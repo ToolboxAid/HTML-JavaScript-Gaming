@@ -1,7 +1,7 @@
 /*
 Toolbox Aid
 David Quesenberry
-03/30/2026
+04/07/2026
 createWorldGameStateSystem.js
 */
 
@@ -11,6 +11,7 @@ import {
   WORLD_GAME_STATE_SYSTEM_ID,
   WORLD_GAME_STATE_TRANSITION_NAMES
 } from './constants.js';
+import { createPromotionGate } from '../promotion/createPromotionGate.js';
 import { createInitialWorldGameState } from './initialState.js';
 import { createSelectorRegistry } from './selectors.js';
 import { createTransitionRegistry } from './transitions.js';
@@ -39,9 +40,46 @@ function patchTouchesScoreSlice(patch) {
   return worldStatePatch.scores !== undefined;
 }
 
+function resolvePromotionCriteriaFromMeta(meta, payload) {
+  if (isPlainObject(meta) && isPlainObject(meta.promotionCriteria)) {
+    return meta.promotionCriteria;
+  }
+  if (isPlainObject(meta) && isPlainObject(meta.promotionGate) && isPlainObject(meta.promotionGate.criteria)) {
+    return meta.promotionGate.criteria;
+  }
+  if (isPlainObject(payload) && isPlainObject(payload.promotionCriteria)) {
+    return payload.promotionCriteria;
+  }
+  return null;
+}
+
+function resolveRollbackTriggerFromMeta(meta) {
+  if (!isPlainObject(meta)) return false;
+  if (meta.rollbackTriggered !== undefined) {
+    return Boolean(meta.rollbackTriggered);
+  }
+  if (isPlainObject(meta.promotionGate) && meta.promotionGate.rollbackTriggered !== undefined) {
+    return Boolean(meta.promotionGate.rollbackTriggered);
+  }
+  return false;
+}
+
+function resolveFrameFromMeta(meta, payload) {
+  if (isPlainObject(meta) && Number.isFinite(Number(meta.frameId))) {
+    return Number(meta.frameId);
+  }
+  if (isPlainObject(meta) && isPlainObject(meta.promotionGate) && Number.isFinite(Number(meta.promotionGate.frameId))) {
+    return Number(meta.promotionGate.frameId);
+  }
+  if (isPlainObject(payload) && Number.isFinite(Number(payload.frameId))) {
+    return Number(payload.frameId);
+  }
+  return null;
+}
+
 function createWorldGameStateSystem(options = {}) {
   const now = typeof options.now === 'function' ? options.now : () => Date.now();
-  const passiveMode = options.passiveMode !== undefined ? Boolean(options.passiveMode) : true;
+  const initialPassiveMode = options.passiveMode !== undefined ? Boolean(options.passiveMode) : true;
   const strictTransitions = options.strictTransitions !== undefined ? Boolean(options.strictTransitions) : true;
   const publishEvent = typeof options.publishEvent === 'function' ? options.publishEvent : null;
   const featureGates = Object.freeze({
@@ -62,7 +100,79 @@ function createWorldGameStateSystem(options = {}) {
 
   const selectorRegistry = createSelectorRegistry();
   const transitionRegistry = createTransitionRegistry();
+  const promotionGateConfig = isPlainObject(options.promotionGate) ? options.promotionGate : null;
+  const resolvePromotionCriteria = promotionGateConfig && typeof promotionGateConfig.resolveCriteria === 'function'
+    ? promotionGateConfig.resolveCriteria
+    : null;
+  const resolveRollbackTrigger = promotionGateConfig && typeof promotionGateConfig.resolveRollbackTrigger === 'function'
+    ? promotionGateConfig.resolveRollbackTrigger
+    : null;
+  const promotionGateLogger = promotionGateConfig && typeof promotionGateConfig.logger === 'function'
+    ? promotionGateConfig.logger
+    : null;
+  const promotionGate = promotionGateConfig
+    ? createPromotionGate({
+        now,
+        requiredCriteria: promotionGateConfig.requiredCriteria,
+        stabilityWindowFrames: promotionGateConfig.stabilityWindowFrames,
+        initiallyPromoted: !initialPassiveMode,
+        logger: promotionGateLogger
+      })
+    : null;
+  let activeMode = initialPassiveMode ? 'passive' : 'authoritative';
   let snapshot = createInitialWorldGameState(options.initialStatePatch);
+
+  function isPassiveModeActive() {
+    return activeMode !== 'authoritative';
+  }
+
+  function evaluatePromotionGate({
+    transitionName,
+    payload,
+    meta,
+    comparison,
+    canUseAuthoritativeTransition
+  }) {
+    if (!promotionGate || !isPassiveModeActive()) return null;
+
+    let criteria = resolvePromotionCriteriaFromMeta(meta, payload);
+    if (!criteria && resolvePromotionCriteria) {
+      const resolved = resolvePromotionCriteria({
+        transitionName,
+        payload,
+        meta,
+        comparison,
+        snapshot: createReadonlyClone(snapshot),
+        canUseAuthoritativeTransition
+      });
+      if (isPlainObject(resolved)) criteria = resolved;
+    }
+
+    let rollbackTriggered = resolveRollbackTriggerFromMeta(meta);
+    if (!rollbackTriggered && resolveRollbackTrigger) {
+      rollbackTriggered = Boolean(resolveRollbackTrigger({
+        transitionName,
+        payload,
+        meta,
+        comparison,
+        snapshot: createReadonlyClone(snapshot),
+        canUseAuthoritativeTransition
+      }));
+    }
+
+    const evaluation = promotionGate.evaluate({
+      criteria: isPlainObject(criteria) ? criteria : {},
+      rollbackTriggered,
+      transitionName,
+      frame: resolveFrameFromMeta(meta, payload)
+    });
+
+    if (evaluation.promotedNow) {
+      activeMode = 'authoritative';
+    }
+
+    return evaluation;
+  }
 
   function publishEnvelope(eventType, envelope) {
     if (!publishEvent) return false;
@@ -88,7 +198,8 @@ function createWorldGameStateSystem(options = {}) {
     return {
       ok: false,
       applied: false,
-      passiveMode,
+      passiveMode: isPassiveModeActive(),
+      mode: activeMode,
       transitionName: String(transitionName || ''),
       reason: String(reason),
       code: String(code),
@@ -143,11 +254,15 @@ function createWorldGameStateSystem(options = {}) {
     const correlationId = String((meta && meta.correlationId) || correlationIdFactory(normalizedTransitionName, payload, meta));
     let changes = [];
     let comparison = null;
+    let promotion = null;
     let applied = false;
+    let authoritativePreviewSnapshot = null;
+    let authoritativePreviewChanges = [];
     const result = {
       ok: true,
       applied: false,
-      passiveMode,
+      passiveMode: isPassiveModeActive(),
+      mode: activeMode,
       transitionName: normalizedTransitionName,
       reason: 'STUB_NOOP',
       code: 'STUB_NOOP',
@@ -169,6 +284,8 @@ function createWorldGameStateSystem(options = {}) {
     if (canUseAuthoritativeTransition) {
       const previewSnapshot = cloneDeep(snapshot);
       const previewResult = transition.authoritativeApply(previewSnapshot, payload, { now });
+      authoritativePreviewSnapshot = previewSnapshot;
+      authoritativePreviewChanges = Array.isArray(previewResult && previewResult.changes) ? previewResult.changes.slice() : [];
       const beforeSlice = normalizedTransitionName === 'updateObjectiveProgress'
         ? snapshot.worldState.objectives
         : snapshot.worldState.scores;
@@ -176,16 +293,26 @@ function createWorldGameStateSystem(options = {}) {
         ? previewSnapshot.worldState.objectives
         : previewSnapshot.worldState.scores;
       comparison = {
-        mode: passiveMode ? 'passive-comparison' : 'gated-comparison',
+        mode: isPassiveModeActive() ? 'passive-comparison' : 'gated-comparison',
         before: createReadonlyClone(beforeSlice),
         candidate: createReadonlyClone(candidateSlice),
-        changes: Array.isArray(previewResult && previewResult.changes) ? previewResult.changes.slice() : []
+        changes: authoritativePreviewChanges.slice()
       };
+    }
 
+    promotion = evaluatePromotionGate({
+      transitionName: normalizedTransitionName,
+      payload,
+      meta,
+      comparison,
+      canUseAuthoritativeTransition
+    });
+
+    if (canUseAuthoritativeTransition) {
       const authoritativeEnabled = featureGates[authoritativeGateKey];
-      if (!passiveMode && authoritativeEnabled) {
-        snapshot = previewSnapshot;
-        changes = comparison.changes.slice();
+      if (!isPassiveModeActive() && authoritativeEnabled) {
+        snapshot = authoritativePreviewSnapshot || snapshot;
+        changes = authoritativePreviewChanges.slice();
         applied = true;
         if (normalizedTransitionName === 'applyScoreDelta') {
           result.reason = 'APPLIED_AUTHORITATIVE_SCORE';
@@ -206,9 +333,32 @@ function createWorldGameStateSystem(options = {}) {
     }
 
     result.applied = applied;
+    result.passiveMode = isPassiveModeActive();
+    result.mode = activeMode;
     result.changes = changes;
     if (comparison) {
       result.comparison = comparison;
+    }
+    if (promotion) {
+      result.promotion = createReadonlyClone(promotion);
+    } else if (promotionGate) {
+      result.promotion = createReadonlyClone({
+        readiness: isPassiveModeActive() ? 'passive' : 'authoritative',
+        promoted: !isPassiveModeActive(),
+        promotedNow: false,
+        rollbackTriggered: false,
+        criteria: {
+          values: {},
+          unmet: [],
+          allMet: false
+        },
+        stability: {
+          currentFrames: promotionGate.getState().stableFrames,
+          requiredFrames: promotionGate.getState().stabilityWindowFrames
+        },
+        reason: promotionGate.getState().lastReason,
+        metrics: promotionGate.getMetrics()
+      });
     }
 
     const eventEnvelope = createTransitionAppliedEvent({
@@ -217,11 +367,13 @@ function createWorldGameStateSystem(options = {}) {
       correlationId,
       changes,
       payload: {
-        passiveMode,
+        passiveMode: isPassiveModeActive(),
+        mode: activeMode,
         applied,
         stub: !applied,
         featureGates,
         comparisonMode: Boolean(comparison && !applied),
+        promotion: result.promotion ? cloneDeep(result.promotion) : null,
         requestedPayload: isPlainObject(payload) ? payload : {}
       },
       meta,
@@ -242,7 +394,7 @@ function createWorldGameStateSystem(options = {}) {
     }
 
     const objectiveAuthoritativeActive = Boolean(
-      !passiveMode &&
+      !isPassiveModeActive() &&
       featureGates[WORLD_GAME_STATE_FEATURE_GATES.AUTHORITATIVE_OBJECTIVE_PROGRESS]
     );
     if (objectiveAuthoritativeActive && patchTouchesObjectiveSlice(patch)) {
@@ -267,7 +419,7 @@ function createWorldGameStateSystem(options = {}) {
     }
 
     const scoreAuthoritativeActive = Boolean(
-      !passiveMode &&
+      !isPassiveModeActive() &&
       featureGates[WORLD_GAME_STATE_FEATURE_GATES.AUTHORITATIVE_SCORE]
     );
     if (scoreAuthoritativeActive && patchTouchesScoreSlice(patch)) {
@@ -325,6 +477,26 @@ function createWorldGameStateSystem(options = {}) {
     return featureGates;
   }
 
+  function getMode() {
+    return activeMode;
+  }
+
+  function getPromotionReadiness() {
+    if (!promotionGate) return null;
+    const state = promotionGate.getState();
+    return {
+      mode: activeMode,
+      promoted: !isPassiveModeActive(),
+      stableFrames: state.stableFrames,
+      requiredStableFrames: state.stabilityWindowFrames,
+      reason: state.lastReason
+    };
+  }
+
+  function getPromotionMetrics() {
+    return promotionGate ? promotionGate.getMetrics() : null;
+  }
+
   const publicApi = {
     getSnapshot,
     getReadonlyView,
@@ -333,7 +505,10 @@ function createWorldGameStateSystem(options = {}) {
     applyExternalSnapshotPatch,
     getTransitionNames,
     getSelectorNames,
-    getFeatureGates
+    getFeatureGates,
+    getMode,
+    getPromotionReadiness,
+    getPromotionMetrics
   };
 
   function getPublicApi() {

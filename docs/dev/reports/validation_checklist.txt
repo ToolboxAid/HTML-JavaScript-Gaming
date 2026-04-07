@@ -1,7 +1,6 @@
 VALIDATION CHECKLIST
 
-[ ] Promotion criteria defined
-[ ] Stability thresholds defined
-[ ] Rollback conditions defined
-[ ] Observability requirements defined
-[ ] No runtime scope introduced
+[ ] Promotion triggers only under valid conditions
+[ ] Stability window enforced
+[ ] Rollback conditions abort correctly
+[ ] Logging provides visibility

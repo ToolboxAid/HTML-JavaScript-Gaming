@@ -1,4 +1,6 @@
 CHANGE SUMMARY
 
-- Introduced final promotion gate definition
-- Defined criteria and constraints for authoritative switch
+- Added promotion gate runtime logic
+- Enforced stability checks before promotion
+- Added rollback safety conditions
+- Added observability logging
