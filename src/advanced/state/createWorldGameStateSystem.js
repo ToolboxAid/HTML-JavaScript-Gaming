@@ -11,7 +11,6 @@ import {
   WORLD_GAME_STATE_SYSTEM_ID,
   WORLD_GAME_STATE_TRANSITION_NAMES
 } from './constants.js';
-import { createPromotionGate } from '../promotion/createPromotionGate.js';
 import { createInitialWorldGameState } from './initialState.js';
 import { createSelectorRegistry } from './selectors.js';
 import { createTransitionRegistry } from './transitions.js';
@@ -77,6 +76,172 @@ function resolveFrameFromMeta(meta, payload) {
   return null;
 }
 
+function asFiniteNumber(value, fallback = 0) {
+  const numeric = Number(value);
+  return Number.isFinite(numeric) ? numeric : fallback;
+}
+
+function asPositiveInteger(value, fallback = 1) {
+  const numeric = Math.floor(asFiniteNumber(value, fallback));
+  return numeric >= 1 ? numeric : fallback;
+}
+
+function normalizeRequiredCriteria(requiredCriteria) {
+  if (!Array.isArray(requiredCriteria)) return [];
+  const seen = new Set();
+  const out = [];
+  for (let i = 0; i < requiredCriteria.length; i += 1) {
+    const key = String(requiredCriteria[i] || '').trim();
+    if (!key || seen.has(key)) continue;
+    seen.add(key);
+    out.push(key);
+  }
+  return out;
+}
+
+function normalizeCriteriaMap(criteria, requiredCriteria) {
+  const normalized = {};
+  if (isPlainObject(criteria)) {
+    const keys = Object.keys(criteria);
+    for (let i = 0; i < keys.length; i += 1) {
+      normalized[String(keys[i])] = Boolean(criteria[keys[i]]);
+    }
+  }
+  for (let i = 0; i < requiredCriteria.length; i += 1) {
+    const key = requiredCriteria[i];
+    if (!(key in normalized)) normalized[key] = false;
+  }
+  return normalized;
+}
+
+function createInlinePromotionGate({
+  now,
+  requiredCriteria,
+  stabilityWindowFrames,
+  initiallyPromoted,
+  logger
+}) {
+  const criteriaKeys = normalizeRequiredCriteria(requiredCriteria);
+  const windowFrames = asPositiveInteger(stabilityWindowFrames, 3);
+  let promoted = Boolean(initiallyPromoted);
+  let stableFrames = promoted ? windowFrames : 0;
+  let lastReason = promoted ? 'ALREADY_PROMOTED' : 'AWAITING_CRITERIA';
+  let lastEvaluation = null;
+  const metrics = {
+    evaluations: 0,
+    stableEvaluations: 0,
+    blockedEvaluations: 0,
+    rollbackAborts: 0,
+    promotions: promoted ? 1 : 0,
+    lastEvaluationAtMs: null,
+    lastPromotionAtMs: promoted ? Number(now()) : null
+  };
+
+  function getMetrics() {
+    return {
+      ...metrics,
+      promoted,
+      stableFrames,
+      stabilityWindowFrames: windowFrames
+    };
+  }
+
+  function getState() {
+    return {
+      promoted,
+      stableFrames,
+      stabilityWindowFrames: windowFrames,
+      lastReason,
+      lastEvaluation: lastEvaluation ? cloneDeep(lastEvaluation) : null
+    };
+  }
+
+  function evaluate({ criteria = {}, rollbackTriggered = false, transitionName = '', frame = null } = {}) {
+    metrics.evaluations += 1;
+    const timestampMs = Number(now());
+    metrics.lastEvaluationAtMs = timestampMs;
+
+    const normalizedCriteria = normalizeCriteriaMap(criteria, criteriaKeys);
+    const normalizedKeys = Object.keys(normalizedCriteria);
+    const unmet = [];
+    for (let i = 0; i < normalizedKeys.length; i += 1) {
+      const key = normalizedKeys[i];
+      if (!normalizedCriteria[key]) unmet.push(key);
+    }
+    const hasCriteria = normalizedKeys.length > 0;
+    const allCriteriaMet = hasCriteria && unmet.length === 0;
+    let promotedNow = false;
+
+    if (rollbackTriggered && !promoted) {
+      stableFrames = 0;
+      lastReason = 'ROLLBACK_ABORTED_PROMOTION';
+      metrics.rollbackAborts += 1;
+      metrics.blockedEvaluations += 1;
+    } else if (promoted) {
+      stableFrames = windowFrames;
+      lastReason = 'ALREADY_PROMOTED';
+      metrics.stableEvaluations += 1;
+    } else if (!hasCriteria) {
+      stableFrames = 0;
+      lastReason = 'PROMOTION_CRITERIA_MISSING';
+      metrics.blockedEvaluations += 1;
+    } else if (!allCriteriaMet) {
+      stableFrames = 0;
+      lastReason = 'PROMOTION_CRITERIA_UNMET';
+      metrics.blockedEvaluations += 1;
+    } else {
+      stableFrames += 1;
+      metrics.stableEvaluations += 1;
+      lastReason = stableFrames >= windowFrames ? 'PROMOTION_READY' : 'PROMOTION_STABILIZING';
+      if (stableFrames >= windowFrames) {
+        promoted = true;
+        promotedNow = true;
+        metrics.promotions += 1;
+        metrics.lastPromotionAtMs = timestampMs;
+        lastReason = 'PROMOTED';
+      }
+    }
+
+    const readiness = promoted ? 'authoritative' : (allCriteriaMet ? 'stabilizing' : 'passive');
+    const evaluation = {
+      transitionName: String(transitionName || ''),
+      frame: frame !== undefined && frame !== null ? Number(frame) : null,
+      timestampMs,
+      readiness,
+      promoted,
+      promotedNow,
+      rollbackTriggered: Boolean(rollbackTriggered),
+      stability: {
+        currentFrames: stableFrames,
+        requiredFrames: windowFrames
+      },
+      criteria: {
+        values: normalizedCriteria,
+        unmet,
+        allMet: allCriteriaMet
+      },
+      reason: lastReason,
+      metrics: getMetrics()
+    };
+    lastEvaluation = cloneDeep(evaluation);
+
+    if (typeof logger === 'function') {
+      logger(
+        `[promotion-gate] readiness=${readiness} promoted=${String(promoted)} ` +
+        `stable=${stableFrames}/${windowFrames} reason=${lastReason}`
+      );
+    }
+
+    return evaluation;
+  }
+
+  return {
+    evaluate,
+    getMetrics,
+    getState
+  };
+}
+
 function createWorldGameStateSystem(options = {}) {
   const now = typeof options.now === 'function' ? options.now : () => Date.now();
   const initialPassiveMode = options.passiveMode !== undefined ? Boolean(options.passiveMode) : true;
@@ -111,7 +276,7 @@ function createWorldGameStateSystem(options = {}) {
     ? promotionGateConfig.logger
     : null;
   const promotionGate = promotionGateConfig
-    ? createPromotionGate({
+    ? createInlinePromotionGate({
         now,
         requiredCriteria: promotionGateConfig.requiredCriteria,
         stabilityWindowFrames: promotionGateConfig.stabilityWindowFrames,
@@ -477,26 +642,6 @@ function createWorldGameStateSystem(options = {}) {
     return featureGates;
   }
 
-  function getMode() {
-    return activeMode;
-  }
-
-  function getPromotionReadiness() {
-    if (!promotionGate) return null;
-    const state = promotionGate.getState();
-    return {
-      mode: activeMode,
-      promoted: !isPassiveModeActive(),
-      stableFrames: state.stableFrames,
-      requiredStableFrames: state.stabilityWindowFrames,
-      reason: state.lastReason
-    };
-  }
-
-  function getPromotionMetrics() {
-    return promotionGate ? promotionGate.getMetrics() : null;
-  }
-
   const publicApi = {
     getSnapshot,
     getReadonlyView,
@@ -505,10 +650,7 @@ function createWorldGameStateSystem(options = {}) {
     applyExternalSnapshotPatch,
     getTransitionNames,
     getSelectorNames,
-    getFeatureGates,
-    getMode,
-    getPromotionReadiness,
-    getPromotionMetrics
+    getFeatureGates
   };
 
   function getPublicApi() {

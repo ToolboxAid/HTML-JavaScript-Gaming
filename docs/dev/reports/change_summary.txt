@@ -1,7 +1,1 @@
-CHANGE SUMMARY
-
-- restored roadmap depth after over-compression
-- added strategic layer without replacing detailed tracks
-- preserved [ ] [.] [x] checklist style throughout
-- retained debug, network, productization, tools, samples, and capability sections
-- kept master roadmap as the single source of truth
+clean retry scoped to single file

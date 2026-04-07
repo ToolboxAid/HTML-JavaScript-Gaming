@@ -1,6 +1,13 @@
-PLAN: restore detailed master roadmap and add strategic layer
+BUILD: Level 11.7 promotion gate (clean single-file retry)
 
-- restore expanded roadmap depth
-- add strategic learning / separation / promotion guidance
-- preserve detailed debug, network, productization, tool, and sample tracks
-- keep [ ] [.] [x] consistency throughout
+- implemented promotion gate inline within createWorldGameStateSystem.js
+- no new files created
+- no engine API changes
+- adhered to strict file-only scope
+
+notes:
+- replaces previous non-compliant attempt
+- ensures compatibility with repo constraints
+
+next:
+- validate promotion gate behavior
