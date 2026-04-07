@@ -1,4 +1,7 @@
 CHANGE SUMMARY
 
-- Added protected BUILD template at `docs/dev/templates/BUILD_TEMPLATE_PROTECTED.md`
-- Standardized mandatory BUILD constraints for future BUILD bundles
+- restored roadmap depth after over-compression
+- added strategic layer without replacing detailed tracks
+- preserved [ ] [.] [x] checklist style throughout
+- retained debug, network, productization, tools, samples, and capability sections
+- kept master roadmap as the single source of truth

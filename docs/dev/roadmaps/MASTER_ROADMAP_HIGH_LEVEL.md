@@ -1,0 +1,575 @@
+# MASTER ROADMAP — HIGH LEVEL (v6 ADDITIVE)
+
+## Status Key
+- [x] complete
+- [.] in progress
+- [ ] planned
+
+---
+
+## Strategic Layer
+
+### Learning System
+- [ ] phases form a complete learning path
+- [ ] each phase introduces one new concept cleanly
+- [ ] each sample has a clear teaching purpose
+- [ ] samples build progressively from prior phases
+- [ ] no overlapping concept samples without clear justification
+- [ ] advanced phases depend on mastered earlier phases
+- [ ] samples remain understandable as standalone learning units
+- [ ] sample naming stays aligned to phase numbering
+
+### Architectural Separation
+- [ ] engine contains reusable runtime logic only
+- [ ] shared contains reusable cross-domain helpers only
+- [ ] games contain game-specific implementation only
+- [ ] samples contain learning/demo logic only
+- [ ] tools contain editor/pipeline/debug-authoring logic only
+- [ ] no sample logic promoted directly into engine without stabilization
+- [ ] no tool logic promoted directly into engine without stabilization
+- [ ] games do not become the default location for engine experiments
+- [ ] dependency direction stays enforced across all refactors
+
+### Promotion Pipeline
+- [ ] sample proves concept
+- [ ] shared extracts reusable logic
+- [ ] engine receives stable abstraction
+- [ ] promotion requires multi-use reuse evidence
+- [ ] promotion requires stable public contract
+- [ ] promotion requires removal of sample-specific assumptions
+- [ ] promotion requires validation after extraction
+- [ ] promotion does not happen as a blind dedupe exercise
+
+### Tooling Strategy
+- [ ] tools are created when they unblock engine/content progress
+- [ ] tools do not define engine behavior
+- [ ] tools share common IO/state/util layers where appropriate
+- [ ] tools remain organized under `tools/`
+- [ ] active tools list remains explicit
+- [ ] legacy tools remain isolated and visibly non-current
+- [ ] 3D tools arrive when 3D capability needs them, not before
+- [ ] content pipeline tools arrive when asset complexity justifies them
+
+### End State Vision
+- [ ] clean engine core
+- [ ] clean shared layer
+- [ ] games follow a standard structure
+- [ ] samples form a complete curriculum
+- [ ] tools support authoring/debug/content workflows
+- [ ] debug platform supports games, tools, and samples
+- [ ] network concepts are deterministic and explainable
+- [ ] 2D capabilities are complete and reusable
+- [ ] 3D capabilities are complete and reusable
+- [ ] productization/distribution is documented and repeatable
+
+---
+
+## 0. Workflow + Delivery Foundation
+- [x] PLAN → BUILD → APPLY workflow defined
+- [x] docs-first operating model established
+- [x] repo-structured ZIP delivery established
+- [x] validation-gate model established
+- [x] protected start_of_day operating boundary established
+- [x] protected BUILD template direction established
+- [x] ChatGPT owns planning/docs/bundles
+- [x] Codex owns code/runtime edits
+- [x] docs/dev reports + commit metadata pattern established
+- [x] no-Codex APPLY rule established
+- [x] single-validation-gate concept established
+
+---
+
+## 1. Repo Structure Normalization
+- [.] target structure defined at high level
+- [.] `src/engine` target established
+- [.] `src/shared` target established
+- [.] `games/` target established
+- [.] `games/_template/` target established
+- [.] `tools/shared` target established
+- [.] phase-based `samples/` grouping target established
+- [.] dependency direction rules defined
+- [.] shared asset promotion rules defined
+- [.] network samples classified as sample-phase content
+- [ ] current folder inventory mapped to target homes
+- [ ] move-map defined for root `engine/` -> `src/engine/`
+- [ ] duplicate-helper migration map defined
+- [ ] ambiguous-name rename map defined
+- [ ] legacy migration map defined
+- [ ] implementation PRs executed
+- [ ] imports normalized after moves
+- [ ] post-move validation complete
+
+### Structure Targets
+- [ ] `src/engine/core`
+- [ ] `src/engine/state`
+- [ ] `src/engine/rendering`
+- [ ] `src/engine/input`
+- [ ] `src/engine/physics`
+- [ ] `src/engine/audio`
+- [ ] `src/engine/scene`
+- [ ] `src/shared/utils`
+- [ ] `src/shared/math`
+- [ ] `src/shared/state`
+- [ ] `games/_template/flow`
+- [ ] `samples/phase-01`
+- [ ] `samples/phase-13_network-concepts`
+- [ ] `tools/shared`
+
+---
+
+## 2. Engine Core
+- [ ] core bootstrapping normalized
+- [ ] scene management normalized
+- [ ] rendering layer normalized
+- [ ] input layer normalized
+- [ ] physics layer normalized
+- [ ] audio layer normalized
+- [ ] systems layer normalized
+- [ ] engine-level contracts documented
+- [ ] engine public boundaries clarified
+- [ ] timing/frame services stabilized
+- [ ] event routing stabilized
+- [ ] camera integration stabilized
+
+### 2D Engine Capability
+- [ ] 2D scene boot
+- [ ] 2D render loop
+- [ ] 2D camera
+- [ ] 2D tilemap integration
+- [ ] 2D collision patterns
+- [ ] 2D gameplay hooks
+
+### 3D Engine Foundation
+- [ ] 3D scene boot
+- [ ] 3D render foundation
+- [ ] 3D transforms
+- [ ] 3D camera controls
+- [ ] 3D movement base
+- [ ] 3D collision base
+- [ ] 3D physics base
+- [ ] 3D content loading path
+
+---
+
+## 3. Shared Foundation (`src/shared`)
+- [ ] numbers utilities consolidated
+- [ ] objects utilities consolidated
+- [ ] arrays utilities consolidated
+- [ ] strings utilities consolidated
+- [ ] ids utilities consolidated
+- [ ] shared math layer consolidated
+- [ ] shared state guards consolidated
+- [ ] shared state normalization consolidated
+- [ ] shared selectors consolidated
+- [ ] shared contracts consolidated
+- [ ] shared io/data/types stabilized
+
+### Duplicate / Rename Focus
+- [ ] `asFiniteNumber` unified
+- [ ] `asPositiveInteger` unified
+- [ ] `isPlainObject` unified
+- [ ] `getState` variants bucketed by domain
+- [ ] `getSimulationState` naming established where needed
+- [ ] `getReplayState` naming established where needed
+- [ ] `getEditorState` naming established where needed
+- [ ] sample/tool/runtime duplicates classified before move
+
+---
+
+## 4. State, Replay, Timeline, Authoritative Flow
+- [.] authoritative state direction established
+- [.] authoritative score/objective slices exist
+- [.] promotion-gate lane active
+- [ ] final promotion gate implemented and applied
+- [ ] authoritative/passive handoff finalized
+- [ ] replay/timeline boundaries normalized
+- [ ] state contracts extracted/confirmed
+- [ ] public selectors stabilized
+- [ ] observability for promotion/handoff completed
+- [ ] long-run validation completed
+- [ ] rollback safety / abort logic completed
+
+### Subcomponents
+- [ ] state contracts
+- [ ] authoritative state slices
+- [ ] replay model
+- [ ] timeline orchestration
+- [ ] selectors/public readers
+- [ ] promotion gating
+- [ ] rollback safety / abort logic
+
+---
+
+## 5. Debug Platform & Ecosystem
+
+### Track A — Debug Foundation
+- [x] Dev Console (input + command execution)
+- [x] Debug Overlay (visual panels)
+- [x] Console ↔ Overlay Boundary
+- [x] Panel Registry
+- [x] Data Providers (read-only model)
+- [x] Operator Commands (control surface)
+- [x] Panel Persistence
+
+### Track B — Promotion To Engine Layer
+- [x] PLAN_PR_DEBUG_SURFACES_PROMOTION
+- [x] BUILD_PR_DEBUG_SURFACES_PROMOTION
+- [x] APPLY_PR_DEBUG_SURFACES_PROMOTION
+
+### Track C — Standard Debug Library
+- [x] PLAN_PR_DEBUG_SURFACES_STANDARD_LIBRARY
+- [x] BUILD_PR_DEBUG_SURFACES_STANDARD_LIBRARY
+- [x] APPLY_PR_DEBUG_SURFACES_STANDARD_LIBRARY
+
+### Track D — Debug Presets
+- [x] PLAN_PR_DEBUG_SURFACES_PRESETS
+- [x] BUILD_PR_DEBUG_SURFACES_PRESETS
+- [x] APPLY_PR_DEBUG_SURFACES_PRESETS
+
+### Track E — Advanced Debug UX
+- [x] PLAN_PR_DEBUG_SURFACES_ADVANCED_UX
+- [x] BUILD_PR_DEBUG_SURFACES_ADVANCED_UX
+- [x] APPLY_PR_DEBUG_SURFACES_ADVANCED_UX
+
+### Track F — Game Integration
+- [x] PLAN_PR_DEBUG_SURFACES_GAME_INTEGRATION
+- [x] BUILD_PR_DEBUG_SURFACES_GAME_INTEGRATION
+- [x] APPLY_PR_DEBUG_SURFACES_GAME_INTEGRATION
+- [x] Sample game uses full debug platform
+- [x] Toggle debug in production-safe mode
+- [x] Performance-safe overlays
+- [x] Build-time debug flags
+
+### Track G — Network / Multiplayer Debug
+- [x] Connection status panel
+- [.] Latency / RTT panel
+- [ ] Replication state viewer
+- [x] Client/server divergence inspector
+- [.] Event tracing
+- [.] PLAN_PR_DEBUG_SURFACES_NETWORK_SUPPORT
+- [ ] BUILD_PR_DEBUG_SURFACES_NETWORK_SUPPORT
+- [x] APPLY_PR_DEBUG_SURFACES_NETWORK_SUPPORT
+
+### Track H — 3D Debug Support
+- [.] Transform inspector
+- [x] BUILD_PR_DEBUG_SURFACES_3D_SUPPORT
+- [x] APPLY_PR_DEBUG_SURFACES_3D_SUPPORT
+- [ ] Camera debug panel
+- [ ] Render pipeline stages
+- [ ] Collision overlays
+- [ ] Scene graph inspector
+
+### Track I — Inspectors & Tooling
+- [x] Entity inspector
+- [x] Component inspector
+- [x] State diff viewer
+- [x] Timeline debugger
+- [x] Event stream viewer
+
+### Track J — Engine Maturity
+- [x] Stable debug API
+- [x] Plugin system
+- [x] External documentation
+- [x] Versioned contracts
+- [x] Performance benchmarks
+
+---
+
+## 6. Samples Program
+- [.] sample numbering normalization completed
+- [.] sample formatting alignment completed
+- [ ] phase grouping normalized
+- [ ] `samples/shared` boundaries defined and used
+- [ ] sample index normalized to phase structure
+- [ ] sample-to-engine dependency cleanup completed
+- [ ] sample duplicate helper usage reduced
+- [ ] sample curriculum progression validated
+
+### Sample Phase Tracks
+- [ ] foundational phases normalized
+- [ ] tilemap / camera / rendering phases normalized
+- [ ] tool-linked sample phases normalized
+- [ ] network concepts / latency / simulation phase normalized
+- [ ] 3D phase normalized
+
+### Dependency-Driven Sample Builds
+- [ ] 2D camera sample
+- [ ] tilemap scrolling sample
+- [ ] collision sample
+- [ ] enemy behavior sample
+- [ ] full 2D reference game sample
+- [ ] 3D scene boot sample
+- [ ] 3D camera orbit sample
+- [ ] 3D movement sample
+- [ ] 3D collision sample
+
+---
+
+## 7. Phase 13 — Network Concepts, Latency & Simulation
+
+### Track N — Network Sample Foundation
+- [x] Sample A — Local Loopback / Fake Network
+- [x] Synthetic connection lifecycle
+- [x] Synthetic RTT feed
+- [x] Synthetic replication feed
+- [x] Trace event feed
+
+### Track O — Host / Client Sample
+- [x] Sample B — Host / Client Diagnostics
+- [x] Host status panel data
+- [x] Client status panel data
+- [x] Authority / ownership visibility
+- [x] Replication snapshot visibility
+- [x] Divergence warning surface
+
+### Track P — Divergence / Trace Sample
+- [x] Sample C — Divergence / Trace Validation
+- [x] Deterministic mismatch scenario
+- [x] Event sequencing timeline
+- [x] Divergence explanation notes
+- [x] Reproduction guide
+- [x] Validation checklist
+
+### Track Q — Network Debug Panels
+- [x] Connection status panel
+- [.] Latency / RTT panel
+- [ ] Replication state viewer
+- [x] Client/server divergence inspector
+- [.] Event tracing panel
+
+### Track R — Network Debug Commands
+- [ ] network.help
+- [x] network.status
+- [x] network.latency
+- [ ] network.replication
+- [x] network.divergence
+- [x] network.trace
+- [ ] network.sample.*
+
+### Track S — Readiness To Promote
+- [.] Sample-backed provider validation
+- [.] Sample-backed panel validation
+- [.] Operator command validation
+- [ ] Debug-only gating validation
+- [ ] Promotion recommendation
+
+### Track T — Server Dashboard
+- [ ] Server dashboard shell
+- [ ] Player statistics view
+- [ ] Latency view
+- [ ] RX bytes view
+- [ ] TX bytes view
+- [ ] Connection/session counts
+- [ ] Per-player status rows
+- [ ] Refresh/update strategy
+- [ ] Debug-only access rules
+
+### Track U — Server Containerization
+- [x] Dockerfile for server
+- [x] .dockerignore
+- [x] Environment variable contract
+- [x] Local run command
+- [x] Compose-ready service definition
+- [x] Port mapping rules
+- [x] Health/readiness check
+- [x] Logging/output expectations
+- [x] Container debug notes
+
+### Recommended Execution Order
+- [x] Sample A
+- [x] Connection + RTT + tracing basics
+- [x] Sample B
+- [x] Replication + authority + divergence
+- [x] Sample C
+- [ ] Server dashboard
+- [x] Server containerization
+- [ ] Promotion review
+
+---
+
+## 8. Games Layer
+- [ ] `games/_template/` created
+- [ ] game flow pattern standardized (`flow/attract.js`, `flow/intro.js`, `flow/highscore.js`)
+- [ ] per-game structure normalized
+- [ ] gameplay/entities/levels/rules/assets boundaries normalized
+- [ ] current games migrated to target structure
+- [ ] game-specific asset ownership enforced
+- [ ] shared-vs-game utility boundaries enforced
+- [ ] space_invaders normalized
+- [ ] puckman normalized
+- [ ] future games follow template-first path
+
+---
+
+## 9. Tools
+
+### Existing Tools
+- [ ] TileMapEditor normalized
+- [ ] ParallaxEditor normalized
+- [ ] VectorMapEditor normalized
+- [ ] VectorAssetStudio normalized
+
+### New Required Tools (By Dependency)
+- [ ] 3DMapEditor
+- [ ] 3DAssetViewer
+- [ ] 3DCameraPathEditor
+- [ ] PhysicsSandboxTool
+- [ ] StateInspectorTool
+- [ ] ReplayVisualizerTool
+- [ ] PerformanceProfilerTool
+- [ ] AssetPipelineTool
+- [ ] Tile/Model Converter Tool
+
+### Tooling Strategy By Need
+- [ ] 2D tool stabilization before 3D tool expansion
+- [ ] 3D prerequisite samples before advanced 3D tools
+- [ ] content pipeline tools after asset complexity justifies them
+- [ ] debug tools align with engine/debug maturity
+- [ ] no standalone showcase-only tool tracks
+
+---
+
+## 10. Assets & Data Policy
+- [.] shared asset policy defined at planning level
+- [ ] game asset ownership normalized
+- [ ] sample asset ownership normalized
+- [ ] tool demo asset ownership normalized
+- [ ] promotion criteria for shared assets enforced
+- [ ] asset duplication reduced
+- [ ] top-level shared asset strategy finalized if needed
+
+---
+
+## 11. Productization & Distribution
+
+### Track P — Product Samples / Demonstrations
+- [x] Asteroids Debug Showcase
+- [x] Breakout Debug Showcase
+
+### Track Q — UX Polish
+- [x] Debug toggle indicator
+- [x] Default preset auto-load
+- [x] Open Debug Panel button
+- [x] Inline mini help
+
+### Track R — Distribution And Packaging
+- [x] Showcase landing page
+- [x] Build packaging strategy
+- [x] Asset bundling rules
+
+### Track S — Documentation And Adoption
+- [x] Debug tour
+- [x] Getting started guide
+- [x] Example-driven docs
+
+### Productization Rule
+- [ ] do not create standalone showcase tracks in future roadmaps
+- [ ] fold showcase importance into the main feature or sample title when needed
+
+---
+
+## 12. 2D Capability Track
+- [ ] camera systems stabilized
+- [ ] tilemap/runtime integration stabilized
+- [ ] collision patterns stabilized
+- [ ] enemy/hero/gameplay conventions stabilized
+- [ ] replay/state integration for 2D games stabilized
+- [ ] polished 2D reference game path established
+- [ ] 2D reference game built
+
+---
+
+## 13. 3D Capability Track (Phase 16)
+
+### Phase 16 Description Alignment
+- [ ] phase-16 description updated in repo docs/index
+- [ ] phase-16 description kept separate from networking language
+
+### Prerequisite Samples
+- [ ] 3D Scene Boot Sample
+- [ ] Camera Orbit Sample
+- [ ] 3D Movement Sample
+- [ ] Basic Collision Sample
+
+### Core Sample Track (1601–1608)
+- [ ] 1601 — 3D Cube Explorer
+- [ ] 1602 — 3D Maze Runner
+- [ ] 1603 — First Person Walkthrough
+- [ ] 1604 — 3D Platformer
+- [ ] 1605 — 3D Driving Sandbox
+- [ ] 1606 — 3D Physics Playground
+- [ ] 1607 — 3D Space Shooter
+- [ ] 1608 — 3D Dungeon Crawler
+
+### Advanced 3D Samples
+- [ ] 1610 — Lighting Demo
+- [ ] 1611 — AI Navigation Demo
+- [ ] 1612 — Large World Streaming Demo
+
+### 3D Capability Requirements
+- [ ] 3D rendering
+- [ ] 3D camera
+- [ ] 3D movement
+- [ ] 3D physics
+- [ ] 3D tool support
+- [ ] 3D debug support
+
+---
+
+## 14. Testing & Validation
+- [ ] `tests/` structure normalized
+- [ ] unit coverage aligned to engine/shared/games
+- [ ] integration coverage aligned to state/replay/rendering/tools
+- [ ] smoke validation aligned to samples/tools/games
+- [ ] fixtures/helpers organization normalized
+- [ ] move/refactor validation strategy documented
+- [ ] post-PR acceptance criteria consistently enforced
+
+---
+
+## 15. Legacy Reduction
+- [ ] legacy inventory completed
+- [ ] keep vs migrate vs future-delete decisions recorded
+- [ ] `classes_old_keep` policy defined
+- [ ] `SpriteEditor_old_keep` policy defined
+- [ ] archived notes policy defined
+- [ ] imports pointing to legacy paths reduced
+- [ ] roadmap for eventual legacy retirement defined
+
+---
+
+## 16. Documentation + Planning System
+- [x] PR docs structure established
+- [x] reports structure established
+- [x] templates structure established
+- [x] roadmaps folder recognized as tracker space
+- [ ] master roadmap committed and maintained
+- [ ] per-component roadmap slices added only when truly needed
+- [ ] structure normalization roadmap linked to future BUILD lanes
+- [ ] phase descriptions normalized repo-wide
+- [ ] naming policy documented
+
+---
+
+## Dependency-Ordered Future Build Sequence
+- [ ] Finish current promotion-gate lane (BUILD → APPLY)
+- [ ] Apply master roadmap baseline
+- [ ] Apply repo structure normalization implementation plan
+- [ ] Extract / normalize shared utilities
+- [ ] Normalize samples phase structure
+- [ ] Normalize phase-13 network concepts samples
+- [ ] Establish games/_template and normalize games layer
+- [ ] Normalize tools/shared and tool boundaries
+- [ ] Normalize assets/data ownership
+- [ ] Expand testing/validation structure
+- [ ] Execute 2D capability polish lanes
+- [ ] Execute phase-16 / 3D capability lanes
+- [ ] Reduce legacy footprint after replacements are proven
+
+---
+
+## Immediate Next High-Level Actions
+- [ ] Commit this roadmap baseline
+- [ ] Finish active promotion-gate lane
+- [ ] Return to repo structure normalization lane
+- [ ] split future implementation into small dependency-ordered PRs

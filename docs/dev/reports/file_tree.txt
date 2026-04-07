@@ -1,6 +1,8 @@
 FILE TREE
 
 docs/
+├── pr/
+│   └── PLAN_PR_MASTER_ROADMAP_HIGH_LEVEL.md
 └── dev/
     ├── commit_comment.txt
     ├── codex_commands.md
@@ -8,9 +10,5 @@ docs/
     │   ├── change_summary.txt
     │   ├── file_tree.txt
     │   └── validation_checklist.txt
-    └── templates/
-        └── BUILD_TEMPLATE_PROTECTED.md
-
-docs/
-└── pr/
-    └── PLAN_PR_BUILD_TEMPLATE_PROTECTED.md
+    └── roadmaps/
+        └── MASTER_ROADMAP_HIGH_LEVEL.md

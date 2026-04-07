@@ -1,4 +1,6 @@
-PLAN: add protected BUILD template under docs/dev/templates
+PLAN: restore detailed master roadmap and add strategic layer
 
-- standardizes mandatory BUILD constraints
-- no runtime changes
+- restore expanded roadmap depth
+- add strategic learning / separation / promotion guidance
+- preserve detailed debug, network, productization, tool, and sample tracks
+- keep [ ] [.] [x] consistency throughout
