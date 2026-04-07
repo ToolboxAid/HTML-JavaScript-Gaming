@@ -29,7 +29,7 @@ export default class WorldStreamingScene extends Scene {
 
   render(renderer) {
     drawFrame(renderer, theme, [
-      'Engine Sample108',
+      'Engine sample 0613',
       'Chunk streaming keeps a reusable loaded-window around the player for scalable worlds.',
       'Move with Arrow keys to shift the loaded chunk set.',
     ]);

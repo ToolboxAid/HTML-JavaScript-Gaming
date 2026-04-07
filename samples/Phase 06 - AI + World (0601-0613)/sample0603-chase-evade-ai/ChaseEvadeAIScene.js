@@ -34,7 +34,7 @@ export default class ChaseEvadeAIScene extends Scene {
 
   render(renderer) {
     drawFrame(renderer, theme, [
-      'Engine Sample99',
+      'Engine sample 0603',
       'Chase and evade use reusable engine steering behaviors against the same target.',
       'Move the green target with Arrow keys.',
     ]);

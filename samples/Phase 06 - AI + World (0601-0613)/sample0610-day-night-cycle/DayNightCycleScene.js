@@ -26,7 +26,7 @@ export default class DayNightCycleScene extends Scene {
     const skyAlpha = 0.15 + ((1 - lightness) * 0.6);
 
     drawFrame(renderer, theme, [
-      'Engine Sample106',
+      'Engine sample 0610',
       'Time-of-day is tracked by an engine-owned cycle and can drive presentation.',
       'The sky darkens and brightens as the cycle advances.',
     ]);

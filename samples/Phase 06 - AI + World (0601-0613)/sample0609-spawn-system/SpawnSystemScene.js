@@ -209,7 +209,7 @@ export default class SpawnSystemScene extends Scene {
 
   render(renderer) {
     drawFrame(renderer, theme, [
-      'Engine Sample105',
+      'Engine sample 0609',
       'Spawn + lifecycle + world phase systems run deterministically.',
       'World phase transitions: idle -> spawning -> active -> complete.',
     ]);

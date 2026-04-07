@@ -24,7 +24,7 @@ export default class WeatherSystemScene extends Scene {
   render(renderer) {
     const current = this.weather.getCurrent();
     drawFrame(renderer, theme, [
-      'Engine Sample107',
+      'Engine sample 0611',
       'Weather state is managed by a reusable engine-owned system and fed into world presentation.',
       `Current weather: ${current}`,
     ]);

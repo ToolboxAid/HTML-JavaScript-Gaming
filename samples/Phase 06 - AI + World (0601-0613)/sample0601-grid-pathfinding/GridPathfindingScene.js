@@ -40,7 +40,7 @@ export default class GridPathfindingScene extends Scene {
 
   render(renderer) {
     drawFrame(renderer, theme, [
-      'Engine Sample97',
+      'Engine sample 0601',
       'Grid A* pathfinding computes a reusable route across blocked cells.',
       'The agent is following the engine-produced path result.',
     ]);

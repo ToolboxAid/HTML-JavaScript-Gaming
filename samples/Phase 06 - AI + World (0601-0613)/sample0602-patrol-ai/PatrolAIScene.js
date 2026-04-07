@@ -29,7 +29,7 @@ export default class PatrolAIScene extends Scene {
 
   render(renderer) {
     drawFrame(renderer, theme, [
-      'Engine Sample98',
+      'Engine sample 0602',
       'Patrol movement follows reusable engine route logic instead of scene-owned branches.',
       'The guard cycles through data-driven patrol points.',
     ]);

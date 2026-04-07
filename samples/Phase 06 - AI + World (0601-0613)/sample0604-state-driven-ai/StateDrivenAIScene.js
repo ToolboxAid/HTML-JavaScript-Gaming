@@ -53,7 +53,7 @@ export default class StateDrivenAIScene extends Scene {
 
   render(renderer) {
     drawFrame(renderer, theme, [
-      'Engine Sample100',
+      'Engine sample 0604',
       'A reusable AI state controller switches between patrol and chase behavior through data-driven conditions.',
       'Move near the orange actor to trigger chase.',
     ]);

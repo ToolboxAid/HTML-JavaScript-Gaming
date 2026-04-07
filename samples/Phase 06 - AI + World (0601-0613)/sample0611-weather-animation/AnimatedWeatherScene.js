@@ -81,7 +81,7 @@ export default class AnimatedWeatherScene extends Scene {
     const hasWind = current === 'wind' || current === 'storm';
     const hasRain = current === 'rain' || current === 'storm';
     drawFrame(renderer, theme, [
-      'Engine Sample107A',
+      'Engine sample 0611A',
       'Animated weather layers build on the reusable weather state system.',
       `Current weather: ${current}`,
     ]);

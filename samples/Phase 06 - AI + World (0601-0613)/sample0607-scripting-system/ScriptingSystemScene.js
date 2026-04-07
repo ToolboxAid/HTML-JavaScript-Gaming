@@ -49,7 +49,7 @@ export default class ScriptingSystemScene extends Scene {
 
   render(renderer) {
     drawFrame(renderer, theme, [
-      'Engine Sample103',
+      'Engine sample 0607',
       'Event-driven scripting reacts to published events without hardcoding the outcome in scene branches.',
       this.message,
     ]);

@@ -40,7 +40,7 @@ export default class QuestSystemScene extends Scene {
   render(renderer) {
     const quest = this.quests.get('collect_orbs');
     drawFrame(renderer, theme, [
-      'Engine Sample102',
+      'Engine sample 0606',
       'Quest progression is tracked by an engine-owned quest system instead of scene counters.',
       'Move to each orb and press Space.',
     ]);

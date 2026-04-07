@@ -43,7 +43,7 @@ export default class CutsceneSystemScene extends Scene {
 
   render(renderer) {
     drawFrame(renderer, theme, [
-      'Engine Sample104',
+      'Engine sample 0608',
       'Timed cutscene sequencing is driven by a reusable engine-owned step system.',
       this.caption,
     ]);

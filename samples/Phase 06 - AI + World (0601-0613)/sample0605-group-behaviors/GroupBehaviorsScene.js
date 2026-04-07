@@ -34,7 +34,7 @@ export default class GroupBehaviorsScene extends Scene {
 
   render(renderer) {
     drawFrame(renderer, theme, [
-      'Engine Sample101',
+      'Engine sample 0605',
       'Reusable group steering creates coordinated movement tendencies across multiple agents.',
       'The group stays coherent without scene-to-scene wiring between members.',
     ]);
