@@ -4,7 +4,7 @@ David Quesenberry
 03/24/2026
 GravityScene.js
 */
-import { Scene } from '../../../engine/scenes/index.js';
+import { Scene } from '../../../src/engine/scenes/index.js';
 import GravityAudio from './GravityAudio.js';
 import GravityInputController from './GravityInputController.js';
 import GravityWorld from './GravityWorld.js';

@@ -5,7 +5,7 @@ David Quesenberry
 PrecisionCollisionSystems.test.mjs
 */
 import assert from 'node:assert/strict';
-import { transformPoints } from '../../engine/vector/index.js';
+import { transformPoints } from '../../src/engine/vector/index.js';
 import {
   arePolygonsColliding,
   isPointInPolygon,
@@ -13,7 +13,7 @@ import {
   areMasksColliding,
   runHybridCollision,
   getPolygonBounds,
-} from '../../engine/collision/index.js';
+} from '../../src/engine/collision/index.js';
 
 export function run() {
   const transformed = transformPoints(

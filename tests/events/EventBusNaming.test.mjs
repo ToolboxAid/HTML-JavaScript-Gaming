@@ -6,8 +6,8 @@
 */
 import assert from 'node:assert/strict';
 import { readdirSync, readFileSync } from 'node:fs';
-import Engine from '../../engine/core/Engine.js';
-import EventBus from '../../engine/events/EventBus.js';
+import Engine from '../../src/engine/core/Engine.js';
+import EventBus from '../../src/engine/events/EventBus.js';
 
 function createCanvas() {
   const canvas = {

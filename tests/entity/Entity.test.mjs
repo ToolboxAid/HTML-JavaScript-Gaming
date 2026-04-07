@@ -4,10 +4,10 @@ David Quesenberry
 03/21/2026
 Entity.test.mjs
 */
-import Entity from '../../engine/entity/Entity.js';
-import Transform from '../../engine/entity/Transform.js';
-import Velocity from '../../engine/entity/Velocity.js';
-import Bounds from '../../engine/entity/Bounds.js';
+import Entity from '../../src/engine/entity/Entity.js';
+import Transform from '../../src/engine/entity/Transform.js';
+import Velocity from '../../src/engine/entity/Velocity.js';
+import Bounds from '../../src/engine/entity/Bounds.js';
 
 function assert(condition, message) {
     if (!condition) {

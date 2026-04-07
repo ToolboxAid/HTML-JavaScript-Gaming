@@ -4,10 +4,10 @@ David Quesenberry
 03/22/2026
 SynthesizerScene.js
 */
-import { Scene } from '../../../engine/scenes/index.js';
-import { Theme, ThemeTokens } from '../../../engine/theme/index.js';
-import { drawFrame, drawPanel } from '../../../engine/debug/index.js';
-import { Synthesizer } from '../../../engine/audio/index.js';
+import { Scene } from '../../../src/engine/scenes/index.js';
+import { Theme, ThemeTokens } from '../../../src/engine/theme/index.js';
+import { drawFrame, drawPanel } from '../../../src/engine/debug/index.js';
+import { Synthesizer } from '../../../src/engine/audio/index.js';
 
 const theme = new Theme(ThemeTokens);
 

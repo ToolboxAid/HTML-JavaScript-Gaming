@@ -4,8 +4,8 @@ David Quesenberry
 03/29/2026
 main.js
 */
-import Engine from '../../../engine/core/Engine.js';
-import { Theme, ThemeTokens } from '../../../engine/theme/index.js';
+import Engine from '../../../src/engine/core/Engine.js';
+import { Theme, ThemeTokens } from '../../../src/engine/theme/index.js';
 import SpaceInvadersWorldSystemsScene from './SpaceInvadersWorldSystemsScene.js';
 
 const theme = new Theme(ThemeTokens);

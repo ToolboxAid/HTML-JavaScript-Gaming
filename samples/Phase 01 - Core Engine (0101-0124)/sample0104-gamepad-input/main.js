@@ -4,10 +4,10 @@ David Quesenberry
 03/21/2026
 main.js
 */
-import Engine from '../../../engine/core/Engine.js';
+import Engine from '../../../src/engine/core/Engine.js';
 import GamepadScene from './GamepadScene.js';
-import { InputService } from '../../../engine/input/index.js';
-import { Theme, ThemeTokens } from '../../../engine/theme/index.js';
+import { InputService } from '../../../src/engine/input/index.js';
+import { Theme, ThemeTokens } from '../../../src/engine/theme/index.js';
 
 const theme = new Theme(ThemeTokens);
 theme.applyDocumentTheme();

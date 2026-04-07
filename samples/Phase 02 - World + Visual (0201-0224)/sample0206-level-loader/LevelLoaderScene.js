@@ -4,12 +4,12 @@ David Quesenberry
 03/21/2026
 LevelLoaderScene.js
 */
-import { Scene } from '../../../engine/scenes/index.js';
-import { Theme, ThemeTokens } from '../../../engine/theme/index.js';
-import { clamp } from '../../../engine/utils/index.js';
-import { drawFrame, drawPanel } from '../../../engine/debug/index.js';
-import { isColliding } from '../../../engine/collision/index.js';
-import { LevelLoader } from '../../../engine/level/index.js';
+import { Scene } from '../../../src/engine/scenes/index.js';
+import { Theme, ThemeTokens } from '../../../src/engine/theme/index.js';
+import { clamp } from '../../../src/engine/utils/index.js';
+import { drawFrame, drawPanel } from '../../../src/engine/debug/index.js';
+import { isColliding } from '../../../src/engine/collision/index.js';
+import { LevelLoader } from '../../../src/engine/level/index.js';
 import { levelData } from './levelData.js';
 
 const theme = new Theme(ThemeTokens);

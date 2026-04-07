@@ -4,11 +4,11 @@ David Quesenberry
 03/21/2026
 StateMachineScene.js
 */
-import { Scene } from '../../../engine/scenes/index.js';
-import { Theme, ThemeTokens } from '../../../engine/theme/index.js';
-import { clamp } from '../../../engine/utils/index.js';
-import { drawFrame, drawPanel } from '../../../engine/debug/index.js';
-import { StateMachine } from '../../../engine/state/index.js';
+import { Scene } from '../../../src/engine/scenes/index.js';
+import { Theme, ThemeTokens } from '../../../src/engine/theme/index.js';
+import { clamp } from '../../../src/engine/utils/index.js';
+import { drawFrame, drawPanel } from '../../../src/engine/debug/index.js';
+import { StateMachine } from '../../../src/engine/state/index.js';
 
 const theme = new Theme(ThemeTokens);
 

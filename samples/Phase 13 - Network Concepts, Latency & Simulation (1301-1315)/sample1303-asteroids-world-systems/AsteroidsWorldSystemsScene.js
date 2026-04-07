@@ -4,9 +4,9 @@ David Quesenberry
 03/29/2026
 AsteroidsWorldSystemsScene.js
 */
-import { Scene } from '../../../engine/scenes/index.js';
-import { Theme, ThemeTokens } from '../../../engine/theme/index.js';
-import { drawFrame, drawPanel } from '../../../engine/debug/index.js';
+import { Scene } from '../../../src/engine/scenes/index.js';
+import { Theme, ThemeTokens } from '../../../src/engine/theme/index.js';
+import { drawFrame, drawPanel } from '../../../src/engine/debug/index.js';
 import { SpawnSystem, LifecycleSystem, WorldStateSystem, EventsSystem, distanceSq } from '../../shared/worldSystems.js';
 
 const theme = new Theme(ThemeTokens);

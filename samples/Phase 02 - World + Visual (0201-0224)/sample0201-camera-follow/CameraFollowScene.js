@@ -4,11 +4,11 @@ David Quesenberry
 03/21/2026
 CameraFollowScene.js
 */
-import { Scene } from '../../../engine/scenes/index.js';
-import { Theme, ThemeTokens } from '../../../engine/theme/index.js';
-import { clamp } from '../../../engine/utils/index.js';
-import { drawFrame } from '../../../engine/debug/index.js';
-import { Camera2D } from '../../../engine/camera/index.js';
+import { Scene } from '../../../src/engine/scenes/index.js';
+import { Theme, ThemeTokens } from '../../../src/engine/theme/index.js';
+import { clamp } from '../../../src/engine/utils/index.js';
+import { drawFrame } from '../../../src/engine/debug/index.js';
+import { Camera2D } from '../../../src/engine/camera/index.js';
 
 const theme = new Theme(ThemeTokens);
 

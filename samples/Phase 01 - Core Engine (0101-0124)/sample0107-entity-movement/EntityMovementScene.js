@@ -4,9 +4,9 @@ David Quesenberry
 03/21/2026
 EntityMovementScene.js
 */
-import { Scene } from '../../../engine/scenes/index.js';
-import { Theme, ThemeTokens } from '../../../engine/theme/index.js';
-import { Entity, Transform, Velocity, Bounds } from '../../../engine/entity/index.js';
+import { Scene } from '../../../src/engine/scenes/index.js';
+import { Theme, ThemeTokens } from '../../../src/engine/theme/index.js';
+import { Entity, Transform, Velocity, Bounds } from '../../../src/engine/entity/index.js';
 
 const theme = new Theme(ThemeTokens);
 

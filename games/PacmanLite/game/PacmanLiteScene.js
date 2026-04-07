@@ -4,7 +4,7 @@ David Quesenberry
 03/25/2026
 PacmanLiteScene.js
 */
-import { Scene } from '../../../engine/scenes/index.js';
+import { Scene } from '../../../src/engine/scenes/index.js';
 import PacmanLiteDebugOverlay from './PacmanLiteDebugOverlay.js';
 import PacmanLiteInputController from './PacmanLiteInputController.js';
 import PacmanLiteWorld from './PacmanLiteWorld.js';

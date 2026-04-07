@@ -4,10 +4,10 @@ David Quesenberry
 03/21/2026
 main.js
 */
-import Engine from '../../../engine/core/Engine.js';
-import { InputMap, InputService } from '../../../engine/input/index.js';
+import Engine from '../../../src/engine/core/Engine.js';
+import { InputMap, InputService } from '../../../src/engine/input/index.js';
 import InputMappingScene from './InputMappingScene.js';
-import { Theme, ThemeTokens } from '../../../engine/theme/index.js';
+import { Theme, ThemeTokens } from '../../../src/engine/theme/index.js';
 
 const theme = new Theme(ThemeTokens);
 theme.applyDocumentTheme();

@@ -5,8 +5,8 @@
  EngineFullscreen.test.mjs
 */
 import assert from 'node:assert/strict';
-import Engine from '../../engine/core/Engine.js';
-import { FullscreenService } from '../../engine/runtime/index.js';
+import Engine from '../../src/engine/core/Engine.js';
+import { FullscreenService } from '../../src/engine/runtime/index.js';
 
 function createCanvas() {
   const canvas = {

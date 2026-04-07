@@ -4,15 +4,15 @@ David Quesenberry
 03/21/2026
 PhysicsSystemScene.js
 */
-import { Scene } from '../../../engine/scenes/index.js';
-import { Theme, ThemeTokens } from '../../../engine/theme/index.js';
-import { drawFrame, drawPanel } from '../../../engine/debug/index.js';
-import { Camera2D, followCameraTarget, worldRectToScreen } from '../../../engine/camera/index.js';
-import { Tilemap, renderTilemap } from '../../../engine/tilemap/index.js';
-import { SpriteAtlas, ImageAssetLoader } from '../../../engine/assets/index.js';
-import { AnimationController } from '../../../engine/animation/index.js';
-import { renderSpriteReadyEntities } from '../../../engine/render/index.js';
-import { stepArcadeBody } from '../../../engine/systems/index.js';
+import { Scene } from '../../../src/engine/scenes/index.js';
+import { Theme, ThemeTokens } from '../../../src/engine/theme/index.js';
+import { drawFrame, drawPanel } from '../../../src/engine/debug/index.js';
+import { Camera2D, followCameraTarget, worldRectToScreen } from '../../../src/engine/camera/index.js';
+import { Tilemap, renderTilemap } from '../../../src/engine/tilemap/index.js';
+import { SpriteAtlas, ImageAssetLoader } from '../../../src/engine/assets/index.js';
+import { AnimationController } from '../../../src/engine/animation/index.js';
+import { renderSpriteReadyEntities } from '../../../src/engine/render/index.js';
+import { stepArcadeBody } from '../../../src/engine/systems/index.js';
 import { createDemoSpriteSheet } from '../sample0301-real-sprite-rendering/demoSpriteFactory.js';
 
 const theme = new Theme(ThemeTokens);

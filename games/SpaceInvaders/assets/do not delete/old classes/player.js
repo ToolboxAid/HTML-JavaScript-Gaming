@@ -4,8 +4,8 @@
 // player.js
 
 import { canvasConfig, spriteConfig, playerSelect } from './global.js';
-import ObjectSprite from '../../engine/objects/objectSprite.js';
-import GameControllerMap from '../../engine/input/controller/gameControllerMap.js';
+import ObjectSprite from '../../src/engine/objects/objectSprite.js';
+import GameControllerMap from '../../src/engine/input/controller/gameControllerMap.js';
 
 class Player extends ObjectSprite {
 

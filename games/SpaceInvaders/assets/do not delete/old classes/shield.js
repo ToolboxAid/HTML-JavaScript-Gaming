@@ -5,11 +5,11 @@
 
 import { canvasConfig, shieldConfig, spriteConfig } from './global.js';
 
-import ObjectStatic from '../../engine/objects/objectStatic.js';
-import CanvasUtils from '../../engine/core/canvasUtils.js';
+import ObjectStatic from '../../src/engine/objects/objectStatic.js';
+import CanvasUtils from '../../src/engine/core/canvasUtils.js';
 
-import RandomUtils from '../../engine/math/randomUtils.js';
-import Sprite from '../../engine/core/sprite.js';
+import RandomUtils from '../../src/engine/math/randomUtils.js';
+import Sprite from '../../src/engine/core/sprite.js';
 
 /**
  * Represents a shield object in the game.

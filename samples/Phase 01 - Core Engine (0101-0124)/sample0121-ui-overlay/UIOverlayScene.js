@@ -4,9 +4,9 @@ David Quesenberry
 03/21/2026
 UIOverlayScene.js
 */
-import { Scene } from '../../../engine/scenes/index.js';
-import { Theme, ThemeTokens } from '../../../engine/theme/index.js';
-import { World } from '../../../engine/ecs/index.js';
+import { Scene } from '../../../src/engine/scenes/index.js';
+import { Theme, ThemeTokens } from '../../../src/engine/theme/index.js';
+import { World } from '../../../src/engine/ecs/index.js';
 import {
   createTransform,
   createSize,
@@ -14,13 +14,13 @@ import {
   createSpeed,
   createInputControlled,
   createRenderable,
-} from '../../../engine/components/index.js';
-import { drawSceneFrame, drawPanel } from '../../../engine/debug/index.js';
+} from '../../../src/engine/components/index.js';
+import { drawSceneFrame, drawPanel } from '../../../src/engine/debug/index.js';
 import {
   applyInputControl,
   moveEntities,
   renderRectEntities,
-} from '../../../engine/systems/index.js';
+} from '../../../src/engine/systems/index.js';
 
 const theme = new Theme(ThemeTokens);
 

@@ -4,12 +4,12 @@ David Quesenberry
 03/31/2026
 TriggerZoneDemoScene.js
 */
-import { Scene } from '../../../engine/scenes/index.js';
-import { Theme, ThemeTokens } from '../../../engine/theme/index.js';
-import { clamp } from '../../../engine/utils/index.js';
-import { drawFrame, drawPanel } from '../../../engine/debug/index.js';
-import { Camera2D, worldRectToScreen } from '../../../engine/camera/index.js';
-import { Tilemap, renderTilemap, resolveRectVsTilemap } from '../../../engine/tilemap/index.js';
+import { Scene } from '../../../src/engine/scenes/index.js';
+import { Theme, ThemeTokens } from '../../../src/engine/theme/index.js';
+import { clamp } from '../../../src/engine/utils/index.js';
+import { drawFrame, drawPanel } from '../../../src/engine/debug/index.js';
+import { Camera2D, worldRectToScreen } from '../../../src/engine/camera/index.js';
+import { Tilemap, renderTilemap, resolveRectVsTilemap } from '../../../src/engine/tilemap/index.js';
 
 const theme = new Theme(ThemeTokens);
 

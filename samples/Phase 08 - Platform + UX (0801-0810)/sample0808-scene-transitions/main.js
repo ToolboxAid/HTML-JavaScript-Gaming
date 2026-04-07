@@ -4,10 +4,10 @@ David Quesenberry
 03/22/2026
 main.js
 */
-import Engine from '../../../engine/core/Engine.js';
+import Engine from '../../../src/engine/core/Engine.js';
 import TransitionProofScene from './TransitionProofScene.js';
-import { Theme, ThemeTokens } from '../../../engine/theme/index.js';
-import { SceneTransitionController } from '../../../engine/scenes/index.js';
+import { Theme, ThemeTokens } from '../../../src/engine/theme/index.js';
+import { SceneTransitionController } from '../../../src/engine/scenes/index.js';
 
 const theme = new Theme(ThemeTokens);
 theme.applyDocumentTheme();

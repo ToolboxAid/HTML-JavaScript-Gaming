@@ -4,10 +4,10 @@ David Quesenberry
 03/22/2026
 MobileSupportScene.js
 */
-import { Scene } from '../../../engine/scenes/index.js';
-import { Theme, ThemeTokens } from '../../../engine/theme/index.js';
-import { drawFrame, drawPanel } from '../../../engine/debug/index.js';
-import { MobileRuntimeTweaks } from '../../../engine/runtime/index.js';
+import { Scene } from '../../../src/engine/scenes/index.js';
+import { Theme, ThemeTokens } from '../../../src/engine/theme/index.js';
+import { drawFrame, drawPanel } from '../../../src/engine/debug/index.js';
+import { MobileRuntimeTweaks } from '../../../src/engine/runtime/index.js';
 
 const theme = new Theme(ThemeTokens);
 

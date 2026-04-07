@@ -4,8 +4,8 @@ David Quesenberry
 03/21/2026
 theme.test.js
 */
-import { Theme } from '../engine/theme/Theme.js';
-import { ThemeTokens } from '../engine/theme/ThemeTokens.js';
+import { Theme } from '../src/engine/theme/Theme.js';
+import { ThemeTokens } from '../src/engine/theme/ThemeTokens.js';
 
 const theme = new Theme(ThemeTokens);
 

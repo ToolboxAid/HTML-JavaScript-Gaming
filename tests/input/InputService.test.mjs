@@ -4,8 +4,8 @@ David Quesenberry
 03/21/2026
 InputService.test.mjs
 */
-import InputService from '../../engine/input/InputService.js';
-import InputMap from '../../engine/input/InputMap.js';
+import InputService from '../../src/engine/input/InputService.js';
+import InputMap from '../../src/engine/input/InputMap.js';
 
 function assert(condition, message) {
     if (!condition) {

@@ -1,7 +1,3 @@
-VALIDATION CHECKLIST
-
-[ ] src/engine/ exists
-[ ] all files from engine/** exist under src/engine/** (1:1)
-[ ] original engine/** remains unchanged
-[ ] no import paths changed
-[ ] application runs as before
+[ ] imports updated
+[ ] no new files
+[ ] app runs

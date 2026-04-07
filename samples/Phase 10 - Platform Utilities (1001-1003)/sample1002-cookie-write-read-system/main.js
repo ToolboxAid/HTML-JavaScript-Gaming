@@ -4,10 +4,10 @@ David Quesenberry
 03/22/2026
 main.js
 */
-import Engine from '../../../engine/core/Engine.js';
+import Engine from '../../../src/engine/core/Engine.js';
 import CookieWriteReadScene from './CookieWriteReadScene.js';
-import { Theme, ThemeTokens } from '../../../engine/theme/index.js';
-import { CookieStorageService } from '../../../engine/persistence/index.js';
+import { Theme, ThemeTokens } from '../../../src/engine/theme/index.js';
+import { CookieStorageService } from '../../../src/engine/persistence/index.js';
 
 const theme = new Theme(ThemeTokens);
 theme.applyDocumentTheme();

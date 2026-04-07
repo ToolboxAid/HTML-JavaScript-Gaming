@@ -3,12 +3,12 @@
 // 10/24/2024
 // laser.js
 
-import ObjectDynamic from '../../engine/objects/objectDynamic.js';
+import ObjectDynamic from '../../src/engine/objects/objectDynamic.js';
 import { canvasConfig, spriteConfig } from './global.js';
 
-import CanvasUtils from '../../engine/core/canvasUtils.js';
-import GameCollision from '../../engine/game/gameCollision.js';
-import Sprite from '../../engine/core/sprite.js';
+import CanvasUtils from '../../src/engine/core/canvasUtils.js';
+import GameCollision from '../../src/engine/game/gameCollision.js';
+import Sprite from '../../src/engine/core/sprite.js';
 class Laser extends ObjectDynamic {
 
 

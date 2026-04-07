@@ -4,7 +4,7 @@ David Quesenberry
 03/24/2026
 ThrusterScene.js
 */
-import { Scene } from '../../../engine/scenes/index.js';
+import { Scene } from '../../../src/engine/scenes/index.js';
 import ThrusterAudio from './ThrusterAudio.js';
 import ThrusterInputController from './ThrusterInputController.js';
 import ThrusterWorld from './ThrusterWorld.js';

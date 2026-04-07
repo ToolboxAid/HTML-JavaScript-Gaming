@@ -4,10 +4,10 @@ David Quesenberry
 03/22/2026
 main.js
 */
-import Engine from '../../../engine/core/Engine.js';
-import { ActionInputMap, ActionInputService } from '../../../engine/input/index.js';
-import { Theme, ThemeTokens } from '../../../engine/theme/index.js';
-import { ConfigStore } from '../../../engine/config/index.js';
+import Engine from '../../../src/engine/core/Engine.js';
+import { ActionInputMap, ActionInputService } from '../../../src/engine/input/index.js';
+import { Theme, ThemeTokens } from '../../../src/engine/theme/index.js';
+import { ConfigStore } from '../../../src/engine/config/index.js';
 import ConfigSystemScene from './ConfigSystemScene.js';
 import { sampleConfigJson } from './sampleConfig.js';
 

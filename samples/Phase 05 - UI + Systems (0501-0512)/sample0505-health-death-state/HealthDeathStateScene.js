@@ -4,9 +4,9 @@ David Quesenberry
 03/22/2026
 HealthDeathStateScene.js
 */
-import { Scene } from '../../../engine/scenes/index.js';
-import { Theme, ThemeTokens } from '../../../engine/theme/index.js';
-import { drawFrame, drawPanel } from '../../../engine/debug/index.js';
+import { Scene } from '../../../src/engine/scenes/index.js';
+import { Theme, ThemeTokens } from '../../../src/engine/theme/index.js';
+import { drawFrame, drawPanel } from '../../../src/engine/debug/index.js';
 import {
   applyAttackOverlaps,
   createAttackProfile,
@@ -14,7 +14,7 @@ import {
   startAttack,
   updateAttackState,
   updateCombatant,
-} from '../../../engine/combat/index.js';
+} from '../../../src/engine/combat/index.js';
 
 const theme = new Theme(ThemeTokens);
 

@@ -4,7 +4,7 @@ David Quesenberry
 03/21/2026
 index.js
 */
-import { Theme, ThemeTokens } from '../../../engine/theme/index.js';
+import { Theme, ThemeTokens } from '../../../src/engine/theme/index.js';
 
 const theme = new Theme(ThemeTokens);
 

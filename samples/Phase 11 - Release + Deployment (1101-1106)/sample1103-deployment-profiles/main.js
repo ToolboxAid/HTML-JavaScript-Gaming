@@ -4,9 +4,9 @@ David Quesenberry
 03/22/2026
 main.js
 */
-import Engine from '../../../engine/core/Engine.js';
-import { Theme, ThemeTokens } from '../../../engine/theme/index.js';
-import { DeploymentProfiles } from '../../../engine/release/index.js';
+import Engine from '../../../src/engine/core/Engine.js';
+import { Theme, ThemeTokens } from '../../../src/engine/theme/index.js';
+import { DeploymentProfiles } from '../../../src/engine/release/index.js';
 import DeploymentProfilesScene from './DeploymentProfilesScene.js';
 
 const theme = new Theme(ThemeTokens);

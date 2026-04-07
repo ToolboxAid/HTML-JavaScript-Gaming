@@ -4,9 +4,9 @@ David Quesenberry
 03/25/2026
 main.js
 */
-import Engine from '../../engine/core/Engine.js';
-import { InputService } from '../../engine/input/index.js';
-import { Theme, ThemeTokens } from '../../engine/theme/index.js';
+import Engine from '../../src/engine/core/Engine.js';
+import { InputService } from '../../src/engine/input/index.js';
+import { Theme, ThemeTokens } from '../../src/engine/theme/index.js';
 import AITargetDummyScene from './game/AITargetDummyScene.js';
 
 const theme = new Theme(ThemeTokens);

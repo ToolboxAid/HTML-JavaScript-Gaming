@@ -4,7 +4,7 @@ David Quesenberry
 03/25/2026
 PacmanFullAIInputController.js
 */
-import { GamepadInputAdapter } from '../../../engine/input/index.js';
+import { GamepadInputAdapter } from '../../../src/engine/input/index.js';
 
 export default class PacmanFullAIInputController {
   constructor(input) {

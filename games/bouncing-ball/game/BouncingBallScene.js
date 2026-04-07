@@ -4,7 +4,7 @@ David Quesenberry
 03/24/2026
 BouncingBallScene.js
 */
-import { Scene } from '../../../engine/scenes/index.js';
+import { Scene } from '../../../src/engine/scenes/index.js';
 import BouncingBallAudio from './BouncingBallAudio.js';
 import BouncingBallInputController from './BouncingBallInputController.js';
 import BouncingBallWorld from './BouncingBallWorld.js';

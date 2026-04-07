@@ -1,15 +1,10 @@
-BUILD: repo structure normalization (01) staged engine move
+BUILD: repo structure normalization (02) import switch
 
-- created src/engine/ directory
-- copied engine/** to src/engine/** (1:1 mirror)
-- no changes to original engine/ directory
-- no import path changes
-- no engine API changes
-
-notes:
-- staged move to allow safe validation before cutover
-- follow-up PR will switch imports to src/engine/
+- updated imports from engine/ to src/engine/
+- no API changes
+- no new files
+- original engine/ still present for rollback safety
 
 next:
-- validate mirror integrity
-- proceed to import normalization PR
+- validate runtime
+- prepare removal PR for old engine/ directory

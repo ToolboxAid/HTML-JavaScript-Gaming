@@ -4,10 +4,10 @@ David Quesenberry
 03/22/2026
 StateDrivenAIScene.js
 */
-import { Scene } from '../../../engine/scenes/index.js';
-import { Theme, ThemeTokens } from '../../../engine/theme/index.js';
-import { drawFrame, drawPanel } from '../../../engine/debug/index.js';
-import { advancePatrolRoute, AIStateController, stepChaseBehavior } from '../../../engine/ai/index.js';
+import { Scene } from '../../../src/engine/scenes/index.js';
+import { Theme, ThemeTokens } from '../../../src/engine/theme/index.js';
+import { drawFrame, drawPanel } from '../../../src/engine/debug/index.js';
+import { advancePatrolRoute, AIStateController, stepChaseBehavior } from '../../../src/engine/ai/index.js';
 
 const theme = new Theme(ThemeTokens);
 

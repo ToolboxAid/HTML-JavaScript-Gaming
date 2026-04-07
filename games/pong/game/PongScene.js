@@ -4,7 +4,7 @@ David Quesenberry
 03/24/2026
 PongScene.js
 */
-import { Scene } from '../../../engine/scenes/index.js';
+import { Scene } from '../../../src/engine/scenes/index.js';
 import PongInputController from './PongInputController.js';
 import PongAudio from './PongAudio.js';
 import { getPongModes } from './PongModeConfig.js';

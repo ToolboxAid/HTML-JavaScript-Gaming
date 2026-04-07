@@ -4,7 +4,7 @@ David Quesenberry
 03/21/2026
 MouseState.test.mjs
 */
-import MouseState from '../../engine/input/MouseState.js';
+import MouseState from '../../src/engine/input/MouseState.js';
 
 function assert(condition, message) {
     if (!condition) {

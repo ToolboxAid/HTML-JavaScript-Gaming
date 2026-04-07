@@ -5,13 +5,13 @@ David Quesenberry
 PlatformUxSystems.test.mjs
 */
 import assert from 'node:assert/strict';
-import { AudioService, MidiPlayer, FrequencyPlayer, Synthesizer, MediaTrackService, PlaylistManager } from '../../engine/audio/index.js';
-import { ParticleSystem } from '../../engine/fx/index.js';
-import { UIFramework } from '../../engine/ui/index.js';
-import { InputContextService } from '../../engine/input/index.js';
-import { SceneTransitionController } from '../../engine/scenes/index.js';
-import { SaveSlotManager, StorageService, CookieStorageService } from '../../engine/persistence/index.js';
-import { Logger, ErrorBoundary } from '../../engine/logging/index.js';
+import { AudioService, MidiPlayer, FrequencyPlayer, Synthesizer, MediaTrackService, PlaylistManager } from '../../src/engine/audio/index.js';
+import { ParticleSystem } from '../../src/engine/fx/index.js';
+import { UIFramework } from '../../src/engine/ui/index.js';
+import { InputContextService } from '../../src/engine/input/index.js';
+import { SceneTransitionController } from '../../src/engine/scenes/index.js';
+import { SaveSlotManager, StorageService, CookieStorageService } from '../../src/engine/persistence/index.js';
+import { Logger, ErrorBoundary } from '../../src/engine/logging/index.js';
 
 class MemoryStorage {
   constructor() {

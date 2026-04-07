@@ -4,7 +4,7 @@ David Quesenberry
 03/22/2026
 EntityPlacementEditorScene.js
 */
-import { Scene } from '../../../engine/scenes/index.js'; import { drawFrame, drawPanel } from '../../../engine/debug/index.js'; import { Theme, ThemeTokens } from '../../../engine/theme/index.js'; import { EntityPlacementEditor } from '../../../engine/editor/index.js';
+import { Scene } from '../../../src/engine/scenes/index.js'; import { drawFrame, drawPanel } from '../../../src/engine/debug/index.js'; import { Theme, ThemeTokens } from '../../../src/engine/theme/index.js'; import { EntityPlacementEditor } from '../../../src/engine/editor/index.js';
 const theme = new Theme(ThemeTokens);
 export default class EntityPlacementEditorScene extends Scene {
   constructor() { super(); this.editor = new EntityPlacementEditor(); this.status = 'Add an entity, then move it through editor tooling.'; }

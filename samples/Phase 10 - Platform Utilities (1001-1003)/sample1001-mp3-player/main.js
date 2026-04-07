@@ -4,10 +4,10 @@ David Quesenberry
 03/22/2026
 main.js
 */
-import Engine from '../../../engine/core/Engine.js';
+import Engine from '../../../src/engine/core/Engine.js';
 import MP3PlayerScene from './MP3PlayerScene.js';
-import { Theme, ThemeTokens } from '../../../engine/theme/index.js';
-import { MediaTrackService } from '../../../engine/audio/index.js';
+import { Theme, ThemeTokens } from '../../../src/engine/theme/index.js';
+import { MediaTrackService } from '../../../src/engine/audio/index.js';
 
 const theme = new Theme(ThemeTokens);
 theme.applyDocumentTheme();

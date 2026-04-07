@@ -4,7 +4,7 @@ David Quesenberry
 03/21/2026
 KeyboardState.test.mjs
 */
-import KeyboardState from '../../engine/input/KeyboardState.js';
+import KeyboardState from '../../src/engine/input/KeyboardState.js';
 
 function assert(condition, message) {
     if (!condition) {

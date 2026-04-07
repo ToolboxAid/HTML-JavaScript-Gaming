@@ -3,31 +3,18 @@ REASONING: high
 
 CONSTRAINTS:
 - DO NOT scan repo
-- ONLY modify listed targets
+- ONLY modify files that explicitly import from engine/
 - NO engine API changes
-- NO new files unless explicitly listed
+- NO new files
 
 TASK:
-Staged, non-destructive engine move.
-
-1) Create directory:
-   src/engine/
-
-2) Copy ALL files and folders from:
-   engine/**
-
-   to:
-   src/engine/**
-
-3) Preserve relative structure exactly (1:1 mirror).
+Replace import paths:
+engine/... → src/engine/...
 
 RULES:
-- Do NOT delete or modify anything under engine/
-- Do NOT change any import paths
-- Do NOT edit file contents
-- Do NOT create files outside src/engine/**
-- If any ambiguity, STOP and report
+- Do not modify anything else
+- Do not change logic
+- Do not delete engine/ yet
 
 OUTPUT:
-Create ZIP at:
-<project folder>/tmp/BUILD_PR_REPO_STRUCTURE_NORMALIZATION_01_ENGINE_MOVE.zip
+<project folder>/tmp/BUILD_PR_REPO_STRUCTURE_NORMALIZATION_02_IMPORT_SWITCH.zip

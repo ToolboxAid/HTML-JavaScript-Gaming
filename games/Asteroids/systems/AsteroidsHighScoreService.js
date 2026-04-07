@@ -4,7 +4,7 @@ David Quesenberry
 03/25/2026
 AsteroidsHighScoreService.js
 */
-import { StorageService } from '../../../engine/persistence/index.js';
+import { StorageService } from '../../../src/engine/persistence/index.js';
 
 const DEFAULT_KEY = 'toolboxaid:games:asteroids:high-score-table';
 const DEFAULT_ROWS = [

@@ -4,7 +4,7 @@ David Quesenberry
 03/24/2026
 BouncingBallInputController.js
 */
-import { GamepadInputAdapter } from '../../../engine/input/index.js';
+import { GamepadInputAdapter } from '../../../src/engine/input/index.js';
 
 export default class BouncingBallInputController {
   constructor(input) {

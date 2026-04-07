@@ -4,11 +4,11 @@ David Quesenberry
 03/23/2026
 GravityWellScene.js
 */
-import { Scene } from '../../../engine/scenes/index.js';
-import { Theme, ThemeTokens } from '../../../engine/theme/index.js';
-import { drawPanel } from '../../../engine/debug/index.js';
-import { drawVectorShape } from '../../../engine/vector/index.js';
-import { ReplaySystem } from '../../../engine/replay/index.js';
+import { Scene } from '../../../src/engine/scenes/index.js';
+import { Theme, ThemeTokens } from '../../../src/engine/theme/index.js';
+import { drawPanel } from '../../../src/engine/debug/index.js';
+import { drawVectorShape } from '../../../src/engine/vector/index.js';
+import { ReplaySystem } from '../../../src/engine/replay/index.js';
 import GravityWellWorld from './GravityWellWorld.js';
 
 const theme = new Theme(ThemeTokens);

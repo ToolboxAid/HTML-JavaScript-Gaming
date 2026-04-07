@@ -4,7 +4,7 @@ David Quesenberry
 03/25/2026
 PacmanFullAIScene.js
 */
-import { Scene } from '../../../engine/scenes/index.js';
+import { Scene } from '../../../src/engine/scenes/index.js';
 import PacmanFullAIDebugOverlay from './PacmanFullAIDebugOverlay.js';
 import PacmanFullAIInputController from './PacmanFullAIInputController.js';
 import PacmanFullAIWorld from './PacmanFullAIWorld.js';

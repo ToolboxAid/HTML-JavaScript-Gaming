@@ -4,7 +4,7 @@ David Quesenberry
 03/21/2026
 InputMap.test.mjs
 */
-import InputMap from '../../engine/input/InputMap.js';
+import InputMap from '../../src/engine/input/InputMap.js';
 
 function assert(condition, message) {
     if (!condition) {

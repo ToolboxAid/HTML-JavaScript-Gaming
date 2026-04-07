@@ -4,11 +4,11 @@ David Quesenberry
 03/22/2026
 PolygonCollisionScene.js
 */
-import { Scene } from '../../../engine/scenes/index.js';
-import { Theme, ThemeTokens } from '../../../engine/theme/index.js';
-import { drawFrame, drawPanel } from '../../../engine/debug/index.js';
-import { transformPoints, drawVectorShape } from '../../../engine/vector/index.js';
-import { arePolygonsColliding } from '../../../engine/collision/index.js';
+import { Scene } from '../../../src/engine/scenes/index.js';
+import { Theme, ThemeTokens } from '../../../src/engine/theme/index.js';
+import { drawFrame, drawPanel } from '../../../src/engine/debug/index.js';
+import { transformPoints, drawVectorShape } from '../../../src/engine/vector/index.js';
+import { arePolygonsColliding } from '../../../src/engine/collision/index.js';
 
 const theme = new Theme(ThemeTokens);
 const triangle = [{ x: 0, y: -26 }, { x: 24, y: 20 }, { x: -24, y: 20 }];
