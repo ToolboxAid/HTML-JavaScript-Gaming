@@ -1,4 +1,4 @@
-# sample 0201 - Camera Follow
+# Sample 0201 - Camera Follow
 
 ## Purpose
 Introduces a scrolling camera that follows the player inside a world larger than the viewport.

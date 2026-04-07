@@ -1,4 +1,4 @@
-# sample 0204 - Asset Registry
+# Sample 0204 - Asset Registry
 
 ## Purpose
 Introduces a central registry for content references before real asset loading is implemented.

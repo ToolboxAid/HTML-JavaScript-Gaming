@@ -1,4 +1,4 @@
-# sample 0207 - Animation System
+# Sample 0207 - Animation System
 
 ## Purpose
 Introduces a reusable animation controller with named animation loops.

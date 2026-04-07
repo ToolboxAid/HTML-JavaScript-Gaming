@@ -1,4 +1,4 @@
-# sample 0205 - Save Load State
+# Sample 0205 - Save Load State
 
 ## Purpose
 Introduces persistence by saving and restoring player state through local storage.

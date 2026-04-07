@@ -1,4 +1,4 @@
-# sample 0202 - Camera Bounds
+# Sample 0202 - Camera Bounds
 
 ## Purpose
 Adds camera clamping so the viewport remains inside the world.

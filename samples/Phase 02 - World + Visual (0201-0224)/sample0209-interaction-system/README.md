@@ -1,4 +1,4 @@
-# sample 0209 - Interaction System
+# Sample 0209 - Interaction System
 
 ## Purpose
 Introduces prompt-driven interactions through engine interaction helpers.

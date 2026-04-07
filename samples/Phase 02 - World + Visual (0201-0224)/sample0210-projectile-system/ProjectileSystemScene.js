@@ -54,7 +54,7 @@ export default class ProjectileSystemScene extends Scene {
 
   render(renderer) {
     drawFrame(renderer, theme, [
-      'Engine sample 0210',
+      'Engine Sample 0210',
       'Demonstrates projectile spawning and lifecycle updates',
       'Use Arrow keys to move and Space to fire projectiles',
       `Active projectiles: ${this.projectiles.length}`,

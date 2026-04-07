@@ -11,7 +11,7 @@ import { drawFrame, drawPanel } from '../../../engine/debug/index.js';
 import { StorageService } from '../../../engine/persistence/index.js';
 
 const theme = new Theme(ThemeTokens);
-const STORAGE_KEY = 'engine-v2-sample 0205-state';
+const STORAGE_KEY = 'engine-v2-Sample 0205-state';
 
 export default class SaveLoadStateScene extends Scene {
   constructor() {
@@ -77,7 +77,7 @@ export default class SaveLoadStateScene extends Scene {
 
   render(renderer) {
     drawFrame(renderer, theme, [
-      'Engine sample 0205',
+      'Engine Sample 0205',
       'Demonstrates basic save and load state using browser localStorage',
       'Use Arrow keys to move, KeyK to save, and KeyL to load',
       'The scene persists player position so state can survive scene resets or refreshes',

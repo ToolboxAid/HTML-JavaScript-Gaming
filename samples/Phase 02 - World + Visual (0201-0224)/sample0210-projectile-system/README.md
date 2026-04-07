@@ -1,4 +1,4 @@
-# sample 0210 - Projectile Spawn System
+# Sample 0210 - Projectile Spawn System
 
 ## Purpose
 Introduces reusable projectile spawning and update helpers.

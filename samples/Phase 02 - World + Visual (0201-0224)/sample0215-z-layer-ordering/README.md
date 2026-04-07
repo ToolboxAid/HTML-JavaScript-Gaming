@@ -1,4 +1,4 @@
-# sample 0219 - Z Layer Ordering
+# Sample 0219 - Z Layer Ordering
 
 ## Purpose
 Introduces explicit layered render ordering for the engine.
