@@ -54,7 +54,7 @@ export default class StateMachineFrameworkScene extends Scene {
 
   render(renderer) {
     drawFrame(renderer, theme, [
-      'Engine Sample92',
+      'Engine sample 0508',
       'Reusable state machine primitives drive transitions, enter hooks, exit hooks, and guards.',
       this.message,
     ]);

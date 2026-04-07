@@ -83,7 +83,7 @@ export default class AttackTimingWindowsScene extends Scene {
     const progress = getAttackPhaseProgress(this.attackState);
 
     drawFrame(renderer, theme, [
-      'Engine Sample86',
+      'Engine sample 0502',
       'Attack timing is data-driven: startup, active, and recovery windows are reusable engine state.',
       this.message,
     ]);

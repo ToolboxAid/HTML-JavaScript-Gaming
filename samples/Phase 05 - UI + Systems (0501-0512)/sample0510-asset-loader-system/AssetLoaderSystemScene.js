@@ -28,7 +28,7 @@ export default class AssetLoaderSystemScene extends Scene {
   render(renderer) {
     const snapshot = this.loaderSystem.getSnapshot();
     drawFrame(renderer, theme, [
-      'Engine Sample94',
+      'Engine sample 0510',
       'Asset loading is orchestrated through engine-owned contracts with visible lifecycle state.',
       this.message,
     ]);

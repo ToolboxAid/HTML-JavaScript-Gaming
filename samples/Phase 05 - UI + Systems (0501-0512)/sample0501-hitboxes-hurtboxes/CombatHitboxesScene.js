@@ -102,7 +102,7 @@ export default class CombatHitboxesScene extends Scene {
     const attackActive = isAttackActive(this.attackState);
 
     drawFrame(renderer, theme, [
-      'Engine Sample85',
+      'Engine sample 0501',
       'Reusable combat data defines hitboxes and hurtboxes without scene-owned overlap rules.',
       this.message,
     ]);

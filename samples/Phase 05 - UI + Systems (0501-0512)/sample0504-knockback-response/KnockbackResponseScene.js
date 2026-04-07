@@ -73,7 +73,7 @@ export default class KnockbackResponseScene extends Scene {
 
   render(renderer) {
     drawFrame(renderer, theme, [
-      'Engine Sample88',
+      'Engine sample 0504',
       'Knockback response is reusable and stays inside the lane bounds without scene hacks.',
       this.message,
     ]);

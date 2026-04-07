@@ -71,7 +71,7 @@ export default class EventBusScene extends Scene {
 
   render(renderer, engine) {
     drawFrame(renderer, theme, [
-      'Engine Sample91',
+      'Engine sample 0507',
       'An engine-owned event bus lets separate concerns publish and subscribe without direct object links.',
       this.message,
     ]);

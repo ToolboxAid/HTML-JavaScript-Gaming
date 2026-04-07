@@ -110,7 +110,7 @@ export default class CombatDebugOverlayScene extends Scene {
 
   render(renderer) {
     drawFrame(renderer, theme, [
-      'Engine Sample90',
+      'Engine sample 0506',
       'Combat debug rendering is engine-owned and can be toggled on without changing combat rules.',
       this.message,
     ]);

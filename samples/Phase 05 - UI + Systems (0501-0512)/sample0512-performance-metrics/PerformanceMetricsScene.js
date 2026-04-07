@@ -29,7 +29,7 @@ export default class PerformanceMetricsScene extends Scene {
 
   render(renderer, engine) {
     drawFrame(renderer, theme, [
-      'Engine Sample96',
+      'Engine sample 0512',
       'Runtime timing and update counts come from engine-owned metrics instrumentation.',
       'The panel is optional and can be reused in later samples without scene-owned profiling code.',
     ]);

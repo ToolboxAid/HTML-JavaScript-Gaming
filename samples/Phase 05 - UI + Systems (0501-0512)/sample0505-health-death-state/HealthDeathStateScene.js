@@ -87,7 +87,7 @@ export default class HealthDeathStateScene extends Scene {
 
   render(renderer) {
     drawFrame(renderer, theme, [
-      'Engine Sample89',
+      'Engine sample 0505',
       'Health and death state live in reusable combat data; the sample only proves the transition.',
       this.message,
     ]);

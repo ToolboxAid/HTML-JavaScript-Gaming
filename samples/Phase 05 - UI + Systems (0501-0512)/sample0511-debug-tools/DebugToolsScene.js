@@ -31,7 +31,7 @@ export default class DebugToolsScene extends Scene {
     const body = { ...this.player, label: 'body' };
 
     drawFrame(renderer, theme, [
-      'Engine Sample95',
+      'Engine sample 0511',
       'Reusable debug tools draw overlays and hitbox-style bounds only through engine debug paths.',
       this.message,
     ]);

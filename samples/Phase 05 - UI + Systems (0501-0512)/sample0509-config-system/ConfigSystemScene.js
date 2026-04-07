@@ -34,7 +34,7 @@ export default class ConfigSystemScene extends Scene {
 
   render(renderer) {
     drawFrame(renderer, theme, [
-      'Engine Sample93',
+      'Engine sample 0509',
       'A reusable config store loads JSON text and exposes settings through engine-owned access paths.',
       this.message,
     ]);
