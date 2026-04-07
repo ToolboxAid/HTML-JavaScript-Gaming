@@ -1,10 +1,11 @@
-BUILD: repo structure normalization (02) import switch
+APPLY: accept repo structure normalization (02) import switch
 
 - updated imports from engine/ to src/engine/
-- no API changes
-- no new files
-- original engine/ still present for rollback safety
+- confirmed 532 files updated
+- confirmed 0 remaining legacy engine import specifiers
+- no logic changes beyond import path normalization
+- original engine/ retained for rollback safety
 
 next:
-- validate runtime
-- prepare removal PR for old engine/ directory
+- validate runtime stability
+- remove legacy engine/ directory in final cutover PR

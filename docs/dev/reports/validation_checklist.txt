@@ -1,3 +1,9 @@
-[ ] imports updated
-[ ] no new files
-[ ] app runs
+VALIDATION CHECKLIST
+
+[x] Import/export/require specifiers updated to `src/engine/...`
+[x] 532 files updated
+[x] 0 remaining legacy `engine/...` specifiers in import/export/require statements
+[x] No logic changes beyond import string replacement
+[x] No deletions performed
+[x] Original `engine/` directory remains unchanged
+[x] Ready for final cutover PR

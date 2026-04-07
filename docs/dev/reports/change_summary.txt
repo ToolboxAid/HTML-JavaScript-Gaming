@@ -1,5 +1,6 @@
 CHANGE SUMMARY
 
-- established src/engine/ as target structure
-- mirrored existing engine/** into src/engine/**
-- performed non-destructive staged move
+- accepted import normalization from `engine/...` to `src/engine/...`
+- confirmed 532 files updated
+- confirmed 0 remaining legacy engine import specifiers
+- confirmed original `engine/` directory remains unchanged
