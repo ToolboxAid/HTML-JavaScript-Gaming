@@ -1,7 +1,7 @@
-# Demo 1207 - Switch Checkpoint Marker
+# Sample 1207 - Switch Checkpoint Marker
 
 ## Purpose
-Provide an integrated runnable demo that preserves the proven Demo 1206 movement, jump, collision, camera follow, and parallax behavior while adding one switch/checkpoint marker interaction.
+Provide an integrated runnable demo that preserves the proven Sample 1206 movement, jump, collision, camera follow, and parallax behavior while adding one switch/checkpoint marker interaction.
 
 ## Controls
 - Left Arrow: move hero left

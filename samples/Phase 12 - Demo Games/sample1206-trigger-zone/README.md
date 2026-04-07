@@ -1,7 +1,7 @@
-# Demo 1206 - Trigger Zone
+# Sample 1206 - Trigger Zone
 
 ## Purpose
-Provide an integrated runnable demo that preserves the proven Demo 1204/1205 movement, jump, collision, camera follow, and parallax behavior while adding one light trigger-zone interaction.
+Provide an integrated runnable demo that preserves the proven Sample 1204/1205 movement, jump, collision, camera follow, and parallax behavior while adding one light trigger-zone interaction.
 
 ## Controls
 - Left Arrow: move hero left

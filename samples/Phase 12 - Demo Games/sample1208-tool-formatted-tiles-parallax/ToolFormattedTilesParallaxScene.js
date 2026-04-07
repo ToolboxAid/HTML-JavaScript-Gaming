@@ -337,7 +337,7 @@ export default class ToolFormattedTilesParallaxScene extends Scene {
 
   drawHeaderText(renderer) {
     const lines = [
-      'Demo 1208 - Tool Formatted Tiles Parallax',
+      'Sample 1208 - Tool Formatted Tiles Parallax',
       'Move with Left/Right Arrow. Press Space to jump.',
       'PNG atlas tiles + SVG parallax layers rendered by canvas drawImage.',
       'Parallax draw order: far -> mid -> near -> tilemap -> hero.',

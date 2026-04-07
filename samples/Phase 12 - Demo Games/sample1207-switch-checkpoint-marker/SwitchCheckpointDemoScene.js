@@ -2,7 +2,7 @@
 Toolbox Aid
 David Quesenberry
 03/31/2026
-MultiSystemDemoScene.js
+SwitchCheckpointDemoScene.js
 */
 import { Scene } from '../../../engine/scenes/index.js';
 import { Theme, ThemeTokens } from '../../../engine/theme/index.js';
@@ -13,11 +13,9 @@ import { Tilemap, renderTilemap, resolveRectVsTilemap } from '../../../engine/ti
 
 const theme = new Theme(ThemeTokens);
 
-export default class MultiSystemDemoScene extends Scene {
-  constructor(options = {}) {
+export default class SwitchCheckpointDemoScene extends Scene {
+  constructor() {
     super();
-    this.devConsoleIntegration = options.devConsoleIntegration || null;
-    this.debugConfig = options.debugConfig || { debugMode: 'dev', debugEnabled: Boolean(options.devConsoleIntegration) };
     this.screen = { x: 40, y: 180 };
     this.moveSpeed = 280;
     this.jumpSpeed = 900;
@@ -63,28 +61,23 @@ export default class MultiSystemDemoScene extends Scene {
       { speed: 0.52, y: 128, height: 92, width: 140, gap: 24, color: 'rgba(45, 212, 191, 0.22)' },
     ];
 
-    this.collectibles = [
-      { x: 360, y: this.world.height - this.tilemap.tileSize - 86, radius: 10, collected: false },
-      { x: 910, y: this.world.height - this.tilemap.tileSize - 182, radius: 10, collected: false },
-      { x: 1450, y: this.world.height - this.tilemap.tileSize - 230, radius: 10, collected: false },
-      { x: 2010, y: this.world.height - this.tilemap.tileSize - 182, radius: 10, collected: false },
-      { x: 2580, y: this.world.height - this.tilemap.tileSize - 278, radius: 10, collected: false },
-      { x: 3160, y: this.world.height - this.tilemap.tileSize - 200, radius: 10, collected: false },
-    ];
-    this.collectedCount = 0;
-    this.totalCollectibles = this.collectibles.length;
-    this.lastDeltaTime = 0;
-    this.lastResolvedRenderOrder = [];
-  }
-
-  exit() {
-    if (this.devConsoleIntegration) {
-      this.devConsoleIntegration.dispose();
-    }
+    this.activator = {
+      x: 2940,
+      y: this.world.height - this.tilemap.tileSize - 44,
+      width: 44,
+      height: 44,
+    };
+    this.checkpointMarker = {
+      x: 3090,
+      y: this.world.height - this.tilemap.tileSize - 120,
+      width: 26,
+      height: 120,
+    };
+    this.checkpointActive = false;
+    this.wasOnActivator = false;
   }
 
   update(dt, engine) {
-    this.lastDeltaTime = dt;
     const left = engine.input.isDown('ArrowLeft');
     const right = engine.input.isDown('ArrowRight');
     const jumpPressed = engine.input.isDown('Space');
@@ -116,20 +109,15 @@ export default class MultiSystemDemoScene extends Scene {
     this.hero.x = clamp(this.hero.x, 0, this.world.width - this.hero.width);
     this.hero.y = clamp(this.hero.y, 0, this.world.height - this.hero.height);
 
-    this.collectPickups();
+    const onActivator = isRectOverlap(this.hero, this.activator);
+    if (onActivator && !this.wasOnActivator) {
+      this.checkpointActive = !this.checkpointActive;
+    }
+    this.wasOnActivator = onActivator;
 
     this.camera.x = this.hero.x + this.hero.width * 0.5 - this.camera.viewportWidth * 0.5;
     this.camera.y = this.fixedCameraY;
     this.camera.clampToWorld();
-
-    if (this.devConsoleIntegration) {
-      const diagnosticsContext = this.buildDiagnosticsContext(engine, dt);
-      this.devConsoleIntegration.update({
-        engine,
-        scene: this,
-        diagnosticsContext,
-      });
-    }
   }
 
   moveHeroHorizontally(distance) {
@@ -174,86 +162,13 @@ export default class MultiSystemDemoScene extends Scene {
     }
   }
 
-  collectPickups() {
-    for (const pickup of this.collectibles) {
-      if (pickup.collected) continue;
-      if (!isHeroTouchingCollectible(this.hero, pickup)) continue;
-      pickup.collected = true;
-      this.collectedCount += 1;
-    }
-  }
-
-  buildDiagnosticsContext(engine, dt) {
-    const fps = dt > 0 ? Math.round(1 / dt) : 0;
-    const worldStages = ['parallax', 'tilemap', 'entities', 'sprite-effects', 'vector-overlay'];
-    const renderOrder = this.devConsoleIntegration?.getRuntime?.().getDeterministicRenderOrder(worldStages) || worldStages;
-    this.lastResolvedRenderOrder = renderOrder.slice();
-    const shiftDown = engine.input.isDown('ShiftLeft') || engine.input.isDown('ShiftRight');
-    const ctrlDown = engine.input.isDown('ControlLeft') || engine.input.isDown('ControlRight');
-    const backquoteDown = engine.input.isDown('Backquote');
-
-    return {
-      runtime: {
-        sceneId: 'demo-1205-multi-system',
-        status: 'running',
-        fps,
-        frameTimeMs: Math.round(dt * 1000 * 100) / 100,
-      },
-      camera: {
-        x: Math.round(this.camera.x * 100) / 100,
-        y: Math.round(this.camera.y * 100) / 100,
-        viewportWidth: this.camera.viewportWidth,
-        viewportHeight: this.camera.viewportHeight,
-      },
-      entities: {
-        count: 1 + (this.totalCollectibles - this.collectedCount),
-        heroState: this.hero.onGround ? 'grounded' : 'airborne',
-      },
-      tilemap: {
-        width: this.tilemap.width,
-        height: this.tilemap.height,
-        tileSize: this.tilemap.tileSize,
-      },
-      input: {
-        left: engine.input.isDown('ArrowLeft'),
-        right: engine.input.isDown('ArrowRight'),
-        jump: engine.input.isDown('Space'),
-        consoleToggle: shiftDown && !ctrlDown && backquoteDown,
-        overlayToggle: ctrlDown && shiftDown && backquoteDown,
-        reload: ctrlDown && shiftDown && engine.input.isDown('KeyR'),
-        nextPanel: ctrlDown && shiftDown && engine.input.isDown('BracketRight'),
-        previousPanel: ctrlDown && shiftDown && engine.input.isDown('BracketLeft'),
-      },
-      hotReload: {
-        enabled: false,
-        pending: false,
-        mode: 'sample-manual',
-      },
-      validation: {
-        errorCount: 0,
-        warningCount: 0,
-      },
-      render: {
-        stages: renderOrder,
-        debugSurfaceTail: renderOrder.slice(-2),
-      },
-      assets: {
-        parallaxLayers: this.parallaxLayers.length,
-        collectibleTotal: this.totalCollectibles,
-      },
-    };
-  }
-
   render(renderer) {
     drawFrame(renderer, theme, [
-      'Demo 1205 - Multi-System Demo',
+      'Sample 1207 - Switch Checkpoint Marker',
       'Move with Left/Right Arrow. Press Space to jump.',
-      'Gameplay contract matches Demo 1204 with one added collectible counter layer.',
-      'Collectibles disappear on touch and increment the counter.',
-      'No enemies, trigger/switch systems, or broader game systems.',
-      'Debug: Shift+` console, Ctrl+Shift+` overlay, Ctrl+Shift+R reload.',
-      'Debug Panels: Ctrl+Shift+] next panel, Ctrl+Shift+[ previous panel.',
-      'Console Input: type command + Enter (Up/Down history, Esc clear).',
+      'Touch the activator to toggle checkpoint marker state.',
+      'Gameplay contract matches Sample 1206; only interaction changed.',
+      'No collectibles, trigger zones, enemies, or progression systems.',
     ]);
 
     renderer.strokeRect(this.screen.x, this.screen.y, this.camera.viewportWidth, this.camera.viewportHeight, '#d8d5ff', 2);
@@ -266,32 +181,23 @@ export default class MultiSystemDemoScene extends Scene {
     };
     renderTilemap(renderer, this.tilemap, tileScreen);
 
-    this.drawCollectibles(renderer);
+    this.drawActivator(renderer);
+    this.drawCheckpointMarker(renderer);
 
     const heroScreen = worldRectToScreen(this.camera, this.hero, this.screen.x, this.screen.y);
     renderer.drawRect(heroScreen.x, heroScreen.y, heroScreen.width, heroScreen.height, theme.getColor('actorFill'));
     renderer.strokeRect(heroScreen.x, heroScreen.y, heroScreen.width, heroScreen.height, '#ffffff', 1);
 
     const stateLabel = this.hero.onGround ? (this.landingTimer > 0 ? 'landed' : 'grounded') : 'airborne';
-    const complete = this.collectedCount === this.totalCollectibles ? 'All collected' : 'Collect all';
-    drawPanel(renderer, 620, 34, 300, 166, 'Multi-System', [
+    const checkpointState = this.checkpointActive ? 'Checkpoint: ACTIVE' : 'Checkpoint: INACTIVE';
+    drawPanel(renderer, 620, 34, 300, 166, 'Switch + Checkpoint', [
       `State: ${stateLabel}`,
-      `Collected: ${this.collectedCount}/${this.totalCollectibles}`,
-      `Goal: ${complete}`,
+      checkpointState,
       `Camera X: ${this.camera.x.toFixed(1)}`,
       `Parallax Far/Near: ${this.parallaxLayers[0].speed}/${this.parallaxLayers[2].speed}`,
-      `Debug: ${this.debugConfig.debugEnabled ? 'enabled' : 'disabled'} (${this.debugConfig.debugMode})`,
-      'Controls: Left/Right + Space + Shift+` (console input while open)',
+      'Controls: Left/Right + Space',
+      'Interaction: Activator toggles marker',
     ]);
-
-    if (this.devConsoleIntegration) {
-      const debugRender = this.devConsoleIntegration.render(renderer, {
-        worldStages: ['parallax', 'tilemap', 'entities', 'sprite-effects', 'vector-overlay'],
-      });
-      if (Array.isArray(debugRender?.renderOrder)) {
-        this.lastResolvedRenderOrder = debugRender.renderOrder.slice();
-      }
-    }
   }
 
   drawParallax(renderer) {
@@ -331,23 +237,60 @@ export default class MultiSystemDemoScene extends Scene {
     }
   }
 
-  drawCollectibles(renderer) {
-    for (const pickup of this.collectibles) {
-      if (pickup.collected) continue;
-      const x = pickup.x + this.screen.x - this.camera.x;
-      const y = pickup.y + this.screen.y - this.camera.y;
-      renderer.drawCircle(x, y, pickup.radius, '#fbbf24');
-      renderer.drawCircle(x, y, Math.max(2, pickup.radius * 0.45), '#fef3c7');
-    }
+  drawActivator(renderer) {
+    const activatorScreen = worldRectToScreen(this.camera, this.activator, this.screen.x, this.screen.y);
+    const fill = this.wasOnActivator ? 'rgba(16, 185, 129, 0.65)' : 'rgba(250, 204, 21, 0.55)';
+    const stroke = this.wasOnActivator ? '#10b981' : '#facc15';
+    renderer.drawRect(
+      activatorScreen.x,
+      activatorScreen.y,
+      activatorScreen.width,
+      activatorScreen.height,
+      fill
+    );
+    renderer.strokeRect(
+      activatorScreen.x,
+      activatorScreen.y,
+      activatorScreen.width,
+      activatorScreen.height,
+      stroke,
+      2
+    );
+  }
+
+  drawCheckpointMarker(renderer) {
+    const markerScreen = worldRectToScreen(this.camera, this.checkpointMarker, this.screen.x, this.screen.y);
+    const poleColor = this.checkpointActive ? '#22c55e' : '#64748b';
+    const flagColor = this.checkpointActive ? '#86efac' : '#cbd5e1';
+
+    renderer.drawRect(markerScreen.x, markerScreen.y, markerScreen.width, markerScreen.height, poleColor);
+    renderer.strokeRect(markerScreen.x, markerScreen.y, markerScreen.width, markerScreen.height, '#ffffff', 1);
+
+    renderer.drawRect(
+      markerScreen.x + markerScreen.width,
+      markerScreen.y + 10,
+      56,
+      28,
+      flagColor
+    );
+    renderer.strokeRect(
+      markerScreen.x + markerScreen.width,
+      markerScreen.y + 10,
+      56,
+      28,
+      '#0f172a',
+      1
+    );
   }
 }
 
-function isHeroTouchingCollectible(hero, pickup) {
-  const closestX = clamp(pickup.x, hero.x, hero.x + hero.width);
-  const closestY = clamp(pickup.y, hero.y, hero.y + hero.height);
-  const dx = pickup.x - closestX;
-  const dy = pickup.y - closestY;
-  return (dx * dx + dy * dy) <= pickup.radius * pickup.radius;
+function isRectOverlap(a, b) {
+  return (
+    a.x < b.x + b.width &&
+    a.x + a.width > b.x &&
+    a.y < b.y + b.height &&
+    a.y + a.height > b.y
+  );
 }
 
 function buildTiles(width, height) {

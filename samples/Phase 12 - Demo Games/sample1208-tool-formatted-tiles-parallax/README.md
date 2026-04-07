@@ -1,4 +1,4 @@
-# Demo 1208 - Tool Formatted Tiles Parallax
+# Sample 1208 - Tool Formatted Tiles Parallax
 
 ## Purpose
 Provide a runnable authoring-pipeline validation demo that preserves the proven Phase 12 hero movement/jump/collision/camera/parallax behavior while using sample-local content shaped like tool exports.

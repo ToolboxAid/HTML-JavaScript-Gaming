@@ -4111,6 +4111,6 @@ export default {
   "metadata": {
     "createdAt": "2026-03-31T23:10:10.099Z",
     "updatedAt": "2026-03-31T23:10:10.099Z",
-    "notes": "Tile Map Editor toolbox.tilemap/1 format for Demo 1208 runtime import."
+    "notes": "Tile Map Editor toolbox.tilemap/1 format for Sample 1208 runtime import."
   }
 };

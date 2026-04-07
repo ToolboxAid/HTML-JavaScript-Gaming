@@ -155,9 +155,9 @@ export default class TriggerZoneDemoScene extends Scene {
 
   render(renderer) {
     drawFrame(renderer, theme, [
-      'Demo 1206 - Trigger Zone',
+      'Sample 1206 - Trigger Zone',
       'Move with Left/Right Arrow. Press Space to jump.',
-      'Gameplay contract matches Demo 1204/1205 with one added trigger-zone interaction.',
+      'Gameplay contract matches Sample 1204/1205 with one added trigger-zone interaction.',
       'Enter the trigger zone to activate success state.',
       'No collectibles, switch/checkpoint systems, or broader game systems.',
     ]);
