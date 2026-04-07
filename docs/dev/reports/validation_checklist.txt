@@ -1,7 +1,7 @@
 VALIDATION CHECKLIST
 
-[✔] Sample directories unchanged
-[✔] No files added, removed, or renamed
-[✔] Numbering is sequential and consistent
-[✔] Formatting aligned across corrected samples
-[✔] Index references match updated numbering (if applicable)
+[ ] Promotion criteria defined
+[ ] Stability thresholds defined
+[ ] Rollback conditions defined
+[ ] Observability requirements defined
+[ ] No runtime scope introduced

@@ -1,5 +1,4 @@
-APPLY: Sample number normalization and formatting alignment
+PLAN: Level 11.7 Final Promotion Gate
 
-- Sequential numbering corrected
-- Formatting standardized
-- No file structure changes
+- Defines promotion criteria
+- Prepares BUILD phase

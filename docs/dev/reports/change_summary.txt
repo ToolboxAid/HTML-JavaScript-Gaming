@@ -1,5 +1,4 @@
 CHANGE SUMMARY
 
-- Corrected sample numbering to be sequential
-- Standardized formatting across affected sample directories
-- No structural or file-level changes made
+- Introduced final promotion gate definition
+- Defined criteria and constraints for authoritative switch
