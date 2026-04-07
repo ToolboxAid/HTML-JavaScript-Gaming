@@ -4,16 +4,16 @@
 Introduce a protected BUILD template to standardize constraints across all BUILD PRs.
 
 ## Scope
-- Add BUILD template under docs/dev/templates/
+- Add protected BUILD template under `docs/dev/templates/`
 - Define mandatory constraints section
-- Ensure reuse across all future BUILD bundles
+- Require future BUILD PRs to include or reference this protected template
 
 ## Non-Goals
 - No runtime changes
-- No modification to existing BUILD PRs
 - No Codex execution
+- No changes to protected start_of_day directories
 
 ## Acceptance Criteria
-- Template exists in protected location
-- Includes mandatory constraints section
-- Future BUILD PRs can reference template
+- `docs/dev/templates/BUILD_TEMPLATE_PROTECTED.md` exists
+- Template includes mandatory constraints section
+- Future BUILD PRs can reuse the exact constraints block

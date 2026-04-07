@@ -6,4 +6,4 @@
 - Do not change engine core APIs
 
 ## Requirement
-This section must be included in every BUILD PR.
+This mandatory constraints section must be included in every BUILD PR.

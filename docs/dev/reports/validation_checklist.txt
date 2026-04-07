@@ -1,6 +1,6 @@
 VALIDATION CHECKLIST
 
-[ ] Promotion triggers only under valid conditions
-[ ] Stability window enforced
-[ ] Rollback conditions abort correctly
-[ ] Logging provides visibility
+[ ] Template file exists at `docs/dev/templates/BUILD_TEMPLATE_PROTECTED.md`
+[ ] Mandatory constraints are defined
+[ ] No runtime impact introduced
+[ ] No protected start_of_day directories touched

@@ -1,6 +1,4 @@
 CHANGE SUMMARY
 
-- Added promotion gate runtime logic
-- Enforced stability checks before promotion
-- Added rollback safety conditions
-- Added observability logging
+- Added protected BUILD template at `docs/dev/templates/BUILD_TEMPLATE_PROTECTED.md`
+- Standardized mandatory BUILD constraints for future BUILD bundles

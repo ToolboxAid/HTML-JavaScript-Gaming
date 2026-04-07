@@ -1,4 +1,4 @@
-BUILD: Level 11.7 Final Promotion Gate
+PLAN: add protected BUILD template under docs/dev/templates
 
-- Implements promotion gating logic
-- Adds stability + rollback checks
+- standardizes mandatory BUILD constraints
+- no runtime changes
