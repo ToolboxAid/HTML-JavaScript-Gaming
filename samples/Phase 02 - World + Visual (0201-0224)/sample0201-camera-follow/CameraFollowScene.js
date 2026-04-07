@@ -61,7 +61,7 @@ export default class CameraFollowScene extends Scene {
 
   render(renderer) {
     drawFrame(renderer, theme, [
-      'Engine Sample25',
+      'Engine sample 0201',
       'Demonstrates camera follow over a world larger than the viewport',
       'Use Arrow keys to move the player and watch the camera track movement',
       'This is the first sample where the view scrolls over a larger game space',

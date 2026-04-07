@@ -69,7 +69,7 @@ export default class BasicNpcEntityScene extends Scene {
 
   render(renderer) {
     drawFrame(renderer, theme, [
-      'Engine Sample65',
+      'Engine sample 0317',
       'Introduces a basic NPC entity.',
       'The NPC patrols in a small range and faces the player when close.',
       this.message,

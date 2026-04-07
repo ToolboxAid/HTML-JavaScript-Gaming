@@ -63,7 +63,7 @@ export default class WorldSerializationScene extends Scene {
 
   render(renderer) {
     drawFrame(renderer, theme, [
-      'Engine Sample47',
+      'Engine Sample 0223',
       'Demonstrates serialization and deserialization of a world snapshot',
       'Use Arrow keys to move, KeyK to save, KeyL to load',
       `Saved: ${this.lastSave} | Loaded: ${this.lastLoad}`,

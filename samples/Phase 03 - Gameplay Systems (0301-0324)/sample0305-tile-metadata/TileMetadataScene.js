@@ -13,7 +13,7 @@ import { SpriteAtlas, ImageAssetLoader } from '../../../engine/assets/index.js';
 import { AnimationController } from '../../../engine/animation/index.js';
 import { renderSpriteReadyEntities } from '../../../engine/render/index.js';
 import { stepArcadeBody, moveRectWithTilemapCollision } from '../../../engine/systems/index.js';
-import { createDemoSpriteSheet } from '../sample049-real-sprite-rendering/demoSpriteFactory.js';
+import { createDemoSpriteSheet } from '../sample0301-real-sprite-rendering/demoSpriteFactory.js';
 
 const theme = new Theme(ThemeTokens);
 
@@ -167,7 +167,7 @@ export default class TileMetadataScene extends Scene {
 
   render(renderer) {
     drawFrame(renderer, theme, [
-      'Engine Sample53',
+      'Engine sample 0305',
       'Extends the tilemap from solid/not-solid into hazard, trigger, and slope-style metadata',
       'Red tiles reset the actor (to spawn point)',
       'Green tiles trigger a flag,',

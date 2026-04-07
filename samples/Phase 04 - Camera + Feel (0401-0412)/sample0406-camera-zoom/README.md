@@ -3,7 +3,7 @@ David Quesenberry
 03/21/2026
 README.md
 
-# Sample078 - Camera Zoom
+# sample 0406 - Camera Zoom
 
 ## Purpose
 Demonstrates the same actor-centered world at multiple camera zoom levels.

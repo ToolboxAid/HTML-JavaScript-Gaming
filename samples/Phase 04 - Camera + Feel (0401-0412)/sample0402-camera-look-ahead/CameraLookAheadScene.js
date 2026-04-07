@@ -103,7 +103,7 @@ export default class CameraLookAheadScene extends Scene {
     renderer.drawRect(this.actor.x, this.actor.y, this.actor.width, this.actor.height, actorFill);
 
     const lines = [
-      "Sample74 - Camera Look Ahead",
+      "sample 0326 - Camera Look Ahead",
       this.note,
       "The yellow box shows the area the camera peeks into.",
       "It moves in front of the actor instead of sitting on top of it.",

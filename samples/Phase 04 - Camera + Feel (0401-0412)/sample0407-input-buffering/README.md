@@ -3,7 +3,7 @@ David Quesenberry
 03/22/2026
 README.md
 
-# Sample079 - Input Buffering
+# sample 0407 - Input Buffering
 
 ## Purpose
 Demonstrates queued input that executes when the action becomes valid.

@@ -25,7 +25,7 @@ export default class SpriteRenderLayerScene extends Scene {
 
   render(renderer) {
     drawFrame(renderer, theme, [
-      'Engine Sample37',
+      'Engine Sample 213',
       'Demonstrates a sprite-ready render path with fallback rendering',
       'Entities can provide a sprite-ready color proxy or a plain fallback color',
       'This sample establishes the render boundary for future image-based sprites',

@@ -55,7 +55,7 @@ export default class GameModeStateScene extends Scene {
     const mode = this.gameMode.getMode();
 
     drawFrame(renderer, theme, [
-      'Engine Sample41',
+      'Engine  0217',
       'Demonstrates higher-level game mode flow outside per-entity state',
       'Enter starts or resets, KeyP toggles pause, KeyW wins, KeyL loses',
       `Current mode: ${mode}`,

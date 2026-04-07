@@ -1,4 +1,4 @@
-# Sample043 - Sprite Atlas + Image Rendering
+# Sample 0219 - Sprite Atlas + Image Rendering
 
 ## Purpose
 Introduces sprite atlas frame lookup and image-loader-ready rendering.

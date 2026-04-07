@@ -3,7 +3,7 @@ David Quesenberry
 03/22/2026
 README.md
 
-# Sample081 - Input Timing Windows
+# sample 0409 - Input Timing Windows
 
 ## Purpose
 Demonstrates valid input only during configured timing windows.

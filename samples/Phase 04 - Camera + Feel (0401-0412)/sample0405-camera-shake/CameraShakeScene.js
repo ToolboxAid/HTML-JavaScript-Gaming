@@ -135,7 +135,7 @@ export default class CameraShakeScene extends Scene {
     renderer.drawRect(this.bounds.x + this.bounds.width - 38, this.bounds.y + this.bounds.height - 38, 12, 12, '#ef4444');
 
     const lines = [
-      "Sample77 - Camera Shake",
+      "sample 0327 - Camera Shake",
       this.note,
       "The camera window jitters, while the outer frame stays still.",
       `Impact shake offset: ${shakeX}, ${shakeY}`,

@@ -1,4 +1,4 @@
-# Sample035 - Enemy Patrol AI
+# Sample 0211 - Enemy Patrol AI
 
 ## Purpose
 Introduces a reusable patrol behavior and basic player detection helper.

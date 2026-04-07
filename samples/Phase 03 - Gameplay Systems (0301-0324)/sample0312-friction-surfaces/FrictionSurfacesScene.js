@@ -88,7 +88,7 @@ export default class FrictionSurfacesScene extends Scene {
 
   render(renderer) {
     drawFrame(renderer, theme, [
-      'Engine Sample60',
+      'Engine sample 0312',
       'Introduces authored friction surfaces such as ice and mud.',
       'Blue ice keeps momentum. Brown mud slows movement and increases traction.',
       'Move left/right across each surface and compare the feel.',

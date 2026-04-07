@@ -13,7 +13,7 @@ import { SpriteAtlas, ImageAssetLoader } from '../../../engine/assets/index.js';
 import { AnimationController } from '../../../engine/animation/index.js';
 import { renderSpriteReadyEntities } from '../../../engine/render/index.js';
 import { stepArcadeBody } from '../../../engine/systems/index.js';
-import { createDemoSpriteSheet } from '../sample049-real-sprite-rendering/demoSpriteFactory.js';
+import { createDemoSpriteSheet } from '../sample0301-real-sprite-rendering/demoSpriteFactory.js';
 
 const theme = new Theme(ThemeTokens);
 
@@ -102,10 +102,10 @@ export default class PhysicsSystemScene extends Scene {
 
   render(renderer) {
     drawFrame(renderer, theme, [
-      'Engine Sample51',
+      'Engine sample 0303',
       'Shifts movement to velocity, acceleration, and drag instead of raw position nudging',
       'Move with Arrow keys or WASD and release to watch drag settle the actor',
-      'This is the motion base for better collision response in Sample52',
+      'This is the motion base for better collision response in sample 0304',
       `Velocity: ${this.player.velocityX.toFixed(1)}, ${this.player.velocityY.toFixed(1)}`,
     ]);
 

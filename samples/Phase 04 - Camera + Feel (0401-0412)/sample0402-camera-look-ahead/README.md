@@ -3,7 +3,7 @@ David Quesenberry
 03/21/2026
 README.md
 
-# Sample074 - Camera Look Ahead
+# sample 0402- Camera Look Ahead
 
 ## Purpose
 Demonstrates look-ahead camera movement that anticipates actor direction.

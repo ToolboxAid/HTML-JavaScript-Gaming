@@ -71,7 +71,7 @@ export default class DoorsGatesScene extends Scene {
 
   render(renderer) {
     drawFrame(renderer, theme, [
-      'Engine Sample64',
+      'Engine sample 0316',
       'Introduces linked doors and gates.',
       'The red button controls the center gate.',
       this.message,

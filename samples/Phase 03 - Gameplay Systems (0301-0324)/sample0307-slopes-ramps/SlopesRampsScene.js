@@ -100,7 +100,7 @@ export default class SlopesRampsScene extends Scene {
 
   render(renderer) {
     drawFrame(renderer, theme, [
-      'Engine Sample55',
+      'Engine sample 0307',
       'Introduces slope and ramp surfaces as a first pass for platformer terrain.',
       'AABB walls still block normally. Ramp surfaces compute a floor height from the actor position.',
       'Use A/D or Left/Right. Press Space to jump.',

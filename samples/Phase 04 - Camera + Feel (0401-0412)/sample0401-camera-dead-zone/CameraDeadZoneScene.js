@@ -163,7 +163,7 @@ export default class CameraDeadZoneScene extends Scene {
     renderer.drawRect(view.x + view.width - 30, view.y + view.height - 30, 14, 14, '#ef4444');
 
     const lines = [
-      "Sample73 - Camera Dead Zone",
+      "sample 0325 - Camera Dead Zone",
       this.note,
       "The blue box is the camera. Yellow marks the follow margin.",
       "The world scrolls only after the actor leaves the yellow zone.",

@@ -65,7 +65,7 @@ export default class TilemapSystemScene extends Scene {
 
   render(renderer) {
     drawFrame(renderer, theme, [
-      'Engine Sample45',
+      'Engine Sample 221',
       'Demonstrates tilemap rendering and tile-based collision',
       'Use Arrow keys to move through the open tiles',
       `Collision: ${this.lastCollision}`,

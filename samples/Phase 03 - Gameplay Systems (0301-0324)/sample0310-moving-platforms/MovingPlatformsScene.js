@@ -106,7 +106,7 @@ export default class MovingPlatformsScene extends Scene {
 
   render(renderer) {
     drawFrame(renderer, theme, [
-      'Engine Sample58',
+      'Engine sample 0310',
       'Introduces moving platforms and actor carry behavior.',
       'Stand on the cyan platforms and verify that the actor rides with them.',
       'Use A/D or Left/Right. Press Space to jump.',

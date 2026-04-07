@@ -114,7 +114,7 @@ export default class OneWayPlatformsScene extends Scene {
 
   render(renderer) {
     drawFrame(renderer, theme, [
-      'Engine Sample59',
+      'Engine sample 0311',
       'Introduces one-way platforms: land from above, jump through from below, and optionally drop down.',
       'Press Down + Space while standing on a one-way platform to drop through.',
       'Orange platforms should not block upward travel.',

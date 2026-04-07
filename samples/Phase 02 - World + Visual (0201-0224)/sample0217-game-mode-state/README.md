@@ -1,4 +1,4 @@
-# Sample041 - Game Mode State
+# Sample 0217 - Game Mode State
 
 ## Purpose
 Introduces higher-level game mode flow for screens and runtime progression.

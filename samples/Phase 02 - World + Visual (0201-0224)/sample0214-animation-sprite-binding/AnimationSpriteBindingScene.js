@@ -47,7 +47,7 @@ export default class AnimationSpriteBindingScene extends Scene {
     const frame = this.animation.getFrame() || { id: 'fallback', color: theme.getColor('actorFill') };
 
     drawFrame(renderer, theme, [
-      'Engine Sample38',
+      'Engine Sample 0214',
       'Demonstrates binding animation state to sprite-frame-like output',
       'Use Arrow keys to move and switch between animation frame sets',
       `Frame id: ${frame.id}`,

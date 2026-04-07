@@ -91,7 +91,7 @@ export default class SwitchesButtonsScene extends Scene {
 
   render(renderer) {
     drawFrame(renderer, theme, [
-      'Engine Sample63',
+      'Engine sample 0315',
       'Introduces switches and buttons.',
       'Red floor button activates by contact. Yellow switch toggles with E.',
       this.message,

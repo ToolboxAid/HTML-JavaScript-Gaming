@@ -76,7 +76,7 @@ export default class InteractionPressKeyScene extends Scene {
 
   render(renderer) {
     drawFrame(renderer, theme, [
-      'Engine Sample66',
+      'Engine sample 0318',
       'Introduces a generic press-key interaction pattern.',
       'Walk near the console to show the prompt, then press E.',
       this.prompt,

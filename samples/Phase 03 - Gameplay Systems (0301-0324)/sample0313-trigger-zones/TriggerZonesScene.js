@@ -79,7 +79,7 @@ export default class TriggerZonesScene extends Scene {
 
   render(renderer) {
     drawFrame(renderer, theme, [
-      'Engine Sample61',
+      'Engine sample 0313',
       'Introduces enter / exit trigger zones.',
       'Trigger regions are not solid; they only report overlap state changes.',
       this.message,

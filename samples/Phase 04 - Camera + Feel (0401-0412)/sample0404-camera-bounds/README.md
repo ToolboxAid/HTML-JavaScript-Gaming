@@ -3,7 +3,7 @@ David Quesenberry
 03/21/2026
 README.md
 
-# Sample076 - Camera Bounds
+# sample 0404- Camera Bounds
 
 ## Purpose
 Demonstrates clamped camera travel inside world bounds.

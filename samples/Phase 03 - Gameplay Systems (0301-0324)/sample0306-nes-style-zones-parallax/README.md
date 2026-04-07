@@ -1,4 +1,4 @@
-# Sample054 - NES-Style Zones + Parallax
+# sample 0306 - NES-Style Zones + Parallax
 
 ## Purpose
 Adds deliberate section-based camera behavior and depth layers.

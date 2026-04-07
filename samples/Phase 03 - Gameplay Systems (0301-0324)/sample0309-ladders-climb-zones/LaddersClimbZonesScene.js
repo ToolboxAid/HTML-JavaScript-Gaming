@@ -124,7 +124,7 @@ export default class LaddersClimbZonesScene extends Scene {
 
   render(renderer) {
     drawFrame(renderer, theme, [
-      'Engine Sample57',
+      'Engine sample 0309',
       'Introduces ladders and climb zones that suspend normal gravity while the actor is inside a ladder volume.',
       'Climb with W/S or Up/Down while overlapping a yellow ladder.',
       'Move horizontally to enter or leave the ladder volume.',

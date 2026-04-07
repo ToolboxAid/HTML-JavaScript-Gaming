@@ -13,7 +13,7 @@ import { SpriteAtlas, ImageAssetLoader } from '../../../engine/assets/index.js';
 import { AnimationController } from '../../../engine/animation/index.js';
 import { renderSpriteReadyEntities } from '../../../engine/render/index.js';
 import { stepArcadeBody, moveRectWithTilemapCollision } from '../../../engine/systems/index.js';
-import { createDemoSpriteSheet } from '../sample049-real-sprite-rendering/demoSpriteFactory.js';
+import { createDemoSpriteSheet } from '../sample0301-real-sprite-rendering/demoSpriteFactory.js';
 
 const theme = new Theme(ThemeTokens);
 
@@ -113,7 +113,7 @@ export default class CollisionResolutionScene extends Scene {
 
   render(renderer) {
     drawFrame(renderer, theme, [
-      'Engine Sample52',
+      'Engine sample 0304',
       'Refines collision response with axis-separated resolution and clean wall sliding',
       'Drive diagonally into corners to see reduced snagging compared with rollback collision',
       'Physics remains the motion source, while collision now resolves axis by axis',

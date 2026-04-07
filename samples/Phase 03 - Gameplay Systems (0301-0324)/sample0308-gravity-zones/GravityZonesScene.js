@@ -158,7 +158,7 @@ export default class GravityZonesScene extends Scene {
 
   render(renderer) {
     drawFrame(renderer, theme, [
-      'Engine Sample56',
+      'Engine sample 0308',
       'Introduces gravity zones that change the pull direction inside colored areas.',
       'Space applies a simple jump opposite the active gravity direction.',
       'Use jump blocks to verify that the sample can reach raised platforms.',

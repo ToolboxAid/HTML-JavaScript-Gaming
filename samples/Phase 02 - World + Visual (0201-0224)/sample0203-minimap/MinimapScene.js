@@ -55,7 +55,7 @@ export default class MinimapScene extends Scene {
 
   render(renderer) {
     drawFrame(renderer, theme, [
-      'Engine Sample27',
+      'Engine sample 0203',
       'Demonstrates a minimap overlay for a larger scrolling world',
       'Use Arrow keys to move and compare the viewport with the minimap panel',
       'The minimap shows player position and obstacle layout at reduced scale',

@@ -34,7 +34,7 @@ export default class InputActionMappingScene extends Scene {
 
   render(renderer) {
     drawFrame(renderer, theme, [
-      'Engine Sample46',
+      'Engine Sample 0222',
       'Demonstrates action-based input mapping independent of raw keys',
       'Use Arrow keys or WASD to move the actor through actions',
       `Last action: ${this.lastAction}`,

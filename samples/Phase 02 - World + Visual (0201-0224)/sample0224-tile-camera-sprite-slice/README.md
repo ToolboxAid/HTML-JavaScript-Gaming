@@ -1,4 +1,4 @@
-# Sample048 - Tile + Camera + Sprite Slice
+# Sample 0224 - Tile + Camera + Sprite Slice
 
 ## Purpose
 Builds a tile-based playable slice using camera, action input, sprite-style rendering, and world snapshots.

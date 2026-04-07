@@ -1,4 +1,4 @@
-# Sample053 - Tile Metadata
+# sample 0305 - Tile Metadata
 
 ## Purpose
 Extends the tilemap into richer gameplay data.

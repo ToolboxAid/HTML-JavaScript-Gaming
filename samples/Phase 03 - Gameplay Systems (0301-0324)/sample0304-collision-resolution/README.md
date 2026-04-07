@@ -1,4 +1,4 @@
-# Sample052 - Collision Resolution
+# sample 0304 - Collision Resolution
 
 ## Purpose
 Makes collision response cleaner at walls and corners.

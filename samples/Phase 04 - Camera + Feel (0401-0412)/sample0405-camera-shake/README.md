@@ -3,7 +3,7 @@ David Quesenberry
 03/21/2026
 README.md
 
-# Sample077 - Camera Shake
+# sample 0405- Camera Shake
 
 ## Purpose
 Demonstrates a simple camera shake effect triggered during play.

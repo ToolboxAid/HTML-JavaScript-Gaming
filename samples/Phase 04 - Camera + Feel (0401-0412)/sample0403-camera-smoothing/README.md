@@ -3,7 +3,7 @@ David Quesenberry
 03/21/2026
 README.md
 
-# Sample075 - Camera Smoothing
+# sample 0403- Camera Smoothing
 
 ## Purpose
 Demonstrates smoothed camera movement instead of a hard snap follow.

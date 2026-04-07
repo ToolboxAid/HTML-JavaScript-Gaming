@@ -1,4 +1,4 @@
-# Sample051 - Physics System
+# sample 0303 - Physics System
 
 ## Purpose
 Replaces direct position nudging with a reusable motion model.
@@ -8,7 +8,7 @@ Replaces direct position nudging with a reusable motion model.
 - drag-based deceleration
 - velocity limits
 - easy-to-tune constants
-- clean handoff to Sample052 collision work
+- clean handoff to sample 0304 collision work
 
 ## Controls
 - Arrow keys or WASD: move actor

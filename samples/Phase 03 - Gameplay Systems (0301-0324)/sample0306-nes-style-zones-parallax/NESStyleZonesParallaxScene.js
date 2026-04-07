@@ -13,7 +13,7 @@ import { SpriteAtlas, ImageAssetLoader } from '../../../engine/assets/index.js';
 import { AnimationController } from '../../../engine/animation/index.js';
 import { renderSpriteReadyEntities } from '../../../engine/render/index.js';
 import { stepArcadeBody, moveRectWithTilemapCollision } from '../../../engine/systems/index.js';
-import { createDemoSpriteSheet } from '../sample049-real-sprite-rendering/demoSpriteFactory.js';
+import { createDemoSpriteSheet } from '../sample0301-real-sprite-rendering/demoSpriteFactory.js';
 
 const theme = new Theme(ThemeTokens);
 
@@ -125,7 +125,7 @@ export default class NESStyleZonesParallaxScene extends Scene {
 
   render(renderer) {
     drawFrame(renderer, theme, [
-      'Engine Sample54',
+      'Engine sample 0306',
       'Shows NES-style scrolling zones with simple parallax layers',
       'Move left and right to cross deliberate camera zones instead of pure free-follow',
       'Foreground tilemap stays sharp while distant layers move at slower rates',

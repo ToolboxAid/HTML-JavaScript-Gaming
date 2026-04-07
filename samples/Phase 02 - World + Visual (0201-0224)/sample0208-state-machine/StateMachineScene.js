@@ -64,7 +64,7 @@ export default class StateMachineScene extends Scene {
 
   render(renderer) {
     drawFrame(renderer, theme, [
-      'Engine Sample32',
+      'Engine sample 0208',
       'Demonstrates state-driven behavior with a reusable state machine',
       'Use Arrow keys to move and run into the block to enter blocked state',
       `Current state: ${this.machine.getState()}`,

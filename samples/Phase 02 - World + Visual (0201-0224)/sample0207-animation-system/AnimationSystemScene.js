@@ -50,7 +50,7 @@ export default class AnimationSystemScene extends Scene {
 
   render(renderer) {
     drawFrame(renderer, theme, [
-      'Engine Sample31',
+      'Engine sample 0207',
       'Demonstrates animation playback with idle and move states',
       'Use Arrow keys to move the actor and switch animation state',
       `Current animation: ${this.animation.getStateName()}`,

@@ -3,7 +3,7 @@ David Quesenberry
 03/22/2026
 README.md
 
-# Sample082 - Action Cooldowns
+# sample 0410 - Action Cooldowns
 
 ## Purpose
 Demonstrates reusable cooldown timers for actions.

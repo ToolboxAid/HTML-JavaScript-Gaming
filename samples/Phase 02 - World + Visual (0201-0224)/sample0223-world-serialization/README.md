@@ -1,4 +1,4 @@
-# Sample047 - World Serialization
+# Sample 0223 - World Serialization
 
 ## Purpose
 Introduces shared helpers for serializing and restoring world state.

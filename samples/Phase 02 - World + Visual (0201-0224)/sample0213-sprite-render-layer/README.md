@@ -1,4 +1,4 @@
-# Sample037 - Sprite Render Layer
+# sample 0217 - Sprite Render Layer
 
 ## Purpose
 Introduces a sprite-ready render path with safe fallback rendering.

@@ -66,7 +66,7 @@ export default class HealthSystemScene extends Scene {
 
   render(renderer) {
     drawFrame(renderer, theme, [
-      'Engine V2 Sample69',
+      'Engine V2 sample 0321',
       'Introduces HP, death state, and reset flow.',
       this.message,
     ]);

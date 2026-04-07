@@ -82,7 +82,7 @@ export default class PickupsCollectiblesScene extends Scene {
 
   render(renderer) {
     drawFrame(renderer, theme, [
-      'Engine Sample62',
+      'Engine sample 0314',
       'Introduces pickups and collectibles.',
       'Items disappear when touched and add to score.',
       this.message,

@@ -89,7 +89,7 @@ export default class RealSpriteRenderingScene extends Scene {
 
   render(renderer) {
     drawFrame(renderer, theme, [
-      'Engine Sample49',
+      'Engine sample 0301',
       'Promotes real image-backed sprite rendering to the standard actor path',
       'Uses a generated sprite sheet and atlas coordinates, not color-only boxes',
       'Camera + tilemap remain in place so later samples can inherit the path',

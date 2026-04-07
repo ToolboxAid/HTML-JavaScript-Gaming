@@ -1,4 +1,4 @@
-# Sample027 - Minimap
+# sample 0203 - Minimap
 
 ## Purpose
 Adds a minimap overlay that summarizes a larger world in a compact panel.

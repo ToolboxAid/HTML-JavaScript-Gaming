@@ -105,7 +105,7 @@ export default class CameraSmoothingScene extends Scene {
     renderer.drawRect(this.actor.x + 54, this.actor.y + 14, 12, 12, '#fbbf24');
 
     const lines = [
-      "Sample75 - Camera Smoothing",
+      "sample 0327 - Camera Smoothing",
       this.note,
       "The orange box is the actor target.",
       "The blue box follows behind it and smooths the movement.",

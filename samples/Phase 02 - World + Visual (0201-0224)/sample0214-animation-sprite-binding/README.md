@@ -1,4 +1,4 @@
-# Sample038 - Animation Sprite Binding
+# sample 0218 - Animation Sprite Binding
 
 ## Purpose
 Connects animation output to sprite-frame-like render behavior.

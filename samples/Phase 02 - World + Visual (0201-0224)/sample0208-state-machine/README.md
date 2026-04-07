@@ -1,4 +1,4 @@
-# Sample032 - State Machine
+# sample 0208 - State Machine
 
 ## Purpose
 Introduces a reusable state machine for behavior switching.

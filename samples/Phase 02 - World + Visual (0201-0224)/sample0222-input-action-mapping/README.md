@@ -1,4 +1,4 @@
-# Sample046 - Input Action Mapping
+# Sample 0222 - Input Action Mapping
 
 ## Purpose
 Introduces action-based input so gameplay logic is independent from raw keys.

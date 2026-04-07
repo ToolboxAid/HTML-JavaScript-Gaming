@@ -1,4 +1,4 @@
-# Sample049 - Real Sprite Rendering
+# sample 0301 - Real Sprite Rendering
 
 ## Purpose
 Promotes image-backed sprite rendering to the standard actor path.
@@ -8,7 +8,7 @@ Promotes image-backed sprite rendering to the standard actor path.
 - atlas-based frame selection
 - player, npc, and goal rendered from image frames
 - camera and tilemap working with sprite blits
-- clean handoff to Sample050 animation work
+- clean handoff to sample 0302 animation work
 
 ## Controls
 - Arrow keys or WASD: move actor

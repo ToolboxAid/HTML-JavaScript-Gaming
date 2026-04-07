@@ -1,4 +1,4 @@
-# Sample040 - Prefab System
+# Sample 0216 - Prefab System
 
 ## Purpose
 Introduces prefab factory functions for repeated gameplay entities.

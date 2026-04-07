@@ -62,7 +62,7 @@ export default class DamageKnockbackScene extends Scene {
 
   render(renderer) {
     drawFrame(renderer, theme, [
-      'Engine V2 Sample70',
+      'Engine V2 sample 0322',
       'Applies directional knockback when damage lands.',
       this.message,
     ]);

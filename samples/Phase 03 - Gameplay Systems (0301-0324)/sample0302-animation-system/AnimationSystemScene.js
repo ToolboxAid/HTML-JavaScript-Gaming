@@ -13,8 +13,7 @@ import { SpriteAtlas, ImageAssetLoader } from '../../../engine/assets/index.js';
 import { AnimationController } from '../../../engine/animation/index.js';
 import { renderSpriteReadyEntities } from '../../../engine/render/index.js';
 import { moveRectWithTilemapCollision } from '../../../engine/systems/index.js';
-import { createDemoSpriteSheet } from '../sample049-real-sprite-rendering/demoSpriteFactory.js';
-
+import { createDemoSpriteSheet } from '../sample0301-real-sprite-rendering/demoSpriteFactory.js';
 const theme = new Theme(ThemeTokens);
 
 export default class AnimationSystemScene extends Scene {
@@ -96,7 +95,7 @@ export default class AnimationSystemScene extends Scene {
 
   render(renderer) {
     drawFrame(renderer, theme, [
-      'Engine Sample50',
+      'Engine sample 0302',
       'Adds predictable timing, loop control, and a one-shot action animation',
       'Move with Arrow keys/WASD, press Space for a non-looping test action',
       'Idle and move states no longer flicker or reset on every input poll',

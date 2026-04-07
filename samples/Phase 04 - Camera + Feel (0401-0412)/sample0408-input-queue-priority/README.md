@@ -3,7 +3,7 @@ David Quesenberry
 03/22/2026
 README.md
 
-# Sample080 - Input Queue + Priority
+# sample 0408 - Input Queue + Priority
 
 ## Purpose
 Demonstrates queued actions resolving by configured priority.

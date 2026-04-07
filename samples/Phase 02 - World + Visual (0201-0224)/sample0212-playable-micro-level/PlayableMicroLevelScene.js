@@ -130,7 +130,7 @@ export default class PlayableMicroLevelScene extends Scene {
 
   render(renderer) {
     drawFrame(renderer, theme, [
-      'Engine Sample36',
+      'Engine Sample 212',
       'Combines interaction, patrol AI, projectiles, and goal logic into a micro-level',
       'Use Arrow keys to move, KeyE to interact, and Space to fire',
       `Status: ${this.won ? 'victory' : this.lost ? 'defeat' : 'in progress'}`,
