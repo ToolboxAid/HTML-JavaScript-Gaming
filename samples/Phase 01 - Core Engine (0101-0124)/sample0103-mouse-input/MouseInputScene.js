@@ -55,7 +55,7 @@ export default class MouseInputScene extends Scene {
         renderer.strokeRect(this.bounds.x, this.bounds.y, this.bounds.width, this.bounds.height, '#d8d5ff', 3);
         renderer.drawCircle(this.marker.x, this.marker.y, radius, theme.getColor('actorFill'));
 
-        renderer.drawText('Engine Sample03', this.textStartX, this.textStartY, {
+        renderer.drawText('Engine Sample 0103', this.textStartX, this.textStartY, {
             color: theme.getColor('textCanvs'),
             font: '16px monospace',
         });

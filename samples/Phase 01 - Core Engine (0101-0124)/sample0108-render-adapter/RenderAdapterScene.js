@@ -61,7 +61,7 @@ export default class RenderAdapterScene extends Scene {
     );
 
     const lines = [
-      'Engine Sample08',
+      'Engine Sample 0108',
       'Demonstrates the render adapter abstraction',
       'Rendering is performed through a renderer, not direct canvas calls',
       'Observe that scene behavior stays the same while drawing stays decoupled',

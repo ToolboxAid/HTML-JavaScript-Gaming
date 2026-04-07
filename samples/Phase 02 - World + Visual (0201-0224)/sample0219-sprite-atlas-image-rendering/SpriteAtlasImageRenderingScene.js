@@ -40,7 +40,7 @@ export default class SpriteAtlasImageRenderingScene extends Scene {
 
   render(renderer) {
     drawFrame(renderer, theme, [
-      'Engine Sample219',
+      'Engine Sample 01219',
       'Demonstrates sprite atlas frame lookup and image-loader-ready output',
       'Current rendering uses safe frame-color proxies instead of real image blits',
       'This sample defines the engine contract for atlas + frame based rendering',

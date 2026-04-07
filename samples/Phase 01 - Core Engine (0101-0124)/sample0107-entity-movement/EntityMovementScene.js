@@ -66,7 +66,7 @@ export default class EntityMovementScene extends Scene {
         renderer.drawRect(current.x - drawWidth / 2, current.y - drawHeight / 2, drawWidth, drawHeight, theme.getColor('actorFill'));
 
         const lines = [
-            'Engine Sample07',
+            'Engine Sample 0107',
             'Demonstrates entity-based movement using Transform and Velocity',
             'Use Arrow keys or WASD to move the entity inside the play area',
             'Observe position and velocity separated from scene orchestration',

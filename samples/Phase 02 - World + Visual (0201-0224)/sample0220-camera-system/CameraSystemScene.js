@@ -48,7 +48,7 @@ export default class CameraSystemScene extends Scene {
 
   render(renderer) {
     drawFrame(renderer, theme, [
-      'Engine Sample0220',
+      'Engine Sample 010220',
       'Demonstrates a shared world-to-screen camera system',
       'Use Arrow keys to move through a larger world',
       'All drawing goes through camera helpers instead of local offset math',

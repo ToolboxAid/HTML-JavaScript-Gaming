@@ -67,7 +67,7 @@ export default class ECSCollisionSystemScene extends Scene {
     const { width, height } = renderer.getCanvasSize();
 
     drawSceneFrame(renderer, theme, width, height, [
-      'Engine Sample18',
+      'Engine Sample 0118',
       'Demonstrates an ECS collision system using collider and solid components',
       'Use Arrow keys to move the player entity around the play area',
       `Collision state: ${this.hitSolid ? 'blocked by solid' : 'clear'}`,

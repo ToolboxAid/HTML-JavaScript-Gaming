@@ -74,7 +74,7 @@ export default class MultipleSolidsScene extends Scene {
     renderer.strokeRect(this.player.x, this.player.y, this.player.width, this.player.height, '#ffffff', 1);
 
     const lines = [
-      'Engine Sample11',
+      'Engine Sample 0111',
       'Demonstrates collision response against multiple solid objects',
       'Use Arrow keys to move through the play area',
       'The same loop tests the player against every blocking rectangle',

@@ -49,7 +49,7 @@ export default class LagPacketLossSimulationScene extends Scene {
   render(renderer) {
     const state = this.client.getState();
     drawFrame(renderer, theme, [
-      'Engine Sample156',
+      'Engine Sample 01156',
       'Lag, jitter, and loss simulation stay reusable for multiplayer testing instead of being scene hacks.',
       this.status,
     ]);

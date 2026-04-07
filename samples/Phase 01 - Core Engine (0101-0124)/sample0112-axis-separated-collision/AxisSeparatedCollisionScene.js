@@ -101,7 +101,7 @@ export default class AxisSeparatedCollisionScene extends Scene {
     renderer.strokeRect(this.player.x, this.player.y, this.player.width, this.player.height, '#ffffff', 1);
 
     const lines = [
-      'Engine Sample12',
+      'Engine Sample 0112',
       'Demonstrates axis-separated collision resolution',
       'Use Arrow keys to move and slide along obstacle edges',
       `X collision: ${this.hitX ? 'yes' : 'no'} | Y collision: ${this.hitY ? 'yes' : 'no'}`,

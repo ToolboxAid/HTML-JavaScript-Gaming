@@ -1,4 +1,4 @@
-# Sample019 - ECS Render System
+# Sample 0119 - ECS Render System
 
 ## Purpose
 Separates drawing into a render-focused ECS pass that uses shared renderable component data.

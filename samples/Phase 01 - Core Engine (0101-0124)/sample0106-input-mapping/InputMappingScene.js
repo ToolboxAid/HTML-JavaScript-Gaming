@@ -70,7 +70,7 @@ export default class InputMappingScene extends Scene {
         renderer.drawRect(drawX - half, drawY - half, this.size, this.size, theme.getColor('actorFill'));
 
         const lines = [
-            'Engine Sample06',
+            'Engine Sample 0106',
             'Demonstrates input mapping from physical keys to actions',
             'Use Arrow keys or WASD to move the box in four directions',
             'Observe multiple physical keys mapped to the same movement actions',

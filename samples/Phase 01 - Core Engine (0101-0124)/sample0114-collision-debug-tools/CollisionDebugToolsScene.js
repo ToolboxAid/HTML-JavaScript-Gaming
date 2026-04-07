@@ -108,7 +108,7 @@ export default class CollisionDebugToolsScene extends Scene {
     renderer.strokeRect(this.player.x, this.player.y, this.player.width, this.player.height, '#ffffff', 1);
 
     const lines = [
-      'Engine Sample14',
+      'Engine Sample 0114',
       'Demonstrates collision debug tools and live blocker inspection',
       'Use Arrow keys to move the player box',
       `Nearest candidate: ${this.candidateIndex >= 0 ? this.candidateIndex : 'none'} | Overlap: ${this.overlapIndex >= 0 ? this.overlapIndex : 'none'}`,

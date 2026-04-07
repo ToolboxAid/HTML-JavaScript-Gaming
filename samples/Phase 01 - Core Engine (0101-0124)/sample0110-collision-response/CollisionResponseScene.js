@@ -71,7 +71,7 @@ export default class CollisionResponseScene extends Scene {
     renderer.strokeRect(this.player.x, this.player.y, this.player.width, this.player.height, '#ffffff', 1);
 
     const lines = [
-      'Engine Sample10',
+      'Engine Sample 0110',
       'Demonstrates basic collision response against one solid block',
       'Use Arrow keys to move the player box',
       'Movement is reverted when the attempted step overlaps the block',

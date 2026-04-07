@@ -51,7 +51,7 @@ export default class ECSInputSystemScene extends Scene {
     const { width, height } = renderer.getCanvasSize();
 
     drawSceneFrame(renderer, theme, width, height, [
-      'Engine Sample17',
+      'Engine Sample 0117',
       'Demonstrates an ECS input system with inputControlled and speed components',
       'Use Arrow keys to move the player entity through the play area',
       'The scene queries component sets instead of hard-coding player fields',

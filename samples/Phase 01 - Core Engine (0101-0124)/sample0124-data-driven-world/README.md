@@ -1,4 +1,4 @@
-# Sample024 - Data-Driven World
+# Sample 0124 - Data-Driven World
 
 ## Purpose
 Introduces declarative scene setup by building the world from config data.

@@ -1,4 +1,4 @@
-# Sample009 - Collision (AABB)
+# Sample 0109 - Collision (AABB)
 
 ## Purpose
 Demonstrates axis-aligned bounding box (AABB) collision detection with visual debugging.

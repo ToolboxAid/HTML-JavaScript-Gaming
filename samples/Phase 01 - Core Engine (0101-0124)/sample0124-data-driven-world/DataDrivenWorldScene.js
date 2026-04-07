@@ -98,7 +98,7 @@ export default class DataDrivenWorldScene extends Scene {
     const { width, height } = renderer.getCanvasSize();
 
     drawSceneFrame(renderer, theme, width, height, [
-      'Engine Sample24',
+      'Engine Sample 0124',
       'Demonstrates a data-driven world loaded from config definitions',
       'Use Arrow keys to move the player entity through configured geometry',
       `Collision state: ${this.hitSolid ? 'blocked' : 'clear'}`,

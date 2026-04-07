@@ -29,7 +29,7 @@ export default class InterestManagementScene extends Scene {
     const visibleA = this.manager.filterForViewer(this.viewerA, [this.viewerA, ...this.entities], { radius: 170 });
     const visibleB = this.manager.filterForViewer(this.viewerB, [this.viewerB, ...this.entities], { radius: 170 });
     drawFrame(renderer, theme, [
-      'Engine Sample10',
+      'Engine Sample 0110',
       'Interest management filters replicated state by relevance instead of sending every entity to every client.',
       'Blue and green viewers receive different subsets of the same world.',
     ]);

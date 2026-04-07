@@ -1,4 +1,4 @@
-# Sample012 - Axis-Separated Collision
+# Sample 0112 - Axis-Separated Collision
 
 ## Purpose
 Improves collision response by resolving horizontal and vertical motion separately.

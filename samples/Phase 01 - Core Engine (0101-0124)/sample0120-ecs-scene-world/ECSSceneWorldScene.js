@@ -74,7 +74,7 @@ export default class ECSSceneWorldScene extends Scene {
     const { width, height } = renderer.getCanvasSize();
 
     drawSceneFrame(renderer, theme, width, height, [
-      'Engine Sample20',
+      'Engine Sample 0120',
       'Demonstrates a scene that delegates behavior to ECS-style systems',
       'Use Arrow keys to move the player entity through the world',
       `Collision state: ${this.hitSolid ? 'blocked' : 'clear'}`,

@@ -1,4 +1,4 @@
-# Sample010 - Collision Response
+# Sample 0110 - Collision Response
 
 ## Purpose
 Turns collision from detection into gameplay by preventing the player from moving through a blocking obstacle.

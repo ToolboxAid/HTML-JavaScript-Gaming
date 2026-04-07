@@ -53,7 +53,7 @@ export default class IntroScene extends Scene {
         renderer.drawRect(panelX, panelY, panelWidth, panelHeight, 'rgba(226, 224, 255, 0.18)');
         renderer.strokeRect(panelX, panelY, panelWidth, panelHeight, '#ed9700', 2);
 
-        renderer.drawText('Engine Sample05', this.textStartX, this.textStartY, {
+        renderer.drawText('Engine Sample 0105', this.textStartX, this.textStartY, {
             color: '#dddddd',
             font: '16px monospace',
         });

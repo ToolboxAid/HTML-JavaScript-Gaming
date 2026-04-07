@@ -67,7 +67,7 @@ export default class PlayScene extends Scene {
         renderer.strokeRect(this.bounds.x, this.bounds.y, this.bounds.width, this.bounds.height, '#ffd8a8', 3);
         renderer.drawCircle(this.actor.x, this.actor.y, this.actor.radius, theme.getColor('actorFill'));
 
-        renderer.drawText('Engine Sample05', this.textStartX, this.textStartY, {
+        renderer.drawText('Engine Sample 0105', this.textStartX, this.textStartY, {
             color: '#dddddd',
             font: '16px monospace',
         });

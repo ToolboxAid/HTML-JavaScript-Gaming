@@ -52,7 +52,7 @@ export default class DebugStatsScene extends Scene {
     const { width, height } = renderer.getCanvasSize();
 
     drawSceneFrame(renderer, theme, width, height, [
-      'Engine Sample23',
+      'Engine Sample 0123',
       'Demonstrates a live debug stats overlay for engine-style diagnostics',
       'Press KeyD to toggle the stats overlay on and off',
       'The stats block displays FPS, entity counts, and system information',

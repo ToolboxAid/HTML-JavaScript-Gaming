@@ -112,7 +112,7 @@ export default class CollisionScene extends Scene {
     );
 
     const lines = [
-      'Engine Sample09',
+      'Engine Sample 0109',
       'Demonstrates AABB collision detection and visual debug rendering',
       'Use Arrow keys to move the player box',
       'Player turns red while overlapping the static block',

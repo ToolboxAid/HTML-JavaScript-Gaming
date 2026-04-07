@@ -85,7 +85,7 @@ export default class TileCollisionScene extends Scene {
     renderer.strokeRect(this.player.x, this.player.y, this.player.width, this.player.height, '#ffffff', 1);
 
     const lines = [
-      'Engine Sample13',
+      'Engine Sample 0113',
       'Demonstrates tile-based collision using a grid of solid cells',
       'Use Arrow keys to move through open floor tiles',
       'Axis-separated resolution keeps the player inside valid tile space',

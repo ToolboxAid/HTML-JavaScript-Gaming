@@ -1,4 +1,4 @@
-# Sample023 - Debug Stats
+# Sample 0123 - Debug Stats
 
 ## Purpose
 Adds a reusable stats overlay for engine-style visibility into runtime behavior.

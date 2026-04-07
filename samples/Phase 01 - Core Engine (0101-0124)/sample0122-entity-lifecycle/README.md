@@ -1,4 +1,4 @@
-# Sample022 - Entity Lifecycle
+# Sample 0122 - Entity Lifecycle
 
 ## Purpose
 Introduces entity spawning, tagging, cleanup, and removal as a reusable lifecycle pattern.

@@ -69,7 +69,7 @@ export default class KeyboardMoveScene extends Scene {
     renderer.drawRect(this.box.x, this.box.y, this.box.width, this.box.height, theme.getColor('actorFill'));
 
     const lines = [
-      'Engine Sample02',
+      'Engine Sample 0102',
       'Demonstrates the keyboard input boundary',
       'Use Arrow keys to move the box in four directions',
       'Observe movement driven by input state, not DOM events in the scene',
