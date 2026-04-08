@@ -1,1 +1,1 @@
-BUILD PR: optional npm prehook for shared extraction guard.
+BUILD PR: add simple script to run shared extraction guard.

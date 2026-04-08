@@ -1,1 +1,1 @@
-prehook added correctly
+script added correctly

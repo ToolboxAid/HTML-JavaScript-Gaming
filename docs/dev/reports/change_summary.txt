@@ -1,1 +1,1 @@
-Optional guard auto-run via npm prehooks.
+Adds simple guard runner script.
