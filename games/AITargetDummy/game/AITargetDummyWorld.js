@@ -7,16 +7,9 @@ AITargetDummyWorld.js
 import AITargetDummyConfig from './AITargetDummyConfig.js';
 import AITargetDummyController from './AITargetDummyController.js';
 import { clamp } from '../../../src/engine/utils/math.js';
+import { safeNormalize } from '../../../src/shared/math/vectorNormalizeUtils.js';
 
 const MAX_STEP_SECONDS = 1 / 120;
-
-function safeNormalize(x, y) {
-  const length = Math.hypot(x, y);
-  if (length <= 1e-6) {
-    return { x: 0, y: 0, length: 0 };
-  }
-  return { x: x / length, y: y / length, length };
-}
 
 export default class AITargetDummyWorld {
   constructor({ width = 960, height = 720, config = AITargetDummyConfig } = {}) {

@@ -7,14 +7,7 @@ AITargetDummyController.js
 import AITargetDummyConfig from './AITargetDummyConfig.js';
 import AITargetDummyStateMachine from './AITargetDummyStateMachine.js';
 import { clamp } from '../../../src/engine/utils/math.js';
-
-function safeNormalize(x, y) {
-  const length = Math.hypot(x, y);
-  if (length <= 1e-6) {
-    return { x: 0, y: 0, length: 0 };
-  }
-  return { x: x / length, y: y / length, length };
-}
+import { safeNormalize } from '../../../src/shared/math/vectorNormalizeUtils.js';
 
 export default class AITargetDummyController {
   constructor({ config = AITargetDummyConfig } = {}) {
