@@ -1,6 +1,1 @@
-MODEL: GPT-5.3-codex
-REASONING: high
-COMMAND:
-Execute docs/pr/BUILD_PR_SHARED_EXTRACTION_37_STRING_UTILS_TRIM_NORMALIZE_BATCH.md exactly.
-Edit only listed files.
-Package to <project folder>/tmp/BUILD_PR_SHARED_EXTRACTION_37_STRING_UTILS_TRIM_NORMALIZE_BATCH_delta.zip
+Execute exactly. No expansion.
