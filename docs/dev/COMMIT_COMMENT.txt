@@ -1,1 +1,1 @@
-BUILD PR: remove temporary alias bootstrap jsconfig after reverting to approved relative shared imports.
+BUILD PR: wire shared extraction guard into package.json script.

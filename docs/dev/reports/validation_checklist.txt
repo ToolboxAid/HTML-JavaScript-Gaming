@@ -1,8 +1,1 @@
-SESSION VALIDATION GATE
-- Bundle type: BUILD
-- One PR purpose only: yes
-- Exact target file listed: yes
-- Exact fail-fast conditions listed: yes
-- No source edits allowed: yes
-- Scope minimized: yes
-- ZIP repo-structured and execution-ready: yes
+package.json script added correctly
