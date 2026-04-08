@@ -11,6 +11,7 @@ import {
   evaluateContractVersion,
   normalizeContractVersion
 } from "./contractVersioning.js";
+import { isObject } from "../../src/shared/utils/objectUtils.js";
 
 export const RENDER_CONTRACT_VERSION = "1.0.0";
 export const RENDER_CONTRACT_ID = "toolbox.render.contract";
@@ -97,10 +98,6 @@ function createContractError(stage, code, path, message, details = {}) {
 
 function pushError(errors, stage, code, path, message, details = {}) {
   errors.push(createContractError(stage, code, path, message, details));
-}
-
-function isObject(value) {
-  return value !== null && typeof value === "object" && !Array.isArray(value);
 }
 
 function validateEnvelope(document, expectedType, errors, pathPrefix) {

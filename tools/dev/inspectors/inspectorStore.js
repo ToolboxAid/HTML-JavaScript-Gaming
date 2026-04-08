@@ -12,10 +12,7 @@ const DEFAULT_LIMITS = Object.freeze({
 });
 
 import { asArray, asObject, sanitizeText } from "../../../src/engine/debug/inspectors/shared/inspectorUtils.js";
-
-function isObject(value) {
-  return value !== null && typeof value === "object" && !Array.isArray(value);
-}
+import { isObject } from "../../../src/shared/utils/objectUtils.js";
 
 function asFinite(value, fallback = 0) {
   return Number.isFinite(value) ? Number(value) : fallback;

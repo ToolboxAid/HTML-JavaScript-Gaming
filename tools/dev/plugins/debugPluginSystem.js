@@ -6,10 +6,7 @@ debugPluginSystem.js
 */
 
 import { asArray, asObject, sanitizeText } from "../../../src/engine/debug/inspectors/shared/inspectorUtils.js";
-
-function isObject(value) {
-  return value !== null && typeof value === "object" && !Array.isArray(value);
-}
+import { isObject } from "../../../src/shared/utils/objectUtils.js";
 
 function asPositiveInt(value, fallback) {
   const normalized = Number.isFinite(value) ? Math.floor(Number(value)) : fallback;

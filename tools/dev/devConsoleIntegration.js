@@ -56,10 +56,7 @@ const DEFAULT_PLUGIN_CAPABILITIES = Object.freeze([
 ]);
 
 import { sanitizeText } from "../../src/engine/debug/inspectors/shared/inspectorUtils.js";
-
-function isObject(value) {
-  return value !== null && typeof value === "object" && !Array.isArray(value);
-}
+import { isObject } from "../../src/shared/utils/objectUtils.js";
 
 function cloneJson(value) {
   if (typeof structuredClone === "function") {

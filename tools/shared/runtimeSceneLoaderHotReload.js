@@ -6,6 +6,7 @@ runtimeSceneLoaderHotReload.js
 */
 import { normalizeProjectRelativePath } from "./projectAssetRegistry.js";
 import { runRenderContractRuntimePath } from "./renderPipelineContract.js";
+import { isObject } from "../../src/shared/utils/objectUtils.js";
 
 const DOMAIN_ORDER = Object.freeze(["parallax", "tilemap", "sprite", "vector", "overlay"]);
 
@@ -36,10 +37,6 @@ function cloneJson(value) {
     return structuredClone(value);
   }
   return JSON.parse(JSON.stringify(value));
-}
-
-function isObject(value) {
-  return value !== null && typeof value === "object" && !Array.isArray(value);
 }
 
 function createStructuredReport(level, stage, code, message, details = {}) {

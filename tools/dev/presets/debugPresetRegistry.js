@@ -6,6 +6,7 @@ debugPresetRegistry.js
 */
 
 import { sanitizeText } from "../../../src/engine/debug/inspectors/shared/inspectorUtils.js";
+import { isObject } from "../../../src/shared/utils/objectUtils.js";
 
 function asStringArray(value) {
   if (!Array.isArray(value)) {
@@ -19,10 +20,6 @@ function asStringArray(value) {
     }
   });
   return Array.from(unique.values());
-}
-
-function isObject(value) {
-  return value !== null && typeof value === "object" && !Array.isArray(value);
 }
 
 function cloneJson(value) {

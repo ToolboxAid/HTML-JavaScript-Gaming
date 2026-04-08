@@ -5,8 +5,12 @@ David Quesenberry
 objectUtils.js
 */
 
+function isObject(value) {
+  return value !== null && typeof value === 'object' && !Array.isArray(value);
+}
+
 function isPlainObject(value) {
   return !!value && typeof value === 'object' && !Array.isArray(value);
 }
 
-export { isPlainObject };
+export { isObject, isPlainObject };

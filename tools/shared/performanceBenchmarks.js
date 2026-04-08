@@ -4,16 +4,13 @@ David Quesenberry
 04/05/2026
 performanceBenchmarks.js
 */
+import { isObject } from "../../src/shared/utils/objectUtils.js";
 
 export const PERFORMANCE_BENCHMARK_CONTRACT_ID = "toolbox.performance.benchmarks";
 export const PERFORMANCE_BENCHMARK_CONTRACT_VERSION = "1.0.0";
 
 function sanitizeText(value) {
   return typeof value === "string" ? value.trim() : "";
-}
-
-function isObject(value) {
-  return value !== null && typeof value === "object" && !Array.isArray(value);
 }
 
 function normalizeNumber(value, fallback = 0) {

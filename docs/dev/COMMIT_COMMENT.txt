@@ -1,1 +1,1 @@
-BUILD PR: centralize debug config helpers across main entry points.
+centralize isObject
