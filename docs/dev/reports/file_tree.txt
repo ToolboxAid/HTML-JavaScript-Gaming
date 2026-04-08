@@ -1,1 +1,11 @@
-src/shared populated per target map
+docs/
+  pr/
+    PLAN_PR_SHARED_EXTRACTION_02_EXECUTABLE_TARGET_MAP.md
+  dev/
+    codex_commands.md
+    commit_comment.txt
+    next_command.txt
+    reports/
+      change_summary.txt
+      validation_checklist.txt
+      file_tree.txt

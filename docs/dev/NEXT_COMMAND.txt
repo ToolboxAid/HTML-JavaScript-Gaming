@@ -1,1 +1,8 @@
-Proceed to APPLY_PR after validation.
+Next step:
+Create an executable replacement for PLAN_PR_SHARED_EXTRACTION_02_TARGET_MAP with:
+1. exact source file list
+2. exact destination file list
+3. exact source->destination mapping
+4. exact import-update targets
+
+Do not issue another BUILD until all four are explicit.

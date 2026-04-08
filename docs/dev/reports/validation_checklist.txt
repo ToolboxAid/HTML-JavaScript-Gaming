@@ -1,4 +1,15 @@
-- Matches target map
-- No duplicates
-- Imports updated
-- Build passes
+SESSION VALIDATION GATE
+- Bundle type: PLAN
+- One PR purpose only: yes
+- BUILD command included: no
+- Repo scan requested: no
+- Vague execution language present: no
+- Code claims made: no
+- Start-of-day directories touched: no
+- ZIP repo-structured: yes
+
+PLAN-SPECIFIC CHECKS
+- Exact blocker captured: yes
+- Next required artifact defined: yes
+- Non-goals explicit: yes
+- Prevents premature BUILD retry: yes
