@@ -1,11 +1,10 @@
 MODEL: GPT-5.3-codex
 REASONING: high
 COMMAND:
-Execute docs/pr/BUILD_PR_SHARED_EXTRACTION_38_CODE_TO_LETTER_HIGHSCORE_BATCH.md exactly.
+Execute docs/pr/BUILD_PR_SHARED_EXTRACTION_44_TO_RESULT_DEBUG_COMMAND_BATCH.md exactly.
 Edit only these files:
-- src/shared/utils/initialsEntryUtils.js (new file)
-- games/Asteroids/systems/AsteroidsInitialsEntry.js
-- games/SpaceDuel/game/SpaceDuelInitialsEntry.js
-- games/SpaceInvaders/game/SpaceInvadersInitialsEntry.js
+- src/engine/debug/shared/debugCommandResultUtils.js (new file)
+- src/engine/debug/inspectors/commands/registerInspectorCommands.js
+- tools/dev/presets/debugPresetApplier.js
 Do not expand scope.
-Package the delta output to <project folder>/tmp/BUILD_PR_SHARED_EXTRACTION_38_CODE_TO_LETTER_HIGHSCORE_BATCH_delta.zip
+Package the delta output to <project folder>/tmp/BUILD_PR_SHARED_EXTRACTION_44_TO_RESULT_DEBUG_COMMAND_BATCH_delta.zip

@@ -10,16 +10,7 @@ import {
   asObject,
   sanitizeText
 } from "../shared/inspectorUtils.js";
-
-function toResult(status, title, code, lines, details = {}) {
-  return {
-    status: status === "failed" ? "failed" : "ready",
-    title,
-    code,
-    lines: asArray(lines).map((line) => String(line)),
-    details: asObject(details)
-  };
-}
+import { toResult } from "../../shared/debugCommandResultUtils.js";
 
 function readHostStatus(host) {
   return host && typeof host.getStatus === "function"

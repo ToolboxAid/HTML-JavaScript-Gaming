@@ -1,1 +1,1 @@
-BUILD PR: centralize codeToLetter across exact initials-entry batch.
+BUILD PR: centralize toResult across exact debug-command batch.

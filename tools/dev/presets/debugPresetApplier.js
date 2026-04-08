@@ -6,9 +6,9 @@ debugPresetApplier.js
 */
 
 import { sanitizeText } from "../../../src/engine/debug/inspectors/shared/inspectorUtils.js";
-import { isObject } from "../../../src/shared/utils/objectUtils.js";
 import { cloneJson } from "../../../src/shared/utils/jsonUtils.js";
 import { getRuntimeAndRegistry } from "../shared/runtimeRegistryUtils.js";
+import { toResult } from "../../../src/engine/debug/shared/debugCommandResultUtils.js";
 
 function getAllPanels(panelRegistry) {
   const panels = panelRegistry.getOrderedPanels(true);
@@ -36,16 +36,6 @@ function toPanelMap(panelRegistry) {
     }
   });
   return map;
-}
-
-function toResult(status, title, code, lines, details = {}) {
-  return {
-    status: status === "failed" ? "failed" : "ready",
-    title,
-    code,
-    lines: Array.isArray(lines) ? lines : [],
-    details: isObject(details) ? details : {}
-  };
 }
 
 export class DebugPresetApplier {
