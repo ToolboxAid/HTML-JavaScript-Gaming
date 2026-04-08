@@ -20,10 +20,10 @@ import {
 } from './events.js';
 import { createPromotionStateSnapshot } from '../../shared/state/createPromotionStateSnapshot.js';
 import { asFiniteNumber, asPositiveInteger } from '../../shared/utils/numberUtils.js';
+import { isPlainObject } from '../../shared/utils/objectUtils.js';
 import {
   cloneDeep,
   createReadonlyClone,
-  isPlainObject,
   mergeDeep
 } from './utils.js';
 

@@ -1,1 +1,1 @@
-Built the next executable shared-extraction step by narrowing to the two remaining advanced modules that still carried local asPositiveInteger definitions in the repo snapshot used for this workflow.
+Built the next executable shared-extraction step for isPlainObject, constrained to the two advanced modules only and guarded by a fail-fast check on the existing shared object helper.

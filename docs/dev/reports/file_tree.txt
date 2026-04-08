@@ -1,6 +1,6 @@
 docs/
   pr/
-    BUILD_PR_SHARED_EXTRACTION_07_AS_POSITIVE_INTEGER_ADVANCED_ONLY.md
+    BUILD_PR_SHARED_EXTRACTION_08_IS_PLAIN_OBJECT_ADVANCED_ONLY.md
   dev/
     codex_commands.md
     commit_comment.txt
