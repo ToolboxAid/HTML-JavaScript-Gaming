@@ -1,1 +1,1 @@
-BUILD PR: remove remaining network_sample_c number helper duplicates and use shared number utils.
+BUILD PR: consolidate shared-helper imports in network_sample_c only.
