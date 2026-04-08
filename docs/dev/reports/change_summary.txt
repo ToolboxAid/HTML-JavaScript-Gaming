@@ -1,4 +1,5 @@
 CHANGE SUMMARY
 
-- preparing shared extraction plan
-- no code changes
+- captured the exact-target-map requirement before first helper move
+- preserved small-step workflow
+- prevented vague BUILD scope

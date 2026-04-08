@@ -1,8 +1,8 @@
-BUILD: shared extraction (01) scaffold
+PLAN: shared extraction (02) target map preparation
 
-- created src/shared structure
-- no file moves
-- no code changes
+- captured required exact-target mapping before first helper move
+- identified initial helper buckets
+- prevented vague BUILD scope
 
 next:
-- move duplicate helpers into shared
+- BUILD_PR_SHARED_EXTRACTION_02_EXACT_HELPER_MOVE once exact files are named
