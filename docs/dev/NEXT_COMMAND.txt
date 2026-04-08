@@ -1,1 +1,1 @@
-Next batch
+Next: continue duplicate-family extraction from the provided duplicate report.

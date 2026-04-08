@@ -1,1 +1,1 @@
-batch
+Execution-grade batch for codeToLetter using the exact duplicate-report file list.

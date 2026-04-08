@@ -4,16 +4,9 @@ David Quesenberry
 03/25/2026
 SpaceInvadersInitialsEntry.js
 */
+import { codeToLetter } from '../../../src/shared/utils/initialsEntryUtils.js';
+
 const KEY_CODES = Array.from({ length: 26 }).map((_, index) => `Key${String.fromCharCode(65 + index)}`);
-
-function codeToLetter(code) {
-  if (!code || !code.startsWith('Key')) {
-    return null;
-  }
-
-  const letter = code.slice(3, 4).toUpperCase();
-  return /^[A-Z]$/.test(letter) ? letter : null;
-}
 
 export default class SpaceInvadersInitialsEntry {
   constructor() {
