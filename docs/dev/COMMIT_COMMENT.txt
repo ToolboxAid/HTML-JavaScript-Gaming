@@ -1,1 +1,1 @@
-BUILD PR: centralize getRuntimeAndRegistry across exact command-pack/preset batch.
+BUILD PR: centralize codeToLetter across exact initials-entry batch.
