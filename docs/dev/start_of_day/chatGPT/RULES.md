@@ -26,7 +26,17 @@ Default:
 - combine commit-ready docs with BUILD bundles when possible
 
 Do not:
-- create separate commit-only ZIPs unless APPLY is actually required
+- create separate commit-only ZIPs
+- create PLAN-only ZIPs unless fail-fast requires a non-executable correction step
+- create APPLY-only ZIPs unless the user explicitly asks for a closeout/acceptance bundle
+
+Prefer:
+- a single executable BUILD ZIP that includes:
+  - BUILD doc
+  - Codex command
+  - commit comment
+  - next command
+  - reports
 
 APPLY remains:
 - docs-only

@@ -12,7 +12,11 @@
 
 ## Operating Model
 ### When the user asks for a plan
-Create a docs-only PLAN bundle and package it for commit.
+Prefer folding planning detail into the next executable BUILD bundle instead of creating a separate PLAN-only ZIP.
+
+Only create a docs-only PLAN bundle when:
+- the user explicitly asks for it, or
+- fail-fast prevents an executable BUILD and a correction step is required
 
 ### When the user asks for the next command for Codex
 Produce a BUILD bundle with:
@@ -29,11 +33,14 @@ BUILD bundles should include:
 - next command
 - reports
 
-Avoid splitting these into separate ZIPs when the same BUILD bundle can carry them.
+Prefer one executable BUILD ZIP instead of splitting work across PLAN-only, APPLY-only, or commit-only ZIPs.
 
 ### When Codex reports code is complete
-Produce an APPLY/acceptance bundle only.
-Do not send Codex another command unless more code is actually required.
+Do not create an APPLY-only bundle by default.
+
+Only produce APPLY/acceptance docs when:
+- the user explicitly asks for closeout/acceptance docs, or
+- a formal acceptance step is genuinely needed
 
 ## Low-Token Mode
 Default to:
