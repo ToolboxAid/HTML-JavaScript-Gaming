@@ -152,8 +152,10 @@
 ---
 
 ## 3. Shared Foundation (`src/shared`)
-- [ ] numbers utilities consolidated
-- [ ] objects utilities consolidated
+- [x] core shared extraction pipeline executed
+- [x] enforcement guard in place
+- [x] numbers utilities consolidated
+- [x] objects utilities consolidated
 - [ ] arrays utilities consolidated
 - [ ] strings utilities consolidated
 - [ ] ids utilities consolidated
@@ -165,9 +167,9 @@
 - [ ] shared io/data/types stabilized
 
 ### Duplicate / Rename Focus
-- [ ] `asFiniteNumber` unified
-- [ ] `asPositiveInteger` unified
-- [ ] `isPlainObject` unified
+- [x] `asFiniteNumber` unified
+- [x] `asPositiveInteger` unified
+- [x] `isPlainObject` unified
 - [ ] `getState` variants bucketed by domain
 - [ ] `getSimulationState` naming established where needed
 - [ ] `getReplayState` naming established where needed
@@ -282,7 +284,7 @@
 - [ ] `samples/shared` boundaries defined and used
 - [ ] sample index normalized to phase structure
 - [ ] sample-to-engine dependency cleanup completed
-- [ ] sample duplicate helper usage reduced
+- [x] sample duplicate helper usage reduced
 - [ ] sample curriculum progression validated
 
 ### Sample Phase Tracks
