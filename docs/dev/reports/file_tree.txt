@@ -1,11 +1,1 @@
-docs/
-  pr/
-    BUILD_PR_SHARED_EXTRACTION_03_IMPORT_NORMALIZATION_RETRY.md
-  dev/
-    codex_commands.md
-    commit_comment.txt
-    next_command.txt
-    reports/
-      change_summary.txt
-      validation_checklist.txt
-      file_tree.txt
+docs/pr + docs/dev structure

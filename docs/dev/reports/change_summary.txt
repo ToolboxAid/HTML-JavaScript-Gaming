@@ -1,6 +1,1 @@
-Replaced the prior non-executable import-normalization BUILD with an execution-grade retry.
-This retry resolves the fail-fast blocker by supplying:
-- one unambiguous BUILD target
-- exact file list
-- exact old->new import replacements
-- explicit non-goals for helpers with no identified import targets
+Accepted retry BUILD for import normalization with narrowed scope.
