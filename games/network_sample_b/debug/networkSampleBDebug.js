@@ -6,17 +6,10 @@ networkSampleBDebug.js
 */
 
 import { createNetworkDebugPluginDefinition } from "../../../engine/debug/network/index.js";
+import { asArray, asObject } from "../../../src/engine/debug/inspectors/shared/inspectorUtils.js";
 
 function sanitizeText(value) {
   return typeof value === "string" ? value.trim() : "";
-}
-
-function asObject(value) {
-  return value !== null && typeof value === "object" && !Array.isArray(value) ? value : {};
-}
-
-function asArray(value) {
-  return Array.isArray(value) ? value : [];
 }
 
 function asNumber(value, fallback = 0) {

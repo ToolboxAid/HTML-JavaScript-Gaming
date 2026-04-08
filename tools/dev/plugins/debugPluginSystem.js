@@ -5,18 +5,10 @@ David Quesenberry
 debugPluginSystem.js
 */
 
-import { sanitizeText } from "../../../src/engine/debug/inspectors/shared/inspectorUtils.js";
+import { asArray, asObject, sanitizeText } from "../../../src/engine/debug/inspectors/shared/inspectorUtils.js";
 
 function isObject(value) {
   return value !== null && typeof value === "object" && !Array.isArray(value);
-}
-
-function asArray(value) {
-  return Array.isArray(value) ? value : [];
-}
-
-function asObject(value) {
-  return isObject(value) ? value : {};
 }
 
 function asPositiveInt(value, fallback) {

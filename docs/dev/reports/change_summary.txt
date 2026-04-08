@@ -1,1 +1,1 @@
-Batch extraction for sanitizeText across tools/dev/shared debug consumers only.
+Batch extraction for asObject/asArray across selected debug consumers only.

@@ -11,18 +11,10 @@ const DEFAULT_LIMITS = Object.freeze({
   eventStreamMax: 300
 });
 
-import { sanitizeText } from "../../../src/engine/debug/inspectors/shared/inspectorUtils.js";
+import { asArray, asObject, sanitizeText } from "../../../src/engine/debug/inspectors/shared/inspectorUtils.js";
 
 function isObject(value) {
   return value !== null && typeof value === "object" && !Array.isArray(value);
-}
-
-function asObject(value) {
-  return isObject(value) ? value : {};
-}
-
-function asArray(value) {
-  return Array.isArray(value) ? value : [];
 }
 
 function asFinite(value, fallback = 0) {
