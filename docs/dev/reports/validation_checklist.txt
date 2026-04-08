@@ -1,1 +1,8 @@
-Unused imports removed only.
+SESSION VALIDATION GATE
+- Bundle type: BUILD
+- One PR purpose only: yes
+- Exact target files listed: yes
+- Fail-fast rule explicit: yes
+- No consumer changes allowed: yes
+- No guessing: yes
+- ZIP repo-structured and execution-ready: yes
