@@ -7,6 +7,7 @@ NetworkSampleAScene.js
 import { Scene } from "../../../engine/scenes/index.js";
 import FakeLoopbackNetworkModel from "./FakeLoopbackNetworkModel.js";
 import { clamp } from "../../../src/engine/utils/math.js";
+import { asPositiveNumber } from "../../../src/shared/utils/numberUtils.js";
 
 const VIEW_WIDTH = 960;
 const VIEW_HEIGHT = 720;
@@ -18,14 +19,6 @@ const MUTED_TEXT_COLOR = "#94a3b8";
 const GOOD_COLOR = "#22c55e";
 const WARN_COLOR = "#f59e0b";
 const BAD_COLOR = "#ef4444";
-
-function asPositiveNumber(value, fallback) {
-  const numeric = Number(value);
-  if (!Number.isFinite(numeric) || numeric <= 0) {
-    return fallback;
-  }
-  return numeric;
-}
 
 function getInputEdgePress(input, keyCode, edgeState) {
   if (!input || typeof input.isDown !== "function" || typeof keyCode !== "string") {

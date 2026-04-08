@@ -6,16 +6,9 @@ FakeHostClientNetworkModel.js
 */
 import FakeLoopbackNetworkModel from "../../network_sample_a/game/FakeLoopbackNetworkModel.js";
 import { clamp } from "../../../src/engine/utils/math.js";
+import { asPositiveNumber } from "../../../src/shared/utils/numberUtils.js";
 
 const MAX_TRACE_EVENTS = 120;
-
-function asPositiveNumber(value, fallback) {
-  const numeric = Number(value);
-  if (!Number.isFinite(numeric) || numeric <= 0) {
-    return fallback;
-  }
-  return numeric;
-}
 
 function toConnectionState(peers) {
   const source = Array.isArray(peers) ? peers : [];

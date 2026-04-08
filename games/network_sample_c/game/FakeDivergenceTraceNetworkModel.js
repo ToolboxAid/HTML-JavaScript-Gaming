@@ -6,6 +6,7 @@ FakeDivergenceTraceNetworkModel.js
 */
 import ReconciliationLayerAdapter from "./ReconciliationLayerAdapter.js";
 import { clamp } from "../../../src/engine/utils/math.js";
+import { asPositiveNumber } from "../../../src/shared/utils/numberUtils.js";
 
 const MAX_TRACE_EVENTS = 160;
 const MAX_TIMELINE_EVENTS = 80;
@@ -116,14 +117,6 @@ function cloneInputRecord(record) {
     rewindPrepareCount: Number(source.rewindPrepareCount || 0),
     entityMutations: clonedEntityMutations
   };
-}
-
-function asPositiveNumber(value, fallback) {
-  const numeric = Number(value);
-  if (!Number.isFinite(numeric) || numeric <= 0) {
-    return fallback;
-  }
-  return numeric;
 }
 
 function moveToward(currentValue, targetValue, maxDelta) {

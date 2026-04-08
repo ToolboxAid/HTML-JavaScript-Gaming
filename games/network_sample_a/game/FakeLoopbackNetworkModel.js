@@ -6,16 +6,9 @@ FakeLoopbackNetworkModel.js
 */
 
 import { clamp } from '../../../src/engine/utils/math.js';
+import { asPositiveNumber } from '../../../src/shared/utils/numberUtils.js';
 
 const MAX_TRACE_EVENTS = 80;
-
-function asPositiveNumber(value, fallback) {
-  const numeric = Number(value);
-  if (!Number.isFinite(numeric) || numeric <= 0) {
-    return fallback;
-  }
-  return numeric;
-}
 
 function normalizePhase(value) {
   const normalized = typeof value === "string" ? value.trim().toLowerCase() : "";

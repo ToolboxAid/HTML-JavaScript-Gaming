@@ -15,7 +15,16 @@ function asPositiveInteger(value, fallback = 1) {
   return numeric >= 1 ? numeric : fallback;
 }
 
+function asPositiveNumber(value, fallback) {
+  const numeric = Number(value);
+  if (!Number.isFinite(numeric) || numeric <= 0) {
+    return fallback;
+  }
+  return numeric;
+}
+
 export {
   asFiniteNumber,
-  asPositiveInteger
+  asPositiveInteger,
+  asPositiveNumber
 };

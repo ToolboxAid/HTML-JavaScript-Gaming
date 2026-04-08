@@ -6,6 +6,7 @@ NetworkSampleCScene.js
 */
 import { Scene } from "../../../engine/scenes/index.js";
 import FakeDivergenceTraceNetworkModel from "./FakeDivergenceTraceNetworkModel.js";
+import { asPositiveNumber } from "../../../src/shared/utils/numberUtils.js";
 
 const VIEW_WIDTH = 960;
 const VIEW_HEIGHT = 720;
@@ -17,14 +18,6 @@ const MUTED_TEXT = "#92a8c0";
 const GOOD_COLOR = "#34d399";
 const WARN_COLOR = "#fbbf24";
 const BAD_COLOR = "#f87171";
-
-function asPositiveNumber(value, fallback) {
-  const numeric = Number(value);
-  if (!Number.isFinite(numeric) || numeric <= 0) {
-    return fallback;
-  }
-  return numeric;
-}
 
 function getEdgePress(input, code, edgeState) {
   if (!input || typeof input.isDown !== "function") {
