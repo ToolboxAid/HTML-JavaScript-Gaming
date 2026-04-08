@@ -1,4 +1,1 @@
-Produced APPLY/acceptance docs for the completed shared helper extraction PR.
-Accepted based on clean execution report.
-No new code requested.
-No new BUILD command included.
+Defined import normalization plan.

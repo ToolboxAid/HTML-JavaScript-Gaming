@@ -1,1 +1,1 @@
-APPLY PR: accept shared helper extraction exact helper move after clean Codex execution.
+PLAN PR: normalize helper imports to src/shared.

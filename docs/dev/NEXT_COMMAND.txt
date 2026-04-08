@@ -1,3 +1,1 @@
-Next step:
-Select the next PLAN or BUILD in the repo workflow.
-This PR is closed at APPLY.
+Next: BUILD_PR_SHARED_EXTRACTION_03_IMPORT_NORMALIZATION
