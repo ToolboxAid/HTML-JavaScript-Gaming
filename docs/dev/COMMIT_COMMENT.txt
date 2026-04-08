@@ -1,11 +1,7 @@
-APPLY: accept repo structure normalization (02) import switch
+APPLY: finalize repo structure normalization (03) remove legacy engine directory
 
-- updated imports from engine/ to src/engine/
-- confirmed 532 files updated
-- confirmed 0 remaining legacy engine import specifiers
-- no logic changes beyond import path normalization
-- original engine/ retained for rollback safety
+- removed root-level engine/ directory
+- src/engine/ is now the only engine location
 
 next:
-- validate runtime stability
-- remove legacy engine/ directory in final cutover PR
+- shared extraction
