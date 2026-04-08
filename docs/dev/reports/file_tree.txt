@@ -1,6 +1,6 @@
 docs/
   pr/
-    BUILD_PR_SHARED_EXTRACTION_15B_ALIAS_CONFIG_BOOTSTRAP_JSCONFIG_ONLY.md
+    BUILD_PR_SHARED_EXTRACTION_16_ALIAS_IMPORTS_NETWORK_SAMPLE_C.md
   dev/
     codex_commands.md
     commit_comment.txt

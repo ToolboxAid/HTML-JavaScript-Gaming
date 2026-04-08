@@ -5,7 +5,7 @@ David Quesenberry
 StateTimelineBuffer.js
 */
 
-import { asPositiveInteger } from "../../../src/shared/utils/numberUtils.js";
+import { asPositiveInteger } from "@shared/utils/numberUtils.js";
 
 function normalizeFrameId(frameId) {
   const numeric = Number(frameId);

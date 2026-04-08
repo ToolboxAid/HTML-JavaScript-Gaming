@@ -1,1 +1,1 @@
-Replaced the blocked alias BUILD with an execution-grade retry that explicitly creates a minimal jsconfig.json and switches only the two advanced files to @shared imports.
+Built the next executable alias rollout step, limited to network_sample_c only and assuming the existing @shared alias bootstrap.

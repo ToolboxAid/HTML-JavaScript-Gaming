@@ -1,1 +1,1 @@
-BUILD PR: add minimal jsconfig @shared alias bootstrap and switch advanced shared imports only.
+BUILD PR: switch network_sample_c shared helper imports to @shared alias only.
