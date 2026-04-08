@@ -1,7 +1,4 @@
-VALIDATION CHECKLIST
-
-[x] docs-only plan
-[x] no code changes
-[x] no file moves
-[x] exact-target requirement captured
-[x] next BUILD blocked until exact source files are named
+- Matches target map
+- No duplicates
+- Imports updated
+- Build passes

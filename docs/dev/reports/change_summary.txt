@@ -1,5 +1,1 @@
-CHANGE SUMMARY
-
-- captured the exact-target-map requirement before first helper move
-- preserved small-step workflow
-- prevented vague BUILD scope
+Helper extraction to shared.

@@ -1,8 +1,1 @@
-PLAN: shared extraction (02) target map preparation
-
-- captured required exact-target mapping before first helper move
-- identified initial helper buckets
-- prevented vague BUILD scope
-
-next:
-- BUILD_PR_SHARED_EXTRACTION_02_EXACT_HELPER_MOVE once exact files are named
+BUILD PR: exact helper move to src/shared using target map.
