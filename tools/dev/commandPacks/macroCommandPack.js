@@ -12,18 +12,9 @@ import {
   requireAtLeastArgs,
   requireNoArgs
 } from "./packUtils.js";
+import { createResult } from "./commandPackResultUtils.js";
 
 import { sanitizeText } from "../../../src/engine/debug/inspectors/shared/inspectorUtils.js";
-
-function createResult(status, title, lines, code, details = {}) {
-  return {
-    status: status === "failed" ? "failed" : "ready",
-    title,
-    lines: Array.isArray(lines) ? lines : [],
-    code,
-    details
-  };
-}
 
 const macroRegistry = new DebugMacroRegistry();
 registerStandardDebugMacros(macroRegistry, "standard");

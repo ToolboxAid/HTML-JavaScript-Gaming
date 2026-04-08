@@ -1,1 +1,1 @@
-BUILD PR: centralize asStringArray across exact preset/group-registry batch.
+BUILD PR: centralize createResult across exact command-pack batch.

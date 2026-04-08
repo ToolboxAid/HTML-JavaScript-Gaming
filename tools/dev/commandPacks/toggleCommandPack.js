@@ -8,16 +8,7 @@ toggleCommandPack.js
 import {
   requireNoArgs
 } from "./packUtils.js";
-
-function createResult(status, title, lines, code, details = {}) {
-  return {
-    status: status === "failed" ? "failed" : "ready",
-    title,
-    lines: Array.isArray(lines) ? lines : [],
-    code,
-    details
-  };
-}
+import { createResult } from "./commandPackResultUtils.js";
 
 function executePresetToggle(context, presetId) {
   if (typeof context?.executeConsoleCommand !== "function") {

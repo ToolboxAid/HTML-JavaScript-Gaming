@@ -1,10 +1,11 @@
 MODEL: GPT-5.3-codex
 REASONING: high
 COMMAND:
-Execute docs/pr/BUILD_PR_SHARED_EXTRACTION_41_AS_STRING_ARRAY_PRESET_BATCH.md exactly.
+Execute docs/pr/BUILD_PR_SHARED_EXTRACTION_42_CREATE_RESULT_COMMANDPACK_BATCH.md exactly.
 Edit only these files:
-- src/shared/utils/arrayUtils.js (only to add/export asStringArray if missing, or minimum export fix if present)
-- tools/dev/advanced/debugPanelGroupRegistry.js
-- tools/dev/presets/debugPresetRegistry.js
+- tools/dev/commandPacks/commandPackResultUtils.js (new file)
+- tools/dev/commandPacks/groupCommandPack.js
+- tools/dev/commandPacks/macroCommandPack.js
+- tools/dev/commandPacks/toggleCommandPack.js
 Do not expand scope.
-Package the delta output to <project folder>/tmp/BUILD_PR_SHARED_EXTRACTION_41_AS_STRING_ARRAY_PRESET_BATCH_delta.zip
+Package the delta output to <project folder>/tmp/BUILD_PR_SHARED_EXTRACTION_42_CREATE_RESULT_COMMANDPACK_BATCH_delta.zip
