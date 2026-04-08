@@ -4,16 +4,13 @@ import ImageAssetLoader from "../../engine/assets/ImageAssetLoader.js";
 import { prepareVectorGeometryRuntimeAsset } from "./vectorGeometryRuntime.js";
 import { ensureArray } from "../../src/shared/utils/arrayUtils.js";
 import { cloneJson } from "../../src/shared/utils/jsonUtils.js";
-
-function sanitizeText(value) {
-  return typeof value === "string" ? value.trim() : "";
-}
+import { trimSafe } from "../../src/shared/utils/stringUtils.js";
 
 function createReport(level, code, message) {
   return {
-    level: sanitizeText(level) || "info",
-    code: sanitizeText(code),
-    message: sanitizeText(message)
+    level: trimSafe(level) || "info",
+    code: trimSafe(code),
+    message: trimSafe(message)
   };
 }
 
@@ -36,7 +33,7 @@ function validatePackageManifest(manifest) {
   if (!Number.isFinite(pkg.version)) {
     throw new Error("Invalid packaged input: package.version must be numeric.");
   }
-  if (!sanitizeText(pkg.projectId)) {
+  if (!trimSafe(pkg.projectId)) {
     throw new Error("Invalid packaged input: package.projectId is required.");
   }
   if (!Array.isArray(pkg.assets) || pkg.assets.length === 0) {
@@ -51,8 +48,8 @@ function validatePackageManifest(manifest) {
 
   const seenIds = new Set();
   pkg.assets.forEach((asset, index) => {
-    const id = sanitizeText(asset?.id);
-    const type = sanitizeText(asset?.type);
+    const id = trimSafe(asset?.id);
+    const type = trimSafe(asset?.type);
     if (!id) {
       throw new Error(`Invalid packaged input: asset at index ${index} is missing id.`);
     }
@@ -66,16 +63,16 @@ function validatePackageManifest(manifest) {
   });
 
   pkg.roots.forEach((root, index) => {
-    const id = sanitizeText(root?.id);
+    const id = trimSafe(root?.id);
     if (!id || !seenIds.has(id)) {
       throw new Error(`Invalid packaged input: startup root at index ${index} does not resolve to a packaged asset.`);
     }
   });
 
   pkg.dependencies.forEach((dependency, index) => {
-    const from = sanitizeText(dependency?.from);
-    const to = sanitizeText(dependency?.to);
-    const type = sanitizeText(dependency?.type);
+    const from = trimSafe(dependency?.from);
+    const to = trimSafe(dependency?.to);
+    const type = trimSafe(dependency?.type);
     if (!from || !to || !type) {
       throw new Error(`Invalid packaged input: dependency at index ${index} is incomplete.`);
     }
@@ -88,12 +85,12 @@ function validatePackageManifest(manifest) {
 }
 
 function createRegistryDefinition(asset, source) {
-  const type = sanitizeText(asset?.type);
+  const type = trimSafe(asset?.type);
   const sourceType = type === "image" ? "image" : "data";
   return {
-    id: sanitizeText(asset?.id),
+    id: trimSafe(asset?.id),
     type: sourceType,
-    path: sanitizeText(asset?.path),
+    path: trimSafe(asset?.path),
     source
   };
 }
@@ -102,7 +99,7 @@ function toBootstrapData(packageManifest, loadedAssets) {
   const pkg = packageManifest.package;
   return {
     projectId: pkg.projectId,
-    startupAssetIds: pkg.roots.map((root) => sanitizeText(root.id)),
+    startupAssetIds: pkg.roots.map((root) => trimSafe(root.id)),
     assetTable: loadedAssets.reduce((accumulator, entry) => {
       accumulator[entry.id] = entry.asset;
       return accumulator;
@@ -112,12 +109,12 @@ function toBootstrapData(packageManifest, loadedAssets) {
 }
 
 function finalizeLoadedAsset(asset, loadedAsset) {
-  if (sanitizeText(asset?.type) !== "vector") {
+  if (trimSafe(asset?.type) !== "vector") {
     return loadedAsset;
   }
   return prepareVectorGeometryRuntimeAsset(loadedAsset, {
-    sourcePath: sanitizeText(asset?.path),
-    assetId: sanitizeText(asset?.id)
+    sourcePath: trimSafe(asset?.path),
+    assetId: trimSafe(asset?.id)
   });
 }
 
@@ -169,7 +166,7 @@ export async function loadPackagedProjectRuntime(options = {}) {
 
   for (let index = 0; index < pkg.assets.length; index += 1) {
     const asset = pkg.assets[index];
-    const assetId = sanitizeText(asset?.id);
+    const assetId = trimSafe(asset?.id);
     const resolvedSource = assetProvider(asset, manifest);
     if (resolvedSource === undefined || resolvedSource === null || resolvedSource === "") {
       reports.push(createReport("error", "MISSING_PACKAGED_ASSET", `Required packaged asset ${assetId} could not be resolved from package input.`));
@@ -189,7 +186,7 @@ export async function loadPackagedProjectRuntime(options = {}) {
       };
     }
     const finalizedAsset = finalizeLoadedAsset(asset, result.asset);
-    if (sanitizeText(asset?.type) === "vector") {
+    if (trimSafe(asset?.type) === "vector") {
       reports.push(createReport("info", "VECTOR_RUNTIME_READY", `Prepared vector geometry runtime data for ${assetId}.`));
     }
     loadedAssets.push({

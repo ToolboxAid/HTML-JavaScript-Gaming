@@ -9,21 +9,18 @@ import { buildDebugVisualizationLayer, summarizeDebugVisualizationLayer } from "
 import { buildPerformanceProfiler, summarizePerformanceProfiler } from "./performanceProfiler.js";
 import { createVectorNativeTemplateDefinition } from "./vectorNativeTemplate.js";
 import { cloneJson } from "../../src/shared/utils/jsonUtils.js";
-
-function sanitizeText(value) {
-  return typeof value === "string" ? value.trim() : "";
-}
+import { normalizeString } from "../../src/shared/utils/stringUtils.js";
 
 function createReport(level, code, message) {
   return {
-    level: sanitizeText(level) || "info",
-    code: sanitizeText(code),
-    message: sanitizeText(message)
+    level: normalizeString(level) || "info",
+    code: normalizeString(code),
+    message: normalizeString(message)
   };
 }
 
 function remapPath(pathValue) {
-  return sanitizeText(pathValue).replace("templates/vector-native-arcade/", "games/vector-arcade-sample/");
+  return normalizeString(pathValue).replace("templates/vector-native-arcade/", "games/vector-arcade-sample/");
 }
 
 function remapRegistry(registry) {
@@ -84,7 +81,7 @@ function buildImageSource(asset) {
     image: {
       width: 960,
       height: 720,
-      src: sanitizeText(asset?.path)
+      src: normalizeString(asset?.path)
     },
     status: "provided-loaded"
   };
@@ -92,8 +89,8 @@ function buildImageSource(asset) {
 
 function createResolvePackagedAsset(assetSources) {
   return (asset) => {
-    const assetId = sanitizeText(asset?.id);
-    if (sanitizeText(asset?.type) === "image") {
+    const assetId = normalizeString(asset?.id);
+    if (normalizeString(asset?.type) === "image") {
       return buildImageSource(asset);
     }
     return assetSources[assetId] ? cloneJson(assetSources[assetId]) : null;
@@ -101,7 +98,7 @@ function createResolvePackagedAsset(assetSources) {
 }
 
 export function summarizeVectorTemplateSampleGame(result) {
-  const status = sanitizeText(result?.sampleGame?.status);
+  const status = normalizeString(result?.sampleGame?.status);
   if (status !== "ready") {
     return "Vector template sample game unavailable.";
   }
@@ -172,7 +169,7 @@ export async function buildVectorTemplateSampleGame(options = {}) {
   });
 
   const packageAssetIds = Array.isArray(packageResult.manifest?.package?.assets)
-    ? packageResult.manifest.package.assets.map((asset) => sanitizeText(asset?.id))
+    ? packageResult.manifest.package.assets.map((asset) => normalizeString(asset?.id))
     : [];
   const hasSpriteRuntimeDependency = packageAssetIds.some((id) => id.startsWith("sprite."));
 
