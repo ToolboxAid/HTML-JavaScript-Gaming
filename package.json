@@ -1,6 +1,7 @@
 {
   "type": "module",
   "scripts": {
+    "pretest": "node tools/dev/checkSharedExtractionGuard.mjs",
     "test": "node ./scripts/run-node-tests.mjs",
     "build:manifest": "node ./scripts/generate-sample-manifest.mjs",
     "check:shared-extraction-guard": "node tools/dev/checkSharedExtractionGuard.mjs"

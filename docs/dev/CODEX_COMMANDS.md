@@ -1,8 +1,7 @@
 MODEL: GPT-5.3-codex
 REASONING: high
 COMMAND:
-Execute docs/pr/BUILD_PR_SHARED_EXTRACTION_20_GUARD_SCRIPT_WIRING_PACKAGE_JSON.md exactly.
-Edit only:
-- package.json (only if it exists and has scripts)
-Fail fast if conditions are not met.
-Package delta to <project folder>/tmp/BUILD_PR_SHARED_EXTRACTION_20_GUARD_SCRIPT_WIRING_PACKAGE_JSON_delta.zip
+Execute docs/pr/BUILD_PR_SHARED_EXTRACTION_21_OPTIONAL_NPM_PREHOOK_GUARD.md exactly.
+Edit only package.json under defined rules.
+Fail fast if conditions not met.
+Package delta to <project folder>/tmp/BUILD_PR_SHARED_EXTRACTION_21_OPTIONAL_NPM_PREHOOK_GUARD_delta.zip

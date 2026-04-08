@@ -1,1 +1,1 @@
-Add npm script for guard execution.
+Optional guard auto-run via npm prehooks.
