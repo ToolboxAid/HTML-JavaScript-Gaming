@@ -1,1 +1,1 @@
-high score helpers centralized
+debug config helpers centralized

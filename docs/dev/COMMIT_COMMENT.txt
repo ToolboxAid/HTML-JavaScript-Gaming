@@ -1,1 +1,1 @@
-BUILD PR: centralize high score helpers across games.
+BUILD PR: centralize debug config helpers across main entry points.
