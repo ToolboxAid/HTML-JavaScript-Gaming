@@ -9,17 +9,7 @@ import {
   validateProjectManifest
 } from "./projectManifestContract.js";
 import { getProjectAdapter } from "./projectSystemAdapters.js";
-
-function cloneValue(value) {
-  if (typeof structuredClone === "function") {
-    return structuredClone(value);
-  }
-  return JSON.parse(JSON.stringify(value));
-}
-
-function safeString(value, fallback = "") {
-  return typeof value === "string" && value.trim() ? value.trim() : fallback;
-}
+import { cloneValue, safeString } from "./projectSystemValueUtils.js";
 
 function readStorage() {
   try {

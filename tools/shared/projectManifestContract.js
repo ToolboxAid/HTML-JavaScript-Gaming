@@ -1,15 +1,9 @@
 import { readSharedAssetHandoff, readSharedPaletteHandoff } from "./assetUsageIntegration.js";
+import { cloneValue } from "./projectSystemValueUtils.js";
 
 export const PROJECT_MANIFEST_SCHEMA = "html-js-gaming.project";
 export const PROJECT_MANIFEST_VERSION = 1;
 export const ACTIVE_PROJECT_STORAGE_KEY = "toolboxaid.projectSystem.activeManifest";
-
-function cloneValue(value) {
-  if (typeof structuredClone === "function") {
-    return structuredClone(value);
-  }
-  return JSON.parse(JSON.stringify(value));
-}
 
 function sanitizeString(value, fallback = "") {
   return typeof value === "string" && value.trim() ? value.trim() : fallback;

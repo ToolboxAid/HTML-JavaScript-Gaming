@@ -1,1 +1,1 @@
-BUILD PR: centralize stringifyValue across exact inspector/command-pack batch.
+BUILD PR: centralize project-system cloneValue/safeString helpers across exact tools/shared batch.

@@ -1,16 +1,6 @@
 import { createAssetRegistry } from "./projectAssetRegistry.js";
 import { createNewProject, ensureProjectShape, serializeProject } from "../Sprite Editor/modules/projectModel.js";
-
-function cloneValue(value) {
-  if (typeof structuredClone === "function") {
-    return structuredClone(value);
-  }
-  return JSON.parse(JSON.stringify(value));
-}
-
-function safeString(value, fallback = "") {
-  return typeof value === "string" && value.trim() ? value.trim() : fallback;
-}
+import { cloneValue, safeString } from "./projectSystemValueUtils.js";
 
 function readToolApi(globalKey) {
   return globalThis[globalKey] && typeof globalThis[globalKey] === "object"
