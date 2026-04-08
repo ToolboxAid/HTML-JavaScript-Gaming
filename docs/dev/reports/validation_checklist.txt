@@ -1,4 +1,14 @@
-- No duplicates
-- Imports updated
-- Shared utils populated
-- Build passes
+SESSION VALIDATION GATE
+- Bundle type: APPLY
+- One PR purpose only: yes
+- Codex command removed: yes
+- Fake code claims avoided: yes
+- Start-of-day directories touched: no
+- Repo scan requested: no
+- ZIP repo-structured: yes
+
+APPLY-SPECIFIC CHECKS
+- Scope limited to completed BUILD: yes
+- No new runtime work requested: yes
+- No new BUILD embedded: yes
+- Commit-ready docs included: yes

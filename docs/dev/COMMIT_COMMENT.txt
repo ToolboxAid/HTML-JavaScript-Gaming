@@ -1,1 +1,1 @@
-BUILD PR: executable helper extraction to shared (explicit file mapping).
+APPLY PR: accept shared helper extraction exact helper move after clean Codex execution.

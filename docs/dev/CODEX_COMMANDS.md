@@ -1,6 +1,8 @@
-MODEL: GPT-5.3-codex
-REASONING: high
-COMMAND:
-Execute EXACT helper moves as listed.
-Do not expand.
-Output zip to <project folder>/tmp/.
+# docs/dev/codex_commands.md
+
+No Codex command included.
+
+Reason:
+This is an APPLY bundle.
+Code execution was reported complete and clean.
+Do not send another BUILD for this same PR scope.

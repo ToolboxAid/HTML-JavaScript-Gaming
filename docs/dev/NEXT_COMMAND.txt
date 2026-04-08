@@ -1,1 +1,3 @@
-Proceed to APPLY_PR after validation.
+Next step:
+Select the next PLAN or BUILD in the repo workflow.
+This PR is closed at APPLY.

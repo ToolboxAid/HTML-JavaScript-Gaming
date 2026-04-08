@@ -1,3 +1,11 @@
-src/shared/utils/numberUtils.js
-src/shared/utils/objectUtils.js
-src/shared/state/getState.js
+docs/
+  pr/
+    APPLY_PR_SHARED_EXTRACTION_02_EXACT_HELPER_MOVE.md
+  dev/
+    codex_commands.md
+    commit_comment.txt
+    next_command.txt
+    reports/
+      change_summary.txt
+      validation_checklist.txt
+      file_tree.txt
