@@ -5,6 +5,7 @@ David Quesenberry
 FakeDivergenceTraceNetworkModel.js
 */
 import ReconciliationLayerAdapter from "./ReconciliationLayerAdapter.js";
+import { clamp } from "../../../src/engine/utils/math.js";
 
 const MAX_TRACE_EVENTS = 160;
 const MAX_TIMELINE_EVENTS = 80;
@@ -123,11 +124,6 @@ function asPositiveNumber(value, fallback) {
     return fallback;
   }
   return numeric;
-}
-
-function clamp(value, min, max) {
-  const numeric = Number.isFinite(value) ? Number(value) : min;
-  return Math.min(max, Math.max(min, numeric));
 }
 
 function moveToward(currentValue, targetValue, maxDelta) {

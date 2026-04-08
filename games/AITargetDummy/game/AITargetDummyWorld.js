@@ -6,12 +6,9 @@ AITargetDummyWorld.js
 */
 import AITargetDummyConfig from './AITargetDummyConfig.js';
 import AITargetDummyController from './AITargetDummyController.js';
+import { clamp } from '../../../src/engine/utils/math.js';
 
 const MAX_STEP_SECONDS = 1 / 120;
-
-function clamp(value, min, max) {
-  return Math.max(min, Math.min(max, value));
-}
 
 function safeNormalize(x, y) {
   const length = Math.hypot(x, y);

@@ -5,10 +5,7 @@ David Quesenberry
 GravityInputController.js
 */
 import { GamepadInputAdapter } from '../../../src/engine/input/index.js';
-
-function clamp(value, min, max) {
-  return Math.max(min, Math.min(max, value));
-}
+import { clamp } from '../../../src/engine/utils/math.js';
 
 export default class GravityInputController {
   constructor(input) {

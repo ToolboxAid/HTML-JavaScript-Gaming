@@ -4,6 +4,8 @@ David Quesenberry
 03/24/2026
 MultiBallChaosWorld.js
 */
+import { clamp } from '../../../src/engine/utils/math.js';
+
 const MAX_STEP_SECONDS = 1 / 120;
 
 const PRESET_ORDER = ['three', 'six', 'ten', 'fast'];
@@ -55,10 +57,6 @@ const BALL_COLORS = [
   '#f97316',
   '#2dd4bf',
 ];
-
-function clamp(value, min, max) {
-  return Math.max(min, Math.min(max, value));
-}
 
 function createBall(index, size, x, y, vx, vy) {
   return {

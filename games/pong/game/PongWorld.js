@@ -4,12 +4,10 @@ David Quesenberry
 03/24/2026
 PongWorld.js
 */
+import { clamp } from '../../../src/engine/utils/math.js';
+
 const MAX_STEP_SECONDS = 1 / 120;
 const PADDLE_MARGIN = 44;
-
-function clamp(value, min, max) {
-  return Math.max(min, Math.min(max, value));
-}
 
 function sign(value) {
   if (value === 0) {

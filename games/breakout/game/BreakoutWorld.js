@@ -4,6 +4,8 @@ David Quesenberry
 03/24/2026
 BreakoutWorld.js
 */
+import { clamp } from '../../../src/engine/utils/math.js';
+
 const MAX_STEP_SECONDS = 1 / 120;
 
 const DEFAULT_COLORS = [
@@ -14,10 +16,6 @@ const DEFAULT_COLORS = [
   '#1982c4',
   '#6a4c93',
 ];
-
-function clamp(value, min, max) {
-  return Math.max(min, Math.min(max, value));
-}
 
 function createBrickLayout(width) {
   const columns = 10;

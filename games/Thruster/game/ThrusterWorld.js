@@ -4,12 +4,10 @@ David Quesenberry
 03/24/2026
 ThrusterWorld.js
 */
+import { clamp } from '../../../src/engine/utils/math.js';
+
 const MAX_STEP_SECONDS = 1 / 120;
 const SHIP_RADIUS = 16;
-
-function clamp(value, min, max) {
-  return Math.max(min, Math.min(max, value));
-}
 
 function normalizeAngle(angle) {
   let next = angle;

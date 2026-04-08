@@ -1,4 +1,4 @@
-﻿/*
+/*
 Toolbox Aid
 David Quesenberry
 04/06/2026
@@ -6,6 +6,7 @@ NetworkSampleAScene.js
 */
 import { Scene } from "../../../engine/scenes/index.js";
 import FakeLoopbackNetworkModel from "./FakeLoopbackNetworkModel.js";
+import { clamp } from "../../../src/engine/utils/math.js";
 
 const VIEW_WIDTH = 960;
 const VIEW_HEIGHT = 720;
@@ -24,11 +25,6 @@ function asPositiveNumber(value, fallback) {
     return fallback;
   }
   return numeric;
-}
-
-function clamp(value, min, max) {
-  const numeric = Number.isFinite(value) ? Number(value) : min;
-  return Math.min(max, Math.max(min, numeric));
 }
 
 function getInputEdgePress(input, keyCode, edgeState) {

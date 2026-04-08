@@ -5,6 +5,8 @@ David Quesenberry
 SpaceInvadersWorld.js
 */
 import { SHIELD_BOMB_OVERLAY, SHIELD_FRAME } from './SpaceInvadersSpriteData.js';
+import { clamp } from '../../../src/engine/utils/math.js';
+
 const MAX_STEP_SECONDS = 1 / 120;
 const PLAYER_WIDTH = 51;
 const PLAYER_HEIGHT = 33;
@@ -49,10 +51,6 @@ const ROW_TYPES = [
   { type: 'squid', points: 10, width: 33, height: 24 },
   { type: 'squid', points: 10, width: 33, height: 24 },
 ];
-
-function clamp(value, min, max) {
-  return Math.max(min, Math.min(max, value));
-}
 
 function randomChoice(list, rng) {
   if (!list.length) {

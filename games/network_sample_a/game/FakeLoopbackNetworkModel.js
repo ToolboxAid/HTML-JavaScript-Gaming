@@ -1,16 +1,13 @@
-﻿/*
+/*
 Toolbox Aid
 David Quesenberry
 04/06/2026
 FakeLoopbackNetworkModel.js
 */
 
-const MAX_TRACE_EVENTS = 80;
+import { clamp } from '../../../src/engine/utils/math.js';
 
-function clamp(value, min, max) {
-  const numeric = Number.isFinite(value) ? Number(value) : min;
-  return Math.min(max, Math.max(min, numeric));
-}
+const MAX_TRACE_EVENTS = 80;
 
 function asPositiveNumber(value, fallback) {
   const numeric = Number(value);

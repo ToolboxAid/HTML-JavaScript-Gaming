@@ -1,1 +1,1 @@
-Batch extraction for asObject/asArray across selected debug consumers only.
+clamp core batch extraction

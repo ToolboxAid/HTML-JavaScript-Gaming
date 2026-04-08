@@ -4,11 +4,9 @@ David Quesenberry
 03/24/2026
 BouncingBallWorld.js
 */
-const MAX_STEP_SECONDS = 1 / 120;
+import { clamp } from '../../../src/engine/utils/math.js';
 
-function clamp(value, min, max) {
-  return Math.max(min, Math.min(max, value));
-}
+const MAX_STEP_SECONDS = 1 / 120;
 
 export default class BouncingBallWorld {
   constructor({ width = 960, height = 720 } = {}) {

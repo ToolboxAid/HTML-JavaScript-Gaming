@@ -5,10 +5,7 @@ David Quesenberry
 PacmanLitePlayerController.js
 */
 import { DIRS, canMoveDirection } from './PacmanLiteNavigator.js';
-
-function clamp(value, min, max) {
-  return Math.max(min, Math.min(max, value));
-}
+import { clamp } from '../../../src/engine/utils/math.js';
 
 function near(a, b, epsilon = 1.2) {
   return Math.abs(a - b) <= epsilon;

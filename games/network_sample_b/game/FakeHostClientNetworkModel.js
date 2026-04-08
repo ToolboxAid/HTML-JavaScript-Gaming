@@ -5,6 +5,7 @@ David Quesenberry
 FakeHostClientNetworkModel.js
 */
 import FakeLoopbackNetworkModel from "../../network_sample_a/game/FakeLoopbackNetworkModel.js";
+import { clamp } from "../../../src/engine/utils/math.js";
 
 const MAX_TRACE_EVENTS = 120;
 
@@ -14,11 +15,6 @@ function asPositiveNumber(value, fallback) {
     return fallback;
   }
   return numeric;
-}
-
-function clamp(value, min, max) {
-  const numeric = Number.isFinite(value) ? Number(value) : min;
-  return Math.min(max, Math.max(min, numeric));
 }
 
 function toConnectionState(peers) {

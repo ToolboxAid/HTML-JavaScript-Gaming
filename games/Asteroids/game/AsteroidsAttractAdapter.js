@@ -4,9 +4,7 @@ David Quesenberry
 03/25/2026
 AsteroidsAttractAdapter.js
 */
-function clamp(value, min, max) {
-  return Math.max(min, Math.min(max, value));
-}
+import { clamp } from '../../../src/engine/utils/math.js';
 
 function estimateTextWidth(text, fontPx) {
   return String(text ?? '').length * (fontPx * 0.62);

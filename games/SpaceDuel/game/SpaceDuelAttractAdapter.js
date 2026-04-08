@@ -4,9 +4,7 @@ David Quesenberry
 03/25/2026
 SpaceDuelAttractAdapter.js
 */
-function clamp(value, min, max) {
-  return Math.max(min, Math.min(max, value));
-}
+import { clamp } from '../../../src/engine/utils/math.js';
 
 export default class SpaceDuelAttractAdapter {
   constructor({ scene }) {

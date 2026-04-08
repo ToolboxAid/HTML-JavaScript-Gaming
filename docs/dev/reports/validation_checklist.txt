@@ -1,1 +1,1 @@
-asObject/asArray batch moved to shared helper with consumer imports updated.
+clamp centralized

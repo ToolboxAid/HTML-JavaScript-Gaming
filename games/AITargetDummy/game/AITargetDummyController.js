@@ -6,10 +6,7 @@ AITargetDummyController.js
 */
 import AITargetDummyConfig from './AITargetDummyConfig.js';
 import AITargetDummyStateMachine from './AITargetDummyStateMachine.js';
-
-function clamp(value, min, max) {
-  return Math.max(min, Math.min(max, value));
-}
+import { clamp } from '../../../src/engine/utils/math.js';
 
 function safeNormalize(x, y) {
   const length = Math.hypot(x, y);
