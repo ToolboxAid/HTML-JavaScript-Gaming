@@ -1,8 +1,8 @@
-PLAN: prepare shared extraction (duplicate helpers → src/shared)
+BUILD: shared extraction (01) scaffold
 
-- defined scope for identifying duplicate helpers
-- no code or structure changes
-- sets up next BUILD PR with exact file targets
+- created src/shared structure
+- no file moves
+- no code changes
 
 next:
-- BUILD_PR_SHARED_EXTRACTION_01_MOVE_HELPERS
+- move duplicate helpers into shared

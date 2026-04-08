@@ -1,5 +1,2 @@
-VALIDATION CHECKLIST
-
-[x] no code changes
-[x] no file moves
-[x] ready for BUILD with exact targets
+[ ] directories created
+[ ] no code changes
