@@ -1,1 +1,1 @@
-Built the next executable shared-extraction step for isPlainObject, constrained to the two advanced modules only and guarded by a fail-fast check on the existing shared object helper.
+Cleanup pass for unused imports after extraction steps.
