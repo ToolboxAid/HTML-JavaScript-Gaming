@@ -1,1 +1,1 @@
-BUILD PR: centralize clamp(value,min,max) across core game batch.
+BUILD PR: centralize high score helpers across games.

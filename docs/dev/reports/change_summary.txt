@@ -1,1 +1,1 @@
-clamp core batch extraction
+high score helpers centralized

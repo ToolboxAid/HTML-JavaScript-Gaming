@@ -5,6 +5,12 @@ David Quesenberry
 SpaceInvadersHighScoreService.js
 */
 import { StorageService } from '../../../src/engine/persistence/index.js';
+import {
+  sanitizeScore,
+  sanitizeInitials,
+  sanitizeRow,
+  sortRows,
+} from '../../../src/shared/utils/highScoreUtils.js';
 
 const DEFAULT_KEY = 'toolboxaid:games:space-invaders:high-score-table';
 const DEFAULT_ROWS = [
@@ -14,29 +20,6 @@ const DEFAULT_ROWS = [
   { initials: 'CPU', score: 700 },
   { initials: 'BOT', score: 500 },
 ];
-
-function sanitizeScore(value) {
-  if (!Number.isFinite(value)) {
-    return 0;
-  }
-  return Math.max(0, Math.trunc(value));
-}
-
-function sanitizeInitials(value) {
-  const letters = String(value ?? '').toUpperCase().replace(/[^A-Z]/g, '');
-  return (letters || 'AAA').slice(0, 3).padEnd(3, 'A');
-}
-
-function sanitizeRow(row) {
-  return {
-    initials: sanitizeInitials(row?.initials),
-    score: sanitizeScore(row?.score),
-  };
-}
-
-function sortRows(rows) {
-  return [...rows].sort((a, b) => b.score - a.score);
-}
 
 export default class SpaceInvadersHighScoreService {
   constructor({ key = DEFAULT_KEY, tableSize = 5, storage = null } = {}) {
