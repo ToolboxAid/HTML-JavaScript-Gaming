@@ -7,17 +7,11 @@ debugPluginSystem.js
 
 import { asArray, asObject, sanitizeText } from "../../../src/engine/debug/inspectors/shared/inspectorUtils.js";
 import { isObject } from "../../../src/shared/utils/objectUtils.js";
+import { cloneJson } from "../../../src/shared/utils/jsonUtils.js";
 
 function asPositiveInt(value, fallback) {
   const normalized = Number.isFinite(value) ? Math.floor(Number(value)) : fallback;
   return normalized > 0 ? normalized : fallback;
-}
-
-function cloneJson(value) {
-  if (typeof structuredClone === "function") {
-    return structuredClone(value);
-  }
-  return JSON.parse(JSON.stringify(value));
 }
 
 function toResult(status, code, message, details = {}) {

@@ -1,5 +1,6 @@
 import { inspectVectorAssetContract } from "./vector/vectorAssetContract.js";
 import { prepareVectorRenderables } from "./vector/vectorRenderPrep.js";
+import { cloneJson } from "../../src/shared/utils/jsonUtils.js";
 
 export const VECTOR_GEOMETRY_RUNTIME_POLICY = Object.freeze({
   contract: "vector-geometry-runtime/1",
@@ -24,10 +25,6 @@ export const VECTOR_GEOMETRY_RUNTIME_POLICY = Object.freeze({
 
 function sanitizeText(value) {
   return typeof value === "string" ? value.trim() : "";
-}
-
-function cloneJson(value) {
-  return JSON.parse(JSON.stringify(value));
 }
 
 function createReport(level, code, message) {

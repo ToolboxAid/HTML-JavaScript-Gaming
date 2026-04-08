@@ -1,13 +1,10 @@
 import AssetRegistry from "../../engine/assets/AssetRegistry.js";
 import AssetLoaderSystem from "../../engine/assets/AssetLoaderSystem.js";
 import ImageAssetLoader from "../../engine/assets/ImageAssetLoader.js";
+import { cloneJson } from "../../src/shared/utils/jsonUtils.js";
 
 function sanitizeText(value) {
   return typeof value === "string" ? value.trim() : "";
-}
-
-function cloneJson(value) {
-  return JSON.parse(JSON.stringify(value));
 }
 
 function createReport(level, code, message) {

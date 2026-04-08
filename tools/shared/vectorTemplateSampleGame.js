@@ -8,13 +8,10 @@ import { runPublishingPipeline, summarizePublishingPipeline } from "./publishing
 import { buildDebugVisualizationLayer, summarizeDebugVisualizationLayer } from "./debugVisualizationLayer.js";
 import { buildPerformanceProfiler, summarizePerformanceProfiler } from "./performanceProfiler.js";
 import { createVectorNativeTemplateDefinition } from "./vectorNativeTemplate.js";
+import { cloneJson } from "../../src/shared/utils/jsonUtils.js";
 
 function sanitizeText(value) {
   return typeof value === "string" ? value.trim() : "";
-}
-
-function cloneJson(value) {
-  return JSON.parse(JSON.stringify(value));
 }
 
 function createReport(level, code, message) {

@@ -5,15 +5,10 @@ David Quesenberry
 contractVersioning.js
 */
 
+import { cloneJson } from '../../src/shared/utils/jsonUtils.js';
+
 function sanitizeText(value) {
   return typeof value === "string" ? value.trim() : "";
-}
-
-function cloneJson(value) {
-  if (typeof structuredClone === "function") {
-    return structuredClone(value);
-  }
-  return JSON.parse(JSON.stringify(value));
 }
 
 function parseVersionParts(value) {

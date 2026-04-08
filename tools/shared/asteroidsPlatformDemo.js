@@ -9,13 +9,10 @@ import { buildDebugVisualizationLayer, summarizeDebugVisualizationLayer } from "
 import { buildPerformanceProfiler, summarizePerformanceProfiler } from "./performanceProfiler.js";
 import { runPublishingPipeline, summarizePublishingPipeline } from "./publishingPipeline.js";
 import { normalizeSvgToVectorAsset } from "./vector/vectorAssetBridge.js";
+import { cloneJson } from "../../src/shared/utils/jsonUtils.js";
 
 function sanitizeText(value) {
   return typeof value === "string" ? value.trim() : "";
-}
-
-function cloneJson(value) {
-  return JSON.parse(JSON.stringify(value));
 }
 
 function createReport(level, code, message) {

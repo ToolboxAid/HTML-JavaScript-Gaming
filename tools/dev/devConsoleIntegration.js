@@ -22,6 +22,8 @@ import { createToggleCommandPack } from "./commandPacks/toggleCommandPack.js";
 import { createValidationCommandPack } from "./commandPacks/validationCommandPack.js";
 import { createInspectorStore } from "./inspectors/inspectorStore.js";
 import { createDebugPluginRegistry } from "./plugins/debugPluginSystem.js";
+import { cloneJson } from "../../src/shared/utils/jsonUtils.js";
+
 import {
   createDiagnosticsCollector,
   createDevConsoleDebugOverlayRuntime
@@ -57,13 +59,6 @@ const DEFAULT_PLUGIN_CAPABILITIES = Object.freeze([
 
 import { sanitizeText } from "../../src/engine/debug/inspectors/shared/inspectorUtils.js";
 import { isObject } from "../../src/shared/utils/objectUtils.js";
-
-function cloneJson(value) {
-  if (typeof structuredClone === "function") {
-    return structuredClone(value);
-  }
-  return JSON.parse(JSON.stringify(value));
-}
 
 function toContextSection(context, field) {
   return isObject(context?.[field]) ? context[field] : {};

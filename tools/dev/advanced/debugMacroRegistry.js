@@ -6,6 +6,7 @@ debugMacroRegistry.js
 */
 
 import { sanitizeText } from "../../../src/engine/debug/inspectors/shared/inspectorUtils.js";
+import { cloneJson } from "../../../src/shared/utils/jsonUtils.js";
 
 function asStepArray(value) {
   if (!Array.isArray(value)) {
@@ -14,13 +15,6 @@ function asStepArray(value) {
   return value
     .map((step) => sanitizeText(step))
     .filter(Boolean);
-}
-
-function cloneJson(value) {
-  if (typeof structuredClone === "function") {
-    return structuredClone(value);
-  }
-  return JSON.parse(JSON.stringify(value));
 }
 
 function normalizeMacroDescriptor(descriptor = {}) {

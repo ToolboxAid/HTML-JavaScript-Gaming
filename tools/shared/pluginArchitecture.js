@@ -1,9 +1,7 @@
+import { cloneJson } from '../../src/shared/utils/jsonUtils.js';
+
 function sanitizeText(value) {
   return typeof value === "string" ? value.trim() : "";
-}
-
-function cloneJson(value) {
-  return JSON.parse(JSON.stringify(value));
 }
 
 function createReport(level, code, message) {

@@ -97,13 +97,7 @@ const CORE_PANEL_SPECS = Object.freeze([
 
 import { sanitizeText } from "../../src/engine/debug/inspectors/shared/inspectorUtils.js";
 import { isObject } from "../../src/shared/utils/objectUtils.js";
-
-function cloneJson(value) {
-  if (typeof structuredClone === "function") {
-    return structuredClone(value);
-  }
-  return JSON.parse(JSON.stringify(value));
-}
+import { cloneJson } from "../../src/shared/utils/jsonUtils.js";
 
 function createStructuredReport(level, stage, code, message, details = {}) {
   return {

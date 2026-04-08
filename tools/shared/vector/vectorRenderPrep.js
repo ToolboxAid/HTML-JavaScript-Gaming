@@ -1,3 +1,5 @@
+import { cloneJson } from '../../../src/shared/utils/jsonUtils.js';
+
 import {
   combineBounds,
   computeBoundsFromPoints,
@@ -8,10 +10,6 @@ import {
 
 function sanitizeText(value) {
   return typeof value === "string" ? value.trim() : "";
-}
-
-function cloneJson(value) {
-  return JSON.parse(JSON.stringify(value));
 }
 
 function sampleEllipsePoints(shape, segments = 16) {

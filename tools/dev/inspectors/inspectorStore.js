@@ -13,6 +13,7 @@ const DEFAULT_LIMITS = Object.freeze({
 
 import { asArray, asObject, sanitizeText } from "../../../src/engine/debug/inspectors/shared/inspectorUtils.js";
 import { isObject } from "../../../src/shared/utils/objectUtils.js";
+import { cloneJson } from "../../../src/shared/utils/jsonUtils.js";
 
 function asFinite(value, fallback = 0) {
   return Number.isFinite(value) ? Number(value) : fallback;
@@ -21,13 +22,6 @@ function asFinite(value, fallback = 0) {
 function asPositiveInt(value, fallback) {
   const normalized = Number.isFinite(value) ? Math.floor(Number(value)) : fallback;
   return normalized > 0 ? normalized : fallback;
-}
-
-function cloneJson(value) {
-  if (typeof structuredClone === "function") {
-    return structuredClone(value);
-  }
-  return JSON.parse(JSON.stringify(value));
 }
 
 function boundedPush(buffer, item, max) {

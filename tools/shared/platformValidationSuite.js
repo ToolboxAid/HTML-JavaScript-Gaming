@@ -5,13 +5,10 @@ import { loadPackagedProjectRuntime } from "./runtimeAssetLoader.js";
 import { buildRuntimeStreamingManifest, loadRuntimeStreamingChunks } from "./runtimeStreaming.js";
 import { buildPluginArchitecture } from "./pluginArchitecture.js";
 import { buildProjectVersioning } from "./projectVersioning.js";
+import { cloneJson } from "../../src/shared/utils/jsonUtils.js";
 
 function sanitizeText(value) {
   return typeof value === "string" ? value.trim() : "";
-}
-
-function cloneJson(value) {
-  return JSON.parse(JSON.stringify(value));
 }
 
 function createScenario(id, status, summary, details = []) {

@@ -5,6 +5,8 @@ David Quesenberry
 renderPipelineContract.js
 */
 import { normalizeProjectRelativePath } from "./projectAssetRegistry.js";
+import { cloneJson } from "../../src/shared/utils/jsonUtils.js";
+
 import {
   createVersionedContractMetadata,
   createVersionedContractPolicy,
@@ -68,13 +70,6 @@ const STAGES = Object.freeze(["load", "validate", "normalize", "resolve", "compo
 
 function sanitizeText(value) {
   return typeof value === "string" ? value.trim() : "";
-}
-
-function cloneJson(value) {
-  if (typeof structuredClone === "function") {
-    return structuredClone(value);
-  }
-  return JSON.parse(JSON.stringify(value));
 }
 
 function createStageStatus(stage, status, message = "") {

@@ -1,13 +1,10 @@
 import { validateProjectAssetState } from "./projectAssetValidation.js";
 import { buildProjectPackage } from "./projectPackaging.js";
 import { loadPackagedProjectRuntime } from "./runtimeAssetLoader.js";
+import { cloneJson } from "../../src/shared/utils/jsonUtils.js";
 
 function sanitizeText(value) {
   return typeof value === "string" ? value.trim() : "";
-}
-
-function cloneJson(value) {
-  return JSON.parse(JSON.stringify(value));
 }
 
 function createReport(level, code, message) {

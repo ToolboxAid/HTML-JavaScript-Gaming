@@ -6,6 +6,7 @@ debugPanelGroupRegistry.js
 */
 
 import { sanitizeText } from "../../../src/engine/debug/inspectors/shared/inspectorUtils.js";
+import { cloneJson } from "../../../src/shared/utils/jsonUtils.js";
 
 function asStringArray(value) {
   if (!Array.isArray(value)) {
@@ -19,13 +20,6 @@ function asStringArray(value) {
     }
   });
   return Array.from(unique.values());
-}
-
-function cloneJson(value) {
-  if (typeof structuredClone === "function") {
-    return structuredClone(value);
-  }
-  return JSON.parse(JSON.stringify(value));
 }
 
 function normalizeGroupDescriptor(descriptor = {}) {

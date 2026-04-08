@@ -5,6 +5,7 @@ David Quesenberry
 performanceBenchmarks.js
 */
 import { isObject } from "../../src/shared/utils/objectUtils.js";
+import { cloneJson } from "../../src/shared/utils/jsonUtils.js";
 
 export const PERFORMANCE_BENCHMARK_CONTRACT_ID = "toolbox.performance.benchmarks";
 export const PERFORMANCE_BENCHMARK_CONTRACT_VERSION = "1.0.0";
@@ -15,13 +16,6 @@ function sanitizeText(value) {
 
 function normalizeNumber(value, fallback = 0) {
   return Number.isFinite(value) ? Number(value) : fallback;
-}
-
-function cloneJson(value) {
-  if (typeof structuredClone === "function") {
-    return structuredClone(value);
-  }
-  return JSON.parse(JSON.stringify(value));
 }
 
 function createReport(level, code, message, details = {}) {

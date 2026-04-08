@@ -1,4 +1,5 @@
 import { parseSvgPathData } from "./vectorGeometryMath.js";
+import { cloneJson } from "../../../src/shared/utils/jsonUtils.js";
 
 export const VECTOR_ASSET_FORMAT = "toolbox.vector.asset";
 export const VECTOR_ASSET_VERSION = 1;
@@ -18,10 +19,6 @@ const COLOR_PATTERN = /^#[0-9A-F]{6}([0-9A-F]{2})?$/;
 
 function sanitizeText(value) {
   return typeof value === "string" ? value.trim() : "";
-}
-
-function cloneJson(value) {
-  return value === undefined ? undefined : JSON.parse(JSON.stringify(value));
 }
 
 function toFiniteNumber(value, fallback = NaN) {
