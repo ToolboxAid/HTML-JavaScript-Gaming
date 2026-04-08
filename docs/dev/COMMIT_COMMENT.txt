@@ -1,1 +1,1 @@
-BUILD PR: consolidate duplicate definitions and export consistency inside shared util files only.
+BUILD PR: validate direct consumer import/export edges for extracted shared helpers only.

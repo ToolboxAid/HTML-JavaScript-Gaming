@@ -1,6 +1,6 @@
 docs/
   pr/
-    BUILD_PR_SHARED_EXTRACTION_10_SHARED_UTIL_CONSOLIDATION_CHECK.md
+    BUILD_PR_SHARED_EXTRACTION_11_CONSUMER_EDGE_VALIDATION.md
   dev/
     codex_commands.md
     commit_comment.txt

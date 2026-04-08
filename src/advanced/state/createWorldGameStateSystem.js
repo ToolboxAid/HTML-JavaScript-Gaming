@@ -19,7 +19,7 @@ import {
   createTransitionRejectedEvent
 } from './events.js';
 import { createPromotionStateSnapshot } from '../../shared/state/createPromotionStateSnapshot.js';
-import { asPositiveInteger } from '../../shared/utils/numberUtils.js';
+import { asFiniteNumber, asPositiveInteger } from '../../shared/utils/numberUtils.js';
 import { isPlainObject } from '../../shared/utils/objectUtils.js';
 import {
   cloneDeep,

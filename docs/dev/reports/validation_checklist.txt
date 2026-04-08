@@ -2,7 +2,8 @@ SESSION VALIDATION GATE
 - Bundle type: BUILD
 - One PR purpose only: yes
 - Exact target files listed: yes
+- Exact expected imports/exports listed: yes
 - Fail-fast rule explicit: yes
-- No consumer changes allowed: yes
-- No guessing: yes
+- No repo-wide scan language: yes
+- Scope minimized: yes
 - ZIP repo-structured and execution-ready: yes
