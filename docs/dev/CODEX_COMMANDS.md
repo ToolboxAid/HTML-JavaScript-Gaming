@@ -1,8 +1,8 @@
 MODEL: GPT-5.3-codex
 REASONING: high
 COMMAND:
-Execute docs/pr/BUILD_PR_SHARED_EXTRACTION_22_ADD_GUARD_RUN_SCRIPT.md exactly.
+Execute docs/pr/BUILD_PR_SHARED_EXTRACTION_23_GUARD_DOC_MINIMAL_USAGE.md exactly.
 Create only:
-- tools/dev/runSharedExtractionGuard.sh
+- docs/dev/SHARED_EXTRACTION_GUARD_USAGE.md
 Do not expand scope.
-Package delta to <project folder>/tmp/BUILD_PR_SHARED_EXTRACTION_22_ADD_GUARD_RUN_SCRIPT_delta.zip
+Package delta to <project folder>/tmp/BUILD_PR_SHARED_EXTRACTION_23_GUARD_DOC_MINIMAL_USAGE_delta.zip

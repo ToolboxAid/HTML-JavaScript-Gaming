@@ -1,1 +1,1 @@
-Adds simple guard runner script.
+Adds guard usage documentation.
