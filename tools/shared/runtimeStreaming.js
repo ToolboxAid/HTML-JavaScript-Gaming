@@ -2,6 +2,7 @@ import AssetRegistry from "../../engine/assets/AssetRegistry.js";
 import AssetLoaderSystem from "../../engine/assets/AssetLoaderSystem.js";
 import ImageAssetLoader from "../../engine/assets/ImageAssetLoader.js";
 import { cloneJson } from "../../src/shared/utils/jsonUtils.js";
+import { validatePackageManifest, createRegistryDefinition } from "./runtimeAssetValidationUtils.js";
 
 function sanitizeText(value) {
   return typeof value === "string" ? value.trim() : "";
@@ -13,23 +14,6 @@ function createReport(level, code, message) {
     code: sanitizeText(code),
     message: sanitizeText(message)
   };
-}
-
-function validatePackageManifest(manifest) {
-  const pkg = manifest?.package;
-  if (!pkg || typeof pkg !== "object") {
-    throw new Error("Invalid packaged input: missing package root.");
-  }
-  if (!Array.isArray(pkg.assets) || pkg.assets.length === 0) {
-    throw new Error("Invalid packaged input: package.assets must contain at least one asset.");
-  }
-  if (!Array.isArray(pkg.dependencies)) {
-    throw new Error("Invalid packaged input: package.dependencies must be an array.");
-  }
-  if (!Array.isArray(pkg.roots) || pkg.roots.length === 0) {
-    throw new Error("Invalid packaged input: package.roots must contain at least one startup root.");
-  }
-  return pkg;
 }
 
 function collectBootAssetIds(pkg) {
@@ -66,15 +50,6 @@ function collectBootAssetIds(pkg) {
   return pkg.assets
     .map((asset) => sanitizeText(asset?.id))
     .filter((assetId) => boot.has(assetId));
-}
-
-function createRegistryDefinition(asset, source) {
-  return {
-    id: sanitizeText(asset?.id),
-    type: sanitizeText(asset?.type) === "image" ? "image" : "data",
-    path: sanitizeText(asset?.path),
-    source
-  };
 }
 
 export function summarizeRuntimeStreaming(result) {

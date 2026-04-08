@@ -1,1 +1,1 @@
-BUILD PR: centralize project-system cloneValue/safeString helpers across exact tools/shared batch.
+BUILD PR: centralize runtime asset validation/registry helpers across exact tools/shared batch.

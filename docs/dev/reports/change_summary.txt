@@ -1,1 +1,1 @@
-Execution-grade batch for cloneValue/safeString using the exact duplicate-report file list.
+Execution-grade batch for validatePackageManifest/createRegistryDefinition using the exact duplicate-report file list.
