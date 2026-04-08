@@ -1,1 +1,1 @@
-BUILD PR: standardize shared helper imports to approved relative path forms in advanced and network_sample_c slices.
+BUILD PR: remove temporary alias bootstrap jsconfig after reverting to approved relative shared imports.

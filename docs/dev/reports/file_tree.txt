@@ -1,6 +1,6 @@
 docs/
   pr/
-    BUILD_PR_SHARED_EXTRACTION_18_RELATIVE_PATH_STANDARDIZATION.md
+    BUILD_PR_SHARED_EXTRACTION_19_REMOVE_ALIAS_BOOTSTRAP_JSCONFIG_ONLY.md
   dev/
     codex_commands.md
     commit_comment.txt

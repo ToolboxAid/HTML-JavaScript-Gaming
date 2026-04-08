@@ -1,1 +1,1 @@
-Built the next executable step to remove alias/disallowed shared import variants and standardize the approved relative shared import paths in the current normalized slices only.
+Built the next executable cleanup step to remove the temporary alias bootstrap config once the approved relative shared import pattern is restored.
