@@ -8,6 +8,10 @@ registerDashboardCommands.js
 import { asArray, asObject, sanitizeText } from "../shared/networkDebugUtils.js";
 import { normalizeServerDashboardSnapshot } from "./serverDashboardProviders.js";
 import { listServerDashboardRefreshModes } from "./serverDashboardRefreshModes.js";
+import {
+  readHostSnapshot,
+  readHostStatus
+} from "../shared/hostReadUtils.js";
 
 function toCommandResult(title, lines, code = "DASHBOARD_OK", status = "ready") {
   return {
@@ -16,20 +20,6 @@ function toCommandResult(title, lines, code = "DASHBOARD_OK", status = "ready") 
     lines: asArray(lines).map((line) => String(line)),
     code
   };
-}
-
-function readHostStatus(host) {
-  if (!host || typeof host.getStatus !== "function") {
-    return {};
-  }
-  return asObject(host.getStatus());
-}
-
-function readHostSnapshot(host) {
-  if (!host || typeof host.getSnapshot !== "function") {
-    return normalizeServerDashboardSnapshot({});
-  }
-  return normalizeServerDashboardSnapshot(host.getSnapshot());
 }
 
 function formatStatusLines(status) {
@@ -132,7 +122,7 @@ export function createServerDashboardCommandPack(options = {}) {
         summary: "Show normalized dashboard snapshot summary.",
         usage: "dashboard.snapshot",
         handler() {
-          const snapshot = readHostSnapshot(host);
+          const snapshot = normalizeServerDashboardSnapshot(readHostSnapshot(host));
           const players = asArray(snapshot.players);
           const selectedRows = players.slice(0, 5).map((player) => {
             const row = asObject(player);

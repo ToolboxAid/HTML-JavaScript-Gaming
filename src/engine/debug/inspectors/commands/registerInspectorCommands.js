@@ -11,18 +11,10 @@ import {
   sanitizeText
 } from "../shared/inspectorUtils.js";
 import { toResult } from "../../shared/debugCommandResultUtils.js";
-
-function readHostStatus(host) {
-  return host && typeof host.getStatus === "function"
-    ? asObject(host.getStatus())
-    : {};
-}
-
-function readHostSnapshot(host) {
-  return host && typeof host.getSnapshot === "function"
-    ? asObject(host.getSnapshot())
-    : {};
-}
+import {
+  readHostSnapshot,
+  readHostStatus
+} from "../../network/shared/hostReadUtils.js";
 
 export function createInspectorCommandPack(options = {}) {
   const source = asObject(options);
