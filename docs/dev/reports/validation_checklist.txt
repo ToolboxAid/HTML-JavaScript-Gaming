@@ -1,4 +1,16 @@
-- Imports point to src/shared
-- No relative helper imports
-- No duplicates
-- Build passes
+SESSION VALIDATION GATE
+- Bundle type: BUILD
+- One PR purpose only: yes
+- Exact target files listed: yes
+- Exact source->target import map listed: yes
+- Vague repo-wide scan language removed: yes
+- Scope minimized: yes
+- Start-of-day directories touched: no
+- Fake code claims avoided: yes
+- ZIP repo-structured and execution-ready: yes
+
+BUILD-SPECIFIC CHECKS
+- Codex can execute without guessing: yes
+- Exact ambiguous prior BUILD replaced with one explicit target: yes
+- Only 9 files allowed: yes
+- Non-goals explicit: yes

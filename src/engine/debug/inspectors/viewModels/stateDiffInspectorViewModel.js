@@ -6,9 +6,9 @@ stateDiffInspectorViewModel.js
 */
 
 import {
-  asObject,
-  asPositiveInteger
+  asObject
 } from "../shared/inspectorUtils.js";
+import { asPositiveInteger } from "../../../../shared/utils/numberUtils.js";
 
 function stringifyValue(value) {
   try {

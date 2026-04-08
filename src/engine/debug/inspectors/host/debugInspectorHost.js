@@ -10,11 +10,11 @@ import {
   asArray,
   asNonNegativeInteger,
   asObject,
-  asPositiveInteger,
   boundedPush,
   cloneJson,
   sanitizeText
 } from "../shared/inspectorUtils.js";
+import { asPositiveInteger } from "../../../../shared/utils/numberUtils.js";
 import { createComponentInspectorViewModel } from "../viewModels/componentInspectorViewModel.js";
 import { createEntityInspectorViewModel } from "../viewModels/entityInspectorViewModel.js";
 import { createEventStreamInspectorViewModel } from "../viewModels/eventStreamInspectorViewModel.js";

@@ -1,1 +1,3 @@
-Next: BUILD_PR_SHARED_EXTRACTION_03_IMPORT_NORMALIZATION
+Next:
+If Codex reports clean execution, produce APPLY_PR_SHARED_EXTRACTION_03_IMPORT_NORMALIZATION_RETRY.
+If Codex stops, capture the exact blocker and narrow further without changing PR purpose.

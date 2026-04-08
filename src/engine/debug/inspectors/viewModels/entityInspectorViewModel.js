@@ -8,9 +8,9 @@ entityInspectorViewModel.js
 import {
   asArray,
   asObject,
-  asPositiveInteger,
   sanitizeText
 } from "../shared/inspectorUtils.js";
+import { asPositiveInteger } from "../../../../shared/utils/numberUtils.js";
 
 function normalizeEntity(input, index) {
   const source = asObject(input);
