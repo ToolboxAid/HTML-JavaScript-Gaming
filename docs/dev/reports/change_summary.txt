@@ -1,1 +1,1 @@
-Built a narrow consumer-edge validation BUILD limited to the known extracted helper consumers and their shared export files.
+Built the next executable extraction step by targeting the remaining local number-helper duplication in network_sample_c only.

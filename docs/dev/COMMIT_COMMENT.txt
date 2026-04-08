@@ -1,1 +1,1 @@
-BUILD PR: validate direct consumer import/export edges for extracted shared helpers only.
+BUILD PR: remove remaining network_sample_c number helper duplicates and use shared number utils.

@@ -1,14 +1,11 @@
 MODEL: GPT-5.3-codex
 REASONING: high
 COMMAND:
-Execute docs/pr/BUILD_PR_SHARED_EXTRACTION_11_CONSUMER_EDGE_VALIDATION.md exactly.
-Edit only these files if needed:
-- src/advanced/promotion/createPromotionGate.js
-- src/advanced/state/createWorldGameStateSystem.js
+Execute docs/pr/BUILD_PR_SHARED_EXTRACTION_12_NETWORK_SAMPLE_C_NUMBER_HELPERS.md exactly.
+Edit only these files:
 - games/network_sample_c/game/ReconciliationLayerAdapter.js
-- src/shared/utils/numberUtils.js
-- src/shared/utils/objectUtils.js
-- src/shared/state/createPromotionStateSnapshot.js
-Fail fast if any required shared file is missing or a required helper/export is absent entirely.
+- games/network_sample_c/game/StateTimelineBuffer.js
+- src/shared/utils/numberUtils.js (only if minimum export fix is needed)
+Fail fast if src/shared/utils/numberUtils.js does not already exist and export or contain asFiniteNumber and asPositiveInteger.
 Do not expand scope.
-Package the delta output to <project folder>/tmp/BUILD_PR_SHARED_EXTRACTION_11_CONSUMER_EDGE_VALIDATION_delta.zip
+Package the delta output to <project folder>/tmp/BUILD_PR_SHARED_EXTRACTION_12_NETWORK_SAMPLE_C_NUMBER_HELPERS_delta.zip
