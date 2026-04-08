@@ -21,6 +21,17 @@ ChatGPT may do either of these:
 1. Always package the plan/docs for commit.
 2. Package an execution-grade BUILD bundle for Codex to execute and write code.
 
+## Bundle Packaging Preference
+Default:
+- combine commit-ready docs with BUILD bundles when possible
+
+Do not:
+- create separate commit-only ZIPs unless APPLY is actually required
+
+APPLY remains:
+- docs-only
+- no Codex command
+
 ## Core Workflow
 `PLAN_PR -> BUILD_PR -> APPLY_PR`
 

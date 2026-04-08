@@ -22,6 +22,15 @@ Produce a BUILD bundle with:
 - exact constraints
 - exact validation
 
+BUILD bundles should include:
+- BUILD doc
+- Codex command
+- commit comment
+- next command
+- reports
+
+Avoid splitting these into separate ZIPs when the same BUILD bundle can carry them.
+
 ### When Codex reports code is complete
 Produce an APPLY/acceptance bundle only.
 Do not send Codex another command unless more code is actually required.
