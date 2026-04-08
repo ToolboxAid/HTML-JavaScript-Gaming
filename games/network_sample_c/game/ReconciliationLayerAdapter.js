@@ -6,6 +6,7 @@ ReconciliationLayerAdapter.js
 */
 import StateTimelineBuffer from "./StateTimelineBuffer.js";
 import { asFiniteNumber, asPositiveInteger } from "../../../src/shared/utils/numberUtils.js";
+import { cloneSnapshot } from "../../../src/shared/utils/snapshotCloneUtils.js";
 
 const APPROVED_PUBLIC_EVENT_TYPES = new Set([
   "worldState.transition.applied",
@@ -17,26 +18,6 @@ const APPROVED_PUBLIC_EVENT_TYPES = new Set([
 
 function sanitizeText(value, fallback = "") {
   return typeof value === "string" && value.trim() ? value.trim() : fallback;
-}
-
-function cloneSnapshot(snapshot) {
-  if (snapshot === null || typeof snapshot !== "object") {
-    return {};
-  }
-  return {
-    ...snapshot,
-    entities: Array.isArray(snapshot.entities)
-      ? snapshot.entities.map((entity) => ({
-          ...entity,
-          position: entity?.position ? { ...entity.position } : undefined,
-          velocity: entity?.velocity ? { ...entity.velocity } : undefined,
-          stateFlags: entity?.stateFlags ? { ...entity.stateFlags } : undefined
-        }))
-      : [],
-    meta: snapshot.meta && typeof snapshot.meta === "object"
-      ? { ...snapshot.meta }
-      : undefined
-  };
 }
 
 function cloneEntitySnapshot(entity) {
