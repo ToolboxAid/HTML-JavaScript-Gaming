@@ -2,6 +2,7 @@ import AssetRegistry from "../../engine/assets/AssetRegistry.js";
 import AssetLoaderSystem from "../../engine/assets/AssetLoaderSystem.js";
 import ImageAssetLoader from "../../engine/assets/ImageAssetLoader.js";
 import { prepareVectorGeometryRuntimeAsset } from "./vectorGeometryRuntime.js";
+import { ensureArray } from "../../src/shared/utils/arrayUtils.js";
 import { cloneJson } from "../../src/shared/utils/jsonUtils.js";
 
 function sanitizeText(value) {
@@ -20,7 +21,7 @@ function createLoaderState(status, reports, extra = {}) {
   return {
     runtimeLoader: {
       status,
-      loadedAssets: Array.isArray(extra.loadedAssets) ? extra.loadedAssets : [],
+      loadedAssets: ensureArray(extra.loadedAssets),
       failedAt: extra.failedAt ?? null,
       reports
     }

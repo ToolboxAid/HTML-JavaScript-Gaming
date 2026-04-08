@@ -22,6 +22,7 @@ import { createToggleCommandPack } from "./commandPacks/toggleCommandPack.js";
 import { createValidationCommandPack } from "./commandPacks/validationCommandPack.js";
 import { createInspectorStore } from "./inspectors/inspectorStore.js";
 import { createDebugPluginRegistry } from "./plugins/debugPluginSystem.js";
+import { ensureArray } from "../../src/shared/utils/arrayUtils.js";
 import { cloneJson } from "../../src/shared/utils/jsonUtils.js";
 
 import {
@@ -178,12 +179,12 @@ function isPrintableCharacter(key) {
 
 function flattenOverlaySections(sections, maxLines = 9) {
   const lines = [];
-  const source = Array.isArray(sections) ? sections : [];
+  const source = ensureArray(sections);
 
   for (let sectionIndex = 0; sectionIndex < source.length; sectionIndex += 1) {
     const section = source[sectionIndex];
     lines.push(`${sanitizeText(section?.title) || "Panel"}:`);
-    const sectionLines = Array.isArray(section?.lines) ? section.lines : [];
+    const sectionLines = ensureArray(section?.lines);
     for (let lineIndex = 0; lineIndex < sectionLines.length; lineIndex += 1) {
       lines.push(`  ${sanitizeText(sectionLines[lineIndex])}`);
       if (lines.length >= maxLines) {
@@ -277,7 +278,7 @@ export function createSampleGameDevConsoleIntegration(options = {}) {
     limits: isObject(options?.pluginLimits) ? options.pluginLimits : {}
   });
   let pluginActivityReports = [];
-  const pluginDescriptors = Array.isArray(options?.plugins) ? options.plugins : [];
+  const pluginDescriptors = ensureArray(options?.plugins);
   const pluginBootstrapReports = pluginRegistry.registerPlugins(
     pluginDescriptors,
     options?.activatePluginsOnInit === true
@@ -390,7 +391,7 @@ export function createSampleGameDevConsoleIntegration(options = {}) {
   }
 
   function pushConsoleOutputLines(lines) {
-    const source = Array.isArray(lines) ? lines : [];
+    const source = ensureArray(lines);
     source.forEach((line) => pushConsoleOutputLine(line));
   }
 
@@ -406,7 +407,7 @@ export function createSampleGameDevConsoleIntegration(options = {}) {
     const names = new Set(["help", "status"]);
     if (typeof commandRegistry?.listCommands === "function") {
       const commands = commandRegistry.listCommands();
-      const source = Array.isArray(commands) ? commands : [];
+      const source = ensureArray(commands);
       source.forEach((entry) => {
         const name = sanitizeText(typeof entry === "string" ? entry : entry?.name);
         if (name) {
@@ -418,7 +419,7 @@ export function createSampleGameDevConsoleIntegration(options = {}) {
   }
 
   function findLongestCommonPrefix(values) {
-    const source = Array.isArray(values) ? values.filter(Boolean) : [];
+    const source = ensureArray(values).filter(Boolean);
     if (source.length === 0) {
       return "";
     }
@@ -892,7 +893,7 @@ export function createSampleGameDevConsoleIntegration(options = {}) {
     const diagnosticsContext = isObject(frame.diagnosticsContext) ? frame.diagnosticsContext : {};
     const diagnosticsResult = runtime.collectDiagnostics(diagnosticsContext);
     diagnosticsSnapshot = diagnosticsResult?.diagnostics || null;
-    diagnosticsReports = Array.isArray(diagnosticsResult?.reports) ? diagnosticsResult.reports.slice() : [];
+    diagnosticsReports = ensureArray(diagnosticsResult?.reports).slice();
     inspectorStore.update({
       diagnosticsSnapshot: diagnosticsSnapshot || {},
       diagnosticsContext,

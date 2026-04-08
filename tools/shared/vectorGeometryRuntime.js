@@ -1,5 +1,6 @@
 import { inspectVectorAssetContract } from "./vector/vectorAssetContract.js";
 import { prepareVectorRenderables } from "./vector/vectorRenderPrep.js";
+import { ensureArray } from "../../src/shared/utils/arrayUtils.js";
 import { cloneJson } from "../../src/shared/utils/jsonUtils.js";
 
 export const VECTOR_GEOMETRY_RUNTIME_POLICY = Object.freeze({
@@ -92,6 +93,6 @@ export function prepareVectorGeometryRuntimeAsset(asset, options = {}) {
 
 export function summarizeVectorGeometryRuntime(result) {
   const assetId = sanitizeText(result?.assetId) || sanitizeText(result?.id) || "vector";
-  const renderableCount = Array.isArray(result?.renderables) ? result.renderables.length : 0;
+  const renderableCount = ensureArray(result?.renderables).length;
   return `Vector geometry runtime ready for ${assetId} with ${renderableCount} renderable primitive${renderableCount === 1 ? "" : "s"}.`;
 }
