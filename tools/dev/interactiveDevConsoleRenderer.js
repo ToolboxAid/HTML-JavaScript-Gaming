@@ -5,9 +5,7 @@ David Quesenberry
 interactiveDevConsoleRenderer.js
 */
 
-function sanitizeText(value) {
-  return typeof value === "string" ? value.trim() : "";
-}
+import { sanitizeText } from "../../src/engine/debug/inspectors/shared/inspectorUtils.js";
 
 function toLines(lines) {
   if (!Array.isArray(lines)) {

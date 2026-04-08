@@ -5,9 +5,7 @@ David Quesenberry
 debugMacroExecutor.js
 */
 
-function sanitizeText(value) {
-  return typeof value === "string" ? value.trim() : "";
-}
+import { sanitizeText } from "../../../src/engine/debug/inspectors/shared/inspectorUtils.js";
 
 function parseCommandName(commandLine) {
   const line = sanitizeText(commandLine);

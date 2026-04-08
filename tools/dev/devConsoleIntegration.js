@@ -55,9 +55,7 @@ const DEFAULT_PLUGIN_CAPABILITIES = Object.freeze([
   Object.freeze({ capabilityId: "debug.diagnostics.snapshot", version: "1.0.0" })
 ]);
 
-function sanitizeText(value) {
-  return typeof value === "string" ? value.trim() : "";
-}
+import { sanitizeText } from "../../src/engine/debug/inspectors/shared/inspectorUtils.js";
 
 function isObject(value) {
   return value !== null && typeof value === "object" && !Array.isArray(value);

@@ -14,9 +14,7 @@ import {
   toLinePair
 } from "./packUtils.js";
 
-function sanitizeText(value) {
-  return typeof value === "string" ? value.trim() : "";
-}
+import { sanitizeText } from "../../../src/engine/debug/inspectors/shared/inspectorUtils.js";
 
 function asPositiveInt(value, fallback) {
   const normalized = Number.isFinite(value) ? Math.floor(Number(value)) : fallback;

@@ -1,1 +1,1 @@
-Adds a temp-workspace self-test runner for the guard.
+Batch extraction for sanitizeText across tools/dev/shared debug consumers only.

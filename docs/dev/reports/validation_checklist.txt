@@ -1,1 +1,1 @@
-self-test runner added correctly
+sanitizeText batch moved to shared helper with consumer imports updated.

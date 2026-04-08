@@ -95,9 +95,7 @@ const CORE_PANEL_SPECS = Object.freeze([
   { id: "validation-warnings", title: "Validation", source: "validation", priority: 1000, renderMode: "text-block", enabled: true }
 ]);
 
-function sanitizeText(value) {
-  return typeof value === "string" ? value.trim() : "";
-}
+import { sanitizeText } from "../../src/engine/debug/inspectors/shared/inspectorUtils.js";
 
 function isObject(value) {
   return value !== null && typeof value === "object" && !Array.isArray(value);

@@ -11,9 +11,7 @@ const DEFAULT_LIMITS = Object.freeze({
   eventStreamMax: 300
 });
 
-function sanitizeText(value) {
-  return typeof value === "string" ? value.trim() : "";
-}
+import { sanitizeText } from "../../../src/engine/debug/inspectors/shared/inspectorUtils.js";
 
 function isObject(value) {
   return value !== null && typeof value === "object" && !Array.isArray(value);

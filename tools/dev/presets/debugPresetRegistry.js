@@ -5,9 +5,7 @@ David Quesenberry
 debugPresetRegistry.js
 */
 
-function sanitizeText(value) {
-  return typeof value === "string" ? value.trim() : "";
-}
+import { sanitizeText } from "../../../src/engine/debug/inspectors/shared/inspectorUtils.js";
 
 function asStringArray(value) {
   if (!Array.isArray(value)) {
