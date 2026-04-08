@@ -1,0 +1,71 @@
+function sanitizeText(value) {
+  return typeof value === "string" ? value.trim() : "";
+}
+
+function asObject(value) {
+  return value !== null && typeof value === "object" && !Array.isArray(value) ? value : {};
+}
+
+function asArray(value) {
+  return Array.isArray(value) ? value : [];
+}
+
+function toSafeKey(value) {
+  return sanitizeText(value);
+}
+
+export function toNetworkSnapshot(snapshot, sampleKey) {
+  const key = toSafeKey(sampleKey);
+  if (!key) {
+    return {};
+  }
+  return asObject(snapshot?.assets?.[key]);
+}
+
+export function getCommandSnapshot(context, sampleKey) {
+  const key = toSafeKey(sampleKey);
+  if (!key) {
+    return {};
+  }
+  return asObject(context?.assets?.[key]);
+}
+
+export function commandLinesForTrace(context, args = [], options = {}) {
+  const sanitize = typeof options?.sanitizeText === "function" ? options.sanitizeText : sanitizeText;
+  const formatNumber = typeof options?.formatNumber === "function"
+    ? options.formatNumber
+    : (value, fallback = 0) => {
+      const numeric = Number(value);
+      return Number.isFinite(numeric) ? numeric : fallback;
+    };
+
+  const snapshot = getCommandSnapshot(context, options?.sampleKey);
+  const trace = asObject(snapshot.trace);
+  const events = asArray(trace.events);
+
+  const requestedCount = Number.parseInt(args?.[0], 10);
+  const count = Number.isFinite(requestedCount)
+    ? Math.min(20, Math.max(1, requestedCount))
+    : 8;
+
+  if (events.length === 0) {
+    return ["No network trace events recorded."];
+  }
+
+  const phaseField = toSafeKey(options?.phaseField) || "phase";
+  return events
+    .slice(-count)
+    .reverse()
+    .map((event) => {
+      const source = asObject(event);
+      const details = asObject(source.details);
+      const detailsText = Object.keys(details)
+        .slice(0, 2)
+        .map((key) => `${key}=${String(details[key])}`)
+        .join(" ");
+      const eventType = sanitize(source.type) || "EVENT";
+      const phase = sanitize(source[phaseField]) || "unknown";
+      const prefix = `${formatNumber(source.timestampMs, 0)}ms ${eventType} phase=${phase}`;
+      return detailsText ? `${prefix} ${detailsText}` : prefix;
+    });
+}

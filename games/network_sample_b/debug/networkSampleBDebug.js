@@ -7,6 +7,9 @@ networkSampleBDebug.js
 
 import { createNetworkDebugPluginDefinition } from "../../../engine/debug/network/index.js";
 import { asArray, asObject } from "../../../src/engine/debug/inspectors/shared/inspectorUtils.js";
+import { toNetworkSnapshot } from "../../../src/shared/utils/networkDebugUtils.js";
+
+const NETWORK_SAMPLE_KEY = "networkSampleB";
 
 function sanitizeText(value) {
   return typeof value === "string" ? value.trim() : "";
@@ -17,12 +20,8 @@ function asNumber(value, fallback = 0) {
   return Number.isFinite(numeric) ? numeric : fallback;
 }
 
-function toNetworkSnapshot(snapshot) {
-  return asObject(snapshot?.assets?.networkSampleB);
-}
-
 function toHostStatusLines(snapshot) {
-  const network = toNetworkSnapshot(snapshot);
+  const network = toNetworkSnapshot(snapshot, NETWORK_SAMPLE_KEY);
   const summary = asObject(network.summary);
   const host = asObject(network.host);
   return [
@@ -37,7 +36,7 @@ function toHostStatusLines(snapshot) {
 }
 
 function toClientStatusLines(snapshot) {
-  const network = toNetworkSnapshot(snapshot);
+  const network = toNetworkSnapshot(snapshot, NETWORK_SAMPLE_KEY);
   const clients = asArray(network.clients);
   if (clients.length === 0) {
     return ["No client peer snapshots available."];
@@ -50,7 +49,7 @@ function toClientStatusLines(snapshot) {
 }
 
 function toOwnershipLines(snapshot) {
-  const network = toNetworkSnapshot(snapshot);
+  const network = toNetworkSnapshot(snapshot, NETWORK_SAMPLE_KEY);
   const ownership = asObject(network.ownership);
   const rows = asArray(ownership.rows);
 
@@ -67,7 +66,7 @@ function toOwnershipLines(snapshot) {
 }
 
 function toReplicationLines(snapshot) {
-  const network = toNetworkSnapshot(snapshot);
+  const network = toNetworkSnapshot(snapshot, NETWORK_SAMPLE_KEY);
   const replication = asObject(network.replication);
   const clients = asArray(replication.clientSnapshots);
 
@@ -86,7 +85,7 @@ function toReplicationLines(snapshot) {
 }
 
 function commandLinesForConnections(context) {
-  const snapshot = toNetworkSnapshot(context);
+  const snapshot = toNetworkSnapshot(context, NETWORK_SAMPLE_KEY);
   const summary = asObject(snapshot.summary);
   const peers = asArray(snapshot.peers);
 
@@ -107,7 +106,7 @@ function commandLinesForConnections(context) {
 }
 
 function commandLinesForReplication(context) {
-  const snapshot = toNetworkSnapshot(context);
+  const snapshot = toNetworkSnapshot(context, NETWORK_SAMPLE_KEY);
   const replication = asObject(snapshot.replication);
   const clients = asArray(replication.clientSnapshots);
 

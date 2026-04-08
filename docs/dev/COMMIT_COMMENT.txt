@@ -1,1 +1,1 @@
-centralize isObject
+centralize network debug helpers

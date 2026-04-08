@@ -7,6 +7,13 @@ networkSampleCDebug.js
 
 import { createNetworkDebugPluginDefinition } from "../../../engine/debug/network/index.js";
 import { asArray, asObject } from "../../../src/engine/debug/inspectors/shared/inspectorUtils.js";
+import {
+  commandLinesForTrace,
+  getCommandSnapshot,
+  toNetworkSnapshot
+} from "../../../src/shared/utils/networkDebugUtils.js";
+
+const NETWORK_SAMPLE_KEY = "networkSampleC";
 
 function sanitizeText(value) {
   return typeof value === "string" ? value.trim() : "";
@@ -34,16 +41,8 @@ function formatEntityLine(entity, options = {}) {
   return `${marker}${compactLabel} delta=${frameDelta} status=${status} severity=${severity} align=${alignment}`;
 }
 
-function toNetworkSnapshot(snapshot) {
-  return asObject(snapshot?.assets?.networkSampleC);
-}
-
-function getCommandSnapshot(context) {
-  return asObject(context?.assets?.networkSampleC);
-}
-
 function toDivergenceLines(snapshot) {
-  const network = toNetworkSnapshot(snapshot);
+  const network = toNetworkSnapshot(snapshot, NETWORK_SAMPLE_KEY);
   const scenario = asObject(network.scenario);
   const divergence = asObject(network.divergence);
   const transport = asObject(network.network);
@@ -78,7 +77,7 @@ function toDivergenceLines(snapshot) {
 }
 
 function toTimelineLines(snapshot) {
-  const network = toNetworkSnapshot(snapshot);
+  const network = toNetworkSnapshot(snapshot, NETWORK_SAMPLE_KEY);
   const timeline = asObject(network.timeline);
   const history = asObject(timeline.history);
   const entityHistory = asArray(history.entities);
@@ -117,7 +116,7 @@ function toTimelineLines(snapshot) {
 }
 
 function toValidationLines(snapshot) {
-  const network = toNetworkSnapshot(snapshot);
+  const network = toNetworkSnapshot(snapshot, NETWORK_SAMPLE_KEY);
   const validation = asObject(network.validation);
   const items = asArray(validation.items);
 
@@ -135,7 +134,7 @@ function toValidationLines(snapshot) {
 }
 
 function toRewindLines(snapshot) {
-  const network = toNetworkSnapshot(snapshot);
+  const network = toNetworkSnapshot(snapshot, NETWORK_SAMPLE_KEY);
   const rewind = asObject(network.rewindPreparation);
   const rewindEntities = asArray(rewind.entities);
   const rewindSelected = asArray(rewind.selectedEntityIds);
@@ -171,7 +170,7 @@ function toRewindLines(snapshot) {
 }
 
 function toTraceLines(snapshot, maxLines = 10) {
-  const network = toNetworkSnapshot(snapshot);
+  const network = toNetworkSnapshot(snapshot, NETWORK_SAMPLE_KEY);
   const trace = asObject(network.trace);
   const events = asArray(trace.events);
 
@@ -193,7 +192,7 @@ function toTraceLines(snapshot, maxLines = 10) {
 }
 
 function commandLinesForDivergence(context) {
-  const snapshot = getCommandSnapshot(context);
+  const snapshot = getCommandSnapshot(context, NETWORK_SAMPLE_KEY);
   const scenario = asObject(snapshot.scenario);
   const divergence = asObject(snapshot.divergence);
   const network = asObject(snapshot.network);
@@ -223,37 +222,8 @@ function commandLinesForDivergence(context) {
   return lines;
 }
 
-function commandLinesForTrace(context, args = []) {
-  const snapshot = getCommandSnapshot(context);
-  const trace = asObject(snapshot.trace);
-  const events = asArray(trace.events);
-
-  const requestedCount = Number.parseInt(args[0], 10);
-  const count = Number.isFinite(requestedCount)
-    ? Math.min(20, Math.max(1, requestedCount))
-    : 8;
-
-  if (events.length === 0) {
-    return ["No network trace events recorded."];
-  }
-
-  return events
-    .slice(-count)
-    .reverse()
-    .map((event) => {
-      const source = asObject(event);
-      const details = asObject(source.details);
-      const detailText = Object.keys(details)
-        .slice(0, 2)
-        .map((key) => `${key}=${String(details[key])}`)
-        .join(" ");
-      const base = `${asNumber(source.timestampMs, 0)}ms ${sanitizeText(source.type) || "EVENT"} phase=${sanitizeText(source.phaseId) || "unknown"}`;
-      return detailText ? `${base} ${detailText}` : base;
-    });
-}
-
 function commandLinesForValidation(context) {
-  const snapshot = getCommandSnapshot(context);
+  const snapshot = getCommandSnapshot(context, NETWORK_SAMPLE_KEY);
   const validation = asObject(snapshot.validation);
   const items = asArray(validation.items);
 
@@ -270,7 +240,7 @@ function commandLinesForValidation(context) {
 }
 
 function commandLinesForReproduction(context) {
-  const snapshot = getCommandSnapshot(context);
+  const snapshot = getCommandSnapshot(context, NETWORK_SAMPLE_KEY);
   const reproduction = asObject(snapshot.reproduction);
   const steps = asArray(reproduction.steps);
 
@@ -288,7 +258,7 @@ function commandLinesForReproduction(context) {
 }
 
 function commandLinesForRewind(context) {
-  const snapshot = getCommandSnapshot(context);
+  const snapshot = getCommandSnapshot(context, NETWORK_SAMPLE_KEY);
   const rewind = asObject(snapshot.rewindPreparation);
   const rewindEntities = asArray(rewind.entities);
   const rewindSelected = asArray(rewind.selectedEntityIds);
@@ -499,7 +469,12 @@ export function createNetworkSampleCDebugPlugin() {
                 return {
                   status: "ready",
                   title: "Network Trace",
-                  lines: commandLinesForTrace(context, args),
+                  lines: commandLinesForTrace(context, args, {
+                    sampleKey: NETWORK_SAMPLE_KEY,
+                    phaseField: "phaseId",
+                    sanitizeText,
+                    formatNumber: asNumber
+                  }),
                   code: "NETWORK_TRACE"
                 };
               }

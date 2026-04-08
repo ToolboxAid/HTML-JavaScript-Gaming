@@ -7,6 +7,13 @@ networkSampleADebug.js
 
 import { createNetworkDebugPluginDefinition } from "../../../engine/debug/network/index.js";
 import { asArray, asObject } from "../../../src/engine/debug/inspectors/shared/inspectorUtils.js";
+import {
+  commandLinesForTrace,
+  getCommandSnapshot,
+  toNetworkSnapshot
+} from "../../../src/shared/utils/networkDebugUtils.js";
+
+const NETWORK_SAMPLE_KEY = "networkSampleA";
 
 function sanitizeText(value) {
   return typeof value === "string" ? value.trim() : "";
@@ -16,12 +23,8 @@ function asNumber(value, fallback = 0) {
   return Number.isFinite(value) ? Number(value) : fallback;
 }
 
-function toNetworkSnapshot(snapshot) {
-  return asObject(snapshot?.assets?.networkSampleA);
-}
-
 function toConnectionLines(snapshot) {
-  const network = toNetworkSnapshot(snapshot);
+  const network = toNetworkSnapshot(snapshot, NETWORK_SAMPLE_KEY);
   const connection = asObject(network.connection);
   return [
     `phase=${sanitizeText(connection.phase) || "unknown"}`,
@@ -34,7 +37,7 @@ function toConnectionLines(snapshot) {
 }
 
 function toLatencyLines(snapshot) {
-  const network = toNetworkSnapshot(snapshot);
+  const network = toNetworkSnapshot(snapshot, NETWORK_SAMPLE_KEY);
   const latency = asObject(network.latency);
   return [
     `status=${sanitizeText(latency.status) || "unknown"}`,
@@ -44,7 +47,7 @@ function toLatencyLines(snapshot) {
 }
 
 function toTraceLines(snapshot, maxLines = 8) {
-  const network = toNetworkSnapshot(snapshot);
+  const network = toNetworkSnapshot(snapshot, NETWORK_SAMPLE_KEY);
   const trace = asObject(network.trace);
   const events = asArray(trace.events);
   if (events.length === 0) {
@@ -63,12 +66,8 @@ function toTraceLines(snapshot, maxLines = 8) {
     });
 }
 
-function getCommandSnapshot(context) {
-  return asObject(context?.assets?.networkSampleA);
-}
-
 function commandLinesForStatus(context) {
-  const snapshot = getCommandSnapshot(context);
+  const snapshot = getCommandSnapshot(context, NETWORK_SAMPLE_KEY);
   const connection = asObject(snapshot.connection);
   const replication = asObject(snapshot.replication);
   return [
@@ -82,44 +81,13 @@ function commandLinesForStatus(context) {
 }
 
 function commandLinesForLatency(context) {
-  const snapshot = getCommandSnapshot(context);
+  const snapshot = getCommandSnapshot(context, NETWORK_SAMPLE_KEY);
   const latency = asObject(snapshot.latency);
   return [
     `status=${sanitizeText(latency.status) || "unknown"}`,
     `rttMs=${asNumber(latency.rttMs, 0)}`,
     `jitterMs=${asNumber(latency.jitterMs, 0)}`
   ];
-}
-
-function commandLinesForTrace(context, args = []) {
-  const snapshot = getCommandSnapshot(context);
-  const trace = asObject(snapshot.trace);
-  const events = asArray(trace.events);
-
-  const requestedCount = Number.parseInt(args[0], 10);
-  const count = Number.isFinite(requestedCount)
-    ? Math.min(20, Math.max(1, requestedCount))
-    : 8;
-
-  if (events.length === 0) {
-    return ["No network trace events recorded."];
-  }
-
-  return events
-    .slice(-count)
-    .reverse()
-    .map((event) => {
-      const source = asObject(event);
-      const details = asObject(source.details);
-      const detailsPairs = Object.keys(details)
-        .slice(0, 2)
-        .map((key) => `${key}=${String(details[key])}`)
-        .join(" ");
-      const eventType = sanitizeText(source.type) || "EVENT";
-      const phase = sanitizeText(source.phase) || "unknown";
-      const prefix = `${asNumber(source.timestampMs, 0)}ms ${eventType} phase=${phase}`;
-      return detailsPairs ? `${prefix} ${detailsPairs}` : prefix;
-    });
 }
 
 export function createNetworkSampleADebugPlugin() {
@@ -265,7 +233,11 @@ export function createNetworkSampleADebugPlugin() {
                 return {
                   status: "ready",
                   title: "Network Trace",
-                  lines: commandLinesForTrace(context, args),
+                  lines: commandLinesForTrace(context, args, {
+                    sampleKey: NETWORK_SAMPLE_KEY,
+                    sanitizeText,
+                    formatNumber: asNumber
+                  }),
                   code: "NETWORK_TRACE"
                 };
               }
