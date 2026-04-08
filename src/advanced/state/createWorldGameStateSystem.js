@@ -18,7 +18,7 @@ import {
   createTransitionAppliedEvent,
   createTransitionRejectedEvent
 } from './events.js';
-import { getState as getSharedState } from '../../shared/state/getState.js';
+import { createPromotionStateSnapshot } from '../../shared/state/createPromotionStateSnapshot.js';
 import { asFiniteNumber } from '../../shared/utils/numberUtils.js';
 import {
   cloneDeep,
@@ -226,17 +226,14 @@ function createInlinePromotionGate({
     evaluate,
     getMetrics,
     getState() {
-      const state = getSharedState({
+      return createPromotionStateSnapshot({
         promoted,
         stableFrames,
         stabilityWindowFrames: windowFrames,
         lastReason,
-        lastEvaluation
+        lastEvaluation,
+        cloneLastEvaluation: (value) => (value ? cloneDeep(value) : null)
       });
-      return {
-        ...state,
-        lastEvaluation: state.lastEvaluation ? cloneDeep(state.lastEvaluation) : null
-      };
     }
   };
 }

@@ -7,6 +7,7 @@ createPromotionGate.js
 
 import { asFiniteNumber } from '../../shared/utils/numberUtils.js';
 import { isPlainObject } from '../../shared/utils/objectUtils.js';
+import { createPromotionStateSnapshot } from '../../shared/state/createPromotionStateSnapshot.js';
 
 function asPositiveInteger(value, fallback = 1) {
   const numeric = Math.floor(asFiniteNumber(value, fallback));
@@ -75,13 +76,14 @@ function createPromotionGate(options = {}) {
   }
 
   function getState() {
-    return {
+    return createPromotionStateSnapshot({
       promoted,
       stableFrames,
       stabilityWindowFrames,
       lastReason,
-      lastEvaluation: lastEvaluation ? { ...lastEvaluation } : null
-    };
+      lastEvaluation,
+      cloneLastEvaluation: (value) => (value ? { ...value } : null)
+    });
   }
 
   function evaluate({

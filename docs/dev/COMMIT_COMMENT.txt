@@ -1,1 +1,1 @@
-BUILD PR: exact asFiniteNumber extraction to shared number utils only.
+BUILD PR: extract duplicated promotion-state getState snapshot into shared helper only.

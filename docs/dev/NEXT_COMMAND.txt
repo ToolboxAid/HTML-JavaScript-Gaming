@@ -1,1 +1,1 @@
-Next: if clean, produce APPLY_PR_SHARED_EXTRACTION_04_AS_FINITE_NUMBER_ONLY. If blocked, narrow further without changing PR purpose.
+Next: if clean, commit result and continue to the next executable BUILD. If blocked, capture the exact blocker and narrow further without changing PR purpose.

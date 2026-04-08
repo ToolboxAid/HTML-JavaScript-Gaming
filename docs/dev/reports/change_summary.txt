@@ -1,2 +1,2 @@
-Built an execution-grade BUILD bundle for the remaining helper work by narrowing to one executable helper only: asFiniteNumber.
-Excluded getState because the uploaded repo snapshot did not support an exact helper-only extraction map without guessing.
+Built an execution-grade BUILD for the remaining getState-related work by narrowing to the only exact duplicated getState snapshot pattern identifiable without guessing.
+This BUILD centralizes the duplicated promotion-state snapshot logic only.

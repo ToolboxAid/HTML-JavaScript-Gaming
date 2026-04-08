@@ -1,6 +1,6 @@
 docs/
   pr/
-    BUILD_PR_SHARED_EXTRACTION_04_AS_FINITE_NUMBER_ONLY.md
+    BUILD_PR_SHARED_EXTRACTION_05_GETSTATE_PROMOTION_STATE_ONLY.md
   dev/
     codex_commands.md
     commit_comment.txt
