@@ -1,1 +1,1 @@
-Built the next executable alias rollout step, limited to network_sample_c only and assuming the existing @shared alias bootstrap.
+Built an enforcement guard step that protects the shared-extraction work, blocks reintroduced local helpers, blocks fragile relative shared imports, and blocks further @shared alias usage.

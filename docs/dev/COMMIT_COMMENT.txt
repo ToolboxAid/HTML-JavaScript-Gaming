@@ -1,1 +1,1 @@
-BUILD PR: switch network_sample_c shared helper imports to @shared alias only.
+BUILD PR: add shared extraction enforcement guard and block alias usage/regression.

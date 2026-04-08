@@ -1,6 +1,6 @@
 docs/
   pr/
-    BUILD_PR_SHARED_EXTRACTION_16_ALIAS_IMPORTS_NETWORK_SAMPLE_C.md
+    BUILD_PR_SHARED_EXTRACTION_17_ENFORCEMENT_GUARD.md
   dev/
     codex_commands.md
     commit_comment.txt
