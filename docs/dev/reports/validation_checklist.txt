@@ -1,16 +1,5 @@
 SESSION VALIDATION GATE
-- Bundle type: BUILD
-- One PR purpose only: yes
-- Exact target files listed: yes
-- Exact new file listed: yes
-- Exact source edits listed: yes
-- Vague repo-wide scan/refactor language avoided: yes
-- Scope minimized: yes
-- Start-of-day directories untouched: yes
-- Fake code claims avoided: yes
-- ZIP repo-structured and execution-ready: yes
-
-BUILD-SPECIFIC CHECKS
-- Codex can execute without guessing: yes
-- Broad getState normalization intentionally excluded: yes
-- Validation steps explicit: yes
+- BUILD executable: yes
+- Exact files listed: yes
+- No guessing: yes
+- Scope minimal: yes

@@ -1,1 +1,1 @@
-BUILD PR: extract duplicated promotion-state getState snapshot into shared helper only.
+BUILD PR: normalize createPromotionStateSnapshot imports in promotion/state modules only.

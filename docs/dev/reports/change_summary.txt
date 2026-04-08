@@ -1,2 +1,1 @@
-Built an execution-grade BUILD for the remaining getState-related work by narrowing to the only exact duplicated getState snapshot pattern identifiable without guessing.
-This BUILD centralizes the duplicated promotion-state snapshot logic only.
+Normalized import paths for shared promotion snapshot helper to prevent path drift.

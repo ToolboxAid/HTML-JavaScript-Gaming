@@ -7,7 +7,7 @@ createPromotionGate.js
 
 import { asFiniteNumber } from '../../shared/utils/numberUtils.js';
 import { isPlainObject } from '../../shared/utils/objectUtils.js';
-import { createPromotionStateSnapshot } from '../../shared/state/createPromotionStateSnapshot.js';
+import { createPromotionStateSnapshot } from '../shared/state/createPromotionStateSnapshot.js';
 
 function asPositiveInteger(value, fallback = 1) {
   const numeric = Math.floor(asFiniteNumber(value, fallback));
