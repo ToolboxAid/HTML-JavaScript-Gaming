@@ -1,4 +1,15 @@
-- Only targeted files changed
-- Imports point to src/shared
-- No additional helpers modified
-- Build passes
+SESSION VALIDATION GATE
+- Bundle type: BUILD
+- One PR purpose only: yes
+- Exact target files listed: yes
+- Exact destination file listed: yes
+- Exact source edits listed: yes
+- Repo-wide scan avoided: yes
+- Start-of-day directories touched: no
+- Fake code claims avoided: yes
+- ZIP repo-structured and execution-ready: yes
+
+BUILD-SPECIFIC CHECKS
+- Codex can execute without guessing: yes
+- Scope minimized to one helper: yes
+- Non-goals explicit: yes

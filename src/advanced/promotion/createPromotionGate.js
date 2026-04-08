@@ -5,8 +5,13 @@ David Quesenberry
 createPromotionGate.js
 */
 
-import { asFiniteNumber, asPositiveInteger } from '../../shared/utils/numberUtils.js';
+import { asFiniteNumber } from '../../shared/utils/numberUtils.js';
 import { isPlainObject } from '../../shared/utils/objectUtils.js';
+
+function asPositiveInteger(value, fallback = 1) {
+  const numeric = Math.floor(asFiniteNumber(value, fallback));
+  return numeric >= 1 ? numeric : fallback;
+}
 
 function normalizeCriteriaMap(input, requiredCriteria = []) {
   const normalized = {};

@@ -1,1 +1,1 @@
-APPLY PR: import normalization retry accepted for isPlainObject and asPositiveInteger.
+BUILD PR: exact asFiniteNumber extraction to shared number utils only.

@@ -19,7 +19,7 @@ import {
   createTransitionRejectedEvent
 } from './events.js';
 import { getState as getSharedState } from '../../shared/state/getState.js';
-import { asPositiveInteger } from '../../shared/utils/numberUtils.js';
+import { asFiniteNumber } from '../../shared/utils/numberUtils.js';
 import {
   cloneDeep,
   createReadonlyClone,
@@ -76,6 +76,11 @@ function resolveFrameFromMeta(meta, payload) {
     return Number(payload.frameId);
   }
   return null;
+}
+
+function asPositiveInteger(value, fallback = 1) {
+  const numeric = Math.floor(asFiniteNumber(value, fallback));
+  return numeric >= 1 ? numeric : fallback;
 }
 
 function normalizeRequiredCriteria(requiredCriteria) {

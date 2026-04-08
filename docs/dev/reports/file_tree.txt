@@ -1,1 +1,11 @@
-docs/pr + docs/dev structure
+docs/
+  pr/
+    BUILD_PR_SHARED_EXTRACTION_04_AS_FINITE_NUMBER_ONLY.md
+  dev/
+    codex_commands.md
+    commit_comment.txt
+    next_command.txt
+    reports/
+      change_summary.txt
+      validation_checklist.txt
+      file_tree.txt

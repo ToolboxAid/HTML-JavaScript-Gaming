@@ -1,1 +1,2 @@
-Accepted retry BUILD for import normalization with narrowed scope.
+Built an execution-grade BUILD bundle for the remaining helper work by narrowing to one executable helper only: asFiniteNumber.
+Excluded getState because the uploaded repo snapshot did not support an exact helper-only extraction map without guessing.
