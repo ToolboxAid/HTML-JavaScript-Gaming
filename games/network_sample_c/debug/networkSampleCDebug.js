@@ -8,6 +8,7 @@ networkSampleCDebug.js
 import { createNetworkDebugPluginDefinition } from "../../../engine/debug/network/index.js";
 import { asArray, asObject } from "../../../src/engine/debug/inspectors/shared/inspectorUtils.js";
 import {
+  asNumber,
   commandLinesForTrace,
   getCommandSnapshot,
   toNetworkSnapshot
@@ -17,11 +18,6 @@ const NETWORK_SAMPLE_KEY = "networkSampleC";
 
 function sanitizeText(value) {
   return typeof value === "string" ? value.trim() : "";
-}
-
-function asNumber(value, fallback = 0) {
-  const numeric = Number(value);
-  return Number.isFinite(numeric) ? numeric : fallback;
 }
 
 function formatEntityLine(entity, options = {}) {

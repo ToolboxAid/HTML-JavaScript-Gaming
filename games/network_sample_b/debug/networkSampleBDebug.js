@@ -7,17 +7,12 @@ networkSampleBDebug.js
 
 import { createNetworkDebugPluginDefinition } from "../../../engine/debug/network/index.js";
 import { asArray, asObject } from "../../../src/engine/debug/inspectors/shared/inspectorUtils.js";
-import { toNetworkSnapshot } from "../../../src/shared/utils/networkDebugUtils.js";
+import { asNumber, toNetworkSnapshot } from "../../../src/shared/utils/networkDebugUtils.js";
 
 const NETWORK_SAMPLE_KEY = "networkSampleB";
 
 function sanitizeText(value) {
   return typeof value === "string" ? value.trim() : "";
-}
-
-function asNumber(value, fallback = 0) {
-  const numeric = Number(value);
-  return Number.isFinite(numeric) ? numeric : fallback;
 }
 
 function toHostStatusLines(snapshot) {

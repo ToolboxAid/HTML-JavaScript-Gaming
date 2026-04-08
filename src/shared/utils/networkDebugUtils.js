@@ -14,7 +14,13 @@ function toSafeKey(value) {
   return sanitizeText(value);
 }
 
-export function toNetworkSnapshot(snapshot, sampleKey) {
+export function asNumber(value, fallback = 0) {
+  const numeric = Number(value);
+  return Number.isFinite(numeric) ? numeric : fallback;
+}
+
+export function toNetworkSnapshot(snapshot) {
+  const sampleKey = arguments[1];
   const key = toSafeKey(sampleKey);
   if (!key) {
     return {};
@@ -22,7 +28,8 @@ export function toNetworkSnapshot(snapshot, sampleKey) {
   return asObject(snapshot?.assets?.[key]);
 }
 
-export function getCommandSnapshot(context, sampleKey) {
+export function getCommandSnapshot(context) {
+  const sampleKey = arguments[1];
   const key = toSafeKey(sampleKey);
   if (!key) {
     return {};
@@ -30,14 +37,12 @@ export function getCommandSnapshot(context, sampleKey) {
   return asObject(context?.assets?.[key]);
 }
 
-export function commandLinesForTrace(context, args = [], options = {}) {
+export function commandLinesForTrace(context, args = []) {
+  const options = asObject(arguments[2]);
   const sanitize = typeof options?.sanitizeText === "function" ? options.sanitizeText : sanitizeText;
   const formatNumber = typeof options?.formatNumber === "function"
     ? options.formatNumber
-    : (value, fallback = 0) => {
-      const numeric = Number(value);
-      return Number.isFinite(numeric) ? numeric : fallback;
-    };
+    : asNumber;
 
   const snapshot = getCommandSnapshot(context, options?.sampleKey);
   const trace = asObject(snapshot.trace);
