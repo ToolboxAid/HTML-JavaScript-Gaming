@@ -11,6 +11,7 @@ import {
   standardDetails,
   toLinePair
 } from "./packUtils.js";
+import { getRuntimeAndRegistry } from "../shared/runtimeRegistryUtils.js";
 
 import { sanitizeText } from "../../../src/engine/debug/inspectors/shared/inspectorUtils.js";
 
@@ -34,36 +35,12 @@ function createReadyResult(title, lines, code, details = {}) {
   };
 }
 
-function getRuntimeAndRegistry(context) {
-  const runtime = context?.consoleRuntime;
-  if (!runtime || typeof runtime.getState !== "function") {
-    return {
-      status: "failed",
-      error: createFailedResult(
-        "Overlay Operator",
-        ["Console runtime is unavailable."],
-        "MISSING_COMMAND_CONTEXT"
-      )
-    };
-  }
-
-  const registry = runtime.panelRegistry;
-  if (!registry || typeof registry.getOrderedPanels !== "function" || typeof registry.setPanelEnabled !== "function") {
-    return {
-      status: "failed",
-      error: createFailedResult(
-        "Overlay Operator",
-        ["Overlay panel registry is unavailable."],
-        "MISSING_OVERLAY_REGISTRY"
-      )
-    };
-  }
-
-  return {
-    status: "ready",
-    runtime,
-    registry
-  };
+function toRuntimeContextError(runtimeContext) {
+  return createFailedResult(
+    "Overlay Operator",
+    [runtimeContext.message],
+    runtimeContext.code
+  );
 }
 
 function getPanels(registry, includeDisabled = true) {
@@ -206,10 +183,10 @@ export function createOverlayCommandPack() {
         handler(context) {
           const runtimeContext = getRuntimeAndRegistry(context);
           if (runtimeContext.status !== "ready") {
-            return runtimeContext.error;
+            return toRuntimeContextError(runtimeContext);
           }
 
-          const allPanels = getPanels(runtimeContext.registry, true);
+          const allPanels = getPanels(runtimeContext.panelRegistry, true);
           const lines = allPanels.length > 0
             ? allPanels.map((panel, index) => formatPanelLine(panel, index))
             : ["No overlay panels are registered."];
@@ -237,10 +214,10 @@ export function createOverlayCommandPack() {
         handler(context) {
           const runtimeContext = getRuntimeAndRegistry(context);
           if (runtimeContext.status !== "ready") {
-            return runtimeContext.error;
+            return toRuntimeContextError(runtimeContext);
           }
 
-          const allPanels = getPanels(runtimeContext.registry, true);
+          const allPanels = getPanels(runtimeContext.panelRegistry, true);
           const enabledPanels = allPanels.filter((panel) => panel.enabled === true);
           const runtimeState = runtimeContext.runtime.getState();
           return createReadyResult(
@@ -270,24 +247,24 @@ export function createOverlayCommandPack() {
         handler(context, args) {
           const runtimeContext = getRuntimeAndRegistry(context);
           if (runtimeContext.status !== "ready") {
-            return runtimeContext.error;
+            return toRuntimeContextError(runtimeContext);
           }
 
           const panelId = sanitizeText(args?.[0]);
-          const panel = findPanel(runtimeContext.registry, panelId);
+          const panel = findPanel(runtimeContext.panelRegistry, panelId);
           if (!panel) {
-            return buildMissingPanelError(runtimeContext.registry, panelId);
+            return buildMissingPanelError(runtimeContext.panelRegistry, panelId);
           }
 
-          const failure = setPanelState(runtimeContext.registry, panelId, true);
+          const failure = setPanelState(runtimeContext.panelRegistry, panelId, true);
           if (failure) {
             return failure;
           }
 
           runtimeContext.runtime.showOverlay();
-          const nextPanel = findPanel(runtimeContext.registry, panelId);
+          const nextPanel = findPanel(runtimeContext.panelRegistry, panelId);
           const runtimeState = runtimeContext.runtime.getState();
-          const persistence = persistOverlayState(context, runtimeContext.registry);
+          const persistence = persistOverlayState(context, runtimeContext.panelRegistry);
           return createReadyResult(
             "Overlay Show",
             [
@@ -316,23 +293,23 @@ export function createOverlayCommandPack() {
         handler(context, args) {
           const runtimeContext = getRuntimeAndRegistry(context);
           if (runtimeContext.status !== "ready") {
-            return runtimeContext.error;
+            return toRuntimeContextError(runtimeContext);
           }
 
           const panelId = sanitizeText(args?.[0]);
-          const panel = findPanel(runtimeContext.registry, panelId);
+          const panel = findPanel(runtimeContext.panelRegistry, panelId);
           if (!panel) {
-            return buildMissingPanelError(runtimeContext.registry, panelId);
+            return buildMissingPanelError(runtimeContext.panelRegistry, panelId);
           }
 
-          const failure = setPanelState(runtimeContext.registry, panelId, false);
+          const failure = setPanelState(runtimeContext.panelRegistry, panelId, false);
           if (failure) {
             return failure;
           }
 
-          const nextPanel = findPanel(runtimeContext.registry, panelId);
+          const nextPanel = findPanel(runtimeContext.panelRegistry, panelId);
           const runtimeState = runtimeContext.runtime.getState();
-          const persistence = persistOverlayState(context, runtimeContext.registry);
+          const persistence = persistOverlayState(context, runtimeContext.panelRegistry);
           return createReadyResult(
             "Overlay Hide",
             [
@@ -361,22 +338,22 @@ export function createOverlayCommandPack() {
         handler(context, args) {
           const runtimeContext = getRuntimeAndRegistry(context);
           if (runtimeContext.status !== "ready") {
-            return runtimeContext.error;
+            return toRuntimeContextError(runtimeContext);
           }
 
           const panelId = sanitizeText(args?.[0]);
-          const panel = findPanel(runtimeContext.registry, panelId);
+          const panel = findPanel(runtimeContext.panelRegistry, panelId);
           if (!panel) {
-            return buildMissingPanelError(runtimeContext.registry, panelId);
+            return buildMissingPanelError(runtimeContext.panelRegistry, panelId);
           }
 
-          const toggle = togglePanelState(runtimeContext.registry, panel);
+          const toggle = togglePanelState(runtimeContext.panelRegistry, panel);
           if (toggle.failure) {
             return toggle.failure;
           }
 
-          const nextPanel = findPanel(runtimeContext.registry, panelId);
-          const persistence = persistOverlayState(context, runtimeContext.registry);
+          const nextPanel = findPanel(runtimeContext.panelRegistry, panelId);
+          const persistence = persistOverlayState(context, runtimeContext.panelRegistry);
           return createReadyResult(
             "Overlay Toggle",
             [
@@ -403,15 +380,15 @@ export function createOverlayCommandPack() {
         handler(context) {
           const runtimeContext = getRuntimeAndRegistry(context);
           if (runtimeContext.status !== "ready") {
-            return runtimeContext.error;
+            return toRuntimeContextError(runtimeContext);
           }
 
-          const allPanels = getPanels(runtimeContext.registry, true);
+          const allPanels = getPanels(runtimeContext.panelRegistry, true);
           let changedCount = 0;
           for (let index = 0; index < allPanels.length; index += 1) {
             const panel = allPanels[index];
             const wasEnabled = panel.enabled === true;
-            const failure = setPanelState(runtimeContext.registry, panel.id, true);
+            const failure = setPanelState(runtimeContext.panelRegistry, panel.id, true);
             if (failure) {
               return failure;
             }
@@ -422,7 +399,7 @@ export function createOverlayCommandPack() {
 
           runtimeContext.runtime.showOverlay();
           const runtimeState = runtimeContext.runtime.getState();
-          const persistence = persistOverlayState(context, runtimeContext.registry);
+          const persistence = persistOverlayState(context, runtimeContext.panelRegistry);
           return createReadyResult(
             "Overlay ShowAll",
             [
@@ -451,15 +428,15 @@ export function createOverlayCommandPack() {
         handler(context) {
           const runtimeContext = getRuntimeAndRegistry(context);
           if (runtimeContext.status !== "ready") {
-            return runtimeContext.error;
+            return toRuntimeContextError(runtimeContext);
           }
 
-          const allPanels = getPanels(runtimeContext.registry, true);
+          const allPanels = getPanels(runtimeContext.panelRegistry, true);
           let changedCount = 0;
           for (let index = 0; index < allPanels.length; index += 1) {
             const panel = allPanels[index];
             const wasEnabled = panel.enabled === true;
-            const failure = setPanelState(runtimeContext.registry, panel.id, false);
+            const failure = setPanelState(runtimeContext.panelRegistry, panel.id, false);
             if (failure) {
               return failure;
             }
@@ -469,7 +446,7 @@ export function createOverlayCommandPack() {
           }
 
           const runtimeState = runtimeContext.runtime.getState();
-          const persistence = persistOverlayState(context, runtimeContext.registry);
+          const persistence = persistOverlayState(context, runtimeContext.panelRegistry);
           return createReadyResult(
             "Overlay HideAll",
             [
@@ -498,10 +475,10 @@ export function createOverlayCommandPack() {
         handler(context) {
           const runtimeContext = getRuntimeAndRegistry(context);
           if (runtimeContext.status !== "ready") {
-            return runtimeContext.error;
+            return toRuntimeContextError(runtimeContext);
           }
 
-          const allPanels = getPanels(runtimeContext.registry, true);
+          const allPanels = getPanels(runtimeContext.panelRegistry, true);
           const lines = allPanels.length > 0
             ? allPanels.map((panel, index) => formatPanelOrderLine(panel, index))
             : ["No overlay panels are registered."];

@@ -12,42 +12,9 @@ import {
   requireNoArgs
 } from "./packUtils.js";
 import { createResult } from "./commandPackResultUtils.js";
+import { getRuntimeAndRegistry } from "../shared/runtimeRegistryUtils.js";
 
 import { sanitizeText } from "../../../src/engine/debug/inspectors/shared/inspectorUtils.js";
-
-function getRuntimeAndRegistry(context) {
-  const runtime = context?.consoleRuntime;
-  const panelRegistry = runtime?.panelRegistry;
-  if (!runtime || typeof runtime.getState !== "function") {
-    return {
-      status: "failed",
-      error: createResult(
-        "failed",
-        "Group",
-        ["Console runtime is unavailable."],
-        "MISSING_COMMAND_CONTEXT"
-      )
-    };
-  }
-
-  if (!panelRegistry || typeof panelRegistry.getOrderedPanels !== "function" || typeof panelRegistry.setPanelEnabled !== "function") {
-    return {
-      status: "failed",
-      error: createResult(
-        "failed",
-        "Group",
-        ["Overlay panel registry is unavailable."],
-        "MISSING_OVERLAY_REGISTRY"
-      )
-    };
-  }
-
-  return {
-    status: "ready",
-    runtime,
-    panelRegistry
-  };
-}
 
 function buildSnapshot(panelRegistry) {
   const panels = panelRegistry.getOrderedPanels(true);
@@ -78,7 +45,12 @@ function persistSnapshotIfConfigured(context, panelRegistry) {
 function setGroupEnabled(context, groupDescriptor, nextEnabled) {
   const runtimeContext = getRuntimeAndRegistry(context);
   if (runtimeContext.status !== "ready") {
-    return runtimeContext.error;
+    return createResult(
+      "failed",
+      "Group",
+      [runtimeContext.message],
+      runtimeContext.code
+    );
   }
 
   const panelRegistry = runtimeContext.panelRegistry;
@@ -256,7 +228,12 @@ export function createGroupCommandPack() {
 
           const runtimeContext = getRuntimeAndRegistry(context);
           if (runtimeContext.status !== "ready") {
-            return runtimeContext.error;
+            return createResult(
+              "failed",
+              "Group",
+              [runtimeContext.message],
+              runtimeContext.code
+            );
           }
 
           const panelRegistry = runtimeContext.panelRegistry;

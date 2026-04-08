@@ -1,1 +1,1 @@
-Execution-grade batch for createResult using the exact duplicate-report file list.
+Execution-grade batch for getRuntimeAndRegistry using the exact duplicate-report file list.

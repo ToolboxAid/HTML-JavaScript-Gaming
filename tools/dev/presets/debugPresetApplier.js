@@ -8,38 +8,7 @@ debugPresetApplier.js
 import { sanitizeText } from "../../../src/engine/debug/inspectors/shared/inspectorUtils.js";
 import { isObject } from "../../../src/shared/utils/objectUtils.js";
 import { cloneJson } from "../../../src/shared/utils/jsonUtils.js";
-
-function getRuntimeAndRegistry(context) {
-  const runtime = context?.consoleRuntime;
-  const panelRegistry = runtime?.panelRegistry;
-  if (!runtime || typeof runtime.getState !== "function") {
-    return {
-      status: "failed",
-      code: "MISSING_COMMAND_CONTEXT",
-      message: "Console runtime is unavailable.",
-      runtime: null,
-      panelRegistry: null
-    };
-  }
-
-  if (!panelRegistry || typeof panelRegistry.getOrderedPanels !== "function" || typeof panelRegistry.setPanelEnabled !== "function") {
-    return {
-      status: "failed",
-      code: "MISSING_OVERLAY_REGISTRY",
-      message: "Overlay panel registry is unavailable.",
-      runtime,
-      panelRegistry: null
-    };
-  }
-
-  return {
-    status: "ready",
-    runtime,
-    panelRegistry,
-    code: "OK",
-    message: "ready"
-  };
-}
+import { getRuntimeAndRegistry } from "../shared/runtimeRegistryUtils.js";
 
 function getAllPanels(panelRegistry) {
   const panels = panelRegistry.getOrderedPanels(true);
