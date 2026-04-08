@@ -1,1 +1,1 @@
-Next: continue with next executable BUILD (no APPLY).
+Next: if clean, continue with the next executable BUILD. If blocked, capture the exact blocker and narrow further without changing PR purpose.

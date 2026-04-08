@@ -1,5 +1,9 @@
 SESSION VALIDATION GATE
-- BUILD executable: yes
-- Exact files listed: yes
-- No guessing: yes
-- Scope minimal: yes
+- Bundle type: BUILD
+- One PR purpose only: yes
+- Exact target files listed: yes
+- Exact import target listed: yes
+- No guessing beyond established shared helper path: yes
+- Repo-wide scan/refactor language avoided: yes
+- Scope minimized: yes
+- ZIP repo-structured and execution-ready: yes
