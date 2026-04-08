@@ -1,1 +1,1 @@
-Execution-grade batch for host reader helpers using the exact duplicate-report file list.
+Execution-grade batch for stringifyValue using the exact duplicate-report file list.

@@ -13,6 +13,7 @@ import {
   standardDetails,
   toLinePair
 } from "./packUtils.js";
+import { stringifyValue } from "../shared/stringifyValueUtils.js";
 
 import { sanitizeText } from "../../../src/engine/debug/inspectors/shared/inspectorUtils.js";
 
@@ -38,15 +39,6 @@ function findEntity(inspectors, entityId) {
     return entities.find((entry) => entry.id === inspectors.selectedEntityId) || entities[0] || null;
   }
   return entities.find((entry) => entry.id === id) || null;
-}
-
-function stringifyValue(value) {
-  try {
-    const json = JSON.stringify(value);
-    return typeof json === "string" ? json : String(value);
-  } catch (_error) {
-    return String(value);
-  }
 }
 
 function formatTime(timestamp) {

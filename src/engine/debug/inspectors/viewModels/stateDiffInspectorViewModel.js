@@ -9,15 +9,7 @@ import {
   asObject
 } from "../shared/inspectorUtils.js";
 import { asPositiveInteger } from "../../../../shared/utils/numberUtils.js";
-
-function stringifyValue(value) {
-  try {
-    const encoded = JSON.stringify(value);
-    return typeof encoded === "string" ? encoded : String(value);
-  } catch (_error) {
-    return String(value);
-  }
-}
+import { stringifyValue } from "../../../../../tools/dev/shared/stringifyValueUtils.js";
 
 export function createStateDiffInspectorViewModel(options = {}) {
   const source = asObject(options);

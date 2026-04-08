@@ -1,1 +1,1 @@
-BUILD PR: centralize readHostStatus/readHostSnapshot across exact engine batch.
+BUILD PR: centralize stringifyValue across exact inspector/command-pack batch.
