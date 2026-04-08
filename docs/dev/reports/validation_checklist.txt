@@ -1,1 +1,1 @@
-doc added correctly
+self-test runner added correctly

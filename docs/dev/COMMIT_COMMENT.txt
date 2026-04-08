@@ -1,1 +1,1 @@
-BUILD PR: add minimal usage doc for shared extraction guard.
+BUILD PR: add self-test runner for shared extraction guard.

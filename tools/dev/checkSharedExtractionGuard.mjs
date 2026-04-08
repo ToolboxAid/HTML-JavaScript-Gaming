@@ -22,6 +22,23 @@ const DIRECT_SHARED_IMPORT_RULES = [
 ];
 
 const ALIAS_RULE = { rule: "shared-alias-import-disallowed", regex: /@shared\//g, label: "rule:shared-alias-marker" };
+const NUMBER_UTIL_IMPORT_HINT = /from\s+["'][^"']*shared\/utils\/numberUtils\.js["']/;
+
+const INLINE_HELPER_VARIANT_RULES = [
+  { rule: "inline-helper-clone", regex: /\(value\)\s*=>\s*Number\.isFinite/g, label: "rule:inline-arrow-number-is-finite" },
+  { rule: "inline-helper-clone", regex: /typeof\s+value\s*===\s*'object'\s*&&\s*value\s*!==\s*null/g, label: "rule:inline-plain-object-check" }
+];
+
+const RENAMED_HELPER_FUNCTION_RULES = [
+  { rule: "renamed-helper-clone", regex: /function\s+finiteNumber\s*\(/g, label: "rule:renamed-helper-finiteNumber" },
+  { rule: "renamed-helper-clone", regex: /function\s+positiveInt\s*\(/g, label: "rule:renamed-helper-positiveInt" },
+  { rule: "renamed-helper-clone", regex: /function\s+plainObj\s*\(/g, label: "rule:renamed-helper-plainObj" }
+];
+
+const DEEP_RELATIVE_TRAVERSAL_RULES = [
+  { rule: "deep-relative-shared-traversal", regex: /\.\.\/\.\.\/\.\.\/\.\.\/src\/shared/g, label: "rule:deep-relative-src-shared-traversal" },
+  { rule: "deep-relative-shared-traversal", regex: /\.\.\/\.\.\/\.\.\/src\/\.\.\/shared/g, label: "rule:relative-src-parent-shared-traversal" }
+];
 
 async function pathExists(targetPath) {
   try {
@@ -86,7 +103,99 @@ function findViolations(fileContent, filePathFromRoot) {
     });
   }
 
+  for (const check of INLINE_HELPER_VARIANT_RULES) {
+    const matches = fileContent.match(check.regex) || [];
+    for (const _match of matches) {
+      violations.push({
+        file: filePathFromRoot,
+        type: check.rule,
+        match: check.label
+      });
+    }
+  }
+
+  for (const check of RENAMED_HELPER_FUNCTION_RULES) {
+    const matches = fileContent.match(check.regex) || [];
+    for (const _match of matches) {
+      violations.push({
+        file: filePathFromRoot,
+        type: check.rule,
+        match: check.label
+      });
+    }
+  }
+
+  for (const check of DEEP_RELATIVE_TRAVERSAL_RULES) {
+    const matches = fileContent.match(check.regex) || [];
+    for (const _match of matches) {
+      violations.push({
+        file: filePathFromRoot,
+        type: check.rule,
+        match: check.label
+      });
+    }
+  }
+
+  const finiteMatches = [...fileContent.matchAll(/Number\.isFinite\s*\(/g)];
+  for (const finiteMatch of finiteMatches) {
+    const matchIndex = finiteMatch.index ?? -1;
+    if (matchIndex < 0) continue;
+    const lineStart = fileContent.lastIndexOf("\n", matchIndex) + 1;
+    const lineEndCandidate = fileContent.indexOf("\n", matchIndex);
+    const lineEnd = lineEndCandidate === -1 ? fileContent.length : lineEndCandidate;
+    const lineText = fileContent.slice(lineStart, lineEnd);
+
+    if (NUMBER_UTIL_IMPORT_HINT.test(lineText)) continue;
+
+    violations.push({
+      file: filePathFromRoot,
+      type: "inline-helper-clone",
+      match: "rule:number-is-finite-usage"
+    });
+  }
+
   return violations;
+}
+
+function summarizeViolationLabels(violations) {
+  const counts = new Map();
+  for (const violation of violations) {
+    const next = (counts.get(violation.match) || 0) + 1;
+    counts.set(violation.match, next);
+  }
+  return [...counts.entries()].sort(([a], [b]) => a.localeCompare(b));
+}
+
+function printGroupedViolations(violations) {
+  const byType = new Map();
+  for (const violation of violations) {
+    if (!byType.has(violation.type)) byType.set(violation.type, new Map());
+    const byFile = byType.get(violation.type);
+    if (!byFile.has(violation.file)) byFile.set(violation.file, []);
+    byFile.get(violation.file).push(violation);
+  }
+
+  const typeEntries = [...byType.entries()].sort(([a], [b]) => a.localeCompare(b));
+  for (const [type, filesMap] of typeEntries) {
+    console.error(`TYPE: ${type}`);
+    const fileEntries = [...filesMap.entries()].sort(([a], [b]) => a.localeCompare(b));
+    for (const [file, fileViolations] of fileEntries) {
+      console.error(`  FILE: ${file}`);
+      const summaries = summarizeViolationLabels(fileViolations);
+      for (const [label, count] of summaries) {
+        console.error(`    MATCH: ${label}${count > 1 ? ` (x${count})` : ""}`);
+      }
+    }
+  }
+}
+
+function printSummary(filesScanned, violations, useErrorStream = false) {
+  const out = useErrorStream ? console.error : console.log;
+  const types = [...new Set(violations.map((violation) => violation.type))].sort();
+  const typeSummary = types.length > 0 ? types.join(", ") : "none";
+  out(`Summary: files_scanned=${filesScanned}`);
+  out(`Summary: total_violations=${violations.length}`);
+  out(`Summary: violation_types=${typeSummary}`);
 }
 
 async function run() {
@@ -108,15 +217,13 @@ async function run() {
 
   if (violations.length === 0) {
     console.log("Shared extraction guard passed. No violations found.");
+    printSummary(filesToScan.length, violations);
     process.exit(0);
   }
 
   console.error(`Shared extraction guard failed with ${violations.length} violation(s).`);
-  for (const violation of violations) {
-    console.error(
-      `${violation.file} | ${violation.type} | ${violation.match}`
-    );
-  }
+  printGroupedViolations(violations);
+  printSummary(filesToScan.length, violations, true);
   process.exit(1);
 }
 

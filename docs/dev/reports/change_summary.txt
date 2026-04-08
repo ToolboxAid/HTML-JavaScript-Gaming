@@ -1,1 +1,1 @@
-Adds guard usage documentation.
+Adds a temp-workspace self-test runner for the guard.
