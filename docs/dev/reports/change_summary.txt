@@ -1,3 +1,1 @@
-Created a docs-only correction PLAN after BUILD fail-fast.
-Recorded the exact blocker and defined the minimum execution-grade target map structure required before retrying BUILD.
-No code changes. No file moves. No runtime claims.
+Explicit helper extraction mapping created and executed.

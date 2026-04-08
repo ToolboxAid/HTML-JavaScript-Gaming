@@ -6,7 +6,7 @@ transitions.js
 */
 
 import { WORLD_GAME_STATE_EVENT_TYPES } from './constants.js';
-import { isPlainObject } from './utils.js';
+import { isPlainObject } from '../../shared/utils/objectUtils.js';
 
 function toFiniteNumber(value, fallback = 0) {
   const numeric = Number(value);

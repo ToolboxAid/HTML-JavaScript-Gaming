@@ -5,7 +5,8 @@ David Quesenberry
 initialState.js
 */
 
-import { isPlainObject, mergeDeep } from './utils.js';
+import { mergeDeep } from './utils.js';
+import { isPlainObject } from '../../shared/utils/objectUtils.js';
 
 function createInitialWorldGameState(initialPatch = {}) {
   const baseline = {

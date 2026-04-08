@@ -5,6 +5,7 @@ David Quesenberry
 ReconciliationLayerAdapter.js
 */
 import StateTimelineBuffer from "./StateTimelineBuffer.js";
+import { asFiniteNumber, asPositiveInteger } from "../../../src/shared/utils/numberUtils.js";
 
 const APPROVED_PUBLIC_EVENT_TYPES = new Set([
   "worldState.transition.applied",
@@ -13,19 +14,6 @@ const APPROVED_PUBLIC_EVENT_TYPES = new Set([
   "gameState.mode.changed",
   "objective.snapshot.updated"
 ]);
-
-function asPositiveInteger(value, fallback) {
-  const numeric = Number(value);
-  if (!Number.isFinite(numeric) || numeric <= 0) {
-    return fallback;
-  }
-  return Math.floor(numeric);
-}
-
-function asFiniteNumber(value, fallback = 0) {
-  const numeric = Number(value);
-  return Number.isFinite(numeric) ? numeric : fallback;
-}
 
 function sanitizeText(value, fallback = "") {
   return typeof value === "string" && value.trim() ? value.trim() : fallback;

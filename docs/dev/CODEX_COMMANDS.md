@@ -1,11 +1,6 @@
-# docs/dev/codex_commands.md
-
-No Codex command included.
-
-Reason:
-This is a docs-only correction PLAN. The previous BUILD failed because the referenced target map was not executable.
-Do not send Codex another BUILD until the target map contains:
-- exact source files
-- exact destination files
-- exact source -> destination mapping
-- exact import-update targets
+MODEL: GPT-5.3-codex
+REASONING: high
+COMMAND:
+Execute EXACT helper moves as listed.
+Do not expand.
+Output zip to <project folder>/tmp/.

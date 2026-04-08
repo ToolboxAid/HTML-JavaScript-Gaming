@@ -1,1 +1,1 @@
-PLAN PR: replace non-executable shared extraction target map with execution-grade target map requirements. No code changes.
+BUILD PR: executable helper extraction to shared (explicit file mapping).

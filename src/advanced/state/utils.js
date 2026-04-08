@@ -5,9 +5,7 @@ David Quesenberry
 utils.js
 */
 
-function isPlainObject(value) {
-  return !!value && typeof value === 'object' && !Array.isArray(value);
-}
+import { isPlainObject } from '../../shared/utils/objectUtils.js';
 
 function cloneDeep(value) {
   if (Array.isArray(value)) {

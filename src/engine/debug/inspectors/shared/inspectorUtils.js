@@ -5,6 +5,8 @@ David Quesenberry
 inspectorUtils.js
 */
 
+import { asPositiveInteger } from "../../../../shared/utils/numberUtils.js";
+
 export function sanitizeText(value) {
   return typeof value === "string" ? value.trim() : "";
 }
@@ -28,10 +30,7 @@ export function asNonNegativeInteger(value, fallback = 0) {
   return normalized >= 0 ? normalized : Math.max(0, Math.floor(asFinite(fallback, 0)));
 }
 
-export function asPositiveInteger(value, fallback = 1) {
-  const normalized = Math.floor(asFinite(value, fallback));
-  return normalized > 0 ? normalized : Math.max(1, Math.floor(asFinite(fallback, 1)));
-}
+export { asPositiveInteger };
 
 export function cloneJson(value) {
   if (typeof structuredClone === "function") {

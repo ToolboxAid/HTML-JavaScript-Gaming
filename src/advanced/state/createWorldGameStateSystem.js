@@ -18,6 +18,8 @@ import {
   createTransitionAppliedEvent,
   createTransitionRejectedEvent
 } from './events.js';
+import { getState as getSharedState } from '../../shared/state/getState.js';
+import { asPositiveInteger } from '../../shared/utils/numberUtils.js';
 import {
   cloneDeep,
   createReadonlyClone,
@@ -74,16 +76,6 @@ function resolveFrameFromMeta(meta, payload) {
     return Number(payload.frameId);
   }
   return null;
-}
-
-function asFiniteNumber(value, fallback = 0) {
-  const numeric = Number(value);
-  return Number.isFinite(numeric) ? numeric : fallback;
-}
-
-function asPositiveInteger(value, fallback = 1) {
-  const numeric = Math.floor(asFiniteNumber(value, fallback));
-  return numeric >= 1 ? numeric : fallback;
 }
 
 function normalizeRequiredCriteria(requiredCriteria) {
@@ -143,16 +135,6 @@ function createInlinePromotionGate({
       promoted,
       stableFrames,
       stabilityWindowFrames: windowFrames
-    };
-  }
-
-  function getState() {
-    return {
-      promoted,
-      stableFrames,
-      stabilityWindowFrames: windowFrames,
-      lastReason,
-      lastEvaluation: lastEvaluation ? cloneDeep(lastEvaluation) : null
     };
   }
 
@@ -238,7 +220,19 @@ function createInlinePromotionGate({
   return {
     evaluate,
     getMetrics,
-    getState
+    getState() {
+      const state = getSharedState({
+        promoted,
+        stableFrames,
+        stabilityWindowFrames: windowFrames,
+        lastReason,
+        lastEvaluation
+      });
+      return {
+        ...state,
+        lastEvaluation: state.lastEvaluation ? cloneDeep(state.lastEvaluation) : null
+      };
+    }
   };
 }
 

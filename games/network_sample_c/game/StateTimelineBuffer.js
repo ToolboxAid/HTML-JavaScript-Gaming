@@ -5,13 +5,7 @@ David Quesenberry
 StateTimelineBuffer.js
 */
 
-function asPositiveInteger(value, fallback) {
-  const numeric = Number(value);
-  if (!Number.isFinite(numeric) || numeric <= 0) {
-    return fallback;
-  }
-  return Math.floor(numeric);
-}
+import { asPositiveInteger } from "../../../src/shared/utils/numberUtils.js";
 
 function normalizeFrameId(frameId) {
   const numeric = Number(frameId);

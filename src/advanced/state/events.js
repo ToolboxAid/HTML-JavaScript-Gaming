@@ -9,7 +9,8 @@ import {
   WORLD_GAME_STATE_EVENT_TYPES,
   WORLD_GAME_STATE_SYSTEM_ID
 } from './constants.js';
-import { cloneDeep, isPlainObject } from './utils.js';
+import { cloneDeep } from './utils.js';
+import { isPlainObject } from '../../shared/utils/objectUtils.js';
 
 function createStateEventEnvelope({
   eventType,
