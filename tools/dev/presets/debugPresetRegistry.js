@@ -6,22 +6,9 @@ debugPresetRegistry.js
 */
 
 import { sanitizeText } from "../../../src/engine/debug/inspectors/shared/inspectorUtils.js";
+import { asStringArray } from "../../../src/shared/utils/arrayUtils.js";
 import { isObject } from "../../../src/shared/utils/objectUtils.js";
 import { cloneJson } from "../../../src/shared/utils/jsonUtils.js";
-
-function asStringArray(value) {
-  if (!Array.isArray(value)) {
-    return [];
-  }
-  const unique = new Set();
-  value.forEach((item) => {
-    const token = sanitizeText(String(item));
-    if (token) {
-      unique.add(token);
-    }
-  });
-  return Array.from(unique.values());
-}
 
 function normalizePresetDescriptor(descriptor = {}) {
   const presetId = sanitizeText(descriptor.presetId);

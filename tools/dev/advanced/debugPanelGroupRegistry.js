@@ -6,21 +6,8 @@ debugPanelGroupRegistry.js
 */
 
 import { sanitizeText } from "../../../src/engine/debug/inspectors/shared/inspectorUtils.js";
+import { asStringArray } from "../../../src/shared/utils/arrayUtils.js";
 import { cloneJson } from "../../../src/shared/utils/jsonUtils.js";
-
-function asStringArray(value) {
-  if (!Array.isArray(value)) {
-    return [];
-  }
-  const unique = new Set();
-  value.forEach((item) => {
-    const token = sanitizeText(String(item));
-    if (token) {
-      unique.add(token);
-    }
-  });
-  return Array.from(unique.values());
-}
 
 function normalizeGroupDescriptor(descriptor = {}) {
   const groupId = sanitizeText(descriptor.groupId);
