@@ -1,1 +1,1 @@
-Built the next executable step to consolidate duplicate shared-helper import lines inside network_sample_c only.
+Replaced the blocked alias BUILD with an execution-grade retry that explicitly creates a minimal jsconfig.json and switches only the two advanced files to @shared imports.
