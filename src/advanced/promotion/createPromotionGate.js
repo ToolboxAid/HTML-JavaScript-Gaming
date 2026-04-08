@@ -5,9 +5,9 @@ David Quesenberry
 createPromotionGate.js
 */
 
-import { asFiniteNumber, asPositiveInteger } from '@shared/utils/numberUtils.js';
-import { isPlainObject } from '@shared/utils/objectUtils.js';
-import { createPromotionStateSnapshot } from '@shared/state/createPromotionStateSnapshot.js';
+import { asFiniteNumber, asPositiveInteger } from '../../shared/utils/numberUtils.js';
+import { isPlainObject } from '../../shared/utils/objectUtils.js';
+import { createPromotionStateSnapshot } from '../../shared/state/createPromotionStateSnapshot.js';
 
 function normalizeCriteriaMap(input, requiredCriteria = []) {
   const normalized = {};

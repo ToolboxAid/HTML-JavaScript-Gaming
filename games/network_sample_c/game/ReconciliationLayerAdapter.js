@@ -5,7 +5,7 @@ David Quesenberry
 ReconciliationLayerAdapter.js
 */
 import StateTimelineBuffer from "./StateTimelineBuffer.js";
-import { asFiniteNumber, asPositiveInteger } from "@shared/utils/numberUtils.js";
+import { asFiniteNumber, asPositiveInteger } from "../../../src/shared/utils/numberUtils.js";
 
 const APPROVED_PUBLIC_EVENT_TYPES = new Set([
   "worldState.transition.applied",

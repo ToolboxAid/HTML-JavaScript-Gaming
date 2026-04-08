@@ -1,1 +1,1 @@
-Built an enforcement guard step that protects the shared-extraction work, blocks reintroduced local helpers, blocks fragile relative shared imports, and blocks further @shared alias usage.
+Built the next executable step to remove alias/disallowed shared import variants and standardize the approved relative shared import paths in the current normalized slices only.

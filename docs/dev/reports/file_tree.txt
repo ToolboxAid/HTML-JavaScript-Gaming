@@ -1,6 +1,6 @@
 docs/
   pr/
-    BUILD_PR_SHARED_EXTRACTION_17_ENFORCEMENT_GUARD.md
+    BUILD_PR_SHARED_EXTRACTION_18_RELATIVE_PATH_STANDARDIZATION.md
   dev/
     codex_commands.md
     commit_comment.txt
