@@ -1,7 +1,8 @@
-APPLY: finalize repo structure normalization (03) remove legacy engine directory
+PLAN: prepare shared extraction (duplicate helpers → src/shared)
 
-- removed root-level engine/ directory
-- src/engine/ is now the only engine location
+- defined scope for identifying duplicate helpers
+- no code or structure changes
+- sets up next BUILD PR with exact file targets
 
 next:
-- shared extraction
+- BUILD_PR_SHARED_EXTRACTION_01_MOVE_HELPERS

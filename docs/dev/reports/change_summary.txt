@@ -1,1 +1,4 @@
-removed legacy engine directory
+CHANGE SUMMARY
+
+- preparing shared extraction plan
+- no code changes
