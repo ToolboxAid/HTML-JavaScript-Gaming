@@ -1,5 +1,7 @@
 - single PR purpose only
 - exact target files only
-- no new files
+- copy-only from original Asteroids files
 - no original Asteroids file changes
-- minimum-fix validation only
+- no systems/levels/assets widening
+- minimum import/path fixes only
+- listed asteroids_new files parse and resolve together

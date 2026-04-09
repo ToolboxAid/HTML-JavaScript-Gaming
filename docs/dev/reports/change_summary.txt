@@ -1,2 +1,4 @@
-- focused validation and minimum-fix closeout for the current aggressive asteroids_new burst
-- no original Asteroids files touched
+- combine multiple previously separate asteroids_new parallel-adoption slices into one larger exact-file BUILD
+- copy world, debug shell, and two entity files into the parallel lane
+- allow only the minimum path/import fixes inside asteroids_new index/flow files
+- keep the original Asteroids game untouched

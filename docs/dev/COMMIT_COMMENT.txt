@@ -1,1 +1,1 @@
-Validate and minimally fix the current asteroids_new parallel boot lane.
+Accelerate asteroids_new with one larger non-destructive parallel adoption burst covering world, debug, and two entity files.

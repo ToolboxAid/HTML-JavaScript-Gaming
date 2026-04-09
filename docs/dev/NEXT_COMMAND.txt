@@ -1,1 +1,1 @@
-Next: inspect whether systems or one additional gameplay slice can be pulled over exactly.
+After commit, inspect the delta and either pull one additional gameplay slice or validate before widening into systems.

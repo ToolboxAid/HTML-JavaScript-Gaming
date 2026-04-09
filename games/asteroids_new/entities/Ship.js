@@ -4,7 +4,7 @@ David Quesenberry
 03/22/2026
 Ship.js
 */
-import { wrap } from "../../asteroids/utils/math.js";
+import { wrap } from '../../Asteroids/utils/math.js';
 import { transformPoints } from '../../../src/engine/vector/index.js';
 
 const SMALL_VECTOR_MAP = [
