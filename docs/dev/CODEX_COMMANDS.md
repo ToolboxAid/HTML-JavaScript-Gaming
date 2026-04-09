@@ -1,5 +1,5 @@
 MODEL: GPT-5.4-codex
 REASONING: high
 COMMAND:
-Execute docs/pr/BUILD_PR_PROMOTION_GATE_57_OBSERVABILITY_ABORT.md exactly.
-Package to <project folder>/tmp/BUILD_PR_PROMOTION_GATE_57_OBSERVABILITY_ABORT_delta.zip
+Execute docs/pr/BUILD_PR_PROMOTION_GATE_58_VALIDATION_CLOSEOUT.md exactly.
+Package to <project folder>/tmp/BUILD_PR_PROMOTION_GATE_58_VALIDATION_CLOSEOUT_delta.zip

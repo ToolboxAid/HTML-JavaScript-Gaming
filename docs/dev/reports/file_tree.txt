@@ -1,3 +1,2 @@
 src/advanced/promotion/createPromotionGate.js
-src/engine/debug/panels/PromotionGatePanel.js
 src/shared/state/createPromotionStateSnapshot.js

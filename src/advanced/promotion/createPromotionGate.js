@@ -53,12 +53,38 @@ function resolveGateMode({ promoted }) {
 }
 
 function createAbortVisibility({ rollbackTriggered, promoted, reason }) {
-  const aborted = Boolean(rollbackTriggered) && !promoted;
+  const aborted = Boolean(rollbackTriggered);
   return {
     decisionPath: 'PROMOTION_GATE_ABORT_VISIBILITY',
     rollbackTriggered: Boolean(rollbackTriggered),
     aborted,
-    reason: aborted ? 'ROLLBACK_ABORTED_PROMOTION' : String(reason || '')
+    reason: aborted
+      ? (promoted ? 'ROLLBACK_ABORT_VISIBLE' : 'ROLLBACK_ABORTED_PROMOTION')
+      : String(reason || '')
+  };
+}
+
+function createValidationChecklist(evaluation, cycleState) {
+  const modeVisible = typeof evaluation?.mode === 'string' && evaluation.mode.length > 0;
+  const handoffVisible = isPlainObject(evaluation?.handoff)
+    && evaluation.handoff.decisionPath === 'PROMOTION_GATE_HANDOFF';
+  const abortVisible = isPlainObject(evaluation?.abort)
+    && evaluation.abort.decisionPath === 'PROMOTION_GATE_ABORT_VISIBILITY';
+
+  cycleState.passiveSeen = cycleState.passiveSeen || evaluation.mode === 'passive';
+  cycleState.authoritativeSeen = cycleState.authoritativeSeen || evaluation.mode === 'authoritative';
+  cycleState.abortSeen = cycleState.abortSeen || evaluation.abort?.aborted === true;
+  cycleState.fullCycleReached = cycleState.passiveSeen && cycleState.authoritativeSeen && cycleState.abortSeen;
+
+  return {
+    checklistPath: 'PROMOTION_GATE_VALIDATION_CLOSEOUT',
+    modeVisible,
+    handoffVisible,
+    abortVisible,
+    passiveSeen: cycleState.passiveSeen,
+    authoritativeSeen: cycleState.authoritativeSeen,
+    abortSeen: cycleState.abortSeen,
+    fullCycleReached: cycleState.fullCycleReached
   };
 }
 
@@ -68,6 +94,7 @@ function createPromotionGate(options = {}) {
   const stabilityWindowFrames = asPositiveInteger(options.stabilityWindowFrames, 3);
   const logger = typeof options.logger === 'function' ? options.logger : null;
   const onEvaluation = typeof options.onEvaluation === 'function' ? options.onEvaluation : null;
+  const onValidation = typeof options.onValidation === 'function' ? options.onValidation : null;
 
   let promoted = Boolean(options.initiallyPromoted);
   let stableFrames = promoted ? stabilityWindowFrames : 0;
@@ -82,6 +109,12 @@ function createPromotionGate(options = {}) {
     promotions: promoted ? 1 : 0,
     lastEvaluationAtMs: null,
     lastPromotionAtMs: promoted ? Number(now()) : null
+  };
+  const validationCycle = {
+    passiveSeen: !promoted,
+    authoritativeSeen: promoted,
+    abortSeen: false,
+    fullCycleReached: false
   };
 
   function getMetrics() {
@@ -180,6 +213,7 @@ function createPromotionGate(options = {}) {
       reason: lastReason,
       metrics: getMetrics()
     };
+    evaluation.validation = createValidationChecklist(evaluation, validationCycle);
 
     lastEvaluation = evaluation;
 
@@ -191,6 +225,9 @@ function createPromotionGate(options = {}) {
     }
     if (onEvaluation) {
       onEvaluation(evaluation);
+    }
+    if (onValidation) {
+      onValidation(evaluation.validation, evaluation);
     }
 
     return evaluation;

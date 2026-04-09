@@ -1,1 +1,1 @@
-Add promotion gate observability and abort visibility
+Finalize promotion gate validation and closeout

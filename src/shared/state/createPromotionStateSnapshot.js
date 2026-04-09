@@ -12,6 +12,11 @@ function cloneAbort(value) {
   return { ...value };
 }
 
+function cloneValidation(value) {
+  if (!value || typeof value !== 'object') return null;
+  return { ...value };
+}
+
 function resolveStatusMode({ promoted, lastEvaluation }) {
   const fromEvaluation = lastEvaluation && typeof lastEvaluation.mode === 'string'
     ? lastEvaluation.mode
@@ -27,6 +32,10 @@ function resolveStatusHandoff({ handoff, lastEvaluation }) {
 
 function resolveStatusAbort({ lastEvaluation }) {
   return cloneAbort(lastEvaluation?.abort);
+}
+
+function resolveStatusValidation({ lastEvaluation }) {
+  return cloneValidation(lastEvaluation?.validation);
 }
 
 export function createPromotionStateSnapshot({
@@ -52,7 +61,8 @@ export function createPromotionStateSnapshot({
   snapshot.status = {
     mode: resolveStatusMode({ promoted, lastEvaluation: snapshot.lastEvaluation }),
     handoff: resolvedHandoff,
-    abort: resolveStatusAbort({ lastEvaluation: snapshot.lastEvaluation })
+    abort: resolveStatusAbort({ lastEvaluation: snapshot.lastEvaluation }),
+    validation: resolveStatusValidation({ lastEvaluation: snapshot.lastEvaluation })
   };
   return snapshot;
 }
