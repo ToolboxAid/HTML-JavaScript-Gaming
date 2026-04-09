@@ -11,6 +11,7 @@ import Ufo from '../entities/Ufo.js';
 import { arePolygonsColliding } from '../../../src/engine/collision/index.js';
 import { distance } from '../../../src/engine/utils/index.js';
 import { randomRange } from '../utils/math.js';
+import { sanitizeFiniteNumber, sanitizePositiveNumber } from '../../../src/shared/math/numberNormalization.js';
 
 const WAVE_ASTEROID_COUNTS = [4, 6, 8];
 const RESPAWN_SAFE_DISTANCE = 100;
@@ -31,10 +32,6 @@ const WAVE_SPAWN_ATTEMPTS = 60;
 const ASTEROID_SPAWN_SAFE_PADDING = 24;
 const MAX_UPDATE_STEP_SECONDS = 1 / 60;
 
-function sanitizeFiniteNumber(value, fallback) {
-  return Number.isFinite(value) ? value : fallback;
-}
-
 function sanitizeBoolean(value, fallback = false) {
   return typeof value === 'boolean' ? value : fallback;
 }
@@ -44,11 +41,6 @@ function sanitizeInteger(value, fallback, { min = -Infinity, max = Infinity } = 
     return fallback;
   }
   return Math.max(min, Math.min(max, Math.trunc(value)));
-}
-
-function sanitizePositiveNumber(value, fallback) {
-  const number = sanitizeFiniteNumber(value, fallback);
-  return number > 0 ? number : fallback;
 }
 
 function sanitizeArray(value) {

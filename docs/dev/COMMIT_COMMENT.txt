@@ -1,1 +1,1 @@
-Promote asNumber into src/shared/math/numberNormalization.js and migrate the two exact network debug utility duplicates.
+Move Asteroids-local number sanitizers into src/shared/math/numberNormalization.js and replace local definitions with shared imports.

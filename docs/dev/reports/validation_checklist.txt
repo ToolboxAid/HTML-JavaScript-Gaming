@@ -4,4 +4,4 @@
 - Confirm imports resolve correctly after the change
 - Confirm no dead local helper remains in the touched files for this PR purpose
 - Confirm no unrelated refactor or formatting-only churn was introduced
-- Confirm `asObject` and `asArray` were not changed in this PR
+- Confirm no non-number helper in AsteroidsWorld.js was changed
