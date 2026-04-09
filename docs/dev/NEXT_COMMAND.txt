@@ -1,1 +1,4 @@
-Test Ctrl+Shift+` and Shift+` in asteroids_new.
+Create BUILD_PR_GAMES_ASTEROIDS_COPY_FROM_ASTEROIDS_NEW
+
+Scope:
+- Copy contents from games/asteroids_new to games/Asteroids

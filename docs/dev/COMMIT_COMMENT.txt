@@ -1,1 +1,5 @@
-Install and wire debug system in asteroids_new and enable keybindings.
+BUILD_PR_GAMES_ASTEROIDS_CLEAR_DESTINATION
+
+Cleared games/Asteroids directory in preparation for canonical replacement.
+
+No other directories affected.

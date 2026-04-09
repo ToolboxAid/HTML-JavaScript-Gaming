@@ -1,5 +1,0 @@
-{
-  "name": "Asteroids Demo Stage",
-  "screens": ["title", "play", "game-over"],
-  "systems": ["ship", "bullets", "asteroids", "score", "lives", "waves"]
-}

@@ -1,9 +1,12 @@
-MODEL: GPT-5.4-codex
+MODEL: GPT-5.3-codex
 REASONING: high
 
 COMMAND:
-Execute exactly docs/pr/BUILD_PR_GAMES_103A_ASTEROIDS_NEW_DEBUG_INSTALL_AND_KEYBINDINGS.md.
-Modify only listed files.
-Do not expand scope.
-Package:
-<project folder>/tmp/BUILD_PR_GAMES_103A_ASTEROIDS_NEW_DEBUG_INSTALL_AND_KEYBINDINGS_delta.zip
+Execute BUILD_PR_GAMES_ASTEROIDS_CLEAR_DESTINATION exactly.
+
+- Delete ONLY games/Asteroids/**
+- Do not touch any other directory
+- Fail fast on ambiguity
+
+Output:
+<project folder>/tmp/BUILD_PR_GAMES_ASTEROIDS_CLEAR_DESTINATION_delta.zip

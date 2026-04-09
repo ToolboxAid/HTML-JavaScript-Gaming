@@ -1,1 +1,7 @@
-Debug visible + keys work
+Validation Checklist — Clear Destination
+
+[ ] games/Asteroids exists
+[ ] games/Asteroids is empty
+[ ] No other directories changed
+
+Status: PENDING
