@@ -1,6 +1,6 @@
-Create BUILD_PR_GAMES_SPACE_INVADERS_COPY_FROM_NEXT
+Create APPLY_PR_GAMES_SPACE_INVADERS_COPY_FROM_NEXT
 
 Scope:
-- copy games/SpaceInvaders_next into games/SpaceInvaders
-- include all required files in correct destinations
-- explicitly validate capture-preview.html presence if it belongs in source
+- accept canonical replacement
+- validate runtime and structure
+- prepare for _next cleanup

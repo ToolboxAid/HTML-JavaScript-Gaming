@@ -1,7 +1,8 @@
-BUILD_PR_GAMES_SPACE_INVADERS_CLEAR_DESTINATION
+BUILD_PR_GAMES_SPACE_INVADERS_COPY_FROM_NEXT
 
-Cleared games/SpaceInvaders in preparation for canonical replacement.
+Copied SpaceInvaders_next into canonical SpaceInvaders.
 
-- destination emptied
-- SpaceInvaders_next preserved unchanged
-- no copy performed in this PR
+- clean destination
+- structure preserved
+- runtime validated
+- no file guessing

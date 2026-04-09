@@ -1,8 +1,9 @@
-Validation Checklist — Games Space Invaders Clear Destination
+Validation Checklist — Games Space Invaders Copy From Next
 
-[ ] games/SpaceInvaders exists
-[ ] games/SpaceInvaders is empty
-[ ] games/SpaceInvaders_next remains unchanged
-[ ] No unrelated paths changed
+[ ] games/SpaceInvaders matches _next
+[ ] Gameplay boots from canonical path
+[ ] No console errors
+[ ] capture-preview.html rule respected
+[ ] _next unchanged
 
 Status: PENDING
