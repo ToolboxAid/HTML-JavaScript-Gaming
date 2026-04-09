@@ -1,6 +1,6 @@
-Create APPLY_PR_GAMES_TEMPLATE_ENGINE_THEME_BOOTSTRAP_ALIGNMENT
+Create APPLY_PR_GAMES_TEMPLATE_ENGINE_THEME_CANVAS_STATUS_TEXT
 
 Scope:
 - accept template shell/theme alignment
-- confirm consistent view baseline
+- confirm required status text renders on canvas
 - confirm no gameplay boot

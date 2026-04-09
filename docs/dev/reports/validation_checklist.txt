@@ -1,11 +1,12 @@
-Validation Checklist — Games Template Engine Theme Bootstrap Alignment
+Validation Checklist — Games Template Engine Theme Canvas Status Text
 
-[ ] games/_template/index.html shows consistent shell/theme baseline
+[ ] Consistent shell/theme baseline is present
 [ ] Canvas is visible
-[ ] Template message visible
-[ ] No Asteroids gameplay boots
-[ ] No Asteroids-specific assets copied into _template
-[ ] Only minimal shell/bootstrap files added
+[ ] "HTML Says" renders on canvas
+[ ] "Template Status" renders on canvas
+[ ] "This template intentionally does not boot gameplay." renders on canvas
+[ ] Status text is not relied on as HTML body text
+[ ] No gameplay boots
 [ ] No console errors
 
 Status: PENDING

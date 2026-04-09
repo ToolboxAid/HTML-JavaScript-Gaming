@@ -1,7 +1,7 @@
-BUILD_PR_GAMES_TEMPLATE_ENGINE_THEME_BOOTSTRAP_ALIGNMENT
+BUILD_PR_GAMES_TEMPLATE_ENGINE_THEME_CANVAS_STATUS_TEXT
 
-Aligned games/_template with the canonical engine/theme shell baseline.
+Updated games/_template to keep the canonical shell/theme baseline while rendering template status text on the canvas.
 
-- updated template index shell
-- added only minimal shared bootstrap/theme dependencies as needed
-- kept template non-playable and game-neutral
+- preserved non-playable template shell
+- moved status messaging to canvas rendering
+- kept gameplay and assets out of _template

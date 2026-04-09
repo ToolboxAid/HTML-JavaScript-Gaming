@@ -1,5 +1,0 @@
-[ ] Canvas renders
-[ ] Text drawn on canvas
-[ ] No DOM text
-[ ] No console errors
-Status: PENDING
