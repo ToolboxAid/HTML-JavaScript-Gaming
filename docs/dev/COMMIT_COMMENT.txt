@@ -1,1 +1,1 @@
-Create initial games template structure
+Wire minimal flow structure in template (no game impact)

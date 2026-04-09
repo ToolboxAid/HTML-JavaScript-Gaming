@@ -1,1 +1,1 @@
-template scaffold
+Wire minimal flow structure in template (no game impact)

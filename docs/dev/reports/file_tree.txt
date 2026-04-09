@@ -1,1 +1,2 @@
-games/_template/*
+games/_template/index.js
+games/_template/flow/*
