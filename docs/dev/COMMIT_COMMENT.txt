@@ -1,7 +1,2 @@
-APPLY_PR_GAMES_PONG_FULL_FOLDER_MIGRATION
-
-Accepted full Pong migration.
-
-- canonical Pong validated
-- _next removed
-- pipeline confirmed
+BUILD_PR_GAMES_GRAVITY_FULL_FOLDER_MIGRATION
+Full Gravity migration.
