@@ -1,6 +1,7 @@
-BUILD_PR_GAMES_ASTEROIDS_COPY_FROM_ASTEROIDS_NEW
+BUILD_PR_GAMES_TEMPLATE_FROM_ASTEROIDS_V2_INDEX_SHELL
 
-Copied asteroids_new into games/Asteroids as canonical implementation.
+Created games/_template with standardized index shell.
 
-Exact mirror copy.
-No source modification.
+- Canvas present
+- Template message displayed
+- No game logic included

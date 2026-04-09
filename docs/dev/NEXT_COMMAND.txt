@@ -1,5 +1,5 @@
-Create APPLY_PR_GAMES_ASTEROIDS_CANONICAL_SWAP
+Create APPLY_PR_GAMES_TEMPLATE_FROM_ASTEROIDS
 
 Scope:
-- Accept canonical replacement
-- Confirm validation
+- Accept template
+- Confirm shell behavior

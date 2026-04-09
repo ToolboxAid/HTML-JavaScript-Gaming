@@ -1,4 +1,4 @@
-export const attractFlow = Object.freeze({
+﻿export const attractFlow = Object.freeze({
   id: "attract",
   label: "Attract"
 });

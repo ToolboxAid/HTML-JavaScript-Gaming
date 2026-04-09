@@ -1,7 +1,8 @@
-Validation Checklist — Copy From asteroids_new
+Validation Checklist — Template Index Shell
 
-[ ] Destination matches source exactly
-[ ] File count identical
-[ ] No extra files
+[ ] index.html renders canvas
+[ ] Template message visible
+[ ] No game logic runs
+[ ] No assets included
 
 Status: PENDING
