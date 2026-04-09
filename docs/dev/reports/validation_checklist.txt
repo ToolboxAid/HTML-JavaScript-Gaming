@@ -1,5 +1,1 @@
-- single PR purpose only
-- exact target file only
-- no file or directory creation
-- no file moves or renames
-- all links still resolve
+links resolve; no duplicates

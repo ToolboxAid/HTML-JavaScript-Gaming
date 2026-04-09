@@ -1,1 +1,1 @@
-Group existing sample links in samples/index.html by phase using current paths only.
+Clean up samples index links (duplicates/broken)

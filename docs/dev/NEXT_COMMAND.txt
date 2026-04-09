@@ -1,1 +1,1 @@
-Next: inspect exact sample file paths before issuing any folder-alignment BUILD.
+Next: identify exact sample files for phase-folder normalization
