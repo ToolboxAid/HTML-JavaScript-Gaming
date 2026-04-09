@@ -1,1 +1,1 @@
-After commit, report visible gameplay behavior and decide whether the next slice should be scoring/audio/input polish or one targeted stabilization PR.
+After commit, report exactly what becomes visible at boot; use that result to choose either boot-fix or gameplay continuation.

@@ -38,6 +38,16 @@ const ATTRACT_INPUT_CODES = [
   'Enter',
   'KeyP',
 ];
+let hasLoggedSceneConstruction = false;
+let hasLoggedSceneEnter = false;
+
+function logSceneBootStage(stage, details = null) {
+  if (details === null) {
+    console.info(`[AsteroidsNewBoot] scene:${stage}`);
+  } else {
+    console.info(`[AsteroidsNewBoot] scene:${stage}`, details);
+  }
+}
 
 function getBeatInterval(asteroidCount) {
   if (asteroidCount <= 1) {
@@ -84,6 +94,10 @@ function drawLives(renderer, centerX, y, lives) {
 export default class AsteroidsGameScene extends Scene {
   constructor(options = {}) {
     super();
+    if (!hasLoggedSceneConstruction) {
+      hasLoggedSceneConstruction = true;
+      logSceneBootStage('constructed');
+    }
     this.devConsoleIntegration = options.devConsoleIntegration || null;
     this.debugConfig = options.debugConfig || {
       debugMode: 'prod',
@@ -179,6 +193,10 @@ export default class AsteroidsGameScene extends Scene {
   }
 
   enter(engine) {
+    if (!hasLoggedSceneEnter) {
+      hasLoggedSceneEnter = true;
+      logSceneBootStage('enter');
+    }
     if (engine?.canvas) {
       engine.canvas.style.cursor = this.session.mode === 'playing' && !this.isPaused
         ? 'none'

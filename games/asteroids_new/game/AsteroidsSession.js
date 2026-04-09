@@ -35,9 +35,23 @@ function createSilentEvents() {
     sfx: [],
   };
 }
+let hasLoggedSessionConstruction = false;
+let hasLoggedSessionStart = false;
+
+function logSessionBootStage(stage, details = null) {
+  if (details === null) {
+    console.info(`[AsteroidsNewBoot] session:${stage}`);
+  } else {
+    console.info(`[AsteroidsNewBoot] session:${stage}`, details);
+  }
+}
 
 export default class AsteroidsSession {
   constructor(world, highScoreStore) {
+    if (!hasLoggedSessionConstruction) {
+      hasLoggedSessionConstruction = true;
+      logSessionBootStage('constructed');
+    }
     this.turnIntroTotalFlashes = 10;
     this.turnIntroInterval = 0.2;
     this.world = world;
@@ -63,6 +77,10 @@ export default class AsteroidsSession {
   }
 
   start(playerCount) {
+    if (!hasLoggedSessionStart) {
+      hasLoggedSessionStart = true;
+      logSessionBootStage('start-called', { playerCount });
+    }
     const safePlayerCount = sanitizePlayerCount(Number(playerCount));
     this.players = Array.from({ length: safePlayerCount }, (_, index) => ({
       id: index + 1,

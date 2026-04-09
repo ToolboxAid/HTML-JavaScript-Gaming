@@ -1,1 +1,1 @@
-Complete the minimum gameplay slice in asteroids_new so the parallel lane is meaningfully testable, not just bootable.
+Add explicit boot-entry visibility to asteroids_new so execution or silent failure can be confirmed immediately.

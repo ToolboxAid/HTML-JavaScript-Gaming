@@ -1,4 +1,4 @@
-docs/pr/BUILD_PR_GAMES_98A_ASTEROIDS_NEW_GAMEPLAY_SLICE_COMPLETION.md
+docs/pr/BUILD_PR_GAMES_99A_ASTEROIDS_NEW_BOOT_ENTRY_VISIBILITY_AND_EXECUTION_CHECK.md
 docs/dev/codex_commands.md
 docs/dev/commit_comment.txt
 docs/dev/next_command.txt
@@ -9,9 +9,3 @@ games/asteroids_new/index.js
 games/asteroids_new/game/AsteroidsGameScene.js
 games/asteroids_new/game/AsteroidsSession.js
 games/asteroids_new/game/AsteroidsWorld.js
-games/asteroids_new/entities/Asteroid.js
-games/asteroids_new/entities/Bullet.js
-games/asteroids_new/entities/Ship.js
-games/asteroids_new/entities/Ufo.js
-games/asteroids_new/systems/ShipDebrisSystem.js
-games/asteroids_new/debug/asteroidsShowcaseDebug.js

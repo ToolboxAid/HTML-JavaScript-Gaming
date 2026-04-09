@@ -1,7 +1,5 @@
 - single PR purpose only
 - exact target files only
 - no original Asteroids file changes
-- no new files
-- no assets/platform/config/levels widening
-- asteroids_new remains runnable from its own index entry
-- gameplay slice is meaningfully testable
+- visible execution proof added
+- silent failure point exposed if boot still fails

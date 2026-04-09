@@ -31,6 +31,16 @@ const WAVE_SPAWN_MARGIN_Y = 120;
 const WAVE_SPAWN_ATTEMPTS = 60;
 const ASTEROID_SPAWN_SAFE_PADDING = 24;
 const MAX_UPDATE_STEP_SECONDS = 1 / 60;
+let hasLoggedWorldConstruction = false;
+let hasLoggedWorldStartGame = false;
+
+function logWorldBootStage(stage, details = null) {
+  if (details === null) {
+    console.info(`[AsteroidsNewBoot] world:${stage}`);
+  } else {
+    console.info(`[AsteroidsNewBoot] world:${stage}`, details);
+  }
+}
 
 function sanitizeBoolean(value, fallback = false) {
   return typeof value === 'boolean' ? value : fallback;
@@ -127,6 +137,10 @@ function getRectOverlapDepth(x, y, radius, rect) {
 
 export default class AsteroidsWorld {
   constructor(bounds, { rng = Math.random } = {}) {
+    if (!hasLoggedWorldConstruction) {
+      hasLoggedWorldConstruction = true;
+      logWorldBootStage('constructed', bounds);
+    }
     this.rng = typeof rng === 'function' ? rng : Math.random;
     this.bounds = sanitizeBounds(bounds);
     this.starfield = Array.from({ length: 70 }, () => ({
@@ -232,6 +246,10 @@ export default class AsteroidsWorld {
   }
 
   startGame() {
+    if (!hasLoggedWorldStartGame) {
+      hasLoggedWorldStartGame = true;
+      logWorldBootStage('start-game');
+    }
     this.wave = 1;
     this.shipActive = true;
     this.respawnDelay = 0;
