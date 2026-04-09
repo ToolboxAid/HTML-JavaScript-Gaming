@@ -1,1 +1,1 @@
-Add placeholder files to template
+Add import rules to template

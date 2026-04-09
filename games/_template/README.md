@@ -18,3 +18,14 @@ import templateFlow from "./index.js";
 // templateFlow.attract
 // templateFlow.intro
 ```
+
+## Import Rules
+
+Use direct project-root relative imports for shared and engine modules:
+
+```js
+import { sanitizeText } from "src/shared/utils/stringUtils.js";
+import { createEngineLoop } from "src/engine/core/createEngineLoop.js";
+```
+
+Do not use relative climbing imports like `../../` inside games code.
