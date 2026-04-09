@@ -1,3 +1,7 @@
+function defaultCloneLastEvaluation(value) {
+  return value ? { ...value } : null;
+}
+
 export function createPromotionStateSnapshot({
   promoted,
   stableFrames,
@@ -11,8 +15,8 @@ export function createPromotionStateSnapshot({
     stableFrames,
     stabilityWindowFrames,
     lastReason,
-    lastEvaluation: typeof cloneLastEvaluation === 'function'
-      ? cloneLastEvaluation(lastEvaluation)
-      : lastEvaluation ?? null
+    lastEvaluation: (typeof cloneLastEvaluation === 'function'
+      ? cloneLastEvaluation
+      : defaultCloneLastEvaluation)(lastEvaluation)
   };
 }

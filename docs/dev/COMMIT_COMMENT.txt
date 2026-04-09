@@ -1,1 +1,1 @@
-Promote asObject/asArray into shared utils and remove duplicates from debug network utilities.
+Establish an explicit shared public-reader contract for the promotion gate and reduce local gate-specific state read assumptions.

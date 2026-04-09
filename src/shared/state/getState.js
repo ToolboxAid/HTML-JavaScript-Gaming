@@ -5,20 +5,24 @@ David Quesenberry
 getState.js
 */
 
+import { createPromotionStateSnapshot } from './createPromotionStateSnapshot.js';
+
 function getState({
   promoted,
   stableFrames,
   stabilityWindowFrames,
   lastReason,
-  lastEvaluation
-}) {
-  return {
+  lastEvaluation,
+  cloneLastEvaluation
+} = {}) {
+  return createPromotionStateSnapshot({
     promoted,
     stableFrames,
     stabilityWindowFrames,
     lastReason,
-    lastEvaluation: lastEvaluation || null
-  };
+    lastEvaluation,
+    cloneLastEvaluation
+  });
 }
 
 export { getState };

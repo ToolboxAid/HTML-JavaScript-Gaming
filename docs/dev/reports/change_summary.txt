@@ -1,2 +1,3 @@
-- Consolidated asObject/asArray into shared utils
-- Removed duplicates from debug network utilities
+- narrow promotion-gate BUILD focused on contract and public-reader boundary only
+- exact target files limited to createPromotionGate + shared state reader + promotion snapshot
+- explicitly excludes replay/timeline/sample/game/debug widening

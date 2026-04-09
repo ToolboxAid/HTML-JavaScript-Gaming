@@ -7,7 +7,7 @@ createPromotionGate.js
 
 import { asFiniteNumber, asPositiveInteger } from '../../shared/utils/numberUtils.js';
 import { isPlainObject } from '../../shared/utils/objectUtils.js';
-import { createPromotionStateSnapshot } from '../../shared/state/createPromotionStateSnapshot.js';
+import { getState as getPromotionPublicState } from '../../shared/state/getState.js';
 
 function normalizeCriteriaMap(input, requiredCriteria = []) {
   const normalized = {};
@@ -68,17 +68,6 @@ function createPromotionGate(options = {}) {
       stableFrames,
       stabilityWindowFrames
     };
-  }
-
-  function getState() {
-    return createPromotionStateSnapshot({
-      promoted,
-      stableFrames,
-      stabilityWindowFrames,
-      lastReason,
-      lastEvaluation,
-      cloneLastEvaluation: (value) => (value ? { ...value } : null)
-    });
   }
 
   function evaluate({
@@ -184,7 +173,16 @@ function createPromotionGate(options = {}) {
   return {
     evaluate,
     getMetrics,
-    getState,
+    getState() {
+      return getPromotionPublicState({
+        promoted,
+        stableFrames,
+        stabilityWindowFrames,
+        lastReason,
+        lastEvaluation,
+        cloneLastEvaluation: (value) => (value ? { ...value } : null)
+      });
+    },
     reset
   };
 }
