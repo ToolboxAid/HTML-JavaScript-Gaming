@@ -12,11 +12,11 @@ Normalize ONLY these helpers:
 ## Exact Files Allowed
 
 ### New shared file
-1. `src/engine/debug/network/shared/hostReadUtils.js`
+1. `src/src/engine/debug/network/shared/hostReadUtils.js`
 
 ### Consumer files
-2. `src/engine/debug/inspectors/commands/registerInspectorCommands.js`
-3. `src/engine/debug/network/dashboard/registerDashboardCommands.js`
+2. `src/src/engine/debug/inspectors/commands/registerInspectorCommands.js`
+3. `src/src/engine/debug/network/dashboard/registerDashboardCommands.js`
 
 Do not edit any other file.
 
@@ -30,7 +30,7 @@ Only the 2 listed consumer files are in scope.
 ## Exact Shared Helper Creation
 Create:
 
-`src/engine/debug/network/shared/hostReadUtils.js`
+`src/src/engine/debug/network/shared/hostReadUtils.js`
 
 Export exactly:
 - `readHostStatus`
@@ -55,7 +55,7 @@ function readHostSnapshot(host)
 then:
 - remove the local function definition(s)
 - import the helper(s) from the correct relative path to:
-  - `src/engine/debug/network/shared/hostReadUtils.js`
+  - `src/src/engine/debug/network/shared/hostReadUtils.js`
 - if the file already imports from that module, add the needed helper(s) with the minimum safe edit
 - do not duplicate imports
 - do not touch unrelated helpers
@@ -66,7 +66,7 @@ If a listed file already imports and uses shared versions, leave it unchanged.
 ## Relative Import Rule
 Use the correct relative path from each consumer file to:
 
-`src/engine/debug/network/shared/hostReadUtils.js`
+`src/src/engine/debug/network/shared/hostReadUtils.js`
 
 Do not use aliases.
 Do not change `.js` extension usage.
@@ -79,11 +79,11 @@ Do not change `.js` extension usage.
 
 ## Validation Checklist
 1. Confirm no more than the 3 listed files changed
-2. Confirm `src/engine/debug/network/shared/hostReadUtils.js` exists and exports:
+2. Confirm `src/src/engine/debug/network/shared/hostReadUtils.js` exists and exports:
    - `readHostStatus`
    - `readHostSnapshot`
 3. Confirm local function definitions no longer exist in changed listed consumer files
-4. Confirm changed consumer files import the helpers from the correct relative path to `src/engine/debug/network/shared/hostReadUtils.js`
+4. Confirm changed consumer files import the helpers from the correct relative path to `src/src/engine/debug/network/shared/hostReadUtils.js`
 5. Confirm no unrelated files changed
 6. Confirm no behavior changes were made
 

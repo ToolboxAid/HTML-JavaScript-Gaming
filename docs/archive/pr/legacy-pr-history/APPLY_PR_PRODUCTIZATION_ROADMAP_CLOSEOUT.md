@@ -15,7 +15,7 @@ Apply BUILD_PR_PRODUCTIZATION_ROADMAP_CLOSEOUT exactly as scoped.
 ## Validation Summary
 - All targeted Track P/Q/R/S items are now `[x]`.
 - No BIG_PICTURE roadmap edits.
-- No engine/runtime/UI changes.
+- No src/engine/runtime/UI changes.
 - Docs-only bundle.
 
 ## Output

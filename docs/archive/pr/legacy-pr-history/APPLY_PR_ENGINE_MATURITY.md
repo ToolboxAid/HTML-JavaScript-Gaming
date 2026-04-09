@@ -13,7 +13,7 @@ Apply BUILD_PR_ENGINE_MATURITY exactly as defined, without scope expansion.
 ## Contract Rules Enforced
 - no runtime code changes required for this apply slice
 - preserve public/internal/transitional boundaries
-- preserve engine/runtime separation
+- preserve src/engine/runtime separation
 - no unrelated file modifications in this apply scope
 
 ## Validation Results

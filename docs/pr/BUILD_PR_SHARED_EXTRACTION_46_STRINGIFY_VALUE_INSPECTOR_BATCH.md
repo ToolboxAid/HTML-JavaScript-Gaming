@@ -14,7 +14,7 @@ Normalize ONLY this helper:
 1. `tools/dev/shared/stringifyValueUtils.js`
 
 ### Consumer files
-2. `src/engine/debug/inspectors/viewModels/stateDiffInspectorViewModel.js`
+2. `src/src/engine/debug/inspectors/viewModels/stateDiffInspectorViewModel.js`
 3. `tools/dev/commandPacks/inspectorCommandPack.js`
 
 Do not edit any other file.

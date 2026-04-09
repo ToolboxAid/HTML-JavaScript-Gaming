@@ -16,7 +16,7 @@ Validate that the existing Level 7 world systems and Level 8 game integration pa
 - docs/dev
 
 ## Out of Scope
-- engine/ redesign
+- src/engine/ redesign
 - tool refactors
 - system rewrites
 - unrelated cleanup

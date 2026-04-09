@@ -44,7 +44,7 @@ The build stays surgical: both tools use the shared engine theme and platform sh
 ### Palette Browser / Manager
 - Added a launchable first-class tool at `tools/Palette Browser/`.
 - Uses shared shell and engine theme.
-- Loads built-in palettes from `engine/paletteList.js`.
+- Loads built-in palettes from `src/engine/paletteList.js`.
 - Supports local custom palette workflows through browser storage:
   - create
   - duplicate
@@ -76,6 +76,6 @@ The build stays surgical: both tools use the shared engine theme and platform sh
 ## Acceptance Summary
 - Both tools exist under `tools/`.
 - Both tools are active in the shared registry.
-- Both tools load through the shared engine/platform shell.
+- Both tools load through the shared src/engine/platform shell.
 - The tools landing page surfaces them through the existing registry-driven launcher.
 - Legacy sprite tooling remains excluded from the active surface.

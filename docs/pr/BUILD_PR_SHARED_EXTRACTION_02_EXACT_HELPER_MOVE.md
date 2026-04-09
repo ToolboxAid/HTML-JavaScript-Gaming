@@ -20,7 +20,7 @@ FROM:
 - src/advanced/state/createWorldGameStateSystem.js
 - games/network_sample_c/game/ReconciliationLayerAdapter.js
 - games/network_sample_c/game/StateTimelineBuffer.js
-- src/engine/debug/inspectors/shared/inspectorUtils.js
+- src/src/engine/debug/inspectors/shared/inspectorUtils.js
 
 TO:
 - src/shared/utils/numberUtils.js

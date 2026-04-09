@@ -31,7 +31,7 @@ This BUILD does not change game files, sample files, or engine files.
 Edit only these 19 files:
 
 ### Canonical shared source
-1. `src/engine/debug/inspectors/shared/inspectorUtils.js`
+1. `src/src/engine/debug/inspectors/shared/inspectorUtils.js`
 
 ### Consumer files
 2. `tools/dev/canvasDebugHudRenderer.js`
@@ -62,7 +62,7 @@ This PR intentionally handles ONLY the tools/debug batch, not the game/sample du
 ## Shared Helper Assumption
 Use the existing canonical helper:
 
-- `src/engine/debug/inspectors/shared/inspectorUtils.js`
+- `src/src/engine/debug/inspectors/shared/inspectorUtils.js`
 
 Fail fast unless that file exists and exports:
 
@@ -77,7 +77,7 @@ Do not create a new shared file in this PR.
 ## Exact Change Rules
 
 ### Shared source file
-#### `src/engine/debug/inspectors/shared/inspectorUtils.js`
+#### `src/src/engine/debug/inspectors/shared/inspectorUtils.js`
 Allowed:
 - confirm `sanitizeText` exists
 - confirm `sanitizeText` is exported
@@ -99,7 +99,7 @@ function sanitizeText(value)
 then:
 - remove the local `sanitizeText` function definition
 - add exactly one import for `sanitizeText` from the correct relative path to:
-  - `src/engine/debug/inspectors/shared/inspectorUtils.js`
+  - `src/src/engine/debug/inspectors/shared/inspectorUtils.js`
 - if the file already imports from that shared module, add `sanitizeText` to the existing import with the minimum safe edit
 - do not duplicate imports
 - do not touch unrelated helpers
@@ -111,7 +111,7 @@ If a listed file does not currently contain a local `sanitizeText(value)` functi
 ## Relative Import Rule
 Use the correct relative path from each consumer file to:
 
-`src/engine/debug/inspectors/shared/inspectorUtils.js`
+`src/src/engine/debug/inspectors/shared/inspectorUtils.js`
 
 Do not use aliases.
 Do not change `.js` extension usage.
@@ -119,7 +119,7 @@ Do not change `.js` extension usage.
 ## Hard Constraints
 - no game files
 - no sample files
-- no engine files beyond `src/engine/debug/inspectors/shared/inspectorUtils.js`
+- no engine files beyond `src/src/engine/debug/inspectors/shared/inspectorUtils.js`
 - no repo-wide sanitizeText cleanup
 - no helper behavior changes
 - no import path normalization beyond this exact helper move
@@ -127,9 +127,9 @@ Do not change `.js` extension usage.
 
 ## Validation Checklist
 1. Confirm no more than the 19 listed files changed
-2. Confirm `src/engine/debug/inspectors/shared/inspectorUtils.js` exports `sanitizeText`
+2. Confirm `src/src/engine/debug/inspectors/shared/inspectorUtils.js` exports `sanitizeText`
 3. Confirm local `function sanitizeText(value)` definitions no longer exist in the changed listed consumer files
-4. Confirm changed consumer files import `sanitizeText` from the correct relative path to `src/engine/debug/inspectors/shared/inspectorUtils.js`
+4. Confirm changed consumer files import `sanitizeText` from the correct relative path to `src/src/engine/debug/inspectors/shared/inspectorUtils.js`
 5. Confirm no game, sample, or unrelated engine file changed
 6. Confirm no behavior changes were made
 

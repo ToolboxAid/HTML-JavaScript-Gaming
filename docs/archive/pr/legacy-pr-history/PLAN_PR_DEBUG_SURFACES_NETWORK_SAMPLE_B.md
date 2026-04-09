@@ -28,7 +28,7 @@ PLAN_PR -> BUILD_PR -> APPLY_PR
 
 ## Out Of Scope
 - real networking sockets/WebRTC
-- engine/core API changes
+- src/engine/core API changes
 - server/dashboard changes
 
 ## Contracts

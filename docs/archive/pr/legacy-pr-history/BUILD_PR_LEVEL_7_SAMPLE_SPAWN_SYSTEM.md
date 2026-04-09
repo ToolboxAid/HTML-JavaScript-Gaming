@@ -10,7 +10,7 @@ BUILD_PR_LEVEL_7_SAMPLE_SPAWN_SYSTEM.md
 
 ## Scope Confirmation
 - Sample-only implementation
-- No `engine/` changes
+- No `src/engine/` changes
 - Minimal world system implementation aligned to existing sample patterns
 
 ## Full Repo-Relative Paths (Touched for This BUILD)

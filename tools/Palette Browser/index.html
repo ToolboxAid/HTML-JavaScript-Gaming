@@ -1,22 +1,28 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Palette Browser / Manager</title>
-  <link rel="stylesheet" href="../../engine/ui/hubCommon.css" />
+  <link rel="stylesheet" href="../../src/engine/ui/hubCommon.css" />
   <link rel="stylesheet" href="../shared/platformShell.css" />
   <link rel="stylesheet" href="./paletteBrowser.css" />
-  <script src="../../engine/paletteList.js"></script>
+  <script src="../../src/engine/paletteList.js"></script>
 </head>
 <body class="tools-platform-tool-page" data-tool-id="palette-browser" data-tools-platform-page="tool">
   <div data-tools-platform-header></div>
   <div class="palette-browser app-shell">
-    <header class="palette-browser__hero panel">
-      <h2>Palette Browser / Manager</h2>
-      <p>Browse shared engine palettes, duplicate them into editable local palettes, validate entries, and hand off a chosen palette contract to the active art tools.</p>
-    </header>
-
+    <details class="accordion palette-browser__accordion" open>
+      <summary class="accordion__summary">
+        <h2>Palette Browser / Manager</h2>
+        <span class="accordion__icon">▼</span>
+      </summary>
+      <div class="accordion__content">
+        <header class="palette-browser__hero panel">
+          <p>Browse shared engine palettes, duplicate them into editable local palettes, validate entries, and hand off a chosen palette contract to the active art tools.</p>
+        </header>
+      </div>
+    </details>
     <div class="palette-browser__layout">
       <aside class="panel palette-browser__panel">
         <h3>Palette List</h3>

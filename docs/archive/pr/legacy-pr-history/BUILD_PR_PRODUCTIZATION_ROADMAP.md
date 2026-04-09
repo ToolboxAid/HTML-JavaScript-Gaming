@@ -35,4 +35,4 @@ Built a docs-only productization roadmap bundle with no runtime changes.
 - Roadmap file is present.
 - Roadmap is ASCII and free of malformed symbols.
 - Scope remains docs-only.
-- No engine/runtime files changed.
+- No src/engine/runtime files changed.

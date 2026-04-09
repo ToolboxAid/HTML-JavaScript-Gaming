@@ -1,4 +1,4 @@
-import { xyInRect } from "../../../engine/utils/index.js";
+﻿import { xyInRect } from "../../../src/engine/utils/index.js";
 
 function installControlSurfaceInput(SpriteEditorCanvasControlSurface) {
   SpriteEditorCanvasControlSurface.prototype.getControlAt = function getControlAt(x, y) {

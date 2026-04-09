@@ -16,7 +16,7 @@ Begin building actual arcade-style games using the completed Level 7 world syste
 - docs/dev
 
 ## Out of Scope
-- engine/ changes (initially)
+- src/engine/ changes (initially)
 - tool refactors
 - system redesign
 

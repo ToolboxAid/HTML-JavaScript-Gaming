@@ -16,9 +16,9 @@ Apply the approved network promotion by introducing shared reusable network debu
 - no combo-key behavior changes
 
 ## Ordered Apply Sequence
-1. Add `engine/debug/network` shared modules (shared/provider/panel/command/bootstrap).
-2. Add read-only dashboard and diagnostics helpers under `engine/debug/network`.
-3. Export shared network layer through `engine/debug/index.js`.
+1. Add `src/engine/debug/network` shared modules (shared/provider/panel/command/bootstrap).
+2. Add read-only dashboard and diagnostics helpers under `src/engine/debug/network`.
+3. Export shared network layer through `src/engine/debug/index.js`.
 4. Rebind Sample A/B/C debug plugin factories through shared network bootstrap.
 5. Run targeted import and smoke checks.
 
@@ -31,6 +31,6 @@ Apply the approved network promotion by introducing shared reusable network debu
 
 ## Rollback
 If promotion causes regressions:
-- revert `engine/debug/network` additions
+- revert `src/engine/debug/network` additions
 - restore direct plugin object construction in sample debug plugin files
 - keep sample-level behavior as pre-promotion baseline

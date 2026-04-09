@@ -46,7 +46,7 @@ Required BUILD docs/report files:
 
 ## 4. Engine Integration Contract For paletteList
 Authoritative source:
-- Engine-owned `engine/paletteList.js` exposes `globalThis.palettesList` / `window.palettesList`.
+- Engine-owned `src/engine/paletteList.js` exposes `globalThis.palettesList` / `window.palettesList`.
 
 Tool integration rule:
 - Sprite Editor reads palette sets from that engine contract only.
@@ -115,7 +115,7 @@ Saved JSON contract addition:
 - Store palette reference block, not authoritative palette catalog copy.
 
 Planned shape:
-- `paletteRef.source = "engine/paletteList"`
+- `paletteRef.source = "src/engine/paletteList"`
 - `paletteRef.id = <paletteId>`
 - `paletteRef.locked = true`
 - optional non-authoritative verification metadata (example: color count/signature) for diagnostics only

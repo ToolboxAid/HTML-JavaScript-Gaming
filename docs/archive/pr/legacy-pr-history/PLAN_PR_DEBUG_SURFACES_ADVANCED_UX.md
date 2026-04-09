@@ -118,7 +118,7 @@ Rules:
 
 ## Target Structure
 ```text
-engine/
+src/engine/
   debug/
     advanced/
       groups/

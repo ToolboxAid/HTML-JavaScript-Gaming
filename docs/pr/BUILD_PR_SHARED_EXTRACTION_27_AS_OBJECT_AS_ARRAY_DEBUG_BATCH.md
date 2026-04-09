@@ -24,7 +24,7 @@ This BUILD does **not** change any other helper or file.
 Edit only these 7 files:
 
 ### Canonical shared source
-1. `src/engine/debug/inspectors/shared/inspectorUtils.js`
+1. `src/src/engine/debug/inspectors/shared/inspectorUtils.js`
 
 ### Consumer files
 2. `games/Asteroids/debug/asteroidsShowcaseDebug.js`
@@ -47,7 +47,7 @@ This PR intentionally handles only this exact batch.
 ## Shared Helper Assumption
 Use the existing canonical shared debug utility:
 
-- `src/engine/debug/inspectors/shared/inspectorUtils.js`
+- `src/src/engine/debug/inspectors/shared/inspectorUtils.js`
 
 Fail fast unless that file exists and exports:
 
@@ -61,7 +61,7 @@ Do not create a new shared file in this PR.
 ## Exact Change Rules
 
 ### Shared source file
-#### `src/engine/debug/inspectors/shared/inspectorUtils.js`
+#### `src/src/engine/debug/inspectors/shared/inspectorUtils.js`
 Allowed:
 - confirm `asObject` exists
 - confirm `asArray` exists
@@ -84,7 +84,7 @@ function asObject(value)
 then:
 - remove the local `asObject` function definition
 - import `asObject` from the correct relative path to:
-  - `src/engine/debug/inspectors/shared/inspectorUtils.js`
+  - `src/src/engine/debug/inspectors/shared/inspectorUtils.js`
 
 If a local function definition exists matching:
 ```js
@@ -93,7 +93,7 @@ function asArray(value)
 then:
 - remove the local `asArray` function definition
 - import `asArray` from the correct relative path to:
-  - `src/engine/debug/inspectors/shared/inspectorUtils.js`
+  - `src/src/engine/debug/inspectors/shared/inspectorUtils.js`
 
 Import rules:
 - if the file already imports from that shared module, add `asObject` and/or `asArray` to the existing import with the minimum safe edit
@@ -108,7 +108,7 @@ If a listed file does not currently contain one or both local helper definitions
 ## Relative Import Rule
 Use the correct relative path from each consumer file to:
 
-`src/engine/debug/inspectors/shared/inspectorUtils.js`
+`src/src/engine/debug/inspectors/shared/inspectorUtils.js`
 
 Do not use aliases.
 Do not change `.js` extension usage.
@@ -116,7 +116,7 @@ Do not change `.js` extension usage.
 ## Hard Constraints
 - no game main files
 - no sample files
-- no engine files beyond `src/engine/debug/inspectors/shared/inspectorUtils.js`
+- no engine files beyond `src/src/engine/debug/inspectors/shared/inspectorUtils.js`
 - no repo-wide asObject/asArray cleanup
 - no helper behavior changes
 - no import path normalization beyond this exact helper move
@@ -124,12 +124,12 @@ Do not change `.js` extension usage.
 
 ## Validation Checklist
 1. Confirm no more than the 7 listed files changed
-2. Confirm `src/engine/debug/inspectors/shared/inspectorUtils.js` exports:
+2. Confirm `src/src/engine/debug/inspectors/shared/inspectorUtils.js` exports:
    - `asObject`
    - `asArray`
 3. Confirm local `function asObject(value)` definitions no longer exist in the changed listed consumer files
 4. Confirm local `function asArray(value)` definitions no longer exist in the changed listed consumer files
-5. Confirm changed consumer files import `asObject` and/or `asArray` from the correct relative path to `src/engine/debug/inspectors/shared/inspectorUtils.js`
+5. Confirm changed consumer files import `asObject` and/or `asArray` from the correct relative path to `src/src/engine/debug/inspectors/shared/inspectorUtils.js`
 6. Confirm no unrelated engine, game-main, or sample files changed
 7. Confirm no behavior changes were made
 

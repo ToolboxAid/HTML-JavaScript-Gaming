@@ -74,7 +74,7 @@ Required outcomes:
 - Docs-first only
 - One PR per purpose
 - No skipped workflow steps
-- Preserve engine/runtime separation
+- Preserve src/engine/runtime separation
 - Keep public/internal/transitional boundaries explicit
 - Do not modify unrelated runtime code
 

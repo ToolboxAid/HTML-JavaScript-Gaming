@@ -19,7 +19,7 @@ Introduce lifecycle control for world entities:
 - docs/dev
 
 ## Out of Scope
-- engine/
+- src/engine/
 - games/
 - tools/
 - runtime code changes

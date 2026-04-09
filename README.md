@@ -24,6 +24,6 @@ This repository is a docs-first game/runtime workspace with a stable engine laye
 - `docs/archive/`: archived dev-ops notes and generated reports
 
 ## Runtime Boundary Reminder
-- Engine code remains in `engine/`.
+- Engine code remains in `src/engine/`.
 - Advanced composable architecture remains in `src/advanced/`.
 - Tools/samples/games consume public contracts and should not bypass engine boundaries.

@@ -1,4 +1,4 @@
-import { openCanvasTransientSurface } from "../../../engine/ui/index.js";
+﻿import { openCanvasTransientSurface } from "../../../src/engine/ui/index.js";
 
 function installSpriteEditorMenuMethods(SpriteEditorApp) {
   Object.assign(SpriteEditorApp.prototype, {
@@ -89,15 +89,15 @@ function installSpriteEditorMenuMethods(SpriteEditorApp) {
       if (!this.canOpenTransientSurface()) return false;
       const active = this.activeTool;
       const items = [
-        { id: "tools-brush", text: `${active === "brush" ? "• " : ""}Brush`, action: () => this.setTool("brush"), shortcut: "B" },
-        { id: "tools-erase", text: `${active === "erase" ? "• " : ""}Erase`, action: () => this.setTool("erase"), shortcut: "E" },
-        { id: "tools-fill", text: `${active === "fill" ? "• " : ""}Fill`, action: () => this.setTool("fill"), shortcut: "G" },
-        { id: "tools-line", text: `${active === "line" ? "• " : ""}Line`, action: () => this.setTool("line"), shortcut: "L" },
-        { id: "tools-rect", text: `${active === "rect" ? "• " : ""}Rectangle`, action: () => this.setTool("rect"), shortcut: "R" },
-        { id: "tools-fillrect", text: `${active === "fillrect" ? "• " : ""}Filled Rectangle`, action: () => this.setTool("fillrect"), shortcut: "Shift+R" },
-        { id: "tools-eyedropper", text: `${active === "eyedropper" ? "• " : ""}Eyedropper`, action: () => this.setTool("eyedropper"), shortcut: "I" },
-        { id: "tools-select", text: `${active === "select" ? "• " : ""}Select`, action: () => this.setTool("select"), shortcut: "S" },
-        { id: "tools-reference", text: `${active === "reference" ? "• " : ""}Reference Image`, action: () => this.setTool("reference") }
+        { id: "tools-brush", text: `${active === "brush" ? "â€¢ " : ""}Brush`, action: () => this.setTool("brush"), shortcut: "B" },
+        { id: "tools-erase", text: `${active === "erase" ? "â€¢ " : ""}Erase`, action: () => this.setTool("erase"), shortcut: "E" },
+        { id: "tools-fill", text: `${active === "fill" ? "â€¢ " : ""}Fill`, action: () => this.setTool("fill"), shortcut: "G" },
+        { id: "tools-line", text: `${active === "line" ? "â€¢ " : ""}Line`, action: () => this.setTool("line"), shortcut: "L" },
+        { id: "tools-rect", text: `${active === "rect" ? "â€¢ " : ""}Rectangle`, action: () => this.setTool("rect"), shortcut: "R" },
+        { id: "tools-fillrect", text: `${active === "fillrect" ? "â€¢ " : ""}Filled Rectangle`, action: () => this.setTool("fillrect"), shortcut: "Shift+R" },
+        { id: "tools-eyedropper", text: `${active === "eyedropper" ? "â€¢ " : ""}Eyedropper`, action: () => this.setTool("eyedropper"), shortcut: "I" },
+        { id: "tools-select", text: `${active === "select" ? "â€¢ " : ""}Select`, action: () => this.setTool("select"), shortcut: "S" },
+        { id: "tools-reference", text: `${active === "reference" ? "â€¢ " : ""}Reference Image`, action: () => this.setTool("reference") }
       ];
       return this.prepareTopMenu("tools", items);
     },
@@ -193,7 +193,7 @@ function installSpriteEditorMenuMethods(SpriteEditorApp) {
       const currentScope = ["active_layer", "current_frame", "selected_range"].includes(rawScope) ? rawScope : "active_layer";
       const sourceColor = this.paletteWorkflow && this.paletteWorkflow.source ? String(this.paletteWorkflow.source) : "";
       const targetColor = this.paletteWorkflow && this.paletteWorkflow.target ? String(this.paletteWorkflow.target) : "";
-      const scopeLabel = (scopeId, label) => `Set Scope ${label}${currentScope === scopeId ? " ✓" : ""}`;
+      const scopeLabel = (scopeId, label) => `Set Scope ${label}${currentScope === scopeId ? " âœ“" : ""}`;
       const items = [
         { id: "palette-menu-presets", text: "Palettes...", action: () => this.openPalettePresetsMenu() },
         { id: "palette-menu-clone", text: canClone ? "Clone" : "Clone (select preset first)", action: () => this.createCustomPaletteClone() },
@@ -218,7 +218,7 @@ function installSpriteEditorMenuMethods(SpriteEditorApp) {
       }
       const items = clones.map((name) => ({
         id: `palette-clone-${name}`,
-        text: `${this.currentPalettePreset === name ? "• " : ""}${name}`,
+        text: `${this.currentPalettePreset === name ? "â€¢ " : ""}${name}`,
         action: () => this.selectCustomPaletteClone(name)
       }));
       return this.prepareTopMenu("palette", items);
@@ -231,9 +231,9 @@ function installSpriteEditorMenuMethods(SpriteEditorApp) {
         { id: "export-menu-animation-json", text: "Export Animation JSON", action: () => this.exportAnimationJson(this.exportMode) },
         { id: "export-menu-gif", text: "Export GIF", action: () => this.exportGif(this.exportMode) },
         { id: "export-menu-package-json", text: "Export Package", action: () => this.exportPackageJson(this.exportMode) },
-        { id: "export-menu-current", text: `Mode: ${this.exportMode === "current_frame" ? "• " : ""}Current Frame`, action: () => this.setExportMode("current_frame") },
-        { id: "export-menu-all", text: `Mode: ${this.exportMode === "all_frames" ? "• " : ""}All Frames`, action: () => this.setExportMode("all_frames") },
-        { id: "export-menu-range", text: `Mode: ${this.exportMode === "selected_range" ? "• " : ""}Selected Range`, action: () => this.setExportMode("selected_range") }
+        { id: "export-menu-current", text: `Mode: ${this.exportMode === "current_frame" ? "â€¢ " : ""}Current Frame`, action: () => this.setExportMode("current_frame") },
+        { id: "export-menu-all", text: `Mode: ${this.exportMode === "all_frames" ? "â€¢ " : ""}All Frames`, action: () => this.setExportMode("all_frames") },
+        { id: "export-menu-range", text: `Mode: ${this.exportMode === "selected_range" ? "â€¢ " : ""}Selected Range`, action: () => this.setExportMode("selected_range") }
       ];
       return this.prepareTopMenu("file-export", items);
     }

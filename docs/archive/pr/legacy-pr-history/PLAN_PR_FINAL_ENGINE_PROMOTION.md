@@ -10,7 +10,7 @@ PLAN_PR -> BUILD_PR -> APPLY_PR
 One PR purpose only: finalize migration of proven debug surfaces assets into engine-owned boundaries and stabilize contracts.
 
 ## Goals
-- complete migration of proven reusable debug modules into `engine/debug` ownership
+- complete migration of proven reusable debug modules into `src/engine/debug` ownership
 - stabilize public APIs and registration seams
 - minimize project/sample-specific coupling
 - preserve behavior parity

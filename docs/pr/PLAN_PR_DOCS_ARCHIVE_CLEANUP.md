@@ -22,7 +22,7 @@ Combined PLAN + BUILD bundle for one PR purpose only: docs archive cleanup.
 - No deletions.
 - No roadmap wording changes.
 - No edits inside `docs/dev/start_of_day/`.
-- No engine/runtime/code changes.
+- No src/engine/runtime/code changes.
 - No restructuring outside the stated PR/archive paths.
 
 ## Keep Rules

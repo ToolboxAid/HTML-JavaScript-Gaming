@@ -1,4 +1,4 @@
-Toolbox Aid
+﻿Toolbox Aid
 David Quesenberry
 04/05/2026
 APPLY_PR_RENDER_PIPELINE_CONTRACT_ALL_4_TOOLS.md
@@ -89,7 +89,7 @@ Stable ordering rules:
 Codex MUST NOT invent alternate mappings.
 
 Required mappings:
-- Tile Map Editor document payloads -> `engine/tilemap/` runtime and `TilemapRenderSystem`
+- Tile Map Editor document payloads -> `src/engine/tilemap/` runtime and `TilemapRenderSystem`
 - Parallax Editor document payloads -> renderer/background or parallax runtime path that feeds background rendering
 - Sprite Editor document payloads -> sprite/entity render path already used by samples or tools
 - Vector Asset Studio document payloads -> vector runtime path used by shared vector rendering/template systems
@@ -163,11 +163,11 @@ Test placement should follow current repo conventions under `tests/`.
 Exact filenames may vary slightly to fit repo conventions, but output should stay surgical.
 
 Likely targets:
-- `engine/renderer/` shared render pipeline contract utilities
-- `engine/assets/` shared contract loader utilities
-- `engine/tilemap/` contract-aware integration updates
+- `src/engine/renderer/` shared render pipeline contract utilities
+- `src/engine/assets/` shared contract loader utilities
+- `src/engine/tilemap/` contract-aware integration updates
 - `tools/shared/` vector-compatible contract helpers only if required by existing runtime path
-- `tests/tools/` and/or `tests/engine/` new contract tests
+- `tests/tools/` and/or `tests/src/src/engine/` new contract tests
 - `docs/pr/APPLY_PR_RENDER_PIPELINE_CONTRACT_ALL_4_TOOLS.md`
 - `docs/dev/change_summary.txt`
 - `docs/dev/validation_checklist.txt`

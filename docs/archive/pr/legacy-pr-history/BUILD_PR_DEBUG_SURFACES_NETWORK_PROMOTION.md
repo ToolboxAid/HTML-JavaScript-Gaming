@@ -6,20 +6,20 @@ BUILD_PR_DEBUG_SURFACES_NETWORK_PROMOTION.md
 # BUILD_PR_DEBUG_SURFACES_NETWORK_PROMOTION
 
 ## Build Summary
-Define the implementation shape for promoting reusable network debug capabilities into a shared `engine/debug/network` layer while keeping sample scenarios and adapters project-owned.
+Define the implementation shape for promoting reusable network debug capabilities into a shared `src/engine/debug/network` layer while keeping sample scenarios and adapters project-owned.
 
 ## Workflow Discipline
 PLAN_PR -> BUILD_PR -> APPLY_PR
 
 ## Scope
-- create reusable network debug modules under `engine/debug/network`
+- create reusable network debug modules under `src/engine/debug/network`
 - keep engine core unchanged in this slice
 - keep data flow read-only for providers/panels/dashboard
 - preserve sample-level integration for Sample A/B/C
 
 ## Target Structure
 ```text
-engine/debug/network/
+src/engine/debug/network/
   index.js
   shared/
     networkDebugUtils.js
@@ -43,7 +43,7 @@ engine/debug/network/
 ```
 
 ## Ownership Model
-- shared reusable logic: `engine/debug/network`
+- shared reusable logic: `src/engine/debug/network`
 - sample-specific scenarios and local adapters: `games/network_sample_*`
 - engine core: no implementation changes in this promotion slice
 
@@ -54,4 +54,4 @@ engine/debug/network/
 - dashboard host/providers/renderer remain observational only
 
 ## Apply Gate
-APPLY should wire sample plugin creation through shared network bootstrap and export the shared layer from `engine/debug/index.js` without changing combo-key behavior or core runtime contracts.
+APPLY should wire sample plugin creation through shared network bootstrap and export the shared layer from `src/engine/debug/index.js` without changing combo-key behavior or core runtime contracts.

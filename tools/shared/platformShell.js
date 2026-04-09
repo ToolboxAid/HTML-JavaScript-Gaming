@@ -120,9 +120,14 @@ function renderHeaderMarkup(currentTool) {
 
   return `
     <section class="tools-platform-frame">
+    <details class="accordion palette-browser__accordion" open> 
+      <summary class="accordion__summary">
+        <h2 class="tools-platform-frame__eyebrow">First-Class Tools Surface</h2>
+        <span class="accordion__icon">▼</span>
+      </summary>
+      <div class="accordion__content">
       <div class="tools-platform-frame__topline">
         <div>
-          <p class="tools-platform-frame__eyebrow">First-Class Tools Surface</p>
           <h1 class="tools-platform-frame__title">${escapeHtml(title)}</h1>
           <p class="tools-platform-frame__description">${escapeHtml(description)}</p>
         </div>
@@ -144,6 +149,8 @@ function renderHeaderMarkup(currentTool) {
         </div>
         ${renderSharedSelectionSummary()}
       ` : ""}
+      </div>
+      </details>
     </section>
   `;
 }
@@ -247,10 +254,22 @@ function renderShell(currentTool) {
   const headerHost = document.querySelector("[data-tools-platform-header]");
   const statusHost = document.querySelector("[data-tools-platform-status]");
 
+  // Preserve accordion open state (default to open on first load)
+  const accordion = headerHost?.querySelector(".accordion");
+  const wasOpen = accordion?.hasAttribute("open") ?? true;
+
   applyDocumentMetadata(currentTool);
 
   if (headerHost) {
     headerHost.innerHTML = renderHeaderMarkup(currentTool);
+    
+    // Restore accordion open state (always open by default)
+    const newAccordion = headerHost.querySelector(".accordion");
+    if (newAccordion && wasOpen) {
+      newAccordion.setAttribute("open", "");
+    } else if (newAccordion && !wasOpen) {
+      newAccordion.removeAttribute("open");
+    }
   }
 
   if (statusHost) {

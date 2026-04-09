@@ -117,8 +117,12 @@ spriteEditor.css
 
 .workspace {
   display: grid;
-  grid-template-columns: minmax(260px, 320px) 1fr minmax(220px, 280px);
+  grid-template-columns: 260px minmax(0, 1fr) 440px;
   gap: 0.8rem;
+}
+
+.center-panel {
+  min-width: 0;
 }
 
 .left-panel,
@@ -155,7 +159,8 @@ spriteEditor.css
   border-radius: 12px;
   background: color-mix(in srgb, var(--se-panel) 88%, black);
   display: grid;
-  place-items: center;
+  justify-items: center;
+  align-items: start;
   padding: 0.9rem;
   overflow: auto;
 }
@@ -166,6 +171,7 @@ spriteEditor.css
   background: linear-gradient(45deg, var(--se-canvas-bg-a) 25%, var(--se-canvas-bg-b) 25%, var(--se-canvas-bg-b) 50%, var(--se-canvas-bg-a) 50%, var(--se-canvas-bg-a) 75%, var(--se-canvas-bg-b) 75%, var(--se-canvas-bg-b) 100%);
   background-size: 20px 20px;
   padding: 0.5rem;
+  margin-top: 20px;
 }
 
 #editorCanvas {

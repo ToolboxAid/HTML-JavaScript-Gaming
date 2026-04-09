@@ -1,9 +1,9 @@
-Toolbox Aid
+﻿Toolbox Aid
 David Quesenberry
 03/24/2026
 BUILD_PR_SOUND_SYSTEM.md
 
-# BUILD_PR — Sound System
+# BUILD_PR â€” Sound System
 
 ## Goal
 Add a minimal reusable engine-owned sound system first, then integrate it into Pong in a controlled way.
@@ -19,7 +19,7 @@ This BUILD_PR authorizes:
 7. Tests or mock-based validation where practical
 
 ## Locked Rules
-- Follow PLAN_PR → BUILD_PR → APPLY_PR
+- Follow PLAN_PR â†’ BUILD_PR â†’ APPLY_PR
 - Reusable code goes to engine
 - Games consume engine services through public contracts
 - Keep change surgical
@@ -28,11 +28,11 @@ This BUILD_PR authorizes:
 
 ## Engine Additions Allowed
 Suggested targets:
-- engine/audio/AudioService.js
-- engine/audio/index.js
+- src/engine/audio/AudioService.js
+- src/engine/audio/index.js
 
 Optional docs:
-- docs/dev/engine/AUDIO.md
+- docs/dev/src/src/engine/AUDIO.md
 
 Optional tests:
 - tests/audio/AudioService.test.mjs
@@ -63,7 +63,7 @@ Keep the following block as an implementation comment in the audio service or Po
 
 Recommended Defaults
 - Paddle/Bounce: 400 Hz, 0.10 s, square, volume 0.20
-- Wall (optional distinction): 380 Hz, 0.08–0.10 s, square, volume 0.15
+- Wall (optional distinction): 380 Hz, 0.08â€“0.10 s, square, volume 0.15
 - Score (recommended 2-step): 400 Hz for 0.12 s, then 300 Hz for 0.25 s, square, volume 0.25
 - Serve: 500 Hz, 0.08 s, square, volume 0.20
 

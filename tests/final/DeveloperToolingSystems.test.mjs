@@ -1,4 +1,4 @@
-/*
+﻿/*
 Toolbox Aid
 David Quesenberry
 03/22/2026
@@ -12,7 +12,7 @@ import {
   PropertyEditor,
   RuntimeInspector,
   SceneGraphViewer,
-} from '../../engine/tooling/index.js';
+} from '../../src/engine/tooling/index.js';
 
 export async function run() {
   const consoleTool = new DeveloperConsole();

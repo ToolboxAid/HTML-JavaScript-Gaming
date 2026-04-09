@@ -63,7 +63,7 @@ Remain local:
 
 ## Target Structure (Authoritative Direction)
 ```text
-engine/
+src/engine/
   core/
     debug/
       DebugSurfaceContracts.js
@@ -98,7 +98,7 @@ samples/
 - keep core contract-only
 
 ### Phase 3: Engine-Debug Assembly
-- relocate reusable debug implementations to `engine/debug`
+- relocate reusable debug implementations to `src/engine/debug`
 - preserve current public behavior via adapter/bridge seams
 
 ### Phase 4: Sample Rewire

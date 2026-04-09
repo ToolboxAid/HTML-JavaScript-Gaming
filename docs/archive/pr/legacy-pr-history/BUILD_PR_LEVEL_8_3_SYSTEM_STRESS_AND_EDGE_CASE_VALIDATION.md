@@ -12,7 +12,7 @@ BUILD_PR_LEVEL_8_3_SYSTEM_STRESS_AND_EDGE_CASE_VALIDATION.md
 - Docs-first validation delta
 - Stress and edge-case scenarios added in sample/game layer only
 - Reuse existing world systems without duplication
-- No `engine/` changes
+- No `src/engine/` changes
 
 ## Full Repo-Relative Paths (Touched for This BUILD)
 - `samples/sample149-asteroids-world-systems/AsteroidsWorldSystemsScene.js`

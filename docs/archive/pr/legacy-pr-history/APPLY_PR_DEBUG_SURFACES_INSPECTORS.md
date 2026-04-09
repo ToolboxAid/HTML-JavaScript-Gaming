@@ -26,7 +26,7 @@ Included contracts:
 - No runtime mutation APIs
 - No unrelated engine changes
 - No breaking sample behavior
-- Preserve engine/runtime separation
+- Preserve src/engine/runtime separation
 - Debug surfaces remain optional
 
 ## Validation Requirements

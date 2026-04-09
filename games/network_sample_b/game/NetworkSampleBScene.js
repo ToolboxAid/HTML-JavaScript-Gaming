@@ -1,10 +1,10 @@
-/*
+﻿/*
 Toolbox Aid
 David Quesenberry
 04/06/2026
 NetworkSampleBScene.js
 */
-import { Scene } from "../../../engine/scenes/index.js";
+import { Scene } from "../../../src/engine/scenes/index.js";
 import FakeHostClientNetworkModel from "./FakeHostClientNetworkModel.js";
 import { asPositiveNumber } from "../../../src/shared/utils/numberUtils.js";
 

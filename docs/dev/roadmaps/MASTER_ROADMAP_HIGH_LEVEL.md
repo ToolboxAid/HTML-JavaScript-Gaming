@@ -41,7 +41,7 @@
 - [ ] promotion does not happen as a blind dedupe exercise
 
 ### Tooling Strategy
-- [ ] tools are created when they unblock engine/content progress
+- [ ] tools are created when they unblock src/engine/content progress
 - [ ] tools do not define engine behavior
 - [ ] tools share common IO/state/util layers where appropriate
 - [ ] tools remain organized under `tools/`
@@ -91,7 +91,7 @@
 - [.] shared asset promotion rules defined
 - [.] network samples classified as sample-phase content
 - [ ] current folder inventory mapped to target homes
-- [ ] move-map defined for root `engine/` -> `src/engine/`
+- [ ] move-map defined for root `src/engine/` -> `src/src/engine/`
 - [x] duplicate-helper migration map defined
 - [ ] ambiguous-name rename map defined
 - [ ] legacy migration map defined
@@ -100,13 +100,13 @@
 - [ ] post-move validation complete
 
 ### Structure Targets
-- [ ] `src/engine/core`
-- [ ] `src/engine/state`
-- [ ] `src/engine/rendering`
-- [ ] `src/engine/input`
-- [ ] `src/engine/physics`
-- [ ] `src/engine/audio`
-- [ ] `src/engine/scene`
+- [ ] `src/src/engine/core`
+- [ ] `src/src/engine/state`
+- [ ] `src/src/engine/rendering`
+- [ ] `src/src/engine/input`
+- [ ] `src/src/engine/physics`
+- [ ] `src/src/engine/audio`
+- [ ] `src/src/engine/scene`
 - [ ] `src/shared/utils`
 - [ ] `src/shared/math`
 - [ ] `src/shared/state`
@@ -426,7 +426,7 @@
 - [ ] 2D tool stabilization before 3D tool expansion
 - [ ] 3D prerequisite samples before advanced 3D tools
 - [ ] content pipeline tools after asset complexity justifies them
-- [ ] debug tools align with engine/debug maturity
+- [ ] debug tools align with src/engine/debug maturity
 - [ ] no standalone showcase-only tool tracks
 
 ---
@@ -520,7 +520,7 @@
 
 ## 14. Testing & Validation
 - [ ] `tests/` structure normalized
-- [ ] unit coverage aligned to engine/shared/games
+- [ ] unit coverage aligned to src/engine/shared/games
 - [ ] integration coverage aligned to state/replay/rendering/tools
 - [ ] smoke validation aligned to samples/tools/games
 - [ ] fixtures/helpers organization normalized

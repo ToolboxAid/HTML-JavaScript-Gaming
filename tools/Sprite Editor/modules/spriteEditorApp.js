@@ -1,4 +1,4 @@
-/*
+﻿/*
 Toolbox Aid
 David Quesenberry
 04/03/2026
@@ -99,7 +99,7 @@ function buildEnginePaletteCatalog() {
       available: false,
       groups: {},
       options: [],
-      error: "Engine palette list is unavailable. Confirm ../../engine/paletteList.js is loaded."
+      error: "Engine palette list is unavailable. Confirm ../../src/engine/paletteList.js is loaded."
     };
   }
 

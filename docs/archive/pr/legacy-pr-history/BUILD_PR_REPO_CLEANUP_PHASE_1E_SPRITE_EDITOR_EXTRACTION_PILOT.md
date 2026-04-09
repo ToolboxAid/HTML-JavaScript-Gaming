@@ -18,7 +18,7 @@ Repo Cleanup Phase 1E - Sprite Editor Extraction Pilot
 - Preserve behavior
 
 ## Do-Not-Touch Confirmation
-- `engine/`
+- `src/engine/`
 - `games/`
 - `samples/`
 - unrelated files outside this BUILD scope
@@ -59,5 +59,5 @@ Repo Cleanup Phase 1E - Sprite Editor Extraction Pilot
 ## Acceptance Check
 - One helper extracted: pass.
 - Behavior preserved: pass (logic copied 1:1).
-- No engine/game/sample changes: pass.
+- No src/engine/game/sample changes: pass.
 - No scope expansion: pass.

@@ -18,7 +18,7 @@ Expand from Phase 1E single-helper extraction into controlled multi-helper extra
 - docs/dev
 
 ## Out of Scope
-- engine/ (no direct modification yet)
+- src/engine/ (no direct modification yet)
 - games/
 - samples/
 - feature changes

@@ -1,4 +1,4 @@
-/*
+﻿/*
 Toolbox Aid
 David Quesenberry
 03/22/2026
@@ -12,7 +12,7 @@ import {
   findGridPath,
   stepChaseBehavior,
   stepEvadeBehavior,
-} from '../../engine/ai/index.js';
+} from '../../src/engine/ai/index.js';
 
 export function run() {
   const grid = [

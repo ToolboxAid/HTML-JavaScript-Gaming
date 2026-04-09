@@ -30,4 +30,4 @@ PLAN_PR -> BUILD_PR -> APPLY_PR
 ## Acceptance Criteria
 - Roadmap reflects completed productization state using bracket-only edits.
 - No wording/structure changes to roadmap.
-- No engine/UI changes.
+- No src/engine/UI changes.

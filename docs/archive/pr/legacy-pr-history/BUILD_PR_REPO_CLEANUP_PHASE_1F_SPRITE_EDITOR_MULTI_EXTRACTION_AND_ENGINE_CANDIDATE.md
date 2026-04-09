@@ -17,7 +17,7 @@ Repo Cleanup Phase 1F - Controlled Multi-Helper Extraction and Engine Candidate 
 - Behavior-preserving changes only
 
 ## Do-Not-Touch Confirmation
-- `engine/`
+- `src/engine/`
 - `games/`
 - `samples/`
 - unrelated files outside this BUILD scope
@@ -53,7 +53,7 @@ Repo Cleanup Phase 1F - Controlled Multi-Helper Extraction and Engine Candidate 
 2. Helpers moved as isolated units (no bulk utility bundle file).
 3. No API redesign; call behavior remains unchanged.
 4. Updated imports only in `tools/SpriteEditor_old_keep/modules/appCommands.js`.
-5. No changes in `engine/`, `games/`, or `samples/`.
+5. No changes in `src/engine/`, `games/`, or `samples/`.
 
 ## Acceptance Check
 - No behavior changes: pass.

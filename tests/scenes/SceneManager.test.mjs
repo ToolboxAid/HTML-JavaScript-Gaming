@@ -1,12 +1,12 @@
-/*
+﻿/*
 Toolbox Aid
 David Quesenberry
 03/21/2026
 SceneManager.test.mjs
 */
 import assert from "node:assert/strict";
-import Scene from "../../engine/scenes/Scene.js";
-import SceneManager from "../../engine/scenes/SceneManager.js";
+import Scene from "../../src/engine/scenes/Scene.js";
+import SceneManager from "../../src/engine/scenes/SceneManager.js";
 
 class TestScene extends Scene {
     constructor(name, log) {

@@ -15,7 +15,7 @@ Apply BUILD_PR_PRODUCTIZATION_DISTRIBUTION_STARTER exactly as scoped.
 
 ## Validation Summary
 - Docs-only changes.
-- No engine/runtime changes.
+- No src/engine/runtime changes.
 - No BIG_PICTURE roadmap edits.
 - Productization roadmap updated via bracket states only.
 

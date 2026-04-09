@@ -23,4 +23,4 @@ Apply the approved standard library build as a focused implementation PR with op
 - boundary checks confirm project-specific logic remains local
 
 ## Expected Outcome
-A small, opt-in, reusable debug standard library baseline under `engine/debug/standard` with clear extension boundaries.
+A small, opt-in, reusable debug standard library baseline under `src/engine/debug/standard` with clear extension boundaries.

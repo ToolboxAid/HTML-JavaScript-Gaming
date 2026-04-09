@@ -19,7 +19,7 @@ Introduce event-driven world behavior:
 - docs/dev
 
 ## Out of Scope
-- engine/
+- src/engine/
 - games/
 - tools/
 - runtime code changes

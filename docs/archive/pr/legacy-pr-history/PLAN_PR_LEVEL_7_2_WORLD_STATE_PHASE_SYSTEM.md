@@ -19,7 +19,7 @@ Introduce world-level progression control:
 - docs/dev
 
 ## Out of Scope
-- engine/
+- src/engine/
 - games/
 - tools/
 - runtime code changes

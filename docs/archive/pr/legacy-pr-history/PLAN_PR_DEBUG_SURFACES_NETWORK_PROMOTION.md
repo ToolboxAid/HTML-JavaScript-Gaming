@@ -15,7 +15,7 @@ PLAN_PR -> BUILD_PR -> APPLY_PR
 This PLAN PR is documentation only. It does not move implementation code.
 
 ## Goals
-- promote reusable network debug capability into shared ownership under `engine/debug/network`
+- promote reusable network debug capability into shared ownership under `src/engine/debug/network`
 - keep engine core contract-only for minimal debug hooks/interfaces
 - keep sample-specific scenarios, feeds, and local adapters project-owned
 - preserve read-only data flow and debug-only access behavior
@@ -30,7 +30,7 @@ This PLAN PR is documentation only. It does not move implementation code.
 
 ## Target Structure (Promotion Direction)
 ```text
-engine/
+src/engine/
   core/
     debug/
       NetworkDebugContracts.js
@@ -71,8 +71,8 @@ games/
 ## Ownership Matrix
 | Area | Owner | Scope |
 |---|---|---|
-| Minimal contracts/hooks | `engine/core/debug` | registration hooks, environment gating, narrow interfaces only |
-| Reusable network debug implementation | `engine/debug/network` | shared providers/panels/commands/dashboard foundation/diagnostics helpers |
+| Minimal contracts/hooks | `src/engine/core/debug` | registration hooks, environment gating, narrow interfaces only |
+| Reusable network debug implementation | `src/engine/debug/network` | shared providers/panels/commands/dashboard foundation/diagnostics helpers |
 | Sample scenarios and synthetic feeds | project/sample folders | Sample A/B/C deterministic scenarios and local adapters |
 | Tool-local helper glue | `tools/dev` + project | temporary adapters, local stubs, project-specific sections |
 | Engine core UI behavior | not allowed | core must not own console/overlay/dashboard rendering policy |
@@ -82,13 +82,13 @@ games/
 Identify stable network debug pieces already validated in sample flow (panels, providers, commands, dashboard foundation).
 
 2. Shared-vs-Local Split
-Tag each artifact as shared (`engine/debug/network`) or local (sample/project/tool) with explicit non-promotion exclusions.
+Tag each artifact as shared (`src/engine/debug/network`) or local (sample/project/tool) with explicit non-promotion exclusions.
 
 3. Contract Freeze
 Define minimal core hook contracts required for shared registration/gating. Keep contracts narrow and implementation-free.
 
 4. Shared Layer Assembly
-Define extraction map into `engine/debug/network` for providers, panels, command bridge, dashboard foundation, and diagnostics helpers.
+Define extraction map into `src/engine/debug/network` for providers, panels, command bridge, dashboard foundation, and diagnostics helpers.
 
 5. Sample Rebind Strategy
 Define sample-level adapter rewiring to consume shared components while retaining local scenarios/feeds.
@@ -118,10 +118,10 @@ Run validation matrix and risk controls before BUILD/APPLY execution.
 Control: require explicit ownership matrix tagging with non-promote list.
 
 ### Risk: core-layer scope creep
-Control: permit only minimal contract/hook surface in `engine/core/debug`.
+Control: permit only minimal contract/hook surface in `src/engine/core/debug`.
 
 ### Risk: coupling dashboard with console/overlay internals
-Control: keep dashboard host/registry/providers/renderer isolated in `engine/debug/network/dashboard`.
+Control: keep dashboard host/registry/providers/renderer isolated in `src/engine/debug/network/dashboard`.
 
 ### Risk: migration regressions across samples
 Control: phase-gated validation matrix with sample parity checks before APPLY.

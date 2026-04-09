@@ -36,7 +36,7 @@ Define a docs-first plan for advanced shared inspector capabilities under debug 
 - 3D-specific assumptions as required inputs
 
 ## Ownership Model
-### Shared (`engine/debug/inspectors`)
+### Shared (`src/engine/debug/inspectors`)
 - host + registry contracts
 - command-surface contracts
 - read-only inspector view-model contracts
@@ -53,7 +53,7 @@ Define a docs-first plan for advanced shared inspector capabilities under debug 
 
 ## Candidate Shared Structure
 ```text
-engine/debug/inspectors/
+src/engine/debug/inspectors/
   bootstrap/
   host/
   registry/

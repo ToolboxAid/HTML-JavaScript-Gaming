@@ -21,7 +21,7 @@ PLAN_PR -> BUILD_PR -> APPLY_PR
 
 ## Authoritative Target Structure
 ```text
-engine/
+src/engine/
   debug/
     presets/
       DebugPresetRegistry.js

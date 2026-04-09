@@ -1,11 +1,11 @@
-/*
+﻿/*
 Toolbox Aid
 David Quesenberry
 03/21/2026
 CameraZoomScene.js
 */
-import { Scene } from "../../../engine/scenes/index.js";
-import { Theme, ThemeTokens } from "../../../engine/theme/index.js";
+import { Scene } from "../../../src/engine/scenes/index.js";
+import { Theme, ThemeTokens } from "../../../src/engine/theme/index.js";
 
 const theme = new Theme(ThemeTokens);
 

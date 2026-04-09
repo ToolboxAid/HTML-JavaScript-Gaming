@@ -10,7 +10,7 @@ BUILD_PR_LEVEL_7_2_SAMPLE_WORLD_STATE_SYSTEM.md
 
 ## Scope Confirmation
 - Sample-only implementation
-- No `engine/` changes
+- No `src/engine/` changes
 - Minimal world state/phase system aligned with existing patterns
 
 ## Full Repo-Relative Paths (Touched for This BUILD)

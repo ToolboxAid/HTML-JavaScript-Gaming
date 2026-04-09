@@ -117,7 +117,7 @@ If both helpers are already exported, leave this file unchanged.
 
 ## Non-Goals
 - no work in `games/network_sample_a/server/networkSampleADashboardServer.mjs`
-- no work in `src/engine/debug/inspectors/shared/inspectorUtils.js`
+- no work in `src/src/engine/debug/inspectors/shared/inspectorUtils.js`
 - no broader number helper normalization
 - no new shared helper creation
 - no refactor beyond this exact duplicate-removal step

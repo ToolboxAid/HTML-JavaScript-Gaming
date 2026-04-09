@@ -48,7 +48,7 @@ Out of scope:
 - Undo/redo stack implemented and wired
 - State row and status bar wired and updated during interaction
 - Preview controls updated to Play/Pause/Reset semantics
-- No engine/unrelated tool modifications in this PR scope
+- No src/engine/unrelated tool modifications in this PR scope
 
 ## Packaging
 - `tmp/BUILD_PR_SPRITE_EDITOR_USABILITY_POLISH_delta.zip`

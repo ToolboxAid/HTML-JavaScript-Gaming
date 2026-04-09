@@ -47,5 +47,5 @@ Bracket-only update in `docs/dev/BIG_PICTURE_ROADMAP.md`:
 
 ## Scope Safety
 - Docs-first only.
-- No engine/runtime implementation changes.
+- No src/engine/runtime implementation changes.
 - No Track H edits.

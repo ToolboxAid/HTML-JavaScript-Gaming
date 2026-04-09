@@ -10,7 +10,7 @@ BUILD_PR_LEVEL_7_1_SAMPLE_LIFECYCLE_SYSTEM.md
 
 ## Scope Confirmation
 - Sample-only implementation
-- No `engine/` changes
+- No `src/engine/` changes
 - Minimal world lifecycle system aligned with existing sample patterns
 
 ## Full Repo-Relative Paths (Touched for This BUILD)

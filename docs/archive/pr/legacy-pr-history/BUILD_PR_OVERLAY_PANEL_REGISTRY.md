@@ -31,8 +31,8 @@ No implementation code is included in this docs bundle.
 Expected implementation touch points should stay as small and surgical as possible. Final file names may vary slightly if Codex finds existing equivalent locations.
 
 Likely targets:
-- `engine/debug/` overlay registry module
-- `engine/debug/` overlay host / panel consumption module
+- `src/engine/debug/` overlay registry module
+- `src/engine/debug/` overlay host / panel consumption module
 - `tools/dev/devConsoleIntegration.js` only if public registry commands already belong there and can remain isolated
 - `samples/.../MultiSystemDemoScene.js` for sample registration and validation wiring
 - docs under `docs/pr/` and `docs/dev/reports/`

@@ -1,4 +1,4 @@
-/*
+﻿/*
  Toolbox Aid
  David Quesenberry
  03/23/2026
@@ -66,13 +66,13 @@ function createEngine(overrides = {}) {
 }
 
 export function run() {
-  const eventFiles = readdirSync(new URL('../../engine/events/', import.meta.url));
+  const eventFiles = readdirSync(new URL('../../src/engine/events/', import.meta.url));
   assert.equal(eventFiles.includes('EventBus.js'), true);
   assert.equal(eventFiles.includes('eventBus.js'), false);
 
   [
-    '../../engine/core/Engine.js',
-    '../../engine/events/index.js',
+    '../../src/engine/core/Engine.js',
+    '../../src/engine/events/index.js',
     '../../tests/events/EventBus.test.mjs',
     '../../tests/world/WorldSystems.test.mjs',
   ].forEach((relativePath) => {

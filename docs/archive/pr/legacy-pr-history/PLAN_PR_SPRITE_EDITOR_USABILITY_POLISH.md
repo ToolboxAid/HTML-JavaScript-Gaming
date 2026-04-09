@@ -144,7 +144,7 @@ Required BUILD constraints:
 - Keep PR small and surgical.
 - No changes outside `tools/Sprite Editor/` + docs/reports (+ `tools/index.html` only if strictly needed).
 - Do not touch any pre-existing sprite editor implementation outside `tools/Sprite Editor/`.
-- No engine/unrelated tool/samples changes.
+- No src/engine/unrelated tool/samples changes.
 - Preserve file headers and docs-first workflow.
 - Produce delta zip: `tmp/BUILD_PR_SPRITE_EDITOR_USABILITY_POLISH_delta.zip`.
 

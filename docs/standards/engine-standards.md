@@ -10,7 +10,7 @@ Define the architecture and design rules for the engine.
 
 The engine must behave like a reusable framework, not a specific game.
 
-- No game-specific logic in `engine/`
+- No game-specific logic in `src/engine/`
 - `games/` and `samples/` are consumers
 
 ### 2. Clear boundaries
@@ -53,7 +53,7 @@ No duplicate lifecycle ownership across unrelated systems.
 
 Preferred direction:
 
-- `engine/core` → subsystems
+- `src/engine/core` → subsystems
 - subsystems → utilities
 
 Avoid:

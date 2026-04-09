@@ -16,7 +16,7 @@ PLAN_PR -> BUILD_PR -> APPLY_PR
 
 ## Authoritative Target Structure
 ```text
-engine/
+src/engine/
   core/
     debug/
       DebugSurfaceContracts.js
@@ -56,11 +56,11 @@ project|sample|tool/
 
 ## Ordered Migration Steps
 1. Freeze ownership boundaries and no-go rules.
-2. Extract minimal core contracts/hooks into `engine/core/debug`.
-3. Relocate console host/bridge to `engine/debug/console`.
-4. Relocate overlay host/registry/persistence adapter to `engine/debug/overlay`.
-5. Relocate provider registry/plumbing to `engine/debug/providers`.
-6. Add shared bootstrap/composition in `engine/debug/bootstrap`.
+2. Extract minimal core contracts/hooks into `src/engine/core/debug`.
+3. Relocate console host/bridge to `src/engine/debug/console`.
+4. Relocate overlay host/registry/persistence adapter to `src/engine/debug/overlay`.
+5. Relocate provider registry/plumbing to `src/engine/debug/providers`.
+6. Add shared bootstrap/composition in `src/engine/debug/bootstrap`.
 7. Rewire `MultiSystemDemoScene.js` through public bootstrap/registration APIs.
 8. Validate parity and boundary compliance.
 

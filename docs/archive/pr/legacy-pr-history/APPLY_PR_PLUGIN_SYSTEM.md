@@ -12,7 +12,7 @@ Apply BUILD_PR_PLUGIN_SYSTEM exactly as defined.
 ## Rules
 - No runtime mutation outside approved boundaries
 - No breaking changes
-- Preserve engine/runtime separation
+- Preserve src/engine/runtime separation
 
 ## Validation
 - Plugins register/unregister correctly

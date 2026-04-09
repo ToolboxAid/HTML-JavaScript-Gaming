@@ -10,7 +10,7 @@ BUILD_PR_LEVEL_7_3_SAMPLE_WORLD_EVENTS_SYSTEM.md
 
 ## Scope Confirmation
 - Sample-only implementation
-- No `engine/` changes
+- No `src/engine/` changes
 - Minimal world events system aligned with existing patterns
 
 ## Full Repo-Relative Paths (Touched for This BUILD)

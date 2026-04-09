@@ -35,14 +35,14 @@ Target batch (core + games using identical signature):
 ## Exact Files Allowed
 
 ### Canonical shared source
-1. src/engine/utils/math.js
+1. src/src/engine/utils/math.js
 
 ### Consumers
 (only the 21 listed files)
 
 ## Shared Helper
 Use:
-- src/engine/utils/math.js
+- src/src/engine/utils/math.js
 
 Fail fast unless it exports:
 - clamp
@@ -67,7 +67,7 @@ function clamp(value, min, max)
 
 Then:
 - remove local definition
-- import clamp from src/engine/utils/math.js
+- import clamp from src/src/engine/utils/math.js
 - merge into existing import if present
 
 Do NOT touch:

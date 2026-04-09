@@ -55,7 +55,7 @@ Out of scope:
 - prepared runtime assets now carry the shared `runtimePolicy` payload and a deterministic policy report
 
 ## Shared Boundaries Preserved
-- `engine/ui/hubCommon.css` remains the engine theme source of truth
+- `src/engine/ui/hubCommon.css` remains the engine theme source of truth
 - `tools/shared/platformShell.css` remains the shared tool-shell layer consuming engine theme tokens
 - `tools/toolRegistry.js` remains the single source of truth for active tool visibility and showcase metadata
 - geometry runtime behavior remains shared infrastructure, not tool-specific logic

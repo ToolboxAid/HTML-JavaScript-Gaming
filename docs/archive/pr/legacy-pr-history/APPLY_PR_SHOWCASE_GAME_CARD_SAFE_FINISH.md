@@ -18,7 +18,7 @@ Apply BUILD_PR_SHOWCASE_GAME_CARD_SAFE_FINISH exactly as scoped.
 - No game reorder.
 - No card structure changes.
 - No nested links/buttons inside cards.
-- No engine/runtime changes.
+- No src/engine/runtime changes.
 - No unrelated card edits.
 
 ## Output

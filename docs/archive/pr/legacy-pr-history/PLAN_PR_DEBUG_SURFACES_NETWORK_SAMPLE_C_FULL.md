@@ -27,7 +27,7 @@ PLAN_PR -> BUILD_PR -> APPLY_PR
 - docs/dev control/report files for this PR bundle
 
 ## Out Of Scope
-- engine/runtime code changes
+- src/engine/runtime code changes
 - server dashboard implementation
 - docker/container implementation
 - destructive layout changes in `games/index.html`

@@ -10,7 +10,7 @@ BUILD_PR_LEVEL_10_1_ADAPTIVE_SPAWN_DIRECTOR.md
 
 ## Scope Confirmation
 - Docs-first, repo-structured delta
-- No engine/runtime implementation changes in this step
+- No src/engine/runtime implementation changes in this step
 - Public-API-only integration guidance
 
 ## Full Repo-Relative Paths (Touched for This BUILD)

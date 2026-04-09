@@ -16,7 +16,7 @@ Define extraction decision rules after Phase 1C ownership normalization. This is
 - docs/pr and docs/dev outputs only
 
 ## Out of Scope
-- engine/
+- src/engine/
 - games/
 - samples/
 - runtime code

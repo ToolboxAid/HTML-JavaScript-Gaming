@@ -10,7 +10,7 @@ PLAN_PR -> BUILD_PR -> APPLY_PR
 One PR purpose only: convert promotion plan into a deterministic apply contract without introducing new features.
 
 ## Build Scope
-- final migration map (`tools/dev` integration seams to `engine/debug` ownership)
+- final migration map (`tools/dev` integration seams to `src/engine/debug` ownership)
 - stabilized public API contract inventory
 - compatibility/deprecation notes
 - validation, rollback, and release-readiness checklist

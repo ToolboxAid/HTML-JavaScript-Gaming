@@ -10,7 +10,7 @@ BUILD_PR_LEVEL_8_1_SPACE_INVADERS_REUSE_VALIDATION.md
 
 ## Scope Confirmation
 - Sample-based game implementation
-- No `engine/` modifications
+- No `src/engine/` modifications
 - Reuse existing Level 7 world systems + Level 8 integration pattern without duplicating systems
 
 ## Full Repo-Relative Paths (Touched for This BUILD)
