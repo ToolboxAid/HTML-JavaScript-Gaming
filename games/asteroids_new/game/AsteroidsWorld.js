@@ -10,7 +10,7 @@ import Ship from '../entities/Ship.js';
 import Ufo from '../entities/Ufo.js';
 import { arePolygonsColliding } from '../../../src/engine/collision/index.js';
 import { distance } from '../../../src/engine/utils/index.js';
-import { randomRange } from '../../Asteroids/utils/math.js';
+import { randomRange } from '../utils/math.js';
 import { sanitizeFiniteNumber, sanitizePositiveNumber } from '../../../src/shared/math/numberNormalization.js';
 
 const WAVE_ASTEROID_COUNTS = [4, 6, 8];

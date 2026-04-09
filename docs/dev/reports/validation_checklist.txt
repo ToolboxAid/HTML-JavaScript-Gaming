@@ -1,7 +1,6 @@
 - single PR purpose only
-- exact target files only
-- existing source files only
+- exact folders/files only
 - no original Asteroids file changes
-- no missing source-file assumptions
-- asteroids_new files parse and import cleanly together
-- result is substantial enough for a real smoke test
+- no content changes to correct root-level files
+- duplicate nested folders removed
+- asteroids_new remains smoke-testable

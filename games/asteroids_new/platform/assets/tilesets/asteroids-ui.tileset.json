@@ -1,0 +1,6 @@
+{
+  "name": "Asteroids UI Tileset",
+  "tileWidth": 8,
+  "tileHeight": 8,
+  "tiles": ["score-panel", "wave-panel", "lives-panel"]
+}

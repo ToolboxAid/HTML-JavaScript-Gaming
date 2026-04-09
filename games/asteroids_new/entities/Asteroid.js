@@ -4,7 +4,7 @@ David Quesenberry
 03/22/2026
 Asteroid.js
 */
-import { TAU, randomRange, wrap } from '../../Asteroids/utils/math.js';
+import { TAU, randomRange, wrap } from '../utils/math.js';
 import { transformPoints } from '../../../src/engine/vector/index.js';
 
 const BASE_VECTOR_MAP = [

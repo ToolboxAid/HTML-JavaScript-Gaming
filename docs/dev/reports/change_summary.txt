@@ -1,4 +1,3 @@
-- replace blocked 95A with an existing-sources-only vertical slice BUILD
-- use current asteroids_new boot/flow shell instead of missing original Asteroids boot/flow files
-- copy only world/debug/core-entity files that actually exist in the repo
-- keep original Asteroids files untouched
+- fix duplicated nested folders created by the full-copy burst
+- keep only the intended root-level asteroids_new files
+- preserve the smoke-testable parallel lane

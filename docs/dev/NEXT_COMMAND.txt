@@ -1,1 +1,1 @@
-After commit, inspect whether one additional exact gameplay dependency is needed or whether the vertical slice is already smoke-testable enough to validate.
+After commit, validate asteroids_new runtime/imports and then continue with the next testable vertical slice only.

@@ -1,1 +1,1 @@
-Recover blocked 95A by building a smoke-testable asteroids_new vertical slice from existing Asteroids source files only.
+Flatten duplicated nested asteroids_new subfolders and keep only the correct root-level copies.

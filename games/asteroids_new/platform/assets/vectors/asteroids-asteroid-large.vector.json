@@ -1,0 +1,16 @@
+{
+  "id": "vector.asteroids.asteroid.large",
+  "type": "vector",
+  "source": {
+    "kind": "svg",
+    "path": "games/Asteroids/platform/assets/vectors/asteroids-asteroid-large.vector.json"
+  },
+  "geometry": {
+    "viewBox": "-40 -40 80 80",
+    "paths": [{ "d": "M -28 -12 L -10 -30 L 20 -26 L 32 -8 L 26 18 L 6 32 L -22 24 L -34 2 Z" }]
+  },
+  "style": {
+    "stroke": true,
+    "fill": false
+  }
+}
