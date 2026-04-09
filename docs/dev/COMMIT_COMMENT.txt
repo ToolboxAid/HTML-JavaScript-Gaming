@@ -1,7 +1,7 @@
-APPLY_PR_GAMES_SPACE_INVADERS_REMOVE_NEXT
+BUILD_PR_GAMES_PACMANLITE_NEXT_TEMPLATE_BASELINE
 
-Accepted removal of SpaceInvaders_next scaffold.
+Prepared PacmanLite next baseline BUILD from template.
 
-- canonical SpaceInvaders preserved
-- migration pipeline completed
-- repo cleaned
+- source of truth: games/_template
+- destination: games/PacmanLite_next
+- non-playable shell with canvas status text

@@ -1,1 +1,5 @@
-Wire debug init + keybindings
+Planned PacmanLite migration handoff to first BUILD step.
+
+- Added BUILD_PR_GAMES_PACMANLITE_NEXT_TEMPLATE_BASELINE
+- Updated active command to execute baseline BUILD
+- Updated next command to APPLY baseline acceptance

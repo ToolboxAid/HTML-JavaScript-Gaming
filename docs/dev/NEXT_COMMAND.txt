@@ -1,5 +1,6 @@
-Create PLAN_PR_NEXT_GAME_MIGRATION
+Create APPLY_PR_GAMES_PACMANLITE_NEXT_TEMPLATE_BASELINE
 
 Scope:
-- select next game (e.g., Puckman)
-- repeat template → _next → migration → promotion pipeline
+- accept baseline copy
+- verify non-playable shell behavior
+- verify required canvas status text
