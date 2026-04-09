@@ -1,2 +1,14 @@
-games/asteroids/entities/*
-games/asteroids_new/entities/*
+docs/pr/BUILD_PR_GAMES_93A_ASTEROIDS_NEW_PARALLEL_BOOT_VALIDATION.md
+docs/dev/codex_commands.md
+docs/dev/commit_comment.txt
+docs/dev/next_command.txt
+docs/dev/reports/file_tree.txt
+docs/dev/reports/change_summary.txt
+docs/dev/reports/validation_checklist.txt
+games/asteroids_new/index.js
+games/asteroids_new/flow/attract.js
+games/asteroids_new/flow/intro.js
+games/asteroids_new/game/AsteroidsWorld.js
+games/asteroids_new/entities/Bullet.js
+games/asteroids_new/entities/Ship.js
+games/asteroids_new/debug/asteroidsShowcaseDebug.js

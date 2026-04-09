@@ -1,1 +1,2 @@
-Copy first entity slice into new template structure
+- focused validation and minimum-fix closeout for the current aggressive asteroids_new burst
+- no original Asteroids files touched

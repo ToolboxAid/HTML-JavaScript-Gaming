@@ -1,1 +1,1 @@
-BUILD_PR_GAMES_90A_ASTEROIDS_ENTITY_VALIDATE_STEP2
+Validate and minimally fix the current asteroids_new parallel boot lane.
