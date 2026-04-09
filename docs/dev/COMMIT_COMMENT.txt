@@ -1,8 +1,7 @@
-BUILD_PR_GAMES_SPACE_INVADERS_COPY_FROM_NEXT
+APPLY_PR_GAMES_SPACE_INVADERS_REMOVE_NEXT
 
-Copied SpaceInvaders_next into canonical SpaceInvaders.
+Accepted removal of SpaceInvaders_next scaffold.
 
-- clean destination
-- structure preserved
-- runtime validated
-- no file guessing
+- canonical SpaceInvaders preserved
+- migration pipeline completed
+- repo cleaned

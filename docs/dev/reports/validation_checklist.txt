@@ -1,9 +1,8 @@
-Validation Checklist — Games Space Invaders Copy From Next
+Validation Checklist — APPLY Games Space Invaders Remove Next
 
-[ ] games/SpaceInvaders matches _next
-[ ] Gameplay boots from canonical path
-[ ] No console errors
-[ ] capture-preview.html rule respected
-[ ] _next unchanged
+[x] games/SpaceInvaders_next removed
+[x] games/SpaceInvaders unchanged
+[x] No preview restoration
+[x] No unrelated changes
 
-Status: PENDING
+Status: PASS

@@ -2,16 +2,15 @@ MODEL: GPT-5.4
 REASONING: high
 
 COMMAND:
-Execute BUILD_PR_GAMES_SPACE_INVADERS_COPY_FROM_NEXT exactly as written.
+Execute BUILD_PR_GAMES_SPACE_INVADERS_REMOVE_NEXT exactly as written.
 
 Rules:
-- Copy from `games/SpaceInvaders_next/**`
-- Write to `games/SpaceInvaders/**`
-- Preserve structure exactly
-- Do NOT modify `_next`
-- Do NOT invent missing files
-- Validate capture-preview.html rule strictly
+- Delete ONLY `games/SpaceInvaders_next/**`
+- Remove `games/SpaceInvaders_next/` after contents are deleted
+- Do NOT touch `games/SpaceInvaders/**`
+- Do NOT add or restore preview files
+- Do NOT modify engine/shared code
 - Fail fast on ambiguity
 
 Package output to:
-<project folder>/tmp/BUILD_PR_GAMES_SPACE_INVADERS_COPY_FROM_NEXT_delta.zip
+<project folder>/tmp/BUILD_PR_GAMES_SPACE_INVADERS_REMOVE_NEXT_delta.zip

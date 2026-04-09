@@ -1,6 +1,5 @@
-Create APPLY_PR_GAMES_SPACE_INVADERS_COPY_FROM_NEXT
+Create PLAN_PR_NEXT_GAME_MIGRATION
 
 Scope:
-- accept canonical replacement
-- validate runtime and structure
-- prepare for _next cleanup
+- select next game (e.g., Puckman)
+- repeat template → _next → migration → promotion pipeline
