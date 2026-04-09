@@ -1,6 +1,1 @@
-After this BUILD is complete, report:
-1. the exact files changed
-2. whether `vectorGeometryMath.js` no longer defines local `toFiniteNumber` / `roundNumber`
-3. whether `vectorAssetContract.js` now imports numeric helpers from `src/shared/math/numberNormalization.js`
-4. whether only the 3 targeted code files changed
-Do not start another BUILD automatically.
+After this lands, inspect the two migrated files for any leftover inline numeric normalization helpers and only then propose the next exact-cluster BUILD.

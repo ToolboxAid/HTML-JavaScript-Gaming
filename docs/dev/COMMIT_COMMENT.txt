@@ -1,3 +1,1 @@
-BUILD_PR_SHARED_EXTRACTION_50_VECTOR_NUMBER_NORMALIZATION_TO_SHARED_MATH
-
-Extract vector-lane numeric normalization helpers into src/shared/math/numberNormalization.js and rewire vector imports without widening scope.
+BUILD_PR_SHARED_EXTRACTION_51_STATE_SAMPLE_TOFINITENUMBER_MIGRATION: migrate remaining state/sample toFiniteNumber duplicates to shared math helper

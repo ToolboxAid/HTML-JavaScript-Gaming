@@ -2,14 +2,18 @@ MODEL: GPT-5.4
 REASONING: high
 
 COMMAND:
-Create BUILD_PR_SHARED_EXTRACTION_50_VECTOR_NUMBER_NORMALIZATION_TO_SHARED_MATH exactly as written in `docs/pr/BUILD_PR_SHARED_EXTRACTION_50_VECTOR_NUMBER_NORMALIZATION_TO_SHARED_MATH.md`.
+Execute `docs/pr/BUILD_PR_SHARED_EXTRACTION_51_STATE_SAMPLE_TOFINITENUMBER_MIGRATION.md` exactly as written.
 
-Hard constraints:
-- Touch exactly 3 code files:
-  - create `src/shared/math/numberNormalization.js`
-  - modify `tools/shared/vector/vectorGeometryMath.js`
-  - modify `tools/shared/vector/vectorAssetContract.js`
-- Do not touch any other file.
-- Preserve exact behavior from PR 49 for `toFiniteNumber` and `roundNumber`.
-- Do not broaden scope.
-- Package output to `<project folder>/tmp/BUILD_PR_SHARED_EXTRACTION_50_VECTOR_NUMBER_NORMALIZATION_TO_SHARED_MATH_delta.zip`
+Requirements:
+- modify only these code files:
+  - `src/advanced/state/transitions.js`
+  - `samples/shared/worldGameStateSystem.js`
+- use existing helper from:
+  - `src/shared/math/numberNormalization.js`
+- remove local `toFiniteNumber(value, fallback = 0)` implementations from both target files
+- add correct shared imports
+- preserve behavior
+- fail fast if the shared export is missing or if extra files would be required
+
+Package output to:
+- `<project folder>/tmp/BUILD_PR_SHARED_EXTRACTION_51_STATE_SAMPLE_TOFINITENUMBER_MIGRATION_delta.zip`

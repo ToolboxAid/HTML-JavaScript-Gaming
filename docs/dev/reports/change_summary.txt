@@ -1,8 +1,15 @@
-Purpose: extract PR 49 vector numeric helpers into canonical shared math home.
+PR purpose:
+- migrate the remaining state/sample-local `toFiniteNumber` duplicates to the canonical shared math helper
 
 Exact code scope:
-- create src/shared/math/numberNormalization.js
-- modify tools/shared/vector/vectorGeometryMath.js
-- modify tools/shared/vector/vectorAssetContract.js
+- `src/advanced/state/transitions.js`
+- `samples/shared/worldGameStateSystem.js`
 
-No other files may be changed.
+Shared dependency consumed:
+- `src/shared/math/numberNormalization.js`
+
+Out of scope:
+- any vector files
+- any other number helper
+- any repo-wide cleanup
+- any new shared helper creation

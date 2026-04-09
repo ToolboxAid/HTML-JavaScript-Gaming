@@ -5,6 +5,8 @@ David Quesenberry
 worldGameStateSystem.js
 */
 
+import { toFiniteNumber } from '../../src/shared/math/numberNormalization.js';
+
 const WORLD_GAME_STATE_SYSTEM_ID = 'worldGameStateSystem';
 
 const WORLD_GAME_STATE_EVENT_TYPES = Object.freeze({
@@ -97,11 +99,6 @@ function mergeDeep(baseValue, patchValue) {
     return out;
   }
   return patchValue === undefined ? cloneDeep(baseValue) : patchValue;
-}
-
-function toFiniteNumber(value, fallback = 0) {
-  const numeric = Number(value);
-  return Number.isFinite(numeric) ? numeric : fallback;
 }
 
 function createInitialWorldGameState(initialPatch = {}) {

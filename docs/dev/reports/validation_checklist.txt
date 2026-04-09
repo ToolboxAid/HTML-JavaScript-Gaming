@@ -1,8 +1,8 @@
-[ ] Single PR purpose only
-[ ] Exact 3 code files only
-[ ] No repo scan / no scope expansion
-[ ] numberNormalization.js exports only toFiniteNumber and roundNumber
-[ ] vectorGeometryMath.js removes local helper definitions
-[ ] vectorAssetContract.js imports numeric helpers from shared math
-[ ] Behavior preserved from PR 49
-[ ] Output zip path set under <project folder>/tmp/
+[ ] Confirm `src/shared/math/numberNormalization.js` exports `toFiniteNumber`
+[ ] `src/advanced/state/transitions.js` imports shared `toFiniteNumber`
+[ ] Local `toFiniteNumber` removed from `src/advanced/state/transitions.js`
+[ ] `samples/shared/worldGameStateSystem.js` imports shared `toFiniteNumber`
+[ ] Local `toFiniteNumber` removed from `samples/shared/worldGameStateSystem.js`
+[ ] No unused imports remain in the two target files
+[ ] No files outside the exact target set were modified
+[ ] Delta zip written to `<project folder>/tmp/BUILD_PR_SHARED_EXTRACTION_51_STATE_SAMPLE_TOFINITENUMBER_MIGRATION_delta.zip`
