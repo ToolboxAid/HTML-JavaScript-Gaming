@@ -6,10 +6,9 @@ inspectorUtils.js
 */
 
 import { asPositiveInteger } from "../../../../shared/utils/numberUtils.js";
+import { sanitizeText } from "../../../../shared/utils/stringUtils.js";
 
-export function sanitizeText(value) {
-  return typeof value === "string" ? value.trim() : "";
-}
+export { sanitizeText };
 
 export function asObject(value) {
   return value !== null && typeof value === "object" && !Array.isArray(value)

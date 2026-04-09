@@ -1,1 +1,1 @@
-Next: BUILD_PR_REPO_STRUCTURE_66_MOVE_MAP_GAMES_BOUNDARY
+Next: inspect remaining shared/tools boundary candidates and build the next exact slice only if the target files are explicit.

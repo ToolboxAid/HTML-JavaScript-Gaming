@@ -14,7 +14,7 @@ import {
 import { createResult } from "./commandPackResultUtils.js";
 import { getRuntimeAndRegistry } from "../../../src/shared/utils/runtimeRegistryUtils.js";
 
-import { sanitizeText } from "../../../src/engine/debug/inspectors/shared/inspectorUtils.js";
+import { sanitizeText } from "../../../src/shared/utils/stringUtils.js";
 
 function buildSnapshot(panelRegistry) {
   const panels = panelRegistry.getOrderedPanels(true);

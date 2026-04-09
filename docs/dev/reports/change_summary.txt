@@ -1,1 +1,3 @@
-shared/tools boundary enforcement
+- continue shared/tools boundary enforcement with one exact reusable string helper
+- move canonical sanitizeText ownership into shared string utils
+- update only the listed tool consumers; preserve engine-facing behavior

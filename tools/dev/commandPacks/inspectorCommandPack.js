@@ -15,7 +15,7 @@ import {
 } from "./packUtils.js";
 import { stringifyValue } from "../../../src/shared/utils/stringifyValueUtils.js";
 
-import { sanitizeText } from "../../../src/engine/debug/inspectors/shared/inspectorUtils.js";
+import { sanitizeText } from "../../../src/shared/utils/stringUtils.js";
 
 function asPositiveInt(value, fallback) {
   const normalized = Number.isFinite(value) ? Math.floor(Number(value)) : fallback;

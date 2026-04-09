@@ -13,7 +13,7 @@ import {
 } from "./packUtils.js";
 import { getRuntimeAndRegistry } from "../../../src/shared/utils/runtimeRegistryUtils.js";
 
-import { sanitizeText } from "../../../src/engine/debug/inspectors/shared/inspectorUtils.js";
+import { sanitizeText } from "../../../src/shared/utils/stringUtils.js";
 
 function createFailedResult(title, lines, code, details = {}) {
   return {

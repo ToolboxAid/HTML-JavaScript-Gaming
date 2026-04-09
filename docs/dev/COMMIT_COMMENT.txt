@@ -1,1 +1,1 @@
-Enforce shared vs tools boundary by moving pure utilities to src/shared
+Move sanitizeText into src/shared/utils/stringUtils.js and update the exact tool consumers in the shared/tools boundary lane.
