@@ -11,7 +11,7 @@ BUILD_PR_LEVEL_9_3_ENGINE_SAMPLE_TEMPLATES.md
 ## Scope Confirmation
 - Docs-first delta
 - Templates and wiring examples included
-- No engine/runtime code changes
+- No src/engine/runtime code changes
 
 ## Full Repo-Relative Paths (Touched for This BUILD)
 - `docs/pr/PLAN.md`

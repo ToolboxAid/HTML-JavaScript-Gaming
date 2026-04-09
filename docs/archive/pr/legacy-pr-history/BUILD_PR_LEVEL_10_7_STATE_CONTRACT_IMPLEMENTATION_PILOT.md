@@ -22,7 +22,7 @@ BUILD_PR_LEVEL_10_7_STATE_CONTRACT_IMPLEMENTATION_PILOT.md
 - one optional consumer pilot through approved Level 10.4 and Level 10.5 boundaries
 - passive-mode-first rollout to preserve current behavior
 - all new runtime code constrained to `src/advanced/state/`
-- no `engine/state/` or `samples/` reuse
+- no `src/engine/state/` or `samples/` reuse
 
 ## Full Repo-Relative Paths (Touched for This BUILD)
 - `docs/pr/BUILD_PR_LEVEL_10_7_STATE_CONTRACT_IMPLEMENTATION_PILOT.md`

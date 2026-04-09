@@ -88,7 +88,7 @@ Persistence rule:
 
 ## Target Structure
 ```text
-engine/
+src/engine/
   debug/
     presets/
       DebugPresetRegistry.js

@@ -28,7 +28,7 @@ Build Game #3: Pong as a standalone game with:
 - samples/index.html is up to date
 - Current focus is Game #3: Pong
 - Known gaps:
-  - Docs mismatch (_shared vs engine/ui)
+  - Docs mismatch (_shared vs src/engine/ui)
   - Gamepad abstraction needed
 
 ## Scope
@@ -41,7 +41,7 @@ This BUILD_PR authorizes Codex to build:
 
 ## Engine Additions Allowed
 ### Required
-- engine/input/GamepadInputAdapter.js
+- src/engine/input/GamepadInputAdapter.js
 
 ### Optional, only if clearly reusable
 - minimal input plumbing updates

@@ -10,7 +10,7 @@ BUILD_PR_LEVEL_8_2_PACMAN_LITE_PATTERN_EXPANSION.md
 
 ## Scope Confirmation
 - Sample-based game implementation
-- No `engine/` changes
+- No `src/engine/` changes
 - Reuse shared Level 7 world systems + Level 8 integration pattern without duplication
 
 ## Full Repo-Relative Paths (Touched for This BUILD)

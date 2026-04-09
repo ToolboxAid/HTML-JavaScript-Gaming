@@ -1,24 +1,24 @@
 # BUILD_PR: REPO_CLEANUP_PHASE_1B_ENGINE_BOUNDARY_AND_DUPLICATE_HELPER_SCAN
 
 ## Execution Summary
-- Docs-first scan completed across `engine/utils/**`, `engine/ui/**`, `games/**`, `tools/**`, and `samples/**`.
+- Docs-first scan completed across `src/engine/utils/**`, `src/engine/ui/**`, `games/**`, `tools/**`, and `samples/**`.
 - This phase made no runtime/helper consolidation changes.
 - Classification produced candidate groups for immediate low-risk cleanup and deferred manual review.
 
 ## Findings: Already in engine, local duplicate
 | path | responsibility | duplicate of | should be in engine | already in engine | canonical location | risk | recommendation |
 |---|---|---|---|---|---|---|---|
-| `games/Asteroids/utils/math.js` | wraps random/wrap helpers for Asteroids | `engine/utils/math.js` (`randomRange`, `wrap`) | no (wrapper can stay local) | yes | `engine/utils/math.js` | low | Keep only game-specific surface (`TAU`) or import engine helpers directly in consumers in a follow-up micro-PR. |
-| `games/*/game/*` local `function clamp(...)` cluster | scalar clamp utility repeated in multiple game modules | `engine/utils/math.js` (`clamp`) | no | yes | `engine/utils/math.js` | medium | Migrate in small batches (one game at a time) to reduce behavior/regression risk. |
-| `tools/Vector Map Editor/editor/VectorMapFullscreenController.js` | fullscreen toggle + state sync | `engine/runtime/FullscreenService.js` | no | yes | `engine/runtime/FullscreenService.js` | low | Replace tool-local controller with engine runtime service adapter. |
-| `tools/Vector Map Editor/editor/VectorMapSerializer.js` + `tools/Vector Map Editor/editor/VectorMapRuntimeExporter.js` | blob download orchestration | `engine/runtime/BrowserDownloadService.js` | no | yes | `engine/runtime/BrowserDownloadService.js` | low | Route downloads through `BrowserDownloadService` and keep only payload-building logic local. |
-| `samples/_shared/platformerHelpers.js` (`overlap`) | AABB overlap predicate | `engine/collision/aabb.js` (`isColliding`) | no | yes | `engine/collision/index.js` | low | Import/alias `isColliding` in shared sample helper instead of redefining overlap math. |
+| `games/Asteroids/utils/math.js` | wraps random/wrap helpers for Asteroids | `src/engine/utils/math.js` (`randomRange`, `wrap`) | no (wrapper can stay local) | yes | `src/engine/utils/math.js` | low | Keep only game-specific surface (`TAU`) or import engine helpers directly in consumers in a follow-up micro-PR. |
+| `games/*/game/*` local `function clamp(...)` cluster | scalar clamp utility repeated in multiple game modules | `src/engine/utils/math.js` (`clamp`) | no | yes | `src/engine/utils/math.js` | medium | Migrate in small batches (one game at a time) to reduce behavior/regression risk. |
+| `tools/Vector Map Editor/editor/VectorMapFullscreenController.js` | fullscreen toggle + state sync | `src/engine/runtime/FullscreenService.js` | no | yes | `src/engine/runtime/FullscreenService.js` | low | Replace tool-local controller with engine runtime service adapter. |
+| `tools/Vector Map Editor/editor/VectorMapSerializer.js` + `tools/Vector Map Editor/editor/VectorMapRuntimeExporter.js` | blob download orchestration | `src/engine/runtime/BrowserDownloadService.js` | no | yes | `src/engine/runtime/BrowserDownloadService.js` | low | Route downloads through `BrowserDownloadService` and keep only payload-building logic local. |
+| `samples/_shared/platformerHelpers.js` (`overlap`) | AABB overlap predicate | `src/engine/collision/aabb.js` (`isColliding`) | no | yes | `src/engine/collision/index.js` | low | Import/alias `isColliding` in shared sample helper instead of redefining overlap math. |
 
 ## Findings: Should be promoted to engine
 | path | responsibility | duplicate of | should be in engine | already in engine | canonical location | risk | recommendation |
 |---|---|---|---|---|---|---|---|
-| `games/SpaceInvaders/game/SpaceInvadersHighScoreService.js`, `games/SpaceDuel/game/SpaceDuelHighScoreService.js`, `games/Asteroids/systems/AsteroidsHighScoreService.js` | normalized table-based high score persistence | each other (near-identical sanitize/sort/load/save flow) | yes | partial (`StorageService` only) | `engine/persistence/` (new `HighScoreTableService`) | medium | Add an engine-level reusable table service with injectable defaults/key/tableSize; then thin each game service. |
-| `games/Breakout/game/BreakoutInputController.js`, `games/Pong/game/PongInputController.js`, `games/SpaceInvaders/game/SpaceInvadersInputController.js`, plus similar axis/pad glue in other game controllers | repeated keyboard+gamepad axis merge and action button mapping | each other (pickAxis/readDigitalAxis patterns) | yes (internal helper) | partial (`GamepadInputAdapter`) | `engine/input/` (new internal mapping helper) | medium | Introduce a narrow internal helper for digital-axis and action-button mapping to cut duplicated controller glue. |
+| `games/SpaceInvaders/game/SpaceInvadersHighScoreService.js`, `games/SpaceDuel/game/SpaceDuelHighScoreService.js`, `games/Asteroids/systems/AsteroidsHighScoreService.js` | normalized table-based high score persistence | each other (near-identical sanitize/sort/load/save flow) | yes | partial (`StorageService` only) | `src/engine/persistence/` (new `HighScoreTableService`) | medium | Add an engine-level reusable table service with injectable defaults/key/tableSize; then thin each game service. |
+| `games/Breakout/game/BreakoutInputController.js`, `games/Pong/game/PongInputController.js`, `games/SpaceInvaders/game/SpaceInvadersInputController.js`, plus similar axis/pad glue in other game controllers | repeated keyboard+gamepad axis merge and action button mapping | each other (pickAxis/readDigitalAxis patterns) | yes (internal helper) | partial (`GamepadInputAdapter`) | `src/engine/input/` (new internal mapping helper) | medium | Introduce a narrow internal helper for digital-axis and action-button mapping to cut duplicated controller glue. |
 
 ## Findings: Correctly local, keep out of engine
 | path | responsibility | duplicate of | should be in engine | already in engine | canonical location | risk | recommendation |
@@ -33,15 +33,15 @@
 |---|---|---|---|---|---|---|---|
 | `games/PacmanLite/game/PacmanLiteInputController.js` + `games/PacmanFullAI/game/PacmanFullAIInputController.js` | queued direction input parsing | each other (nearly identical) | no | no | per-game folders | low | Consolidate game-local shared controller first; decide engine promotion later if a third consumer appears. |
 | `games/Bouncing-ball/game/BouncingBallInputController.js` + `games/PaddleIntercept/game/PaddleInterceptInputController.js` | start/pause/reset button mapping | each other | no | partial | per-game folders | low | Consolidate into shared mini-helper under `games/_shared/` (if that folder is approved) before engine consideration. |
-| `tools/Vector Map Editor/editor/VectorMapSerializer.js` + `tools/Vector Map Editor/editor/VectorMapRuntimeExporter.js` | repeated DOM download ceremony | each other and `BrowserDownloadService` | no | yes | `tools/Vector Map Editor/editor/` for payload logic, `engine/runtime/` for download transport | low | Do tool-local dedupe and engine service adoption in one contained tool PR. |
+| `tools/Vector Map Editor/editor/VectorMapSerializer.js` + `tools/Vector Map Editor/editor/VectorMapRuntimeExporter.js` | repeated DOM download ceremony | each other and `BrowserDownloadService` | no | yes | `tools/Vector Map Editor/editor/` for payload logic, `src/engine/runtime/` for download transport | low | Do tool-local dedupe and engine service adoption in one contained tool PR. |
 
 ## Findings: Manual review required
 | path | responsibility | duplicate of | should be in engine | already in engine | canonical location | risk | recommendation |
 |---|---|---|---|---|---|---|---|
 | `games/SpaceInvaders/game/WaveController.js` naming | helper name implies simulation controller but currently HUD/banner presenter | `games/SpaceDuel/game/WaveController.js` (name only) | no | no | likely rename to `WaveHudPresenter`/`WaveStatusPresenter` | low | Rename in a doc-safe or tiny code-safe follow-up with import-site checks. |
-| `tools/SpriteEditor_old_keep/main.js` local `clamp` | overlaps engine clamp but file is a large patch/stabilization entrypoint | `engine/utils/math.js` (`clamp`) | uncertain | yes | evaluate per SpriteEditor stability plan | medium | Defer until SpriteEditor stabilization work is complete; avoid mixing concerns. |
-| `samples/sample003-mouse-input/MouseInputScene.js`, `samples/sample004-gamepad-input/GamepadScene.js` class-local clamp methods | duplicates engine clamp, but potentially intentional pedagogy | `engine/utils/math.js` (`clamp`) | uncertain | yes | sample-specific decision | low | Keep as-is unless sample docs explicitly prefer engine helper usage. |
-| Target path expectation: `engine/math/**` | scan target includes path that does not exist in repo (math lives under `engine/utils/math.js`) | N/A | N/A | N/A | `engine/utils/math.js` | low | Update future scan templates/docs to avoid path drift. |
+| `tools/SpriteEditor_old_keep/main.js` local `clamp` | overlaps engine clamp but file is a large patch/stabilization entrypoint | `src/engine/utils/math.js` (`clamp`) | uncertain | yes | evaluate per SpriteEditor stability plan | medium | Defer until SpriteEditor stabilization work is complete; avoid mixing concerns. |
+| `samples/sample003-mouse-input/MouseInputScene.js`, `samples/sample004-gamepad-input/GamepadScene.js` class-local clamp methods | duplicates engine clamp, but potentially intentional pedagogy | `src/engine/utils/math.js` (`clamp`) | uncertain | yes | sample-specific decision | low | Keep as-is unless sample docs explicitly prefer engine helper usage. |
+| Target path expectation: `src/engine/math/**` | scan target includes path that does not exist in repo (math lives under `src/engine/utils/math.js`) | N/A | N/A | N/A | `src/engine/utils/math.js` | low | Update future scan templates/docs to avoid path drift. |
 
 ## Explicit File Lists
 
@@ -110,11 +110,11 @@
    - Add internal engine input helper(s) for digital-axis and button mapping.
    - Migrate a pilot set (`Breakout`, `Pong`, `SpaceInvaders`).
 3. `BUILD_PR: REPO_CLEANUP_PHASE_1E_HIGH_SCORE_TABLE_ENGINE_SERVICE`
-   - Add `engine/persistence` table-based high score service.
+   - Add `src/engine/persistence` table-based high score service.
    - Migrate `Asteroids`, `SpaceDuel`, `SpaceInvaders` services to thin adapters.
 4. `BUILD_PR: REPO_CLEANUP_PHASE_1F_NAMING_AND_TEMPLATE_ALIGNMENT`
    - Resolve `WaveController` naming ambiguity in Space Invaders.
-   - Update cleanup template path expectation from `engine/math/**` to `engine/utils/math.js`.
+   - Update cleanup template path expectation from `src/engine/math/**` to `src/engine/utils/math.js`.
 
 ## Phase Status
 - Classification and planning complete.

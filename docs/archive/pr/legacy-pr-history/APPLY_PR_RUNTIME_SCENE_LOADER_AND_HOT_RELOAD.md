@@ -70,10 +70,10 @@ Codex should implement a thin orchestration layer that:
 ## Suggested File Targets
 These are guidance targets. Codex may adjust exact paths if the repo requires better placement while keeping architecture boundaries intact.
 
-- engine/scene/RuntimeSceneLoader.js
-- engine/scene/SceneCompositionResolver.js
-- engine/validation/RuntimeContractValidator.js
-- engine/debug/HotReloadCoordinator.js
+- src/engine/scene/RuntimeSceneLoader.js
+- src/engine/scene/SceneCompositionResolver.js
+- src/engine/validation/RuntimeContractValidator.js
+- src/engine/debug/HotReloadCoordinator.js
 - samples/<target-sample>/ or tools/dev harness wiring as appropriate
 - tests/scene/RuntimeSceneLoader.test.mjs
 - tests/debug/HotReloadCoordinator.test.mjs

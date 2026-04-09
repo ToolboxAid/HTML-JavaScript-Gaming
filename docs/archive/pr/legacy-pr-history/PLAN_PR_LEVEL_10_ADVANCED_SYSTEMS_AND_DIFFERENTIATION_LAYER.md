@@ -9,7 +9,7 @@ PLAN_PR_LEVEL_10_ADVANCED_SYSTEMS_AND_DIFFERENTIATION_LAYER.md
 Level 10 — Advanced Systems and Differentiation Layer
 
 ## Purpose
-Extend the stable engine/platform with advanced, optional systems that differentiate games without breaking the core architecture.
+Extend the stable src/engine/platform with advanced, optional systems that differentiate games without breaking the core architecture.
 
 ## Scope
 - docs/pr

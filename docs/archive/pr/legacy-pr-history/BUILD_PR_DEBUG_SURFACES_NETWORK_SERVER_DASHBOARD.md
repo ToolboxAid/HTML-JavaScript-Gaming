@@ -43,7 +43,7 @@ Implemented Track T with a lightweight server dashboard for Sample A network tel
 - structure is ready for swapping fake data source with real networking source later
 
 ## Scope Safety
-- no engine/core modifications
+- no src/engine/core modifications
 - no DB/auth system expansion
 - no Track U containerization work
 - no BIG_PICTURE roadmap edits

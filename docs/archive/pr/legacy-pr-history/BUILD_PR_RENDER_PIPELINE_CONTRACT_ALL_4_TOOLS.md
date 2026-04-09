@@ -438,7 +438,7 @@ This PR locks the intended engine seam so Codex does not guess.
 
 | Producer | Contract Kind / Content | Engine Responsibility | Notes |
 |---|---|---|---|
-| Tile Map Editor | `tilemap`, `collision` | `engine/tilemap/`, renderer, collision, camera consumption | Tile art and collision data remain distinct even when exported together |
+| Tile Map Editor | `tilemap`, `collision` | `src/engine/tilemap/`, renderer, collision, camera consumption | Tile art and collision data remain distinct even when exported together |
 | Parallax Editor | `parallax` | renderer + camera-based parallax handling | Camera motion modifies parallax factors, not source asset coordinates |
 | Sprite Editor | `sprite`, sprite-backed `entities` | ECS movement/collision + renderer consumption | Sprite content stays engine-facing through public contracts only |
 | Vector Asset Studio | `vector`, `overlay`, optional debug layers | renderer/debug paths as appropriate | Vector overlays may be gameplay or debug depending on `runtimeInclusion` |

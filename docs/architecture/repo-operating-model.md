@@ -20,7 +20,7 @@ This document captures the durable operating model for how this repository is or
 - `docs/pr/` is the historical PR and architecture trail and must remain intact.
 
 ## Layer Boundaries
-- `engine/` owns foundational reusable runtime systems.
+- `src/engine/` owns foundational reusable runtime systems.
 - `src/advanced/` owns composable higher-level architecture patterns.
 - `samples/` demonstrates usage patterns and should not become the source of reusable runtime logic.
 - `games/` consumes public contracts; it should not bypass engine boundaries.

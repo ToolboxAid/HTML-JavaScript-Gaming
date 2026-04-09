@@ -1,7 +1,7 @@
 # Repo Directory Structure
 
 ## Runtime and Product Layers
-- `engine/`: stable foundational runtime systems
+- `src/engine/`: stable foundational runtime systems
 - `src/advanced/`: composable advanced architecture layer
 - `tools/`: editor and pipeline tooling
 - `samples/`: demonstration consumers

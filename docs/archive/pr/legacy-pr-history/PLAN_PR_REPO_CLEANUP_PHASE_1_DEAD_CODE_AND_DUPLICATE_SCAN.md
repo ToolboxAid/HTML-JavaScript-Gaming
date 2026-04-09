@@ -9,7 +9,7 @@ Phase 1 planning for safe cleanup with emphasis on dead code, duplicate code, st
 
 ## Why these changes are safe
 - Test import path fixes do not change runtime game behavior.
-- `samples/sample028-asset-registry/assetRegistry.js` was only a pass-through re-export of `AssetRegistry` from `engine/assets/index.js` and was not used by the sample.
+- `samples/sample028-asset-registry/assetRegistry.js` was only a pass-through re-export of `AssetRegistry` from `src/engine/assets/index.js` and was not used by the sample.
 
 ## Engine-boundary note
 - The removed file is a good example of code that should not remain local when the engine already provides the canonical implementation.

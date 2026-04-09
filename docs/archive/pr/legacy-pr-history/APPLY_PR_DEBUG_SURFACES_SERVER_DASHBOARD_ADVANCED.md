@@ -6,7 +6,7 @@ APPLY_PR_DEBUG_SURFACES_SERVER_DASHBOARD_ADVANCED.md
 # APPLY_PR_DEBUG_SURFACES_SERVER_DASHBOARD_ADVANCED
 
 ## Apply Intent
-Implement advanced shared server dashboard behavior in `engine/debug/network/dashboard` with read-only providers and command-safe host APIs.
+Implement advanced shared server dashboard behavior in `src/engine/debug/network/dashboard` with read-only providers and command-safe host APIs.
 
 ## Guardrails
 - No engine core changes.
@@ -16,15 +16,15 @@ Implement advanced shared server dashboard behavior in `engine/debug/network/das
 - Keep implementation scoped to shared dashboard modules.
 
 ## Required File Work
-- `engine/debug/network/dashboard/serverDashboardHost.js`
-- `engine/debug/network/dashboard/serverDashboardRegistry.js`
-- `engine/debug/network/dashboard/serverDashboardProviders.js`
-- `engine/debug/network/dashboard/serverDashboardRenderer.js`
-- `engine/debug/network/dashboard/serverDashboardViewModel.js`
-- `engine/debug/network/dashboard/serverDashboardMetrics.js`
-- `engine/debug/network/dashboard/serverDashboardRefreshModes.js`
-- `engine/debug/network/dashboard/registerDashboardCommands.js`
-- `engine/debug/network/index.js` (exports only)
+- `src/engine/debug/network/dashboard/serverDashboardHost.js`
+- `src/engine/debug/network/dashboard/serverDashboardRegistry.js`
+- `src/engine/debug/network/dashboard/serverDashboardProviders.js`
+- `src/engine/debug/network/dashboard/serverDashboardRenderer.js`
+- `src/engine/debug/network/dashboard/serverDashboardViewModel.js`
+- `src/engine/debug/network/dashboard/serverDashboardMetrics.js`
+- `src/engine/debug/network/dashboard/serverDashboardRefreshModes.js`
+- `src/engine/debug/network/dashboard/registerDashboardCommands.js`
+- `src/engine/debug/network/index.js` (exports only)
 
 ## Command Contract
 - `dashboard.help` lists commands and modes

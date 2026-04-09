@@ -3,7 +3,7 @@
 Palette Browser / Manager is a first-class tools surface for shared engine palettes and local editable palette workflows.
 
 ## Phase 1
-- Browse built-in palettes from `engine/paletteList.js`.
+- Browse built-in palettes from `src/engine/paletteList.js`.
 - Duplicate a palette into a local editable copy.
 - Rename custom palettes and add or remove swatches.
 - Validate duplicate names, missing metadata, and invalid color values.

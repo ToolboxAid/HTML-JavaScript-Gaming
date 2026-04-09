@@ -44,7 +44,7 @@ Implemented Sample B host/client diagnostics using sample-owned fake peer simula
 - no required changes to `docs/dev/BIG_PICTURE_ROADMAP.md`
 
 ## Scope Safety
-- no engine/core changes
+- no src/engine/core changes
 - no real networking transport work
 - no server/dashboard expansion
 - sample-driven and read-only diagnostics only

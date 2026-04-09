@@ -38,7 +38,7 @@ Implemented Track U containerization for the Sample A server dashboard with mini
 - adds opt-in `NETWORK_SAMPLE_A_ALLOW_REMOTE_WITH_KEY=1` gate to allow key-authenticated container access without changing default local safety
 
 ## Scope Safety
-- no engine/core modifications
+- no src/engine/core modifications
 - no orchestration stack changes
 - no dashboard feature expansion beyond access compatibility for container usage
 - no BIG_PICTURE roadmap edits

@@ -9,7 +9,7 @@ PLAN_PR_DEBUG_SURFACES_SERVER_DASHBOARD_ADVANCED.md
 PLAN_PR -> BUILD_PR -> APPLY_PR
 
 ## Purpose
-Advance the shared server dashboard under `engine/debug/network/dashboard` into a stronger read-only debugging surface without changing engine core APIs.
+Advance the shared server dashboard under `src/engine/debug/network/dashboard` into a stronger read-only debugging surface without changing engine core APIs.
 
 ## Scope
 In scope:
@@ -31,7 +31,7 @@ Out of scope:
 - Server-dashboard, docker, or transport work.
 
 ## Boundaries
-- Shared ownership: `engine/debug/network/dashboard/*`
+- Shared ownership: `src/engine/debug/network/dashboard/*`
 - Sample ownership: sample feeds and scenario data
 - Engine core ownership: no changes in this PR
 

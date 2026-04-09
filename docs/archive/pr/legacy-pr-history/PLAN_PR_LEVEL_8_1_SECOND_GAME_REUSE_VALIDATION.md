@@ -16,7 +16,7 @@ Validate that the Level 7 world systems and Level 8 implementation patterns gene
 - docs/dev
 
 ## Out of Scope
-- engine/ redesign
+- src/engine/ redesign
 - tool refactors
 - system rewrites
 - unrelated cleanup

@@ -10,7 +10,7 @@ BUILD_PR_LEVEL_10_3_ADVANCED_OBJECTIVE_MISSION_SYSTEM.md
 
 ## Scope Confirmation
 - Docs-first, repo-structured delta
-- No engine/runtime implementation changes
+- No src/engine/runtime implementation changes
 - Public-API-only composition guidance
 
 ## Full Repo-Relative Paths (Touched for This BUILD)

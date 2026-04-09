@@ -1,4 +1,4 @@
-import { sanitizeText } from "../../engine/debug/inspectors/shared/inspectorUtils.js";
+﻿import { sanitizeText } from "../../src/engine/debug/inspectors/shared/inspectorUtils.js";
 
 export function ensureArray(value) {
   return Array.isArray(value) ? value : [];

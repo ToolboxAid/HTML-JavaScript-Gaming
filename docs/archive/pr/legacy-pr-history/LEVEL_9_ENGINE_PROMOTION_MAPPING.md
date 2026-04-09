@@ -16,10 +16,10 @@ LEVEL_9_ENGINE_PROMOTION_MAPPING.md
 ## Proposed Engine Domain Mapping
 | candidate | proposed engine domain | proposed path | rationale |
 |---|---|---|---|
-| Spawn System | `engine/world` | `engine/world/SpawnSystem.js` | world population and timed creation concern |
-| Lifecycle System | `engine/world` | `engine/world/LifecycleSystem.js` | world entity cleanup/lifetime/bounds concern |
-| World State System | `engine/state` | `engine/state/WorldStateSystem.js` | phase/wave transition state machine concern |
-| Events System | `engine/events` | `engine/events/WorldEventsSystem.js` | deterministic trigger/effect orchestration concern |
+| Spawn System | `src/engine/world` | `src/engine/world/SpawnSystem.js` | world population and timed creation concern |
+| Lifecycle System | `src/engine/world` | `src/engine/world/LifecycleSystem.js` | world entity cleanup/lifetime/bounds concern |
+| World State System | `src/engine/state` | `src/engine/state/WorldStateSystem.js` | phase/wave transition state machine concern |
+| Events System | `src/engine/events` | `src/engine/events/WorldEventsSystem.js` | deterministic trigger/effect orchestration concern |
 
 ## Ownership Before/After
 | system | before | after |

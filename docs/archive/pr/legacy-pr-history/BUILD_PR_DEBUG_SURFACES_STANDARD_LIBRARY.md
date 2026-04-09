@@ -1,7 +1,7 @@
 # BUILD_PR_DEBUG_SURFACES_STANDARD_LIBRARY
 
 ## Objective
-Create an authoritative docs-only BUILD bundle for the first shared debug surfaces standard library under `engine/debug/standard`.
+Create an authoritative docs-only BUILD bundle for the first shared debug surfaces standard library under `src/engine/debug/standard`.
 
 ## Workflow
 PLAN_PR -> BUILD_PR -> APPLY_PR
@@ -15,7 +15,7 @@ PLAN_PR -> BUILD_PR -> APPLY_PR
 
 ## Authoritative Target Structure
 ```text
-engine/
+src/engine/
   debug/
     standard/
       panels/

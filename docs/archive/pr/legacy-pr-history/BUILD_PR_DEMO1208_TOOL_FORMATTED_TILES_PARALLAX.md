@@ -76,4 +76,4 @@ Demo 1208 should look like authored content from the user's tools:
 - Demo 1207 index link is fixed to runnable page
 - Demo 1208 index link resolves to runnable page
 - no diff outside approved paths
-- no engine/tools/tests/games changes
+- no src/engine/tools/tests/games changes

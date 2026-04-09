@@ -19,7 +19,7 @@ This is a tightly controlled pilot to validate extraction rules without introduc
 - Target: tools/SpriteEditor_old_keep/shared/ (NOT engine)
 
 ## Out of Scope
-- engine/
+- src/engine/
 - games/
 - samples/
 - multi-helper extraction

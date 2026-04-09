@@ -35,7 +35,7 @@ Treat the following as complete for this PR:
 - no additional helper consolidation
 - no naming cleanup
 - no shared API redesign
-- no engine/runtime expansion beyond the accepted BUILD scope
+- no src/engine/runtime expansion beyond the accepted BUILD scope
 
 ## Ready To Commit
 This PR is ready for commit as the APPLY/acceptance step for the completed helper extraction work.

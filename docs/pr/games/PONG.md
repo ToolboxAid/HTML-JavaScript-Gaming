@@ -1,4 +1,4 @@
-Toolbox Aid
+﻿Toolbox Aid
 David Quesenberry
 03/24/2026
 PONG.md
@@ -12,10 +12,10 @@ Pong is Game #3 and ships as a standalone game under `games/Pong`.
 - Tennis, Hockey, Handball, and Jai-Alai modes
 - Keyboard + gamepad support
 - Paddle english from contact point and paddle motion
-- Shared engine-owned layout via `/engine/ui/baseLayout.css`
+- Shared engine-owned layout via `/src/src/engine/ui/baseLayout.css`
 
 ## Engine touch points
-- Added `engine/input/GamepadInputAdapter.js` for reusable normalized gamepad access.
+- Added `src/engine/input/GamepadInputAdapter.js` for reusable normalized gamepad access.
 - Kept rendering inside the renderer and scene orchestration inside `PongScene`.
 - Kept Pong-specific rules local to the game layer.
 

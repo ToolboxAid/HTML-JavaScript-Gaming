@@ -18,7 +18,7 @@ Repo Cleanup Phase 1D - Sprite Editor Post-Normalization Extraction Gate
 - No runtime code changes
 
 ## Do-Not-Touch Confirmation
-- `engine/`
+- `src/engine/`
 - `games/`
 - `samples/`
 - `tests/`
@@ -101,7 +101,7 @@ Any helper must pass all gates before extraction:
 ## Risks
 - Premature extraction can reverse Phase 1C ownership clarity.
 - False-positive duplicate detection can merge helpers with subtly different behavior.
-- Scope drift into engine/shared-tool abstraction can violate cleanup workflow locks.
+- Scope drift into src/engine/shared-tool abstraction can violate cleanup workflow locks.
 
 ## Acceptance Criteria
 1. Helper inventory is explicit and path-based.

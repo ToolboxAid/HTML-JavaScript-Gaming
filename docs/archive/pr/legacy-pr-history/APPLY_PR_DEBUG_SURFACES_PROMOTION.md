@@ -4,7 +4,7 @@
 Apply the approved extraction/relocation plan for debug surfaces with no feature expansion and minimal engine-core changes.
 
 ## Apply Scope
-- relocate proven reusable debug systems into `engine/debug`
+- relocate proven reusable debug systems into `src/engine/debug`
 - keep engine-core changes limited to debug contracts/hooks
 - preserve local ownership for sample-specific panels/providers/commands
 - preserve `MultiSystemDemoScene.js` as proving integration
@@ -32,4 +32,4 @@ Apply the approved extraction/relocation plan for debug surfaces with no feature
 - no unrelated files or systems changed
 
 ## Expected Outcome
-Debug surfaces are promoted out of `tools/dev` into shared `engine/debug` structure while engine-core remains minimal and local sample integrations stay local.
+Debug surfaces are promoted out of `tools/dev` into shared `src/engine/debug` structure while engine-core remains minimal and local sample integrations stay local.

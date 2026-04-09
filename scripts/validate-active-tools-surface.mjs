@@ -1,4 +1,4 @@
-import fs from "node:fs/promises";
+﻿import fs from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import {
@@ -137,7 +137,7 @@ async function main() {
 
   for (const target of ACTIVE_TOOL_ENTRYPOINTS) {
     const text = await readText(target);
-    if (!text.includes("../../engine/ui/hubCommon.css")) {
+    if (!text.includes("../../src/engine/ui/hubCommon.css")) {
       issues.push(`Engine theme stylesheet missing from active tool page: ${target}`);
     }
     if (!text.includes("../shared/platformShell.css")) {
@@ -158,7 +158,7 @@ async function main() {
   if (/Asset Browser \/ Import Hub/.test(toolsLandingPage)) {
     issues.push('Asset Browser / Import Hub should be registry-rendered, not left behind as a static placeholder card.');
   }
-  if (!toolsLandingPage.includes("../engine/ui/hubCommon.css")) {
+  if (!toolsLandingPage.includes("../src/engine/ui/hubCommon.css")) {
     issues.push("Engine theme stylesheet missing from tools landing page.");
   }
   if (!toolsLandingPage.includes("./shared/platformShell.css")) {

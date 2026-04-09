@@ -33,7 +33,7 @@ Accept this PR only if all of the following are true:
 - README exists under `games/network_sample_a/server/`
 
 ### Scope Control
-- no engine/core files changed
+- no src/engine/core files changed
 - no dashboard mutation/admin features added
 - no transport redesign occurred
 - no unrelated sample/game refactors occurred

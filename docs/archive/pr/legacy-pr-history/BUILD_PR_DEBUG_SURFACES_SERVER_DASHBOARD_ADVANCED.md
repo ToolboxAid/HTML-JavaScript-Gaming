@@ -6,11 +6,11 @@ BUILD_PR_DEBUG_SURFACES_SERVER_DASHBOARD_ADVANCED.md
 # BUILD_PR_DEBUG_SURFACES_SERVER_DASHBOARD_ADVANCED
 
 ## Build Intent
-Prepare an implementation-ready APPLY package for advanced shared server dashboard behavior under `engine/debug/network/dashboard` while preserving read-only and decoupled architecture rules.
+Prepare an implementation-ready APPLY package for advanced shared server dashboard behavior under `src/engine/debug/network/dashboard` while preserving read-only and decoupled architecture rules.
 
 ## Authoritative Target Structure
 ```text
-engine/debug/network/dashboard/
+src/engine/debug/network/dashboard/
   serverDashboardHost.js
   serverDashboardRegistry.js
   serverDashboardProviders.js
@@ -61,7 +61,7 @@ engine/debug/network/dashboard/
 5. Extend registry for deterministic section controls.
 6. Extend renderer to consume the new view model.
 7. Add dashboard command registration bridge using host APIs only.
-8. Export advanced dashboard modules from `engine/debug/network/index.js`.
+8. Export advanced dashboard modules from `src/engine/debug/network/index.js`.
 9. Run targeted validations.
 
 ## Validation Targets

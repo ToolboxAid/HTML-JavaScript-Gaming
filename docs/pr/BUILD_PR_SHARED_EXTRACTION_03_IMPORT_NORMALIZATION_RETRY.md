@@ -64,7 +64,7 @@ With:
 import { isPlainObject } from '../../shared/utils/objectUtils.js';
 ```
 
-### 4) `src/engine/debug/inspectors/host/debugInspectorHost.js`
+### 4) `src/src/engine/debug/inspectors/host/debugInspectorHost.js`
 Current import block contains `asPositiveInteger` from `../shared/inspectorUtils.js`.
 
 Update to:
@@ -74,7 +74,7 @@ Update to:
 import { asPositiveInteger } from '../../../../shared/utils/numberUtils.js';
 ```
 
-### 5) `src/engine/debug/inspectors/registry/debugInspectorRegistry.js`
+### 5) `src/src/engine/debug/inspectors/registry/debugInspectorRegistry.js`
 Current import block contains `asPositiveInteger` from `../shared/inspectorUtils.js`.
 
 Update to:
@@ -84,7 +84,7 @@ Update to:
 import { asPositiveInteger } from '../../../../shared/utils/numberUtils.js';
 ```
 
-### 6) `src/engine/debug/inspectors/viewModels/entityInspectorViewModel.js`
+### 6) `src/src/engine/debug/inspectors/viewModels/entityInspectorViewModel.js`
 Current import block contains `asPositiveInteger` from `../shared/inspectorUtils.js`.
 
 Update to:
@@ -94,7 +94,7 @@ Update to:
 import { asPositiveInteger } from '../../../../shared/utils/numberUtils.js';
 ```
 
-### 7) `src/engine/debug/inspectors/viewModels/eventStreamInspectorViewModel.js`
+### 7) `src/src/engine/debug/inspectors/viewModels/eventStreamInspectorViewModel.js`
 Current import block contains `asPositiveInteger` from `../shared/inspectorUtils.js`.
 
 Update to:
@@ -104,7 +104,7 @@ Update to:
 import { asPositiveInteger } from '../../../../shared/utils/numberUtils.js';
 ```
 
-### 8) `src/engine/debug/inspectors/viewModels/stateDiffInspectorViewModel.js`
+### 8) `src/src/engine/debug/inspectors/viewModels/stateDiffInspectorViewModel.js`
 Current import block contains `asPositiveInteger` from `../shared/inspectorUtils.js`.
 
 Update to:
@@ -114,7 +114,7 @@ Update to:
 import { asPositiveInteger } from '../../../../shared/utils/numberUtils.js';
 ```
 
-### 9) `src/engine/debug/inspectors/viewModels/timelineInspectorViewModel.js`
+### 9) `src/src/engine/debug/inspectors/viewModels/timelineInspectorViewModel.js`
 Current import block contains `asPositiveInteger` from `../shared/inspectorUtils.js`.
 
 Update to:
@@ -138,12 +138,12 @@ import { asPositiveInteger } from '../../../../shared/utils/numberUtils.js';
    - `src/advanced/state/initialState.js`
    - `src/advanced/state/transitions.js`
 3. Confirm `asPositiveInteger` is no longer imported from `../shared/inspectorUtils.js` in:
-   - `src/engine/debug/inspectors/host/debugInspectorHost.js`
-   - `src/engine/debug/inspectors/registry/debugInspectorRegistry.js`
-   - `src/engine/debug/inspectors/viewModels/entityInspectorViewModel.js`
-   - `src/engine/debug/inspectors/viewModels/eventStreamInspectorViewModel.js`
-   - `src/engine/debug/inspectors/viewModels/stateDiffInspectorViewModel.js`
-   - `src/engine/debug/inspectors/viewModels/timelineInspectorViewModel.js`
+   - `src/src/engine/debug/inspectors/host/debugInspectorHost.js`
+   - `src/src/engine/debug/inspectors/registry/debugInspectorRegistry.js`
+   - `src/src/engine/debug/inspectors/viewModels/entityInspectorViewModel.js`
+   - `src/src/engine/debug/inspectors/viewModels/eventStreamInspectorViewModel.js`
+   - `src/src/engine/debug/inspectors/viewModels/stateDiffInspectorViewModel.js`
+   - `src/src/engine/debug/inspectors/viewModels/timelineInspectorViewModel.js`
 4. Confirm the new shared imports resolve to:
    - `../../shared/utils/objectUtils.js`
    - `../../../../shared/utils/numberUtils.js`

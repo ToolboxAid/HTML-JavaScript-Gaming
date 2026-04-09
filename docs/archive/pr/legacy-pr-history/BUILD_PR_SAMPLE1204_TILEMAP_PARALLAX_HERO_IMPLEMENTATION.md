@@ -102,7 +102,7 @@ Secondary only if required:
 - `samples/index.html`
 
 ## Disallowed Diff Area
-- `engine/**`
+- `src/engine/**`
 - `tools/**`
 - `games/**`
 - `tests/**`

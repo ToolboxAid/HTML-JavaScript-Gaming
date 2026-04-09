@@ -1,4 +1,4 @@
-import { DEFAULT_PALETTE, DEFAULT_PALETTE_NAMED_ENTRIES } from "../../../engine/paletteDefaults.js";
+﻿import { DEFAULT_PALETTE, DEFAULT_PALETTE_NAMED_ENTRIES } from "../../../src/engine/paletteDefaults.js";
 
 class SpriteEditorDocument {
     constructor() {

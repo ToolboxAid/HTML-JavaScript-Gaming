@@ -1,11 +1,11 @@
-/*
+﻿/*
 Toolbox Aid
 David Quesenberry
 03/21/2026
 FixedTicker.test.mjs
 */
 import assert from "node:assert/strict";
-import FixedTicker from "../../engine/core/FixedTicker.js";
+import FixedTicker from "../../src/engine/core/FixedTicker.js";
 
 export function run() {
     const ticker = new FixedTicker({ stepMs: 10, maxCatchUpSteps: 3 });

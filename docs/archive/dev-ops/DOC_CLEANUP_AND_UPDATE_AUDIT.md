@@ -106,7 +106,7 @@ This needs explicit updates for:
 - `src/advanced/state/`
 - `docs/dev/reports/`
 - current purpose of `games/`, `tools/`, `samples/`
-- distinction between `engine/` and `src/advanced/`
+- distinction between `src/engine/` and `src/advanced/`
 
 ### 4. `docs/getting-started.md`
 Update onboarding to current reality:
@@ -126,7 +126,7 @@ Update review checklist to include:
 
 ### 6. `docs/architecture/README.md`
 Update to include the current layered model:
-- `engine/` = stable foundational systems
+- `src/engine/` = stable foundational systems
 - `src/advanced/` = composable optional architecture layer
 - `games/` = primary consumers
 - `tools/` = optional consumers
@@ -134,9 +134,9 @@ Update to include the current layered model:
 
 ### 7. `docs/architecture/engine-api-boundary.md`
 Update to explicitly state:
-- authoritative state belongs in `src/advanced/state/`, not `engine/state/`
+- authoritative state belongs in `src/advanced/state/`, not `src/engine/state/`
 - engine must not import advanced systems
-- reusable + foundational goes to `engine/`
+- reusable + foundational goes to `src/engine/`
 - reusable + composable goes to `src/advanced/`
 
 ### 8. `docs/dev/README.md`

@@ -8,7 +8,7 @@ Codex MUST:
 - Keep consumer read-only
 
 Codex MUST NOT:
-- Modify engine/
+- Modify src/engine/
 - Add additional slices
 - Add multiple consumers
 - Refactor unrelated systems

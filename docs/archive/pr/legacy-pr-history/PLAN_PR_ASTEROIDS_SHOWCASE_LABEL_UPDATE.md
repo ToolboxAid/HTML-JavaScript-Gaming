@@ -18,7 +18,7 @@ PLAN_PR -> BUILD_PR -> APPLY_PR
 
 ## Constraints
 - No runtime behavior changes.
-- No engine/tool refactors.
+- No src/engine/tool refactors.
 - Keep formatting/style conventions intact.
 
 ## Acceptance

@@ -27,7 +27,7 @@ PLAN_PR -> BUILD_PR -> APPLY_PR
 
 2. `PluginContext`
 - approved public APIs only
-- read-only access to engine/debug snapshots
+- read-only access to src/engine/debug snapshots
 - bounded command/panel/provider registration helpers
 
 3. `CapabilityDescriptor`

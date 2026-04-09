@@ -11,10 +11,10 @@ Normalize ONLY this helper:
 ## Exact Files Allowed
 
 ### New shared file
-1. `src/engine/debug/shared/debugCommandResultUtils.js`
+1. `src/src/engine/debug/shared/debugCommandResultUtils.js`
 
 ### Consumer files
-2. `src/engine/debug/inspectors/commands/registerInspectorCommands.js`
+2. `src/src/engine/debug/inspectors/commands/registerInspectorCommands.js`
 3. `tools/dev/presets/debugPresetApplier.js`
 
 Do not edit any other file.
@@ -29,7 +29,7 @@ Only the 2 listed consumer files are in scope.
 ## Exact Shared Helper Creation
 Create:
 
-`src/engine/debug/shared/debugCommandResultUtils.js`
+`src/src/engine/debug/shared/debugCommandResultUtils.js`
 
 Export exactly:
 
@@ -56,7 +56,7 @@ function toResult(status, title, code, lines, details = {})
 then:
 - remove the local `toResult(...)` function definition
 - import `toResult` from the correct relative path to:
-  - `src/engine/debug/shared/debugCommandResultUtils.js`
+  - `src/src/engine/debug/shared/debugCommandResultUtils.js`
 - if the file already imports from that module, add `toResult` with the minimum safe edit
 - do not duplicate imports
 - do not touch unrelated helpers
@@ -67,7 +67,7 @@ If a listed file already imports and uses shared `toResult`, leave it unchanged.
 ## Relative Import Rule
 Use the correct relative path from each consumer file to:
 
-`src/engine/debug/shared/debugCommandResultUtils.js`
+`src/src/engine/debug/shared/debugCommandResultUtils.js`
 
 Do not use aliases.
 Do not change `.js` extension usage.
@@ -80,9 +80,9 @@ Do not change `.js` extension usage.
 
 ## Validation Checklist
 1. Confirm no more than the 3 listed files changed
-2. Confirm `src/engine/debug/shared/debugCommandResultUtils.js` exists and exports `toResult`
+2. Confirm `src/src/engine/debug/shared/debugCommandResultUtils.js` exists and exports `toResult`
 3. Confirm local `function toResult(...)` definitions no longer exist in changed listed consumer files
-4. Confirm changed consumer files import `toResult` from the correct relative path to `src/engine/debug/shared/debugCommandResultUtils.js`
+4. Confirm changed consumer files import `toResult` from the correct relative path to `src/src/engine/debug/shared/debugCommandResultUtils.js`
 5. Confirm no unrelated files changed
 6. Confirm no behavior changes were made
 

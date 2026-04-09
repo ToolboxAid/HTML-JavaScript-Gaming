@@ -9,11 +9,11 @@ PLAN_PR_REPO_CLEANUP_PHASE_1G_ENGINE_PROMOTION_FROM_STRONG_CANDIDATES.md
 Repo Cleanup Phase 1G — Engine Promotion (Strong Candidates Only)
 
 ## Purpose
-Promote only “Strong Candidate” helpers (identified in Phase 1F) into engine/ as reusable, engine-owned utilities.
+Promote only “Strong Candidate” helpers (identified in Phase 1F) into src/engine/ as reusable, engine-owned utilities.
 
 ## Scope
 - Source: tools/SpriteEditor_old_keep/shared/
-- Target: engine/
+- Target: src/engine/
 - docs/pr
 - docs/dev
 
@@ -40,7 +40,7 @@ A helper can move to engine ONLY if:
 - No API redesign
 
 ## Deliverables
-- Promoted helper in engine/
+- Promoted helper in src/engine/
 - Updated imports
 - Engine placement justification
 - Before/after ownership table

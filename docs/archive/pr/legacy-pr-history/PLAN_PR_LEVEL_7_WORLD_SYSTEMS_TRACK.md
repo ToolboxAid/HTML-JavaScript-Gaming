@@ -16,7 +16,7 @@ Introduce world-level systems using existing engine patterns. First system: Spaw
 - docs/dev
 
 ## Out of Scope
-- engine/
+- src/engine/
 - games/
 - samples/
 - runtime code

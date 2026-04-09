@@ -1,4 +1,4 @@
-/*
+﻿/*
 Toolbox Aid
 David Quesenberry
 03/22/2026
@@ -14,7 +14,7 @@ import {
   startAttack,
   updateAttackState,
   updateCombatant,
-} from '../../engine/combat/index.js';
+} from '../../src/engine/combat/index.js';
 
 export function run() {
   const attacker = createCombatant({ x: 100, y: 100, width: 30, height: 30, facing: 1 });

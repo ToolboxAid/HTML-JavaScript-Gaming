@@ -32,7 +32,7 @@ Define a namespaced command-pack model for the existing dev console so command r
   - `tools/dev/`
   - optional `tests/tools/`
 - Not allowed:
-  - `engine/`
+  - `src/engine/`
   - runtime core rewrites
   - unrelated tools/samples/games
 

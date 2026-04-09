@@ -3,8 +3,8 @@
 Shared framework used by `samples/` and `games/`. All modules are ES modules and browser-ready; no build step is required.
 
 ## Import Policy
-- Bootstrap via `engine/core/Engine.js`.
-- For subsystems, prefer the public barrel `engine/<subsystem>/index.js` when it exists.
+- Bootstrap via `src/engine/core/Engine.js`.
+- For subsystems, prefer the public barrel `src/engine/<subsystem>/index.js` when it exists.
 
 ## Key Areas
 - `core/` timing, orchestration, metrics

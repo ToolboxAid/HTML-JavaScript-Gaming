@@ -13,9 +13,9 @@ Scene -> Renderer -> CanvasRenderer -> CanvasRenderingContext2D
 
 ## Core files
 
-- `engine/render/Renderer.js`
-- `engine/render/CanvasRenderer.js`
-- `engine/core/Engine.js`
+- `src/engine/render/Renderer.js`
+- `src/engine/render/CanvasRenderer.js`
+- `src/engine/core/Engine.js`
 
 ## Responsibilities
 

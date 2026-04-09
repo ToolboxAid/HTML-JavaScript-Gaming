@@ -1,6 +1,6 @@
-import AssetRegistry from "../../engine/assets/AssetRegistry.js";
-import AssetLoaderSystem from "../../engine/assets/AssetLoaderSystem.js";
-import ImageAssetLoader from "../../engine/assets/ImageAssetLoader.js";
+﻿import AssetRegistry from "../../src/engine/assets/AssetRegistry.js";
+import AssetLoaderSystem from "../../src/engine/assets/AssetLoaderSystem.js";
+import ImageAssetLoader from "../../src/engine/assets/ImageAssetLoader.js";
 import { prepareVectorGeometryRuntimeAsset } from "./vectorGeometryRuntime.js";
 import { validatePackageManifest, createRegistryDefinition } from "./runtimeAssetValidationUtils.js";
 import { ensureArray } from "../../src/shared/utils/arrayUtils.js";

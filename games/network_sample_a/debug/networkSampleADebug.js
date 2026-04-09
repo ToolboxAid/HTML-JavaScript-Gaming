@@ -5,7 +5,7 @@ David Quesenberry
 networkSampleADebug.js
 */
 
-import { createNetworkDebugPluginDefinition } from "../../../engine/debug/network/index.js";
+import { createNetworkDebugPluginDefinition } from "../../../src/engine/debug/network/index.js";
 import { asArray, asObject } from "../../../src/engine/debug/inspectors/shared/inspectorUtils.js";
 import {
   asNumber,

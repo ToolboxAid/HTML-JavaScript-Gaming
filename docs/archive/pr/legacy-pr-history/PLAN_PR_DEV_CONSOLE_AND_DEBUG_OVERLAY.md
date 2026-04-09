@@ -288,11 +288,11 @@ BUILD phase may refine bindings if conflicts exist, but must preserve discoverab
 
 ## Files Expected In Later BUILD/APPLY Phases
 Potential implementation targets, subject to Codex refinement:
-- engine/debug/DebugOverlay.js
-- engine/debug/DevConsole.js
-- engine/debug/DiagnosticsRegistry.js
-- engine/debug/DiagnosticsAdapters.js
-- engine/debug/ConsoleCommandRegistry.js
+- src/engine/debug/DebugOverlay.js
+- src/engine/debug/DevConsole.js
+- src/engine/debug/DiagnosticsRegistry.js
+- src/engine/debug/DiagnosticsAdapters.js
+- src/engine/debug/ConsoleCommandRegistry.js
 - tests/debug/DebugOverlay.test.mjs
 - tests/debug/DevConsole.test.mjs
 - tests/debug/DiagnosticsRegistry.test.mjs

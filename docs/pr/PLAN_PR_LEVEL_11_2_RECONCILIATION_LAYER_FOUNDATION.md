@@ -37,7 +37,7 @@ Define the reconciliation architecture before code is written so future implemen
 - Rewriting Sample C to production networking
 
 ## Architectural Goals
-1. Keep reconciliation logic layered above existing engine/game runtime boundaries.
+1. Keep reconciliation logic layered above existing src/engine/game runtime boundaries.
 2. Preserve the Sample C teaching/debug value while making future shared behavior possible.
 3. Standardize terminology so later tracks do not drift.
 4. Allow future Sample D / hub work to reuse contracts without duplicating ad hoc wiring.

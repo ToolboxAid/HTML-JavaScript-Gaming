@@ -32,7 +32,7 @@ Out of scope:
 - `paletteRef` is optional on input; missing references normalize safely to unselected state.
 - When `paletteRef.id` resolves against engine palette authority, project loads locked and editable.
 - When `paletteRef.id` is missing/unresolvable, project loads safely in blocked mode until explicit palette selection.
-- Palette authority remains external to project JSON (`engine/paletteList.js`), preventing tool-local authority drift.
+- Palette authority remains external to project JSON (`src/engine/paletteList.js`), preventing tool-local authority drift.
 
 ## User-Visible Behavior Changes (Confirmed)
 - Editor actions remain disabled until an engine palette is explicitly selected.

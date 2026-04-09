@@ -21,7 +21,7 @@ README.md
 - `engine-scene-transitions.md`
 
 ## Layer Model
-- `engine/`: stable foundational runtime systems
+- `src/engine/`: stable foundational runtime systems
 - `src/advanced/`: composable advanced architecture layer
 - `samples/`: usage demonstrations
 - `games/`: consumer implementations

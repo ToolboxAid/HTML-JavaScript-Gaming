@@ -1,4 +1,4 @@
-/*
+﻿/*
 Toolbox Aid
 David Quesenberry
 03/22/2026
@@ -16,7 +16,7 @@ import {
   RollbackDiagnostics,
   Serializer,
   StateReplication,
-} from '../../engine/network/index.js';
+} from '../../src/engine/network/index.js';
 
 export async function run() {
   const serializer = new Serializer({ version: 2 });

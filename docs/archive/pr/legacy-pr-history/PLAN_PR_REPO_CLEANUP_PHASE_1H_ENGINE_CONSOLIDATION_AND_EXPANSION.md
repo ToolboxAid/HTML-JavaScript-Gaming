@@ -12,7 +12,7 @@ Repo Cleanup Phase 1H — Engine Consolidation and Controlled Expansion
 Expand engine promotion from Phase 1G and consolidate promoted helpers into proper engine subsystems.
 
 ## Scope
-- engine/
+- src/engine/
 - tools/SpriteEditor_old_keep/shared/
 - docs/pr
 - docs/dev

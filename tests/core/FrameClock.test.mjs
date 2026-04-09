@@ -1,11 +1,11 @@
-/*
+﻿/*
 Toolbox Aid
 David Quesenberry
 03/21/2026
 FrameClock.test.mjs
 */
 import assert from "node:assert/strict";
-import FrameClock from "../../engine/core/FrameClock.js";
+import FrameClock from "../../src/engine/core/FrameClock.js";
 
 export function run() {
     const clock = new FrameClock({ maxDeltaMs: 50 });

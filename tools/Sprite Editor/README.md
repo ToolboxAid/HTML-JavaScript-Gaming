@@ -24,7 +24,7 @@ Standalone browser-based pixel art tool under `tools/Sprite Editor/`.
 - Keyboard shortcuts and undo/redo support
 
 ## Project integration
-- Palette source of truth is engine-owned `globalThis.palettesList` from `engine/paletteList.js`.
+- Palette source of truth is engine-owned `globalThis.palettesList` from `src/engine/paletteList.js`.
 - Editing remains disabled until a palette is selected.
 - Saved project JSON persists `paletteRef` identity and optional `assetRefs`.
 - Loading unresolved palette refs leaves the project in blocked selection mode.

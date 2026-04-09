@@ -22,7 +22,7 @@ Track S - Documentation and Adoption:
 ## Scope Safety
 - No roadmap wording/structure edits.
 - No BIG_PICTURE roadmap edits.
-- No engine/runtime/UI changes.
+- No src/engine/runtime/UI changes.
 
 ## Validation
 - `git diff -- docs/dev/PRODUCTIZATION_ROADMAP.md` shows bracket-only changes.

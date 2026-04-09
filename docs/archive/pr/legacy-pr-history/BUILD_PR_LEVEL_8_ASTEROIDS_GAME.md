@@ -10,7 +10,7 @@ BUILD_PR_LEVEL_8_ASTEROIDS_GAME.md
 
 ## Scope Confirmation
 - Sample-based game implementation
-- No `engine/` modifications
+- No `src/engine/` modifications
 - Asteroids-style game flow using Level 7 world systems pattern
 
 ## Full Repo-Relative Paths (Touched for This BUILD)

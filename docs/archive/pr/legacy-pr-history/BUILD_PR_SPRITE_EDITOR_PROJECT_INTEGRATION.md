@@ -1,4 +1,4 @@
-Toolbox Aid
+﻿Toolbox Aid
 David Quesenberry
 04/03/2026
 BUILD_PR_SPRITE_EDITOR_PROJECT_INTEGRATION.md
@@ -9,7 +9,7 @@ BUILD_PR_SPRITE_EDITOR_PROJECT_INTEGRATION.md
 Implement the approved Sprite Editor project integration contract from `PLAN_PR_SPRITE_EDITOR_PROJECT_INTEGRATION` with small, surgical changes in `tools/Sprite Editor/` only.
 
 ## Approved contract implemented
-- Sprite Editor now consumes palette authority from engine `globalThis.palettesList` (loaded from `../../engine/paletteList.js`).
+- Sprite Editor now consumes palette authority from engine `globalThis.palettesList` (loaded from `../../src/src/engine/paletteList.js`).
 - No local hardcoded tool-authoritative palette catalog is used for selection flow.
 - Editing remains disabled until a palette is selected.
 - Palette selection locks for the active project/session.

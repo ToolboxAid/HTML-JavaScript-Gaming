@@ -11,7 +11,7 @@ BUILD_PR_LEVEL_9_2_ENGINE_DOCUMENTATION_AND_USAGE_PATTERNS.md
 ## Scope Confirmation
 - Docs-first delta
 - Includes examples and usage patterns
-- No engine/runtime modifications
+- No src/engine/runtime modifications
 
 ## Full Repo-Relative Paths (Touched for This BUILD)
 - `docs/pr/PLAN.md`
