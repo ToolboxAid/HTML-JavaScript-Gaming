@@ -1,1 +1,1 @@
-tools path normalization slice
+samples path normalization slice
