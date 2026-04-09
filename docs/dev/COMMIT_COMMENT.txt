@@ -1,1 +1,1 @@
-Copy first entity slice into new template structure
+BUILD_PR_GAMES_90A_ASTEROIDS_ENTITY_VALIDATE_STEP2

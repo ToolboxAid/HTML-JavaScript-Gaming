@@ -1,0 +1,1 @@
+Copy one additional entity file from asteroids to asteroids_new. Copy only.

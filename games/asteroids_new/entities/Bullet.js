@@ -4,7 +4,7 @@ David Quesenberry
 03/22/2026
 Bullet.js
 */
-import { wrap } from '../utils/math.js';
+import { wrap } from "../../asteroids/utils/math.js";
 
 export default class Bullet {
   constructor(x, y, vx, vy, life = 1.1) {

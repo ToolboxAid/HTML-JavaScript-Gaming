@@ -1,0 +1,1 @@
+Fix imports only inside asteroids_new entities if needed. No logic changes.

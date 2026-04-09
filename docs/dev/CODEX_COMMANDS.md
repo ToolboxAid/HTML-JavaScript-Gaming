@@ -1,5 +1,4 @@
 MODEL: GPT-5.4-codex
 REASONING: medium
 COMMAND:
-Execute docs/pr/BUILD_PR_GAMES_87_ASTEROIDS_SINGLE_SLICE_MIGRATION.md exactly.
-Package to <project folder>/tmp/BUILD_PR_GAMES_87_ASTEROIDS_SINGLE_SLICE_MIGRATION_delta.zip
+Execute PR exactly and package delta zip.
