@@ -1,9 +1,8 @@
-Validation Checklist — APPLY Gravity Migration
+Validation Checklist — APPLY Bouncing-ball Migration
 
-[x] Gravity runs from canonical
+[x] Runs from canonical
 [x] Canvas visible
 [x] No console errors
-[x] Gravity_next removed
-[x] No unrelated changes
+[x] _next removed
 
 Status: PASS

@@ -1,2 +1,7 @@
-BUILD_PR_GAMES_BOUNCING_BALL_FULL_FOLDER_MIGRATION
-Full Bouncing-ball migration.
+APPLY_PR_GAMES_BOUNCING_BALL_FULL_FOLDER_MIGRATION
+
+Accepted full Bouncing-ball migration.
+
+- canonical validated
+- _next removed
+- pipeline confirmed
