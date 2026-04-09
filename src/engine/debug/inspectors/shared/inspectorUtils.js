@@ -7,12 +7,8 @@ inspectorUtils.js
 
 import { asPositiveInteger } from "../../../../shared/utils/numberUtils.js";
 import { sanitizeText } from "../../../../shared/utils/stringUtils.js";
-import { createId, isValidId } from "../../../../shared/utils/idUtils.js";
-import { asFinite, asNonNegativeInteger } from "../../../../shared/math/numberNormalization.js";
 
 export { sanitizeText };
-export { createId, isValidId };
-export { asFinite, asNonNegativeInteger };
 
 export function asObject(value) {
   return value !== null && typeof value === "object" && !Array.isArray(value)

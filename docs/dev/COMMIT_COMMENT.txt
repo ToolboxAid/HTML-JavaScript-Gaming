@@ -1,1 +1,1 @@
-Move numeric edge helpers to shared math
+Clean up inspector utils after shared extraction

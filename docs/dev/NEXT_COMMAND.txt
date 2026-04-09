@@ -1,1 +1,1 @@
-Next: final inspector cleanup
+Next: boundary validation

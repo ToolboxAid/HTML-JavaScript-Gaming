@@ -1,1 +1,1 @@
-numeric helpers consolidation
+cleanup after moves
