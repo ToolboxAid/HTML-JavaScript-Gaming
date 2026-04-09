@@ -1,7 +1,7 @@
-Validation Checklist — Clear Destination
+Validation Checklist — Copy From asteroids_new
 
-[ ] games/Asteroids exists
-[ ] games/Asteroids is empty
-[ ] No other directories changed
+[ ] Destination matches source exactly
+[ ] File count identical
+[ ] No extra files
 
 Status: PENDING

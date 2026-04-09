@@ -1,4 +1,5 @@
-Create BUILD_PR_GAMES_ASTEROIDS_COPY_FROM_ASTEROIDS_NEW
+Create APPLY_PR_GAMES_ASTEROIDS_CANONICAL_SWAP
 
 Scope:
-- Copy contents from games/asteroids_new to games/Asteroids
+- Accept canonical replacement
+- Confirm validation

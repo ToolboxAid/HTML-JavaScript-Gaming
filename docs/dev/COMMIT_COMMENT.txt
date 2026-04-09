@@ -1,5 +1,6 @@
-BUILD_PR_GAMES_ASTEROIDS_CLEAR_DESTINATION
+BUILD_PR_GAMES_ASTEROIDS_COPY_FROM_ASTEROIDS_NEW
 
-Cleared games/Asteroids directory in preparation for canonical replacement.
+Copied asteroids_new into games/Asteroids as canonical implementation.
 
-No other directories affected.
+Exact mirror copy.
+No source modification.
