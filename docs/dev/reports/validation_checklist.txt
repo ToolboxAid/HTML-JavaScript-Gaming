@@ -1,1 +1,1 @@
-exact files only
+folders tracked by git

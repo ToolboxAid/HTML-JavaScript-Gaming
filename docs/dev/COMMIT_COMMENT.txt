@@ -1,1 +1,1 @@
-Add import rules to template
+Standardize template placeholders to .gitkeep for Git tracking
