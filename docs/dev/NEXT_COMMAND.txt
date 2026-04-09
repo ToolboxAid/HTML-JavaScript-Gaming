@@ -1,1 +1,6 @@
-Create APPLY_PR_GAMES_TEMPLATE_CONTRACT_ENFORCEMENT
+Create BUILD_PR_GAMES_BREAKOUT_NEXT_TEMPLATE_BASELINE
+
+Scope:
+- start next migration using template
+- create Breakout_next baseline
+- keep non-playable

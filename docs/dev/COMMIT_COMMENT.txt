@@ -1,2 +1,7 @@
-BUILD_PR_GAMES_TEMPLATE_CONTRACT_ENFORCEMENT
-Added template contract rules.
+APPLY_PR_GAMES_TEMPLATE_CONTRACT_ENFORCEMENT
+
+Accepted template contract enforcement.
+
+- structure rules locked
+- behavior rules locked
+- future drift prevented

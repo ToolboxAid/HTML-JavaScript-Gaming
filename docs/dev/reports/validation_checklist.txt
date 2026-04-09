@@ -1,7 +1,7 @@
-Validation Checklist — APPLY Games PacmanLite Remove Next
+Validation Checklist — APPLY Template Contract Enforcement
 
-[x] games/PacmanLite_next removed
-[x] games/PacmanLite unchanged
-[x] No unrelated changes
+[x] Contract rules accepted
+[x] No runtime impact
+[x] No existing games broken
 
 Status: PASS
