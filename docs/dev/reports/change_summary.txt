@@ -1,3 +1,1 @@
-- bind the timer to the visible Game Over screen, not a guessed internal state
-- make the timeout behave exactly like pressing Enter
-- keep scope to the current asteroids_new game files only
+Wire debug init + keybindings

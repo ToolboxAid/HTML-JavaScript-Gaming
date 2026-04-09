@@ -1,1 +1,1 @@
-After commit, test at games/asteroids_new/index.html: press Enter on Game Over, then wait ~30 seconds on Game Over and confirm the same return occurs.
+Test Ctrl+Shift+` and Shift+` in asteroids_new.

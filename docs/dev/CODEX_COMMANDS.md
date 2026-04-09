@@ -2,8 +2,8 @@ MODEL: GPT-5.4-codex
 REASONING: high
 
 COMMAND:
-Execute exactly docs/pr/BUILD_PR_GAMES_102C_ASTEROIDS_NEW_GAME_OVER_SCREEN_TIMER.md.
-Modify only the exact target files listed in the PR doc.
+Execute exactly docs/pr/BUILD_PR_GAMES_103A_ASTEROIDS_NEW_DEBUG_INSTALL_AND_KEYBINDINGS.md.
+Modify only listed files.
 Do not expand scope.
-Package the delta zip to:
-<project folder>/tmp/BUILD_PR_GAMES_102C_ASTEROIDS_NEW_GAME_OVER_SCREEN_TIMER_delta.zip
+Package:
+<project folder>/tmp/BUILD_PR_GAMES_103A_ASTEROIDS_NEW_DEBUG_INSTALL_AND_KEYBINDINGS_delta.zip

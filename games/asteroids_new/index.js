@@ -5,6 +5,7 @@ import Engine from "/src/engine/core/Engine.js";
 import { InputService } from "/src/engine/input/index.js";
 import { Theme, ThemeTokens } from "/src/engine/theme/index.js";
 import { resolveDebugConfig } from "../../src/shared/utils/debugConfigUtils.js";
+import { createSampleGameDevConsoleIntegration } from "../../tools/dev/devConsoleIntegration.js";
 import AsteroidsGameScene from "./game/AsteroidsGameScene.js";
 
 export const asteroidFlow = Object.freeze({
@@ -89,7 +90,7 @@ export function bootAsteroidsNew({
   EngineClass = Engine,
   InputServiceClass = InputService,
   SceneClass = AsteroidsGameScene,
-  createDevConsoleIntegration = null
+  createDevConsoleIntegration = createSampleGameDevConsoleIntegration
 } = {}) {
   let stage = "entered";
   traceBoot(stage);
@@ -184,11 +185,19 @@ export function bootAsteroidsNew({
   }
 }
 
-if (typeof document !== "undefined") {
+function tryAutoBoot() {
   try {
     void bootAsteroidsNew();
   } catch (error) {
     traceBootFailure("auto-boot", error);
+  }
+}
+
+if (typeof document !== "undefined") {
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", tryAutoBoot, { once: true });
+  } else {
+    tryAutoBoot();
   }
 }
 

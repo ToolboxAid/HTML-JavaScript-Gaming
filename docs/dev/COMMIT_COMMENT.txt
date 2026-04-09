@@ -1,1 +1,1 @@
-Make the visible Game Over screen in asteroids_new trigger a 30-second auto-return using the exact same path as Enter.
+Install and wire debug system in asteroids_new and enable keybindings.
