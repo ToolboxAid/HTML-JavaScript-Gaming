@@ -1,3 +1,2 @@
-- Promote Asteroids-local finite/positive number sanitizers into canonical shared math
-- Remove local numeric helper duplication from AsteroidsWorld.js
-- Preserve exact behavior and existing gameplay usage
+- Consolidated asObject/asArray into shared utils
+- Removed duplicates from debug network utilities

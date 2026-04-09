@@ -6,18 +6,13 @@ networkDebugUtils.js
 */
 
 import { asNumber } from "../../../../shared/math/numberNormalization.js";
+import { asObject, asArray } from "../../../../shared/utils/objectUtils.js";
 
 export function sanitizeText(value) {
   return typeof value === "string" ? value.trim() : "";
 }
 
-export function asObject(value) {
-  return value !== null && typeof value === "object" && !Array.isArray(value) ? value : {};
-}
-
-export function asArray(value) {
-  return Array.isArray(value) ? value : [];
-}
+export { asObject, asArray };
 
 export { asNumber };
 

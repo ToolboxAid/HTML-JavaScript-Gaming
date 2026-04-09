@@ -1,9 +1,3 @@
-src/shared/math/numberNormalization.js
-games/Asteroids/game/AsteroidsWorld.js
-docs/pr/BUILD_PR_SHARED_EXTRACTION_53_ASTEROIDS_NUMBER_SANITIZERS_TO_SHARED_MATH.md
-docs/dev/codex_commands.md
-docs/dev/commit_comment.txt
-docs/dev/next_command.txt
-docs/dev/reports/file_tree.txt
-docs/dev/reports/change_summary.txt
-docs/dev/reports/validation_checklist.txt
+src/shared/utils/objectUtils.js
+src/shared/utils/networkDebugUtils.js
+src/engine/debug/network/shared/networkDebugUtils.js

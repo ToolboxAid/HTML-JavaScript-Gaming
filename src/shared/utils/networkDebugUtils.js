@@ -1,15 +1,8 @@
 import { asNumber } from "../math/numberNormalization.js";
+import { asObject, asArray } from "./objectUtils.js";
 
 function sanitizeText(value) {
   return typeof value === "string" ? value.trim() : "";
-}
-
-function asObject(value) {
-  return value !== null && typeof value === "object" && !Array.isArray(value) ? value : {};
-}
-
-function asArray(value) {
-  return Array.isArray(value) ? value : [];
 }
 
 function toSafeKey(value) {

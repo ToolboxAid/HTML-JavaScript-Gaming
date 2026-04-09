@@ -1,1 +1,1 @@
-After commit, inspect remaining number-related helpers and continue with the next exact shared-math extraction cluster only if exact files and consumer replacement are known.
+After commit, identify next duplicate cluster (likely normalizeNumber or string utils) with exact files only.

@@ -1,7 +1,4 @@
-# Validation Checklist
-- Confirm only the exact target files were modified
-- Confirm no wildcard or repo-wide scanning was introduced into the implementation
-- Confirm imports resolve correctly after the change
-- Confirm no dead local helper remains in the touched files for this PR purpose
-- Confirm no unrelated refactor or formatting-only churn was introduced
-- Confirm no non-number helper in AsteroidsWorld.js was changed
+- Exact files only
+- No duplicate helpers remain
+- Imports resolve
+- No behavior change

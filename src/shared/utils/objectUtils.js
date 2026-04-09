@@ -13,4 +13,12 @@ function isPlainObject(value) {
   return !!value && typeof value === 'object' && !Array.isArray(value);
 }
 
-export { isObject, isPlainObject };
+function asObject(value) {
+  return isObject(value) ? value : {};
+}
+
+function asArray(value) {
+  return Array.isArray(value) ? value : [];
+}
+
+export { isObject, isPlainObject, asObject, asArray };
