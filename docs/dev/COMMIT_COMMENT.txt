@@ -1,2 +1,2 @@
-BUILD_PR_GAMES_PACMANLITE_COPY_FROM_NEXT
-Copied _next to canonical.
+BUILD_PR_GAMES_PACMANLITE_REMOVE_NEXT
+Removed PacmanLite_next.

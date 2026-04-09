@@ -2,10 +2,8 @@ MODEL: GPT-5.4
 REASONING: high
 
 COMMAND:
-Execute BUILD_PR_GAMES_PACMANLITE_COPY_FROM_NEXT
+Execute BUILD_PR_GAMES_PACMANLITE_REMOVE_NEXT
 
 Rules:
-- Copy from _next
-- Preserve structure
-- Do NOT modify _next
-- No guessing files
+- Delete ONLY games/PacmanLite_next/**
+- Do NOT touch canonical
