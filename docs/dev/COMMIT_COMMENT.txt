@@ -1,1 +1,1 @@
-Fix samples index to align with phase structure (no new files)
+Group existing sample links in samples/index.html by phase using current paths only.

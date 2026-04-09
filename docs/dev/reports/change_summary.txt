@@ -1,1 +1,3 @@
-fixed invalid target file; narrowed scope
+- replaced invalid folder-alignment BUILD with an index-only grouping BUILD
+- narrowed scope to existing file and existing resolving links only
+- removed all implied directory creation/move assumptions
