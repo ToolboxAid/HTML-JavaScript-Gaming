@@ -5,7 +5,6 @@ David Quesenberry
 AsteroidsGameScene.js
 */
 import { AttractModeController, Scene } from '../../../src/engine/scenes/index.js';
-import { Theme, ThemeTokens } from '../../../src/engine/theme/index.js';
 import { ParticleSystem } from '../../../src/engine/fx/index.js';
 import AsteroidsSession from './AsteroidsSession.js';
 import AsteroidsWorld from './AsteroidsWorld.js';
@@ -15,7 +14,6 @@ import AsteroidsAttractAdapter from './AsteroidsAttractAdapter.js';
 import AsteroidsHighScoreService from '../systems/AsteroidsHighScoreService.js';
 import AsteroidsInitialsEntry from '../systems/AsteroidsInitialsEntry.js';
 
-const theme = new Theme(ThemeTokens);
 const HUD_FONT = '"Vector Battle", monospace';
 const SCORE_ONE_X = 136;
 const HIGH_SCORE_X = 480;

@@ -1,1 +1,1 @@
-After commit, either add the next gameplay-critical slice in one testable chunk or run a stronger runtime validation pass before widening further.
+After commit, report visible gameplay behavior and decide whether the next slice should be scoring/audio/input polish or one targeted stabilization PR.

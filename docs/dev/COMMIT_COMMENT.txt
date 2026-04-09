@@ -1,1 +1,1 @@
-Stabilize asteroids_new runtime boot so the parallel lane becomes smoke-testable from its own index entry.
+Complete the minimum gameplay slice in asteroids_new so the parallel lane is meaningfully testable, not just bootable.

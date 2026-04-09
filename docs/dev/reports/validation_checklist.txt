@@ -1,6 +1,7 @@
 - single PR purpose only
 - exact target files only
 - no original Asteroids file changes
-- minimum-fix stabilization only
-- asteroids_new index is used as the smoke-test entry point
-- touched asteroids_new files parse and resolve together
+- no new files
+- no assets/platform/config/levels widening
+- asteroids_new remains runnable from its own index entry
+- gameplay slice is meaningfully testable
