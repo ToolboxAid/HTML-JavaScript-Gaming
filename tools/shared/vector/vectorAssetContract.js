@@ -1,4 +1,4 @@
-import { parseSvgPathData } from "./vectorGeometryMath.js";
+import { parseSvgPathData, toFiniteNumber, roundNumber } from "./vectorGeometryMath.js";
 import { cloneJson } from "../../../src/shared/utils/jsonUtils.js";
 
 export const VECTOR_ASSET_FORMAT = "toolbox.vector.asset";
@@ -19,18 +19,6 @@ const COLOR_PATTERN = /^#[0-9A-F]{6}([0-9A-F]{2})?$/;
 
 function sanitizeText(value) {
   return typeof value === "string" ? value.trim() : "";
-}
-
-function toFiniteNumber(value, fallback = NaN) {
-  const numeric = Number(value);
-  return Number.isFinite(numeric) ? numeric : fallback;
-}
-
-function roundNumber(value) {
-  if (!Number.isFinite(value)) {
-    return value;
-  }
-  return Number(value.toFixed(6));
 }
 
 export function parseViewBoxString(viewBox) {

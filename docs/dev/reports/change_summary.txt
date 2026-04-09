@@ -1,1 +1,1 @@
-Execution-grade batch for validatePackageManifest/createRegistryDefinition using the exact duplicate-report file list.
+Rebuilt BUILD 49 as an execution-grade two-file batch with explicit dead-code prevention and fail-fast rules.

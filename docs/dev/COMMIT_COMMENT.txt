@@ -1,1 +1,1 @@
-BUILD PR: centralize runtime asset validation/registry helpers across exact tools/shared batch.
+BUILD PR: centralize vector toFiniteNumber/roundNumber helpers with exact two-file consumer replacement.

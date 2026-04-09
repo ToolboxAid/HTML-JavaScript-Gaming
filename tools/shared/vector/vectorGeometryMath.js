@@ -1,11 +1,11 @@
 const PATH_TOKEN_PATTERN = /[AaCcHhLlMmQqSsTtVvZz]|-?\d*\.?\d+(?:e[-+]?\d+)?/g;
 
-function toFiniteNumber(value, fallback = NaN) {
+export function toFiniteNumber(value, fallback = NaN) {
   const numeric = Number(value);
   return Number.isFinite(numeric) ? numeric : fallback;
 }
 
-function roundNumber(value) {
+export function roundNumber(value) {
   if (!Number.isFinite(value)) {
     return value;
   }
