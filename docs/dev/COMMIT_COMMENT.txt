@@ -1,3 +1,7 @@
-BUILD_PR_GAMES_TEMPLATE_INDEX_CANVAS_FIX
+BUILD_PR_GAMES_TEMPLATE_ENGINE_THEME_BOOTSTRAP_ALIGNMENT
 
-Fixed template index to render message on canvas only.
+Aligned games/_template with the canonical engine/theme shell baseline.
+
+- updated template index shell
+- added only minimal shared bootstrap/theme dependencies as needed
+- kept template non-playable and game-neutral

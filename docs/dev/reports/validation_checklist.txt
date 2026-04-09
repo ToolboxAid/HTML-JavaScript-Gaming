@@ -1,5 +1,11 @@
-[ ] Canvas renders
-[ ] Text drawn on canvas
-[ ] No DOM text
+Validation Checklist — Games Template Engine Theme Bootstrap Alignment
+
+[ ] games/_template/index.html shows consistent shell/theme baseline
+[ ] Canvas is visible
+[ ] Template message visible
+[ ] No Asteroids gameplay boots
+[ ] No Asteroids-specific assets copied into _template
+[ ] Only minimal shell/bootstrap files added
 [ ] No console errors
+
 Status: PENDING
