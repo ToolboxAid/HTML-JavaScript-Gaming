@@ -1,1 +1,1 @@
-After commit, report exactly what becomes visible at boot; use that result to choose either boot-fix or gameplay continuation.
+After commit, open games/asteroids_new/index.html and report whether you see execution or a concrete runtime error.

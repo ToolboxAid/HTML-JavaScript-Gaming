@@ -1,4 +1,4 @@
-﻿/*
+/*
 Toolbox Aid
 David Quesenberry
 04/06/2026
@@ -6,7 +6,7 @@ networkSampleADebug.js
 */
 
 import { createNetworkDebugPluginDefinition } from "../../../src/engine/debug/network/index.js";
-import { asArray, asObject } from "../../../src/engine/debug/inspectors/shared/inspectorUtils.js";
+import { asArray, asObject } from "/src/engine/debug/inspectors/shared/inspectorUtils.js";
 import {
   asNumber,
   commandLinesForTrace,

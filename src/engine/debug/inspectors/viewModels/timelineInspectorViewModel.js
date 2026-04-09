@@ -9,7 +9,7 @@ import {
   asArray,
   asObject,
   sanitizeText
-} from "../shared/inspectorUtils.js";
+} from "/src/engine/debug/inspectors/shared/inspectorUtils.js";
 import { asPositiveInteger } from "../../../../shared/utils/numberUtils.js";
 
 function normalizeTimelineMarker(input, index) {

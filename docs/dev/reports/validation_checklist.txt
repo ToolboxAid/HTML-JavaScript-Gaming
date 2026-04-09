@@ -1,5 +1,5 @@
 - single PR purpose only
 - exact target files only
 - no original Asteroids file changes
-- visible execution proof added
-- silent failure point exposed if boot still fails
+- asteroids_new has its own HTML entrypoint
+- opening the HTML page produces execution or a real visible error

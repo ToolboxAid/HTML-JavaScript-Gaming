@@ -8,7 +8,7 @@ componentInspectorViewModel.js
 import {
   asObject,
   sanitizeText
-} from "../shared/inspectorUtils.js";
+} from "/src/engine/debug/inspectors/shared/inspectorUtils.js";
 
 function summarizePayload(payload) {
   if (payload === null) {

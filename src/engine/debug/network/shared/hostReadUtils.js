@@ -1,4 +1,4 @@
-import { asObject } from "../../inspectors/shared/inspectorUtils.js";
+import { asObject } from "/src/engine/debug/inspectors/shared/inspectorUtils.js";
 
 export function readHostStatus(host) {
   return host && typeof host.getStatus === "function"

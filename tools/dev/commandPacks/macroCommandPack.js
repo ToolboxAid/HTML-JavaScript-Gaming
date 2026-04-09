@@ -14,7 +14,7 @@ import {
 } from "./packUtils.js";
 import { createResult } from "./commandPackResultUtils.js";
 
-import { sanitizeText } from "../../../src/engine/debug/inspectors/shared/inspectorUtils.js";
+import { sanitizeText } from "/src/engine/debug/inspectors/shared/inspectorUtils.js";
 
 const macroRegistry = new DebugMacroRegistry();
 registerStandardDebugMacros(macroRegistry, "standard");

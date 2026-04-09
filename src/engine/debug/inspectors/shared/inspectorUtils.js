@@ -5,9 +5,11 @@ David Quesenberry
 inspectorUtils.js
 */
 
-import { sanitizeText } from "../../../../shared/utils/stringUtils.js";
+import { sanitizeText } from "/src/shared/utils/stringUtils.js";
+import { asNonNegativeInteger, toFiniteNumber } from "/src/shared/math/numberNormalization.js";
+import { asPositiveInteger } from "/src/shared/utils/numberUtils.js";
 
-export { sanitizeText };
+export { asNonNegativeInteger, asPositiveInteger, sanitizeText, toFiniteNumber };
 
 export function asObject(value) {
   return value !== null && typeof value === "object" && !Array.isArray(value)

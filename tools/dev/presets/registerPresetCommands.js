@@ -10,7 +10,7 @@ import {
   requireNoArgs
 } from "../commandPacks/packUtils.js";
 
-import { sanitizeText } from "../../../src/engine/debug/inspectors/shared/inspectorUtils.js";
+import { sanitizeText } from "/src/engine/debug/inspectors/shared/inspectorUtils.js";
 
 function createCommandResult(status, title, lines, code, details = {}) {
   return {

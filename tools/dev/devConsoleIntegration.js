@@ -58,7 +58,7 @@ const DEFAULT_PLUGIN_CAPABILITIES = Object.freeze([
   Object.freeze({ capabilityId: "debug.diagnostics.snapshot", version: "1.0.0" })
 ]);
 
-import { sanitizeText } from "../../src/engine/debug/inspectors/shared/inspectorUtils.js";
+import { sanitizeText } from "/src/engine/debug/inspectors/shared/inspectorUtils.js";
 import { isObject } from "../../src/shared/utils/objectUtils.js";
 
 function toContextSection(context, field) {

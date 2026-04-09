@@ -1,9 +1,9 @@
 import { attractFlow } from "./flow/attract.js";
 import { introFlow } from "./flow/intro.js";
 import { createAsteroidsShowcaseDebugPlugin } from "./debug/asteroidsShowcaseDebug.js";
-import Engine from "../../src/engine/core/Engine.js";
-import { InputService } from "../../src/engine/input/index.js";
-import { Theme, ThemeTokens } from "../../src/engine/theme/index.js";
+import Engine from "/src/engine/core/Engine.js";
+import { InputService } from "/src/engine/input/index.js";
+import { Theme, ThemeTokens } from "/src/engine/theme/index.js";
 import { resolveDebugConfig } from "../../src/shared/utils/debugConfigUtils.js";
 import AsteroidsGameScene from "./game/AsteroidsGameScene.js";
 

@@ -1,7 +1,7 @@
 import {
   asArray,
   asObject
-} from "../inspectors/shared/inspectorUtils.js";
+} from "/src/engine/debug/inspectors/shared/inspectorUtils.js";
 
 export function toResult(status, title, code, lines, details = {}) {
   return {

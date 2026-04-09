@@ -5,7 +5,7 @@ David Quesenberry
 interactiveDevConsoleRenderer.js
 */
 
-import { sanitizeText } from "../../src/engine/debug/inspectors/shared/inspectorUtils.js";
+import { sanitizeText } from "/src/engine/debug/inspectors/shared/inspectorUtils.js";
 
 function toLines(lines) {
   if (!Array.isArray(lines)) {
