@@ -1,1 +1,1 @@
-Next: begin first game migration to template
+Next: expand slice or validate

@@ -1,1 +1,1 @@
-gitkeep standardization
+Copy first entity slice into new template structure

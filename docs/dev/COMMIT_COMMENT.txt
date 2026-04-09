@@ -1,1 +1,1 @@
-Standardize template placeholders to .gitkeep for Git tracking
+Copy first entity slice into new template structure

@@ -1,1 +1,2 @@
-games/_template/**/.gitkeep
+games/asteroids/entities/*
+games/asteroids_new/entities/*

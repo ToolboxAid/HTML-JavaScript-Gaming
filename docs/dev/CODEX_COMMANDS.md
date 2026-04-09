@@ -1,7 +1,5 @@
 MODEL: GPT-5.4-codex
-REASONING: low
-
+REASONING: medium
 COMMAND:
-Execute docs/pr/BUILD_PR_GAMES_84_TEMPLATE_GITKEEP_STANDARDIZATION.md exactly.
-Package to:
-<project folder>/tmp/BUILD_PR_GAMES_84_TEMPLATE_GITKEEP_STANDARDIZATION_delta.zip
+Execute docs/pr/BUILD_PR_GAMES_87_ASTEROIDS_SINGLE_SLICE_MIGRATION.md exactly.
+Package to <project folder>/tmp/BUILD_PR_GAMES_87_ASTEROIDS_SINGLE_SLICE_MIGRATION_delta.zip
