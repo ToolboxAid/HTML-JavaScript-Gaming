@@ -1,1 +1,1 @@
-Next: identify exact sample files for phase-folder normalization
+Next: identify explicit sample files before structural changes

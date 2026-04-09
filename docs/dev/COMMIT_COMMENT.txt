@@ -1,1 +1,1 @@
-Clean up samples index links (duplicates/broken)
+Sort samples index and add simple section headers

@@ -1,8 +1,8 @@
 MODEL: GPT-5.4-codex
-REASONING: high
+REASONING: low
 
 COMMAND:
-Execute docs/pr/BUILD_PR_SAMPLES_74_INDEX_LINK_VALIDATION_CLEANUP.md exactly.
+Execute docs/pr/BUILD_PR_SAMPLES_75_INDEX_SORT_AND_SECTION_HEADERS.md exactly.
 Modify only samples/index.html.
 Package to:
-<project folder>/tmp/BUILD_PR_SAMPLES_74_INDEX_LINK_VALIDATION_CLEANUP_delta.zip
+<project folder>/tmp/BUILD_PR_SAMPLES_75_INDEX_SORT_AND_SECTION_HEADERS_delta.zip
