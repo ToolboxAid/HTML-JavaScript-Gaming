@@ -1,6 +1,1 @@
-- single PR purpose only
-- exact target files only
-- no broad repo scan
-- no unrelated helper moves
-- no behavior change
-- imports/exports resolve after the move
+exact files only, no behavior change

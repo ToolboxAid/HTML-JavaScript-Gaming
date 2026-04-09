@@ -1,1 +1,1 @@
-Next: inspect remaining shared/tools boundary candidates and build the next exact slice only if the target files are explicit.
+Next: evaluate remaining shared/tools boundary candidates
