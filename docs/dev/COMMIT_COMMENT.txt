@@ -1,1 +1,1 @@
-Remove empty sections from samples index
+Create initial games template structure

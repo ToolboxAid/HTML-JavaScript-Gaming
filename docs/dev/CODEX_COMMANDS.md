@@ -1,8 +1,8 @@
 MODEL: GPT-5.4-codex
-REASONING: low
+REASONING: medium
 
 COMMAND:
-Execute docs/pr/BUILD_PR_SAMPLES_76_INDEX_REMOVE_DEAD_SECTIONS.md exactly.
-Modify only samples/index.html.
+Execute docs/pr/BUILD_PR_GAMES_77_CREATE_TEMPLATE_STRUCTURE.md exactly.
+Create only listed files.
 Package to:
-<project folder>/tmp/BUILD_PR_SAMPLES_76_INDEX_REMOVE_DEAD_SECTIONS_delta.zip
+<project folder>/tmp/BUILD_PR_GAMES_77_CREATE_TEMPLATE_STRUCTURE_delta.zip

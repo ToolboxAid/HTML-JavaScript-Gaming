@@ -1,1 +1,1 @@
-samples/index.html
+games/_template/*

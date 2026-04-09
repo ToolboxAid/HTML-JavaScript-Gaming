@@ -1,1 +1,1 @@
-Next: pause samples index work and plan explicit file-based phase moves
+Next: add flow wiring
