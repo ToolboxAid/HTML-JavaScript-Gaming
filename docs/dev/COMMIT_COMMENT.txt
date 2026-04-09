@@ -1,1 +1,1 @@
-Normalize remaining engine import paths to src/engine/
+Normalize remaining shared import paths to src/shared/
