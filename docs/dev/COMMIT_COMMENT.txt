@@ -1,2 +1,2 @@
-BUILD_PR_GAMES_PACMANLITE_CLEAR_DESTINATION
-Cleared PacmanLite for replacement.
+BUILD_PR_GAMES_PACMANLITE_COPY_FROM_NEXT
+Copied _next to canonical.
