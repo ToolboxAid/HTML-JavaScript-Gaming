@@ -1,7 +1,2 @@
 BUILD_PR_GAMES_PACMANLITE_NEXT_TEMPLATE_BASELINE
-
-Prepared PacmanLite next baseline BUILD from template.
-
-- source of truth: games/_template
-- destination: games/PacmanLite_next
-- non-playable shell with canvas status text
+Created PacmanLite_next baseline from template.
