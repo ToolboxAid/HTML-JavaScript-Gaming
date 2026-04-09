@@ -5,7 +5,7 @@ David Quesenberry
 EventBus.test.mjs
 */
 import assert from 'node:assert/strict';
-import EventBus from '../../src/engine/events/EventBus.js';
+import EventBus from '/src/engine/events/EventBus.js';
 
 export function run() {
   const bus = new EventBus();

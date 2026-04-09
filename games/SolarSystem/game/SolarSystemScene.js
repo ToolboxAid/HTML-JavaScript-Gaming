@@ -4,7 +4,7 @@ David Quesenberry
 03/24/2026
 SolarSystemScene.js
 */
-import { Scene } from '../../../src/engine/scenes/index.js';
+import { Scene } from '/src/engine/scenes/index.js';
 import SolarSystemWorld from './SolarSystemWorld.js';
 
 const VIEW = { width: 960, height: 720 };

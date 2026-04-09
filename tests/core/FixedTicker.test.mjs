@@ -5,7 +5,7 @@ David Quesenberry
 FixedTicker.test.mjs
 */
 import assert from "node:assert/strict";
-import FixedTicker from "../../src/engine/core/FixedTicker.js";
+import FixedTicker from "/src/engine/core/FixedTicker.js";
 
 export function run() {
     const ticker = new FixedTicker({ stepMs: 10, maxCatchUpSteps: 3 });

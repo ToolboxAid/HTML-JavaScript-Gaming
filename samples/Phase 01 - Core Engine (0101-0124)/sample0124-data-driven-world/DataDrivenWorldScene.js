@@ -4,9 +4,9 @@ David Quesenberry
 03/21/2026
 DataDrivenWorldScene.js
 */
-import { Scene } from '../../../src/engine/scenes/index.js';
-import { Theme, ThemeTokens } from '../../../src/engine/theme/index.js';
-import { World } from '../../../src/engine/ecs/index.js';
+import { Scene } from '/src/engine/scenes/index.js';
+import { Theme, ThemeTokens } from '/src/engine/theme/index.js';
+import { World } from '/src/engine/ecs/index.js';
 import {
   createTransform,
   createSize,
@@ -14,14 +14,14 @@ import {
   createSpeed,
   createInputControlled,
   createCollider,
-} from '../../../src/engine/components/index.js';
-import { drawSceneFrame, drawPanel, drawValidationPanel, validateWorldEntities } from '../../../src/engine/debug/index.js';
+} from '/src/engine/components/index.js';
+import { drawSceneFrame, drawPanel, drawValidationPanel, validateWorldEntities } from '/src/engine/debug/index.js';
 import {
   applyInputControl,
   moveEntities,
   blockCollidingEntities,
   renderRectEntities,
-} from '../../../src/engine/systems/index.js';
+} from '/src/engine/systems/index.js';
 import { worldData } from './worldData.js';
 
 const theme = new Theme(ThemeTokens);

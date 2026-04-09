@@ -4,15 +4,15 @@ David Quesenberry
 03/22/2026
 HybridCollisionScene.js
 */
-import { Scene } from '../../../src/engine/scenes/index.js';
-import { Theme, ThemeTokens } from '../../../src/engine/theme/index.js';
-import { drawFrame, drawPanel } from '../../../src/engine/debug/index.js';
-import { transformPoints, drawVectorShape } from '../../../src/engine/vector/index.js';
+import { Scene } from '/src/engine/scenes/index.js';
+import { Theme, ThemeTokens } from '/src/engine/theme/index.js';
+import { drawFrame, drawPanel } from '/src/engine/debug/index.js';
+import { transformPoints, drawVectorShape } from '/src/engine/vector/index.js';
 import {
   createRasterMask,
   runHybridCollision,
   getCollisionBoundsFromPolygon,
-} from '../../../src/engine/collision/index.js';
+} from '/src/engine/collision/index.js';
 
 const theme = new Theme(ThemeTokens);
 const ship = [{ x: 0, y: -18 }, { x: 18, y: 18 }, { x: -18, y: 18 }];

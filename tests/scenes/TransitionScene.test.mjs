@@ -5,8 +5,8 @@
  TransitionScene.test.mjs
 */
 import assert from 'node:assert/strict';
-import SceneTransition from '../../src/engine/scenes/SceneTransition.js';
-import TransitionScene from '../../src/engine/scenes/TransitionScene.js';
+import SceneTransition from '/src/engine/scenes/SceneTransition.js';
+import TransitionScene from '/src/engine/scenes/TransitionScene.js';
 
 function createRenderer(log) {
   const renderer = {

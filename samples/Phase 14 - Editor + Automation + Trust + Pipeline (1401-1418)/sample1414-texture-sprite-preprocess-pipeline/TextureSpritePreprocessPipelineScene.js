@@ -1,4 +1,4 @@
-import { Scene } from '../../../src/engine/scenes/index.js'; import { drawFrame, drawPanel } from '../../../src/engine/debug/index.js'; import { Theme, ThemeTokens } from '../../../src/engine/theme/index.js'; import { TexturePreprocessPipeline } from '../../../src/engine/pipeline/index.js';
+import { Scene } from '/src/engine/scenes/index.js'; import { drawFrame, drawPanel } from '/src/engine/debug/index.js'; import { Theme, ThemeTokens } from '/src/engine/theme/index.js'; import { TexturePreprocessPipeline } from '/src/engine/pipeline/index.js';
 const theme = new Theme(ThemeTokens);
 export default class TextureSpritePreprocessPipelineScene extends Scene {
   constructor() { super(); this.pipeline = new TexturePreprocessPipeline(); this.texture = null; this.status = 'Preprocess a texture record.'; }

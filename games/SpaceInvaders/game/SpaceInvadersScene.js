@@ -4,7 +4,7 @@ David Quesenberry
 03/24/2026
 SpaceInvadersScene.js
 */
-import { AttractModeController, Scene } from '../../../src/engine/scenes/index.js';
+import { AttractModeController, Scene } from '/src/engine/scenes/index.js';
 import SpaceInvadersAudio from './SpaceInvadersAudio.js';
 import { getFontGlyph } from './font8x8.js';
 import SpaceInvadersHighScoreService from './SpaceInvadersHighScoreService.js';

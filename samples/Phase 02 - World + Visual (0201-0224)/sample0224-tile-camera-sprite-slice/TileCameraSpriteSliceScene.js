@@ -4,14 +4,14 @@ David Quesenberry
 03/21/2026
 TileCameraSpriteSliceScene.js
 */
-import { Scene } from '../../../src/engine/scenes/index.js';
-import { Theme, ThemeTokens } from '../../../src/engine/theme/index.js';
-import { drawFrame, drawPanel } from '../../../src/engine/debug/index.js';
-import { Camera2D, followCameraTarget, worldRectToScreen } from '../../../src/engine/camera/index.js';
-import { Tilemap, renderTilemap, resolveRectVsTilemap } from '../../../src/engine/tilemap/index.js';
-import { SpriteAtlas } from '../../../src/engine/assets/index.js';
-import { renderSpriteReadyEntities } from '../../../src/engine/render/index.js';
-import { serializeWorldState, deserializeWorldState } from '../../../src/engine/persistence/index.js';
+import { Scene } from '/src/engine/scenes/index.js';
+import { Theme, ThemeTokens } from '/src/engine/theme/index.js';
+import { drawFrame, drawPanel } from '/src/engine/debug/index.js';
+import { Camera2D, followCameraTarget, worldRectToScreen } from '/src/engine/camera/index.js';
+import { Tilemap, renderTilemap, resolveRectVsTilemap } from '/src/engine/tilemap/index.js';
+import { SpriteAtlas } from '/src/engine/assets/index.js';
+import { renderSpriteReadyEntities } from '/src/engine/render/index.js';
+import { serializeWorldState, deserializeWorldState } from '/src/engine/persistence/index.js';
 
 const theme = new Theme(ThemeTokens);
 

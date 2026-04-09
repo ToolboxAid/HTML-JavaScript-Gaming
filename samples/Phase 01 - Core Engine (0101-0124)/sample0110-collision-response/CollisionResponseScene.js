@@ -4,8 +4,8 @@ David Quesenberry
 03/21/2026
 CollisionResponseScene.js
 */
-import { Scene } from '../../../src/engine/scenes/index.js';
-import { Theme, ThemeTokens } from '../../../src/engine/theme/index.js';
+import { Scene } from '/src/engine/scenes/index.js';
+import { Theme, ThemeTokens } from '/src/engine/theme/index.js';
 
 const theme = new Theme(ThemeTokens);
 

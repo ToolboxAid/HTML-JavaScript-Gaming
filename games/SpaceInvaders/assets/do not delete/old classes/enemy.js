@@ -5,10 +5,10 @@
 
 import { canvasConfig, enemyConfig, spriteConfig } from './global.js';
 
-import RandomUtils from '../../src/engine/math/randomUtils.js';
+import RandomUtils from '/src/engine/math/randomUtils.js';
 
-import ObjectSprite from '../../src/engine/objects/objectSprite.js';
-import Sprite from '../../src/engine/core/sprite.js';
+import ObjectSprite from '/src/engine/objects/objectSprite.js';
+import Sprite from '/src/engine/core/sprite.js';
 
 class Enemy extends ObjectSprite {
 

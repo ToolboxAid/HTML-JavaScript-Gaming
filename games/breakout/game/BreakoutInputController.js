@@ -4,7 +4,7 @@ David Quesenberry
 03/24/2026
 BreakoutInputController.js
 */
-import { GamepadInputAdapter } from '../../../src/engine/input/index.js';
+import { GamepadInputAdapter } from '/src/engine/input/index.js';
 
 export default class BreakoutInputController {
   constructor(input) {

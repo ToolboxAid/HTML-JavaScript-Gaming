@@ -4,10 +4,10 @@ David Quesenberry
 03/22/2026
 PatrolAIScene.js
 */
-import { Scene } from '../../../src/engine/scenes/index.js';
-import { Theme, ThemeTokens } from '../../../src/engine/theme/index.js';
-import { drawFrame, drawPanel } from '../../../src/engine/debug/index.js';
-import { advancePatrolRoute } from '../../../src/engine/ai/index.js';
+import { Scene } from '/src/engine/scenes/index.js';
+import { Theme, ThemeTokens } from '/src/engine/theme/index.js';
+import { drawFrame, drawPanel } from '/src/engine/debug/index.js';
+import { advancePatrolRoute } from '/src/engine/ai/index.js';
 
 const theme = new Theme(ThemeTokens);
 

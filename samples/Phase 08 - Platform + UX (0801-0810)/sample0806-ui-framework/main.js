@@ -4,9 +4,9 @@ David Quesenberry
 03/22/2026
 main.js
 */
-import Engine from '../../../src/engine/core/Engine.js';
+import Engine from '/src/engine/core/Engine.js';
 import UIFrameworkScene from './UIFrameworkScene.js';
-import { Theme, ThemeTokens } from '../../../src/engine/theme/index.js';
+import { Theme, ThemeTokens } from '/src/engine/theme/index.js';
 
 const theme = new Theme(ThemeTokens);
 theme.applyDocumentTheme();

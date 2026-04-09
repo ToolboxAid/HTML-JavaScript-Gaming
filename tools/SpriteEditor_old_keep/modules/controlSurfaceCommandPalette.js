@@ -1,5 +1,5 @@
 ﻿import { LOGICAL_H, LOGICAL_W } from "./constants.js";
-import { xyInRect } from "../../../src/engine/utils/index.js";
+import { xyInRect } from "/src/engine/utils/index.js";
 
 function installControlSurfaceCommandPalette(SpriteEditorCanvasControlSurface) {
   SpriteEditorCanvasControlSurface.prototype.toggleFavoriteAt = function toggleFavoriteAt(x, y) {

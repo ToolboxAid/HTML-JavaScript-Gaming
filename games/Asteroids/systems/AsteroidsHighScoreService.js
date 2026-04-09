@@ -4,7 +4,7 @@ David Quesenberry
 03/25/2026
 AsteroidsHighScoreService.js
 */
-import { StorageService } from '../../../src/engine/persistence/index.js';
+import { StorageService } from '/src/engine/persistence/index.js';
 import {
   sanitizeScore,
   sanitizeInitials,

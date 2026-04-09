@@ -4,9 +4,9 @@ David Quesenberry
 03/22/2026
 main.js
 */
-import Engine from '../../../src/engine/core/Engine.js';
-import { Theme, ThemeTokens } from '../../../src/engine/theme/index.js';
-import { ReleaseValidationChecklist } from '../../../src/engine/release/index.js';
+import Engine from '/src/engine/core/Engine.js';
+import { Theme, ThemeTokens } from '/src/engine/theme/index.js';
+import { ReleaseValidationChecklist } from '/src/engine/release/index.js';
 import ReleaseValidationChecklistScene from './ReleaseValidationChecklistScene.js';
 
 const theme = new Theme(ThemeTokens);

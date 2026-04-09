@@ -4,9 +4,9 @@ David Quesenberry
 03/22/2026
 main.js
 */
-import Engine from '../../../src/engine/core/Engine.js';
-import { Theme, ThemeTokens } from '../../../src/engine/theme/index.js';
-import { AccessibilityOptions } from '../../../src/engine/release/index.js';
+import Engine from '/src/engine/core/Engine.js';
+import { Theme, ThemeTokens } from '/src/engine/theme/index.js';
+import { AccessibilityOptions } from '/src/engine/release/index.js';
 import AccessibilityOptionsScene from './AccessibilityOptionsScene.js';
 
 const theme = new Theme(ThemeTokens);

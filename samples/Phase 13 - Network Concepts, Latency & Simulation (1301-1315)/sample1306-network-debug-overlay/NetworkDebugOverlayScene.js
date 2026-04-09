@@ -4,10 +4,10 @@ David Quesenberry
 03/22/2026
 NetworkDebugOverlayScene.js
 */
-import { Scene } from '../../../src/engine/scenes/index.js';
-import { drawFrame } from '../../../src/engine/debug/index.js';
-import { Theme, ThemeTokens } from '../../../src/engine/theme/index.js';
-import { drawNetworkDebugOverlay, NetworkingLayer, NetworkConditionSimulator } from '../../../src/engine/network/index.js';
+import { Scene } from '/src/engine/scenes/index.js';
+import { drawFrame } from '/src/engine/debug/index.js';
+import { Theme, ThemeTokens } from '/src/engine/theme/index.js';
+import { drawNetworkDebugOverlay, NetworkingLayer, NetworkConditionSimulator } from '/src/engine/network/index.js';
 
 const theme = new Theme(ThemeTokens);
 

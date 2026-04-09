@@ -5,9 +5,9 @@ David Quesenberry
 EditorAutomationSecurityPipeline.test.mjs
 */
 import assert from 'node:assert/strict';
-import { LevelEditor, TileMapEditor, EntityPlacementEditor, TimelineEditor } from '../../src/engine/editor/index.js';
-import { AutomatedTestRunner, RegressionPlaybackHarness, BenchmarkRunner, CIValidationFlow } from '../../src/engine/automation/index.js';
-import { PacketValidator, DataIntegrityService, PermissionGate, SessionTrustValidator } from '../../src/engine/security/index.js';
+import { LevelEditor, TileMapEditor, EntityPlacementEditor, TimelineEditor } from '/src/engine/editor/index.js';
+import { AutomatedTestRunner, RegressionPlaybackHarness, BenchmarkRunner, CIValidationFlow } from '/src/engine/automation/index.js';
+import { PacketValidator, DataIntegrityService, PermissionGate, SessionTrustValidator } from '/src/engine/security/index.js';
 import {
   AssetImportPipeline,
   TexturePreprocessPipeline,
@@ -15,7 +15,7 @@ import {
   ContentMigrationSystem,
   BuildAssetManifestSystem,
   ContentValidationPipeline,
-} from '../../src/engine/pipeline/index.js';
+} from '/src/engine/pipeline/index.js';
 
 export async function run() {
   const level = new LevelEditor({ width: 4, height: 3 });

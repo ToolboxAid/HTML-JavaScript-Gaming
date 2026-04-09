@@ -1,4 +1,4 @@
-import { Scene } from '../../../src/engine/scenes/index.js'; import { drawFrame, drawPanel } from '../../../src/engine/debug/index.js'; import { Theme, ThemeTokens } from '../../../src/engine/theme/index.js'; import { PacketValidator } from '../../../src/engine/security/index.js';
+import { Scene } from '/src/engine/scenes/index.js'; import { drawFrame, drawPanel } from '/src/engine/debug/index.js'; import { Theme, ThemeTokens } from '/src/engine/theme/index.js'; import { PacketValidator } from '/src/engine/security/index.js';
 const theme = new Theme(ThemeTokens);
 export default class PacketValidationAntiCheatScene extends Scene {
   constructor() { super(); this.validator = new PacketValidator({ allowedTypes: ['move'] }); this.last = null; this.status = 'Validate a normal or suspicious packet.'; }

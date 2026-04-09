@@ -4,9 +4,9 @@ David Quesenberry
 04/06/2026
 NetworkSampleAScene.js
 */
-import { Scene } from "../../../src/engine/scenes/index.js";
+import { Scene } from "/src/engine/scenes/index.js";
 import FakeLoopbackNetworkModel from "./FakeLoopbackNetworkModel.js";
-import { clamp } from "../../../src/engine/utils/math.js";
+import { clamp } from "/src/engine/utils/math.js";
 import { asPositiveNumber } from "../../../src/shared/utils/numberUtils.js";
 
 const VIEW_WIDTH = 960;

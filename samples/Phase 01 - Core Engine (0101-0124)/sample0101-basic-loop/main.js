@@ -4,9 +4,9 @@ David Quesenberry
 03/21/2026
 main.js
 */
-import Engine from '../../../src/engine/core/Engine.js';
+import Engine from '/src/engine/core/Engine.js';
 import BouncerScene from './BouncerScene.js';
-import { Theme, ThemeTokens } from '../../../src/engine/theme/index.js';
+import { Theme, ThemeTokens } from '/src/engine/theme/index.js';
 
 const theme = new Theme(ThemeTokens);
 theme.applyDocumentTheme();

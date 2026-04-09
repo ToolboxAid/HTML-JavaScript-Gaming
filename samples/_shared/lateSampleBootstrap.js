@@ -4,8 +4,8 @@ David Quesenberry
 03/23/2026
 lateSampleBootstrap.js
 */
-import Engine from '../../src/engine/core/Engine.js';
-import { Theme, ThemeTokens } from '../../src/engine/theme/index.js';
+import Engine from '/src/engine/core/Engine.js';
+import { Theme, ThemeTokens } from '/src/engine/theme/index.js';
 
 const DEFAULT_WIDTH = 960;
 const DEFAULT_HEIGHT = 540;

@@ -4,7 +4,7 @@ David Quesenberry
 03/24/2026
 MultiBallChaosScene.js
 */
-import { Scene } from '../../../src/engine/scenes/index.js';
+import { Scene } from '/src/engine/scenes/index.js';
 import MultiBallChaosAudio from './MultiBallChaosAudio.js';
 import MultiBallChaosInputController from './MultiBallChaosInputController.js';
 import MultiBallChaosWorld from './MultiBallChaosWorld.js';

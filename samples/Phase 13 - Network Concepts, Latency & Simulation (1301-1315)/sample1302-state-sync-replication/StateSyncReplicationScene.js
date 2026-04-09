@@ -4,10 +4,10 @@ David Quesenberry
 03/22/2026
 StateSyncReplicationScene.js
 */
-import { Scene } from '../../../src/engine/scenes/index.js';
-import { drawFrame, drawPanel } from '../../../src/engine/debug/index.js';
-import { Theme, ThemeTokens } from '../../../src/engine/theme/index.js';
-import { NetworkingLayer, StateReplication } from '../../../src/engine/network/index.js';
+import { Scene } from '/src/engine/scenes/index.js';
+import { drawFrame, drawPanel } from '/src/engine/debug/index.js';
+import { Theme, ThemeTokens } from '/src/engine/theme/index.js';
+import { NetworkingLayer, StateReplication } from '/src/engine/network/index.js';
 
 const theme = new Theme(ThemeTokens);
 

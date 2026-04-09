@@ -5,7 +5,7 @@
  VectorMath.test.mjs
 */
 import assert from 'node:assert/strict';
-import { vectorFromAngle } from '../../src/engine/vector/index.js';
+import { vectorFromAngle } from '/src/engine/vector/index.js';
 
 function assertClose(actual, expected, tolerance = 1e-9) {
   assert.equal(Math.abs(actual - expected) <= tolerance, true);

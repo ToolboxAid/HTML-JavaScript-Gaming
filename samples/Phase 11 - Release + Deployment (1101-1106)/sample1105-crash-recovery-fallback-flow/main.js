@@ -4,10 +4,10 @@ David Quesenberry
 03/22/2026
 main.js
 */
-import Engine from '../../../src/engine/core/Engine.js';
-import { Theme, ThemeTokens } from '../../../src/engine/theme/index.js';
-import { Logger } from '../../../src/engine/logging/index.js';
-import { CrashRecoveryManager } from '../../../src/engine/release/index.js';
+import Engine from '/src/engine/core/Engine.js';
+import { Theme, ThemeTokens } from '/src/engine/theme/index.js';
+import { Logger } from '/src/engine/logging/index.js';
+import { CrashRecoveryManager } from '/src/engine/release/index.js';
 import CrashRecoveryScene from './CrashRecoveryScene.js';
 
 const theme = new Theme(ThemeTokens);

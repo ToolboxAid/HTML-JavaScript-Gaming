@@ -4,7 +4,7 @@ David Quesenberry
 03/24/2026
 PaddleInterceptScene.js
 */
-import { Scene } from '../../../src/engine/scenes/index.js';
+import { Scene } from '/src/engine/scenes/index.js';
 import PaddleInterceptAudio from './PaddleInterceptAudio.js';
 import PaddleInterceptInputController from './PaddleInterceptInputController.js';
 import PaddleInterceptWorld from './PaddleInterceptWorld.js';

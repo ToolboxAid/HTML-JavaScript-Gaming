@@ -4,9 +4,9 @@ David Quesenberry
 03/22/2026
 main.js
 */
-import Engine from '../../../src/engine/core/Engine.js';
-import { Theme, ThemeTokens } from '../../../src/engine/theme/index.js';
-import { AssetLoaderSystem, AssetRegistry, ImageAssetLoader } from '../../../src/engine/assets/index.js';
+import Engine from '/src/engine/core/Engine.js';
+import { Theme, ThemeTokens } from '/src/engine/theme/index.js';
+import { AssetLoaderSystem, AssetRegistry, ImageAssetLoader } from '/src/engine/assets/index.js';
 import AssetLoaderSystemScene from './AssetLoaderSystemScene.js';
 
 const theme = new Theme(ThemeTokens);

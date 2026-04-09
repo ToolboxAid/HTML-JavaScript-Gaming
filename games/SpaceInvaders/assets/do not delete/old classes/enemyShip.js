@@ -4,14 +4,14 @@
 // enemyShip.js
 
 import { canvasConfig, spriteConfig } from './global.js'; // Import canvasConfig for canvas-related configurations
-import GameCollision from '../../src/engine/game/gameCollision.js';
-import RandomUtils from '../../src/engine/math/randomUtils.js';
-import CanvasUtils from '../../src/engine/core/canvasUtils.js';
+import GameCollision from '/src/engine/game/gameCollision.js';
+import RandomUtils from '/src/engine/math/randomUtils.js';
+import CanvasUtils from '/src/engine/core/canvasUtils.js';
 
 
-import ObjectSprite from '../../src/engine/objects/objectSprite.js';
-import Sprite from '../../src/engine/core/sprite.js';
-import Timer from '../../src/engine/utils/timer.js';
+import ObjectSprite from '/src/engine/objects/objectSprite.js';
+import Sprite from '/src/engine/core/sprite.js';
+import Timer from '/src/engine/utils/timer.js';
 
 class EnemyShip extends ObjectSprite {
 

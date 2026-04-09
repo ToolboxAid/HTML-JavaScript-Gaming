@@ -5,7 +5,7 @@ David Quesenberry
 ConfigStore.test.mjs
 */
 import assert from 'node:assert/strict';
-import ConfigStore from '../../src/engine/config/ConfigStore.js';
+import ConfigStore from '/src/engine/config/ConfigStore.js';
 
 export function run() {
   const store = new ConfigStore();

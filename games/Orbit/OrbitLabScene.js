@@ -4,9 +4,9 @@ David Quesenberry
 03/24/2026
 OrbitLabScene.js
 */
-import { Scene } from '../../src/engine/scenes/index.js';
-import { Theme, ThemeTokens } from '../../src/engine/theme/index.js';
-import { drawFrame, drawPanel } from '../../src/engine/debug/index.js';
+import { Scene } from '/src/engine/scenes/index.js';
+import { Theme, ThemeTokens } from '/src/engine/theme/index.js';
+import { drawFrame, drawPanel } from '/src/engine/debug/index.js';
 import OrbitLabModel from './OrbitLabModel.js';
 
 const theme = new Theme(ThemeTokens);

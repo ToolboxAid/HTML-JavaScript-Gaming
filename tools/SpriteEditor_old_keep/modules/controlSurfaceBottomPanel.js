@@ -1,4 +1,4 @@
-﻿import { drawCanvasCheckerboard } from "../../../src/engine/ui/index.js";
+﻿import { drawCanvasCheckerboard } from "/src/engine/ui/index.js";
 
 function drawPixelPreviewExact(ctx, pixels, rect, options = {}) {
   const cols = Math.max(1, Number(options.cols) || 1);

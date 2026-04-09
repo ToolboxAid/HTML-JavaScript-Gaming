@@ -5,7 +5,7 @@ David Quesenberry
 WorldSystems.test.mjs
 */
 import assert from 'node:assert/strict';
-import EventBus from '../../src/engine/events/EventBus.js';
+import EventBus from '/src/engine/events/EventBus.js';
 import {
   CutsceneSystem,
   DayNightCycle,
@@ -14,7 +14,7 @@ import {
   SpawnSystem,
   WeatherSystem,
   WorldStreamingSystem,
-} from '../../src/engine/world/index.js';
+} from '/src/engine/world/index.js';
 
 export function run() {
   const quests = new QuestSystem([{ id: 'collect', required: 2 }]);

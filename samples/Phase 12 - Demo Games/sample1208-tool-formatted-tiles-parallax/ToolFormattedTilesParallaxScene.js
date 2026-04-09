@@ -4,11 +4,11 @@ David Quesenberry
 03/31/2026
 ToolFormattedTilesParallaxScene.js
 */
-import { Scene } from '../../../src/engine/scenes/index.js';
-import { Theme, ThemeTokens } from '../../../src/engine/theme/index.js';
-import { clamp } from '../../../src/engine/utils/index.js';
-import { Camera2D, worldRectToScreen } from '../../../src/engine/camera/index.js';
-import { Tilemap, resolveRectVsTilemap } from '../../../src/engine/tilemap/index.js';
+import { Scene } from '/src/engine/scenes/index.js';
+import { Theme, ThemeTokens } from '/src/engine/theme/index.js';
+import { clamp } from '/src/engine/utils/index.js';
+import { Camera2D, worldRectToScreen } from '/src/engine/camera/index.js';
+import { Tilemap, resolveRectVsTilemap } from '/src/engine/tilemap/index.js';
 import tileMapToolExport from './data/toolFormattedTileMap.js';
 import fallbackParallaxToolExport from './data/toolFormattedParallax.js';
 

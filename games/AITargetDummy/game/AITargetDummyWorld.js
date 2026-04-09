@@ -6,7 +6,7 @@ AITargetDummyWorld.js
 */
 import AITargetDummyConfig from './AITargetDummyConfig.js';
 import AITargetDummyController from './AITargetDummyController.js';
-import { clamp } from '../../../src/engine/utils/math.js';
+import { clamp } from '/src/engine/utils/math.js';
 import { safeNormalize } from '../../../src/shared/math/vectorNormalizeUtils.js';
 
 const MAX_STEP_SECONDS = 1 / 120;

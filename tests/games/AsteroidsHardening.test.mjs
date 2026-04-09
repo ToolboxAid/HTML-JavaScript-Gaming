@@ -5,7 +5,7 @@ David Quesenberry
 AsteroidsHardening.test.mjs
 */
 import assert from 'node:assert/strict';
-import { wrap } from '../../src/engine/utils/math.js';
+import { wrap } from '/src/engine/utils/math.js';
 import AsteroidsGameScene from '../../games/Asteroids/game/AsteroidsGameScene.js';
 import AsteroidsSession from '../../games/Asteroids/game/AsteroidsSession.js';
 import AsteroidsWorld from '../../games/Asteroids/game/AsteroidsWorld.js';

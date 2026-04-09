@@ -1,9 +1,9 @@
 ﻿import { SpriteEditorViewport } from "./viewport.js";
 import { SpriteEditorDocument } from "./document.js";
 import { SpriteEditorCanvasControlSurface } from "./controlSurface.js";
-import { StorageService } from "../../../src/engine/persistence/index.js";
-import { BrowserDownloadService, FullscreenService } from "../../../src/engine/runtime/index.js";
-import { createCanvasPopupState } from "../../../src/engine/ui/index.js";
+import { StorageService } from "/src/engine/persistence/index.js";
+import { BrowserDownloadService, FullscreenService } from "/src/engine/runtime/index.js";
+import { createCanvasPopupState } from "/src/engine/ui/index.js";
 import { installSpriteEditorPopupMethods } from "./appPopups.js";
 import { installSpriteEditorMenuMethods } from "./appMenus.js";
 import { installSpriteEditorRenderMethods } from "./appRender.js";

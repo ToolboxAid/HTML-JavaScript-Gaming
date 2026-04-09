@@ -3,7 +3,7 @@
   MACRO_DEFINITIONS_KEY,
   RECENT_ACTIONS_KEY,
 } from "./constants.js";
-import { pointInRect } from "../../../src/engine/utils/index.js";
+import { pointInRect } from "/src/engine/utils/index.js";
 
 function installSpriteEditorShellMethods(SpriteEditorApp) {
   Object.assign(SpriteEditorApp.prototype, {

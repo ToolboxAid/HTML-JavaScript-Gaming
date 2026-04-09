@@ -5,9 +5,9 @@
  EngineTiming.test.mjs
 */
 import assert from 'node:assert/strict';
-import Engine from '../../src/engine/core/Engine.js';
-import FrameClock from '../../src/engine/core/FrameClock.js';
-import FixedTicker from '../../src/engine/core/FixedTicker.js';
+import Engine from '/src/engine/core/Engine.js';
+import FrameClock from '/src/engine/core/FrameClock.js';
+import FixedTicker from '/src/engine/core/FixedTicker.js';
 
 function createCanvas() {
   const canvas = {

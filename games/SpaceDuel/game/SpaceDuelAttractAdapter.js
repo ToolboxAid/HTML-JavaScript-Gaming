@@ -4,7 +4,7 @@ David Quesenberry
 03/25/2026
 SpaceDuelAttractAdapter.js
 */
-import { clamp } from '../../../src/engine/utils/math.js';
+import { clamp } from '/src/engine/utils/math.js';
 
 export default class SpaceDuelAttractAdapter {
   constructor({ scene }) {

@@ -4,7 +4,7 @@ David Quesenberry
 03/24/2026
 MultiBallChaosInputController.js
 */
-import { GamepadInputAdapter } from '../../../src/engine/input/index.js';
+import { GamepadInputAdapter } from '/src/engine/input/index.js';
 
 const PRESET_CODES = {
   Digit1: 'three',

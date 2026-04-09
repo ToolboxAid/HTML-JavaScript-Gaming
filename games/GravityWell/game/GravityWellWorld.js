@@ -4,8 +4,8 @@ David Quesenberry
 03/23/2026
 GravityWellWorld.js
 */
-import { clamp, distance } from '../../../src/engine/utils/index.js';
-import { transformPoints, vectorFromAngle } from '../../../src/engine/vector/index.js';
+import { clamp, distance } from '/src/engine/utils/index.js';
+import { transformPoints, vectorFromAngle } from '/src/engine/vector/index.js';
 
 const SHIP_SHAPE = [
   { x: 0, y: -16 },

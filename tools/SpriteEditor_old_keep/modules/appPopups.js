@@ -1,4 +1,4 @@
-﻿import { getCenteredRect } from "../../../src/engine/utils/index.js";
+﻿import { getCenteredRect } from "/src/engine/utils/index.js";
 import {
   createCanvasPopupState,
   dismissCanvasPopup,
@@ -7,7 +7,7 @@ import {
   handleCanvasPopupDismissPointer,
   openCanvasTransientSurface,
   resetCanvasPopupState
-} from "../../../src/engine/ui/index.js";
+} from "/src/engine/ui/index.js";
 
 function installSpriteEditorPopupMethods(SpriteEditorApp) {
   Object.assign(SpriteEditorApp.prototype, {

@@ -4,7 +4,7 @@ David Quesenberry
 03/25/2026
 SpaceDuelScene.js
 */
-import { AttractModeController, Scene } from '../../../src/engine/scenes/index.js';
+import { AttractModeController, Scene } from '/src/engine/scenes/index.js';
 import PhysicsController from './PhysicsController.js';
 import PlayerController from './PlayerController.js';
 import WaveController from './WaveController.js';

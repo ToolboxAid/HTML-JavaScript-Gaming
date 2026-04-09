@@ -1,5 +1,5 @@
 ﻿import { LOGICAL_H, LOGICAL_W } from "./constants.js";
-import { drawCanvasPixelPreview } from "../../../src/engine/ui/index.js";
+import { drawCanvasPixelPreview } from "/src/engine/ui/index.js";
 
 function installControlSurfaceDraw(SpriteEditorCanvasControlSurface) {
   SpriteEditorCanvasControlSurface.prototype.draw = function draw(ctx) {

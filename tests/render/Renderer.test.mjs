@@ -5,7 +5,7 @@ David Quesenberry
 Renderer.test.mjs
 */
 import assert from 'node:assert/strict';
-import { CanvasRenderer } from '../../src/engine/render/index.js';
+import { CanvasRenderer } from '/src/engine/render/index.js';
 
 function createFakeContext() {
   const calls = [];

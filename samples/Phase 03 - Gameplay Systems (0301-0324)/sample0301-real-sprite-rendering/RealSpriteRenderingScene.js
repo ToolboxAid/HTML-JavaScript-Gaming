@@ -4,14 +4,14 @@ David Quesenberry
 03/21/2026
 RealSpriteRenderingScene.js
 */
-import { Scene } from '../../../src/engine/scenes/index.js';
-import { Theme, ThemeTokens } from '../../../src/engine/theme/index.js';
-import { drawFrame, drawPanel } from '../../../src/engine/debug/index.js';
-import { Camera2D, followCameraTarget, worldRectToScreen } from '../../../src/engine/camera/index.js';
-import { Tilemap, renderTilemap } from '../../../src/engine/tilemap/index.js';
-import { SpriteAtlas, ImageAssetLoader } from '../../../src/engine/assets/index.js';
-import { renderSpriteReadyEntities } from '../../../src/engine/render/index.js';
-import { moveRectWithTilemapCollision } from '../../../src/engine/systems/index.js';
+import { Scene } from '/src/engine/scenes/index.js';
+import { Theme, ThemeTokens } from '/src/engine/theme/index.js';
+import { drawFrame, drawPanel } from '/src/engine/debug/index.js';
+import { Camera2D, followCameraTarget, worldRectToScreen } from '/src/engine/camera/index.js';
+import { Tilemap, renderTilemap } from '/src/engine/tilemap/index.js';
+import { SpriteAtlas, ImageAssetLoader } from '/src/engine/assets/index.js';
+import { renderSpriteReadyEntities } from '/src/engine/render/index.js';
+import { moveRectWithTilemapCollision } from '/src/engine/systems/index.js';
 import { createDemoSpriteSheet } from './demoSpriteFactory.js';
 
 const theme = new Theme(ThemeTokens);

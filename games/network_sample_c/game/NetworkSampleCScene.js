@@ -4,7 +4,7 @@ David Quesenberry
 04/06/2026
 NetworkSampleCScene.js
 */
-import { Scene } from "../../../src/engine/scenes/index.js";
+import { Scene } from "/src/engine/scenes/index.js";
 import FakeDivergenceTraceNetworkModel from "./FakeDivergenceTraceNetworkModel.js";
 import { asPositiveNumber } from "../../../src/shared/utils/numberUtils.js";
 

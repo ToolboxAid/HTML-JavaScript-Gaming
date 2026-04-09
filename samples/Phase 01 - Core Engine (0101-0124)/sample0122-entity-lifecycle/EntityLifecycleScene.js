@@ -4,9 +4,9 @@ David Quesenberry
 03/21/2026
 EntityLifecycleScene.js
 */
-import { Scene } from '../../../src/engine/scenes/index.js';
-import { Theme, ThemeTokens } from '../../../src/engine/theme/index.js';
-import { World } from '../../../src/engine/ecs/index.js';
+import { Scene } from '/src/engine/scenes/index.js';
+import { Theme, ThemeTokens } from '/src/engine/theme/index.js';
+import { World } from '/src/engine/ecs/index.js';
 import {
   createTransform,
   createSize,
@@ -16,15 +16,15 @@ import {
   createLifetime,
   createRenderable,
   createTag,
-} from '../../../src/engine/components/index.js';
-import { drawSceneFrame, drawPanel } from '../../../src/engine/debug/index.js';
+} from '/src/engine/components/index.js';
+import { drawSceneFrame, drawPanel } from '/src/engine/debug/index.js';
 import {
   applyInputControl,
   moveEntities,
   renderRectEntities,
   tickLifetimes,
   collectOverlappingEntities,
-} from '../../../src/engine/systems/index.js';
+} from '/src/engine/systems/index.js';
 
 const theme = new Theme(ThemeTokens);
 

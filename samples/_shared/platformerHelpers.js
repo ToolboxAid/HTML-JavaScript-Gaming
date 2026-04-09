@@ -4,7 +4,7 @@ David Quesenberry
 03/21/2026
 platformerHelpers.js
 */
-import { worldRectToScreen } from '../../src/engine/camera/index.js';
+import { worldRectToScreen } from '/src/engine/camera/index.js';
 
 export function overlap(a, b) {
   return (

@@ -4,10 +4,10 @@ David Quesenberry
 03/22/2026
 LagPacketLossSimulationScene.js
 */
-import { Scene } from '../../../src/engine/scenes/index.js';
-import { drawFrame, drawPanel } from '../../../src/engine/debug/index.js';
-import { Theme, ThemeTokens } from '../../../src/engine/theme/index.js';
-import { NetworkConditionSimulator, NetworkingLayer } from '../../../src/engine/network/index.js';
+import { Scene } from '/src/engine/scenes/index.js';
+import { drawFrame, drawPanel } from '/src/engine/debug/index.js';
+import { Theme, ThemeTokens } from '/src/engine/theme/index.js';
+import { NetworkConditionSimulator, NetworkingLayer } from '/src/engine/network/index.js';
 
 const theme = new Theme(ThemeTokens);
 

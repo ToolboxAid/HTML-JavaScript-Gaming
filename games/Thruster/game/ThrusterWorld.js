@@ -4,7 +4,7 @@ David Quesenberry
 03/24/2026
 ThrusterWorld.js
 */
-import { clamp } from '../../../src/engine/utils/math.js';
+import { clamp } from '/src/engine/utils/math.js';
 
 const MAX_STEP_SECONDS = 1 / 120;
 const SHIP_RADIUS = 16;

@@ -4,16 +4,16 @@ David Quesenberry
 03/21/2026
 PolishedPlayableSliceScene.js
 */
-import { Scene } from '../../../src/engine/scenes/index.js';
-import { Theme, ThemeTokens } from '../../../src/engine/theme/index.js';
-import { clamp } from '../../../src/engine/utils/index.js';
-import { drawFrame, drawPanel } from '../../../src/engine/debug/index.js';
-import { renderByLayers, renderSpriteReadyEntities } from '../../../src/engine/render/index.js';
-import { GameModeState } from '../../../src/engine/game/index.js';
-import { resolveInteraction } from '../../../src/engine/interaction/index.js';
-import { updatePatrolEntity, isWithinDetectionRange } from '../../../src/engine/ai/index.js';
-import { spawnProjectile, updateProjectiles } from '../../../src/engine/systems/index.js';
-import { createPlayerPrefab, createEnemyPrefab } from '../../../src/engine/prefabs/index.js';
+import { Scene } from '/src/engine/scenes/index.js';
+import { Theme, ThemeTokens } from '/src/engine/theme/index.js';
+import { clamp } from '/src/engine/utils/index.js';
+import { drawFrame, drawPanel } from '/src/engine/debug/index.js';
+import { renderByLayers, renderSpriteReadyEntities } from '/src/engine/render/index.js';
+import { GameModeState } from '/src/engine/game/index.js';
+import { resolveInteraction } from '/src/engine/interaction/index.js';
+import { updatePatrolEntity, isWithinDetectionRange } from '/src/engine/ai/index.js';
+import { spawnProjectile, updateProjectiles } from '/src/engine/systems/index.js';
+import { createPlayerPrefab, createEnemyPrefab } from '/src/engine/prefabs/index.js';
 
 const theme = new Theme(ThemeTokens);
 

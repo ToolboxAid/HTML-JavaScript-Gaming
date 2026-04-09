@@ -1,4 +1,4 @@
-﻿import { openCanvasTransientSurface } from "../../../src/engine/ui/index.js";
+﻿import { openCanvasTransientSurface } from "/src/engine/ui/index.js";
 
 function installSpriteEditorMenuMethods(SpriteEditorApp) {
   Object.assign(SpriteEditorApp.prototype, {

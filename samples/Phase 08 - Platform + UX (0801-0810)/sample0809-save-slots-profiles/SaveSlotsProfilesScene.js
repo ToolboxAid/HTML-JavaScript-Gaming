@@ -4,10 +4,10 @@ David Quesenberry
 03/22/2026
 SaveSlotsProfilesScene.js
 */
-import { Scene } from '../../../src/engine/scenes/index.js';
-import { Theme, ThemeTokens } from '../../../src/engine/theme/index.js';
-import { drawFrame, drawPanel } from '../../../src/engine/debug/index.js';
-import { SaveSlotManager } from '../../../src/engine/persistence/index.js';
+import { Scene } from '/src/engine/scenes/index.js';
+import { Theme, ThemeTokens } from '/src/engine/theme/index.js';
+import { drawFrame, drawPanel } from '/src/engine/debug/index.js';
+import { SaveSlotManager } from '/src/engine/persistence/index.js';
 
 const theme = new Theme(ThemeTokens);
 

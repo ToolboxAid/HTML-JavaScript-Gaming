@@ -4,11 +4,11 @@ David Quesenberry
 03/21/2026
 ECSRenderSystemScene.js
 */
-import { Scene } from '../../../src/engine/scenes/index.js';
-import { Theme, ThemeTokens } from '../../../src/engine/theme/index.js';
-import { World } from '../../../src/engine/ecs/index.js';
-import { drawSceneFrame } from '../../../src/engine/debug/index.js';
-import { renderRectEntities } from '../../../src/engine/systems/index.js';
+import { Scene } from '/src/engine/scenes/index.js';
+import { Theme, ThemeTokens } from '/src/engine/theme/index.js';
+import { World } from '/src/engine/ecs/index.js';
+import { drawSceneFrame } from '/src/engine/debug/index.js';
+import { renderRectEntities } from '/src/engine/systems/index.js';
 
 const theme = new Theme(ThemeTokens);
 
