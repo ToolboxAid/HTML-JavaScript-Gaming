@@ -1,1 +1,1 @@
-string normalization consolidation
+id helpers consolidation

@@ -1,1 +1,2 @@
-inspectorUtils + stringUtils only
+src/engine/debug/inspectors/shared/inspectorUtils.js
+src/shared/utils/idUtils.js

@@ -1,1 +1,1 @@
-Next: evaluate remaining shared/tools boundary candidates
+Next: numeric edge helpers
