@@ -1,7 +1,2 @@
-APPLY_PR_GAMES_PACMANLITE_REMOVE_NEXT
-
-Accepted removal of PacmanLite_next scaffold.
-
-- canonical PacmanLite preserved
-- migration pipeline completed
-- repo cleaned
+BUILD_PR_GAMES_TEMPLATE_CONTRACT_ENFORCEMENT
+Added template contract rules.

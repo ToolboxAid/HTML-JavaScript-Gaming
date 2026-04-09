@@ -2,8 +2,10 @@ MODEL: GPT-5.4
 REASONING: high
 
 COMMAND:
-Execute BUILD_PR_GAMES_PACMANLITE_REMOVE_NEXT
+Execute BUILD_PR_GAMES_TEMPLATE_CONTRACT_ENFORCEMENT
 
 Rules:
-- Delete ONLY games/PacmanLite_next/**
-- Do NOT touch canonical
+- Do NOT modify gameplay
+- Do NOT break existing games
+- Enforce structure and behavior only
+- Fail fast on ambiguity

@@ -1,0 +1,16 @@
+BUILD_PR_GAMES_TEMPLATE_CONTRACT_ENFORCEMENT validation report
+
+STATUS: PASS
+
+Targets:
+- games/_template
+- games/PacmanLite
+- games/SpaceInvaders
+
+Checks:
+- _template: structure and shell contract checks passed.
+- PacmanLite: structure and shell contract checks passed.
+- SpaceInvaders: structure and shell contract checks passed.
+
+Issues:
+- none

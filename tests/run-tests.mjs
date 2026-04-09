@@ -108,6 +108,7 @@ import { run as runPerformanceProfiler } from './tools/PerformanceProfiler.test.
 import { run as runAssetMarketplace } from './tools/AssetMarketplace.test.mjs';
 import { run as runCloudRuntime } from './tools/CloudRuntime.test.mjs';
 import { run as runGameTemplates } from './tools/GameTemplates.test.mjs';
+import { run as runGamesTemplateContractEnforcement } from './tools/GamesTemplateContractEnforcement.test.mjs';
 import { run as runPublishingPipeline } from './tools/PublishingPipeline.test.mjs';
 import { run as runRenderPipelineContractAll4Tools } from './tools/RenderPipelineContractAll4Tools.test.mjs';
 import { run as runRuntimeSceneLoaderHotReload } from './tools/RuntimeSceneLoaderHotReload.test.mjs';
@@ -217,6 +218,7 @@ const tests = [
     ['AssetMarketplace', runAssetMarketplace],
     ['CloudRuntime', runCloudRuntime],
     ['GameTemplates', runGameTemplates],
+    ['GamesTemplateContractEnforcement', runGamesTemplateContractEnforcement],
     ['PublishingPipeline', runPublishingPipeline],
     ['RenderPipelineContractAll4Tools', runRenderPipelineContractAll4Tools],
     ['RuntimeSceneLoaderHotReload', runRuntimeSceneLoaderHotReload],

@@ -1,6 +1,1 @@
-Create BUILD_PR_GAMES_TEMPLATE_CONTRACT_ENFORCEMENT
-
-Scope:
-- codify required games template structure and index behavior
-- enforce canvas-first shell expectations
-- prevent cross-game drift without broad refactor
+Create APPLY_PR_GAMES_TEMPLATE_CONTRACT_ENFORCEMENT
