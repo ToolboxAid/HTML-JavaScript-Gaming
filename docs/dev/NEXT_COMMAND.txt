@@ -1,6 +1,6 @@
-Create BUILD_PR_GAMES_BREAKOUT_NEXT_TEMPLATE_BASELINE
+Create APPLY_PR_GAMES_BREAKOUT_FULL_FOLDER_MIGRATION
 
 Scope:
-- start next migration using template
-- create Breakout_next baseline
-- keep non-playable
+- accept full Breakout folder migration
+- confirm canonical runtime and cleanup
+- no additional changes

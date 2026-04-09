@@ -1,7 +1,11 @@
-APPLY_PR_GAMES_TEMPLATE_CONTRACT_ENFORCEMENT
+BUILD_PR_GAMES_BREAKOUT_FULL_FOLDER_MIGRATION
 
-Accepted template contract enforcement.
+Executed full Breakout folder migration using the validated template-based pipeline.
 
-- structure rules locked
-- behavior rules locked
-- future drift prevented
+- created Breakout_next from template
+- migrated gameplay into correct _next destinations
+- validated _next runtime
+- cleared canonical destination
+- copied _next back into canonical
+- validated canonical runtime
+- removed Breakout_next

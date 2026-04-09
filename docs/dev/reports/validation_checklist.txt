@@ -1,7 +1,15 @@
-Validation Checklist — APPLY Template Contract Enforcement
+Validation Checklist — Games Breakout Full Folder Migration
 
-[x] Contract rules accepted
-[x] No runtime impact
-[x] No existing games broken
+[ ] Breakout_next created from template
+[ ] Breakout gameplay migrated into correct _next destinations
+[ ] Breakout_next/index.html boots gameplay
+[ ] Breakout_next runtime has no console errors
+[ ] Canonical Breakout destination cleared successfully
+[ ] Canonical Breakout matches promoted _next structure
+[ ] games/Breakout/index.html boots gameplay
+[ ] Canonical runtime has no console errors
+[ ] Breakout_next removed at end
+[ ] No unrelated game folders changed
+[ ] No broad engine/shared refactor occurred
 
-Status: PASS
+Status: PENDING
