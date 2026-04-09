@@ -1,1 +1,1 @@
-Add TESTABILITY GATE and BUILD quality requirement without modifying existing content.
+Recover blocked 95A by building a smoke-testable asteroids_new vertical slice from existing Asteroids source files only.

@@ -1,7 +1,7 @@
 - single PR purpose only
 - exact target files only
-- copy-only from original Asteroids files
+- existing source files only
 - no original Asteroids file changes
-- no systems/levels/assets widening
-- minimum import/path fixes only
-- listed asteroids_new files parse and resolve together
+- no missing source-file assumptions
+- asteroids_new files parse and import cleanly together
+- result is substantial enough for a real smoke test

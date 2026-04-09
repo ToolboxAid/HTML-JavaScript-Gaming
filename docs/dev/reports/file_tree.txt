@@ -1,4 +1,4 @@
-docs/pr/BUILD_PR_GAMES_94A_ASTEROIDS_NEW_PARALLEL_BURST_ALPHA.md
+docs/pr/BUILD_PR_GAMES_95B_ASTEROIDS_NEW_TESTABLE_VERTICAL_SLICE_EXISTING_SOURCES_ONLY.md
 docs/dev/codex_commands.md
 docs/dev/commit_comment.txt
 docs/dev/next_command.txt
@@ -9,6 +9,8 @@ games/Asteroids/game/AsteroidsWorld.js
 games/Asteroids/debug/asteroidsShowcaseDebug.js
 games/Asteroids/entities/Bullet.js
 games/Asteroids/entities/Ship.js
+games/Asteroids/entities/Asteroid.js
+games/Asteroids/entities/Ufo.js
 games/asteroids_new/index.js
 games/asteroids_new/flow/attract.js
 games/asteroids_new/flow/intro.js
@@ -16,3 +18,5 @@ games/asteroids_new/game/AsteroidsWorld.js
 games/asteroids_new/debug/asteroidsShowcaseDebug.js
 games/asteroids_new/entities/Bullet.js
 games/asteroids_new/entities/Ship.js
+games/asteroids_new/entities/Asteroid.js
+games/asteroids_new/entities/Ufo.js

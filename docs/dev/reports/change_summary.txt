@@ -1,4 +1,4 @@
-- combine multiple previously separate asteroids_new parallel-adoption slices into one larger exact-file BUILD
-- copy world, debug shell, and two entity files into the parallel lane
-- allow only the minimum path/import fixes inside asteroids_new index/flow files
-- keep the original Asteroids game untouched
+- replace blocked 95A with an existing-sources-only vertical slice BUILD
+- use current asteroids_new boot/flow shell instead of missing original Asteroids boot/flow files
+- copy only world/debug/core-entity files that actually exist in the repo
+- keep original Asteroids files untouched

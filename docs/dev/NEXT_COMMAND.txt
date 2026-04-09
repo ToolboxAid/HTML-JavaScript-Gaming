@@ -1,1 +1,1 @@
-Next: enforce testable vertical slice builds across roadmap.
+After commit, inspect whether one additional exact gameplay dependency is needed or whether the vertical slice is already smoke-testable enough to validate.
