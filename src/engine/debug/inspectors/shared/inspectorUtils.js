@@ -5,7 +5,6 @@ David Quesenberry
 inspectorUtils.js
 */
 
-import { asPositiveInteger } from "../../../../shared/utils/numberUtils.js";
 import { sanitizeText } from "../../../../shared/utils/stringUtils.js";
 
 export { sanitizeText };
@@ -19,8 +18,6 @@ export function asObject(value) {
 export function asArray(value) {
   return Array.isArray(value) ? value : [];
 }
-
-export { asPositiveInteger };
 
 export function cloneJson(value) {
   if (typeof structuredClone === "function") {

@@ -1,1 +1,1 @@
-cleanup after moves
+boundary validation
