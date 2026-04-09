@@ -1,4 +1,4 @@
-# MASTER ROADMAP — HIGH LEVEL (v6 ADDITIVE)
+# MASTER ROADMAP — HIGH LEVEL (v7 ADDITIVE)
 
 ## Status Key
 - [x] complete
@@ -41,7 +41,7 @@
 - [ ] promotion does not happen as a blind dedupe exercise
 
 ### Tooling Strategy
-- [ ] tools are created when they unblock src/engine/content progress
+- [ ] tools are created when they unblock engine/content progress
 - [ ] tools do not define engine behavior
 - [ ] tools share common IO/state/util layers where appropriate
 - [ ] tools remain organized under `tools/`
@@ -91,7 +91,7 @@
 - [.] shared asset promotion rules defined
 - [.] network samples classified as sample-phase content
 - [ ] current folder inventory mapped to target homes
-- [ ] move-map defined for root `src/engine/` -> `src/src/engine/`
+- [ ] move-map defined for root `engine/` -> `src/engine/`
 - [x] duplicate-helper migration map defined
 - [ ] ambiguous-name rename map defined
 - [ ] legacy migration map defined
@@ -100,13 +100,13 @@
 - [ ] post-move validation complete
 
 ### Structure Targets
-- [ ] `src/src/engine/core`
-- [ ] `src/src/engine/state`
-- [ ] `src/src/engine/rendering`
-- [ ] `src/src/engine/input`
-- [ ] `src/src/engine/physics`
-- [ ] `src/src/engine/audio`
-- [ ] `src/src/engine/scene`
+- [ ] `src/engine/core`
+- [ ] `src/engine/state`
+- [ ] `src/engine/rendering`
+- [ ] `src/engine/input`
+- [ ] `src/engine/physics`
+- [ ] `src/engine/audio`
+- [ ] `src/engine/scene`
 - [ ] `src/shared/utils`
 - [ ] `src/shared/math`
 - [ ] `src/shared/state`
@@ -114,6 +114,13 @@
 - [ ] `samples/phase-01`
 - [ ] `samples/phase-13_network-concepts`
 - [ ] `tools/shared`
+
+### Recent Checkpoint Notes
+- [x] broad import-path correction from `engine/` to `src/engine/` applied across remaining games/samples
+- [.] partial retro smoke pass completed after path correction
+- [.] additional post-move validation still required before this lane can be closed
+- [.] repo structure work is now constrained to exact move-map BUILDs only
+- [ ] remaining structure normalization should avoid broad folder churn until active shared extraction and promotion-gate work stabilize
 
 ---
 
@@ -159,7 +166,7 @@
 - [.] arrays utilities consolidated
 - [.] strings utilities consolidated
 - [ ] ids utilities consolidated
-- [ ] shared math layer consolidated
+- [.] shared math layer consolidated
 - [ ] shared state guards consolidated
 - [ ] shared state normalization consolidated
 - [ ] shared selectors consolidated
@@ -175,6 +182,16 @@
 - [ ] `getReplayState` naming established where needed
 - [ ] `getEditorState` naming established where needed
 - [ ] sample/tool/runtime duplicates classified before move
+
+### Recent Consolidation Checkpoint
+- [x] vector-domain `toFiniteNumber` promoted into `src/shared/math/numberNormalization.js`
+- [x] vector-domain `roundNumber` promoted into `src/shared/math/numberNormalization.js`
+- [x] state/sample `toFiniteNumber` consumers migrated to shared math
+- [x] duplicated `asNumber` consumers migrated to shared math
+- [x] Asteroids numeric sanitizers promoted into shared math
+- [x] duplicated `asObject` / `asArray` consumers moved to shared utils
+- [.] shared math is now a real active layer and should continue by exact-cluster extraction only
+- [ ] remaining number/string/id helpers still need exact-cluster normalization
 
 ---
 
@@ -426,8 +443,13 @@
 - [ ] 2D tool stabilization before 3D tool expansion
 - [ ] 3D prerequisite samples before advanced 3D tools
 - [ ] content pipeline tools after asset complexity justifies them
-- [ ] debug tools align with src/engine/debug maturity
+- [ ] debug tools align with engine/debug maturity
 - [ ] no standalone showcase-only tool tracks
+
+### Recent Tool Shell Notes
+- [.] tools header accordion added to reduce vertical real-estate usage
+- [.] tool-shell UI compaction is useful but does not replace tool-boundary normalization work
+- [ ] any follow-up tool UI cleanup should remain subordinate to shared-boundary and data-contract work
 
 ---
 
@@ -520,7 +542,7 @@
 
 ## 14. Testing & Validation
 - [ ] `tests/` structure normalized
-- [ ] unit coverage aligned to src/engine/shared/games
+- [ ] unit coverage aligned to engine/shared/games
 - [ ] integration coverage aligned to state/replay/rendering/tools
 - [ ] smoke validation aligned to samples/tools/games
 - [ ] fixtures/helpers organization normalized
@@ -545,7 +567,7 @@
 - [x] reports structure established
 - [x] templates structure established
 - [x] roadmaps folder recognized as tracker space
-- [ ] master roadmap committed and maintained
+- [.] master roadmap committed and maintained
 - [ ] per-component roadmap slices added only when truly needed
 - [ ] structure normalization roadmap linked to future BUILD lanes
 - [ ] phase descriptions normalized repo-wide
@@ -554,24 +576,40 @@
 ---
 
 ## Dependency-Ordered Future Build Sequence
-- [ ] Finish current promotion-gate lane (BUILD → APPLY)
-- [ ] Apply master roadmap baseline
-- [ ] Apply repo structure normalization implementation plan
+
+### Active Execution Lanes
+- [.] Finish current promotion-gate lane (BUILD → APPLY)
+- [.] Apply repo structure normalization implementation plan
 - [.] Extract / normalize shared utilities
+- [.] Normalize phase-13 network concepts samples
+
+### Next Planning / Normalization Lanes
+- [ ] Apply master roadmap baseline
 - [ ] Normalize samples phase structure
-- [ ] Normalize phase-13 network concepts samples
 - [ ] Establish games/_template and normalize games layer
 - [ ] Normalize tools/shared and tool boundaries
 - [ ] Normalize assets/data ownership
 - [ ] Expand testing/validation structure
+
+### Later Capability Lanes
 - [ ] Execute 2D capability polish lanes
 - [ ] Execute phase-16 / 3D capability lanes
+
+### Final Cleanup Lane
 - [ ] Reduce legacy footprint after replacements are proven
+
+### Recommended Final Status Summary
+- [.] current active execution lanes are 1 / 3 / 4 / 6
+- [ ] next planning lanes are 2 / 5 / 7 / 8 / 9 / 10
+- [ ] later capability lanes are 11 / 12
+- [ ] final cleanup lane is 13
 
 ---
 
 ## Immediate Next High-Level Actions
-- [ ] Commit this roadmap baseline
-- [ ] Finish active promotion-gate lane
-- [ ] Return to repo structure normalization lane
+- [.] continue exact-cluster shared extraction until the current lane reaches a stable stop point
+- [ ] finish active promotion-gate lane enough to remove it from half-active status
+- [ ] convert repo structure normalization into exact move-map BUILDs with explicit validation
+- [ ] re-baseline this roadmap after active execution lanes stabilize
 - [ ] split future implementation into small dependency-ordered PRs
+- [ ] avoid broad repo-wide cleanup passes until the active lanes above are materially further along
