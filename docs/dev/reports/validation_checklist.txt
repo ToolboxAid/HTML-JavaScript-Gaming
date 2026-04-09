@@ -1,9 +1,9 @@
-Validation Checklist — APPLY Pong Migration
+Validation Checklist — APPLY Gravity Migration
 
-[x] Pong runs from canonical
+[x] Gravity runs from canonical
 [x] Canvas visible
 [x] No console errors
-[x] Pong_next removed
+[x] Gravity_next removed
 [x] No unrelated changes
 
 Status: PASS

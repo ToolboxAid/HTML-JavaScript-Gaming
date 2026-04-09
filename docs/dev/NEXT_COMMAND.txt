@@ -1,1 +1,5 @@
-Create APPLY_PR_GAMES_GRAVITY_FULL_FOLDER_MIGRATION
+Create BUILD_PR_NEXT_GAME_FULL_FOLDER_MIGRATION
+
+Scope:
+- select next game
+- repeat single-zip migration
