@@ -1,5 +1,1 @@
-Create APPLY_PR_GAMES_TEMPLATE_FROM_ASTEROIDS
-
-Scope:
-- Accept template
-- Confirm shell behavior
+Create APPLY_PR_GAMES_TEMPLATE_INDEX_CANVAS_FIX

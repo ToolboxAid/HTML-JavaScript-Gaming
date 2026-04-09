@@ -2,13 +2,12 @@ MODEL: GPT-5.3-codex
 REASONING: high
 
 COMMAND:
-Execute BUILD_PR_GAMES_TEMPLATE_FROM_ASTEROIDS_V2_INDEX_SHELL exactly.
+Execute BUILD_PR_GAMES_TEMPLATE_INDEX_CANVAS_FIX exactly.
 
-- Copy structure from games/Asteroids
-- Create games/_template
-- Replace index.html with template shell
-- Remove assets
-- Do NOT include Asteroids logic
+- Modify ONLY games/_template/index.html
+- Draw text on canvas
+- No DOM text
+- No other files
 
-Package output to:
-<project folder>/tmp/BUILD_PR_GAMES_TEMPLATE_FROM_ASTEROIDS_V2_INDEX_SHELL_delta.zip
+Package to:
+<project folder>/tmp/BUILD_PR_GAMES_TEMPLATE_INDEX_CANVAS_FIX_delta.zip

@@ -1,8 +1,5 @@
-Validation Checklist — Template Index Shell
-
-[ ] index.html renders canvas
-[ ] Template message visible
-[ ] No game logic runs
-[ ] No assets included
-
+[ ] Canvas renders
+[ ] Text drawn on canvas
+[ ] No DOM text
+[ ] No console errors
 Status: PENDING
