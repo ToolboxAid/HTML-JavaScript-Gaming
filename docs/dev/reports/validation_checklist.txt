@@ -1,6 +1,1 @@
-- single PR purpose only
-- exact target files only
-- executable BUILD with Codex command included
-- no roadmap edits
-- no docs-only commit intent
-- no replay/timeline/sample/game/debug scope expansion
+exact files only

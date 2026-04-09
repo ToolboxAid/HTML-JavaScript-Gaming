@@ -1,3 +1,1 @@
-- narrow promotion-gate BUILD focused on authoritative/passive handoff boundary only
-- exact target files limited to promotion gate + world game state system + promotion snapshot
-- explicitly excludes replay/timeline/sample/game/debug widening
+narrow slice

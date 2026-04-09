@@ -1,1 +1,1 @@
-After commit, inspect the delta and build the next exact promotion-gate slice only if observability/abort files are explicit.
+Next: validation closeout

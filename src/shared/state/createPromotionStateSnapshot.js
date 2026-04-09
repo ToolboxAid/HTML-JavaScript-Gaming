@@ -7,6 +7,28 @@ function cloneHandoff(value) {
   return { ...value };
 }
 
+function cloneAbort(value) {
+  if (!value || typeof value !== 'object') return null;
+  return { ...value };
+}
+
+function resolveStatusMode({ promoted, lastEvaluation }) {
+  const fromEvaluation = lastEvaluation && typeof lastEvaluation.mode === 'string'
+    ? lastEvaluation.mode
+    : '';
+  if (fromEvaluation) return fromEvaluation;
+  return promoted ? 'authoritative' : 'passive';
+}
+
+function resolveStatusHandoff({ handoff, lastEvaluation }) {
+  if (handoff && typeof handoff === 'object') return cloneHandoff(handoff);
+  return cloneHandoff(lastEvaluation?.handoff);
+}
+
+function resolveStatusAbort({ lastEvaluation }) {
+  return cloneAbort(lastEvaluation?.abort);
+}
+
 export function createPromotionStateSnapshot({
   promoted,
   stableFrames,
@@ -25,8 +47,12 @@ export function createPromotionStateSnapshot({
       ? cloneLastEvaluation
       : defaultCloneLastEvaluation)(lastEvaluation)
   };
-  if (handoff !== undefined) {
-    snapshot.handoff = cloneHandoff(handoff);
-  }
+  const resolvedHandoff = resolveStatusHandoff({ handoff, lastEvaluation: snapshot.lastEvaluation });
+  if (resolvedHandoff !== null) snapshot.handoff = resolvedHandoff;
+  snapshot.status = {
+    mode: resolveStatusMode({ promoted, lastEvaluation: snapshot.lastEvaluation }),
+    handoff: resolvedHandoff,
+    abort: resolveStatusAbort({ lastEvaluation: snapshot.lastEvaluation })
+  };
   return snapshot;
 }

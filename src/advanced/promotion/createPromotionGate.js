@@ -48,6 +48,20 @@ function createHandoffDecision({ promoted, promotedNow }) {
   };
 }
 
+function resolveGateMode({ promoted }) {
+  return promoted ? 'authoritative' : 'passive';
+}
+
+function createAbortVisibility({ rollbackTriggered, promoted, reason }) {
+  const aborted = Boolean(rollbackTriggered) && !promoted;
+  return {
+    decisionPath: 'PROMOTION_GATE_ABORT_VISIBILITY',
+    rollbackTriggered: Boolean(rollbackTriggered),
+    aborted,
+    reason: aborted ? 'ROLLBACK_ABORTED_PROMOTION' : String(reason || '')
+  };
+}
+
 function createPromotionGate(options = {}) {
   const now = typeof options.now === 'function' ? options.now : () => Date.now();
   const requiredCriteria = sanitizeRequiredCriteria(options.requiredCriteria);
@@ -136,12 +150,19 @@ function createPromotionGate(options = {}) {
     const readiness = promoted
       ? 'authoritative'
       : (allCriteriaMet ? 'stabilizing' : 'passive');
+    const mode = resolveGateMode({ promoted });
     const handoff = createHandoffDecision({ promoted, promotedNow });
+    const abort = createAbortVisibility({
+      rollbackTriggered,
+      promoted,
+      reason: lastReason
+    });
     const evaluation = {
       transitionName: String(transitionName || ''),
       frame: frame !== undefined && frame !== null ? Number(frame) : null,
       timestampMs,
       readiness,
+      mode,
       promoted,
       promotedNow,
       rollbackTriggered: Boolean(rollbackTriggered),
@@ -155,6 +176,7 @@ function createPromotionGate(options = {}) {
         allMet: allCriteriaMet
       },
       handoff,
+      abort,
       reason: lastReason,
       metrics: getMetrics()
     };
