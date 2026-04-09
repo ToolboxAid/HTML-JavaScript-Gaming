@@ -1,1 +1,1 @@
-Next: identify explicit sample files before structural changes
+Next: pause samples index work and plan explicit file-based phase moves

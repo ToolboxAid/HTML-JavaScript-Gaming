@@ -1,1 +1,1 @@
-Sort samples index and add simple section headers
+Remove empty sections from samples index

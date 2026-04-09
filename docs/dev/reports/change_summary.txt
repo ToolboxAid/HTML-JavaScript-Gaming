@@ -1,1 +1,1 @@
-index readability improvement
+cleanup empty sections
