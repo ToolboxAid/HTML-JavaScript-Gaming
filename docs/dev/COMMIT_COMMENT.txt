@@ -1,1 +1,1 @@
-Wire minimal flow structure in template (no game impact)
+Validate template loads without errors
