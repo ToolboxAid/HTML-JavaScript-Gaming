@@ -2,11 +2,9 @@ MODEL: GPT-5.4
 REASONING: high
 
 COMMAND:
-Execute BUILD_PR_GAMES_PACMANLITE_GAMEPLAY_MIGRATION_TO_NEXT
+Execute BUILD_PR_GAMES_PACMANLITE_CLEAR_DESTINATION
 
 Rules:
-- Read games/PacmanLite/**
-- Write games/PacmanLite_next/**
-- Correct folder placement
-- No guessing
-- Do NOT modify original
+- Delete ONLY games/PacmanLite/**
+- Keep folder
+- Do NOT touch _next

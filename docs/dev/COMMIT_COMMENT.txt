@@ -1,2 +1,2 @@
-BUILD_PR_GAMES_PACMANLITE_GAMEPLAY_MIGRATION_TO_NEXT
-Migrated gameplay to PacmanLite_next.
+BUILD_PR_GAMES_PACMANLITE_CLEAR_DESTINATION
+Cleared PacmanLite for replacement.
