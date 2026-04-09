@@ -1,11 +1,7 @@
-BUILD_PR_GAMES_BREAKOUT_FULL_FOLDER_MIGRATION
+APPLY_PR_GAMES_BREAKOUT_FULL_FOLDER_MIGRATION
 
-Executed full Breakout folder migration using the validated template-based pipeline.
+Accepted full Breakout migration.
 
-- created Breakout_next from template
-- migrated gameplay into correct _next destinations
-- validated _next runtime
-- cleared canonical destination
-- copied _next back into canonical
-- validated canonical runtime
-- removed Breakout_next
+- canonical Breakout validated
+- template pipeline confirmed
+- _next removed

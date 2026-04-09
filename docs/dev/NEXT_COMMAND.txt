@@ -1,6 +1,5 @@
-Create APPLY_PR_GAMES_BREAKOUT_FULL_FOLDER_MIGRATION
+Create BUILD_PR_NEXT_GAME_FULL_FOLDER_MIGRATION
 
 Scope:
-- accept full Breakout folder migration
-- confirm canonical runtime and cleanup
-- no additional changes
+- select next game (e.g., Pong or Breakout-level complexity)
+- repeat single-zip full migration pattern
