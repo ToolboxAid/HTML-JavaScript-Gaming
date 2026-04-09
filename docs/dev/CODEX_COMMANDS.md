@@ -2,16 +2,17 @@ MODEL: GPT-5.4
 REASONING: high
 
 COMMAND:
-Execute BUILD_PR_GAMES_TEMPLATE_ENGINE_THEME_CANVAS_STATUS_TEXT exactly as written.
+Execute BUILD_PR_GAMES_SPACE_INVADERS_GAMEPLAY_MIGRATION_TO_NEXT exactly as written.
 
 Rules:
-- Keep the canonical shell/theme baseline alignment
-- Modify `games/_template/index.html`
-- Render the required status text on the canvas, not as HTML status text
-- Keep `_template` non-playable and game-neutral
-- Do NOT copy Asteroids gameplay, assets, entities, levels, or flow
-- Do NOT modify `games/Asteroids`
-- Fail fast on ambiguity or gameplay dependency bleed
+- Read from `games/SpaceInvaders/**`
+- Write only to `games/SpaceInvaders_next/**`
+- Put files into the correct destination folders by responsibility
+- Fail fast instead of guessing any unclear destination
+- Keep `games/SpaceInvaders/**` unchanged
+- Do NOT perform canonical replacement
+- Do NOT refactor engine/shared broadly
+- Do NOT change unrelated games
 
 Package output to:
-<project folder>/tmp/BUILD_PR_GAMES_TEMPLATE_ENGINE_THEME_CANVAS_STATUS_TEXT_delta.zip
+<project folder>/tmp/BUILD_PR_GAMES_SPACE_INVADERS_GAMEPLAY_MIGRATION_TO_NEXT_delta.zip

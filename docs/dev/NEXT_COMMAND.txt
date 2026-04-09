@@ -1,6 +1,6 @@
-Create BUILD_PR_GAMES_SPACE_INVADERS_TEMPLATE_BASELINE
+Create APPLY_PR_GAMES_SPACE_INVADERS_GAMEPLAY_MIGRATION_TO_NEXT
 
 Scope:
-- create or normalize games/SpaceInvaders from games/_template
-- preserve current SpaceInvaders implementation until replacement is validated
-- no broad refactor
+- accept gameplay migration into SpaceInvaders_next
+- confirm runtime and debug behavior
+- keep existing SpaceInvaders unchanged

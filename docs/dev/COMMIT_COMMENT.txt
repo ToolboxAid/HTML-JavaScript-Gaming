@@ -1,8 +1,7 @@
-APPLY_PR_GAMES_TEMPLATE_ENGINE_THEME_CANVAS_STATUS_TEXT
+BUILD_PR_GAMES_SPACE_INVADERS_GAMEPLAY_MIGRATION_TO_NEXT
 
-Accepted games/_template as the standard reusable game template baseline.
+Migrated Space Invaders gameplay into games/SpaceInvaders_next.
 
-- clean minimal structure
-- engine/theme shell aligned
-- required status text renders on canvas
-- no gameplay boot
+- source game preserved unchanged
+- gameplay moved into correct _next destination folders
+- _next now boots gameplay instead of template-only status mode

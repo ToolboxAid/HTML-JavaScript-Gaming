@@ -1,13 +1,13 @@
-Validation Checklist — APPLY Games Template Engine Theme Canvas Status Text
+Validation Checklist — Games Space Invaders Gameplay Migration To Next
 
-[x] _template structure is correct
-[x] No Asteroids gameplay present
-[x] Standard shell/theme baseline aligned
-[x] Canvas visible
-[x] "HTML Says" renders on canvas
-[x] "Template Status" renders on canvas
-[x] "This template intentionally does not boot gameplay." renders on canvas
-[x] No gameplay boots
-[x] No console errors reported
+[ ] games/SpaceInvaders_next contains migrated gameplay
+[ ] Migrated files are in correct destination folders
+[ ] games/SpaceInvaders_next/index.html boots gameplay
+[ ] Canvas is visible
+[ ] Shell/theme baseline still looks correct
+[ ] Debug works if it existed in source
+[ ] No console errors
+[ ] Existing games/SpaceInvaders remains unchanged
+[ ] No unrelated games changed
 
-Status: PASS
+Status: PENDING
