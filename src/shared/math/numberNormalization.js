@@ -17,6 +17,15 @@ export function sanitizePositiveNumber(value, fallback) {
   return number > 0 ? number : fallback;
 }
 
+export function asFinite(value, fallback = 0) {
+  return Number.isFinite(value) ? Number(value) : fallback;
+}
+
+export function asNonNegativeInteger(value, fallback = 0) {
+  const normalized = Math.floor(asFinite(value, fallback));
+  return normalized >= 0 ? normalized : Math.max(0, Math.floor(asFinite(fallback, 0)));
+}
+
 export function roundNumber(value) {
   if (!Number.isFinite(value)) {
     return value;

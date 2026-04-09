@@ -1,1 +1,1 @@
-Move id helpers to shared utils
+Move numeric edge helpers to shared math
