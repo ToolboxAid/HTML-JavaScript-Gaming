@@ -2,7 +2,7 @@ MODEL: GPT-5.4-codex
 REASONING: high
 
 COMMAND:
-Execute docs/pr/BUILD_PR_REPO_STRUCTURE_63_MOVE_MAP_GAMES_PATHS.md exactly.
-Only update incorrect games import paths.
+Execute docs/pr/BUILD_PR_REPO_STRUCTURE_64_POST_PATH_VALIDATION.md exactly.
+Only fix broken imports from prior PRs.
 Package to:
-<project folder>/tmp/BUILD_PR_REPO_STRUCTURE_63_MOVE_MAP_GAMES_PATHS_delta.zip
+<project folder>/tmp/BUILD_PR_REPO_STRUCTURE_64_POST_PATH_VALIDATION_delta.zip

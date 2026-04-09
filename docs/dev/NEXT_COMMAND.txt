@@ -1,1 +1,1 @@
-Next: inspect whether a post-path validation or exact move-map file relocation slice is needed.
+Next: begin repo move-map (actual file relocation) if clean

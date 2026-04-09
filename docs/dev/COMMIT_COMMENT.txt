@@ -1,1 +1,1 @@
-Normalize remaining games import paths
+Post path-normalization validation and cleanup
