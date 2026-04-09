@@ -22,16 +22,16 @@ export default class AsteroidsAudio {
       return;
     }
 
-    this.media.register('fire', { src: '/games/Asteroids/assets/fire.wav', volume: 0.55 });
-    this.media.register('bangLarge', { src: '/games/Asteroids/assets/bangLarge.wav', volume: 0.65 });
-    this.media.register('bangMedium', { src: '/games/Asteroids/assets/bangMedium.wav', volume: 0.6 });
-    this.media.register('bangSmall', { src: '/games/Asteroids/assets/bangSmall.wav', volume: 0.55 });
-    this.media.register('beat1', { src: '/games/Asteroids/assets/beat1.wav', volume: 0.45 });
-    this.media.register('beat2', { src: '/games/Asteroids/assets/beat2.wav', volume: 0.45 });
-    this.loopPlayer.register('extraShip', { src: '/games/Asteroids/assets/extraShip.wav', volume: 0.6, overlapSeconds: 0.035, fadeSeconds: 0.012 });
-    this.loopPlayer.register('thrust', { src: '/games/Asteroids/assets/thrust.wav', volume: 0.35, overlapSeconds: 0.03, fadeSeconds: 0.01 });
-    this.loopPlayer.register('saucerLarge', { src: '/games/Asteroids/assets/saucerBig.wav', volume: 0.35, overlapSeconds: 0.03, fadeSeconds: 0.01 });
-    this.loopPlayer.register('saucerSmall', { src: '/games/Asteroids/assets/saucerSmall.wav', volume: 0.4, overlapSeconds: 0.03, fadeSeconds: 0.01 });
+    this.media.register('fire', { src: '/games/asteroids_new/assets/fire.wav', volume: 0.55 });
+    this.media.register('bangLarge', { src: '/games/asteroids_new/assets/bangLarge.wav', volume: 0.65 });
+    this.media.register('bangMedium', { src: '/games/asteroids_new/assets/bangMedium.wav', volume: 0.6 });
+    this.media.register('bangSmall', { src: '/games/asteroids_new/assets/bangSmall.wav', volume: 0.55 });
+    this.media.register('beat1', { src: '/games/asteroids_new/assets/beat1.wav', volume: 0.45 });
+    this.media.register('beat2', { src: '/games/asteroids_new/assets/beat2.wav', volume: 0.45 });
+    this.loopPlayer.register('extraShip', { src: '/games/asteroids_new/assets/extraShip.wav', volume: 0.6, overlapSeconds: 0.035, fadeSeconds: 0.012 });
+    this.loopPlayer.register('thrust', { src: '/games/asteroids_new/assets/thrust.wav', volume: 0.35, overlapSeconds: 0.03, fadeSeconds: 0.01 });
+    this.loopPlayer.register('saucerLarge', { src: '/games/asteroids_new/assets/saucerBig.wav', volume: 0.35, overlapSeconds: 0.03, fadeSeconds: 0.01 });
+    this.loopPlayer.register('saucerSmall', { src: '/games/asteroids_new/assets/saucerSmall.wav', volume: 0.4, overlapSeconds: 0.03, fadeSeconds: 0.01 });
     this.initialized = true;
   }
 

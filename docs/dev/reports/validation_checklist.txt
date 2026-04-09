@@ -1,6 +1,6 @@
 - single PR purpose only
-- exact folders/files only
+- exact target files only
 - no original Asteroids file changes
-- no content changes to correct root-level files
-- duplicate nested folders removed
-- asteroids_new remains smoke-testable
+- minimum-fix stabilization only
+- asteroids_new index is used as the smoke-test entry point
+- touched asteroids_new files parse and resolve together

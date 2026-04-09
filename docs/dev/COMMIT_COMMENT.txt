@@ -1,1 +1,1 @@
-Flatten duplicated nested asteroids_new subfolders and keep only the correct root-level copies.
+Stabilize asteroids_new runtime boot so the parallel lane becomes smoke-testable from its own index entry.

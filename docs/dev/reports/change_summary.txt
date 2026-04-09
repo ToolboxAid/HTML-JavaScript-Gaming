@@ -1,3 +1,3 @@
-- fix duplicated nested folders created by the full-copy burst
-- keep only the intended root-level asteroids_new files
-- preserve the smoke-testable parallel lane
+- move asteroids_new from copied structure to smoke-testable runtime lane
+- allow only minimum runtime/import/path fixes across the existing parallel files
+- keep original Asteroids untouched

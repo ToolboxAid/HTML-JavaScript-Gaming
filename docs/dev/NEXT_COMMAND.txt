@@ -1,1 +1,1 @@
-After commit, validate asteroids_new runtime/imports and then continue with the next testable vertical slice only.
+After commit, either add the next gameplay-critical slice in one testable chunk or run a stronger runtime validation pass before widening further.
