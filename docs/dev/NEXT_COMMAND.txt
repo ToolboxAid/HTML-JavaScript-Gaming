@@ -1,1 +1,1 @@
-After commit, inspect the delta and either pull one additional gameplay slice or validate before widening into systems.
+Next: enforce testable vertical slice builds across roadmap.

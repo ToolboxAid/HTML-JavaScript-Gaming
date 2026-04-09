@@ -30,3 +30,19 @@
 - modify roadmap wording
 - touch start_of_day files
 - continue after a failed execution threshold
+
+
+
+## ✅ BUILD PR Quality Requirement (TESTABILITY)
+
+Every BUILD PR must result in a testable state.
+
+Preferred:
+- Vertical slice (feature, flow, or runnable subset)
+
+Avoid:
+- Incremental fragments that cannot run
+
+Rule of thumb:
+If it cannot be executed or meaningfully validated, it is not a valid BUILD.
+

@@ -77,3 +77,29 @@ Codex must report:
 - whether scope stayed clean
 - whether engine-core was untouched if expected
 - the ZIP output path under `<project folder>/tmp/`
+
+
+
+## 🚫 TESTABILITY GATE (NEW — REQUIRED)
+
+A BUILD PR must produce a testable result.
+
+Definition of testable:
+- Can be executed, loaded, or meaningfully validated (runtime, UI, or module level)
+- Not just structural (folders, placeholders, or isolated files)
+- Not a partial dependency chain that cannot run
+
+FAIL FAST if:
+- The change only copies files without enabling execution
+- The result cannot be smoke-tested
+- The change introduces a partial system with no entry point
+
+DO NOT EXECUTE:
+- Scaffolding-only PRs
+- Single-file migrations that do not integrate
+- Folder-only or placeholder-only changes
+
+Instead:
+- Expand the BUILD scope to a vertical slice
+- Or request a corrected BUILD PR with sufficient scope
+

@@ -1,1 +1,1 @@
-Accelerate asteroids_new with one larger non-destructive parallel adoption burst covering world, debug, and two entity files.
+Add TESTABILITY GATE and BUILD quality requirement without modifying existing content.
