@@ -2,17 +2,14 @@ MODEL: GPT-5.4
 REASONING: high
 
 COMMAND:
-Execute BUILD_PR_GAMES_SPACE_INVADERS_GAMEPLAY_MIGRATION_TO_NEXT exactly as written.
+Execute BUILD_PR_GAMES_SPACE_INVADERS_CLEAR_DESTINATION exactly as written.
 
 Rules:
-- Read from `games/SpaceInvaders/**`
-- Write only to `games/SpaceInvaders_next/**`
-- Put files into the correct destination folders by responsibility
-- Fail fast instead of guessing any unclear destination
-- Keep `games/SpaceInvaders/**` unchanged
-- Do NOT perform canonical replacement
-- Do NOT refactor engine/shared broadly
-- Do NOT change unrelated games
+- Delete ONLY `games/SpaceInvaders/**`
+- Leave `games/SpaceInvaders/` present and empty
+- Do NOT touch `games/SpaceInvaders_next/**`
+- Do NOT recreate missing files such as `capture-preview.html` in this PR
+- Fail fast on ambiguity
 
 Package output to:
-<project folder>/tmp/BUILD_PR_GAMES_SPACE_INVADERS_GAMEPLAY_MIGRATION_TO_NEXT_delta.zip
+<project folder>/tmp/BUILD_PR_GAMES_SPACE_INVADERS_CLEAR_DESTINATION_delta.zip
