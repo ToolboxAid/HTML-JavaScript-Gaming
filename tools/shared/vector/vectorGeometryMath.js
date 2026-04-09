@@ -1,16 +1,5 @@
+import { toFiniteNumber, roundNumber } from "../../../src/shared/math/numberNormalization.js";
 const PATH_TOKEN_PATTERN = /[AaCcHhLlMmQqSsTtVvZz]|-?\d*\.?\d+(?:e[-+]?\d+)?/g;
-
-export function toFiniteNumber(value, fallback = NaN) {
-  const numeric = Number(value);
-  return Number.isFinite(numeric) ? numeric : fallback;
-}
-
-export function roundNumber(value) {
-  if (!Number.isFinite(value)) {
-    return value;
-  }
-  return Number(value.toFixed(6));
-}
 
 export function createPoint(x = 0, y = 0) {
   return {

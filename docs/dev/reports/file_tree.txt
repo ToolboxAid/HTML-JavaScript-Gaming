@@ -1,7 +1,10 @@
-docs/pr/BUILD_PR_SHARED_EXTRACTION_49_VECTOR_TO_FINITE_NUMBER_ROUND_BATCH.md
+src/shared/math/numberNormalization.js
+tools/shared/vector/vectorGeometryMath.js
+tools/shared/vector/vectorAssetContract.js
+docs/pr/BUILD_PR_SHARED_EXTRACTION_50_VECTOR_NUMBER_NORMALIZATION_TO_SHARED_MATH.md
 docs/dev/codex_commands.md
 docs/dev/commit_comment.txt
 docs/dev/next_command.txt
+docs/dev/reports/file_tree.txt
 docs/dev/reports/change_summary.txt
 docs/dev/reports/validation_checklist.txt
-docs/dev/reports/file_tree.txt

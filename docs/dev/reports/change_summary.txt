@@ -1,1 +1,8 @@
-Rebuilt BUILD 49 as an execution-grade two-file batch with explicit dead-code prevention and fail-fast rules.
+Purpose: extract PR 49 vector numeric helpers into canonical shared math home.
+
+Exact code scope:
+- create src/shared/math/numberNormalization.js
+- modify tools/shared/vector/vectorGeometryMath.js
+- modify tools/shared/vector/vectorAssetContract.js
+
+No other files may be changed.

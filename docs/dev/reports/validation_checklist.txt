@@ -1,1 +1,8 @@
-Exact file list present; exact helper list present; consumer replacement required; dead-code blocked; one PR purpose only.
+[ ] Single PR purpose only
+[ ] Exact 3 code files only
+[ ] No repo scan / no scope expansion
+[ ] numberNormalization.js exports only toFiniteNumber and roundNumber
+[ ] vectorGeometryMath.js removes local helper definitions
+[ ] vectorAssetContract.js imports numeric helpers from shared math
+[ ] Behavior preserved from PR 49
+[ ] Output zip path set under <project folder>/tmp/

@@ -1,1 +1,3 @@
-BUILD PR: centralize vector toFiniteNumber/roundNumber helpers with exact two-file consumer replacement.
+BUILD_PR_SHARED_EXTRACTION_50_VECTOR_NUMBER_NORMALIZATION_TO_SHARED_MATH
+
+Extract vector-lane numeric normalization helpers into src/shared/math/numberNormalization.js and rewire vector imports without widening scope.
