@@ -1,1 +1,1 @@
-Finalize promotion gate validation and closeout
+Normalize remaining engine import paths to src/engine/

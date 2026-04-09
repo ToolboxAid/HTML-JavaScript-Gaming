@@ -1,1 +1,1 @@
-exact files only
+no broad scan, exact replacements only
