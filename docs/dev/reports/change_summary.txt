@@ -1,1 +1,1 @@
-Validate template loads without errors
+Add full folder structure to template
