@@ -1,5 +1,1 @@
-Create BUILD_PR_NEXT_GAME_FULL_FOLDER_MIGRATION
-
-Scope:
-- select next game
-- repeat single-zip migration
+Create APPLY_PR_GAMES_BOUNCING_BALL_FULL_FOLDER_MIGRATION

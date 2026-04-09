@@ -1,7 +1,2 @@
-APPLY_PR_GAMES_GRAVITY_FULL_FOLDER_MIGRATION
-
-Accepted full Gravity migration.
-
-- canonical Gravity validated
-- _next removed
-- pipeline confirmed
+BUILD_PR_GAMES_BOUNCING_BALL_FULL_FOLDER_MIGRATION
+Full Bouncing-ball migration.
