@@ -1,3 +1,5 @@
+import { asNumber } from "../math/numberNormalization.js";
+
 function sanitizeText(value) {
   return typeof value === "string" ? value.trim() : "";
 }
@@ -14,10 +16,7 @@ function toSafeKey(value) {
   return sanitizeText(value);
 }
 
-export function asNumber(value, fallback = 0) {
-  const numeric = Number(value);
-  return Number.isFinite(numeric) ? numeric : fallback;
-}
+export { asNumber };
 
 export function toNetworkSnapshot(snapshot) {
   const sampleKey = arguments[1];

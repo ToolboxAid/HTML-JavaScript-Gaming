@@ -1,15 +1,3 @@
-PR purpose:
-- migrate the remaining state/sample-local `toFiniteNumber` duplicates to the canonical shared math helper
-
-Exact code scope:
-- `src/advanced/state/transitions.js`
-- `samples/shared/worldGameStateSystem.js`
-
-Shared dependency consumed:
-- `src/shared/math/numberNormalization.js`
-
-Out of scope:
-- any vector files
-- any other number helper
-- any repo-wide cleanup
-- any new shared helper creation
+- Promote duplicated asNumber helper into canonical shared math
+- Remove duplicate local asNumber definitions from the two exact network debug utility files
+- Preserve existing exports and caller-facing API

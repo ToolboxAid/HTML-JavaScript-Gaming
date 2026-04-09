@@ -5,6 +5,8 @@ David Quesenberry
 networkDebugUtils.js
 */
 
+import { asNumber } from "../../../../shared/math/numberNormalization.js";
+
 export function sanitizeText(value) {
   return typeof value === "string" ? value.trim() : "";
 }
@@ -17,10 +19,7 @@ export function asArray(value) {
   return Array.isArray(value) ? value : [];
 }
 
-export function asNumber(value, fallback = 0) {
-  const numeric = Number(value);
-  return Number.isFinite(numeric) ? numeric : fallback;
-}
+export { asNumber };
 
 export function asBoolean(value, fallback = false) {
   if (typeof value === "boolean") {

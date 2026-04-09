@@ -3,6 +3,11 @@ export function toFiniteNumber(value, fallback = NaN) {
   return Number.isFinite(numeric) ? numeric : fallback;
 }
 
+export function asNumber(value, fallback = 0) {
+  const numeric = Number(value);
+  return Number.isFinite(numeric) ? numeric : fallback;
+}
+
 export function roundNumber(value) {
   if (!Number.isFinite(value)) {
     return value;

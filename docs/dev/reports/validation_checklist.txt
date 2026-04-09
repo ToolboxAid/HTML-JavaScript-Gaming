@@ -1,8 +1,7 @@
-[ ] Confirm `src/shared/math/numberNormalization.js` exports `toFiniteNumber`
-[ ] `src/advanced/state/transitions.js` imports shared `toFiniteNumber`
-[ ] Local `toFiniteNumber` removed from `src/advanced/state/transitions.js`
-[ ] `samples/shared/worldGameStateSystem.js` imports shared `toFiniteNumber`
-[ ] Local `toFiniteNumber` removed from `samples/shared/worldGameStateSystem.js`
-[ ] No unused imports remain in the two target files
-[ ] No files outside the exact target set were modified
-[ ] Delta zip written to `<project folder>/tmp/BUILD_PR_SHARED_EXTRACTION_51_STATE_SAMPLE_TOFINITENUMBER_MIGRATION_delta.zip`
+# Validation Checklist
+- Confirm only the exact target files were modified
+- Confirm no wildcard or repo-wide scanning was introduced into the implementation
+- Confirm imports resolve correctly after the change
+- Confirm no dead local helper remains in the touched files for this PR purpose
+- Confirm no unrelated refactor or formatting-only churn was introduced
+- Confirm `asObject` and `asArray` were not changed in this PR
