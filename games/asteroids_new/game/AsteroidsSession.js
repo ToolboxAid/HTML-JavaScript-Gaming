@@ -73,7 +73,12 @@ export default class AsteroidsSession {
     this.turnIntroTimer = 0;
     this.turnIntroVisible = false;
     this.extraLifeInterval = 10000;
+    this.gameOverAutoExitSeconds = 30;
     this.status = 'Press 1 for one player or 2 for two players.';
+  }
+
+  getGameOverAutoExitSeconds() {
+    return this.gameOverAutoExitSeconds;
   }
 
   start(playerCount) {
@@ -196,7 +201,7 @@ export default class AsteroidsSession {
     }
 
     this.mode = 'game-over';
-    this.status = 'Game over. Press Enter to return to menu.';
+    this.status = `Game over. Press Enter to return to menu. Auto-return in ${this.gameOverAutoExitSeconds} seconds.`;
   }
 
   update(dtSeconds, input) {

@@ -1,5 +1,6 @@
 - single PR purpose only
 - exact target files only
 - no original Asteroids file changes
-- asteroids_new has its own HTML entrypoint
-- opening the HTML page produces execution or a real visible error
+- no new files
+- Enter works on visible Game Over screen
+- 30 seconds on visible Game Over screen triggers same return path

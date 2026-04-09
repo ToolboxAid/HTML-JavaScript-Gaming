@@ -21,6 +21,9 @@ const SCORE_TWO_X = 824;
 const LIFE_SPACING = 22;
 const PAUSE_OVERLAY_COLOR = 'rgba(2, 6, 23, 0.58)';
 const INITIALS_OVERLAY_COLOR = 'rgba(1, 6, 19, 0.62)';
+const GAME_OVER_AUTO_EXIT_SECONDS_DEFAULT = 30;
+const GAME_OVER_RETURN_MODE = 'menu';
+const GAME_OVER_RETURN_STATUS = 'Press 1 for one player or 2 for two players.';
 const LIFE_ICON_POINTS = [
   [14, 0],
   [-10, -8],
@@ -111,6 +114,14 @@ export default class AsteroidsGameScene extends Scene {
       load: () => initialTopScore,
       save: (score) => Math.max(0, Math.trunc(Number(score) || 0)),
     });
+    this.gameOverAutoExitSeconds = Math.max(
+      1,
+      Math.floor(
+        Number(this.session.getGameOverAutoExitSeconds?.())
+        || GAME_OVER_AUTO_EXIT_SECONDS_DEFAULT,
+      ),
+    );
+    this.gameOverAutoExitRemainingSeconds = 0;
     this.audio = new AsteroidsAudio();
     this.shipDebris = new ShipDebrisSystem({ rng: this.world.rng });
     this.particles = new ParticleSystem();
@@ -187,9 +198,42 @@ export default class AsteroidsGameScene extends Scene {
     }, this.highScoreRows);
     this.session.highScore = Math.max(this.session.highScore, this.highScoreService.getTopScore(this.highScoreRows));
     this.initialsEntry.cancel();
-    this.session.mode = 'menu';
-    this.session.status = 'Press 1 for one player or 2 for two players.';
+    this.returnToIntroAttract();
+  }
+
+  resetGameOverAutoExitTimer() {
+    this.gameOverAutoExitRemainingSeconds = 0;
+  }
+
+  armGameOverAutoExitTimer() {
+    this.gameOverAutoExitRemainingSeconds = this.gameOverAutoExitSeconds;
+  }
+
+  isGameOverScreenVisible() {
+    return this.session.mode === 'game-over' && !this.initialsEntry.active;
+  }
+
+  returnToIntroAttract() {
+    this.session.mode = GAME_OVER_RETURN_MODE;
+    this.session.status = GAME_OVER_RETURN_STATUS;
     this.attractController.resetIdle();
+    this.resetGameOverAutoExitTimer();
+  }
+
+  updateGameOverAutoExitTimer(dtSeconds) {
+    if (!this.isGameOverScreenVisible() || this.gameOverAutoExitRemainingSeconds <= 0) {
+      return false;
+    }
+
+    const safeDt = Number.isFinite(dtSeconds) ? Math.max(0, dtSeconds) : 0;
+    this.gameOverAutoExitRemainingSeconds = Math.max(0, this.gameOverAutoExitRemainingSeconds - safeDt);
+    if (this.gameOverAutoExitRemainingSeconds > 0) {
+      return false;
+    }
+
+    this.initialsEntry.cancel();
+    this.returnToIntroAttract();
+    return true;
   }
 
   enter(engine) {
@@ -462,9 +506,16 @@ export default class AsteroidsGameScene extends Scene {
       sfx: [],
     };
 
+    if (this.isGameOverScreenVisible() && this.gameOverAutoExitRemainingSeconds <= 0) {
+      this.armGameOverAutoExitTimer();
+    } else if (!this.isGameOverScreenVisible() && this.gameOverAutoExitRemainingSeconds > 0) {
+      this.resetGameOverAutoExitTimer();
+    }
+
     this.recordGameplayInputEvents(engine.input);
 
     if (this.session.mode === 'menu') {
+      this.resetGameOverAutoExitTimer();
       this.attractController.update(dtSeconds);
       this.attractAdapter.update(dtSeconds);
       this.isPaused = false;
@@ -507,25 +558,30 @@ export default class AsteroidsGameScene extends Scene {
       if (engine.canvas) {
         engine.canvas.style.cursor = 'default';
       }
-        if (this.initialsEntry.active) {
-          const entryResult = this.initialsEntry.update(engine.input);
-          if (entryResult.confirmed) {
-            this.finishInitialsEntry(entryResult);
-          }
-          this.recordWorldEvents(frameEvents);
-          this.updateDebugIntegration(engine, dtSeconds, frameEvents);
-          this.lastEnterPressed = enterPressed;
-          this.lastOnePressed = onePressed;
-          this.lastTwoPressed = twoPressed;
-          this.lastPPressed = pPressed;
-          return;
+      if (enterPressed && !this.lastEnterPressed && this.isGameOverScreenVisible()) {
+        this.initialsEntry.cancel();
+        this.returnToIntroAttract();
+        this.recordWorldEvents(frameEvents);
+        this.updateDebugIntegration(engine, dtSeconds, frameEvents);
+        this.lastEnterPressed = enterPressed;
+        this.lastOnePressed = onePressed;
+        this.lastTwoPressed = twoPressed;
+        this.lastPPressed = pPressed;
+        return;
       }
-      if (enterPressed && !this.lastEnterPressed) {
-        if (!this.tryBeginInitialsEntry()) {
-          this.session.mode = 'menu';
-          this.session.status = 'Press 1 for one player or 2 for two players.';
-            this.attractController.resetIdle();
-          }
+      if (this.updateGameOverAutoExitTimer(dtSeconds)) {
+        this.recordWorldEvents(frameEvents);
+        this.updateDebugIntegration(engine, dtSeconds, frameEvents);
+        this.lastEnterPressed = enterPressed;
+        this.lastOnePressed = onePressed;
+        this.lastTwoPressed = twoPressed;
+        this.lastPPressed = pPressed;
+        return;
+      }
+      if (this.initialsEntry.active) {
+        const entryResult = this.initialsEntry.update(engine.input);
+        if (entryResult.confirmed) {
+          this.finishInitialsEntry(entryResult);
         }
         this.recordWorldEvents(frameEvents);
         this.updateDebugIntegration(engine, dtSeconds, frameEvents);
@@ -534,6 +590,14 @@ export default class AsteroidsGameScene extends Scene {
         this.lastTwoPressed = twoPressed;
         this.lastPPressed = pPressed;
         return;
+      }
+      this.recordWorldEvents(frameEvents);
+      this.updateDebugIntegration(engine, dtSeconds, frameEvents);
+      this.lastEnterPressed = enterPressed;
+      this.lastOnePressed = onePressed;
+      this.lastTwoPressed = twoPressed;
+      this.lastPPressed = pPressed;
+      return;
     }
 
     if (pPressed && !this.lastPPressed) {

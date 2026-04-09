@@ -1,3 +1,3 @@
-- add the missing HTML launch entrypoint for asteroids_new
-- wire the HTML page to the existing parallel JS entry
-- keep scope limited to launchability only
+- bind the timer to the visible Game Over screen, not a guessed internal state
+- make the timeout behave exactly like pressing Enter
+- keep scope to the current asteroids_new game files only
