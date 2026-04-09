@@ -1,6 +1,6 @@
-Create APPLY_PR_GAMES_TEMPLATE_ENGINE_THEME_CANVAS_STATUS_TEXT
+Create BUILD_PR_GAMES_SPACE_INVADERS_TEMPLATE_BASELINE
 
 Scope:
-- accept template shell/theme alignment
-- confirm required status text renders on canvas
-- confirm no gameplay boot
+- create or normalize games/SpaceInvaders from games/_template
+- preserve current SpaceInvaders implementation until replacement is validated
+- no broad refactor

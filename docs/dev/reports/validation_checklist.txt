@@ -1,12 +1,13 @@
-Validation Checklist — Games Template Engine Theme Canvas Status Text
+Validation Checklist — APPLY Games Template Engine Theme Canvas Status Text
 
-[ ] Consistent shell/theme baseline is present
-[ ] Canvas is visible
-[ ] "HTML Says" renders on canvas
-[ ] "Template Status" renders on canvas
-[ ] "This template intentionally does not boot gameplay." renders on canvas
-[ ] Status text is not relied on as HTML body text
-[ ] No gameplay boots
-[ ] No console errors
+[x] _template structure is correct
+[x] No Asteroids gameplay present
+[x] Standard shell/theme baseline aligned
+[x] Canvas visible
+[x] "HTML Says" renders on canvas
+[x] "Template Status" renders on canvas
+[x] "This template intentionally does not boot gameplay." renders on canvas
+[x] No gameplay boots
+[x] No console errors reported
 
-Status: PENDING
+Status: PASS

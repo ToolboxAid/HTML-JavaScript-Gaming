@@ -1,7 +1,8 @@
-BUILD_PR_GAMES_TEMPLATE_ENGINE_THEME_CANVAS_STATUS_TEXT
+APPLY_PR_GAMES_TEMPLATE_ENGINE_THEME_CANVAS_STATUS_TEXT
 
-Updated games/_template to keep the canonical shell/theme baseline while rendering template status text on the canvas.
+Accepted games/_template as the standard reusable game template baseline.
 
-- preserved non-playable template shell
-- moved status messaging to canvas rendering
-- kept gameplay and assets out of _template
+- clean minimal structure
+- engine/theme shell aligned
+- required status text renders on canvas
+- no gameplay boot
