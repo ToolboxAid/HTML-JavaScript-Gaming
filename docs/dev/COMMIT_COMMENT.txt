@@ -1,7 +1,7 @@
-APPLY_PR_GAMES_BREAKOUT_FULL_FOLDER_MIGRATION
+APPLY_PR_GAMES_PONG_FULL_FOLDER_MIGRATION
 
-Accepted full Breakout migration.
+Accepted full Pong migration.
 
-- canonical Breakout validated
-- template pipeline confirmed
+- canonical Pong validated
 - _next removed
+- pipeline confirmed

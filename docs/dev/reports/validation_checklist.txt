@@ -1,9 +1,9 @@
-Validation Checklist — APPLY Breakout Full Folder Migration
+Validation Checklist — APPLY Pong Migration
 
-[x] Breakout runs from canonical
+[x] Pong runs from canonical
 [x] Canvas visible
 [x] No console errors
-[x] Breakout_next removed
+[x] Pong_next removed
 [x] No unrelated changes
 
 Status: PASS

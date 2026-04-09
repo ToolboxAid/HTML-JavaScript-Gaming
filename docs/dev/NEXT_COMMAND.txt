@@ -1,5 +1,5 @@
 Create BUILD_PR_NEXT_GAME_FULL_FOLDER_MIGRATION
 
 Scope:
-- select next game (e.g., Pong or Breakout-level complexity)
-- repeat single-zip full migration pattern
+- select next game
+- repeat single-zip migration
