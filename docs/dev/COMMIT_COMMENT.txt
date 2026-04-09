@@ -1,1 +1,1 @@
-Validate inspector/shared boundary after moves
+Fix samples index to align with phase structure (no new files)

@@ -1,1 +1,1 @@
-Next: samples phase normalization start
+Next: BUILD_PR_SAMPLES_73_PHASE_FOLDER_ALIGNMENT_PARTIAL
