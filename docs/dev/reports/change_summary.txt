@@ -1,1 +1,1 @@
-Add full folder structure to template
+Add placeholder files to template
