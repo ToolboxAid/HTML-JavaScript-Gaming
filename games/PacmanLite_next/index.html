@@ -1,43 +1,37 @@
+﻿<!--
+Toolbox Aid
+David Quesenberry
+03/25/2026
+index.html
+-->
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Game Template</title>
+  <title>Pacman Lite</title>
   <link rel="stylesheet" href="/src/engine/ui/baseLayout.css" />
 </head>
 <body>
   <main>
-    <h1>Game Template</h1>
-    <p>Replace this entrypoint with your game-specific shell.</p>
-    <canvas id="game" width="960" height="720" aria-label="Template game canvas"></canvas>
+    <h1>Pacman Lite</h1>
+    <p>Grid-locked maze runner with buffered turns, legal intersections, and simplified ghost pressure.</p>
+    <canvas id="game" width="960" height="720"></canvas>
+    <section>
+      <h3>Controls</h3>
+      <p><code>WASD</code>/<code>Arrows</code> queue movement. <code>Enter</code>/<code>Space</code> starts. <code>P</code> pauses. <code>R</code> resets.</p>
+    </section>
+    <section>
+      <h3>Engine Classes Used</h3>
+      <ul>
+        <li>core / Engine</li>
+        <li>render / CanvasRenderer</li>
+        <li>input / InputService</li>
+        <li>scenes / Scene</li>
+        <li>theme / Theme</li>
+        <li>input / GamepadInputAdapter</li>
+      </ul>
+    </section>
   </main>
-  <script>
-    const canvas = document.getElementById("game");
-    const ctx = canvas.getContext("2d");
-
-    if (ctx) {
-      const x = 48;
-      const y = 96;
-      const lineHeight = 38;
-
-      ctx.fillStyle = "#f8fafc";
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-      ctx.fillStyle = "#0f172a";
-      ctx.font = "bold 34px Arial, sans-serif";
-      ctx.fillText("HTML Says", x, y);
-
-      ctx.font = "bold 30px Arial, sans-serif";
-      ctx.fillText("Template Status", x, y + lineHeight + 8);
-
-      ctx.font = "26px Arial, sans-serif";
-      ctx.fillText(
-        "This template intentionally does not boot gameplay.",
-        x,
-        y + (lineHeight * 2) + 20
-      );
-    }
-  </script>
+  <script type="module" src="./main.js"></script>
 </body>
 </html>

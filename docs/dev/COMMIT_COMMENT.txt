@@ -1,2 +1,2 @@
-BUILD_PR_GAMES_PACMANLITE_NEXT_TEMPLATE_BASELINE
-Created PacmanLite_next baseline from template.
+BUILD_PR_GAMES_PACMANLITE_GAMEPLAY_MIGRATION_TO_NEXT
+Migrated gameplay to PacmanLite_next.
