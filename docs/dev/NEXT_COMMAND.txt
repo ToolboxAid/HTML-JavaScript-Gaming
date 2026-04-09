@@ -1,1 +1,1 @@
-After commit, inspect the promotion-gate delta and build the next exact slice only if authoritative/passive handoff files are explicit.
+After commit, inspect the delta and build the next exact promotion-gate slice only if observability/abort files are explicit.

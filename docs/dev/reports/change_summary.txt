@@ -1,3 +1,3 @@
-- narrow promotion-gate BUILD focused on contract and public-reader boundary only
-- exact target files limited to createPromotionGate + shared state reader + promotion snapshot
+- narrow promotion-gate BUILD focused on authoritative/passive handoff boundary only
+- exact target files limited to promotion gate + world game state system + promotion snapshot
 - explicitly excludes replay/timeline/sample/game/debug widening

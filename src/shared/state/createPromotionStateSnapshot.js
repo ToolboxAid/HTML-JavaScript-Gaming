@@ -2,15 +2,21 @@ function defaultCloneLastEvaluation(value) {
   return value ? { ...value } : null;
 }
 
+function cloneHandoff(value) {
+  if (!value || typeof value !== 'object') return null;
+  return { ...value };
+}
+
 export function createPromotionStateSnapshot({
   promoted,
   stableFrames,
   stabilityWindowFrames,
   lastReason,
   lastEvaluation,
+  handoff,
   cloneLastEvaluation
 }) {
-  return {
+  const snapshot = {
     promoted,
     stableFrames,
     stabilityWindowFrames,
@@ -19,4 +25,8 @@ export function createPromotionStateSnapshot({
       ? cloneLastEvaluation
       : defaultCloneLastEvaluation)(lastEvaluation)
   };
+  if (handoff !== undefined) {
+    snapshot.handoff = cloneHandoff(handoff);
+  }
+  return snapshot;
 }

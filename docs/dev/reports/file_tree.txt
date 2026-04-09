@@ -1,4 +1,4 @@
-docs/pr/BUILD_PR_PROMOTION_GATE_55_CONTRACT_AND_PUBLIC_READERS.md
+docs/pr/BUILD_PR_PROMOTION_GATE_56_AUTHORITATIVE_PASSIVE_HANDOFF_BOUNDARY.md
 docs/dev/codex_commands.md
 docs/dev/commit_comment.txt
 docs/dev/next_command.txt
@@ -6,5 +6,5 @@ docs/dev/reports/file_tree.txt
 docs/dev/reports/change_summary.txt
 docs/dev/reports/validation_checklist.txt
 src/advanced/promotion/createPromotionGate.js
-src/shared/state/getState.js
+src/advanced/state/createWorldGameStateSystem.js
 src/shared/state/createPromotionStateSnapshot.js

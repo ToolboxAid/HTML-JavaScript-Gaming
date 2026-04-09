@@ -39,6 +39,15 @@ function sanitizeRequiredCriteria(requiredCriteria) {
   return out;
 }
 
+function createHandoffDecision({ promoted, promotedNow }) {
+  return {
+    decisionPath: 'PROMOTION_GATE_HANDOFF',
+    fromMode: promotedNow ? 'passive' : (promoted ? 'authoritative' : 'passive'),
+    toMode: promoted ? 'authoritative' : 'passive',
+    shouldHandoff: Boolean(promotedNow)
+  };
+}
+
 function createPromotionGate(options = {}) {
   const now = typeof options.now === 'function' ? options.now : () => Date.now();
   const requiredCriteria = sanitizeRequiredCriteria(options.requiredCriteria);
@@ -127,6 +136,7 @@ function createPromotionGate(options = {}) {
     const readiness = promoted
       ? 'authoritative'
       : (allCriteriaMet ? 'stabilizing' : 'passive');
+    const handoff = createHandoffDecision({ promoted, promotedNow });
     const evaluation = {
       transitionName: String(transitionName || ''),
       frame: frame !== undefined && frame !== null ? Number(frame) : null,
@@ -144,6 +154,7 @@ function createPromotionGate(options = {}) {
         unmet: unmetCriteria,
         allMet: allCriteriaMet
       },
+      handoff,
       reason: lastReason,
       metrics: getMetrics()
     };

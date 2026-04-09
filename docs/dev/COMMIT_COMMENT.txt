@@ -1,1 +1,1 @@
-Establish an explicit shared public-reader contract for the promotion gate and reduce local gate-specific state read assumptions.
+Make the promotion-gate authoritative/passive handoff boundary explicit across the exact gate/state/snapshot files.

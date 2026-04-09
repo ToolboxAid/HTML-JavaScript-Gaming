@@ -106,6 +106,15 @@ function normalizeCriteriaMap(criteria, requiredCriteria) {
   return normalized;
 }
 
+function createPromotionHandoffDecision({ promoted, promotedNow }) {
+  return {
+    decisionPath: 'PROMOTION_GATE_HANDOFF',
+    fromMode: promotedNow ? 'passive' : (promoted ? 'authoritative' : 'passive'),
+    toMode: promoted ? 'authoritative' : 'passive',
+    shouldHandoff: Boolean(promotedNow)
+  };
+}
+
 function createInlinePromotionGate({
   now,
   requiredCriteria,
@@ -185,6 +194,7 @@ function createInlinePromotionGate({
     }
 
     const readiness = promoted ? 'authoritative' : (allCriteriaMet ? 'stabilizing' : 'passive');
+    const handoff = createPromotionHandoffDecision({ promoted, promotedNow });
     const evaluation = {
       transitionName: String(transitionName || ''),
       frame: frame !== undefined && frame !== null ? Number(frame) : null,
@@ -202,6 +212,7 @@ function createInlinePromotionGate({
         unmet,
         allMet: allCriteriaMet
       },
+      handoff,
       reason: lastReason,
       metrics: getMetrics()
     };
@@ -227,6 +238,10 @@ function createInlinePromotionGate({
         stabilityWindowFrames: windowFrames,
         lastReason,
         lastEvaluation,
+        handoff: createPromotionHandoffDecision({
+          promoted,
+          promotedNow: false
+        }),
         cloneLastEvaluation: (value) => (value ? cloneDeep(value) : null)
       });
     }
@@ -323,7 +338,13 @@ function createWorldGameStateSystem(options = {}) {
       frame: resolveFrameFromMeta(meta, payload)
     });
 
-    if (evaluation.promotedNow) {
+    const handoff = isPlainObject(evaluation?.handoff)
+      ? evaluation.handoff
+      : createPromotionHandoffDecision({
+          promoted: Boolean(evaluation?.promoted),
+          promotedNow: Boolean(evaluation?.promotedNow)
+        });
+    if (handoff.shouldHandoff) {
       activeMode = 'authoritative';
     }
 
