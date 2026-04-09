@@ -1,1 +1,1 @@
-samples path normalization slice
+games path normalization slice

@@ -1,1 +1,1 @@
-Normalize remaining samples import paths
+Normalize remaining games import paths
