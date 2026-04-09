@@ -4,12 +4,47 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Game Template</title>
+  <style>
+    :root { color-scheme: light; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      background: #f5f5f5;
+    }
+    canvas {
+      width: min(92vw, 800px);
+      height: auto;
+      aspect-ratio: 4 / 3;
+      border: 2px solid #111;
+      background: #fff;
+      display: block;
+    }
+  </style>
 </head>
 <body>
-  <main>
-    <h1>Game Template</h1>
-    <p>Replace this entrypoint with your game-specific shell.</p>
-  </main>
-  <script type="module" src="./index.js"></script>
+  <canvas id="game-canvas" width="800" height="600" aria-label="Template Game Canvas"></canvas>
+  <script>
+    const canvas = document.getElementById("game-canvas");
+    const ctx = canvas.getContext("2d");
+
+    if (ctx) {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = "#111";
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+
+      ctx.font = "bold 52px sans-serif";
+      ctx.fillText("Game Template", canvas.width / 2, canvas.height / 2 - 36);
+
+      ctx.font = "24px sans-serif";
+      ctx.fillText(
+        "Replace this entrypoint with your game-specific shell.",
+        canvas.width / 2,
+        canvas.height / 2 + 28
+      );
+    }
+  </script>
 </body>
 </html>

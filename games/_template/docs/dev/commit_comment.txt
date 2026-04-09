@@ -1,0 +1,3 @@
+BUILD_PR_GAMES_TEMPLATE_INDEX_CANVAS_FIX
+
+Fixed template index to render message on canvas only.
