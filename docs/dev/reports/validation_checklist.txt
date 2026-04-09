@@ -1,9 +1,7 @@
-﻿Validation Checklist — PLAN PR Games PacmanLite Migration
+Validation Checklist — APPLY Games PacmanLite Remove Next
 
-[x] Validated migration pipeline referenced
-[x] Sequence preserved with no skipped steps
-[x] Scope constrained to first BUILD handoff
-[x] Fail-fast rules retained in generated BUILD doc
-[x] No runtime/gameplay code touched
+[x] games/PacmanLite_next removed
+[x] games/PacmanLite unchanged
+[x] No unrelated changes
 
 Status: PASS

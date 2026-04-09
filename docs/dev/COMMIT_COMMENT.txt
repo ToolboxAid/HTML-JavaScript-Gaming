@@ -1,2 +1,7 @@
-BUILD_PR_GAMES_PACMANLITE_REMOVE_NEXT
-Removed PacmanLite_next.
+APPLY_PR_GAMES_PACMANLITE_REMOVE_NEXT
+
+Accepted removal of PacmanLite_next scaffold.
+
+- canonical PacmanLite preserved
+- migration pipeline completed
+- repo cleaned
