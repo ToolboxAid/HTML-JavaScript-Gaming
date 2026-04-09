@@ -12,7 +12,7 @@ import {
   requireNoArgs
 } from "./packUtils.js";
 import { createResult } from "./commandPackResultUtils.js";
-import { getRuntimeAndRegistry } from "../shared/runtimeRegistryUtils.js";
+import { getRuntimeAndRegistry } from "../../../src/shared/utils/runtimeRegistryUtils.js";
 
 import { sanitizeText } from "../../../src/engine/debug/inspectors/shared/inspectorUtils.js";
 

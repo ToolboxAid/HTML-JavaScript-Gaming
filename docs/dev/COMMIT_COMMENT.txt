@@ -1,1 +1,1 @@
-Post path-normalization validation and cleanup
+Enforce shared vs tools boundary by moving pure utilities to src/shared

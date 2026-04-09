@@ -95,9 +95,9 @@
 - [x] duplicate-helper migration map defined
 - [ ] ambiguous-name rename map defined
 - [ ] legacy migration map defined
-- [ ] implementation PRs executed
+- [.] implementation PRs executed
 - [x] imports normalized after moves
-- [ ] post-move validation complete
+- [.] post-move validation complete
 
 ### Structure Targets
 - [ ] `src/engine/core`
@@ -196,26 +196,26 @@
 ---
 
 ## 4. State, Replay, Timeline, Authoritative Flow
-- [.] authoritative state direction established
-- [.] authoritative score/objective slices exist
-- [.] promotion-gate lane active
-- [ ] final promotion gate implemented and applied
-- [ ] authoritative/passive handoff finalized
+- [x] authoritative state direction established
+- [x] authoritative score/objective slices exist
+- [x] promotion-gate lane active
+- [x] final promotion gate implemented and applied
+- [x] authoritative/passive handoff finalized
 - [ ] replay/timeline boundaries normalized
-- [ ] state contracts extracted/confirmed
-- [ ] public selectors stabilized
-- [ ] observability for promotion/handoff completed
-- [ ] long-run validation completed
-- [ ] rollback safety / abort logic completed
+- [.] state contracts extracted/confirmed
+- [x] public selectors stabilized
+- [x] observability for promotion/handoff completed
+- [x] long-run validation completed
+- [x] rollback safety / abort logic completed
 
 ### Subcomponents
-- [ ] state contracts
-- [ ] authoritative state slices
+- [.] state contracts
+- [.] authoritative state slices
 - [ ] replay model
 - [ ] timeline orchestration
-- [ ] selectors/public readers
-- [ ] promotion gating
-- [ ] rollback safety / abort logic
+- [x] selectors/public readers
+- [x] promotion gating
+- [x] rollback safety / abort logic
 
 ---
 
@@ -578,7 +578,7 @@
 ## Dependency-Ordered Future Build Sequence
 
 ### Active Execution Lanes
-- [.] Finish current promotion-gate lane (BUILD → APPLY)
+- [x] Finish current promotion-gate lane (BUILD → APPLY)
 - [.] Apply repo structure normalization implementation plan
 - [.] Extract / normalize shared utilities
 - [.] Normalize phase-13 network concepts samples
@@ -587,7 +587,7 @@
 - [ ] Apply master roadmap baseline
 - [ ] Normalize samples phase structure
 - [ ] Establish games/_template and normalize games layer
-- [ ] Normalize tools/shared and tool boundaries
+- [.] Normalize tools/shared and tool boundaries
 - [ ] Normalize assets/data ownership
 - [ ] Expand testing/validation structure
 
@@ -599,8 +599,8 @@
 - [ ] Reduce legacy footprint after replacements are proven
 
 ### Recommended Final Status Summary
-- [.] current active execution lanes are 1 / 3 / 4 / 6
-- [ ] next planning lanes are 2 / 5 / 7 / 8 / 9 / 10
+- [.] current active execution lanes are 3 / 6 / 8
+- [ ] next planning lanes are 2 / 5 / 7 / 9 / 10
 - [ ] later capability lanes are 11 / 12
 - [ ] final cleanup lane is 13
 
@@ -608,8 +608,8 @@
 
 ## Immediate Next High-Level Actions
 - [.] continue exact-cluster shared extraction until the current lane reaches a stable stop point
-- [ ] finish active promotion-gate lane enough to remove it from half-active status
-- [ ] convert repo structure normalization into exact move-map BUILDs with explicit validation
+- [x] finish active promotion-gate lane enough to remove it from half-active status
+- [.] convert repo structure normalization into exact move-map BUILDs with explicit validation
 - [ ] re-baseline this roadmap after active execution lanes stabilize
 - [ ] split future implementation into small dependency-ordered PRs
 - [ ] avoid broad repo-wide cleanup passes until the active lanes above are materially further along

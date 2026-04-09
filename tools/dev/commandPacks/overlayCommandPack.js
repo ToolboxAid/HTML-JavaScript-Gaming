@@ -11,7 +11,7 @@ import {
   standardDetails,
   toLinePair
 } from "./packUtils.js";
-import { getRuntimeAndRegistry } from "../shared/runtimeRegistryUtils.js";
+import { getRuntimeAndRegistry } from "../../../src/shared/utils/runtimeRegistryUtils.js";
 
 import { sanitizeText } from "../../../src/engine/debug/inspectors/shared/inspectorUtils.js";
 

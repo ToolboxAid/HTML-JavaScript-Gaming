@@ -1,1 +1,1 @@
-Next: begin repo move-map (actual file relocation) if clean
+Next: BUILD_PR_REPO_STRUCTURE_66_MOVE_MAP_GAMES_BOUNDARY

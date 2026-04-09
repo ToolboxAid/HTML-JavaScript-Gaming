@@ -13,7 +13,7 @@ import {
   standardDetails,
   toLinePair
 } from "./packUtils.js";
-import { stringifyValue } from "../shared/stringifyValueUtils.js";
+import { stringifyValue } from "../../../src/shared/utils/stringifyValueUtils.js";
 
 import { sanitizeText } from "../../../src/engine/debug/inspectors/shared/inspectorUtils.js";
 

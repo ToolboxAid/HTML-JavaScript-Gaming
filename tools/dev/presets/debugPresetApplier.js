@@ -7,7 +7,7 @@ debugPresetApplier.js
 
 import { sanitizeText } from "../../../src/engine/debug/inspectors/shared/inspectorUtils.js";
 import { cloneJson } from "../../../src/shared/utils/jsonUtils.js";
-import { getRuntimeAndRegistry } from "../shared/runtimeRegistryUtils.js";
+import { getRuntimeAndRegistry } from "../../../src/shared/utils/runtimeRegistryUtils.js";
 import { toResult } from "../../../src/engine/debug/shared/debugCommandResultUtils.js";
 
 function getAllPanels(panelRegistry) {
