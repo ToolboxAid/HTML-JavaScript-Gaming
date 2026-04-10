@@ -1,4 +1,4 @@
-Validation Checklist — APPLY GravityWell Migration
+Validation Checklist — APPLY MultiBallChaos Migration
 
 [x] Runs from canonical
 [x] Canvas visible
