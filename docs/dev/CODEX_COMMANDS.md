@@ -1,10 +1,1 @@
-MODEL: GPT-5.4
-REASONING: high
-
-COMMAND:
-Execute BUILD_PR_GAMES_PROJECTILELAB_FULL_FOLDER_MIGRATION
-
-Rules:
-- Use template → _next → migrate → promote → cleanup
-- Correct folder placement
-- No guessing
+Execute BUILD_PR_GAMES_SOLARSYSTEM_FULL_FOLDER_MIGRATION
