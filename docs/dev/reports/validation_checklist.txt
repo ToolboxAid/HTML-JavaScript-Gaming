@@ -1,4 +1,4 @@
-Validation Checklist — APPLY MultiBallChaos Migration
+Validation Checklist — APPLY AITargetDummy Migration
 
 [x] Runs from canonical
 [x] Canvas visible
