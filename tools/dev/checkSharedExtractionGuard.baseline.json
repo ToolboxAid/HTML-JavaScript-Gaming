@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-04-10T03:55:10.301Z",
+  "generatedAt": "2026-04-10T19:01:37.948Z",
   "violations": [
     {
       "file": "games/AITargetDummy/game/AITargetDummyController.js",
@@ -172,257 +172,257 @@
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1316-network-sample-a/debug/networkSampleADebug.js",
+      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1316_network_sample_a/debug/networkSampleADebug.js",
       "type": "deep-relative-shared-traversal",
       "match": "rule:deep-relative-src-shared-traversal"
     },
     {
-      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1316-network-sample-a/debug/networkSampleADebug.js",
+      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1316_network_sample_a/debug/networkSampleADebug.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-src-depth-3"
     },
     {
-      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1316-network-sample-a/game/FakeLoopbackNetworkModel.js",
+      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1316_network_sample_a/game/FakeLoopbackNetworkModel.js",
       "type": "deep-relative-shared-traversal",
       "match": "rule:deep-relative-src-shared-traversal"
     },
     {
-      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1316-network-sample-a/game/FakeLoopbackNetworkModel.js",
+      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1316_network_sample_a/game/FakeLoopbackNetworkModel.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-src-depth-3"
     },
     {
-      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1316-network-sample-a/game/NetworkSampleAScene.js",
+      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1316_network_sample_a/game/NetworkSampleAScene.js",
       "type": "deep-relative-shared-traversal",
       "match": "rule:deep-relative-src-shared-traversal"
     },
     {
-      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1316-network-sample-a/game/NetworkSampleAScene.js",
+      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1316_network_sample_a/game/NetworkSampleAScene.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-src-depth-3"
     },
     {
-      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1316-network-sample-a/main.js",
+      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1316_network_sample_a/main.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-src-depth-3"
     },
     {
-      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1316-network-sample-a/server/networkSampleADashboardServer.mjs",
+      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1316_network_sample_a/server/networkSampleADashboardServer.mjs",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1316-network-sample-a/server/networkSampleADashboardServer.mjs",
+      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1316_network_sample_a/server/networkSampleADashboardServer.mjs",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1316-network-sample-a/server/networkSampleADashboardServer.mjs",
+      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1316_network_sample_a/server/networkSampleADashboardServer.mjs",
       "type": "local-helper-definition",
       "match": "rule:helper-fn-asPositiveInteger"
     },
     {
-      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1317-network-sample-b/debug/networkSampleBDebug.js",
+      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1317_network_sample_b/debug/networkSampleBDebug.js",
       "type": "deep-relative-shared-traversal",
       "match": "rule:deep-relative-src-shared-traversal"
     },
     {
-      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1317-network-sample-b/debug/networkSampleBDebug.js",
+      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1317_network_sample_b/debug/networkSampleBDebug.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-src-depth-3"
     },
     {
-      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1317-network-sample-b/game/FakeHostClientNetworkModel.js",
+      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1317_network_sample_b/game/FakeHostClientNetworkModel.js",
       "type": "deep-relative-shared-traversal",
       "match": "rule:deep-relative-src-shared-traversal"
     },
     {
-      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1317-network-sample-b/game/FakeHostClientNetworkModel.js",
+      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1317_network_sample_b/game/FakeHostClientNetworkModel.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-src-depth-3"
     },
     {
-      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1317-network-sample-b/game/NetworkSampleBScene.js",
+      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1317_network_sample_b/game/NetworkSampleBScene.js",
       "type": "deep-relative-shared-traversal",
       "match": "rule:deep-relative-src-shared-traversal"
     },
     {
-      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1317-network-sample-b/game/NetworkSampleBScene.js",
+      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1317_network_sample_b/game/NetworkSampleBScene.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-src-depth-3"
     },
     {
-      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1317-network-sample-b/main.js",
+      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1317_network_sample_b/main.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-src-depth-3"
     },
     {
-      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1318-network-sample-c/debug/networkSampleCDebug.js",
+      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1318_network_sample_c/debug/networkSampleCDebug.js",
       "type": "deep-relative-shared-traversal",
       "match": "rule:deep-relative-src-shared-traversal"
     },
     {
-      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1318-network-sample-c/debug/networkSampleCDebug.js",
+      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1318_network_sample_c/debug/networkSampleCDebug.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-src-depth-3"
     },
     {
-      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1318-network-sample-c/debug/networkSampleCDebug.js",
+      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1318_network_sample_c/debug/networkSampleCDebug.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1318-network-sample-c/game/FakeDivergenceTraceNetworkModel.js",
+      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1318_network_sample_c/game/FakeDivergenceTraceNetworkModel.js",
       "type": "deep-relative-shared-traversal",
       "match": "rule:deep-relative-src-shared-traversal"
     },
     {
-      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1318-network-sample-c/game/FakeDivergenceTraceNetworkModel.js",
+      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1318_network_sample_c/game/FakeDivergenceTraceNetworkModel.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-src-depth-3"
     },
     {
-      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1318-network-sample-c/game/FakeDivergenceTraceNetworkModel.js",
+      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1318_network_sample_c/game/FakeDivergenceTraceNetworkModel.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1318-network-sample-c/game/FakeDivergenceTraceNetworkModel.js",
+      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1318_network_sample_c/game/FakeDivergenceTraceNetworkModel.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1318-network-sample-c/game/FakeDivergenceTraceNetworkModel.js",
+      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1318_network_sample_c/game/FakeDivergenceTraceNetworkModel.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1318-network-sample-c/game/FakeDivergenceTraceNetworkModel.js",
+      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1318_network_sample_c/game/FakeDivergenceTraceNetworkModel.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1318-network-sample-c/game/FakeDivergenceTraceNetworkModel.js",
+      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1318_network_sample_c/game/FakeDivergenceTraceNetworkModel.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1318-network-sample-c/game/FakeDivergenceTraceNetworkModel.js",
+      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1318_network_sample_c/game/FakeDivergenceTraceNetworkModel.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1318-network-sample-c/game/FakeDivergenceTraceNetworkModel.js",
+      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1318_network_sample_c/game/FakeDivergenceTraceNetworkModel.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1318-network-sample-c/game/FakeDivergenceTraceNetworkModel.js",
+      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1318_network_sample_c/game/FakeDivergenceTraceNetworkModel.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1318-network-sample-c/game/FakeDivergenceTraceNetworkModel.js",
+      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1318_network_sample_c/game/FakeDivergenceTraceNetworkModel.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1318-network-sample-c/game/FakeDivergenceTraceNetworkModel.js",
+      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1318_network_sample_c/game/FakeDivergenceTraceNetworkModel.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1318-network-sample-c/game/FakeDivergenceTraceNetworkModel.js",
+      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1318_network_sample_c/game/FakeDivergenceTraceNetworkModel.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1318-network-sample-c/game/FakeDivergenceTraceNetworkModel.js",
+      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1318_network_sample_c/game/FakeDivergenceTraceNetworkModel.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1318-network-sample-c/game/NetworkSampleCScene.js",
+      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1318_network_sample_c/game/NetworkSampleCScene.js",
       "type": "deep-relative-shared-traversal",
       "match": "rule:deep-relative-src-shared-traversal"
     },
     {
-      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1318-network-sample-c/game/NetworkSampleCScene.js",
+      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1318_network_sample_c/game/NetworkSampleCScene.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-src-depth-3"
     },
     {
-      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1318-network-sample-c/game/NetworkSampleCScene.js",
+      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1318_network_sample_c/game/NetworkSampleCScene.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1318-network-sample-c/game/ReconciliationLayerAdapter.js",
+      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1318_network_sample_c/game/ReconciliationLayerAdapter.js",
       "type": "deep-relative-shared-traversal",
       "match": "rule:deep-relative-src-shared-traversal"
     },
     {
-      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1318-network-sample-c/game/ReconciliationLayerAdapter.js",
+      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1318_network_sample_c/game/ReconciliationLayerAdapter.js",
       "type": "deep-relative-shared-traversal",
       "match": "rule:deep-relative-src-shared-traversal"
     },
     {
-      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1318-network-sample-c/game/ReconciliationLayerAdapter.js",
+      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1318_network_sample_c/game/ReconciliationLayerAdapter.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-src-depth-3"
     },
     {
-      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1318-network-sample-c/game/ReconciliationLayerAdapter.js",
+      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1318_network_sample_c/game/ReconciliationLayerAdapter.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-src-depth-3"
     },
     {
-      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1318-network-sample-c/game/ReconciliationLayerAdapter.js",
+      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1318_network_sample_c/game/ReconciliationLayerAdapter.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1318-network-sample-c/game/ReconciliationLayerAdapter.js",
+      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1318_network_sample_c/game/ReconciliationLayerAdapter.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1318-network-sample-c/game/ReconciliationLayerAdapter.js",
+      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1318_network_sample_c/game/ReconciliationLayerAdapter.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1318-network-sample-c/game/ReconciliationLayerAdapter.js",
+      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1318_network_sample_c/game/ReconciliationLayerAdapter.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1318-network-sample-c/game/StateTimelineBuffer.js",
+      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1318_network_sample_c/game/StateTimelineBuffer.js",
       "type": "deep-relative-shared-traversal",
       "match": "rule:deep-relative-src-shared-traversal"
     },
     {
-      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1318-network-sample-c/game/StateTimelineBuffer.js",
+      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1318_network_sample_c/game/StateTimelineBuffer.js",
       "type": "deep-relative-shared-traversal",
       "match": "rule:deep-relative-src-shared-traversal"
     },
     {
-      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1318-network-sample-c/game/StateTimelineBuffer.js",
+      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1318_network_sample_c/game/StateTimelineBuffer.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-src-depth-3"
     },
     {
-      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1318-network-sample-c/game/StateTimelineBuffer.js",
+      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1318_network_sample_c/game/StateTimelineBuffer.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-src-depth-3"
     },
     {
-      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1318-network-sample-c/game/StateTimelineBuffer.js",
+      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1318_network_sample_c/game/StateTimelineBuffer.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1318-network-sample-c/main.js",
+      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1318_network_sample_c/main.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-src-depth-3"
     },

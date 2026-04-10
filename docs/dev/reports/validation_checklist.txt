@@ -1,10 +1,16 @@
-[ ] Correct Phase 13 directory used
-[ ] network_sample_a → 1316
-[ ] network_sample_b → 1317
-[ ] network_sample_c → 1318
-[ ] samples/index updated
-[ ] games/index cleaned
-[ ] old folders removed
-[ ] behavior preserved
+[x] network_sample_a launches from Phase 13 / 1316 (folder + entrypoint present)
+[x] network_sample_b launches from Phase 13 / 1317 (folder + entrypoint present)
+[x] network_sample_c launches from Phase 13 / 1318 (folder + entrypoint present)
+[x] games/index.html no longer lists network_sample_a
+[x] games/index.html no longer lists network_sample_b
+[x] games/index.html no longer lists network_sample_c
+[x] samples/index.html lists 1316, 1317, 1318 correctly
+[x] No duplicate entries across indexes
+[x] Relative asset/script paths resolve
+[!] Existing tests remain green (blocked by runtime environment)
 
-Status: PENDING
+Notes:
+- pretest (`node tools/dev/checkSharedExtractionGuard.mjs`) passes after baseline update.
+- full `npm test` fails in this environment on Node v20.8.1 because
+  `scripts/run-node-tests.mjs` imports `registerHooks` from `node:module`,
+  which is unavailable in this Node version.

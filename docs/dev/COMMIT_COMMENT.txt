@@ -1,6 +1,11 @@
-BUILD_PR_NETWORK_SAMPLES_RELOCATION_FROM_GAMES_TO_SAMPLES_v3
+APPLY_PR: network samples Phase 13 destination normalization to underscore paths
 
-Corrected Phase 13 destination path and enforced:
-- proper directory placement
-- samples/index tile updates
-- removal from games/index.html
+- Normalized Phase 13 sample folders:
+  1316-network-sample-a -> 1316_network_sample_a
+  1317-network-sample-b -> 1317_network_sample_b
+  1318-network-sample-c -> 1318_network_sample_c
+- Updated samples/index.html links for 1316/1317/1318
+- Fixed one cross-sample import path in 1317_network_sample_b to the renamed 1316 path
+- Kept games/index.html unchanged (network entries were already removed)
+- Updated shared extraction guard baseline path entries to keep pretest green
+- No gameplay/engine logic changes
