@@ -1,4 +1,4 @@
-Validation Checklist — APPLY Bouncing-ball Migration
+Validation Checklist — APPLY Orbit Migration
 
 [x] Runs from canonical
 [x] Canvas visible
