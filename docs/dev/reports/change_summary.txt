@@ -1,12 +1,11 @@
-TYPE: PLANNING ONLY
+CHANGE SUMMARY
 
-Created planning artifacts for a minimal samples metadata layer.
+Purpose:
+- prevent accidental dependency installation in repo workflow
+- prohibit node_modules creation
+- add cleanup scripts for repo-root node_modules deletion
 
-Included in plan:
-- minimal metadata schema (`id`, `phase`, `title`, `description`, `tags`)
-- metadata location proposal (`samples/metadata/samples.index.metadata.json`)
-- source-of-truth boundaries between canonical folders, metadata, and generated index
-- fail-fast rules for duplicates, mismatches, and missing required fields
-- narrow, testable BUILD shape for future implementation
-
-No gameplay, engine-core, or implementation code changes.
+Included:
+- Codex rule updates
+- workflow/checklist/stop-condition updates
+- delete scripts: PowerShell, batch, and zero-dependency Node.js

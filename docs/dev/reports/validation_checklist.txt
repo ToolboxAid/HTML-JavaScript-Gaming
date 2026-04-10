@@ -1,10 +1,6 @@
-[x] Docs-only scope preserved
-[x] No gameplay scope introduced
-[x] No engine-core scope introduced
-[x] No start_of_day directory changes
-[x] Minimal metadata schema defined
-[x] Metadata location defined
-[x] Source-of-truth boundaries defined
-[x] Fail-fast rules defined (duplicates, mismatches, missing fields)
-[x] Future BUILD testability gates documented
-[x] Future BUILD kept narrowly scoped
+[ ] Codex docs explicitly prohibit npm install / npm init
+[ ] Codex docs explicitly prohibit package.json / package-lock.json creation without approval
+[ ] Codex docs explicitly prohibit repo-root node_modules
+[ ] node_modules appearance is defined as stop-and-report
+[ ] cleanup scripts target only repo-root node_modules
+[ ] bundle ZIP exists under <project folder>/tmp/
