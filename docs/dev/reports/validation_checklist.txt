@@ -1,6 +1,7 @@
-[ ] header enhancement defined
-[ ] preview support defined
-[ ] related samples defined
-[ ] navigation defined
-[ ] no path changes
+[ ] header renders
+[ ] preview optional works
+[ ] navigation works
+[ ] related samples work
+[ ] links resolve (1316–1318)
+[ ] no console errors
 [ ] zip exists

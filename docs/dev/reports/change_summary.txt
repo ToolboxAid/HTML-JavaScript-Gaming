@@ -1,1 +1,1 @@
-Define improvements for sample pages including headers, previews, and navigation
+Add header, preview, related samples, and navigation to sample pages

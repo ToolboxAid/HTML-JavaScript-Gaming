@@ -1,2 +1,5 @@
+MODIFIED:
+- sample pages (index.html in samples)
+
 ADDED:
-- docs/pr/PLAN_PR_SAMPLES_DETAIL_PAGE_ENHANCEMENT.md
+- minimal UI JS for metadata rendering
