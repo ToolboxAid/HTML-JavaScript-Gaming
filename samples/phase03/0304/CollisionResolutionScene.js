@@ -2,7 +2,7 @@
 Toolbox Aid
 David Quesenberry
 03/21/2026
-TileMetadataScene.js
+CollisionResolutionScene.js
 */
 import { Scene } from '/src/engine/scenes/index.js';
 import { Theme, ThemeTokens } from '/src/engine/theme/index.js';
@@ -13,33 +13,26 @@ import { SpriteAtlas, ImageAssetLoader } from '/src/engine/assets/index.js';
 import { AnimationController } from '/src/engine/animation/index.js';
 import { renderSpriteReadyEntities } from '/src/engine/render/index.js';
 import { stepArcadeBody, moveRectWithTilemapCollision } from '/src/engine/systems/index.js';
-import { createDemoSpriteSheet } from '../sample0301-real-sprite-rendering/demoSpriteFactory.js';
+import { createDemoSpriteSheet } from '../0301/demoSpriteFactory.js';
 
 const theme = new Theme(ThemeTokens);
 
-export default class TileMetadataScene extends Scene {
+export default class CollisionResolutionScene extends Scene {
   constructor() {
     super();
-    this.screen = { x: 60, y: 240 };
+    this.screen = { x: 60, y: 180 };
     this.loader = new ImageAssetLoader();
     this.tilemap = new Tilemap({
       tileSize: 48,
       tiles: [
-        [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-        [1, 0, 0, 0, 0, 0, 0, 4, 0, 0, 0, 0, 0, 1],
-        [1, 0, 0, 2, 2, 0, 0, 0, 0, 3, 3, 0, 0, 1],
-        [1, 0, 0, 2, 2, 0, 0, 0, 0, 3, 3, 0, 0, 1],
-        [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-        [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 0, 0, 1],
-        [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+        [1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+        [1,0,0,0,0,0,0,0,0,0,0,0,0,1],
+        [1,0,0,1,1,1,0,0,0,1,1,0,0,1],
+        [1,0,0,0,0,1,0,0,0,1,0,0,0,1],
+        [1,0,0,0,0,1,1,1,0,1,0,0,0,1],
+        [1,0,0,0,0,0,0,0,0,1,0,0,0,1],
+        [1,1,1,1,1,1,1,1,1,1,1,1,1,1],
       ],
-      definitions: {
-        0: { label: 'floor', color: '#1f2937', solid: false },
-        1: { label: 'wall', color: '#4338ca', solid: true },
-        2: { label: 'hazard', color: '#dc2626', solid: false, hazard: true, respawnMessage: 'Hazard tile touched. Reset.' },
-        3: { label: 'trigger', color: '#059669', solid: false, trigger: 'goal-flag', message: 'Trigger tile activated.' },
-        4: { label: 'slope', color: '#a855f7', solid: false, slope: 'placeholder-up-right', message: 'Slope metadata placeholder.' },
-      },
       palette: { 0: '#1f2937', 1: '#4338ca' },
     });
     this.world = {
@@ -61,11 +54,9 @@ export default class TileMetadataScene extends Scene {
       },
     });
     this.asset = { status: 'generated-loaded', image: createDemoSpriteSheet() };
-    //this.spawn = { x: 48, y: 48 };
-    this.spawn = { x: 582, y: 246 };
     this.player = {
-      x: this.spawn.x,
-      y: this.spawn.y,
+      x: 80,
+      y: 80,
       width: 36,
       height: 36,
       velocityX: 0,
@@ -85,36 +76,7 @@ export default class TileMetadataScene extends Scene {
         move: { frames: ['move_0', 'move_1'], frameDuration: 0.12, loop: true },
       },
     });
-    this.metadataNote = 'Walk onto colored metadata tiles.';
-    this.flags = { goalTriggered: false };
-  }
-
-  getOverlappedMetadata() {
-    const tileSize = this.tilemap.tileSize;
-    const startCol = Math.floor(this.player.x / tileSize);
-    const endCol = Math.floor((this.player.x + this.player.width - 1) / tileSize);
-    const startRow = Math.floor(this.player.y / tileSize);
-    const endRow = Math.floor((this.player.y + this.player.height - 1) / tileSize);
-
-    const metadataList = [];
-    for (let row = startRow; row <= endRow; row += 1) {
-      for (let col = startCol; col <= endCol; col += 1) {
-        const definition = this.tilemap.getDefinition(col, row);
-        if (definition) {
-          metadataList.push(definition);
-        }
-      }
-    }
-    return metadataList;
-  }
-
-  resetPlayerToSpawn() {
-    this.player.x = this.spawn.x;
-    this.player.y = this.spawn.y;
-    this.player.velocityX = 0;
-    this.player.velocityY = 0;
-    this.player.accelerationX = 0;
-    this.player.accelerationY = 0;
+    this.collisionNote = 'none';
   }
 
   update(dt, engine) {
@@ -132,31 +94,15 @@ export default class TileMetadataScene extends Scene {
       x: this.player.velocityX,
       y: this.player.velocityY,
     };
-    moveRectWithTilemapCollision(this.player, velocity, dt, this.tilemap);
+
+    const resolved = moveRectWithTilemapCollision(this.player, velocity, dt, this.tilemap);
     this.player.velocityX = velocity.x;
     this.player.velocityY = velocity.y;
 
-    const metadataList = this.getOverlappedMetadata();
-    const hazard = metadataList.find((item) => item.hazard);
-    const trigger = metadataList.find((item) => item.trigger);
-    const slope = metadataList.find((item) => item.slope);
-
-    if (hazard) {
-      this.resetPlayerToSpawn();
-      this.metadataNote = hazard.respawnMessage;
-      this.animation.play('idle');
-      this.animation.update(0);
-      followCameraTarget(this.camera, this.player, true);
-      return;
-    }
-
-    if (trigger) {
-      this.flags.goalTriggered = true;
-      this.metadataNote = trigger.message;
-    } else if (slope) {
-      this.metadataNote = slope.message;
+    if (resolved.hitX || resolved.hitY) {
+      this.collisionNote = `${resolved.hitX ? 'slide-x ' : ''}${resolved.hitY ? 'slide-y' : ''}`.trim();
     } else {
-      this.metadataNote = 'Walk onto colored metadata tiles.';
+      this.collisionNote = 'none';
     }
 
     const moving = Math.abs(this.player.velocityX) > 8 || Math.abs(this.player.velocityY) > 8;
@@ -167,13 +113,11 @@ export default class TileMetadataScene extends Scene {
 
   render(renderer) {
     drawFrame(renderer, theme, [
-      'Engine sample 0305',
-      'Extends the tilemap from solid/not-solid into hazard, trigger, and slope-style metadata',
-      'Red tiles reset the actor (to spawn point)',
-      'Green tiles trigger a flag,',
-      'Purple tiles prove schema room for slopes',
-      'Only blue wall tiles are solid blockers',
-      this.metadataNote,
+      'Engine sample 0304',
+      'Refines collision response with axis-separated resolution and clean wall sliding',
+      'Drive diagonally into corners to see reduced snagging compared with rollback collision',
+      'Physics remains the motion source, while collision now resolves axis by axis',
+      `Collision: ${this.collisionNote}`,
     ]);
 
     renderer.strokeRect(this.screen.x, this.screen.y, this.camera.viewportWidth, this.camera.viewportHeight, '#d8d5ff', 2);
@@ -194,11 +138,11 @@ export default class TileMetadataScene extends Scene {
       getImage: () => this.asset?.image || null,
     });
 
-    drawPanel(renderer, 620, 34, 300, 126, 'Tile Metadata', [
-      `Goal triggered: ${this.flags.goalTriggered}`,
-      this.metadataNote,
-      'Hazard and trigger behavior come from tile definitions',
-      'Slope tile is a schema placeholder for future movement work',
+    drawPanel(renderer, 620, 34, 300, 126, 'Collision', [
+      `vx: ${this.player.velocityX.toFixed(1)}`,
+      `vy: ${this.player.velocityY.toFixed(1)}`,
+      `Collision: ${this.collisionNote}`,
+      'Diagonal wall contact slides instead of full rollback',
     ]);
   }
 }

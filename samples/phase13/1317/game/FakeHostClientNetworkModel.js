@@ -4,7 +4,7 @@ David Quesenberry
 04/06/2026
 FakeHostClientNetworkModel.js
 */
-import FakeLoopbackNetworkModel from "../../1316_network_sample_a/game/FakeLoopbackNetworkModel.js";
+import FakeLoopbackNetworkModel from "../../1316/game/FakeLoopbackNetworkModel.js";
 import { clamp } from "/src/engine/utils/math.js";
 import { asPositiveNumber } from "../../../../src/shared/utils/numberUtils.js";
 

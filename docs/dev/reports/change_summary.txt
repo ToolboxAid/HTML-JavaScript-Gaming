@@ -1,20 +1,2 @@
-TYPE: APPLY / STRUCTURAL
-
-Applied relocation finalization for Network Sample A/B/C in Phase 13 with required underscore destinations.
-
-Changed:
-- Renamed folder: 1316-network-sample-a -> 1316_network_sample_a
-- Renamed folder: 1317-network-sample-b -> 1317_network_sample_b
-- Renamed folder: 1318-network-sample-c -> 1318_network_sample_c
-- Updated links in samples/index.html for 1316/1317/1318
-- Fixed one cross-sample import path to the renamed 1316 destination
-- Updated shared extraction guard baseline paths for renamed folders
-
-Verified no additional canonical cleanup was needed:
-- games/index.html already had network sample entries removed
-
-Not changed:
-- Gameplay logic
-- Engine/shared runtime logic
-- Asset contents
-- Unrelated indexes
+TYPE: STRUCTURE ONLY
+Normalize samples directories and paths

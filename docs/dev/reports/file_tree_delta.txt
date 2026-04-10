@@ -1,14 +1,1 @@
-APPLY DELTA
-
-RENAMED (Phase 13 destination normalization):
-- samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1316-network-sample-a
-  -> samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1316_network_sample_a
-- samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1317-network-sample-b
-  -> samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1317_network_sample_b
-- samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1318-network-sample-c
-  -> samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1318_network_sample_c
-
-MODIFIED:
-- samples/index.html
-- samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1317_network_sample_b/game/FakeHostClientNetworkModel.js
-- tools/dev/checkSharedExtractionGuard.baseline.json
+All samples directories will be renamed to phasexx/xxyy

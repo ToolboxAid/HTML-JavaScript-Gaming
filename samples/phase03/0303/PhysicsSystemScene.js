@@ -13,7 +13,7 @@ import { SpriteAtlas, ImageAssetLoader } from '/src/engine/assets/index.js';
 import { AnimationController } from '/src/engine/animation/index.js';
 import { renderSpriteReadyEntities } from '/src/engine/render/index.js';
 import { stepArcadeBody } from '/src/engine/systems/index.js';
-import { createDemoSpriteSheet } from '../sample0301-real-sprite-rendering/demoSpriteFactory.js';
+import { createDemoSpriteSheet } from '../0301/demoSpriteFactory.js';
 
 const theme = new Theme(ThemeTokens);
 
