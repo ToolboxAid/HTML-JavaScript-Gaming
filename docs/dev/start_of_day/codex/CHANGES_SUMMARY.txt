@@ -1,0 +1,8 @@
+CODEx COMMAND CORRECTIONS SUMMARY
+
+Main fixes:
+- Prefer Node.js or Python over PowerShell for Windows path/rename/ZIP tasks
+- Ban PowerShell string interpolation for path construction
+- Require exact ZIP output path under <project folder>/tmp/
+- Treat missing ZIP output as task failure
+- Stop and report on parse errors instead of silently retrying

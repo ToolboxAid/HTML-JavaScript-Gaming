@@ -6,6 +6,7 @@
 3. Read the current BUILD doc.
 4. Implement only that BUILD scope.
 5. Stop immediately if the BUILD doc fails the execution threshold.
+6. Prefer Node.js or Python over PowerShell on Windows for path, rename, and ZIP tasks.
 
 ## During Work
 - open target files first
@@ -15,6 +16,8 @@
 - preserve project-specific ownership
 - avoid speculative expansion
 - avoid opportunistic cleanup/refactor
+- for Windows path work, use explicit path APIs rather than interpolated shell strings
+- if the BUILD requires PowerShell, use `Join-Path` or `[System.IO.Path]::Combine(...)`
 
 ## When Finished
 1. run required validation
@@ -22,7 +25,8 @@
 3. report validation results
 4. package a repo-structured delta ZIP under `<project folder>/tmp/`
 5. do not stage ZIP files from `<project folder>/tmp/`
-6. stop after BUILD output is complete
+6. confirm the ZIP exists at the exact requested path
+7. stop after BUILD output is complete
 
 ## Do Not
 - generate APPLY instructions unless explicitly requested
@@ -30,8 +34,7 @@
 - modify roadmap wording
 - touch start_of_day files
 - continue after a failed execution threshold
-
-
+- silently rerun after a PowerShell parse error
 
 ## ✅ BUILD PR Quality Requirement (TESTABILITY)
 
@@ -45,4 +48,3 @@ Avoid:
 
 Rule of thumb:
 If it cannot be executed or meaningfully validated, it is not a valid BUILD.
-

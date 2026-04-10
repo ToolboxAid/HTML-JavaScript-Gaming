@@ -33,10 +33,12 @@ Do not:
 - chase speculative improvements
 
 ## ZIP Output Rule
-Codex should always package code/output ZIP files under:
+Codex must package code/output ZIP files under:
 - `<project folder>/tmp/`
 
 Codex must not stage or commit ZIP files from `<project folder>/tmp/`.
+
+A BUILD task is not complete until the required ZIP exists at the exact requested path.
 
 ## Scope Rule
 - one PR purpose only
@@ -78,7 +80,28 @@ Codex must report:
 - whether engine-core was untouched if expected
 - the ZIP output path under `<project folder>/tmp/`
 
+## Windows Command Rule
+On Windows machines:
+- prefer Node.js or Python for file operations, directory normalization, renames, and packaging
+- do not use PowerShell string interpolation for path construction
+- do not use quoted variable interpolation such as `"$var/path"`, `"$base\$child"`, `"${var}/path"`, or nested interpolation for rename-heavy tasks
+- use `path.join(...)` / `path.resolve(...)` in Node.js or `pathlib.Path` / `os.path.join(...)` in Python
+- use PowerShell only when the BUILD doc explicitly requires it or when no safer runtime is available
 
+## PowerShell Safety Rules
+If PowerShell is required:
+- do not build paths with string interpolation
+- use `Join-Path` or `[System.IO.Path]::Combine(...)`
+- stop immediately on parse errors
+- do not silently retry with rewritten commands
+- report the exact failing command shape and the safer replacement
+
+## Execution Output Rule
+Every BUILD execution command must state:
+- exact target files or directories
+- exact validation to run
+- exact ZIP output path under `<project folder>/tmp/`
+- exact failure conditions
 
 ## 🚫 TESTABILITY GATE (NEW — REQUIRED)
 
@@ -102,4 +125,3 @@ DO NOT EXECUTE:
 Instead:
 - Expand the BUILD scope to a vertical slice
 - Or request a corrected BUILD PR with sufficient scope
-
