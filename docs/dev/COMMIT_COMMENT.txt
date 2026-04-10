@@ -1,6 +1,6 @@
-BUILD_PR: normalize sample presentation, previews, tags, and engine-class reporting
+BUILD_PR: normalize sample presentation, runtime-derived previews, tags, and engine-class reporting
 
-- create preview SVG assets for all samples
+- create preview SVG assets for all samples from the running sample canvas appearance
 - remove preview image blocks from sample pages
 - keep H1, description, and tags at the top
 - keep Back to Samples and Prev / Next navigation

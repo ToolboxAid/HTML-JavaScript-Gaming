@@ -6,7 +6,7 @@ MODIFIED:
 - minimal sample detail rendering files/templates/helpers controlling page layout
 
 ADDED:
-- preview SVG assets for samples or the minimal generator/mapping path directly required to produce them
+- runtime-derived preview SVG assets for samples or the minimal generator/mapping path directly required to produce them
 
 REPORT ONLY:
 - docs/pr/BUILD_PR_SAMPLES_PRESENTATION_PREVIEW_AND_METADATA_NORMALIZATION.md

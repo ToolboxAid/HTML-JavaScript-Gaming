@@ -1,9 +1,9 @@
 PR TYPE: BUILD
-PURPOSE: sample presentation / preview / metadata normalization
+PURPOSE: sample presentation / runtime-preview / metadata normalization
 
 SUMMARY:
-- defines a final normalization BUILD for sample page layout, preview assets, tags, and engine-class reporting
+- corrects the preview requirement so SVGs reflect the running sample canvas appearance
 - preserves canonical sample paths and runtime behavior
-- removes preview image blocks from sample pages while adding preview SVG assets for all samples
+- removes preview image blocks from sample pages while adding runtime-representative preview SVGs for all samples
 - aligns index labels for 1316 / 1317 / 1318 with sample page titles
 - keeps scope narrow, dependency-free, and Windows-safe

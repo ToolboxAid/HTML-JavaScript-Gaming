@@ -286,56 +286,12 @@ function buildTagsFromEngineClasses(engineClassesUsed, sample, title) {
   return [...tags].sort();
 }
 
-function escapeXml(value) {
-  return String(value)
-    .replaceAll('&', '&amp;')
-    .replaceAll('<', '&lt;')
-    .replaceAll('>', '&gt;')
-    .replaceAll('"', '&quot;')
-    .replaceAll("'", '&apos;');
-}
-
-function lineClamp(text, maxChars) {
-  const clean = normalizeWhitespace(text);
-  if (clean.length <= maxChars) {
-    return clean;
-  }
-  return clean.slice(0, Math.max(0, maxChars - 3)).trimEnd() + '...';
-}
-
-function buildPreviewSvg(sampleId, phase, title) {
-  const titleLine = lineClamp(title || 'Sample', 44);
-  return [
-    "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 640 360' role='img' aria-label='Sample preview'>",
-    "  <defs>",
-    "    <linearGradient id='bg' x1='0' y1='0' x2='1' y2='1'>",
-    "      <stop offset='0%' stop-color='#0f172a'/>",
-    "      <stop offset='100%' stop-color='#1f2937'/>",
-    '    </linearGradient>',
-    '  </defs>',
-    "  <rect width='640' height='360' fill='url(#bg)'/>",
-    "  <rect x='18' y='18' width='604' height='324' rx='14' fill='none' stroke='#3a4f72' stroke-width='2'/>",
-    "  <text x='42' y='78' fill='#9fb8da' font-family='monospace' font-size='18'>Phase " +
-      escapeXml(phase) +
-      '</text>',
-    "  <text x='42' y='122' fill='#ffffff' font-family='monospace' font-size='42' font-weight='700'>" +
-      escapeXml(sampleId) +
-      '</text>',
-    "  <text x='42' y='168' fill='#d5e2f5' font-family='sans-serif' font-size='21'>" +
-      escapeXml(titleLine) +
-      '</text>',
-    "  <text x='42' y='316' fill='#7f93b3' font-family='monospace' font-size='16'>ToolboxAid Sample Preview</text>",
-    '</svg>',
-    ''
-  ].join('\n');
-}
-
 function normalizeMetadataAndPreviews() {
   const metadata = loadMetadata();
   const samples = discoverCanonicalSamples();
   const metadataById = new Map(metadata.samples.map((entry) => [String(entry.id), entry]));
   const normalizedSamples = [];
-  let previewWriteCount = 0;
+  let previewVerifiedCount = 0;
 
   for (const sample of samples) {
     const currentEntry = metadataById.get(sample.id);
@@ -353,12 +309,11 @@ function normalizeMetadataAndPreviews() {
     const engineClassesUsed = collectEngineClassReferencesFromJs(sample.sampleDir).map(normalizeEngineReference).filter(Boolean);
     const tags = buildTagsFromEngineClasses(engineClassesUsed, sample, titleFromPage);
     const previewPath = '/samples/phase' + sample.phase + '/' + sample.id + '/assets/preview.svg';
-
-    const assetsDir = path.join(sample.sampleDir, 'assets');
-    const previewFilePath = path.join(assetsDir, 'preview.svg');
-    ensureDir(assetsDir);
-    writeFile(previewFilePath, buildPreviewSvg(sample.id, sample.phase, titleFromPage));
-    previewWriteCount += 1;
+    const previewFilePath = path.join(ROOT, previewPath.replace(/^\//, '').replace(/\//g, path.sep));
+    if (!fs.existsSync(previewFilePath)) {
+      throw new Error('Missing runtime preview asset for sample ' + sample.id + ': ' + path.relative(ROOT, previewFilePath));
+    }
+    previewVerifiedCount += 1;
 
     const nextEntry = {
       ...currentEntry,
@@ -387,7 +342,7 @@ function normalizeMetadataAndPreviews() {
   return {
     sampleCount: samples.length,
     metadataCount: normalizedSamples.length,
-    previewWriteCount
+    previewVerifiedCount
   };
 }
 
@@ -399,7 +354,7 @@ function main() {
       ' metadata=' +
       result.metadataCount +
       ' previews=' +
-      result.previewWriteCount
+      result.previewVerifiedCount
   );
 }
 

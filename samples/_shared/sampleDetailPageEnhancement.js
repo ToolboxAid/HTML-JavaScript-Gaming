@@ -177,9 +177,10 @@ function ensureStyles() {
     '  color: #e7edf8;',
     '  font: 600 12px/1.2 monospace;',
     '}',
+    '.sample-detail-row a { color: #ffffff; }',
     '.sample-detail-nav { display: flex; flex-wrap: wrap; gap: 12px; margin: 10px 0; }',
-    '.sample-detail-nav a { color: #9bd1ff; }',
-    '.sample-detail-muted { color: #c7d5ea; margin: 6px 0 0; }'
+    '.sample-detail-nav a { color: #ffffff; }',
+    '.sample-detail-muted { color: #ffffff; margin: 6px 0 0; }'
   ].join('\n');
   document.head.appendChild(style);
 }

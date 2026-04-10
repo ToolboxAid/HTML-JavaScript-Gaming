@@ -1,13 +1,13 @@
 # BUILD_PR_SAMPLES_PRESENTATION_PREVIEW_AND_METADATA_NORMALIZATION
 
 ## Objective
-Implement a final, testable normalization wave for sample presentation, preview assets, tag semantics, and engine-class reporting across the samples system.
+Implement a final, testable normalization wave for sample presentation, runtime-derived preview assets, tag semantics, and engine-class reporting across the samples system.
 
 This BUILD must apply the following user-approved adjustments:
 
-1. create preview SVG for all samples
+1. create preview SVG for all samples based on what the sample canvas looks like when the sample is running
 2. remove tags that are the sample number, phase, or sample name
-3. correct all "Engine classes used" entries so they reference `engine/<class>` consistently
+3. correct all "Engine Classes Used" entries so they reference `engine/<class>` consistently
 4. set tags to classes used, excluding `engine` and `theme`
 5. remove preview image from the sample page
 6. keep tags at the top
@@ -21,11 +21,12 @@ Canonical path contract remains:
 
 ## PR Purpose
 One purpose only:
-- normalize sample presentation and sample metadata display consistency
+- normalize sample presentation and sample metadata display consistency using runtime-representative previews
 
 ## In Scope
-- generate or define preview SVG assets for all samples using a consistent convention
-- ensure sample detail pages no longer show a preview image block above or within the page body where it conflicts with the desired layout
+- create or generate preview SVG assets for all samples using the actual running canvas output as the visual source
+- ensure preview assets visually represent the rendered sample scene rather than generic placeholders
+- ensure sample detail pages no longer show a preview image block in the page body
 - normalize sample page structure so:
   - H1 is at the top
   - description is directly below the H1
@@ -50,16 +51,21 @@ One purpose only:
 - no unrelated performance work
 - no favorites/pinning changes unless directly required to preserve current behavior
 
-## Required Behavior
-1. Every sample has a preview SVG asset or a clearly generated preview placeholder under the agreed samples preview convention.
-2. Sample detail pages do not show the preview image block in the final page layout.
-3. H1 and description are the first visible content at the top of the sample page.
-4. Tags remain at the top section of the sample page.
-5. Back to Samples and Prev / Next navigation remain intact.
-6. Related Samples appears below the canvas and before Engine Classes Used.
-7. Engine Classes Used entries are normalized to the `engine/<ClassName>` style or the exact repo-appropriate engine folder/class reference format used consistently across all samples.
-8. Tags reflect classes used and exclude engine/theme/system-noise labels.
-9. `samples/index.html` labels for 1316 / 1317 / 1318 exactly match their sample page titles.
+## Required Preview Behavior
+1. Every sample has a preview SVG asset or a clearly generated preview SVG based on the sample's actual running canvas appearance.
+2. The preview generation path must use the live or representative rendered scene as the source of truth.
+3. The preview SVG should capture the look of the sample canvas, not a generic text-only or placeholder card.
+4. If exact runtime capture cannot be fully automated for a subset of samples, fail fast and report which samples block automation rather than silently substituting generic placeholders.
+
+## Required Page Behavior
+1. Sample detail pages do not show the preview image block in the final page layout.
+2. H1 and description are the first visible content at the top of the sample page.
+3. Tags remain at the top section of the sample page.
+4. Back to Samples and Prev / Next navigation remain intact.
+5. Related Samples appears below the canvas and before Engine Classes Used.
+6. Engine Classes Used entries are normalized to the `engine/<ClassName>` style or the exact repo-appropriate engine folder/class reference format used consistently across all samples.
+7. Tags reflect classes used and exclude engine/theme/system-noise labels.
+8. `samples/index.html` labels for 1316 / 1317 / 1318 exactly match their sample page titles.
 
 ## Expected Targets
 Codex should keep reads narrow and stop if the actual required target list expands materially.
@@ -68,7 +74,7 @@ Expected implementation targets:
 - `samples/index.html`
 - sample metadata source(s) directly used for titles, tags, related items, and engine-classes-used presentation
 - minimal sample detail rendering files/templates/helpers directly controlling sample page layout
-- preview SVG asset generation path or preview asset mapping files directly needed for this normalization
+- preview SVG generation path or preview asset mapping files directly needed to produce runtime-representative previews
 - report files under `docs/` only for output packaging
 
 ## Windows / Execution Constraints
@@ -94,13 +100,14 @@ Minimum required validation:
 - verify Engine Classes Used formatting is normalized on representative samples
 - verify tags exclude sample-number / phase / sample-name noise
 - verify tags reflect classes used while excluding `engine` and `theme`
-- verify preview SVG assets exist for representative samples and are wired consistently
+- verify preview SVG assets exist for representative samples and visually match the running canvas appearance
 - verify `samples/index.html` names for 1316 / 1317 / 1318 match their sample pages exactly
 - verify Phase 13 samples 1316, 1317, 1318 still load correctly
 - verify console stays clean for tested pages
 
 ## Acceptance Criteria
 - all 10 approved adjustments are implemented
+- preview SVGs are derived from what the sample canvas looks like when running
 - no gameplay changes
 - no engine-core changes
 - canonical sample paths remain unchanged
@@ -109,7 +116,7 @@ Minimum required validation:
 
 ## Fail Fast
 Stop and report if:
-- preview SVG generation would require a broad asset pipeline redesign
+- runtime-representative preview SVG generation would require a broad asset pipeline redesign
 - engine-class normalization would require engine-core changes
 - layout normalization requires unrelated page architecture rewrites
 - implementation expands beyond sample presentation and metadata display normalization

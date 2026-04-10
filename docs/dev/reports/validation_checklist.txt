@@ -1,4 +1,4 @@
-[ ] preview SVG assets exist for all samples or follow the approved generated convention
+[ ] preview SVG assets reflect the running canvas appearance for representative samples
 [ ] preview image block is removed from sample pages
 [ ] H1 is at the top of representative sample pages
 [ ] description is directly below H1 on representative sample pages
