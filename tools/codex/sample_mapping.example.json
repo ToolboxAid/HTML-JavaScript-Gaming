@@ -1,0 +1,17 @@
+{
+  "projectRoot": "C:/Users/davidq/Documents/GitHub/HTML-JavaScript-Gaming",
+  "moves": [
+    {
+      "from": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1316_network_sample_a",
+      "to": "samples/phase13/1316"
+    },
+    {
+      "from": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1317_network_sample_b",
+      "to": "samples/phase13/1317"
+    },
+    {
+      "from": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1318_network_sample_c",
+      "to": "samples/phase13/1318"
+    }
+  ]
+}

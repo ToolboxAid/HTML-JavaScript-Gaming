@@ -1,0 +1,18 @@
+WINDOWS-SAFE EXECUTION NOTES
+
+Standard recommendation:
+1. Run validator first:
+   node tools/codex/path_mapping_validator.js tools/codex/sample_mapping.example.json
+
+2. Run rename engine:
+   node tools/codex/node_rename_engine_template.js tools/codex/sample_mapping.example.json
+
+3. Validate required repo links and sample entry points.
+
+4. Package the PR ZIP to:
+   <project folder>/tmp/<BUILD_PR_NAME>.zip
+
+Hard rules:
+- No PowerShell interpolation for path work
+- No silent retries after parse errors
+- Missing ZIP at exact path = task failure
