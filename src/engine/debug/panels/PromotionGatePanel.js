@@ -8,7 +8,9 @@ PromotionGatePanel.js
 import { drawPanel } from '../DebugPanel.js';
 
 function asObject(value) {
-  return value && typeof value === 'object' && !Array.isArray(value) ? value : {};
+  return value && typeof value === 'object' && !Array.isArray(value) 
+  ? value 
+  : {};
 }
 
 function resolvePromotionStatus(source) {

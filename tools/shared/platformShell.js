@@ -5,17 +5,9 @@ import {
   readSharedPaletteHandoff
 } from "./assetUsageIntegration.js";
 import { createProjectSystemController } from "./projectSystem.js";
+import { escapeHtml } from "../../src/shared/string/stringUtil.js";
 
 let projectController = null;
-
-function escapeHtml(value) {
-  return String(value ?? "")
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#39;");
-}
 
 function getPageMode() {
   return document.body.dataset.toolsPlatformPage || "tool";
