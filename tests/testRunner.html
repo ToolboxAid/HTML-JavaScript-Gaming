@@ -1,36 +1,126 @@
-<!--
-Toolbox Aid
-David Quesenberry
-03/21/2026
-testRunner.html
--->
-<!DOCTYPE HTML>
-
+<!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="UTF-8">
-    <title>Game Engine Test Runner</title>
-    <style>
-        body {
-            margin: 0;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            gap: 12px;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: #141414;
-            color: #f5f5f5;
-        }
-    </style>
-    <script type="module" src="./testRunner.js" defer></script>
+<meta charset="UTF-8">
+<title>Test Runner Guide</title>
+
+<style>
+body {
+    font-family: Consolas, monospace;
+    background: #0f1117;
+    color: #e6edf3;
+    padding: 30px;
+    line-height: 1.6;
+}
+
+h1 { color: #58a6ff; }
+h2 { color: #79c0ff; margin-top: 30px; }
+
+.box {
+    background: #161b22;
+    padding: 20px;
+    margin: 20px 0;
+    border-radius: 8px;
+    border-left: 5px solid #58a6ff;
+}
+
+.warning { border-left-color: #f1c40f; }
+.error { border-left-color: #e74c3c; }
+
+pre {
+    background: #0d1117;
+    padding: 15px;
+    border-radius: 6px;
+    overflow-x: auto;
+    color: #7ee787;
+}
+
+button {
+    margin-top: 10px;
+    padding: 8px 12px;
+    background: #238636;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+button:hover {
+    background: #2ea043;
+}
+</style>
 </head>
 
 <body>
-    <h1>Game Engine Test Runner</h1>
-    <p>Open the browser console to view test progress and results.</p>
-</body>
 
+<h1>🧪 Node Test Runner</h1>
+
+<div class="box">
+    <h2>🚀 Run All Tests</h2>
+    <pre id="cmd">node scripts/run-node-tests.mjs</pre>
+    <button onclick="copyCmd()">Copy Command</button>
+</div>
+
+<div class="box">
+    <h2>📊 Expected Result</h2>
+    <pre>116/116 explicit run() tests passed</pre>
+</div>
+
+<div class="box">
+    <h2>🔁 Watch Mode (Auto Re-run)</h2>
+    <pre id="watchCmd">node --watch scripts/run-node-tests.mjs</pre>
+    <button onclick="copyWatch()">Copy Watch Command</button>
+</div>
+
+<div class="box warning">
+    <h2>⚠️ Important</h2>
+    <p>
+        This test suite uses <b>Node-only modules</b> (like <code>node:assert/strict</code>).
+        <br><br>
+        👉 Tests <b>cannot run in the browser</b>.
+    </p>
+</div>
+
+<div class="box">
+    <h2>🧠 Quick Steps</h2>
+    <ul>
+        <li>Open VS Code</li>
+        <li>Press <b>Ctrl + `</b> to open terminal</li>
+        <li>Ensure you're in project root</li>
+        <li>Run the command above</li>
+    </ul>
+</div>
+
+<div class="box">
+    <h2>💡 What Looks Like Errors (but isn't)</h2>
+    <pre>[AsteroidsNewBoot] FAIL missing-canvas</pre>
+    <p>
+        These are <b>intentional test scenarios</b>, not failures.
+        <br>
+        ✔ If you see <b>116/116 passed</b>, everything is working.
+    </p>
+</div>
+
+<div class="box error">
+    <h2>❌ Real Problems</h2>
+    <ul>
+        <li>Tests stop early</li>
+        <li>Missing PASS lines</li>
+        <li>No final "116/116 passed"</li>
+    </ul>
+</div>
+
+<script>
+function copyCmd() {
+    navigator.clipboard.writeText(document.getElementById("cmd").innerText);
+    alert("Copied test command 👍");
+}
+
+function copyWatch() {
+    navigator.clipboard.writeText(document.getElementById("watchCmd").innerText);
+    alert("Copied watch command 👍");
+}
+</script>
+
+</body>
 </html>
