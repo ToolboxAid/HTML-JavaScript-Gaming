@@ -1,1 +1,8 @@
-PLAN_PR: add preview assets and thumbnails to samples
+PLAN_PR: bundle remaining sample objectives into minimal safe BUILD/APPLY waves
+
+- covers all 7 remaining sample objectives
+- minimizes future execution to 3 BUILD/APPLY waves
+- preserves one-purpose-per-PR rule and testability gate
+- preserves canonical sample paths and Windows-safe zero-dependency assumptions
+
+Docs-only planning bundle

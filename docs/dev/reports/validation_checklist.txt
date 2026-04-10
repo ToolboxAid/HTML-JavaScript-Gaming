@@ -1,4 +1,8 @@
-[ ] thumbnail rules defined
-[ ] fallback defined
-[ ] no path changes
-[ ] zip exists
+[x] All 7 remaining sample objectives are covered
+[x] Bundling uses the fewest safe BUILD/APPLY waves
+[x] No future BUILD mixes incompatible PR purposes
+[x] Each future BUILD remains testable
+[x] Canonical path contract remains unchanged
+[x] Windows-safe zero-dependency assumptions remain intact
+[x] Output files generated at required docs paths
+[x] ZIP exists at <project folder>/tmp/PLAN_PR_SAMPLES_BUNDLED_FINALIZATION.zip

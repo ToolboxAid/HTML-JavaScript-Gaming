@@ -1,1 +1,8 @@
-Define thumbnail + preview system for samples index and detail pages
+PR TYPE: PLAN
+PURPOSE: samples bundled finalization
+
+SUMMARY:
+- defines the 7 remaining sample objectives to complete
+- bundles work into the minimum safe number of future BUILD/APPLY waves (3)
+- separates browse UX, discovery-data quality, and performance/personalization into compatible lanes
+- preserves one-purpose-per-PR, testability gates, canonical paths, and Windows-safe zero-dependency assumptions
