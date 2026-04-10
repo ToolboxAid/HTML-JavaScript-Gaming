@@ -1,0 +1,55 @@
+BUILD_PR_SAMPLES_PRESENTATION_PREVIEW_AND_METADATA_NORMALIZATION
+
+Scope confirmation:
+- No gameplay files changed
+- No engine-core files changed
+- Canonical sample paths preserved
+
+Files changed for this BUILD:
+- scripts/normalize-samples-presentation.mjs
+- scripts/generate-samples-index.mjs
+- samples/_shared/sampleDetailPageEnhancement.js
+- samples/metadata/samples.index.metadata.json
+- samples/index.html
+- samples/phaseXX/XXYY/assets/preview.svg (generated for all canonical samples; count=197)
+- docs/dev/reports/BUILD_PR_SAMPLES_PRESENTATION_PREVIEW_AND_METADATA_NORMALIZATION_validation.txt
+
+Validation executed:
+1) node scripts/normalize-samples-presentation.mjs
+   - Result: OK normalized samples=197 metadata=197 previews=197
+
+2) node scripts/generate-samples-index.mjs
+   - Result: OK phases=15 samples=197 metadata=197 mode=write
+
+3) node scripts/generate-samples-index.mjs --check
+   - Result: OK phases=15 samples=197 metadata=197 mode=check
+
+4) node scripts/generate-samples-index.mjs --self-test
+   - Result: OK self-test metadata validation and tag normalization
+
+5) Syntax validation
+   - node --check scripts/normalize-samples-presentation.mjs => pass
+   - node --check scripts/generate-samples-index.mjs => pass
+   - node --check samples/_shared/sampleDetailPageEnhancement.js => pass
+
+6) Metadata + preview + label normalization checks (all canonical samples)
+   - Preview file presence and wiring: pass (197/197)
+   - Engine Classes Used format `engine/...`: pass
+   - Tag noise exclusion (engine/theme/phase/sample/name/id): pass
+   - 1316/1317/1318 index labels exactly match sample H1 titles: pass
+
+7) Console-clean guard checks for tested UI files
+   - No console.log / console.warn / console.error in:
+     - samples/index.html
+     - samples/_shared/sampleDetailPageEnhancement.js
+
+Representative checks:
+- Sample 0101: H1="Sample 0101 - Basic Loop" | index label="Sample 0101 - Basic Loop"
+- Sample 1316: H1="Network Sample A - Local Loopback / Fake Network" | index label="Network Sample A - Local Loopback / Fake Network"
+- Sample 1317: H1="Network Sample B - Host / Client Diagnostics" | index label="Network Sample B - Host / Client Diagnostics"
+- Sample 1318: H1="Network Sample C - Divergence / Trace Validation" | index label="Network Sample C - Divergence / Trace Validation"
+- Sample 1506: H1="Sample 1506 - Scene Graph / Entity Hierarchy Viewer" | index label="Sample 1506 - Scene Graph Entity Hierarchy Viewer"
+
+Layout enforcement note:
+- sampleDetailPageEnhancement enforces DOM order to: H1, description, tags, navigation, canvas, related samples, engine classes used.
+- Preview image block creation removed from sample detail enhancement.

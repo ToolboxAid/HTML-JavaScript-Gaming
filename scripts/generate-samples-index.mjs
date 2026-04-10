@@ -191,6 +191,9 @@ function parseMetadataObject(raw) {
     if (!Array.isArray(entry.tags)) {
       throw new Error(context + '.tags must be an array.');
     }
+    if ('indexLabel' in entry && (typeof entry.indexLabel !== 'string' || entry.indexLabel.trim() === '')) {
+      throw new Error(context + '.indexLabel must be a non-empty string when provided.');
+    }
 
     const tagSet = new Set();
     for (let t = 0; t < entry.tags.length; t += 1) {
@@ -218,7 +221,11 @@ function parseMetadataObject(raw) {
       phase: entry.phase,
       title: entry.title.trim(),
       description: entry.description.trim(),
-      tags: [...tagSet]
+      tags: [...tagSet],
+      indexLabel:
+        typeof entry.indexLabel === 'string' && entry.indexLabel.trim() !== ''
+          ? entry.indexLabel.trim()
+          : ''
     });
   }
 
@@ -281,6 +288,7 @@ function buildGeneratedSections(phases, metadata) {
     for (const sample of phase.samples) {
       const sampleInfo = metadata.sampleMeta.get(sample.id);
       const tagValue = sampleInfo.tags.join(', ');
+      const labelText = sampleInfo.indexLabel || 'Sample ' + sample.id + ' - ' + sampleInfo.title;
       links.push(
         '        <a class="live" href="' +
           sample.href +
@@ -288,10 +296,8 @@ function buildGeneratedSections(phases, metadata) {
           escapeAttr(sampleInfo.description) +
           '" data-tags="' +
           escapeAttr(tagValue) +
-          '">Sample ' +
-          sample.id +
-          ' - ' +
-          escapeHtml(sampleInfo.title) +
+          '">' +
+          escapeHtml(labelText) +
           '</a>'
       );
     }

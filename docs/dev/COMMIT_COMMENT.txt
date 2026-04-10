@@ -1,1 +1,12 @@
-APPLY_PR: apply metadata validation and tag normalization
+BUILD_PR: normalize sample presentation, previews, tags, and engine-class reporting
+
+- create preview SVG assets for all samples
+- remove preview image blocks from sample pages
+- keep H1, description, and tags at the top
+- keep Back to Samples and Prev / Next navigation
+- move Related Samples below canvas and before Engine Classes Used
+- normalize Engine Classes Used references
+- normalize tags to classes used excluding engine/theme/system-noise labels
+- sync samples/index.html names for 1316/1317/1318 with sample page titles
+
+No gameplay or engine-core scope included

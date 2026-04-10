@@ -1,6 +1,16 @@
-[ ] validation enforced
-[ ] duplicates rejected
-[ ] tags normalized
-[ ] filters/search ok
-[ ] no console errors
-[ ] zip exists
+[ ] preview SVG assets exist for all samples or follow the approved generated convention
+[ ] preview image block is removed from sample pages
+[ ] H1 is at the top of representative sample pages
+[ ] description is directly below H1 on representative sample pages
+[ ] tags remain at the top
+[ ] Back to Samples and Prev / Next remain present and functional
+[ ] Related Samples appears below the canvas and before Engine Classes Used
+[ ] Engine Classes Used formatting is normalized
+[ ] tags exclude phase/sample/name noise and exclude engine/theme
+[ ] tags reflect classes used
+[ ] samples/index.html names for 1316 / 1317 / 1318 match sample page titles exactly
+[ ] Phase 13 samples 1316, 1317, 1318 still load
+[ ] no console errors in tested pages
+[ ] no gameplay changes
+[ ] no engine-core changes
+[ ] ZIP exists at <project folder>/tmp/BUILD_PR_SAMPLES_PRESENTATION_PREVIEW_AND_METADATA_NORMALIZATION.zip

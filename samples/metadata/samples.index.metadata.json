@@ -82,1398 +82,5330 @@
       "id": "0101",
       "phase": "01",
       "title": "Basic Loop",
-      "description": "Basic Loop",
-      "tags": []
+      "description": "Demonstrates the core engine loop with simple bounded motion.",
+      "tags": [
+        "scene",
+        "themetokens"
+      ],
+      "engineClassesUsed": [
+        "engine/core/Engine/Engine",
+        "engine/scenes/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
+      ],
+      "thumbnail": "/samples/phase01/0101/assets/preview.svg",
+      "preview": "/samples/phase01/0101/assets/preview.svg"
     },
     {
       "id": "0102",
       "phase": "01",
       "title": "Keyboard Move",
-      "description": "Keyboard Move",
-      "tags": []
+      "description": "Demonstrates keyboard-driven movement inside a bounded play area.",
+      "tags": [
+        "inputservice",
+        "scene",
+        "themetokens"
+      ],
+      "engineClassesUsed": [
+        "engine/core/Engine/Engine",
+        "engine/input/index/InputService",
+        "engine/scenes/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
+      ],
+      "thumbnail": "/samples/phase01/0102/assets/preview.svg",
+      "preview": "/samples/phase01/0102/assets/preview.svg"
     },
     {
       "id": "0103",
       "phase": "01",
       "title": "Mouse Input",
-      "description": "Mouse Input",
-      "tags": []
+      "description": "Demonstrates mouse input tracking and renderer-based feedback.",
+      "tags": [
+        "inputservice",
+        "scene",
+        "themetokens"
+      ],
+      "engineClassesUsed": [
+        "engine/core/Engine/Engine",
+        "engine/input/index/InputService",
+        "engine/scenes/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
+      ],
+      "thumbnail": "/samples/phase01/0103/assets/preview.svg",
+      "preview": "/samples/phase01/0103/assets/preview.svg"
     },
     {
       "id": "0104",
       "phase": "01",
       "title": "Gamepad Input",
-      "description": "Gamepad Input",
-      "tags": []
+      "description": "Demonstrates basic gamepad input and live control feedback.",
+      "tags": [
+        "inputservice",
+        "scene",
+        "themetokens"
+      ],
+      "engineClassesUsed": [
+        "engine/core/Engine/Engine",
+        "engine/input/index/InputService",
+        "engine/scenes/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
+      ],
+      "thumbnail": "/samples/phase01/0104/assets/preview.svg",
+      "preview": "/samples/phase01/0104/assets/preview.svg"
     },
     {
       "id": "0105",
       "phase": "01",
       "title": "Scene Switch",
-      "description": "Scene Switch",
-      "tags": []
+      "description": "Demonstrates scene transitions and shared engine scene flow.",
+      "tags": [
+        "inputservice",
+        "scenetransition",
+        "themetokens",
+        "transitionscene"
+      ],
+      "engineClassesUsed": [
+        "engine/core/Engine/Engine",
+        "engine/input/index/InputService",
+        "engine/scenes/index/Scene",
+        "engine/scenes/index/SceneTransition",
+        "engine/scenes/index/TransitionScene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
+      ],
+      "thumbnail": "/samples/phase01/0105/assets/preview.svg",
+      "preview": "/samples/phase01/0105/assets/preview.svg"
     },
     {
       "id": "0106",
       "phase": "01",
       "title": "Input Mapping",
-      "description": "Input Mapping",
-      "tags": []
+      "description": "Demonstrates action-based input mapping using shared bindings.",
+      "tags": [
+        "inputmap",
+        "inputservice",
+        "scene",
+        "themetokens"
+      ],
+      "engineClassesUsed": [
+        "engine/core/Engine/Engine",
+        "engine/input/index/InputMap",
+        "engine/input/index/InputService",
+        "engine/scenes/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
+      ],
+      "thumbnail": "/samples/phase01/0106/assets/preview.svg",
+      "preview": "/samples/phase01/0106/assets/preview.svg"
     },
     {
       "id": "0107",
       "phase": "01",
       "title": "Entity Movement",
-      "description": "Entity Movement",
-      "tags": []
+      "description": "Demonstrates entity movement driven by shared engine input patterns.",
+      "tags": [
+        "bounds",
+        "inputmap",
+        "inputservice",
+        "scene",
+        "themetokens",
+        "transform",
+        "velocity"
+      ],
+      "engineClassesUsed": [
+        "engine/core/Engine/Engine",
+        "engine/entity/index/Bounds",
+        "engine/entity/index/Entity",
+        "engine/entity/index/Transform",
+        "engine/entity/index/Velocity",
+        "engine/input/index/InputMap",
+        "engine/input/index/InputService",
+        "engine/scenes/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
+      ],
+      "thumbnail": "/samples/phase01/0107/assets/preview.svg",
+      "preview": "/samples/phase01/0107/assets/preview.svg"
     },
     {
       "id": "0108",
       "phase": "01",
       "title": "Render Adapter",
-      "description": "Render Adapter",
-      "tags": []
+      "description": "Demonstrates renderer abstraction through the render adapter.",
+      "tags": [
+        "bounds",
+        "entity",
+        "inputservice",
+        "scene",
+        "themetokens",
+        "transform",
+        "velocity"
+      ],
+      "engineClassesUsed": [
+        "engine/core/Engine/Engine",
+        "engine/entity/index/Bounds",
+        "engine/entity/index/Entity",
+        "engine/entity/index/Transform",
+        "engine/entity/index/Velocity",
+        "engine/input/index/InputService",
+        "engine/scenes/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
+      ],
+      "thumbnail": "/samples/phase01/0108/assets/preview.svg",
+      "preview": "/samples/phase01/0108/assets/preview.svg"
     },
     {
       "id": "0109",
       "phase": "01",
       "title": "Collision",
-      "description": "Collision",
-      "tags": []
+      "description": "Demonstrates axis-aligned bounding box collision detection with visual debug feedback and keyboard-controlled movement.",
+      "tags": [
+        "inputservice",
+        "scene",
+        "themetokens"
+      ],
+      "engineClassesUsed": [
+        "engine/core/Engine/Engine",
+        "engine/input/index/InputService",
+        "engine/scenes/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
+      ],
+      "thumbnail": "/samples/phase01/0109/assets/preview.svg",
+      "preview": "/samples/phase01/0109/assets/preview.svg"
     },
     {
       "id": "0110",
       "phase": "01",
       "title": "Collision Response",
-      "description": "Collision Response",
-      "tags": []
+      "description": "Demonstrates single-block collision response by stopping player movement at the obstacle instead of allowing overlap.",
+      "tags": [
+        "inputservice",
+        "scene",
+        "themetokens"
+      ],
+      "engineClassesUsed": [
+        "engine/core/Engine/Engine",
+        "engine/input/index/InputService",
+        "engine/scenes/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
+      ],
+      "thumbnail": "/samples/phase01/0110/assets/preview.svg",
+      "preview": "/samples/phase01/0110/assets/preview.svg"
     },
     {
       "id": "0111",
       "phase": "01",
       "title": "Multiple Solids",
-      "description": "Multiple Solids",
-      "tags": []
+      "description": "Demonstrates collision response against several blocking rectangles using one shared collision loop.",
+      "tags": [
+        "inputservice",
+        "scene",
+        "themetokens"
+      ],
+      "engineClassesUsed": [
+        "engine/core/Engine/Engine",
+        "engine/input/index/InputService",
+        "engine/scenes/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
+      ],
+      "thumbnail": "/samples/phase01/0111/assets/preview.svg",
+      "preview": "/samples/phase01/0111/assets/preview.svg"
     },
     {
       "id": "0112",
       "phase": "01",
       "title": "Axis Separated Collision",
-      "description": "Axis Separated Collision",
-      "tags": []
+      "description": "Demonstrates separate X and Y collision resolution so the player can slide cleanly along blocking surfaces.",
+      "tags": [
+        "inputservice",
+        "scene",
+        "themetokens"
+      ],
+      "engineClassesUsed": [
+        "engine/core/Engine/Engine",
+        "engine/input/index/InputService",
+        "engine/scenes/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
+      ],
+      "thumbnail": "/samples/phase01/0112/assets/preview.svg",
+      "preview": "/samples/phase01/0112/assets/preview.svg"
     },
     {
       "id": "0113",
       "phase": "01",
       "title": "Tile Collision",
-      "description": "Tile Collision",
-      "tags": []
+      "description": "Demonstrates tile-based collision by treating selected grid cells as solid blockers with axis-separated movement.",
+      "tags": [
+        "inputservice",
+        "scene",
+        "themetokens"
+      ],
+      "engineClassesUsed": [
+        "engine/core/Engine/Engine",
+        "engine/input/index/InputService",
+        "engine/scenes/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
+      ],
+      "thumbnail": "/samples/phase01/0113/assets/preview.svg",
+      "preview": "/samples/phase01/0113/assets/preview.svg"
     },
     {
       "id": "0114",
       "phase": "01",
       "title": "Collision Debug Tools",
-      "description": "Collision Debug Tools",
-      "tags": []
+      "description": "Demonstrates collision inspection tools such as candidate highlights, nearest blocker emphasis, and live overlap status text.",
+      "tags": [
+        "inputservice",
+        "scene",
+        "themetokens"
+      ],
+      "engineClassesUsed": [
+        "engine/core/Engine/Engine",
+        "engine/input/index/InputService",
+        "engine/scenes/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
+      ],
+      "thumbnail": "/samples/phase01/0114/assets/preview.svg",
+      "preview": "/samples/phase01/0114/assets/preview.svg"
     },
     {
       "id": "0115",
       "phase": "01",
       "title": "ECS Foundation",
-      "description": "ECS Foundation",
-      "tags": []
+      "description": "Demonstrates a minimal entity-component world with reusable component storage and renderer-driven drawing.",
+      "tags": [
+        "drawsceneframe",
+        "inputservice",
+        "scene",
+        "themetokens",
+        "world"
+      ],
+      "engineClassesUsed": [
+        "engine/core/Engine/Engine",
+        "engine/debug/index/drawSceneFrame",
+        "engine/ecs/index/World",
+        "engine/input/index/InputService",
+        "engine/scenes/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
+      ],
+      "thumbnail": "/samples/phase01/0115/assets/preview.svg",
+      "preview": "/samples/phase01/0115/assets/preview.svg"
     },
     {
       "id": "0116",
       "phase": "01",
       "title": "ECS Movement System",
-      "description": "ECS Movement System",
-      "tags": []
+      "description": "Demonstrates an ECS movement system that updates entity positions from transform and velocity components.",
+      "tags": [
+        "bounceentitieshorizontallyinbounds",
+        "createrenderable",
+        "createsize",
+        "createtransform",
+        "createvelocity",
+        "drawsceneframe",
+        "inputservice",
+        "moveentities",
+        "renderrectentities",
+        "scene",
+        "themetokens",
+        "world"
+      ],
+      "engineClassesUsed": [
+        "engine/components/index/createRenderable",
+        "engine/components/index/createSize",
+        "engine/components/index/createTransform",
+        "engine/components/index/createVelocity",
+        "engine/core/Engine/Engine",
+        "engine/debug/index/drawSceneFrame",
+        "engine/ecs/index/World",
+        "engine/input/index/InputService",
+        "engine/scenes/index/Scene",
+        "engine/systems/index/bounceEntitiesHorizontallyInBounds",
+        "engine/systems/index/moveEntities",
+        "engine/systems/index/renderRectEntities",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
+      ],
+      "thumbnail": "/samples/phase01/0116/assets/preview.svg",
+      "preview": "/samples/phase01/0116/assets/preview.svg"
     },
     {
       "id": "0117",
       "phase": "01",
       "title": "ECS Input System",
-      "description": "ECS Input System",
-      "tags": []
+      "description": "Demonstrates an ECS input system that controls one entity through input and speed components.",
+      "tags": [
+        "applyinputcontrol",
+        "clampentitiestobounds",
+        "createinputcontrolled",
+        "createrenderable",
+        "createsize",
+        "createspeed",
+        "createtransform",
+        "createvelocity",
+        "drawsceneframe",
+        "inputservice",
+        "moveentities",
+        "renderrectentities",
+        "scene",
+        "themetokens",
+        "world"
+      ],
+      "engineClassesUsed": [
+        "engine/components/index/createInputControlled",
+        "engine/components/index/createRenderable",
+        "engine/components/index/createSize",
+        "engine/components/index/createSpeed",
+        "engine/components/index/createTransform",
+        "engine/components/index/createVelocity",
+        "engine/core/Engine/Engine",
+        "engine/debug/index/drawSceneFrame",
+        "engine/ecs/index/World",
+        "engine/input/index/InputService",
+        "engine/scenes/index/Scene",
+        "engine/systems/index/applyInputControl",
+        "engine/systems/index/clampEntitiesToBounds",
+        "engine/systems/index/moveEntities",
+        "engine/systems/index/renderRectEntities",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
+      ],
+      "thumbnail": "/samples/phase01/0117/assets/preview.svg",
+      "preview": "/samples/phase01/0117/assets/preview.svg"
     },
     {
       "id": "0118",
       "phase": "01",
       "title": "ECS Collision System",
-      "description": "ECS Collision System",
-      "tags": []
+      "description": "Demonstrates an ECS collision system that blocks a controlled entity against solids using collider and solid components.",
+      "tags": [
+        "applyinputcontrol",
+        "blockcollidingentities",
+        "createcollider",
+        "createinputcontrolled",
+        "createrenderable",
+        "createsize",
+        "createsolid",
+        "createspeed",
+        "createtransform",
+        "createvelocity",
+        "drawsceneframe",
+        "inputservice",
+        "moveentities",
+        "renderrectentities",
+        "scene",
+        "themetokens",
+        "world"
+      ],
+      "engineClassesUsed": [
+        "engine/components/index/createCollider",
+        "engine/components/index/createInputControlled",
+        "engine/components/index/createRenderable",
+        "engine/components/index/createSize",
+        "engine/components/index/createSolid",
+        "engine/components/index/createSpeed",
+        "engine/components/index/createTransform",
+        "engine/components/index/createVelocity",
+        "engine/core/Engine/Engine",
+        "engine/debug/index/drawSceneFrame",
+        "engine/ecs/index/World",
+        "engine/input/index/InputService",
+        "engine/scenes/index/Scene",
+        "engine/systems/index/applyInputControl",
+        "engine/systems/index/blockCollidingEntities",
+        "engine/systems/index/moveEntities",
+        "engine/systems/index/renderRectEntities",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
+      ],
+      "thumbnail": "/samples/phase01/0118/assets/preview.svg",
+      "preview": "/samples/phase01/0118/assets/preview.svg"
     },
     {
       "id": "0119",
       "phase": "01",
       "title": "ECS Render System",
-      "description": "ECS Render System",
-      "tags": []
+      "description": "Demonstrates a dedicated ECS render pass that draws multiple entities from transform, size, and renderable components.",
+      "tags": [
+        "drawsceneframe",
+        "inputservice",
+        "renderrectentities",
+        "scene",
+        "themetokens",
+        "world"
+      ],
+      "engineClassesUsed": [
+        "engine/core/Engine/Engine",
+        "engine/debug/index/drawSceneFrame",
+        "engine/ecs/index/World",
+        "engine/input/index/InputService",
+        "engine/scenes/index/Scene",
+        "engine/systems/index/renderRectEntities",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
+      ],
+      "thumbnail": "/samples/phase01/0119/assets/preview.svg",
+      "preview": "/samples/phase01/0119/assets/preview.svg"
     },
     {
       "id": "0120",
       "phase": "01",
       "title": "ECS Scene World",
-      "description": "ECS Scene World",
-      "tags": []
+      "description": "Demonstrates a scene that delegates interaction to ECS-style systems for input, movement, collision, and rendering.",
+      "tags": [
+        "applyinputcontrol",
+        "blockcollidingentities",
+        "createcollider",
+        "createinputcontrolled",
+        "createrenderable",
+        "createsize",
+        "createsolid",
+        "createspeed",
+        "createtransform",
+        "createvelocity",
+        "drawsceneframe",
+        "drawvalidationpanel",
+        "inputservice",
+        "moveentities",
+        "renderrectentities",
+        "themetokens",
+        "validateworldentities"
+      ],
+      "engineClassesUsed": [
+        "engine/components/index/createCollider",
+        "engine/components/index/createInputControlled",
+        "engine/components/index/createRenderable",
+        "engine/components/index/createSize",
+        "engine/components/index/createSolid",
+        "engine/components/index/createSpeed",
+        "engine/components/index/createTransform",
+        "engine/components/index/createVelocity",
+        "engine/core/Engine/Engine",
+        "engine/debug/index/drawSceneFrame",
+        "engine/debug/index/drawValidationPanel",
+        "engine/debug/index/validateWorldEntities",
+        "engine/ecs/index/World",
+        "engine/input/index/InputService",
+        "engine/scenes/index/Scene",
+        "engine/systems/index/applyInputControl",
+        "engine/systems/index/blockCollidingEntities",
+        "engine/systems/index/moveEntities",
+        "engine/systems/index/renderRectEntities",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
+      ],
+      "thumbnail": "/samples/phase01/0120/assets/preview.svg",
+      "preview": "/samples/phase01/0120/assets/preview.svg"
     },
     {
       "id": "0121",
       "phase": "01",
       "title": "UI Overlay",
-      "description": "UI Overlay",
-      "tags": []
+      "description": "HUD and debug overlay rendered separately from world.",
+      "tags": [
+        "applyinputcontrol",
+        "createinputcontrolled",
+        "createrenderable",
+        "createsize",
+        "createspeed",
+        "createtransform",
+        "createvelocity",
+        "drawpanel",
+        "drawsceneframe",
+        "inputservice",
+        "moveentities",
+        "renderrectentities",
+        "scene",
+        "themetokens",
+        "world"
+      ],
+      "engineClassesUsed": [
+        "engine/components/index/createInputControlled",
+        "engine/components/index/createRenderable",
+        "engine/components/index/createSize",
+        "engine/components/index/createSpeed",
+        "engine/components/index/createTransform",
+        "engine/components/index/createVelocity",
+        "engine/core/Engine/Engine",
+        "engine/debug/index/drawPanel",
+        "engine/debug/index/drawSceneFrame",
+        "engine/ecs/index/World",
+        "engine/input/index/InputService",
+        "engine/scenes/index/Scene",
+        "engine/systems/index/applyInputControl",
+        "engine/systems/index/moveEntities",
+        "engine/systems/index/renderRectEntities",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
+      ],
+      "thumbnail": "/samples/phase01/0121/assets/preview.svg",
+      "preview": "/samples/phase01/0121/assets/preview.svg"
     },
     {
       "id": "0122",
       "phase": "01",
       "title": "Entity Lifecycle",
-      "description": "Entity Lifecycle",
-      "tags": []
+      "description": "Spawning, collecting, and removing entities.",
+      "tags": [
+        "applyinputcontrol",
+        "collectoverlappingentities",
+        "createinputcontrolled",
+        "createlifetime",
+        "createrenderable",
+        "createsize",
+        "createspeed",
+        "createtag",
+        "createtransform",
+        "createvelocity",
+        "drawpanel",
+        "drawsceneframe",
+        "inputservice",
+        "moveentities",
+        "renderrectentities",
+        "scene",
+        "themetokens",
+        "ticklifetimes",
+        "world"
+      ],
+      "engineClassesUsed": [
+        "engine/components/index/createInputControlled",
+        "engine/components/index/createLifetime",
+        "engine/components/index/createRenderable",
+        "engine/components/index/createSize",
+        "engine/components/index/createSpeed",
+        "engine/components/index/createTag",
+        "engine/components/index/createTransform",
+        "engine/components/index/createVelocity",
+        "engine/core/Engine/Engine",
+        "engine/debug/index/drawPanel",
+        "engine/debug/index/drawSceneFrame",
+        "engine/ecs/index/World",
+        "engine/input/index/InputService",
+        "engine/scenes/index/Scene",
+        "engine/systems/index/applyInputControl",
+        "engine/systems/index/collectOverlappingEntities",
+        "engine/systems/index/moveEntities",
+        "engine/systems/index/renderRectEntities",
+        "engine/systems/index/tickLifetimes",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
+      ],
+      "thumbnail": "/samples/phase01/0122/assets/preview.svg",
+      "preview": "/samples/phase01/0122/assets/preview.svg"
     },
     {
       "id": "0123",
       "phase": "01",
       "title": "Debug Stats",
-      "description": "Debug Stats",
-      "tags": []
+      "description": "FPS, entity counts, debug toggle.",
+      "tags": [
+        "bounceentitieshorizontallyinbounds",
+        "createrenderable",
+        "createsize",
+        "createtransform",
+        "createvelocity",
+        "drawpanel",
+        "drawsceneframe",
+        "inputservice",
+        "moveentities",
+        "renderrectentities",
+        "scene",
+        "statstracker",
+        "themetokens",
+        "world"
+      ],
+      "engineClassesUsed": [
+        "engine/components/index/createRenderable",
+        "engine/components/index/createSize",
+        "engine/components/index/createTransform",
+        "engine/components/index/createVelocity",
+        "engine/core/Engine/Engine",
+        "engine/debug/index/StatsTracker",
+        "engine/debug/index/drawPanel",
+        "engine/debug/index/drawSceneFrame",
+        "engine/ecs/index/World",
+        "engine/input/index/InputService",
+        "engine/scenes/index/Scene",
+        "engine/systems/index/bounceEntitiesHorizontallyInBounds",
+        "engine/systems/index/moveEntities",
+        "engine/systems/index/renderRectEntities",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
+      ],
+      "thumbnail": "/samples/phase01/0123/assets/preview.svg",
+      "preview": "/samples/phase01/0123/assets/preview.svg"
     },
     {
       "id": "0124",
       "phase": "01",
       "title": "Data Driven World",
-      "description": "Data Driven World",
-      "tags": []
+      "description": "Scene built from config data.",
+      "tags": [
+        "applyinputcontrol",
+        "blockcollidingentities",
+        "createcollider",
+        "createinputcontrolled",
+        "createsize",
+        "createspeed",
+        "createtransform",
+        "createvelocity",
+        "drawpanel",
+        "drawsceneframe",
+        "drawvalidationpanel",
+        "inputservice",
+        "moveentities",
+        "renderrectentities",
+        "scene",
+        "themetokens",
+        "validateworldentities"
+      ],
+      "engineClassesUsed": [
+        "engine/components/index/createCollider",
+        "engine/components/index/createInputControlled",
+        "engine/components/index/createSize",
+        "engine/components/index/createSpeed",
+        "engine/components/index/createTransform",
+        "engine/components/index/createVelocity",
+        "engine/core/Engine/Engine",
+        "engine/debug/index/drawPanel",
+        "engine/debug/index/drawSceneFrame",
+        "engine/debug/index/drawValidationPanel",
+        "engine/debug/index/validateWorldEntities",
+        "engine/ecs/index/World",
+        "engine/input/index/InputService",
+        "engine/scenes/index/Scene",
+        "engine/systems/index/applyInputControl",
+        "engine/systems/index/blockCollidingEntities",
+        "engine/systems/index/moveEntities",
+        "engine/systems/index/renderRectEntities",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
+      ],
+      "thumbnail": "/samples/phase01/0124/assets/preview.svg",
+      "preview": "/samples/phase01/0124/assets/preview.svg"
     },
     {
       "id": "0201",
       "phase": "02",
       "title": "Camera Follow",
-      "description": "Camera Follow",
-      "tags": []
+      "description": "Demonstrates a larger world with a camera that follows the player as the viewport scrolls across the map.",
+      "tags": [
+        "camera2d",
+        "clamp",
+        "drawframe",
+        "inputservice",
+        "scene",
+        "themetokens"
+      ],
+      "engineClassesUsed": [
+        "engine/camera/index/Camera2D",
+        "engine/core/Engine/Engine",
+        "engine/debug/index/drawFrame",
+        "engine/input/index/InputService",
+        "engine/scenes/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens",
+        "engine/utils/index/clamp"
+      ],
+      "thumbnail": "/samples/phase02/0201/assets/preview.svg",
+      "preview": "/samples/phase02/0201/assets/preview.svg"
     },
     {
       "id": "0202",
       "phase": "02",
       "title": "Camera Bounds",
-      "description": "Camera Bounds",
-      "tags": []
+      "description": "Demonstrates camera follow with camera clamping so the viewport never shows beyond the world edges.",
+      "tags": [
+        "camera2d",
+        "clamp",
+        "drawframe",
+        "inputservice",
+        "scene",
+        "themetokens"
+      ],
+      "engineClassesUsed": [
+        "engine/camera/index/Camera2D",
+        "engine/core/Engine/Engine",
+        "engine/debug/index/drawFrame",
+        "engine/input/index/InputService",
+        "engine/scenes/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens",
+        "engine/utils/index/clamp"
+      ],
+      "thumbnail": "/samples/phase02/0202/assets/preview.svg",
+      "preview": "/samples/phase02/0202/assets/preview.svg"
     },
     {
       "id": "0203",
       "phase": "02",
       "title": "Minimap",
-      "description": "Minimap",
-      "tags": []
+      "description": "Demonstrates a minimap overlay that shows world bounds, player position, and obstacle placement at a reduced scale.",
+      "tags": [
+        "camera2d",
+        "clamp",
+        "drawframe",
+        "drawminimap",
+        "inputservice",
+        "scene",
+        "themetokens"
+      ],
+      "engineClassesUsed": [
+        "engine/camera/index/Camera2D",
+        "engine/core/Engine/Engine",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawMinimap",
+        "engine/input/index/InputService",
+        "engine/scenes/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens",
+        "engine/utils/index/clamp"
+      ],
+      "thumbnail": "/samples/phase02/0203/assets/preview.svg",
+      "preview": "/samples/phase02/0203/assets/preview.svg"
     },
     {
       "id": "0204",
       "phase": "02",
       "title": "Asset Registry",
-      "description": "Asset Registry",
-      "tags": []
+      "description": "Demonstrates a simple asset registry pattern for centralizing image, audio, and data references before real loading is added.",
+      "tags": [
+        "assetregistry",
+        "drawframe",
+        "drawpanel",
+        "index",
+        "inputservice",
+        "scene",
+        "themetokens"
+      ],
+      "engineClassesUsed": [
+        "engine/assets/index",
+        "engine/assets/index/AssetRegistry",
+        "engine/core/Engine/Engine",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawPanel",
+        "engine/input/index/InputService",
+        "engine/scenes/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
+      ],
+      "thumbnail": "/samples/phase02/0204/assets/preview.svg",
+      "preview": "/samples/phase02/0204/assets/preview.svg"
     },
     {
       "id": "0205",
       "phase": "02",
       "title": "Save Load State",
-      "description": "Save Load State",
-      "tags": []
+      "description": "Demonstrates saving and restoring player state with browser storage so a scene can persist position between actions.",
+      "tags": [
+        "clamp",
+        "drawframe",
+        "drawpanel",
+        "inputservice",
+        "scene",
+        "storageservice",
+        "themetokens"
+      ],
+      "engineClassesUsed": [
+        "engine/core/Engine/Engine",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawPanel",
+        "engine/input/index/InputService",
+        "engine/persistence/index/StorageService",
+        "engine/scenes/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens",
+        "engine/utils/index/clamp"
+      ],
+      "thumbnail": "/samples/phase02/0205/assets/preview.svg",
+      "preview": "/samples/phase02/0205/assets/preview.svg"
     },
     {
       "id": "0206",
       "phase": "02",
       "title": "Level Loader",
-      "description": "Level Loader",
-      "tags": []
+      "description": "Demonstrates loading a level definition from structured data so scene content is configured outside the scene class.",
+      "tags": [
+        "clamp",
+        "drawframe",
+        "drawpanel",
+        "inputservice",
+        "iscolliding",
+        "levelloader",
+        "scene",
+        "themetokens"
+      ],
+      "engineClassesUsed": [
+        "engine/collision/index/isColliding",
+        "engine/core/Engine/Engine",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawPanel",
+        "engine/input/index/InputService",
+        "engine/level/index/LevelLoader",
+        "engine/scenes/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens",
+        "engine/utils/index/clamp"
+      ],
+      "thumbnail": "/samples/phase02/0206/assets/preview.svg",
+      "preview": "/samples/phase02/0206/assets/preview.svg"
     },
     {
       "id": "0207",
       "phase": "02",
       "title": "Animation System",
-      "description": "Animation System",
-      "tags": []
+      "description": "Demonstrates animation state playback with idle and move loops driven by the hardened engine.",
+      "tags": [
+        "animationcontroller",
+        "clamp",
+        "drawframe",
+        "drawpanel",
+        "inputservice",
+        "scene",
+        "themetokens"
+      ],
+      "engineClassesUsed": [
+        "engine/animation/index/AnimationController",
+        "engine/core/Engine/Engine",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawPanel",
+        "engine/input/index/InputService",
+        "engine/scenes/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens",
+        "engine/utils/index/clamp"
+      ],
+      "thumbnail": "/samples/phase02/0207/assets/preview.svg",
+      "preview": "/samples/phase02/0207/assets/preview.svg"
     },
     {
       "id": "0208",
       "phase": "02",
       "title": "State Machine",
-      "description": "State Machine",
-      "tags": []
+      "description": "Demonstrates state-driven behavior using a reusable engine state machine.",
+      "tags": [
+        "clamp",
+        "drawframe",
+        "drawpanel",
+        "inputservice",
+        "scene",
+        "statemachine",
+        "themetokens"
+      ],
+      "engineClassesUsed": [
+        "engine/core/Engine/Engine",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawPanel",
+        "engine/input/index/InputService",
+        "engine/scenes/index/Scene",
+        "engine/state/index/StateMachine",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens",
+        "engine/utils/index/clamp"
+      ],
+      "thumbnail": "/samples/phase02/0208/assets/preview.svg",
+      "preview": "/samples/phase02/0208/assets/preview.svg"
     },
     {
       "id": "0209",
       "phase": "02",
       "title": "Interaction System",
-      "description": "Interaction System",
-      "tags": []
+      "description": "Demonstrates prompts and interactions using engine-owned interaction helpers.",
+      "tags": [
+        "clamp",
+        "drawframe",
+        "drawpanel",
+        "findnearestinteractable",
+        "inputservice",
+        "resolveinteraction",
+        "scene",
+        "themetokens"
+      ],
+      "engineClassesUsed": [
+        "engine/core/Engine/Engine",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawPanel",
+        "engine/input/index/InputService",
+        "engine/interaction/index/findNearestInteractable",
+        "engine/interaction/index/resolveInteraction",
+        "engine/scenes/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens",
+        "engine/utils/index/clamp"
+      ],
+      "thumbnail": "/samples/phase02/0209/assets/preview.svg",
+      "preview": "/samples/phase02/0209/assets/preview.svg"
     },
     {
       "id": "0210",
       "phase": "02",
       "title": "Projectile System",
-      "description": "Projectile System",
-      "tags": []
+      "description": "Demonstrates runtime spawning and updating of projectiles using shared engine projectile helpers.",
+      "tags": [
+        "clamp",
+        "drawframe",
+        "drawpanel",
+        "inputservice",
+        "scene",
+        "spawnprojectile",
+        "themetokens",
+        "updateprojectiles"
+      ],
+      "engineClassesUsed": [
+        "engine/core/Engine/Engine",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawPanel",
+        "engine/input/index/InputService",
+        "engine/scenes/index/Scene",
+        "engine/systems/index/spawnProjectile",
+        "engine/systems/index/updateProjectiles",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens",
+        "engine/utils/index/clamp"
+      ],
+      "thumbnail": "/samples/phase02/0210/assets/preview.svg",
+      "preview": "/samples/phase02/0210/assets/preview.svg"
     },
     {
       "id": "0211",
       "phase": "02",
       "title": "Enemy Patrol AI",
-      "description": "Enemy Patrol AI",
-      "tags": []
+      "description": "Demonstrates a patrol behavior and player detection using engine AI helpers.",
+      "tags": [
+        "clamp",
+        "drawframe",
+        "drawpanel",
+        "inputservice",
+        "iswithindetectionrange",
+        "scene",
+        "themetokens",
+        "updatepatrolentity"
+      ],
+      "engineClassesUsed": [
+        "engine/ai/index/isWithinDetectionRange",
+        "engine/ai/index/updatePatrolEntity",
+        "engine/core/Engine/Engine",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawPanel",
+        "engine/input/index/InputService",
+        "engine/scenes/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens",
+        "engine/utils/index/clamp"
+      ],
+      "thumbnail": "/samples/phase02/0211/assets/preview.svg",
+      "preview": "/samples/phase02/0211/assets/preview.svg"
     },
     {
       "id": "0212",
       "phase": "02",
       "title": "Playable Micro Level",
-      "description": "Playable Micro Level",
-      "tags": []
+      "description": "Combines the hardened engine pieces into a small playable slice with interaction, enemy patrol, goal, and projectiles.",
+      "tags": [
+        "clamp",
+        "drawframe",
+        "drawpanel",
+        "inputservice",
+        "iswithindetectionrange",
+        "resolveinteraction",
+        "scene",
+        "spawnprojectile",
+        "themetokens",
+        "updatepatrolentity",
+        "updateprojectiles"
+      ],
+      "engineClassesUsed": [
+        "engine/ai/index/isWithinDetectionRange",
+        "engine/ai/index/updatePatrolEntity",
+        "engine/core/Engine/Engine",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawPanel",
+        "engine/input/index/InputService",
+        "engine/interaction/index/resolveInteraction",
+        "engine/scenes/index/Scene",
+        "engine/systems/index/spawnProjectile",
+        "engine/systems/index/updateProjectiles",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens",
+        "engine/utils/index/clamp"
+      ],
+      "thumbnail": "/samples/phase02/0212/assets/preview.svg",
+      "preview": "/samples/phase02/0212/assets/preview.svg"
     },
     {
       "id": "0213",
       "phase": "02",
       "title": "Sprite Render Layer",
-      "description": "Sprite Render Layer",
-      "tags": []
+      "description": "Demonstrates a sprite-ready render path with color-rect fallback using the engine render layer.",
+      "tags": [
+        "drawframe",
+        "drawpanel",
+        "inputservice",
+        "renderspritereadyentities",
+        "scene",
+        "themetokens"
+      ],
+      "engineClassesUsed": [
+        "engine/core/Engine/Engine",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawPanel",
+        "engine/input/index/InputService",
+        "engine/render/index/renderSpriteReadyEntities",
+        "engine/scenes/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
+      ],
+      "thumbnail": "/samples/phase02/0213/assets/preview.svg",
+      "preview": "/samples/phase02/0213/assets/preview.svg"
     },
     {
       "id": "0214",
       "phase": "02",
       "title": "Animation Sprite Binding",
-      "description": "Animation Sprite Binding",
-      "tags": []
+      "description": "Demonstrates binding animation state to sprite-frame-like render output.",
+      "tags": [
+        "animationcontroller",
+        "clamp",
+        "drawframe",
+        "drawpanel",
+        "inputservice",
+        "renderspritereadyentities",
+        "scene",
+        "themetokens"
+      ],
+      "engineClassesUsed": [
+        "engine/animation/index/AnimationController",
+        "engine/core/Engine/Engine",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawPanel",
+        "engine/input/index/InputService",
+        "engine/render/index/renderSpriteReadyEntities",
+        "engine/scenes/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens",
+        "engine/utils/index/clamp"
+      ],
+      "thumbnail": "/samples/phase02/0214/assets/preview.svg",
+      "preview": "/samples/phase02/0214/assets/preview.svg"
     },
     {
       "id": "0215",
       "phase": "02",
       "title": "Z Layer Ordering",
-      "description": "Z Layer Ordering",
-      "tags": []
+      "description": "Demonstrates layered draw ordering for background, world, actors, projectiles, UI, and debug.",
+      "tags": [
+        "drawframe",
+        "drawpanel",
+        "inputservice",
+        "renderbylayers",
+        "scene",
+        "themetokens"
+      ],
+      "engineClassesUsed": [
+        "engine/core/Engine/Engine",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawPanel",
+        "engine/input/index/InputService",
+        "engine/render/index/renderByLayers",
+        "engine/scenes/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
+      ],
+      "thumbnail": "/samples/phase02/0215/assets/preview.svg",
+      "preview": "/samples/phase02/0215/assets/preview.svg"
     },
     {
       "id": "0216",
       "phase": "02",
       "title": "Prefab System",
-      "description": "Prefab System",
-      "tags": []
+      "description": "Demonstrates prefab-based entity creation for players, enemies, pickups, and projectiles.",
+      "tags": [
+        "createenemyprefab",
+        "createpickupprefab",
+        "createplayerprefab",
+        "createprojectileprefab",
+        "drawframe",
+        "drawpanel",
+        "inputservice",
+        "renderspritereadyentities",
+        "scene",
+        "themetokens"
+      ],
+      "engineClassesUsed": [
+        "engine/core/Engine/Engine",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawPanel",
+        "engine/input/index/InputService",
+        "engine/prefabs/index/createEnemyPrefab",
+        "engine/prefabs/index/createPickupPrefab",
+        "engine/prefabs/index/createPlayerPrefab",
+        "engine/prefabs/index/createProjectilePrefab",
+        "engine/render/index/renderSpriteReadyEntities",
+        "engine/scenes/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
+      ],
+      "thumbnail": "/samples/phase02/0216/assets/preview.svg",
+      "preview": "/samples/phase02/0216/assets/preview.svg"
     },
     {
       "id": "0217",
       "phase": "02",
       "title": "Game Mode State",
-      "description": "Game Mode State",
-      "tags": []
+      "description": "Demonstrates higher-level game mode flow for title, play, pause, win, and lose states.",
+      "tags": [
+        "drawframe",
+        "drawpanel",
+        "gamemodestate",
+        "inputservice",
+        "scene",
+        "themetokens"
+      ],
+      "engineClassesUsed": [
+        "engine/core/Engine/Engine",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawPanel",
+        "engine/game/index/GameModeState",
+        "engine/input/index/InputService",
+        "engine/scenes/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
+      ],
+      "thumbnail": "/samples/phase02/0217/assets/preview.svg",
+      "preview": "/samples/phase02/0217/assets/preview.svg"
     },
     {
       "id": "0218",
       "phase": "02",
       "title": "Polished Playable Slice",
-      "description": "Polished Playable Slice",
-      "tags": []
+      "description": "Combines prefabs, render layers, game modes, interaction, AI, and projectiles into a cleaner mini-game slice.",
+      "tags": [
+        "clamp",
+        "createenemyprefab",
+        "createplayerprefab",
+        "drawframe",
+        "drawpanel",
+        "gamemodestate",
+        "inputservice",
+        "iswithindetectionrange",
+        "renderbylayers",
+        "renderspritereadyentities",
+        "resolveinteraction",
+        "scene",
+        "spawnprojectile",
+        "themetokens",
+        "updatepatrolentity",
+        "updateprojectiles"
+      ],
+      "engineClassesUsed": [
+        "engine/ai/index/isWithinDetectionRange",
+        "engine/ai/index/updatePatrolEntity",
+        "engine/core/Engine/Engine",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawPanel",
+        "engine/game/index/GameModeState",
+        "engine/input/index/InputService",
+        "engine/interaction/index/resolveInteraction",
+        "engine/prefabs/index/createEnemyPrefab",
+        "engine/prefabs/index/createPlayerPrefab",
+        "engine/render/index/renderByLayers",
+        "engine/render/index/renderSpriteReadyEntities",
+        "engine/scenes/index/Scene",
+        "engine/systems/index/spawnProjectile",
+        "engine/systems/index/updateProjectiles",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens",
+        "engine/utils/index/clamp"
+      ],
+      "thumbnail": "/samples/phase02/0218/assets/preview.svg",
+      "preview": "/samples/phase02/0218/assets/preview.svg"
     },
     {
       "id": "0219",
       "phase": "02",
       "title": "Sprite Atlas Image Rendering",
-      "description": "Sprite Atlas Image Rendering",
-      "tags": []
+      "description": "Demonstrates sprite-atlas-style frame lookup and image-loader-ready rendering proxies.",
+      "tags": [
+        "drawframe",
+        "drawpanel",
+        "imageassetloader",
+        "inputservice",
+        "renderspritereadyentities",
+        "scene",
+        "spriteatlas",
+        "themetokens"
+      ],
+      "engineClassesUsed": [
+        "engine/assets/index/ImageAssetLoader",
+        "engine/assets/index/SpriteAtlas",
+        "engine/core/Engine/Engine",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawPanel",
+        "engine/input/index/InputService",
+        "engine/render/index/renderSpriteReadyEntities",
+        "engine/scenes/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
+      ],
+      "thumbnail": "/samples/phase02/0219/assets/preview.svg",
+      "preview": "/samples/phase02/0219/assets/preview.svg"
     },
     {
       "id": "0220",
       "phase": "02",
       "title": "Camera System",
-      "description": "Camera System",
-      "tags": []
+      "description": "Demonstrates a world-space camera system so scenes stop doing ad hoc offset math.",
+      "tags": [
+        "camera2d",
+        "clamp",
+        "drawframe",
+        "drawpanel",
+        "followcameratarget",
+        "inputservice",
+        "scene",
+        "themetokens",
+        "worldrecttoscreen"
+      ],
+      "engineClassesUsed": [
+        "engine/camera/index/Camera2D",
+        "engine/camera/index/followCameraTarget",
+        "engine/camera/index/worldRectToScreen",
+        "engine/core/Engine/Engine",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawPanel",
+        "engine/input/index/InputService",
+        "engine/scenes/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens",
+        "engine/utils/index/clamp"
+      ],
+      "thumbnail": "/samples/phase02/0220/assets/preview.svg",
+      "preview": "/samples/phase02/0220/assets/preview.svg"
     },
     {
       "id": "0221",
       "phase": "02",
       "title": "Tilemap System",
-      "description": "Tilemap System",
-      "tags": []
+      "description": "Demonstrates tilemap rendering and tile-based collision as the foundation for map-driven games.",
+      "tags": [
+        "clamp",
+        "drawframe",
+        "drawpanel",
+        "inputservice",
+        "rendertilemap",
+        "resolverectvstilemap",
+        "scene",
+        "themetokens"
+      ],
+      "engineClassesUsed": [
+        "engine/core/Engine/Engine",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawPanel",
+        "engine/input/index/InputService",
+        "engine/scenes/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens",
+        "engine/tilemap/index/Tilemap",
+        "engine/tilemap/index/renderTilemap",
+        "engine/tilemap/index/resolveRectVsTilemap",
+        "engine/utils/index/clamp"
+      ],
+      "thumbnail": "/samples/phase02/0221/assets/preview.svg",
+      "preview": "/samples/phase02/0221/assets/preview.svg"
     },
     {
       "id": "0222",
       "phase": "02",
       "title": "Input Action Mapping",
-      "description": "Input Action Mapping",
-      "tags": []
+      "description": "Demonstrates action-based input mapping so gameplay is decoupled from physical keys.",
+      "tags": [
+        "actioninputmap",
+        "actioninputservice",
+        "clamp",
+        "drawframe",
+        "drawpanel",
+        "scene",
+        "themetokens"
+      ],
+      "engineClassesUsed": [
+        "engine/core/Engine/Engine",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawPanel",
+        "engine/input/index/ActionInputMap",
+        "engine/input/index/ActionInputService",
+        "engine/scenes/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens",
+        "engine/utils/index/clamp"
+      ],
+      "thumbnail": "/samples/phase02/0222/assets/preview.svg",
+      "preview": "/samples/phase02/0222/assets/preview.svg"
     },
     {
       "id": "0223",
       "phase": "02",
       "title": "World Serialization",
-      "description": "World Serialization",
-      "tags": []
+      "description": "Demonstrates saving and restoring a world snapshot through shared serialization helpers.",
+      "tags": [
+        "clamp",
+        "deserializeworldstate",
+        "drawframe",
+        "drawpanel",
+        "inputservice",
+        "scene",
+        "serializeworldstate",
+        "themetokens"
+      ],
+      "engineClassesUsed": [
+        "engine/core/Engine/Engine",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawPanel",
+        "engine/input/index/InputService",
+        "engine/persistence/index/deserializeWorldState",
+        "engine/persistence/index/serializeWorldState",
+        "engine/scenes/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens",
+        "engine/utils/index/clamp"
+      ],
+      "thumbnail": "/samples/phase02/0223/assets/preview.svg",
+      "preview": "/samples/phase02/0223/assets/preview.svg"
     },
     {
       "id": "0224",
       "phase": "02",
       "title": "Tile Camera Sprite Slice",
-      "description": "Tile Camera Sprite Slice",
-      "tags": []
+      "description": "Combines tilemap, camera, action input, sprite-atlas-style rendering, and world serialization into a playable slice.",
+      "tags": [
+        "actioninputmap",
+        "actioninputservice",
+        "camera2d",
+        "deserializeworldstate",
+        "drawframe",
+        "drawpanel",
+        "followcameratarget",
+        "renderspritereadyentities",
+        "rendertilemap",
+        "resolverectvstilemap",
+        "scene",
+        "serializeworldstate",
+        "spriteatlas",
+        "themetokens",
+        "tilemap",
+        "worldrecttoscreen"
+      ],
+      "engineClassesUsed": [
+        "engine/assets/index/SpriteAtlas",
+        "engine/camera/index/Camera2D",
+        "engine/camera/index/followCameraTarget",
+        "engine/camera/index/worldRectToScreen",
+        "engine/core/Engine/Engine",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawPanel",
+        "engine/input/index/ActionInputMap",
+        "engine/input/index/ActionInputService",
+        "engine/persistence/index/deserializeWorldState",
+        "engine/persistence/index/serializeWorldState",
+        "engine/render/index/renderSpriteReadyEntities",
+        "engine/scenes/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens",
+        "engine/tilemap/index/Tilemap",
+        "engine/tilemap/index/renderTilemap",
+        "engine/tilemap/index/resolveRectVsTilemap"
+      ],
+      "thumbnail": "/samples/phase02/0224/assets/preview.svg",
+      "preview": "/samples/phase02/0224/assets/preview.svg"
     },
     {
       "id": "0301",
       "phase": "03",
       "title": "Real Sprite Rendering",
-      "description": "Real Sprite Rendering",
-      "tags": []
+      "description": "Makes image-backed sprite rendering the standard actor path instead of color-box placeholders.",
+      "tags": [
+        "actioninputmap",
+        "actioninputservice",
+        "camera2d",
+        "drawframe",
+        "drawpanel",
+        "followcameratarget",
+        "imageassetloader",
+        "moverectwithtilemapcollision",
+        "renderspritereadyentities",
+        "rendertilemap",
+        "scene",
+        "spriteatlas",
+        "themetokens",
+        "tilemap",
+        "worldrecttoscreen"
+      ],
+      "engineClassesUsed": [
+        "engine/assets/index/ImageAssetLoader",
+        "engine/assets/index/SpriteAtlas",
+        "engine/camera/index/Camera2D",
+        "engine/camera/index/followCameraTarget",
+        "engine/camera/index/worldRectToScreen",
+        "engine/core/Engine/Engine",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawPanel",
+        "engine/input/index/ActionInputMap",
+        "engine/input/index/ActionInputService",
+        "engine/render/index/renderSpriteReadyEntities",
+        "engine/scenes/index/Scene",
+        "engine/systems/index/moveRectWithTilemapCollision",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens",
+        "engine/tilemap/index/Tilemap",
+        "engine/tilemap/index/renderTilemap"
+      ],
+      "thumbnail": "/samples/phase03/0301/assets/preview.svg",
+      "preview": "/samples/phase03/0301/assets/preview.svg"
     },
     {
       "id": "0302",
       "phase": "03",
       "title": "Animation System",
-      "description": "Animation System",
-      "tags": []
+      "description": "Adds stable timing, loop control, and a one-shot action animation on top of the real sprite path.",
+      "tags": [
+        "actioninputmap",
+        "actioninputservice",
+        "animationcontroller",
+        "camera2d",
+        "drawframe",
+        "drawpanel",
+        "followcameratarget",
+        "imageassetloader",
+        "moverectwithtilemapcollision",
+        "renderspritereadyentities",
+        "rendertilemap",
+        "scene",
+        "spriteatlas",
+        "themetokens",
+        "tilemap",
+        "worldrecttoscreen"
+      ],
+      "engineClassesUsed": [
+        "engine/animation/index/AnimationController",
+        "engine/assets/index/ImageAssetLoader",
+        "engine/assets/index/SpriteAtlas",
+        "engine/camera/index/Camera2D",
+        "engine/camera/index/followCameraTarget",
+        "engine/camera/index/worldRectToScreen",
+        "engine/core/Engine/Engine",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawPanel",
+        "engine/input/index/ActionInputMap",
+        "engine/input/index/ActionInputService",
+        "engine/render/index/renderSpriteReadyEntities",
+        "engine/scenes/index/Scene",
+        "engine/systems/index/moveRectWithTilemapCollision",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens",
+        "engine/tilemap/index/Tilemap",
+        "engine/tilemap/index/renderTilemap"
+      ],
+      "thumbnail": "/samples/phase03/0302/assets/preview.svg",
+      "preview": "/samples/phase03/0302/assets/preview.svg"
     },
     {
       "id": "0303",
       "phase": "03",
       "title": "Physics System",
-      "description": "Physics System",
-      "tags": []
+      "description": "Introduces reusable velocity, acceleration, and drag based movement for a more game-ready motion model.",
+      "tags": [
+        "actioninputmap",
+        "actioninputservice",
+        "animationcontroller",
+        "camera2d",
+        "drawframe",
+        "drawpanel",
+        "followcameratarget",
+        "imageassetloader",
+        "renderspritereadyentities",
+        "rendertilemap",
+        "scene",
+        "spriteatlas",
+        "steparcadebody",
+        "themetokens",
+        "tilemap",
+        "worldrecttoscreen"
+      ],
+      "engineClassesUsed": [
+        "engine/animation/index/AnimationController",
+        "engine/assets/index/ImageAssetLoader",
+        "engine/assets/index/SpriteAtlas",
+        "engine/camera/index/Camera2D",
+        "engine/camera/index/followCameraTarget",
+        "engine/camera/index/worldRectToScreen",
+        "engine/core/Engine/Engine",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawPanel",
+        "engine/input/index/ActionInputMap",
+        "engine/input/index/ActionInputService",
+        "engine/render/index/renderSpriteReadyEntities",
+        "engine/scenes/index/Scene",
+        "engine/systems/index/stepArcadeBody",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens",
+        "engine/tilemap/index/Tilemap",
+        "engine/tilemap/index/renderTilemap"
+      ],
+      "thumbnail": "/samples/phase03/0303/assets/preview.svg",
+      "preview": "/samples/phase03/0303/assets/preview.svg"
     },
     {
       "id": "0304",
       "phase": "03",
       "title": "Collision Resolution",
-      "description": "Collision Resolution",
-      "tags": []
+      "description": "Improves tile collision response with axis-separated resolution and better wall sliding behavior.",
+      "tags": [
+        "actioninputmap",
+        "actioninputservice",
+        "animationcontroller",
+        "camera2d",
+        "drawframe",
+        "drawpanel",
+        "followcameratarget",
+        "imageassetloader",
+        "moverectwithtilemapcollision",
+        "renderspritereadyentities",
+        "rendertilemap",
+        "scene",
+        "spriteatlas",
+        "steparcadebody",
+        "themetokens",
+        "tilemap",
+        "worldrecttoscreen"
+      ],
+      "engineClassesUsed": [
+        "engine/animation/index/AnimationController",
+        "engine/assets/index/ImageAssetLoader",
+        "engine/assets/index/SpriteAtlas",
+        "engine/camera/index/Camera2D",
+        "engine/camera/index/followCameraTarget",
+        "engine/camera/index/worldRectToScreen",
+        "engine/core/Engine/Engine",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawPanel",
+        "engine/input/index/ActionInputMap",
+        "engine/input/index/ActionInputService",
+        "engine/render/index/renderSpriteReadyEntities",
+        "engine/scenes/index/Scene",
+        "engine/systems/index/moveRectWithTilemapCollision",
+        "engine/systems/index/stepArcadeBody",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens",
+        "engine/tilemap/index/Tilemap",
+        "engine/tilemap/index/renderTilemap"
+      ],
+      "thumbnail": "/samples/phase03/0304/assets/preview.svg",
+      "preview": "/samples/phase03/0304/assets/preview.svg"
     },
     {
       "id": "0305",
       "phase": "03",
       "title": "Tile Metadata",
-      "description": "Tile Metadata",
-      "tags": []
+      "description": "Adds hazard, trigger, and slope-style metadata definitions to the tilemap system.",
+      "tags": [
+        "actioninputmap",
+        "actioninputservice",
+        "animationcontroller",
+        "camera2d",
+        "drawframe",
+        "drawpanel",
+        "followcameratarget",
+        "imageassetloader",
+        "moverectwithtilemapcollision",
+        "renderspritereadyentities",
+        "rendertilemap",
+        "scene",
+        "spriteatlas",
+        "steparcadebody",
+        "themetokens",
+        "tilemap",
+        "worldrecttoscreen"
+      ],
+      "engineClassesUsed": [
+        "engine/animation/index/AnimationController",
+        "engine/assets/index/ImageAssetLoader",
+        "engine/assets/index/SpriteAtlas",
+        "engine/camera/index/Camera2D",
+        "engine/camera/index/followCameraTarget",
+        "engine/camera/index/worldRectToScreen",
+        "engine/core/Engine/Engine",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawPanel",
+        "engine/input/index/ActionInputMap",
+        "engine/input/index/ActionInputService",
+        "engine/render/index/renderSpriteReadyEntities",
+        "engine/scenes/index/Scene",
+        "engine/systems/index/moveRectWithTilemapCollision",
+        "engine/systems/index/stepArcadeBody",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens",
+        "engine/tilemap/index/Tilemap",
+        "engine/tilemap/index/renderTilemap"
+      ],
+      "thumbnail": "/samples/phase03/0305/assets/preview.svg",
+      "preview": "/samples/phase03/0305/assets/preview.svg"
     },
     {
       "id": "0306",
       "phase": "03",
       "title": "Nes Style Zones Parallax",
-      "description": "Nes Style Zones Parallax",
-      "tags": []
+      "description": "Demonstrates section-based camera zones and simple parallax layers inspired by classic side scrollers.",
+      "tags": [
+        "actioninputmap",
+        "actioninputservice",
+        "animationcontroller",
+        "camera2d",
+        "drawframe",
+        "drawpanel",
+        "followcameratarget",
+        "imageassetloader",
+        "moverectwithtilemapcollision",
+        "renderspritereadyentities",
+        "rendertilemap",
+        "scene",
+        "spriteatlas",
+        "steparcadebody",
+        "themetokens",
+        "tilemap",
+        "worldrecttoscreen"
+      ],
+      "engineClassesUsed": [
+        "engine/animation/index/AnimationController",
+        "engine/assets/index/ImageAssetLoader",
+        "engine/assets/index/SpriteAtlas",
+        "engine/camera/index/Camera2D",
+        "engine/camera/index/followCameraTarget",
+        "engine/camera/index/worldRectToScreen",
+        "engine/core/Engine/Engine",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawPanel",
+        "engine/input/index/ActionInputMap",
+        "engine/input/index/ActionInputService",
+        "engine/render/index/renderSpriteReadyEntities",
+        "engine/scenes/index/Scene",
+        "engine/systems/index/moveRectWithTilemapCollision",
+        "engine/systems/index/stepArcadeBody",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens",
+        "engine/tilemap/index/Tilemap",
+        "engine/tilemap/index/renderTilemap"
+      ],
+      "thumbnail": "/samples/phase03/0306/assets/preview.svg",
+      "preview": "/samples/phase03/0306/assets/preview.svg"
     },
     {
       "id": "0307",
       "phase": "03",
       "title": "Slopes Ramps",
-      "description": "Slopes Ramps",
-      "tags": []
+      "description": "First-pass slope and ramp sample. Move across the purple ramp surfaces to verify the actor can climb an angled floor instead of colliding as if it were a wall.",
+      "tags": [
+        "actioninputmap",
+        "actioninputservice",
+        "camera2d",
+        "drawframe",
+        "drawpanel",
+        "followcameratarget",
+        "scene",
+        "themetokens"
+      ],
+      "engineClassesUsed": [
+        "engine/camera/index/Camera2D",
+        "engine/camera/index/followCameraTarget",
+        "engine/core/Engine/Engine",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawPanel",
+        "engine/input/index/ActionInputMap",
+        "engine/input/index/ActionInputService",
+        "engine/scenes/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
+      ],
+      "thumbnail": "/samples/phase03/0307/assets/preview.svg",
+      "preview": "/samples/phase03/0307/assets/preview.svg"
     },
     {
       "id": "0308",
       "phase": "03",
       "title": "Gravity Zones",
-      "description": "Gravity Zones",
-      "tags": []
+      "description": "Colored zones change the direction of gravity. Move through the blue, orange, and green fields to verify that gravity can be authored per-zone instead of globally. Press Space to jump opposite the current gravity direction.",
+      "tags": [
+        "actioninputmap",
+        "actioninputservice",
+        "camera2d",
+        "drawframe",
+        "drawpanel",
+        "followcameratarget",
+        "scene",
+        "themetokens"
+      ],
+      "engineClassesUsed": [
+        "engine/camera/index/Camera2D",
+        "engine/camera/index/followCameraTarget",
+        "engine/core/Engine/Engine",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawPanel",
+        "engine/input/index/ActionInputMap",
+        "engine/input/index/ActionInputService",
+        "engine/scenes/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
+      ],
+      "thumbnail": "/samples/phase03/0308/assets/preview.svg",
+      "preview": "/samples/phase03/0308/assets/preview.svg"
     },
     {
       "id": "0309",
       "phase": "03",
       "title": "Ladders Climb Zones",
-      "description": "Ladders Climb Zones",
-      "tags": []
+      "description": "Yellow ladder volumes let the actor climb vertically and suspend falling. Enter a ladder, climb up to the next platform, and step off to resume normal gravity.",
+      "tags": [
+        "actioninputmap",
+        "actioninputservice",
+        "camera2d",
+        "drawframe",
+        "drawpanel",
+        "followcameratarget",
+        "scene",
+        "themetokens"
+      ],
+      "engineClassesUsed": [
+        "engine/camera/index/Camera2D",
+        "engine/camera/index/followCameraTarget",
+        "engine/core/Engine/Engine",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawPanel",
+        "engine/input/index/ActionInputMap",
+        "engine/input/index/ActionInputService",
+        "engine/scenes/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
+      ],
+      "thumbnail": "/samples/phase03/0309/assets/preview.svg",
+      "preview": "/samples/phase03/0309/assets/preview.svg"
     },
     {
       "id": "0310",
       "phase": "03",
       "title": "Moving Platforms",
-      "description": "Moving Platforms",
-      "tags": []
+      "description": "Two moving platforms demonstrate ride/carry behavior. Stand on the cyan platforms and verify that the actor is translated with the platform instead of slipping off every frame.",
+      "tags": [
+        "actioninputmap",
+        "actioninputservice",
+        "camera2d",
+        "drawframe",
+        "drawpanel",
+        "followcameratarget",
+        "scene",
+        "themetokens"
+      ],
+      "engineClassesUsed": [
+        "engine/camera/index/Camera2D",
+        "engine/camera/index/followCameraTarget",
+        "engine/core/Engine/Engine",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawPanel",
+        "engine/input/index/ActionInputMap",
+        "engine/input/index/ActionInputService",
+        "engine/scenes/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
+      ],
+      "thumbnail": "/samples/phase03/0310/assets/preview.svg",
+      "preview": "/samples/phase03/0310/assets/preview.svg"
     },
     {
       "id": "0311",
       "phase": "03",
       "title": "One Way Platforms",
-      "description": "One Way Platforms",
-      "tags": []
+      "description": "Orange platforms only collide when the actor falls onto them from above. Jump upward through them, land on them from above, and press Down + Space to drop through.",
+      "tags": [
+        "actioninputmap",
+        "actioninputservice",
+        "camera2d",
+        "drawframe",
+        "drawpanel",
+        "followcameratarget",
+        "scene",
+        "themetokens"
+      ],
+      "engineClassesUsed": [
+        "engine/camera/index/Camera2D",
+        "engine/camera/index/followCameraTarget",
+        "engine/core/Engine/Engine",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawPanel",
+        "engine/input/index/ActionInputMap",
+        "engine/input/index/ActionInputService",
+        "engine/scenes/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
+      ],
+      "thumbnail": "/samples/phase03/0311/assets/preview.svg",
+      "preview": "/samples/phase03/0311/assets/preview.svg"
     },
     {
       "id": "0312",
       "phase": "03",
       "title": "Friction Surfaces",
-      "description": "Friction Surfaces",
-      "tags": []
+      "description": "Blue ice and brown mud surfaces alter horizontal movement feel. Compare momentum retention and traction as you move across each authored surface strip.",
+      "tags": [
+        "actioninputmap",
+        "actioninputservice",
+        "camera2d",
+        "drawframe",
+        "drawpanel",
+        "followcameratarget",
+        "scene",
+        "themetokens"
+      ],
+      "engineClassesUsed": [
+        "engine/camera/index/Camera2D",
+        "engine/camera/index/followCameraTarget",
+        "engine/core/Engine/Engine",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawPanel",
+        "engine/input/index/ActionInputMap",
+        "engine/input/index/ActionInputService",
+        "engine/scenes/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
+      ],
+      "thumbnail": "/samples/phase03/0312/assets/preview.svg",
+      "preview": "/samples/phase03/0312/assets/preview.svg"
     },
     {
       "id": "0313",
       "phase": "03",
       "title": "Trigger Zones",
-      "description": "Trigger Zones",
-      "tags": []
+      "description": "Demonstrates enter and exit trigger zones. Walk through the colored fields to see one-time enter events, active states, and exit messages without requiring button presses.",
+      "tags": [
+        "actioninputmap",
+        "actioninputservice",
+        "camera2d",
+        "drawframe",
+        "drawpanel",
+        "followcameratarget",
+        "scene",
+        "themetokens"
+      ],
+      "engineClassesUsed": [
+        "engine/camera/index/Camera2D",
+        "engine/camera/index/followCameraTarget",
+        "engine/core/Engine/Engine",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawPanel",
+        "engine/input/index/ActionInputMap",
+        "engine/input/index/ActionInputService",
+        "engine/scenes/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
+      ],
+      "thumbnail": "/samples/phase03/0313/assets/preview.svg",
+      "preview": "/samples/phase03/0313/assets/preview.svg"
     },
     {
       "id": "0314",
       "phase": "03",
       "title": "Pickups Collectibles",
-      "description": "Pickups Collectibles",
-      "tags": []
+      "description": "Demonstrates collectibles that disappear when touched, increment score, and can require jumping to reach elevated items.",
+      "tags": [
+        "actioninputmap",
+        "actioninputservice",
+        "camera2d",
+        "drawframe",
+        "drawpanel",
+        "followcameratarget",
+        "scene",
+        "themetokens"
+      ],
+      "engineClassesUsed": [
+        "engine/camera/index/Camera2D",
+        "engine/camera/index/followCameraTarget",
+        "engine/core/Engine/Engine",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawPanel",
+        "engine/input/index/ActionInputMap",
+        "engine/input/index/ActionInputService",
+        "engine/scenes/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
+      ],
+      "thumbnail": "/samples/phase03/0314/assets/preview.svg",
+      "preview": "/samples/phase03/0314/assets/preview.svg"
     },
     {
       "id": "0315",
       "phase": "03",
       "title": "Switches Buttons",
-      "description": "Switches Buttons",
-      "tags": []
+      "description": "Demonstrates floor buttons and toggled switches. Contact with the red floor pad and interact with the yellow wall switch to change linked state.",
+      "tags": [
+        "actioninputmap",
+        "actioninputservice",
+        "camera2d",
+        "drawframe",
+        "drawpanel",
+        "followcameratarget",
+        "scene",
+        "themetokens"
+      ],
+      "engineClassesUsed": [
+        "engine/camera/index/Camera2D",
+        "engine/camera/index/followCameraTarget",
+        "engine/core/Engine/Engine",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawPanel",
+        "engine/input/index/ActionInputMap",
+        "engine/input/index/ActionInputService",
+        "engine/scenes/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
+      ],
+      "thumbnail": "/samples/phase03/0315/assets/preview.svg",
+      "preview": "/samples/phase03/0315/assets/preview.svg"
     },
     {
       "id": "0316",
       "phase": "03",
       "title": "Doors Gates",
-      "description": "Doors Gates",
-      "tags": []
+      "description": "Demonstrates linked buttons and a door gate. Step on the red button to open the center gate and walk through before it closes again.",
+      "tags": [
+        "actioninputmap",
+        "actioninputservice",
+        "camera2d",
+        "drawframe",
+        "drawpanel",
+        "followcameratarget",
+        "scene",
+        "themetokens"
+      ],
+      "engineClassesUsed": [
+        "engine/camera/index/Camera2D",
+        "engine/camera/index/followCameraTarget",
+        "engine/core/Engine/Engine",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawPanel",
+        "engine/input/index/ActionInputMap",
+        "engine/input/index/ActionInputService",
+        "engine/scenes/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
+      ],
+      "thumbnail": "/samples/phase03/0316/assets/preview.svg",
+      "preview": "/samples/phase03/0316/assets/preview.svg"
     },
     {
       "id": "0317",
       "phase": "03",
       "title": "Basic NPC Entity",
-      "description": "Basic NPC Entity",
-      "tags": []
+      "description": "Demonstrates a basic NPC entity with patrol motion, facing direction, and a simple speech bubble when the player gets close.",
+      "tags": [
+        "actioninputmap",
+        "actioninputservice",
+        "camera2d",
+        "drawframe",
+        "drawpanel",
+        "followcameratarget",
+        "scene",
+        "themetokens"
+      ],
+      "engineClassesUsed": [
+        "engine/camera/index/Camera2D",
+        "engine/camera/index/followCameraTarget",
+        "engine/core/Engine/Engine",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawPanel",
+        "engine/input/index/ActionInputMap",
+        "engine/input/index/ActionInputService",
+        "engine/scenes/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
+      ],
+      "thumbnail": "/samples/phase03/0317/assets/preview.svg",
+      "preview": "/samples/phase03/0317/assets/preview.svg"
     },
     {
       "id": "0318",
       "phase": "03",
       "title": "Interaction Press Key",
-      "description": "Interaction Press Key",
-      "tags": []
+      "description": "Demonstrates a generic press-key interaction system. Walk up to the console, see the prompt, and press E to toggle the target state.",
+      "tags": [
+        "actioninputmap",
+        "actioninputservice",
+        "camera2d",
+        "drawframe",
+        "drawpanel",
+        "followcameratarget",
+        "scene",
+        "themetokens"
+      ],
+      "engineClassesUsed": [
+        "engine/camera/index/Camera2D",
+        "engine/camera/index/followCameraTarget",
+        "engine/core/Engine/Engine",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawPanel",
+        "engine/input/index/ActionInputMap",
+        "engine/input/index/ActionInputService",
+        "engine/scenes/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
+      ],
+      "thumbnail": "/samples/phase03/0318/assets/preview.svg",
+      "preview": "/samples/phase03/0318/assets/preview.svg"
     },
     {
       "id": "0319",
       "phase": "03",
       "title": "Hitboxes Hurtboxes",
-      "description": "Hitboxes Hurtboxes",
-      "tags": []
+      "description": "Demonstrates the difference between an attack hitbox and a hurtbox. Move the player into range and press Space to test overlap.",
+      "tags": [
+        "actioninputmap",
+        "actioninputservice",
+        "drawframe",
+        "drawpanel",
+        "scene",
+        "themetokens"
+      ],
+      "engineClassesUsed": [
+        "engine/core/Engine/Engine",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawPanel",
+        "engine/input/index/ActionInputMap",
+        "engine/input/index/ActionInputService",
+        "engine/scenes/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
+      ],
+      "thumbnail": "/samples/phase03/0319/assets/preview.svg",
+      "preview": "/samples/phase03/0319/assets/preview.svg"
     },
     {
       "id": "0320",
       "phase": "03",
       "title": "Projectile System",
-      "description": "Projectile System",
-      "tags": []
+      "description": "Introduces spawned projectiles with travel, lifetime, cleanup, and simple hit detection. Press F to fire.",
+      "tags": [
+        "actioninputmap",
+        "actioninputservice",
+        "drawframe",
+        "drawpanel",
+        "scene",
+        "themetokens"
+      ],
+      "engineClassesUsed": [
+        "engine/core/Engine/Engine",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawPanel",
+        "engine/input/index/ActionInputMap",
+        "engine/input/index/ActionInputService",
+        "engine/scenes/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
+      ],
+      "thumbnail": "/samples/phase03/0320/assets/preview.svg",
+      "preview": "/samples/phase03/0320/assets/preview.svg"
     },
     {
       "id": "0321",
       "phase": "03",
       "title": "Health System",
-      "description": "Health System",
-      "tags": []
+      "description": "Adds health values, simple damage application, HUD readout, and reset behavior for combat testing.",
+      "tags": [
+        "actioninputmap",
+        "actioninputservice",
+        "drawframe",
+        "drawpanel",
+        "scene",
+        "themetokens"
+      ],
+      "engineClassesUsed": [
+        "engine/core/Engine/Engine",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawPanel",
+        "engine/input/index/ActionInputMap",
+        "engine/input/index/ActionInputService",
+        "engine/scenes/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
+      ],
+      "thumbnail": "/samples/phase03/0321/assets/preview.svg",
+      "preview": "/samples/phase03/0321/assets/preview.svg"
     },
     {
       "id": "0322",
       "phase": "03",
       "title": "Damage Knockback",
-      "description": "Damage Knockback",
-      "tags": []
+      "description": "Adds directional knockback when damage lands so hits feel physical instead of purely numeric.",
+      "tags": [
+        "actioninputmap",
+        "actioninputservice",
+        "drawframe",
+        "drawpanel",
+        "scene",
+        "themetokens"
+      ],
+      "engineClassesUsed": [
+        "engine/core/Engine/Engine",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawPanel",
+        "engine/input/index/ActionInputMap",
+        "engine/input/index/ActionInputService",
+        "engine/scenes/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
+      ],
+      "thumbnail": "/samples/phase03/0322/assets/preview.svg",
+      "preview": "/samples/phase03/0322/assets/preview.svg"
     },
     {
       "id": "0323",
       "phase": "03",
       "title": "Invulnerability Frames",
-      "description": "Invulnerability Frames",
-      "tags": []
+      "description": "Prevents repeated damage every frame during overlap. The target flashes while temporarily invulnerable.",
+      "tags": [
+        "actioninputmap",
+        "actioninputservice",
+        "drawframe",
+        "drawpanel",
+        "scene",
+        "themetokens"
+      ],
+      "engineClassesUsed": [
+        "engine/core/Engine/Engine",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawPanel",
+        "engine/input/index/ActionInputMap",
+        "engine/input/index/ActionInputService",
+        "engine/scenes/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
+      ],
+      "thumbnail": "/samples/phase03/0323/assets/preview.svg",
+      "preview": "/samples/phase03/0323/assets/preview.svg"
     },
     {
       "id": "0324",
       "phase": "03",
       "title": "Simple Enemy AI",
-      "description": "Simple Enemy AI",
-      "tags": []
+      "description": "Adds a simple enemy that idles until the player comes near, then follows. Contact shows the first end-to-end mini combat loop.",
+      "tags": [
+        "actioninputmap",
+        "actioninputservice",
+        "drawframe",
+        "drawpanel",
+        "scene",
+        "themetokens"
+      ],
+      "engineClassesUsed": [
+        "engine/core/Engine/Engine",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawPanel",
+        "engine/input/index/ActionInputMap",
+        "engine/input/index/ActionInputService",
+        "engine/scenes/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
+      ],
+      "thumbnail": "/samples/phase03/0324/assets/preview.svg",
+      "preview": "/samples/phase03/0324/assets/preview.svg"
     },
     {
       "id": "0401",
       "phase": "04",
       "title": "Camera Dead Zone",
-      "description": "Camera Dead Zone",
-      "tags": []
+      "description": "Demonstrates a dead zone where the camera waits before following the actor.",
+      "tags": [
+        "scene",
+        "themetokens"
+      ],
+      "engineClassesUsed": [
+        "engine/core/Engine/Engine",
+        "engine/scenes/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
+      ],
+      "thumbnail": "/samples/phase04/0401/assets/preview.svg",
+      "preview": "/samples/phase04/0401/assets/preview.svg"
     },
     {
       "id": "0402",
       "phase": "04",
       "title": "Camera Look Ahead",
-      "description": "Camera Look Ahead",
-      "tags": []
+      "description": "Demonstrates look-ahead camera movement that anticipates actor direction.",
+      "tags": [
+        "scene",
+        "themetokens"
+      ],
+      "engineClassesUsed": [
+        "engine/core/Engine/Engine",
+        "engine/scenes/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
+      ],
+      "thumbnail": "/samples/phase04/0402/assets/preview.svg",
+      "preview": "/samples/phase04/0402/assets/preview.svg"
     },
     {
       "id": "0403",
       "phase": "04",
       "title": "Camera Smoothing",
-      "description": "Camera Smoothing",
-      "tags": []
+      "description": "Demonstrates smoothed camera movement instead of a hard snap follow.",
+      "tags": [
+        "scene",
+        "themetokens"
+      ],
+      "engineClassesUsed": [
+        "engine/core/Engine/Engine",
+        "engine/scenes/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
+      ],
+      "thumbnail": "/samples/phase04/0403/assets/preview.svg",
+      "preview": "/samples/phase04/0403/assets/preview.svg"
     },
     {
       "id": "0404",
       "phase": "04",
       "title": "Camera Bounds",
-      "description": "Camera Bounds",
-      "tags": []
+      "description": "Demonstrates clamped camera travel inside world bounds.",
+      "tags": [
+        "scene",
+        "themetokens"
+      ],
+      "engineClassesUsed": [
+        "engine/core/Engine/Engine",
+        "engine/scenes/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
+      ],
+      "thumbnail": "/samples/phase04/0404/assets/preview.svg",
+      "preview": "/samples/phase04/0404/assets/preview.svg"
     },
     {
       "id": "0405",
       "phase": "04",
       "title": "Camera Shake",
-      "description": "Camera Shake",
-      "tags": []
+      "description": "Demonstrates a simple camera shake effect triggered during play.",
+      "tags": [
+        "scene",
+        "themetokens"
+      ],
+      "engineClassesUsed": [
+        "engine/core/Engine/Engine",
+        "engine/scenes/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
+      ],
+      "thumbnail": "/samples/phase04/0405/assets/preview.svg",
+      "preview": "/samples/phase04/0405/assets/preview.svg"
     },
     {
       "id": "0406",
       "phase": "04",
       "title": "Camera Zoom",
-      "description": "Camera Zoom",
-      "tags": []
+      "description": "Demonstrates the same actor-centered world at multiple camera zoom levels.",
+      "tags": [
+        "scene",
+        "themetokens"
+      ],
+      "engineClassesUsed": [
+        "engine/core/Engine/Engine",
+        "engine/scenes/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
+      ],
+      "thumbnail": "/samples/phase04/0406/assets/preview.svg",
+      "preview": "/samples/phase04/0406/assets/preview.svg"
     },
     {
       "id": "0407",
       "phase": "04",
       "title": "Input Buffering",
-      "description": "Input Buffering",
-      "tags": []
+      "description": "Demonstrates queued input that executes when the action becomes valid.",
+      "tags": [
+        "actioninputmap",
+        "actioninputservice",
+        "drawframe",
+        "drawpanel",
+        "scene",
+        "themetokens"
+      ],
+      "engineClassesUsed": [
+        "engine/core/Engine/Engine",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawPanel",
+        "engine/input/index/ActionInputMap",
+        "engine/input/index/ActionInputService",
+        "engine/scenes/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
+      ],
+      "thumbnail": "/samples/phase04/0407/assets/preview.svg",
+      "preview": "/samples/phase04/0407/assets/preview.svg"
     },
     {
       "id": "0408",
       "phase": "04",
       "title": "Input Queue Priority",
-      "description": "Input Queue Priority",
-      "tags": []
+      "description": "Demonstrates queued actions resolving by configured priority.",
+      "tags": [
+        "actioninputmap",
+        "actioninputservice",
+        "drawframe",
+        "drawpanel",
+        "scene",
+        "themetokens"
+      ],
+      "engineClassesUsed": [
+        "engine/core/Engine/Engine",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawPanel",
+        "engine/input/index/ActionInputMap",
+        "engine/input/index/ActionInputService",
+        "engine/scenes/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
+      ],
+      "thumbnail": "/samples/phase04/0408/assets/preview.svg",
+      "preview": "/samples/phase04/0408/assets/preview.svg"
     },
     {
       "id": "0409",
       "phase": "04",
       "title": "Input Timing Windows",
-      "description": "Input Timing Windows",
-      "tags": []
+      "description": "Demonstrates valid input only during configured timing windows.",
+      "tags": [
+        "actioninputmap",
+        "actioninputservice",
+        "drawframe",
+        "drawpanel",
+        "scene",
+        "themetokens"
+      ],
+      "engineClassesUsed": [
+        "engine/core/Engine/Engine",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawPanel",
+        "engine/input/index/ActionInputMap",
+        "engine/input/index/ActionInputService",
+        "engine/scenes/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
+      ],
+      "thumbnail": "/samples/phase04/0409/assets/preview.svg",
+      "preview": "/samples/phase04/0409/assets/preview.svg"
     },
     {
       "id": "0410",
       "phase": "04",
       "title": "Action Cooldowns",
-      "description": "Action Cooldowns",
-      "tags": []
+      "description": "Demonstrates reusable cooldown timers for actions.",
+      "tags": [
+        "actioninputmap",
+        "actioninputservice",
+        "drawframe",
+        "drawpanel",
+        "scene",
+        "themetokens"
+      ],
+      "engineClassesUsed": [
+        "engine/core/Engine/Engine",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawPanel",
+        "engine/input/index/ActionInputMap",
+        "engine/input/index/ActionInputService",
+        "engine/scenes/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
+      ],
+      "thumbnail": "/samples/phase04/0410/assets/preview.svg",
+      "preview": "/samples/phase04/0410/assets/preview.svg"
     },
     {
       "id": "0411",
       "phase": "04",
       "title": "Input Chaining",
-      "description": "Input Chaining",
-      "tags": []
+      "description": "Demonstrates named input sequences triggering chained actions.",
+      "tags": [
+        "actioninputmap",
+        "actioninputservice",
+        "drawframe",
+        "drawpanel",
+        "scene",
+        "themetokens"
+      ],
+      "engineClassesUsed": [
+        "engine/core/Engine/Engine",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawPanel",
+        "engine/input/index/ActionInputMap",
+        "engine/input/index/ActionInputService",
+        "engine/scenes/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
+      ],
+      "thumbnail": "/samples/phase04/0411/assets/preview.svg",
+      "preview": "/samples/phase04/0411/assets/preview.svg"
     },
     {
       "id": "0412",
       "phase": "04",
       "title": "Input State Debug Overlay",
-      "description": "Input State Debug Overlay",
-      "tags": []
+      "description": "Demonstrates a live debug overlay for action input states.",
+      "tags": [
+        "actioninputmap",
+        "actioninputservice",
+        "drawactioninputdebugoverlay",
+        "drawframe",
+        "scene",
+        "themetokens"
+      ],
+      "engineClassesUsed": [
+        "engine/core/Engine/Engine",
+        "engine/debug/index/drawFrame",
+        "engine/input/index/ActionInputMap",
+        "engine/input/index/ActionInputService",
+        "engine/input/index/drawActionInputDebugOverlay",
+        "engine/scenes/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
+      ],
+      "thumbnail": "/samples/phase04/0412/assets/preview.svg",
+      "preview": "/samples/phase04/0412/assets/preview.svg"
     },
     {
       "id": "0501",
       "phase": "05",
       "title": "Hitboxes Hurtboxes",
-      "description": "Hitboxes Hurtboxes",
-      "tags": []
+      "description": "Demonstrates reusable attack overlap regions and target hurtboxes.",
+      "tags": [
+        "actioninputmap",
+        "actioninputservice",
+        "createattackprofile",
+        "createcombatant",
+        "drawframe",
+        "drawpanel",
+        "findattackoverlaps",
+        "getattackhitboxes",
+        "getcombatanthurtboxes",
+        "isattackactive",
+        "scene",
+        "startattack",
+        "themetokens",
+        "updateattackstate"
+      ],
+      "engineClassesUsed": [
+        "engine/combat/index/createAttackProfile",
+        "engine/combat/index/createCombatant",
+        "engine/combat/index/findAttackOverlaps",
+        "engine/combat/index/getAttackHitboxes",
+        "engine/combat/index/getCombatantHurtboxes",
+        "engine/combat/index/isAttackActive",
+        "engine/combat/index/startAttack",
+        "engine/combat/index/updateAttackState",
+        "engine/core/Engine/Engine",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawPanel",
+        "engine/input/index/ActionInputMap",
+        "engine/input/index/ActionInputService",
+        "engine/scenes/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
+      ],
+      "thumbnail": "/samples/phase05/0501/assets/preview.svg",
+      "preview": "/samples/phase05/0501/assets/preview.svg"
     },
     {
       "id": "0502",
       "phase": "05",
       "title": "Attack Timing Windows",
-      "description": "Attack Timing Windows",
-      "tags": []
+      "description": "Demonstrates startup, active, and recovery timing windows for attacks.",
+      "tags": [
+        "actioninputmap",
+        "actioninputservice",
+        "createattackprofile",
+        "createcombatant",
+        "drawframe",
+        "drawpanel",
+        "findattackoverlaps",
+        "getattackphaseprogress",
+        "isattackactive",
+        "scene",
+        "startattack",
+        "themetokens",
+        "updateattackstate"
+      ],
+      "engineClassesUsed": [
+        "engine/combat/index/createAttackProfile",
+        "engine/combat/index/createCombatant",
+        "engine/combat/index/findAttackOverlaps",
+        "engine/combat/index/getAttackPhaseProgress",
+        "engine/combat/index/isAttackActive",
+        "engine/combat/index/startAttack",
+        "engine/combat/index/updateAttackState",
+        "engine/core/Engine/Engine",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawPanel",
+        "engine/input/index/ActionInputMap",
+        "engine/input/index/ActionInputService",
+        "engine/scenes/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
+      ],
+      "thumbnail": "/samples/phase05/0502/assets/preview.svg",
+      "preview": "/samples/phase05/0502/assets/preview.svg"
     },
     {
       "id": "0503",
       "phase": "05",
       "title": "Damage Invulnerability",
-      "description": "Damage Invulnerability",
-      "tags": []
+      "description": "Demonstrates damage application with temporary invulnerability after a hit.",
+      "tags": [
+        "actioninputmap",
+        "actioninputservice",
+        "applyattackoverlaps",
+        "createattackprofile",
+        "createcombatant",
+        "drawframe",
+        "drawpanel",
+        "scene",
+        "startattack",
+        "themetokens",
+        "updateattackstate",
+        "updatecombatant"
+      ],
+      "engineClassesUsed": [
+        "engine/combat/index/applyAttackOverlaps",
+        "engine/combat/index/createAttackProfile",
+        "engine/combat/index/createCombatant",
+        "engine/combat/index/startAttack",
+        "engine/combat/index/updateAttackState",
+        "engine/combat/index/updateCombatant",
+        "engine/core/Engine/Engine",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawPanel",
+        "engine/input/index/ActionInputMap",
+        "engine/input/index/ActionInputService",
+        "engine/scenes/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
+      ],
+      "thumbnail": "/samples/phase05/0503/assets/preview.svg",
+      "preview": "/samples/phase05/0503/assets/preview.svg"
     },
     {
       "id": "0504",
       "phase": "05",
       "title": "Knockback Response",
-      "description": "Knockback Response",
-      "tags": []
+      "description": "Demonstrates reusable directional knockback when damage lands.",
+      "tags": [
+        "actioninputmap",
+        "actioninputservice",
+        "applyattackoverlaps",
+        "createattackprofile",
+        "createcombatant",
+        "drawframe",
+        "drawpanel",
+        "scene",
+        "startattack",
+        "themetokens",
+        "updateattackstate",
+        "updatecombatant"
+      ],
+      "engineClassesUsed": [
+        "engine/combat/index/applyAttackOverlaps",
+        "engine/combat/index/createAttackProfile",
+        "engine/combat/index/createCombatant",
+        "engine/combat/index/startAttack",
+        "engine/combat/index/updateAttackState",
+        "engine/combat/index/updateCombatant",
+        "engine/core/Engine/Engine",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawPanel",
+        "engine/input/index/ActionInputMap",
+        "engine/input/index/ActionInputService",
+        "engine/scenes/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
+      ],
+      "thumbnail": "/samples/phase05/0504/assets/preview.svg",
+      "preview": "/samples/phase05/0504/assets/preview.svg"
     },
     {
       "id": "0505",
       "phase": "05",
       "title": "Health Death State",
-      "description": "Health Death State",
-      "tags": []
+      "description": "Demonstrates health reduction to zero and a reusable dead disabled state.",
+      "tags": [
+        "actioninputmap",
+        "actioninputservice",
+        "applyattackoverlaps",
+        "createattackprofile",
+        "createcombatant",
+        "drawframe",
+        "drawpanel",
+        "scene",
+        "startattack",
+        "themetokens",
+        "updateattackstate",
+        "updatecombatant"
+      ],
+      "engineClassesUsed": [
+        "engine/combat/index/applyAttackOverlaps",
+        "engine/combat/index/createAttackProfile",
+        "engine/combat/index/createCombatant",
+        "engine/combat/index/startAttack",
+        "engine/combat/index/updateAttackState",
+        "engine/combat/index/updateCombatant",
+        "engine/core/Engine/Engine",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawPanel",
+        "engine/input/index/ActionInputMap",
+        "engine/input/index/ActionInputService",
+        "engine/scenes/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
+      ],
+      "thumbnail": "/samples/phase05/0505/assets/preview.svg",
+      "preview": "/samples/phase05/0505/assets/preview.svg"
     },
     {
       "id": "0506",
       "phase": "05",
       "title": "Combat Debug Overlay",
-      "description": "Combat Debug Overlay",
-      "tags": []
+      "description": "Demonstrates an engine-owned overlay for hitboxes, hurtboxes, timing, health, and invulnerability.",
+      "tags": [
+        "actioninputmap",
+        "actioninputservice",
+        "applyattackoverlaps",
+        "createattackprofile",
+        "createcombatant",
+        "drawcombatdebugoverlay",
+        "drawframe",
+        "drawpanel",
+        "scene",
+        "startattack",
+        "themetokens",
+        "updateattackstate",
+        "updatecombatant"
+      ],
+      "engineClassesUsed": [
+        "engine/combat/index/applyAttackOverlaps",
+        "engine/combat/index/createAttackProfile",
+        "engine/combat/index/createCombatant",
+        "engine/combat/index/startAttack",
+        "engine/combat/index/updateAttackState",
+        "engine/combat/index/updateCombatant",
+        "engine/core/Engine/Engine",
+        "engine/debug/index/drawCombatDebugOverlay",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawPanel",
+        "engine/input/index/ActionInputMap",
+        "engine/input/index/ActionInputService",
+        "engine/scenes/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
+      ],
+      "thumbnail": "/samples/phase05/0506/assets/preview.svg",
+      "preview": "/samples/phase05/0506/assets/preview.svg"
     },
     {
       "id": "0507",
       "phase": "05",
       "title": "Event Bus",
-      "description": "Event Bus",
-      "tags": []
+      "description": "Demonstrates engine-owned publish and subscribe flow without direct object coupling.",
+      "tags": [
+        "actioninputmap",
+        "actioninputservice",
+        "drawframe",
+        "drawpanel",
+        "scene",
+        "themetokens"
+      ],
+      "engineClassesUsed": [
+        "engine/core/Engine/Engine",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawPanel",
+        "engine/input/index/ActionInputMap",
+        "engine/input/index/ActionInputService",
+        "engine/scenes/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
+      ],
+      "thumbnail": "/samples/phase05/0507/assets/preview.svg",
+      "preview": "/samples/phase05/0507/assets/preview.svg"
     },
     {
       "id": "0508",
       "phase": "05",
       "title": "State Machine Framework",
-      "description": "State Machine Framework",
-      "tags": []
+      "description": "Demonstrates reusable state definitions with enter, update, exit, and guarded transitions.",
+      "tags": [
+        "actioninputmap",
+        "actioninputservice",
+        "drawframe",
+        "drawpanel",
+        "scene",
+        "statemachine",
+        "themetokens"
+      ],
+      "engineClassesUsed": [
+        "engine/core/Engine/Engine",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawPanel",
+        "engine/input/index/ActionInputMap",
+        "engine/input/index/ActionInputService",
+        "engine/scenes/index/Scene",
+        "engine/state/index/StateMachine",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
+      ],
+      "thumbnail": "/samples/phase05/0508/assets/preview.svg",
+      "preview": "/samples/phase05/0508/assets/preview.svg"
     },
     {
       "id": "0509",
       "phase": "05",
       "title": "Config System",
-      "description": "Config System",
-      "tags": []
+      "description": "Demonstrates JSON-driven configuration loaded through an engine-owned config store.",
+      "tags": [
+        "actioninputmap",
+        "actioninputservice",
+        "configstore",
+        "drawframe",
+        "drawpanel",
+        "scene",
+        "themetokens"
+      ],
+      "engineClassesUsed": [
+        "engine/config/index/ConfigStore",
+        "engine/core/Engine/Engine",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawPanel",
+        "engine/input/index/ActionInputMap",
+        "engine/input/index/ActionInputService",
+        "engine/scenes/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
+      ],
+      "thumbnail": "/samples/phase05/0509/assets/preview.svg",
+      "preview": "/samples/phase05/0509/assets/preview.svg"
     },
     {
       "id": "0510",
       "phase": "05",
       "title": "Asset Loader System",
-      "description": "Asset Loader System",
-      "tags": []
+      "description": "Demonstrates deterministic engine-owned asset loading and status reporting.",
+      "tags": [
+        "assetloadersystem",
+        "assetregistry",
+        "drawframe",
+        "drawpanel",
+        "imageassetloader",
+        "scene",
+        "themetokens"
+      ],
+      "engineClassesUsed": [
+        "engine/assets/index/AssetLoaderSystem",
+        "engine/assets/index/AssetRegistry",
+        "engine/assets/index/ImageAssetLoader",
+        "engine/core/Engine/Engine",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawPanel",
+        "engine/scenes/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
+      ],
+      "thumbnail": "/samples/phase05/0510/assets/preview.svg",
+      "preview": "/samples/phase05/0510/assets/preview.svg"
     },
     {
       "id": "0511",
       "phase": "05",
       "title": "Debug Tools",
-      "description": "Debug Tools",
-      "tags": []
+      "description": "Demonstrates reusable overlays and bounds visualization through engine debug helpers.",
+      "tags": [
+        "actioninputmap",
+        "actioninputservice",
+        "drawdebugbounds",
+        "drawdebugoverlay",
+        "drawframe",
+        "scene",
+        "themetokens"
+      ],
+      "engineClassesUsed": [
+        "engine/core/Engine/Engine",
+        "engine/debug/index/drawDebugBounds",
+        "engine/debug/index/drawDebugOverlay",
+        "engine/debug/index/drawFrame",
+        "engine/input/index/ActionInputMap",
+        "engine/input/index/ActionInputService",
+        "engine/scenes/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
+      ],
+      "thumbnail": "/samples/phase05/0511/assets/preview.svg",
+      "preview": "/samples/phase05/0511/assets/preview.svg"
     },
     {
       "id": "0512",
       "phase": "05",
       "title": "Performance Metrics",
-      "description": "Performance Metrics",
-      "tags": []
+      "description": "Demonstrates engine-owned runtime timing instrumentation through a reusable metrics panel.",
+      "tags": [
+        "drawframe",
+        "drawperformancemetricspanel",
+        "scene",
+        "themetokens"
+      ],
+      "engineClassesUsed": [
+        "engine/core/Engine/Engine",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawPerformanceMetricsPanel",
+        "engine/scenes/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
+      ],
+      "thumbnail": "/samples/phase05/0512/assets/preview.svg",
+      "preview": "/samples/phase05/0512/assets/preview.svg"
     },
     {
       "id": "0601",
       "phase": "06",
       "title": "Grid Pathfinding",
-      "description": "Grid Pathfinding",
-      "tags": []
+      "description": "Demonstrates engine-owned A* pathfinding across a blocked grid.",
+      "tags": [
+        "advancepatrolroute",
+        "drawframe",
+        "drawpanel",
+        "findgridpath",
+        "scene",
+        "themetokens"
+      ],
+      "engineClassesUsed": [
+        "engine/ai/index/advancePatrolRoute",
+        "engine/ai/index/findGridPath",
+        "engine/core/Engine/Engine",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawPanel",
+        "engine/scenes/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
+      ],
+      "thumbnail": "/samples/phase06/0601/assets/preview.svg",
+      "preview": "/samples/phase06/0601/assets/preview.svg"
     },
     {
       "id": "0602",
       "phase": "06",
       "title": "Patrol AI",
-      "description": "Patrol AI",
-      "tags": []
+      "description": "Demonstrates reusable patrol movement across a data-driven route.",
+      "tags": [
+        "advancepatrolroute",
+        "drawframe",
+        "drawpanel",
+        "scene",
+        "themetokens"
+      ],
+      "engineClassesUsed": [
+        "engine/ai/index/advancePatrolRoute",
+        "engine/core/Engine/Engine",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawPanel",
+        "engine/scenes/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
+      ],
+      "thumbnail": "/samples/phase06/0602/assets/preview.svg",
+      "preview": "/samples/phase06/0602/assets/preview.svg"
     },
     {
       "id": "0603",
       "phase": "06",
       "title": "Chase Evade AI",
-      "description": "Chase Evade AI",
-      "tags": []
+      "description": "Demonstrates reusable steering behaviors for pursuit and avoidance.",
+      "tags": [
+        "actioninputmap",
+        "actioninputservice",
+        "drawframe",
+        "drawpanel",
+        "scene",
+        "stepchasebehavior",
+        "stepevadebehavior",
+        "themetokens"
+      ],
+      "engineClassesUsed": [
+        "engine/ai/index/stepChaseBehavior",
+        "engine/ai/index/stepEvadeBehavior",
+        "engine/core/Engine/Engine",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawPanel",
+        "engine/input/index/ActionInputMap",
+        "engine/input/index/ActionInputService",
+        "engine/scenes/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
+      ],
+      "thumbnail": "/samples/phase06/0603/assets/preview.svg",
+      "preview": "/samples/phase06/0603/assets/preview.svg"
     },
     {
       "id": "0604",
       "phase": "06",
       "title": "State Driven AI",
-      "description": "State Driven AI",
-      "tags": []
+      "description": "Demonstrates reusable AI orchestration switching behaviors through state control.",
+      "tags": [
+        "actioninputmap",
+        "actioninputservice",
+        "advancepatrolroute",
+        "aistatecontroller",
+        "drawframe",
+        "drawpanel",
+        "scene",
+        "stepchasebehavior",
+        "themetokens"
+      ],
+      "engineClassesUsed": [
+        "engine/ai/index/AIStateController",
+        "engine/ai/index/advancePatrolRoute",
+        "engine/ai/index/stepChaseBehavior",
+        "engine/core/Engine/Engine",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawPanel",
+        "engine/input/index/ActionInputMap",
+        "engine/input/index/ActionInputService",
+        "engine/scenes/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
+      ],
+      "thumbnail": "/samples/phase06/0604/assets/preview.svg",
+      "preview": "/samples/phase06/0604/assets/preview.svg"
     },
     {
       "id": "0605",
       "phase": "06",
       "title": "Group Behaviors",
-      "description": "Group Behaviors",
-      "tags": []
+      "description": "Demonstrates reusable coordinated movement tendencies across a group of agents.",
+      "tags": [
+        "drawframe",
+        "drawpanel",
+        "scene",
+        "stepgroupbehavior",
+        "themetokens"
+      ],
+      "engineClassesUsed": [
+        "engine/ai/index/stepGroupBehavior",
+        "engine/core/Engine/Engine",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawPanel",
+        "engine/scenes/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
+      ],
+      "thumbnail": "/samples/phase06/0605/assets/preview.svg",
+      "preview": "/samples/phase06/0605/assets/preview.svg"
     },
     {
       "id": "0606",
       "phase": "06",
       "title": "Quest System",
-      "description": "Quest System",
-      "tags": []
+      "description": "Demonstrates data-driven quest tracking through an engine-owned system.",
+      "tags": [
+        "actioninputmap",
+        "actioninputservice",
+        "drawframe",
+        "drawpanel",
+        "questsystem",
+        "scene",
+        "themetokens"
+      ],
+      "engineClassesUsed": [
+        "engine/core/Engine/Engine",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawPanel",
+        "engine/input/index/ActionInputMap",
+        "engine/input/index/ActionInputService",
+        "engine/scenes/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens",
+        "engine/world/index/QuestSystem"
+      ],
+      "thumbnail": "/samples/phase06/0606/assets/preview.svg",
+      "preview": "/samples/phase06/0606/assets/preview.svg"
     },
     {
       "id": "0607",
       "phase": "06",
       "title": "Scripting System",
-      "description": "Scripting System",
-      "tags": []
+      "description": "Demonstrates reusable event-driven scripting through engine-owned script registration.",
+      "tags": [
+        "actioninputmap",
+        "actioninputservice",
+        "drawframe",
+        "drawpanel",
+        "eventscriptsystem",
+        "scene",
+        "themetokens"
+      ],
+      "engineClassesUsed": [
+        "engine/core/Engine/Engine",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawPanel",
+        "engine/input/index/ActionInputMap",
+        "engine/input/index/ActionInputService",
+        "engine/scenes/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens",
+        "engine/world/index/EventScriptSystem"
+      ],
+      "thumbnail": "/samples/phase06/0607/assets/preview.svg",
+      "preview": "/samples/phase06/0607/assets/preview.svg"
     },
     {
       "id": "0608",
       "phase": "06",
       "title": "Cutscene System",
-      "description": "Cutscene System",
-      "tags": []
+      "description": "Demonstrates reusable timed sequencing for scripted cutscene steps.",
+      "tags": [
+        "cutscenesystem",
+        "drawframe",
+        "drawpanel",
+        "scene",
+        "themetokens"
+      ],
+      "engineClassesUsed": [
+        "engine/core/Engine/Engine",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawPanel",
+        "engine/scenes/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens",
+        "engine/world/index/CutsceneSystem"
+      ],
+      "thumbnail": "/samples/phase06/0608/assets/preview.svg",
+      "preview": "/samples/phase06/0608/assets/preview.svg"
     },
     {
       "id": "0609",
       "phase": "06",
       "title": "Spawn System",
-      "description": "Spawn System",
-      "tags": []
+      "description": "Demonstrates reusable timed spawning rules through an engine-owned spawn system.",
+      "tags": [
+        "drawframe",
+        "drawpanel",
+        "scene",
+        "themetokens"
+      ],
+      "engineClassesUsed": [
+        "engine/core/Engine/Engine",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawPanel",
+        "engine/scenes/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
+      ],
+      "thumbnail": "/samples/phase06/0609/assets/preview.svg",
+      "preview": "/samples/phase06/0609/assets/preview.svg"
     },
     {
       "id": "0610",
       "phase": "06",
       "title": "Day Night Cycle",
-      "description": "Day Night Cycle",
-      "tags": []
+      "description": "Demonstrates reusable time-of-day tracking affecting world presentation.",
+      "tags": [
+        "daynightcycle",
+        "drawframe",
+        "drawpanel",
+        "scene",
+        "themetokens"
+      ],
+      "engineClassesUsed": [
+        "engine/core/Engine/Engine",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawPanel",
+        "engine/scenes/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens",
+        "engine/world/index/DayNightCycle"
+      ],
+      "thumbnail": "/samples/phase06/0610/assets/preview.svg",
+      "preview": "/samples/phase06/0610/assets/preview.svg"
     },
     {
       "id": "0611",
       "phase": "06",
       "title": "Weather Animation",
-      "description": "Weather Animation",
-      "tags": []
+      "description": "Demonstrates animated rain and wind layered on top of the engine weather state system.",
+      "tags": [
+        "drawframe",
+        "drawpanel",
+        "scene",
+        "themetokens",
+        "weathersystem"
+      ],
+      "engineClassesUsed": [
+        "engine/core/Engine/Engine",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawPanel",
+        "engine/scenes/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens",
+        "engine/world/index/WeatherSystem"
+      ],
+      "thumbnail": "/samples/phase06/0611/assets/preview.svg",
+      "preview": "/samples/phase06/0611/assets/preview.svg"
     },
     {
       "id": "0612",
       "phase": "06",
       "title": "Weather System",
-      "description": "Weather System",
-      "tags": []
+      "description": "Demonstrates reusable weather state management affecting presentation.",
+      "tags": [
+        "drawframe",
+        "drawpanel",
+        "scene",
+        "themetokens",
+        "weathersystem"
+      ],
+      "engineClassesUsed": [
+        "engine/core/Engine/Engine",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawPanel",
+        "engine/scenes/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens",
+        "engine/world/index/WeatherSystem"
+      ],
+      "thumbnail": "/samples/phase06/0612/assets/preview.svg",
+      "preview": "/samples/phase06/0612/assets/preview.svg"
     },
     {
       "id": "0613",
       "phase": "06",
       "title": "World Streaming",
-      "description": "World Streaming",
-      "tags": []
+      "description": "Demonstrates reusable chunk loading logic driven by player position.",
+      "tags": [
+        "actioninputmap",
+        "actioninputservice",
+        "drawframe",
+        "drawpanel",
+        "scene",
+        "themetokens",
+        "worldstreamingsystem"
+      ],
+      "engineClassesUsed": [
+        "engine/core/Engine/Engine",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawPanel",
+        "engine/input/index/ActionInputMap",
+        "engine/input/index/ActionInputService",
+        "engine/scenes/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens",
+        "engine/world/index/WorldStreamingSystem"
+      ],
+      "thumbnail": "/samples/phase06/0613/assets/preview.svg",
+      "preview": "/samples/phase06/0613/assets/preview.svg"
     },
     {
       "id": "0701",
       "phase": "07",
       "title": "Input Remapping",
-      "description": "Input Remapping",
-      "tags": []
+      "description": "Demonstrates engine-owned action remapping without changing scene logic.",
+      "tags": [
+        "actioninputmap",
+        "actioninputservice",
+        "drawframe",
+        "drawpanel",
+        "scene",
+        "themetokens"
+      ],
+      "engineClassesUsed": [
+        "engine/core/Engine/Engine",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawPanel",
+        "engine/input/index/ActionInputMap",
+        "engine/input/index/ActionInputService",
+        "engine/scenes/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
+      ],
+      "thumbnail": "/samples/phase07/0701/assets/preview.svg",
+      "preview": "/samples/phase07/0701/assets/preview.svg"
     },
     {
       "id": "0702",
       "phase": "07",
       "title": "Controller Support",
-      "description": "Controller Support",
-      "tags": []
+      "description": "Demonstrates controller-style bindings mapped through the normal action input system.",
+      "tags": [
+        "actioninputmap",
+        "actioninputservice",
+        "drawframe",
+        "drawpanel",
+        "scene",
+        "themetokens"
+      ],
+      "engineClassesUsed": [
+        "engine/core/Engine/Engine",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawPanel",
+        "engine/input/index/ActionInputMap",
+        "engine/input/index/ActionInputService",
+        "engine/scenes/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
+      ],
+      "thumbnail": "/samples/phase07/0702/assets/preview.svg",
+      "preview": "/samples/phase07/0702/assets/preview.svg"
     },
     {
       "id": "0703",
       "phase": "07",
       "title": "Resolution Scaling",
-      "description": "Resolution Scaling",
-      "tags": []
+      "description": "Demonstrates reusable scale-driven presentation sizing.",
+      "tags": [
+        "actioninputmap",
+        "actioninputservice",
+        "drawframe",
+        "drawpanel",
+        "resolutionscaler",
+        "scene",
+        "themetokens"
+      ],
+      "engineClassesUsed": [
+        "engine/core/Engine/Engine",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawPanel",
+        "engine/input/index/ActionInputMap",
+        "engine/input/index/ActionInputService",
+        "engine/render/index/ResolutionScaler",
+        "engine/scenes/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
+      ],
+      "thumbnail": "/samples/phase07/0703/assets/preview.svg",
+      "preview": "/samples/phase07/0703/assets/preview.svg"
     },
     {
       "id": "0704",
       "phase": "07",
       "title": "Mobile Support",
-      "description": "Mobile Support",
-      "tags": []
+      "description": "Demonstrates reusable mobile-oriented runtime sizing adjustments.",
+      "tags": [
+        "drawframe",
+        "drawpanel",
+        "mobileruntimetweaks",
+        "scene",
+        "themetokens"
+      ],
+      "engineClassesUsed": [
+        "engine/core/Engine/Engine",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawPanel",
+        "engine/runtime/index/MobileRuntimeTweaks",
+        "engine/scenes/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
+      ],
+      "thumbnail": "/samples/phase07/0704/assets/preview.svg",
+      "preview": "/samples/phase07/0704/assets/preview.svg"
     },
     {
       "id": "0705",
       "phase": "07",
       "title": "Asset Optimization",
-      "description": "Asset Optimization",
-      "tags": []
+      "description": "Demonstrates engine-owned asset caching and reuse.",
+      "tags": [
+        "assetloadersystem",
+        "assetoptimizer",
+        "assetregistry",
+        "drawframe",
+        "drawpanel",
+        "imageassetloader",
+        "scene",
+        "themetokens"
+      ],
+      "engineClassesUsed": [
+        "engine/assets/index/AssetLoaderSystem",
+        "engine/assets/index/AssetOptimizer",
+        "engine/assets/index/AssetRegistry",
+        "engine/assets/index/ImageAssetLoader",
+        "engine/core/Engine/Engine",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawPanel",
+        "engine/scenes/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
+      ],
+      "thumbnail": "/samples/phase07/0705/assets/preview.svg",
+      "preview": "/samples/phase07/0705/assets/preview.svg"
     },
     {
       "id": "0706",
       "phase": "07",
       "title": "Memory Management",
-      "description": "Memory Management",
-      "tags": []
+      "description": "Demonstrates engine-owned pooling and cleanup patterns for long-running samples.",
+      "tags": [
+        "disposablestore",
+        "drawframe",
+        "drawpanel",
+        "objectpool",
+        "scene",
+        "themetokens"
+      ],
+      "engineClassesUsed": [
+        "engine/core/Engine/Engine",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawPanel",
+        "engine/memory/index/DisposableStore",
+        "engine/memory/index/ObjectPool",
+        "engine/scenes/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
+      ],
+      "thumbnail": "/samples/phase07/0706/assets/preview.svg",
+      "preview": "/samples/phase07/0706/assets/preview.svg"
     },
     {
       "id": "0707",
       "phase": "07",
       "title": "Save Compression",
-      "description": "Save Compression",
-      "tags": []
+      "description": "Demonstrates engine-owned compressed save and restore flow.",
+      "tags": [
+        "actioninputmap",
+        "actioninputservice",
+        "compressjson",
+        "decompressjson",
+        "drawframe",
+        "drawpanel",
+        "scene",
+        "themetokens"
+      ],
+      "engineClassesUsed": [
+        "engine/core/Engine/Engine",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawPanel",
+        "engine/input/index/ActionInputMap",
+        "engine/input/index/ActionInputService",
+        "engine/persistence/index/compressJson",
+        "engine/persistence/index/decompressJson",
+        "engine/scenes/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
+      ],
+      "thumbnail": "/samples/phase07/0707/assets/preview.svg",
+      "preview": "/samples/phase07/0707/assets/preview.svg"
     },
     {
       "id": "0708",
       "phase": "07",
       "title": "Replay System",
-      "description": "Replay System",
-      "tags": []
+      "description": "Demonstrates engine-owned session recording and playback.",
+      "tags": [
+        "actioninputmap",
+        "actioninputservice",
+        "drawframe",
+        "drawpanel",
+        "replaysystem",
+        "scene",
+        "themetokens"
+      ],
+      "engineClassesUsed": [
+        "engine/core/Engine/Engine",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawPanel",
+        "engine/input/index/ActionInputMap",
+        "engine/input/index/ActionInputService",
+        "engine/replay/index/ReplaySystem",
+        "engine/scenes/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
+      ],
+      "thumbnail": "/samples/phase07/0708/assets/preview.svg",
+      "preview": "/samples/phase07/0708/assets/preview.svg"
     },
     {
       "id": "0709",
       "phase": "07",
       "title": "Mini Map System",
-      "description": "Mini Map System",
-      "tags": []
+      "description": "Demonstrates reusable mini-map presentation through engine-owned paths.",
+      "tags": [
+        "actioninputmap",
+        "actioninputservice",
+        "drawframe",
+        "drawminimap",
+        "scene",
+        "themetokens"
+      ],
+      "engineClassesUsed": [
+        "engine/core/Engine/Engine",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawMinimap",
+        "engine/input/index/ActionInputMap",
+        "engine/input/index/ActionInputService",
+        "engine/scenes/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
+      ],
+      "thumbnail": "/samples/phase07/0709/assets/preview.svg",
+      "preview": "/samples/phase07/0709/assets/preview.svg"
     },
     {
       "id": "0710",
       "phase": "07",
       "title": "Achievements System",
-      "description": "Achievements System",
-      "tags": []
+      "description": "Demonstrates reusable milestone tracking and unlocks.",
+      "tags": [
+        "achievementsystem",
+        "actioninputmap",
+        "actioninputservice",
+        "drawframe",
+        "drawpanel",
+        "scene",
+        "themetokens"
+      ],
+      "engineClassesUsed": [
+        "engine/core/Engine/Engine",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawPanel",
+        "engine/input/index/ActionInputMap",
+        "engine/input/index/ActionInputService",
+        "engine/scenes/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens",
+        "engine/world/index/AchievementSystem"
+      ],
+      "thumbnail": "/samples/phase07/0710/assets/preview.svg",
+      "preview": "/samples/phase07/0710/assets/preview.svg"
     },
     {
       "id": "0711",
       "phase": "07",
       "title": "Localization System",
-      "description": "Localization System",
-      "tags": []
+      "description": "Demonstrates engine-owned language lookup and visible language switching.",
+      "tags": [
+        "actioninputmap",
+        "actioninputservice",
+        "drawframe",
+        "drawpanel",
+        "localizationservice",
+        "scene",
+        "themetokens"
+      ],
+      "engineClassesUsed": [
+        "engine/core/Engine/Engine",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawPanel",
+        "engine/input/index/ActionInputMap",
+        "engine/input/index/ActionInputService",
+        "engine/localization/index/LocalizationService",
+        "engine/scenes/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
+      ],
+      "thumbnail": "/samples/phase07/0711/assets/preview.svg",
+      "preview": "/samples/phase07/0711/assets/preview.svg"
     },
     {
       "id": "0712",
       "phase": "07",
       "title": "Packaging Build System",
-      "description": "Packaging Build System",
-      "tags": []
+      "description": "Demonstrates the repo-owned packaging/build direction through a repeatable manifest step.",
+      "tags": [
+        "drawframe",
+        "drawpanel",
+        "scene",
+        "themetokens"
+      ],
+      "engineClassesUsed": [
+        "engine/core/Engine/Engine",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawPanel",
+        "engine/scenes/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
+      ],
+      "thumbnail": "/samples/phase07/0712/assets/preview.svg",
+      "preview": "/samples/phase07/0712/assets/preview.svg"
     },
     {
       "id": "0713",
       "phase": "07",
       "title": "Fullscreen Ability",
-      "description": "Fullscreen Ability",
-      "tags": []
+      "description": "Demonstrates reusable fullscreen enter, exit, and state reporting.",
+      "tags": [
+        "scene",
+        "themetokens"
+      ],
+      "engineClassesUsed": [
+        "engine/core/Engine/Engine",
+        "engine/scenes/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
+      ],
+      "thumbnail": "/samples/phase07/0713/assets/preview.svg",
+      "preview": "/samples/phase07/0713/assets/preview.svg"
     },
     {
       "id": "0801",
       "phase": "08",
       "title": "Audio System",
-      "description": "Audio System",
-      "tags": []
+      "description": "Demonstrates engine-owned music and one-shot sound effect playback.",
+      "tags": [
+        "drawframe",
+        "drawpanel",
+        "scene",
+        "themetokens"
+      ],
+      "engineClassesUsed": [
+        "engine/core/Engine/Engine",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawPanel",
+        "engine/scenes/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
+      ],
+      "thumbnail": "/samples/phase08/0801/assets/preview.svg",
+      "preview": "/samples/phase08/0801/assets/preview.svg"
     },
     {
       "id": "0802",
       "phase": "08",
       "title": "Midi Player",
-      "description": "Midi Player",
-      "tags": []
+      "description": "Demonstrates engine-owned timed note playback.",
+      "tags": [
+        "drawframe",
+        "drawpanel",
+        "midiplayer",
+        "scene",
+        "themetokens"
+      ],
+      "engineClassesUsed": [
+        "engine/audio/index/MidiPlayer",
+        "engine/core/Engine/Engine",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawPanel",
+        "engine/scenes/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
+      ],
+      "thumbnail": "/samples/phase08/0802/assets/preview.svg",
+      "preview": "/samples/phase08/0802/assets/preview.svg"
     },
     {
       "id": "0803",
       "phase": "08",
       "title": "Synthesizer",
-      "description": "Synthesizer",
-      "tags": []
+      "description": "Demonstrates generated sound output through a reusable synth capability.",
+      "tags": [
+        "drawframe",
+        "drawpanel",
+        "scene",
+        "themetokens"
+      ],
+      "engineClassesUsed": [
+        "engine/audio/index/Synthesizer",
+        "engine/core/Engine/Engine",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawPanel",
+        "engine/scenes/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
+      ],
+      "thumbnail": "/samples/phase08/0803/assets/preview.svg",
+      "preview": "/samples/phase08/0803/assets/preview.svg"
     },
     {
       "id": "0804",
       "phase": "08",
       "title": "Frequency Player",
-      "description": "Frequency Player",
-      "tags": []
+      "description": "Demonstrates discrete frequency playback through a reusable engine contract.",
+      "tags": [
+        "drawframe",
+        "drawpanel",
+        "frequencyplayer",
+        "scene",
+        "themetokens"
+      ],
+      "engineClassesUsed": [
+        "engine/audio/index/FrequencyPlayer",
+        "engine/core/Engine/Engine",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawPanel",
+        "engine/scenes/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
+      ],
+      "thumbnail": "/samples/phase08/0804/assets/preview.svg",
+      "preview": "/samples/phase08/0804/assets/preview.svg"
     },
     {
       "id": "0805",
       "phase": "08",
       "title": "Particle FX",
-      "description": "Particle FX",
-      "tags": []
+      "description": "Demonstrates reusable explosion and particle effect lifecycle.",
+      "tags": [
+        "drawframe",
+        "drawpanel",
+        "particlesystem",
+        "scene",
+        "themetokens"
+      ],
+      "engineClassesUsed": [
+        "engine/core/Engine/Engine",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawPanel",
+        "engine/fx/index/ParticleSystem",
+        "engine/scenes/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
+      ],
+      "thumbnail": "/samples/phase08/0805/assets/preview.svg",
+      "preview": "/samples/phase08/0805/assets/preview.svg"
     },
     {
       "id": "0806",
       "phase": "08",
       "title": "UI Framework",
-      "description": "UI Framework",
-      "tags": []
+      "description": "Demonstrates reusable canvas UI elements and interaction routing.",
+      "tags": [
+        "drawframe",
+        "scene",
+        "themetokens",
+        "uiframework"
+      ],
+      "engineClassesUsed": [
+        "engine/core/Engine/Engine",
+        "engine/debug/index/drawFrame",
+        "engine/scenes/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens",
+        "engine/ui/index/UIFramework"
+      ],
+      "thumbnail": "/samples/phase08/0806/assets/preview.svg",
+      "preview": "/samples/phase08/0806/assets/preview.svg"
     },
     {
       "id": "0807",
       "phase": "08",
       "title": "Input Context System",
-      "description": "Input Context System",
-      "tags": []
+      "description": "Demonstrates switching between gameplay and menu action maps.",
+      "tags": [
+        "drawframe",
+        "drawpanel",
+        "inputcontextservice",
+        "scene",
+        "themetokens"
+      ],
+      "engineClassesUsed": [
+        "engine/core/Engine/Engine",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawPanel",
+        "engine/input/index/InputContextService",
+        "engine/scenes/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
+      ],
+      "thumbnail": "/samples/phase08/0807/assets/preview.svg",
+      "preview": "/samples/phase08/0807/assets/preview.svg"
     },
     {
       "id": "0808",
       "phase": "08",
       "title": "Scene Transitions",
-      "description": "Scene Transitions",
-      "tags": []
+      "description": "Demonstrates reusable fade-based scene handoff.",
+      "tags": [
+        "drawframe",
+        "drawpanel",
+        "scenetransitioncontroller",
+        "themetokens"
+      ],
+      "engineClassesUsed": [
+        "engine/core/Engine/Engine",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawPanel",
+        "engine/scenes/index/Scene",
+        "engine/scenes/index/SceneTransitionController",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
+      ],
+      "thumbnail": "/samples/phase08/0808/assets/preview.svg",
+      "preview": "/samples/phase08/0808/assets/preview.svg"
     },
     {
       "id": "0809",
       "phase": "08",
       "title": "Save Slots Profiles",
-      "description": "Save Slots Profiles",
-      "tags": []
+      "description": "Demonstrates multiple persisted identities through a reusable save-slot manager.",
+      "tags": [
+        "drawframe",
+        "drawpanel",
+        "saveslotmanager",
+        "scene",
+        "themetokens"
+      ],
+      "engineClassesUsed": [
+        "engine/core/Engine/Engine",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawPanel",
+        "engine/persistence/index/SaveSlotManager",
+        "engine/scenes/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
+      ],
+      "thumbnail": "/samples/phase08/0809/assets/preview.svg",
+      "preview": "/samples/phase08/0809/assets/preview.svg"
     },
     {
       "id": "0810",
       "phase": "08",
       "title": "Logging Error System",
-      "description": "Logging Error System",
-      "tags": []
+      "description": "Demonstrates structured logs and graceful error handling.",
+      "tags": [
+        "drawframe",
+        "drawpanel",
+        "errorboundary",
+        "scene",
+        "themetokens"
+      ],
+      "engineClassesUsed": [
+        "engine/core/Engine/Engine",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawPanel",
+        "engine/logging/index/ErrorBoundary",
+        "engine/scenes/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
+      ],
+      "thumbnail": "/samples/phase08/0810/assets/preview.svg",
+      "preview": "/samples/phase08/0810/assets/preview.svg"
     },
     {
       "id": "0901",
       "phase": "09",
       "title": "Vector Rendering System",
-      "description": "Vector Rendering System",
-      "tags": []
+      "description": "Demonstrates reusable vector-rendered shapes with transforms.",
+      "tags": [
+        "drawframe",
+        "drawpanel",
+        "drawvectorshape",
+        "scene",
+        "themetokens",
+        "transformpoints"
+      ],
+      "engineClassesUsed": [
+        "engine/core/Engine/Engine",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawPanel",
+        "engine/scenes/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens",
+        "engine/vector/index/drawVectorShape",
+        "engine/vector/index/transformPoints"
+      ],
+      "thumbnail": "/samples/phase09/0901/assets/preview.svg",
+      "preview": "/samples/phase09/0901/assets/preview.svg"
     },
     {
       "id": "0902",
       "phase": "09",
       "title": "Polygon Collision",
-      "description": "Polygon Collision",
-      "tags": []
+      "description": "Demonstrates reusable polygon-based collision testing.",
+      "tags": [
+        "arepolygonscolliding",
+        "drawframe",
+        "drawpanel",
+        "drawvectorshape",
+        "scene",
+        "themetokens",
+        "transformpoints"
+      ],
+      "engineClassesUsed": [
+        "engine/collision/index/arePolygonsColliding",
+        "engine/core/Engine/Engine",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawPanel",
+        "engine/scenes/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens",
+        "engine/vector/index/drawVectorShape",
+        "engine/vector/index/transformPoints"
+      ],
+      "thumbnail": "/samples/phase09/0902/assets/preview.svg",
+      "preview": "/samples/phase09/0902/assets/preview.svg"
     },
     {
       "id": "0903",
       "phase": "09",
       "title": "Point In Polygon",
-      "description": "Point In Polygon",
-      "tags": []
+      "description": "Demonstrates a moving probe being tested against a shape interior.",
+      "tags": [
+        "drawframe",
+        "drawpanel",
+        "drawvectorshape",
+        "ispointinpolygon",
+        "scene",
+        "themetokens"
+      ],
+      "engineClassesUsed": [
+        "engine/collision/index/isPointInPolygon",
+        "engine/core/Engine/Engine",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawPanel",
+        "engine/scenes/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens",
+        "engine/vector/index/drawVectorShape"
+      ],
+      "thumbnail": "/samples/phase09/0903/assets/preview.svg",
+      "preview": "/samples/phase09/0903/assets/preview.svg"
     },
     {
       "id": "0904",
       "phase": "09",
       "title": "Raster Mask Collision",
-      "description": "Raster Mask Collision",
-      "tags": []
+      "description": "Demonstrates mask-based occupancy checks beyond coarse bounds.",
+      "tags": [
+        "aremaskscolliding",
+        "createrastermask",
+        "drawframe",
+        "drawpanel",
+        "getmaskbounds",
+        "iscolliding",
+        "scene",
+        "themetokens"
+      ],
+      "engineClassesUsed": [
+        "engine/collision/index/areMasksColliding",
+        "engine/collision/index/createRasterMask",
+        "engine/collision/index/getMaskBounds",
+        "engine/collision/index/isColliding",
+        "engine/core/Engine/Engine",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawPanel",
+        "engine/scenes/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
+      ],
+      "thumbnail": "/samples/phase09/0904/assets/preview.svg",
+      "preview": "/samples/phase09/0904/assets/preview.svg"
     },
     {
       "id": "0905",
       "phase": "09",
       "title": "Pixel Perfect Collision",
-      "description": "Pixel Perfect Collision",
-      "tags": []
+      "description": "Demonstrates occupied-pixel overlap being more precise than broad checks.",
+      "tags": [
+        "aremaskscolliding",
+        "createrastermask",
+        "drawframe",
+        "drawpanel",
+        "getmaskbounds",
+        "iscolliding",
+        "scene",
+        "themetokens"
+      ],
+      "engineClassesUsed": [
+        "engine/collision/index/areMasksColliding",
+        "engine/collision/index/createRasterMask",
+        "engine/collision/index/getMaskBounds",
+        "engine/collision/index/isColliding",
+        "engine/core/Engine/Engine",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawPanel",
+        "engine/scenes/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
+      ],
+      "thumbnail": "/samples/phase09/0905/assets/preview.svg",
+      "preview": "/samples/phase09/0905/assets/preview.svg"
     },
     {
       "id": "0906",
       "phase": "09",
       "title": "Hybrid Collision",
-      "description": "Hybrid Collision",
-      "tags": []
+      "description": "Demonstrates staged collision flow from broad bounds to precise checks.",
+      "tags": [
+        "createrastermask",
+        "drawframe",
+        "drawpanel",
+        "drawvectorshape",
+        "getcollisionboundsfrompolygon",
+        "runhybridcollision",
+        "scene",
+        "themetokens",
+        "transformpoints"
+      ],
+      "engineClassesUsed": [
+        "engine/collision/index/createRasterMask",
+        "engine/collision/index/getCollisionBoundsFromPolygon",
+        "engine/collision/index/runHybridCollision",
+        "engine/core/Engine/Engine",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawPanel",
+        "engine/scenes/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens",
+        "engine/vector/index/drawVectorShape",
+        "engine/vector/index/transformPoints"
+      ],
+      "thumbnail": "/samples/phase09/0906/assets/preview.svg",
+      "preview": "/samples/phase09/0906/assets/preview.svg"
     },
     {
       "id": "1001",
       "phase": "10",
       "title": "MP3 Player",
-      "description": "MP3 Player",
-      "tags": []
+      "description": "Demonstrates engine-owned MP3-style media controls.",
+      "tags": [
+        "drawframe",
+        "drawpanel",
+        "mediatrackservice",
+        "scene",
+        "themetokens"
+      ],
+      "engineClassesUsed": [
+        "engine/audio/index/MediaTrackService",
+        "engine/core/Engine/Engine",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawPanel",
+        "engine/scenes/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
+      ],
+      "thumbnail": "/samples/phase10/1001/assets/preview.svg",
+      "preview": "/samples/phase10/1001/assets/preview.svg"
     },
     {
       "id": "1002",
       "phase": "10",
       "title": "Cookie Write Read System",
-      "description": "Cookie Write Read System",
-      "tags": []
+      "description": "Demonstrates cookie persistence through an engine-owned wrapper.",
+      "tags": [
+        "cookiestorageservice",
+        "drawframe",
+        "drawpanel",
+        "scene",
+        "themetokens"
+      ],
+      "engineClassesUsed": [
+        "engine/core/Engine/Engine",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawPanel",
+        "engine/persistence/index/CookieStorageService",
+        "engine/scenes/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
+      ],
+      "thumbnail": "/samples/phase10/1002/assets/preview.svg",
+      "preview": "/samples/phase10/1002/assets/preview.svg"
     },
     {
       "id": "1003",
       "phase": "10",
       "title": "Audio Playlist Track Management",
-      "description": "Audio Playlist Track Management",
-      "tags": []
+      "description": "Demonstrates track ordering and playlist-style audio control.",
+      "tags": [
+        "drawframe",
+        "drawpanel",
+        "mediatrackservice",
+        "playlistmanager",
+        "scene",
+        "themetokens"
+      ],
+      "engineClassesUsed": [
+        "engine/audio/index/MediaTrackService",
+        "engine/audio/index/PlaylistManager",
+        "engine/core/Engine/Engine",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawPanel",
+        "engine/scenes/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
+      ],
+      "thumbnail": "/samples/phase10/1003/assets/preview.svg",
+      "preview": "/samples/phase10/1003/assets/preview.svg"
     },
     {
       "id": "1101",
       "phase": "11",
       "title": "Settings System",
-      "description": "Settings System",
-      "tags": []
+      "description": "Stores reusable audio, video, and gameplay preferences through an engine-owned settings service.",
+      "tags": [
+        "drawframe",
+        "drawpanel",
+        "scene",
+        "settingssystem",
+        "themetokens"
+      ],
+      "engineClassesUsed": [
+        "engine/core/Engine/Engine",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawPanel",
+        "engine/release/index/SettingsSystem",
+        "engine/scenes/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
+      ],
+      "thumbnail": "/samples/phase11/1101/assets/preview.svg",
+      "preview": "/samples/phase11/1101/assets/preview.svg"
     },
     {
       "id": "1102",
       "phase": "11",
       "title": "Accessibility Options",
-      "description": "Accessibility Options",
-      "tags": []
+      "description": "Demonstrates high contrast, reduced motion, scalable UI, and input comfort presets.",
+      "tags": [
+        "accessibilityoptions",
+        "drawframe",
+        "drawpanel",
+        "scene",
+        "themetokens"
+      ],
+      "engineClassesUsed": [
+        "engine/core/Engine/Engine",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawPanel",
+        "engine/release/index/AccessibilityOptions",
+        "engine/scenes/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
+      ],
+      "thumbnail": "/samples/phase11/1102/assets/preview.svg",
+      "preview": "/samples/phase11/1102/assets/preview.svg"
     },
     {
       "id": "1103",
       "phase": "11",
       "title": "Deployment Profiles",
-      "description": "Deployment Profiles",
-      "tags": []
+      "description": "Switches between reusable build profiles such as debug, demo, and production.",
+      "tags": [
+        "deploymentprofiles",
+        "drawframe",
+        "drawpanel",
+        "scene",
+        "themetokens"
+      ],
+      "engineClassesUsed": [
+        "engine/core/Engine/Engine",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawPanel",
+        "engine/release/index/DeploymentProfiles",
+        "engine/scenes/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
+      ],
+      "thumbnail": "/samples/phase11/1103/assets/preview.svg",
+      "preview": "/samples/phase11/1103/assets/preview.svg"
     },
     {
       "id": "1104",
       "phase": "11",
       "title": "Distribution Packaging",
-      "description": "Distribution Packaging",
-      "tags": []
+      "description": "Builds consistent release descriptors for testing, sharing, and production packaging.",
+      "tags": [
+        "deploymentprofiles",
+        "distributionpackager",
+        "drawframe",
+        "drawpanel",
+        "scene",
+        "themetokens"
+      ],
+      "engineClassesUsed": [
+        "engine/core/Engine/Engine",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawPanel",
+        "engine/release/index/DeploymentProfiles",
+        "engine/release/index/DistributionPackager",
+        "engine/scenes/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
+      ],
+      "thumbnail": "/samples/phase11/1104/assets/preview.svg",
+      "preview": "/samples/phase11/1104/assets/preview.svg"
     },
     {
       "id": "1105",
       "phase": "11",
       "title": "Crash Recovery Fallback Flow",
-      "description": "Crash Recovery Fallback Flow",
-      "tags": []
+      "description": "Handles runtime failures gracefully and restores a usable fallback state.",
+      "tags": [
+        "crashrecoverymanager",
+        "drawframe",
+        "drawpanel",
+        "logger",
+        "scene",
+        "themetokens"
+      ],
+      "engineClassesUsed": [
+        "engine/core/Engine/Engine",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawPanel",
+        "engine/logging/index/Logger",
+        "engine/release/index/CrashRecoveryManager",
+        "engine/scenes/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
+      ],
+      "thumbnail": "/samples/phase11/1105/assets/preview.svg",
+      "preview": "/samples/phase11/1105/assets/preview.svg"
     },
     {
       "id": "1106",
       "phase": "11",
       "title": "Release Validation Checklist Flow",
-      "description": "Release Validation Checklist Flow",
-      "tags": []
+      "description": "Runs a structured release-readiness checklist before a build is shipped.",
+      "tags": [
+        "drawframe",
+        "drawpanel",
+        "releasevalidationchecklist",
+        "scene",
+        "themetokens"
+      ],
+      "engineClassesUsed": [
+        "engine/core/Engine/Engine",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawPanel",
+        "engine/release/index/ReleaseValidationChecklist",
+        "engine/scenes/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
+      ],
+      "thumbnail": "/samples/phase11/1106/assets/preview.svg",
+      "preview": "/samples/phase11/1106/assets/preview.svg"
     },
     {
       "id": "1201",
       "phase": "12",
       "title": "Tilemap Viewer",
-      "description": "Tilemap Viewer",
-      "tags": []
+      "description": "Renders a stable tilemap larger than the viewport. Use Arrow keys to pan the viewer camera.",
+      "tags": [
+        "camera2d",
+        "drawframe",
+        "drawpanel",
+        "inputservice",
+        "rendertilemap",
+        "scene",
+        "themetokens"
+      ],
+      "engineClassesUsed": [
+        "engine/camera/index/Camera2D",
+        "engine/core/Engine/Engine",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawPanel",
+        "engine/input/index/InputService",
+        "engine/scenes/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens",
+        "engine/tilemap/index/Tilemap",
+        "engine/tilemap/index/renderTilemap"
+      ],
+      "thumbnail": "/samples/phase12/1201/assets/preview.svg",
+      "preview": "/samples/phase12/1201/assets/preview.svg"
     },
     {
       "id": "1202",
       "phase": "12",
       "title": "Tilemap Hero Movement",
-      "description": "Tilemap Hero Movement",
-      "tags": []
+      "description": "Use Left/Right Arrow to move the hero. The camera follows horizontally across a wide tilemap.",
+      "tags": [
+        "camera2d",
+        "clamp",
+        "drawframe",
+        "drawpanel",
+        "inputservice",
+        "rendertilemap",
+        "scene",
+        "themetokens",
+        "worldrecttoscreen"
+      ],
+      "engineClassesUsed": [
+        "engine/camera/index/Camera2D",
+        "engine/camera/index/worldRectToScreen",
+        "engine/core/Engine/Engine",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawPanel",
+        "engine/input/index/InputService",
+        "engine/scenes/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens",
+        "engine/tilemap/index/Tilemap",
+        "engine/tilemap/index/renderTilemap",
+        "engine/utils/index/clamp"
+      ],
+      "thumbnail": "/samples/phase12/1202/assets/preview.svg",
+      "preview": "/samples/phase12/1202/assets/preview.svg"
     },
     {
       "id": "1203",
       "phase": "12",
       "title": "Tilemap Hero Jump Collision",
-      "description": "Tilemap Hero Jump Collision",
-      "tags": []
+      "description": "Move with Left/Right and jump with Space. Gravity and tile collisions drive grounded landing behavior.",
+      "tags": [
+        "camera2d",
+        "clamp",
+        "drawframe",
+        "drawpanel",
+        "inputservice",
+        "rendertilemap",
+        "resolverectvstilemap",
+        "scene",
+        "themetokens",
+        "worldrecttoscreen"
+      ],
+      "engineClassesUsed": [
+        "engine/camera/index/Camera2D",
+        "engine/camera/index/worldRectToScreen",
+        "engine/core/Engine/Engine",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawPanel",
+        "engine/input/index/InputService",
+        "engine/scenes/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens",
+        "engine/tilemap/index/Tilemap",
+        "engine/tilemap/index/renderTilemap",
+        "engine/tilemap/index/resolveRectVsTilemap",
+        "engine/utils/index/clamp"
+      ],
+      "thumbnail": "/samples/phase12/1203/assets/preview.svg",
+      "preview": "/samples/phase12/1203/assets/preview.svg"
     },
     {
       "id": "1204",
       "phase": "12",
       "title": "Tilemap Parallax Hero",
-      "description": "Tilemap Parallax Hero",
-      "tags": []
+      "description": "Move with Left/Right and jump with Space. Camera-relative parallax layers add background depth while gameplay remains focused on platform traversal.",
+      "tags": [
+        "camera2d",
+        "clamp",
+        "drawframe",
+        "drawpanel",
+        "inputservice",
+        "rendertilemap",
+        "resolverectvstilemap",
+        "scene",
+        "themetokens",
+        "worldrecttoscreen"
+      ],
+      "engineClassesUsed": [
+        "engine/camera/index/Camera2D",
+        "engine/camera/index/worldRectToScreen",
+        "engine/core/Engine/Engine",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawPanel",
+        "engine/input/index/InputService",
+        "engine/scenes/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens",
+        "engine/tilemap/index/Tilemap",
+        "engine/tilemap/index/renderTilemap",
+        "engine/tilemap/index/resolveRectVsTilemap",
+        "engine/utils/index/clamp"
+      ],
+      "thumbnail": "/samples/phase12/1204/assets/preview.svg",
+      "preview": "/samples/phase12/1204/assets/preview.svg"
     },
     {
       "id": "1205",
       "phase": "12",
       "title": "Multi-System Demo",
-      "description": "Multi-System Demo",
-      "tags": []
+      "description": "Move with Left/Right and jump with Space. Collect the pickups while traversal, collision, camera follow, and parallax remain active. Debug is production-safe and opt-in: use ?debug=1 (and optionally &amp;debugMode=qa ) to enable console/overlay.",
+      "tags": [
+        "camera2d",
+        "clamp",
+        "drawframe",
+        "drawpanel",
+        "inputservice",
+        "rendertilemap",
+        "resolverectvstilemap",
+        "scene",
+        "themetokens",
+        "tilemap",
+        "worldrecttoscreen"
+      ],
+      "engineClassesUsed": [
+        "engine/camera/index/Camera2D",
+        "engine/camera/index/worldRectToScreen",
+        "engine/core/Engine/Engine",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawPanel",
+        "engine/input/index/InputService",
+        "engine/scenes/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens",
+        "engine/tilemap/index/Tilemap",
+        "engine/tilemap/index/renderTilemap",
+        "engine/tilemap/index/resolveRectVsTilemap",
+        "engine/utils/index/clamp"
+      ],
+      "thumbnail": "/samples/phase12/1205/assets/preview.svg",
+      "preview": "/samples/phase12/1205/assets/preview.svg"
     },
     {
       "id": "1206",
       "phase": "12",
       "title": "Trigger Zone",
-      "description": "Trigger Zone",
-      "tags": []
+      "description": "Move with Left/Right and jump with Space. Reach the trigger zone to activate success state.",
+      "tags": [
+        "camera2d",
+        "clamp",
+        "drawframe",
+        "drawpanel",
+        "inputservice",
+        "rendertilemap",
+        "resolverectvstilemap",
+        "scene",
+        "themetokens",
+        "tilemap",
+        "worldrecttoscreen"
+      ],
+      "engineClassesUsed": [
+        "engine/camera/index/Camera2D",
+        "engine/camera/index/worldRectToScreen",
+        "engine/core/Engine/Engine",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawPanel",
+        "engine/input/index/InputService",
+        "engine/scenes/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens",
+        "engine/tilemap/index/Tilemap",
+        "engine/tilemap/index/renderTilemap",
+        "engine/tilemap/index/resolveRectVsTilemap",
+        "engine/utils/index/clamp"
+      ],
+      "thumbnail": "/samples/phase12/1206/assets/preview.svg",
+      "preview": "/samples/phase12/1206/assets/preview.svg"
     },
     {
       "id": "1207",
       "phase": "12",
       "title": "Switch Checkpoint Marker",
-      "description": "Switch Checkpoint Marker",
-      "tags": []
+      "description": "Move with Left/Right and jump with Space. Touch the activator to toggle checkpoint state and marker visuals.",
+      "tags": [
+        "camera2d",
+        "clamp",
+        "drawframe",
+        "drawpanel",
+        "inputservice",
+        "rendertilemap",
+        "resolverectvstilemap",
+        "scene",
+        "themetokens",
+        "tilemap",
+        "worldrecttoscreen"
+      ],
+      "engineClassesUsed": [
+        "engine/camera/index/Camera2D",
+        "engine/camera/index/worldRectToScreen",
+        "engine/core/Engine/Engine",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawPanel",
+        "engine/input/index/InputService",
+        "engine/scenes/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens",
+        "engine/tilemap/index/Tilemap",
+        "engine/tilemap/index/renderTilemap",
+        "engine/tilemap/index/resolveRectVsTilemap",
+        "engine/utils/index/clamp"
+      ],
+      "thumbnail": "/samples/phase12/1207/assets/preview.svg",
+      "preview": "/samples/phase12/1207/assets/preview.svg"
     },
     {
       "id": "1208",
       "phase": "12",
       "title": "Tool Formatted Tiles Parallax",
-      "description": "Tool Formatted Tiles Parallax",
-      "tags": []
+      "description": "Move with Left/Right and jump with Space across a scrolling world rendered from tool-formatted tile and parallax assets.",
+      "tags": [
+        "camera2d",
+        "clamp",
+        "inputservice",
+        "resolverectvstilemap",
+        "scene",
+        "themetokens",
+        "tilemap",
+        "worldrecttoscreen"
+      ],
+      "engineClassesUsed": [
+        "engine/camera/index/Camera2D",
+        "engine/camera/index/worldRectToScreen",
+        "engine/core/Engine/Engine",
+        "engine/input/index/InputService",
+        "engine/scenes/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens",
+        "engine/tilemap/index/Tilemap",
+        "engine/tilemap/index/resolveRectVsTilemap",
+        "engine/utils/index/clamp"
+      ],
+      "thumbnail": "/samples/phase12/1208/assets/preview.svg",
+      "preview": "/samples/phase12/1208/assets/preview.svg"
     },
     {
       "id": "1301",
       "phase": "13",
       "title": "Networking Layer",
-      "description": "Networking Layer",
-      "tags": []
+      "description": "Shows connect, send, receive, and disconnect flow through an engine-owned network layer.",
+      "tags": [
+        "drawframe",
+        "drawpanel",
+        "networkinglayer",
+        "scene",
+        "themetokens"
+      ],
+      "engineClassesUsed": [
+        "engine/core/Engine/Engine",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawPanel",
+        "engine/network/index/NetworkingLayer",
+        "engine/scenes/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
+      ],
+      "thumbnail": "/samples/phase13/1301/assets/preview.svg",
+      "preview": "/samples/phase13/1301/assets/preview.svg"
     },
     {
       "id": "1302",
       "phase": "13",
       "title": "State Sync Replication",
-      "description": "State Sync Replication",
-      "tags": []
+      "description": "Demonstrates authoritative state snapshots being replicated to a remote side.",
+      "tags": [
+        "drawframe",
+        "drawpanel",
+        "networkinglayer",
+        "scene",
+        "statereplication",
+        "themetokens"
+      ],
+      "engineClassesUsed": [
+        "engine/core/Engine/Engine",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawPanel",
+        "engine/network/index/NetworkingLayer",
+        "engine/network/index/StateReplication",
+        "engine/scenes/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
+      ],
+      "thumbnail": "/samples/phase13/1302/assets/preview.svg",
+      "preview": "/samples/phase13/1302/assets/preview.svg"
     },
     {
       "id": "1303",
       "phase": "13",
       "title": "Asteroids World Systems",
-      "description": "Asteroids World Systems",
-      "tags": []
+      "description": "Asteroids-style sample built with local Spawn, Lifecycle, World State, and Events systems.",
+      "tags": [
+        "drawframe",
+        "drawpanel",
+        "scene",
+        "themetokens"
+      ],
+      "engineClassesUsed": [
+        "engine/core/Engine/Engine",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawPanel",
+        "engine/scenes/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
+      ],
+      "thumbnail": "/samples/phase13/1303/assets/preview.svg",
+      "preview": "/samples/phase13/1303/assets/preview.svg"
     },
     {
       "id": "1304",
       "phase": "13",
       "title": "Client Prediction Reconciliation",
-      "description": "Client Prediction Reconciliation",
-      "tags": []
+      "description": "Shows immediate local prediction with later authoritative correction.",
+      "tags": [
+        "drawframe",
+        "drawpanel",
+        "predictionreconciler",
+        "scene",
+        "themetokens"
+      ],
+      "engineClassesUsed": [
+        "engine/core/Engine/Engine",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawPanel",
+        "engine/network/index/PredictionReconciler",
+        "engine/scenes/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
+      ],
+      "thumbnail": "/samples/phase13/1304/assets/preview.svg",
+      "preview": "/samples/phase13/1304/assets/preview.svg"
     },
     {
       "id": "1305",
       "phase": "13",
       "title": "Serialization System",
-      "description": "Serialization System",
-      "tags": []
+      "description": "Demonstrates stable encode/decode round trips for multiplayer-style payloads.",
+      "tags": [
+        "drawframe",
+        "drawpanel",
+        "scene",
+        "serializer",
+        "themetokens"
+      ],
+      "engineClassesUsed": [
+        "engine/core/Engine/Engine",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawPanel",
+        "engine/network/index/Serializer",
+        "engine/scenes/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
+      ],
+      "thumbnail": "/samples/phase13/1305/assets/preview.svg",
+      "preview": "/samples/phase13/1305/assets/preview.svg"
     },
     {
       "id": "1306",
       "phase": "13",
       "title": "Network Debug Overlay",
-      "description": "Network Debug Overlay",
-      "tags": []
+      "description": "Displays connection state, ping, and message flow through a reusable overlay.",
+      "tags": [
+        "drawframe",
+        "drawnetworkdebugoverlay",
+        "networkconditionsimulator",
+        "networkinglayer",
+        "scene",
+        "themetokens"
+      ],
+      "engineClassesUsed": [
+        "engine/core/Engine/Engine",
+        "engine/debug/index/drawFrame",
+        "engine/network/index/NetworkConditionSimulator",
+        "engine/network/index/NetworkingLayer",
+        "engine/network/index/drawNetworkDebugOverlay",
+        "engine/scenes/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
+      ],
+      "thumbnail": "/samples/phase13/1306/assets/preview.svg",
+      "preview": "/samples/phase13/1306/assets/preview.svg"
     },
     {
       "id": "1307",
       "phase": "13",
       "title": "Remote Entity Interpolation",
-      "description": "Remote Entity Interpolation",
-      "tags": []
+      "description": "Compares raw network snapshots with smoothed remote interpolation.",
+      "tags": [
+        "drawframe",
+        "drawpanel",
+        "remoteinterpolationbuffer",
+        "scene",
+        "themetokens"
+      ],
+      "engineClassesUsed": [
+        "engine/core/Engine/Engine",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawPanel",
+        "engine/network/index/RemoteInterpolationBuffer",
+        "engine/scenes/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
+      ],
+      "thumbnail": "/samples/phase13/1307/assets/preview.svg",
+      "preview": "/samples/phase13/1307/assets/preview.svg"
     },
     {
       "id": "1308",
       "phase": "13",
       "title": "Lobby Session System",
-      "description": "Lobby Session System",
-      "tags": []
+      "description": "Demonstrates create, join, leave, and presence management for multiplayer sessions.",
+      "tags": [
+        "drawframe",
+        "drawpanel",
+        "lobbysessionmanager",
+        "scene",
+        "themetokens"
+      ],
+      "engineClassesUsed": [
+        "engine/core/Engine/Engine",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawPanel",
+        "engine/network/index/LobbySessionManager",
+        "engine/scenes/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
+      ],
+      "thumbnail": "/samples/phase13/1308/assets/preview.svg",
+      "preview": "/samples/phase13/1308/assets/preview.svg"
     },
     {
       "id": "1309",
       "phase": "13",
       "title": "Space Invaders World Systems",
-      "description": "Space Invaders World Systems",
-      "tags": []
+      "description": "Space Invaders-style sample built by composing the shared world-systems stack from Level 8 pattern.",
+      "tags": [
+        "drawframe",
+        "drawpanel",
+        "scene",
+        "themetokens"
+      ],
+      "engineClassesUsed": [
+        "engine/core/Engine/Engine",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawPanel",
+        "engine/scenes/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
+      ],
+      "thumbnail": "/samples/phase13/1309/assets/preview.svg",
+      "preview": "/samples/phase13/1309/assets/preview.svg"
     },
     {
       "id": "1310",
       "phase": "13",
       "title": "Host Server Bootstrap",
-      "description": "Host Server Bootstrap",
-      "tags": []
+      "description": "Shows repeatable authoritative host startup and client attachment.",
+      "tags": [
+        "drawframe",
+        "drawpanel",
+        "hostserverbootstrap",
+        "scene",
+        "themetokens"
+      ],
+      "engineClassesUsed": [
+        "engine/core/Engine/Engine",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawPanel",
+        "engine/network/index/HostServerBootstrap",
+        "engine/scenes/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
+      ],
+      "thumbnail": "/samples/phase13/1310/assets/preview.svg",
+      "preview": "/samples/phase13/1310/assets/preview.svg"
     },
     {
       "id": "1311",
       "phase": "13",
       "title": "Interest Management",
-      "description": "Interest Management",
-      "tags": []
+      "description": "Filters world state so each client sees only nearby or relevant entities.",
+      "tags": [
+        "drawframe",
+        "drawpanel",
+        "interestmanager",
+        "scene",
+        "themetokens"
+      ],
+      "engineClassesUsed": [
+        "engine/core/Engine/Engine",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawPanel",
+        "engine/network/index/InterestManager",
+        "engine/scenes/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
+      ],
+      "thumbnail": "/samples/phase13/1311/assets/preview.svg",
+      "preview": "/samples/phase13/1311/assets/preview.svg"
     },
     {
       "id": "1312",
       "phase": "13",
       "title": "Lag Packet Loss Simulation",
-      "description": "Lag Packet Loss Simulation",
-      "tags": []
+      "description": "Tests network behavior under reusable lag, jitter, and packet-loss conditions.",
+      "tags": [
+        "drawframe",
+        "drawpanel",
+        "networkconditionsimulator",
+        "networkinglayer",
+        "scene",
+        "themetokens"
+      ],
+      "engineClassesUsed": [
+        "engine/core/Engine/Engine",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawPanel",
+        "engine/network/index/NetworkConditionSimulator",
+        "engine/network/index/NetworkingLayer",
+        "engine/scenes/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
+      ],
+      "thumbnail": "/samples/phase13/1312/assets/preview.svg",
+      "preview": "/samples/phase13/1312/assets/preview.svg"
     },
     {
       "id": "1313",
       "phase": "13",
       "title": "Pacman Lite World Systems",
-      "description": "Pacman Lite World Systems",
-      "tags": []
+      "description": "Pacman Lite sample built with shared Spawn, Lifecycle, World State, and Events systems.",
+      "tags": [
+        "drawframe",
+        "drawpanel",
+        "scene",
+        "themetokens"
+      ],
+      "engineClassesUsed": [
+        "engine/core/Engine/Engine",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawPanel",
+        "engine/scenes/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
+      ],
+      "thumbnail": "/samples/phase13/1313/assets/preview.svg",
+      "preview": "/samples/phase13/1313/assets/preview.svg"
     },
     {
       "id": "1314",
       "phase": "13",
       "title": "Chat Presence Layer",
-      "description": "Chat Presence Layer",
-      "tags": []
+      "description": "Shows reusable player presence and lightweight session chat.",
+      "tags": [
+        "chatpresencelayer",
+        "drawframe",
+        "drawpanel",
+        "scene",
+        "themetokens"
+      ],
+      "engineClassesUsed": [
+        "engine/core/Engine/Engine",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawPanel",
+        "engine/network/index/ChatPresenceLayer",
+        "engine/scenes/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
+      ],
+      "thumbnail": "/samples/phase13/1314/assets/preview.svg",
+      "preview": "/samples/phase13/1314/assets/preview.svg"
     },
     {
       "id": "1315",
       "phase": "13",
       "title": "Rollback Replay Diagnostics",
-      "description": "Rollback Replay Diagnostics",
-      "tags": []
+      "description": "Exposes correction and replay behavior for prediction diagnostics.",
+      "tags": [
+        "drawframe",
+        "drawpanel",
+        "predictionreconciler",
+        "rollbackdiagnostics",
+        "scene",
+        "themetokens"
+      ],
+      "engineClassesUsed": [
+        "engine/core/Engine/Engine",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawPanel",
+        "engine/network/index/PredictionReconciler",
+        "engine/network/index/RollbackDiagnostics",
+        "engine/scenes/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
+      ],
+      "thumbnail": "/samples/phase13/1315/assets/preview.svg",
+      "preview": "/samples/phase13/1315/assets/preview.svg"
     },
     {
       "id": "1316",
       "phase": "13",
       "title": "Network Sample A",
-      "description": "Network Sample A",
+      "description": "Sample-backed network diagnostics with no real transport. This validates read-only providers, passive overlay panels, and operator-safe command surfaces before host/client wiring.",
       "tags": [
-        "network",
-        "phase-13",
-        "sample-a"
+        "asarray",
+        "asobject",
+        "clamp",
+        "createnetworkdebugplugindefinition",
+        "inputservice",
+        "scene",
+        "themetokens"
       ],
       "thumbnail": "/samples/phase13/1316/assets/preview.svg",
-      "preview": "/samples/phase13/1316/assets/preview.svg"
+      "preview": "/samples/phase13/1316/assets/preview.svg",
+      "engineClassesUsed": [
+        "engine/core/Engine/Engine",
+        "engine/debug/inspectors/shared/inspectorUtils/asArray",
+        "engine/debug/inspectors/shared/inspectorUtils/asObject",
+        "engine/debug/network/index/createNetworkDebugPluginDefinition",
+        "engine/input/index/InputService",
+        "engine/scenes/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens",
+        "engine/utils/math/clamp"
+      ],
+      "indexLabel": "Network Sample A - Local Loopback / Fake Network"
     },
     {
       "id": "1317",
       "phase": "13",
       "title": "Network Sample B",
-      "description": "Network Sample B",
+      "description": "Sample-backed multi-role diagnostics that simulate host and client peers with read-only debug surfaces and no real transport layer.",
       "tags": [
-        "network",
-        "phase-13",
-        "sample-b"
+        "asarray",
+        "asobject",
+        "clamp",
+        "createnetworkdebugplugindefinition",
+        "inputservice",
+        "scene",
+        "themetokens"
       ],
       "thumbnail": "/samples/phase13/1317/assets/preview.svg",
-      "preview": "/samples/phase13/1317/assets/preview.svg"
+      "preview": "/samples/phase13/1317/assets/preview.svg",
+      "engineClassesUsed": [
+        "engine/core/Engine/Engine",
+        "engine/debug/inspectors/shared/inspectorUtils/asArray",
+        "engine/debug/inspectors/shared/inspectorUtils/asObject",
+        "engine/debug/network/index/createNetworkDebugPluginDefinition",
+        "engine/input/index/InputService",
+        "engine/scenes/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens",
+        "engine/utils/math/clamp"
+      ],
+      "indexLabel": "Network Sample B - Host / Client Diagnostics"
     },
     {
       "id": "1318",
       "phase": "13",
-      "title": "Network Sample C",
-      "description": "Network Sample C",
+      "title": "Sample 1318 Network Commands and Trace Validation",
+      "description": "Deterministic mismatch and trace-validation showcase with timeline sequencing, divergence explanation notes, reproduction guidance, and checklist-driven verification.",
       "tags": [
-        "network",
-        "phase-13",
-        "sample-c"
+        "asarray",
+        "asobject",
+        "clamp",
+        "createnetworkdebugplugindefinition",
+        "inputservice",
+        "scene",
+        "themetokens"
       ],
       "thumbnail": "/samples/phase13/1318/assets/preview.svg",
-      "preview": "/samples/phase13/1318/assets/preview.svg"
+      "preview": "/samples/phase13/1318/assets/preview.svg",
+      "engineClassesUsed": [
+        "engine/core/Engine/Engine",
+        "engine/debug/inspectors/shared/inspectorUtils/asArray",
+        "engine/debug/inspectors/shared/inspectorUtils/asObject",
+        "engine/debug/network/index/createNetworkDebugPluginDefinition",
+        "engine/input/index/InputService",
+        "engine/scenes/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens",
+        "engine/utils/math/clamp"
+      ],
+      "indexLabel": "Sample 1318 - Divergence / Trace Validation"
     },
     {
       "id": "1401",
       "phase": "14",
       "title": "Level Editor",
-      "description": "Level Editor",
-      "tags": []
+      "description": "Demonstrates reusable level editing state.",
+      "tags": [
+        "drawframe",
+        "drawpanel",
+        "leveleditor",
+        "scene",
+        "themetokens"
+      ],
+      "engineClassesUsed": [
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawPanel",
+        "engine/editor/index/LevelEditor",
+        "engine/scenes/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
+      ],
+      "thumbnail": "/samples/phase14/1401/assets/preview.svg",
+      "preview": "/samples/phase14/1401/assets/preview.svg"
     },
     {
       "id": "1402",
       "phase": "14",
       "title": "Tile Map Editor",
-      "description": "Tile Map Editor",
-      "tags": []
+      "description": "Shows grid tile editing with an active palette choice.",
+      "tags": [
+        "scene"
+      ],
+      "engineClassesUsed": [
+        "engine/scenes/index/Scene"
+      ],
+      "thumbnail": "/samples/phase14/1402/assets/preview.svg",
+      "preview": "/samples/phase14/1402/assets/preview.svg"
     },
     {
       "id": "1403",
       "phase": "14",
       "title": "Entity Placement Editor",
-      "description": "Entity Placement Editor",
-      "tags": []
+      "description": "Places and moves authored entities visually.",
+      "tags": [
+        "scene"
+      ],
+      "engineClassesUsed": [
+        "engine/scenes/index/Scene"
+      ],
+      "thumbnail": "/samples/phase14/1403/assets/preview.svg",
+      "preview": "/samples/phase14/1403/assets/preview.svg"
     },
     {
       "id": "1404",
       "phase": "14",
       "title": "Timeline Cutscene Editor",
-      "description": "Timeline Cutscene Editor",
-      "tags": []
+      "description": "Authors sequence clips without scene-hardcoded timing.",
+      "tags": [
+        "scene"
+      ],
+      "engineClassesUsed": [
+        "engine/scenes/index/Scene"
+      ],
+      "thumbnail": "/samples/phase14/1404/assets/preview.svg",
+      "preview": "/samples/phase14/1404/assets/preview.svg"
     },
     {
       "id": "1405",
       "phase": "14",
       "title": "Automated Test Runner",
-      "description": "Automated Test Runner",
-      "tags": []
+      "description": "Runs centralized proof checks with pass/fail output.",
+      "tags": [
+        "scene"
+      ],
+      "engineClassesUsed": [
+        "engine/scenes/index/Scene"
+      ],
+      "thumbnail": "/samples/phase14/1405/assets/preview.svg",
+      "preview": "/samples/phase14/1405/assets/preview.svg"
     },
     {
       "id": "1406",
       "phase": "14",
       "title": "Regression Playback Harness",
-      "description": "Regression Playback Harness",
-      "tags": []
+      "description": "Replays a stored scenario for behavioral verification.",
+      "tags": [
+        "scene"
+      ],
+      "engineClassesUsed": [
+        "engine/scenes/index/Scene"
+      ],
+      "thumbnail": "/samples/phase14/1406/assets/preview.svg",
+      "preview": "/samples/phase14/1406/assets/preview.svg"
     },
     {
       "id": "1407",
       "phase": "14",
       "title": "Performance Benchmark Runner",
-      "description": "Performance Benchmark Runner",
-      "tags": []
+      "description": "Runs reusable benchmark cases and shows timing output.",
+      "tags": [
+        "scene"
+      ],
+      "engineClassesUsed": [
+        "engine/scenes/index/Scene"
+      ],
+      "thumbnail": "/samples/phase14/1407/assets/preview.svg",
+      "preview": "/samples/phase14/1407/assets/preview.svg"
     },
     {
       "id": "1408",
       "phase": "14",
       "title": "CI Validation Flow",
-      "description": "CI Validation Flow",
-      "tags": []
+      "description": "Shows automation-friendly pass/fail validation steps.",
+      "tags": [
+        "scene"
+      ],
+      "engineClassesUsed": [
+        "engine/scenes/index/Scene"
+      ],
+      "thumbnail": "/samples/phase14/1408/assets/preview.svg",
+      "preview": "/samples/phase14/1408/assets/preview.svg"
     },
     {
       "id": "1409",
       "phase": "14",
       "title": "Packet Validation Anti Cheat",
-      "description": "Packet Validation Anti Cheat",
-      "tags": []
+      "description": "Validates network packets and rejects suspicious ones.",
+      "tags": [
+        "scene"
+      ],
+      "engineClassesUsed": [
+        "engine/scenes/index/Scene"
+      ],
+      "thumbnail": "/samples/phase14/1409/assets/preview.svg",
+      "preview": "/samples/phase14/1409/assets/preview.svg"
     },
     {
       "id": "1410",
       "phase": "14",
       "title": "Save Data Integrity Checks",
-      "description": "Save Data Integrity Checks",
-      "tags": []
+      "description": "Seals and verifies persisted data for tamper detection.",
+      "tags": [
+        "scene"
+      ],
+      "engineClassesUsed": [
+        "engine/scenes/index/Scene"
+      ],
+      "thumbnail": "/samples/phase14/1410/assets/preview.svg",
+      "preview": "/samples/phase14/1410/assets/preview.svg"
     },
     {
       "id": "1411",
       "phase": "14",
       "title": "Permissions Capability Gating",
-      "description": "Permissions Capability Gating",
-      "tags": []
+      "description": "Compares allowed and blocked capabilities by role.",
+      "tags": [
+        "scene"
+      ],
+      "engineClassesUsed": [
+        "engine/scenes/index/Scene"
+      ],
+      "thumbnail": "/samples/phase14/1411/assets/preview.svg",
+      "preview": "/samples/phase14/1411/assets/preview.svg"
     },
     {
       "id": "1412",
       "phase": "14",
       "title": "Trust Session Validation",
-      "description": "Trust Session Validation",
-      "tags": []
+      "description": "Detects stale or invalid session state before use.",
+      "tags": [
+        "scene"
+      ],
+      "engineClassesUsed": [
+        "engine/scenes/index/Scene"
+      ],
+      "thumbnail": "/samples/phase14/1412/assets/preview.svg",
+      "preview": "/samples/phase14/1412/assets/preview.svg"
     },
     {
       "id": "1413",
       "phase": "14",
       "title": "Asset Import Pipeline",
-      "description": "Asset Import Pipeline",
-      "tags": []
+      "description": "Runs imported content through structured pipeline steps.",
+      "tags": [
+        "scene"
+      ],
+      "engineClassesUsed": [
+        "engine/scenes/index/Scene"
+      ],
+      "thumbnail": "/samples/phase14/1413/assets/preview.svg",
+      "preview": "/samples/phase14/1413/assets/preview.svg"
     },
     {
       "id": "1414",
       "phase": "14",
       "title": "Texture Sprite Preprocess Pipeline",
-      "description": "Texture Sprite Preprocess Pipeline",
-      "tags": []
+      "description": "Prepares texture metadata consistently before engine use.",
+      "tags": [
+        "scene"
+      ],
+      "engineClassesUsed": [
+        "engine/scenes/index/Scene"
+      ],
+      "thumbnail": "/samples/phase14/1414/assets/preview.svg",
+      "preview": "/samples/phase14/1414/assets/preview.svg"
     },
     {
       "id": "1415",
       "phase": "14",
       "title": "Audio Preprocess Pipeline",
-      "description": "Audio Preprocess Pipeline",
-      "tags": []
+      "description": "Prepares audio assets through a reusable preprocess path.",
+      "tags": [
+        "scene"
+      ],
+      "engineClassesUsed": [
+        "engine/scenes/index/Scene"
+      ],
+      "thumbnail": "/samples/phase14/1415/assets/preview.svg",
+      "preview": "/samples/phase14/1415/assets/preview.svg"
     },
     {
       "id": "1416",
       "phase": "14",
       "title": "Content Versioning Migration",
-      "description": "Content Versioning Migration",
-      "tags": []
+      "description": "Migrates older content to a current structure.",
+      "tags": [
+        "scene"
+      ],
+      "engineClassesUsed": [
+        "engine/scenes/index/Scene"
+      ],
+      "thumbnail": "/samples/phase14/1416/assets/preview.svg",
+      "preview": "/samples/phase14/1416/assets/preview.svg"
     },
     {
       "id": "1417",
       "phase": "14",
       "title": "Build Asset Manifest System",
-      "description": "Build Asset Manifest System",
-      "tags": []
+      "description": "Generates and validates a structured asset manifest.",
+      "tags": [
+        "scene"
+      ],
+      "engineClassesUsed": [
+        "engine/scenes/index/Scene"
+      ],
+      "thumbnail": "/samples/phase14/1417/assets/preview.svg",
+      "preview": "/samples/phase14/1417/assets/preview.svg"
     },
     {
       "id": "1418",
       "phase": "14",
       "title": "Content Validation Pipeline",
-      "description": "Content Validation Pipeline",
-      "tags": []
+      "description": "Detects invalid content before runtime use.",
+      "tags": [
+        "scene"
+      ],
+      "engineClassesUsed": [
+        "engine/scenes/index/Scene"
+      ],
+      "thumbnail": "/samples/phase14/1418/assets/preview.svg",
+      "preview": "/samples/phase14/1418/assets/preview.svg"
     },
     {
       "id": "1501",
       "phase": "15",
       "title": "Developer Console",
-      "description": "Developer Console",
-      "tags": []
+      "description": "Executes runtime commands through a reusable developer console.",
+      "tags": [
+        "developerconsole",
+        "drawframe",
+        "drawpanel",
+        "scene",
+        "themetokens"
+      ],
+      "engineClassesUsed": [
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawPanel",
+        "engine/scenes/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens",
+        "engine/tooling/index/DeveloperConsole"
+      ],
+      "thumbnail": "/samples/phase15/1501/assets/preview.svg",
+      "preview": "/samples/phase15/1501/assets/preview.svg"
     },
     {
       "id": "1502",
       "phase": "15",
       "title": "In Engine Inspector",
-      "description": "In Engine Inspector",
-      "tags": []
+      "description": "Inspects runtime object state through an engine-owned tooling view.",
+      "tags": [
+        "drawframe",
+        "drawpanel",
+        "runtimeinspector",
+        "scene",
+        "themetokens"
+      ],
+      "engineClassesUsed": [
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawPanel",
+        "engine/scenes/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens",
+        "engine/tooling/index/RuntimeInspector"
+      ],
+      "thumbnail": "/samples/phase15/1502/assets/preview.svg",
+      "preview": "/samples/phase15/1502/assets/preview.svg"
     },
     {
       "id": "1503",
       "phase": "15",
       "title": "Property Editor",
-      "description": "Property Editor",
-      "tags": []
+      "description": "Modifies runtime values through a reusable property editing tool.",
+      "tags": [
+        "drawframe",
+        "drawpanel",
+        "propertyeditor",
+        "scene",
+        "themetokens"
+      ],
+      "engineClassesUsed": [
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawPanel",
+        "engine/scenes/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens",
+        "engine/tooling/index/PropertyEditor"
+      ],
+      "thumbnail": "/samples/phase15/1503/assets/preview.svg",
+      "preview": "/samples/phase15/1503/assets/preview.svg"
     },
     {
       "id": "1504",
       "phase": "15",
       "title": "Live Tuning Hot Reload",
-      "description": "Live Tuning Hot Reload",
-      "tags": []
+      "description": "Adjusts live data without restarting the runtime.",
+      "tags": [
+        "drawframe",
+        "drawpanel",
+        "livetuningservice",
+        "scene",
+        "themetokens"
+      ],
+      "engineClassesUsed": [
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawPanel",
+        "engine/scenes/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens",
+        "engine/tooling/index/LiveTuningService"
+      ],
+      "thumbnail": "/samples/phase15/1504/assets/preview.svg",
+      "preview": "/samples/phase15/1504/assets/preview.svg"
     },
     {
       "id": "1505",
       "phase": "15",
       "title": "Asset Browser",
-      "description": "Asset Browser",
-      "tags": []
+      "description": "Browses and selects project asset records through a tooling view.",
+      "tags": [
+        "assetbrowser",
+        "drawframe",
+        "drawpanel",
+        "scene",
+        "themetokens"
+      ],
+      "engineClassesUsed": [
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawPanel",
+        "engine/scenes/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens",
+        "engine/tooling/index/AssetBrowser"
+      ],
+      "thumbnail": "/samples/phase15/1505/assets/preview.svg",
+      "preview": "/samples/phase15/1505/assets/preview.svg"
     },
     {
       "id": "1506",
       "phase": "15",
       "title": "Scene Graph Entity Hierarchy Viewer",
-      "description": "Scene Graph Entity Hierarchy Viewer",
-      "tags": []
+      "description": "Views hierarchy relationships through a reusable scene graph tool.",
+      "tags": [
+        "drawframe",
+        "drawpanel",
+        "scenegraphviewer",
+        "themetokens"
+      ],
+      "engineClassesUsed": [
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawPanel",
+        "engine/scenes/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens",
+        "engine/tooling/index/SceneGraphViewer"
+      ],
+      "thumbnail": "/samples/phase15/1506/assets/preview.svg",
+      "preview": "/samples/phase15/1506/assets/preview.svg"
     }
   ]
 }
