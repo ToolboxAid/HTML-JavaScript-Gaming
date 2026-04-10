@@ -1,11 +1,7 @@
-[ ] samples/index.html renders thumbnails when available
-[ ] missing preview assets fall back cleanly
-[ ] hover preview works without breaking layout
-[ ] representative sample pages show correct navigation
-[ ] related links resolve correctly
-[ ] Phase 13 samples 1316, 1317, 1318 still load
-[ ] no console errors in tested pages
-[ ] no gameplay changes
-[ ] no engine-core changes
-[ ] changed-file count stayed minimal
-[ ] ZIP exists at <project folder>/tmp/BUILD_PR_SAMPLES_BROWSE_VISUALS_AND_NAVIGATION.zip
+[ ] metadata validation works
+[ ] duplicate ids fail
+[ ] duplicate entries fail
+[ ] tags normalized
+[ ] filters/search consistent
+[ ] no console errors
+[ ] zip exists

@@ -1273,7 +1273,11 @@
       "phase": "13",
       "title": "Network Sample A",
       "description": "Network Sample A",
-      "tags": [],
+      "tags": [
+        "network",
+        "phase-13",
+        "sample-a"
+      ],
       "thumbnail": "/samples/phase13/1316/assets/preview.svg",
       "preview": "/samples/phase13/1316/assets/preview.svg"
     },
@@ -1282,7 +1286,11 @@
       "phase": "13",
       "title": "Network Sample B",
       "description": "Network Sample B",
-      "tags": [],
+      "tags": [
+        "network",
+        "phase-13",
+        "sample-b"
+      ],
       "thumbnail": "/samples/phase13/1317/assets/preview.svg",
       "preview": "/samples/phase13/1317/assets/preview.svg"
     },
@@ -1291,7 +1299,11 @@
       "phase": "13",
       "title": "Network Sample C",
       "description": "Network Sample C",
-      "tags": [],
+      "tags": [
+        "network",
+        "phase-13",
+        "sample-c"
+      ],
       "thumbnail": "/samples/phase13/1318/assets/preview.svg",
       "preview": "/samples/phase13/1318/assets/preview.svg"
     },

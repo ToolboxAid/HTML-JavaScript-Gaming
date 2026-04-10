@@ -1,8 +1,1 @@
-PR TYPE: BUILD
-PURPOSE: samples browse visuals and navigation
-
-SUMMARY:
-- defines a testable BUILD wave for thumbnails, hover preview, and navigation polish
-- preserves canonical sample paths and metadata-driven readable UI
-- requires clean fallback behavior when preview assets are missing
-- keeps scope narrow and Windows-safe
+Add fail-fast metadata validation and normalize tags for consistent discovery

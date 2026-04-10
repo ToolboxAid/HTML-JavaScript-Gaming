@@ -1,8 +1,1 @@
-BUILD_PR: improve samples browse visuals and navigation
-
-- add thumbnail / preview asset support with clean fallback behavior
-- add lightweight hover preview behavior
-- polish next/previous/related navigation surfaces
-- preserve canonical paths and metadata-driven readable UI
-
-No gameplay or engine-core scope included
+BUILD_PR: metadata validation hardening and tag standardization

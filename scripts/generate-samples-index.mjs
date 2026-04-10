@@ -105,18 +105,17 @@ function assertRequiredField(obj, field, context) {
   }
 }
 
-function loadMetadata() {
-  if (!fs.existsSync(METADATA_PATH)) {
-    throw new Error('Missing metadata file: ' + path.relative(ROOT, METADATA_PATH));
-  }
+function normalizeTag(tag) {
+  const normalized = String(tag)
+    .trim()
+    .toLowerCase()
+    .replaceAll(/[_\s]+/g, '-')
+    .replaceAll(/-+/g, '-')
+    .replaceAll(/^-|-$/g, '');
+  return normalized;
+}
 
-  let raw;
-  try {
-    raw = JSON.parse(readFile(METADATA_PATH));
-  } catch (error) {
-    throw new Error('Invalid metadata JSON: ' + error.message);
-  }
-
+function parseMetadataObject(raw) {
   if (!raw || typeof raw !== 'object') {
     throw new Error('Metadata root must be an object.');
   }
@@ -129,6 +128,7 @@ function loadMetadata() {
 
   const phaseMeta = new Map();
   const sampleMeta = new Map();
+  const sampleEntrypaths = new Set();
 
   for (let i = 0; i < raw.phases.length; i += 1) {
     const entry = raw.phases[i];
@@ -191,24 +191,53 @@ function loadMetadata() {
     if (!Array.isArray(entry.tags)) {
       throw new Error(context + '.tags must be an array.');
     }
+
+    const tagSet = new Set();
     for (let t = 0; t < entry.tags.length; t += 1) {
       if (typeof entry.tags[t] !== 'string' || entry.tags[t].trim() === '') {
         throw new Error(context + '.tags[' + t + '] must be a non-empty string.');
       }
+      const normalizedTag = normalizeTag(entry.tags[t]);
+      if (!normalizedTag) {
+        throw new Error(context + '.tags[' + t + '] is invalid after normalization.');
+      }
+      tagSet.add(normalizedTag);
     }
+
     if (sampleMeta.has(entry.id)) {
       throw new Error('Duplicate sample metadata entry: ' + entry.id);
     }
+
+    const canonicalEntrypath = './phase' + entry.phase + '/' + entry.id + '/index.html';
+    if (sampleEntrypaths.has(canonicalEntrypath)) {
+      throw new Error('Duplicate sample entry path detected: ' + canonicalEntrypath);
+    }
+    sampleEntrypaths.add(canonicalEntrypath);
 
     sampleMeta.set(entry.id, {
       phase: entry.phase,
       title: entry.title.trim(),
       description: entry.description.trim(),
-      tags: entry.tags.map((tag) => tag.trim())
+      tags: [...tagSet]
     });
   }
 
   return { phaseMeta, sampleMeta };
+}
+
+function loadMetadata() {
+  if (!fs.existsSync(METADATA_PATH)) {
+    throw new Error('Missing metadata file: ' + path.relative(ROOT, METADATA_PATH));
+  }
+
+  let raw;
+  try {
+    raw = JSON.parse(readFile(METADATA_PATH));
+  } catch (error) {
+    throw new Error('Invalid metadata JSON: ' + error.message);
+  }
+
+  return parseMetadataObject(raw);
 }
 
 function validateMetadataAgainstCanonical(phases, metadata) {
@@ -319,7 +348,63 @@ function replaceGeneratedBlock(html, generatedSections) {
   return prefix + START_MARKER + '\n' + generatedSections + '\n    ' + END_MARKER + '\n' + suffix;
 }
 
+function runSelfTests() {
+  const validRaw = {
+    phases: [{ phase: '13', title: 'Phase 13', description: 'Network' }],
+    samples: [
+      {
+        id: '1316',
+        phase: '13',
+        title: 'A',
+        description: 'A',
+        tags: [' Network ', 'PHASE 13', 'sample_a', 'sample-a']
+      }
+    ]
+  };
+  const parsed = parseMetadataObject(validRaw);
+  const normalizedTags = parsed.sampleMeta.get('1316').tags.join(',');
+  if (normalizedTags !== 'network,phase-13,sample-a') {
+    throw new Error('Self-test failed: tag normalization mismatch.');
+  }
+
+  let duplicateIdFailed = false;
+  try {
+    parseMetadataObject({
+      phases: [{ phase: '13', title: 'Phase 13', description: 'Network' }],
+      samples: [
+        { id: '1316', phase: '13', title: 'A', description: 'A', tags: ['network'] },
+        { id: '1316', phase: '13', title: 'B', description: 'B', tags: ['network'] }
+      ]
+    });
+  } catch (error) {
+    duplicateIdFailed = String(error.message || '').includes('Duplicate sample metadata entry');
+  }
+  if (!duplicateIdFailed) {
+    throw new Error('Self-test failed: duplicate sample ID was not rejected.');
+  }
+
+  let badTagFailed = false;
+  try {
+    parseMetadataObject({
+      phases: [{ phase: '13', title: 'Phase 13', description: 'Network' }],
+      samples: [{ id: '1316', phase: '13', title: 'A', description: 'A', tags: ['   '] }]
+    });
+  } catch (error) {
+    badTagFailed = String(error.message || '').includes('non-empty string');
+  }
+  if (!badTagFailed) {
+    throw new Error('Self-test failed: invalid tag was not rejected.');
+  }
+}
+
 function main() {
+  const modeSelfTest = process.argv.includes('--self-test');
+  if (modeSelfTest) {
+    runSelfTests();
+    console.log('OK self-test metadata validation and tag normalization');
+    return;
+  }
+
   const modeCheck = process.argv.includes('--check');
   const html = readFile(INDEX_PATH);
   const phases = discoverCanonicalSamples();
