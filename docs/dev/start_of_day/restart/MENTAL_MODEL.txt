@@ -1,0 +1,11 @@
+IMPORTANT:
+
+You are NOT migrating games anymore.
+
+You are:
+- organizing samples
+- fixing index wiring
+- aligning structure
+
+This is a MOVE + INDEX problem
+NOT a gameplay problem
