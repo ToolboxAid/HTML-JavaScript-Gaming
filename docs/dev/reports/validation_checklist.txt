@@ -1,4 +1,4 @@
-Validation Checklist — APPLY AITargetDummy Migration
+Validation Checklist — APPLY PaddleIntercept Migration
 
 [x] Runs from canonical
 [x] Canvas visible
