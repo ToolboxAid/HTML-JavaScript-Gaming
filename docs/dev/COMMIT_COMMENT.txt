@@ -1,1 +1,1 @@
-BUILD_PR: add filtering and search to samples index
+PLAN_PR: enhance sample detail pages with metadata-driven UI

@@ -1,5 +1,2 @@
-MODIFIED:
-- samples/index.html
-
 ADDED:
-- minimal filter/search JS
+- docs/pr/PLAN_PR_SAMPLES_DETAIL_PAGE_ENHANCEMENT.md

@@ -1,1 +1,1 @@
-Add phase filter, tag filter, and search to samples index
+Define improvements for sample pages including headers, previews, and navigation

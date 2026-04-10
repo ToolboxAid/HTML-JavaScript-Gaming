@@ -2,23 +2,13 @@ MODEL: GPT-5.4-codex
 REASONING: high
 
 COMMAND:
-Execute BUILD_PR_SAMPLES_FILTER_AND_SEARCH
-
-ENVIRONMENT:
-- Windows
-- Use Node.js or vanilla JS only
-- No npm install
-- No node_modules
+Create PLAN_PR_SAMPLES_DETAIL_PAGE_ENHANCEMENT
 
 RULES:
-- Do not change canonical paths
-- Do not modify gameplay
-- Keep changes minimal
-
-VALIDATION:
-- filters work
-- search works
-- 1316–1318 load correctly
+- Docs only
+- No implementation code
+- No gameplay changes
+- No engine changes
 
 ZIP:
-<project folder>/tmp/BUILD_PR_SAMPLES_FILTER_AND_SEARCH.zip
+<project folder>/tmp/PLAN_PR_SAMPLES_DETAIL_PAGE_ENHANCEMENT.zip
