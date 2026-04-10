@@ -1,8 +1,13 @@
-Validation Checklist — APPLY SolarSystem Migration
+Validation Checklist — Games PacmanFullAI Full Folder Migration
 
-[x] Runs from canonical
-[x] Canvas visible
-[x] No console errors
-[x] _next removed
+[ ] PacmanFullAI_next created from template
+[ ] PacmanFullAI gameplay migrated into correct _next destinations
+[ ] PacmanFullAI_next/index.html boots gameplay
+[ ] PacmanFullAI_next runtime has no console errors
+[ ] Canonical PacmanFullAI destination cleared successfully
+[ ] games/PacmanFullAI/index.html boots gameplay
+[ ] Canonical runtime has no console errors
+[ ] PacmanFullAI_next removed at end
+[ ] No unrelated game folders changed
 
-Status: PASS
+Status: PENDING

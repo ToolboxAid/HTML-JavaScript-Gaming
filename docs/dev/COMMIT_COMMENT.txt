@@ -1,2 +1,11 @@
-APPLY_PR_GAMES_THRUSTER_FULL_FOLDER_MIGRATION
-Accepted.
+BUILD_PR_GAMES_PACMANFULLAI_FULL_FOLDER_MIGRATION
+
+Executed full PacmanFullAI folder migration.
+
+- created PacmanFullAI_next from template
+- migrated gameplay into correct _next destinations
+- validated _next runtime
+- cleared canonical destination
+- copied _next back into canonical
+- validated canonical runtime
+- removed PacmanFullAI_next
