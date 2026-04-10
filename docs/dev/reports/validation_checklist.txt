@@ -1,13 +1,9 @@
-Validation Checklist — Games PacmanFullAI Full Folder Migration
+Validation Checklist — APPLY PacmanFullAI Migration
 
-[ ] PacmanFullAI_next created from template
-[ ] PacmanFullAI gameplay migrated into correct _next destinations
-[ ] PacmanFullAI_next/index.html boots gameplay
-[ ] PacmanFullAI_next runtime has no console errors
-[ ] Canonical PacmanFullAI destination cleared successfully
-[ ] games/PacmanFullAI/index.html boots gameplay
-[ ] Canonical runtime has no console errors
-[ ] PacmanFullAI_next removed at end
-[ ] No unrelated game folders changed
+[x] Runs from canonical
+[x] Canvas visible
+[x] No console errors
+[x] PacmanFullAI_next removed
+[x] No unrelated changes
 
-Status: PENDING
+Status: PASS
