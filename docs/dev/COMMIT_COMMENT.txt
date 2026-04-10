@@ -1,2 +1,7 @@
-BUILD_PR_GAMES_SPACEDUEL_FULL_FOLDER_MIGRATION
-Full SpaceDuel migration.
+APPLY_PR_GAMES_SPACEDUEL_FULL_FOLDER_MIGRATION
+
+Accepted full SpaceDuel migration.
+
+- canonical validated
+- _next removed
+- pipeline confirmed
