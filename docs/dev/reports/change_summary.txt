@@ -1,8 +1,8 @@
-PR TYPE: PLAN
-PURPOSE: samples bundled finalization
+PR TYPE: BUILD
+PURPOSE: samples browse visuals and navigation
 
 SUMMARY:
-- defines the 7 remaining sample objectives to complete
-- bundles work into the minimum safe number of future BUILD/APPLY waves (3)
-- separates browse UX, discovery-data quality, and performance/personalization into compatible lanes
-- preserves one-purpose-per-PR, testability gates, canonical paths, and Windows-safe zero-dependency assumptions
+- defines a testable BUILD wave for thumbnails, hover preview, and navigation polish
+- preserves canonical sample paths and metadata-driven readable UI
+- requires clean fallback behavior when preview assets are missing
+- keeps scope narrow and Windows-safe

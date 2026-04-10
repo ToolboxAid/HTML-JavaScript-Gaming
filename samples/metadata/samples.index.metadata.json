@@ -1273,21 +1273,27 @@
       "phase": "13",
       "title": "Network Sample A",
       "description": "Network Sample A",
-      "tags": []
+      "tags": [],
+      "thumbnail": "/samples/phase13/1316/assets/preview.svg",
+      "preview": "/samples/phase13/1316/assets/preview.svg"
     },
     {
       "id": "1317",
       "phase": "13",
       "title": "Network Sample B",
       "description": "Network Sample B",
-      "tags": []
+      "tags": [],
+      "thumbnail": "/samples/phase13/1317/assets/preview.svg",
+      "preview": "/samples/phase13/1317/assets/preview.svg"
     },
     {
       "id": "1318",
       "phase": "13",
       "title": "Network Sample C",
       "description": "Network Sample C",
-      "tags": []
+      "tags": [],
+      "thumbnail": "/samples/phase13/1318/assets/preview.svg",
+      "preview": "/samples/phase13/1318/assets/preview.svg"
     },
     {
       "id": "1401",

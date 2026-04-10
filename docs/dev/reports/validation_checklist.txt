@@ -1,8 +1,11 @@
-[x] All 7 remaining sample objectives are covered
-[x] Bundling uses the fewest safe BUILD/APPLY waves
-[x] No future BUILD mixes incompatible PR purposes
-[x] Each future BUILD remains testable
-[x] Canonical path contract remains unchanged
-[x] Windows-safe zero-dependency assumptions remain intact
-[x] Output files generated at required docs paths
-[x] ZIP exists at <project folder>/tmp/PLAN_PR_SAMPLES_BUNDLED_FINALIZATION.zip
+[ ] samples/index.html renders thumbnails when available
+[ ] missing preview assets fall back cleanly
+[ ] hover preview works without breaking layout
+[ ] representative sample pages show correct navigation
+[ ] related links resolve correctly
+[ ] Phase 13 samples 1316, 1317, 1318 still load
+[ ] no console errors in tested pages
+[ ] no gameplay changes
+[ ] no engine-core changes
+[ ] changed-file count stayed minimal
+[ ] ZIP exists at <project folder>/tmp/BUILD_PR_SAMPLES_BROWSE_VISUALS_AND_NAVIGATION.zip

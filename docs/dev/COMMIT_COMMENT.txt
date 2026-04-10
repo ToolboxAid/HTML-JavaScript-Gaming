@@ -1,8 +1,8 @@
-PLAN_PR: bundle remaining sample objectives into minimal safe BUILD/APPLY waves
+BUILD_PR: improve samples browse visuals and navigation
 
-- covers all 7 remaining sample objectives
-- minimizes future execution to 3 BUILD/APPLY waves
-- preserves one-purpose-per-PR rule and testability gate
-- preserves canonical sample paths and Windows-safe zero-dependency assumptions
+- add thumbnail / preview asset support with clean fallback behavior
+- add lightweight hover preview behavior
+- polish next/previous/related navigation surfaces
+- preserve canonical paths and metadata-driven readable UI
 
-Docs-only planning bundle
+No gameplay or engine-core scope included
