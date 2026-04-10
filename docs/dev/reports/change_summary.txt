@@ -1,1 +1,8 @@
-Add fail-fast metadata validation and normalize tags for consistent discovery
+PR TYPE: BUILD
+PURPOSE: samples index performance and personalization
+
+SUMMARY:
+- defines a testable BUILD wave for index responsiveness and favorites/pinning
+- preserves canonical sample paths and metadata-driven readable UI
+- requires lightweight client-side persistence only
+- keeps scope narrow, dependency-free, and Windows-safe

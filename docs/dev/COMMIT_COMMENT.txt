@@ -1,1 +1,8 @@
-BUILD_PR: metadata validation hardening and tag standardization
+BUILD_PR: improve samples index responsiveness and add favorites/pinning
+
+- tighten samples index rendering/update behavior for repeated browse flows
+- add lightweight favorites / pinning with local persistence
+- preserve canonical paths and metadata-driven readable UI
+- keep implementation dependency-free and Windows-safe
+
+No gameplay or engine-core scope included

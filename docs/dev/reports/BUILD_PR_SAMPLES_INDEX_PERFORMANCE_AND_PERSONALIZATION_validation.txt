@@ -1,0 +1,53 @@
+BUILD_PR_SAMPLES_INDEX_PERFORMANCE_AND_PERSONALIZATION
+
+Scope confirmation:
+- No gameplay files changed
+- No engine-core files changed
+- Canonical sample paths preserved
+
+Files changed for this BUILD:
+- samples/index.html
+- docs/dev/reports/BUILD_PR_SAMPLES_INDEX_PERFORMANCE_AND_PERSONALIZATION_validation.txt
+
+Validation executed:
+1) node scripts/generate-samples-index.mjs --check
+   - Result: OK phases=15 samples=197 metadata=197 mode=check
+
+2) Inline index script parse + feature hook checks
+   - Result: pass
+   - Verified:
+     - favorites containers exist
+     - localStorage read/write hooks exist
+     - favorites toggle/render functions exist
+     - requestAnimationFrame scheduling exists
+     - last-criteria skip guard exists
+
+3) Filter/search correctness checks against launcher links
+   - Result: pass
+   - Verified network-tag filtering includes 1316/1317/1318
+   - Verified combined tag+search resolves Network Sample B to 1317
+
+4) Phase 13 representative link/file checks
+   - Result: pass
+   - Confirmed 1316, 1317, 1318 launcher links still present
+   - Confirmed corresponding sample files still exist
+
+5) Favorites persistence and removal path checks (source-level)
+   - Result: pass
+   - Verified:
+     - favorites key: toolboxaid:samples:favorites:v1
+     - favorites loaded from localStorage at startup
+     - add path uses favoriteIds.add(...) and writeFavorites(...)
+     - remove path uses favoriteIds.delete(...) and writeFavorites(...)
+     - UI re-render triggered after add/remove
+
+6) Responsiveness guard checks (source-level)
+   - Result: pass
+   - Verified:
+     - input-driven filter scheduling uses requestAnimationFrame
+     - repeated unchanged criteria short-circuits through lastCriteria
+     - visibility updates apply only on change (reduced DOM churn)
+
+7) Console-clean check
+   - Result: pass
+   - No console.log / console.warn / console.error statements in samples/index.html
