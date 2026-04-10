@@ -4,6 +4,7 @@ import path from 'node:path';
 const ROOT = process.cwd();
 const SAMPLES_DIR = path.join(ROOT, 'samples');
 const INDEX_PATH = path.join(SAMPLES_DIR, 'index.html');
+const METADATA_PATH = path.join(SAMPLES_DIR, 'metadata', 'samples.index.metadata.json');
 const START_MARKER = '<!-- AUTO-GENERATED SAMPLE SECTIONS START -->';
 const END_MARKER = '<!-- AUTO-GENERATED SAMPLE SECTIONS END -->';
 
@@ -16,7 +17,7 @@ function writeFile(filePath, content) {
 }
 
 function escapeHtml(text) {
-  return text
+  return String(text)
     .replaceAll('&', '&amp;')
     .replaceAll('<', '&lt;')
     .replaceAll('>', '&gt;')
@@ -24,43 +25,18 @@ function escapeHtml(text) {
     .replaceAll("'", '&#39;');
 }
 
-function parseMetadataFromIndex(html) {
-  const phaseMeta = new Map();
-  const sampleMeta = new Map();
-
-  const sectionRegex = /<section>\s*<h2>(.*?)<\/h2>\s*<p>(.*?)<\/p>\s*<div class="grid">([\s\S]*?)<\/div>\s*<\/section>/g;
-  let sectionMatch;
-  while ((sectionMatch = sectionRegex.exec(html)) !== null) {
-    const heading = sectionMatch[1].trim();
-    const description = sectionMatch[2].trim();
-    const grid = sectionMatch[3];
-    const phaseNumMatch = /^Phase\s+(\d{2})\b/.exec(heading);
-    if (!phaseNumMatch) continue;
-    const phaseNum = phaseNumMatch[1];
-    phaseMeta.set(phaseNum, { heading, description });
-
-    const linkRegex = /<a class="live" href="\.\/phase(\d{2})\/(\d{4})\/index\.html">Sample\s+\d{4}\s+-\s+([^<]+)<\/a>/g;
-    let linkMatch;
-    while ((linkMatch = linkRegex.exec(grid)) !== null) {
-      const phaseFromLink = linkMatch[1];
-      const sampleId = linkMatch[2];
-      const sampleTitle = linkMatch[3].trim();
-      if (phaseFromLink === phaseNum) {
-        sampleMeta.set(sampleId, sampleTitle);
-      }
-    }
-  }
-
-  return { phaseMeta, sampleMeta };
+function escapeAttr(text) {
+  return escapeHtml(text).replaceAll('\n', ' ').replaceAll('\r', ' ');
 }
 
 function discoverCanonicalSamples() {
-  const phaseDirs = fs.readdirSync(SAMPLES_DIR, { withFileTypes: true })
+  const phaseEntries = fs.readdirSync(SAMPLES_DIR, { withFileTypes: true });
+  const phaseDirs = phaseEntries
     .filter((d) => d.isDirectory() && /^phase\d{2}$/.test(d.name))
     .map((d) => d.name)
     .sort();
 
-  const malformedPhaseDirs = fs.readdirSync(SAMPLES_DIR, { withFileTypes: true })
+  const malformedPhaseDirs = phaseEntries
     .filter((d) => d.isDirectory() && d.name.startsWith('phase') && !/^phase\d{2}$/.test(d.name))
     .map((d) => d.name);
 
@@ -68,7 +44,7 @@ function discoverCanonicalSamples() {
     throw new Error('Malformed phase directory names: ' + malformedPhaseDirs.join(', '));
   }
 
-  const duplicateSampleIds = new Map();
+  const duplicateSampleIds = new Set();
   const seenSampleIds = new Set();
   const phases = [];
 
@@ -97,7 +73,7 @@ function discoverCanonicalSamples() {
       }
 
       if (seenSampleIds.has(sampleId)) {
-        duplicateSampleIds.set(sampleId, true);
+        duplicateSampleIds.add(sampleId);
       }
       seenSampleIds.add(sampleId);
 
@@ -108,6 +84,7 @@ function discoverCanonicalSamples() {
 
       samples.push({
         id: sampleId,
+        phase: phaseNum,
         href: './' + phaseDir + '/' + sampleId + '/index.html'
       });
     }
@@ -116,41 +93,192 @@ function discoverCanonicalSamples() {
   }
 
   if (duplicateSampleIds.size > 0) {
-    throw new Error('Duplicate sample numbers detected: ' + [...duplicateSampleIds.keys()].join(', '));
+    throw new Error('Duplicate sample numbers detected: ' + [...duplicateSampleIds].join(', '));
   }
 
   return phases;
 }
 
-function buildGeneratedSections(phases, phaseMeta, sampleMeta) {
-  const blocks = [];
-  for (const phase of phases) {
-    if (!phaseMeta.has(phase.phaseNum)) {
-      throw new Error('Missing phase metadata for phase ' + phase.phaseNum);
-    }
-    const meta = phaseMeta.get(phase.phaseNum);
+function assertRequiredField(obj, field, context) {
+  if (!(field in obj)) {
+    throw new Error('Missing required field "' + field + '" in ' + context);
+  }
+}
 
-    const links = [];
-    for (const sample of phase.samples) {
-      if (!sampleMeta.has(sample.id)) {
-        throw new Error('Ambiguous sample metadata: missing title for sample ' + sample.id);
-      }
-      const title = sampleMeta.get(sample.id);
-      links.push('        <a class="live" href="' + sample.href + '">Sample ' + sample.id + ' - ' + escapeHtml(title) + '</a>');
-    }
-
-    const sectionLines = [
-      '    <section>',
-      '      <h2>' + escapeHtml(meta.heading) + '</h2>',
-      '      <p>' + escapeHtml(meta.description) + '</p>',
-      '      <div class="grid">',
-      ...links,
-      '      </div>',
-      '    </section>'
-    ];
-    blocks.push(sectionLines.join('\n'));
+function loadMetadata() {
+  if (!fs.existsSync(METADATA_PATH)) {
+    throw new Error('Missing metadata file: ' + path.relative(ROOT, METADATA_PATH));
   }
 
+  let raw;
+  try {
+    raw = JSON.parse(readFile(METADATA_PATH));
+  } catch (error) {
+    throw new Error('Invalid metadata JSON: ' + error.message);
+  }
+
+  if (!raw || typeof raw !== 'object') {
+    throw new Error('Metadata root must be an object.');
+  }
+  if (!Array.isArray(raw.phases)) {
+    throw new Error('Metadata field "phases" must be an array.');
+  }
+  if (!Array.isArray(raw.samples)) {
+    throw new Error('Metadata field "samples" must be an array.');
+  }
+
+  const phaseMeta = new Map();
+  const sampleMeta = new Map();
+
+  for (let i = 0; i < raw.phases.length; i += 1) {
+    const entry = raw.phases[i];
+    const context = 'phases[' + i + ']';
+    if (!entry || typeof entry !== 'object' || Array.isArray(entry)) {
+      throw new Error(context + ' must be an object.');
+    }
+
+    assertRequiredField(entry, 'phase', context);
+    assertRequiredField(entry, 'title', context);
+    assertRequiredField(entry, 'description', context);
+
+    if (!/^\d{2}$/.test(entry.phase)) {
+      throw new Error(context + '.phase must be 2 digits.');
+    }
+    if (typeof entry.title !== 'string' || entry.title.trim() === '') {
+      throw new Error(context + '.title must be a non-empty string.');
+    }
+    if (typeof entry.description !== 'string' || entry.description.trim() === '') {
+      throw new Error(context + '.description must be a non-empty string.');
+    }
+    if (phaseMeta.has(entry.phase)) {
+      throw new Error('Duplicate phase metadata entry: ' + entry.phase);
+    }
+
+    phaseMeta.set(entry.phase, {
+      title: entry.title.trim(),
+      description: entry.description.trim()
+    });
+  }
+
+  for (let i = 0; i < raw.samples.length; i += 1) {
+    const entry = raw.samples[i];
+    const context = 'samples[' + i + ']';
+    if (!entry || typeof entry !== 'object' || Array.isArray(entry)) {
+      throw new Error(context + ' must be an object.');
+    }
+
+    assertRequiredField(entry, 'id', context);
+    assertRequiredField(entry, 'phase', context);
+    assertRequiredField(entry, 'title', context);
+    assertRequiredField(entry, 'description', context);
+    assertRequiredField(entry, 'tags', context);
+
+    if (!/^\d{4}$/.test(entry.id)) {
+      throw new Error(context + '.id must be 4 digits.');
+    }
+    if (!/^\d{2}$/.test(entry.phase)) {
+      throw new Error(context + '.phase must be 2 digits.');
+    }
+    if (entry.id.slice(0, 2) !== entry.phase) {
+      throw new Error('Phase/sample mismatch in metadata for sample ' + entry.id);
+    }
+    if (typeof entry.title !== 'string' || entry.title.trim() === '') {
+      throw new Error(context + '.title must be a non-empty string.');
+    }
+    if (typeof entry.description !== 'string' || entry.description.trim() === '') {
+      throw new Error(context + '.description must be a non-empty string.');
+    }
+    if (!Array.isArray(entry.tags)) {
+      throw new Error(context + '.tags must be an array.');
+    }
+    for (let t = 0; t < entry.tags.length; t += 1) {
+      if (typeof entry.tags[t] !== 'string' || entry.tags[t].trim() === '') {
+        throw new Error(context + '.tags[' + t + '] must be a non-empty string.');
+      }
+    }
+    if (sampleMeta.has(entry.id)) {
+      throw new Error('Duplicate sample metadata entry: ' + entry.id);
+    }
+
+    sampleMeta.set(entry.id, {
+      phase: entry.phase,
+      title: entry.title.trim(),
+      description: entry.description.trim(),
+      tags: entry.tags.map((tag) => tag.trim())
+    });
+  }
+
+  return { phaseMeta, sampleMeta };
+}
+
+function validateMetadataAgainstCanonical(phases, metadata) {
+  const canonicalPhaseSet = new Set(phases.map((phase) => phase.phaseNum));
+  const canonicalSampleMap = new Map();
+
+  for (const phase of phases) {
+    if (!metadata.phaseMeta.has(phase.phaseNum)) {
+      throw new Error('Missing phase metadata for canonical phase ' + phase.phaseNum);
+    }
+    for (const sample of phase.samples) {
+      canonicalSampleMap.set(sample.id, sample);
+      if (!metadata.sampleMeta.has(sample.id)) {
+        throw new Error('Missing sample metadata for canonical sample ' + sample.id);
+      }
+      const sampleInfo = metadata.sampleMeta.get(sample.id);
+      if (sampleInfo.phase !== phase.phaseNum) {
+        throw new Error('Phase/sample mismatch for metadata sample ' + sample.id);
+      }
+    }
+  }
+
+  for (const phaseId of metadata.phaseMeta.keys()) {
+    if (!canonicalPhaseSet.has(phaseId)) {
+      throw new Error('Metadata contains non-canonical phase ' + phaseId);
+    }
+  }
+  for (const sampleId of metadata.sampleMeta.keys()) {
+    if (!canonicalSampleMap.has(sampleId)) {
+      throw new Error('Metadata contains non-canonical sample ' + sampleId);
+    }
+  }
+}
+
+function buildGeneratedSections(phases, metadata) {
+  const blocks = [];
+  for (const phase of phases) {
+    const phaseInfo = metadata.phaseMeta.get(phase.phaseNum);
+    const links = [];
+
+    for (const sample of phase.samples) {
+      const sampleInfo = metadata.sampleMeta.get(sample.id);
+      const tagValue = sampleInfo.tags.join(', ');
+      links.push(
+        '        <a class="live" href="' +
+          sample.href +
+          '" title="' +
+          escapeAttr(sampleInfo.description) +
+          '" data-tags="' +
+          escapeAttr(tagValue) +
+          '">Sample ' +
+          sample.id +
+          ' - ' +
+          escapeHtml(sampleInfo.title) +
+          '</a>'
+      );
+    }
+
+    blocks.push(
+      [
+        '    <section>',
+        '      <h2>' + escapeHtml(phaseInfo.title) + '</h2>',
+        '      <p>' + escapeHtml(phaseInfo.description) + '</p>',
+        '      <div class="grid">',
+        ...links,
+        '      </div>',
+        '    </section>'
+      ].join('\n')
+    );
+  }
   return blocks.join('\n');
 }
 
@@ -177,7 +305,6 @@ function replaceGeneratedBlock(html, generatedSections) {
 
   const phase16HeaderIndex = html.indexOf(phase16Header);
   const phase16SectionStart = phase16HeaderIndex >= 0 ? html.lastIndexOf('<section>', phase16HeaderIndex) : -1;
-
   if (phase16HeaderIndex >= 0 && phase16SectionStart < 0) {
     throw new Error('Could not locate section start for Phase 16 in samples/index.html');
   }
@@ -189,16 +316,16 @@ function replaceGeneratedBlock(html, generatedSections) {
 
   const prefix = html.slice(0, firstSectionStart);
   const suffix = html.slice(splitIndex);
-
   return prefix + START_MARKER + '\n' + generatedSections + '\n    ' + END_MARKER + '\n' + suffix;
 }
 
 function main() {
   const modeCheck = process.argv.includes('--check');
   const html = readFile(INDEX_PATH);
-  const { phaseMeta, sampleMeta } = parseMetadataFromIndex(html);
   const phases = discoverCanonicalSamples();
-  const generatedSections = buildGeneratedSections(phases, phaseMeta, sampleMeta);
+  const metadata = loadMetadata();
+  validateMetadataAgainstCanonical(phases, metadata);
+  const generatedSections = buildGeneratedSections(phases, metadata);
   const nextHtml = replaceGeneratedBlock(html, generatedSections);
 
   if (!modeCheck && nextHtml !== html) {
@@ -206,7 +333,16 @@ function main() {
   }
 
   const linkCount = (generatedSections.match(/class="live"/g) || []).length;
-  console.log('OK phases=' + phases.length + ' samples=' + linkCount + ' mode=' + (modeCheck ? 'check' : 'write'));
+  console.log(
+    'OK phases=' +
+      phases.length +
+      ' samples=' +
+      linkCount +
+      ' metadata=' +
+      metadata.sampleMeta.size +
+      ' mode=' +
+      (modeCheck ? 'check' : 'write')
+  );
 }
 
 try {

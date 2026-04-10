@@ -1,6 +1,5 @@
-[ ] Codex docs explicitly prohibit npm install / npm init
-[ ] Codex docs explicitly prohibit package.json / package-lock.json creation without approval
-[ ] Codex docs explicitly prohibit repo-root node_modules
-[ ] node_modules appearance is defined as stop-and-report
-[ ] cleanup scripts target only repo-root node_modules
-[ ] bundle ZIP exists under <project folder>/tmp/
+[ ] metadata file exists
+[ ] ids match folders
+[ ] index renders titles
+[ ] no broken links
+[ ] zip exists

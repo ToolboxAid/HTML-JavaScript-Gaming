@@ -1,0 +1,1461 @@
+{
+  "version": 1,
+  "phases": [
+    {
+      "phase": "01",
+      "title": "Phase 01 - Core Engine (0101-0124)",
+      "description": "Builds the game loop, input handling, rendering basics, collision foundations, ECS structure, and debug visibility."
+    },
+    {
+      "phase": "02",
+      "title": "Phase 02 - World + Visual (0201-0224)",
+      "description": "Expands into cameras, assets, animation, prefabs, tilemaps, serialization, and playable world slices."
+    },
+    {
+      "phase": "03",
+      "title": "Phase 03 - Gameplay Systems (0301-0324)",
+      "description": "Introduces movement rules, interaction systems, combat foundations, hazards, pickups, NPCs, and enemy behavior patterns."
+    },
+    {
+      "phase": "04",
+      "title": "Phase 04 - Camera + Feel (0401-0412)",
+      "description": "Focuses on camera behavior and input feel, covering dead zones, smoothing, shake, buffering, queues, and timing windows."
+    },
+    {
+      "phase": "05",
+      "title": "Phase 05 - UI + Systems (0501-0512)",
+      "description": "Builds combat-facing UI and reusable support systems such as events, state machines, config loading, debugging, and metrics."
+    },
+    {
+      "phase": "06",
+      "title": "Phase 06 - AI + World (0601-0613)",
+      "description": "Explores navigation, AI behaviors, questing, scripting, cutscenes, spawning, weather, and broader world simulation features."
+    },
+    {
+      "phase": "07",
+      "title": "Phase 07 - Polish + Scale (0701-0713)",
+      "description": "Improves usability and production readiness with remapping, controller support, optimization, saves, replays, localization, and packaging."
+    },
+    {
+      "phase": "08",
+      "title": "Phase 08 - Platform + UX (0801-0810)",
+      "description": "Rounds out audio, UI framework work, scene flow, profile handling, and platform-facing error and logging support."
+    },
+    {
+      "phase": "09",
+      "title": "Phase 09 - Graphics + Precision Collision (0901-0906)",
+      "description": "Moves into advanced rendering and collision precision with vector, polygon, mask, pixel-perfect, and hybrid approaches."
+    },
+    {
+      "phase": "10",
+      "title": "Phase 10 - Platform Utilities (1001-1003)",
+      "description": "Covers platform utility features for audio playback, browser storage helpers, and playlist management."
+    },
+    {
+      "phase": "11",
+      "title": "Phase 11 - Release + Deployment (1101-1106)",
+      "description": "Prepares projects for shipping with settings, accessibility, packaging, deployment profiles, and release validation workflows."
+    },
+    {
+      "phase": "12",
+      "title": "Phase 12 - Demo Games (1201-1208)",
+      "description": "Playable demo-game track for hero movement, jump timing, camera follow, and layered world presentation."
+    },
+    {
+      "phase": "13",
+      "title": "Phase 13 - Network Concepts, Latency &amp; Simulation (1301-1315)",
+      "description": "Introduces networking concepts using local and simulated systems (event bus, input models, latency simulation)."
+    },
+    {
+      "phase": "14",
+      "title": "Phase 14 - Editor + Automation + Trust + Pipeline (1401-1418)",
+      "description": "Builds authoring tools, automated validation, CI flows, trust checks, and import pipelines for a reliable workflow."
+    },
+    {
+      "phase": "15",
+      "title": "Phase 15 - Advanced Systems (1501-1506)",
+      "description": "Introduces deterministic scheduling, replay-friendly state handling, diffing, and verification systems."
+    }
+  ],
+  "samples": [
+    {
+      "id": "0101",
+      "phase": "01",
+      "title": "Basic Loop",
+      "description": "Basic Loop",
+      "tags": []
+    },
+    {
+      "id": "0102",
+      "phase": "01",
+      "title": "Keyboard Move",
+      "description": "Keyboard Move",
+      "tags": []
+    },
+    {
+      "id": "0103",
+      "phase": "01",
+      "title": "Mouse Input",
+      "description": "Mouse Input",
+      "tags": []
+    },
+    {
+      "id": "0104",
+      "phase": "01",
+      "title": "Gamepad Input",
+      "description": "Gamepad Input",
+      "tags": []
+    },
+    {
+      "id": "0105",
+      "phase": "01",
+      "title": "Scene Switch",
+      "description": "Scene Switch",
+      "tags": []
+    },
+    {
+      "id": "0106",
+      "phase": "01",
+      "title": "Input Mapping",
+      "description": "Input Mapping",
+      "tags": []
+    },
+    {
+      "id": "0107",
+      "phase": "01",
+      "title": "Entity Movement",
+      "description": "Entity Movement",
+      "tags": []
+    },
+    {
+      "id": "0108",
+      "phase": "01",
+      "title": "Render Adapter",
+      "description": "Render Adapter",
+      "tags": []
+    },
+    {
+      "id": "0109",
+      "phase": "01",
+      "title": "Collision",
+      "description": "Collision",
+      "tags": []
+    },
+    {
+      "id": "0110",
+      "phase": "01",
+      "title": "Collision Response",
+      "description": "Collision Response",
+      "tags": []
+    },
+    {
+      "id": "0111",
+      "phase": "01",
+      "title": "Multiple Solids",
+      "description": "Multiple Solids",
+      "tags": []
+    },
+    {
+      "id": "0112",
+      "phase": "01",
+      "title": "Axis Separated Collision",
+      "description": "Axis Separated Collision",
+      "tags": []
+    },
+    {
+      "id": "0113",
+      "phase": "01",
+      "title": "Tile Collision",
+      "description": "Tile Collision",
+      "tags": []
+    },
+    {
+      "id": "0114",
+      "phase": "01",
+      "title": "Collision Debug Tools",
+      "description": "Collision Debug Tools",
+      "tags": []
+    },
+    {
+      "id": "0115",
+      "phase": "01",
+      "title": "ECS Foundation",
+      "description": "ECS Foundation",
+      "tags": []
+    },
+    {
+      "id": "0116",
+      "phase": "01",
+      "title": "ECS Movement System",
+      "description": "ECS Movement System",
+      "tags": []
+    },
+    {
+      "id": "0117",
+      "phase": "01",
+      "title": "ECS Input System",
+      "description": "ECS Input System",
+      "tags": []
+    },
+    {
+      "id": "0118",
+      "phase": "01",
+      "title": "ECS Collision System",
+      "description": "ECS Collision System",
+      "tags": []
+    },
+    {
+      "id": "0119",
+      "phase": "01",
+      "title": "ECS Render System",
+      "description": "ECS Render System",
+      "tags": []
+    },
+    {
+      "id": "0120",
+      "phase": "01",
+      "title": "ECS Scene World",
+      "description": "ECS Scene World",
+      "tags": []
+    },
+    {
+      "id": "0121",
+      "phase": "01",
+      "title": "UI Overlay",
+      "description": "UI Overlay",
+      "tags": []
+    },
+    {
+      "id": "0122",
+      "phase": "01",
+      "title": "Entity Lifecycle",
+      "description": "Entity Lifecycle",
+      "tags": []
+    },
+    {
+      "id": "0123",
+      "phase": "01",
+      "title": "Debug Stats",
+      "description": "Debug Stats",
+      "tags": []
+    },
+    {
+      "id": "0124",
+      "phase": "01",
+      "title": "Data Driven World",
+      "description": "Data Driven World",
+      "tags": []
+    },
+    {
+      "id": "0201",
+      "phase": "02",
+      "title": "Camera Follow",
+      "description": "Camera Follow",
+      "tags": []
+    },
+    {
+      "id": "0202",
+      "phase": "02",
+      "title": "Camera Bounds",
+      "description": "Camera Bounds",
+      "tags": []
+    },
+    {
+      "id": "0203",
+      "phase": "02",
+      "title": "Minimap",
+      "description": "Minimap",
+      "tags": []
+    },
+    {
+      "id": "0204",
+      "phase": "02",
+      "title": "Asset Registry",
+      "description": "Asset Registry",
+      "tags": []
+    },
+    {
+      "id": "0205",
+      "phase": "02",
+      "title": "Save Load State",
+      "description": "Save Load State",
+      "tags": []
+    },
+    {
+      "id": "0206",
+      "phase": "02",
+      "title": "Level Loader",
+      "description": "Level Loader",
+      "tags": []
+    },
+    {
+      "id": "0207",
+      "phase": "02",
+      "title": "Animation System",
+      "description": "Animation System",
+      "tags": []
+    },
+    {
+      "id": "0208",
+      "phase": "02",
+      "title": "State Machine",
+      "description": "State Machine",
+      "tags": []
+    },
+    {
+      "id": "0209",
+      "phase": "02",
+      "title": "Interaction System",
+      "description": "Interaction System",
+      "tags": []
+    },
+    {
+      "id": "0210",
+      "phase": "02",
+      "title": "Projectile System",
+      "description": "Projectile System",
+      "tags": []
+    },
+    {
+      "id": "0211",
+      "phase": "02",
+      "title": "Enemy Patrol AI",
+      "description": "Enemy Patrol AI",
+      "tags": []
+    },
+    {
+      "id": "0212",
+      "phase": "02",
+      "title": "Playable Micro Level",
+      "description": "Playable Micro Level",
+      "tags": []
+    },
+    {
+      "id": "0213",
+      "phase": "02",
+      "title": "Sprite Render Layer",
+      "description": "Sprite Render Layer",
+      "tags": []
+    },
+    {
+      "id": "0214",
+      "phase": "02",
+      "title": "Animation Sprite Binding",
+      "description": "Animation Sprite Binding",
+      "tags": []
+    },
+    {
+      "id": "0215",
+      "phase": "02",
+      "title": "Z Layer Ordering",
+      "description": "Z Layer Ordering",
+      "tags": []
+    },
+    {
+      "id": "0216",
+      "phase": "02",
+      "title": "Prefab System",
+      "description": "Prefab System",
+      "tags": []
+    },
+    {
+      "id": "0217",
+      "phase": "02",
+      "title": "Game Mode State",
+      "description": "Game Mode State",
+      "tags": []
+    },
+    {
+      "id": "0218",
+      "phase": "02",
+      "title": "Polished Playable Slice",
+      "description": "Polished Playable Slice",
+      "tags": []
+    },
+    {
+      "id": "0219",
+      "phase": "02",
+      "title": "Sprite Atlas Image Rendering",
+      "description": "Sprite Atlas Image Rendering",
+      "tags": []
+    },
+    {
+      "id": "0220",
+      "phase": "02",
+      "title": "Camera System",
+      "description": "Camera System",
+      "tags": []
+    },
+    {
+      "id": "0221",
+      "phase": "02",
+      "title": "Tilemap System",
+      "description": "Tilemap System",
+      "tags": []
+    },
+    {
+      "id": "0222",
+      "phase": "02",
+      "title": "Input Action Mapping",
+      "description": "Input Action Mapping",
+      "tags": []
+    },
+    {
+      "id": "0223",
+      "phase": "02",
+      "title": "World Serialization",
+      "description": "World Serialization",
+      "tags": []
+    },
+    {
+      "id": "0224",
+      "phase": "02",
+      "title": "Tile Camera Sprite Slice",
+      "description": "Tile Camera Sprite Slice",
+      "tags": []
+    },
+    {
+      "id": "0301",
+      "phase": "03",
+      "title": "Real Sprite Rendering",
+      "description": "Real Sprite Rendering",
+      "tags": []
+    },
+    {
+      "id": "0302",
+      "phase": "03",
+      "title": "Animation System",
+      "description": "Animation System",
+      "tags": []
+    },
+    {
+      "id": "0303",
+      "phase": "03",
+      "title": "Physics System",
+      "description": "Physics System",
+      "tags": []
+    },
+    {
+      "id": "0304",
+      "phase": "03",
+      "title": "Collision Resolution",
+      "description": "Collision Resolution",
+      "tags": []
+    },
+    {
+      "id": "0305",
+      "phase": "03",
+      "title": "Tile Metadata",
+      "description": "Tile Metadata",
+      "tags": []
+    },
+    {
+      "id": "0306",
+      "phase": "03",
+      "title": "Nes Style Zones Parallax",
+      "description": "Nes Style Zones Parallax",
+      "tags": []
+    },
+    {
+      "id": "0307",
+      "phase": "03",
+      "title": "Slopes Ramps",
+      "description": "Slopes Ramps",
+      "tags": []
+    },
+    {
+      "id": "0308",
+      "phase": "03",
+      "title": "Gravity Zones",
+      "description": "Gravity Zones",
+      "tags": []
+    },
+    {
+      "id": "0309",
+      "phase": "03",
+      "title": "Ladders Climb Zones",
+      "description": "Ladders Climb Zones",
+      "tags": []
+    },
+    {
+      "id": "0310",
+      "phase": "03",
+      "title": "Moving Platforms",
+      "description": "Moving Platforms",
+      "tags": []
+    },
+    {
+      "id": "0311",
+      "phase": "03",
+      "title": "One Way Platforms",
+      "description": "One Way Platforms",
+      "tags": []
+    },
+    {
+      "id": "0312",
+      "phase": "03",
+      "title": "Friction Surfaces",
+      "description": "Friction Surfaces",
+      "tags": []
+    },
+    {
+      "id": "0313",
+      "phase": "03",
+      "title": "Trigger Zones",
+      "description": "Trigger Zones",
+      "tags": []
+    },
+    {
+      "id": "0314",
+      "phase": "03",
+      "title": "Pickups Collectibles",
+      "description": "Pickups Collectibles",
+      "tags": []
+    },
+    {
+      "id": "0315",
+      "phase": "03",
+      "title": "Switches Buttons",
+      "description": "Switches Buttons",
+      "tags": []
+    },
+    {
+      "id": "0316",
+      "phase": "03",
+      "title": "Doors Gates",
+      "description": "Doors Gates",
+      "tags": []
+    },
+    {
+      "id": "0317",
+      "phase": "03",
+      "title": "Basic NPC Entity",
+      "description": "Basic NPC Entity",
+      "tags": []
+    },
+    {
+      "id": "0318",
+      "phase": "03",
+      "title": "Interaction Press Key",
+      "description": "Interaction Press Key",
+      "tags": []
+    },
+    {
+      "id": "0319",
+      "phase": "03",
+      "title": "Hitboxes Hurtboxes",
+      "description": "Hitboxes Hurtboxes",
+      "tags": []
+    },
+    {
+      "id": "0320",
+      "phase": "03",
+      "title": "Projectile System",
+      "description": "Projectile System",
+      "tags": []
+    },
+    {
+      "id": "0321",
+      "phase": "03",
+      "title": "Health System",
+      "description": "Health System",
+      "tags": []
+    },
+    {
+      "id": "0322",
+      "phase": "03",
+      "title": "Damage Knockback",
+      "description": "Damage Knockback",
+      "tags": []
+    },
+    {
+      "id": "0323",
+      "phase": "03",
+      "title": "Invulnerability Frames",
+      "description": "Invulnerability Frames",
+      "tags": []
+    },
+    {
+      "id": "0324",
+      "phase": "03",
+      "title": "Simple Enemy AI",
+      "description": "Simple Enemy AI",
+      "tags": []
+    },
+    {
+      "id": "0401",
+      "phase": "04",
+      "title": "Camera Dead Zone",
+      "description": "Camera Dead Zone",
+      "tags": []
+    },
+    {
+      "id": "0402",
+      "phase": "04",
+      "title": "Camera Look Ahead",
+      "description": "Camera Look Ahead",
+      "tags": []
+    },
+    {
+      "id": "0403",
+      "phase": "04",
+      "title": "Camera Smoothing",
+      "description": "Camera Smoothing",
+      "tags": []
+    },
+    {
+      "id": "0404",
+      "phase": "04",
+      "title": "Camera Bounds",
+      "description": "Camera Bounds",
+      "tags": []
+    },
+    {
+      "id": "0405",
+      "phase": "04",
+      "title": "Camera Shake",
+      "description": "Camera Shake",
+      "tags": []
+    },
+    {
+      "id": "0406",
+      "phase": "04",
+      "title": "Camera Zoom",
+      "description": "Camera Zoom",
+      "tags": []
+    },
+    {
+      "id": "0407",
+      "phase": "04",
+      "title": "Input Buffering",
+      "description": "Input Buffering",
+      "tags": []
+    },
+    {
+      "id": "0408",
+      "phase": "04",
+      "title": "Input Queue Priority",
+      "description": "Input Queue Priority",
+      "tags": []
+    },
+    {
+      "id": "0409",
+      "phase": "04",
+      "title": "Input Timing Windows",
+      "description": "Input Timing Windows",
+      "tags": []
+    },
+    {
+      "id": "0410",
+      "phase": "04",
+      "title": "Action Cooldowns",
+      "description": "Action Cooldowns",
+      "tags": []
+    },
+    {
+      "id": "0411",
+      "phase": "04",
+      "title": "Input Chaining",
+      "description": "Input Chaining",
+      "tags": []
+    },
+    {
+      "id": "0412",
+      "phase": "04",
+      "title": "Input State Debug Overlay",
+      "description": "Input State Debug Overlay",
+      "tags": []
+    },
+    {
+      "id": "0501",
+      "phase": "05",
+      "title": "Hitboxes Hurtboxes",
+      "description": "Hitboxes Hurtboxes",
+      "tags": []
+    },
+    {
+      "id": "0502",
+      "phase": "05",
+      "title": "Attack Timing Windows",
+      "description": "Attack Timing Windows",
+      "tags": []
+    },
+    {
+      "id": "0503",
+      "phase": "05",
+      "title": "Damage Invulnerability",
+      "description": "Damage Invulnerability",
+      "tags": []
+    },
+    {
+      "id": "0504",
+      "phase": "05",
+      "title": "Knockback Response",
+      "description": "Knockback Response",
+      "tags": []
+    },
+    {
+      "id": "0505",
+      "phase": "05",
+      "title": "Health Death State",
+      "description": "Health Death State",
+      "tags": []
+    },
+    {
+      "id": "0506",
+      "phase": "05",
+      "title": "Combat Debug Overlay",
+      "description": "Combat Debug Overlay",
+      "tags": []
+    },
+    {
+      "id": "0507",
+      "phase": "05",
+      "title": "Event Bus",
+      "description": "Event Bus",
+      "tags": []
+    },
+    {
+      "id": "0508",
+      "phase": "05",
+      "title": "State Machine Framework",
+      "description": "State Machine Framework",
+      "tags": []
+    },
+    {
+      "id": "0509",
+      "phase": "05",
+      "title": "Config System",
+      "description": "Config System",
+      "tags": []
+    },
+    {
+      "id": "0510",
+      "phase": "05",
+      "title": "Asset Loader System",
+      "description": "Asset Loader System",
+      "tags": []
+    },
+    {
+      "id": "0511",
+      "phase": "05",
+      "title": "Debug Tools",
+      "description": "Debug Tools",
+      "tags": []
+    },
+    {
+      "id": "0512",
+      "phase": "05",
+      "title": "Performance Metrics",
+      "description": "Performance Metrics",
+      "tags": []
+    },
+    {
+      "id": "0601",
+      "phase": "06",
+      "title": "Grid Pathfinding",
+      "description": "Grid Pathfinding",
+      "tags": []
+    },
+    {
+      "id": "0602",
+      "phase": "06",
+      "title": "Patrol AI",
+      "description": "Patrol AI",
+      "tags": []
+    },
+    {
+      "id": "0603",
+      "phase": "06",
+      "title": "Chase Evade AI",
+      "description": "Chase Evade AI",
+      "tags": []
+    },
+    {
+      "id": "0604",
+      "phase": "06",
+      "title": "State Driven AI",
+      "description": "State Driven AI",
+      "tags": []
+    },
+    {
+      "id": "0605",
+      "phase": "06",
+      "title": "Group Behaviors",
+      "description": "Group Behaviors",
+      "tags": []
+    },
+    {
+      "id": "0606",
+      "phase": "06",
+      "title": "Quest System",
+      "description": "Quest System",
+      "tags": []
+    },
+    {
+      "id": "0607",
+      "phase": "06",
+      "title": "Scripting System",
+      "description": "Scripting System",
+      "tags": []
+    },
+    {
+      "id": "0608",
+      "phase": "06",
+      "title": "Cutscene System",
+      "description": "Cutscene System",
+      "tags": []
+    },
+    {
+      "id": "0609",
+      "phase": "06",
+      "title": "Spawn System",
+      "description": "Spawn System",
+      "tags": []
+    },
+    {
+      "id": "0610",
+      "phase": "06",
+      "title": "Day Night Cycle",
+      "description": "Day Night Cycle",
+      "tags": []
+    },
+    {
+      "id": "0611",
+      "phase": "06",
+      "title": "Weather Animation",
+      "description": "Weather Animation",
+      "tags": []
+    },
+    {
+      "id": "0612",
+      "phase": "06",
+      "title": "Weather System",
+      "description": "Weather System",
+      "tags": []
+    },
+    {
+      "id": "0613",
+      "phase": "06",
+      "title": "World Streaming",
+      "description": "World Streaming",
+      "tags": []
+    },
+    {
+      "id": "0701",
+      "phase": "07",
+      "title": "Input Remapping",
+      "description": "Input Remapping",
+      "tags": []
+    },
+    {
+      "id": "0702",
+      "phase": "07",
+      "title": "Controller Support",
+      "description": "Controller Support",
+      "tags": []
+    },
+    {
+      "id": "0703",
+      "phase": "07",
+      "title": "Resolution Scaling",
+      "description": "Resolution Scaling",
+      "tags": []
+    },
+    {
+      "id": "0704",
+      "phase": "07",
+      "title": "Mobile Support",
+      "description": "Mobile Support",
+      "tags": []
+    },
+    {
+      "id": "0705",
+      "phase": "07",
+      "title": "Asset Optimization",
+      "description": "Asset Optimization",
+      "tags": []
+    },
+    {
+      "id": "0706",
+      "phase": "07",
+      "title": "Memory Management",
+      "description": "Memory Management",
+      "tags": []
+    },
+    {
+      "id": "0707",
+      "phase": "07",
+      "title": "Save Compression",
+      "description": "Save Compression",
+      "tags": []
+    },
+    {
+      "id": "0708",
+      "phase": "07",
+      "title": "Replay System",
+      "description": "Replay System",
+      "tags": []
+    },
+    {
+      "id": "0709",
+      "phase": "07",
+      "title": "Mini Map System",
+      "description": "Mini Map System",
+      "tags": []
+    },
+    {
+      "id": "0710",
+      "phase": "07",
+      "title": "Achievements System",
+      "description": "Achievements System",
+      "tags": []
+    },
+    {
+      "id": "0711",
+      "phase": "07",
+      "title": "Localization System",
+      "description": "Localization System",
+      "tags": []
+    },
+    {
+      "id": "0712",
+      "phase": "07",
+      "title": "Packaging Build System",
+      "description": "Packaging Build System",
+      "tags": []
+    },
+    {
+      "id": "0713",
+      "phase": "07",
+      "title": "Fullscreen Ability",
+      "description": "Fullscreen Ability",
+      "tags": []
+    },
+    {
+      "id": "0801",
+      "phase": "08",
+      "title": "Audio System",
+      "description": "Audio System",
+      "tags": []
+    },
+    {
+      "id": "0802",
+      "phase": "08",
+      "title": "Midi Player",
+      "description": "Midi Player",
+      "tags": []
+    },
+    {
+      "id": "0803",
+      "phase": "08",
+      "title": "Synthesizer",
+      "description": "Synthesizer",
+      "tags": []
+    },
+    {
+      "id": "0804",
+      "phase": "08",
+      "title": "Frequency Player",
+      "description": "Frequency Player",
+      "tags": []
+    },
+    {
+      "id": "0805",
+      "phase": "08",
+      "title": "Particle FX",
+      "description": "Particle FX",
+      "tags": []
+    },
+    {
+      "id": "0806",
+      "phase": "08",
+      "title": "UI Framework",
+      "description": "UI Framework",
+      "tags": []
+    },
+    {
+      "id": "0807",
+      "phase": "08",
+      "title": "Input Context System",
+      "description": "Input Context System",
+      "tags": []
+    },
+    {
+      "id": "0808",
+      "phase": "08",
+      "title": "Scene Transitions",
+      "description": "Scene Transitions",
+      "tags": []
+    },
+    {
+      "id": "0809",
+      "phase": "08",
+      "title": "Save Slots Profiles",
+      "description": "Save Slots Profiles",
+      "tags": []
+    },
+    {
+      "id": "0810",
+      "phase": "08",
+      "title": "Logging Error System",
+      "description": "Logging Error System",
+      "tags": []
+    },
+    {
+      "id": "0901",
+      "phase": "09",
+      "title": "Vector Rendering System",
+      "description": "Vector Rendering System",
+      "tags": []
+    },
+    {
+      "id": "0902",
+      "phase": "09",
+      "title": "Polygon Collision",
+      "description": "Polygon Collision",
+      "tags": []
+    },
+    {
+      "id": "0903",
+      "phase": "09",
+      "title": "Point In Polygon",
+      "description": "Point In Polygon",
+      "tags": []
+    },
+    {
+      "id": "0904",
+      "phase": "09",
+      "title": "Raster Mask Collision",
+      "description": "Raster Mask Collision",
+      "tags": []
+    },
+    {
+      "id": "0905",
+      "phase": "09",
+      "title": "Pixel Perfect Collision",
+      "description": "Pixel Perfect Collision",
+      "tags": []
+    },
+    {
+      "id": "0906",
+      "phase": "09",
+      "title": "Hybrid Collision",
+      "description": "Hybrid Collision",
+      "tags": []
+    },
+    {
+      "id": "1001",
+      "phase": "10",
+      "title": "MP3 Player",
+      "description": "MP3 Player",
+      "tags": []
+    },
+    {
+      "id": "1002",
+      "phase": "10",
+      "title": "Cookie Write Read System",
+      "description": "Cookie Write Read System",
+      "tags": []
+    },
+    {
+      "id": "1003",
+      "phase": "10",
+      "title": "Audio Playlist Track Management",
+      "description": "Audio Playlist Track Management",
+      "tags": []
+    },
+    {
+      "id": "1101",
+      "phase": "11",
+      "title": "Settings System",
+      "description": "Settings System",
+      "tags": []
+    },
+    {
+      "id": "1102",
+      "phase": "11",
+      "title": "Accessibility Options",
+      "description": "Accessibility Options",
+      "tags": []
+    },
+    {
+      "id": "1103",
+      "phase": "11",
+      "title": "Deployment Profiles",
+      "description": "Deployment Profiles",
+      "tags": []
+    },
+    {
+      "id": "1104",
+      "phase": "11",
+      "title": "Distribution Packaging",
+      "description": "Distribution Packaging",
+      "tags": []
+    },
+    {
+      "id": "1105",
+      "phase": "11",
+      "title": "Crash Recovery Fallback Flow",
+      "description": "Crash Recovery Fallback Flow",
+      "tags": []
+    },
+    {
+      "id": "1106",
+      "phase": "11",
+      "title": "Release Validation Checklist Flow",
+      "description": "Release Validation Checklist Flow",
+      "tags": []
+    },
+    {
+      "id": "1201",
+      "phase": "12",
+      "title": "Tilemap Viewer",
+      "description": "Tilemap Viewer",
+      "tags": []
+    },
+    {
+      "id": "1202",
+      "phase": "12",
+      "title": "Tilemap Hero Movement",
+      "description": "Tilemap Hero Movement",
+      "tags": []
+    },
+    {
+      "id": "1203",
+      "phase": "12",
+      "title": "Tilemap Hero Jump Collision",
+      "description": "Tilemap Hero Jump Collision",
+      "tags": []
+    },
+    {
+      "id": "1204",
+      "phase": "12",
+      "title": "Tilemap Parallax Hero",
+      "description": "Tilemap Parallax Hero",
+      "tags": []
+    },
+    {
+      "id": "1205",
+      "phase": "12",
+      "title": "Multi-System Demo",
+      "description": "Multi-System Demo",
+      "tags": []
+    },
+    {
+      "id": "1206",
+      "phase": "12",
+      "title": "Trigger Zone",
+      "description": "Trigger Zone",
+      "tags": []
+    },
+    {
+      "id": "1207",
+      "phase": "12",
+      "title": "Switch Checkpoint Marker",
+      "description": "Switch Checkpoint Marker",
+      "tags": []
+    },
+    {
+      "id": "1208",
+      "phase": "12",
+      "title": "Tool Formatted Tiles Parallax",
+      "description": "Tool Formatted Tiles Parallax",
+      "tags": []
+    },
+    {
+      "id": "1301",
+      "phase": "13",
+      "title": "Networking Layer",
+      "description": "Networking Layer",
+      "tags": []
+    },
+    {
+      "id": "1302",
+      "phase": "13",
+      "title": "State Sync Replication",
+      "description": "State Sync Replication",
+      "tags": []
+    },
+    {
+      "id": "1303",
+      "phase": "13",
+      "title": "Asteroids World Systems",
+      "description": "Asteroids World Systems",
+      "tags": []
+    },
+    {
+      "id": "1304",
+      "phase": "13",
+      "title": "Client Prediction Reconciliation",
+      "description": "Client Prediction Reconciliation",
+      "tags": []
+    },
+    {
+      "id": "1305",
+      "phase": "13",
+      "title": "Serialization System",
+      "description": "Serialization System",
+      "tags": []
+    },
+    {
+      "id": "1306",
+      "phase": "13",
+      "title": "Network Debug Overlay",
+      "description": "Network Debug Overlay",
+      "tags": []
+    },
+    {
+      "id": "1307",
+      "phase": "13",
+      "title": "Remote Entity Interpolation",
+      "description": "Remote Entity Interpolation",
+      "tags": []
+    },
+    {
+      "id": "1308",
+      "phase": "13",
+      "title": "Lobby Session System",
+      "description": "Lobby Session System",
+      "tags": []
+    },
+    {
+      "id": "1309",
+      "phase": "13",
+      "title": "Space Invaders World Systems",
+      "description": "Space Invaders World Systems",
+      "tags": []
+    },
+    {
+      "id": "1310",
+      "phase": "13",
+      "title": "Host Server Bootstrap",
+      "description": "Host Server Bootstrap",
+      "tags": []
+    },
+    {
+      "id": "1311",
+      "phase": "13",
+      "title": "Interest Management",
+      "description": "Interest Management",
+      "tags": []
+    },
+    {
+      "id": "1312",
+      "phase": "13",
+      "title": "Lag Packet Loss Simulation",
+      "description": "Lag Packet Loss Simulation",
+      "tags": []
+    },
+    {
+      "id": "1313",
+      "phase": "13",
+      "title": "Pacman Lite World Systems",
+      "description": "Pacman Lite World Systems",
+      "tags": []
+    },
+    {
+      "id": "1314",
+      "phase": "13",
+      "title": "Chat Presence Layer",
+      "description": "Chat Presence Layer",
+      "tags": []
+    },
+    {
+      "id": "1315",
+      "phase": "13",
+      "title": "Rollback Replay Diagnostics",
+      "description": "Rollback Replay Diagnostics",
+      "tags": []
+    },
+    {
+      "id": "1316",
+      "phase": "13",
+      "title": "Network Sample A",
+      "description": "Network Sample A",
+      "tags": []
+    },
+    {
+      "id": "1317",
+      "phase": "13",
+      "title": "Network Sample B",
+      "description": "Network Sample B",
+      "tags": []
+    },
+    {
+      "id": "1318",
+      "phase": "13",
+      "title": "Network Sample C",
+      "description": "Network Sample C",
+      "tags": []
+    },
+    {
+      "id": "1401",
+      "phase": "14",
+      "title": "Level Editor",
+      "description": "Level Editor",
+      "tags": []
+    },
+    {
+      "id": "1402",
+      "phase": "14",
+      "title": "Tile Map Editor",
+      "description": "Tile Map Editor",
+      "tags": []
+    },
+    {
+      "id": "1403",
+      "phase": "14",
+      "title": "Entity Placement Editor",
+      "description": "Entity Placement Editor",
+      "tags": []
+    },
+    {
+      "id": "1404",
+      "phase": "14",
+      "title": "Timeline Cutscene Editor",
+      "description": "Timeline Cutscene Editor",
+      "tags": []
+    },
+    {
+      "id": "1405",
+      "phase": "14",
+      "title": "Automated Test Runner",
+      "description": "Automated Test Runner",
+      "tags": []
+    },
+    {
+      "id": "1406",
+      "phase": "14",
+      "title": "Regression Playback Harness",
+      "description": "Regression Playback Harness",
+      "tags": []
+    },
+    {
+      "id": "1407",
+      "phase": "14",
+      "title": "Performance Benchmark Runner",
+      "description": "Performance Benchmark Runner",
+      "tags": []
+    },
+    {
+      "id": "1408",
+      "phase": "14",
+      "title": "CI Validation Flow",
+      "description": "CI Validation Flow",
+      "tags": []
+    },
+    {
+      "id": "1409",
+      "phase": "14",
+      "title": "Packet Validation Anti Cheat",
+      "description": "Packet Validation Anti Cheat",
+      "tags": []
+    },
+    {
+      "id": "1410",
+      "phase": "14",
+      "title": "Save Data Integrity Checks",
+      "description": "Save Data Integrity Checks",
+      "tags": []
+    },
+    {
+      "id": "1411",
+      "phase": "14",
+      "title": "Permissions Capability Gating",
+      "description": "Permissions Capability Gating",
+      "tags": []
+    },
+    {
+      "id": "1412",
+      "phase": "14",
+      "title": "Trust Session Validation",
+      "description": "Trust Session Validation",
+      "tags": []
+    },
+    {
+      "id": "1413",
+      "phase": "14",
+      "title": "Asset Import Pipeline",
+      "description": "Asset Import Pipeline",
+      "tags": []
+    },
+    {
+      "id": "1414",
+      "phase": "14",
+      "title": "Texture Sprite Preprocess Pipeline",
+      "description": "Texture Sprite Preprocess Pipeline",
+      "tags": []
+    },
+    {
+      "id": "1415",
+      "phase": "14",
+      "title": "Audio Preprocess Pipeline",
+      "description": "Audio Preprocess Pipeline",
+      "tags": []
+    },
+    {
+      "id": "1416",
+      "phase": "14",
+      "title": "Content Versioning Migration",
+      "description": "Content Versioning Migration",
+      "tags": []
+    },
+    {
+      "id": "1417",
+      "phase": "14",
+      "title": "Build Asset Manifest System",
+      "description": "Build Asset Manifest System",
+      "tags": []
+    },
+    {
+      "id": "1418",
+      "phase": "14",
+      "title": "Content Validation Pipeline",
+      "description": "Content Validation Pipeline",
+      "tags": []
+    },
+    {
+      "id": "1501",
+      "phase": "15",
+      "title": "Developer Console",
+      "description": "Developer Console",
+      "tags": []
+    },
+    {
+      "id": "1502",
+      "phase": "15",
+      "title": "In Engine Inspector",
+      "description": "In Engine Inspector",
+      "tags": []
+    },
+    {
+      "id": "1503",
+      "phase": "15",
+      "title": "Property Editor",
+      "description": "Property Editor",
+      "tags": []
+    },
+    {
+      "id": "1504",
+      "phase": "15",
+      "title": "Live Tuning Hot Reload",
+      "description": "Live Tuning Hot Reload",
+      "tags": []
+    },
+    {
+      "id": "1505",
+      "phase": "15",
+      "title": "Asset Browser",
+      "description": "Asset Browser",
+      "tags": []
+    },
+    {
+      "id": "1506",
+      "phase": "15",
+      "title": "Scene Graph Entity Hierarchy Viewer",
+      "description": "Scene Graph Entity Hierarchy Viewer",
+      "tags": []
+    }
+  ]
+}

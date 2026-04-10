@@ -1,0 +1,34 @@
+BUILD_PR_SAMPLES_METADATA_LAYER VALIDATION REPORT
+
+Files changed for this BUILD:
+- scripts/generate-samples-index.mjs
+- samples/metadata/samples.index.metadata.json
+- samples/index.html
+- docs/dev/reports/BUILD_PR_SAMPLES_METADATA_LAYER_validation.txt
+
+Validation executed:
+1) node scripts/generate-samples-index.mjs
+   - OK phases=15 samples=197 metadata=197 mode=write
+2) node scripts/generate-samples-index.mjs --check
+   - OK phases=15 samples=197 metadata=197 mode=check
+3) Representative link checks from generated index:
+   - first sample in a populated phase: 0101 -> ./phase01/0101/index.html
+   - last sample in a populated phase: 1506 -> ./phase15/1506/index.html
+   - phase 13 samples: 1316, 1317, 1318 present and resolvable
+
+Fail-fast checks implemented in generator:
+- malformed phase folders
+- malformed sample folders
+- duplicate sample IDs in canonical tree
+- missing canonical sample entrypoint index.html
+- missing metadata file
+- duplicate metadata phase entries
+- duplicate metadata sample entries
+- phase/sample mismatches
+- missing required metadata fields
+- non-canonical metadata phase/sample entries
+
+Scope confirmation:
+- gameplay untouched
+- engine core untouched
+- implementation limited to samples metadata layer + index generation integration

@@ -1,7 +1,1 @@
-PLAN_PR_SAMPLES_METADATA_LAYER
-
-- Define minimal samples metadata schema for generated index rendering
-- Define metadata location and source-of-truth boundaries
-- Define fail-fast validation rules (duplicates, mismatches, missing fields)
-- Keep future BUILD narrowly scoped and testable
-- Docs-only planning; no implementation code changes
+BUILD_PR: add metadata layer for samples and integrate with index generation

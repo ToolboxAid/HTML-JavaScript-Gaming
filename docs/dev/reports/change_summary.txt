@@ -1,11 +1,1 @@
-CHANGE SUMMARY
-
-Purpose:
-- prevent accidental dependency installation in repo workflow
-- prohibit node_modules creation
-- add cleanup scripts for repo-root node_modules deletion
-
-Included:
-- Codex rule updates
-- workflow/checklist/stop-condition updates
-- delete scripts: PowerShell, batch, and zero-dependency Node.js
+Add metadata layer, integrate with index, validate canonical paths
