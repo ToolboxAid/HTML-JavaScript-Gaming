@@ -1,10 +1,10 @@
-[ ] samples/index.html uses generated or generation-backed sample tile data
-[ ] generated tiles render correctly
-[ ] first sample in a populated phase opens successfully
-[ ] last sample in a populated phase opens successfully
-[ ] Phase 13 samples 1316, 1317, 1318 open successfully
-[ ] console clean for tested pages
-[ ] no gameplay changes
-[ ] no engine-core changes
-[ ] changed-file count stayed minimal
-[ ] ZIP exists at <project folder>/tmp/BUILD_PR_SAMPLES_INDEX_AUTOGENERATION.zip
+[x] Docs-only scope preserved
+[x] No gameplay scope introduced
+[x] No engine-core scope introduced
+[x] No start_of_day directory changes
+[x] Minimal metadata schema defined
+[x] Metadata location defined
+[x] Source-of-truth boundaries defined
+[x] Fail-fast rules defined (duplicates, mismatches, missing fields)
+[x] Future BUILD testability gates documented
+[x] Future BUILD kept narrowly scoped

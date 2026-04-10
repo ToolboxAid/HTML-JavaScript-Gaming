@@ -1,83 +1,43 @@
-# Codex command for BUILD_PR_SAMPLES_INDEX_AUTOGENERATION
+# Codex command for PLAN_PR_SAMPLES_METADATA_LAYER
 
 MODEL: GPT-5.4-codex
 REASONING: high
 
 COMMAND:
-Execute BUILD_PR_SAMPLES_INDEX_AUTOGENERATION exactly as written.
+Create PLAN_PR_SAMPLES_METADATA_LAYER as docs-only planning.
 
-EXECUTION ENVIRONMENT (MANDATORY):
-- Target platform: Windows
-- Prefer Node.js for path discovery, generation, and validation
-- Python is allowed if Node.js is not the best fit
-- DO NOT use PowerShell for:
-  - path construction
-  - directory scanning
-  - bulk file moves
-  - ZIP path generation
+OBJECTIVE:
+Define a minimal metadata layer for canonical sample paths so the generated samples index can render stable human-readable titles, descriptions, and tags.
 
-POWERSHELL PROHIBITION (CRITICAL):
-The following patterns are NOT allowed:
-- "$var/path"
-- "${var}/path"
-- "$base\$child"
-- "$($var)/path"
+CONSTRAINTS:
+- docs only
+- no implementation code changes
+- no gameplay scope
+- no engine-core scope
+- no start_of_day directory changes
 
-If any of these appear:
-- STOP
-- report the violation
-- do not silently retry
+PLANNING REQUIREMENTS:
+1. Define the minimal metadata schema
+2. Define where the metadata should live
+3. Define source-of-truth boundaries between:
+   - canonical folder structure
+   - metadata content
+   - generated index rendering
+4. Define fail-fast rules for:
+   - duplicate IDs
+   - duplicate entries
+   - phase/sample mismatches
+   - missing required fields
+5. Keep the future BUILD testable and narrowly scoped
 
-PR PURPOSE:
-Auto-generate the samples index from canonical sample folders in a testable way.
+OUTPUT FILES:
+- docs/pr/PLAN_PR_SAMPLES_METADATA_LAYER.md
+- docs/dev/commit_comment.txt
+- docs/dev/reports/change_summary.txt
+- docs/dev/reports/validation_checklist.txt
+- docs/dev/reports/file_tree_delta.txt
 
-EXPECTED TARGETS:
-- `samples/index.html`
-- exact generator/helper files required for sample index generation
-- minimal supporting config/data files only if required
-- reporting docs under `docs/`
-
-DO NOT:
-- modify gameplay code
-- modify engine core
-- perform unrelated cleanup
-- broaden scope beyond sample index generation
-- modify `docs/dev/start_of_day/chatGPT/`
-- modify `docs/dev/start_of_day/codex/`
-
-REQUIRED IMPLEMENTATION SHAPE:
-1. Discover canonical sample folders under `samples/phaseXX/XXYY/`
-2. Build or update the minimal generation path needed for `samples/index.html`
-3. Preserve human-readable labels in UI
-4. Fail fast on:
-   - malformed sample paths
-   - duplicate sample numbers
-   - missing sample entry points
-   - ambiguous phase/sample metadata
-5. Keep changed-file count minimal
-
-VALIDATION (REQUIRED):
-- load `samples/index.html`
-- verify generated tiles render
-- open representative sample links:
-  - first sample in a populated phase
-  - last sample in a populated phase
-  - Phase 13 samples 1316, 1317, 1318
-- confirm console is clean for tested pages
-- report exact files changed
-- report exact validation performed
-
-ZIP OUTPUT REQUIREMENT (HARD RULE):
+ZIP OUTPUT REQUIREMENT:
 - MUST produce ZIP:
-  <project folder>/tmp/BUILD_PR_SAMPLES_INDEX_AUTOGENERATION.zip
-- ZIP must contain only repo-relevant delta output for this PR
-- Do not stage ZIP files from `<project folder>/tmp/`
-- Task is NOT complete until the ZIP exists at the exact requested path
-
-FAIL FAST:
-- vague BUILD doc
-- conflicting target files
-- generator path would require broad repo analysis
-- malformed canonical sample directories
-- PowerShell parse issue before execution
-- missing ZIP output at exact path
+  <project folder>/tmp/PLAN_PR_SAMPLES_METADATA_LAYER.zip
+- Task is not complete until the ZIP exists at that exact path

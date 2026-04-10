@@ -1,9 +1,12 @@
-PR TYPE: BUILD
-PURPOSE: testable samples index autogeneration
+TYPE: PLANNING ONLY
 
-SUMMARY:
-- introduces a docs-first BUILD bundle for replacing manual samples index maintenance
-- requires generation from canonical `samples/phaseXX/XXYY/` structure
-- requires runtime-visible validation of generated tiles and links
-- preserves readable labels in UI
-- keeps scope narrow and Windows-safe
+Created planning artifacts for a minimal samples metadata layer.
+
+Included in plan:
+- minimal metadata schema (`id`, `phase`, `title`, `description`, `tags`)
+- metadata location proposal (`samples/metadata/samples.index.metadata.json`)
+- source-of-truth boundaries between canonical folders, metadata, and generated index
+- fail-fast rules for duplicates, mismatches, and missing required fields
+- narrow, testable BUILD shape for future implementation
+
+No gameplay, engine-core, or implementation code changes.

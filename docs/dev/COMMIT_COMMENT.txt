@@ -1,8 +1,7 @@
-BUILD_PR: auto-generate samples index from canonical sample folders
+PLAN_PR_SAMPLES_METADATA_LAYER
 
-- define minimal, testable BUILD for generated samples index
-- preserve readable UI labels while using canonical paths
-- require representative runtime validation
-- enforce Windows-safe execution and exact ZIP output path
-
-No gameplay or engine-core scope included
+- Define minimal samples metadata schema for generated index rendering
+- Define metadata location and source-of-truth boundaries
+- Define fail-fast validation rules (duplicates, mismatches, missing fields)
+- Keep future BUILD narrowly scoped and testable
+- Docs-only planning; no implementation code changes
