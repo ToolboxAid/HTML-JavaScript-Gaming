@@ -10,6 +10,34 @@ index.html
   <meta charset="UTF-8" />
   <title>ToolboxAid - Sample Launcher</title>
   <link rel="stylesheet" href="../src/engine/ui/hubCommon.css" />
+  <style>
+    .samples-filters {
+      display: grid;
+      gap: 0.75rem;
+      margin: 1rem 0 1.5rem;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      align-items: end;
+    }
+    .samples-filters label {
+      display: block;
+      margin-bottom: 0.25rem;
+      font-weight: 600;
+    }
+    .samples-filters select,
+    .samples-filters input {
+      width: 100%;
+      padding: 0.45rem 0.55rem;
+      border: 1px solid #9ca3af;
+      border-radius: 6px;
+      font: inherit;
+      box-sizing: border-box;
+    }
+    .samples-filters .status {
+      margin: 0;
+      font-size: 0.95rem;
+      align-self: center;
+    }
+  </style>
 </head>
 <body class="hub-page-samples">
   <div class="wrap">
@@ -21,6 +49,26 @@ index.html
     <section class="hero">
       <h1>ToolboxAid - Sample Launcher</h1>
       <p class="subtitle">Samples are regrouped into phase folders and renumbered as LLSS (Level + Sample).</p>
+    </section>
+    <section class="samples-filters" aria-label="Sample filters">
+      <div>
+        <label for="sample-phase-filter">Phase</label>
+        <select id="sample-phase-filter">
+          <option value="">All phases</option>
+        </select>
+      </div>
+      <div>
+        <label for="sample-tag-filter">Tag</label>
+        <select id="sample-tag-filter">
+          <option value="">All tags</option>
+          <option value="__untagged">Untagged</option>
+        </select>
+      </div>
+      <div>
+        <label for="sample-search">Search</label>
+        <input id="sample-search" type="search" placeholder="Sample ID, title, description, or tag" />
+      </div>
+      <p class="status" id="samples-filter-status" role="status" aria-live="polite"></p>
     </section>
     <!-- AUTO-GENERATED SAMPLE SECTIONS START -->
     <section>
@@ -326,6 +374,96 @@ index.html
       </div>
     </section>    
   </div>
+  <script>
+    (function () {
+      const phaseFilter = document.getElementById('sample-phase-filter');
+      const tagFilter = document.getElementById('sample-tag-filter');
+      const searchInput = document.getElementById('sample-search');
+      const statusNode = document.getElementById('samples-filter-status');
+      const linkNodes = Array.from(document.querySelectorAll('section .grid a.live'));
+
+      if (!phaseFilter || !tagFilter || !searchInput || !statusNode || linkNodes.length === 0) {
+        return;
+      }
+
+      const linkModels = linkNodes.map((link) => {
+        const href = String(link.getAttribute('href') || '');
+        const match = href.match(/^\.\/phase(\d{2})\/(\d{4})\/index\.html$/);
+        const phase = match ? match[1] : '';
+        const sampleId = match ? match[2] : '';
+        const tags = String(link.getAttribute('data-tags') || '')
+          .split(',')
+          .map((tag) => tag.trim().toLowerCase())
+          .filter(Boolean);
+        const titleText = String(link.textContent || '').trim().toLowerCase();
+        const descriptionText = String(link.getAttribute('title') || '').trim().toLowerCase();
+        const searchText = [sampleId, titleText, descriptionText, tags.join(' ')].join(' ');
+
+        return { link, phase, tags, searchText };
+      });
+
+      const phaseValues = Array.from(
+        new Set(linkModels.map((model) => model.phase).filter(Boolean))
+      ).sort();
+      for (const phase of phaseValues) {
+        const option = document.createElement('option');
+        option.value = phase;
+        option.textContent = 'Phase ' + phase;
+        phaseFilter.appendChild(option);
+      }
+
+      const tagValues = Array.from(
+        new Set(linkModels.flatMap((model) => model.tags).filter(Boolean))
+      ).sort();
+      for (const tag of tagValues) {
+        const option = document.createElement('option');
+        option.value = tag;
+        option.textContent = tag;
+        tagFilter.appendChild(option);
+      }
+
+      const sections = Array.from(document.querySelectorAll('.wrap > section')).map((section) => ({
+        section,
+        links: Array.from(section.querySelectorAll('.grid a.live'))
+      }));
+
+      function applyFilters() {
+        const selectedPhase = String(phaseFilter.value || '');
+        const selectedTag = String(tagFilter.value || '').toLowerCase();
+        const query = String(searchInput.value || '').trim().toLowerCase();
+        let visibleCount = 0;
+
+        for (const model of linkModels) {
+          const phaseMatch = !selectedPhase || model.phase === selectedPhase;
+          const tagMatch =
+            !selectedTag ||
+            (selectedTag === '__untagged' ? model.tags.length === 0 : model.tags.includes(selectedTag));
+          const searchMatch = !query || model.searchText.includes(query);
+          const isVisible = phaseMatch && tagMatch && searchMatch;
+
+          model.link.style.display = isVisible ? '' : 'none';
+          if (isVisible) {
+            visibleCount += 1;
+          }
+        }
+
+        for (const sectionModel of sections) {
+          if (sectionModel.links.length === 0) {
+            continue;
+          }
+          const hasVisibleLink = sectionModel.links.some((link) => link.style.display !== 'none');
+          sectionModel.section.style.display = hasVisibleLink ? '' : 'none';
+        }
+
+        statusNode.textContent = String(visibleCount) + ' of ' + String(linkModels.length) + ' samples shown';
+      }
+
+      phaseFilter.addEventListener('change', applyFilters);
+      tagFilter.addEventListener('change', applyFilters);
+      searchInput.addEventListener('input', applyFilters);
+      applyFilters();
+    })();
+  </script>
 </body>
 </html>
 

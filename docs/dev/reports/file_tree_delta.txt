@@ -1,13 +1,5 @@
-PLAN_PR_SAMPLES_FILTER_AND_SEARCH DELTA
+MODIFIED:
+- samples/index.html
 
-Modified:
-- docs/pr/PLAN_PR_SAMPLES_FILTER_AND_SEARCH.md
-- docs/dev/codex_commands.md
-- docs/dev/commit_comment.txt
-- docs/dev/reports/change_summary.txt
-- docs/dev/reports/validation_checklist.txt
-- docs/dev/reports/file_tree_delta.txt
-
-Scope:
-- docs-only planning
-- no implementation/runtime code changes
+ADDED:
+- minimal filter/search JS

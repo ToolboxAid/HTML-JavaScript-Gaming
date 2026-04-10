@@ -1,12 +1,1 @@
-TYPE: PLANNING ONLY
-
-Created planning artifacts for samples index filter-and-search.
-
-Defined:
-- minimal UX contract for phase filtering, tag filtering, and search
-- combined-state behavior and deterministic result ordering
-- source-of-truth boundaries across canonical folders, metadata, and UI behavior
-- fail-fast expectations for duplicates, mismatches, and missing required fields
-- narrow, testable future BUILD scope
-
-No implementation/runtime/gameplay/engine-core changes.
+Add phase filter, tag filter, and search to samples index
