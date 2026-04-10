@@ -1,9 +1,10 @@
-Validation Checklist — APPLY PacmanFullAI Migration
+[ ] Correct Phase 13 directory used
+[ ] network_sample_a → 1316
+[ ] network_sample_b → 1317
+[ ] network_sample_c → 1318
+[ ] samples/index updated
+[ ] games/index cleaned
+[ ] old folders removed
+[ ] behavior preserved
 
-[x] Runs from canonical
-[x] Canvas visible
-[x] No console errors
-[x] PacmanFullAI_next removed
-[x] No unrelated changes
-
-Status: PASS
+Status: PENDING

@@ -7,7 +7,7 @@ networkSampleBDebug.js
 
 import { createNetworkDebugPluginDefinition } from "/src/engine/debug/network/index.js";
 import { asArray, asObject } from "/src/engine/debug/inspectors/shared/inspectorUtils.js";
-import { asNumber, toNetworkSnapshot } from "../../../src/shared/utils/networkDebugUtils.js";
+import { asNumber, toNetworkSnapshot } from "../../../../src/shared/utils/networkDebugUtils.js";
 
 const NETWORK_SAMPLE_KEY = "networkSampleB";
 

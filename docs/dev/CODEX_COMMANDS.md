@@ -2,12 +2,14 @@ MODEL: GPT-5.4
 REASONING: high
 
 COMMAND:
-Execute BUILD_PR_GAMES_PACMANFULLAI_FULL_FOLDER_MIGRATION exactly as written.
+Execute BUILD_PR_NETWORK_SAMPLES_RELOCATION_FROM_GAMES_TO_SAMPLES (v3)
 
 Rules:
-- Use template → _next → migrate → promote → cleanup
-- Work only in the PacmanFullAI lane
-- Correct folder placement by responsibility
-- Do not modify unrelated games
-- Do not refactor engine/shared broadly
-- Fail fast instead of guessing
+- Use EXACT destination path:
+  samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/
+- Move (not copy)
+- Add tiles to samples/index
+- Remove entries from games/index.html
+- Remove original folders
+- Do NOT touch unrelated files
+- Fail fast on ambiguity

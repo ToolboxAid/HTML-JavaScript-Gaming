@@ -1,4 +1,4 @@
-﻿/*
+/*
 Toolbox Aid
 David Quesenberry
 04/06/2026
@@ -6,7 +6,7 @@ NetworkSampleCScene.js
 */
 import { Scene } from "/src/engine/scenes/index.js";
 import FakeDivergenceTraceNetworkModel from "./FakeDivergenceTraceNetworkModel.js";
-import { asPositiveNumber } from "../../../src/shared/utils/numberUtils.js";
+import { asPositiveNumber } from "../../../../src/shared/utils/numberUtils.js";
 
 const VIEW_WIDTH = 960;
 const VIEW_HEIGHT = 720;

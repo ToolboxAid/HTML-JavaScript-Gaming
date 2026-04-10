@@ -6,7 +6,7 @@ FakeLoopbackNetworkModel.js
 */
 
 import { clamp } from '/src/engine/utils/math.js';
-import { asPositiveNumber } from '../../../src/shared/utils/numberUtils.js';
+import { asPositiveNumber } from '../../../../src/shared/utils/numberUtils.js';
 
 const MAX_TRACE_EVENTS = 80;
 

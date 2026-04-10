@@ -1,7 +1,6 @@
-APPLY_PR_GAMES_PACMANFULLAI_FULL_FOLDER_MIGRATION
+BUILD_PR_NETWORK_SAMPLES_RELOCATION_FROM_GAMES_TO_SAMPLES_v3
 
-Accepted full PacmanFullAI migration.
-
-- canonical validated
-- _next removed
-- pipeline confirmed
+Corrected Phase 13 destination path and enforced:
+- proper directory placement
+- samples/index tile updates
+- removal from games/index.html

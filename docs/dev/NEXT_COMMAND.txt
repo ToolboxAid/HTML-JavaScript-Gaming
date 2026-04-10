@@ -1,6 +1,1 @@
-Create BUILD_PR_NETWORK_SAMPLES_RELOCATION_FROM_GAMES_TO_SAMPLES
-
-Scope:
-- move network_sample_a, network_sample_b, network_sample_c from games/ to samples/
-- preserve behavior
-- keep one migration lane for network samples
+Create APPLY_PR_NETWORK_SAMPLES_RELOCATION_FROM_GAMES_TO_SAMPLES
