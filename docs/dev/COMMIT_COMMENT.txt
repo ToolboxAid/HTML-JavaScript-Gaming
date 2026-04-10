@@ -1,7 +1,2 @@
-APPLY_PR_GAMES_GRAVITYWELL_FULL_FOLDER_MIGRATION
-
-Accepted full GravityWell migration.
-
-- canonical validated
-- _next removed
-- pipeline confirmed
+BUILD_PR_GAMES_MULTIBALLCHAOS_FULL_FOLDER_MIGRATION
+Full MultiBallChaos migration.
