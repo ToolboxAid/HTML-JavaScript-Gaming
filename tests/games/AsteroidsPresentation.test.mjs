@@ -85,8 +85,81 @@ function testAsteroidsAttractMenuFlow() {
   assert.equal(scene.attractController.active, false);
 }
 
+function testAsteroidsGameOverQualifyingScoreInitialsFlow() {
+  const scene = new AsteroidsGameScene();
+  const storage = createStorage();
+  scene.highScoreService = new AsteroidsHighScoreService({ storage, tableSize: 5 });
+  scene.highScoreRows = [
+    { initials: 'ACE', score: 1800 },
+    { initials: 'VTR', score: 1400 },
+    { initials: 'ION', score: 1000 },
+    { initials: 'CPU', score: 700 },
+    { initials: 'BOT', score: 500 },
+  ];
+  scene.session.players = [
+    { id: 1, score: 1900, lives: 0, nextExtraLifeScore: 10000, worldState: null },
+  ];
+  scene.session.activePlayerIndex = 0;
+  scene.session.mode = 'game-over';
+  scene.initialsEntry.cancel();
+
+  const engine = {
+    input: createInput(),
+    canvas: { style: {} },
+  };
+
+  scene.update(0.016, engine);
+  assert.equal(scene.initialsEntry.active, true);
+  assert.equal(scene.initialsEntry.score, 1900);
+  assert.equal(scene.isGameOverScreenVisible(), false);
+
+  engine.input = createInput({ pressed: ['Enter'] });
+  scene.update(0.016, engine);
+
+  assert.equal(scene.initialsEntry.active, false);
+  assert.equal(scene.session.mode, 'menu');
+  assert.equal(scene.highScoreRows.length, 5);
+  assert.equal(scene.highScoreRows[0].initials, 'AAA');
+  assert.equal(scene.highScoreRows[0].score, 1900);
+  for (let index = 1; index < scene.highScoreRows.length; index += 1) {
+    assert.equal(scene.highScoreRows[index - 1].score >= scene.highScoreRows[index].score, true);
+  }
+}
+
+function testAsteroidsMenuHighScoreUsesLeaderboardTop() {
+  const scene = new AsteroidsGameScene();
+  scene.highScoreRows = [
+    { initials: 'ACE', score: 1800 },
+    { initials: 'VTR', score: 1400 },
+    { initials: 'ION', score: 1000 },
+    { initials: 'CPU', score: 700 },
+    { initials: 'BOT', score: 500 },
+  ];
+  scene.session.highScore = 2500;
+  scene.session.mode = 'menu';
+  scene.attractController.active = false;
+
+  const textCalls = [];
+  const renderer = {
+    drawRect() {},
+    strokeRect() {},
+    drawPolygon() {},
+    drawLine() {},
+    drawCircle() {},
+    drawText(text, ...rest) {
+      textCalls.push([text, ...rest]);
+    },
+  };
+
+  scene.render(renderer);
+  assert.equal(textCalls.some(([text]) => text === 'HIGH SCORE 1800'), true);
+  assert.equal(textCalls.some(([text]) => text === 'HIGH SCORE 2500'), false);
+}
+
 export function run() {
   testAsteroidsHighScoreService();
   testAsteroidsInitialsEntry();
   testAsteroidsAttractMenuFlow();
+  testAsteroidsGameOverQualifyingScoreInitialsFlow();
+  testAsteroidsMenuHighScoreUsesLeaderboardTop();
 }

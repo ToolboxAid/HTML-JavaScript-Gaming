@@ -558,6 +558,10 @@ export default class AsteroidsGameScene extends Scene {
       if (engine.canvas) {
         engine.canvas.style.cursor = 'default';
       }
+      // Ensure qualifying game-over scores always enter initials flow before continue/auto-exit paths.
+      if (!this.initialsEntry.active) {
+        this.tryBeginInitialsEntry();
+      }
       if (enterPressed && !this.lastEnterPressed && this.isGameOverScreenVisible()) {
         this.initialsEntry.cancel();
         this.returnToIntroAttract();
@@ -684,6 +688,8 @@ export default class AsteroidsGameScene extends Scene {
   }
 
   render(renderer) {
+    const leaderboardTopScore = this.highScoreService.getTopScore(this.highScoreRows);
+    const liveHudHighScore = Math.max(this.session.highScore, leaderboardTopScore);
     renderer.drawRect(0, 0, this.world.bounds.width, this.world.bounds.height, '#020617');
     this.world.starfield.forEach((star) => {
       renderer.drawRect(star.x, star.y, star.size, star.size, '#94a3b8');
@@ -698,7 +704,7 @@ export default class AsteroidsGameScene extends Scene {
       renderer.drawText('SCORE 1', SCORE_ONE_X, 34, { color: '#ffffff', font: `18px ${HUD_FONT}`, textAlign: 'center' });
       renderer.drawText(`${this.session.players[0]?.score || 0}`.padStart(4, '0'), SCORE_ONE_X, 62, { color: scoreOneColor, font: `24px ${HUD_FONT}`, textAlign: 'center' });
       renderer.drawText('HIGH SCORE', HIGH_SCORE_X, 34, { color: '#ffffff', font: `18px ${HUD_FONT}`, textAlign: 'center' });
-      renderer.drawText(`${this.session.highScore}`.padStart(4, '0'), HIGH_SCORE_X, 62, { color: '#ffffff', font: `24px ${HUD_FONT}`, textAlign: 'center' });
+      renderer.drawText(`${liveHudHighScore}`.padStart(4, '0'), HIGH_SCORE_X, 62, { color: '#ffffff', font: `24px ${HUD_FONT}`, textAlign: 'center' });
       renderer.drawText('SCORE 2', SCORE_TWO_X, 34, { color: '#ffffff', font: `18px ${HUD_FONT}`, textAlign: 'center' });
       renderer.drawText(`${this.session.players[1]?.score || 0}`.padStart(4, '0'), SCORE_TWO_X, 62, { color: scoreTwoColor, font: `24px ${HUD_FONT}`, textAlign: 'center' });
 
@@ -762,7 +768,7 @@ export default class AsteroidsGameScene extends Scene {
           font: `56px ${HUD_FONT}`,
           textAlign: 'center',
         });
-        renderer.drawText(`HIGH SCORE ${String(this.session.highScore).padStart(4, '0')}`, 480, 286, {
+        renderer.drawText(`HIGH SCORE ${String(leaderboardTopScore).padStart(4, '0')}`, 480, 286, {
           color: '#ffffff',
           font: `20px ${HUD_FONT}`,
           textAlign: 'center',
