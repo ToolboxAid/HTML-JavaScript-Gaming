@@ -5,7 +5,7 @@ David Quesenberry
 GamepadState.test.mjs
 */
 import assert from 'node:assert/strict';
-import GamepadState from '/src/engine/input/GamepadState.js';
+import GamepadState from '../../src/engine/input/GamepadState.js';
 
 function testStoresMultipleConcurrentGamepads() {
     const gamepads = new GamepadState();

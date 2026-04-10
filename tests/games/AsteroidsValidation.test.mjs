@@ -5,11 +5,11 @@
  AsteroidsValidation.test.mjs
 */
 import assert from 'node:assert/strict';
-import Engine from '/src/engine/core/Engine.js';
+import Engine from '../../src/engine/core/Engine.js';
 import AsteroidsGameScene from '../../games/Asteroids/game/AsteroidsGameScene.js';
 import AsteroidsSession from '../../games/Asteroids/game/AsteroidsSession.js';
 import AsteroidsWorld from '../../games/Asteroids/game/AsteroidsWorld.js';
-import { bootAsteroids } from '../../games/Asteroids/main.js';
+import { bootAsteroidsNew as bootAsteroids } from '../../games/Asteroids/index.js';
 
 function createCanvas() {
   const listeners = new Map();

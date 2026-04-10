@@ -5,11 +5,11 @@ David Quesenberry
 ProductionReadiness.test.mjs
 */
 import assert from 'node:assert/strict';
-import ActionInputMap from '/src/engine/input/ActionInputMap.js';
-import ActionInputService from '/src/engine/input/ActionInputService.js';
-import ResolutionScaler from '/src/engine/render/ResolutionScaler.js';
-import AssetOptimizer from '/src/engine/assets/AssetOptimizer.js';
-import { ObjectPool } from '/src/engine/memory/index.js';
+import ActionInputMap from '../../src/engine/input/ActionInputMap.js';
+import ActionInputService from '../../src/engine/input/ActionInputService.js';
+import ResolutionScaler from '../../src/engine/render/ResolutionScaler.js';
+import AssetOptimizer from '../../src/engine/assets/AssetOptimizer.js';
+import { ObjectPool } from '../../src/engine/memory/index.js';
 
 export async function run() {
   const map = new ActionInputMap({ jump: ['Space'] });

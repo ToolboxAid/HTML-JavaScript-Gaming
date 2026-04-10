@@ -141,7 +141,7 @@ async function validateTarget(target) {
   return { issues, notes };
 }
 
-async function main() {
+export async function validateGamesTemplateContract({ emitLogs = true } = {}) {
   const issues = [];
   const notes = [];
 
@@ -174,14 +174,40 @@ async function main() {
   await fs.writeFile(REPORT_PATH, `${reportLines.join("\n")}\n`, "utf8");
 
   if (issues.length > 0) {
-    console.error("GAMES_TEMPLATE_CONTRACT_INVALID");
-    issues.forEach((issue) => console.error(`- ${issue}`));
-    process.exitCode = 1;
-    return;
+    if (emitLogs) {
+      console.error("GAMES_TEMPLATE_CONTRACT_INVALID");
+      issues.forEach((issue) => console.error(`- ${issue}`));
+    }
+    return {
+      status: "invalid",
+      issues,
+      notes,
+      targets,
+      reportPath: toRepoRelative(REPORT_PATH)
+    };
   }
 
-  console.log("GAMES_TEMPLATE_CONTRACT_VALID");
-  console.log(`Report: ${toRepoRelative(REPORT_PATH)}`);
+  if (emitLogs) {
+    console.log("GAMES_TEMPLATE_CONTRACT_VALID");
+    console.log(`Report: ${toRepoRelative(REPORT_PATH)}`);
+  }
+
+  return {
+    status: "valid",
+    issues,
+    notes,
+    targets,
+    reportPath: toRepoRelative(REPORT_PATH)
+  };
 }
 
-await main();
+async function main() {
+  const result = await validateGamesTemplateContract({ emitLogs: true });
+  if (result.status !== "valid") {
+    process.exitCode = 1;
+  }
+}
+
+if (process.argv[1] && path.resolve(process.argv[1]) === __filename) {
+  await main();
+}

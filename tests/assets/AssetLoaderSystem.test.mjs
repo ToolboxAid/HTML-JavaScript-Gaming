@@ -5,9 +5,9 @@ David Quesenberry
 AssetLoaderSystem.test.mjs
 */
 import assert from 'node:assert/strict';
-import AssetRegistry from '/src/engine/assets/AssetRegistry.js';
-import ImageAssetLoader from '/src/engine/assets/ImageAssetLoader.js';
-import AssetLoaderSystem from '/src/engine/assets/AssetLoaderSystem.js';
+import AssetRegistry from '../../src/engine/assets/AssetRegistry.js';
+import ImageAssetLoader from '../../src/engine/assets/ImageAssetLoader.js';
+import AssetLoaderSystem from '../../src/engine/assets/AssetLoaderSystem.js';
 
 export async function run() {
   const registry = new AssetRegistry();

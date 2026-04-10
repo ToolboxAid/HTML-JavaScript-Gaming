@@ -5,7 +5,7 @@ David Quesenberry
 GamepadInputAdapter.test.mjs
 */
 import assert from 'node:assert/strict';
-import GamepadInputAdapter from '/src/engine/input/GamepadInputAdapter.js';
+import GamepadInputAdapter from '../../src/engine/input/GamepadInputAdapter.js';
 
 function createInputService({
   axes = [0, 0, 0, 0],

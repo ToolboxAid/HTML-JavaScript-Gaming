@@ -12,7 +12,7 @@ import {
   findGridPath,
   stepChaseBehavior,
   stepEvadeBehavior,
-} from '/src/engine/ai/index.js';
+} from '../../src/engine/ai/index.js';
 
 export function run() {
   const grid = [

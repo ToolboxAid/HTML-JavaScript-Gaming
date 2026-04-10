@@ -5,7 +5,7 @@ David Quesenberry
 RuntimeMetrics.test.mjs
 */
 import assert from 'node:assert/strict';
-import RuntimeMetrics from '/src/engine/core/RuntimeMetrics.js';
+import RuntimeMetrics from '../../src/engine/core/RuntimeMetrics.js';
 
 export function run() {
   const metrics = new RuntimeMetrics({ sampleWindowSeconds: 0.25 });

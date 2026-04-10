@@ -4,6 +4,10 @@ import path from "node:path";
 const SCAN_ROOTS = ["src", "games", "samples", "tools"];
 const ALLOWED_EXTENSIONS = new Set([".js", ".mjs"]);
 const IGNORED_DIRS = new Set(["node_modules", ".git", "tmp"]);
+// Selftest intentionally contains violating fixtures and should not affect repo guard status.
+const IGNORED_FILES = new Set(["tools/dev/checkSharedExtractionGuard.selftest.mjs"]);
+// Backlog is tracked in a baseline so pretest can fail only on regressions.
+const BASELINE_RELATIVE_PATH = "tools/dev/checkSharedExtractionGuard.baseline.json";
 
 const LOCAL_HELPER_RULES = [
   { rule: "local-helper-definition", regex: /function\s+asFiniteNumber\s*\(/g, label: "rule:helper-fn-asFiniteNumber" },
@@ -198,9 +202,59 @@ function printSummary(filesScanned, violations, useErrorStream = false) {
   out(`Summary: violation_types=${typeSummary}`);
 }
 
+function sortViolations(violations) {
+  return [...violations].sort((left, right) => (
+    left.file.localeCompare(right.file)
+    || left.type.localeCompare(right.type)
+    || left.match.localeCompare(right.match)
+  ));
+}
+
+function violationKey(violation) {
+  return `${violation.file}::${violation.type}::${violation.match}`;
+}
+
+function parseArgs(argv) {
+  return {
+    updateBaseline: argv.includes("--update-baseline")
+  };
+}
+
+async function loadBaseline(baselinePath) {
+  const raw = await fs.readFile(baselinePath, "utf8");
+  const parsed = JSON.parse(raw);
+  if (!parsed || !Array.isArray(parsed.violations)) {
+    throw new Error("Invalid shared extraction guard baseline format.");
+  }
+  return sortViolations(parsed.violations);
+}
+
+async function writeBaseline(baselinePath, violations) {
+  const payload = {
+    generatedAt: new Date().toISOString(),
+    violations: sortViolations(violations)
+  };
+  await fs.writeFile(`${baselinePath}`, `${JSON.stringify(payload, null, 2)}\n`, "utf8");
+}
+
+function diffViolations(currentViolations, baselineViolations) {
+  const baselineSet = new Set(baselineViolations.map(violationKey));
+  const currentSet = new Set(currentViolations.map(violationKey));
+
+  const unexpected = currentViolations.filter((violation) => !baselineSet.has(violationKey(violation)));
+  const resolved = baselineViolations.filter((violation) => !currentSet.has(violationKey(violation)));
+
+  return {
+    unexpected: sortViolations(unexpected),
+    resolved: sortViolations(resolved)
+  };
+}
+
 async function run() {
+  const { updateBaseline } = parseArgs(process.argv.slice(2));
   const repoRoot = process.cwd();
   const filesToScan = [];
+  const baselinePath = path.join(repoRoot, BASELINE_RELATIVE_PATH);
 
   for (const root of SCAN_ROOTS) {
     const rootPath = path.join(repoRoot, root);
@@ -210,9 +264,38 @@ async function run() {
 
   const violations = [];
   for (const filePath of filesToScan) {
-    const content = await fs.readFile(filePath, "utf8");
     const relPath = path.relative(repoRoot, filePath).replaceAll("\\", "/");
+    if (IGNORED_FILES.has(relPath)) continue;
+    const content = await fs.readFile(filePath, "utf8");
     violations.push(...findViolations(content, relPath));
+  }
+
+  if (updateBaseline) {
+    await writeBaseline(baselinePath, violations);
+    console.log(`Shared extraction guard baseline updated at ${BASELINE_RELATIVE_PATH}.`);
+    printSummary(filesToScan.length, violations);
+    process.exit(0);
+  }
+
+  if (await pathExists(baselinePath)) {
+    const baselineViolations = await loadBaseline(baselinePath);
+    const { unexpected, resolved } = diffViolations(sortViolations(violations), baselineViolations);
+
+    if (unexpected.length === 0) {
+      console.log("Shared extraction guard passed against baseline.");
+      printSummary(filesToScan.length, violations);
+      console.log(`Summary: baseline_expected=${baselineViolations.length}`);
+      console.log(`Summary: baseline_resolved=${resolved.length}`);
+      return;
+    }
+
+    console.error(`Shared extraction guard failed with ${unexpected.length} unexpected violation(s).`);
+    printGroupedViolations(unexpected);
+    printSummary(filesToScan.length, violations, true);
+    console.error(`Summary: baseline_expected=${baselineViolations.length}`);
+    console.error(`Summary: baseline_unexpected=${unexpected.length}`);
+    console.error(`Summary: baseline_resolved=${resolved.length}`);
+    process.exit(1);
   }
 
   if (violations.length === 0) {

@@ -5,7 +5,7 @@ David Quesenberry
 FrameClock.test.mjs
 */
 import assert from "node:assert/strict";
-import FrameClock from "/src/engine/core/FrameClock.js";
+import FrameClock from "../../src/engine/core/FrameClock.js";
 
 export function run() {
     const clock = new FrameClock({ maxDeltaMs: 50 });

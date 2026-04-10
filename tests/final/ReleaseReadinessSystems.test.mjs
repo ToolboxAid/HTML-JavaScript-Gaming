@@ -12,9 +12,9 @@ import {
   DistributionPackager,
   ReleaseValidationChecklist,
   SettingsSystem,
-} from '/src/engine/release/index.js';
-import { Logger } from '/src/engine/logging/index.js';
-import { StorageService } from '/src/engine/persistence/index.js';
+} from '../../src/engine/release/index.js';
+import { Logger } from '../../src/engine/logging/index.js';
+import { StorageService } from '../../src/engine/persistence/index.js';
 
 class MemoryStorage {
   constructor() {

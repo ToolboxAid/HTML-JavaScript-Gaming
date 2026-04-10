@@ -5,7 +5,7 @@ David Quesenberry
 OrbitLabScene.test.mjs
 */
 import assert from 'node:assert/strict';
-import OrbitLabScene from '../../games/Orbit/OrbitLabScene.js';
+import OrbitLabScene from '../../games/Orbit/game/OrbitLabScene.js';
 
 function createMutableInput() {
   let down = new Set();

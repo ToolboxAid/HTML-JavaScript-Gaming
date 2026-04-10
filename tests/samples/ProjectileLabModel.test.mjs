@@ -5,7 +5,7 @@ David Quesenberry
 ProjectileLabModel.test.mjs
 */
 import assert from 'node:assert/strict';
-import ProjectileLabModel from '../../games/ProjectileLab/ProjectileLabModel.js';
+import ProjectileLabModel from '../../games/ProjectileLab/game/ProjectileLabModel.js';
 
 function testPresetSelectionAndSpawnCounts() {
   const model = new ProjectileLabModel();

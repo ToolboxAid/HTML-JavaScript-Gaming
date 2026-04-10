@@ -109,34 +109,32 @@ export async function run() {
   assert.equal(state.commandCount >= 17, true);
   assert.equal(state.panelCount >= 10, true);
 
-  input.frame({ down: ["Backquote"], pressed: ["Backquote"] });
+  input.frame({ down: ["Backquote", "ShiftLeft"], pressed: ["Backquote"] });
   integration.update({ engine, diagnosticsContext: buildDiagnostics() });
   state = integration.getState();
   assert.equal(state.consoleVisible, true);
 
-  input.frame({ down: ["Backquote"], pressed: [] });
+  input.frame({ down: ["Backquote", "ShiftLeft"], pressed: [] });
   integration.update({ engine, diagnosticsContext: buildDiagnostics() });
   state = integration.getState();
   assert.equal(state.consoleVisible, true);
 
-  input.frame({ down: [], pressed: ["F6"] });
-  integration.update({ engine, diagnosticsContext: buildDiagnostics() });
+  integration.executeCommand("help");
   state = integration.getState();
   assert.equal(state.lastCommandBinding, "help");
   assert.equal(state.lastCommandExecution.status, "ready");
 
-  input.frame({ down: [], pressed: ["F9"] });
-  integration.update({ engine, diagnosticsContext: buildDiagnostics() });
+  integration.executeCommand("unknown.command");
   state = integration.getState();
   assert.equal(state.lastCommandBinding, "unknown.command");
   assert.equal(state.lastCommandExecution.status, "failed");
 
-  input.frame({ down: ["F3"], pressed: ["F3"] });
+  input.frame({ down: ["Backquote", "ShiftLeft", "ControlLeft"], pressed: ["Backquote"] });
   integration.update({ engine, diagnosticsContext: buildDiagnostics() });
   state = integration.getState();
   assert.equal(state.overlayVisible, false);
 
-  input.frame({ down: ["F3"], pressed: ["F3"] });
+  input.frame({ down: ["Backquote", "ShiftLeft", "ControlLeft"], pressed: ["Backquote"] });
   integration.update({ engine, diagnosticsContext: buildDiagnostics() });
   state = integration.getState();
   assert.equal(state.overlayVisible, true);
@@ -144,7 +142,7 @@ export async function run() {
   const baselineCommandCount = state.commandCount;
   const baselinePanelCount = state.panelCount;
   for (let index = 0; index < 4; index += 1) {
-    input.frame({ down: ["Backquote"], pressed: ["Backquote"] });
+    input.frame({ down: ["Backquote", "ShiftLeft"], pressed: ["Backquote"] });
     integration.update({ engine, diagnosticsContext: buildDiagnostics(`demo-1205-r${index}`) });
     input.frame();
     integration.update({ engine, diagnosticsContext: buildDiagnostics(`demo-1205-r${index}`) });
@@ -158,17 +156,20 @@ export async function run() {
   });
   assert.equal(renderResult.status, "ready");
   assert.deepEqual(renderResult.renderOrder.slice(-2), ["debug-overlay", "dev-console-surface"]);
-  assert.equal(renderer.calls.some((call) => call.fn === "drawText" && call.text === "Debug Overlay (F3)"), true);
+  assert.equal(
+    renderer.calls.some((call) => call.fn === "drawText" && call.text === "Debug Overlay (Ctrl+Shift+`)"),
+    true
+  );
 
   if (!integration.getState().consoleVisible) {
-    input.frame({ down: ["Backquote"], pressed: ["Backquote"] });
+    input.frame({ down: ["Backquote", "ShiftLeft"], pressed: ["Backquote"] });
     integration.update({ engine, diagnosticsContext: buildDiagnostics() });
   }
   renderer.calls = [];
   integration.render(renderer, {
     worldStages: ["parallax", "tilemap", "entities", "sprite-effects", "vector-overlay"]
   });
-  assert.equal(renderer.calls.some((call) => call.fn === "drawText" && call.text === "Dev Console (`)"), true);
+  assert.equal(renderer.calls.some((call) => call.fn === "drawText" && call.text === "Dev Console (Shift+`)"), true);
 
   const summary = summarizeSampleGameDevConsoleIntegration(integration);
   assert.equal(summary.startsWith("Sample dev console integration ready"), true);

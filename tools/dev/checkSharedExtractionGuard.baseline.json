@@ -1,0 +1,1990 @@
+{
+  "generatedAt": "2026-04-10T03:55:10.301Z",
+  "violations": [
+    {
+      "file": "games/AITargetDummy/game/AITargetDummyController.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-src-depth-3"
+    },
+    {
+      "file": "games/AITargetDummy/game/AITargetDummyController.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "games/AITargetDummy/game/AITargetDummyWorld.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-src-depth-3"
+    },
+    {
+      "file": "games/Asteroids/debug/asteroidsShowcaseDebug.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "games/Asteroids/game/AsteroidsGameScene.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "games/Asteroids/game/AsteroidsGameScene.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "games/Asteroids/game/AsteroidsGameScene.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "games/Asteroids/game/AsteroidsSession.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "games/Asteroids/game/AsteroidsSession.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "games/Asteroids/game/AsteroidsWorld.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-src-depth-3"
+    },
+    {
+      "file": "games/Asteroids/game/AsteroidsWorld.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "games/Asteroids/game/AsteroidsWorld.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "games/Asteroids/game/AsteroidsWorld.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "games/Asteroids/game/AsteroidsWorld.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "games/Asteroids/systems/AsteroidsHighScoreService.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-src-depth-3"
+    },
+    {
+      "file": "games/Asteroids/systems/AsteroidsInitialsEntry.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-src-depth-3"
+    },
+    {
+      "file": "games/Asteroids/systems/HighScoreStore.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "games/Breakout/game/BreakoutScene.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "games/GravityWell/game/GravityWellWorld.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "games/GravityWell/game/GravityWellWorld.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "games/GravityWell/game/GravityWellWorld.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "games/GravityWell/game/GravityWellWorld.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "games/GravityWell/game/GravityWellWorld.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "games/SpaceDuel/game/SpaceDuelHighScoreService.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-src-depth-3"
+    },
+    {
+      "file": "games/SpaceDuel/game/SpaceDuelInitialsEntry.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-src-depth-3"
+    },
+    {
+      "file": "games/SpaceInvaders/game/SpaceInvadersHighScoreService.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-src-depth-3"
+    },
+    {
+      "file": "games/SpaceInvaders/game/SpaceInvadersInitialsEntry.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-src-depth-3"
+    },
+    {
+      "file": "samples/Phase 12 - Demo Games/sample1205-multi-system/main.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-src-depth-3"
+    },
+    {
+      "file": "samples/Phase 12 - Demo Games/sample1208-tool-formatted-tiles-parallax/ToolFormattedTilesParallaxScene.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "samples/Phase 12 - Demo Games/sample1208-tool-formatted-tiles-parallax/ToolFormattedTilesParallaxScene.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "samples/Phase 12 - Demo Games/sample1208-tool-formatted-tiles-parallax/ToolFormattedTilesParallaxScene.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "samples/Phase 12 - Demo Games/sample1208-tool-formatted-tiles-parallax/ToolFormattedTilesParallaxScene.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "samples/Phase 12 - Demo Games/sample1208-tool-formatted-tiles-parallax/ToolFormattedTilesParallaxScene.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "samples/Phase 12 - Demo Games/sample1208-tool-formatted-tiles-parallax/ToolFormattedTilesParallaxScene.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1316-network-sample-a/debug/networkSampleADebug.js",
+      "type": "deep-relative-shared-traversal",
+      "match": "rule:deep-relative-src-shared-traversal"
+    },
+    {
+      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1316-network-sample-a/debug/networkSampleADebug.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-src-depth-3"
+    },
+    {
+      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1316-network-sample-a/game/FakeLoopbackNetworkModel.js",
+      "type": "deep-relative-shared-traversal",
+      "match": "rule:deep-relative-src-shared-traversal"
+    },
+    {
+      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1316-network-sample-a/game/FakeLoopbackNetworkModel.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-src-depth-3"
+    },
+    {
+      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1316-network-sample-a/game/NetworkSampleAScene.js",
+      "type": "deep-relative-shared-traversal",
+      "match": "rule:deep-relative-src-shared-traversal"
+    },
+    {
+      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1316-network-sample-a/game/NetworkSampleAScene.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-src-depth-3"
+    },
+    {
+      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1316-network-sample-a/main.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-src-depth-3"
+    },
+    {
+      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1316-network-sample-a/server/networkSampleADashboardServer.mjs",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1316-network-sample-a/server/networkSampleADashboardServer.mjs",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1316-network-sample-a/server/networkSampleADashboardServer.mjs",
+      "type": "local-helper-definition",
+      "match": "rule:helper-fn-asPositiveInteger"
+    },
+    {
+      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1317-network-sample-b/debug/networkSampleBDebug.js",
+      "type": "deep-relative-shared-traversal",
+      "match": "rule:deep-relative-src-shared-traversal"
+    },
+    {
+      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1317-network-sample-b/debug/networkSampleBDebug.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-src-depth-3"
+    },
+    {
+      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1317-network-sample-b/game/FakeHostClientNetworkModel.js",
+      "type": "deep-relative-shared-traversal",
+      "match": "rule:deep-relative-src-shared-traversal"
+    },
+    {
+      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1317-network-sample-b/game/FakeHostClientNetworkModel.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-src-depth-3"
+    },
+    {
+      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1317-network-sample-b/game/NetworkSampleBScene.js",
+      "type": "deep-relative-shared-traversal",
+      "match": "rule:deep-relative-src-shared-traversal"
+    },
+    {
+      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1317-network-sample-b/game/NetworkSampleBScene.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-src-depth-3"
+    },
+    {
+      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1317-network-sample-b/main.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-src-depth-3"
+    },
+    {
+      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1318-network-sample-c/debug/networkSampleCDebug.js",
+      "type": "deep-relative-shared-traversal",
+      "match": "rule:deep-relative-src-shared-traversal"
+    },
+    {
+      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1318-network-sample-c/debug/networkSampleCDebug.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-src-depth-3"
+    },
+    {
+      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1318-network-sample-c/debug/networkSampleCDebug.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1318-network-sample-c/game/FakeDivergenceTraceNetworkModel.js",
+      "type": "deep-relative-shared-traversal",
+      "match": "rule:deep-relative-src-shared-traversal"
+    },
+    {
+      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1318-network-sample-c/game/FakeDivergenceTraceNetworkModel.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-src-depth-3"
+    },
+    {
+      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1318-network-sample-c/game/FakeDivergenceTraceNetworkModel.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1318-network-sample-c/game/FakeDivergenceTraceNetworkModel.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1318-network-sample-c/game/FakeDivergenceTraceNetworkModel.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1318-network-sample-c/game/FakeDivergenceTraceNetworkModel.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1318-network-sample-c/game/FakeDivergenceTraceNetworkModel.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1318-network-sample-c/game/FakeDivergenceTraceNetworkModel.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1318-network-sample-c/game/FakeDivergenceTraceNetworkModel.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1318-network-sample-c/game/FakeDivergenceTraceNetworkModel.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1318-network-sample-c/game/FakeDivergenceTraceNetworkModel.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1318-network-sample-c/game/FakeDivergenceTraceNetworkModel.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1318-network-sample-c/game/FakeDivergenceTraceNetworkModel.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1318-network-sample-c/game/FakeDivergenceTraceNetworkModel.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1318-network-sample-c/game/NetworkSampleCScene.js",
+      "type": "deep-relative-shared-traversal",
+      "match": "rule:deep-relative-src-shared-traversal"
+    },
+    {
+      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1318-network-sample-c/game/NetworkSampleCScene.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-src-depth-3"
+    },
+    {
+      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1318-network-sample-c/game/NetworkSampleCScene.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1318-network-sample-c/game/ReconciliationLayerAdapter.js",
+      "type": "deep-relative-shared-traversal",
+      "match": "rule:deep-relative-src-shared-traversal"
+    },
+    {
+      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1318-network-sample-c/game/ReconciliationLayerAdapter.js",
+      "type": "deep-relative-shared-traversal",
+      "match": "rule:deep-relative-src-shared-traversal"
+    },
+    {
+      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1318-network-sample-c/game/ReconciliationLayerAdapter.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-src-depth-3"
+    },
+    {
+      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1318-network-sample-c/game/ReconciliationLayerAdapter.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-src-depth-3"
+    },
+    {
+      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1318-network-sample-c/game/ReconciliationLayerAdapter.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1318-network-sample-c/game/ReconciliationLayerAdapter.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1318-network-sample-c/game/ReconciliationLayerAdapter.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1318-network-sample-c/game/ReconciliationLayerAdapter.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1318-network-sample-c/game/StateTimelineBuffer.js",
+      "type": "deep-relative-shared-traversal",
+      "match": "rule:deep-relative-src-shared-traversal"
+    },
+    {
+      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1318-network-sample-c/game/StateTimelineBuffer.js",
+      "type": "deep-relative-shared-traversal",
+      "match": "rule:deep-relative-src-shared-traversal"
+    },
+    {
+      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1318-network-sample-c/game/StateTimelineBuffer.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-src-depth-3"
+    },
+    {
+      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1318-network-sample-c/game/StateTimelineBuffer.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-src-depth-3"
+    },
+    {
+      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1318-network-sample-c/game/StateTimelineBuffer.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1318-network-sample-c/main.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-src-depth-3"
+    },
+    {
+      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/sample1303-asteroids-world-systems/AsteroidsWorldSystemsScene.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/sample1303-asteroids-world-systems/AsteroidsWorldSystemsScene.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-2"
+    },
+    {
+      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/sample1309-space-invaders-world-systems/SpaceInvadersWorldSystemsScene.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/sample1309-space-invaders-world-systems/SpaceInvadersWorldSystemsScene.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-2"
+    },
+    {
+      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/sample1313-pacman-lite-world-systems/PacmanLiteWorldSystemsScene.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/sample1313-pacman-lite-world-systems/PacmanLiteWorldSystemsScene.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-2"
+    },
+    {
+      "file": "samples/shared/worldGameStateSystem.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "samples/shared/worldGameStateSystem.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "samples/shared/worldGameStateSystem.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "samples/shared/worldGameStateSystem.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "samples/shared/worldGameStateSystem.js",
+      "type": "local-helper-definition",
+      "match": "rule:helper-fn-isPlainObject"
+    },
+    {
+      "file": "src/advanced/promotion/createPromotionGate.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "src/advanced/promotion/createPromotionGate.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "src/advanced/promotion/createPromotionGate.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "src/advanced/promotion/createPromotionGate.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-2"
+    },
+    {
+      "file": "src/advanced/promotion/createPromotionGate.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-2"
+    },
+    {
+      "file": "src/advanced/promotion/createPromotionGate.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-2"
+    },
+    {
+      "file": "src/advanced/state/createWorldGameStateSystem.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "src/advanced/state/createWorldGameStateSystem.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "src/advanced/state/createWorldGameStateSystem.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "src/advanced/state/createWorldGameStateSystem.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-2"
+    },
+    {
+      "file": "src/advanced/state/createWorldGameStateSystem.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-2"
+    },
+    {
+      "file": "src/advanced/state/createWorldGameStateSystem.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-2"
+    },
+    {
+      "file": "src/advanced/state/createWorldGameStateSystem.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "src/advanced/state/createWorldGameStateSystem.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "src/advanced/state/createWorldGameStateSystem.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "src/advanced/state/events.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "src/advanced/state/events.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-2"
+    },
+    {
+      "file": "src/advanced/state/events.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "src/advanced/state/initialState.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "src/advanced/state/initialState.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-2"
+    },
+    {
+      "file": "src/advanced/state/transitions.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "src/advanced/state/transitions.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "src/advanced/state/transitions.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-2"
+    },
+    {
+      "file": "src/advanced/state/transitions.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-2"
+    },
+    {
+      "file": "src/advanced/state/transitions.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "src/advanced/state/transitions.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "src/advanced/state/utils.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "src/advanced/state/utils.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-2"
+    },
+    {
+      "file": "src/engine/audio/MediaTrackService.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "src/engine/debug/inspectors/bootstrap/createInspectorSurfaceIntegration.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "src/engine/debug/inspectors/commands/registerInspectorCommands.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "src/engine/debug/inspectors/commands/registerInspectorCommands.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-2"
+    },
+    {
+      "file": "src/engine/debug/inspectors/host/debugInspectorHost.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "src/engine/debug/inspectors/host/debugInspectorHost.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-2"
+    },
+    {
+      "file": "src/engine/debug/inspectors/host/debugInspectorHost.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-4"
+    },
+    {
+      "file": "src/engine/debug/inspectors/host/debugInspectorHost.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "src/engine/debug/inspectors/host/debugInspectorHost.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "src/engine/debug/inspectors/host/debugInspectorHost.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "src/engine/debug/inspectors/registry/debugInspectorRegistry.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "src/engine/debug/inspectors/registry/debugInspectorRegistry.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-2"
+    },
+    {
+      "file": "src/engine/debug/inspectors/registry/debugInspectorRegistry.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-4"
+    },
+    {
+      "file": "src/engine/debug/inspectors/viewModels/entityInspectorViewModel.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "src/engine/debug/inspectors/viewModels/entityInspectorViewModel.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-2"
+    },
+    {
+      "file": "src/engine/debug/inspectors/viewModels/entityInspectorViewModel.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-4"
+    },
+    {
+      "file": "src/engine/debug/inspectors/viewModels/entityInspectorViewModel.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "src/engine/debug/inspectors/viewModels/eventStreamInspectorViewModel.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "src/engine/debug/inspectors/viewModels/eventStreamInspectorViewModel.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-2"
+    },
+    {
+      "file": "src/engine/debug/inspectors/viewModels/eventStreamInspectorViewModel.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-4"
+    },
+    {
+      "file": "src/engine/debug/inspectors/viewModels/eventStreamInspectorViewModel.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "src/engine/debug/inspectors/viewModels/stateDiffInspectorViewModel.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "src/engine/debug/inspectors/viewModels/stateDiffInspectorViewModel.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "src/engine/debug/inspectors/viewModels/stateDiffInspectorViewModel.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-2"
+    },
+    {
+      "file": "src/engine/debug/inspectors/viewModels/stateDiffInspectorViewModel.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-2"
+    },
+    {
+      "file": "src/engine/debug/inspectors/viewModels/stateDiffInspectorViewModel.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-4"
+    },
+    {
+      "file": "src/engine/debug/inspectors/viewModels/stateDiffInspectorViewModel.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-4"
+    },
+    {
+      "file": "src/engine/debug/inspectors/viewModels/timelineInspectorViewModel.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "src/engine/debug/inspectors/viewModels/timelineInspectorViewModel.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-2"
+    },
+    {
+      "file": "src/engine/debug/inspectors/viewModels/timelineInspectorViewModel.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-4"
+    },
+    {
+      "file": "src/engine/debug/inspectors/viewModels/timelineInspectorViewModel.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "src/engine/debug/inspectors/viewModels/timelineInspectorViewModel.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "src/engine/debug/network/bootstrap/createNetworkDebugSurfaceIntegration.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "src/engine/debug/network/commands/networkDebugCommandPackBridge.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "src/engine/debug/network/dashboard/registerDashboardCommands.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "src/engine/debug/network/dashboard/registerDashboardCommands.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "src/engine/debug/network/dashboard/serverDashboardHost.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "src/engine/debug/network/dashboard/serverDashboardMetrics.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "src/engine/debug/network/dashboard/serverDashboardMetrics.js",
+      "type": "inline-helper-clone",
+      "match": "rule:inline-arrow-number-is-finite"
+    },
+    {
+      "file": "src/engine/debug/network/dashboard/serverDashboardMetrics.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "src/engine/debug/network/dashboard/serverDashboardProviders.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "src/engine/debug/network/dashboard/serverDashboardRefreshModes.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "src/engine/debug/network/dashboard/serverDashboardRegistry.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "src/engine/debug/network/dashboard/serverDashboardRenderer.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "src/engine/debug/network/dashboard/serverDashboardViewModel.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "src/engine/debug/network/diagnostics/divergenceDiagnosticsModel.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "src/engine/debug/network/diagnostics/latencyDiagnosticsModel.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "src/engine/debug/network/diagnostics/replicationDiagnosticsModel.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "src/engine/debug/network/panels/networkDebugPanelRegistry.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "src/engine/debug/network/providers/networkDebugProviderRegistry.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "src/engine/debug/network/shared/networkDebugUtils.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "src/engine/debug/network/shared/networkDebugUtils.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "src/engine/debug/network/shared/networkDebugUtils.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-2"
+    },
+    {
+      "file": "src/engine/debug/network/shared/networkDebugUtils.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-2"
+    },
+    {
+      "file": "src/engine/debug/network/shared/networkDebugUtils.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-4"
+    },
+    {
+      "file": "src/engine/debug/network/shared/networkDebugUtils.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-4"
+    },
+    {
+      "file": "src/engine/debug/network/shared/networkDebugUtils.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "src/engine/debug/standard/threeD/bootstrap/createStandard3dDebugSurfaceIntegration.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "src/engine/debug/standard/threeD/panels/panel3dCamera.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "src/engine/debug/standard/threeD/panels/panel3dCollision.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "src/engine/debug/standard/threeD/panels/panel3dRenderStages.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "src/engine/debug/standard/threeD/panels/panel3dSceneGraph.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "src/engine/debug/standard/threeD/panels/panel3dTransform.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "src/engine/debug/standard/threeD/providers/cameraSummaryProvider.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "src/engine/debug/standard/threeD/providers/collisionSummaryProvider.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "src/engine/debug/standard/threeD/providers/renderStageSummaryProvider.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "src/engine/debug/standard/threeD/providers/sceneGraphSummaryProvider.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "src/engine/debug/standard/threeD/providers/transformSummaryProvider.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "src/engine/debug/standard/threeD/shared/threeDDebugUtils.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "src/engine/debug/standard/threeD/shared/threeDDebugUtils.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "src/shared/math/numberNormalization.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "src/shared/math/numberNormalization.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "src/shared/math/numberNormalization.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "src/shared/math/numberNormalization.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "src/shared/math/numberNormalization.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "src/shared/utils/highScoreUtils.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "src/shared/utils/networkDebugUtils.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "src/shared/utils/numberUtils.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "src/shared/utils/numberUtils.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "src/shared/utils/numberUtils.js",
+      "type": "local-helper-definition",
+      "match": "rule:helper-fn-asFiniteNumber"
+    },
+    {
+      "file": "src/shared/utils/numberUtils.js",
+      "type": "local-helper-definition",
+      "match": "rule:helper-fn-asPositiveInteger"
+    },
+    {
+      "file": "src/shared/utils/objectUtils.js",
+      "type": "local-helper-definition",
+      "match": "rule:helper-fn-isPlainObject"
+    },
+    {
+      "file": "tools/Asset Browser/main.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "tools/dev/advanced/debugMacroExecutor.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/dev/advanced/debugMacroRegistry.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-src-depth-3"
+    },
+    {
+      "file": "tools/dev/advanced/debugPanelGroupRegistry.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-src-depth-3"
+    },
+    {
+      "file": "tools/dev/advanced/debugPanelGroupRegistry.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-src-depth-3"
+    },
+    {
+      "file": "tools/dev/commandPacks/groupCommandPack.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-src-depth-3"
+    },
+    {
+      "file": "tools/dev/commandPacks/groupCommandPack.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-src-depth-3"
+    },
+    {
+      "file": "tools/dev/commandPacks/inspectorCommandPack.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-src-depth-3"
+    },
+    {
+      "file": "tools/dev/commandPacks/inspectorCommandPack.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-src-depth-3"
+    },
+    {
+      "file": "tools/dev/commandPacks/inspectorCommandPack.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/dev/commandPacks/inspectorCommandPack.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/dev/commandPacks/overlayCommandPack.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-src-depth-3"
+    },
+    {
+      "file": "tools/dev/commandPacks/overlayCommandPack.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-src-depth-3"
+    },
+    {
+      "file": "tools/dev/commandPacks/packUtils.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-src-depth-3"
+    },
+    {
+      "file": "tools/dev/devConsoleCommandRegistry.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/dev/devConsoleIntegration.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "tools/dev/devConsoleIntegration.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/dev/devConsoleIntegration.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/dev/devConsoleIntegration.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/dev/devConsoleIntegration.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/dev/devConsoleIntegration.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/dev/devConsoleIntegration.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/dev/devConsoleIntegration.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/dev/devConsoleIntegration.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/dev/devConsoleIntegration.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/dev/inspectors/inspectorStore.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-src-depth-3"
+    },
+    {
+      "file": "tools/dev/inspectors/inspectorStore.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-src-depth-3"
+    },
+    {
+      "file": "tools/dev/inspectors/inspectorStore.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/dev/inspectors/inspectorStore.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/dev/plugins/debugPluginSystem.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-src-depth-3"
+    },
+    {
+      "file": "tools/dev/plugins/debugPluginSystem.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-src-depth-3"
+    },
+    {
+      "file": "tools/dev/plugins/debugPluginSystem.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/dev/presets/debugPresetApplier.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-src-depth-3"
+    },
+    {
+      "file": "tools/dev/presets/debugPresetApplier.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-src-depth-3"
+    },
+    {
+      "file": "tools/dev/presets/debugPresetApplier.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-src-depth-3"
+    },
+    {
+      "file": "tools/dev/presets/debugPresetRegistry.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-src-depth-3"
+    },
+    {
+      "file": "tools/dev/presets/debugPresetRegistry.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-src-depth-3"
+    },
+    {
+      "file": "tools/dev/presets/debugPresetRegistry.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-src-depth-3"
+    },
+    {
+      "file": "tools/Palette Browser/main.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "tools/Parallax Scene Studio/main.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "tools/Parallax Scene Studio/main.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "tools/Parallax Scene Studio/main.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "tools/Parallax Scene Studio/main.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "tools/Parallax Scene Studio/main.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "tools/Parallax Scene Studio/main.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "tools/Parallax Scene Studio/main.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/Parallax Scene Studio/main.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/Parallax Scene Studio/main.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/Parallax Scene Studio/main.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/shared/assetMarketplace.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/shared/assetMarketplace.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/shared/collaborationSystem.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/shared/collaborationSystem.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/shared/collaborationSystem.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/shared/devConsoleDebugOverlay.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/shared/devConsoleDebugOverlay.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/shared/devConsoleDebugOverlay.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/shared/devConsoleDebugOverlay.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/shared/devConsoleDebugOverlay.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/shared/devConsoleDebugOverlay.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/shared/devConsoleDebugOverlay.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/shared/devConsoleDebugOverlay.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/shared/devConsoleDebugOverlay.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/shared/performanceBenchmarks.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/shared/performanceBenchmarks.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/shared/performanceBenchmarks.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/shared/performanceProfiler.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/shared/pluginArchitecture.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/shared/projectAssetRegistry.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/shared/projectAssetRegistry.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/shared/projectAssetRegistry.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/shared/projectAssetValidation.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/shared/projectPackaging.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/shared/projectPackaging.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/shared/projectPackaging.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/shared/projectPackaging.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/shared/projectSystemAdapters.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/shared/projectSystemAdapters.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/shared/projectSystemAdapters.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/shared/projectSystemAdapters.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/shared/projectVersioning.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/shared/projectVersioning.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/shared/projectVersioning.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/shared/projectVersioning.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/shared/projectVersioning.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/shared/projectVersioning.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/shared/projectVersioning.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/shared/renderPipelineContract.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/shared/renderPipelineContract.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/shared/renderPipelineContract.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/shared/renderPipelineContract.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/shared/renderPipelineContract.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/shared/renderPipelineContract.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/shared/renderPipelineContract.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/shared/renderPipelineContract.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/shared/renderPipelineContract.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/shared/renderPipelineContract.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/shared/renderPipelineContract.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/shared/renderPipelineContract.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/shared/renderPipelineContract.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/shared/runtimeAssetValidationUtils.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/shared/runtimeSceneLoaderHotReload.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/shared/vector/vectorAssetContract.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-src-depth-3"
+    },
+    {
+      "file": "tools/shared/vector/vectorAssetContract.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-src-depth-3"
+    },
+    {
+      "file": "tools/shared/vector/vectorAssetContract.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/shared/vector/vectorAssetContract.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/shared/vector/vectorAssetContract.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/shared/vector/vectorAssetContract.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/shared/vector/vectorAssetContract.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/shared/vector/vectorAssetContract.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/shared/vector/vectorAssetContract.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/shared/vector/vectorAssetContract.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/shared/vector/vectorAssetContract.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/shared/vector/vectorAssetContract.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/shared/vector/vectorAssetContract.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/shared/vector/vectorAssetContract.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/shared/vector/vectorAssetContract.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/shared/vector/vectorAssetContract.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/shared/vector/vectorAssetContract.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/shared/vector/vectorGeometryMath.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-src-depth-3"
+    },
+    {
+      "file": "tools/shared/vector/vectorGeometryMath.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/shared/vector/vectorRenderPrep.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-src-depth-3"
+    },
+    {
+      "file": "tools/Sprite Editor/modules/projectModel.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/Sprite Editor/modules/spriteEditorApp.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "tools/Sprite Editor/modules/spriteEditorApp.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "tools/Sprite Editor/modules/spriteEditorApp.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "tools/Sprite Editor/modules/spriteEditorApp.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "tools/Sprite Editor/modules/spriteEditorApp.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "tools/Sprite Editor/modules/spriteEditorApp.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "tools/Sprite Editor/modules/spriteEditorApp.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-2"
+    },
+    {
+      "file": "tools/Sprite Editor/modules/spriteEditorApp.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-2"
+    },
+    {
+      "file": "tools/Sprite Editor/modules/spriteEditorApp.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-2"
+    },
+    {
+      "file": "tools/Sprite Editor/modules/spriteEditorApp.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-2"
+    },
+    {
+      "file": "tools/Sprite Editor/modules/spriteEditorApp.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-2"
+    },
+    {
+      "file": "tools/Sprite Editor/modules/spriteEditorApp.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-2"
+    },
+    {
+      "file": "tools/Sprite Editor/modules/spriteEditorApp.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/Sprite Editor/modules/spriteEditorApp.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/Sprite Editor/modules/spriteEditorApp.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/SpriteEditor_old_keep/modules/appCommands.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "tools/SpriteEditor_old_keep/modules/appCommands.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/SpriteEditor_old_keep/modules/appIO.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/SpriteEditor_old_keep/modules/appPalette.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "tools/SpriteEditor_old_keep/modules/appPalette.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/SpriteEditor_old_keep/modules/appPalette.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/SpriteEditor_old_keep/modules/integration/integrationContracts.js",
+      "type": "local-helper-definition",
+      "match": "rule:helper-fn-isPlainObject"
+    },
+    {
+      "file": "tools/Tilemap Studio/main.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "tools/Tilemap Studio/main.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "tools/Tilemap Studio/main.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "tools/Tilemap Studio/main.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "tools/Tilemap Studio/main.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "tools/Tilemap Studio/main.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "tools/Tilemap Studio/main.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/Tilemap Studio/main.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/Tilemap Studio/main.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/Tilemap Studio/main.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/Vector Asset Studio/main.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/Vector Asset Studio/main.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/Vector Asset Studio/main.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/Vector Asset Studio/main.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/Vector Asset Studio/main.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/Vector Asset Studio/main.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/Vector Asset Studio/main.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/Vector Asset Studio/main.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/Vector Asset Studio/main.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/Vector Asset Studio/main.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/Vector Asset Studio/main.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/Vector Asset Studio/main.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/Vector Asset Studio/main.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/Vector Asset Studio/main.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/Vector Asset Studio/main.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/Vector Asset Studio/main.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/Vector Asset Studio/main.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/Vector Asset Studio/main.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/Vector Asset Studio/main.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/Vector Asset Studio/main.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/Vector Asset Studio/main.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/Vector Asset Studio/main.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/Vector Asset Studio/main.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/Vector Asset Studio/main.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/Vector Asset Studio/main.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/Vector Map Editor/editor/VectorMapDocument.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/Vector Map Editor/editor/VectorMapDocument.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/Vector Map Editor/editor/VectorMapDocument.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/Vector Map Editor/editor/VectorMapDocument.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/Vector Map Editor/editor/VectorMapDocument.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/Vector Map Editor/editor/VectorMapDocument.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/Vector Map Editor/editor/VectorMapDocument.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/Vector Map Editor/editor/VectorMapEditorApp.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/Vector Map Editor/editor/VectorMapEditorApp.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/Vector Map Editor/editor/VectorMapEditorApp.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/Vector Map Editor/editor/VectorMapTransformController.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    }
+  ]
+}
