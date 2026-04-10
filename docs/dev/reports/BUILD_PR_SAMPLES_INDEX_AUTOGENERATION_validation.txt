@@ -1,0 +1,42 @@
+BUILD_PR_SAMPLES_INDEX_AUTOGENERATION VALIDATION REPORT
+
+Build output summary:
+- Generator added: scripts/generate-samples-index.mjs
+- samples/index.html now contains an auto-generated section block bounded by markers
+- Generator source of truth: canonical folders under samples/phaseXX/XXYY/index.html
+
+Fail-fast checks enforced by generator:
+- malformed phase folders (phaseXX format)
+- malformed sample folders (XXYY format)
+- sample/phase number mismatch
+- duplicate sample numbers
+- missing sample entrypoints
+- missing phase/sample metadata labels in index source
+
+Validation executed:
+1) node scripts/generate-samples-index.mjs
+   - result: OK phases=15 samples=197 mode=write
+2) node scripts/generate-samples-index.mjs --check
+   - result: OK phases=15 samples=197 mode=check
+3) Link/coverage check against generated index:
+   - index markers present: true
+   - live links counted: 197
+   - representative links found:
+     - first sample in populated phase: 0101 -> ./phase01/0101/index.html
+     - last sample in populated phase: 1506 -> ./phase15/1506/index.html
+     - phase13: 1316, 1317, 1318 -> present
+4) Browser smoke/console validation (headless chromium via Playwright):
+   - loaded pages:
+     - /samples/index.html
+     - /samples/phase01/0101/index.html
+     - /samples/phase15/1506/index.html
+     - /samples/phase13/1316/index.html
+     - /samples/phase13/1317/index.html
+     - /samples/phase13/1318/index.html
+   - result: BROWSER_VALIDATION_PASS pages=6
+   - console/pageerror events: none
+
+Scope check:
+- gameplay code untouched
+- engine core untouched
+- scope limited to sample index generation path

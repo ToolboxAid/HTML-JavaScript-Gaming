@@ -1,1 +1,8 @@
-BUILD_PR: normalize sample directories to phasexx/xxyy structure
+BUILD_PR: auto-generate samples index from canonical sample folders
+
+- define minimal, testable BUILD for generated samples index
+- preserve readable UI labels while using canonical paths
+- require representative runtime validation
+- enforce Windows-safe execution and exact ZIP output path
+
+No gameplay or engine-core scope included

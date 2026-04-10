@@ -1,2 +1,9 @@
-TYPE: STRUCTURE ONLY
-Normalize samples directories and paths
+PR TYPE: BUILD
+PURPOSE: testable samples index autogeneration
+
+SUMMARY:
+- introduces a docs-first BUILD bundle for replacing manual samples index maintenance
+- requires generation from canonical `samples/phaseXX/XXYY/` structure
+- requires runtime-visible validation of generated tiles and links
+- preserves readable labels in UI
+- keeps scope narrow and Windows-safe
