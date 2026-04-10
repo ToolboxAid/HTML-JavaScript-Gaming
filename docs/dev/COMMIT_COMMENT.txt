@@ -1,7 +1,2 @@
-APPLY_PR_GAMES_PADDLEINTERCEPT_FULL_FOLDER_MIGRATION
-
-Accepted full PaddleIntercept migration.
-
-- canonical validated
-- _next removed
-- pipeline confirmed
+BUILD_PR_GAMES_PROJECTILELAB_FULL_FOLDER_MIGRATION
+Full ProjectileLab migration.

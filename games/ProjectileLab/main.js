@@ -7,7 +7,7 @@ main.js
 import Engine from '/src/engine/core/Engine.js';
 import { InputService } from '/src/engine/input/index.js';
 import { Theme, ThemeTokens } from '/src/engine/theme/index.js';
-import ProjectileLabScene from './ProjectileLabScene.js';
+import ProjectileLabScene from './game/ProjectileLabScene.js';
 
 const theme = new Theme(ThemeTokens);
 theme.applyDocumentTheme();
