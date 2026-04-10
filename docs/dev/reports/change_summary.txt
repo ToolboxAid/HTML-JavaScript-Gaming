@@ -1,1 +1,1 @@
-Add header, preview, related samples, and navigation to sample pages
+Define thumbnail + preview system for samples index and detail pages

@@ -1,1 +1,1 @@
-BUILD_PR: enhance sample detail pages with metadata-driven UI and navigation
+PLAN_PR: add preview assets and thumbnails to samples

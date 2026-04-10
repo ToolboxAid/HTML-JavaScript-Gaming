@@ -1,5 +1,1 @@
-MODIFIED:
-- sample pages (index.html in samples)
-
-ADDED:
-- minimal UI JS for metadata rendering
+ADDED: docs/pr/PLAN_PR_SAMPLES_PREVIEW_ASSETS_AND_THUMBNAILS.md
