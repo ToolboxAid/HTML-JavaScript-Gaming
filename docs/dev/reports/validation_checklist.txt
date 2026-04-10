@@ -1,5 +1,11 @@
-[ ] metadata file exists
-[ ] ids match folders
-[ ] index renders titles
-[ ] no broken links
-[ ] zip exists
+[x] Docs-only scope preserved
+[x] No implementation code changes
+[x] No gameplay scope introduced
+[x] No engine-core scope introduced
+[x] No path normalization scope introduced
+[x] No start_of_day directory changes
+[x] Minimal UX contract defined (phase, tag, search)
+[x] Combined-state behavior defined
+[x] Source-of-truth boundaries defined
+[x] Validation + fail-fast expectations documented
+[x] Future BUILD scope kept narrow and testable

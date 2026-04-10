@@ -1,1 +1,7 @@
-BUILD_PR: add metadata layer for samples and integrate with index generation
+PLAN_PR_SAMPLES_FILTER_AND_SEARCH
+
+- Define docs-only plan for samples index phase/tag/search UX
+- Define combined-state filtering behavior and deterministic ordering
+- Define source-of-truth boundaries (canonical paths, metadata, UI)
+- Define validation + fail-fast expectations for future BUILD
+- Keep future BUILD narrowly scoped and testable
