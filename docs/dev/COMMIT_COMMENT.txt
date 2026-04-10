@@ -1,8 +1,8 @@
-BUILD_PR: improve samples index responsiveness and add favorites/pinning
+APPLY_PR: apply samples browse visuals and navigation wave
 
-- tighten samples index rendering/update behavior for repeated browse flows
-- add lightweight favorites / pinning with local persistence
-- preserve canonical paths and metadata-driven readable UI
-- keep implementation dependency-free and Windows-safe
+- applies the approved browse visuals/navigation BUILD delta
+- preserves canonical paths and metadata-driven readable UI
+- validates thumbnails, hover preview, and navigation behavior
+- keeps scope narrow and dependency-free
 
 No gameplay or engine-core scope included

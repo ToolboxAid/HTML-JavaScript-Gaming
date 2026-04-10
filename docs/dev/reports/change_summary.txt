@@ -1,8 +1,8 @@
-PR TYPE: BUILD
-PURPOSE: samples index performance and personalization
+PR TYPE: APPLY
+PURPOSE: samples browse visuals and navigation
 
 SUMMARY:
-- defines a testable BUILD wave for index responsiveness and favorites/pinning
+- applies the completed browse visuals/navigation BUILD wave
+- validates preview thumbnail rendering, clean fallback behavior, and navigation correctness
 - preserves canonical sample paths and metadata-driven readable UI
-- requires lightweight client-side persistence only
 - keeps scope narrow, dependency-free, and Windows-safe

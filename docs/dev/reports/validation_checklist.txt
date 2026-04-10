@@ -1,11 +1,10 @@
-[ ] samples/index.html still supports correct filter/search behavior
-[ ] repeated filter/search interactions remain responsive
-[ ] favorites / pins can be added
-[ ] favorites / pins persist locally after reload
-[ ] favorites / pins can be removed and removal persists
+[ ] BUILD delta is limited to browse visuals and navigation
+[ ] thumbnails render when available
+[ ] missing previews fall back cleanly
+[ ] hover preview works without breaking layout
+[ ] navigation remains correct
 [ ] Phase 13 samples 1316, 1317, 1318 still load
 [ ] no console errors in tested pages
 [ ] no gameplay changes
 [ ] no engine-core changes
-[ ] changed-file count stayed minimal
-[ ] ZIP exists at <project folder>/tmp/BUILD_PR_SAMPLES_INDEX_PERFORMANCE_AND_PERSONALIZATION.zip
+[ ] ZIP exists at <project folder>/tmp/APPLY_PR_SAMPLES_BROWSE_VISUALS_AND_NAVIGATION.zip
