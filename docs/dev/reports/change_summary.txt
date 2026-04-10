@@ -1,8 +1,1 @@
-PR TYPE: APPLY
-PURPOSE: samples browse visuals and navigation
-
-SUMMARY:
-- applies the completed browse visuals/navigation BUILD wave
-- validates preview thumbnail rendering, clean fallback behavior, and navigation correctness
-- preserves canonical sample paths and metadata-driven readable UI
-- keeps scope narrow, dependency-free, and Windows-safe
+Apply validation + tag normalization

@@ -1,0 +1,27 @@
+APPLY_PR_SAMPLES_DISCOVERY_DATA_AND_FINDABILITY
+
+Apply scope confirmation:
+- Applied approved discovery-data/findability BUILD behavior only
+- No gameplay files changed
+- No engine-core files changed
+- Canonical sample paths unchanged
+
+Files changed for this APPLY:
+- docs/dev/reports/APPLY_PR_SAMPLES_DISCOVERY_DATA_AND_FINDABILITY_validation.txt
+
+Validation executed:
+1) node scripts/generate-samples-index.mjs --check
+   - Result: OK phases=15 samples=197 metadata=197 mode=check
+
+2) node scripts/generate-samples-index.mjs --self-test
+   - Result: OK self-test metadata validation and tag normalization
+
+3) Node guard: verify 1316/1317/1318 generated links, normalized tags, and entrypoints
+   - Result: OK index links/tags/entrypoints 1316-1318
+
+4) Node guard: metadata duplicate-id scan
+   - Result: OK metadata duplicate-id scan count=197
+
+Notes:
+- Discovery validation rules and normalized tag output are already present in canonical target files.
+- APPLY completed without additional code changes beyond this apply report artifact.

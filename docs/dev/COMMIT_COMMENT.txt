@@ -1,8 +1,1 @@
-APPLY_PR: apply samples browse visuals and navigation wave
-
-- applies the approved browse visuals/navigation BUILD delta
-- preserves canonical paths and metadata-driven readable UI
-- validates thumbnails, hover preview, and navigation behavior
-- keeps scope narrow and dependency-free
-
-No gameplay or engine-core scope included
+APPLY_PR: apply metadata validation and tag normalization
