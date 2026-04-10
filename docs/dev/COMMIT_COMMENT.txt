@@ -1,7 +1,2 @@
-APPLY_PR_GAMES_MULTIBALLCHAOS_FULL_FOLDER_MIGRATION
-
-Accepted full MultiBallChaos migration.
-
-- canonical validated
-- _next removed
-- pipeline confirmed
+BUILD_PR_GAMES_AITARGETDUMMY_FULL_FOLDER_MIGRATION
+Full AITargetDummy migration.
