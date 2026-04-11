@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Generate Sample Preview SVGs</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 16px;
+      line-height: 1.4;
+    }
+    h1 {
+      margin-top: 0;
+    }
+    .row {
+      margin: 10px 0;
+    }
+    label {
+      display: inline-block;
+      min-width: 180px;
+    }
+    input[type="text"], input[type="number"] {
+      width: 420px;
+      padding: 6px;
+    }
+    button {
+      padding: 8px 14px;
+      margin-right: 8px;
+      cursor: pointer;
+    }
+    #log {
+      margin-top: 16px;
+      border: 1px solid #ccc;
+      padding: 12px;
+      height: 420px;
+      overflow: auto;
+      white-space: pre-wrap;
+      background: #fafafa;
+      font-family: Consolas, monospace;
+      font-size: 13px;
+    }
+    #frame {
+      width: 1280px;
+      height: 800px;
+      border: 1px solid #ddd;
+      margin-top: 16px;
+      display: none;
+    }
+    .note {
+      color: #444;
+      margin-top: 6px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Sample Preview SVG Generator</h1>
+
+  <div class="row">
+    <label for="baseUrl">Base URL</label>
+    <input id="baseUrl" type="text" value="http://localhost:5500" />
+  </div>
+
+  <div class="row">
+    <label for="waitMs">Minimum wait (ms)</label>
+    <input id="waitMs" type="number" value="3500" min="3000" step="500" />
+  </div>
+
+  <div class="row">
+    <button id="pickRepoBtn">Pick Repo Folder</button>
+    <button id="runBtn" disabled>Run</button>
+    <button id="stopBtn" disabled>Stop</button>
+  </div>
+
+  <div class="note">
+    Pick the root folder of your repo, for example <code>HTML-JavaScript-Gaming</code>.
+  </div>
+
+  <div id="status" class="row">Repo folder: not selected</div>
+
+  <iframe id="frame" title="sample-loader"></iframe>
+
+  <div id="log"></div>
+
+  <script>
+    const TARGET_SAMPLES = [
+      "0102","0107","0110","0116","0117","0119",
+      "0206","0212","0218","0220","0221","0223",
+      "0305","0306","0307","0308","0311","0318","0320","0322","0324",
+      "0407","0409","0412",
+      "0508",
+      "0601","0603","0605","0607","0608","0612",
+      "0707","0709","0712",
+      "0801","0808",
+      "0904",
+      "1101","1102","1103",
+      "1201","1202","1203","1206","1207",
+      "1301","1302","1303","1305","1306","1307","1308","1309","1311","1313","1314","1315",
+      "1401","1404","1410","1418",
+      "1503","1506"
+    ];
+
+    const OUTPUT_NAME = "preview.svg";
+    const CAPTURE_TIMEOUT_MARKER = "Capture timeout";
+
+    const pickRepoBtn = document.getElementById("pickRepoBtn");
+    const runBtn = document.getElementById("runBtn");
+    const stopBtn = document.getElementById("stopBtn");
+    const baseUrlInput = document.getElementById("baseUrl");
+    const waitMsInput = document.getElementById("waitMs");
+    const statusEl = document.getElementById("status");
+    const logEl = document.getElementById("log");
+    const frame = document.getElementById("frame");
+
+    let repoDirHandle = null;
+    let stopRequested = false;
+
+    function log(message = "") {
+      const now = new Date().toLocaleTimeString();
+      logEl.textContent += `[${now}] ${message}\n`;
+      logEl.scrollTop = logEl.scrollHeight;
+      console.log(message);
+    }
+
+    function sleep(ms) {
+      return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
+    async function getDirectoryHandle(parentHandle, name) {
+      return await parentHandle.getDirectoryHandle(name);
+    }
+
+    async function getFileHandle(parentHandle, name, create = false) {
+      return await parentHandle.getFileHandle(name, { create });
+    }
+
+    async function getSampleDirHandle(repoHandle, sampleId) {
+      const phase = sampleId.substring(0, 2);
+      const samplesDir = await getDirectoryHandle(repoHandle, "samples");
+      const phaseDir = await getDirectoryHandle(samplesDir, `phase${phase}`);
+      const sampleDir = await getDirectoryHandle(phaseDir, sampleId);
+      return sampleDir;
+    }
+
+    async function readExistingPreview(sampleDirHandle) {
+      try {
+        const fileHandle = await getFileHandle(sampleDirHandle, OUTPUT_NAME, false);
+        const file = await fileHandle.getFile();
+        return await file.text();
+      } catch {
+        return null;
+      }
+    }
+
+    async function needsRetry(sampleDirHandle) {
+      const content = await readExistingPreview(sampleDirHandle);
+      if (content == null) return true;
+      return content.includes(CAPTURE_TIMEOUT_MARKER);
+    }
+
+    async function writePreview(sampleDirHandle, svgContent) {
+      const fileHandle = await getFileHandle(sampleDirHandle, OUTPUT_NAME, true);
+      const writable = await fileHandle.createWritable();
+      await writable.write(svgContent);
+      await writable.close();
+    }
+
+    function buildFallbackSvg(message) {
+      return `<svg xmlns="http://www.w3.org/2000/svg" width="800" height="100">
+  <text x="10" y="24">${escapeXml(message)}</text>
+</svg>`;
+    }
+
+    function escapeXml(text) {
+      return String(text)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&apos;");
+    }
+
+    function buildCanvasWrappedSvg(canvas) {
+      const dataUrl = canvas.toDataURL("image/png");
+      const width = canvas.width || 800;
+      const height = canvas.height || 600;
+      return `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}">
+  <image href="${dataUrl}" width="100%" height="100%" />
+</svg>`;
+    }
+
+    async function waitForFrameLoad(iframe, timeoutMs = 20000) {
+      return await new Promise((resolve, reject) => {
+        let done = false;
+        const timer = setTimeout(() => {
+          if (!done) {
+            done = true;
+            reject(new Error(`iframe load timed out after ${timeoutMs}ms`));
+          }
+        }, timeoutMs);
+
+        function onLoad() {
+          if (!done) {
+            done = true;
+            clearTimeout(timer);
+            iframe.removeEventListener("load", onLoad);
+            resolve();
+          }
+        }
+
+        iframe.addEventListener("load", onLoad, { once: true });
+      });
+    }
+
+    async function extractSvgFromFrame() {
+      const doc = frame.contentDocument;
+      if (!doc) {
+        return buildFallbackSvg(CAPTURE_TIMEOUT_MARKER);
+      }
+
+      const svg = doc.querySelector("svg");
+      if (svg) {
+        return svg.outerHTML;
+      }
+
+      const canvas = doc.querySelector("canvas");
+      if (canvas) {
+        return buildCanvasWrappedSvg(canvas);
+      }
+
+      return buildFallbackSvg(CAPTURE_TIMEOUT_MARKER);
+    }
+
+    async function processSample(sampleId, baseUrl, waitMs) {
+      const phase = sampleId.substring(0, 2);
+      const sampleDirHandle = await getSampleDirHandle(repoDirHandle, sampleId);
+
+      const retry = await needsRetry(sampleDirHandle);
+      if (!retry) {
+        log(`✔ Skipping ${sampleId} (existing preview.svg does not contain "${CAPTURE_TIMEOUT_MARKER}")`);
+        return;
+      }
+
+      const url = `${baseUrl}/samples/phase${phase}/${sampleId}/index.html`;
+      log(`🔄 Generating ${sampleId}`);
+      log(`   ${url}`);
+
+      try {
+        frame.src = url;
+        await waitForFrameLoad(frame, 20000);
+        await sleep(waitMs);
+
+        const svgContent = await extractSvgFromFrame();
+        await writePreview(sampleDirHandle, svgContent);
+
+        if (svgContent.includes(CAPTURE_TIMEOUT_MARKER)) {
+          log(`⚠ Saved ${sampleId}, but still contains "${CAPTURE_TIMEOUT_MARKER}"`);
+        } else {
+          log(`✅ Saved ${sampleId}`);
+        }
+      } catch (error) {
+        const fallback = buildFallbackSvg(`${CAPTURE_TIMEOUT_MARKER}: ${error.message}`);
+        await writePreview(sampleDirHandle, fallback);
+        log(`❌ Failed ${sampleId}: ${error.message}`);
+      }
+
+      log("");
+    }
+
+    pickRepoBtn.addEventListener("click", async () => {
+      try {
+        repoDirHandle = await window.showDirectoryPicker({ mode: "readwrite" });
+        statusEl.textContent = `Repo folder: ${repoDirHandle.name}`;
+        runBtn.disabled = false;
+        log(`Repo folder selected: ${repoDirHandle.name}`);
+      } catch (error) {
+        log(`Repo folder selection canceled or failed: ${error.message}`);
+      }
+    });
+
+    runBtn.addEventListener("click", async () => {
+      if (!repoDirHandle) {
+        log("Pick the repo folder first.");
+        return;
+      }
+
+      const baseUrl = baseUrlInput.value.trim().replace(/\/+$/, "");
+      const waitMs = Math.max(3000, Number(waitMsInput.value) || 3500);
+
+      stopRequested = false;
+      runBtn.disabled = true;
+      stopBtn.disabled = false;
+
+      log("Starting preview generation...");
+      log(`Base URL: ${baseUrl}`);
+      log(`Minimum wait: ${waitMs}ms`);
+      log("");
+
+      try {
+        for (const sampleId of TARGET_SAMPLES) {
+          if (stopRequested) {
+            log("Stop requested. Ending run.");
+            break;
+          }
+          await processSample(sampleId, baseUrl, waitMs);
+        }
+      } catch (error) {
+        log(`Unexpected error: ${error.message}`);
+      } finally {
+        runBtn.disabled = false;
+        stopBtn.disabled = true;
+        log("Done.");
+      }
+    });
+
+    stopBtn.addEventListener("click", () => {
+      stopRequested = true;
+      log("Stop requested. Will stop after current sample.");
+    });
+  </script>
+</body>
+</html>
