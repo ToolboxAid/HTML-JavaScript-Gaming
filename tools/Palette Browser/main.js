@@ -5,6 +5,7 @@ import {
   getToolDisplayName,
   writeSharedPaletteHandoff
 } from "../shared/assetUsageIntegration.js";
+import { registerToolBootContract } from "../shared/toolBootContract.js";
 
 const CUSTOM_PALETTES_STORAGE_KEY = "toolboxaid.paletteBrowser.customPalettes";
 
@@ -388,8 +389,9 @@ function init() {
   bindEvents();
 }
 
-init();
-window.paletteBrowserApp = {
+let initialized = false;
+
+const paletteBrowserApi = {
   captureProjectState() {
     return {
       search: state.search,
@@ -411,3 +413,24 @@ window.paletteBrowserApp = {
     return true;
   }
 };
+
+function bootPaletteBrowser() {
+  if (!initialized) {
+    init();
+    initialized = true;
+  }
+  window.paletteBrowserApp = paletteBrowserApi;
+  return paletteBrowserApi;
+}
+
+registerToolBootContract("palette-browser", {
+  init: bootPaletteBrowser,
+  destroy() {
+    return true;
+  },
+  getApi() {
+    return window.paletteBrowserApp || null;
+  }
+});
+
+bootPaletteBrowser();

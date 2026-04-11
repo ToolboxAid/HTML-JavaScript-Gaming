@@ -29,6 +29,7 @@ import {
 import { buildProjectPackage, summarizeProjectPackaging } from "../shared/projectPackaging.js";
 import { buildEditorExperienceLayer, summarizeEditorExperienceLayer } from "../shared/editorExperienceLayer.js";
 import { buildDebugVisualizationLayer, summarizeDebugVisualizationLayer } from "../shared/debugVisualizationLayer.js";
+import { registerToolBootContract } from "../shared/toolBootContract.js";
 
 const DEFAULT_TILESET = [
   { id: 0, name: "Empty", color: "transparent" },
@@ -2646,23 +2647,46 @@ class TileMapEditorApp {
   }
 }
 
-const initialDocument = createInitialDocument();
-const app = new TileMapEditorApp(initialDocument);
-app.init(document);
-app.applyProjectSystemState = function applyProjectSystemState(snapshot) {
-  const nextDocument = sanitizeDocument(snapshot?.documentModel);
-  this.documentModel = nextDocument;
-  this.assetRegistry = snapshot?.assetRegistry && typeof snapshot.assetRegistry === "object"
-    ? sanitizeAssetRegistry(snapshot.assetRegistry)
-    : createAssetRegistry({ projectId: nextDocument?.map?.name || "tilemap-project" });
-  this.selectedLayerId = typeof snapshot?.selectedLayerId === "string" && nextDocument.layers.some((layer) => layer.id === snapshot.selectedLayerId)
-    ? snapshot.selectedLayerId
-    : nextDocument.layers[0]?.id || "";
-  this.selectedMarkerId = typeof snapshot?.selectedMarkerId === "string" ? snapshot.selectedMarkerId : "";
-  this.activeTileId = Number.isInteger(snapshot?.activeTileId) ? snapshot.activeTileId : 1;
-  this.resolveAssetRefsFromRegistry();
-  this.syncInputsFromDocument();
-  this.renderAll();
-  this.updateStatus(`Project state loaded for ${this.documentModel.map.name}.`);
-};
-window.tileMapStudioApp = app;
+let tileMapStudioApp = null;
+
+function bootTileMapStudio() {
+  if (tileMapStudioApp) {
+    window.tileMapStudioApp = tileMapStudioApp;
+    return tileMapStudioApp;
+  }
+
+  const initialDocument = createInitialDocument();
+  const app = new TileMapEditorApp(initialDocument);
+  app.init(document);
+  app.applyProjectSystemState = function applyProjectSystemState(snapshot) {
+    const nextDocument = sanitizeDocument(snapshot?.documentModel);
+    this.documentModel = nextDocument;
+    this.assetRegistry = snapshot?.assetRegistry && typeof snapshot.assetRegistry === "object"
+      ? sanitizeAssetRegistry(snapshot.assetRegistry)
+      : createAssetRegistry({ projectId: nextDocument?.map?.name || "tilemap-project" });
+    this.selectedLayerId = typeof snapshot?.selectedLayerId === "string" && nextDocument.layers.some((layer) => layer.id === snapshot.selectedLayerId)
+      ? snapshot.selectedLayerId
+      : nextDocument.layers[0]?.id || "";
+    this.selectedMarkerId = typeof snapshot?.selectedMarkerId === "string" ? snapshot.selectedMarkerId : "";
+    this.activeTileId = Number.isInteger(snapshot?.activeTileId) ? snapshot.activeTileId : 1;
+    this.resolveAssetRefsFromRegistry();
+    this.syncInputsFromDocument();
+    this.renderAll();
+    this.updateStatus(`Project state loaded for ${this.documentModel.map.name}.`);
+  };
+  tileMapStudioApp = app;
+  window.tileMapStudioApp = tileMapStudioApp;
+  return tileMapStudioApp;
+}
+
+registerToolBootContract("tile-map-editor", {
+  init: bootTileMapStudio,
+  destroy() {
+    return true;
+  },
+  getApi() {
+    return window.tileMapStudioApp || null;
+  }
+});
+
+bootTileMapStudio();

@@ -4,6 +4,7 @@ import {
   getToolDisplayName,
   writeSharedAssetHandoff
 } from "../shared/assetUsageIntegration.js";
+import { registerToolBootContract } from "../shared/toolBootContract.js";
 
 const APPROVED_DESTINATIONS = Object.freeze({
   "Vector Assets": "games/<project>/platform/assets/vectors/",
@@ -409,8 +410,9 @@ function init() {
   bindEvents();
 }
 
-init();
-window.assetBrowserApp = {
+let initialized = false;
+
+const assetBrowserApi = {
   captureProjectState() {
     return {
       selectedCategory: state.selectedCategory,
@@ -437,3 +439,24 @@ window.assetBrowserApp = {
     return true;
   }
 };
+
+function bootAssetBrowser() {
+  if (!initialized) {
+    init();
+    initialized = true;
+  }
+  window.assetBrowserApp = assetBrowserApi;
+  return assetBrowserApi;
+}
+
+registerToolBootContract("asset-browser", {
+  init: bootAssetBrowser,
+  destroy() {
+    return true;
+  },
+  getApi() {
+    return window.assetBrowserApp || null;
+  }
+});
+
+bootAssetBrowser();

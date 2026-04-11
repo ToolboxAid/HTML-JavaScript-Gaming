@@ -4,6 +4,7 @@ David Quesenberry
 03/30/2026
 main.js
 */
+import { registerToolBootContract } from "../shared/toolBootContract.js";
 
 const SVG_NS = "http://www.w3.org/2000/svg";
 const SAMPLE_MANIFEST_PATH = "./samples/sample-manifest.json";
@@ -2734,8 +2735,7 @@ async function initialize() {
   setStatus("Vector Asset Studio ready.");
 }
 
-initialize();
-window.vectorAssetStudioApp = {
+const vectorAssetStudioApi = {
   getProjectName() {
     return state.documentName || "untitled-background";
   },
@@ -2784,3 +2784,26 @@ window.vectorAssetStudioApp = {
     };
   }
 };
+
+let vectorAssetStudioBooted = false;
+
+function bootVectorAssetStudio() {
+  if (!vectorAssetStudioBooted) {
+    vectorAssetStudioBooted = true;
+    void initialize();
+  }
+  window.vectorAssetStudioApp = vectorAssetStudioApi;
+  return vectorAssetStudioApi;
+}
+
+registerToolBootContract("vector-asset-studio", {
+  init: bootVectorAssetStudio,
+  destroy() {
+    return true;
+  },
+  getApi() {
+    return window.vectorAssetStudioApp || null;
+  }
+});
+
+bootVectorAssetStudio();

@@ -1,8 +1,31 @@
 import { createAssetRegistry } from "./projectAssetRegistry.js";
 import { createNewProject, ensureProjectShape, serializeProject } from "../Sprite Editor/modules/projectModel.js";
 import { cloneValue, safeString } from "./projectSystemValueUtils.js";
+import { getToolBootContract } from "./toolBootContract.js";
 
-function readToolApi(globalKey) {
+function readToolApi(toolId, globalKey) {
+  const contract = getToolBootContract(toolId);
+  if (contract) {
+    try {
+      const directApi = typeof contract.getApi === "function" ? contract.getApi() : null;
+      if (directApi && typeof directApi === "object") {
+        return directApi;
+      }
+
+      const initializedApi = typeof contract.init === "function" ? contract.init() : null;
+      if (initializedApi && typeof initializedApi === "object") {
+        return initializedApi;
+      }
+
+      const fallbackApi = typeof contract.getApi === "function" ? contract.getApi() : null;
+      if (fallbackApi && typeof fallbackApi === "object") {
+        return fallbackApi;
+      }
+    } catch {
+      // Fallback to legacy global lookup.
+    }
+  }
+
   return globalThis[globalKey] && typeof globalThis[globalKey] === "object"
     ? globalThis[globalKey]
     : null;
@@ -28,7 +51,7 @@ function buildUnavailableAdapter(toolId) {
 }
 
 function createVectorMapAdapter() {
-  const api = readToolApi("vectorMapEditorApp");
+  const api = readToolApi("vector-map-editor", "vectorMapEditorApp");
   if (!api || typeof api.createHistorySnapshot !== "function" || typeof api.applyHistorySnapshot !== "function") {
     return buildUnavailableAdapter("vector-map-editor");
   }
@@ -77,7 +100,7 @@ function createVectorMapAdapter() {
 }
 
 function createTilemapAdapter() {
-  const api = readToolApi("tileMapStudioApp");
+  const api = readToolApi("tile-map-editor", "tileMapStudioApp");
   if (!api || !api.documentModel) {
     return buildUnavailableAdapter("tile-map-editor");
   }
@@ -145,7 +168,7 @@ function createTilemapAdapter() {
 }
 
 function createParallaxAdapter() {
-  const api = readToolApi("parallaxSceneStudioApp");
+  const api = readToolApi("parallax-editor", "parallaxSceneStudioApp");
   if (!api || !api.documentModel) {
     return buildUnavailableAdapter("parallax-editor");
   }
@@ -202,7 +225,7 @@ function createParallaxAdapter() {
 }
 
 function createSpriteAdapter() {
-  const api = readToolApi("spriteEditorApp");
+  const api = readToolApi("sprite-editor", "spriteEditorApp");
   if (!api || !api.state || typeof api.applyProjectSystemState !== "function") {
     return buildUnavailableAdapter("sprite-editor");
   }
@@ -246,7 +269,7 @@ function createSpriteAdapter() {
 }
 
 function createVectorAssetAdapter() {
-  const api = readToolApi("vectorAssetStudioApp");
+  const api = readToolApi("vector-asset-studio", "vectorAssetStudioApp");
   if (!api || typeof api.captureProjectState !== "function" || typeof api.applyProjectState !== "function") {
     return buildUnavailableAdapter("vector-asset-studio");
   }
@@ -277,7 +300,7 @@ function createVectorAssetAdapter() {
 }
 
 function createAssetBrowserAdapter() {
-  const api = readToolApi("assetBrowserApp");
+  const api = readToolApi("asset-browser", "assetBrowserApp");
   if (!api || typeof api.captureProjectState !== "function" || typeof api.applyProjectState !== "function") {
     return buildUnavailableAdapter("asset-browser");
   }
@@ -307,7 +330,7 @@ function createAssetBrowserAdapter() {
 }
 
 function createPaletteBrowserAdapter() {
-  const api = readToolApi("paletteBrowserApp");
+  const api = readToolApi("palette-browser", "paletteBrowserApp");
   if (!api || typeof api.captureProjectState !== "function" || typeof api.applyProjectState !== "function") {
     return buildUnavailableAdapter("palette-browser");
   }
