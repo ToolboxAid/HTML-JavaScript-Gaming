@@ -4,14 +4,18 @@ import { createToolHostRuntime } from "../shared/toolHostRuntime.js";
 const refs = {
   toolSelect: document.querySelector("[data-tool-host-select]"),
   mountButton: document.querySelector("[data-tool-host-mount]"),
+  prevButton: document.querySelector("[data-tool-host-prev]"),
+  nextButton: document.querySelector("[data-tool-host-next]"),
   unmountButton: document.querySelector("[data-tool-host-unmount]"),
   standaloneLink: document.querySelector("[data-tool-host-standalone]"),
+  switchMetaText: document.querySelector("[data-tool-host-switch-meta]"),
   statusText: document.querySelector("[data-tool-host-status]"),
   currentLabel: document.querySelector("[data-tool-host-current-label]"),
   mountContainer: document.querySelector("[data-tool-host-mount-container]")
 };
 
 const manifest = createToolHostManifest();
+const toolIds = manifest.tools.map((tool) => tool.id);
 
 function readSelectedToolId() {
   return refs.toolSelect instanceof HTMLSelectElement ? refs.toolSelect.value : "";
@@ -27,6 +31,39 @@ function setCurrentLabel(text) {
   if (refs.currentLabel instanceof HTMLElement) {
     refs.currentLabel.textContent = text;
   }
+}
+
+function writeSwitchMeta(text) {
+  if (refs.switchMetaText instanceof HTMLElement) {
+    refs.switchMetaText.textContent = text;
+  }
+}
+
+function getSelectedToolIndex() {
+  const selectedToolId = readSelectedToolId();
+  return toolIds.findIndex((toolId) => toolId === selectedToolId);
+}
+
+function updateSwitchMeta() {
+  if (toolIds.length === 0) {
+    writeSwitchMeta("No active tools are available in host manifest.");
+    return;
+  }
+  const selectedIndex = getSelectedToolIndex();
+  const oneBased = selectedIndex >= 0 ? selectedIndex + 1 : 1;
+  writeSwitchMeta(`Switch target ${oneBased}/${toolIds.length}.`);
+}
+
+function selectToolByOffset(offset) {
+  if (!(refs.toolSelect instanceof HTMLSelectElement) || toolIds.length === 0) {
+    return false;
+  }
+
+  const currentIndex = Math.max(0, getSelectedToolIndex());
+  const nextIndex = (currentIndex + offset + toolIds.length) % toolIds.length;
+  refs.toolSelect.value = toolIds[nextIndex];
+  updateSwitchMeta();
+  return true;
 }
 
 function updateStandaloneHref(toolId) {
@@ -66,6 +103,7 @@ function populateToolSelect(initialToolId) {
     .map((tool) => `<option value="${tool.id}">${tool.displayName}</option>`)
     .join("");
   refs.toolSelect.value = getToolHostEntryById(manifest, initialToolId) ? initialToolId : (manifest.tools[0]?.id || "");
+  updateSwitchMeta();
 }
 
 const runtime = createToolHostRuntime({
@@ -88,6 +126,7 @@ function mountSelectedTool(source = "manual") {
     writeStatus("Select a tool to mount.");
     return;
   }
+  updateSwitchMeta();
   updateStandaloneHref(toolId);
   writeQueryToolId(toolId, source === "init");
   runtime.mountTool(toolId, {
@@ -103,6 +142,24 @@ function bindEvents() {
     });
   }
 
+  if (refs.prevButton instanceof HTMLButtonElement) {
+    refs.prevButton.addEventListener("click", () => {
+      if (!selectToolByOffset(-1)) {
+        return;
+      }
+      mountSelectedTool("prev");
+    });
+  }
+
+  if (refs.nextButton instanceof HTMLButtonElement) {
+    refs.nextButton.addEventListener("click", () => {
+      if (!selectToolByOffset(1)) {
+        return;
+      }
+      mountSelectedTool("next");
+    });
+  }
+
   if (refs.unmountButton instanceof HTMLButtonElement) {
     refs.unmountButton.addEventListener("click", () => {
       runtime.unmountCurrentTool("manual");
@@ -111,6 +168,7 @@ function bindEvents() {
 
   if (refs.toolSelect instanceof HTMLSelectElement) {
     refs.toolSelect.addEventListener("change", () => {
+      updateSwitchMeta();
       updateStandaloneHref(readSelectedToolId());
       mountSelectedTool("select");
     });
@@ -121,6 +179,7 @@ function bindEvents() {
     if (refs.toolSelect instanceof HTMLSelectElement) {
       refs.toolSelect.value = toolId;
     }
+    updateSwitchMeta();
     updateStandaloneHref(toolId);
     mountSelectedTool("popstate");
   });

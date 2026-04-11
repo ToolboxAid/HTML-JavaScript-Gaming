@@ -34,6 +34,21 @@ function createHostFrame(toolEntry, sourceUrl) {
   return frame;
 }
 
+function readToolDestroyContract(frameWindow, toolId) {
+  if (!frameWindow || typeof frameWindow !== "object") {
+    return null;
+  }
+  const registry = frameWindow.__TOOLS_BOOT_CONTRACT_REGISTRY__;
+  if (!registry || typeof registry !== "object") {
+    return null;
+  }
+  const contract = registry[toolId];
+  if (!contract || typeof contract.destroy !== "function") {
+    return null;
+  }
+  return contract.destroy.bind(contract);
+}
+
 export function createToolHostRuntime(options = {}) {
   const manifest = options.manifest;
   const mountContainer = options.mountContainer instanceof HTMLElement ? options.mountContainer : null;
@@ -42,6 +57,7 @@ export function createToolHostRuntime(options = {}) {
   const onUnmounted = typeof options.onUnmounted === "function" ? options.onUnmounted : (() => {});
 
   let currentMount = null;
+  let mountSequence = 0;
 
   function getCurrentMount() {
     return currentMount ? { ...currentMount } : null;
@@ -54,13 +70,30 @@ export function createToolHostRuntime(options = {}) {
     }
 
     const previous = currentMount;
+    currentMount = null;
+
+    let destroyStatus = "not-available";
+    try {
+      const frameWindow = previous.frame?.contentWindow ?? null;
+      const destroyFn = readToolDestroyContract(frameWindow, previous.tool.id);
+      if (destroyFn) {
+        const destroyResult = destroyFn({
+          reason,
+          hosted: true,
+          source: "tool-host-runtime"
+        });
+        destroyStatus = destroyResult === false ? "failed" : "ok";
+      }
+    } catch {
+      destroyStatus = "failed";
+    }
+
     if (previous.frame && previous.frame.parentElement === mountContainer) {
       previous.frame.removeAttribute("src");
       mountContainer.removeChild(previous.frame);
     }
-    currentMount = null;
-    onStatus(`Unmounted ${previous.tool.displayName} (${reason}).`);
-    onUnmounted(previous.tool, reason);
+    onStatus(`Unmounted ${previous.tool.displayName} (${reason}, destroy=${destroyStatus}).`);
+    onUnmounted(previous.tool, reason, destroyStatus);
     return true;
   }
 
@@ -83,12 +116,22 @@ export function createToolHostRuntime(options = {}) {
       unmountCurrentTool("reload");
     }
 
+    mountSequence += 1;
+    const sequenceId = mountSequence;
     const sourceUrl = buildHostLaunchUrl(toolEntry, config);
     const frame = createHostFrame(toolEntry, sourceUrl);
     frame.addEventListener("load", () => {
+      if (!currentMount || currentMount.mountSequence !== sequenceId) {
+        return;
+      }
+      currentMount.loadedAt = new Date().toISOString();
       onStatus(`Mounted ${toolEntry.displayName}.`);
     }, { once: true });
     frame.addEventListener("error", () => {
+      if (!currentMount || currentMount.mountSequence !== sequenceId) {
+        return;
+      }
+      currentMount.failedAt = new Date().toISOString();
       onStatus(`Failed to load ${toolEntry.displayName}.`);
     }, { once: true });
 
@@ -97,9 +140,11 @@ export function createToolHostRuntime(options = {}) {
       tool: toolEntry,
       frame,
       sourceUrl,
-      mountedAt: new Date().toISOString()
+      mountedAt: new Date().toISOString(),
+      mountSequence: sequenceId
     };
 
+    onStatus(`Mounting ${toolEntry.displayName}...`);
     onMounted(toolEntry, currentMount);
     return getCurrentMount();
   }

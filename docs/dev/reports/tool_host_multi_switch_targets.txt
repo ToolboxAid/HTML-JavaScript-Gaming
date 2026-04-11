@@ -1,0 +1,5 @@
+MULTI TOOL SWITCH TARGETS
+
+- tool selector
+- mount/unmount enforcement
+- lifecycle validation
