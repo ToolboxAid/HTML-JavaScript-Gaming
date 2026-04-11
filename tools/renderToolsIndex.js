@@ -2,6 +2,7 @@ import { getToolRegistry } from "./toolRegistry.js";
 import { escapeHtml } from "../src/shared/string/stringUtil.js";
 
 function renderToolCard(tool) {
+  const hostHref = `Tool Host/index.html?tool=${encodeURIComponent(tool.id)}`;
   const sampleLinks = Array.isArray(tool.sampleEntryPoints) && tool.sampleEntryPoints.length > 0
     ? `
       <div class="meta">
@@ -22,6 +23,7 @@ function renderToolCard(tool) {
       <p>${escapeHtml(tool.description)}</p>
       <div class="meta">
         <a class="tools-platform-card__action" href="${escapeHtml(tool.entryPoint)}">Open Tool</a>
+        <a class="tools-platform-card__action tools-platform-card__action--secondary" href="${escapeHtml(hostHref)}">Open In Host</a>
       </div>
       ${sampleLinks}
     </div>

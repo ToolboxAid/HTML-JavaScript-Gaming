@@ -1,0 +1,12 @@
+TOOL HOST FOUNDATION TARGETS
+
+Primary targets:
+1. shared host shell entry
+2. tool registry / manifest
+3. mount/unmount lifecycle glue
+4. config handoff to normalized tools
+
+Must preserve:
+- standalone tool pages
+- current tool-specific workflows
+- boot contract semantics from prior lane

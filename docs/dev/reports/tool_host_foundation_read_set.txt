@@ -1,0 +1,18 @@
+READ SET — TOOL HOST FOUNDATION
+
+Read first:
+- active tool entry points
+- any existing tool boot/init adapters
+- tools/shared/platformShell.js
+- tools/shared/projectSystem.js and adjacent registry helpers where relevant
+
+Read only immediate dependencies needed to:
+- understand current tool boot path
+- introduce a host registry/loader
+- preserve standalone launch pages
+
+Do not scan:
+- games
+- samples
+- broad engine runtime unrelated to tool mounting
+- templates/ (tracked for later roadmap cleanup only)

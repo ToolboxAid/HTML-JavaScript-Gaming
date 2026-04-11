@@ -1,0 +1,14 @@
+VALIDATION CHECKLIST — BUILD_PR_TOOL_HOST_FOUNDATION
+
+Required:
+- [ ] host shell loads at least one normalized tool
+- [ ] tool switch/unmount path works for target tools in scope
+- [ ] standalone tool pages still launch
+- [ ] npm run test:launch-smoke -- --tools executed
+- [ ] no new console regressions
+- [ ] no styling/theme churn beyond host necessities
+- [ ] exact files changed reported
+
+Do not accept:
+- [ ] hidden editor-state rewrites
+- [ ] speculative host abstractions without active-tool evidence

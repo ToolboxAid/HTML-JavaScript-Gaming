@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tool Host</title>
+  <link rel="stylesheet" href="../../src/engine/ui/hubCommon.css" />
+  <link rel="stylesheet" href="../shared/platformShell.css" />
+</head>
+<body class="tools-platform-tool-page" data-tools-platform-page="tool">
+  <div data-tools-platform-header></div>
+  <div class="wrap app-shell">
+    <section class="panel">
+      <h2>Tool Host Foundation</h2>
+      <p>Load one active tool at a time through a shared host container while keeping direct standalone tool pages unchanged.</p>
+      <div class="meta">
+        <label class="field">
+          Tool
+          <select data-tool-host-select></select>
+        </label>
+      </div>
+      <div class="meta">
+        <button type="button" data-tool-host-mount>Load Selected Tool</button>
+        <button type="button" data-tool-host-unmount>Unmount Tool</button>
+        <a data-tool-host-standalone href="#" target="_blank" rel="noopener noreferrer">Open Standalone</a>
+      </div>
+      <p data-tool-host-status>Tool host idle.</p>
+    </section>
+
+    <section class="panel">
+      <h3 data-tool-host-current-label>No tool mounted.</h3>
+      <div data-tool-host-mount-container style="min-height: 980px; border: 1px solid rgba(148, 163, 184, 0.35); border-radius: 10px; overflow: hidden; background: rgba(15, 23, 42, 0.45);"></div>
+    </section>
+  </div>
+  <div data-tools-platform-status></div>
+  <script type="module" src="../shared/platformShell.js"></script>
+  <script type="module" src="./main.js"></script>
+</body>
+</html>
