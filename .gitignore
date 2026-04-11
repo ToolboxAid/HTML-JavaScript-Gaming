@@ -10,3 +10,5 @@
 # Ignore the docs directory
 /*.zip
 /tmp/*
+/node_modules/
+.tmp*

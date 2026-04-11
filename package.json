@@ -5,6 +5,10 @@
     "test": "node ./scripts/run-node-tests.mjs",
     "build:manifest": "node ./scripts/generate-sample-manifest.mjs",
     "check:shared-extraction-guard": "node tools/dev/checkSharedExtractionGuard.mjs",
-    "check:games-template-contract": "node ./scripts/validate-games-template-contract.mjs"
+    "check:games-template-contract": "node ./scripts/validate-games-template-contract.mjs",
+    "test:launch-smoke": "node ./tests/runtime/LaunchSmokeAllEntries.test.mjs"
+  },
+  "dependencies": {
+    "ws": "^8.20.0"
   }
 }

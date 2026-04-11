@@ -1,3 +1,0 @@
-Next suggested command after this BUILD succeeds:
-
-Create APPLY_PR_SAMPLES_RUNTIME_PREVIEW_SVG_CAPTURE docs-only acceptance bundle with exact files changed, exact validation performed, and explicit confirmation that 1316/1317/1318 were not modified.

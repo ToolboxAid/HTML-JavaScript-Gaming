@@ -1,0 +1,11 @@
+Launch smoke suite was added for discovered games, samples, and tools.
+
+Verification in this container could not complete because Chromium remote debugging could not be initialized under the sandbox restrictions of this environment.
+
+What was verified here:
+- test module imports successfully
+- package script was added
+- main test runner imports the new suite
+
+What still needs to be run on the user's machine:
+- npm run test:launch-smoke
