@@ -37,7 +37,7 @@
       const samplePath = params.get('sample') || '';
       const width = Number(params.get('w') || 640);
       const height = Number(params.get('h') || 360);
-      const settleMs = Number(params.get('settle') || 1800);
+      const settleMs = Number(params.get('settle') || 3000);
       const timeoutMs = Number(params.get('timeout') || 12000);
       const outputCanvas = document.getElementById('surface');
       const frame = document.getElementById('frame');

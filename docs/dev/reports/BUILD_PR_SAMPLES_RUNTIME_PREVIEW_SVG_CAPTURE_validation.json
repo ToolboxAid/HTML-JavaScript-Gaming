@@ -1,0 +1,104 @@
+{
+  "command": "BUILD_PR_SAMPLES_RUNTIME_PREVIEW_SVG_CAPTURE",
+  "generatedRunResult": "OK runtime previews generated=194 skipped=3 (frozen samples)",
+  "runtimeWaitMs": 3000,
+  "frozenSamples": [
+    "1316",
+    "1317",
+    "1318"
+  ],
+  "changedPreviewCount": 125,
+  "frozenPreviewTouchedCount": 0,
+  "placeholderHash": "f0848d39a519932b2958962a72d95ff46cb4f4c4",
+  "placeholderMatchCount": 0,
+  "representativeChecks": [
+    {
+      "samplePath": "/samples/phase01/0101/index.html",
+      "pngSize": 16474,
+      "hash": "2075fdae6a109568ba0d861762d72292f99a284c",
+      "notPlaceholder": true
+    },
+    {
+      "samplePath": "/samples/phase06/0606/index.html",
+      "pngSize": 16476,
+      "hash": "f825b4e95760749aa273bb3ede5ba14057dfa5cb",
+      "notPlaceholder": true
+    },
+    {
+      "samplePath": "/samples/phase10/1002/index.html",
+      "pngSize": 18083,
+      "hash": "6d2e9a1296b3c6b315acc500b23ef19f5f99eaee",
+      "notPlaceholder": true
+    },
+    {
+      "samplePath": "/samples/phase15/1506/index.html",
+      "pngSize": 14675,
+      "hash": "68bb58176d1d3ff1cde6bc123f203b8e9cd1f9f0",
+      "notPlaceholder": true
+    },
+    {
+      "samplePath": "/samples/phase13/1316/index.html",
+      "pngSize": 20907,
+      "hash": "a3cd1b635aa79e24dccd314fa96e2b887e790a9e",
+      "notPlaceholder": true
+    },
+    {
+      "samplePath": "/samples/phase13/1317/index.html",
+      "pngSize": 47689,
+      "hash": "30f1188990febd4f1e68aac202771536e456c303",
+      "notPlaceholder": true
+    },
+    {
+      "samplePath": "/samples/phase13/1318/index.html",
+      "pngSize": 66962,
+      "hash": "497215dfc0870495114298c1face390e3b1a2d67",
+      "notPlaceholder": true
+    }
+  ],
+  "frozenHashChecks": [
+    {
+      "file": "samples/phase13/1316/assets/preview.svg",
+      "expected": "805b8a8f64bd33dabb3d4c367d67dc7d4ed53615",
+      "actual": "805b8a8f64bd33dabb3d4c367d67dc7d4ed53615",
+      "unchanged": true
+    },
+    {
+      "file": "samples/phase13/1317/assets/preview.svg",
+      "expected": "bd611722c245619c9a2b02026fd60a47b39d6af9",
+      "actual": "bd611722c245619c9a2b02026fd60a47b39d6af9",
+      "unchanged": true
+    },
+    {
+      "file": "samples/phase13/1318/assets/preview.svg",
+      "expected": "83c505eb6a5fb303e2af57e09f9808f0f20e0bdc",
+      "actual": "83c505eb6a5fb303e2af57e09f9808f0f20e0bdc",
+      "unchanged": true
+    },
+    {
+      "file": "samples/phase13/1316/index.html",
+      "expected": "f2516483b1b6be6803b7e0dfbfb47f0271e1b8c1",
+      "actual": "f2516483b1b6be6803b7e0dfbfb47f0271e1b8c1",
+      "unchanged": true
+    },
+    {
+      "file": "samples/phase13/1317/index.html",
+      "expected": "5be1825fee3fe36cb9c28a6877345b9e9bf903b8",
+      "actual": "5be1825fee3fe36cb9c28a6877345b9e9bf903b8",
+      "unchanged": true
+    },
+    {
+      "file": "samples/phase13/1318/index.html",
+      "expected": "d7d0f422d55e765ae3c2cd3557277849ec84fe80",
+      "actual": "d7d0f422d55e765ae3c2cd3557277849ec84fe80",
+      "unchanged": true
+    },
+    {
+      "file": "samples/index.html",
+      "expected": "1c113382ce4e6cbb820ec2aab7be655247031c9e",
+      "actual": "1c113382ce4e6cbb820ec2aab7be655247031c9e",
+      "unchanged": true
+    }
+  ],
+  "sampleConsoleGuardClean": true,
+  "sampleConsoleGuardOutput": ""
+}

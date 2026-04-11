@@ -8,9 +8,10 @@ const SAMPLES_DIR = path.join(ROOT, 'samples');
 const CAPTURE_PAGE_PATH = '/samples/_shared/runtimePreviewCapture.html';
 const OUTPUT_WIDTH = 640;
 const OUTPUT_HEIGHT = 360;
-const CAPTURE_SETTLE_MS = 1800;
+const CAPTURE_SETTLE_MS = 3000;
 const CAPTURE_TIMEOUT_MS = 12000;
-const EDGE_RUNTIME_BUDGET_MS = 13000;
+const EDGE_RUNTIME_BUDGET_MS = 17000;
+const FROZEN_SAMPLE_IDS = new Set(['1316', '1317', '1318']);
 
 function discoverCanonicalSamples() {
   const results = [];
@@ -239,7 +240,8 @@ async function generateRuntimePreviews() {
     throw new Error('Missing capture page: ' + path.relative(ROOT, capturePageFile));
   }
 
-  const samples = discoverCanonicalSamples();
+  const allSamples = discoverCanonicalSamples();
+  const samples = allSamples.filter((sample) => !FROZEN_SAMPLE_IDS.has(sample.id));
   const tempDir = path.join(ROOT, 'tmp', 'runtime_preview_capture');
   fs.mkdirSync(tempDir, { recursive: true });
 
@@ -295,7 +297,10 @@ async function generateRuntimePreviews() {
   }
 
   const avgBytes = generated > 0 ? Math.round(totalBytes / generated) : 0;
-  console.log('OK runtime previews generated=' + generated + ' avgPngBytes=' + avgBytes);
+  const skipped = allSamples.length - samples.length;
+  console.log(
+    'OK runtime previews generated=' + generated + ' skipped=' + skipped + ' (frozen samples) avgPngBytes=' + avgBytes
+  );
 }
 
 try {
