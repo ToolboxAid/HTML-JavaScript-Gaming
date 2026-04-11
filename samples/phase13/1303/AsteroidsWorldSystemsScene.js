@@ -10,6 +10,8 @@ import { drawFrame, drawPanel } from '/src/engine/debug/index.js';
 import { SpawnSystem, LifecycleSystem, WorldStateSystem, EventsSystem, distanceSq } from '../../shared/worldSystems.js';
 
 const theme = new Theme(ThemeTokens);
+const ASTEROID_MIN_SPEED = 20;
+const ASTEROID_MAX_SPEED = 140;
 const ASTEROIDS_VALIDATION_PRESETS = {
   baseline: {
     waves: [
@@ -58,6 +60,14 @@ function getValidationMode() {
   return 'baseline';
 }
 
+function clampAsteroidSpeed(value) {
+  const numeric = Number(value);
+  if (!Number.isFinite(numeric)) {
+    return ASTEROID_MIN_SPEED;
+  }
+  return Math.max(ASTEROID_MIN_SPEED, Math.min(ASTEROID_MAX_SPEED, numeric));
+}
+
 export default class AsteroidsWorldSystemsScene extends Scene {
   constructor() {
     super();
@@ -82,7 +92,7 @@ export default class AsteroidsWorldSystemsScene extends Scene {
       maxLifetime: this.validationConfig.lifecycle.maxLifetime,
       bounds: { minX: 0, maxX: this.width, minY: 0, maxY: this.height }
     });
-    this.asteroidSpeed = 40;
+    this.asteroidSpeed = clampAsteroidSpeed(40);
     this.fireCooldown = 0.3;
     this.configureWave();
   }
@@ -95,7 +105,7 @@ export default class AsteroidsWorldSystemsScene extends Scene {
       return;
     }
     this.spawnSystem = new SpawnSystem([wave.spawn]);
-    this.asteroidSpeed = wave.asteroidSpeed;
+    this.asteroidSpeed = clampAsteroidSpeed(wave.asteroidSpeed);
     this.spawnDone = false;
   }
 
@@ -116,7 +126,7 @@ export default class AsteroidsWorldSystemsScene extends Scene {
         this.fireCooldown = Math.max(0.1, Number(action.value) || this.fireCooldown);
       }
       if (action.type === 'asteroidSpeedMult') {
-        this.asteroidSpeed = Math.max(20, this.asteroidSpeed * (Number(action.value) || 1));
+        this.asteroidSpeed = clampAsteroidSpeed(this.asteroidSpeed * (Number(action.value) || 1));
       }
     });
     if (fired.length) this.lastEvent = fired[fired.length - 1];

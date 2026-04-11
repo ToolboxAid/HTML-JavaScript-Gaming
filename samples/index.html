@@ -576,13 +576,34 @@ index.html
 
       const modelsById = new Map(linkModels.map((model) => [model.sampleId, model]));
 
+      function parsePhaseName(sectionNode) {
+        if (!sectionNode || typeof sectionNode.querySelector !== 'function') {
+          return '';
+        }
+        const heading = sectionNode.querySelector('h2');
+        const headingText = String(heading ? heading.textContent : '').trim();
+        const match = headingText.match(/^Phase\s+(\d{2})\s*-\s*(.+?)(?:\s*\(|$)/i);
+        return match ? String(match[2] || '').trim() : '';
+      }
+
       const phaseValues = Array.from(
         new Set(linkModels.map((model) => model.phase).filter(Boolean))
       ).sort();
+      const phaseNameByValue = new Map();
+      for (const model of linkModels) {
+        if (!model.phase || phaseNameByValue.has(model.phase)) {
+          continue;
+        }
+        const phaseName = parsePhaseName(model.section);
+        if (phaseName) {
+          phaseNameByValue.set(model.phase, phaseName);
+        }
+      }
       for (const phase of phaseValues) {
         const option = document.createElement('option');
         option.value = phase;
-        option.textContent = 'Phase ' + phase;
+        const phaseName = phaseNameByValue.get(phase);
+        option.textContent = phaseName ? 'Phase ' + phase + ' - ' + phaseName : 'Phase ' + phase;
         phaseFilter.appendChild(option);
       }
 
@@ -953,4 +974,3 @@ index.html
   </script>
 </body>
 </html>
-

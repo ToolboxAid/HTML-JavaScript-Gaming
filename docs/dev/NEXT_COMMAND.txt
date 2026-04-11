@@ -1,3 +1,1 @@
-Next suggested command after this BUILD succeeds:
-
-Create APPLY_PR_SAMPLES_RUNTIME_PREVIEW_SVG_CAPTURE docs-only acceptance bundle with exact files changed, exact validation performed, and explicit confirmation that 1316/1317/1318 were not modified.
+After Codex completes, produce APPLY_PR_SAMPLES_INDEX_FIXES_AND_TARGETED_PREVIEW_RETRY with acceptance docs only. Verify: samples/index.html header/dropdown text changes, Sample 1303 local-only fix with no engine edits, retry-only preview SVG replacements for the approved list, and explicit confirmation that 1316/1317/1318 were untouched.
