@@ -4,35 +4,26 @@ David Quesenberry
 04/03/2026
 spriteEditor.css
 */
-:root {
-  --se-bg: #0b1727;
-  --se-panel: #102136;
-  --se-panel-border: #274868;
-  --se-text: #e7f3ff;
-  --se-muted: #9fbbd6;
-  --se-accent: #4eb6ff;
-  --se-accent-strong: #1d8cd6;
-  --se-danger: #c74f64;
-  --se-canvas-bg-a: #1f2f43;
-  --se-canvas-bg-b: #14263b;
-}
-
 .sprite-editor-page {
+  --se-panel: var(--panel, rgba(76, 29, 149, 0.88));
+  --se-panel-border: var(--line, rgba(221, 214, 254, 0.26));
+  --se-text: var(--text, #f7f4ff);
+  --se-muted: var(--muted, #e9ddff);
+  --se-accent: var(--accent, #ddd6fe);
+  --se-accent-strong: var(--accent, #ddd6fe);
+  --se-danger: #c74f64;
+  --se-canvas-bg-a: color-mix(in srgb, var(--surface-inline, rgba(43, 16, 91, 0.9)) 82%, black);
+  --se-canvas-bg-b: var(--surface-code, rgba(34, 12, 74, 0.92));
   margin: 0;
   min-height: 100vh;
   color: var(--se-text);
-  background:
-    radial-gradient(circle at 12% 18%, #1f3d5b 0%, transparent 40%),
-    radial-gradient(circle at 85% 75%, #11263d 0%, transparent 36%),
-    linear-gradient(155deg, #081221 0%, #132a44 100%);
-  font-family: "Segoe UI", "Trebuchet MS", Verdana, sans-serif;
+  background: var(--bg-gradient, linear-gradient(180deg, #c4b5fd 0%, #a78bfa 18%, #8b5cf6 36%, #7c3aed 54%, #6d28d9 74%, #5b21b6 88%, #4c1d95 100%));
 }
 
 .app-shell {
-  width: min(1480px, calc(100vw - 2rem));
-  margin: 1rem auto 2rem;
   display: grid;
   gap: 0.8rem;
+  padding: 12px;
 }
 
 .app-header {
@@ -74,12 +65,12 @@ spriteEditor.css
 
 .state-pill {
   margin: 0;
-  border: 1px solid #3b6287;
+  border: 1px solid var(--se-panel-border);
   border-radius: 999px;
   padding: 0.2rem 0.55rem;
   font-size: 0.82rem;
   color: var(--se-muted);
-  background: #112c47;
+  background: var(--surface-inline, rgba(43, 16, 91, 0.9));
 }
 
 .toolbar-group {
@@ -105,14 +96,14 @@ spriteEditor.css
 }
 
 .tool-button {
-  background: #1d334d;
-  border: 1px solid #365f84;
+  background: linear-gradient(180deg, var(--se-panel) 0%, color-mix(in srgb, var(--se-panel) 70%, var(--panel2, rgba(49, 17, 102, 0.94))) 100%);
+  border: 1px solid var(--se-panel-border);
 }
 
 .tool-button.active {
   border-color: var(--se-accent);
   box-shadow: inset 0 0 0 1px var(--se-accent);
-  background: #10415f;
+  background: color-mix(in srgb, var(--se-panel) 68%, var(--se-accent));
 }
 
 .workspace {
@@ -157,7 +148,7 @@ spriteEditor.css
 .center-panel {
   border: 1px solid var(--se-panel-border);
   border-radius: 12px;
-  background: color-mix(in srgb, var(--se-panel) 88%, black);
+  background: var(--surface-inline, rgba(43, 16, 91, 0.9));
   display: grid;
   justify-items: center;
   align-items: start;
@@ -166,7 +157,7 @@ spriteEditor.css
 }
 
 .canvas-wrap {
-  border: 1px solid #3a648a;
+  border: 1px solid var(--se-panel-border);
   border-radius: 10px;
   background: linear-gradient(45deg, var(--se-canvas-bg-a) 25%, var(--se-canvas-bg-b) 25%, var(--se-canvas-bg-b) 50%, var(--se-canvas-bg-a) 50%, var(--se-canvas-bg-a) 75%, var(--se-canvas-bg-b) 75%, var(--se-canvas-bg-b) 100%);
   background-size: 20px 20px;
@@ -184,7 +175,7 @@ spriteEditor.css
 
 #previewCanvas {
   width: 100%;
-  border: 1px solid #355f85;
+  border: 1px solid var(--se-panel-border);
   border-radius: 8px;
   background: linear-gradient(45deg, #293c53 25%, #1b2f46 25%, #1b2f46 50%, #293c53 50%, #293c53 75%, #1b2f46 75%, #1b2f46 100%);
   background-size: 16px 16px;
@@ -219,7 +210,7 @@ spriteEditor.css
 .swatch-button {
   width: 100%;
   aspect-ratio: 1 / 1;
-  border: 1px solid #5b7fa4;
+  border: 1px solid var(--se-panel-border);
   border-radius: 4px;
   background: transparent;
   padding: 0;
@@ -233,7 +224,7 @@ spriteEditor.css
 .active-color-swatch {
   height: 1.6rem;
   border-radius: 6px;
-  border: 1px solid #5b7fa4;
+  border: 1px solid var(--se-panel-border);
   margin-top: 0.4rem;
 }
 
@@ -263,16 +254,16 @@ output {
 }
 
 button {
-  border: 1px solid #356a92;
+  border: 1px solid var(--se-panel-border);
   color: var(--se-text);
-  background: #163351;
+  background: linear-gradient(180deg, var(--se-panel) 0%, color-mix(in srgb, var(--se-panel) 70%, var(--panel2, rgba(49, 17, 102, 0.94))) 100%);
   border-radius: 8px;
   padding: 0.35rem 0.55rem;
   cursor: pointer;
 }
 
 button:hover {
-  background: #1c4468;
+  background: color-mix(in srgb, var(--se-panel) 72%, var(--se-accent));
 }
 
 button:disabled {
@@ -288,9 +279,9 @@ input[type="number"],
 input[type="range"],
 input[type="color"],
 select {
-  border: 1px solid #4779a0;
+  border: 1px solid var(--se-panel-border);
   border-radius: 6px;
-  background: #0f253d;
+  background: var(--surface-inline, rgba(43, 16, 91, 0.9));
   color: var(--se-text);
 }
 

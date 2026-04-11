@@ -120,14 +120,14 @@ body.vector-map-help-page {
 }
 
 body.vector-editor-page {
-  --bg: #0b1020;
-  --panel: #121a2f;
-  --panel2: #17223e;
-  --line: #2a395f;
-  --text: #ecf2ff;
-  --muted: #9eb0d8;
-  --accent: #6bb8ff;
-  --canvas-bg: #080b14;
+  --bg: var(--bg, #4c1d95);
+  --panel: var(--panel, rgba(76, 29, 149, 0.88));
+  --panel2: var(--panel2, rgba(49, 17, 102, 0.94));
+  --line: var(--line, rgba(221, 214, 254, 0.26));
+  --text: var(--text, #f7f4ff);
+  --muted: var(--muted, #e9ddff);
+  --accent: var(--accent, #ddd6fe);
+  --canvas-bg: var(--surface-code, rgba(34, 12, 74, 0.92));
 }
 
 html.vector-editor-page-root,
@@ -229,7 +229,7 @@ body.vector-editor-page {
 .vector-editor-page .sidebar input,
 .vector-editor-page .sidebar select,
 .vector-editor-page .toolbar-link {
-  background: #1b2948;
+  background: var(--surface-inline, rgba(43, 16, 91, 0.9));
   color: var(--text);
   border: 1px solid var(--line);
   border-radius: 8px;
@@ -267,7 +267,7 @@ body.vector-editor-page {
   padding: 7px 10px;
   border: 1px solid var(--line);
   border-radius: 8px;
-  background: #10192f;
+  background: var(--surface-code, rgba(34, 12, 74, 0.92));
   color: var(--text);
 }
 
@@ -327,7 +327,7 @@ body.vector-editor-page {
   padding: 8px;
   border: 1px solid var(--line);
   border-radius: 8px;
-  background: #182441;
+  background: var(--surface-inline, rgba(43, 16, 91, 0.9));
   cursor: pointer;
 }
 
@@ -347,7 +347,7 @@ body.vector-editor-page {
   right: 12px;
   bottom: 12px;
   max-height: 38%;
-  background: rgba(9, 14, 29, 0.95);
+  background: var(--surface-code, rgba(34, 12, 74, 0.92));
   border: 1px solid var(--line);
   border-radius: 12px;
   overflow: hidden;
@@ -361,7 +361,7 @@ body.vector-editor-page {
   gap: 8px;
   padding: 8px 10px;
   border-bottom: 1px solid var(--line);
-  background: rgba(18, 26, 47, 0.96);
+  background: linear-gradient(180deg, var(--panel) 0%, var(--panel2) 100%);
 }
 
 .vector-editor-page .json-editor {
@@ -421,7 +421,7 @@ body.vector-editor-page {
   top: 12px;
   z-index: 15;
   padding: 8px 10px;
-  background: rgba(18, 26, 47, 0.95);
+  background: var(--surface-inline, rgba(43, 16, 91, 0.9));
 }
 
 .vector-editor-page #showLeftPanelButton {

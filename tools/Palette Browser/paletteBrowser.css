@@ -29,7 +29,7 @@
 }
 
 .palette-browser__hint {
-  color: var(--muted-text, #c9d5e6);
+  color: var(--muted, #e9ddff);
   font-size: 0.95rem;
 }
 
@@ -43,16 +43,16 @@
 
 .palette-browser__list button {
   text-align: left;
-  border: 1px solid var(--panel-border, #29405c);
-  background: rgba(12, 24, 40, 0.9);
+  border: 1px solid var(--line, rgba(221, 214, 254, 0.26));
+  background: var(--surface-inline, rgba(43, 16, 91, 0.9));
   color: inherit;
   border-radius: 0.75rem;
   padding: 0.8rem;
 }
 
 .palette-browser__list button.is-current {
-  border-color: var(--accent, #65c3ff);
-  box-shadow: 0 0 0 1px rgba(101, 195, 255, 0.25);
+  border-color: var(--accent, #ddd6fe);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--accent, #ddd6fe) 35%, transparent);
 }
 
 .palette-browser__swatches {
@@ -62,9 +62,9 @@
 }
 
 .palette-browser__swatches button {
-  border: 1px solid var(--panel-border, #29405c);
+  border: 1px solid var(--line, rgba(221, 214, 254, 0.26));
   border-radius: 0.85rem;
-  background: rgba(9, 18, 30, 0.72);
+  background: var(--surface-inline, rgba(43, 16, 91, 0.9));
   color: inherit;
   padding: 0.5rem;
   display: grid;
@@ -72,7 +72,7 @@
 }
 
 .palette-browser__swatches button.is-current {
-  border-color: var(--accent, #65c3ff);
+  border-color: var(--accent, #ddd6fe);
 }
 
 .palette-browser__swatch-chip {
@@ -109,9 +109,9 @@
   overflow: auto;
   white-space: pre-wrap;
   word-break: break-word;
-  border: 1px solid var(--panel-border, #29405c);
+  border: 1px solid var(--line, rgba(221, 214, 254, 0.26));
   border-radius: 1rem;
-  background: rgba(9, 18, 30, 0.72);
+  background: var(--surface-inline, rgba(43, 16, 91, 0.9));
   padding: 1rem;
 }
 
@@ -127,10 +127,10 @@
 
 /* Accordion Styles */
 .accordion {
-  border: 1px solid var(--panel-border, #29405c);
+  border: 1px solid var(--line, rgba(221, 214, 254, 0.26));
   border-radius: 0.75rem;
   margin-bottom: 1.5rem;
-  background: rgba(15, 23, 42, 0.6);
+  background: var(--surface-inline, rgba(43, 16, 91, 0.9));
   position: relative;
   z-index: 0;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
@@ -155,13 +155,13 @@
   list-style: none;
   position: relative;
   z-index: 1;
-  background: linear-gradient(135deg, rgba(15, 23, 42, 0.8) 0%, rgba(30, 41, 59, 0.8) 100%);
-  border-bottom: 1px solid var(--panel-border, #29405c);
+  background: linear-gradient(180deg, var(--panel, rgba(76, 29, 149, 0.88)) 0%, var(--panel2, rgba(49, 17, 102, 0.94)) 100%);
+  border-bottom: 1px solid var(--line, rgba(221, 214, 254, 0.26));
   transition: background-color 0.2s ease;
 }
 
 .accordion__summary:hover {
-  background: linear-gradient(135deg, rgba(30, 41, 59, 0.9) 0%, rgba(51, 65, 85, 0.9) 100%);
+  background: color-mix(in srgb, var(--panel, rgba(76, 29, 149, 0.88)) 65%, var(--accent, #ddd6fe));
 }
 
 .accordion__summary h2 {
@@ -170,7 +170,7 @@
   font-weight: 600;
   flex: 1;
   position: relative;
-  color: var(--text-color, #e2e8f0);
+  color: var(--text, #f7f4ff);
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
 }
 
@@ -188,20 +188,20 @@
   pointer-events: none;
   z-index: 10;
   position: relative;
-  background: rgba(221, 214, 254, 0.1);
+  background: color-mix(in srgb, var(--accent, #ddd6fe) 15%, transparent);
   border-radius: 50%;
-  border: 1px solid rgba(221, 214, 254, 0.3);
+  border: 1px solid color-mix(in srgb, var(--accent, #ddd6fe) 35%, transparent);
 }
 
 .accordion[open] .accordion__icon {
   transform: rotate(180deg);
-  background: rgba(221, 214, 254, 0.2);
-  border-color: rgba(221, 214, 254, 0.5);
+  background: color-mix(in srgb, var(--accent, #ddd6fe) 25%, transparent);
+  border-color: color-mix(in srgb, var(--accent, #ddd6fe) 50%, transparent);
 }
 
 .accordion__content {
   padding: 1rem 1.5rem 1.5rem 1.5rem;
   border-top: none;
-  background: rgba(15, 23, 42, 0.4);
+  background: color-mix(in srgb, var(--surface-inline, rgba(43, 16, 91, 0.9)) 82%, transparent);
 }
 

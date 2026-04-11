@@ -1,0 +1,30 @@
+TOOLS/SHARED NORMALIZATION INVENTORY
+
+Active tools discovered:
+- tools/Asset Browser
+- tools/Palette Browser
+- tools/Parallax Scene Studio
+- tools/Sprite Editor
+- tools/SpriteEditor_old_keep
+- tools/Tilemap Studio
+- tools/Vector Asset Studio
+- tools/Vector Map Editor
+
+Existing shared tooling layer:
+- tools/shared/platformShell.js
+- tools/shared/platformShell.css
+- tools/shared/vector/vectorAssetBridge.js
+- tools/shared/vector/vectorAssetContract.js
+- tools/shared/vector/vectorGeometryMath.js
+- tools/shared/vector/vectorRenderPrep.js
+- tools/shared/projectSystem.js
+- tools/shared/projectSystemAdapters.js
+- tools/shared/projectSystemValueUtils.js
+- tools/shared/runtimeAssetLoader.js
+- tools/shared/runtimeAssetValidationUtils.js
+- tools/shared/renderPipelineContract.js
+- tools/shared/vectorAssetSystem.js
+
+Observation:
+- The repo already has a meaningful `tools/shared` surface.
+- The next lane should normalize and constrain it rather than inventing a new shared layer from scratch.

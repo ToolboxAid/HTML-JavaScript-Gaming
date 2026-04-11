@@ -4,26 +4,14 @@ David Quesenberry
 03/30/2026
 parallaxEditor.css
 */
-:root {
-  --bg-a: #0d1b2d;
-  --bg-b: #10253b;
-  --panel: #162b43;
-  --panel-2: #1b3552;
-  --border: #2f4f73;
-  --text: #e2e8f0;
-  --muted: #9ab3d3;
-  --accent: #38bdf8;
-}
-
 .parallax-editor-page {
+  --parallax-border: var(--line, rgba(221, 214, 254, 0.26));
+  --parallax-text: var(--text, #f7f4ff);
+  --parallax-muted: var(--muted, #e9ddff);
+  --parallax-accent: var(--accent, #ddd6fe);
   margin: 0;
   min-height: 100vh;
-  color: var(--text);
-  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-  background:
-    radial-gradient(circle at 0% 0%, #1d3555 0%, transparent 40%),
-    radial-gradient(circle at 100% 10%, #162d47 0%, transparent 35%),
-    linear-gradient(180deg, #0a1424 0%, #0f1c31 100%);
+  color: var(--parallax-text);
 }
 
 .app-shell {
@@ -39,9 +27,9 @@ parallaxEditor.css
   display: flex;
   flex-wrap: wrap;
   gap: 12px;
-  border: 1px solid var(--border);
+  border: 1px solid var(--parallax-border);
   border-radius: 10px;
-  background: rgba(9, 20, 34, 0.93);
+  background: var(--surface-inline, rgba(43, 16, 91, 0.9));
   padding: 10px;
 }
 
@@ -57,7 +45,7 @@ label {
   flex-direction: column;
   gap: 4px;
   font-size: 12px;
-  color: var(--muted);
+  color: var(--parallax-muted);
 }
 
 input,
@@ -68,18 +56,18 @@ button {
 
 input,
 select {
-  color: var(--text);
-  background: #0f2136;
-  border: 1px solid #365476;
+  color: var(--parallax-text);
+  background: var(--surface-inline, rgba(43, 16, 91, 0.9));
+  border: 1px solid var(--parallax-border);
   border-radius: 6px;
   padding: 5px 8px;
 }
 
 button,
 .file-input-label {
-  color: var(--text);
-  background: #1c3350;
-  border: 1px solid var(--border);
+  color: var(--parallax-text);
+  background: linear-gradient(180deg, var(--panel, rgba(76, 29, 149, 0.88)) 0%, var(--panel2, rgba(49, 17, 102, 0.94)) 100%);
+  border: 1px solid var(--parallax-border);
   border-radius: 6px;
   padding: 6px 10px;
   cursor: pointer;
@@ -87,8 +75,8 @@ button,
 
 button:hover,
 .file-input-label:hover {
-  border-color: #5d84b2;
-  background: #224166;
+  border-color: var(--card-hover-border, #c4b5fd);
+  background: color-mix(in srgb, var(--panel, rgba(76, 29, 149, 0.88)) 72%, var(--accent, #ddd6fe));
 }
 
 .inline-label {
@@ -115,9 +103,9 @@ button:hover,
 
 .sidebar,
 .preview-panel {
-  border: 1px solid var(--border);
+  border: 1px solid var(--parallax-border);
   border-radius: 10px;
-  background: rgba(10, 20, 35, 0.9);
+  background: var(--surface-inline, rgba(43, 16, 91, 0.9));
   min-height: 0;
 }
 
@@ -127,11 +115,11 @@ button:hover,
 }
 
 .panel {
-  border: 1px solid #345375;
+  border: 1px solid var(--parallax-border);
   border-radius: 8px;
   padding: 8px;
   margin-bottom: 10px;
-  background: rgba(20, 39, 61, 0.9);
+  background: linear-gradient(180deg, var(--panel, rgba(76, 29, 149, 0.88)) 0%, var(--panel2, rgba(49, 17, 102, 0.94)) 100%);
 }
 
 .panel h3 {
@@ -157,10 +145,10 @@ button:hover,
 .preview-wrap {
   flex: 1;
   min-height: 260px;
-  border: 1px solid var(--border);
+  border: 1px solid var(--parallax-border);
   border-radius: 8px;
   overflow: auto;
-  background: #0a1728;
+  background: var(--surface-code, rgba(34, 12, 74, 0.92));
 }
 
 #previewCanvas {
@@ -170,7 +158,7 @@ button:hover,
 
 .status-text,
 .muted {
-  color: var(--muted);
+  color: var(--parallax-muted);
   font-size: 12px;
 }
 
@@ -188,15 +176,15 @@ button:hover,
 }
 
 .layer-item {
-  border: 1px solid #355476;
+  border: 1px solid var(--parallax-border);
   border-radius: 6px;
-  background: #19324f;
+  background: var(--surface-inline, rgba(43, 16, 91, 0.9));
   padding: 6px;
 }
 
 .layer-item.selected {
-  border-color: var(--accent);
-  box-shadow: 0 0 0 1px rgba(56, 189, 248, 0.3) inset;
+  border-color: var(--parallax-accent);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--parallax-accent) 30%, transparent) inset;
 }
 
 .layer-row {
@@ -211,8 +199,8 @@ button:hover,
 
 .layer-order-chip {
   font-size: 10px;
-  color: var(--muted);
-  border: 1px solid #426487;
+  color: var(--parallax-muted);
+  border: 1px solid var(--parallax-border);
   border-radius: 999px;
   padding: 2px 6px;
   line-height: 1.2;
@@ -232,7 +220,7 @@ button:hover,
 .usage-list {
   margin: 0;
   padding-left: 18px;
-  color: var(--muted);
+  color: var(--parallax-muted);
   font-size: 12px;
 }
 

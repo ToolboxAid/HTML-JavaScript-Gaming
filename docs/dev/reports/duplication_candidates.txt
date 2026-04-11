@@ -1,0 +1,28 @@
+DUPLICATION / NORMALIZATION CANDIDATES
+
+Priority 1 — Theme / shell / layout reuse
+- generic layout rules duplicated across tool-local CSS
+- panel chrome / shell styling candidates should prefer:
+  - src/engine/theme/*
+  - src/engine/ui/baseLayout.css
+  - src/engine/ui/hubCommon.css
+  - tools/shared/platformShell.css only after engine reuse review
+
+Priority 2 — Shared JS extraction candidates
+- platform shell bootstrap usage
+- preview-generation helpers
+- vector utility overlap
+- project manifest / registry helpers
+- validation helpers
+
+Priority 3 — Tool-local residuals to preserve
+- Sprite Editor pixel-grid/editor specifics
+- Tilemap Studio tile-palette/map specifics
+- Vector Map Editor authoring specifics
+- Vector Asset Studio SVG-specific workflows
+- Parallax Scene Studio layer/timeline/editor specifics
+
+Do not treat the following as immediate extraction candidates:
+- tool-exclusive render pipelines
+- unique editor interaction models
+- legacy/old_keep surfaces

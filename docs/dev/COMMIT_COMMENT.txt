@@ -1,1 +1,1 @@
-BUILD_PR_SAMPLES_INDEX_FIXES_AND_TARGETED_PREVIEW_RETRY: narrow samples-system BUILD for index label cleanup, Sample 1303 local asteroid speed cap, and targeted preview SVG retry only where current SVG contains "Capture timeout".
+docs: add PLAN_PR for tools/shared normalization with engine-theme-first reuse priority

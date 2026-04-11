@@ -4,26 +4,17 @@ David Quesenberry
 03/30/2026
 tileMapEditor.css
 */
-:root {
-  --editor-bg: #0f172a;
-  --editor-panel: #162338;
-  --editor-panel-2: #1d2f4a;
-  --editor-border: #2e4668;
-  --editor-text: #e2e8f0;
-  --editor-muted: #9db0cc;
-  --editor-accent: #22c55e;
-  --editor-warning: #ef4444;
-}
-
 .tile-map-editor-page {
+  --editor-panel: var(--panel, rgba(76, 29, 149, 0.88));
+  --editor-panel-2: var(--panel2, rgba(49, 17, 102, 0.94));
+  --editor-border: var(--line, rgba(221, 214, 254, 0.26));
+  --editor-text: var(--text, #f7f4ff);
+  --editor-muted: var(--muted, #e9ddff);
+  --editor-accent: var(--accent, #ddd6fe);
+  --editor-warning: #ef4444;
   margin: 0;
   min-height: 100vh;
-  background:
-    radial-gradient(circle at 20% 20%, #1e293b 0%, transparent 55%),
-    radial-gradient(circle at 80% 0%, #16233a 0%, transparent 45%),
-    linear-gradient(180deg, #0b1220 0%, #0f172a 100%);
   color: var(--editor-text);
-  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
 }
 
 .app-shell {
@@ -41,7 +32,7 @@ tileMapEditor.css
   gap: 12px;
   padding: 10px;
   border: 1px solid var(--editor-border);
-  background: rgba(11, 18, 32, 0.9);
+  background: var(--surface-inline, rgba(43, 16, 91, 0.9));
   border-radius: 10px;
 }
 
@@ -70,7 +61,7 @@ button {
 button,
 .file-input-label {
   border: 1px solid var(--editor-border);
-  background: #1a2b44;
+  background: linear-gradient(180deg, var(--editor-panel) 0%, var(--editor-panel-2) 100%);
   color: var(--editor-text);
   padding: 6px 10px;
   border-radius: 6px;
@@ -79,8 +70,8 @@ button,
 
 button:hover,
 .file-input-label:hover {
-  border-color: #4f7099;
-  background: #223555;
+  border-color: var(--card-hover-border, #c4b5fd);
+  background: color-mix(in srgb, var(--editor-panel) 72%, var(--editor-accent));
 }
 
 button:active {
@@ -89,8 +80,8 @@ button:active {
 
 input,
 select {
-  background: #0f1b2f;
-  border: 1px solid #2d4669;
+  background: var(--surface-inline, rgba(43, 16, 91, 0.9));
+  border: 1px solid var(--editor-border);
   color: var(--editor-text);
   border-radius: 6px;
   padding: 5px 8px;
@@ -108,7 +99,7 @@ select {
   padding: 4px 7px;
   border-radius: 999px;
   border: 1px solid var(--editor-border);
-  background: #1b2a43;
+  background: var(--surface-inline, rgba(43, 16, 91, 0.9));
 }
 
 .workspace {
@@ -123,7 +114,7 @@ select {
 .canvas-panel {
   border: 1px solid var(--editor-border);
   border-radius: 10px;
-  background: rgba(12, 20, 34, 0.92);
+  background: var(--surface-inline, rgba(43, 16, 91, 0.9));
   min-height: 0;
 }
 
@@ -133,9 +124,9 @@ select {
 }
 
 .panel {
-  border: 1px solid #304a6e;
+  border: 1px solid var(--editor-border);
   border-radius: 8px;
-  background: rgba(22, 35, 56, 0.9);
+  background: linear-gradient(180deg, var(--editor-panel) 0%, var(--editor-panel-2) 100%);
   padding: 8px;
   margin-bottom: 10px;
 }
@@ -171,7 +162,7 @@ select {
   overflow: auto;
   border: 1px solid var(--editor-border);
   border-radius: 8px;
-  background: #111c2f;
+  background: var(--surface-code, rgba(34, 12, 74, 0.92));
   display: flex;
   align-items: flex-start;
   justify-content: flex-start;
@@ -225,7 +216,7 @@ select {
 
 .tile-swatch.active {
   border-color: var(--editor-accent);
-  box-shadow: 0 0 0 1px rgba(34, 197, 94, 0.35) inset;
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--editor-accent) 35%, transparent) inset;
 }
 
 .tileset-config-grid {
@@ -247,15 +238,15 @@ select {
 
 .layer-item,
 .marker-item {
-  border: 1px solid #2f486c;
+  border: 1px solid var(--editor-border);
   border-radius: 6px;
   padding: 6px;
-  background: #162842;
+  background: var(--surface-inline, rgba(43, 16, 91, 0.9));
 }
 
 .layer-item.selected,
 .marker-item.selected {
-  border-color: #8ab4ff;
+  border-color: var(--editor-accent);
 }
 
 .layer-row,
