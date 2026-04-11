@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Launch Smoke Test Guide</title>
+<style>
+body {
+  font-family: Consolas, monospace;
+  background: #0f1117;
+  color: #e6edf3;
+  padding: 30px;
+  line-height: 1.6;
+}
+h1 { color: #58a6ff; }
+h2 { color: #79c0ff; margin-top: 30px; }
+.box {
+  background: #161b22;
+  padding: 20px;
+  margin: 20px 0;
+  border-radius: 8px;
+  border-left: 5px solid #58a6ff;
+}
+.warning { border-left-color: #f1c40f; }
+.good { border-left-color: #2ea043; }
+pre {
+  background: #0d1117;
+  padding: 15px;
+  border-radius: 6px;
+  overflow-x: auto;
+  color: #7ee787;
+}
+button {
+  margin-top: 10px;
+  padding: 8px 12px;
+  background: #238636;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+button:hover { background: #2ea043; }
+code { color: #7ee787; }
+</style>
+</head>
+<body>
+
+<h1>🧪 Launch Smoke Test Guide</h1>
+
+<div class="box good">
+  <h2>Install and Run</h2>
+  <pre id="cmd1">npm run test:launch-smoke</pre>
+  <button onclick="copyId('cmd1')">Copy</button>
+  <p>The script auto-installs <code>ws</code> into <code>&lt;project&gt;/tmp/node_modules</code> if missing.</p>
+</div>
+
+<div class="box">
+  <h2>Run Filters</h2>
+  <pre id="cmd2">npm run test:launch-smoke -- --tools
+npm run test:launch-smoke -- --games
+npm run test:launch-smoke -- --samples
+npm run test:launch-smoke -- --samples --sample-range=0101-0124
+npm run test:launch-smoke -- --games --tools</pre>
+  <button onclick="copyId('cmd2')">Copy</button>
+</div>
+
+<div class="box">
+  <h2>What the Script Creates</h2>
+  <pre>&lt;project&gt;/tmp/node_modules/
+&lt;project&gt;/tmp/package.json
+&lt;project&gt;/tmp/launch-smoke-browser/
+&lt;project&gt;/tmp/launch-smoke-runtime/
+&lt;project&gt;/tmp/launch-smoke-owned.json</pre>
+</div>
+
+<div class="box warning">
+  <h2>Cleanup Behavior</h2>
+  <p><b>Deletes only script-owned artifacts:</b></p>
+  <pre>&lt;project&gt;/tmp/launch-smoke-browser/
+&lt;project&gt;/tmp/launch-smoke-runtime/
+&lt;project&gt;/tmp/launch-smoke-owned.json</pre>
+  <p><b>Does not delete:</b></p>
+  <pre>&lt;project&gt;/tmp/node_modules/</pre>
+</div>
+
+<div class="box">
+  <h2>Terminal Output At End</h2>
+  <pre>[launch-smoke ...] summary: PASS=220 FAIL=4 TOTAL=224
+[launch-smoke ...] report: &lt;project&gt;/docs/dev/reports/launch_smoke_report.md
+[launch-smoke ...] isolated node_modules: &lt;project&gt;/tmp/node_modules
+[launch-smoke ...] failed entries: none</pre>
+</div>
+
+<script>
+function copyId(id) {
+  navigator.clipboard.writeText(document.getElementById(id).innerText);
+  alert("Copied 👍");
+}
+</script>
+
+</body>
+</html>

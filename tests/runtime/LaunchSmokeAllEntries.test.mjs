@@ -2,9 +2,8 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
 import http from 'node:http';
-import { spawn } from 'node:child_process';
-import { fileURLToPath } from 'node:url';
-import { WebSocket } from 'ws';
+import { spawn, execFileSync } from 'node:child_process';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -12,18 +11,101 @@ const repoRoot = path.resolve(__dirname, '..', '..');
 const reportsDir = path.join(repoRoot, 'docs', 'dev', 'reports');
 const reportPath = path.join(reportsDir, 'launch_smoke_report.md');
 
+const tmpRoot = path.join(repoRoot, 'tmp');
+const ownedManifestPath = path.join(tmpRoot, 'launch-smoke-owned.json');
+const isolatedNodeModulesRoot = path.join(tmpRoot, 'node_modules');
+const isolatedPackageJsonPath = path.join(tmpRoot, 'package.json');
+const runtimeDir = path.join(tmpRoot, 'launch-smoke-runtime');
+const browserProfileDir = path.join(tmpRoot, 'launch-smoke-browser');
+
 const DEFAULT_LOAD_WAIT_MS = 1500;
 const GAME_POST_START_WAIT_MS = 3000;
 const DEBUG_PORT = 9222;
 const EXECUTION_STEPS = [
-  'npm install',
-  'npm install ws --save',
-  'npm run test:launch-smoke'
+  'npm install --prefix ./tmp ws',
+  'npm run test:launch-smoke',
 ].join(' → ');
+
+let WebSocketCtor = null;
 
 function log(message) {
   const timestamp = new Date().toLocaleTimeString();
   console.log(`[launch-smoke ${timestamp}] ${message}`);
+}
+
+function ensureDir(dirPath) {
+  fs.mkdirSync(dirPath, { recursive: true });
+}
+
+function writeOwnedManifest(entries) {
+  ensureDir(tmpRoot);
+  const payload = {
+    created: entries,
+    note: 'Only these launch-smoke-owned artifacts may be cleaned automatically.'
+  };
+  fs.writeFileSync(ownedManifestPath, JSON.stringify(payload, null, 2) + '\n');
+}
+
+function cleanupOwnedArtifacts() {
+  if (!fs.existsSync(ownedManifestPath)) {
+    return;
+  }
+
+  let payload = null;
+  try {
+    payload = JSON.parse(fs.readFileSync(ownedManifestPath, 'utf8'));
+  } catch {
+    return;
+  }
+
+  const created = Array.isArray(payload?.created) ? payload.created : [];
+  for (const rel of created) {
+    const targetPath = path.join(tmpRoot, rel);
+    if (!targetPath.startsWith(tmpRoot)) continue;
+    try {
+      fs.rmSync(targetPath, { recursive: true, force: true });
+    } catch {}
+  }
+
+  try {
+    fs.rmSync(ownedManifestPath, { force: true });
+  } catch {}
+}
+
+function ensureIsolatedTmpLayout() {
+  ensureDir(tmpRoot);
+  ensureDir(runtimeDir);
+  writeOwnedManifest([
+    'launch-smoke-browser',
+    'launch-smoke-runtime'
+  ]);
+}
+
+async function ensureIsolatedWsDependency() {
+  ensureDir(tmpRoot);
+
+  if (!fs.existsSync(isolatedPackageJsonPath)) {
+    const pkg = {
+      private: true
+    };
+    fs.writeFileSync(isolatedPackageJsonPath, JSON.stringify({"private": true}, null, 2) + '\n');
+  }
+
+  const wsWrapperPath = path.join(isolatedNodeModulesRoot, 'ws', 'wrapper.mjs');
+  if (!fs.existsSync(wsWrapperPath)) {
+    log('installing isolated dependency: ws -> <project>/tmp/node_modules');
+    execFileSync('npm', ['install', '--prefix', tmpRoot, 'ws'], {
+      cwd: repoRoot,
+      stdio: 'inherit',
+      shell: process.platform === 'win32'
+    });
+  } else {
+    log('isolated dependency present: <project>/tmp/node_modules/ws');
+  }
+
+  const wsModule = await import(pathToFileURL(wsWrapperPath).href);
+  WebSocketCtor = wsModule.WebSocket;
+  assert.ok(WebSocketCtor, 'Failed to load WebSocket from <project>/tmp/node_modules/ws');
 }
 
 function parseCliArgs(argv) {
@@ -241,7 +323,7 @@ class CdpConnection {
   }
 
   async connect() {
-    this.ws = new WebSocket(this.wsUrl);
+    this.ws = new WebSocketCtor(this.wsUrl);
 
     await new Promise((resolve, reject) => {
       this.ws.once('open', resolve);
@@ -292,13 +374,12 @@ class CdpConnection {
 }
 
 async function startBrowser(executable) {
-  const userDataDir = path.join(repoRoot, '.tmp-launch-smoke-browser');
-  try { fs.rmSync(userDataDir, { recursive: true, force: true }); } catch {}
-  fs.mkdirSync(userDataDir, { recursive: true });
+  try { fs.rmSync(browserProfileDir, { recursive: true, force: true }); } catch {}
+  ensureDir(browserProfileDir);
 
   const args = [
     `--remote-debugging-port=${DEBUG_PORT}`,
-    `--user-data-dir=${userDataDir}`,
+    `--user-data-dir=${browserProfileDir}`,
     '--disable-extensions',
     '--disable-background-networking',
     '--disable-sync',
@@ -318,7 +399,7 @@ async function startBrowser(executable) {
     try {
       const version = await fetchJson(`http://127.0.0.1:${DEBUG_PORT}/json/version`, 1000);
       log(`browser ready on port ${DEBUG_PORT}`);
-      return { child, userDataDir, version };
+      return { child, version };
     } catch {
       await wait(100);
     }
@@ -330,7 +411,6 @@ async function startBrowser(executable) {
 
 async function stopBrowser(browser) {
   try { browser.child.kill('SIGKILL'); } catch {}
-  try { fs.rmSync(browser.userDataDir, { recursive: true, force: true }); } catch {}
 }
 
 async function createPageController(browserWsUrl) {
@@ -451,7 +531,7 @@ async function runEntry(page, baseUrl, entry, index, total) {
 }
 
 function writeReport(results, filters) {
-  fs.mkdirSync(reportsDir, { recursive: true });
+  ensureDir(reportsDir);
   const filterSummary = [
     `games=${filters.includeGames}`,
     `samples=${filters.includeSamples}`,
@@ -485,6 +565,10 @@ function writeReport(results, filters) {
 }
 
 async function run() {
+  cleanupOwnedArtifacts();
+  ensureIsolatedTmpLayout();
+  await ensureIsolatedWsDependency();
+
   const filters = parseCliArgs(process.argv);
   const executable = resolveBrowserExecutable();
   assert.ok(executable, 'No supported Chromium/Chrome/Edge executable found.');
@@ -493,6 +577,7 @@ async function run() {
   assert.ok(entries.length > 0, 'No matching games, samples, or tools discovered.');
 
   log(`filters: games=${filters.includeGames} samples=${filters.includeSamples} tools=${filters.includeTools} sampleRange=${filters.sampleRange ? `${filters.sampleRange.start}-${filters.sampleRange.end}` : 'all'}`);
+  log(`isolated deps: ${path.join('<project>', 'tmp', 'node_modules')}`);
   log(`discovered ${entries.length} entries`);
 
   const { server, port } = await launchServer(repoRoot);
@@ -535,6 +620,7 @@ async function run() {
 
     log(`summary: PASS=${passes} FAIL=${failures.length} TOTAL=${results.length}`);
     log(`report: ${reportPath}`);
+    log(`isolated node_modules: ${isolatedNodeModulesRoot}`);
 
     if (failures.length > 0) {
       log(`failed entries: ${failures.map((x) => x.entry.label).join(', ')}`);
@@ -544,7 +630,9 @@ async function run() {
 
     if (page) await page.close();
     if (browser) await stopBrowser(browser);
+
     await closeServer(server);
+    cleanupOwnedArtifacts();
   }
 
   const failures = results.filter((x) => !x.passed);
