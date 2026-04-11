@@ -1,0 +1,84 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="800">
+  <foreignObject width="100%" height="100%">
+    <div xmlns="http://www.w3.org/1999/xhtml"><main xmlns="http://www.w3.org/1999/xhtml" class="panel palette-browser__panel">
+        <h3 id="paletteTitle">crayola008</h3>
+        <div id="paletteSummaryText" class="palette-browser__hint">8 swatches | source: engine</div>
+        <div id="paletteSwatches" class="palette-browser__swatches">
+      <button type="button" data-swatch-index="0" class="is-current">
+        <span class="palette-browser__swatch-chip" style="background:#232323"></span>
+        <strong>Black</strong>
+        <span>!</span>
+      </button>
+    
+      <button type="button" data-swatch-index="1" class="">
+        <span class="palette-browser__swatch-chip" style="background:#B4674D"></span>
+        <strong>Brown</strong>
+        <span>#</span>
+      </button>
+    
+      <button type="button" data-swatch-index="2" class="">
+        <span class="palette-browser__swatch-chip" style="background:#FF7538"></span>
+        <strong>Orange</strong>
+        <span>$</span>
+      </button>
+    
+      <button type="button" data-swatch-index="3" class="">
+        <span class="palette-browser__swatch-chip" style="background:#FCE883"></span>
+        <strong>Yellow</strong>
+        <span>%</span>
+      </button>
+    
+      <button type="button" data-swatch-index="4" class="">
+        <span class="palette-browser__swatch-chip" style="background:#1CAC78"></span>
+        <strong>Green</strong>
+        <span>&amp;</span>
+      </button>
+    
+      <button type="button" data-swatch-index="5" class="">
+        <span class="palette-browser__swatch-chip" style="background:#1F75FE"></span>
+        <strong>Blue</strong>
+        <span>(</span>
+      </button>
+    
+      <button type="button" data-swatch-index="6" class="">
+        <span class="palette-browser__swatch-chip" style="background:#926EAE"></span>
+        <strong>Violet</strong>
+        <span>)</span>
+      </button>
+    
+      <button type="button" data-swatch-index="7" class="">
+        <span class="palette-browser__swatch-chip" style="background:#EE204D"></span>
+        <strong>Red</strong>
+        <span>*</span>
+      </button>
+    </div>
+        <div class="palette-browser__editor">
+          <label class="field">
+            Palette name
+            <input id="paletteNameInput" type="text" disabled="" />
+          </label>
+          <div class="palette-browser__editor-grid">
+            <label class="field">
+              Swatch color
+              <input id="swatchColorInput" type="color" value="#ffffff" />
+            </label>
+            <label class="field">
+              Swatch name
+              <input id="swatchNameInput" type="text" placeholder="Color name" />
+            </label>
+            <label class="field">
+              Symbol
+              <input id="swatchSymbolInput" type="text" maxlength="2" placeholder="A" />
+            </label>
+          </div>
+          <div class="palette-browser__actions">
+            <button id="newPaletteButton" type="button">New Palette</button>
+            <button id="duplicatePaletteButton" type="button">Duplicate Selected</button>
+            <button id="renamePaletteButton" type="button">Rename Palette</button>
+            <button id="addSwatchButton" type="button">Add Swatch</button>
+            <button id="deleteSwatchButton" type="button">Delete Swatch</button>
+          </div>
+        </div>
+      </main></div>
+  </foreignObject>
+</svg>

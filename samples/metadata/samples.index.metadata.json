@@ -3,77 +3,77 @@
   "phases": [
     {
       "phase": "01",
-      "title": "Phase 01 - Core Engine (0101-0124)",
+      "title": "Phase 01 - Core Engine",
       "description": "Builds the game loop, input handling, rendering basics, collision foundations, ECS structure, and debug visibility."
     },
     {
       "phase": "02",
-      "title": "Phase 02 - World + Visual (0201-0224)",
+      "title": "Phase 02 - World + Visual",
       "description": "Expands into cameras, assets, animation, prefabs, tilemaps, serialization, and playable world slices."
     },
     {
       "phase": "03",
-      "title": "Phase 03 - Gameplay Systems (0301-0324)",
+      "title": "Phase 03 - Gameplay Systems",
       "description": "Introduces movement rules, interaction systems, combat foundations, hazards, pickups, NPCs, and enemy behavior patterns."
     },
     {
       "phase": "04",
-      "title": "Phase 04 - Camera + Feel (0401-0412)",
+      "title": "Phase 04 - Camera + Feel",
       "description": "Focuses on camera behavior and input feel, covering dead zones, smoothing, shake, buffering, queues, and timing windows."
     },
     {
       "phase": "05",
-      "title": "Phase 05 - UI + Systems (0501-0512)",
+      "title": "Phase 05 - UI + Systems",
       "description": "Builds combat-facing UI and reusable support systems such as events, state machines, config loading, debugging, and metrics."
     },
     {
       "phase": "06",
-      "title": "Phase 06 - AI + World (0601-0613)",
+      "title": "Phase 06 - AI + World Simulation",
       "description": "Explores navigation, AI behaviors, questing, scripting, cutscenes, spawning, weather, and broader world simulation features."
     },
     {
       "phase": "07",
-      "title": "Phase 07 - Polish + Scale (0701-0713)",
+      "title": "Phase 07 - Polish + Scale",
       "description": "Improves usability and production readiness with remapping, controller support, optimization, saves, replays, localization, and packaging."
     },
     {
       "phase": "08",
-      "title": "Phase 08 - Platform + UX (0801-0810)",
+      "title": "Phase 08 - Platform + UX",
       "description": "Rounds out audio, UI framework work, scene flow, profile handling, and platform-facing error and logging support."
     },
     {
       "phase": "09",
-      "title": "Phase 09 - Graphics + Precision Collision (0901-0906)",
+      "title": "Phase 09 - Graphics + Precision Collision",
       "description": "Moves into advanced rendering and collision precision with vector, polygon, mask, pixel-perfect, and hybrid approaches."
     },
     {
       "phase": "10",
-      "title": "Phase 10 - Platform Utilities (1001-1003)",
+      "title": "Phase 10 - Platform Utilities",
       "description": "Covers platform utility features for audio playback, browser storage helpers, and playlist management."
     },
     {
       "phase": "11",
-      "title": "Phase 11 - Release + Deployment (1101-1106)",
+      "title": "Phase 11 - Release + Deployment",
       "description": "Prepares projects for shipping with settings, accessibility, packaging, deployment profiles, and release validation workflows."
     },
     {
       "phase": "12",
-      "title": "Phase 12 - Demo Games (1201-1208)",
+      "title": "Phase 12 - Demo Games",
       "description": "Playable demo-game track for hero movement, jump timing, camera follow, and layered world presentation."
     },
     {
       "phase": "13",
-      "title": "Phase 13 - Network Concepts, Latency and Simulation (1301-1315)",
+      "title": "Phase 13 - Network Concepts, Latency and Simulation",
       "description": "Introduces networking concepts using local and simulated systems (event bus, input models, latency simulation)."
     },
     {
       "phase": "14",
-      "title": "Phase 14 - Editor + Automation + Trust + Pipeline (1401-1418)",
+      "title": "Phase 14 - Editor + Automation + Trust + Pipeline",
       "description": "Builds authoring tools, automated validation, CI flows, trust checks, and import pipelines for a reliable workflow."
     },
     {
       "phase": "15",
-      "title": "Phase 15 - Advanced Systems (1501-1506)",
+      "title": "Phase 15 - Advanced Systems",
       "description": "Introduces deterministic scheduling, replay-friendly state handling, diffing, and verification systems."
     }
   ],

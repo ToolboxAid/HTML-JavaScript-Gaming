@@ -92,6 +92,7 @@
       word-break: break-word;
     }
   </style>
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 </head>
 
 <body>
@@ -232,10 +233,6 @@ Vector Map Editor"></textarea>
         .replace(/\\{2,}/g, "\\");
     }
 
-    function trimTrailingSlashes(value) {
-      return String(value || "").replace(/[\\/]+$/, "");
-    }
-
     function escapeXml(text) {
       return String(text)
         .replaceAll("&", "&amp;")
@@ -271,15 +268,12 @@ Vector Map Editor"></textarea>
       if (entry.targetType === "samples") {
         return `samples/phase${entry.phase}/${entry.id}/${getAssetFolderRelativePath()}`;
       }
-
       if (entry.targetType === "games") {
         return `games/${entry.name}/${getAssetFolderRelativePath()}`;
       }
-
       if (entry.targetType === "tools") {
         return `tools/${entry.name}/${getAssetFolderRelativePath()}`;
       }
-
       throw new Error(`Unsupported target type: ${entry.targetType}`);
     }
 
@@ -299,15 +293,12 @@ Vector Map Editor"></textarea>
         writeFolderSampleValueEl.textContent = `samples\\phaseXX\\XXXX\\${assetFolder}`;
         return;
       }
-
       if (targetType === "games") {
         writeFolderSampleValueEl.textContent = `games\\Game Name\\${assetFolder}`;
         return;
       }
-
       if (targetType === "tools") {
         writeFolderSampleValueEl.textContent = `tools\\Tool Name\\${assetFolder}`;
-        return;
       }
     }
 
@@ -342,7 +333,6 @@ Vector Map Editor"></textarea>
     async function resolveSample(inputLine) {
       const raw = inputLine.trim();
       if (!raw) return null;
-
       const normalized = raw.replaceAll("\\", "/");
 
       const idOnlyMatch = normalized.match(/^(\d{4})$/);
@@ -373,7 +363,6 @@ Vector Map Editor"></textarea>
     async function resolveGame(inputLine) {
       const raw = inputLine.trim();
       if (!raw) return null;
-
       const normalized = raw.replaceAll("\\", "/").replace(/^\/+|\/+$/g, "");
 
       const pathMatch = normalized.match(/^games\/(.+)\/index\.html$/i);
@@ -395,7 +384,6 @@ Vector Map Editor"></textarea>
     async function resolveTool(inputLine) {
       const raw = inputLine.trim();
       if (!raw) return null;
-
       const normalized = raw.replaceAll("\\", "/").replace(/^\/+|\/+$/g, "");
 
       const pathMatch = normalized.match(/^tools\/(.+)\/index\.html$/i);
@@ -415,19 +403,25 @@ Vector Map Editor"></textarea>
     }
 
     async function resolveEntry(inputLine) {
+      const raw = String(inputLine || "").trim();
+      if (!raw) return null;
+
+      const normalized = raw.replaceAll("\\", "/").replace(/^\/+|\/+$/g, "");
+
+      if (/^samples\//i.test(normalized)) {
+        return await resolveSample(normalized);
+      }
+      if (/^games\//i.test(normalized)) {
+        return await resolveGame(normalized);
+      }
+      if (/^tools\//i.test(normalized)) {
+        return await resolveTool(normalized);
+      }
+
       const targetType = getSelectedTargetType();
-
-      if (targetType === "samples") {
-        return await resolveSample(inputLine);
-      }
-
-      if (targetType === "games") {
-        return await resolveGame(inputLine);
-      }
-
-      if (targetType === "tools") {
-        return await resolveTool(inputLine);
-      }
+      if (targetType === "samples") return await resolveSample(raw);
+      if (targetType === "games") return await resolveGame(raw);
+      if (targetType === "tools") return await resolveTool(raw);
 
       throw new Error(`Unsupported target type: ${targetType}`);
     }
@@ -436,8 +430,7 @@ Vector Map Editor"></textarea>
       if (entry.targetType === "samples") {
         const samplesDir = await getDirectoryHandle(repoHandle, "samples");
         const phaseDir = await getDirectoryHandle(samplesDir, `phase${entry.phase}`);
-        const sampleDir = await getDirectoryHandle(phaseDir, entry.id);
-        return sampleDir;
+        return await getDirectoryHandle(phaseDir, entry.id);
       }
 
       if (entry.targetType === "games") {
@@ -483,7 +476,6 @@ Vector Map Editor"></textarea>
 
     async function readExistingPreview(targetDirHandle) {
       const relativeOutputFolder = getAssetFolderRelativePath();
-
       try {
         const targetDir = relativeOutputFolder
           ? await getExistingDirectoryPath(targetDirHandle, relativeOutputFolder)
@@ -503,7 +495,6 @@ Vector Map Editor"></textarea>
       }
 
       const existing = await readExistingPreview(targetDirHandle);
-
       if (existing == null) {
         return { rewrite: true, reason: "missing-preview" };
       }
@@ -538,11 +529,23 @@ Vector Map Editor"></textarea>
     }
 
     function buildCanvasWrappedSvg(canvas) {
-      const width = canvas.width || 800;
-      const height = canvas.height || 600;
+      const width = canvas.width || canvas.scrollWidth || 800;
+      const height = canvas.height || canvas.scrollHeight || 600;
       const dataUrl = canvas.toDataURL("image/png");
       return `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}">
   <image href="${dataUrl}" width="100%" height="100%" />
+</svg>`;
+    }
+
+    function buildElementWrappedSvg(element) {
+      const rect = element.getBoundingClientRect();
+      const width = Math.max(1, Math.ceil(rect.width || 1280));
+      const height = Math.max(1, Math.ceil(rect.height || 800));
+      const serialized = new XMLSerializer().serializeToString(element);
+      return `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}">
+  <foreignObject width="100%" height="100%">
+    <div xmlns="http://www.w3.org/1999/xhtml">${serialized}</div>
+  </foreignObject>
 </svg>`;
     }
 
@@ -570,10 +573,126 @@ Vector Map Editor"></textarea>
       });
     }
 
-    async function extractSvgFromFrame() {
+    function sanitizeClonedToolDocument(clonedDoc) {
+      const all = clonedDoc.querySelectorAll("*");
+      for (const el of all) {
+        const style = el.style;
+        if (!style) continue;
+        const bg = style.backgroundImage || "";
+        if (/gradient/i.test(bg)) {
+          style.backgroundImage = "none";
+        }
+      }
+
+      const canvases = clonedDoc.querySelectorAll("canvas");
+      for (const canvas of canvases) {
+        try {
+          const img = clonedDoc.createElement("img");
+          img.src = canvas.toDataURL("image/png");
+          img.style.width = canvas.style.width || `${canvas.width}px`;
+          img.style.height = canvas.style.height || `${canvas.height}px`;
+          img.style.display = "block";
+          canvas.replaceWith(img);
+        } catch {
+        }
+      }
+    }
+
+    function extractBestToolFallbackSvg(doc) {
+      const preferredSelectors = [
+        "main canvas",
+        ".editor canvas",
+        ".workspace canvas",
+        "#editor canvas",
+        "canvas",
+        "main",
+        ".editor",
+        ".workspace",
+        "#editor",
+        "body"
+      ];
+
+      for (const selector of preferredSelectors) {
+        const el = doc.querySelector(selector);
+        if (!el) continue;
+
+        if ((el.tagName || "").toLowerCase() === "canvas") {
+          return buildCanvasWrappedSvg(el);
+        }
+
+        try {
+          return buildElementWrappedSvg(el);
+        } catch {
+        }
+      }
+
+      return buildFallbackSvg(CAPTURE_TIMEOUT_MARKER);
+    }
+
+    async function extractToolFullPageSvg(doc) {
+      const win = frame.contentWindow;
+      if (!win) {
+        return buildFallbackSvg(CAPTURE_TIMEOUT_MARKER);
+      }
+
+      const html2canvasFn = window.html2canvas || win.html2canvas;
+      if (typeof html2canvasFn !== "function") {
+        return extractBestToolFallbackSvg(doc);
+      }
+
+      const body = doc.body;
+      const html = doc.documentElement;
+
+      const fullWidth = 1600; // forced
+      /*original*/ const _origWidth = Math.max(
+        body ? body.scrollWidth : 0,
+        html ? html.scrollWidth : 0,
+        body ? body.offsetWidth : 0,
+        html ? html.offsetWidth : 0,
+        1280
+      );
+
+      const fullHeight = 900; // forced
+      /*original*/ const _origHeight = Math.max(
+        body ? body.scrollHeight : 0,
+        html ? html.scrollHeight : 0,
+        body ? body.offsetHeight : 0,
+        html ? html.offsetHeight : 0,
+        800
+      );
+
+      try {
+        const canvas = await html2canvasFn(body, {
+          backgroundColor: "#ffffff",
+          useCORS: true,
+          allowTaint: true,
+          logging: false,
+          width: 1600,
+          height: 900,
+          windowWidth: 1600,
+          windowHeight: 900,
+          scrollX: 0,
+          scrollY: 0,
+          onclone: (clonedDoc) => {
+            sanitizeClonedToolDocument(clonedDoc);
+          }
+        });
+
+        return buildCanvasWrappedSvg(canvas);
+      } catch (error) {
+        log(`WARN tool full-page capture failed, using fallback (${error.message})`);
+        return extractBestToolFallbackSvg(doc);
+      }
+    }
+
+    async function extractSvgFromFrame(entry) {
       const doc = frame.contentDocument;
       if (!doc) {
         return buildFallbackSvg(CAPTURE_TIMEOUT_MARKER);
+      }
+
+      if (entry.targetType === "tools") {
+        return await extractToolFullPageSvg(doc);
       }
 
       const svg = doc.querySelector("svg");
@@ -594,22 +713,15 @@ Vector Map Editor"></textarea>
       const decision = await shouldRewrite(targetDirHandle);
 
       writeFolderActualValueEl.textContent = getWriteFolderDisplayPath(entry);
+      const label = entry.targetType === "samples" ? entry.id : entry.name;
 
       if (!decision.rewrite) {
-        const label = entry.targetType === "samples"
-          ? entry.id
-          : entry.name;
-
         log(`SKIP ${label}  (${decision.reason})`);
         log(`CHK  ${getFullOutputPath(entry)}`);
         return { id: label, status: "skipped", reason: decision.reason };
       }
 
       const url = `${baseUrl}/${entry.samplePath}`;
-      const label = entry.targetType === "samples"
-        ? entry.id
-        : entry.name;
-
       log(`RUN  ${label}`);
       log(`OUT  ${getFullOutputPath(entry)}`);
       log(`URL  ${url}`);
@@ -619,7 +731,7 @@ Vector Map Editor"></textarea>
         await waitForFrameLoad(frame, 20000);
         await sleep(waitMs);
 
-        const svgContent = await extractSvgFromFrame();
+        const svgContent = await extractSvgFromFrame(entry);
         await writePreview(targetDirHandle, svgContent);
 
         const stillHasTimeout = svgContent.includes(CAPTURE_TIMEOUT_MARKER);
@@ -709,7 +821,6 @@ Vector Map Editor"></textarea>
         executeBtn.disabled = false;
 
         await updatePathPreviewLabels();
-
         log(`Repo selected: ${repoDisplayName}`);
       } catch (error) {
         log(`Repo folder selection canceled or failed: ${error.message}`);
