@@ -3,6 +3,7 @@ import { createToolHostRuntime } from "../shared/toolHostRuntime.js";
 
 const refs = {
   toolSelect: document.querySelector("[data-tool-host-select]"),
+  stateInput: document.querySelector("[data-tool-host-state-input]"),
   mountButton: document.querySelector("[data-tool-host-mount]"),
   prevButton: document.querySelector("[data-tool-host-prev]"),
   nextButton: document.querySelector("[data-tool-host-next]"),
@@ -126,12 +127,31 @@ function mountSelectedTool(source = "manual") {
     writeStatus("Select a tool to mount.");
     return;
   }
+  let optionalState = null;
+  if (refs.stateInput instanceof HTMLTextAreaElement) {
+    const rawState = refs.stateInput.value.trim();
+    if (rawState) {
+      try {
+        optionalState = JSON.parse(rawState);
+      } catch {
+        writeStatus("State JSON is invalid. Fix JSON or clear the state field.");
+        return;
+      }
+    }
+  }
   updateSwitchMeta();
   updateStandaloneHref(toolId);
   writeQueryToolId(toolId, source === "init");
+  const previousMount = runtime.getCurrentMount();
   runtime.mountTool(toolId, {
     source,
-    requestedAt: new Date().toISOString()
+    requestedAt: new Date().toISOString(),
+    sharedContext: {
+      requestedToolId: toolId,
+      previousToolId: previousMount?.tool?.id || "",
+      switchPosition: `${Math.max(1, getSelectedToolIndex() + 1)}/${Math.max(1, toolIds.length)}`
+    },
+    state: optionalState
   });
 }
 

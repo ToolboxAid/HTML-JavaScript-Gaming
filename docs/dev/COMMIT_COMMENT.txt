@@ -1,1 +1,1 @@
-docs: add BUILD_PR tool host multi-switch bundle
+docs: add BUILD_PR tool host state handoff bundle

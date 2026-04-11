@@ -1,0 +1,5 @@
+STATE HANDOFF TARGETS
+
+- shared context object
+- getState()/setState()
+- optional tool participation

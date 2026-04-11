@@ -2,16 +2,16 @@ MODEL: GPT-5.4
 REASONING: high
 
 COMMAND:
-Create BUILD_PR_TOOL_HOST_MULTI_SWITCH
+Create BUILD_PR_TOOL_HOST_STATE_HANDOFF
 
 Scope:
-- add multi-tool switching to host
-- enforce lifecycle correctness
-- minimal UI
+- add shared context for tools
+- allow optional state passing
+- minimal changes
 
 Validation:
 - npm run test:launch-smoke -- --tools
-- verify switching works
+- verify state handoff works
 
 Output:
-<project>/tmp/BUILD_PR_TOOL_HOST_MULTI_SWITCH_delta.zip
+<project>/tmp/BUILD_PR_TOOL_HOST_STATE_HANDOFF_delta.zip

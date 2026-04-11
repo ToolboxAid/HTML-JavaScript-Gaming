@@ -1,17 +1,27 @@
 import { getToolHostEntryById } from "./toolHostManifest.js";
+import {
+  removeToolHostSharedContextById,
+  writeToolHostSharedContext
+} from "./toolHostSharedContext.js";
 
 function normalizeToolId(toolId) {
   return typeof toolId === "string" ? toolId.trim() : "";
 }
 
-function buildHostLaunchUrl(toolEntry, config = {}) {
+function buildHostLaunchUrl(toolEntry, config = {}, hostContextId = "") {
   const url = new URL(toolEntry.launchPath, window.location.href);
   url.searchParams.set("hosted", "1");
   url.searchParams.set("hostToolId", toolEntry.id);
+  if (hostContextId) {
+    url.searchParams.set("hostContextId", hostContextId);
+  }
 
   if (config && typeof config === "object") {
     Object.entries(config).forEach(([key, value]) => {
-      if (value === undefined || value === null) {
+      if (key === "state" || key === "sharedContext") {
+        return;
+      }
+      if (value === undefined || value === null || typeof value === "object") {
         return;
       }
       url.searchParams.set(`hostConfig_${key}`, String(value));
@@ -92,6 +102,9 @@ export function createToolHostRuntime(options = {}) {
       previous.frame.removeAttribute("src");
       mountContainer.removeChild(previous.frame);
     }
+    if (previous.hostContextId) {
+      removeToolHostSharedContextById(previous.hostContextId);
+    }
     onStatus(`Unmounted ${previous.tool.displayName} (${reason}, destroy=${destroyStatus}).`);
     onUnmounted(previous.tool, reason, destroyStatus);
     return true;
@@ -118,7 +131,16 @@ export function createToolHostRuntime(options = {}) {
 
     mountSequence += 1;
     const sequenceId = mountSequence;
-    const sourceUrl = buildHostLaunchUrl(toolEntry, config);
+    const sharedContext = config.sharedContext && typeof config.sharedContext === "object" ? config.sharedContext : {};
+    const hostContext = writeToolHostSharedContext({
+      toolId: toolEntry.id,
+      source: typeof config.source === "string" ? config.source : "",
+      requestedAt: typeof config.requestedAt === "string" ? config.requestedAt : new Date().toISOString(),
+      sharedContext,
+      state: Object.prototype.hasOwnProperty.call(config, "state") ? config.state : null
+    });
+    const hostContextId = hostContext?.contextId || "";
+    const sourceUrl = buildHostLaunchUrl(toolEntry, config, hostContextId);
     const frame = createHostFrame(toolEntry, sourceUrl);
     frame.addEventListener("load", () => {
       if (!currentMount || currentMount.mountSequence !== sequenceId) {
@@ -141,7 +163,8 @@ export function createToolHostRuntime(options = {}) {
       frame,
       sourceUrl,
       mountedAt: new Date().toISOString(),
-      mountSequence: sequenceId
+      mountSequence: sequenceId,
+      hostContextId
     };
 
     onStatus(`Mounting ${toolEntry.displayName}...`);
