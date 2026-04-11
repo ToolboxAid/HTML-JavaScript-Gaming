@@ -1,0 +1,14 @@
+VALIDATION CHECKLIST — BUILD_PR_TOOLS_SHARED_EXTRACTION_PHASE_1
+
+Required:
+- [ ] touched tools still load
+- [ ] no new console errors
+- [ ] npm run test:launch-smoke -- --tools executed
+- [ ] no shell/theme regressions introduced by this PR
+- [ ] changed-file count stayed minimal
+- [ ] SpriteEditor_old_keep untouched
+- [ ] report exact extracted/normalized helpers
+- [ ] report helpers intentionally left local
+
+Nice to have:
+- [ ] note any helper families that clearly belong in phase 2

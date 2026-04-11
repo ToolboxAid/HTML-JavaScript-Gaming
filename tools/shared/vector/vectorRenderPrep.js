@@ -1,4 +1,5 @@
 import { cloneJson } from '../../../src/shared/utils/jsonUtils.js';
+import { sanitizeVectorText } from "./vectorSafeValueUtils.js";
 
 import {
   combineBounds,
@@ -7,10 +8,6 @@ import {
   parseSvgPathData,
   transformPoints
 } from "./vectorGeometryMath.js";
-
-function sanitizeText(value) {
-  return typeof value === "string" ? value.trim() : "";
-}
 
 function sampleEllipsePoints(shape, segments = 16) {
   const points = [];
@@ -85,7 +82,7 @@ function createCollisionPrimitive(shape, transformedPoints, bounds, geometry) {
   if (shape.type === "ellipse") {
     return {
       type: "ellipse",
-      shapeId: sanitizeText(shape?.id),
+      shapeId: sanitizeVectorText(shape?.id),
       points: transformedPoints,
       bounds,
       ellipse: geometry.ellipse
@@ -95,7 +92,7 @@ function createCollisionPrimitive(shape, transformedPoints, bounds, geometry) {
   if (shape.type === "line" || shape.type === "polyline") {
     return {
       type: "segments",
-      shapeId: sanitizeText(shape?.id),
+      shapeId: sanitizeVectorText(shape?.id),
       points: transformedPoints,
       bounds
     };
@@ -103,7 +100,7 @@ function createCollisionPrimitive(shape, transformedPoints, bounds, geometry) {
 
   return {
     type: geometry.closed ? "polygon" : "polyline",
-    shapeId: sanitizeText(shape?.id),
+    shapeId: sanitizeVectorText(shape?.id),
     points: transformedPoints,
     bounds
   };
@@ -131,11 +128,11 @@ export function prepareVectorRenderables(asset, options = {}) {
       const transformedPoints = transformPoints(geometry.points, transform, origin);
       const bounds = computeBoundsFromPoints(transformedPoints);
       const renderable = {
-        assetId: sanitizeText(asset?.assetId),
-        layerId: sanitizeText(layer?.id),
-        id: sanitizeText(shape?.id),
-        name: sanitizeText(shape?.name),
-        primitive: sanitizeText(shape?.type),
+        assetId: sanitizeVectorText(asset?.assetId),
+        layerId: sanitizeVectorText(layer?.id),
+        id: sanitizeVectorText(shape?.id),
+        name: sanitizeVectorText(shape?.name),
+        primitive: sanitizeVectorText(shape?.type),
         drawOrder,
         stroke: resolveStyle(layer, shape, "stroke"),
         fill: resolveStyle(layer, shape, "fill"),
@@ -145,7 +142,7 @@ export function prepareVectorRenderables(asset, options = {}) {
       };
       if (shape.type === "path") {
         renderable.path = {
-          d: sanitizeText(shape?.d),
+          d: sanitizeVectorText(shape?.d),
           commands: geometry.commands || []
         };
       }

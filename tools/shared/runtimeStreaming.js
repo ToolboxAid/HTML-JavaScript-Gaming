@@ -3,24 +3,13 @@ import AssetLoaderSystem from "/src/engine/assets/AssetLoaderSystem.js";
 import ImageAssetLoader from "/src/engine/assets/ImageAssetLoader.js";
 import { cloneJson } from "../../src/shared/utils/jsonUtils.js";
 import { validatePackageManifest, createRegistryDefinition } from "./runtimeAssetValidationUtils.js";
-
-function sanitizeText(value) {
-  return typeof value === "string" ? value.trim() : "";
-}
-
-function createReport(level, code, message) {
-  return {
-    level: sanitizeText(level) || "info",
-    code: sanitizeText(code),
-    message: sanitizeText(message)
-  };
-}
+import { createRuntimeReport, sanitizeRuntimeText } from "./runtimeAssetSharedUtils.js";
 
 function collectBootAssetIds(pkg) {
   const adjacency = new Map();
   pkg.dependencies.forEach((dependency) => {
-    const from = sanitizeText(dependency?.from);
-    const to = sanitizeText(dependency?.to);
+    const from = sanitizeRuntimeText(dependency?.from);
+    const to = sanitizeRuntimeText(dependency?.to);
     if (!from || !to) {
       return;
     }
@@ -42,13 +31,13 @@ function collectBootAssetIds(pkg) {
   };
 
   pkg.roots
-    .map((root) => sanitizeText(root?.id))
+    .map((root) => sanitizeRuntimeText(root?.id))
     .filter(Boolean)
     .sort((left, right) => left.localeCompare(right))
     .forEach((assetId) => visit(assetId));
 
   return pkg.assets
-    .map((asset) => sanitizeText(asset?.id))
+    .map((asset) => sanitizeRuntimeText(asset?.id))
     .filter((assetId) => boot.has(assetId));
 }
 
@@ -57,7 +46,7 @@ export function summarizeRuntimeStreaming(result) {
     return `Runtime streaming ready with ${result.streaming.chunks.length} chunks.`;
   }
   if (result?.streaming?.status === "failed") {
-    return `Runtime streaming failed at ${sanitizeText(result.streaming.failedAt) || "unknown"}.`;
+    return `Runtime streaming failed at ${sanitizeRuntimeText(result.streaming.failedAt) || "unknown"}.`;
   }
   return "Runtime streaming unavailable.";
 }
@@ -72,7 +61,7 @@ export function buildRuntimeStreamingManifest(options = {}) {
     const chunkSize = Math.max(1, Number.parseInt(options.chunkSize, 10) || 2);
     const bootAssetIds = collectBootAssetIds(pkg);
     const remainder = pkg.assets
-      .map((asset) => sanitizeText(asset?.id))
+      .map((asset) => sanitizeRuntimeText(asset?.id))
       .filter((assetId) => assetId && !bootAssetIds.includes(assetId));
     const chunks = [
       {
@@ -88,7 +77,7 @@ export function buildRuntimeStreamingManifest(options = {}) {
         assetIds: remainder.slice(index, index + chunkSize)
       });
     }
-    reports.push(createReport("info", "STREAMING_READY", `Streaming manifest created with ${chunks.length} chunks.`));
+    reports.push(createRuntimeReport("info", "STREAMING_READY", `Streaming manifest created with ${chunks.length} chunks.`));
     return {
       streaming: {
         status: "ready",
@@ -105,7 +94,7 @@ export function buildRuntimeStreamingManifest(options = {}) {
       }
     };
   } catch (error) {
-    reports.push(createReport("error", "INVALID_STREAMING_INPUT", error instanceof Error ? error.message : "Invalid streaming input."));
+    reports.push(createRuntimeReport("error", "INVALID_STREAMING_INPUT", error instanceof Error ? error.message : "Invalid streaming input."));
     return {
       streaming: {
         status: "failed",
@@ -131,7 +120,7 @@ export async function loadRuntimeStreamingChunks(options = {}) {
       throw new Error("Streaming manifest is missing chunk definitions.");
     }
   } catch (error) {
-    reports.push(createReport("error", "INVALID_STREAMING_MANIFEST", error instanceof Error ? error.message : "Invalid streaming manifest."));
+    reports.push(createRuntimeReport("error", "INVALID_STREAMING_MANIFEST", error instanceof Error ? error.message : "Invalid streaming manifest."));
     return {
       streaming: {
         status: "failed",
@@ -143,16 +132,16 @@ export async function loadRuntimeStreamingChunks(options = {}) {
   }
 
   const requestedChunkIds = Array.isArray(options.chunkIds) && options.chunkIds.length > 0
-    ? options.chunkIds.map((chunkId) => sanitizeText(chunkId)).filter(Boolean)
+    ? options.chunkIds.map((chunkId) => sanitizeRuntimeText(chunkId)).filter(Boolean)
     : ["boot"];
-  const chunkMap = new Map(streaming.chunks.map((chunk) => [sanitizeText(chunk.id), chunk]));
+  const chunkMap = new Map(streaming.chunks.map((chunk) => [sanitizeRuntimeText(chunk.id), chunk]));
   const registry = new AssetRegistry();
   const loaderSystem = new AssetLoaderSystem({
     registry,
     imageLoader: options.imageLoader || new ImageAssetLoader(),
     loaders: options.loaders || {}
   });
-  const assetMap = new Map((pkg.assets || []).map((asset) => [sanitizeText(asset.id), asset]));
+  const assetMap = new Map((pkg.assets || []).map((asset) => [sanitizeRuntimeText(asset.id), asset]));
   const loadedAssets = [];
   const seenAssetIds = new Set(options.loadedAssetIds || []);
   const resolvePackagedAsset = typeof options.resolvePackagedAsset === "function"
@@ -163,7 +152,7 @@ export async function loadRuntimeStreamingChunks(options = {}) {
     const chunkId = requestedChunkIds[index];
     const chunk = chunkMap.get(chunkId);
     if (!chunk) {
-      reports.push(createReport("error", "UNKNOWN_STREAM_CHUNK", `Requested stream chunk ${chunkId} does not exist.`));
+      reports.push(createRuntimeReport("error", "UNKNOWN_STREAM_CHUNK", `Requested stream chunk ${chunkId} does not exist.`));
       return {
         streaming: {
           status: "failed",
@@ -175,13 +164,13 @@ export async function loadRuntimeStreamingChunks(options = {}) {
     }
 
     for (let assetIndex = 0; assetIndex < chunk.assetIds.length; assetIndex += 1) {
-      const assetId = sanitizeText(chunk.assetIds[assetIndex]);
+      const assetId = sanitizeRuntimeText(chunk.assetIds[assetIndex]);
       if (!assetId || seenAssetIds.has(assetId)) {
         continue;
       }
       const asset = assetMap.get(assetId);
       if (!asset) {
-        reports.push(createReport("error", "MISSING_STREAM_ASSET", `Stream chunk ${chunkId} references missing asset ${assetId}.`));
+        reports.push(createRuntimeReport("error", "MISSING_STREAM_ASSET", `Stream chunk ${chunkId} references missing asset ${assetId}.`));
         return {
           streaming: {
             status: "failed",
@@ -193,7 +182,7 @@ export async function loadRuntimeStreamingChunks(options = {}) {
       }
       const source = resolvePackagedAsset(asset, streamingPlan);
       if (source === undefined || source === null || source === "") {
-        reports.push(createReport("error", "MISSING_STREAM_SOURCE", `Packaged stream asset ${assetId} could not be resolved.`));
+        reports.push(createRuntimeReport("error", "MISSING_STREAM_SOURCE", `Packaged stream asset ${assetId} could not be resolved.`));
         return {
           streaming: {
             status: "failed",
@@ -206,7 +195,7 @@ export async function loadRuntimeStreamingChunks(options = {}) {
       registry.register(assetId, createRegistryDefinition(asset, source));
       const result = await loaderSystem.loadOne(assetId, registry.get(assetId));
       if (result.status !== "ready") {
-        reports.push(createReport("error", "STREAM_ASSET_LOAD_FAILED", `Failed to load streamed asset ${assetId}: ${result.error || "unknown error"}`));
+        reports.push(createRuntimeReport("error", "STREAM_ASSET_LOAD_FAILED", `Failed to load streamed asset ${assetId}: ${result.error || "unknown error"}`));
         return {
           streaming: {
             status: "failed",
@@ -226,7 +215,7 @@ export async function loadRuntimeStreamingChunks(options = {}) {
     }
   }
 
-  reports.push(createReport("info", "STREAM_CHUNKS_READY", `Loaded ${loadedAssets.length} streamed asset entries across ${requestedChunkIds.length} chunks.`));
+  reports.push(createRuntimeReport("info", "STREAM_CHUNKS_READY", `Loaded ${loadedAssets.length} streamed asset entries across ${requestedChunkIds.length} chunks.`));
   return {
     streaming: {
       status: "ready",

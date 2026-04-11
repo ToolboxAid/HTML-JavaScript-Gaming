@@ -1,4 +1,4 @@
-import { trimSafe } from "../../src/shared/utils/stringUtils.js";
+import { sanitizeRuntimeText } from "./runtimeAssetSharedUtils.js";
 
 export function validatePackageManifest(manifest) {
   const pkg = manifest?.package;
@@ -8,7 +8,7 @@ export function validatePackageManifest(manifest) {
   if (!Number.isFinite(pkg.version)) {
     throw new Error("Invalid packaged input: package.version must be numeric.");
   }
-  if (!trimSafe(pkg.projectId)) {
+  if (!sanitizeRuntimeText(pkg.projectId)) {
     throw new Error("Invalid packaged input: package.projectId is required.");
   }
   if (!Array.isArray(pkg.assets) || pkg.assets.length === 0) {
@@ -23,8 +23,8 @@ export function validatePackageManifest(manifest) {
 
   const seenIds = new Set();
   pkg.assets.forEach((asset, index) => {
-    const id = trimSafe(asset?.id);
-    const type = trimSafe(asset?.type);
+    const id = sanitizeRuntimeText(asset?.id);
+    const type = sanitizeRuntimeText(asset?.type);
     if (!id) {
       throw new Error(`Invalid packaged input: asset at index ${index} is missing id.`);
     }
@@ -38,16 +38,16 @@ export function validatePackageManifest(manifest) {
   });
 
   pkg.roots.forEach((root, index) => {
-    const id = trimSafe(root?.id);
+    const id = sanitizeRuntimeText(root?.id);
     if (!id || !seenIds.has(id)) {
       throw new Error(`Invalid packaged input: startup root at index ${index} does not resolve to a packaged asset.`);
     }
   });
 
   pkg.dependencies.forEach((dependency, index) => {
-    const from = trimSafe(dependency?.from);
-    const to = trimSafe(dependency?.to);
-    const type = trimSafe(dependency?.type);
+    const from = sanitizeRuntimeText(dependency?.from);
+    const to = sanitizeRuntimeText(dependency?.to);
+    const type = sanitizeRuntimeText(dependency?.type);
     if (!from || !to || !type) {
       throw new Error(`Invalid packaged input: dependency at index ${index} is incomplete.`);
     }
@@ -60,12 +60,12 @@ export function validatePackageManifest(manifest) {
 }
 
 export function createRegistryDefinition(asset, source) {
-  const type = trimSafe(asset?.type);
+  const type = sanitizeRuntimeText(asset?.type);
   const sourceType = type === "image" ? "image" : "data";
   return {
-    id: trimSafe(asset?.id),
+    id: sanitizeRuntimeText(asset?.id),
     type: sourceType,
-    path: trimSafe(asset?.path),
+    path: sanitizeRuntimeText(asset?.path),
     source
   };
 }

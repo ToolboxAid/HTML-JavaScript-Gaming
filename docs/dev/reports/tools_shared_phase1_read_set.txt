@@ -1,0 +1,25 @@
+BUILD READ SET (TARGETS + IMMEDIATE DEPS ONLY)
+
+Read shared targets first:
+- tools/shared/projectSystem.js
+- tools/shared/projectSystemAdapters.js
+- tools/shared/projectSystemValueUtils.js
+- tools/shared/runtimeAssetLoader.js
+- tools/shared/runtimeAssetValidationUtils.js
+- tools/shared/vector/vectorAssetBridge.js
+- tools/shared/vector/vectorAssetContract.js
+- tools/shared/vector/vectorGeometryMath.js
+- tools/shared/vector/vectorRenderPrep.js
+
+Then inspect active tool entry/runtime files only as needed:
+- tools/Asset Browser/*
+- tools/Palette Browser/*
+- tools/Parallax Scene Studio/*
+- tools/Sprite Editor/*
+- tools/Tilemap Studio/*
+- tools/Vector Asset Studio/*
+- tools/Vector Map Editor/*
+
+Constraint:
+- do not scan full repo
+- do not read unrelated games/samples unless a touched helper import requires a narrow check

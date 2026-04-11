@@ -5,20 +5,17 @@ import {
   createDefaultVectorOrigin,
   parseViewBoxString
 } from "./vectorAssetContract.js";
-
-function sanitizeText(value) {
-  return typeof value === "string" ? value.trim() : "";
-}
+import { sanitizeVectorText } from "./vectorSafeValueUtils.js";
 
 function extractViewBox(svgText) {
   const match = svgText.match(/viewBox\s*=\s*"([^"]+)"/i);
-  return sanitizeText(match?.[1]);
+  return sanitizeVectorText(match?.[1]);
 }
 
 function extractPathData(svgText) {
   const matches = Array.from(svgText.matchAll(/<path\b[^>]*\sd\s*=\s*"([^"]+)"/gi));
   return matches
-    .map((match) => sanitizeText(match[1]))
+    .map((match) => sanitizeVectorText(match[1]))
     .filter(Boolean)
     .sort((left, right) => left.localeCompare(right))
     .map((d) => ({ d }));
@@ -30,12 +27,12 @@ export function summarizeVectorAssetDefinition(asset) {
     : (Array.isArray(asset?.layers)
       ? asset.layers.reduce((total, layer) => total + (Array.isArray(layer?.shapes) ? layer.shapes.length : 0), 0)
       : 0);
-  return `Vector asset ${sanitizeText(asset?.id) || "vector"} ready with ${pathCount} path${pathCount === 1 ? "" : "s"}.`;
+  return `Vector asset ${sanitizeVectorText(asset?.id) || "vector"} ready with ${pathCount} path${pathCount === 1 ? "" : "s"}.`;
 }
 
 export function normalizeSvgToVectorAsset(options = {}) {
-  const svgText = sanitizeText(options.svgText);
-  const id = sanitizeText(options.id) || createAssetId("vector", options.name || "asset", "asset");
+  const svgText = sanitizeVectorText(options.svgText);
+  const id = sanitizeVectorText(options.id) || createAssetId("vector", options.name || "asset", "asset");
   const path = normalizeProjectRelativePath(options.path);
   const geometryPaths = extractPathData(svgText);
   const viewport = parseViewBoxString(extractViewBox(svgText));
@@ -61,11 +58,11 @@ export function normalizeSvgToVectorAsset(options = {}) {
     version: VECTOR_ASSET_VERSION,
     assetId: id,
     id,
-    name: sanitizeText(options.name) || id,
+    name: sanitizeVectorText(options.name) || id,
     path,
     type: "vector",
-    paletteId: sanitizeText(options.paletteId),
-    sourceTool: sanitizeText(options.sourceTool) || "vector-asset-studio",
+    paletteId: sanitizeVectorText(options.paletteId),
+    sourceTool: sanitizeVectorText(options.sourceTool) || "vector-asset-studio",
     source: {
       kind: "svg",
       path

@@ -1,0 +1,20 @@
+PHASE 1 EXTRACTION TARGETS (CONSERVATIVE)
+
+Primary target families:
+1. project system helper normalization
+2. runtime asset loader helper normalization
+3. runtime asset validation helper normalization
+4. safe vector helper normalization where already represented in tools/shared/vector/*
+
+Do first:
+- reuse existing tools/shared modules
+- swap imports where helper semantics already align
+- introduce the smallest adapters only when necessary
+
+Do not do in phase 1:
+- editor-state extraction
+- command-bus extraction
+- tool boot contract refactor
+- shell/theme restyling
+- pipeline rewrites
+- legacy folder deletion

@@ -2,29 +2,29 @@ MODEL: GPT-5.4
 REASONING: high
 
 COMMAND:
-Create BUILD_PR_TOOLS_THEME_REUSE_BASELINE as a docs-to-code follow-up to PLAN_PR_TOOLS_SHARED_NORMALIZATION.
+Create BUILD_PR_TOOLS_SHARED_EXTRACTION_PHASE_1 as a conservative exact-cluster implementation.
 
 Scope:
-- prioritize reuse of existing engine theme/UI assets before adding or expanding any new tool-local CSS
-- target active tools only:
-  - tools/Asset Browser
-  - tools/Palette Browser
-  - tools/Parallax Scene Studio
-  - tools/Sprite Editor
-  - tools/Tilemap Studio
-  - tools/Vector Asset Studio
-  - tools/Vector Map Editor
+- active tools only
+- reuse existing tools/shared modules first
+- target only:
+  - project system helper normalization
+  - runtime asset loader helper normalization
+  - runtime asset validation helper normalization
+  - safe vector helper normalization already represented in tools/shared/vector/*
+- no style/theme work in this PR
+- no editor-state extraction
+- no render-pipeline rewrites
+- no tool-host work
 - preserve tools/SpriteEditor_old_keep
-- keep scope tight to shell/theme/layout normalization and import alignment only
-- do not refactor tool-specific behavior
-- do not rewrite roadmap wording
-- do not touch start_of_day directories
+- keep changed-file count minimal
+- stop and report if helper semantics diverge too much
 
 Validation:
-- each touched tool loads
-- no console regressions
-- no shell/theme visual collapse
+- npm run test:launch-smoke -- --tools
 - report exact files changed
+- report extracted vs normalized helpers
+- report helpers intentionally left local and why
 
 Output:
 - package repo-structured delta ZIP under <project folder>/tmp/

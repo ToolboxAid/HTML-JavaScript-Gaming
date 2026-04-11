@@ -1,6 +1,7 @@
 import { parseSvgPathData } from "./vectorGeometryMath.js";
 import { toFiniteNumber, roundNumber } from "../../../src/shared/math/numberNormalization.js";
 import { cloneJson } from "../../../src/shared/utils/jsonUtils.js";
+import { sanitizeVectorText } from "./vectorSafeValueUtils.js";
 
 export const VECTOR_ASSET_FORMAT = "toolbox.vector.asset";
 export const VECTOR_ASSET_VERSION = 1;
@@ -18,12 +19,8 @@ const SUPPORTED_STROKE_JOINS = new Set(["miter", "round", "bevel"]);
 const SUPPORTED_STROKE_CAPS = new Set(["butt", "round", "square"]);
 const COLOR_PATTERN = /^#[0-9A-F]{6}([0-9A-F]{2})?$/;
 
-function sanitizeText(value) {
-  return typeof value === "string" ? value.trim() : "";
-}
-
 export function parseViewBoxString(viewBox) {
-  const parts = sanitizeText(viewBox).split(/\s+/).map((value) => Number(value));
+  const parts = sanitizeVectorText(viewBox).split(/\s+/).map((value) => Number(value));
   if (parts.length !== 4 || parts.some((value) => !Number.isFinite(value))) {
     return {
       x: 0,
@@ -66,7 +63,7 @@ function normalizeOrigin(origin, viewport) {
   const fallback = createDefaultVectorOrigin(viewport);
   const source = origin && typeof origin === "object" ? origin : {};
   return {
-    name: sanitizeText(source.name) || fallback.name,
+    name: sanitizeVectorText(source.name) || fallback.name,
     x: roundNumber(toFiniteNumber(source.x, fallback.x)),
     y: roundNumber(toFiniteNumber(source.y, fallback.y))
   };
@@ -75,14 +72,14 @@ function normalizeOrigin(origin, viewport) {
 function normalizeAnchor(anchor, index) {
   const source = anchor && typeof anchor === "object" ? anchor : {};
   return {
-    name: sanitizeText(source.name) || `anchor-${index + 1}`,
+    name: sanitizeVectorText(source.name) || `anchor-${index + 1}`,
     x: roundNumber(toFiniteNumber(source.x, 0)),
     y: roundNumber(toFiniteNumber(source.y, 0))
   };
 }
 
 function normalizeColor(value) {
-  const color = sanitizeText(value).toUpperCase();
+  const color = sanitizeVectorText(value).toUpperCase();
   return COLOR_PATTERN.test(color) ? color : color;
 }
 
@@ -94,8 +91,8 @@ function normalizeStroke(stroke) {
     color: normalizeColor(stroke.color),
     width: roundNumber(toFiniteNumber(stroke.width, 1)),
     opacity: roundNumber(toFiniteNumber(stroke.opacity, 1)),
-    join: sanitizeText(stroke.join) || "miter",
-    cap: sanitizeText(stroke.cap) || "butt"
+    join: sanitizeVectorText(stroke.join) || "miter",
+    cap: sanitizeVectorText(stroke.cap) || "butt"
   };
 }
 
@@ -123,7 +120,7 @@ function normalizePoints(points) {
 
 function normalizeShapeGeometry(shape) {
   const source = shape && typeof shape === "object" ? shape : {};
-  const type = sanitizeText(source.type).toLowerCase();
+  const type = sanitizeVectorText(source.type).toLowerCase();
   if (type === "line") {
     return {
       x1: roundNumber(toFiniteNumber(source.x1, 0)),
@@ -155,7 +152,7 @@ function normalizeShapeGeometry(shape) {
   }
   if (type === "path") {
     return {
-      d: sanitizeText(source.d)
+      d: sanitizeVectorText(source.d)
     };
   }
   return {};
@@ -163,10 +160,10 @@ function normalizeShapeGeometry(shape) {
 
 function normalizeShape(shape, layerId, index) {
   const source = shape && typeof shape === "object" ? shape : {};
-  const type = sanitizeText(source.type).toLowerCase();
+  const type = sanitizeVectorText(source.type).toLowerCase();
   return {
-    id: sanitizeText(source.id) || `${layerId}.shape-${String(index + 1).padStart(3, "0")}`,
-    name: sanitizeText(source.name) || sanitizeText(source.id) || `${type || "shape"}-${index + 1}`,
+    id: sanitizeVectorText(source.id) || `${layerId}.shape-${String(index + 1).padStart(3, "0")}`,
+    name: sanitizeVectorText(source.name) || sanitizeVectorText(source.id) || `${type || "shape"}-${index + 1}`,
     type,
     visible: source.visible !== false,
     stroke: normalizeStroke(source.stroke),
@@ -177,10 +174,10 @@ function normalizeShape(shape, layerId, index) {
 
 function normalizeLayer(layer, index) {
   const source = layer && typeof layer === "object" ? layer : {};
-  const layerId = sanitizeText(source.id) || `layer-${String(index + 1).padStart(2, "0")}`;
+  const layerId = sanitizeVectorText(source.id) || `layer-${String(index + 1).padStart(2, "0")}`;
   return {
     id: layerId,
-    name: sanitizeText(source.name) || layerId,
+    name: sanitizeVectorText(source.name) || layerId,
     visible: source.visible !== false,
     style: {
       stroke: normalizeStroke(source.style?.stroke),
@@ -227,7 +224,7 @@ function normalizeLegacyLayer(asset) {
         name: `path-${index + 1}`,
         type: "path",
         visible: true,
-        d: sanitizeText(pathEntry?.d || pathEntry),
+        d: sanitizeVectorText(pathEntry?.d || pathEntry),
         stroke: cloneJson(stroke),
         fill: cloneJson(fill)
       }))
@@ -245,18 +242,18 @@ export function normalizeVectorAssetContract(asset, options = {}) {
     : (Array.isArray(source?.layers) ? source.layers : []).map((layer, index) => normalizeLayer(layer, index));
 
   return {
-    format: sanitizeText(source.format) || (isLegacy ? VECTOR_ASSET_FORMAT : ""),
+    format: sanitizeVectorText(source.format) || (isLegacy ? VECTOR_ASSET_FORMAT : ""),
     version: Number.isFinite(source.version) ? source.version : (isLegacy ? VECTOR_ASSET_VERSION : NaN),
-    assetId: sanitizeText(source.assetId) || sanitizeText(source.id),
-    id: sanitizeText(source.id) || sanitizeText(source.assetId),
-    name: sanitizeText(source.name) || sanitizeText(source.assetId) || sanitizeText(source.id),
+    assetId: sanitizeVectorText(source.assetId) || sanitizeVectorText(source.id),
+    id: sanitizeVectorText(source.id) || sanitizeVectorText(source.assetId),
+    name: sanitizeVectorText(source.name) || sanitizeVectorText(source.assetId) || sanitizeVectorText(source.id),
     type: "vector",
-    path: sanitizeText(source.path),
-    paletteId: sanitizeText(source.paletteId),
-    sourceTool: sanitizeText(source.sourceTool) || "vector-asset-studio",
+    path: sanitizeVectorText(source.path),
+    paletteId: sanitizeVectorText(source.paletteId),
+    sourceTool: sanitizeVectorText(source.sourceTool) || "vector-asset-studio",
     source: {
-      kind: sanitizeText(source?.source?.kind),
-      path: sanitizeText(source?.source?.path) || sanitizeText(source.path)
+      kind: sanitizeVectorText(source?.source?.kind),
+      path: sanitizeVectorText(source?.source?.path) || sanitizeVectorText(source.path)
     },
     viewport,
     origin,
@@ -272,7 +269,7 @@ export function normalizeVectorAssetContract(asset, options = {}) {
 function pushIssue(issues, category, message) {
   issues.push({
     category,
-    message: sanitizeText(message)
+    message: sanitizeVectorText(message)
   });
 }
 
@@ -280,7 +277,7 @@ function validateStylePayload(style, issues, styleName) {
   if (!style) {
     return;
   }
-  if (!COLOR_PATTERN.test(sanitizeText(style.color).toUpperCase())) {
+  if (!COLOR_PATTERN.test(sanitizeVectorText(style.color).toUpperCase())) {
     pushIssue(issues, "style", `${styleName} color must use #RRGGBB or #RRGGBBAA format.`);
   }
   if (styleName === "stroke") {
@@ -308,12 +305,12 @@ function validateLayerAndShapeStructure(layers, issues) {
   let visibleShapeCount = 0;
 
   layers.forEach((layer) => {
-    if (!sanitizeText(layer?.id)) {
+    if (!sanitizeVectorText(layer?.id)) {
       pushIssue(issues, "geometry", "Every vector layer must define a stable id.");
     }
     const layerShapes = Array.isArray(layer?.shapes) ? layer.shapes : [];
     if (layerShapes.length === 0) {
-      pushIssue(issues, "geometry", `Layer ${sanitizeText(layer?.id) || "layer"} must contain at least one shape.`);
+      pushIssue(issues, "geometry", `Layer ${sanitizeVectorText(layer?.id) || "layer"} must contain at least one shape.`);
       return;
     }
 
@@ -322,7 +319,7 @@ function validateLayerAndShapeStructure(layers, issues) {
 
     layerShapes.forEach((shape) => {
       if (!SUPPORTED_PRIMITIVES.includes(shape?.type)) {
-        pushIssue(issues, "geometry", `Unsupported vector primitive ${sanitizeText(shape?.type) || "unknown"}.`);
+        pushIssue(issues, "geometry", `Unsupported vector primitive ${sanitizeVectorText(shape?.type) || "unknown"}.`);
         return;
       }
       if (shape.visible !== false) {
@@ -332,49 +329,49 @@ function validateLayerAndShapeStructure(layers, issues) {
       validateStylePayload(shape?.stroke, issues, "stroke");
       validateStylePayload(shape?.fill, issues, "fill");
       if (!shape?.stroke && !shape?.fill && !layer?.style?.stroke && !layer?.style?.fill) {
-        pushIssue(issues, "style", `Shape ${sanitizeText(shape?.id) || "shape"} must resolve to a stroke or fill.`);
+        pushIssue(issues, "style", `Shape ${sanitizeVectorText(shape?.id) || "shape"} must resolve to a stroke or fill.`);
       }
 
       switch (shape.type) {
         case "line":
           ["x1", "y1", "x2", "y2"].forEach((key) => {
             if (!Number.isFinite(shape?.[key])) {
-              pushIssue(issues, "geometry", `Line shape ${sanitizeText(shape?.id)} is missing ${key}.`);
+              pushIssue(issues, "geometry", `Line shape ${sanitizeVectorText(shape?.id)} is missing ${key}.`);
             }
           });
           break;
         case "rectangle":
           if (!Number.isFinite(shape?.width) || shape.width <= 0 || !Number.isFinite(shape?.height) || shape.height <= 0) {
-            pushIssue(issues, "geometry", `Rectangle shape ${sanitizeText(shape?.id)} must declare positive width and height.`);
+            pushIssue(issues, "geometry", `Rectangle shape ${sanitizeVectorText(shape?.id)} must declare positive width and height.`);
           }
           break;
         case "ellipse":
           if (!Number.isFinite(shape?.rx) || shape.rx <= 0 || !Number.isFinite(shape?.ry) || shape.ry <= 0) {
-            pushIssue(issues, "geometry", `Ellipse shape ${sanitizeText(shape?.id)} must declare positive rx and ry.`);
+            pushIssue(issues, "geometry", `Ellipse shape ${sanitizeVectorText(shape?.id)} must declare positive rx and ry.`);
           }
           break;
         case "polyline":
           if (!Array.isArray(shape?.points) || shape.points.length < 2) {
-            pushIssue(issues, "geometry", `Polyline shape ${sanitizeText(shape?.id)} must declare at least two points.`);
+            pushIssue(issues, "geometry", `Polyline shape ${sanitizeVectorText(shape?.id)} must declare at least two points.`);
           }
           break;
         case "polygon":
           if (!Array.isArray(shape?.points) || shape.points.length < 3) {
-            pushIssue(issues, "geometry", `Polygon shape ${sanitizeText(shape?.id)} must declare at least three points.`);
+            pushIssue(issues, "geometry", `Polygon shape ${sanitizeVectorText(shape?.id)} must declare at least three points.`);
           }
           break;
         case "path":
-          if (!sanitizeText(shape?.d)) {
-            pushIssue(issues, "geometry", `Path shape ${sanitizeText(shape?.id)} must declare path data.`);
+          if (!sanitizeVectorText(shape?.d)) {
+            pushIssue(issues, "geometry", `Path shape ${sanitizeVectorText(shape?.id)} must declare path data.`);
             break;
           }
           try {
             const parsed = parseSvgPathData(shape.d);
             if (parsed.points.length === 0) {
-              pushIssue(issues, "geometry", `Path shape ${sanitizeText(shape?.id)} must produce at least one point.`);
+              pushIssue(issues, "geometry", `Path shape ${sanitizeVectorText(shape?.id)} must produce at least one point.`);
             }
           } catch (error) {
-            pushIssue(issues, "geometry", error instanceof Error ? error.message : `Path shape ${sanitizeText(shape?.id)} is invalid.`);
+            pushIssue(issues, "geometry", error instanceof Error ? error.message : `Path shape ${sanitizeVectorText(shape?.id)} is invalid.`);
           }
           break;
         default:
@@ -398,13 +395,13 @@ export function inspectVectorAssetContract(asset, options = {}) {
   if (normalizedAsset.version !== VECTOR_ASSET_VERSION) {
     pushIssue(issues, "geometry", `Vector asset version must be ${VECTOR_ASSET_VERSION}.`);
   }
-  if (!sanitizeText(normalizedAsset.assetId)) {
+  if (!sanitizeVectorText(normalizedAsset.assetId)) {
     pushIssue(issues, "geometry", "Vector assetId is required.");
   }
   if (normalizedAsset.source.kind !== "svg") {
     pushIssue(issues, "source", "Vector assets must declare source.kind as svg.");
   }
-  if (!sanitizeText(normalizedAsset.source.path)) {
+  if (!sanitizeVectorText(normalizedAsset.source.path)) {
     pushIssue(issues, "source", "Vector assets must declare a normalized project-relative source path.");
   }
   if (!Number.isFinite(normalizedAsset.viewport.width) || normalizedAsset.viewport.width <= 0
@@ -417,7 +414,7 @@ export function inspectVectorAssetContract(asset, options = {}) {
 
   const anchorNames = new Set();
   normalizedAsset.anchors.forEach((anchor) => {
-    if (!sanitizeText(anchor?.name)) {
+    if (!sanitizeVectorText(anchor?.name)) {
       pushIssue(issues, "geometry", "Vector anchors must define names.");
       return;
     }
