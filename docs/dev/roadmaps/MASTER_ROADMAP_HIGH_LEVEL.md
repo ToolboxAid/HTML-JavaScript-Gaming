@@ -100,20 +100,20 @@
 - [.] post-move validation complete
 
 ### Structure Targets
-- [ ] `src/engine/core`
-- [ ] `src/engine/state`
+- [x] `src/engine/core`
+- [x] `src/engine/state`
 - [ ] `src/engine/rendering`
-- [ ] `src/engine/input`
+- [x] `src/engine/input`
 - [ ] `src/engine/physics`
-- [ ] `src/engine/audio`
+- [x] `src/engine/audio`
 - [ ] `src/engine/scene`
-- [ ] `src/shared/utils`
-- [ ] `src/shared/math`
-- [ ] `src/shared/state`
-- [ ] `games/_template/flow`
+- [x] `src/shared/utils`
+- [x] `src/shared/math`
+- [x] `src/shared/state`
+- [x] `games/_template/flow`
 - [ ] `samples/phase-01`
 - [ ] `samples/phase-13_network-concepts`
-- [ ] `tools/shared`
+- [x] `tools/shared`
 
 ### Recent Checkpoint Notes
 - [x] broad import-path correction from `engine/` to `src/engine/` applied across remaining games/samples
@@ -407,12 +407,12 @@
 ---
 
 ## 8. Games Layer
-- [ ] `games/_template/` created
+- [x] `games/_template/` created
 - [ ] game flow pattern standardized (`flow/attract.js`, `flow/intro.js`, `flow/highscore.js`)
-- [ ] per-game structure normalized
+- [.] per-game structure normalized
 - [ ] gameplay/entities/levels/rules/assets boundaries normalized
-- [ ] current games migrated to target structure
-- [ ] game-specific asset ownership enforced
+- [.] current games migrated to target structure
+- [.] game-specific asset ownership enforced
 - [ ] shared-vs-game utility boundaries enforced
 - [ ] space_invaders normalized
 - [ ] puckman normalized
@@ -541,10 +541,10 @@
 ---
 
 ## 14. Testing & Validation
-- [ ] `tests/` structure normalized
-- [ ] unit coverage aligned to engine/shared/games
-- [ ] integration coverage aligned to state/replay/rendering/tools
-- [ ] smoke validation aligned to samples/tools/games
+- [.] `tests/` structure normalized
+- [.] unit coverage aligned to engine/shared/games
+- [.] integration coverage aligned to state/replay/rendering/tools
+- [.] smoke validation aligned to samples/tools/games
 - [ ] fixtures/helpers organization normalized
 - [ ] move/refactor validation strategy documented
 - [ ] post-PR acceptance criteria consistently enforced
