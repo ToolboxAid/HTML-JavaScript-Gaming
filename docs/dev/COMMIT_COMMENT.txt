@@ -1,1 +1,1 @@
-docs: add BUILD_PR bundle for conservative tools/shared extraction phase 1
+docs: add BUILD_PR phase 2 shared extraction bundle

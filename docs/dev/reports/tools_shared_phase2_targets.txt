@@ -1,0 +1,9 @@
+PHASE 2 TARGETS
+
+1. event helpers
+2. command helpers
+3. lightweight UI utilities
+
+Only extract if:
+- used in multiple tools
+- no editor-specific coupling

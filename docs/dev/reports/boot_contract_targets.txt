@@ -1,0 +1,10 @@
+BOOT CONTRACT TARGETS
+
+- init(container, config)
+- destroy()
+
+Optional:
+- loadProject()
+- saveProject()
+
+Ensure consistent signature across tools

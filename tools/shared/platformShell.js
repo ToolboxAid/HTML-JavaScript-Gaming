@@ -5,6 +5,8 @@ import {
   readSharedPaletteHandoff
 } from "./assetUsageIntegration.js";
 import { createProjectSystemController } from "./projectSystem.js";
+import { bindEventHandlers, createCommandDispatcher } from "./eventCommandUtils.js";
+import { asHtmlInput, queryAll, queryFirst, readDataAttribute, setTextContent } from "./uiSafeUtils.js";
 import { escapeHtml } from "../../src/shared/string/stringUtil.js";
 
 let projectController = null;
@@ -176,50 +178,46 @@ function bindProjectShellEvents(currentTool) {
     return;
   }
 
-  document.querySelectorAll("[data-project-action]").forEach((button) => {
-    button.addEventListener("click", async () => {
-      const action = button.getAttribute("data-project-action");
+  const actionButtons = queryAll("[data-project-action]");
+  const openInputElement = asHtmlInput(queryFirst("[data-project-open-input]"));
 
-      if (action === "new") {
-        if (!projectController.shouldConfirmDiscard("Discard unsaved project changes and create a new project?")) {
-          return;
-        }
-        await projectController.handleNewProject();
+  const dispatchProjectAction = createCommandDispatcher({
+    async new() {
+      if (!projectController.shouldConfirmDiscard("Discard unsaved project changes and create a new project?")) {
         return;
       }
-
-      if (action === "open") {
-        if (!projectController.shouldConfirmDiscard("Discard unsaved project changes and open another project?")) {
-          return;
-        }
-        document.querySelector("[data-project-open-input]")?.click();
+      await projectController.handleNewProject();
+    },
+    async open() {
+      if (!projectController.shouldConfirmDiscard("Discard unsaved project changes and open another project?")) {
         return;
       }
-
-      if (action === "save") {
-        projectController.handleSaveProject();
+      openInputElement?.click();
+    },
+    async save() {
+      projectController.handleSaveProject();
+    },
+    async "save-as"() {
+      projectController.handleSaveProjectAs();
+    },
+    async close() {
+      if (!projectController.shouldConfirmDiscard("Close the active project and clear unsaved changes?")) {
         return;
       }
-
-      if (action === "save-as") {
-        projectController.handleSaveProjectAs();
-        return;
-      }
-
-      if (action === "close") {
-        if (!projectController.shouldConfirmDiscard("Close the active project and clear unsaved changes?")) {
-          return;
-        }
-        projectController.handleCloseProject();
-      }
-    });
+      projectController.handleCloseProject();
+    }
   });
 
-  const openInput = document.querySelector("[data-project-open-input]");
-  if (openInput instanceof HTMLInputElement) {
-    openInput.addEventListener("change", async () => {
-      const file = openInput.files?.[0];
-      openInput.value = "";
+  bindEventHandlers(actionButtons, "click", async (event) => {
+    const button = event.currentTarget instanceof Element ? event.currentTarget : null;
+    const action = readDataAttribute(button, "data-project-action");
+    await dispatchProjectAction(action);
+  });
+
+  if (openInputElement) {
+    bindEventHandlers(openInputElement, "change", async () => {
+      const file = openInputElement.files?.[0];
+      openInputElement.value = "";
       if (!file) {
         return;
       }
@@ -232,19 +230,17 @@ function bindProjectShellEvents(currentTool) {
     });
   }
 
-  document.querySelectorAll(".tools-platform-frame__nav-link").forEach((link) => {
-    link.addEventListener("click", (event) => {
+  bindEventHandlers(queryAll(".tools-platform-frame__nav-link"), "click", (event) => {
       if (projectController.shouldConfirmDiscard("You have unsaved project changes. Continue to another tool?")) {
         return;
       }
       event.preventDefault();
-    });
   });
 }
 
 function renderShell(currentTool) {
-  const headerHost = document.querySelector("[data-tools-platform-header]");
-  const statusHost = document.querySelector("[data-tools-platform-status]");
+  const headerHost = queryFirst("[data-tools-platform-header]");
+  const statusHost = queryFirst("[data-tools-platform-status]");
 
   // Preserve accordion open state (default to open on first load)
   const accordion = headerHost?.querySelector(".accordion");
@@ -282,13 +278,13 @@ function initPlatformShell() {
         renderShell(currentTool);
       },
       onStatus(message) {
-        const statusHost = document.querySelector("[data-tools-platform-status]");
+        const statusHost = queryFirst("[data-tools-platform-status]");
         if (!(statusHost instanceof HTMLElement)) {
           return;
         }
-        const spans = statusHost.querySelectorAll("span");
+        const spans = queryAll("span", statusHost);
         if (spans[0]) {
-          spans[0].textContent = message;
+          setTextContent(spans[0], message);
         }
       }
     });
