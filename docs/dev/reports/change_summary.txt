@@ -1,22 +1,14 @@
-PR: BUILD_PR_SAMPLES_INDEX_FIXES_AND_TARGETED_PREVIEW_RETRY
-
-Bundle contents:
-- docs/pr/BUILD_PR_SAMPLES_INDEX_FIXES_AND_TARGETED_PREVIEW_RETRY.md
-- docs/dev/codex_commands.md
-- docs/dev/commit_comment.txt
-- docs/dev/next_command.txt
-- docs/dev/reports/change_summary.txt
-- docs/dev/reports/validation_checklist.txt
-- docs/dev/reports/file_tree.txt
-
-Requested runtime/code scope for Codex:
-- samples/index.html label/header text correction only
-- Sample 1303 local asteroid speed cap only
-- targeted preview SVG retry only for the enumerated samples and only when SVG contains `Capture timeout`
-
-Explicit exclusions:
-- no engine/core edits
-- no metadata/tag changes
-- no broad layout changes
-- no modifications to 1316, 1317, 1318
-- no protected start_of_day directory changes
+Bundle type: execution-ready BUILD docs only
+PR purpose: targeted cleanup enforcement/normalization pass
+Scope:
+- create cleanup target enforcement map
+- create cleanup execution guard
+- create cleanup target normalization report
+- create BUILD report
+- create validation checklist
+Constraints:
+- non-destructive
+- templates untouched
+- no runtime/test changes
+- no start_of_day changes
+- no new cleanup targets

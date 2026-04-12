@@ -1,28 +1,33 @@
-﻿BUILD_PR_TEMPLATES_POLICY_CLASSIFICATION
+﻿BUILD_PR_TARGETED_REPO_CLEANUP_PASS_1
 Validation Checklist
 Generated: 2026-04-12
 
+[PASS] no deletion/move/rename executed
+Evidence: `git diff --name-status` + structural guard => `STRUCTURAL_CHECK: PASS` (no D/R/C entries)
+
+[PASS] `templates/` untouched
+Evidence: `git diff --name-status -- templates` => no entries (`TEMPLATES_TOUCH_CHECK: PASS`)
+
+[PASS] no runtime code changes
+Evidence: `git diff --name-only -- tools src games samples tests` => no entries
+
+[PASS] no test logic changes
+Evidence: `git diff --name-only -- tools src games samples tests` => no entries
+
+[PASS] enforcement map created
+Evidence: `docs/dev/reports/cleanup_target_enforcement_map.md`
+
+[PASS] cleanup execution guard created
+Evidence: `docs/dev/reports/cleanup_execution_guard.md`
+
+[PASS] normalization report created
+Evidence: `docs/dev/reports/cleanup_target_normalization_report.md`
+
+[PASS] no new cleanup targets introduced
+Evidence: enforcement map contains only approved six targets from PR spec
+
+[PASS] roadmap unchanged or bracket-only if changed
+Evidence: `git diff --unified=0 -- docs/dev/roadmaps/MASTER_ROADMAP_HIGH_LEVEL.md` => no diff in this lane
+
 [PASS] protected start_of_day directories untouched
-Evidence: `git status --short -- docs/dev/start_of_day/chatGPT docs/dev/start_of_day/codex` -> no entries
-
-[PASS] `templates/` not moved/renamed/deleted
-Evidence: `git diff --name-status -- templates` -> no entries
-
-[PASS] no runtime import rewrites performed
-Evidence: working-tree changes are docs-only (`git diff --name-only`); import/require guard scan shows no direct module imports from `templates/`
-
-[PASS] templates evidence reports created
-Evidence:
-- `docs/dev/reports/templates_live_usage_inventory.md`
-- `docs/dev/reports/templates_policy_decision.md`
-- `docs/dev/reports/templates_validation_guard.md`
-- `docs/dev/reports/BUILD_PR_TEMPLATES_POLICY_CLASSIFICATION_report.md`
-
-[PASS] no unrelated cleanup targets changed
-Evidence: no changes under `SpriteEditor_old_keep` or `classes_old_keep`; no unrelated cleanup-matrix/inventory files modified in this lane
-
-[PASS] roadmap wording preserved if roadmap changed
-Evidence: `git diff --unified=0 -- docs/dev/roadmaps/MASTER_ROADMAP_HIGH_LEVEL.md` shows only checkbox state update on existing line
-
-[PASS] roadmap changes bracket-only if roadmap changed
-Evidence: automated check -> `BRACKET_ONLY_CHECK: PASS`
+Evidence: `git status --short -- docs/dev/start_of_day/chatGPT docs/dev/start_of_day/codex` => no entries

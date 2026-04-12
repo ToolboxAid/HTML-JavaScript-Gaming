@@ -1,1 +1,1 @@
-After this BUILD completes, create the next exact-scope cleanup BUILD from the resulting templates policy: either a templates-retain-and-guard lane or a tightly scoped templates-migration lane, whichever the evidence supports.
+After Codex completes this BUILD and the output files validate, the next testable lane should be a single-target cleanup BUILD such as a legacy-import-guard lane or an archived-notes-policy lane, chosen strictly from the approved cleanup target set.

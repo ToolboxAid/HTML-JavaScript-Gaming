@@ -1,1 +1,1 @@
-BUILD_PR_TEMPLATES_POLICY_CLASSIFICATION: add templates usage inventory, conservative policy baseline, and future cleanup validation guards without moving or rewriting templates.
+BUILD_PR_TARGETED_REPO_CLEANUP_PASS_1 - targeted cleanup enforcement/normalization docs lane
