@@ -70,7 +70,7 @@
 ---
 
 ## 0. Workflow + Delivery Foundation
-- [x] PLAN â†’ BUILD â†’ APPLY workflow defined
+- [x] PLAN => BUILD => APPLY workflow defined
 - [x] docs-first operating model established
 - [x] repo-structured ZIP delivery established
 - [x] validation-gate model established
@@ -584,7 +584,7 @@
 ## Dependency-Ordered Future Build Sequence
 
 ### Active Execution Lanes
-- [x] Finish current promotion-gate lane (BUILD â†’ APPLY)
+- [x] Finish current promotion-gate lane (BUILD => APPLY)
 - [.] Apply repo structure normalization implementation plan
 - [.] Extract / normalize shared utilities
 - [.] Normalize phase-13 network concepts samples
