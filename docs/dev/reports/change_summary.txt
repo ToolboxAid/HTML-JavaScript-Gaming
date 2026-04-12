@@ -1,4 +1,4 @@
-- codex-only execution lane
-- move starter-project-template to tools/templates
-- preserve vector-native template under tools/templates
-- no archive move
+- low-token engine import baseline lane
+- no import rewrites
+- no structural moves
+- records current /src/engine usage as contract candidate

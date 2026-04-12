@@ -1,27 +1,32 @@
-APPLY_PR_TEMPLATES_ROOT_REMOVE_AFTER_RELOCATION
+BUILD_PR_ENGINE_IMPORT_BASELINE_AND_CONTRACT
 Validation Checklist
 Generated: 2026-04-12
 
-[PASS] tools/templates/vector-native-arcade exists
+[PASS] baseline scan completed across required directories
 Evidence:
-- `Test-Path tools/templates/vector-native-arcade` -> `True`
+- scanned `src/`, `games/`, `samples/`, `tools/` for `/src/engine/` usage
+- included HTML-specific scan under same areas
 
-[PASS] tools/templates/starter-project-template exists
+[PASS] baseline report created
 Evidence:
-- `Test-Path tools/templates/starter-project-template` -> `True`
+- `docs/dev/reports/engine_import_baseline_report.md`
 
-[PASS] templates root has no active files
+[PASS] contract decision created
 Evidence:
-- `Get-ChildItem -Recurse -File templates | Measure-Object` -> `0`
+- `docs/dev/reports/engine_import_contract_decision.md`
 
-[FAIL] no non-doc runtime references to "templates/"
+[PASS] BUILD report created
 Evidence:
-- `rg -n "templates/" --glob "!docs/**"` returned matches
+- `docs/dev/reports/BUILD_PR_ENGINE_IMPORT_BASELINE_AND_CONTRACT_report.md`
 
-[SKIP] delete templates/
+[PASS] no import rewrites performed
 Evidence:
-- skipped because validation did not pass
+- lane executed as scan+docs-only baseline/decision pass
 
-[PASS] docs/dev/start_of_day untouched
+[PASS] no move/delete operations performed
 Evidence:
-- `git diff --name-only -- docs/dev/start_of_day` -> no entries
+- lane executed as docs-only reporting pass
+
+[PASS] protected start_of_day directories untouched
+Evidence:
+- `git diff --name-only -- docs/dev/start_of_day/chatGPT docs/dev/start_of_day/codex` -> no entries

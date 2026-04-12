@@ -1,32 +1,29 @@
 MODEL: GPT-5.3-codex
-REASONING: medium
+REASONING: low
 
 COMMAND:
-Execute BUILD_PR_STARTER_PROJECT_TEMPLATE_MOVE_TOOLS.
+Execute BUILD_PR_ENGINE_IMPORT_BASELINE_AND_CONTRACT.
 
-Do the work in this PR. Do not ask for clarification.
+Do not ask for clarification.
 
-Required actions:
-1. Move:
-   templates/starter-project-template/
-   ->
-   tools/templates/starter-project-template/
-2. Update only exact references that must change for correctness after the move.
-3. Do NOT touch:
-   - tools/templates/vector-native-arcade/
-   - docs/dev/start_of_day/chatGPT/
-   - docs/dev/start_of_day/codex/
-   - docs/archive/
-
-Create:
-- docs/dev/reports/starter_project_template_move_report.md
+Create exactly:
+- docs/dev/reports/engine_import_baseline_report.md
+- docs/dev/reports/engine_import_contract_decision.md
+- docs/dev/reports/BUILD_PR_ENGINE_IMPORT_BASELINE_AND_CONTRACT_report.md
 - docs/dev/reports/validation_checklist.txt
 
-Validation required:
-- new tools/templates starter-project-template path exists
-- old templates/starter-project-template path no longer exists
-- vector-native template location remains untouched
-- protected start_of_day directories untouched
+Required work:
+1. Baseline current `/src/engine/` usage across src/, games/, samples/, tools/, and relevant HTML files.
+2. Summarize whether the current import style is already a stable baseline contract.
+3. Do NOT rewrite imports in this PR.
+4. Do NOT move files or folders.
+5. Do NOT touch templates/archive lanes.
+6. Do NOT change anything under:
+   - docs/dev/start_of_day/chatGPT/
+   - docs/dev/start_of_day/codex/
+
+If exact roadmap lines already exist and are justified by findings, bracket-only state updates are allowed.
+Otherwise, record unapplied delta and leave roadmap wording untouched.
 
 Package output to:
-<project folder>/tmp/BUILD_PR_STARTER_PROJECT_TEMPLATE_MOVE_TOOLS.zip
+<project folder>/tmp/BUILD_PR_ENGINE_IMPORT_BASELINE_AND_CONTRACT.zip

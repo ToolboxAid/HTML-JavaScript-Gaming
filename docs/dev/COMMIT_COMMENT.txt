@@ -1,1 +1,1 @@
-Relocate starter-project-template to tools/templates and preserve active template surfaces
+Baseline current /src/engine import usage and record the active engine import contract
