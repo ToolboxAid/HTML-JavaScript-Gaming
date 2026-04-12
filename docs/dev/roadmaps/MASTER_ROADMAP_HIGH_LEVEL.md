@@ -564,7 +564,7 @@
 - [ ] archived notes policy defined
 - [ ] imports pointing to legacy paths reduced
 - [.] roadmap for eventual legacy retirement defined
-- [ ] `templates/` folder evaluated for keep vs move vs future-delete during cleanup phase (explicitly deferred in this docs-only bundle)
+- [.] `templates/` folder evaluated for keep vs move vs future-delete during cleanup phase (explicitly deferred in this docs-only bundle)
 
 ---
 

@@ -1,1 +1,1 @@
-BUILD_PR_REPO_CLEANUP_AND_ROADMAP_UPDATE: apply conservative roadmap bracket-state updates and generate reference-safe cleanup evidence reports without deleting, moving, renaming, or touching templates/.
+BUILD_PR_TEMPLATES_POLICY_CLASSIFICATION: add templates usage inventory, conservative policy baseline, and future cleanup validation guards without moving or rewriting templates.

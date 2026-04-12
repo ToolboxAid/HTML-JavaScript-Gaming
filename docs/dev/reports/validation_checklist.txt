@@ -1,32 +1,28 @@
-BUILD_PR_REPO_CLEANUP_AND_ROADMAP_UPDATE
+﻿BUILD_PR_TEMPLATES_POLICY_CLASSIFICATION
 Validation Checklist
 Generated: 2026-04-12
 
-[PASS] roadmap wording preserved
-- Evidence: roadmap diff shows only one checkbox marker transition line and no non-bracket content edits.
+[PASS] protected start_of_day directories untouched
+Evidence: `git status --short -- docs/dev/start_of_day/chatGPT docs/dev/start_of_day/codex` -> no entries
 
-[PASS] roadmap changes bracket-only
-- Evidence:
-  - changed: "- [.] smoke validation aligned to samples/tools/games"
-  - to:      "- [x] smoke validation aligned to samples/tools/games"
-  - non-bracket changed lines: none
+[PASS] `templates/` not moved/renamed/deleted
+Evidence: `git diff --name-status -- templates` -> no entries
 
-[PASS] no protected start_of_day directories touched
-- Evidence: `git status --short -- docs/dev/start_of_day/chatGPT docs/dev/start_of_day/codex` returned no entries.
+[PASS] no runtime import rewrites performed
+Evidence: working-tree changes are docs-only (`git diff --name-only`); import/require guard scan shows no direct module imports from `templates/`
 
-[PASS] no deletion/move/rename executed
-- Evidence: `git diff --name-status -- <PR target files>` returned only `M` statuses for tracked files and no `D`/`R` entries.
+[PASS] templates evidence reports created
+Evidence:
+- `docs/dev/reports/templates_live_usage_inventory.md`
+- `docs/dev/reports/templates_policy_decision.md`
+- `docs/dev/reports/templates_validation_guard.md`
+- `docs/dev/reports/BUILD_PR_TEMPLATES_POLICY_CLASSIFICATION_report.md`
 
-[PASS] templates/ untouched
-- Evidence: `git status --short -- templates` returned no entries.
+[PASS] no unrelated cleanup targets changed
+Evidence: no changes under `SpriteEditor_old_keep` or `classes_old_keep`; no unrelated cleanup-matrix/inventory files modified in this lane
 
-[PASS] evidence reports created
-- Evidence:
-  - docs/dev/reports/cleanup_live_reference_inventory.txt
-  - docs/dev/reports/cleanup_keep_move_future_delete_matrix.md
-  - docs/dev/reports/BUILD_PR_REPO_CLEANUP_AND_ROADMAP_UPDATE_report.md
-  - docs/dev/reports/validation_checklist.txt
+[PASS] roadmap wording preserved if roadmap changed
+Evidence: `git diff --unified=0 -- docs/dev/roadmaps/MASTER_ROADMAP_HIGH_LEVEL.md` shows only checkbox state update on existing line
 
-[PASS] no unrelated repo files changed (bundle-scoped)
-- Evidence: this BUILD bundle modifies/creates only roadmap + cleanup evidence report files listed in the BUILD report.
-- Note: unrelated pre-existing workspace changes outside this bundle were preserved and not altered by this BUILD.
+[PASS] roadmap changes bracket-only if roadmap changed
+Evidence: automated check -> `BRACKET_ONLY_CHECK: PASS`
