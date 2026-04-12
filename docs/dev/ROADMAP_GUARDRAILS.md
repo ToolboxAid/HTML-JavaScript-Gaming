@@ -1,14 +1,16 @@
-# 🛡️ Roadmap Guardrails
+# Roadmap Guardrails
 
 ## Purpose
-Prevent accidental corruption of BIG_PICTURE_ROADMAP.md by enforcing strict update rules.
+Prevent accidental corruption or path drift of the active master roadmap.
 
-## RULE: TRACKER FILE PROTECTION
-The file `docs/dev/BIG_PICTURE_ROADMAP.md` is a status tracker only.
+## TRACKER FILE PROTECTION
+The active master roadmap file is:
+
+`docs/dev/roadmaps/MASTER_ROADMAP_HIGH_LEVEL.md`
 
 ### Allowed Changes
-- Change ONLY:
-  - [ ] → [.] → [x]
+- Change ONLY bracket states:
+  - `[ ]` → `[.]` → `[x]`
 
 ### Forbidden Changes
 - Adding/removing sections
@@ -16,12 +18,23 @@ The file `docs/dev/BIG_PICTURE_ROADMAP.md` is a status tracker only.
 - Reordering items
 - Renaming tracks
 - Collapsing or expanding content
+- Moving the active master roadmap out of `docs/dev/roadmaps/`
+- Creating duplicate active roadmap copies elsewhere
 
-## VALIDATION CHECK
-Any change to BIG_PICTURE_ROADMAP.md must pass:
-- Headings unchanged
-- No text modified outside brackets
-- Only bracket states updated
+## PATH RULE
+All active roadmap files MUST live in:
+- `docs/dev/roadmaps/`
 
-## CODEX RULE
-Codex must treat this file as immutable structure and perform surgical edits only.
+Never use:
+- `docs/roadmaps/`
+- `docs/dev/BIG_PICTURE_ROADMAP.md` as the active master roadmap
+
+## Validation Check
+Any change to the active master roadmap must pass:
+- headings unchanged
+- no text modified outside brackets
+- only bracket states updated
+- file path remains under `docs/dev/roadmaps/`
+
+## Codex Rule
+Codex must treat the active roadmap as immutable structure and perform surgical edits only.

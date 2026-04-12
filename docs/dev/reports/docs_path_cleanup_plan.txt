@@ -1,0 +1,30 @@
+DOCS PATH CLEANUP PLAN
+
+KEEP WHERE IT IS
+- docs/dev/roadmaps/MASTER_ROADMAP_HIGH_LEVEL.md
+- docs/dev/PLANNING_SYSTEM_RULES.md
+- docs/dev/CODEX_COMMANDS.md
+- docs/dev/COMMIT_COMMENT.txt
+- docs/dev/ROADMAP_GUARDRAILS.md
+- docs/dev/reports/*
+- docs/pr/*
+- docs/archive/*
+
+MOVE
+- docs/dev/BIG_PICTURE_ROADMAP.md
+  -> move to docs/dev/roadmaps/BIG_PICTURE_ROADMAP.md if still needed as an active roadmap
+  -> otherwise archive to docs/archive/dev-ops/ if superseded
+
+- docs/dev/reports/roadmap_move_manifest.txt
+  -> move to docs/archive/dev-ops/roadmap_move_manifest.txt after the roadmap move is complete
+  -> it is a transitional operational artifact, not a permanent active report
+
+DELETE
+- docs/roadmaps/
+  -> safe to delete if empty
+  -> do not recreate
+
+RULES
+- active roadmap files live only in docs/dev/roadmaps/
+- transitional move manifests should not remain in active reports forever
+- no duplicate active roadmap copies in multiple folders
