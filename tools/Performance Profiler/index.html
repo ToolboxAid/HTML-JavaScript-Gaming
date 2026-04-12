@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Performance Profiler</title>
+  <link rel="stylesheet" href="../../src/engine/ui/hubCommon.css" />
+  <link rel="stylesheet" href="../shared/platformShell.css" />
+  <link rel="stylesheet" href="../shared/debugInspectorTools.css" />
+</head>
+<body class="tools-platform-tool-page" data-tool-id="performance-profiler" data-tools-platform-page="tool">
+  <div data-tools-platform-header></div>
+  <div class="debug-tool-shell app-shell">
+    <section class="panel debug-tool-panel">
+      <h2>Performance Profiler</h2>
+      <p>Run baseline deterministic workload and frame cadence sampling to inspect timing health.</p>
+      <div class="debug-tool-actions">
+        <button type="button" id="runWorkloadButton">Run Workload Profile</button>
+        <button type="button" id="runFrameSampleButton">Run Frame Sample</button>
+        <button type="button" id="stopProfilerButton">Stop</button>
+      </div>
+      <div id="profilerStatusText" class="debug-tool-meta">Profiler ready.</div>
+    </section>
+
+    <section class="debug-tool-grid">
+      <section class="panel debug-tool-panel">
+        <h3>Profile Settings</h3>
+        <label>
+          Workload iterations
+          <input id="workloadIterationsInput" type="number" min="10" max="5000" step="10" value="300" />
+        </label>
+        <label>
+          Work size per iteration
+          <input id="workSizeInput" type="number" min="100" max="100000" step="100" value="3000" />
+        </label>
+        <label>
+          Frame samples
+          <input id="frameSamplesInput" type="number" min="10" max="600" step="10" value="120" />
+        </label>
+      </section>
+
+      <section class="panel debug-tool-panel">
+        <h3>Profile Output</h3>
+        <pre id="profileOutput" class="debug-tool-readout">Run a workload or frame sample to inspect performance metrics.</pre>
+      </section>
+    </section>
+  </div>
+  <div data-tools-platform-status></div>
+  <script type="module" src="../shared/platformShell.js"></script>
+  <script type="module" src="./main.js"></script>
+</body>
+</html>

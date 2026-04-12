@@ -1,1 +1,1 @@
-docs: add BUILD_PR asset pipeline validation & output bundle
+docs: add BUILD_PR debug / inspector tools bundle

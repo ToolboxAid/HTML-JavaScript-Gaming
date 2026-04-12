@@ -2,16 +2,17 @@ MODEL: GPT-5.4
 REASONING: high
 
 COMMAND:
-Create BUILD_PR_ASSET_PIPELINE_VALIDATION_OUTPUT
+Create BUILD_PR_DEBUG_INSPECTOR_TOOLS
 
 Scope:
-- add validation stage
-- add export/output stage
-- integrate with pipeline
+- add state inspector tool
+- add replay visualizer tool
+- add basic performance profiler
+- integrate with tool host
 
 Validation:
 - npm run test:launch-smoke -- --tools
-- verify assets validate and export
+- verify tools launch and inspect data
 
 Output:
-<project>/tmp/BUILD_PR_ASSET_PIPELINE_VALIDATION_OUTPUT_delta.zip
+<project>/tmp/BUILD_PR_DEBUG_INSPECTOR_TOOLS_delta.zip

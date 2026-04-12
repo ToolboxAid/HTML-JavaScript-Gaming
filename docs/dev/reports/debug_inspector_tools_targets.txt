@@ -1,0 +1,9 @@
+DEBUG / INSPECTOR TOOL TARGETS
+
+- State Inspector
+- Replay Visualizer
+- Performance Profiler (basic)
+
+Keep:
+- minimal UI
+- read-only interactions initially

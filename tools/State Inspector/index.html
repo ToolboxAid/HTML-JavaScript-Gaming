@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>State Inspector</title>
+  <link rel="stylesheet" href="../../src/engine/ui/hubCommon.css" />
+  <link rel="stylesheet" href="../shared/platformShell.css" />
+  <link rel="stylesheet" href="../shared/debugInspectorTools.css" />
+</head>
+<body class="tools-platform-tool-page" data-tool-id="state-inspector" data-tools-platform-page="tool">
+  <div data-tools-platform-header></div>
+  <div class="debug-tool-shell app-shell">
+    <section class="panel debug-tool-panel">
+      <h2>State Inspector</h2>
+      <p>Read-only runtime visibility for host context, shared project state, and persisted storage snapshots.</p>
+      <div class="debug-tool-actions">
+        <button type="button" id="refreshSnapshotButton">Refresh Snapshot</button>
+        <button type="button" id="loadJsonButton">Inspect JSON</button>
+      </div>
+      <div id="stateInspectorStatus" class="debug-tool-meta">Inspector ready.</div>
+    </section>
+
+    <section class="debug-tool-grid">
+      <section class="panel debug-tool-panel">
+        <h3>JSON Input</h3>
+        <p>Paste JSON to inspect arbitrary state payloads.</p>
+        <textarea id="stateJsonInput" rows="16" placeholder='{"example":"state"}'></textarea>
+      </section>
+
+      <section class="panel debug-tool-panel">
+        <h3>Inspection Snapshot</h3>
+        <pre id="stateSnapshotOutput" class="debug-tool-readout">Snapshot output will appear here.</pre>
+      </section>
+    </section>
+  </div>
+  <div data-tools-platform-status></div>
+  <script type="module" src="../shared/platformShell.js"></script>
+  <script type="module" src="./main.js"></script>
+</body>
+</html>
