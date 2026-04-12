@@ -15,7 +15,7 @@ Bundle type: execution-ready BUILD docs
 ## Enforcement-Map Summary
 - Formalized enforcement for exactly six approved cleanup targets:
   - `templates/`
-  - `tools/SpriteEditor_old_keep/` policy target
+  - `docs/archive/tools/SpriteEditor_old_keep/` policy target
   - `classes_old_keep` policy target
   - `docs/archive/` archived-notes policy target
   - legacy import path patterns
@@ -78,3 +78,4 @@ Bundle type: execution-ready BUILD docs
    - `git diff --name-only -- tools src games samples tests`
    - Result: no entries.
    - Guard result: `RUNTIME_TEST_SURFACE_CHECK: PASS`.
+

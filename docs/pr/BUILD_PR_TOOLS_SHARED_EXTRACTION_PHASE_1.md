@@ -1,4 +1,4 @@
-# BUILD_PR_TOOLS_SHARED_EXTRACTION_PHASE_1
+﻿# BUILD_PR_TOOLS_SHARED_EXTRACTION_PHASE_1
 
 ## PR Purpose
 Conservative exact-cluster helper normalization for active tools, limited to shared helper reuse and import normalization.
@@ -15,7 +15,7 @@ Conservative exact-cluster helper normalization for active tools, limited to sha
 - No editor-state extraction.
 - No render-pipeline rewrites.
 - No tool-host work.
-- Preserve `tools/SpriteEditor_old_keep`.
+- Preserve `docs/archive/tools/SpriteEditor_old_keep`.
 - Keep changed-file count minimal.
 - Stop and report if helper semantics diverge too much.
 
@@ -42,10 +42,11 @@ Conservative exact-cluster helper normalization for active tools, limited to sha
 Stop and report if:
 - helper semantics differ enough to risk behavior change
 - extraction requires editor-state or render-pipeline refactor
-- `tools/SpriteEditor_old_keep` would need modification
+- `docs/archive/tools/SpriteEditor_old_keep` would need modification
 - scope expands beyond exact target files
 
 ## Required Output
 - Reports under `docs/dev/reports/`
 - Repo-structured delta ZIP at exact path:
   - `tmp/BUILD_PR_TOOLS_SHARED_EXTRACTION_PHASE_1_delta.zip`
+

@@ -1,11 +1,11 @@
-TOOLS/SHARED NORMALIZATION INVENTORY
+﻿TOOLS/SHARED NORMALIZATION INVENTORY
 
 Active tools discovered:
 - tools/Asset Browser
 - tools/Palette Browser
 - tools/Parallax Scene Studio
 - tools/Sprite Editor
-- tools/SpriteEditor_old_keep
+- docs/archive/tools/SpriteEditor_old_keep
 - tools/Tilemap Studio
 - tools/Vector Asset Studio
 - tools/Vector Map Editor
@@ -28,3 +28,4 @@ Existing shared tooling layer:
 Observation:
 - The repo already has a meaningful `tools/shared` surface.
 - The next lane should normalize and constrain it rather than inventing a new shared layer from scratch.
+

@@ -15,7 +15,7 @@ Compared Sources:
 | Target | Name Consistency | Path Consistency | Classification Consistency | Tracking Presence | Mismatch Found? |
 | --- | --- | --- | --- | --- | --- |
 | `templates/` | yes | yes | no | yes | yes |
-| `tools/SpriteEditor_old_keep/` policy target | yes (policy label vs path label both map to same target) | yes | yes | yes | no |
+| `docs/archive/tools/SpriteEditor_old_keep/` policy target | yes (policy label vs path label both map to same target) | yes | yes | yes | no |
 | `classes_old_keep` policy target | yes | yes (as policy placeholder path) | yes | yes | no |
 | `docs/archive/` archived-notes policy target | yes | yes | yes | yes | no |
 | Legacy import path patterns | yes | yes (pattern-based target) | yes | yes | no |
@@ -36,3 +36,4 @@ Compared Sources:
 - All approved targets are present and traceable across cleanup targets, inventory, matrix, and roadmap tracking.
 - Aside from the templates classification terminology mismatch, alignment is acceptable for this enforcement/normalization pass.
 - No wording rewrites were applied in this PR to force normalization.
+

@@ -1,3 +1,3 @@
-BUILD_PR_TARGETED_REPO_CLEANUP_PASS_3_ARCHIVED_NOTES_POLICY
+BUILD_PR_TARGETED_REPO_CLEANUP_PASS_4B_SPRITEEDITOR_MOVE_TO_ARCHIVE
 
-Create archived notes policy inventory, decision, and validation guard as a docs-only, non-destructive cleanup lane.
+Moved SpriteEditor_old_keep to archive for reference-only usage.

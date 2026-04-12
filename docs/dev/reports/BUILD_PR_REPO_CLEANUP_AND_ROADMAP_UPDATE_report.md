@@ -1,4 +1,4 @@
-# BUILD_PR_REPO_CLEANUP_AND_ROADMAP_UPDATE Report
+﻿# BUILD_PR_REPO_CLEANUP_AND_ROADMAP_UPDATE Report
 
 ## Bundle Type
 - Execution-ready BUILD docs (non-destructive cleanup-evidence lane).
@@ -34,7 +34,7 @@ Per BUILD constraints, wording was left intact and no forced rewrite was perform
 
 ## Cleanup Inventory Findings Summary
 - `templates/`: exists; live references in active tooling/tests/docs; classification requires manual review in later cleanup lane.
-- `tools/SpriteEditor_old_keep/`: exists; live references in registry/spec/report docs; remains keep-only legacy candidate for later policy PR.
+- `docs/archive/tools/SpriteEditor_old_keep/`: exists; live references in registry/spec/report docs; remains keep-only legacy candidate for later policy PR.
 - `classes_old_keep`: path does not exist; docs-only planning references present.
 - `docs/archive/` archived notes area: exists and actively referenced in documentation structure/policy docs.
 - Legacy import path scan (`/engine/`, `../engine/`, `./engine/` in tools/src/games/samples): no direct matches.
@@ -55,3 +55,4 @@ Per BUILD constraints, wording was left intact and no forced rewrite was perform
 - `templates/` untouched: PASS
 - Evidence reports created: PASS
 - No unrelated repo files changed (bundle-scoped): PASS
+

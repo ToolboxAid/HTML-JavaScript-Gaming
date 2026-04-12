@@ -1,4 +1,4 @@
-# BUILD_PR_TOOLS_THEME_REUSE_BASELINE
+﻿# BUILD_PR_TOOLS_THEME_REUSE_BASELINE
 
 ## PR Purpose
 Apply a minimal tools theme reuse baseline as a docs-to-code follow-up to `PLAN_PR_TOOLS_SHARED_NORMALIZATION`, limited to shell/theme/layout normalization and stylesheet token alignment for active tools.
@@ -13,7 +13,7 @@ Apply a minimal tools theme reuse baseline as a docs-to-code follow-up to `PLAN_
   - `tools/Tilemap Studio/`
   - `tools/Vector Asset Studio/`
   - `tools/Vector Map Editor/`
-- Keep `tools/SpriteEditor_old_keep/` unchanged.
+- Keep `docs/archive/tools/SpriteEditor_old_keep/` unchanged.
 - Do not refactor tool-specific behavior.
 - Do not rewrite roadmap wording.
 - Do not touch `docs/dev/start_of_day/*`.
@@ -49,7 +49,7 @@ Apply a minimal tools theme reuse baseline as a docs-to-code follow-up to `PLAN_
 ## Failure Conditions
 Stop and report if:
 - scope expands beyond the exact files listed above
-- `tools/SpriteEditor_old_keep/` requires edits
+- `docs/archive/tools/SpriteEditor_old_keep/` requires edits
 - start_of_day directories require edits
 - a touched tool cannot load after theme normalization
 
@@ -57,3 +57,4 @@ Stop and report if:
 - Validation report files under `docs/dev/reports/`
 - Repo-structured delta ZIP at exact path:
   - `tmp/BUILD_PR_TOOLS_THEME_REUSE_BASELINE_delta.zip`
+

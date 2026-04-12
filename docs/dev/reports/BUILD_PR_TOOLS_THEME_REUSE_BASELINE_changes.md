@@ -1,4 +1,4 @@
-# BUILD_PR_TOOLS_THEME_REUSE_BASELINE - Changes Report
+﻿# BUILD_PR_TOOLS_THEME_REUSE_BASELINE - Changes Report
 
 Date: 2026-04-11
 
@@ -21,6 +21,6 @@ Date: 2026-04-11
 - Did not modify tool JavaScript behavior.
 
 ## Explicit Non-Changes
-- No edits in `tools/SpriteEditor_old_keep/`.
+- No edits in `docs/archive/tools/SpriteEditor_old_keep/`.
 - No edits in `docs/dev/start_of_day/`.
 - No roadmap wording changes.

@@ -1,4 +1,4 @@
-BUILD_PR_REPO_CLEANUP_AND_ROADMAP_UPDATE
+﻿BUILD_PR_REPO_CLEANUP_AND_ROADMAP_UPDATE
 Cleanup Live Reference Inventory
 Generated: 2026-04-12
 
@@ -20,7 +20,7 @@ Target 1: templates/
 - Notes: path is active for template-backed tooling and tests; cleanup decision must be deferred and reference-safe.
 
 Target 2: SpriteEditor_old_keep policy locations/references
-- Exact path: tools/SpriteEditor_old_keep/
+- Exact path: docs/archive/tools/SpriteEditor_old_keep/
 - Exists: yes
 - Inbound references:
   - runtime/config refs:
@@ -74,7 +74,7 @@ Target 5: imports/references pointing to legacy paths
 - Exists: pattern-based check
 - Inbound references:
   - old engine import patterns above: no matches in tools/src/games/samples
-  - legacy path docs references exist for tools/SpriteEditor_old_keep and templates/ (planning + archival context)
+  - legacy path docs references exist for docs/archive/tools/SpriteEditor_old_keep and templates/ (planning + archival context)
 - Assessment: mixed (code imports: zero-reference; docs/file refs: live-reference)
 - Notes: no direct legacy-engine import usage was found in active code for inspected patterns; legacy references persist in docs/planning surfaces.
 
@@ -90,3 +90,4 @@ Target 6: eventual legacy-retirement candidates already called out in cleanup pl
   - cleanup targets list: "eventual legacy retirement roadmap"
 - Assessment: live-reference (planning)
 - Notes: candidate list exists and is referenced; execution remains deferred to dedicated cleanup PRs.
+

@@ -1,4 +1,4 @@
-# BUILD_PR_TARGETED_REPO_CLEANUP_PASS_1
+﻿# BUILD_PR_TARGETED_REPO_CLEANUP_PASS_1
 
 ## PR Purpose
 Create one execution-ready, testable targeted cleanup pass that converts the existing cleanup evidence into enforceable guard artifacts and normalized tracking for the already-approved cleanup targets.
@@ -71,7 +71,7 @@ For each approved cleanup target, capture:
 
 The target list is limited to:
 - `templates/`
-- `tools/SpriteEditor_old_keep/` policy target
+- `docs/archive/tools/SpriteEditor_old_keep/` policy target
 - `classes_old_keep` policy target
 - `docs/archive/` archived-notes policy target
 - legacy import path patterns
@@ -220,3 +220,4 @@ Codex should package its output ZIP under:
 - `<project folder>/tmp/BUILD_PR_TARGETED_REPO_CLEANUP_PASS_1.zip`
 
 The ZIP must preserve exact repo-relative structure and include only files relevant to this PR.
+

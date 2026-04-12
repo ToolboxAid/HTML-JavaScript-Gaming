@@ -1,11 +1,11 @@
-# BUILD_PR_TOOLS_THEME_REUSE_BASELINE - Validation Report
+﻿# BUILD_PR_TOOLS_THEME_REUSE_BASELINE - Validation Report
 
 Date: 2026-04-11
 Branch: main
 
 ## Scope Checks
 - PASS: start_of_day directories unchanged (`git status --short -- docs/dev/start_of_day`)
-- PASS: `tools/SpriteEditor_old_keep` unchanged (`git status --short -- tools/SpriteEditor_old_keep`)
+- PASS: `docs/archive/tools/SpriteEditor_old_keep` unchanged (`git status --short -- docs/archive/tools/SpriteEditor_old_keep`)
 - PASS: active tool targets limited to seven tool CSS files
 
 ## Static Contract Validation

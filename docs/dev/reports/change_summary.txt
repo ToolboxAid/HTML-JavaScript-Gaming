@@ -1,4 +1,3 @@
-- Replaces the prior non-executable APPLY step with a real Codex-run BUILD lane.
-- Narrows scope to one cleanup target only: archived notes policy.
-- Keeps the lane non-destructive and docs-only.
-- Leaves templates/, runtime code, and repo structure untouched.
+- Moves SpriteEditor_old_keep to archive
+- Converts to reference-only asset
+- No runtime or template impact
