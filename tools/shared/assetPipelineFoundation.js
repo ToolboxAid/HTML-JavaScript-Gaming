@@ -5,10 +5,16 @@ import {
   upsertRegistryEntry
 } from "./projectAssetRegistry.js";
 import { cloneValue, safeString } from "./projectSystemValueUtils.js";
+import {
+  convertAssetPipelineCandidate,
+  createAssetPipelineConverterRegistry,
+  listAssetPipelineConverters
+} from "./assetPipelineConverters.js";
 
 export const ASSET_PIPELINE_STAGES = Object.freeze({
   INGEST: "ingest",
   NORMALIZE: "normalize",
+  CONVERT: "convert",
   VALIDATE: "validate",
   REGISTER: "register"
 });
@@ -24,6 +30,7 @@ export const ASSET_PIPELINE_SECTION_RULES = Object.freeze({
 });
 
 const KNOWN_PIPELINE_SECTIONS = Object.freeze(Object.keys(ASSET_PIPELINE_SECTION_RULES));
+const DEFAULT_PIPELINE_CONVERTER_REGISTRY = createAssetPipelineConverterRegistry();
 
 function normalizeSection(section, fallback = "") {
   const safeSection = safeString(section, fallback);
@@ -45,6 +52,10 @@ function buildFallbackLabel(candidate) {
     return normalizedPath.split("/").pop() || normalizedPath;
   }
   return safeString(candidate.section, "asset");
+}
+
+function ensureConverterRegistry(registry) {
+  return registry instanceof Map ? registry : DEFAULT_PIPELINE_CONVERTER_REGISTRY;
 }
 
 export function ingestAssetPipelineCandidate(input = {}) {
@@ -81,8 +92,18 @@ export function normalizeAssetPipelineCandidate(rawCandidate = {}) {
   };
 }
 
-export function validateAssetPipelineCandidate(rawCandidate = {}) {
-  const candidate = normalizeAssetPipelineCandidate(rawCandidate);
+export function convertNormalizedAssetPipelineCandidate(candidate, options = {}) {
+  const conversion = options.conversion && typeof options.conversion === "object"
+    ? cloneValue(options.conversion)
+    : {};
+  const converterRegistry = ensureConverterRegistry(options.converterRegistry);
+  return convertAssetPipelineCandidate(candidate, { conversion, converterRegistry });
+}
+
+export function validateNormalizedAssetPipelineCandidate(candidateInput = {}) {
+  const candidate = candidateInput && typeof candidateInput === "object"
+    ? cloneValue(candidateInput)
+    : normalizeAssetPipelineCandidate(candidateInput);
   const issues = [];
   const warnings = [];
 
@@ -117,6 +138,11 @@ export function validateAssetPipelineCandidate(rawCandidate = {}) {
   };
 }
 
+export function validateAssetPipelineCandidate(rawCandidate = {}) {
+  const candidate = normalizeAssetPipelineCandidate(rawCandidate);
+  return validateNormalizedAssetPipelineCandidate(candidate);
+}
+
 export function registerAssetPipelineCandidate(options = {}) {
   const incomingRegistry = options.registry && typeof options.registry === "object"
     ? options.registry
@@ -128,7 +154,14 @@ export function registerAssetPipelineCandidate(options = {}) {
     ...options.ingest,
     section: safeString(options.section, options.ingest?.section || "")
   };
-  const validation = validateAssetPipelineCandidate(ingestInput);
+
+  const normalizedCandidate = normalizeAssetPipelineCandidate(ingestInput);
+  const conversionResult = convertNormalizedAssetPipelineCandidate(normalizedCandidate, {
+    conversion: options.conversion,
+    converterRegistry: options.converterRegistry
+  });
+  const candidate = conversionResult.candidate;
+  const validation = validateNormalizedAssetPipelineCandidate(candidate);
   const registry = sanitizeAssetRegistry(incomingRegistry);
 
   if (!validation.valid) {
@@ -137,30 +170,31 @@ export function registerAssetPipelineCandidate(options = {}) {
       valid: false,
       registry,
       entry: null,
-      validation
+      validation,
+      conversion: conversionResult
     };
   }
 
-  const normalized = validation.candidate;
-  const rules = ASSET_PIPELINE_SECTION_RULES[normalized.section] || { requiresPath: true };
+  const rules = ASSET_PIPELINE_SECTION_RULES[candidate.section] || { requiresPath: true };
   const entry = {
-    id: normalized.id,
-    name: normalized.name,
-    sourceTool: normalized.sourceTool,
+    id: candidate.id,
+    name: candidate.name,
+    sourceTool: candidate.sourceTool,
     ...entryFields
   };
 
   if (rules.requiresPath === true) {
-    entry.path = normalized.path;
+    entry.path = candidate.path;
   }
 
-  const nextRegistry = upsertRegistryEntry(registry, normalized.section, entry);
+  const nextRegistry = upsertRegistryEntry(registry, candidate.section, entry);
   return {
     stage: ASSET_PIPELINE_STAGES.REGISTER,
     valid: true,
     registry: nextRegistry,
     entry,
-    validation
+    validation,
+    conversion: conversionResult
   };
 }
 
@@ -168,6 +202,7 @@ export function summarizeAssetPipelineRules() {
   return {
     schema: "tools.asset-pipeline-foundation-rules/1",
     stages: cloneValue(ASSET_PIPELINE_STAGES),
-    sectionRules: cloneValue(ASSET_PIPELINE_SECTION_RULES)
+    sectionRules: cloneValue(ASSET_PIPELINE_SECTION_RULES),
+    converters: listAssetPipelineConverters(DEFAULT_PIPELINE_CONVERTER_REGISTRY)
   };
 }

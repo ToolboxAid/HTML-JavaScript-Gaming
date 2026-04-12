@@ -1,0 +1,9 @@
+ASSET PIPELINE CONVERTER TARGETS
+
+- tile → vector (basic)
+- vector → tile (basic)
+- sprite normalization
+
+Keep:
+- minimal logic
+- no heavy transforms
