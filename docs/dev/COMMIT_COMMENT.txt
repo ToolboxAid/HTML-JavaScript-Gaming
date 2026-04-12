@@ -1,1 +1,1 @@
-Validate engine import baseline and confirm contract stability
+Enforce minimal /src/engine import consistency (surgical fixes only)

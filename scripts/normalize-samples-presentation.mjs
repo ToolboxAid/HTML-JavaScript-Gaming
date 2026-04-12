@@ -117,11 +117,15 @@ function normalizeEngineReference(rawRef) {
     return '';
   }
 
-  if (segments[0].toLowerCase() === 'engine') {
-    return 'engine/' + segments.slice(1).join('/');
+  if (segments[0].toLowerCase() === 'src' && segments[1] && segments[1].toLowerCase() === 'engine') {
+    return 'src/engine/' + segments.slice(2).join('/');
   }
 
-  return 'engine/' + segments.join('/');
+  if (segments[0].toLowerCase() === 'engine') {
+    return 'src/engine/' + segments.slice(1).join('/');
+  }
+
+  return 'src/engine/' + segments.join('/');
 }
 
 function walkJsFiles(dirPath) {
@@ -230,7 +234,7 @@ function collectFromImportSource(importSource, symbols, refs) {
   }
 
   if (!symbols || symbols.length === 0) {
-    refs.add(normalizeEngineReference('engine/' + modulePath));
+    refs.add(normalizeEngineReference('src/engine/' + modulePath));
     return;
   }
 
@@ -239,7 +243,7 @@ function collectFromImportSource(importSource, symbols, refs) {
     if (!cleanSymbol) {
       continue;
     }
-    refs.add(normalizeEngineReference('engine/' + modulePath + '/' + cleanSymbol));
+    refs.add(normalizeEngineReference('src/engine/' + modulePath + '/' + cleanSymbol));
   }
 }
 

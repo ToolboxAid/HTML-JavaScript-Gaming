@@ -1,5 +1,20 @@
-[ ] baseline report exists
-[ ] contract decision exists
-[ ] no runtime changes
-[ ] no start_of_day changes
-[ ] validation report created
+BUILD_PR_ENGINE_IMPORT_ENFORCE_MINIMAL
+Validation Checklist
+Generated: 2026-04-12
+
+[PASS] enforcement limited to max 2 files
+Evidence:
+- `scripts/normalize-samples-presentation.mjs`
+- `samples/phase11/1104/DistributionPackagingScene.js`
+
+[PASS] replacement rule applied (`engine/` -> `src/engine/`) in changed files
+Evidence:
+- path literals updated in both files
+
+[PASS] no additional runtime/source files changed by enforcement step
+Evidence:
+- `git status --short -- scripts/normalize-samples-presentation.mjs samples/phase11/1104/DistributionPackagingScene.js`
+
+[PASS] report generated
+Evidence:
+- `docs/dev/reports/BUILD_PR_ENGINE_IMPORT_ENFORCE_MINIMAL_report.md`
