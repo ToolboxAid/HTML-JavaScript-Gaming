@@ -15,57 +15,57 @@
 ## Strategic Layer
 
 ### Learning System
-- [ ] phases form a complete learning path
-- [ ] each phase introduces one new concept cleanly
-- [ ] each sample has a clear teaching purpose
-- [ ] samples build progressively from prior phases
-- [ ] no overlapping concept samples without clear justification
-- [ ] advanced phases depend on mastered earlier phases
-- [ ] samples remain understandable as standalone learning units
-- [ ] sample naming stays aligned to phase numbering
+- phases form a complete learning path
+- each phase introduces one new concept cleanly
+- each sample has a clear teaching purpose
+- samples build progressively from prior phases
+- no overlapping concept samples without clear justification
+- advanced phases depend on mastered earlier phases
+- samples remain understandable as standalone learning units
+- sample naming stays aligned to phase numbering
 
 ### Architectural Separation
-- [ ] engine contains reusable runtime logic only
-- [ ] shared contains reusable cross-domain helpers only
-- [ ] games contain game-specific implementation only
-- [ ] samples contain learning/demo logic only
-- [ ] tools contain editor/pipeline/debug-authoring logic only
-- [ ] no sample logic promoted directly into engine without stabilization
-- [ ] no tool logic promoted directly into engine without stabilization
-- [ ] games do not become the default location for engine experiments
-- [ ] dependency direction stays enforced across all refactors
+- engine contains reusable runtime logic only
+- shared contains reusable cross-domain helpers only
+- games contain game-specific implementation only
+- samples contain learning/demo logic only
+- tools contain editor/pipeline/debug-authoring logic only
+- no sample logic promoted directly into engine without stabilization
+- no tool logic promoted directly into engine without stabilization
+- games do not become the default location for engine experiments
+- dependency direction stays enforced across all refactors
 
 ### Promotion Pipeline
-- [ ] sample proves concept
-- [ ] shared extracts reusable logic
-- [ ] engine receives stable abstraction
-- [ ] promotion requires multi-use reuse evidence
-- [ ] promotion requires stable public contract
-- [ ] promotion requires removal of sample-specific assumptions
-- [ ] promotion requires validation after extraction
-- [ ] promotion does not happen as a blind dedupe exercise
+- sample proves concept
+- shared extracts reusable logic
+- engine receives stable abstraction
+- promotion requires multi-use reuse evidence
+- promotion requires stable public contract
+- promotion requires removal of sample-specific assumptions
+- promotion requires validation after extraction
+- promotion does not happen as a blind dedupe exercise
 
 ### Tooling Strategy
-- [ ] tools are created when they unblock engine/content progress
-- [ ] tools do not define engine behavior
-- [ ] tools share common IO/state/util layers where appropriate
-- [ ] tools remain organized under `tools/`
-- [ ] active tools list remains explicit
-- [ ] legacy tools remain isolated and visibly non-current
-- [ ] 3D tools arrive when 3D capability needs them, not before
-- [ ] content pipeline tools arrive when asset complexity justifies them
+- tools are created when they unblock engine/content progress
+- tools do not define engine behavior
+- tools share common IO/state/util layers where appropriate
+- tools remain organized under `tools/`
+- active tools list remains explicit
+- legacy tools remain isolated and visibly non-current
+- 3D tools arrive when 3D capability needs them, not before
+- content pipeline tools arrive when asset complexity justifies them
 
 ### End State Vision
-- [ ] clean engine core
-- [ ] clean shared layer
-- [ ] games follow a standard structure
-- [ ] samples form a complete curriculum
-- [ ] tools support authoring/debug/content workflows
-- [ ] debug platform supports games, tools, and samples
-- [ ] network concepts are deterministic and explainable
-- [ ] 2D capabilities are complete and reusable
-- [ ] 3D capabilities are complete and reusable
-- [ ] productization/distribution is documented and repeatable
+- clean engine core
+- clean shared layer
+- games follow a standard structure
+- samples form a complete curriculum
+- tools support authoring/debug/content workflows
+- debug platform supports games, tools, and samples
+- network concepts are deterministic and explainable
+- 2D capabilities are complete and reusable
+- 3D capabilities are complete and reusable
+- productization/distribution is documented and repeatable
 
 ---
 
