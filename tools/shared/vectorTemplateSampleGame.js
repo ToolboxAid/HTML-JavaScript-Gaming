@@ -20,7 +20,7 @@ function createReport(level, code, message) {
 }
 
 function remapPath(pathValue) {
-  return normalizeString(pathValue).replace("templates/vector-native-arcade/", "games/vector-arcade-sample/");
+  return normalizeString(pathValue).replace("tools/templates/vector-native-arcade/", "games/vector-arcade-sample/");
 }
 
 function remapRegistry(registry) {
@@ -230,3 +230,4 @@ export async function buildVectorTemplateSampleGame(options = {}) {
     }
   };
 }
+

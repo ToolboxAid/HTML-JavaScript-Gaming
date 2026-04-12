@@ -3,7 +3,7 @@ import { buildVectorNativeTemplate, createVectorNativeTemplateDefinition, summar
 
 export async function run() {
   const definition = createVectorNativeTemplateDefinition();
-  assert.equal(definition.templatePath, "templates/vector-native-arcade/");
+  assert.equal(definition.templatePath, "tools/templates/vector-native-arcade/");
   assert.equal(definition.registry.sprites.length, 0);
   assert.equal(definition.registry.vectors.length, 5);
 
@@ -31,3 +31,4 @@ export async function run() {
   assert.deepEqual(first, second);
   assert.equal(summarizeVectorNativeTemplate(first), "Vector native template ready with 10 packaged assets.");
 }
+

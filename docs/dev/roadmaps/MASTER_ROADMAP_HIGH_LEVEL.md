@@ -562,7 +562,7 @@
 - [ ] `legacy class-retention policy marker` policy defined
 - [.] `SpriteEditor_old_keep` policy defined
 - [ ] archived notes policy defined
-- [ ] imports pointing to legacy paths reduced
+- [.] imports pointing to legacy paths reduced
 - [.] roadmap for eventual legacy retirement defined
 - [x] `templates/` folder evaluated for keep vs move vs future-delete during cleanup phase (explicitly deferred in this docs-only bundle)
 

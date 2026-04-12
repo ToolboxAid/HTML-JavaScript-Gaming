@@ -1,31 +1,31 @@
-﻿BUILD_PR_TARGETED_REPO_CLEANUP_PASS_8_REMOVE_CLASSES_OLD_KEEP_REFERENCES
+BUILD_PR_TEMPLATES_VECTOR_NATIVE_ACTIVE_RELOCATION
 Validation Checklist
 Generated: 2026-04-12
 
-[PASS] token scan executed across docs markdown/text scope
+[PASS] no bare legacy path references remain in the four target files
 Evidence:
-- `rg -n --glob "docs/**/*.md" --glob "docs/**/*.txt" --glob "!docs/archive/**" --glob "!**/start_of_day/**" "<removed-token>" docs`
+- `rg --pcre2 -n "(?<!tools/)templates/vector-native-arcade/|(?<!tools/)templates/vector-native-arcade\\b" tools/shared/vectorNativeTemplate.js tools/shared/vectorTemplateSampleGame.js tests/tools/VectorNativeTemplate.test.mjs games/vector-arcade-sample/README.md` -> no matches
 
-[PASS] no scoped token matches remain
+[PASS] canonical active path is used in all four target files
 Evidence:
-- scan result count: `0`
+- `tools/templates/vector-native-arcade/` present in:
+  - `tools/shared/vectorNativeTemplate.js`
+  - `tools/shared/vectorTemplateSampleGame.js`
+  - `tests/tools/VectorNativeTemplate.test.mjs`
+  - `games/vector-arcade-sample/README.md`
 
-[PASS] no runtime code changes
+[PASS] no changes under protected start_of_day directories
 Evidence:
-- `git diff --name-only -- tools src games samples tests` returned no entries
+- `git diff --name-only -- docs/dev/start_of_day/chatGPT docs/dev/start_of_day/codex` -> no entries
 
-[PASS] templates/ untouched
+[PASS] starter-project-template remains untouched
 Evidence:
-- `git diff --name-only -- templates` returned no entries
+- `git diff --name-only -- templates/starter-project-template` -> no entries
 
-[PASS] docs/archive/ untouched
+[PASS] no directory move/archive executed in this lane
 Evidence:
-- `git diff --name-only -- docs/archive` returned no entries
+- `git diff --name-status` filter for `D|R|C` -> no entries related to this lane
 
-[PASS] start_of_day/* untouched
+[INFO] targeted test execution note
 Evidence:
-- `git diff --name-only -- docs/dev/start_of_day docs/start_of_day` returned no entries
-
-[PASS] no directory create/delete/move performed in this lane
-Evidence:
-- no directory operations were executed; edits were docs content rewrites only
+- direct isolated test invocation could not run in this local Node 20.8.1 environment because `node:module` `registerHooks` is unavailable; this repository's full test harness expects newer runtime hook support.

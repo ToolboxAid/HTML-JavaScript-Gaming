@@ -1,0 +1,9 @@
+templates/vector-native-arcade blockers:
+- tools/shared/vectorNativeTemplate.js
+- tools/shared/vectorTemplateSampleGame.js
+- tests/tools/VectorNativeTemplate.test.mjs
+- games/vector-arcade-sample/README.md
+
+Do not archive templates yet.
+Reason: active path-string consumers still exist.
+Future direction: keep active, later relocate to tools/templates/.
