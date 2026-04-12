@@ -433,17 +433,17 @@
 - [ ] 3DAssetViewer
 - [ ] 3DCameraPathEditor
 - [ ] PhysicsSandboxTool
-- [ ] StateInspectorTool
-- [ ] ReplayVisualizerTool
-- [ ] PerformanceProfilerTool
-- [ ] AssetPipelineTool
-- [ ] Tile/Model Converter Tool
+- [.] StateInspectorTool
+- [.] ReplayVisualizerTool
+- [.] PerformanceProfilerTool
+- [.] AssetPipelineTool
+- [.] Tile/Model Converter Tool
 
 ### Tooling Strategy By Need
 - [ ] 2D tool stabilization before 3D tool expansion
 - [ ] 3D prerequisite samples before advanced 3D tools
-- [ ] content pipeline tools after asset complexity justifies them
-- [ ] debug tools align with engine/debug maturity
+- [.] content pipeline tools after asset complexity justifies them
+- [.] debug tools align with engine/debug maturity
 - [ ] no standalone showcase-only tool tracks
 
 ### Recent Tool Shell Notes
@@ -546,19 +546,20 @@
 - [.] integration coverage aligned to state/replay/rendering/tools
 - [.] smoke validation aligned to samples/tools/games
 - [ ] fixtures/helpers organization normalized
-- [ ] move/refactor validation strategy documented
+- [.] move/refactor validation strategy documented
 - [ ] post-PR acceptance criteria consistently enforced
 
 ---
 
 ## 15. Legacy Reduction
-- [ ] legacy inventory completed
-- [ ] keep vs migrate vs future-delete decisions recorded
+- [.] legacy inventory completed
+- [.] keep vs migrate vs future-delete decisions recorded
 - [ ] `classes_old_keep` policy defined
-- [ ] `SpriteEditor_old_keep` policy defined
+- [.] `SpriteEditor_old_keep` policy defined
 - [ ] archived notes policy defined
 - [ ] imports pointing to legacy paths reduced
-- [ ] roadmap for eventual legacy retirement defined
+- [.] roadmap for eventual legacy retirement defined
+- [ ] `templates/` folder evaluated for keep vs move vs future-delete during cleanup phase
 
 ---
 
@@ -588,8 +589,11 @@
 - [ ] Normalize samples phase structure
 - [ ] Establish games/_template and normalize games layer
 - [.] Normalize tools/shared and tool boundaries
-- [ ] Normalize assets/data ownership
-- [ ] Expand testing/validation structure
+- [.] Normalize assets/data ownership
+- [.] Expand testing/validation structure
+
+### Later Capability Lanes
+- [ ] FEATURE: Fullscreen Bezel Overlay System — Render game in full screen with optional bezel artwork layer (static or animated) surrounding the active playfield, preserving aspect ratio and supporting per-game/theme bezel assets without modifying core engine rendering.
 
 ### Later Capability Lanes
 - [ ] Execute 2D capability polish lanes
@@ -610,6 +614,6 @@
 - [.] continue exact-cluster shared extraction until the current lane reaches a stable stop point
 - [x] finish active promotion-gate lane enough to remove it from half-active status
 - [.] convert repo structure normalization into exact move-map BUILDs with explicit validation
-- [ ] re-baseline this roadmap after active execution lanes stabilize
+- [.] re-baseline this roadmap after active execution lanes stabilize
 - [ ] split future implementation into small dependency-ordered PRs
 - [ ] avoid broad repo-wide cleanup passes until the active lanes above are materially further along

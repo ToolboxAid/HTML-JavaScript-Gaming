@@ -1,1 +1,1 @@
-docs: add BUILD_PR debug / inspector tools bundle
+chore: enforce docs path rules + roadmap location guard
