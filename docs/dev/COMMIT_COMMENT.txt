@@ -1,3 +1,2 @@
-BUILD_PR_TARGETED_REPO_CLEANUP_PASS_4B_SPRITEEDITOR_MOVE_TO_ARCHIVE
-
-Moved SpriteEditor_old_keep to archive for reference-only usage.
+APPLY_PR_SPRITEEDITOR_ARCHIVE_VALIDATE_v2
+Validate archive move.

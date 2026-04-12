@@ -1,3 +1,2 @@
-- Moves SpriteEditor_old_keep to archive
-- Converts to reference-only asset
+- SpriteEditor_old_keep successfully moved to archive
 - No runtime or template impact

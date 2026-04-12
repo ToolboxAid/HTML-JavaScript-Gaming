@@ -1,5 +1,4 @@
-[ ] directory moved correctly
-[ ] archive path exists
 [ ] old path removed
-[ ] no runtime references
-[ ] templates untouched
+[ ] new path exists
+[ ] no broken refs
+[ ] no runtime impact

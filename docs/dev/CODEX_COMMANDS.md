@@ -1,13 +1,19 @@
-﻿MODEL: GPT-5.3-codex
-REASONING: high
+MODEL: GPT-5.3-codex
+REASONING: medium
 
 COMMAND:
-Execute move of tools/SpriteEditor_old_keep to docs/archive/tools/SpriteEditor_old_keep.
+Validate the completed move of:
+tools/SpriteEditor_old_keep/
+→ docs/archive/tools/SpriteEditor_old_keep/
 
-- Preserve all files
-- Do not modify contents
-- Update only documentation references if needed
-- Generate spriteeditor_archive_move_report.md
-- Ensure no runtime impact
-- Package output to:
-<project folder>/tmp/BUILD_PR_TARGETED_REPO_CLEANUP_PASS_4B_SPRITEEDITOR_MOVE_TO_ARCHIVE.zip
+Steps:
+1. Confirm old path does not exist
+2. Confirm new archive path exists with identical structure
+3. Search repo for any remaining references to old path
+4. Confirm no runtime imports reference the old path
+5. Generate validation report:
+   docs/dev/reports/spriteeditor_archive_move_validation.md
+6. If any broken references are found, list them (DO NOT FIX)
+
+Package results to:
+<project folder>/tmp/APPLY_PR_SPRITEEDITOR_ARCHIVE_VALIDATE_v2.zip
