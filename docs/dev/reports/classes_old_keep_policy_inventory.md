@@ -1,25 +1,25 @@
-﻿# classes_old_keep Policy Inventory
+﻿# legacy class-retention policy marker Policy Inventory
 
 Generated: 2026-04-12
 Scope: docs-only policy inventory using user-supplied PowerShell scan evidence as primary source of truth.
 
 ## Primary Evidence Input (User-Supplied PowerShell Scan)
 The user-provided scan evidence establishes:
-- `classes_old_keep (docs-only placeholder, no on-disk path)` appears only in docs/planning/generated-doc files.
-- No `classes_old_keep (docs-only placeholder, no on-disk path)` directory exists on disk.
+- `legacy class-retention policy marker` appears only in docs/planning/generated-doc files.
+- No `legacy class-retention policy marker` directory exists on disk.
 - No active runtime/code references were found in the supplied scan output.
 
 This lane treats the above as authoritative baseline and avoids broad rediscovery scans.
 
 ## Supporting Existing Cleanup Evidence
 - `docs/dev/reports/cleanup_live_reference_inventory.txt`
-  - Target 3: `classes_old_keep (docs-only placeholder, no on-disk path)` policy locations/references
-  - Exact path: `classes_old_keep/`
+  - Target 3: `legacy class-retention policy marker` policy locations/references
+  - Exact path: `legacy class-retention marker path`
   - Exists: no
   - Inbound references: roadmap + cleanup targets + build spec docs
   - Assessment: docs-reference-only
 - `docs/dev/reports/cleanup_keep_move_future_delete_matrix.md`
-  - Target row: `classes_old_keep (docs-only placeholder, no on-disk path)` policy target
+  - Target row: `legacy class-retention policy marker` policy target
   - Proposed classification: `needs-manual-review`
   - Evidence summary: planning references only; no on-disk path
 
@@ -34,7 +34,7 @@ This lane treats the above as authoritative baseline and avoids broad rediscover
 - `docs/dev/reports/cleanup_target_enforcement_map.md` (tracking context)
 
 ### Roadmap
-- `docs/dev/roadmaps/MASTER_ROADMAP_HIGH_LEVEL.md` (`classes_old_keep (docs-only placeholder, no on-disk path)` policy tracking item)
+- `docs/dev/roadmaps/MASTER_ROADMAP_HIGH_LEVEL.md` (`legacy class-retention policy marker` policy tracking item)
 
 ### PR / BUILD Spec
 - `docs/pr/BUILD_PR_REPO_CLEANUP_AND_ROADMAP_UPDATE.md` (historical cleanup evidence lane)
@@ -54,13 +54,14 @@ This lane treats the above as authoritative baseline and avoids broad rediscover
 - Present (command/report metadata surfaces).
 
 ### On-Disk Existence Result
-- `classes_old_keep/` directory exists on disk: **no**.
+- `legacy class-retention marker path` directory exists on disk: **no**.
 
 ## Runtime/Code Surface Statement
-- Based on the user-supplied PowerShell scan evidence, no active runtime/code references were found for `classes_old_keep (docs-only placeholder, no on-disk path)`.
+- Based on the user-supplied PowerShell scan evidence, no active runtime/code references were found for `legacy class-retention policy marker`.
 - No contradictory runtime evidence was required for this lane.
 
 ## Inventory Conclusion
-- `classes_old_keep (docs-only placeholder, no on-disk path)` is currently a docs-only planning placeholder with no on-disk implementation path.
+- `legacy class-retention policy marker` is currently a docs-only planning placeholder with no on-disk implementation path.
 - Structural actions (create/move/delete path) are out of scope for this docs-only policy lane.
+
 

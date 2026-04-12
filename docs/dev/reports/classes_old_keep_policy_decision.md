@@ -1,7 +1,7 @@
-﻿# classes_old_keep Policy Decision
+﻿# legacy class-retention policy marker Policy Decision
 
 Generated: 2026-04-12
-Scope: policy classification for `classes_old_keep (docs-only placeholder, no on-disk path)` using user-supplied PowerShell evidence first.
+Scope: policy classification for `legacy class-retention policy marker` using user-supplied PowerShell evidence first.
 
 ## Classification Options Considered
 - `keep-as-doc-placeholder`
@@ -14,15 +14,15 @@ Scope: policy classification for `classes_old_keep (docs-only placeholder, no on
 
 ## Rationale (Evidence-Grounded)
 Primary (user-supplied PowerShell evidence):
-- `classes_old_keep (docs-only placeholder, no on-disk path)` appears only in docs/planning/generated-doc files.
-- no `classes_old_keep (docs-only placeholder, no on-disk path)` directory exists on disk.
+- `legacy class-retention policy marker` appears only in docs/planning/generated-doc files.
+- no `legacy class-retention policy marker` directory exists on disk.
 - no active runtime/code references were found.
 
 Supporting cleanup artifacts:
-- cleanup inventory marks `classes_old_keep (docs-only placeholder, no on-disk path)` as docs-reference-only and non-existent on disk.
-- cleanup matrix marks `classes_old_keep (docs-only placeholder, no on-disk path)` as `needs-manual-review`.
+- cleanup inventory marks `legacy class-retention policy marker` as docs-reference-only and non-existent on disk.
+- cleanup matrix marks `legacy class-retention policy marker` as `needs-manual-review`.
 
-Together, this indicates `classes_old_keep (docs-only placeholder, no on-disk path)` is a planning placeholder, not an active runtime surface.
+Together, this indicates `legacy class-retention policy marker` is a planning placeholder, not an active runtime surface.
 
 ## Allowed Now
 - Maintain docs-only placeholder tracking.
@@ -30,9 +30,9 @@ Together, this indicates `classes_old_keep (docs-only placeholder, no on-disk pa
 - Keep references explicit until a dedicated rename/removal docs lane is approved.
 
 ## Forbidden Now
-- Creating a `classes_old_keep/` directory.
+- Creating a `legacy class-retention marker path` directory.
 - Moving, renaming, or deleting paths in a structural cleanup lane from this PR.
-- Mixing `classes_old_keep (docs-only placeholder, no on-disk path)` policy work with runtime changes, templates changes, archive changes, or SpriteEditor archive changes.
+- Mixing `legacy class-retention policy marker` policy work with runtime changes, templates changes, archive changes, or SpriteEditor archive changes.
 
 ## Prerequisites For Future Rename/Removal/Archive Lane
 1. Reconfirm docs-only reference surface at execution time.
@@ -52,6 +52,7 @@ Escalate to `needs-manual-review` when:
 - policy intent cannot be resolved from cleanup docs alone.
 
 ## Decision Summary
-- `classes_old_keep (docs-only placeholder, no on-disk path)` remains docs-only placeholder in this PR.
+- `legacy class-retention policy marker` remains docs-only placeholder in this PR.
 - No structural path action is authorized or performed.
+
 

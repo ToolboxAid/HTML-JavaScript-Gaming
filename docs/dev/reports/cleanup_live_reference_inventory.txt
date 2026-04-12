@@ -35,8 +35,8 @@ Target 2: SpriteEditor_old_keep policy locations/references
 - Assessment: live-reference
 - Notes: preserved-legacy lane is still explicitly tracked and surfaced in validation/tooling metadata.
 
-Target 3: classes_old_keep (docs-only placeholder, no on-disk path) policy locations/references
-- Exact path: classes_old_keep/
+Target 3: legacy class-retention policy marker policy locations/references
+- Exact path: legacy class-retention marker path
 - Exists: no
 - Inbound references:
   - docs planning refs:
@@ -70,7 +70,7 @@ Target 5: imports/references pointing to legacy paths
   - require('/engine/')
   - require('../engine/')
   - require('./engine/')
-  - imports from SpriteEditor_old_keep/classes_old_keep paths
+  - imports from SpriteEditor_old_keep/legacy class-retention policy marker paths
 - Exists: pattern-based check
 - Inbound references:
   - old engine import patterns above: no matches in tools/src/games/samples
@@ -90,5 +90,6 @@ Target 6: eventual legacy-retirement candidates already called out in cleanup pl
   - cleanup targets list: "eventual legacy retirement roadmap"
 - Assessment: live-reference (planning)
 - Notes: candidate list exists and is referenced; execution remains deferred to dedicated cleanup PRs.
+
 
 

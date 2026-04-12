@@ -1,1 +1,2 @@
-APPLY_PR_TARGETED_REPO_CLEANUP_PASS_7_DECISION_v2 - validate and lock decision
+﻿Remove legacy class-retention policy marker references from docs
+

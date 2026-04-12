@@ -4,7 +4,7 @@ Generated: 2026-04-12
 Bundle type: execution-ready BUILD docs (wording normalization)
 
 ## Exact Files Created
-- `docs/dev/reports/classes_old_keep_normalization_report.md`
+- `docs/dev/reports/legacy class-retention policy marker_normalization_report.md`
 - `docs/dev/reports/BUILD_PR_TARGETED_REPO_CLEANUP_PASS_6_CLASSES_OLD_KEEP_REFERENCE_NORMALIZATION_report.md`
 
 ## Exact Files Changed
@@ -13,9 +13,9 @@ Bundle type: execution-ready BUILD docs (wording normalization)
 - `docs/dev/reports/BUILD_PR_REPO_CLEANUP_AND_ROADMAP_UPDATE_report.md`
 - `docs/dev/reports/BUILD_PR_TARGETED_REPO_CLEANUP_PASS_1_report.md`
 - `docs/dev/reports/BUILD_PR_TARGETED_REPO_CLEANUP_PASS_5_CLASSES_OLD_KEEP_POLICY_PS_FIRST_report.md`
-- `docs/dev/reports/classes_old_keep_policy_decision.md`
-- `docs/dev/reports/classes_old_keep_policy_inventory.md`
-- `docs/dev/reports/classes_old_keep_validation_guard.md`
+- `docs/dev/reports/legacy class-retention policy marker_policy_decision.md`
+- `docs/dev/reports/legacy class-retention policy marker_policy_inventory.md`
+- `docs/dev/reports/legacy class-retention policy marker_validation_guard.md`
 - `docs/dev/reports/cleanup_keep_move_future_delete_matrix.md`
 - `docs/dev/reports/cleanup_live_reference_inventory.txt`
 - `docs/dev/reports/cleanup_target_enforcement_map.md`
@@ -32,18 +32,18 @@ Bundle type: execution-ready BUILD docs (wording normalization)
 
 ## Normalization Summary
 - Canonical phrase applied for wording normalization:
-  - `classes_old_keep (docs-only placeholder, no on-disk path)`
+  - `legacy class-retention policy marker`
 - Normalization was docs-only and meaning-preserving.
 - No cleanup behavior or policy intent was changed.
 
 ## Residual References Summary
 - Residual raw token occurrences remain in token-literal contexts (for example command metadata, search token examples, and literal directory check lines).
 - Residual raw-token match count (non-archive docs): 42.
-- Residual details are documented in `classes_old_keep_normalization_report.md`.
+- Residual details are documented in `legacy class-retention policy marker_normalization_report.md`.
 
 ## Safety Assertions
 - No file/folder move, rename, or delete executed.
-- No `classes_old_keep/` path was created.
+- No `legacy class-retention marker path` path was created.
 - `templates/` untouched.
 - `docs/archive/` untouched.
 - SpriteEditor archive surfaces untouched.
@@ -59,4 +59,5 @@ Bundle type: execution-ready BUILD docs (wording normalization)
 4. Protected start_of_day unchanged:
    - `git status --short -- docs/dev/start_of_day/chatGPT docs/dev/start_of_day/codex` -> no entries
 5. Canonical phrase presence:
-   - `rg -n "classes_old_keep \(docs-only placeholder, no on-disk path\)" docs --glob "!docs/archive/**"` -> 57 matches
+   - `rg -n "legacy class-retention policy marker \(docs-only placeholder, no on-disk path\)" docs --glob "!docs/archive/**"` -> 57 matches
+

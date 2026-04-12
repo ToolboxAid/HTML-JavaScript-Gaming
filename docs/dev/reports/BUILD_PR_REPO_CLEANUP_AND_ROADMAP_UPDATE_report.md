@@ -35,7 +35,7 @@ Per BUILD constraints, wording was left intact and no forced rewrite was perform
 ## Cleanup Inventory Findings Summary
 - `templates/`: exists; live references in active tooling/tests/docs; classification requires manual review in later cleanup lane.
 - `docs/archive/tools/SpriteEditor_old_keep/`: exists; live references in registry/spec/report docs; remains keep-only legacy candidate for later policy PR.
-- `classes_old_keep (docs-only placeholder, no on-disk path)`: path does not exist; docs-only planning references present.
+- `legacy class-retention policy marker`: path does not exist; docs-only planning references present.
 - `docs/archive/` archived notes area: exists and actively referenced in documentation structure/policy docs.
 - Legacy import path scan (`/engine/`, `../engine/`, `./engine/` in tools/src/games/samples): no direct matches.
 - Legacy-retirement candidates are present and tracked in roadmap + cleanup planning docs.
@@ -55,5 +55,6 @@ Per BUILD constraints, wording was left intact and no forced rewrite was perform
 - `templates/` untouched: PASS
 - Evidence reports created: PASS
 - No unrelated repo files changed (bundle-scoped): PASS
+
 
 

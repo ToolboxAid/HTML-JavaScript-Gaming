@@ -72,7 +72,7 @@ For each approved cleanup target, capture:
 The target list is limited to:
 - `templates/`
 - `docs/archive/tools/SpriteEditor_old_keep/` policy target
-- `classes_old_keep (docs-only placeholder, no on-disk path)` policy target
+- `legacy class-retention policy marker` policy target
 - `docs/archive/` archived-notes policy target
 - legacy import path patterns
 - eventual legacy-retirement planning target
@@ -220,5 +220,6 @@ Codex should package its output ZIP under:
 - `<project folder>/tmp/BUILD_PR_TARGETED_REPO_CLEANUP_PASS_1.zip`
 
 The ZIP must preserve exact repo-relative structure and include only files relevant to this PR.
+
 
 

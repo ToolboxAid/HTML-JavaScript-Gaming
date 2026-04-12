@@ -18,7 +18,7 @@ Prior cleanup evidence established that `docs/archive/` exists and is actively r
   - `docs/dev/start_of_day/codex/`
 - Do **not** move, rename, delete, or rewrite any file under `docs/archive/`.
 - Do **not** modify `templates/`.
-- Do **not** mix in `SpriteEditor_old_keep`, `classes_old_keep (docs-only placeholder, no on-disk path)`, legacy import guard work, or runtime feature work.
+- Do **not** mix in `SpriteEditor_old_keep`, `legacy class-retention policy marker`, legacy import guard work, or runtime feature work.
 - Do **not** rewrite roadmap wording, reorder roadmap items, collapse roadmap sections, or replace roadmap content.
 - If roadmap updates are applied, they must be bracket-only and only where exact text already exists.
 
@@ -124,7 +124,7 @@ Codex must run and use the results in the report:
 - no deletion under `docs/archive/`
 - no changes to `templates/`
 - no work on `SpriteEditor_old_keep`
-- no work on `classes_old_keep (docs-only placeholder, no on-disk path)`
+- no work on `legacy class-retention policy marker`
 - no legacy import guard changes
 - no engine/tool/sample runtime implementation
 
@@ -141,4 +141,5 @@ Codex should package its output ZIP under:
 - `<project folder>/tmp/BUILD_PR_TARGETED_REPO_CLEANUP_PASS_3_ARCHIVED_NOTES_POLICY.zip`
 
 The ZIP must preserve exact repo-relative structure and include only files relevant to this PR.
+
 

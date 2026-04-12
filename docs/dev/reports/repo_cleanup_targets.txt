@@ -3,7 +3,7 @@
 Track now, defer action:
 - templates/
 - SpriteEditor_old_keep policy
-- classes_old_keep (docs-only placeholder, no on-disk path) policy
+- legacy class-retention policy marker policy
 - archived notes policy
 - imports pointing to legacy paths
 - eventual legacy retirement roadmap
@@ -13,4 +13,5 @@ Rules:
 - no movement without target-home decision
 - no cleanup mixed into active feature lanes
 - smoke validation before/after cleanup PRs
+
 

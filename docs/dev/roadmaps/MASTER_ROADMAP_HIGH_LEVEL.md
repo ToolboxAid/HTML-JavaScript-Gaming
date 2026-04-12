@@ -559,7 +559,7 @@
 ## 15. Legacy Reduction
 - [.] legacy inventory completed
 - [.] keep vs migrate vs future-delete decisions recorded
-- [ ] `classes_old_keep (docs-only placeholder, no on-disk path)` policy defined
+- [ ] `legacy class-retention policy marker` policy defined
 - [.] `SpriteEditor_old_keep` policy defined
 - [ ] archived notes policy defined
 - [ ] imports pointing to legacy paths reduced
@@ -623,4 +623,5 @@
 - [.] re-baseline this roadmap after active execution lanes stabilize
 - [ ] split future implementation into small dependency-ordered PRs
 - [ ] avoid broad repo-wide cleanup passes until the active lanes above are materially further along
+
 

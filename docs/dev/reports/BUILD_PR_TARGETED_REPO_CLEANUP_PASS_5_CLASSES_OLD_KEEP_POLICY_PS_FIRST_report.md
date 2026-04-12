@@ -1,20 +1,20 @@
 ﻿# BUILD_PR_TARGETED_REPO_CLEANUP_PASS_5_CLASSES_OLD_KEEP_POLICY_PS_FIRST Report
 
 Generated: 2026-04-12
-Bundle type: execution-ready BUILD docs (classes_old_keep policy, PS-first evidence)
+Bundle type: execution-ready BUILD docs (legacy class-retention policy marker policy, PS-first evidence)
 
 ## Exact Files Created
-- `docs/dev/reports/classes_old_keep_policy_inventory.md`
-- `docs/dev/reports/classes_old_keep_policy_decision.md`
-- `docs/dev/reports/classes_old_keep_validation_guard.md`
+- `docs/dev/reports/legacy class-retention policy marker_policy_inventory.md`
+- `docs/dev/reports/legacy class-retention policy marker_policy_decision.md`
+- `docs/dev/reports/legacy class-retention policy marker_validation_guard.md`
 - `docs/dev/reports/BUILD_PR_TARGETED_REPO_CLEANUP_PASS_5_CLASSES_OLD_KEEP_POLICY_PS_FIRST_report.md`
 
 ## Exact Files Changed
 - `docs/dev/reports/validation_checklist.txt`
 
 ## User-Supplied Scan Evidence Used (Primary)
-- `classes_old_keep (docs-only placeholder, no on-disk path)` appears only in docs/planning/generated-doc files.
-- no `classes_old_keep (docs-only placeholder, no on-disk path)` directory exists on disk.
+- `legacy class-retention policy marker` appears only in docs/planning/generated-doc files.
+- no `legacy class-retention policy marker` directory exists on disk.
 - no active runtime/code references found in supplied scan output.
 
 ## Supporting Existing Cleanup Evidence
@@ -34,19 +34,20 @@ Bundle type: execution-ready BUILD docs (classes_old_keep policy, PS-first evide
 - Optional roadmap bracket progression was not required for this lane.
 
 ## Structural Safety Assertions
-- No `classes_old_keep/` directory was created, moved, renamed, or deleted.
+- No `legacy class-retention marker path` directory was created, moved, renamed, or deleted.
 - `templates/` was untouched.
 - `docs/archive/` was untouched.
 - SpriteEditor archive surfaces were untouched.
 - No runtime code or repo-structure changes were made.
 
 ## Validation Results
-1. Verify no `classes_old_keep (docs-only placeholder, no on-disk path)` directory exists on disk:
-   - `Test-Path classes_old_keep` -> `False`
+1. Verify no `legacy class-retention policy marker` directory exists on disk:
+   - `Test-Path legacy class-retention policy marker` -> `False`
 2. Verify required report files exist:
    - all required files present in `docs/dev/reports/`
 3. Confirm protected start_of_day directories unchanged:
    - `git status --short -- docs/dev/start_of_day/chatGPT docs/dev/start_of_day/codex` -> no entries
 4. Roadmap diff check (if changed):
    - not required; roadmap unchanged in this lane.
+
 

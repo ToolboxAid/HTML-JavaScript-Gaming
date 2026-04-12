@@ -1,22 +1,29 @@
-MODEL: GPT-5.3-codex
-REASONING: medium
+﻿MODEL: GPT-5.3-codex
+REASONING: high
 
 COMMAND:
-Validate PASS_7 decision artifacts.
+Execute BUILD_PR_TARGETED_REPO_CLEANUP_PASS_8_REMOVE_CLASSES_OLD_KEEP_REFERENCES.
+
+Inputs:
+- Decision = REMOVE (from PASS_7)
+- References exist only in docs/planning files
 
 Steps:
-1) Confirm existence of:
-   - docs/dev/reports/classes_old_keep_final_decision_report.md
-   - docs/dev/reports/classes_old_keep_cleanup_recommendation.md
-2) Verify decision consistency with prior normalization:
-   - references use "docs-only placeholder" wording
-3) Confirm no structural changes:
-   - no classes_old_keep directory exists on disk
-   - no changes under templates/ or docs/archive/ or start_of_day/*
+1) Find all occurrences of "legacy class-retention policy marker" in docs (*.md, *.txt)
+2) For each occurrence:
+   - Remove the reference OR
+   - Rewrite to a neutral phrase (no placeholder mention)
+3) Ensure no semantic break in docs
 4) Generate:
-   - docs/dev/reports/classes_old_keep_final_decision_validation.md
+   - docs/dev/reports/legacy class-retention policy marker_removal_change_log.md
+   - docs/dev/reports/BUILD_PR_TARGETED_REPO_CLEANUP_PASS_8_REMOVE_CLASSES_OLD_KEEP_REFERENCES_report.md
    - docs/dev/reports/validation_checklist.txt
-5) If inconsistencies found, list them (DO NOT FIX)
+
+Constraints:
+- Do NOT create/delete/move any directories
+- Do NOT modify templates/ or docs/archive/ or start_of_day/*
+- Do NOT touch runtime code
 
 Package to:
-<project folder>/tmp/APPLY_PR_TARGETED_REPO_CLEANUP_PASS_7_DECISION_v2.zip
+<project folder>/tmp/BUILD_PR_TARGETED_REPO_CLEANUP_PASS_8_REMOVE_CLASSES_OLD_KEEP_REFERENCES.zip
+

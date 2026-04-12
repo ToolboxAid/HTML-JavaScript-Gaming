@@ -1,1 +1,2 @@
-final decision for classes_old_keep
+﻿Removed legacy class-retention policy marker references from documentation
+

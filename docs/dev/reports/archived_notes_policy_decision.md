@@ -30,7 +30,7 @@ Given this coupling, move/delete/repath actions are unsafe without synchronized 
 
 ## Forbidden Now
 - Move, rename, delete, or rewrite any file/path under `docs/archive/` in this lane.
-- Structural cleanup mixed with unrelated targets (`templates`, `SpriteEditor_old_keep`, `classes_old_keep (docs-only placeholder, no on-disk path)`, legacy import guard work).
+- Structural cleanup mixed with unrelated targets (`templates`, `SpriteEditor_old_keep`, `legacy class-retention policy marker`, legacy import guard work).
 - Runtime or repo-structure edits under this policy-only BUILD.
 
 ## Exact Prerequisites For Future Migration/Removal Lane
@@ -55,4 +55,5 @@ Policy may move to deletion-oriented consideration only when:
 ## Decision Summary
 - Archived notes remain retained in place for now.
 - This BUILD is policy/guard documentation only and performs no structural repo change.
+
 

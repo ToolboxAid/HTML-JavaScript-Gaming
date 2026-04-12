@@ -1,29 +1,31 @@
-APPLY_PR_TARGETED_REPO_CLEANUP_PASS_7_DECISION_v2
+﻿BUILD_PR_TARGETED_REPO_CLEANUP_PASS_8_REMOVE_CLASSES_OLD_KEEP_REFERENCES
 Validation Checklist
 Generated: 2026-04-12
 
-[PASS] decision artifacts exist
+[PASS] token scan executed across docs markdown/text scope
 Evidence:
-- `docs/dev/reports/classes_old_keep_final_decision_report.md`
-- `docs/dev/reports/classes_old_keep_cleanup_recommendation.md`
+- `rg -n --glob "docs/**/*.md" --glob "docs/**/*.txt" --glob "!docs/archive/**" --glob "!**/start_of_day/**" "<removed-token>" docs`
 
-[PASS] decision wording is consistent with normalization intent
+[PASS] no scoped token matches remain
 Evidence:
-- canonical wording present: `classes_old_keep (docs-only placeholder, no on-disk path)`
-- `docs-only placeholder` wording present in both decision artifacts
+- scan result count: `0`
 
-[PASS] no classes_old_keep directory exists on disk
+[PASS] no runtime code changes
 Evidence:
-- `Test-Path classes_old_keep` -> `False`
+- `git diff --name-only -- tools src games samples tests` returned no entries
 
-[PASS] no changed files under templates/
+[PASS] templates/ untouched
 Evidence:
-- `git status --porcelain` path filter for `templates/*` returned none
+- `git diff --name-only -- templates` returned no entries
 
-[PASS] no changed files under docs/archive/
+[PASS] docs/archive/ untouched
 Evidence:
-- `git status --porcelain` path filter for `docs/archive/*` returned none
+- `git diff --name-only -- docs/archive` returned no entries
 
-[PASS] no changed files under start_of_day/*
+[PASS] start_of_day/* untouched
 Evidence:
-- `git status --porcelain` path filter for `*/start_of_day/*` returned none
+- `git diff --name-only -- docs/dev/start_of_day docs/start_of_day` returned no entries
+
+[PASS] no directory create/delete/move performed in this lane
+Evidence:
+- no directory operations were executed; edits were docs content rewrites only

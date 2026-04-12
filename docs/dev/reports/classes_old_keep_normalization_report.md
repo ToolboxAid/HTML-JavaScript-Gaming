@@ -1,10 +1,10 @@
-﻿# classes_old_keep Reference Normalization Report
+﻿# legacy class-retention policy marker Reference Normalization Report
 
 Generated: 2026-04-12
 
 ## Normalization Goal
 Normalize docs wording to the canonical phrase:
-- `classes_old_keep (docs-only placeholder, no on-disk path)`
+- `legacy class-retention policy marker`
 
 This pass is wording-only and does not change cleanup meaning.
 
@@ -20,9 +20,9 @@ This pass is wording-only and does not change cleanup meaning.
 - docs/dev/reports/BUILD_PR_REPO_CLEANUP_AND_ROADMAP_UPDATE_report.md
 - docs/dev/reports/BUILD_PR_TARGETED_REPO_CLEANUP_PASS_1_report.md
 - docs/dev/reports/BUILD_PR_TARGETED_REPO_CLEANUP_PASS_5_CLASSES_OLD_KEEP_POLICY_PS_FIRST_report.md
-- docs/dev/reports/classes_old_keep_policy_decision.md
-- docs/dev/reports/classes_old_keep_policy_inventory.md
-- docs/dev/reports/classes_old_keep_validation_guard.md
+- docs/dev/reports/legacy class-retention policy marker_policy_decision.md
+- docs/dev/reports/legacy class-retention policy marker_policy_inventory.md
+- docs/dev/reports/legacy class-retention policy marker_validation_guard.md
 - docs/dev/reports/cleanup_keep_move_future_delete_matrix.md
 - docs/dev/reports/cleanup_live_reference_inventory.txt
 - docs/dev/reports/cleanup_target_enforcement_map.md
@@ -36,13 +36,13 @@ This pass is wording-only and does not change cleanup meaning.
 - docs/pr/BUILD_PR_TARGETED_REPO_CLEANUP_PASS_5_CLASSES_OLD_KEEP_POLICY_PS_FIRST.md
 
 ## Normalization Patterns Applied
-- `` `classes_old_keep` `` -> `` `classes_old_keep (docs-only placeholder, no on-disk path)` ``
-- `classes_old_keep policy target` -> `classes_old_keep (docs-only placeholder, no on-disk path) policy target`
-- `classes_old_keep policy locations/references` -> `classes_old_keep (docs-only placeholder, no on-disk path) policy locations/references`
-- `classes_old_keep policy defined` -> `classes_old_keep (docs-only placeholder, no on-disk path) policy defined`
+- `` `legacy class-retention policy marker` `` -> `` `legacy class-retention policy marker` ``
+- `legacy class-retention policy marker policy target` -> `legacy class-retention policy marker policy target`
+- `legacy class-retention policy marker policy locations/references` -> `legacy class-retention policy marker policy locations/references`
+- `legacy class-retention policy marker policy defined` -> `legacy class-retention policy marker policy defined`
 
 ## Residual Raw Token References
-Residual non-normalized `classes_old_keep` occurrences remain where token-level literal wording is intentionally required (for example command metadata/search token guidance and literal directory checks).
+Residual non-normalized `legacy class-retention policy marker` occurrences remain where token-level literal wording is intentionally required (for example command metadata/search token guidance and literal directory checks).
 
 Residual match count: 42
 Residual files:
@@ -50,14 +50,15 @@ Residual files:
 - docs\dev\commit_comment.txt
 - docs\dev\reports\BUILD_PR_TARGETED_REPO_CLEANUP_PASS_5_CLASSES_OLD_KEEP_POLICY_PS_FIRST_report.md
 - docs\dev\reports\change_summary.txt
-- docs\dev\reports\classes_old_keep_policy_decision.md
-- docs\dev\reports\classes_old_keep_policy_inventory.md
-- docs\dev\reports\classes_old_keep_validation_guard.md
+- docs\dev\reports\legacy class-retention policy marker_policy_decision.md
+- docs\dev\reports\legacy class-retention policy marker_policy_inventory.md
+- docs\dev\reports\legacy class-retention policy marker_validation_guard.md
 - docs\dev\reports\cleanup_execution_guard.md
 - docs\dev\reports\cleanup_live_reference_inventory.txt
 - docs\pr\BUILD_PR_TARGETED_REPO_CLEANUP_PASS_5_CLASSES_OLD_KEEP_POLICY.md
 - docs\pr\BUILD_PR_TARGETED_REPO_CLEANUP_PASS_5_CLASSES_OLD_KEEP_POLICY_PS_FIRST.md
 
 ## Meaning Preservation Statement
-All changes are wording clarifications only. No cleanup target semantics were changed; `classes_old_keep` remains a docs-only placeholder with no on-disk path.
+All changes are wording clarifications only. No cleanup target semantics were changed; `legacy class-retention policy marker` remains a docs-only placeholder with no on-disk path.
+
 

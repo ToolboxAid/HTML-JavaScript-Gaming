@@ -37,7 +37,7 @@ Run from repo root.
 1. Reference scans:
 ```powershell
 rg -n "templates/" tools src games samples tests
-rg -n "SpriteEditor_old_keep|classes_old_keep|docs/archive/|legacy retirement|imports pointing to legacy paths" docs --glob "!docs/archive/**"
+rg -n "SpriteEditor_old_keep|legacy class-retention policy marker|docs/archive/|legacy retirement|imports pointing to legacy paths" docs --glob "!docs/archive/**"
 rg -n "from '/engine/|from '../engine/|from './engine/" tools src games samples tests
 ```
 
@@ -80,3 +80,4 @@ Stop execution immediately if any of the following occur:
 
 ## Guard Summary
 Future cleanup execution must stay target-specific, evidence-backed, and validation-first. Policy and enforcement docs alone do not authorize structural cleanup.
+

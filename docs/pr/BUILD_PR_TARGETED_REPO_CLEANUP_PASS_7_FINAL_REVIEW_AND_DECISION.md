@@ -1,7 +1,7 @@
-# BUILD_PR_TARGETED_REPO_CLEANUP_PASS_7_FINAL_REVIEW_AND_DECISION
+﻿# BUILD_PR_TARGETED_REPO_CLEANUP_PASS_7_FINAL_REVIEW_AND_DECISION
 
 ## Purpose
-Finalize decision for classes_old_keep after normalization.
+Finalize decision for legacy class-retention policy marker after normalization.
 
 ## Options
 - remove all references
