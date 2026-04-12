@@ -1,7 +1,0 @@
-OPTIONAL:
-
-Assume next.
-Do not ask for confirmation.
-Build ZIPs directly.
-
-This keeps velocity high.

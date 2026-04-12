@@ -8,7 +8,7 @@
 ## Conservative Rebaseline (2026-04-12)
 - status updates in this revision are conservative and execution-backed
 - recent tool-host, asset-pipeline, debug-inspector, and launch-smoke lanes are reflected without broad scope expansion
-- `templates/` cleanup is explicitly tracked and completed
+- `templates/` cleanup was completed by relocating active template surfaces to `tools/templates/` and removing the empty root `templates/` directory
 
 ---
 
@@ -122,8 +122,8 @@
 
 ### Recent Checkpoint Notes
 - [x] broad import-path correction from `engine/` to `src/engine/` applied across remaining games/samples
-- [.] partial retro smoke pass completed after path correction
-- [.] additional post-move validation still required before this lane can be closed
+- [x] partial retro smoke pass completed after path correction
+- [x] additional post-move validation complete
 - [.] repo structure work is now constrained to exact move-map BUILDs only
 - [ ] remaining structure normalization should avoid broad folder churn until active shared extraction and promotion-gate work stabilize
 
@@ -564,7 +564,7 @@
 - [ ] archived notes policy defined
 - [x] imports pointing to legacy paths reduced
 - [.] roadmap for eventual legacy retirement defined
-- [x] `templates/` folder evaluated, relocated to tools/templates, and removed after validation
+- [x] `templates/` folder evaluated, relocated to `tools/templates/`, and root `templates/` removed after validation
 
 ---
 
@@ -606,7 +606,7 @@
 
 ### Final Cleanup Lane
 - [ ] Reduce legacy footprint after replacements are proven
-- [x] Execute `templates/` relocation and removal cleanup PR
+- [x] Execute `templates/` relocation and root removal cleanup PR
 
 ### Recommended Final Status Summary
 - [.] current active execution lanes are 3 / 6 / 8
@@ -624,4 +624,4 @@
 - [ ] split future implementation into small dependency-ordered PRs
 - [ ] avoid broad repo-wide cleanup passes until the active lanes above are materially further along
 
-- [x] templates relocated to tools/templates and root templates directory removed
+- [x] relocate active template surfaces to `tools/templates/` and remove the empty root `templates/` directory
