@@ -10,13 +10,19 @@ import {
   createAssetPipelineConverterRegistry,
   listAssetPipelineConverters
 } from "./assetPipelineConverters.js";
+import {
+  createAssetPipelineOutputArtifact,
+  validateAssetPipelineState
+} from "./assetPipelineValidationOutput.js";
 
 export const ASSET_PIPELINE_STAGES = Object.freeze({
   INGEST: "ingest",
   NORMALIZE: "normalize",
   CONVERT: "convert",
   VALIDATE: "validate",
-  REGISTER: "register"
+  REGISTER: "register",
+  VALIDATION: "validation",
+  OUTPUT: "output"
 });
 
 export const ASSET_PIPELINE_SECTION_RULES = Object.freeze({
@@ -143,6 +149,38 @@ export function validateAssetPipelineCandidate(rawCandidate = {}) {
   return validateNormalizedAssetPipelineCandidate(candidate);
 }
 
+export function validateAssetPipelineRegistryState(options = {}) {
+  const registry = options.registry && typeof options.registry === "object"
+    ? options.registry
+    : {};
+  const candidate = options.candidate && typeof options.candidate === "object"
+    ? cloneValue(options.candidate)
+    : null;
+
+  return validateAssetPipelineState({
+    registry,
+    candidate,
+    sectionRules: ASSET_PIPELINE_SECTION_RULES
+  });
+}
+
+export function createAssetPipelineOutput(options = {}) {
+  const registry = options.registry && typeof options.registry === "object"
+    ? options.registry
+    : {};
+  const validation = options.validation && typeof options.validation === "object"
+    ? cloneValue(options.validation)
+    : null;
+  const format = safeString(options.format, "json");
+
+  return createAssetPipelineOutputArtifact({
+    registry,
+    validation,
+    format,
+    sectionRules: ASSET_PIPELINE_SECTION_RULES
+  });
+}
+
 export function registerAssetPipelineCandidate(options = {}) {
   const incomingRegistry = options.registry && typeof options.registry === "object"
     ? options.registry
@@ -171,7 +209,9 @@ export function registerAssetPipelineCandidate(options = {}) {
       registry,
       entry: null,
       validation,
-      conversion: conversionResult
+      conversion: conversionResult,
+      pipelineValidation: null,
+      output: null
     };
   }
 
@@ -188,21 +228,55 @@ export function registerAssetPipelineCandidate(options = {}) {
   }
 
   const nextRegistry = upsertRegistryEntry(registry, candidate.section, entry);
+  const pipelineValidation = validateAssetPipelineRegistryState({
+    registry: nextRegistry,
+    candidate
+  });
+  if (!pipelineValidation.valid) {
+    return {
+      stage: ASSET_PIPELINE_STAGES.REGISTER,
+      valid: false,
+      registry,
+      entry: null,
+      validation,
+      conversion: conversionResult,
+      pipelineValidation,
+      output: null
+    };
+  }
+
+  const output = createAssetPipelineOutput({
+    registry: nextRegistry,
+    validation: pipelineValidation,
+    format: safeString(options.outputFormat, "json")
+  });
+
   return {
     stage: ASSET_PIPELINE_STAGES.REGISTER,
     valid: true,
     registry: nextRegistry,
     entry,
     validation,
-    conversion: conversionResult
+    conversion: conversionResult,
+    pipelineValidation,
+    output
   };
 }
 
 export function summarizeAssetPipelineRules() {
+  const output = createAssetPipelineOutput({
+    registry: {},
+    format: "json"
+  });
   return {
     schema: "tools.asset-pipeline-foundation-rules/1",
     stages: cloneValue(ASSET_PIPELINE_STAGES),
     sectionRules: cloneValue(ASSET_PIPELINE_SECTION_RULES),
-    converters: listAssetPipelineConverters(DEFAULT_PIPELINE_CONVERTER_REGISTRY)
+    converters: listAssetPipelineConverters(DEFAULT_PIPELINE_CONVERTER_REGISTRY),
+    output: {
+      schema: output.artifact.schema,
+      format: output.format,
+      filePathTemplate: "build/assets/<projectId>.assets.pipeline.json"
+    }
   };
 }

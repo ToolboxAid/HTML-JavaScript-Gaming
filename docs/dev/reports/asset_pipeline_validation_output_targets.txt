@@ -1,0 +1,9 @@
+ASSET PIPELINE VALIDATION & OUTPUT TARGETS
+
+- validation rules (schema, IDs, references)
+- export JSON format
+- build artifact structure
+
+Keep:
+- simple
+- deterministic
