@@ -8,7 +8,7 @@
 ## Conservative Rebaseline (2026-04-12)
 - status updates in this revision are conservative and execution-backed
 - recent tool-host, asset-pipeline, debug-inspector, and launch-smoke lanes are reflected without broad scope expansion
-- `templates/` cleanup is explicitly tracked and deferred to a dedicated cleanup-only lane
+- `templates/` cleanup is explicitly tracked and completed
 
 ---
 
@@ -102,7 +102,7 @@
 - [ ] legacy migration map defined
 - [.] implementation PRs executed
 - [x] imports normalized after moves
-- [.] post-move validation complete
+- [x] post-move validation complete
 
 ### Structure Targets
 - [x] `src/engine/core`
@@ -562,9 +562,9 @@
 - [ ] `legacy class-retention policy marker` policy defined
 - [.] `SpriteEditor_old_keep` policy defined
 - [ ] archived notes policy defined
-- [.] imports pointing to legacy paths reduced
+- [x] imports pointing to legacy paths reduced
 - [.] roadmap for eventual legacy retirement defined
-- [x] `templates/` folder evaluated for keep vs move vs future-delete during cleanup phase (explicitly deferred in this docs-only bundle)
+- [x] `templates/` folder evaluated, relocated to tools/templates, and removed after validation
 
 ---
 
@@ -606,7 +606,7 @@
 
 ### Final Cleanup Lane
 - [ ] Reduce legacy footprint after replacements are proven
-- [ ] Execute `templates/` keep-vs-move-vs-future-delete decision in a dedicated cleanup PR (deferred here; no movement/deletion in this bundle)
+- [x] Execute `templates/` relocation and removal cleanup PR
 
 ### Recommended Final Status Summary
 - [.] current active execution lanes are 3 / 6 / 8
@@ -624,4 +624,4 @@
 - [ ] split future implementation into small dependency-ordered PRs
 - [ ] avoid broad repo-wide cleanup passes until the active lanes above are materially further along
 
-- [ ] Future: relocate `templates/vector-native-arcade` to `tools/templates/` as an active surface; keep `starter-project-template` under separate review
+- [x] templates relocated to tools/templates and root templates directory removed
