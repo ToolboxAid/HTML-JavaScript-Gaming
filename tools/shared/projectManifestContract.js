@@ -1,5 +1,11 @@
 import { readSharedAssetHandoff, readSharedPaletteHandoff } from "./assetUsageIntegration.js";
 import { cloneValue, safeString } from "./projectSystemValueUtils.js";
+import {
+  buildProjectToolIntegration,
+  PROJECT_TOOL_INTEGRATION_SCHEMA,
+  PROJECT_TOOL_INTEGRATION_VERSION,
+  normalizeToolStateForProjectManifest
+} from "./projectToolIntegration.js";
 
 export const PROJECT_MANIFEST_SCHEMA = "html-js-gaming.project";
 export const PROJECT_MANIFEST_VERSION = 1;
@@ -39,7 +45,7 @@ function sanitizeToolsBlock(rawTools) {
     if (typeof toolId !== "string" || !toolId.trim() || !value || typeof value !== "object") {
       return;
     }
-    tools[toolId.trim()] = cloneValue(value);
+    tools[toolId.trim()] = normalizeToolStateForProjectManifest(toolId.trim(), value);
   });
   return tools;
 }
@@ -88,6 +94,7 @@ export function normalizeProjectFileName(projectName) {
 export function createEmptyProjectManifest(options = {}) {
   const now = new Date().toISOString();
   const toolId = sanitizeString(options.toolId, "");
+  const tools = sanitizeToolsBlock(options.tools);
   const name = sanitizeString(options.name, "Untitled Project");
   const manifest = {
     schema: PROJECT_MANIFEST_SCHEMA,
@@ -103,7 +110,8 @@ export function createEmptyProjectManifest(options = {}) {
       palette: sanitizeSharedReference(options.sharedReferences?.palette || readSharedPaletteHandoff())
     },
     sharedLibrary: sanitizeSharedLibrary(options.sharedLibrary),
-    tools: sanitizeToolsBlock(options.tools),
+    tools,
+    toolIntegration: buildProjectToolIntegration(tools),
     workspace: {
       lastOpenTool: toolId,
       notes: sanitizeString(options.workspace?.notes, "")
@@ -149,6 +157,12 @@ export function migrateProjectManifest(rawManifest) {
     migrated.migration.applied.push("forward-version-opened-as-compatible");
   }
 
+  if (!rawManifest.toolIntegration || typeof rawManifest.toolIntegration !== "object") {
+    migrated.migration.applied.push("project-tool-integration-created");
+  }
+
+  migrated.toolIntegration = buildProjectToolIntegration(migrated.tools);
+
   return migrated;
 }
 
@@ -175,6 +189,17 @@ export function validateProjectManifest(rawManifest) {
 
   if (!manifest.tools || typeof manifest.tools !== "object") {
     issues.push("Project manifest tools block is required.");
+  }
+
+  if (!manifest.toolIntegration || typeof manifest.toolIntegration !== "object") {
+    issues.push("Project manifest toolIntegration block is required.");
+  } else {
+    if (manifest.toolIntegration.schema !== PROJECT_TOOL_INTEGRATION_SCHEMA) {
+      warnings.push(`Project toolIntegration schema expected ${PROJECT_TOOL_INTEGRATION_SCHEMA} but received ${manifest.toolIntegration.schema || "unknown"}.`);
+    }
+    if (manifest.toolIntegration.version !== PROJECT_TOOL_INTEGRATION_VERSION) {
+      warnings.push(`Project toolIntegration version expected ${PROJECT_TOOL_INTEGRATION_VERSION} but received ${manifest.toolIntegration.version || "unknown"}.`);
+    }
   }
 
   if (manifest.sharedReferences.asset && !manifest.sharedReferences.asset.id && !manifest.sharedReferences.asset.sourcePath) {

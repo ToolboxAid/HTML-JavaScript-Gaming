@@ -1,0 +1,5 @@
+PROJECT TOOL INTEGRATION TARGETS
+
+- shared project schema
+- asset reference normalization
+- cross-tool project loading

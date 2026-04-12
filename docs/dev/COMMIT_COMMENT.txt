@@ -1,1 +1,1 @@
-docs: add BUILD_PR tool host state handoff bundle
+docs: add BUILD_PR project-level tool integration bundle

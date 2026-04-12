@@ -10,6 +10,11 @@ import {
 } from "./projectManifestContract.js";
 import { getProjectAdapter } from "./projectSystemAdapters.js";
 import { cloneValue, safeString } from "./projectSystemValueUtils.js";
+import {
+  buildProjectToolIntegration,
+  normalizeToolStateForProjectManifest,
+  unwrapToolStateForAdapter
+} from "./projectToolIntegration.js";
 
 function readStorage() {
   try {
@@ -87,14 +92,22 @@ export function createProjectSystemController(options = {}) {
     currentManifest.workspace.lastOpenTool = toolId;
     currentManifest.updatedAt = new Date().toISOString();
     currentManifest.sharedReferences = captureSharedReferenceSnapshot();
+    currentManifest.tools = currentManifest.tools && typeof currentManifest.tools === "object"
+      ? currentManifest.tools
+      : {};
 
     if (toolAdapter.ready) {
-      currentManifest.tools[toolId] = toolAdapter.captureState();
+      currentManifest.tools[toolId] = normalizeToolStateForProjectManifest(
+        toolId,
+        toolAdapter.captureState()
+      );
       const adapterName = safeString(toolAdapter.getProjectName?.(), "");
       if (adapterName) {
         currentManifest.name = adapterName;
       }
     }
+
+    currentManifest.toolIntegration = buildProjectToolIntegration(currentManifest.tools);
 
     return migrateProjectManifest(currentManifest);
   }
@@ -156,7 +169,7 @@ export function createProjectSystemController(options = {}) {
     const manifest = ensureProjectManifest();
     const toolState = manifest.tools?.[toolId];
     if (toolState) {
-      toolAdapter.applyState(cloneValue(toolState));
+      toolAdapter.applyState(cloneValue(unwrapToolStateForAdapter(toolId, toolState)));
       onStatus(buildStatusSummary(validateProjectManifest(manifest)));
     }
     state.appliedInitialState = true;
@@ -172,8 +185,10 @@ export function createProjectSystemController(options = {}) {
       toolId
     });
     if (toolAdapter.ready) {
-      nextManifest.tools[toolId] = toolAdapter.createDefaultState(nextName);
-      toolAdapter.applyState(cloneValue(nextManifest.tools[toolId]));
+      const defaultState = normalizeToolStateForProjectManifest(toolId, toolAdapter.createDefaultState(nextName));
+      nextManifest.tools[toolId] = defaultState;
+      nextManifest.toolIntegration = buildProjectToolIntegration(nextManifest.tools);
+      toolAdapter.applyState(cloneValue(unwrapToolStateForAdapter(toolId, defaultState)));
     }
     state.manifest = nextManifest;
     state.appliedInitialState = true;
@@ -192,9 +207,12 @@ export function createProjectSystemController(options = {}) {
     state.manifest = nextManifest;
     const toolAdapter = adapter();
     if (toolAdapter.ready) {
-      const nextToolState = nextManifest.tools?.[toolId] || toolAdapter.createDefaultState(nextManifest.name);
-      toolAdapter.applyState(cloneValue(nextToolState));
+      const nextToolState = nextManifest.tools?.[toolId]
+        ? normalizeToolStateForProjectManifest(toolId, nextManifest.tools[toolId])
+        : normalizeToolStateForProjectManifest(toolId, toolAdapter.createDefaultState(nextManifest.name));
+      toolAdapter.applyState(cloneValue(unwrapToolStateForAdapter(toolId, nextToolState)));
       nextManifest.tools[toolId] = cloneValue(nextToolState);
+      nextManifest.toolIntegration = buildProjectToolIntegration(nextManifest.tools);
     }
     state.appliedInitialState = true;
     markSaved("open-project");
@@ -224,8 +242,10 @@ export function createProjectSystemController(options = {}) {
       toolId
     });
     if (toolAdapter.ready) {
-      nextManifest.tools[toolId] = toolAdapter.createDefaultState(fallbackName);
-      toolAdapter.applyState(cloneValue(nextManifest.tools[toolId]));
+      const defaultState = normalizeToolStateForProjectManifest(toolId, toolAdapter.createDefaultState(fallbackName));
+      nextManifest.tools[toolId] = defaultState;
+      nextManifest.toolIntegration = buildProjectToolIntegration(nextManifest.tools);
+      toolAdapter.applyState(cloneValue(unwrapToolStateForAdapter(toolId, defaultState)));
     }
     state.manifest = nextManifest;
     state.appliedInitialState = true;
