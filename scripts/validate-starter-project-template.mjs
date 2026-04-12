@@ -13,7 +13,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const repoRoot = path.resolve(__dirname, "..");
 
-const TEMPLATE_MANIFEST_PATH = "templates/starter-project-template/config/starter.project.json";
+const TEMPLATE_MANIFEST_PATH = "tools/templates/starter-project-template/config/starter.project.json";
 const REPORT_PATH = "docs/dev/reports/starter_project_template_validation.txt";
 
 function assert(condition, message, issues) {

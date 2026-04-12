@@ -1,32 +1,25 @@
-APPLY_PR_TEMPLATES_VECTOR_NATIVE_ACTIVE_RELOCATION_VALIDATE
+BUILD_PR_STARTER_PROJECT_TEMPLATE_MOVE_TOOLS
 Validation Checklist
 Generated: 2026-04-12
 
-[PASS] tools/templates/vector-native-arcade exists
+[PASS] new tools/templates starter-project-template path exists
+Evidence:
+- `Test-Path tools/templates/starter-project-template` -> `True`
+
+[PASS] old templates/starter-project-template path no longer exists
+Evidence:
+- `Test-Path templates/starter-project-template` -> `False`
+
+[PASS] vector-native template location remains untouched
 Evidence:
 - `Test-Path tools/templates/vector-native-arcade` -> `True`
+- `git diff --name-only -- tools/templates/vector-native-arcade` -> no entries
 
-[PASS] templates/vector-native-arcade no longer exists
+[PASS] required direct starter-template references updated for correctness
 Evidence:
-- `Test-Path templates/vector-native-arcade` -> `False`
-
-[PASS] templates/starter-project-template exists and is unchanged
-Evidence:
-- `Test-Path templates/starter-project-template` -> `True`
-- `git diff --name-only -- templates/starter-project-template` -> no entries
-
-[PASS] required four files reference tools/templates/vector-native-arcade
-Evidence:
-- positive path matches found in all four files
-
-[PASS] old bare path absent in required four files
-Evidence:
-- `rg --pcre2 -n "(?<!tools/)templates/vector-native-arcade/|(?<!tools/)templates/vector-native-arcade\b" <4 files>` -> no matches
+- `scripts/validate-starter-project-template.mjs` uses `tools/templates/starter-project-template/config/starter.project.json`
+- `tools/templates/starter-project-template/README.md` uses `tools/templates/starter-project-template/config/starter.project.json`
 
 [PASS] protected start_of_day directories untouched
 Evidence:
 - `git diff --name-only -- docs/dev/start_of_day/chatGPT docs/dev/start_of_day/codex` -> no entries
-
-[PASS] APPLY lane did not perform structural changes
-Evidence:
-- validation/report-only execution

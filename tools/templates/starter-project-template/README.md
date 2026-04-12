@@ -10,7 +10,7 @@ This template is a single reusable project manifest for the shared tools project
 ## Open flow
 1. Open any active first-class tool.
 2. Use the shared shell `Open Project` action.
-3. Select `templates/starter-project-template/config/starter.project.json`.
+3. Select `tools/templates/starter-project-template/config/starter.project.json`.
 
 ## Shared references used
 - vector: `templates/vector-native-arcade/assets/vectors/template-player.vector.json`

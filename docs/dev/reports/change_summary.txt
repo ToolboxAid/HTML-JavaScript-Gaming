@@ -1,4 +1,4 @@
-- validation/apply lane for vector-native active relocation
-- confirms tools/templates location
-- confirms starter-project-template remains untouched
-- no new structural changes
+- codex-only execution lane
+- move starter-project-template to tools/templates
+- preserve vector-native template under tools/templates
+- no archive move

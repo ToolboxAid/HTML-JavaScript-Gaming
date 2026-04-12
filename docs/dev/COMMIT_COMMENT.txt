@@ -1,1 +1,1 @@
-Validate and lock active relocation of vector-native template surface to tools/templates
+Relocate starter-project-template to tools/templates and preserve active template surfaces

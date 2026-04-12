@@ -1,29 +1,32 @@
 MODEL: GPT-5.3-codex
-REASONING: low
+REASONING: medium
 
 COMMAND:
-Execute APPLY_PR_TEMPLATES_VECTOR_NATIVE_ACTIVE_RELOCATION_VALIDATE.
+Execute BUILD_PR_STARTER_PROJECT_TEMPLATE_MOVE_TOOLS.
 
-Do not make new structural changes in this PR.
+Do the work in this PR. Do not ask for clarification.
 
-Validation steps:
-1. Confirm `tools/templates/vector-native-arcade/` exists.
-2. Confirm `templates/vector-native-arcade/` does not exist.
-3. Confirm `templates/starter-project-template/` still exists and is unchanged.
-4. Check these files now use `tools/templates/vector-native-arcade/`:
-   - tools/shared/vectorNativeTemplate.js
-   - tools/shared/vectorTemplateSampleGame.js
-   - tests/tools/VectorNativeTemplate.test.mjs
-   - games/vector-arcade-sample/README.md
-5. Confirm no file changes under:
+Required actions:
+1. Move:
+   templates/starter-project-template/
+   ->
+   tools/templates/starter-project-template/
+2. Update only exact references that must change for correctness after the move.
+3. Do NOT touch:
+   - tools/templates/vector-native-arcade/
    - docs/dev/start_of_day/chatGPT/
    - docs/dev/start_of_day/codex/
+   - docs/archive/
 
 Create:
-- docs/dev/reports/templates_vector_native_active_relocation_validation.md
+- docs/dev/reports/starter_project_template_move_report.md
 - docs/dev/reports/validation_checklist.txt
 
-If inconsistencies are found, report them and do not fix them in this APPLY.
+Validation required:
+- new tools/templates starter-project-template path exists
+- old templates/starter-project-template path no longer exists
+- vector-native template location remains untouched
+- protected start_of_day directories untouched
 
 Package output to:
-<project folder>/tmp/APPLY_PR_TEMPLATES_VECTOR_NATIVE_ACTIVE_RELOCATION_VALIDATE.zip
+<project folder>/tmp/BUILD_PR_STARTER_PROJECT_TEMPLATE_MOVE_TOOLS.zip
