@@ -3,29 +3,26 @@
 ---
 
 ## 1. Game Overview
-
 King of the Iceberg is a chaotic multiplayer arena game where 2–8 pingwins compete to control a floating, unstable iceberg.
 
 Players:
-- Push / knock others off
-- Fight for control of the top
-- Use abilities + power-ups
-- Manipulate physics (jump/landing impacts)
+- Push / knock others off  
+- Fight for control of the top  
+- Use abilities + power-ups  
+- Manipulate physics via movement and impact  
 
 ---
 
 ## 2. Core Game Loop
-
 Win by staying on TOP for X total seconds
 
-- Timer increases only on top
-- Timer pauses when off
-- First to reach target wins
+- Timer increases only on top  
+- Timer pauses when off  
+- First to reach target wins  
 
 ---
 
 ## 3. Core Pillars
-
 - Unstable Terrain (tilt, bob, rotate)
 - Slippery Physics (momentum + slope)
 - Push Combat (knock, bounce, displace)
@@ -41,21 +38,19 @@ Win by staying on TOP for X total seconds
 
 ---
 
-### 4.2 Named Heroes & Abilities (RESTORED)
-
+### 4.2 Named Heroes & Abilities
 - Splash — Pucker Blaster (water push stream)
-- Frostbite — Freeze Blast (temporary freeze zone)
-- Glacier — Mega Weight (heavy mass, strong tilt)
+- Frostbite — Freeze Blast (freeze zone)
+- Glacier — Mega Weight (high tilt influence)
 - Dash — Slipstream Dash (burst movement)
-- Sniper — Crystal Shot (long-range precision)
-- Bombard — Belly Bomb (explosive slide impact)
-- Cyclone — Spin Attack (radial knockback)
-- Anchor — Grip Mode (high traction, anti-slide)
+- Sniper — Crystal Shot (precision projectile)
+- Bombard — Belly Bomb (explosive impact)
+- Cyclone — Spin Attack (radial push)
+- Anchor — Grip Mode (high traction)
 
 ---
 
 ### 4.3 Movement
-
 - Slippery, momentum-based
 - Influenced by slope
 - Drift + overshoot behavior
@@ -63,24 +58,21 @@ Win by staying on TOP for X total seconds
 ---
 
 ### 4.4 Spawn Rule
-
 If no input:
 - On iceberg → slide based on tilt
 - In water → bob with current
 
 ---
 
-### 4.5 Wrap System (NEW)
-
-If a player exits screen (jump/swim):
-- Wraps to opposite side
-- Preserves velocity and direction
+### 4.5 Wrap System
+If player exits screen:
+- Warp to opposite side
+- Preserve velocity and direction
 
 ---
 
 ### 4.6 Collision
-
-- Players cannot overlap
+- No overlapping players
 - Bounce based on impact direction
 - Momentum transfer
 
@@ -90,45 +82,39 @@ If a player exits screen (jump/swim):
 
 Landing creates tilt force on iceberg
 
-#### Stomp Landing
-Press DOWN during landing:
+Stomp Landing (DOWN input):
 - Increased tilt force
 
-#### Group Impact
-Multiple players landing together:
-- Amplified tilt
+Group Impact:
+- Multiple players amplify tilt
 - Can slide others off top
 
 ---
 
-### 4.8 Combat System
+### 4.8 Combat
+Push / knock players off
 
-Push / knock players off iceberg
-
-- Collision-based force
+- Collision force
 - Ability-enhanced knockback
-- Landing impacts also affect combat
+- Landing impacts contribute
 
 ---
 
-### 4.9 Knockdown State
-
-- Triggered by strong impact
+### 4.9 Knockdown
+- Strong impacts cause slip state
 - Temporary loss of control
 
 ---
 
 ### 4.10 Health & Death
-
 - HP reduced by collisions, abilities, power-ups
 
 Death:
-- Explosion with ice particles
+- Explosion effect (ice + particles)
 
 ---
 
 ### 4.11 Respawn
-
 - Fall → 5s delay
 - Swim → jump back
 
@@ -136,15 +122,13 @@ Death:
 
 ## 5. Iceberg System
 
-### 5.1 Tilemap Generated
-
+### 5.1 Tilemap
 - Left side authored
 - Right side mirrored at runtime
 
 ---
 
 ### 5.2 Motion
-
 - Bobbing
 - Tilting
 - Rotation
@@ -152,145 +136,103 @@ Death:
 ---
 
 ### 5.3 Tilt Forces
-
 - Player weight
-- Position
+- Player position
 - Landing impacts
 
 ---
 
 ### 5.4 Balance Rule
-
-- Edge = higher push power
-- Top = more stable, less push
+- Edge = stronger push
+- Top = more stable
 
 ---
 
 ### 5.5 Dynamic Top
-
 - Highest point defines control
 
 ---
 
 ## 6. Control Zone
-
 - Only dominant player gains time
 - Contested reduces gain
 
 ---
 
 ## 7. Iceberg Break Event
-
 - Trigger at 65% progress
-- Top breaks away
-- Larger combat surface
+- Top breaks
+- Larger combat area
 
 ---
 
 ## 8. Ability System
 
-### 8.1 Mechanics
-
+### Mechanics
 - Wind-up required
 - Directional targeting
 
 ---
 
-### 8.2 Ability Effects (RESTORED DETAIL)
+## 9. Power-Up System
 
-- Pucker Blaster → continuous push force
-- Freeze Blast → slows and freezes area
-- Mega Weight → increases tilt influence
-- Slipstream Dash → burst movement + knockback
-- Crystal Shot → high-speed projectile
-- Belly Bomb → explosive landing impact
-- Spin Attack → radial push
-- Grip Mode → reduces sliding
-
----
-
-## 9. Power-Up System (RESTORED DETAIL)
-
-### 9.1 Spawn
-
+### Spawn
 - Random
 - High-risk positions
 - Moves with tilt
 
----
-
-### 9.2 Power-Ups & Effects
-
-- Grip Boots → high traction
-- Freeze Orb → freezes nearby players
-- Wave Slam → shockwave push
-- Mega Core → doubles weight influence
-- Ice Sniper → long-range projectile boost
-- Spin Core → enhanced spin attack
-- Dash Surge → faster dash + cooldown reduction
-- Wind Gust → directional push field
+### Power-Ups
+- Grip Boots → traction
+- Freeze Orb → freeze
+- Wave Slam → shockwave
+- Mega Core → weight boost
+- Ice Sniper → ranged boost
+- Spin Core → spin boost
+- Dash Surge → speed boost
+- Wind Gust → push field
 
 ---
 
 ## 10. Falling & Recovery
 
-### 10.1 Falling
-
+### Falling
 - Ocean OR recovery platform
 
----
-
-### 10.2 Recovery
-
-- Swim
-- Jump back onto iceberg
+### Recovery
+- Swim + jump back
 
 ---
 
 ## 11. Multiplayer
-
 - 2–8 players
-- Local + network + hybrid
+- Local + network
 
 ---
 
 ## 12. Match Flow
-
 1. Attract Mode
 2. Character Select
 3. Spawn
-4. Control Battle
-5. Iceberg Break
+4. Battle
+5. Break Event
 6. Chaos Phase
 7. Win
 
 ---
 
 ## 13. Attract Mode
-
 - Gameplay demo
 - Hero showcase
 - Power-up showcase
 - Instructions
-- High score screen
+- High score
 
----
-
-### 13.1 High Score System
-
-Primary metric:
-
-Fastest Match Completion Time
-
-Tracks:
-- Player
-- Time
-- Character
+### High Score
+Fastest match completion time
 
 ---
 
 ## 14. End Game Stats
-
 - Winner
 - Time on Top
 - Match Time
@@ -299,8 +241,7 @@ Tracks:
 
 ---
 
-## 15. Camera System
-
+## 15. Camera
 - Shared camera
 - Dynamic zoom
 - Tracks iceberg
@@ -308,34 +249,26 @@ Tracks:
 ---
 
 ## 16. Visual System
-
-### Iceberg
-- Tilemap-based
-
-### Background
-- Parallax layers
+- Tilemap iceberg
+- Parallax background
 
 ---
 
 ## 17. Networking
-
 - Authoritative host
-- Clients send input
+- Client input model
 
 ---
 
 ## 18. UI / HUD
-
 - Time meter
 - King indicator
 - Ability cooldown
-- Power-up indicator
+- Power-up display
 
 ---
 
 ## 19. Data Model
-
-```js
 {
   player: {
     position,
@@ -350,15 +283,12 @@ Tracks:
     forces
   }
 }
-```
 
 ---
 
 ## 20. MVP Scope
-
 - 2–4 players
-- 1 iceberg
-- Core physics + tilt
+- Core physics
 - 3 abilities
 - 2 power-ups
 - Local multiplayer
@@ -367,12 +297,5 @@ Tracks:
 ---
 
 ## 21. Identity Summary
-
 King of the Iceberg =
-
-King of the Hill
-+ Sliding physics
-+ Push combat
-+ Dynamic terrain
-+ Multiplayer chaos
-
+King of the Hill + Sliding physics + Push combat + Dynamic terrain + Multiplayer chaos
