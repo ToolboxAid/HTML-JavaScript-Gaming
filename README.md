@@ -28,12 +28,12 @@ This repository follows a docs-first game/runtime model, combining a stable engi
 
 ## ▶️ Start Here
 
-1. Review the repo model in `docs/README.md`
-2. Explore the roadmap in `docs/dev/BIG_PICTURE_ROADMAP.md`
-3. Browse samples from `samples/index.html`
-4. Explore tools under `tools/`
-5. Review engine and architecture boundaries in `docs/architecture/`
-6. Follow the workflow in `docs/dev/` and `docs/pr/`
+1. Review the repo model in [docs/README.md](docs/README.md)
+2. Explore the roadmap in [docs/dev/BIG_PICTURE_ROADMAP.md](docs/dev/BIG_PICTURE_ROADMAP.md)
+3. Browse samples from [samples/index.html](samples/index.html)
+4. Explore tools under [tools/](tools/)
+5. Review engine and architecture boundaries in [docs/architecture/](docs/architecture/)
+6. Follow the workflow in [docs/dev/](docs/dev/) and [docs/pr/](docs/pr/)
 
 ---
 
@@ -90,15 +90,9 @@ This repo is designed as a learning system, not just a code dump.
 
 ## 🏗️ Architecture Overview
 
-- Engine Layer → `src/engine/`
-- Advanced Systems → `src/advanced/`
+- Engine Layer → [src/engine/](src/engine/)
+- Advanced Systems → [src/advanced/](src/advanced/)
 - Tools, samples, and games consume public contracts only
-
-Strict boundaries help preserve:
-- Engine stability
-- Clean extensibility
-- Lower coupling
-- Safer long-term evolution
 
 ---
 
@@ -106,9 +100,7 @@ Strict boundaries help preserve:
 
 This project uses a structured PR workflow:
 
-```text
 PLAN_PR → BUILD_PR → APPLY_PR
-```
 
 - One PR per purpose
 - Small, surgical changes
@@ -119,19 +111,19 @@ PLAN_PR → BUILD_PR → APPLY_PR
 
 ## 📚 Documentation Map
 
-- `docs/README.md` → top-level documentation index
-- `docs/architecture/` → durable architecture and boundary contracts
-- `docs/pr/` → preserved PR history and architecture evolution
-- `docs/dev/` → active workflow controls and implementation planning
-- `docs/dev/reports/` → active report artifacts
-- `docs/archive/` → archived dev-ops notes and generated reports
+- [docs/README.md](docs/README.md) → top-level documentation index
+- [docs/architecture/](docs/architecture/) → durable architecture and boundary contracts
+- [docs/pr/](docs/pr/) → preserved PR history and architecture evolution
+- [docs/dev/](docs/dev/) → active workflow controls and implementation planning
+- [docs/dev/reports/](docs/dev/reports/) → active report artifacts
+- [docs/archive/](docs/archive/) → archived dev-ops notes and generated reports
 
 ---
 
 ## ⚠️ Runtime Boundary Rules
 
-- Engine code lives in `src/engine/`
-- Advanced systems live in `src/advanced/`
+- Engine code lives in [src/engine/](src/engine/)
+- Advanced systems live in [src/advanced/](src/advanced/)
 - Tools, samples, and games must use public contracts only
 - Engine boundaries should not be bypassed
 
