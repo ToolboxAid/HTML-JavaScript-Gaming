@@ -1,1 +1,1 @@
-docs: add BUILD_PR project-level tool integration bundle
+docs: add BUILD_PR asset pipeline foundation bundle

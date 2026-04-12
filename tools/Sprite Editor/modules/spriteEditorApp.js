@@ -36,6 +36,7 @@ import {
   sanitizeAssetRegistry,
   upsertRegistryEntry
 } from "../../shared/projectAssetRegistry.js";
+import { registerAssetPipelineCandidate } from "../../shared/assetPipelineFoundation.js";
 import {
   getBlockingAssetValidationMessage,
   hasBlockingAssetValidationFindings,
@@ -169,22 +170,36 @@ function syncSpriteAssetsToRegistry(state, options = {}) {
 
   if (isPaletteLocked(state.project) && state.project.paletteRef?.id && state.project.paletteRef.id !== NO_PALETTE_ID) {
     paletteAssetId = createAssetId("palette", state.project.paletteRef.id, "palette");
-    nextRegistry = upsertRegistryEntry(nextRegistry, "palettes", {
-      id: paletteAssetId,
-      name: state.project.paletteRef.id,
-      enginePaletteId: state.project.paletteRef.id,
-      colors: state.project.palette.slice(),
-      sourceTool: "sprite-editor"
+    const paletteRegistration = registerAssetPipelineCandidate({
+      registry: nextRegistry,
+      section: "palettes",
+      ingest: {
+        id: paletteAssetId,
+        name: state.project.paletteRef.id,
+        sourceTool: "sprite-editor"
+      },
+      entryFields: {
+        enginePaletteId: state.project.paletteRef.id,
+        colors: state.project.palette.slice()
+      }
     });
+    nextRegistry = paletteRegistration.registry;
   }
 
-  nextRegistry = upsertRegistryEntry(nextRegistry, "sprites", {
-    id: spriteAssetId,
-    name: spriteName,
-    path: spritePath,
-    paletteId: paletteAssetId,
-    sourceTool: "sprite-editor"
+  const spriteRegistration = registerAssetPipelineCandidate({
+    registry: nextRegistry,
+    section: "sprites",
+    ingest: {
+      id: spriteAssetId,
+      name: spriteName,
+      path: spritePath,
+      sourceTool: "sprite-editor"
+    },
+    entryFields: {
+      paletteId: paletteAssetId
+    }
   });
+  nextRegistry = spriteRegistration.registry;
 
   state.assetRegistry = sanitizeAssetRegistry(nextRegistry);
   state.project.assetRefs = {

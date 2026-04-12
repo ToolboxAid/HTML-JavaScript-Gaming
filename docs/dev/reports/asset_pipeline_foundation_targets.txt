@@ -1,0 +1,19 @@
+ASSET PIPELINE FOUNDATION TARGETS
+
+Primary target cluster:
+1. asset ingest baseline
+2. asset identity normalization
+3. asset validation at import boundary
+4. project registration/handoff
+
+Do first:
+- reuse existing tools/shared asset/project helpers
+- normalize IDs/paths/types
+- introduce only minimal adapters per touched tool
+
+Do not do in this phase:
+- full converter implementations
+- 3D asset handling
+- render-pipeline rewrites
+- editor-state changes
+- broad import UI redesign

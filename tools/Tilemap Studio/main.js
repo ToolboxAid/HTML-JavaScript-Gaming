@@ -15,6 +15,7 @@ import {
   sanitizeAssetRegistry,
   upsertRegistryEntry
 } from "../shared/projectAssetRegistry.js";
+import { registerAssetPipelineCandidate } from "../shared/assetPipelineFoundation.js";
 import {
   getBlockingAssetValidationMessage,
   hasBlockingAssetValidationFindings,
@@ -782,26 +783,39 @@ class TileMapEditorApp {
 
     if (atlasImagePath) {
       const tilesetId = nextAssetRefs.tilesetId || createAssetId("tileset", mapName, "tileset");
-
-      this.assetRegistry = upsertRegistryEntry(this.assetRegistry, "tilesets", {
-        id: tilesetId,
-        name: `${mapName} Tileset`,
-        path: atlasImagePath,
-        tileWidth: atlas.tileWidth,
-        tileHeight: atlas.tileHeight,
-        sourceTool: "tile-map-editor"
+      const tilesetRegistration = registerAssetPipelineCandidate({
+        registry: this.assetRegistry,
+        section: "tilesets",
+        ingest: {
+          id: tilesetId,
+          name: `${mapName} Tileset`,
+          path: atlasImagePath,
+          sourceTool: "tile-map-editor"
+        },
+        entryFields: {
+          tileWidth: atlas.tileWidth,
+          tileHeight: atlas.tileHeight
+        }
       });
+      this.assetRegistry = tilesetRegistration.registry;
 
       nextAssetRefs.tilesetId = tilesetId;
     }
 
-    this.assetRegistry = upsertRegistryEntry(this.assetRegistry, "tilemaps", {
-      id: tilemapId,
-      name: mapName,
-      path: tilemapPath,
-      tilesetId: nextAssetRefs.tilesetId || "",
-      sourceTool: "tile-map-editor"
+    const tilemapRegistration = registerAssetPipelineCandidate({
+      registry: this.assetRegistry,
+      section: "tilemaps",
+      ingest: {
+        id: tilemapId,
+        name: mapName,
+        path: tilemapPath,
+        sourceTool: "tile-map-editor"
+      },
+      entryFields: {
+        tilesetId: nextAssetRefs.tilesetId || ""
+      }
     });
+    this.assetRegistry = tilemapRegistration.registry;
 
     this.documentModel.assetRefs = nextAssetRefs;
   }

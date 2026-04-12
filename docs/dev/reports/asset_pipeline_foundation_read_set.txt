@@ -1,0 +1,22 @@
+READ SET — ASSET PIPELINE FOUNDATION
+
+Read shared targets first:
+- tools/shared/projectSystem.js
+- tools/shared/projectSystemAdapters.js
+- tools/shared/projectSystemValueUtils.js
+- tools/shared/runtimeAssetLoader.js
+- tools/shared/runtimeAssetValidationUtils.js
+
+Then inspect only active tool import/load paths as needed:
+- tools/Asset Browser/*
+- tools/Palette Browser/*
+- tools/Parallax Scene Studio/*
+- tools/Sprite Editor/*
+- tools/Tilemap Studio/*
+- tools/Vector Asset Studio/*
+- tools/Vector Map Editor/*
+
+Constraint:
+- do not scan full repo
+- do not read games/samples unless a touched shared helper requires a narrow validation check
+- do not broaden into converter or 3D tool lanes

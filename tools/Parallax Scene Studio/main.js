@@ -15,6 +15,7 @@ import {
   sanitizeAssetRegistry,
   upsertRegistryEntry
 } from "../shared/projectAssetRegistry.js";
+import { registerAssetPipelineCandidate } from "../shared/assetPipelineFoundation.js";
 import {
   getBlockingAssetValidationMessage,
   hasBlockingAssetValidationFindings,
@@ -966,20 +967,32 @@ class ParallaxEditorApp {
       const sourceId = layer.parallaxSourceId || createAssetId("parallax", layer.id || layer.name || `source-${index + 1}`, `source-${index + 1}`);
       layer.parallaxSourceId = sourceId;
 
-      this.assetRegistry = upsertRegistryEntry(this.assetRegistry, "images", {
-        id: imageId,
-        name: layer.name || `Parallax Layer ${index + 1}`,
-        path: layerPath,
-        sourceTool: "parallax-editor"
+      const imageRegistration = registerAssetPipelineCandidate({
+        registry: this.assetRegistry,
+        section: "images",
+        ingest: {
+          id: imageId,
+          name: layer.name || `Parallax Layer ${index + 1}`,
+          path: layerPath,
+          sourceTool: "parallax-editor"
+        }
       });
+      this.assetRegistry = imageRegistration.registry;
 
-      this.assetRegistry = upsertRegistryEntry(this.assetRegistry, "parallaxSources", {
-        id: sourceId,
-        name: layer.name || `Parallax Layer ${index + 1}`,
-        path: layerPath,
-        imageId,
-        sourceTool: "parallax-editor"
+      const sourceRegistration = registerAssetPipelineCandidate({
+        registry: this.assetRegistry,
+        section: "parallaxSources",
+        ingest: {
+          id: sourceId,
+          name: layer.name || `Parallax Layer ${index + 1}`,
+          path: layerPath,
+          sourceTool: "parallax-editor"
+        },
+        entryFields: {
+          imageId
+        }
       });
+      this.assetRegistry = sourceRegistration.registry;
 
       sourceIds.push(sourceId);
     });

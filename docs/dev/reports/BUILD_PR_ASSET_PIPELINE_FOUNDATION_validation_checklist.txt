@@ -1,0 +1,15 @@
+VALIDATION CHECKLIST — BUILD_PR_ASSET_PIPELINE_FOUNDATION
+
+Required:
+- [ ] touched tools still load
+- [ ] npm run test:launch-smoke -- --tools executed
+- [ ] no new console errors
+- [ ] asset ingest still works for touched tools
+- [ ] normalized ID/path/type rules reported
+- [ ] exact files changed reported
+- [ ] adapters added reported
+- [ ] no style/theme churn
+- [ ] no editor-state rewrite slipped in
+
+Nice to have:
+- [ ] phase-2 converter/pipeline follow-up candidates listed
