@@ -1,2 +1,4 @@
-- SpriteEditor_old_keep successfully moved to archive
-- No runtime or template impact
+- Uses user-supplied Windows PowerShell scan results instead of spending Codex tokens on broad repo search.
+- Narrows the lane to docs-only policy work for classes_old_keep.
+- Confirms no on-disk classes_old_keep directory exists in the supplied evidence.
+- Keeps templates/, docs/archive/, and SpriteEditor archive surfaces untouched.

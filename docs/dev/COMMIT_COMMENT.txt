@@ -1,2 +1,3 @@
-APPLY_PR_SPRITEEDITOR_ARCHIVE_VALIDATE_v2
-Validate archive move.
+BUILD_PR_TARGETED_REPO_CLEANUP_PASS_5_CLASSES_OLD_KEEP_POLICY_PS_FIRST
+
+Convert user-supplied PowerShell evidence into docs-only policy, inventory, and validation guard for classes_old_keep.

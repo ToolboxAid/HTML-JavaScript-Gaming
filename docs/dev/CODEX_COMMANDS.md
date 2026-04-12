@@ -2,18 +2,26 @@ MODEL: GPT-5.3-codex
 REASONING: medium
 
 COMMAND:
-Validate the completed move of:
-tools/SpriteEditor_old_keep/
-→ docs/archive/tools/SpriteEditor_old_keep/
+Execute BUILD_PR_TARGETED_REPO_CLEANUP_PASS_5_CLASSES_OLD_KEEP_POLICY_PS_FIRST.
 
-Steps:
-1. Confirm old path does not exist
-2. Confirm new archive path exists with identical structure
-3. Search repo for any remaining references to old path
-4. Confirm no runtime imports reference the old path
-5. Generate validation report:
-   docs/dev/reports/spriteeditor_archive_move_validation.md
-6. If any broken references are found, list them (DO NOT FIX)
+Use the user-supplied PowerShell scan evidence as the primary source of truth:
+- `classes_old_keep` appears only in docs/planning/generated-doc files
+- no `classes_old_keep` directory exists on disk
+- no active runtime/code references were found in the supplied scan output
 
-Package results to:
-<project folder>/tmp/APPLY_PR_SPRITEEDITOR_ARCHIVE_VALIDATE_v2.zip
+Create exactly:
+- docs/dev/reports/classes_old_keep_policy_inventory.md
+- docs/dev/reports/classes_old_keep_policy_decision.md
+- docs/dev/reports/classes_old_keep_validation_guard.md
+- docs/dev/reports/BUILD_PR_TARGETED_REPO_CLEANUP_PASS_5_CLASSES_OLD_KEEP_POLICY_PS_FIRST_report.md
+- docs/dev/reports/validation_checklist.txt
+
+Constraints:
+- Do NOT rerun broad repo discovery scans already completed by the user unless needed only to validate a specific contradiction.
+- Do NOT create, move, rename, or delete any `classes_old_keep/` directory.
+- Do NOT modify templates/, docs/archive/, or SpriteEditor archive surfaces.
+- Do NOT modify runtime code or repo structure.
+- If roadmap updates are needed, apply bracket-only changes only where exact wording already exists.
+
+Package output to:
+<project folder>/tmp/BUILD_PR_TARGETED_REPO_CLEANUP_PASS_5_CLASSES_OLD_KEEP_POLICY_PS_FIRST.zip

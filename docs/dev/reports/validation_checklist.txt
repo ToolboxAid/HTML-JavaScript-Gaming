@@ -1,4 +1,31 @@
-[ ] old path removed
-[ ] new path exists
-[ ] no broken refs
-[ ] no runtime impact
+﻿BUILD_PR_TARGETED_REPO_CLEANUP_PASS_5_CLASSES_OLD_KEEP_POLICY_PS_FIRST
+Validation Checklist
+Generated: 2026-04-12
+
+[PASS] protected start_of_day directories untouched
+Evidence: `git status --short -- docs/dev/start_of_day/chatGPT docs/dev/start_of_day/codex` -> no entries
+
+[PASS] no `classes_old_keep/` directory created/moved/deleted
+Evidence: `Test-Path classes_old_keep` -> False
+
+[PASS] `templates/` untouched
+Evidence: no files changed under `templates/` in this lane
+
+[PASS] `docs/archive/` untouched
+Evidence: no files changed under `docs/archive/` in this lane
+
+[PASS] classes_old_keep evidence reports created
+Evidence:
+- `docs/dev/reports/classes_old_keep_policy_inventory.md`
+- `docs/dev/reports/classes_old_keep_policy_decision.md`
+- `docs/dev/reports/classes_old_keep_validation_guard.md`
+- `docs/dev/reports/BUILD_PR_TARGETED_REPO_CLEANUP_PASS_5_CLASSES_OLD_KEEP_POLICY_PS_FIRST_report.md`
+
+[PASS] no unrelated cleanup targets changed
+Evidence: lane output limited to classes_old_keep policy docs and validation checklist
+
+[PASS] roadmap wording preserved if roadmap changed
+Evidence: roadmap unchanged in this lane
+
+[PASS] roadmap changes bracket-only if roadmap changed
+Evidence: N/A (roadmap unchanged)
