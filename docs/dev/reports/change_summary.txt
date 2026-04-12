@@ -1,2 +1,3 @@
-﻿Removed legacy class-retention policy marker references from documentation
-
+- updated roadmap item: `templates/` folder evaluated for keep vs move vs future-delete -> complete
+- appended deferred future roadmap note for relocating `templates/vector-native-arcade` to `tools/templates/`
+- no code/runtime changes

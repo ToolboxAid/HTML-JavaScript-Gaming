@@ -564,7 +564,7 @@
 - [ ] archived notes policy defined
 - [ ] imports pointing to legacy paths reduced
 - [.] roadmap for eventual legacy retirement defined
-- [.] `templates/` folder evaluated for keep vs move vs future-delete during cleanup phase (explicitly deferred in this docs-only bundle)
+- [x] `templates/` folder evaluated for keep vs move vs future-delete during cleanup phase (explicitly deferred in this docs-only bundle)
 
 ---
 
@@ -623,4 +623,5 @@
 - [.] re-baseline this roadmap after active execution lanes stabilize
 - [ ] split future implementation into small dependency-ordered PRs
 - [ ] avoid broad repo-wide cleanup passes until the active lanes above are materially further along
-- [ ] Future: Relocate `templates/vector-native-arcade` to `tools/templates/` (active surface), keep `starter-project-template` under review; do not archive while actively referenced
+
+- [ ] Future: relocate `templates/vector-native-arcade` to `tools/templates/` as an active surface; keep `starter-project-template` under separate review

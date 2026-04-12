@@ -1,2 +1,1 @@
-﻿Remove legacy class-retention policy marker references from docs
-
+Update roadmap: mark templates evaluation complete and append deferred tools/templates relocation note
