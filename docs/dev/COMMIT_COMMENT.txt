@@ -1,1 +1,1 @@
-Relocate active vector-native template surface to tools/templates and update known blocker references
+Validate and lock active relocation of vector-native template surface to tools/templates

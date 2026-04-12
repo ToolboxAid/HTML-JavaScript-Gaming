@@ -1,5 +1,4 @@
-- codex-only execution lane
-- move active vector-native template surface to tools/templates
-- update the four exact blocker files
-- leave starter-project-template untouched
-- no archive move
+- validation/apply lane for vector-native active relocation
+- confirms tools/templates location
+- confirms starter-project-template remains untouched
+- no new structural changes
