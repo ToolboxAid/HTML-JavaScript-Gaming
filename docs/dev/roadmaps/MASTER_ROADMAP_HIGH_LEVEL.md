@@ -623,5 +623,4 @@
 - [.] re-baseline this roadmap after active execution lanes stabilize
 - [ ] split future implementation into small dependency-ordered PRs
 - [ ] avoid broad repo-wide cleanup passes until the active lanes above are materially further along
-
-
+- [ ] Future: Relocate `templates/vector-native-arcade` to `tools/templates/` (active surface), keep `starter-project-template` under review; do not archive while actively referenced
