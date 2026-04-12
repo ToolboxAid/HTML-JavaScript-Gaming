@@ -1,4 +1,4 @@
-﻿# MASTER ROADMAP â€” HIGH LEVEL (v7 ADDITIVE)
+# MASTER ROADMAP - HIGH LEVEL (v7 ADDITIVE)
 
 ## Status Key
 - [x] complete
@@ -226,7 +226,7 @@
 
 ## 5. Debug Platform & Ecosystem
 
-### Track A â€” Debug Foundation
+### Track A - Debug Foundation
 - [x] Dev Console (input + command execution)
 - [x] Debug Overlay (visual panels)
 - [x] Console â†” Overlay Boundary
@@ -235,27 +235,27 @@
 - [x] Operator Commands (control surface)
 - [x] Panel Persistence
 
-### Track B â€” Promotion To Engine Layer
+### Track B - Promotion To Engine Layer
 - [x] PLAN_PR_DEBUG_SURFACES_PROMOTION
 - [x] BUILD_PR_DEBUG_SURFACES_PROMOTION
 - [x] APPLY_PR_DEBUG_SURFACES_PROMOTION
 
-### Track C â€” Standard Debug Library
+### Track C - Standard Debug Library
 - [x] PLAN_PR_DEBUG_SURFACES_STANDARD_LIBRARY
 - [x] BUILD_PR_DEBUG_SURFACES_STANDARD_LIBRARY
 - [x] APPLY_PR_DEBUG_SURFACES_STANDARD_LIBRARY
 
-### Track D â€” Debug Presets
+### Track D - Debug Presets
 - [x] PLAN_PR_DEBUG_SURFACES_PRESETS
 - [x] BUILD_PR_DEBUG_SURFACES_PRESETS
 - [x] APPLY_PR_DEBUG_SURFACES_PRESETS
 
-### Track E â€” Advanced Debug UX
+### Track E - Advanced Debug UX
 - [x] PLAN_PR_DEBUG_SURFACES_ADVANCED_UX
 - [x] BUILD_PR_DEBUG_SURFACES_ADVANCED_UX
 - [x] APPLY_PR_DEBUG_SURFACES_ADVANCED_UX
 
-### Track F â€” Game Integration
+### Track F - Game Integration
 - [x] PLAN_PR_DEBUG_SURFACES_GAME_INTEGRATION
 - [x] BUILD_PR_DEBUG_SURFACES_GAME_INTEGRATION
 - [x] APPLY_PR_DEBUG_SURFACES_GAME_INTEGRATION
@@ -264,7 +264,7 @@
 - [x] Performance-safe overlays
 - [x] Build-time debug flags
 
-### Track G â€” Network / Multiplayer Debug
+### Track G - Network / Multiplayer Debug
 - [x] Connection status panel
 - [.] Latency / RTT panel
 - [ ] Replication state viewer
@@ -274,7 +274,7 @@
 - [ ] BUILD_PR_DEBUG_SURFACES_NETWORK_SUPPORT
 - [x] APPLY_PR_DEBUG_SURFACES_NETWORK_SUPPORT
 
-### Track H â€” 3D Debug Support
+### Track H - 3D Debug Support
 - [.] Transform inspector
 - [x] BUILD_PR_DEBUG_SURFACES_3D_SUPPORT
 - [x] APPLY_PR_DEBUG_SURFACES_3D_SUPPORT
@@ -283,14 +283,14 @@
 - [ ] Collision overlays
 - [ ] Scene graph inspector
 
-### Track I â€” Inspectors & Tooling
+### Track I - Inspectors & Tooling
 - [x] Entity inspector
 - [x] Component inspector
 - [x] State diff viewer
 - [x] Timeline debugger
 - [x] Event stream viewer
 
-### Track J â€” Engine Maturity
+### Track J - Engine Maturity
 - [x] Stable debug API
 - [x] Plugin system
 - [x] External documentation
@@ -329,39 +329,39 @@
 
 ---
 
-## 7. Phase 13 â€” Network Concepts, Latency & Simulation
+## 7. Phase 13 - Network Concepts, Latency & Simulation
 
-### Track N â€” Network Sample Foundation
-- [x] Sample A â€” Local Loopback / Fake Network
+### Track N - Network Sample Foundation
+- [x] Sample A - Local Loopback / Fake Network
 - [x] Synthetic connection lifecycle
 - [x] Synthetic RTT feed
 - [x] Synthetic replication feed
 - [x] Trace event feed
 
-### Track O â€” Host / Client Sample
-- [x] Sample B â€” Host / Client Diagnostics
+### Track O - Host / Client Sample
+- [x] Sample B - Host / Client Diagnostics
 - [x] Host status panel data
 - [x] Client status panel data
 - [x] Authority / ownership visibility
 - [x] Replication snapshot visibility
 - [x] Divergence warning surface
 
-### Track P â€” Divergence / Trace Sample
-- [x] Sample C â€” Divergence / Trace Validation
+### Track P - Divergence / Trace Sample
+- [x] Sample C - Divergence / Trace Validation
 - [x] Deterministic mismatch scenario
 - [x] Event sequencing timeline
 - [x] Divergence explanation notes
 - [x] Reproduction guide
 - [x] Validation checklist
 
-### Track Q â€” Network Debug Panels
+### Track Q - Network Debug Panels
 - [x] Connection status panel
 - [.] Latency / RTT panel
 - [ ] Replication state viewer
 - [x] Client/server divergence inspector
 - [x] Event tracing panel
 
-### Track R â€” Network Debug Commands
+### Track R - Network Debug Commands
 - [ ] network.help
 - [x] network.status
 - [x] network.latency
@@ -370,14 +370,14 @@
 - [x] network.trace
 - [.] network.sample.*
 
-### Track S â€” Readiness To Promote
+### Track S - Readiness To Promote
 - [.] Sample-backed provider validation
 - [.] Sample-backed panel validation
 - [.] Operator command validation
 - [ ] Debug-only gating validation
 - [ ] Promotion recommendation
 
-### Track T â€” Server Dashboard
+### Track T - Server Dashboard
 - [ ] Server dashboard shell
 - [ ] Player statistics view
 - [ ] Latency view
@@ -388,7 +388,7 @@
 - [ ] Refresh/update strategy
 - [ ] Debug-only access rules
 
-### Track U â€” Server Containerization
+### Track U - Server Containerization
 - [x] Dockerfile for server
 - [x] .dockerignore
 - [x] Environment variable contract
@@ -471,22 +471,22 @@
 
 ## 11. Productization & Distribution
 
-### Track P â€” Product Samples / Demonstrations
+### Track P - Product Samples / Demonstrations
 - [x] Asteroids Debug Showcase
 - [x] Breakout Debug Showcase
 
-### Track Q â€” UX Polish
+### Track Q - UX Polish
 - [x] Debug toggle indicator
 - [x] Default preset auto-load
 - [x] Open Debug Panel button
 - [x] Inline mini help
 
-### Track R â€” Distribution And Packaging
+### Track R - Distribution And Packaging
 - [x] Showcase landing page
 - [x] Build packaging strategy
 - [x] Asset bundling rules
 
-### Track S â€” Documentation And Adoption
+### Track S - Documentation And Adoption
 - [x] Debug tour
 - [x] Getting started guide
 - [x] Example-driven docs
@@ -521,19 +521,19 @@
 - [ ] Basic Collision Sample
 
 ### Core Sample Track (1601â€“1608)
-- [ ] 1601 â€” 3D Cube Explorer
-- [ ] 1602 â€” 3D Maze Runner
-- [ ] 1603 â€” First Person Walkthrough
-- [ ] 1604 â€” 3D Platformer
-- [ ] 1605 â€” 3D Driving Sandbox
-- [ ] 1606 â€” 3D Physics Playground
-- [ ] 1607 â€” 3D Space Shooter
-- [ ] 1608 â€” 3D Dungeon Crawler
+- [ ] 1601 - 3D Cube Explorer
+- [ ] 1602 - 3D Maze Runner
+- [ ] 1603 - First Person Walkthrough
+- [ ] 1604 - 3D Platformer
+- [ ] 1605 - 3D Driving Sandbox
+- [ ] 1606 - 3D Physics Playground
+- [ ] 1607 - 3D Space Shooter
+- [ ] 1608 - 3D Dungeon Crawler
 
 ### Advanced 3D Samples
-- [ ] 1610 â€” Lighting Demo
-- [ ] 1611 â€” AI Navigation Demo
-- [ ] 1612 â€” Large World Streaming Demo
+- [ ] 1610 - Lighting Demo
+- [ ] 1611 - AI Navigation Demo
+- [ ] 1612 - Large World Streaming Demo
 
 ### 3D Capability Requirements
 - [ ] 3D rendering
@@ -598,7 +598,7 @@
 - [.] Expand testing/validation structure
 
 ### Later Capability Lanes
-- [ ] FEATURE: Fullscreen Bezel Overlay System â€” Render game in full screen with optional bezel artwork layer (static or animated) surrounding the active playfield, preserving aspect ratio and supporting per-game/theme bezel assets without modifying core engine rendering.
+- [ ] FEATURE: Fullscreen Bezel Overlay System - Render game in full screen with optional bezel artwork layer (static or animated) surrounding the active playfield, preserving aspect ratio and supporting per-game/theme bezel assets without modifying core engine rendering.
 
 ### Later Capability Lanes
 - [ ] Execute 2D capability polish lanes
