@@ -1,34 +1,43 @@
 # Templates Vector-Native Active Relocation Report
 
-Generated: 2026-04-12  
-Lane: narrow decouple-only
+Generated: 2026-04-12
+Lane: BUILD_PR_TEMPLATES_VECTOR_NATIVE_ACTIVE_RELOCATION
 
-## Purpose
-Decouple active vector-native template references from `templates/vector-native-arcade/` and standardize on the canonical active path:
+## Scope Executed
+1. Moved template directory:
+   - `templates/vector-native-arcade/`
+   - -> `tools/templates/vector-native-arcade/`
+2. Updated only the required four files:
+   - `tools/shared/vectorNativeTemplate.js`
+   - `tools/shared/vectorTemplateSampleGame.js`
+   - `tests/tools/VectorNativeTemplate.test.mjs`
+   - `games/vector-arcade-sample/README.md`
+3. Wrote required validation artifacts:
+   - `docs/dev/reports/templates_vector_native_active_relocation_report.md`
+   - `docs/dev/reports/validation_checklist.txt`
 
+## Path Normalization Applied
+All required path references were normalized from:
+- `templates/vector-native-arcade/`
+to:
 - `tools/templates/vector-native-arcade/`
 
-## Scope Applied
-Modified only:
-- `tools/shared/vectorNativeTemplate.js`
-- `tools/shared/vectorTemplateSampleGame.js`
-- `tests/tools/VectorNativeTemplate.test.mjs`
-- `games/vector-arcade-sample/README.md`
+## Move Result
+- Destination exists: `tools/templates/vector-native-arcade/`
+- Source removed: `templates/vector-native-arcade/`
+- Files moved under destination: `15`
 
-## Changes Made
-1. Updated vector-native template asset/config/docs/runtime path strings to use `tools/templates/vector-native-arcade/`.
-2. Updated sample-game remap logic to map from `tools/templates/vector-native-arcade/` to `games/vector-arcade-sample/`.
-3. Updated test assertion for `definition.templatePath` to the canonical active path.
-4. Updated sample-game README template source path to the canonical active path.
-
-## Move Decision
-- No physical move performed in this lane.
-- `templates/vector-native-arcade/` remains in place.
-- Rationale: this lane is decouple-only and path normalization was completed in the four blocker files without requiring filesystem relocation for correctness in this PR.
-
-## Validation Notes
-- No bare legacy path references remain in the four target files (`templates/vector-native-arcade/` not preceded by `tools/`).
+## Guard Results
+- `templates/starter-project-template/` untouched.
 - No changes under:
   - `docs/dev/start_of_day/chatGPT/`
   - `docs/dev/start_of_day/codex/`
-- `templates/starter-project-template/` untouched.
+  - `docs/archive/`
+
+## Validation Summary
+- Legacy path references in the four target files (bare, non-`tools/`): `0`
+- Canonical active path references in the four target files: `28`
+
+## Notes
+- No archive actions were performed.
+- No additional non-required source files were edited.

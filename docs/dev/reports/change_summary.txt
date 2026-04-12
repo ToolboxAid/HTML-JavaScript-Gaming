@@ -1,3 +1,5 @@
-- updated roadmap item: `templates/` folder evaluated for keep vs move vs future-delete -> complete
-- appended deferred future roadmap note for relocating `templates/vector-native-arcade` to `tools/templates/`
-- no code/runtime changes
+- codex-only execution lane
+- move active vector-native template surface to tools/templates
+- update the four exact blocker files
+- leave starter-project-template untouched
+- no archive move

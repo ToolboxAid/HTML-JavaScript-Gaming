@@ -2,30 +2,26 @@ BUILD_PR_TEMPLATES_VECTOR_NATIVE_ACTIVE_RELOCATION
 Validation Checklist
 Generated: 2026-04-12
 
-[PASS] no bare legacy path references remain in the four target files
+[PASS] old vector-native template path no longer referenced in four target files
 Evidence:
-- `rg --pcre2 -n "(?<!tools/)templates/vector-native-arcade/|(?<!tools/)templates/vector-native-arcade\\b" tools/shared/vectorNativeTemplate.js tools/shared/vectorTemplateSampleGame.js tests/tools/VectorNativeTemplate.test.mjs games/vector-arcade-sample/README.md` -> no matches
+- `rg --pcre2 -n "(?<!tools/)templates/vector-native-arcade/|(?<!tools/)templates/vector-native-arcade\b" tools/shared/vectorNativeTemplate.js tools/shared/vectorTemplateSampleGame.js tests/tools/VectorNativeTemplate.test.mjs games/vector-arcade-sample/README.md` -> no matches
 
-[PASS] canonical active path is used in all four target files
+[PASS] new tools/templates path referenced in four target files
 Evidence:
-- `tools/templates/vector-native-arcade/` present in:
-  - `tools/shared/vectorNativeTemplate.js`
-  - `tools/shared/vectorTemplateSampleGame.js`
-  - `tests/tools/VectorNativeTemplate.test.mjs`
-  - `games/vector-arcade-sample/README.md`
+- `rg -n "tools/templates/vector-native-arcade/|tools/templates/vector-native-arcade" tools/shared/vectorNativeTemplate.js tools/shared/vectorTemplateSampleGame.js tests/tools/VectorNativeTemplate.test.mjs games/vector-arcade-sample/README.md` -> matches found
 
-[PASS] no changes under protected start_of_day directories
-Evidence:
-- `git diff --name-only -- docs/dev/start_of_day/chatGPT docs/dev/start_of_day/codex` -> no entries
-
-[PASS] starter-project-template remains untouched
+[PASS] templates/starter-project-template remains untouched
 Evidence:
 - `git diff --name-only -- templates/starter-project-template` -> no entries
 
-[PASS] no directory move/archive executed in this lane
+[PASS] tools/templates/vector-native-arcade exists
 Evidence:
-- `git diff --name-status` filter for `D|R|C` -> no entries related to this lane
+- `Test-Path tools/templates/vector-native-arcade` -> `True`
 
-[INFO] targeted test execution note
+[PASS] templates/vector-native-arcade no longer exists
 Evidence:
-- direct isolated test invocation could not run in this local Node 20.8.1 environment because `node:module` `registerHooks` is unavailable; this repository's full test harness expects newer runtime hook support.
+- `Test-Path templates/vector-native-arcade` -> `False`
+
+[PASS] protected start_of_day directories untouched
+Evidence:
+- `git diff --name-only -- docs/dev/start_of_day/chatGPT docs/dev/start_of_day/codex` -> no entries

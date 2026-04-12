@@ -1,1 +1,1 @@
-Update roadmap: mark templates evaluation complete and append deferred tools/templates relocation note
+Relocate active vector-native template surface to tools/templates and update known blocker references
