@@ -1,1 +1,1 @@
-docs: rebaseline roadmap and stage later repo cleanup targets including templates/ deferment
+BUILD_PR_REPO_CLEANUP_AND_ROADMAP_UPDATE: apply conservative roadmap bracket-state updates and generate reference-safe cleanup evidence reports without deleting, moving, renaming, or touching templates/.

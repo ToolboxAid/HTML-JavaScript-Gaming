@@ -1,1 +1,9 @@
-After Codex completes, produce APPLY_PR_SAMPLES_INDEX_FIXES_AND_TARGETED_PREVIEW_RETRY with acceptance docs only. Verify: samples/index.html header/dropdown text changes, Sample 1303 local-only fix with no engine edits, retry-only preview SVG replacements for the approved list, and explicit confirmation that 1316/1317/1318 were untouched.
+After Codex completes and validation is clean, the next recommended lane is:
+APPLY_PR_REPO_CLEANUP_AND_ROADMAP_UPDATE
+
+Only do that if this BUILD reports:
+- bracket-only roadmap changes
+- no protected directory edits
+- no deletion/move/rename
+- templates/ untouched
+- cleanup evidence reports complete

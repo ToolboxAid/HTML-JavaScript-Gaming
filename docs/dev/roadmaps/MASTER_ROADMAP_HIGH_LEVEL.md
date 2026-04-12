@@ -549,7 +549,7 @@
 - [.] `tests/` structure normalized
 - [.] unit coverage aligned to engine/shared/games
 - [.] integration coverage aligned to state/replay/rendering/tools
-- [.] smoke validation aligned to samples/tools/games
+- [x] smoke validation aligned to samples/tools/games
 - [ ] fixtures/helpers organization normalized
 - [.] move/refactor validation strategy documented
 - [ ] post-PR acceptance criteria consistently enforced
