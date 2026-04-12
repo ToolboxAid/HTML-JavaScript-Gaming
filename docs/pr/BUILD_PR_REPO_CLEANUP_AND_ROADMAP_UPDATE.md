@@ -1,4 +1,4 @@
-# BUILD_PR_REPO_CLEANUP_AND_ROADMAP_UPDATE
+﻿# BUILD_PR_REPO_CLEANUP_AND_ROADMAP_UPDATE
 
 ## PR Purpose
 Create one execution-ready, testable cleanup-evidence lane that:
@@ -39,7 +39,7 @@ The prior PLAN established that cleanup must be staged and that `templates/` mus
 Codex must inspect and report on these cleanup targets only:
 - `templates/`
 - `SpriteEditor_old_keep` policy locations/references
-- `classes_old_keep` policy locations/references
+- `classes_old_keep (docs-only placeholder, no on-disk path)` policy locations/references
 - archived notes policy locations/references
 - imports/references pointing to legacy paths
 - eventual legacy-retirement candidates already called out in repo cleanup planning
@@ -150,3 +150,4 @@ Codex should package its output ZIP under:
 - `<project folder>/tmp/BUILD_PR_REPO_CLEANUP_AND_ROADMAP_UPDATE.zip`
 
 The ZIP must preserve exact repo-relative structure and include only files relevant to this PR.
+

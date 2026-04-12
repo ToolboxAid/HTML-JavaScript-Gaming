@@ -16,7 +16,7 @@ Bundle type: execution-ready BUILD docs
 - Formalized enforcement for exactly six approved cleanup targets:
   - `templates/`
   - `docs/archive/tools/SpriteEditor_old_keep/` policy target
-  - `classes_old_keep` policy target
+  - `classes_old_keep (docs-only placeholder, no on-disk path)` policy target
   - `docs/archive/` archived-notes policy target
   - legacy import path patterns
   - eventual legacy-retirement planning target
@@ -78,4 +78,5 @@ Bundle type: execution-ready BUILD docs
    - `git diff --name-only -- tools src games samples tests`
    - Result: no entries.
    - Guard result: `RUNTIME_TEST_SURFACE_CHECK: PASS`.
+
 

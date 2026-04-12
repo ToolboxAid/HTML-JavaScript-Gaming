@@ -1,4 +1,4 @@
-# BUILD_PR_TEMPLATES_POLICY_CLASSIFICATION
+﻿# BUILD_PR_TEMPLATES_POLICY_CLASSIFICATION
 
 ## PR Purpose
 Create one execution-ready, testable templates-classification lane that:
@@ -18,7 +18,7 @@ The previous cleanup-evidence BUILD established that `templates/` exists, has li
   - `docs/dev/start_of_day/codex/`
 - Do **not** move, rename, or delete `templates/` or any file under it.
 - Do **not** rewrite runtime imports away from `templates/` in this PR.
-- Do **not** change unrelated cleanup targets (`SpriteEditor_old_keep`, `classes_old_keep`, archived notes policy) in this PR.
+- Do **not** change unrelated cleanup targets (`SpriteEditor_old_keep`, `classes_old_keep (docs-only placeholder, no on-disk path)`, archived notes policy) in this PR.
 - Do **not** mix in feature work, engine refactors, or sample implementation.
 - If roadmap edits are needed, they must be bracket-only and only where exact text already exists.
 
@@ -124,7 +124,7 @@ Codex must run and use the results in the report:
 - no import rewrites
 - no migration of template consumers
 - no work on `SpriteEditor_old_keep`
-- no work on `classes_old_keep`
+- no work on `classes_old_keep (docs-only placeholder, no on-disk path)`
 - no archived-notes policy changes
 - no engine/tool/sample runtime implementation
 
@@ -141,3 +141,4 @@ Codex should package its output ZIP under:
 - `<project folder>/tmp/BUILD_PR_TEMPLATES_POLICY_CLASSIFICATION.zip`
 
 The ZIP must preserve exact repo-relative structure and include only files relevant to this PR.
+

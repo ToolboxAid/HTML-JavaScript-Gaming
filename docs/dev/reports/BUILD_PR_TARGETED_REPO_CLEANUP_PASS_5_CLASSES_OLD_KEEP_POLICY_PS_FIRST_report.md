@@ -13,8 +13,8 @@ Bundle type: execution-ready BUILD docs (classes_old_keep policy, PS-first evide
 - `docs/dev/reports/validation_checklist.txt`
 
 ## User-Supplied Scan Evidence Used (Primary)
-- `classes_old_keep` appears only in docs/planning/generated-doc files.
-- no `classes_old_keep` directory exists on disk.
+- `classes_old_keep (docs-only placeholder, no on-disk path)` appears only in docs/planning/generated-doc files.
+- no `classes_old_keep (docs-only placeholder, no on-disk path)` directory exists on disk.
 - no active runtime/code references found in supplied scan output.
 
 ## Supporting Existing Cleanup Evidence
@@ -41,7 +41,7 @@ Bundle type: execution-ready BUILD docs (classes_old_keep policy, PS-first evide
 - No runtime code or repo-structure changes were made.
 
 ## Validation Results
-1. Verify no `classes_old_keep` directory exists on disk:
+1. Verify no `classes_old_keep (docs-only placeholder, no on-disk path)` directory exists on disk:
    - `Test-Path classes_old_keep` -> `False`
 2. Verify required report files exist:
    - all required files present in `docs/dev/reports/`
@@ -49,3 +49,4 @@ Bundle type: execution-ready BUILD docs (classes_old_keep policy, PS-first evide
    - `git status --short -- docs/dev/start_of_day/chatGPT docs/dev/start_of_day/codex` -> no entries
 4. Roadmap diff check (if changed):
    - not required; roadmap unchanged in this lane.
+

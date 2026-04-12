@@ -70,7 +70,8 @@ Stop cleanup execution immediately if:
 - `docs/archive/` has move/delete/rename entries without explicit destination and rollback map;
 - protected start_of_day directories show any change;
 - roadmap requires wording rewrite (non bracket-only) to reflect status;
-- cleanup scope expands into unrelated targets (`templates`, `SpriteEditor_old_keep`, `classes_old_keep`, legacy import guard) in the same lane.
+- cleanup scope expands into unrelated targets (`templates`, `SpriteEditor_old_keep`, `classes_old_keep (docs-only placeholder, no on-disk path)`, legacy import guard) in the same lane.
 
 ## Guard Summary
 No future archived-notes structural cleanup should proceed without full reference proof, synchronized docs updates, structural integrity checks, and rollback-ready execution evidence.
+

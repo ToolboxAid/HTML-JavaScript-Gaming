@@ -1,27 +1,27 @@
-# BUILD_PR_TARGETED_REPO_CLEANUP_PASS_5_CLASSES_OLD_KEEP_POLICY_PS_FIRST
+﻿# BUILD_PR_TARGETED_REPO_CLEANUP_PASS_5_CLASSES_OLD_KEEP_POLICY_PS_FIRST
 
 ## PR Purpose
-Create one execution-ready, testable docs-only cleanup lane for `classes_old_keep` using user-supplied PowerShell scan evidence instead of repeating repo-wide search in Codex.
+Create one execution-ready, testable docs-only cleanup lane for `classes_old_keep (docs-only placeholder, no on-disk path)` using user-supplied PowerShell scan evidence instead of repeating repo-wide search in Codex.
 
 This PR must:
-1. convert the provided PowerShell evidence into formal inventory/policy/guard docs for `classes_old_keep`
-2. classify `classes_old_keep` as docs-only planning/reference surface unless contradictory evidence is found in already-known repo docs
+1. convert the provided PowerShell evidence into formal inventory/policy/guard docs for `classes_old_keep (docs-only placeholder, no on-disk path)`
+2. classify `classes_old_keep (docs-only placeholder, no on-disk path)` as docs-only planning/reference surface unless contradictory evidence is found in already-known repo docs
 3. remain non-destructive and docs-only
 4. avoid repeating broad repo scans already completed outside Codex
 
 ## Why This BUILD Exists
 The user already executed Windows PowerShell searches and confirmed:
-- `classes_old_keep` appears only in documentation/planning files
-- no `classes_old_keep` directory exists on disk
+- `classes_old_keep (docs-only placeholder, no on-disk path)` appears only in documentation/planning files
+- no `classes_old_keep (docs-only placeholder, no on-disk path)` directory exists on disk
 - no runtime/code references were found in active code paths
 
 This BUILD converts that evidence into durable cleanup-policy artifacts without spending additional Codex tokens on the same scan work.
 
 ## User-Supplied Evidence To Treat As Source Input
 Codex should treat the following as already established input for this PR:
-- text-file scan for `classes_old_keep` returned docs/planning/report files only
+- text-file scan for `classes_old_keep (docs-only placeholder, no on-disk path)` returned docs/planning/report files only
 - unique matching paths are all under `docs/` or generated docs metadata
-- on-disk directory check for `classes_old_keep` returned no results
+- on-disk directory check for `classes_old_keep (docs-only placeholder, no on-disk path)` returned no results
 
 Codex may quote/summarize these results in the reports, but should not rerun broad discovery searches unless needed only to validate a specific cited file.
 
@@ -64,7 +64,7 @@ This report must:
   - roadmap
   - PR/build spec
   - generated command metadata
-- state that no `classes_old_keep` directory exists on disk
+- state that no `classes_old_keep (docs-only placeholder, no on-disk path)` directory exists on disk
 - state that no active runtime/code location was found in the supplied scan evidence
 - clearly separate:
   - docs/planning references
@@ -86,7 +86,7 @@ This file must include:
 - exact signals that would justify reclassification later
 
 Expected outcome for this PR:
-- because `classes_old_keep` has no on-disk path and appears only in docs/planning surfaces, this PR should classify it as a docs-only placeholder / manual-review target
+- because `classes_old_keep (docs-only placeholder, no on-disk path)` has no on-disk path and appears only in docs/planning surfaces, this PR should classify it as a docs-only placeholder / manual-review target
 - no structural move/delete action is allowed in this PR
 
 ### 3) classes_old_keep validation guard
@@ -100,7 +100,7 @@ At minimum include:
 - failure conditions that block cleanup execution
 
 ### 4) Optional roadmap alignment
-Only if exact wording already exists, Codex may apply bracket-only state changes for the `classes_old_keep` policy tracking item in:
+Only if exact wording already exists, Codex may apply bracket-only state changes for the `classes_old_keep (docs-only placeholder, no on-disk path)` policy tracking item in:
 - `docs/dev/roadmaps/MASTER_ROADMAP_HIGH_LEVEL.md`
 
 Rules:
@@ -134,7 +134,7 @@ Create `docs/dev/reports/validation_checklist.txt` that records pass/fail for:
 
 ## Validation Commands Codex Must Run
 Codex must run only narrow validation commands needed for this PR:
-1. Verify no `classes_old_keep` directory exists on disk.
+1. Verify no `classes_old_keep (docs-only placeholder, no on-disk path)` directory exists on disk.
 2. Verify created report files exist.
 3. Confirm no file changes under protected start_of_day directories.
 4. If roadmap changed, diff the roadmap file and verify only bracket-state changes occurred.
@@ -151,8 +151,8 @@ Avoid repeating broad repo discovery scans already completed by the user unless 
 - no runtime/code implementation
 
 ## Acceptance Criteria
-- `classes_old_keep` has an evidence-grounded docs-only inventory.
-- `classes_old_keep` has an explicit policy decision suitable for later manual-review cleanup work.
+- `classes_old_keep (docs-only placeholder, no on-disk path)` has an evidence-grounded docs-only inventory.
+- `classes_old_keep (docs-only placeholder, no on-disk path)` has an explicit policy decision suitable for later manual-review cleanup work.
 - a Windows-safe validation guard is documented.
 - no structural repo change occurs.
 - protected start_of_day directories remain untouched.
@@ -162,3 +162,4 @@ Codex should package its output ZIP under:
 - `<project folder>/tmp/BUILD_PR_TARGETED_REPO_CLEANUP_PASS_5_CLASSES_OLD_KEEP_POLICY_PS_FIRST.zip`
 
 The ZIP must preserve exact repo-relative structure and include only files relevant to this PR.
+

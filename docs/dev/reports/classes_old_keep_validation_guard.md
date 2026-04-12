@@ -1,7 +1,7 @@
 ﻿# classes_old_keep Validation Guard
 
 Generated: 2026-04-12
-Purpose: define checks required before any future rename/removal/archive lane for `classes_old_keep` docs references.
+Purpose: define checks required before any future rename/removal/archive lane for `classes_old_keep (docs-only placeholder, no on-disk path)` docs references.
 
 ## A) Windows PowerShell-Safe Search Commands (Text-Like Files)
 Run from repo root.
@@ -37,7 +37,7 @@ Expected for current policy: `False`.
 - `docs/dev/reports/cleanup_keep_move_future_delete_matrix.md`
 - `docs/dev/reports/cleanup_target_enforcement_map.md`
 - `docs/dev/reports/cleanup_target_normalization_report.md`
-- active `docs/pr/*` specs referencing `classes_old_keep`
+- active `docs/pr/*` specs referencing `classes_old_keep (docs-only placeholder, no on-disk path)`
 
 ## D) Blocking Failure Conditions
 Stop future cleanup execution if any of the following occur:
@@ -48,4 +48,5 @@ Stop future cleanup execution if any of the following occur:
 - roadmap requires wording rewrite (non bracket-only) during a status-only lane.
 
 ## Guard Summary
-`classes_old_keep` remains a docs-only placeholder until a dedicated, synchronized docs cleanup lane resolves naming/retirement intent.
+`classes_old_keep (docs-only placeholder, no on-disk path)` remains a docs-only placeholder until a dedicated, synchronized docs cleanup lane resolves naming/retirement intent.
+
