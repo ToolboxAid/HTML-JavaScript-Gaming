@@ -1,25 +1,27 @@
-BUILD_PR_STARTER_PROJECT_TEMPLATE_MOVE_TOOLS
+APPLY_PR_TEMPLATES_ROOT_REMOVE_AFTER_RELOCATION
 Validation Checklist
 Generated: 2026-04-12
 
-[PASS] new tools/templates starter-project-template path exists
+[PASS] tools/templates/vector-native-arcade exists
+Evidence:
+- `Test-Path tools/templates/vector-native-arcade` -> `True`
+
+[PASS] tools/templates/starter-project-template exists
 Evidence:
 - `Test-Path tools/templates/starter-project-template` -> `True`
 
-[PASS] old templates/starter-project-template path no longer exists
+[PASS] templates root has no active files
 Evidence:
-- `Test-Path templates/starter-project-template` -> `False`
+- `Get-ChildItem -Recurse -File templates | Measure-Object` -> `0`
 
-[PASS] vector-native template location remains untouched
+[FAIL] no non-doc runtime references to "templates/"
 Evidence:
-- `Test-Path tools/templates/vector-native-arcade` -> `True`
-- `git diff --name-only -- tools/templates/vector-native-arcade` -> no entries
+- `rg -n "templates/" --glob "!docs/**"` returned matches
 
-[PASS] required direct starter-template references updated for correctness
+[SKIP] delete templates/
 Evidence:
-- `scripts/validate-starter-project-template.mjs` uses `tools/templates/starter-project-template/config/starter.project.json`
-- `tools/templates/starter-project-template/README.md` uses `tools/templates/starter-project-template/config/starter.project.json`
+- skipped because validation did not pass
 
-[PASS] protected start_of_day directories untouched
+[PASS] docs/dev/start_of_day untouched
 Evidence:
-- `git diff --name-only -- docs/dev/start_of_day/chatGPT docs/dev/start_of_day/codex` -> no entries
+- `git diff --name-only -- docs/dev/start_of_day` -> no entries
