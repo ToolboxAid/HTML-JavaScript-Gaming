@@ -1,1 +1,2 @@
-Proceed to APPLY_PR_TARGETED_REPO_CLEANUP_PASS_2 if validation passes.
+After Codex completes and validation passes, proceed to:
+APPLY_PR_TARGETED_REPO_CLEANUP_PASS_3_ARCHIVED_NOTES_POLICY

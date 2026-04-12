@@ -1,3 +1,3 @@
-BUILD_PR_TARGETED_REPO_CLEANUP_PASS_2
+BUILD_PR_TARGETED_REPO_CLEANUP_PASS_3_ARCHIVED_NOTES_POLICY
 
-Adds legacy import guard and report.
+Create archived notes policy inventory, decision, and validation guard as a docs-only, non-destructive cleanup lane.

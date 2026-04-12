@@ -1,4 +1,28 @@
-[PASS] no deletion/move/rename
-[PASS] templates untouched
-[PASS] no runtime changes
-[PASS] guard report created
+﻿BUILD_PR_TARGETED_REPO_CLEANUP_PASS_3_ARCHIVED_NOTES_POLICY
+Validation Checklist
+Generated: 2026-04-12
+
+[PASS] protected start_of_day directories untouched
+Evidence: `git status --short -- docs/dev/start_of_day/chatGPT docs/dev/start_of_day/codex` -> no entries
+
+[PASS] `docs/archive/` not moved/renamed/deleted
+Evidence: `git diff --name-status -- docs/archive` -> no entries
+
+[PASS] `templates/` untouched
+Evidence: `git diff --name-status -- templates` -> no entries
+
+[PASS] archived notes evidence reports created
+Evidence:
+- `docs/dev/reports/archived_notes_policy_inventory.md`
+- `docs/dev/reports/archived_notes_policy_decision.md`
+- `docs/dev/reports/archived_notes_validation_guard.md`
+- `docs/dev/reports/BUILD_PR_TARGETED_REPO_CLEANUP_PASS_3_ARCHIVED_NOTES_POLICY_report.md`
+
+[PASS] no unrelated cleanup targets changed
+Evidence: changed files for this lane are archived-notes policy docs plus validation checklist only
+
+[PASS] roadmap wording preserved if roadmap changed
+Evidence: `git diff --unified=0 -- docs/dev/roadmaps/MASTER_ROADMAP_HIGH_LEVEL.md` -> no diff in this lane
+
+[PASS] roadmap changes bracket-only if roadmap changed
+Evidence: N/A (roadmap unchanged)
