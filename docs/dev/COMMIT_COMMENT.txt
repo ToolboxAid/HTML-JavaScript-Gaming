@@ -1,1 +1,1 @@
-Normalize classes_old_keep references to docs-only placeholder
+Finalize classes_old_keep decision

@@ -1,36 +1,27 @@
-﻿BUILD_PR_TARGETED_REPO_CLEANUP_PASS_6_CLASSES_OLD_KEEP_REFERENCE_NORMALIZATION
+﻿BUILD_PR_TARGETED_REPO_CLEANUP_PASS_7_FINAL_REVIEW_AND_DECISION
 Validation Checklist
 Generated: 2026-04-12
 
-[PASS] wording normalized to docs-only placeholder terminology
-Evidence: canonical phrase applied across active docs; see `classes_old_keep_normalization_report.md`
+[PASS] final review of normalized references completed
+Evidence: canonical phrase scan + residual reference scan captured in final decision report
 
-[PASS] meaning preserved (no policy behavior change)
-Evidence: only terminology clarifications, no action/rule semantics changed
+[PASS] decision recorded (remove vs keep)
+Evidence: decision = keep placeholder in `classes_old_keep_final_decision_report.md`
 
-[PASS] no file/folder move/rename/delete operations
-Evidence: `MOVE_DELETE_RENAME_CHECK: PASS`
-
-[PASS] no `classes_old_keep/` directory created
-Evidence: `Test-Path classes_old_keep` remains False
-
-[PASS] `templates/` untouched
-Evidence: `git diff --name-status -- templates` -> no entries
-
-[PASS] `docs/archive/` untouched
-Evidence: `git diff --name-status -- docs/archive` -> no entries
-
-[PASS] SpriteEditor archive surfaces untouched
-Evidence: `git diff --name-status -- docs/archive/tools/SpriteEditor_old_keep` -> no entries
-
-[PASS] runtime code untouched
-Evidence: `git diff --name-only -- tools src games samples tests` -> no entries
+[PASS] decision justified
+Evidence: explicit multi-point rationale included in final decision report
 
 [PASS] required reports generated
 Evidence:
-- `docs/dev/reports/classes_old_keep_normalization_report.md`
-- `docs/dev/reports/BUILD_PR_TARGETED_REPO_CLEANUP_PASS_6_CLASSES_OLD_KEEP_REFERENCE_NORMALIZATION_report.md`
+- `docs/dev/reports/classes_old_keep_final_decision_report.md`
+- `docs/dev/reports/classes_old_keep_cleanup_recommendation.md`
 - `docs/dev/reports/validation_checklist.txt`
 
-[PASS] protected start_of_day directories untouched
-Evidence: `git status --short -- docs/dev/start_of_day/chatGPT docs/dev/start_of_day/codex` -> no entries
+[PASS] no file deletion in this PR
+Evidence: no D/R/C entries in current diff status filter
+
+[PASS] no folder creation in this PR scope
+Evidence: no new directories required for deliverables; reports written in existing `docs/dev/reports/`
+
+[PASS] no runtime changes
+Evidence: `git diff --name-only -- tools src games samples tests` -> no entries
