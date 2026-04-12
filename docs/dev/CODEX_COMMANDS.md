@@ -2,17 +2,15 @@ MODEL: GPT-5.4
 REASONING: high
 
 COMMAND:
-Create BUILD_PR_DEBUG_INSPECTOR_TOOLS
+Create PLAN_PR_REPO_CLEANUP_AND_ROADMAP_UPDATE as a docs-only package.
 
 Scope:
-- add state inspector tool
-- add replay visualizer tool
-- add basic performance profiler
-- integrate with tool host
-
-Validation:
-- npm run test:launch-smoke -- --tools
-- verify tools launch and inspect data
+- commit updated master roadmap with conservative status rebaseline
+- add tracked cleanup item for templates/ with explicit deferment
+- document cleanup targets and sequencing
+- do not delete or move templates/
+- do not implement cleanup in this PR
+- keep this bundle docs-only
 
 Output:
-<project>/tmp/BUILD_PR_DEBUG_INSPECTOR_TOOLS_delta.zip
+<project folder>/tmp/PLAN_PR_REPO_CLEANUP_AND_ROADMAP_UPDATE.zip

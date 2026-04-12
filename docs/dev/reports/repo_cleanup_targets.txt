@@ -1,0 +1,15 @@
+REPO CLEANUP TARGETS (PLANNED, NOT EXECUTED)
+
+Track now, defer action:
+- templates/
+- SpriteEditor_old_keep policy
+- classes_old_keep policy
+- archived notes policy
+- imports pointing to legacy paths
+- eventual legacy retirement roadmap
+
+Rules:
+- no deletion without reference verification
+- no movement without target-home decision
+- no cleanup mixed into active feature lanes
+- smoke validation before/after cleanup PRs

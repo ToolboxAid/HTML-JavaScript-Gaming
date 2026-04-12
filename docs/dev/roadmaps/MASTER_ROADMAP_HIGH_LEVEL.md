@@ -5,6 +5,11 @@
 - [.] in progress
 - [ ] planned
 
+## Conservative Rebaseline (2026-04-12)
+- status updates in this revision are conservative and execution-backed
+- recent tool-host, asset-pipeline, debug-inspector, and launch-smoke lanes are reflected without broad scope expansion
+- `templates/` cleanup is explicitly tracked and deferred to a dedicated cleanup-only lane
+
 ---
 
 ## Strategic Layer
@@ -559,7 +564,7 @@
 - [ ] archived notes policy defined
 - [ ] imports pointing to legacy paths reduced
 - [.] roadmap for eventual legacy retirement defined
-- [ ] `templates/` folder evaluated for keep vs move vs future-delete during cleanup phase
+- [ ] `templates/` folder evaluated for keep vs move vs future-delete during cleanup phase (explicitly deferred in this docs-only bundle)
 
 ---
 
@@ -601,6 +606,7 @@
 
 ### Final Cleanup Lane
 - [ ] Reduce legacy footprint after replacements are proven
+- [ ] Execute `templates/` keep-vs-move-vs-future-delete decision in a dedicated cleanup PR (deferred here; no movement/deletion in this bundle)
 
 ### Recommended Final Status Summary
 - [.] current active execution lanes are 3 / 6 / 8

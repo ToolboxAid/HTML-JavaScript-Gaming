@@ -1,1 +1,1 @@
-chore: enforce docs path rules + roadmap location guard
+docs: rebaseline roadmap and stage later repo cleanup targets including templates/ deferment

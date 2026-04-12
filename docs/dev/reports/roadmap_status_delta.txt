@@ -1,0 +1,24 @@
+ROADMAP STATUS DELTA INCLUDED IN THIS BUNDLE
+
+Advanced to in-progress:
+- StateInspectorTool
+- ReplayVisualizerTool
+- PerformanceProfilerTool
+- AssetPipelineTool
+- Tile/Model Converter Tool
+- content pipeline tools after asset complexity justifies them
+- debug tools align with engine/debug maturity
+- move/refactor validation strategy documented
+- legacy inventory completed
+- keep vs migrate vs future-delete decisions recorded
+- SpriteEditor_old_keep policy defined
+- roadmap for eventual legacy retirement defined
+- Normalize assets/data ownership
+- Expand testing/validation structure
+- re-baseline this roadmap after active execution lanes stabilize
+
+Advanced to complete:
+- smoke validation aligned to samples/tools/games
+
+New tracked cleanup item:
+- templates/ folder evaluated for keep vs move vs future-delete during cleanup phase

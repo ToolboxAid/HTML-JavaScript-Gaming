@@ -1,0 +1,66 @@
+A few things are still worth locking down before build.
+
+The biggest missing piece is a **tie-break rule** for who owns the top when two pingwins are effectively equal height. Without that, scoring can feel inconsistent. Good choices are center proximity, last uncontested owner, or highest world Y plus velocity fallback.
+
+You also still need a precise **damage model**. Right now HP exists, but the GDD does not yet say how much damage comes from collisions, abilities, stomps, falling, or environmental hazards.
+
+The **water / recovery platform rules** could use one more pass. You have “fall into ocean or recover on a platform,” but not yet:
+
+* how many platforms can exist
+* whether platforms move
+* whether enemies or abilities can hit players in water
+* whether players are invulnerable while swimming
+
+The **co-op / multiplayer session rule** should be clarified a little more. You have single-player and co-op, but it would help to say whether the win condition is always individual, or whether there is ever a team-based variant.
+
+The **iceberg wrap rule** is good, but it should define whether projectiles, power-ups, and enemies also wrap, or only players.
+
+The **ability targeting system** could use final input rules:
+
+* mouse aim, right stick aim, or directional-only
+* whether aiming slows movement
+* whether throw arcs are fixed or charge-based
+
+The **power-up carry rule** should be explicit:
+gravity should play in for special ability
+* one carried at a time
+* auto-activate or manual activate
+* dropped on death or lost on death (barrial at sea would be very kewl.)
+
+The **break event** is strong, but it still needs exact behavior:
+
+* is the break purely visual + collision shape change
+* or does a chunk fully separate and drift
+* does the “top” relocate instantly or transition over time
+
+The **leaderboard model** should define whether “fastest win” is tracked:
+
+* per character
+* per map
+* globally
+* local machine only or network profile later
+
+The **match configuration defaults** should be pinned down:
+
+* default win time
+* default HP
+* default respawn delay
+* default power-up spawn frequency
+* default break trigger at 65 percent is set, but timer length is not
+
+And one very practical item: you still want a short **controls section** in the GDD. Even if temporary, it helps build faster:
+
+* move
+* jump
+* ability
+* power-up
+* pause
+* character select confirm
+
+So, no major concept is missing. The game idea is solid. What’s left is mostly **numbers, tie-breaks, input specifics, and edge-case rules**. The most important three to add before build are:
+
+1. top ownership tie-break
+2. damage/HP rules
+3. controls/input map
+
+If you want, I can do one final pass and produce a **“build-complete GDD”** with those remaining rules filled in.
