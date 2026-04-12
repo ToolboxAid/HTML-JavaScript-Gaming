@@ -1,27 +1,29 @@
-﻿BUILD_PR_TARGETED_REPO_CLEANUP_PASS_7_FINAL_REVIEW_AND_DECISION
+APPLY_PR_TARGETED_REPO_CLEANUP_PASS_7_DECISION_v2
 Validation Checklist
 Generated: 2026-04-12
 
-[PASS] final review of normalized references completed
-Evidence: canonical phrase scan + residual reference scan captured in final decision report
-
-[PASS] decision recorded (remove vs keep)
-Evidence: decision = keep placeholder in `classes_old_keep_final_decision_report.md`
-
-[PASS] decision justified
-Evidence: explicit multi-point rationale included in final decision report
-
-[PASS] required reports generated
+[PASS] decision artifacts exist
 Evidence:
 - `docs/dev/reports/classes_old_keep_final_decision_report.md`
 - `docs/dev/reports/classes_old_keep_cleanup_recommendation.md`
-- `docs/dev/reports/validation_checklist.txt`
 
-[PASS] no file deletion in this PR
-Evidence: no D/R/C entries in current diff status filter
+[PASS] decision wording is consistent with normalization intent
+Evidence:
+- canonical wording present: `classes_old_keep (docs-only placeholder, no on-disk path)`
+- `docs-only placeholder` wording present in both decision artifacts
 
-[PASS] no folder creation in this PR scope
-Evidence: no new directories required for deliverables; reports written in existing `docs/dev/reports/`
+[PASS] no classes_old_keep directory exists on disk
+Evidence:
+- `Test-Path classes_old_keep` -> `False`
 
-[PASS] no runtime changes
-Evidence: `git diff --name-only -- tools src games samples tests` -> no entries
+[PASS] no changed files under templates/
+Evidence:
+- `git status --porcelain` path filter for `templates/*` returned none
+
+[PASS] no changed files under docs/archive/
+Evidence:
+- `git status --porcelain` path filter for `docs/archive/*` returned none
+
+[PASS] no changed files under start_of_day/*
+Evidence:
+- `git status --porcelain` path filter for `*/start_of_day/*` returned none

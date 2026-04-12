@@ -1,28 +1,22 @@
 MODEL: GPT-5.3-codex
-REASONING: high
+REASONING: medium
 
 COMMAND:
-Execute BUILD_PR_TARGETED_REPO_CLEANUP_PASS_7_FINAL_REVIEW_AND_DECISION
-
-Input:
-- normalization complete
-- classes_old_keep = docs-only placeholder
+Validate PASS_7 decision artifacts.
 
 Steps:
-1. Review all normalized references
-2. Decide:
-   a) remove references OR
-   b) keep placeholder
-3. Justify decision
-4. Create:
-   docs/dev/reports/classes_old_keep_final_decision_report.md
-   docs/dev/reports/classes_old_keep_cleanup_recommendation.md
-   docs/dev/reports/validation_checklist.txt
+1) Confirm existence of:
+   - docs/dev/reports/classes_old_keep_final_decision_report.md
+   - docs/dev/reports/classes_old_keep_cleanup_recommendation.md
+2) Verify decision consistency with prior normalization:
+   - references use "docs-only placeholder" wording
+3) Confirm no structural changes:
+   - no classes_old_keep directory exists on disk
+   - no changes under templates/ or docs/archive/ or start_of_day/*
+4) Generate:
+   - docs/dev/reports/classes_old_keep_final_decision_validation.md
+   - docs/dev/reports/validation_checklist.txt
+5) If inconsistencies found, list them (DO NOT FIX)
 
-Constraints:
-- no file deletion in this PR
-- no folder creation
-- no runtime changes
-
-Output:
-<project folder>/tmp/BUILD_PR_TARGETED_REPO_CLEANUP_PASS_7_FINAL_REVIEW_AND_DECISION.zip
+Package to:
+<project folder>/tmp/APPLY_PR_TARGETED_REPO_CLEANUP_PASS_7_DECISION_v2.zip
