@@ -1,32 +1,5 @@
-BUILD_PR_ENGINE_IMPORT_BASELINE_AND_CONTRACT
-Validation Checklist
-Generated: 2026-04-12
-
-[PASS] baseline scan completed across required directories
-Evidence:
-- scanned `src/`, `games/`, `samples/`, `tools/` for `/src/engine/` usage
-- included HTML-specific scan under same areas
-
-[PASS] baseline report created
-Evidence:
-- `docs/dev/reports/engine_import_baseline_report.md`
-
-[PASS] contract decision created
-Evidence:
-- `docs/dev/reports/engine_import_contract_decision.md`
-
-[PASS] BUILD report created
-Evidence:
-- `docs/dev/reports/BUILD_PR_ENGINE_IMPORT_BASELINE_AND_CONTRACT_report.md`
-
-[PASS] no import rewrites performed
-Evidence:
-- lane executed as scan+docs-only baseline/decision pass
-
-[PASS] no move/delete operations performed
-Evidence:
-- lane executed as docs-only reporting pass
-
-[PASS] protected start_of_day directories untouched
-Evidence:
-- `git diff --name-only -- docs/dev/start_of_day/chatGPT docs/dev/start_of_day/codex` -> no entries
+[ ] baseline report exists
+[ ] contract decision exists
+[ ] no runtime changes
+[ ] no start_of_day changes
+[ ] validation report created

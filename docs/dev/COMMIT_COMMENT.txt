@@ -1,1 +1,1 @@
-Baseline current /src/engine import usage and record the active engine import contract
+Validate engine import baseline and confirm contract stability
