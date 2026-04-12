@@ -1,14 +1,2 @@
-Bundle type: execution-ready BUILD docs only
-PR purpose: targeted cleanup enforcement/normalization pass
-Scope:
-- create cleanup target enforcement map
-- create cleanup execution guard
-- create cleanup target normalization report
-- create BUILD report
-- create validation checklist
-Constraints:
-- non-destructive
-- templates untouched
-- no runtime/test changes
-- no start_of_day changes
-- no new cleanup targets
+- Added legacy import guard report
+- No structural repo changes

@@ -1,1 +1,3 @@
-BUILD_PR_TARGETED_REPO_CLEANUP_PASS_1 - targeted cleanup enforcement/normalization docs lane
+BUILD_PR_TARGETED_REPO_CLEANUP_PASS_2
+
+Adds legacy import guard and report.

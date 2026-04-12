@@ -1,1 +1,1 @@
-After Codex completes this BUILD and the output files validate, the next testable lane should be a single-target cleanup BUILD such as a legacy-import-guard lane or an archived-notes-policy lane, chosen strictly from the approved cleanup target set.
+Proceed to APPLY_PR_TARGETED_REPO_CLEANUP_PASS_2 if validation passes.
