@@ -41,6 +41,8 @@ export default class ToolFormattedTilesParallaxScene extends Scene {
     this.contentError = null;
     this.liveSyncVersion = 0;
     this.liveSyncPending = Promise.resolve();
+    this.runtimeBindingPublisher = null;
+    this.lastRuntimeBindingTimestamp = 0;
     this.tilesetAssetPath = '';
     this.tilesetImage = null;
     this.tileFrameById = {};
@@ -255,6 +257,7 @@ export default class ToolFormattedTilesParallaxScene extends Scene {
     this.camera.x = this.hero.x + this.hero.width * 0.5 - this.camera.viewportWidth * 0.5;
     this.camera.y = this.fixedCameraY;
     this.camera.clampToWorld();
+    this.publishRuntimeBindingState(engine);
   }
 
   moveHeroHorizontally(distance) {
@@ -451,6 +454,30 @@ export default class ToolFormattedTilesParallaxScene extends Scene {
       this.contentError = error instanceof Error ? error.message : String(error);
       this.contentStatus = 'Live preview sync failed.';
     }
+  }
+
+  setRuntimeBindingPublisher(publisher) {
+    this.runtimeBindingPublisher = typeof publisher === 'function' ? publisher : null;
+  }
+
+  publishRuntimeBindingState(engine) {
+    if (!this.runtimeBindingPublisher) {
+      return;
+    }
+    const now = (engine && Number.isFinite(Number(engine.time?.nowMs))) ? Number(engine.time.nowMs) : Date.now();
+    if ((now - this.lastRuntimeBindingTimestamp) < 125) {
+      return;
+    }
+    this.lastRuntimeBindingTimestamp = now;
+    this.runtimeBindingPublisher({
+      toolId: 'sample-1208-runtime',
+      runtimeState: {
+        heroX: Number(this.hero.x) || 0,
+        heroY: Number(this.hero.y) || 0,
+        cameraX: Number(this.camera?.x) || 0,
+        cameraY: Number(this.camera?.y) || 0,
+      },
+    });
   }
 }
 

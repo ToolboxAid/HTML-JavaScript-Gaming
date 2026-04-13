@@ -1,0 +1,22 @@
+﻿PR: PR_08_04_TOOL_STATE_BINDING
+
+Binding Contract
+- Channel: toolboxaid.livePreviewSync.v1
+- Event types:
+  - tool-live-preview-sync
+  - runtime-state-binding
+- Required payload fields:
+  - toolId (non-empty string)
+  - one of: runtimeState, tileMapDocument, parallaxDocument
+- runtimeState contract:
+  - heroX, heroY, cameraX, cameraY must be finite numbers
+
+Flow
+- Tool -> runtime: tile and parallax documents continue to publish via tool-live-preview-sync.
+- Runtime -> tools: sample 1208 publishes runtime-state-binding snapshots.
+- Tool consumers subscribe and apply runtime-state payloads for bound status readout.
+
+Safety / Compatibility
+- Existing live preview payloads remain accepted.
+- Unknown or malformed payloads are rejected by contract validation.
+- No engine API changes; binding is tool/sample channel-level only.

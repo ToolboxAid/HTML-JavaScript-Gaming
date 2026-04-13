@@ -31,7 +31,7 @@ import { buildProjectPackage, summarizeProjectPackaging } from "../shared/projec
 import { buildEditorExperienceLayer, summarizeEditorExperienceLayer } from "../shared/editorExperienceLayer.js";
 import { buildDebugVisualizationLayer, summarizeDebugVisualizationLayer } from "../shared/debugVisualizationLayer.js";
 import { registerToolBootContract } from "../shared/toolBootContract.js";
-import { createLivePreviewSyncBridge } from "../shared/livePreviewSyncChannel.js";
+import { createLivePreviewSyncBridge, validateStateBindingPayload } from "../shared/livePreviewSyncChannel.js";
 
 const DEFAULT_TILESET = [
   { id: 0, name: "Empty", color: "transparent" },
@@ -585,6 +585,8 @@ class TileMapEditorApp {
     this.livePreviewSync = createLivePreviewSyncBridge({ sourceId: "tile-map-editor" });
     this.livePreviewSyncFrame = 0;
     this.pendingLivePreviewReason = "init";
+    this.boundRuntimeState = null;
+    this.lastRuntimeBindingStatusAt = 0;
   }
 
   init(rootDocument) {
@@ -592,6 +594,7 @@ class TileMapEditorApp {
     this.attachEvents();
     this.syncInputsFromDocument();
     this.renderAll();
+    this.bindRuntimeStateSync();
     this.queueLivePreviewSync("init");
     void this.reloadTilesetImageFromDocument({ quiet: true });
     void this.preloadIndividualTileImages({ quiet: true });
@@ -1562,6 +1565,29 @@ class TileMapEditorApp {
   touchDocument() {
     this.documentModel.metadata.updatedAt = new Date().toISOString();
     this.queueLivePreviewSync("document-update");
+  }
+
+  bindRuntimeStateSync() {
+    this.livePreviewSync.subscribe((payload, envelope) => {
+      if (envelope?.eventType !== "runtime-state-binding") {
+        return;
+      }
+      const validation = validateStateBindingPayload(payload);
+      if (!validation.valid || !payload?.runtimeState) {
+        return;
+      }
+      this.boundRuntimeState = payload.runtimeState;
+      const now = Date.now();
+      if ((now - this.lastRuntimeBindingStatusAt) < 500) {
+        return;
+      }
+      this.lastRuntimeBindingStatusAt = now;
+      const heroX = Number(this.boundRuntimeState.heroX).toFixed(1);
+      const heroY = Number(this.boundRuntimeState.heroY).toFixed(1);
+      const cameraX = Number(this.boundRuntimeState.cameraX).toFixed(1);
+      const cameraY = Number(this.boundRuntimeState.cameraY).toFixed(1);
+      this.updateStatus(`Runtime bound: hero(${heroX}, ${heroY}) camera(${cameraX}, ${cameraY}).`);
+    });
   }
 
   publishLivePreviewSync(reason = "update") {

@@ -1,4 +1,4 @@
-﻿PR: PR_08_03_TOOL_LIVE_PREVIEW_SYNC
+﻿PR: PR_08_04_TOOL_STATE_BINDING
 
 Validation Commands
 - node --check tools/shared/livePreviewSyncChannel.js
@@ -8,18 +8,10 @@ Validation Commands
 - node --check samples/phase-12/1208/ToolFormattedTilesParallaxScene.js
 - node tests/runtime/LaunchSmokeAllEntries.test.mjs
 
-Results
-- Syntax checks: PASS
-- Runtime smoke: PASS
+Expected Runtime Checks
+- tool-live-preview-sync payloads still apply in sample 1208.
+- runtime-state-binding payloads are emitted from sample 1208.
+- tile/parallax tools accept valid runtime-state-binding payloads only.
 
-Scope Verification
-- Changed implementation files:
-  - tools/shared/livePreviewSyncChannel.js
-  - tools/Tilemap Studio/main.js
-  - tools/Parallax Scene Studio/main.js
-  - samples/phase-12/1208/main.js
-  - samples/phase-12/1208/ToolFormattedTilesParallaxScene.js
-- Deliverable docs:
-  - docs/dev/reports/live_sync_model.txt
-  - docs/dev/reports/validation_checklist.txt
-- No engine core API modifications performed.
+Result
+- PASS

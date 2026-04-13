@@ -29,5 +29,8 @@ const livePreviewSync = createLivePreviewSyncBridge({ sourceId: 'sample-1208-liv
 livePreviewSync.subscribe((payload) => {
   scene.applyLivePreviewUpdate(payload);
 });
+scene.setRuntimeBindingPublisher((payload) => {
+  livePreviewSync.publish(payload, 'runtime-state-binding');
+});
 engine.setScene(scene);
 engine.start();

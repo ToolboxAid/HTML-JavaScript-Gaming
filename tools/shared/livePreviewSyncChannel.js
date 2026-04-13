@@ -1,18 +1,79 @@
-const LIVE_PREVIEW_CHANNEL_NAME = "toolboxaid.livePreviewSync.v1";
+export const LIVE_PREVIEW_CHANNEL_NAME = "toolboxaid.livePreviewSync.v1";
 const LIVE_PREVIEW_STORAGE_KEY = "__toolboxaid_live_preview_sync_v1__";
+const VALID_EVENT_TYPES = new Set([
+  "update",
+  "tool-live-preview-sync",
+  "runtime-state-binding"
+]);
 
 function sanitizeText(value) {
   return typeof value === "string" ? value.trim() : "";
 }
 
 function toMessageEnvelope(sourceId, payload, eventType) {
+  const normalizedEventType = sanitizeText(eventType) || "update";
   return {
     channel: LIVE_PREVIEW_CHANNEL_NAME,
     sourceId: sanitizeText(sourceId) || "unknown-source",
-    eventType: sanitizeText(eventType) || "update",
+    eventType: VALID_EVENT_TYPES.has(normalizedEventType) ? normalizedEventType : "update",
     updatedAt: Date.now(),
     payload
   };
+}
+
+function hasObjectField(payload, key) {
+  return payload
+    && Object.prototype.hasOwnProperty.call(payload, key)
+    && payload[key]
+    && typeof payload[key] === "object";
+}
+
+function hasRuntimeState(payload) {
+  return hasObjectField(payload, "runtimeState");
+}
+
+function hasToolStatePayload(payload) {
+  return hasObjectField(payload, "tileMapDocument")
+    || hasObjectField(payload, "parallaxDocument");
+}
+
+export function validateStateBindingPayload(payload) {
+  if (!payload || typeof payload !== "object") {
+    return { valid: false, reason: "payload must be an object." };
+  }
+
+  const toolId = sanitizeText(payload.toolId || "");
+  if (!toolId) {
+    return { valid: false, reason: "payload.toolId is required." };
+  }
+
+  if (!hasRuntimeState(payload) && !hasToolStatePayload(payload)) {
+    return {
+      valid: false,
+      reason: "payload must include runtimeState, tileMapDocument, or parallaxDocument."
+    };
+  }
+
+  if (hasRuntimeState(payload)) {
+    const runtimeState = payload.runtimeState;
+    const heroX = Number(runtimeState.heroX);
+    const heroY = Number(runtimeState.heroY);
+    const cameraX = Number(runtimeState.cameraX);
+    const cameraY = Number(runtimeState.cameraY);
+    if (
+      !Number.isFinite(heroX)
+      || !Number.isFinite(heroY)
+      || !Number.isFinite(cameraX)
+      || !Number.isFinite(cameraY)
+    ) {
+      return {
+        valid: false,
+        reason: "runtimeState requires finite hero/camera coordinates."
+      };
+    }
+  }
+
+  return { valid: true };
 }
 
 export function createLivePreviewSyncBridge(options = {}) {
@@ -60,6 +121,10 @@ export function createLivePreviewSyncBridge(options = {}) {
     if (disposed || !payload || typeof payload !== "object") {
       return { status: "ignored" };
     }
+    const validation = validateStateBindingPayload(payload);
+    if (!validation.valid) {
+      return { status: "rejected", reason: validation.reason };
+    }
     const signature = JSON.stringify(payload);
     if (signature === lastPayloadSignature) {
       return { status: "deduped" };
@@ -104,4 +169,3 @@ export function createLivePreviewSyncBridge(options = {}) {
     dispose
   };
 }
-
