@@ -9,6 +9,13 @@ import { WORLD_GAME_STATE_EVENT_TYPES } from './constants.js';
 import { isPlainObject } from '../../shared/utils/objectUtils.js';
 import { toFiniteNumber } from '../../shared/math/numberNormalization.js';
 
+function isPassiveModeContext(context) {
+  if (!isPlainObject(context)) return false;
+  if (context.passiveMode === true) return true;
+  if (typeof context.mode === 'string' && context.mode.trim().toLowerCase() === 'passive') return true;
+  return false;
+}
+
 function recalcObjectiveSummary(objectivesById) {
   const objectiveIds = Object.keys(objectivesById);
   let completed = 0;
@@ -60,7 +67,10 @@ function validateApplyScoreDelta(payload) {
   return { ok: true };
 }
 
-function applyAuthoritativeScoreDelta(snapshot, payload) {
+function applyAuthoritativeScoreDelta(snapshot, payload, context = {}) {
+  if (isPassiveModeContext(context)) {
+    return { changes: [] };
+  }
   if (!snapshot.worldState || !isPlainObject(snapshot.worldState)) {
     snapshot.worldState = {};
   }
@@ -112,6 +122,9 @@ function validateUpdateObjectiveProgress(payload) {
 }
 
 function applyAuthoritativeObjectiveProgress(snapshot, payload, context = {}) {
+  if (isPassiveModeContext(context)) {
+    return { changes: [] };
+  }
   const now = typeof context.now === 'function' ? context.now : () => Date.now();
   const objectiveId = String(payload.objectiveId || '').trim();
   const objectives = snapshot.worldState && snapshot.worldState.objectives

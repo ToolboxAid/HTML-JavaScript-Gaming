@@ -1,7 +1,4 @@
-Level 11.1: tighten numeric validation at transition boundary
+Level 11.1: Passive mode guard
 
-- enforce finite numeric validation using Number() normalization
-- prevent NaN / Infinity drift
-- improve validation clarity
-
-Scope: validation only
+- Prevented authoritative mutations in passive mode
+- No API changes

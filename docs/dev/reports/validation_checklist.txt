@@ -1,8 +1,5 @@
-[ ] Only src/advanced/state/transitions.js modified
+[ ] transitions.js modified only
+[ ] Passive mode does not mutate
+[ ] Authoritative mode unchanged
 [ ] No API changes
-[ ] No apply function changes
-[ ] Number() normalization added
-[ ] Number.isFinite enforced
-[ ] NaN rejected
-[ ] Infinity rejected
-[ ] Existing tests pass
+[ ] Tests pass

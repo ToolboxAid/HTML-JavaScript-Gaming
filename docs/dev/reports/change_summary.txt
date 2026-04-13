@@ -1,8 +1,1 @@
-Updated transition validation to enforce finite numeric inputs.
-
-Targets:
-- applyScoreDelta: normalized + finite check
-- advanceWave: clarified finite requirement
-- updateObjectiveProgress: explicit normalized finite checks
-
-No API or structural changes.
+Added passive mode guard to prevent state mutation during non-authoritative execution.
