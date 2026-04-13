@@ -99,6 +99,15 @@ export function run() {
   const passiveSnapshot = passiveComparisonSystem.select('selectObjectiveSnapshot');
   assert.equal(passiveSnapshot.byId['obj-passive'], undefined);
 
+  const invalidPayloadResult = passiveComparisonSystem.requestTransition('updateObjectiveProgress', {
+    objectiveId: 'obj-invalid',
+    currentValue: 'not-a-number'
+  });
+  assert.equal(invalidPayloadResult.ok, false);
+  assert.equal(invalidPayloadResult.code, 'INVALID_PAYLOAD');
+  assert.equal(invalidPayloadResult.eventType, WORLD_GAME_STATE_EVENT_TYPES.TRANSITION_REJECTED);
+  assert.equal(passiveComparisonSystem.select('selectObjectiveSnapshot').byId['obj-invalid'], undefined);
+
   const gateOffSystem = createWorldGameStateSystem({
     passiveMode: false,
     featureGates: {

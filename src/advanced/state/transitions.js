@@ -96,6 +96,15 @@ function validateUpdateObjectiveProgress(payload) {
   if (!objectiveId) {
     return { ok: false, reason: 'updateObjectiveProgress requires payload.objectiveId.' };
   }
+  if (payload.currentValue !== undefined && !Number.isFinite(Number(payload.currentValue))) {
+    return { ok: false, reason: 'updateObjectiveProgress payload.currentValue must be numeric when provided.' };
+  }
+  if (payload.targetValue !== undefined && !Number.isFinite(Number(payload.targetValue))) {
+    return { ok: false, reason: 'updateObjectiveProgress payload.targetValue must be numeric when provided.' };
+  }
+  if (payload.isComplete !== undefined && typeof payload.isComplete !== 'boolean') {
+    return { ok: false, reason: 'updateObjectiveProgress payload.isComplete must be boolean when provided.' };
+  }
   return { ok: true };
 }
 
