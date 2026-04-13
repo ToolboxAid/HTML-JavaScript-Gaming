@@ -1,6 +1,4 @@
-Samples: align phase structure and navigation references
+Apply: Samples phase alignment
 
-- mapped samples to canonical phase-based locations
-- corrected misnumbered/misplaced sample paths
-- updated sample index/navigation references
-- kept scope to samples structure and direct references only
+- canonical phase structure applied
+- navigation verified

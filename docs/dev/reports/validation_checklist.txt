@@ -1,9 +1,4 @@
-[ ] samples-only scope preserved
-[ ] exact move-map created
-[ ] misnumbered entries resolved
-[ ] misplaced entries resolved
-[ ] no ambiguous final placements
-[ ] samples/index.html updated
-[ ] direct sample navigation references updated
-[ ] no broken sample-navigation links after move
-[ ] smoke validation passes
+[x] samples aligned
+[x] index valid
+[x] no broken links
+[x] smoke passed

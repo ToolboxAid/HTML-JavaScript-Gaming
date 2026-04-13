@@ -1,7 +1,1 @@
-Build package for samples phase alignment.
-
-Targeted outcome:
-- canonical phase-based sample placement
-- exact move/rename map
-- updated sample index/direct navigation references
-- verification of post-move sample navigation integrity
+Applied samples phase alignment and verified navigation integrity.
