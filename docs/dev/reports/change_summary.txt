@@ -1,1 +1,1 @@
-Added guard to ensure authoritativeApply executes only in authoritative context.
+Finalized state contract boundaries and normalization enforcement.

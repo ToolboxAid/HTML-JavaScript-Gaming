@@ -1,5 +1,4 @@
 [ ] transitions.js modified only
-[ ] authoritativeApply guarded
-[ ] Passive mode safe
-[ ] No API changes
+[ ] State normalized
+[ ] No undefined shapes
 [ ] Tests pass

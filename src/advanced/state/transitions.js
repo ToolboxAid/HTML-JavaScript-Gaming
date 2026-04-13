@@ -79,6 +79,37 @@ function recalcObjectiveSummary(objectivesById) {
   };
 }
 
+function ensureNormalizedWorldState(snapshot) {
+  if (!isPlainObject(snapshot.worldState)) {
+    snapshot.worldState = {};
+  }
+
+  const worldState = snapshot.worldState;
+
+  if (!isPlainObject(worldState.scores)) {
+    worldState.scores = {};
+  }
+  worldState.scores.total = toFiniteNumber(worldState.scores.total, 0);
+  worldState.scores.rewardPoints = toFiniteNumber(worldState.scores.rewardPoints, 0);
+  if (worldState.scores.rank === undefined) {
+    worldState.scores.rank = null;
+  }
+
+  if (!isPlainObject(worldState.objectives)) {
+    worldState.objectives = {};
+  }
+  if (!isPlainObject(worldState.objectives.byId)) {
+    worldState.objectives.byId = {};
+  }
+  worldState.objectives.summary = recalcObjectiveSummary(worldState.objectives.byId);
+
+  if (!isPlainObject(worldState.flags)) {
+    worldState.flags = {};
+  }
+
+  return worldState;
+}
+
 function validateTransitionGameMode(payload) {
   const nextMode = payload && payload.nextMode;
   if (typeof nextMode !== 'string' || !nextMode.trim()) {
@@ -114,6 +145,9 @@ function validateApplyScoreDelta(payload) {
   if (!Number.isFinite(normalizedDelta)) {
     return { ok: false, reason: 'applyScoreDelta requires finite numeric payload.delta.' };
   }
+  if (payload.rewardDelta !== undefined && !Number.isFinite(Number(payload.rewardDelta))) {
+    return { ok: false, reason: 'applyScoreDelta payload.rewardDelta must be finite numeric when provided.' };
+  }
   return { ok: true };
 }
 
@@ -121,18 +155,8 @@ function applyAuthoritativeScoreDelta(snapshot, payload, context = {}) {
   if (isPassiveModeContext(context)) {
     return { changes: [] };
   }
-  if (!snapshot.worldState || !isPlainObject(snapshot.worldState)) {
-    snapshot.worldState = {};
-  }
-  if (!isPlainObject(snapshot.worldState.scores)) {
-    snapshot.worldState.scores = {
-      total: 0,
-      rewardPoints: 0,
-      rank: null
-    };
-  }
-
-  const scores = snapshot.worldState.scores;
+  const worldState = ensureNormalizedWorldState(snapshot);
+  const scores = worldState.scores;
   const currentTotal = toFiniteNumber(scores.total, 0);
   const currentRewardPoints = toFiniteNumber(scores.rewardPoints, 0);
   const delta = toFiniteNumber(payload.delta, 0);
@@ -177,17 +201,8 @@ function applyAuthoritativeObjectiveProgress(snapshot, payload, context = {}) {
   }
   const now = typeof context.now === 'function' ? context.now : () => Date.now();
   const objectiveId = String(payload.objectiveId || '').trim();
-  const objectives = snapshot.worldState && snapshot.worldState.objectives
-    ? snapshot.worldState.objectives
-    : { summary: { total: 0, completed: 0, active: 0 }, byId: {} };
-  if (!snapshot.worldState.objectives) {
-    snapshot.worldState.objectives = objectives;
-  }
-
-  if (!isPlainObject(objectives.byId)) objectives.byId = {};
-  if (!isPlainObject(objectives.summary)) {
-    objectives.summary = { total: 0, completed: 0, active: 0 };
-  }
+  const worldState = ensureNormalizedWorldState(snapshot);
+  const objectives = worldState.objectives;
 
   const existing = isPlainObject(objectives.byId[objectiveId]) ? objectives.byId[objectiveId] : {};
   objectives.byId[objectiveId] = {
