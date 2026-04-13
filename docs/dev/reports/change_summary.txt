@@ -1,1 +1,1 @@
-Added regex fix so launch-smoke discovers phase-XX samples.
+Applied runtime validation completion and launch-smoke harness phase-folder discovery fix.

@@ -1,1 +1,4 @@
-Samples: runtime harness fix (phase-XX support)
+Apply: runtime validation + launch-smoke harness fix
+
+- aligned launch-smoke sample discovery to phase-XX folders
+- completed sample runtime validation lane

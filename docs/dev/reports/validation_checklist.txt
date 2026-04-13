@@ -1,3 +1,3 @@
-[ ] regex updated
-[ ] samples discovered
-[ ] smoke passes
+[x] harness regex updated
+[x] phase-XX sample discovery works
+[x] runtime validation lane completed
