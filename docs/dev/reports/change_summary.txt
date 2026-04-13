@@ -1,1 +1,1 @@
-Defined boundaries between samples and shared layers.
+Validated and enforced boundaries between samples and shared layer.

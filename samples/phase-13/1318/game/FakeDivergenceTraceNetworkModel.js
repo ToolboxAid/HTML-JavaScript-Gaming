@@ -5,7 +5,7 @@ David Quesenberry
 FakeDivergenceTraceNetworkModel.js
 */
 import ReconciliationLayerAdapter from "./ReconciliationLayerAdapter.js";
-import { clamp } from "/src/engine/utils/math.js";
+import { clamp } from "/src/engine/utils/index.js";
 import { asPositiveNumber, isFiniteNumber } from "../../../_shared/numberUtils.js";
 
 const MAX_TRACE_EVENTS = 160;

@@ -1,2 +1,3 @@
-[ ] plan only
-[ ] boundaries defined
+[ ] samples runnable
+[ ] no boundary violations
+[ ] no engine changes

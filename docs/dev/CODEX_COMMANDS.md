@@ -2,21 +2,21 @@ MODEL: GPT-5.4
 REASONING: high
 
 COMMAND:
-Implement BUILD_PR_LEVEL_6_2_SAMPLE_CURRICULUM_VALIDATION.
+Implement BUILD_PR_LEVEL_6_3_SAMPLE_SHARED_BOUNDARIES.
 
 Scope:
-- samples/ and samples/index.html only
+- samples/ only
 
 Steps:
-1. Analyze sample ordering by phase/number.
-2. Ensure each sample has one clear primary concept.
-3. Identify overlaps and resolve by reordering or flagging (no deletes unless exact duplicates).
-4. Update samples/index.html if ordering changes.
+1. Scan samples for reusable utilities.
+2. Mark (comment or report) candidates for shared extraction.
+3. Ensure sample-only logic stays local.
+4. Remove any direct dependency on non-public engine internals (adjust imports if needed without refactor).
 
 Validation:
-- clean progression
-- no overlapping adjacent concepts
-- navigation intact
+- samples run
+- no engine changes
+- no boundary violations
 
 Output:
-<project folder>/tmp/BUILD_PR_LEVEL_6_2_SAMPLE_CURRICULUM_VALIDATION.zip
+<project folder>/tmp/BUILD_PR_LEVEL_6_3_SAMPLE_SHARED_BOUNDARIES.zip

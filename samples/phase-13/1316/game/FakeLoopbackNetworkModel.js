@@ -5,7 +5,7 @@ David Quesenberry
 FakeLoopbackNetworkModel.js
 */
 
-import { clamp } from '/src/engine/utils/math.js';
+import { clamp } from "/src/engine/utils/index.js";
 import { asPositiveNumber } from '../../../_shared/numberUtils.js';
 
 const MAX_TRACE_EVENTS = 80;

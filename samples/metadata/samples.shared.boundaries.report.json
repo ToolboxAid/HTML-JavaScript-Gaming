@@ -1,0 +1,695 @@
+{
+  "version": 1,
+  "scope": "samples-only",
+  "generatedAt": "2026-04-13",
+  "summary": {
+    "analyzedSourceFiles": 494,
+    "engineUniqueImports": 43,
+    "engineBoundaryViolations": 0,
+    "sharedUtilityCandidates": 6,
+    "crossSampleImportEdges": 6
+  },
+  "actionsApplied": [
+    {
+      "kind": "import-boundary-fix",
+      "description": "Replaced non-public engine imports in phase-13 samples with approved public/shared imports.",
+      "files": [
+        "samples/phase-13/1316/debug/networkSampleADebug.js",
+        "samples/phase-13/1317/debug/networkSampleBDebug.js",
+        "samples/phase-13/1318/debug/networkSampleCDebug.js",
+        "samples/phase-13/1316/game/FakeLoopbackNetworkModel.js",
+        "samples/phase-13/1316/game/NetworkSampleAScene.js",
+        "samples/phase-13/1317/game/FakeHostClientNetworkModel.js",
+        "samples/phase-13/1318/game/FakeDivergenceTraceNetworkModel.js"
+      ]
+    }
+  ],
+  "engineBoundary": {
+    "rule": "Allow /src/engine/core/Engine.js and /src/engine/*/index.js only for samples.",
+    "violations": [],
+    "uniqueImports": [
+      {
+        "specifier": "/src/engine/ai/index.js",
+        "importCount": 8,
+        "importerExamples": [
+          "phase-02/0211/EnemyPatrolAIScene.js",
+          "phase-02/0212/PlayableMicroLevelScene.js",
+          "phase-02/0218/PolishedPlayableSliceScene.js",
+          "phase-06/0601/GridPathfindingScene.js",
+          "phase-06/0602/PatrolAIScene.js",
+          "phase-06/0603/ChaseEvadeAIScene.js",
+          "phase-06/0604/StateDrivenAIScene.js",
+          "phase-06/0605/GroupBehaviorsScene.js"
+        ],
+        "boundaryStatus": "allowed-public"
+      },
+      {
+        "specifier": "/src/engine/animation/index.js",
+        "importCount": 7,
+        "importerExamples": [
+          "phase-02/0207/AnimationSystemScene.js",
+          "phase-02/0214/AnimationSpriteBindingScene.js",
+          "phase-03/0302/AnimationSystemScene.js",
+          "phase-03/0303/PhysicsSystemScene.js",
+          "phase-03/0304/CollisionResolutionScene.js",
+          "phase-03/0305/TileMetadataScene.js",
+          "phase-03/0306/NESStyleZonesParallaxScene.js"
+        ],
+        "boundaryStatus": "allowed-public"
+      },
+      {
+        "specifier": "/src/engine/assets/index.js",
+        "importCount": 12,
+        "importerExamples": [
+          "phase-02/0204/assetRegistry.js",
+          "phase-02/0204/AssetRegistryScene.js",
+          "phase-02/0219/SpriteAtlasImageRenderingScene.js",
+          "phase-02/0224/TileCameraSpriteSliceScene.js",
+          "phase-03/0301/RealSpriteRenderingScene.js",
+          "phase-03/0302/AnimationSystemScene.js",
+          "phase-03/0303/PhysicsSystemScene.js",
+          "phase-03/0304/CollisionResolutionScene.js"
+        ],
+        "boundaryStatus": "allowed-public"
+      },
+      {
+        "specifier": "/src/engine/audio/index.js",
+        "importCount": 6,
+        "importerExamples": [
+          "phase-08/0802/MidiPlayerScene.js",
+          "phase-08/0803/SynthesizerScene.js",
+          "phase-08/0804/FrequencyPlayerScene.js",
+          "phase-10/1001/main.js",
+          "phase-10/1001/MP3PlayerScene.js",
+          "phase-10/1003/main.js"
+        ],
+        "boundaryStatus": "allowed-public"
+      },
+      {
+        "specifier": "/src/engine/automation/index.js",
+        "importCount": 4,
+        "importerExamples": [
+          "phase-14/1405/AutomatedTestRunnerScene.js",
+          "phase-14/1406/RegressionPlaybackHarnessScene.js",
+          "phase-14/1407/PerformanceBenchmarkRunnerScene.js",
+          "phase-14/1408/CIValidationFlowScene.js"
+        ],
+        "boundaryStatus": "allowed-public"
+      },
+      {
+        "specifier": "/src/engine/camera/index.js",
+        "importCount": 32,
+        "importerExamples": [
+          "phase-02/0201/CameraFollowScene.js",
+          "phase-02/0202/CameraBoundsScene.js",
+          "phase-02/0203/MinimapScene.js",
+          "phase-02/0220/CameraSystemScene.js",
+          "phase-02/0224/TileCameraSpriteSliceScene.js",
+          "phase-03/0301/RealSpriteRenderingScene.js",
+          "phase-03/0302/AnimationSystemScene.js",
+          "phase-03/0303/PhysicsSystemScene.js"
+        ],
+        "boundaryStatus": "allowed-public"
+      },
+      {
+        "specifier": "/src/engine/collision/index.js",
+        "importCount": 6,
+        "importerExamples": [
+          "phase-02/0206/LevelLoaderScene.js",
+          "phase-09/0902/PolygonCollisionScene.js",
+          "phase-09/0903/PointInPolygonScene.js",
+          "phase-09/0904/RasterMaskCollisionScene.js",
+          "phase-09/0905/PixelPerfectCollisionScene.js",
+          "phase-09/0906/HybridCollisionScene.js"
+        ],
+        "boundaryStatus": "allowed-public"
+      },
+      {
+        "specifier": "/src/engine/combat/index.js",
+        "importCount": 6,
+        "importerExamples": [
+          "phase-05/0501/CombatHitboxesScene.js",
+          "phase-05/0502/AttackTimingWindowsScene.js",
+          "phase-05/0503/DamageInvulnerabilityScene.js",
+          "phase-05/0504/KnockbackResponseScene.js",
+          "phase-05/0505/HealthDeathStateScene.js",
+          "phase-05/0506/CombatDebugOverlayScene.js"
+        ],
+        "boundaryStatus": "allowed-public"
+      },
+      {
+        "specifier": "/src/engine/components/index.js",
+        "importCount": 8,
+        "importerExamples": [
+          "phase-01/0116/ECSMovementSystemScene.js",
+          "phase-01/0117/ECSInputSystemScene.js",
+          "phase-01/0118/ECSCollisionSystemScene.js",
+          "phase-01/0120/ECSSceneWorldScene.js",
+          "phase-01/0121/UIOverlayScene.js",
+          "phase-01/0122/EntityLifecycleScene.js",
+          "phase-01/0123/DebugStatsScene.js",
+          "phase-01/0124/DataDrivenWorldScene.js"
+        ],
+        "boundaryStatus": "allowed-public"
+      },
+      {
+        "specifier": "/src/engine/config/index.js",
+        "importCount": 1,
+        "importerExamples": [
+          "phase-05/0509/main.js"
+        ],
+        "boundaryStatus": "allowed-public"
+      },
+      {
+        "specifier": "/src/engine/core/Engine.js",
+        "importCount": 174,
+        "importerExamples": [
+          "phase-01/0101/main.js",
+          "phase-01/0102/main.js",
+          "phase-01/0103/main.js",
+          "phase-01/0104/main.js",
+          "phase-01/0105/main.js",
+          "phase-01/0106/main.js",
+          "phase-01/0107/main.js",
+          "phase-01/0108/main.js"
+        ],
+        "boundaryStatus": "allowed-public"
+      },
+      {
+        "specifier": "/src/engine/debug/index.js",
+        "importCount": 172,
+        "importerExamples": [
+          "phase-01/0115/ECSFoundationScene.js",
+          "phase-01/0116/ECSMovementSystemScene.js",
+          "phase-01/0117/ECSInputSystemScene.js",
+          "phase-01/0118/ECSCollisionSystemScene.js",
+          "phase-01/0119/ECSRenderSystemScene.js",
+          "phase-01/0120/ECSSceneWorldScene.js",
+          "phase-01/0121/UIOverlayScene.js",
+          "phase-01/0122/EntityLifecycleScene.js"
+        ],
+        "boundaryStatus": "allowed-public"
+      },
+      {
+        "specifier": "/src/engine/debug/network/index.js",
+        "importCount": 3,
+        "importerExamples": [
+          "phase-13/1316/debug/networkSampleADebug.js",
+          "phase-13/1317/debug/networkSampleBDebug.js",
+          "phase-13/1318/debug/networkSampleCDebug.js"
+        ],
+        "boundaryStatus": "allowed-public"
+      },
+      {
+        "specifier": "/src/engine/ecs/index.js",
+        "importCount": 10,
+        "importerExamples": [
+          "phase-01/0115/ECSFoundationScene.js",
+          "phase-01/0116/ECSMovementSystemScene.js",
+          "phase-01/0117/ECSInputSystemScene.js",
+          "phase-01/0118/ECSCollisionSystemScene.js",
+          "phase-01/0119/ECSRenderSystemScene.js",
+          "phase-01/0120/ECSSceneWorldScene.js",
+          "phase-01/0121/UIOverlayScene.js",
+          "phase-01/0122/EntityLifecycleScene.js"
+        ],
+        "boundaryStatus": "allowed-public"
+      },
+      {
+        "specifier": "/src/engine/editor/index.js",
+        "importCount": 4,
+        "importerExamples": [
+          "phase-14/1401/LevelEditorScene.js",
+          "phase-14/1402/TileMapEditorScene.js",
+          "phase-14/1403/EntityPlacementEditorScene.js",
+          "phase-14/1404/TimelineCutsceneEditorScene.js"
+        ],
+        "boundaryStatus": "allowed-public"
+      },
+      {
+        "specifier": "/src/engine/entity/index.js",
+        "importCount": 2,
+        "importerExamples": [
+          "phase-01/0107/EntityMovementScene.js",
+          "phase-01/0108/RenderAdapterScene.js"
+        ],
+        "boundaryStatus": "allowed-public"
+      },
+      {
+        "specifier": "/src/engine/fx/index.js",
+        "importCount": 1,
+        "importerExamples": [
+          "phase-08/0805/ParticleFxScene.js"
+        ],
+        "boundaryStatus": "allowed-public"
+      },
+      {
+        "specifier": "/src/engine/game/index.js",
+        "importCount": 2,
+        "importerExamples": [
+          "phase-02/0217/GameModeStateScene.js",
+          "phase-02/0218/PolishedPlayableSliceScene.js"
+        ],
+        "boundaryStatus": "allowed-public"
+      },
+      {
+        "specifier": "/src/engine/input/index.js",
+        "importCount": 113,
+        "importerExamples": [
+          "phase-01/0102/main.js",
+          "phase-01/0103/main.js",
+          "phase-01/0104/main.js",
+          "phase-01/0105/main.js",
+          "phase-01/0106/main.js",
+          "phase-01/0107/main.js",
+          "phase-01/0108/main.js",
+          "phase-01/0109/main.js"
+        ],
+        "boundaryStatus": "allowed-public"
+      },
+      {
+        "specifier": "/src/engine/interaction/index.js",
+        "importCount": 3,
+        "importerExamples": [
+          "phase-02/0209/InteractionSystemScene.js",
+          "phase-02/0212/PlayableMicroLevelScene.js",
+          "phase-02/0218/PolishedPlayableSliceScene.js"
+        ],
+        "boundaryStatus": "allowed-public"
+      },
+      {
+        "specifier": "/src/engine/level/index.js",
+        "importCount": 1,
+        "importerExamples": [
+          "phase-02/0206/LevelLoaderScene.js"
+        ],
+        "boundaryStatus": "allowed-public"
+      },
+      {
+        "specifier": "/src/engine/localization/index.js",
+        "importCount": 1,
+        "importerExamples": [
+          "phase-07/0711/LocalizationSystemScene.js"
+        ],
+        "boundaryStatus": "allowed-public"
+      },
+      {
+        "specifier": "/src/engine/logging/index.js",
+        "importCount": 2,
+        "importerExamples": [
+          "phase-08/0810/LoggingErrorSystemScene.js",
+          "phase-11/1105/main.js"
+        ],
+        "boundaryStatus": "allowed-public"
+      },
+      {
+        "specifier": "/src/engine/memory/index.js",
+        "importCount": 1,
+        "importerExamples": [
+          "phase-07/0706/MemoryManagementScene.js"
+        ],
+        "boundaryStatus": "allowed-public"
+      },
+      {
+        "specifier": "/src/engine/network/index.js",
+        "importCount": 12,
+        "importerExamples": [
+          "phase-13/1301/NetworkingLayerScene.js",
+          "phase-13/1302/StateSyncReplicationScene.js",
+          "phase-13/1304/ClientPredictionReconciliationScene.js",
+          "phase-13/1305/SerializationSystemScene.js",
+          "phase-13/1306/NetworkDebugOverlayScene.js",
+          "phase-13/1307/RemoteEntityInterpolationScene.js",
+          "phase-13/1308/LobbySessionSystemScene.js",
+          "phase-13/1310/HostServerBootstrapScene.js"
+        ],
+        "boundaryStatus": "allowed-public"
+      },
+      {
+        "specifier": "/src/engine/persistence/index.js",
+        "importCount": 6,
+        "importerExamples": [
+          "phase-02/0205/SaveLoadStateScene.js",
+          "phase-02/0223/WorldSerializationScene.js",
+          "phase-02/0224/TileCameraSpriteSliceScene.js",
+          "phase-07/0707/SaveCompressionScene.js",
+          "phase-08/0809/SaveSlotsProfilesScene.js",
+          "phase-10/1002/main.js"
+        ],
+        "boundaryStatus": "allowed-public"
+      },
+      {
+        "specifier": "/src/engine/pipeline/index.js",
+        "importCount": 6,
+        "importerExamples": [
+          "phase-14/1413/AssetImportPipelineScene.js",
+          "phase-14/1414/TextureSpritePreprocessPipelineScene.js",
+          "phase-14/1415/AudioPreprocessPipelineScene.js",
+          "phase-14/1416/ContentVersioningMigrationScene.js",
+          "phase-14/1417/BuildAssetManifestSystemScene.js",
+          "phase-14/1418/ContentValidationPipelineScene.js"
+        ],
+        "boundaryStatus": "allowed-public"
+      },
+      {
+        "specifier": "/src/engine/prefabs/index.js",
+        "importCount": 2,
+        "importerExamples": [
+          "phase-02/0216/PrefabSystemScene.js",
+          "phase-02/0218/PolishedPlayableSliceScene.js"
+        ],
+        "boundaryStatus": "allowed-public"
+      },
+      {
+        "specifier": "/src/engine/release/index.js",
+        "importCount": 6,
+        "importerExamples": [
+          "phase-11/1101/main.js",
+          "phase-11/1102/main.js",
+          "phase-11/1103/main.js",
+          "phase-11/1104/main.js",
+          "phase-11/1105/main.js",
+          "phase-11/1106/main.js"
+        ],
+        "boundaryStatus": "allowed-public"
+      },
+      {
+        "specifier": "/src/engine/render/index.js",
+        "importCount": 14,
+        "importerExamples": [
+          "phase-02/0213/SpriteRenderLayerScene.js",
+          "phase-02/0214/AnimationSpriteBindingScene.js",
+          "phase-02/0215/ZLayerOrderingScene.js",
+          "phase-02/0216/PrefabSystemScene.js",
+          "phase-02/0218/PolishedPlayableSliceScene.js",
+          "phase-02/0219/SpriteAtlasImageRenderingScene.js",
+          "phase-02/0224/TileCameraSpriteSliceScene.js",
+          "phase-03/0301/RealSpriteRenderingScene.js"
+        ],
+        "boundaryStatus": "allowed-public"
+      },
+      {
+        "specifier": "/src/engine/replay/index.js",
+        "importCount": 1,
+        "importerExamples": [
+          "phase-07/0708/ReplaySystemScene.js"
+        ],
+        "boundaryStatus": "allowed-public"
+      },
+      {
+        "specifier": "/src/engine/runtime/index.js",
+        "importCount": 1,
+        "importerExamples": [
+          "phase-07/0704/MobileSupportScene.js"
+        ],
+        "boundaryStatus": "allowed-public"
+      },
+      {
+        "specifier": "/src/engine/scenes/index.js",
+        "importCount": 200,
+        "importerExamples": [
+          "phase-01/0101/BouncerScene.js",
+          "phase-01/0102/KeyboardMoveScene.js",
+          "phase-01/0103/MouseInputScene.js",
+          "phase-01/0104/GamepadScene.js",
+          "phase-01/0105/IntroScene.js",
+          "phase-01/0105/main.js",
+          "phase-01/0105/PlayScene.js",
+          "phase-01/0106/InputMappingScene.js"
+        ],
+        "boundaryStatus": "allowed-public"
+      },
+      {
+        "specifier": "/src/engine/security/index.js",
+        "importCount": 4,
+        "importerExamples": [
+          "phase-14/1409/PacketValidationAntiCheatScene.js",
+          "phase-14/1410/SaveDataIntegrityChecksScene.js",
+          "phase-14/1411/PermissionsCapabilityGatingScene.js",
+          "phase-14/1412/TrustSessionValidationScene.js"
+        ],
+        "boundaryStatus": "allowed-public"
+      },
+      {
+        "specifier": "/src/engine/state/index.js",
+        "importCount": 2,
+        "importerExamples": [
+          "phase-02/0208/StateMachineScene.js",
+          "phase-05/0508/StateMachineFrameworkScene.js"
+        ],
+        "boundaryStatus": "allowed-public"
+      },
+      {
+        "specifier": "/src/engine/systems/index.js",
+        "importCount": 18,
+        "importerExamples": [
+          "phase-01/0116/ECSMovementSystemScene.js",
+          "phase-01/0117/ECSInputSystemScene.js",
+          "phase-01/0118/ECSCollisionSystemScene.js",
+          "phase-01/0119/ECSRenderSystemScene.js",
+          "phase-01/0120/ECSSceneWorldScene.js",
+          "phase-01/0121/UIOverlayScene.js",
+          "phase-01/0122/EntityLifecycleScene.js",
+          "phase-01/0123/DebugStatsScene.js"
+        ],
+        "boundaryStatus": "allowed-public"
+      },
+      {
+        "specifier": "/src/engine/theme/index.js",
+        "importCount": 442,
+        "importerExamples": [
+          "phase-01/0101/BouncerScene.js",
+          "phase-01/0101/index.js",
+          "phase-01/0101/main.js",
+          "phase-01/0102/KeyboardMoveScene.js",
+          "phase-01/0102/main.js",
+          "phase-01/0103/main.js",
+          "phase-01/0103/MouseInputScene.js",
+          "phase-01/0104/GamepadScene.js"
+        ],
+        "boundaryStatus": "allowed-public"
+      },
+      {
+        "specifier": "/src/engine/tilemap/index.js",
+        "importCount": 16,
+        "importerExamples": [
+          "phase-02/0221/TilemapSystemScene.js",
+          "phase-02/0224/TileCameraSpriteSliceScene.js",
+          "phase-03/0301/RealSpriteRenderingScene.js",
+          "phase-03/0302/AnimationSystemScene.js",
+          "phase-03/0303/PhysicsSystemScene.js",
+          "phase-03/0304/CollisionResolutionScene.js",
+          "phase-03/0305/TileMetadataScene.js",
+          "phase-03/0306/NESStyleZonesParallaxScene.js"
+        ],
+        "boundaryStatus": "allowed-public"
+      },
+      {
+        "specifier": "/src/engine/tooling/index.js",
+        "importCount": 6,
+        "importerExamples": [
+          "phase-15/1501/DeveloperConsoleScene.js",
+          "phase-15/1502/InEngineInspectorScene.js",
+          "phase-15/1503/PropertyEditorScene.js",
+          "phase-15/1504/LiveTuningHotReloadScene.js",
+          "phase-15/1505/AssetBrowserScene.js",
+          "phase-15/1506/SceneGraphEntityHierarchyViewerScene.js"
+        ],
+        "boundaryStatus": "allowed-public"
+      },
+      {
+        "specifier": "/src/engine/ui/index.js",
+        "importCount": 1,
+        "importerExamples": [
+          "phase-08/0806/UIFrameworkScene.js"
+        ],
+        "boundaryStatus": "allowed-public"
+      },
+      {
+        "specifier": "/src/engine/utils/index.js",
+        "importCount": 28,
+        "importerExamples": [
+          "phase-02/0201/CameraFollowScene.js",
+          "phase-02/0202/CameraBoundsScene.js",
+          "phase-02/0203/MinimapScene.js",
+          "phase-02/0205/SaveLoadStateScene.js",
+          "phase-02/0206/LevelLoaderScene.js",
+          "phase-02/0207/AnimationSystemScene.js",
+          "phase-02/0208/StateMachineScene.js",
+          "phase-02/0209/InteractionSystemScene.js"
+        ],
+        "boundaryStatus": "allowed-public"
+      },
+      {
+        "specifier": "/src/engine/vector/index.js",
+        "importCount": 4,
+        "importerExamples": [
+          "phase-09/0901/VectorRenderingSystemScene.js",
+          "phase-09/0902/PolygonCollisionScene.js",
+          "phase-09/0903/PointInPolygonScene.js",
+          "phase-09/0906/HybridCollisionScene.js"
+        ],
+        "boundaryStatus": "allowed-public"
+      },
+      {
+        "specifier": "/src/engine/world/index.js",
+        "importCount": 8,
+        "importerExamples": [
+          "phase-06/0606/QuestSystemScene.js",
+          "phase-06/0607/ScriptingSystemScene.js",
+          "phase-06/0608/CutsceneSystemScene.js",
+          "phase-06/0610/DayNightCycleScene.js",
+          "phase-06/0611/AnimatedWeatherScene.js",
+          "phase-06/0612/WeatherSystemScene.js",
+          "phase-06/0613/WorldStreamingScene.js",
+          "phase-07/0710/AchievementsSystemScene.js"
+        ],
+        "boundaryStatus": "allowed-public"
+      }
+    ]
+  },
+  "sharedExtractionCandidates": {
+    "fromSamplesShared": [
+      {
+        "modulePath": "_shared/lateSampleBootstrap.js",
+        "importerCount": 24,
+        "sampleCount": 24,
+        "importerExamples": [
+          "phase-14/1401/main.js",
+          "phase-14/1402/main.js",
+          "phase-14/1403/main.js",
+          "phase-14/1404/main.js",
+          "phase-14/1405/main.js",
+          "phase-14/1406/main.js",
+          "phase-14/1407/main.js",
+          "phase-14/1408/main.js"
+        ],
+        "candidateStatus": "candidate-for-src-shared-promotion"
+      },
+      {
+        "modulePath": "_shared/platformerHelpers.js",
+        "importerCount": 12,
+        "sampleCount": 12,
+        "importerExamples": [
+          "phase-03/0307/SlopesRampsScene.js",
+          "phase-03/0308/GravityZonesScene.js",
+          "phase-03/0309/LaddersClimbZonesScene.js",
+          "phase-03/0310/MovingPlatformsScene.js",
+          "phase-03/0311/OneWayPlatformsScene.js",
+          "phase-03/0312/FrictionSurfacesScene.js",
+          "phase-03/0313/TriggerZonesScene.js",
+          "phase-03/0314/PickupsCollectiblesScene.js"
+        ],
+        "candidateStatus": "candidate-for-src-shared-promotion"
+      },
+      {
+        "modulePath": "_shared/numberUtils.js",
+        "importerCount": 13,
+        "sampleCount": 5,
+        "importerExamples": [
+          "_shared/sampleDetailPageEnhancement.js",
+          "phase-12/1208/ToolFormattedTilesParallaxScene.js",
+          "phase-13/1303/AsteroidsWorldSystemsScene.js",
+          "phase-13/1316/game/FakeLoopbackNetworkModel.js",
+          "phase-13/1316/game/NetworkSampleAScene.js",
+          "phase-13/1316/server/networkSampleADashboardServer.mjs",
+          "phase-13/1317/game/FakeHostClientNetworkModel.js",
+          "phase-13/1317/game/NetworkSampleBScene.js"
+        ],
+        "candidateStatus": "candidate-for-src-shared-promotion"
+      },
+      {
+        "modulePath": "_shared/debugConfigUtils.js",
+        "importerCount": 4,
+        "sampleCount": 4,
+        "importerExamples": [
+          "phase-12/1205/main.js",
+          "phase-13/1316/main.js",
+          "phase-13/1317/main.js",
+          "phase-13/1318/main.js"
+        ],
+        "candidateStatus": "candidate-for-src-shared-promotion"
+      },
+      {
+        "modulePath": "_shared/networkDebugUtils.js",
+        "importerCount": 3,
+        "sampleCount": 3,
+        "importerExamples": [
+          "phase-13/1316/debug/networkSampleADebug.js",
+          "phase-13/1317/debug/networkSampleBDebug.js",
+          "phase-13/1318/debug/networkSampleCDebug.js"
+        ],
+        "candidateStatus": "candidate-for-src-shared-promotion"
+      },
+      {
+        "modulePath": "_shared/snapshotCloneUtils.js",
+        "importerCount": 2,
+        "sampleCount": 1,
+        "importerExamples": [
+          "phase-13/1318/game/ReconciliationLayerAdapter.js",
+          "phase-13/1318/game/StateTimelineBuffer.js"
+        ],
+        "candidateStatus": "keep-samples-_shared"
+      }
+    ],
+    "fromCrossSampleImports": [
+      {
+        "modulePath": "phase-03/0301/demoSpriteFactory.js",
+        "importerCount": 5,
+        "importerSampleCount": 5,
+        "importerExamples": [
+          "phase-03/0302/AnimationSystemScene.js",
+          "phase-03/0303/PhysicsSystemScene.js",
+          "phase-03/0304/CollisionResolutionScene.js",
+          "phase-03/0305/TileMetadataScene.js",
+          "phase-03/0306/NESStyleZonesParallaxScene.js"
+        ],
+        "candidateStatus": "candidate-to-move-into-samples-_shared"
+      },
+      {
+        "modulePath": "phase-13/1316/game/FakeLoopbackNetworkModel.js",
+        "importerCount": 1,
+        "importerSampleCount": 1,
+        "importerExamples": [
+          "phase-13/1317/game/FakeHostClientNetworkModel.js"
+        ],
+        "candidateStatus": "keep-local-or-duplicate-per-sample"
+      }
+    ]
+  },
+  "isolationNotes": {
+    "sampleOnlyLogicRule": "Sample-specific game logic remains under its owning sample folder unless promoted intentionally.",
+    "flaggedCrossSampleImports": [
+      {
+        "source": "phase-03/0302/AnimationSystemScene.js",
+        "target": "phase-03/0301/demoSpriteFactory.js",
+        "status": "flagged-for-follow-up"
+      },
+      {
+        "source": "phase-03/0303/PhysicsSystemScene.js",
+        "target": "phase-03/0301/demoSpriteFactory.js",
+        "status": "flagged-for-follow-up"
+      },
+      {
+        "source": "phase-03/0304/CollisionResolutionScene.js",
+        "target": "phase-03/0301/demoSpriteFactory.js",
+        "status": "flagged-for-follow-up"
+      },
+      {
+        "source": "phase-03/0305/TileMetadataScene.js",
+        "target": "phase-03/0301/demoSpriteFactory.js",
+        "status": "flagged-for-follow-up"
+      },
+      {
+        "source": "phase-03/0306/NESStyleZonesParallaxScene.js",
+        "target": "phase-03/0301/demoSpriteFactory.js",
+        "status": "flagged-for-follow-up"
+      },
+      {
+        "source": "phase-13/1317/game/FakeHostClientNetworkModel.js",
+        "target": "phase-13/1316/game/FakeLoopbackNetworkModel.js",
+        "status": "flagged-for-follow-up"
+      }
+    ]
+  }
+}
