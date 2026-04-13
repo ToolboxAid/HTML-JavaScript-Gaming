@@ -43,3 +43,47 @@ NEXT = PLAN_PR_LEVEL_11_2_...
 
 If no prior context exists:
 STOP and ask: "What is the base PLAN_PR?"
+
+One-shot execution rule:
+
+If the user says:
+"Run full workflow for <PLAN_PR_NAME>" or "NEXT"
+
+Then:
+1. Validate the PLAN
+2. Generate a compact BUILD_PR
+3. Generate Codex command
+4. Package a repo-structured ZIP
+5. Return all outputs
+
+Do not ask for confirmation unless ambiguity exists.
+
+OUTPUT FORMAT (STRICT)
+
+When producing BUILD, PLAN, or APPLY results:
+
+- ALWAYS return a downloadable ZIP
+- DO NOT output full command text, PR docs, or reports inline
+- Keep chat response minimal:
+  - ZIP download
+  - short summary (1–3 lines max)
+  - NEXT step (if applicable)
+
+All detailed content must be placed inside the ZIP, including:
+- docs/pr/*
+- docs/dev/codex_commands.md
+- docs/dev/commit_comment.txt
+- docs/dev/reports/*
+
+If a ZIP cannot be produced:
+- STOP and explain why
+- DO NOT fall back to full inline output
+
+ZIP STANDARD (ENFORCED)
+
+- Exactly one ZIP per request
+- ZIP name MUST match PR name
+- ZIP path MUST be:
+  <project folder>/tmp/<PR_NAME>.zip
+- Internal structure MUST be repo-relative only
+- No extra files outside defined structure

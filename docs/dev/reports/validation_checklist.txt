@@ -1,12 +1,8 @@
-[x] Confirmed applied BUILD scope (authoritative handoff candidate) is present in repo state.
-[x] Confirmed strict `updateObjectiveProgress` payload validation exists for:
-    - non-numeric `currentValue` rejection
-    - non-numeric `targetValue` rejection
-    - non-boolean `isComplete` rejection
-[x] Confirmed targeted invalid-payload rejection test coverage exists in authoritative handoff test.
-[x] Ran `node tests/world/WorldGameStateAuthoritativeHandoff.test.mjs` -> PASS
-[x] Ran `node tests/world/WorldGameStateAuthoritativeScore.test.mjs` -> PASS
-[x] Ran `node --check src/advanced/state/transitions.js` -> PASS
-[x] Confirmed APPLY closeout remained docs/reporting only.
-[x] Confirmed no engine core API modifications for this closeout.
-[x] Confirmed no repo-wide refactor or unrelated implementation expansion.
+[ ] Only src/advanced/state/transitions.js modified
+[ ] No API changes
+[ ] No apply function changes
+[ ] Number() normalization added
+[ ] Number.isFinite enforced
+[ ] NaN rejected
+[ ] Infinity rejected
+[ ] Existing tests pass

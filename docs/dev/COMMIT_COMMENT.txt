@@ -1,1 +1,7 @@
-apply(level11.1): close out authoritative state handoff candidate
+Level 11.1: tighten numeric validation at transition boundary
+
+- enforce finite numeric validation using Number() normalization
+- prevent NaN / Infinity drift
+- improve validation clarity
+
+Scope: validation only

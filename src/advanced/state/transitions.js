@@ -44,7 +44,7 @@ function validateAdvanceWave(payload) {
   }
   const amount = payload && payload.amount !== undefined ? Number(payload.amount) : 1;
   if (!Number.isFinite(amount) || amount <= 0) {
-    return { ok: false, reason: 'advanceWave requires amount > 0.' };
+    return { ok: false, reason: 'advanceWave requires finite amount > 0.' };
   }
   return { ok: true };
 }
@@ -53,8 +53,9 @@ function validateApplyScoreDelta(payload) {
   if (!isPlainObject(payload)) {
     return { ok: false, reason: 'applyScoreDelta requires an object payload.' };
   }
-  if (!Number.isFinite(Number(payload.delta))) {
-    return { ok: false, reason: 'applyScoreDelta requires numeric payload.delta.' };
+  const normalizedDelta = Number(payload.delta);
+  if (!Number.isFinite(normalizedDelta)) {
+    return { ok: false, reason: 'applyScoreDelta requires finite numeric payload.delta.' };
   }
   return { ok: true };
 }
@@ -96,11 +97,13 @@ function validateUpdateObjectiveProgress(payload) {
   if (!objectiveId) {
     return { ok: false, reason: 'updateObjectiveProgress requires payload.objectiveId.' };
   }
-  if (payload.currentValue !== undefined && !Number.isFinite(Number(payload.currentValue))) {
-    return { ok: false, reason: 'updateObjectiveProgress payload.currentValue must be numeric when provided.' };
+  const normalizedCurrent = payload.currentValue !== undefined ? Number(payload.currentValue) : null;
+  if (payload.currentValue !== undefined && !Number.isFinite(normalizedCurrent)) {
+    return { ok: false, reason: 'updateObjectiveProgress payload.currentValue must be finite numeric when provided.' };
   }
-  if (payload.targetValue !== undefined && !Number.isFinite(Number(payload.targetValue))) {
-    return { ok: false, reason: 'updateObjectiveProgress payload.targetValue must be numeric when provided.' };
+  const normalizedTarget = payload.targetValue !== undefined ? Number(payload.targetValue) : null;
+  if (payload.targetValue !== undefined && !Number.isFinite(normalizedTarget)) {
+    return { ok: false, reason: 'updateObjectiveProgress payload.targetValue must be finite numeric when provided.' };
   }
   if (payload.isComplete !== undefined && typeof payload.isComplete !== 'boolean') {
     return { ok: false, reason: 'updateObjectiveProgress payload.isComplete must be boolean when provided.' };
