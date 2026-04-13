@@ -19,6 +19,10 @@ export const TOOL_REGISTRY = Object.freeze([
       {
         label: "How To Use",
         path: "Vector Map Editor/how_to_use.html"
+      },
+      {
+        label: "Sample 1208 - Tool Formatted Tiles Parallax",
+        path: "../samples/phase-12/1208/index.html"
       }
     ],
     visibleInToolsList: true
@@ -41,6 +45,10 @@ export const TOOL_REGISTRY = Object.freeze([
       {
         label: "Sample Manifest",
         path: "Vector Asset Studio/samples/sample-manifest.json"
+      },
+      {
+        label: "Sample 1208 - Tool Formatted Tiles Parallax",
+        path: "../samples/phase-12/1208/index.html"
       }
     ],
     visibleInToolsList: true
@@ -63,6 +71,10 @@ export const TOOL_REGISTRY = Object.freeze([
       {
         label: "Sample Manifest",
         path: "Tilemap Studio/samples/sample-manifest.json"
+      },
+      {
+        label: "Sample 1208 - Tool Formatted Tiles Parallax",
+        path: "../samples/phase-12/1208/index.html"
       }
     ],
     visibleInToolsList: true
@@ -85,6 +97,10 @@ export const TOOL_REGISTRY = Object.freeze([
       {
         label: "Sample Manifest",
         path: "Parallax Scene Studio/samples/sample-manifest.json"
+      },
+      {
+        label: "Sample 1208 - Tool Formatted Tiles Parallax",
+        path: "../samples/phase-12/1208/index.html"
       }
     ],
     visibleInToolsList: true
