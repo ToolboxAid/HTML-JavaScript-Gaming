@@ -8,38 +8,40 @@ MODEL: GPT-5.4
 REASONING: high
 
 COMMAND:
-Implement PR_03_02_SHARED_STRINGS_EXTRACTION.
+Implement PR_03_03_SHARED_SELECTORS_CONTRACTS.
 
 Goal:
-Consolidate duplicated string helpers onto the shared layer with no behavior or API changes.
+Standardize selector usage and contract boundaries onto shared state/public reader surfaces with no behavior or API changes.
 
-Target layer:
-- src/shared/utils/
+Target areas:
+- src/shared/state/
+- public selector/read boundary surfaces
 
-Focus helpers:
-- normalizeString
-- safeTrim
-- toLowerSafe
-- stringCompare
+Focus:
+- getState
+- getSimulationState
+- getReplayState
+- getEditorState
+- public selector/read boundaries
 
 Required steps:
-1. Produce docs/dev/reports/string_usage_scan.txt for string helper duplicates and consumers in scope.
-2. Produce docs/dev/reports/extraction_map.txt with exact source -> shared target mapping.
-3. Standardize consumers in scope onto shared string helpers.
-4. Remove only obsolete duplicate string helper implementations within this PR scope.
+1. Produce docs/dev/reports/selector_usage_scan.txt for selector variants and consumers in scope.
+2. Produce docs/dev/reports/contract_map.txt with exact source -> standardized target mapping.
+3. Standardize consumers in scope onto shared selector/contract surfaces.
+4. Remove only obsolete duplicate selector/contract implementations within this PR scope.
 5. Keep changes surgical.
 
 Rules:
-- string helpers only
-- no number/id/object helper extraction
+- selector/contract work only
+- no number/string/id helper extraction
 - no broad cleanup
 - no API changes
 - no behavior changes
 
 Validation:
 - impacted imports resolve
-- duplicate string helpers in scope removed or redirected
+- duplicate selector variants in scope removed or redirected
 - impacted tests/smoke pass
 
 Return ZIP:
-<project folder>/tmp/PR_03_02_SHARED_STRINGS_EXTRACTION.zip
+<project folder>/tmp/PR_03_03_SHARED_SELECTORS_CONTRACTS.zip

@@ -18,7 +18,7 @@ import {
   createTransitionAppliedEvent,
   createTransitionRejectedEvent
 } from './events.js';
-import { createPromotionStateSnapshot } from '../../shared/state/createPromotionStateSnapshot.js';
+import { getState as getPromotionPublicState } from '../../shared/state/getState.js';
 import { asFiniteNumber, asPositiveInteger } from '../../shared/math/numberNormalization.js';
 import { isPlainObject } from '../../shared/utils/objectUtils.js';
 import {
@@ -232,7 +232,7 @@ function createInlinePromotionGate({
     evaluate,
     getMetrics,
     getState() {
-      return createPromotionStateSnapshot({
+      return getPromotionPublicState({
         promoted,
         stableFrames,
         stabilityWindowFrames: windowFrames,

@@ -1,6 +1,6 @@
-[ ] string_usage_scan.txt generated
-[ ] extraction_map.txt generated
-[ ] string helpers consolidated to src/shared/utils
+[ ] selector_usage_scan.txt generated
+[ ] contract_map.txt generated
+[ ] selectors/contracts standardized to shared surfaces
 [ ] no API changes
 [ ] no behavior changes
 [ ] impacted imports resolve

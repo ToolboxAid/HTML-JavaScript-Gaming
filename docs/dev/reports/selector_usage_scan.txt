@@ -1,0 +1,35 @@
+PR_03_03_SHARED_SELECTORS_CONTRACTS - selector usage scan
+
+Scope scanned:
+- src/shared/state/
+- public selector/read boundary surfaces in moved scope
+- in-scope consumer: src/advanced/state/createWorldGameStateSystem.js
+
+Focused selectors:
+- getState
+  - Canonical shared selector: src/shared/state/getState.js
+  - Consumer(s) in scope:
+    - src/advanced/promotion/createPromotionGate.js (already canonical via shared getState)
+    - src/advanced/state/createWorldGameStateSystem.js (standardized in this PR)
+- getSimulationState
+  - No pre-existing selector variant in scanned scope
+- getReplayState
+  - No pre-existing selector variant in scanned scope
+- getEditorState
+  - No pre-existing selector variant in scanned scope
+
+Contract boundary findings:
+- Duplicate/bypass contract call in scope before change:
+  - src/advanced/state/createWorldGameStateSystem.js used createPromotionStateSnapshot directly
+- Standardized contract usage after change:
+  - src/advanced/state/createWorldGameStateSystem.js now routes through shared selector boundary src/shared/state/getState.js
+
+New standardized selector/read surface added:
+- src/shared/state/publicSelectors.js
+  - getState
+  - getSimulationState
+  - getReplayState
+  - getEditorState
+
+Out-of-scope selector/getState implementations (unchanged):
+- runtime/tool-specific local getState functions outside target scope

@@ -1,1 +1,1 @@
-Shared string helper consolidation package focused on canonicalizing string normalization utilities under src/shared/utils.
+Shared selector and contract consolidation package focused on canonicalizing selector/read boundaries under shared state surfaces.

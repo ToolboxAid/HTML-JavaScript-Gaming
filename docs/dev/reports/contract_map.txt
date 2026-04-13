@@ -1,0 +1,24 @@
+PR_03_03_SHARED_SELECTORS_CONTRACTS - contract map
+
+Canonical selector/contract surfaces:
+1) src/shared/state/getState.js::getState
+   - canonical public reader for promotion gate state snapshots
+
+2) src/shared/state/publicSelectors.js
+   - getState(source)
+   - getSimulationState(source)
+   - getReplayState(source)
+   - getEditorState(source)
+
+Source -> standardized target mapping:
+- src/advanced/state/createWorldGameStateSystem.js
+  - direct createPromotionStateSnapshot(...) call
+  -> src/shared/state/getState.js::getState(...)
+
+Obsolete in-scope variant removed/redirection:
+- Removed direct promotion snapshot-construction bypass in createWorldGameStateSystem getState().
+- Behavior/API preserved by using same underlying snapshot contract through shared getState selector.
+
+No API removals:
+- Existing shared exports remain valid.
+- New selector reader surface is additive and non-breaking.
