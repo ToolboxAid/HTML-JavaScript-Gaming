@@ -2,20 +2,19 @@ MODEL: GPT-5.4
 REASONING: high
 
 COMMAND:
-Implement PR_07_04_NETWORK_RECONCILIATION.
+Implement PR_07_05_NETWORK_PREDICTION.
 
 Goal:
-Add reconciliation to simulation.
+Add client-side prediction to simulation.
 
 Steps:
-1. Define authoritative vs local state.
-2. Detect divergence.
-3. Apply correction.
+1. Define prediction model.
+2. Apply prediction for local inputs.
+3. Integrate with reconciliation.
 
 Rules:
 - no real networking
-- no prediction yet
 - no behavior changes outside simulation layer
 
 Return ZIP:
-<project folder>/tmp/PR_07_04_NETWORK_RECONCILIATION.zip
+<project folder>/tmp/PR_07_05_NETWORK_PREDICTION.zip

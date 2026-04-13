@@ -43,8 +43,13 @@ export default class FakeLoopbackNetworkModel {
     this.replicationTick = 0;
     this.authoritativeFrame = 0;
     this.localFrame = 0;
+    this.predictedFrame = 0;
+    this.predictionLeadFrames = 0;
     this.lastReconcileAtMs = null;
     this.reconciliationCount = 0;
+    this.predictionCount = 0;
+    this.lastPredictedSequence = 0;
+    this.predictionRecords = [];
 
     this.autoPacketTimerSeconds = 0;
     this.autoPacketIntervalSeconds = 0.65;
@@ -148,7 +153,32 @@ export default class FakeLoopbackNetworkModel {
       oneWayDelayMs
     });
 
+    this.applyLocalPrediction(sequence, label);
+
     return true;
+  }
+
+  applyLocalPrediction(sequence, label) {
+    const nextPredicted = this.predictedFrame + 1;
+    this.predictedFrame = nextPredicted;
+    this.localFrame = Math.max(this.localFrame, nextPredicted);
+    this.lastPredictedSequence = Math.max(this.lastPredictedSequence, Number(sequence) || 0);
+    this.predictionCount += 1;
+    this.predictionRecords.push({
+      sequence: Number(sequence) || 0,
+      frame: nextPredicted,
+      label: String(label || ""),
+      timestampMs: Math.round(this.elapsedSeconds * 1000)
+    });
+    if (this.predictionRecords.length > 128) {
+      const trimCount = this.predictionRecords.length - 128;
+      this.predictionRecords.splice(0, trimCount);
+    }
+
+    this.pushTrace("PREDICTION_APPLIED", {
+      sequence: Number(sequence) || 0,
+      predictedFrame: nextPredicted
+    });
   }
 
   updatePhaseProgress(dtSeconds) {
@@ -210,12 +240,13 @@ export default class FakeLoopbackNetworkModel {
   }
 
   updateDivergenceState() {
-    this.authoritativeFrame = Math.max(0, Number(this.replicationTick) || 0);
+    this.authoritativeFrame = Math.max(0, Number(this.ackedSequence) || 0);
     const ackedFloor = Math.max(0, Number(this.ackedSequence) || 0);
     if (this.localFrame < ackedFloor) {
       this.localFrame = ackedFloor;
     }
-    this.localFrame = clamp(this.localFrame, 0, this.authoritativeFrame);
+    this.predictedFrame = Math.max(this.predictedFrame, this.localFrame);
+    this.predictionLeadFrames = Math.max(0, this.localFrame - this.authoritativeFrame);
   }
 
   applyReconciliation() {
@@ -223,22 +254,46 @@ export default class FakeLoopbackNetworkModel {
       return;
     }
 
-    const divergence = Math.max(0, this.authoritativeFrame - this.localFrame);
+    const delta = this.localFrame - this.authoritativeFrame;
     const stableWindow = 2;
-    if (divergence <= stableWindow) {
+    const maxLead = 6;
+
+    if (delta >= 0 && delta <= maxLead) {
+      this.predictionLeadFrames = delta;
       return;
     }
 
-    const correction = Math.min(2, divergence - stableWindow);
-    this.localFrame = clamp(this.localFrame + correction, 0, this.authoritativeFrame);
+    if (delta < 0) {
+      const correctionForward = Math.min(2, Math.abs(delta));
+      this.localFrame += correctionForward;
+      this.predictedFrame = Math.max(this.predictedFrame, this.localFrame);
+      this.reconciliationCount += 1;
+      this.lastReconcileAtMs = Math.round(this.elapsedSeconds * 1000);
+      this.pushTrace("RECONCILE_APPLIED", {
+        correctionFrames: correctionForward,
+        correctionDirection: "forward",
+        authoritativeFrame: this.authoritativeFrame,
+        localFrame: this.localFrame,
+        divergenceAfter: this.localFrame - this.authoritativeFrame
+      });
+      return;
+    }
+
+    const excess = Math.max(0, delta - maxLead);
+    const correctionBack = Math.min(2, excess || Math.max(0, delta - stableWindow));
+    if (correctionBack <= 0) {
+      return;
+    }
+    this.localFrame = Math.max(this.authoritativeFrame, this.localFrame - correctionBack);
     this.reconciliationCount += 1;
     this.lastReconcileAtMs = Math.round(this.elapsedSeconds * 1000);
 
     this.pushTrace("RECONCILE_APPLIED", {
-      correctionFrames: correction,
+      correctionFrames: correctionBack,
+      correctionDirection: "backward",
       authoritativeFrame: this.authoritativeFrame,
       localFrame: this.localFrame,
-      divergenceAfter: Math.max(0, this.authoritativeFrame - this.localFrame)
+      divergenceAfter: this.localFrame - this.authoritativeFrame
     });
   }
 
@@ -261,9 +316,10 @@ export default class FakeLoopbackNetworkModel {
   getSnapshot() {
     const traceTail = this.traceEvents.slice(-18);
 
-    const frameDelta = Math.max(0, this.authoritativeFrame - this.localFrame);
-    const divergenceStatus = frameDelta > 8 ? "diverged" : (frameDelta > 2 ? "drifting" : "stable");
-    const divergenceScore = frameDelta > 4 ? "warning" : "ok";
+    const frameDelta = this.localFrame - this.authoritativeFrame;
+    const absoluteDelta = Math.abs(frameDelta);
+    const divergenceStatus = absoluteDelta > 8 ? "diverged" : (absoluteDelta > 2 ? "drifting" : "stable");
+    const divergenceScore = absoluteDelta > 4 ? "warning" : "ok";
 
     return {
       sessionId: this.sessionId,
@@ -288,6 +344,10 @@ export default class FakeLoopbackNetworkModel {
         backlog: this.replicationBacklog,
         authoritativeFrame: this.authoritativeFrame,
         localFrame: this.localFrame,
+        predictedFrame: this.predictedFrame,
+        predictionLeadFrames: this.predictionLeadFrames,
+        predictionCount: this.predictionCount,
+        lastPredictedSequence: this.lastPredictedSequence,
         reconciliationCount: this.reconciliationCount,
         lastReconcileAtMs: this.lastReconcileAtMs
       },

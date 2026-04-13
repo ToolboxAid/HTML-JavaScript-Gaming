@@ -1,4 +1,4 @@
-[ ] reconciliation model defined
-[ ] divergence detection working
-[ ] correction applied
+[ ] prediction model defined
+[ ] prediction applied
+[ ] reconciliation integration working
 [ ] validation complete
