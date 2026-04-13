@@ -1,4 +1,1 @@
-Apply: Samples phase alignment
-
-- canonical phase structure applied
-- navigation verified
+Plan: Sample curriculum validation

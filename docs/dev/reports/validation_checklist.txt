@@ -1,4 +1,2 @@
-[x] samples aligned
-[x] index valid
-[x] no broken links
-[x] smoke passed
+[ ] plan only
+[ ] progression defined
