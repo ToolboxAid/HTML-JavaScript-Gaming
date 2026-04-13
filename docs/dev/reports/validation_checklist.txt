@@ -1,3 +1,3 @@
-[ ] samples runnable
-[ ] no boundary violations
-[ ] no engine changes
+[x] samples runnable
+[x] no boundary violations
+[x] no engine changes

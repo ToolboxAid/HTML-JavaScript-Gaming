@@ -1,1 +1,1 @@
-Samples: enforce shared boundaries
+Apply: Sample shared boundaries
