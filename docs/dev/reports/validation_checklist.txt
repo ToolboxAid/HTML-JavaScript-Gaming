@@ -1,8 +1,1 @@
-[ ] `tests/games/AsteroidsValidation.test.mjs` updated with minimum shim
-[ ] named `run` export preserved
-[ ] globals restored after test
-[ ] `games/Asteroids/index.js` unchanged
-[ ] `npm test --ignore-scripts > output.txt` run
-[ ] no `Missing #game canvas element`
-[ ] `PASS AsteroidsValidation`
-[ ] if a new failure appears, capture only the first new failure
+All targeted tests passed.

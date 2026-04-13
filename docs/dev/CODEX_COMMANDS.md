@@ -1,31 +1,30 @@
-MODEL: GPT-5.4-codex
+MODEL: GPT-5.3-codex
 REASONING: high
 
 COMMAND:
-Create a small test-only patch for the current Asteroids failure.
+Create BUILD_PR_LEVEL_11_1_AUTHORITATIVE_STATE_HANDOFF_CANDIDATE implementation from provided payload.
 
-Primary target:
-- `tests/games/AsteroidsValidation.test.mjs`
+INPUT:
+Use provided ZIP payload.
 
-Do the following:
-1. Inspect the real file around the current failing call:
-   - stack shows `tests/games/AsteroidsValidation.test.mjs:152:37`
-2. Preserve the existing structure and assertions.
-3. Ensure the file exports the named `run` function expected by `tests/run-tests.mjs`.
-4. Immediately before the failing `bootAsteroidsNew(...)` path, install the minimum Node-safe DOM/canvas shim so:
-   - `globalThis.document` exists for this test scope
-   - `document.getElementById('game')` returns a canvas-like object
-   - the returned object supports the canvas methods/properties Asteroids boot actually uses
-5. Restore globals after the test scope finishes.
-6. Do not use a browser-only approach that assumes a full DOM implementation.
-7. Do not edit `games/Asteroids/index.js`.
+REQUIREMENTS:
+- Implement authoritative state handoff per PR intent
+- Maintain strict separation engine/game
+- Use approved selectors/events only
+- No engine core API changes unless required
+- Preserve backward compatibility
+- Add contract validation
 
-Secondary target, only if still failing in the current branch:
-- `tests/tools/VectorNativeTemplate.test.mjs`
-  - update expected path from `templates/vector-native-arcade/` to `tools/templates/vector-native-arcade/`
+CONSTRAINTS:
+- Minimal, surgical changes only
+- No unrelated modifications
 
-Success criteria:
-- `npm test --ignore-scripts > output.txt`
-- the first failure is no longer `Missing #game canvas element`
-- `PASS AsteroidsValidation` appears
-- stop after the first new failure, if any, and report it
+OUTPUT (CRITICAL):
+- Provide ONE download ZIP (delta only)
+- Repo-structured
+- Only changed/added files
+- No full repo copies
+
+ALSO INCLUDE:
+- docs/dev/commit_comment.txt
+- docs/dev/next_command.txt

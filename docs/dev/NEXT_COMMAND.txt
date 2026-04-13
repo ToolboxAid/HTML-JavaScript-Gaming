@@ -1,2 +1,13 @@
-After Codex completes and validation passes:
-APPLY_PR_ENGINE_IMPORT_BASELINE_AND_CONTRACT_VALIDATE
+MODEL: GPT-5.3-codex
+REASONING: high
+
+COMMAND:
+Create APPLY_PR_LEVEL_11_1_AUTHORITATIVE_STATE_HANDOFF_CANDIDATE docs-only closeout.
+
+REQUIREMENTS:
+- summarize implementation
+- confirm validation
+- no code changes
+
+OUTPUT:
+- repo-structured delta ZIP

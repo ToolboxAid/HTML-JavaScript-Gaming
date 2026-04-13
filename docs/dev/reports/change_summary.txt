@@ -1,13 +1,1 @@
-Purpose:
-- eliminate the current Asteroids test blocker in plain Node
-
-Current blocker:
-- `Missing #game canvas element`
-- thrown by `bootAsteroidsNew(...)`
-- invoked from `tests/games/AsteroidsValidation.test.mjs`
-
-Expected patch style:
-- test-only
-- minimum diff
-- no production game code changes
-- no full-file replacement
+Level 11.1 authoritative handoff minimal scoped implementation.
