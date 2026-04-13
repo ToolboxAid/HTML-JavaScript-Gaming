@@ -8,38 +8,38 @@ MODEL: GPT-5.4
 REASONING: high
 
 COMMAND:
-Implement PR_03_01_SHARED_NUMBERS_NORMALIZATION.
+Implement PR_03_02_SHARED_STRINGS_EXTRACTION.
 
 Goal:
-Consolidate duplicated numeric helpers onto the shared math layer with no behavior or API changes.
+Consolidate duplicated string helpers onto the shared layer with no behavior or API changes.
 
 Target layer:
-- src/shared/math/
+- src/shared/utils/
 
 Focus helpers:
-- asFiniteNumber
-- asPositiveInteger
-- toFiniteNumber
-- roundNumber
+- normalizeString
+- safeTrim
+- toLowerSafe
+- stringCompare
 
 Required steps:
-1. Produce docs/dev/reports/number_usage_scan.txt for numeric helper duplicates and consumers in scope.
+1. Produce docs/dev/reports/string_usage_scan.txt for string helper duplicates and consumers in scope.
 2. Produce docs/dev/reports/extraction_map.txt with exact source -> shared target mapping.
-3. Standardize consumers in scope onto shared numeric helpers.
-4. Remove only obsolete duplicate numeric helper implementations within this PR scope.
+3. Standardize consumers in scope onto shared string helpers.
+4. Remove only obsolete duplicate string helper implementations within this PR scope.
 5. Keep changes surgical.
 
 Rules:
-- numeric helpers only
-- no string/id/object helper extraction
+- string helpers only
+- no number/id/object helper extraction
 - no broad cleanup
 - no API changes
 - no behavior changes
 
 Validation:
 - impacted imports resolve
-- duplicate numeric helpers in scope removed or redirected
+- duplicate string helpers in scope removed or redirected
 - impacted tests/smoke pass
 
 Return ZIP:
-<project folder>/tmp/PR_03_01_SHARED_NUMBERS_NORMALIZATION.zip
+<project folder>/tmp/PR_03_02_SHARED_STRINGS_EXTRACTION.zip

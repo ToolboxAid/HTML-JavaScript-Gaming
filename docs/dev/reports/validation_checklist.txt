@@ -1,6 +1,6 @@
-[ ] number_usage_scan.txt generated
+[ ] string_usage_scan.txt generated
 [ ] extraction_map.txt generated
-[ ] numeric helpers consolidated to src/shared/math
+[ ] string helpers consolidated to src/shared/utils
 [ ] no API changes
 [ ] no behavior changes
 [ ] impacted imports resolve

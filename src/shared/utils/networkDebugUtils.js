@@ -1,15 +1,13 @@
 import { asNumber } from "../math/numberNormalization.js";
 import { asObject, asArray } from "./objectUtils.js";
-
-function sanitizeText(value) {
-  return typeof value === "string" ? value.trim() : "";
-}
+import { safeTrim } from "./stringUtils.js";
 
 function toSafeKey(value) {
-  return sanitizeText(value);
+  return safeTrim(value);
 }
 
 export { asNumber };
+export const sanitizeText = safeTrim;
 
 export function toNetworkSnapshot(snapshot) {
   const sampleKey = arguments[1];

@@ -1,13 +1,24 @@
-EXTRACTION MAP
-Generated: 2026-04-13
-Command: PR_03_01_SHARED_NUMBERS_NORMALIZATION
+PR_03_02_SHARED_STRINGS_EXTRACTION - extraction map
 
-Source -> Shared Target Mapping
-- src/shared/utils/numberUtils.js::toFiniteNumber -> src/shared/math/numberNormalization.js::toFiniteNumber
-- src/shared/utils/numberUtils.js::asFiniteNumber -> src/shared/math/numberNormalization.js::asFiniteNumber
-- src/shared/utils/numberUtils.js::asPositiveInteger -> src/shared/math/numberNormalization.js::asPositiveInteger
-- src/shared/math/numberNormalization.js::roundNumber remains canonical owner
+Canonical shared targets:
+- src/shared/utils/stringUtils.js::safeTrim
+- src/shared/utils/stringUtils.js::toLowerSafe
+- src/shared/utils/stringUtils.js::stringCompare
+- src/shared/utils/stringUtils.js::normalizeString (existing canonical export retained)
 
-Compatibility Redirects
-- src/shared/utils/numberUtils.js keeps export surface and redirects numeric helper ownership to shared/math.
-- samples/_shared/numberUtils.js routes core numeric helpers to shared/math and keeps non-target helpers from shared/utils.
+Source -> shared mapping:
+1) src/shared/utils/debugConfigUtils.js
+   - local sanitizeText(value) -> safeTrim(value)
+   - sanitizeText(value).toLowerCase() callsites -> toLowerSafe(value)
+
+2) src/shared/utils/networkDebugUtils.js
+   - local sanitizeText(value) -> safeTrim(value)
+   - exported sanitizeText symbol redirected as:
+     export const sanitizeText = safeTrim;
+
+Backward-compatibility mapping retained in shared layer:
+- trimSafe(value) -> safeTrim(value)
+- sanitizeText(value) -> safeTrim(value)
+- normalizeString(value) -> safeTrim(value)
+
+No API or behavior changes introduced for existing public exports.

@@ -1,0 +1,29 @@
+PR_03_02_SHARED_STRINGS_EXTRACTION - string helper usage scan
+
+Focused helper scan (src/, samples/, tools/, games/, tests/):
+- normalizeString
+  - Definition: src/shared/utils/stringUtils.js:9 (pre-change)
+  - Consumer(s): tools/shared/vectorTemplateSampleGame.js (multiple)
+- safeTrim
+  - No pre-existing definition or usage in scan scope
+- toLowerSafe
+  - No pre-existing definition or usage in scan scope
+- stringCompare
+  - No pre-existing definition or usage in scan scope
+
+Duplicate helper implementations in scoped shared utils:
+- src/shared/utils/debugConfigUtils.js
+  - local sanitizeText(value) => typeof string ? trim : ''
+  - consumer sites: parseBooleanFlag, normalizeDebugMode, isLocalDebugEnvironment, resolveDebugConfig
+- src/shared/utils/networkDebugUtils.js
+  - local sanitizeText(value) => typeof string ? trim : ''
+  - consumer sites: toSafeKey + commandLinesForTrace optional sanitizer fallback
+
+Consolidation scope applied:
+- Shared canonical string helpers consolidated in src/shared/utils/stringUtils.js
+- In-scope duplicate local sanitize helpers replaced by shared helper usage in:
+  - src/shared/utils/debugConfigUtils.js
+  - src/shared/utils/networkDebugUtils.js
+
+Out of scope:
+- Engine-level and tools/sample local sanitizeText duplicates are intentionally unchanged in this PR.

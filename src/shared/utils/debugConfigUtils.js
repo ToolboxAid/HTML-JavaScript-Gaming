@@ -1,13 +1,10 @@
+import { safeTrim, toLowerSafe } from './stringUtils.js';
 const BUILD_DEBUG_MODE = 'prod';
 const BUILD_DEBUG_ENABLED = false;
 const DEBUG_STATE_STORAGE_KEY = 'toolbox.sample.asteroids.debug.enabled';
 
-function sanitizeText(value) {
-  return typeof value === 'string' ? value.trim() : '';
-}
-
 export function parseBooleanFlag(value, fallback) {
-  const normalized = sanitizeText(value).toLowerCase();
+  const normalized = toLowerSafe(value);
   if (!normalized) {
     return fallback;
   }
@@ -21,7 +18,7 @@ export function parseBooleanFlag(value, fallback) {
 }
 
 export function normalizeDebugMode(value, fallback = 'prod') {
-  const normalized = sanitizeText(value).toLowerCase();
+  const normalized = toLowerSafe(value);
   if (normalized === 'dev' || normalized === 'qa' || normalized === 'prod') {
     return normalized;
   }
@@ -61,8 +58,8 @@ export function writeStoredBoolean(key, value) {
 }
 
 export function isLocalDebugEnvironment(documentRef) {
-  const protocol = sanitizeText(documentRef?.location?.protocol) || sanitizeText(globalThis?.location?.protocol);
-  const hostname = sanitizeText(documentRef?.location?.hostname) || sanitizeText(globalThis?.location?.hostname);
+  const protocol = safeTrim(documentRef?.location?.protocol) || safeTrim(globalThis?.location?.protocol);
+  const hostname = safeTrim(documentRef?.location?.hostname) || safeTrim(globalThis?.location?.hostname);
 
   if (protocol === 'file:') {
     return true;
@@ -72,7 +69,7 @@ export function isLocalDebugEnvironment(documentRef) {
 }
 
 export function resolveDebugConfig(documentRef) {
-  const search = sanitizeText(documentRef?.location?.search) || sanitizeText(globalThis?.location?.search);
+  const search = safeTrim(documentRef?.location?.search) || safeTrim(globalThis?.location?.search);
   const searchParams = new URLSearchParams(search);
   const queryMode = searchParams.get('debugMode');
   const queryEnabled = searchParams.get('debug');

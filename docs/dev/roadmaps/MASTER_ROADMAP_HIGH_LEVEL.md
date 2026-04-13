@@ -117,7 +117,7 @@
 - [x] `src/shared/state`
 - [x] `games/_template/flow`
 - [ ] `samples/phase-01`
-- [ ] `samples/phase-13_network-concepts`
+- [ ] `samples/phase-13`
 - [x] `tools/shared`
 
 ### Recent Checkpoint Notes

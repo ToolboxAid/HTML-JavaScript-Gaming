@@ -1,1 +1,1 @@
-Shared numeric helper consolidation package focused on canonicalizing numeric normalization utilities under src/shared/math.
+Shared string helper consolidation package focused on canonicalizing string normalization utilities under src/shared/utils.
