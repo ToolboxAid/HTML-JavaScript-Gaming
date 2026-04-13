@@ -1,1 +1,1 @@
-Applied shared boundary enforcement.
+Plan for runtime validation of samples.

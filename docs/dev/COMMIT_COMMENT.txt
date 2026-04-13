@@ -1,1 +1,1 @@
-Apply: Sample shared boundaries
+Plan: Sample runtime validation
