@@ -1,0 +1,29 @@
+PR_07_01_NETWORK_PHASE_STRUCTURE_VALIDATION
+
+Scope
+- samples/phase-13
+- samples/index.html phase-13 entries
+
+Checks performed
+1. Folder structure scan:
+- Found canonical directories 1301..1318 (18 total), no gaps.
+
+2. Required entry files:
+- Every phase-13 sample directory contains index.html and main.js.
+
+3. Naming validation:
+- For every sample 1301..1318, <title> and <h1> start with "Sample <id>".
+- No ID/title/header mismatches detected.
+
+4. Navigation references:
+- samples/index.html contains links for 1301..1318 under Phase 13.
+- Link path format is canonical ./phase-13/<id>/index.html.
+
+Inconsistencies found
+- None.
+
+Fixes applied
+- No code or sample content changes required.
+
+Validation
+- node tests/runtime/LaunchSmokeAllEntries.test.mjs (pass)

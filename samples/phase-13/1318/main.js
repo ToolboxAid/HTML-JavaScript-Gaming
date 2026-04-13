@@ -11,6 +11,7 @@ import { resolveDebugConfig } from "../../_shared/debugConfigUtils.js";
 import { createSampleGameDevConsoleIntegration } from "../../../tools/dev/devConsoleIntegration.js";
 import { createNetworkSampleCDebugPlugin } from "./debug/networkSampleCDebug.js";
 import NetworkSampleCScene from "./game/NetworkSampleCScene.js";
+import { SIMULATION_FIXED_STEP_MS } from "/samples/phase-13/_shared/simulationBaseline.js";
 
 const theme = new Theme(ThemeTokens);
 
@@ -63,7 +64,7 @@ export function bootNetworkSampleC({
     canvas,
     width: 960,
     height: 720,
-    fixedStepMs: 1000 / 60,
+    fixedStepMs: SIMULATION_FIXED_STEP_MS,
     input
   });
 
