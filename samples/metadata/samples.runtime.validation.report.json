@@ -1,0 +1,20 @@
+{
+  "version": 1,
+  "generatedAt": "2026-04-13T21:06:29.167Z",
+  "scope": "samples-runtime-only",
+  "command": "BUILD_PR_LEVEL_6_4_SAMPLE_RUNTIME_VALIDATION",
+  "checks": {
+    "loadEachSample": true,
+    "runtimeErrorsBlocked": true,
+    "renderLoopObserved": true,
+    "blockingConsoleErrorsBlocked": true
+  },
+  "summary": {
+    "generatedAt": "2026-04-13T21:06:29.167Z",
+    "sampleCount": 197,
+    "passCount": 197,
+    "failCount": 0
+  },
+  "failureCount": 0,
+  "failures": []
+}

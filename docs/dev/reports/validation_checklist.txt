@@ -1,2 +1,3 @@
-[ ] plan only
-[ ] runtime rules defined
+[ ] all samples load
+[ ] no crashes
+[ ] console clean

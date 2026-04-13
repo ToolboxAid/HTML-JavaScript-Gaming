@@ -1,1 +1,1 @@
-Plan: Sample runtime validation
+Samples: runtime validation

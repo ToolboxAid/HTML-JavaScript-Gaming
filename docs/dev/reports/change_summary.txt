@@ -1,1 +1,1 @@
-Plan for runtime validation of samples.
+Validated runtime execution of all samples.
