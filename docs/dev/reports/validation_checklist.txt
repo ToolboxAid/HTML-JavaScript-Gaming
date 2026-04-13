@@ -1,2 +1,2 @@
-[ ] plan only
-[ ] index rules defined
+[ ] links valid
+[ ] ordering correct

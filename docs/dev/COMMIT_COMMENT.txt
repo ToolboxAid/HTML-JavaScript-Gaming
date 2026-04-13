@@ -1,1 +1,1 @@
-Plan: sample index normalization
+Samples: normalize sample index

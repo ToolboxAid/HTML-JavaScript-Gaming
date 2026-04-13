@@ -1,1 +1,1 @@
-Plan for aligning sample index to phase structure.
+Normalized sample index paths and ordering.
