@@ -1,21 +1,21 @@
 MODEL: GPT-5.4
-REASONING: medium
+REASONING: high
 
 COMMAND:
-Implement PR_07_03_NETWORK_LATENCY_MODELING.
+Implement PR_07_04_NETWORK_RECONCILIATION.
 
 Goal:
-Add latency modeling to simulation.
+Add reconciliation to simulation.
 
 Steps:
-1. Define latency model (delay/jitter).
-2. Inject into simulation inputs.
-3. Validate behavior.
+1. Define authoritative vs local state.
+2. Detect divergence.
+3. Apply correction.
 
 Rules:
-- no networking
-- no reconciliation
-- no behavior changes outside latency simulation
+- no real networking
+- no prediction yet
+- no behavior changes outside simulation layer
 
 Return ZIP:
-<project folder>/tmp/PR_07_03_NETWORK_LATENCY_MODELING.zip
+<project folder>/tmp/PR_07_04_NETWORK_RECONCILIATION.zip

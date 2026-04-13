@@ -1,0 +1,22 @@
+PR_06_07_SAMPLE_LAUNCHER_FILTER_RESTORE - regression scan
+
+Scope:
+- samples/index.html launcher filter script/UI only
+
+Regression cause identified:
+1) Sample href parsing was too strict.
+- Previous parser accepted only: ./phase-XX/####/index.html
+- If launcher links are emitted in equivalent canonical variants (for example /samples/phase-XX/####/index.html or phaseXX), phase/sample IDs fail to parse.
+- Failed parse results in blank model.phase and model.sampleId, which prevents correct phase dropdown population and weakens filter matching.
+
+2) Tag extraction ignored primary concept fallback.
+- Tags were sourced only from data-tags.
+- When data-tags are incomplete but data-primary is present, expected tag filter discoverability is reduced.
+
+3) Duplicate helper declaration in filter script.
+- resolveThumbnail was declared twice.
+- Runtime behavior was not always broken, but duplicate declarations increase maintenance risk and regression susceptibility.
+
+Observed impact pattern:
+- phase dropdown can appear incomplete/empty under path variant drift.
+- tag filter discoverability can regress for entries relying on primary concept.

@@ -1,1 +1,1 @@
-Samples dependency cleanup package focused on removing non-public engine coupling and standardizing samples onto approved public/shared surfaces.
+Restore sample launcher phase dropdown and tag filter behavior with a surgical launcher-only fix.

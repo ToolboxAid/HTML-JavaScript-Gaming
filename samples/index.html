@@ -544,13 +544,10 @@ index.html
       const linkModels = linkNodes.map((link) => {
         const labelText = String(link.textContent || '').trim();
         const href = String(link.getAttribute('href') || '');
-        const match = href.match(/^\\.\\/phase-(\\d{2})\\/(\\d{4})\\/index\\.html$/);
-        const phase = match ? match[1] : '';
-        const sampleId = match ? match[2] : '';
-        const tags = String(link.getAttribute('data-tags') || '')
-          .split(',')
-          .map((tag) => tag.trim().toLowerCase())
-          .filter(Boolean);
+        const parsed = parseSampleLink(href);
+        const phase = parsed.phase;
+        const sampleId = parsed.sampleId;
+        const tags = parseTagTokens({ link });
         const titleText = labelText.toLowerCase();
         const descriptionText = String(link.getAttribute('title') || '').trim().toLowerCase();
         const searchText = [sampleId, titleText, descriptionText, tags.join(' ')].join(' ');
@@ -639,6 +636,32 @@ index.html
         return typeof value === 'string' ? value.trim() : '';
       }
 
+      function parseSampleLink(hrefValue) {
+        const href = String(hrefValue || '').trim();
+        const match = href.match(/(?:^|\/)phase-?(\d{2})\/(\d{4})\/index\.html$/i);
+        if (!match) {
+          return { phase: '', sampleId: '' };
+        }
+        return {
+          phase: String(match[1] || ''),
+          sampleId: String(match[2] || '')
+        };
+      }
+
+      function parseTagTokens(model) {
+        const tags = String(model.link.getAttribute('data-tags') || '')
+          .split(',')
+          .map((tag) => tag.trim().toLowerCase())
+          .filter(Boolean);
+        const primary = String(model.link.getAttribute('data-primary') || '')
+          .trim()
+          .toLowerCase();
+        if (primary && !tags.includes(primary)) {
+          tags.push(primary);
+        }
+        return tags;
+      }
+
       function ensureHoverCard() {
         if (hoverCard) {
           return hoverCard;
@@ -659,10 +682,6 @@ index.html
 
         document.body.appendChild(hoverCard);
         return hoverCard;
-      }
-
-      function resolveThumbnail(model) {
-        return model.thumbnail || model.preview || FALLBACK_THUMBNAIL;
       }
 
       function resolvePreview(model) {

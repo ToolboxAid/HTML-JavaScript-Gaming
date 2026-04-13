@@ -1,0 +1,27 @@
+PR_06_07_SAMPLE_LAUNCHER_FILTER_RESTORE - fix map
+
+File: samples/index.html
+
+Targeted fixes:
+1) Added parseSampleLink(href)
+- New parser accepts canonical phase path variants via:
+  /(?:^|\/)phase-?(\d{2})\/(\d{4})\/index\.html$/i
+- Standardizes extraction for phase and sampleId used by phase dropdown + filtering.
+
+2) Added parseTagTokens(model)
+- Preserves data-tags behavior.
+- Adds data-primary as fallback/augmenting tag (deduplicated), restoring expected tag discoverability/filter interaction.
+
+3) Updated link model construction
+- Replaced inline strict href regex logic with parseSampleLink.
+- Replaced inline data-tags parsing with parseTagTokens.
+
+4) Removed duplicate resolveThumbnail declaration
+- Kept single canonical helper definition in launcher script to reduce regression risk.
+
+Validation evidence:
+- Live sample links parsed: 197/197
+- Unique parsed phases: 15 (01..15)
+- Unparsed live links: 0
+- Unique filter tags generated (tags + primary fallback): 351
+- Runtime smoke: node tests/runtime/LaunchSmokeAllEntries.test.mjs passed

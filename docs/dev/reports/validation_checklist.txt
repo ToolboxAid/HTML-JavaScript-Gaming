@@ -1,3 +1,4 @@
-[ ] latency model defined
-[ ] latency injection applied
+[ ] reconciliation model defined
+[ ] divergence detection working
+[ ] correction applied
 [ ] validation complete

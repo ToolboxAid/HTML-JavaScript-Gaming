@@ -41,6 +41,10 @@ export default class FakeLoopbackNetworkModel {
     this.jitterMs = 3;
     this.replicationBacklog = 0;
     this.replicationTick = 0;
+    this.authoritativeFrame = 0;
+    this.localFrame = 0;
+    this.lastReconcileAtMs = null;
+    this.reconciliationCount = 0;
 
     this.autoPacketTimerSeconds = 0;
     this.autoPacketIntervalSeconds = 0.65;
@@ -205,6 +209,39 @@ export default class FakeLoopbackNetworkModel {
     this.replicationBacklog = Math.max(0, this.inFlightPackets.length);
   }
 
+  updateDivergenceState() {
+    this.authoritativeFrame = Math.max(0, Number(this.replicationTick) || 0);
+    const ackedFloor = Math.max(0, Number(this.ackedSequence) || 0);
+    if (this.localFrame < ackedFloor) {
+      this.localFrame = ackedFloor;
+    }
+    this.localFrame = clamp(this.localFrame, 0, this.authoritativeFrame);
+  }
+
+  applyReconciliation() {
+    if (this.phase !== "connected") {
+      return;
+    }
+
+    const divergence = Math.max(0, this.authoritativeFrame - this.localFrame);
+    const stableWindow = 2;
+    if (divergence <= stableWindow) {
+      return;
+    }
+
+    const correction = Math.min(2, divergence - stableWindow);
+    this.localFrame = clamp(this.localFrame + correction, 0, this.authoritativeFrame);
+    this.reconciliationCount += 1;
+    this.lastReconcileAtMs = Math.round(this.elapsedSeconds * 1000);
+
+    this.pushTrace("RECONCILE_APPLIED", {
+      correctionFrames: correction,
+      authoritativeFrame: this.authoritativeFrame,
+      localFrame: this.localFrame,
+      divergenceAfter: Math.max(0, this.authoritativeFrame - this.localFrame)
+    });
+  }
+
   update(dtSeconds, options = {}) {
     const safeDt = asPositiveNumber(dtSeconds, 1 / 60);
     this.elapsedSeconds += safeDt;
@@ -217,10 +254,16 @@ export default class FakeLoopbackNetworkModel {
     this.updatePhaseProgress(safeDt);
     this.updateLatencySnapshot();
     this.updateAcks();
+    this.updateDivergenceState();
+    this.applyReconciliation();
   }
 
   getSnapshot() {
     const traceTail = this.traceEvents.slice(-18);
+
+    const frameDelta = Math.max(0, this.authoritativeFrame - this.localFrame);
+    const divergenceStatus = frameDelta > 8 ? "diverged" : (frameDelta > 2 ? "drifting" : "stable");
+    const divergenceScore = frameDelta > 4 ? "warning" : "ok";
 
     return {
       sessionId: this.sessionId,
@@ -242,13 +285,18 @@ export default class FakeLoopbackNetworkModel {
         nextSequence: this.nextSequence,
         ackedSequence: this.ackedSequence,
         pendingPackets: this.pendingPackets,
-        backlog: this.replicationBacklog
+        backlog: this.replicationBacklog,
+        authoritativeFrame: this.authoritativeFrame,
+        localFrame: this.localFrame,
+        reconciliationCount: this.reconciliationCount,
+        lastReconcileAtMs: this.lastReconcileAtMs
       },
       divergence: {
-        status: "stable",
-        score: this.replicationBacklog > 4 ? "warning" : "ok",
-        serverFrame: this.replicationTick,
-        clientFrame: Math.max(0, this.replicationTick - this.replicationBacklog)
+        status: divergenceStatus,
+        score: divergenceScore,
+        frameDelta,
+        serverFrame: this.authoritativeFrame,
+        clientFrame: this.localFrame
       },
       trace: {
         totalEvents: this.traceEvents.length,
