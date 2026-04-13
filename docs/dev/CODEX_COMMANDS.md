@@ -1,25 +1,45 @@
+PR Naming Rule:
+ALL PRs MUST follow:
+PR_<SECTION>_<STEP>_<SHORT_NAME>
+
+Reject any PR name that does not follow this format.
+
 MODEL: GPT-5.4
 REASONING: high
 
 COMMAND:
-Implement PR_01_02_REPO_STRUCTURE_APPLY.
+Implement PR_03_01_SHARED_NUMBERS_NORMALIZATION.
 
-Use:
-- docs/dev/reports/move_map.txt
-- docs/dev/reports/validation_checklist.txt
+Goal:
+Consolidate duplicated numeric helpers onto the shared math layer with no behavior or API changes.
+
+Target layer:
+- src/shared/math/
+
+Focus helpers:
+- asFiniteNumber
+- asPositiveInteger
+- toFiniteNumber
+- roundNumber
+
+Required steps:
+1. Produce docs/dev/reports/number_usage_scan.txt for numeric helper duplicates and consumers in scope.
+2. Produce docs/dev/reports/extraction_map.txt with exact source -> shared target mapping.
+3. Standardize consumers in scope onto shared numeric helpers.
+4. Remove only obsolete duplicate numeric helper implementations within this PR scope.
+5. Keep changes surgical.
 
 Rules:
-- Apply only the mapped moves
-- Update only the imports/paths required by those moves
-- No logic refactors
-- No broad repo cleanup
-- No deletes unless explicitly mapped
+- numeric helpers only
+- no string/id/object helper extraction
+- no broad cleanup
+- no API changes
+- no behavior changes
 
 Validation:
-- imports resolve
-- structure matches move_map
-- no unresolved live sample links
-- runtime harness phase matcher remains intact
+- impacted imports resolve
+- duplicate numeric helpers in scope removed or redirected
+- impacted tests/smoke pass
 
 Return ZIP:
-<project folder>/tmp/PR_01_02_REPO_STRUCTURE_APPLY.zip
+<project folder>/tmp/PR_03_01_SHARED_NUMBERS_NORMALIZATION.zip

@@ -1,0 +1,25 @@
+NUMBER USAGE SCAN
+Generated: 2026-04-13
+Command: PR_03_01_SHARED_NUMBERS_NORMALIZATION
+
+Helper Ownership (Post-Normalization)
+- src/shared/math/numberNormalization.js: toFiniteNumber, asFiniteNumber, asPositiveInteger, roundNumber
+- src/shared/utils/numberUtils.js: compatibility re-export for toFiniteNumber/asFiniteNumber/asPositiveInteger plus isFiniteNumber/asPositiveNumber
+
+Duplicate Helper Implementations In Scope
+- asFiniteNumber: removed from src/shared/utils/numberUtils.js (redirected to shared/math)
+- asPositiveInteger: removed from src/shared/utils/numberUtils.js (redirected to shared/math)
+- toFiniteNumber: duplicate ownership removed from src/shared/utils/numberUtils.js (redirected to shared/math)
+- roundNumber: unchanged canonical in src/shared/math/numberNormalization.js
+
+Consumers Updated In Scope
+- src/advanced/promotion/createPromotionGate.js
+- src/advanced/state/createWorldGameStateSystem.js
+- src/engine/debug/inspectors/shared/inspectorUtils.js
+- src/engine/debug/inspectors/host/debugInspectorHost.js
+- src/engine/debug/inspectors/registry/debugInspectorRegistry.js
+- src/engine/debug/inspectors/viewModels/entityInspectorViewModel.js
+- src/engine/debug/inspectors/viewModels/eventStreamInspectorViewModel.js
+- src/engine/debug/inspectors/viewModels/stateDiffInspectorViewModel.js
+- src/engine/debug/inspectors/viewModels/timelineInspectorViewModel.js
+- samples/_shared/numberUtils.js

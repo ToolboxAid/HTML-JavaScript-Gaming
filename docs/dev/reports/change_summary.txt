@@ -1,1 +1,1 @@
-Apply the validated repo structure move map and only the import/path updates required by those moves.
+Shared numeric helper consolidation package focused on canonicalizing numeric normalization utilities under src/shared/math.

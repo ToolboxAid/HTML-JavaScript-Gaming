@@ -1,0 +1,12 @@
+ORPHAN SCAN
+Generated: 2026-04-13
+Command: PR_01_03_POST_MOVE_VALIDATION
+
+legacy phase directories (phaseNN) under samples/: 0
+- none
+
+unresolved live sample href entries in samples/index.html: 0
+- none
+
+missing relative imports within samples JS/MJS: 0
+- none

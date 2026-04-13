@@ -5,22 +5,14 @@ David Quesenberry
 numberUtils.js
 */
 
-function asFiniteNumber(value, fallback = 0) {
-  return toFiniteNumber(value, fallback);
-}
+import {
+  asFiniteNumber,
+  asPositiveInteger,
+  toFiniteNumber
+} from '../math/numberNormalization.js';
 
 function isFiniteNumber(value) {
   return Number.isFinite(value);
-}
-
-function toFiniteNumber(value, fallback = 0) {
-  const numeric = Number(value);
-  return isFiniteNumber(numeric) ? numeric : fallback;
-}
-
-function asPositiveInteger(value, fallback = 1) {
-  const numeric = Math.floor(asFiniteNumber(value, fallback));
-  return numeric >= 1 ? numeric : fallback;
 }
 
 function asPositiveNumber(value, fallback) {

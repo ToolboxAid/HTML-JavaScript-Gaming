@@ -6,8 +6,11 @@ inspectorUtils.js
 */
 
 import { sanitizeText } from "/src/shared/utils/stringUtils.js";
-import { asNonNegativeInteger, toFiniteNumber } from "/src/shared/math/numberNormalization.js";
-import { asPositiveInteger } from "/src/shared/utils/numberUtils.js";
+import {
+  asNonNegativeInteger,
+  asPositiveInteger,
+  toFiniteNumber
+} from "/src/shared/math/numberNormalization.js";
 
 export { asNonNegativeInteger, asPositiveInteger, sanitizeText, toFiniteNumber };
 

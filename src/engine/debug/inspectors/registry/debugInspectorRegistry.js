@@ -8,9 +8,9 @@ debugInspectorRegistry.js
 import {
   asArray,
   asObject,
+  asPositiveInteger,
   sanitizeText
 } from "/src/engine/debug/inspectors/shared/inspectorUtils.js";
-import { asPositiveInteger } from "../../../../shared/utils/numberUtils.js";
 
 const DEFAULT_INSPECTORS = Object.freeze([
   Object.freeze({

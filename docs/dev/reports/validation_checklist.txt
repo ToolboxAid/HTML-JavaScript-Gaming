@@ -1,11 +1,7 @@
-[x] all mapped moves applied
-[x] imports/paths updated only where required
-[x] no extra structural churn
-[x] samples/index.html live links still resolve
-[x] runtime harness matcher remains ^phase-?\\d{2}$
-
-Result Snapshot (2026-04-13)
-- canonical phase dirs present: phase-01..phase-15
-- legacy phase dirs present: none
-- live sample links resolved: 197/197
-- runtime harness matcher check: PASS (tests/runtime/LaunchSmokeAllEntries.test.mjs)
+[ ] number_usage_scan.txt generated
+[ ] extraction_map.txt generated
+[ ] numeric helpers consolidated to src/shared/math
+[ ] no API changes
+[ ] no behavior changes
+[ ] impacted imports resolve
+[ ] impacted tests/smoke pass

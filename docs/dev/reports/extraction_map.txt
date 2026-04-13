@@ -1,0 +1,13 @@
+EXTRACTION MAP
+Generated: 2026-04-13
+Command: PR_03_01_SHARED_NUMBERS_NORMALIZATION
+
+Source -> Shared Target Mapping
+- src/shared/utils/numberUtils.js::toFiniteNumber -> src/shared/math/numberNormalization.js::toFiniteNumber
+- src/shared/utils/numberUtils.js::asFiniteNumber -> src/shared/math/numberNormalization.js::asFiniteNumber
+- src/shared/utils/numberUtils.js::asPositiveInteger -> src/shared/math/numberNormalization.js::asPositiveInteger
+- src/shared/math/numberNormalization.js::roundNumber remains canonical owner
+
+Compatibility Redirects
+- src/shared/utils/numberUtils.js keeps export surface and redirects numeric helper ownership to shared/math.
+- samples/_shared/numberUtils.js routes core numeric helpers to shared/math and keeps non-target helpers from shared/utils.

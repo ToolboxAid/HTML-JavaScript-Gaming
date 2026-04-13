@@ -3,6 +3,10 @@ export function toFiniteNumber(value, fallback = NaN) {
   return Number.isFinite(numeric) ? numeric : fallback;
 }
 
+export function asFiniteNumber(value, fallback = 0) {
+  return toFiniteNumber(value, fallback);
+}
+
 export function asNumber(value, fallback = 0) {
   const numeric = Number(value);
   return Number.isFinite(numeric) ? numeric : fallback;
@@ -24,6 +28,11 @@ export function asFinite(value, fallback = 0) {
 export function asNonNegativeInteger(value, fallback = 0) {
   const normalized = Math.floor(asFinite(value, fallback));
   return normalized >= 0 ? normalized : Math.max(0, Math.floor(asFinite(fallback, 0)));
+}
+
+export function asPositiveInteger(value, fallback = 1) {
+  const normalized = Math.floor(asFiniteNumber(value, fallback));
+  return normalized >= 1 ? normalized : fallback;
 }
 
 export function roundNumber(value) {

@@ -5,7 +5,7 @@ David Quesenberry
 createPromotionGate.js
 */
 
-import { asFiniteNumber, asPositiveInteger } from '../../shared/utils/numberUtils.js';
+import { asFiniteNumber, asPositiveInteger } from '../../shared/math/numberNormalization.js';
 import { isPlainObject } from '../../shared/utils/objectUtils.js';
 import { getState as getPromotionPublicState } from '../../shared/state/getState.js';
 

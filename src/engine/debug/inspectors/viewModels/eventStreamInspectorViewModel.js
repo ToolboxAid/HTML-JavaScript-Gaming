@@ -7,10 +7,10 @@ eventStreamInspectorViewModel.js
 
 import {
   asArray,
+  asPositiveInteger,
   asObject,
   sanitizeText
 } from "/src/engine/debug/inspectors/shared/inspectorUtils.js";
-import { asPositiveInteger } from "../../../../shared/utils/numberUtils.js";
 
 function normalizeEvent(input, index) {
   const source = asObject(input);

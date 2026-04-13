@@ -1,0 +1,24 @@
+VALIDATION RESULTS
+Generated: 2026-04-13
+Command: PR_01_03_POST_MOVE_VALIDATION
+
+move-map targets exist: PASS
+canonical phase dirs found: 15 (phase-01, phase-02, phase-03, phase-04, phase-05, phase-06, phase-07, phase-08, phase-09, phase-10, phase-11, phase-12, phase-13, phase-14, phase-15)
+missing canonical phase dirs: none
+legacy phase dirs present: none
+
+imports/paths resolve in moved scope: PASS
+missing relative imports: 0
+non-public engine imports in samples scope: 0
+
+no unresolved live sample links: PASS
+live sample links scanned: 197
+unresolved live links: 0
+
+runtime harness matcher remains ^phase-?\d{2}$: PASS
+harness evidence file: tests/runtime/LaunchSmokeAllEntries.test.mjs
+
+Details
+- missing relative imports: none
+- non-public engine imports: none
+- unresolved live hrefs: none
