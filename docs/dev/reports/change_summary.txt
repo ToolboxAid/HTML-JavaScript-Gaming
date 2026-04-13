@@ -1,1 +1,1 @@
-Plan for validating sample curriculum progression.
+Validated and normalized sample curriculum progression.

@@ -1,2 +1,3 @@
-[ ] plan only
-[ ] progression defined
+[ ] progression valid
+[ ] no overlap
+[ ] index valid
