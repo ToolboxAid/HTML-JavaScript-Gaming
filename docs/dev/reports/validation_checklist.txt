@@ -1,4 +1,3 @@
-[ ] transitions.js modified only
-[ ] State normalized
-[ ] No undefined shapes
-[ ] Tests pass
+[ ] Plan only
+[ ] No code changes
+[ ] Structure defined

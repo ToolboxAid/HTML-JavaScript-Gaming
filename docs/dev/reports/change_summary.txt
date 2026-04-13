@@ -1,1 +1,1 @@
-Finalized state contract boundaries and normalization enforcement.
+Created plan for samples phase alignment and structure normalization.
