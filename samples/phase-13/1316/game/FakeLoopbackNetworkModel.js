@@ -108,6 +108,10 @@ export default class FakeLoopbackNetworkModel {
       this.pendingPackets = 0;
       this.replicationBacklog = 0;
       this.inFlightPackets = [];
+      this.authoritativeFrame = Math.max(0, Number(this.ackedSequence) || 0);
+      this.localFrame = this.authoritativeFrame;
+      this.predictedFrame = this.authoritativeFrame;
+      this.predictionLeadFrames = 0;
     }
   }
 

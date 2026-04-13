@@ -1,20 +1,21 @@
 MODEL: GPT-5.4
-REASONING: high
+REASONING: medium
 
 COMMAND:
-Implement PR_07_05_NETWORK_PREDICTION.
+Implement PR_07_06_NETWORK_INTEGRATION_POLISH.
 
 Goal:
-Add client-side prediction to simulation.
+Integrate all Phase 13 systems cleanly.
 
 Steps:
-1. Define prediction model.
-2. Apply prediction for local inputs.
-3. Integrate with reconciliation.
+1. Validate flow between simulation, latency, reconciliation, prediction.
+2. Fix minor inconsistencies.
+3. Ensure stability.
 
 Rules:
-- no real networking
-- no behavior changes outside simulation layer
+- no new features
+- no networking
+- no behavior changes outside simulation
 
 Return ZIP:
-<project folder>/tmp/PR_07_05_NETWORK_PREDICTION.zip
+<project folder>/tmp/PR_07_06_NETWORK_INTEGRATION_POLISH.zip
