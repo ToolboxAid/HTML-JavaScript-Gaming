@@ -1,1 +1,1 @@
-Samples: curriculum validation
+Apply: Sample curriculum validation
