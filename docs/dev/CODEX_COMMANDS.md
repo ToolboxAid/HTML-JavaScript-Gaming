@@ -1,20 +1,6 @@
-MODEL: GPT-5.4
-REASONING: low
+PR Naming Rule:
+ALL PRs MUST follow:
+PR_<SECTION>_<STEP>_<SHORT_NAME>
 
-COMMAND:
-Implement BUILD_PR_LEVEL_6_5_SAMPLE_INDEX_NORMALIZATION.
+Reject any PR name that does not follow this format.
 
-Scope:
-- samples/index.html only
-
-Steps:
-1. Update paths to phase-XX structure.
-2. Sort entries by phase then id.
-3. Remove invalid/broken links.
-
-Validation:
-- links resolve
-- ordering correct
-
-Return ZIP:
-<project folder>/tmp/BUILD_PR_LEVEL_6_5_SAMPLE_INDEX_NORMALIZATION.zip
