@@ -1,3 +1,2 @@
-[x] progression valid
-[x] no overlap
-[x] index valid
+[ ] plan only
+[ ] boundaries defined
