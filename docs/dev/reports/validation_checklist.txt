@@ -1,3 +1,9 @@
-[ ] Plan only
-[ ] No code changes
-[ ] Structure defined
+[ ] samples-only scope preserved
+[ ] exact move-map created
+[ ] misnumbered entries resolved
+[ ] misplaced entries resolved
+[ ] no ambiguous final placements
+[ ] samples/index.html updated
+[ ] direct sample navigation references updated
+[ ] no broken sample-navigation links after move
+[ ] smoke validation passes

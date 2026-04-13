@@ -1,3 +1,6 @@
-Plan: Samples phase alignment
+Samples: align phase structure and navigation references
 
-- Defined structure for samples by phase
+- mapped samples to canonical phase-based locations
+- corrected misnumbered/misplaced sample paths
+- updated sample index/navigation references
+- kept scope to samples structure and direct references only

@@ -1,1 +1,7 @@
-Created plan for samples phase alignment and structure normalization.
+Build package for samples phase alignment.
+
+Targeted outcome:
+- canonical phase-based sample placement
+- exact move/rename map
+- updated sample index/direct navigation references
+- verification of post-move sample navigation integrity
