@@ -1,0 +1,20 @@
+PR_06_06_SAMPLE_ENGINE_DEPENDENCY_CLEANUP - sample dependency scan
+
+Scope scanned:
+- samples/** (HTML + JS import/link surfaces)
+
+Policy applied for this sweep:
+- Allowed engine direct surfaces for samples: /src/engine/core/Engine.js and /src/engine/*/index.js
+- Non-public dependency violations in scope: direct sample links/imports outside allowed surfaces.
+
+Violations found in scope:
+1) samples/phase-13/1316/index.html:12
+   - /src/engine/ui/baseLayout.css
+2) samples/phase-13/1317/index.html:12
+   - /src/engine/ui/baseLayout.css
+3) samples/phase-13/1318/index.html:12
+   - /src/engine/ui/baseLayout.css
+
+Notes:
+- JS imports in scanned sample scope are already routed through allowed engine index surfaces.
+- This PR addresses only direct dependency violations detected above.

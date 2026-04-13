@@ -1,1 +1,1 @@
-Shared selector and contract consolidation package focused on canonicalizing selector/read boundaries under shared state surfaces.
+Samples dependency cleanup package focused on removing non-public engine coupling and standardizing samples onto approved public/shared surfaces.

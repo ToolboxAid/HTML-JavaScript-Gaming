@@ -1,4 +1,6 @@
-[ ] final cleanup scan complete
-[ ] no duplicates remain
-[ ] imports resolved
-[ ] tests pass
+[ ] sample_dependency_scan.txt generated
+[ ] dependency_cleanup_map.txt generated
+[ ] non-public engine dependencies removed in scope
+[ ] no behavior changes
+[ ] imports resolve
+[ ] impacted tests/smoke pass
