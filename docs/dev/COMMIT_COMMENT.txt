@@ -1,14 +1,1 @@
-BUILD_PR_LEVEL_11_1_AUTHORITATIVE_STATE_HANDOFF_CANDIDATE
-
-- authoritative state handoff implementation
-- payload validation improvements
-- targeted tests for invalid payload rejection
-
-validation:
-- handoff test
-- score test
-- syntax check
-
-scope:
-- src/advanced/state/*
-- targeted tests only
+apply(level11.1): close out authoritative state handoff candidate

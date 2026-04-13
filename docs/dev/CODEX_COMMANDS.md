@@ -2,29 +2,30 @@ MODEL: GPT-5.3-codex
 REASONING: high
 
 COMMAND:
-Create BUILD_PR_LEVEL_11_1_AUTHORITATIVE_STATE_HANDOFF_CANDIDATE implementation from provided payload.
+Create APPLY_PR_LEVEL_11_1_AUTHORITATIVE_STATE_HANDOFF_CANDIDATE closeout.
 
 INPUT:
-Use provided ZIP payload.
+Use the applied repo state (post BUILD delta ZIP).
 
 REQUIREMENTS:
-- Implement authoritative state handoff per PR intent
-- Maintain strict separation engine/game
-- Use approved selectors/events only
-- No engine core API changes unless required
-- Preserve backward compatibility
-- Add contract validation
+- Summarize implemented changes
+- Confirm validation commands and results
+- Confirm scope adherence (only intended files modified)
+- Identify any risks or follow-ups
 
 CONSTRAINTS:
-- Minimal, surgical changes only
-- No unrelated modifications
+- NO code changes
+- Docs/reporting only
+- No repo refactoring
 
 OUTPUT (CRITICAL):
 - Provide ONE download ZIP (delta only)
 - Repo-structured
-- Only changed/added files
-- No full repo copies
+- Only docs/dev changes
 
-ALSO INCLUDE:
+INCLUDE:
+- docs/pr/APPLY_PR_LEVEL_11_1_AUTHORITATIVE_STATE_HANDOFF_CANDIDATE.md
 - docs/dev/commit_comment.txt
 - docs/dev/next_command.txt
+- docs/dev/reports/change_summary.txt
+- docs/dev/reports/validation_checklist.txt

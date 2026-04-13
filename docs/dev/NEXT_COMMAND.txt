@@ -1,13 +1,1 @@
-MODEL: GPT-5.3-codex
-REASONING: high
-
-COMMAND:
-Create APPLY_PR_LEVEL_11_1_AUTHORITATIVE_STATE_HANDOFF_CANDIDATE docs-only closeout.
-
-REQUIREMENTS:
-- summarize implementation
-- confirm validation
-- no code changes
-
-OUTPUT:
-- repo-structured delta ZIP
+PLAN_PR_LEVEL_11_2_RECONCILIATION_LAYER_FOUNDATION
