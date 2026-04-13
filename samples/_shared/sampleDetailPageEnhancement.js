@@ -1,3 +1,5 @@
+import { isFiniteNumber } from './numberUtils.js';
+
 const METADATA_URL = '/samples/metadata/samples.index.metadata.json';
 const BACK_TO_SAMPLES_HREF = '/samples/index.html';
 const ENHANCER_STYLE_ID = 'sample-detail-enhancement-style';
@@ -21,7 +23,7 @@ function sortById(a, b) {
 function numericDistanceFromCurrent(currentId, candidateId) {
   const current = Number(currentId);
   const candidate = Number(candidateId);
-  if (!Number.isFinite(current) || !Number.isFinite(candidate)) {
+  if (!isFiniteNumber(current) || !isFiniteNumber(candidate)) {
     return Number.POSITIVE_INFINITY;
   }
   return Math.abs(current - candidate);

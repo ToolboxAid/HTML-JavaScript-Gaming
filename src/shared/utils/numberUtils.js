@@ -6,8 +6,16 @@ numberUtils.js
 */
 
 function asFiniteNumber(value, fallback = 0) {
+  return toFiniteNumber(value, fallback);
+}
+
+function isFiniteNumber(value) {
+  return Number.isFinite(value);
+}
+
+function toFiniteNumber(value, fallback = 0) {
   const numeric = Number(value);
-  return Number.isFinite(numeric) ? numeric : fallback;
+  return isFiniteNumber(numeric) ? numeric : fallback;
 }
 
 function asPositiveInteger(value, fallback = 1) {
@@ -16,14 +24,16 @@ function asPositiveInteger(value, fallback = 1) {
 }
 
 function asPositiveNumber(value, fallback) {
-  const numeric = Number(value);
-  if (!Number.isFinite(numeric) || numeric <= 0) {
+  const numeric = toFiniteNumber(value, fallback);
+  if (!isFiniteNumber(numeric) || numeric <= 0) {
     return fallback;
   }
   return numeric;
 }
 
 export {
+  isFiniteNumber,
+  toFiniteNumber,
   asFiniteNumber,
   asPositiveInteger,
   asPositiveNumber

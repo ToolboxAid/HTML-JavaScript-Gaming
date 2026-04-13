@@ -7,7 +7,7 @@ SpaceInvadersWorldSystemsScene.js
 import { Scene } from '/src/engine/scenes/index.js';
 import { Theme, ThemeTokens } from '/src/engine/theme/index.js';
 import { drawFrame, drawPanel } from '/src/engine/debug/index.js';
-import { SpawnSystem, LifecycleSystem, WorldStateSystem, EventsSystem, distanceSq } from '../../shared/worldSystems.js';
+import { SpawnSystem, LifecycleSystem, WorldStateSystem, EventsSystem, distanceSq } from '/samples/shared/worldSystems.js';
 
 const theme = new Theme(ThemeTokens);
 const INVADERS_VALIDATION_PRESETS = {

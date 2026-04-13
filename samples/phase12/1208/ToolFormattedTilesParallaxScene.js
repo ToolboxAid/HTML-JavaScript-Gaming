@@ -9,6 +9,7 @@ import { Theme, ThemeTokens } from '/src/engine/theme/index.js';
 import { clamp } from '/src/engine/utils/index.js';
 import { Camera2D, worldRectToScreen } from '/src/engine/camera/index.js';
 import { Tilemap, resolveRectVsTilemap } from '/src/engine/tilemap/index.js';
+import { isFiniteNumber } from '../../_shared/numberUtils.js';
 import tileMapToolExport from './data/toolFormattedTileMap.js';
 import fallbackParallaxToolExport from './data/toolFormattedParallax.js';
 
@@ -635,7 +636,7 @@ function extractCameraViewport(tileExport) {
 
 function extractSpawnPoint(tileExport, tileSize, hero) {
   const explicit = tileExport?.spawnPoints?.hero || tileExport?.heroSpawn || null;
-  if (explicit && Number.isFinite(Number(explicit.x)) && Number.isFinite(Number(explicit.y))) {
+  if (explicit && isFiniteNumber(Number(explicit.x)) && isFiniteNumber(Number(explicit.y))) {
     return { x: Number(explicit.x), y: Number(explicit.y) };
   }
 
@@ -644,11 +645,11 @@ function extractSpawnPoint(tileExport, tileSize, hero) {
     if (spawnMarker?.properties) {
       const px = Number(spawnMarker.properties.spawnX);
       const py = Number(spawnMarker.properties.spawnY);
-      if (Number.isFinite(px) && Number.isFinite(py)) {
+      if (isFiniteNumber(px) && isFiniteNumber(py)) {
         return { x: px, y: py };
       }
     }
-    if (spawnMarker && Number.isFinite(Number(spawnMarker.col)) && Number.isFinite(Number(spawnMarker.row))) {
+    if (spawnMarker && isFiniteNumber(Number(spawnMarker.col)) && isFiniteNumber(Number(spawnMarker.row))) {
       const col = Number(spawnMarker.col);
       const row = Number(spawnMarker.row);
       return {

@@ -1,5 +1,5 @@
-import { createToolHostManifest, getToolHostEntryById } from "../shared/toolHostManifest.js";
-import { createToolHostRuntime } from "../shared/toolHostRuntime.js";
+import { createToolHostManifest, getToolHostEntryById } from "../../tools/shared/toolHostManifest.js";
+import { createToolHostRuntime } from "../../tools/shared/toolHostRuntime.js";
 
 const refs = {
   toolSelect: document.querySelector("[data-tool-host-select]"),

@@ -7,7 +7,8 @@ AsteroidsWorldSystemsScene.js
 import { Scene } from '/src/engine/scenes/index.js';
 import { Theme, ThemeTokens } from '/src/engine/theme/index.js';
 import { drawFrame, drawPanel } from '/src/engine/debug/index.js';
-import { SpawnSystem, LifecycleSystem, WorldStateSystem, EventsSystem, distanceSq } from '../../shared/worldSystems.js';
+import { isFiniteNumber } from '../../_shared/numberUtils.js';
+import { SpawnSystem, LifecycleSystem, WorldStateSystem, EventsSystem, distanceSq } from '/samples/shared/worldSystems.js';
 
 const theme = new Theme(ThemeTokens);
 const ASTEROID_MIN_SPEED = 20;
@@ -62,7 +63,7 @@ function getValidationMode() {
 
 function clampAsteroidSpeed(value) {
   const numeric = Number(value);
-  if (!Number.isFinite(numeric)) {
+  if (!isFiniteNumber(numeric)) {
     return ASTEROID_MIN_SPEED;
   }
   return Math.max(ASTEROID_MIN_SPEED, Math.min(ASTEROID_MAX_SPEED, numeric));

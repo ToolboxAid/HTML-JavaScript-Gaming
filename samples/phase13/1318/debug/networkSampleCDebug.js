@@ -7,12 +7,13 @@ networkSampleCDebug.js
 
 import { createNetworkDebugPluginDefinition } from "/src/engine/debug/network/index.js";
 import { asArray, asObject } from "/src/engine/debug/inspectors/shared/inspectorUtils.js";
+import { isFiniteNumber } from "../../../_shared/numberUtils.js";
 import {
   asNumber,
   commandLinesForTrace,
   getCommandSnapshot,
   toNetworkSnapshot
-} from "../../../../src/shared/utils/networkDebugUtils.js";
+} from "../../../_shared/networkDebugUtils.js";
 
 const NETWORK_SAMPLE_KEY = "networkSampleC";
 
@@ -22,8 +23,9 @@ function sanitizeText(value) {
 
 function formatEntityLine(entity, options = {}) {
   const source = asObject(entity);
-  const limit = Number.isFinite(Number(options.labelLimit))
-    ? Math.max(6, Math.floor(Number(options.labelLimit)))
+  const numericLabelLimit = Number(options.labelLimit);
+  const limit = isFiniteNumber(numericLabelLimit)
+    ? Math.max(6, Math.floor(numericLabelLimit))
     : 14;
   const label = sanitizeText(source.label) || sanitizeText(source.entityId) || "entity";
   const compactLabel = label.length > limit

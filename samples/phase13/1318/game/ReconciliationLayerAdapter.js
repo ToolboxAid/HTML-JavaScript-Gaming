@@ -5,8 +5,8 @@ David Quesenberry
 ReconciliationLayerAdapter.js
 */
 import StateTimelineBuffer from "./StateTimelineBuffer.js";
-import { asFiniteNumber, asPositiveInteger } from "../../../../src/shared/utils/numberUtils.js";
-import { cloneSnapshot } from "../../../../src/shared/utils/snapshotCloneUtils.js";
+import { asFiniteNumber, asPositiveInteger, isFiniteNumber } from "../../../_shared/numberUtils.js";
+import { cloneSnapshot } from "../../../_shared/snapshotCloneUtils.js";
 
 const APPROVED_PUBLIC_EVENT_TYPES = new Set([
   "worldState.transition.applied",
@@ -161,7 +161,7 @@ export default class ReconciliationLayerAdapter {
   recordPredictedSnapshot(snapshot = {}) {
     const source = cloneSnapshot(snapshot);
     const frameId = asFiniteNumber(source.frameId, NaN);
-    if (!Number.isFinite(frameId)) {
+    if (!isFiniteNumber(frameId)) {
       return false;
     }
 
@@ -193,7 +193,7 @@ export default class ReconciliationLayerAdapter {
   receiveAuthoritativeSnapshot(snapshot = {}, envelope = {}) {
     const normalizedSnapshot = cloneSnapshot(snapshot);
     const frameId = asFiniteNumber(normalizedSnapshot.frameId, NaN);
-    if (!Number.isFinite(frameId)) {
+    if (!isFiniteNumber(frameId)) {
       return false;
     }
 
@@ -239,7 +239,7 @@ export default class ReconciliationLayerAdapter {
 
   reconcileLatest() {
     const authoritative = this.latestAuthoritativeSnapshot;
-    if (!authoritative || !Number.isFinite(Number(authoritative.frameId))) {
+    if (!authoritative || !isFiniteNumber(Number(authoritative.frameId))) {
       this.latestDivergenceReport = null;
       this.latestCorrectionPlan = null;
       this.latestRewindPreparation = this.buildRewindPreparation(null);
@@ -305,7 +305,7 @@ export default class ReconciliationLayerAdapter {
       const positionDelta = computeVectorDelta(predictedEntity.position, authoritativeEntity.position);
       const velocityDelta = computeVectorDelta(predictedEntity.velocity, authoritativeEntity.velocity);
       const stateFlagsDelta = computeStateFlagsDelta(predictedEntity.stateFlags, authoritativeEntity.stateFlags);
-      const frameGap = predictedMatchForEntity && Number.isFinite(Number(predictedMatchForEntity.frameId))
+      const frameGap = predictedMatchForEntity && isFiniteNumber(Number(predictedMatchForEntity.frameId))
         ? Math.max(0, authoritativeFrameId - Number(predictedMatchForEntity.frameId))
         : null;
       const severity = severityFromDeltas({

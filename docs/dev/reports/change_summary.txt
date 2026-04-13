@@ -1,4 +1,12 @@
-- low-token engine import baseline lane
-- no import rewrites
-- no structural moves
-- records current /src/engine usage as contract candidate
+PR intent:
+- repair current `npm test --ignore-scripts` failures without changing runtime behavior
+- keep scope limited to test harness drift and assertion drift
+
+Primary targets:
+- tests/games/AsteroidsValidation.test.mjs
+- tests/tools/VectorNativeTemplate.test.mjs
+
+Known symptoms from user run:
+- missing named `run` export in AsteroidsValidation after a bad overwrite attempt
+- `document is not defined` when trying a browser-style patch in a plain Node test runner
+- template path expectation still points at `templates/...` while actual output is `tools/templates/...`

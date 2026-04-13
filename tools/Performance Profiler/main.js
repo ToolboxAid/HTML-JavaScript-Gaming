@@ -2,9 +2,10 @@ import {
   runDeterministicWorkloadIteration,
   summarizeDurationSamples,
   toPrettyJson
-} from "../shared/debugInspectorData.js";
-import { readToolHostSharedContextFromLocation } from "../shared/toolHostSharedContext.js";
-import { registerToolBootContract } from "../shared/toolBootContract.js";
+} from "../../tools/shared/debugInspectorData.js";
+import { readToolHostSharedContextFromLocation } from "../../tools/shared/toolHostSharedContext.js";
+import { registerToolBootContract } from "../../tools/shared/toolBootContract.js";
+import { isFiniteNumber } from "../../src/shared/utils/numberUtils.js";
 
 const refs = {
   runWorkloadButton: document.getElementById("runWorkloadButton"),
@@ -33,7 +34,7 @@ function readPositiveInt(input, fallback, min, max) {
     return fallback;
   }
   const numeric = Math.trunc(Number(input.value));
-  if (!Number.isFinite(numeric)) {
+  if (!isFiniteNumber(numeric)) {
     return fallback;
   }
   return Math.max(min, Math.min(max, numeric));
@@ -142,13 +143,13 @@ const performanceProfilerApi = {
     };
   },
   applyProjectState(snapshot) {
-    if (refs.workloadIterationsInput instanceof HTMLInputElement && Number.isFinite(snapshot?.workloadIterations)) {
+    if (refs.workloadIterationsInput instanceof HTMLInputElement && isFiniteNumber(snapshot?.workloadIterations)) {
       refs.workloadIterationsInput.value = String(snapshot.workloadIterations);
     }
-    if (refs.workSizeInput instanceof HTMLInputElement && Number.isFinite(snapshot?.workSize)) {
+    if (refs.workSizeInput instanceof HTMLInputElement && isFiniteNumber(snapshot?.workSize)) {
       refs.workSizeInput.value = String(snapshot.workSize);
     }
-    if (refs.frameSamplesInput instanceof HTMLInputElement && Number.isFinite(snapshot?.frameSamples)) {
+    if (refs.frameSamplesInput instanceof HTMLInputElement && isFiniteNumber(snapshot?.frameSamples)) {
       refs.frameSamplesInput.value = String(snapshot.frameSamples);
     }
     return true;

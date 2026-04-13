@@ -1,0 +1,36 @@
+*** MANUAL PATCH FOR tests/games/AsteroidsValidation.test.mjs ***
+
+1) Export the test runner function
+
+Find:
+    async function run() {
+
+Replace with:
+    export async function run() {
+
+2) Inject the required canvas before bootAsteroidsNew(...) is called
+
+Add this immediately before the line that calls bootAsteroidsNew(...):
+
+    document.body.innerHTML = `
+      <canvas id="game" width="960" height="720"></canvas>
+    `;
+
+If the test already creates a canvas, make sure the id is exactly:
+    id="game"
+
+3) Remove standalone execution at file bottom
+
+If present, remove this block entirely:
+
+    run().catch((error) => {
+      console.error(error);
+      process.exitCode = 1;
+    });
+
+4) Keep the rest of the original file unchanged
+
+Expected result:
+- the module exports `run`
+- the test runner imports it correctly
+- bootAsteroidsNew finds the required canvas

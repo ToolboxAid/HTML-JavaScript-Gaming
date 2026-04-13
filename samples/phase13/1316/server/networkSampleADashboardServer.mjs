@@ -9,6 +9,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 import FakeLoopbackNetworkModel from "../game/FakeLoopbackNetworkModel.js";
+import { asPositiveInteger } from "../../../_shared/numberUtils.js";
 
 const DEFAULT_HOST = "127.0.0.1";
 const DEFAULT_PORT = 4310;
@@ -17,11 +18,6 @@ const DEFAULT_ADMIN_KEY = "sample-a-admin";
 const DASHBOARD_PATH = "/admin/network-sample-a/dashboard";
 const METRICS_PATH = "/admin/network-sample-a/api/metrics";
 const HEALTH_PATH = "/admin/network-sample-a/health";
-
-function asPositiveInteger(value, fallback) {
-  const parsed = Number.parseInt(value, 10);
-  return Number.isFinite(parsed) && parsed > 0 ? parsed : fallback;
-}
 
 function isLoopbackAddress(address) {
   const value = typeof address === "string" ? address.trim() : "";
@@ -334,7 +330,7 @@ function createDashboardPage(config) {
     const refreshMs = ${JSON.stringify(escapedRefreshMs)};
 
     function formatInt(value) {
-      const numeric = Number.isFinite(Number(value)) ? Number(value) : 0;
+      const numeric = isFinite(Number(value)) ? Number(value) : 0;
       return numeric.toLocaleString();
     }
 

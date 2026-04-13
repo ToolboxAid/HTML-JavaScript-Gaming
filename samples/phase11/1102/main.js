@@ -15,7 +15,7 @@ theme.applyDocumentTheme();
 const canvas = document.getElementById('game');
 const engine = new Engine({ canvas, width: 960, height: 540 });
 const accessibility = new AccessibilityOptions({
-  namespace: 'toolboxaid:sample142',
+  namespace: 'toolboxaid:sample1102',
 });
 accessibility.load();
 

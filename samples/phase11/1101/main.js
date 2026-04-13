@@ -15,7 +15,7 @@ theme.applyDocumentTheme();
 const canvas = document.getElementById('game');
 const engine = new Engine({ canvas, width: 960, height: 540 });
 const settings = new SettingsSystem({
-  namespace: 'toolboxaid:sample141',
+  namespace: 'toolboxaid:sample 1101',
   defaults: {
     audio: { musicVolume: 0.6, sfxVolume: 0.8 },
     video: { fullscreenPreferred: false },

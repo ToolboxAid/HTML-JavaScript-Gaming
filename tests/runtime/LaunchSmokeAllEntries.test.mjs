@@ -24,7 +24,7 @@ const DEBUG_PORT = 9222;
 const EXECUTION_STEPS = [
   'npm install --prefix ./tmp ws',
   'npm run test:launch-smoke',
-].join(' → ');
+].join(' â†’ ');
 
 let WebSocketCtor = null;
 
@@ -564,7 +564,7 @@ function writeReport(results, filters) {
   log(`report written: ${reportPath}`);
 }
 
-async function run() {
+export async function run() {
   cleanupOwnedArtifacts();
   ensureIsolatedTmpLayout();
   await ensureIsolatedWsDependency();
@@ -639,7 +639,3 @@ async function run() {
   assert.equal(failures.length, 0, `Launch smoke failures detected: ${failures.map((x) => x.entry.label).join(', ')}`);
 }
 
-run().catch((error) => {
-  console.error(error);
-  process.exitCode = 1;
-});

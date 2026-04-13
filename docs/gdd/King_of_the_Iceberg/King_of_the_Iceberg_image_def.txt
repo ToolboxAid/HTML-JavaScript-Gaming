@@ -1,0 +1,334 @@
+Absolutely — here’s a clean **image-generation character brief** for the penguin heroes based on your GDD. The game describes them as **competitive, chaotic “pingwins”** on a floating iceberg, with distinct hero identities and ability silhouettes.  
+
+## Base penguin style
+
+Use this as the shared foundation for all heroes:
+
+**Species/style**
+
+* Stylized arcade-cartoon penguin
+* Round but athletic body
+* Short legs, wide belly, strong readable silhouette
+* Cute at first glance, but competitive and slightly intense
+* Designed for fast gameplay readability, not realism
+
+**Body proportions**
+
+* Large head and upper torso
+* Small flippers, but expressive
+* Short stout legs with webbed feet
+* Belly-forward stance for comedic momentum
+* Slightly oversized beak for expression clarity
+
+**Face**
+
+* Bold eyes, expressive brows
+* Determined, mischievous, or cocky expression
+* Small blush/cheek color optional for charm
+* Beak should support “angry”, “smug”, and “shouting” poses well
+
+**Texture/material**
+
+* Smooth, clean feather shapes
+* Not fluffy-realistic
+* Bright game-ready shading
+* Slight icy rim light
+* Feet and beak should be saturated enough to pop against snow/ice
+
+**Movement personality**
+
+* Built for slipping, sliding, bumping, bouncing
+* Slight forward lean like a character always about to lose traction
+* Strong readability in dash, belly-slide, spin, jump, and knockback poses
+
+**World fit**
+
+* Lives on a floating unstable iceberg
+* Arena-combat / king-of-the-hill vibe
+* Silhouette must read well over blue-white ice backgrounds  
+
+---
+
+## Overall visual direction
+
+A good top-level art prompt would be:
+
+> A stylized multiplayer arcade penguin character for a chaotic iceberg arena game, cartoon proportions, bold silhouette, expressive face, clean game-ready shapes, slippery physics energy, colorful hero design, readable from a distance, dynamic pose, icy action-game aesthetic.
+
+---
+
+## Shared hero rules
+
+Because your GDD says each hero is unique and locked once selected, each penguin should have:
+
+* a unique color accent
+* a unique head/gear shape
+* a unique ability silhouette
+* a unique stance/personality read at a glance 
+
+Good design rule:
+
+* same core penguin body
+* different accessories, markings, posture, and VFX identity
+
+---
+
+## Hero-by-hero image briefs
+
+### Splash — Pucker Blaster
+
+Ability is a continuous water push stream.  
+
+**Look**
+
+* Aqua-blue accent colors
+* Goggled or playful water-blaster look
+* Beak shaped or posed like blowing/puckering
+* Small tank, nozzle, or pressure-pack aesthetic
+* Fun, cheeky, agile
+
+**Pose**
+
+* Leaning forward blasting a stream of water
+* Webbed feet sliding backward from recoil
+
+**Personality**
+
+* Playful troublemaker
+* Likes disrupting everyone else
+
+---
+
+### Frostbite — Freeze Blast
+
+Ability creates a temporary freeze zone.  
+
+**Look**
+
+* Cyan / icy white / pale blue palette
+* Sharp angular ice motif
+* Frost crystals on shoulders, headpiece, or flippers
+* Colder, more focused face
+* Slight mage / ice-controller vibe
+
+**Pose**
+
+* One flipper extended creating an icy blast or freezing ring
+* Frost mist curling around feet
+
+**Personality**
+
+* Calm, precise, dangerous
+* Tactical controller
+
+---
+
+### Glacier — Mega Weight
+
+Ability increases tilt influence through heavy mass.  
+
+**Look**
+
+* Largest-looking penguin
+* Dark navy, glacier-blue, stone-gray palette
+* Thick chest and belly
+* Heavy armored ice plates or rugged frozen-rock styling
+* Dense and imposing
+
+**Pose**
+
+* Stomping down hard
+* Ice cracking under feet
+* Strong planted stance
+
+**Personality**
+
+* Slow powerhouse
+* Immovable tank
+
+---
+
+### Dash — Slipstream Dash
+
+Ability is burst movement plus knockback.  
+
+**Look**
+
+* Sleek aerodynamic shape
+* Bright yellow, electric blue, or neon accent colors
+* Speed lines, scarf, visor, or racer markings
+* Narrower body language than other penguins
+
+**Pose**
+
+* Mid-dash with trailing ice streaks
+* Leaned hard forward, one foot skidding
+
+**Personality**
+
+* Cocky speedster
+* Hard to pin down
+
+---
+
+### Sniper — Crystal Shot
+
+Ability is a high-speed precision projectile.  
+
+**Look**
+
+* Purple, silver, icy teal, or crystal-blue accents
+* Clean, focused, elegant silhouette
+* Crystal monocle/visor or ice scope aesthetic
+* Sharper beak and eye markings
+
+**Pose**
+
+* Aiming a crystal shard shot with intense focus
+* Lower, balanced stance
+
+**Personality**
+
+* Cold precision
+* Quiet and deadly
+
+---
+
+### Bombard — Belly Bomb
+
+Ability is explosive landing impact.  
+
+**Look**
+
+* Red-orange or hazard-yellow accents
+* Rounder belly emphasis
+* Explosive warning stripes, impact pads, or padded belly plate
+* Chaotic grin
+
+**Pose**
+
+* Mid-air belly flop or crash-landing
+* Snow and shockwave burst under body
+
+**Personality**
+
+* Wild chaos-maker
+* Big commitment attacks
+
+---
+
+### Cyclone — Spin Attack
+
+Ability is radial knockback.  
+
+**Look**
+
+* Teal, white, and storm-gray palette
+* Spiral motifs on belly or headgear
+* Feather shapes or scarf forms that look good in circular motion
+* Slightly dramatic, flashy design
+
+**Pose**
+
+* Spinning with icy wind swirl around body
+* Flippers extended outward
+
+**Personality**
+
+* Show-off brawler
+* Crowd-control specialist
+
+---
+
+### Anchor — Grip Mode
+
+Ability reduces sliding and increases traction.  
+
+**Look**
+
+* Deep green, black, steel-blue accents
+* Heavy boots or clawed traction gear
+* Low center of gravity
+* Rugged, dependable silhouette
+* Maybe crampon-inspired feet
+
+**Pose**
+
+* Digging into the ice while others slide
+* Ice scraping under feet
+
+**Personality**
+
+* Stoic defender
+* Hard counter to chaos
+
+---
+
+## Strong shared pose ideas for the image engine
+
+Depending on what you want generated:
+
+**Character select portrait**
+
+* Full-body hero pose
+* Facing slightly 3/4 toward camera
+* Big readable expression
+* Ability-themed effect around them
+
+**Action card**
+
+* Dynamic mid-move pose
+* Sliding, jumping, spinning, blasting, stomping
+* Ice particles and motion arcs
+
+**Model sheet style**
+
+* Front, 3/4, side pose
+* Clean white or transparent background
+* Emphasis on silhouette and costume details
+
+**Roster sheet**
+
+* Same base body, eight unique hero variants
+* Consistent proportions, different colors/accessories/ability effects
+
+---
+
+## Best single prompt for one hero
+
+Example for Splash:
+
+> Stylized arcade-cartoon penguin hero for a multiplayer iceberg battle game, round athletic body, expressive eyes, clean bold silhouette, aqua-blue water-themed outfit accents, playful mischievous face, puckered beak, blasting a stream of pressurized water from a flipper-mounted nozzle, sliding backward on ice from recoil, bright game-ready shading, readable character design, dynamic action pose, icy arena aesthetic.
+
+---
+
+## Best single prompt for the full cast
+
+> Eight stylized arcade-cartoon penguin heroes for a chaotic multiplayer iceberg arena game, each with the same core penguin body but unique silhouette, colors, accessories, and ability theme: water blaster, ice mage, heavyweight tank, speed dash racer, crystal sniper, explosive belly bomber, spinning cyclone fighter, traction anchor defender; clean game-ready shapes, expressive faces, bold readable silhouettes, dynamic poses, colorful icy action aesthetic, character select roster presentation.
+
+---
+
+## Art-direction constraints to include
+
+Add these to any prompt:
+
+* no realistic feathers
+* no photorealism
+* no soft plush toy look
+* prioritize gameplay readability
+* strong silhouette separation
+* clean character-select style
+* bright but icy palette
+* suitable for 2D or 2.5D arcade game art
+
+---
+
+## My recommendation
+
+For the first pass, generate:
+
+* **one neutral base penguin**
+* **one full eight-hero lineup sheet**
+* **one action pose for Splash, Glacier, Dash, and Anchor**
+
+That will quickly establish the art bible for the rest of the cast.

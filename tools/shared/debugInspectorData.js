@@ -1,4 +1,5 @@
 import { cloneValue, safeString } from "./projectSystemValueUtils.js";
+import { isFiniteNumber } from "../../src/shared/utils/numberUtils.js";
 
 function asArray(value) {
   return Array.isArray(value) ? value : [];
@@ -6,12 +7,12 @@ function asArray(value) {
 
 function asNumber(value, fallback = 0) {
   const numeric = Number(value);
-  return Number.isFinite(numeric) ? numeric : fallback;
+  return isFiniteNumber(numeric) ? numeric : fallback;
 }
 
 function toPositiveInt(value, fallback, min = 1, max = Number.MAX_SAFE_INTEGER) {
   const numeric = Math.trunc(asNumber(value, fallback));
-  if (!Number.isFinite(numeric)) {
+  if (!isFiniteNumber(numeric)) {
     return fallback;
   }
   return Math.max(min, Math.min(max, numeric));
@@ -109,7 +110,7 @@ export function getReplayEventAtTime(events, timeMs = 0) {
 export function summarizeDurationSamples(samples) {
   const normalized = asArray(samples)
     .map((value) => asNumber(value, 0))
-    .filter((value) => Number.isFinite(value) && value >= 0);
+    .filter((value) => isFiniteNumber(value) && value >= 0);
 
   if (!normalized.length) {
     return {

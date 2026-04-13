@@ -69,7 +69,7 @@ export default class ProjectileSystemScene extends Scene {
 
   render(renderer) {
     drawFrame(renderer, theme, [
-      'Engine V2 sample 0320',
+      'Engine  sample 0320',
       'Introduces projectile spawn, travel, hit, and cleanup.',
       'Press F to fire. Press R to reset.',
       this.message,

@@ -4,9 +4,10 @@ import {
   normalizeReplayEvents,
   safeParseJson,
   toPrettyJson
-} from "../shared/debugInspectorData.js";
-import { readToolHostSharedContextFromLocation } from "../shared/toolHostSharedContext.js";
-import { registerToolBootContract } from "../shared/toolBootContract.js";
+} from "../../tools/shared/debugInspectorData.js";
+import { readToolHostSharedContextFromLocation } from "../../tools/shared/toolHostSharedContext.js";
+import { registerToolBootContract } from "../../tools/shared/toolBootContract.js";
+import { isFiniteNumber } from "../../src/shared/utils/numberUtils.js";
 
 const refs = {
   loadButton: document.getElementById("loadReplayButton"),
@@ -45,7 +46,7 @@ function getDurationMs(events) {
 
 function clampTimeMs(value, durationMs) {
   const numeric = Number(value);
-  if (!Number.isFinite(numeric)) {
+  if (!isFiniteNumber(numeric)) {
     return 0;
   }
   return Math.max(0, Math.min(durationMs, numeric));
@@ -210,7 +211,7 @@ const replayVisualizerApi = {
     if (typeof snapshot?.replayInput === "string" && snapshot.replayInput.trim()) {
       loadReplayFromInput();
     }
-    if (Number.isFinite(snapshot?.currentTimeMs)) {
+    if (isFiniteNumber(snapshot?.currentTimeMs)) {
       setCurrentTimeMs(snapshot.currentTimeMs);
       renderCurrentEvent();
     }

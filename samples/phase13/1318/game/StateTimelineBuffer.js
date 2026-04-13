@@ -5,12 +5,12 @@ David Quesenberry
 StateTimelineBuffer.js
 */
 
-import { asPositiveInteger } from "../../../../src/shared/utils/numberUtils.js";
-import { cloneSnapshot } from "../../../../src/shared/utils/snapshotCloneUtils.js";
+import { asPositiveInteger, isFiniteNumber } from "../../../_shared/numberUtils.js";
+import { cloneSnapshot } from "../../../_shared/snapshotCloneUtils.js";
 
 function normalizeFrameId(frameId) {
   const numeric = Number(frameId);
-  if (!Number.isFinite(numeric)) {
+  if (!isFiniteNumber(numeric)) {
     return null;
   }
   return Math.floor(numeric);

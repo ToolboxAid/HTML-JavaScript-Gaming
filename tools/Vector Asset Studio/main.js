@@ -4,7 +4,7 @@ David Quesenberry
 03/30/2026
 main.js
 */
-import { registerToolBootContract } from "../shared/toolBootContract.js";
+import { registerToolBootContract } from "../../tools/shared/toolBootContract.js";
 
 const SVG_NS = "http://www.w3.org/2000/svg";
 const SAMPLE_MANIFEST_PATH = "./samples/sample-manifest.json";

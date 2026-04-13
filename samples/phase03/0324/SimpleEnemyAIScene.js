@@ -61,7 +61,7 @@ export default class SimpleEnemyAIScene extends Scene {
 
   render(renderer) {
     drawFrame(renderer, theme, [
-      'Engine V2 sample 0324',
+      'Engine  sample 0324',
       'Adds idle/follow enemy behavior with contact damage.',
       this.message,
     ]);

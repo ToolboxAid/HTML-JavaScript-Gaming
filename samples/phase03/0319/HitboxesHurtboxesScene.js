@@ -66,7 +66,7 @@ export default class HitboxesHurtboxesScene extends Scene {
 
   render(renderer) {
     drawFrame(renderer, theme, [
-      'Engine V2 sample 0319',
+      'Engine  sample 0319',
       'Separates attack hitbox from enemy hurtbox.',
       'Gray body = entity body, red = hurtbox, yellow = active hitbox.',
       this.message,

@@ -6,7 +6,7 @@ FakeDivergenceTraceNetworkModel.js
 */
 import ReconciliationLayerAdapter from "./ReconciliationLayerAdapter.js";
 import { clamp } from "/src/engine/utils/math.js";
-import { asPositiveNumber } from "../../../../src/shared/utils/numberUtils.js";
+import { asPositiveNumber, isFiniteNumber } from "../../../_shared/numberUtils.js";
 
 const MAX_TRACE_EVENTS = 160;
 const MAX_TIMELINE_EVENTS = 80;
@@ -123,7 +123,7 @@ function moveToward(currentValue, targetValue, maxDelta) {
   const current = Number(currentValue);
   const target = Number(targetValue);
   const delta = Number(maxDelta);
-  if (!Number.isFinite(current) || !Number.isFinite(target) || !Number.isFinite(delta) || delta <= 0) {
+  if (!isFiniteNumber(current) || !isFiniteNumber(target) || !isFiniteNumber(delta) || delta <= 0) {
     return target;
   }
 
@@ -505,7 +505,7 @@ export default class FakeDivergenceTraceNetworkModel {
 
   flushPendingInputsForFrame(frameId) {
     const normalizedFrameId = Math.floor(Number(frameId));
-    if (!Number.isFinite(normalizedFrameId)) {
+    if (!isFiniteNumber(normalizedFrameId)) {
       this.pendingInputRecord = createEmptyInputFrameRecord();
       return;
     }
@@ -518,7 +518,7 @@ export default class FakeDivergenceTraceNetworkModel {
 
   getInputRecordForFrame(frameId) {
     const normalizedFrameId = Math.floor(Number(frameId));
-    if (!Number.isFinite(normalizedFrameId) || !this.inputHistoryByFrame.has(normalizedFrameId)) {
+    if (!isFiniteNumber(normalizedFrameId) || !this.inputHistoryByFrame.has(normalizedFrameId)) {
       return createEmptyInputFrameRecord();
     }
     return cloneInputRecord(this.inputHistoryByFrame.get(normalizedFrameId));
@@ -763,7 +763,7 @@ export default class FakeDivergenceTraceNetworkModel {
     }
 
     const restoredElapsedSeconds = Number(modelState.elapsedSeconds);
-    this.elapsedSeconds = Number.isFinite(restoredElapsedSeconds)
+    this.elapsedSeconds = isFiniteNumber(restoredElapsedSeconds)
       ? Math.max(0, restoredElapsedSeconds)
       : this.elapsedSeconds;
     const restoredStepIndex = Math.max(0, Math.floor(Number(modelState.stepIndex) || 0));
@@ -882,25 +882,25 @@ export default class FakeDivergenceTraceNetworkModel {
 
     const anchorFrameId = selectedEntityPreps.reduce((minValue, row) => {
       const anchor = Number(row.rewindAnchorFrameId);
-      if (!Number.isFinite(anchor)) {
+      if (!isFiniteNumber(anchor)) {
         return minValue;
       }
       return Math.min(minValue, anchor);
     }, Number.POSITIVE_INFINITY);
     const latestFrameId = selectedEntityIds.reduce((maxValue, entityId) => {
       const latestForEntity = Number(this.reconciliationLayer.getLatestTimelineFrameId({ entityId }));
-      if (!Number.isFinite(latestForEntity)) {
+      if (!isFiniteNumber(latestForEntity)) {
         return maxValue;
       }
       return Math.max(maxValue, latestForEntity);
     }, Number(this.reconciliationLayer.getLatestTimelineFrameId()));
 
-    if (!Number.isFinite(anchorFrameId) || !Number.isFinite(latestFrameId) || latestFrameId <= anchorFrameId) {
+    if (!isFiniteNumber(anchorFrameId) || !isFiniteNumber(latestFrameId) || latestFrameId <= anchorFrameId) {
       this.pushEvent("REWIND_REPLAY_SKIPPED", {
         reason,
         status: "invalid-window",
-        anchorFrameId: Number.isFinite(anchorFrameId) ? anchorFrameId : rewindPreparation.rewindAnchorFrameId,
-        latestFrameId: Number.isFinite(latestFrameId) ? latestFrameId : this.reconciliationLayer.getLatestTimelineFrameId(),
+        anchorFrameId: isFiniteNumber(anchorFrameId) ? anchorFrameId : rewindPreparation.rewindAnchorFrameId,
+        latestFrameId: isFiniteNumber(latestFrameId) ? latestFrameId : this.reconciliationLayer.getLatestTimelineFrameId(),
         selectedEntityIds
       });
       return {

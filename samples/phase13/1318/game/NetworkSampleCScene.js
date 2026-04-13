@@ -6,7 +6,7 @@ NetworkSampleCScene.js
 */
 import { Scene } from "/src/engine/scenes/index.js";
 import FakeDivergenceTraceNetworkModel from "./FakeDivergenceTraceNetworkModel.js";
-import { asPositiveNumber } from "../../../../src/shared/utils/numberUtils.js";
+import { asPositiveNumber, isFiniteNumber } from "../../../_shared/numberUtils.js";
 
 const VIEW_WIDTH = 960;
 const VIEW_HEIGHT = 720;
@@ -52,8 +52,9 @@ function toChecklistPrefix(status) {
 
 function toEntityToken(entity, options = {}) {
   const source = entity && typeof entity === "object" ? entity : {};
-  const limit = Number.isFinite(Number(options.labelLimit))
-    ? Math.max(6, Math.floor(Number(options.labelLimit)))
+  const numericLabelLimit = Number(options.labelLimit);
+  const limit = isFiniteNumber(numericLabelLimit)
+    ? Math.max(6, Math.floor(numericLabelLimit))
     : 12;
   const label = String(source.label || source.entityId || "entity");
   const compactLabel = label.length > limit

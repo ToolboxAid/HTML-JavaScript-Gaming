@@ -1,1 +1,5 @@
-Enforce minimal /src/engine import consistency (surgical fixes only)
+Fix node test-runner drift in AsteroidsValidation and VectorNativeTemplate
+
+- restore named run export contract for AsteroidsValidation
+- replace invalid browser-only DOM setup with a minimal node-safe test shim
+- update VectorNativeTemplate path expectation to current tools/templates location

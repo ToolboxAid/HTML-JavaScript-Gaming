@@ -117,13 +117,38 @@ function withBlockedLocalStorage(run) {
 }
 
 export async function run() {
-  const missingCanvasDocument = {
-    documentElement: { style: {} },
-    body: { style: {} },
-    getElementById() {
-      return null;
-    },
-  };
+  const createdDocumentShim = typeof globalThis.document === 'undefined';
+  const createdWindowShim = typeof globalThis.window === 'undefined';
+  const shimCanvas = createCanvas();
+
+  if (createdDocumentShim) {
+    globalThis.document = {
+      readyState: 'complete',
+      documentElement: { style: {} },
+      body: { style: {} },
+      addEventListener() {},
+      getElementById(id) {
+        return id === 'game' ? shimCanvas : null;
+      },
+    };
+  }
+
+  if (createdWindowShim) {
+    globalThis.window = {
+      location: {
+        search: '',
+      },
+    };
+  }
+
+  try {
+    const missingCanvasDocument = {
+      documentElement: { style: {} },
+      body: { style: {} },
+      getElementById() {
+        return null;
+      },
+    };
   const missingCanvasEngine = await bootAsteroids({
     documentRef: missingCanvasDocument,
     EngineClass: class {
@@ -413,4 +438,12 @@ export async function run() {
   assert.equal(world.ship.x, 123);
   assert.equal(world.ship.y, 234);
   assert.equal(session.isTurnIntroActive(), true);
+  } finally {
+    if (createdDocumentShim) {
+      delete globalThis.document;
+    }
+    if (createdWindowShim) {
+      delete globalThis.window;
+    }
+  }
 }

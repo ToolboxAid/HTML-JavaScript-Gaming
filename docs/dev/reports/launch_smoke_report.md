@@ -1,19 +1,235 @@
 # Launch Smoke Report
 
-Generated: 2026-04-12T20:11:58.820Z
+Generated: 2026-04-13T04:47:02.910Z
 
-Filters: games=false, samples=false, tools=true, sampleRange=all
+Filters: games=true, samples=true, tools=true, sampleRange=all
 
 | Status | Type | Label | Path | Notes | Steps |
 | --- | --- | --- | --- | --- | --- |
-| PASS | tool | Asset Browser | tools\Asset Browser\index.html |  | npm install --prefix ./tmp ws → npm run test:launch-smoke |
-| PASS | tool | Palette Browser | tools\Palette Browser\index.html |  | npm install --prefix ./tmp ws → npm run test:launch-smoke |
-| PASS | tool | Parallax Scene Studio | tools\Parallax Scene Studio\index.html |  | npm install --prefix ./tmp ws → npm run test:launch-smoke |
-| PASS | tool | Performance Profiler | tools\Performance Profiler\index.html |  | npm install --prefix ./tmp ws → npm run test:launch-smoke |
-| PASS | tool | Replay Visualizer | tools\Replay Visualizer\index.html |  | npm install --prefix ./tmp ws → npm run test:launch-smoke |
-| PASS | tool | Sprite Editor | tools\Sprite Editor\index.html |  | npm install --prefix ./tmp ws → npm run test:launch-smoke |
-| PASS | tool | State Inspector | tools\State Inspector\index.html |  | npm install --prefix ./tmp ws → npm run test:launch-smoke |
-| PASS | tool | Tilemap Studio | tools\Tilemap Studio\index.html |  | npm install --prefix ./tmp ws → npm run test:launch-smoke |
-| PASS | tool | Tool Host | tools\Tool Host\index.html |  | npm install --prefix ./tmp ws → npm run test:launch-smoke |
-| PASS | tool | Vector Asset Studio | tools\Vector Asset Studio\index.html |  | npm install --prefix ./tmp ws → npm run test:launch-smoke |
-| PASS | tool | Vector Map Editor | tools\Vector Map Editor\index.html |  | npm install --prefix ./tmp ws → npm run test:launch-smoke |
+| PASS | game | _template | games\_template\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | game | AITargetDummy | games\AITargetDummy\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | game | Asteroids | games\Asteroids\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | game | Bouncing-ball | games\Bouncing-ball\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | game | Breakout | games\Breakout\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | game | Gravity | games\Gravity\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | game | GravityWell | games\GravityWell\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | game | MultiBallChaos | games\MultiBallChaos\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | game | Orbit | games\Orbit\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | game | PacmanFullAI | games\PacmanFullAI\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | game | PacmanLite | games\PacmanLite\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | game | PaddleIntercept | games\PaddleIntercept\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | game | Pong | games\Pong\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | game | ProjectileLab | games\ProjectileLab\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | game | SolarSystem | games\SolarSystem\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | game | SpaceDuel | games\SpaceDuel\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | game | SpaceInvaders | games\SpaceInvaders\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | game | Thruster | games\Thruster\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | game | vector-arcade-sample | games\vector-arcade-sample\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 0101 | samples\phase01\0101\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 0102 | samples\phase01\0102\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 0103 | samples\phase01\0103\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 0104 | samples\phase01\0104\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 0105 | samples\phase01\0105\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 0106 | samples\phase01\0106\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 0107 | samples\phase01\0107\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 0108 | samples\phase01\0108\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 0109 | samples\phase01\0109\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 0110 | samples\phase01\0110\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 0111 | samples\phase01\0111\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 0112 | samples\phase01\0112\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 0113 | samples\phase01\0113\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 0114 | samples\phase01\0114\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 0115 | samples\phase01\0115\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 0116 | samples\phase01\0116\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 0117 | samples\phase01\0117\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 0118 | samples\phase01\0118\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 0119 | samples\phase01\0119\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 0120 | samples\phase01\0120\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 0121 | samples\phase01\0121\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 0122 | samples\phase01\0122\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 0123 | samples\phase01\0123\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 0124 | samples\phase01\0124\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 0201 | samples\phase02\0201\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 0202 | samples\phase02\0202\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 0203 | samples\phase02\0203\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 0204 | samples\phase02\0204\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 0205 | samples\phase02\0205\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 0206 | samples\phase02\0206\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 0207 | samples\phase02\0207\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 0208 | samples\phase02\0208\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 0209 | samples\phase02\0209\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 0210 | samples\phase02\0210\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 0211 | samples\phase02\0211\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 0212 | samples\phase02\0212\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 0213 | samples\phase02\0213\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 0214 | samples\phase02\0214\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 0215 | samples\phase02\0215\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 0216 | samples\phase02\0216\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 0217 | samples\phase02\0217\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 0218 | samples\phase02\0218\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 0219 | samples\phase02\0219\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 0220 | samples\phase02\0220\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 0221 | samples\phase02\0221\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 0222 | samples\phase02\0222\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 0223 | samples\phase02\0223\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 0224 | samples\phase02\0224\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 0301 | samples\phase03\0301\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 0302 | samples\phase03\0302\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 0303 | samples\phase03\0303\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 0304 | samples\phase03\0304\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 0305 | samples\phase03\0305\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 0306 | samples\phase03\0306\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 0307 | samples\phase03\0307\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 0308 | samples\phase03\0308\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 0309 | samples\phase03\0309\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 0310 | samples\phase03\0310\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 0311 | samples\phase03\0311\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 0312 | samples\phase03\0312\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 0313 | samples\phase03\0313\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 0314 | samples\phase03\0314\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 0315 | samples\phase03\0315\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 0316 | samples\phase03\0316\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 0317 | samples\phase03\0317\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 0318 | samples\phase03\0318\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 0319 | samples\phase03\0319\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 0320 | samples\phase03\0320\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 0321 | samples\phase03\0321\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 0322 | samples\phase03\0322\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 0323 | samples\phase03\0323\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 0324 | samples\phase03\0324\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 0401 | samples\phase04\0401\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 0402 | samples\phase04\0402\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 0403 | samples\phase04\0403\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 0404 | samples\phase04\0404\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 0405 | samples\phase04\0405\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 0406 | samples\phase04\0406\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 0407 | samples\phase04\0407\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 0408 | samples\phase04\0408\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 0409 | samples\phase04\0409\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 0410 | samples\phase04\0410\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 0411 | samples\phase04\0411\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 0412 | samples\phase04\0412\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 0501 | samples\phase05\0501\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 0502 | samples\phase05\0502\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 0503 | samples\phase05\0503\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 0504 | samples\phase05\0504\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 0505 | samples\phase05\0505\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 0506 | samples\phase05\0506\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 0507 | samples\phase05\0507\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 0508 | samples\phase05\0508\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 0509 | samples\phase05\0509\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 0510 | samples\phase05\0510\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 0511 | samples\phase05\0511\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 0512 | samples\phase05\0512\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 0601 | samples\phase06\0601\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 0602 | samples\phase06\0602\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 0603 | samples\phase06\0603\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 0604 | samples\phase06\0604\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 0605 | samples\phase06\0605\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 0606 | samples\phase06\0606\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 0607 | samples\phase06\0607\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 0608 | samples\phase06\0608\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 0609 | samples\phase06\0609\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 0610 | samples\phase06\0610\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 0611 | samples\phase06\0611\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 0612 | samples\phase06\0612\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 0613 | samples\phase06\0613\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 0701 | samples\phase07\0701\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 0702 | samples\phase07\0702\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 0703 | samples\phase07\0703\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 0704 | samples\phase07\0704\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 0705 | samples\phase07\0705\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 0706 | samples\phase07\0706\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 0707 | samples\phase07\0707\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 0708 | samples\phase07\0708\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 0709 | samples\phase07\0709\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 0710 | samples\phase07\0710\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 0711 | samples\phase07\0711\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 0712 | samples\phase07\0712\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 0713 | samples\phase07\0713\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 0801 | samples\phase08\0801\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 0802 | samples\phase08\0802\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 0803 | samples\phase08\0803\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 0804 | samples\phase08\0804\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 0805 | samples\phase08\0805\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 0806 | samples\phase08\0806\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 0807 | samples\phase08\0807\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 0808 | samples\phase08\0808\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 0809 | samples\phase08\0809\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 0810 | samples\phase08\0810\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 0901 | samples\phase09\0901\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 0902 | samples\phase09\0902\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 0903 | samples\phase09\0903\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 0904 | samples\phase09\0904\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 0905 | samples\phase09\0905\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 0906 | samples\phase09\0906\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 1001 | samples\phase10\1001\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 1002 | samples\phase10\1002\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 1003 | samples\phase10\1003\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 1101 | samples\phase11\1101\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 1102 | samples\phase11\1102\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 1103 | samples\phase11\1103\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 1104 | samples\phase11\1104\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 1105 | samples\phase11\1105\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 1106 | samples\phase11\1106\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 1201 | samples\phase12\1201\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 1202 | samples\phase12\1202\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 1203 | samples\phase12\1203\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 1204 | samples\phase12\1204\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 1205 | samples\phase12\1205\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 1206 | samples\phase12\1206\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 1207 | samples\phase12\1207\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 1208 | samples\phase12\1208\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 1301 | samples\phase13\1301\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 1302 | samples\phase13\1302\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 1303 | samples\phase13\1303\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 1304 | samples\phase13\1304\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 1305 | samples\phase13\1305\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 1306 | samples\phase13\1306\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 1307 | samples\phase13\1307\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 1308 | samples\phase13\1308\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 1309 | samples\phase13\1309\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 1310 | samples\phase13\1310\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 1311 | samples\phase13\1311\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 1312 | samples\phase13\1312\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 1313 | samples\phase13\1313\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 1314 | samples\phase13\1314\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 1315 | samples\phase13\1315\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 1316 | samples\phase13\1316\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 1317 | samples\phase13\1317\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 1318 | samples\phase13\1318\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 1401 | samples\phase14\1401\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 1402 | samples\phase14\1402\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 1403 | samples\phase14\1403\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 1404 | samples\phase14\1404\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 1405 | samples\phase14\1405\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 1406 | samples\phase14\1406\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 1407 | samples\phase14\1407\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 1408 | samples\phase14\1408\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 1409 | samples\phase14\1409\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 1410 | samples\phase14\1410\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 1411 | samples\phase14\1411\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 1412 | samples\phase14\1412\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 1413 | samples\phase14\1413\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 1414 | samples\phase14\1414\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 1415 | samples\phase14\1415\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 1416 | samples\phase14\1416\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 1417 | samples\phase14\1417\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 1418 | samples\phase14\1418\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 1501 | samples\phase15\1501\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 1502 | samples\phase15\1502\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 1503 | samples\phase15\1503\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 1504 | samples\phase15\1504\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 1505 | samples\phase15\1505\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 1506 | samples\phase15\1506\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | tool | Asset Browser | tools\Asset Browser\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | tool | Palette Browser | tools\Palette Browser\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | tool | Parallax Scene Studio | tools\Parallax Scene Studio\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | tool | Performance Profiler | tools\Performance Profiler\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | tool | Replay Visualizer | tools\Replay Visualizer\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | tool | Sprite Editor | tools\Sprite Editor\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | tool | State Inspector | tools\State Inspector\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | tool | Tilemap Studio | tools\Tilemap Studio\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | tool | Tool Host | tools\Tool Host\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | tool | Vector Asset Studio | tools\Vector Asset Studio\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | tool | Vector Map Editor | tools\Vector Map Editor\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |

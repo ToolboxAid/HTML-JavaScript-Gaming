@@ -1,0 +1,9 @@
+*** MANUAL PATCH FOR tests/tools/VectorNativeTemplate.test.mjs ***
+
+Find:
+    /Template path: templates\/vector-native-arcade\//
+
+Replace with:
+    /Template path: tools\/templates\/vector-native-arcade\//
+
+Keep the rest of the file unchanged.

@@ -17,7 +17,7 @@ const canvas = document.getElementById('game');
 const engine = new Engine({ canvas, width: 960, height: 540 });
 const logger = new Logger({ channel: 'sample145', level: 'debug' });
 const recovery = new CrashRecoveryManager({
-  namespace: 'toolboxaid:sample145',
+  namespace: 'toolboxaid:sample1105',
   logger,
   fallbackFactory: (crash) => ({ screen: 'fallback', reason: crash.label }),
 });
