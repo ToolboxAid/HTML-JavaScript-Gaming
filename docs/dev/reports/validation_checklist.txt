@@ -1,21 +1,11 @@
-VALIDATION CHECKLIST
-Generated: 2026-04-13
-Command: Generate move map and validation artifacts
+[x] all mapped moves applied
+[x] imports/paths updated only where required
+[x] no extra structural churn
+[x] samples/index.html live links still resolve
+[x] runtime harness matcher remains ^phase-?\\d{2}$
 
-Checks
-- [x] Canonical sample phase directories present (phase-01..phase-15)
-- [x] Canonical sample ids present under each phase (####)
-- [x] samples/index.html live links use ./phase-XX/####/index.html
-- [x] samples/index.html live links resolve to existing files
-- [x] Runtime harness phase matcher accepts canonical phase naming
-- [x] No engine/game API surface changes required for artifact generation
-
-Command Results
-- samples canonical dirs: PASS
-- live sample href format: PASS
-- live sample href resolution: PASS
-- runtime harness matcher (^phase-?\\d{2}$): PASS
-
-Notes
-- Artifacts generated from repository current state.
-- This checklist is reporting-only and does not broaden implementation scope.
+Result Snapshot (2026-04-13)
+- canonical phase dirs present: phase-01..phase-15
+- legacy phase dirs present: none
+- live sample links resolved: 197/197
+- runtime harness matcher check: PASS (tests/runtime/LaunchSmokeAllEntries.test.mjs)

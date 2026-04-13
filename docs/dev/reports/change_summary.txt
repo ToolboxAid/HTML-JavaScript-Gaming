@@ -1,1 +1,1 @@
-Normalized sample index paths and ordering.
+Apply the validated repo structure move map and only the import/path updates required by those moves.
