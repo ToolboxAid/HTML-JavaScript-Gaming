@@ -31,6 +31,7 @@ import { buildProjectPackage, summarizeProjectPackaging } from "../shared/projec
 import { buildEditorExperienceLayer, summarizeEditorExperienceLayer } from "../shared/editorExperienceLayer.js";
 import { buildDebugVisualizationLayer, summarizeDebugVisualizationLayer } from "../shared/debugVisualizationLayer.js";
 import { registerToolBootContract } from "../shared/toolBootContract.js";
+import { createLivePreviewSyncBridge } from "../shared/livePreviewSyncChannel.js";
 
 const DEFAULT_TILESET = [
   { id: 0, name: "Empty", color: "transparent" },
@@ -581,6 +582,9 @@ class TileMapEditorApp {
     this.lastRuntimeResult = null;
     this.editorExperienceResult = null;
     this.debugVisualizationResult = null;
+    this.livePreviewSync = createLivePreviewSyncBridge({ sourceId: "tile-map-editor" });
+    this.livePreviewSyncFrame = 0;
+    this.pendingLivePreviewReason = "init";
   }
 
   init(rootDocument) {
@@ -588,6 +592,7 @@ class TileMapEditorApp {
     this.attachEvents();
     this.syncInputsFromDocument();
     this.renderAll();
+    this.queueLivePreviewSync("init");
     void this.reloadTilesetImageFromDocument({ quiet: true });
     void this.preloadIndividualTileImages({ quiet: true });
     this.loadSampleManifest();
@@ -764,6 +769,7 @@ class TileMapEditorApp {
     this.tilesetImageCache = new Map();
     this.syncInputsFromDocument();
     this.renderAll();
+    this.queueLivePreviewSync("new-project");
     this.updateStatus("Created a new map document.");
   }
 
@@ -947,6 +953,7 @@ class TileMapEditorApp {
         this.tilesetImageCache = new Map();
         this.syncInputsFromDocument();
         this.renderAll();
+        this.queueLivePreviewSync("load-project");
         const validation = this.validateProjectAssets();
         void this.reloadTilesetImageFromDocument({ quiet: true });
         void this.preloadIndividualTileImages({ quiet: true });
@@ -1554,6 +1561,32 @@ class TileMapEditorApp {
 
   touchDocument() {
     this.documentModel.metadata.updatedAt = new Date().toISOString();
+    this.queueLivePreviewSync("document-update");
+  }
+
+  publishLivePreviewSync(reason = "update") {
+    this.livePreviewSync.publish(
+      {
+        toolId: "tile-map-editor",
+        reason,
+        tileMapDocument: cloneDeep(this.documentModel)
+      },
+      "tool-live-preview-sync"
+    );
+  }
+
+  queueLivePreviewSync(reason = "update") {
+    this.pendingLivePreviewReason = reason;
+    if (this.livePreviewSyncFrame) {
+      return;
+    }
+    const schedule = typeof requestAnimationFrame === "function"
+      ? requestAnimationFrame
+      : (callback) => setTimeout(callback, 16);
+    this.livePreviewSyncFrame = schedule(() => {
+      this.livePreviewSyncFrame = 0;
+      this.publishLivePreviewSync(this.pendingLivePreviewReason);
+    });
   }
 
   syncInputsFromDocument() {

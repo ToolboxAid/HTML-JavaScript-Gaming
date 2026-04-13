@@ -31,6 +31,7 @@ import { buildProjectPackage, summarizeProjectPackaging } from "../shared/projec
 import { buildEditorExperienceLayer, summarizeEditorExperienceLayer } from "../shared/editorExperienceLayer.js";
 import { buildDebugVisualizationLayer, summarizeDebugVisualizationLayer } from "../shared/debugVisualizationLayer.js";
 import { registerToolBootContract } from "../shared/toolBootContract.js";
+import { createLivePreviewSyncBridge } from "../shared/livePreviewSyncChannel.js";
 
 const SAMPLE_DIRECTORY_PATH = "./samples/";
 const SAMPLE_MANIFEST_PATH = "./samples/sample-manifest.json";
@@ -390,6 +391,9 @@ class ParallaxEditorApp {
     this.lastRuntimeResult = null;
     this.editorExperienceResult = null;
     this.debugVisualizationResult = null;
+    this.livePreviewSync = createLivePreviewSyncBridge({ sourceId: "parallax-editor" });
+    this.livePreviewSyncFrame = 0;
+    this.pendingLivePreviewReason = "init";
   }
 
   invalidateImageCache() {
@@ -402,6 +406,7 @@ class ParallaxEditorApp {
     this.attachEvents();
     this.syncInputsFromDocument();
     this.renderAll();
+    this.queueLivePreviewSync("init");
     this.loadSampleManifest();
   }
 
@@ -539,6 +544,32 @@ class ParallaxEditorApp {
 
   touchDocument() {
     this.documentModel.metadata.updatedAt = new Date().toISOString();
+    this.queueLivePreviewSync("document-update");
+  }
+
+  publishLivePreviewSync(reason = "update") {
+    this.livePreviewSync.publish(
+      {
+        toolId: "parallax-editor",
+        reason,
+        parallaxDocument: cloneDeep(this.documentModel)
+      },
+      "tool-live-preview-sync"
+    );
+  }
+
+  queueLivePreviewSync(reason = "update") {
+    this.pendingLivePreviewReason = reason;
+    if (this.livePreviewSyncFrame) {
+      return;
+    }
+    const schedule = typeof requestAnimationFrame === "function"
+      ? requestAnimationFrame
+      : (callback) => setTimeout(callback, 16);
+    this.livePreviewSyncFrame = schedule(() => {
+      this.livePreviewSyncFrame = 0;
+      this.publishLivePreviewSync(this.pendingLivePreviewReason);
+    });
   }
 
   updateStatus(message) {
@@ -933,6 +964,7 @@ class ParallaxEditorApp {
       this.cameraY = 0;
       this.syncInputsFromDocument();
       this.renderAll();
+      this.queueLivePreviewSync("load-sample");
       this.updateStatus(`Loaded sample ${selectedPath}.`);
     } catch (error) {
       this.updateStatus(`Sample load failed: ${error instanceof Error ? error.message : "unknown error"}`);
@@ -948,6 +980,7 @@ class ParallaxEditorApp {
     this.cameraY = 0;
     this.syncInputsFromDocument();
     this.renderAll();
+    this.queueLivePreviewSync("new-project");
     this.updateStatus("Created new parallax document.");
   }
 
@@ -1151,6 +1184,7 @@ class ParallaxEditorApp {
         this.cameraY = 0;
         this.syncInputsFromDocument();
         this.renderAll();
+        this.queueLivePreviewSync("load-project");
         const validation = this.validateProjectAssets();
         if (resolution.resolvedCount > 0) {
           this.updateStatus(`Loaded ${file.name} (${resolution.resolvedCount} layer image refs restored from asset registry, validation: ${summarizeAssetValidation(validation)}).`);

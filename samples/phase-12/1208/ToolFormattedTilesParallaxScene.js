@@ -39,6 +39,8 @@ export default class ToolFormattedTilesParallaxScene extends Scene {
     this.contentStatus = 'Loading tool-formatted tile/parallax content...';
     this.contentLoaded = false;
     this.contentError = null;
+    this.liveSyncVersion = 0;
+    this.liveSyncPending = Promise.resolve();
     this.tilesetAssetPath = '';
     this.tilesetImage = null;
     this.tileFrameById = {};
@@ -413,6 +415,41 @@ export default class ToolFormattedTilesParallaxScene extends Scene {
         );
 
       }
+    }
+  }
+
+  applyLivePreviewUpdate(update = {}) {
+    this.liveSyncPending = this.liveSyncPending
+      .then(() => this.applyLivePreviewUpdateInternal(update))
+      .catch(() => {});
+    return this.liveSyncPending;
+  }
+
+  async applyLivePreviewUpdateInternal(update = {}) {
+    const nextTileDocument = update && typeof update.tileMapDocument === 'object' ? update.tileMapDocument : null;
+    const nextParallaxDocument = update && typeof update.parallaxDocument === 'object' ? update.parallaxDocument : null;
+    if (!nextTileDocument && !nextParallaxDocument) {
+      return;
+    }
+
+    try {
+      let tileAssetCount = this.tilesetImage ? 1 : 0;
+      if (nextTileDocument) {
+        this.applyTileExportData(nextTileDocument);
+        tileAssetCount = await this.loadTileAssets(extractTileEntries(nextTileDocument));
+      }
+
+      if (nextParallaxDocument) {
+        this.parallaxLayers = await this.loadParallaxAssets(extractParallaxLayers(nextParallaxDocument));
+      }
+
+      this.liveSyncVersion += 1;
+      this.contentLoaded = tileAssetCount > 0 && this.parallaxLayers.length > 0;
+      this.contentError = null;
+      this.contentStatus = `Live preview synced (${this.liveSyncVersion}).`;
+    } catch (error) {
+      this.contentError = error instanceof Error ? error.message : String(error);
+      this.contentStatus = 'Live preview sync failed.';
     }
   }
 }

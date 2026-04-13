@@ -1,0 +1,36 @@
+﻿PR: PR_08_03_TOOL_LIVE_PREVIEW_SYNC
+
+Live Sync Channel
+- Added shared bridge utility at tools/shared/livePreviewSyncChannel.js.
+- Channel name: world-game-tool-live-preview-sync.
+- Transport order:
+  1. BroadcastChannel when available.
+  2. localStorage storage-event fallback when BroadcastChannel is unavailable.
+- Envelope fields: channel, sourceId, eventType, updatedAt, payload.
+- Loop prevention: per-source filtering and payload signature de-duplication.
+
+Tool Publishers
+- tools/Tilemap Studio/main.js publishes tileMapDocument snapshots on:
+  - init
+  - new project
+  - load project
+  - document update
+- tools/Parallax Scene Studio/main.js publishes parallaxDocument snapshots on:
+  - init
+  - load sample
+  - new project
+  - load project
+  - document update
+- Both publishers batch same-frame updates with requestAnimationFrame (setTimeout fallback).
+
+Sample Consumer
+- samples/phase-12/1208/main.js subscribes to live sync channel.
+- samples/phase-12/1208/ToolFormattedTilesParallaxScene.js applies updates through queued async processing.
+- Tile updates reuse existing tile import and asset load path.
+- Parallax updates reuse existing layer extraction and asset load path.
+- Status surface updated with sync success/failure and version counter.
+
+Compatibility / Boundaries
+- No engine core API changes.
+- No sample navigation/index reshaping.
+- Sync is additive and isolated to tool/sample integration surface.

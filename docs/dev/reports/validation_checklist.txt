@@ -1,8 +1,25 @@
-PR_08_02_TOOL_SAMPLE_ROUNDTRIP - checklist
+﻿PR: PR_08_03_TOOL_LIVE_PREVIEW_SYNC
 
-[x] Tool launcher retains sample link entry points for Sample 1208.
-[x] Sample 1208 exposes direct links back to relevant tools.
-[x] No tool runtime implementation redesign.
-[x] No game/network behavior changes.
-[x] Roundtrip path (tool -> sample -> tool) is present.
-[x] Smoke validation passed.
+Validation Commands
+- node --check tools/shared/livePreviewSyncChannel.js
+- node --check "tools/Tilemap Studio/main.js"
+- node --check "tools/Parallax Scene Studio/main.js"
+- node --check samples/phase-12/1208/main.js
+- node --check samples/phase-12/1208/ToolFormattedTilesParallaxScene.js
+- node tests/runtime/LaunchSmokeAllEntries.test.mjs
+
+Results
+- Syntax checks: PASS
+- Runtime smoke: PASS
+
+Scope Verification
+- Changed implementation files:
+  - tools/shared/livePreviewSyncChannel.js
+  - tools/Tilemap Studio/main.js
+  - tools/Parallax Scene Studio/main.js
+  - samples/phase-12/1208/main.js
+  - samples/phase-12/1208/ToolFormattedTilesParallaxScene.js
+- Deliverable docs:
+  - docs/dev/reports/live_sync_model.txt
+  - docs/dev/reports/validation_checklist.txt
+- No engine core API modifications performed.

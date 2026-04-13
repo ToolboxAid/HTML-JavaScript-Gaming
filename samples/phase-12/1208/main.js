@@ -8,6 +8,7 @@ import Engine from '/src/engine/core/Engine.js';
 import { InputService } from '/src/engine/input/index.js';
 import { Theme, ThemeTokens } from '/src/engine/theme/index.js';
 import ToolFormattedTilesParallaxScene from './ToolFormattedTilesParallaxScene.js';
+import { createLivePreviewSyncBridge } from '/tools/shared/livePreviewSyncChannel.js';
 
 const theme = new Theme(ThemeTokens);
 theme.applyDocumentTheme();
@@ -23,5 +24,10 @@ const engine = new Engine({
   input,
 });
 
-engine.setScene(new ToolFormattedTilesParallaxScene());
+const scene = new ToolFormattedTilesParallaxScene();
+const livePreviewSync = createLivePreviewSyncBridge({ sourceId: 'sample-1208-live-preview' });
+livePreviewSync.subscribe((payload) => {
+  scene.applyLivePreviewUpdate(payload);
+});
+engine.setScene(scene);
 engine.start();
