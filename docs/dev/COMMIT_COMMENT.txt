@@ -1,4 +1,4 @@
-Level 11.1: Event whitelist guard
+Level 11.1: Authoritative apply guard
 
-- Enforced allowed event types
+- Restricted authoritativeApply execution
 - No API changes

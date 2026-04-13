@@ -29,6 +29,16 @@ function validateTransitionEventType(eventType, transitionName) {
   return { ok: true };
 }
 
+function invokeAuthoritativeApplyGuarded(authoritativeApply, snapshot, payload, context) {
+  if (context && context.authoritative === true) {
+    return authoritativeApply(snapshot, payload, context);
+  }
+  if (context && (context.authoritative === false || isPassiveModeContext(context))) {
+    return { changes: [] };
+  }
+  return authoritativeApply(snapshot, payload, context);
+}
+
 function createWhitelistedTransition({
   transitionName,
   validate,
@@ -49,7 +59,8 @@ function createWhitelistedTransition({
   };
 
   if (typeof authoritativeApply === 'function') {
-    definition.authoritativeApply = authoritativeApply;
+    definition.authoritativeApply = (snapshot, payload, context = {}) =>
+      invokeAuthoritativeApplyGuarded(authoritativeApply, snapshot, payload, context);
   }
 
   return definition;
