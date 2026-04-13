@@ -1,0 +1,30 @@
+PR_08_02_TOOL_SAMPLE_ROUNDTRIP - validation report
+
+Scope
+- tools launcher registry-driven sample links
+- sample 1208 tool-formatted integration surface
+
+Roundtrip intent
+- Tool -> Sample: first-class tools provide direct sample entry links (Sample 1208) via toolRegistry sampleEntryPoints.
+- Sample -> Tool: Sample 1208 now provides explicit links back to the relevant authoring tools and tools hub.
+
+Integration checks
+1. Tool side links
+- tools/toolRegistry.js contains sampleEntryPoints linking to ../samples/phase-12/1208/index.html for:
+  - Vector Map Editor
+  - Vector Asset Studio
+  - Tilemap Studio
+  - Parallax Scene Studio
+
+2. Sample side links
+- samples/phase-12/1208/index.html includes:
+  - /tools/Tilemap%20Studio/index.html
+  - /tools/Parallax%20Scene%20Studio/index.html
+  - /tools/Vector%20Asset%20Studio/index.html
+  - /tools/index.html
+
+3. Roundtrip outcome
+- Navigation flow exists for tool -> sample -> tool without runtime/network logic changes.
+
+Validation executed
+- node tests/runtime/LaunchSmokeAllEntries.test.mjs (pass)

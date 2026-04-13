@@ -1,3 +1,8 @@
-[ ] integration validated
-[ ] flow consistency confirmed
-[ ] no regressions
+PR_08_02_TOOL_SAMPLE_ROUNDTRIP - checklist
+
+[x] Tool launcher retains sample link entry points for Sample 1208.
+[x] Sample 1208 exposes direct links back to relevant tools.
+[x] No tool runtime implementation redesign.
+[x] No game/network behavior changes.
+[x] Roundtrip path (tool -> sample -> tool) is present.
+[x] Smoke validation passed.
