@@ -7,6 +7,7 @@ FakeLoopbackNetworkModel.js
 
 import { clamp } from "/src/engine/utils/index.js";
 import { asPositiveNumber } from '../../../_shared/numberUtils.js';
+import { createLatencyModel } from "/samples/phase-13/_shared/latencyModel.js";
 
 const MAX_TRACE_EVENTS = 80;
 
@@ -43,7 +44,12 @@ export default class FakeLoopbackNetworkModel {
 
     this.autoPacketTimerSeconds = 0;
     this.autoPacketIntervalSeconds = 0.65;
-    this.lastAckTimerSeconds = 0;
+    this.inFlightPackets = [];
+    this.latencyModel = createLatencyModel({
+      baseRttMs: 30,
+      jitterMs: 4,
+      minOneWayMs: 8
+    });
 
     this.traceEvents = [];
 
@@ -92,7 +98,7 @@ export default class FakeLoopbackNetworkModel {
     if (normalizedNext === "disconnected") {
       this.pendingPackets = 0;
       this.replicationBacklog = 0;
-      this.lastAckTimerSeconds = 0;
+      this.inFlightPackets = [];
     }
   }
 
@@ -122,11 +128,20 @@ export default class FakeLoopbackNetworkModel {
     this.sentPackets += 1;
     this.pendingPackets += 1;
     this.replicationTick += 1;
+    const oneWayDelayMs = this.latencyModel.sampleOneWayDelayMs(this.elapsedSeconds, sequence);
+    this.inFlightPackets.push({
+      sequence,
+      label,
+      deliverAtSeconds: this.elapsedSeconds + (oneWayDelayMs / 1000),
+      oneWayDelayMs
+    });
+    this.inFlightPackets.sort((left, right) => left.deliverAtSeconds - right.deliverAtSeconds);
 
     this.pushTrace("PACKET_SENT", {
       label,
       sequence,
-      pendingPackets: this.pendingPackets
+      pendingPackets: this.pendingPackets,
+      oneWayDelayMs
     });
 
     return true;
@@ -162,37 +177,32 @@ export default class FakeLoopbackNetworkModel {
       this.jitterMs = 0;
       return;
     }
-
-    const waveform = Math.sin(this.elapsedSeconds * 1.8);
-    const harmonic = Math.sin(this.elapsedSeconds * 0.45);
-    this.rttMs = Math.round(30 + (waveform * 7) + (harmonic * 3));
-    this.rttMs = clamp(this.rttMs, 16, 70);
-
-    this.jitterMs = Math.round(Math.abs(Math.cos(this.elapsedSeconds * 2.2)) * 4);
-    this.jitterMs = clamp(this.jitterMs, 1, 8);
+    const snapshot = this.latencyModel.sampleSnapshot(this.elapsedSeconds, this.nextSequence);
+    this.rttMs = snapshot.rttMs;
+    this.jitterMs = snapshot.jitterMs;
   }
 
-  updateAcks(dtSeconds) {
+  updateAcks() {
     if (this.phase !== "connected") {
       return;
     }
-
-    this.lastAckTimerSeconds += dtSeconds;
-    const ackInterval = 0.22 + (this.jitterMs / 1000);
-
-    if (this.pendingPackets > 0 && this.lastAckTimerSeconds >= ackInterval) {
-      this.lastAckTimerSeconds = 0;
-      this.pendingPackets -= 1;
-      this.ackedSequence += 1;
+    while (this.inFlightPackets.length > 0 && this.inFlightPackets[0].deliverAtSeconds <= this.elapsedSeconds) {
+      const delivered = this.inFlightPackets.shift();
+      if (!delivered) break;
+      if (this.pendingPackets > 0) {
+        this.pendingPackets -= 1;
+      }
+      this.ackedSequence = Math.max(this.ackedSequence, Number(delivered.sequence) || 0);
       this.receivedPackets += 1;
 
       this.pushTrace("PACKET_ACKED", {
         sequence: this.ackedSequence,
-        pendingPackets: this.pendingPackets
+        pendingPackets: this.pendingPackets,
+        oneWayDelayMs: Number(delivered.oneWayDelayMs || 0)
       });
     }
 
-    this.replicationBacklog = Math.max(0, this.pendingPackets - 1);
+    this.replicationBacklog = Math.max(0, this.inFlightPackets.length);
   }
 
   update(dtSeconds, options = {}) {
@@ -206,7 +216,7 @@ export default class FakeLoopbackNetworkModel {
 
     this.updatePhaseProgress(safeDt);
     this.updateLatencySnapshot();
-    this.updateAcks(safeDt);
+    this.updateAcks();
   }
 
   getSnapshot() {
