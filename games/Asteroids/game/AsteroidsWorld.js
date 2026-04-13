@@ -36,9 +36,9 @@ let hasLoggedWorldStartGame = false;
 
 function logWorldBootStage(stage, details = null) {
   if (details === null) {
-    console.info(`[AsteroidsNewBoot] world:${stage}`);
+    console.info(`Asteroids world:${stage}`);
   } else {
-    console.info(`[AsteroidsNewBoot] world:${stage}`, details);
+    console.info(`Asteroids world:${stage}`, details);
   }
 }
 

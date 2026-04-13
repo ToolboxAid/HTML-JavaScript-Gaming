@@ -152,7 +152,7 @@ export async function run() {
   const originalConsoleError = console.error;
   console.error = (...args) => {
     const head = String(args?.[0] ?? '');
-    if (head.includes('[AsteroidsNewBoot] FAIL missing-canvas')) {
+    if (head.includes('Asteroids FAIL missing-canvas')) {
       return;
     }
     originalConsoleError(...args);

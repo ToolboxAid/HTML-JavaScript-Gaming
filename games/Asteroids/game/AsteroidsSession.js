@@ -40,9 +40,9 @@ let hasLoggedSessionStart = false;
 
 function logSessionBootStage(stage, details = null) {
   if (details === null) {
-    console.info(`[AsteroidsNewBoot] session:${stage}`);
+    console.info(`Asteroids session:${stage}`);
   } else {
-    console.info(`[AsteroidsNewBoot] session:${stage}`, details);
+    console.info(`Asteroids session:${stage}`, details);
   }
 }
 

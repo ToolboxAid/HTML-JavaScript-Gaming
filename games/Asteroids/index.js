@@ -13,7 +13,7 @@ export const asteroidFlow = Object.freeze({
   intro: introFlow
 });
 const theme = new Theme(ThemeTokens);
-const BOOT_TRACE_PREFIX = "[AsteroidsNewBoot]";
+const BOOT_TRACE_PREFIX = "Asteroids";
 
 function traceBoot(stage, details = null) {
   if (details === null) {

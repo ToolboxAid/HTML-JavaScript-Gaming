@@ -46,9 +46,9 @@ let hasLoggedSceneEnter = false;
 
 function logSceneBootStage(stage, details = null) {
   if (details === null) {
-    console.info(`[AsteroidsNewBoot] scene:${stage}`);
+    console.info(`Asteroids scene:${stage}`);
   } else {
-    console.info(`[AsteroidsNewBoot] scene:${stage}`, details);
+    console.info(`Asteroids scene:${stage}`, details);
   }
 }
 
