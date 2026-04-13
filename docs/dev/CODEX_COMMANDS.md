@@ -2,40 +2,30 @@ MODEL: GPT-5.4-codex
 REASONING: high
 
 COMMAND:
-Create BUILD_PR_TEST_RUNNER_DRIFT_FIX as a docs-following, test-only patch.
+Create a small test-only patch for the current Asteroids failure.
 
-Inspect these files first:
-- tests/run-tests.mjs
-- tests/games/AsteroidsValidation.test.mjs
-- games/Asteroids/index.js
-- tests/tools/VectorNativeTemplate.test.mjs
+Primary target:
+- `tests/games/AsteroidsValidation.test.mjs`
 
-Then apply the minimum safe changes needed to restore `npm test --ignore-scripts`:
+Do the following:
+1. Inspect the real file around the current failing call:
+   - stack shows `tests/games/AsteroidsValidation.test.mjs:152:37`
+2. Preserve the existing structure and assertions.
+3. Ensure the file exports the named `run` function expected by `tests/run-tests.mjs`.
+4. Immediately before the failing `bootAsteroidsNew(...)` path, install the minimum Node-safe DOM/canvas shim so:
+   - `globalThis.document` exists for this test scope
+   - `document.getElementById('game')` returns a canvas-like object
+   - the returned object supports the canvas methods/properties Asteroids boot actually uses
+5. Restore globals after the test scope finishes.
+6. Do not use a browser-only approach that assumes a full DOM implementation.
+7. Do not edit `games/Asteroids/index.js`.
 
-1. Re-align `tests/games/AsteroidsValidation.test.mjs` with the runner contract:
-   - export a named `run`
-   - remove any self-executing `run().catch(...)` block if present
-   - preserve existing assertions and structure
+Secondary target, only if still failing in the current branch:
+- `tests/tools/VectorNativeTemplate.test.mjs`
+  - update expected path from `templates/vector-native-arcade/` to `tools/templates/vector-native-arcade/`
 
-2. Fix the Asteroids validation environment using a Node-safe local shim:
-   - do NOT use `document.body.innerHTML`
-   - inspect the boot path and mock only the minimal globals actually touched
-   - likely candidates: `globalThis.document`, `document.getElementById('game')`, a minimal fake canvas/context, and possibly `globalThis.window`
-   - restore original globals after the test
-
-3. Update `tests/tools/VectorNativeTemplate.test.mjs` so the expected template path matches the current repo output:
-   - `tools/templates/vector-native-arcade/`
-
-Constraints:
-- no broad rewrites
-- no stub file replacement
-- no runtime behavior changes in game code unless absolutely required by an already-existing contract mismatch
-- no new heavy dependencies
-
-Validate with:
-- npm test --ignore-scripts
-
-If there is another failing test afterward, report it separately instead of rolling unrelated fixes into this PR.
-
-NEXT COMMAND:
-npm test --ignore-scripts
+Success criteria:
+- `npm test --ignore-scripts > output.txt`
+- the first failure is no longer `Missing #game canvas element`
+- `PASS AsteroidsValidation` appears
+- stop after the first new failure, if any, and report it

@@ -1,8 +1,8 @@
-[ ] Inspect current source before editing; do not patch from memory
-[ ] `tests/games/AsteroidsValidation.test.mjs` exports named `run`
-[ ] No standalone `run().catch(...)` remains in that file
-[ ] AsteroidsValidation uses a node-safe local DOM/canvas shim rather than `document.body.innerHTML`
-[ ] Original globals are restored after the test
-[ ] `tests/tools/VectorNativeTemplate.test.mjs` expects `tools/templates/vector-native-arcade/`
-[ ] `npm test --ignore-scripts` rerun after edits
-[ ] Any remaining failures documented separately
+[ ] `tests/games/AsteroidsValidation.test.mjs` updated with minimum shim
+[ ] named `run` export preserved
+[ ] globals restored after test
+[ ] `games/Asteroids/index.js` unchanged
+[ ] `npm test --ignore-scripts > output.txt` run
+[ ] no `Missing #game canvas element`
+[ ] `PASS AsteroidsValidation`
+[ ] if a new failure appears, capture only the first new failure

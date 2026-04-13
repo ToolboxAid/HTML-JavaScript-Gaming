@@ -1,7 +1,7 @@
 docs/
   pr/
-    PLAN_PR_TEST_RUNNER_DRIFT_FIX.md
-    BUILD_PR_TEST_RUNNER_DRIFT_FIX.md
+    PLAN_PR_ASTEROIDS_GAME_CANVAS_FIX.md
+    BUILD_PR_ASTEROIDS_GAME_CANVAS_FIX.md
   dev/
     codex_commands.md
     commit_comment.txt

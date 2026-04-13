@@ -149,19 +149,34 @@ export async function run() {
         return null;
       },
     };
-  const missingCanvasEngine = await bootAsteroids({
-    documentRef: missingCanvasDocument,
-    EngineClass: class {
-      constructor() {
-        throw new Error('Engine should not boot without a canvas.');
-      }
-    },
-    InputServiceClass: class {
-      constructor() {
-        throw new Error('Input should not initialize without a canvas.');
-      }
-    },
-  });
+  const originalConsoleError = console.error;
+  console.error = (...args) => {
+    const head = String(args?.[0] ?? '');
+    if (head.includes('[AsteroidsNewBoot] FAIL missing-canvas')) {
+      return;
+    }
+    originalConsoleError(...args);
+  };
+
+  let missingCanvasEngine = null;
+  try {
+    missingCanvasEngine = await bootAsteroids({
+      documentRef: missingCanvasDocument,
+      EngineClass: class {
+        constructor() {
+          throw new Error('Engine should not boot without a canvas.');
+        }
+      },
+      InputServiceClass: class {
+        constructor() {
+          throw new Error('Input should not initialize without a canvas.');
+        }
+      },
+    });
+  } finally {
+    console.error = originalConsoleError;
+  }
+
   assert.equal(missingCanvasEngine, null);
 
   const fullscreenStates = [
