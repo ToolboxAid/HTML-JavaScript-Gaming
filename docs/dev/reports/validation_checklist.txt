@@ -1,7 +1,4 @@
-[ ] selector_usage_scan.txt generated
-[ ] contract_map.txt generated
-[ ] selectors/contracts standardized to shared surfaces
-[ ] no API changes
-[ ] no behavior changes
-[ ] impacted imports resolve
-[ ] impacted tests/smoke pass
+[ ] final cleanup scan complete
+[ ] no duplicates remain
+[ ] imports resolved
+[ ] tests pass

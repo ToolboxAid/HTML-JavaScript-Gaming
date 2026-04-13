@@ -1,4 +1,4 @@
-﻿import { sanitizeText } from "/src/engine/debug/inspectors/shared/inspectorUtils.js";
+import { sanitizeText } from "./stringUtils.js";
 
 export function ensureArray(value) {
   return Array.isArray(value) ? value : [];
@@ -17,3 +17,4 @@ export function asStringArray(value) {
   });
   return Array.from(unique.values());
 }
+
