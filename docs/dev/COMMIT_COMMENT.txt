@@ -1,1 +1,1 @@
-Samples: runtime validation
+Samples: runtime harness fix (phase-XX support)

@@ -148,7 +148,7 @@ function discoverSamples(range) {
   if (!fs.existsSync(baseDir)) return results;
 
   for (const phaseEntry of fs.readdirSync(baseDir, { withFileTypes: true })) {
-    if (!phaseEntry.isDirectory() || !/^phase\d{2}$/.test(phaseEntry.name)) continue;
+    if (!phaseEntry.isDirectory() || !/^phase-?\d{2}$/.test(phaseEntry.name)) continue;
     const phaseDir = path.join(baseDir, phaseEntry.name);
 
     for (const sampleEntry of fs.readdirSync(phaseDir, { withFileTypes: true })) {

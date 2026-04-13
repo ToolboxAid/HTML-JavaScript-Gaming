@@ -1,23 +1,19 @@
 MODEL: GPT-5.4
-REASONING: high
+REASONING: low
 
 COMMAND:
-Implement BUILD_PR_LEVEL_6_4_SAMPLE_RUNTIME_VALIDATION.
+Implement BUILD_PR_LEVEL_6_4_RUNTIME_VALIDATION_PLUS_HARNESS_FIX.
 
-Scope:
-- samples runtime only
+Change:
+In tests/runtime/LaunchSmokeAllEntries.test.mjs
 
-Steps:
-1. Load each sample.
-2. Verify no runtime errors.
-3. Confirm render loop executes.
-4. Confirm no blocking console errors.
-5. Fix only path/runtime issues if required (no refactors).
+Replace:
+^phase\d{2}$
 
-Validation:
-- all samples run
-- no crashes
-- navigation intact
+With:
+^phase-?\d{2}$
 
-Output:
-<project folder>/tmp/BUILD_PR_LEVEL_6_4_SAMPLE_RUNTIME_VALIDATION.zip
+Do not modify anything else.
+
+Return ZIP:
+<project folder>/tmp/BUILD_PR_LEVEL_6_4_RUNTIME_VALIDATION_PLUS_HARNESS_FIX.zip

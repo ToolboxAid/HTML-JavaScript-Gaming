@@ -1,1 +1,1 @@
-Validated runtime execution of all samples.
+Added regex fix so launch-smoke discovers phase-XX samples.
