@@ -1,4 +1,1 @@
-Apply: runtime validation + launch-smoke harness fix
-
-- aligned launch-smoke sample discovery to phase-XX folders
-- completed sample runtime validation lane
+Plan: sample index normalization

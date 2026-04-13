@@ -1,1 +1,1 @@
-Applied runtime validation completion and launch-smoke harness phase-folder discovery fix.
+Plan for aligning sample index to phase structure.
