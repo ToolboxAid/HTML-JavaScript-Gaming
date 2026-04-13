@@ -300,14 +300,14 @@
 ---
 
 ## 6. Samples Program
-- [.] sample numbering normalization completed
-- [.] sample formatting alignment completed
-- [ ] phase grouping normalized
+- [x] sample numbering normalization completed
+- [x] sample formatting alignment completed
+- [.] phase grouping normalized
 - [ ] `samples/shared` boundaries defined and used
-- [ ] sample index normalized to phase structure
+- [x] sample index normalized to phase structure
 - [ ] sample-to-engine dependency cleanup completed
 - [x] sample duplicate helper usage reduced
-- [ ] sample curriculum progression validated
+- [.] sample curriculum progression validated
 
 ### Sample Phase Tracks
 - [ ] foundational phases normalized
