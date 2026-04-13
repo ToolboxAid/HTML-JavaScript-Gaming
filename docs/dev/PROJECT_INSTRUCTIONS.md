@@ -26,3 +26,20 @@ Do not:
 - Write implementation code unless explicitly asked
 - Expand scope beyond the PR
 - Modify start_of_day folders unless requested
+
+NEXT resolution rules:
+
+If the user says "NEXT":
+1. Look for the highest completed or referenced PLAN_PR in the session
+2. Increment to the next logical PLAN_PR in sequence
+3. If sequence is unclear, STOP and ask for clarification
+
+Assume naming pattern:
+PLAN_PR_LEVEL_<major>_<minor>_<name>
+
+Example:
+If last = PLAN_PR_LEVEL_11_1_...
+NEXT = PLAN_PR_LEVEL_11_2_...
+
+If no prior context exists:
+STOP and ask: "What is the base PLAN_PR?"
