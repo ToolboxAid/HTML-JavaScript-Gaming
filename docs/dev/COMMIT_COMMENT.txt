@@ -1,4 +1,4 @@
-Level 11.1: Passive mode guard
+Level 11.1: Event whitelist guard
 
-- Prevented authoritative mutations in passive mode
+- Enforced allowed event types
 - No API changes

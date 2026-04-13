@@ -9,11 +9,50 @@ import { WORLD_GAME_STATE_EVENT_TYPES } from './constants.js';
 import { isPlainObject } from '../../shared/utils/objectUtils.js';
 import { toFiniteNumber } from '../../shared/math/numberNormalization.js';
 
+const ALLOWED_TRANSITION_EVENT_TYPES = new Set(Object.values(WORLD_GAME_STATE_EVENT_TYPES));
+
 function isPassiveModeContext(context) {
   if (!isPlainObject(context)) return false;
   if (context.passiveMode === true) return true;
   if (typeof context.mode === 'string' && context.mode.trim().toLowerCase() === 'passive') return true;
   return false;
+}
+
+function validateTransitionEventType(eventType, transitionName) {
+  const normalizedEventType = String(eventType || '').trim();
+  if (!ALLOWED_TRANSITION_EVENT_TYPES.has(normalizedEventType)) {
+    return {
+      ok: false,
+      reason: `${String(transitionName || 'transition')} has unapproved eventType.`
+    };
+  }
+  return { ok: true };
+}
+
+function createWhitelistedTransition({
+  transitionName,
+  validate,
+  eventType,
+  authoritativeApply
+}) {
+  const baseValidate = typeof validate === 'function'
+    ? validate
+    : () => ({ ok: false, reason: `${String(transitionName || 'transition')} missing validate handler.` });
+
+  const definition = {
+    eventType: String(eventType || ''),
+    validate(payload, context) {
+      const eventTypeValidation = validateTransitionEventType(definition.eventType, transitionName);
+      if (!eventTypeValidation.ok) return eventTypeValidation;
+      return baseValidate(payload, context);
+    }
+  };
+
+  if (typeof authoritativeApply === 'function') {
+    definition.authoritativeApply = authoritativeApply;
+  }
+
+  return definition;
 }
 
 function recalcObjectiveSummary(objectivesById) {
@@ -191,36 +230,43 @@ function validateResolveRunOutcome(payload) {
 
 function createTransitionRegistry() {
   return {
-    transitionGameMode: {
+    transitionGameMode: createWhitelistedTransition({
+      transitionName: 'transitionGameMode',
       validate: validateTransitionGameMode,
       eventType: WORLD_GAME_STATE_EVENT_TYPES.GAME_MODE_CHANGED
-    },
-    transitionPhase: {
+    }),
+    transitionPhase: createWhitelistedTransition({
+      transitionName: 'transitionPhase',
       validate: validateTransitionPhase,
       eventType: WORLD_GAME_STATE_EVENT_TYPES.GAME_PHASE_CHANGED
-    },
-    advanceWave: {
+    }),
+    advanceWave: createWhitelistedTransition({
+      transitionName: 'advanceWave',
       validate: validateAdvanceWave,
       eventType: WORLD_GAME_STATE_EVENT_TYPES.TRANSITION_APPLIED
-    },
-    applyScoreDelta: {
+    }),
+    applyScoreDelta: createWhitelistedTransition({
+      transitionName: 'applyScoreDelta',
       validate: validateApplyScoreDelta,
       eventType: WORLD_GAME_STATE_EVENT_TYPES.TRANSITION_APPLIED,
       authoritativeApply: applyAuthoritativeScoreDelta
-    },
-    updateObjectiveProgress: {
+    }),
+    updateObjectiveProgress: createWhitelistedTransition({
+      transitionName: 'updateObjectiveProgress',
       validate: validateUpdateObjectiveProgress,
       eventType: WORLD_GAME_STATE_EVENT_TYPES.OBJECTIVE_SNAPSHOT_UPDATED,
       authoritativeApply: applyAuthoritativeObjectiveProgress
-    },
-    setWorldFlag: {
+    }),
+    setWorldFlag: createWhitelistedTransition({
+      transitionName: 'setWorldFlag',
       validate: validateSetWorldFlag,
       eventType: WORLD_GAME_STATE_EVENT_TYPES.TRANSITION_APPLIED
-    },
-    resolveRunOutcome: {
+    }),
+    resolveRunOutcome: createWhitelistedTransition({
+      transitionName: 'resolveRunOutcome',
       validate: validateResolveRunOutcome,
       eventType: WORLD_GAME_STATE_EVENT_TYPES.TRANSITION_APPLIED
-    }
+    })
   };
 }
 

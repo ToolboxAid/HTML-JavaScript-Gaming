@@ -1,5 +1,4 @@
 [ ] transitions.js modified only
-[ ] Passive mode does not mutate
-[ ] Authoritative mode unchanged
+[ ] Unknown event types rejected
 [ ] No API changes
 [ ] Tests pass
