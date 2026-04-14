@@ -1,6 +1,3 @@
-- Reissued as strict docs-only BUILD_PR bundle
-- Canvas internal size remains unchanged and centered
-- backgroundImage remains gameplay-only and draws before starfield/world
-- Bezel fit still uses the exact four-direction first-transparent-pixel rule
-- Added one shared extra-stretch developer setting for all four sides
-- Added auto-create behavior for the bezel-fit override/config file when missing
+- Added verification PR for completed Asteroids bezel/background work
+- Focused on centered canvas, fullscreen bezel visibility, override-file creation, and gameplay-only background
+- Allows only minimal surgical fixes if validation finds real defects

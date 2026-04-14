@@ -1,13 +1,12 @@
-- Bundle is docs-only
-- Codex command requires implementation by Codex, not ChatGPT
-- Bezel URL/path must resolve once
-- Canvas internal size must remain unchanged
-- Canvas must remain centered
-- Transparency window must use the exact four-direction first-transparent-pixel rule
-- Canvas display box must fill the transparency window as fully as possible while preserving aspect ratio
-- One shared extra-stretch variable must affect all four sides equally
-- Bezel-fit override/config file must be auto-created when missing and bezel is detected
-- Background must draw only during gameplay
-- Background must draw before starfield/world content
-- Codex output ZIP path must be:
-  <project folder>/tmp/BUILD_PR_LEVEL_10_20_FIX_BEZEL_PATH_AND_BACKGROUND_DRAW_ORDER.zip
+- Canvas internal size unchanged
+- Canvas remains centered
+- Bezel path not duplicated
+- Bezel visible only in fullscreen
+- Bezel visible on screen
+- Stretch override honored
+- Missing override file auto-created before gameplay
+- Existing override file preserved
+- Background draws only during gameplay
+- Background draws after clear and before starfield/world
+- Output ZIP path:
+  <project folder>/tmp/BUILD_PR_LEVEL_10_21_VERIFY_CENTERED_CANVAS_BEZEL_AND_GAMEPLAY_BACKGROUND.zip

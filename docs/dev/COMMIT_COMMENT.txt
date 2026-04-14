@@ -1,1 +1,2 @@
-Add pre-game bezel stretch override file auto-create
+Verify centered canvas, fullscreen bezel, override creation, and gameplay background
+BUILD_PR_LEVEL_10_21_VERIFY_CENTERED_CANVAS_BEZEL_AND_GAMEPLAY_BACKGROUND
