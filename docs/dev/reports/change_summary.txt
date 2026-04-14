@@ -1,15 +1,13 @@
 Summary
-- Added focused operator scripts under `scripts/PS`:
-  - `Switch-CodexPlanMode.ps1`
-  - `Set-CodexApiKey.ps1`
-  - `Validate-CodexApiKey.ps1`
-  - `Get-CodexOperatorState.ps1`
-  - shared helper: `CodexOperatorState.ps1`
-- Added usage + guardrails documentation at `docs/dev/CODEX_PLAN_AND_API_KEY_SCRIPTING.md`.
-- Implemented repo-local metadata state at `.codex/local/codex-operator-state.json` (generated at runtime), with no raw key persisted to disk by scripts.
-- Updated roadmap with the four requested new items and marked the plan/API-key scripting item as completed by this PR.
-
-Behavior implemented
-- Plan mode switching between `payg` and `codex` with explicit persisted state metadata.
-- API key input/update for `Process` and `User` scopes via environment variable configuration.
-- Safe API key validation (presence + format + metadata fingerprint consistency check) without printing raw secret values.
+- Added `scripts/PS/codex/New-CodexTemplateGame.ps1` as a focused template game creation script.
+- Script copies `games/_template` into `games/<game>` and enforces active asset domains with runtime/data split:
+  - `assets/sprites/data`
+  - `assets/tilemaps/data`
+  - `assets/parallax/data`
+  - `assets/vectors/data`
+- Script scaffolds:
+  - `games/<game>/assets/<game>.assets.json`
+  - `games/<game>/config/<game>.project.json`
+- Updated codex scripting doc paths to use `scripts/PS/codex/` as the base location.
+- Updated roadmap with status-only bracket change for template game creation scripting.
+- Commit comment format remains description first and PR name last.

@@ -1,15 +1,15 @@
 # Codex Plan And API Key Scripting
 
-This repo includes a focused operator scripting surface in `scripts/PS` for:
+This repo includes a focused operator scripting surface in `scripts/PS/codex` for:
 - switching active Codex billing/plan workflow mode
 - setting/updating local API key configuration
 - validating API key readiness safely
 
 ## Scripts
-- `scripts/PS/Switch-CodexPlanMode.ps1`
-- `scripts/PS/Set-CodexApiKey.ps1`
-- `scripts/PS/Validate-CodexApiKey.ps1`
-- `scripts/PS/Get-CodexOperatorState.ps1`
+- `scripts/PS/codex/Switch-CodexPlanMode.ps1`
+- `scripts/PS/codex/Set-CodexApiKey.ps1`
+- `scripts/PS/codex/Validate-CodexApiKey.ps1`
+- `scripts/PS/codex/Get-CodexOperatorState.ps1`
 
 ## State File
 - Default state file: `.codex/local/codex-operator-state.json`
@@ -20,37 +20,37 @@ This repo includes a focused operator scripting surface in `scripts/PS` for:
 Switch to Pay-as-you-go mode:
 
 ```powershell
-.\scripts\PS\Switch-CodexPlanMode.ps1 -Mode payg
+.\scripts\PS\codex\Switch-CodexPlanMode.ps1 -Mode payg
 ```
 
 Switch to Codex mode:
 
 ```powershell
-.\scripts\PS\Switch-CodexPlanMode.ps1 -Mode codex
+.\scripts\PS\codex\Switch-CodexPlanMode.ps1 -Mode codex
 ```
 
 Set or update API key for current process only (safe for smoke checks):
 
 ```powershell
-.\scripts\PS\Set-CodexApiKey.ps1 -ApiKey "sk-your-key" -Scope Process
+.\scripts\PS\codex\Set-CodexApiKey.ps1 -ApiKey "sk-your-key" -Scope Process
 ```
 
 Set or update API key for current user profile:
 
 ```powershell
-.\scripts\PS\Set-CodexApiKey.ps1 -Scope User
+.\scripts\PS\codex\Set-CodexApiKey.ps1 -Scope User
 ```
 
 Validate configured key state:
 
 ```powershell
-.\scripts\PS\Validate-CodexApiKey.ps1 -EnvVarName OPENAI_API_KEY -RequireStateRecord
+.\scripts\PS\codex\Validate-CodexApiKey.ps1 -EnvVarName OPENAI_API_KEY -RequireStateRecord
 ```
 
 Inspect current mode + metadata:
 
 ```powershell
-.\scripts\PS\Get-CodexOperatorState.ps1
+.\scripts\PS\codex\Get-CodexOperatorState.ps1
 ```
 
 ## Guardrails
