@@ -549,6 +549,7 @@ export default class fullscreenBezel {
       ? options.stretchConfigProvider
       : loadBezelStretchConfig;
     this.stretchConfigPromise = null;
+    this.stretchConfigInitialized = false;
     this.uniformEdgeStretchPx = 0;
     this.transparentWindowRect = null;
     this.imageSize = null;
@@ -565,6 +566,7 @@ export default class fullscreenBezel {
       canvasLayoutMode: this.canvasLayoutMode,
       transparentWindowRect: this.transparentWindowRect,
       stretchConfigPath: this.stretchConfigPath,
+      stretchConfigInitialized: this.stretchConfigInitialized,
       uniformEdgeStretchPx: this.uniformEdgeStretchPx
     };
   }
@@ -609,6 +611,11 @@ export default class fullscreenBezel {
   }
 
   refreshStretchConfig() {
+    if (this.stretchConfigInitialized) {
+      return this.stretchConfigPromise;
+    }
+    this.stretchConfigInitialized = true;
+
     if (!this.stretchConfigPath || typeof this.stretchConfigProvider !== "function") {
       this.applyStretchConfig(DEFAULT_BEZEL_STRETCH_CONFIG);
       return null;

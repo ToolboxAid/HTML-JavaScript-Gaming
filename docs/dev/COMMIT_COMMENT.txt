@@ -1,2 +1,1 @@
-Fix bezel path and gameplay background draw order, add bezel extra-stretch override
-BUILD_PR_LEVEL_10_20_FIX_BEZEL_PATH_AND_BACKGROUND_DRAW_ORDER
+Add pre-game bezel stretch override file auto-create

@@ -417,6 +417,17 @@ async function testBezelStretchConfigAutoCreate() {
     const absolutePath = path.resolve(tempRoot, configPath);
     const saved = JSON.parse(await fs.readFile(absolutePath, "utf8"));
     assert.deepEqual(saved, { uniformEdgeStretchPx: 0 });
+
+    const existingContent = { uniformEdgeStretchPx: 12 };
+    await fs.writeFile(absolutePath, `${JSON.stringify(existingContent, null, 2)}\n`, "utf8");
+    const loadedExisting = await ensureBezelStretchConfigFile(configPath, {
+      cwd: tempRoot,
+      fsModule: fs,
+      pathModule: path
+    });
+    const savedAfterReload = JSON.parse(await fs.readFile(absolutePath, "utf8"));
+    assert.deepEqual(loadedExisting, existingContent);
+    assert.deepEqual(savedAfterReload, existingContent);
   } finally {
     await fs.rm(tempRoot, { recursive: true, force: true });
   }
@@ -433,10 +444,12 @@ async function testBezelDetectionTriggersStretchConfigAutoCreate() {
   documentRef.body.appendChild(host);
 
   try {
+    let providerCalls = 0;
     const bezel = new fullscreenBezel({
       canvas,
       documentRef,
       stretchConfigProvider(configPath) {
+        providerCalls += 1;
         return ensureBezelStretchConfigFile(configPath, {
           cwd: tempRoot,
           fsModule: fs,
@@ -445,9 +458,13 @@ async function testBezelDetectionTriggersStretchConfigAutoCreate() {
       }
     });
     bezel.attach();
+    assert.equal(providerCalls, 0);
     bezel.element.naturalWidth = 1920;
     bezel.element.naturalHeight = 1080;
     bezel.element.onload?.();
+    assert.equal(providerCalls, 1);
+    bezel.sync({ fullscreenActive: false, fullscreenElement: host });
+    assert.equal(providerCalls, 1);
     if (bezel.stretchConfigPromise) {
       await bezel.stretchConfigPromise;
     }
@@ -456,6 +473,7 @@ async function testBezelDetectionTriggersStretchConfigAutoCreate() {
     const saved = JSON.parse(await fs.readFile(createdPath, "utf8"));
     assert.deepEqual(saved, { uniformEdgeStretchPx: 0 });
     assert.equal(bezel.getState().stretchConfigPath, "games/Asteroids/assets/images/bezel.stretch.override.json");
+    assert.equal(bezel.getState().stretchConfigInitialized, true);
   } finally {
     await fs.rm(tempRoot, { recursive: true, force: true });
   }
