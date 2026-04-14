@@ -1,10 +1,35 @@
-Validation Checklist - BUILD_PR_LEVEL_09_22_DEPLOYMENT_PIPELINE_INTEGRATION
+Validation Checklist - BUILD_PR_LEVEL_09_23_SCRIPT_STRUCTURE_FINALIZATION
 
-[x] template game script moved from `scripts/PS/codex/` to `scripts/PS/`
-[x] script renamed to purpose-based name (`New-TemplateGame.ps1`)
-[x] references updated to avoid broken paths
-[x] script folder structure preserved (`scripts/PS/`, `scripts/PS/codex/`, `scripts/PS/deploy/`)
-[x] PowerShell parse check passes on renamed/touched script
-[x] focused dry-run/apply smoke checks pass for renamed script
-[x] roadmap updated with status-only bracket change
-[x] commit format enforced: description first line, PR name last line
+Scope
+[x] PR remains in the script-structure lane only
+[x] No engine changes introduced
+[x] No gameplay/runtime feature changes introduced
+[x] No tool UI redesign introduced
+[x] No unrelated deployment feature expansion introduced
+
+Structure
+[x] General operator/template scripts live under `scripts/PS/`
+[x] Codex-only scripts live under `scripts/PS/codex/`
+[x] Deployment scripts live under `scripts/PS/deploy/`
+[x] No misplaced general script remains in `scripts/PS/codex/`
+[x] References point to the updated script paths
+[x] Names match actual purpose where touched
+
+Validation
+[x] Touched PowerShell files parse/read cleanly
+[x] Focused reference/path checks pass
+[x] Focused structure checks pass
+[x] Focused template script dry-run/apply smoke check passes
+
+Roadmap
+[x] Roadmap status updated only where applicable
+[x] No unapproved roadmap prose changes made
+
+Packaging
+[x] docs/pr document included
+[x] docs/dev/codex_commands.md included
+[x] docs/dev/commit_comment.txt included
+[x] docs/dev/next_command.txt included
+[x] docs/dev/reports/change_summary.txt included
+[x] docs/dev/reports/validation_checklist.txt included
+[x] Single ZIP produced at `<project folder>/tmp/BUILD_PR_LEVEL_09_23_SCRIPT_STRUCTURE_FINALIZATION.zip`

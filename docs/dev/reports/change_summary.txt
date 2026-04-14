@@ -1,13 +1,16 @@
 Summary
-- Moved template game creation script from `scripts/PS/codex/New-CodexTemplateGame.ps1` to `scripts/PS/New-TemplateGame.ps1`.
-- Renamed script to reflect purpose (general template game creation, not codex-only naming).
-- Updated script internals for new location:
-  - repo-root resolution now matches `scripts/PS/` depth
-  - generation note path updated to `scripts/PS/New-TemplateGame.ps1`
-- Updated documentation references to the new script path:
+- Finalized script placement/naming for the template game creation script:
+  - removed `scripts/PS/New-TemplateGame.ps1`
+  - added `scripts/PS/New-Game-from-Template.ps1`
+- Updated all active references to the renamed script path:
   - `docs/dev/CODEX_TEMPLATE_GAME_CREATION_SCRIPTING.md`
-- Preserved script folder structure:
+  - generation-note path in `scripts/PS/New-Game-from-Template.ps1`
+- Added focused structure validation script:
+  - `scripts/PS/Validate-ScriptStructure.ps1`
+- Added final structure expectations doc:
+  - `docs/dev/POWERSHELL_SCRIPT_STRUCTURE.md`
+- Preserved and validated folder roles:
   - `scripts/PS/` (general)
-  - `scripts/PS/codex/` (codex)
+  - `scripts/PS/codex/` (Codex-only)
   - `scripts/PS/deploy/` (deployment)
-- Updated roadmap with status-only bracket change.
+- Applied roadmap status-only update for script naming policy finalization.

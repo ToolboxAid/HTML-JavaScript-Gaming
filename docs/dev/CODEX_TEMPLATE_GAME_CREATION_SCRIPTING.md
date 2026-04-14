@@ -1,13 +1,13 @@
 # Codex Template Game Creation Scripting
 
-Use `scripts/PS/New-TemplateGame.ps1` to create a new game scaffold from `games/_template` with the standardized asset/data and tool-project contract.
+Use `scripts/PS/New-Game-from-Template.ps1` to create a new game scaffold from `games/_template` with the standardized asset/data and tool-project contract.
 
 ## Script
-- `scripts/PS/New-TemplateGame.ps1`
+- `scripts/PS/New-Game-from-Template.ps1`
 
 ## Example
 ```powershell
-.\scripts\PS\New-TemplateGame.ps1 -GameId "my-new-game" -DisplayName "My New Game" -Apply
+.\scripts\PS\New-Game-from-Template.ps1 -GameId "my-new-game" -DisplayName "My New Game" -Apply
 ```
 
 ## Generated Structure

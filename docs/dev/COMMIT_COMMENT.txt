@@ -1,3 +1,3 @@
-Moves template game creation out of codex-specific scripts by relocating `New-CodexTemplateGame.ps1` to `scripts/PS/New-TemplateGame.ps1`, updates all references, and preserves `scripts/PS/`, `scripts/PS/codex/`, and `scripts/PS/deploy/` boundaries.
+Finalizes the PowerShell script tree by renaming/moving template game creation to `scripts/PS/New-Game-from-Template.ps1`, updating references, and enforcing `scripts/PS/`, `scripts/PS/codex/`, and `scripts/PS/deploy/` role boundaries.
 
-BUILD_PR_LEVEL_09_22_DEPLOYMENT_PIPELINE_INTEGRATION
+BUILD_PR_LEVEL_09_23_SCRIPT_STRUCTURE_FINALIZATION
