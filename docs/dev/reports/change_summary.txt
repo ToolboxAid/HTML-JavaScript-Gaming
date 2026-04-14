@@ -1,1 +1,1 @@
-Adds additional validation checks.
+Adds required data/ folders for Asteroids assets.

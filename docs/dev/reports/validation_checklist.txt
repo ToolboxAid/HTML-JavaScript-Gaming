@@ -1,3 +1,3 @@
-[ ] run validation
-[ ] break folder structure → fails
-[ ] restore → passes
+[ ] run Validate-All.ps1 → PASS
+[ ] run Validate-All.ps1 -ValidateAssetStructure → PASS
+[ ] confirm data/ folders exist

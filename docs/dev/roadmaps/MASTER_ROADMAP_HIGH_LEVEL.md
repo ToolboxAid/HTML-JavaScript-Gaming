@@ -598,7 +598,7 @@
 - [x] Expand testing/validation structure
 
 ### Repo Operator + Asset Conversion Scripting Lanes
-- [ ] Existing games asset folders updated so existing images / vectors / related runtime assets can be transformed into tool-editable `data/` objects, with corresponding project JSON updates
+- [.] Existing games asset folders updated so existing images / vectors / related runtime assets can be transformed into tool-editable `data/` objects, with corresponding project JSON updates
 - [x] Add the ability for a PowerShell script to create a new game from template, including a project scaffold for the tools
 - [x] Add scripts to prep / update / delete the repo so it can be placed on a website
 - [x] Add scripts to switch between Pay-as-you-go and Codex plan modes, and scripts to input API key material and validate it
