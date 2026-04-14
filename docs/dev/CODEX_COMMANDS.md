@@ -2,44 +2,41 @@ MODEL: GPT-5.4
 REASONING: high
 
 COMMAND:
-Create `BUILD_PR_LEVEL_10_16_AUTODISCOVER_FULLSCREEN_BEZEL_AND_BACKGROUND` as one small testable PR.
+Create `BUILD_PR_LEVEL_10_17_HTML_FULLSCREEN_BEZEL_AND_CANVAS_BACKGROUND_SPLIT` as one small testable PR.
 
-Implement convention-based autodiscovery and autodraw for these optional files:
+Implement the correction exactly as follows:
 
-- `games/<gameId>/assets/images/background.png`
-- `games/<gameId>/assets/images/bezel.png`
+1. Add a dedicated canvas class/module named `backgroundImage`
+   - autodiscover: `games/<gameId>/assets/images/background.png`
+   - render into the canvas
+   - draw immediately after screen clear
+   - draw before ALL other game/world content
+   - keep logic independent from bezel logic
 
-Requirements:
-1. `background.png`
-   - if present, draw automatically
-   - draw before game/world content
-   - no user-added game code required
+2. Add a dedicated HTML-overlay class/module named `fullscreenBezel`
+   - autodiscover: `games/<gameId>/assets/images/bezel.png`
+   - render at the HTML/container level above the canvas
+   - only show when fullscreen is active
+   - hide when not fullscreen
+   - no canvas drawing for bezel
+   - no Parallax coupling
 
-2. `bezel.png`
-   - if present, draw automatically
-   - only draw in fullscreen mode
-   - draw in screen space
-   - draw after gameplay/HUD by default
-   - no user-added game code required
+3. Remove any incorrect coupling between background and bezel behavior
+   - separate classes
+   - separate render paths
+   - separate responsibilities
 
-3. Architecture rules
-   - do NOT use Parallax for bezel
-   - keep implementation minimal and shared where appropriate
-   - do not require explicit per-game registration
-   - do not break games that do not have these files
-
-4. Validation
-   - add/update focused tests or validation coverage for:
-     - autodetect present file
-     - no-op when file missing
-     - fullscreen gating for bezel
-     - background draw-before-world behavior
-   - verify Asteroids bezel candidate works from:
-     `games/Asteroids/assets/images/bezel.png`
+4. Validation/tests
+   - cover background draw order: after clear, before world render
+   - cover bezel fullscreen-only visibility
+   - cover bezel attachment to HTML/container layer rather than canvas
+   - verify Asteroids uses:
+     - `games/Asteroids/assets/images/background.png` when present
+     - `games/Asteroids/assets/images/bezel.png` in fullscreen
 
 5. Final packaging step is REQUIRED
    - package ALL changed files into this exact repo-structured ZIP:
-     `<project folder>/tmp/BUILD_PR_LEVEL_10_16_AUTODISCOVER_FULLSCREEN_BEZEL_AND_BACKGROUND.zip`
+     `<project folder>/tmp/BUILD_PR_LEVEL_10_17_HTML_FULLSCREEN_BEZEL_AND_CANVAS_BACKGROUND_SPLIT.zip`
 
 Hard rules:
 - no commit-only result

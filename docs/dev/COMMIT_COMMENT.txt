@@ -1,2 +1,2 @@
-Autodiscover and autodraw fullscreen bezel and background images
-BUILD_PR_LEVEL_10_16_AUTODISCOVER_FULLSCREEN_BEZEL_AND_BACKGROUND
+Split canvas background and HTML fullscreen bezel into separate classes
+BUILD_PR_LEVEL_10_17_HTML_FULLSCREEN_BEZEL_AND_CANVAS_BACKGROUND_SPLIT

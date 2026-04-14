@@ -1,6 +1,7 @@
-- `background.png` autodetects and draws without manual wiring
-- `bezel.png` autodetects and draws without manual wiring
-- Bezel only renders in fullscreen
-- Missing files cause no runtime failure
-- Asteroids bezel candidate is covered
-- Output ZIP created at `<project folder>/tmp/BUILD_PR_LEVEL_10_16_AUTODISCOVER_FULLSCREEN_BEZEL_AND_BACKGROUND.zip`
+- `backgroundImage` exists as separate class/module
+- `fullscreenBezel` exists as separate class/module
+- Background draws after clear and before world render
+- Bezel is HTML-level, not canvas-level
+- Bezel only appears in fullscreen
+- Missing files do not break runtime
+- Output ZIP created at `<project folder>/tmp/BUILD_PR_LEVEL_10_17_HTML_FULLSCREEN_BEZEL_AND_CANVAS_BACKGROUND_SPLIT.zip`

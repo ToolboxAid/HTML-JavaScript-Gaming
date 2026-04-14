@@ -9,7 +9,7 @@ import RuntimeMetrics from './RuntimeMetrics.js';
 import FrameClock from './FrameClock.js';
 import FixedTicker from './FixedTicker.js';
 import EventBus from '../events/EventBus.js';
-import { AutoDiscoveredGameImageLayers, FullscreenService } from '../runtime/index.js';
+import { backgroundImage, fullscreenBezel, FullscreenService } from '../runtime/index.js';
 import { AudioService } from '../audio/index.js';
 import { Logger } from '../logging/index.js';
 import { SettingsSystem } from '../release/index.js';
@@ -26,7 +26,8 @@ export default class Engine {
     frameClock = null,
     fixedTicker = null,
     fullscreen = null,
-    autoImageLayers = null,
+    backgroundImageLayer = null,
+    fullscreenBezelLayer = null,
     audio = null,
     logger = null,
   } = {}) {
@@ -52,7 +53,11 @@ export default class Engine {
       documentRef: globalThis.document ?? null,
       target: canvas,
     });
-    this.autoImageLayers = autoImageLayers || new AutoDiscoveredGameImageLayers({
+    this.backgroundImageLayer = backgroundImageLayer || new backgroundImage({
+      documentRef: globalThis.document ?? null
+    });
+    this.fullscreenBezelLayer = fullscreenBezelLayer || new fullscreenBezel({
+      canvas,
       documentRef: globalThis.document ?? null
     });
     this.audio = audio || new AudioService();
@@ -102,6 +107,9 @@ export default class Engine {
     if (this.fullscreen && typeof this.fullscreen.attach === 'function') {
       this.fullscreen.attach(this.canvas);
     }
+    if (this.fullscreenBezelLayer && typeof this.fullscreenBezelLayer.attach === 'function') {
+      this.fullscreenBezelLayer.attach();
+    }
 
     this.frameClock.reset();
     this.fixedTicker.reset();
@@ -122,6 +130,9 @@ export default class Engine {
     }
     if (this.fullscreen && typeof this.fullscreen.detach === 'function') {
       this.fullscreen.detach();
+    }
+    if (this.fullscreenBezelLayer && typeof this.fullscreenBezelLayer.detach === 'function') {
+      this.fullscreenBezelLayer.detach();
     }
   }
 
@@ -149,12 +160,13 @@ export default class Engine {
     updateDurationMs = performance.now() - updateStart;
 
     const renderStart = performance.now();
-    this.autoImageLayers?.renderBackground?.(this.renderer);
+    this.renderer.clear();
+    this.backgroundImageLayer?.render?.(this.renderer);
     if (this.scene && typeof this.scene.render === 'function') {
       this.scene.render(this.renderer, this);
     }
     const fullscreenActive = this.fullscreen?.getState?.().active === true;
-    this.autoImageLayers?.renderBezel?.(this.renderer, { fullscreenActive });
+    this.fullscreenBezelLayer?.sync?.({ fullscreenActive });
     renderDurationMs = performance.now() - renderStart;
 
     this.metrics.recordFrame({
