@@ -117,7 +117,7 @@
 - [x] `src/shared/state`
 - [x] `games/_template/flow`
 - [x] `samples/phase-01`
-- [x] `samples/phase-13_network-concepts`
+- [x] `samples/phase-13`
 - [x] `tools/shared`
 
 ### Recent Checkpoint Notes
@@ -196,7 +196,7 @@
 - [x] Asteroids numeric sanitizers promoted into shared math
 - [x] duplicated `asObject` / `asArray` consumers moved to shared utils
 - [.] shared math is now a real active layer and should continue by exact-cluster extraction only
-- [.] remaining number/string/id helpers still need exact-cluster normalization
+- [ ] remaining number/string/id helpers still need exact-cluster normalization
 
 ---
 
@@ -206,7 +206,7 @@
 - [x] promotion-gate lane active
 - [x] final promotion gate implemented and applied
 - [x] authoritative/passive handoff finalized
-- [.] replay/timeline boundaries normalized
+- [ ] replay/timeline boundaries normalized
 - [x] state contracts extracted/confirmed
 - [x] public selectors stabilized
 - [x] observability for promotion/handoff completed
@@ -305,7 +305,7 @@
 - [x] phase grouping normalized
 - [x] `samples/shared` boundaries defined and used
 - [x] sample index normalized to phase structure
-- [X] sample-to-engine dependency cleanup completed
+- [x] sample-to-engine dependency cleanup completed
 - [x] sample duplicate helper usage reduced
 - [x] sample curriculum progression validated
 
@@ -314,7 +314,7 @@
 - [x] tilemap / camera / rendering phases normalized
 - [x] tool-linked sample phases normalized
 - [x] network concepts / latency / simulation phase normalized
-- [.] 3D phase normalized
+- [ ] 3D phase normalized
 
 ### Dependency-Driven Sample Builds
 - [ ] 2D camera sample
@@ -399,6 +399,14 @@
 - [x] Logging/output expectations
 - [x] Container debug notes
 
+
+### Recent Phase 13 Execution Checkpoint (Additive)
+- [x] simulation baseline established
+- [x] latency modeling implemented
+- [x] reconciliation implemented
+- [x] prediction implemented
+- [x] integration polish completed
+
 ### Recommended Execution Order
 - [x] Sample A
 - [x] Connection + RTT + tracing basics
@@ -443,6 +451,13 @@
 - [.] PerformanceProfilerTool
 - [.] AssetPipelineTool
 - [.] Tile/Model Converter Tool
+
+
+### Recent Tool Execution Checkpoint (Additive)
+- [x] tool sample linking established
+- [x] tool sample roundtrip working
+- [x] live preview sync implemented
+- [.] state binding contract defined
 
 ### Tooling Strategy By Need
 - [ ] 2D tool stabilization before 3D tool expansion
@@ -585,9 +600,9 @@
 
 ### Active Execution Lanes
 - [x] Finish current promotion-gate lane (BUILD => APPLY)
-- [.] Apply repo structure normalization implementation plan
-- [.] Extract / normalize shared utilities
-- [.] Normalize phase-13 network concepts samples
+- [x] Apply repo structure normalization implementation plan
+- [x] Extract / normalize shared utilities
+- [x] Normalize phase-13 network concepts samples
 
 ### Next Planning / Normalization Lanes
 - [ ] Apply master roadmap baseline
@@ -609,8 +624,8 @@
 - [x] Execute `templates/` relocation and root removal cleanup PR
 
 ### Recommended Final Status Summary
-- [.] current active execution lanes are 6 / 8
-- [.] next planning lanes are 2 / 7 / 9 / 10
+- [.] current active execution lanes are 3 / 6 / 8
+- [ ] next planning lanes are 2 / 5 / 7 / 9 / 10
 - [ ] later capability lanes are 11 / 12
 - [ ] final cleanup lane is 13
 
