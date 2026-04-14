@@ -1,0 +1,1 @@
+Tool data contracts normalization (docs-only PR).

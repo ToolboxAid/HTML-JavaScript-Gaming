@@ -2,6 +2,18 @@ import { cloneValue, safeString } from "./projectSystemValueUtils.js";
 
 export const PROJECT_TOOL_INTEGRATION_SCHEMA = "html-js-gaming.project-tool-integration";
 export const PROJECT_TOOL_INTEGRATION_VERSION = 1;
+export const TOOL_DATA_CONTRACT_SCHEMA = "html-js-gaming.tool-data-contract";
+export const TOOL_DATA_CONTRACT_VERSION = 1;
+
+const TOOL_DATA_CONTRACT_IDS = Object.freeze({
+  "tile-map-editor": "tool-state.tile-map-editor/1",
+  "parallax-editor": "tool-state.parallax-editor/1",
+  "sprite-editor": "tool-state.sprite-editor/1",
+  "vector-map-editor": "tool-state.vector-map-editor/1",
+  "vector-asset-studio": "tool-state.vector-asset-studio/1",
+  "asset-browser": "tool-state.asset-browser/1",
+  "palette-browser": "tool-state.palette-browser/1"
+});
 
 function normalizeId(value) {
   return safeString(value, "");
@@ -195,6 +207,59 @@ export function normalizeToolStateForProjectManifest(toolId, rawState) {
   return cloneValue(state);
 }
 
+export function getToolDataContract(toolId) {
+  const safeToolId = normalizeId(toolId);
+  return {
+    schema: TOOL_DATA_CONTRACT_SCHEMA,
+    version: TOOL_DATA_CONTRACT_VERSION,
+    toolId: safeToolId,
+    contractId: TOOL_DATA_CONTRACT_IDS[safeToolId] || "tool-state.generic/1"
+  };
+}
+
+export function validateToolStateContract(toolId, rawState) {
+  const safeToolId = normalizeId(toolId);
+  const sourceState = readObject(rawState);
+  const normalizedState = normalizeToolStateForProjectManifest(safeToolId, sourceState);
+  const issues = [];
+  const warnings = [];
+
+  if (!safeToolId) {
+    issues.push("Tool id is required.");
+  }
+
+  if (!normalizedState || typeof normalizedState !== "object") {
+    issues.push("Normalized tool state must be an object.");
+  }
+
+  if (safeToolId === "tile-map-editor" || safeToolId === "parallax-editor") {
+    if (!sourceState.documentModel || typeof sourceState.documentModel !== "object") {
+      issues.push("documentModel block is required.");
+    }
+    if (!readObject(sourceState.documentModel).assetRefs || typeof readObject(sourceState.documentModel).assetRefs !== "object") {
+      issues.push("documentModel.assetRefs block is required.");
+    }
+  } else if (safeToolId === "sprite-editor") {
+    if (!sourceState.project || typeof sourceState.project !== "object") {
+      issues.push("project block is required.");
+    }
+    if (!readObject(sourceState.project).assetRefs || typeof readObject(sourceState.project).assetRefs !== "object") {
+      issues.push("project.assetRefs block is required.");
+    }
+  } else if (!TOOL_DATA_CONTRACT_IDS[safeToolId]) {
+    warnings.push(`No explicit tool data contract is registered for ${safeToolId || "(empty tool id)"}.`);
+  }
+
+  const contract = getToolDataContract(safeToolId);
+  return {
+    ...contract,
+    valid: issues.length === 0,
+    issues,
+    warnings,
+    normalizedState
+  };
+}
+
 export function extractToolAssetReferences(toolId, rawState) {
   const safeToolId = normalizeId(toolId);
   const state = normalizeToolStateForProjectManifest(safeToolId, rawState);
@@ -248,6 +313,8 @@ export function buildProjectToolIntegration(rawTools) {
   const sourceTools = rawTools && typeof rawTools === "object" ? rawTools : {};
   const tools = {};
   let aggregateRefs = createEmptyNormalizedAssetReferences();
+  const invalidTools = [];
+  const warningsByTool = {};
 
   Object.entries(sourceTools).forEach(([toolId, toolState]) => {
     const safeToolId = normalizeId(toolId);
@@ -255,12 +322,23 @@ export function buildProjectToolIntegration(rawTools) {
       return;
     }
 
-    const normalizedState = normalizeToolStateForProjectManifest(safeToolId, toolState);
+    const contractValidation = validateToolStateContract(safeToolId, toolState);
+    const normalizedState = contractValidation.normalizedState;
     const assetReferences = extractToolAssetReferences(safeToolId, normalizedState);
     aggregateRefs = mergeAssetRefs(aggregateRefs, assetReferences);
+    if (!contractValidation.valid) {
+      invalidTools.push(safeToolId);
+    }
+    if (contractValidation.warnings.length > 0) {
+      warningsByTool[safeToolId] = cloneValue(contractValidation.warnings);
+    }
 
     tools[safeToolId] = {
       toolId: safeToolId,
+      contractId: contractValidation.contractId,
+      contractVersion: contractValidation.version,
+      contractStatus: contractValidation.valid ? "valid" : "invalid",
+      contractIssues: cloneValue(contractValidation.issues),
       assetReferences
     };
   });
@@ -269,6 +347,13 @@ export function buildProjectToolIntegration(rawTools) {
     schema: PROJECT_TOOL_INTEGRATION_SCHEMA,
     version: PROJECT_TOOL_INTEGRATION_VERSION,
     tools,
-    assetReferences: aggregateRefs
+    assetReferences: aggregateRefs,
+    contractSummary: {
+      schema: TOOL_DATA_CONTRACT_SCHEMA,
+      version: TOOL_DATA_CONTRACT_VERSION,
+      status: invalidTools.length === 0 ? "valid" : "invalid",
+      invalidToolIds: invalidTools,
+      warningsByTool
+    }
   };
 }

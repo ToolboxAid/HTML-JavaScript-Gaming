@@ -88,6 +88,8 @@ import { run as runStorageService } from './persistence/StorageService.test.mjs'
 import { run as runAssetValidationEngine } from './tools/AssetValidationEngine.test.mjs';
 import { run as runAssetUsageIntegration } from './tools/AssetUsageIntegration.test.mjs';
 import { run as runAssetRemediationSystem } from './tools/AssetRemediationSystem.test.mjs';
+import { run as runToolBoundaryEnforcement } from './tools/ToolBoundaryEnforcement.test.mjs';
+import { run as runProjectToolDataContracts } from './tools/ProjectToolDataContracts.test.mjs';
 import { run as runToolEntryLaunchContract } from './tools/ToolEntryLaunchContract.test.mjs';
 import { run as runProjectPackagingSystem } from './tools/ProjectPackagingSystem.test.mjs';
 import { run as runRuntimeAssetLoader } from './tools/RuntimeAssetLoader.test.mjs';
@@ -201,6 +203,8 @@ const tests = [
     ['AssetValidationEngine', runAssetValidationEngine],
     ['AssetUsageIntegration', runAssetUsageIntegration],
     ['AssetRemediationSystem', runAssetRemediationSystem],
+    ['ToolBoundaryEnforcement', runToolBoundaryEnforcement],
+    ['ProjectToolDataContracts', runProjectToolDataContracts],
     ['ToolEntryLaunchContract', runToolEntryLaunchContract],
     ['ProjectPackagingSystem', runProjectPackagingSystem],
     ['RuntimeAssetLoader', runRuntimeAssetLoader],

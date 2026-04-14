@@ -32,6 +32,7 @@ import { buildEditorExperienceLayer, summarizeEditorExperienceLayer } from "../s
 import { buildDebugVisualizationLayer, summarizeDebugVisualizationLayer } from "../shared/debugVisualizationLayer.js";
 import { registerToolBootContract } from "../shared/toolBootContract.js";
 import { createLivePreviewSyncBridge, validateStateBindingPayload } from "../shared/livePreviewSyncChannel.js";
+import { normalizeToolSamplePath, toToolSampleLabel } from "../shared/toolSampleCatalog.js";
 
 const SAMPLE_DIRECTORY_PATH = "./samples/";
 const SAMPLE_MANIFEST_PATH = "./samples/sample-manifest.json";
@@ -308,35 +309,6 @@ function summarizeGraphFindings(findings) {
   return Array.isArray(findings) && findings.length > 0
     ? ` Graph findings: ${findings.length}.`
     : " Graph findings: none.";
-}
-
-function normalizeSamplePath(pathValue) {
-  if (typeof pathValue !== "string") {
-    return null;
-  }
-
-  const trimmed = pathValue.trim().replace(/\\/g, "/");
-  if (!trimmed || trimmed.includes("..")) {
-    return null;
-  }
-
-  if (trimmed.startsWith("./samples/")) {
-    return trimmed;
-  }
-  if (trimmed.startsWith("samples/")) {
-    return `./${trimmed}`;
-  }
-  return `./samples/${trimmed}`;
-}
-
-function toSampleLabel(pathValue) {
-  const fileName = String(pathValue).split("/").pop() || String(pathValue);
-  const base = fileName.replace(/\.json$/i, "");
-  const words = base.replace(/[_-]+/g, " ").replace(/\s+/g, " ").trim();
-  if (!words) {
-    return "Sample";
-  }
-  return words.replace(/\b\w/g, (value) => value.toUpperCase());
 }
 
 function mod(value, range) {
@@ -818,12 +790,12 @@ class ParallaxEditorApp {
   }
 
   createSampleEntry(pathValue, labelHint = "", idHint = "") {
-    const path = normalizeSamplePath(pathValue);
+    const path = normalizeToolSamplePath(pathValue);
     if (!path) {
       return null;
     }
     const normalizedLabel = typeof labelHint === "string" ? labelHint.trim() : "";
-    const fallbackLabel = toSampleLabel(path);
+    const fallbackLabel = toToolSampleLabel(path);
     return {
       id: typeof idHint === "string" && idHint.trim() ? idHint.trim() : path,
       label: normalizedLabel && !/[\\/]/.test(normalizedLabel) ? normalizedLabel : fallbackLabel,
@@ -880,7 +852,7 @@ class ParallaxEditorApp {
 
   async loadSampleManifest(options = {}) {
     const quiet = options.quiet === true;
-    const previousSelection = normalizeSamplePath(this.refs.sampleSelect.value);
+    const previousSelection = normalizeToolSamplePath(this.refs.sampleSelect.value);
     if (!quiet) {
       this.refs.sampleSelect.innerHTML = "<option value=\"\">Loading samples...</option>";
       this.refs.loadSampleButton.disabled = true;
@@ -958,7 +930,7 @@ class ParallaxEditorApp {
   }
 
   handleSampleSelectionChanged() {
-    const selectedPath = normalizeSamplePath(this.refs.sampleSelect.value);
+    const selectedPath = normalizeToolSamplePath(this.refs.sampleSelect.value);
     if (!selectedPath) {
       return;
     }
@@ -966,7 +938,7 @@ class ParallaxEditorApp {
   }
 
   async handleLoadSelectedSample() {
-    const selectedPath = normalizeSamplePath(this.refs.sampleSelect.value);
+    const selectedPath = normalizeToolSamplePath(this.refs.sampleSelect.value);
     if (!selectedPath) {
       this.updateStatus("Select a sample before loading.");
       return;

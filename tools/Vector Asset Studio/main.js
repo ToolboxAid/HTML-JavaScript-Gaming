@@ -5,6 +5,7 @@ David Quesenberry
 main.js
 */
 import { registerToolBootContract } from "../shared/toolBootContract.js";
+import { normalizeToolSamplePath } from "../shared/toolSampleCatalog.js";
 
 const SVG_NS = "http://www.w3.org/2000/svg";
 const SAMPLE_MANIFEST_PATH = "./samples/sample-manifest.json";
@@ -2151,23 +2152,6 @@ function loadSvgFromText(svgText, sourceName = "loaded-svg") {
   setStatus(embeddedEditorOptions ? `Loaded SVG: ${sourceName} (embedded editor options applied).` : `Loaded SVG: ${sourceName}`);
 }
 
-function normalizeSamplePath(pathValue) {
-  if (typeof pathValue !== "string") {
-    return null;
-  }
-  const normalized = pathValue.trim().replace(/\\/g, "/");
-  if (!normalized || normalized.includes("..")) {
-    return null;
-  }
-  if (normalized.startsWith("./samples/")) {
-    return normalized;
-  }
-  if (normalized.startsWith("samples/")) {
-    return `./${normalized}`;
-  }
-  return `./samples/${normalized}`;
-}
-
 function resolvePaletteIdFromConfig(value) {
   if (typeof value !== "string" || !value.trim()) {
     return NO_PALETTE_ID;
@@ -2355,7 +2339,7 @@ async function refreshSampleOptions(preserveSelection = true) {
     const seen = new Set();
 
     rawSamples.forEach((entry, index) => {
-      const path = normalizeSamplePath(entry?.path);
+      const path = normalizeToolSamplePath(entry?.path);
       if (!path || seen.has(path)) {
         return;
       }
