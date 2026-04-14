@@ -1,26 +1,23 @@
 Summary
-- Implemented a surgical 09_12 adoption slice in the Asteroids runtime demo consumer lane.
-- Replaced touched ad hoc runtime file selection for bindable domains with 09_11 manifest-driven runtime binding.
-- Added focused adoption validation to prove runtime resolution uses binding outputs and remains `/data/`-safe.
+- Consolidated runtime asset lookup behind one shared interface: `tools/shared/pipeline/runtimeAssetLookup.js`.
+- Replaced duplicated runtime lookup resolver logic in touched consumers with the shared manifest-backed lookup.
+- Kept manifest binding as the lookup source of truth for bindable runtime asset domains.
 
-Code changes
-- `tools/shared/asteroidsPlatformDemo.js`
-  - imports and uses `coordinateGameAssetManifest`, `createRuntimeAssetBinding`, and `resolveRuntimeAsset`
-  - adds bindable domain mapping for `vector.*`, `tilemap.*`, `parallax.*`, `sprite.*`
-  - builds a coordinated game-asset manifest + runtime binding from runtime source records
-  - resolves bindable runtime assets through manifest-driven binding instead of ad hoc direct path use in touched resolver code
-  - preserves non-bindable runtime asset behavior and existing runtime/demo flow
-- `tests/games/AsteroidsAssetReferenceAdoption.test.mjs` (new)
-  - asserts runtime binding is `ready` with no issues
-  - asserts vector/tilemap/parallax assets resolve through binding and runtime paths do not include `/data/`
-  - asserts runtime bootstrap asset table paths match binding runtime paths
+Implementation
+- Added `createRuntimeManifestAssetLookup` and `getRuntimeBindingDomain`:
+  - Builds/uses `coordinateGameAssetManifest` + `createRuntimeAssetBinding`
+  - Exposes `resolvePackagedAsset` for runtime loaders
+  - Supports strict (`missingBindingBehavior: "null"`) and fallback (`"static"`) missing-binding handling
+- Replaced local duplicate resolver logic in:
+  - `tools/shared/asteroidsPlatformDemo.js`
+  - `tools/shared/vectorNativeTemplate.js`
+  - `tools/shared/vectorTemplateSampleGame.js`
+  - `tools/shared/vectorAssetSystem.js`
+- Added focused consolidation test:
+  - `tests/tools/RuntimeAssetLookupConsolidation.test.mjs`
+- Registered the test in `tests/run-tests.mjs`.
 
-Scope guard
-- No engine core changes.
-- No tool UI redesign.
-- No gameplay/runtime feature expansion.
-- No repo-wide migration.
-- No asset moves.
-
-Roadmap
-- No roadmap file changes were required in this checkpoint.
+Roadmap (status-only)
+- Updated one bracket status only in `docs/dev/roadmaps/MASTER_ROADMAP_HIGH_LEVEL.md`:
+  - `Normalize tools/shared and tool boundaries` moved from `[.]` to `[x]`
+- No roadmap prose/order/wording edits.

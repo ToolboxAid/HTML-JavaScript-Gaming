@@ -10,8 +10,7 @@ import { buildPerformanceProfiler, summarizePerformanceProfiler } from "./perfor
 import { runPublishingPipeline, summarizePublishingPipeline } from "./publishingPipeline.js";
 import { normalizeSvgToVectorAsset } from "./vector/vectorAssetBridge.js";
 import { cloneJson } from "../../src/shared/utils/jsonUtils.js";
-import { coordinateGameAssetManifest } from "./pipeline/gameAssetManifestCoordinator.js";
-import { createRuntimeAssetBinding, resolveRuntimeAsset } from "./pipeline/runtimeAssetBinding.js";
+import { createRuntimeManifestAssetLookup } from "./pipeline/runtimeAssetLookup.js";
 
 function sanitizeText(value) {
   return typeof value === "string" ? value.trim() : "";
@@ -329,48 +328,6 @@ function createRuntimeAssetSources(registry) {
   };
 }
 
-const BINDABLE_ASSET_DOMAINS = Object.freeze({
-  "vector.": "vectors",
-  "tilemap.": "tilemaps",
-  "parallax.": "parallax",
-  "sprite.": "sprites"
-});
-
-function getBindableDomainForAssetId(assetId) {
-  const normalizedId = sanitizeText(assetId).toLowerCase();
-  const matchedPrefix = Object.keys(BINDABLE_ASSET_DOMAINS).find((prefix) => normalizedId.startsWith(prefix));
-  return matchedPrefix ? BINDABLE_ASSET_DOMAINS[matchedPrefix] : "";
-}
-
-function buildRuntimeBindingForAsteroids(assetSources) {
-  const records = Object.entries(assetSources || {})
-    .map(([assetId, source]) => {
-      const domain = getBindableDomainForAssetId(assetId);
-      if (!domain) {
-        return null;
-      }
-      const runtimePath = sanitizeText(source?.file);
-      if (!runtimePath) {
-        return null;
-      }
-
-      return {
-        domain,
-        assetId,
-        runtimePath,
-        toolDataPath: `games/asteroids/assets/${domain}/data/${sanitizeText(assetId).replace(/[^a-z0-9._-]+/gi, "-")}.tool.json`,
-        sourceToolId: "runtime-adoption-09-12"
-      };
-    })
-    .filter(Boolean);
-
-  const coordinated = coordinateGameAssetManifest({
-    gameId: "Asteroids",
-    records
-  });
-  return createRuntimeAssetBinding(coordinated.manifest);
-}
-
 function buildImageSource(asset) {
   return {
     image: {
@@ -379,33 +336,6 @@ function buildImageSource(asset) {
       src: sanitizeText(asset?.path)
     },
     status: "provided-loaded"
-  };
-}
-
-function createResolvePackagedAsset(assetSources, runtimeBinding) {
-  return (asset) => {
-    const assetId = sanitizeText(asset?.id);
-    if (sanitizeText(asset?.type) === "image") {
-      return buildImageSource(asset);
-    }
-
-    const domain = getBindableDomainForAssetId(assetId);
-    const staticSource = assetSources[assetId] ? cloneJson(assetSources[assetId]) : null;
-    if (!domain) {
-      return staticSource;
-    }
-
-    const runtimeRecord = resolveRuntimeAsset(runtimeBinding, {
-      domain,
-      assetId
-    });
-    if (!runtimeRecord) {
-      return null;
-    }
-
-    const mergedSource = staticSource || {};
-    mergedSource.file = runtimeRecord.runtimePath;
-    return mergedSource;
   };
 }
 
@@ -466,7 +396,14 @@ export async function buildAsteroidsPlatformDemo(options = {}) {
   const tileMapDocument = cloneJson(options.tileMapDocument || definition.tileMapDocument);
   const parallaxDocument = cloneJson(options.parallaxDocument || definition.parallaxDocument);
   const runtimeAssetSources = cloneJson(options.runtimeAssetSources || definition.runtimeAssetSources);
-  const runtimeBinding = buildRuntimeBindingForAsteroids(runtimeAssetSources);
+  const runtimeLookup = createRuntimeManifestAssetLookup({
+    gameId: "Asteroids",
+    runtimeAssetSources,
+    sourceToolId: "runtime-adoption-09-13",
+    missingBindingBehavior: "null",
+    resolveImageAsset: buildImageSource
+  });
+  const runtimeBinding = runtimeLookup.binding;
 
   const validationResult = validateProjectAssetState({
     registry,
@@ -489,7 +426,7 @@ export async function buildAsteroidsPlatformDemo(options = {}) {
   });
   const runtimeResult = await loadPackagedProjectRuntime({
     packageManifest: packageResult.manifest,
-    resolvePackagedAsset: createResolvePackagedAsset(runtimeAssetSources, runtimeBinding)
+    resolvePackagedAsset: runtimeLookup.resolvePackagedAsset
   });
   const gameplayResult = buildGameplaySystemLayer({
     runtimeResult

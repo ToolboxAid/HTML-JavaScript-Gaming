@@ -5,6 +5,7 @@ import { buildDebugVisualizationLayer, summarizeDebugVisualizationLayer } from "
 import { buildPerformanceProfiler, summarizePerformanceProfiler } from "./performanceProfiler.js";
 import { normalizeSvgToVectorAsset, summarizeVectorAssetDefinition } from "./vector/vectorAssetBridge.js";
 import { cloneJson } from "../../src/shared/utils/jsonUtils.js";
+import { createRuntimeManifestAssetLookup } from "./pipeline/runtimeAssetLookup.js";
 
 function sanitizeText(value) {
   return typeof value === "string" ? value.trim() : "";
@@ -89,6 +90,12 @@ export async function buildVectorAssetSystem(options = {}) {
   const registry = cloneJson(options.registry || fixture.registry);
   const vectorDocument = cloneJson(options.vectorDocument || fixture.vectorDocument);
   const runtimeAssets = cloneJson(options.runtimeAssets || fixture.runtimeAssets);
+  const runtimeLookup = createRuntimeManifestAssetLookup({
+    gameId: "Asteroids",
+    runtimeAssetSources: runtimeAssets,
+    sourceToolId: "runtime-adoption-09-13",
+    missingBindingBehavior: "static"
+  });
 
   const validationResult = validateProjectAssetState({
     registry,
@@ -101,7 +108,7 @@ export async function buildVectorAssetSystem(options = {}) {
   });
   const runtimeResult = await loadPackagedProjectRuntime({
     packageManifest: packageResult.manifest,
-    resolvePackagedAsset: (asset) => runtimeAssets[sanitizeText(asset?.id)] || null
+    resolvePackagedAsset: runtimeLookup.resolvePackagedAsset
   });
   const performanceResult = buildPerformanceProfiler({
     validationResult,

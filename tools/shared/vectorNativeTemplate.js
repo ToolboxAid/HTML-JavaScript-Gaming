@@ -10,6 +10,7 @@ import { buildDebugVisualizationLayer, summarizeDebugVisualizationLayer } from "
 import { buildPerformanceProfiler, summarizePerformanceProfiler } from "./performanceProfiler.js";
 import { normalizeSvgToVectorAsset } from "./vector/vectorAssetBridge.js";
 import { cloneJson } from "../../src/shared/utils/jsonUtils.js";
+import { createRuntimeManifestAssetLookup } from "./pipeline/runtimeAssetLookup.js";
 
 function sanitizeText(value) {
   return typeof value === "string" ? value.trim() : "";
@@ -258,27 +259,6 @@ function createRuntimeAssetSources(registry) {
   };
 }
 
-function buildImageSource(asset) {
-  return {
-    image: {
-      width: 960,
-      height: 720,
-      src: sanitizeText(asset?.path)
-    },
-    status: "provided-loaded"
-  };
-}
-
-function createResolvePackagedAsset(assetSources) {
-  return (asset) => {
-    const assetId = sanitizeText(asset?.id);
-    if (sanitizeText(asset?.type) === "image") {
-      return buildImageSource(asset);
-    }
-    return assetSources[assetId] ? cloneJson(assetSources[assetId]) : null;
-  };
-}
-
 export function createVectorNativeTemplateDefinition() {
   const registry = createRegistry();
   return {
@@ -313,6 +293,12 @@ export async function buildVectorNativeTemplate(options = {}) {
   const tileMapDocument = cloneJson(options.tileMapDocument || definition.tileMapDocument);
   const parallaxDocument = cloneJson(options.parallaxDocument || definition.parallaxDocument);
   const runtimeAssetSources = cloneJson(options.runtimeAssetSources || definition.runtimeAssetSources);
+  const runtimeLookup = createRuntimeManifestAssetLookup({
+    gameId: "vector-native-arcade-template",
+    runtimeAssetSources,
+    sourceToolId: "runtime-adoption-09-13",
+    missingBindingBehavior: "static"
+  });
 
   const validationResult = validateProjectAssetState({
     registry,
@@ -329,7 +315,7 @@ export async function buildVectorNativeTemplate(options = {}) {
   });
   const runtimeResult = await loadPackagedProjectRuntime({
     packageManifest: packageResult.manifest,
-    resolvePackagedAsset: createResolvePackagedAsset(runtimeAssetSources)
+    resolvePackagedAsset: runtimeLookup.resolvePackagedAsset
   });
   const gameplayResult = buildGameplaySystemLayer({
     runtimeResult

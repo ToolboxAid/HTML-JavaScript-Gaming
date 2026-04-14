@@ -93,6 +93,7 @@ import { run as runProjectToolDataContracts } from './tools/ProjectToolDataContr
 import { run as runAssetPipelineTooling } from './tools/AssetPipelineTooling.test.mjs';
 import { run as runGameAssetManifestCoordinator } from './tools/GameAssetManifestCoordinator.test.mjs';
 import { run as runRuntimeAssetBinding } from './tools/RuntimeAssetBinding.test.mjs';
+import { run as runRuntimeAssetLookupConsolidation } from './tools/RuntimeAssetLookupConsolidation.test.mjs';
 import { run as runToolEntryLaunchContract } from './tools/ToolEntryLaunchContract.test.mjs';
 import { run as runProjectPackagingSystem } from './tools/ProjectPackagingSystem.test.mjs';
 import { run as runRuntimeAssetLoader } from './tools/RuntimeAssetLoader.test.mjs';
@@ -211,6 +212,7 @@ const tests = [
     ['AssetPipelineTooling', runAssetPipelineTooling],
     ['GameAssetManifestCoordinator', runGameAssetManifestCoordinator],
     ['RuntimeAssetBinding', runRuntimeAssetBinding],
+    ['RuntimeAssetLookupConsolidation', runRuntimeAssetLookupConsolidation],
     ['ToolEntryLaunchContract', runToolEntryLaunchContract],
     ['ProjectPackagingSystem', runProjectPackagingSystem],
     ['RuntimeAssetLoader', runRuntimeAssetLoader],

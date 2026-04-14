@@ -1,39 +1,32 @@
-Validation Checklist - BUILD_PR_LEVEL_09_12_ASSET_REFERENCE_ADOPTION
+Validation Checklist - BUILD_PR_LEVEL_09_13_ASSET_LOOKUP_CONSOLIDATION
 
 Scope
-[x] PR remains in the asset reference adoption lane only
-[x] No broad repo-wide migration introduced
-[x] No tool UI redesign introduced
-[x] No gameplay feature changes introduced
-[x] No new asset format work introduced
+[x] Runtime asset lookup consolidated via shared interface
+[x] Duplicate lookup logic replaced where touched
+[x] Manifest binding used as source of truth for bindable runtime domains
+[x] No engine-core changes
+[x] No tool UI changes
 
-Adoption
-[x] Selected runtime consumers now use manifest-driven binding
-[x] Replaced ad hoc path assumptions where touched
-[x] `assets/<domain>/data/` content remains excluded from runtime use
-[x] Deterministic identifier-based resolution remains intact
-[x] Adoption stops at a stable checkpoint
+Code
+[x] Added `tools/shared/pipeline/runtimeAssetLookup.js`
+[x] Updated `tools/shared/asteroidsPlatformDemo.js`
+[x] Updated `tools/shared/vectorNativeTemplate.js`
+[x] Updated `tools/shared/vectorTemplateSampleGame.js`
+[x] Updated `tools/shared/vectorAssetSystem.js`
+[x] Added `tests/tools/RuntimeAssetLookupConsolidation.test.mjs`
+[x] Updated `tests/run-tests.mjs`
 
 Validation
+[x] `node --check tools/shared/pipeline/runtimeAssetLookup.js`
 [x] `node --check tools/shared/asteroidsPlatformDemo.js`
-[x] `node --check tests/games/AsteroidsAssetReferenceAdoption.test.mjs`
-[x] Focused adoption test passes: `AsteroidsAssetReferenceAdoption`
-[x] Existing runtime binding test passes: `RuntimeAssetBinding`
-[x] Existing GameAssetManifestCoordinator test passes
-[x] Existing AssetPipelineTooling test passes
-[x] Existing ProjectToolDataContracts test passes
-[x] Existing AsteroidsPlatformDemo non-regression test passes
+[x] `node --check tools/shared/vectorNativeTemplate.js`
+[x] `node --check tools/shared/vectorTemplateSampleGame.js`
+[x] `node --check tools/shared/vectorAssetSystem.js`
+[x] `node --check tests/tools/RuntimeAssetLookupConsolidation.test.mjs`
+[x] Focused test passes: `RuntimeAssetLookupConsolidation`
+[x] Existing tests pass: RuntimeAssetBinding, GameAssetManifestCoordinator, AssetPipelineTooling, ProjectToolDataContracts
+[x] Existing touched-consumer non-regression tests pass: AsteroidsAssetReferenceAdoption, AsteroidsPlatformDemo, VectorNativeTemplate, VectorTemplateSampleGame, VectorAssetSystem
 
 Roadmap
-[x] Roadmap status update not applied (not clearly required in this checkpoint)
-[x] No roadmap prose/text changes made
-
-Packaging
-[x] docs/pr document included
-[x] docs/dev/codex_commands.md included
-[x] docs/dev/commit_comment.txt included
-[x] docs/dev/next_command.txt included
-[x] docs/dev/reports/change_summary.txt included
-[x] docs/dev/reports/validation_checklist.txt included
-[x] Single ZIP produced at `<project folder>/tmp/BUILD_PR_LEVEL_09_12_ASSET_REFERENCE_ADOPTION.zip`
-
+[x] Status-only update applied
+[x] No roadmap prose/text/order changes
