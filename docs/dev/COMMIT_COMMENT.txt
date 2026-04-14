@@ -1,1 +1,1 @@
-BUILD_PR_LEVEL_09_10_GAME_ASSET_MANIFEST_COORDINATION
+build(runtime): bind runtime asset lookup to coordinated game asset manifest

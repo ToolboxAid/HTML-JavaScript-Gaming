@@ -1,3 +1,44 @@
-[ ] manifest exists
-[ ] pipeline integrates
-[ ] no engine changes
+Validation Checklist - BUILD_PR_LEVEL_09_11_RUNTIME_ASSET_BINDING
+
+Scope
+[x] PR remains in the runtime asset binding lane only
+[x] No tool UI redesign introduced
+[x] No gameplay feature changes introduced
+[x] No broad engine scope expansion introduced
+[x] No unrelated asset moves introduced
+
+Binding
+[x] Runtime-facing binding reads from `games/<game>/assets/<game>.assets.json`
+[x] Lookup is manifest-driven rather than ad hoc where touched
+[x] Binding supports sprites
+[x] Binding supports tilemaps
+[x] Binding supports parallax
+[x] Binding supports vectors
+[x] Tilesets only included if directly required
+[x] `assets/<domain>/data/` content is excluded or rejected from runtime binding
+[x] Deterministic lookup works by asset/domain identifiers
+
+Validation
+[x] `node --check` passes for touched files
+[x] Focused runtime binding tests pass
+[x] Existing GameAssetManifestCoordinator tests still pass
+[x] Existing AssetPipelineTooling tests still pass
+[x] Existing ProjectToolDataContracts tests still pass
+
+Executed commands
+- node --check tools/shared/pipeline/runtimeAssetBinding.js
+- node --check tests/tools/RuntimeAssetBinding.test.mjs
+- node --check tests/run-tests.mjs
+- node --input-type=module -e "import('./tests/tools/RuntimeAssetBinding.test.mjs').then(async ({ run }) => { await run(); console.log('PASS RuntimeAssetBinding'); })"
+- node --input-type=module -e "import('./tests/tools/GameAssetManifestCoordinator.test.mjs').then(async ({ run }) => { await run(); console.log('PASS GameAssetManifestCoordinator'); })"
+- node --input-type=module -e "import('./tests/tools/AssetPipelineTooling.test.mjs').then(async ({ run }) => { await run(); console.log('PASS AssetPipelineTooling'); })"
+- node --input-type=module -e "import('./tests/tools/ProjectToolDataContracts.test.mjs').then(async ({ run }) => { await run(); console.log('PASS ProjectToolDataContracts'); })"
+
+Packaging
+[x] docs/pr document included
+[x] docs/dev/codex_commands.md included
+[x] docs/dev/commit_comment.txt included
+[x] docs/dev/next_command.txt included
+[x] docs/dev/reports/change_summary.txt included
+[x] docs/dev/reports/validation_checklist.txt included
+[x] Single ZIP produced at `<project folder>/tmp/BUILD_PR_LEVEL_09_11_RUNTIME_ASSET_BINDING.zip`

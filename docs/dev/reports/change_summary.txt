@@ -1,1 +1,33 @@
-Adds root asset manifest coordination.
+Summary
+- Implemented a runtime-facing manifest binding layer under `tools/shared/pipeline/runtimeAssetBinding.js`.
+- Runtime lookup is now manifest-driven by domain + asset id.
+- Runtime binding explicitly excludes `/data/` records so runtime readers cannot consume editor/tool-only assets.
+- Added focused runtime binding tests and wired them into the test runner.
+
+Implemented runtime binding surface
+- `createRuntimeAssetBinding(manifest)`
+  - consumes `games/<game>/assets/<game>.assets.json`-shaped manifest payload
+  - builds runtime-safe domain indexes for active domains:
+    - sprites
+    - tilemaps
+    - parallax
+    - vectors
+  - rejects records whose runtime path resolves to `/data/`
+- `resolveRuntimeAsset(binding, { domain, assetId })`
+  - deterministic runtime lookup by normalized domain + asset id
+  - returns null for missing/rejected assets
+
+Focused tests added
+- `tests/tools/RuntimeAssetBinding.test.mjs`
+  - validates manifest-driven lookup
+  - validates `/data/` exclusion
+  - validates active domain support
+  - validates invalid-manifest handling
+- `tests/run-tests.mjs` updated to include `RuntimeAssetBinding` test.
+
+Scope guard
+- No tool UI redesign.
+- No gameplay feature additions.
+- No broad engine scope expansion.
+- No new asset formats.
+- No unrelated asset movement.
