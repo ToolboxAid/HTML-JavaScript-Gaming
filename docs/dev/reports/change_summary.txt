@@ -1,3 +1,23 @@
-Adds a docs-only roadmap correction PR after boundary enforcement scan.
-The correction preserves earned completion for Asteroids, Puckman, and SpaceInvaders while removing
-any implication that all games now satisfy the strict boundary contract.
+﻿BUILD_PR_LEVEL_08_08_REPO_WIDE_GAME_NORMALIZATION_WAVE_1
+
+What changed
+- Added wave-1 rules modules and flow files for six target games only.
+- Converted each target from rules-placeholder-only to real rules JS + required flow file presence.
+
+Wave 1 targets normalized
+- Breakout
+- Pong
+- Bouncing-ball
+- ProjectileLab
+- Gravity
+- GravityWell
+
+What was intentionally not changed
+- No engine files
+- No launch/bootstrap wiring
+- No behavior standardization beyond file presence + rules source surface
+- No status inflation for repo-wide completion lines
+
+Net effect
+- First repo-wide normalization wave completed at minimal structural boundary scope.
+- Remaining non-wave targets still require future waves.

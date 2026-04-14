@@ -1,26 +1,16 @@
-MODEL: GPT-5.4
-REASONING: medium
+﻿MODEL: GPT-5.4
+REASONING: high
 
 COMMAND GOAL:
-Create a docs-only PR that corrects Section 8 roadmap wording and markers to match the completed
-boundary scan.
+Create BUILD_PR_LEVEL_08_08_REPO_WIDE_GAME_NORMALIZATION_WAVE_1 as a docs-first, small-scope
+implementation bundle for the first repo-wide normalization wave.
 
 CONSTRAINTS:
-- Docs only
-- No code changes
-- No repo-wide restructuring
-- Preserve completed status for Asteroids, Puckman, and SpaceInvaders
-- Distinguish core-games completion from repo-wide adoption
-
-REQUIRED OUTPUT:
-Return ZIP to <project folder>/tmp/ with exact repo-relative structure.
-
-FILES TO UPDATE:
-- docs/MASTER_ROADMAP_HIGH_LEVEL.md
-- docs/dev/ROADMAP_RULES.md
-- docs/pr/BUILD_PR_LEVEL_08_07_ROADMAP_SCOPE_CORRECTION.md
-
-VALIDATION INPUT:
-Use the latest boundary scan results:
-- No violations: Asteroids, Puckman, SpaceInvaders
-- Violations remain across multiple other game folders
+- One PR purpose only
+- Smallest scoped valid change
+- No engine modifications
+- No launch/bootstrap work
+- No status inflation
+- Preserve existing compliant games: Asteroids, Puckman, SpaceInvaders
+- Normalize only Wave 1 targets:
+  Breakout, Pong, Bouncing-ball, ProjectileLab, Gravity, GravityWell

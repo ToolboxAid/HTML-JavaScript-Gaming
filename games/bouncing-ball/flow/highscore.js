@@ -1,0 +1,16 @@
+﻿import {
+  BOUNCING_BALL_FLOW_IDS,
+  BOUNCING_BALL_FLOW_LABELS,
+  BOUNCING_BALL_HIGHSCORE_AUTO_EXIT_SECONDS,
+  BOUNCING_BALL_HIGHSCORE_STATUS,
+  createFlowDescriptor
+} from "../rules/gameFlowRules.js";
+
+export const BOUNCING_BALL_HIGHSCORE_FLOW_NEXT_ID = BOUNCING_BALL_FLOW_IDS.attract;
+
+export const highscoreFlow = createFlowDescriptor(BOUNCING_BALL_FLOW_IDS.highscore, {
+  label: BOUNCING_BALL_FLOW_LABELS.highscore,
+  nextFlowId: BOUNCING_BALL_HIGHSCORE_FLOW_NEXT_ID,
+  autoAdvanceSeconds: BOUNCING_BALL_HIGHSCORE_AUTO_EXIT_SECONDS,
+  statusText: BOUNCING_BALL_HIGHSCORE_STATUS
+});

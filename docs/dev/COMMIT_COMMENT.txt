@@ -1,1 +1,1 @@
-Phase 08.07 — correct roadmap scope to core-games complete, repo-wide adoption pending
+﻿build(games): normalize wave-1 repo-wide game boundaries (breakout/pong/bouncing-ball/projectilelab/gravity/gravitywell)
