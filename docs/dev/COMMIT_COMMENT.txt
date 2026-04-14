@@ -1,1 +1,1 @@
-Phase 08.06 — Boundary enforcement rules and validation
+Phase 08.07 — correct roadmap scope to core-games complete, repo-wide adoption pending

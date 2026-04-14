@@ -1,1 +1,11 @@
-docs/pr/BUILD_PR_LEVEL_08_06_BOUNDARY_ENFORCEMENT.md
+docs/
+  dev/
+    ROADMAP_RULES.md
+    codex_commands.md
+    commit_comment.txt
+    reports/
+      change_summary.txt
+      file_tree.txt
+      validation_checklist.txt
+  pr/
+    BUILD_PR_LEVEL_08_07_ROADMAP_SCOPE_CORRECTION.md

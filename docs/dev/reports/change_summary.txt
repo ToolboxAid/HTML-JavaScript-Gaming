@@ -1,1 +1,3 @@
-Adds enforcement rules for Phase 08 completion.
+Adds a docs-only roadmap correction PR after boundary enforcement scan.
+The correction preserves earned completion for Asteroids, Puckman, and SpaceInvaders while removing
+any implication that all games now satisfy the strict boundary contract.

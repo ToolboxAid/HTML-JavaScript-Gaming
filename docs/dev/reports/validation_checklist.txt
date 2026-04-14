@@ -1,1 +1,7 @@
-Check all games follow flow/game/rules separation.
+Roadmap correction checklist
+
+- Confirm Section 8 no longer implies repo-wide completion
+- Confirm normalized core games are called out explicitly
+- Confirm placeholder-only directories are not counted
+- Confirm future template-first adoption remains pending
+- Confirm no code files changed

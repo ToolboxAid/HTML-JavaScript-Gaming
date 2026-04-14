@@ -1,48 +1,34 @@
-# Roadmap Rules
+# ROADMAP RULES
 
-## Purpose
-Prevent roadmap drift by separating implementation work from roadmap truth updates.
+## Status authority
+Roadmap status must be evidence-backed and scoped.
 
-## Ownership
-- Implementation PRs build or refactor code.
-- Validation PRs verify repo reality against roadmap criteria.
-- Roadmap status changes happen only in a dedicated validation or planning PR.
+## Required distinction
+A line may be marked complete for:
+- a named game
+- a defined subset (for example, core games)
+- the full repo
 
-## Status Definitions
-- `[x]` Complete: every acceptance criterion is satisfied and evidenced.
-- `[.]` In Progress: meaningful partial completion exists, but at least one acceptance criterion is still unmet.
-- `[ ]` Not Complete: no sufficient evidence exists to claim progress or completion.
+These scopes must not be collapsed into one another.
 
-## Evidence Standard
-Before changing any roadmap line, collect all of the following:
-1. scoped acceptance criteria
-2. repo evidence for each criterion
-3. a pass/fail checklist
-4. missing-items summary
-5. recommendation with justification
+## Placeholder rule
+`.gitkeep` folders and placeholder-only directories do not count as completion.
 
-## Forbidden Shortcuts
-Do not move a roadmap line to `[x]` because of:
-- folder placeholders
-- naming conventions alone
-- one-off samples when the line is repo-wide
-- inferred intent
-- partial migration without runtime boundary proof
+## Repo-wide completion rule
+Repo-wide boundary completion requires all in-scope game folders to pass the active contract.
+If a contract is intended only for target/core games, the roadmap must say so explicitly.
 
-## Validator Behavior
-Validators must report facts only:
-- what files exist
-- what boundaries are present
-- what criteria pass
-- what criteria fail
+## Games-layer scope rule
+Section 8 lines must explicitly state scope:
+- core/target-game completion
+- or repo-wide adoption
+Do not mark repo-wide lines complete from core-game evidence alone.
 
-Validators must not:
-- decide roadmap status without explicit acceptance criteria
-- broaden scope
-- merge multiple roadmap lines into one conclusion
+## Validation rule
+Validation reports may provide facts and recommendations.
+Roadmap status changes require an explicit docs update aligned to the real scope.
 
-## Review Rule
-When there is uncertainty, preserve the stricter status.
-
-## Phase-Based Rule
-A line that names multiple games, systems, or structures stays below `[x]` until all named targets are validated.
+## Boundary scan interpretation rule
+Boundary scan facts must be recorded line-by-line:
+- games with no violations may support game-specific `[x]` lines
+- remaining violations in other game folders keep repo-wide lines below `[x]`
