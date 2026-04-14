@@ -199,6 +199,12 @@ function testBackgroundGameplayGatingAndOrder() {
   assert.equal(gameplayResult.drawn, true);
   assert.equal(gameplayResult.path, "games/Asteroids/assets/images/background.png");
   assert.deepEqual(order, ["background:/games/Asteroids/assets/images/background.png"]);
+
+  order.length = 0;
+  const backToMenuResult = layer.render(renderer, { scene: { session: { mode: "menu" } } });
+  assert.equal(backToMenuResult.drawn, false);
+  assert.equal(backToMenuResult.reason, "non-gameplay-state");
+  assert.deepEqual(order, []);
 }
 
 function testGameImageConventionsAreGameAgnostic() {
@@ -316,6 +322,29 @@ function testNoOpWhenBezelMissing() {
   const result = bezel.sync({ fullscreenActive: true, fullscreenElement: host });
   assert.equal(result.visible, false);
   assert.equal(bezel.element.style.display, "none");
+}
+
+function testMalformedBezelImageIsTreatedAsUnavailable() {
+  const documentRef = createDocumentStub("/games/Asteroids/index.html");
+  const host = createElement("div", documentRef);
+  const canvas = createElement("canvas", documentRef);
+  canvas.width = 960;
+  canvas.height = 720;
+  host.appendChild(canvas);
+  documentRef.body.appendChild(host);
+
+  const bezel = new fullscreenBezel({ canvas, documentRef });
+  bezel.attach();
+  bezel.element.naturalWidth = 0;
+  bezel.element.naturalHeight = 0;
+  bezel.element.width = 0;
+  bezel.element.height = 0;
+  bezel.element.onload?.();
+
+  const result = bezel.sync({ fullscreenActive: true, fullscreenElement: host });
+  assert.equal(result.visible, false);
+  assert.equal(bezel.getState().visible, false);
+  assert.equal(bezel.getState().canvasLayoutMode, "fallback");
 }
 
 function testTransparentWindowDetectionAndAspectFit() {
@@ -461,6 +490,100 @@ function testFullscreenBezelSharedStretchAffectsAllSides() {
   assertNear(stretchedCenterY, baselineCenterY, 0.51);
 }
 
+function testFullscreenBezelCyclesAndResizeKeepLayoutStable() {
+  const documentRef = createDocumentStub("/games/Asteroids/index.html");
+  const host = createElement("div", documentRef);
+  host.clientWidth = 1600;
+  host.clientHeight = 900;
+  host.offsetWidth = 1600;
+  host.offsetHeight = 900;
+  const canvas = createElement("canvas", documentRef);
+  canvas.width = 960;
+  canvas.height = 720;
+  host.appendChild(canvas);
+  documentRef.body.appendChild(host);
+
+  const bezel = new fullscreenBezel({
+    canvas,
+    documentRef,
+    alphaInspector() {
+      return { x: 460, y: 220, width: 1000, height: 500 };
+    }
+  });
+  bezel.attach();
+  bezel.element.naturalWidth = 1920;
+  bezel.element.naturalHeight = 1080;
+  bezel.element.onload?.();
+
+  let result = bezel.sync({ fullscreenActive: true, fullscreenElement: host });
+  assert.equal(result.visible, true);
+  assert.equal(result.canvasLayoutMode, "transparent-window-fit");
+  const firstWidth = parseFloat(canvas.style.width);
+  const firstHeight = parseFloat(canvas.style.height);
+
+  result = bezel.sync({ fullscreenActive: false, fullscreenElement: host });
+  assert.equal(result.visible, false);
+  assert.equal(result.canvasLayoutMode, "fallback");
+  assert.equal(canvas.style.width, "960px");
+  assert.equal(canvas.style.height, "720px");
+
+  host.clientWidth = 1920;
+  host.clientHeight = 1080;
+  host.offsetWidth = 1920;
+  host.offsetHeight = 1080;
+  result = bezel.sync({ fullscreenActive: true, fullscreenElement: host });
+  assert.equal(result.visible, true);
+  assert.equal(result.canvasLayoutMode, "transparent-window-fit");
+  const resizedWidth = parseFloat(canvas.style.width);
+  const resizedHeight = parseFloat(canvas.style.height);
+  assert.equal(resizedWidth > firstWidth, true);
+  assert.equal(resizedHeight > firstHeight, true);
+}
+
+function testMalformedAndExtremeStretchConfigValuesAreSafe() {
+  const documentRef = createDocumentStub("/games/Asteroids/index.html");
+  const host = createElement("div", documentRef);
+  host.clientWidth = 1600;
+  host.clientHeight = 900;
+  host.offsetWidth = 1600;
+  host.offsetHeight = 900;
+  const canvas = createElement("canvas", documentRef);
+  canvas.width = 960;
+  canvas.height = 720;
+  host.appendChild(canvas);
+  documentRef.body.appendChild(host);
+
+  const malformed = new fullscreenBezel({
+    canvas,
+    documentRef,
+    alphaInspector: () => ({ x: 460, y: 220, width: 1000, height: 500 }),
+    stretchConfigProvider: () => ({ uniformEdgeStretchPx: "abc" })
+  });
+  malformed.attach();
+  malformed.element.naturalWidth = 1920;
+  malformed.element.naturalHeight = 1080;
+  malformed.element.onload?.();
+  malformed.sync({ fullscreenActive: true, fullscreenElement: host });
+  assert.equal(malformed.getState().uniformEdgeStretchPx, 0);
+  malformed.detach();
+
+  const extreme = new fullscreenBezel({
+    canvas,
+    documentRef,
+    alphaInspector: () => ({ x: 460, y: 220, width: 1000, height: 500 }),
+    stretchConfigProvider: () => ({ uniformEdgeStretchPx: Number.MAX_SAFE_INTEGER })
+  });
+  extreme.attach();
+  extreme.element.naturalWidth = 1920;
+  extreme.element.naturalHeight = 1080;
+  extreme.element.onload?.();
+  const result = extreme.sync({ fullscreenActive: true, fullscreenElement: host });
+  assert.equal(result.visible, true);
+  assert.equal(extreme.getState().uniformEdgeStretchPx > 0, true);
+  assert.equal(parseFloat(canvas.style.width) <= 1600.01, true);
+  assert.equal(parseFloat(canvas.style.height) <= 900.01, true);
+}
+
 async function testBezelStretchConfigAutoCreate() {
   const tempRoot = await fs.mkdtemp(path.join(os.tmpdir(), "bezel-stretch-config-"));
   const configPath = "games/Asteroids/assets/images/bezel.stretch.override.json";
@@ -576,6 +699,27 @@ async function testBezelDetectionDoesNotOverwriteExistingStretchConfig() {
     const savedAfterStartup = JSON.parse(await fs.readFile(configPath, "utf8"));
     assert.deepEqual(savedAfterStartup, expectedConfig);
     assert.equal(bezel.getState().uniformEdgeStretchPx, expectedConfig.uniformEdgeStretchPx);
+  } finally {
+    await fs.rm(tempRoot, { recursive: true, force: true });
+  }
+}
+
+async function testMalformedStretchConfigFileFallsBackWithoutOverwrite() {
+  const tempRoot = await fs.mkdtemp(path.join(os.tmpdir(), "bezel-malformed-config-"));
+  const configPath = path.resolve(tempRoot, "games/Asteroids/assets/images/bezel.stretch.override.json");
+  try {
+    await fs.mkdir(path.dirname(configPath), { recursive: true });
+    const malformedContent = "{not-valid-json";
+    await fs.writeFile(configPath, malformedContent, "utf8");
+
+    const loaded = await ensureBezelStretchConfigFile("games/Asteroids/assets/images/bezel.stretch.override.json", {
+      cwd: tempRoot,
+      fsModule: fs,
+      pathModule: path
+    });
+    const savedAfterLoad = await fs.readFile(configPath, "utf8");
+    assert.deepEqual(loaded, { uniformEdgeStretchPx: 0 });
+    assert.equal(savedAfterLoad, malformedContent);
   } finally {
     await fs.rm(tempRoot, { recursive: true, force: true });
   }
@@ -761,12 +905,16 @@ export async function run() {
   testSampleGameBackgroundAndBezelNoOpWhenMissing();
   testFullscreenBezelVisibilityAndHtmlAttachment();
   testNoOpWhenBezelMissing();
+  testMalformedBezelImageIsTreatedAsUnavailable();
   testTransparentWindowDetectionAndAspectFit();
   testFullscreenBezelTransparentWindowCanvasFit();
   testFullscreenBezelSharedStretchAffectsAllSides();
+  testFullscreenBezelCyclesAndResizeKeepLayoutStable();
+  testMalformedAndExtremeStretchConfigValuesAreSafe();
   await testBezelStretchConfigAutoCreate();
   await testBezelDetectionTriggersStretchConfigAutoCreate();
   await testBezelDetectionDoesNotOverwriteExistingStretchConfig();
+  await testMalformedStretchConfigFileFallsBackWithoutOverwrite();
   await testSampleGameBezelDetectionCreatesStretchConfig();
   testEngineRuntimeIntegration();
 }

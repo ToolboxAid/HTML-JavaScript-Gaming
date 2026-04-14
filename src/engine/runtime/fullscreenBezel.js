@@ -671,6 +671,14 @@ export default class fullscreenBezel {
     applyBezelStyles(element);
     element.onload = () => {
       this.imageSize = getImageSize(element);
+      if (!this.imageSize) {
+        this.transparentWindowRect = null;
+        this.ready = false;
+        this.missing = true;
+        element.style.display = "none";
+        this.applyCanvasFallbackLayout();
+        return;
+      }
       this.transparentWindowRect = this.imageSize
         ? inspectTransparentWindowRect(element, this.documentRef, this.alphaInspector, this.imageSize)
         : null;

@@ -1,7 +1,6 @@
-
-- Asteroids passes
-- Template passes
-- Another game passes
-- Bezel works
-- Background works
-- Override file works
+- Bezel missing-file case covered
+- Invalid transparency-window case covered
+- Fullscreen cycle case covered
+- Override malformed/extreme case covered
+- Background state-transition case covered
+- Shared code remains game-agnostic

@@ -1,2 +1,2 @@
-Multi-game validation pass for bezel/background system
-BUILD_PR_LEVEL_10_24_MULTI_GAME_VALIDATION_PASS
+Polish bezel/background system and close remaining Level 10 edge cases
+BUILD_PR_LEVEL_10_25_POLISH_AND_EDGE_CASES

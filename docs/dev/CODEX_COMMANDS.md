@@ -1,25 +1,31 @@
-
 MODEL: GPT-5.4
 REASONING: high
 
 COMMAND:
-Create `BUILD_PR_LEVEL_10_24_MULTI_GAME_VALIDATION_PASS`
+Create `BUILD_PR_LEVEL_10_25_POLISH_AND_EDGE_CASES`
 
-1. Validate across:
+1. Validate and polish the shared bezel/background system for edge cases:
+   - bezel missing
+   - bezel malformed
+   - no valid transparency window
+   - fullscreen enter/exit cycles
+   - fullscreen resize
+   - malformed or extreme override values
+   - background missing
+   - gameplay/non-gameplay transitions
+   - starfield ordering regressions
+
+2. Keep fixes surgical and minimal
+
+3. Confirm shared code remains game-agnostic and works for:
    - Asteroids
    - games/_template
-   - another sample
+   - additional sample coverage already established
 
-2. Verify:
-   - bezel behavior
-   - background behavior
-   - override file creation
-
-3. Fix only real issues (minimal changes)
-
-4. Package:
-<project folder>/tmp/BUILD_PR_LEVEL_10_24_MULTI_GAME_VALIDATION_PASS.zip
+4. Final packaging step is REQUIRED:
+   <project folder>/tmp/BUILD_PR_LEVEL_10_25_POLISH_AND_EDGE_CASES.zip
 
 Rules:
-- no scope expansion
-- no unnecessary changes
+- no unrelated repo changes
+- no redesign
+- minimal corrections only
