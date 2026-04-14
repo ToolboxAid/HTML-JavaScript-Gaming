@@ -7,7 +7,7 @@ Use `scripts/PS/codex/New-CodexTemplateGame.ps1` to create a new game scaffold f
 
 ## Example
 ```powershell
-.\scripts\PS\codex\New-CodexTemplateGame.ps1 -GameId "my-new-game" -DisplayName "My New Game"
+.\scripts\PS\codex\New-CodexTemplateGame.ps1 -GameId "my-new-game" -DisplayName "My New Game" -Apply
 ```
 
 ## Generated Structure
@@ -23,4 +23,6 @@ Use `scripts/PS/codex/New-CodexTemplateGame.ps1` to create a new game scaffold f
 ## Guardrails
 - Script normalizes `-GameId` to slug format for deterministic paths.
 - Script fails if the target game folder already exists.
+- Script defaults to dry-run output unless `-Apply` is provided.
+- `-DryRun` is supported explicitly for preview checks.
 - Script writes empty scaffold metadata only; no engine or gameplay files are altered.

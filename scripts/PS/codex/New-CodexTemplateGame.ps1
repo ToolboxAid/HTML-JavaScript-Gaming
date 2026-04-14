@@ -1,10 +1,12 @@
-[CmdletBinding()]
+[CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = "Medium")]
 param(
     [Parameter(Mandatory = $true)]
     [string]$GameId,
     [string]$DisplayName,
     [string]$GamesRoot,
-    [string]$TemplatePath
+    [string]$TemplatePath,
+    [switch]$Apply,
+    [switch]$DryRun
 )
 
 Set-StrictMode -Version Latest
@@ -58,6 +60,20 @@ function Ensure-File {
     }
 }
 
+function Test-PathWithinRoot {
+    param(
+        [Parameter(Mandatory = $true)]
+        [string]$Path,
+        [Parameter(Mandatory = $true)]
+        [string]$RootPath
+    )
+
+    $resolvedPath = [System.IO.Path]::GetFullPath($Path)
+    $resolvedRoot = [System.IO.Path]::GetFullPath($RootPath)
+    $normalizedRoot = $resolvedRoot.TrimEnd('\', '/') + [System.IO.Path]::DirectorySeparatorChar
+    return $resolvedPath.StartsWith($normalizedRoot, [StringComparison]::OrdinalIgnoreCase)
+}
+
 function Write-JsonFile {
     param(
         [Parameter(Mandatory = $true)]
@@ -104,6 +120,10 @@ function New-ToolIntegrationEntry {
 $repoRoot = Get-CodexRepoRoot
 $normalizedGameId = ConvertTo-CodexSlug -Value $GameId -Fallback "new-game"
 
+if ($Apply.IsPresent -and $DryRun.IsPresent) {
+    throw "Use either -Apply or -DryRun, not both."
+}
+
 if ($normalizedGameId -ne $GameId) {
     Write-Host "Normalized game id: $normalizedGameId"
 }
@@ -121,12 +141,18 @@ if ([string]::IsNullOrWhiteSpace($GamesRoot)) {
 else {
     $GamesRoot = [System.IO.Path]::GetFullPath($GamesRoot)
 }
+if (-not (Test-PathWithinRoot -Path $GamesRoot -RootPath $repoRoot)) {
+    throw "Games root must remain within repo root: $GamesRoot"
+}
 
 if ([string]::IsNullOrWhiteSpace($TemplatePath)) {
     $TemplatePath = Join-Path $GamesRoot "_template"
 }
 else {
     $TemplatePath = [System.IO.Path]::GetFullPath($TemplatePath)
+}
+if (-not (Test-PathWithinRoot -Path $TemplatePath -RootPath $repoRoot)) {
+    throw "Template path must remain within repo root: $TemplatePath"
 }
 
 if (-not (Test-Path -LiteralPath $TemplatePath)) {
@@ -136,6 +162,22 @@ if (-not (Test-Path -LiteralPath $TemplatePath)) {
 $targetGamePath = Join-Path $GamesRoot $normalizedGameId
 if (Test-Path -LiteralPath $targetGamePath) {
     throw "Target game path already exists: $targetGamePath"
+}
+if (-not (Test-PathWithinRoot -Path $targetGamePath -RootPath $GamesRoot)) {
+    throw "Target game path must remain within games root: $targetGamePath"
+}
+
+if (-not $Apply.IsPresent -or $DryRun.IsPresent) {
+    Write-Host "Dry-run only. No files were created."
+    Write-Host "Run with -Apply to create the game scaffold."
+    Write-Host "Template source: $TemplatePath"
+    Write-Host "Target game path: $targetGamePath"
+    exit 0
+}
+
+if (-not $PSCmdlet.ShouldProcess($targetGamePath, "Create template game scaffold")) {
+    Write-Host "Game scaffold creation cancelled."
+    exit 0
 }
 
 Ensure-Directory -Path $GamesRoot

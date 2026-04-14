@@ -20,7 +20,7 @@ This repo includes a focused operator scripting surface in `scripts/PS/codex` fo
 Switch to Pay-as-you-go mode:
 
 ```powershell
-.\scripts\PS\codex\Switch-CodexPlanMode.ps1 -Mode payg
+.\scripts\PS\codex\Switch-CodexPlanMode.ps1 -Mode payg -DryRun
 ```
 
 Switch to Codex mode:
@@ -32,7 +32,7 @@ Switch to Codex mode:
 Set or update API key for current process only (safe for smoke checks):
 
 ```powershell
-.\scripts\PS\codex\Set-CodexApiKey.ps1 -ApiKey "sk-your-key" -Scope Process
+.\scripts\PS\codex\Set-CodexApiKey.ps1 -ApiKey "sk-your-key" -Scope Process -DryRun
 ```
 
 Set or update API key for current user profile:
@@ -44,7 +44,7 @@ Set or update API key for current user profile:
 Validate configured key state:
 
 ```powershell
-.\scripts\PS\codex\Validate-CodexApiKey.ps1 -EnvVarName OPENAI_API_KEY -RequireStateRecord
+.\scripts\PS\codex\Validate-CodexApiKey.ps1 -EnvVarName OPENAI_API_KEY -RequireStateRecord -DryRun
 ```
 
 Inspect current mode + metadata:
@@ -56,5 +56,6 @@ Inspect current mode + metadata:
 ## Guardrails
 - Use `-Scope Process` for temporary sessions and script smoke checks.
 - Use `-Scope User` only when you intentionally want persistent user configuration.
+- Use `-DryRun` first for switch/set/validate/get scripts before applying persistent updates.
 - Validation checks local readiness and metadata consistency without printing raw secrets.
 - Keep the state file local to the repo; do not commit generated secret material.

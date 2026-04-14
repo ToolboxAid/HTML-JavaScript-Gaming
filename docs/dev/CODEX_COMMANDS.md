@@ -2,10 +2,12 @@ MODEL: GPT-5.4
 REASONING: high
 
 COMMAND:
-- use scripts/PS/codex/ path
-- implement repo prep/update/clean scripts for website deployment
-- ensure safe, non-destructive defaults
+- enforce scripts/PS/deploy/ for deployment scripts
+- enforce scripts/PS/codex/ for codex scripts
+- add validation and safety checks to all scripts
+- add dry-run capability
+- ensure docker deployment compatibility
 - enforce commit format:
-  description starts first line (no leading CR)
+  description starts first line
   PR name last line
 - update roadmap status only (no text changes except approved additions)

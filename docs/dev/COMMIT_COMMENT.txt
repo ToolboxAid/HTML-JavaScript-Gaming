@@ -1,3 +1,3 @@
-Adds safe website deployment staging automation with prep/update/clean scripts under `scripts/PS/codex/`, preview-only defaults, and constrained clean behavior under `<repo>/tmp`.
+Adds script safety hardening across Codex/deploy PowerShell automation by enforcing `scripts/PS/deploy/` for deployment scripts, `scripts/PS/codex/` for codex scripts, dry-run-first behavior, input/path validation, and Docker-compatible staging artifacts.
 
-BUILD_PR_LEVEL_09_20_WEBSITE_REPO_PREP_SCRIPTING
+BUILD_PR_LEVEL_09_21_SCRIPT_VALIDATION_AND_SAFETY

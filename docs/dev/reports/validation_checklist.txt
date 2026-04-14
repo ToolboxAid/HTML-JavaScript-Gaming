@@ -1,9 +1,12 @@
-Validation Checklist - BUILD_PR_LEVEL_09_20_WEBSITE_REPO_PREP_SCRIPTING
+Validation Checklist - BUILD_PR_LEVEL_09_21_SCRIPT_VALIDATION_AND_SAFETY
 
-[x] website deployment scripts added under `scripts/PS/codex/`
-[x] scripts default to preview mode unless `-Apply` is provided
-[x] clean script safety checks restrict deletes to staging paths under `<repo>/tmp`
+[x] deployment scripts moved/enforced to `scripts/PS/deploy/`
+[x] codex scripts remain/enforced under `scripts/PS/codex/`
+[x] validation and safety checks added to touched codex/deploy scripts
+[x] dry-run capability added to touched codex/deploy scripts
+[x] deploy flow writes Docker-compatible artifacts in staging
 [x] focused PowerShell parse checks pass on touched scripts
-[x] focused prep/update/clean smoke checks pass
+[x] focused dry-run/apply smoke checks pass for deploy scripts
+[x] focused dry-run/apply smoke checks pass for touched codex scripts
 [x] roadmap updated with status-only bracket changes
 [x] commit format enforced: description first line, PR name last line

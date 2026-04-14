@@ -552,7 +552,7 @@
 - [x] smoke validation aligned to samples/tools/games
 - [ ] fixtures/helpers organization normalized
 - [.] move/refactor validation strategy documented
-- [ ] post-PR acceptance criteria consistently enforced
+- [.] post-PR acceptance criteria consistently enforced
 
 ---
 

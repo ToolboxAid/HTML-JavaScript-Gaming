@@ -1,6 +1,7 @@
 [CmdletBinding()]
 param(
-    [string]$StatePath
+    [string]$StatePath,
+    [switch]$DryRun
 )
 
 Set-StrictMode -Version Latest
@@ -9,6 +10,13 @@ $ErrorActionPreference = "Stop"
 . (Join-Path $PSScriptRoot "CodexOperatorState.ps1")
 
 $resolvedStatePath = Get-CodexOperatorStatePath -StatePath $StatePath
+
+if ($DryRun.IsPresent) {
+    Write-Host "Dry-run only. No state read performed."
+    Write-Host "Would read codex state from: $resolvedStatePath"
+    exit 0
+}
+
 $state = Read-CodexOperatorState -StatePath $resolvedStatePath
 
 $summary = [ordered]@{

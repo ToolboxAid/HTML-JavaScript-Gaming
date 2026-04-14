@@ -1,11 +1,26 @@
 Summary
-- Added website deployment scripting under `scripts/PS/codex/`:
+- Enforced script boundaries:
+  - deployment scripts now live under `scripts/PS/deploy/`
+  - codex scripts remain under `scripts/PS/codex/`
+- Added deployment safety/validation helpers in `scripts/PS/deploy/WebsiteRepoDeploymentCommon.ps1`.
+- Added/updated deployment scripts with dry-run and apply guards:
+  - `scripts/PS/deploy/Prep-WebsiteRepoDeployment.ps1`
+  - `scripts/PS/deploy/Update-WebsiteRepoDeployment.ps1`
+  - `scripts/PS/deploy/Clean-WebsiteRepoDeployment.ps1`
+- Removed deployment script duplicates from `scripts/PS/codex/`:
   - `Prep-WebsiteRepoDeployment.ps1`
   - `Update-WebsiteRepoDeployment.ps1`
   - `Clean-WebsiteRepoDeployment.ps1`
-  - shared helper: `WebsiteRepoDeploymentCommon.ps1`
-- Implemented safe non-destructive defaults: scripts run in preview mode unless `-Apply` is provided.
-- Added deployment scripting usage/guardrails doc:
+  - `WebsiteRepoDeploymentCommon.ps1`
+- Added Docker deployment compatibility artifacts to deploy flow (`Dockerfile`, `docker-compose.yml`, `.dockerignore` in staging root).
+- Hardened codex scripts with dry-run and validation where applicable:
+  - `Switch-CodexPlanMode.ps1`
+  - `Set-CodexApiKey.ps1`
+  - `Validate-CodexApiKey.ps1`
+  - `Get-CodexOperatorState.ps1`
+  - `New-CodexTemplateGame.ps1`
+- Updated docs for new deploy path and script guardrails:
   - `docs/dev/CODEX_WEBSITE_REPO_DEPLOYMENT_SCRIPTING.md`
-- Updated roadmap with status-only bracket change for the website prep/update/delete scripting lane.
-- Commit comment format is description on first line and PR name on last line.
+  - `docs/dev/CODEX_TEMPLATE_GAME_CREATION_SCRIPTING.md`
+  - `docs/dev/CODEX_PLAN_AND_API_KEY_SCRIPTING.md`
+- Updated roadmap with status-only bracket change.

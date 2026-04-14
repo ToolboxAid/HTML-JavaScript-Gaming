@@ -1,8 +1,9 @@
-[CmdletBinding()]
+[CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = "Medium")]
 param(
     [string]$StagingRoot,
     [string[]]$IncludePaths,
-    [switch]$Apply
+    [switch]$Apply,
+    [switch]$DryRun
 )
 
 Set-StrictMode -Version Latest
@@ -10,8 +11,13 @@ $ErrorActionPreference = "Stop"
 
 . (Join-Path $PSScriptRoot "WebsiteRepoDeploymentCommon.ps1")
 
-$repoRoot = Get-CodexRepoRoot
+if ($Apply.IsPresent -and $DryRun.IsPresent) {
+    throw "Use either -Apply or -DryRun, not both."
+}
+
+$repoRoot = Get-DeployRepoRoot
 $paths = Get-WebsiteDeploymentPaths -StagingRoot $StagingRoot
+Test-StagingRootSafety -StagingRoot $paths.stagingRoot
 
 $normalizedIncludePaths = Normalize-IncludePaths -IncludePaths $IncludePaths
 if ($normalizedIncludePaths.Count -eq 0) {
@@ -46,11 +52,16 @@ foreach ($entry in $normalizedIncludePaths) {
     })
 }
 
-if (-not $Apply.IsPresent) {
-    Write-Host "Preview mode only. No files were copied."
-    Write-Host "Run with -Apply to update website deployment staging content."
+if (-not $Apply.IsPresent -or $DryRun.IsPresent) {
+    Write-Host "Dry-run only. No files were copied."
+    Write-Host "Run with -Apply to refresh staged website content."
     Write-Host "Site root: $($paths.siteRoot)"
     Write-Host "Entries: $($normalizedIncludePaths -join ', ')"
+    exit 0
+}
+
+if (-not $PSCmdlet.ShouldProcess($paths.siteRoot, "Refresh staged website deployment content")) {
+    Write-Host "Update cancelled."
     exit 0
 }
 
@@ -74,6 +85,7 @@ foreach ($entry in $copyEntries) {
 
 $plan = New-WebsiteDeploymentPlan -IncludePaths $normalizedIncludePaths -RepoRoot $repoRoot
 Write-JsonFile -Value $plan -Path $paths.planPath
+Write-DockerDeploymentArtifacts -Paths $paths
 
 $report = [ordered]@{
     schema = "html-js-gaming.website-repo-deploy-update-report"
@@ -83,10 +95,11 @@ $report = [ordered]@{
     siteRoot = $paths.siteRoot
     entryCount = $copyEntries.Count
     copiedEntries = $copyEntries
+    dockerCompatible = $true
 }
 Write-JsonFile -Value $report -Path $paths.updateReportPath
 
 Write-Host "Updated website deployment staging content."
 Write-Host "Site root: $($paths.siteRoot)"
 Write-Host "Copied entries: $($copyEntries.Count)"
-Write-Host "Report file: $($paths.updateReportPath)"
+Write-Host "Dockerfile: $($paths.dockerfilePath)"

@@ -1,10 +1,12 @@
-[CmdletBinding()]
+[CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = "Medium")]
 param(
     [string]$ApiKey,
     [ValidateSet("Process", "User")]
     [string]$Scope = "User",
+    [ValidatePattern("^[A-Za-z_][A-Za-z0-9_]*$")]
     [string]$EnvVarName = "OPENAI_API_KEY",
-    [string]$StatePath
+    [string]$StatePath,
+    [switch]$DryRun
 )
 
 Set-StrictMode -Version Latest
@@ -28,12 +30,28 @@ function ConvertTo-PlainText {
 }
 
 if ([string]::IsNullOrWhiteSpace($ApiKey)) {
+    if ($DryRun.IsPresent) {
+        throw "Dry-run mode requires -ApiKey so the script can validate format and report the planned update."
+    }
     $secureInput = Read-Host -Prompt "Enter OpenAI API key (input hidden)" -AsSecureString
     $ApiKey = ConvertTo-PlainText -SecureValue $secureInput
 }
 
 if (-not (Test-CodexApiKeyFormat -ApiKey $ApiKey)) {
     throw "API key format appears invalid. Expected a non-empty key that starts with 'sk-' and is at least 20 characters."
+}
+
+if ($DryRun.IsPresent) {
+    $fingerprint = Get-CodexApiKeyFingerprint -ApiKey $ApiKey
+    Write-Host "Dry-run only. No environment or state updates were made."
+    Write-Host "Would set $EnvVarName in $Scope scope."
+    Write-Host "Would record fingerprint: $fingerprint"
+    exit 0
+}
+
+if (-not $PSCmdlet.ShouldProcess($EnvVarName, "Configure API key in $Scope scope and update codex state metadata")) {
+    Write-Host "API key update cancelled."
+    exit 0
 }
 
 if ($Scope -eq "Process") {

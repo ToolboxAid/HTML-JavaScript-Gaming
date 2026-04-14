@@ -1,7 +1,7 @@
 Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
 
-function Get-CodexRepoRoot {
+function Get-DeployRepoRoot {
     return [System.IO.Path]::GetFullPath((Join-Path $PSScriptRoot "..\..\.."))
 }
 
@@ -11,7 +11,7 @@ function Resolve-WebsiteStagingRoot {
     )
 
     if ([string]::IsNullOrWhiteSpace($StagingRoot)) {
-        return [System.IO.Path]::GetFullPath((Join-Path (Get-CodexRepoRoot) "tmp\website-deploy"))
+        return [System.IO.Path]::GetFullPath((Join-Path (Get-DeployRepoRoot) "tmp\website-deploy"))
     }
 
     return [System.IO.Path]::GetFullPath($StagingRoot)
@@ -30,6 +30,9 @@ function Get-WebsiteDeploymentPaths {
         metaRoot = [System.IO.Path]::GetFullPath((Join-Path $resolvedStagingRoot "meta"))
         planPath = [System.IO.Path]::GetFullPath((Join-Path $resolvedStagingRoot "meta\website-deploy-plan.json"))
         updateReportPath = [System.IO.Path]::GetFullPath((Join-Path $resolvedStagingRoot "meta\website-deploy-last-update.json"))
+        dockerfilePath = [System.IO.Path]::GetFullPath((Join-Path $resolvedStagingRoot "Dockerfile"))
+        composePath = [System.IO.Path]::GetFullPath((Join-Path $resolvedStagingRoot "docker-compose.yml"))
+        dockerIgnorePath = [System.IO.Path]::GetFullPath((Join-Path $resolvedStagingRoot ".dockerignore"))
     }
 }
 
@@ -82,9 +85,21 @@ function Test-PathWithinRoot {
 
     $resolvedPath = [System.IO.Path]::GetFullPath($Path)
     $resolvedRoot = [System.IO.Path]::GetFullPath($RootPath)
-
     $normalizedRoot = $resolvedRoot.TrimEnd('\', '/') + [System.IO.Path]::DirectorySeparatorChar
     return $resolvedPath.StartsWith($normalizedRoot, [StringComparison]::OrdinalIgnoreCase)
+}
+
+function Test-StagingRootSafety {
+    param(
+        [Parameter(Mandatory = $true)]
+        [string]$StagingRoot
+    )
+
+    $repoRoot = Get-DeployRepoRoot
+    $tmpRoot = [System.IO.Path]::GetFullPath((Join-Path $repoRoot "tmp"))
+    if (-not (Test-PathWithinRoot -Path $StagingRoot -RootPath $tmpRoot)) {
+        throw "Safety check failed. Staging root must remain under <repo>/tmp: $StagingRoot"
+    }
 }
 
 function Normalize-IncludePaths {
@@ -125,6 +140,7 @@ function New-WebsiteDeploymentPlan {
         generatedUtc = [DateTime]::UtcNow.ToString("o")
         repoRoot = $RepoRoot
         includePaths = $IncludePaths
+        dockerCompatible = $true
     }
 }
 
@@ -137,4 +153,39 @@ function Get-DefaultWebsiteIncludePaths {
         "src",
         "tools"
     )
+}
+
+function Get-DockerArtifactContent {
+    return [ordered]@{
+        Dockerfile = @(
+            "FROM nginx:alpine",
+            "COPY site/ /usr/share/nginx/html/",
+            "EXPOSE 80",
+            'CMD ["nginx", "-g", "daemon off;"]'
+        ) -join [Environment]::NewLine
+        Compose = @(
+            'services:',
+            '  web:',
+            '    build: .',
+            '    ports:',
+            '      - "${PORT:-8080}:80"',
+            '    restart: unless-stopped'
+        ) -join [Environment]::NewLine
+        DockerIgnore = @(
+            "meta/",
+            "*.log"
+        ) -join [Environment]::NewLine
+    }
+}
+
+function Write-DockerDeploymentArtifacts {
+    param(
+        [Parameter(Mandatory = $true)]
+        [object]$Paths
+    )
+
+    $docker = Get-DockerArtifactContent
+    [System.IO.File]::WriteAllText($Paths.dockerfilePath, $docker.Dockerfile + [Environment]::NewLine, [System.Text.Encoding]::UTF8)
+    [System.IO.File]::WriteAllText($Paths.composePath, $docker.Compose + [Environment]::NewLine, [System.Text.Encoding]::UTF8)
+    [System.IO.File]::WriteAllText($Paths.dockerIgnorePath, $docker.DockerIgnore + [Environment]::NewLine, [System.Text.Encoding]::UTF8)
 }
