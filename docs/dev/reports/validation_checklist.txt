@@ -1,12 +1,10 @@
-Validation Checklist - BUILD_PR_LEVEL_09_21_SCRIPT_VALIDATION_AND_SAFETY
+Validation Checklist - BUILD_PR_LEVEL_09_22_DEPLOYMENT_PIPELINE_INTEGRATION
 
-[x] deployment scripts moved/enforced to `scripts/PS/deploy/`
-[x] codex scripts remain/enforced under `scripts/PS/codex/`
-[x] validation and safety checks added to touched codex/deploy scripts
-[x] dry-run capability added to touched codex/deploy scripts
-[x] deploy flow writes Docker-compatible artifacts in staging
-[x] focused PowerShell parse checks pass on touched scripts
-[x] focused dry-run/apply smoke checks pass for deploy scripts
-[x] focused dry-run/apply smoke checks pass for touched codex scripts
-[x] roadmap updated with status-only bracket changes
+[x] template game script moved from `scripts/PS/codex/` to `scripts/PS/`
+[x] script renamed to purpose-based name (`New-TemplateGame.ps1`)
+[x] references updated to avoid broken paths
+[x] script folder structure preserved (`scripts/PS/`, `scripts/PS/codex/`, `scripts/PS/deploy/`)
+[x] PowerShell parse check passes on renamed/touched script
+[x] focused dry-run/apply smoke checks pass for renamed script
+[x] roadmap updated with status-only bracket change
 [x] commit format enforced: description first line, PR name last line

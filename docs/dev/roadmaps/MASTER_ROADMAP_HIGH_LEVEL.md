@@ -577,7 +577,7 @@
 - [ ] per-component roadmap slices added only when truly needed
 - [ ] structure normalization roadmap linked to future BUILD lanes
 - [ ] phase descriptions normalized repo-wide
-- [ ] naming policy documented
+- [.] naming policy documented
 
 ---
 

@@ -2,12 +2,15 @@ MODEL: GPT-5.4
 REASONING: high
 
 COMMAND:
-- enforce scripts/PS/deploy/ for deployment scripts
-- enforce scripts/PS/codex/ for codex scripts
-- add validation and safety checks to all scripts
-- add dry-run capability
-- ensure docker deployment compatibility
+- move New-CodexTemplateGame.ps1 to scripts/PS/
+- rename to reflect actual purpose (template game creation)
+- ensure no references break
+- enforce script folder structure:
+  scripts/PS/
+  scripts/PS/codex/
+  scripts/PS/deploy/
+- update any references accordingly
 - enforce commit format:
-  description starts first line
+  description first line
   PR name last line
-- update roadmap status only (no text changes except approved additions)
+- update roadmap status only

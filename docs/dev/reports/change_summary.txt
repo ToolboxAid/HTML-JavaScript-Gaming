@@ -1,26 +1,13 @@
 Summary
-- Enforced script boundaries:
-  - deployment scripts now live under `scripts/PS/deploy/`
-  - codex scripts remain under `scripts/PS/codex/`
-- Added deployment safety/validation helpers in `scripts/PS/deploy/WebsiteRepoDeploymentCommon.ps1`.
-- Added/updated deployment scripts with dry-run and apply guards:
-  - `scripts/PS/deploy/Prep-WebsiteRepoDeployment.ps1`
-  - `scripts/PS/deploy/Update-WebsiteRepoDeployment.ps1`
-  - `scripts/PS/deploy/Clean-WebsiteRepoDeployment.ps1`
-- Removed deployment script duplicates from `scripts/PS/codex/`:
-  - `Prep-WebsiteRepoDeployment.ps1`
-  - `Update-WebsiteRepoDeployment.ps1`
-  - `Clean-WebsiteRepoDeployment.ps1`
-  - `WebsiteRepoDeploymentCommon.ps1`
-- Added Docker deployment compatibility artifacts to deploy flow (`Dockerfile`, `docker-compose.yml`, `.dockerignore` in staging root).
-- Hardened codex scripts with dry-run and validation where applicable:
-  - `Switch-CodexPlanMode.ps1`
-  - `Set-CodexApiKey.ps1`
-  - `Validate-CodexApiKey.ps1`
-  - `Get-CodexOperatorState.ps1`
-  - `New-CodexTemplateGame.ps1`
-- Updated docs for new deploy path and script guardrails:
-  - `docs/dev/CODEX_WEBSITE_REPO_DEPLOYMENT_SCRIPTING.md`
+- Moved template game creation script from `scripts/PS/codex/New-CodexTemplateGame.ps1` to `scripts/PS/New-TemplateGame.ps1`.
+- Renamed script to reflect purpose (general template game creation, not codex-only naming).
+- Updated script internals for new location:
+  - repo-root resolution now matches `scripts/PS/` depth
+  - generation note path updated to `scripts/PS/New-TemplateGame.ps1`
+- Updated documentation references to the new script path:
   - `docs/dev/CODEX_TEMPLATE_GAME_CREATION_SCRIPTING.md`
-  - `docs/dev/CODEX_PLAN_AND_API_KEY_SCRIPTING.md`
+- Preserved script folder structure:
+  - `scripts/PS/` (general)
+  - `scripts/PS/codex/` (codex)
+  - `scripts/PS/deploy/` (deployment)
 - Updated roadmap with status-only bracket change.
