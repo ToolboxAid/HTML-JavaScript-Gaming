@@ -10,6 +10,10 @@ export const SHARED_ACTION_LABELS = Object.freeze({
   managePalettes: "Manage Palettes"
 });
 
+function sanitizeText(value) {
+  return typeof value === "string" ? value.trim() : "";
+}
+
 function safeParseJson(raw) {
   if (typeof raw !== "string" || !raw.trim()) {
     return null;
@@ -19,6 +23,89 @@ function safeParseJson(raw) {
   } catch {
     return null;
   }
+}
+
+function isRecord(value) {
+  return Boolean(value) && typeof value === "object" && !Array.isArray(value);
+}
+
+function normalizeTimestamp(value) {
+  const text = sanitizeText(value);
+  return text || new Date().toISOString();
+}
+
+function normalizeAssetType(value) {
+  const text = sanitizeText(value);
+  return text || "other";
+}
+
+function normalizeMetadata(value) {
+  return isRecord(value) ? { ...value } : {};
+}
+
+function normalizeAssetTags(value) {
+  if (!Array.isArray(value)) {
+    return [];
+  }
+  return value
+    .map((entry) => sanitizeText(entry))
+    .filter((entry) => Boolean(entry));
+}
+
+function normalizePaletteColors(value) {
+  if (!Array.isArray(value)) {
+    return [];
+  }
+  return value
+    .filter((entry) => isRecord(entry))
+    .map((entry) => ({
+      symbol: sanitizeText(entry.symbol),
+      hex: sanitizeText(entry.hex),
+      name: sanitizeText(entry.name)
+    }));
+}
+
+export function normalizeSharedAssetHandoff(raw) {
+  if (!isRecord(raw)) {
+    return null;
+  }
+
+  const assetId = sanitizeText(raw.assetId);
+  const sourcePath = sanitizeText(raw.sourcePath);
+  if (!assetId || !sourcePath) {
+    return null;
+  }
+
+  return {
+    assetId,
+    assetType: normalizeAssetType(raw.assetType),
+    sourcePath,
+    displayName: sanitizeText(raw.displayName) || assetId,
+    tags: normalizeAssetTags(raw.tags),
+    metadata: normalizeMetadata(raw.metadata),
+    sourceToolId: sanitizeText(raw.sourceToolId),
+    selectedAt: normalizeTimestamp(raw.selectedAt)
+  };
+}
+
+export function normalizeSharedPaletteHandoff(raw) {
+  if (!isRecord(raw)) {
+    return null;
+  }
+
+  const paletteId = sanitizeText(raw.paletteId);
+  if (!paletteId) {
+    return null;
+  }
+
+  return {
+    paletteId,
+    displayName: sanitizeText(raw.displayName) || paletteId,
+    colors: normalizePaletteColors(raw.colors),
+    metadata: normalizeMetadata(raw.metadata),
+    sourceToolId: sanitizeText(raw.sourceToolId),
+    selectedAt: normalizeTimestamp(raw.selectedAt)
+  };
 }
 
 export function getSharedLaunchContext() {
@@ -92,7 +179,7 @@ export function createAssetHandoff({
   metadata = {},
   sourceToolId = ""
 }) {
-  return {
+  return normalizeSharedAssetHandoff({
     assetId: String(assetId || ""),
     assetType: String(assetType || "other"),
     sourcePath: String(sourcePath || ""),
@@ -101,7 +188,7 @@ export function createAssetHandoff({
     metadata: metadata && typeof metadata === "object" ? { ...metadata } : {},
     sourceToolId: String(sourceToolId || ""),
     selectedAt: new Date().toISOString()
-  };
+  });
 }
 
 export function createPaletteHandoff({
@@ -111,40 +198,50 @@ export function createPaletteHandoff({
   metadata = {},
   sourceToolId = ""
 }) {
-  return {
+  return normalizeSharedPaletteHandoff({
     paletteId: String(paletteId || ""),
     displayName: String(displayName || "Unnamed Palette"),
     colors: Array.isArray(colors) ? colors.map((entry) => ({ ...entry })) : [],
     metadata: metadata && typeof metadata === "object" ? { ...metadata } : {},
     sourceToolId: String(sourceToolId || ""),
     selectedAt: new Date().toISOString()
-  };
+  });
 }
 
 export function readSharedAssetHandoff() {
   if (typeof window === "undefined") {
     return null;
   }
-  return safeParseJson(window.localStorage.getItem(SHARED_ASSET_HANDOFF_KEY));
+  return normalizeSharedAssetHandoff(safeParseJson(window.localStorage.getItem(SHARED_ASSET_HANDOFF_KEY)));
 }
 
 export function readSharedPaletteHandoff() {
   if (typeof window === "undefined") {
     return null;
   }
-  return safeParseJson(window.localStorage.getItem(SHARED_PALETTE_HANDOFF_KEY));
+  return normalizeSharedPaletteHandoff(safeParseJson(window.localStorage.getItem(SHARED_PALETTE_HANDOFF_KEY)));
 }
 
 export function writeSharedAssetHandoff(handoff) {
   if (typeof window === "undefined") {
-    return;
+    return false;
   }
-  window.localStorage.setItem(SHARED_ASSET_HANDOFF_KEY, JSON.stringify(handoff));
+  const normalized = normalizeSharedAssetHandoff(handoff);
+  if (!normalized) {
+    return false;
+  }
+  window.localStorage.setItem(SHARED_ASSET_HANDOFF_KEY, JSON.stringify(normalized));
+  return true;
 }
 
 export function writeSharedPaletteHandoff(handoff) {
   if (typeof window === "undefined") {
-    return;
+    return false;
   }
-  window.localStorage.setItem(SHARED_PALETTE_HANDOFF_KEY, JSON.stringify(handoff));
+  const normalized = normalizeSharedPaletteHandoff(handoff);
+  if (!normalized) {
+    return false;
+  }
+  window.localStorage.setItem(SHARED_PALETTE_HANDOFF_KEY, JSON.stringify(normalized));
+  return true;
 }

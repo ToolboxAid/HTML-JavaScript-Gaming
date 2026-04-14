@@ -1,5 +1,12 @@
-Validation:
-- no data/platform nesting remains
-- top-level assets folders are type-only
-- plural naming enforced
-- references updated
+[ ] PR scope remains limited to shared handoff enforcement.
+[ ] Asset Browser launch flows use normalized `view` and `sourceToolId` parameters.
+[ ] Shared action labels remain exact and normalized.
+[ ] `toolboxaid.shared.assetHandoff` is the only asset handoff key used.
+[ ] `toolboxaid.shared.paletteHandoff` is the only palette handoff key used.
+[ ] Asset payload preserves canonical top-level fields.
+[ ] Palette payload preserves canonical top-level fields.
+[ ] Consuming tools prefer valid shared handoffs over hidden private defaults.
+[ ] Invalid/missing handoff payloads degrade safely.
+[ ] Starter template remains compatible.
+[ ] Legacy tools remain excluded.
+[ ] No engine core API files are changed.

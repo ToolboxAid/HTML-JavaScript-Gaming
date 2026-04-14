@@ -1,8 +1,8 @@
 import {
-  SHARED_PALETTE_HANDOFF_KEY,
   createPaletteHandoff,
   getSharedLaunchContext,
   getToolDisplayName,
+  readSharedPaletteHandoff,
   writeSharedPaletteHandoff
 } from "../shared/assetUsageIntegration.js";
 import { registerToolBootContract } from "../shared/toolBootContract.js";
@@ -327,22 +327,19 @@ function usePaletteInActiveTools() {
     },
     sourceToolId: context.sourceToolId || "palette-browser"
   });
-  writeSharedPaletteHandoff(handoff);
-  refs.selectionText.textContent = `Shared palette handoff updated for ${getToolDisplayName(context.sourceToolId, "active tool")}: ${palette.name}`;
+  const stored = writeSharedPaletteHandoff(handoff);
+  refs.selectionText.textContent = stored
+    ? `Shared palette handoff updated for ${getToolDisplayName(context.sourceToolId, "active tool")}: ${palette.name}`
+    : "Shared palette handoff was not updated because the payload was invalid.";
 }
 
 function renderStoredSelection() {
-  try {
-    const raw = localStorage.getItem(SHARED_PALETTE_HANDOFF_KEY);
-    if (!raw) {
-      refs.selectionText.textContent = "No handoff recorded yet.";
-      return;
-    }
-    const parsed = JSON.parse(raw);
-    refs.selectionText.textContent = `Active handoff: ${parsed.name} (${parsed.updatedAt})`;
-  } catch {
+  const handoff = readSharedPaletteHandoff();
+  if (!handoff) {
     refs.selectionText.textContent = "No handoff recorded yet.";
+    return;
   }
+  refs.selectionText.textContent = `Active handoff: ${handoff.displayName} (${handoff.selectedAt})`;
 }
 
 function bindEvents() {

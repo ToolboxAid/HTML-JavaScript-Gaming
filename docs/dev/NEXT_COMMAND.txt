@@ -1,3 +1,1 @@
-# Validate BUILD_PR_LEVEL_09_03_ASSET_BUCKET_TAXONOMY_STANDARD
-rg -n ""assets/platform/"" games samples tools src tests --glob '!start_of_day/**'
-node tests/tools/VectorAssetSystem.test.mjs
+APPLY_PR_LEVEL_09_05_SHARED_ASSET_HANDOFF_ENFORCEMENT

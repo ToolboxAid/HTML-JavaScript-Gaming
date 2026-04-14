@@ -1,1 +1,1 @@
-Level 09.04 — simplify asset structure by removing redundant data/platform containers
+build(assets): enforce shared tool asset and palette handoff contract

@@ -348,8 +348,10 @@ function useSelectedAssetInActiveTool() {
     },
     sourceToolId: context.sourceToolId || "asset-browser"
   });
-  writeSharedAssetHandoff(handoff);
-  refs.launchContextText.textContent = `Shared asset handoff updated for ${getToolDisplayName(context.sourceToolId, "active tool")}: ${selectedAsset.label}`;
+  const stored = writeSharedAssetHandoff(handoff);
+  refs.launchContextText.textContent = stored
+    ? `Shared asset handoff updated for ${getToolDisplayName(context.sourceToolId, "active tool")}: ${selectedAsset.label}`
+    : "Shared asset handoff was not updated because the payload was invalid.";
 }
 
 function syncImportFormFromFile() {
