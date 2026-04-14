@@ -25,6 +25,7 @@ export async function run() {
   });
   assert.equal(dataPathBlocked.valid, false);
   assert.equal(dataPathBlocked.issues.some((issue) => issue.includes("/data/")), true);
+  assert.equal(dataPathBlocked.errors.some((entry) => entry.code === "RUNTIME_PATH_DATA_BLOCKED"), true);
 
   const invalidTilemap = validateRuntimeResolvedAsset({
     domain: "tilemaps",
@@ -36,4 +37,5 @@ export async function run() {
   });
   assert.equal(invalidTilemap.valid, false);
   assert.equal(invalidTilemap.issues.some((issue) => issue.includes("Tilemaps")), true);
+  assert.equal(invalidTilemap.errors.some((entry) => entry.code === "RUNTIME_TILEMAP_METADATA_REQUIRED"), true);
 }

@@ -38,6 +38,7 @@ export async function run() {
   });
 
   assert.equal(ready.status, "ready");
+  assert.deepEqual(ready.errors, []);
   assert.equal(ready.stages.validate.valid, true);
   assert.equal(ready.records.length, 4);
   assert.equal(ready.stages.emit.coordinatorPath, "games/asteroids/assets/asteroids.assets.json");
@@ -77,6 +78,8 @@ export async function run() {
   });
 
   assert.equal(invalid.status, "invalid");
+  assert.equal(Array.isArray(invalid.errors), true);
+  assert.equal(invalid.errors.some((entry) => entry.code === "PIPELINE_TOOL_CONTRACT_INVALID"), true);
   assert.equal(invalid.stages.validate.valid, false);
   assert.equal(
     invalid.stages.validate.issues.some((entry) => entry.includes("sprite-editor: project.assetRefs block is required.")),

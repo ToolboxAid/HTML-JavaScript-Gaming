@@ -1,22 +1,30 @@
 Summary
-- Added a runtime asset validation layer integrated into shared runtime lookup.
-- Manifest-resolved assets are now validated before runtime use.
-- Runtime `/data/` path resolution is rejected in validation.
+- Implemented a shared asset error handling standard for pipeline/runtime layers.
+- Unified error propagation through runtime validation + runtime lookup + pipeline tooling.
+- Added debug-friendly structured error reporting with stable codes/stages.
 
 Implementation
-- Added `tools/shared/pipeline/runtimeAssetValidation.js`:
-  - validates manifest-resolved runtime assets by domain (`sprites`, `tilemaps`, `parallax`, `vectors`)
-  - enforces required runtime path and domain-specific minimal field checks
-  - rejects any `/data/` runtime path/source path usage
+- Added `tools/shared/pipeline/assetErrorHandling.js`:
+  - shared error shape (`level`, `code`, `stage`, `domain`, `assetId`, `message`, `details`)
+  - helper append utilities for consistent propagation
+- Updated `tools/shared/pipeline/runtimeAssetValidation.js`:
+  - emits standardized errors while preserving compatibility `issues` messages
+  - rejects `/data/` runtime/source paths with explicit error codes
+  - validates required domain metadata with stable codes per domain
 - Updated `tools/shared/pipeline/runtimeAssetLookup.js`:
-  - integrates `validateRuntimeResolvedAsset` into `resolvePackagedAsset`
-  - returns `null` for invalid manifest-resolved assets so runtime loader blocks consumption
-- Added focused tests:
-  - `tests/tools/RuntimeAssetValidation.test.mjs`
-  - updated `tests/tools/RuntimeAssetLookupConsolidation.test.mjs` for validation integration behavior
-  - registered `RuntimeAssetValidation` in `tests/run-tests.mjs`
+  - collects/propagates binding issues, binding rejections, lookup misses, and runtime validation errors
+  - exposes `errors` and `getErrors()` for debug/reporting
+- Updated `tools/shared/pipeline/assetPipelineTooling.js`:
+  - emits standardized `errors` for invalid tool-contract stage failures
+
+Tests
+- Added `tests/tools/AssetErrorHandlingStandard.test.mjs`
+- Updated `tests/tools/RuntimeAssetValidation.test.mjs`
+- Updated `tests/tools/RuntimeAssetLookupConsolidation.test.mjs`
+- Updated `tests/tools/AssetPipelineTooling.test.mjs`
+- Updated `tests/run-tests.mjs` registrations
 
 Roadmap (status-only)
 - `docs/dev/roadmaps/MASTER_ROADMAP_HIGH_LEVEL.md`
-  - `Normalize assets/data ownership` moved from `[.]` to `[x]`
-- No roadmap wording/order/prose edits.
+  - `Expand testing/validation structure` moved from `[.]` to `[x]`
+- No roadmap prose/text/order edits.

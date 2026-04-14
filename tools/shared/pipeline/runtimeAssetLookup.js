@@ -3,6 +3,7 @@ import { safeString } from "../projectSystemValueUtils.js";
 import { coordinateGameAssetManifest } from "./gameAssetManifestCoordinator.js";
 import { createRuntimeAssetBinding, resolveRuntimeAsset } from "./runtimeAssetBinding.js";
 import { validateRuntimeResolvedAsset } from "./runtimeAssetValidation.js";
+import { appendAssetError, appendAssetErrors } from "./assetErrorHandling.js";
 
 const RUNTIME_BINDING_PREFIXES = Object.freeze({
   "vector.": "vectors",
@@ -75,6 +76,28 @@ export function createRuntimeManifestAssetLookup(options = {}) {
   });
   const binding = createRuntimeAssetBinding(coordinatedManifest.manifest);
   const missingBindingBehavior = options.missingBindingBehavior === "null" ? "null" : "static";
+  const errors = [];
+
+  appendAssetErrors(
+    errors,
+    (binding.issues || []).map((message) => ({
+      code: "RUNTIME_BINDING_INVALID",
+      stage: "runtime-binding",
+      message,
+      domain: "",
+      assetId: ""
+    }))
+  );
+  appendAssetErrors(
+    errors,
+    (binding.rejected || []).map((entry) => ({
+      code: "RUNTIME_BINDING_REJECTED",
+      stage: "runtime-binding",
+      message: `Rejected runtime binding for ${safeString(entry.assetId, "unknown")} (${safeString(entry.reason, "unknown-reason")}).`,
+      domain: safeString(entry.domain, ""),
+      assetId: safeString(entry.assetId, "")
+    }))
+  );
 
   function resolvePackagedAsset(asset) {
     const assetId = safeString(asset?.id, "");
@@ -104,6 +127,13 @@ export function createRuntimeManifestAssetLookup(options = {}) {
 
     const runtimeRecord = resolveRuntimeAsset(binding, { domain, assetId });
     if (!runtimeRecord) {
+      appendAssetError(errors, {
+        code: "RUNTIME_LOOKUP_MISSING_BINDING",
+        stage: "runtime-lookup",
+        domain,
+        assetId,
+        message: `Missing runtime binding for ${assetId}.`
+      });
       return missingBindingBehavior === "null" ? null : staticSource;
     }
 
@@ -120,6 +150,7 @@ export function createRuntimeManifestAssetLookup(options = {}) {
       source: mergedSource
     });
     if (!validation.valid) {
+      appendAssetErrors(errors, validation.errors);
       return null;
     }
 
@@ -129,6 +160,10 @@ export function createRuntimeManifestAssetLookup(options = {}) {
   return {
     binding,
     records,
+    errors,
+    getErrors() {
+      return errors.slice();
+    },
     resolvePackagedAsset
   };
 }

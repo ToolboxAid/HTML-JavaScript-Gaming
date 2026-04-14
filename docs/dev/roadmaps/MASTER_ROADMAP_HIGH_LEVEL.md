@@ -595,7 +595,7 @@
 - [ ] Establish games/_template and normalize games layer
 - [x] Normalize tools/shared and tool boundaries
 - [x] Normalize assets/data ownership
-- [.] Expand testing/validation structure
+- [x] Expand testing/validation structure
 
 ### Later Capability Lanes
 - [ ] FEATURE: Fullscreen Bezel Overlay System - Render game in full screen with optional bezel artwork layer (static or animated) surrounding the active playfield, preserving aspect ratio and supporting per-game/theme bezel assets without modifying core engine rendering.

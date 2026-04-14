@@ -1,30 +1,36 @@
-Validation Checklist - BUILD_PR_LEVEL_09_14_RUNTIME_ASSET_VALIDATION
+Validation Checklist - BUILD_PR_LEVEL_09_15_ASSET_ERROR_HANDLING
 
 Scope
-[x] Runtime asset validation layer added
-[x] Manifest-resolved runtime assets validated before use
-[x] `/data/` runtime paths rejected
-[x] Validation integrated with shared lookup layer
+[x] Asset error handling standard implemented
+[x] Error propagation unified in touched pipeline/runtime layers
+[x] Runtime validation + lookup integration completed
+[x] Debug-friendly structured reporting added
 [x] No engine redesign
-[x] No tool UI work
-[x] No asset format expansion
+[x] No UI changes
 
 Code
-[x] Added `tools/shared/pipeline/runtimeAssetValidation.js`
+[x] Added `tools/shared/pipeline/assetErrorHandling.js`
+[x] Updated `tools/shared/pipeline/runtimeAssetValidation.js`
 [x] Updated `tools/shared/pipeline/runtimeAssetLookup.js`
-[x] Added `tests/tools/RuntimeAssetValidation.test.mjs`
+[x] Updated `tools/shared/pipeline/assetPipelineTooling.js`
+[x] Added `tests/tools/AssetErrorHandlingStandard.test.mjs`
+[x] Updated `tests/tools/RuntimeAssetValidation.test.mjs`
 [x] Updated `tests/tools/RuntimeAssetLookupConsolidation.test.mjs`
+[x] Updated `tests/tools/AssetPipelineTooling.test.mjs`
 [x] Updated `tests/run-tests.mjs`
 
 Validation
+[x] `node --check tools/shared/pipeline/assetErrorHandling.js`
 [x] `node --check tools/shared/pipeline/runtimeAssetValidation.js`
 [x] `node --check tools/shared/pipeline/runtimeAssetLookup.js`
+[x] `node --check tools/shared/pipeline/assetPipelineTooling.js`
+[x] `node --check tests/tools/AssetErrorHandlingStandard.test.mjs`
 [x] `node --check tests/tools/RuntimeAssetValidation.test.mjs`
 [x] `node --check tests/tools/RuntimeAssetLookupConsolidation.test.mjs`
+[x] `node --check tests/tools/AssetPipelineTooling.test.mjs`
 [x] `node --check tests/run-tests.mjs`
-[x] Focused tests pass: RuntimeAssetValidation, RuntimeAssetLookupConsolidation
-[x] Existing tests pass: RuntimeAssetBinding, GameAssetManifestCoordinator, AssetPipelineTooling, ProjectToolDataContracts
-[x] Existing consumer/lane tests pass: AsteroidsAssetReferenceAdoption, AsteroidsPlatformDemo, VectorNativeTemplate, VectorTemplateSampleGame, VectorAssetSystem
+[x] Focused tests pass: AssetErrorHandlingStandard, RuntimeAssetValidation, RuntimeAssetLookupConsolidation, AssetPipelineTooling
+[x] Existing regression tests pass: RuntimeAssetBinding, GameAssetManifestCoordinator, ProjectToolDataContracts, AsteroidsAssetReferenceAdoption, AsteroidsPlatformDemo, VectorNativeTemplate, VectorTemplateSampleGame, VectorAssetSystem
 
 Roadmap
 [x] Status-only update applied

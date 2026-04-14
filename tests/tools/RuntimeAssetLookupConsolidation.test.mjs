@@ -34,6 +34,10 @@ export async function run() {
   assert.equal(strictLookup.resolvePackagedAsset({ id: "vector.bad", type: "vector" }), null);
   assert.equal(strictLookup.resolvePackagedAsset({ id: "vector.tool-only", type: "vector" }), null);
   assert.equal(strictLookup.resolvePackagedAsset({ id: "palette.hud", type: "palette" }).kind, "palette");
+  const strictCodes = strictLookup.getErrors().map((entry) => entry.code);
+  assert.equal(strictCodes.includes("RUNTIME_BINDING_REJECTED"), true);
+  assert.equal(strictCodes.includes("RUNTIME_VECTOR_METADATA_REQUIRED"), true);
+  assert.equal(strictCodes.includes("RUNTIME_LOOKUP_MISSING_BINDING"), true);
 
   const fallbackLookup = createRuntimeManifestAssetLookup({
     gameId: "TemplateGame",
@@ -50,4 +54,5 @@ export async function run() {
   const fallbackResolved = fallbackLookup.resolvePackagedAsset({ id: "vector.template.player", type: "vector" });
   assert.equal(fallbackResolved.file, "tools/templates/vector-native-arcade/assets/data/vectors/template-player.vector.json");
   assert.equal(fallbackLookup.binding.domains.vectors.length, 0);
+  assert.equal(fallbackLookup.getErrors().some((entry) => entry.code === "RUNTIME_BINDING_REJECTED"), true);
 }

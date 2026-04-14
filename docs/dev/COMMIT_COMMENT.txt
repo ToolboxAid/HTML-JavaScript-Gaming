@@ -1,3 +1,3 @@
-BUILD_PR_LEVEL_09_14_RUNTIME_ASSET_VALIDATION
+BUILD_PR_LEVEL_09_15_ASSET_ERROR_HANDLING
 
-Adds runtime asset validation for manifest-resolved assets, rejects `/data/` paths at runtime, integrates validation into shared runtime lookup resolution, and applies a status-only roadmap bracket update.
+Implements a shared asset error standard, unifies error propagation across runtime validation + runtime lookup + asset pipeline tooling, adds debug-friendly structured error reporting, and applies a status-only roadmap update.

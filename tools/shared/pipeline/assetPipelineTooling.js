@@ -1,6 +1,7 @@
 import { safeString } from "../projectSystemValueUtils.js";
 import { validateToolStateContract } from "../projectToolIntegration.js";
 import { coordinateGameAssetManifest } from "./gameAssetManifestCoordinator.js";
+import { appendAssetErrors } from "./assetErrorHandling.js";
 
 export const ASSET_PIPELINE_TOOLING_SCHEMA = "html-js-gaming.asset-pipeline-tooling";
 export const ASSET_PIPELINE_TOOLING_VERSION = 1;
@@ -137,6 +138,7 @@ export function runAssetPipelineTooling(options = {}) {
   const gameId = normalizeGameId(options.gameId);
   const loadedRecords = collectRecords(options.domainInputs);
   const contractValidation = validateToolContracts(options.toolStates);
+  const errors = [];
 
   const loadStage = {
     stage: ASSET_PIPELINE_TOOLING_STAGES.LOAD,
@@ -153,10 +155,21 @@ export function runAssetPipelineTooling(options = {}) {
   };
 
   if (!validateStage.valid) {
+    appendAssetErrors(
+      errors,
+      validateStage.issues.map((message) => ({
+        code: "PIPELINE_TOOL_CONTRACT_INVALID",
+        stage: "validate",
+        message,
+        domain: "",
+        assetId: ""
+      }))
+    );
     return {
       schema: ASSET_PIPELINE_TOOLING_SCHEMA,
       version: ASSET_PIPELINE_TOOLING_VERSION,
       status: "invalid",
+      errors,
       stages: {
         load: loadStage,
         validate: validateStage,
@@ -204,6 +217,7 @@ export function runAssetPipelineTooling(options = {}) {
     schema: ASSET_PIPELINE_TOOLING_SCHEMA,
     version: ASSET_PIPELINE_TOOLING_VERSION,
     status: "ready",
+    errors,
     stages: {
       load: loadStage,
       validate: validateStage,
