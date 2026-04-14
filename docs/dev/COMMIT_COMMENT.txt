@@ -1,1 +1,1 @@
-﻿build(games): normalize wave-1 repo-wide game boundaries (breakout/pong/bouncing-ball/projectilelab/gravity/gravitywell)
+﻿build(games): normalize wave-2 repo-wide game boundaries (orbit/multiballchaos/paddleintercept/thruster/spaceduel/solarsystem)

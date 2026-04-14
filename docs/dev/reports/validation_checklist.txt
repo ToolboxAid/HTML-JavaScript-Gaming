@@ -1,32 +1,27 @@
-﻿PR: BUILD_PR_LEVEL_08_08_REPO_WIDE_GAME_NORMALIZATION_WAVE_1
-
-Validation checklist
+﻿Wave 2 Validation Checklist
 
 Scope guard
-- [x] Only Wave 1 targets changed: Breakout, Pong, Bouncing-ball, ProjectileLab, Gravity, GravityWell
-- [x] Existing compliant games preserved (Asteroids, Puckman, SpaceInvaders untouched)
-- [x] No engine files modified
-- [x] No launch/bootstrap normalization work performed
+- [x] Wave 2 targets only
+- [x] No engine modifications
+- [x] No launch/bootstrap normalization
+- [x] Existing compliant games preserved
 
-Per-target contract
-For each Wave 1 game:
-1. required dirs exist
-2. real rules JS exists at rules/gameFlowRules.js
-3. flow/attract.js exists
-4. flow/intro.js exists
-5. flow/highscore.js exists
+Per-target checks
+For each target game:
+- required dirs present
+- rules/gameFlowRules.js present
+- flow/attract.js present
+- flow/intro.js present
+- flow/highscore.js present
 
 Results
-- [x] Breakout
-- [x] Pong
-- [x] Bouncing-ball
-- [x] ProjectileLab
-- [x] Gravity
-- [x] GravityWell
+- [x] Orbit
+- [x] MultiBallChaos
+- [x] PaddleIntercept
+- [x] Thruster
+- [x] SpaceDuel
+- [x] SolarSystem
 
 Command evidence
-- node --check run on all 24 new files (6 rules + 18 flow): PASS
-- structural presence check for all 6 targets: PASS
-
-Status rule
-- [x] No Section 8 repo-wide [x] inflation performed in this PR
+- node --check on all 24 Wave 2 files: PASS
+- per-target structural checks: PASS

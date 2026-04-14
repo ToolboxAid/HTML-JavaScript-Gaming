@@ -1,23 +1,19 @@
-﻿BUILD_PR_LEVEL_08_08_REPO_WIDE_GAME_NORMALIZATION_WAVE_1
+﻿Wave 2 Change Summary
 
 What changed
-- Added wave-1 rules modules and flow files for six target games only.
-- Converted each target from rules-placeholder-only to real rules JS + required flow file presence.
+- Added real rules modules and required flow files for six Wave 2 targets.
+- Removed placeholder-only rules condition for Wave 2 targets by adding rules/gameFlowRules.js.
 
-Wave 1 targets normalized
-- Breakout
-- Pong
-- Bouncing-ball
-- ProjectileLab
-- Gravity
-- GravityWell
+Wave 2 targets normalized
+- Orbit
+- MultiBallChaos
+- PaddleIntercept
+- Thruster
+- SpaceDuel
+- SolarSystem
 
-What was intentionally not changed
+What did not change
 - No engine files
-- No launch/bootstrap wiring
-- No behavior standardization beyond file presence + rules source surface
-- No status inflation for repo-wide completion lines
-
-Net effect
-- First repo-wide normalization wave completed at minimal structural boundary scope.
-- Remaining non-wave targets still require future waves.
+- No launcher/bootstrap work
+- No status inflation edits
+- Existing compliant games (Asteroids, Puckman, SpaceInvaders) preserved
