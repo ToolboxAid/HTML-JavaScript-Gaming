@@ -1,3 +1,2 @@
-Adds runnable validation entry point for all repo validation scripts.
-
-BUILD_PR_LEVEL_10_02_SCRIPT_VALIDATION_RUNNER
+Harden Validate-All exit-code behavior, keep clear PASS/FAIL summaries, and add an optional pre-commit hook example under .githooks.
+BUILD_PR_LEVEL_10_03_VALIDATION_INTEGRATION

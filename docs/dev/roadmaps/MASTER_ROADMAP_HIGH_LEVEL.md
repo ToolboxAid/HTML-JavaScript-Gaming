@@ -550,7 +550,7 @@
 - [.] unit coverage aligned to engine/shared/games
 - [.] integration coverage aligned to state/replay/rendering/tools
 - [x] smoke validation aligned to samples/tools/games
-- [ ] fixtures/helpers organization normalized
+- [.] fixtures/helpers organization normalized
 - [x] move/refactor validation strategy documented
 - [x] post-PR acceptance criteria consistently enforced
 

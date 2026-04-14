@@ -1,1 +1,20 @@
-Adds executable validation runner script.
+BUILD_PR_LEVEL_10_03_VALIDATION_INTEGRATION
+
+Scope:
+- Validation-lane changes only.
+- No engine/runtime/tool code touched.
+
+Implemented:
+- Updated `scripts/PS/validate/Validate-All.ps1`:
+  - explicit `0` exit on PASS
+  - non-zero exit on failure
+  - clear PASS/FAIL summary output
+  - guarded error path with failure summary and reason
+- Added optional pre-commit hook example:
+  - `.githooks/pre-commit.example.ps1`
+  - calls `scripts/PS/validate/Validate-All.ps1`
+  - blocks commit on validation failure
+
+Constraints:
+- Validation scripts remain under `scripts/PS/validate/`.
+- Deployment, engine, and runtime behavior were not modified.

@@ -11,18 +11,29 @@ if (-not (Test-Path -LiteralPath $validatorPath)) {
     throw "Missing validation entrypoint: $validatorPath"
 }
 
-$global:LASTEXITCODE = 0
-if ($Json.IsPresent) {
-    & $validatorPath -Json
+try {
+    $global:LASTEXITCODE = 0
+    if ($Json.IsPresent) {
+        & $validatorPath -Json
+    }
+    else {
+        & $validatorPath
+    }
 }
-else {
-    & $validatorPath
+catch {
+    Write-Host "Validate-All summary: FAIL"
+    Write-Host "Reason: $($_.Exception.Message)"
+    exit 1
 }
 
 $validatorExitCode = if ($null -eq $LASTEXITCODE) { 0 } else { [int]$LASTEXITCODE }
 $summary = if ($validatorExitCode -eq 0) { "PASS" } else { "FAIL" }
-Write-Host "Validate-All summary: $summary"
+if (-not $Json.IsPresent) {
+    Write-Host "Validate-All summary: $summary"
+}
 
 if ($validatorExitCode -ne 0) {
     exit $validatorExitCode
 }
+
+exit 0
