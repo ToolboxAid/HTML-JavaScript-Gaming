@@ -1,4 +1,3 @@
-[ ] Tool entry points aligned
-[ ] Config loading consistent
-[ ] No engine changes introduced
-[ ] Docs match implementation intent
+[ ] entry aligned
+[ ] config consistent
+[ ] tests pass

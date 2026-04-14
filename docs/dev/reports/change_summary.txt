@@ -1,3 +1,1 @@
-- Added tool launch contract documentation
-- Standardized entry expectations
-- Prepared tools for normalization phase
+Aligned tool entry + config loading.
