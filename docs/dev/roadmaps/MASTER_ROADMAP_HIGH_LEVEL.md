@@ -91,16 +91,16 @@
 ---
 
 ## 1. Repo Structure Normalization
-- [.] target structure defined at high level
-- [.] `src/engine` target established
-- [.] `src/shared` target established
-- [.] `games/` target established
-- [.] `games/_template/` target established
-- [.] `tools/shared` target established
-- [.] phase-based `samples/` grouping target established
-- [.] dependency direction rules defined
-- [.] shared asset promotion rules defined
-- [.] network samples classified as sample-phase content
+- [x] target structure defined at high level
+- [x] `src/engine` target established
+- [x] `src/shared` target established
+- [x] `games/` target established
+- [x] `games/_template/` target established
+- [x] `tools/shared` target established
+- [x] phase-based `samples/` grouping target established
+- [x] dependency direction rules defined
+- [x] shared asset promotion rules defined
+- [x] network samples classified as sample-phase content
 - [x] current folder inventory mapped to target homes
 - [x] move-map defined for root `engine/` -> `src/engine/`
 - [x] duplicate-helper migration map defined
