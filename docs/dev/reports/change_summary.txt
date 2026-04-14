@@ -1,3 +1,1 @@
-- Added residue-cleanup PR for the leftover engine/vector folder
-- Requires audit, move-or-remove classification, and import normalization
-- Aims to eliminate misleading legacy vector ownership during section-1 closeout
+Moved rules from checklist to top

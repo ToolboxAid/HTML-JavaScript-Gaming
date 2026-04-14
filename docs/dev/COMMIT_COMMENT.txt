@@ -1,2 +1,1 @@
-Clean up leftover engine/vector residue after vector boundary moves
-BUILD_PR_LEVEL_01_ENGINE_VECTOR_RESIDUE_CLEANUP
+Promote roadmap rules out of checklist

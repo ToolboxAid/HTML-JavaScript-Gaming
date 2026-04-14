@@ -5,6 +5,10 @@
 - [.] in progress
 - [ ] planned
 
+## Rules
+- repo structure work is now constrained to exact move-map BUILDs only
+- remaining structure normalization should avoid broad folder churn until active shared extraction and promotion-gate work stabilize
+
 ## Conservative Rebaseline (2026-04-12)
 - status updates in this revision are conservative and execution-backed
 - recent tool-host, asset-pipeline, debug-inspector, and launch-smoke lanes are reflected without broad scope expansion
@@ -130,8 +134,6 @@
 - [x] broad import-path correction from `engine/` to `src/engine/` applied across remaining games/samples
 - [x] partial retro smoke pass completed after path correction
 - [x] additional post-move validation complete
-- [.] repo structure work is now constrained to exact move-map BUILDs only
-- [ ] remaining structure normalization should avoid broad folder churn until active shared extraction and promotion-gate work stabilize
 
 ---
 

@@ -1,7 +1,1 @@
-- remaining engine/vector contents were audited
-- stale residue removed or real content moved
-- lingering imports normalized
-- old vector boundary no longer misleads structure truth
-- roadmap/status handling remains truth-safe
-- output ZIP created at:
-  <project folder>/tmp/BUILD_PR_LEVEL_01_ENGINE_VECTOR_RESIDUE_CLEANUP.zip
+Rules no longer use [ ]
