@@ -1,38 +1,32 @@
-Validation Checklist - BUILD_PR_LEVEL_09_11_RUNTIME_ASSET_BINDING
+Validation Checklist - BUILD_PR_LEVEL_09_12_ASSET_REFERENCE_ADOPTION
 
 Scope
-[x] PR remains in the runtime asset binding lane only
+[x] PR remains in the asset reference adoption lane only
+[x] No broad repo-wide migration introduced
 [x] No tool UI redesign introduced
 [x] No gameplay feature changes introduced
-[x] No broad engine scope expansion introduced
-[x] No unrelated asset moves introduced
+[x] No new asset format work introduced
 
-Binding
-[x] Runtime-facing binding reads from `games/<game>/assets/<game>.assets.json`
-[x] Lookup is manifest-driven rather than ad hoc where touched
-[x] Binding supports sprites
-[x] Binding supports tilemaps
-[x] Binding supports parallax
-[x] Binding supports vectors
-[x] Tilesets only included if directly required
-[x] `assets/<domain>/data/` content is excluded or rejected from runtime binding
-[x] Deterministic lookup works by asset/domain identifiers
+Adoption
+[x] Selected runtime consumers now use manifest-driven binding
+[x] Replaced ad hoc path assumptions where touched
+[x] `assets/<domain>/data/` content remains excluded from runtime use
+[x] Deterministic identifier-based resolution remains intact
+[x] Adoption stops at a stable checkpoint
 
 Validation
-[x] `node --check` passes for touched files
-[x] Focused runtime binding tests pass
-[x] Existing GameAssetManifestCoordinator tests still pass
-[x] Existing AssetPipelineTooling tests still pass
-[x] Existing ProjectToolDataContracts tests still pass
+[x] `node --check tools/shared/asteroidsPlatformDemo.js`
+[x] `node --check tests/games/AsteroidsAssetReferenceAdoption.test.mjs`
+[x] Focused adoption test passes: `AsteroidsAssetReferenceAdoption`
+[x] Existing runtime binding test passes: `RuntimeAssetBinding`
+[x] Existing GameAssetManifestCoordinator test passes
+[x] Existing AssetPipelineTooling test passes
+[x] Existing ProjectToolDataContracts test passes
+[x] Existing AsteroidsPlatformDemo non-regression test passes
 
-Executed commands
-- node --check tools/shared/pipeline/runtimeAssetBinding.js
-- node --check tests/tools/RuntimeAssetBinding.test.mjs
-- node --check tests/run-tests.mjs
-- node --input-type=module -e "import('./tests/tools/RuntimeAssetBinding.test.mjs').then(async ({ run }) => { await run(); console.log('PASS RuntimeAssetBinding'); })"
-- node --input-type=module -e "import('./tests/tools/GameAssetManifestCoordinator.test.mjs').then(async ({ run }) => { await run(); console.log('PASS GameAssetManifestCoordinator'); })"
-- node --input-type=module -e "import('./tests/tools/AssetPipelineTooling.test.mjs').then(async ({ run }) => { await run(); console.log('PASS AssetPipelineTooling'); })"
-- node --input-type=module -e "import('./tests/tools/ProjectToolDataContracts.test.mjs').then(async ({ run }) => { await run(); console.log('PASS ProjectToolDataContracts'); })"
+Roadmap
+[x] Roadmap status update not applied (not clearly required in this checkpoint)
+[x] No roadmap prose/text changes made
 
 Packaging
 [x] docs/pr document included
@@ -41,4 +35,5 @@ Packaging
 [x] docs/dev/next_command.txt included
 [x] docs/dev/reports/change_summary.txt included
 [x] docs/dev/reports/validation_checklist.txt included
-[x] Single ZIP produced at `<project folder>/tmp/BUILD_PR_LEVEL_09_11_RUNTIME_ASSET_BINDING.zip`
+[x] Single ZIP produced at `<project folder>/tmp/BUILD_PR_LEVEL_09_12_ASSET_REFERENCE_ADOPTION.zip`
+

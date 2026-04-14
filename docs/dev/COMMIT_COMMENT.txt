@@ -1,1 +1,3 @@
-build(runtime): bind runtime asset lookup to coordinated game asset manifest
+BUILD_PR_LEVEL_09_12_ASSET_REFERENCE_ADOPTION
+
+Adopt manifest-driven runtime asset binding in Asteroids runtime demo consumers (vectors/tilemap/parallax) using the 09_11 binding surface, replace touched ad hoc runtime path resolution with binding-based lookup, and add focused adoption/non-regression tests while preserving runtime/editor data boundaries.

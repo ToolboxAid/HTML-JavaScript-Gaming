@@ -1,33 +1,26 @@
 Summary
-- Implemented a runtime-facing manifest binding layer under `tools/shared/pipeline/runtimeAssetBinding.js`.
-- Runtime lookup is now manifest-driven by domain + asset id.
-- Runtime binding explicitly excludes `/data/` records so runtime readers cannot consume editor/tool-only assets.
-- Added focused runtime binding tests and wired them into the test runner.
+- Implemented a surgical 09_12 adoption slice in the Asteroids runtime demo consumer lane.
+- Replaced touched ad hoc runtime file selection for bindable domains with 09_11 manifest-driven runtime binding.
+- Added focused adoption validation to prove runtime resolution uses binding outputs and remains `/data/`-safe.
 
-Implemented runtime binding surface
-- `createRuntimeAssetBinding(manifest)`
-  - consumes `games/<game>/assets/<game>.assets.json`-shaped manifest payload
-  - builds runtime-safe domain indexes for active domains:
-    - sprites
-    - tilemaps
-    - parallax
-    - vectors
-  - rejects records whose runtime path resolves to `/data/`
-- `resolveRuntimeAsset(binding, { domain, assetId })`
-  - deterministic runtime lookup by normalized domain + asset id
-  - returns null for missing/rejected assets
-
-Focused tests added
-- `tests/tools/RuntimeAssetBinding.test.mjs`
-  - validates manifest-driven lookup
-  - validates `/data/` exclusion
-  - validates active domain support
-  - validates invalid-manifest handling
-- `tests/run-tests.mjs` updated to include `RuntimeAssetBinding` test.
+Code changes
+- `tools/shared/asteroidsPlatformDemo.js`
+  - imports and uses `coordinateGameAssetManifest`, `createRuntimeAssetBinding`, and `resolveRuntimeAsset`
+  - adds bindable domain mapping for `vector.*`, `tilemap.*`, `parallax.*`, `sprite.*`
+  - builds a coordinated game-asset manifest + runtime binding from runtime source records
+  - resolves bindable runtime assets through manifest-driven binding instead of ad hoc direct path use in touched resolver code
+  - preserves non-bindable runtime asset behavior and existing runtime/demo flow
+- `tests/games/AsteroidsAssetReferenceAdoption.test.mjs` (new)
+  - asserts runtime binding is `ready` with no issues
+  - asserts vector/tilemap/parallax assets resolve through binding and runtime paths do not include `/data/`
+  - asserts runtime bootstrap asset table paths match binding runtime paths
 
 Scope guard
+- No engine core changes.
 - No tool UI redesign.
-- No gameplay feature additions.
-- No broad engine scope expansion.
-- No new asset formats.
-- No unrelated asset movement.
+- No gameplay/runtime feature expansion.
+- No repo-wide migration.
+- No asset moves.
+
+Roadmap
+- No roadmap file changes were required in this checkpoint.

@@ -10,6 +10,8 @@ import { buildPerformanceProfiler, summarizePerformanceProfiler } from "./perfor
 import { runPublishingPipeline, summarizePublishingPipeline } from "./publishingPipeline.js";
 import { normalizeSvgToVectorAsset } from "./vector/vectorAssetBridge.js";
 import { cloneJson } from "../../src/shared/utils/jsonUtils.js";
+import { coordinateGameAssetManifest } from "./pipeline/gameAssetManifestCoordinator.js";
+import { createRuntimeAssetBinding, resolveRuntimeAsset } from "./pipeline/runtimeAssetBinding.js";
 
 function sanitizeText(value) {
   return typeof value === "string" ? value.trim() : "";
@@ -327,6 +329,48 @@ function createRuntimeAssetSources(registry) {
   };
 }
 
+const BINDABLE_ASSET_DOMAINS = Object.freeze({
+  "vector.": "vectors",
+  "tilemap.": "tilemaps",
+  "parallax.": "parallax",
+  "sprite.": "sprites"
+});
+
+function getBindableDomainForAssetId(assetId) {
+  const normalizedId = sanitizeText(assetId).toLowerCase();
+  const matchedPrefix = Object.keys(BINDABLE_ASSET_DOMAINS).find((prefix) => normalizedId.startsWith(prefix));
+  return matchedPrefix ? BINDABLE_ASSET_DOMAINS[matchedPrefix] : "";
+}
+
+function buildRuntimeBindingForAsteroids(assetSources) {
+  const records = Object.entries(assetSources || {})
+    .map(([assetId, source]) => {
+      const domain = getBindableDomainForAssetId(assetId);
+      if (!domain) {
+        return null;
+      }
+      const runtimePath = sanitizeText(source?.file);
+      if (!runtimePath) {
+        return null;
+      }
+
+      return {
+        domain,
+        assetId,
+        runtimePath,
+        toolDataPath: `games/asteroids/assets/${domain}/data/${sanitizeText(assetId).replace(/[^a-z0-9._-]+/gi, "-")}.tool.json`,
+        sourceToolId: "runtime-adoption-09-12"
+      };
+    })
+    .filter(Boolean);
+
+  const coordinated = coordinateGameAssetManifest({
+    gameId: "Asteroids",
+    records
+  });
+  return createRuntimeAssetBinding(coordinated.manifest);
+}
+
 function buildImageSource(asset) {
   return {
     image: {
@@ -338,13 +382,30 @@ function buildImageSource(asset) {
   };
 }
 
-function createResolvePackagedAsset(assetSources) {
+function createResolvePackagedAsset(assetSources, runtimeBinding) {
   return (asset) => {
     const assetId = sanitizeText(asset?.id);
     if (sanitizeText(asset?.type) === "image") {
       return buildImageSource(asset);
     }
-    return assetSources[assetId] ? cloneJson(assetSources[assetId]) : null;
+
+    const domain = getBindableDomainForAssetId(assetId);
+    const staticSource = assetSources[assetId] ? cloneJson(assetSources[assetId]) : null;
+    if (!domain) {
+      return staticSource;
+    }
+
+    const runtimeRecord = resolveRuntimeAsset(runtimeBinding, {
+      domain,
+      assetId
+    });
+    if (!runtimeRecord) {
+      return null;
+    }
+
+    const mergedSource = staticSource || {};
+    mergedSource.file = runtimeRecord.runtimePath;
+    return mergedSource;
   };
 }
 
@@ -405,6 +466,7 @@ export async function buildAsteroidsPlatformDemo(options = {}) {
   const tileMapDocument = cloneJson(options.tileMapDocument || definition.tileMapDocument);
   const parallaxDocument = cloneJson(options.parallaxDocument || definition.parallaxDocument);
   const runtimeAssetSources = cloneJson(options.runtimeAssetSources || definition.runtimeAssetSources);
+  const runtimeBinding = buildRuntimeBindingForAsteroids(runtimeAssetSources);
 
   const validationResult = validateProjectAssetState({
     registry,
@@ -427,7 +489,7 @@ export async function buildAsteroidsPlatformDemo(options = {}) {
   });
   const runtimeResult = await loadPackagedProjectRuntime({
     packageManifest: packageResult.manifest,
-    resolvePackagedAsset: createResolvePackagedAsset(runtimeAssetSources)
+    resolvePackagedAsset: createResolvePackagedAsset(runtimeAssetSources, runtimeBinding)
   });
   const gameplayResult = buildGameplaySystemLayer({
     runtimeResult
@@ -485,6 +547,7 @@ export async function buildAsteroidsPlatformDemo(options = {}) {
   const reports = [
     createReport("info", "ASTEROIDS_PLATFORM_DEMO_READY", "Asteroids demo completed strict validation, packaging, runtime, export, and publishing flows."),
     createReport("info", "ASTEROIDS_RUNTIME_HANDOFF", `Runtime handoff preserved ${handoff.exportName} from ${handoff.modulePath}.`),
+    createReport("info", "ASTEROIDS_RUNTIME_BINDING_ADOPTED", `Manifest-driven runtime asset binding active for domains: vectors, tilemaps, parallax.`),
     createReport("info", "ASTEROIDS_VECTOR_ONLY_RUNTIME", "Vector assets are the sole active visual runtime path for ship, asteroid variants, and title presentation."),
     createReport("info", "ASTEROIDS_ROLLBACK_NOTES_ONLY", "Rollback guidance remains documented historically and is not part of the active packaged runtime dependency set.")
   ];
@@ -538,6 +601,7 @@ export async function buildAsteroidsPlatformDemo(options = {}) {
       debugVisualizationResult,
       performanceResult,
       runtimeHandoff: handoff,
+      runtimeBinding,
       vectorOnly: {
         requiredVectorIds,
         missingRequiredVectorIds,
