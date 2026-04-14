@@ -5,7 +5,8 @@ David Quesenberry
 GravityWellWorld.js
 */
 import { clamp, distance } from '/src/engine/utils/index.js';
-import { transformPoints, vectorFromAngle } from '/src/engine/vector/index.js';
+import { transformPoints } from '/src/engine/rendering/VectorDrawing.js';
+import { vectorFromAngle } from '/src/shared/math/vectorMath.js';
 
 const SHIP_SHAPE = [
   { x: 0, y: -16 },

@@ -1,1 +1,4 @@
-Repack bundle
+- Combined vector boundary normalization with physics closeout to reduce PR count
+- Rendering now owns vector drawing concerns
+- Shared math/utils now owns generic vector math
+- Physics must be closed by extracting real reusable helpers from games/samples

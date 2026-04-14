@@ -5,7 +5,7 @@ David Quesenberry
 PrecisionCollisionSystems.test.mjs
 */
 import assert from 'node:assert/strict';
-import { transformPoints } from '../../src/engine/vector/index.js';
+import { transformPoints } from '../../src/engine/rendering/VectorDrawing.js';
 import {
   arePolygonsColliding,
   isPointInPolygon,

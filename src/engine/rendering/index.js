@@ -8,4 +8,4 @@ export { default as CanvasRenderer } from './CanvasRenderer.js';
 export { default as ResolutionScaler } from './ResolutionScaler.js';
 export { renderSpriteReadyEntities } from './SpriteRenderSystem.js';
 export { renderByLayers } from './LayeredRenderSystem.js';
-
+export { transformPoints, drawVectorShape } from './VectorDrawing.js';

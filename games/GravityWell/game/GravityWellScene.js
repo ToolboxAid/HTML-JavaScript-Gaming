@@ -7,7 +7,7 @@ GravityWellScene.js
 import { Scene } from '/src/engine/scenes/index.js';
 import { Theme, ThemeTokens } from '/src/engine/theme/index.js';
 import { drawPanel } from '/src/engine/debug/index.js';
-import { drawVectorShape } from '/src/engine/vector/index.js';
+import { drawVectorShape } from '/src/engine/rendering/VectorDrawing.js';
 import { ReplaySystem } from '/src/engine/replay/index.js';
 import GravityWellWorld from './GravityWellWorld.js';
 

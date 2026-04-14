@@ -1,1 +1,8 @@
-Ensure collision != physics
+- VectorDrawing moved to rendering-owned path
+- VectorMath moved to shared math/utility path
+- imports/exports normalized and valid
+- src/engine/physics contains real reusable physics helpers
+- roadmap updated by status markers only
+- section 1 residue reduced or fully closed truthfully
+- output ZIP created at:
+  <project folder>/tmp/BUILD_PR_LEVEL_01_RENDERING_VECTOR_BOUNDARY_AND_PHYSICS_CLOSEOUT.zip
