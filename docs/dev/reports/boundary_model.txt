@@ -1,0 +1,35 @@
+﻿PR: PR_08_02_GAMES_BOUNDARY_NORMALIZATION
+
+Boundary Model (Asteroids-targeted normalization)
+
+Gameplay Layer
+- games/Asteroids/game/*
+- Owns runtime orchestration and mode transitions.
+- Consumes rules constants from games/Asteroids/rules/gameFlowRules.js.
+
+Entities Layer
+- games/Asteroids/entities/*
+- Owns simulation objects (ship, asteroid, bullet, ufo).
+
+Levels Layer
+- games/Asteroids/levels/*
+- Reserved for stage/layout definitions.
+
+Rules Layer
+- games/Asteroids/rules/gameFlowRules.js
+- Owns game-flow constants and flow contract primitives shared by flow + gameplay.
+
+Assets Layer
+- games/Asteroids/assets/* and games/Asteroids/platform/assets/*
+- Owns game-local media and authored content only.
+
+Shared vs Game-specific Utilities
+- Shared (cross-game/engine): /src/engine/* and src/shared/*.
+- Game-specific: games/Asteroids/systems/* and games/Asteroids/utils/*.
+- Normalization applied: game-flow constants moved from gameplay/flow duplication into rules surface.
+
+Applied normalization
+- Added rules module: games/Asteroids/rules/gameFlowRules.js.
+- flow/attract.js, flow/intro.js, flow/highscore.js now read rule constants from rules layer.
+- game/AsteroidsGameScene.js now reads return/auto-exit values from rules layer.
+- index.js flow map now includes highscore flow as a first-class boundary member.

@@ -1,9 +1,11 @@
 import { createAsteroidsShowcaseDebugPlugin } from "../debug/asteroidsShowcaseDebug.js";
+import {
+  ASTEROIDS_FLOW_CONTRACT_VERSION,
+  ASTEROIDS_HIGHSCORE_AUTO_EXIT_SECONDS,
+  ASTEROIDS_HIGHSCORE_STATUS
+} from "../rules/gameFlowRules.js";
 
-export const ASTEROIDS_FLOW_CONTRACT_VERSION = "1";
 export const ASTEROIDS_HIGHSCORE_FLOW_NEXT_ID = "attract";
-export const ASTEROIDS_HIGHSCORE_AUTO_EXIT_SECONDS = 12;
-export const ASTEROIDS_HIGHSCORE_STATUS = "High scores";
 
 export const highscoreFlow = Object.freeze({
   id: "highscore",

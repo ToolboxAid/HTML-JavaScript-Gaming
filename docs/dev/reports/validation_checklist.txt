@@ -1,14 +1,19 @@
-﻿PR: PR_08_01_GAMES_FLOW_STANDARDIZATION
+﻿PR: PR_08_02_GAMES_BOUNDARY_NORMALIZATION
 
 Validation Commands
+- node --check games/Asteroids/rules/gameFlowRules.js
 - node --check games/Asteroids/flow/attract.js
 - node --check games/Asteroids/flow/intro.js
 - node --check games/Asteroids/flow/highscore.js
+- node --check games/Asteroids/game/AsteroidsGameScene.js
+- node --check games/Asteroids/index.js
+- node tests/runtime/LaunchSmokeAllEntries.test.mjs
 
-Transition Validation
-- attract.nextFlowId => intro (exists)
-- intro.nextFlowId => highscore (exists)
-- highscore.nextFlowId => attract (exists)
+Checks
+- no engine files modified
+- no feature behavior intentionally changed
+- flow/rules/gameplay boundaries now reference rules constants from one source
+- highscore flow included in normalized game flow map
 
 Result
 - PASS

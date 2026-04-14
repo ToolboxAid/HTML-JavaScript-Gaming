@@ -1,8 +1,12 @@
 import { createAsteroidsShowcaseDebugPlugin } from "../debug/asteroidsShowcaseDebug.js";
+import {
+  ASTEROIDS_FLOW_CONTRACT_VERSION,
+  ASTEROIDS_GAME_OVER_AUTO_EXIT_SECONDS,
+  ASTEROIDS_GAME_OVER_RETURN_STATUS
+} from "../rules/gameFlowRules.js";
 
-export const ASTEROIDS_NEW_GAME_OVER_AUTO_EXIT_SECONDS = 30;
-export const ASTEROIDS_NEW_GAME_OVER_RETURN_STATUS = "Press 1 for one player or 2 for two players.";
-export const ASTEROIDS_FLOW_CONTRACT_VERSION = "1";
+export const ASTEROIDS_NEW_GAME_OVER_AUTO_EXIT_SECONDS = ASTEROIDS_GAME_OVER_AUTO_EXIT_SECONDS;
+export const ASTEROIDS_NEW_GAME_OVER_RETURN_STATUS = ASTEROIDS_GAME_OVER_RETURN_STATUS;
 export const ASTEROIDS_INTRO_FLOW_NEXT_ID = "highscore";
 
 export const introFlow = Object.freeze({

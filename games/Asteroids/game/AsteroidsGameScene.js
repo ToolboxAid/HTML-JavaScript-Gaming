@@ -13,6 +13,11 @@ import ShipDebrisSystem from '../systems/ShipDebrisSystem.js';
 import AsteroidsAttractAdapter from './AsteroidsAttractAdapter.js';
 import AsteroidsHighScoreService from '../systems/AsteroidsHighScoreService.js';
 import AsteroidsInitialsEntry from '../systems/AsteroidsInitialsEntry.js';
+import {
+  ASTEROIDS_GAME_OVER_AUTO_EXIT_SECONDS,
+  ASTEROIDS_GAME_OVER_RETURN_MODE,
+  ASTEROIDS_GAME_OVER_RETURN_STATUS
+} from '../rules/gameFlowRules.js';
 
 const HUD_FONT = '"Vector Battle", monospace';
 const SCORE_ONE_X = 136;
@@ -21,9 +26,6 @@ const SCORE_TWO_X = 824;
 const LIFE_SPACING = 22;
 const PAUSE_OVERLAY_COLOR = 'rgba(2, 6, 23, 0.58)';
 const INITIALS_OVERLAY_COLOR = 'rgba(1, 6, 19, 0.62)';
-const GAME_OVER_AUTO_EXIT_SECONDS_DEFAULT = 30;
-const GAME_OVER_RETURN_MODE = 'menu';
-const GAME_OVER_RETURN_STATUS = 'Press 1 for one player or 2 for two players.';
 const LIFE_ICON_POINTS = [
   [14, 0],
   [-10, -8],
@@ -118,7 +120,7 @@ export default class AsteroidsGameScene extends Scene {
       1,
       Math.floor(
         Number(this.session.getGameOverAutoExitSeconds?.())
-        || GAME_OVER_AUTO_EXIT_SECONDS_DEFAULT,
+        || ASTEROIDS_GAME_OVER_AUTO_EXIT_SECONDS,
       ),
     );
     this.gameOverAutoExitRemainingSeconds = 0;
@@ -214,8 +216,8 @@ export default class AsteroidsGameScene extends Scene {
   }
 
   returnToIntroAttract() {
-    this.session.mode = GAME_OVER_RETURN_MODE;
-    this.session.status = GAME_OVER_RETURN_STATUS;
+    this.session.mode = ASTEROIDS_GAME_OVER_RETURN_MODE;
+    this.session.status = ASTEROIDS_GAME_OVER_RETURN_STATUS;
     this.attractController.resetIdle();
     this.resetGameOverAutoExitTimer();
   }

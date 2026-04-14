@@ -1,5 +1,6 @@
 import { attractFlow } from "./flow/attract.js";
 import { introFlow } from "./flow/intro.js";
+import { highscoreFlow } from "./flow/highscore.js";
 import { createAsteroidsShowcaseDebugPlugin } from "./debug/asteroidsShowcaseDebug.js";
 import Engine from "/src/engine/core/Engine.js";
 import { InputService } from "/src/engine/input/index.js";
@@ -10,7 +11,8 @@ import AsteroidsGameScene from "./game/AsteroidsGameScene.js";
 
 export const asteroidFlow = Object.freeze({
   attract: attractFlow,
-  intro: introFlow
+  intro: introFlow,
+  highscore: highscoreFlow
 });
 const theme = new Theme(ThemeTokens);
 const BOOT_TRACE_PREFIX = "Asteroids";
