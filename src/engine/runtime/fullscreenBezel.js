@@ -1,6 +1,10 @@
 import { resolveGameImageConventionPaths, resolveRuntimeAssetUrl } from "./gameImageConvention.js";
 
 const TRANSPARENT_ALPHA_THRESHOLD = 8;
+const DEFAULT_BEZEL_STRETCH_OVERRIDE_FILENAME = "bezel.stretch.override.json";
+const DEFAULT_BEZEL_STRETCH_CONFIG = Object.freeze({
+  uniformEdgeStretchPx: 0
+});
 
 function toDisplayValue(visible) {
   return visible ? "block" : "none";
@@ -96,6 +100,103 @@ function toPixel(value) {
   return `${rounded}px`;
 }
 
+function normalizePath(value) {
+  return typeof value === "string" ? value.replace(/\\/g, "/") : "";
+}
+
+function safeNumber(value, fallback = 0) {
+  const parsed = Number(value);
+  return Number.isFinite(parsed) ? parsed : fallback;
+}
+
+export function sanitizeUniformEdgeStretchPx(value) {
+  return Math.max(0, safeNumber(value, 0));
+}
+
+export function resolveBezelStretchConfigPath(bezelPath, fileName = DEFAULT_BEZEL_STRETCH_OVERRIDE_FILENAME) {
+  const normalized = normalizePath(bezelPath).trim();
+  if (!normalized) {
+    return "";
+  }
+  const slashIndex = normalized.lastIndexOf("/");
+  if (slashIndex < 0) {
+    return fileName;
+  }
+  return `${normalized.slice(0, slashIndex + 1)}${fileName}`;
+}
+
+function parseStretchConfigObject(candidate) {
+  const source = candidate && typeof candidate === "object" ? candidate : {};
+  return {
+    uniformEdgeStretchPx: sanitizeUniformEdgeStretchPx(source.uniformEdgeStretchPx)
+  };
+}
+
+function isNodeRuntime() {
+  return typeof process !== "undefined"
+    && !!process?.versions?.node;
+}
+
+export async function ensureBezelStretchConfigFile(configPath, options = {}) {
+  const normalizedPath = normalizePath(configPath).trim();
+  if (!normalizedPath || !isNodeRuntime()) {
+    return { ...DEFAULT_BEZEL_STRETCH_CONFIG };
+  }
+
+  const cwd = typeof options.cwd === "string" && options.cwd.trim()
+    ? options.cwd
+    : process.cwd();
+  const fsModule = options.fsModule || await import("node:fs/promises");
+  const pathModule = options.pathModule || await import("node:path");
+  const absolutePath = pathModule.resolve(cwd, normalizedPath);
+  const directoryPath = pathModule.dirname(absolutePath);
+  const defaultContent = `${JSON.stringify(DEFAULT_BEZEL_STRETCH_CONFIG, null, 2)}\n`;
+
+  try {
+    await fsModule.access(absolutePath);
+  } catch {
+    await fsModule.mkdir(directoryPath, { recursive: true });
+    await fsModule.writeFile(absolutePath, defaultContent, "utf8");
+    return { ...DEFAULT_BEZEL_STRETCH_CONFIG };
+  }
+
+  try {
+    const content = await fsModule.readFile(absolutePath, "utf8");
+    const parsed = JSON.parse(content);
+    return parseStretchConfigObject(parsed);
+  } catch {
+    return { ...DEFAULT_BEZEL_STRETCH_CONFIG };
+  }
+}
+
+export async function loadBezelStretchConfig(configPath, options = {}) {
+  const normalizedPath = normalizePath(configPath).trim();
+  if (!normalizedPath) {
+    return { ...DEFAULT_BEZEL_STRETCH_CONFIG };
+  }
+
+  if (isNodeRuntime()) {
+    return ensureBezelStretchConfigFile(normalizedPath, options);
+  }
+
+  const fetchImpl = options.fetchImpl || globalThis.fetch;
+  if (typeof fetchImpl !== "function") {
+    return { ...DEFAULT_BEZEL_STRETCH_CONFIG };
+  }
+
+  try {
+    const requestPath = normalizedPath.startsWith("/") ? normalizedPath : `/${normalizedPath}`;
+    const response = await fetchImpl(requestPath, { cache: "no-store" });
+    if (!response || response.ok !== true) {
+      return { ...DEFAULT_BEZEL_STRETCH_CONFIG };
+    }
+    const parsed = await response.json();
+    return parseStretchConfigObject(parsed);
+  } catch {
+    return { ...DEFAULT_BEZEL_STRETCH_CONFIG };
+  }
+}
+
 function sanitizeRect(candidate) {
   if (!candidate || typeof candidate !== "object") {
     return null;
@@ -110,6 +211,45 @@ function sanitizeRect(candidate) {
   }
 
   return { x, y, width, height };
+}
+
+function expandRectWithinBounds(rect, expandPx, bounds) {
+  const source = sanitizeRect(rect);
+  if (!source || !bounds || typeof bounds !== "object") {
+    return source;
+  }
+
+  const stretch = sanitizeUniformEdgeStretchPx(expandPx);
+  if (stretch <= 0) {
+    return source;
+  }
+
+  const boundX = safeNumber(bounds.x, 0);
+  const boundY = safeNumber(bounds.y, 0);
+  const boundWidth = toPositiveNumber(bounds.width);
+  const boundHeight = toPositiveNumber(bounds.height);
+  if (boundWidth <= 0 || boundHeight <= 0) {
+    return source;
+  }
+
+  const boundRight = boundX + boundWidth;
+  const boundBottom = boundY + boundHeight;
+  const expandedLeft = Math.max(boundX, source.x - stretch);
+  const expandedTop = Math.max(boundY, source.y - stretch);
+  const expandedRight = Math.min(boundRight, source.x + source.width + stretch);
+  const expandedBottom = Math.min(boundBottom, source.y + source.height + stretch);
+  const expandedWidth = Math.max(0, expandedRight - expandedLeft);
+  const expandedHeight = Math.max(0, expandedBottom - expandedTop);
+  if (expandedWidth <= 0 || expandedHeight <= 0) {
+    return source;
+  }
+
+  return {
+    x: expandedLeft,
+    y: expandedTop,
+    width: expandedWidth,
+    height: expandedHeight
+  };
 }
 
 function getHostBounds(host) {
@@ -399,11 +539,17 @@ export default class fullscreenBezel {
     this.defaultHost = options.host || null;
     this.gameId = resolved.gameId;
     this.path = resolved.bezelPath;
+    this.stretchConfigPath = resolveBezelStretchConfigPath(this.path);
     this.host = null;
     this.element = null;
     this.ready = false;
     this.missing = !this.path;
     this.alphaInspector = typeof options.alphaInspector === "function" ? options.alphaInspector : null;
+    this.stretchConfigProvider = typeof options.stretchConfigProvider === "function"
+      ? options.stretchConfigProvider
+      : loadBezelStretchConfig;
+    this.stretchConfigPromise = null;
+    this.uniformEdgeStretchPx = 0;
     this.transparentWindowRect = null;
     this.imageSize = null;
     this.canvasLayoutMode = "fallback";
@@ -417,7 +563,9 @@ export default class fullscreenBezel {
       visible: this.element?.style?.display === "block",
       hostTagName: this.host?.tagName || "",
       canvasLayoutMode: this.canvasLayoutMode,
-      transparentWindowRect: this.transparentWindowRect
+      transparentWindowRect: this.transparentWindowRect,
+      stretchConfigPath: this.stretchConfigPath,
+      uniformEdgeStretchPx: this.uniformEdgeStretchPx
     };
   }
 
@@ -454,6 +602,51 @@ export default class fullscreenBezel {
     return true;
   }
 
+  applyStretchConfig(config) {
+    const parsed = parseStretchConfigObject(config);
+    this.uniformEdgeStretchPx = parsed.uniformEdgeStretchPx;
+    return parsed;
+  }
+
+  refreshStretchConfig() {
+    if (!this.stretchConfigPath || typeof this.stretchConfigProvider !== "function") {
+      this.applyStretchConfig(DEFAULT_BEZEL_STRETCH_CONFIG);
+      return null;
+    }
+
+    try {
+      const result = this.stretchConfigProvider(this.stretchConfigPath, {
+        bezelPath: this.path,
+        gameId: this.gameId,
+        defaultConfig: { ...DEFAULT_BEZEL_STRETCH_CONFIG }
+      });
+      if (result && typeof result.then === "function") {
+        const pending = Promise.resolve(result)
+          .then((config) => {
+            const parsed = this.applyStretchConfig(config);
+            if (this.element?.style?.display === "block") {
+              const fitted = this.applyCanvasWindowFitLayout();
+              if (!fitted) {
+                this.applyCanvasFallbackLayout();
+              }
+            }
+            return parsed;
+          })
+          .catch(() => this.applyStretchConfig(DEFAULT_BEZEL_STRETCH_CONFIG));
+        this.stretchConfigPromise = pending;
+        return pending;
+      }
+
+      this.applyStretchConfig(result);
+      this.stretchConfigPromise = Promise.resolve({ uniformEdgeStretchPx: this.uniformEdgeStretchPx });
+      return this.stretchConfigPromise;
+    } catch {
+      this.applyStretchConfig(DEFAULT_BEZEL_STRETCH_CONFIG);
+      this.stretchConfigPromise = Promise.resolve({ uniformEdgeStretchPx: this.uniformEdgeStretchPx });
+      return this.stretchConfigPromise;
+    }
+  }
+
   attach() {
     if (!this.documentRef || !this.path || this.element) {
       return;
@@ -475,6 +668,7 @@ export default class fullscreenBezel {
       this.transparentWindowRect = this.imageSize
         ? inspectTransparentWindowRect(element, this.documentRef, this.alphaInspector, this.imageSize)
         : null;
+      this.refreshStretchConfig();
       this.ready = true;
       this.missing = false;
     };
@@ -553,17 +747,34 @@ export default class fullscreenBezel {
       return false;
     }
 
-    const mappedWindowWidth = this.transparentWindowRect.width * containPlacement.scale;
-    const mappedWindowHeight = this.transparentWindowRect.height * containPlacement.scale;
-    const fittedCanvas = chooseBestOpeningFit(sourceWidth, sourceHeight, mappedWindowWidth, mappedWindowHeight);
+    const mappedWindow = {
+      x: containPlacement.x + (this.transparentWindowRect.x * containPlacement.scale),
+      y: containPlacement.y + (this.transparentWindowRect.y * containPlacement.scale),
+      width: this.transparentWindowRect.width * containPlacement.scale,
+      height: this.transparentWindowRect.height * containPlacement.scale
+    };
+    const stretchedWindow = expandRectWithinBounds(mappedWindow, this.uniformEdgeStretchPx, {
+      x: containPlacement.x,
+      y: containPlacement.y,
+      width: containPlacement.width,
+      height: containPlacement.height
+    });
+    const fittedCanvas = chooseBestOpeningFit(
+      sourceWidth,
+      sourceHeight,
+      stretchedWindow?.width || 0,
+      stretchedWindow?.height || 0
+    );
     if (!fittedCanvas) {
       return false;
     }
 
-    const mappedWindowX = containPlacement.x + (this.transparentWindowRect.x * containPlacement.scale);
-    const mappedWindowY = containPlacement.y + (this.transparentWindowRect.y * containPlacement.scale);
-    const left = mappedWindowX + ((mappedWindowWidth - fittedCanvas.width) * 0.5);
-    const top = mappedWindowY + ((mappedWindowHeight - fittedCanvas.height) * 0.5);
+    const windowX = stretchedWindow?.x || 0;
+    const windowY = stretchedWindow?.y || 0;
+    const windowWidth = stretchedWindow?.width || 0;
+    const windowHeight = stretchedWindow?.height || 0;
+    const left = windowX + ((windowWidth - fittedCanvas.width) * 0.5);
+    const top = windowY + ((windowHeight - fittedCanvas.height) * 0.5);
 
     this.canvas.style.position = "absolute";
     this.canvas.style.left = toPixel(left);

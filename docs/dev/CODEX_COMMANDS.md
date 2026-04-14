@@ -44,18 +44,28 @@ Implement the confirmed Asteroids runtime fixes:
    - if left/right does not fill, use that result for resize
    - if no valid transparency window is found, fall back to existing centered-canvas behavior
 
-6. Validate
+6. Add one shared extra-stretch setting
+   - create one single developer-facing variable that applies equally to all four sides
+   - use it to push the displayed canvas slightly farther toward the bezel opening edges when the default fit is just short
+   - place this in a small easy-to-find config/override file, not hidden in code constants
+   - when bezel is detected, check whether that file exists
+   - if it does not exist, create it automatically for the developer with a safe default value
+   - keep filename/location obvious near the relevant game asset/config area
+
+7. Validate
    - bezel URL/path not duplicated
    - bezel visible in fullscreen
    - canvas internal size unchanged
    - canvas centered
    - exact four-direction transparency rule used
    - displayed canvas fills transparency window as fully as possible while preserving aspect ratio
+   - shared extra-stretch variable affects all four sides equally
+   - override/config file is auto-created when missing and bezel is detected
    - background visible during gameplay
    - background absent in non-gameplay states
    - starfield no longer hides background incorrectly
 
-7. Final packaging step is REQUIRED
+8. Final packaging step is REQUIRED
    - package ALL changed files into this exact repo-structured ZIP:
      `<project folder>/tmp/BUILD_PR_LEVEL_10_20_FIX_BEZEL_PATH_AND_BACKGROUND_DRAW_ORDER.zip`
 

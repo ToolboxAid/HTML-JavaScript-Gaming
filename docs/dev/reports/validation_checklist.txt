@@ -5,6 +5,8 @@
 - Canvas must remain centered
 - Transparency window must use the exact four-direction first-transparent-pixel rule
 - Canvas display box must fill the transparency window as fully as possible while preserving aspect ratio
+- One shared extra-stretch variable must affect all four sides equally
+- Bezel-fit override/config file must be auto-created when missing and bezel is detected
 - Background must draw only during gameplay
 - Background must draw before starfield/world content
 - Codex output ZIP path must be:

@@ -1,8 +1,13 @@
 import assert from "node:assert/strict";
+import os from "node:os";
+import path from "node:path";
+import * as fs from "node:fs/promises";
 import Engine from "../../src/engine/core/Engine.js";
 import backgroundImage from "../../src/engine/runtime/backgroundImage.js";
 import fullscreenBezel, {
   chooseBestOpeningFit,
+  ensureBezelStretchConfigFile,
+  resolveBezelStretchConfigPath,
   findTransparencyWindowFromEdges,
   fitAspectRatio
 } from "../../src/engine/runtime/fullscreenBezel.js";
@@ -292,6 +297,10 @@ function testTransparentWindowDetectionAndAspectFit() {
   assertNear(bestFit.height, 500, 0.01);
   assert.equal(bestFit.width <= 1000.01, true);
   assert.equal(bestFit.height <= 500.01, true);
+  assert.equal(
+    resolveBezelStretchConfigPath("games/Asteroids/assets/images/bezel.png"),
+    "games/Asteroids/assets/images/bezel.stretch.override.json"
+  );
 }
 
 function testFullscreenBezelTransparentWindowCanvasFit() {
@@ -329,6 +338,127 @@ function testFullscreenBezelTransparentWindowCanvasFit() {
   assertNear(parseFloat(canvas.style.top), 183.33, 0.6);
   assert.equal(canvas.width, 960);
   assert.equal(canvas.height, 720);
+}
+
+function testFullscreenBezelSharedStretchAffectsAllSides() {
+  const documentRef = createDocumentStub();
+  const host = createElement("div", documentRef);
+  host.clientWidth = 1600;
+  host.clientHeight = 900;
+  host.offsetWidth = 1600;
+  host.offsetHeight = 900;
+  const canvas = createElement("canvas", documentRef);
+  canvas.width = 960;
+  canvas.height = 720;
+  host.appendChild(canvas);
+  documentRef.body.appendChild(host);
+
+  const alphaInspector = () => ({ x: 460, y: 220, width: 1000, height: 500 });
+  const baseline = new fullscreenBezel({
+    canvas,
+    documentRef,
+    alphaInspector,
+    stretchConfigProvider() {
+      return { uniformEdgeStretchPx: 0 };
+    }
+  });
+  baseline.attach();
+  baseline.element.naturalWidth = 1920;
+  baseline.element.naturalHeight = 1080;
+  baseline.element.onload?.();
+  baseline.sync({ fullscreenActive: true, fullscreenElement: host });
+  const baselineLeft = parseFloat(canvas.style.left);
+  const baselineTop = parseFloat(canvas.style.top);
+  const baselineWidth = parseFloat(canvas.style.width);
+  const baselineHeight = parseFloat(canvas.style.height);
+  const baselineCenterX = baselineLeft + (baselineWidth * 0.5);
+  const baselineCenterY = baselineTop + (baselineHeight * 0.5);
+  baseline.detach();
+
+  const stretched = new fullscreenBezel({
+    canvas,
+    documentRef,
+    alphaInspector,
+    stretchConfigProvider() {
+      return { uniformEdgeStretchPx: 20 };
+    }
+  });
+  stretched.attach();
+  stretched.element.naturalWidth = 1920;
+  stretched.element.naturalHeight = 1080;
+  stretched.element.onload?.();
+  stretched.sync({ fullscreenActive: true, fullscreenElement: host });
+  const stretchedLeft = parseFloat(canvas.style.left);
+  const stretchedTop = parseFloat(canvas.style.top);
+  const stretchedWidth = parseFloat(canvas.style.width);
+  const stretchedHeight = parseFloat(canvas.style.height);
+  const stretchedCenterX = stretchedLeft + (stretchedWidth * 0.5);
+  const stretchedCenterY = stretchedTop + (stretchedHeight * 0.5);
+
+  assert.equal(stretched.getState().uniformEdgeStretchPx, 20);
+  assert.equal(stretchedWidth >= baselineWidth, true);
+  assert.equal(stretchedHeight >= baselineHeight, true);
+  assertNear(stretchedCenterX, baselineCenterX, 0.51);
+  assertNear(stretchedCenterY, baselineCenterY, 0.51);
+}
+
+async function testBezelStretchConfigAutoCreate() {
+  const tempRoot = await fs.mkdtemp(path.join(os.tmpdir(), "bezel-stretch-config-"));
+  const configPath = "games/Asteroids/assets/images/bezel.stretch.override.json";
+
+  try {
+    const config = await ensureBezelStretchConfigFile(configPath, {
+      cwd: tempRoot,
+      fsModule: fs,
+      pathModule: path
+    });
+    assert.deepEqual(config, { uniformEdgeStretchPx: 0 });
+
+    const absolutePath = path.resolve(tempRoot, configPath);
+    const saved = JSON.parse(await fs.readFile(absolutePath, "utf8"));
+    assert.deepEqual(saved, { uniformEdgeStretchPx: 0 });
+  } finally {
+    await fs.rm(tempRoot, { recursive: true, force: true });
+  }
+}
+
+async function testBezelDetectionTriggersStretchConfigAutoCreate() {
+  const tempRoot = await fs.mkdtemp(path.join(os.tmpdir(), "bezel-detected-config-"));
+  const documentRef = createDocumentStub();
+  const host = createElement("div", documentRef);
+  const canvas = createElement("canvas", documentRef);
+  canvas.width = 960;
+  canvas.height = 720;
+  host.appendChild(canvas);
+  documentRef.body.appendChild(host);
+
+  try {
+    const bezel = new fullscreenBezel({
+      canvas,
+      documentRef,
+      stretchConfigProvider(configPath) {
+        return ensureBezelStretchConfigFile(configPath, {
+          cwd: tempRoot,
+          fsModule: fs,
+          pathModule: path
+        });
+      }
+    });
+    bezel.attach();
+    bezel.element.naturalWidth = 1920;
+    bezel.element.naturalHeight = 1080;
+    bezel.element.onload?.();
+    if (bezel.stretchConfigPromise) {
+      await bezel.stretchConfigPromise;
+    }
+
+    const createdPath = path.resolve(tempRoot, "games/Asteroids/assets/images/bezel.stretch.override.json");
+    const saved = JSON.parse(await fs.readFile(createdPath, "utf8"));
+    assert.deepEqual(saved, { uniformEdgeStretchPx: 0 });
+    assert.equal(bezel.getState().stretchConfigPath, "games/Asteroids/assets/images/bezel.stretch.override.json");
+  } finally {
+    await fs.rm(tempRoot, { recursive: true, force: true });
+  }
 }
 
 function testEngineRuntimeIntegration() {
@@ -464,12 +594,15 @@ function testEngineRuntimeIntegration() {
   }
 }
 
-export function run() {
+export async function run() {
   testBackgroundGameplayGatingAndOrder();
   testNoOpWhenBackgroundMissing();
   testFullscreenBezelVisibilityAndHtmlAttachment();
   testNoOpWhenBezelMissing();
   testTransparentWindowDetectionAndAspectFit();
   testFullscreenBezelTransparentWindowCanvasFit();
+  testFullscreenBezelSharedStretchAffectsAllSides();
+  await testBezelStretchConfigAutoCreate();
+  await testBezelDetectionTriggersStretchConfigAutoCreate();
   testEngineRuntimeIntegration();
 }

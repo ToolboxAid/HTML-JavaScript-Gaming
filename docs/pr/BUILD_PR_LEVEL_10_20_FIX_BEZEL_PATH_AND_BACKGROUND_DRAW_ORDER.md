@@ -14,7 +14,7 @@ Prepare a docs-only BUILD_PR bundle for Codex to implement the confirmed Asteroi
 
 4. Background should render only during gameplay, not attract, title, select-player, menu, or other non-gameplay states.
 
-5. When a bezel image is loaded, the displayed canvas should be fit to the bezel transparency using the exact edge-detection rule below.
+5. Current bezel fit is almost correct, but the displayed canvas is still slightly short of the bezel opening edges.
 
 ## Required implementation for Codex
 
@@ -65,10 +65,25 @@ Selection rule:
 - If top/bottom does not fill, use that result for resize.
 - If left/right does not fill, use that result for resize.
 
-Interpretation:
-- the display box should be driven by the transparency bounds
-- the goal is to fill the transparent gameplay area as fully as possible while keeping aspect ratio
-- fallback to existing centered-canvas behavior only if a valid transparency window cannot be determined
+### F. Add one shared extra-stretch developer setting
+Add one single variable that applies equally to all four sides of the detected bezel opening.
+
+Intent:
+- this is a small outward adjustment for cases where the fitted canvas is just short of the transparent edges
+- one variable only
+- same adjustment behavior for top, bottom, left, and right
+- used after the transparency window is detected and before final display-box placement is applied
+
+Decision:
+- this should live in a small developer-facing config/override file, not buried in rules/code constants
+- the location should be easy to find and edit
+
+Required behavior:
+- when a bezel is detected, check whether the bezel-fit override file exists
+- if it does not exist, create it automatically for the developer
+- include the shared extra-stretch variable in that file with a safe default
+- keep the filename/location obvious and easy to discover near the game assets/config area
+- use that single value to allow the developer to push the fitted canvas slightly farther toward all four opening edges
 
 ## Validation targets
 Codex must validate:
@@ -78,6 +93,8 @@ Codex must validate:
 - canvas remains centered
 - transparency bounds are determined by the exact four-direction first-transparent-pixel rule
 - displayed canvas fills the transparency window as fully as possible while preserving aspect ratio
+- shared extra-stretch variable affects all four sides equally
+- override/config file is auto-created when bezel is detected and the file is missing
 - background is visible during gameplay
 - background does not render in non-gameplay states
 - starfield no longer hides background by draw order mistake
