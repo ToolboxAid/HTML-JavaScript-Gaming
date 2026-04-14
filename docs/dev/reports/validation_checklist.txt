@@ -1,19 +1,26 @@
-﻿PR: PR_08_02_GAMES_BOUNDARY_NORMALIZATION
+﻿PR: PR_08_03_GAMES_MIGRATION
 
-Validation Commands
-- node --check games/Asteroids/rules/gameFlowRules.js
-- node --check games/Asteroids/flow/attract.js
-- node --check games/Asteroids/flow/intro.js
-- node --check games/Asteroids/flow/highscore.js
-- node --check games/Asteroids/game/AsteroidsGameScene.js
-- node --check games/Asteroids/index.js
-- node tests/runtime/LaunchSmokeAllEntries.test.mjs
+Validation Checklist
+- structural migration only (folder boundaries)
+- every game has game/entities/levels/rules/assets
+- runtime smoke remains passing
 
-Checks
-- no engine files modified
-- no feature behavior intentionally changed
-- flow/rules/gameplay boundaries now reference rules constants from one source
-- highscore flow included in normalized game flow map
+- PASS AITargetDummy
+- PASS Asteroids
+- PASS Bouncing-ball
+- PASS Breakout
+- PASS Gravity
+- PASS GravityWell
+- PASS MultiBallChaos
+- PASS Orbit
+- PASS PacmanFullAI
+- PASS PacmanLite
+- PASS PaddleIntercept
+- PASS Pong
+- PASS ProjectileLab
+- PASS SolarSystem
+- PASS SpaceDuel
+- PASS SpaceInvaders
+- PASS Thruster
 
-Result
-- PASS
+Result: PASS
