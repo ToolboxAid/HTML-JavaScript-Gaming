@@ -2,11 +2,10 @@ MODEL: GPT-5.4
 REASONING: high
 
 COMMAND:
-- implement deploy monitoring/ops layer
-- add post-deploy verification checks
-- standardize logging and operator messaging
-- define rollback/abort expectations where practical
-- keep deploy work under scripts/PS/deploy/
+- create deploy documentation covering full flow
+- include usage examples for scripts/PS/deploy/
+- include dry-run and validation usage
+- include monitoring + rollback guidance
 - commit format:
   description first line
   PR name last line

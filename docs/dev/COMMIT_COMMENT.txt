@@ -1,3 +1,2 @@
-Adds a meaningful deploy-operations layer with post-deploy verification, monitoring/logging expectations, clearer operator messaging, and rollback/abort guidance so the Docker deployment flow is easier to validate and run.
-
-BUILD_PR_LEVEL_09_31_DEPLOY_MONITORING_AND_OPERATIONS
+Add full deploy operator handoff documentation with script examples, dry-run/validation workflows, monitoring artifacts, and rollback/abort guidance.
+BUILD_PR_LEVEL_09_32_DEPLOY_DOCUMENTATION_AND_HANDOFF

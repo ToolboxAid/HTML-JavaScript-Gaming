@@ -1,8 +1,7 @@
-[x] PowerShell parse/readiness checks pass on touched deploy scripts
-[x] Update apply path emits post-deploy verification report and verification passes in smoke run
-[x] Ops monitoring artifacts are generated (`ops-log`, `ops-state`, `last-verify`) during deploy flow
-[x] Operator messaging standardized for stage start/success/failure/next-step outputs
-[x] Rollback guard enforced: `-RollbackOnVerificationFailure` requires `-ConfirmDestructive`
-[x] Metadata cleanup removes ops/verify artifacts when `DEPLOY_REMOVE_METADATA=true`
-[x] Script structure validation smoke run passes
+[x] Deploy documentation covers full prep/update/clean flow
+[x] Usage examples included for scripts under `scripts/PS/deploy/`
+[x] Dry-run and validation usage documented
+[x] Monitoring artifacts and operator triage guidance documented
+[x] Rollback/abort expectations documented with command examples
+[x] Commit comment format matches requirement (description first line, PR name last line)
 [x] Roadmap updated with status-only change

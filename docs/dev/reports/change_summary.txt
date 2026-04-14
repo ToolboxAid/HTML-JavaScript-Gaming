@@ -1,32 +1,20 @@
-BUILD_PR_LEVEL_09_31_DEPLOY_MONITORING_AND_OPERATIONS
+BUILD_PR_LEVEL_09_32_DEPLOY_DOCUMENTATION_AND_HANDOFF
 
 Scope:
-- Implemented a deploy monitoring/ops layer under `scripts/PS/deploy/`.
-- Added post-deploy verification checks and standardized operator-facing messaging.
-- Defined practical rollback/abort behavior in update flow.
+- Docs-only deploy lane finalization and operator handoff.
+- No engine/runtime/tool UI/script behavior changes.
 
 Implemented:
-- `WebsiteRepoDeploymentCommon.ps1`
-  - Added ops artifacts to deployment paths:
-    - `meta/website-deploy-last-verify.json`
-    - `meta/website-deploy-ops-log.jsonl`
-    - `meta/website-deploy-ops-state.json`
-  - Added reusable ops helpers:
-    - `Write-DeployOpsEvent`
-    - `Write-DeployOpsState`
-    - `Get-WebsiteDeploymentVerificationResult`
-- `Prep-WebsiteRepoDeployment.ps1`
-  - Added start/success ops state/event writes around staging preparation.
-- `Update-WebsiteRepoDeployment.ps1`
-  - Added post-deploy verification stage after apply.
-  - Emits verification report JSON.
-  - Aborts on verification failure with explicit operator guidance.
-  - Supports practical rollback behavior with `-RollbackOnVerificationFailure`.
-  - Enforces rollback safety by requiring `-ConfirmDestructive` when rollback is requested.
-- `Clean-WebsiteRepoDeployment.ps1`
-  - Includes new ops/verify artifacts in metadata cleanup path.
-  - Adds cleanup stage ops state/event writes.
+- Expanded `docs/dev/CODEX_WEBSITE_REPO_DEPLOYMENT_SCRIPTING.md` to document:
+  - full deploy flow across prep/update/clean scripts
+  - script usage examples under `scripts/PS/deploy/`
+  - `.env` config usage and normalized `DEPLOY_*` variables
+  - dry-run workflow and validation usage
+  - monitoring artifacts (`ops-state`, `ops-log`, `last-verify`)
+  - rollback/abort expectations with practical command examples
+- Updated commit comment to required format:
+  - description on first line
+  - PR identifier on last line
 
 Outcome:
-- Deploy scripts now expose a consistent operational trail (state + event log + verify report),
-  with standardized success/failure messaging and practical rollback/abort expectations.
+- Deploy lane now has a clear, end-to-end operator runbook aligned to the current deploy script surface.

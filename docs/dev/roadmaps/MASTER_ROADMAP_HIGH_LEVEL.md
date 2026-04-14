@@ -626,7 +626,7 @@
 - [.] continue exact-cluster shared extraction until the current lane reaches a stable stop point
 - [x] finish active promotion-gate lane enough to remove it from half-active status
 - [.] convert repo structure normalization into exact move-map BUILDs with explicit validation
-- [.] re-baseline this roadmap after active execution lanes stabilize
+- [x] re-baseline this roadmap after active execution lanes stabilize
 - [x] split future implementation into small dependency-ordered PRs
 - [ ] avoid broad repo-wide cleanup passes until the active lanes above are materially further along
 
