@@ -1,7 +1,8 @@
-- ZIP contains changed implementation files, not docs only
-- Background renders only during gameplay
-- Background draws after clear and before world/gameplay
-- Bezel is visibly on screen in fullscreen
-- Bezel is hidden when not fullscreen
-- Missing background/bezel files do not break runtime
-- Output ZIP created at `<project folder>/tmp/BUILD_PR_LEVEL_10_19_REAL_IMPLEMENTATION_DELTA_FULLSCREEN_BEZEL_AND_BACKGROUND.zip`
+- Bundle is docs-only
+- Codex command requires implementation by Codex, not ChatGPT
+- Bezel URL/path must resolve once
+- Canvas must remain centered and unchanged in size
+- Background must draw only during gameplay
+- Background must draw before starfield/world content
+- Codex output ZIP path must be:
+  <project folder>/tmp/BUILD_PR_LEVEL_10_20_FIX_BEZEL_PATH_AND_BACKGROUND_DRAW_ORDER.zip

@@ -1,4 +1,4 @@
-import { resolveGameImageConventionPaths } from "./gameImageConvention.js";
+import { resolveGameImageConventionPaths, resolveRuntimeAssetUrl } from "./gameImageConvention.js";
 
 function toDisplayValue(visible) {
   return visible ? "block" : "none";
@@ -184,7 +184,7 @@ export default class fullscreenBezel {
       this.missing = true;
       element.style.display = "none";
     };
-    element.src = this.path;
+    element.src = resolveRuntimeAssetUrl(this.path, this.documentRef);
 
     this.host.appendChild?.(element);
     this.element = element;

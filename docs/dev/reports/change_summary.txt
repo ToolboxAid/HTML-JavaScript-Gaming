@@ -1,4 +1,5 @@
-- Reframed the next PR to require actual implementation files in the ZIP
-- Locked asset assumptions to images/background.png and images/bezel.png
-- Kept separate classes: backgroundImage and fullscreenBezel
-- Enforced gameplay-only background and visible fullscreen bezel behavior
+- Reissued as strict docs-only BUILD_PR bundle
+- Codex instructed to fix bezel path duplication
+- Canvas must remain centered at original W x H
+- backgroundImage must render after clear and before starfield/world
+- backgroundImage limited to gameplay states only

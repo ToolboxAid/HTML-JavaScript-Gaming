@@ -1,4 +1,4 @@
-import { resolveGameImageConventionPaths } from "./gameImageConvention.js";
+import { resolveGameImageConventionPaths, resolveRuntimeAssetUrl } from "./gameImageConvention.js";
 
 const NON_GAMEPLAY_MODE_TOKENS = Object.freeze([
   "menu",
@@ -76,9 +76,10 @@ function sceneModeCandidates(scene) {
 
 export default class backgroundImage {
   constructor(options = {}) {
+    this.documentRef = options.documentRef || globalThis.document || null;
     const resolved = resolveGameImageConventionPaths({
       gameId: options.gameId,
-      documentRef: options.documentRef || globalThis.document || null
+      documentRef: this.documentRef
     });
     this.gameId = resolved.gameId;
     this.layer = createLayerState(resolved.backgroundPath);
@@ -156,7 +157,7 @@ export default class backgroundImage {
     };
 
     try {
-      image.src = this.layer.path;
+      image.src = resolveRuntimeAssetUrl(this.layer.path, this.documentRef);
     } catch {
       this.layer.status = "missing";
     }

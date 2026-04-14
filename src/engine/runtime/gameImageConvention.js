@@ -6,6 +6,10 @@ function normalizePath(value) {
   return safeText(value, "").replace(/\\/g, "/");
 }
 
+function hasUrlProtocol(value) {
+  return /^[a-z][a-z0-9+.-]*:/i.test(value);
+}
+
 function discoverGameIdFromDocument(documentRef) {
   const pathname = normalizePath(documentRef?.location?.pathname || "");
   if (!pathname) {
@@ -21,6 +25,32 @@ function toImagePath(gameId, fileName) {
     return "";
   }
   return `games/${id}/assets/images/${fileName}`;
+}
+
+export function resolveRuntimeAssetUrl(pathValue, documentRef = null) {
+  const normalized = normalizePath(pathValue);
+  if (!normalized) {
+    return "";
+  }
+
+  if (hasUrlProtocol(normalized) || normalized.startsWith("//")) {
+    return normalized;
+  }
+
+  if (normalized.startsWith("/")) {
+    return normalized;
+  }
+
+  if (normalized.startsWith("./") || normalized.startsWith("../")) {
+    try {
+      const baseHref = safeText(documentRef?.location?.href, "http://localhost/");
+      return new URL(normalized, baseHref).pathname;
+    } catch {
+      return `/${normalized.replace(/^\/+/, "")}`;
+    }
+  }
+
+  return `/${normalized.replace(/^\/+/, "")}`;
 }
 
 export function resolveGameImageConventionPaths(options = {}) {

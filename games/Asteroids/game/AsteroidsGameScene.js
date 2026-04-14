@@ -690,7 +690,9 @@ export default class AsteroidsGameScene extends Scene {
   render(renderer) {
     const leaderboardTopScore = this.highScoreService.getTopScore(this.highScoreRows);
     const liveHudHighScore = Math.max(this.session.highScore, leaderboardTopScore);
-    renderer.drawRect(0, 0, this.world.bounds.width, this.world.bounds.height, '#020617');
+    if (this.session.mode !== 'playing') {
+      renderer.drawRect(0, 0, this.world.bounds.width, this.world.bounds.height, '#020617');
+    }
     this.world.starfield.forEach((star) => {
       renderer.drawRect(star.x, star.y, star.size, star.size, '#94a3b8');
     });
