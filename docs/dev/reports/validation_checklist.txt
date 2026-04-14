@@ -1,6 +1,3 @@
-[x] `scripts/PS/validate/Validate-All.ps1` runs successfully in repo
-[x] PASS path returns exit code `0`
-[x] failure simulation returns non-zero exit code
-[x] clear PASS/FAIL summary output is present
-[x] optional `.githooks/pre-commit.example.ps1` calls `Validate-All.ps1`
-[x] roadmap updated with status-only change
+[ ] run validation
+[ ] break folder structure → fails
+[ ] restore → passes
