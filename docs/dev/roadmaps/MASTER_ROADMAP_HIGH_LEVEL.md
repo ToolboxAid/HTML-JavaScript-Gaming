@@ -45,6 +45,12 @@
 - promotion requires validation after extraction
 - promotion does not happen as a blind dedupe exercise
 
+
+### Productization Rule
+- do not create standalone showcase tracks in future roadmaps
+- fold showcase importance into the main feature or sample title when needed
+
+
 ### Tooling Strategy
 - tools are created when they unblock engine/content progress
 - tools do not define engine behavior
@@ -490,10 +496,6 @@
 - [x] Debug tour
 - [x] Getting started guide
 - [x] Example-driven docs
-
-### Productization Rule
-- [ ] do not create standalone showcase tracks in future roadmaps
-- [ ] fold showcase importance into the main feature or sample title when needed
 
 ---
 

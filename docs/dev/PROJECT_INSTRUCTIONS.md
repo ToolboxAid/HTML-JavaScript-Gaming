@@ -108,3 +108,7 @@ ZIP STANDARD (ENFORCED)
 - Assume approval
 - Continue automatically
 - Do not stop unless blocked
+
+## Productization Rules
+- Do not create standalone showcase tracks in future roadmaps
+- Fold showcase importance into the main feature or sample title when needed
