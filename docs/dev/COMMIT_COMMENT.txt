@@ -1,2 +1,2 @@
-Restore full MASTER_ROADMAP_HIGH_LEVEL from history and update status only
-BUILD_PR_LEVEL_10_23_RESTORE_MASTER_ROADMAP_STATUS_ONLY
+Multi-game validation pass for bezel/background system
+BUILD_PR_LEVEL_10_24_MULTI_GAME_VALIDATION_PASS

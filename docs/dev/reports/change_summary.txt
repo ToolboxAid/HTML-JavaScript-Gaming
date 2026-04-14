@@ -1,3 +1,3 @@
-- Reissued roadmap restore with strict historical-restore requirement
-- Added hard 600+ line guard
-- Limited post-restore edits to status markers only
+- Multi-game validation
+- Confirmed shared behavior
+- Minimal fixes if needed

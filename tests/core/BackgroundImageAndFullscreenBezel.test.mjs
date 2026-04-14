@@ -234,6 +234,39 @@ function testNoOpWhenBackgroundMissing() {
   assert.equal(order.length, 0);
 }
 
+function testSampleGameBackgroundAndBezelNoOpWhenMissing() {
+  const documentRef = createDocumentStub("/games/SpaceInvaders/index.html");
+  const paths = resolveGameImageConventionPaths({ documentRef });
+  assert.equal(paths.backgroundPath, "games/SpaceInvaders/assets/images/background.png");
+  assert.equal(paths.bezelPath, "games/SpaceInvaders/assets/images/bezel.png");
+
+  const backgroundLayer = new backgroundImage({
+    documentRef,
+    imageFactory: createImageFactory(new Set())
+  });
+  const backgroundOrder = [];
+  const backgroundResult = backgroundLayer.render(createRendererSpy(backgroundOrder), {
+    scene: { session: { mode: "playing" } }
+  });
+  assert.equal(backgroundResult.drawn, false);
+  assert.equal(backgroundResult.path, "games/SpaceInvaders/assets/images/background.png");
+  assert.equal(backgroundOrder.length, 0);
+
+  const host = createElement("div", documentRef);
+  const canvas = createElement("canvas", documentRef);
+  host.appendChild(canvas);
+  documentRef.body.appendChild(host);
+
+  const bezel = new fullscreenBezel({ canvas, documentRef });
+  bezel.attach();
+  assert.equal(bezel.element.src, "/games/SpaceInvaders/assets/images/bezel.png");
+  assert.equal(bezel.element.src.includes("/games/SpaceInvaders/games/SpaceInvaders/"), false);
+  bezel.element.onerror?.();
+  const bezelResult = bezel.sync({ fullscreenActive: true, fullscreenElement: host });
+  assert.equal(bezelResult.visible, false);
+  assert.equal(bezel.element.style.display, "none");
+}
+
 function testFullscreenBezelVisibilityAndHtmlAttachment() {
   const documentRef = createDocumentStub();
   const host = createElement("div", documentRef);
@@ -548,6 +581,46 @@ async function testBezelDetectionDoesNotOverwriteExistingStretchConfig() {
   }
 }
 
+async function testSampleGameBezelDetectionCreatesStretchConfig() {
+  const tempRoot = await fs.mkdtemp(path.join(os.tmpdir(), "bezel-detected-spaceinvaders-config-"));
+  const documentRef = createDocumentStub("/games/SpaceInvaders/index.html");
+  const host = createElement("div", documentRef);
+  const canvas = createElement("canvas", documentRef);
+  canvas.width = 960;
+  canvas.height = 720;
+  host.appendChild(canvas);
+  documentRef.body.appendChild(host);
+
+  try {
+    const bezel = new fullscreenBezel({
+      canvas,
+      documentRef,
+      stretchConfigProvider(configPath) {
+        return ensureBezelStretchConfigFile(configPath, {
+          cwd: tempRoot,
+          fsModule: fs,
+          pathModule: path
+        });
+      }
+    });
+
+    bezel.attach();
+    bezel.element.naturalWidth = 1920;
+    bezel.element.naturalHeight = 1080;
+    bezel.element.onload?.();
+    if (bezel.stretchConfigPromise) {
+      await bezel.stretchConfigPromise;
+    }
+
+    const createdPath = path.resolve(tempRoot, "games/SpaceInvaders/assets/images/bezel.stretch.override.json");
+    const saved = JSON.parse(await fs.readFile(createdPath, "utf8"));
+    assert.deepEqual(saved, { uniformEdgeStretchPx: 0 });
+    assert.equal(bezel.getState().stretchConfigPath, "games/SpaceInvaders/assets/images/bezel.stretch.override.json");
+  } finally {
+    await fs.rm(tempRoot, { recursive: true, force: true });
+  }
+}
+
 function testEngineRuntimeIntegration() {
   const animationFrame = createAnimationFrameStub();
   const originalDocument = globalThis.document;
@@ -685,6 +758,7 @@ export async function run() {
   testBackgroundGameplayGatingAndOrder();
   testGameImageConventionsAreGameAgnostic();
   testNoOpWhenBackgroundMissing();
+  testSampleGameBackgroundAndBezelNoOpWhenMissing();
   testFullscreenBezelVisibilityAndHtmlAttachment();
   testNoOpWhenBezelMissing();
   testTransparentWindowDetectionAndAspectFit();
@@ -693,5 +767,6 @@ export async function run() {
   await testBezelStretchConfigAutoCreate();
   await testBezelDetectionTriggersStretchConfigAutoCreate();
   await testBezelDetectionDoesNotOverwriteExistingStretchConfig();
+  await testSampleGameBezelDetectionCreatesStretchConfig();
   testEngineRuntimeIntegration();
 }
