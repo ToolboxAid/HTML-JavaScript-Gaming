@@ -609,7 +609,7 @@
 - [.] FEATURE: Fullscreen Bezel Overlay System - Render game in full screen with optional bezel artwork layer (static or animated) surrounding the active playfield, preserving aspect ratio and supporting per-game/theme bezel assets without modifying core engine rendering.
 
 ### Later Capability Lanes
-- [ ] Execute 2D capability polish lanes
+- [.] Execute 2D capability polish lanes
 - [ ] Execute phase-16 / 3D capability lanes
 
 ### Final Cleanup Lane

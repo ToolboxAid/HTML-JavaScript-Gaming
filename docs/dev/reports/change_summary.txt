@@ -1,3 +1,3 @@
-- Level 11 start
-- roadmap rule cleanup
-- instructions updated
+- Combined the next Level 11 setup work to reduce PR count
+- Added explicit move-not-delete guard for future roadmap/instruction migrations
+- Kept roadmap handling status-only unless explicitly requested otherwise

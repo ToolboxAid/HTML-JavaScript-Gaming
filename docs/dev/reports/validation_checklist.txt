@@ -1,4 +1,6 @@
-
-- roadmap cleaned of rule checkboxes
-- instructions updated
-- Level 10 confirmed complete
+- Combined PR reduces follow-on PR count
+- Rule-migration guard is explicit
+- Roadmap cleanup cannot silently delete moved content
+- Outputs remain docs-first and repo-structured
+- Output ZIP created at:
+  <project folder>/tmp/BUILD_PR_LEVEL_11_2_COMBINED_RUNTIME_DIRECTION_AND_RULE_MOVE_GUARDS.zip

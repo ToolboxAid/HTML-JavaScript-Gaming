@@ -112,3 +112,10 @@ ZIP STANDARD (ENFORCED)
 ## Productization Rules
 - Do not create standalone showcase tracks in future roadmaps
 - Fold showcase importance into the main feature or sample title when needed
+
+## Roadmap Instruction Move Guards
+- If roadmap content is moved to `PROJECT_INSTRUCTIONS.md`, move it and do not delete it without relocation.
+- Ensure destination text exists before removing the source text.
+- Preserve wording unless the PR explicitly requires rewriting.
+- Keep roadmap handling status-only unless explicitly requested otherwise.
+- Do not delete roadmap content during cleanup work.
