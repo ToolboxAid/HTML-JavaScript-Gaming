@@ -1,0 +1,31 @@
+﻿PR: PR_08_01_GAMES_FLOW_STANDARDIZATION
+
+Standard Flow Contract (v1)
+- Required fields:
+  - id
+  - label
+  - contractVersion
+  - nextFlowId
+  - autoAdvanceSeconds
+  - statusText
+  - returnMode
+  - resetIdleOnReturn
+  - debugPluginFactory
+
+Asteroids flow descriptors aligned
+- attract.js:
+  - id=attract
+  - nextFlowId=intro
+  - returnMode=menu
+- intro.js:
+  - id=intro
+  - nextFlowId=highscore
+  - autoAdvanceSeconds=30
+- highscore.js:
+  - id=highscore
+  - nextFlowId=attract
+  - autoAdvanceSeconds=12
+
+Backward compatibility
+- Existing exported constants in attract.js and intro.js preserved.
+- Flow descriptors extended additively (no removals).
