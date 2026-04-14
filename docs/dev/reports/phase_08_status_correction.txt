@@ -1,0 +1,15 @@
+﻿Phase 08 status correction after BUILD_PR_LEVEL_08_04_PUCKMAN_BOUNDARY_NORMALIZATION
+
+Earned now
+- [x] puckman normalized
+
+Still not earned repo-wide
+- [ ] game flow pattern standardized (`flow/attract.js`, `flow/intro.js`, `flow/highscore.js`)
+- [ ] gameplay/entities/levels/rules/assets boundaries normalized
+- [ ] shared-vs-game utility boundaries enforced
+- [ ] space_invaders normalized
+- [ ] future games follow template-first path
+
+Notes
+- This PR normalizes Puckman only.
+- Repo-wide completion markers remain unchanged unless globally satisfied.

@@ -1,26 +1,20 @@
-﻿PR: PR_08_03_GAMES_MIGRATION
+﻿PR: BUILD_PR_LEVEL_08_04_PUCKMAN_BOUNDARY_NORMALIZATION
 
-Validation Checklist
-- structural migration only (folder boundaries)
-- every game has game/entities/levels/rules/assets
-- runtime smoke remains passing
+Validation checklist
+- [x] Puckman has a game-local rules surface
+- [x] Flow files import constants from rules
+- [x] Gameplay scene/runtime files import constants from rules
+- [x] No engine files changed
+- [x] Status markers updated only where earned
 
-- PASS AITargetDummy
-- PASS Asteroids
-- PASS Bouncing-ball
-- PASS Breakout
-- PASS Gravity
-- PASS GravityWell
-- PASS MultiBallChaos
-- PASS Orbit
-- PASS PacmanFullAI
-- PASS PacmanLite
-- PASS PaddleIntercept
-- PASS Pong
-- PASS ProjectileLab
-- PASS SolarSystem
-- PASS SpaceDuel
-- PASS SpaceInvaders
-- PASS Thruster
+Commands run
+- node --check games/Puckman/rules/gameFlowRules.js
+- node --check games/Puckman/flow/attract.js
+- node --check games/Puckman/flow/intro.js
+- node --check games/Puckman/flow/highscore.js
+- node --check games/Puckman/game/PuckmanRuntime.js
+- node --check games/Puckman/game/PuckmanGameScene.js
+- node tests/runtime/LaunchSmokeAllEntries.test.mjs
 
-Result: PASS
+Result
+- PASS

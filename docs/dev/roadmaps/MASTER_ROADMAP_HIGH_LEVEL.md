@@ -1,4 +1,4 @@
-# MASTER ROADMAP - HIGH LEVEL (v7 ADDITIVE)
+﻿# MASTER ROADMAP - HIGH LEVEL (v7 ADDITIVE)
 
 ## Status Key
 - [x] complete
@@ -229,7 +229,7 @@
 ### Track A - Debug Foundation
 - [x] Dev Console (input + command execution)
 - [x] Debug Overlay (visual panels)
-- [x] Console â†” Overlay Boundary
+- [x] Console Ã¢â€ â€ Overlay Boundary
 - [x] Panel Registry
 - [x] Data Providers (read-only model)
 - [x] Operator Commands (control surface)
@@ -420,7 +420,7 @@
 - [.] game-specific asset ownership enforced
 - [ ] shared-vs-game utility boundaries enforced
 - [ ] space_invaders normalized
-- [ ] puckman normalized
+- [x] puckman normalized
 - [ ] future games follow template-first path
 
 ---
@@ -520,7 +520,7 @@
 - [ ] 3D Movement Sample
 - [ ] Basic Collision Sample
 
-### Core Sample Track (1601â€“1608)
+### Core Sample Track (1601Ã¢â‚¬â€œ1608)
 - [ ] 1601 - 3D Cube Explorer
 - [ ] 1602 - 3D Maze Runner
 - [ ] 1603 - First Person Walkthrough
