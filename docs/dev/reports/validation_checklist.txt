@@ -1,7 +1,2 @@
-[x] Deploy documentation covers full prep/update/clean flow
-[x] Usage examples included for scripts under `scripts/PS/deploy/`
-[x] Dry-run and validation usage documented
-[x] Monitoring artifacts and operator triage guidance documented
-[x] Rollback/abort expectations documented with command examples
-[x] Commit comment format matches requirement (description first line, PR name last line)
-[x] Roadmap updated with status-only change
+[ ] run scripts/PS/validate/Validate-All.ps1
+[ ] PASS/FAIL output shown

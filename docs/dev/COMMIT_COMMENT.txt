@@ -1,2 +1,3 @@
-Add full deploy operator handoff documentation with script examples, dry-run/validation workflows, monitoring artifacts, and rollback/abort guidance.
-BUILD_PR_LEVEL_09_32_DEPLOY_DOCUMENTATION_AND_HANDOFF
+Adds runnable validation entry point for all repo validation scripts.
+
+BUILD_PR_LEVEL_10_02_SCRIPT_VALIDATION_RUNNER

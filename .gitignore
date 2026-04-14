@@ -14,8 +14,8 @@
 /*.zip
 
 # Ignore specific files in the docs/dev directory
-/docs/dev/CODEX_COMMANDS.md
-/docs/dev/COMMIT_COMMENT.txt
-/docs/dev/NEXT_COMMANDS.txt
-/docs/dev/commit_comment.txt
+docs/dev/CODEX_COMMANDS.md
+docs/dev/COMMIT_COMMENT.txt
+docs/dev/NEXT_COMMANDS.txt
+docs/dev/commit_comment.txt
 
