@@ -1,2 +1,2 @@
-Remove duplicate asset definitions and add bezel roadmap entry
-BUILD_PR_LEVEL_10_13_ASSET_DEDUP_AND_BEZEL_ROADMAP
+Validate runtime after asset normalization and manifest deduplication
+BUILD_PR_LEVEL_10_14_ASTEROIDS_RUNTIME_VALIDATION_PASS

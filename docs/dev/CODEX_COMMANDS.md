@@ -2,9 +2,10 @@ MODEL: GPT-5.3-codex
 REASONING: medium
 
 COMMAND:
-1. Remove assets.json
-2. Ensure tools.manifest.json is sole source of truth
-3. Remove duplicate data structures if present
-4. Validate all loaders/tests still pass
-5. Package repo ZIP to:
-   <project folder>/tmp/BUILD_PR_LEVEL_10_13_ASSET_DEDUP_AND_BEZEL_ROADMAP.zip
+1. Run full validation suite
+2. Verify manifest-driven loading across all asset types
+3. Confirm no references to assets.json remain
+4. Confirm all renamed files resolve correctly
+5. Fix any breakages found
+6. Package repo ZIP to:
+   <project folder>/tmp/BUILD_PR_LEVEL_10_14_ASTEROIDS_RUNTIME_VALIDATION_PASS.zip

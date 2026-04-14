@@ -1,4 +1,6 @@
-- assets.json removed
-- single manifest
-- loaders pass
-- roadmap updated
+- npm test: FAIL at pretest shared-extraction guard (existing baseline drift: baseline_unexpected=26)
+- node ./scripts/run-node-tests.mjs: PASS (127/127 explicit tests, launch smoke PASS=227 FAIL=0)
+- PASS GameAssetManifestDiscovery (expanded all-domain manifest assertions)
+- PASS manifest-runtime-resolution (sprites/tilemaps/parallax/vectors)
+- PASS renamed-files-resolve (all runtimePath/toolDataPath entries exist)
+- no matches for deprecated games/<game>/assets/assets.json references
