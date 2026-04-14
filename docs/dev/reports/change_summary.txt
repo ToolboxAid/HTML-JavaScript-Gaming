@@ -1,30 +1,22 @@
 Summary
-- Added debug visibility hooks for asset pipeline and runtime lookup layers.
-- Exposed manifest + lookup state snapshots through shared debug reporting.
-- Kept scope surgical with no engine/runtime behavior redesign.
+- Added caching to runtime asset lookup resolution to avoid redundant repeated resolution/validation work.
+- Optimized manifest and binding access patterns by pre-indexing lookup data and reusing manifest snapshot state.
+- Reduced redundant per-call cloning/lookup overhead in touched runtime asset consumers through shared lookup improvements.
 
 Implementation
 - Updated `tools/shared/pipeline/runtimeAssetLookup.js`:
-  - exposes `gameAssetManifest`
-  - adds `getDebugState()` snapshot with lookup counters, manifest, and propagated errors
-- Updated `tools/shared/pipeline/assetPipelineTooling.js`:
-  - adds `debugState` snapshot in both ready and invalid paths
-  - includes stage/status/record/error summaries and coordinated manifest reference when available
-- Updated `tools/shared/debugVisualizationLayer.js`:
-  - added sections `Asset Runtime State` and `Asset Pipeline State`
-  - renders manifest-domain and lookup/pipeline summary lines for debug visibility
-- Updated touched runtime consumers to pass lookup debug state into debug visualization:
-  - `tools/shared/asteroidsPlatformDemo.js`
-  - `tools/shared/vectorNativeTemplate.js`
-  - `tools/shared/vectorTemplateSampleGame.js`
-  - `tools/shared/vectorAssetSystem.js`
-
-Tests
-- Updated `tests/tools/DebugVisualizationLayer.test.mjs`
-- Updated `tests/tools/RuntimeAssetLookupConsolidation.test.mjs`
-- Updated `tests/tools/AssetPipelineTooling.test.mjs`
+  - adds per-asset resolution cache (`hits/misses/size`) to avoid redundant loads/resolution
+  - adds static source cache to avoid repeated deep clone work per request
+  - pre-indexes binding records by domain+asset id for faster access
+  - reuses manifest snapshot for debug state to avoid repeated manifest recomputation
+  - exposes cache stats via `getDebugState().lookup.cache`
+- Updated `tools/shared/pipeline/runtimeAssetBinding.js`:
+  - adds WeakMap-backed indexed resolution in `resolveRuntimeAsset` for efficient repeated lookup
+- Updated `tests/tools/RuntimeAssetLookupConsolidation.test.mjs`:
+  - validates cache hit/miss behavior and cache size
+  - validates optimized lookup still preserves existing error/visibility behavior
 
 Roadmap (status-only)
 - `docs/dev/roadmaps/MASTER_ROADMAP_HIGH_LEVEL.md`
-  - `debug tools align with engine/debug maturity` moved from `[.]` to `[x]`
+  - `content pipeline tools after asset complexity justifies them` moved from `[.]` to `[x]`
 - No roadmap prose/text/order edits.

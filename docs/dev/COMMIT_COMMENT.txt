@@ -1,3 +1,3 @@
-BUILD_PR_LEVEL_09_16_ASSET_DEBUG_VISIBILITY
+BUILD_PR_LEVEL_09_17_ASSET_PERFORMANCE_OPTIMIZATION
 
-Adds debug visibility hooks for asset pipeline + runtime lookup, exposes manifest and lookup state snapshots in debug reporting, and applies a roadmap status-only bracket update.
+Adds runtime asset lookup caching, optimizes manifest/binding access patterns, avoids redundant resolution work in touched layers, and applies a roadmap status-only bracket update.

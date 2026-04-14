@@ -25,6 +25,18 @@ function toSlug(value, fallback = "asset") {
   return text || fallback;
 }
 
+function createDomainIndex(binding) {
+  const index = {};
+  Object.entries(binding?.domains || {}).forEach(([domain, entries]) => {
+    const domainMap = new Map();
+    (Array.isArray(entries) ? entries : []).forEach((entry) => {
+      domainMap.set(safeString(entry?.assetId, ""), entry);
+    });
+    index[domain] = domainMap;
+  });
+  return index;
+}
+
 export function getRuntimeBindingDomain(assetId) {
   const normalizedId = safeString(assetId, "").toLowerCase();
   const matchedPrefix = Object.keys(RUNTIME_BINDING_PREFIXES)
@@ -75,6 +87,14 @@ export function createRuntimeManifestAssetLookup(options = {}) {
     records
   });
   const binding = createRuntimeAssetBinding(coordinatedManifest.manifest);
+  const bindingIndex = createDomainIndex(binding);
+  const manifestSnapshot = cloneJson(coordinatedManifest.manifest);
+  const staticSourceCache = new Map();
+  const resolutionCache = new Map();
+  const cacheStats = {
+    hits: 0,
+    misses: 0
+  };
   const missingBindingBehavior = options.missingBindingBehavior === "null" ? "null" : "static";
   const errors = [];
 
@@ -105,11 +125,19 @@ export function createRuntimeManifestAssetLookup(options = {}) {
       return null;
     }
 
+    if (resolutionCache.has(assetId)) {
+      cacheStats.hits += 1;
+      return resolutionCache.get(assetId);
+    }
+    cacheStats.misses += 1;
+
     if (safeString(asset?.type, "") === "image") {
       if (typeof options.resolveImageAsset === "function") {
-        return options.resolveImageAsset(asset);
+        const resolvedImage = options.resolveImageAsset(asset);
+        resolutionCache.set(assetId, resolvedImage);
+        return resolvedImage;
       }
-      return {
+      const defaultImage = {
         image: {
           width: 960,
           height: 720,
@@ -117,15 +145,21 @@ export function createRuntimeManifestAssetLookup(options = {}) {
         },
         status: "provided-loaded"
       };
+      resolutionCache.set(assetId, defaultImage);
+      return defaultImage;
     }
 
-    const staticSource = runtimeAssetSources[assetId] ? cloneJson(runtimeAssetSources[assetId]) : null;
+    if (!staticSourceCache.has(assetId)) {
+      staticSourceCache.set(assetId, runtimeAssetSources[assetId] ? cloneJson(runtimeAssetSources[assetId]) : null);
+    }
+    const staticSource = staticSourceCache.get(assetId);
     const domain = getRuntimeBindingDomain(assetId);
     if (!domain) {
+      resolutionCache.set(assetId, staticSource);
       return staticSource;
     }
 
-    const runtimeRecord = resolveRuntimeAsset(binding, { domain, assetId });
+    const runtimeRecord = bindingIndex[domain]?.get(assetId) || resolveRuntimeAsset(binding, { domain, assetId });
     if (!runtimeRecord) {
       appendAssetError(errors, {
         code: "RUNTIME_LOOKUP_MISSING_BINDING",
@@ -134,7 +168,9 @@ export function createRuntimeManifestAssetLookup(options = {}) {
         assetId,
         message: `Missing runtime binding for ${assetId}.`
       });
-      return missingBindingBehavior === "null" ? null : staticSource;
+      const missingResolution = missingBindingBehavior === "null" ? null : staticSource;
+      resolutionCache.set(assetId, missingResolution);
+      return missingResolution;
     }
 
     const mergedSource = staticSource || {};
@@ -151,9 +187,11 @@ export function createRuntimeManifestAssetLookup(options = {}) {
     });
     if (!validation.valid) {
       appendAssetErrors(errors, validation.errors);
+      resolutionCache.set(assetId, null);
       return null;
     }
 
+    resolutionCache.set(assetId, mergedSource);
     return mergedSource;
   }
 
@@ -175,9 +213,14 @@ export function createRuntimeManifestAssetLookup(options = {}) {
             Object.entries(binding.domains || {}).map(([domain, entries]) => [domain, Array.isArray(entries) ? entries.length : 0])
           ),
           rejectedCount: Array.isArray(binding.rejected) ? binding.rejected.length : 0,
-          errorCount: errors.length
+          errorCount: errors.length,
+          cache: {
+            hits: cacheStats.hits,
+            misses: cacheStats.misses,
+            size: resolutionCache.size
+          }
         },
-        manifest: cloneJson(coordinatedManifest.manifest),
+        manifest: manifestSnapshot,
         errors: errors.slice()
       };
     },

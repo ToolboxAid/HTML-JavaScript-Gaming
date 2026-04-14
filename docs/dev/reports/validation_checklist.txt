@@ -1,28 +1,25 @@
-Validation Checklist - BUILD_PR_LEVEL_09_16_ASSET_DEBUG_VISIBILITY
+Validation Checklist - BUILD_PR_LEVEL_09_17_ASSET_PERFORMANCE_OPTIMIZATION
 
 Scope
-[x] Debug visibility hooks added for asset pipeline + runtime lookup
-[x] Manifest + lookup state exposed through debug layer
+[x] Caching added to shared asset lookup path
+[x] Manifest access optimized in touched lookup flow
+[x] Redundant resolution/load work avoided where touched
 [x] No engine redesign
-[x] No gameplay/runtime feature expansion
-[x] No UI redesign work outside debug reporting sections
+[x] No UI changes
 
 Code
 [x] Updated `tools/shared/pipeline/runtimeAssetLookup.js`
-[x] Updated `tools/shared/pipeline/assetPipelineTooling.js`
-[x] Updated `tools/shared/debugVisualizationLayer.js`
-[x] Updated `tools/shared/asteroidsPlatformDemo.js`
-[x] Updated `tools/shared/vectorNativeTemplate.js`
-[x] Updated `tools/shared/vectorTemplateSampleGame.js`
-[x] Updated `tools/shared/vectorAssetSystem.js`
-[x] Updated `tests/tools/DebugVisualizationLayer.test.mjs`
+[x] Updated `tools/shared/pipeline/runtimeAssetBinding.js`
 [x] Updated `tests/tools/RuntimeAssetLookupConsolidation.test.mjs`
-[x] Updated `tests/tools/AssetPipelineTooling.test.mjs`
 
 Validation
-[x] `node --check` passes on touched files
-[x] Focused tests pass: DebugVisualizationLayer, RuntimeAssetLookupConsolidation, AssetPipelineTooling
-[x] Existing regression tests pass: RuntimeAssetValidation, RuntimeAssetBinding, GameAssetManifestCoordinator, ProjectToolDataContracts
+[x] `node --check tools/shared/pipeline/runtimeAssetLookup.js`
+[x] `node --check tools/shared/pipeline/runtimeAssetBinding.js`
+[x] `node --check tests/tools/RuntimeAssetLookupConsolidation.test.mjs`
+[x] `node --check tests/tools/RuntimeAssetBinding.test.mjs`
+[x] `node --check tests/tools/AssetPipelineTooling.test.mjs`
+[x] Focused tests pass: RuntimeAssetLookupConsolidation, RuntimeAssetBinding, AssetPipelineTooling
+[x] Existing regression tests pass: RuntimeAssetValidation, GameAssetManifestCoordinator, ProjectToolDataContracts
 [x] Existing consumer tests pass: AsteroidsAssetReferenceAdoption, AsteroidsPlatformDemo, VectorNativeTemplate, VectorTemplateSampleGame, VectorAssetSystem
 
 Roadmap

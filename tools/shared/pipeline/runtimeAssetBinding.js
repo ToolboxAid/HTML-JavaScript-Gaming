@@ -5,6 +5,7 @@ export const RUNTIME_ASSET_BINDING_SCHEMA = "html-js-gaming.runtime-asset-bindin
 export const RUNTIME_ASSET_BINDING_VERSION = 1;
 
 export const RUNTIME_ACTIVE_DOMAINS = Object.freeze(["sprites", "tilemaps", "parallax", "vectors"]);
+const RUNTIME_BINDING_INDEX_CACHE = new WeakMap();
 
 function asObject(value) {
   return value && typeof value === "object" ? value : {};
@@ -120,6 +121,20 @@ export function resolveRuntimeAsset(bindingInput, options = {}) {
   if (!domain || !assetId) {
     return null;
   }
-  const entries = asArray(asObject(binding.domains)[domain]);
-  return entries.find((entry) => toSlug(entry.assetId, "") === assetId) || null;
+
+  let index = RUNTIME_BINDING_INDEX_CACHE.get(binding);
+  if (!index) {
+    index = {};
+    RUNTIME_ACTIVE_DOMAINS.forEach((activeDomain) => {
+      const domainMap = new Map();
+      asArray(asObject(binding.domains)[activeDomain]).forEach((entry) => {
+        domainMap.set(toSlug(entry?.assetId, ""), entry);
+      });
+      index[activeDomain] = domainMap;
+    });
+    RUNTIME_BINDING_INDEX_CACHE.set(binding, index);
+  }
+
+  const domainMap = index[domain];
+  return domainMap ? domainMap.get(assetId) || null : null;
 }

@@ -31,6 +31,7 @@ export async function run() {
   );
 
   assert.equal(strictLookup.resolvePackagedAsset({ id: "vector.ship", type: "vector" }).file, "games/asteroids/assets/vectors/ship.vector.json");
+  assert.equal(strictLookup.resolvePackagedAsset({ id: "vector.ship", type: "vector" }).file, "games/asteroids/assets/vectors/ship.vector.json");
   assert.equal(strictLookup.resolvePackagedAsset({ id: "vector.bad", type: "vector" }), null);
   assert.equal(strictLookup.resolvePackagedAsset({ id: "vector.tool-only", type: "vector" }), null);
   assert.equal(strictLookup.resolvePackagedAsset({ id: "palette.hud", type: "palette" }).kind, "palette");
@@ -43,6 +44,9 @@ export async function run() {
   assert.equal(strictDebug.lookup.recordCount, 5);
   assert.equal(strictDebug.lookup.domainCounts.vectors, 2);
   assert.equal(Object.keys(strictDebug.manifest.domains).length, 4);
+  assert.equal(strictDebug.lookup.cache.misses, 4);
+  assert.equal(strictDebug.lookup.cache.hits, 1);
+  assert.equal(strictDebug.lookup.cache.size, 4);
 
   const fallbackLookup = createRuntimeManifestAssetLookup({
     gameId: "TemplateGame",
@@ -60,5 +64,7 @@ export async function run() {
   assert.equal(fallbackResolved.file, "tools/templates/vector-native-arcade/assets/data/vectors/template-player.vector.json");
   assert.equal(fallbackLookup.binding.domains.vectors.length, 0);
   assert.equal(fallbackLookup.getErrors().some((entry) => entry.code === "RUNTIME_BINDING_REJECTED"), true);
-  assert.equal(fallbackLookup.getDebugState().lookup.rejectedCount > 0, true);
+  const fallbackDebug = fallbackLookup.getDebugState();
+  assert.equal(fallbackDebug.lookup.rejectedCount > 0, true);
+  assert.equal(fallbackDebug.lookup.cache.misses, 1);
 }

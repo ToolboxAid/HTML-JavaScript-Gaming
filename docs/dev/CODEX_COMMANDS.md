@@ -1,6 +1,7 @@
 MODEL: GPT-5.4
 REASONING: high
 COMMAND:
-- add debug visibility hooks for asset pipeline
-- expose manifest + lookup state
+- add caching to asset lookup
+- optimize manifest access
+- avoid redundant loads
 - roadmap status only update
