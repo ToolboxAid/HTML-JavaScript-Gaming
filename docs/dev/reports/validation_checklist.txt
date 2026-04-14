@@ -1,6 +1,8 @@
-
-- Template structure matches Asteroids
-- Background gameplay-only
-- Bezel fullscreen-only
-- Override file auto-created
-- No game-specific coupling
+- Restored file came from git history
+- Restored file is the full correct roadmap
+- Restored file is 600+ lines
+- Only status markers changed after restore
+- No roadmap text was rewritten
+- No sections were added or removed
+- Output ZIP created at:
+  <project folder>/tmp/BUILD_PR_LEVEL_10_23_RESTORE_MASTER_ROADMAP_STATUS_ONLY.zip

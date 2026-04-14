@@ -1,2 +1,2 @@
-Standardize bezel/background conventions and align template
-BUILD_PR_LEVEL_10_22_TEMPLATE_BEZEL_BACKGROUND_CONVENTION_FOUNDATION
+Restore full MASTER_ROADMAP_HIGH_LEVEL from history and update status only
+BUILD_PR_LEVEL_10_23_RESTORE_MASTER_ROADMAP_STATUS_ONLY

@@ -592,7 +592,7 @@
 ### Next Planning / Normalization Lanes
 - [ ] Apply master roadmap baseline
 - [ ] Normalize samples phase structure
-- [ ] Establish games/_template and normalize games layer
+- [x] Establish games/_template and normalize games layer
 - [x] Normalize tools/shared and tool boundaries
 - [x] Normalize assets/data ownership
 - [x] Expand testing/validation structure
@@ -604,7 +604,7 @@
 - [x] Add scripts to switch between Pay-as-you-go and Codex plan modes, and scripts to input API key material and validate it
 
 ### Later Capability Lanes
-- [ ] FEATURE: Fullscreen Bezel Overlay System - Render game in full screen with optional bezel artwork layer (static or animated) surrounding the active playfield, preserving aspect ratio and supporting per-game/theme bezel assets without modifying core engine rendering.
+- [.] FEATURE: Fullscreen Bezel Overlay System - Render game in full screen with optional bezel artwork layer (static or animated) surrounding the active playfield, preserving aspect ratio and supporting per-game/theme bezel assets without modifying core engine rendering.
 
 ### Later Capability Lanes
 - [ ] Execute 2D capability polish lanes
@@ -636,4 +636,4 @@
 
 [.] asset naming normalization
 [.] manifest discovery
-[ ] fullscreen bezel overlay system (low priority, before next game)
+[x] fullscreen bezel overlay system (low priority, before next game)
