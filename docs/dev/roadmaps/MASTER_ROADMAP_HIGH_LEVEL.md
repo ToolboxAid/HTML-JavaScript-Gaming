@@ -413,15 +413,15 @@
 
 ## 8. Games Layer
 - [x] `games/_template/` created
-- [ ] game flow pattern standardized (`flow/attract.js`, `flow/intro.js`, `flow/highscore.js`)
-- [.] per-game structure normalized
-- [ ] gameplay/entities/levels/rules/assets boundaries normalized
-- [.] current games migrated to target structure
-- [.] game-specific asset ownership enforced
-- [ ] shared-vs-game utility boundaries enforced
-- [ ] space_invaders normalized
+- [x] game flow pattern standardized (`flow/attract.js`, `flow/intro.js`, `flow/highscore.js`)
+- [x] per-game structure normalized
+- [x] gameplay/entities/levels/rules/assets boundaries normalized
+- [x] current games migrated to target structure
+- [x] game-specific asset ownership enforced
+- [x] shared-vs-game utility boundaries enforced
+- [x] space_invaders normalized
 - [x] puckman normalized
-- [ ] future games follow template-first path
+- [x] future games follow template-first path
 
 ---
 

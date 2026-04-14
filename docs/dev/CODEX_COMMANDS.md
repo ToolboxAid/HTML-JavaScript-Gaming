@@ -1,8 +1,8 @@
-﻿MODEL: GPT-5.4
-REASONING: high
+MODEL: GPT-5.4
+REASONING: low
 
-Normalize Wave 3 games:
-PacmanLite, PacmanFullAI, AITargetDummy, vector-arcade-sample
+TASK:
+Update roadmap Section 8 to fully complete [x]
 
-Same constraints as previous waves.
+No code changes.
 Return ZIP to <project folder>/tmp/

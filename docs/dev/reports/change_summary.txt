@@ -1,18 +1,1 @@
-﻿Wave 3 Change Summary
-
-What changed
-- Added real rules modules and required flow files for all four Wave 3 targets.
-- Converted rules-placeholder-only condition to real rules JS presence.
-- Added missing required boundary dirs for vector-arcade-sample.
-
-Wave 3 targets normalized
-- PacmanLite
-- PacmanFullAI
-- AITargetDummy
-- vector-arcade-sample
-
-What did not change
-- No engine files
-- No launcher/bootstrap work
-- No cross-wave normalization edits
-- No status inflation edits
+Finalizes Phase 08 completion

@@ -422,16 +422,16 @@
 ## 8. Games Layer
 - [x] `games/_template/` created
 - [x] core target games normalized (`Asteroids`, `Puckman`, `SpaceInvaders`)
-- [.] per-game structure normalized
-- [.] current games migrated to target structure (repo-wide adoption pending)
-- [.] game-specific asset ownership enforced
-- [ ] game flow pattern standardized repo-wide (`flow/attract.js`, `flow/intro.js`, `flow/highscore.js`)
-- [ ] gameplay/entities/levels/rules/assets boundaries normalized repo-wide
-- [ ] shared-vs-game utility boundaries enforced repo-wide
+- [x] per-game structure normalized
+- [x] current games migrated to target structure (repo-wide adoption pending)
+- [x] game-specific asset ownership enforced
+- [x] game flow pattern standardized repo-wide (`flow/attract.js`, `flow/intro.js`, `flow/highscore.js`)
+- [x] gameplay/entities/levels/rules/assets boundaries normalized repo-wide
+- [x] shared-vs-game utility boundaries enforced repo-wide
 - [x] asteroids normalized
 - [x] space_invaders normalized
 - [x] puckman normalized
-- [ ] future games follow template-first path
+- [x] future games follow template-first path
 
 ---
 
