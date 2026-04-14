@@ -1,3 +1,3 @@
 MODEL: GPT-5.3-codex
-REASONING: medium
-COMMAND: Implement manifest loader that reads asteroids.asset.manifest.json and exposes discovery API without modifying engine core
+REASONING: high
+COMMAND: Normalize shared manifest loader to be game-agnostic, rename file and APIs, parameterize gameId, update tests accordingly

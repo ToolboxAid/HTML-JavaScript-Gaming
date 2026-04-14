@@ -6,16 +6,18 @@ import {
   validateGameAssetManifestStructure
 } from "./gameAssetManifestDiscovery.js";
 
-export const ASTEROIDS_ASSET_MANIFEST_RELATIVE_PATH = "games/Asteroids/assets/asteroids.asset.manifest.json";
-
 const MODULE_DIRECTORY = path.dirname(fileURLToPath(import.meta.url));
 const REPO_ROOT = path.resolve(MODULE_DIRECTORY, "../../../");
 
-function toManifestPath(options = {}) {
+function toManifestPath(gameId, options = {}) {
   if (typeof options.manifestPath === "string" && options.manifestPath.trim()) {
     return path.resolve(options.manifestPath);
   }
-  return path.resolve(REPO_ROOT, ASTEROIDS_ASSET_MANIFEST_RELATIVE_PATH);
+  return path.resolve(REPO_ROOT, getAssetManifestRelativePath(gameId));
+}
+
+function toGameId(gameId) {
+  return String(gameId || "").trim();
 }
 
 async function readManifestJson(manifestPath) {
@@ -26,8 +28,27 @@ async function readManifestJson(manifestPath) {
   };
 }
 
-export async function loadAsteroidsAssetManifest(options = {}) {
-  const manifestPath = toManifestPath(options);
+export function getAssetManifestRelativePath(gameId) {
+  const normalizedGameId = toGameId(gameId);
+  if (!normalizedGameId) {
+    throw new Error("gameId is required to resolve asset manifest path.");
+  }
+  return `games/${normalizedGameId}/assets/${normalizedGameId.toLowerCase()}.asset.manifest.json`;
+}
+
+export async function loadAssetManifest(gameId, options = {}) {
+  const normalizedGameId = toGameId(gameId);
+  if (!normalizedGameId) {
+    return {
+      status: "invalid",
+      manifestPath: "",
+      manifest: null,
+      discovery: null,
+      issues: ["gameId is required."]
+    };
+  }
+
+  const manifestPath = toManifestPath(normalizedGameId, options);
   let payload;
   try {
     payload = await readManifestJson(manifestPath);
@@ -37,11 +58,13 @@ export async function loadAsteroidsAssetManifest(options = {}) {
       manifestPath,
       manifest: null,
       discovery: null,
-      issues: [error instanceof Error ? error.message : "Failed to read Asteroids asset manifest."]
+      issues: [error instanceof Error ? error.message : "Failed to read game asset manifest."]
     };
   }
 
-  const validation = validateGameAssetManifestStructure(payload.manifest, { gameId: "asteroids" });
+  const validation = validateGameAssetManifestStructure(payload.manifest, {
+    gameId: normalizedGameId.toLowerCase()
+  });
   if (!validation.valid) {
     return {
       status: "invalid",
@@ -52,7 +75,9 @@ export async function loadAsteroidsAssetManifest(options = {}) {
     };
   }
 
-  const discovery = discoverRuntimeAssetSourcesFromManifest(payload.manifest, { gameId: "asteroids" });
+  const discovery = discoverRuntimeAssetSourcesFromManifest(payload.manifest, {
+    gameId: normalizedGameId.toLowerCase()
+  });
   return {
     status: discovery.status,
     manifestPath,
@@ -62,8 +87,8 @@ export async function loadAsteroidsAssetManifest(options = {}) {
   };
 }
 
-export async function discoverAsteroidsRuntimeAssets(options = {}) {
-  const loaded = await loadAsteroidsAssetManifest(options);
+export async function discoverRuntimeAssets(gameId, options = {}) {
+  const loaded = await loadAssetManifest(gameId, options);
   if (loaded.status !== "ready") {
     return {
       status: "invalid",

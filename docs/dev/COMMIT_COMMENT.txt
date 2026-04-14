@@ -1,2 +1,2 @@
-Define Asteroids manifest loader integration contract
-BUILD_PR_LEVEL_10_09_ASTEROIDS_MANIFEST_LOADER_INTEGRATION
+Normalize shared manifest loader to remove Asteroids-specific coupling
+BUILD_PR_LEVEL_10_10_SHARED_MANIFEST_LOADER_NORMALIZATION
