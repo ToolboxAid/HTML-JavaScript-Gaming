@@ -2,43 +2,47 @@ MODEL: GPT-5.4
 REASONING: high
 
 COMMAND:
-Create `BUILD_PR_LEVEL_10_17_HTML_FULLSCREEN_BEZEL_AND_CANVAS_BACKGROUND_SPLIT` as one small testable PR.
+Create `BUILD_PR_LEVEL_10_19_REAL_IMPLEMENTATION_DELTA_FULLSCREEN_BEZEL_AND_BACKGROUND` as a real implementation PR, not a docs-only PR.
 
-Implement the correction exactly as follows:
+Assume these files already exist and are the correct conventions:
+- `games/Asteroids/assets/images/background.png`
+- `games/Asteroids/assets/images/bezel.png`
 
-1. Add a dedicated canvas class/module named `backgroundImage`
-   - autodiscover: `games/<gameId>/assets/images/background.png`
-   - render into the canvas
-   - draw immediately after screen clear
-   - draw before ALL other game/world content
-   - keep logic independent from bezel logic
+Implement all of the following with actual runtime code changes:
 
-2. Add a dedicated HTML-overlay class/module named `fullscreenBezel`
-   - autodiscover: `games/<gameId>/assets/images/bezel.png`
-   - render at the HTML/container level above the canvas
-   - only show when fullscreen is active
-   - hide when not fullscreen
-   - no canvas drawing for bezel
-   - no Parallax coupling
+1. Add/use a dedicated `backgroundImage` class/module
+   - autodiscover `games/<gameId>/assets/images/background.png`
+   - canvas-rendered
+   - draw immediately after clear
+   - draw before all world/gameplay content
+   - render ONLY during gameplay states
+   - do NOT render in attract/title/select-player/menu/non-gameplay states
 
-3. Remove any incorrect coupling between background and bezel behavior
-   - separate classes
-   - separate render paths
-   - separate responsibilities
+2. Add/use a dedicated `fullscreenBezel` class/module
+   - autodiscover `games/<gameId>/assets/images/bezel.png`
+   - HTML/container level overlay above canvas
+   - only visible in fullscreen
+   - must be visibly on screen, not DOM-only
+   - verify/fix sizing, positioning, stacking context, host attachment, z-index, overflow, opacity, and fullscreen lifecycle wiring
 
-4. Validation/tests
-   - cover background draw order: after clear, before world render
-   - cover bezel fullscreen-only visibility
-   - cover bezel attachment to HTML/container layer rather than canvas
-   - verify Asteroids uses:
-     - `games/Asteroids/assets/images/background.png` when present
-     - `games/Asteroids/assets/images/bezel.png` in fullscreen
+3. Add focused tests/validation covering:
+   - gameplay-only background gating
+   - background draw order after clear and before world render
+   - fullscreen bezel visibility on screen
+   - bezel hidden outside fullscreen
+   - no-op when files are missing
+
+4. REQUIRED OUTPUT CONTENT
+   The final ZIP MUST include actual changed implementation files.
+   Docs-only output is not acceptable.
 
 5. Final packaging step is REQUIRED
-   - package ALL changed files into this exact repo-structured ZIP:
-     `<project folder>/tmp/BUILD_PR_LEVEL_10_17_HTML_FULLSCREEN_BEZEL_AND_CANVAS_BACKGROUND_SPLIT.zip`
+   Package ALL changed files into this exact repo-structured ZIP:
+   `<project folder>/tmp/BUILD_PR_LEVEL_10_19_REAL_IMPLEMENTATION_DELTA_FULLSCREEN_BEZEL_AND_BACKGROUND.zip`
 
 Hard rules:
-- no commit-only result
+- do real implementation work
+- include changed source files in the ZIP
+- no docs-only completion
 - no missing ZIP
 - no unrelated repo changes

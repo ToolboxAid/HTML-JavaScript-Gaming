@@ -31,20 +31,6 @@ function createImageFactory(presentPaths) {
   };
 }
 
-function createRendererSpy(order) {
-  return {
-    clear() {
-      order.push("clear");
-    },
-    getCanvasSize() {
-      return { width: 960, height: 720 };
-    },
-    drawImageFrame(image) {
-      order.push(`background:${image?.src || ""}`);
-    }
-  };
-}
-
 function createElement(tagName, ownerDocument) {
   return {
     tagName: String(tagName || "").toUpperCase(),
@@ -55,6 +41,7 @@ function createElement(tagName, ownerDocument) {
     parentElement: null,
     onload: null,
     onerror: null,
+    requestFullscreen() {},
     setAttribute(name, value) {
       this.attributes[name] = String(value);
     },
@@ -76,11 +63,9 @@ function createElement(tagName, ownerDocument) {
   };
 }
 
-function createDocumentStub() {
+function createDocumentStub(pathname = "/games/Asteroids/index.html") {
   const documentRef = {
-    location: {
-      pathname: "/games/Asteroids/index.html"
-    },
+    location: { pathname },
     body: null,
     createElement(tagName) {
       return createElement(tagName, documentRef);
@@ -90,11 +75,27 @@ function createDocumentStub() {
   return documentRef;
 }
 
+function createRendererSpy(order) {
+  return {
+    getCanvasSize() {
+      return { width: 960, height: 720 };
+    },
+    drawImageFrame(image) {
+      order.push(`background:${image?.src || ""}`);
+    }
+  };
+}
+
 function createAnimationFrameStub() {
   const originalRequestAnimationFrame = globalThis.requestAnimationFrame;
   const originalCancelAnimationFrame = globalThis.cancelAnimationFrame;
+  let nextId = 1;
 
-  globalThis.requestAnimationFrame = () => 1;
+  globalThis.requestAnimationFrame = () => {
+    const id = nextId;
+    nextId += 1;
+    return id;
+  };
   globalThis.cancelAnimationFrame = () => {};
 
   return {
@@ -138,67 +139,93 @@ function createCanvasWithOrder(order, documentRef) {
   return canvas;
 }
 
-function testBackgroundDrawAfterClearBeforeWorldRender() {
+function testBackgroundGameplayGatingAndOrder() {
   const paths = resolveGameImageConventionPaths({ documentRef: { location: { pathname: "/games/Asteroids/index.html" } } });
   assert.equal(paths.backgroundPath, "games/Asteroids/assets/images/background.png");
   assert.equal(paths.bezelPath, "games/Asteroids/assets/images/bezel.png");
 
-  const order = [];
   const layer = new backgroundImage({
     documentRef: { location: { pathname: "/games/Asteroids/index.html" } },
     imageFactory: createImageFactory(new Set([paths.backgroundPath]))
   });
+  const order = [];
+  const renderer = createRendererSpy(order);
 
-  const result = layer.render(createRendererSpy(order));
-  assert.equal(result.drawn, true);
+  const menuResult = layer.render(renderer, { scene: { session: { mode: "menu" } } });
+  assert.equal(menuResult.drawn, false);
+  assert.equal(menuResult.reason, "non-gameplay-state");
+  assert.deepEqual(order, []);
+
+  const attractResult = layer.render(renderer, { scene: { mode: "attract" } });
+  assert.equal(attractResult.drawn, false);
+  assert.equal(attractResult.reason, "non-gameplay-state");
+  assert.deepEqual(order, []);
+
+  const gameplayResult = layer.render(renderer, { scene: { session: { mode: "playing" } } });
+  assert.equal(gameplayResult.drawn, true);
   assert.deepEqual(order, ["background:games/Asteroids/assets/images/background.png"]);
-
-  const missingLayer = new backgroundImage({
-    documentRef: { location: { pathname: "/games/Missing/index.html" } },
-    imageFactory: createImageFactory(new Set())
-  });
-  const missingOrder = [];
-  const missingResult = missingLayer.render(createRendererSpy(missingOrder));
-  assert.equal(missingResult.drawn, false);
-  assert.deepEqual(missingOrder, []);
 }
 
-function testFullscreenBezelHtmlAttachmentAndFullscreenVisibility() {
+function testNoOpWhenBackgroundMissing() {
+  const layer = new backgroundImage({
+    documentRef: { location: { pathname: "/games/MissingGame/index.html" } },
+    imageFactory: createImageFactory(new Set())
+  });
+  const order = [];
+  const result = layer.render(createRendererSpy(order), { scene: { session: { mode: "playing" } } });
+  assert.equal(result.drawn, false);
+  assert.equal(order.length, 0);
+}
+
+function testFullscreenBezelVisibilityAndHtmlAttachment() {
   const documentRef = createDocumentStub();
   const host = createElement("div", documentRef);
   const canvas = createElement("canvas", documentRef);
   host.appendChild(canvas);
   documentRef.body.appendChild(host);
 
-  const bezel = new fullscreenBezel({
-    canvas,
-    documentRef
-  });
+  const bezel = new fullscreenBezel({ canvas, documentRef });
   bezel.attach();
   assert.equal(bezel.getState().attached, true);
-  assert.equal(bezel.getState().hostTagName, "DIV");
+  assert.equal(bezel.element.parentElement, host);
   assert.equal(bezel.element.attributes["data-runtime-overlay"], "fullscreenBezel");
 
-  bezel.element.onerror?.();
-  let syncResult = bezel.sync({ fullscreenActive: true });
-  assert.equal(syncResult.visible, false);
+  bezel.element.onload?.();
+  let result = bezel.sync({ fullscreenActive: false, fullscreenElement: host });
+  assert.equal(result.visible, false);
   assert.equal(bezel.element.style.display, "none");
+  assert.equal(bezel.element.style.visibility, "hidden");
+  assert.equal(bezel.element.style.opacity, "0");
 
-  const readyBezel = new fullscreenBezel({
-    canvas,
-    documentRef
-  });
-  readyBezel.attach();
-  readyBezel.element.onload?.();
-  syncResult = readyBezel.sync({ fullscreenActive: false });
-  assert.equal(syncResult.visible, false);
-  assert.equal(readyBezel.element.style.display, "none");
-  syncResult = readyBezel.sync({ fullscreenActive: true });
-  assert.equal(syncResult.visible, true);
-  assert.equal(readyBezel.element.style.display, "block");
+  result = bezel.sync({ fullscreenActive: true, fullscreenElement: host });
+  assert.equal(result.visible, true);
+  assert.equal(bezel.element.style.display, "block");
+  assert.equal(bezel.element.style.visibility, "visible");
+  assert.equal(bezel.element.style.opacity, "1");
+  assert.equal(host.style.position, "relative");
+  assert.equal(host.style.overflow, "hidden");
+  assert.equal(host.style.isolation, "isolate");
+  assert.equal(canvas.style.position, "relative");
+  assert.equal(canvas.style.zIndex, "1");
+  assert.equal(Number(bezel.element.style.zIndex) > Number(canvas.style.zIndex), true);
 }
 
-function testEngineSplitPathsBackgroundCanvasAndBezelHtml() {
+function testNoOpWhenBezelMissing() {
+  const documentRef = createDocumentStub("/games/MissingGame/index.html");
+  const host = createElement("div", documentRef);
+  const canvas = createElement("canvas", documentRef);
+  host.appendChild(canvas);
+  documentRef.body.appendChild(host);
+
+  const bezel = new fullscreenBezel({ canvas, documentRef });
+  bezel.attach();
+  bezel.element.onerror?.();
+  const result = bezel.sync({ fullscreenActive: true, fullscreenElement: host });
+  assert.equal(result.visible, false);
+  assert.equal(bezel.element.style.display, "none");
+}
+
+function testEngineRuntimeIntegration() {
   const animationFrame = createAnimationFrameStub();
   const originalDocument = globalThis.document;
   const originalImage = globalThis.Image;
@@ -239,6 +266,15 @@ function testEngineSplitPathsBackgroundCanvasAndBezelHtml() {
     };
 
     let fullscreenActive = false;
+    let attachedFullscreenTarget = null;
+    const scene = {
+      session: { mode: "menu" },
+      update() {},
+      render() {
+        order.push("scene");
+      }
+    };
+
     const engine = new Engine({
       canvas,
       input: {
@@ -255,7 +291,9 @@ function testEngineSplitPathsBackgroundCanvasAndBezelHtml() {
         recordFrame() {}
       },
       fullscreen: {
-        attach() {},
+        attach(target) {
+          attachedFullscreenTarget = target;
+        },
         detach() {},
         getState() {
           return { available: true, active: fullscreenActive };
@@ -268,24 +306,15 @@ function testEngineSplitPathsBackgroundCanvasAndBezelHtml() {
         error() {}
       }
     });
-    engine.setScene({
-      update() {},
-      render() {
-        order.push("scene");
-      }
-    });
+    engine.setScene(scene);
     engine.start();
+    assert.equal(attachedFullscreenTarget, host);
 
     engine.tick(1000);
-    assert.deepEqual(order, [
-      "clear",
-      "background:games/Asteroids/assets/images/background.png",
-      "scene"
-    ]);
+    assert.deepEqual(order, ["clear", "scene"]);
     assert.equal(engine.fullscreenBezelLayer.getState().visible, false);
 
-    fullscreenActive = true;
-    engine.fullscreenBezelLayer.element.onload?.();
+    scene.session.mode = "playing";
     order.length = 0;
     engine.tick(1016);
     assert.deepEqual(order, [
@@ -293,8 +322,17 @@ function testEngineSplitPathsBackgroundCanvasAndBezelHtml() {
       "background:games/Asteroids/assets/images/background.png",
       "scene"
     ]);
+
+    fullscreenActive = true;
+    engine.fullscreenBezelLayer.element.onload?.();
+    order.length = 0;
+    engine.tick(1032);
+    assert.deepEqual(order, [
+      "clear",
+      "background:games/Asteroids/assets/images/background.png",
+      "scene"
+    ]);
     assert.equal(engine.fullscreenBezelLayer.getState().visible, true);
-    assert.equal(engine.fullscreenBezelLayer.getState().path, "games/Asteroids/assets/images/bezel.png");
     assert.equal(order.some((entry) => entry.includes("bezel")), false);
   } finally {
     animationFrame.restore();
@@ -312,7 +350,9 @@ function testEngineSplitPathsBackgroundCanvasAndBezelHtml() {
 }
 
 export function run() {
-  testBackgroundDrawAfterClearBeforeWorldRender();
-  testFullscreenBezelHtmlAttachmentAndFullscreenVisibility();
-  testEngineSplitPathsBackgroundCanvasAndBezelHtml();
+  testBackgroundGameplayGatingAndOrder();
+  testNoOpWhenBackgroundMissing();
+  testFullscreenBezelVisibilityAndHtmlAttachment();
+  testNoOpWhenBezelMissing();
+  testEngineRuntimeIntegration();
 }

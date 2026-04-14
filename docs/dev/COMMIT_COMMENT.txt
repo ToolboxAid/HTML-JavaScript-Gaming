@@ -1,2 +1,2 @@
-Split canvas background and HTML fullscreen bezel into separate classes
-BUILD_PR_LEVEL_10_17_HTML_FULLSCREEN_BEZEL_AND_CANVAS_BACKGROUND_SPLIT
+Implement real fullscreen bezel and gameplay background runtime delta
+BUILD_PR_LEVEL_10_19_REAL_IMPLEMENTATION_DELTA_FULLSCREEN_BEZEL_AND_BACKGROUND

@@ -9,7 +9,7 @@ import RuntimeMetrics from './RuntimeMetrics.js';
 import FrameClock from './FrameClock.js';
 import FixedTicker from './FixedTicker.js';
 import EventBus from '../events/EventBus.js';
-import { backgroundImage, fullscreenBezel, FullscreenService } from '../runtime/index.js';
+import { backgroundImage, fullscreenBezel, FullscreenService, resolvePreferredFullscreenTarget } from '../runtime/index.js';
 import { AudioService } from '../audio/index.js';
 import { Logger } from '../logging/index.js';
 import { SettingsSystem } from '../release/index.js';
@@ -41,6 +41,11 @@ export default class Engine {
     this.canvas.height = height;
 
     this.renderer = new CanvasRenderer(this.ctx);
+    this.documentRef = globalThis.document ?? null;
+    this.fullscreenTarget = resolvePreferredFullscreenTarget({
+      canvas,
+      documentRef: this.documentRef,
+    }) || canvas;
     this.input = input;
     this.events = events || new EventBus();
     this.metrics = metrics || new RuntimeMetrics();
@@ -50,15 +55,16 @@ export default class Engine {
       maxCatchUpSteps: Number.POSITIVE_INFINITY,
     });
     this.fullscreen = fullscreen || FullscreenService.fromBrowser({
-      documentRef: globalThis.document ?? null,
-      target: canvas,
+      documentRef: this.documentRef,
+      target: this.fullscreenTarget,
     });
     this.backgroundImageLayer = backgroundImageLayer || new backgroundImage({
-      documentRef: globalThis.document ?? null
+      documentRef: this.documentRef
     });
     this.fullscreenBezelLayer = fullscreenBezelLayer || new fullscreenBezel({
       canvas,
-      documentRef: globalThis.document ?? null
+      host: this.fullscreenTarget,
+      documentRef: this.documentRef
     });
     this.audio = audio || new AudioService();
     this.logger = logger || new Logger({ channel: 'engine' });
@@ -105,10 +111,15 @@ export default class Engine {
       this.audio.attach(this.canvas);
     }
     if (this.fullscreen && typeof this.fullscreen.attach === 'function') {
-      this.fullscreen.attach(this.canvas);
+      this.fullscreen.attach(this.fullscreenTarget);
     }
     if (this.fullscreenBezelLayer && typeof this.fullscreenBezelLayer.attach === 'function') {
       this.fullscreenBezelLayer.attach();
+      const fullscreenActive = this.fullscreen?.getState?.().active === true;
+      const fullscreenElement = this.fullscreen?.documentRef?.fullscreenElement
+        || this.documentRef?.fullscreenElement
+        || null;
+      this.fullscreenBezelLayer.sync({ fullscreenActive, fullscreenElement });
     }
 
     this.frameClock.reset();
@@ -161,12 +172,15 @@ export default class Engine {
 
     const renderStart = performance.now();
     this.renderer.clear();
-    this.backgroundImageLayer?.render?.(this.renderer);
+    this.backgroundImageLayer?.render?.(this.renderer, { scene: this.scene, engine: this });
     if (this.scene && typeof this.scene.render === 'function') {
       this.scene.render(this.renderer, this);
     }
     const fullscreenActive = this.fullscreen?.getState?.().active === true;
-    this.fullscreenBezelLayer?.sync?.({ fullscreenActive });
+    const fullscreenElement = this.fullscreen?.documentRef?.fullscreenElement
+      || this.documentRef?.fullscreenElement
+      || null;
+    this.fullscreenBezelLayer?.sync?.({ fullscreenActive, fullscreenElement });
     renderDurationMs = performance.now() - renderStart;
 
     this.metrics.recordFrame({

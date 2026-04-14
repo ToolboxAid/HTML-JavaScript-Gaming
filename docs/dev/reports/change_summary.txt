@@ -1,5 +1,4 @@
-- Split bezel and background into separate explicit systems
-- backgroundImage is canvas-rendered after clear and before all other content
-- fullscreenBezel is HTML-layer rendered above canvas in fullscreen only
-- Removed coupling between background and bezel behavior
-- Codex ZIP output explicitly required
+- Reframed the next PR to require actual implementation files in the ZIP
+- Locked asset assumptions to images/background.png and images/bezel.png
+- Kept separate classes: backgroundImage and fullscreenBezel
+- Enforced gameplay-only background and visible fullscreen bezel behavior
