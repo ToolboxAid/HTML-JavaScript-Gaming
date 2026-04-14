@@ -13,7 +13,6 @@ import ShipDebrisSystem from '../systems/ShipDebrisSystem.js';
 import AsteroidsAttractAdapter from './AsteroidsAttractAdapter.js';
 import AsteroidsHighScoreService from '../systems/AsteroidsHighScoreService.js';
 import AsteroidsInitialsEntry from '../systems/AsteroidsInitialsEntry.js';
-import FullscreenBezelOverlay from './FullscreenBezelOverlay.js';
 import {
   ASTEROIDS_GAME_OVER_AUTO_EXIT_SECONDS, ASTEROIDS_GAME_OVER_RETURN_MODE } from "../rules/flowRules.js";
 import { ASTEROIDS_GAME_OVER_RETURN_STATUS } from "../rules/flowContent.js";
@@ -135,8 +134,6 @@ export default class AsteroidsGameScene extends Scene {
     this.beatTimer = 0;
     this.nextBeatId = 'beat1';
     this.scoreFlashTime = 0;
-    this.isFullscreenActive = false;
-    this.fullscreenBezelOverlay = new FullscreenBezelOverlay();
     this.initialsEntry = new AsteroidsInitialsEntry();
     this.attractAdapter = new AsteroidsAttractAdapter({ scene: this });
     this.currentInput = null;
@@ -495,7 +492,6 @@ export default class AsteroidsGameScene extends Scene {
   update(dtSeconds, engine) {
     this.debugFrame += 1;
     this.currentInput = engine.input ?? null;
-    this.isFullscreenActive = engine?.fullscreen?.getState?.().active === true;
     const enterPressed = engine.input?.isDown('Enter');
     const onePressed = engine.input?.isDown('Digit1');
     const twoPressed = engine.input?.isDown('Digit2');
@@ -698,10 +694,6 @@ export default class AsteroidsGameScene extends Scene {
     this.world.starfield.forEach((star) => {
       renderer.drawRect(star.x, star.y, star.size, star.size, '#94a3b8');
     });
-    this.fullscreenBezelOverlay.render(renderer, {
-      fullscreenActive: this.isFullscreenActive,
-      stage: 'underlay',
-    });
 
     if (this.session.mode !== 'menu') {
       const flashOn = this.session.isTurnIntroActive()
@@ -823,11 +815,6 @@ export default class AsteroidsGameScene extends Scene {
         textAlign: 'center',
       });
     }
-
-    this.fullscreenBezelOverlay.render(renderer, {
-      fullscreenActive: this.isFullscreenActive,
-      stage: 'overlay',
-    });
 
     if (this.devConsoleIntegration) {
       this.devConsoleIntegration.render(renderer, {

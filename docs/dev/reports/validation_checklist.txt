@@ -1,8 +1,6 @@
-- `_template` asset folders match Asteroids structure
-- `.gitkeep` files preserved where needed
-- No Asteroids-specific content copied into `_template`
-- Bezel is fullscreen-only
-- Bezel is screen-space, not camera/parallax space
-- Default draw mode is overlay, with explicit future underlay hook
-- Focused validation/tests added
-- Output ZIP created at `<project folder>/tmp/BUILD_PR_LEVEL_10_15_TEMPLATE_ASSET_STRUCTURE_AND_FULLSCREEN_BEZEL_FOUNDATION.zip`
+- `background.png` autodetects and draws without manual wiring
+- `bezel.png` autodetects and draws without manual wiring
+- Bezel only renders in fullscreen
+- Missing files cause no runtime failure
+- Asteroids bezel candidate is covered
+- Output ZIP created at `<project folder>/tmp/BUILD_PR_LEVEL_10_16_AUTODISCOVER_FULLSCREEN_BEZEL_AND_BACKGROUND.zip`

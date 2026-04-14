@@ -1,2 +1,2 @@
-Normalize _template asset structure and add fullscreen bezel foundation
-BUILD_PR_LEVEL_10_15_TEMPLATE_ASSET_STRUCTURE_AND_FULLSCREEN_BEZEL_FOUNDATION
+Autodiscover and autodraw fullscreen bezel and background images
+BUILD_PR_LEVEL_10_16_AUTODISCOVER_FULLSCREEN_BEZEL_AND_BACKGROUND

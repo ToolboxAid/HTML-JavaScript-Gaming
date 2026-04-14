@@ -1,4 +1,5 @@
-- Bundled _template asset scaffold normalization with fullscreen bezel foundation
-- Declared bezel as dedicated screen-space overlay, not Parallax
-- Set Asteroids bezel.png as first candidate asset
-- Enforced required Codex ZIP packaging output
+- Added zero-config autodiscovery direction for background.png and bezel.png
+- Background draws automatically before world render
+- Bezel draws automatically in fullscreen after gameplay/HUD
+- No per-game user code required
+- Codex ZIP output explicitly required

@@ -9,7 +9,7 @@ import RuntimeMetrics from './RuntimeMetrics.js';
 import FrameClock from './FrameClock.js';
 import FixedTicker from './FixedTicker.js';
 import EventBus from '../events/EventBus.js';
-import { FullscreenService } from '../runtime/index.js';
+import { AutoDiscoveredGameImageLayers, FullscreenService } from '../runtime/index.js';
 import { AudioService } from '../audio/index.js';
 import { Logger } from '../logging/index.js';
 import { SettingsSystem } from '../release/index.js';
@@ -26,6 +26,7 @@ export default class Engine {
     frameClock = null,
     fixedTicker = null,
     fullscreen = null,
+    autoImageLayers = null,
     audio = null,
     logger = null,
   } = {}) {
@@ -50,6 +51,9 @@ export default class Engine {
     this.fullscreen = fullscreen || FullscreenService.fromBrowser({
       documentRef: globalThis.document ?? null,
       target: canvas,
+    });
+    this.autoImageLayers = autoImageLayers || new AutoDiscoveredGameImageLayers({
+      documentRef: globalThis.document ?? null
     });
     this.audio = audio || new AudioService();
     this.logger = logger || new Logger({ channel: 'engine' });
@@ -145,9 +149,12 @@ export default class Engine {
     updateDurationMs = performance.now() - updateStart;
 
     const renderStart = performance.now();
+    this.autoImageLayers?.renderBackground?.(this.renderer);
     if (this.scene && typeof this.scene.render === 'function') {
       this.scene.render(this.renderer, this);
     }
+    const fullscreenActive = this.fullscreen?.getState?.().active === true;
+    this.autoImageLayers?.renderBezel?.(this.renderer, { fullscreenActive });
     renderDurationMs = performance.now() - renderStart;
 
     this.metrics.recordFrame({

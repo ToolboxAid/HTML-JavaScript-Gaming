@@ -2,49 +2,46 @@ MODEL: GPT-5.4
 REASONING: high
 
 COMMAND:
-Create `BUILD_PR_LEVEL_10_15_TEMPLATE_ASSET_STRUCTURE_AND_FULLSCREEN_BEZEL_FOUNDATION` as one small bundled PR with exactly these changes:
+Create `BUILD_PR_LEVEL_10_16_AUTODISCOVER_FULLSCREEN_BEZEL_AND_BACKGROUND` as one small testable PR.
 
-1. Normalize `games/_template/assets/` to match the current Asteroids asset directory structure:
-   - audio/
-   - fonts/
-   - images/
-   - palettes/
-   - parallax/
-   - parallax/data/.gitkeep
-   - sprites/
-   - sprites/data/.gitkeep
-   - tilemaps/
-   - tilemaps/data/.gitkeep
-   - tilesets/
-   - vectors/
-   - vectors/data/.gitkeep
-   - preserve `.gitkeep` where needed
-   - do NOT copy Asteroids-specific content into `_template`
+Implement convention-based autodiscovery and autodraw for these optional files:
 
-2. Add a minimal fullscreen bezel foundation that is clearly NOT Parallax:
-   - use Asteroids `games/Asteroids/assets/images/bezel.png` as the first candidate asset
-   - bezel only applies in fullscreen mode
-   - bezel is screen-space, not world-space
-   - implement as a dedicated explicit surface/class/module name such as `FullscreenBezelOverlay` or equivalent clear name
-   - support draw mode contract with:
-     - default `overlay` (draw last)
-     - optional `underlay` support point for future use
-   - keep scope minimal and engine-safe
+- `games/<gameId>/assets/images/background.png`
+- `games/<gameId>/assets/images/bezel.png`
 
-3. Add/update focused tests or validation coverage for:
-   - `_template` directory scaffold exists
-   - bezel path/contract resolves correctly
-   - fullscreen-only gating is covered
-   - no Parallax coupling is introduced
+Requirements:
+1. `background.png`
+   - if present, draw automatically
+   - draw before game/world content
+   - no user-added game code required
 
-4. Update roadmap status only by adding the bezel foundation item in the appropriate high-level roadmap area without rewriting unrelated roadmap text.
+2. `bezel.png`
+   - if present, draw automatically
+   - only draw in fullscreen mode
+   - draw in screen space
+   - draw after gameplay/HUD by default
+   - no user-added game code required
 
-5. Final packaging step is REQUIRED:
+3. Architecture rules
+   - do NOT use Parallax for bezel
+   - keep implementation minimal and shared where appropriate
+   - do not require explicit per-game registration
+   - do not break games that do not have these files
+
+4. Validation
+   - add/update focused tests or validation coverage for:
+     - autodetect present file
+     - no-op when file missing
+     - fullscreen gating for bezel
+     - background draw-before-world behavior
+   - verify Asteroids bezel candidate works from:
+     `games/Asteroids/assets/images/bezel.png`
+
+5. Final packaging step is REQUIRED
    - package ALL changed files into this exact repo-structured ZIP:
-     `<project folder>/tmp/BUILD_PR_LEVEL_10_15_TEMPLATE_ASSET_STRUCTURE_AND_FULLSCREEN_BEZEL_FOUNDATION.zip`
+     `<project folder>/tmp/BUILD_PR_LEVEL_10_16_AUTODISCOVER_FULLSCREEN_BEZEL_AND_BACKGROUND.zip`
 
 Hard rules:
 - no commit-only result
 - no missing ZIP
-- no repo-wide unrelated edits
-- keep changes surgical
+- no unrelated repo changes

@@ -9,6 +9,7 @@ import { run as runAssetLoaderSystem } from './assets/AssetLoaderSystem.test.mjs
 import { run as runConfigStore } from './config/ConfigStore.test.mjs';
 import { run as runFixedTicker } from './core/FixedTicker.test.mjs';
 import { run as runEngineFullscreen } from './core/EngineFullscreen.test.mjs';
+import { run as runAutoDiscoveredGameImageLayers } from './core/AutoDiscoveredGameImageLayers.test.mjs';
 import { run as runEngineSceneLifecycle } from './core/EngineSceneLifecycle.test.mjs';
 import { run as runEngineTiming } from './core/EngineTiming.test.mjs';
 import { run as runFrameClock } from './core/FrameClock.test.mjs';
@@ -141,6 +142,7 @@ const tests = [
     ['AssetLoaderSystem', runAssetLoaderSystem],
     ['ConfigStore', runConfigStore],
     ['EngineFullscreen', runEngineFullscreen],
+    ['AutoDiscoveredGameImageLayers', runAutoDiscoveredGameImageLayers],
     ['EngineSceneLifecycle', runEngineSceneLifecycle],
     ['EngineTiming', runEngineTiming],
     ['FixedTicker', runFixedTicker],
