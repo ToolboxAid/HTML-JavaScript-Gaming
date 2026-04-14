@@ -1,1 +1,8 @@
-Rules no longer use [ ]
+- Engine-core boundaries are clarified
+- Public boundaries/contracts are documented enough to support implementation
+- Timing/frame, event routing, and camera are treated as one combined service cluster where possible
+- Section-2 items closed in this PR are truthfully supported
+- Any remaining residue is small and explicit
+- Roadmap updated by status markers only
+- Output ZIP created at:
+  <project folder>/tmp/BUILD_PR_LEVEL_02_ENGINE_CORE_BASELINE_AND_BOUNDARY_PASS.zip

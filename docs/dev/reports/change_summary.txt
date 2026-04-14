@@ -1,1 +1,3 @@
-Moved rules from checklist to top
+- Added a combined Section-2 baseline PR to reduce PR count
+- Groups boundary normalization, contracts, and core runtime services into one coherent engine-core pass
+- Intended to close most of section 2 in one pass and leave only small residue if needed

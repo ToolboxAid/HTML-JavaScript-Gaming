@@ -138,18 +138,18 @@
 ---
 
 ## 2. Engine Core
-- [ ] core bootstrapping normalized
-- [ ] scene management normalized
-- [ ] rendering layer normalized
-- [ ] input layer normalized
-- [ ] physics layer normalized
-- [ ] audio layer normalized
-- [ ] systems layer normalized
-- [ ] engine-level contracts documented
-- [ ] engine public boundaries clarified
-- [ ] timing/frame services stabilized
-- [ ] event routing stabilized
-- [ ] camera integration stabilized
+- [x] core bootstrapping normalized
+- [x] scene management normalized
+- [x] rendering layer normalized
+- [x] input layer normalized
+- [x] physics layer normalized
+- [x] audio layer normalized
+- [x] systems layer normalized
+- [x] engine-level contracts documented
+- [x] engine public boundaries clarified
+- [x] timing/frame services stabilized
+- [x] event routing stabilized
+- [x] camera integration stabilized
 
 ### 2D Engine Capability
 - [ ] 2D scene boot
