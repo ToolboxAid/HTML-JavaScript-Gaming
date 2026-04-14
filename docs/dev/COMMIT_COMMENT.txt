@@ -1,2 +1,1 @@
-Close the final section-1 residue for rendering, physics, scene, and implementation status
-BUILD_PR_LEVEL_01_FINAL_RESIDUE_ONLY
+Collision boundary normalization

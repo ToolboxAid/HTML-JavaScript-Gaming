@@ -106,7 +106,7 @@
 - [x] duplicate-helper migration map defined
 - [x] ambiguous-name rename map defined
 - [x] legacy migration map defined
-- [x] implementation PRs executed
+- [.] implementation PRs executed
 - [x] imports normalized after moves
 - [x] post-move validation complete
 
@@ -115,7 +115,7 @@
 - [x] `src/engine/state`
 - [x] `src/engine/rendering`
 - [x] `src/engine/input`
-- [x] `src/engine/physics`
+- [ ] `src/engine/physics`
 - [x] `src/engine/audio`
 - [x] `src/engine/scene`
 - [x] `src/shared/utils`

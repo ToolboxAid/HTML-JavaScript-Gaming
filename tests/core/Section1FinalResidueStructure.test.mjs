@@ -20,7 +20,7 @@ import {
   AttractModeController,
   DEFAULT_ATTRACT_CONFIG,
 } from '../../src/engine/scene/index.js';
-import { isColliding } from '../../src/engine/physics/index.js';
+import { isColliding } from '../../src/engine/collision/index.js';
 
 assert.equal(typeof CanvasRenderer, 'function');
 assert.equal(typeof ResolutionScaler, 'function');
@@ -51,4 +51,3 @@ assert.equal(
 );
 
 console.log('Section1FinalResidueStructure.test.mjs passed');
-
