@@ -1,3 +1,3 @@
-BUILD_PR_LEVEL_09_13_ASSET_LOOKUP_CONSOLIDATION
+BUILD_PR_LEVEL_09_14_RUNTIME_ASSET_VALIDATION
 
-Consolidates runtime asset lookup into a shared manifest-backed interface, replaces duplicated runtime lookup logic in touched consumers, enforces manifest binding as the source of truth for bindable domains, and applies a status-only roadmap bracket update.
+Adds runtime asset validation for manifest-resolved assets, rejects `/data/` paths at runtime, integrates validation into shared runtime lookup resolution, and applies a status-only roadmap bracket update.

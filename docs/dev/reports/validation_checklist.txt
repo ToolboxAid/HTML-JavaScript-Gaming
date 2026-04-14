@@ -1,31 +1,30 @@
-Validation Checklist - BUILD_PR_LEVEL_09_13_ASSET_LOOKUP_CONSOLIDATION
+Validation Checklist - BUILD_PR_LEVEL_09_14_RUNTIME_ASSET_VALIDATION
 
 Scope
-[x] Runtime asset lookup consolidated via shared interface
-[x] Duplicate lookup logic replaced where touched
-[x] Manifest binding used as source of truth for bindable runtime domains
-[x] No engine-core changes
-[x] No tool UI changes
+[x] Runtime asset validation layer added
+[x] Manifest-resolved runtime assets validated before use
+[x] `/data/` runtime paths rejected
+[x] Validation integrated with shared lookup layer
+[x] No engine redesign
+[x] No tool UI work
+[x] No asset format expansion
 
 Code
-[x] Added `tools/shared/pipeline/runtimeAssetLookup.js`
-[x] Updated `tools/shared/asteroidsPlatformDemo.js`
-[x] Updated `tools/shared/vectorNativeTemplate.js`
-[x] Updated `tools/shared/vectorTemplateSampleGame.js`
-[x] Updated `tools/shared/vectorAssetSystem.js`
-[x] Added `tests/tools/RuntimeAssetLookupConsolidation.test.mjs`
+[x] Added `tools/shared/pipeline/runtimeAssetValidation.js`
+[x] Updated `tools/shared/pipeline/runtimeAssetLookup.js`
+[x] Added `tests/tools/RuntimeAssetValidation.test.mjs`
+[x] Updated `tests/tools/RuntimeAssetLookupConsolidation.test.mjs`
 [x] Updated `tests/run-tests.mjs`
 
 Validation
+[x] `node --check tools/shared/pipeline/runtimeAssetValidation.js`
 [x] `node --check tools/shared/pipeline/runtimeAssetLookup.js`
-[x] `node --check tools/shared/asteroidsPlatformDemo.js`
-[x] `node --check tools/shared/vectorNativeTemplate.js`
-[x] `node --check tools/shared/vectorTemplateSampleGame.js`
-[x] `node --check tools/shared/vectorAssetSystem.js`
+[x] `node --check tests/tools/RuntimeAssetValidation.test.mjs`
 [x] `node --check tests/tools/RuntimeAssetLookupConsolidation.test.mjs`
-[x] Focused test passes: `RuntimeAssetLookupConsolidation`
+[x] `node --check tests/run-tests.mjs`
+[x] Focused tests pass: RuntimeAssetValidation, RuntimeAssetLookupConsolidation
 [x] Existing tests pass: RuntimeAssetBinding, GameAssetManifestCoordinator, AssetPipelineTooling, ProjectToolDataContracts
-[x] Existing touched-consumer non-regression tests pass: AsteroidsAssetReferenceAdoption, AsteroidsPlatformDemo, VectorNativeTemplate, VectorTemplateSampleGame, VectorAssetSystem
+[x] Existing consumer/lane tests pass: AsteroidsAssetReferenceAdoption, AsteroidsPlatformDemo, VectorNativeTemplate, VectorTemplateSampleGame, VectorAssetSystem
 
 Roadmap
 [x] Status-only update applied

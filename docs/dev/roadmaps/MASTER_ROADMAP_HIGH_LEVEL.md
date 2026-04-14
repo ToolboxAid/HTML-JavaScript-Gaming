@@ -594,7 +594,7 @@
 - [ ] Normalize samples phase structure
 - [ ] Establish games/_template and normalize games layer
 - [x] Normalize tools/shared and tool boundaries
-- [.] Normalize assets/data ownership
+- [x] Normalize assets/data ownership
 - [.] Expand testing/validation structure
 
 ### Later Capability Lanes

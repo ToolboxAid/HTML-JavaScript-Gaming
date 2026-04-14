@@ -1,23 +1,22 @@
 Summary
-- Consolidated runtime asset lookup behind one shared interface: `tools/shared/pipeline/runtimeAssetLookup.js`.
-- Replaced duplicated runtime lookup resolver logic in touched consumers with the shared manifest-backed lookup.
-- Kept manifest binding as the lookup source of truth for bindable runtime asset domains.
+- Added a runtime asset validation layer integrated into shared runtime lookup.
+- Manifest-resolved assets are now validated before runtime use.
+- Runtime `/data/` path resolution is rejected in validation.
 
 Implementation
-- Added `createRuntimeManifestAssetLookup` and `getRuntimeBindingDomain`:
-  - Builds/uses `coordinateGameAssetManifest` + `createRuntimeAssetBinding`
-  - Exposes `resolvePackagedAsset` for runtime loaders
-  - Supports strict (`missingBindingBehavior: "null"`) and fallback (`"static"`) missing-binding handling
-- Replaced local duplicate resolver logic in:
-  - `tools/shared/asteroidsPlatformDemo.js`
-  - `tools/shared/vectorNativeTemplate.js`
-  - `tools/shared/vectorTemplateSampleGame.js`
-  - `tools/shared/vectorAssetSystem.js`
-- Added focused consolidation test:
-  - `tests/tools/RuntimeAssetLookupConsolidation.test.mjs`
-- Registered the test in `tests/run-tests.mjs`.
+- Added `tools/shared/pipeline/runtimeAssetValidation.js`:
+  - validates manifest-resolved runtime assets by domain (`sprites`, `tilemaps`, `parallax`, `vectors`)
+  - enforces required runtime path and domain-specific minimal field checks
+  - rejects any `/data/` runtime path/source path usage
+- Updated `tools/shared/pipeline/runtimeAssetLookup.js`:
+  - integrates `validateRuntimeResolvedAsset` into `resolvePackagedAsset`
+  - returns `null` for invalid manifest-resolved assets so runtime loader blocks consumption
+- Added focused tests:
+  - `tests/tools/RuntimeAssetValidation.test.mjs`
+  - updated `tests/tools/RuntimeAssetLookupConsolidation.test.mjs` for validation integration behavior
+  - registered `RuntimeAssetValidation` in `tests/run-tests.mjs`
 
 Roadmap (status-only)
-- Updated one bracket status only in `docs/dev/roadmaps/MASTER_ROADMAP_HIGH_LEVEL.md`:
-  - `Normalize tools/shared and tool boundaries` moved from `[.]` to `[x]`
-- No roadmap prose/order/wording edits.
+- `docs/dev/roadmaps/MASTER_ROADMAP_HIGH_LEVEL.md`
+  - `Normalize assets/data ownership` moved from `[.]` to `[x]`
+- No roadmap wording/order/prose edits.

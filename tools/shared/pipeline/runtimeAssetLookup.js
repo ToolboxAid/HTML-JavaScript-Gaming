@@ -2,6 +2,7 @@ import { cloneJson } from "../../../src/shared/utils/jsonUtils.js";
 import { safeString } from "../projectSystemValueUtils.js";
 import { coordinateGameAssetManifest } from "./gameAssetManifestCoordinator.js";
 import { createRuntimeAssetBinding, resolveRuntimeAsset } from "./runtimeAssetBinding.js";
+import { validateRuntimeResolvedAsset } from "./runtimeAssetValidation.js";
 
 const RUNTIME_BINDING_PREFIXES = Object.freeze({
   "vector.": "vectors",
@@ -111,6 +112,17 @@ export function createRuntimeManifestAssetLookup(options = {}) {
     if (typeof mergedSource.path === "string") {
       mergedSource.path = runtimeRecord.runtimePath;
     }
+
+    const validation = validateRuntimeResolvedAsset({
+      domain,
+      assetId,
+      runtimePath: runtimeRecord.runtimePath,
+      source: mergedSource
+    });
+    if (!validation.valid) {
+      return null;
+    }
+
     return mergedSource;
   }
 

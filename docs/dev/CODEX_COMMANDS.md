@@ -1,7 +1,9 @@
+
 MODEL: GPT-5.4
 REASONING: high
 COMMAND:
-- Consolidate runtime asset lookup into shared interface
-- Replace duplicate lookup logic where touched
-- Use manifest binding as source of truth
+- Add runtime asset validation layer
+- Validate manifest-resolved assets
+- Reject `/data/` paths at runtime
+- Integrate with lookup layer
 - Update roadmap status only (no text changes)

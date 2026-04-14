@@ -13,6 +13,7 @@ export async function run() {
       "vector.ship": { file: "games/asteroids/assets/vectors/ship.vector.json", kind: "vector" },
       "tilemap.main": { file: "games/asteroids/assets/tilemaps/main.tilemap.json", kind: "tilemap" },
       "parallax.bg": { file: "games/asteroids/assets/parallax/background.parallax.json", kind: "parallaxLayer" },
+      "vector.bad": { file: "games/asteroids/assets/vectors/bad.vector.json" },
       "vector.tool-only": { file: "games/asteroids/assets/vectors/data/tool-only.vector.json", kind: "vector" },
       "palette.hud": { kind: "palette", colors: ["#ffffffff"] }
     },
@@ -21,7 +22,7 @@ export async function run() {
 
   assert.equal(strictLookup.binding.status, "ready");
   assert.equal(strictLookup.binding.issues.length, 0);
-  assert.equal(strictLookup.binding.domains.vectors.length, 1);
+  assert.equal(strictLookup.binding.domains.vectors.length, 2);
   assert.equal(strictLookup.binding.domains.tilemaps.length, 1);
   assert.equal(strictLookup.binding.domains.parallax.length, 1);
   assert.equal(
@@ -30,6 +31,7 @@ export async function run() {
   );
 
   assert.equal(strictLookup.resolvePackagedAsset({ id: "vector.ship", type: "vector" }).file, "games/asteroids/assets/vectors/ship.vector.json");
+  assert.equal(strictLookup.resolvePackagedAsset({ id: "vector.bad", type: "vector" }), null);
   assert.equal(strictLookup.resolvePackagedAsset({ id: "vector.tool-only", type: "vector" }), null);
   assert.equal(strictLookup.resolvePackagedAsset({ id: "palette.hud", type: "palette" }).kind, "palette");
 
