@@ -2,6 +2,7 @@
 param(
     [string]$StagingRoot,
     [switch]$RemoveMetadata,
+    [string]$EnvFilePath,
     [switch]$Apply,
     [switch]$DryRun,
     [switch]$ConfirmDestructive
@@ -13,8 +14,11 @@ $ErrorActionPreference = "Stop"
 . (Join-Path $PSScriptRoot "WebsiteRepoDeploymentCommon.ps1")
 Assert-DeployScriptLocation -ScriptPath $PSCommandPath
 $executionMode = Resolve-DeployExecutionMode -Apply:$Apply.IsPresent -DryRun:$DryRun.IsPresent
+$resolvedRemoveMetadata = if ($PSBoundParameters.ContainsKey("RemoveMetadata")) { [Nullable[bool]]$RemoveMetadata.IsPresent } else { $null }
+$config = Resolve-DeployScriptConfig -StagingRoot $StagingRoot -RemoveMetadata $resolvedRemoveMetadata -EnvFilePath $EnvFilePath
+Write-DeployConfigLoadLog -ScriptName "Clean-WebsiteRepoDeployment" -Config $config
 
-$paths = Get-WebsiteDeploymentPaths -StagingRoot $StagingRoot
+$paths = Get-WebsiteDeploymentPaths -StagingRoot $config.stagingRoot
 Test-StagingRootSafety -StagingRoot $paths.stagingRoot
 $environment = Assert-DeployEnvironmentReadiness -Paths $paths
 
@@ -22,7 +26,7 @@ $targets = New-Object System.Collections.Generic.List[string]
 if (Test-Path -LiteralPath $paths.siteRoot) {
     $targets.Add($paths.siteRoot)
 }
-if ($RemoveMetadata.IsPresent) {
+if ($config.removeMetadata) {
     foreach ($metadataPath in @($paths.planPath, $paths.updateReportPath, $paths.dockerfilePath, $paths.composePath, $paths.dockerIgnorePath)) {
         if (Test-Path -LiteralPath $metadataPath) {
             $targets.Add($metadataPath)
@@ -34,6 +38,7 @@ if ($targets.Count -eq 0) {
     Write-DeployLog -Level "INFO" -Message "Nothing to clean." -Data @{
         script = "Clean-WebsiteRepoDeployment"
         stagingRoot = $paths.stagingRoot
+        removeMetadata = $config.removeMetadata
     }
     exit 0
 }
@@ -46,6 +51,7 @@ if ($executionMode.isDryRun) {
         targets = @($targets)
         dockerCliFound = $environment.dockerCliFound
         destructiveConfirmationRequired = $true
+        removeMetadata = $config.removeMetadata
     }
     Write-DeployLog -Level "INFO" -Message "Next step: run Clean-WebsiteRepoDeployment.ps1 -Apply -ConfirmDestructive after reviewing the dry-run output."
     exit 0
@@ -68,4 +74,5 @@ Write-DeployLog -Level "SUCCESS" -Message "Cleaned website deployment artifacts.
     mode = $executionMode.label
     targetCount = $targets.Count
     dockerCliFound = $environment.dockerCliFound
+    removeMetadata = $config.removeMetadata
 }

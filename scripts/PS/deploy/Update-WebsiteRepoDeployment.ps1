@@ -2,6 +2,8 @@
 param(
     [string]$StagingRoot,
     [string[]]$IncludePaths,
+    [int]$WebPort,
+    [string]$EnvFilePath,
     [switch]$Apply,
     [switch]$DryRun,
     [switch]$ConfirmDestructive
@@ -13,13 +15,16 @@ $ErrorActionPreference = "Stop"
 . (Join-Path $PSScriptRoot "WebsiteRepoDeploymentCommon.ps1")
 Assert-DeployScriptLocation -ScriptPath $PSCommandPath
 $executionMode = Resolve-DeployExecutionMode -Apply:$Apply.IsPresent -DryRun:$DryRun.IsPresent
+$resolvedWebPort = if ($PSBoundParameters.ContainsKey("WebPort")) { [Nullable[int]]$WebPort } else { $null }
+$config = Resolve-DeployScriptConfig -StagingRoot $StagingRoot -IncludePaths $IncludePaths -WebPort $resolvedWebPort -EnvFilePath $EnvFilePath
+Write-DeployConfigLoadLog -ScriptName "Update-WebsiteRepoDeployment" -Config $config
 
 $repoRoot = Get-DeployRepoRoot
-$paths = Get-WebsiteDeploymentPaths -StagingRoot $StagingRoot
+$paths = Get-WebsiteDeploymentPaths -StagingRoot $config.stagingRoot
 Test-StagingRootSafety -StagingRoot $paths.stagingRoot
 $environment = Assert-DeployEnvironmentReadiness -Paths $paths
 
-$normalizedIncludePaths = Normalize-IncludePaths -IncludePaths $IncludePaths
+$normalizedIncludePaths = Normalize-IncludePaths -IncludePaths $config.includePaths
 if ($normalizedIncludePaths.Count -eq 0) {
     if (Test-Path -LiteralPath $paths.planPath) {
         $existingPlan = Read-JsonFile -Path $paths.planPath
@@ -97,7 +102,7 @@ foreach ($entry in $copyEntries) {
 
 $plan = New-WebsiteDeploymentPlan -IncludePaths $normalizedIncludePaths -RepoRoot $repoRoot
 Write-JsonFile -Value $plan -Path $paths.planPath
-Write-DockerDeploymentArtifacts -Paths $paths
+Write-DockerDeploymentArtifacts -Paths $paths -WebPort $config.webPort
 Assert-DockerArtifactReadiness -Paths $paths
 
 $report = [ordered]@{
@@ -120,4 +125,5 @@ Write-DeployLog -Level "SUCCESS" -Message "Updated website deployment staging co
     dockerfilePath = $paths.dockerfilePath
     reportPath = $paths.updateReportPath
     dockerCliFound = $environment.dockerCliFound
+    webPort = $config.webPort
 }

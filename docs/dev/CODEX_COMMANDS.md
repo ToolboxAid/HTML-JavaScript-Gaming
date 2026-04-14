@@ -2,10 +2,10 @@ MODEL: GPT-5.4
 REASONING: high
 
 COMMAND:
-- add dry-run mode to scripts/PS/deploy/
-- validate inputs and environment
-- prevent destructive execution without explicit confirmation
-- improve output messaging
+- standardize env config handling for scripts/PS/deploy/
+- support .env loading
+- normalize variable names
+- ensure consistent config usage
 - commit format:
   description first line
   PR name last line

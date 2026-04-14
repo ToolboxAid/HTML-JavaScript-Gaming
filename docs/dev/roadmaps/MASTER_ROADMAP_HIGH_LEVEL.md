@@ -573,7 +573,7 @@
 - [x] reports structure established
 - [x] templates structure established
 - [x] roadmaps folder recognized as tracker space
-- [.] master roadmap committed and maintained
+- [x] master roadmap committed and maintained
 - [ ] per-component roadmap slices added only when truly needed
 - [ ] structure normalization roadmap linked to future BUILD lanes
 - [ ] phase descriptions normalized repo-wide

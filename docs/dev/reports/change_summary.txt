@@ -1,18 +1,22 @@
-BUILD_PR_LEVEL_09_26_DEPLOY_VALIDATION_AND_DRYRUN
+BUILD_PR_LEVEL_09_27_DEPLOY_ENV_CONFIG_STANDARDIZATION
 
 Scope:
-- Refined deployment safety/validation behavior only under `scripts/PS/deploy/`.
-- No runtime, engine, tool UI, or non-deploy scope changes.
+- Standardized deploy-script environment configuration only under `scripts/PS/deploy/`.
+- No runtime, engine, tool UI, or non-deploy behavior expansion.
 
 Implemented:
-- Kept/standardized dry-run behavior across deploy scripts with clearer next-step messaging.
-- Added environment readiness validation (`repo root`, `tmp root`, staging-root containment) before execution.
-- Added include-path contract validation (repo-relative only, no traversal/wildcards/rooted paths).
-- Added explicit destructive confirmation guard via `-ConfirmDestructive` for:
-  - `Update-WebsiteRepoDeployment.ps1` apply path (site-root refresh/delete)
-  - `Clean-WebsiteRepoDeployment.ps1` apply path (artifact deletion)
-- Preserved non-destructive defaults and existing staging-root safety checks.
+- Added shared `.env` loading in `WebsiteRepoDeploymentCommon.ps1` with repo-root default and optional `-EnvFilePath` override.
+- Added normalized deploy env variables:
+  - `DEPLOY_STAGING_ROOT`
+  - `DEPLOY_INCLUDE_PATHS`
+  - `DEPLOY_REMOVE_METADATA`
+  - `DEPLOY_WEB_PORT`
+- Added backward-compat alias handling (`STAGING_ROOT`, `INCLUDE_PATHS`, `REMOVE_METADATA`, `PORT`) with warning logs.
+- Centralized script config resolution via `Resolve-DeployScriptConfig` so prep/update/clean all load config the same way.
+- Added config-load telemetry (`Write-DeployConfigLoadLog`) for consistent operator visibility.
+- Updated docker compose artifact generation to use normalized variable token `${DEPLOY_WEB_PORT:-<default>}`.
+- Added optional `-EnvFilePath` on prep/update/clean and optional `-WebPort` override on prep/update.
 
-Tracking:
-- Commit comment format enforced (description first line, PR name last line, no leading blank line).
-- Roadmap updated with status-only change.
+Result:
+- Deploy scripts now use one consistent config contract with deterministic precedence:
+  explicit params > `.env` values > built-in defaults.

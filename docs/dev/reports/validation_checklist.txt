@@ -1,9 +1,8 @@
 [x] PowerShell parse/readiness checks pass on touched deploy scripts
-[x] Dry-run smoke checks pass for prep/update/clean deploy scripts
-[x] Environment readiness validation executes before deploy operations
-[x] Invalid include path traversal input is rejected
-[x] Update apply is blocked without explicit -ConfirmDestructive
-[x] Clean apply is blocked without explicit -ConfirmDestructive
-[x] Update/Clean apply succeed when -ConfirmDestructive is provided
+[x] .env loading works through shared config resolver for prep/update/clean
+[x] Normalized DEPLOY_* variables resolve consistently across deploy scripts
+[x] Legacy env aliases still work and emit warning telemetry
+[x] Docker compose output uses normalized DEPLOY_WEB_PORT token and resolved default
+[x] Dry-run/apply focused smoke checks pass with .env-sourced config
 [x] Script structure validation smoke run passes
 [x] Roadmap updated with status-only change

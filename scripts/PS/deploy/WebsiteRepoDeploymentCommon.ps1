@@ -126,6 +126,270 @@ function Get-DeployRepoRoot {
     return [System.IO.Path]::GetFullPath((Join-Path $PSScriptRoot "..\..\.."))
 }
 
+function Resolve-DeployConfigPath {
+    param(
+        [string]$EnvFilePath
+    )
+
+    if ([string]::IsNullOrWhiteSpace($EnvFilePath)) {
+        return [System.IO.Path]::GetFullPath((Join-Path (Get-DeployRepoRoot) ".env"))
+    }
+
+    if ([System.IO.Path]::IsPathRooted($EnvFilePath)) {
+        return [System.IO.Path]::GetFullPath($EnvFilePath)
+    }
+
+    return [System.IO.Path]::GetFullPath((Join-Path (Get-DeployRepoRoot) $EnvFilePath))
+}
+
+function Remove-DeployValueQuotes {
+    param(
+        [string]$Value
+    )
+
+    if ($null -eq $Value) {
+        return ""
+    }
+
+    $trimmed = $Value.Trim()
+    if ($trimmed.Length -ge 2) {
+        if (($trimmed.StartsWith('"') -and $trimmed.EndsWith('"')) -or ($trimmed.StartsWith("'") -and $trimmed.EndsWith("'"))) {
+            return $trimmed.Substring(1, $trimmed.Length - 2)
+        }
+    }
+    return $trimmed
+}
+
+function Read-DeployDotEnvFile {
+    param(
+        [Parameter(Mandatory = $true)]
+        [string]$Path
+    )
+
+    $pairs = @{}
+    if (-not (Test-Path -LiteralPath $Path)) {
+        return $pairs
+    }
+
+    $lines = Get-Content -LiteralPath $Path -Encoding UTF8
+    foreach ($line in $lines) {
+        $current = [string]$line
+        if ([string]::IsNullOrWhiteSpace($current)) {
+            continue
+        }
+
+        $trimmed = $current.Trim()
+        if ($trimmed.StartsWith("#")) {
+            continue
+        }
+
+        if ($trimmed.StartsWith("export ")) {
+            $trimmed = $trimmed.Substring(7).Trim()
+        }
+
+        $delimiterIndex = $trimmed.IndexOf("=")
+        if ($delimiterIndex -le 0) {
+            continue
+        }
+
+        $rawName = $trimmed.Substring(0, $delimiterIndex).Trim()
+        $rawValue = $trimmed.Substring($delimiterIndex + 1)
+        if ([string]::IsNullOrWhiteSpace($rawName)) {
+            continue
+        }
+
+        $pairs[$rawName] = Remove-DeployValueQuotes -Value $rawValue
+    }
+
+    return $pairs
+}
+
+function Get-DeployDotEnvValue {
+    param(
+        [Parameter(Mandatory = $true)]
+        [hashtable]$DotEnv,
+        [Parameter(Mandatory = $true)]
+        [string]$CanonicalName,
+        [string[]]$LegacyNames
+    )
+
+    if ($DotEnv.ContainsKey($CanonicalName)) {
+        return [ordered]@{
+            value = [string]$DotEnv[$CanonicalName]
+            source = $CanonicalName
+            isLegacy = $false
+        }
+    }
+
+    foreach ($legacyName in $LegacyNames) {
+        if ($DotEnv.ContainsKey($legacyName)) {
+            return [ordered]@{
+                value = [string]$DotEnv[$legacyName]
+                source = $legacyName
+                isLegacy = $true
+            }
+        }
+    }
+
+    return [ordered]@{
+        value = $null
+        source = $null
+        isLegacy = $false
+    }
+}
+
+function ConvertTo-DeployBoolean {
+    param(
+        [string]$Value
+    )
+
+    if ([string]::IsNullOrWhiteSpace($Value)) {
+        return $null
+    }
+
+    $normalized = $Value.Trim().ToLowerInvariant()
+    if ($normalized -in @("1", "true", "yes", "y", "on")) {
+        return $true
+    }
+
+    if ($normalized -in @("0", "false", "no", "n", "off")) {
+        return $false
+    }
+
+    throw "Invalid boolean value '$Value'. Expected one of: true/false, yes/no, on/off, 1/0."
+}
+
+function ConvertTo-DeployPort {
+    param(
+        [string]$Value
+    )
+
+    if ([string]::IsNullOrWhiteSpace($Value)) {
+        return $null
+    }
+
+    $parsedPort = 0
+    if (-not [int]::TryParse($Value.Trim(), [ref]$parsedPort)) {
+        throw "Invalid DEPLOY_WEB_PORT value '$Value'. Expected an integer between 1 and 65535."
+    }
+
+    if ($parsedPort -lt 1 -or $parsedPort -gt 65535) {
+        throw "Invalid DEPLOY_WEB_PORT value '$Value'. Expected an integer between 1 and 65535."
+    }
+
+    return $parsedPort
+}
+
+function ConvertTo-DeployIncludePathList {
+    param(
+        [string]$Value
+    )
+
+    if ([string]::IsNullOrWhiteSpace($Value)) {
+        return @()
+    }
+
+    return @(
+        $Value -split '[,;]'
+    )
+}
+
+function Resolve-DeployScriptConfig {
+    param(
+        [string]$StagingRoot,
+        [string[]]$IncludePaths,
+        [object]$RemoveMetadata,
+        [object]$WebPort,
+        [string]$EnvFilePath
+    )
+
+    $resolvedEnvFilePath = Resolve-DeployConfigPath -EnvFilePath $EnvFilePath
+    $dotEnv = Read-DeployDotEnvFile -Path $resolvedEnvFilePath
+
+    $legacyVariablesUsed = New-Object System.Collections.Generic.List[string]
+
+    $stagingRootValue = Get-DeployDotEnvValue -DotEnv $dotEnv -CanonicalName "DEPLOY_STAGING_ROOT" -LegacyNames @("STAGING_ROOT")
+    if ($stagingRootValue.isLegacy) { $legacyVariablesUsed.Add($stagingRootValue.source) }
+
+    $includePathsValue = Get-DeployDotEnvValue -DotEnv $dotEnv -CanonicalName "DEPLOY_INCLUDE_PATHS" -LegacyNames @("INCLUDE_PATHS")
+    if ($includePathsValue.isLegacy) { $legacyVariablesUsed.Add($includePathsValue.source) }
+
+    $removeMetadataValue = Get-DeployDotEnvValue -DotEnv $dotEnv -CanonicalName "DEPLOY_REMOVE_METADATA" -LegacyNames @("REMOVE_METADATA")
+    if ($removeMetadataValue.isLegacy) { $legacyVariablesUsed.Add($removeMetadataValue.source) }
+
+    $webPortValue = Get-DeployDotEnvValue -DotEnv $dotEnv -CanonicalName "DEPLOY_WEB_PORT" -LegacyNames @("PORT")
+    if ($webPortValue.isLegacy) { $legacyVariablesUsed.Add($webPortValue.source) }
+
+    $resolvedStagingRoot = if (-not [string]::IsNullOrWhiteSpace($StagingRoot)) {
+        $StagingRoot
+    }
+    elseif (-not [string]::IsNullOrWhiteSpace($stagingRootValue.value)) {
+        $stagingRootValue.value
+    }
+    else {
+        $null
+    }
+
+    $resolvedIncludePaths = if ($IncludePaths -and $IncludePaths.Count -gt 0) {
+        $IncludePaths
+    }
+    elseif (-not [string]::IsNullOrWhiteSpace($includePathsValue.value)) {
+        ConvertTo-DeployIncludePathList -Value $includePathsValue.value
+    }
+    else {
+        @()
+    }
+
+    $resolvedRemoveMetadata = if ($null -ne $RemoveMetadata) {
+        [bool]$RemoveMetadata
+    }
+    else {
+        $parsedRemoveMetadata = ConvertTo-DeployBoolean -Value $removeMetadataValue.value
+        if ($null -eq $parsedRemoveMetadata) { $false } else { [bool]$parsedRemoveMetadata }
+    }
+
+    $resolvedWebPort = if ($null -ne $WebPort) {
+        [int]$WebPort
+    }
+    else {
+        $parsedWebPort = ConvertTo-DeployPort -Value $webPortValue.value
+        if ($null -eq $parsedWebPort) { 8080 } else { [int]$parsedWebPort }
+    }
+
+    return [ordered]@{
+        stagingRoot = $resolvedStagingRoot
+        includePaths = @($resolvedIncludePaths)
+        removeMetadata = [bool]$resolvedRemoveMetadata
+        webPort = [int]$resolvedWebPort
+        envFilePath = $resolvedEnvFilePath
+        envFileLoaded = Test-Path -LiteralPath $resolvedEnvFilePath
+        legacyVariablesUsed = @($legacyVariablesUsed)
+    }
+}
+
+function Write-DeployConfigLoadLog {
+    param(
+        [Parameter(Mandatory = $true)]
+        [string]$ScriptName,
+        [Parameter(Mandatory = $true)]
+        [object]$Config
+    )
+
+    Write-DeployLog -Level "INFO" -Message "Loaded deploy configuration." -Data @{
+        script = $ScriptName
+        envFilePath = $Config.envFilePath
+        envFileLoaded = $Config.envFileLoaded
+        webPort = $Config.webPort
+    }
+
+    if ($Config.legacyVariablesUsed.Count -gt 0) {
+        Write-DeployLog -Level "WARN" -Message "Legacy deploy environment variable names detected. Prefer DEPLOY_* names." -Data @{
+            script = $ScriptName
+            legacyVariablesUsed = $Config.legacyVariablesUsed
+        }
+    }
+}
+
 function Resolve-WebsiteStagingRoot {
     param(
         [string]$StagingRoot
@@ -140,7 +404,6 @@ function Resolve-WebsiteStagingRoot {
 
 function Get-WebsiteDeploymentPaths {
     param(
-        [Parameter(Mandatory = $true)]
         [string]$StagingRoot
     )
 
@@ -307,6 +570,10 @@ function Get-DefaultWebsiteIncludePaths {
 }
 
 function Get-DockerArtifactContent {
+    param(
+        [int]$WebPort = 8080
+    )
+
     return [ordered]@{
         Dockerfile = @(
             "FROM nginx:alpine",
@@ -319,7 +586,7 @@ function Get-DockerArtifactContent {
             '  web:',
             '    build: .',
             '    ports:',
-            '      - "${PORT:-8080}:80"',
+            "      - `"`${DEPLOY_WEB_PORT:-$WebPort}:80`"",
             '    restart: unless-stopped'
         ) -join [Environment]::NewLine
         DockerIgnore = @(
@@ -332,10 +599,11 @@ function Get-DockerArtifactContent {
 function Write-DockerDeploymentArtifacts {
     param(
         [Parameter(Mandatory = $true)]
-        [object]$Paths
+        [object]$Paths,
+        [int]$WebPort = 8080
     )
 
-    $docker = Get-DockerArtifactContent
+    $docker = Get-DockerArtifactContent -WebPort $WebPort
     [System.IO.File]::WriteAllText($Paths.dockerfilePath, $docker.Dockerfile + [Environment]::NewLine, [System.Text.Encoding]::UTF8)
     [System.IO.File]::WriteAllText($Paths.composePath, $docker.Compose + [Environment]::NewLine, [System.Text.Encoding]::UTF8)
     [System.IO.File]::WriteAllText($Paths.dockerIgnorePath, $docker.DockerIgnore + [Environment]::NewLine, [System.Text.Encoding]::UTF8)

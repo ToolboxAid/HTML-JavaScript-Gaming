@@ -1,2 +1,2 @@
-Add deploy dry-run/environment validation guards and require explicit destructive confirmation for apply cleanup/refresh paths.
-BUILD_PR_LEVEL_09_26_DEPLOY_VALIDATION_AND_DRYRUN
+Standardize deploy env config via shared .env loading, normalized DEPLOY_* variables, and consistent script-level config resolution.
+BUILD_PR_LEVEL_09_27_DEPLOY_ENV_CONFIG_STANDARDIZATION
