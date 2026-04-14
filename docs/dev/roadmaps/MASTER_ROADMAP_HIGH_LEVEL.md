@@ -634,6 +634,9 @@
 
 - [x] relocate active template surfaces to `tools/templates/` and remove the empty root `templates/` directory
 
+---
+
+## Recovery / Preserved Content
 # MASTER ROADMAP HIGH LEVEL (status updates only)
 
 [.] asset naming normalization

@@ -1,3 +1,4 @@
-- Combined the next Level 11 setup work to reduce PR count
-- Added explicit move-not-delete guard for future roadmap/instruction migrations
-- Kept roadmap handling status-only unless explicitly requested otherwise
+- Added strict roadmap-repair bundle
+- Enforced no-delete and no-text-change rules
+- Limited Codex to adds, moves, and status-marker updates only
+- Added recovery section fallback to preserve uncertain content rather than deleting it

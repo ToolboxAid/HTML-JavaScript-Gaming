@@ -1,6 +1,7 @@
-- Combined PR reduces follow-on PR count
-- Rule-migration guard is explicit
-- Roadmap cleanup cannot silently delete moved content
-- Outputs remain docs-first and repo-structured
+- No roadmap text deleted
+- No roadmap wording changed
+- Only adds, moves, and status-marker updates used
+- Duplicated/appended content preserved and relocated
+- Recovery / Preserved Content section used if placement uncertainty remained
 - Output ZIP created at:
-  <project folder>/tmp/BUILD_PR_LEVEL_11_2_COMBINED_RUNTIME_DIRECTION_AND_RULE_MOVE_GUARDS.zip
+  <project folder>/tmp/BUILD_PR_ROADMAP_REPAIR_ADDITIVE_MOVE_ONLY.zip
