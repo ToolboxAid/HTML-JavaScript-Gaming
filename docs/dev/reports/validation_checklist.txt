@@ -1,35 +1,6 @@
-Validation Checklist - BUILD_PR_LEVEL_09_23_SCRIPT_STRUCTURE_FINALIZATION
-
-Scope
-[x] PR remains in the script-structure lane only
-[x] No engine changes introduced
-[x] No gameplay/runtime feature changes introduced
-[x] No tool UI redesign introduced
-[x] No unrelated deployment feature expansion introduced
-
-Structure
-[x] General operator/template scripts live under `scripts/PS/`
-[x] Codex-only scripts live under `scripts/PS/codex/`
-[x] Deployment scripts live under `scripts/PS/deploy/`
-[x] No misplaced general script remains in `scripts/PS/codex/`
-[x] References point to the updated script paths
-[x] Names match actual purpose where touched
-
-Validation
-[x] Touched PowerShell files parse/read cleanly
-[x] Focused reference/path checks pass
-[x] Focused structure checks pass
-[x] Focused template script dry-run/apply smoke check passes
-
-Roadmap
-[x] Roadmap status updated only where applicable
-[x] No unapproved roadmap prose changes made
-
-Packaging
-[x] docs/pr document included
-[x] docs/dev/codex_commands.md included
-[x] docs/dev/commit_comment.txt included
-[x] docs/dev/next_command.txt included
-[x] docs/dev/reports/change_summary.txt included
-[x] docs/dev/reports/validation_checklist.txt included
-[x] Single ZIP produced at `<project folder>/tmp/BUILD_PR_LEVEL_09_23_SCRIPT_STRUCTURE_FINALIZATION.zip`
+[x] PowerShell parse/readiness checks on touched deploy scripts
+[x] focused dry-run smoke checks for prep/update/clean deploy flow
+[x] focused apply smoke checks in tmp staging path for prep/update/clean deploy flow
+[x] Docker artifact readiness assertions pass after prep/update apply flows
+[x] script structure validation smoke run passes
+[x] roadmap updated with status-only change

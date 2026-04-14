@@ -10,10 +10,8 @@ Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
 
 . (Join-Path $PSScriptRoot "WebsiteRepoDeploymentCommon.ps1")
-
-if ($Apply.IsPresent -and $DryRun.IsPresent) {
-    throw "Use either -Apply or -DryRun, not both."
-}
+Assert-DeployScriptLocation -ScriptPath $PSCommandPath
+$executionMode = Resolve-DeployExecutionMode -Apply:$Apply.IsPresent -DryRun:$DryRun.IsPresent
 
 $repoRoot = Get-DeployRepoRoot
 $paths = Get-WebsiteDeploymentPaths -StagingRoot $StagingRoot
@@ -52,16 +50,22 @@ foreach ($entry in $normalizedIncludePaths) {
     })
 }
 
-if (-not $Apply.IsPresent -or $DryRun.IsPresent) {
-    Write-Host "Dry-run only. No files were copied."
-    Write-Host "Run with -Apply to refresh staged website content."
-    Write-Host "Site root: $($paths.siteRoot)"
-    Write-Host "Entries: $($normalizedIncludePaths -join ', ')"
+if ($executionMode.isDryRun) {
+    Write-DeployLog -Level "INFO" -Message "Dry-run only. No files were copied." -Data @{
+        script = "Update-WebsiteRepoDeployment"
+        mode = $executionMode.label
+        siteRoot = $paths.siteRoot
+        includePaths = $normalizedIncludePaths
+    }
+    Write-DeployLog -Level "INFO" -Message "Run with -Apply to refresh staged website content."
     exit 0
 }
 
 if (-not $PSCmdlet.ShouldProcess($paths.siteRoot, "Refresh staged website deployment content")) {
-    Write-Host "Update cancelled."
+    Write-DeployLog -Level "WARN" -Message "Update cancelled by ShouldProcess." -Data @{
+        script = "Update-WebsiteRepoDeployment"
+        siteRoot = $paths.siteRoot
+    }
     exit 0
 }
 
@@ -86,6 +90,7 @@ foreach ($entry in $copyEntries) {
 $plan = New-WebsiteDeploymentPlan -IncludePaths $normalizedIncludePaths -RepoRoot $repoRoot
 Write-JsonFile -Value $plan -Path $paths.planPath
 Write-DockerDeploymentArtifacts -Paths $paths
+Assert-DockerArtifactReadiness -Paths $paths
 
 $report = [ordered]@{
     schema = "html-js-gaming.website-repo-deploy-update-report"
@@ -99,7 +104,11 @@ $report = [ordered]@{
 }
 Write-JsonFile -Value $report -Path $paths.updateReportPath
 
-Write-Host "Updated website deployment staging content."
-Write-Host "Site root: $($paths.siteRoot)"
-Write-Host "Copied entries: $($copyEntries.Count)"
-Write-Host "Dockerfile: $($paths.dockerfilePath)"
+Write-DeployLog -Level "SUCCESS" -Message "Updated website deployment staging content." -Data @{
+    script = "Update-WebsiteRepoDeployment"
+    mode = $executionMode.label
+    siteRoot = $paths.siteRoot
+    copiedEntries = $copyEntries.Count
+    dockerfilePath = $paths.dockerfilePath
+    reportPath = $paths.updateReportPath
+}

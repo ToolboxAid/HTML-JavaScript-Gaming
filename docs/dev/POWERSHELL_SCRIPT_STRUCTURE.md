@@ -8,12 +8,13 @@ This repo uses a purpose-based PowerShell layout:
   - codex session/operator scripts
 - `scripts/PS/deploy/`
   - deployment/staging scripts
+- `scripts/PS/validate/`
+  - repo-governance validation scripts for script-tree structure
 
 ## Current Canonical Scripts
 
 General (`scripts/PS/`):
 - `New-Game-from-Template.ps1`
-- `Validate-ScriptStructure.ps1`
 
 Codex (`scripts/PS/codex/`):
 - `CodexOperatorState.ps1`
@@ -29,16 +30,20 @@ Deploy (`scripts/PS/deploy/`):
 - `Update-WebsiteRepoDeployment.ps1`
 - `Clean-WebsiteRepoDeployment.ps1`
 
+Validate (`scripts/PS/validate/`):
+- `Validate-ScriptStructure.ps1`
+- `Validate-All.ps1`
+
 ## Validation
 
 Run:
 
 ```powershell
-.\scripts\PS\Validate-ScriptStructure.ps1
+.\scripts\PS\validate\Validate-ScriptStructure.ps1
 ```
 
 Optional JSON output:
 
 ```powershell
-.\scripts\PS\Validate-ScriptStructure.ps1 -Json
+.\scripts\PS\validate\Validate-ScriptStructure.ps1 -Json
 ```

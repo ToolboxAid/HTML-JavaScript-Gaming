@@ -1,3 +1,2 @@
-Finalizes the PowerShell script tree by renaming/moving template game creation to `scripts/PS/New-Game-from-Template.ps1`, updating references, and enforcing `scripts/PS/`, `scripts/PS/codex/`, and `scripts/PS/deploy/` role boundaries.
-
-BUILD_PR_LEVEL_09_23_SCRIPT_STRUCTURE_FINALIZATION
+Refine Docker deploy scripts with standardized mode handling/logging and deploy-folder enforcement checks.
+BUILD_PR_LEVEL_09_25_DOCKER_DEPLOY_SCRIPT_REFINEMENT

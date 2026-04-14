@@ -10,10 +10,8 @@ Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
 
 . (Join-Path $PSScriptRoot "WebsiteRepoDeploymentCommon.ps1")
-
-if ($Apply.IsPresent -and $DryRun.IsPresent) {
-    throw "Use either -Apply or -DryRun, not both."
-}
+Assert-DeployScriptLocation -ScriptPath $PSCommandPath
+$executionMode = Resolve-DeployExecutionMode -Apply:$Apply.IsPresent -DryRun:$DryRun.IsPresent
 
 $paths = Get-WebsiteDeploymentPaths -StagingRoot $StagingRoot
 Test-StagingRootSafety -StagingRoot $paths.stagingRoot
@@ -31,16 +29,21 @@ if ($RemoveMetadata.IsPresent) {
 }
 
 if ($targets.Count -eq 0) {
-    Write-Host "Nothing to clean."
+    Write-DeployLog -Level "INFO" -Message "Nothing to clean." -Data @{
+        script = "Clean-WebsiteRepoDeployment"
+        stagingRoot = $paths.stagingRoot
+    }
     exit 0
 }
 
-if (-not $Apply.IsPresent -or $DryRun.IsPresent) {
-    Write-Host "Dry-run only. No files were deleted."
-    Write-Host "Run with -Apply to remove deployment artifacts."
-    foreach ($target in $targets) {
-        Write-Host " - $target"
+if ($executionMode.isDryRun) {
+    Write-DeployLog -Level "INFO" -Message "Dry-run only. No files were deleted." -Data @{
+        script = "Clean-WebsiteRepoDeployment"
+        mode = $executionMode.label
+        targetCount = $targets.Count
+        targets = @($targets)
     }
+    Write-DeployLog -Level "INFO" -Message "Run with -Apply to remove deployment artifacts."
     exit 0
 }
 
@@ -54,4 +57,8 @@ foreach ($target in $targets) {
     Remove-Item -LiteralPath $target -Recurse -Force
 }
 
-Write-Host "Cleaned website deployment artifacts."
+Write-DeployLog -Level "SUCCESS" -Message "Cleaned website deployment artifacts." -Data @{
+    script = "Clean-WebsiteRepoDeployment"
+    mode = $executionMode.label
+    targetCount = $targets.Count
+}

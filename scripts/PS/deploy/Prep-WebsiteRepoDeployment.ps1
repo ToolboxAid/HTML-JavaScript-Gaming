@@ -10,10 +10,8 @@ Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
 
 . (Join-Path $PSScriptRoot "WebsiteRepoDeploymentCommon.ps1")
-
-if ($Apply.IsPresent -and $DryRun.IsPresent) {
-    throw "Use either -Apply or -DryRun, not both."
-}
+Assert-DeployScriptLocation -ScriptPath $PSCommandPath
+$executionMode = Resolve-DeployExecutionMode -Apply:$Apply.IsPresent -DryRun:$DryRun.IsPresent
 
 $repoRoot = Get-DeployRepoRoot
 $paths = Get-WebsiteDeploymentPaths -StagingRoot $StagingRoot
@@ -40,16 +38,22 @@ if ($missing.Count -gt 0) {
 
 $plan = New-WebsiteDeploymentPlan -IncludePaths $normalizedIncludePaths -RepoRoot $repoRoot
 
-if (-not $Apply.IsPresent -or $DryRun.IsPresent) {
-    Write-Host "Dry-run only. No files were created."
-    Write-Host "Run with -Apply to create staging folders, deployment plan, and Docker artifacts."
-    Write-Host "Staging root: $($paths.stagingRoot)"
-    Write-Host "Planned include paths: $($normalizedIncludePaths -join ', ')"
+if ($executionMode.isDryRun) {
+    Write-DeployLog -Level "INFO" -Message "Dry-run only. No files were created." -Data @{
+        script = "Prep-WebsiteRepoDeployment"
+        mode = $executionMode.label
+        stagingRoot = $paths.stagingRoot
+        includePaths = $normalizedIncludePaths
+    }
+    Write-DeployLog -Level "INFO" -Message "Run with -Apply to create staging folders, deployment plan, and Docker artifacts."
     exit 0
 }
 
 if (-not $PSCmdlet.ShouldProcess($paths.stagingRoot, "Prepare website deployment staging")) {
-    Write-Host "Preparation cancelled."
+    Write-DeployLog -Level "WARN" -Message "Preparation cancelled by ShouldProcess." -Data @{
+        script = "Prep-WebsiteRepoDeployment"
+        stagingRoot = $paths.stagingRoot
+    }
     exit 0
 }
 
@@ -58,8 +62,12 @@ Ensure-Directory -Path $paths.siteRoot
 Ensure-Directory -Path $paths.metaRoot
 Write-JsonFile -Value $plan -Path $paths.planPath
 Write-DockerDeploymentArtifacts -Paths $paths
+Assert-DockerArtifactReadiness -Paths $paths
 
-Write-Host "Prepared website deployment staging."
-Write-Host "Staging root: $($paths.stagingRoot)"
-Write-Host "Plan file: $($paths.planPath)"
-Write-Host "Dockerfile: $($paths.dockerfilePath)"
+Write-DeployLog -Level "SUCCESS" -Message "Prepared website deployment staging." -Data @{
+    script = "Prep-WebsiteRepoDeployment"
+    mode = $executionMode.label
+    stagingRoot = $paths.stagingRoot
+    planPath = $paths.planPath
+    dockerfilePath = $paths.dockerfilePath
+}

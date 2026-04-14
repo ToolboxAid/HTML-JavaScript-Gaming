@@ -1,6 +1,66 @@
 Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
 
+function Get-DeployExpectedScriptsRoot {
+    return [System.IO.Path]::GetFullPath((Join-Path (Get-DeployRepoRoot) "scripts\PS\deploy"))
+}
+
+function Assert-DeployScriptLocation {
+    param(
+        [Parameter(Mandatory = $true)]
+        [string]$ScriptPath
+    )
+
+    $resolvedScriptPath = [System.IO.Path]::GetFullPath($ScriptPath)
+    $resolvedScriptRoot = [System.IO.Path]::GetFullPath((Split-Path -Path $resolvedScriptPath -Parent))
+    $expectedRoot = Get-DeployExpectedScriptsRoot
+
+    if (-not [string]::Equals(
+            $resolvedScriptRoot.TrimEnd('\', '/'),
+            $expectedRoot.TrimEnd('\', '/'),
+            [StringComparison]::OrdinalIgnoreCase
+        )) {
+        throw "Deployment script placement check failed. Expected scripts under '$expectedRoot' but script was loaded from '$resolvedScriptRoot'. Run scripts/PS/validate/Validate-ScriptStructure.ps1 for details."
+    }
+}
+
+function Resolve-DeployExecutionMode {
+    param(
+        [switch]$Apply,
+        [switch]$DryRun
+    )
+
+    if ($Apply.IsPresent -and $DryRun.IsPresent) {
+        throw "Use either -Apply or -DryRun, not both."
+    }
+
+    $isDryRun = -not $Apply.IsPresent -or $DryRun.IsPresent
+    return [ordered]@{
+        isDryRun = $isDryRun
+        label = if ($isDryRun) { "dry-run" } else { "apply" }
+    }
+}
+
+function Write-DeployLog {
+    param(
+        [ValidateSet("INFO", "WARN", "ERROR", "SUCCESS")]
+        [string]$Level = "INFO",
+        [Parameter(Mandatory = $true)]
+        [string]$Message,
+        [hashtable]$Data
+    )
+
+    $timestamp = [DateTime]::UtcNow.ToString("o")
+    $prefix = "[deploy][$timestamp][$Level]"
+    if ($Data) {
+        $payload = $Data | ConvertTo-Json -Compress -Depth 10
+        Write-Host "$prefix $Message $payload"
+        return
+    }
+
+    Write-Host "$prefix $Message"
+}
+
 function Get-DeployRepoRoot {
     return [System.IO.Path]::GetFullPath((Join-Path $PSScriptRoot "..\..\.."))
 }
@@ -188,4 +248,28 @@ function Write-DockerDeploymentArtifacts {
     [System.IO.File]::WriteAllText($Paths.dockerfilePath, $docker.Dockerfile + [Environment]::NewLine, [System.Text.Encoding]::UTF8)
     [System.IO.File]::WriteAllText($Paths.composePath, $docker.Compose + [Environment]::NewLine, [System.Text.Encoding]::UTF8)
     [System.IO.File]::WriteAllText($Paths.dockerIgnorePath, $docker.DockerIgnore + [Environment]::NewLine, [System.Text.Encoding]::UTF8)
+}
+
+function Assert-DockerArtifactReadiness {
+    param(
+        [Parameter(Mandatory = $true)]
+        [object]$Paths
+    )
+
+    $requiredArtifacts = @(
+        @{ path = $Paths.dockerfilePath; expectedToken = "FROM nginx:alpine" },
+        @{ path = $Paths.composePath; expectedToken = "services:" },
+        @{ path = $Paths.dockerIgnorePath; expectedToken = "meta/" }
+    )
+
+    foreach ($artifact in $requiredArtifacts) {
+        if (-not (Test-Path -LiteralPath $artifact.path)) {
+            throw "Docker readiness check failed. Missing artifact: $($artifact.path)"
+        }
+
+        $content = Get-Content -LiteralPath $artifact.path -Raw -Encoding UTF8
+        if ($content.IndexOf($artifact.expectedToken, [StringComparison]::OrdinalIgnoreCase) -lt 0) {
+            throw "Docker readiness check failed. Artifact '$($artifact.path)' is missing expected token '$($artifact.expectedToken)'."
+        }
+    }
 }

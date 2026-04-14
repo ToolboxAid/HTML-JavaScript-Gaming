@@ -1,16 +1,17 @@
-Summary
-- Finalized script placement/naming for the template game creation script:
-  - removed `scripts/PS/New-TemplateGame.ps1`
-  - added `scripts/PS/New-Game-from-Template.ps1`
-- Updated all active references to the renamed script path:
-  - `docs/dev/CODEX_TEMPLATE_GAME_CREATION_SCRIPTING.md`
-  - generation-note path in `scripts/PS/New-Game-from-Template.ps1`
-- Added focused structure validation script:
-  - `scripts/PS/Validate-ScriptStructure.ps1`
-- Added final structure expectations doc:
-  - `docs/dev/POWERSHELL_SCRIPT_STRUCTURE.md`
-- Preserved and validated folder roles:
-  - `scripts/PS/` (general)
-  - `scripts/PS/codex/` (Codex-only)
-  - `scripts/PS/deploy/` (deployment)
-- Applied roadmap status-only update for script naming policy finalization.
+BUILD_PR_LEVEL_09_25_DOCKER_DEPLOY_SCRIPT_REFINEMENT
+
+Scope:
+- Refined deploy scripts under scripts/PS/deploy/ only.
+- Kept behavior surgical and non-destructive by default.
+
+Implemented:
+- Added shared deploy execution mode normalization (`-Apply` / `-DryRun`) in WebsiteRepoDeploymentCommon.ps1.
+- Added shared structured deploy logging helper with consistent level+timestamp output.
+- Added deploy script placement enforcement (`scripts/PS/deploy/`) with actionable failure text.
+- Added Docker artifact readiness assertion after artifact writes in prep/update flows.
+- Updated prep/update/clean entry scripts to use shared mode/logging enforcement helpers.
+
+Docs/Tracking:
+- Updated commit comment format (description first line, PR name last line).
+- Updated validation checklist for focused PowerShell/deploy checks.
+- Updated roadmap with status-only progression tied to acceptance enforcement.
