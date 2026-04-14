@@ -6,7 +6,7 @@ Ufo.js
 */
 import Bullet from './Bullet.js';
 import { distance } from '/src/engine/utils/index.js';
-import { transformPoints } from '/src/engine/vector/index.js';
+import { transformPoints } from '/src/engine/rendering/index.js';
 import { randomRange } from '../utils/math.js';
 
 const UFO_PROFILES = {

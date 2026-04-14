@@ -3862,8 +3862,8 @@
         "engine/scene/index/Scene",
         "engine/theme/index/Theme",
         "engine/theme/index/ThemeTokens",
-        "engine/vector/index/drawVectorShape",
-        "engine/vector/index/transformPoints"
+        "engine/rendering/index/drawVectorShape",
+        "engine/rendering/index/transformPoints"
       ],
       "thumbnail": "/samples/phase-09/0901/assets/images/preview.svg",
       "preview": "/samples/phase-09/0901/assets/images/preview.svg"
@@ -3890,8 +3890,8 @@
         "engine/scene/index/Scene",
         "engine/theme/index/Theme",
         "engine/theme/index/ThemeTokens",
-        "engine/vector/index/drawVectorShape",
-        "engine/vector/index/transformPoints"
+        "engine/rendering/index/drawVectorShape",
+        "engine/rendering/index/transformPoints"
       ],
       "thumbnail": "/samples/phase-09/0902/assets/images/preview.svg",
       "preview": "/samples/phase-09/0902/assets/images/preview.svg"
@@ -3917,7 +3917,7 @@
         "engine/scene/index/Scene",
         "engine/theme/index/Theme",
         "engine/theme/index/ThemeTokens",
-        "engine/vector/index/drawVectorShape"
+        "engine/rendering/index/drawVectorShape"
       ],
       "thumbnail": "/samples/phase-09/0903/assets/images/preview.svg",
       "preview": "/samples/phase-09/0903/assets/images/preview.svg"
@@ -4008,8 +4008,8 @@
         "engine/scene/index/Scene",
         "engine/theme/index/Theme",
         "engine/theme/index/ThemeTokens",
-        "engine/vector/index/drawVectorShape",
-        "engine/vector/index/transformPoints"
+        "engine/rendering/index/drawVectorShape",
+        "engine/rendering/index/transformPoints"
       ],
       "thumbnail": "/samples/phase-09/0906/assets/images/preview.svg",
       "preview": "/samples/phase-09/0906/assets/images/preview.svg"

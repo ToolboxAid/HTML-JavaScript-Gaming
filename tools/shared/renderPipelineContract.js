@@ -58,7 +58,7 @@ export const TOOL_ENGINE_MAPPINGS = Object.freeze({
   }),
   "vector-asset-studio": Object.freeze({
     allowedLayerKinds: Object.freeze(["vector", "guide", "overlay"]),
-    engineTargets: Object.freeze(["engine/vector", "engine/rendering"]) 
+    engineTargets: Object.freeze(["engine/rendering"]) 
   }),
   "composition-manifest": Object.freeze({
     allowedLayerKinds: Object.freeze([]),

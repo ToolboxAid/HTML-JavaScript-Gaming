@@ -1,7 +1,7 @@
-- only one top-level engine scene boundary remains
-- scene no longer competes with scenes as a parallel engine concept
-- imports/exports normalized and valid
-- game/sample scene content ownership is clearer
+- remaining engine/vector contents were audited
+- stale residue removed or real content moved
+- lingering imports normalized
+- old vector boundary no longer misleads structure truth
 - roadmap/status handling remains truth-safe
 - output ZIP created at:
-  <project folder>/tmp/BUILD_PR_LEVEL_01_SCENE_SCENES_BOUNDARY_NORMALIZATION.zip
+  <project folder>/tmp/BUILD_PR_LEVEL_01_ENGINE_VECTOR_RESIDUE_CLEANUP.zip

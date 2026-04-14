@@ -5,7 +5,7 @@ David Quesenberry
 Ship.js
 */
 import { wrap } from '../utils/math.js';
-import { transformPoints } from '/src/engine/vector/index.js';
+import { transformPoints } from '/src/engine/rendering/index.js';
 
 const SMALL_VECTOR_MAP = [
   { x: 14, y: 0 },

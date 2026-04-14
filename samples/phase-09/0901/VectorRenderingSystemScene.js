@@ -7,7 +7,7 @@ VectorRenderingSystemScene.js
 import { Scene } from '/src/engine/scene/index.js';
 import { Theme, ThemeTokens } from '/src/engine/theme/index.js';
 import { drawFrame, drawPanel } from '/src/engine/debug/index.js';
-import { transformPoints, drawVectorShape } from '/src/engine/vector/index.js';
+import { transformPoints, drawVectorShape } from '/src/engine/rendering/index.js';
 
 const theme = new Theme(ThemeTokens);
 

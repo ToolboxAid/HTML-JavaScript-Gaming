@@ -2,27 +2,31 @@ MODEL: GPT-5.4
 REASONING: high
 
 COMMAND:
-Create `BUILD_PR_LEVEL_01_SCENE_SCENES_BOUNDARY_NORMALIZATION`.
+Create `BUILD_PR_LEVEL_01_ENGINE_VECTOR_RESIDUE_CLEANUP`.
 
-Implement one clear scene boundary decision:
+Implement a surgical cleanup of the leftover `engine/vector/` residue.
 
-1. Do NOT keep both `scene` and `scenes` as competing top-level engine concepts when they overlap.
-2. Prefer `src/engine/scene/` as the single engine domain boundary.
-3. Treat plural "scenes" as content collections/instances owned by games or samples where appropriate, not as a competing engine boundary.
-4. Normalize imports/exports to that one truth.
-5. Keep ownership clear:
-   - engine owns reusable scene runtime logic only
-   - game/sample-specific scene content stays in its owning layer unless truly reusable
-6. Keep the changes surgical.
-7. Update roadmap/status only if needed and only by status markers or additive truth-safe structure clarification.
-8. Validate:
+Required work:
+1. Audit the remaining contents of `engine/vector/`.
+2. For each remaining item, classify it as:
+   - stale residue to remove
+   - real content to move to the correct modern home
+   - temporary compatibility surface that must remain
+3. Preferred outcome:
+   - if the folder is only stale residue, remove it cleanly
+   - if it contains real content, move that content first, then remove the stale shell if possible
+4. Respect current boundary decisions:
+   - rendering-owned vector drawing stays with rendering
+   - shared math/utility-owned vector math stays in shared math/utility
+5. Normalize lingering imports pointing at `engine/vector/`.
+6. Validate:
    - imports remain green
-   - no duplicate scene/scenes top-level ambiguity remains
-   - engine scene ownership is clearer
-   - section 1 residue is reduced or closed truthfully
+   - no misleading old vector boundary remains unless a temporary compatibility reason is explicitly documented
+   - section-1 truth is improved
+7. Update roadmap status markers only if truthfully supported.
 
 Final packaging step is REQUIRED:
-`<project folder>/tmp/BUILD_PR_LEVEL_01_SCENE_SCENES_BOUNDARY_NORMALIZATION.zip`
+`<project folder>/tmp/BUILD_PR_LEVEL_01_ENGINE_VECTOR_RESIDUE_CLEANUP.zip`
 
 Hard rules:
 - implementation by Codex

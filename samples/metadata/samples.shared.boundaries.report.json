@@ -521,7 +521,7 @@
         "boundaryStatus": "allowed-public"
       },
       {
-        "specifier": "/src/engine/vector/index.js",
+        "specifier": "/src/engine/rendering/index.js",
         "importCount": 4,
         "importerExamples": [
           "phase-09/0901/VectorRenderingSystemScene.js",
