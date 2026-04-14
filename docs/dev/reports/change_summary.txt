@@ -1,1 +1,36 @@
-Introduces tool data contract layer.
+Summary
+- Implemented a shared asset pipeline tooling surface at `tools/shared/pipeline/assetPipelineTooling.js`.
+- Centralized staged flow: load -> validate -> normalize -> emit.
+- Reused 09_08 tool-data contract enforcement via `validateToolStateContract` from `tools/shared/projectToolIntegration.js`.
+- Added focused pipeline validation test coverage and wired it into the test runner.
+
+Pipeline behavior
+- Active domains handled consistently:
+  - sprites
+  - tilemaps
+  - parallax
+  - vectors
+- Runtime/tool-data split is enforced in emitted paths:
+  - runtime: `games/<game>/assets/<domain>/...`
+  - tool/editor data: `games/<game>/assets/<domain>/data/...`
+- Coordinator output path contract:
+  - `games/<game>/assets/<game>.assets.json`
+
+Contract gate reuse (09_08)
+- `runAssetPipelineTooling(...)` validates all provided tool states through shared 09_08 contract validation.
+- Invalid tool contract state blocks emit and returns explicit issues.
+- No duplicate contract validation layer was introduced.
+
+Files added
+- `tools/shared/pipeline/assetPipelineTooling.js`
+- `tests/tools/AssetPipelineTooling.test.mjs`
+
+Files updated
+- `tests/run-tests.mjs`
+- docs/dev deliverables for this BUILD PR
+
+Scope guard
+- No engine files changed.
+- No gameplay/runtime feature expansion.
+- No tool UI redesign.
+- No unrelated asset moves.
