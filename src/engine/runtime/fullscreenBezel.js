@@ -1,4 +1,8 @@
-import { resolveGameImageConventionPaths, resolveRuntimeAssetUrl } from "./gameImageConvention.js";
+import {
+  resolveBezelStretchOverridePath,
+  resolveGameImageConventionPaths,
+  resolveRuntimeAssetUrl
+} from "./gameImageConvention.js";
 
 const TRANSPARENT_ALPHA_THRESHOLD = 8;
 const DEFAULT_BEZEL_STRETCH_OVERRIDE_FILENAME = "bezel.stretch.override.json";
@@ -114,15 +118,10 @@ export function sanitizeUniformEdgeStretchPx(value) {
 }
 
 export function resolveBezelStretchConfigPath(bezelPath, fileName = DEFAULT_BEZEL_STRETCH_OVERRIDE_FILENAME) {
-  const normalized = normalizePath(bezelPath).trim();
-  if (!normalized) {
-    return "";
-  }
-  const slashIndex = normalized.lastIndexOf("/");
-  if (slashIndex < 0) {
-    return fileName;
-  }
-  return `${normalized.slice(0, slashIndex + 1)}${fileName}`;
+  return resolveBezelStretchOverridePath({
+    bezelPath,
+    fileName
+  });
 }
 
 function parseStretchConfigObject(candidate) {

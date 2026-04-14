@@ -11,7 +11,11 @@ import fullscreenBezel, {
   findTransparencyWindowFromEdges,
   fitAspectRatio
 } from "../../src/engine/runtime/fullscreenBezel.js";
-import { resolveGameImageConventionPaths, resolveRuntimeAssetUrl } from "../../src/engine/runtime/gameImageConvention.js";
+import {
+  resolveBezelStretchOverridePath,
+  resolveGameImageConventionPaths,
+  resolveRuntimeAssetUrl
+} from "../../src/engine/runtime/gameImageConvention.js";
 
 function createImageFactory(presentPaths) {
   return () => {
@@ -195,6 +199,28 @@ function testBackgroundGameplayGatingAndOrder() {
   assert.equal(gameplayResult.drawn, true);
   assert.equal(gameplayResult.path, "games/Asteroids/assets/images/background.png");
   assert.deepEqual(order, ["background:/games/Asteroids/assets/images/background.png"]);
+}
+
+function testGameImageConventionsAreGameAgnostic() {
+  const asteroidsPaths = resolveGameImageConventionPaths({
+    documentRef: { location: { pathname: "/games/Asteroids/index.html" } }
+  });
+  assert.equal(asteroidsPaths.backgroundPath, "games/Asteroids/assets/images/background.png");
+  assert.equal(asteroidsPaths.bezelPath, "games/Asteroids/assets/images/bezel.png");
+  assert.equal(
+    resolveBezelStretchOverridePath({ documentRef: { location: { pathname: "/games/Asteroids/index.html" } } }),
+    "games/Asteroids/assets/images/bezel.stretch.override.json"
+  );
+
+  const templatePaths = resolveGameImageConventionPaths({
+    documentRef: { location: { pathname: "/games/_template/index.html" } }
+  });
+  assert.equal(templatePaths.backgroundPath, "games/_template/assets/images/background.png");
+  assert.equal(templatePaths.bezelPath, "games/_template/assets/images/bezel.png");
+  assert.equal(
+    resolveBezelStretchOverridePath({ documentRef: { location: { pathname: "/games/_template/index.html" } } }),
+    "games/_template/assets/images/bezel.stretch.override.json"
+  );
 }
 
 function testNoOpWhenBackgroundMissing() {
@@ -435,7 +461,7 @@ async function testBezelStretchConfigAutoCreate() {
 
 async function testBezelDetectionTriggersStretchConfigAutoCreate() {
   const tempRoot = await fs.mkdtemp(path.join(os.tmpdir(), "bezel-detected-config-"));
-  const documentRef = createDocumentStub();
+  const documentRef = createDocumentStub("/games/_template/index.html");
   const host = createElement("div", documentRef);
   const canvas = createElement("canvas", documentRef);
   canvas.width = 960;
@@ -469,11 +495,54 @@ async function testBezelDetectionTriggersStretchConfigAutoCreate() {
       await bezel.stretchConfigPromise;
     }
 
-    const createdPath = path.resolve(tempRoot, "games/Asteroids/assets/images/bezel.stretch.override.json");
+    const createdPath = path.resolve(tempRoot, "games/_template/assets/images/bezel.stretch.override.json");
     const saved = JSON.parse(await fs.readFile(createdPath, "utf8"));
     assert.deepEqual(saved, { uniformEdgeStretchPx: 0 });
-    assert.equal(bezel.getState().stretchConfigPath, "games/Asteroids/assets/images/bezel.stretch.override.json");
+    assert.equal(bezel.getState().stretchConfigPath, "games/_template/assets/images/bezel.stretch.override.json");
     assert.equal(bezel.getState().stretchConfigInitialized, true);
+  } finally {
+    await fs.rm(tempRoot, { recursive: true, force: true });
+  }
+}
+
+async function testBezelDetectionDoesNotOverwriteExistingStretchConfig() {
+  const tempRoot = await fs.mkdtemp(path.join(os.tmpdir(), "bezel-detected-existing-config-"));
+  const documentRef = createDocumentStub("/games/_template/index.html");
+  const host = createElement("div", documentRef);
+  const canvas = createElement("canvas", documentRef);
+  canvas.width = 960;
+  canvas.height = 720;
+  host.appendChild(canvas);
+  documentRef.body.appendChild(host);
+
+  try {
+    const expectedConfig = { uniformEdgeStretchPx: 14 };
+    const configPath = path.resolve(tempRoot, "games/_template/assets/images/bezel.stretch.override.json");
+    await fs.mkdir(path.dirname(configPath), { recursive: true });
+    await fs.writeFile(configPath, `${JSON.stringify(expectedConfig, null, 2)}\n`, "utf8");
+
+    const bezel = new fullscreenBezel({
+      canvas,
+      documentRef,
+      stretchConfigProvider(runtimeConfigPath) {
+        return ensureBezelStretchConfigFile(runtimeConfigPath, {
+          cwd: tempRoot,
+          fsModule: fs,
+          pathModule: path
+        });
+      }
+    });
+    bezel.attach();
+    bezel.element.naturalWidth = 1920;
+    bezel.element.naturalHeight = 1080;
+    bezel.element.onload?.();
+    if (bezel.stretchConfigPromise) {
+      await bezel.stretchConfigPromise;
+    }
+
+    const savedAfterStartup = JSON.parse(await fs.readFile(configPath, "utf8"));
+    assert.deepEqual(savedAfterStartup, expectedConfig);
+    assert.equal(bezel.getState().uniformEdgeStretchPx, expectedConfig.uniformEdgeStretchPx);
   } finally {
     await fs.rm(tempRoot, { recursive: true, force: true });
   }
@@ -614,6 +683,7 @@ function testEngineRuntimeIntegration() {
 
 export async function run() {
   testBackgroundGameplayGatingAndOrder();
+  testGameImageConventionsAreGameAgnostic();
   testNoOpWhenBackgroundMissing();
   testFullscreenBezelVisibilityAndHtmlAttachment();
   testNoOpWhenBezelMissing();
@@ -622,5 +692,6 @@ export async function run() {
   testFullscreenBezelSharedStretchAffectsAllSides();
   await testBezelStretchConfigAutoCreate();
   await testBezelDetectionTriggersStretchConfigAutoCreate();
+  await testBezelDetectionDoesNotOverwriteExistingStretchConfig();
   testEngineRuntimeIntegration();
 }

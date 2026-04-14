@@ -27,6 +27,7 @@ const TEMPLATE_REQUIRED_ASSET_DIRS = [
 ];
 const TEMPLATE_REQUIRED_ASSET_FILES = [
   ".gitkeep",
+  "tools.manifest.json",
   "parallax/data/.gitkeep",
   "sprites/data/.gitkeep",
   "tilemaps/data/.gitkeep",

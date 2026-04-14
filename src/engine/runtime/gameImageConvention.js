@@ -27,6 +27,21 @@ function toImagePath(gameId, fileName) {
   return `games/${id}/assets/images/${fileName}`;
 }
 
+function resolveSiblingPath(pathValue, fileName) {
+  const normalizedPath = normalizePath(pathValue);
+  const normalizedName = safeText(fileName, "");
+  if (!normalizedPath || !normalizedName) {
+    return "";
+  }
+
+  const slashIndex = normalizedPath.lastIndexOf("/");
+  if (slashIndex < 0) {
+    return normalizedName;
+  }
+
+  return `${normalizedPath.slice(0, slashIndex + 1)}${normalizedName}`;
+}
+
 export function resolveRuntimeAssetUrl(pathValue, documentRef = null) {
   const normalized = normalizePath(pathValue);
   if (!normalized) {
@@ -60,4 +75,11 @@ export function resolveGameImageConventionPaths(options = {}) {
     backgroundPath: toImagePath(gameId, "background.png"),
     bezelPath: toImagePath(gameId, "bezel.png")
   };
+}
+
+export function resolveBezelStretchOverridePath(options = {}) {
+  const fileName = safeText(options.fileName, "bezel.stretch.override.json");
+  const explicitBezelPath = safeText(options.bezelPath, "");
+  const bezelPath = explicitBezelPath || resolveGameImageConventionPaths(options).bezelPath;
+  return resolveSiblingPath(bezelPath, fileName);
 }

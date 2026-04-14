@@ -1,12 +1,6 @@
-- Canvas internal size unchanged
-- Canvas remains centered
-- Bezel path not duplicated
-- Bezel visible only in fullscreen
-- Bezel visible on screen
-- Stretch override honored
-- Missing override file auto-created before gameplay
-- Existing override file preserved
-- Background draws only during gameplay
-- Background draws after clear and before starfield/world
-- Output ZIP path:
-  <project folder>/tmp/BUILD_PR_LEVEL_10_21_VERIFY_CENTERED_CANVAS_BEZEL_AND_GAMEPLAY_BACKGROUND.zip
+
+- Template structure matches Asteroids
+- Background gameplay-only
+- Bezel fullscreen-only
+- Override file auto-created
+- No game-specific coupling

@@ -1,2 +1,2 @@
-Verify centered canvas, fullscreen bezel, override creation, and gameplay background
-BUILD_PR_LEVEL_10_21_VERIFY_CENTERED_CANVAS_BEZEL_AND_GAMEPLAY_BACKGROUND
+Standardize bezel/background conventions and align template
+BUILD_PR_LEVEL_10_22_TEMPLATE_BEZEL_BACKGROUND_CONVENTION_FOUNDATION

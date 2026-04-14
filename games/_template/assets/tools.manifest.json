@@ -1,0 +1,11 @@
+{
+  "schema": "html-js-gaming.game-asset-manifest",
+  "version": 1,
+  "gameId": "_template",
+  "domains": {
+    "sprites": [],
+    "tilemaps": [],
+    "parallax": [],
+    "vectors": []
+  }
+}
