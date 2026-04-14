@@ -1,4 +1,3 @@
-- Added strict roadmap-repair bundle
-- Enforced no-delete and no-text-change rules
-- Limited Codex to adds, moves, and status-marker updates only
-- Added recovery section fallback to preserve uncertain content rather than deleting it
+- Added section-1 finalization PR as the correct top-down next lane
+- Re-anchored execution away from already-complete section 11
+- Focused on move-map, rename-map, legacy-map, and validation-gate definition only

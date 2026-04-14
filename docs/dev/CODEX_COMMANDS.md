@@ -2,40 +2,39 @@ MODEL: GPT-5.4
 REASONING: high
 
 COMMAND:
-Create `BUILD_PR_ROADMAP_REPAIR_ADDITIVE_MOVE_ONLY`.
+Create `BUILD_PR_LEVEL_01_STRUCTURE_FINALIZATION_AND_ROADMAP_CORRECTION`.
 
-Repair:
-`docs/dev/roadmaps/MASTER_ROADMAP_HIGH_LEVEL.md`
+Goals:
+1. Finalize the remaining planning/definition work for roadmap section 1.
+2. Re-anchor execution order to the correct top-down next lane.
+3. Keep this PR docs-first and surgical.
 
-Hard rules:
-- NO delete
-- NO text rewrite
-- NO summarization
-- ONLY adds, moves, and status marker updates
-- preserve every existing roadmap line somewhere in the repaired file
+Required work:
+1. Complete the remaining section-1 definition items where possible:
+   - map current folder inventory to target homes
+   - define remaining move-map lanes
+   - define ambiguous-name rename map where still needed
+   - define legacy migration map where still needed
+   - confirm structure targets and boundaries against current repo state
 
-Required actions:
-1. Repair roadmap structure using MOVE operations first
-2. Preserve all existing text exactly as written
-3. If duplicated/appended content exists:
-   - move it into the correct location when clear
-   - otherwise preserve it in an additive `Recovery / Preserved Content` section
-4. Productization-rule style content:
-   - move to the correct policy/instruction area if touched
-   - do not delete
-   - do not rewrite
-5. Update status markers only where execution truth clearly supports it
-6. Do not change any other wording
+2. Update roadmap status markers only where truthfully supported.
+   - do NOT rewrite roadmap text
+   - do NOT jump to already-complete sections as the next lane
+   - section 1 should become the active anchor if validation supports it
 
-Validation output must explicitly confirm:
-- no roadmap text deleted
-- no roadmap wording changed
-- only adds, moves, and status updates were used
+3. Produce clear handoff guidance for later implementation PRs:
+   - exact move-map lanes
+   - exact rename-map lanes
+   - exact validation gates
+   - explicit no-go areas for now
 
-Final packaging step is REQUIRED:
-`<project folder>/tmp/BUILD_PR_ROADMAP_REPAIR_ADDITIVE_MOVE_ONLY.zip`
+4. Final packaging step is REQUIRED:
+   - package ALL changed files into this exact repo-structured ZIP:
+     `<project folder>/tmp/BUILD_PR_LEVEL_01_STRUCTURE_FINALIZATION_AND_ROADMAP_CORRECTION.zip`
 
 Hard rules:
-- roadmap repair only
+- docs-first only
+- no implementation code by ChatGPT
+- no broad repo churn
 - no unrelated repo changes
 - no missing ZIP

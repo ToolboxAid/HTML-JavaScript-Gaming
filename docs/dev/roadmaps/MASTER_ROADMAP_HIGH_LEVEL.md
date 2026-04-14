@@ -101,11 +101,11 @@
 - [.] dependency direction rules defined
 - [.] shared asset promotion rules defined
 - [.] network samples classified as sample-phase content
-- [ ] current folder inventory mapped to target homes
-- [ ] move-map defined for root `engine/` -> `src/engine/`
+- [x] current folder inventory mapped to target homes
+- [x] move-map defined for root `engine/` -> `src/engine/`
 - [x] duplicate-helper migration map defined
-- [ ] ambiguous-name rename map defined
-- [ ] legacy migration map defined
+- [x] ambiguous-name rename map defined
+- [x] legacy migration map defined
 - [.] implementation PRs executed
 - [x] imports normalized after moves
 - [x] post-move validation complete
@@ -122,8 +122,8 @@
 - [x] `src/shared/math`
 - [x] `src/shared/state`
 - [x] `games/_template/flow`
-- [ ] `samples/phase-01`
-- [ ] `samples/phase-13`
+- [x] `samples/phase-01`
+- [x] `samples/phase-13`
 - [x] `tools/shared`
 
 ### Recent Checkpoint Notes
@@ -617,7 +617,7 @@
 - [x] Execute `templates/` relocation and root removal cleanup PR
 
 ### Recommended Final Status Summary
-- [.] current active execution lanes are 3 / 6 / 8
+- [ ] current active execution lanes are 3 / 6 / 8
 - [ ] next planning lanes are 2 / 5 / 7 / 9 / 10
 - [ ] later capability lanes are 11 / 12
 - [ ] final cleanup lane is 13
