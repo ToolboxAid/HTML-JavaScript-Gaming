@@ -2,25 +2,27 @@ MODEL: GPT-5.4
 REASONING: high
 
 COMMAND:
-Create `BUILD_PR_LEVEL_01_RENDERER_RENDERING_BOUNDARY_NORMALIZATION`.
+Create `BUILD_PR_LEVEL_01_SCENE_SCENES_BOUNDARY_NORMALIZATION`.
 
-Implement one clear rendering boundary decision:
+Implement one clear scene boundary decision:
 
-1. Do NOT keep both `renderer` and `rendering` as competing top-level engine concepts.
-2. Prefer `src/engine/rendering/` as the single domain boundary.
-3. Treat renderer as an implementation/class/module inside rendering, not as a separate parallel boundary.
+1. Do NOT keep both `scene` and `scenes` as competing top-level engine concepts when they overlap.
+2. Prefer `src/engine/scene/` as the single engine domain boundary.
+3. Treat plural "scenes" as content collections/instances owned by games or samples where appropriate, not as a competing engine boundary.
 4. Normalize imports/exports to that one truth.
-5. Keep the structure simple:
-   - do NOT over-split into `vector/`, `sprite/`, `layer/` unless the repo already has enough stable clustered content to justify it
-   - prefer a flatter rendering boundary first
-6. Update roadmap/status only if needed and only by status markers or additive truth-safe structure clarification.
-7. Validate:
+5. Keep ownership clear:
+   - engine owns reusable scene runtime logic only
+   - game/sample-specific scene content stays in its owning layer unless truly reusable
+6. Keep the changes surgical.
+7. Update roadmap/status only if needed and only by status markers or additive truth-safe structure clarification.
+8. Validate:
    - imports remain green
-   - no duplicate renderer/rendering top-level ambiguity remains
-   - any subfolders added are truthfully justified, not speculative
+   - no duplicate scene/scenes top-level ambiguity remains
+   - engine scene ownership is clearer
+   - section 1 residue is reduced or closed truthfully
 
 Final packaging step is REQUIRED:
-`<project folder>/tmp/BUILD_PR_LEVEL_01_RENDERER_RENDERING_BOUNDARY_NORMALIZATION.zip`
+`<project folder>/tmp/BUILD_PR_LEVEL_01_SCENE_SCENES_BOUNDARY_NORMALIZATION.zip`
 
 Hard rules:
 - implementation by Codex

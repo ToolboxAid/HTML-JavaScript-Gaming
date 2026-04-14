@@ -4,7 +4,7 @@ David Quesenberry
 03/21/2026
 ECSMovementSystemScene.js
 */
-import { Scene } from '/src/engine/scenes/index.js';
+import { Scene } from '/src/engine/scene/index.js';
 import { Theme, ThemeTokens } from '/src/engine/theme/index.js';
 import { World } from '/src/engine/ecs/index.js';
 import { createTransform, createSize, createVelocity, createRenderable } from '/src/engine/components/index.js';

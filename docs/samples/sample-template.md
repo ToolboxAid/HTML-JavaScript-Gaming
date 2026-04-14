@@ -16,11 +16,11 @@ Late samples may instead use shared sample-owned helpers from `samples/_shared/`
 ## main.js Rules
 - bootstrap only
 - import `Engine` from `src/engine/core/Engine.js` when booting directly
-- prefer public engine barrels such as `src/engine/input/index.js`, `src/engine/theme/index.js`, and `src/engine/scenes/index.js`
+- prefer public engine barrels such as `src/engine/input/index.js`, `src/engine/theme/index.js`, and `src/engine/scene/index.js`
 - set the scene and start the engine
 
 ## Scene Rules
-- extend `Scene` from `src/engine/scenes/index.js`
+- extend `Scene` from `src/engine/scene/index.js`
 - own sample-specific state, update, and render logic
 - do not own engine construction or document-wide wiring
 

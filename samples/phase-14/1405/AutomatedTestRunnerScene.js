@@ -4,7 +4,7 @@ David Quesenberry
 03/22/2026
 AutomatedTestRunnerScene.js
 */
-import { Scene } from '/src/engine/scenes/index.js'; import { drawFrame, drawPanel } from '/src/engine/debug/index.js'; import { Theme, ThemeTokens } from '/src/engine/theme/index.js'; import { AutomatedTestRunner } from '/src/engine/automation/index.js';
+import { Scene } from '/src/engine/scene/index.js'; import { drawFrame, drawPanel } from '/src/engine/debug/index.js'; import { Theme, ThemeTokens } from '/src/engine/theme/index.js'; import { AutomatedTestRunner } from '/src/engine/automation/index.js';
 const theme = new Theme(ThemeTokens);
 export default class AutomatedTestRunnerScene extends Scene {
   constructor() { super(); this.runner = new AutomatedTestRunner(); this.results = []; this.status = 'Run the centralized test runner.'; this.runner.register('scene-load', async () => 'ready'); this.runner.register('mock-failure', async () => { throw new Error('expected fail'); }); }

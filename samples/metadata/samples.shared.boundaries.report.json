@@ -405,7 +405,7 @@
         "boundaryStatus": "allowed-public"
       },
       {
-        "specifier": "/src/engine/scenes/index.js",
+        "specifier": "/src/engine/scene/index.js",
         "importCount": 200,
         "importerExamples": [
           "phase-01/0101/BouncerScene.js",

@@ -4,7 +4,7 @@ David Quesenberry
 03/22/2026
 TileMapEditorScene.js
 */
-import { Scene } from '/src/engine/scenes/index.js'; import { drawFrame, drawPanel } from '/src/engine/debug/index.js'; import { Theme, ThemeTokens } from '/src/engine/theme/index.js'; import { TileMapEditor } from '/src/engine/editor/index.js';
+import { Scene } from '/src/engine/scene/index.js'; import { drawFrame, drawPanel } from '/src/engine/debug/index.js'; import { Theme, ThemeTokens } from '/src/engine/theme/index.js'; import { TileMapEditor } from '/src/engine/editor/index.js';
 const theme = new Theme(ThemeTokens);
 export default class TileMapEditorScene extends Scene {
   constructor() { super(); this.editor = new TileMapEditor({ width: 8, height: 4 }); this.status = 'Pick a tile type, then paint a row.'; }

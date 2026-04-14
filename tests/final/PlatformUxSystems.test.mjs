@@ -9,7 +9,7 @@ import { AudioService, MidiPlayer, FrequencyPlayer, Synthesizer, MediaTrackServi
 import { ParticleSystem } from '../../src/engine/fx/index.js';
 import { UIFramework } from '../../src/engine/ui/index.js';
 import { InputContextService } from '../../src/engine/input/index.js';
-import { SceneTransitionController } from '../../src/engine/scenes/index.js';
+import { SceneTransitionController } from '../../src/engine/scene/index.js';
 import { SaveSlotManager, StorageService, CookieStorageService } from '../../src/engine/persistence/index.js';
 import { Logger, ErrorBoundary } from '../../src/engine/logging/index.js';
 

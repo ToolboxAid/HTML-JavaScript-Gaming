@@ -89,7 +89,7 @@
       ],
       "engineClassesUsed": [
         "engine/core/Engine",
-        "engine/scenes/index/Scene"
+        "engine/scene/index/Scene"
       ],
       "thumbnail": "/samples/phase-01/0101/assets/images/preview.svg",
       "preview": "/samples/phase-01/0101/assets/images/preview.svg"
@@ -107,7 +107,7 @@
       "engineClassesUsed": [
         "engine/core/Engine",
         "engine/input/index/InputService",
-        "engine/scenes/index/Scene"
+        "engine/scene/index/Scene"
       ],
       "thumbnail": "/samples/phase-01/0102/assets/images/preview.svg",
       "preview": "/samples/phase-01/0102/assets/images/preview.svg"
@@ -125,7 +125,7 @@
       "engineClassesUsed": [
         "engine/core/Engine",
         "engine/input/index/InputService",
-        "engine/scenes/index/Scene"
+        "engine/scene/index/Scene"
       ],
       "thumbnail": "/samples/phase-01/0103/assets/images/preview.svg",
       "preview": "/samples/phase-01/0103/assets/images/preview.svg"
@@ -143,7 +143,7 @@
       "engineClassesUsed": [
         "engine/core/Engine",
         "engine/input/index/InputService",
-        "engine/scenes/index/Scene"
+        "engine/scene/index/Scene"
       ],
       "thumbnail": "/samples/phase-01/0104/assets/images/preview.svg",
       "preview": "/samples/phase-01/0104/assets/images/preview.svg"
@@ -162,9 +162,9 @@
       "engineClassesUsed": [
         "engine/core/Engine",
         "engine/input/index/InputService",
-        "engine/scenes/index/Scene",
-        "engine/scenes/index/SceneTransition",
-        "engine/scenes/index/TransitionScene"
+        "engine/scene/index/Scene",
+        "engine/scene/index/SceneTransition",
+        "engine/scene/index/TransitionScene"
       ],
       "thumbnail": "/samples/phase-01/0105/assets/images/preview.svg",
       "preview": "/samples/phase-01/0105/assets/images/preview.svg"
@@ -184,7 +184,7 @@
         "engine/core/Engine",
         "engine/input/index/InputMap",
         "engine/input/index/InputService",
-        "engine/scenes/index/Scene"
+        "engine/scene/index/Scene"
       ],
       "thumbnail": "/samples/phase-01/0106/assets/images/preview.svg",
       "preview": "/samples/phase-01/0106/assets/images/preview.svg"
@@ -211,7 +211,7 @@
         "engine/entity/index/Velocity",
         "engine/input/index/InputMap",
         "engine/input/index/InputService",
-        "engine/scenes/index/Scene"
+        "engine/scene/index/Scene"
       ],
       "thumbnail": "/samples/phase-01/0107/assets/images/preview.svg",
       "preview": "/samples/phase-01/0107/assets/images/preview.svg"
@@ -237,7 +237,7 @@
         "engine/entity/index/Transform",
         "engine/entity/index/Velocity",
         "engine/input/index/InputService",
-        "engine/scenes/index/Scene"
+        "engine/scene/index/Scene"
       ],
       "thumbnail": "/samples/phase-01/0108/assets/images/preview.svg",
       "preview": "/samples/phase-01/0108/assets/images/preview.svg"
@@ -255,7 +255,7 @@
       "engineClassesUsed": [
         "engine/core/Engine",
         "engine/input/index/InputService",
-        "engine/scenes/index/Scene"
+        "engine/scene/index/Scene"
       ],
       "thumbnail": "/samples/phase-01/0109/assets/images/preview.svg",
       "preview": "/samples/phase-01/0109/assets/images/preview.svg"
@@ -273,7 +273,7 @@
       "engineClassesUsed": [
         "engine/core/Engine",
         "engine/input/index/InputService",
-        "engine/scenes/index/Scene"
+        "engine/scene/index/Scene"
       ],
       "thumbnail": "/samples/phase-01/0110/assets/images/preview.svg",
       "preview": "/samples/phase-01/0110/assets/images/preview.svg"
@@ -291,7 +291,7 @@
       "engineClassesUsed": [
         "engine/core/Engine",
         "engine/input/index/InputService",
-        "engine/scenes/index/Scene"
+        "engine/scene/index/Scene"
       ],
       "thumbnail": "/samples/phase-01/0111/assets/images/preview.svg",
       "preview": "/samples/phase-01/0111/assets/images/preview.svg"
@@ -309,7 +309,7 @@
       "engineClassesUsed": [
         "engine/core/Engine",
         "engine/input/index/InputService",
-        "engine/scenes/index/Scene"
+        "engine/scene/index/Scene"
       ],
       "thumbnail": "/samples/phase-01/0112/assets/images/preview.svg",
       "preview": "/samples/phase-01/0112/assets/images/preview.svg"
@@ -327,7 +327,7 @@
       "engineClassesUsed": [
         "engine/core/Engine",
         "engine/input/index/InputService",
-        "engine/scenes/index/Scene"
+        "engine/scene/index/Scene"
       ],
       "thumbnail": "/samples/phase-01/0113/assets/images/preview.svg",
       "preview": "/samples/phase-01/0113/assets/images/preview.svg"
@@ -345,7 +345,7 @@
       "engineClassesUsed": [
         "engine/core/Engine",
         "engine/input/index/InputService",
-        "engine/scenes/index/Scene"
+        "engine/scene/index/Scene"
       ],
       "thumbnail": "/samples/phase-01/0114/assets/images/preview.svg",
       "preview": "/samples/phase-01/0114/assets/images/preview.svg"
@@ -367,7 +367,7 @@
         "engine/debug/index/drawSceneFrame",
         "engine/ecs/index/World",
         "engine/input/index/InputService",
-        "engine/scenes/index/Scene"
+        "engine/scene/index/Scene"
       ],
       "thumbnail": "/samples/phase-01/0115/assets/images/preview.svg",
       "preview": "/samples/phase-01/0115/assets/images/preview.svg"
@@ -400,7 +400,7 @@
         "engine/debug/index/drawSceneFrame",
         "engine/ecs/index/World",
         "engine/input/index/InputService",
-        "engine/scenes/index/Scene",
+        "engine/scene/index/Scene",
         "engine/systems/index/bounceEntitiesHorizontallyInBounds",
         "engine/systems/index/moveEntities",
         "engine/systems/index/renderRectEntities"
@@ -441,7 +441,7 @@
         "engine/debug/index/drawSceneFrame",
         "engine/ecs/index/World",
         "engine/input/index/InputService",
-        "engine/scenes/index/Scene",
+        "engine/scene/index/Scene",
         "engine/systems/index/applyInputControl",
         "engine/systems/index/clampEntitiesToBounds",
         "engine/systems/index/moveEntities",
@@ -487,7 +487,7 @@
         "engine/debug/index/drawSceneFrame",
         "engine/ecs/index/World",
         "engine/input/index/InputService",
-        "engine/scenes/index/Scene",
+        "engine/scene/index/Scene",
         "engine/systems/index/applyInputControl",
         "engine/systems/index/blockCollidingEntities",
         "engine/systems/index/moveEntities",
@@ -514,7 +514,7 @@
         "engine/debug/index/drawSceneFrame",
         "engine/ecs/index/World",
         "engine/input/index/InputService",
-        "engine/scenes/index/Scene",
+        "engine/scene/index/Scene",
         "engine/systems/index/renderRectEntities"
       ],
       "thumbnail": "/samples/phase-01/0119/assets/images/preview.svg",
@@ -559,7 +559,7 @@
         "engine/debug/index/validateWorldEntities",
         "engine/ecs/index/World",
         "engine/input/index/InputService",
-        "engine/scenes/index/Scene",
+        "engine/scene/index/Scene",
         "engine/systems/index/applyInputControl",
         "engine/systems/index/blockCollidingEntities",
         "engine/systems/index/moveEntities",
@@ -602,7 +602,7 @@
         "engine/debug/index/drawSceneFrame",
         "engine/ecs/index/World",
         "engine/input/index/InputService",
-        "engine/scenes/index/Scene",
+        "engine/scene/index/Scene",
         "engine/systems/index/applyInputControl",
         "engine/systems/index/moveEntities",
         "engine/systems/index/renderRectEntities"
@@ -650,7 +650,7 @@
         "engine/debug/index/drawSceneFrame",
         "engine/ecs/index/World",
         "engine/input/index/InputService",
-        "engine/scenes/index/Scene",
+        "engine/scene/index/Scene",
         "engine/systems/index/applyInputControl",
         "engine/systems/index/collectOverlappingEntities",
         "engine/systems/index/moveEntities",
@@ -692,7 +692,7 @@
         "engine/debug/index/drawSceneFrame",
         "engine/ecs/index/World",
         "engine/input/index/InputService",
-        "engine/scenes/index/Scene",
+        "engine/scene/index/Scene",
         "engine/systems/index/bounceEntitiesHorizontallyInBounds",
         "engine/systems/index/moveEntities",
         "engine/systems/index/renderRectEntities"
@@ -738,7 +738,7 @@
         "engine/debug/index/validateWorldEntities",
         "engine/ecs/index/World",
         "engine/input/index/InputService",
-        "engine/scenes/index/Scene",
+        "engine/scene/index/Scene",
         "engine/systems/index/applyInputControl",
         "engine/systems/index/blockCollidingEntities",
         "engine/systems/index/moveEntities",
@@ -765,7 +765,7 @@
         "engine/core/Engine",
         "engine/debug/index/drawFrame",
         "engine/input/index/InputService",
-        "engine/scenes/index/Scene",
+        "engine/scene/index/Scene",
         "engine/theme/index/Theme",
         "engine/theme/index/ThemeTokens",
         "engine/utils/index/clamp"
@@ -791,7 +791,7 @@
         "engine/core/Engine",
         "engine/debug/index/drawFrame",
         "engine/input/index/InputService",
-        "engine/scenes/index/Scene",
+        "engine/scene/index/Scene",
         "engine/theme/index/Theme",
         "engine/theme/index/ThemeTokens",
         "engine/utils/index/clamp"
@@ -819,7 +819,7 @@
         "engine/debug/index/drawFrame",
         "engine/debug/index/drawMinimap",
         "engine/input/index/InputService",
-        "engine/scenes/index/Scene",
+        "engine/scene/index/Scene",
         "engine/theme/index/Theme",
         "engine/theme/index/ThemeTokens",
         "engine/utils/index/clamp"
@@ -848,7 +848,7 @@
         "engine/debug/index/drawFrame",
         "engine/debug/index/drawPanel",
         "engine/input/index/InputService",
-        "engine/scenes/index/Scene"
+        "engine/scene/index/Scene"
       ],
       "thumbnail": "/samples/phase-02/0204/assets/images/preview.svg",
       "preview": "/samples/phase-02/0204/assets/images/preview.svg"
@@ -873,7 +873,7 @@
         "engine/debug/index/drawPanel",
         "engine/input/index/InputService",
         "engine/persistence/index/StorageService",
-        "engine/scenes/index/Scene",
+        "engine/scene/index/Scene",
         "engine/theme/index/Theme",
         "engine/theme/index/ThemeTokens",
         "engine/utils/index/clamp"
@@ -903,7 +903,7 @@
         "engine/debug/index/drawPanel",
         "engine/input/index/InputService",
         "engine/level/index/LevelLoader",
-        "engine/scenes/index/Scene",
+        "engine/scene/index/Scene",
         "engine/theme/index/Theme",
         "engine/theme/index/ThemeTokens",
         "engine/utils/index/clamp"
@@ -931,7 +931,7 @@
         "engine/debug/index/drawFrame",
         "engine/debug/index/drawPanel",
         "engine/input/index/InputService",
-        "engine/scenes/index/Scene",
+        "engine/scene/index/Scene",
         "engine/theme/index/Theme",
         "engine/theme/index/ThemeTokens",
         "engine/utils/index/clamp"
@@ -958,7 +958,7 @@
         "engine/debug/index/drawFrame",
         "engine/debug/index/drawPanel",
         "engine/input/index/InputService",
-        "engine/scenes/index/Scene",
+        "engine/scene/index/Scene",
         "engine/state/index/StateMachine",
         "engine/theme/index/Theme",
         "engine/theme/index/ThemeTokens",
@@ -989,7 +989,7 @@
         "engine/input/index/InputService",
         "engine/interaction/index/findNearestInteractable",
         "engine/interaction/index/resolveInteraction",
-        "engine/scenes/index/Scene",
+        "engine/scene/index/Scene",
         "engine/theme/index/Theme",
         "engine/theme/index/ThemeTokens",
         "engine/utils/index/clamp"
@@ -1017,7 +1017,7 @@
         "engine/debug/index/drawFrame",
         "engine/debug/index/drawPanel",
         "engine/input/index/InputService",
-        "engine/scenes/index/Scene",
+        "engine/scene/index/Scene",
         "engine/systems/index/spawnProjectile",
         "engine/systems/index/updateProjectiles",
         "engine/theme/index/Theme",
@@ -1049,7 +1049,7 @@
         "engine/debug/index/drawFrame",
         "engine/debug/index/drawPanel",
         "engine/input/index/InputService",
-        "engine/scenes/index/Scene",
+        "engine/scene/index/Scene",
         "engine/theme/index/Theme",
         "engine/theme/index/ThemeTokens",
         "engine/utils/index/clamp"
@@ -1083,7 +1083,7 @@
         "engine/debug/index/drawPanel",
         "engine/input/index/InputService",
         "engine/interaction/index/resolveInteraction",
-        "engine/scenes/index/Scene",
+        "engine/scene/index/Scene",
         "engine/systems/index/spawnProjectile",
         "engine/systems/index/updateProjectiles",
         "engine/theme/index/Theme",
@@ -1112,7 +1112,7 @@
         "engine/debug/index/drawPanel",
         "engine/input/index/InputService",
         "engine/rendering/index/renderSpriteReadyEntities",
-        "engine/scenes/index/Scene"
+        "engine/scene/index/Scene"
       ],
       "thumbnail": "/samples/phase-02/0213/assets/images/preview.svg",
       "preview": "/samples/phase-02/0213/assets/images/preview.svg"
@@ -1139,7 +1139,7 @@
         "engine/debug/index/drawPanel",
         "engine/input/index/InputService",
         "engine/rendering/index/renderSpriteReadyEntities",
-        "engine/scenes/index/Scene",
+        "engine/scene/index/Scene",
         "engine/theme/index/Theme",
         "engine/theme/index/ThemeTokens",
         "engine/utils/index/clamp"
@@ -1166,7 +1166,7 @@
         "engine/debug/index/drawPanel",
         "engine/input/index/InputService",
         "engine/rendering/index/renderByLayers",
-        "engine/scenes/index/Scene",
+        "engine/scene/index/Scene",
         "engine/theme/index/Theme",
         "engine/theme/index/ThemeTokens"
       ],
@@ -1200,7 +1200,7 @@
         "engine/prefabs/index/createPlayerPrefab",
         "engine/prefabs/index/createProjectilePrefab",
         "engine/rendering/index/renderSpriteReadyEntities",
-        "engine/scenes/index/Scene",
+        "engine/scene/index/Scene",
         "engine/theme/index/Theme",
         "engine/theme/index/ThemeTokens"
       ],
@@ -1226,7 +1226,7 @@
         "engine/debug/index/drawPanel",
         "engine/game/index/GameModeState",
         "engine/input/index/InputService",
-        "engine/scenes/index/Scene",
+        "engine/scene/index/Scene",
         "engine/theme/index/Theme",
         "engine/theme/index/ThemeTokens"
       ],
@@ -1269,7 +1269,7 @@
         "engine/prefabs/index/createPlayerPrefab",
         "engine/rendering/index/renderByLayers",
         "engine/rendering/index/renderSpriteReadyEntities",
-        "engine/scenes/index/Scene",
+        "engine/scene/index/Scene",
         "engine/systems/index/spawnProjectile",
         "engine/systems/index/updateProjectiles",
         "engine/theme/index/Theme",
@@ -1302,7 +1302,7 @@
         "engine/debug/index/drawPanel",
         "engine/input/index/InputService",
         "engine/rendering/index/renderSpriteReadyEntities",
-        "engine/scenes/index/Scene",
+        "engine/scene/index/Scene",
         "engine/theme/index/Theme",
         "engine/theme/index/ThemeTokens"
       ],
@@ -1333,7 +1333,7 @@
         "engine/debug/index/drawFrame",
         "engine/debug/index/drawPanel",
         "engine/input/index/InputService",
-        "engine/scenes/index/Scene",
+        "engine/scene/index/Scene",
         "engine/theme/index/Theme",
         "engine/theme/index/ThemeTokens",
         "engine/utils/index/clamp"
@@ -1361,7 +1361,7 @@
         "engine/debug/index/drawFrame",
         "engine/debug/index/drawPanel",
         "engine/input/index/InputService",
-        "engine/scenes/index/Scene",
+        "engine/scene/index/Scene",
         "engine/theme/index/Theme",
         "engine/theme/index/ThemeTokens",
         "engine/tilemap/index/Tilemap",
@@ -1392,7 +1392,7 @@
         "engine/debug/index/drawPanel",
         "engine/input/index/ActionInputMap",
         "engine/input/index/ActionInputService",
-        "engine/scenes/index/Scene",
+        "engine/scene/index/Scene",
         "engine/theme/index/Theme",
         "engine/theme/index/ThemeTokens",
         "engine/utils/index/clamp"
@@ -1422,7 +1422,7 @@
         "engine/input/index/InputService",
         "engine/persistence/index/deserializeWorldState",
         "engine/persistence/index/serializeWorldState",
-        "engine/scenes/index/Scene",
+        "engine/scene/index/Scene",
         "engine/theme/index/Theme",
         "engine/theme/index/ThemeTokens",
         "engine/utils/index/clamp"
@@ -1466,7 +1466,7 @@
         "engine/persistence/index/deserializeWorldState",
         "engine/persistence/index/serializeWorldState",
         "engine/rendering/index/renderSpriteReadyEntities",
-        "engine/scenes/index/Scene",
+        "engine/scene/index/Scene",
         "engine/theme/index/Theme",
         "engine/theme/index/ThemeTokens",
         "engine/tilemap/index/Tilemap",
@@ -1510,7 +1510,7 @@
         "engine/input/index/ActionInputMap",
         "engine/input/index/ActionInputService",
         "engine/rendering/index/renderSpriteReadyEntities",
-        "engine/scenes/index/Scene",
+        "engine/scene/index/Scene",
         "engine/systems/index/moveRectWithTilemapCollision",
         "engine/theme/index/Theme",
         "engine/theme/index/ThemeTokens",
@@ -1556,7 +1556,7 @@
         "engine/input/index/ActionInputMap",
         "engine/input/index/ActionInputService",
         "engine/rendering/index/renderSpriteReadyEntities",
-        "engine/scenes/index/Scene",
+        "engine/scene/index/Scene",
         "engine/systems/index/moveRectWithTilemapCollision",
         "engine/theme/index/Theme",
         "engine/theme/index/ThemeTokens",
@@ -1602,7 +1602,7 @@
         "engine/input/index/ActionInputMap",
         "engine/input/index/ActionInputService",
         "engine/rendering/index/renderSpriteReadyEntities",
-        "engine/scenes/index/Scene",
+        "engine/scene/index/Scene",
         "engine/systems/index/stepArcadeBody",
         "engine/theme/index/Theme",
         "engine/theme/index/ThemeTokens",
@@ -1649,7 +1649,7 @@
         "engine/input/index/ActionInputMap",
         "engine/input/index/ActionInputService",
         "engine/rendering/index/renderSpriteReadyEntities",
-        "engine/scenes/index/Scene",
+        "engine/scene/index/Scene",
         "engine/systems/index/moveRectWithTilemapCollision",
         "engine/systems/index/stepArcadeBody",
         "engine/theme/index/Theme",
@@ -1697,7 +1697,7 @@
         "engine/input/index/ActionInputMap",
         "engine/input/index/ActionInputService",
         "engine/rendering/index/renderSpriteReadyEntities",
-        "engine/scenes/index/Scene",
+        "engine/scene/index/Scene",
         "engine/systems/index/moveRectWithTilemapCollision",
         "engine/systems/index/stepArcadeBody",
         "engine/theme/index/Theme",
@@ -1745,7 +1745,7 @@
         "engine/input/index/ActionInputMap",
         "engine/input/index/ActionInputService",
         "engine/rendering/index/renderSpriteReadyEntities",
-        "engine/scenes/index/Scene",
+        "engine/scene/index/Scene",
         "engine/systems/index/moveRectWithTilemapCollision",
         "engine/systems/index/stepArcadeBody",
         "engine/theme/index/Theme",
@@ -1779,7 +1779,7 @@
         "engine/debug/index/drawPanel",
         "engine/input/index/ActionInputMap",
         "engine/input/index/ActionInputService",
-        "engine/scenes/index/Scene",
+        "engine/scene/index/Scene",
         "engine/theme/index/Theme",
         "engine/theme/index/ThemeTokens"
       ],
@@ -1809,7 +1809,7 @@
         "engine/debug/index/drawPanel",
         "engine/input/index/ActionInputMap",
         "engine/input/index/ActionInputService",
-        "engine/scenes/index/Scene",
+        "engine/scene/index/Scene",
         "engine/theme/index/Theme",
         "engine/theme/index/ThemeTokens"
       ],
@@ -1839,7 +1839,7 @@
         "engine/debug/index/drawPanel",
         "engine/input/index/ActionInputMap",
         "engine/input/index/ActionInputService",
-        "engine/scenes/index/Scene",
+        "engine/scene/index/Scene",
         "engine/theme/index/Theme",
         "engine/theme/index/ThemeTokens"
       ],
@@ -1869,7 +1869,7 @@
         "engine/debug/index/drawPanel",
         "engine/input/index/ActionInputMap",
         "engine/input/index/ActionInputService",
-        "engine/scenes/index/Scene",
+        "engine/scene/index/Scene",
         "engine/theme/index/Theme",
         "engine/theme/index/ThemeTokens"
       ],
@@ -1899,7 +1899,7 @@
         "engine/debug/index/drawPanel",
         "engine/input/index/ActionInputMap",
         "engine/input/index/ActionInputService",
-        "engine/scenes/index/Scene",
+        "engine/scene/index/Scene",
         "engine/theme/index/Theme",
         "engine/theme/index/ThemeTokens"
       ],
@@ -1929,7 +1929,7 @@
         "engine/debug/index/drawPanel",
         "engine/input/index/ActionInputMap",
         "engine/input/index/ActionInputService",
-        "engine/scenes/index/Scene",
+        "engine/scene/index/Scene",
         "engine/theme/index/Theme",
         "engine/theme/index/ThemeTokens"
       ],
@@ -1959,7 +1959,7 @@
         "engine/debug/index/drawPanel",
         "engine/input/index/ActionInputMap",
         "engine/input/index/ActionInputService",
-        "engine/scenes/index/Scene",
+        "engine/scene/index/Scene",
         "engine/theme/index/Theme",
         "engine/theme/index/ThemeTokens"
       ],
@@ -1989,7 +1989,7 @@
         "engine/debug/index/drawPanel",
         "engine/input/index/ActionInputMap",
         "engine/input/index/ActionInputService",
-        "engine/scenes/index/Scene",
+        "engine/scene/index/Scene",
         "engine/theme/index/Theme",
         "engine/theme/index/ThemeTokens"
       ],
@@ -2019,7 +2019,7 @@
         "engine/debug/index/drawPanel",
         "engine/input/index/ActionInputMap",
         "engine/input/index/ActionInputService",
-        "engine/scenes/index/Scene",
+        "engine/scene/index/Scene",
         "engine/theme/index/Theme",
         "engine/theme/index/ThemeTokens"
       ],
@@ -2049,7 +2049,7 @@
         "engine/debug/index/drawPanel",
         "engine/input/index/ActionInputMap",
         "engine/input/index/ActionInputService",
-        "engine/scenes/index/Scene",
+        "engine/scene/index/Scene",
         "engine/theme/index/Theme",
         "engine/theme/index/ThemeTokens"
       ],
@@ -2079,7 +2079,7 @@
         "engine/debug/index/drawPanel",
         "engine/input/index/ActionInputMap",
         "engine/input/index/ActionInputService",
-        "engine/scenes/index/Scene",
+        "engine/scene/index/Scene",
         "engine/theme/index/Theme",
         "engine/theme/index/ThemeTokens"
       ],
@@ -2109,7 +2109,7 @@
         "engine/debug/index/drawPanel",
         "engine/input/index/ActionInputMap",
         "engine/input/index/ActionInputService",
-        "engine/scenes/index/Scene",
+        "engine/scene/index/Scene",
         "engine/theme/index/Theme",
         "engine/theme/index/ThemeTokens"
       ],
@@ -2135,7 +2135,7 @@
         "engine/debug/index/drawPanel",
         "engine/input/index/ActionInputMap",
         "engine/input/index/ActionInputService",
-        "engine/scenes/index/Scene",
+        "engine/scene/index/Scene",
         "engine/theme/index/Theme",
         "engine/theme/index/ThemeTokens"
       ],
@@ -2161,7 +2161,7 @@
         "engine/debug/index/drawPanel",
         "engine/input/index/ActionInputMap",
         "engine/input/index/ActionInputService",
-        "engine/scenes/index/Scene",
+        "engine/scene/index/Scene",
         "engine/theme/index/Theme",
         "engine/theme/index/ThemeTokens"
       ],
@@ -2187,7 +2187,7 @@
         "engine/debug/index/drawPanel",
         "engine/input/index/ActionInputMap",
         "engine/input/index/ActionInputService",
-        "engine/scenes/index/Scene",
+        "engine/scene/index/Scene",
         "engine/theme/index/Theme",
         "engine/theme/index/ThemeTokens"
       ],
@@ -2213,7 +2213,7 @@
         "engine/debug/index/drawPanel",
         "engine/input/index/ActionInputMap",
         "engine/input/index/ActionInputService",
-        "engine/scenes/index/Scene",
+        "engine/scene/index/Scene",
         "engine/theme/index/Theme",
         "engine/theme/index/ThemeTokens"
       ],
@@ -2239,7 +2239,7 @@
         "engine/debug/index/drawPanel",
         "engine/input/index/ActionInputMap",
         "engine/input/index/ActionInputService",
-        "engine/scenes/index/Scene",
+        "engine/scene/index/Scene",
         "engine/theme/index/Theme",
         "engine/theme/index/ThemeTokens"
       ],
@@ -2265,7 +2265,7 @@
         "engine/debug/index/drawPanel",
         "engine/input/index/ActionInputMap",
         "engine/input/index/ActionInputService",
-        "engine/scenes/index/Scene",
+        "engine/scene/index/Scene",
         "engine/theme/index/Theme",
         "engine/theme/index/ThemeTokens"
       ],
@@ -2283,7 +2283,7 @@
       ],
       "engineClassesUsed": [
         "engine/core/Engine",
-        "engine/scenes/index/Scene",
+        "engine/scene/index/Scene",
         "engine/theme/index/Theme",
         "engine/theme/index/ThemeTokens"
       ],
@@ -2301,7 +2301,7 @@
       ],
       "engineClassesUsed": [
         "engine/core/Engine",
-        "engine/scenes/index/Scene",
+        "engine/scene/index/Scene",
         "engine/theme/index/Theme",
         "engine/theme/index/ThemeTokens"
       ],
@@ -2319,7 +2319,7 @@
       ],
       "engineClassesUsed": [
         "engine/core/Engine",
-        "engine/scenes/index/Scene",
+        "engine/scene/index/Scene",
         "engine/theme/index/Theme",
         "engine/theme/index/ThemeTokens"
       ],
@@ -2337,7 +2337,7 @@
       ],
       "engineClassesUsed": [
         "engine/core/Engine",
-        "engine/scenes/index/Scene",
+        "engine/scene/index/Scene",
         "engine/theme/index/Theme",
         "engine/theme/index/ThemeTokens"
       ],
@@ -2355,7 +2355,7 @@
       ],
       "engineClassesUsed": [
         "engine/core/Engine",
-        "engine/scenes/index/Scene",
+        "engine/scene/index/Scene",
         "engine/theme/index/Theme",
         "engine/theme/index/ThemeTokens"
       ],
@@ -2373,7 +2373,7 @@
       ],
       "engineClassesUsed": [
         "engine/core/Engine",
-        "engine/scenes/index/Scene",
+        "engine/scene/index/Scene",
         "engine/theme/index/Theme",
         "engine/theme/index/ThemeTokens"
       ],
@@ -2399,7 +2399,7 @@
         "engine/debug/index/drawPanel",
         "engine/input/index/ActionInputMap",
         "engine/input/index/ActionInputService",
-        "engine/scenes/index/Scene",
+        "engine/scene/index/Scene",
         "engine/theme/index/Theme",
         "engine/theme/index/ThemeTokens"
       ],
@@ -2425,7 +2425,7 @@
         "engine/debug/index/drawPanel",
         "engine/input/index/ActionInputMap",
         "engine/input/index/ActionInputService",
-        "engine/scenes/index/Scene",
+        "engine/scene/index/Scene",
         "engine/theme/index/Theme",
         "engine/theme/index/ThemeTokens"
       ],
@@ -2451,7 +2451,7 @@
         "engine/debug/index/drawPanel",
         "engine/input/index/ActionInputMap",
         "engine/input/index/ActionInputService",
-        "engine/scenes/index/Scene",
+        "engine/scene/index/Scene",
         "engine/theme/index/Theme",
         "engine/theme/index/ThemeTokens"
       ],
@@ -2477,7 +2477,7 @@
         "engine/debug/index/drawPanel",
         "engine/input/index/ActionInputMap",
         "engine/input/index/ActionInputService",
-        "engine/scenes/index/Scene",
+        "engine/scene/index/Scene",
         "engine/theme/index/Theme",
         "engine/theme/index/ThemeTokens"
       ],
@@ -2503,7 +2503,7 @@
         "engine/debug/index/drawPanel",
         "engine/input/index/ActionInputMap",
         "engine/input/index/ActionInputService",
-        "engine/scenes/index/Scene",
+        "engine/scene/index/Scene",
         "engine/theme/index/Theme",
         "engine/theme/index/ThemeTokens"
       ],
@@ -2529,7 +2529,7 @@
         "engine/input/index/ActionInputMap",
         "engine/input/index/ActionInputService",
         "engine/input/index/drawActionInputDebugOverlay",
-        "engine/scenes/index/Scene",
+        "engine/scene/index/Scene",
         "engine/theme/index/Theme",
         "engine/theme/index/ThemeTokens"
       ],
@@ -2571,7 +2571,7 @@
         "engine/debug/index/drawPanel",
         "engine/input/index/ActionInputMap",
         "engine/input/index/ActionInputService",
-        "engine/scenes/index/Scene",
+        "engine/scene/index/Scene",
         "engine/theme/index/Theme",
         "engine/theme/index/ThemeTokens"
       ],
@@ -2611,7 +2611,7 @@
         "engine/debug/index/drawPanel",
         "engine/input/index/ActionInputMap",
         "engine/input/index/ActionInputService",
-        "engine/scenes/index/Scene",
+        "engine/scene/index/Scene",
         "engine/theme/index/Theme",
         "engine/theme/index/ThemeTokens"
       ],
@@ -2649,7 +2649,7 @@
         "engine/debug/index/drawPanel",
         "engine/input/index/ActionInputMap",
         "engine/input/index/ActionInputService",
-        "engine/scenes/index/Scene",
+        "engine/scene/index/Scene",
         "engine/theme/index/Theme",
         "engine/theme/index/ThemeTokens"
       ],
@@ -2687,7 +2687,7 @@
         "engine/debug/index/drawPanel",
         "engine/input/index/ActionInputMap",
         "engine/input/index/ActionInputService",
-        "engine/scenes/index/Scene",
+        "engine/scene/index/Scene",
         "engine/theme/index/Theme",
         "engine/theme/index/ThemeTokens"
       ],
@@ -2725,7 +2725,7 @@
         "engine/debug/index/drawPanel",
         "engine/input/index/ActionInputMap",
         "engine/input/index/ActionInputService",
-        "engine/scenes/index/Scene",
+        "engine/scene/index/Scene",
         "engine/theme/index/Theme",
         "engine/theme/index/ThemeTokens"
       ],
@@ -2765,7 +2765,7 @@
         "engine/debug/index/drawPanel",
         "engine/input/index/ActionInputMap",
         "engine/input/index/ActionInputService",
-        "engine/scenes/index/Scene",
+        "engine/scene/index/Scene",
         "engine/theme/index/Theme",
         "engine/theme/index/ThemeTokens"
       ],
@@ -2791,7 +2791,7 @@
         "engine/debug/index/drawPanel",
         "engine/input/index/ActionInputMap",
         "engine/input/index/ActionInputService",
-        "engine/scenes/index/Scene",
+        "engine/scene/index/Scene",
         "engine/theme/index/Theme",
         "engine/theme/index/ThemeTokens"
       ],
@@ -2818,7 +2818,7 @@
         "engine/debug/index/drawPanel",
         "engine/input/index/ActionInputMap",
         "engine/input/index/ActionInputService",
-        "engine/scenes/index/Scene",
+        "engine/scene/index/Scene",
         "engine/state/index/StateMachine"
       ],
       "thumbnail": "/samples/phase-05/0508/assets/images/preview.svg",
@@ -2845,7 +2845,7 @@
         "engine/debug/index/drawPanel",
         "engine/input/index/ActionInputMap",
         "engine/input/index/ActionInputService",
-        "engine/scenes/index/Scene",
+        "engine/scene/index/Scene",
         "engine/theme/index/Theme",
         "engine/theme/index/ThemeTokens"
       ],
@@ -2873,7 +2873,7 @@
         "engine/core/Engine",
         "engine/debug/index/drawFrame",
         "engine/debug/index/drawPanel",
-        "engine/scenes/index/Scene",
+        "engine/scene/index/Scene",
         "engine/theme/index/Theme",
         "engine/theme/index/ThemeTokens"
       ],
@@ -2901,7 +2901,7 @@
         "engine/debug/index/drawFrame",
         "engine/input/index/ActionInputMap",
         "engine/input/index/ActionInputService",
-        "engine/scenes/index/Scene",
+        "engine/scene/index/Scene",
         "engine/theme/index/Theme",
         "engine/theme/index/ThemeTokens"
       ],
@@ -2923,7 +2923,7 @@
         "engine/core/Engine",
         "engine/debug/index/drawFrame",
         "engine/debug/index/drawPerformanceMetricsPanel",
-        "engine/scenes/index/Scene",
+        "engine/scene/index/Scene",
         "engine/theme/index/Theme",
         "engine/theme/index/ThemeTokens"
       ],
@@ -2949,7 +2949,7 @@
         "engine/core/Engine",
         "engine/debug/index/drawFrame",
         "engine/debug/index/drawPanel",
-        "engine/scenes/index/Scene",
+        "engine/scene/index/Scene",
         "engine/theme/index/Theme",
         "engine/theme/index/ThemeTokens"
       ],
@@ -2973,7 +2973,7 @@
         "engine/core/Engine",
         "engine/debug/index/drawFrame",
         "engine/debug/index/drawPanel",
-        "engine/scenes/index/Scene",
+        "engine/scene/index/Scene",
         "engine/theme/index/Theme",
         "engine/theme/index/ThemeTokens"
       ],
@@ -3003,7 +3003,7 @@
         "engine/debug/index/drawPanel",
         "engine/input/index/ActionInputMap",
         "engine/input/index/ActionInputService",
-        "engine/scenes/index/Scene",
+        "engine/scene/index/Scene",
         "engine/theme/index/Theme",
         "engine/theme/index/ThemeTokens"
       ],
@@ -3035,7 +3035,7 @@
         "engine/debug/index/drawPanel",
         "engine/input/index/ActionInputMap",
         "engine/input/index/ActionInputService",
-        "engine/scenes/index/Scene",
+        "engine/scene/index/Scene",
         "engine/theme/index/Theme",
         "engine/theme/index/ThemeTokens"
       ],
@@ -3059,7 +3059,7 @@
         "engine/core/Engine",
         "engine/debug/index/drawFrame",
         "engine/debug/index/drawPanel",
-        "engine/scenes/index/Scene",
+        "engine/scene/index/Scene",
         "engine/theme/index/Theme",
         "engine/theme/index/ThemeTokens"
       ],
@@ -3086,7 +3086,7 @@
         "engine/debug/index/drawPanel",
         "engine/input/index/ActionInputMap",
         "engine/input/index/ActionInputService",
-        "engine/scenes/index/Scene",
+        "engine/scene/index/Scene",
         "engine/theme/index/Theme",
         "engine/theme/index/ThemeTokens",
         "engine/world/index/QuestSystem"
@@ -3114,7 +3114,7 @@
         "engine/debug/index/drawPanel",
         "engine/input/index/ActionInputMap",
         "engine/input/index/ActionInputService",
-        "engine/scenes/index/Scene",
+        "engine/scene/index/Scene",
         "engine/theme/index/Theme",
         "engine/theme/index/ThemeTokens",
         "engine/world/index/EventScriptSystem"
@@ -3138,7 +3138,7 @@
         "engine/core/Engine",
         "engine/debug/index/drawFrame",
         "engine/debug/index/drawPanel",
-        "engine/scenes/index/Scene",
+        "engine/scene/index/Scene",
         "engine/theme/index/Theme",
         "engine/theme/index/ThemeTokens",
         "engine/world/index/CutsceneSystem"
@@ -3161,7 +3161,7 @@
         "engine/core/Engine",
         "engine/debug/index/drawFrame",
         "engine/debug/index/drawPanel",
-        "engine/scenes/index/Scene",
+        "engine/scene/index/Scene",
         "engine/theme/index/Theme",
         "engine/theme/index/ThemeTokens"
       ],
@@ -3184,7 +3184,7 @@
         "engine/core/Engine",
         "engine/debug/index/drawFrame",
         "engine/debug/index/drawPanel",
-        "engine/scenes/index/Scene",
+        "engine/scene/index/Scene",
         "engine/theme/index/Theme",
         "engine/theme/index/ThemeTokens",
         "engine/world/index/DayNightCycle"
@@ -3208,7 +3208,7 @@
         "engine/core/Engine",
         "engine/debug/index/drawFrame",
         "engine/debug/index/drawPanel",
-        "engine/scenes/index/Scene",
+        "engine/scene/index/Scene",
         "engine/theme/index/Theme",
         "engine/theme/index/ThemeTokens",
         "engine/world/index/WeatherSystem"
@@ -3232,7 +3232,7 @@
         "engine/core/Engine",
         "engine/debug/index/drawFrame",
         "engine/debug/index/drawPanel",
-        "engine/scenes/index/Scene",
+        "engine/scene/index/Scene",
         "engine/theme/index/Theme",
         "engine/theme/index/ThemeTokens",
         "engine/world/index/WeatherSystem"
@@ -3260,7 +3260,7 @@
         "engine/debug/index/drawPanel",
         "engine/input/index/ActionInputMap",
         "engine/input/index/ActionInputService",
-        "engine/scenes/index/Scene",
+        "engine/scene/index/Scene",
         "engine/theme/index/Theme",
         "engine/theme/index/ThemeTokens",
         "engine/world/index/WorldStreamingSystem"
@@ -3287,7 +3287,7 @@
         "engine/debug/index/drawPanel",
         "engine/input/index/ActionInputMap",
         "engine/input/index/ActionInputService",
-        "engine/scenes/index/Scene",
+        "engine/scene/index/Scene",
         "engine/theme/index/Theme",
         "engine/theme/index/ThemeTokens"
       ],
@@ -3313,7 +3313,7 @@
         "engine/debug/index/drawPanel",
         "engine/input/index/ActionInputMap",
         "engine/input/index/ActionInputService",
-        "engine/scenes/index/Scene",
+        "engine/scene/index/Scene",
         "engine/theme/index/Theme",
         "engine/theme/index/ThemeTokens"
       ],
@@ -3341,7 +3341,7 @@
         "engine/input/index/ActionInputMap",
         "engine/input/index/ActionInputService",
         "engine/rendering/index/ResolutionScaler",
-        "engine/scenes/index/Scene",
+        "engine/scene/index/Scene",
         "engine/theme/index/Theme",
         "engine/theme/index/ThemeTokens"
       ],
@@ -3365,7 +3365,7 @@
         "engine/debug/index/drawFrame",
         "engine/debug/index/drawPanel",
         "engine/runtime/index/MobileRuntimeTweaks",
-        "engine/scenes/index/Scene",
+        "engine/scene/index/Scene",
         "engine/theme/index/Theme",
         "engine/theme/index/ThemeTokens"
       ],
@@ -3395,7 +3395,7 @@
         "engine/core/Engine",
         "engine/debug/index/drawFrame",
         "engine/debug/index/drawPanel",
-        "engine/scenes/index/Scene",
+        "engine/scene/index/Scene",
         "engine/theme/index/Theme",
         "engine/theme/index/ThemeTokens"
       ],
@@ -3421,7 +3421,7 @@
         "engine/debug/index/drawPanel",
         "engine/memory/index/DisposableStore",
         "engine/memory/index/ObjectPool",
-        "engine/scenes/index/Scene",
+        "engine/scene/index/Scene",
         "engine/theme/index/Theme",
         "engine/theme/index/ThemeTokens"
       ],
@@ -3451,7 +3451,7 @@
         "engine/input/index/ActionInputService",
         "engine/persistence/index/compressJson",
         "engine/persistence/index/decompressJson",
-        "engine/scenes/index/Scene",
+        "engine/scene/index/Scene",
         "engine/theme/index/Theme",
         "engine/theme/index/ThemeTokens"
       ],
@@ -3479,7 +3479,7 @@
         "engine/input/index/ActionInputMap",
         "engine/input/index/ActionInputService",
         "engine/replay/index/ReplaySystem",
-        "engine/scenes/index/Scene",
+        "engine/scene/index/Scene",
         "engine/theme/index/Theme",
         "engine/theme/index/ThemeTokens"
       ],
@@ -3505,7 +3505,7 @@
         "engine/debug/index/drawMinimap",
         "engine/input/index/ActionInputMap",
         "engine/input/index/ActionInputService",
-        "engine/scenes/index/Scene",
+        "engine/scene/index/Scene",
         "engine/theme/index/Theme",
         "engine/theme/index/ThemeTokens"
       ],
@@ -3532,7 +3532,7 @@
         "engine/debug/index/drawPanel",
         "engine/input/index/ActionInputMap",
         "engine/input/index/ActionInputService",
-        "engine/scenes/index/Scene",
+        "engine/scene/index/Scene",
         "engine/theme/index/Theme",
         "engine/theme/index/ThemeTokens",
         "engine/world/index/AchievementSystem"
@@ -3561,7 +3561,7 @@
         "engine/input/index/ActionInputMap",
         "engine/input/index/ActionInputService",
         "engine/localization/index/LocalizationService",
-        "engine/scenes/index/Scene",
+        "engine/scene/index/Scene",
         "engine/theme/index/Theme",
         "engine/theme/index/ThemeTokens"
       ],
@@ -3583,7 +3583,7 @@
         "engine/core/Engine",
         "engine/debug/index/drawFrame",
         "engine/debug/index/drawPanel",
-        "engine/scenes/index/Scene",
+        "engine/scene/index/Scene",
         "engine/theme/index/Theme",
         "engine/theme/index/ThemeTokens"
       ],
@@ -3601,7 +3601,7 @@
       ],
       "engineClassesUsed": [
         "engine/core/Engine",
-        "engine/scenes/index/Scene",
+        "engine/scene/index/Scene",
         "engine/theme/index/Theme",
         "engine/theme/index/ThemeTokens"
       ],
@@ -3623,7 +3623,7 @@
         "engine/core/Engine",
         "engine/debug/index/drawFrame",
         "engine/debug/index/drawPanel",
-        "engine/scenes/index/Scene",
+        "engine/scene/index/Scene",
         "engine/theme/index/Theme",
         "engine/theme/index/ThemeTokens"
       ],
@@ -3647,7 +3647,7 @@
         "engine/core/Engine",
         "engine/debug/index/drawFrame",
         "engine/debug/index/drawPanel",
-        "engine/scenes/index/Scene",
+        "engine/scene/index/Scene",
         "engine/theme/index/Theme",
         "engine/theme/index/ThemeTokens"
       ],
@@ -3670,7 +3670,7 @@
         "engine/core/Engine",
         "engine/debug/index/drawFrame",
         "engine/debug/index/drawPanel",
-        "engine/scenes/index/Scene",
+        "engine/scene/index/Scene",
         "engine/theme/index/Theme",
         "engine/theme/index/ThemeTokens"
       ],
@@ -3694,7 +3694,7 @@
         "engine/core/Engine",
         "engine/debug/index/drawFrame",
         "engine/debug/index/drawPanel",
-        "engine/scenes/index/Scene",
+        "engine/scene/index/Scene",
         "engine/theme/index/Theme",
         "engine/theme/index/ThemeTokens"
       ],
@@ -3718,7 +3718,7 @@
         "engine/debug/index/drawFrame",
         "engine/debug/index/drawPanel",
         "engine/fx/index/ParticleSystem",
-        "engine/scenes/index/Scene",
+        "engine/scene/index/Scene",
         "engine/theme/index/Theme",
         "engine/theme/index/ThemeTokens"
       ],
@@ -3739,7 +3739,7 @@
       "engineClassesUsed": [
         "engine/core/Engine",
         "engine/debug/index/drawFrame",
-        "engine/scenes/index/Scene",
+        "engine/scene/index/Scene",
         "engine/theme/index/Theme",
         "engine/theme/index/ThemeTokens",
         "engine/ui/index/UIFramework"
@@ -3764,7 +3764,7 @@
         "engine/debug/index/drawFrame",
         "engine/debug/index/drawPanel",
         "engine/input/index/InputContextService",
-        "engine/scenes/index/Scene",
+        "engine/scene/index/Scene",
         "engine/theme/index/Theme",
         "engine/theme/index/ThemeTokens"
       ],
@@ -3786,8 +3786,8 @@
         "engine/core/Engine",
         "engine/debug/index/drawFrame",
         "engine/debug/index/drawPanel",
-        "engine/scenes/index/Scene",
-        "engine/scenes/index/SceneTransitionController",
+        "engine/scene/index/Scene",
+        "engine/scene/index/SceneTransitionController",
         "engine/theme/index/Theme",
         "engine/theme/index/ThemeTokens"
       ],
@@ -3811,7 +3811,7 @@
         "engine/debug/index/drawFrame",
         "engine/debug/index/drawPanel",
         "engine/persistence/index/SaveSlotManager",
-        "engine/scenes/index/Scene",
+        "engine/scene/index/Scene",
         "engine/theme/index/Theme",
         "engine/theme/index/ThemeTokens"
       ],
@@ -3835,7 +3835,7 @@
         "engine/debug/index/drawFrame",
         "engine/debug/index/drawPanel",
         "engine/logging/index/ErrorBoundary",
-        "engine/scenes/index/Scene",
+        "engine/scene/index/Scene",
         "engine/theme/index/Theme",
         "engine/theme/index/ThemeTokens"
       ],
@@ -3859,7 +3859,7 @@
         "engine/core/Engine",
         "engine/debug/index/drawFrame",
         "engine/debug/index/drawPanel",
-        "engine/scenes/index/Scene",
+        "engine/scene/index/Scene",
         "engine/theme/index/Theme",
         "engine/theme/index/ThemeTokens",
         "engine/vector/index/drawVectorShape",
@@ -3887,7 +3887,7 @@
         "engine/core/Engine",
         "engine/debug/index/drawFrame",
         "engine/debug/index/drawPanel",
-        "engine/scenes/index/Scene",
+        "engine/scene/index/Scene",
         "engine/theme/index/Theme",
         "engine/theme/index/ThemeTokens",
         "engine/vector/index/drawVectorShape",
@@ -3914,7 +3914,7 @@
         "engine/core/Engine",
         "engine/debug/index/drawFrame",
         "engine/debug/index/drawPanel",
-        "engine/scenes/index/Scene",
+        "engine/scene/index/Scene",
         "engine/theme/index/Theme",
         "engine/theme/index/ThemeTokens",
         "engine/vector/index/drawVectorShape"
@@ -3945,7 +3945,7 @@
         "engine/core/Engine",
         "engine/debug/index/drawFrame",
         "engine/debug/index/drawPanel",
-        "engine/scenes/index/Scene",
+        "engine/scene/index/Scene",
         "engine/theme/index/Theme",
         "engine/theme/index/ThemeTokens"
       ],
@@ -3975,7 +3975,7 @@
         "engine/core/Engine",
         "engine/debug/index/drawFrame",
         "engine/debug/index/drawPanel",
-        "engine/scenes/index/Scene",
+        "engine/scene/index/Scene",
         "engine/theme/index/Theme",
         "engine/theme/index/ThemeTokens"
       ],
@@ -4005,7 +4005,7 @@
         "engine/core/Engine",
         "engine/debug/index/drawFrame",
         "engine/debug/index/drawPanel",
-        "engine/scenes/index/Scene",
+        "engine/scene/index/Scene",
         "engine/theme/index/Theme",
         "engine/theme/index/ThemeTokens",
         "engine/vector/index/drawVectorShape",
@@ -4031,7 +4031,7 @@
         "engine/core/Engine",
         "engine/debug/index/drawFrame",
         "engine/debug/index/drawPanel",
-        "engine/scenes/index/Scene",
+        "engine/scene/index/Scene",
         "engine/theme/index/Theme",
         "engine/theme/index/ThemeTokens"
       ],
@@ -4055,7 +4055,7 @@
         "engine/debug/index/drawFrame",
         "engine/debug/index/drawPanel",
         "engine/persistence/index/CookieStorageService",
-        "engine/scenes/index/Scene",
+        "engine/scene/index/Scene",
         "engine/theme/index/Theme",
         "engine/theme/index/ThemeTokens"
       ],
@@ -4081,7 +4081,7 @@
         "engine/core/Engine",
         "engine/debug/index/drawFrame",
         "engine/debug/index/drawPanel",
-        "engine/scenes/index/Scene",
+        "engine/scene/index/Scene",
         "engine/theme/index/Theme",
         "engine/theme/index/ThemeTokens"
       ],
@@ -4105,7 +4105,7 @@
         "engine/debug/index/drawFrame",
         "engine/debug/index/drawPanel",
         "engine/release/index/SettingsSystem",
-        "engine/scenes/index/Scene",
+        "engine/scene/index/Scene",
         "engine/theme/index/Theme",
         "engine/theme/index/ThemeTokens"
       ],
@@ -4129,7 +4129,7 @@
         "engine/debug/index/drawFrame",
         "engine/debug/index/drawPanel",
         "engine/release/index/AccessibilityOptions",
-        "engine/scenes/index/Scene",
+        "engine/scene/index/Scene",
         "engine/theme/index/Theme",
         "engine/theme/index/ThemeTokens"
       ],
@@ -4153,7 +4153,7 @@
         "engine/debug/index/drawFrame",
         "engine/debug/index/drawPanel",
         "engine/release/index/DeploymentProfiles",
-        "engine/scenes/index/Scene",
+        "engine/scene/index/Scene",
         "engine/theme/index/Theme",
         "engine/theme/index/ThemeTokens"
       ],
@@ -4179,7 +4179,7 @@
         "engine/debug/index/drawPanel",
         "engine/release/index/DeploymentProfiles",
         "engine/release/index/DistributionPackager",
-        "engine/scenes/index/Scene",
+        "engine/scene/index/Scene",
         "engine/theme/index/Theme",
         "engine/theme/index/ThemeTokens"
       ],
@@ -4205,7 +4205,7 @@
         "engine/debug/index/drawPanel",
         "engine/logging/index/Logger",
         "engine/release/index/CrashRecoveryManager",
-        "engine/scenes/index/Scene",
+        "engine/scene/index/Scene",
         "engine/theme/index/Theme",
         "engine/theme/index/ThemeTokens"
       ],
@@ -4229,7 +4229,7 @@
         "engine/debug/index/drawFrame",
         "engine/debug/index/drawPanel",
         "engine/release/index/ReleaseValidationChecklist",
-        "engine/scenes/index/Scene",
+        "engine/scene/index/Scene",
         "engine/theme/index/Theme",
         "engine/theme/index/ThemeTokens"
       ],
@@ -4256,7 +4256,7 @@
         "engine/debug/index/drawFrame",
         "engine/debug/index/drawPanel",
         "engine/input/index/InputService",
-        "engine/scenes/index/Scene",
+        "engine/scene/index/Scene",
         "engine/theme/index/Theme",
         "engine/theme/index/ThemeTokens",
         "engine/tilemap/index/Tilemap",
@@ -4288,7 +4288,7 @@
         "engine/debug/index/drawFrame",
         "engine/debug/index/drawPanel",
         "engine/input/index/InputService",
-        "engine/scenes/index/Scene",
+        "engine/scene/index/Scene",
         "engine/theme/index/Theme",
         "engine/theme/index/ThemeTokens",
         "engine/tilemap/index/Tilemap",
@@ -4322,7 +4322,7 @@
         "engine/debug/index/drawFrame",
         "engine/debug/index/drawPanel",
         "engine/input/index/InputService",
-        "engine/scenes/index/Scene",
+        "engine/scene/index/Scene",
         "engine/theme/index/Theme",
         "engine/theme/index/ThemeTokens",
         "engine/tilemap/index/Tilemap",
@@ -4357,7 +4357,7 @@
         "engine/debug/index/drawFrame",
         "engine/debug/index/drawPanel",
         "engine/input/index/InputService",
-        "engine/scenes/index/Scene",
+        "engine/scene/index/Scene",
         "engine/theme/index/Theme",
         "engine/theme/index/ThemeTokens",
         "engine/tilemap/index/Tilemap",
@@ -4393,7 +4393,7 @@
         "engine/debug/index/drawFrame",
         "engine/debug/index/drawPanel",
         "engine/input/index/InputService",
-        "engine/scenes/index/Scene",
+        "engine/scene/index/Scene",
         "engine/theme/index/Theme",
         "engine/theme/index/ThemeTokens",
         "engine/tilemap/index/Tilemap",
@@ -4429,7 +4429,7 @@
         "engine/debug/index/drawFrame",
         "engine/debug/index/drawPanel",
         "engine/input/index/InputService",
-        "engine/scenes/index/Scene",
+        "engine/scene/index/Scene",
         "engine/theme/index/Theme",
         "engine/theme/index/ThemeTokens",
         "engine/tilemap/index/Tilemap",
@@ -4465,7 +4465,7 @@
         "engine/debug/index/drawFrame",
         "engine/debug/index/drawPanel",
         "engine/input/index/InputService",
-        "engine/scenes/index/Scene",
+        "engine/scene/index/Scene",
         "engine/theme/index/Theme",
         "engine/theme/index/ThemeTokens",
         "engine/tilemap/index/Tilemap",
@@ -4496,7 +4496,7 @@
         "engine/camera/index/worldRectToScreen",
         "engine/core/Engine",
         "engine/input/index/InputService",
-        "engine/scenes/index/Scene",
+        "engine/scene/index/Scene",
         "engine/theme/index/Theme",
         "engine/theme/index/ThemeTokens",
         "engine/tilemap/index/Tilemap",
@@ -4523,7 +4523,7 @@
         "engine/debug/index/drawFrame",
         "engine/debug/index/drawPanel",
         "engine/network/index/NetworkingLayer",
-        "engine/scenes/index/Scene",
+        "engine/scene/index/Scene",
         "engine/theme/index/Theme",
         "engine/theme/index/ThemeTokens"
       ],
@@ -4549,7 +4549,7 @@
         "engine/debug/index/drawPanel",
         "engine/network/index/NetworkingLayer",
         "engine/network/index/StateReplication",
-        "engine/scenes/index/Scene",
+        "engine/scene/index/Scene",
         "engine/theme/index/Theme",
         "engine/theme/index/ThemeTokens"
       ],
@@ -4571,7 +4571,7 @@
         "engine/core/Engine",
         "engine/debug/index/drawFrame",
         "engine/debug/index/drawPanel",
-        "engine/scenes/index/Scene",
+        "engine/scene/index/Scene",
         "engine/theme/index/Theme",
         "engine/theme/index/ThemeTokens"
       ],
@@ -4595,7 +4595,7 @@
         "engine/debug/index/drawFrame",
         "engine/debug/index/drawPanel",
         "engine/network/index/PredictionReconciler",
-        "engine/scenes/index/Scene",
+        "engine/scene/index/Scene",
         "engine/theme/index/Theme",
         "engine/theme/index/ThemeTokens"
       ],
@@ -4619,7 +4619,7 @@
         "engine/debug/index/drawFrame",
         "engine/debug/index/drawPanel",
         "engine/network/index/Serializer",
-        "engine/scenes/index/Scene",
+        "engine/scene/index/Scene",
         "engine/theme/index/Theme",
         "engine/theme/index/ThemeTokens"
       ],
@@ -4645,7 +4645,7 @@
         "engine/network/index/NetworkConditionSimulator",
         "engine/network/index/NetworkingLayer",
         "engine/network/index/drawNetworkDebugOverlay",
-        "engine/scenes/index/Scene",
+        "engine/scene/index/Scene",
         "engine/theme/index/Theme",
         "engine/theme/index/ThemeTokens"
       ],
@@ -4669,7 +4669,7 @@
         "engine/debug/index/drawFrame",
         "engine/debug/index/drawPanel",
         "engine/network/index/RemoteInterpolationBuffer",
-        "engine/scenes/index/Scene",
+        "engine/scene/index/Scene",
         "engine/theme/index/Theme",
         "engine/theme/index/ThemeTokens"
       ],
@@ -4693,7 +4693,7 @@
         "engine/debug/index/drawFrame",
         "engine/debug/index/drawPanel",
         "engine/network/index/LobbySessionManager",
-        "engine/scenes/index/Scene",
+        "engine/scene/index/Scene",
         "engine/theme/index/Theme",
         "engine/theme/index/ThemeTokens"
       ],
@@ -4715,7 +4715,7 @@
         "engine/core/Engine",
         "engine/debug/index/drawFrame",
         "engine/debug/index/drawPanel",
-        "engine/scenes/index/Scene",
+        "engine/scene/index/Scene",
         "engine/theme/index/Theme",
         "engine/theme/index/ThemeTokens"
       ],
@@ -4739,7 +4739,7 @@
         "engine/debug/index/drawFrame",
         "engine/debug/index/drawPanel",
         "engine/network/index/HostServerBootstrap",
-        "engine/scenes/index/Scene",
+        "engine/scene/index/Scene",
         "engine/theme/index/Theme",
         "engine/theme/index/ThemeTokens"
       ],
@@ -4763,7 +4763,7 @@
         "engine/debug/index/drawFrame",
         "engine/debug/index/drawPanel",
         "engine/network/index/InterestManager",
-        "engine/scenes/index/Scene",
+        "engine/scene/index/Scene",
         "engine/theme/index/Theme",
         "engine/theme/index/ThemeTokens"
       ],
@@ -4789,7 +4789,7 @@
         "engine/debug/index/drawPanel",
         "engine/network/index/NetworkConditionSimulator",
         "engine/network/index/NetworkingLayer",
-        "engine/scenes/index/Scene",
+        "engine/scene/index/Scene",
         "engine/theme/index/Theme",
         "engine/theme/index/ThemeTokens"
       ],
@@ -4811,7 +4811,7 @@
         "engine/core/Engine",
         "engine/debug/index/drawFrame",
         "engine/debug/index/drawPanel",
-        "engine/scenes/index/Scene",
+        "engine/scene/index/Scene",
         "engine/theme/index/Theme",
         "engine/theme/index/ThemeTokens"
       ],
@@ -4835,7 +4835,7 @@
         "engine/debug/index/drawFrame",
         "engine/debug/index/drawPanel",
         "engine/network/index/ChatPresenceLayer",
-        "engine/scenes/index/Scene",
+        "engine/scene/index/Scene",
         "engine/theme/index/Theme",
         "engine/theme/index/ThemeTokens"
       ],
@@ -4861,7 +4861,7 @@
         "engine/debug/index/drawPanel",
         "engine/network/index/PredictionReconciler",
         "engine/network/index/RollbackDiagnostics",
-        "engine/scenes/index/Scene",
+        "engine/scene/index/Scene",
         "engine/theme/index/Theme",
         "engine/theme/index/ThemeTokens"
       ],
@@ -4890,7 +4890,7 @@
         "engine/debug/inspectors/shared/inspectorUtils/asObject",
         "engine/debug/network/index/createNetworkDebugPluginDefinition",
         "engine/input/index/InputService",
-        "engine/scenes/index/Scene",
+        "engine/scene/index/Scene",
         "engine/theme/index/Theme",
         "engine/theme/index/ThemeTokens",
         "engine/utils/math/clamp"
@@ -4919,7 +4919,7 @@
         "engine/debug/inspectors/shared/inspectorUtils/asObject",
         "engine/debug/network/index/createNetworkDebugPluginDefinition",
         "engine/input/index/InputService",
-        "engine/scenes/index/Scene",
+        "engine/scene/index/Scene",
         "engine/theme/index/Theme",
         "engine/theme/index/ThemeTokens",
         "engine/utils/math/clamp"
@@ -4948,7 +4948,7 @@
         "engine/debug/inspectors/shared/inspectorUtils/asObject",
         "engine/debug/network/index/createNetworkDebugPluginDefinition",
         "engine/input/index/InputService",
-        "engine/scenes/index/Scene",
+        "engine/scene/index/Scene",
         "engine/theme/index/Theme",
         "engine/theme/index/ThemeTokens",
         "engine/utils/math/clamp"
@@ -4971,7 +4971,7 @@
         "engine/debug/index/drawFrame",
         "engine/debug/index/drawPanel",
         "engine/editor/index/LevelEditor",
-        "engine/scenes/index/Scene",
+        "engine/scene/index/Scene",
         "engine/theme/index/Theme",
         "engine/theme/index/ThemeTokens"
       ],
@@ -4987,7 +4987,7 @@
         "scene"
       ],
       "engineClassesUsed": [
-        "engine/scenes/index/Scene"
+        "engine/scene/index/Scene"
       ],
       "thumbnail": "/samples/phase-14/1402/assets/images/preview.svg",
       "preview": "/samples/phase-14/1402/assets/images/preview.svg"
@@ -5001,7 +5001,7 @@
         "scene"
       ],
       "engineClassesUsed": [
-        "engine/scenes/index/Scene"
+        "engine/scene/index/Scene"
       ],
       "thumbnail": "/samples/phase-14/1403/assets/images/preview.svg",
       "preview": "/samples/phase-14/1403/assets/images/preview.svg"
@@ -5015,7 +5015,7 @@
         "scene"
       ],
       "engineClassesUsed": [
-        "engine/scenes/index/Scene"
+        "engine/scene/index/Scene"
       ],
       "thumbnail": "/samples/phase-14/1404/assets/images/preview.svg",
       "preview": "/samples/phase-14/1404/assets/images/preview.svg"
@@ -5029,7 +5029,7 @@
         "scene"
       ],
       "engineClassesUsed": [
-        "engine/scenes/index/Scene"
+        "engine/scene/index/Scene"
       ],
       "thumbnail": "/samples/phase-14/1405/assets/images/preview.svg",
       "preview": "/samples/phase-14/1405/assets/images/preview.svg"
@@ -5043,7 +5043,7 @@
         "scene"
       ],
       "engineClassesUsed": [
-        "engine/scenes/index/Scene"
+        "engine/scene/index/Scene"
       ],
       "thumbnail": "/samples/phase-14/1406/assets/images/preview.svg",
       "preview": "/samples/phase-14/1406/assets/images/preview.svg"
@@ -5057,7 +5057,7 @@
         "scene"
       ],
       "engineClassesUsed": [
-        "engine/scenes/index/Scene"
+        "engine/scene/index/Scene"
       ],
       "thumbnail": "/samples/phase-14/1407/assets/images/preview.svg",
       "preview": "/samples/phase-14/1407/assets/images/preview.svg"
@@ -5071,7 +5071,7 @@
         "scene"
       ],
       "engineClassesUsed": [
-        "engine/scenes/index/Scene"
+        "engine/scene/index/Scene"
       ],
       "thumbnail": "/samples/phase-14/1408/assets/images/preview.svg",
       "preview": "/samples/phase-14/1408/assets/images/preview.svg"
@@ -5085,7 +5085,7 @@
         "scene"
       ],
       "engineClassesUsed": [
-        "engine/scenes/index/Scene"
+        "engine/scene/index/Scene"
       ],
       "thumbnail": "/samples/phase-14/1409/assets/images/preview.svg",
       "preview": "/samples/phase-14/1409/assets/images/preview.svg"
@@ -5099,7 +5099,7 @@
         "scene"
       ],
       "engineClassesUsed": [
-        "engine/scenes/index/Scene"
+        "engine/scene/index/Scene"
       ],
       "thumbnail": "/samples/phase-14/1410/assets/images/preview.svg",
       "preview": "/samples/phase-14/1410/assets/images/preview.svg"
@@ -5113,7 +5113,7 @@
         "scene"
       ],
       "engineClassesUsed": [
-        "engine/scenes/index/Scene"
+        "engine/scene/index/Scene"
       ],
       "thumbnail": "/samples/phase-14/1411/assets/images/preview.svg",
       "preview": "/samples/phase-14/1411/assets/images/preview.svg"
@@ -5127,7 +5127,7 @@
         "scene"
       ],
       "engineClassesUsed": [
-        "engine/scenes/index/Scene"
+        "engine/scene/index/Scene"
       ],
       "thumbnail": "/samples/phase-14/1412/assets/images/preview.svg",
       "preview": "/samples/phase-14/1412/assets/images/preview.svg"
@@ -5141,7 +5141,7 @@
         "scene"
       ],
       "engineClassesUsed": [
-        "engine/scenes/index/Scene"
+        "engine/scene/index/Scene"
       ],
       "thumbnail": "/samples/phase-14/1413/assets/images/preview.svg",
       "preview": "/samples/phase-14/1413/assets/images/preview.svg"
@@ -5155,7 +5155,7 @@
         "scene"
       ],
       "engineClassesUsed": [
-        "engine/scenes/index/Scene"
+        "engine/scene/index/Scene"
       ],
       "thumbnail": "/samples/phase-14/1414/assets/images/preview.svg",
       "preview": "/samples/phase-14/1414/assets/images/preview.svg"
@@ -5169,7 +5169,7 @@
         "scene"
       ],
       "engineClassesUsed": [
-        "engine/scenes/index/Scene"
+        "engine/scene/index/Scene"
       ],
       "thumbnail": "/samples/phase-14/1415/assets/images/preview.svg",
       "preview": "/samples/phase-14/1415/assets/images/preview.svg"
@@ -5183,7 +5183,7 @@
         "scene"
       ],
       "engineClassesUsed": [
-        "engine/scenes/index/Scene"
+        "engine/scene/index/Scene"
       ],
       "thumbnail": "/samples/phase-14/1416/assets/images/preview.svg",
       "preview": "/samples/phase-14/1416/assets/images/preview.svg"
@@ -5197,7 +5197,7 @@
         "scene"
       ],
       "engineClassesUsed": [
-        "engine/scenes/index/Scene"
+        "engine/scene/index/Scene"
       ],
       "thumbnail": "/samples/phase-14/1417/assets/images/preview.svg",
       "preview": "/samples/phase-14/1417/assets/images/preview.svg"
@@ -5211,7 +5211,7 @@
         "scene"
       ],
       "engineClassesUsed": [
-        "engine/scenes/index/Scene"
+        "engine/scene/index/Scene"
       ],
       "thumbnail": "/samples/phase-14/1418/assets/images/preview.svg",
       "preview": "/samples/phase-14/1418/assets/images/preview.svg"
@@ -5231,7 +5231,7 @@
       "engineClassesUsed": [
         "engine/debug/index/drawFrame",
         "engine/debug/index/drawPanel",
-        "engine/scenes/index/Scene",
+        "engine/scene/index/Scene",
         "engine/theme/index/Theme",
         "engine/theme/index/ThemeTokens",
         "engine/tooling/index/DeveloperConsole"
@@ -5254,7 +5254,7 @@
       "engineClassesUsed": [
         "engine/debug/index/drawFrame",
         "engine/debug/index/drawPanel",
-        "engine/scenes/index/Scene",
+        "engine/scene/index/Scene",
         "engine/theme/index/Theme",
         "engine/theme/index/ThemeTokens",
         "engine/tooling/index/RuntimeInspector"
@@ -5277,7 +5277,7 @@
       "engineClassesUsed": [
         "engine/debug/index/drawFrame",
         "engine/debug/index/drawPanel",
-        "engine/scenes/index/Scene",
+        "engine/scene/index/Scene",
         "engine/theme/index/Theme",
         "engine/theme/index/ThemeTokens",
         "engine/tooling/index/PropertyEditor"
@@ -5300,7 +5300,7 @@
       "engineClassesUsed": [
         "engine/debug/index/drawFrame",
         "engine/debug/index/drawPanel",
-        "engine/scenes/index/Scene",
+        "engine/scene/index/Scene",
         "engine/theme/index/Theme",
         "engine/theme/index/ThemeTokens",
         "engine/tooling/index/LiveTuningService"
@@ -5323,7 +5323,7 @@
       "engineClassesUsed": [
         "engine/debug/index/drawFrame",
         "engine/debug/index/drawPanel",
-        "engine/scenes/index/Scene",
+        "engine/scene/index/Scene",
         "engine/theme/index/Theme",
         "engine/theme/index/ThemeTokens",
         "engine/tooling/index/AssetBrowser"
@@ -5345,7 +5345,7 @@
       "engineClassesUsed": [
         "engine/debug/index/drawFrame",
         "engine/debug/index/drawPanel",
-        "engine/scenes/index/Scene",
+        "engine/scene/index/Scene",
         "engine/theme/index/Theme",
         "engine/theme/index/ThemeTokens",
         "engine/tooling/index/SceneGraphViewer"

@@ -4,7 +4,7 @@ David Quesenberry
 03/22/2026
 AnimatedWeatherScene.js
 */
-import { Scene } from '/src/engine/scenes/index.js';
+import { Scene } from '/src/engine/scene/index.js';
 import { Theme, ThemeTokens } from '/src/engine/theme/index.js';
 import { drawFrame, drawPanel } from '/src/engine/debug/index.js';
 import { WeatherSystem } from '/src/engine/world/index.js';

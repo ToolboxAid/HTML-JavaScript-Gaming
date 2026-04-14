@@ -4,7 +4,7 @@ David Quesenberry
 03/21/2026
 TileMetadataScene.js
 */
-import { Scene } from '/src/engine/scenes/index.js';
+import { Scene } from '/src/engine/scene/index.js';
 import { Theme, ThemeTokens } from '/src/engine/theme/index.js';
 import { drawFrame, drawPanel } from '/src/engine/debug/index.js';
 import { Camera2D, followCameraTarget, worldRectToScreen } from '/src/engine/camera/index.js';

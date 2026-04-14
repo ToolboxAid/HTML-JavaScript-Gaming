@@ -8,7 +8,7 @@ import Engine from '/src/engine/core/Engine.js';
 import IntroScene from './IntroScene.js';
 import PlayScene from './PlayScene.js';
 import { InputService } from '/src/engine/input/index.js';
-import { SceneTransition, TransitionScene } from '/src/engine/scenes/index.js';
+import { SceneTransition, TransitionScene } from '/src/engine/scene/index.js';
 import { Theme, ThemeTokens } from '/src/engine/theme/index.js';
 
 const theme = new Theme(ThemeTokens);

@@ -4,7 +4,7 @@ David Quesenberry
 04/06/2026
 NetworkSampleBScene.js
 */
-import { Scene } from "/src/engine/scenes/index.js";
+import { Scene } from "/src/engine/scene/index.js";
 import FakeHostClientNetworkModel from "./FakeHostClientNetworkModel.js";
 import { asPositiveNumber } from "../../../_shared/numberUtils.js";
 

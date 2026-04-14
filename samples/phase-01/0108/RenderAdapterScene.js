@@ -4,7 +4,7 @@ David Quesenberry
 03/21/2026
 RenderAdapterScene.js
 */
-import { Scene } from '/src/engine/scenes/index.js';
+import { Scene } from '/src/engine/scene/index.js';
 import { Theme, ThemeTokens } from '/src/engine/theme/index.js';
 import { Entity, Transform, Velocity, Bounds } from '/src/engine/entity/index.js';
 

@@ -5,8 +5,8 @@ David Quesenberry
 SceneManager.test.mjs
 */
 import assert from "node:assert/strict";
-import Scene from "../../src/engine/scenes/Scene.js";
-import SceneManager from "../../src/engine/scenes/SceneManager.js";
+import Scene from "../../src/engine/scene/Scene.js";
+import SceneManager from "../../src/engine/scene/SceneManager.js";
 
 class TestScene extends Scene {
     constructor(name, log) {

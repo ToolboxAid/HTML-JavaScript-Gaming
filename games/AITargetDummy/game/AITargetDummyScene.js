@@ -4,7 +4,7 @@ David Quesenberry
 03/25/2026
 AITargetDummyScene.js
 */
-import { Scene } from '/src/engine/scenes/index.js';
+import { Scene } from '/src/engine/scene/index.js';
 import AITargetDummyDebugOverlay from './AITargetDummyDebugOverlay.js';
 import AITargetDummyInputController from './AITargetDummyInputController.js';
 import AITargetDummyWorld from './AITargetDummyWorld.js';
