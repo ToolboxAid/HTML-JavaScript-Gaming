@@ -21,6 +21,7 @@ import { run as runAsteroidsPlatformDemo } from './games/AsteroidsPlatformDemo.t
 import { run as runAsteroidsValidation } from './games/AsteroidsValidation.test.mjs';
 import { run as runAsteroidsVectorTransforms } from './games/AsteroidsVectorTransforms.test.mjs';
 import { run as runAsteroidsPresentation } from './games/AsteroidsPresentation.test.mjs';
+import { run as runFullscreenBezelOverlay } from './games/FullscreenBezelOverlay.test.mjs';
 import { run as runAITargetDummyWorld } from './games/AITargetDummyWorld.test.mjs';
 import { run as runAITargetDummyValidation } from './games/AITargetDummyValidation.test.mjs';
 import { run as runBouncingBallValidation } from './games/BouncingBallValidation.test.mjs';
@@ -161,6 +162,7 @@ const tests = [
     ['AsteroidsValidation', runAsteroidsValidation],
     ['AsteroidsVectorTransforms', runAsteroidsVectorTransforms],
     ['AsteroidsPresentation', runAsteroidsPresentation],
+    ['FullscreenBezelOverlay', runFullscreenBezelOverlay],
     ['AITargetDummyWorld', runAITargetDummyWorld],
     ['AITargetDummyValidation', runAITargetDummyValidation],
     ['BouncingBallValidation', runBouncingBallValidation],

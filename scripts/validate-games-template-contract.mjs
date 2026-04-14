@@ -10,6 +10,28 @@ const GAMES_ROOT = path.join(repoRoot, "games");
 const REPORT_PATH = path.join(repoRoot, "docs/dev/reports/games_template_contract_validation.txt");
 const MANAGED_CANONICAL_GAMES = ["PacmanLite", "SpaceInvaders"];
 const REQUIRED_DIRS = ["assets", "game", "entities", "systems", "ui", "debug"];
+const TEMPLATE_REQUIRED_ASSET_DIRS = [
+  "audio",
+  "fonts",
+  "images",
+  "palettes",
+  "parallax",
+  "parallax/data",
+  "sprites",
+  "sprites/data",
+  "tilemaps",
+  "tilemaps/data",
+  "tilesets",
+  "vectors",
+  "vectors/data"
+];
+const TEMPLATE_REQUIRED_ASSET_FILES = [
+  ".gitkeep",
+  "parallax/data/.gitkeep",
+  "sprites/data/.gitkeep",
+  "tilemaps/data/.gitkeep",
+  "vectors/data/.gitkeep"
+];
 const REQUIRED_INDEX_PATTERNS = [
   { id: "canvas", test: (text) => /<canvas\b/i.test(text), message: "index.html must include a <canvas> element." },
   {
@@ -22,6 +44,21 @@ const SOURCE_FILE_EXTENSIONS = new Set([".js", ".mjs", ".cjs", ".html"]);
 
 function toRepoRelative(targetPath) {
   return path.relative(repoRoot, targetPath).replace(/\\/g, "/");
+}
+
+async function pathExistsWithType(targetPath, expectedType) {
+  try {
+    const stat = await fs.stat(targetPath);
+    if (expectedType === "directory") {
+      return stat.isDirectory();
+    }
+    if (expectedType === "file") {
+      return stat.isFile();
+    }
+    return false;
+  } catch {
+    return false;
+  }
 }
 
 async function resolveContractTargets() {
@@ -103,6 +140,23 @@ async function validateTarget(target) {
   for (const requiredDir of REQUIRED_DIRS) {
     if (!entryNames.has(requiredDir)) {
       issues.push(`${target.gameName}: missing required directory ${requiredDir}/.`);
+    }
+  }
+
+  if (target.gameName === "_template") {
+    const templateAssetsRoot = path.join(target.gameRoot, "assets");
+    for (const requiredDir of TEMPLATE_REQUIRED_ASSET_DIRS) {
+      const dirPath = path.join(templateAssetsRoot, requiredDir);
+      if (!(await pathExistsWithType(dirPath, "directory"))) {
+        issues.push(`${target.gameName}: missing required directory assets/${requiredDir}/.`);
+      }
+    }
+
+    for (const requiredFile of TEMPLATE_REQUIRED_ASSET_FILES) {
+      const filePath = path.join(templateAssetsRoot, requiredFile);
+      if (!(await pathExistsWithType(filePath, "file"))) {
+        issues.push(`${target.gameName}: missing required file assets/${requiredFile}.`);
+      }
     }
   }
 

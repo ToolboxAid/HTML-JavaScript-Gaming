@@ -1,6 +1,8 @@
-- npm test: FAIL at pretest shared-extraction guard (existing baseline drift: baseline_unexpected=26)
-- node ./scripts/run-node-tests.mjs: PASS (127/127 explicit tests, launch smoke PASS=227 FAIL=0)
-- PASS GameAssetManifestDiscovery (expanded all-domain manifest assertions)
-- PASS manifest-runtime-resolution (sprites/tilemaps/parallax/vectors)
-- PASS renamed-files-resolve (all runtimePath/toolDataPath entries exist)
-- no matches for deprecated games/<game>/assets/assets.json references
+- `_template` asset folders match Asteroids structure
+- `.gitkeep` files preserved where needed
+- No Asteroids-specific content copied into `_template`
+- Bezel is fullscreen-only
+- Bezel is screen-space, not camera/parallax space
+- Default draw mode is overlay, with explicit future underlay hook
+- Focused validation/tests added
+- Output ZIP created at `<project folder>/tmp/BUILD_PR_LEVEL_10_15_TEMPLATE_ASSET_STRUCTURE_AND_FULLSCREEN_BEZEL_FOUNDATION.zip`

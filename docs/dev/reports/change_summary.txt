@@ -1,4 +1,4 @@
-Runtime validation pass completed after manifest deduplication and filename normalization.
-Expanded manifest discovery test to assert all active domains resolve through tools.manifest.json.
-Confirmed no remaining runtime references to deprecated games/<game>/assets/assets.json paths.
-No runtime breakages found in loader or renamed asset path resolution.
+- Bundled _template asset scaffold normalization with fullscreen bezel foundation
+- Declared bezel as dedicated screen-space overlay, not Parallax
+- Set Asteroids bezel.png as first candidate asset
+- Enforced required Codex ZIP packaging output

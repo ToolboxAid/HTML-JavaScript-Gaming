@@ -1,2 +1,2 @@
-Validate runtime after asset normalization and manifest deduplication
-BUILD_PR_LEVEL_10_14_ASTEROIDS_RUNTIME_VALIDATION_PASS
+Normalize _template asset structure and add fullscreen bezel foundation
+BUILD_PR_LEVEL_10_15_TEMPLATE_ASSET_STRUCTURE_AND_FULLSCREEN_BEZEL_FOUNDATION
