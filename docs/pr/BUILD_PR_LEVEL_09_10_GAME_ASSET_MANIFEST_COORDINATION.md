@@ -1,0 +1,1 @@
+Game asset manifest coordination layer.

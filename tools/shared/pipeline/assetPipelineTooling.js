@@ -1,5 +1,6 @@
 import { safeString } from "../projectSystemValueUtils.js";
 import { validateToolStateContract } from "../projectToolIntegration.js";
+import { coordinateGameAssetManifest } from "./gameAssetManifestCoordinator.js";
 
 export const ASSET_PIPELINE_TOOLING_SCHEMA = "html-js-gaming.asset-pipeline-tooling";
 export const ASSET_PIPELINE_TOOLING_VERSION = 1;
@@ -186,9 +187,16 @@ export function runAssetPipelineTooling(options = {}) {
     normalizedRecordCount: normalizedRecords.length
   };
   const coordinator = buildCoordinator(gameId, normalizedRecords);
+  const gameAssetManifest = coordinateGameAssetManifest({
+    gameId,
+    coordinatorPath: `games/${gameId}/assets/${gameId}.assets.json`,
+    records: normalizedRecords,
+    existingManifest: options.existingManifest
+  });
   const emitStage = {
     stage: ASSET_PIPELINE_TOOLING_STAGES.EMIT,
-    coordinatorPath: `games/${gameId}/assets/${gameId}.assets.json`,
+    coordinatorPath: gameAssetManifest.filePath,
+    gameAssetManifestPath: gameAssetManifest.filePath,
     emittedRecordCount: normalizedRecords.length
   };
 
@@ -203,6 +211,7 @@ export function runAssetPipelineTooling(options = {}) {
       emit: emitStage
     },
     records: normalizedRecords,
-    coordinator
+    coordinator,
+    gameAssetManifest
   };
 }

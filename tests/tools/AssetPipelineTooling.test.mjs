@@ -41,6 +41,7 @@ export async function run() {
   assert.equal(ready.stages.validate.valid, true);
   assert.equal(ready.records.length, 4);
   assert.equal(ready.stages.emit.coordinatorPath, "games/asteroids/assets/asteroids.assets.json");
+  assert.equal(ready.stages.emit.gameAssetManifestPath, "games/asteroids/assets/asteroids.assets.json");
   assert.equal(
     ready.records.every((entry) => entry.runtimePath.includes("/assets/") && !entry.runtimePath.includes("/data/")),
     true
@@ -51,6 +52,17 @@ export async function run() {
   );
   assert.equal(ready.coordinator.domains.sprites[0].runtimePath.startsWith("games/asteroids/assets/sprites/"), true);
   assert.equal(ready.coordinator.domains.sprites[0].toolDataPath.startsWith("games/asteroids/assets/sprites/data/"), true);
+  assert.equal(ready.gameAssetManifest.status, "ready");
+  assert.equal(ready.gameAssetManifest.filePath, "games/asteroids/assets/asteroids.assets.json");
+  assert.equal(ready.gameAssetManifest.manifest.domains.sprites[0].assetId, "sprite.ship");
+  assert.equal(
+    ready.gameAssetManifest.manifest.domains.sprites[0].runtimePath.startsWith("games/asteroids/assets/sprites/"),
+    true
+  );
+  assert.equal(
+    ready.gameAssetManifest.manifest.domains.sprites[0].toolDataPath.startsWith("games/asteroids/assets/sprites/data/"),
+    true
+  );
 
   const invalid = runAssetPipelineTooling({
     gameId: "Asteroids",
@@ -71,4 +83,5 @@ export async function run() {
     true
   );
   assert.equal(invalid.records.length, 0);
+  assert.equal(invalid.gameAssetManifest, undefined);
 }
