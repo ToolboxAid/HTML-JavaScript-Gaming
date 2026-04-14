@@ -1,2 +1,2 @@
-Add real Asteroids tool-editable bootstrap JSON objects across sprites/tilemaps/parallax/vectors data folders while keeping runtime assets untouched.
-BUILD_PR_LEVEL_10_06_ASSET_DATA_BOOTSTRAP_ASTEROIDS
+Validated Asteroids manifest structure and wired loader discovery via shared pipeline contract.
+BUILD_PR_LEVEL_10_08_ASTEROIDS_DATA_MANIFEST_DISCOVERY

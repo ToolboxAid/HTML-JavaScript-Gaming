@@ -4,6 +4,7 @@ import { coordinateGameAssetManifest } from "./gameAssetManifestCoordinator.js";
 import { createRuntimeAssetBinding, resolveRuntimeAsset } from "./runtimeAssetBinding.js";
 import { validateRuntimeResolvedAsset } from "./runtimeAssetValidation.js";
 import { appendAssetError, appendAssetErrors } from "./assetErrorHandling.js";
+import { discoverRuntimeAssetSourcesFromManifest } from "./gameAssetManifestDiscovery.js";
 
 const RUNTIME_BINDING_PREFIXES = Object.freeze({
   "vector.": "vectors",
@@ -72,7 +73,12 @@ function buildRuntimeRecords(gameId, runtimeAssetSources, options) {
 }
 
 export function createRuntimeManifestAssetLookup(options = {}) {
-  const runtimeAssetSources = toObject(options.runtimeAssetSources);
+  const discovery = options.gameAssetManifest
+    ? discoverRuntimeAssetSourcesFromManifest(options.gameAssetManifest, { gameId: options.gameId })
+    : null;
+  const runtimeAssetSources = Object.keys(toObject(options.runtimeAssetSources)).length > 0
+    ? toObject(options.runtimeAssetSources)
+    : toObject(discovery?.runtimeAssetSources);
   const gameId = safeString(options.gameId, "game");
   const recordOptions = {
     sourceToolId: safeString(options.sourceToolId, "runtime-asset-lookup")
@@ -80,6 +86,8 @@ export function createRuntimeManifestAssetLookup(options = {}) {
 
   const records = Array.isArray(options.records)
     ? options.records.slice()
+    : Array.isArray(discovery?.records)
+      ? discovery.records.slice()
     : buildRuntimeRecords(gameId, runtimeAssetSources, recordOptions);
 
   const coordinatedManifest = coordinateGameAssetManifest({
@@ -118,6 +126,18 @@ export function createRuntimeManifestAssetLookup(options = {}) {
       assetId: safeString(entry.assetId, "")
     }))
   );
+  if (discovery && discovery.status !== "ready") {
+    appendAssetErrors(
+      errors,
+      (discovery.issues || []).map((message) => ({
+        code: "RUNTIME_MANIFEST_DISCOVERY_INVALID",
+        stage: "manifest-discovery",
+        message,
+        domain: "",
+        assetId: ""
+      }))
+    );
+  }
 
   function resolvePackagedAsset(asset) {
     const assetId = safeString(asset?.id, "");

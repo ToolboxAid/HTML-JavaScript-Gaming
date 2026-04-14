@@ -1,6 +1,7 @@
-[ ] run Validate-All.ps1 -ValidateAssetStructure → PASS
-[ ] confirm sprites/data contains real JSON
-[ ] confirm tilemaps/data contains real JSON
-[ ] confirm parallax/data contains real JSON
-[ ] confirm vectors/data contains real JSON
-[ ] confirm runtime assets were not moved/deleted
+- node --check tools/shared/pipeline/gameAssetManifestDiscovery.js
+- node --check tools/shared/pipeline/runtimeAssetLookup.js
+- node --check tests/tools/GameAssetManifestDiscovery.test.mjs
+- PASS GameAssetManifestDiscovery (focused test)
+- PASS RuntimeAssetLookupConsolidation (existing regression check)
+- PASS AsteroidsManifestJsonParse
+- no engine code modified
