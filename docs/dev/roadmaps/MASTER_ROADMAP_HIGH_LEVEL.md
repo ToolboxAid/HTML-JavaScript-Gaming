@@ -106,18 +106,18 @@
 - [x] duplicate-helper migration map defined
 - [x] ambiguous-name rename map defined
 - [x] legacy migration map defined
-- [.] implementation PRs executed
+- [x] implementation PRs executed
 - [x] imports normalized after moves
 - [x] post-move validation complete
 
 ### Structure Targets
 - [x] `src/engine/core`
 - [x] `src/engine/state`
-- [ ] `src/engine/rendering`
+- [x] `src/engine/rendering`
 - [x] `src/engine/input`
-- [ ] `src/engine/physics`
+- [x] `src/engine/physics`
 - [x] `src/engine/audio`
-- [ ] `src/engine/scene`
+- [x] `src/engine/scene`
 - [x] `src/shared/utils`
 - [x] `src/shared/math`
 - [x] `src/shared/state`

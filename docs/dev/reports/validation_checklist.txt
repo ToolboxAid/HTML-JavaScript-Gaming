@@ -1,7 +1,9 @@
-- Section 1 validated against actual repo state
-- Supported section-1 items closed
-- Any remaining open items are explicit and minimal
-- Roadmap updates are status-only
-- No broad structure churn introduced
-- Output ZIP created at:
-  <project folder>/tmp/BUILD_PR_LEVEL_01_COMBINED_STRUCTURE_CLOSEOUT.zip
+- implementation PRs executed can be truthfully marked complete
+- src/engine/rendering exists and is valid
+- src/engine/physics exists and is valid
+- src/engine/scene exists and is valid
+- imports/paths remain valid
+- validation remains green
+- roadmap updated by status markers only
+- output ZIP created at:
+  <project folder>/tmp/BUILD_PR_LEVEL_01_FINAL_RESIDUE_ONLY.zip

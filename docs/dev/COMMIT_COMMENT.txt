@@ -1,2 +1,2 @@
-Combine remaining section-1 work into a near-closeout structure PR
-BUILD_PR_LEVEL_01_COMBINED_STRUCTURE_CLOSEOUT
+Close the final section-1 residue for rendering, physics, scene, and implementation status
+BUILD_PR_LEVEL_01_FINAL_RESIDUE_ONLY
