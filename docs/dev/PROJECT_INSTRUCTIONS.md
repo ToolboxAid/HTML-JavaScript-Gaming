@@ -87,3 +87,24 @@ ZIP STANDARD (ENFORCED)
   <project folder>/tmp/<PR_NAME>.zip
 - Internal structure MUST be repo-relative only
 - No extra files outside defined structure
+
+
+## 🔒 EXECUTION DEFAULTS (MANDATORY)
+
+### ALWAYS CONTINUE
+- Never pause for confirmation
+- Never present optional branches
+- Always proceed to the next logical step
+
+### NO COMMIT-ONLY PRs
+- PRs must include something testable
+- If a PR is doc-only, bundle with next smallest executable/testable change
+
+### ZIP IS ALWAYS REQUIRED
+- Never ask if a ZIP is needed
+- Always produce a ZIP
+
+### DEFAULT EXECUTION MODE
+- Assume approval
+- Continue automatically
+- Do not stop unless blocked
