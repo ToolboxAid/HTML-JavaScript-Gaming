@@ -1,8 +1,3 @@
-BUILD bundle created for the post-09_04 enforcement slice.
-
-Summary:
-- continues directly from 09_04 asset structure simplification
-- preserves the 09_04 asset usage contract as the source baseline
-- narrows the next PR to first-class tool shared handoff enforcement only
-- avoids engine changes, gameplay changes, and broad tool cleanup
-- requires focused validation for canonical query parameters, storage keys, payload shapes, and safe fallback behavior
+- Added tool launch contract documentation
+- Standardized entry expectations
+- Prepared tools for normalization phase

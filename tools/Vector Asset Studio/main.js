@@ -4,7 +4,7 @@ David Quesenberry
 03/30/2026
 main.js
 */
-import { registerToolBootContract } from "../../tools/shared/toolBootContract.js";
+import { registerToolBootContract } from "../shared/toolBootContract.js";
 
 const SVG_NS = "http://www.w3.org/2000/svg";
 const SAMPLE_MANIFEST_PATH = "./samples/sample-manifest.json";
@@ -2345,7 +2345,8 @@ async function refreshSampleOptions(preserveSelection = true) {
   state.sampleEntries = [];
 
   try {
-    const response = await fetch(SAMPLE_MANIFEST_PATH, { cache: "no-store" });
+    const manifestUrl = new URL(SAMPLE_MANIFEST_PATH, window.location.href);
+    const response = await fetch(manifestUrl.toString(), { cache: "no-store" });
     if (!response.ok) {
       throw new Error(`Manifest request failed: ${response.status}`);
     }
@@ -2404,7 +2405,8 @@ async function loadSelectedSample() {
     return;
   }
 
-  const response = await fetch(selectedPath, { cache: "no-store" });
+  const sampleUrl = new URL(selectedPath, window.location.href);
+  const response = await fetch(sampleUrl.toString(), { cache: "no-store" });
   if (!response.ok) {
     throw new Error(`Sample fetch failed: ${response.status}`);
   }

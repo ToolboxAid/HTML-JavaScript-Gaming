@@ -1,11 +1,11 @@
-import { ACTIVE_PROJECT_STORAGE_KEY } from "../../tools/shared/projectManifestContract.js";
+import { ACTIVE_PROJECT_STORAGE_KEY } from "../shared/projectManifestContract.js";
 import {
   createStateInspectorSnapshot,
   safeParseJson,
   toPrettyJson
-} from "../../tools/shared/debugInspectorData.js";
-import { readToolHostSharedContextFromLocation } from "../../tools/shared/toolHostSharedContext.js";
-import { registerToolBootContract } from "../../tools/shared/toolBootContract.js";
+} from "../shared/debugInspectorData.js";
+import { readToolHostSharedContextFromLocation } from "../shared/toolHostSharedContext.js";
+import { registerToolBootContract } from "../shared/toolBootContract.js";
 
 const refs = {
   refreshButton: document.getElementById("refreshSnapshotButton"),

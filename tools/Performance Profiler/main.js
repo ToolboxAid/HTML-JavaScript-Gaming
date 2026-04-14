@@ -2,9 +2,9 @@ import {
   runDeterministicWorkloadIteration,
   summarizeDurationSamples,
   toPrettyJson
-} from "../../tools/shared/debugInspectorData.js";
-import { readToolHostSharedContextFromLocation } from "../../tools/shared/toolHostSharedContext.js";
-import { registerToolBootContract } from "../../tools/shared/toolBootContract.js";
+} from "../shared/debugInspectorData.js";
+import { readToolHostSharedContextFromLocation } from "../shared/toolHostSharedContext.js";
+import { registerToolBootContract } from "../shared/toolBootContract.js";
 import { isFiniteNumber } from "../../src/shared/utils/numberUtils.js";
 
 const refs = {

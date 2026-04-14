@@ -5,7 +5,7 @@ David Quesenberry
 main.js
 */
 import { VectorMapEditorApp } from "./editor/VectorMapEditorApp.js";
-import { registerToolBootContract } from "../../tools/shared/toolBootContract.js";
+import { registerToolBootContract } from "../shared/toolBootContract.js";
 
 let vectorMapEditorApp = null;
 

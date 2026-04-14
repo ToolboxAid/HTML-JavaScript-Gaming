@@ -5,7 +5,7 @@ David Quesenberry
 main.js
 */
 import { initializeSpriteEditorApp } from "./modules/spriteEditorApp.js";
-import { registerToolBootContract } from "../../tools/shared/toolBootContract.js";
+import { registerToolBootContract } from "../shared/toolBootContract.js";
 
 let spriteEditorApp = null;
 

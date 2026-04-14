@@ -1,1 +1,4 @@
-build(assets): enforce shared tool asset and palette handoff contract
+BUILD_PR_LEVEL_09_06_TOOL_LAUNCH_CONTRACT_ALIGNMENT
+
+Enforces consistent tool launch contract across active tools.
+No engine/runtime changes.
