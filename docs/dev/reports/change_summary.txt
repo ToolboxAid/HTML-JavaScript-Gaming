@@ -1,1 +1,1 @@
-Adds required data/ folders for Asteroids assets.
+Adds real bootstrap JSON objects under the Asteroids asset data folders.

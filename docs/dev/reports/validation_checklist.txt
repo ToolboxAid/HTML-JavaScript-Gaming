@@ -1,3 +1,6 @@
-[ ] run Validate-All.ps1 → PASS
 [ ] run Validate-All.ps1 -ValidateAssetStructure → PASS
-[ ] confirm data/ folders exist
+[ ] confirm sprites/data contains real JSON
+[ ] confirm tilemaps/data contains real JSON
+[ ] confirm parallax/data contains real JSON
+[ ] confirm vectors/data contains real JSON
+[ ] confirm runtime assets were not moved/deleted

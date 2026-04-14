@@ -1,0 +1,13 @@
+{
+  "schema": "html-js-gaming.tool-data.tilemap-project",
+  "version": 1,
+  "id": "tooldata.asteroids.tilemaps.stage",
+  "name": "Asteroids Demo Stage Tilemap Project",
+  "runtimeSource": "games/Asteroids/assets/tilemaps/asteroids-stage.tilemap.json",
+  "screens": [
+    { "id": "title", "order": 1 },
+    { "id": "play", "order": 2 },
+    { "id": "game-over", "order": 3 }
+  ],
+  "systems": ["ship", "bullets", "asteroids", "score", "lives", "waves"]
+}

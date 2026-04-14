@@ -1,0 +1,33 @@
+{
+  "schema": "html-js-gaming.tool-data.vector-library",
+  "version": 1,
+  "id": "tooldata.asteroids.vectors.library",
+  "name": "Asteroids Vector Library",
+  "vectors": [
+    {
+      "id": "vector.asteroids.ship",
+      "runtimeSource": "games/Asteroids/assets/vectors/asteroids-ship.vector.json",
+      "label": "Ship"
+    },
+    {
+      "id": "vector.asteroids.asteroid.large",
+      "runtimeSource": "games/Asteroids/assets/vectors/asteroids-asteroid-large.vector.json",
+      "label": "Asteroid Large"
+    },
+    {
+      "id": "vector.asteroids.asteroid.medium",
+      "runtimeSource": "games/Asteroids/assets/vectors/asteroids-asteroid-medium.vector.json",
+      "label": "Asteroid Medium"
+    },
+    {
+      "id": "vector.asteroids.asteroid.small",
+      "runtimeSource": "games/Asteroids/assets/vectors/asteroids-asteroid-small.vector.json",
+      "label": "Asteroid Small"
+    },
+    {
+      "id": "vector.asteroids.ui.title",
+      "runtimeSource": "games/Asteroids/assets/vectors/asteroids-title.vector.json",
+      "label": "Title"
+    }
+  ]
+}

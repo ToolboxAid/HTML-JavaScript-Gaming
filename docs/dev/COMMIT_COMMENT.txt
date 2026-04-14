@@ -1,2 +1,2 @@
-Create missing Asteroids asset data folders with .gitkeep placeholders while preserving runtime assets and existing structure.
-BUILD_PR_LEVEL_10_05_ASSET_STRUCTURE_MIGRATION_ASTEROIDS
+Add real Asteroids tool-editable bootstrap JSON objects across sprites/tilemaps/parallax/vectors data folders while keeping runtime assets untouched.
+BUILD_PR_LEVEL_10_06_ASSET_DATA_BOOTSTRAP_ASTEROIDS

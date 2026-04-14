@@ -1,0 +1,10 @@
+{
+  "schema": "html-js-gaming.tool-data.parallax-layer",
+  "version": 1,
+  "id": "tooldata.asteroids.parallax.title",
+  "name": "Asteroids Title Parallax Layer",
+  "runtimeSource": "games/Asteroids/assets/parallax/asteroids-title.parallax.json",
+  "role": "title-frame",
+  "imageId": "image.asteroids-preview",
+  "enabled": true
+}

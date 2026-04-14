@@ -1,0 +1,10 @@
+{
+  "schema": "html-js-gaming.tool-data.parallax-layer",
+  "version": 1,
+  "id": "tooldata.asteroids.parallax.overlay",
+  "name": "Asteroids Overlay Parallax Layer",
+  "runtimeSource": "games/Asteroids/assets/parallax/asteroids-overlay.parallax.json",
+  "role": "gameplay-overlay",
+  "imageId": "image.asteroids-bezel",
+  "enabled": true
+}

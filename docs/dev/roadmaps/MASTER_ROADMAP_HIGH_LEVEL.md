@@ -460,7 +460,7 @@
 
 ## 10. Assets & Data Policy
 - [.] shared asset policy defined at planning level
-- [ ] game asset ownership normalized
+- [.] game asset ownership normalized
 - [ ] sample asset ownership normalized
 - [ ] tool demo asset ownership normalized
 - [ ] promotion criteria for shared assets enforced
