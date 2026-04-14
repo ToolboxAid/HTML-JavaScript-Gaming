@@ -120,6 +120,7 @@ export async function buildVectorAssetSystem(options = {}) {
     validationResult,
     packageResult,
     runtimeResult,
+    assetRuntimeState: runtimeLookup.getDebugState?.() || null,
     performanceResult
   });
 
@@ -140,6 +141,7 @@ export async function buildVectorAssetSystem(options = {}) {
       validationResult,
       packageResult,
       runtimeResult,
+      runtimeLookupDebug: runtimeLookup.getDebugState?.() || null,
       debugVisualizationResult,
       performanceResult,
       reports,

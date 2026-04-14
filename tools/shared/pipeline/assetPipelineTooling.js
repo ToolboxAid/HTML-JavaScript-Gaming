@@ -183,7 +183,21 @@ export function runAssetPipelineTooling(options = {}) {
         }
       },
       records: [],
-      coordinator: null
+      coordinator: null,
+      debugState: {
+        pipeline: {
+          status: "invalid",
+          gameId,
+          stages: {
+            load: loadStage,
+            validate: validateStage
+          },
+          recordCount: 0,
+          errorCount: errors.length
+        },
+        manifest: null,
+        errors: errors.slice()
+      }
     };
   }
 
@@ -226,6 +240,22 @@ export function runAssetPipelineTooling(options = {}) {
     },
     records: normalizedRecords,
     coordinator,
-    gameAssetManifest
+    gameAssetManifest,
+    debugState: {
+      pipeline: {
+        status: "ready",
+        gameId,
+        stages: {
+          load: loadStage,
+          validate: validateStage,
+          normalize: normalizeStage,
+          emit: emitStage
+        },
+        recordCount: normalizedRecords.length,
+        errorCount: errors.length
+      },
+      manifest: gameAssetManifest.manifest,
+      errors: errors.slice()
+    }
   };
 }

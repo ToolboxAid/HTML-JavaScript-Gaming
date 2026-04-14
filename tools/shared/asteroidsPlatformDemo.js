@@ -442,6 +442,7 @@ export async function buildAsteroidsPlatformDemo(options = {}) {
     remediationResult,
     packageResult,
     runtimeResult,
+    assetRuntimeState: runtimeLookup.getDebugState?.() || null,
     performanceResult
   });
   const templateResult = buildGameTemplates({
@@ -539,6 +540,7 @@ export async function buildAsteroidsPlatformDemo(options = {}) {
       performanceResult,
       runtimeHandoff: handoff,
       runtimeBinding,
+      runtimeLookupDebug: runtimeLookup.getDebugState?.() || null,
       vectorOnly: {
         requiredVectorIds,
         missingRequiredVectorIds,

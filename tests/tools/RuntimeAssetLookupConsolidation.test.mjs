@@ -38,6 +38,11 @@ export async function run() {
   assert.equal(strictCodes.includes("RUNTIME_BINDING_REJECTED"), true);
   assert.equal(strictCodes.includes("RUNTIME_VECTOR_METADATA_REQUIRED"), true);
   assert.equal(strictCodes.includes("RUNTIME_LOOKUP_MISSING_BINDING"), true);
+  const strictDebug = strictLookup.getDebugState();
+  assert.equal(strictDebug.lookup.status, "ready");
+  assert.equal(strictDebug.lookup.recordCount, 5);
+  assert.equal(strictDebug.lookup.domainCounts.vectors, 2);
+  assert.equal(Object.keys(strictDebug.manifest.domains).length, 4);
 
   const fallbackLookup = createRuntimeManifestAssetLookup({
     gameId: "TemplateGame",
@@ -55,4 +60,5 @@ export async function run() {
   assert.equal(fallbackResolved.file, "tools/templates/vector-native-arcade/assets/data/vectors/template-player.vector.json");
   assert.equal(fallbackLookup.binding.domains.vectors.length, 0);
   assert.equal(fallbackLookup.getErrors().some((entry) => entry.code === "RUNTIME_BINDING_REJECTED"), true);
+  assert.equal(fallbackLookup.getDebugState().lookup.rejectedCount > 0, true);
 }

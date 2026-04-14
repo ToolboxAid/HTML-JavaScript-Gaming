@@ -135,6 +135,7 @@ export async function buildVectorTemplateSampleGame(options = {}) {
     validationResult,
     packageResult,
     runtimeResult,
+    assetRuntimeState: runtimeLookup.getDebugState?.() || null,
     performanceResult
   });
   const multiTargetExportResult = buildMultiTargetExport({
@@ -186,6 +187,7 @@ export async function buildVectorTemplateSampleGame(options = {}) {
       performanceResult,
       multiTargetExportResult,
       publishingResult,
+      runtimeLookupDebug: runtimeLookup.getDebugState?.() || null,
       vectorOnly: {
         hasSpriteRuntimeDependency
       },

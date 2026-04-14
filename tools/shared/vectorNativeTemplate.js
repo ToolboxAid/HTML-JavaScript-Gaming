@@ -333,6 +333,7 @@ export async function buildVectorNativeTemplate(options = {}) {
     validationResult,
     packageResult,
     runtimeResult,
+    assetRuntimeState: runtimeLookup.getDebugState?.() || null,
     performanceResult
   });
   const multiTargetExportResult = buildMultiTargetExport({
@@ -390,6 +391,7 @@ export async function buildVectorNativeTemplate(options = {}) {
       multiTargetExportResult,
       ciValidationResult,
       publishingResult,
+      runtimeLookupDebug: runtimeLookup.getDebugState?.() || null,
       vectorOnly: {
         requiredVectorIds: vectorIds,
         missingVectorIds,

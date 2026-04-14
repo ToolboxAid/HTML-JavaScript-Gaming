@@ -83,6 +83,43 @@ function toProfilerLines(performanceResult) {
   ];
 }
 
+function toAssetRuntimeStateLines(assetRuntimeState) {
+  const lookup = assetRuntimeState?.lookup || {};
+  const manifest = assetRuntimeState?.manifest || null;
+  const errors = Array.isArray(assetRuntimeState?.errors) ? assetRuntimeState.errors : [];
+  if (!manifest && !lookup.status) {
+    return ["asset-runtime=unavailable"];
+  }
+  const domains = lookup.domainCounts && typeof lookup.domainCounts === "object"
+    ? Object.entries(lookup.domainCounts).map(([domain, count]) => `${domain}:${count}`).join(", ")
+    : "none";
+  return [
+    `status=${sanitizeText(lookup.status) || "unknown"}`,
+    `gameId=${sanitizeText(lookup.gameId) || "unknown"}`,
+    `records=${Number.isFinite(lookup.recordCount) ? lookup.recordCount : 0}`,
+    `domains=${domains}`,
+    `rejected=${Number.isFinite(lookup.rejectedCount) ? lookup.rejectedCount : 0}`,
+    `errors=${errors.length}`,
+    `manifestDomains=${Object.keys(manifest?.domains || {}).length}`
+  ];
+}
+
+function toAssetPipelineStateLines(assetPipelineState) {
+  const pipeline = assetPipelineState?.pipeline || {};
+  const manifest = assetPipelineState?.manifest || null;
+  const errors = Array.isArray(assetPipelineState?.errors) ? assetPipelineState.errors : [];
+  if (!pipeline.status && !manifest) {
+    return ["asset-pipeline=unavailable"];
+  }
+  return [
+    `status=${sanitizeText(pipeline.status) || "unknown"}`,
+    `gameId=${sanitizeText(pipeline.gameId) || "unknown"}`,
+    `records=${Number.isFinite(pipeline.recordCount) ? pipeline.recordCount : 0}`,
+    `errors=${errors.length}`,
+    `manifestDomains=${Object.keys(manifest?.domains || {}).length}`
+  ];
+}
+
 function toRemediationLines(remediationResult) {
   const actions = Array.isArray(remediationResult?.remediation?.actions) ? remediationResult.remediation.actions : [];
   return [
@@ -105,6 +142,8 @@ export function buildDebugVisualizationLayer(options = {}) {
     createSection("Remediation Navigation", toRemediationLines(options.remediationResult)),
     createSection("Packaging Report", toPackagingLines(options.packageResult)),
     createSection("Runtime Trace", toRuntimeLines(options.runtimeResult)),
+    createSection("Asset Runtime State", toAssetRuntimeStateLines(options.assetRuntimeState)),
+    createSection("Asset Pipeline State", toAssetPipelineStateLines(options.assetPipelineState)),
     createSection("Profiler", toProfilerLines(options.performanceResult))
   ];
   const summary = `Debug view: ${Object.keys(graph.nodes || {}).length} nodes, ${(graph.edges || []).length} edges, ${options.validationResult?.validation?.findings?.length || 0} findings.`;

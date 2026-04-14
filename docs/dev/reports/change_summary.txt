@@ -1,30 +1,30 @@
 Summary
-- Implemented a shared asset error handling standard for pipeline/runtime layers.
-- Unified error propagation through runtime validation + runtime lookup + pipeline tooling.
-- Added debug-friendly structured error reporting with stable codes/stages.
+- Added debug visibility hooks for asset pipeline and runtime lookup layers.
+- Exposed manifest + lookup state snapshots through shared debug reporting.
+- Kept scope surgical with no engine/runtime behavior redesign.
 
 Implementation
-- Added `tools/shared/pipeline/assetErrorHandling.js`:
-  - shared error shape (`level`, `code`, `stage`, `domain`, `assetId`, `message`, `details`)
-  - helper append utilities for consistent propagation
-- Updated `tools/shared/pipeline/runtimeAssetValidation.js`:
-  - emits standardized errors while preserving compatibility `issues` messages
-  - rejects `/data/` runtime/source paths with explicit error codes
-  - validates required domain metadata with stable codes per domain
 - Updated `tools/shared/pipeline/runtimeAssetLookup.js`:
-  - collects/propagates binding issues, binding rejections, lookup misses, and runtime validation errors
-  - exposes `errors` and `getErrors()` for debug/reporting
+  - exposes `gameAssetManifest`
+  - adds `getDebugState()` snapshot with lookup counters, manifest, and propagated errors
 - Updated `tools/shared/pipeline/assetPipelineTooling.js`:
-  - emits standardized `errors` for invalid tool-contract stage failures
+  - adds `debugState` snapshot in both ready and invalid paths
+  - includes stage/status/record/error summaries and coordinated manifest reference when available
+- Updated `tools/shared/debugVisualizationLayer.js`:
+  - added sections `Asset Runtime State` and `Asset Pipeline State`
+  - renders manifest-domain and lookup/pipeline summary lines for debug visibility
+- Updated touched runtime consumers to pass lookup debug state into debug visualization:
+  - `tools/shared/asteroidsPlatformDemo.js`
+  - `tools/shared/vectorNativeTemplate.js`
+  - `tools/shared/vectorTemplateSampleGame.js`
+  - `tools/shared/vectorAssetSystem.js`
 
 Tests
-- Added `tests/tools/AssetErrorHandlingStandard.test.mjs`
-- Updated `tests/tools/RuntimeAssetValidation.test.mjs`
+- Updated `tests/tools/DebugVisualizationLayer.test.mjs`
 - Updated `tests/tools/RuntimeAssetLookupConsolidation.test.mjs`
 - Updated `tests/tools/AssetPipelineTooling.test.mjs`
-- Updated `tests/run-tests.mjs` registrations
 
 Roadmap (status-only)
 - `docs/dev/roadmaps/MASTER_ROADMAP_HIGH_LEVEL.md`
-  - `Expand testing/validation structure` moved from `[.]` to `[x]`
+  - `debug tools align with engine/debug maturity` moved from `[.]` to `[x]`
 - No roadmap prose/text/order edits.

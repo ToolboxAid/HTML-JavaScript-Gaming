@@ -1,7 +1,6 @@
 MODEL: GPT-5.4
 REASONING: high
 COMMAND:
-- implement asset error handling standard
-- unify error propagation
-- integrate with validation + pipeline
+- add debug visibility hooks for asset pipeline
+- expose manifest + lookup state
 - roadmap status only update

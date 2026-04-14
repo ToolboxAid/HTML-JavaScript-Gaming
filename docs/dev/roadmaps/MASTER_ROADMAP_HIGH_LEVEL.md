@@ -448,7 +448,7 @@
 - [ ] 2D tool stabilization before 3D tool expansion
 - [ ] 3D prerequisite samples before advanced 3D tools
 - [.] content pipeline tools after asset complexity justifies them
-- [.] debug tools align with engine/debug maturity
+- [x] debug tools align with engine/debug maturity
 - [ ] no standalone showcase-only tool tracks
 
 ### Recent Tool Shell Notes

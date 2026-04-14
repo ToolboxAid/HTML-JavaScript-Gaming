@@ -160,9 +160,26 @@ export function createRuntimeManifestAssetLookup(options = {}) {
   return {
     binding,
     records,
+    gameAssetManifest: coordinatedManifest,
     errors,
     getErrors() {
       return errors.slice();
+    },
+    getDebugState() {
+      return {
+        lookup: {
+          status: binding.status,
+          gameId: safeString(binding.gameId, gameId),
+          recordCount: records.length,
+          domainCounts: Object.fromEntries(
+            Object.entries(binding.domains || {}).map(([domain, entries]) => [domain, Array.isArray(entries) ? entries.length : 0])
+          ),
+          rejectedCount: Array.isArray(binding.rejected) ? binding.rejected.length : 0,
+          errorCount: errors.length
+        },
+        manifest: cloneJson(coordinatedManifest.manifest),
+        errors: errors.slice()
+      };
     },
     resolvePackagedAsset
   };
