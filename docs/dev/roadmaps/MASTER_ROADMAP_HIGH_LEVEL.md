@@ -597,6 +597,12 @@
 - [x] Normalize assets/data ownership
 - [x] Expand testing/validation structure
 
+### Repo Operator + Asset Conversion Scripting Lanes
+- [ ] Existing games asset folders updated so existing images / vectors / related runtime assets can be transformed into tool-editable `data/` objects, with corresponding project JSON updates
+- [ ] Add the ability for a PowerShell script to create a new game from template, including a project scaffold for the tools
+- [ ] Add scripts to prep / update / delete the repo so it can be placed on a website
+- [x] Add scripts to switch between Pay-as-you-go and Codex plan modes, and scripts to input API key material and validate it
+
 ### Later Capability Lanes
 - [ ] FEATURE: Fullscreen Bezel Overlay System - Render game in full screen with optional bezel artwork layer (static or animated) surrounding the active playfield, preserving aspect ratio and supporting per-game/theme bezel assets without modifying core engine rendering.
 

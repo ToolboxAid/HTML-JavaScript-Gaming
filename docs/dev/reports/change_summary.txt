@@ -1,22 +1,15 @@
 Summary
-- Added caching to runtime asset lookup resolution to avoid redundant repeated resolution/validation work.
-- Optimized manifest and binding access patterns by pre-indexing lookup data and reusing manifest snapshot state.
-- Reduced redundant per-call cloning/lookup overhead in touched runtime asset consumers through shared lookup improvements.
+- Added focused operator scripts under `scripts/PS`:
+  - `Switch-CodexPlanMode.ps1`
+  - `Set-CodexApiKey.ps1`
+  - `Validate-CodexApiKey.ps1`
+  - `Get-CodexOperatorState.ps1`
+  - shared helper: `CodexOperatorState.ps1`
+- Added usage + guardrails documentation at `docs/dev/CODEX_PLAN_AND_API_KEY_SCRIPTING.md`.
+- Implemented repo-local metadata state at `.codex/local/codex-operator-state.json` (generated at runtime), with no raw key persisted to disk by scripts.
+- Updated roadmap with the four requested new items and marked the plan/API-key scripting item as completed by this PR.
 
-Implementation
-- Updated `tools/shared/pipeline/runtimeAssetLookup.js`:
-  - adds per-asset resolution cache (`hits/misses/size`) to avoid redundant loads/resolution
-  - adds static source cache to avoid repeated deep clone work per request
-  - pre-indexes binding records by domain+asset id for faster access
-  - reuses manifest snapshot for debug state to avoid repeated manifest recomputation
-  - exposes cache stats via `getDebugState().lookup.cache`
-- Updated `tools/shared/pipeline/runtimeAssetBinding.js`:
-  - adds WeakMap-backed indexed resolution in `resolveRuntimeAsset` for efficient repeated lookup
-- Updated `tests/tools/RuntimeAssetLookupConsolidation.test.mjs`:
-  - validates cache hit/miss behavior and cache size
-  - validates optimized lookup still preserves existing error/visibility behavior
-
-Roadmap (status-only)
-- `docs/dev/roadmaps/MASTER_ROADMAP_HIGH_LEVEL.md`
-  - `content pipeline tools after asset complexity justifies them` moved from `[.]` to `[x]`
-- No roadmap prose/text/order edits.
+Behavior implemented
+- Plan mode switching between `payg` and `codex` with explicit persisted state metadata.
+- API key input/update for `Process` and `User` scopes via environment variable configuration.
+- Safe API key validation (presence + format + metadata fingerprint consistency check) without printing raw secret values.

@@ -1,27 +1,37 @@
-Validation Checklist - BUILD_PR_LEVEL_09_17_ASSET_PERFORMANCE_OPTIMIZATION
+Validation Checklist - BUILD_PR_LEVEL_09_18_CODEX_PLAN_SWITCH_AND_API_KEY_SCRIPTING
 
 Scope
-[x] Caching added to shared asset lookup path
-[x] Manifest access optimized in touched lookup flow
-[x] Redundant resolution/load work avoided where touched
-[x] No engine redesign
-[x] No UI changes
+[x] PR remains in the repo scripting lane only
+[x] No engine changes introduced
+[x] No gameplay/runtime feature changes introduced
+[x] No tool UI redesign introduced
+[x] No broad deployment automation introduced in this PR
+[x] No asset conversion automation introduced in this PR
 
-Code
-[x] Updated `tools/shared/pipeline/runtimeAssetLookup.js`
-[x] Updated `tools/shared/pipeline/runtimeAssetBinding.js`
-[x] Updated `tests/tools/RuntimeAssetLookupConsolidation.test.mjs`
+Scripts
+[x] PowerShell plan-switch script(s) added
+[x] Active mode is clear and inspectable
+[x] API key input/update script(s) added
+[x] API key validation script(s) added
+[x] Script usage is documented clearly
+[x] Script outputs/errors are actionable
 
 Validation
-[x] `node --check tools/shared/pipeline/runtimeAssetLookup.js`
-[x] `node --check tools/shared/pipeline/runtimeAssetBinding.js`
-[x] `node --check tests/tools/RuntimeAssetLookupConsolidation.test.mjs`
-[x] `node --check tests/tools/RuntimeAssetBinding.test.mjs`
-[x] `node --check tests/tools/AssetPipelineTooling.test.mjs`
-[x] Focused tests pass: RuntimeAssetLookupConsolidation, RuntimeAssetBinding, AssetPipelineTooling
-[x] Existing regression tests pass: RuntimeAssetValidation, GameAssetManifestCoordinator, ProjectToolDataContracts
-[x] Existing consumer tests pass: AsteroidsAssetReferenceAdoption, AsteroidsPlatformDemo, VectorNativeTemplate, VectorTemplateSampleGame, VectorAssetSystem
+[x] Touched PowerShell files parse/read cleanly
+[x] Focused plan-switch smoke checks pass
+[x] Focused API key input/update smoke checks pass
+[x] Focused API key validation smoke checks pass
 
 Roadmap
-[x] Status-only update applied
-[x] No roadmap prose/text/order changes
+[x] Existing roadmap status updated where applicable
+[x] Requested new roadmap items added
+[x] Added roadmap items are limited to the explicitly requested scripting/asset items
+
+Packaging
+[x] docs/pr document included
+[x] docs/dev/codex_commands.md included
+[x] docs/dev/commit_comment.txt included
+[x] docs/dev/next_command.txt included
+[x] docs/dev/reports/change_summary.txt included
+[x] docs/dev/reports/validation_checklist.txt included
+[x] Single ZIP produced at `<project folder>/tmp/BUILD_PR_LEVEL_09_18_CODEX_PLAN_SWITCH_AND_API_KEY_SCRIPTING.zip`

@@ -1,3 +1,3 @@
-BUILD_PR_LEVEL_09_17_ASSET_PERFORMANCE_OPTIMIZATION
+BUILD_PR_LEVEL_09_18_CODEX_PLAN_SWITCH_AND_API_KEY_SCRIPTING
 
-Adds runtime asset lookup caching, optimizes manifest/binding access patterns, avoids redundant resolution work in touched layers, and applies a roadmap status-only bracket update.
+Adds a focused PowerShell operator automation slice with repo-local plan mode switching, API key input/update, and API key validation scripts (`scripts/PS/*Codex*.ps1`). Includes usage/guardrails documentation and roadmap updates with the four requested scripting/asset-conversion items.
