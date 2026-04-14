@@ -1,0 +1,16 @@
+{
+  "id": "vector.template.ui.hud",
+  "type": "vector",
+  "source": {
+    "kind": "svg",
+    "path": "games/vector-arcade-sample/assets/data/vectors/template-hud.vector.json"
+  },
+  "geometry": {
+    "viewBox": "0 0 160 32",
+    "paths": [{ "d": "M 4 4 L 156 4 L 156 28 L 4 28 Z" }, { "d": "M 18 10 L 28 10 L 28 22 L 18 22 Z" }]
+  },
+  "style": {
+    "stroke": true,
+    "fill": false
+  }
+}

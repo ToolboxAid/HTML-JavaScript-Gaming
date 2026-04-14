@@ -1,4 +1,4 @@
-﻿import {
+import {
   createAssetHandoff,
   getSharedLaunchContext,
   getToolDisplayName,
@@ -7,11 +7,11 @@
 import { registerToolBootContract } from "../shared/toolBootContract.js";
 
 const APPROVED_DESTINATIONS = Object.freeze({
-  "Vector Assets": "games/<project>/assets/platform/vectors/",
-  "Sprite Projects": "games/<project>/assets/platform/sprites/",
-  "Tilemaps": "games/<project>/assets/platform/tilemaps/",
-  "Parallax Scenes": "games/<project>/assets/platform/parallax/",
-  "Palettes": "games/<project>/assets/platform/palettes/",
+  "Vector Assets": "games/<project>/assets/vectors/",
+  "Sprite Projects": "games/<project>/assets/sprites/",
+  "Tilemaps": "games/<project>/assets/tilemaps/",
+  "Parallax Scenes": "games/<project>/assets/parallax/",
+  "Palettes": "games/<project>/assets/palettes/",
   "Workflow JSON": "games/<project>/config/"
 });
 
@@ -20,43 +20,43 @@ const ASSET_CATALOG = Object.freeze([
     id: "asset-vector-player",
     label: "Asteroids Ship Vector",
     category: "Vector Assets",
-    path: "../../games/Asteroids/assets/platform/vectors/asteroids-ship.vector.json"
+    path: "../../games/Asteroids/assets/vectors/asteroids-ship.vector.json"
   },
   {
     id: "asset-vector-title",
     label: "Asteroids Title Vector",
     category: "Vector Assets",
-    path: "../../games/Asteroids/assets/platform/vectors/asteroids-title.vector.json"
+    path: "../../games/Asteroids/assets/vectors/asteroids-title.vector.json"
   },
   {
     id: "asset-sprite-demo",
     label: "Asteroids Sprite Project",
     category: "Sprite Projects",
-    path: "../../games/Asteroids/assets/platform/sprites/asteroids-demo.sprite.json"
+    path: "../../games/Asteroids/assets/sprites/asteroids-demo.sprite.json"
   },
   {
     id: "asset-tilemap-template",
     label: "Vector Arcade Template Tilemap",
     category: "Tilemaps",
-    path: "../../games/vector-arcade-sample/assets/tilemaps/template-arena.tilemap.json"
+    path: "../../games/vector-arcade-sample/assets/data/tilemaps/template-arena.tilemap.json"
   },
   {
     id: "asset-parallax-template",
     label: "Template Backdrop Parallax",
     category: "Parallax Scenes",
-    path: "../../games/vector-arcade-sample/assets/parallax/template-backdrop.parallax.json"
+    path: "../../games/vector-arcade-sample/assets/data/parallax/template-backdrop.parallax.json"
   },
   {
     id: "asset-parallax-svg",
     label: "Template Backdrop SVG",
     category: "Parallax Scenes",
-    path: "../../games/vector-arcade-sample/assets/parallax/template-backdrop.svg"
+    path: "../../games/vector-arcade-sample/assets/data/parallax/template-backdrop.svg"
   },
   {
     id: "asset-palette-primary",
     label: "Vector Native Primary Palette",
     category: "Palettes",
-    path: "../../games/vector-arcade-sample/assets/palettes/vector-native-primary.palette.json"
+    path: "../../games/vector-arcade-sample/assets/data/palettes/vector-native-primary.palette.json"
   },
   {
     id: "asset-project-config",

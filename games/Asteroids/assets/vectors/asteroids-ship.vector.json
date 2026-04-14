@@ -1,0 +1,17 @@
+{
+  "id": "vector.asteroids.ship",
+  "type": "vector",
+  "source": {
+    "kind": "svg",
+    "path": "games/Asteroids/assets/vectors/asteroids-ship.vector.json"
+  },
+  "geometry": {
+    "viewBox": "-24 -24 48 48",
+    "paths": [{ "d": "M 0 -18 L 14 16 L 0 8 L -14 16 Z" }, { "d": "M -6 14 L 0 6 L 6 14" }]
+  },
+  "style": {
+    "stroke": true,
+    "fill": false
+  }
+}
+

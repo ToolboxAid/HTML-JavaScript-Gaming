@@ -1,4 +1,4 @@
-﻿import { validateProjectAssetState, summarizeAssetValidation } from "./projectAssetValidation.js";
+import { validateProjectAssetState, summarizeAssetValidation } from "./projectAssetValidation.js";
 import { buildProjectAssetRemediation } from "./projectAssetRemediation.js";
 import { buildProjectPackage, summarizeProjectPackaging } from "./projectPackaging.js";
 import { loadPackagedProjectRuntime, summarizeRuntimeAssetLoader } from "./runtimeAssetLoader.js";
@@ -31,7 +31,7 @@ function createRegistry() {
   const shipVector = normalizeSvgToVectorAsset({
     id: "vector.asteroids.ship",
     name: "Asteroids Ship",
-    path: "games/Asteroids/assets/platform/vectors/asteroids-ship.vector.json",
+    path: "games/Asteroids/assets/vectors/asteroids-ship.vector.json",
     paletteId: "palette.asteroids-hud",
     sourceTool: "vector-asset-studio",
     svgText: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="-24 -24 48 48"><path d="M 0 -18 L 14 16 L 0 8 L -14 16 Z" /><path d="M -6 14 L 0 6 L 6 14" /></svg>'
@@ -39,7 +39,7 @@ function createRegistry() {
   const asteroidLargeVector = normalizeSvgToVectorAsset({
     id: "vector.asteroids.asteroid.large",
     name: "Asteroids Large Rock",
-    path: "games/Asteroids/assets/platform/vectors/asteroids-asteroid-large.vector.json",
+    path: "games/Asteroids/assets/vectors/asteroids-asteroid-large.vector.json",
     paletteId: "palette.asteroids-hud",
     sourceTool: "vector-asset-studio",
     svgText: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="-40 -40 80 80"><path d="M -28 -12 L -10 -30 L 20 -26 L 32 -8 L 26 18 L 6 32 L -22 24 L -34 2 Z" /></svg>'
@@ -47,7 +47,7 @@ function createRegistry() {
   const asteroidMediumVector = normalizeSvgToVectorAsset({
     id: "vector.asteroids.asteroid.medium",
     name: "Asteroids Medium Rock",
-    path: "games/Asteroids/assets/platform/vectors/asteroids-asteroid-medium.vector.json",
+    path: "games/Asteroids/assets/vectors/asteroids-asteroid-medium.vector.json",
     paletteId: "palette.asteroids-hud",
     sourceTool: "vector-asset-studio",
     svgText: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="-28 -28 56 56"><path d="M -16 -10 L -2 -18 L 16 -14 L 20 2 L 8 18 L -10 16 L -20 4 Z" /></svg>'
@@ -55,7 +55,7 @@ function createRegistry() {
   const asteroidSmallVector = normalizeSvgToVectorAsset({
     id: "vector.asteroids.asteroid.small",
     name: "Asteroids Small Rock",
-    path: "games/Asteroids/assets/platform/vectors/asteroids-asteroid-small.vector.json",
+    path: "games/Asteroids/assets/vectors/asteroids-asteroid-small.vector.json",
     paletteId: "palette.asteroids-hud",
     sourceTool: "vector-asset-studio",
     svgText: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="-18 -18 36 36"><path d="M -10 -6 L 0 -12 L 10 -6 L 8 8 L -6 10 L -12 0 Z" /></svg>'
@@ -63,7 +63,7 @@ function createRegistry() {
   const titleVector = normalizeSvgToVectorAsset({
     id: "vector.asteroids.ui.title",
     name: "Asteroids Title Vector",
-    path: "games/Asteroids/assets/platform/vectors/asteroids-title.vector.json",
+    path: "games/Asteroids/assets/vectors/asteroids-title.vector.json",
     paletteId: "palette.asteroids-hud",
     sourceTool: "vector-asset-studio",
     svgText: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 48"><path d="M 6 40 L 24 6 L 42 40 Z" /><path d="M 58 40 L 58 8 L 88 8 L 88 18 L 70 18 L 70 22 L 86 22 L 86 32 L 70 32 L 70 40 Z" /><path d="M 100 40 L 100 8 L 112 8 L 128 26 L 128 8 L 140 8 L 140 40 L 128 40 L 112 22 L 112 40 Z" /><path d="M 154 40 L 154 8 L 184 8 L 184 18 L 166 18 L 166 22 L 182 22 L 182 32 L 166 32 L 166 40 Z" /><path d="M 194 40 L 212 6 L 214 40 Z" /></svg>'
@@ -76,7 +76,7 @@ function createRegistry() {
       {
         id: "palette.asteroids-hud",
         name: "Asteroids HUD Palette",
-        path: "games/Asteroids/assets/platform/palettes/asteroids-hud.palette.json",
+        path: "games/Asteroids/assets/palettes/asteroids-hud.palette.json",
         colors: ["#05070DFF", "#DCE8FFFF", "#78B7FFFF", "#FFBE64FF"],
         sourceTool: "pixel-asset-studio"
       }
@@ -93,7 +93,7 @@ function createRegistry() {
       {
         id: "tileset.asteroids-ui",
         name: "Asteroids UI Tileset",
-        path: "games/Asteroids/assets/platform/tilesets/asteroids-ui.tileset.json",
+        path: "games/Asteroids/assets/tilesets/asteroids-ui.tileset.json",
         paletteId: "palette.asteroids-hud",
         tileWidth: 8,
         tileHeight: 8,
@@ -104,7 +104,7 @@ function createRegistry() {
       {
         id: "tilemap.asteroids-stage",
         name: "Asteroids Demo Stage",
-        path: "games/Asteroids/assets/platform/tilemaps/asteroids-stage.tilemap.json",
+        path: "games/Asteroids/assets/tilemaps/asteroids-stage.tilemap.json",
         tilesetId: "tileset.asteroids-ui",
         sourceTool: "tilemap-studio"
       }
@@ -113,13 +113,13 @@ function createRegistry() {
       {
         id: "image.asteroids-preview",
         name: "Asteroids Preview",
-        path: "games/Asteroids/assets/preview.png",
+        path: "games/Asteroids/assets/images/preview.png",
         sourceTool: "parallax-scene-studio"
       },
       {
         id: "image.asteroids-bezel",
         name: "Asteroids Bezel",
-        path: "games/Asteroids/assets/asteroids-bezel.png",
+        path: "games/Asteroids/assets/images/asteroids-bezel.png",
         sourceTool: "parallax-scene-studio"
       }
     ],
@@ -127,14 +127,14 @@ function createRegistry() {
       {
         id: "parallax.asteroids-title",
         name: "Asteroids Title Layer",
-        path: "games/Asteroids/assets/platform/parallax/asteroids-title.parallax.json",
+        path: "games/Asteroids/assets/parallax/asteroids-title.parallax.json",
         imageId: "image.asteroids-preview",
         sourceTool: "parallax-scene-studio"
       },
       {
         id: "parallax.asteroids-overlay",
         name: "Asteroids Overlay Layer",
-        path: "games/Asteroids/assets/platform/parallax/asteroids-overlay.parallax.json",
+        path: "games/Asteroids/assets/parallax/asteroids-overlay.parallax.json",
         imageId: "image.asteroids-bezel",
         sourceTool: "parallax-scene-studio"
       }
@@ -240,47 +240,47 @@ function createRuntimeAssetSources(registry) {
   return {
     "palette.asteroids-hud": {
       kind: "palette",
-      file: "games/Asteroids/assets/platform/palettes/asteroids-hud.palette.json",
+      file: "games/Asteroids/assets/palettes/asteroids-hud.palette.json",
       colors: ["#05070DFF", "#DCE8FFFF", "#78B7FFFF", "#FFBE64FF"]
     },
     "vector.asteroids.ship": {
       ...cloneJson(findRegistryEntry(registry?.vectors, "vector.asteroids.ship")),
       kind: "vector",
-      file: "games/Asteroids/assets/platform/vectors/asteroids-ship.vector.json",
+      file: "games/Asteroids/assets/vectors/asteroids-ship.vector.json",
       role: "ship"
     },
     "vector.asteroids.asteroid.large": {
       ...cloneJson(findRegistryEntry(registry?.vectors, "vector.asteroids.asteroid.large")),
       kind: "vector",
-      file: "games/Asteroids/assets/platform/vectors/asteroids-asteroid-large.vector.json",
+      file: "games/Asteroids/assets/vectors/asteroids-asteroid-large.vector.json",
       role: "asteroid-large"
     },
     "vector.asteroids.asteroid.medium": {
       ...cloneJson(findRegistryEntry(registry?.vectors, "vector.asteroids.asteroid.medium")),
       kind: "vector",
-      file: "games/Asteroids/assets/platform/vectors/asteroids-asteroid-medium.vector.json",
+      file: "games/Asteroids/assets/vectors/asteroids-asteroid-medium.vector.json",
       role: "asteroid-medium"
     },
     "vector.asteroids.asteroid.small": {
       ...cloneJson(findRegistryEntry(registry?.vectors, "vector.asteroids.asteroid.small")),
       kind: "vector",
-      file: "games/Asteroids/assets/platform/vectors/asteroids-asteroid-small.vector.json",
+      file: "games/Asteroids/assets/vectors/asteroids-asteroid-small.vector.json",
       role: "asteroid-small"
     },
     "vector.asteroids.ui.title": {
       ...cloneJson(findRegistryEntry(registry?.vectors, "vector.asteroids.ui.title")),
       kind: "vector",
-      file: "games/Asteroids/assets/platform/vectors/asteroids-title.vector.json",
+      file: "games/Asteroids/assets/vectors/asteroids-title.vector.json",
       role: "ui-title"
     },
     "tileset.asteroids-ui": {
       kind: "tileset",
-      file: "games/Asteroids/assets/platform/tilesets/asteroids-ui.tileset.json",
+      file: "games/Asteroids/assets/tilesets/asteroids-ui.tileset.json",
       hudFrames: ["score-panel", "lives-panel", "wave-panel"]
     },
     "tilemap.asteroids-stage": {
       kind: "tilemap",
-      file: "games/Asteroids/assets/platform/tilemaps/asteroids-stage.tilemap.json",
+      file: "games/Asteroids/assets/tilemaps/asteroids-stage.tilemap.json",
       gameplayLoop: {
         title: true,
         start: true,
@@ -316,12 +316,12 @@ function createRuntimeAssetSources(registry) {
     },
     "parallax.asteroids-overlay": {
       kind: "parallaxLayer",
-      file: "games/Asteroids/assets/platform/parallax/asteroids-overlay.parallax.json",
+      file: "games/Asteroids/assets/parallax/asteroids-overlay.parallax.json",
       role: "gameplay-overlay"
     },
     "parallax.asteroids-title": {
       kind: "parallaxLayer",
-      file: "games/Asteroids/assets/platform/parallax/asteroids-title.parallax.json",
+      file: "games/Asteroids/assets/parallax/asteroids-title.parallax.json",
       role: "title-frame"
     }
   };

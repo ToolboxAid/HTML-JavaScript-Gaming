@@ -1,23 +1,10 @@
-﻿Asset Ownership Normalization - File Tree (Changed)
-
-games/Asteroids/assets/platform/
-  palettes/asteroids-hud.palette.json
-  parallax/asteroids-overlay.parallax.json
-  parallax/asteroids-title.parallax.json
-  sprites/asteroids-demo.sprite.json
-  tilemaps/asteroids-stage.tilemap.json
-  tilesets/asteroids-ui.tileset.json
-  vectors/asteroids-asteroid-large.vector.json
-  vectors/asteroids-asteroid-medium.vector.json
-  vectors/asteroids-asteroid-small.vector.json
-  vectors/asteroids-ship.vector.json
-  vectors/asteroids-title.vector.json
-
-Reference updates
-- tools/Asset Browser/main.js
-- tools/shared/asteroidsPlatformDemo.js
-- tools/shared/vectorAssetSystem.js
-- tools/templates/starter-project-template/README.md
-- tools/templates/starter-project-template/config/starter.project.json
-- tests/tools/VectorAssetSystem.test.mjs
-- docs/specs/asset_usage_contract.md
+docs/
+  dev/
+    codex_commands.md
+    commit_comment.txt
+    reports/
+      change_summary.txt
+      file_tree.txt
+      validation_checklist.txt
+  pr/
+    BUILD_PR_LEVEL_09_04_ASSET_STRUCTURE_SIMPLIFICATION.md

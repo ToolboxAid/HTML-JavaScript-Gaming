@@ -1,1 +1,3 @@
-PLAN_PR_LEVEL_11_2_RECONCILIATION_LAYER_FOUNDATION
+# Validate BUILD_PR_LEVEL_09_03_ASSET_BUCKET_TAXONOMY_STANDARD
+rg -n ""assets/platform/"" games samples tools src tests --glob '!start_of_day/**'
+node tests/tools/VectorAssetSystem.test.mjs

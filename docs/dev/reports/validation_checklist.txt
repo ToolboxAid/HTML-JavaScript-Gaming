@@ -1,43 +1,5 @@
-﻿BUILD_PR_LEVEL_09_02_ASSET_OWNERSHIP_NORMALIZATION - Validation Checklist
-
-Scope
-- [x] one PR purpose only
-- [x] no engine modifications
-- [x] no launcher/bootstrap changes
-- [x] no config migration as a separate lane
-- [x] no start_of_day modifications
-
-Required work
-1. scan repo for owner-specific assets outside owner assets/
-- [x] scanned games/, samples/, tools/ for */platform/assets payloads
-
-2. classify by owner
-- [x] game-owned: Asteroids payloads found
-- [x] sample-owned: none found
-- [x] tool-owned: none found
-- [x] truly shared: none found in scanned owner scopes
-
-3. move only asset payloads
-- [x] 11 asset payload files moved from games/Asteroids/platform/assets/* to games/Asteroids/assets/platform/*
-
-4. update references
-- [x] updated active path references to games/Asteroids/assets/platform/
-
-5. remove old asset locations when safe
-- [x] moved payload files out of old location
-- [x] no owner payload files remain under games/Asteroids/platform/assets
-
-6. preserve exact assets / avoid code moves
-- [x] payload files preserved (move only)
-- [x] no runtime/platform code moved
-
-Command evidence
-- rg scan for old active paths (tools/tests/docs/specs): no stale games/Asteroids/platform/assets refs remain
-- node --check tools/Asset Browser/main.js : PASS
-- node --check tools/shared/asteroidsPlatformDemo.js : PASS
-- node --check tools/shared/vectorAssetSystem.js : PASS
-- node tests/runtime/LaunchSmokeAllEntries.test.mjs : PASS
-- tests/tools/VectorAssetSystem.test.mjs : blocked by existing baseline env/module resolution issue (C:/src/engine/assets/AssetRegistry.js)
-
-Result
-- PASS (with noted baseline test-environment blocker unrelated to this move)
+Validation:
+- no data/platform nesting remains
+- top-level assets folders are type-only
+- plural naming enforced
+- references updated

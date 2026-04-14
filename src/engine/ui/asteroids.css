@@ -6,6 +6,6 @@ asteroids.css
 */
 @font-face {
   font-family: "Vector Battle";
-  src: url("/games/Asteroids/assets/vector_battle.ttf") format("truetype");
+  src: url("/games/Asteroids/assets/fonts/vector_battle.ttf") format("truetype");
   font-display: swap;
 }
