@@ -4,7 +4,7 @@ David Quesenberry
 03/21/2026
 Engine.js
 */
-import { CanvasRenderer } from '../render/index.js';
+import { CanvasRenderer } from '../rendering/index.js';
 import RuntimeMetrics from './RuntimeMetrics.js';
 import FrameClock from './FrameClock.js';
 import FixedTicker from './FixedTicker.js';

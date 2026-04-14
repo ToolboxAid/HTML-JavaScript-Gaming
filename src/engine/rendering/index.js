@@ -1,7 +1,7 @@
 /*
 Toolbox Aid
 David Quesenberry
-04/14/2026
+03/21/2026
 index.js
 */
 export { default as CanvasRenderer } from './CanvasRenderer.js';

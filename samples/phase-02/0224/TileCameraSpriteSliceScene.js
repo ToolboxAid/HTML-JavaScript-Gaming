@@ -10,7 +10,7 @@ import { drawFrame, drawPanel } from '/src/engine/debug/index.js';
 import { Camera2D, followCameraTarget, worldRectToScreen } from '/src/engine/camera/index.js';
 import { Tilemap, renderTilemap, resolveRectVsTilemap } from '/src/engine/tilemap/index.js';
 import { SpriteAtlas } from '/src/engine/assets/index.js';
-import { renderSpriteReadyEntities } from '/src/engine/render/index.js';
+import { renderSpriteReadyEntities } from '/src/engine/rendering/index.js';
 import { serializeWorldState, deserializeWorldState } from '/src/engine/persistence/index.js';
 
 const theme = new Theme(ThemeTokens);

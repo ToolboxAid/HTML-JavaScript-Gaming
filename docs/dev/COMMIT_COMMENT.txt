@@ -1,2 +1,2 @@
-Normalize vector rendering/math boundaries and close physics with real reusable helpers
-BUILD_PR_LEVEL_01_RENDERING_VECTOR_BOUNDARY_AND_PHYSICS_CLOSEOUT
+Normalize renderer vs rendering into one engine boundary
+BUILD_PR_LEVEL_01_RENDERER_RENDERING_BOUNDARY_NORMALIZATION

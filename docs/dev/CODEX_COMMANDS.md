@@ -2,46 +2,25 @@ MODEL: GPT-5.4
 REASONING: high
 
 COMMAND:
-Create `BUILD_PR_LEVEL_01_RENDERING_VECTOR_BOUNDARY_AND_PHYSICS_CLOSEOUT`.
+Create `BUILD_PR_LEVEL_01_RENDERER_RENDERING_BOUNDARY_NORMALIZATION`.
 
-Implement this as one combined section-1 closeout PR.
+Implement one clear rendering boundary decision:
 
-Boundary decisions:
-1. `VectorDrawing` belongs in rendering.
-2. `VectorMath` belongs in shared math/utility.
-3. `src/engine/physics` must contain real reusable physics helpers, not just placeholder/barrel status.
-
-Required work:
-1. Move/normalize vector drawing:
-   - place `VectorDrawing` under the appropriate rendering-owned path
-   - update imports/exports accordingly
-
-2. Move/normalize vector math:
-   - place `VectorMath` under the appropriate shared math/utility path
-   - update imports/exports accordingly
-
-3. Close physics truthfully:
-   - extract the smallest valid set of reusable physics-domain helpers from existing games/samples into `src/engine/physics`
-   - examples may include gravity, friction, drag, acceleration/integration, bounce/impulse if already stable
-   - do NOT promote game-specific behavior prematurely
-   - keep the extraction surgical
-
-4. Validate:
+1. Do NOT keep both `renderer` and `rendering` as competing top-level engine concepts.
+2. Prefer `src/engine/rendering/` as the single domain boundary.
+3. Treat renderer as an implementation/class/module inside rendering, not as a separate parallel boundary.
+4. Normalize imports/exports to that one truth.
+5. Keep the structure simple:
+   - do NOT over-split into `vector/`, `sprite/`, `layer/` unless the repo already has enough stable clustered content to justify it
+   - prefer a flatter rendering boundary first
+6. Update roadmap/status only if needed and only by status markers or additive truth-safe structure clarification.
+7. Validate:
    - imports remain green
-   - post-move validation remains green
-   - rendering no longer owns generic vector math
-   - shared math no longer depends on rendering
-   - `src/engine/physics` now contains real reusable physics helpers
+   - no duplicate renderer/rendering top-level ambiguity remains
+   - any subfolders added are truthfully justified, not speculative
 
-5. Roadmap:
-   - update status markers only
-   - no roadmap text rewrite
-   - mark `src/engine/rendering` and `src/engine/physics` complete only if truthfully supported
-   - leave `src/engine/scene` open if it still is not done
-
-6. Final packaging step is REQUIRED:
-   - package ALL changed files into this exact repo-structured ZIP:
-     `<project folder>/tmp/BUILD_PR_LEVEL_01_RENDERING_VECTOR_BOUNDARY_AND_PHYSICS_CLOSEOUT.zip`
+Final packaging step is REQUIRED:
+`<project folder>/tmp/BUILD_PR_LEVEL_01_RENDERER_RENDERING_BOUNDARY_NORMALIZATION.zip`
 
 Hard rules:
 - implementation by Codex

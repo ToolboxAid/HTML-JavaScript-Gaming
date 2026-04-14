@@ -374,7 +374,7 @@
         "boundaryStatus": "allowed-public"
       },
       {
-        "specifier": "/src/engine/render/index.js",
+        "specifier": "/src/engine/rendering/index.js",
         "importCount": 14,
         "importerExamples": [
           "phase-02/0213/SpriteRenderLayerScene.js",

@@ -46,23 +46,23 @@ const LAYER_RENDER_BUCKETS = Object.freeze({
 export const TOOL_ENGINE_MAPPINGS = Object.freeze({
   "tile-map-editor": Object.freeze({
     allowedLayerKinds: Object.freeze(["tilemap", "collision", "guide", "overlay"]),
-    engineTargets: Object.freeze(["engine/tilemap", "engine/collision", "engine/render"]) 
+    engineTargets: Object.freeze(["engine/tilemap", "engine/collision", "engine/rendering"]) 
   }),
   "parallax-editor": Object.freeze({
     allowedLayerKinds: Object.freeze(["parallax", "guide", "overlay"]),
-    engineTargets: Object.freeze(["engine/camera", "engine/render"]) 
+    engineTargets: Object.freeze(["engine/camera", "engine/rendering"]) 
   }),
   "sprite-editor": Object.freeze({
     allowedLayerKinds: Object.freeze(["sprite", "guide", "overlay"]),
-    engineTargets: Object.freeze(["engine/animation", "engine/render", "engine/entity"]) 
+    engineTargets: Object.freeze(["engine/animation", "engine/rendering", "engine/entity"]) 
   }),
   "vector-asset-studio": Object.freeze({
     allowedLayerKinds: Object.freeze(["vector", "guide", "overlay"]),
-    engineTargets: Object.freeze(["engine/vector", "engine/render"]) 
+    engineTargets: Object.freeze(["engine/vector", "engine/rendering"]) 
   }),
   "composition-manifest": Object.freeze({
     allowedLayerKinds: Object.freeze([]),
-    engineTargets: Object.freeze(["engine/render"]) 
+    engineTargets: Object.freeze(["engine/rendering"]) 
   })
 });
 

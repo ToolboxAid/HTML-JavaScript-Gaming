@@ -8,7 +8,7 @@ import { Scene } from '/src/engine/scenes/index.js';
 import { Theme, ThemeTokens } from '/src/engine/theme/index.js';
 import { clamp } from '/src/engine/utils/index.js';
 import { drawFrame, drawPanel } from '/src/engine/debug/index.js';
-import { renderByLayers, renderSpriteReadyEntities } from '/src/engine/render/index.js';
+import { renderByLayers, renderSpriteReadyEntities } from '/src/engine/rendering/index.js';
 import { GameModeState } from '/src/engine/game/index.js';
 import { resolveInteraction } from '/src/engine/interaction/index.js';
 import { updatePatrolEntity, isWithinDetectionRange } from '/src/engine/ai/index.js';

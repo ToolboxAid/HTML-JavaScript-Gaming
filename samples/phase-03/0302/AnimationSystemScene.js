@@ -11,7 +11,7 @@ import { Camera2D, followCameraTarget, worldRectToScreen } from '/src/engine/cam
 import { Tilemap, renderTilemap } from '/src/engine/tilemap/index.js';
 import { SpriteAtlas, ImageAssetLoader } from '/src/engine/assets/index.js';
 import { AnimationController } from '/src/engine/animation/index.js';
-import { renderSpriteReadyEntities } from '/src/engine/render/index.js';
+import { renderSpriteReadyEntities } from '/src/engine/rendering/index.js';
 import { moveRectWithTilemapCollision } from '/src/engine/systems/index.js';
 import { createDemoSpriteSheet } from '../0301/demoSpriteFactory.js';
 const theme = new Theme(ThemeTokens);

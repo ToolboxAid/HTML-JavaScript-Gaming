@@ -1,4 +1,3 @@
-- Combined vector boundary normalization with physics closeout to reduce PR count
-- Rendering now owns vector drawing concerns
-- Shared math/utils now owns generic vector math
-- Physics must be closed by extracting real reusable helpers from games/samples
+- Added PR to collapse renderer/rendering ambiguity into one engine boundary
+- Recommends keeping rendering as the folder/domain and renderer as an implementation inside it
+- Avoids premature vector/sprite/layer over-structuring unless justified by real content

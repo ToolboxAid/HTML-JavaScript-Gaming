@@ -9,7 +9,7 @@ import { Theme, ThemeTokens } from '/src/engine/theme/index.js';
 import { clamp } from '/src/engine/utils/index.js';
 import { drawFrame, drawPanel } from '/src/engine/debug/index.js';
 import { AnimationController } from '/src/engine/animation/index.js';
-import { renderSpriteReadyEntities } from '/src/engine/render/index.js';
+import { renderSpriteReadyEntities } from '/src/engine/rendering/index.js';
 
 const theme = new Theme(ThemeTokens);
 

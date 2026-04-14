@@ -10,7 +10,7 @@ import { drawFrame, drawPanel } from '/src/engine/debug/index.js';
 import { Camera2D, followCameraTarget, worldRectToScreen } from '/src/engine/camera/index.js';
 import { Tilemap, renderTilemap } from '/src/engine/tilemap/index.js';
 import { SpriteAtlas, ImageAssetLoader } from '/src/engine/assets/index.js';
-import { renderSpriteReadyEntities } from '/src/engine/render/index.js';
+import { renderSpriteReadyEntities } from '/src/engine/rendering/index.js';
 import { moveRectWithTilemapCollision } from '/src/engine/systems/index.js';
 import { createDemoSpriteSheet } from './demoSpriteFactory.js';
 

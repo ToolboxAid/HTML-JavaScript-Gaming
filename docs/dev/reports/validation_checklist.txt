@@ -1,8 +1,7 @@
-- VectorDrawing moved to rendering-owned path
-- VectorMath moved to shared math/utility path
+- only one top-level rendering boundary remains
+- renderer no longer competes with rendering as a parallel concept
 - imports/exports normalized and valid
-- src/engine/physics contains real reusable physics helpers
-- roadmap updated by status markers only
-- section 1 residue reduced or fully closed truthfully
+- no speculative subfolder explosion introduced
+- roadmap/status handling remains truth-safe
 - output ZIP created at:
-  <project folder>/tmp/BUILD_PR_LEVEL_01_RENDERING_VECTOR_BOUNDARY_AND_PHYSICS_CLOSEOUT.zip
+  <project folder>/tmp/BUILD_PR_LEVEL_01_RENDERER_RENDERING_BOUNDARY_NORMALIZATION.zip
