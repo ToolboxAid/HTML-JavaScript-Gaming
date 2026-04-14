@@ -20,7 +20,7 @@
   "tilesetAtlas": {
     "schema": "toolbox.tileset-atlas/1",
     "imageDataUrl": "",
-    "imageName": "assets/tiles/overworld-main.png",
+    "imageName": "tools/shared/samples/project-asset-registry-demo/assets/tiles/overworld-main.png",
     "imageWidth": 0,
     "imageHeight": 0,
     "tileWidth": 24,
@@ -42,7 +42,7 @@
     "schema": "toolbox.parallax/1",
     "companionEditor": "ParallaxEditor",
     "layers": [
-      { "id": "sky", "name": "Sky", "imageSource": "assets/parallax/clouds-layer.svg" }
+      { "id": "sky", "name": "Sky", "imageSource": "tools/shared/samples/project-asset-registry-demo/assets/images/clouds-layer.svg" }
     ]
   }
 }

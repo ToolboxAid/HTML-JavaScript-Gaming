@@ -1,2 +1,2 @@
-Polish bezel/background system and close remaining Level 10 edge cases
-BUILD_PR_LEVEL_10_25_POLISH_AND_EDGE_CASES
+Close Level 10 by combining sample/tool normalization, shared strategy finalization, and handoff
+BUILD_PR_LEVEL_10_26_LEVEL_10_CLOSEOUT_SAMPLE_TOOL_NORMALIZATION_AND_SHARED_STRATEGY

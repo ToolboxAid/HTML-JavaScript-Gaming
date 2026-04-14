@@ -1,6 +1,12 @@
-- Bezel missing-file case covered
-- Invalid transparency-window case covered
-- Fullscreen cycle case covered
-- Override malformed/extreme case covered
-- Background state-transition case covered
-- Shared code remains game-agnostic
+- Asteroids validated
+- games/_template validated
+- sample asset ownership normalized/validated
+- tool demo asset ownership normalized/validated
+- promotion criteria documented and enforced
+- shared asset strategy finalized
+- unnecessary duplication reduced in touched areas
+- full roadmap restored if needed
+- roadmap updated by status markers only
+- all remaining section-10 items either truthfully closed or explicitly called out
+- output ZIP created at:
+  <project folder>/tmp/BUILD_PR_LEVEL_10_26_LEVEL_10_CLOSEOUT_SAMPLE_TOOL_NORMALIZATION_AND_SHARED_STRATEGY.zip

@@ -93,6 +93,7 @@ import { run as runAssetRemediationSystem } from './tools/AssetRemediationSystem
 import { run as runToolBoundaryEnforcement } from './tools/ToolBoundaryEnforcement.test.mjs';
 import { run as runProjectToolDataContracts } from './tools/ProjectToolDataContracts.test.mjs';
 import { run as runAssetPipelineTooling } from './tools/AssetPipelineTooling.test.mjs';
+import { run as runAssetOwnershipStrategyCloseout } from './tools/AssetOwnershipStrategyCloseout.test.mjs';
 import { run as runAssetErrorHandlingStandard } from './tools/AssetErrorHandlingStandard.test.mjs';
 import { run as runGameAssetManifestCoordinator } from './tools/GameAssetManifestCoordinator.test.mjs';
 import { run as runRuntimeAssetBinding } from './tools/RuntimeAssetBinding.test.mjs';
@@ -216,6 +217,7 @@ const tests = [
     ['ToolBoundaryEnforcement', runToolBoundaryEnforcement],
     ['ProjectToolDataContracts', runProjectToolDataContracts],
     ['AssetPipelineTooling', runAssetPipelineTooling],
+    ['AssetOwnershipStrategyCloseout', runAssetOwnershipStrategyCloseout],
     ['AssetErrorHandlingStandard', runAssetErrorHandlingStandard],
     ['GameAssetManifestCoordinator', runGameAssetManifestCoordinator],
     ['RuntimeAssetBinding', runRuntimeAssetBinding],

@@ -15,8 +15,8 @@ export default class AssetBrowserScene extends Scene {
   constructor() {
     super();
     this.browser = new AssetBrowser([
-      { id: 'hero-texture', category: 'texture', path: 'assets/hero.png' },
-      { id: 'menu-theme', category: 'audio', path: 'assets/menu.mp3' },
+      { id: 'hero-texture', category: 'texture', path: 'samples/phase-15/1505/assets/images/hero.png' },
+      { id: 'menu-theme', category: 'audio', path: 'samples/phase-15/1505/assets/audio/menu.mp3' },
     ]);
     this.status = 'Select an asset category entry.';
   }

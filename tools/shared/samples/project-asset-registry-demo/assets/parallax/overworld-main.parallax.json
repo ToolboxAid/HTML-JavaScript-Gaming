@@ -22,7 +22,7 @@
       "name": "Sky",
       "parallaxSourceId": "parallax.sky-clouds",
       "drawOrder": 0,
-      "imageSource": "assets/parallax/clouds-layer.svg",
+      "imageSource": "tools/shared/samples/project-asset-registry-demo/assets/images/clouds-layer.svg",
       "imageDataUrl": "",
       "scrollFactorX": 0.2,
       "scrollFactorY": 0.05,

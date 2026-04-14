@@ -7,7 +7,7 @@
   },
   "version": 1,
   "projectId": "mario-style-learning-level",
-  "basePath": ".",
+  "basePath": "tools/shared/samples/project-asset-registry-demo",
   "palettes": [
     {
       "id": "palette.crayola032",
@@ -21,7 +21,7 @@
     {
       "id": "sprite.hero-idle",
       "name": "Hero Idle",
-      "path": "assets/sprites/hero-idle.sprite.json",
+      "path": "tools/shared/samples/project-asset-registry-demo/assets/sprites/hero-idle.sprite.json",
       "paletteId": "palette.crayola032",
       "sourceTool": "sprite-editor"
     }
@@ -30,7 +30,7 @@
     {
       "id": "tileset.overworld-main",
       "name": "Overworld Main",
-      "path": "assets/tiles/overworld-main.png",
+      "path": "tools/shared/samples/project-asset-registry-demo/assets/tiles/overworld-main.png",
       "tileWidth": 24,
       "tileHeight": 24,
       "sourceTool": "tile-map-editor"
@@ -40,7 +40,7 @@
     {
       "id": "image.parallax-clouds",
       "name": "Parallax Clouds",
-      "path": "assets/parallax/clouds-layer.svg",
+      "path": "tools/shared/samples/project-asset-registry-demo/assets/images/clouds-layer.svg",
       "sourceTool": "parallax-editor"
     }
   ],
@@ -48,7 +48,7 @@
     {
       "id": "parallax.sky-clouds",
       "name": "Sky Clouds",
-      "path": "assets/parallax/clouds-layer.svg",
+      "path": "tools/shared/samples/project-asset-registry-demo/assets/parallax/overworld-main.parallax.json",
       "imageId": "image.parallax-clouds",
       "sourceTool": "parallax-editor"
     }
