@@ -1,3 +1,1 @@
-Implemented Asteroids game asset manifest and shared manifest-discovery contract.
-Wired runtime asset lookup to consume validated manifest discovery output when a game manifest is provided.
-Added focused manifest discovery test covering structure validation, runtime-safe path enforcement, and lookup integration.
+Defined loader integration contract

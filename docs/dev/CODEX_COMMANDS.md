@@ -1,3 +1,3 @@
 MODEL: GPT-5.3-codex
 REASONING: medium
-COMMAND: Validate manifest structure and wire loader discovery (no engine modification)
+COMMAND: Implement manifest loader that reads asteroids.asset.manifest.json and exposes discovery API without modifying engine core

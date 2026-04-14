@@ -1,7 +1,3 @@
-- node --check tools/shared/pipeline/gameAssetManifestDiscovery.js
-- node --check tools/shared/pipeline/runtimeAssetLookup.js
-- node --check tests/tools/GameAssetManifestDiscovery.test.mjs
-- PASS GameAssetManifestDiscovery (focused test)
-- PASS RuntimeAssetLookupConsolidation (existing regression check)
-- PASS AsteroidsManifestJsonParse
-- no engine code modified
+- Contract defined
+- Codex command present
+- No engine changes

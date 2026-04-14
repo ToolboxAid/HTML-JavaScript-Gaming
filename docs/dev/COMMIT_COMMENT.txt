@@ -1,2 +1,2 @@
-Validated Asteroids manifest structure and wired loader discovery via shared pipeline contract.
-BUILD_PR_LEVEL_10_08_ASTEROIDS_DATA_MANIFEST_DISCOVERY
+Define Asteroids manifest loader integration contract
+BUILD_PR_LEVEL_10_09_ASTEROIDS_MANIFEST_LOADER_INTEGRATION
