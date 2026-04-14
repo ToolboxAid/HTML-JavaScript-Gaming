@@ -156,10 +156,51 @@ function testAsteroidsMenuHighScoreUsesLeaderboardTop() {
   assert.equal(textCalls.some(([text]) => text === 'HIGH SCORE 2500'), false);
 }
 
+function testAsteroidsGameplayRenderDoesNotCoverBackgroundLayer() {
+  const scene = new AsteroidsGameScene();
+  scene.session.mode = 'playing';
+  scene.attractController.active = false;
+
+  const drawRectCalls = [];
+  const renderer = {
+    drawRect(...args) {
+      drawRectCalls.push(args);
+    },
+    strokeRect() {},
+    drawPolygon() {},
+    drawLine() {},
+    drawCircle() {},
+    drawText() {},
+  };
+
+  scene.render(renderer);
+  const gameplayOpaqueCover = drawRectCalls.some(([x, y, width, height, color]) => (
+    x === 0
+    && y === 0
+    && width === scene.world.bounds.width
+    && height === scene.world.bounds.height
+    && color === '#020617'
+  ));
+  assert.equal(gameplayOpaqueCover, false);
+
+  scene.session.mode = 'menu';
+  drawRectCalls.length = 0;
+  scene.render(renderer);
+  const menuCover = drawRectCalls.some(([x, y, width, height, color]) => (
+    x === 0
+    && y === 0
+    && width === scene.world.bounds.width
+    && height === scene.world.bounds.height
+    && color === '#020617'
+  ));
+  assert.equal(menuCover, true);
+}
+
 export function run() {
   testAsteroidsHighScoreService();
   testAsteroidsInitialsEntry();
   testAsteroidsAttractMenuFlow();
   testAsteroidsGameOverQualifyingScoreInitialsFlow();
   testAsteroidsMenuHighScoreUsesLeaderboardTop();
+  testAsteroidsGameplayRenderDoesNotCoverBackgroundLayer();
 }

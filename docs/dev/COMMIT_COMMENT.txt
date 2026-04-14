@@ -1,2 +1,2 @@
-Fix bezel path duplication and background draw order without resizing canvas
+Fix bezel path and gameplay background draw order, add exact transparency-window fitting rule
 BUILD_PR_LEVEL_10_20_FIX_BEZEL_PATH_AND_BACKGROUND_DRAW_ORDER

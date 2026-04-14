@@ -1,5 +1,6 @@
 - Reissued as strict docs-only BUILD_PR bundle
 - Codex instructed to fix bezel path duplication
-- Canvas must remain centered at original W x H
+- Canvas internal size must remain unchanged and centered
 - backgroundImage must render after clear and before starfield/world
 - backgroundImage limited to gameplay states only
+- Updated bezel fitting requirement to use the exact four-direction first-transparent-pixel rule

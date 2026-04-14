@@ -1,7 +1,10 @@
 - Bundle is docs-only
 - Codex command requires implementation by Codex, not ChatGPT
 - Bezel URL/path must resolve once
-- Canvas must remain centered and unchanged in size
+- Canvas internal size must remain unchanged
+- Canvas must remain centered
+- Transparency window must use the exact four-direction first-transparent-pixel rule
+- Canvas display box must fill the transparency window as fully as possible while preserving aspect ratio
 - Background must draw only during gameplay
 - Background must draw before starfield/world content
 - Codex output ZIP path must be:

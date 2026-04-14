@@ -13,10 +13,10 @@ Implement the confirmed Asteroids runtime fixes:
      `games/Asteroids/assets/images/bezel.png`
 
 2. Preserve canvas layout
-   - do NOT resize the canvas
-   - do NOT stretch the canvas to the viewport
+   - do NOT resize the canvas internal game dimensions
+   - do NOT stretch the game resolution
    - keep canvas centered
-   - preserve intended game W x H dimensions
+   - preserve intended game width and height
 
 3. Fix background rendering
    - keep `backgroundImage` as a separate class/module from `fullscreenBezel`
@@ -30,16 +30,32 @@ Implement the confirmed Asteroids runtime fixes:
    - only show it in fullscreen
    - ensure it is visibly on screen, not just present in the DOM
 
-5. Validate
+5. Use this exact bezel transparency fit rule
+   - from left to right, find first transparent pixel
+   - from right to left, find first transparent pixel
+   - from top to bottom, find first transparent pixel
+   - from bottom to top, find first transparent pixel
+   - use those four values as the transparency window
+   - maintain canvas aspect ratio
+   - stretch the displayed canvas to fill the transparency window as much as possible
+   - keep the displayed canvas centered in that window
+   - do NOT change internal game resolution
+   - if top/bottom does not fill, use that result for resize
+   - if left/right does not fill, use that result for resize
+   - if no valid transparency window is found, fall back to existing centered-canvas behavior
+
+6. Validate
    - bezel URL/path not duplicated
    - bezel visible in fullscreen
-   - canvas size unchanged
+   - canvas internal size unchanged
    - canvas centered
+   - exact four-direction transparency rule used
+   - displayed canvas fills transparency window as fully as possible while preserving aspect ratio
    - background visible during gameplay
    - background absent in non-gameplay states
    - starfield no longer hides background incorrectly
 
-6. Final packaging step is REQUIRED
+7. Final packaging step is REQUIRED
    - package ALL changed files into this exact repo-structured ZIP:
      `<project folder>/tmp/BUILD_PR_LEVEL_10_20_FIX_BEZEL_PATH_AND_BACKGROUND_DRAW_ORDER.zip`
 

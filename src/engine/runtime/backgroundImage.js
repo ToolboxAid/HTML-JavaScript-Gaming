@@ -140,7 +140,13 @@ export default class backgroundImage {
       return;
     }
 
-    const image = this.imageFactory(this.layer.path);
+    const runtimePath = resolveRuntimeAssetUrl(this.layer.path, this.documentRef);
+    if (!runtimePath) {
+      this.layer.status = "missing";
+      return;
+    }
+
+    const image = this.imageFactory(runtimePath);
     if (!image || typeof image !== "object") {
       this.layer.status = "missing";
       return;
@@ -157,7 +163,7 @@ export default class backgroundImage {
     };
 
     try {
-      image.src = resolveRuntimeAssetUrl(this.layer.path, this.documentRef);
+      image.src = runtimePath;
     } catch {
       this.layer.status = "missing";
     }
