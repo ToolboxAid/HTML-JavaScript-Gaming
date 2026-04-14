@@ -3,7 +3,8 @@ param(
     [string]$StagingRoot,
     [switch]$RemoveMetadata,
     [switch]$Apply,
-    [switch]$DryRun
+    [switch]$DryRun,
+    [switch]$ConfirmDestructive
 )
 
 Set-StrictMode -Version Latest
@@ -15,6 +16,7 @@ $executionMode = Resolve-DeployExecutionMode -Apply:$Apply.IsPresent -DryRun:$Dr
 
 $paths = Get-WebsiteDeploymentPaths -StagingRoot $StagingRoot
 Test-StagingRootSafety -StagingRoot $paths.stagingRoot
+$environment = Assert-DeployEnvironmentReadiness -Paths $paths
 
 $targets = New-Object System.Collections.Generic.List[string]
 if (Test-Path -LiteralPath $paths.siteRoot) {
@@ -42,10 +44,14 @@ if ($executionMode.isDryRun) {
         mode = $executionMode.label
         targetCount = $targets.Count
         targets = @($targets)
+        dockerCliFound = $environment.dockerCliFound
+        destructiveConfirmationRequired = $true
     }
-    Write-DeployLog -Level "INFO" -Message "Run with -Apply to remove deployment artifacts."
+    Write-DeployLog -Level "INFO" -Message "Next step: run Clean-WebsiteRepoDeployment.ps1 -Apply -ConfirmDestructive after reviewing the dry-run output."
     exit 0
 }
+
+Assert-ExplicitDestructiveConfirmation -IsDryRun:$executionMode.isDryRun -ConfirmDestructive:$ConfirmDestructive.IsPresent -OperationName "Clean-WebsiteRepoDeployment delete" -TargetCount $targets.Count
 
 foreach ($target in $targets) {
     if (-not (Test-PathWithinRoot -Path $target -RootPath $paths.stagingRoot)) {
@@ -61,4 +67,5 @@ Write-DeployLog -Level "SUCCESS" -Message "Cleaned website deployment artifacts.
     script = "Clean-WebsiteRepoDeployment"
     mode = $executionMode.label
     targetCount = $targets.Count
+    dockerCliFound = $environment.dockerCliFound
 }

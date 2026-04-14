@@ -1,2 +1,2 @@
-Refine Docker deploy scripts with standardized mode handling/logging and deploy-folder enforcement checks.
-BUILD_PR_LEVEL_09_25_DOCKER_DEPLOY_SCRIPT_REFINEMENT
+Add deploy dry-run/environment validation guards and require explicit destructive confirmation for apply cleanup/refresh paths.
+BUILD_PR_LEVEL_09_26_DEPLOY_VALIDATION_AND_DRYRUN

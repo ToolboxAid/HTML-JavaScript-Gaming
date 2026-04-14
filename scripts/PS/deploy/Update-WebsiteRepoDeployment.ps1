@@ -3,7 +3,8 @@ param(
     [string]$StagingRoot,
     [string[]]$IncludePaths,
     [switch]$Apply,
-    [switch]$DryRun
+    [switch]$DryRun,
+    [switch]$ConfirmDestructive
 )
 
 Set-StrictMode -Version Latest
@@ -16,6 +17,7 @@ $executionMode = Resolve-DeployExecutionMode -Apply:$Apply.IsPresent -DryRun:$Dr
 $repoRoot = Get-DeployRepoRoot
 $paths = Get-WebsiteDeploymentPaths -StagingRoot $StagingRoot
 Test-StagingRootSafety -StagingRoot $paths.stagingRoot
+$environment = Assert-DeployEnvironmentReadiness -Paths $paths
 
 $normalizedIncludePaths = Normalize-IncludePaths -IncludePaths $IncludePaths
 if ($normalizedIncludePaths.Count -eq 0) {
@@ -27,6 +29,7 @@ if ($normalizedIncludePaths.Count -eq 0) {
         $normalizedIncludePaths = Get-DefaultWebsiteIncludePaths
     }
 }
+Assert-NormalizedIncludePaths -IncludePaths $normalizedIncludePaths
 
 $copyEntries = New-Object System.Collections.Generic.List[object]
 foreach ($entry in $normalizedIncludePaths) {
@@ -56,8 +59,10 @@ if ($executionMode.isDryRun) {
         mode = $executionMode.label
         siteRoot = $paths.siteRoot
         includePaths = $normalizedIncludePaths
+        dockerCliFound = $environment.dockerCliFound
+        destructiveConfirmationRequired = $true
     }
-    Write-DeployLog -Level "INFO" -Message "Run with -Apply to refresh staged website content."
+    Write-DeployLog -Level "INFO" -Message "Next step: run Update-WebsiteRepoDeployment.ps1 -Apply -ConfirmDestructive after reviewing the dry-run output."
     exit 0
 }
 
@@ -72,6 +77,9 @@ if (-not $PSCmdlet.ShouldProcess($paths.siteRoot, "Refresh staged website deploy
 Ensure-Directory -Path $paths.stagingRoot
 Ensure-Directory -Path $paths.metaRoot
 Ensure-Directory -Path $paths.siteRoot
+
+$existingSiteRoot = Test-Path -LiteralPath $paths.siteRoot
+Assert-ExplicitDestructiveConfirmation -IsDryRun:$executionMode.isDryRun -ConfirmDestructive:$ConfirmDestructive.IsPresent -OperationName "Update-WebsiteRepoDeployment site refresh" -TargetCount $(if ($existingSiteRoot) { 1 } else { 0 })
 
 if (Test-Path -LiteralPath $paths.siteRoot) {
     if (-not (Test-PathWithinRoot -Path $paths.siteRoot -RootPath $paths.stagingRoot)) {
@@ -111,4 +119,5 @@ Write-DeployLog -Level "SUCCESS" -Message "Updated website deployment staging co
     copiedEntries = $copyEntries.Count
     dockerfilePath = $paths.dockerfilePath
     reportPath = $paths.updateReportPath
+    dockerCliFound = $environment.dockerCliFound
 }

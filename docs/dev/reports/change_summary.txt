@@ -1,17 +1,18 @@
-BUILD_PR_LEVEL_09_25_DOCKER_DEPLOY_SCRIPT_REFINEMENT
+BUILD_PR_LEVEL_09_26_DEPLOY_VALIDATION_AND_DRYRUN
 
 Scope:
-- Refined deploy scripts under scripts/PS/deploy/ only.
-- Kept behavior surgical and non-destructive by default.
+- Refined deployment safety/validation behavior only under `scripts/PS/deploy/`.
+- No runtime, engine, tool UI, or non-deploy scope changes.
 
 Implemented:
-- Added shared deploy execution mode normalization (`-Apply` / `-DryRun`) in WebsiteRepoDeploymentCommon.ps1.
-- Added shared structured deploy logging helper with consistent level+timestamp output.
-- Added deploy script placement enforcement (`scripts/PS/deploy/`) with actionable failure text.
-- Added Docker artifact readiness assertion after artifact writes in prep/update flows.
-- Updated prep/update/clean entry scripts to use shared mode/logging enforcement helpers.
+- Kept/standardized dry-run behavior across deploy scripts with clearer next-step messaging.
+- Added environment readiness validation (`repo root`, `tmp root`, staging-root containment) before execution.
+- Added include-path contract validation (repo-relative only, no traversal/wildcards/rooted paths).
+- Added explicit destructive confirmation guard via `-ConfirmDestructive` for:
+  - `Update-WebsiteRepoDeployment.ps1` apply path (site-root refresh/delete)
+  - `Clean-WebsiteRepoDeployment.ps1` apply path (artifact deletion)
+- Preserved non-destructive defaults and existing staging-root safety checks.
 
-Docs/Tracking:
-- Updated commit comment format (description first line, PR name last line).
-- Updated validation checklist for focused PowerShell/deploy checks.
-- Updated roadmap with status-only progression tied to acceptance enforcement.
+Tracking:
+- Commit comment format enforced (description first line, PR name last line, no leading blank line).
+- Roadmap updated with status-only change.

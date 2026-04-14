@@ -16,11 +16,13 @@ $executionMode = Resolve-DeployExecutionMode -Apply:$Apply.IsPresent -DryRun:$Dr
 $repoRoot = Get-DeployRepoRoot
 $paths = Get-WebsiteDeploymentPaths -StagingRoot $StagingRoot
 Test-StagingRootSafety -StagingRoot $paths.stagingRoot
+$environment = Assert-DeployEnvironmentReadiness -Paths $paths
 
 $normalizedIncludePaths = Normalize-IncludePaths -IncludePaths $IncludePaths
 if ($normalizedIncludePaths.Count -eq 0) {
     $normalizedIncludePaths = Get-DefaultWebsiteIncludePaths
 }
+Assert-NormalizedIncludePaths -IncludePaths $normalizedIncludePaths
 
 $missing = New-Object System.Collections.Generic.List[string]
 foreach ($entry in $normalizedIncludePaths) {
@@ -44,8 +46,9 @@ if ($executionMode.isDryRun) {
         mode = $executionMode.label
         stagingRoot = $paths.stagingRoot
         includePaths = $normalizedIncludePaths
+        dockerCliFound = $environment.dockerCliFound
     }
-    Write-DeployLog -Level "INFO" -Message "Run with -Apply to create staging folders, deployment plan, and Docker artifacts."
+    Write-DeployLog -Level "INFO" -Message "Next step: run Prep-WebsiteRepoDeployment.ps1 -Apply after reviewing include paths and staging root."
     exit 0
 }
 
@@ -70,4 +73,5 @@ Write-DeployLog -Level "SUCCESS" -Message "Prepared website deployment staging."
     stagingRoot = $paths.stagingRoot
     planPath = $paths.planPath
     dockerfilePath = $paths.dockerfilePath
+    dockerCliFound = $environment.dockerCliFound
 }

@@ -627,7 +627,7 @@
 - [x] finish active promotion-gate lane enough to remove it from half-active status
 - [.] convert repo structure normalization into exact move-map BUILDs with explicit validation
 - [.] re-baseline this roadmap after active execution lanes stabilize
-- [ ] split future implementation into small dependency-ordered PRs
+- [.] split future implementation into small dependency-ordered PRs
 - [ ] avoid broad repo-wide cleanup passes until the active lanes above are materially further along
 
 - [x] relocate active template surfaces to `tools/templates/` and remove the empty root `templates/` directory

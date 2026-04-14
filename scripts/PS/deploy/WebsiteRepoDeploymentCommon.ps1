@@ -41,6 +41,25 @@ function Resolve-DeployExecutionMode {
     }
 }
 
+function Assert-ExplicitDestructiveConfirmation {
+    param(
+        [Parameter(Mandatory = $true)]
+        [bool]$IsDryRun,
+        [switch]$ConfirmDestructive,
+        [Parameter(Mandatory = $true)]
+        [string]$OperationName,
+        [int]$TargetCount = 1
+    )
+
+    if ($IsDryRun -or $TargetCount -le 0) {
+        return
+    }
+
+    if (-not $ConfirmDestructive.IsPresent) {
+        throw "Destructive execution blocked for '$OperationName'. Re-run with -Apply -ConfirmDestructive after reviewing the dry-run output."
+    }
+}
+
 function Write-DeployLog {
     param(
         [ValidateSet("INFO", "WARN", "ERROR", "SUCCESS")]
@@ -59,6 +78,48 @@ function Write-DeployLog {
     }
 
     Write-Host "$prefix $Message"
+}
+
+function Get-DeployEnvironmentStatus {
+    param(
+        [Parameter(Mandatory = $true)]
+        [object]$Paths
+    )
+
+    $repoRoot = Get-DeployRepoRoot
+    $tmpRoot = [System.IO.Path]::GetFullPath((Join-Path $repoRoot "tmp"))
+    $dockerCommand = Get-Command docker -ErrorAction SilentlyContinue
+
+    return [ordered]@{
+        repoRoot = $repoRoot
+        repoRootExists = Test-Path -LiteralPath $repoRoot
+        tmpRoot = $tmpRoot
+        tmpRootExists = Test-Path -LiteralPath $tmpRoot
+        stagingRoot = $Paths.stagingRoot
+        dockerCliFound = $null -ne $dockerCommand
+    }
+}
+
+function Assert-DeployEnvironmentReadiness {
+    param(
+        [Parameter(Mandatory = $true)]
+        [object]$Paths
+    )
+
+    $status = Get-DeployEnvironmentStatus -Paths $Paths
+    if (-not $status.repoRootExists) {
+        throw "Environment validation failed. Repo root not found: $($status.repoRoot)"
+    }
+
+    if (-not $status.tmpRootExists) {
+        throw "Environment validation failed. Required tmp root not found: $($status.tmpRoot)"
+    }
+
+    if (-not (Test-PathWithinRoot -Path $status.stagingRoot -RootPath $status.tmpRoot)) {
+        throw "Environment validation failed. Staging root must remain under tmp root: $($status.stagingRoot)"
+    }
+
+    return $status
 }
 
 function Get-DeployRepoRoot {
@@ -184,6 +245,36 @@ function Normalize-IncludePaths {
     }
 
     return ,$output.ToArray()
+}
+
+function Assert-NormalizedIncludePaths {
+    param(
+        [Parameter(Mandatory = $true)]
+        [string[]]$IncludePaths
+    )
+
+    foreach ($entry in $IncludePaths) {
+        if ([string]::IsNullOrWhiteSpace($entry)) {
+            continue
+        }
+
+        if ([System.IO.Path]::IsPathRooted($entry)) {
+            throw "Include path must be repo-relative, but was rooted: $entry"
+        }
+
+        if ($entry.Contains(":")) {
+            throw "Include path must not contain drive/URI separators: $entry"
+        }
+
+        if ($entry.IndexOfAny([char[]]@('*', '?')) -ge 0) {
+            throw "Include path wildcard patterns are not allowed: $entry"
+        }
+
+        $segments = $entry.Split("/")
+        if ($segments -contains "..") {
+            throw "Include path traversal is not allowed: $entry"
+        }
+    }
 }
 
 function New-WebsiteDeploymentPlan {
