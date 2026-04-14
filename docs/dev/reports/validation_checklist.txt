@@ -1,10 +1,10 @@
-﻿Wave 2 Validation Checklist
+﻿Wave 3 Validation Checklist
 
 Scope guard
-- [x] Wave 2 targets only
+- [x] Wave 3 targets only
 - [x] No engine modifications
 - [x] No launch/bootstrap normalization
-- [x] Existing compliant games preserved
+- [x] Same constraints as prior waves applied
 
 Per-target checks
 For each target game:
@@ -15,13 +15,11 @@ For each target game:
 - flow/highscore.js present
 
 Results
-- [x] Orbit
-- [x] MultiBallChaos
-- [x] PaddleIntercept
-- [x] Thruster
-- [x] SpaceDuel
-- [x] SolarSystem
+- [x] PacmanLite
+- [x] PacmanFullAI
+- [x] AITargetDummy
+- [x] vector-arcade-sample
 
 Command evidence
-- node --check on all 24 Wave 2 files: PASS
+- node --check on all 16 Wave 3 files: PASS
 - per-target structural checks: PASS

@@ -1,0 +1,16 @@
+﻿import {
+  PACMAN_LITE_FLOW_IDS,
+  PACMAN_LITE_FLOW_LABELS,
+  PACMAN_LITE_HIGHSCORE_AUTO_EXIT_SECONDS,
+  PACMAN_LITE_HIGHSCORE_STATUS,
+  createPACMANLITEFlowDescriptor
+} from "../rules/gameFlowRules.js";
+
+export const PACMAN_LITE_HIGHSCORE_FLOW_NEXT_ID = PACMAN_LITE_FLOW_IDS.attract;
+
+export const highscoreFlow = createPACMANLITEFlowDescriptor(PACMAN_LITE_FLOW_IDS.highscore, {
+  label: PACMAN_LITE_FLOW_LABELS.highscore,
+  nextFlowId: PACMAN_LITE_HIGHSCORE_FLOW_NEXT_ID,
+  autoAdvanceSeconds: PACMAN_LITE_HIGHSCORE_AUTO_EXIT_SECONDS,
+  statusText: PACMAN_LITE_HIGHSCORE_STATUS
+});

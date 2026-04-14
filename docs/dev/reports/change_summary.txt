@@ -1,19 +1,18 @@
-﻿Wave 2 Change Summary
+﻿Wave 3 Change Summary
 
 What changed
-- Added real rules modules and required flow files for six Wave 2 targets.
-- Removed placeholder-only rules condition for Wave 2 targets by adding rules/gameFlowRules.js.
+- Added real rules modules and required flow files for all four Wave 3 targets.
+- Converted rules-placeholder-only condition to real rules JS presence.
+- Added missing required boundary dirs for vector-arcade-sample.
 
-Wave 2 targets normalized
-- Orbit
-- MultiBallChaos
-- PaddleIntercept
-- Thruster
-- SpaceDuel
-- SolarSystem
+Wave 3 targets normalized
+- PacmanLite
+- PacmanFullAI
+- AITargetDummy
+- vector-arcade-sample
 
 What did not change
 - No engine files
 - No launcher/bootstrap work
+- No cross-wave normalization edits
 - No status inflation edits
-- Existing compliant games (Asteroids, Puckman, SpaceInvaders) preserved

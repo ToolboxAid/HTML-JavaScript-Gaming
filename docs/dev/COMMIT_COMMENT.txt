@@ -1,1 +1,1 @@
-﻿build(games): normalize wave-2 repo-wide game boundaries (orbit/multiballchaos/paddleintercept/thruster/spaceduel/solarsystem)
+﻿build(games): normalize wave-3 repo-wide game boundaries (pacmanlite/pacmanfullai/aitargetdummy/vector-arcade-sample)

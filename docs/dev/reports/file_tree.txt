@@ -1,33 +1,30 @@
-﻿Wave 2 Normalization Tree
+﻿Wave 3 Normalization Tree
 
 games/
-  Orbit/
+  PacmanLite/
     rules/gameFlowRules.js
     flow/attract.js
     flow/intro.js
     flow/highscore.js
-  MultiBallChaos/
+  PacmanFullAI/
     rules/gameFlowRules.js
     flow/attract.js
     flow/intro.js
     flow/highscore.js
-  PaddleIntercept/
+  AITargetDummy/
     rules/gameFlowRules.js
     flow/attract.js
     flow/intro.js
     flow/highscore.js
-  Thruster/
-    rules/gameFlowRules.js
+  vector-arcade-sample/
+    debug/.gitkeep
+    entities/.gitkeep
     flow/attract.js
     flow/intro.js
     flow/highscore.js
-  SpaceDuel/
+    game/.gitkeep
+    levels/.gitkeep
     rules/gameFlowRules.js
-    flow/attract.js
-    flow/intro.js
-    flow/highscore.js
-  SolarSystem/
-    rules/gameFlowRules.js
-    flow/attract.js
-    flow/intro.js
-    flow/highscore.js
+    systems/.gitkeep
+    ui/.gitkeep
+    utils/.gitkeep
