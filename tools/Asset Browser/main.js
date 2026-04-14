@@ -1,4 +1,4 @@
-import {
+﻿import {
   createAssetHandoff,
   getSharedLaunchContext,
   getToolDisplayName,
@@ -7,11 +7,11 @@ import {
 import { registerToolBootContract } from "../shared/toolBootContract.js";
 
 const APPROVED_DESTINATIONS = Object.freeze({
-  "Vector Assets": "games/<project>/platform/assets/vectors/",
-  "Sprite Projects": "games/<project>/platform/assets/sprites/",
-  "Tilemaps": "games/<project>/platform/assets/tilemaps/",
-  "Parallax Scenes": "games/<project>/platform/assets/parallax/",
-  "Palettes": "games/<project>/platform/assets/palettes/",
+  "Vector Assets": "games/<project>/assets/platform/vectors/",
+  "Sprite Projects": "games/<project>/assets/platform/sprites/",
+  "Tilemaps": "games/<project>/assets/platform/tilemaps/",
+  "Parallax Scenes": "games/<project>/assets/platform/parallax/",
+  "Palettes": "games/<project>/assets/platform/palettes/",
   "Workflow JSON": "games/<project>/config/"
 });
 
@@ -20,19 +20,19 @@ const ASSET_CATALOG = Object.freeze([
     id: "asset-vector-player",
     label: "Asteroids Ship Vector",
     category: "Vector Assets",
-    path: "../../games/Asteroids/platform/assets/vectors/asteroids-ship.vector.json"
+    path: "../../games/Asteroids/assets/platform/vectors/asteroids-ship.vector.json"
   },
   {
     id: "asset-vector-title",
     label: "Asteroids Title Vector",
     category: "Vector Assets",
-    path: "../../games/Asteroids/platform/assets/vectors/asteroids-title.vector.json"
+    path: "../../games/Asteroids/assets/platform/vectors/asteroids-title.vector.json"
   },
   {
     id: "asset-sprite-demo",
     label: "Asteroids Sprite Project",
     category: "Sprite Projects",
-    path: "../../games/Asteroids/platform/assets/sprites/asteroids-demo.sprite.json"
+    path: "../../games/Asteroids/assets/platform/sprites/asteroids-demo.sprite.json"
   },
   {
     id: "asset-tilemap-template",
@@ -460,3 +460,4 @@ registerToolBootContract("asset-browser", {
 });
 
 bootAssetBrowser();
+

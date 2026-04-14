@@ -1,4 +1,4 @@
-{
+﻿{
   "schema": "html-js-gaming.project",
   "version": 1,
   "id": "starter-project-template",
@@ -58,7 +58,7 @@
         "id": "sprite.asteroids-demo",
         "type": "sprite",
         "displayName": "Asteroids Demo Sprite Project",
-        "sourcePath": "games/Asteroids/platform/assets/sprites/asteroids-demo.sprite.json",
+        "sourcePath": "games/Asteroids/assets/platform/sprites/asteroids-demo.sprite.json",
         "sourceToolId": "sprite-editor"
       }
     ],
@@ -404,7 +404,7 @@
           {
             "id": "sprite.asteroids-demo",
             "name": "Asteroids Demo Atlas",
-            "path": "games/Asteroids/platform/assets/sprites/asteroids-demo.sprite.json",
+            "path": "games/Asteroids/assets/platform/sprites/asteroids-demo.sprite.json",
             "paletteId": "palette.vector-native-primary",
             "sourceTool": "sprite-editor"
           }
@@ -446,3 +446,4 @@
     "applied": []
   }
 }
+

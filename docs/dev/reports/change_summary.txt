@@ -1,37 +1,34 @@
-﻿BUILD_PR_LEVEL_09_01_FLOW_RULES_VS_FLOW_CONTENT_SPLIT
+﻿BUILD_PR_LEVEL_09_02_ASSET_OWNERSHIP_NORMALIZATION
 
-What changed
-- Added rules split modules per game: rules/flowRules.js and rules/flowContent.js.
-- Converted rules/gameFlowRules.js into a compatibility shim re-exporting flowRules + flowContent.
-- Updated flow/ and game/ import consumers to read behavior constants from flowRules and player-facing text from flowContent.
+Moved owner-specific asset payloads
+games/Asteroids/platform/assets/palettes/asteroids-hud.palette.json => games/Asteroids/assets/platform/palettes/asteroids-hud.palette.json
+games/Asteroids/platform/assets/parallax/asteroids-overlay.parallax.json => games/Asteroids/assets/platform/parallax/asteroids-overlay.parallax.json
+games/Asteroids/platform/assets/parallax/asteroids-title.parallax.json => games/Asteroids/assets/platform/parallax/asteroids-title.parallax.json
+games/Asteroids/platform/assets/sprites/asteroids-demo.sprite.json => games/Asteroids/assets/platform/sprites/asteroids-demo.sprite.json
+games/Asteroids/platform/assets/tilemaps/asteroids-stage.tilemap.json => games/Asteroids/assets/platform/tilemaps/asteroids-stage.tilemap.json
+games/Asteroids/platform/assets/tilesets/asteroids-ui.tileset.json => games/Asteroids/assets/platform/tilesets/asteroids-ui.tileset.json
+games/Asteroids/platform/assets/vectors/asteroids-asteroid-large.vector.json => games/Asteroids/assets/platform/vectors/asteroids-asteroid-large.vector.json
+games/Asteroids/platform/assets/vectors/asteroids-asteroid-medium.vector.json => games/Asteroids/assets/platform/vectors/asteroids-asteroid-medium.vector.json
+games/Asteroids/platform/assets/vectors/asteroids-asteroid-small.vector.json => games/Asteroids/assets/platform/vectors/asteroids-asteroid-small.vector.json
+games/Asteroids/platform/assets/vectors/asteroids-ship.vector.json => games/Asteroids/assets/platform/vectors/asteroids-ship.vector.json
+games/Asteroids/platform/assets/vectors/asteroids-title.vector.json => games/Asteroids/assets/platform/vectors/asteroids-title.vector.json
 
-Classification applied
-- behavior/timing/mode/contract/booleans/selectors => flowRules.js
-- visible flow text/prompts/headings/labels => flowContent.js
+Updated references in active surfaces
+- tools/Asset Browser/main.js
+- tools/shared/asteroidsPlatformDemo.js
+- tools/shared/vectorAssetSystem.js
+- tools/templates/starter-project-template/README.md
+- tools/templates/starter-project-template/config/starter.project.json
+- tests/tools/VectorAssetSystem.test.mjs
+- docs/specs/asset_usage_contract.md
 
-Behavior preservation
-- No engine files changed.
-- No launcher/bootstrap changes.
-- No config migration included.
-- Split is extraction-only; constants remain same values.
+Classification result
+- Game-owned moved: Asteroids platform asset payloads
+- Sample-owned moved: none found
+- Tool-owned moved: none found
+- Truly shared assets requiring retention outside owner roots: none found in scanned owner scopes
 
-Games affected: 19
-- AITargetDummy
-- Asteroids
-- Bouncing-ball
-- Breakout
-- Gravity
-- GravityWell
-- MultiBallChaos
-- Orbit
-- PacmanFullAI
-- PacmanLite
-- PaddleIntercept
-- Pong
-- ProjectileLab
-- Puckman
-- SolarSystem
-- SpaceDuel
-- SpaceInvaders
-- Thruster
-- vector-arcade-sample
+Out-of-scope preserved
+- no platform/runtime code moved
+- no engine abstractions moved
+- no shared infrastructure code moved

@@ -1,4 +1,4 @@
-import { validateProjectAssetState, summarizeAssetValidation } from "./projectAssetValidation.js";
+﻿import { validateProjectAssetState, summarizeAssetValidation } from "./projectAssetValidation.js";
 import { buildProjectPackage, summarizeProjectPackaging } from "./projectPackaging.js";
 import { loadPackagedProjectRuntime, summarizeRuntimeAssetLoader } from "./runtimeAssetLoader.js";
 import { buildDebugVisualizationLayer, summarizeDebugVisualizationLayer } from "./debugVisualizationLayer.js";
@@ -26,21 +26,21 @@ export function createVectorAssetSystemFixture() {
   const shipVector = normalizeSvgToVectorAsset({
     id: "vector.asteroids.ship",
     name: "Asteroids Ship",
-    path: "games/Asteroids/platform/assets/vectors/asteroids-ship.vector.json",
+    path: "games/Asteroids/assets/platform/vectors/asteroids-ship.vector.json",
     paletteId: "palette.asteroids-hud",
     svgText: ASTEROIDS_SHIP_SVG
   });
   const asteroidLargeVector = normalizeSvgToVectorAsset({
     id: "vector.asteroids.asteroid.large",
     name: "Asteroids Large Rock",
-    path: "games/Asteroids/platform/assets/vectors/asteroids-asteroid-large.vector.json",
+    path: "games/Asteroids/assets/platform/vectors/asteroids-asteroid-large.vector.json",
     paletteId: "palette.asteroids-hud",
     svgText: ASTEROIDS_LARGE_SVG
   });
   const titleVector = normalizeSvgToVectorAsset({
     id: "vector.asteroids.ui.title",
     name: "Asteroids Title Vector",
-    path: "games/Asteroids/platform/assets/vectors/asteroids-title.vector.json",
+    path: "games/Asteroids/assets/platform/vectors/asteroids-title.vector.json",
     paletteId: "palette.asteroids-hud",
     svgText: ASTEROIDS_TITLE_SVG
   });
@@ -148,3 +148,4 @@ export async function buildVectorAssetSystem(options = {}) {
     }
   };
 }
+

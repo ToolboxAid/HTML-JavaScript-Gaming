@@ -1,9 +1,9 @@
-{
+﻿{
   "id": "vector.asteroids.asteroid.small",
   "type": "vector",
   "source": {
     "kind": "svg",
-    "path": "games/Asteroids/platform/assets/vectors/asteroids-asteroid-small.vector.json"
+    "path": "games/Asteroids/assets/platform/vectors/asteroids-asteroid-small.vector.json"
   },
   "geometry": {
     "viewBox": "-18 -18 36 36",
@@ -14,3 +14,4 @@
     "fill": false
   }
 }
+

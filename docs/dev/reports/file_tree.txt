@@ -1,121 +1,23 @@
-﻿Flow Rules vs Content Split Tree
+﻿Asset Ownership Normalization - File Tree (Changed)
 
-games/AITargetDummy/rules/flowRules.js
-games/AITargetDummy/rules/flowContent.js
-games/AITargetDummy/rules/gameFlowRules.js
-games/Asteroids/rules/flowRules.js
-games/Asteroids/rules/flowContent.js
-games/Asteroids/rules/gameFlowRules.js
-games/Bouncing-ball/rules/flowRules.js
-games/Bouncing-ball/rules/flowContent.js
-games/Bouncing-ball/rules/gameFlowRules.js
-games/Breakout/rules/flowRules.js
-games/Breakout/rules/flowContent.js
-games/Breakout/rules/gameFlowRules.js
-games/Gravity/rules/flowRules.js
-games/Gravity/rules/flowContent.js
-games/Gravity/rules/gameFlowRules.js
-games/GravityWell/rules/flowRules.js
-games/GravityWell/rules/flowContent.js
-games/GravityWell/rules/gameFlowRules.js
-games/MultiBallChaos/rules/flowRules.js
-games/MultiBallChaos/rules/flowContent.js
-games/MultiBallChaos/rules/gameFlowRules.js
-games/Orbit/rules/flowRules.js
-games/Orbit/rules/flowContent.js
-games/Orbit/rules/gameFlowRules.js
-games/PacmanFullAI/rules/flowRules.js
-games/PacmanFullAI/rules/flowContent.js
-games/PacmanFullAI/rules/gameFlowRules.js
-games/PacmanLite/rules/flowRules.js
-games/PacmanLite/rules/flowContent.js
-games/PacmanLite/rules/gameFlowRules.js
-games/PaddleIntercept/rules/flowRules.js
-games/PaddleIntercept/rules/flowContent.js
-games/PaddleIntercept/rules/gameFlowRules.js
-games/Pong/rules/flowRules.js
-games/Pong/rules/flowContent.js
-games/Pong/rules/gameFlowRules.js
-games/ProjectileLab/rules/flowRules.js
-games/ProjectileLab/rules/flowContent.js
-games/ProjectileLab/rules/gameFlowRules.js
-games/Puckman/rules/flowRules.js
-games/Puckman/rules/flowContent.js
-games/Puckman/rules/gameFlowRules.js
-games/SolarSystem/rules/flowRules.js
-games/SolarSystem/rules/flowContent.js
-games/SolarSystem/rules/gameFlowRules.js
-games/SpaceDuel/rules/flowRules.js
-games/SpaceDuel/rules/flowContent.js
-games/SpaceDuel/rules/gameFlowRules.js
-games/SpaceInvaders/rules/flowRules.js
-games/SpaceInvaders/rules/flowContent.js
-games/SpaceInvaders/rules/gameFlowRules.js
-games/Thruster/rules/flowRules.js
-games/Thruster/rules/flowContent.js
-games/Thruster/rules/gameFlowRules.js
-games/vector-arcade-sample/rules/flowRules.js
-games/vector-arcade-sample/rules/flowContent.js
-games/vector-arcade-sample/rules/gameFlowRules.js
+games/Asteroids/assets/platform/
+  palettes/asteroids-hud.palette.json
+  parallax/asteroids-overlay.parallax.json
+  parallax/asteroids-title.parallax.json
+  sprites/asteroids-demo.sprite.json
+  tilemaps/asteroids-stage.tilemap.json
+  tilesets/asteroids-ui.tileset.json
+  vectors/asteroids-asteroid-large.vector.json
+  vectors/asteroids-asteroid-medium.vector.json
+  vectors/asteroids-asteroid-small.vector.json
+  vectors/asteroids-ship.vector.json
+  vectors/asteroids-title.vector.json
 
-Updated import consumers:
-games\AITargetDummy\flow\attract.js
-games\AITargetDummy\flow\highscore.js
-games\AITargetDummy\flow\intro.js
-games\Asteroids\flow\attract.js
-games\Asteroids\flow\highscore.js
-games\Asteroids\flow\intro.js
-games\Asteroids\game\AsteroidsGameScene.js
-games\Bouncing-ball\flow\attract.js
-games\Bouncing-ball\flow\highscore.js
-games\Bouncing-ball\flow\intro.js
-games\Breakout\flow\attract.js
-games\Breakout\flow\highscore.js
-games\Breakout\flow\intro.js
-games\Gravity\flow\attract.js
-games\Gravity\flow\highscore.js
-games\Gravity\flow\intro.js
-games\GravityWell\flow\attract.js
-games\GravityWell\flow\highscore.js
-games\GravityWell\flow\intro.js
-games\MultiBallChaos\flow\attract.js
-games\MultiBallChaos\flow\highscore.js
-games\MultiBallChaos\flow\intro.js
-games\Orbit\flow\attract.js
-games\Orbit\flow\highscore.js
-games\Orbit\flow\intro.js
-games\PacmanFullAI\flow\attract.js
-games\PacmanFullAI\flow\highscore.js
-games\PacmanFullAI\flow\intro.js
-games\PacmanLite\flow\attract.js
-games\PacmanLite\flow\highscore.js
-games\PacmanLite\flow\intro.js
-games\PaddleIntercept\flow\attract.js
-games\PaddleIntercept\flow\highscore.js
-games\PaddleIntercept\flow\intro.js
-games\Pong\flow\attract.js
-games\Pong\flow\highscore.js
-games\Pong\flow\intro.js
-games\ProjectileLab\flow\attract.js
-games\ProjectileLab\flow\highscore.js
-games\ProjectileLab\flow\intro.js
-games\Puckman\flow\attract.js
-games\Puckman\flow\highscore.js
-games\Puckman\flow\intro.js
-games\Puckman\game\PuckmanGameScene.js
-games\Puckman\game\PuckmanRuntime.js
-games\SolarSystem\flow\attract.js
-games\SolarSystem\flow\highscore.js
-games\SolarSystem\flow\intro.js
-games\SpaceDuel\flow\attract.js
-games\SpaceDuel\flow\highscore.js
-games\SpaceDuel\flow\intro.js
-games\SpaceInvaders\flow\attract.js
-games\SpaceInvaders\flow\highscore.js
-games\SpaceInvaders\flow\intro.js
-games\Thruster\flow\attract.js
-games\Thruster\flow\highscore.js
-games\Thruster\flow\intro.js
-games\vector-arcade-sample\flow\attract.js
-games\vector-arcade-sample\flow\highscore.js
-games\vector-arcade-sample\flow\intro.js
+Reference updates
+- tools/Asset Browser/main.js
+- tools/shared/asteroidsPlatformDemo.js
+- tools/shared/vectorAssetSystem.js
+- tools/templates/starter-project-template/README.md
+- tools/templates/starter-project-template/config/starter.project.json
+- tests/tools/VectorAssetSystem.test.mjs
+- docs/specs/asset_usage_contract.md

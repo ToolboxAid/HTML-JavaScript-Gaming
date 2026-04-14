@@ -1,4 +1,4 @@
-import assert from "node:assert/strict";
+﻿import assert from "node:assert/strict";
 import { validateProjectAssetState } from "../../tools/shared/projectAssetValidation.js";
 import { buildProjectPackage } from "../../tools/shared/projectPackaging.js";
 import { loadPackagedProjectRuntime } from "../../tools/shared/runtimeAssetLoader.js";
@@ -10,7 +10,7 @@ export async function run() {
   const normalized = normalizeSvgToVectorAsset({
     id: "vector.test.ship",
     name: "Test Ship",
-    path: "games/Asteroids/platform/assets/vectors/test-ship.vector.json",
+    path: "games/Asteroids/assets/platform/vectors/test-ship.vector.json",
     paletteId: "palette.hero",
     svgText: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="-10 -10 20 20"><path d="M 0 -8 L 6 8 L 0 4 L -6 8 Z" /></svg>'
   });
@@ -62,7 +62,7 @@ export async function run() {
         {
           id: "vector.broken",
           name: "Broken",
-          path: "games/Asteroids/platform/assets/vectors/broken.vector.json",
+          path: "games/Asteroids/assets/platform/vectors/broken.vector.json",
           paletteId: "palette.asteroids-hud",
           source: { kind: "json", path: "" },
           format: VECTOR_ASSET_FORMAT,
@@ -108,3 +108,4 @@ export async function run() {
   assert.deepEqual(first, second);
   assert.match(first.vectorAssetSystem.reportText, /VECTOR_ASSET_SYSTEM_READY/);
 }
+

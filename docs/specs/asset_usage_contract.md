@@ -1,4 +1,4 @@
-# Asset Usage Contract
+﻿# Asset Usage Contract
 
 ## Purpose
 Define the shared asset and shared palette handoff contract for first-class tools under `tools/`.
@@ -58,7 +58,7 @@ Normalized shape:
 {
   "assetId": "asset-vector-player",
   "assetType": "vector",
-  "sourcePath": "../../games/Asteroids/platform/assets/vectors/asteroids-ship.vector.json",
+  "sourcePath": "../../games/Asteroids/assets/platform/vectors/asteroids-ship.vector.json",
   "displayName": "Asteroids Ship Vector",
   "tags": ["Vector Assets"],
   "metadata": {
@@ -137,3 +137,4 @@ Normalized shape:
 - tool-local asset silos as the default integration path
 - legacy sprite editor reintegration
 - sample cards or showcase cards on the tools landing page
+
