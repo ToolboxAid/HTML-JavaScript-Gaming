@@ -1,1 +1,1 @@
-Verify flow/game/rules separation and no duplication.
+Check all games follow flow/game/rules separation.

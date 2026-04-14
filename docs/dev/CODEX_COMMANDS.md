@@ -2,12 +2,10 @@ MODEL: GPT-5.3-codex
 REASONING: medium
 
 TASK:
-Normalize SpaceInvaders to match Puckman/Asteroids structure.
+Scan all games/* and report boundary violations.
 
-CONSTRAINTS:
-- DO NOT modify engine
-- DO NOT add index.html
-- DO NOT standardize flow behavior beyond file presence
+DO NOT FIX.
+DO NOT MODIFY.
 
 OUTPUT:
-Return ZIP to <project folder>/tmp/
+Return report only.

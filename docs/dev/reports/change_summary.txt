@@ -1,1 +1,1 @@
-Adds Space Invaders completion PR. No code included.
+Adds enforcement rules for Phase 08 completion.

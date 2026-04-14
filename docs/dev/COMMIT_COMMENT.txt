@@ -1,1 +1,1 @@
-Phase 08.05 — Space Invaders boundary normalization completion
+Phase 08.06 — Boundary enforcement rules and validation
