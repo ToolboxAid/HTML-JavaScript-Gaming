@@ -1,1 +1,23 @@
-Restore sample launcher phase dropdown and tag filter behavior with a surgical launcher-only fix.
+﻿Change Summary (Evidence-Only)
+
+Facts found
+- A game-local Puckman rules source exists: games/Puckman/rules/gameFlowRules.js.
+- Flow modules exist and import from rules:
+  - games/Puckman/flow/attract.js
+  - games/Puckman/flow/intro.js
+  - games/Puckman/flow/highscore.js
+- Gameplay runtime/scene exist and import from rules:
+  - games/Puckman/game/PuckmanRuntime.js
+  - games/Puckman/game/PuckmanGameScene.js
+- Puckman boundary folders are present (assets/config/debug/entities/levels/rules/systems/ui/utils).
+
+Missing evidence / limits
+- This validation is intentionally scoped to one roadmap line only: "puckman normalized".
+- No claim is made here about repo-wide lines such as:
+  - game flow pattern standardized
+  - gameplay/entities/levels/rules/assets boundaries normalized (repo-wide)
+  - shared-vs-game utility boundaries enforced
+
+Recommended status (single-line)
+- Games Layer -> puckman normalized: [x]
+- Reason: scoped acceptance criteria are met by non-placeholder flow/game/rules implementation evidence.

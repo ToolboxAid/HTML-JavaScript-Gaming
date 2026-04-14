@@ -1,11 +1,36 @@
+﻿Scoped Validation Tree
+
 docs/
-  pr/
-    PLAN_PR_ASTEROIDS_GAME_CANVAS_FIX.md
-    BUILD_PR_ASTEROIDS_GAME_CANVAS_FIX.md
   dev/
-    codex_commands.md
-    commit_comment.txt
-    reports/
-      change_summary.txt
-      validation_checklist.txt
-      file_tree.txt
+    ROADMAP_RULES.md
+  pr/
+    BUILD_PR_LEVEL_08_04_PUCKMAN_BOUNDARY_NORMALIZATION.md
+  MASTER_ROADMAP_HIGH_LEVEL.md
+
+games/
+  Puckman/
+    assets/
+      .gitkeep
+    config/
+      .gitkeep
+    debug/
+      .gitkeep
+    entities/
+      .gitkeep
+    flow/
+      attract.js
+      intro.js
+      highscore.js
+    game/
+      PuckmanRuntime.js
+      PuckmanGameScene.js
+    levels/
+      .gitkeep
+    rules/
+      gameFlowRules.js
+    systems/
+      .gitkeep
+    ui/
+      .gitkeep
+    utils/
+      .gitkeep

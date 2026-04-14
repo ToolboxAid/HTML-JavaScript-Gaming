@@ -1,1 +1,1 @@
-﻿build(games): normalize puckman boundaries for phase 08
+Add roadmap validation guardrails so status changes require explicit evidence and facts-only validation reports.
