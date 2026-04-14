@@ -1,1 +1,1 @@
-Phase 08 complete — repo-wide normalization achieved
+﻿build(games): split flow behavior rules vs flow content across game rules surfaces

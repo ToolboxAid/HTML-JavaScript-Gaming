@@ -2,11 +2,8 @@
 import { introFlow } from "../flow/intro.js";
 import { highscoreFlow } from "../flow/highscore.js";
 import {
-  PUCKMAN_FLOW_IDS,
-  PUCKMAN_GAME_OVER_AUTO_EXIT_SECONDS,
-  PUCKMAN_GAME_OVER_RETURN_MODE,
-  PUCKMAN_GAME_OVER_RETURN_STATUS
-} from "../rules/gameFlowRules.js";
+  PUCKMAN_FLOW_IDS, PUCKMAN_GAME_OVER_AUTO_EXIT_SECONDS, PUCKMAN_GAME_OVER_RETURN_MODE } from "../rules/flowRules.js";
+import { PUCKMAN_GAME_OVER_RETURN_STATUS } from "../rules/flowContent.js";
 
 export const puckmanFlow = Object.freeze({
   [PUCKMAN_FLOW_IDS.attract]: attractFlow,
@@ -45,3 +42,4 @@ export function createPuckmanRuntime(initialFlowId = PUCKMAN_FLOW_IDS.attract) {
     setFlow
   });
 }
+

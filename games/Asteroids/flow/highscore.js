@@ -1,9 +1,7 @@
-import { createAsteroidsShowcaseDebugPlugin } from "../debug/asteroidsShowcaseDebug.js";
+﻿import { createAsteroidsShowcaseDebugPlugin } from "../debug/asteroidsShowcaseDebug.js";
 import {
-  ASTEROIDS_FLOW_CONTRACT_VERSION,
-  ASTEROIDS_HIGHSCORE_AUTO_EXIT_SECONDS,
-  ASTEROIDS_HIGHSCORE_STATUS
-} from "../rules/gameFlowRules.js";
+  ASTEROIDS_FLOW_CONTRACT_VERSION, ASTEROIDS_HIGHSCORE_AUTO_EXIT_SECONDS } from "../rules/flowRules.js";
+import { ASTEROIDS_HIGHSCORE_STATUS } from "../rules/flowContent.js";
 
 export const ASTEROIDS_HIGHSCORE_FLOW_NEXT_ID = "attract";
 
@@ -18,3 +16,4 @@ export const highscoreFlow = Object.freeze({
   resetIdleOnReturn: true,
   debugPluginFactory: createAsteroidsShowcaseDebugPlugin
 });
+

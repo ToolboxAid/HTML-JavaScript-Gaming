@@ -1,9 +1,6 @@
-import { createAsteroidsShowcaseDebugPlugin } from "../debug/asteroidsShowcaseDebug.js";
+﻿import { createAsteroidsShowcaseDebugPlugin } from "../debug/asteroidsShowcaseDebug.js";
 import {
-  ASTEROIDS_FLOW_CONTRACT_VERSION,
-  ASTEROIDS_GAME_OVER_RETURN_MODE,
-  ASTEROIDS_GAME_OVER_RETURN_RESET_IDLE
-} from "../rules/gameFlowRules.js";
+  ASTEROIDS_FLOW_CONTRACT_VERSION, ASTEROIDS_GAME_OVER_RETURN_MODE, ASTEROIDS_GAME_OVER_RETURN_RESET_IDLE } from "../rules/flowRules.js";
 
 export const ASTEROIDS_NEW_GAME_OVER_RETURN_MODE = ASTEROIDS_GAME_OVER_RETURN_MODE;
 export const ASTEROIDS_NEW_GAME_OVER_RETURN_RESET_IDLE = ASTEROIDS_GAME_OVER_RETURN_RESET_IDLE;
@@ -20,3 +17,4 @@ export const attractFlow = Object.freeze({
   resetIdleOnReturn: ASTEROIDS_NEW_GAME_OVER_RETURN_RESET_IDLE,
   debugPluginFactory: createAsteroidsShowcaseDebugPlugin
 });
+

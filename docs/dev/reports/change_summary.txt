@@ -1,1 +1,37 @@
-Finalizes Phase 08 completion
+﻿BUILD_PR_LEVEL_09_01_FLOW_RULES_VS_FLOW_CONTENT_SPLIT
+
+What changed
+- Added rules split modules per game: rules/flowRules.js and rules/flowContent.js.
+- Converted rules/gameFlowRules.js into a compatibility shim re-exporting flowRules + flowContent.
+- Updated flow/ and game/ import consumers to read behavior constants from flowRules and player-facing text from flowContent.
+
+Classification applied
+- behavior/timing/mode/contract/booleans/selectors => flowRules.js
+- visible flow text/prompts/headings/labels => flowContent.js
+
+Behavior preservation
+- No engine files changed.
+- No launcher/bootstrap changes.
+- No config migration included.
+- Split is extraction-only; constants remain same values.
+
+Games affected: 19
+- AITargetDummy
+- Asteroids
+- Bouncing-ball
+- Breakout
+- Gravity
+- GravityWell
+- MultiBallChaos
+- Orbit
+- PacmanFullAI
+- PacmanLite
+- PaddleIntercept
+- Pong
+- ProjectileLab
+- Puckman
+- SolarSystem
+- SpaceDuel
+- SpaceInvaders
+- Thruster
+- vector-arcade-sample

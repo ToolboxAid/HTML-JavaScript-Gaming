@@ -1,10 +1,5 @@
-﻿import {
-  SOLAR_SYSTEM_FLOW_IDS,
-  SOLAR_SYSTEM_FLOW_LABELS,
-  SOLAR_SYSTEM_HIGHSCORE_AUTO_EXIT_SECONDS,
-  SOLAR_SYSTEM_HIGHSCORE_STATUS,
-  createSOLARSYSTEMFlowDescriptor
-} from "../rules/gameFlowRules.js";
+﻿import { SOLAR_SYSTEM_FLOW_IDS, SOLAR_SYSTEM_HIGHSCORE_AUTO_EXIT_SECONDS, createSOLARSYSTEMFlowDescriptor } from "../rules/flowRules.js";
+import { SOLAR_SYSTEM_FLOW_LABELS, SOLAR_SYSTEM_HIGHSCORE_STATUS } from "../rules/flowContent.js";
 
 export const SOLAR_SYSTEM_HIGHSCORE_FLOW_NEXT_ID = SOLAR_SYSTEM_FLOW_IDS.attract;
 
@@ -14,3 +9,4 @@ export const highscoreFlow = createSOLARSYSTEMFlowDescriptor(SOLAR_SYSTEM_FLOW_I
   autoAdvanceSeconds: SOLAR_SYSTEM_HIGHSCORE_AUTO_EXIT_SECONDS,
   statusText: SOLAR_SYSTEM_HIGHSCORE_STATUS
 });
+

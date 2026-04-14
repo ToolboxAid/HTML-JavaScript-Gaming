@@ -1,11 +1,5 @@
-﻿import {
-  PUCKMAN_FLOW_IDS,
-  PUCKMAN_FLOW_LABELS,
-  PUCKMAN_GAME_OVER_RETURN_MODE,
-  PUCKMAN_GAME_OVER_RETURN_RESET_IDLE,
-  PUCKMAN_GAME_OVER_RETURN_STATUS,
-  createPuckmanFlowDescriptor
-} from "../rules/gameFlowRules.js";
+﻿import { PUCKMAN_FLOW_IDS, PUCKMAN_GAME_OVER_RETURN_MODE, PUCKMAN_GAME_OVER_RETURN_RESET_IDLE, createPuckmanFlowDescriptor } from "../rules/flowRules.js";
+import { PUCKMAN_FLOW_LABELS, PUCKMAN_GAME_OVER_RETURN_STATUS } from "../rules/flowContent.js";
 
 export const PUCKMAN_ATTRACT_FLOW_NEXT_ID = PUCKMAN_FLOW_IDS.intro;
 
@@ -17,3 +11,4 @@ export const attractFlow = createPuckmanFlowDescriptor(PUCKMAN_FLOW_IDS.attract,
   returnMode: PUCKMAN_GAME_OVER_RETURN_MODE,
   resetIdleOnReturn: PUCKMAN_GAME_OVER_RETURN_RESET_IDLE
 });
+

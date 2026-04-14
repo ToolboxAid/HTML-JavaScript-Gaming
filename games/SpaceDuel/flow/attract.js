@@ -1,11 +1,5 @@
-﻿import {
-  SPACE_DUEL_FLOW_IDS,
-  SPACE_DUEL_FLOW_LABELS,
-  SPACE_DUEL_GAME_OVER_RETURN_MODE,
-  SPACE_DUEL_GAME_OVER_RETURN_RESET_IDLE,
-  SPACE_DUEL_GAME_OVER_RETURN_STATUS,
-  createSPACEDUELFlowDescriptor
-} from "../rules/gameFlowRules.js";
+﻿import { SPACE_DUEL_FLOW_IDS, SPACE_DUEL_GAME_OVER_RETURN_MODE, SPACE_DUEL_GAME_OVER_RETURN_RESET_IDLE, createSPACEDUELFlowDescriptor } from "../rules/flowRules.js";
+import { SPACE_DUEL_FLOW_LABELS, SPACE_DUEL_GAME_OVER_RETURN_STATUS } from "../rules/flowContent.js";
 
 export const SPACE_DUEL_ATTRACT_FLOW_NEXT_ID = SPACE_DUEL_FLOW_IDS.intro;
 
@@ -17,3 +11,4 @@ export const attractFlow = createSPACEDUELFlowDescriptor(SPACE_DUEL_FLOW_IDS.att
   returnMode: SPACE_DUEL_GAME_OVER_RETURN_MODE,
   resetIdleOnReturn: SPACE_DUEL_GAME_OVER_RETURN_RESET_IDLE
 });
+

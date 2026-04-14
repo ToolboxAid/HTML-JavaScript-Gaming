@@ -1,12 +1,5 @@
-﻿import {
-  GRAVITY_FLOW_IDS,
-  GRAVITY_FLOW_LABELS,
-  GRAVITY_GAME_OVER_AUTO_EXIT_SECONDS,
-  GRAVITY_GAME_OVER_RETURN_MODE,
-  GRAVITY_GAME_OVER_RETURN_RESET_IDLE,
-  GRAVITY_GAME_OVER_RETURN_STATUS,
-  createFlowDescriptor
-} from "../rules/gameFlowRules.js";
+﻿import { GRAVITY_FLOW_IDS, GRAVITY_GAME_OVER_AUTO_EXIT_SECONDS, GRAVITY_GAME_OVER_RETURN_MODE, GRAVITY_GAME_OVER_RETURN_RESET_IDLE, createFlowDescriptor } from "../rules/flowRules.js";
+import { GRAVITY_FLOW_LABELS, GRAVITY_GAME_OVER_RETURN_STATUS } from "../rules/flowContent.js";
 
 export const GRAVITY_INTRO_FLOW_NEXT_ID = GRAVITY_FLOW_IDS.highscore;
 
@@ -18,3 +11,4 @@ export const introFlow = createFlowDescriptor(GRAVITY_FLOW_IDS.intro, {
   returnMode: GRAVITY_GAME_OVER_RETURN_MODE,
   resetIdleOnReturn: GRAVITY_GAME_OVER_RETURN_RESET_IDLE
 });
+

@@ -1,1 +1,20 @@
-All games pass boundary validation
+﻿BUILD_PR_LEVEL_09_01_FLOW_RULES_VS_FLOW_CONTENT_SPLIT - Validation Checklist
+
+Scope and constraints
+- [x] one PR purpose only
+- [x] no engine changes
+- [x] no launcher changes
+- [x] no config migration
+- [x] preserve behavior via constant extraction only
+
+Required pattern
+- [x] games/<GameName>/rules/flowRules.js present for all affected games
+- [x] games/<GameName>/rules/flowContent.js present for all affected games
+- [x] flow/ and game/ import consumers updated to split modules
+
+Command evidence
+- node --check on all rules split files + all import consumers: PASS (117 files)
+- node tests/runtime/LaunchSmokeAllEntries.test.mjs: PASS
+
+Result
+- PASS

@@ -1,8 +1,14 @@
-MODEL: GPT-5.4
-REASONING: low
+﻿MODEL: GPT-5.4
+REASONING: high
 
-TASK:
-Update roadmap Section 8 to fully complete [x]
+COMMAND GOAL:
+Create BUILD_PR_LEVEL_09_01_FLOW_RULES_VS_FLOW_CONTENT_SPLIT as a repo-wide docs-first implementation
+bundle that separates behavioral flow rules from player-facing flow content across all games.
 
-No code changes.
-Return ZIP to <project folder>/tmp/
+CONSTRAINTS:
+- one PR purpose only
+- preserve behavior exactly
+- no engine changes
+- no launcher changes
+- no config migration in this PR
+- only split existing flow-related rules/content
