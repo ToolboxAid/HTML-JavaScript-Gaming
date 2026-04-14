@@ -1,4 +1,3 @@
+Adds safe website deployment staging automation with prep/update/clean scripts under `scripts/PS/codex/`, preview-only defaults, and constrained clean behavior under `<repo>/tmp`.
 
-Adds `scripts/PS/codex/New-CodexTemplateGame.ps1` to create new games from `games/_template`, scaffold tool project metadata, and enforce runtime/domain + tool-data folder structure under `games/<game>/assets/<domain>/data/`. Keeps codex scripts under `scripts/PS/codex/` and applies roadmap status-only updates.
-
-BUILD_PR_LEVEL_09_19_TEMPLATE_GAME_CREATION_SCRIPTING
+BUILD_PR_LEVEL_09_20_WEBSITE_REPO_PREP_SCRIPTING

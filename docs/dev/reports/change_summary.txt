@@ -1,13 +1,11 @@
 Summary
-- Added `scripts/PS/codex/New-CodexTemplateGame.ps1` as a focused template game creation script.
-- Script copies `games/_template` into `games/<game>` and enforces active asset domains with runtime/data split:
-  - `assets/sprites/data`
-  - `assets/tilemaps/data`
-  - `assets/parallax/data`
-  - `assets/vectors/data`
-- Script scaffolds:
-  - `games/<game>/assets/<game>.assets.json`
-  - `games/<game>/config/<game>.project.json`
-- Updated codex scripting doc paths to use `scripts/PS/codex/` as the base location.
-- Updated roadmap with status-only bracket change for template game creation scripting.
-- Commit comment format remains description first and PR name last.
+- Added website deployment scripting under `scripts/PS/codex/`:
+  - `Prep-WebsiteRepoDeployment.ps1`
+  - `Update-WebsiteRepoDeployment.ps1`
+  - `Clean-WebsiteRepoDeployment.ps1`
+  - shared helper: `WebsiteRepoDeploymentCommon.ps1`
+- Implemented safe non-destructive defaults: scripts run in preview mode unless `-Apply` is provided.
+- Added deployment scripting usage/guardrails doc:
+  - `docs/dev/CODEX_WEBSITE_REPO_DEPLOYMENT_SCRIPTING.md`
+- Updated roadmap with status-only bracket change for the website prep/update/delete scripting lane.
+- Commit comment format is description on first line and PR name on last line.
