@@ -6,7 +6,9 @@ param(
     [string]$EnvFilePath,
     [switch]$Apply,
     [switch]$DryRun,
-    [switch]$ConfirmDestructive
+    [switch]$ConfirmDestructive,
+    [switch]$SkipPostDeployVerification,
+    [switch]$RollbackOnVerificationFailure
 )
 
 Set-StrictMode -Version Latest
@@ -68,7 +70,12 @@ if ($executionMode.isDryRun) {
         destructiveConfirmationRequired = $true
     }
     Write-DeployLog -Level "INFO" -Message "Next step: run Update-WebsiteRepoDeployment.ps1 -Apply -ConfirmDestructive after reviewing the dry-run output."
+    Write-DeployLog -Level "INFO" -Message "Rollback/abort expectation: verification failures abort by default; add -RollbackOnVerificationFailure to auto-clean staging artifacts."
     exit 0
+}
+
+if ($RollbackOnVerificationFailure.IsPresent -and -not $ConfirmDestructive.IsPresent) {
+    throw "Rollback requires -ConfirmDestructive because rollback cleanup deletes staged artifacts."
 }
 
 if (-not $PSCmdlet.ShouldProcess($paths.siteRoot, "Refresh staged website deployment content")) {
@@ -82,6 +89,12 @@ if (-not $PSCmdlet.ShouldProcess($paths.siteRoot, "Refresh staged website deploy
 Ensure-Directory -Path $paths.stagingRoot
 Ensure-Directory -Path $paths.metaRoot
 Ensure-Directory -Path $paths.siteRoot
+Write-DeployOpsState -Paths $paths -Operation "update" -Stage "refresh-site-content" -Status "running" -Message "Refreshing staged website content." -Data @{
+    includePathCount = $normalizedIncludePaths.Count
+}
+Write-DeployOpsEvent -Paths $paths -Operation "update" -Stage "refresh-site-content" -Status "start" -Message "Starting staged website refresh." -Data @{
+    includePathCount = $normalizedIncludePaths.Count
+}
 
 $existingSiteRoot = Test-Path -LiteralPath $paths.siteRoot
 Assert-ExplicitDestructiveConfirmation -IsDryRun:$executionMode.isDryRun -ConfirmDestructive:$ConfirmDestructive.IsPresent -OperationName "Update-WebsiteRepoDeployment site refresh" -TargetCount $(if ($existingSiteRoot) { 1 } else { 0 })
@@ -117,6 +130,63 @@ $report = [ordered]@{
 }
 Write-JsonFile -Value $report -Path $paths.updateReportPath
 
+Write-DeployOpsState -Paths $paths -Operation "update" -Stage "refresh-site-content" -Status "success" -Message "Staged website refresh completed." -Data @{
+    copiedEntries = $copyEntries.Count
+    reportPath = $paths.updateReportPath
+}
+Write-DeployOpsEvent -Paths $paths -Operation "update" -Stage "refresh-site-content" -Status "success" -Message "Staged website refresh completed." -Data @{
+    copiedEntries = $copyEntries.Count
+    reportPath = $paths.updateReportPath
+}
+
+$verificationPassed = $true
+if (-not $SkipPostDeployVerification.IsPresent) {
+    Write-DeployOpsState -Paths $paths -Operation "update" -Stage "post-deploy-verification" -Status "running" -Message "Running post-deploy verification checks."
+    Write-DeployOpsEvent -Paths $paths -Operation "update" -Stage "post-deploy-verification" -Status "start" -Message "Running post-deploy verification checks."
+
+    $verification = Get-WebsiteDeploymentVerificationResult -Paths $paths -ExpectedIncludePaths $normalizedIncludePaths
+    Write-JsonFile -Value $verification -Path $paths.verifyReportPath
+
+    if (-not $verification.passed) {
+        $verificationPassed = $false
+        Write-DeployOpsState -Paths $paths -Operation "update" -Stage "post-deploy-verification" -Status "error" -Message "Post-deploy verification failed." -Data @{
+            verifyReportPath = $paths.verifyReportPath
+            failedCheckCount = $verification.failedCheckCount
+        }
+        Write-DeployOpsEvent -Paths $paths -Operation "update" -Stage "post-deploy-verification" -Status "error" -Message "Post-deploy verification failed." -Data @{
+            verifyReportPath = $paths.verifyReportPath
+            failedCheckCount = $verification.failedCheckCount
+        }
+
+        if ($RollbackOnVerificationFailure.IsPresent) {
+            Write-DeployOpsEvent -Paths $paths -Operation "update" -Stage "rollback-on-verification-failure" -Status "warn" -Message "Verification failed. Starting rollback cleanup of staging artifacts." -Data @{
+                rollbackMode = "clean-staging"
+            }
+
+            $cleanScriptPath = Join-Path $PSScriptRoot "Clean-WebsiteRepoDeployment.ps1"
+            & $cleanScriptPath -StagingRoot $paths.stagingRoot -RemoveMetadata -EnvFilePath $config.envFilePath -Apply -ConfirmDestructive -Confirm:$false
+
+            Write-DeployOpsEvent -Paths $paths -Operation "update" -Stage "rollback-on-verification-failure" -Status "success" -Message "Rollback cleanup completed." -Data @{
+                rollbackMode = "clean-staging"
+            }
+        }
+
+        throw "Post-deploy verification failed. Review $($paths.verifyReportPath). Update operation aborted."
+    }
+
+    Write-DeployOpsState -Paths $paths -Operation "update" -Stage "post-deploy-verification" -Status "success" -Message "Post-deploy verification passed." -Data @{
+        verifyReportPath = $paths.verifyReportPath
+    }
+    Write-DeployOpsEvent -Paths $paths -Operation "update" -Stage "post-deploy-verification" -Status "success" -Message "Post-deploy verification passed." -Data @{
+        verifyReportPath = $paths.verifyReportPath
+    }
+}
+else {
+    Write-DeployOpsEvent -Paths $paths -Operation "update" -Stage "post-deploy-verification" -Status "warn" -Message "Post-deploy verification skipped by operator switch." -Data @{
+        skippedBySwitch = $true
+    }
+}
+
 Write-DeployLog -Level "SUCCESS" -Message "Updated website deployment staging content." -Data @{
     script = "Update-WebsiteRepoDeployment"
     mode = $executionMode.label
@@ -126,4 +196,6 @@ Write-DeployLog -Level "SUCCESS" -Message "Updated website deployment staging co
     reportPath = $paths.updateReportPath
     dockerCliFound = $environment.dockerCliFound
     webPort = $config.webPort
+    postDeployVerificationPassed = $verificationPassed
+    verifyReportPath = $paths.verifyReportPath
 }

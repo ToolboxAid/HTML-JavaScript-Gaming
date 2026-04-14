@@ -68,9 +68,22 @@ if (-not $PSCmdlet.ShouldProcess($paths.stagingRoot, "Prepare website deployment
 Ensure-Directory -Path $paths.stagingRoot
 Ensure-Directory -Path $paths.siteRoot
 Ensure-Directory -Path $paths.metaRoot
+Write-DeployOpsState -Paths $paths -Operation "prep" -Stage "prepare-staging" -Status "running" -Message "Preparing deployment staging directories and artifacts."
+Write-DeployOpsEvent -Paths $paths -Operation "prep" -Stage "prepare-staging" -Status "start" -Message "Starting deployment staging preparation." -Data @{
+    includePathCount = $normalizedIncludePaths.Count
+    webPort = $config.webPort
+}
 Write-JsonFile -Value $plan -Path $paths.planPath
 Write-DockerDeploymentArtifacts -Paths $paths -WebPort $config.webPort
 Assert-DockerArtifactReadiness -Paths $paths
+Write-DeployOpsState -Paths $paths -Operation "prep" -Stage "prepare-staging" -Status "success" -Message "Deployment staging preparation completed." -Data @{
+    planPath = $paths.planPath
+    dockerfilePath = $paths.dockerfilePath
+}
+Write-DeployOpsEvent -Paths $paths -Operation "prep" -Stage "prepare-staging" -Status "success" -Message "Deployment staging preparation completed." -Data @{
+    planPath = $paths.planPath
+    dockerfilePath = $paths.dockerfilePath
+}
 
 Write-DeployLog -Level "SUCCESS" -Message "Prepared website deployment staging." -Data @{
     script = "Prep-WebsiteRepoDeployment"

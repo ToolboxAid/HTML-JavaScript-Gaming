@@ -414,9 +414,149 @@ function Get-WebsiteDeploymentPaths {
         metaRoot = [System.IO.Path]::GetFullPath((Join-Path $resolvedStagingRoot "meta"))
         planPath = [System.IO.Path]::GetFullPath((Join-Path $resolvedStagingRoot "meta\website-deploy-plan.json"))
         updateReportPath = [System.IO.Path]::GetFullPath((Join-Path $resolvedStagingRoot "meta\website-deploy-last-update.json"))
+        verifyReportPath = [System.IO.Path]::GetFullPath((Join-Path $resolvedStagingRoot "meta\website-deploy-last-verify.json"))
+        opsLogPath = [System.IO.Path]::GetFullPath((Join-Path $resolvedStagingRoot "meta\website-deploy-ops-log.jsonl"))
+        opsStatePath = [System.IO.Path]::GetFullPath((Join-Path $resolvedStagingRoot "meta\website-deploy-ops-state.json"))
         dockerfilePath = [System.IO.Path]::GetFullPath((Join-Path $resolvedStagingRoot "Dockerfile"))
         composePath = [System.IO.Path]::GetFullPath((Join-Path $resolvedStagingRoot "docker-compose.yml"))
         dockerIgnorePath = [System.IO.Path]::GetFullPath((Join-Path $resolvedStagingRoot ".dockerignore"))
+    }
+}
+
+function Write-DeployOpsEvent {
+    param(
+        [Parameter(Mandatory = $true)]
+        [object]$Paths,
+        [Parameter(Mandatory = $true)]
+        [string]$Operation,
+        [Parameter(Mandatory = $true)]
+        [string]$Stage,
+        [ValidateSet("start", "success", "warn", "error")]
+        [string]$Status = "start",
+        [Parameter(Mandatory = $true)]
+        [string]$Message,
+        [hashtable]$Data
+    )
+
+    Ensure-Directory -Path $Paths.metaRoot
+
+    $eventRecord = [ordered]@{
+        schema = "html-js-gaming.website-repo-deploy-ops-event"
+        version = 1
+        timestampUtc = [DateTime]::UtcNow.ToString("o")
+        operation = $Operation
+        stage = $Stage
+        status = $Status
+        message = $Message
+        data = if ($Data) { $Data } else { [ordered]@{} }
+    }
+
+    $line = ($eventRecord | ConvertTo-Json -Compress -Depth 20) + [Environment]::NewLine
+    [System.IO.File]::AppendAllText($Paths.opsLogPath, $line, [System.Text.Encoding]::UTF8)
+
+    $level = switch ($Status) {
+        "success" { "SUCCESS" }
+        "warn" { "WARN" }
+        "error" { "ERROR" }
+        default { "INFO" }
+    }
+
+    $logPayload = [ordered]@{
+        operation = $Operation
+        stage = $Stage
+        status = $Status
+    }
+    if ($Data) {
+        foreach ($key in $Data.Keys) {
+            $logPayload[$key] = $Data[$key]
+        }
+    }
+
+    Write-DeployLog -Level $level -Message $Message -Data $logPayload
+}
+
+function Write-DeployOpsState {
+    param(
+        [Parameter(Mandatory = $true)]
+        [object]$Paths,
+        [Parameter(Mandatory = $true)]
+        [string]$Operation,
+        [Parameter(Mandatory = $true)]
+        [string]$Stage,
+        [Parameter(Mandatory = $true)]
+        [string]$Status,
+        [string]$Message,
+        [hashtable]$Data
+    )
+
+    $state = [ordered]@{
+        schema = "html-js-gaming.website-repo-deploy-ops-state"
+        version = 1
+        updatedUtc = [DateTime]::UtcNow.ToString("o")
+        operation = $Operation
+        stage = $Stage
+        status = $Status
+        message = $Message
+        stagingRoot = $Paths.stagingRoot
+        data = if ($Data) { $Data } else { [ordered]@{} }
+    }
+
+    Write-JsonFile -Value $state -Path $Paths.opsStatePath
+}
+
+function Get-WebsiteDeploymentVerificationResult {
+    param(
+        [Parameter(Mandatory = $true)]
+        [object]$Paths,
+        [string[]]$ExpectedIncludePaths
+    )
+
+    $checks = New-Object System.Collections.ArrayList
+
+    $siteRootExists = Test-Path -LiteralPath $Paths.siteRoot
+    [void]$checks.Add([pscustomobject]@{
+            name = "siteRootExists"
+            passed = $siteRootExists
+            details = if ($siteRootExists) { "Site root exists." } else { "Site root is missing: $($Paths.siteRoot)" }
+        })
+
+    $dockerReady = $true
+    $dockerDetails = "Docker deployment artifacts validated."
+    try {
+        Assert-DockerArtifactReadiness -Paths $Paths
+    }
+    catch {
+        $dockerReady = $false
+        $dockerDetails = $_.Exception.Message
+    }
+    [void]$checks.Add([pscustomobject]@{
+            name = "dockerArtifactsReady"
+            passed = $dockerReady
+            details = $dockerDetails
+        })
+
+    $normalizedExpected = Normalize-IncludePaths -IncludePaths $ExpectedIncludePaths
+    foreach ($entry in $normalizedExpected) {
+        $targetPath = [System.IO.Path]::GetFullPath((Join-Path $Paths.siteRoot $entry))
+        $exists = Test-Path -LiteralPath $targetPath
+        [void]$checks.Add([pscustomobject]@{
+                name = "includePathExists:$entry"
+                passed = $exists
+                details = if ($exists) { "Found expected staged entry." } else { "Missing expected staged entry: $targetPath" }
+            })
+    }
+
+    $failedChecks = @($checks | Where-Object { -not $_.passed })
+    return [pscustomobject]@{
+        schema = "html-js-gaming.website-repo-deploy-verify-report"
+        version = 1
+        verifiedUtc = [DateTime]::UtcNow.ToString("o")
+        stagingRoot = $Paths.stagingRoot
+        siteRoot = $Paths.siteRoot
+        expectedIncludePaths = $normalizedExpected
+        checks = @($checks)
+        passed = ($failedChecks.Count -eq 0)
+        failedCheckCount = $failedChecks.Count
     }
 }
 

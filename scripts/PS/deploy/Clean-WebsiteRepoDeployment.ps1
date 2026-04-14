@@ -27,7 +27,7 @@ if (Test-Path -LiteralPath $paths.siteRoot) {
     $targets.Add($paths.siteRoot)
 }
 if ($config.removeMetadata) {
-    foreach ($metadataPath in @($paths.planPath, $paths.updateReportPath, $paths.dockerfilePath, $paths.composePath, $paths.dockerIgnorePath)) {
+    foreach ($metadataPath in @($paths.planPath, $paths.updateReportPath, $paths.verifyReportPath, $paths.opsLogPath, $paths.opsStatePath, $paths.dockerfilePath, $paths.composePath, $paths.dockerIgnorePath)) {
         if (Test-Path -LiteralPath $metadataPath) {
             $targets.Add($metadataPath)
         }
@@ -58,6 +58,14 @@ if ($executionMode.isDryRun) {
 }
 
 Assert-ExplicitDestructiveConfirmation -IsDryRun:$executionMode.isDryRun -ConfirmDestructive:$ConfirmDestructive.IsPresent -OperationName "Clean-WebsiteRepoDeployment delete" -TargetCount $targets.Count
+Write-DeployOpsState -Paths $paths -Operation "clean" -Stage "cleanup-artifacts" -Status "running" -Message "Cleaning deployment artifacts." -Data @{
+    targetCount = $targets.Count
+    removeMetadata = $config.removeMetadata
+}
+Write-DeployOpsEvent -Paths $paths -Operation "clean" -Stage "cleanup-artifacts" -Status "start" -Message "Starting deployment artifact cleanup." -Data @{
+    targetCount = $targets.Count
+    removeMetadata = $config.removeMetadata
+}
 
 foreach ($target in $targets) {
     if (-not (Test-PathWithinRoot -Path $target -RootPath $paths.stagingRoot)) {
@@ -67,6 +75,17 @@ foreach ($target in $targets) {
 
 foreach ($target in $targets) {
     Remove-Item -LiteralPath $target -Recurse -Force
+}
+
+if (-not $config.removeMetadata) {
+    Write-DeployOpsState -Paths $paths -Operation "clean" -Stage "cleanup-artifacts" -Status "success" -Message "Deployment artifacts cleaned." -Data @{
+        targetCount = $targets.Count
+        removeMetadata = $config.removeMetadata
+    }
+    Write-DeployOpsEvent -Paths $paths -Operation "clean" -Stage "cleanup-artifacts" -Status "success" -Message "Deployment artifacts cleaned." -Data @{
+        targetCount = $targets.Count
+        removeMetadata = $config.removeMetadata
+    }
 }
 
 Write-DeployLog -Level "SUCCESS" -Message "Cleaned website deployment artifacts." -Data @{

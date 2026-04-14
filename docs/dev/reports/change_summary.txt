@@ -1,1 +1,32 @@
-Adds release flow
+BUILD_PR_LEVEL_09_31_DEPLOY_MONITORING_AND_OPERATIONS
+
+Scope:
+- Implemented a deploy monitoring/ops layer under `scripts/PS/deploy/`.
+- Added post-deploy verification checks and standardized operator-facing messaging.
+- Defined practical rollback/abort behavior in update flow.
+
+Implemented:
+- `WebsiteRepoDeploymentCommon.ps1`
+  - Added ops artifacts to deployment paths:
+    - `meta/website-deploy-last-verify.json`
+    - `meta/website-deploy-ops-log.jsonl`
+    - `meta/website-deploy-ops-state.json`
+  - Added reusable ops helpers:
+    - `Write-DeployOpsEvent`
+    - `Write-DeployOpsState`
+    - `Get-WebsiteDeploymentVerificationResult`
+- `Prep-WebsiteRepoDeployment.ps1`
+  - Added start/success ops state/event writes around staging preparation.
+- `Update-WebsiteRepoDeployment.ps1`
+  - Added post-deploy verification stage after apply.
+  - Emits verification report JSON.
+  - Aborts on verification failure with explicit operator guidance.
+  - Supports practical rollback behavior with `-RollbackOnVerificationFailure`.
+  - Enforces rollback safety by requiring `-ConfirmDestructive` when rollback is requested.
+- `Clean-WebsiteRepoDeployment.ps1`
+  - Includes new ops/verify artifacts in metadata cleanup path.
+  - Adds cleanup stage ops state/event writes.
+
+Outcome:
+- Deploy scripts now expose a consistent operational trail (state + event log + verify report),
+  with standardized success/failure messaging and practical rollback/abort expectations.
