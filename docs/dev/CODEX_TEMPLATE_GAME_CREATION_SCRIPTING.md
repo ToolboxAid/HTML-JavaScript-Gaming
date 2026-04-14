@@ -17,7 +17,7 @@ Use `scripts/PS/New-Game-from-Template.ps1` to create a new game scaffold from `
   - `tilemaps`
   - `parallax`
   - `vectors`
-- `games/<game>/assets/<game>.assets.json` (manifest scaffold)
+- `games/<game>/assets/tools.manifest.json` (manifest scaffold)
 - `games/<game>/config/<game>.project.json` (tool project scaffold)
 
 ## Guardrails

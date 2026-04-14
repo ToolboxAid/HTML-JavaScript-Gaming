@@ -1,1 +1,1 @@
-Identified and corrected shared pipeline coupling issue
+Deduplicated assets + added bezel roadmap

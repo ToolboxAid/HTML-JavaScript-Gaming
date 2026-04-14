@@ -520,7 +520,7 @@
 - [ ] 3D Movement Sample
 - [ ] Basic Collision Sample
 
-### Core Sample Track (1601Ã¢â‚¬â€œ1608)
+### Core Sample Track (1601 - 1608)
 - [ ] 1601 - 3D Cube Explorer
 - [ ] 1602 - 3D Maze Runner
 - [ ] 1603 - First Person Walkthrough
@@ -631,3 +631,9 @@
 - [ ] avoid broad repo-wide cleanup passes until the active lanes above are materially further along
 
 - [x] relocate active template surfaces to `tools/templates/` and remove the empty root `templates/` directory
+
+# MASTER ROADMAP HIGH LEVEL (status updates only)
+
+[.] asset naming normalization
+[.] manifest discovery
+[ ] fullscreen bezel overlay system (low priority, before next game)

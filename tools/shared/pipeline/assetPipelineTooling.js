@@ -216,7 +216,7 @@ export function runAssetPipelineTooling(options = {}) {
   const coordinator = buildCoordinator(gameId, normalizedRecords);
   const gameAssetManifest = coordinateGameAssetManifest({
     gameId,
-    coordinatorPath: `games/${gameId}/assets/${gameId}.assets.json`,
+    coordinatorPath: `games/${gameId}/assets/tools.manifest.json`,
     records: normalizedRecords,
     existingManifest: options.existingManifest
   });

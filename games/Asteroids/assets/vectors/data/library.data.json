@@ -6,27 +6,27 @@
   "vectors": [
     {
       "id": "vector.asteroids.ship",
-      "runtimeSource": "games/Asteroids/assets/vectors/asteroids-ship.vector.json",
+      "runtimeSource": "games/Asteroids/assets/vectors/ship.json",
       "label": "Ship"
     },
     {
       "id": "vector.asteroids.asteroid.large",
-      "runtimeSource": "games/Asteroids/assets/vectors/asteroids-asteroid-large.vector.json",
+      "runtimeSource": "games/Asteroids/assets/vectors/asteroid-large.json",
       "label": "Asteroid Large"
     },
     {
       "id": "vector.asteroids.asteroid.medium",
-      "runtimeSource": "games/Asteroids/assets/vectors/asteroids-asteroid-medium.vector.json",
+      "runtimeSource": "games/Asteroids/assets/vectors/asteroid-medium.json",
       "label": "Asteroid Medium"
     },
     {
       "id": "vector.asteroids.asteroid.small",
-      "runtimeSource": "games/Asteroids/assets/vectors/asteroids-asteroid-small.vector.json",
+      "runtimeSource": "games/Asteroids/assets/vectors/asteroid-small.json",
       "label": "Asteroid Small"
     },
     {
       "id": "vector.asteroids.ui.title",
-      "runtimeSource": "games/Asteroids/assets/vectors/asteroids-title.vector.json",
+      "runtimeSource": "games/Asteroids/assets/vectors/title.json",
       "label": "Title"
     }
   ]

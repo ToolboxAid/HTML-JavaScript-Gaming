@@ -1,3 +1,4 @@
-- No game-specific naming in shared loader
-- API parameterized
-- Tests updated
+- assets.json removed
+- single manifest
+- loaders pass
+- roadmap updated

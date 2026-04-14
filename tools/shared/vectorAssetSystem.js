@@ -27,21 +27,21 @@ export function createVectorAssetSystemFixture() {
   const shipVector = normalizeSvgToVectorAsset({
     id: "vector.asteroids.ship",
     name: "Asteroids Ship",
-    path: "games/Asteroids/assets/vectors/asteroids-ship.vector.json",
+    path: "games/Asteroids/assets/vectors/ship.json",
     paletteId: "palette.asteroids-hud",
     svgText: ASTEROIDS_SHIP_SVG
   });
   const asteroidLargeVector = normalizeSvgToVectorAsset({
     id: "vector.asteroids.asteroid.large",
     name: "Asteroids Large Rock",
-    path: "games/Asteroids/assets/vectors/asteroids-asteroid-large.vector.json",
+    path: "games/Asteroids/assets/vectors/asteroid-large.json",
     paletteId: "palette.asteroids-hud",
     svgText: ASTEROIDS_LARGE_SVG
   });
   const titleVector = normalizeSvgToVectorAsset({
     id: "vector.asteroids.ui.title",
     name: "Asteroids Title Vector",
-    path: "games/Asteroids/assets/vectors/asteroids-title.vector.json",
+    path: "games/Asteroids/assets/vectors/title.json",
     paletteId: "palette.asteroids-hud",
     svgText: ASTEROIDS_TITLE_SVG
   });

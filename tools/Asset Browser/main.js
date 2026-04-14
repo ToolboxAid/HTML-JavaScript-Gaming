@@ -20,19 +20,19 @@ const ASSET_CATALOG = Object.freeze([
     id: "asset-vector-player",
     label: "Asteroids Ship Vector",
     category: "Vector Assets",
-    path: "../../games/Asteroids/assets/vectors/asteroids-ship.vector.json"
+    path: "../../games/Asteroids/assets/vectors/ship.json"
   },
   {
     id: "asset-vector-title",
     label: "Asteroids Title Vector",
     category: "Vector Assets",
-    path: "../../games/Asteroids/assets/vectors/asteroids-title.vector.json"
+    path: "../../games/Asteroids/assets/vectors/title.json"
   },
   {
     id: "asset-sprite-demo",
     label: "Asteroids Sprite Project",
     category: "Sprite Projects",
-    path: "../../games/Asteroids/assets/sprites/asteroids-demo.sprite.json"
+    path: "../../games/Asteroids/assets/sprites/demo.json"
   },
   {
     id: "asset-tilemap-template",

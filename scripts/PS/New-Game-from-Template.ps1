@@ -200,7 +200,7 @@ foreach ($domain in $domains) {
     Ensure-File -Path (Join-Path $toolDataPath ".gitkeep")
 }
 
-$manifestPath = Join-Path $assetsRoot "$normalizedGameId.assets.json"
+$manifestPath = Join-Path $assetsRoot "tools.manifest.json"
 $manifest = [ordered]@{
     schema = "html-js-gaming.game-asset-manifest"
     version = 1

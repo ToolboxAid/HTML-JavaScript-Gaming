@@ -3,7 +3,7 @@
   "version": 1,
   "id": "tooldata.asteroids.sprites.demo",
   "name": "Asteroids Demo Sprite Project",
-  "runtimeSource": "games/Asteroids/assets/sprites/asteroids-demo.sprite.json",
+  "runtimeSource": "games/Asteroids/assets/sprites/demo.json",
   "frames": [
     { "id": "player-ship", "label": "Player Ship" },
     { "id": "player-bullet", "label": "Player Bullet" },

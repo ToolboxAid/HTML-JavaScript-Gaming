@@ -1,2 +1,2 @@
-Normalize shared manifest loader to remove Asteroids-specific coupling
-BUILD_PR_LEVEL_10_10_SHARED_MANIFEST_LOADER_NORMALIZATION
+Remove duplicate asset definitions and add bezel roadmap entry
+BUILD_PR_LEVEL_10_13_ASSET_DEDUP_AND_BEZEL_ROADMAP

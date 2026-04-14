@@ -3,7 +3,7 @@
   "type": "vector",
   "source": {
     "kind": "svg",
-    "path": "games/Asteroids/assets/vectors/asteroids-asteroid-medium.vector.json"
+    "path": "games/Asteroids/assets/vectors/asteroid-medium.json"
   },
   "geometry": {
     "viewBox": "-28 -28 56 56",

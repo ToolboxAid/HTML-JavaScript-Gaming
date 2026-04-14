@@ -3,7 +3,7 @@
   "version": 1,
   "id": "tooldata.asteroids.parallax.overlay",
   "name": "Asteroids Overlay Parallax Layer",
-  "runtimeSource": "games/Asteroids/assets/parallax/asteroids-overlay.parallax.json",
+  "runtimeSource": "games/Asteroids/assets/parallax/overlay.json",
   "role": "gameplay-overlay",
   "imageId": "image.asteroids-bezel",
   "enabled": true

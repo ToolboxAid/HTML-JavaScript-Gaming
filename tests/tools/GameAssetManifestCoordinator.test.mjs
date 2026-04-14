@@ -42,7 +42,7 @@ export async function run() {
   });
 
   assert.equal(coordinated.status, "ready");
-  assert.equal(coordinated.filePath, "games/asteroids/assets/asteroids.assets.json");
+  assert.equal(coordinated.filePath, "games/asteroids/assets/tools.manifest.json");
   assert.equal(coordinated.summary.totalAssets, 3);
   assert.deepEqual(
     coordinated.manifest.domains.sprites.map((entry) => entry.assetId),

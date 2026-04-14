@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import asteroidsManifest from "../../games/Asteroids/assets/asteroids.assets.json" with { type: "json" };
+import asteroidsManifest from "../../games/Asteroids/assets/tools.manifest.json" with { type: "json" };
 import {
   discoverRuntimeAssetSourcesFromManifest,
   validateGameAssetManifestStructure
@@ -34,7 +34,7 @@ export async function run() {
       vectors: [
         {
           ...asteroidsManifest.domains.vectors[0],
-          runtimePath: "games/Asteroids/assets/vectors/data/asteroids-ship.vector.json"
+          runtimePath: "games/Asteroids/assets/vectors/data/ship.json"
         }
       ]
     }

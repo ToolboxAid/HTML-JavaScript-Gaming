@@ -3,7 +3,7 @@
   "version": 1,
   "id": "tooldata.asteroids.tilemaps.stage",
   "name": "Asteroids Demo Stage Tilemap Project",
-  "runtimeSource": "games/Asteroids/assets/tilemaps/asteroids-stage.tilemap.json",
+  "runtimeSource": "games/Asteroids/assets/tilemaps/stage.json",
   "screens": [
     { "id": "title", "order": 1 },
     { "id": "play", "order": 2 },

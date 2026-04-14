@@ -61,7 +61,7 @@ export async function run() {
     const validAsset = createAssetHandoff({
       assetId: "asset-vector-player",
       assetType: "vector",
-      sourcePath: "../../games/Asteroids/assets/vectors/asteroids-ship.vector.json",
+      sourcePath: "../../games/Asteroids/assets/vectors/ship.json",
       displayName: "Asteroids Ship Vector",
       metadata: { category: "Vector Assets" },
       sourceToolId: "tile-map-editor"
@@ -70,7 +70,7 @@ export async function run() {
     const storedAsset = readSharedAssetHandoff();
     assert.equal(storedAsset.assetId, "asset-vector-player");
     assert.equal(storedAsset.assetType, "vector");
-    assert.equal(storedAsset.sourcePath, "../../games/Asteroids/assets/vectors/asteroids-ship.vector.json");
+    assert.equal(storedAsset.sourcePath, "../../games/Asteroids/assets/vectors/ship.json");
     assert.equal(storedAsset.displayName, "Asteroids Ship Vector");
     assert.equal(storedAsset.sourceToolId, "tile-map-editor");
     assert.equal(typeof storedAsset.selectedAt, "string");

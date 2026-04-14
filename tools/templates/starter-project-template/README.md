@@ -16,7 +16,7 @@ This template is a single reusable project manifest for the shared tools project
 - vector: `templates/vector-native-arcade/assets/vectors/template-player.vector.json`
 - tilemap: `templates/vector-native-arcade/assets/tilemaps/template-arena.tilemap.json`
 - parallax: `templates/vector-native-arcade/assets/parallax/template-backdrop.parallax.json`
-- sprite: `games/Asteroids/assets/sprites/asteroids-demo.sprite.json`
+- sprite: `games/Asteroids/assets/sprites/demo.json`
 - palette: `templates/vector-native-arcade/assets/palettes/vector-native-primary.palette.json`
 
 ## Notes
