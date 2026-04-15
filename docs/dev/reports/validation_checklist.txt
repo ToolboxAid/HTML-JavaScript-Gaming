@@ -1,8 +1,7 @@
-- remaining number helper residue addressed
-- remaining string helper residue addressed
-- remaining id helper residue addressed
-- only exact-cluster normalization used
+- event tracing addressed
+- PLAN_PR_DEBUG_SURFACES_NETWORK_SUPPORT status reconciled truthfully
+- BUILD_PR_DEBUG_SURFACES_NETWORK_SUPPORT status reconciled truthfully
 - roadmap updated by status markers only
-- final checkpoint item either marked complete or exact blockers reported
+- Track G either fully complete or exact blockers reported
 - output ZIP created at:
-  <project folder>/tmp/BUILD_PR_LEVEL_03_EXACT_CLUSTER_NUMBER_STRING_ID_CLOSEOUT.zip
+  <project folder>/tmp/BUILD_PR_TRACK_G_NETWORK_MULTIPLAYER_DEBUG_CLOSEOUT.zip

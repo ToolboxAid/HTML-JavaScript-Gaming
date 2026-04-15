@@ -2,30 +2,26 @@ MODEL: GPT-5.4
 REASONING: high
 
 COMMAND:
-Create `BUILD_PR_LEVEL_03_EXACT_CLUSTER_NUMBER_STRING_ID_CLOSEOUT`.
+Create `BUILD_PR_TRACK_G_NETWORK_MULTIPLAYER_DEBUG_CLOSEOUT`.
 
 Goal:
-Close the final remaining Shared Foundation checkpoint item:
-- remaining number/string/id helpers still need exact-cluster normalization
+Close the remaining Track G residue:
+- Event tracing
+- PLAN_PR_DEBUG_SURFACES_NETWORK_SUPPORT
+- BUILD_PR_DEBUG_SURFACES_NETWORK_SUPPORT
 
 Required work:
-1. Find the remaining duplicated or fragmented helper clusters in:
-   - number
-   - string
-   - id
-2. Normalize them using exact-cluster extraction only.
-3. Move them into the correct `src/shared` homes.
-4. Update consumers as needed.
-5. Do NOT perform a broad repo-wide cleanup pass.
-6. Do NOT do blind dedupe.
-7. Update roadmap status markers only.
-8. Report whether the item can now be truthfully marked complete.
+1. Inspect current repo truth for the Track G lane.
+2. Complete/confirm event tracing.
+3. Reconcile PLAN/BUILD/APPLY status for DEBUG_SURFACES_NETWORK_SUPPORT against actual artifacts and repo history.
+4. Update roadmap status markers only.
+5. Report whether Track G is now fully complete.
 
 Final packaging step is REQUIRED:
 - package ALL changed files into this exact repo-structured ZIP:
-  `<project folder>/tmp/BUILD_PR_LEVEL_03_EXACT_CLUSTER_NUMBER_STRING_ID_CLOSEOUT.zip`
+  `<project folder>/tmp/BUILD_PR_TRACK_G_NETWORK_MULTIPLAYER_DEBUG_CLOSEOUT.zip`
 
 Hard rules:
-- exact-cluster work only
+- residue-only closeout
 - no unrelated repo changes
 - no missing ZIP

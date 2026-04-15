@@ -281,9 +281,9 @@
 - [x] Latency / RTT panel
 - [x] Replication state viewer
 - [x] Client/server divergence inspector
-- [.] Event tracing
-- [.] PLAN_PR_DEBUG_SURFACES_NETWORK_SUPPORT
-- [ ] BUILD_PR_DEBUG_SURFACES_NETWORK_SUPPORT
+- [x] Event tracing
+- [x] PLAN_PR_DEBUG_SURFACES_NETWORK_SUPPORT
+- [x] BUILD_PR_DEBUG_SURFACES_NETWORK_SUPPORT
 - [x] APPLY_PR_DEBUG_SURFACES_NETWORK_SUPPORT
 
 ### Track H - 3D Debug Support
