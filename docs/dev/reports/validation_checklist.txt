@@ -1,4 +1,10 @@
-- end-to-end validated
-- remote stable
-- no regressions
-- roadmap rule enforced
+- transport/session lifecycle validated
+- authoritative server determinism validated
+- client replication/application validated
+- playable multiplayer slice validated
+- hosting/runtime path validated
+- remote candidate validated
+- focused 2D regression checks passed
+- execution-backed evidence collected
+- roadmap updated by marker only
+- completion gate advanced only if all checks passed

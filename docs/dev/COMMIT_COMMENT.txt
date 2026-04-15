@@ -1,1 +1,1 @@
-define real network completion gate and validation — PLAN_PR_LEVEL_12_7_REAL_NETWORK_COMPLETION_GATE
+execute full real-network completion gate validation and close marker only on full pass — BUILD_PR_LEVEL_12_7_REAL_NETWORK_COMPLETION_GATE
