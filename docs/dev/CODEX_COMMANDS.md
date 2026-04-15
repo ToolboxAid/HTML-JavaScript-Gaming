@@ -2,8 +2,9 @@ MODEL: GPT-5.3-codex
 REASONING: high
 
 COMMAND:
-Implement basic 3D movement + collision:
-- add velocity-based position updates
-- implement simple collision bounds (AABB or sphere)
-- isolate from 2D systems
-- validate no regression across samples
+Implement minimal 3D physics + sample:
+- add basic physics update loop
+- integrate with movement system
+- create sample 1601 (3D cube explorer)
+- ensure sample loads via samples index
+- validate no regressions across all samples

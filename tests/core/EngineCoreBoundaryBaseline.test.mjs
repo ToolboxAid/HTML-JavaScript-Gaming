@@ -35,7 +35,9 @@ export function run() {
   assert.equal(typeof physics.stepSceneBodies3D, 'function');
   assert.equal(typeof audio.AudioService, 'function');
   assert.equal(typeof systems.moveEntities, 'function');
+  assert.equal(typeof systems.moveEntities3D, 'function');
   assert.equal(typeof systems.stepArcadeBody, 'function');
+  assert.equal(typeof systems.stepWorldPhysics3D, 'function');
 
   // Combined service cluster contracts: timing/frame, event routing, camera.
   const frameClock = new core.FrameClock({ now: () => 100, maxDeltaMs: 100 });
@@ -137,6 +139,66 @@ export function run() {
   assert.equal(stepSummary.movedBodies, 1);
   assert.equal(stepSummary.resolvedCollisions, 0);
   assert.equal(scene3D.bodies3D[0].x, 1);
+
+  const { world: world3D, movingEntity, blockingEntity } = worldFor3DSystem();
+  const before3D = world3D.getComponent(movingEntity, 'transform3D');
+  assert.equal(before3D.x, 0);
+  assert.equal(before3D.z, 8);
+  const physics3DSummary = systems.stepWorldPhysics3D(world3D, 1);
+  const after3D = world3D.getComponent(movingEntity, 'transform3D');
+  const velocity3D = world3D.getComponent(movingEntity, 'velocity3D');
+  assert.equal(physics3DSummary.movedEntities, 1);
+  assert.equal(physics3DSummary.collisionCount >= 1, true);
+  assert.equal(after3D.x >= 0, true);
+  assert.equal(after3D.x <= 1.6, true);
+  assert.equal(velocity3D.x, 0);
+  assert.equal(world3D.getComponent(blockingEntity, 'transform3D').x, 2.5);
+}
+
+function worldFor3DSystem() {
+  const world = {
+    entities: new Set([1, 2]),
+    components: new Map([
+      ['transform3D', new Map([
+        [1, { x: 0, y: 0, z: 8, previousX: 0, previousY: 0, previousZ: 8 }],
+        [2, { x: 2.5, y: 0, z: 8, previousX: 2.5, previousY: 0, previousZ: 8 }],
+      ])],
+      ['size3D', new Map([
+        [1, { width: 1.6, height: 1.6, depth: 1.6 }],
+        [2, { width: 1.6, height: 1.6, depth: 1.6 }],
+      ])],
+      ['velocity3D', new Map([
+        [1, { x: 2, y: 0, z: 0 }],
+      ])],
+      ['collider3D', new Map([
+        [1, { enabled: true, solid: false }],
+      ])],
+      ['solid3D', new Map([
+        [2, { enabled: true }],
+      ])],
+    ]),
+    getEntitiesWith(...componentNames) {
+      return Array.from(this.entities).filter((entityId) =>
+        componentNames.every((name) => this.components.get(name)?.has(entityId))
+      );
+    },
+    requireComponent(entityId, name) {
+      const component = this.components.get(name)?.get(entityId);
+      if (!component) {
+        throw new Error(`Missing component ${name} on entity ${entityId}`);
+      }
+      return component;
+    },
+    getComponent(entityId, name) {
+      return this.components.get(name)?.get(entityId);
+    },
+  };
+
+  return {
+    world,
+    movingEntity: 1,
+    blockingEntity: 2,
+  };
 }
 
 if (import.meta.url === `file://${process.argv[1]}`) {
