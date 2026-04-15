@@ -1,7 +1,1 @@
-- event tracing addressed
-- PLAN_PR_DEBUG_SURFACES_NETWORK_SUPPORT status reconciled truthfully
-- BUILD_PR_DEBUG_SURFACES_NETWORK_SUPPORT status reconciled truthfully
-- roadmap updated by status markers only
-- Track G either fully complete or exact blockers reported
-- output ZIP created at:
-  <project folder>/tmp/BUILD_PR_TRACK_G_NETWORK_MULTIPLAYER_DEBUG_CLOSEOUT.zip
+Item moved, wording preserved, checkbox removed

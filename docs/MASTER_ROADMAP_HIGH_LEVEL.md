@@ -5,6 +5,9 @@
 - [.] in progress
 - [ ] planned
 
+## Rules
+- shared math is now a real active layer and should continue by exact-cluster extraction only
+
 ## Conservative Rebaseline (2026-04-12)
 - status updates in this revision are conservative and execution-backed
 - recent tool-host, asset-pipeline, debug-inspector, and launch-smoke lanes are reflected without broad scope expansion
@@ -199,7 +202,6 @@
 - [x] duplicated `asNumber` consumers migrated to shared math
 - [x] Asteroids numeric sanitizers promoted into shared math
 - [x] duplicated `asObject` / `asArray` consumers moved to shared utils
-- [.] shared math is now a real active layer and should continue by exact-cluster extraction only
 - [x] remaining number/string/id helpers still need exact-cluster normalization
 
 ---

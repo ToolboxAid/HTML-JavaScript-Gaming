@@ -1,2 +1,1 @@
-- Added residue closeout PR for Track G - Network / Multiplayer Debug
-- Focused on event tracing and reconciling missing PLAN/BUILD status truth
+Promoted cleanup constraint to rule
