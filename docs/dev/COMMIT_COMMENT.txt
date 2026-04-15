@@ -1,1 +1,1 @@
-PLAN_PR_LEVEL_12_1_REAL_NETWORK_FOUNDATION: establish transport/session contracts and handshake model for real-network lane
+BUILD_PR_LEVEL_12_1_REAL_NETWORK_FOUNDATION: implement transport/session contracts and handshake simulation

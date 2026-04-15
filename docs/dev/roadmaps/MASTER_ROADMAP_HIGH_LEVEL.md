@@ -658,3 +658,12 @@
 # MASTER ROADMAP HIGH LEVEL (status updates only)
 
 [x] fullscreen bezel overlay system (low priority, before next game)
+
+
+## 17. Finalize engine
+[ ] Verify all samples/ and games/ must use engine and not coded locally, if local, update to use engine
+[ ] docs/organization, classify all ./docs/ into buckets
+[ ] arrage docs into a classification bucket
+[ ] any doc that is a move/rename/etc. should be deleted (verify content is in the correct doc before deleting)
+[ ] consolidate PR for easier, one stop, review, no need to look as 6 different docs for one capability (a good example of this is bezel/background), all people care about is what it does.
+[ ] some games are actually samples/demo, identify and recomment a phase-xx to move to.

@@ -1,4 +1,4 @@
-- Transport abstraction defined
-- Session lifecycle defined
-- Handshake flow defined
-- No engine boundary violations
+- Contracts implemented
+- Session lifecycle working
+- Handshake simulation working
+- No regressions
