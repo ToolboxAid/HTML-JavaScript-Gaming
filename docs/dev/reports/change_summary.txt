@@ -1,1 +1,1 @@
-1607 adds playable loop
+1608 now has a readable dungeon loop with movement, blocking collision, and interaction.

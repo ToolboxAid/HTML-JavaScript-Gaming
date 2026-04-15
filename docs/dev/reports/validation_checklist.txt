@@ -1,4 +1,7 @@
 
-[ ] movement
-[ ] shooting
-[ ] hit
+[ ] movement works
+[ ] walls block
+[ ] interaction visible
+[ ] loop understandable
+[ ] sanity pass
+[ ] smoke pass

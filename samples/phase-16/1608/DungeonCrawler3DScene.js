@@ -19,6 +19,7 @@ export default class DungeonCrawler3DScene extends Scene {
     super();
     this.world = new World();
     this.moveSpeed = 6.2;
+    this.playerSpawn = { x: -8.2, y: 0, z: 4.2 };
     this.viewport = {
       x: 40,
       y: 170,
@@ -52,16 +53,23 @@ export default class DungeonCrawler3DScene extends Scene {
     };
     this.relicCollected = false;
     this.escaped = false;
+    this.runState = 'seek-relic';
+    this.runElapsedSeconds = 0;
+    this.lastCompletionSeconds = 0;
+    this.runCount = 1;
+    this.lastResetReason = 'spawn';
+    this.interactionFlashSeconds = 0;
+    this.resetLatch = false;
     this.lastPhysicsSummary = { movedEntities: 0, collisionCount: 0 };
 
     this.playerId = this.world.createEntity();
     this.world.addComponent(this.playerId, 'transform3D', {
-      x: -8.2,
-      y: 0,
-      z: 4.2,
-      previousX: -8.2,
-      previousY: 0,
-      previousZ: 4.2,
+      x: this.playerSpawn.x,
+      y: this.playerSpawn.y,
+      z: this.playerSpawn.z,
+      previousX: this.playerSpawn.x,
+      previousY: this.playerSpawn.y,
+      previousZ: this.playerSpawn.z,
     });
     this.world.addComponent(this.playerId, 'size3D', { width: 1.0, height: 1.4, depth: 1.0 });
     this.world.addComponent(this.playerId, 'velocity3D', { x: 0, y: 0, z: 0 });
@@ -133,20 +141,63 @@ export default class DungeonCrawler3DScene extends Scene {
     });
   }
 
+  resetRun(reason = 'manual-reset') {
+    const player = this.world.requireComponent(this.playerId, 'transform3D');
+    const velocity = this.world.requireComponent(this.playerId, 'velocity3D');
+    player.x = this.playerSpawn.x;
+    player.y = this.playerSpawn.y;
+    player.z = this.playerSpawn.z;
+    player.previousX = this.playerSpawn.x;
+    player.previousY = this.playerSpawn.y;
+    player.previousZ = this.playerSpawn.z;
+    velocity.x = 0;
+    velocity.y = 0;
+    velocity.z = 0;
+
+    this.relicCollected = false;
+    this.escaped = false;
+    this.runState = 'seek-relic';
+    this.runElapsedSeconds = 0;
+    this.interactionFlashSeconds = 0;
+    this.lastResetReason = reason;
+    this.runCount += 1;
+
+    const gateSolid = this.world.requireComponent(this.gateId, 'solid3D');
+    gateSolid.enabled = true;
+    const gateRenderable = this.world.requireComponent(this.gateId, 'renderable3D');
+    gateRenderable.color = '#f87171';
+  }
+
   step3DPhysics(dt, engine) {
     const input = engine.input;
+    const resetPressed = input?.isDown('KeyR') === true;
+    if (resetPressed && !this.resetLatch) {
+      this.resetRun('manual-reset');
+    }
+    this.resetLatch = resetPressed;
+
+    this.interactionFlashSeconds = Math.max(0, this.interactionFlashSeconds - dt);
+
     const velocity = this.world.requireComponent(this.playerId, 'velocity3D');
-    const axisX = (input?.isDown('KeyD') ? 1 : 0) - (input?.isDown('KeyA') ? 1 : 0);
-    const axisZ = (input?.isDown('KeyW') ? 1 : 0) - (input?.isDown('KeyS') ? 1 : 0);
-    const length = Math.hypot(axisX, axisZ) || 1;
+    if (!this.escaped) {
+      const axisX = (input?.isDown('KeyD') ? 1 : 0) - (input?.isDown('KeyA') ? 1 : 0);
+      const axisZ = (input?.isDown('KeyW') ? 1 : 0) - (input?.isDown('KeyS') ? 1 : 0);
+      const length = Math.hypot(axisX, axisZ) || 1;
 
-    velocity.x = (axisX / length) * this.moveSpeed;
-    velocity.z = (axisZ / length) * this.moveSpeed;
-    velocity.y = 0;
+      velocity.x = (axisX / length) * this.moveSpeed;
+      velocity.z = (axisZ / length) * this.moveSpeed;
+      velocity.y = 0;
 
-    this.lastPhysicsSummary = stepWorldPhysics3D(this.world, dt, {
-      worldBounds: this.worldBounds,
-    });
+      this.lastPhysicsSummary = stepWorldPhysics3D(this.world, dt, {
+        worldBounds: this.worldBounds,
+      });
+      this.runElapsedSeconds += dt;
+    } else {
+      velocity.x = 0;
+      velocity.y = 0;
+      velocity.z = 0;
+      this.lastPhysicsSummary = { movedEntities: 0, collisionCount: 0 };
+    }
 
     const player = this.world.requireComponent(this.playerId, 'transform3D');
     const playerSize = this.world.requireComponent(this.playerId, 'size3D');
@@ -161,6 +212,8 @@ export default class DungeonCrawler3DScene extends Scene {
 
     if (!this.relicCollected && isAabbColliding3D(playerAabb, this.relic)) {
       this.relicCollected = true;
+      this.runState = 'escape';
+      this.interactionFlashSeconds = 1.1;
       const gateSolid = this.world.requireComponent(this.gateId, 'solid3D');
       gateSolid.enabled = false;
       const gateRenderable = this.world.requireComponent(this.gateId, 'renderable3D');
@@ -169,17 +222,27 @@ export default class DungeonCrawler3DScene extends Scene {
 
     if (this.relicCollected && isAabbColliding3D(playerAabb, this.exitGoal)) {
       this.escaped = true;
+      this.runState = 'complete';
+      this.lastCompletionSeconds = this.runElapsedSeconds;
+      this.interactionFlashSeconds = 1.6;
     }
 
     this.syncCamera();
   }
 
   render(renderer) {
+    const objectiveLine =
+      this.runState === 'seek-relic'
+        ? 'Objective: collect the relic to unlock the gate.'
+        : this.runState === 'escape'
+          ? 'Objective: pass the unlocked gate and reach the exit.'
+          : `Run complete in ${this.lastCompletionSeconds.toFixed(1)} s. Press R to restart.`;
+
     drawFrame(renderer, theme, [
       'Sample 1608 - 3D Dungeon Crawler',
-      'Explore rooms, collect the relic, and unlock the gate to escape.',
-      'Move: W A S D',
-      this.escaped ? 'Escape complete: dungeon cleared.' : 'Collect relic first, then reach the green exit marker.',
+      'Explore rooms, collect the relic, then escape through the unlocked route.',
+      'Move: W A S D | Restart run: R',
+      objectiveLine,
     ]);
 
     renderer.strokeRect(this.viewport.x, this.viewport.y, this.viewport.width, this.viewport.height, '#d8d5ff', 2);
@@ -226,24 +289,28 @@ export default class DungeonCrawler3DScene extends Scene {
       );
     }
 
-    drawWireBox(
-      renderer,
-      this.exitGoal,
-      { width: this.exitGoal.width, height: this.exitGoal.height, depth: this.exitGoal.depth },
-      cameraState,
-      projectionViewport,
-      '#4ade80',
-      2,
-    );
+    const exitColor = this.relicCollected ? '#4ade80' : '#475569';
+    drawWireBox(renderer, this.exitGoal, { width: this.exitGoal.width, height: this.exitGoal.height, depth: this.exitGoal.depth }, cameraState, projectionViewport, exitColor, 2);
 
     const player = this.world.requireComponent(this.playerId, 'transform3D');
-    drawPanel(renderer, 620, 34, 300, 126, 'Dungeon Runtime', [
+    const statusLine =
+      this.runState === 'seek-relic'
+        ? 'Seek relic'
+        : this.runState === 'escape'
+          ? 'Exit route open'
+          : 'Escaped';
+    const flashLine = this.interactionFlashSeconds > 0 ? 'Interaction: event pulse active' : 'Interaction: idle';
+
+    drawPanel(renderer, 620, 34, 300, 236, 'Dungeon Runtime', [
       `Explorer: x=${player.x.toFixed(2)} y=${player.y.toFixed(2)} z=${player.z.toFixed(2)}`,
+      `Run: ${this.runCount} | State: ${statusLine}`,
       `Relic: ${this.relicCollected ? 'collected' : 'missing'}`,
       `Gate: ${this.relicCollected ? 'unlocked' : 'locked'}`,
       `Escaped: ${this.escaped ? 'yes' : 'no'}`,
       `Resolved collisions: ${this.lastPhysicsSummary.collisionCount}`,
+      `Run time: ${this.runElapsedSeconds.toFixed(1)} s | Last clear: ${this.lastCompletionSeconds.toFixed(1)} s`,
+      flashLine,
+      `Last reset: ${this.lastResetReason}`,
     ]);
   }
 }
-
