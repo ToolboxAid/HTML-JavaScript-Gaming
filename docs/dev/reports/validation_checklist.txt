@@ -1,13 +1,14 @@
-- Latency / RTT panel addressed
-- Replication state viewer addressed
-- network.help addressed
-- network.replication addressed
-- network.sample.* addressed
-- sample-backed provider/panel/operator validations addressed
-- debug-only gating validation addressed
-- promotion recommendation addressed
-- server dashboard shell/views addressed
+- TileMapEditor addressed
+- ParallaxEditor addressed
+- VectorMapEditor addressed
+- VectorAssetStudio addressed
+- PhysicsSandboxTool addressed
+- StateInspectorTool addressed
+- ReplayVisualizerTool addressed
+- PerformanceProfilerTool addressed
+- AssetPipelineTool addressed
+- Tile/Model Converter Tool addressed
 - any residue is explicit and minimal
 - roadmap updated by status markers only
 - output ZIP created at:
-  <project folder>/tmp/BUILD_PR_LEVEL_07_NETWORK_DEBUG_AND_SERVER_DASHBOARD_COMBINED_CLOSEOUT.zip
+  <project folder>/tmp/BUILD_PR_LEVEL_09_TOOLS_NORMALIZATION_AND_REQUIRED_TOOLS_COMBINED_PASS.zip

@@ -2,47 +2,34 @@ MODEL: GPT-5.4
 REASONING: high
 
 COMMAND:
-Create `BUILD_PR_LEVEL_07_NETWORK_DEBUG_AND_SERVER_DASHBOARD_COMBINED_CLOSEOUT` as one combined network-debug and server-dashboard closeout PR.
+Create `BUILD_PR_LEVEL_09_TOOLS_NORMALIZATION_AND_REQUIRED_TOOLS_COMBINED_PASS` as one combined Tools-lane PR.
 
 Goal:
-Finish as much of the remaining network debug / readiness / dashboard lane as truthfully possible in one pass.
+Finish as much of the remaining tool normalization and dependency-driven required tool work as truthfully possible in one pass.
 
 Target items to close in this PR if supported:
 
-Track Q:
-- Latency / RTT panel
-- Replication state viewer
+Existing Tools
+- TileMapEditor normalized
+- ParallaxEditor normalized
+- VectorMapEditor normalized
+- VectorAssetStudio normalized
 
-Track R:
-- network.help
-- network.replication
-- network.sample.*
-
-Track S:
-- Sample-backed provider validation
-- Sample-backed panel validation
-- Operator command validation
-- Debug-only gating validation
-- Promotion recommendation
-
-Track T:
-- Server dashboard shell
-- Player statistics view
-- Latency view
-- RX bytes view
-- TX bytes view
-- Connection/session counts
-- Per-player status rows
-- Refresh/update strategy
-- Debug-only access rules
+New Required Tools
+- PhysicsSandboxTool
+- StateInspectorTool
+- ReplayVisualizerTool
+- PerformanceProfilerTool
+- AssetPipelineTool
+- Tile/Model Converter Tool
 
 Required work:
-1. Treat the remaining open items as one coherent network-observability lane.
-2. Complete the remaining debug panels/commands.
-3. Bundle the readiness-to-promote validations together.
-4. Build the dashboard as one shell-plus-views slice.
-5. Reuse existing connection/divergence/trace/status/latency work instead of redoing it.
-6. Close as many remaining items as truthfully possible in this one PR.
+1. Treat the four existing tools as one normalization cluster.
+2. Normalize their shared shell, placement, boundaries, and data-contract consistency.
+3. Treat the required tools as one dependency-driven stabilization cluster.
+4. Close as many partial or open items as truthfully possible without speculative overbuilding.
+5. Reuse existing repo patterns and tool infrastructure instead of creating disconnected one-offs.
+6. Close as many remaining tool items as truthfully possible in this one PR.
 7. If anything remains open:
    - keep the residue very small
    - report exact blockers
@@ -54,7 +41,7 @@ Roadmap:
 
 Final packaging step is REQUIRED:
 - package ALL changed files into this exact repo-structured ZIP:
-  `<project folder>/tmp/BUILD_PR_LEVEL_07_NETWORK_DEBUG_AND_SERVER_DASHBOARD_COMBINED_CLOSEOUT.zip`
+  `<project folder>/tmp/BUILD_PR_LEVEL_09_TOOLS_NORMALIZATION_AND_REQUIRED_TOOLS_COMBINED_PASS.zip`
 
 Hard rules:
 - combine aggressively to reduce PR count

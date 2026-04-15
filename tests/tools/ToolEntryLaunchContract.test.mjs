@@ -12,7 +12,13 @@ const FIRST_CLASS_TOOL_INDEXES = Object.freeze([
   { toolId: "vector-asset-studio", indexPath: "../../tools/Vector Asset Studio/index.html" },
   { toolId: "tile-map-editor", indexPath: "../../tools/Tilemap Studio/index.html" },
   { toolId: "parallax-editor", indexPath: "../../tools/Parallax Scene Studio/index.html" },
-  { toolId: "palette-browser", indexPath: "../../tools/Palette Browser/index.html" }
+  { toolId: "palette-browser", indexPath: "../../tools/Palette Browser/index.html" },
+  { toolId: "state-inspector", indexPath: "../../tools/State Inspector/index.html" },
+  { toolId: "replay-visualizer", indexPath: "../../tools/Replay Visualizer/index.html" },
+  { toolId: "performance-profiler", indexPath: "../../tools/Performance Profiler/index.html" },
+  { toolId: "physics-sandbox", indexPath: "../../tools/Physics Sandbox/index.html" },
+  { toolId: "asset-pipeline-tool", indexPath: "../../tools/Asset Pipeline Tool/index.html" },
+  { toolId: "tile-model-converter", indexPath: "../../tools/Tile Model Converter/index.html" }
 ]);
 
 export async function run() {

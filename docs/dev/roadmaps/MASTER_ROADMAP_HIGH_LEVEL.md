@@ -436,21 +436,21 @@
 ## 9. Tools
 
 ### Existing Tools
-- [ ] TileMapEditor normalized
-- [ ] ParallaxEditor normalized
-- [ ] VectorMapEditor normalized
-- [ ] VectorAssetStudio normalized
+- [x] TileMapEditor normalized
+- [x] ParallaxEditor normalized
+- [x] VectorMapEditor normalized
+- [x] VectorAssetStudio normalized
 
 ### New Required Tools (By Dependency)
 - [ ] 3DMapEditor
 - [ ] 3DAssetViewer
 - [ ] 3DCameraPathEditor
-- [ ] PhysicsSandboxTool
-- [.] StateInspectorTool
-- [.] ReplayVisualizerTool
-- [.] PerformanceProfilerTool
-- [.] AssetPipelineTool
-- [.] Tile/Model Converter Tool
+- [x] PhysicsSandboxTool
+- [x] StateInspectorTool
+- [x] ReplayVisualizerTool
+- [x] PerformanceProfilerTool
+- [x] AssetPipelineTool
+- [x] Tile/Model Converter Tool
 
 ### Tooling Strategy By Need
 - [ ] 2D tool stabilization before 3D tool expansion

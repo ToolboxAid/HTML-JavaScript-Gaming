@@ -9,7 +9,13 @@ const ACTIVE_TOOL_FOLDERS = Object.freeze([
   "Parallax Scene Studio",
   "Vector Map Editor",
   "Vector Asset Studio",
-  "Sprite Editor"
+  "Sprite Editor",
+  "State Inspector",
+  "Replay Visualizer",
+  "Performance Profiler",
+  "Physics Sandbox",
+  "Asset Pipeline Tool",
+  "Tile Model Converter"
 ]);
 
 function listScriptFiles(directoryPath) {

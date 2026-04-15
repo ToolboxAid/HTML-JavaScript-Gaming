@@ -1,3 +1,3 @@
-- Added a combined PR for the remaining network debug panels, commands, promotion readiness, and server dashboard lane
-- Bundles dashboard shell/views with replication/RTT/debug completion and readiness validation
-- Intended to finish most or all of the lane in one pass and leave only tiny residue if needed
+- Added a combined PR for the remaining Tools lane
+- Bundles existing-tool normalization with dependency-driven required-tool stabilization
+- Intended to finish most or all of the Tools lane in one pass and leave only tiny residue if needed

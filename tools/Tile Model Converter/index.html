@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tile Model Converter</title>
+  <link rel="stylesheet" href="../../src/engine/ui/hubCommon.css" />
+  <link rel="stylesheet" href="../shared/platformShell.css" />
+  <link rel="stylesheet" href="../shared/debugInspectorTools.css" />
+</head>
+<body class="tools-platform-tool-page" data-tool-id="tile-model-converter" data-tools-platform-page="tool">
+  <div data-tools-platform-header></div>
+  <div class="debug-tool-shell app-shell">
+    <section class="panel debug-tool-panel">
+      <h2>Tile Model Converter</h2>
+      <p>Run shared converter contracts for tile and vector model normalization without ad hoc tool-specific conversion paths.</p>
+      <div class="debug-tool-actions">
+        <button type="button" id="runConverterButton">Run Conversion</button>
+      </div>
+      <div id="converterStatus" class="debug-tool-meta">Converter ready.</div>
+    </section>
+
+    <section class="debug-tool-grid">
+      <section class="panel debug-tool-panel">
+        <h3>Conversion Input</h3>
+        <textarea id="converterInput" rows="16"></textarea>
+      </section>
+
+      <section class="panel debug-tool-panel">
+        <h3>Conversion Output</h3>
+        <pre id="converterOutput" class="debug-tool-readout">Run conversion to inspect candidate transformations and converter metadata.</pre>
+      </section>
+    </section>
+  </div>
+  <div data-tools-platform-status></div>
+  <script type="module" src="../shared/platformShell.js"></script>
+  <script type="module" src="./main.js"></script>
+</body>
+</html>

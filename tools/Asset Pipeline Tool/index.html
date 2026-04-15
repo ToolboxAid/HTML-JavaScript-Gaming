@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Asset Pipeline Tool</title>
+  <link rel="stylesheet" href="../../src/engine/ui/hubCommon.css" />
+  <link rel="stylesheet" href="../shared/platformShell.css" />
+  <link rel="stylesheet" href="../shared/debugInspectorTools.css" />
+</head>
+<body class="tools-platform-tool-page" data-tool-id="asset-pipeline-tool" data-tools-platform-page="tool">
+  <div data-tools-platform-header></div>
+  <div class="debug-tool-shell app-shell">
+    <section class="panel debug-tool-panel">
+      <h2>Asset Pipeline Tool</h2>
+      <p>Run the shared load, validate, normalize, and emit pipeline on tool-authored asset records.</p>
+      <div class="debug-tool-actions">
+        <button type="button" id="runAssetPipelineButton">Run Pipeline</button>
+      </div>
+      <div id="assetPipelineStatus" class="debug-tool-meta">Asset pipeline ready.</div>
+    </section>
+
+    <section class="debug-tool-grid">
+      <section class="panel debug-tool-panel">
+        <h3>Pipeline Input</h3>
+        <textarea id="assetPipelineInput" rows="16"></textarea>
+      </section>
+
+      <section class="panel debug-tool-panel">
+        <h3>Pipeline Output</h3>
+        <pre id="assetPipelineOutput" class="debug-tool-readout">Run pipeline to inspect normalized records and manifest output.</pre>
+      </section>
+    </section>
+  </div>
+  <div data-tools-platform-status></div>
+  <script type="module" src="../shared/platformShell.js"></script>
+  <script type="module" src="./main.js"></script>
+</body>
+</html>
