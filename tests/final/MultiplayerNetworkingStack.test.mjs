@@ -8,6 +8,8 @@ import assert from 'node:assert/strict';
 import {
   AuthoritativeInputIngestionContract,
   AuthoritativeServerRuntime,
+  ClientReplicationApplicationLayer,
+  ClientReconciliationStrategy,
   ChatPresenceLayer,
   HandshakeSimulator,
   HostServerBootstrap,
@@ -16,6 +18,10 @@ import {
   NetworkConditionSimulator,
   NetworkingLayer,
   PredictionReconciler,
+  REPLICATION_IGNORE_REASONS,
+  REPLICATION_MESSAGE_REJECTION_CODES,
+  REPLICATION_SNAPSHOT_TYPES,
+  ReplicationMessageContract,
   RemoteInterpolationBuffer,
   RollbackDiagnostics,
   SERVER_RUNTIME_INGEST_REJECTION_CODES,
@@ -184,6 +190,127 @@ export async function run() {
   assert.equal(
     stopIngestReject.code,
     SERVER_RUNTIME_INGEST_REJECTION_CODES.SERVER_RUNTIME_NOT_RUNNING,
+  );
+
+  const replicationContract = new ReplicationMessageContract({ sessionId: 'session-runtime' });
+  const replicationValidation = replicationContract.validate({
+    sessionId: 'session-runtime',
+    replicationSequence: 10,
+    authoritativeTick: 5,
+    snapshotType: REPLICATION_SNAPSHOT_TYPES.FULL,
+    snapshot: {
+      entities: [{ id: 'npc-1', x: 10, y: 10 }],
+      despawned: [],
+    },
+    sentAtMs: 100,
+  });
+  assert.equal(replicationValidation.ok, true);
+  const invalidReplicationValidation = replicationContract.validate({
+    sessionId: 'session-runtime',
+    replicationSequence: 11,
+    authoritativeTick: 5,
+    snapshotType: REPLICATION_SNAPSHOT_TYPES.DELTA,
+    snapshot: {
+      entities: [{ id: 'npc-1', x: 11, y: 10 }],
+      lastAppliedTick: 999,
+    },
+    sentAtMs: 101,
+  });
+  assert.equal(invalidReplicationValidation.ok, false);
+  assert.equal(
+    invalidReplicationValidation.code,
+    REPLICATION_MESSAGE_REJECTION_CODES.CLIENT_METADATA_COLLISION,
+  );
+
+  const clientReplication = new ClientReplicationApplicationLayer({
+    sessionId: 'session-runtime',
+    reconciliationStrategy: new ClientReconciliationStrategy(),
+  });
+  assert.equal(clientReplication.ingestReplicationEnvelope({
+    sessionId: 'session-runtime',
+    replicationSequence: 10,
+    authoritativeTick: 5,
+    snapshotType: REPLICATION_SNAPSHOT_TYPES.FULL,
+    snapshot: {
+      entities: [
+        { id: 'npc-1', x: 10, y: 10 },
+        { id: 'npc-2', x: 4, y: 2 },
+      ],
+      despawned: [],
+    },
+    sentAtMs: 100,
+  }).ok, true);
+  const firstApply = clientReplication.applyPendingReplication();
+  assert.equal(firstApply.applied, 1);
+  assert.equal(firstApply.ignored, 0);
+  assert.equal(clientReplication.getReplicationStatus().lastAppliedTick, 5);
+  assert.equal(clientReplication.getReplicationStatus().lastAppliedSequence, 10);
+
+  assert.equal(clientReplication.ingestReplicationEnvelope({
+    sessionId: 'session-runtime',
+    replicationSequence: 0,
+    authoritativeTick: 6,
+    snapshotType: REPLICATION_SNAPSHOT_TYPES.DELTA,
+    snapshot: {
+      entities: [
+        { id: 'npc-1', x: 15, y: 10 },
+        { id: 'npc-3', x: 2, y: 9 },
+      ],
+      despawned: ['npc-2'],
+    },
+    sentAtMs: 130,
+  }).ok, true);
+  assert.equal(clientReplication.ingestReplicationEnvelope({
+    sessionId: 'session-runtime',
+    replicationSequence: 9,
+    authoritativeTick: 5,
+    snapshotType: REPLICATION_SNAPSHOT_TYPES.DELTA,
+    snapshot: {
+      entities: [{ id: 'npc-1', x: 13, y: 10 }],
+      despawned: [],
+    },
+    sentAtMs: 120,
+  }).ok, true);
+  assert.equal(clientReplication.ingestReplicationEnvelope({
+    sessionId: 'session-runtime',
+    replicationSequence: 99,
+    authoritativeTick: 4,
+    snapshotType: REPLICATION_SNAPSHOT_TYPES.DELTA,
+    snapshot: {
+      entities: [{ id: 'npc-9', x: 1, y: 1 }],
+      despawned: [],
+    },
+    sentAtMs: 119,
+  }).ok, true);
+  const secondApply = clientReplication.applyPendingReplication();
+  assert.equal(secondApply.applied, 1);
+  assert.equal(secondApply.ignored, 2);
+  assert.equal(clientReplication.getReplicationStatus().lastAppliedTick, 6);
+  assert.equal(clientReplication.getReplicationStatus().lastAppliedSequence, 0);
+  assert.equal(clientReplication.getReplicationStatus().stateEntities, 2);
+  const replicatedState = clientReplication.getReplicatedStateSnapshot();
+  assert.equal(replicatedState.find((entity) => entity.id === 'npc-1').x, 15);
+  assert.equal(replicatedState.some((entity) => entity.id === 'npc-2'), false);
+  assert.equal(replicatedState.some((entity) => entity.id === 'npc-3'), true);
+  const ignoreReasons = clientReplication.getIgnoredEnvelopes()
+    .map((entry) => entry.reason)
+    .filter((reason) => reason !== REPLICATION_IGNORE_REASONS.INVALID_ENVELOPE);
+  assert.equal(ignoreReasons.includes(REPLICATION_IGNORE_REASONS.STALE_TICK), true);
+  assert.equal(ignoreReasons.includes(REPLICATION_IGNORE_REASONS.STALE_SEQUENCE), true);
+  const invalidEnvelopeResult = clientReplication.ingestReplicationEnvelope({
+    sessionId: 'session-runtime',
+    replicationSequence: 12,
+    authoritativeTick: 7,
+    snapshotType: 'unknown',
+    snapshot: {
+      entities: [],
+    },
+    sentAtMs: 140,
+  });
+  assert.equal(invalidEnvelopeResult.ok, false);
+  assert.equal(
+    invalidEnvelopeResult.code,
+    REPLICATION_MESSAGE_REJECTION_CODES.SNAPSHOT_TYPE_INVALID,
   );
 
   const replication = new StateReplication();

@@ -1,1 +1,1 @@
-define client replication and application contracts — PLAN_PR_LEVEL_12_3_REPLICATION_CLIENT_APPLICATION
+implement client replication and application layer — BUILD_PR_LEVEL_12_3_REPLICATION_CLIENT_APPLICATION

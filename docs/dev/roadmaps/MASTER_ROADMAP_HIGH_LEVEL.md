@@ -668,3 +668,5 @@
 [ ] consolidate PR for easier, one stop, review, no need to look as 6 different docs for one capability (a good example of this is bezel/background), all people care about is what it does.
 [ ] some games are actually samples/demo, identify and recomment a phase-xx to move to.
 [ ] simulated code (like some of the netword samples) should be coverted to use real networks) understanding, tests may need some moch
+[ ] single class per file
+[ ] organize/rebuild samples/games so the are as if new construction with proper classes/data/etc in proper folder

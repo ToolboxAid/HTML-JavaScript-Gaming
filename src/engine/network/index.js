@@ -17,6 +17,20 @@ export { default as InterestManager } from './InterestManager.js';
 export { default as ChatPresenceLayer } from './ChatPresenceLayer.js';
 export { default as RollbackDiagnostics } from './RollbackDiagnostics.js';
 export {
+  REPLICATION_IGNORE_REASONS,
+  compareReplicationEnvelopeOrder,
+  isReplicationEnvelopeStale,
+  default as ClientReconciliationStrategy,
+} from './ClientReconciliationStrategy.js';
+export {
+  REPLICATION_MESSAGE_REJECTION_CODES,
+  REPLICATION_SNAPSHOT_TYPES,
+  default as ReplicationMessageContract,
+  normalizeReplicationEnvelope,
+  validateReplicationEnvelope,
+} from './ReplicationMessageContract.js';
+export { default as ClientReplicationApplicationLayer } from './ClientReplicationApplicationLayer.js';
+export {
   INPUT_INGESTION_REJECTION_CODES,
   SERVER_OWNED_STATE_FIELDS,
   default as AuthoritativeInputIngestionContract,
