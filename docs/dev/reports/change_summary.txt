@@ -1,17 +1,20 @@
-Applied scope:
-- implemented Phase 16 core track samples 1605 through 1608:
-  - 1605: 3D driving sandbox (throttle/steer + AABB track blockers)
-  - 1606: 3D physics playground (gravity, bounce, impulses, damping)
-  - 1607: 3D space shooter (lane movement, projectiles, asteroid hits)
-  - 1608: 3D dungeon crawler (maze traversal, relic gate unlock, exit)
-- wired launcher entries in samples/index.html from planned to live for 1605-1608
-- reused shared 3D wireframe helper path for rendering consistency
-- extended Phase16VisibilitySanity.test.mjs surgically to include 1605-1608:
-  - visibility on load checks
-  - one control/function assertion per new sample
+Observed issue:
+- Sample 1605 renders and loads
+- steering behavior gets stuck left/right
+
+Applied fix:
+- isolated steering correction in samples/phase-16/1605/DrivingSandbox3DScene.js
+- removed reverse-dependent steering inversion so A/D turn direction remains consistent
+- preserved 1605 rendering path and forward/reverse speed model
+- extended existing targeted runtime sanity in tests/runtime/Phase16VisibilitySanity.test.mjs with 1605 steering behavior checks:
+  - left hold
+  - right hold
+  - release stop
+  - immediate opposite engagement
+  - reverse motion
 
 Validation outcome:
 - PASS Phase16VisibilitySanity
-- PASS launch smoke (samples 1601-1608): PASS=8 FAIL=0
+- PASS launch smoke (sample 1605): PASS=1 FAIL=0
 - PASS EngineTiming (targeted 2D regression check)
 - PASS MultiplayerNetworkingStack (targeted networking regression check)

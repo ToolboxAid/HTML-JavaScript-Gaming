@@ -128,6 +128,36 @@ function assertDrivingVisibilityAndInput() {
   const startZ = car.z;
   scene.step3DPhysics(1 / 60, { input: makeInput(['KeyW']) });
   assert.equal(car.z > startZ, true, 'Driving sample W input should advance car forward.');
+
+  const startHeading = scene.heading;
+  for (let i = 0; i < 4; i += 1) {
+    scene.step3DPhysics(1 / 60, { input: makeInput(['KeyW', 'KeyA']) });
+  }
+  const afterLeftHeading = scene.heading;
+  assert.equal(afterLeftHeading < startHeading, true, 'Driving sample A hold should turn left.');
+
+  scene.step3DPhysics(1 / 60, { input: makeInput(['KeyW']) });
+  const afterReleaseHeading = scene.heading;
+  scene.step3DPhysics(1 / 60, { input: makeInput(['KeyW']) });
+  assert.equal(scene.heading, afterReleaseHeading, 'Driving sample steering should stop when A/D is released.');
+
+  scene.step3DPhysics(1 / 60, { input: makeInput(['KeyW', 'KeyD']) });
+  assert.equal(scene.heading > afterReleaseHeading, true, 'Driving sample D should engage immediately after left release.');
+  const afterImmediateRightHeading = scene.heading;
+
+  for (let i = 0; i < 3; i += 1) {
+    scene.step3DPhysics(1 / 60, { input: makeInput(['KeyW', 'KeyD']) });
+  }
+  assert.equal(scene.heading > afterImmediateRightHeading, true, 'Driving sample D hold should continue turning right.');
+
+  const beforeReverseHeading = scene.heading;
+  scene.step3DPhysics(1 / 60, { input: makeInput(['KeyS', 'KeyD']) });
+  assert.equal(scene.heading > beforeReverseHeading, true, 'Driving sample D should still steer right while reversing.');
+
+  for (let i = 0; i < 120; i += 1) {
+    scene.step3DPhysics(1 / 60, { input: makeInput(['KeyS']) });
+  }
+  assert.equal(scene.speed < 0, true, 'Driving sample S input should produce reverse motion.');
 }
 
 function assertPhysicsPlaygroundVisibilityAndInput() {

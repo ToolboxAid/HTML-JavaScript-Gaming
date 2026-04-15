@@ -1,19 +1,17 @@
-Phase 16 core track checklist
-[x] 1605 visible on load
-[x] 1606 visible on load
-[x] 1607 visible on load
-[x] 1608 visible on load
-[x] 1605 controls function
-[x] 1606 controls function
-[x] 1607 controls function
-[x] 1608 controls function
-[x] targeted smoke 1601-1608 passes
+Sample 1605 driving control checklist
+[x] left turn works while held
+[x] right turn works while held
+[x] steering stops on release
+[x] opposite direction can engage immediately
+[x] forward/reverse still function
+[x] sample renders visibly on load
+[x] targeted smoke for 1605 passes
 [x] no 2D regression observed in targeted checks
 [x] no networking regression observed in targeted checks
 
 Execution evidence:
 - PASS Phase16VisibilitySanity
-- Launch smoke targeted run: --samples --sample-range=1601-1608
-- Launch smoke result: PASS=8 FAIL=0 TOTAL=8
+- Launch smoke targeted run: --samples --sample-range=1605-1605
+- Launch smoke result: PASS=1 FAIL=0 TOTAL=1
 - PASS EngineTiming (2D baseline targeted check)
 - PASS MultiplayerNetworkingStack (network baseline targeted check)

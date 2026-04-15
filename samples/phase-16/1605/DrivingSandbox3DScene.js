@@ -138,8 +138,7 @@ export default class DrivingSandbox3DScene extends Scene {
 
     this.speed = clamp(this.speed, -this.maxReverseSpeed, this.maxForwardSpeed);
     if (Math.abs(this.speed) > 0.1) {
-      const steeringDirection = this.speed >= 0 ? 1 : -1;
-      this.heading += steer * this.turnRate * steeringDirection * dt;
+      this.heading += steer * this.turnRate * dt;
     }
 
     velocity.x = Math.sin(this.heading) * this.speed;
@@ -206,4 +205,3 @@ export default class DrivingSandbox3DScene extends Scene {
     ]);
   }
 }
-
