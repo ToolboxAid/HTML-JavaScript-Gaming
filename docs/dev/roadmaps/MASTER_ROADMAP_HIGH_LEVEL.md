@@ -636,9 +636,13 @@
 
 ---
 
+## Deferred Infrastructure
+- asset naming normalization (trigger condition: start only when a new non-3D asset lane requires cross-game naming standardization beyond current stable ownership/pipeline conventions)
+- manifest discovery (trigger condition: start only when a new non-3D runtime/tool lane requires automatic manifest discovery beyond current explicit manifest wiring)
+
+---
+
 ## Recovery / Preserved Content
 # MASTER ROADMAP HIGH LEVEL (status updates only)
 
-[.] asset naming normalization
-[.] manifest discovery
 [x] fullscreen bezel overlay system (low priority, before next game)
