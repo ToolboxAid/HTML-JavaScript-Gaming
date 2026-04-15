@@ -1,6 +1,4 @@
 
-[ ] all samples consistent
-[ ] controls aligned
-[ ] no visual regressions
-[ ] full smoke pass 1601–1608
-[ ] sanity pass
+[x] markers only changed
+[x] no text changed
+[x] roadmap reflects progress

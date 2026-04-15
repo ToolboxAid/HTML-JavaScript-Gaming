@@ -1,1 +1,1 @@
-Stabilize Phase 16 3D samples and prepare handoff to finalize phase<BUILD_PR_LEVEL_17_16_FINAL_3D_STABILITY_AND_HANDOFF_GATE>
+Sync MASTER_ROADMAP_HIGH_LEVEL status markers only<BUILD_PR_LEVEL_17_17_MASTER_ROADMAP_STATUS_SYNC>

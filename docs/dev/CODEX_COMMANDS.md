@@ -1,21 +1,15 @@
 
 MODEL: GPT-5.3-codex
-REASONING: high
+REASONING: medium
 
 COMMAND:
-Stabilize Phase 16 samples (1601–1608).
-
-Focus:
-- align controls
-- remove inconsistencies
-- ensure visual/readability consistency
+Update docs/dev/roadmaps/MASTER_ROADMAP_HIGH_LEVEL.md
 
 Rules:
-- no new features
-- no zip output
-- smallest scoped fixes only
+- ONLY change [ ] [.] [x]
+- DO NOT change text
+- DO NOT reorder
 
 Validate:
-- full sample smoke 1601–1608
-- sanity pass
-- no regressions
+- diff = markers only
+- update reports

@@ -607,21 +607,21 @@
 ## 17. 3D Activation, Validation, and Execution (Phase 16)
 
 ### Impact Validation (FIRST - REQUIRED)
-- [ ] Validate no render loop regressions
-- [ ] Validate no timing model regressions
-- [ ] Validate no input system regressions
-- [ ] Confirm networking/runtime remains stable during 3D activation
-- [ ] Confirm 2D samples still run correctly after 3D activation work
+- [x] Validate no render loop regressions
+- [x] Validate no timing model regressions
+- [x] Validate no input system regressions
+- [x] Confirm networking/runtime remains stable during 3D activation
+- [x] Confirm 2D samples still run correctly after 3D activation work
 
 ### 3D Engine Foundation
-- [ ] 3D scene boot
-- [ ] 3D render foundation
-- [ ] 3D transforms
-- [ ] 3D camera controls
-- [ ] 3D movement base
-- [ ] 3D collision base
-- [ ] 3D physics base
-- [ ] 3D content loading path
+- [x] 3D scene boot
+- [x] 3D render foundation
+- [x] 3D transforms
+- [x] 3D camera controls
+- [x] 3D movement base
+- [x] 3D collision base
+- [x] 3D physics base
+- [x] 3D content loading path
 
 ### Track H - 3D Debug Support
 - [.] Transform inspector
@@ -633,32 +633,32 @@
 - [ ] Scene graph inspector
 
 ### Sample Phase Tracks
-- [ ] 3D phase normalized
+- [x] 3D phase normalized
 
 ### Dependency-Driven Sample Builds
-- [ ] 3D scene boot sample
-- [ ] 3D camera orbit sample
-- [ ] 3D movement sample
-- [ ] 3D collision sample
+- [x] 3D scene boot sample
+- [x] 3D camera orbit sample
+- [x] 3D movement sample
+- [x] 3D collision sample
 
 ### Tooling Strategy By Need
-- [ ] 3D prerequisite samples before advanced 3D tools
+- [x] 3D prerequisite samples before advanced 3D tools
 
 ### Prerequisite Samples
-- [ ] 3D Scene Boot Sample
-- [ ] Camera Orbit Sample
-- [ ] 3D Movement Sample
-- [ ] Basic Collision Sample
+- [x] 3D Scene Boot Sample
+- [x] Camera Orbit Sample
+- [x] 3D Movement Sample
+- [x] Basic Collision Sample
 
 ### Core Sample Track (1601 - 1608)
-- [ ] 1601 - 3D Cube Explorer
-- [ ] 1602 - 3D Maze Runner
-- [ ] 1603 - First Person Walkthrough
-- [ ] 1604 - 3D Platformer
-- [ ] 1605 - 3D Driving Sandbox
-- [ ] 1606 - 3D Physics Playground
-- [ ] 1607 - 3D Space Shooter
-- [ ] 1608 - 3D Dungeon Crawler
+- [x] 1601 - 3D Cube Explorer
+- [x] 1602 - 3D Maze Runner
+- [x] 1603 - First Person Walkthrough
+- [x] 1604 - 3D Platformer
+- [x] 1605 - 3D Driving Sandbox
+- [x] 1606 - 3D Physics Playground
+- [x] 1607 - 3D Space Shooter
+- [x] 1608 - 3D Dungeon Crawler
 
 ### Advanced 3D Samples (1609+ EXPANDED VALIDATION TRACK)
 - [ ] 1609 - Lighting Demo
@@ -676,15 +676,15 @@
 - [ ] 1621 - AI Navigation Demo
 
 ### 3D Capability Requirements
-- [ ] 3D rendering
-- [ ] 3D camera
-- [ ] 3D movement
-- [ ] 3D physics
-- [ ] 3D tool support
-- [ ] 3D debug support
+- [x] 3D rendering
+- [x] 3D camera
+- [x] 3D movement
+- [x] 3D physics
+- [x] 3D tool support
+- [.] 3D debug support
 
 ### Later Capability Lanes
-- [ ] Execute phase-16 / 3D capability lanes (after full real-network capability lane completion)
+- [x] Execute phase-16 / 3D capability lanes (after full real-network capability lane completion)
 
 
 ## 18. Finalize engine
