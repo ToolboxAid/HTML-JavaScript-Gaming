@@ -3,14 +3,13 @@ MODEL: GPT-5.4
 REASONING: high
 
 COMMAND:
-Create `BUILD_PR_LEVEL_12_2D_CAPABILITY_TRACK_RESIDUE_ONLY`.
+Create BUILD_PR_LEVEL_14_TESTS_VALIDATION_COMBINED_PASS.
 
-1. Inspect prior combined PR results.
-2. Identify remaining open items ONLY.
-3. Apply minimal fixes.
-4. Do not expand scope.
+1. Normalize tests/ structure.
+2. Align unit/integration coverage.
+3. Organize fixtures/helpers.
+4. Align validation with engine/shared/tools.
 5. Update roadmap status markers only.
-6. Report if lane is fully complete.
 
 Package:
-`<project folder>/tmp/BUILD_PR_LEVEL_12_2D_CAPABILITY_TRACK_RESIDUE_ONLY.zip`
+<project folder>/tmp/BUILD_PR_LEVEL_14_TESTS_VALIDATION_COMBINED_PASS.zip

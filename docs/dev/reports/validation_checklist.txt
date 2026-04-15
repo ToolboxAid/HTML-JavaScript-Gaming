@@ -1,1 +1,1 @@
-Only remaining items touched; lane complete or blockers listed
+tests normalized, coverage aligned, fixtures organized

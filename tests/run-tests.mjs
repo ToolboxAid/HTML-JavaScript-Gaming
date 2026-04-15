@@ -87,6 +87,7 @@ import { run as runWorldGameStateAuthoritativeHandoff } from './world/WorldGameS
 import { run as runWorldGameStateAuthoritativeScore } from './world/WorldGameStateAuthoritativeScore.test.mjs';
 import { run as runProductionReadiness } from './production/ProductionReadiness.test.mjs';
 import { run as runEnginePublicBarrelImports } from './production/EnginePublicBarrelImports.test.mjs';
+import { run as runTestsValidationCombinedPass } from './production/TestsValidationCombinedPass.test.mjs';
 import { run as runStorageService } from './persistence/StorageService.test.mjs';
 import { run as runAssetValidationEngine } from './tools/AssetValidationEngine.test.mjs';
 import { run as runAssetUsageIntegration } from './tools/AssetUsageIntegration.test.mjs';
@@ -266,6 +267,7 @@ const tests = [
     ['ProjectileLabScene', runProjectileLabScene],
     ['EnginePublicBarrelImports', runEnginePublicBarrelImports],
     ['ProductionReadiness', runProductionReadiness],
+    ['TestsValidationCombinedPass', runTestsValidationCombinedPass],
     ['AttractModeController', runAttractModeController],
     ['SceneManager', runSceneManager],
     ['TransitionScene', runTransitionScene],

@@ -1,1 +1,1 @@
-Residue-only closeout for 2D capability track
+Combined tests/validation normalization pass

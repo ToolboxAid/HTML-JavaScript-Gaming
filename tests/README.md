@@ -14,3 +14,7 @@ npm test
 - persistence, serialization, FX determinism
 - production/import guardrails for engine barrels
 - game boots and hardening flows (Asteroids plus AI track entry points)
+
+## Structure Notes
+- `tests/helpers/` holds shared test catalogs/helpers used by validation tests.
+- `tests/fixtures/` holds non-executable fixture artifacts (`.patch`, `.snippet`, and regex snapshots) kept out of executable suites.
