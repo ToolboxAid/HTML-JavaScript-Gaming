@@ -6,15 +6,20 @@ MultiplayerNetworkingStack.test.mjs
 */
 import assert from 'node:assert/strict';
 import {
+  AuthoritativeInputIngestionContract,
+  AuthoritativeServerRuntime,
   ChatPresenceLayer,
   HandshakeSimulator,
   HostServerBootstrap,
+  INPUT_INGESTION_REJECTION_CODES,
   InterestManager,
   NetworkConditionSimulator,
   NetworkingLayer,
   PredictionReconciler,
   RemoteInterpolationBuffer,
   RollbackDiagnostics,
+  SERVER_RUNTIME_INGEST_REJECTION_CODES,
+  SERVER_RUNTIME_PHASES,
   SESSION_STATES,
   Serializer,
   StateReplication,
@@ -84,6 +89,102 @@ export async function run() {
   const disconnectedHandshakeState = handshake.disconnect('test-closeout');
   assert.equal(disconnectedHandshakeState.host.state, SESSION_STATES.DISCONNECTED);
   assert.equal(disconnectedHandshakeState.client.state, SESSION_STATES.DISCONNECTED);
+
+  const server = new AuthoritativeServerRuntime({
+    sessionId: 'session-runtime',
+    tickRateHz: 20,
+  });
+  const mirrorServer = new AuthoritativeServerRuntime({
+    sessionId: 'session-runtime',
+    tickRateHz: 20,
+  });
+  assert.equal(server.start().runtimePhase, SERVER_RUNTIME_PHASES.RUNNING);
+  assert.equal(mirrorServer.start().runtimePhase, SERVER_RUNTIME_PHASES.RUNNING);
+
+  const tickStepPlan = [0.01, 0.04, 0.05, 0.10];
+  tickStepPlan.forEach((dtSeconds) => {
+    const serverStep = server.step(dtSeconds);
+    const mirrorStep = mirrorServer.step(dtSeconds);
+    assert.equal(serverStep.ok, true);
+    assert.equal(mirrorStep.ok, true);
+    assert.equal(serverStep.ticksAdvanced, mirrorStep.ticksAdvanced);
+  });
+  assert.equal(server.getSnapshot().authoritativeTick, 4);
+  assert.equal(server.getSnapshot().authoritativeTick, mirrorServer.getSnapshot().authoritativeTick);
+
+  const ingestionContract = new AuthoritativeInputIngestionContract({ sessionId: 'session-runtime' });
+  const validationResult = ingestionContract.validate({
+    sessionId: 'session-runtime',
+    clientId: 'client-1',
+    sequence: 0,
+    inputType: 'move',
+    payload: { dx: 1, dy: 0 },
+    sentAtMs: 10,
+  });
+  assert.equal(validationResult.ok, true);
+
+  const acceptedInput = server.ingestClientInput({
+    sessionId: 'session-runtime',
+    clientId: 'client-1',
+    sequence: 0,
+    inputType: 'move',
+    payload: { dx: 1, dy: 0 },
+    sentAtMs: 10,
+  });
+  assert.equal(acceptedInput.ok, true);
+
+  const duplicateInput = server.ingestClientInput({
+    sessionId: 'session-runtime',
+    clientId: 'client-1',
+    sequence: 0,
+    inputType: 'move',
+    payload: { dx: 2, dy: 0 },
+    sentAtMs: 11,
+  });
+  assert.equal(duplicateInput.ok, false);
+  assert.equal(
+    duplicateInput.code,
+    SERVER_RUNTIME_INGEST_REJECTION_CODES.DUPLICATE_OR_OUT_OF_ORDER_SEQUENCE,
+  );
+
+  const ownershipViolationInput = server.ingestClientInput({
+    sessionId: 'session-runtime',
+    clientId: 'client-1',
+    sequence: 1,
+    inputType: 'move',
+    payload: { authoritativeTick: 999 },
+    sentAtMs: 12,
+  });
+  assert.equal(ownershipViolationInput.ok, false);
+  assert.equal(
+    ownershipViolationInput.code,
+    INPUT_INGESTION_REJECTION_CODES.SERVER_OWNERSHIP_VIOLATION,
+  );
+
+  const drainedInputs = server.drainAcceptedInputs();
+  assert.equal(drainedInputs.length, 1);
+  assert.equal(drainedInputs[0].acceptedAtTick, 4);
+  assert.equal(drainedInputs[0].payload.dx, 1);
+
+  const mutableSnapshot = server.getSnapshot();
+  mutableSnapshot.authoritativeTick = 999;
+  assert.equal(server.getSnapshot().authoritativeTick, 4);
+
+  const stoppedSnapshot = server.stop('test-stop');
+  assert.equal(stoppedSnapshot.runtimePhase, SERVER_RUNTIME_PHASES.STOPPED);
+  const stopIngestReject = server.ingestClientInput({
+    sessionId: 'session-runtime',
+    clientId: 'client-1',
+    sequence: 2,
+    inputType: 'move',
+    payload: { dx: 1 },
+    sentAtMs: 20,
+  });
+  assert.equal(stopIngestReject.ok, false);
+  assert.equal(
+    stopIngestReject.code,
+    SERVER_RUNTIME_INGEST_REJECTION_CODES.SERVER_RUNTIME_NOT_RUNNING,
+  );
 
   const replication = new StateReplication();
   const snapshot = replication.createSnapshot([{ id: 'npc-1', x: 10, y: 20 }], { tick: 3 });

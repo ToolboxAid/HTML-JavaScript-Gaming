@@ -1,3 +1,4 @@
-- Server loop defined
-- Input ingestion defined
-- Ownership boundaries defined
+- Server loop working
+- Input ingestion working
+- Ownership enforced
+- No regressions

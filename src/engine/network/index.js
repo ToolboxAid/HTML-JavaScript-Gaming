@@ -17,6 +17,18 @@ export { default as InterestManager } from './InterestManager.js';
 export { default as ChatPresenceLayer } from './ChatPresenceLayer.js';
 export { default as RollbackDiagnostics } from './RollbackDiagnostics.js';
 export {
+  INPUT_INGESTION_REJECTION_CODES,
+  SERVER_OWNED_STATE_FIELDS,
+  default as AuthoritativeInputIngestionContract,
+  normalizeClientInputEnvelope,
+  validateClientInputEnvelope,
+} from './AuthoritativeInputIngestionContract.js';
+export {
+  SERVER_RUNTIME_INGEST_REJECTION_CODES,
+  SERVER_RUNTIME_PHASES,
+  default as AuthoritativeServerRuntime,
+} from './AuthoritativeServerRuntime.js';
+export {
   assertTransportContract,
   createTransportBoundary,
   getTransportContract,
