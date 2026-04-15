@@ -1,1 +1,1 @@
-BUILD_PR_LEVEL_12_1_REAL_NETWORK_FOUNDATION: implement transport/session contracts and handshake simulation
+apply transport/session foundation and validate — APPLY_PR_LEVEL_12_1_REAL_NETWORK_FOUNDATION
