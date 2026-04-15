@@ -1,1 +1,1 @@
-Post-run: verify physics loop + sample 1601 execution + no regression
+Post-run: verify all samples 1602–1604 + no regression

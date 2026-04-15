@@ -660,10 +660,20 @@
 - [ ] 1607 - 3D Space Shooter
 - [ ] 1608 - 3D Dungeon Crawler
 
-### Advanced 3D Samples
-- [ ] 1610 - Lighting Demo
-- [ ] 1611 - AI Navigation Demo
-- [ ] 1612 - Large World Streaming Demo
+### Advanced 3D Samples (1609+ EXPANDED VALIDATION TRACK)
+- [ ] 1609 - Lighting Demo
+- [ ] 1610 - Hybrid 2D/3D World Sample
+- [ ] 1611 - Multiplayer Sync Demo
+- [ ] 1612 - Stress Test (1,000 Objects)
+- [ ] 1613 - Input Lab
+- [ ] 1614 - Camera Modes Lab
+- [ ] 1615 - Entity Composition Demo
+- [ ] 1616 - World Streaming / Chunk Loader
+- [ ] 1617 - Large World Streaming Demo
+- [ ] 1618 - Lighting & Materials Lab
+- [ ] 1619 - Debug HUD Sample
+- [ ] 1620 - Mini Game (3D Reference Sample)
+- [ ] 1621 - AI Navigation Demo
 
 ### 3D Capability Requirements
 - [ ] 3D rendering

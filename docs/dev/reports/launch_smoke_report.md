@@ -1,6 +1,6 @@
 # Launch Smoke Report
 
-Generated: 2026-04-15T19:36:10.578Z
+Generated: 2026-04-15T19:55:49.765Z
 
 Filters: games=false, samples=true, tools=false, sampleRange=all
 
@@ -205,3 +205,6 @@ Filters: games=false, samples=true, tools=false, sampleRange=all
 | PASS | sample | 1505 | samples\phase-15\1505\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
 | PASS | sample | 1506 | samples\phase-15\1506\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
 | PASS | sample | 1601 | samples\phase-16\1601\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 1602 | samples\phase-16\1602\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 1603 | samples\phase-16\1603\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 1604 | samples\phase-16\1604\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |

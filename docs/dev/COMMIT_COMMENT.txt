@@ -1,1 +1,1 @@
-Introduce 3D physics base and first sample 1601 Cube Explorer<BUILD_PR_LEVEL_17_5_PHYSICS_BASE_AND_SAMPLE_1601>
+Add progressive 3D samples 1602–1604 (navigation, FPS, platformer)<BUILD_PR_LEVEL_17_6_SAMPLES_1602_TO_1604_PROGRESSIVE>
