@@ -1,7 +1,9 @@
-Sample 1605 chase camera checklist
-[x] vehicle visibly turns with heading
-[x] camera stays behind during normal driving
-[x] vehicle remains visible during turning
+Sample 1605 readability checklist
+[x] vehicle shape is visibly directional
+[x] front marker rotates with heading
+[x] camera is hard-locked behind vehicle
+[x] camera remains aimed at vehicle
+[x] vehicle stays easy to track during turning
 [x] steering still behaves correctly
 [x] forward/reverse still function
 [x] sample renders visibly on load

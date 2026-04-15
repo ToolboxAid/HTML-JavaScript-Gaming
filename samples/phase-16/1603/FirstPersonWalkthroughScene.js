@@ -113,7 +113,7 @@ export default class FirstPersonWalkthroughScene extends Scene {
     });
     this.camera3D.setRotation({
       x: this.pitch,
-      y: this.yaw,
+      y: -this.yaw,
       z: 0,
     });
   }
@@ -128,15 +128,16 @@ export default class FirstPersonWalkthroughScene extends Scene {
     this.pitch = clamp(this.pitch + lookY * this.lookSpeed * dt, -0.55, 0.5);
 
     const axisForward = (input?.isDown('KeyW') ? 1 : 0) - (input?.isDown('KeyS') ? 1 : 0);
-    const axisStrafe = (input?.isDown('KeyD') ? 1 : 0) - (input?.isDown('KeyA') ? 1 : 0);
+    const axisStrafe = (input?.isDown('KeyA') ? 1 : 0) - (input?.isDown('KeyD') ? 1 : 0);
     const length = Math.hypot(axisForward, axisStrafe) || 1;
     const forward = axisForward / length;
     const strafe = axisStrafe / length;
 
-    const forwardX = Math.sin(this.yaw);
-    const forwardZ = Math.cos(this.yaw);
-    const rightX = Math.cos(this.yaw);
-    const rightZ = -Math.sin(this.yaw);
+    const cameraYaw = this.yaw;
+    const forwardX = Math.sin(cameraYaw);
+    const forwardZ = Math.cos(cameraYaw);
+    const rightX = Math.cos(cameraYaw);
+    const rightZ = -Math.sin(cameraYaw);
 
     velocity.x = (forwardX * forward + rightX * strafe) * this.moveSpeed;
     velocity.z = (forwardZ * forward + rightZ * strafe) * this.moveSpeed;

@@ -52,6 +52,16 @@ function normalizeAngle(angle) {
   return value;
 }
 
+function computeLookRotation(cameraPosition, targetPosition) {
+  const dx = targetPosition.x - cameraPosition.x;
+  const dy = targetPosition.y - cameraPosition.y;
+  const dz = targetPosition.z - cameraPosition.z;
+  const yaw = Math.atan2(dx, dz);
+  const horizontal = Math.hypot(dx, dz) || 1;
+  const pitch = Math.atan2(dy, horizontal);
+  return { yaw, pitch };
+}
+
 function createRendererProbe(width = 960, height = 540) {
   const lines = [];
   return {
@@ -138,12 +148,28 @@ function assertDrivingVisibilityAndInput() {
   scene.step3DPhysics(1 / 60, { input: makeInput(['KeyW']) });
   assert.equal(car.z > startZ, true, 'Driving sample W input should advance car forward.');
   let cameraState = camera.getState();
-  let forwardX = Math.sin(scene.heading);
-  let forwardZ = Math.cos(scene.heading);
-  let toCameraX = cameraState.position.x - car.x;
-  let toCameraZ = cameraState.position.z - car.z;
+  const carSize = scene.world.requireComponent(scene.carId, 'size3D');
+  const getCarCenter = () => ({
+    x: car.x + carSize.width * 0.5,
+    y: car.y + carSize.height * 0.5,
+    z: car.z + carSize.depth * 0.5,
+  });
+  let carCenter = getCarCenter();
+  let vehicleYaw = scene.getVehicleYaw();
+  let forwardX = Math.sin(vehicleYaw);
+  let forwardZ = Math.cos(vehicleYaw);
+  let toCameraX = cameraState.position.x - carCenter.x;
+  let toCameraZ = cameraState.position.z - carCenter.z;
   let behindDot = toCameraX * forwardX + toCameraZ * forwardZ;
   assert.equal(behindDot < -2, true, 'Driving sample chase camera should remain behind the car during forward drive.');
+
+  const startMarker = scene.getVehicleMarkerWorldPoints();
+  const startMarkerDirection = {
+    x: startMarker.tip.x - startMarker.tail.x,
+    z: startMarker.tip.z - startMarker.tail.z,
+  };
+  const startMarkerLength = Math.hypot(startMarkerDirection.x, startMarkerDirection.z);
+  assert.equal(startMarkerLength > 0.1, true, 'Driving sample should expose a valid front marker vector.');
 
   const startHeading = scene.heading;
   for (let i = 0; i < 4; i += 1) {
@@ -151,6 +177,18 @@ function assertDrivingVisibilityAndInput() {
   }
   const afterLeftHeading = scene.heading;
   assert.equal(afterLeftHeading < startHeading, true, 'Driving sample A hold should turn left.');
+  const turnedMarker = scene.getVehicleMarkerWorldPoints();
+  const turnedMarkerDirection = {
+    x: turnedMarker.tip.x - turnedMarker.tail.x,
+    z: turnedMarker.tip.z - turnedMarker.tail.z,
+  };
+  const startMarkerAngle = Math.atan2(startMarkerDirection.x, startMarkerDirection.z);
+  const turnedMarkerAngle = Math.atan2(turnedMarkerDirection.x, turnedMarkerDirection.z);
+  assert.equal(
+    Math.abs(normalizeAngle(turnedMarkerAngle - startMarkerAngle)) > 0.05,
+    true,
+    'Driving sample front marker should rotate with heading.',
+  );
 
   scene.step3DPhysics(1 / 60, { input: makeInput(['KeyW']) });
   const afterReleaseHeading = scene.heading;
@@ -166,16 +204,29 @@ function assertDrivingVisibilityAndInput() {
   }
   assert.equal(scene.heading > afterImmediateRightHeading, true, 'Driving sample D hold should continue turning right.');
   cameraState = camera.getState();
-  forwardX = Math.sin(scene.heading);
-  forwardZ = Math.cos(scene.heading);
-  toCameraX = cameraState.position.x - car.x;
-  toCameraZ = cameraState.position.z - car.z;
+  carCenter = getCarCenter();
+  vehicleYaw = scene.getVehicleYaw();
+  forwardX = Math.sin(vehicleYaw);
+  forwardZ = Math.cos(vehicleYaw);
+  toCameraX = cameraState.position.x - carCenter.x;
+  toCameraZ = cameraState.position.z - carCenter.z;
   behindDot = toCameraX * forwardX + toCameraZ * forwardZ;
   assert.equal(behindDot < -2, true, 'Driving sample chase camera should remain behind while turning.');
+
+  const expectedLook = computeLookRotation(cameraState.position, {
+    x: carCenter.x + forwardX * scene.chaseLookAhead,
+    y: carCenter.y + 0.35,
+    z: carCenter.z + forwardZ * scene.chaseLookAhead,
+  });
   assert.equal(
-    Math.abs(normalizeAngle(scene.heading - cameraState.rotation.y)) > 0.01,
+    Math.abs(normalizeAngle(cameraState.rotation.y + expectedLook.yaw)) < 0.03,
     true,
-    'Driving sample vehicle heading should remain visibly distinct from chase yaw during turn.',
+    'Driving sample camera yaw should stay aimed at vehicle.',
+  );
+  assert.equal(
+    Math.abs(cameraState.rotation.x - expectedLook.pitch) < 0.03,
+    true,
+    'Driving sample camera pitch should stay aimed at vehicle.',
   );
 
   const beforeReverseHeading = scene.heading;
