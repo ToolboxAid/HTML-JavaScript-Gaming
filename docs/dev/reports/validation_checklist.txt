@@ -1,4 +1,1 @@
-- incorrect launch/ location corrected
-- 1319 runtime restored to sample-local server folder
-- references must be updated to server-local paths
-- validation remains execution-backed and testable
+Validation report will be generated after execution.
