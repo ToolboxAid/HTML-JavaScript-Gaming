@@ -604,7 +604,14 @@
 
 [x] fullscreen bezel overlay system (low priority, before next game)
 
-## 17
+## 17. 3D Activation, Validation, and Execution (Phase 16)
+
+### Impact Validation (FIRST - REQUIRED)
+- [ ] Validate no render loop regressions
+- [ ] Validate no timing model regressions
+- [ ] Validate no input system regressions
+- [ ] Confirm networking/runtime remains stable during 3D activation
+- [ ] Confirm 2D samples still run correctly after 3D activation work
 
 ### 3D Engine Foundation
 - [ ] 3D scene boot
@@ -689,6 +696,3 @@
 [ ] Clean boundaries
 [ ] Document contracts
 [ ] Stabilize networking/runtime before 3D
-[ ] Validate no render loop regressions
-[ ] Validate no timing model regressions
-[ ] Validate no input system regressions
