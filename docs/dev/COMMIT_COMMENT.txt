@@ -1,1 +1,2 @@
-BUILD_PR_LEVEL_14_TESTS_VALIDATION_RESIDUE_ONLY
+Normalize phase descriptions repo-wide and close the final Section-16 residue
+BUILD_PR_LEVEL_16_PHASE_DESCRIPTIONS_REPO_WIDE_NORMALIZATION

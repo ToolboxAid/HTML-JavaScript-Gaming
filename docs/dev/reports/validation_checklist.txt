@@ -1,1 +1,6 @@
-Only remaining items touched
+- phase-description text normalized repo-wide where needed
+- unrelated docs left untouched
+- roadmap updated by status markers only
+- final item can be truthfully marked complete or exact blockers are reported
+- output ZIP created at:
+  <project folder>/tmp/BUILD_PR_LEVEL_16_PHASE_DESCRIPTIONS_REPO_WIDE_NORMALIZATION.zip

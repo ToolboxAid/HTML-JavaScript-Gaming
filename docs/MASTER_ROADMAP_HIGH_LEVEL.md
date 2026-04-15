@@ -528,8 +528,8 @@
 ## 13. 3D Capability Track (Phase 16)
 
 ### Phase 16 Description Alignment
-- [ ] phase-16 description updated in repo docs/index
-- [ ] phase-16 description kept separate from networking language
+- [x] phase-16 description updated in repo docs/index
+- [x] phase-16 description kept separate from networking language
 
 ### Prerequisite Samples
 - [ ] 3D Scene Boot Sample
@@ -593,7 +593,7 @@
 - [.] master roadmap committed and maintained
 - [ ] per-component roadmap slices added only when truly needed
 - [ ] structure normalization roadmap linked to future BUILD lanes
-- [ ] phase descriptions normalized repo-wide
+- [x] phase descriptions normalized repo-wide
 - [ ] naming policy documented
 
 ---

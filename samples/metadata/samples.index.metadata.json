@@ -63,7 +63,7 @@
     },
     {
       "phase": "13",
-      "title": "Phase 13 - Network Concepts, Latency and Simulation",
+      "title": "Phase 13 - Network Concepts, Latency & Simulation",
       "description": "Introduces networking concepts using local and simulated systems (event bus, input models, latency simulation)."
     },
     {

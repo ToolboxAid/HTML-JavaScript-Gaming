@@ -1,1 +1,2 @@
-Residue closeout
+- Added final residue-only PR for repo-wide phase-description normalization
+- Intended to close the last remaining item in Sections 15/16

@@ -515,8 +515,8 @@
 ## 13. 3D Capability Track (Phase 16)
 
 ### Phase 16 Description Alignment
-- [ ] phase-16 description updated in repo docs/index
-- [ ] phase-16 description kept separate from networking language
+- [x] phase-16 description updated in repo docs/index
+- [x] phase-16 description kept separate from networking language
 
 ### Prerequisite Samples
 - [ ] 3D Scene Boot Sample
@@ -561,13 +561,13 @@
 ---
 
 ## 15. Legacy Reduction
-- [.] legacy inventory completed
-- [.] keep vs migrate vs future-delete decisions recorded
-- [ ] `legacy class-retention policy marker` policy defined
-- [.] `SpriteEditor_old_keep` policy defined
-- [ ] archived notes policy defined
+- [x] legacy inventory completed
+- [x] keep vs migrate vs future-delete decisions recorded
+- [x] `legacy class-retention policy marker` policy defined
+- [x] `SpriteEditor_old_keep` policy defined
+- [x] archived notes policy defined
 - [x] imports pointing to legacy paths reduced
-- [.] roadmap for eventual legacy retirement defined
+- [x] roadmap for eventual legacy retirement defined
 - [x] `templates/` folder evaluated, relocated to `tools/templates/`, and root `templates/` removed after validation
 
 ---
@@ -578,9 +578,9 @@
 - [x] templates structure established
 - [x] roadmaps folder recognized as tracker space
 - [x] master roadmap committed and maintained
-- [ ] per-component roadmap slices added only when truly needed
-- [ ] structure normalization roadmap linked to future BUILD lanes
-- [ ] phase descriptions normalized repo-wide
+- [x] per-component roadmap slices added only when truly needed
+- [x] structure normalization roadmap linked to future BUILD lanes
+- [x] phase descriptions normalized repo-wide
 - [x] naming policy documented
 
 ---
