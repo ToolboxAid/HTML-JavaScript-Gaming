@@ -600,7 +600,7 @@
 - [x] Expand testing/validation structure
 
 ### Repo Operator + Asset Conversion Scripting Lanes
-- [.] Existing games asset folders updated so existing images / vectors / related runtime assets can be transformed into tool-editable `data/` objects, with corresponding project JSON updates
+- [x] Existing games asset folders updated so existing images / vectors / related runtime assets can be transformed into tool-editable `data/` objects, with corresponding project JSON updates
 - [x] Add the ability for a PowerShell script to create a new game from template, including a project scaffold for the tools
 - [x] Add scripts to prep / update / delete the repo so it can be placed on a website
 - [x] Add scripts to switch between Pay-as-you-go and Codex plan modes, and scripts to input API key material and validate it
@@ -609,7 +609,7 @@
 - [x] FEATURE: Fullscreen Bezel Overlay System - Render game in full screen with optional bezel artwork layer (static or animated) surrounding the active playfield, preserving aspect ratio and supporting per-game/theme bezel assets without modifying core engine rendering.
 
 ### Later Capability Lanes
-- [.] Execute 2D capability polish lanes
+- [x] Execute 2D capability polish lanes
 - [ ] Execute phase-16 / 3D capability lanes
 
 ### Final Cleanup Lane
@@ -619,7 +619,7 @@
 ### Recommended Final Status Summary
 - [ ] current active execution lanes are 3 / 6 / 8
 - [ ] next planning lanes are 2 / 5 / 7 / 9 / 10
-- [ ] later capability lanes are 11 / 12
+- [x] later capability lanes are 11 / 12
 - [ ] final cleanup lane is 13
 
 ---
