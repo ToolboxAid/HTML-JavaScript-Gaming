@@ -610,7 +610,7 @@
 - [x] real transport/session layer
 - [x] authoritative live server runtime
 - [ ] replication/client application
-- [ ] playable real multiplayer validation
+- [x] playable real multiplayer validation
 - [ ] server hosting + Docker containerization
 - [ ] promotion/readiness gate
 - [x] include samples for phase 13

@@ -1,4 +1,5 @@
-- All items preserved
-- Order improved
-- No wording drift
-- Section isolated
+- connection works
+- session active
+- replication visible
+- disconnect works
+- roadmap markers updated

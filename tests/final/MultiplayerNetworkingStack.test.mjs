@@ -15,6 +15,7 @@ import {
   HostServerBootstrap,
   INPUT_INGESTION_REJECTION_CODES,
   InterestManager,
+  LoopbackTransport,
   NetworkConditionSimulator,
   NetworkingLayer,
   PredictionReconciler,
@@ -312,6 +313,92 @@ export async function run() {
     invalidEnvelopeResult.code,
     REPLICATION_MESSAGE_REJECTION_CODES.SNAPSHOT_TYPE_INVALID,
   );
+
+  // Level 12.4: one minimal playable multiplayer validation slice.
+  const playableSessionId = 'session-playable-minimal';
+  const [playableHostTransport, playableClientTransport] = LoopbackTransport.createLinkedPair(
+    'host-playable',
+    'client-playable',
+  );
+  const playableHandshake = new HandshakeSimulator({
+    sessionId: playableSessionId,
+    hostId: 'host-playable',
+    clientId: 'client-playable',
+    hostTransport: playableHostTransport,
+    clientTransport: playableClientTransport,
+  });
+  assert.equal(playableHandshake.begin({ token: 'playable-token' }), true);
+  const playableHandshakeState = playableHandshake.update();
+  assert.equal(playableHandshakeState.handshakeComplete, true);
+  assert.equal(playableHandshakeState.host.state, SESSION_STATES.ACTIVE);
+  assert.equal(playableHandshakeState.client.state, SESSION_STATES.ACTIVE);
+
+  const playableServer = new AuthoritativeServerRuntime({
+    sessionId: playableSessionId,
+    tickRateHz: 20,
+  });
+  const playableServerStarted = playableServer.start();
+  assert.equal(playableServerStarted.runtimePhase, SERVER_RUNTIME_PHASES.RUNNING);
+
+  const playableClient = new ClientReplicationApplicationLayer({
+    sessionId: playableSessionId,
+    reconciliationStrategy: new ClientReconciliationStrategy(),
+  });
+  const playableStateReplication = new StateReplication();
+  let authoritativePlayableEntities = [{ id: 'player-1', x: 0, y: 0 }];
+
+  const playableInputAccepted = playableServer.ingestClientInput({
+    sessionId: playableSessionId,
+    clientId: 'client-playable',
+    sequence: 0,
+    inputType: 'move',
+    payload: { dx: 3, dy: 0 },
+    sentAtMs: 1,
+  });
+  assert.equal(playableInputAccepted.ok, true);
+
+  playableServer.step(0.05);
+  const playableInputs = playableServer.drainAcceptedInputs();
+  assert.equal(playableInputs.length, 1);
+  authoritativePlayableEntities = authoritativePlayableEntities.map((entity) => ({
+    ...entity,
+    x: entity.id === 'player-1'
+      ? entity.x + (playableInputs[0].payload.dx ?? 0)
+      : entity.x,
+    y: entity.id === 'player-1'
+      ? entity.y + (playableInputs[0].payload.dy ?? 0)
+      : entity.y,
+  }));
+
+  const playableSnapshot = playableStateReplication.createSnapshot(authoritativePlayableEntities, {
+    tick: playableServer.getSnapshot().authoritativeTick,
+  });
+  assert.equal(playableClient.ingestReplicationEnvelope({
+    sessionId: playableSessionId,
+    replicationSequence: 0,
+    authoritativeTick: playableSnapshot.tick,
+    snapshotType: REPLICATION_SNAPSHOT_TYPES.FULL,
+    snapshot: {
+      entities: playableSnapshot.entities,
+      despawned: playableSnapshot.despawned,
+    },
+    sentAtMs: 5,
+  }).ok, true);
+  const playableApplyResult = playableClient.applyPendingReplication();
+  assert.equal(playableApplyResult.applied, 1);
+  assert.equal(playableApplyResult.ignored, 0);
+  assert.equal(
+    playableClient.getReplicatedStateSnapshot().find((entity) => entity.id === 'player-1').x,
+    authoritativePlayableEntities[0].x,
+  );
+
+  const playableDisconnectState = playableHandshake.disconnect('playable-cleanup');
+  assert.equal(playableDisconnectState.host.state, SESSION_STATES.DISCONNECTED);
+  assert.equal(playableDisconnectState.client.state, SESSION_STATES.DISCONNECTED);
+  const playableServerStopped = playableServer.stop('playable-cleanup');
+  assert.equal(playableServerStopped.runtimePhase, SERVER_RUNTIME_PHASES.STOPPED);
+  assert.equal(playableServer.drainAcceptedInputs().length, 0);
+  assert.equal(playableClient.getReplicationStatus().pendingEnvelopes, 0);
 
   const replication = new StateReplication();
   const snapshot = replication.createSnapshot([{ id: 'npc-1', x: 10, y: 20 }], { tick: 3 });
