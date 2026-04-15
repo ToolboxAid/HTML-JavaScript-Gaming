@@ -1,7 +1,4 @@
-- new real-network capability lane added to roadmap
-- hosted Docker server path explicitly included
-- 3D sequencing updated to depend on real-network completion
-- existing completed network items preserved
-- roadmap updated additively
-- output ZIP created at:
-  <project folder>/tmp/BUILD_PR_ROADMAP_ADD_FULL_NETWORK_CAPABILITY_BEFORE_3D.zip
+- Transport abstraction defined
+- Session lifecycle defined
+- Handshake flow defined
+- No engine boundary violations

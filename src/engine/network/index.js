@@ -16,4 +16,19 @@ export { default as HostServerBootstrap } from './HostServerBootstrap.js';
 export { default as InterestManager } from './InterestManager.js';
 export { default as ChatPresenceLayer } from './ChatPresenceLayer.js';
 export { default as RollbackDiagnostics } from './RollbackDiagnostics.js';
+export {
+  assertTransportContract,
+  createTransportBoundary,
+  getTransportContract,
+} from './TransportContract.js';
+export {
+  SESSION_STATES,
+  createSessionLifecycle,
+  getSessionLifecycleContract,
+} from './SessionLifecycleContract.js';
+export {
+  HANDSHAKE_MESSAGE_TYPES,
+  getHandshakeContract,
+  default as HandshakeSimulator,
+} from './HandshakeSimulator.js';
 export { drawNetworkDebugOverlay } from './NetworkDebugOverlay.js';

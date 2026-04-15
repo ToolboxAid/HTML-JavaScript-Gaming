@@ -7,6 +7,7 @@ MultiplayerNetworkingStack.test.mjs
 import assert from 'node:assert/strict';
 import {
   ChatPresenceLayer,
+  HandshakeSimulator,
   HostServerBootstrap,
   InterestManager,
   NetworkConditionSimulator,
@@ -14,8 +15,13 @@ import {
   PredictionReconciler,
   RemoteInterpolationBuffer,
   RollbackDiagnostics,
+  SESSION_STATES,
   Serializer,
   StateReplication,
+  createSessionLifecycle,
+  getHandshakeContract,
+  getSessionLifecycleContract,
+  getTransportContract,
 } from '../../src/engine/network/index.js';
 
 export async function run() {
@@ -34,6 +40,50 @@ export async function run() {
   host.update(0.02);
   client.update(0.02);
   assert.equal(client.consumeReceived()[0].payload.text, 'hi');
+
+  const transportContract = getTransportContract();
+  assert.deepEqual(transportContract.requiredMethods, [
+    'connect',
+    'disconnect',
+    'send',
+    'drainInbox',
+  ]);
+
+  const lifecycleContract = getSessionLifecycleContract();
+  assert.equal(lifecycleContract.states.ACTIVE, SESSION_STATES.ACTIVE);
+  const lifecycle = createSessionLifecycle({
+    sessionId: 'session-lifecycle',
+    peerId: 'peer-a',
+    role: 'client',
+  });
+  assert.equal(
+    lifecycle.transition(SESSION_STATES.ACTIVE, 'skip-connect-handshake').ok,
+    false,
+  );
+  assert.equal(lifecycle.transition(SESSION_STATES.CONNECTING, 'connect').ok, true);
+  assert.equal(lifecycle.transition(SESSION_STATES.HANDSHAKING, 'hello').ok, true);
+  assert.equal(lifecycle.transition(SESSION_STATES.ACTIVE, 'accepted').ok, true);
+  assert.equal(lifecycle.getState(), SESSION_STATES.ACTIVE);
+
+  const handshakeContract = getHandshakeContract();
+  assert.deepEqual(handshakeContract.flow, [
+    'session.handshake.hello',
+    'session.handshake.accept',
+    'session.handshake.confirm',
+  ]);
+  const handshake = new HandshakeSimulator({
+    sessionId: 'session-handshake',
+    hostId: 'host-h',
+    clientId: 'client-h',
+  });
+  assert.equal(handshake.begin({ token: 'token-1' }), true);
+  const activeHandshakeState = handshake.update();
+  assert.equal(activeHandshakeState.handshakeComplete, true);
+  assert.equal(activeHandshakeState.host.state, SESSION_STATES.ACTIVE);
+  assert.equal(activeHandshakeState.client.state, SESSION_STATES.ACTIVE);
+  const disconnectedHandshakeState = handshake.disconnect('test-closeout');
+  assert.equal(disconnectedHandshakeState.host.state, SESSION_STATES.DISCONNECTED);
+  assert.equal(disconnectedHandshakeState.client.state, SESSION_STATES.DISCONNECTED);
 
   const replication = new StateReplication();
   const snapshot = replication.createSnapshot([{ id: 'npc-1', x: 10, y: 20 }], { tick: 3 });

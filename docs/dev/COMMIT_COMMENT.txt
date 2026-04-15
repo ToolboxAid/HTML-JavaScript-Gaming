@@ -1,2 +1,1 @@
-Add full real-network capability lane before 3D, including hosted Docker server path
-BUILD_PR_ROADMAP_ADD_FULL_NETWORK_CAPABILITY_BEFORE_3D
+PLAN_PR_LEVEL_12_1_REAL_NETWORK_FOUNDATION: establish transport/session contracts and handshake model for real-network lane
