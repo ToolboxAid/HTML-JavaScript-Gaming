@@ -165,16 +165,6 @@
 - [x] 2D collision patterns
 - [x] 2D gameplay hooks
 
-### 3D Engine Foundation
-- [ ] 3D scene boot
-- [ ] 3D render foundation
-- [ ] 3D transforms
-- [ ] 3D camera controls
-- [ ] 3D movement base
-- [ ] 3D collision base
-- [ ] 3D physics base
-- [ ] 3D content loading path
-
 ---
 
 ## 3. Shared Foundation (`src/shared`)
@@ -287,15 +277,6 @@
 - [x] BUILD_PR_DEBUG_SURFACES_NETWORK_SUPPORT
 - [x] APPLY_PR_DEBUG_SURFACES_NETWORK_SUPPORT
 
-### Track H - 3D Debug Support
-- [.] Transform inspector
-- [x] BUILD_PR_DEBUG_SURFACES_3D_SUPPORT
-- [x] APPLY_PR_DEBUG_SURFACES_3D_SUPPORT
-- [ ] Camera debug panel
-- [ ] Render pipeline stages
-- [ ] Collision overlays
-- [ ] Scene graph inspector
-
 ### Track I - Inspectors & Tooling
 - [x] Entity inspector
 - [x] Component inspector
@@ -327,7 +308,6 @@
 - [x] tilemap / camera / rendering phases normalized
 - [x] tool-linked sample phases normalized
 - [x] network concepts / latency / simulation phase normalized
-- [ ] 3D phase normalized
 
 ### Dependency-Driven Sample Builds
 - [x] 2D camera sample
@@ -335,10 +315,6 @@
 - [x] collision sample
 - [x] enemy behavior sample
 - [x] full 2D reference game sample
-- [ ] 3D scene boot sample
-- [ ] 3D camera orbit sample
-- [ ] 3D movement sample
-- [ ] 3D collision sample
 
 ---
 
@@ -459,7 +435,6 @@
 
 ### Tooling Strategy By Need
 - [x] 2D tool stabilization before 3D tool expansion
-- [ ] 3D prerequisite samples before advanced 3D tools
 - [x] content pipeline tools after asset complexity justifies them
 - [x] debug tools align with engine/debug maturity
 
@@ -516,35 +491,6 @@
 ### Phase 16 Description Alignment
 - [x] phase-16 description updated in repo docs/index
 - [x] phase-16 description kept separate from networking language
-
-### Prerequisite Samples
-- [ ] 3D Scene Boot Sample
-- [ ] Camera Orbit Sample
-- [ ] 3D Movement Sample
-- [ ] Basic Collision Sample
-
-### Core Sample Track (1601 - 1608)
-- [ ] 1601 - 3D Cube Explorer
-- [ ] 1602 - 3D Maze Runner
-- [ ] 1603 - First Person Walkthrough
-- [ ] 1604 - 3D Platformer
-- [ ] 1605 - 3D Driving Sandbox
-- [ ] 1606 - 3D Physics Playground
-- [ ] 1607 - 3D Space Shooter
-- [ ] 1608 - 3D Dungeon Crawler
-
-### Advanced 3D Samples
-- [ ] 1610 - Lighting Demo
-- [ ] 1611 - AI Navigation Demo
-- [ ] 1612 - Large World Streaming Demo
-
-### 3D Capability Requirements
-- [ ] 3D rendering
-- [ ] 3D camera
-- [ ] 3D movement
-- [ ] 3D physics
-- [ ] 3D tool support
-- [ ] 3D debug support
 
 ---
 
@@ -623,7 +569,6 @@
 
 ### Later Capability Lanes
 - [x] Execute 2D capability polish lanes
-- [ ] Execute phase-16 / 3D capability lanes (after full real-network capability lane completion)
 
 ### Final Cleanup Lane
 - [x] Reduce legacy footprint after replacements are proven
@@ -659,8 +604,73 @@
 
 [x] fullscreen bezel overlay system (low priority, before next game)
 
+## 17
 
-## 17. Finalize engine
+### 3D Engine Foundation
+- [ ] 3D scene boot
+- [ ] 3D render foundation
+- [ ] 3D transforms
+- [ ] 3D camera controls
+- [ ] 3D movement base
+- [ ] 3D collision base
+- [ ] 3D physics base
+- [ ] 3D content loading path
+
+### Track H - 3D Debug Support
+- [.] Transform inspector
+- [x] BUILD_PR_DEBUG_SURFACES_3D_SUPPORT
+- [x] APPLY_PR_DEBUG_SURFACES_3D_SUPPORT
+- [ ] Camera debug panel
+- [ ] Render pipeline stages
+- [ ] Collision overlays
+- [ ] Scene graph inspector
+
+### Sample Phase Tracks
+- [ ] 3D phase normalized
+
+### Dependency-Driven Sample Builds
+- [ ] 3D scene boot sample
+- [ ] 3D camera orbit sample
+- [ ] 3D movement sample
+- [ ] 3D collision sample
+
+### Tooling Strategy By Need
+- [ ] 3D prerequisite samples before advanced 3D tools
+
+### Prerequisite Samples
+- [ ] 3D Scene Boot Sample
+- [ ] Camera Orbit Sample
+- [ ] 3D Movement Sample
+- [ ] Basic Collision Sample
+
+### Core Sample Track (1601 - 1608)
+- [ ] 1601 - 3D Cube Explorer
+- [ ] 1602 - 3D Maze Runner
+- [ ] 1603 - First Person Walkthrough
+- [ ] 1604 - 3D Platformer
+- [ ] 1605 - 3D Driving Sandbox
+- [ ] 1606 - 3D Physics Playground
+- [ ] 1607 - 3D Space Shooter
+- [ ] 1608 - 3D Dungeon Crawler
+
+### Advanced 3D Samples
+- [ ] 1610 - Lighting Demo
+- [ ] 1611 - AI Navigation Demo
+- [ ] 1612 - Large World Streaming Demo
+
+### 3D Capability Requirements
+- [ ] 3D rendering
+- [ ] 3D camera
+- [ ] 3D movement
+- [ ] 3D physics
+- [ ] 3D tool support
+- [ ] 3D debug support
+
+### Later Capability Lanes
+- [ ] Execute phase-16 / 3D capability lanes (after full real-network capability lane completion)
+
+
+## 18. Finalize engine
 
 [ ] Verify all `samples/` and `games/` use engine systems and are not coded locally; if local, migrate to engine.
 [ ] Some games are actually samples/demos; identify and recommend a `phase-xx` move target.
