@@ -1,5 +1,4 @@
-- target sample set locked
-- import policy locked to src/engine/network/index.js
-- no feature expansion allowed
-- testable validation requirements included
-- roadmap updates constrained to marker-only progression
+- imports normalized
+- validation passed
+- no regressions
+- roadmap markers updated only
