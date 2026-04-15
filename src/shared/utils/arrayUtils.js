@@ -4,6 +4,10 @@ export function ensureArray(value) {
   return Array.isArray(value) ? value : [];
 }
 
+export function asArray(value) {
+  return ensureArray(value);
+}
+
 export function asStringArray(value) {
   if (!Array.isArray(value)) {
     return [];

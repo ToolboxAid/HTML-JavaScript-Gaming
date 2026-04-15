@@ -6,6 +6,7 @@ getState.js
 */
 
 import { createPromotionStateSnapshot } from './createPromotionStateSnapshot.js';
+import { createNormalizedPromotionSnapshot } from './normalization.js';
 
 function getState({
   promoted,
@@ -15,13 +16,24 @@ function getState({
   lastEvaluation,
   cloneLastEvaluation
 } = {}) {
-  return createPromotionStateSnapshot({
+  if (typeof cloneLastEvaluation === "function") {
+    return createPromotionStateSnapshot({
+      promoted,
+      stableFrames,
+      stabilityWindowFrames,
+      lastReason,
+      lastEvaluation,
+      cloneLastEvaluation
+    });
+  }
+
+  return createNormalizedPromotionSnapshot({
     promoted,
     stableFrames,
     stabilityWindowFrames,
     lastReason,
     lastEvaluation,
-    cloneLastEvaluation
+    handoff: lastEvaluation?.handoff
   });
 }
 

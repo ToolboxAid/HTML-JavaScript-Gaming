@@ -1,10 +1,13 @@
-- 2D scene boot addressed
-- 2D render loop addressed
-- 2D camera addressed
-- 2D tilemap integration addressed
-- 2D collision patterns addressed
-- 2D gameplay hooks addressed
-- Any residue is explicit and minimal
-- Roadmap updated by status markers only
-- Output ZIP created at:
-  <project folder>/tmp/BUILD_PR_LEVEL_02_2D_CAPABILITY_COMBINED_FOUNDATION.zip
+- arrays utilities addressed
+- strings utilities addressed
+- ids utilities addressed
+- shared math addressed
+- shared state guards addressed
+- shared state normalization addressed
+- shared selectors addressed
+- shared contracts addressed
+- shared io/data/types addressed
+- any residue is explicit and minimal
+- roadmap updated by status markers only
+- output ZIP created at:
+  <project folder>/tmp/BUILD_PR_LEVEL_03_SHARED_FOUNDATION_COMBINED_PASS.zip

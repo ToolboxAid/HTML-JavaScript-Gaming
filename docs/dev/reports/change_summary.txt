@@ -1,3 +1,3 @@
-- Added a combined PR for the full 2D Engine Capability cluster
-- Bundles scene boot, render loop, camera, tilemap, collision, and gameplay hooks
-- Intended to finish the 2D capability lane in one pass or leave only a tiny residue
+- Added a combined PR for the Section-3 Shared Foundation lane
+- Bundles utilities, shared math, shared state, contracts, and io/data/types stabilization
+- Intended to finish most or all of Section 3 in one pass and leave only tiny residue if needed

@@ -2,30 +2,42 @@ MODEL: GPT-5.4
 REASONING: high
 
 COMMAND:
-Create `BUILD_PR_LEVEL_02_2D_CAPABILITY_COMBINED_FOUNDATION` as one combined 2D capability PR.
+Create `BUILD_PR_LEVEL_03_SHARED_FOUNDATION_COMBINED_PASS` as one combined Section-3 PR.
 
 Goal:
-Finish the 2D Engine Capability cluster in the fewest practical PRs.
+Finish as much of Shared Foundation (`src/shared`) as truthfully possible in one pass.
 
-Target items to close in this PR if truthfully possible:
-- 2D scene boot
-- 2D render loop
-- 2D camera
-- 2D tilemap integration
-- 2D collision patterns
-- 2D gameplay hooks
+Target items to close in this PR if supported:
+- arrays utilities consolidated
+- strings utilities consolidated
+- ids utilities consolidated
+- shared math layer consolidated
+- shared state guards consolidated
+- shared state normalization consolidated
+- shared selectors consolidated
+- shared contracts consolidated
+- shared io/data/types stabilized
 
 Required work:
-1. Treat these as one coherent 2D engine slice, not six isolated tasks.
-2. Bundle the work logically:
-   - scene boot + render loop + gameplay hooks
-   - camera + tilemap integration
-   - collision patterns + gameplay hooks
-3. Reuse existing validated repo patterns where possible.
-4. Keep the implementation engine-facing and reusable.
-5. Avoid game-specific hacks unless they are already the accepted engine pattern.
-6. Close as many of the six items as truthfully possible in this one PR.
-7. If anything remains open:
+1. Treat the utility cluster as one lane:
+   - arrays
+   - strings
+   - ids
+   - shared math
+
+2. Treat the shared-state cluster as one lane:
+   - state guards
+   - state normalization
+   - selectors
+   - contracts
+
+3. Stabilize shared io/data/types enough to support and close as much of the above as possible.
+
+4. Reuse existing exact-cluster extraction patterns already established in the repo.
+
+5. Close as many Section-3 items as truthfully possible in this one PR.
+
+6. If anything remains open:
    - keep the residue very small
    - report exact blockers
    - leave it suitable for one residue-only PR
@@ -36,10 +48,10 @@ Roadmap:
 
 Final packaging step is REQUIRED:
 - package ALL changed files into this exact repo-structured ZIP:
-  `<project folder>/tmp/BUILD_PR_LEVEL_02_2D_CAPABILITY_COMBINED_FOUNDATION.zip`
+  `<project folder>/tmp/BUILD_PR_LEVEL_03_SHARED_FOUNDATION_COMBINED_PASS.zip`
 
 Hard rules:
 - combine aggressively to reduce PR count
-- coherent implementation over scattered edits
+- keep the changes coherent
 - no unrelated repo changes
 - no missing ZIP

@@ -176,15 +176,15 @@
 - [x] enforcement guard in place
 - [x] numbers utilities consolidated
 - [x] objects utilities consolidated
-- [.] arrays utilities consolidated
-- [.] strings utilities consolidated
-- [ ] ids utilities consolidated
-- [.] shared math layer consolidated
-- [ ] shared state guards consolidated
-- [ ] shared state normalization consolidated
-- [ ] shared selectors consolidated
-- [ ] shared contracts consolidated
-- [ ] shared io/data/types stabilized
+- [x] arrays utilities consolidated
+- [x] strings utilities consolidated
+- [x] ids utilities consolidated
+- [x] shared math layer consolidated
+- [x] shared state guards consolidated
+- [x] shared state normalization consolidated
+- [x] shared selectors consolidated
+- [x] shared contracts consolidated
+- [x] shared io/data/types stabilized
 
 ### Duplicate / Rename Focus
 - [x] `asFiniteNumber` unified

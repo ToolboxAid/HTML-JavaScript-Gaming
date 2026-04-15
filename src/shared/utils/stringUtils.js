@@ -21,3 +21,12 @@ export function sanitizeText(value) {
 export function normalizeString(value) {
   return safeTrim(value);
 }
+
+export function escapeHtml(value) {
+  return String(value || "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#39;");
+}
