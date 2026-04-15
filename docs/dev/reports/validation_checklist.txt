@@ -1,1 +1,7 @@
-Item moved, wording preserved, checkbox removed
+- each target item was inspected before any creation
+- already-existing items were reused instead of recreated
+- only missing items were created
+- roadmap updated by status markers only
+- any residue is explicit and minimal
+- output ZIP created at:
+  <project folder>/tmp/BUILD_PR_LEVEL_06_SAMPLE_PHASE_TRACKS_AND_2D_SAMPLE_BUILDS_INSPECT_FIRST.zip

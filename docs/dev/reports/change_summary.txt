@@ -1,1 +1,3 @@
-Promoted cleanup constraint to rule
+- Added an inspect-first PR for remaining Sample Phase Tracks and Dependency-Driven Sample Builds
+- Requires repo truth classification before any creation or normalization
+- Prevents duplicate sample creation and unnecessary churn

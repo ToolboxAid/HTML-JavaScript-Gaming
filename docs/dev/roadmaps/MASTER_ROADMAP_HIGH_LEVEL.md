@@ -322,18 +322,18 @@
 - [x] sample curriculum progression validated
 
 ### Sample Phase Tracks
-- [ ] foundational phases normalized
-- [ ] tilemap / camera / rendering phases normalized
-- [ ] tool-linked sample phases normalized
-- [ ] network concepts / latency / simulation phase normalized
+- [x] foundational phases normalized
+- [x] tilemap / camera / rendering phases normalized
+- [x] tool-linked sample phases normalized
+- [x] network concepts / latency / simulation phase normalized
 - [ ] 3D phase normalized
 
 ### Dependency-Driven Sample Builds
-- [ ] 2D camera sample
-- [ ] tilemap scrolling sample
-- [ ] collision sample
-- [ ] enemy behavior sample
-- [ ] full 2D reference game sample
+- [x] 2D camera sample
+- [x] tilemap scrolling sample
+- [x] collision sample
+- [x] enemy behavior sample
+- [x] full 2D reference game sample
 - [ ] 3D scene boot sample
 - [ ] 3D camera orbit sample
 - [ ] 3D movement sample
