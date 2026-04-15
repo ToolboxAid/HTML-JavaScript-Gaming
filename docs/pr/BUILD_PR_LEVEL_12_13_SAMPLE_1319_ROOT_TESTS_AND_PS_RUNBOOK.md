@@ -25,12 +25,12 @@ samples/phase-13/1319/
 
 ### A. Move Executable Runtime Files To Repo-Level tests/
 Move:
-- `tests/network-sample-1319/realNetworkServer.mjs`
-- `tests/network-sample-1319/realNetworkDashboard.mjs`
+- `samples/phase-13/1319/server/realNetworkServer.mjs`
+- `samples/phase-13/1319/server/realNetworkDashboard.mjs`
 
 To repo-level tests home:
-- `tests/network-sample-1319/realNetworkServer.mjs`
-- `tests/network-sample-1319/realNetworkDashboard.mjs`
+- `samples/phase-13/1319/server/realNetworkServer.mjs`
+- `samples/phase-13/1319/server/realNetworkDashboard.mjs`
 
 ### B. Keep Sample Folder Clean
 After relocation:
@@ -62,7 +62,7 @@ The PowerShell runbook must include:
 ### 1. Start the real server from repo root
 Use repo-level test path, not sample-local tests path.
 Example target command shape:
-- `node tests/network-sample-1319/realNetworkServer.mjs`
+- `node samples/phase-13/1319/server/realNetworkServer.mjs`
 
 ### 2. Start a local static file host for samples
 From repo root using PowerShell-friendly steps.
@@ -101,7 +101,7 @@ Document terminal commands from repo root for validation checks using the correc
 
 ## Important Path Correction
 The old command:
-- `node tests/network-sample-1319/realNetworkServer.mjs`
+- `node samples/phase-13/1319/server/realNetworkServer.mjs`
 
 must be replaced with the new repo-level path.
 
@@ -119,7 +119,7 @@ must be replaced with the new repo-level path.
 - repo-level test paths resolve correctly
 
 ### Runtime Validation
-- `node tests/network-sample-1319/realNetworkServer.mjs` starts successfully
+- `node samples/phase-13/1319/server/realNetworkServer.mjs` starts successfully
 - sample 1319 still connects correctly
 - dashboard still loads and updates
 

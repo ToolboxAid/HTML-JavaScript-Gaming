@@ -11,7 +11,7 @@ import { WebSocketServer, WebSocket } from "ws";
 
 import {
   AuthoritativeServerRuntime
-} from "../../src/engine/network/index.js";
+} from "../../../../src/engine/network/index.js";
 import {
   DASHBOARD_PATH,
   METRICS_PATH,

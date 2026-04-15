@@ -1,5 +1,4 @@
-- confirmed current 1319 layout
-- executable runtime mjs files targeted for repo-level tests relocation
-- all old sample-local test references must be removed
-- PowerShell runbook required
-- launcher and dashboard validation required
+- incorrect launch/ location corrected
+- 1319 runtime restored to sample-local server folder
+- references must be updated to server-local paths
+- validation remains execution-backed and testable

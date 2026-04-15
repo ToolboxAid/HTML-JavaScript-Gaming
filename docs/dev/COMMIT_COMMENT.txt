@@ -1,1 +1,1 @@
-relocate 1319 runtime mjs files to repo-level tests and add PowerShell runbook — BUILD_PR_LEVEL_12_13_SAMPLE_1319_ROOT_TESTS_AND_PS_RUNBOOK
+return 1319 runtime entry points to sample server folder — BUILD_PR_LEVEL_12_15_SAMPLE_1319_RUNTIME_RETURN_TO_SERVER

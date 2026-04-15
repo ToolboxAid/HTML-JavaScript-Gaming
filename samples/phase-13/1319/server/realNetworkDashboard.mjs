@@ -1,3 +1,6 @@
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+
 /*
 Toolbox Aid
 David Quesenberry
@@ -225,4 +228,13 @@ export function createDashboardPage({
   </script>
 </body>
 </html>`;
+}
+
+const isDirectRun = process.argv[1]
+  && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url);
+
+if (isDirectRun) {
+  console.log("NETWORK_SAMPLE_1319_DASHBOARD_MODULE_ONLY");
+  console.log("Start the real runtime with:");
+  console.log("node samples/phase-13/1319/server/realNetworkServer.mjs");
 }

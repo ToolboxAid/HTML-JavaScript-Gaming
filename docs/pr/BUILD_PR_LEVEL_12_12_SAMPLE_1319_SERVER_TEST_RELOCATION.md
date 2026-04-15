@@ -20,7 +20,7 @@ From:
 - samples/phase-13/1319/server/*.mjs
 
 To:
-- tests/network-sample-1319/*.mjs
+- samples/phase-13/1319/server/*.mjs
 
 ### Update References
 - Update ALL references to new paths

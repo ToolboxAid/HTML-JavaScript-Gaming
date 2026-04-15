@@ -10,7 +10,7 @@ Launch and validate sample 1319 real-network runtime from PowerShell using repo-
 ## 1) Start Real Server (Terminal A)
 ```powershell
 cd c:\Users\davidq\Documents\GitHub\HTML-JavaScript-Gaming
-node tests/network-sample-1319/realNetworkServer.mjs
+node samples/phase-13/1319/server/realNetworkServer.mjs
 ```
 
 Expected startup output includes:
