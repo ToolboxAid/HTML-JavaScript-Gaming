@@ -661,10 +661,11 @@
 
 
 ## 17. Finalize engine
+
 [ ] Verify all `samples/` and `games/` use engine systems and are not coded locally; if local, migrate to engine.
 [ ] Some games are actually samples/demos; identify and recommend a `phase-xx` move target.
 [.] Organize/rebuild `samples/` and `games/` as if newly constructed, with proper classes/data in proper folders.
-[x] Simulated code (for example, some network samples) should be converted to real networks, with tests as needed.
+[.] Simulated code (for example, some network samples) should be converted to real networks, with tests as needed.
 [ ] Single class per file.
 [ ] Flatten CSS layers so only a few remain; use top-layer shared classes as much as possible (for example, a button should use one standard class, with exceptions only when needed).
 [ ] Docs organization: classify all `./docs/` into buckets.
@@ -673,3 +674,11 @@
 [ ] Consolidate PRs for easier one-stop review, so one capability does not require reading many docs (for example, bezel/background); focus on what the capability does.
 [ ] Remove imports to export (should not be import x, export x)
 [ ] Other than templates (games/samples/tools), remove the .keep file, if the folder is empty, delete
+
+[ ] Lock APIs
+[ ] Clean boundaries
+[ ] Document contracts
+[ ] Stabilize networking/runtime before 3D
+[ ] Validate no render loop regressions
+[ ] Validate no timing model regressions
+[ ] Validate no input system regressions
