@@ -442,9 +442,9 @@
 - [x] VectorAssetStudio normalized
 
 ### New Required Tools (By Dependency)
-- [ ] 3DMapEditor
-- [ ] 3DAssetViewer
-- [ ] 3DCameraPathEditor
+- [x] 3DMapEditor
+- [x] 3DAssetViewer
+- [x] 3DCameraPathEditor
 - [x] PhysicsSandboxTool
 - [x] StateInspectorTool
 - [x] ReplayVisualizerTool

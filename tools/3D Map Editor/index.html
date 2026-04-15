@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>3D Map Editor</title>
+  <link rel="stylesheet" href="../../src/engine/ui/hubCommon.css" />
+  <link rel="stylesheet" href="../shared/platformShell.css" />
+  <link rel="stylesheet" href="../shared/debugInspectorTools.css" />
+</head>
+<body class="tools-platform-tool-page" data-tool-id="3d-map-editor" data-tools-platform-page="tool">
+  <div data-tools-platform-header></div>
+  <div class="debug-tool-shell app-shell">
+    <section class="panel debug-tool-panel">
+      <h2>3D Map Editor</h2>
+      <p>Edit baseline 3D map points and segments into a normalized map payload.</p>
+      <div class="debug-tool-actions">
+        <button type="button" id="normalize3dMapButton">Normalize Map</button>
+      </div>
+      <div id="map3dStatus" class="debug-tool-meta">3D map editor ready.</div>
+    </section>
+
+    <section class="debug-tool-grid">
+      <section class="panel debug-tool-panel">
+        <h3>Map Input</h3>
+        <textarea id="map3dInput" rows="16"></textarea>
+      </section>
+      <section class="panel debug-tool-panel">
+        <h3>Map Output</h3>
+        <pre id="map3dOutput" class="debug-tool-readout">Run normalize to inspect the map payload.</pre>
+      </section>
+    </section>
+  </div>
+  <div data-tools-platform-status></div>
+  <script type="module" src="../shared/platformShell.js"></script>
+  <script type="module" src="./main.js"></script>
+</body>
+</html>

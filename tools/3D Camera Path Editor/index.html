@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>3D Camera Path Editor</title>
+  <link rel="stylesheet" href="../../src/engine/ui/hubCommon.css" />
+  <link rel="stylesheet" href="../shared/platformShell.css" />
+  <link rel="stylesheet" href="../shared/debugInspectorTools.css" />
+</head>
+<body class="tools-platform-tool-page" data-tool-id="3d-camera-path-editor" data-tools-platform-page="tool">
+  <div data-tools-platform-header></div>
+  <div class="debug-tool-shell app-shell">
+    <section class="panel debug-tool-panel">
+      <h2>3D Camera Path Editor</h2>
+      <p>Edit camera waypoints and export a normalized deterministic path payload.</p>
+      <div class="debug-tool-actions">
+        <button type="button" id="addCameraPointButton">Add Waypoint</button>
+        <button type="button" id="normalizeCameraPathButton">Normalize Path</button>
+      </div>
+      <div id="cameraPathStatus" class="debug-tool-meta">3D camera path editor ready.</div>
+    </section>
+
+    <section class="debug-tool-grid">
+      <section class="panel debug-tool-panel">
+        <h3>Path Input</h3>
+        <textarea id="cameraPathInput" rows="16"></textarea>
+      </section>
+      <section class="panel debug-tool-panel">
+        <h3>Path Output</h3>
+        <pre id="cameraPathOutput" class="debug-tool-readout">Normalize a path to inspect waypoint output.</pre>
+      </section>
+    </section>
+  </div>
+  <div data-tools-platform-status></div>
+  <script type="module" src="../shared/platformShell.js"></script>
+  <script type="module" src="./main.js"></script>
+</body>
+</html>

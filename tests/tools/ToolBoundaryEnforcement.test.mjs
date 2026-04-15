@@ -15,7 +15,10 @@ const ACTIVE_TOOL_FOLDERS = Object.freeze([
   "Performance Profiler",
   "Physics Sandbox",
   "Asset Pipeline Tool",
-  "Tile Model Converter"
+  "Tile Model Converter",
+  "3D Map Editor",
+  "3D Asset Viewer",
+  "3D Camera Path Editor"
 ]);
 
 function listScriptFiles(directoryPath) {

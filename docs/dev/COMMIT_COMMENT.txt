@@ -1,2 +1,2 @@
-Combine tool normalization and required-tool stabilization into one low-PR pass
-BUILD_PR_LEVEL_09_TOOLS_NORMALIZATION_AND_REQUIRED_TOOLS_COMBINED_PASS
+Close the final remaining Tools lane residue
+BUILD_PR_LEVEL_09_TOOLS_RESIDUE_ONLY

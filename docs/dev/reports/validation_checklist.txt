@@ -1,14 +1,6 @@
-- TileMapEditor addressed
-- ParallaxEditor addressed
-- VectorMapEditor addressed
-- VectorAssetStudio addressed
-- PhysicsSandboxTool addressed
-- StateInspectorTool addressed
-- ReplayVisualizerTool addressed
-- PerformanceProfilerTool addressed
-- AssetPipelineTool addressed
-- Tile/Model Converter Tool addressed
-- any residue is explicit and minimal
+- only remaining open tool items were touched
+- no already-complete tool items were reopened
 - roadmap updated by status markers only
+- Tools lane is either fully complete or exact blockers are reported
 - output ZIP created at:
-  <project folder>/tmp/BUILD_PR_LEVEL_09_TOOLS_NORMALIZATION_AND_REQUIRED_TOOLS_COMBINED_PASS.zip
+  <project folder>/tmp/BUILD_PR_LEVEL_09_TOOLS_RESIDUE_ONLY.zip
