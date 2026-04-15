@@ -1,1 +1,3 @@
-Rule promoted, task retained
+- Added a combined PR for the remaining Section-4 state/replay/timeline lane
+- Bundles contracts, replay model, timeline orchestration, authoritative slices, and boundary normalization
+- Intended to finish most or all of Section 4 in one pass and leave only tiny residue if needed

@@ -5,3 +5,5 @@ David Quesenberry
 index.js
 */
 export { default as ReplaySystem } from './ReplaySystem.js';
+export { ReplayTimeline } from './ReplayTimeline.js';
+export { createReplayModel, normalizeReplayModel, withFinalState } from './ReplayModel.js';

@@ -131,6 +131,7 @@ import { run as runVectorTemplateSampleGame } from './tools/VectorTemplateSample
 import { run as runVectorGeometryRuntime } from './tools/VectorGeometryRuntime.test.mjs';
 import './render/Renderer.test.mjs';
 import { run as runReplaySystem } from './replay/ReplaySystem.test.mjs';
+import { run as runReplayTimeline } from './replay/ReplayTimeline.test.mjs';
 import { run as runOrbitLabModel } from './samples/OrbitLabModel.test.mjs';
 import { run as runOrbitLabScene } from './samples/OrbitLabScene.test.mjs';
 import { run as runProjectileLabModel } from './samples/ProjectileLabModel.test.mjs';
@@ -254,6 +255,7 @@ const tests = [
     ['VectorTemplateSampleGame', runVectorTemplateSampleGame],
     ['VectorGeometryRuntime', runVectorGeometryRuntime],
     ['ReplaySystem', runReplaySystem],
+    ['ReplayTimeline', runReplayTimeline],
     ['OrbitLabModel', runOrbitLabModel],
     ['OrbitLabScene', runOrbitLabScene],
     ['ProjectileLabModel', runProjectileLabModel],

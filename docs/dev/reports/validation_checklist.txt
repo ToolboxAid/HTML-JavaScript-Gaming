@@ -1,1 +1,9 @@
-No rules remain as checklist items
+- replay/timeline boundaries addressed
+- state contracts addressed
+- replay model addressed
+- timeline orchestration addressed
+- authoritative state slices addressed
+- any residue is explicit and minimal
+- roadmap updated by status markers only
+- output ZIP created at:
+  <project folder>/tmp/BUILD_PR_LEVEL_04_STATE_REPLAY_TIMELINE_COMBINED_PASS.zip

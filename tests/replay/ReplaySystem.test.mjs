@@ -45,4 +45,17 @@ export function run() {
   assert.deepEqual(replay.nextFrame(), savedReplay.frames[0]);
   assert.equal(replay.nextFrame(), null);
   assert.equal(replay.playing, false);
+
+  const timeline = replay.getTimeline();
+  assert.equal(timeline.length, 1);
+  assert.equal(timeline[0].frameId, 0);
+  assert.equal(timeline[0].snapshot.input.thrust, true);
+  assert.equal(replay.getTimelineSnapshot(0).snapshot.events.status, 'running');
+  assert.equal(replay.getNearestTimelineSnapshot(100).frameId, 0);
+
+  replay.replaceReplayFromFrame(0, [{ dtSeconds: 1 / 30, input: { thrust: false }, events: { status: 'patched' } }]);
+  const replaced = replay.getReplay();
+  assert.equal(replaced.frames.length, 1);
+  assert.equal(replaced.frames[0].events.status, 'patched');
+  assert.equal(replay.getTimelineSnapshot(0).snapshot.events.status, 'patched');
 }

@@ -214,18 +214,18 @@
 - [x] promotion-gate lane active
 - [x] final promotion gate implemented and applied
 - [x] authoritative/passive handoff finalized
-- [ ] replay/timeline boundaries normalized
-- [.] state contracts extracted/confirmed
+- [x] replay/timeline boundaries normalized
+- [x] state contracts extracted/confirmed
 - [x] public selectors stabilized
 - [x] observability for promotion/handoff completed
 - [x] long-run validation completed
 - [x] rollback safety / abort logic completed
 
 ### Subcomponents
-- [.] state contracts
-- [.] authoritative state slices
-- [ ] replay model
-- [ ] timeline orchestration
+- [x] state contracts
+- [x] authoritative state slices
+- [x] replay model
+- [x] timeline orchestration
 - [x] selectors/public readers
 - [x] promotion gating
 - [x] rollback safety / abort logic
