@@ -1,3 +1,5 @@
-- runtime files moved to tests/
-- references updated
-- no logic changes
+- confirmed current 1319 layout
+- executable runtime mjs files targeted for repo-level tests relocation
+- all old sample-local test references must be removed
+- PowerShell runbook required
+- launcher and dashboard validation required
