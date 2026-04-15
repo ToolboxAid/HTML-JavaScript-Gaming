@@ -1,1 +1,4 @@
-plan-only; no code; no repo changes; layered execution defined
+- All items preserved
+- Order improved
+- No wording drift
+- Section isolated

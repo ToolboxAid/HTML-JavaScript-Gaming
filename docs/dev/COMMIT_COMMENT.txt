@@ -1,1 +1,1 @@
-Plan Phase 16 3D execution (all items structured into layers)
+reorder and clarify section 17 finalize engine — PLAN_PR_LEVEL_17_ENGINE_FINALIZATION_REORDER

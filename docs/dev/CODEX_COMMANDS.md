@@ -1,19 +1,8 @@
-
-MODEL: GPT-5.4
-REASONING: medium
-
+MODEL: GPT-5.3-codex
+REASONING: low
 COMMAND:
-Prepare for Phase 16 execution using PLAN_PR_3D_PHASE16_MASTER_EXECUTION
-
-Do NOT implement yet.
-
-Tasks:
-- understand layer ordering
-- prepare for Layer 1 start
-- ensure no conflicts with existing engine
-- confirm separation from 2D systems
-
-Rules:
-- no code generation in this step
-- no repo modification
-- planning only
+Update Section 17 in MASTER_ROADMAP_HIGH_LEVEL.md.
+Only reorder and lightly clarify wording.
+Do NOT remove items.
+Do NOT change meaning.
+Do NOT modify other sections.

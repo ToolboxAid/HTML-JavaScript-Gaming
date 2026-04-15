@@ -661,13 +661,13 @@
 
 
 ## 17. Finalize engine
-[ ] Verify all samples/ and games/ must use engine and not coded locally, if local, update to use engine
-[ ] docs/organization, classify all ./docs/ into buckets
-[ ] arrage docs into a classification bucket
-[ ] any doc that is a move/rename/etc. should be deleted (verify content is in the correct doc before deleting)
-[ ] consolidate PR for easier, one stop, review, no need to look as 6 different docs for one capability (a good example of this is bezel/background), all people care about is what it does.
-[ ] some games are actually samples/demo, identify and recomment a phase-xx to move to.
-[ ] simulated code (like some of the netword samples) should be coverted to use real networks) understanding, tests may need some moch
-[ ] single class per file
-[ ] organize/rebuild samples/games so the are as if new construction with proper classes/data/etc in proper folder
-[ ] flatten css layer, there should only be a few, use as much as possible to top layer a button is a button, should be a single class to operate, I know exceptions can exist
+[ ] Verify all `samples/` and `games/` use engine systems and are not coded locally; if local, migrate to engine.
+[ ] Some games are actually samples/demos; identify and recommend a `phase-xx` move target.
+[ ] Organize/rebuild `samples/` and `games/` as if newly constructed, with proper classes/data in proper folders.
+[ ] Simulated code (for example, some network samples) should be converted to real networks, with tests as needed.
+[ ] Single class per file.
+[ ] Flatten CSS layers so only a few remain; use top-layer shared classes as much as possible (for example, a button should use one standard class, with exceptions only when needed).
+[ ] Docs organization: classify all `./docs/` into buckets.
+[ ] Arrange docs into classification buckets.
+[ ] Any doc that is only move/rename/etc. should be deleted (verify content is in the correct doc before deleting).
+[ ] Consolidate PRs for easier one-stop review, so one capability does not require reading many docs (for example, bezel/background); focus on what the capability does.
