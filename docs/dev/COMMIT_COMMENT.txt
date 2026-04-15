@@ -1,1 +1,1 @@
-apply standardized network usage across phase-13 samples — APPLY_PR_LEVEL_12_9_NETWORK_USAGE_SAMPLE_STANDARDIZATION
+define real-network sample launch and live dashboard requirements — PLAN_PR_LEVEL_12_10_REAL_NETWORK_SAMPLE_AND_DASHBOARD

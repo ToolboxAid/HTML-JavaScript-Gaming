@@ -1,4 +1,5 @@
-- imports normalized
-- validation passed
-- no regressions
-- roadmap markers updated only
+- missing execution-facing network capabilities identified
+- scope limited to real-network sample + dashboard
+- remains testable
+- roadmap updates restricted to marker-only progression
+- 3D remains gated
