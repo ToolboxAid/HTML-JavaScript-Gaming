@@ -8,6 +8,7 @@
 ## Rules
 - repo structure work is now constrained to exact move-map BUILDs only
 - remaining structure normalization should avoid broad folder churn until active shared extraction and promotion-gate work stabilize
+- shared math is now a real active layer and should continue by exact-cluster extraction only
 
 ## Conservative Rebaseline (2026-04-12)
 - status updates in this revision are conservative and execution-backed
@@ -203,7 +204,6 @@
 - [x] duplicated `asNumber` consumers migrated to shared math
 - [x] Asteroids numeric sanitizers promoted into shared math
 - [x] duplicated `asObject` / `asArray` consumers moved to shared utils
-- [.] shared math is now a real active layer and should continue by exact-cluster extraction only
 - [ ] remaining number/string/id helpers still need exact-cluster normalization
 
 ---

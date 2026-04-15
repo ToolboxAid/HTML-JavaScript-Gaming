@@ -3,30 +3,23 @@ MODEL: GPT-5.4
 REASONING: high
 
 COMMAND:
-Create BUILD_PR_LEVEL_03_DUPLICATE_RENAME_COMBINED_PASS
+Create BUILD_PR_SHARED_RULE_PROMOTION_AND_TASK_SPLIT
 
-1. Identify all getState variants
-2. Bucket by domain:
-   - simulation
-   - replay
-   - editor
-   - other
+1. Locate:
+- shared math is now a real active layer and should continue by exact-cluster extraction only
+- remaining number/string/id helpers still need exact-cluster normalization
 
-3. Normalize naming:
-   - getSimulationState
-   - getReplayState
-   - getEditorState
+2. Convert:
+RULE:
+- remove checkbox
+- move to rules section
 
-4. Classify duplicates:
-   - sample
-   - tool
-   - runtime
+TASK:
+- keep as checklist item
 
-5. Only move after classification
-
-6. Close as many roadmap items as possible
-
-7. Update roadmap status only
+3. Do NOT:
+- change wording
+- delete content
 
 OUTPUT:
-<project folder>/tmp/BUILD_PR_LEVEL_03_DUPLICATE_RENAME_COMBINED_PASS.zip
+<project folder>/tmp/BUILD_PR_SHARED_RULE_PROMOTION_AND_TASK_SPLIT.zip
