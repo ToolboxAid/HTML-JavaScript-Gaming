@@ -1,1 +1,1 @@
-apply real-network completion gate with evidence; advance marker only on full pass — APPLY_PR_LEVEL_12_7_REAL_NETWORK_COMPLETION_GATE
+normalize network directory structure with validated import rewiring — BUILD_PR_LEVEL_12_8_NETWORK_DIRECTORY_NORMALIZATION

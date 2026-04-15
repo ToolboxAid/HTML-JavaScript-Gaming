@@ -4,8 +4,8 @@ David Quesenberry
 03/22/2026
 NetworkingLayer.js
 */
-import LoopbackTransport from './LoopbackTransport.js';
-import NetworkConditionSimulator from './NetworkConditionSimulator.js';
+import LoopbackTransport from '../transport/LoopbackTransport.js';
+import NetworkConditionSimulator from '../transport/NetworkConditionSimulator.js';
 
 function clone(value) {
   return JSON.parse(JSON.stringify(value));

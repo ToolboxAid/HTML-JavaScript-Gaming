@@ -1,7 +1,18 @@
 MODEL: GPT-5.4
-REASONING: medium
+REASONING: high
 COMMAND:
-Finalize APPLY_PR_LEVEL_12_7_REAL_NETWORK_COMPLETION_GATE with real execution evidence.
+Implement BUILD_PR_LEVEL_12_8_NETWORK_DIRECTORY_NORMALIZATION exactly as defined from the reviewed src.zip baseline.
+Apply the exact move-map under src/engine/network/.
+Keep scope to directory normalization only.
 Do not add features.
-Update docs/dev/roadmaps/MASTER_ROADMAP_HIGH_LEVEL.md by markers only.
-Advance `promotion/readiness gate` from [.] to [x] only if every validation area passed.
+Do not leave duplicate legacy files behind.
+Update imports and src/engine/network/index.js so the export surface remains stable where possible.
+Run real validation:
+- import/path resolution
+- network runtime smoke boot
+- transport/session lifecycle smoke
+- authoritative runtime boot
+- replication/apply smoke
+- focused 2D regression smoke
+Update docs/dev/roadmaps/MASTER_ROADMAP_HIGH_LEVEL.md by changing status markers only.
+Do not modify roadmap wording, structure, add content, or delete content.

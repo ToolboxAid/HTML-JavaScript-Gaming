@@ -4,13 +4,13 @@ David Quesenberry
 04/15/2026
 HandshakeSimulator.js
 */
-import LoopbackTransport from './LoopbackTransport.js';
+import LoopbackTransport from '../transport/LoopbackTransport.js';
 import {
   createSessionLifecycle,
   getSessionLifecycleContract,
   SESSION_STATES,
 } from './SessionLifecycleContract.js';
-import { createTransportBoundary, getTransportContract } from './TransportContract.js';
+import { createTransportBoundary, getTransportContract } from '../transport/TransportContract.js';
 
 function clone(value) {
   return JSON.parse(JSON.stringify(value));
@@ -226,4 +226,3 @@ export default class HandshakeSimulator {
     };
   }
 }
-

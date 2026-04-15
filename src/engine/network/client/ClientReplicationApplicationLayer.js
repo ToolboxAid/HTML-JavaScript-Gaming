@@ -7,8 +7,8 @@ ClientReplicationApplicationLayer.js
 import ClientReconciliationStrategy, {
   REPLICATION_IGNORE_REASONS,
 } from './ClientReconciliationStrategy.js';
-import ReplicationMessageContract from './ReplicationMessageContract.js';
-import StateReplication from './StateReplication.js';
+import ReplicationMessageContract from '../replication/ReplicationMessageContract.js';
+import StateReplication from '../replication/StateReplication.js';
 
 function clone(value) {
   return JSON.parse(JSON.stringify(value));
@@ -122,4 +122,3 @@ export default class ClientReplicationApplicationLayer {
     };
   }
 }
-

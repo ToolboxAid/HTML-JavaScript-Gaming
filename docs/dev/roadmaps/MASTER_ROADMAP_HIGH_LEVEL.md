@@ -671,3 +671,5 @@
 [ ] Arrange docs into classification buckets.
 [ ] Any doc that is only move/rename/etc. should be deleted (verify content is in the correct doc before deleting).
 [ ] Consolidate PRs for easier one-stop review, so one capability does not require reading many docs (for example, bezel/background); focus on what the capability does.
+[ ] Remove imports to export (should not be import x, export x)
+[ ] other than templates (games/samples/tools), remove the .keep file, if the folder is empty, delete

@@ -4,7 +4,7 @@ David Quesenberry
 03/22/2026
 NetworkDebugOverlay.js
 */
-import { drawPanel } from '../debug/index.js';
+import { drawPanel } from '../../debug/index.js';
 
 export function drawNetworkDebugOverlay(renderer, layer, {
   x = 610,

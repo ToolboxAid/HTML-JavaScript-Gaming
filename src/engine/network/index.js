@@ -4,57 +4,57 @@ David Quesenberry
 03/22/2026
 index.js
 */
-export { default as Serializer } from './Serializer.js';
-export { default as LoopbackTransport } from './LoopbackTransport.js';
-export { default as NetworkConditionSimulator } from './NetworkConditionSimulator.js';
-export { default as NetworkingLayer } from './NetworkingLayer.js';
-export { default as StateReplication } from './StateReplication.js';
-export { default as PredictionReconciler } from './PredictionReconciler.js';
-export { default as RemoteInterpolationBuffer } from './RemoteInterpolationBuffer.js';
-export { default as LobbySessionManager } from './LobbySessionManager.js';
-export { default as HostServerBootstrap } from './HostServerBootstrap.js';
-export { default as InterestManager } from './InterestManager.js';
-export { default as ChatPresenceLayer } from './ChatPresenceLayer.js';
-export { default as RollbackDiagnostics } from './RollbackDiagnostics.js';
+export { default as Serializer } from './transport/Serializer.js';
+export { default as LoopbackTransport } from './transport/LoopbackTransport.js';
+export { default as NetworkConditionSimulator } from './transport/NetworkConditionSimulator.js';
+export { default as NetworkingLayer } from './bootstrap/NetworkingLayer.js';
+export { default as StateReplication } from './replication/StateReplication.js';
+export { default as PredictionReconciler } from './client/PredictionReconciler.js';
+export { default as RemoteInterpolationBuffer } from './client/RemoteInterpolationBuffer.js';
+export { default as LobbySessionManager } from './session/LobbySessionManager.js';
+export { default as HostServerBootstrap } from './bootstrap/HostServerBootstrap.js';
+export { default as InterestManager } from './server/InterestManager.js';
+export { default as ChatPresenceLayer } from './session/ChatPresenceLayer.js';
+export { default as RollbackDiagnostics } from './server/RollbackDiagnostics.js';
 export {
   REPLICATION_IGNORE_REASONS,
   compareReplicationEnvelopeOrder,
   isReplicationEnvelopeStale,
   default as ClientReconciliationStrategy,
-} from './ClientReconciliationStrategy.js';
+} from './client/ClientReconciliationStrategy.js';
 export {
   REPLICATION_MESSAGE_REJECTION_CODES,
   REPLICATION_SNAPSHOT_TYPES,
   default as ReplicationMessageContract,
   normalizeReplicationEnvelope,
   validateReplicationEnvelope,
-} from './ReplicationMessageContract.js';
-export { default as ClientReplicationApplicationLayer } from './ClientReplicationApplicationLayer.js';
+} from './replication/ReplicationMessageContract.js';
+export { default as ClientReplicationApplicationLayer } from './client/ClientReplicationApplicationLayer.js';
 export {
   INPUT_INGESTION_REJECTION_CODES,
   SERVER_OWNED_STATE_FIELDS,
   default as AuthoritativeInputIngestionContract,
   normalizeClientInputEnvelope,
   validateClientInputEnvelope,
-} from './AuthoritativeInputIngestionContract.js';
+} from './server/AuthoritativeInputIngestionContract.js';
 export {
   SERVER_RUNTIME_INGEST_REJECTION_CODES,
   SERVER_RUNTIME_PHASES,
   default as AuthoritativeServerRuntime,
-} from './AuthoritativeServerRuntime.js';
+} from './server/AuthoritativeServerRuntime.js';
 export {
   assertTransportContract,
   createTransportBoundary,
   getTransportContract,
-} from './TransportContract.js';
+} from './transport/TransportContract.js';
 export {
   SESSION_STATES,
   createSessionLifecycle,
   getSessionLifecycleContract,
-} from './SessionLifecycleContract.js';
+} from './session/SessionLifecycleContract.js';
 export {
   HANDSHAKE_MESSAGE_TYPES,
   getHandshakeContract,
   default as HandshakeSimulator,
-} from './HandshakeSimulator.js';
-export { drawNetworkDebugOverlay } from './NetworkDebugOverlay.js';
+} from './session/HandshakeSimulator.js';
+export { drawNetworkDebugOverlay } from './debug/NetworkDebugOverlay.js';
