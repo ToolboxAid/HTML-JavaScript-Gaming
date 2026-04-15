@@ -1,0 +1,29 @@
+services:
+  network-sample-1319-server:
+    image: node:22-alpine
+    container_name: network-sample-1319-server
+    working_dir: /app
+    volumes:
+      - ../../../../:/app
+    command: >
+      sh -lc "cd /app
+      && npm install --omit=dev --silent
+      && node samples/phase-13/1319/server/realNetworkServer.mjs"
+    environment:
+      NETWORK_SAMPLE_1319_HOST: "0.0.0.0"
+      NETWORK_SAMPLE_1319_PORT: "4320"
+      NETWORK_SAMPLE_1319_SESSION_ID: "sample-1319-live"
+      NETWORK_SAMPLE_1319_ADMIN_KEY: "network-1319-admin"
+      NETWORK_SAMPLE_1319_ALLOW_LOCALHOST_WITHOUT_KEY: "1"
+      NETWORK_SAMPLE_1319_ALLOW_REMOTE_WITH_KEY: "1"
+      NETWORK_SAMPLE_1319_TICK_RATE_HZ: "20"
+      NETWORK_SAMPLE_1319_DASHBOARD_REFRESH_MS: "1000"
+    ports:
+      - "4320:4320"
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:4320/admin/network-sample-1319/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    restart: unless-stopped

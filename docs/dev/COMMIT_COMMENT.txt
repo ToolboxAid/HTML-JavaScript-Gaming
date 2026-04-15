@@ -1,1 +1,1 @@
-define real-network sample launch and live dashboard requirements — PLAN_PR_LEVEL_12_10_REAL_NETWORK_SAMPLE_AND_DASHBOARD
+wire real sample 1319 into samples launcher and add live network dashboard — BUILD_PR_LEVEL_12_10_REAL_NETWORK_SAMPLE_AND_DASHBOARD

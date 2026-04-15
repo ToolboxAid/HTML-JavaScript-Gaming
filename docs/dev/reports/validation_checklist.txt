@@ -1,5 +1,5 @@
-- missing execution-facing network capabilities identified
-- scope limited to real-network sample + dashboard
-- remains testable
-- roadmap updates restricted to marker-only progression
-- 3D remains gated
+- 1319 launcher wiring required in samples/index.html
+- real-network path required (not simulation-only)
+- live dashboard required with players/sessions/RTT/RX/TX
+- execution-backed validation required
+- roadmap progression constrained to marker-only updates
