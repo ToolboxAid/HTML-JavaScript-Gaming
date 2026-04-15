@@ -1,5 +1,3 @@
-- container builds
-- server runs
-- client connects
-- lifecycle verified
-- roadmap updated
+- remote host defined
+- connectivity defined
+- validation steps defined

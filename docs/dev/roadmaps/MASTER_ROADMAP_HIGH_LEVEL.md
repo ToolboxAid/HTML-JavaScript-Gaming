@@ -612,7 +612,7 @@
 - [x] replication/client application
 - [x] playable real multiplayer validation
 - [x] server hosting + Docker containerization
-- [ ] promotion/readiness gate
+- [.] promotion/readiness gate
 - [x] include samples for phase 13
 
 ### 3D Execution Dependency Gate

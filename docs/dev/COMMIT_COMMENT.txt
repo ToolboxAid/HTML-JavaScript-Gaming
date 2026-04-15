@@ -1,1 +1,1 @@
-apply docker runtime for server hosting and validate — APPLY_PR_LEVEL_12_5_SERVER_HOSTING_DOCKER_RUNTIME
+define remote deployment candidate for authoritative server — PLAN_PR_LEVEL_12_6_REMOTE_DEPLOYMENT_CANDIDATE
