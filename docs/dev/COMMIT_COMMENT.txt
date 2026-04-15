@@ -1,1 +1,1 @@
-define canonical network validation sample — PLAN_PR_LEVEL_12_9_NETWORK_USAGE_SAMPLE_STANDARDIZATION
+standardize phase-13 sample network imports against normalized network structure — BUILD_PR_LEVEL_12_9_NETWORK_USAGE_SAMPLE_STANDARDIZATION

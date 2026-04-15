@@ -1,3 +1,5 @@
-- canonical sample defined
-- scope controlled
-- aligned with normalized structure
+- target sample set locked
+- import policy locked to src/engine/network/index.js
+- no feature expansion allowed
+- testable validation requirements included
+- roadmap updates constrained to marker-only progression
