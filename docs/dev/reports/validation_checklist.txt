@@ -1,13 +1,19 @@
-Phase 16 targeted visibility checklist
-[x] 1601 renders visible wireframe geometry on load
-[x] 1602 renders visible wireframe geometry on load
-[x] 1604 renders visible wireframe geometry on load
-[x] 1602 movement/input still functions
-[x] 1604 movement/input still functions
-[x] no 2D regression observed in targeted smoke
-[x] no networking regression observed in targeted smoke
+Phase 16 core track checklist
+[x] 1605 visible on load
+[x] 1606 visible on load
+[x] 1607 visible on load
+[x] 1608 visible on load
+[x] 1605 controls function
+[x] 1606 controls function
+[x] 1607 controls function
+[x] 1608 controls function
+[x] targeted smoke 1601-1608 passes
+[x] no 2D regression observed in targeted checks
+[x] no networking regression observed in targeted checks
 
 Execution evidence:
-- PASS Phase16VisibilitySanity (wireframe visibility + movement/jump input checks for 1601/1602/1604)
-- Launch smoke targeted run: --samples --sample-range=1601-1604
-- Launch smoke result: PASS=4 FAIL=0 TOTAL=4
+- PASS Phase16VisibilitySanity
+- Launch smoke targeted run: --samples --sample-range=1601-1608
+- Launch smoke result: PASS=8 FAIL=0 TOTAL=8
+- PASS EngineTiming (2D baseline targeted check)
+- PASS MultiplayerNetworkingStack (network baseline targeted check)

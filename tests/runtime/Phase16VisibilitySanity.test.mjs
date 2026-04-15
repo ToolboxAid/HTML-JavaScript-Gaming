@@ -8,6 +8,10 @@ import assert from 'node:assert/strict';
 import CubeExplorer3DScene from '../../samples/phase-16/1601/CubeExplorer3DScene.js';
 import MazeRunner3DScene from '../../samples/phase-16/1602/MazeRunner3DScene.js';
 import Platformer3DBasicsScene from '../../samples/phase-16/1604/Platformer3DBasicsScene.js';
+import DrivingSandbox3DScene from '../../samples/phase-16/1605/DrivingSandbox3DScene.js';
+import PhysicsPlayground3DScene from '../../samples/phase-16/1606/PhysicsPlayground3DScene.js';
+import SpaceShooter3DScene from '../../samples/phase-16/1607/SpaceShooter3DScene.js';
+import DungeonCrawler3DScene from '../../samples/phase-16/1608/DungeonCrawler3DScene.js';
 
 function createCameraStub() {
   const state = {
@@ -116,10 +120,59 @@ function assertPlatformerVisibilityAndInput() {
   assert.equal(velocity.y > 0, true, 'Platformer sample Space input should produce upward velocity.');
 }
 
+function assertDrivingVisibilityAndInput() {
+  const scene = new DrivingSandbox3DScene();
+  scene.setCamera3D(createCameraStub());
+
+  const car = scene.world.requireComponent(scene.carId, 'transform3D');
+  const startZ = car.z;
+  scene.step3DPhysics(1 / 60, { input: makeInput(['KeyW']) });
+  assert.equal(car.z > startZ, true, 'Driving sample W input should advance car forward.');
+}
+
+function assertPhysicsPlaygroundVisibilityAndInput() {
+  const scene = new PhysicsPlayground3DScene();
+  scene.setCamera3D(createCameraStub());
+
+  const startVy = scene.bodies[0].velocity.y;
+  scene.step3DPhysics(1 / 60, { input: makeInput(['Space']) });
+  assert.equal(scene.bodies[0].velocity.y > startVy, true, 'Physics sample Space input should add upward impulse.');
+}
+
+function assertShooterVisibilityAndInput() {
+  const scene = new SpaceShooter3DScene();
+  scene.setCamera3D(createCameraStub());
+
+  const startX = scene.ship.transform3D.x;
+  scene.step3DPhysics(1 / 60, { input: makeInput(['KeyD']) });
+  assert.equal(scene.ship.transform3D.x > startX, true, 'Shooter sample D input should move ship right.');
+
+  scene.step3DPhysics(1 / 60, { input: makeInput(['Space']) });
+  assert.equal(scene.bullets.length > 0, true, 'Shooter sample Space input should spawn a projectile.');
+}
+
+function assertDungeonVisibilityAndInput() {
+  const scene = new DungeonCrawler3DScene();
+  scene.setCamera3D(createCameraStub());
+
+  const player = scene.world.requireComponent(scene.playerId, 'transform3D');
+  const startZ = player.z;
+  scene.step3DPhysics(1 / 60, { input: makeInput(['KeyW']) });
+  assert.equal(player.z > startZ, true, 'Dungeon sample W input should move explorer forward.');
+}
+
 export function run() {
   assertSceneRendersVisibleWireframe(CubeExplorer3DScene, 'Sample 1601');
   assertSceneRendersVisibleWireframe(MazeRunner3DScene, 'Sample 1602');
   assertSceneRendersVisibleWireframe(Platformer3DBasicsScene, 'Sample 1604');
+  assertSceneRendersVisibleWireframe(DrivingSandbox3DScene, 'Sample 1605');
+  assertSceneRendersVisibleWireframe(PhysicsPlayground3DScene, 'Sample 1606');
+  assertSceneRendersVisibleWireframe(SpaceShooter3DScene, 'Sample 1607');
+  assertSceneRendersVisibleWireframe(DungeonCrawler3DScene, 'Sample 1608');
   assertMazeRunnerVisibilityAndMovement();
   assertPlatformerVisibilityAndInput();
+  assertDrivingVisibilityAndInput();
+  assertPhysicsPlaygroundVisibilityAndInput();
+  assertShooterVisibilityAndInput();
+  assertDungeonVisibilityAndInput();
 }

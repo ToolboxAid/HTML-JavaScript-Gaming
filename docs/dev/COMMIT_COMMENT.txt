@@ -1,1 +1,1 @@
-Fix Phase 16 visibility calibration for samples 1602 and 1604 with shared 3D projection sanity<BUILD_PR_LEVEL_17_7_3D_VISIBILITY_CALIBRATION_AND_SANITY>
+Complete the remaining core Phase 16 sample track for 1605 through 1608 with targeted validation<BUILD_PR_LEVEL_17_8_SAMPLES_1605_TO_1608_CORE_TRACK>

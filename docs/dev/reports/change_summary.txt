@@ -1,21 +1,17 @@
-Observed issue:
-- 1602 and 1604 load
-- canvas paints
-- input appears live
-- visible 3D geometry missing
-
-Applied fix (minimal scope):
-- corrected pitch sign in 3D camera-space projection:
-  - samples/phase-16/shared/threeDWireframe.js
-  - samples/phase-16/1601/CubeExplorer3DScene.js (local duplicated projection path)
-- calibrated initial camera framing for affected samples:
-  - samples/phase-16/1602/MazeRunner3DScene.js (camera height/depth/pitch)
-  - samples/phase-16/1604/Platformer3DBasicsScene.js (camera yaw fallback alignment)
-- added surgical runtime sanity check:
-  - tests/runtime/Phase16VisibilitySanity.test.mjs
+Applied scope:
+- implemented Phase 16 core track samples 1605 through 1608:
+  - 1605: 3D driving sandbox (throttle/steer + AABB track blockers)
+  - 1606: 3D physics playground (gravity, bounce, impulses, damping)
+  - 1607: 3D space shooter (lane movement, projectiles, asteroid hits)
+  - 1608: 3D dungeon crawler (maze traversal, relic gate unlock, exit)
+- wired launcher entries in samples/index.html from planned to live for 1605-1608
+- reused shared 3D wireframe helper path for rendering consistency
+- extended Phase16VisibilitySanity.test.mjs surgically to include 1605-1608:
+  - visibility on load checks
+  - one control/function assertion per new sample
 
 Validation outcome:
 - PASS Phase16VisibilitySanity
-- PASS launch smoke (samples 1601-1604): PASS=4 FAIL=0
-- visibility restored for 1602 and 1604 while preserving 1601
-- input/movement confirmed for 1602 and 1604 via sanity test
+- PASS launch smoke (samples 1601-1608): PASS=8 FAIL=0
+- PASS EngineTiming (targeted 2D regression check)
+- PASS MultiplayerNetworkingStack (targeted networking regression check)
