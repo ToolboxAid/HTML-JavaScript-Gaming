@@ -1,3 +1,1 @@
-- Added roadmap-update bundle to make full real-network capability a prerequisite before 3D
-- Includes live transport, authoritative server runtime, replication, playable validation, and Docker-hosted server items
-- Preserves existing completed network/debug/container work
+Structured all 3D roadmap items into dependency-ordered execution layers

@@ -670,3 +670,4 @@
 [ ] simulated code (like some of the netword samples) should be coverted to use real networks) understanding, tests may need some moch
 [ ] single class per file
 [ ] organize/rebuild samples/games so the are as if new construction with proper classes/data/etc in proper folder
+[ ] flatten css layer, there should only be a few, use as much as possible to top layer a button is a button, should be a single class to operate, I know exceptions can exist
