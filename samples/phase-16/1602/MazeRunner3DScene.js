@@ -111,11 +111,11 @@ export default class MazeRunner3DScene extends Scene {
     const player = this.world.requireComponent(this.playerId, 'transform3D');
     this.camera3D.setPosition({
       x: player.x,
-      y: 11.5,
-      z: player.z - 9.6,
+      y: 10.2,
+      z: player.z - 10.6,
     });
     this.camera3D.setRotation({
-      x: -0.62,
+      x: -0.5,
       y: 0,
       z: 0,
     });
@@ -164,8 +164,8 @@ export default class MazeRunner3DScene extends Scene {
     renderer.strokeRect(this.viewport.x, this.viewport.y, this.viewport.width, this.viewport.height, '#d8d5ff', 2);
 
     const cameraState = this.camera3D?.getState?.() ?? {
-      position: { x: 0, y: 10, z: -8 },
-      rotation: { x: -0.6, y: 0, z: 0 },
+      position: { x: 0, y: 10.2, z: -7.4 },
+      rotation: { x: -0.5, y: 0, z: 0 },
     };
     const projectionViewport = createProjectionViewport(this.viewport);
 

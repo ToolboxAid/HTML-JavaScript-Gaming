@@ -1,1 +1,13 @@
-Validation report will be generated after execution.
+Phase 16 targeted visibility checklist
+[x] 1601 renders visible wireframe geometry on load
+[x] 1602 renders visible wireframe geometry on load
+[x] 1604 renders visible wireframe geometry on load
+[x] 1602 movement/input still functions
+[x] 1604 movement/input still functions
+[x] no 2D regression observed in targeted smoke
+[x] no networking regression observed in targeted smoke
+
+Execution evidence:
+- PASS Phase16VisibilitySanity (wireframe visibility + movement/jump input checks for 1601/1602/1604)
+- Launch smoke targeted run: --samples --sample-range=1601-1604
+- Launch smoke result: PASS=4 FAIL=0 TOTAL=4

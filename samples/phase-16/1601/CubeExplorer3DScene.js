@@ -42,7 +42,7 @@ function createBoxVertices(transform3D, size3D) {
 
 function rotateToCameraSpace(point, cameraState) {
   const yaw = -(cameraState.rotation.y ?? 0);
-  const pitch = -(cameraState.rotation.x ?? 0);
+  const pitch = cameraState.rotation.x ?? 0;
 
   let x = point.x - cameraState.position.x;
   let y = point.y - cameraState.position.y;

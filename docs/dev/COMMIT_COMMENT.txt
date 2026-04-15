@@ -1,1 +1,1 @@
-Add progressive 3D samples 1602–1604 (navigation, FPS, platformer)<BUILD_PR_LEVEL_17_6_SAMPLES_1602_TO_1604_PROGRESSIVE>
+Fix Phase 16 visibility calibration for samples 1602 and 1604 with shared 3D projection sanity<BUILD_PR_LEVEL_17_7_3D_VISIBILITY_CALIBRATION_AND_SANITY>

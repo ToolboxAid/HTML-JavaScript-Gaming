@@ -1,1 +1,21 @@
-Structured all 3D roadmap items into dependency-ordered execution layers
+Observed issue:
+- 1602 and 1604 load
+- canvas paints
+- input appears live
+- visible 3D geometry missing
+
+Applied fix (minimal scope):
+- corrected pitch sign in 3D camera-space projection:
+  - samples/phase-16/shared/threeDWireframe.js
+  - samples/phase-16/1601/CubeExplorer3DScene.js (local duplicated projection path)
+- calibrated initial camera framing for affected samples:
+  - samples/phase-16/1602/MazeRunner3DScene.js (camera height/depth/pitch)
+  - samples/phase-16/1604/Platformer3DBasicsScene.js (camera yaw fallback alignment)
+- added surgical runtime sanity check:
+  - tests/runtime/Phase16VisibilitySanity.test.mjs
+
+Validation outcome:
+- PASS Phase16VisibilitySanity
+- PASS launch smoke (samples 1601-1604): PASS=4 FAIL=0
+- visibility restored for 1602 and 1604 while preserving 1601
+- input/movement confirmed for 1602 and 1604 via sanity test

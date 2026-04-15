@@ -113,7 +113,7 @@ export default class Platformer3DBasicsScene extends Scene {
     });
     this.camera3D.setRotation({
       x: -0.42,
-      y: 0.72,
+      y: -0.72,
       z: 0,
     });
   }
@@ -205,7 +205,7 @@ export default class Platformer3DBasicsScene extends Scene {
 
     const cameraState = this.camera3D?.getState?.() ?? {
       position: { x: -10, y: 5, z: 2 },
-      rotation: { x: -0.4, y: 0.7, z: 0 },
+      rotation: { x: -0.42, y: -0.72, z: 0 },
     };
     const projectionViewport = createProjectionViewport(this.viewport);
 
