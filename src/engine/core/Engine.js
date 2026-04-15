@@ -9,6 +9,7 @@ import RuntimeMetrics from './RuntimeMetrics.js';
 import FrameClock from './FrameClock.js';
 import FixedTicker from './FixedTicker.js';
 import EventBus from '../events/EventBus.js';
+import { Camera3D } from '../camera/index.js';
 import { backgroundImage, fullscreenBezel, FullscreenService, resolvePreferredFullscreenTarget } from '../runtime/index.js';
 import { AudioService } from '../audio/index.js';
 import { Logger } from '../logging/index.js';
@@ -30,6 +31,7 @@ export default class Engine {
     fullscreenBezelLayer = null,
     audio = null,
     logger = null,
+    camera3D = null,
   } = {}) {
     if (!canvas) {
       throw new Error('Engine requires a canvas.');
@@ -68,6 +70,7 @@ export default class Engine {
     });
     this.audio = audio || new AudioService();
     this.logger = logger || new Logger({ channel: 'engine' });
+    this.camera3D = camera3D || new Camera3D();
     this.settings = new SettingsSystem({
       namespace: 'toolboxaid:engine-settings',
       defaults: {
@@ -97,9 +100,39 @@ export default class Engine {
     }
 
     this.scene = scene;
+    this.attachScene3DCamera(this.scene);
 
     if (this.scene && typeof this.scene.enter === 'function') {
       this.scene.enter(this);
+    }
+  }
+
+  attachScene3DCamera(scene) {
+    if (!scene || !this.camera3D) {
+      return;
+    }
+
+    if (typeof scene.setCamera3D === 'function') {
+      try {
+        scene.setCamera3D(this.camera3D, this);
+      } catch (error) {
+        this.logger?.warn?.('Engine scene setCamera3D hook failed.', {
+          error: error?.message || String(error),
+        });
+      }
+      return;
+    }
+
+    if (scene.camera3D !== undefined && scene.camera3D !== null) {
+      return;
+    }
+
+    try {
+      scene.camera3D = this.camera3D;
+    } catch (error) {
+      this.logger?.warn?.('Engine scene camera3D assignment failed.', {
+        error: error?.message || String(error),
+      });
     }
   }
 

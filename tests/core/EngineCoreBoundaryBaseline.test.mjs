@@ -68,6 +68,20 @@ export function run() {
   assert.equal(typeof rect.y, 'number');
   assert.equal(rect.width, 10);
   assert.equal(rect.height, 10);
+
+  const camera3D = new core.Camera3D({
+    position: { x: 1, y: 2, z: 3 },
+    rotation: { x: 0.1, y: 0.2, z: 0.3 },
+  });
+  camera3D.translate({ x: 2, y: -1, z: 5 });
+  camera3D.rotate({ y: 0.5 });
+  const camera3DState = camera3D.getState();
+  assert.equal(camera3DState.position.x, 3);
+  assert.equal(camera3DState.position.y, 1);
+  assert.equal(camera3DState.position.z, 8);
+  assert.equal(camera3DState.rotation.x, 0.1);
+  assert.equal(camera3DState.rotation.y, 0.7);
+  assert.equal(camera3DState.rotation.z, 0.3);
 }
 
 if (import.meta.url === `file://${process.argv[1]}`) {

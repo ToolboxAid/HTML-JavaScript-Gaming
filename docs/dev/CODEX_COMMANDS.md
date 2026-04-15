@@ -2,8 +2,8 @@ MODEL: GPT-5.3-codex
 REASONING: high
 
 COMMAND:
-Implement isolated 3D scene boot:
-- add 3D scene initializer
-- hook render pipeline safely
-- do not modify existing 2D paths
-- validate all 2D samples still run
+Implement minimal 3D camera:
+- create camera state (position, rotation)
+- integrate into scene safely
+- ensure no impact to 2D camera
+- validate all samples still pass

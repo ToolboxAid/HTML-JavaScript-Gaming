@@ -1,1 +1,1 @@
-BUILD_PR_LEVEL_17_2_RENDER_SCENE_BOOT_VALIDATION - safe 3D scene boot + render hook
+Introduce minimal 3D camera foundation<BUILD_PR_LEVEL_17_3_CAMERA_FOUNDATION>

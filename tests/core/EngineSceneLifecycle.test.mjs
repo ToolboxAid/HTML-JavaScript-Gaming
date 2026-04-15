@@ -8,6 +8,7 @@ import assert from 'node:assert/strict';
 import Engine from '../../src/engine/core/Engine.js';
 import SceneTransition from '../../src/engine/scene/SceneTransition.js';
 import TransitionScene from '../../src/engine/scene/TransitionScene.js';
+import { Camera3D } from '../../src/engine/camera/index.js';
 
 function createCanvas() {
   const canvas = {
@@ -79,6 +80,7 @@ function createScene(name, log) {
 
 export function run() {
   const engine = createEngine();
+  assert.equal(engine.camera3D instanceof Camera3D, true);
   const log = [];
   const firstScene = createScene('first', log);
   const secondScene = createScene('second', log);
@@ -92,6 +94,8 @@ export function run() {
     'first:exit:true',
     'second:enter:true',
   ]);
+  assert.equal(firstScene.camera3D, engine.camera3D);
+  assert.equal(secondScene.camera3D, engine.camera3D);
 
   const transitionLog = [];
   const fromScene = createScene('from', transitionLog);

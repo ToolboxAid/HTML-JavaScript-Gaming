@@ -11,4 +11,4 @@ export { default as RuntimeMetrics } from './RuntimeMetrics.js';
 
 // Baseline core service cluster exports (timing/frame, event routing, camera integration).
 export { EventBus } from '../events/index.js';
-export { Camera2D, followCameraTarget, worldRectToScreen, updateZoneCamera } from '../camera/index.js';
+export { Camera2D, Camera3D, followCameraTarget, worldRectToScreen, updateZoneCamera } from '../camera/index.js';
