@@ -1,1 +1,1 @@
-1608 now has a readable dungeon loop with movement, blocking collision, and interaction.
+Adds camera modes, shading cues, and debug overlays to improve 3D sample clarity.

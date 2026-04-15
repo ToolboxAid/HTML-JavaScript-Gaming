@@ -9,7 +9,16 @@ import { Theme, ThemeTokens } from '/src/engine/theme/index.js';
 import { drawFrame, drawPanel } from '/src/engine/debug/index.js';
 import { World } from '/src/engine/ecs/index.js';
 import { stepWorldPhysics3D } from '/src/engine/systems/index.js';
-import { createProjectionViewport, drawGroundGrid, drawWireBox } from '../shared/threeDWireframe.js';
+import {
+  applyPhase16CameraMode,
+  createPhase16ViewState,
+  createProjectionViewport,
+  drawDepthBackdrop,
+  drawGroundGrid,
+  drawPhase16DebugOverlay,
+  drawWireBox,
+  stepPhase16ViewToggles,
+} from '../shared/threeDWireframe.js';
 
 const theme = new Theme(ThemeTokens);
 
@@ -42,6 +51,7 @@ export default class FirstPersonWalkthroughScene extends Scene {
       depth: 26,
     };
     this.lastPhysicsSummary = { movedEntities: 0, collisionCount: 0 };
+    this.viewState = createPhase16ViewState();
 
     this.playerId = this.world.createEntity();
     this.world.addComponent(this.playerId, 'transform3D', {
@@ -106,20 +116,28 @@ export default class FirstPersonWalkthroughScene extends Scene {
     }
 
     const player = this.world.requireComponent(this.playerId, 'transform3D');
-    this.camera3D.setPosition({
+    const basePose = {
+      position: {
+        x: player.x + 0.45,
+        y: player.y + 1.2,
+        z: player.z + 0.45,
+      },
+      rotation: {
+        x: this.pitch,
+        y: -this.yaw,
+        z: 0,
+      },
+    };
+    applyPhase16CameraMode(this.camera3D, this.viewState, basePose, {
       x: player.x + 0.45,
-      y: player.y + 1.2,
+      y: player.y + 0.9,
       z: player.z + 0.45,
-    });
-    this.camera3D.setRotation({
-      x: this.pitch,
-      y: -this.yaw,
-      z: 0,
     });
   }
 
   step3DPhysics(dt, engine) {
     const input = engine.input;
+    stepPhase16ViewToggles(this.viewState, input);
     const velocity = this.world.requireComponent(this.playerId, 'velocity3D');
 
     const lookX = (input?.isDown('ArrowRight') ? 1 : 0) - (input?.isDown('ArrowLeft') ? 1 : 0);
@@ -153,11 +171,12 @@ export default class FirstPersonWalkthroughScene extends Scene {
     drawFrame(renderer, theme, [
       'Sample 1603 - First Person Walkthrough',
       'Navigate from a first-person camera while AABB collisions keep movement grounded.',
-      'Move: W A S D | Look: Arrow Keys',
+      'Move: W A S D | Look: Arrow Keys | Camera: C | Debug: V',
       'Stay centered in the lane and navigate around interior blockers.',
     ]);
 
     renderer.strokeRect(this.viewport.x, this.viewport.y, this.viewport.width, this.viewport.height, '#d8d5ff', 2);
+    drawDepthBackdrop(renderer, this.viewport);
 
     const cameraState = this.camera3D?.getState?.() ?? {
       position: { x: 0, y: 1.2, z: 2.5 },
@@ -201,6 +220,11 @@ export default class FirstPersonWalkthroughScene extends Scene {
       `Moved entities: ${this.lastPhysicsSummary.movedEntities}`,
       `Resolved collisions: ${this.lastPhysicsSummary.collisionCount}`,
       'View mode: first person + collision-aware movement',
+    ]);
+
+    drawPhase16DebugOverlay(renderer, this.viewport, this.viewState, [
+      `Yaw: ${this.yaw.toFixed(2)} | Pitch: ${this.pitch.toFixed(2)}`,
+      `Collisions/frame: ${this.lastPhysicsSummary.collisionCount}`,
     ]);
   }
 }

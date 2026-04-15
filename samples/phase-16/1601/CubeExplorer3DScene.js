@@ -9,6 +9,13 @@ import { Theme, ThemeTokens } from '/src/engine/theme/index.js';
 import { drawFrame, drawPanel } from '/src/engine/debug/index.js';
 import { World } from '/src/engine/ecs/index.js';
 import { stepWorldPhysics3D } from '/src/engine/systems/index.js';
+import {
+  applyPhase16CameraMode,
+  createPhase16ViewState,
+  drawDepthBackdrop,
+  drawPhase16DebugOverlay,
+  stepPhase16ViewToggles,
+} from '../shared/threeDWireframe.js';
 
 const theme = new Theme(ThemeTokens);
 const BOX_EDGES = [
@@ -91,7 +98,10 @@ function drawWireBox(renderer, transform3D, size3D, cameraState, viewport, color
     if (!start || !end) {
       continue;
     }
-    renderer.drawLine(start.x, start.y, end.x, end.y, color, 2);
+    const edgeDepth = (start.depth + end.depth) * 0.5;
+    const depthT = clamp((edgeDepth - 3) / 40, 0, 1);
+    const edgeWidth = 2.2 - depthT * 1.1;
+    renderer.drawLine(start.x, start.y, end.x, end.y, color, Math.max(1, edgeWidth));
   }
 }
 
@@ -120,6 +130,7 @@ export default class CubeExplorer3DScene extends Scene {
       depth: 22,
     };
     this.lastPhysicsSummary = { movedEntities: 0, collisionCount: 0 };
+    this.viewState = createPhase16ViewState();
 
     this.playerId = this.world.createEntity();
     this.world.addComponent(this.playerId, 'transform3D', {
@@ -175,21 +186,29 @@ export default class CubeExplorer3DScene extends Scene {
     const cameraZ = playerTransform.z - Math.cos(this.cameraYaw) * orbitDistance;
     const cameraY = playerTransform.y + 4.8;
 
-    this.camera3D.setPosition({
-      x: cameraX,
-      y: cameraY,
-      z: cameraZ,
-    });
-    this.camera3D.setRotation({
-      x: this.cameraPitch,
-      y: this.cameraYaw,
-      z: 0,
+    const basePose = {
+      position: {
+        x: cameraX,
+        y: cameraY,
+        z: cameraZ,
+      },
+      rotation: {
+        x: this.cameraPitch,
+        y: this.cameraYaw,
+        z: 0,
+      },
+    };
+    applyPhase16CameraMode(this.camera3D, this.viewState, basePose, {
+      x: playerTransform.x + 0.8,
+      y: playerTransform.y + 0.8,
+      z: playerTransform.z + 0.8,
     });
   }
 
   step3DPhysics(dt, engine) {
     const velocity = this.world.requireComponent(this.playerId, 'velocity3D');
     const input = engine.input;
+    stepPhase16ViewToggles(this.viewState, input);
 
     velocity.x = 0;
     velocity.y = 0;
@@ -217,7 +236,7 @@ export default class CubeExplorer3DScene extends Scene {
     drawFrame(renderer, theme, [
       'Sample 1601 - 3D Cube Explorer',
       'Minimal 3D movement + AABB collision using an isolated physics loop',
-      'Move: W A S D | Vertical: R/F | Camera orbit: Arrow keys',
+      'Move: W A S D | Vertical: R/F | Camera orbit: Arrow keys | Camera: C | Debug: V',
       'Goal: navigate around blocking boxes while remaining inside world bounds',
     ]);
 
@@ -229,6 +248,7 @@ export default class CubeExplorer3DScene extends Scene {
       '#d8d5ff',
       2,
     );
+    drawDepthBackdrop(renderer, this.viewport);
 
     const cameraState = this.camera3D?.getState?.() ?? {
       position: { x: 0, y: 3, z: -8 },
@@ -277,12 +297,17 @@ export default class CubeExplorer3DScene extends Scene {
     });
 
     const player = this.world.requireComponent(this.playerId, 'transform3D');
-    drawPanel(renderer, 620, 34, 300, 126, '3D Runtime', [
+    drawPanel(renderer, 620, 34, 300, 156, '3D Runtime', [
       `Cube: x=${player.x.toFixed(2)} y=${player.y.toFixed(2)} z=${player.z.toFixed(2)}`,
       `Camera yaw: ${this.cameraYaw.toFixed(2)} pitch: ${this.cameraPitch.toFixed(2)}`,
       `Moved entities: ${this.lastPhysicsSummary.movedEntities}`,
       `Resolved collisions: ${this.lastPhysicsSummary.collisionCount}`,
       'Physics loop: stepWorldPhysics3D (MovementSystem + AABB)',
+    ]);
+
+    drawPhase16DebugOverlay(renderer, this.viewport, this.viewState, [
+      `Yaw: ${this.cameraYaw.toFixed(2)} | Pitch: ${this.cameraPitch.toFixed(2)}`,
+      `Collisions/frame: ${this.lastPhysicsSummary.collisionCount}`,
     ]);
   }
 }

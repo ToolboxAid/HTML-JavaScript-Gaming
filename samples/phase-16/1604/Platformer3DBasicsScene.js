@@ -10,7 +10,16 @@ import { drawFrame, drawPanel } from '/src/engine/debug/index.js';
 import { World } from '/src/engine/ecs/index.js';
 import { isAabbColliding3D } from '/src/engine/physics/index.js';
 import { stepWorldPhysics3D } from '/src/engine/systems/index.js';
-import { createProjectionViewport, drawGroundGrid, drawWireBox } from '../shared/threeDWireframe.js';
+import {
+  applyPhase16CameraMode,
+  createPhase16ViewState,
+  createProjectionViewport,
+  drawDepthBackdrop,
+  drawGroundGrid,
+  drawPhase16DebugOverlay,
+  drawWireBox,
+  stepPhase16ViewToggles,
+} from '../shared/threeDWireframe.js';
 
 const theme = new Theme(ThemeTokens);
 
@@ -53,6 +62,7 @@ export default class Platformer3DBasicsScene extends Scene {
       depth: 1.2,
     };
     this.lastPhysicsSummary = { movedEntities: 0, collisionCount: 0 };
+    this.viewState = createPhase16ViewState();
 
     this.playerId = this.world.createEntity();
     this.world.addComponent(this.playerId, 'transform3D', {
@@ -106,15 +116,22 @@ export default class Platformer3DBasicsScene extends Scene {
     }
 
     const player = this.world.requireComponent(this.playerId, 'transform3D');
-    this.camera3D.setPosition({
-      x: player.x - 7.2,
-      y: player.y + 5.2,
-      z: player.z - 8.0,
-    });
-    this.camera3D.setRotation({
-      x: -0.42,
-      y: -0.72,
-      z: 0,
+    const basePose = {
+      position: {
+        x: player.x - 7.2,
+        y: player.y + 5.2,
+        z: player.z - 8.0,
+      },
+      rotation: {
+        x: -0.42,
+        y: -0.72,
+        z: 0,
+      },
+    };
+    applyPhase16CameraMode(this.camera3D, this.viewState, basePose, {
+      x: player.x + 0.5,
+      y: player.y + 0.8,
+      z: player.z + 0.5,
     });
   }
 
@@ -146,6 +163,7 @@ export default class Platformer3DBasicsScene extends Scene {
 
   step3DPhysics(dt, engine) {
     const input = engine.input;
+    stepPhase16ViewToggles(this.viewState, input);
     const velocity = this.world.requireComponent(this.playerId, 'velocity3D');
 
     const axisX = (input?.isDown('KeyD') ? 1 : 0) - (input?.isDown('KeyA') ? 1 : 0);
@@ -197,11 +215,12 @@ export default class Platformer3DBasicsScene extends Scene {
     drawFrame(renderer, theme, [
       'Sample 1604 - 3D Platformer Basics',
       'Basic gravity + jump loop layered on top of 3D movement and AABB collision.',
-      'Move: A/D | Jump: Space',
+      'Move: A/D | Jump: Space | Camera: C | Debug: V',
       this.goalReached ? 'Goal reached: platform run completed.' : 'Reach the green marker on the final platform.',
     ]);
 
     renderer.strokeRect(this.viewport.x, this.viewport.y, this.viewport.width, this.viewport.height, '#d8d5ff', 2);
+    drawDepthBackdrop(renderer, this.viewport);
 
     const cameraState = this.camera3D?.getState?.() ?? {
       position: { x: -10, y: 5, z: 2 },
@@ -259,6 +278,11 @@ export default class Platformer3DBasicsScene extends Scene {
       `Moved entities: ${this.lastPhysicsSummary.movedEntities}`,
       `Resolved collisions: ${this.lastPhysicsSummary.collisionCount}`,
       'Physics: gravity + jump + stepWorldPhysics3D',
+    ]);
+
+    drawPhase16DebugOverlay(renderer, this.viewport, this.viewState, [
+      `Grounded: ${this.isGrounded ? 'yes' : 'no'} | Goal: ${this.goalReached ? 'reached' : 'pending'}`,
+      `Vertical velocity: ${velocity.y.toFixed(2)}`,
     ]);
   }
 }

@@ -7,7 +7,16 @@ PhysicsPlayground3DScene.js
 import { Scene } from '/src/engine/scene/index.js';
 import { Theme, ThemeTokens } from '/src/engine/theme/index.js';
 import { drawFrame, drawPanel } from '/src/engine/debug/index.js';
-import { createProjectionViewport, drawGroundGrid, drawWireBox } from '../shared/threeDWireframe.js';
+import {
+  applyPhase16CameraMode,
+  createPhase16ViewState,
+  createProjectionViewport,
+  drawDepthBackdrop,
+  drawGroundGrid,
+  drawPhase16DebugOverlay,
+  drawWireBox,
+  stepPhase16ViewToggles,
+} from '../shared/threeDWireframe.js';
 
 const theme = new Theme(ThemeTokens);
 
@@ -141,6 +150,7 @@ export default class PhysicsPlayground3DScene extends Scene {
     this.impulseCooldown = 0;
     this.simulatedSeconds = 0;
     this.bodyCollisionHits = 0;
+    this.viewState = createPhase16ViewState();
 
     this.bodies = [
       createBody({
@@ -208,12 +218,28 @@ export default class PhysicsPlayground3DScene extends Scene {
 
   setCamera3D(camera3D) {
     this.camera3D = camera3D;
-    this.camera3D.setPosition({ x: 0, y: 8.5, z: 1.2 });
-    this.camera3D.setRotation({ x: -0.42, y: 0, z: 0 });
+    this.syncCamera();
+  }
+
+  syncCamera() {
+    if (!this.camera3D) {
+      return;
+    }
+
+    const basePose = {
+      position: { x: 0, y: 8.5, z: 1.2 },
+      rotation: { x: -0.42, y: 0, z: 0 },
+    };
+    applyPhase16CameraMode(this.camera3D, this.viewState, basePose, {
+      x: 0,
+      y: 2.6,
+      z: 16.0,
+    });
   }
 
   step3DPhysics(dt, engine) {
     const input = engine.input;
+    stepPhase16ViewToggles(this.viewState, input);
     const gravityTogglePressed = input?.isDown('KeyG') === true;
     if (gravityTogglePressed && !this.gravityToggleLatch) {
       this.gravityScale = this.gravityScale === 1 ? 0.35 : 1;
@@ -290,17 +316,19 @@ export default class PhysicsPlayground3DScene extends Scene {
     });
 
     this.simulatedSeconds += dt;
+    this.syncCamera();
   }
 
   render(renderer) {
     drawFrame(renderer, theme, [
       'Sample 1606 - 3D Physics Playground',
       'Inspect gravity, bounce, and impulse behavior with multiple 3D bodies.',
-      'Impulse: Space | Nudge alpha body: W A S D | Toggle gravity: G',
+      'Impulse: Space | Nudge alpha body: W A S D | Toggle gravity: G | Camera: C | Debug: V',
       'Observe velocity damping and rebound inside arena bounds.',
     ]);
 
     renderer.strokeRect(this.viewport.x, this.viewport.y, this.viewport.width, this.viewport.height, '#d8d5ff', 2);
+    drawDepthBackdrop(renderer, this.viewport);
 
     const cameraState = this.camera3D?.getState?.() ?? {
       position: { x: 0, y: 8.5, z: 1.2 },
@@ -348,6 +376,11 @@ export default class PhysicsPlayground3DScene extends Scene {
       `Body collisions/frame: ${this.bodyCollisionHits}`,
       `Impulse cooldown: ${this.impulseCooldown.toFixed(2)} s`,
       `Sim time: ${this.simulatedSeconds.toFixed(1)} s`,
+    ]);
+
+    drawPhase16DebugOverlay(renderer, this.viewport, this.viewState, [
+      `Gravity: ${this.gravity.toFixed(1)} | Scale: ${this.gravityScale.toFixed(2)}`,
+      `Body contacts/frame: ${this.bodyCollisionHits}`,
     ]);
   }
 }

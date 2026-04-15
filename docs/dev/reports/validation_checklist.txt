@@ -1,7 +1,6 @@
 
-[ ] movement works
-[ ] walls block
-[ ] interaction visible
-[ ] loop understandable
+[ ] camera toggle works
+[ ] shading improves readability
+[ ] debug overlay visible
 [ ] sanity pass
 [ ] smoke pass

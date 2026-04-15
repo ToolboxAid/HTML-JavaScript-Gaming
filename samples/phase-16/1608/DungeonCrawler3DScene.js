@@ -10,7 +10,16 @@ import { drawFrame, drawPanel } from '/src/engine/debug/index.js';
 import { World } from '/src/engine/ecs/index.js';
 import { isAabbColliding3D } from '/src/engine/physics/index.js';
 import { stepWorldPhysics3D } from '/src/engine/systems/index.js';
-import { createProjectionViewport, drawGroundGrid, drawWireBox } from '../shared/threeDWireframe.js';
+import {
+  applyPhase16CameraMode,
+  createPhase16ViewState,
+  createProjectionViewport,
+  drawDepthBackdrop,
+  drawGroundGrid,
+  drawPhase16DebugOverlay,
+  drawWireBox,
+  stepPhase16ViewToggles,
+} from '../shared/threeDWireframe.js';
 
 const theme = new Theme(ThemeTokens);
 
@@ -61,6 +70,7 @@ export default class DungeonCrawler3DScene extends Scene {
     this.interactionFlashSeconds = 0;
     this.resetLatch = false;
     this.lastPhysicsSummary = { movedEntities: 0, collisionCount: 0 };
+    this.viewState = createPhase16ViewState();
 
     this.playerId = this.world.createEntity();
     this.world.addComponent(this.playerId, 'transform3D', {
@@ -129,15 +139,22 @@ export default class DungeonCrawler3DScene extends Scene {
     }
 
     const player = this.world.requireComponent(this.playerId, 'transform3D');
-    this.camera3D.setPosition({
-      x: player.x,
-      y: 9.8,
-      z: player.z - 8.8,
-    });
-    this.camera3D.setRotation({
-      x: -0.5,
-      y: 0,
-      z: 0,
+    const basePose = {
+      position: {
+        x: player.x,
+        y: 9.8,
+        z: player.z - 8.8,
+      },
+      rotation: {
+        x: -0.5,
+        y: 0,
+        z: 0,
+      },
+    };
+    applyPhase16CameraMode(this.camera3D, this.viewState, basePose, {
+      x: player.x + 0.5,
+      y: player.y + 0.7,
+      z: player.z + 0.5,
     });
   }
 
@@ -170,6 +187,7 @@ export default class DungeonCrawler3DScene extends Scene {
 
   step3DPhysics(dt, engine) {
     const input = engine.input;
+    stepPhase16ViewToggles(this.viewState, input);
     const resetPressed = input?.isDown('KeyR') === true;
     if (resetPressed && !this.resetLatch) {
       this.resetRun('manual-reset');
@@ -241,11 +259,12 @@ export default class DungeonCrawler3DScene extends Scene {
     drawFrame(renderer, theme, [
       'Sample 1608 - 3D Dungeon Crawler',
       'Explore rooms, collect the relic, then escape through the unlocked route.',
-      'Move: W A S D | Restart run: R',
+      'Move: W A S D | Restart run: R | Camera: C | Debug: V',
       objectiveLine,
     ]);
 
     renderer.strokeRect(this.viewport.x, this.viewport.y, this.viewport.width, this.viewport.height, '#d8d5ff', 2);
+    drawDepthBackdrop(renderer, this.viewport);
 
     const cameraState = this.camera3D?.getState?.() ?? {
       position: { x: -8.2, y: 9.8, z: -4.6 },
@@ -311,6 +330,11 @@ export default class DungeonCrawler3DScene extends Scene {
       `Run time: ${this.runElapsedSeconds.toFixed(1)} s | Last clear: ${this.lastCompletionSeconds.toFixed(1)} s`,
       flashLine,
       `Last reset: ${this.lastResetReason}`,
+    ]);
+
+    drawPhase16DebugOverlay(renderer, this.viewport, this.viewState, [
+      `Run state: ${this.runState}`,
+      `Interaction pulse: ${this.interactionFlashSeconds.toFixed(2)} s`,
     ]);
   }
 }

@@ -9,7 +9,17 @@ import { Theme, ThemeTokens } from '/src/engine/theme/index.js';
 import { drawFrame, drawPanel } from '/src/engine/debug/index.js';
 import { World } from '/src/engine/ecs/index.js';
 import { stepWorldPhysics3D } from '/src/engine/systems/index.js';
-import { createProjectionViewport, drawGroundGrid, drawWireBox, projectPoint } from '../shared/threeDWireframe.js';
+import {
+  applyPhase16CameraMode,
+  createPhase16ViewState,
+  createProjectionViewport,
+  drawDepthBackdrop,
+  drawGroundGrid,
+  drawPhase16DebugOverlay,
+  drawWireBox,
+  projectPoint,
+  stepPhase16ViewToggles,
+} from '../shared/threeDWireframe.js';
 
 const theme = new Theme(ThemeTokens);
 
@@ -148,6 +158,7 @@ export default class DrivingSandbox3DScene extends Scene {
       depth: 36,
     };
     this.lastPhysicsSummary = { movedEntities: 0, collisionCount: 0 };
+    this.viewState = createPhase16ViewState();
 
     this.carId = this.world.createEntity();
     this.world.addComponent(this.carId, 'transform3D', {
@@ -267,16 +278,24 @@ export default class DrivingSandbox3DScene extends Scene {
     this.cameraYaw = normalizeAngle(-lookRotation.yaw);
     this.cameraPitch = clamp(lookRotation.pitch, -0.8, -0.08);
 
-    this.camera3D.setPosition(cameraPosition);
-    this.camera3D.setRotation({
-      x: this.cameraPitch,
-      y: this.cameraYaw,
-      z: 0,
+    const basePose = {
+      position: cameraPosition,
+      rotation: {
+        x: this.cameraPitch,
+        y: this.cameraYaw,
+        z: 0,
+      },
+    };
+    applyPhase16CameraMode(this.camera3D, this.viewState, basePose, {
+      x: targetPosition.x,
+      y: targetPosition.y,
+      z: targetPosition.z,
     });
   }
 
   step3DPhysics(dt, engine) {
     const input = engine.input;
+    stepPhase16ViewToggles(this.viewState, input);
     const velocity = this.world.requireComponent(this.carId, 'velocity3D');
     const throttle = (input?.isDown('KeyW') ? 1 : 0) - (input?.isDown('KeyS') ? 1 : 0);
     const steer = (input?.isDown('KeyD') ? 1 : 0) - (input?.isDown('KeyA') ? 1 : 0);
@@ -312,11 +331,12 @@ export default class DrivingSandbox3DScene extends Scene {
     drawFrame(renderer, theme, [
       'Sample 1605 - 3D Driving Sandbox',
       'Drive a simple 3D test track with throttle, steering, and AABB barriers.',
-      'Throttle: W/S | Steer: A/D',
+      'Throttle: W/S | Steer: A/D | Camera: C | Debug: V',
       'Chase camera hard-locks behind the vehicle for stable readability.',
     ]);
 
     renderer.strokeRect(this.viewport.x, this.viewport.y, this.viewport.width, this.viewport.height, '#d8d5ff', 2);
+    drawDepthBackdrop(renderer, this.viewport);
 
     const cameraState = this.camera3D?.getState?.() ?? {
       position: { x: 0, y: 5.3, z: -0.5 },
@@ -367,6 +387,11 @@ export default class DrivingSandbox3DScene extends Scene {
       `Track distance: ${this.distance.toFixed(1)} u`,
       `Moved entities: ${this.lastPhysicsSummary.movedEntities}`,
       `Resolved collisions: ${this.lastPhysicsSummary.collisionCount}`,
+    ]);
+
+    drawPhase16DebugOverlay(renderer, this.viewport, this.viewState, [
+      `Vehicle speed: ${this.speed.toFixed(2)} u/s`,
+      `Collisions/frame: ${this.lastPhysicsSummary.collisionCount}`,
     ]);
   }
 }

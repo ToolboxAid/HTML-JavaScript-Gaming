@@ -9,6 +9,7 @@ const BOX_EDGES = [
   [4, 5], [5, 6], [6, 7], [7, 4],
   [0, 4], [1, 5], [2, 6], [3, 7],
 ];
+const PHASE16_CAMERA_MODES = ['follow', 'wide', 'overhead'];
 
 function createBoxVertices(transform3D, size3D) {
   const x = transform3D.x;
@@ -27,6 +28,61 @@ function createBoxVertices(transform3D, size3D) {
     { x: x + w, y: y + h, z: z + d },
     { x, y: y + h, z: z + d },
   ];
+}
+
+function clamp(value, min, max) {
+  return Math.max(min, Math.min(max, value));
+}
+
+function clamp01(value) {
+  return clamp(value, 0, 1);
+}
+
+function parseHexChannel(channel) {
+  return Number.parseInt(channel, 16);
+}
+
+function parseHexColor(color) {
+  if (typeof color !== 'string' || !color.startsWith('#')) {
+    return null;
+  }
+
+  if (color.length === 4) {
+    const r = parseHexChannel(color[1] + color[1]);
+    const g = parseHexChannel(color[2] + color[2]);
+    const b = parseHexChannel(color[3] + color[3]);
+    if (Number.isNaN(r) || Number.isNaN(g) || Number.isNaN(b)) return null;
+    return { r, g, b };
+  }
+
+  if (color.length === 7) {
+    const r = parseHexChannel(color.slice(1, 3));
+    const g = parseHexChannel(color.slice(3, 5));
+    const b = parseHexChannel(color.slice(5, 7));
+    if (Number.isNaN(r) || Number.isNaN(g) || Number.isNaN(b)) return null;
+    return { r, g, b };
+  }
+
+  return null;
+}
+
+function colorFromRgb(rgb) {
+  return `rgb(${Math.round(rgb.r)}, ${Math.round(rgb.g)}, ${Math.round(rgb.b)})`;
+}
+
+function applyDepthCueToColor(color, depth, nearDepth, farDepth) {
+  const rgb = parseHexColor(color);
+  if (!rgb) {
+    return color;
+  }
+
+  const depthT = clamp01((depth - nearDepth) / Math.max(0.0001, farDepth - nearDepth));
+  const brightness = 1.08 - depthT * 0.5;
+  return colorFromRgb({
+    r: clamp(rgb.r * brightness, 0, 255),
+    g: clamp(rgb.g * brightness, 0, 255),
+    b: clamp(rgb.b * brightness, 0, 255),
+  });
 }
 
 function rotateToCameraSpace(point, cameraState) {
@@ -78,7 +134,167 @@ export function createProjectionViewport(viewport) {
   };
 }
 
-export function drawWireBox(renderer, transform3D, size3D, cameraState, viewport, color = '#ffffff', lineWidth = 2) {
+export function createPhase16ViewState({
+  defaultCameraMode = 'follow',
+  debugOverlayEnabled = true,
+} = {}) {
+  const initialCameraMode = PHASE16_CAMERA_MODES.includes(defaultCameraMode) ? defaultCameraMode : 'follow';
+  return {
+    cameraMode: initialCameraMode,
+    debugOverlayEnabled,
+    cameraToggleLatch: false,
+    debugToggleLatch: false,
+  };
+}
+
+export function stepPhase16ViewToggles(viewState, input, { cameraToggleKey = 'KeyC', debugToggleKey = 'KeyV' } = {}) {
+  if (!viewState) {
+    return viewState;
+  }
+
+  const cameraPressed = input?.isDown(cameraToggleKey) === true;
+  if (cameraPressed && !viewState.cameraToggleLatch) {
+    const modeIndex = PHASE16_CAMERA_MODES.indexOf(viewState.cameraMode);
+    const nextIndex = (modeIndex + 1 + PHASE16_CAMERA_MODES.length) % PHASE16_CAMERA_MODES.length;
+    viewState.cameraMode = PHASE16_CAMERA_MODES[nextIndex];
+  }
+  viewState.cameraToggleLatch = cameraPressed;
+
+  const debugPressed = input?.isDown(debugToggleKey) === true;
+  if (debugPressed && !viewState.debugToggleLatch) {
+    viewState.debugOverlayEnabled = !viewState.debugOverlayEnabled;
+  }
+  viewState.debugToggleLatch = debugPressed;
+
+  return viewState;
+}
+
+function computeLookRotation(cameraPosition, targetPosition) {
+  const dx = targetPosition.x - cameraPosition.x;
+  const dy = targetPosition.y - cameraPosition.y;
+  const dz = targetPosition.z - cameraPosition.z;
+  const yaw = Math.atan2(dx, dz);
+  const horizontal = Math.hypot(dx, dz) || 1;
+  const pitch = Math.atan2(dy, horizontal);
+  return { yaw, pitch };
+}
+
+function copyPose(basePose) {
+  return {
+    position: {
+      x: basePose.position.x,
+      y: basePose.position.y,
+      z: basePose.position.z,
+    },
+    rotation: {
+      x: basePose.rotation.x,
+      y: basePose.rotation.y,
+      z: basePose.rotation.z,
+    },
+  };
+}
+
+export function resolvePhase16CameraPose(basePose, focusPoint, cameraMode = 'follow') {
+  const pose = copyPose(basePose);
+  if (!focusPoint || cameraMode === 'follow') {
+    return pose;
+  }
+
+  const baseOffset = {
+    x: pose.position.x - focusPoint.x,
+    y: pose.position.y - focusPoint.y,
+    z: pose.position.z - focusPoint.z,
+  };
+
+  if (cameraMode === 'wide') {
+    pose.position.x = focusPoint.x + baseOffset.x * 1.55;
+    pose.position.y = focusPoint.y + baseOffset.y * 1.45 + 0.9;
+    pose.position.z = focusPoint.z + baseOffset.z * 1.55;
+    const look = computeLookRotation(pose.position, focusPoint);
+    pose.rotation.x = look.pitch;
+    pose.rotation.y = -look.yaw;
+    pose.rotation.z = 0;
+    return pose;
+  }
+
+  if (cameraMode === 'overhead') {
+    pose.position.x = focusPoint.x + baseOffset.x * 0.12;
+    pose.position.y = focusPoint.y + Math.max(11.5, Math.abs(baseOffset.y) * 2.3);
+    pose.position.z = focusPoint.z + baseOffset.z * 0.12;
+    const look = computeLookRotation(pose.position, focusPoint);
+    pose.rotation.x = look.pitch;
+    pose.rotation.y = -look.yaw;
+    pose.rotation.z = 0;
+    return pose;
+  }
+
+  return pose;
+}
+
+export function applyPhase16CameraMode(camera3D, viewState, basePose, focusPoint) {
+  const cameraMode = viewState?.cameraMode ?? 'follow';
+  const pose = resolvePhase16CameraPose(basePose, focusPoint, cameraMode);
+  camera3D.setPosition(pose.position);
+  camera3D.setRotation(pose.rotation);
+  return pose;
+}
+
+export function drawDepthBackdrop(renderer, viewport, {
+  bands = 8,
+  alphaNear = 0.12,
+  alphaFar = 0.38,
+  tint = '9, 14, 28',
+} = {}) {
+  const safeBands = Math.max(1, bands);
+  const bandHeight = viewport.height / safeBands;
+  for (let i = 0; i < safeBands; i += 1) {
+    const t = i / Math.max(1, safeBands - 1);
+    const alpha = alphaNear + (alphaFar - alphaNear) * t;
+    renderer.drawRect(
+      viewport.x,
+      viewport.y + i * bandHeight,
+      viewport.width,
+      bandHeight + 1,
+      `rgba(${tint}, ${alpha.toFixed(3)})`,
+    );
+  }
+}
+
+export function drawPhase16DebugOverlay(renderer, viewport, viewState, lines = []) {
+  if (!viewState?.debugOverlayEnabled) {
+    return;
+  }
+
+  const overlayLines = [
+    `View mode: ${viewState.cameraMode}`,
+    'Depth cue: enabled',
+    'Toggle camera: C | Toggle debug: V',
+    ...lines,
+  ];
+
+  const x = viewport.x + 12;
+  const y = viewport.y + 12;
+  const width = Math.min(420, viewport.width - 24);
+  const height = 30 + overlayLines.length * 18;
+  renderer.drawRect(x, y, width, height, 'rgba(15, 23, 42, 0.84)');
+  renderer.strokeRect(x, y, width, height, '#475569', 1);
+  overlayLines.forEach((line, index) => {
+    renderer.drawText(line, x + 10, y + 22 + index * 18, {
+      color: '#e2e8f0',
+      font: '13px monospace',
+    });
+  });
+}
+
+export function drawWireBox(renderer, transform3D, size3D, cameraState, viewport, color = '#ffffff', lineWidthOrOptions = 2) {
+  const options = typeof lineWidthOrOptions === 'number'
+    ? { lineWidth: lineWidthOrOptions }
+    : (lineWidthOrOptions ?? {});
+  const lineWidth = options.lineWidth ?? 2;
+  const depthCueEnabled = options.depthCueEnabled !== false;
+  const nearDepth = options.nearDepth ?? 3;
+  const farDepth = options.farDepth ?? 44;
+
   const vertices = createBoxVertices(transform3D, size3D);
   const projected = vertices.map((vertex) => projectPoint(vertex, cameraState, viewport));
 
@@ -88,7 +304,11 @@ export function drawWireBox(renderer, transform3D, size3D, cameraState, viewport
     if (!start || !end) {
       continue;
     }
-    renderer.drawLine(start.x, start.y, end.x, end.y, color, lineWidth);
+    const edgeDepth = (start.depth + end.depth) * 0.5;
+    const edgeColor = depthCueEnabled ? applyDepthCueToColor(color, edgeDepth, nearDepth, farDepth) : color;
+    const depthT = clamp01((edgeDepth - nearDepth) / Math.max(0.0001, farDepth - nearDepth));
+    const widthScale = depthCueEnabled ? (1.12 - depthT * 0.45) : 1;
+    renderer.drawLine(start.x, start.y, end.x, end.y, edgeColor, Math.max(1, lineWidth * widthScale));
   }
 }
 

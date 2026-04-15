@@ -3,15 +3,19 @@ MODEL: GPT-5.3-codex
 REASONING: high
 
 COMMAND:
-Implement Sample 1608 dungeon crawler core loop.
+Add advanced but safe enhancements to Phase 16 samples.
+
+Focus:
+- camera mode toggle
+- simple shading/depth cues
+- debug overlay
 
 Rules:
 - smallest scoped change
+- sample-only
 - no zip output
-- sample only
 
 Validate:
-- movement works
-- collision blocks
-- interaction visible
+- features visibly work
+- no regressions
 - sanity + smoke pass

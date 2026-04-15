@@ -8,7 +8,15 @@ import { Scene } from '/src/engine/scene/index.js';
 import { Theme, ThemeTokens } from '/src/engine/theme/index.js';
 import { drawFrame, drawPanel } from '/src/engine/debug/index.js';
 import { isAabbColliding3D } from '/src/engine/physics/index.js';
-import { createProjectionViewport, drawWireBox } from '../shared/threeDWireframe.js';
+import {
+  applyPhase16CameraMode,
+  createPhase16ViewState,
+  createProjectionViewport,
+  drawDepthBackdrop,
+  drawPhase16DebugOverlay,
+  drawWireBox,
+  stepPhase16ViewToggles,
+} from '../shared/threeDWireframe.js';
 
 const theme = new Theme(ThemeTokens);
 
@@ -66,6 +74,7 @@ export default class SpaceShooter3DScene extends Scene {
     this.lastLoopScore = 0;
     this.lastLoopReason = 'active';
     this.resetLatch = false;
+    this.viewState = createPhase16ViewState();
   }
 
   setCamera3D(camera3D) {
@@ -78,15 +87,22 @@ export default class SpaceShooter3DScene extends Scene {
       return;
     }
 
-    this.camera3D.setPosition({
-      x: this.ship.transform3D.x,
-      y: this.ship.transform3D.y + 2.4,
-      z: this.ship.transform3D.z - 9.2,
-    });
-    this.camera3D.setRotation({
-      x: -0.08,
-      y: 0,
-      z: 0,
+    const basePose = {
+      position: {
+        x: this.ship.transform3D.x,
+        y: this.ship.transform3D.y + 2.4,
+        z: this.ship.transform3D.z - 9.2,
+      },
+      rotation: {
+        x: -0.08,
+        y: 0,
+        z: 0,
+      },
+    };
+    applyPhase16CameraMode(this.camera3D, this.viewState, basePose, {
+      x: this.ship.transform3D.x + this.ship.size3D.width * 0.5,
+      y: this.ship.transform3D.y + this.ship.size3D.height * 0.5,
+      z: this.ship.transform3D.z + this.ship.size3D.depth * 0.5,
     });
   }
 
@@ -120,6 +136,7 @@ export default class SpaceShooter3DScene extends Scene {
 
   step3DPhysics(dt, engine) {
     const input = engine.input;
+    stepPhase16ViewToggles(this.viewState, input);
     const resetPressed = input?.isDown('KeyR') === true;
     if (resetPressed && !this.resetLatch) {
       this.startLoop('manual-reset');
@@ -261,11 +278,12 @@ export default class SpaceShooter3DScene extends Scene {
     drawFrame(renderer, theme, [
       'Sample 1607 - 3D Space Shooter',
       'Pilot a ship lane, fire at incoming asteroids, and track looping rounds.',
-      'Move: W A S D | Fire: Space | Reset round: R',
+      'Move: W A S D | Fire: Space | Reset round: R | Camera: C | Debug: V',
       'Round auto-resets when misses reach the round limit.',
     ]);
 
     renderer.strokeRect(this.viewport.x, this.viewport.y, this.viewport.width, this.viewport.height, '#d8d5ff', 2);
+    drawDepthBackdrop(renderer, this.viewport);
 
     const cameraState = this.camera3D?.getState?.() ?? {
       position: { x: 0, y: 2.4, z: -2.7 },
@@ -301,6 +319,11 @@ export default class SpaceShooter3DScene extends Scene {
       `Round ${this.loopNumber} | Misses: ${this.misses}/${this.loopMissLimit}`,
       `Round time: ${this.loopElapsedSeconds.toFixed(1)} s | Last round score: ${this.lastLoopScore}`,
       `Last round reset: ${this.lastLoopReason}`,
+    ]);
+
+    drawPhase16DebugOverlay(renderer, this.viewport, this.viewState, [
+      `Round: ${this.loopNumber} | Score: ${this.score}`,
+      `Projectiles: ${this.bullets.length} | Misses: ${this.misses}`,
     ]);
   }
 }

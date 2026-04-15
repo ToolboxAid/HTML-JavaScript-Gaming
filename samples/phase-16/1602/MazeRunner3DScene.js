@@ -10,7 +10,16 @@ import { drawFrame, drawPanel } from '/src/engine/debug/index.js';
 import { World } from '/src/engine/ecs/index.js';
 import { isAabbColliding3D } from '/src/engine/physics/index.js';
 import { stepWorldPhysics3D } from '/src/engine/systems/index.js';
-import { createProjectionViewport, drawGroundGrid, drawWireBox } from '../shared/threeDWireframe.js';
+import {
+  applyPhase16CameraMode,
+  createPhase16ViewState,
+  createProjectionViewport,
+  drawDepthBackdrop,
+  drawGroundGrid,
+  drawPhase16DebugOverlay,
+  drawWireBox,
+  stepPhase16ViewToggles,
+} from '../shared/threeDWireframe.js';
 
 const theme = new Theme(ThemeTokens);
 
@@ -44,6 +53,7 @@ export default class MazeRunner3DScene extends Scene {
     };
     this.goalReached = false;
     this.lastPhysicsSummary = { movedEntities: 0, collisionCount: 0 };
+    this.viewState = createPhase16ViewState();
 
     this.playerId = this.world.createEntity();
     this.world.addComponent(this.playerId, 'transform3D', {
@@ -109,20 +119,28 @@ export default class MazeRunner3DScene extends Scene {
     }
 
     const player = this.world.requireComponent(this.playerId, 'transform3D');
-    this.camera3D.setPosition({
-      x: player.x,
-      y: 10.2,
-      z: player.z - 10.6,
-    });
-    this.camera3D.setRotation({
-      x: -0.5,
-      y: 0,
-      z: 0,
+    const basePose = {
+      position: {
+        x: player.x,
+        y: 10.2,
+        z: player.z - 10.6,
+      },
+      rotation: {
+        x: -0.5,
+        y: 0,
+        z: 0,
+      },
+    };
+    applyPhase16CameraMode(this.camera3D, this.viewState, basePose, {
+      x: player.x + 0.55,
+      y: player.y + 0.55,
+      z: player.z + 0.55,
     });
   }
 
   step3DPhysics(dt, engine) {
     const input = engine.input;
+    stepPhase16ViewToggles(this.viewState, input);
     const velocity = this.world.requireComponent(this.playerId, 'velocity3D');
 
     const axisX = (input?.isDown('KeyD') ? 1 : 0) - (input?.isDown('KeyA') ? 1 : 0);
@@ -157,11 +175,12 @@ export default class MazeRunner3DScene extends Scene {
     drawFrame(renderer, theme, [
       'Sample 1602 - 3D Maze Runner',
       'Navigate through a 3D maze while physics keeps the cube outside wall bounds.',
-      'Move: W A S D',
+      'Move: W A S D | Camera: C | Debug: V',
       this.goalReached ? 'Goal reached: route solved.' : 'Find the green goal cube near the far-right corner.',
     ]);
 
     renderer.strokeRect(this.viewport.x, this.viewport.y, this.viewport.width, this.viewport.height, '#d8d5ff', 2);
+    drawDepthBackdrop(renderer, this.viewport);
 
     const cameraState = this.camera3D?.getState?.() ?? {
       position: { x: 0, y: 10.2, z: -7.4 },
@@ -210,6 +229,11 @@ export default class MazeRunner3DScene extends Scene {
       `Resolved collisions: ${this.lastPhysicsSummary.collisionCount}`,
       `Goal: ${this.goalReached ? 'reached' : 'in progress'}`,
       'Pathing: stepWorldPhysics3D (AABB walls)',
+    ]);
+
+    drawPhase16DebugOverlay(renderer, this.viewport, this.viewState, [
+      `Goal status: ${this.goalReached ? 'reached' : 'pending'}`,
+      `Collisions/frame: ${this.lastPhysicsSummary.collisionCount}`,
     ]);
   }
 }
