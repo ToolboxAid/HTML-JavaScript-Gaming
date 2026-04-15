@@ -190,11 +190,11 @@
 - [x] `asFiniteNumber` unified
 - [x] `asPositiveInteger` unified
 - [x] `isPlainObject` unified
-- [.] `getState` variants bucketed by domain
-- [ ] `getSimulationState` naming established where needed
-- [ ] `getReplayState` naming established where needed
-- [ ] `getEditorState` naming established where needed
-- [ ] sample/tool/runtime duplicates classified before move
+- [x] `getState` variants bucketed by domain
+- [x] `getSimulationState` naming established where needed
+- [x] `getReplayState` naming established where needed
+- [x] `getEditorState` naming established where needed
+- [x] sample/tool/runtime duplicates classified before move
 
 ### Recent Consolidation Checkpoint
 - [x] vector-domain `toFiniteNumber` promoted into `src/shared/math/numberNormalization.js`

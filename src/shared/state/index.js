@@ -16,3 +16,9 @@ export {
   SHARED_STATE_KEYS,
   isSharedPromotionMode,
 } from "./contracts.js";
+export {
+  classifyGetStateVariantDomain,
+  classifyGetStateVariantLayer,
+  extractGetStateVariantNames,
+  bucketGetStateVariants,
+} from "./getStateVariantClassification.js";

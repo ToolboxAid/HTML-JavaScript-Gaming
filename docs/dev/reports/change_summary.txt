@@ -1,3 +1,1 @@
-- Added a combined PR for the Section-3 Shared Foundation lane
-- Bundles utilities, shared math, shared state, contracts, and io/data/types stabilization
-- Intended to finish most or all of Section 3 in one pass and leave only tiny residue if needed
+Duplicate classification and rename normalization
