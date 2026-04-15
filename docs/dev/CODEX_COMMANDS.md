@@ -1,6 +1,6 @@
 MODEL: GPT-5.3-codex
-REASONING: high
+REASONING: low
 COMMAND:
-Prepare implementation-ready Docker runtime plan for authoritative server.
-Keep scope minimal (single-node).
-Update roadmap markers only.
+Finalize APPLY_PR_LEVEL_12_5_SERVER_HOSTING_DOCKER_RUNTIME.
+Update docs/dev/roadmaps/MASTER_ROADMAP_HIGH_LEVEL.md markers only.
+Do not modify wording or structure.

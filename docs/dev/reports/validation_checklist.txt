@@ -1,4 +1,5 @@
-- docker runtime defined
-- startup lifecycle defined
-- connection path defined
-- roadmap rule enforced
+- container builds
+- server runs
+- client connects
+- lifecycle verified
+- roadmap updated

@@ -1,1 +1,1 @@
-define docker runtime for authoritative server hosting — PLAN_PR_LEVEL_12_5_SERVER_HOSTING_DOCKER_RUNTIME
+apply docker runtime for server hosting and validate — APPLY_PR_LEVEL_12_5_SERVER_HOSTING_DOCKER_RUNTIME

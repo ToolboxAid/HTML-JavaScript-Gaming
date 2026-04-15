@@ -611,7 +611,7 @@
 - [x] authoritative live server runtime
 - [x] replication/client application
 - [x] playable real multiplayer validation
-- [.] server hosting + Docker containerization
+- [x] server hosting + Docker containerization
 - [ ] promotion/readiness gate
 - [x] include samples for phase 13
 
