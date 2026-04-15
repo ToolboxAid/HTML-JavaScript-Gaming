@@ -609,7 +609,7 @@
 ### Full Real-Network Capability Lane (Required Before 3D Execution)
 - [x] real transport/session layer
 - [x] authoritative live server runtime
-- [ ] replication/client application
+- [x] replication/client application
 - [x] playable real multiplayer validation
 - [ ] server hosting + Docker containerization
 - [ ] promotion/readiness gate

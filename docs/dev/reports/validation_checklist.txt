@@ -1,5 +1,4 @@
-- connection works
-- session active
-- replication visible
-- disconnect works
-- roadmap markers updated
+- apply complete
+- validation passed
+- replication verified
+- roadmap updated
