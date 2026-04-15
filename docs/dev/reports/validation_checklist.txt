@@ -1,8 +1,8 @@
-Sample 1605 driving control checklist
-[x] left turn works while held
-[x] right turn works while held
-[x] steering stops on release
-[x] opposite direction can engage immediately
+Sample 1605 chase camera checklist
+[x] vehicle visibly turns with heading
+[x] camera stays behind during normal driving
+[x] vehicle remains visible during turning
+[x] steering still behaves correctly
 [x] forward/reverse still function
 [x] sample renders visibly on load
 [x] targeted smoke for 1605 passes

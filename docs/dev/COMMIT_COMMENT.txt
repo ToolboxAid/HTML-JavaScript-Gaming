@@ -1,1 +1,1 @@
-Fix stuck left/right steering behavior in Sample 1605 driving controls with targeted validation<BUILD_PR_LEVEL_17_9_SAMPLE_1605_DRIVING_CONTROL_FIX>
+Improve Sample 1605 readability with vehicle-facing rotation and a behind-the-car chase camera<BUILD_PR_LEVEL_17_10_SAMPLE_1605_CHASE_CAMERA_AND_VEHICLE_FACING>

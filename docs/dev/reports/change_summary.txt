@@ -1,17 +1,21 @@
 Observed issue:
-- Sample 1605 renders and loads
-- steering behavior gets stuck left/right
+- Sample 1605 steering no longer sticks
+- sample still feels hard to read as a driving sandbox
+- camera can lose the vehicle
+- vehicle heading may not be visually obvious
 
 Applied fix:
-- isolated steering correction in samples/phase-16/1605/DrivingSandbox3DScene.js
-- removed reverse-dependent steering inversion so A/D turn direction remains consistent
-- preserved 1605 rendering path and forward/reverse speed model
-- extended existing targeted runtime sanity in tests/runtime/Phase16VisibilitySanity.test.mjs with 1605 steering behavior checks:
-  - left hold
-  - right hold
-  - release stop
-  - immediate opposite engagement
-  - reverse motion
+- tuned Sample 1605 to a stable chase camera profile:
+  - behind-car position based on current heading
+  - chase look-ahead target
+  - mild yaw lag for readable turning
+- kept prior steering fix and existing forward/reverse behavior intact
+- made vehicle facing explicit by drawing a heading-oriented vehicle wireframe and front marker in render path
+- extended existing targeted runtime sanity in tests/runtime/Phase16VisibilitySanity.test.mjs to cover:
+  - chase camera behind-car behavior
+  - visible heading distinction during turn
+  - vehicle visibility during turning/reverse
+  - retained steering/reverse behavior checks
 
 Validation outcome:
 - PASS Phase16VisibilitySanity

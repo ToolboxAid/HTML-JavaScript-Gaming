@@ -9,12 +9,110 @@ import { Theme, ThemeTokens } from '/src/engine/theme/index.js';
 import { drawFrame, drawPanel } from '/src/engine/debug/index.js';
 import { World } from '/src/engine/ecs/index.js';
 import { stepWorldPhysics3D } from '/src/engine/systems/index.js';
-import { createProjectionViewport, drawGroundGrid, drawWireBox } from '../shared/threeDWireframe.js';
+import { createProjectionViewport, drawGroundGrid, drawWireBox, projectPoint } from '../shared/threeDWireframe.js';
 
 const theme = new Theme(ThemeTokens);
+const BOX_EDGES = [
+  [0, 1], [1, 2], [2, 3], [3, 0],
+  [4, 5], [5, 6], [6, 7], [7, 4],
+  [0, 4], [1, 5], [2, 6], [3, 7],
+];
 
 function clamp(value, min, max) {
   return Math.max(min, Math.min(max, value));
+}
+
+function normalizeAngle(angle) {
+  let value = angle;
+  const fullTurn = Math.PI * 2;
+  while (value > Math.PI) value -= fullTurn;
+  while (value < -Math.PI) value += fullTurn;
+  return value;
+}
+
+function rotateYaw(localX, localZ, yaw) {
+  const cos = Math.cos(yaw);
+  const sin = Math.sin(yaw);
+  return {
+    x: localX * cos + localZ * sin,
+    z: -localX * sin + localZ * cos,
+  };
+}
+
+function createOrientedBoxVertices(transform3D, size3D, yaw) {
+  const halfWidth = size3D.width * 0.5;
+  const halfHeight = size3D.height * 0.5;
+  const halfDepth = size3D.depth * 0.5;
+  const centerX = transform3D.x + halfWidth;
+  const centerY = transform3D.y + halfHeight;
+  const centerZ = transform3D.z + halfDepth;
+
+  const localVertices = [
+    { x: -halfWidth, y: -halfHeight, z: -halfDepth },
+    { x: halfWidth, y: -halfHeight, z: -halfDepth },
+    { x: halfWidth, y: halfHeight, z: -halfDepth },
+    { x: -halfWidth, y: halfHeight, z: -halfDepth },
+    { x: -halfWidth, y: -halfHeight, z: halfDepth },
+    { x: halfWidth, y: -halfHeight, z: halfDepth },
+    { x: halfWidth, y: halfHeight, z: halfDepth },
+    { x: -halfWidth, y: halfHeight, z: halfDepth },
+  ];
+
+  return localVertices.map((localVertex) => {
+    const rotated = rotateYaw(localVertex.x, localVertex.z, yaw);
+    return {
+      x: centerX + rotated.x,
+      y: centerY + localVertex.y,
+      z: centerZ + rotated.z,
+    };
+  });
+}
+
+function drawOrientedWireBox(renderer, transform3D, size3D, yaw, cameraState, viewport, color) {
+  const vertices = createOrientedBoxVertices(transform3D, size3D, yaw);
+  const projected = vertices.map((vertex) => projectPoint(vertex, cameraState, viewport));
+
+  for (const [startIndex, endIndex] of BOX_EDGES) {
+    const start = projected[startIndex];
+    const end = projected[endIndex];
+    if (!start || !end) {
+      continue;
+    }
+    renderer.drawLine(start.x, start.y, end.x, end.y, color, 2);
+  }
+}
+
+function drawVehicleHeadingMarker(renderer, transform3D, size3D, yaw, cameraState, viewport) {
+  const halfWidth = size3D.width * 0.5;
+  const halfHeight = size3D.height * 0.5;
+  const halfDepth = size3D.depth * 0.5;
+  const centerX = transform3D.x + halfWidth;
+  const centerY = transform3D.y + halfHeight;
+  const centerZ = transform3D.z + halfDepth;
+
+  const roofLocal = { x: 0, y: halfHeight * 0.55, z: 0 };
+  const frontLocal = { x: 0, y: halfHeight * 0.45, z: halfDepth + 0.15 };
+  const noseLocal = { x: 0, y: halfHeight * 0.45, z: halfDepth + 0.95 };
+
+  const toWorld = (local) => {
+    const rotated = rotateYaw(local.x, local.z, yaw);
+    return {
+      x: centerX + rotated.x,
+      y: centerY + local.y,
+      z: centerZ + rotated.z,
+    };
+  };
+
+  const roof = projectPoint(toWorld(roofLocal), cameraState, viewport);
+  const front = projectPoint(toWorld(frontLocal), cameraState, viewport);
+  const nose = projectPoint(toWorld(noseLocal), cameraState, viewport);
+
+  if (roof && front) {
+    renderer.drawLine(roof.x, roof.y, front.x, front.y, '#fde68a', 2);
+  }
+  if (front && nose) {
+    renderer.drawLine(front.x, front.y, nose.x, nose.y, '#fde68a', 3);
+  }
 }
 
 export default class DrivingSandbox3DScene extends Scene {
@@ -28,6 +126,13 @@ export default class DrivingSandbox3DScene extends Scene {
     this.accel = 20;
     this.drag = 10;
     this.turnRate = 1.8;
+    this.chaseDistance = 9.4;
+    this.chaseHeight = 5.4;
+    this.chaseLookAhead = 2.8;
+    this.chaseYawLerp = 0.2;
+    this.cameraPitch = -0.38;
+    this.cameraYaw = 0;
+    this.cameraInitialized = false;
     this.distance = 0;
     this.viewport = {
       x: 40,
@@ -107,14 +212,29 @@ export default class DrivingSandbox3DScene extends Scene {
     }
 
     const car = this.world.requireComponent(this.carId, 'transform3D');
+    const forwardX = Math.sin(this.heading);
+    const forwardZ = Math.cos(this.heading);
+    const lookTargetX = car.x + forwardX * this.chaseLookAhead;
+    const lookTargetZ = car.z + forwardZ * this.chaseLookAhead;
+    const cameraX = car.x - forwardX * this.chaseDistance;
+    const cameraZ = car.z - forwardZ * this.chaseDistance;
+    const targetYaw = Math.atan2(lookTargetX - cameraX, lookTargetZ - cameraZ);
+
+    if (!this.cameraInitialized) {
+      this.cameraYaw = targetYaw;
+      this.cameraInitialized = true;
+    } else {
+      this.cameraYaw += normalizeAngle(targetYaw - this.cameraYaw) * this.chaseYawLerp;
+    }
+
     this.camera3D.setPosition({
-      x: car.x - Math.sin(this.heading) * 8.5,
-      y: car.y + 4.8,
-      z: car.z - Math.cos(this.heading) * 8.5,
+      x: cameraX,
+      y: car.y + this.chaseHeight,
+      z: cameraZ,
     });
     this.camera3D.setRotation({
-      x: -0.35,
-      y: this.heading,
+      x: this.cameraPitch,
+      y: this.cameraYaw,
       z: 0,
     });
   }
@@ -163,8 +283,8 @@ export default class DrivingSandbox3DScene extends Scene {
     renderer.strokeRect(this.viewport.x, this.viewport.y, this.viewport.width, this.viewport.height, '#d8d5ff', 2);
 
     const cameraState = this.camera3D?.getState?.() ?? {
-      position: { x: 0, y: 4.8, z: 0 },
-      rotation: { x: -0.35, y: 0, z: 0 },
+      position: { x: 0, y: 5.4, z: -0.9 },
+      rotation: { x: this.cameraPitch, y: this.cameraYaw, z: 0 },
     };
     const projectionViewport = createProjectionViewport(this.viewport);
 
@@ -184,21 +304,29 @@ export default class DrivingSandbox3DScene extends Scene {
       projectionViewport,
     );
 
-    const entities = this.world.getEntitiesWith('transform3D', 'size3D', 'renderable3D').map((entityId) => ({
-      transform3D: this.world.requireComponent(entityId, 'transform3D'),
-      size3D: this.world.requireComponent(entityId, 'size3D'),
-      renderable3D: this.world.requireComponent(entityId, 'renderable3D'),
-    }));
-    entities.sort((left, right) => right.transform3D.z - left.transform3D.z);
+    const car = this.world.requireComponent(this.carId, 'transform3D');
+    const carSize = this.world.requireComponent(this.carId, 'size3D');
+    const staticEntities = this.world
+      .getEntitiesWith('transform3D', 'size3D', 'renderable3D')
+      .filter((entityId) => entityId !== this.carId)
+      .map((entityId) => ({
+        transform3D: this.world.requireComponent(entityId, 'transform3D'),
+        size3D: this.world.requireComponent(entityId, 'size3D'),
+        renderable3D: this.world.requireComponent(entityId, 'renderable3D'),
+      }));
 
-    entities.forEach(({ transform3D, size3D, renderable3D }) => {
+    staticEntities.sort((left, right) => right.transform3D.z - left.transform3D.z);
+    staticEntities.forEach(({ transform3D, size3D, renderable3D }) => {
       drawWireBox(renderer, transform3D, size3D, cameraState, projectionViewport, renderable3D.color, 2);
     });
 
-    const car = this.world.requireComponent(this.carId, 'transform3D');
+    drawOrientedWireBox(renderer, car, carSize, this.heading, cameraState, projectionViewport, '#38bdf8');
+    drawVehicleHeadingMarker(renderer, car, carSize, this.heading, cameraState, projectionViewport);
+
     drawPanel(renderer, 620, 34, 300, 126, 'Driving Runtime', [
       `Car: x=${car.x.toFixed(2)} y=${car.y.toFixed(2)} z=${car.z.toFixed(2)}`,
       `Speed: ${this.speed.toFixed(2)} u/s | Heading: ${this.heading.toFixed(2)} rad`,
+      `Chase yaw: ${this.cameraYaw.toFixed(2)} rad`,
       `Track distance: ${this.distance.toFixed(1)} u`,
       `Moved entities: ${this.lastPhysicsSummary.movedEntities}`,
       `Resolved collisions: ${this.lastPhysicsSummary.collisionCount}`,

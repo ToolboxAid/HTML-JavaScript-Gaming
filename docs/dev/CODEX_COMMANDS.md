@@ -2,10 +2,10 @@ MODEL: GPT-5.3-codex
 REASONING: high
 
 COMMAND:
-Create BUILD_PR_LEVEL_17_9_SAMPLE_1605_DRIVING_CONTROL_FIX.
+Create BUILD_PR_LEVEL_17_10_SAMPLE_1605_CHASE_CAMERA_AND_VEHICLE_FACING.
 
 Goal:
-Fix Sample 1605 - 3D Driving Sandbox so left/right steering no longer gets stuck.
+Make Sample 1605 read clearly as a driving sandbox by ensuring the driven object turns with heading and the camera follows from behind.
 
 Constraints:
 - one PR purpose only
@@ -14,18 +14,22 @@ Constraints:
 - no zip output from Codex
 - keep 2D and networking untouched
 - do not modify start_of_day
+- preserve the prior 1605 steering fix
 
 Implement:
 1. Inspect samples/phase-16/1605/DrivingSandbox3DScene.js.
-2. Fix the steering/input-state bug causing left/right navigation to stick.
-3. Preserve current visible 3D output and forward/reverse behavior.
-4. Add or extend the smallest targeted behavioral sanity check if useful.
+2. Ensure the rendered vehicle/box orientation matches heading.
+3. Convert or tune the current camera into a chase camera that stays behind the driven object by default.
+4. Keep framing simple, stable, and readable.
+5. Preserve forward/reverse and current steering behavior.
+6. Extend the smallest targeted behavioral sanity check only if useful.
 
 Validate:
-- verify left turn works while held
-- verify right turn works while held
-- verify steering stops when released
-- verify opposite turn can be engaged immediately
+- verify vehicle visibly turns with heading
+- verify camera stays behind the vehicle during normal driving
+- verify vehicle remains visible during turning
+- verify forward/reverse still function
+- verify steering still behaves correctly
 - verify sample still renders on load
 - run targeted smoke for 1605
 - update:

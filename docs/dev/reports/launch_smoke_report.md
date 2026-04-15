@@ -1,6 +1,6 @@
 # Launch Smoke Report
 
-Generated: 2026-04-15T20:27:13.340Z
+Generated: 2026-04-15T20:33:44.997Z
 
 Filters: games=false, samples=true, tools=false, sampleRange=1605-1605
 

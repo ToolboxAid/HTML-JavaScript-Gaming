@@ -44,6 +44,14 @@ function makeInput(keys = []) {
   };
 }
 
+function normalizeAngle(angle) {
+  let value = angle;
+  const fullTurn = Math.PI * 2;
+  while (value > Math.PI) value -= fullTurn;
+  while (value < -Math.PI) value += fullTurn;
+  return value;
+}
+
 function createRendererProbe(width = 960, height = 540) {
   const lines = [];
   return {
@@ -55,8 +63,8 @@ function createRendererProbe(width = 960, height = 540) {
     strokeRect() {},
     drawText() {},
     drawRect() {},
-    drawLine(x1, y1, x2, y2) {
-      lines.push({ x1, y1, x2, y2 });
+    drawLine(x1, y1, x2, y2, color) {
+      lines.push({ x1, y1, x2, y2, color });
     },
   };
 }
@@ -122,12 +130,20 @@ function assertPlatformerVisibilityAndInput() {
 
 function assertDrivingVisibilityAndInput() {
   const scene = new DrivingSandbox3DScene();
-  scene.setCamera3D(createCameraStub());
+  const camera = createCameraStub();
+  scene.setCamera3D(camera);
 
   const car = scene.world.requireComponent(scene.carId, 'transform3D');
   const startZ = car.z;
   scene.step3DPhysics(1 / 60, { input: makeInput(['KeyW']) });
   assert.equal(car.z > startZ, true, 'Driving sample W input should advance car forward.');
+  let cameraState = camera.getState();
+  let forwardX = Math.sin(scene.heading);
+  let forwardZ = Math.cos(scene.heading);
+  let toCameraX = cameraState.position.x - car.x;
+  let toCameraZ = cameraState.position.z - car.z;
+  let behindDot = toCameraX * forwardX + toCameraZ * forwardZ;
+  assert.equal(behindDot < -2, true, 'Driving sample chase camera should remain behind the car during forward drive.');
 
   const startHeading = scene.heading;
   for (let i = 0; i < 4; i += 1) {
@@ -149,6 +165,18 @@ function assertDrivingVisibilityAndInput() {
     scene.step3DPhysics(1 / 60, { input: makeInput(['KeyW', 'KeyD']) });
   }
   assert.equal(scene.heading > afterImmediateRightHeading, true, 'Driving sample D hold should continue turning right.');
+  cameraState = camera.getState();
+  forwardX = Math.sin(scene.heading);
+  forwardZ = Math.cos(scene.heading);
+  toCameraX = cameraState.position.x - car.x;
+  toCameraZ = cameraState.position.z - car.z;
+  behindDot = toCameraX * forwardX + toCameraZ * forwardZ;
+  assert.equal(behindDot < -2, true, 'Driving sample chase camera should remain behind while turning.');
+  assert.equal(
+    Math.abs(normalizeAngle(scene.heading - cameraState.rotation.y)) > 0.01,
+    true,
+    'Driving sample vehicle heading should remain visibly distinct from chase yaw during turn.',
+  );
 
   const beforeReverseHeading = scene.heading;
   scene.step3DPhysics(1 / 60, { input: makeInput(['KeyS', 'KeyD']) });
@@ -158,6 +186,11 @@ function assertDrivingVisibilityAndInput() {
     scene.step3DPhysics(1 / 60, { input: makeInput(['KeyS']) });
   }
   assert.equal(scene.speed < 0, true, 'Driving sample S input should produce reverse motion.');
+
+  const renderer = createRendererProbe();
+  scene.render(renderer);
+  const visibleLines = countVisibleLinesInViewport(renderer.lines, scene.viewport);
+  assert.equal(visibleLines > 0, true, 'Driving sample should keep vehicle visible during turning and reverse motion.');
 }
 
 function assertPhysicsPlaygroundVisibilityAndInput() {
