@@ -27,8 +27,8 @@ This BUILD fixes that properly by requiring:
 - `samples/phase-13/1319/game/RealNetworkLaunchScene.js`
 
 ### Real Server + Dashboard
-- `samples/phase-13/1319/server/realNetworkServer.mjs`
-- `samples/phase-13/1319/server/realNetworkDashboard.mjs`
+- `samples/phase-13/1319/tests/realNetworkServer.mjs`
+- `samples/phase-13/1319/tests/realNetworkDashboard.mjs`
 - `samples/phase-13/1319/server/README.md`
 - `samples/phase-13/1319/server/docker-compose.yml`
 

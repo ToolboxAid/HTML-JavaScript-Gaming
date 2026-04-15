@@ -7,7 +7,7 @@ Run a real WebSocket authoritative server for sample 1319 and expose a live dash
 From repo root:
 
 ```bash
-node samples/phase-13/1319/server/realNetworkServer.mjs
+node samples/phase-13/1319/tests/realNetworkServer.mjs
 ```
 
 ## Serve Sample Launcher

@@ -1,10 +1,9 @@
 MODEL: GPT-5.4
 REASONING: high
 COMMAND:
-Normalize samples shared directory.
-Merge samples/_shared into samples/shared.
-Update all references.
-Remove _shared.
+Move all .mjs runtime files for sample 1319 from server/ to tests/.
+Update all references accordingly.
 Do not change logic.
-Validate all samples still load.
-Update roadmap markers only.
+Ensure server still runs and dashboard works.
+Validate sample 1319 connectivity.
+Update roadmap markers only if execution passes.

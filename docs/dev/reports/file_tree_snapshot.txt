@@ -4,15 +4,15 @@ Command: PR_01_03_POST_MOVE_VALIDATION
 
 Snapshot Roots
 samples/
-  samples/_shared/
-    samples/_shared/debugConfigUtils.js
-    samples/_shared/lateSampleBootstrap.js
-    samples/_shared/networkDebugUtils.js
-    samples/_shared/numberUtils.js
-    samples/_shared/platformerHelpers.js
-    samples/_shared/runtimePreviewCapture.html
-    samples/_shared/sampleDetailPageEnhancement.js
-    samples/_shared/snapshotCloneUtils.js
+  samples/shared/
+    samples/shared/debugConfigUtils.js
+    samples/shared/lateSampleBootstrap.js
+    samples/shared/networkDebugUtils.js
+    samples/shared/numberUtils.js
+    samples/shared/platformerHelpers.js
+    samples/shared/runtimePreviewCapture.html
+    samples/shared/sampleDetailPageEnhancement.js
+    samples/shared/snapshotCloneUtils.js
   samples/index.html
   samples/metadata/
     samples/metadata/samples.curriculum.validation.json

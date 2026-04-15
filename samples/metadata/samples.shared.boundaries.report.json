@@ -551,7 +551,7 @@
   "sharedExtractionCandidates": {
     "fromSamplesShared": [
       {
-        "modulePath": "_shared/lateSampleBootstrap.js",
+        "modulePath": "shared/lateSampleBootstrap.js",
         "importerCount": 24,
         "sampleCount": 24,
         "importerExamples": [
@@ -567,7 +567,7 @@
         "candidateStatus": "candidate-for-src-shared-promotion"
       },
       {
-        "modulePath": "_shared/platformerHelpers.js",
+        "modulePath": "shared/platformerHelpers.js",
         "importerCount": 12,
         "sampleCount": 12,
         "importerExamples": [
@@ -583,11 +583,11 @@
         "candidateStatus": "candidate-for-src-shared-promotion"
       },
       {
-        "modulePath": "_shared/numberUtils.js",
+        "modulePath": "shared/numberUtils.js",
         "importerCount": 13,
         "sampleCount": 5,
         "importerExamples": [
-          "_shared/sampleDetailPageEnhancement.js",
+          "shared/sampleDetailPageEnhancement.js",
           "phase-12/1208/ToolFormattedTilesParallaxScene.js",
           "phase-13/1303/AsteroidsWorldSystemsScene.js",
           "phase-13/1316/game/FakeLoopbackNetworkModel.js",
@@ -599,7 +599,7 @@
         "candidateStatus": "candidate-for-src-shared-promotion"
       },
       {
-        "modulePath": "_shared/debugConfigUtils.js",
+        "modulePath": "shared/debugConfigUtils.js",
         "importerCount": 4,
         "sampleCount": 4,
         "importerExamples": [
@@ -611,7 +611,7 @@
         "candidateStatus": "candidate-for-src-shared-promotion"
       },
       {
-        "modulePath": "_shared/networkDebugUtils.js",
+        "modulePath": "shared/networkDebugUtils.js",
         "importerCount": 3,
         "sampleCount": 3,
         "importerExamples": [
@@ -622,14 +622,14 @@
         "candidateStatus": "candidate-for-src-shared-promotion"
       },
       {
-        "modulePath": "_shared/snapshotCloneUtils.js",
+        "modulePath": "shared/snapshotCloneUtils.js",
         "importerCount": 2,
         "sampleCount": 1,
         "importerExamples": [
           "phase-13/1318/game/ReconciliationLayerAdapter.js",
           "phase-13/1318/game/StateTimelineBuffer.js"
         ],
-        "candidateStatus": "keep-samples-_shared"
+        "candidateStatus": "keep-samples-shared"
       }
     ],
     "fromCrossSampleImports": [
@@ -644,7 +644,7 @@
           "phase-03/0305/TileMetadataScene.js",
           "phase-03/0306/NESStyleZonesParallaxScene.js"
         ],
-        "candidateStatus": "candidate-to-move-into-samples-_shared"
+        "candidateStatus": "candidate-to-move-into-samples-shared"
       },
       {
         "modulePath": "phase-13/1316/game/FakeLoopbackNetworkModel.js",

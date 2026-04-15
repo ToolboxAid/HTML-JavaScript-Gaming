@@ -1,21 +1,21 @@
 PR_06_06_SAMPLE_ENGINE_DEPENDENCY_CLEANUP - dependency cleanup map
 
 Approved shared/public target introduced:
-- /samples/_shared/sampleBaseLayout.css
+- /samples/shared/sampleBaseLayout.css
   - central sample shared boundary for base layout stylesheet dependency
 
 Source -> approved target mapping:
 1) samples/phase-13/1316/index.html
    - /src/engine/ui/baseLayout.css
-   -> /samples/_shared/sampleBaseLayout.css
+   -> /samples/shared/sampleBaseLayout.css
 
 2) samples/phase-13/1317/index.html
    - /src/engine/ui/baseLayout.css
-   -> /samples/_shared/sampleBaseLayout.css
+   -> /samples/shared/sampleBaseLayout.css
 
 3) samples/phase-13/1318/index.html
    - /src/engine/ui/baseLayout.css
-   -> /samples/_shared/sampleBaseLayout.css
+   -> /samples/shared/sampleBaseLayout.css
 
 Resolved direct violations:
 - 3 direct sample -> non-public engine stylesheet dependencies removed.

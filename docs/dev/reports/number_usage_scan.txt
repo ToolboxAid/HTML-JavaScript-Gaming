@@ -22,4 +22,4 @@ Consumers Updated In Scope
 - src/engine/debug/inspectors/viewModels/eventStreamInspectorViewModel.js
 - src/engine/debug/inspectors/viewModels/stateDiffInspectorViewModel.js
 - src/engine/debug/inspectors/viewModels/timelineInspectorViewModel.js
-- samples/_shared/numberUtils.js
+- samples/shared/numberUtils.js

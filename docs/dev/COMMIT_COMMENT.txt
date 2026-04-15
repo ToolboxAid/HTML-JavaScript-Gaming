@@ -1,1 +1,1 @@
-normalize samples shared directory structure — BUILD_PR_LEVEL_12_11_SAMPLE_SHARED_DIRECTORY_NORMALIZATION
+relocate 1319 server runtime files to tests directory — BUILD_PR_LEVEL_12_12_SAMPLE_1319_SERVER_TEST_RELOCATION

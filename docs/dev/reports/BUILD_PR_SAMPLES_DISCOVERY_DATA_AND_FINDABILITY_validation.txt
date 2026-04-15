@@ -38,4 +38,4 @@ Validation executed:
    - Result: pass
    - No `console.log` / `console.warn` / `console.error` statements found in:
      - samples/index.html
-     - samples/_shared/sampleDetailPageEnhancement.js
+     - samples/shared/sampleDetailPageEnhancement.js
