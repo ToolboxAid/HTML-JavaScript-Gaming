@@ -1,1 +1,1 @@
-PLAN_PR_LEVEL_17_1_3D_ACTIVATION_VALIDATION_GATE created - validation gate before 3D execution
+BUILD_PR_LEVEL_17_2_RENDER_SCENE_BOOT_VALIDATION - safe 3D scene boot + render hook

@@ -1,0 +1,1 @@
+Post-run: confirm 2D stability + 3D boot success
