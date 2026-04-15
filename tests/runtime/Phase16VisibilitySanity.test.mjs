@@ -248,9 +248,38 @@ function assertPhysicsPlaygroundVisibilityAndInput() {
   const scene = new PhysicsPlayground3DScene();
   scene.setCamera3D(createCameraStub());
 
+  const gravityStartVy = scene.bodies[2].velocity.y;
+  scene.step3DPhysics(1 / 60, { input: makeInput([]) });
+  assert.equal(scene.bodies[2].velocity.y < gravityStartVy, true, 'Physics sample gravity should visibly pull bodies downward.');
+
   const startVy = scene.bodies[0].velocity.y;
   scene.step3DPhysics(1 / 60, { input: makeInput(['Space']) });
   assert.equal(scene.bodies[0].velocity.y > startVy, true, 'Physics sample Space input should add upward impulse.');
+
+  const startingPositions = scene.bodies.map((body) => ({ ...body.transform3D }));
+  let sawBounce = false;
+  let sawBodyCollision = false;
+  for (let i = 0; i < 180; i += 1) {
+    scene.step3DPhysics(1 / 60, { input: makeInput([]) });
+    if (scene.bodyCollisionHits > 0) {
+      sawBodyCollision = true;
+    }
+    for (const body of scene.bodies) {
+      if (body.transform3D.y <= scene.arena.minY + 0.01 && body.velocity.y > 0.4) {
+        sawBounce = true;
+      }
+    }
+  }
+
+  const movedBodies = scene.bodies.filter((body, index) => {
+    const start = startingPositions[index];
+    const distance = Math.hypot(body.transform3D.x - start.x, body.transform3D.y - start.y, body.transform3D.z - start.z);
+    return distance > 0.9;
+  }).length;
+
+  assert.equal(sawBounce, true, 'Physics sample should show clearly visible bounce.');
+  assert.equal(sawBodyCollision, true, 'Physics sample should show body-to-body interaction.');
+  assert.equal(movedBodies >= 2, true, 'Physics sample should show distinct motion across multiple bodies.');
 }
 
 function assertShooterVisibilityAndInput() {

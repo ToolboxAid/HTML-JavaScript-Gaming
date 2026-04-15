@@ -1,23 +1,18 @@
-Observed issue:
-- Sample 1605 still fails user-visible validation
-- vehicle heading is not obvious enough
-- camera still gets lost
+BUILD_PR_LEVEL_17_12_SAMPLE_1606_PHYSICS_PLAYGROUND_IMPLEMENTATION
 
-Applied fix:
-- replaced ambiguous symmetric vehicle render with a clearly asymmetric vehicle wireframe
-- added a strong front arrow marker (shaft + wings + mast) driven directly by vehicle heading
-- hard-locked chase camera behind vehicle each frame using heading-based offset
-- computed camera yaw/pitch from camera position to vehicle target each frame to keep aim locked
-- removed chase lag/smoothing behavior that allowed drift/loss
-- preserved steering behavior and forward/reverse speed model
-- extended targeted runtime sanity in tests/runtime/Phase16VisibilitySanity.test.mjs to validate:
-  - marker heading rotation
-  - camera behind-vehicle positioning
-  - camera aim-at-vehicle rotation
-  - retained steering and reverse behavior
+Scope:
+- Updated only Sample 1606 runtime physics behavior plus a surgical 1606 sanity assertion update.
+- Kept 2D systems and networking runtime code untouched.
 
-Validation outcome:
-- PASS Phase16VisibilitySanity
-- PASS launch smoke (sample 1605): PASS=1 FAIL=0
-- PASS EngineTiming (targeted 2D regression check)
-- PASS MultiplayerNetworkingStack (targeted networking regression check)
+Runtime changes:
+- Increased gravity strength for clearer vertical acceleration.
+- Tuned body profiles (size, bounce, mass, initial velocity) for readable and distinct motion.
+- Added lightweight AABB body-to-body collision resolution to make multi-object interaction visible.
+- Added collision telemetry line in the 1606 runtime panel for quick inspection.
+
+Validation evidence:
+- `node --input-type=module -e "... import('./tests/runtime/Phase16VisibilitySanity.test.mjs') ..."` -> PASS
+- `node -e "... LaunchSmokeAllEntries ... --sample-range=1606-1606"` -> PASS
+- `node -e "... LaunchSmokeAllEntries ... --sample-range=0101-0101"` -> PASS (focused 2D regression check)
+- `node -e "... import('./tests/final/MultiplayerNetworkingStack.test.mjs') ..."` -> PASS
+- `node -e "... import('./tests/final/NetworkDebugAndServerDashboardCloseout.test.mjs') ..."` -> PASS

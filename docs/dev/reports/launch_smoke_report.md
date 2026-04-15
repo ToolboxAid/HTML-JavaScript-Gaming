@@ -1,9 +1,9 @@
 # Launch Smoke Report
 
-Generated: 2026-04-15T21:17:06.672Z
+Generated: 2026-04-15T21:30:19.616Z
 
-Filters: games=false, samples=true, tools=false, sampleRange=1603-1603
+Filters: games=false, samples=true, tools=false, sampleRange=0101-0101
 
 | Status | Type | Label | Path | Notes | Steps |
 | --- | --- | --- | --- | --- | --- |
-| PASS | sample | 1603 | samples\phase-16\1603\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 0101 | samples\phase-01\0101\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |

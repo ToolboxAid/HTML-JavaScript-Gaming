@@ -1,1 +1,1 @@
-Make Sample 1605 unmistakably readable with a directional vehicle shape and hard-locked chase camera<BUILD_PR_LEVEL_17_11_SAMPLE_1605_HARD_LOCK_CHASE_AND_ASYMMETRIC_VEHICLE>
+Implement a real visible physics playground improvement for Sample 1606 with targeted validation<BUILD_PR_LEVEL_17_12_SAMPLE_1606_PHYSICS_PLAYGROUND_IMPLEMENTATION>

@@ -1,19 +1,10 @@
-Sample 1605 readability checklist
-[x] vehicle shape is visibly directional
-[x] front marker rotates with heading
-[x] camera is hard-locked behind vehicle
-[x] camera remains aimed at vehicle
-[x] vehicle stays easy to track during turning
-[x] steering still behaves correctly
-[x] forward/reverse still function
-[x] sample renders visibly on load
-[x] targeted smoke for 1605 passes
+Sample 1606 implementation checklist
+[x] 1606 renders visible 3D content on load
+[x] gravity is visually obvious
+[x] bounce is clearly visible
+[x] multiple objects show distinct motion/interaction
+[x] sample is readable without extra explanation
+[x] targeted affected sanity passes
+[x] targeted smoke for 1606 passes
 [x] no 2D regression observed in targeted checks
 [x] no networking regression observed in targeted checks
-
-Execution evidence:
-- PASS Phase16VisibilitySanity
-- Launch smoke targeted run: --samples --sample-range=1605-1605
-- Launch smoke result: PASS=1 FAIL=0 TOTAL=1
-- PASS EngineTiming (2D baseline targeted check)
-- PASS MultiplayerNetworkingStack (network baseline targeted check)

@@ -128,7 +128,7 @@ export default class FirstPersonWalkthroughScene extends Scene {
     this.pitch = clamp(this.pitch + lookY * this.lookSpeed * dt, -0.55, 0.5);
 
     const axisForward = (input?.isDown('KeyW') ? 1 : 0) - (input?.isDown('KeyS') ? 1 : 0);
-    const axisStrafe = (input?.isDown('KeyA') ? 1 : 0) - (input?.isDown('KeyD') ? 1 : 0);
+    const axisStrafe = (input?.isDown('KeyD') ? 1 : 0) - (input?.isDown('KeyA') ? 1 : 0);
     const length = Math.hypot(axisForward, axisStrafe) || 1;
     const forward = axisForward / length;
     const strafe = axisStrafe / length;

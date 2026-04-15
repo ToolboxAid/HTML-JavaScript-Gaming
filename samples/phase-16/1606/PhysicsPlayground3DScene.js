@@ -15,15 +15,106 @@ function clamp(value, min, max) {
   return Math.max(min, Math.min(max, value));
 }
 
-function createBody(id, x, y, z, color, vx, vy, vz) {
+function createBody({
+  id,
+  x,
+  y,
+  z,
+  color,
+  vx,
+  vy,
+  vz,
+  width = 1.1,
+  height = 1.1,
+  depth = 1.1,
+  bounce = 0.62,
+  mass = 1,
+}) {
   return {
     id,
     color,
     transform3D: { x, y, z },
-    size3D: { width: 1.1, height: 1.1, depth: 1.1 },
+    size3D: { width, height, depth },
     velocity: { x: vx, y: vy, z: vz },
-    bounce: 0.62,
+    bounce,
+    mass,
   };
+}
+
+function getBodyCenter(body) {
+  return {
+    x: body.transform3D.x + body.size3D.width * 0.5,
+    y: body.transform3D.y + body.size3D.height * 0.5,
+    z: body.transform3D.z + body.size3D.depth * 0.5,
+  };
+}
+
+function resolveBodyCollision(bodyA, bodyB) {
+  const aMinX = bodyA.transform3D.x;
+  const aMaxX = bodyA.transform3D.x + bodyA.size3D.width;
+  const aMinY = bodyA.transform3D.y;
+  const aMaxY = bodyA.transform3D.y + bodyA.size3D.height;
+  const aMinZ = bodyA.transform3D.z;
+  const aMaxZ = bodyA.transform3D.z + bodyA.size3D.depth;
+
+  const bMinX = bodyB.transform3D.x;
+  const bMaxX = bodyB.transform3D.x + bodyB.size3D.width;
+  const bMinY = bodyB.transform3D.y;
+  const bMaxY = bodyB.transform3D.y + bodyB.size3D.height;
+  const bMinZ = bodyB.transform3D.z;
+  const bMaxZ = bodyB.transform3D.z + bodyB.size3D.depth;
+
+  const overlapX = Math.min(aMaxX, bMaxX) - Math.max(aMinX, bMinX);
+  const overlapY = Math.min(aMaxY, bMaxY) - Math.max(aMinY, bMinY);
+  const overlapZ = Math.min(aMaxZ, bMaxZ) - Math.max(aMinZ, bMinZ);
+
+  if (overlapX <= 0 || overlapY <= 0 || overlapZ <= 0) {
+    return false;
+  }
+
+  let axis = 'x';
+  let minOverlap = overlapX;
+  if (overlapY < minOverlap) {
+    axis = 'y';
+    minOverlap = overlapY;
+  }
+  if (overlapZ < minOverlap) {
+    axis = 'z';
+    minOverlap = overlapZ;
+  }
+
+  const centerA = getBodyCenter(bodyA);
+  const centerB = getBodyCenter(bodyB);
+  const sign = centerA[axis] >= centerB[axis] ? 1 : -1;
+  const correction = minOverlap * 0.5 + 0.0001;
+  bodyA.transform3D[axis] += correction * sign;
+  bodyB.transform3D[axis] -= correction * sign;
+
+  const massA = Math.max(0.2, bodyA.mass ?? 1);
+  const massB = Math.max(0.2, bodyB.mass ?? 1);
+  const restitution = Math.min(bodyA.bounce, bodyB.bounce);
+  const velA = bodyA.velocity[axis];
+  const velB = bodyB.velocity[axis];
+  const combinedMass = massA + massB;
+  const nextVelA = ((velA * (massA - massB) + 2 * massB * velB) / combinedMass) * restitution;
+  const nextVelB = ((velB * (massB - massA) + 2 * massA * velA) / combinedMass) * restitution;
+  bodyA.velocity[axis] = nextVelA;
+  bodyB.velocity[axis] = nextVelB;
+
+  if (axis !== 'x') {
+    bodyA.velocity.x *= 0.985;
+    bodyB.velocity.x *= 0.985;
+  }
+  if (axis !== 'y') {
+    bodyA.velocity.y *= 0.985;
+    bodyB.velocity.y *= 0.985;
+  }
+  if (axis !== 'z') {
+    bodyA.velocity.z *= 0.985;
+    bodyB.velocity.z *= 0.985;
+  }
+
+  return true;
 }
 
 export default class PhysicsPlayground3DScene extends Scene {
@@ -44,16 +135,74 @@ export default class PhysicsPlayground3DScene extends Scene {
       minZ: 7,
       maxZ: 25,
     };
-    this.gravity = -22;
+    this.gravity = -30;
     this.gravityScale = 1;
     this.gravityToggleLatch = false;
     this.impulseCooldown = 0;
     this.simulatedSeconds = 0;
+    this.bodyCollisionHits = 0;
 
     this.bodies = [
-      createBody('alpha', -4.2, 4.8, 10.0, '#7dd3fc', 2.8, -1.0, 3.2),
-      createBody('beta', 0.1, 6.5, 14.2, '#fbbf24', -2.2, 0.0, 2.0),
-      createBody('gamma', 3.8, 5.2, 19.0, '#86efac', 1.7, -2.0, -2.6),
+      createBody({
+        id: 'alpha',
+        x: -5.8,
+        y: 6.8,
+        z: 9.8,
+        color: '#7dd3fc',
+        vx: 4.2,
+        vy: -1.6,
+        vz: 4.9,
+        width: 1.0,
+        height: 1.0,
+        depth: 1.0,
+        bounce: 0.72,
+        mass: 0.9,
+      }),
+      createBody({
+        id: 'beta',
+        x: -0.2,
+        y: 2.8,
+        z: 14.0,
+        color: '#fbbf24',
+        vx: 0.5,
+        vy: 3.4,
+        vz: 1.3,
+        width: 1.4,
+        height: 1.4,
+        depth: 1.4,
+        bounce: 0.88,
+        mass: 0.65,
+      }),
+      createBody({
+        id: 'gamma',
+        x: 4.4,
+        y: 7.1,
+        z: 19.6,
+        color: '#86efac',
+        vx: -3.8,
+        vy: -0.8,
+        vz: -3.4,
+        width: 1.6,
+        height: 1.6,
+        depth: 1.6,
+        bounce: 0.56,
+        mass: 1.35,
+      }),
+      createBody({
+        id: 'delta',
+        x: 0.9,
+        y: 4.0,
+        z: 13.5,
+        color: '#f472b6',
+        vx: -2.2,
+        vy: 1.5,
+        vz: 2.8,
+        width: 0.9,
+        height: 0.9,
+        depth: 0.9,
+        bounce: 0.92,
+        mass: 0.45,
+      }),
     ];
   }
 
@@ -124,6 +273,22 @@ export default class PhysicsPlayground3DScene extends Scene {
       body.velocity.z = clamp(body.velocity.z, -12, 12);
     });
 
+    let bodyCollisionHits = 0;
+    for (let i = 0; i < this.bodies.length - 1; i += 1) {
+      for (let j = i + 1; j < this.bodies.length; j += 1) {
+        if (resolveBodyCollision(this.bodies[i], this.bodies[j])) {
+          bodyCollisionHits += 1;
+        }
+      }
+    }
+    this.bodyCollisionHits = bodyCollisionHits;
+
+    this.bodies.forEach((body) => {
+      body.velocity.x = clamp(body.velocity.x, -12, 12);
+      body.velocity.y = clamp(body.velocity.y, -20, 20);
+      body.velocity.z = clamp(body.velocity.z, -12, 12);
+    });
+
     this.simulatedSeconds += dt;
   }
 
@@ -180,9 +345,9 @@ export default class PhysicsPlayground3DScene extends Scene {
       `Alpha pos: x=${alpha.transform3D.x.toFixed(2)} y=${alpha.transform3D.y.toFixed(2)} z=${alpha.transform3D.z.toFixed(2)}`,
       `Alpha vel: vx=${alpha.velocity.x.toFixed(2)} vy=${alpha.velocity.y.toFixed(2)} vz=${alpha.velocity.z.toFixed(2)}`,
       `Gravity scale: ${this.gravityScale.toFixed(2)}`,
+      `Body collisions/frame: ${this.bodyCollisionHits}`,
       `Impulse cooldown: ${this.impulseCooldown.toFixed(2)} s`,
       `Sim time: ${this.simulatedSeconds.toFixed(1)} s`,
     ]);
   }
 }
-
