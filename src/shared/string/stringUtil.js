@@ -1,1 +1,1 @@
-export { escapeHtml } from "../utils/stringUtils.js";
+export { escapeHtml } from "./stringHelpers.js";

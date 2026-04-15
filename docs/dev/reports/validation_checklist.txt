@@ -1,6 +1,8 @@
-- all specified tool-governance items moved to top-level rules/instructions area
-- wording preserved exactly
-- checklist/status markers removed from those items
-- roadmap task areas left with actionable work only
+- remaining number helper residue addressed
+- remaining string helper residue addressed
+- remaining id helper residue addressed
+- only exact-cluster normalization used
+- roadmap updated by status markers only
+- final checkpoint item either marked complete or exact blockers reported
 - output ZIP created at:
-  <project folder>/tmp/BUILD_PR_ROADMAP_TOOL_RULES_PROMOTION_AND_CLEANUP.zip
+  <project folder>/tmp/BUILD_PR_LEVEL_03_EXACT_CLUSTER_NUMBER_STRING_ID_CLOSEOUT.zip

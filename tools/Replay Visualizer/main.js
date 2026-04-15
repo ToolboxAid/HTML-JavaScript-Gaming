@@ -7,7 +7,7 @@ import {
 } from "../shared/debugInspectorData.js";
 import { readToolHostSharedContextFromLocation } from "../shared/toolHostSharedContext.js";
 import { registerToolBootContract } from "../shared/toolBootContract.js";
-import { isFiniteNumber } from "../../src/shared/utils/numberUtils.js";
+import { isFiniteNumber } from "../../src/shared/number/index.js";
 
 const refs = {
   loadButton: document.getElementById("loadReplayButton"),

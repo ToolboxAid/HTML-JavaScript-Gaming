@@ -200,7 +200,7 @@
 - [x] Asteroids numeric sanitizers promoted into shared math
 - [x] duplicated `asObject` / `asArray` consumers moved to shared utils
 - [.] shared math is now a real active layer and should continue by exact-cluster extraction only
-- [ ] remaining number/string/id helpers still need exact-cluster normalization
+- [x] remaining number/string/id helpers still need exact-cluster normalization
 
 ---
 

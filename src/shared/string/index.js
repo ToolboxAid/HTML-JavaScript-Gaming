@@ -4,4 +4,12 @@ David Quesenberry
 04/14/2026
 index.js
 */
-export { escapeHtml } from "./stringUtil.js";
+export {
+  safeTrim,
+  toLowerSafe,
+  stringCompare,
+  trimSafe,
+  sanitizeText,
+  normalizeString,
+  escapeHtml
+} from "./stringHelpers.js";

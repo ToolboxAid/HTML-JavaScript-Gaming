@@ -208,7 +208,7 @@
 - [x] duplicated `asNumber` consumers migrated to shared math
 - [x] Asteroids numeric sanitizers promoted into shared math
 - [x] duplicated `asObject` / `asArray` consumers moved to shared utils
-- [ ] remaining number/string/id helpers still need exact-cluster normalization
+- [x] remaining number/string/id helpers still need exact-cluster normalization
 
 ---
 

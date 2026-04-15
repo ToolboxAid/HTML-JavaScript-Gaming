@@ -1,5 +1,5 @@
 import { cloneValue, safeString } from "./projectSystemValueUtils.js";
-import { isFiniteNumber } from "../../src/shared/utils/numberUtils.js";
+import { isFiniteNumber } from "../../src/shared/number/index.js";
 
 function asArray(value) {
   return Array.isArray(value) ? value : [];

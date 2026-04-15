@@ -13,15 +13,15 @@ export {
   sanitizeText,
   normalizeString,
   escapeHtml,
-} from "./stringUtils.js";
+} from "../string/index.js";
 export {
   createId,
   generateId,
   normalizeId,
   createStableId,
   isValidId,
-} from "./idUtils.js";
-export { isFiniteNumber, toFiniteNumber, asFiniteNumber, asPositiveInteger, asPositiveNumber } from "./numberUtils.js";
+} from "../id/index.js";
+export { isFiniteNumber, toFiniteNumber, asFiniteNumber, asPositiveInteger, asPositiveNumber } from "../number/index.js";
 export { isObject, isPlainObject, asObject, asArray as asObjectArray } from "./objectUtils.js";
 export { cloneJson } from "./jsonUtils.js";
 export { stringifyValue } from "./stringifyValueUtils.js";

@@ -6,6 +6,9 @@ index.js
 */
 export * as sharedMath from "./math/index.js";
 export * as sharedUtils from "./utils/index.js";
+export * as sharedString from "./string/index.js";
+export * as sharedId from "./id/index.js";
+export * as sharedNumber from "./number/index.js";
 export * as sharedState from "./state/index.js";
 export * as sharedIO from "./io/index.js";
 export * as sharedData from "./data/index.js";
