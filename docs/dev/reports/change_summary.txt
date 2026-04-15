@@ -1,3 +1,1 @@
-- Added validate-first combined closeout PR for the remaining non-3D roadmap items
-- Focuses on asset conversion scripting, 2D polish residue, and legacy footprint reduction
-- Requires status-only roadmap/meta updates after repo-truth validation
+Rules extracted to top section; non-3D items validated and closed where possible

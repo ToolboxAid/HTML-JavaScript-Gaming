@@ -1,6 +1,1 @@
-- each listed non-3D item inspected before any creation/work
-- already-complete items closed by status update only
-- only incomplete residue received implementation work
-- no 3D lane work introduced
-- roadmap updated by status markers only
-- any remaining blockers are explicit
+validate-first applied; rules moved not duplicated; no 3D work; minimal residue only

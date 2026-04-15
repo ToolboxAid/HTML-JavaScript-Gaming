@@ -9,6 +9,7 @@
 - repo structure work is now constrained to exact move-map BUILDs only
 - remaining structure normalization should avoid broad folder churn until active shared extraction and promotion-gate work stabilize
 - shared math is now a real active layer and should continue by exact-cluster extraction only
+- avoid broad repo-wide cleanup passes until the active lanes above are materially further along
 
 ## Conservative Rebaseline (2026-04-12)
 - status updates in this revision are conservative and execution-backed
@@ -613,14 +614,14 @@
 - [ ] Execute phase-16 / 3D capability lanes
 
 ### Final Cleanup Lane
-- [ ] Reduce legacy footprint after replacements are proven
+- [x] Reduce legacy footprint after replacements are proven
 - [x] Execute `templates/` relocation and root removal cleanup PR
 
 ### Recommended Final Status Summary
 - [ ] current active execution lanes are 3 / 6 / 8
 - [ ] next planning lanes are 2 / 5 / 7 / 9 / 10
 - [x] later capability lanes are 11 / 12
-- [ ] final cleanup lane is 13
+- [x] final cleanup lane is 13
 
 ---
 
@@ -630,7 +631,6 @@
 - [.] convert repo structure normalization into exact move-map BUILDs with explicit validation
 - [x] re-baseline this roadmap after active execution lanes stabilize
 - [x] split future implementation into small dependency-ordered PRs
-- [ ] avoid broad repo-wide cleanup passes until the active lanes above are materially further along
 
 - [x] relocate active template surfaces to `tools/templates/` and remove the empty root `templates/` directory
 

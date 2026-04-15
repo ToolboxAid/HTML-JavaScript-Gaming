@@ -1,31 +1,37 @@
+
 MODEL: GPT-5.4
 REASONING: high
 
 COMMAND:
-Create BUILD_PR_REMAINING_NON_3D_VALIDATE_OR_CLOSEOUT_COMBINED.
+Create BUILD_PR_RULE_EXTRACTION_AND_FINAL_NON_3D_CLOSEOUT
 
-Validate-first requirements:
-1. Inspect repo truth for each target item before changing anything.
-2. Classify each item as:
-   - already complete
-   - partially complete
-   - incomplete
-3. If already complete:
-   - update roadmap status only
-4. If partially complete or incomplete:
-   - do the smallest valid work needed to close it
-   - avoid unrelated expansion
-   - do not open any 3D lane work
+Steps:
 
-Target items:
-- Existing games asset folders updated so existing images / vectors / related runtime assets can be transformed into tool-editable `data/` objects, with corresponding project JSON updates
-- Execute 2D capability polish lanes
-- Reduce legacy footprint after replacements are proven
+PART 1 — RULE EXTRACTION
+- scan roadmap
+- identify rule-like statements
+- move them to Rules section
+- remove duplicates from task areas
 
-Roadmap/meta handling:
-- update summary/status rows that are now outdated because repo truth changed
-- status markers only
-- do NOT rewrite roadmap text
+PART 2 — VALIDATION
+- classify each remaining non-3D item:
+  complete / partial / incomplete
 
-Final packaging step is REQUIRED:
-<project folder>/tmp/BUILD_PR_REMAINING_NON_3D_VALIDATE_OR_CLOSEOUT_COMBINED.zip
+PART 3 — CLOSEOUT
+- complete only minimal residue
+- do not expand scope
+
+PART 4 — REPORT
+- what rules were moved
+- what items were already complete
+- what was completed now
+- any blockers
+
+HARD RULES:
+- no 3D work
+- no broad cleanup
+- no duplicate rule text
+- minimal changes only
+
+PACKAGE:
+<project folder>/tmp/BUILD_PR_RULE_EXTRACTION_AND_FINAL_NON_3D_CLOSEOUT.zip
