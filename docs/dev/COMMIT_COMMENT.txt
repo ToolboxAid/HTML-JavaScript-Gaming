@@ -1,1 +1,1 @@
-apply authoritative server runtime and validate — APPLY_PR_LEVEL_12_2_AUTHORITATIVE_SERVER_RUNTIME
+define client replication and application contracts — PLAN_PR_LEVEL_12_3_REPLICATION_CLIENT_APPLICATION

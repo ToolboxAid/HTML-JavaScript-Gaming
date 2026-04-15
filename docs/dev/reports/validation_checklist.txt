@@ -1,4 +1,3 @@
-- Apply completed
-- Validation passed
-- Roadmap status updated (status markers only)
-- Ready for next PR
+- Replication contract defined
+- Client application defined
+- Reconciliation rules defined

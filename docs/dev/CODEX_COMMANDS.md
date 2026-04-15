@@ -1,8 +1,4 @@
 MODEL: GPT-5.3-codex
-REASONING: low
+REASONING: high
 COMMAND:
-Finalize APPLY_PR_LEVEL_12_2_AUTHORITATIVE_SERVER_RUNTIME.
-Additionally:
-- Update docs/dev/roadmaps/MASTER_ROADMAP_HIGH_LEVEL.md
-- Only update status markers [ ] [.] [x]
-- Do not modify wording, structure, or add/remove content
+Prepare implementation plan for client replication and application layer per PLAN_PR_LEVEL_12_3_REPLICATION_CLIENT_APPLICATION. No engine API breakage.
