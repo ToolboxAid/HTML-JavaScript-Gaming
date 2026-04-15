@@ -1,3 +1,1 @@
-- Added a combined PR for the full 2D Capability Track
-- Bundles camera, tilemap/runtime, collision, gameplay conventions, replay/state, and reference-game path
-- Intended to finish most or all of the lane in one pass and leave only tiny residue if needed
+Residue-only closeout for 2D capability track

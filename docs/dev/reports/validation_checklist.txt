@@ -1,11 +1,1 @@
-- camera systems addressed
-- tilemap/runtime integration addressed
-- collision patterns addressed
-- enemy/hero/gameplay conventions addressed
-- replay/state integration for 2D games addressed
-- polished 2D reference game path addressed
-- 2D reference game build addressed or exact residue reported
-- any residue is explicit and minimal
-- roadmap updated by status markers only
-- output ZIP created at:
-  <project folder>/tmp/BUILD_PR_LEVEL_12_2D_CAPABILITY_TRACK_COMBINED_CLOSEOUT.zip
+Only remaining items touched; lane complete or blockers listed
