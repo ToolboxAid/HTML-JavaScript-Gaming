@@ -1,6 +1,3 @@
-- move-map applied
-- imports validated
-- runtime validated
-- no duplicates
-- 2D regression passed
-- roadmap updated (marker only)
+- canonical sample defined
+- scope controlled
+- aligned with normalized structure

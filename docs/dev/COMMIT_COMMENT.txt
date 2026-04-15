@@ -1,1 +1,1 @@
-apply network directory normalization with validated import rewiring — APPLY_PR_LEVEL_12_8_NETWORK_DIRECTORY_NORMALIZATION
+define canonical network validation sample — PLAN_PR_LEVEL_12_9_NETWORK_USAGE_SAMPLE_STANDARDIZATION
