@@ -1,3 +1,4 @@
-- remote host defined
-- connectivity defined
-- validation steps defined
+- remote host reachable
+- client connects remotely
+- session validated
+- roadmap markers updated

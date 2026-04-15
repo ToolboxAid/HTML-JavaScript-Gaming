@@ -1,1 +1,1 @@
-define remote deployment candidate for authoritative server — PLAN_PR_LEVEL_12_6_REMOTE_DEPLOYMENT_CANDIDATE
+implement remote deployment candidate and validate — BUILD_PR_LEVEL_12_6_REMOTE_DEPLOYMENT_CANDIDATE

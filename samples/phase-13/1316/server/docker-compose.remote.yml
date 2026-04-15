@@ -1,0 +1,26 @@
+# Toolbox Aid
+# David Quesenberry
+# 04/15/2026
+# docker-compose.remote.yml
+services:
+  authoritative-server-remote:
+    container_name: authoritative-server-remote
+    build:
+      context: ..
+      dockerfile: server/Dockerfile
+    ports:
+      - "${AUTHORITATIVE_REMOTE_PORT:-4310}:4310"
+    environment:
+      NETWORK_SAMPLE_A_DASHBOARD_HOST: "0.0.0.0"
+      NETWORK_SAMPLE_A_DASHBOARD_PORT: "4310"
+      NETWORK_SAMPLE_A_DASHBOARD_REFRESH_MS: "${NETWORK_SAMPLE_A_DASHBOARD_REFRESH_MS:-1000}"
+      NETWORK_SAMPLE_A_ADMIN_KEY: "${NETWORK_SAMPLE_A_ADMIN_KEY:-sample-a-admin}"
+      NETWORK_SAMPLE_A_ALLOW_LOCALHOST_WITHOUT_KEY: "${NETWORK_SAMPLE_A_ALLOW_LOCALHOST_WITHOUT_KEY:-0}"
+      NETWORK_SAMPLE_A_ALLOW_REMOTE_WITH_KEY: "${NETWORK_SAMPLE_A_ALLOW_REMOTE_WITH_KEY:-1}"
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:4310/admin/network-sample-a/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    restart: unless-stopped

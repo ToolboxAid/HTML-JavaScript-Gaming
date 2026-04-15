@@ -10,13 +10,13 @@ Provide a lightweight, server-owned, read-only diagnostics dashboard for Sample 
 
 ## Local Run (Node)
 ```bash
-node games/network_sample_a/server/networkSampleADashboardServer.mjs
+node samples/phase-13/1316/server/networkSampleADashboardServer.mjs
 ```
 
 ## Container Run (Docker)
 Build from repo root using the sample context:
 ```bash
-docker build -f games/network_sample_a/server/Dockerfile -t network-sample-a-dashboard games/network_sample_a
+docker build -f samples/phase-13/1316/server/Dockerfile -t network-sample-a-dashboard samples/phase-13/1316
 ```
 
 Run with dashboard port mapping:
@@ -26,8 +26,31 @@ docker run --rm -p 4310:4310 -e NETWORK_SAMPLE_A_ADMIN_KEY=sample-a-admin networ
 
 ## Container Run (Compose, Optional)
 ```bash
-cd games/network_sample_a/server
+cd samples/phase-13/1316/server
 docker compose up --build
+```
+
+## Remote Run (Single Node Candidate)
+From the remote host:
+
+```bash
+cd samples/phase-13/1316/server
+docker compose -f docker-compose.remote.yml up --build -d
+```
+
+Public health check:
+
+```bash
+curl "http://<PUBLIC_HOST_OR_IP>:4310/admin/network-sample-a/health"
+```
+
+Public dashboard:
+- `http://<PUBLIC_HOST_OR_IP>:4310/admin/network-sample-a/dashboard?key=<ADMIN_KEY>`
+
+Shutdown:
+
+```bash
+docker compose -f docker-compose.remote.yml down
 ```
 
 ## Default URLs
