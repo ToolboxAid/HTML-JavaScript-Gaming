@@ -152,12 +152,12 @@
 - [x] camera integration stabilized
 
 ### 2D Engine Capability
-- [ ] 2D scene boot
-- [ ] 2D render loop
-- [ ] 2D camera
-- [ ] 2D tilemap integration
-- [ ] 2D collision patterns
-- [ ] 2D gameplay hooks
+- [x] 2D scene boot
+- [x] 2D render loop
+- [x] 2D camera
+- [x] 2D tilemap integration
+- [x] 2D collision patterns
+- [x] 2D gameplay hooks
 
 ### 3D Engine Foundation
 - [ ] 3D scene boot

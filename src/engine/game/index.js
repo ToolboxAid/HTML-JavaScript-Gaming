@@ -5,3 +5,4 @@ David Quesenberry
 index.js
 */
 export { default as GameModeState } from './GameModeState.js';
+export { isGameplayModeActive, runIfGameplayMode } from './gameplayHooks.js';

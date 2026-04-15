@@ -1,3 +1,3 @@
-- Added a combined Section-2 baseline PR to reduce PR count
-- Groups boundary normalization, contracts, and core runtime services into one coherent engine-core pass
-- Intended to close most of section 2 in one pass and leave only small residue if needed
+- Added a combined PR for the full 2D Engine Capability cluster
+- Bundles scene boot, render loop, camera, tilemap, collision, and gameplay hooks
+- Intended to finish the 2D capability lane in one pass or leave only a tiny residue

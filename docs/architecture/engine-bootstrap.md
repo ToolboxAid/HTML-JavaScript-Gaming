@@ -62,3 +62,18 @@ This slice creates the foundation needed for every future subsystem without drag
 3. world/entity boundary
 4. renderer command boundary
 5. collision boundary
+
+## 2D Capability Foundation (Combined)
+
+Public engine homes used by the combined 2D baseline:
+- scene boot: `src/engine/scene/index.js`
+- render loop: `src/engine/core/Engine.js` with renderer + scene tick wiring
+- camera: `src/engine/camera/index.js`
+- tilemap integration: `src/engine/tilemap/index.js`
+- collision patterns: `src/engine/collision/index.js` and `src/engine/systems/CollisionResolutionSystem.js`
+- gameplay hooks: `src/engine/game/index.js` (`GameModeState`, gameplay hook helpers)
+
+Combined service grouping used in this baseline:
+- scene boot + render loop + gameplay hooks
+- camera + tilemap integration
+- collision patterns + gameplay hooks
