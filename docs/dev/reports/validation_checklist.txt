@@ -1,6 +1,6 @@
-- phase-description text normalized repo-wide where needed
-- unrelated docs left untouched
-- roadmap updated by status markers only
-- final item can be truthfully marked complete or exact blockers are reported
+- all specified tool-governance items moved to top-level rules/instructions area
+- wording preserved exactly
+- checklist/status markers removed from those items
+- roadmap task areas left with actionable work only
 - output ZIP created at:
-  <project folder>/tmp/BUILD_PR_LEVEL_16_PHASE_DESCRIPTIONS_REPO_WIDE_NORMALIZATION.zip
+  <project folder>/tmp/BUILD_PR_ROADMAP_TOOL_RULES_PROMOTION_AND_CLEANUP.zip

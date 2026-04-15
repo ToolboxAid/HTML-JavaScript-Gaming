@@ -1,2 +1,2 @@
-Normalize phase descriptions repo-wide and close the final Section-16 residue
-BUILD_PR_LEVEL_16_PHASE_DESCRIPTIONS_REPO_WIDE_NORMALIZATION
+Promote tool roadmap rules out of checklist tracking
+BUILD_PR_ROADMAP_TOOL_RULES_PROMOTION_AND_CLEANUP

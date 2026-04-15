@@ -65,6 +65,10 @@
 - legacy tools remain isolated and visibly non-current
 - 3D tools arrive when 3D capability needs them, not before
 - content pipeline tools arrive when asset complexity justifies them
+- no standalone showcase-only tool tracks
+- tools header accordion added to reduce vertical real-estate usage
+- tool-shell UI compaction is useful but does not replace tool-boundary normalization work
+- any follow-up tool UI cleanup should remain subordinate to shared-boundary and data-contract work
 
 ### End State Vision
 - clean engine core
@@ -457,12 +461,6 @@
 - [ ] 3D prerequisite samples before advanced 3D tools
 - [x] content pipeline tools after asset complexity justifies them
 - [x] debug tools align with engine/debug maturity
-- [ ] no standalone showcase-only tool tracks
-
-### Recent Tool Shell Notes
-- [.] tools header accordion added to reduce vertical real-estate usage
-- [.] tool-shell UI compaction is useful but does not replace tool-boundary normalization work
-- [ ] any follow-up tool UI cleanup should remain subordinate to shared-boundary and data-contract work
 
 ---
 
