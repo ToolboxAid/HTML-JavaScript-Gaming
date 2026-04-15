@@ -1,1 +1,1 @@
-apply playable multiplayer validation and verify — APPLY_PR_LEVEL_12_4_PLAYABLE_MULTIPLAYER_VALIDATION
+define docker runtime for authoritative server hosting — PLAN_PR_LEVEL_12_5_SERVER_HOSTING_DOCKER_RUNTIME

@@ -1,4 +1,4 @@
-- apply complete
-- validation passed
-- replication verified
-- roadmap updated
+- docker runtime defined
+- startup lifecycle defined
+- connection path defined
+- roadmap rule enforced
