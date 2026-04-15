@@ -1,10 +1,4 @@
-Sample 1606 implementation checklist
-[x] 1606 renders visible 3D content on load
-[x] gravity is visually obvious
-[x] bounce is clearly visible
-[x] multiple objects show distinct motion/interaction
-[x] sample is readable without extra explanation
-[x] targeted affected sanity passes
-[x] targeted smoke for 1606 passes
-[x] no 2D regression observed in targeted checks
-[x] no networking regression observed in targeted checks
+
+[ ] movement
+[ ] shooting
+[ ] hit

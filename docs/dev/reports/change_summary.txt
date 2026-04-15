@@ -1,18 +1,1 @@
-BUILD_PR_LEVEL_17_12_SAMPLE_1606_PHYSICS_PLAYGROUND_IMPLEMENTATION
-
-Scope:
-- Updated only Sample 1606 runtime physics behavior plus a surgical 1606 sanity assertion update.
-- Kept 2D systems and networking runtime code untouched.
-
-Runtime changes:
-- Increased gravity strength for clearer vertical acceleration.
-- Tuned body profiles (size, bounce, mass, initial velocity) for readable and distinct motion.
-- Added lightweight AABB body-to-body collision resolution to make multi-object interaction visible.
-- Added collision telemetry line in the 1606 runtime panel for quick inspection.
-
-Validation evidence:
-- `node --input-type=module -e "... import('./tests/runtime/Phase16VisibilitySanity.test.mjs') ..."` -> PASS
-- `node -e "... LaunchSmokeAllEntries ... --sample-range=1606-1606"` -> PASS
-- `node -e "... LaunchSmokeAllEntries ... --sample-range=0101-0101"` -> PASS (focused 2D regression check)
-- `node -e "... import('./tests/final/MultiplayerNetworkingStack.test.mjs') ..."` -> PASS
-- `node -e "... import('./tests/final/NetworkDebugAndServerDashboardCloseout.test.mjs') ..."` -> PASS
+1607 adds playable loop

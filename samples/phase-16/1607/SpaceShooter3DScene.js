@@ -28,6 +28,14 @@ function createAsteroid(seed) {
   };
 }
 
+function getCenter(transform3D, size3D) {
+  return {
+    x: transform3D.x + size3D.width * 0.5,
+    y: transform3D.y + size3D.height * 0.5,
+    z: transform3D.z + size3D.depth * 0.5,
+  };
+}
+
 export default class SpaceShooter3DScene extends Scene {
   constructor() {
     super();
@@ -48,8 +56,16 @@ export default class SpaceShooter3DScene extends Scene {
     this.bulletSpeed = 26;
     this.asteroidSpeed = 7.5;
     this.fireCooldown = 0;
+    this.bulletHitPadding = 1.2;
     this.score = 0;
     this.misses = 0;
+    this.loopMissLimit = 10;
+    this.loopNumber = 1;
+    this.loopElapsedSeconds = 0;
+    this.loopScoreAtStart = 0;
+    this.lastLoopScore = 0;
+    this.lastLoopReason = 'active';
+    this.resetLatch = false;
   }
 
   setCamera3D(camera3D) {
@@ -83,8 +99,33 @@ export default class SpaceShooter3DScene extends Scene {
     asteroid.driftY = ((seed * 5) % 10 - 5) * 0.11;
   }
 
+  startLoop(reason = 'manual-reset') {
+    this.lastLoopReason = reason;
+    this.lastLoopScore = this.score - this.loopScoreAtStart;
+    this.loopNumber += 1;
+    this.loopElapsedSeconds = 0;
+    this.loopScoreAtStart = this.score;
+    this.misses = 0;
+    this.fireCooldown = 0;
+    this.bullets = [];
+    this.ship.transform3D.x = 0;
+    this.ship.transform3D.y = 0;
+    this.ship.transform3D.z = 6.5;
+
+    this.asteroids.forEach((asteroid, asteroidIndex) => {
+      this.resetAsteroid(asteroid, asteroidIndex + this.loopNumber * 11);
+    });
+    this.syncCamera();
+  }
+
   step3DPhysics(dt, engine) {
     const input = engine.input;
+    const resetPressed = input?.isDown('KeyR') === true;
+    if (resetPressed && !this.resetLatch) {
+      this.startLoop('manual-reset');
+    }
+    this.resetLatch = resetPressed;
+
     const moveX = (input?.isDown('KeyD') ? 1 : 0) - (input?.isDown('KeyA') ? 1 : 0);
     const moveY = (input?.isDown('KeyW') ? 1 : 0) - (input?.isDown('KeyS') ? 1 : 0);
     const moveLength = Math.hypot(moveX, moveY) || 1;
@@ -97,21 +138,63 @@ export default class SpaceShooter3DScene extends Scene {
     this.fireCooldown = Math.max(0, this.fireCooldown - dt);
     const firePressed = input?.isDown('Space') === true;
     if (firePressed && this.fireCooldown <= 0) {
+      const bulletSize = { width: 0.25, height: 0.25, depth: 0.8 };
+      const bulletTransform = {
+        x: this.ship.transform3D.x + this.ship.size3D.width * 0.5 - bulletSize.width * 0.5,
+        y: this.ship.transform3D.y + this.ship.size3D.height * 0.5 - bulletSize.height * 0.5,
+        z: this.ship.transform3D.z + 1.7,
+      };
+      const bulletCenter = getCenter(bulletTransform, bulletSize);
+
+      let target = null;
+      for (const asteroid of this.asteroids) {
+        if (asteroid.transform3D.z + asteroid.size3D.depth < bulletTransform.z) {
+          continue;
+        }
+        if (!target || asteroid.transform3D.z < target.transform3D.z) {
+          target = asteroid;
+        }
+      }
+
+      let velocityX = 0;
+      let velocityY = 0;
+      let velocityZ = this.bulletSpeed;
+      if (target) {
+        const targetCenter = getCenter(target.transform3D, target.size3D);
+        const dx = targetCenter.x - bulletCenter.x;
+        const dy = targetCenter.y - bulletCenter.y;
+        const dz = Math.max(0.8, targetCenter.z - bulletCenter.z);
+        const magnitude = Math.hypot(dx, dy, dz) || 1;
+        velocityX = (dx / magnitude) * this.bulletSpeed;
+        velocityY = (dy / magnitude) * this.bulletSpeed;
+        velocityZ = (dz / magnitude) * this.bulletSpeed;
+      }
+
       this.bullets.push({
-        transform3D: {
-          x: this.ship.transform3D.x + 0.38,
-          y: this.ship.transform3D.y + 0.2,
-          z: this.ship.transform3D.z + 1.7,
-        },
-        size3D: { width: 0.25, height: 0.25, depth: 0.8 },
+        transform3D: bulletTransform,
+        previousTransform3D: { ...bulletTransform },
+        size3D: bulletSize,
+        velocity3D: { x: velocityX, y: velocityY, z: velocityZ },
       });
       this.fireCooldown = 0.13;
     }
 
     this.bullets.forEach((bullet) => {
-      bullet.transform3D.z += this.bulletSpeed * dt;
+      bullet.previousTransform3D.x = bullet.transform3D.x;
+      bullet.previousTransform3D.y = bullet.transform3D.y;
+      bullet.previousTransform3D.z = bullet.transform3D.z;
+      bullet.transform3D.x += bullet.velocity3D.x * dt;
+      bullet.transform3D.y += bullet.velocity3D.y * dt;
+      bullet.transform3D.z += bullet.velocity3D.z * dt;
     });
-    this.bullets = this.bullets.filter((bullet) => bullet.transform3D.z < 40);
+    this.bullets = this.bullets.filter(
+      (bullet) =>
+        bullet.transform3D.z < 40 &&
+        bullet.transform3D.x > -9 &&
+        bullet.transform3D.x < 9 &&
+        bullet.transform3D.y > -5 &&
+        bullet.transform3D.y < 7,
+    );
 
     this.asteroids.forEach((asteroid, asteroidIndex) => {
       asteroid.transform3D.z -= this.asteroidSpeed * dt;
@@ -133,12 +216,15 @@ export default class SpaceShooter3DScene extends Scene {
         const asteroid = this.asteroids[asteroidIndex];
         const collided = isAabbColliding3D(
           {
-            x: bullet.transform3D.x,
-            y: bullet.transform3D.y,
-            z: bullet.transform3D.z,
-            width: bullet.size3D.width,
-            height: bullet.size3D.height,
-            depth: bullet.size3D.depth,
+            x: Math.min(bullet.previousTransform3D.x, bullet.transform3D.x) - this.bulletHitPadding,
+            y: Math.min(bullet.previousTransform3D.y, bullet.transform3D.y) - this.bulletHitPadding,
+            z: Math.min(bullet.previousTransform3D.z, bullet.transform3D.z) - this.bulletHitPadding,
+            width: bullet.size3D.width + this.bulletHitPadding * 2,
+            height: bullet.size3D.height + this.bulletHitPadding * 2,
+            depth:
+              Math.abs(bullet.transform3D.z - bullet.previousTransform3D.z) +
+              bullet.size3D.depth +
+              this.bulletHitPadding * 2,
           },
           {
             x: asteroid.transform3D.x,
@@ -163,15 +249,20 @@ export default class SpaceShooter3DScene extends Scene {
       }
     }
 
+    this.loopElapsedSeconds += dt;
+    if (this.misses >= this.loopMissLimit) {
+      this.startLoop('miss-limit');
+    }
+
     this.syncCamera();
   }
 
   render(renderer) {
     drawFrame(renderer, theme, [
       'Sample 1607 - 3D Space Shooter',
-      'Pilot a ship lane, fire at incoming asteroids, and track score.',
-      'Move: W A S D | Fire: Space',
-      'Keep the asteroid lane clear before misses stack up.',
+      'Pilot a ship lane, fire at incoming asteroids, and track looping rounds.',
+      'Move: W A S D | Fire: Space | Reset round: R',
+      'Round auto-resets when misses reach the round limit.',
     ]);
 
     renderer.strokeRect(this.viewport.x, this.viewport.y, this.viewport.width, this.viewport.height, '#d8d5ff', 2);
@@ -202,13 +293,14 @@ export default class SpaceShooter3DScene extends Scene {
       drawWireBox(renderer, asteroid.transform3D, asteroid.size3D, cameraState, projectionViewport, '#fb7185', 2);
     });
 
-    drawPanel(renderer, 620, 34, 300, 126, 'Shooter Runtime', [
+    drawPanel(renderer, 620, 34, 300, 186, 'Shooter Runtime', [
       `Ship: x=${this.ship.transform3D.x.toFixed(2)} y=${this.ship.transform3D.y.toFixed(2)} z=${this.ship.transform3D.z.toFixed(2)}`,
       `Bullets: ${this.bullets.length} | Cooldown: ${this.fireCooldown.toFixed(2)} s`,
       `Asteroids: ${this.asteroids.length}`,
       `Score: ${this.score}`,
-      `Misses: ${this.misses}`,
+      `Round ${this.loopNumber} | Misses: ${this.misses}/${this.loopMissLimit}`,
+      `Round time: ${this.loopElapsedSeconds.toFixed(1)} s | Last round score: ${this.lastLoopScore}`,
+      `Last round reset: ${this.lastLoopReason}`,
     ]);
   }
 }
-
