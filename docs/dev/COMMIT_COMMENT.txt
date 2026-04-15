@@ -1,1 +1,2 @@
-Final snapshot: non-3D complete, deferred infra separated
+Add full real-network capability lane before 3D, including hosted Docker server path
+BUILD_PR_ROADMAP_ADD_FULL_NETWORK_CAPABILITY_BEFORE_3D
