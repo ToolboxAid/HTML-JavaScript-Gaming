@@ -1,3 +1,3 @@
-- Added an inspect-first PR for remaining Sample Phase Tracks and Dependency-Driven Sample Builds
-- Requires repo truth classification before any creation or normalization
-- Prevents duplicate sample creation and unnecessary churn
+- Added validate-first combined closeout PR for the remaining listed roadmap items
+- Requires repo-truth inspection before any new work is created
+- Intended to reduce PR count by closing already-complete items with status-only updates and building only true residue

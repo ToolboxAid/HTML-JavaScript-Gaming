@@ -1,7 +1,7 @@
-- each target item was inspected before any creation
-- already-existing items were reused instead of recreated
-- only missing items were created
+- each listed item inspected before any creation/work
+- already-complete items closed by status update only
+- only incomplete residue received implementation work
 - roadmap updated by status markers only
-- any residue is explicit and minimal
+- any remaining blockers are explicit
 - output ZIP created at:
-  <project folder>/tmp/BUILD_PR_LEVEL_06_SAMPLE_PHASE_TRACKS_AND_2D_SAMPLE_BUILDS_INSPECT_FIRST.zip
+  <project folder>/tmp/BUILD_PR_REMAINING_ROADMAP_VALIDATE_OR_CLOSEOUT_COMBINED.zip

@@ -457,7 +457,7 @@
 - [x] Tile/Model Converter Tool
 
 ### Tooling Strategy By Need
-- [ ] 2D tool stabilization before 3D tool expansion
+- [x] 2D tool stabilization before 3D tool expansion
 - [ ] 3D prerequisite samples before advanced 3D tools
 - [x] content pipeline tools after asset complexity justifies them
 - [x] debug tools align with engine/debug maturity
@@ -592,8 +592,8 @@
 - [.] Normalize phase-13 network concepts samples
 
 ### Next Planning / Normalization Lanes
-- [ ] Apply master roadmap baseline
-- [ ] Normalize samples phase structure
+- [x] Apply master roadmap baseline
+- [x] Normalize samples phase structure
 - [x] Establish games/_template and normalize games layer
 - [x] Normalize tools/shared and tool boundaries
 - [x] Normalize assets/data ownership
@@ -606,7 +606,7 @@
 - [x] Add scripts to switch between Pay-as-you-go and Codex plan modes, and scripts to input API key material and validate it
 
 ### Later Capability Lanes
-- [.] FEATURE: Fullscreen Bezel Overlay System - Render game in full screen with optional bezel artwork layer (static or animated) surrounding the active playfield, preserving aspect ratio and supporting per-game/theme bezel assets without modifying core engine rendering.
+- [x] FEATURE: Fullscreen Bezel Overlay System - Render game in full screen with optional bezel artwork layer (static or animated) surrounding the active playfield, preserving aspect ratio and supporting per-game/theme bezel assets without modifying core engine rendering.
 
 ### Later Capability Lanes
 - [.] Execute 2D capability polish lanes

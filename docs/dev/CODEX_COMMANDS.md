@@ -2,52 +2,57 @@ MODEL: GPT-5.4
 REASONING: high
 
 COMMAND:
-Create `BUILD_PR_LEVEL_06_SAMPLE_PHASE_TRACKS_AND_2D_SAMPLE_BUILDS_INSPECT_FIRST`.
+Create `BUILD_PR_REMAINING_ROADMAP_VALIDATE_OR_CLOSEOUT_COMBINED`.
 
 Goal:
-Close as much of the remaining sample-phase and 2D dependency-driven sample lane as truthfully possible, but DO NOT blindly create items that may already exist.
+Validate the remaining listed roadmap items against repo truth and close them in one combined pass wherever possible.
 
-Inspect-first requirements:
-1. Inspect the repo first for each target item.
+Validate-first requirements:
+1. Inspect repo truth for each target item before changing anything.
 2. Classify each item as:
-   - already exists and complete
-   - partially exists and needs normalization
-   - missing and needs creation
-   - exists under the wrong name/location and needs alignment
+   - already complete
+   - partially complete
+   - incomplete
+3. If already complete:
+   - update roadmap status only
+4. If partially complete or incomplete:
+   - do the smallest valid work needed to close it
+   - avoid unrelated expansion
 
 Target items:
 
-Sample Phase Tracks
-- foundational phases normalized
-- tilemap / camera / rendering phases normalized
-- tool-linked sample phases normalized
-- network concepts / latency / simulation phase normalized
+Tooling Strategy By Need
+- 2D tool stabilization before 3D tool expansion
 
-Dependency-Driven Sample Builds
-- 2D camera sample
-- tilemap scrolling sample
-- collision sample
-- enemy behavior sample
-- full 2D reference game sample
+Next Planning / Normalization Lanes
+- Apply master roadmap baseline
+- Normalize samples phase structure
+
+Repo Operator + Asset Conversion Scripting Lanes
+- Existing games asset folders updated so existing images / vectors / related runtime assets can be transformed into tool-editable `data/` objects, with corresponding project JSON updates
+
+Later Capability Lanes
+- FEATURE: Fullscreen Bezel Overlay System
+
+Final Cleanup Lane
+- Reduce legacy footprint after replacements are proven
 
 Required work:
-1. Reuse and normalize existing sample assets/surfaces wherever possible.
-2. Do NOT recreate samples that already exist under acceptable names/locations.
-3. Create only the truly missing items.
-4. Keep changes surgical and truth-based.
-5. Update roadmap status markers only.
-6. Report:
-   - what already existed
-   - what was normalized
-   - what was newly created
-   - what remains open, if anything
+1. Reuse already-completed repo work wherever truth supports closure.
+2. Perform only the smallest valid residue work for any incomplete items.
+3. Keep changes coherent and surgical.
+4. Update roadmap status markers only.
+5. Report:
+   - what was already complete
+   - what was completed in this PR
+   - what remains open, if anything, with exact blockers
 
 Final packaging step is REQUIRED:
 - package ALL changed files into this exact repo-structured ZIP:
-  `<project folder>/tmp/BUILD_PR_LEVEL_06_SAMPLE_PHASE_TRACKS_AND_2D_SAMPLE_BUILDS_INSPECT_FIRST.zip`
+  `<project folder>/tmp/BUILD_PR_REMAINING_ROADMAP_VALIDATE_OR_CLOSEOUT_COMBINED.zip`
 
 Hard rules:
-- inspect first, create second
-- no blind sample creation
+- validate first, build second
+- combine aggressively to reduce PR count
 - no unrelated repo changes
 - no missing ZIP
