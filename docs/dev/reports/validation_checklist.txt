@@ -1,10 +1,9 @@
-- transport/session lifecycle validated
-- authoritative server determinism validated
-- client replication/application validated
-- playable multiplayer slice validated
-- hosting/runtime path validated
-- remote candidate validated
-- focused 2D regression checks passed
-- execution-backed evidence collected
-- roadmap updated by marker only
-- completion gate advanced only if all checks passed
+- transport/session validated
+- authoritative determinism validated
+- client replication validated
+- playable slice validated
+- hosting/runtime validated
+- remote deployment validated
+- 2D regressions: none
+- evidence attached
+- roadmap markers updated only

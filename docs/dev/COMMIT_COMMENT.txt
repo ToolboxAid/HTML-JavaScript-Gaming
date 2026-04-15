@@ -1,1 +1,1 @@
-execute full real-network completion gate validation and close marker only on full pass — BUILD_PR_LEVEL_12_7_REAL_NETWORK_COMPLETION_GATE
+apply real-network completion gate with evidence; advance marker only on full pass — APPLY_PR_LEVEL_12_7_REAL_NETWORK_COMPLETION_GATE
