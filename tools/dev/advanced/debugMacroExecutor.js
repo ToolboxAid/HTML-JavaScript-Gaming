@@ -5,7 +5,7 @@ David Quesenberry
 debugMacroExecutor.js
 */
 
-import { sanitizeText } from "/src/engine/debug/inspectors/shared/inspectorUtils.js";
+import { sanitizeText } from "../../../src/engine/debug/inspectors/shared/inspectorUtils.js";
 
 function parseCommandName(commandLine) {
   const line = sanitizeText(commandLine);
@@ -200,3 +200,4 @@ export class DebugMacroExecutor {
     );
   }
 }
+

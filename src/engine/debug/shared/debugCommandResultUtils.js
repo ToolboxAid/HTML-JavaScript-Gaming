@@ -1,7 +1,7 @@
 import {
   asArray,
   asObject
-} from "/src/engine/debug/inspectors/shared/inspectorUtils.js";
+} from "../inspectors/shared/inspectorUtils.js";
 
 export function toResult(status, title, code, lines, details = {}) {
   return {
@@ -12,3 +12,4 @@ export function toResult(status, title, code, lines, details = {}) {
     details: asObject(details)
   };
 }
+

@@ -8,7 +8,7 @@ componentInspectorViewModel.js
 import {
   asObject,
   sanitizeText
-} from "/src/engine/debug/inspectors/shared/inspectorUtils.js";
+} from "../shared/inspectorUtils.js";
 
 function summarizePayload(payload) {
   if (payload === null) {
@@ -48,3 +48,4 @@ export function createComponentInspectorViewModel(options = {}) {
     lines
   };
 }
+

@@ -8,7 +8,7 @@ stateDiffInspectorViewModel.js
 import {
   asPositiveInteger,
   asObject
-} from "/src/engine/debug/inspectors/shared/inspectorUtils.js";
+} from "../shared/inspectorUtils.js";
 import { stringifyValue } from "../../../../shared/utils/stringifyValueUtils.js";
 
 export function createStateDiffInspectorViewModel(options = {}) {
@@ -80,3 +80,4 @@ export function createStateDiffInspectorViewModel(options = {}) {
     lines
   };
 }
+

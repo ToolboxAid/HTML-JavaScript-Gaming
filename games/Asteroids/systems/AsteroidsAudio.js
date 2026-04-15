@@ -4,7 +4,7 @@ David Quesenberry
 03/22/2026
 AsteroidsAudio.js
 */
-import { GaplessLoopPlayer, HtmlAudioMediaBackend, MediaTrackService } from '/src/engine/audio/index.js';
+import { GaplessLoopPlayer, HtmlAudioMediaBackend, MediaTrackService } from '../../../src/engine/audio/index.js';
 
 export default class AsteroidsAudio {
   constructor() {

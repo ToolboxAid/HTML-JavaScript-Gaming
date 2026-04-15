@@ -10,7 +10,7 @@ import {
   asObject,
   asPositiveInteger,
   sanitizeText
-} from "/src/engine/debug/inspectors/shared/inspectorUtils.js";
+} from "../shared/inspectorUtils.js";
 
 const DEFAULT_INSPECTORS = Object.freeze([
   Object.freeze({
@@ -231,3 +231,4 @@ export function createDebugInspectorRegistry(options = {}) {
     getSnapshot
   };
 }
+

@@ -5,7 +5,7 @@ David Quesenberry
 debugMacroRegistry.js
 */
 
-import { sanitizeText } from "/src/engine/debug/inspectors/shared/inspectorUtils.js";
+import { sanitizeText } from "../../../src/engine/debug/inspectors/shared/inspectorUtils.js";
 import { cloneJson } from "../../../src/shared/utils/jsonUtils.js";
 
 function asStepArray(value) {
@@ -128,3 +128,4 @@ export class DebugMacroRegistry {
     return this.reports.map((report) => cloneJson(report));
   }
 }
+

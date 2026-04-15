@@ -4,7 +4,7 @@ David Quesenberry
 03/22/2026
 HighScoreStore.js
 */
-import { StorageService } from '/src/engine/persistence/index.js';
+import { StorageService } from '../../../src/engine/persistence/index.js';
 
 function toSafeScore(value) {
   if (!Number.isFinite(value)) {

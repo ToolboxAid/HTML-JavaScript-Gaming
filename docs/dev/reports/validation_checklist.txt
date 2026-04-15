@@ -1,6 +1,11 @@
-- only remaining open tool items were touched
-- no already-complete tool items were reopened
+- camera systems addressed
+- tilemap/runtime integration addressed
+- collision patterns addressed
+- enemy/hero/gameplay conventions addressed
+- replay/state integration for 2D games addressed
+- polished 2D reference game path addressed
+- 2D reference game build addressed or exact residue reported
+- any residue is explicit and minimal
 - roadmap updated by status markers only
-- Tools lane is either fully complete or exact blockers are reported
 - output ZIP created at:
-  <project folder>/tmp/BUILD_PR_LEVEL_09_TOOLS_RESIDUE_ONLY.zip
+  <project folder>/tmp/BUILD_PR_LEVEL_12_2D_CAPABILITY_TRACK_COMBINED_CLOSEOUT.zip

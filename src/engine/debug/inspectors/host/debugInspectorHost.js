@@ -14,7 +14,7 @@ import {
   boundedPush,
   cloneJson,
   sanitizeText
-} from "/src/engine/debug/inspectors/shared/inspectorUtils.js";
+} from "../shared/inspectorUtils.js";
 import { createComponentInspectorViewModel } from "../viewModels/componentInspectorViewModel.js";
 import { createEntityInspectorViewModel } from "../viewModels/entityInspectorViewModel.js";
 import { createEventStreamInspectorViewModel } from "../viewModels/eventStreamInspectorViewModel.js";
@@ -271,3 +271,4 @@ export function createDebugInspectorHost(options = {}) {
     }
   };
 }
+

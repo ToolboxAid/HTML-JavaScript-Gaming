@@ -10,7 +10,7 @@ import {
   asPositiveInteger,
   asObject,
   sanitizeText
-} from "/src/engine/debug/inspectors/shared/inspectorUtils.js";
+} from "../shared/inspectorUtils.js";
 
 function normalizeEntity(input, index) {
   const source = asObject(input);
@@ -48,3 +48,4 @@ export function createEntityInspectorViewModel(options = {}) {
     lines: lines.length > 0 ? lines : ["No entities available."]
   };
 }
+

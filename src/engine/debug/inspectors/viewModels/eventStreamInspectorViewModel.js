@@ -10,7 +10,7 @@ import {
   asPositiveInteger,
   asObject,
   sanitizeText
-} from "/src/engine/debug/inspectors/shared/inspectorUtils.js";
+} from "../shared/inspectorUtils.js";
 
 function normalizeEvent(input, index) {
   const source = asObject(input);
@@ -52,3 +52,4 @@ export function createEventStreamInspectorViewModel(options = {}) {
     lines: lines.length > 0 ? lines : ["No event stream entries available."]
   };
 }
+

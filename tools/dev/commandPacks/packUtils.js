@@ -5,7 +5,7 @@ David Quesenberry
 packUtils.js
 */
 
-import { sanitizeText } from "/src/engine/debug/inspectors/shared/inspectorUtils.js";
+import { sanitizeText } from "../../../src/engine/debug/inspectors/shared/inspectorUtils.js";
 import { isObject } from "../../../src/shared/utils/objectUtils.js";
 
 export function requireNoArgs({ args = [], commandName = "" } = {}) {
@@ -66,3 +66,4 @@ export function delegateRuntimeCommand(context, commandName) {
 export function standardDetails(extra = {}) {
   return isObject(extra) ? extra : {};
 }
+

@@ -1,2 +1,2 @@
-Close the final remaining Tools lane residue
-BUILD_PR_LEVEL_09_TOOLS_RESIDUE_ONLY
+Combine the 2D Capability Track into one low-PR closeout pass
+BUILD_PR_LEVEL_12_2D_CAPABILITY_TRACK_COMBINED_CLOSEOUT

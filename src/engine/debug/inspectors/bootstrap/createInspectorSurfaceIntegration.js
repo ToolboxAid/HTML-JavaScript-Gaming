@@ -8,7 +8,7 @@ createInspectorSurfaceIntegration.js
 import { createInspectorCommandPack, registerInspectorCommands } from "../commands/registerInspectorCommands.js";
 import { createDebugInspectorHost } from "../host/debugInspectorHost.js";
 import { createDebugInspectorRegistry } from "../registry/debugInspectorRegistry.js";
-import { asObject, sanitizeText } from "/src/engine/debug/inspectors/shared/inspectorUtils.js";
+import { asObject, sanitizeText } from "../shared/inspectorUtils.js";
 
 const DEFAULT_INSPECTOR_PANELS = Object.freeze([
   Object.freeze({
@@ -190,3 +190,4 @@ export function createAdvancedInspectorDebugPluginDefinition(options = {}) {
     }
   };
 }
+

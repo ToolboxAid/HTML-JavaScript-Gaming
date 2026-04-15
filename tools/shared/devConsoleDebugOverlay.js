@@ -95,7 +95,7 @@ const CORE_PANEL_SPECS = Object.freeze([
   { id: "validation-warnings", title: "Validation", source: "validation", priority: 1000, renderMode: "text-block", enabled: true }
 ]);
 
-import { sanitizeText } from "/src/engine/debug/inspectors/shared/inspectorUtils.js";
+import { sanitizeText } from "../../src/engine/debug/inspectors/shared/inspectorUtils.js";
 import { isObject } from "../../src/shared/utils/objectUtils.js";
 import { cloneJson } from "../../src/shared/utils/jsonUtils.js";
 
@@ -900,3 +900,4 @@ export function createDevConsoleDebugOverlayRuntime(options = {}) {
 export function getDevDiagnosticsContractVersionMetadata() {
   return createVersionedContractMetadata(DEV_DIAGNOSTICS_CONTRACT_POLICY);
 }
+

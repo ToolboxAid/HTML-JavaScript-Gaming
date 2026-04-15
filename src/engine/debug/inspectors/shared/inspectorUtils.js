@@ -5,12 +5,12 @@ David Quesenberry
 inspectorUtils.js
 */
 
-import { sanitizeText } from "/src/shared/utils/stringUtils.js";
+import { sanitizeText } from "../../../../shared/utils/stringUtils.js";
 import {
   asNonNegativeInteger,
   asPositiveInteger,
   toFiniteNumber
-} from "/src/shared/math/numberNormalization.js";
+} from "../../../../shared/math/numberNormalization.js";
 
 export { asNonNegativeInteger, asPositiveInteger, sanitizeText, toFiniteNumber };
 

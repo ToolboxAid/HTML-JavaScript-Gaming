@@ -8,7 +8,7 @@ debugPresetApplier.js
 import { sanitizeText } from "../../../src/shared/utils/stringUtils.js";
 import { cloneJson } from "../../../src/shared/utils/jsonUtils.js";
 import { getRuntimeAndRegistry } from "../../../src/shared/utils/runtimeRegistryUtils.js";
-import { toResult } from "/src/engine/debug/shared/debugCommandResultUtils.js";
+import { toResult } from "../../../src/engine/debug/shared/debugCommandResultUtils.js";
 
 function getAllPanels(panelRegistry) {
   const panels = panelRegistry.getOrderedPanels(true);
@@ -275,3 +275,4 @@ export class DebugPresetApplier {
     );
   }
 }
+

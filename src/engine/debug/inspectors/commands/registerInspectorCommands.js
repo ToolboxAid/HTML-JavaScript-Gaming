@@ -9,7 +9,7 @@ import {
   asArray,
   asObject,
   sanitizeText
-} from "/src/engine/debug/inspectors/shared/inspectorUtils.js";
+} from "../shared/inspectorUtils.js";
 import { toResult } from "../../shared/debugCommandResultUtils.js";
 import {
   readHostSnapshot,
@@ -176,3 +176,4 @@ export function registerInspectorCommands(options = {}) {
     registration: null
   };
 }
+

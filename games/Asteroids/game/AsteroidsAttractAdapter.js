@@ -4,7 +4,7 @@ David Quesenberry
 03/25/2026
 AsteroidsAttractAdapter.js
 */
-import { clamp } from '/src/engine/utils/math.js';
+import { clamp } from '../../../src/engine/utils/math.js';
 
 function estimateTextWidth(text, fontPx) {
   return String(text ?? '').length * (fontPx * 0.62);

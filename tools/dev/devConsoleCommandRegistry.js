@@ -5,7 +5,7 @@ David Quesenberry
 devConsoleCommandRegistry.js
 */
 
-import { sanitizeText } from "/src/engine/debug/inspectors/shared/inspectorUtils.js";
+import { sanitizeText } from "../../src/engine/debug/inspectors/shared/inspectorUtils.js";
 import { isObject } from "../../src/shared/utils/objectUtils.js";
 
 function toLines(lines) {
@@ -423,3 +423,4 @@ export function createConsoleOutput({
     code
   });
 }
+

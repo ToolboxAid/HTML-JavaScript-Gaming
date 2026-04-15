@@ -5,7 +5,7 @@ David Quesenberry
 asteroidsShowcaseDebug.js
 */
 
-import { asArray, asObject } from "/src/engine/debug/inspectors/shared/inspectorUtils.js";
+import { asArray, asObject } from "../../../src/engine/debug/inspectors/shared/inspectorUtils.js";
 
 function sanitizeText(value) {
   return typeof value === "string" ? value.trim() : "";

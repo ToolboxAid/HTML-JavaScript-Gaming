@@ -11,7 +11,7 @@ const DEFAULT_LIMITS = Object.freeze({
   eventStreamMax: 300
 });
 
-import { asArray, asObject, sanitizeText } from "/src/engine/debug/inspectors/shared/inspectorUtils.js";
+import { asArray, asObject, sanitizeText } from "../../../src/engine/debug/inspectors/shared/inspectorUtils.js";
 import { isObject } from "../../../src/shared/utils/objectUtils.js";
 import { cloneJson } from "../../../src/shared/utils/jsonUtils.js";
 
@@ -326,3 +326,4 @@ export function createInspectorStore(options = {}) {
     buildDiffSummary
   };
 }
+

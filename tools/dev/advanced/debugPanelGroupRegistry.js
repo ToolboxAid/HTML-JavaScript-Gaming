@@ -5,7 +5,7 @@ David Quesenberry
 debugPanelGroupRegistry.js
 */
 
-import { sanitizeText } from "/src/engine/debug/inspectors/shared/inspectorUtils.js";
+import { sanitizeText } from "../../../src/engine/debug/inspectors/shared/inspectorUtils.js";
 import { asStringArray } from "../../../src/shared/utils/arrayUtils.js";
 import { cloneJson } from "../../../src/shared/utils/jsonUtils.js";
 
@@ -120,3 +120,4 @@ export class DebugPanelGroupRegistry {
     return this.reports.map((report) => cloneJson(report));
   }
 }
+

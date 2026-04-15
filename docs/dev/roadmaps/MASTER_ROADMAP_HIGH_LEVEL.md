@@ -502,13 +502,13 @@
 ---
 
 ## 12. 2D Capability Track
-- [ ] camera systems stabilized
-- [ ] tilemap/runtime integration stabilized
-- [ ] collision patterns stabilized
-- [ ] enemy/hero/gameplay conventions stabilized
-- [ ] replay/state integration for 2D games stabilized
-- [ ] polished 2D reference game path established
-- [ ] 2D reference game built
+- [x] camera systems stabilized
+- [x] tilemap/runtime integration stabilized
+- [x] collision patterns stabilized
+- [x] enemy/hero/gameplay conventions stabilized
+- [x] replay/state integration for 2D games stabilized
+- [x] polished 2D reference game path established
+- [x] 2D reference game built
 
 ---
 

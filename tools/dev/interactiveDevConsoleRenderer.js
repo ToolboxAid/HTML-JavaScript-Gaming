@@ -5,7 +5,7 @@ David Quesenberry
 interactiveDevConsoleRenderer.js
 */
 
-import { sanitizeText } from "/src/engine/debug/inspectors/shared/inspectorUtils.js";
+import { sanitizeText } from "../../src/engine/debug/inspectors/shared/inspectorUtils.js";
 
 function toLines(lines) {
   if (!Array.isArray(lines)) {
@@ -170,3 +170,4 @@ export function drawInteractiveDevConsole(renderer, consoleModel = {}) {
 
   drawInteractiveConsoleWithRendererFallback(renderer, consoleModel);
 }
+

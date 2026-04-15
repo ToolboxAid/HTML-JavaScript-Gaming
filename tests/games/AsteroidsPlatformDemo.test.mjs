@@ -1,7 +1,11 @@
 import assert from "node:assert/strict";
+import fs from "node:fs";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 import { buildAsteroidsPlatformDemo, summarizeAsteroidsPlatformDemo } from "../../tools/shared/asteroidsPlatformDemo.js";
 
 export async function run() {
+  const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
   const first = await buildAsteroidsPlatformDemo();
   const second = await buildAsteroidsPlatformDemo();
 
@@ -13,6 +17,10 @@ export async function run() {
   assert.equal(first.demo.publishingResult.publishing.status, "ready");
   assert.equal(first.demo.runtimeHandoff.modulePath, "games/Asteroids/main.js");
   assert.equal(first.demo.runtimeHandoff.exportName, "bootAsteroids");
+  const runtimeModulePath = path.join(repoRoot, ...first.demo.runtimeHandoff.modulePath.split("/"));
+  assert.equal(fs.existsSync(runtimeModulePath), true);
+  const runtimeModule = await import(new URL(`../../${first.demo.runtimeHandoff.modulePath}`, import.meta.url));
+  assert.equal(typeof runtimeModule[first.demo.runtimeHandoff.exportName], "function");
   assert.equal(first.demo.packageResult.manifest.package.projectId, "asteroids-platform-demo");
   assert.equal(first.demo.definition.demo.visualBaseline.preferred, "vector");
   assert.equal(first.demo.definition.demo.visualBaseline.rollbackDocumented, true);

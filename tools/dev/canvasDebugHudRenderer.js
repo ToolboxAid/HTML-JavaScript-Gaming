@@ -5,7 +5,7 @@ David Quesenberry
 canvasDebugHudRenderer.js
 */
 
-import { sanitizeText } from "/src/engine/debug/inspectors/shared/inspectorUtils.js";
+import { sanitizeText } from "../../src/engine/debug/inspectors/shared/inspectorUtils.js";
 
 function toArrayLines(lines) {
   return Array.isArray(lines)
@@ -118,3 +118,4 @@ export function drawCanvasDebugHud(renderer, panels = []) {
     drawCanvasDebugHudPanel(renderer, safePanels[index]);
   }
 }
+

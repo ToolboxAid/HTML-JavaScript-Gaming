@@ -10,7 +10,7 @@ import {
   asPositiveInteger,
   asObject,
   sanitizeText
-} from "/src/engine/debug/inspectors/shared/inspectorUtils.js";
+} from "../shared/inspectorUtils.js";
 
 function normalizeTimelineMarker(input, index) {
   const source = asObject(input);
@@ -38,3 +38,4 @@ export function createTimelineInspectorViewModel(options = {}) {
     lines: lines.length > 0 ? lines : ["No timeline markers available."]
   };
 }
+
