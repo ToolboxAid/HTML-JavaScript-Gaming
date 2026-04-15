@@ -1,3 +1,3 @@
-- Added a combined PR for the remaining Section-4 state/replay/timeline lane
-- Bundles contracts, replay model, timeline orchestration, authoritative slices, and boundary normalization
-- Intended to finish most or all of Section 4 in one pass and leave only tiny residue if needed
+- Added a combined PR for the remaining Section-6 Samples Program lane
+- Bundles phase grouping, samples/shared boundaries, dependency cleanup, and curriculum validation
+- Intended to finish most or all of Section 6 in one pass and leave only tiny residue if needed

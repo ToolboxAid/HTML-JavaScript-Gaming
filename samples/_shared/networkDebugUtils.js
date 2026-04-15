@@ -1,6 +1,1 @@
-export {
-  asNumber,
-  commandLinesForTrace,
-  getCommandSnapshot,
-  toNetworkSnapshot
-} from "../../src/shared/utils/networkDebugUtils.js";
+export * from "../shared/networkDebugUtils.js";

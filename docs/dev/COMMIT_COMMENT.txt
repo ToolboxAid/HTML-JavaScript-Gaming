@@ -1,2 +1,2 @@
-Combine the remaining Section-4 state/replay/timeline work into one low-PR pass
-BUILD_PR_LEVEL_04_STATE_REPLAY_TIMELINE_COMBINED_PASS
+Combine the remaining Section-6 Samples Program work into one low-PR pass
+BUILD_PR_LEVEL_06_SAMPLES_PROGRAM_COMBINED_PASS
