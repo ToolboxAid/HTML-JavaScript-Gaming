@@ -1,4 +1,4 @@
-- Server loop working
-- Input ingestion working
-- Ownership enforced
-- No regressions
+- Apply completed
+- Validation passed
+- Roadmap status updated (status markers only)
+- Ready for next PR

@@ -1,1 +1,1 @@
-implement authoritative server runtime and input ingestion — BUILD_PR_LEVEL_12_2_AUTHORITATIVE_SERVER_RUNTIME
+apply authoritative server runtime and validate — APPLY_PR_LEVEL_12_2_AUTHORITATIVE_SERVER_RUNTIME

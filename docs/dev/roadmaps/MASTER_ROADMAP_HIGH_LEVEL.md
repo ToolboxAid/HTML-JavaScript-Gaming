@@ -607,13 +607,13 @@
 - [x] Add scripts to switch between Pay-as-you-go and Codex plan modes, and scripts to input API key material and validate it
 
 ### Full Real-Network Capability Lane (Required Before 3D Execution)
-- [ ] real transport/session layer
-- [ ] authoritative live server runtime
+- [x] real transport/session layer
+- [x] authoritative live server runtime
 - [ ] replication/client application
 - [ ] playable real multiplayer validation
 - [ ] server hosting + Docker containerization
 - [ ] promotion/readiness gate
-- [ ] include samples for phase 13
+- [x] include samples for phase 13
 
 ### 3D Execution Dependency Gate
 - [ ] begin active phase-16 / 3D execution only after the full real-network capability lane is complete
