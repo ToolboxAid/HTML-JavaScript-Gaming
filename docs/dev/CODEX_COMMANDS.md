@@ -1,4 +1,4 @@
 MODEL: GPT-5.3-codex
-REASONING: low
+REASONING: high
 COMMAND:
-No further implementation. APPLY complete.
+Prepare for implementation of authoritative server runtime per PLAN_PR_LEVEL_12_2_AUTHORITATIVE_SERVER_RUNTIME. No engine API breakage.

@@ -1,1 +1,1 @@
-apply transport/session foundation and validate — APPLY_PR_LEVEL_12_1_REAL_NETWORK_FOUNDATION
+define authoritative server runtime contracts — PLAN_PR_LEVEL_12_2_AUTHORITATIVE_SERVER_RUNTIME
