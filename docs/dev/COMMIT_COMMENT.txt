@@ -1,1 +1,1 @@
-implement remote deployment candidate and validate — BUILD_PR_LEVEL_12_6_REMOTE_DEPLOYMENT_CANDIDATE
+apply remote deployment candidate and validate with execution-backed roadmap advancement — APPLY_PR_LEVEL_12_6_REMOTE_DEPLOYMENT_CANDIDATE

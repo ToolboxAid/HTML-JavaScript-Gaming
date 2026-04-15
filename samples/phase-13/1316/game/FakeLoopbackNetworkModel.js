@@ -5,9 +5,9 @@ David Quesenberry
 FakeLoopbackNetworkModel.js
 */
 
-import { clamp } from "/src/engine/utils/index.js";
+import { clamp } from "../../../../src/engine/utils/index.js";
 import { asPositiveNumber } from '../../../_shared/numberUtils.js';
-import { createLatencyModel } from "/samples/phase-13/_shared/latencyModel.js";
+import { createLatencyModel } from "../../_shared/latencyModel.js";
 
 const MAX_TRACE_EVENTS = 80;
 
