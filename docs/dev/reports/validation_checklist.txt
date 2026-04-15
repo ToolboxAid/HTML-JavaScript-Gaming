@@ -1,7 +1,4 @@
-- remote host reachable
-- public endpoint verified
-- client connects remotely
-- session lifecycle validated remotely
-- disconnect/cleanup validated
-- roadmap updated by marker only
-- marker advanced only if execution-backed validation passed
+- end-to-end validated
+- remote stable
+- no regressions
+- roadmap rule enforced

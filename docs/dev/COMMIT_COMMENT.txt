@@ -1,1 +1,1 @@
-apply remote deployment candidate and validate with execution-backed roadmap advancement — APPLY_PR_LEVEL_12_6_REMOTE_DEPLOYMENT_CANDIDATE
+define real network completion gate and validation — PLAN_PR_LEVEL_12_7_REAL_NETWORK_COMPLETION_GATE

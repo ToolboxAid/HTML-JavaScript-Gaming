@@ -1,8 +1,6 @@
-MODEL: GPT-5.4
-REASONING: medium
+MODEL: GPT-5.3-codex
+REASONING: high
 COMMAND:
-Finalize APPLY_PR_LEVEL_12_6_REMOTE_DEPLOYMENT_CANDIDATE with real validation evidence.
-Keep this PR testable.
-Update docs/dev/roadmaps/MASTER_ROADMAP_HIGH_LEVEL.md by status markers only.
-Do not change wording, structure, add content, or delete content.
-Advance `promotion/readiness gate` from `[.]` to `[x]` only if validation actually passed.
+Prepare completion gate validation plan for full network lane.
+No new features.
+Update roadmap markers only.
