@@ -272,7 +272,7 @@ export default class Platformer3DBasicsScene extends Scene {
 
     const player = this.world.requireComponent(this.playerId, 'transform3D');
     const velocity = this.world.requireComponent(this.playerId, 'velocity3D');
-    drawPanel(renderer, 620, 34, 300, 126, 'Platformer Runtime', [
+    drawPanel(renderer, 620, 34, 300, 156, 'Platformer Runtime', [
       `Cube: x=${player.x.toFixed(2)} y=${player.y.toFixed(2)} z=${player.z.toFixed(2)}`,
       `VelocityY: ${velocity.y.toFixed(2)} | Grounded: ${this.isGrounded ? 'yes' : 'no'}`,
       `Moved entities: ${this.lastPhysicsSummary.movedEntities}`,

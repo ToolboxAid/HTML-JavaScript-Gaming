@@ -223,7 +223,7 @@ export default class MazeRunner3DScene extends Scene {
     drawWireBox(renderer, this.goal, { width: this.goal.width, height: this.goal.height, depth: this.goal.depth }, cameraState, projectionViewport, '#4ade80', 2);
 
     const player = this.world.requireComponent(this.playerId, 'transform3D');
-    drawPanel(renderer, 620, 34, 300, 126, 'Maze Runtime', [
+    drawPanel(renderer, 620, 34, 300, 156, 'Maze Runtime', [
       `Cube: x=${player.x.toFixed(2)} y=${player.y.toFixed(2)} z=${player.z.toFixed(2)}`,
       `Moved entities: ${this.lastPhysicsSummary.movedEntities}`,
       `Resolved collisions: ${this.lastPhysicsSummary.collisionCount}`,

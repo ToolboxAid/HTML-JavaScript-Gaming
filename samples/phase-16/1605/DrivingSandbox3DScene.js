@@ -332,7 +332,7 @@ export default class DrivingSandbox3DScene extends Scene {
       'Sample 1605 - 3D Driving Sandbox',
       'Drive a simple 3D test track with throttle, steering, and AABB barriers.',
       'Throttle: W/S | Steer: A/D | Camera: C | Debug: V',
-      'Chase camera hard-locks behind the vehicle for stable readability.',
+      'Default follow mode uses a hard-locked chase camera for stable readability.',
     ]);
 
     renderer.strokeRect(this.viewport.x, this.viewport.y, this.viewport.width, this.viewport.height, '#d8d5ff', 2);
@@ -380,7 +380,7 @@ export default class DrivingSandbox3DScene extends Scene {
     drawAsymmetricVehicle(renderer, car, carSize, vehicleYaw, cameraState, projectionViewport, '#38bdf8');
     drawVehicleHeadingMarker(renderer, this.getVehicleMarkerWorldPoints(), cameraState, projectionViewport);
 
-    drawPanel(renderer, 620, 34, 300, 126, 'Driving Runtime', [
+    drawPanel(renderer, 620, 34, 300, 176, 'Driving Runtime', [
       `Car: x=${car.x.toFixed(2)} y=${car.y.toFixed(2)} z=${car.z.toFixed(2)}`,
       `Speed: ${this.speed.toFixed(2)} u/s | Heading: ${this.heading.toFixed(2)} rad`,
       `Chase yaw: ${this.cameraYaw.toFixed(2)} rad`,

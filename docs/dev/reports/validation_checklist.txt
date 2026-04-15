@@ -1,6 +1,6 @@
 
-[ ] camera toggle works
-[ ] shading improves readability
-[ ] debug overlay visible
+[ ] all samples consistent
+[ ] controls aligned
+[ ] no visual regressions
+[ ] full smoke pass 1601–1608
 [ ] sanity pass
-[ ] smoke pass

@@ -170,7 +170,7 @@ export default class FirstPersonWalkthroughScene extends Scene {
   render(renderer) {
     drawFrame(renderer, theme, [
       'Sample 1603 - First Person Walkthrough',
-      'Navigate from a first-person camera while AABB collisions keep movement grounded.',
+      'Navigate from a default first-person camera while AABB collisions keep movement grounded.',
       'Move: W A S D | Look: Arrow Keys | Camera: C | Debug: V',
       'Stay centered in the lane and navigate around interior blockers.',
     ]);
@@ -214,12 +214,12 @@ export default class FirstPersonWalkthroughScene extends Scene {
     renderer.drawLine(centerX, centerY - 8, centerX, centerY + 8, '#7dd3fc', 1);
 
     const player = this.world.requireComponent(this.playerId, 'transform3D');
-    drawPanel(renderer, 620, 34, 300, 126, 'Walkthrough Runtime', [
+    drawPanel(renderer, 620, 34, 300, 156, 'Walkthrough Runtime', [
       `Position: x=${player.x.toFixed(2)} y=${player.y.toFixed(2)} z=${player.z.toFixed(2)}`,
       `View: yaw=${this.yaw.toFixed(2)} pitch=${this.pitch.toFixed(2)}`,
       `Moved entities: ${this.lastPhysicsSummary.movedEntities}`,
       `Resolved collisions: ${this.lastPhysicsSummary.collisionCount}`,
-      'View mode: first person + collision-aware movement',
+      'View mode: C cycles follow/wide/overhead',
     ]);
 
     drawPhase16DebugOverlay(renderer, this.viewport, this.viewState, [

@@ -1,1 +1,1 @@
-Add advanced readability and camera enhancements to Phase 16 samples<BUILD_PR_LEVEL_17_15_ADVANCED_3D_SAMPLE_EXTENSIONS>
+Stabilize Phase 16 3D samples and prepare handoff to finalize phase<BUILD_PR_LEVEL_17_16_FINAL_3D_STABILITY_AND_HANDOFF_GATE>

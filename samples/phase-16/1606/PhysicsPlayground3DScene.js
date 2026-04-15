@@ -369,7 +369,7 @@ export default class PhysicsPlayground3DScene extends Scene {
     });
 
     const alpha = this.bodies[0];
-    drawPanel(renderer, 620, 34, 300, 126, 'Physics Runtime', [
+    drawPanel(renderer, 620, 34, 300, 176, 'Physics Runtime', [
       `Alpha pos: x=${alpha.transform3D.x.toFixed(2)} y=${alpha.transform3D.y.toFixed(2)} z=${alpha.transform3D.z.toFixed(2)}`,
       `Alpha vel: vx=${alpha.velocity.x.toFixed(2)} vy=${alpha.velocity.y.toFixed(2)} vz=${alpha.velocity.z.toFixed(2)}`,
       `Gravity scale: ${this.gravityScale.toFixed(2)}`,

@@ -3,19 +3,19 @@ MODEL: GPT-5.3-codex
 REASONING: high
 
 COMMAND:
-Add advanced but safe enhancements to Phase 16 samples.
+Stabilize Phase 16 samples (1601–1608).
 
 Focus:
-- camera mode toggle
-- simple shading/depth cues
-- debug overlay
+- align controls
+- remove inconsistencies
+- ensure visual/readability consistency
 
 Rules:
-- smallest scoped change
-- sample-only
+- no new features
 - no zip output
+- smallest scoped fixes only
 
 Validate:
-- features visibly work
+- full sample smoke 1601–1608
+- sanity pass
 - no regressions
-- sanity + smoke pass
