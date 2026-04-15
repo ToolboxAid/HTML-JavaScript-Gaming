@@ -588,9 +588,9 @@
 
 ### Active Execution Lanes
 - [x] Finish current promotion-gate lane (BUILD => APPLY)
-- [.] Apply repo structure normalization implementation plan
-- [.] Extract / normalize shared utilities
-- [.] Normalize phase-13 network concepts samples
+- [x] Apply repo structure normalization implementation plan
+- [x] Extract / normalize shared utilities
+- [x] Normalize phase-13 network concepts samples
 
 ### Next Planning / Normalization Lanes
 - [x] Apply master roadmap baseline
@@ -618,17 +618,17 @@
 - [x] Execute `templates/` relocation and root removal cleanup PR
 
 ### Recommended Final Status Summary
-- [ ] current active execution lanes are 3 / 6 / 8
-- [ ] next planning lanes are 2 / 5 / 7 / 9 / 10
+- [x] current active execution lanes are 3 / 6 / 8
+- [x] next planning lanes are 2 / 5 / 7 / 9 / 10
 - [x] later capability lanes are 11 / 12
 - [x] final cleanup lane is 13
 
 ---
 
 ## Immediate Next High-Level Actions
-- [.] continue exact-cluster shared extraction until the current lane reaches a stable stop point
+- [x] continue exact-cluster shared extraction until the current lane reaches a stable stop point
 - [x] finish active promotion-gate lane enough to remove it from half-active status
-- [.] convert repo structure normalization into exact move-map BUILDs with explicit validation
+- [x] convert repo structure normalization into exact move-map BUILDs with explicit validation
 - [x] re-baseline this roadmap after active execution lanes stabilize
 - [x] split future implementation into small dependency-ordered PRs
 

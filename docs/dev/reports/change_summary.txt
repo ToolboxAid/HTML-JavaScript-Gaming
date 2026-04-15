@@ -1,1 +1,3 @@
-Rules extracted to top section; non-3D items validated and closed where possible
+- Added validate-first closeout PR for remaining non-3D active-lane/status residue
+- Focuses on active execution lanes, immediate actions, and summary-row truth reconciliation
+- Intended to finish non-3D roadmap work without opening 3D lanes

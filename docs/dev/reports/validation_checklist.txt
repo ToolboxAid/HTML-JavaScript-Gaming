@@ -1,1 +1,8 @@
-validate-first applied; rules moved not duplicated; no 3D work; minimal residue only
+- active execution lane items inspected first
+- immediate-action items inspected first
+- summary rows reconciled to repo truth
+- already-complete items closed by status update only
+- only minimal residue work performed where needed
+- no 3D work introduced
+- output ZIP created at:
+  <project folder>/tmp/BUILD_PR_FINAL_NON_3D_ACTIVE_LANES_AND_STATUS_CLOSEOUT.zip
