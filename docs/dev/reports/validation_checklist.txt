@@ -1,1 +1,1 @@
-tests normalized, coverage aligned, fixtures organized
+Only remaining items touched

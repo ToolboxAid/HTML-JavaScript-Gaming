@@ -1,1 +1,1 @@
-Combined tests/validation normalization pass
+Residue closeout
