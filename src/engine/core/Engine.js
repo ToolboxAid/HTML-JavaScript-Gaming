@@ -196,6 +196,16 @@ export default class Engine {
 
     const updateStart = performance.now();
     const tickerResult = this.fixedTicker.advance(deltaMs, (stepSeconds) => {
+      if (this.scene && typeof this.scene.step3DPhysics === 'function') {
+        try {
+          this.scene.step3DPhysics(stepSeconds, this);
+        } catch (error) {
+          this.logger?.warn?.('Engine scene step3DPhysics hook failed.', {
+            error: error?.message || String(error),
+          });
+        }
+      }
+
       if (this.scene && typeof this.scene.update === 'function') {
         this.scene.update(stepSeconds, this);
       }

@@ -29,6 +29,10 @@ export function run() {
   assert.equal(typeof input.ActionInputService, 'function');
   assert.equal(typeof physics.stepArcadeBody, 'function');
   assert.equal(typeof physics.applyDrag, 'function');
+  assert.equal(typeof physics.integrateVelocity3D, 'function');
+  assert.equal(typeof physics.isAabbColliding3D, 'function');
+  assert.equal(typeof physics.resolveAabbCollision3D, 'function');
+  assert.equal(typeof physics.stepSceneBodies3D, 'function');
   assert.equal(typeof audio.AudioService, 'function');
   assert.equal(typeof systems.moveEntities, 'function');
   assert.equal(typeof systems.stepArcadeBody, 'function');
@@ -82,6 +86,57 @@ export function run() {
   assert.equal(camera3DState.rotation.x, 0.1);
   assert.equal(camera3DState.rotation.y, 0.7);
   assert.equal(camera3DState.rotation.z, 0.3);
+
+  const movingBody = {
+    x: 0,
+    y: 0,
+    z: 0,
+    width: 2,
+    height: 2,
+    depth: 2,
+    velocityX: 6,
+    velocityY: 0,
+    velocityZ: 0,
+  };
+  const wallBody = {
+    x: 4,
+    y: 0,
+    z: 0,
+    width: 2,
+    height: 2,
+    depth: 2,
+  };
+
+  physics.integrateVelocity3D(movingBody, 0.5);
+  assert.equal(movingBody.x, 3);
+  assert.equal(physics.isAabbColliding3D(movingBody, wallBody), true);
+
+  const resolveResult = physics.resolveAabbCollision3D(movingBody, wallBody);
+  assert.equal(resolveResult.collided, true);
+  assert.equal(resolveResult.axis, 'x');
+  assert.equal(movingBody.x, 2);
+  assert.equal(movingBody.velocityX, 0);
+
+  const scene3D = {
+    bodies3D: [
+      {
+        x: 0,
+        y: 0,
+        z: 0,
+        width: 2,
+        height: 2,
+        depth: 2,
+        velocityX: 2,
+        velocityY: 0,
+        velocityZ: 0,
+      },
+    ],
+    staticColliders3D: [],
+  };
+  const stepSummary = physics.stepSceneBodies3D(scene3D, 0.5);
+  assert.equal(stepSummary.movedBodies, 1);
+  assert.equal(stepSummary.resolvedCollisions, 0);
+  assert.equal(scene3D.bodies3D[0].x, 1);
 }
 
 if (import.meta.url === `file://${process.argv[1]}`) {

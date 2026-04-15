@@ -2,8 +2,8 @@ MODEL: GPT-5.3-codex
 REASONING: high
 
 COMMAND:
-Implement minimal 3D camera:
-- create camera state (position, rotation)
-- integrate into scene safely
-- ensure no impact to 2D camera
-- validate all samples still pass
+Implement basic 3D movement + collision:
+- add velocity-based position updates
+- implement simple collision bounds (AABB or sphere)
+- isolate from 2D systems
+- validate no regression across samples

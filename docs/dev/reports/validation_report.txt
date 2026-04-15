@@ -1,1 +1,1 @@
-Post-run: verify camera init + no regression
+Post-run: verify movement + collision + no regression
