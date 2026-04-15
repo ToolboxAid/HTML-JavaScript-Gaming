@@ -1,1 +1,1 @@
-normalize network directory structure with validated import rewiring — BUILD_PR_LEVEL_12_8_NETWORK_DIRECTORY_NORMALIZATION
+apply network directory normalization with validated import rewiring — APPLY_PR_LEVEL_12_8_NETWORK_DIRECTORY_NORMALIZATION

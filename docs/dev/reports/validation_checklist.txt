@@ -1,5 +1,6 @@
-- reviewed actual src.zip baseline
-- exact move-map defined
-- scope limited to network directory normalization
-- testable validation requirements included
-- roadmap update constrained to marker-only progression
+- move-map applied
+- imports validated
+- runtime validated
+- no duplicates
+- 2D regression passed
+- roadmap updated (marker only)
