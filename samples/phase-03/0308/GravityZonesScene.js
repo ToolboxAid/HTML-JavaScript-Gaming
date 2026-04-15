@@ -13,7 +13,7 @@ import {
   drawWorldRect,
   drawWorldLabel,
   overlap,
-} from '../../_shared/platformerHelpers.js';
+} from '../../shared/platformerHelpers.js';
 import { applyMinimalJump } from './minimalJump.js';
 
 const theme = new Theme(ThemeTokens);

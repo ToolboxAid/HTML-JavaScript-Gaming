@@ -7,13 +7,13 @@ networkSampleCDebug.js
 
 import { createNetworkDebugPluginDefinition } from "/src/engine/debug/network/index.js";
 import { asArray, asObject } from "/src/shared/utils/objectUtils.js";
-import { isFiniteNumber } from "../../../_shared/numberUtils.js";
+import { isFiniteNumber } from "../../../shared/numberUtils.js";
 import {
   asNumber,
   commandLinesForTrace,
   getCommandSnapshot,
   toNetworkSnapshot
-} from "../../../_shared/networkDebugUtils.js";
+} from "../../../shared/networkDebugUtils.js";
 
 const NETWORK_SAMPLE_KEY = "networkSampleC";
 

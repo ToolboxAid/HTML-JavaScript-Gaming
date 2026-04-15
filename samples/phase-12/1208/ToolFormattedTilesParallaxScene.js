@@ -9,7 +9,7 @@ import { Theme, ThemeTokens } from '/src/engine/theme/index.js';
 import { clamp } from '/src/engine/utils/index.js';
 import { Camera2D, worldRectToScreen } from '/src/engine/camera/index.js';
 import { Tilemap, resolveRectVsTilemap } from '/src/engine/tilemap/index.js';
-import { isFiniteNumber } from '../../_shared/numberUtils.js';
+import { isFiniteNumber } from '../../shared/numberUtils.js';
 import tileMapToolExport from './data/toolFormattedTileMap.js';
 import fallbackParallaxToolExport from './data/toolFormattedParallax.js';
 

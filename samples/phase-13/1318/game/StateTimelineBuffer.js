@@ -5,8 +5,8 @@ David Quesenberry
 StateTimelineBuffer.js
 */
 
-import { asPositiveInteger, isFiniteNumber } from "../../../_shared/numberUtils.js";
-import { cloneSnapshot } from "../../../_shared/snapshotCloneUtils.js";
+import { asPositiveInteger, isFiniteNumber } from "../../../shared/numberUtils.js";
+import { cloneSnapshot } from "../../../shared/snapshotCloneUtils.js";
 
 function normalizeFrameId(frameId) {
   const numeric = Number(frameId);

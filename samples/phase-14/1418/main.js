@@ -1,4 +1,4 @@
-import { bootLateSample } from '../../_shared/lateSampleBootstrap.js';
+import { bootLateSample } from '../../shared/lateSampleBootstrap.js';
 import ContentValidationPipelineScene from './ContentValidationPipelineScene.js';
 
 bootLateSample({

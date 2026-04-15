@@ -12,7 +12,7 @@ import {
   commandLinesForTrace,
   getCommandSnapshot,
   toNetworkSnapshot
-} from "../../../_shared/networkDebugUtils.js";
+} from "../../../shared/networkDebugUtils.js";
 
 const NETWORK_SAMPLE_KEY = "networkSampleA";
 

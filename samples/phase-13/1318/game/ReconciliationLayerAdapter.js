@@ -5,8 +5,8 @@ David Quesenberry
 ReconciliationLayerAdapter.js
 */
 import StateTimelineBuffer from "./StateTimelineBuffer.js";
-import { asFiniteNumber, asPositiveInteger, isFiniteNumber } from "../../../_shared/numberUtils.js";
-import { cloneSnapshot } from "../../../_shared/snapshotCloneUtils.js";
+import { asFiniteNumber, asPositiveInteger, isFiniteNumber } from "../../../shared/numberUtils.js";
+import { cloneSnapshot } from "../../../shared/snapshotCloneUtils.js";
 
 const APPROVED_PUBLIC_EVENT_TYPES = new Set([
   "worldState.transition.applied",

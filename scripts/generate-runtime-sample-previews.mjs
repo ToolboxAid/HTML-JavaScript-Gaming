@@ -5,7 +5,7 @@ import { spawn } from 'node:child_process';
 
 const ROOT = process.cwd();
 const SAMPLES_DIR = path.join(ROOT, 'samples');
-const CAPTURE_PAGE_PATH = '/samples/_shared/runtimePreviewCapture.html';
+const CAPTURE_PAGE_PATH = '/samples/shared/runtimePreviewCapture.html';
 const OUTPUT_WIDTH = 640;
 const OUTPUT_HEIGHT = 360;
 const CAPTURE_SETTLE_MS = 3000;

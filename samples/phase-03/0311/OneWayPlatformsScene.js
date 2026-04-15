@@ -13,7 +13,7 @@ import {
   drawWorldRect,
   drawWorldLabel,
   moveAgainstSolids,
-} from '../../_shared/platformerHelpers.js';
+} from '../../shared/platformerHelpers.js';
 
 const theme = new Theme(ThemeTokens);
 

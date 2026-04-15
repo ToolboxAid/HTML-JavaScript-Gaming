@@ -15,4 +15,4 @@ Canonical shared sample boundary.
 Sample code may consume only approved public engine surfaces (for example `/src/engine/*/index.js` and `/src/engine/core/Engine.js`).
 
 ## Compatibility
-`samples/_shared` remains as a compatibility shim surface and should re-export or proxy to this canonical `samples/shared` boundary.
+`samples/shared` is the single canonical shared sample boundary.

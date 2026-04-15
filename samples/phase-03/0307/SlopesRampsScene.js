@@ -14,7 +14,7 @@ import {
   drawWorldLabel,
   moveAgainstSolids,
   snapToRamp,
-} from '../../_shared/platformerHelpers.js';
+} from '../../shared/platformerHelpers.js';
 
 const theme = new Theme(ThemeTokens);
 

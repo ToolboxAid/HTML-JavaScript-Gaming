@@ -1,5 +1,3 @@
-- 1319 launcher wiring required in samples/index.html
-- real-network path required (not simulation-only)
-- live dashboard required with players/sessions/RTT/RX/TX
-- execution-backed validation required
-- roadmap progression constrained to marker-only updates
+- duplicate shared directories removed
+- imports normalized
+- no regressions expected

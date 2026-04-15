@@ -6,7 +6,7 @@ FakeHostClientNetworkModel.js
 */
 import FakeLoopbackNetworkModel from "../../1316/game/FakeLoopbackNetworkModel.js";
 import { clamp } from "/src/engine/utils/index.js";
-import { asPositiveNumber } from "../../../_shared/numberUtils.js";
+import { asPositiveNumber } from "../../../shared/numberUtils.js";
 
 const MAX_TRACE_EVENTS = 120;
 

@@ -663,7 +663,7 @@
 ## 17. Finalize engine
 [ ] Verify all `samples/` and `games/` use engine systems and are not coded locally; if local, migrate to engine.
 [ ] Some games are actually samples/demos; identify and recommend a `phase-xx` move target.
-[ ] Organize/rebuild `samples/` and `games/` as if newly constructed, with proper classes/data in proper folders.
+[.] Organize/rebuild `samples/` and `games/` as if newly constructed, with proper classes/data in proper folders.
 [x] Simulated code (for example, some network samples) should be converted to real networks, with tests as needed.
 [ ] Single class per file.
 [ ] Flatten CSS layers so only a few remain; use top-layer shared classes as much as possible (for example, a button should use one standard class, with exceptions only when needed).
