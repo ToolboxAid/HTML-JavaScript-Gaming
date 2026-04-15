@@ -274,8 +274,8 @@
 
 ### Track G - Network / Multiplayer Debug
 - [x] Connection status panel
-- [.] Latency / RTT panel
-- [ ] Replication state viewer
+- [x] Latency / RTT panel
+- [x] Replication state viewer
 - [x] Client/server divergence inspector
 - [.] Event tracing
 - [.] PLAN_PR_DEBUG_SURFACES_NETWORK_SUPPORT
@@ -364,37 +364,37 @@
 
 ### Track Q - Network Debug Panels
 - [x] Connection status panel
-- [.] Latency / RTT panel
-- [ ] Replication state viewer
+- [x] Latency / RTT panel
+- [x] Replication state viewer
 - [x] Client/server divergence inspector
 - [x] Event tracing panel
 
 ### Track R - Network Debug Commands
-- [ ] network.help
+- [x] network.help
 - [x] network.status
 - [x] network.latency
-- [.] network.replication
+- [x] network.replication
 - [x] network.divergence
 - [x] network.trace
-- [.] network.sample.*
+- [x] network.sample.*
 
 ### Track S - Readiness To Promote
-- [.] Sample-backed provider validation
-- [.] Sample-backed panel validation
-- [.] Operator command validation
-- [ ] Debug-only gating validation
-- [ ] Promotion recommendation
+- [x] Sample-backed provider validation
+- [x] Sample-backed panel validation
+- [x] Operator command validation
+- [x] Debug-only gating validation
+- [x] Promotion recommendation
 
 ### Track T - Server Dashboard
-- [ ] Server dashboard shell
-- [ ] Player statistics view
-- [ ] Latency view
-- [ ] RX bytes view
-- [ ] TX bytes view
-- [ ] Connection/session counts
-- [ ] Per-player status rows
-- [ ] Refresh/update strategy
-- [ ] Debug-only access rules
+- [x] Server dashboard shell
+- [x] Player statistics view
+- [x] Latency view
+- [x] RX bytes view
+- [x] TX bytes view
+- [x] Connection/session counts
+- [x] Per-player status rows
+- [x] Refresh/update strategy
+- [x] Debug-only access rules
 
 ### Track U - Server Containerization
 - [x] Dockerfile for server
@@ -413,9 +413,9 @@
 - [x] Sample B
 - [x] Replication + authority + divergence
 - [x] Sample C
-- [ ] Server dashboard
+- [x] Server dashboard
 - [x] Server containerization
-- [ ] Promotion review
+- [x] Promotion review
 
 ---
 

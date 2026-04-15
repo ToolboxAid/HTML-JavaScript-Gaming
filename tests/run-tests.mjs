@@ -63,6 +63,7 @@ import { run as runFullscreenService } from './final/FullscreenService.test.mjs'
 import { run as runPlatformUxSystems } from './final/PlatformUxSystems.test.mjs';
 import { run as runPrecisionCollisionSystems } from './final/PrecisionCollisionSystems.test.mjs';
 import { run as runMultiplayerNetworkingStack } from './final/MultiplayerNetworkingStack.test.mjs';
+import { run as runNetworkDebugAndServerDashboardCloseout } from './final/NetworkDebugAndServerDashboardCloseout.test.mjs';
 import { run as runEditorAutomationSecurityPipeline } from './final/EditorAutomationSecurityPipeline.test.mjs';
 import { run as runDeveloperToolingSystems } from './final/DeveloperToolingSystems.test.mjs';
 import { run as runReleaseReadinessSystems } from './final/ReleaseReadinessSystems.test.mjs';
@@ -154,6 +155,7 @@ const tests = [
     ['PlatformUxSystems', runPlatformUxSystems],
     ['PrecisionCollisionSystems', runPrecisionCollisionSystems],
     ['MultiplayerNetworkingStack', runMultiplayerNetworkingStack],
+    ['NetworkDebugAndServerDashboardCloseout', runNetworkDebugAndServerDashboardCloseout],
     ['EditorAutomationSecurityPipeline', runEditorAutomationSecurityPipeline],
     ['DeveloperToolingSystems', runDeveloperToolingSystems],
     ['ReleaseReadinessSystems', runReleaseReadinessSystems],

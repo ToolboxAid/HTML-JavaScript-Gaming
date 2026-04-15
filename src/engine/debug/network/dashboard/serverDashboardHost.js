@@ -37,6 +37,10 @@ export function createServerDashboardHost(options = {}) {
     });
   const onRender = typeof source.onRender === "function" ? source.onRender : null;
   const onError = typeof source.onError === "function" ? source.onError : null;
+  const debugOnly = source.debugOnly !== false;
+  const resolveDebugEnabled = typeof source.isDebugEnabled === "function"
+    ? source.isDebugEnabled
+    : () => source.isDebugEnabled !== false;
 
   let timer = null;
   let running = false;
@@ -45,6 +49,20 @@ export function createServerDashboardHost(options = {}) {
   let lastRefreshTimestampMs = 0;
   let refreshCount = 0;
   let lastErrorMessage = "";
+
+  function isDebugAccessEnabled() {
+    return resolveDebugEnabled() !== false;
+  }
+
+  function createDebugDeniedResult(action = "refresh") {
+    lastErrorMessage = "Server dashboard is debug-only and currently disabled.";
+    return {
+      ok: false,
+      code: "SERVER_DASHBOARD_DEBUG_ONLY_DISABLED",
+      action,
+      status: getStatus()
+    };
+  }
 
   function cloneValue(value) {
     if (value === null || value === undefined) {
@@ -94,11 +112,17 @@ export function createServerDashboardHost(options = {}) {
       playerCount: Array.isArray(snapshot.players) ? snapshot.players.length : 0,
       connectionCount: Number(snapshot.connectionSessionCounts?.connections) || 0,
       sessionCount: Number(snapshot.connectionSessionCounts?.sessions) || 0,
-      lastErrorMessage
+      lastErrorMessage,
+      debugOnly,
+      debugAccessEnabled: isDebugAccessEnabled()
     };
   }
 
   function refreshNow() {
+    if (debugOnly && !isDebugAccessEnabled()) {
+      return createDebugDeniedResult("refresh");
+    }
+
     try {
       lastSnapshot = collectSnapshot();
       lastRefreshTimestampMs = Date.now();
@@ -137,6 +161,10 @@ export function createServerDashboardHost(options = {}) {
 
   function start() {
     if (running) {
+      return false;
+    }
+    if (debugOnly && !isDebugAccessEnabled()) {
+      createDebugDeniedResult("start");
       return false;
     }
 

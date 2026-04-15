@@ -1,8 +1,13 @@
-- phase grouping addressed
-- samples/shared boundaries addressed
-- sample-to-engine dependency cleanup addressed
-- sample curriculum progression addressed
+- Latency / RTT panel addressed
+- Replication state viewer addressed
+- network.help addressed
+- network.replication addressed
+- network.sample.* addressed
+- sample-backed provider/panel/operator validations addressed
+- debug-only gating validation addressed
+- promotion recommendation addressed
+- server dashboard shell/views addressed
 - any residue is explicit and minimal
 - roadmap updated by status markers only
 - output ZIP created at:
-  <project folder>/tmp/BUILD_PR_LEVEL_06_SAMPLES_PROGRAM_COMBINED_PASS.zip
+  <project folder>/tmp/BUILD_PR_LEVEL_07_NETWORK_DEBUG_AND_SERVER_DASHBOARD_COMBINED_CLOSEOUT.zip

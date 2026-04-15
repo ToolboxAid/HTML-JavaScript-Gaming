@@ -17,9 +17,16 @@ export {
   createTextBlockPanels,
   registerNetworkDebugPanels
 } from "./panels/networkDebugPanelRegistry.js";
+export {
+  createLatencyRttPanel,
+  createReplicationStatePanel,
+  createNetworkObservabilityPanels
+} from "./panels/networkObservabilityPanels.js";
 
 export {
   createNetworkHelpCommand,
+  createNetworkReplicationCommand,
+  createNetworkSampleCommand,
   createNetworkCommandPack
 } from "./commands/networkDebugCommandPackBridge.js";
 
@@ -50,3 +57,4 @@ export {
 export { createLatencyDiagnosticsModel } from "./diagnostics/latencyDiagnosticsModel.js";
 export { createReplicationDiagnosticsModel } from "./diagnostics/replicationDiagnosticsModel.js";
 export { createDivergenceDiagnosticsModel } from "./diagnostics/divergenceDiagnosticsModel.js";
+export { createNetworkPromotionRecommendation } from "./diagnostics/networkPromotionRecommendation.js";

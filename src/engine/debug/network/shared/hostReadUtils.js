@@ -1,4 +1,8 @@
-import { asObject } from "/src/engine/debug/inspectors/shared/inspectorUtils.js";
+function asObject(value) {
+  return value !== null && typeof value === "object" && !Array.isArray(value)
+    ? value
+    : {};
+}
 
 export function readHostStatus(host) {
   return host && typeof host.getStatus === "function"

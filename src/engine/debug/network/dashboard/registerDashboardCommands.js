@@ -26,6 +26,8 @@ function formatStatusLines(status) {
   return [
     `running=${Boolean(status.running)}`,
     `mode=${sanitizeText(status.mode) || "normal"}`,
+    `debugOnly=${status.debugOnly !== false}`,
+    `debugAccessEnabled=${status.debugAccessEnabled !== false}`,
     `refreshIntervalMs=${Number(status.refreshIntervalMs) || 0}`,
     `refreshCount=${Number(status.refreshCount) || 0}`,
     `lastRefreshTimestampMs=${Number(status.lastRefreshTimestampMs) || 0}`,
