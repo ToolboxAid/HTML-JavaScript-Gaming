@@ -1,3 +1,2 @@
-- [ ] all validations pass
-- [ ] roadmap updated
-- [ ] no regressions
+- [ ] plan created
+- [ ] no unintended changes
