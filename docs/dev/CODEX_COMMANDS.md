@@ -2,7 +2,7 @@ MODEL: GPT-5.4
 REASONING: medium
 
 COMMAND:
-Implement plugin error handling:
-- Detect and isolate failures
-- Recover safely
+Implement plugin performance monitoring:
+- Track execution metrics
+- Provide diagnostics
 - Update roadmap status only

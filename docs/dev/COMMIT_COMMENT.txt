@@ -1,5 +1,4 @@
-Add plugin error handling and recovery.
+Add plugin performance monitoring.
 
 PR Details:
-- Improves resilience
-- Prevents crashes from plugin failures
+- Enables tracking of plugin performance

@@ -112,6 +112,24 @@ function assertPluginRegistrationAndRuntimeCompatibility() {
   );
   assert.equal(counters.step, 1, 'Plugin runtime step hook should run exactly once.');
   assert.equal(counters.render, 1, 'Plugin runtime render hook should run exactly once.');
+
+  const metrics = registry.getPluginMetrics('phase19.runtime.plugin');
+  assert.notEqual(metrics, null, 'Plugin metrics should be available after registration and runtime execution.');
+  assert.equal(metrics.transitions.attempted >= 1, true, 'Plugin metrics should record transition attempts.');
+  assert.equal(metrics.transitions.succeeded >= 1, true, 'Plugin metrics should record transition successes.');
+  assert.equal(metrics.hooks.init.calls >= 1, true, 'Plugin metrics should track init hook calls even when hook is absent.');
+  assert.equal(metrics.hooks.activate.calls >= 1, true, 'Plugin metrics should track activate hook calls.');
+  assert.equal(metrics.hooks.activate.totalDurationMs >= 0, true, 'Plugin metrics should track hook duration data.');
+
+  const diagnostics = registry.getPluginDiagnostics('phase19.runtime.plugin');
+  assert.notEqual(diagnostics, null, 'Plugin diagnostics snapshot should be available.');
+  assert.equal(diagnostics.state, registry.states.ACTIVE, 'Plugin diagnostics should expose current state.');
+  assert.equal(Boolean(diagnostics.metrics), true, 'Plugin diagnostics should include metrics payload.');
+  assert.equal(
+    registry.listPluginDiagnostics().some((entry) => entry.pluginId === 'phase19.runtime.plugin'),
+    true,
+    'Plugin diagnostics listing should include registered plugin.'
+  );
 }
 
 function assertPluginUnregisterCleansFramework() {
@@ -263,6 +281,11 @@ function assertPluginFailureRecoveryFlow() {
   assert.equal(registry.activatePlugin(pluginId), false, 'Initial activation should fail for recovery test.');
   assert.equal(registry.getPluginState(pluginId), registry.states.FAILED, 'Failed activation should move plugin into failed state.');
   assert.equal(Boolean(registry.getPluginFailure(pluginId)), true, 'Failed activation should capture failure snapshot.');
+  assert.equal(
+    registry.getPluginMetrics(pluginId).isolation.count >= 1,
+    true,
+    'Plugin metrics should record isolation events for failed activation.'
+  );
   assert.equal(registry.recoverPlugin(pluginId), true, 'Recover should restore plugin from failed state.');
   assert.equal(registry.getPluginState(pluginId), registry.states.INITIALIZED, 'Recover should restore safe pre-failure state.');
   assert.equal(registry.getPluginFailure(pluginId), null, 'Recover should clear last failure snapshot.');
@@ -272,6 +295,17 @@ function assertPluginFailureRecoveryFlow() {
     registry.getFramework().getExtension('phase19.failure.recover.overlay') !== null,
     true,
     'Recovered and activated plugin should re-register extension cleanly.'
+  );
+  assert.equal(
+    registry.getPluginMetrics(pluginId).recoveries.count >= 1,
+    true,
+    'Plugin metrics should record successful recoveries.'
+  );
+  assert.equal(registry.resetPluginMetrics(pluginId), true, 'Plugin metrics reset should succeed for existing plugin.');
+  assert.equal(
+    registry.getPluginMetrics(pluginId).hooks.activate.calls,
+    0,
+    'Plugin metrics reset should clear hook counters while keeping plugin active.'
   );
 }
 

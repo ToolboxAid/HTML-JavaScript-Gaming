@@ -1,4 +1,4 @@
-[ ] Errors detected
-[ ] Recovery works
-[ ] System stable
+[ ] Metrics captured
+[ ] Reporting works
+[ ] No regression
 [ ] Roadmap updated

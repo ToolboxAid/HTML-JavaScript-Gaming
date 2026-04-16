@@ -19,6 +19,12 @@ function normalizePluginId(pluginId) {
 }
 
 function toErrorDetails(error) {
+  if (error && typeof error === 'object' && typeof error.message === 'string') {
+    return {
+      name: String(error.name || 'Error'),
+      message: String(error.message || 'Unknown plugin error'),
+    };
+  }
   if (error instanceof Error) {
     return {
       name: String(error.name || 'Error'),
@@ -58,6 +64,63 @@ function createReadonlyFacade(target, allowedMethods = []) {
     facade[methodName] = (...args) => method(...args);
   }
   return Object.freeze(facade);
+}
+
+function getNowMs() {
+  if (typeof globalThis?.performance?.now === 'function') {
+    return Number(globalThis.performance.now());
+  }
+  return Date.now();
+}
+
+function createHookMetrics() {
+  return {
+    calls: 0,
+    successes: 0,
+    failures: 0,
+    totalDurationMs: 0,
+    lastDurationMs: 0,
+    lastStartedAtIso: '',
+    lastFinishedAtIso: '',
+    lastErrorMessage: '',
+  };
+}
+
+function createPluginMetrics() {
+  return {
+    hooks: {
+      init: createHookMetrics(),
+      activate: createHookMetrics(),
+      deactivate: createHookMetrics(),
+      destroy: createHookMetrics(),
+    },
+    transitions: {
+      attempted: 0,
+      succeeded: 0,
+      failed: 0,
+    },
+    isolation: {
+      count: 0,
+      lastPhase: '',
+      lastErrorMessage: '',
+      lastIsolatedAtIso: '',
+    },
+    recoveries: {
+      count: 0,
+      lastRecoveredAtIso: '',
+    },
+    registration: {
+      count: 0,
+      lastRegisteredAtIso: '',
+      lastExtensionId: '',
+    },
+    lastState: '',
+    lastStateChangedAtIso: '',
+  };
+}
+
+function snapshotPluginMetrics(metrics) {
+  return deepFreezeValue(JSON.parse(JSON.stringify(metrics || createPluginMetrics())));
 }
 
 function normalizePluginDefinition(plugin) {
@@ -137,6 +200,10 @@ export default function createPhase19OverlayPluginRegistry({
       'getPlugin',
       'getPluginState',
       'getPluginExtensionId',
+      'getPluginMetrics',
+      'listPluginMetrics',
+      'getPluginDiagnostics',
+      'listPluginDiagnostics',
       'listPlugins',
     ]);
   }
@@ -243,12 +310,37 @@ export default function createPhase19OverlayPluginRegistry({
       record.stateBeforeFailure = record.state;
       record.state = PLUGIN_STATES.FAILED;
     }
+    if (record.metrics) {
+      record.metrics.isolation.count += 1;
+      record.metrics.isolation.lastPhase = failureSnapshot.phase;
+      record.metrics.isolation.lastErrorMessage = failureSnapshot.message;
+      record.metrics.isolation.lastIsolatedAtIso = failureSnapshot.timestampIso;
+      record.metrics.transitions.failed += 1;
+      record.metrics.lastState = record.state;
+      record.metrics.lastStateChangedAtIso = failureSnapshot.timestampIso;
+    }
     return true;
   }
 
   function runLifecycleHook(record, phase, context = {}) {
+    const bucket = record?.metrics?.hooks?.[phase] || null;
     const hook = record?.plugin?.[phase];
+    const startedAtMs = getNowMs();
+    const startedAtIso = new Date().toISOString();
+    if (bucket) {
+      bucket.calls += 1;
+      bucket.lastStartedAtIso = startedAtIso;
+    }
     if (typeof hook !== 'function') {
+      const finishedAtMs = getNowMs();
+      const durationMs = Math.max(0, finishedAtMs - startedAtMs);
+      if (bucket) {
+        bucket.successes += 1;
+        bucket.totalDurationMs += durationMs;
+        bucket.lastDurationMs = durationMs;
+        bucket.lastFinishedAtIso = new Date().toISOString();
+        bucket.lastErrorMessage = '';
+      }
       return { ok: true };
     }
     try {
@@ -264,12 +356,31 @@ export default function createPhase19OverlayPluginRegistry({
       });
       try {
         hook(lifecycleContext);
+        const finishedAtMs = getNowMs();
+        const durationMs = Math.max(0, finishedAtMs - startedAtMs);
+        if (bucket) {
+          bucket.successes += 1;
+          bucket.totalDurationMs += durationMs;
+          bucket.lastDurationMs = durationMs;
+          bucket.lastFinishedAtIso = new Date().toISOString();
+          bucket.lastErrorMessage = '';
+        }
         return { ok: true };
       } finally {
         activeHookPluginId = previousHookPluginId;
       }
     } catch (error) {
-      return { ok: false, error: toErrorDetails(error) };
+      const errorDetails = toErrorDetails(error);
+      const finishedAtMs = getNowMs();
+      const durationMs = Math.max(0, finishedAtMs - startedAtMs);
+      if (bucket) {
+        bucket.failures += 1;
+        bucket.totalDurationMs += durationMs;
+        bucket.lastDurationMs = durationMs;
+        bucket.lastFinishedAtIso = new Date().toISOString();
+        bucket.lastErrorMessage = errorDetails.message;
+      }
+      return { ok: false, error: errorDetails };
     }
   }
 
@@ -280,6 +391,9 @@ export default function createPhase19OverlayPluginRegistry({
     const record = getPluginRecord(pluginId);
     if (!record) {
       return false;
+    }
+    if (record.metrics) {
+      record.metrics.transitions.attempted += 1;
     }
     return withPluginTransition(record.plugin.id, () => {
       if (record.state === PLUGIN_STATES.INITIALIZED || record.state === PLUGIN_STATES.ACTIVE || record.state === PLUGIN_STATES.INACTIVE) {
@@ -297,6 +411,11 @@ export default function createPhase19OverlayPluginRegistry({
         return false;
       }
       record.state = PLUGIN_STATES.INITIALIZED;
+      if (record.metrics) {
+        record.metrics.transitions.succeeded += 1;
+        record.metrics.lastState = record.state;
+        record.metrics.lastStateChangedAtIso = new Date().toISOString();
+      }
       return true;
     });
   }
@@ -309,11 +428,20 @@ export default function createPhase19OverlayPluginRegistry({
     if (!record) {
       return false;
     }
+    if (record.metrics) {
+      record.metrics.transitions.attempted += 1;
+    }
     return withPluginTransition(record.plugin.id, () => {
       if (record.state === PLUGIN_STATES.ACTIVE) {
+        if (record.metrics) {
+          record.metrics.transitions.failed += 1;
+        }
         return false;
       }
       if (record.state === PLUGIN_STATES.FAILED) {
+        if (record.metrics) {
+          record.metrics.transitions.failed += 1;
+        }
         return false;
       }
       if (record.state === PLUGIN_STATES.REGISTERED) {
@@ -322,9 +450,15 @@ export default function createPhase19OverlayPluginRegistry({
         }
       }
       if (record.state !== PLUGIN_STATES.INITIALIZED && record.state !== PLUGIN_STATES.INACTIVE) {
+        if (record.metrics) {
+          record.metrics.transitions.failed += 1;
+        }
         return false;
       }
       if (!validateExtensionOwnership(record.extension.id, record.plugin.id)) {
+        if (record.metrics) {
+          record.metrics.transitions.failed += 1;
+        }
         return false;
       }
 
@@ -347,6 +481,11 @@ export default function createPhase19OverlayPluginRegistry({
       }
 
       record.state = PLUGIN_STATES.ACTIVE;
+      if (record.metrics) {
+        record.metrics.transitions.succeeded += 1;
+        record.metrics.lastState = record.state;
+        record.metrics.lastStateChangedAtIso = new Date().toISOString();
+      }
       return true;
     });
   }
@@ -359,8 +498,14 @@ export default function createPhase19OverlayPluginRegistry({
     if (!record) {
       return false;
     }
+    if (record.metrics) {
+      record.metrics.transitions.attempted += 1;
+    }
     return withPluginTransition(record.plugin.id, () => {
       if (record.state !== PLUGIN_STATES.ACTIVE) {
+        if (record.metrics) {
+          record.metrics.transitions.failed += 1;
+        }
         return false;
       }
       const deactivateResult = runLifecycleHook(record, 'deactivate', context);
@@ -374,6 +519,11 @@ export default function createPhase19OverlayPluginRegistry({
 
       expansionFramework.unregisterExtension(record.extension.id);
       record.state = PLUGIN_STATES.INACTIVE;
+      if (record.metrics) {
+        record.metrics.transitions.succeeded += 1;
+        record.metrics.lastState = record.state;
+        record.metrics.lastStateChangedAtIso = new Date().toISOString();
+      }
       return true;
     });
   }
@@ -386,6 +536,9 @@ export default function createPhase19OverlayPluginRegistry({
     const record = getPluginRecord(normalizedPluginId);
     if (!record) {
       return false;
+    }
+    if (record.metrics) {
+      record.metrics.transitions.attempted += 1;
     }
     return withPluginTransition(record.plugin.id, () => {
       if (record.state === PLUGIN_STATES.ACTIVE) {
@@ -405,6 +558,11 @@ export default function createPhase19OverlayPluginRegistry({
       expansionFramework.unregisterExtension(record.extension.id);
       extensionOwnerMap.delete(record.extension.id);
       pluginRecordMap.delete(normalizedPluginId);
+      if (record.metrics) {
+        record.metrics.transitions.succeeded += 1;
+        record.metrics.lastState = 'destroyed';
+        record.metrics.lastStateChangedAtIso = new Date().toISOString();
+      }
       return true;
     });
   }
@@ -448,9 +606,15 @@ export default function createPhase19OverlayPluginRegistry({
       failureCount: 0,
       lastFailure: null,
       failureHistory: [],
+      metrics: createPluginMetrics(),
     };
     pluginRecordMap.set(pluginId, record);
     extensionOwnerMap.set(resolvedExtension.id, pluginId);
+    record.metrics.registration.count += 1;
+    record.metrics.registration.lastRegisteredAtIso = new Date().toISOString();
+    record.metrics.registration.lastExtensionId = resolvedExtension.id;
+    record.metrics.lastState = record.state;
+    record.metrics.lastStateChangedAtIso = new Date().toISOString();
 
     if (autoActivate) {
       if (!activatePlugin(pluginId, context)) {
@@ -478,6 +642,9 @@ export default function createPhase19OverlayPluginRegistry({
     if (!record || record.state !== PLUGIN_STATES.FAILED) {
       return false;
     }
+    if (record.metrics) {
+      record.metrics.transitions.attempted += 1;
+    }
     return withPluginTransition(record.plugin.id, () => {
       const recoveryState = getRecoveryTargetState(record);
       try {
@@ -489,10 +656,21 @@ export default function createPhase19OverlayPluginRegistry({
       record.stateBeforeFailure = '';
       record.lastFailure = null;
       record.failureHistory = [];
+      if (record.metrics) {
+        record.metrics.recoveries.count += 1;
+        record.metrics.recoveries.lastRecoveredAtIso = new Date().toISOString();
+        record.metrics.transitions.succeeded += 1;
+        record.metrics.lastState = record.state;
+        record.metrics.lastStateChangedAtIso = new Date().toISOString();
+      }
       if (!activate) {
         return true;
       }
-      return activatePlugin(pluginId, { ...context, reason: context?.reason || 'recover-activate' });
+      const activated = activatePlugin(pluginId, { ...context, reason: context?.reason || 'recover-activate' });
+      if (!activated && record.metrics) {
+        record.metrics.transitions.failed += 1;
+      }
+      return activated;
     });
   }
 
@@ -517,6 +695,72 @@ export default function createPhase19OverlayPluginRegistry({
       return null;
     }
     return record.lastFailure;
+  }
+
+  function getPluginMetrics(pluginId) {
+    const record = getPluginRecord(pluginId);
+    if (!record || !record.metrics) {
+      return null;
+    }
+    return snapshotPluginMetrics(record.metrics);
+  }
+
+  function listPluginMetrics() {
+    const metrics = [];
+    for (const [pluginId, record] of pluginRecordMap.entries()) {
+      metrics.push({
+        pluginId,
+        extensionId: record.extension.id,
+        state: record.state,
+        metrics: snapshotPluginMetrics(record.metrics),
+      });
+    }
+    return Object.freeze(metrics);
+  }
+
+  function getPluginDiagnostics(pluginId) {
+    const record = getPluginRecord(pluginId);
+    if (!record) {
+      return null;
+    }
+    return deepFreezeValue({
+      pluginId: record.plugin.id,
+      version: record.plugin.version,
+      extensionId: record.extension.id,
+      state: record.state,
+      failureCount: record.failureCount,
+      lastFailure: record.lastFailure,
+      metrics: snapshotPluginMetrics(record.metrics),
+    });
+  }
+
+  function listPluginDiagnostics() {
+    const diagnostics = [];
+    for (const [pluginId] of pluginRecordMap.entries()) {
+      const snapshot = getPluginDiagnostics(pluginId);
+      if (!snapshot) {
+        continue;
+      }
+      diagnostics.push(snapshot);
+    }
+    return Object.freeze(diagnostics);
+  }
+
+  function resetPluginMetrics(pluginId) {
+    const record = getPluginRecord(pluginId);
+    if (!record) {
+      return false;
+    }
+    const registrationCount = record.metrics?.registration?.count || 0;
+    const lastRegisteredAtIso = record.metrics?.registration?.lastRegisteredAtIso || '';
+    const lastExtensionId = record.metrics?.registration?.lastExtensionId || record.extension.id;
+    record.metrics = createPluginMetrics();
+    record.metrics.registration.count = registrationCount;
+    record.metrics.registration.lastRegisteredAtIso = lastRegisteredAtIso;
+    record.metrics.registration.lastExtensionId = lastExtensionId;
+    record.metrics.lastState = record.state;
+    record.metrics.lastStateChangedAtIso = new Date().toISOString();
+    return true;
   }
 
   function listPluginFailures() {
@@ -555,6 +799,8 @@ export default function createPhase19OverlayPluginRegistry({
         extensionId: record.extension.id,
         state: record.state,
         failureCount: record.failureCount,
+        transitionAttempts: record.metrics?.transitions?.attempted || 0,
+        transitionFailures: record.metrics?.transitions?.failed || 0,
       });
     }
     return Object.freeze(entries);
@@ -572,6 +818,11 @@ export default function createPhase19OverlayPluginRegistry({
     getPluginState,
     getPluginExtensionId,
     getPluginFailure,
+    getPluginMetrics,
+    listPluginMetrics,
+    getPluginDiagnostics,
+    listPluginDiagnostics,
+    resetPluginMetrics,
     listPluginFailures,
     clearPluginFailure,
     listPlugins,

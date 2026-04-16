@@ -1,21 +1,21 @@
-# BUILD_PR_LEVEL_20_5_OVERLAY_PLUGIN_ERROR_HANDLING_AND_RECOVERY
+# BUILD_PR_LEVEL_20_6_OVERLAY_PLUGIN_PERFORMANCE_MONITORING
 
 ## Purpose
-Add robust error handling and recovery for overlay plugins.
+Introduce performance monitoring for overlay plugins.
 
 ## Roadmap Improvement
-Improves reliability and resilience of plugin system.
+Provides visibility into plugin performance and impact.
 
 ## Scope
-- Detect plugin errors
-- Recover without crashing system
-- Isolate faulty plugin
+- Track plugin execution time
+- Identify slow or heavy plugins
+- Provide basic diagnostics
 
 ## Test Steps
-1. Trigger plugin error
-2. Verify recovery
-3. Confirm system stability
+1. Run plugins
+2. Monitor performance metrics
+3. Validate reporting
 
 ## Expected
-- Errors handled gracefully
-- System remains stable
+- Performance metrics available
+- No performance regression
