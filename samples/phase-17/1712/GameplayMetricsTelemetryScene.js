@@ -7,6 +7,7 @@ GameplayMetricsTelemetryScene.js
 import { createBottomRightDebugPanelStack, drawStackedDebugPanel } from '/src/engine/debug/index.js';
 import RealGameplayMiniGameScene from '/samples/phase-17/1708/RealGameplayMiniGameScene.js';
 import { getRequiredLevel17OverlayStackConfig } from '/samples/phase-17/shared/overlayStackBySampleConfig.js';
+import { getTabDebugOverlayTelemetrySnapshot } from '/samples/phase-17/shared/tabDebugOverlayCycle.js';
 const OVERLAY_UI_LAYER = 'ui-layer';
 const OVERLAY_MISSION_FEED = 'mission-feed';
 const OVERLAY_MISSION_READY = 'mission-ready';
@@ -56,10 +57,22 @@ export default class GameplayMetricsTelemetryScene extends RealGameplayMiniGameS
       speedHistory: [],
       fpsHistory: [],
       collisionHistory: [],
+      overlay: {
+        activeId: '',
+        activeIndex: 0,
+        stackSize: 0,
+        cycleKey: '',
+        statusLabel: 'none',
+      },
     };
     this.setDebugOverlayCycleKey(DEBUG_OVERLAY_CONFIG.cycleKey);
     this.setDebugOverlayPersistenceKey(DEBUG_OVERLAY_CONFIG.persistenceKey);
     this.setDebugOverlayCycleMap(DEBUG_OVERLAY_CONFIG.overlays, DEBUG_OVERLAY_CONFIG.initialOverlayId || OVERLAY_UI_LAYER);
+    this.refreshOverlayTelemetrySnapshot();
+  }
+
+  refreshOverlayTelemetrySnapshot() {
+    this.telemetry.overlay = getTabDebugOverlayTelemetrySnapshot(this.tabDebugOverlays);
   }
 
   step3DPhysics(dtSeconds, engine) {
@@ -93,6 +106,7 @@ export default class GameplayMetricsTelemetryScene extends RealGameplayMiniGameS
     pushSample(this.telemetry.speedHistory, speed);
     pushSample(this.telemetry.fpsHistory, this.telemetry.avgFps);
     pushSample(this.telemetry.collisionHistory, this.lastCollisionCount);
+    this.refreshOverlayTelemetrySnapshot();
   }
 
   render(renderer) {
@@ -113,8 +127,8 @@ export default class GameplayMetricsTelemetryScene extends RealGameplayMiniGameS
       `maxSpeed=${this.telemetry.maxPlayerSpeed.toFixed(2)}`,
       `objects=${objectCount} coresRemaining=${remainingCores}`,
       `collisions=${this.telemetry.collisionsTotal}`,
-      `actions=${this.telemetry.actionEvents}`,
-      `stateTransitions=${this.telemetry.stateTransitions}`,
+      `actions=${this.telemetry.actionEvents} transitions=${this.telemetry.stateTransitions}`,
+      `overlay=${this.telemetry.overlay.statusLabel} key=${this.telemetry.overlay.cycleKey}`,
     ]);
 
     drawTelemetrySparkline(

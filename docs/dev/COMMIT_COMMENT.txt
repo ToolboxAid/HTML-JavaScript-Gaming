@@ -1,2 +1,2 @@
-Level 18.7 overlay integration with mission system.
-Enable Mission Feed overlay to reflect live mission state.
+Level 18.8 overlay integration with telemetry system.
+Enable Telemetry Overlay to reflect live system metrics.

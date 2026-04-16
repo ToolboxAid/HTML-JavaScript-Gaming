@@ -1,4 +1,4 @@
-[ ] Mission Feed updates with state
+[ ] Telemetry Overlay updates with data
 [ ] Overlay cycle unaffected
 [ ] No regression in other overlays
-[ ] Stable behavior
+[ ] Stable performance

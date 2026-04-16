@@ -105,6 +105,8 @@ function assertTelemetryOverlayAndCounters() {
   scene.step3DPhysics(0.2, { input: makeInput(['KeyD']) });
   assert.equal(scene.telemetry.playerSpeed > 0, true, 'Telemetry should report positive player speed after movement.');
   assert.equal(scene.telemetry.avgFps > 0, true, 'Telemetry should report FPS.');
+  assert.equal(scene.telemetry.overlay.stackSize, 4, 'Telemetry should include overlay stack telemetry details.');
+  assert.equal(scene.telemetry.overlay.activeId, 'ui-layer', 'Telemetry should report active overlay id in real time.');
 
   const firstCore = scene.cores.find((core) => core.collected === false);
   positionPlayerOnCore(scene, firstCore);
@@ -126,6 +128,7 @@ function assertTelemetryOverlayAndCounters() {
   assert.equal(renderer.texts.some((text) => text.includes('Telemetry Overlay')), false, 'Telemetry panel should not render by default.');
 
   pressOverlayCycle(scene);
+  assert.equal(scene.telemetry.overlay.activeId, 'mission-feed', 'Telemetry should update active overlay id after overlay cycling.');
   const missionFeedRenderer = createRendererProbe();
   scene.render(missionFeedRenderer);
   assert.equal(missionFeedRenderer.texts.some((text) => text.includes('Mission Feed')), true, 'First G press should cycle to Mission Feed.');
@@ -140,6 +143,7 @@ function assertTelemetryOverlayAndCounters() {
   scene.render(telemetryRenderer);
   assert.equal(telemetryRenderer.texts.some((text) => text.includes('Telemetry Overlay')), true, 'Third G press should cycle to Telemetry Overlay.');
   assert.equal(telemetryRenderer.texts.some((text) => text.includes('playerSpeed=')), true, 'Telemetry overlay should render player-speed metrics.');
+  assert.equal(telemetryRenderer.texts.some((text) => text.includes('overlay=Telemetry Overlay')), true, 'Telemetry overlay should render live overlay telemetry state.');
   assert.equal(telemetryRenderer.texts.some((text) => text.includes('UI Layer')), false, 'Only one debug overlay should be visible at a time.');
 }
 

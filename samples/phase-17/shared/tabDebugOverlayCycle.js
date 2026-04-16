@@ -323,6 +323,28 @@ export function getTabDebugOverlayStatusLabel(controller) {
   return `${active.label} (${index + 1}/${controller.overlays.length})`;
 }
 
+export function getTabDebugOverlayTelemetrySnapshot(controller) {
+  if (!controller || !Array.isArray(controller.overlays) || controller.overlays.length === 0) {
+    return {
+      activeId: '',
+      activeIndex: 0,
+      stackSize: 0,
+      cycleKey: String(controller?.cycleKey || ''),
+      statusLabel: 'none',
+    };
+  }
+
+  const activeIndex = normalizeActiveIndex(controller);
+  const activeEntry = controller.overlays[activeIndex] || null;
+  return {
+    activeId: activeEntry?.id || '',
+    activeIndex,
+    stackSize: controller.overlays.length,
+    cycleKey: String(controller.cycleKey || ''),
+    statusLabel: getTabDebugOverlayStatusLabel(controller),
+  };
+}
+
 export function resetTabDebugOverlayPersistenceForTests() {
   for (const key of overlayPersistenceKeys.values()) {
     if (typeof localStorage !== 'undefined') {
