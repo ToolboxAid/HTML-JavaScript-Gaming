@@ -1,4 +1,8 @@
-- [ ] all samples present (1707–1712)
-- [ ] index updated
-- [ ] samples run independently
+- [ ] Sample 1713 exists and launches from samples/index.html
+- [ ] player movement works
+- [ ] camera follow works
+- [ ] hazard/enemy/obstacle interaction works
+- [ ] score or objective loop works
+- [ ] restart/reset path works
 - [ ] no console errors
+- [ ] samples 1707-1712 remain intact

@@ -1,3 +1,3 @@
 MODEL: GPT-5.3-codex
 REASONING: high
-COMMAND: Use provided 1707-1712.zip as source. Separate and map folders into correct sample structure (1707-1712), fix numbering, update samples/index.html, and package to <project folder>/tmp/BUILD_PR_LEVEL_17_44_SAMPLE_SEQUENCE_REPAIR_1707_1712.zip
+COMMAND: Implement Sample 1713 as the final reference game using existing engine/sample systems only. Register it in samples/index.html after the repaired 1707-1712 sequence, preserve existing work, keep logic bounded unless truly shared, and package the repo-structured result to <project folder>/tmp/BUILD_PR_LEVEL_17_45_SAMPLE_1713_FINAL_REFERENCE_GAME.zip

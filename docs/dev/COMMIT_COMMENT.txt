@@ -1,3 +1,3 @@
-Repair sample sequence 1707-1712 using provided folders as source of truth, enforcing correct structure and index alignment.
+Implement Sample 1713 as the final reference gameplay sample for the repaired Level 17 sequence, with a complete playable loop, HUD, camera follow, and index integration.
 
-PR: BUILD_PR_LEVEL_17_44_SAMPLE_SEQUENCE_REPAIR_1707_1712
+PR: BUILD_PR_LEVEL_17_45_SAMPLE_1713_FINAL_REFERENCE_GAME
