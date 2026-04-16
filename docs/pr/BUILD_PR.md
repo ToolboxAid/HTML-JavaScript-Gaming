@@ -1,30 +1,31 @@
-# BUILD_PR_LEVEL_19_1_OVERLAY_SYSTEM_EXPANSION_FRAMEWORK
+# BUILD_PR_LEVEL_19_2_GAMEPLAY_OVERLAY_INTEGRATION
 
 ## PLAN
 
 ### Purpose
-Establish a framework for expanding the overlay system beyond debug use into reusable gameplay and tool overlays.
+Integrate overlay system into gameplay layer so overlays can be used during active gameplay, not just debug/testing.
 
 ### Goals
-- Define extension points for new overlays
-- Ensure compatibility with existing config-driven system
-- Maintain strict separation between debug and gameplay overlays
+- Enable overlays in gameplay runtime
+- Maintain separation from debug overlays
+- Ensure no gameplay interference
 
 ---
 
 ## BUILD
 
 ### Scope
-- Define overlay extension interface/contracts
-- Document integration pattern for new overlays
-- Ensure existing overlays conform to framework
-- No behavior change
+- Hook overlay system into gameplay runtime
+- Allow gameplay-safe overlays
+- Ensure overlays do not block input or rendering
+- No change to debug overlays
 
 ### Test Steps
-1. Validate existing overlays still load
-2. Confirm extension points available
-3. Verify no regression
+1. Run gameplay sample
+2. Enable overlays
+3. Verify gameplay unaffected
+4. Cycle overlays
 
 ### Expected
-- Overlay system ready for expansion
-- No impact to existing behavior
+- Overlays work during gameplay
+- No input or render conflicts

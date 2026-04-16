@@ -2,9 +2,9 @@ MODEL: GPT-5.4-codex
 REASONING: medium
 
 COMMAND:
-Implement overlay expansion framework:
-- Define extension interfaces/contracts
-- Ensure compatibility with config-driven overlays
-- Do not change existing behavior
+Integrate overlay system into gameplay runtime:
+- Allow overlays to run during gameplay
+- Ensure no interference with controls/rendering
+- Preserve debug overlay behavior
 
 Package ZIP to <project folder>/tmp/

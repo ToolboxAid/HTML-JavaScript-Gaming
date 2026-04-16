@@ -99,7 +99,7 @@ Commit Comment:
 - Always proceed to the next logical step
 
 ### NO COMMIT-ONLY PRs
-- PRs must include something testable
+- PRs must include something testable and improve the Roadmap
 - If a PR is doc-only, bundle with next smallest executable/testable change
 
 ### ZIP IS ALWAYS REQUIRED

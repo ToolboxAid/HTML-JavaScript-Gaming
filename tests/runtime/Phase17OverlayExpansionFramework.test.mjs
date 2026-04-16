@@ -30,6 +30,8 @@ function assertLevel17ContractsMatchControllerConfigs() {
     const resolved = getOverlayControllerConfigFromContract(contract);
     assert.deepEqual(resolved, config, `Overlay controller config for sample ${key} should be derived from extension contract.`);
     assert.equal(contract.cycleKey, LEVEL17_OVERLAY_CYCLE_KEY, `Overlay contract for sample ${key} should use shared cycle key.`);
+    assert.equal(Array.isArray(contract.runtimeExtensions), true, `Overlay contract for sample ${key} should expose runtime extension hooks.`);
+    assert.equal(Array.isArray(config.runtimeExtensions), true, `Overlay config for sample ${key} should expose runtime extension hooks.`);
   }
 }
 
@@ -45,6 +47,15 @@ function assertContractNormalizationForExpansionPath() {
     cycleKey: 'KeyG',
     persistenceKey: 'phaseX:future:overlay-index',
     channel: 'gameplay',
+    runtimeExtensions: [
+      {
+        overlayId: 'runtime',
+        onStep() {},
+      },
+      {
+        overlayId: 'runtime',
+      },
+    ],
     metadata: { family: 'future-track' },
   });
 
@@ -52,6 +63,7 @@ function assertContractNormalizationForExpansionPath() {
   assert.equal(contract.channel, 'gameplay', 'Contract channel should be preserved.');
   assert.equal(contract.overlays.length, 2, 'Contract normalization should dedupe duplicate overlay ids.');
   assert.equal(contract.initialOverlayId, 'runtime', 'Missing initial overlay id should fall back to first normalized overlay.');
+  assert.equal(contract.runtimeExtensions.length, 1, 'Runtime extension hooks should normalize invalid entries.');
   assert.equal(contract.metadata.family, 'future-track', 'Contract metadata should be retained.');
 }
 

@@ -38,6 +38,12 @@ import {
   OVERLAY_UI_LAYER,
 } from '/samples/phase-17/shared/miniGameOverlayStack.js';
 import { getRequiredLevel17OverlayStackConfig } from '/samples/phase-17/shared/overlayStackBySampleConfig.js';
+import {
+  createOverlayGameplayRuntime,
+  renderOverlayGameplayRuntime,
+  setOverlayGameplayRuntimeExtensions,
+  stepOverlayGameplayRuntime,
+} from '/samples/phase-17/shared/overlayGameplayRuntime.js';
 
 const theme = new Theme(ThemeTokens);
 
@@ -105,6 +111,9 @@ export default class RealGameplayMiniGameScene extends Scene {
     setTabDebugOverlayCycleKey(this.tabDebugOverlays, DEBUG_OVERLAY_CONFIG.cycleKey || MINI_GAME_DEBUG_CYCLE_KEY);
     setTabDebugOverlayPersistenceKey(this.tabDebugOverlays, DEBUG_OVERLAY_CONFIG.persistenceKey);
     this.setDebugOverlayCycleMap(DEBUG_OVERLAY_CONFIG.overlays, DEBUG_OVERLAY_CONFIG.initialOverlayId);
+    this.overlayGameplayRuntime = createOverlayGameplayRuntime({
+      runtimeExtensions: DEBUG_OVERLAY_CONFIG.runtimeExtensions,
+    });
   }
 
   addEvent(text) {
@@ -200,6 +209,10 @@ export default class RealGameplayMiniGameScene extends Scene {
 
   setDebugOverlayPersistenceKey(persistenceKey) {
     setTabDebugOverlayPersistenceKey(this.tabDebugOverlays, persistenceKey);
+  }
+
+  setOverlayGameplayRuntimeExtensions(runtimeExtensions) {
+    return setOverlayGameplayRuntimeExtensions(this.overlayGameplayRuntime, runtimeExtensions);
   }
 
   isDebugOverlayActive(overlayId) {
@@ -473,6 +486,14 @@ export default class RealGameplayMiniGameScene extends Scene {
     this.lastCollisionCount = this.debugCollisionRows.length;
     this.updateFeedback(dt);
     this.refreshMissionFeedState();
+    stepOverlayGameplayRuntime(this.overlayGameplayRuntime, {
+      scene: this,
+      engine,
+      input,
+      dtSeconds: dt,
+      gameState: this.gameState,
+      activeOverlayId: this.getActiveDebugOverlayId(),
+    });
     this.syncCamera();
   }
 
@@ -621,5 +642,11 @@ export default class RealGameplayMiniGameScene extends Scene {
         `Camera mode: ${this.viewState.cameraMode}`,
       ]);
     }
+    renderOverlayGameplayRuntime(this.overlayGameplayRuntime, {
+      scene: this,
+      renderer,
+      gameState: this.gameState,
+      activeOverlayId,
+    });
   }
 }

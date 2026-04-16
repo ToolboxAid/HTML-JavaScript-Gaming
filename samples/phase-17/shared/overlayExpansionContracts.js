@@ -45,6 +45,41 @@ function resolveInitialOverlayId(overlays, initialOverlayId) {
   return exists ? requestedId : overlays[0].id;
 }
 
+function normalizeRuntimeExtensionEntry(entry) {
+  if (!entry || typeof entry !== 'object') {
+    return null;
+  }
+
+  const overlayId = String(entry.overlayId || '').trim();
+  const onStep = typeof entry.onStep === 'function' ? entry.onStep : null;
+  const onRender = typeof entry.onRender === 'function' ? entry.onRender : null;
+  if (!onStep && !onRender) {
+    return null;
+  }
+
+  return Object.freeze({
+    overlayId,
+    onStep,
+    onRender,
+  });
+}
+
+function normalizeRuntimeExtensions(runtimeExtensions) {
+  if (!Array.isArray(runtimeExtensions) || runtimeExtensions.length === 0) {
+    return Object.freeze([]);
+  }
+
+  const normalized = [];
+  for (let i = 0; i < runtimeExtensions.length; i += 1) {
+    const candidate = normalizeRuntimeExtensionEntry(runtimeExtensions[i]);
+    if (!candidate) {
+      continue;
+    }
+    normalized.push(candidate);
+  }
+  return Object.freeze(normalized);
+}
+
 export function defineOverlayExtensionContract({
   id = '',
   overlays = [],
@@ -52,6 +87,7 @@ export function defineOverlayExtensionContract({
   cycleKey = '',
   persistenceKey = '',
   channel = DEFAULT_CHANNEL,
+  runtimeExtensions = [],
   metadata = {},
 } = {}) {
   const normalizedId = String(id || '').trim();
@@ -68,6 +104,7 @@ export function defineOverlayExtensionContract({
   const normalizedPersistenceKey = String(persistenceKey || '').trim();
   const normalizedChannel = String(channel || DEFAULT_CHANNEL).trim() || DEFAULT_CHANNEL;
   const normalizedInitialOverlayId = resolveInitialOverlayId(normalizedOverlays, initialOverlayId);
+  const normalizedRuntimeExtensions = normalizeRuntimeExtensions(runtimeExtensions);
 
   return Object.freeze({
     id: normalizedId,
@@ -76,6 +113,7 @@ export function defineOverlayExtensionContract({
     initialOverlayId: normalizedInitialOverlayId,
     cycleKey: normalizedCycleKey,
     persistenceKey: normalizedPersistenceKey,
+    runtimeExtensions: normalizedRuntimeExtensions,
     metadata: Object.freeze({ ...(metadata || {}) }),
   });
 }
@@ -105,5 +143,6 @@ export function getOverlayControllerConfigFromContract(contract) {
     initialOverlayId: contract.initialOverlayId,
     cycleKey: contract.cycleKey,
     persistenceKey: contract.persistenceKey,
+    runtimeExtensions: contract.runtimeExtensions,
   });
 }
