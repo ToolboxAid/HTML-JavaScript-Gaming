@@ -1,5 +1,5 @@
-Add contextual input mapping for overlays.
+Add adaptive UI behavior to overlay system.
 
 PR Details:
-- Enables input behavior based on active overlay context
-- Integrates with existing input systems
+- Introduces runtime adaptive UI rules
+- Enhances responsiveness of overlays

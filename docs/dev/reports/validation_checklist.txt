@@ -1,4 +1,4 @@
-[ ] Context switching updates input behavior
-[ ] No conflicts across overlays
-[ ] Gesture + keybind compatibility maintained
+[ ] UI adapts to gameplay state
+[ ] No layout conflicts
+[ ] Stable rendering
 [ ] Roadmap updated

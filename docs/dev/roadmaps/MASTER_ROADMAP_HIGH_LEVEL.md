@@ -637,6 +637,7 @@
 - [x] Level 21 advanced overlay interactions implemented (click/drag/resize) with gameplay-safe explicit interaction mode
 - [x] Level 22 gesture abstraction added for overlays (tap/hold/swipe mapped to runtime actions with explicit gameplay-safe gating)
 - [x] Level 22 contextual input mapping added (active overlay/layer stack-aware resolution across keybind and gesture actions)
+- [x] Level 22 adaptive overlay UI rules added (visibility/size/emphasis responsive to gameplay state, overlay context, and telemetry)
 
 ### Sample Phase Tracks
 - [x] 3D phase normalized

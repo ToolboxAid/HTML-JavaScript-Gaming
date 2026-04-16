@@ -1,21 +1,21 @@
-# BUILD_PR_LEVEL_22_3_OVERLAY_CONTEXTUAL_INPUT_MAPPING
+# BUILD_PR_LEVEL_22_4_OVERLAY_ADAPTIVE_UI_BEHAVIOR
 
 ## Purpose
-Introduce context-aware input mapping for overlays based on runtime state.
+Enable overlays to adapt their UI behavior dynamically based on runtime conditions.
 
 ## Roadmap Improvement
-Advances Level 22 by aligning input behavior with active overlay context.
+Extends Level 22 into adaptive UI systems layered on contextual input.
 
 ## Scope
-- Map inputs based on overlay stack/context
-- Support priority-based input resolution
-- Integrate with existing gesture and keybind systems
+- Define adaptive UI rules (visibility, size, emphasis)
+- React to gameplay state, overlay stack, and telemetry
+- Avoid conflicts with layout constraints and safe zones
 
 ## Test Steps
-1. Activate different overlay contexts
-2. Verify input behavior changes correctly
-3. Ensure no cross-context leakage
+1. Trigger different gameplay states
+2. Verify UI adapts (size/visibility/emphasis)
+3. Confirm no layout violations
 
 ## Expected
-- Context-driven input behavior
-- Stable and predictable mapping
+- UI responds dynamically to context
+- No overlap or instability

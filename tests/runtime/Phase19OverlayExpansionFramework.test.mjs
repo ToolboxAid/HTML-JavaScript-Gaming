@@ -18,6 +18,7 @@ import {
   getOverlayGameplayRuntimeInteractionSnapshot,
   renderOverlayGameplayRuntime,
   resolveOverlayGameplayRuntimeInputAction,
+  setOverlayGameplayRuntimeAdaptiveUiRules,
   setOverlayGameplayRuntimeContextInputMap,
   stepOverlayGameplayRuntimeGestures,
   stepOverlayGameplayRuntimePointerInteractions,
@@ -41,6 +42,10 @@ function createRendererProbe(width = 960, height = 540) {
     drawPolygon() {},
     drawImageFrame() {},
   };
+}
+
+function rectsOverlap(a, b) {
+  return a.x < b.x + b.width && a.x + a.width > b.x && a.y < b.y + b.height && a.y + a.height > b.y;
 }
 
 function makeInput(keys = []) {
@@ -751,6 +756,99 @@ function assertContextualInputMappingUsesOverlayContextAndStack() {
   assert.equal(runtime.interactionIndex, 1, 'Top-stack contextual mapping should apply to gesture-triggered cycle actions.');
 }
 
+function assertAdaptiveOverlayUiRulesReactToGameplayTelemetryAndContext() {
+  const framework = createPhase19OverlayExpansionFramework();
+  framework.registerExtension(definePhase19OverlayExtension({
+    id: 'phase19-overlay-adaptive-ui',
+    overlays: [
+      { id: 'runtime', label: 'Runtime' },
+    ],
+    initialOverlayId: 'runtime',
+    runtimeExtensions: [
+      { overlayId: 'runtime', compose: true, layerOrder: 10, visualPriority: 10, panelWidth: 220, panelHeight: 96, onRender() {} },
+      { overlayId: 'runtime', compose: true, layerOrder: 20, visualPriority: 20, panelWidth: 220, panelHeight: 96, onRender() {} },
+      { overlayId: 'runtime', compose: true, layerOrder: 30, visualPriority: 30, panelWidth: 220, panelHeight: 96, onRender() {} },
+    ],
+  }));
+
+  const runtime = framework.createRuntimeForExtension('phase19-overlay-adaptive-ui');
+  runtime.interactionIndex = 2;
+  setOverlayGameplayRuntimeAdaptiveUiRules(runtime, [
+    {
+      id: 'hide-base-when-top-active',
+      priority: 10,
+      when: {
+        activeOverlayId: 'runtime',
+        stackPosition: 'base',
+      },
+      apply: {
+        visible: false,
+      },
+    },
+    {
+      id: 'degrade-size-emphasis-under-low-fps',
+      priority: 20,
+      when: {
+        gameplayPhase: 'combat',
+        layerOrder: 20,
+        telemetry: {
+          fps: { max: 45 },
+        },
+      },
+      apply: {
+        sizeScale: 1.5,
+        emphasis: 1.4,
+      },
+    },
+    {
+      id: 'active-top-overlay-emphasis',
+      priority: 30,
+      when: {
+        activeOverlayId: 'runtime',
+        layerOrder: 30,
+        activeStackPosition: 'top',
+      },
+      apply: {
+        panelWidth: 340,
+        panelHeight: 132,
+        emphasis: 1.6,
+      },
+    },
+  ]);
+
+  const safeZone = {
+    x: 620,
+    y: 410,
+    width: 340,
+    height: 120,
+  };
+  const snapshot = getOverlayGameplayRuntimeCompositionSnapshot(runtime, {
+    activeOverlayId: 'runtime',
+    renderer: createRendererProbe(960, 540),
+    gameplayState: { phase: 'combat' },
+    telemetry: { fps: 40 },
+    safeZones: [safeZone],
+  });
+
+  assert.equal(snapshot.length, 2, 'Adaptive visibility rules should hide base overlay while preserving remaining composed layers.');
+  const layerOrders = snapshot.map((entry) => entry.layerOrder);
+  assert.equal(layerOrders.includes(10), false, 'Adaptive visibility rules should hide the base layer when top overlay is active.');
+
+  const runtimeB = snapshot.find((entry) => entry.layerOrder === 20);
+  const runtimeC = snapshot.find((entry) => entry.layerOrder === 30);
+  assert.notEqual(runtimeB, undefined, 'Adaptive snapshot should retain middle overlay layer frame.');
+  assert.notEqual(runtimeC, undefined, 'Adaptive snapshot should retain active top overlay layer frame.');
+  assert.equal(runtimeB.slot.width > 220, true, 'Telemetry-aware adaptive size rule should enlarge runtime-b panel width.');
+  assert.equal(runtimeB.slot.height > 96, true, 'Telemetry-aware adaptive size rule should enlarge runtime-b panel height.');
+  assert.equal(runtimeB.readabilityOpacity > 0.84, true, 'Adaptive emphasis should increase readability opacity for non-active overlay frame.');
+  assert.equal(runtimeC.slot.width, 340, 'Active overlay contextual adaptive rule should set explicit width.');
+  assert.equal(runtimeC.slot.height, 132, 'Active overlay contextual adaptive rule should set explicit height.');
+  assert.equal(runtimeC.adaptiveEmphasis > 1, true, 'Adaptive snapshot should expose emphasis metadata for active overlay frame.');
+
+  assert.equal(rectsOverlap(runtimeB.slot, safeZone), false, 'Adaptive layout should continue respecting safe zones for resized overlays.');
+  assert.equal(rectsOverlap(runtimeC.slot, safeZone), false, 'Adaptive layout should keep active overlay clear of safe zones.');
+}
+
 export function run() {
   assertExpansionRegistrationAndCompatibility();
   assertExtensionLifecycleMutations();
@@ -761,4 +859,5 @@ export function run() {
   assertAdvancedOverlayPointerInteractionsGameplaySafety();
   assertOverlayGestureAbstractionAndCompatibility();
   assertContextualInputMappingUsesOverlayContextAndStack();
+  assertAdaptiveOverlayUiRulesReactToGameplayTelemetryAndContext();
 }

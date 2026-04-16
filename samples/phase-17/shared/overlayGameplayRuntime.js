@@ -305,6 +305,303 @@ function resolveRuntimeExtensionContextBehavior(extension, context = {}) {
   }
 }
 
+function resolveOverlayTelemetryState(context = {}, gameplayState = null) {
+  if (context?.telemetry && typeof context.telemetry === 'object') {
+    return context.telemetry;
+  }
+  if (context?.overlayTelemetry && typeof context.overlayTelemetry === 'object') {
+    return context.overlayTelemetry;
+  }
+  if (gameplayState?.telemetry && typeof gameplayState.telemetry === 'object') {
+    return gameplayState.telemetry;
+  }
+  if (gameplayState?.overlayTelemetry && typeof gameplayState.overlayTelemetry === 'object') {
+    return gameplayState.overlayTelemetry;
+  }
+  if (typeof context?.scene?.getOverlayTelemetryState === 'function') {
+    const telemetry = context.scene.getOverlayTelemetryState();
+    if (telemetry && typeof telemetry === 'object') {
+      return telemetry;
+    }
+  }
+  return null;
+}
+
+function normalizeStringList(input) {
+  if (Array.isArray(input)) {
+    const normalized = [];
+    for (let i = 0; i < input.length; i += 1) {
+      const value = String(input[i] || '').trim();
+      if (!value) {
+        continue;
+      }
+      normalized.push(value);
+    }
+    return Object.freeze(normalized);
+  }
+  const single = String(input || '').trim();
+  return single ? Object.freeze([single]) : Object.freeze([]);
+}
+
+function normalizeNumberList(input) {
+  if (Array.isArray(input)) {
+    const normalized = [];
+    for (let i = 0; i < input.length; i += 1) {
+      const value = Number(input[i]);
+      if (!Number.isFinite(value)) {
+        continue;
+      }
+      normalized.push(value);
+    }
+    return Object.freeze(normalized);
+  }
+  const single = Number(input);
+  return Number.isFinite(single) ? Object.freeze([single]) : Object.freeze([]);
+}
+
+function normalizeTelemetryConstraint(value) {
+  if (typeof value === 'number' && Number.isFinite(value)) {
+    return Object.freeze({
+      min: value,
+      max: value,
+      equals: null,
+    });
+  }
+  if (!value || typeof value !== 'object') {
+    return null;
+  }
+  const min = Number(value.min);
+  const max = Number(value.max);
+  const equals = value.equals;
+  return Object.freeze({
+    min: Number.isFinite(min) ? min : null,
+    max: Number.isFinite(max) ? max : null,
+    equals: equals === undefined ? null : equals,
+  });
+}
+
+function normalizeAdaptiveTelemetryRules(input) {
+  if (!input || typeof input !== 'object') {
+    return Object.freeze({});
+  }
+  const normalized = {};
+  const entries = Object.entries(input);
+  for (let i = 0; i < entries.length; i += 1) {
+    const [key, value] = entries[i];
+    const telemetryKey = String(key || '').trim();
+    if (!telemetryKey) {
+      continue;
+    }
+    const constraint = normalizeTelemetryConstraint(value);
+    if (!constraint) {
+      continue;
+    }
+    normalized[telemetryKey] = constraint;
+  }
+  return Object.freeze(normalized);
+}
+
+function normalizeAdaptiveUiRule(rule, index = 0) {
+  if (!rule || typeof rule !== 'object') {
+    return null;
+  }
+  const when = rule.when && typeof rule.when === 'object' ? rule.when : {};
+  const apply = rule.apply && typeof rule.apply === 'object' ? rule.apply : {};
+  const priority = Number(rule.priority);
+  const sizeScale = Number(apply.sizeScale);
+  const panelWidth = Number(apply.panelWidth ?? apply.width);
+  const panelHeight = Number(apply.panelHeight ?? apply.height);
+  const emphasis = Number(apply.emphasis);
+
+  return Object.freeze({
+    id: String(rule.id || `adaptive-ui-rule-${index + 1}`),
+    priority: Number.isFinite(priority) ? priority : 0,
+    when: Object.freeze({
+      gameplayPhases: normalizeStringList(when.gameplayPhases ?? when.gameplayPhase),
+      activeOverlayIds: normalizeStringList(when.activeOverlayIds ?? when.activeOverlayId),
+      overlayIds: normalizeStringList(when.overlayIds ?? when.overlayId),
+      activeStackPositions: normalizeStringList(when.activeStackPositions ?? when.activeStackPosition),
+      stackPositions: normalizeStringList(when.stackPositions ?? when.stackPosition),
+      activeLayerOrders: normalizeNumberList(when.activeLayerOrders ?? when.activeLayerOrder),
+      layerOrders: normalizeNumberList(when.layerOrders ?? when.layerOrder),
+      telemetry: normalizeAdaptiveTelemetryRules(when.telemetry),
+    }),
+    apply: Object.freeze({
+      visible: apply.visible === true ? true : (apply.visible === false ? false : null),
+      sizeScale: Number.isFinite(sizeScale) && sizeScale > 0 ? sizeScale : null,
+      panelWidth: Number.isFinite(panelWidth) && panelWidth > 0 ? panelWidth : null,
+      panelHeight: Number.isFinite(panelHeight) && panelHeight > 0 ? panelHeight : null,
+      emphasis: Number.isFinite(emphasis) ? Math.max(0.2, Math.min(2, emphasis)) : null,
+    }),
+  });
+}
+
+function normalizeAdaptiveUiRules(rules) {
+  if (!Array.isArray(rules) || rules.length === 0) {
+    return Object.freeze([]);
+  }
+  const normalized = [];
+  for (let i = 0; i < rules.length; i += 1) {
+    const candidate = normalizeAdaptiveUiRule(rules[i], i);
+    if (!candidate) {
+      continue;
+    }
+    normalized.push(candidate);
+  }
+  normalized.sort((left, right) => {
+    if (left.priority !== right.priority) {
+      return left.priority - right.priority;
+    }
+    return 0;
+  });
+  return Object.freeze(normalized);
+}
+
+function matchAdaptiveStringRule(ruleValues, value) {
+  if (!Array.isArray(ruleValues) || ruleValues.length === 0) {
+    return true;
+  }
+  const normalizedValue = String(value || '').trim();
+  if (!normalizedValue) {
+    return false;
+  }
+  return ruleValues.includes(normalizedValue);
+}
+
+function matchAdaptiveNumberRule(ruleValues, value) {
+  if (!Array.isArray(ruleValues) || ruleValues.length === 0) {
+    return true;
+  }
+  const numericValue = Number(value);
+  if (!Number.isFinite(numericValue)) {
+    return false;
+  }
+  return ruleValues.includes(numericValue);
+}
+
+function matchAdaptiveTelemetryRules(ruleTelemetry = {}, telemetry = null) {
+  const keys = Object.keys(ruleTelemetry);
+  if (keys.length === 0) {
+    return true;
+  }
+  if (!telemetry || typeof telemetry !== 'object') {
+    return false;
+  }
+
+  for (let i = 0; i < keys.length; i += 1) {
+    const key = keys[i];
+    const constraint = ruleTelemetry[key];
+    const telemetryValue = telemetry[key];
+    if (constraint?.equals !== null) {
+      if (telemetryValue !== constraint.equals) {
+        return false;
+      }
+      continue;
+    }
+    const numericTelemetryValue = Number(telemetryValue);
+    if (!Number.isFinite(numericTelemetryValue)) {
+      return false;
+    }
+    if (Number.isFinite(constraint?.min) && numericTelemetryValue < constraint.min) {
+      return false;
+    }
+    if (Number.isFinite(constraint?.max) && numericTelemetryValue > constraint.max) {
+      return false;
+    }
+  }
+  return true;
+}
+
+function resolveOverlayStackPosition(rank, count) {
+  if (!Number.isInteger(rank) || rank < 0 || !Number.isInteger(count) || count <= 1) {
+    return 'single';
+  }
+  if (rank <= 0) {
+    return 'base';
+  }
+  if (rank >= count - 1) {
+    return 'top';
+  }
+  return 'middle';
+}
+
+function doesAdaptiveUiRuleMatch(rule, frameContext) {
+  if (!rule || !frameContext) {
+    return false;
+  }
+  const gameplayPhase = String(
+    frameContext?.gameplayState?.phase
+    ?? frameContext?.gameplayState?.gameState
+    ?? ''
+  ).trim();
+  if (!matchAdaptiveStringRule(rule.when.gameplayPhases, gameplayPhase)) {
+    return false;
+  }
+  if (!matchAdaptiveStringRule(rule.when.activeOverlayIds, frameContext.activeOverlayId)) {
+    return false;
+  }
+  if (!matchAdaptiveStringRule(rule.when.overlayIds, frameContext.overlayId)) {
+    return false;
+  }
+  if (!matchAdaptiveStringRule(rule.when.activeStackPositions, frameContext.activeStackPosition)) {
+    return false;
+  }
+  if (!matchAdaptiveStringRule(rule.when.stackPositions, frameContext.stackPosition)) {
+    return false;
+  }
+  if (!matchAdaptiveNumberRule(rule.when.activeLayerOrders, frameContext.activeLayerOrder)) {
+    return false;
+  }
+  if (!matchAdaptiveNumberRule(rule.when.layerOrders, frameContext.layerOrder)) {
+    return false;
+  }
+  return matchAdaptiveTelemetryRules(rule.when.telemetry, frameContext.telemetry);
+}
+
+function resolveAdaptiveUiContextBehavior(runtime, frameContext, baseBehavior) {
+  const rules = Array.isArray(runtime?.interactionAdaptiveUiRules)
+    ? runtime.interactionAdaptiveUiRules
+    : [];
+  const behavior = {
+    visible: baseBehavior?.visible !== false,
+    compose: baseBehavior?.compose === true,
+    panelWidth: Number(baseBehavior?.panelWidth) || 260,
+    panelHeight: Number(baseBehavior?.panelHeight) || 96,
+    emphasis: Number(baseBehavior?.emphasis) || 1,
+  };
+  if (rules.length === 0) {
+    return behavior;
+  }
+
+  for (let i = 0; i < rules.length; i += 1) {
+    const rule = rules[i];
+    if (!doesAdaptiveUiRuleMatch(rule, frameContext)) {
+      continue;
+    }
+    if (rule.apply.visible === true || rule.apply.visible === false) {
+      behavior.visible = rule.apply.visible;
+    }
+    if (Number.isFinite(rule.apply.sizeScale)) {
+      behavior.panelWidth *= rule.apply.sizeScale;
+      behavior.panelHeight *= rule.apply.sizeScale;
+    }
+    if (Number.isFinite(rule.apply.panelWidth)) {
+      behavior.panelWidth = rule.apply.panelWidth;
+    }
+    if (Number.isFinite(rule.apply.panelHeight)) {
+      behavior.panelHeight = rule.apply.panelHeight;
+    }
+    if (Number.isFinite(rule.apply.emphasis)) {
+      behavior.emphasis = rule.apply.emphasis;
+    }
+  }
+
+  behavior.panelWidth = normalizePanelDimension(behavior.panelWidth, 260, 120);
+  behavior.panelHeight = normalizePanelDimension(behavior.panelHeight, 96, 32);
+  behavior.emphasis = Math.max(0.2, Math.min(2, Number(behavior.emphasis) || 1));
+  return behavior;
+}
+
 function resolveOverlayRuntimeSyncStateContainer(context = {}, gameplayState = null) {
   if (context?.overlayRuntimeState && typeof context.overlayRuntimeState === 'object') {
     return context.overlayRuntimeState;
@@ -553,19 +850,39 @@ function getComposedRuntimeFrames(runtime, activeOverlayId, context = {}) {
 
   const normalizedActiveOverlayId = String(activeOverlayId || '').trim();
   const activeIndex = normalizeInteractionIndex(runtime);
+  const inputContext = resolveOverlayRuntimeInputContext(runtime);
+  const stackRankByIndex = new Map();
+  for (let i = 0; i < inputContext.stack.length; i += 1) {
+    const entry = inputContext.stack[i];
+    stackRankByIndex.set(entry.index, i);
+  }
+  const gameplayState = resolveOverlayGameplayState(context);
+  const telemetry = resolveOverlayTelemetryState(context, gameplayState);
   const frames = [];
 
   for (let i = 0; i < runtime.runtimeExtensions.length; i += 1) {
     const extension = runtime.runtimeExtensions[i];
-    const contextBehavior = resolveRuntimeExtensionContextBehavior(extension, context);
+    const isActive = i === activeIndex;
+    if (!shouldRunRuntimeExtension(extension, normalizedActiveOverlayId)) {
+      continue;
+    }
+    const stackRank = stackRankByIndex.get(i);
+    const stackPosition = resolveOverlayStackPosition(stackRank, inputContext.stack.length);
+    const baseBehavior = resolveRuntimeExtensionContextBehavior(extension, context);
+    const contextBehavior = resolveAdaptiveUiContextBehavior(runtime, {
+      gameplayState,
+      telemetry,
+      activeOverlayId: inputContext.activeOverlayId,
+      activeLayerOrder: inputContext.activeLayerOrder,
+      activeStackPosition: inputContext.activeStackPosition,
+      overlayId: String(extension?.overlayId || ''),
+      layerOrder: Number(extension?.layerOrder) || 0,
+      stackPosition,
+    }, baseBehavior);
     if (contextBehavior.visible === false) {
       continue;
     }
-    const isActive = i === activeIndex;
     if (!isActive && contextBehavior.compose !== true) {
-      continue;
-    }
-    if (!shouldRunRuntimeExtension(extension, normalizedActiveOverlayId)) {
       continue;
     }
 
@@ -575,6 +892,7 @@ function getComposedRuntimeFrames(runtime, activeOverlayId, context = {}) {
       isActive,
       contextBehavior,
       layoutKey: getOverlayLayoutKey(extension.overlayId, i),
+      stackPosition,
     });
   }
 
@@ -611,9 +929,12 @@ function deriveRenderHierarchy(frames) {
 
   for (let i = 0; i < ordered.length; i += 1) {
     const frame = ordered[i];
+    const emphasis = Math.max(0.2, Math.min(2, Number(frame?.contextBehavior?.emphasis) || 1));
+    const baseOpacity = frame.isActive === true ? 1 : 0.84;
     frame.visualPriorityRank = i;
     frame.visualTier = frame.isActive === true ? 'primary' : 'secondary';
-    frame.readabilityOpacity = frame.isActive === true ? 1 : 0.84;
+    frame.readabilityOpacity = Math.max(0.35, Math.min(1, baseOpacity * emphasis));
+    frame.adaptiveEmphasis = emphasis;
     frame.hiddenByClutter = false;
   }
 
@@ -904,6 +1225,7 @@ export function createOverlayGameplayRuntime({ runtimeExtensions = [] } = {}) {
     interactionGestureState: null,
     interactionGestureLastDown: false,
     interactionContextInputMap: null,
+    interactionAdaptiveUiRules: Object.freeze([]),
   };
 }
 
@@ -935,6 +1257,14 @@ export function setOverlayGameplayRuntimeContextInputMap(runtime, contextInputMa
   runtime.interactionContextInputMap = contextInputMap && typeof contextInputMap === 'object'
     ? contextInputMap
     : null;
+  return true;
+}
+
+export function setOverlayGameplayRuntimeAdaptiveUiRules(runtime, rules) {
+  if (!runtime) {
+    return false;
+  }
+  runtime.interactionAdaptiveUiRules = normalizeAdaptiveUiRules(rules);
   return true;
 }
 
@@ -1164,6 +1494,8 @@ export function getOverlayGameplayRuntimeCompositionSnapshot(runtime, context = 
     compose: frame.contextBehavior?.compose === true,
     isActive: frame.isActive === true,
     overlayId: frame.extension.overlayId,
+    stackPosition: frame.stackPosition || 'single',
+    adaptiveEmphasis: Number(frame.adaptiveEmphasis) || 1,
     slot: frame.slot,
     layoutKey: frame.layoutKey,
   }));
