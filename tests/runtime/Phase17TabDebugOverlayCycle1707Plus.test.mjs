@@ -48,6 +48,14 @@ function pressCycleKey(scene, { reverse = false } = {}) {
   scene.step3DPhysics(0.02, { input: makeInput([]) });
 }
 
+function holdCycleKey(scene, { reverse = false, frames = 4 } = {}) {
+  const keys = reverse ? ['KeyG', 'ShiftLeft'] : ['KeyG'];
+  for (let i = 0; i < Math.max(1, frames); i += 1) {
+    scene.step3DPhysics(0.01, { input: makeInput(keys) });
+  }
+  scene.step3DPhysics(0.01, { input: makeInput([]) });
+}
+
 function createRendererProbe(width = 960, height = 540) {
   const texts = [];
   return {
@@ -76,6 +84,25 @@ function assertMapOrderAndKeyBehavior(label, sceneFactory, expectedLabels, expec
   assert.equal(scene.tabDebugOverlays?.cycleKey, 'KeyG', `${label} should use G as overlay cycle key.`);
   const labels = scene.tabDebugOverlays.overlays.map((entry) => entry.label);
   assert.deepEqual(labels, expectedLabels, `${label} should use exact required overlay map ordering.`);
+
+  if (scene.tabDebugOverlays.overlays.length > 1) {
+    const count = scene.tabDebugOverlays.overlays.length;
+    const beforeHoldForward = scene.tabDebugOverlays.activeIndex;
+    holdCycleKey(scene);
+    assert.equal(
+      scene.tabDebugOverlays.activeIndex,
+      (beforeHoldForward + 1) % count,
+      `${label} should cycle exactly once while cycle key is held across rapid frames.`
+    );
+
+    const beforeHoldReverse = scene.tabDebugOverlays.activeIndex;
+    holdCycleKey(scene, { reverse: true });
+    assert.equal(
+      scene.tabDebugOverlays.activeIndex,
+      (beforeHoldReverse - 1 + count) % count,
+      `${label} should cycle exactly once in reverse while reverse cycle key is held across rapid frames.`
+    );
+  }
 
   for (let i = 0; i < expectedTokens.length; i += 1) {
     const renderer = createRendererProbe();

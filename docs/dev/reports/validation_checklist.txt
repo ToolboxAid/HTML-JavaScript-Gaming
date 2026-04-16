@@ -1,3 +1,4 @@
-[x] Smoke test complete
-[x] No regressions found
-[x] Baseline confirmed
+[ ] Rapid cycle stable
+[ ] No flicker on sample switch
+[ ] Resize keeps bottom-right anchor
+[ ] No stack reorder issues

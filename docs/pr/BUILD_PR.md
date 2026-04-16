@@ -1,20 +1,33 @@
-# BUILD_PR_LEVEL_17_59_DEBUG_OVERLAY_PROMOTE_BASELINE
+# BUILD_PR_LEVEL_18_1_OVERLAY_RUNTIME_HARDENING
 
-## Purpose
-Promote Level 17 debug overlay system to baseline after successful validation sweep.
+## PLAN
 
-## Scope
-- Mark Level 17 as complete
-- Confirm overlay system baseline:
-  - Bottom-right placement
-  - Non-Tab cycle key
-  - Sample-specific stack mappings
+### Purpose
+Harden overlay runtime behavior after Level 17 baseline promotion to ensure stability under rapid input, resizing, and multi-sample switching.
 
-## Test Steps
-1. Run smoke test across samples
-2. Confirm no regressions
-3. Validate baseline readiness
+### Goals
+- Ensure cycle key stability under rapid input
+- Prevent overlay flicker during sample switching
+- Lock bottom-right anchoring under resize
+- Validate overlay layering does not reorder unexpectedly
 
-## Expected
-- Stable baseline
-- Ready for next level integration
+---
+
+## BUILD
+
+### Scope
+- Overlay runtime stabilization (no feature expansion)
+- Input debounce/throttle validation
+- Resize handling validation
+- Sample switching consistency
+
+### Test Steps
+1. Rapidly cycle overlays
+2. Switch between samples quickly
+3. Resize viewport
+4. Validate overlays remain stable and anchored
+
+### Expected
+- No flicker
+- No misalignment
+- No cycle skips

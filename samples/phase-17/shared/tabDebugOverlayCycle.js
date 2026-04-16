@@ -17,6 +17,21 @@ function hasShiftModifier(input) {
   return input?.isDown('ShiftLeft') === true || input?.isDown('ShiftRight') === true;
 }
 
+function normalizeActiveIndex(controller) {
+  if (!controller || !Array.isArray(controller.overlays) || controller.overlays.length === 0) {
+    if (controller) {
+      controller.activeIndex = 0;
+    }
+    return 0;
+  }
+
+  const count = controller.overlays.length;
+  const current = Number.isInteger(controller.activeIndex) ? controller.activeIndex : 0;
+  const normalized = ((current % count) + count) % count;
+  controller.activeIndex = normalized;
+  return normalized;
+}
+
 export function createTabDebugOverlayController({ overlays = [], initialOverlayId = '' } = {}) {
   const normalized = [];
   for (let i = 0; i < overlays.length; i += 1) {
@@ -40,7 +55,7 @@ export function createTabDebugOverlayController({ overlays = [], initialOverlayI
 
   return {
     overlays: normalized,
-    activeIndex,
+    activeIndex: normalized.length > 0 ? Math.max(0, Math.min(activeIndex, normalized.length - 1)) : 0,
     cycleKey: 'Tab',
     cycleLatch: false,
   };
@@ -71,6 +86,7 @@ export function setTabDebugOverlayMap(controller, { overlays = [], initialOverla
       controller.activeIndex = lookupIndex;
     }
   }
+  normalizeActiveIndex(controller);
   controller.cycleLatch = false;
   return true;
 }
@@ -115,6 +131,7 @@ export function setTabDebugOverlayActive(controller, overlayId) {
     return false;
   }
   controller.activeIndex = nextIndex;
+  normalizeActiveIndex(controller);
   return true;
 }
 
@@ -125,6 +142,7 @@ export function stepTabDebugOverlayController(controller, input) {
 
   const cycleKey = String(controller.cycleKey || 'Tab');
   const cyclePressed = input?.isDown(cycleKey) === true;
+  normalizeActiveIndex(controller);
   if (cyclePressed && controller.cycleLatch === false && controller.overlays.length > 1) {
     const delta = hasShiftModifier(input) ? -1 : 1;
     const count = controller.overlays.length;
@@ -137,6 +155,7 @@ export function isTabDebugOverlayActive(controller, overlayId) {
   if (!controller || !Array.isArray(controller.overlays) || controller.overlays.length === 0) {
     return false;
   }
+  normalizeActiveIndex(controller);
   const active = controller.overlays[controller.activeIndex];
   return active?.id === overlayId;
 }
@@ -145,7 +164,7 @@ export function getTabDebugOverlayStatusLabel(controller) {
   if (!controller || !Array.isArray(controller.overlays) || controller.overlays.length === 0) {
     return 'none';
   }
-  const index = Math.max(0, Math.min(controller.activeIndex, controller.overlays.length - 1));
+  const index = normalizeActiveIndex(controller);
   const active = controller.overlays[index];
   return `${active.label} (${index + 1}/${controller.overlays.length})`;
 }

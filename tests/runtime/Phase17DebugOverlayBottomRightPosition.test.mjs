@@ -54,11 +54,17 @@ function pressCycleKey(scene) {
 }
 
 function createRendererProbe(width = 960, height = 540) {
+  let canvasWidth = width;
+  let canvasHeight = height;
   const texts = [];
   return {
     texts,
     getCanvasSize() {
-      return { width, height };
+      return { width: canvasWidth, height: canvasHeight };
+    },
+    setCanvasSize(nextWidth, nextHeight) {
+      canvasWidth = Math.max(1, Number(nextWidth) || canvasWidth);
+      canvasHeight = Math.max(1, Number(nextHeight) || canvasHeight);
     },
     clear() {},
     drawRect() {},
@@ -94,8 +100,11 @@ function assertSharedStackMath() {
   const stack = createBottomRightDebugPanelStack(renderer, { right: 10, bottom: 10, spacing: 10 });
   const first = getNextBottomRightDebugPanelRect(stack, 300, 170);
   const second = getNextBottomRightDebugPanelRect(stack, 300, 120);
+  renderer.setCanvasSize(1280, 720);
+  const resized = getNextBottomRightDebugPanelRect(stack, 300, 170);
   assert.deepEqual(first, { x: 650, y: 360, width: 300, height: 170 });
   assert.deepEqual(second, { x: 650, y: 230, width: 300, height: 120 });
+  assert.deepEqual(resized, { x: 970, y: 230, width: 300, height: 170 });
 }
 
 function assertSample1701RuntimePanelPlacement() {
@@ -215,6 +224,39 @@ function assertSample1713FinalRuntimePlacement() {
   assertBottomRightFromTitle(runtimeTitle, 228, 248, 722, 282, 'Sample 1713 final runtime overlay');
 }
 
+function assertNoFlickerDuringSampleSwitching() {
+  const scenes = [
+    [new RealGameplayMiniGameScene(), 'UI Layer'],
+    [new MovementModelsLab1709Scene(), 'Movement Runtime'],
+    [new RealGameplayMiniGame1710Scene(), 'UI Layer'],
+    [new MovementModelsLab1711Scene(), 'Movement Runtime'],
+    [new GameplayMetricsTelemetryScene(), 'UI Layer'],
+    [new FinalReferenceGameScene(), 'UI Layer'],
+  ];
+  const overlayTitles = [
+    'UI Layer',
+    'Mission Feed',
+    'MISSION READY',
+    'Mini-Game Runtime',
+    'Movement Runtime',
+    'Movement Lab HUD',
+    'Telemetry Overlay',
+    'Final Reference Runtime',
+  ];
+  const sharedCamera = createCameraStub();
+  for (let i = 0; i < scenes.length; i += 1) {
+    const [scene, expectedTitle] = scenes[i];
+    scene.setCamera3D?.(sharedCamera);
+    for (let pass = 0; pass < 2; pass += 1) {
+      const renderer = createRendererProbe();
+      scene.render(renderer);
+      const visibleOverlays = overlayTitles.filter((title) => Boolean(findExactText(renderer, title)));
+      assert.equal(visibleOverlays.length, 1, `Sample switch pass ${i + 1}.${pass + 1} should render exactly one active overlay panel title.`);
+      assert.equal(visibleOverlays[0], expectedTitle, `Sample switch pass ${i + 1}.${pass + 1} should render expected default overlay without flicker.`);
+    }
+  }
+}
+
 export function run() {
   assertSharedStackMath();
   assertSample1701RuntimePanelPlacement();
@@ -225,4 +267,5 @@ export function run() {
   assertSample1711MovementOverlayPlacement();
   assertSample1712TelemetryPlacement();
   assertSample1713FinalRuntimePlacement();
+  assertNoFlickerDuringSampleSwitching();
 }
