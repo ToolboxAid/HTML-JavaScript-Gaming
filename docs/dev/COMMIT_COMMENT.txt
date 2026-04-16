@@ -1,2 +1,2 @@
-Level 18.2 input system consolidation.
-Unify runtime and test input mappings for overlay cycle key.
+Level 18.3 overlay state persistence.
+Preserve selected overlay across reloads and navigation.

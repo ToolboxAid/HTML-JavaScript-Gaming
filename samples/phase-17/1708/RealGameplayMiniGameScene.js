@@ -26,6 +26,7 @@ import {
   isTabDebugOverlayActive,
   setTabDebugOverlayCycleKey,
   setTabDebugOverlayMap,
+  setTabDebugOverlayPersistenceKey,
   stepTabDebugOverlayController,
 } from '/samples/phase-17/shared/tabDebugOverlayCycle.js';
 import {
@@ -43,6 +44,7 @@ const READY_STATE = 'ready';
 const RUNNING_STATE = 'running';
 const WON_STATE = 'won';
 const LOST_STATE = 'lost';
+const DEBUG_OVERLAY_PERSISTENCE_KEY = 'phase17:1708:overlay-index';
 
 function clamp(value, min, max) {
   return Math.max(min, Math.min(max, value));
@@ -91,6 +93,7 @@ export default class RealGameplayMiniGameScene extends Scene {
 
     this.tabDebugOverlays = createTabDebugOverlayController();
     setTabDebugOverlayCycleKey(this.tabDebugOverlays, MINI_GAME_DEBUG_CYCLE_KEY);
+    setTabDebugOverlayPersistenceKey(this.tabDebugOverlays, DEBUG_OVERLAY_PERSISTENCE_KEY);
     this.setDebugOverlayCycleMap(createMiniGameOverlayCycleMap(), OVERLAY_UI_LAYER);
   }
 
@@ -181,6 +184,10 @@ export default class RealGameplayMiniGameScene extends Scene {
 
   setDebugOverlayCycleKey(cycleKey) {
     setTabDebugOverlayCycleKey(this.tabDebugOverlays, cycleKey);
+  }
+
+  setDebugOverlayPersistenceKey(persistenceKey) {
+    setTabDebugOverlayPersistenceKey(this.tabDebugOverlays, persistenceKey);
   }
 
   isDebugOverlayActive(overlayId) {

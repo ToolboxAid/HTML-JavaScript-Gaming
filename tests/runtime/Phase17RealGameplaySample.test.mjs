@@ -10,6 +10,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import RealGameplayMiniGameScene from '../../samples/phase-17/1708/RealGameplayMiniGameScene.js';
 import { getOverlayCycleInputCodes } from '../../samples/phase-17/shared/overlayCycleInput.js';
+import { resetTabDebugOverlayPersistenceForTests } from '../../samples/phase-17/shared/tabDebugOverlayCycle.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -156,6 +157,7 @@ function assertGameplayLoopAndDebugPanels() {
 }
 
 export function run() {
+  resetTabDebugOverlayPersistenceForTests();
   assertIndexLinkPresent();
   assertGameplayLoopAndDebugPanels();
 }

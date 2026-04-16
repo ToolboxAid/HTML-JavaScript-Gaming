@@ -12,6 +12,7 @@ import {
   getTabDebugOverlayStatusLabel,
   isTabDebugOverlayActive,
   setTabDebugOverlayCycleKey,
+  setTabDebugOverlayPersistenceKey,
   stepTabDebugOverlayController,
 } from '/samples/phase-17/shared/tabDebugOverlayCycle.js';
 import {
@@ -44,6 +45,7 @@ const MODE_ORDER = Object.freeze([
   MOVEMENT_MODES.TANK,
   MOVEMENT_MODES.WEIGHTED,
 ]);
+const DEBUG_OVERLAY_PERSISTENCE_KEY = 'phase17:1709:overlay-index';
 
 function clamp(value, min, max) {
   return Math.max(min, Math.min(max, value));
@@ -105,6 +107,7 @@ export default class MovementModelsLabScene extends Scene {
       initialOverlayId: OVERLAY_MOVEMENT_RUNTIME,
     });
     setTabDebugOverlayCycleKey(this.tabDebugOverlays, MOVEMENT_DEBUG_CYCLE_KEY);
+    setTabDebugOverlayPersistenceKey(this.tabDebugOverlays, DEBUG_OVERLAY_PERSISTENCE_KEY);
   }
 
   setCamera3D(camera3D) {

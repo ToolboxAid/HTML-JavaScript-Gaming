@@ -1,30 +1,31 @@
-# BUILD_PR_LEVEL_18_2_INPUT_SYSTEM_CONSOLIDATION
+# BUILD_PR_LEVEL_18_3_OVERLAY_STATE_PERSISTENCE
 
 ## PLAN
 
 ### Purpose
-Consolidate input handling for overlay cycling and test inputs to ensure a single authoritative key mapping across runtime and tests.
+Introduce overlay state persistence so selected overlay and cycle position are maintained across sample reloads and navigation.
 
 ### Goals
-- Eliminate duplicate key mappings
-- Ensure tests and runtime use same input source
-- Prevent future drift (like Tab issue)
+- Persist current overlay index
+- Restore state on reload
+- Maintain consistency across samples
 
 ---
 
 ## BUILD
 
 ### Scope
-- Centralize overlay cycle key definition
-- Update runtime references to use shared source
-- Update tests to reference shared input mapping
-- No behavior change
+- Store overlay state (in-memory or lightweight persistence)
+- Restore on sample load
+- No UI changes
+- No behavior change to cycle logic
 
 ### Test Steps
-1. Verify cycle key works in runtime
-2. Verify tests use shared mapping
-3. Confirm no hardcoded keys remain
+1. Select overlay
+2. Reload sample
+3. Confirm overlay restored
+4. Switch samples and return
 
 ### Expected
-- Single source of truth for cycle key
-- No drift between runtime and tests
+- Overlay state preserved
+- No regression in cycling

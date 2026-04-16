@@ -15,6 +15,7 @@ import {
   getOverlayCycleInputCodes,
   LEVEL17_OVERLAY_CYCLE_KEY,
 } from '../../samples/phase-17/shared/overlayCycleInput.js';
+import { resetTabDebugOverlayPersistenceForTests } from '../../samples/phase-17/shared/tabDebugOverlayCycle.js';
 
 function createCameraStub() {
   const state = {
@@ -80,6 +81,7 @@ function createRendererProbe(width = 960, height = 540) {
 }
 
 function assertMapOrderAndKeyBehavior(label, sceneFactory, expectedLabels, expectedTokens) {
+  resetTabDebugOverlayPersistenceForTests();
   const scene = sceneFactory();
   if (typeof scene.setCamera3D === 'function') {
     scene.setCamera3D(createCameraStub());
@@ -120,9 +122,21 @@ function assertMapOrderAndKeyBehavior(label, sceneFactory, expectedLabels, expec
   const indexAfterForward = scene.tabDebugOverlays.activeIndex;
   pressCycleKey(scene, { reverse: true });
   assert.equal(scene.tabDebugOverlays.activeIndex, indexAfterForward - 1, `${label} should support reverse cycling with Shift+G.`);
+
+  const persistedIndex = scene.tabDebugOverlays.activeIndex;
+  const reloadedScene = sceneFactory();
+  if (typeof reloadedScene.setCamera3D === 'function') {
+    reloadedScene.setCamera3D(createCameraStub());
+  }
+  assert.equal(
+    reloadedScene.tabDebugOverlays.activeIndex,
+    persistedIndex,
+    `${label} should restore persisted overlay index on sample load.`
+  );
 }
 
 export function run() {
+  resetTabDebugOverlayPersistenceForTests();
   assertMapOrderAndKeyBehavior(
     '1708',
     () => new RealGameplayMiniGameScene(),

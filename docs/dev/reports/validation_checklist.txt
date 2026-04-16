@@ -1,4 +1,4 @@
-[ ] Runtime uses shared input mapping
-[ ] Tests use shared mapping
-[ ] No hardcoded keys remain
-[ ] Cycle behavior unchanged
+[ ] Overlay index persists
+[ ] Restored on reload
+[ ] Works across samples
+[ ] No cycle regression

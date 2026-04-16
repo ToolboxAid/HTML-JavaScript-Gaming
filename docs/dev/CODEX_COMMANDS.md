@@ -2,10 +2,10 @@ MODEL: GPT-5.4-codex
 REASONING: medium
 
 COMMAND:
-Consolidate input system for overlay cycling:
-- Introduce shared cycle key definition
-- Refactor runtime to use shared input mapping
-- Refactor tests to use shared mapping (remove hardcoded keys)
-- Do not change behavior
+Implement overlay state persistence:
+- Store current overlay index
+- Restore on sample load
+- Keep implementation lightweight
+- Do not change cycle behavior
 
 Package ZIP to <project folder>/tmp/

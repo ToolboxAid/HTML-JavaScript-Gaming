@@ -11,6 +11,7 @@ const OVERLAY_UI_LAYER = 'ui-layer';
 const OVERLAY_MISSION_FEED = 'mission-feed';
 const OVERLAY_MISSION_READY = 'mission-ready';
 const OVERLAY_FINAL_REFERENCE_RUNTIME = 'final-reference-runtime';
+const DEBUG_OVERLAY_PERSISTENCE_KEY = 'phase17:1713:overlay-index';
 
 function clamp(value, min, max) {
   return Math.max(min, Math.min(max, value));
@@ -63,6 +64,7 @@ export default class FinalReferenceGameScene extends GameplayMetricsTelemetrySce
       phase: 'briefing',
     };
     this.setDebugOverlayCycleKey(LEVEL17_OVERLAY_CYCLE_KEY);
+    this.setDebugOverlayPersistenceKey(DEBUG_OVERLAY_PERSISTENCE_KEY);
     this.setDebugOverlayCycleMap([
       { id: OVERLAY_UI_LAYER, label: 'UI Layer' },
       { id: OVERLAY_MISSION_FEED, label: 'Mission Feed' },

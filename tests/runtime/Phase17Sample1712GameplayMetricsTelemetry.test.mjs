@@ -13,6 +13,7 @@ import {
   getOverlayCycleInputCodes,
   LEVEL17_OVERLAY_CYCLE_KEY,
 } from '../../samples/phase-17/shared/overlayCycleInput.js';
+import { resetTabDebugOverlayPersistenceForTests } from '../../samples/phase-17/shared/tabDebugOverlayCycle.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -143,6 +144,7 @@ function assertTelemetryOverlayAndCounters() {
 }
 
 export function run() {
+  resetTabDebugOverlayPersistenceForTests();
   assertIndexLinkPresent();
   assertTelemetryOverlayAndCounters();
 }

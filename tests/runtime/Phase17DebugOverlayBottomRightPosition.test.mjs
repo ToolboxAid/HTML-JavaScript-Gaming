@@ -18,6 +18,7 @@ import MovementModelsLab1711Scene from '../../samples/phase-17/1711/MovementMode
 import GameplayMetricsTelemetryScene from '../../samples/phase-17/1712/GameplayMetricsTelemetryScene.js';
 import FinalReferenceGameScene from '../../samples/phase-17/1713/FinalReferenceGameScene.js';
 import { getOverlayCycleInputCodes } from '../../samples/phase-17/shared/overlayCycleInput.js';
+import { resetTabDebugOverlayPersistenceForTests } from '../../samples/phase-17/shared/tabDebugOverlayCycle.js';
 
 function createCameraStub() {
   const state = {
@@ -226,6 +227,7 @@ function assertSample1713FinalRuntimePlacement() {
 }
 
 function assertNoFlickerDuringSampleSwitching() {
+  resetTabDebugOverlayPersistenceForTests();
   const scenes = [
     [new RealGameplayMiniGameScene(), 'UI Layer'],
     [new MovementModelsLab1709Scene(), 'Movement Runtime'],
@@ -259,6 +261,7 @@ function assertNoFlickerDuringSampleSwitching() {
 }
 
 export function run() {
+  resetTabDebugOverlayPersistenceForTests();
   assertSharedStackMath();
   assertSample1701RuntimePanelPlacement();
   assertSample1704StackedPanelPlacement();

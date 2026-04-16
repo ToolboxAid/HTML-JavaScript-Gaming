@@ -11,6 +11,7 @@ const OVERLAY_UI_LAYER = 'ui-layer';
 const OVERLAY_MISSION_FEED = 'mission-feed';
 const OVERLAY_MISSION_READY = 'mission-ready';
 const OVERLAY_TELEMETRY = 'telemetry';
+const DEBUG_OVERLAY_PERSISTENCE_KEY = 'phase17:1712:overlay-index';
 
 function pushSample(history, value, limit = 48) {
   history.push(Number.isFinite(value) ? Number(value) : 0);
@@ -57,6 +58,7 @@ export default class GameplayMetricsTelemetryScene extends RealGameplayMiniGameS
       collisionHistory: [],
     };
     this.setDebugOverlayCycleKey(LEVEL17_OVERLAY_CYCLE_KEY);
+    this.setDebugOverlayPersistenceKey(DEBUG_OVERLAY_PERSISTENCE_KEY);
     this.setDebugOverlayCycleMap([
       { id: OVERLAY_UI_LAYER, label: 'UI Layer' },
       { id: OVERLAY_MISSION_FEED, label: 'Mission Feed' },
