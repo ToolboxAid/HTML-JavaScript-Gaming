@@ -1,20 +1,21 @@
-# BUILD_PR_LEVEL_20_2_OVERLAY_PLUGIN_REGISTRY
+# BUILD_PR_LEVEL_20_3_OVERLAY_PLUGIN_LIFECYCLE
 
 ## Purpose
-Introduce a registry for managing overlay plugins.
+Define lifecycle for overlay plugins from init to teardown.
 
 ## Roadmap Improvement
-Enables structured registration and discovery of overlays.
+Completes plugin system foundation by standardizing lifecycle behavior.
 
 ## Scope
-- Define plugin registry
-- Allow registration/unregistration
-- Validate with one plugin
+- Define init, activate, deactivate, destroy phases
+- Ensure safe transitions between states
+- Validate lifecycle with one plugin
 
 ## Test Steps
 1. Register plugin
-2. Activate overlay
-3. Remove plugin
+2. Activate/deactivate multiple times
+3. Destroy plugin
 
 ## Expected
-- Plugins managed cleanly
+- Clean lifecycle transitions
+- No memory or state leaks

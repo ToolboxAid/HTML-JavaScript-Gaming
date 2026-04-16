@@ -1,4 +1,4 @@
-[ ] Plugin registers
-[ ] Plugin activates
-[ ] Plugin removes cleanly
+[ ] Init works
+[ ] Activate/deactivate stable
+[ ] Destroy cleans up
 [ ] Roadmap updated

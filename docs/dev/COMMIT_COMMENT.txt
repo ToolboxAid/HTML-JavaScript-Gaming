@@ -1,4 +1,4 @@
-Add overlay plugin registry.
+Add overlay plugin lifecycle.
 
 PR Details:
-- Enables structured overlay registration
+- Standardizes plugin lifecycle behavior

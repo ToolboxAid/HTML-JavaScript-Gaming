@@ -819,7 +819,7 @@
 
 ### Track G — Extensibility Readiness
 - [x] validate plugin/extension patterns
-- [ ] validate adding new systems is clean
+- [.] validate adding new systems is clean
 - [ ] validate external integration points
 - [ ] ensure future phases can build cleanly
 
