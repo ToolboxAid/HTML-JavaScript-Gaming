@@ -1,2 +1,2 @@
-- [ ] integration works
-- [ ] no errors
+- [ ] all systems stable
+- [ ] no regressions
