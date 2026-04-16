@@ -110,6 +110,18 @@ function persistActiveIndex(controller) {
   return writePersistedOverlayIndex(key, index);
 }
 
+export function getTabDebugOverlayActiveEntry(controller) {
+  if (!controller || !Array.isArray(controller.overlays) || controller.overlays.length === 0) {
+    return null;
+  }
+  const index = normalizeActiveIndex(controller);
+  return controller.overlays[index] || null;
+}
+
+export function getTabDebugOverlayActiveId(controller) {
+  return getTabDebugOverlayActiveEntry(controller)?.id || '';
+}
+
 export function createTabDebugOverlayController({ overlays = [], initialOverlayId = '' } = {}) {
   const normalized = [];
   for (let i = 0; i < overlays.length; i += 1) {
@@ -239,31 +251,36 @@ export function stepTabDebugOverlayController(controller, input) {
 
   const cycleKey = String(controller.cycleKey || 'Tab');
   const cyclePressed = input?.isDown(cycleKey) === true;
-  normalizeActiveIndex(controller);
-  if (cyclePressed && controller.cycleLatch === false && controller.overlays.length > 1) {
-    const delta = isOverlayCycleReverseModifierActive(input) ? -1 : 1;
-    const count = controller.overlays.length;
-    controller.activeIndex = (controller.activeIndex + delta + count) % count;
-    persistActiveIndex(controller);
+  if (!cyclePressed) {
+    controller.cycleLatch = false;
+    return;
   }
-  controller.cycleLatch = cyclePressed;
+  if (controller.cycleLatch === true) {
+    return;
+  }
+  controller.cycleLatch = true;
+
+  normalizeActiveIndex(controller);
+  if (controller.overlays.length <= 1) {
+    return;
+  }
+
+  const delta = isOverlayCycleReverseModifierActive(input) ? -1 : 1;
+  const count = controller.overlays.length;
+  controller.activeIndex = (controller.activeIndex + delta + count) % count;
+  persistActiveIndex(controller);
 }
 
 export function isTabDebugOverlayActive(controller, overlayId) {
-  if (!controller || !Array.isArray(controller.overlays) || controller.overlays.length === 0) {
-    return false;
-  }
-  normalizeActiveIndex(controller);
-  const active = controller.overlays[controller.activeIndex];
-  return active?.id === overlayId;
+  return getTabDebugOverlayActiveId(controller) === overlayId;
 }
 
 export function getTabDebugOverlayStatusLabel(controller) {
-  if (!controller || !Array.isArray(controller.overlays) || controller.overlays.length === 0) {
+  const active = getTabDebugOverlayActiveEntry(controller);
+  if (!active || !Array.isArray(controller?.overlays) || controller.overlays.length === 0) {
     return 'none';
   }
   const index = normalizeActiveIndex(controller);
-  const active = controller.overlays[index];
   return `${active.label} (${index + 1}/${controller.overlays.length})`;
 }
 

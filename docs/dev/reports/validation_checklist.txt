@@ -1,4 +1,4 @@
-[ ] Overlay index persists
-[ ] Restored on reload
-[ ] Works across samples
-[ ] No cycle regression
+[ ] No lag during rapid cycling
+[ ] Stable FPS
+[ ] No redundant renders observed
+[ ] Behavior unchanged

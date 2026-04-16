@@ -1,31 +1,31 @@
-# BUILD_PR_LEVEL_18_3_OVERLAY_STATE_PERSISTENCE
+# BUILD_PR_LEVEL_18_4_OVERLAY_PERFORMANCE_OPTIMIZATION
 
 ## PLAN
 
 ### Purpose
-Introduce overlay state persistence so selected overlay and cycle position are maintained across sample reloads and navigation.
+Optimize overlay rendering and cycling performance under frequent updates and rapid input.
 
 ### Goals
-- Persist current overlay index
-- Restore state on reload
-- Maintain consistency across samples
+- Reduce unnecessary re-renders
+- Ensure smooth cycling under load
+- Maintain stable FPS
 
 ---
 
 ## BUILD
 
 ### Scope
-- Store overlay state (in-memory or lightweight persistence)
-- Restore on sample load
-- No UI changes
-- No behavior change to cycle logic
+- Optimize overlay render paths
+- Avoid redundant DOM/canvas updates
+- Ensure efficient cycle transitions
+- No behavior changes
 
 ### Test Steps
-1. Select overlay
-2. Reload sample
-3. Confirm overlay restored
-4. Switch samples and return
+1. Rapidly cycle overlays
+2. Monitor frame stability
+3. Switch samples quickly
+4. Confirm no lag or stutter
 
 ### Expected
-- Overlay state preserved
-- No regression in cycling
+- Smooth overlay transitions
+- No visible performance degradation

@@ -9,8 +9,8 @@ import { Theme, ThemeTokens } from '/src/engine/theme/index.js';
 import { createBottomRightDebugPanelStack, drawFrame, drawStackedDebugPanel } from '/src/engine/debug/index.js';
 import {
   createTabDebugOverlayController,
+  getTabDebugOverlayActiveId,
   getTabDebugOverlayStatusLabel,
-  isTabDebugOverlayActive,
   setTabDebugOverlayCycleKey,
   setTabDebugOverlayPersistenceKey,
   stepTabDebugOverlayController,
@@ -331,7 +331,8 @@ export default class MovementModelsLabScene extends Scene {
     const runtimeWidth = hudWidth;
     const runtimeHeight = 212;
     const debugStack = createBottomRightDebugPanelStack(renderer);
-    if (isTabDebugOverlayActive(this.tabDebugOverlays, OVERLAY_MOVEMENT_RUNTIME)) {
+    const activeOverlayId = getTabDebugOverlayActiveId(this.tabDebugOverlays);
+    if (activeOverlayId === OVERLAY_MOVEMENT_RUNTIME) {
       drawStackedDebugPanel(renderer, debugStack, runtimeWidth, runtimeHeight, 'Movement Runtime', [
         `Mode: ${formatMode(this.movementMode)}`,
         `Actor: x=${this.actor.x.toFixed(2)} z=${this.actor.z.toFixed(2)}`,
@@ -342,9 +343,7 @@ export default class MovementModelsLabScene extends Scene {
         'Tank: rotate + throttle',
         'Weighted: acceleration + drag',
       ]);
-    }
-
-    if (isTabDebugOverlayActive(this.tabDebugOverlays, OVERLAY_MOVEMENT_HUD)) {
+    } else if (activeOverlayId === OVERLAY_MOVEMENT_HUD) {
       drawStackedDebugPanel(renderer, debugStack, hudWidth, hudHeight, 'Movement Lab HUD', [
         `Movement Mode: ${formatMode(this.movementMode)}`,
         `Input: ${this.lastInputSummary}`,

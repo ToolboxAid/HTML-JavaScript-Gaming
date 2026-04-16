@@ -22,6 +22,7 @@ import {
 } from '/samples/phase-16/shared/threeDWireframe.js';
 import {
   createTabDebugOverlayController,
+  getTabDebugOverlayActiveId,
   getTabDebugOverlayStatusLabel,
   isTabDebugOverlayActive,
   setTabDebugOverlayCycleKey,
@@ -196,6 +197,10 @@ export default class RealGameplayMiniGameScene extends Scene {
 
   getDebugOverlayStatusLabel() {
     return getTabDebugOverlayStatusLabel(this.tabDebugOverlays);
+  }
+
+  getActiveDebugOverlayId() {
+    return getTabDebugOverlayActiveId(this.tabDebugOverlays);
   }
 
   pushCollisionRow(overlayId, kind, state, enabled = true) {
@@ -545,8 +550,8 @@ export default class RealGameplayMiniGameScene extends Scene {
 
     const debugStack = createBottomRightDebugPanelStack(renderer);
     this.debugOverlayStack = debugStack;
-
-    if (this.isDebugOverlayActive(OVERLAY_UI_LAYER)) {
+    const activeOverlayId = this.getActiveDebugOverlayId();
+    if (activeOverlayId === OVERLAY_UI_LAYER) {
       drawStackedDebugPanel(renderer, debugStack, 326, 174, 'UI Layer', [
         `state=${this.gameState.toUpperCase()}`,
         `objective=${this.score}/${this.targetScore} cores`,
@@ -556,16 +561,12 @@ export default class RealGameplayMiniGameScene extends Scene {
         `overlayCycle=G/Shift+G`,
         'controls=W/A/S/D move | Q/E yaw',
       ]);
-    }
-
-    if (this.isDebugOverlayActive(OVERLAY_MISSION_FEED)) {
+    } else if (activeOverlayId === OVERLAY_MISSION_FEED) {
       drawStackedDebugPanel(renderer, debugStack, 326, 160, 'Mission Feed', [
         ...this.eventFeed,
         missionStatus,
       ]);
-    }
-
-    if (this.isDebugOverlayActive(OVERLAY_MISSION_READY)) {
+    } else if (activeOverlayId === OVERLAY_MISSION_READY) {
       const isWin = this.gameState === WON_STATE;
       const outcomeLabel = this.gameState === READY_STATE
         ? 'Press Space or Enter to deploy.'
@@ -578,9 +579,7 @@ export default class RealGameplayMiniGameScene extends Scene {
         isWin ? 'result=mission complete' : this.gameState === LOST_STATE ? 'result=mission failed' : 'result=pending',
         'restart=R after mission outcome',
       ]);
-    }
-
-    if (this.isDebugOverlayActive(OVERLAY_MINI_GAME_RUNTIME)) {
+    } else if (activeOverlayId === OVERLAY_MINI_GAME_RUNTIME) {
       drawStackedDebugPanel(renderer, debugStack, 300, 120, 'Mini-Game Runtime', [
         `Entities: obstacles=${this.obstacles.length} sentries=${this.enemies.length}`,
         `Remaining cores: ${this.cores.filter((core) => !core.collected).length}`,
