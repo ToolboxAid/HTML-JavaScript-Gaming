@@ -1,21 +1,21 @@
-# BUILD_PR_LEVEL_21_3_OVERLAY_STATE_SYNCHRONIZATION
+# BUILD_PR_LEVEL_21_4_OVERLAY_EVENT_DRIVEN_UPDATES
 
 ## Purpose
-Ensure overlay state is synchronized with gameplay systems.
+Move overlay updates to an event-driven model.
 
 ## Roadmap Improvement
-Advances Level 21 with consistent state behavior across overlays.
+Improves efficiency and responsiveness of overlays.
 
 ## Scope
-- Sync overlay state with gameplay state
-- Prevent desync issues
-- Validate across multiple overlays
+- Trigger overlay updates via events
+- Reduce unnecessary polling
+- Validate responsiveness
 
 ## Test Steps
-1. Change gameplay state rapidly
-2. Verify overlays stay in sync
-3. Confirm no desync artifacts
+1. Trigger gameplay events
+2. Verify overlay updates instantly
+3. Confirm no extra processing
 
 ## Expected
-- Consistent overlay state
-- No desync
+- Event-driven updates working
+- Improved performance

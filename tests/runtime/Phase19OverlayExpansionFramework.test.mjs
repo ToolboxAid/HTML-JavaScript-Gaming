@@ -7,6 +7,7 @@ Phase19OverlayExpansionFramework.test.mjs
 import assert from 'node:assert/strict';
 import { LEVEL17_OVERLAY_CYCLE_KEY } from '../../samples/phase-17/shared/overlayCycleInput.js';
 import {
+  enqueueOverlayGameplayRuntimeSyncEvent,
   getOverlayGameplayRuntimeCompositionSnapshot,
   getOverlayGameplayRuntimeInteractionSnapshot,
   renderOverlayGameplayRuntime,
@@ -257,18 +258,25 @@ function assertOverlayStateSynchronizationAndDesyncRecovery() {
 
   const runtime = framework.createRuntimeForExtension('phase19-overlay-sync');
   const gameplayState = {
-    overlayRuntimeState: {
-      visible: true,
-      interactionIndex: 99,
-      activeOverlayId: 'runtime-b',
-    },
+    overlayRuntimeState: {},
   };
+  enqueueOverlayGameplayRuntimeSyncEvent(gameplayState, {
+    visible: true,
+    interactionIndex: 99,
+    activeOverlayId: 'runtime-b',
+  });
 
   const initialInteraction = getOverlayGameplayRuntimeInteractionSnapshot(runtime, { gameplayState });
   assert.equal(initialInteraction.index, 1, 'Sync should correct out-of-range index to the overlay requested by gameplay state.');
   assert.equal(initialInteraction.activeOverlayId, 'runtime-b', 'Sync should align active overlay id with gameplay state request.');
   assert.equal(gameplayState.overlayRuntimeState.desyncCorrected, true, 'Sync should flag corrected desync state.');
   assert.equal(gameplayState.overlayRuntimeState.count, 2, 'Sync snapshot should expose runtime extension count.');
+  assert.equal(gameplayState.overlayRuntimeState.syncMode, 'events', 'Sync should process queued gameplay events in event-driven mode.');
+  assert.equal(gameplayState.overlayRuntimeState.eventsProcessed, 1, 'Sync should process exactly one overlay event.');
+
+  const idleInteraction = getOverlayGameplayRuntimeInteractionSnapshot(runtime, { gameplayState });
+  assert.equal(idleInteraction.activeOverlayId, 'runtime-b', 'No-event sync should keep prior synchronized state stable.');
+  assert.equal(gameplayState.overlayRuntimeState.eventsProcessed, 0, 'No queued events should avoid extra event processing.');
 
   const renderRuntimeB = renderOverlayGameplayRuntime(runtime, {
     activeOverlayId: 'runtime-b',
@@ -277,16 +285,22 @@ function assertOverlayStateSynchronizationAndDesyncRecovery() {
   });
   assert.equal(renderRuntimeB, 1, 'Synced runtime should render requested gameplay overlay.');
 
-  gameplayState.overlayRuntimeState.visible = false;
-  gameplayState.overlayRuntimeState.activeOverlayId = 'runtime-a';
+  enqueueOverlayGameplayRuntimeSyncEvent(gameplayState, {
+    visible: false,
+    activeOverlayId: 'runtime-a',
+  });
   const renderHidden = renderOverlayGameplayRuntime(runtime, {
     activeOverlayId: 'runtime-a',
     renderer: createRendererProbe(),
     gameplayState,
   });
   assert.equal(renderHidden, 0, 'Gameplay visibility sync should prevent overlay render while hidden.');
+  assert.equal(gameplayState.overlayRuntimeState.syncMode, 'events', 'Render sync should remain event-driven after hide event.');
 
-  gameplayState.overlayRuntimeState.visible = true;
+  enqueueOverlayGameplayRuntimeSyncEvent(gameplayState, {
+    visible: true,
+    activeOverlayId: 'runtime-a',
+  });
   const renderRuntimeA = renderOverlayGameplayRuntime(runtime, {
     activeOverlayId: 'runtime-a',
     renderer: createRendererProbe(),

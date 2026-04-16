@@ -1,4 +1,4 @@
-Add overlay state synchronization.
+Add event-driven overlay updates.
 
 PR Details:
-- Ensures consistent overlay behavior
+- Improves responsiveness and efficiency

@@ -1,4 +1,4 @@
-[ ] State sync works
-[ ] No desync
-[ ] Stable behavior
+[ ] Events trigger updates
+[ ] No polling overhead
+[ ] Performance improved
 [ ] Roadmap updated

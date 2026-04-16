@@ -2,7 +2,7 @@ MODEL: GPT-5.4
 REASONING: medium
 
 COMMAND:
-Implement overlay state synchronization:
-- Sync with gameplay state
-- Prevent desync
+Implement event-driven overlay updates:
+- Use events instead of polling
+- Improve responsiveness
 - Update roadmap status only
