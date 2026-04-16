@@ -1,4 +1,5 @@
-Add advanced overlay feature.
+Add context-aware overlays.
 
 PR Details:
-- Introduces Level 21 capabilities
+- Enables dynamic overlay behavior
+

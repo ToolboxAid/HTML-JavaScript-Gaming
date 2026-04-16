@@ -182,8 +182,65 @@ function assertDynamicPanelSizingCapability() {
   assert.equal(fallbackSnapshot[0].slot.height, 98, 'Resolver failures should preserve compatibility via configured height fallback.');
 }
 
+function assertContextAwareOverlayBehavior() {
+  const framework = createPhase19OverlayExpansionFramework();
+  framework.registerExtension(definePhase19OverlayExtension({
+    id: 'phase19-overlay-context-aware',
+    overlays: [
+      { id: 'ui', label: 'UI' },
+      { id: 'runtime', label: 'Runtime' },
+    ],
+    initialOverlayId: 'ui',
+    runtimeExtensions: [
+      {
+        overlayId: 'runtime',
+        compose: true,
+        panelWidth: 220,
+        panelHeight: 90,
+        onRender() {},
+        resolveContextBehavior(context) {
+          const phase = String(context?.gameplayState?.phase || '').trim();
+          if (phase !== 'combat') {
+            return {
+              visible: false,
+            };
+          }
+          return {
+            visible: true,
+            compose: true,
+            panelWidth: 312,
+            panelHeight: 104,
+          };
+        },
+      },
+    ],
+  }));
+
+  const runtime = framework.createRuntimeForExtension('phase19-overlay-context-aware');
+  const hiddenSnapshot = getOverlayGameplayRuntimeCompositionSnapshot(runtime, {
+    activeOverlayId: 'runtime',
+    renderer: createRendererProbe(960, 540),
+    gameplayState: { phase: 'menu' },
+  });
+  assert.equal(hiddenSnapshot.length, 0, 'Context-aware runtime should hide overlay when gameplay phase is not combat.');
+
+  const visibleSnapshot = getOverlayGameplayRuntimeCompositionSnapshot(runtime, {
+    activeOverlayId: 'runtime',
+    renderer: createRendererProbe(960, 540),
+    scene: {
+      getGameplayState() {
+        return { phase: 'combat' };
+      },
+    },
+  });
+  assert.equal(visibleSnapshot.length, 1, 'Context-aware runtime should detect gameplay state from scene and show overlay.');
+  assert.equal(visibleSnapshot[0].slot.width, 312, 'Context-aware runtime should adapt panel width from gameplay state behavior.');
+  assert.equal(visibleSnapshot[0].slot.height, 104, 'Context-aware runtime should adapt panel height from gameplay state behavior.');
+}
+
 export function run() {
   assertExpansionRegistrationAndCompatibility();
   assertExtensionLifecycleMutations();
   assertDynamicPanelSizingCapability();
+  assertContextAwareOverlayBehavior();
 }

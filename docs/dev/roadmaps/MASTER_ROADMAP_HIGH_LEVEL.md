@@ -827,4 +827,4 @@
 - [ ] full-repo validation sweep
 - [x] zero regression requirement
 - [.] contract freeze readiness
-- [ ] readiness for long-term maintenance mode
+- [.] readiness for long-term maintenance mode

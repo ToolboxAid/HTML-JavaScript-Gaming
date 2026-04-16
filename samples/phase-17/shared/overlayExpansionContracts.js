@@ -54,6 +54,9 @@ function normalizeRuntimeExtensionEntry(entry) {
   const onStep = typeof entry.onStep === 'function' ? entry.onStep : null;
   const onRender = typeof entry.onRender === 'function' ? entry.onRender : null;
   const resolvePanelSize = typeof entry.resolvePanelSize === 'function' ? entry.resolvePanelSize : null;
+  const resolveContextBehavior = typeof entry.resolveContextBehavior === 'function'
+    ? entry.resolveContextBehavior
+    : null;
   if (!onStep && !onRender) {
     return null;
   }
@@ -72,6 +75,7 @@ function normalizeRuntimeExtensionEntry(entry) {
     onStep,
     onRender,
     resolvePanelSize,
+    resolveContextBehavior,
     compose: entry.compose === true,
     layerOrder,
     visualPriority,

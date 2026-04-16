@@ -1,20 +1,21 @@
-# BUILD_PR_LEVEL_21_1_ADVANCED_OVERLAY_FEATURES
+# BUILD_PR_LEVEL_21_2_CONTEXT_AWARE_OVERLAYS
 
 ## Purpose
-Introduce advanced overlay capabilities building on plugin system.
+Add context-aware overlays that respond to gameplay state.
 
 ## Roadmap Improvement
-Begins Level 21 advanced feature set.
+Advances Level 21 with dynamic overlay behavior.
 
 ## Scope
-- Add one advanced overlay capability (e.g. dynamic resizing or contextual display)
-- Ensure compatibility with plugin system
+- Detect gameplay context
+- Show/hide or modify overlays dynamically
+- Validate behavior
 
 ## Test Steps
-1. Activate advanced overlay
-2. Validate behavior
-3. Confirm no regression
+1. Change gameplay state
+2. Verify overlay adapts
+3. Confirm stability
 
 ## Expected
-- Advanced overlay works
-- System stable
+- Context-driven overlays
+- No regression

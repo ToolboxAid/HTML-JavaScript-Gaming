@@ -2,7 +2,7 @@ MODEL: GPT-5.4
 REASONING: medium
 
 COMMAND:
-Implement advanced overlay feature:
-- Add one advanced capability
-- Maintain compatibility
+Implement context-aware overlays:
+- Detect gameplay state
+- Adapt overlay behavior
 - Update roadmap status only

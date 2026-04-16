@@ -1,3 +1,4 @@
-[ ] Feature works
-[ ] No regressions
+[ ] Context detection works
+[ ] Overlay adapts
+[ ] No regression
 [ ] Roadmap updated
