@@ -624,13 +624,13 @@
 - [x] 3D content loading path
 
 ### Track H - 3D Debug Support
-- [.] Transform inspector
+- [x] Transform inspector
 - [x] BUILD_PR_DEBUG_SURFACES_3D_SUPPORT
 - [x] APPLY_PR_DEBUG_SURFACES_3D_SUPPORT
-- [ ] Camera debug panel
-- [ ] Render pipeline stages
-- [ ] Collision overlays
-- [ ] Scene graph inspector
+- [x] Camera debug panel
+- [x] Render pipeline stages
+- [x] Collision overlays
+- [x] Scene graph inspector
 
 ### Sample Phase Tracks
 - [x] 3D phase normalized
@@ -681,7 +681,7 @@
 - [x] 3D movement
 - [x] 3D physics
 - [x] 3D tool support
-- [.] 3D debug support
+- [x] 3D debug support
 
 ### Later Capability Lanes
 - [x] Execute phase-16 / 3D capability lanes (after full real-network capability lane completion)

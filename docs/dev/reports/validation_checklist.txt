@@ -1,3 +1,18 @@
-- [ ] hierarchy renders
-- [ ] no crashes
-- [ ] prior panels unaffected
+BUILD_PR_LEVEL_17_21_TRACK_H_3D_DEBUG_SUPPORT_CLOSEOUT VALIDATION CHECKLIST
+
+Automated
+- [ ] Transform Inspector targeted test passes
+- [ ] camera debug panel test still passes if present
+- [ ] render pipeline stages test still passes if present
+- [ ] collision overlays test still passes if present
+- [ ] scene graph inspector test still passes if present
+
+Manual
+- [ ] app launches without new console errors
+- [ ] camera debug panel renders
+- [ ] render pipeline stages panel renders
+- [ ] collision overlays panel renders
+- [ ] scene graph inspector renders
+- [ ] Transform Inspector renders
+- [ ] all Track H panels are read-only and stable
+- [ ] roadmap statuses changed only where implementation evidence exists

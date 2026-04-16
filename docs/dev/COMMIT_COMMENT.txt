@@ -1,1 +1,5 @@
-Add 3D scene graph inspector panel
+Close out Track H 3D debug support with Transform Inspector completion
+
+- finish the remaining Transform Inspector work
+- validate the full Track H 3D debug panel set without regressions
+- update roadmap status conservatively based on execution-backed completion

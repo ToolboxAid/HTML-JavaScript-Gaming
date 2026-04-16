@@ -9,12 +9,12 @@ import { createCameraSummaryProvider } from "./cameraSummaryProvider.js";
 import { createCollisionOverlaysProvider } from "./collisionOverlaysProvider.js";
 import { createRenderPipelineStagesProvider } from "./renderPipelineStagesProvider.js";
 import { createSceneGraphInspectorProvider } from "./sceneGraphInspectorProvider.js";
-import { createTransformSummaryProvider } from "./transformSummaryProvider.js";
+import { createTransformInspectorProvider } from "./transformInspectorProvider.js";
 
 export function createStandard3dProviders(options = {}) {
   const adapters = options?.adapters || {};
   const providers = [
-    createTransformSummaryProvider(adapters),
+    createTransformInspectorProvider(adapters),
     createCameraSummaryProvider(adapters),
     createRenderPipelineStagesProvider(adapters),
     createCollisionOverlaysProvider(adapters),

@@ -9,12 +9,12 @@ import { PROVIDER_3D_CAMERA_SUMMARY } from "../providers/cameraSummaryProvider.j
 import { PROVIDER_3D_COLLISION_OVERLAYS } from "../providers/collisionOverlaysProvider.js";
 import { PROVIDER_3D_RENDER_PIPELINE_STAGES } from "../providers/renderPipelineStagesProvider.js";
 import { PROVIDER_3D_SCENE_GRAPH_INSPECTOR } from "../providers/sceneGraphInspectorProvider.js";
-import { PROVIDER_3D_TRANSFORM_SUMMARY } from "../providers/transformSummaryProvider.js";
+import { PROVIDER_3D_TRANSFORM_INSPECTOR } from "../providers/transformInspectorProvider.js";
 import { create3dCameraPanel } from "./panel3dCamera.js";
 import { create3dCollisionOverlaysPanel } from "./panel3dCollisionOverlays.js";
 import { create3dRenderPipelineStagesPanel } from "./panel3dRenderPipelineStages.js";
 import { create3dSceneGraphInspectorPanel } from "./panel3dSceneGraphInspector.js";
-import { create3dTransformPanel } from "./panel3dTransform.js";
+import { create3dTransformInspectorPanel } from "./panel3dTransformInspector.js";
 
 function pickProvider(providerMap, providerId) {
   if (providerMap instanceof Map) {
@@ -28,7 +28,7 @@ export function createStandard3dPanels(options = {}) {
     ? options.providerMap
     : new Map();
 
-  const transform = create3dTransformPanel(pickProvider(providerMap, PROVIDER_3D_TRANSFORM_SUMMARY), {
+  const transform = create3dTransformInspectorPanel(pickProvider(providerMap, PROVIDER_3D_TRANSFORM_INSPECTOR), {
     enabled: options.enabled === true
   });
   const camera = create3dCameraPanel(pickProvider(providerMap, PROVIDER_3D_CAMERA_SUMMARY), {
