@@ -1,5 +1,4 @@
-Add context-aware overlays.
+Add overlay state synchronization.
 
 PR Details:
-- Enables dynamic overlay behavior
-
+- Ensures consistent overlay behavior

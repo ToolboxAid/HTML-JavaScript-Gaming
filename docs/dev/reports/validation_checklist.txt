@@ -1,4 +1,4 @@
-[ ] Context detection works
-[ ] Overlay adapts
-[ ] No regression
+[ ] State sync works
+[ ] No desync
+[ ] Stable behavior
 [ ] Roadmap updated

@@ -1,21 +1,21 @@
-# BUILD_PR_LEVEL_21_2_CONTEXT_AWARE_OVERLAYS
+# BUILD_PR_LEVEL_21_3_OVERLAY_STATE_SYNCHRONIZATION
 
 ## Purpose
-Add context-aware overlays that respond to gameplay state.
+Ensure overlay state is synchronized with gameplay systems.
 
 ## Roadmap Improvement
-Advances Level 21 with dynamic overlay behavior.
+Advances Level 21 with consistent state behavior across overlays.
 
 ## Scope
-- Detect gameplay context
-- Show/hide or modify overlays dynamically
-- Validate behavior
+- Sync overlay state with gameplay state
+- Prevent desync issues
+- Validate across multiple overlays
 
 ## Test Steps
-1. Change gameplay state
-2. Verify overlay adapts
-3. Confirm stability
+1. Change gameplay state rapidly
+2. Verify overlays stay in sync
+3. Confirm no desync artifacts
 
 ## Expected
-- Context-driven overlays
-- No regression
+- Consistent overlay state
+- No desync

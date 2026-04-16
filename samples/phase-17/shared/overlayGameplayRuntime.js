@@ -91,6 +91,22 @@ function normalizeInteractionIndex(runtime) {
   return normalized;
 }
 
+function findRuntimeExtensionIndexByOverlayId(runtime, overlayId) {
+  if (!runtime || !Array.isArray(runtime.runtimeExtensions)) {
+    return -1;
+  }
+  const requestedOverlayId = String(overlayId || '').trim();
+  if (!requestedOverlayId) {
+    return -1;
+  }
+  for (let i = 0; i < runtime.runtimeExtensions.length; i += 1) {
+    if (String(runtime.runtimeExtensions[i]?.overlayId || '').trim() === requestedOverlayId) {
+      return i;
+    }
+  }
+  return -1;
+}
+
 function normalizeSafeZoneEntry(entry) {
   if (!entry || typeof entry !== 'object') {
     return null;
@@ -216,6 +232,103 @@ function resolveRuntimeExtensionContextBehavior(extension, context = {}) {
   } catch {
     return defaultBehavior;
   }
+}
+
+function resolveOverlayRuntimeSyncStateContainer(context = {}, gameplayState = null) {
+  if (context?.overlayRuntimeState && typeof context.overlayRuntimeState === 'object') {
+    return context.overlayRuntimeState;
+  }
+  if (gameplayState?.overlayRuntimeState && typeof gameplayState.overlayRuntimeState === 'object') {
+    return gameplayState.overlayRuntimeState;
+  }
+  if (gameplayState && typeof gameplayState === 'object') {
+    try {
+      gameplayState.overlayRuntimeState = {};
+      if (gameplayState.overlayRuntimeState && typeof gameplayState.overlayRuntimeState === 'object') {
+        return gameplayState.overlayRuntimeState;
+      }
+    } catch {
+      // Sync state creation is best effort only.
+    }
+  }
+  return null;
+}
+
+function writeOverlayRuntimeSyncSnapshot(container, snapshot) {
+  if (!container || typeof container !== 'object' || !snapshot || typeof snapshot !== 'object') {
+    return false;
+  }
+  try {
+    container.visible = snapshot.visible;
+    container.interactionIndex = snapshot.interactionIndex;
+    container.activeOverlayId = snapshot.activeOverlayId;
+    container.count = snapshot.count;
+    container.cycleKey = snapshot.cycleKey;
+    container.desyncCorrected = snapshot.desyncCorrected;
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+export function synchronizeOverlayGameplayRuntimeState(runtime, context = {}) {
+  if (!runtime) {
+    return null;
+  }
+
+  const gameplayState = resolveOverlayGameplayState(context);
+  const syncState = resolveOverlayRuntimeSyncStateContainer(context, gameplayState);
+  const runtimeExtensions = Array.isArray(runtime.runtimeExtensions) ? runtime.runtimeExtensions : [];
+  const count = runtimeExtensions.length;
+  let desyncCorrected = false;
+
+  if (syncState) {
+    if (syncState.visible === true || syncState.visible === false) {
+      runtime.interactionVisible = syncState.visible;
+    }
+
+    const incomingIndexRaw = Number(syncState.interactionIndex);
+    const hasIncomingIndex = Number.isFinite(incomingIndexRaw);
+    if (hasIncomingIndex && count > 0) {
+      const incomingIndex = Math.trunc(incomingIndexRaw);
+      if (incomingIndex < 0 || incomingIndex >= count || incomingIndex !== incomingIndexRaw) {
+        desyncCorrected = true;
+      }
+      runtime.interactionIndex = ((incomingIndex % count) + count) % count;
+    }
+
+    const requestedOverlayId = String(syncState.activeOverlayId || '').trim();
+    const resolvedOverlayIndex = findRuntimeExtensionIndexByOverlayId(runtime, requestedOverlayId);
+    if (requestedOverlayId) {
+      if (resolvedOverlayIndex >= 0) {
+        if (runtime.interactionIndex !== resolvedOverlayIndex) {
+          runtime.interactionIndex = resolvedOverlayIndex;
+        }
+      } else {
+        desyncCorrected = true;
+      }
+    }
+
+    if (hasIncomingIndex && requestedOverlayId && resolvedOverlayIndex >= 0 && count > 0) {
+      const incomingIndex = ((Math.trunc(incomingIndexRaw) % count) + count) % count;
+      if (incomingIndex !== resolvedOverlayIndex) {
+        desyncCorrected = true;
+      }
+    }
+  }
+
+  const interactionIndex = normalizeInteractionIndex(runtime);
+  const active = runtimeExtensions[interactionIndex] || null;
+  const snapshot = {
+    visible: runtime.interactionVisible !== false,
+    interactionIndex,
+    activeOverlayId: active?.overlayId || '',
+    count,
+    cycleKey: String(runtime.interactionCycleKey || LEVEL17_OVERLAY_CYCLE_KEY),
+    desyncCorrected,
+  };
+  writeOverlayRuntimeSyncSnapshot(syncState, snapshot);
+  return snapshot;
 }
 
 function getComposedRuntimeFrames(runtime, activeOverlayId, context = {}) {
@@ -570,7 +683,8 @@ export function setOverlayGameplayRuntimeVisible(runtime, visible) {
   return true;
 }
 
-export function getOverlayGameplayRuntimeInteractionSnapshot(runtime) {
+export function getOverlayGameplayRuntimeInteractionSnapshot(runtime, context = {}) {
+  synchronizeOverlayGameplayRuntimeState(runtime, context);
   const extensions = Array.isArray(runtime?.runtimeExtensions) ? runtime.runtimeExtensions : [];
   const index = normalizeInteractionIndex(runtime);
   const active = extensions[index] || null;
@@ -586,6 +700,7 @@ export function getOverlayGameplayRuntimeInteractionSnapshot(runtime) {
 }
 
 export function getOverlayGameplayRuntimeCompositionSnapshot(runtime, context = {}) {
+  synchronizeOverlayGameplayRuntimeState(runtime, context);
   const activeOverlayId = String(context?.activeOverlayId || '').trim();
   const safeZones = resolveLayoutSafeZones(context);
   const frames = deriveRenderHierarchy(attachCompositionSlots(
@@ -618,6 +733,7 @@ export function stepOverlayGameplayRuntimeControls(runtime, input, options = {})
   if (!runtime) {
     return false;
   }
+  synchronizeOverlayGameplayRuntimeState(runtime, options);
 
   const dtSeconds = Math.max(0, Math.min(0.25, Number(options?.dtSeconds) || 0));
   if (runtime.interactionCooldownRemainingSeconds > 0 && dtSeconds > 0) {
@@ -694,6 +810,7 @@ export function stepOverlayGameplayRuntimeControls(runtime, input, options = {})
 }
 
 export function stepOverlayGameplayRuntime(runtime, context = {}) {
+  synchronizeOverlayGameplayRuntimeState(runtime, context);
   if (
     !runtime ||
     runtime.interactionVisible === false ||
@@ -737,6 +854,7 @@ export function stepOverlayGameplayRuntime(runtime, context = {}) {
 }
 
 export function renderOverlayGameplayRuntime(runtime, context = {}) {
+  synchronizeOverlayGameplayRuntimeState(runtime, context);
   if (
     !runtime ||
     runtime.interactionVisible === false ||

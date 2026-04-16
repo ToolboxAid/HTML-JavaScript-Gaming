@@ -8,6 +8,7 @@ import assert from 'node:assert/strict';
 import { LEVEL17_OVERLAY_CYCLE_KEY } from '../../samples/phase-17/shared/overlayCycleInput.js';
 import {
   getOverlayGameplayRuntimeCompositionSnapshot,
+  getOverlayGameplayRuntimeInteractionSnapshot,
   renderOverlayGameplayRuntime,
   stepOverlayGameplayRuntime,
 } from '../../samples/phase-17/shared/overlayGameplayRuntime.js';
@@ -238,9 +239,66 @@ function assertContextAwareOverlayBehavior() {
   assert.equal(visibleSnapshot[0].slot.height, 104, 'Context-aware runtime should adapt panel height from gameplay state behavior.');
 }
 
+function assertOverlayStateSynchronizationAndDesyncRecovery() {
+  const framework = createPhase19OverlayExpansionFramework();
+  framework.registerExtension(definePhase19OverlayExtension({
+    id: 'phase19-overlay-sync',
+    overlays: [
+      { id: 'ui', label: 'UI' },
+      { id: 'runtime-a', label: 'Runtime A' },
+      { id: 'runtime-b', label: 'Runtime B' },
+    ],
+    initialOverlayId: 'ui',
+    runtimeExtensions: [
+      { overlayId: 'runtime-a', onRender() {} },
+      { overlayId: 'runtime-b', onRender() {} },
+    ],
+  }));
+
+  const runtime = framework.createRuntimeForExtension('phase19-overlay-sync');
+  const gameplayState = {
+    overlayRuntimeState: {
+      visible: true,
+      interactionIndex: 99,
+      activeOverlayId: 'runtime-b',
+    },
+  };
+
+  const initialInteraction = getOverlayGameplayRuntimeInteractionSnapshot(runtime, { gameplayState });
+  assert.equal(initialInteraction.index, 1, 'Sync should correct out-of-range index to the overlay requested by gameplay state.');
+  assert.equal(initialInteraction.activeOverlayId, 'runtime-b', 'Sync should align active overlay id with gameplay state request.');
+  assert.equal(gameplayState.overlayRuntimeState.desyncCorrected, true, 'Sync should flag corrected desync state.');
+  assert.equal(gameplayState.overlayRuntimeState.count, 2, 'Sync snapshot should expose runtime extension count.');
+
+  const renderRuntimeB = renderOverlayGameplayRuntime(runtime, {
+    activeOverlayId: 'runtime-b',
+    renderer: createRendererProbe(),
+    gameplayState,
+  });
+  assert.equal(renderRuntimeB, 1, 'Synced runtime should render requested gameplay overlay.');
+
+  gameplayState.overlayRuntimeState.visible = false;
+  gameplayState.overlayRuntimeState.activeOverlayId = 'runtime-a';
+  const renderHidden = renderOverlayGameplayRuntime(runtime, {
+    activeOverlayId: 'runtime-a',
+    renderer: createRendererProbe(),
+    gameplayState,
+  });
+  assert.equal(renderHidden, 0, 'Gameplay visibility sync should prevent overlay render while hidden.');
+
+  gameplayState.overlayRuntimeState.visible = true;
+  const renderRuntimeA = renderOverlayGameplayRuntime(runtime, {
+    activeOverlayId: 'runtime-a',
+    renderer: createRendererProbe(),
+    gameplayState,
+  });
+  assert.equal(renderRuntimeA, 1, 'Gameplay sync should recover to visible overlay rendering without desync.');
+}
+
 export function run() {
   assertExpansionRegistrationAndCompatibility();
   assertExtensionLifecycleMutations();
   assertDynamicPanelSizingCapability();
   assertContextAwareOverlayBehavior();
+  assertOverlayStateSynchronizationAndDesyncRecovery();
 }
