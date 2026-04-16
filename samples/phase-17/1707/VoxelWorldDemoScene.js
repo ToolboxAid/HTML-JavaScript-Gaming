@@ -7,10 +7,17 @@ VoxelWorldDemoScene.js
 import { Scene } from '/src/engine/scene/index.js';
 import { Theme, ThemeTokens } from '/src/engine/theme/index.js';
 import { drawFrame, drawPanel } from '/src/engine/debug/index.js';
+import {
+  createTabDebugOverlayController,
+  getTabDebugOverlayStatusLabel,
+  isTabDebugOverlayActive,
+  stepTabDebugOverlayController,
+} from '/samples/phase-17/shared/tabDebugOverlayCycle.js';
 
 const theme = new Theme(ThemeTokens);
 const WORLD_SIZE = 16;
 const CHUNK_SIZE = 4;
+const OVERLAY_CHUNK_RUNTIME = 'chunk-runtime';
 
 function clamp(value, min, max) {
   return Math.max(min, Math.min(max, value));
@@ -35,6 +42,12 @@ export default class ChunkStreamingVoxelScene extends Scene {
     this.lastFilledFaces = 0;
     this.lastActiveChunks = 0;
     this.heights = this.buildHeights();
+    this.tabDebugOverlays = createTabDebugOverlayController({
+      overlays: [
+        { id: OVERLAY_CHUNK_RUNTIME, label: 'Chunk Runtime' },
+      ],
+      initialOverlayId: OVERLAY_CHUNK_RUNTIME,
+    });
   }
 
   buildHeights() {
@@ -100,6 +113,7 @@ export default class ChunkStreamingVoxelScene extends Scene {
 
   step3DPhysics(dt, engine) {
     const input = engine.input;
+    stepTabDebugOverlayController(this.tabDebugOverlays, input);
     const step = Math.min(dt, 1 / 30);
     const panSpeed = 3;
     if (input?.isDown('KeyA')) this.camera.x -= panSpeed * step;
@@ -119,7 +133,7 @@ export default class ChunkStreamingVoxelScene extends Scene {
     drawFrame(renderer, theme, [
       'Sample 1707 - Minecraft Chunk Streaming',
       'Voxel chunk-window streaming keeps nearby terrain active around the camera anchor.',
-      'Controls: W/A/S/D pan | Up/Down or Q/E chunk radius',
+      `Controls: W/A/S/D pan | Up/Down or Q/E chunk radius | Debug: Tab/Shift+Tab (${getTabDebugOverlayStatusLabel(this.tabDebugOverlays)})`,
     ]);
 
     const viewport = this.viewport;
@@ -159,13 +173,15 @@ export default class ChunkStreamingVoxelScene extends Scene {
       this.drawBlock(renderer, block.x, block.y, block.z, block.baseRgb);
     }
 
-    drawPanel(renderer, 620, 34, 300, 188, 'Chunk Runtime', [
-      `World cells: ${WORLD_SIZE}x${WORLD_SIZE}`,
-      `Camera: x=${this.camera.x.toFixed(2)} z=${this.camera.z.toFixed(2)}`,
-      `Chunk radius: ${this.chunkRadius}`,
-      `Active chunks: ${this.lastActiveChunks}`,
-      `Blocks drawn: ${blocks.length}`,
-      `Filled faces: ${this.lastFilledFaces}`,
-    ]);
+    if (isTabDebugOverlayActive(this.tabDebugOverlays, OVERLAY_CHUNK_RUNTIME)) {
+      drawPanel(renderer, 620, 34, 300, 188, 'Chunk Runtime', [
+        `World cells: ${WORLD_SIZE}x${WORLD_SIZE}`,
+        `Camera: x=${this.camera.x.toFixed(2)} z=${this.camera.z.toFixed(2)}`,
+        `Chunk radius: ${this.chunkRadius}`,
+        `Active chunks: ${this.lastActiveChunks}`,
+        `Blocks drawn: ${blocks.length}`,
+        `Filled faces: ${this.lastFilledFaces}`,
+      ]);
+    }
   }
 }

@@ -130,10 +130,25 @@ function assertGameplayLoopAndDebugPanels() {
   scene.render(renderer);
   assert.equal(renderer.lines.length > 0, true, 'Mini-game scene should render visible wireframe lines.');
   assert.equal(renderer.texts.some((text) => text.includes('3D World - Outpost Arena')), true, 'Scene should render a clear world-layer label.');
-  assert.equal(renderer.texts.some((text) => text.includes('activeCameraId=')), true, 'Camera debug panel should render provider-backed lines.');
-  assert.equal(renderer.texts.some((text) => text.includes('overlayCount=')), true, 'Collision debug panel should render provider-backed lines.');
+  assert.equal(renderer.texts.some((text) => text.includes('Mini-Game Runtime')), true, 'Runtime debug overlay should render by default.');
+  assert.equal(renderer.texts.some((text) => text.includes('activeCameraId=')), false, 'Only one debug overlay should be visible at a time.');
+  assert.equal(renderer.texts.some((text) => text.includes('overlayCount=')), false, 'Collision debug overlay should be hidden when not active.');
   assert.equal(renderer.texts.some((text) => text.includes('UI Layer - Mission HUD')), true, 'Polished HUD header should render.');
   assert.equal(renderer.texts.some((text) => text.includes('Mission Feed')), true, 'Mission feed panel should render.');
+
+  scene.step3DPhysics(0.02, { input: makeInput(['Tab']) });
+  scene.step3DPhysics(0.02, { input: makeInput([]) });
+  const cameraOverlayRenderer = createRendererProbe();
+  scene.render(cameraOverlayRenderer);
+  assert.equal(cameraOverlayRenderer.texts.some((text) => text.includes('activeCameraId=')), true, 'Tab should cycle to camera summary overlay.');
+  assert.equal(cameraOverlayRenderer.texts.some((text) => text.includes('overlayCount=')), false, 'Camera overlay view should hide collision overlay.');
+
+  scene.step3DPhysics(0.02, { input: makeInput(['Tab']) });
+  scene.step3DPhysics(0.02, { input: makeInput([]) });
+  const collisionOverlayRenderer = createRendererProbe();
+  scene.render(collisionOverlayRenderer);
+  assert.equal(collisionOverlayRenderer.texts.some((text) => text.includes('overlayCount=')), true, 'Second Tab press should cycle to collision overlay.');
+  assert.equal(collisionOverlayRenderer.texts.some((text) => text.includes('activeCameraId=')), false, 'Collision overlay view should hide camera overlay.');
 }
 
 export function run() {

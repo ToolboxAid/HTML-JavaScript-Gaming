@@ -96,8 +96,26 @@ function assertFinalReferenceRuntimeFlow() {
   scene.render(renderer);
   assert.equal(renderer.texts.some((text) => text.includes('Final Reference Runtime')), true, 'Final runtime panel should render.');
   assert.equal(renderer.texts.some((text) => text.includes('profile=final-reference')), true, 'Reference runtime metrics should render.');
-  assert.equal(renderer.texts.some((text) => text.includes('activeCameraId=')), true, 'Camera debug panel should remain visible.');
-  assert.equal(renderer.texts.some((text) => text.includes('overlayCount=')), true, 'Collision debug panel should remain visible.');
+  assert.equal(renderer.texts.some((text) => text.includes('activeCameraId=')), false, 'Only one debug overlay should be visible at a time.');
+  assert.equal(renderer.texts.some((text) => text.includes('overlayCount=')), false, 'Only one debug overlay should be visible at a time.');
+
+  scene.step3DPhysics(0.02, { input: makeInput(['Tab']) });
+  scene.step3DPhysics(0.02, { input: makeInput([]) });
+  const runtimeRenderer = createRendererProbe();
+  scene.render(runtimeRenderer);
+  assert.equal(runtimeRenderer.texts.some((text) => text.includes('Mini-Game Runtime')), true, 'Tab should cycle from final overlay to runtime overlay.');
+
+  scene.step3DPhysics(0.02, { input: makeInput(['Tab']) });
+  scene.step3DPhysics(0.02, { input: makeInput([]) });
+  const cameraRenderer = createRendererProbe();
+  scene.render(cameraRenderer);
+  assert.equal(cameraRenderer.texts.some((text) => text.includes('activeCameraId=')), true, 'Cycle should reach camera debug summary.');
+
+  scene.step3DPhysics(0.02, { input: makeInput(['Tab']) });
+  scene.step3DPhysics(0.02, { input: makeInput([]) });
+  const collisionRenderer = createRendererProbe();
+  scene.render(collisionRenderer);
+  assert.equal(collisionRenderer.texts.some((text) => text.includes('overlayCount=')), true, 'Cycle should reach collision debug summary.');
 }
 
 export function run() {

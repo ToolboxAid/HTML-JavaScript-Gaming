@@ -108,8 +108,27 @@ function assertTelemetryOverlayAndCounters() {
   scene.render(renderer);
   assert.equal(renderer.texts.some((text) => text.includes('Telemetry Overlay')), true, 'Telemetry overlay panel should render.');
   assert.equal(renderer.texts.some((text) => text.includes('playerSpeed=')), true, 'Telemetry overlay should render player-speed metrics.');
-  assert.equal(renderer.texts.some((text) => text.includes('activeCameraId=')), true, 'Camera debug panel should remain visible.');
-  assert.equal(renderer.texts.some((text) => text.includes('overlayCount=')), true, 'Collision debug panel should remain visible.');
+  assert.equal(renderer.texts.some((text) => text.includes('activeCameraId=')), false, 'Only one debug overlay should be visible at a time.');
+  assert.equal(renderer.texts.some((text) => text.includes('overlayCount=')), false, 'Only one debug overlay should be visible at a time.');
+
+  scene.step3DPhysics(0.02, { input: makeInput(['Tab']) });
+  scene.step3DPhysics(0.02, { input: makeInput([]) });
+  const runtimeRenderer = createRendererProbe();
+  scene.render(runtimeRenderer);
+  assert.equal(runtimeRenderer.texts.some((text) => text.includes('Mini-Game Runtime')), true, 'Tab should cycle to runtime overlay.');
+  assert.equal(runtimeRenderer.texts.some((text) => text.includes('Telemetry Overlay')), false, 'Telemetry overlay should hide when another debug overlay is active.');
+
+  scene.step3DPhysics(0.02, { input: makeInput(['Tab']) });
+  scene.step3DPhysics(0.02, { input: makeInput([]) });
+  const cameraRenderer = createRendererProbe();
+  scene.render(cameraRenderer);
+  assert.equal(cameraRenderer.texts.some((text) => text.includes('activeCameraId=')), true, 'Cycle should reach camera debug summary.');
+
+  scene.step3DPhysics(0.02, { input: makeInput(['Tab']) });
+  scene.step3DPhysics(0.02, { input: makeInput([]) });
+  const collisionRenderer = createRendererProbe();
+  scene.render(collisionRenderer);
+  assert.equal(collisionRenderer.texts.some((text) => text.includes('overlayCount=')), true, 'Cycle should reach collision debug summary.');
 }
 
 export function run() {

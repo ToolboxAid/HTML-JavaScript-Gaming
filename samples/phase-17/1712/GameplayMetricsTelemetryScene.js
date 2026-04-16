@@ -6,6 +6,7 @@ GameplayMetricsTelemetryScene.js
 */
 import { drawPanel } from '/src/engine/debug/index.js';
 import RealGameplayMiniGameScene from '/samples/phase-17/1708/RealGameplayMiniGameScene.js';
+const OVERLAY_TELEMETRY = 'telemetry';
 
 function pushSample(history, value, limit = 48) {
   history.push(Number.isFinite(value) ? Number(value) : 0);
@@ -51,6 +52,7 @@ export default class GameplayMetricsTelemetryScene extends RealGameplayMiniGameS
       fpsHistory: [],
       collisionHistory: [],
     };
+    this.registerDebugOverlay(OVERLAY_TELEMETRY, 'Telemetry Overlay', { makeActive: true });
   }
 
   step3DPhysics(dtSeconds, engine) {
@@ -88,6 +90,9 @@ export default class GameplayMetricsTelemetryScene extends RealGameplayMiniGameS
 
   render(renderer) {
     super.render(renderer);
+    if (!this.isDebugOverlayActive(OVERLAY_TELEMETRY)) {
+      return;
+    }
 
     const remainingCores = this.cores.filter((core) => core.collected === false).length;
     const objectCount = this.obstacles.length + this.enemies.length + this.cores.length + 1;

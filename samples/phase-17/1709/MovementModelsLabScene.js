@@ -8,6 +8,12 @@ import { Scene } from '/src/engine/scene/index.js';
 import { Theme, ThemeTokens } from '/src/engine/theme/index.js';
 import { drawFrame, drawPanel } from '/src/engine/debug/index.js';
 import {
+  createTabDebugOverlayController,
+  getTabDebugOverlayStatusLabel,
+  isTabDebugOverlayActive,
+  stepTabDebugOverlayController,
+} from '/samples/phase-17/shared/tabDebugOverlayCycle.js';
+import {
   applyPhase16CameraMode,
   createPhase16ViewState,
   createProjectionViewport,
@@ -32,6 +38,8 @@ const MODE_ORDER = Object.freeze([
   MOVEMENT_MODES.TANK,
   MOVEMENT_MODES.WEIGHTED,
 ]);
+const OVERLAY_MOVEMENT_RUNTIME = 'movement-runtime';
+const OVERLAY_PHASE16 = 'phase16-overlay';
 
 function clamp(value, min, max) {
   return Math.max(min, Math.min(max, value));
@@ -88,6 +96,13 @@ export default class MovementModelsLabScene extends Scene {
     this.lastModeSummary = '';
     this.lastInputSummary = '';
     this.lastSpeed = 0;
+    this.tabDebugOverlays = createTabDebugOverlayController({
+      overlays: [
+        { id: OVERLAY_MOVEMENT_RUNTIME, label: 'Movement Runtime' },
+        { id: OVERLAY_PHASE16, label: 'Phase16 Overlay' },
+      ],
+      initialOverlayId: OVERLAY_MOVEMENT_RUNTIME,
+    });
   }
 
   setCamera3D(camera3D) {
@@ -209,6 +224,7 @@ export default class MovementModelsLabScene extends Scene {
     const dt = Math.max(0, Math.min(0.05, Number(dtSeconds) || 0));
     this.elapsed += dt;
     const input = engine?.input;
+    stepTabDebugOverlayController(this.tabDebugOverlays, input);
     stepPhase16ViewToggles(this.viewState, input);
 
     if (input?.isDown('Digit1')) this.setMovementMode(MOVEMENT_MODES.DIRECT);
@@ -271,7 +287,7 @@ export default class MovementModelsLabScene extends Scene {
     drawFrame(renderer, theme, [
       'Sample 1709 - Movement Models Lab',
       'Compare direct axis movement, tank controls, and weighted movement in one controlled arena.',
-      'Mode: 1 Direct | 2 Tank | 3 Weighted | Cycle: M | Move: W A S D | Camera yaw: Q/E | Camera mode: C',
+      `Mode: 1 Direct | 2 Tank | 3 Weighted | Cycle: M | Move: W A S D | Camera yaw: Q/E | Debug: Tab/Shift+Tab (${getTabDebugOverlayStatusLabel(this.tabDebugOverlays)})`,
     ]);
 
     const viewport = this.viewport;
@@ -317,16 +333,18 @@ export default class MovementModelsLabScene extends Scene {
     const runtimeX = hudX;
     const runtimeY = Math.max(12, hudY - runtimeHeight - runtimeGap);
 
-    drawPanel(renderer, runtimeX, runtimeY, runtimeWidth, runtimeHeight, 'Movement Runtime', [
-      `Mode: ${formatMode(this.movementMode)}`,
-      `Actor: x=${this.actor.x.toFixed(2)} z=${this.actor.z.toFixed(2)}`,
-      `Velocity (weighted): x=${this.weightedVelocity.x.toFixed(2)} z=${this.weightedVelocity.z.toFixed(2)}`,
-      `Camera yaw offset: ${this.cameraYawOffset.toFixed(2)}`,
-      this.lastModeSummary,
-      'Direct: immediate axis response',
-      'Tank: rotate + throttle',
-      'Weighted: acceleration + drag',
-    ]);
+    if (isTabDebugOverlayActive(this.tabDebugOverlays, OVERLAY_MOVEMENT_RUNTIME)) {
+      drawPanel(renderer, runtimeX, runtimeY, runtimeWidth, runtimeHeight, 'Movement Runtime', [
+        `Mode: ${formatMode(this.movementMode)}`,
+        `Actor: x=${this.actor.x.toFixed(2)} z=${this.actor.z.toFixed(2)}`,
+        `Velocity (weighted): x=${this.weightedVelocity.x.toFixed(2)} z=${this.weightedVelocity.z.toFixed(2)}`,
+        `Camera yaw offset: ${this.cameraYawOffset.toFixed(2)}`,
+        this.lastModeSummary,
+        'Direct: immediate axis response',
+        'Tank: rotate + throttle',
+        'Weighted: acceleration + drag',
+      ]);
+    }
 
     renderer.drawRect(hudX, hudY, hudWidth, hudHeight, 'rgba(15, 23, 42, 0.76)');
     renderer.strokeRect(hudX, hudY, hudWidth, hudHeight, '#4ade80', 1);
@@ -340,9 +358,11 @@ export default class MovementModelsLabScene extends Scene {
     renderer.drawText(`Heading: ${this.actor.heading.toFixed(2)} rad`, hudTextX, hudY + 96, { color: '#e2e8f0', font: '12px monospace' });
     renderer.drawText(`Camera follow mode: ${this.viewState.cameraMode}`, hudTextX, hudY + 114, { color: '#e2e8f0', font: '12px monospace' });
 
-    drawPhase16DebugOverlay(renderer, viewport, this.viewState, [
-      `Active movement model: ${formatMode(this.movementMode)}`,
-      'Use 1/2/3 or M to compare control response in real time.',
-    ]);
+    if (isTabDebugOverlayActive(this.tabDebugOverlays, OVERLAY_PHASE16)) {
+      drawPhase16DebugOverlay(renderer, viewport, this.viewState, [
+        `Active movement model: ${formatMode(this.movementMode)}`,
+        'Use 1/2/3 or M to compare control response in real time.',
+      ]);
+    }
   }
 }

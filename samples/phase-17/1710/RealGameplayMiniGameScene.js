@@ -24,6 +24,14 @@ import {
   drawWireBox,
   stepPhase16ViewToggles,
 } from '/samples/phase-16/shared/threeDWireframe.js';
+import {
+  appendTabDebugOverlay,
+  createTabDebugOverlayController,
+  getTabDebugOverlayStatusLabel,
+  isTabDebugOverlayActive,
+  setTabDebugOverlayActive,
+  stepTabDebugOverlayController,
+} from '/samples/phase-17/shared/tabDebugOverlayCycle.js';
 
 const theme = new Theme(ThemeTokens);
 
@@ -32,6 +40,10 @@ const READY_STATE = 'ready';
 const RUNNING_STATE = 'running';
 const WON_STATE = 'won';
 const LOST_STATE = 'lost';
+const OVERLAY_RUNTIME = 'runtime';
+const OVERLAY_CAMERA = 'camera';
+const OVERLAY_COLLISION = 'collision';
+const OVERLAY_PHASE16 = 'phase16';
 
 function clamp(value, min, max) {
   return Math.max(min, Math.min(max, value));
@@ -111,6 +123,15 @@ export default class RealGameplayMiniGameScene extends Scene {
       providerMap,
       enabled: true,
     });
+    this.tabDebugOverlays = createTabDebugOverlayController({
+      overlays: [
+        { id: OVERLAY_RUNTIME, label: 'Mini-Game Runtime' },
+        { id: OVERLAY_CAMERA, label: '3D Camera Summary' },
+        { id: OVERLAY_COLLISION, label: '3D Collision Overlays' },
+        { id: OVERLAY_PHASE16, label: 'Phase16 Overlay' },
+      ],
+      initialOverlayId: OVERLAY_RUNTIME,
+    });
   }
 
   addEvent(text) {
@@ -189,6 +210,24 @@ export default class RealGameplayMiniGameScene extends Scene {
   setCamera3D(camera3D) {
     this.camera3D = camera3D;
     this.syncCamera();
+  }
+
+  registerDebugOverlay(overlayId, label, { makeActive = false } = {}) {
+    appendTabDebugOverlay(this.tabDebugOverlays, {
+      id: overlayId,
+      label,
+    });
+    if (makeActive) {
+      setTabDebugOverlayActive(this.tabDebugOverlays, overlayId);
+    }
+  }
+
+  isDebugOverlayActive(overlayId) {
+    return isTabDebugOverlayActive(this.tabDebugOverlays, overlayId);
+  }
+
+  getDebugOverlayStatusLabel() {
+    return getTabDebugOverlayStatusLabel(this.tabDebugOverlays);
   }
 
   pushCollisionRow(overlayId, kind, state, enabled = true) {
@@ -413,6 +452,7 @@ export default class RealGameplayMiniGameScene extends Scene {
     const dt = Math.max(0, Math.min(0.05, Number(dtSeconds) || 0));
     this.elapsed += dt;
     const input = engine?.input;
+    stepTabDebugOverlayController(this.tabDebugOverlays, input);
 
     stepPhase16ViewToggles(this.viewState, input);
 
@@ -465,7 +505,7 @@ export default class RealGameplayMiniGameScene extends Scene {
     drawFrame(renderer, theme, [
       'Sample 1710 - Real Gameplay Mini-Game (Polished)',
       'Deploy, collect data cores, survive sentry patrols, and complete mission objectives.',
-      'Start: Space/Enter | Move: W A S D | Camera yaw: Q/E or Left/Right | Restart after match: R | Camera mode: C',
+      `Start: Space/Enter | Move: W A S D | Camera yaw: Q/E or Left/Right | Restart: R | Overlay: Tab/Shift+Tab (${this.getDebugOverlayStatusLabel()})`,
     ]);
 
     const viewport = this.viewport;
@@ -599,7 +639,10 @@ export default class RealGameplayMiniGameScene extends Scene {
       max: this.roundSeconds,
       barColor: '#38bdf8',
     });
-    renderer.drawText('Camera mode: C | Debug overlay: V', 64, 166, { color: '#e2e8f0', font: '11px monospace' });
+    renderer.drawText(`Camera mode: C | Overlay cycle: Tab/Shift+Tab (${this.getDebugOverlayStatusLabel()})`, 64, 166, {
+      color: '#e2e8f0',
+      font: '11px monospace',
+    });
     renderer.drawText('Move: W A S D | Yaw: Q/E or Left/Right', 64, 182, { color: '#e2e8f0', font: '11px monospace' });
 
     const statePulse = 0.5 + Math.sin(this.statePulse * 3.2) * 0.5;
@@ -637,20 +680,28 @@ export default class RealGameplayMiniGameScene extends Scene {
           : `Status: ${this.gameState}.`,
     ]);
 
-    drawPanel(renderer, 620, 414, 300, 120, 'Mini-Game Runtime', [
-      `Entities: obstacles=${this.obstacles.length} sentries=${this.enemies.length}`,
-      `Remaining cores: ${this.cores.filter((core) => !core.collected).length}`,
-      `Player: x=${this.player.x.toFixed(2)} z=${this.player.z.toFixed(2)}`,
-      `Collision overlays: ${this.lastCollisionCount}`,
-      `Camera mode: ${this.viewState.cameraMode}`,
-    ]);
+    if (this.isDebugOverlayActive(OVERLAY_RUNTIME)) {
+      drawPanel(renderer, 620, 414, 300, 120, 'Mini-Game Runtime', [
+        `Entities: obstacles=${this.obstacles.length} sentries=${this.enemies.length}`,
+        `Remaining cores: ${this.cores.filter((core) => !core.collected).length}`,
+        `Player: x=${this.player.x.toFixed(2)} z=${this.player.z.toFixed(2)}`,
+        `Collision overlays: ${this.lastCollisionCount}`,
+        `Camera mode: ${this.viewState.cameraMode}`,
+      ]);
+    }
 
-    this.renderStandardDebugPanel(renderer, PANEL_3D_CAMERA, 620, 34, 300, 150, 7);
-    this.renderStandardDebugPanel(renderer, PANEL_3D_COLLISION, 620, 194, 300, 210, 9);
+    if (this.isDebugOverlayActive(OVERLAY_CAMERA)) {
+      this.renderStandardDebugPanel(renderer, PANEL_3D_CAMERA, 620, 34, 300, 150, 7);
+    }
+    if (this.isDebugOverlayActive(OVERLAY_COLLISION)) {
+      this.renderStandardDebugPanel(renderer, PANEL_3D_COLLISION, 620, 194, 300, 210, 9);
+    }
 
-    drawPhase16DebugOverlay(renderer, viewport, this.viewState, [
-      `Match state: ${this.gameState}`,
-      'Standard 3D camera/collision debug panels rendered from provider snapshots',
-    ]);
+    if (this.isDebugOverlayActive(OVERLAY_PHASE16)) {
+      drawPhase16DebugOverlay(renderer, viewport, this.viewState, [
+        `Match state: ${this.gameState}`,
+        'Standard 3D camera/collision debug panels rendered from provider snapshots',
+      ]);
+    }
   }
 }

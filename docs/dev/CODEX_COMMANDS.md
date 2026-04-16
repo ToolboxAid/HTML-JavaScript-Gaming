@@ -1,3 +1,3 @@
 MODEL: GPT-5.3-codex
 REASONING: high
-COMMAND: Implement Sample 1713 as the final reference game using existing engine/sample systems only. Register it in samples/index.html after the repaired 1707-1712 sequence, preserve existing work, keep logic bounded unless truly shared, and package the repo-structured result to <project folder>/tmp/BUILD_PR_LEVEL_17_45_SAMPLE_1713_FINAL_REFERENCE_GAME.zip
+COMMAND: Apply TAB-based debug overlay cycling to all samples from 1707 onward using shared debug infrastructure, ensuring only one overlay is visible at a time, preserving gameplay, and package to <project folder>/tmp/BUILD_PR_LEVEL_17_48_APPLY_TAB_DEBUG_TO_SAMPLES_1707_PLUS.zip

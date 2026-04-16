@@ -6,6 +6,7 @@ FinalReferenceGameScene.js
 */
 import { drawPanel } from '/src/engine/debug/index.js';
 import GameplayMetricsTelemetryScene from '/samples/phase-17/1712/GameplayMetricsTelemetryScene.js';
+const OVERLAY_FINAL_REFERENCE_RUNTIME = 'final-reference-runtime';
 
 function clamp(value, min, max) {
   return Math.max(min, Math.min(max, value));
@@ -57,6 +58,7 @@ export default class FinalReferenceGameScene extends GameplayMetricsTelemetrySce
       completionBonus: 0,
       phase: 'briefing',
     };
+    this.registerDebugOverlay(OVERLAY_FINAL_REFERENCE_RUNTIME, 'Final Reference Runtime', { makeActive: true });
   }
 
   step3DPhysics(dtSeconds, engine) {
@@ -124,6 +126,9 @@ export default class FinalReferenceGameScene extends GameplayMetricsTelemetrySce
 
   render(renderer) {
     super.render(renderer);
+    if (!this.isDebugOverlayActive(OVERLAY_FINAL_REFERENCE_RUNTIME)) {
+      return;
+    }
 
     drawPanel(renderer, 384, 286, 228, 248, 'Final Reference Runtime', [
       `profile=final-reference`,
