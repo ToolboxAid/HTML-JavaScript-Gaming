@@ -19,6 +19,18 @@ const DEFAULT_RESOURCE_LIMITS = Object.freeze({
   maxHeapUsedBytes: 512 * 1024 * 1024,
   maxHeapDeltaBytes: 8 * 1024 * 1024,
 });
+const UNSAFE_CONTEXT_KEYS = Object.freeze([
+  'process',
+  'global',
+  'globalThis',
+  'window',
+  'document',
+  'Function',
+  'eval',
+  'require',
+  'module',
+]);
+const RESERVED_PROTOTYPE_KEYS = Object.freeze(['__proto__', 'prototype', 'constructor']);
 
 function normalizePluginId(pluginId) {
   return String(pluginId || '').trim();
@@ -30,6 +42,75 @@ function normalizeLimit(value, fallback) {
     return fallback;
   }
   return numeric;
+}
+
+function isPlainObject(value) {
+  if (!value || typeof value !== 'object') {
+    return false;
+  }
+  const proto = Object.getPrototypeOf(value);
+  return proto === Object.prototype || proto === null;
+}
+
+function sanitizePluginContextValue(value, depth = 0) {
+  if (depth > 6) {
+    return null;
+  }
+  if (value === null) {
+    return null;
+  }
+  const valueType = typeof value;
+  if (valueType === 'string' || valueType === 'number' || valueType === 'boolean') {
+    return value;
+  }
+  if (valueType === 'bigint') {
+    return Number(value);
+  }
+  if (valueType === 'undefined' || valueType === 'function' || valueType === 'symbol') {
+    return undefined;
+  }
+
+  if (Array.isArray(value)) {
+    const result = [];
+    for (let i = 0; i < value.length; i += 1) {
+      const sanitized = sanitizePluginContextValue(value[i], depth + 1);
+      if (typeof sanitized === 'undefined') {
+        continue;
+      }
+      result.push(sanitized);
+    }
+    return result;
+  }
+
+  if (!isPlainObject(value)) {
+    return undefined;
+  }
+
+  const output = {};
+  const keys = Object.keys(value);
+  for (let i = 0; i < keys.length; i += 1) {
+    const key = String(keys[i] || '').trim();
+    if (!key) {
+      continue;
+    }
+    if (UNSAFE_CONTEXT_KEYS.includes(key) || RESERVED_PROTOTYPE_KEYS.includes(key)) {
+      continue;
+    }
+    const sanitized = sanitizePluginContextValue(value[key], depth + 1);
+    if (typeof sanitized === 'undefined') {
+      continue;
+    }
+    output[key] = sanitized;
+  }
+  return output;
+}
+
+function sanitizePluginContext(context = {}) {
+  const sanitized = sanitizePluginContextValue(context, 0);
+  if (!sanitized || typeof sanitized !== 'object') {
+    return {};
+  }
+  return sanitized;
 }
 
 function normalizeResourceLimits(resourceLimits = {}) {
@@ -251,17 +332,70 @@ export default function createPhase19OverlayPluginRegistry({
     return pluginRecordMap.get(normalizedPluginId) ?? null;
   }
 
-  function getReadonlyRegistryView() {
-    return createReadonlyFacade(api, [
-      'getPlugin',
-      'getPluginState',
-      'getPluginExtensionId',
-      'getPluginMetrics',
-      'listPluginMetrics',
-      'getPluginDiagnostics',
-      'listPluginDiagnostics',
-      'listPlugins',
-    ]);
+  function getReadonlyRegistryView(pluginId = '') {
+    const normalizedPluginId = normalizePluginId(pluginId);
+    return Object.freeze({
+      getPlugin(requestedPluginId = normalizedPluginId) {
+        const requestedId = normalizePluginId(requestedPluginId);
+        if (!requestedId || requestedId !== normalizedPluginId) {
+          return null;
+        }
+        return api.getPlugin(requestedId);
+      },
+      getPluginState(requestedPluginId = normalizedPluginId) {
+        const requestedId = normalizePluginId(requestedPluginId);
+        if (!requestedId || requestedId !== normalizedPluginId) {
+          return '';
+        }
+        return api.getPluginState(requestedId);
+      },
+      getPluginExtensionId(requestedPluginId = normalizedPluginId) {
+        const requestedId = normalizePluginId(requestedPluginId);
+        if (!requestedId || requestedId !== normalizedPluginId) {
+          return '';
+        }
+        return api.getPluginExtensionId(requestedId);
+      },
+      getPluginMetrics(requestedPluginId = normalizedPluginId) {
+        const requestedId = normalizePluginId(requestedPluginId);
+        if (!requestedId || requestedId !== normalizedPluginId) {
+          return null;
+        }
+        return api.getPluginMetrics(requestedId);
+      },
+      getPluginDiagnostics(requestedPluginId = normalizedPluginId) {
+        const requestedId = normalizePluginId(requestedPluginId);
+        if (!requestedId || requestedId !== normalizedPluginId) {
+          return null;
+        }
+        return api.getPluginDiagnostics(requestedId);
+      },
+      listPlugins() {
+        const plugin = api.getPlugin(normalizedPluginId);
+        if (!plugin) {
+          return Object.freeze([]);
+        }
+        return Object.freeze([{
+          id: normalizedPluginId,
+          state: api.getPluginState(normalizedPluginId),
+          extensionId: api.getPluginExtensionId(normalizedPluginId),
+        }]);
+      },
+      listPluginMetrics() {
+        const metrics = api.getPluginMetrics(normalizedPluginId);
+        if (!metrics) {
+          return Object.freeze([]);
+        }
+        return Object.freeze([{ pluginId: normalizedPluginId, metrics }]);
+      },
+      listPluginDiagnostics() {
+        const diagnostics = api.getPluginDiagnostics(normalizedPluginId);
+        if (!diagnostics) {
+          return Object.freeze([]);
+        }
+        return Object.freeze([diagnostics]);
+      },
+    });
   }
 
   function getReadonlyFrameworkView() {
@@ -454,13 +588,19 @@ export default function createPhase19OverlayPluginRegistry({
     try {
       const previousHookPluginId = activeHookPluginId;
       activeHookPluginId = record.plugin.id;
+      const safeContext = sanitizePluginContext(context);
       const lifecycleContext = deepFreezeValue({
-        ...context,
+        ...safeContext,
         phase,
         pluginId: record.plugin.id,
         extensionId: record.extension.id,
-        registry: getReadonlyRegistryView(),
+        registry: getReadonlyRegistryView(record.plugin.id),
         expansionFramework: getReadonlyFrameworkView(),
+        security: {
+          mode: 'isolated',
+          scopedRegistryAccess: true,
+          unsafeContextKeysRemoved: UNSAFE_CONTEXT_KEYS,
+        },
       });
       try {
         hook(lifecycleContext);
@@ -697,10 +837,15 @@ export default function createPhase19OverlayPluginRegistry({
       normalizedPlugin,
       normalizedPlugin.createOverlayExtension
         ? normalizedPlugin.createOverlayExtension({
+          ...sanitizePluginContext(context),
           pluginId,
-          registry: getReadonlyRegistryView(),
+          registry: getReadonlyRegistryView(pluginId),
           expansionFramework: getReadonlyFrameworkView(),
-          ...context,
+          security: {
+            mode: 'isolated',
+            scopedRegistryAccess: true,
+            unsafeContextKeysRemoved: UNSAFE_CONTEXT_KEYS,
+          },
         })
         : normalizedPlugin.extension
     );

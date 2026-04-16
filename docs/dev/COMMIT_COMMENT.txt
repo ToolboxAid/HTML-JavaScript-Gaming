@@ -1,4 +1,5 @@
-Add plugin resource limits.
+Add plugin security boundaries.
 
 PR Details:
-- Prevents resource abuse
+- Restricts unsafe plugin behavior
+- Improves system safety

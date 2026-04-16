@@ -1,21 +1,21 @@
-# BUILD_PR_LEVEL_20_7_OVERLAY_PLUGIN_RESOURCE_LIMITS
+# BUILD_PR_LEVEL_20_8_OVERLAY_PLUGIN_SECURITY_BOUNDARIES
 
 ## Purpose
-Enforce resource limits on overlay plugins.
+Establish security boundaries for overlay plugins.
 
 ## Roadmap Improvement
-Prevents plugins from degrading system performance.
+Enhances system safety by restricting plugin capabilities.
 
 ## Scope
-- Define CPU/memory limits
-- Enforce limits
-- Validate behavior under limits
+- Define allowed plugin operations
+- Restrict unsafe access
+- Validate secure execution
 
 ## Test Steps
-1. Run heavy plugin
-2. Verify limits enforced
-3. Confirm system stability
+1. Attempt restricted operations
+2. Verify enforcement
+3. Confirm normal plugin behavior unaffected
 
 ## Expected
-- Limits enforced
-- No system degradation
+- Security rules enforced
+- No unsafe access

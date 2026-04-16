@@ -820,7 +820,7 @@
 ### Track G — Extensibility Readiness
 - [x] validate plugin/extension patterns
 - [x] validate adding new systems is clean
-- [.] validate external integration points
+- [x] validate external integration points
 - [x] ensure future phases can build cleanly
 
 ### Track H — Final Stability Gate

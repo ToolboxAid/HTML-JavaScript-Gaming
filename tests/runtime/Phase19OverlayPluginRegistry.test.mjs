@@ -39,8 +39,17 @@ function assertPluginRegistrationAndRuntimeCompatibility() {
     createOverlayExtension(context) {
       accessSurface.registryRegisterPluginType = typeof context?.registry?.registerPlugin;
       accessSurface.registryGetPluginStateType = typeof context?.registry?.getPluginState;
+      accessSurface.registryOtherStateFromCreate = context?.registry?.getPluginState?.('phase19.other');
+      accessSurface.createListPluginsLength = Array.isArray(context?.registry?.listPlugins?.())
+        ? context.registry.listPlugins().length
+        : -1;
       accessSurface.frameworkRegisterExtensionType = typeof context?.expansionFramework?.registerExtension;
       accessSurface.frameworkListExtensionIdsType = typeof context?.expansionFramework?.listExtensionIds;
+      accessSurface.contextSafeToken = context?.safeToken;
+      accessSurface.contextUnsafeProcessType = typeof context?.process;
+      accessSurface.contextUnsafeWindowType = typeof context?.window;
+      accessSurface.contextNestedFnType = typeof context?.nested?.fn;
+      accessSurface.securityModeFromCreate = context?.security?.mode;
       return definePhase19OverlayExtension({
         id: 'phase19.runtime.plugin.overlay',
         overlays: [
@@ -63,12 +72,49 @@ function assertPluginRegistrationAndRuntimeCompatibility() {
         ],
       });
     },
+    init(context) {
+      accessSurface.securityModeFromInit = context?.security?.mode;
+      accessSurface.scopedRegistryAccess = context?.security?.scopedRegistryAccess;
+      accessSurface.registryOtherStateFromInit = context?.registry?.getPluginState?.('phase19.other');
+      accessSurface.initListPlugins = context?.registry?.listPlugins?.();
+      accessSurface.initListPluginMetrics = context?.registry?.listPluginMetrics?.();
+      accessSurface.initUnsafeDocumentType = typeof context?.document;
+    },
+  }, {
+    context: {
+      safeToken: 'ok-token',
+      process: { env: 'unsafe' },
+      window: { location: 'unsafe' },
+      nested: {
+        keep: true,
+        fn() {},
+      },
+      document: {
+        body: {},
+      },
+    },
   });
 
   assert.equal(accessSurface.registryRegisterPluginType, 'undefined', 'Plugin creation context must not expose mutating registry methods.');
   assert.equal(accessSurface.registryGetPluginStateType, 'function', 'Plugin creation context should expose read-only registry introspection.');
+  assert.equal(accessSurface.registryOtherStateFromCreate, '', 'Scoped registry view should block access to other plugin state during creation.');
+  assert.equal(accessSurface.createListPluginsLength, 0, 'Scoped registry view should not expose other plugins during creation context.');
   assert.equal(accessSurface.frameworkRegisterExtensionType, 'undefined', 'Plugin creation context must not expose mutating framework methods.');
   assert.equal(accessSurface.frameworkListExtensionIdsType, 'function', 'Plugin creation context should expose read-only framework introspection.');
+  assert.equal(accessSurface.contextSafeToken, 'ok-token', 'Sanitized context should preserve safe primitive keys.');
+  assert.equal(accessSurface.contextUnsafeProcessType, 'undefined', 'Sanitized context should strip unsafe process key.');
+  assert.equal(accessSurface.contextUnsafeWindowType, 'undefined', 'Sanitized context should strip unsafe window key.');
+  assert.equal(accessSurface.contextNestedFnType, 'undefined', 'Sanitized context should strip nested function values.');
+  assert.equal(accessSurface.securityModeFromCreate, 'isolated', 'Security context should be available during extension creation.');
+  assert.equal(accessSurface.securityModeFromInit, 'isolated', 'Security context should be available during lifecycle hooks.');
+  assert.equal(accessSurface.scopedRegistryAccess, true, 'Security context should mark scoped registry access.');
+  assert.equal(accessSurface.registryOtherStateFromInit, '', 'Scoped registry view should block access to other plugin state during lifecycle hooks.');
+  assert.equal(Array.isArray(accessSurface.initListPlugins), true, 'Scoped registry list should be present during lifecycle hooks.');
+  assert.equal(accessSurface.initListPlugins.length, 1, 'Scoped registry list should include only current plugin entry.');
+  assert.equal(accessSurface.initListPlugins[0]?.id, 'phase19.runtime.plugin', 'Scoped registry list should only include current plugin id.');
+  assert.equal(Array.isArray(accessSurface.initListPluginMetrics), true, 'Scoped registry metrics list should be available.');
+  assert.equal(accessSurface.initListPluginMetrics.length, 1, 'Scoped registry metrics should include only current plugin.');
+  assert.equal(accessSurface.initUnsafeDocumentType, 'undefined', 'Lifecycle context should strip unsafe document key.');
 
   assert.deepEqual(
     result,
