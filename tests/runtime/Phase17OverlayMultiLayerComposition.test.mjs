@@ -131,8 +131,8 @@ function assertDeterministicCompositionOrderingAndSlots() {
   );
   assert.deepEqual(
     renderOrder.map((token) => token.split(':')[0]),
-    ['mission', 'base', 'telemetry'],
-    'Composed runtime render ordering should be deterministic by layer order.'
+    ['mission', 'telemetry', 'base'],
+    'Composed runtime render ordering should prioritize active readability while preserving deterministic secondary ordering.'
   );
 
   const snapshot = getOverlayGameplayRuntimeCompositionSnapshot(runtime, {
@@ -141,6 +141,16 @@ function assertDeterministicCompositionOrderingAndSlots() {
     safeZones,
   });
   assert.equal(snapshot.length, 3, 'Composition snapshot should include all composed layers.');
+  assert.equal(
+    snapshot.filter((entry) => entry.hiddenByClutter === true).length,
+    0,
+    'Composition snapshot should keep all layers visible when layer count is within readability limits.'
+  );
+  assert.equal(
+    snapshot[snapshot.length - 1].isActive,
+    true,
+    'Active overlay should render with highest visual readability priority.'
+  );
   for (let i = 1; i < snapshot.length; i += 1) {
     const prev = snapshot[i - 1].slot;
     const curr = snapshot[i].slot;
@@ -186,6 +196,103 @@ function assertComposedRuntimeDoesNotInterfereWithGameplayInput() {
   assert.equal(scene.player.x > startX, true, 'Composed overlay runtime should not interfere with gameplay movement priority.');
   assert.equal(counters.active > 0, true, 'Active overlay runtime step should continue executing.');
   assert.equal(counters.composed > 0, true, 'Composed overlay runtime step should execute alongside active layer.');
+}
+
+function assertVisualPriorityReadabilityAndClutterControl() {
+  const renderOrder = [];
+  const runtime = createOverlayGameplayRuntime({
+    runtimeExtensions: [
+      {
+        overlayId: '',
+        compose: true,
+        layerOrder: 5,
+        panelWidth: 220,
+        panelHeight: 86,
+        onStep() {},
+        onRender() {
+          renderOrder.push('low');
+        },
+      },
+      {
+        overlayId: '',
+        compose: true,
+        layerOrder: 10,
+        panelWidth: 220,
+        panelHeight: 86,
+        onStep() {},
+        onRender() {
+          renderOrder.push('mid');
+        },
+      },
+      {
+        overlayId: '',
+        compose: true,
+        layerOrder: 15,
+        panelWidth: 220,
+        panelHeight: 86,
+        onStep() {},
+        onRender() {
+          renderOrder.push('upper');
+        },
+      },
+      {
+        overlayId: '',
+        compose: true,
+        layerOrder: 20,
+        panelWidth: 220,
+        panelHeight: 86,
+        onStep() {},
+        onRender() {
+          renderOrder.push('top-support');
+        },
+      },
+      {
+        overlayId: '',
+        layerOrder: 12,
+        panelWidth: 220,
+        panelHeight: 86,
+        onStep() {},
+        onRender(context) {
+          renderOrder.push('active');
+          assert.equal(
+            context.overlayComposition.visualTier,
+            'primary',
+            'Active overlay should receive primary visual tier.'
+          );
+          assert.equal(
+            context.overlayComposition.readabilityOpacity,
+            1,
+            'Active overlay should keep full readability opacity.'
+          );
+        },
+      },
+    ],
+  });
+  runtime.interactionIndex = 4;
+
+  const renderer = createRendererProbe(960, 320);
+  const renderInvoked = renderOverlayGameplayRuntime(runtime, {
+    activeOverlayId: 'ui-layer',
+    renderer,
+  });
+  assert.equal(renderInvoked, 2, 'Readability limits should prevent visual clutter by capping visible layers on compact canvases.');
+  assert.deepEqual(
+    renderOrder,
+    ['top-support', 'active'],
+    'Render hierarchy should keep only top-priority support layer plus active layer when clutter limits apply.'
+  );
+
+  const snapshot = getOverlayGameplayRuntimeCompositionSnapshot(runtime, {
+    activeOverlayId: 'ui-layer',
+    renderer,
+  });
+  const hiddenLayers = snapshot.filter((entry) => entry.hiddenByClutter === true);
+  assert.equal(hiddenLayers.length, 3, 'Snapshot should identify lower-priority overlays hidden by clutter control.');
+  assert.equal(
+    snapshot.filter((entry) => entry.hiddenByClutter !== true).length,
+    2,
+    'Snapshot should expose the exact number of visible layers after readability limiting.'
+  );
 }
 
 function assertSceneSafeZonesProtectGameplayViewport() {
@@ -242,5 +349,6 @@ function assertSceneSafeZonesProtectGameplayViewport() {
 export function run() {
   assertDeterministicCompositionOrderingAndSlots();
   assertComposedRuntimeDoesNotInterfereWithGameplayInput();
+  assertVisualPriorityReadabilityAndClutterControl();
   assertSceneSafeZonesProtectGameplayViewport();
 }

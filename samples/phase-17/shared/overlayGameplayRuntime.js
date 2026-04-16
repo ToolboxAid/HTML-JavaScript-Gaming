@@ -24,6 +24,8 @@ function normalizeRuntimeExtensionEntry(entry) {
 
   const layerOrderRaw = Number(entry.layerOrder);
   const layerOrder = Number.isFinite(layerOrderRaw) ? layerOrderRaw : 0;
+  const visualPriorityRaw = Number(entry.visualPriority);
+  const visualPriority = Number.isFinite(visualPriorityRaw) ? visualPriorityRaw : layerOrder;
   const compose = entry.compose === true;
   const panelWidthRaw = Number(entry.panelWidth);
   const panelHeightRaw = Number(entry.panelHeight);
@@ -36,6 +38,7 @@ function normalizeRuntimeExtensionEntry(entry) {
     onRender,
     compose,
     layerOrder,
+    visualPriority,
     panelWidth,
     panelHeight,
   });
@@ -169,6 +172,87 @@ function getComposedRuntimeFrames(runtime, activeOverlayId) {
   });
 
   return frames;
+}
+
+function deriveRenderHierarchy(frames) {
+  if (!Array.isArray(frames) || frames.length === 0) {
+    return [];
+  }
+
+  const ordered = [...frames];
+  ordered.sort((left, right) => {
+    const leftIsActive = left.isActive === true;
+    const rightIsActive = right.isActive === true;
+    if (leftIsActive !== rightIsActive) {
+      return leftIsActive ? 1 : -1;
+    }
+    if (left.extension.visualPriority !== right.extension.visualPriority) {
+      return left.extension.visualPriority - right.extension.visualPriority;
+    }
+    if (left.extension.layerOrder !== right.extension.layerOrder) {
+      return left.extension.layerOrder - right.extension.layerOrder;
+    }
+    return left.registrationIndex - right.registrationIndex;
+  });
+
+  for (let i = 0; i < ordered.length; i += 1) {
+    const frame = ordered[i];
+    frame.visualPriorityRank = i;
+    frame.visualTier = frame.isActive === true ? 'primary' : 'secondary';
+    frame.readabilityOpacity = frame.isActive === true ? 1 : 0.84;
+    frame.hiddenByClutter = false;
+  }
+
+  return ordered;
+}
+
+function resolveMaxVisibleCompositionLayers(renderer) {
+  const canvasSize = renderer?.getCanvasSize?.() || { width: 960, height: 540 };
+  const height = Math.max(180, Number(canvasSize.height) || 540);
+  if (height <= 360) {
+    return 2;
+  }
+  if (height <= 540) {
+    return 3;
+  }
+  return 4;
+}
+
+function applyCompositionReadabilityLimits(frames, renderer) {
+  if (!Array.isArray(frames) || frames.length === 0) {
+    return [];
+  }
+
+  const maxVisibleLayers = Math.max(2, resolveMaxVisibleCompositionLayers(renderer));
+  for (let i = 0; i < frames.length; i += 1) {
+    frames[i].hiddenByClutter = false;
+  }
+  if (frames.length <= maxVisibleLayers) {
+    return frames;
+  }
+
+  const activeFrame = frames.find((frame) => frame.isActive === true) || null;
+  const selected = [];
+  if (activeFrame) {
+    const supportFrames = frames.filter((frame) => frame !== activeFrame);
+    const supportLimit = Math.max(0, maxVisibleLayers - 1);
+    const start = Math.max(0, supportFrames.length - supportLimit);
+    for (let i = start; i < supportFrames.length; i += 1) {
+      selected.push(supportFrames[i]);
+    }
+    selected.push(activeFrame);
+  } else {
+    const start = Math.max(0, frames.length - maxVisibleLayers);
+    for (let i = start; i < frames.length; i += 1) {
+      selected.push(frames[i]);
+    }
+  }
+
+  const selectedSet = new Set(selected);
+  for (let i = 0; i < frames.length; i += 1) {
+    frames[i].hiddenByClutter = !selectedSet.has(frames[i]);
+  }
+  return frames.filter((frame) => selectedSet.has(frame));
 }
 
 function attachCompositionSlots(frames, renderer, safeZones = []) {
@@ -370,16 +454,24 @@ export function getOverlayGameplayRuntimeInteractionSnapshot(runtime) {
 export function getOverlayGameplayRuntimeCompositionSnapshot(runtime, context = {}) {
   const activeOverlayId = String(context?.activeOverlayId || '').trim();
   const safeZones = resolveLayoutSafeZones(context);
-  const frames = attachCompositionSlots(
+  const frames = deriveRenderHierarchy(attachCompositionSlots(
     getComposedRuntimeFrames(runtime, activeOverlayId),
     context?.renderer,
     safeZones
-  );
+  ));
+  const visibleFrames = applyCompositionReadabilityLimits(frames, context?.renderer);
+  const visibleSet = new Set(visibleFrames);
   return frames.map((frame, index) => ({
     index,
     count: frames.length,
+    visibleCount: visibleFrames.length,
     registrationIndex: frame.registrationIndex,
     layerOrder: frame.extension.layerOrder,
+    visualPriority: frame.extension.visualPriority,
+    visualPriorityRank: frame.visualPriorityRank,
+    visualTier: frame.visualTier,
+    readabilityOpacity: frame.readabilityOpacity,
+    hiddenByClutter: !visibleSet.has(frame),
     compose: frame.extension.compose === true,
     isActive: frame.isActive === true,
     overlayId: frame.extension.overlayId,
@@ -521,10 +613,15 @@ export function renderOverlayGameplayRuntime(runtime, context = {}) {
 
   const activeOverlayId = String(context.activeOverlayId || '').trim();
   const safeZones = resolveLayoutSafeZones(context);
-  const frames = attachCompositionSlots(
-    getComposedRuntimeFrames(runtime, activeOverlayId),
-    context.renderer,
-    safeZones
+  const frames = applyCompositionReadabilityLimits(
+    deriveRenderHierarchy(
+      attachCompositionSlots(
+        getComposedRuntimeFrames(runtime, activeOverlayId),
+        context.renderer,
+        safeZones
+      )
+    ),
+    context.renderer
   );
   if (frames.length === 0) {
     return 0;
@@ -544,6 +641,11 @@ export function renderOverlayGameplayRuntime(runtime, context = {}) {
           count: frames.length,
           registrationIndex: frame.registrationIndex,
           layerOrder: frame.extension.layerOrder,
+          visualPriority: frame.extension.visualPriority,
+          visualPriorityRank: frame.visualPriorityRank,
+          visualTier: frame.visualTier,
+          readabilityOpacity: frame.readabilityOpacity,
+          hiddenByClutter: frame.hiddenByClutter === true,
           compose: frame.extension.compose === true,
           isActive: frame.isActive === true,
           slot: frame.slot,

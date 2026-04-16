@@ -2,10 +2,10 @@ MODEL: GPT-5.4
 REASONING: medium
 
 COMMAND:
-Implement overlay layout constraints:
-- Define safe zones
-- Prevent overlays from covering critical gameplay areas
-- Validate across multi-layer overlays
+Implement overlay visual priority:
+- Define hierarchy rules
+- Ensure readability under multi-layer conditions
+- Prevent visual clutter
 - Update roadmap status only
 
 Package ZIP to <project folder>/tmp/

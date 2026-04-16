@@ -1,5 +1,5 @@
-Add overlay layout constraints and safe zones.
+Add overlay visual priority and readability rules.
 
 PR Details:
-- Prevents overlays from blocking gameplay
-- Improves usability and readability
+- Ensures clear overlay hierarchy
+- Improves readability under multi-overlay conditions

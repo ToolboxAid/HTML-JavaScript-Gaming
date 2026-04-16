@@ -1,22 +1,23 @@
-# BUILD_PR_LEVEL_19_7_OVERLAY_LAYOUT_CONSTRAINTS_AND_SAFE_ZONES
+# BUILD_PR_LEVEL_19_8_OVERLAY_VISUAL_PRIORITY_AND_READABILITY
 
 ## Purpose
-Introduce layout constraints and safe zones to ensure overlays never block critical gameplay areas.
+Ensure overlays maintain visual priority and readability when multiple overlays are active.
 
 ## Roadmap Improvement
-Advances Level 19 by ensuring visual safety and usability of multi-layer overlays.
+Advances Level 19 by guaranteeing readable, non-conflicting overlay presentation.
 
 ## Scope
-- Define safe zones for gameplay-critical regions
-- Constrain overlay placement to avoid conflicts
-- Validate layout across multiple overlays
+- Define visual priority rules between overlays
+- Ensure text and UI elements remain readable
+- Prevent clutter from multi-overlay stacking
 
 ## Test Steps
-1. Load gameplay sample
-2. Activate multiple overlays
-3. Verify overlays stay within safe zones
-4. Confirm gameplay visibility preserved
+1. Activate multiple overlays
+2. Verify priority ordering is respected
+3. Confirm readability (text/UI clarity)
+4. Validate no visual clutter blocks usability
 
 ## Expected
-- No overlay blocks critical gameplay
-- Layout remains stable and readable
+- Clear visual hierarchy
+- Readable overlays
+- No clutter interference

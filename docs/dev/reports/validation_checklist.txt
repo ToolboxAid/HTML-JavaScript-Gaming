@@ -1,4 +1,4 @@
-[ ] Overlays respect safe zones
-[ ] No gameplay obstruction
-[ ] Layout stable with multiple overlays
+[ ] Visual hierarchy consistent
+[ ] Text/UI readable
+[ ] No clutter issues
 [ ] Roadmap status updated
