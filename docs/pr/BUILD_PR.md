@@ -1,23 +1,30 @@
-# BUILD_PR_LEVEL_17_57_DEBUG_OVERLAY_SAMPLE_1709_1711_MOVEMENT_ALIGNMENT
+# BUILD_PR_LEVEL_17_58_DEBUG_OVERLAY_FULL_VALIDATION_SWEEP
 
 ## Purpose
-Align overlay stacks for samples 1709 and 1711 (movement-focused) with correct order, bottom-right placement, and non-Tab cycle behavior.
+Perform a full Level 17 validation sweep across all updated samples to confirm consistency of:
+- Bottom-right overlay placement
+- Non-Tab cycle key behavior
+- Correct stack mappings per sample
 
 ## Scope
-- Samples: 1709, 1711
-- Stack:
-  - Movement Runtime
-  - Movement Lab HUD
-- Bottom-right anchor
-- Non-Tab cycle key validation
+Samples:
+- 1708, 1710
+- 1709, 1711
+- 1712
+- 1713
+
+Validation Only:
+- No new features
+- No runtime changes
+- No test rewrites (already handled in 17_56)
 
 ## Test Steps
-1. Load samples 1709 and 1711
+1. Load each sample
 2. Verify bottom-right placement
-3. Cycle overlays and confirm order
-4. Confirm Movement Runtime and HUD render correctly
+3. Cycle overlays
+4. Confirm correct stack per sample
+5. Confirm no Tab interaction remains
 
 ## Expected
-- Correct stack order
-- Stable cycling behavior
-- No Tab usage
+- All samples behave consistently
+- No regression from prior PRs

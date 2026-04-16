@@ -1,7 +1,9 @@
-[ ] Sample 1709 loads
-[ ] Sample 1711 loads
-[ ] Bottom-right placement correct
-[ ] Cycle key works (non-Tab)
-[ ] Movement Runtime renders
-[ ] Movement Lab HUD renders
-[ ] Stack order correct
+[ ] 1708 validated
+[ ] 1710 validated
+[ ] 1709 validated
+[ ] 1711 validated
+[ ] 1712 validated
+[ ] 1713 validated
+[ ] Bottom-right placement consistent
+[ ] Non-Tab cycle confirmed
+[ ] Stack mappings correct

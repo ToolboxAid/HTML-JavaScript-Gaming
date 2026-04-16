@@ -1,9 +1,18 @@
 MODEL: GPT-5.3-codex
-REASONING: medium
+REASONING: low
 COMMAND:
-Implement overlay alignment for samples 1709 and 1711.
-- Apply movement-specific stack definition
-- Enforce bottom-right anchor
-- Ensure non-Tab cycle key
-- Validate ordering and rendering
-Package ZIP to <project folder>/tmp/
+Run validation sweep across Level 17 samples:
+- 1708, 1710
+- 1709, 1711
+- 1712
+- 1713
+
+Verify:
+- Bottom-right overlay placement
+- Non-Tab cycle key
+- Correct stack ordering
+
+Do not modify runtime or tests unless a blocking defect is found.
+If defects are found, log them in reports.
+
+Package results to <project folder>/tmp/

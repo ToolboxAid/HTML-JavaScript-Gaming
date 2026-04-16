@@ -1,0 +1,32 @@
+Level 17 Overlay Validation Sweep
+Date: 2026-04-16
+Scope: samples 1708, 1709, 1710, 1711, 1712, 1713
+
+Verification Targets
+- Bottom-right overlay placement
+- Non-Tab cycle key
+- Correct stack ordering
+
+Executed Tests
+- PASS tests/runtime/Phase17RealGameplaySample.test.mjs
+- PASS tests/runtime/Phase17Sample1709MovementModelsLab.test.mjs
+- PASS tests/runtime/Phase17Sample1712GameplayMetricsTelemetry.test.mjs
+- PASS tests/runtime/Phase17Sample1713FinalReferenceGame.test.mjs
+- PASS tests/runtime/Phase17TabDebugOverlayCycle1707Plus.test.mjs
+- PASS tests/runtime/Phase17DebugOverlayBottomRightPosition.test.mjs
+
+Sample Verification Matrix
+- 1708: placement PASS, non-Tab key PASS (KeyG), order PASS (UI Layer > Mission Feed > MISSION READY > Mini-Game Runtime)
+- 1710: placement PASS, non-Tab key PASS (KeyG), order PASS (UI Layer > Mission Feed > MISSION READY > Mini-Game Runtime)
+- 1709: placement PASS, non-Tab key PASS (KeyG), order PASS (Movement Runtime > Movement Lab HUD)
+- 1711: placement PASS, non-Tab key PASS (KeyG), order PASS (Movement Runtime > Movement Lab HUD)
+- 1712: placement PASS, non-Tab key PASS (KeyG), order PASS (UI Layer > Mission Feed > MISSION READY > Telemetry Overlay)
+- 1713: placement PASS, non-Tab key PASS (KeyG), order PASS (UI Layer > Mission Feed > MISSION READY > Final Reference Runtime)
+
+Static Key Check
+- Runtime sample bindings for 1708-1713 are configured to KeyG.
+- Shared controller fallback still contains Tab default, but sample-level bindings override this in scope.
+
+Defects
+- None found.
+- No blocking defects.

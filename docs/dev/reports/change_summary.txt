@@ -1,8 +1,6 @@
-Summary:
-This PR fixes stale Level 17 test inputs that still simulate Tab for debug overlay cycling.
-The runtime behavior has already moved away from Tab, so the tests must be remapped to the current non-Tab cycle key to keep automated validation accurate.
+Full validation sweep for Level 17 debug overlay system after key remap and stack alignment PRs.
 
-Change Boundary:
-- Test-only
-- Level 17 only
-- No runtime/input-system behavior changes
+Confirms:
+- All samples aligned
+- No Tab dependency remains
+- Overlay system consistent
