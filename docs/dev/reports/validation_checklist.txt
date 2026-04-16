@@ -1,7 +1,4 @@
-[ ] Gameplay sample with overlay support loads
-[ ] Multiple overlays can be active together
-[ ] Composition/render order is deterministic
-[ ] No overlay occludes required gameplay information unexpectedly
-[ ] Gameplay controls remain responsive with multiple overlays active
-[ ] No Tab-based interaction is introduced
-[ ] Roadmap status was updated using status markers only
+[ ] Overlays respect safe zones
+[ ] No gameplay obstruction
+[ ] Layout stable with multiple overlays
+[ ] Roadmap status updated

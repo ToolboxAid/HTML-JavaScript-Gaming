@@ -82,6 +82,59 @@ function normalizeInteractionIndex(runtime) {
   return normalized;
 }
 
+function normalizeSafeZoneEntry(entry) {
+  if (!entry || typeof entry !== 'object') {
+    return null;
+  }
+  const x = Number(entry.x);
+  const y = Number(entry.y);
+  const width = Number(entry.width);
+  const height = Number(entry.height);
+  if (!Number.isFinite(x) || !Number.isFinite(y) || !Number.isFinite(width) || !Number.isFinite(height)) {
+    return null;
+  }
+  if (width <= 0 || height <= 0) {
+    return null;
+  }
+  return Object.freeze({
+    id: String(entry.id || '').trim(),
+    x,
+    y,
+    width,
+    height,
+  });
+}
+
+function normalizeSafeZones(safeZones) {
+  if (!Array.isArray(safeZones) || safeZones.length === 0) {
+    return Object.freeze([]);
+  }
+  const normalized = [];
+  for (let i = 0; i < safeZones.length; i += 1) {
+    const candidate = normalizeSafeZoneEntry(safeZones[i]);
+    if (!candidate) {
+      continue;
+    }
+    normalized.push(candidate);
+  }
+  return Object.freeze(normalized);
+}
+
+function resolveLayoutSafeZones(context = {}) {
+  const fromContext = normalizeSafeZones(context?.safeZones);
+  if (fromContext.length > 0) {
+    return fromContext;
+  }
+  if (typeof context?.scene?.getOverlayLayoutSafeZones === 'function') {
+    return normalizeSafeZones(context.scene.getOverlayLayoutSafeZones());
+  }
+  return Object.freeze([]);
+}
+
+function rectsOverlap(a, b) {
+  return a.x < b.x + b.width && a.x + a.width > b.x && a.y < b.y + b.height && a.y + a.height > b.y;
+}
+
 function getComposedRuntimeFrames(runtime, activeOverlayId) {
   if (!runtime || !Array.isArray(runtime.runtimeExtensions) || runtime.runtimeExtensions.length === 0) {
     return [];
@@ -118,7 +171,7 @@ function getComposedRuntimeFrames(runtime, activeOverlayId) {
   return frames;
 }
 
-function attachCompositionSlots(frames, renderer) {
+function attachCompositionSlots(frames, renderer, safeZones = []) {
   if (!Array.isArray(frames) || frames.length === 0) {
     return frames || [];
   }
@@ -128,22 +181,135 @@ function attachCompositionSlots(frames, renderer) {
   const height = Math.max(180, Number(canvasSize.height) || 540);
   const margin = 16;
   const gap = 10;
-  let cursorY = height - margin;
+  const anchorCounts = {
+    'bottom-right': 0,
+    'top-right': 0,
+    'bottom-left': 0,
+    'top-left': 0,
+  };
+  const placedSlots = [];
+
+  function createAnchorSlot(anchor, slotWidth, slotHeight, index = 0) {
+    const stackOffset = index * (slotHeight + gap);
+    const x = anchor.endsWith('right')
+      ? Math.round(width - margin - slotWidth)
+      : Math.round(margin);
+    const y = anchor.startsWith('bottom')
+      ? Math.round(height - margin - slotHeight - stackOffset)
+      : Math.round(margin + stackOffset);
+    return {
+      x,
+      y,
+      width: slotWidth,
+      height: slotHeight,
+      anchor,
+    };
+  }
+
+  function isSlotWithinBounds(slot) {
+    if (!slot) {
+      return false;
+    }
+    return !(slot.x < 0 || slot.y < 0 || slot.x + slot.width > width || slot.y + slot.height > height);
+  }
+
+  function slotOverlapsPlaced(slot) {
+    if (!slot) {
+      return false;
+    }
+    for (let i = 0; i < placedSlots.length; i += 1) {
+      if (rectsOverlap(slot, placedSlots[i])) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  function slotOverlapsSafeZones(slot) {
+    if (!slot) {
+      return false;
+    }
+    for (let i = 0; i < safeZones.length; i += 1) {
+      if (rectsOverlap(slot, safeZones[i])) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  function isSlotUsable(slot) {
+    if (!isSlotWithinBounds(slot)) {
+      return false;
+    }
+    return !slotOverlapsPlaced(slot) && !slotOverlapsSafeZones(slot);
+  }
 
   for (let i = 0; i < frames.length; i += 1) {
     const frame = frames[i];
     const slotWidth = Math.max(120, Number(frame.extension.panelWidth) || 260);
     const slotHeight = Math.max(32, Number(frame.extension.panelHeight) || 96);
-    const slotX = Math.round(width - margin - slotWidth);
-    const slotY = Math.round(cursorY - slotHeight);
+    const anchorOrder = ['bottom-right', 'top-right', 'bottom-left', 'top-left'];
+
+    let slot = null;
+    for (let j = 0; j < anchorOrder.length; j += 1) {
+      const anchor = anchorOrder[j];
+      const startStackIndex = anchorCounts[anchor] || 0;
+      const maxStackIndexExclusive = Math.max(
+        startStackIndex + 1,
+        startStackIndex + frames.length + safeZones.length + 2
+      );
+      for (let stackIndex = startStackIndex; stackIndex < maxStackIndexExclusive; stackIndex += 1) {
+        const candidate = createAnchorSlot(anchor, slotWidth, slotHeight, stackIndex);
+        if (!isSlotUsable(candidate)) {
+          continue;
+        }
+        slot = candidate;
+        anchorCounts[anchor] = stackIndex + 1;
+        break;
+      }
+      if (slot) {
+        break;
+      }
+    }
+
+    if (!slot) {
+      for (let j = 0; j < anchorOrder.length; j += 1) {
+        const anchor = anchorOrder[j];
+        const startStackIndex = anchorCounts[anchor] || 0;
+        const maxStackIndexExclusive = Math.max(
+          startStackIndex + 1,
+          startStackIndex + frames.length + safeZones.length + 2
+        );
+        for (let stackIndex = startStackIndex; stackIndex < maxStackIndexExclusive; stackIndex += 1) {
+          const candidate = createAnchorSlot(anchor, slotWidth, slotHeight, stackIndex);
+          if (!isSlotWithinBounds(candidate) || slotOverlapsPlaced(candidate)) {
+            continue;
+          }
+          slot = candidate;
+          anchorCounts[anchor] = stackIndex + 1;
+          break;
+        }
+        if (slot) {
+          break;
+        }
+      }
+    }
+
+    if (!slot) {
+      const fallbackAnchor = 'bottom-right';
+      const fallbackStackIndex = anchorCounts[fallbackAnchor] || 0;
+      slot = createAnchorSlot(fallbackAnchor, slotWidth, slotHeight, fallbackStackIndex);
+      anchorCounts[fallbackAnchor] = fallbackStackIndex + 1;
+    }
+
     frame.slot = Object.freeze({
-      x: slotX,
-      y: slotY,
-      width: slotWidth,
-      height: slotHeight,
-      anchor: 'bottom-right',
+      x: slot.x,
+      y: slot.y,
+      width: slot.width,
+      height: slot.height,
+      anchor: slot.anchor,
     });
-    cursorY = slotY - gap;
+    placedSlots.push(slot);
   }
 
   return frames;
@@ -203,9 +369,11 @@ export function getOverlayGameplayRuntimeInteractionSnapshot(runtime) {
 
 export function getOverlayGameplayRuntimeCompositionSnapshot(runtime, context = {}) {
   const activeOverlayId = String(context?.activeOverlayId || '').trim();
+  const safeZones = resolveLayoutSafeZones(context);
   const frames = attachCompositionSlots(
     getComposedRuntimeFrames(runtime, activeOverlayId),
-    context?.renderer
+    context?.renderer,
+    safeZones
   );
   return frames.map((frame, index) => ({
     index,
@@ -352,9 +520,11 @@ export function renderOverlayGameplayRuntime(runtime, context = {}) {
   }
 
   const activeOverlayId = String(context.activeOverlayId || '').trim();
+  const safeZones = resolveLayoutSafeZones(context);
   const frames = attachCompositionSlots(
     getComposedRuntimeFrames(runtime, activeOverlayId),
-    context.renderer
+    context.renderer,
+    safeZones
   );
   if (frames.length === 0) {
     return 0;

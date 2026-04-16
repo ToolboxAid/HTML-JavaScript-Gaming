@@ -800,7 +800,7 @@
 ### Track D — Debug & Observability Maturity
 - [ ] ensure all systems expose debug data
 - [ ] ensure providers are complete and consistent
-- [.] validate debug panels across systems
+- [x] validate debug panels across systems
 - [ ] confirm production-safe debug toggling
 
 ### Track E — Toolchain Validation

@@ -248,6 +248,20 @@ export default class RealGameplayMiniGameScene extends Scene {
     };
   }
 
+  getOverlayLayoutSafeZones() {
+    const insetX = 96;
+    const insetY = 66;
+    return [
+      {
+        id: 'critical-gameplay-area',
+        x: this.viewport.x + insetX,
+        y: this.viewport.y + insetY,
+        width: Math.max(240, this.viewport.width - insetX * 2),
+        height: Math.max(160, this.viewport.height - insetY * 2),
+      },
+    ];
+  }
+
   pushCollisionRow(overlayId, kind, state, enabled = true) {
     this.debugCollisionRows.push({
       overlayId,

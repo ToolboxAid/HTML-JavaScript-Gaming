@@ -1,7 +1,5 @@
-Add multi-layer overlay composition for gameplay-safe overlays.
+Add overlay layout constraints and safe zones.
 
 PR Details:
-- Enables deterministic rendering of multiple active overlays
-- Preserves gameplay-first input and shared non-Tab input mapping
-- Improves roadmap progress with a testable composition milestone
-- Roadmap update must be status-only
+- Prevents overlays from blocking gameplay
+- Improves usability and readability
