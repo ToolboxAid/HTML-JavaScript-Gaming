@@ -1,4 +1,4 @@
-[ ] Visual hierarchy consistent
-[ ] Text/UI readable
-[ ] No clutter issues
+[ ] All subsystems validated
+[ ] No regressions found
+[ ] Gameplay unaffected
 [ ] Roadmap status updated

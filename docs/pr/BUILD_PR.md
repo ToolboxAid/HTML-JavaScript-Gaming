@@ -1,23 +1,24 @@
-# BUILD_PR_LEVEL_19_8_OVERLAY_VISUAL_PRIORITY_AND_READABILITY
+# BUILD_PR_LEVEL_19_9_OVERLAY_FINAL_INTEGRATION_VALIDATION
 
 ## Purpose
-Ensure overlays maintain visual priority and readability when multiple overlays are active.
+Perform full validation of overlay system integration across gameplay, input, layout, and composition.
 
 ## Roadmap Improvement
-Advances Level 19 by guaranteeing readable, non-conflicting overlay presentation.
+Completes Level 19 with a full-system validation milestone.
 
 ## Scope
-- Define visual priority rules between overlays
-- Ensure text and UI elements remain readable
-- Prevent clutter from multi-overlay stacking
+- Validate all overlay subsystems together
+- Confirm no regressions across input, rendering, layout, and composition
+- Final readiness check for Level 19
 
 ## Test Steps
-1. Activate multiple overlays
-2. Verify priority ordering is respected
-3. Confirm readability (text/UI clarity)
-4. Validate no visual clutter blocks usability
+1. Run gameplay with multiple overlays
+2. Cycle overlays, toggle visibility
+3. Validate layout, priority, readability
+4. Stress test inputs
+5. Confirm no regressions
 
 ## Expected
-- Clear visual hierarchy
-- Readable overlays
-- No clutter interference
+- System stable
+- No conflicts
+- Ready for promotion
