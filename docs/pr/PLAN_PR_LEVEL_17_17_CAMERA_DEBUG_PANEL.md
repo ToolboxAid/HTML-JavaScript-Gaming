@@ -1,0 +1,2 @@
+# PLAN
+Camera Debug Panel

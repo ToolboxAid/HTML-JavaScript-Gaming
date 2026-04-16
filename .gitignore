@@ -27,3 +27,5 @@ commit_comment.txt
 CODEX_COMMANDS.md
 codex_commands.md
 NEXT_COMMAND.txt
+
+node_modules/

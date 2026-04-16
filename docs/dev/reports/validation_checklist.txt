@@ -1,4 +1,1 @@
-
-[x] markers only changed
-[x] no text changed
-[x] roadmap reflects progress
+Validate camera debug panel
