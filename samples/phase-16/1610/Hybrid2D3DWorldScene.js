@@ -101,37 +101,49 @@ export default class Hybrid2D3DWorldScene extends Scene {
     const zRatio = (point.z - this.worldBounds.minZ) / Math.max(0.0001, this.worldBounds.maxZ - this.worldBounds.minZ);
     return {
       x: viewport.x + xRatio * viewport.width,
-      y: viewport.y + zRatio * viewport.height,
+      y: viewport.y + (1 - zRatio) * viewport.height,
     };
   }
 
   drawTopdown(renderer) {
     const map = this.topdownViewport;
-    renderer.drawRect(map.x, map.y, map.width, map.height, 'rgba(15, 23, 42, 0.86)');
-    renderer.strokeRect(map.x, map.y, map.width, map.height, '#60a5fa', 1.5);
+    renderer.drawRect(map.x - 6, map.y - 28, map.width + 12, map.height + 34, 'rgba(8, 42, 64, 0.54)');
+    renderer.drawRect(map.x, map.y, map.width, map.height, 'rgba(15, 23, 42, 0.92)');
+    renderer.strokeRect(map.x, map.y, map.width, map.height, '#22d3ee', 2);
+    renderer.drawRect(map.x + 8, map.y + 8, 94, 18, 'rgba(8, 145, 178, 0.35)');
+    renderer.drawText('2D Layer', map.x + 15, map.y + 21, { color: '#67e8f9', font: '12px monospace' });
 
     this.props.forEach((prop) => {
       const topLeft = this.worldToMap({ x: prop.transform3D.x, z: prop.transform3D.z }, map);
       const bottomRight = this.worldToMap({ x: prop.transform3D.x + prop.size3D.width, z: prop.transform3D.z + prop.size3D.depth }, map);
+      const left = Math.min(topLeft.x, bottomRight.x);
+      const top = Math.min(topLeft.y, bottomRight.y);
+      const width = Math.max(2, Math.abs(bottomRight.x - topLeft.x));
+      const height = Math.max(2, Math.abs(bottomRight.y - topLeft.y));
       renderer.drawRect(
-        topLeft.x,
-        topLeft.y,
-        Math.max(2, bottomRight.x - topLeft.x),
-        Math.max(2, bottomRight.y - topLeft.y),
+        left,
+        top,
+        width,
+        height,
         prop.color
       );
     });
 
     const playerTopLeft = this.worldToMap({ x: this.player.x, z: this.player.z }, map);
     const playerBottomRight = this.worldToMap({ x: this.player.x + this.player.width, z: this.player.z + this.player.depth }, map);
+    const playerLeft = Math.min(playerTopLeft.x, playerBottomRight.x);
+    const playerTop = Math.min(playerTopLeft.y, playerBottomRight.y);
+    const playerWidth = Math.max(3, Math.abs(playerBottomRight.x - playerTopLeft.x));
+    const playerHeight = Math.max(3, Math.abs(playerBottomRight.y - playerTopLeft.y));
     renderer.drawRect(
-      playerTopLeft.x,
-      playerTopLeft.y,
-      Math.max(3, playerBottomRight.x - playerTopLeft.x),
-      Math.max(3, playerBottomRight.y - playerTopLeft.y),
-      '#f8fafc'
+      playerLeft,
+      playerTop,
+      playerWidth,
+      playerHeight,
+      '#22d3ee'
     );
-    renderer.drawText('2D Tactical View', map.x + 10, map.y + 18, { color: '#cbd5e1', font: '12px monospace' });
+    renderer.strokeRect(playerLeft - 1, playerTop - 1, playerWidth + 2, playerHeight + 2, '#ecfeff', 1);
+    renderer.drawText('Forward ^', map.x + map.width - 74, map.y + 18, { color: '#a5f3fc', font: '12px monospace' });
   }
 
   render(renderer) {
@@ -144,7 +156,10 @@ export default class Hybrid2D3DWorldScene extends Scene {
     this.drawTopdown(renderer);
 
     const viewport = this.viewport3d;
+    renderer.drawRect(viewport.x - 6, viewport.y - 28, viewport.width + 12, viewport.height + 34, 'rgba(56, 29, 92, 0.34)');
     renderer.strokeRect(viewport.x, viewport.y, viewport.width, viewport.height, '#d8d5ff', 2);
+    renderer.drawRect(viewport.x + 10, viewport.y + 8, 94, 18, 'rgba(109, 40, 217, 0.35)');
+    renderer.drawText('3D World', viewport.x + 17, viewport.y + 21, { color: '#ddd6fe', font: '12px monospace' });
     drawDepthBackdrop(renderer, viewport);
 
     const cameraState = this.camera3D?.getState?.() ?? {

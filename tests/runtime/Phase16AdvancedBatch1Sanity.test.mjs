@@ -42,14 +42,18 @@ function makeInput(keys = []) {
 
 function createRendererProbe(width = 960, height = 540) {
   const lines = [];
+  const texts = [];
   return {
     lines,
+    texts,
     getCanvasSize() {
       return { width, height };
     },
     clear() {},
     strokeRect() {},
-    drawText() {},
+    drawText(text) {
+      texts.push(String(text));
+    },
     drawRect() {},
     drawLine(x1, y1, x2, y2, color) {
       lines.push({ x1, y1, x2, y2, color });
@@ -104,10 +108,16 @@ function assertHybridDemo() {
   scene.step3DPhysics(1 / 60, { input: makeInput(['KeyD']) });
   assert.equal(scene.player.x > startX, true, 'Hybrid demo should move player in shared world state.');
 
+  const mapNear = scene.worldToMap({ x: scene.player.x, z: scene.worldBounds.minZ + 1 }, scene.topdownViewport);
+  const mapFar = scene.worldToMap({ x: scene.player.x, z: scene.worldBounds.maxZ - 1 }, scene.topdownViewport);
+  assert.equal(mapFar.y < mapNear.y, true, 'Hybrid mini map should map forward world depth toward upward screen direction.');
+
   const renderer = createRendererProbe();
   scene.render(renderer);
   const visibleLines = countVisibleLinesInViewport(renderer.lines, scene.viewport3d);
   assert.equal(visibleLines > 0, true, 'Hybrid demo should render visible 3D wireframe output.');
+  assert.equal(renderer.texts.includes('2D Layer'), true, 'Hybrid demo should clearly label the 2D layer.');
+  assert.equal(renderer.texts.includes('3D World'), true, 'Hybrid demo should clearly label the 3D world layer.');
 }
 
 function assertMultiplayerDemo() {
