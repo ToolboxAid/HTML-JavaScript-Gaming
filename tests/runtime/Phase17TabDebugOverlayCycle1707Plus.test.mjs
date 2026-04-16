@@ -11,6 +11,10 @@ import RealGameplayMiniGame1710Scene from '../../samples/phase-17/1710/RealGamep
 import MovementModelsLab1711Scene from '../../samples/phase-17/1711/MovementModelsLabScene.js';
 import GameplayMetricsTelemetryScene from '../../samples/phase-17/1712/GameplayMetricsTelemetryScene.js';
 import FinalReferenceGameScene from '../../samples/phase-17/1713/FinalReferenceGameScene.js';
+import {
+  getOverlayCycleInputCodes,
+  LEVEL17_OVERLAY_CYCLE_KEY,
+} from '../../samples/phase-17/shared/overlayCycleInput.js';
 
 function createCameraStub() {
   const state = {
@@ -43,13 +47,13 @@ function makeInput(keys = []) {
 }
 
 function pressCycleKey(scene, { reverse = false } = {}) {
-  const keys = reverse ? ['KeyG', 'ShiftLeft'] : ['KeyG'];
+  const keys = getOverlayCycleInputCodes({ reverse });
   scene.step3DPhysics(0.02, { input: makeInput(keys) });
   scene.step3DPhysics(0.02, { input: makeInput([]) });
 }
 
 function holdCycleKey(scene, { reverse = false, frames = 4 } = {}) {
-  const keys = reverse ? ['KeyG', 'ShiftLeft'] : ['KeyG'];
+  const keys = getOverlayCycleInputCodes({ reverse });
   for (let i = 0; i < Math.max(1, frames); i += 1) {
     scene.step3DPhysics(0.01, { input: makeInput(keys) });
   }
@@ -81,7 +85,7 @@ function assertMapOrderAndKeyBehavior(label, sceneFactory, expectedLabels, expec
     scene.setCamera3D(createCameraStub());
   }
 
-  assert.equal(scene.tabDebugOverlays?.cycleKey, 'KeyG', `${label} should use G as overlay cycle key.`);
+  assert.equal(scene.tabDebugOverlays?.cycleKey, LEVEL17_OVERLAY_CYCLE_KEY, `${label} should use shared overlay cycle key.`);
   const labels = scene.tabDebugOverlays.overlays.map((entry) => entry.label);
   assert.deepEqual(labels, expectedLabels, `${label} should use exact required overlay map ordering.`);
 

@@ -9,6 +9,10 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import FinalReferenceGameScene from '../../samples/phase-17/1713/FinalReferenceGameScene.js';
+import {
+  getOverlayCycleInputCodes,
+  LEVEL17_OVERLAY_CYCLE_KEY,
+} from '../../samples/phase-17/shared/overlayCycleInput.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -63,6 +67,11 @@ function createRendererProbe(width = 960, height = 540) {
   };
 }
 
+function pressOverlayCycle(scene, { reverse = false } = {}) {
+  scene.step3DPhysics(0.02, { input: makeInput(getOverlayCycleInputCodes({ reverse })) });
+  scene.step3DPhysics(0.02, { input: makeInput([]) });
+}
+
 function assertIndexLinkPresent() {
   const indexPath = path.join(repoRoot, 'samples', 'index.html');
   const text = fs.readFileSync(indexPath, 'utf8');
@@ -72,7 +81,7 @@ function assertIndexLinkPresent() {
 function assertFinalReferenceRuntimeFlow() {
   const scene = new FinalReferenceGameScene();
   scene.setCamera3D(createCameraStub());
-  assert.equal(scene.tabDebugOverlays?.cycleKey, 'KeyG', 'Reference game should use G as debug cycle key.');
+  assert.equal(scene.tabDebugOverlays?.cycleKey, LEVEL17_OVERLAY_CYCLE_KEY, 'Reference game should use shared debug cycle key.');
   assert.deepEqual(
     scene.tabDebugOverlays.overlays.map((entry) => entry.label),
     ['UI Layer', 'Mission Feed', 'MISSION READY', 'Final Reference Runtime'],
@@ -103,20 +112,17 @@ function assertFinalReferenceRuntimeFlow() {
   assert.equal(renderer.texts.some((text) => text.includes('UI Layer')), true, 'UI Layer panel should render by default.');
   assert.equal(renderer.texts.some((text) => text.includes('Final Reference Runtime')), false, 'Final runtime panel should not render by default.');
 
-  scene.step3DPhysics(0.02, { input: makeInput(['KeyG']) });
-  scene.step3DPhysics(0.02, { input: makeInput([]) });
+  pressOverlayCycle(scene);
   const missionFeedRenderer = createRendererProbe();
   scene.render(missionFeedRenderer);
   assert.equal(missionFeedRenderer.texts.some((text) => text.includes('Mission Feed')), true, 'First G press should cycle to Mission Feed.');
 
-  scene.step3DPhysics(0.02, { input: makeInput(['KeyG']) });
-  scene.step3DPhysics(0.02, { input: makeInput([]) });
+  pressOverlayCycle(scene);
   const missionReadyRenderer = createRendererProbe();
   scene.render(missionReadyRenderer);
   assert.equal(missionReadyRenderer.texts.some((text) => text.includes('MISSION READY')), true, 'Second G press should cycle to MISSION READY.');
 
-  scene.step3DPhysics(0.02, { input: makeInput(['KeyG']) });
-  scene.step3DPhysics(0.02, { input: makeInput([]) });
+  pressOverlayCycle(scene);
   const runtimeRenderer = createRendererProbe();
   scene.render(runtimeRenderer);
   assert.equal(runtimeRenderer.texts.some((text) => text.includes('Final Reference Runtime')), true, 'Third G press should cycle to Final Reference Runtime.');

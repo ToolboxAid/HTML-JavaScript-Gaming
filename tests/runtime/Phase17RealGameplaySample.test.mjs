@@ -9,6 +9,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import RealGameplayMiniGameScene from '../../samples/phase-17/1708/RealGameplayMiniGameScene.js';
+import { getOverlayCycleInputCodes } from '../../samples/phase-17/shared/overlayCycleInput.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -65,6 +66,11 @@ function createRendererProbe(width = 960, height = 540) {
     drawPolygon() {},
     drawImageFrame() {},
   };
+}
+
+function pressOverlayCycle(scene, { reverse = false } = {}) {
+  scene.step3DPhysics(0.02, { input: makeInput(getOverlayCycleInputCodes({ reverse })) });
+  scene.step3DPhysics(0.02, { input: makeInput([]) });
 }
 
 function assertIndexLinkPresent() {
@@ -133,20 +139,17 @@ function assertGameplayLoopAndDebugPanels() {
   assert.equal(renderer.texts.some((text) => text.includes('UI Layer')), true, 'UI Layer panel should render by default.');
   assert.equal(renderer.texts.some((text) => text.includes('Mission Feed')), false, 'Only one mapped overlay should be visible at a time.');
 
-  scene.step3DPhysics(0.02, { input: makeInput(['KeyG']) });
-  scene.step3DPhysics(0.02, { input: makeInput([]) });
+  pressOverlayCycle(scene);
   const missionFeedRenderer = createRendererProbe();
   scene.render(missionFeedRenderer);
   assert.equal(missionFeedRenderer.texts.some((text) => text.includes('Mission Feed')), true, 'G should cycle to mission feed panel.');
 
-  scene.step3DPhysics(0.02, { input: makeInput(['KeyG']) });
-  scene.step3DPhysics(0.02, { input: makeInput([]) });
+  pressOverlayCycle(scene);
   const missionReadyRenderer = createRendererProbe();
   scene.render(missionReadyRenderer);
   assert.equal(missionReadyRenderer.texts.some((text) => text.includes('MISSION READY')), true, 'Second G press should cycle to MISSION READY panel.');
 
-  scene.step3DPhysics(0.02, { input: makeInput(['KeyG']) });
-  scene.step3DPhysics(0.02, { input: makeInput([]) });
+  pressOverlayCycle(scene);
   const runtimeRenderer = createRendererProbe();
   scene.render(runtimeRenderer);
   assert.equal(runtimeRenderer.texts.some((text) => text.includes('Mini-Game Runtime')), true, 'Third G press should cycle to runtime panel.');

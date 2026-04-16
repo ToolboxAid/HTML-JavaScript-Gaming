@@ -1,2 +1,2 @@
-Level 18.1 overlay runtime hardening.
-Improve stability for input, resize, and sample switching.
+Level 18.2 input system consolidation.
+Unify runtime and test input mappings for overlay cycle key.

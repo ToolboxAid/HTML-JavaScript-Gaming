@@ -4,7 +4,9 @@ David Quesenberry
 04/16/2026
 miniGameOverlayStack.js
 */
-export const MINI_GAME_DEBUG_CYCLE_KEY = 'KeyG';
+import { LEVEL17_OVERLAY_CYCLE_KEY } from '/samples/phase-17/shared/overlayCycleInput.js';
+
+export const MINI_GAME_DEBUG_CYCLE_KEY = LEVEL17_OVERLAY_CYCLE_KEY;
 export const OVERLAY_UI_LAYER = 'ui-layer';
 export const OVERLAY_MISSION_FEED = 'mission-feed';
 export const OVERLAY_MISSION_READY = 'mission-ready';

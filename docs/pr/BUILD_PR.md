@@ -1,33 +1,30 @@
-# BUILD_PR_LEVEL_18_1_OVERLAY_RUNTIME_HARDENING
+# BUILD_PR_LEVEL_18_2_INPUT_SYSTEM_CONSOLIDATION
 
 ## PLAN
 
 ### Purpose
-Harden overlay runtime behavior after Level 17 baseline promotion to ensure stability under rapid input, resizing, and multi-sample switching.
+Consolidate input handling for overlay cycling and test inputs to ensure a single authoritative key mapping across runtime and tests.
 
 ### Goals
-- Ensure cycle key stability under rapid input
-- Prevent overlay flicker during sample switching
-- Lock bottom-right anchoring under resize
-- Validate overlay layering does not reorder unexpectedly
+- Eliminate duplicate key mappings
+- Ensure tests and runtime use same input source
+- Prevent future drift (like Tab issue)
 
 ---
 
 ## BUILD
 
 ### Scope
-- Overlay runtime stabilization (no feature expansion)
-- Input debounce/throttle validation
-- Resize handling validation
-- Sample switching consistency
+- Centralize overlay cycle key definition
+- Update runtime references to use shared source
+- Update tests to reference shared input mapping
+- No behavior change
 
 ### Test Steps
-1. Rapidly cycle overlays
-2. Switch between samples quickly
-3. Resize viewport
-4. Validate overlays remain stable and anchored
+1. Verify cycle key works in runtime
+2. Verify tests use shared mapping
+3. Confirm no hardcoded keys remain
 
 ### Expected
-- No flicker
-- No misalignment
-- No cycle skips
+- Single source of truth for cycle key
+- No drift between runtime and tests

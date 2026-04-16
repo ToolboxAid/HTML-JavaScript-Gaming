@@ -4,6 +4,8 @@ David Quesenberry
 04/16/2026
 tabDebugOverlayCycle.js
 */
+import { isOverlayCycleReverseModifierActive } from '/samples/phase-17/shared/overlayCycleInput.js';
+
 function normalizeOverlayEntry(entry) {
   const id = String(entry?.id ?? '').trim();
   if (!id) {
@@ -11,10 +13,6 @@ function normalizeOverlayEntry(entry) {
   }
   const label = String(entry?.label ?? id).trim() || id;
   return { id, label };
-}
-
-function hasShiftModifier(input) {
-  return input?.isDown('ShiftLeft') === true || input?.isDown('ShiftRight') === true;
 }
 
 function normalizeActiveIndex(controller) {
@@ -144,7 +142,7 @@ export function stepTabDebugOverlayController(controller, input) {
   const cyclePressed = input?.isDown(cycleKey) === true;
   normalizeActiveIndex(controller);
   if (cyclePressed && controller.cycleLatch === false && controller.overlays.length > 1) {
-    const delta = hasShiftModifier(input) ? -1 : 1;
+    const delta = isOverlayCycleReverseModifierActive(input) ? -1 : 1;
     const count = controller.overlays.length;
     controller.activeIndex = (controller.activeIndex + delta + count) % count;
   }

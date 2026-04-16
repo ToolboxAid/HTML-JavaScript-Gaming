@@ -4,7 +4,9 @@ David Quesenberry
 04/16/2026
 movementOverlayStack.js
 */
-export const MOVEMENT_DEBUG_CYCLE_KEY = 'KeyG';
+import { LEVEL17_OVERLAY_CYCLE_KEY } from '/samples/phase-17/shared/overlayCycleInput.js';
+
+export const MOVEMENT_DEBUG_CYCLE_KEY = LEVEL17_OVERLAY_CYCLE_KEY;
 export const OVERLAY_MOVEMENT_RUNTIME = 'movement-runtime';
 export const OVERLAY_MOVEMENT_HUD = 'movement-lab-hud';
 

@@ -17,6 +17,7 @@ import RealGameplayMiniGame1710Scene from '../../samples/phase-17/1710/RealGamep
 import MovementModelsLab1711Scene from '../../samples/phase-17/1711/MovementModelsLabScene.js';
 import GameplayMetricsTelemetryScene from '../../samples/phase-17/1712/GameplayMetricsTelemetryScene.js';
 import FinalReferenceGameScene from '../../samples/phase-17/1713/FinalReferenceGameScene.js';
+import { getOverlayCycleInputCodes } from '../../samples/phase-17/shared/overlayCycleInput.js';
 
 function createCameraStub() {
   const state = {
@@ -49,7 +50,7 @@ function makeInput(keys = []) {
 }
 
 function pressCycleKey(scene) {
-  scene.step3DPhysics(0.02, { input: makeInput(['KeyG']) });
+  scene.step3DPhysics(0.02, { input: makeInput(getOverlayCycleInputCodes()) });
   scene.step3DPhysics(0.02, { input: makeInput([]) });
 }
 

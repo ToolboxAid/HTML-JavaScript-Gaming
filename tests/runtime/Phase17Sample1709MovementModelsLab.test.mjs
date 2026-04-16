@@ -9,6 +9,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import MovementModelsLabScene from '../../samples/phase-17/1709/MovementModelsLabScene.js';
+import { getOverlayCycleInputCodes } from '../../samples/phase-17/shared/overlayCycleInput.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -65,6 +66,11 @@ function createRendererProbe(width = 960, height = 540) {
     drawPolygon() {},
     drawImageFrame() {},
   };
+}
+
+function pressOverlayCycle(scene, { reverse = false } = {}) {
+  scene.step3DPhysics(0.02, { input: makeInput(getOverlayCycleInputCodes({ reverse })) });
+  scene.step3DPhysics(0.02, { input: makeInput([]) });
 }
 
 function assertIndexLinkPresent() {
@@ -125,8 +131,7 @@ function assertVisibleModeLabels() {
   assert.equal(weightedRenderer.lines.length > 0, true, 'Scene should render visible 3D line output.');
   assert.equal(weightedRenderer.texts.some((text) => text.includes('Debug: G/Shift+G')), true, 'HUD instructions should advertise G debug cycling.');
 
-  scene.step3DPhysics(0.02, { input: makeInput(['KeyG']) });
-  scene.step3DPhysics(0.02, { input: makeInput([]) });
+  pressOverlayCycle(scene);
   const hudRenderer = createRendererProbe();
   scene.render(hudRenderer);
   assert.equal(hudRenderer.texts.some((text) => text.includes('Movement Lab HUD')), true, 'G should cycle to Movement Lab HUD.');

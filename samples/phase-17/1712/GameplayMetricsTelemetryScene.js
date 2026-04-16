@@ -6,11 +6,11 @@ GameplayMetricsTelemetryScene.js
 */
 import { createBottomRightDebugPanelStack, drawStackedDebugPanel } from '/src/engine/debug/index.js';
 import RealGameplayMiniGameScene from '/samples/phase-17/1708/RealGameplayMiniGameScene.js';
+import { LEVEL17_OVERLAY_CYCLE_KEY } from '/samples/phase-17/shared/overlayCycleInput.js';
 const OVERLAY_UI_LAYER = 'ui-layer';
 const OVERLAY_MISSION_FEED = 'mission-feed';
 const OVERLAY_MISSION_READY = 'mission-ready';
 const OVERLAY_TELEMETRY = 'telemetry';
-const DEBUG_CYCLE_KEY = 'KeyG';
 
 function pushSample(history, value, limit = 48) {
   history.push(Number.isFinite(value) ? Number(value) : 0);
@@ -56,7 +56,7 @@ export default class GameplayMetricsTelemetryScene extends RealGameplayMiniGameS
       fpsHistory: [],
       collisionHistory: [],
     };
-    this.setDebugOverlayCycleKey(DEBUG_CYCLE_KEY);
+    this.setDebugOverlayCycleKey(LEVEL17_OVERLAY_CYCLE_KEY);
     this.setDebugOverlayCycleMap([
       { id: OVERLAY_UI_LAYER, label: 'UI Layer' },
       { id: OVERLAY_MISSION_FEED, label: 'Mission Feed' },
