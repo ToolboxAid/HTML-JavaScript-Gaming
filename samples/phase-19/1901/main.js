@@ -7,8 +7,7 @@ main.js
 import Engine from '/src/engine/core/Engine.js';
 import { InputService } from '/src/engine/input/index.js';
 import { Theme, ThemeTokens } from '/src/engine/theme/index.js';
-import createPhase19CoreServices from '/samples/phase-19/shared/coreServices/createPhase19CoreServices.js';
-import createPhase19RuntimeLayer from '/samples/phase-19/shared/runtimeLayer/createPhase19RuntimeLayer.js';
+import createPhase19IntegrationFlow from '/samples/phase-19/shared/integration/createPhase19IntegrationFlow.js';
 import Phase19FoundationScene from './Phase19FoundationScene.js';
 
 const theme = new Theme(ThemeTokens);
@@ -25,7 +24,6 @@ const engine = new Engine({
   input,
 });
 
-const coreServices = createPhase19CoreServices();
-const runtimeLayer = createPhase19RuntimeLayer({ coreServices });
-engine.setScene(new Phase19FoundationScene({ runtimeLayer }));
+const phase19Flow = createPhase19IntegrationFlow();
+engine.setScene(new Phase19FoundationScene({ phase19Flow }));
 engine.start();

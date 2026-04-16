@@ -7,6 +7,7 @@ Phase19RuntimeLayerScaffold.test.mjs
 import assert from 'node:assert/strict';
 import createPhase19CoreServices from '../../samples/phase-19/shared/coreServices/createPhase19CoreServices.js';
 import createPhase19RuntimeLayer from '../../samples/phase-19/shared/runtimeLayer/createPhase19RuntimeLayer.js';
+import createPhase19IntegrationFlow from '../../samples/phase-19/shared/integration/createPhase19IntegrationFlow.js';
 import Phase19FoundationScene from '../../samples/phase-19/1901/Phase19FoundationScene.js';
 
 function createRendererProbe(width = 960, height = 540) {
@@ -78,9 +79,8 @@ function assertRuntimeServiceIntegration() {
 }
 
 function assertSampleRuntimeWiring() {
-  const coreServices = createPhase19CoreServices();
-  const runtimeLayer = createPhase19RuntimeLayer({ coreServices });
-  const scene = new Phase19FoundationScene({ runtimeLayer });
+  const phase19Flow = createPhase19IntegrationFlow();
+  const scene = new Phase19FoundationScene({ phase19Flow });
 
   scene.enter({});
   scene.update(0.55);
@@ -91,11 +91,11 @@ function assertSampleRuntimeWiring() {
   assert.equal(
     renderer.texts.some((text) => text.includes('Runtime:')),
     true,
-    'Phase 19 foundation scene should surface runtime status from runtime layer.'
+    'Phase 19 foundation scene should surface runtime status from integration flow.'
   );
 
   scene.exit();
-  assert.equal(coreServices.getLifecycleState().running, false, 'Scene exit should stop runtime/core services.');
+  assert.equal(phase19Flow.getCoreServices().getLifecycleState().running, false, 'Scene exit should stop runtime/core services.');
 }
 
 export function run() {

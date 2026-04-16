@@ -11,54 +11,47 @@ import { drawFrame, drawPanel } from '/src/engine/debug/index.js';
 const theme = new Theme(ThemeTokens);
 
 export default class Phase19FoundationScene extends Scene {
-  constructor({ runtimeLayer = null } = {}) {
+  constructor({ phase19Flow = null } = {}) {
     super();
     this.elapsed = 0;
-    this.runtimeLayer = runtimeLayer;
+    this.phase19Flow = phase19Flow;
     this.lastHeartbeatTick = 0;
     this.lastHeartbeatTime = 0;
     this.lastRuntimeTransition = 'idle';
-    this.unsubscribeHeartbeat = null;
     this.unsubscribeRuntimeState = null;
   }
 
   enter(engine) {
-    if (!this.runtimeLayer) return;
-    this.unsubscribeRuntimeState = this.runtimeLayer.onStateChange(({ previous, next }) => {
+    if (!this.phase19Flow) return;
+    this.unsubscribeRuntimeState = this.phase19Flow.onStateChange(({ previous, next }) => {
       this.lastRuntimeTransition = `${previous} -> ${next}`;
     });
-    const channel = this.runtimeLayer.getService('phase19.channel');
-    if (channel && typeof channel.subscribe === 'function') {
-      this.unsubscribeHeartbeat = channel.subscribe('phase19.heartbeat', (payload) => {
-        this.lastHeartbeatTick = Number(payload?.tick) || 0;
-        this.lastHeartbeatTime = Number(payload?.t) || 0;
-      });
-    }
-    this.runtimeLayer.start({ engine, scene: this });
+    this.phase19Flow.start({ engine, scene: this });
   }
 
   update(dtSeconds) {
     this.elapsed += dtSeconds;
-    this.runtimeLayer?.update(dtSeconds, { scene: this });
+    this.phase19Flow?.update(dtSeconds, { scene: this });
+    const snapshot = this.phase19Flow?.getSnapshot?.();
+    if (snapshot?.flow) {
+      this.lastHeartbeatTick = Number(snapshot.flow.lastHeartbeatTick) || 0;
+      this.lastHeartbeatTime = Number(snapshot.flow.lastHeartbeatSeconds) || 0;
+    }
   }
 
   exit() {
-    if (typeof this.unsubscribeHeartbeat === 'function') {
-      this.unsubscribeHeartbeat();
-      this.unsubscribeHeartbeat = null;
-    }
     if (typeof this.unsubscribeRuntimeState === 'function') {
       this.unsubscribeRuntimeState();
       this.unsubscribeRuntimeState = null;
     }
-    this.runtimeLayer?.stop({ scene: this });
+    this.phase19Flow?.stop({ scene: this });
   }
 
   render(renderer) {
     drawFrame(renderer, theme, [
-      'Sample 1901 - Phase 19 Core Services',
-      'Minimal Phase 19 core-services skeleton wired into foundation sample.',
-      'No feature implementation in this core-services slice.',
+      'Sample 1901 - Phase 19 Integration Flow',
+      'Minimal Phase 19 integration flow wired over runtime layer + core services.',
+      'No feature implementation in this integration slice.',
     ]);
 
     renderer.drawRect(120, 212, 720, 200, '#0f172a');
@@ -72,23 +65,30 @@ export default class Phase19FoundationScene extends Scene {
       font: '16px monospace',
     });
 
-    const runtimeSnapshot = this.runtimeLayer?.getSnapshot?.() || {
+    const phase19Snapshot = this.phase19Flow?.getSnapshot?.() || {
+      runtime: {
+        state: 'idle',
+        tickCount: 0,
+        serviceIds: [],
+      },
+      flow: {
+        runtimeStateEvents: 0,
+      },
+    };
+    const runtimeSnapshot = phase19Snapshot.runtime || {
       state: 'idle',
       tickCount: 0,
       serviceIds: [],
     };
-    const channelSnapshot = this.runtimeLayer?.getService?.('phase19.channel')?.getSnapshot?.() || {
-      publishedCount: 0,
-      lastChannel: 'none',
-    };
+    const flowSnapshot = phase19Snapshot.flow || { runtimeStateEvents: 0 };
     drawPanel(renderer, 620, 34, 300, 160, 'Phase 19 Bootstrap', [
-      'Status: initialized (runtime layer)',
+      'Status: initialized',
       'Folder: samples/phase-19',
       'Entry sample: 1901',
       `Runtime: ${runtimeSnapshot.state} | tick ${runtimeSnapshot.tickCount}`,
       `Transition: ${this.lastRuntimeTransition}`,
+      `Flow events: ${flowSnapshot.runtimeStateEvents}`,
       `Services: ${runtimeSnapshot.serviceIds.length}`,
-      `Published: ${channelSnapshot.publishedCount} (${channelSnapshot.lastChannel})`,
       `Heartbeat tick: ${this.lastHeartbeatTick} @ ${this.lastHeartbeatTime.toFixed(2)}s`,
     ]);
   }

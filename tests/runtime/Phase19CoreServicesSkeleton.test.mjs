@@ -6,7 +6,7 @@ Phase19CoreServicesSkeleton.test.mjs
 */
 import assert from 'node:assert/strict';
 import createPhase19CoreServices from '../../samples/phase-19/shared/coreServices/createPhase19CoreServices.js';
-import createPhase19RuntimeLayer from '../../samples/phase-19/shared/runtimeLayer/createPhase19RuntimeLayer.js';
+import createPhase19IntegrationFlow from '../../samples/phase-19/shared/integration/createPhase19IntegrationFlow.js';
 import Phase19FoundationScene from '../../samples/phase-19/1901/Phase19FoundationScene.js';
 
 function createRendererProbe(width = 960, height = 540) {
@@ -57,9 +57,8 @@ function assertCoreServiceLifecycleAndCommunication() {
 }
 
 function assertPhase19SampleWiring() {
-  const coreServices = createPhase19CoreServices();
-  const runtimeLayer = createPhase19RuntimeLayer({ coreServices });
-  const scene = new Phase19FoundationScene({ runtimeLayer });
+  const phase19Flow = createPhase19IntegrationFlow();
+  const scene = new Phase19FoundationScene({ phase19Flow });
 
   scene.enter({});
   scene.update(0.55);
@@ -75,9 +74,9 @@ function assertPhase19SampleWiring() {
 
   scene.exit();
   assert.equal(
-    coreServices.getLifecycleState().running,
+    phase19Flow.getCoreServices().getLifecycleState().running,
     false,
-    'Scene exit should stop core services through runtime layer.'
+    'Scene exit should stop core services through integration flow.'
   );
 }
 
