@@ -1,2 +1,2 @@
-Level 18.6 overlay diagnostics and debug tooling.
-Add visibility into overlay state and cycle behavior.
+Level 18.7 overlay integration with mission system.
+Enable Mission Feed overlay to reflect live mission state.

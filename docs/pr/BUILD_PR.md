@@ -1,34 +1,31 @@
-# BUILD_PR_LEVEL_18_6_OVERLAY_DIAGNOSTICS_DEBUG_TOOLING
+# BUILD_PR_LEVEL_18_7_OVERLAY_MISSION_SYSTEM_INTEGRATION
 
 ## PLAN
 
 ### Purpose
-Introduce lightweight diagnostics and debug tooling for overlay system to aid validation and future debugging.
+Integrate overlay system with mission system so Mission Feed and related overlays respond to mission state changes.
 
 ### Goals
-- Provide visibility into overlay state
-- Expose current stack + index
-- Enable debug logging toggle
+- Sync Mission Feed overlay with mission state
+- Ensure overlay updates reflect live mission progress
+- Maintain overlay cycle behavior
 
 ---
 
 ## BUILD
 
 ### Scope
-- Add diagnostic hooks (non-invasive)
-- Add debug output for:
-  - Current overlay index
-  - Active stack
-  - Cycle key events
-- Optional debug toggle (no UI change required)
-- No behavior change
+- Hook overlay system into mission state updates
+- Ensure Mission Feed overlay reflects current mission data
+- No changes to overlay positioning or cycling
+- No UI redesign
 
 ### Test Steps
-1. Enable diagnostics
-2. Cycle overlays
-3. Verify logs show correct state transitions
-4. Disable diagnostics
+1. Trigger mission updates
+2. Verify Mission Feed overlay updates
+3. Cycle overlays and confirm consistency
+4. Confirm no regression in other overlays
 
 ### Expected
-- Clear debug visibility
-- No runtime impact when disabled
+- Mission Feed reflects live state
+- Overlay system remains stable

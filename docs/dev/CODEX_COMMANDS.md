@@ -2,10 +2,9 @@ MODEL: GPT-5.4-codex
 REASONING: medium
 
 COMMAND:
-Add overlay diagnostics tooling:
-- Log overlay index and stack state
-- Add optional debug toggle
-- Ensure zero impact when disabled
-- Do not change overlay behavior
+Integrate overlay system with mission system:
+- Connect Mission Feed overlay to mission state updates
+- Ensure live updates reflect correctly
+- Preserve existing overlay behavior
 
 Package ZIP to <project folder>/tmp/

@@ -47,6 +47,14 @@ const WON_STATE = 'won';
 const LOST_STATE = 'lost';
 const DEBUG_OVERLAY_CONFIG = getRequiredLevel17OverlayStackConfig('1708');
 
+function formatMissionStatusLabel(gameState) {
+  return gameState === RUNNING_STATE
+    ? 'Status: mission active.'
+    : gameState === READY_STATE
+      ? 'Status: waiting for deploy.'
+      : `Status: ${gameState}.`;
+}
+
 function clamp(value, min, max) {
   return Math.max(min, Math.min(max, value));
 }
@@ -89,6 +97,7 @@ export default class RealGameplayMiniGameScene extends Scene {
     this.pickupBursts = [];
     this.hitFlash = 0;
     this.pickupFlash = 0;
+    this.missionFeedState = null;
 
     this.resetMatch({ toReady: true });
 
@@ -161,6 +170,7 @@ export default class RealGameplayMiniGameScene extends Scene {
       this.addEvent('Ready: press Space/Enter to deploy.');
     }
 
+    this.refreshMissionFeedState();
     this.syncCamera();
   }
 
@@ -169,6 +179,7 @@ export default class RealGameplayMiniGameScene extends Scene {
     this.gameState = RUNNING_STATE;
     this.resultMessage = 'Mission active. Collect cores and avoid sentries.';
     this.addEvent('Mission started.');
+    this.refreshMissionFeedState();
   }
 
   setCamera3D(camera3D) {
@@ -201,6 +212,26 @@ export default class RealGameplayMiniGameScene extends Scene {
 
   getActiveDebugOverlayId() {
     return getTabDebugOverlayActiveId(this.tabDebugOverlays);
+  }
+
+  buildMissionFeedLiveLine() {
+    return `live=objective ${this.score}/${this.targetScore} hull=${this.health}/${this.maxHealth} t=${this.timeLeft.toFixed(1)}s`;
+  }
+
+  refreshMissionFeedState() {
+    this.missionFeedState = {
+      statusLabel: formatMissionStatusLabel(this.gameState),
+      liveLine: this.buildMissionFeedLiveLine(),
+    };
+    return this.missionFeedState;
+  }
+
+  getMissionFeedStateSnapshot() {
+    const state = this.missionFeedState || this.refreshMissionFeedState();
+    return {
+      statusLabel: state.statusLabel,
+      liveLine: state.liveLine,
+    };
   }
 
   pushCollisionRow(overlayId, kind, state, enabled = true) {
@@ -364,18 +395,21 @@ export default class RealGameplayMiniGameScene extends Scene {
 
   evaluateRoundState() {
     if (this.gameState !== RUNNING_STATE) {
+      this.refreshMissionFeedState();
       return;
     }
     if (this.score >= this.targetScore) {
       this.gameState = WON_STATE;
       this.resultMessage = `Objective complete: ${this.score}/${this.targetScore} cores captured.`;
       this.addEvent('Mission complete.');
+      this.refreshMissionFeedState();
       return;
     }
     if (this.health <= 0) {
       this.gameState = LOST_STATE;
       this.resultMessage = 'Mission failed: hull integrity depleted.';
       this.addEvent('Mission failed: hull integrity depleted.');
+      this.refreshMissionFeedState();
       return;
     }
     if (this.timeLeft <= 0) {
@@ -383,6 +417,7 @@ export default class RealGameplayMiniGameScene extends Scene {
       this.resultMessage = 'Mission failed: timer expired before objective completion.';
       this.addEvent('Mission failed: timer expired.');
     }
+    this.refreshMissionFeedState();
   }
 
   updateFeedback(dtSeconds) {
@@ -437,6 +472,7 @@ export default class RealGameplayMiniGameScene extends Scene {
 
     this.lastCollisionCount = this.debugCollisionRows.length;
     this.updateFeedback(dt);
+    this.refreshMissionFeedState();
     this.syncCamera();
   }
 
@@ -542,11 +578,7 @@ export default class RealGameplayMiniGameScene extends Scene {
       renderer.drawRect(viewport.x, viewport.y, viewport.width, viewport.height, `rgba(34, 211, 238, ${alpha})`);
     }
 
-    const missionStatus = this.gameState === RUNNING_STATE
-      ? 'Status: mission active.'
-      : this.gameState === READY_STATE
-        ? 'Status: waiting for deploy.'
-        : `Status: ${this.gameState}.`;
+    const missionFeedState = this.getMissionFeedStateSnapshot();
 
     const debugStack = createBottomRightDebugPanelStack(renderer);
     this.debugOverlayStack = debugStack;
@@ -564,7 +596,8 @@ export default class RealGameplayMiniGameScene extends Scene {
     } else if (activeOverlayId === OVERLAY_MISSION_FEED) {
       drawStackedDebugPanel(renderer, debugStack, 326, 160, 'Mission Feed', [
         ...this.eventFeed,
-        missionStatus,
+        missionFeedState.liveLine,
+        missionFeedState.statusLabel,
       ]);
     } else if (activeOverlayId === OVERLAY_MISSION_READY) {
       const isWin = this.gameState === WON_STATE;

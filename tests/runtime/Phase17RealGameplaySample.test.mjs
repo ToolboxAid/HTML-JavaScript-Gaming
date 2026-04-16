@@ -144,6 +144,16 @@ function assertGameplayLoopAndDebugPanels() {
   const missionFeedRenderer = createRendererProbe();
   scene.render(missionFeedRenderer);
   assert.equal(missionFeedRenderer.texts.some((text) => text.includes('Mission Feed')), true, 'G should cycle to mission feed panel.');
+  assert.equal(
+    missionFeedRenderer.texts.some((text) => text.includes('live=objective')),
+    true,
+    'Mission Feed should include live mission-state metrics.'
+  );
+  assert.equal(
+    missionFeedRenderer.texts.some((text) => text.includes('Status: won.')),
+    true,
+    'Mission Feed should reflect the latest mission state update.'
+  );
 
   pressOverlayCycle(scene);
   const missionReadyRenderer = createRendererProbe();

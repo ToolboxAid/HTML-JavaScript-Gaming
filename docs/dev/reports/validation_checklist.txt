@@ -1,4 +1,4 @@
-[ ] Diagnostics output correct state
-[ ] Toggle enables/disables logs
-[ ] No performance impact when disabled
-[ ] No behavior change
+[ ] Mission Feed updates with state
+[ ] Overlay cycle unaffected
+[ ] No regression in other overlays
+[ ] Stable behavior
