@@ -88,7 +88,9 @@ ZIP STANDARD (ENFORCED)
 - Internal structure MUST be repo-relative only
 - No extra files outside defined structure
 
-
+Commit Comment:
+<change details>
+<PR Details>
 ## 🔒 EXECUTION DEFAULTS (MANDATORY)
 
 ### ALWAYS CONTINUE

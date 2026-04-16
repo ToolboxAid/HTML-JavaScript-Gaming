@@ -41,8 +41,48 @@ export function createTabDebugOverlayController({ overlays = [], initialOverlayI
   return {
     overlays: normalized,
     activeIndex,
-    tabLatch: false,
+    cycleKey: 'Tab',
+    cycleLatch: false,
   };
+}
+
+export function setTabDebugOverlayMap(controller, { overlays = [], initialOverlayId = '' } = {}) {
+  if (!controller) {
+    return false;
+  }
+
+  const normalized = [];
+  for (let i = 0; i < overlays.length; i += 1) {
+    const candidate = normalizeOverlayEntry(overlays[i]);
+    if (!candidate) {
+      continue;
+    }
+    if (normalized.some((overlay) => overlay.id === candidate.id)) {
+      continue;
+    }
+    normalized.push(candidate);
+  }
+
+  controller.overlays = normalized;
+  controller.activeIndex = 0;
+  if (initialOverlayId && normalized.length > 0) {
+    const lookupIndex = normalized.findIndex((overlay) => overlay.id === initialOverlayId);
+    if (lookupIndex >= 0) {
+      controller.activeIndex = lookupIndex;
+    }
+  }
+  controller.cycleLatch = false;
+  return true;
+}
+
+export function setTabDebugOverlayCycleKey(controller, cycleKey) {
+  if (!controller) {
+    return false;
+  }
+  const normalized = String(cycleKey || '').trim();
+  controller.cycleKey = normalized || 'Tab';
+  controller.cycleLatch = false;
+  return true;
 }
 
 export function appendTabDebugOverlay(controller, entry) {
@@ -83,13 +123,14 @@ export function stepTabDebugOverlayController(controller, input) {
     return;
   }
 
-  const tabPressed = input?.isDown('Tab') === true;
-  if (tabPressed && controller.tabLatch === false && controller.overlays.length > 1) {
+  const cycleKey = String(controller.cycleKey || 'Tab');
+  const cyclePressed = input?.isDown(cycleKey) === true;
+  if (cyclePressed && controller.cycleLatch === false && controller.overlays.length > 1) {
     const delta = hasShiftModifier(input) ? -1 : 1;
     const count = controller.overlays.length;
     controller.activeIndex = (controller.activeIndex + delta + count) % count;
   }
-  controller.tabLatch = tabPressed;
+  controller.cycleLatch = cyclePressed;
 }
 
 export function isTabDebugOverlayActive(controller, overlayId) {

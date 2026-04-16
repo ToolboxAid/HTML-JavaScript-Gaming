@@ -6,11 +6,12 @@ MovementModelsLabScene.js
 */
 import { Scene } from '/src/engine/scene/index.js';
 import { Theme, ThemeTokens } from '/src/engine/theme/index.js';
-import { createBottomRightDebugPanelStack, drawFrame, drawPanel, drawStackedDebugPanel } from '/src/engine/debug/index.js';
+import { createBottomRightDebugPanelStack, drawFrame, drawStackedDebugPanel } from '/src/engine/debug/index.js';
 import {
   createTabDebugOverlayController,
   getTabDebugOverlayStatusLabel,
   isTabDebugOverlayActive,
+  setTabDebugOverlayCycleKey,
   stepTabDebugOverlayController,
 } from '/samples/phase-17/shared/tabDebugOverlayCycle.js';
 import {
@@ -19,7 +20,6 @@ import {
   createProjectionViewport,
   drawDepthBackdrop,
   drawGroundGrid,
-  drawPhase16DebugOverlay,
   drawWireBox,
   projectPoint,
   stepPhase16ViewToggles,
@@ -38,8 +38,9 @@ const MODE_ORDER = Object.freeze([
   MOVEMENT_MODES.TANK,
   MOVEMENT_MODES.WEIGHTED,
 ]);
+const DEBUG_CYCLE_KEY = 'KeyG';
 const OVERLAY_MOVEMENT_RUNTIME = 'movement-runtime';
-const OVERLAY_PHASE16 = 'phase16-overlay';
+const OVERLAY_MOVEMENT_HUD = 'movement-lab-hud';
 
 function clamp(value, min, max) {
   return Math.max(min, Math.min(max, value));
@@ -99,10 +100,11 @@ export default class MovementModelsLabScene extends Scene {
     this.tabDebugOverlays = createTabDebugOverlayController({
       overlays: [
         { id: OVERLAY_MOVEMENT_RUNTIME, label: 'Movement Runtime' },
-        { id: OVERLAY_PHASE16, label: 'Phase16 Overlay' },
+        { id: OVERLAY_MOVEMENT_HUD, label: 'Movement Lab HUD' },
       ],
       initialOverlayId: OVERLAY_MOVEMENT_RUNTIME,
     });
+    setTabDebugOverlayCycleKey(this.tabDebugOverlays, DEBUG_CYCLE_KEY);
   }
 
   setCamera3D(camera3D) {
@@ -287,7 +289,7 @@ export default class MovementModelsLabScene extends Scene {
     drawFrame(renderer, theme, [
       'Sample 1709 - Movement Models Lab',
       'Compare direct axis movement, tank controls, and weighted movement in one controlled arena.',
-      `Mode: 1 Direct | 2 Tank | 3 Weighted | Cycle: M | Move: W A S D | Camera yaw: Q/E | Debug: Tab/Shift+Tab (${getTabDebugOverlayStatusLabel(this.tabDebugOverlays)})`,
+      `Mode: 1 Direct | 2 Tank | 3 Weighted | Cycle: M | Move: W A S D | Camera yaw: Q/E | Debug: G/Shift+G (${getTabDebugOverlayStatusLabel(this.tabDebugOverlays)})`,
     ]);
 
     const viewport = this.viewport;
@@ -321,18 +323,10 @@ export default class MovementModelsLabScene extends Scene {
     );
     this.drawFacingIndicator(renderer, cameraState, projectionViewport);
 
-    const canvasSize = renderer.getCanvasSize?.() || { width: 960, height: 540 };
     const hudWidth = 360;
     const hudHeight = 138;
-    const hudX = Math.max(12, canvasSize.width - hudWidth - 22);
-    const hudY = Math.max(12, canvasSize.height - hudHeight - 18);
-    const hudTextX = hudX + 12;
     const runtimeWidth = hudWidth;
     const runtimeHeight = 212;
-    const runtimeGap = 10;
-    const runtimeX = hudX;
-    const runtimeY = Math.max(12, hudY - runtimeHeight - runtimeGap);
-
     const debugStack = createBottomRightDebugPanelStack(renderer);
     if (isTabDebugOverlayActive(this.tabDebugOverlays, OVERLAY_MOVEMENT_RUNTIME)) {
       drawStackedDebugPanel(renderer, debugStack, runtimeWidth, runtimeHeight, 'Movement Runtime', [
@@ -347,23 +341,14 @@ export default class MovementModelsLabScene extends Scene {
       ]);
     }
 
-    renderer.drawRect(hudX, hudY, hudWidth, hudHeight, 'rgba(15, 23, 42, 0.76)');
-    renderer.strokeRect(hudX, hudY, hudWidth, hudHeight, '#4ade80', 1);
-    renderer.drawText('Movement Lab HUD', hudTextX, hudY + 18, { color: '#86efac', font: '12px monospace' });
-    renderer.drawText(`Movement Mode: ${formatMode(this.movementMode)}`, hudTextX, hudY + 40, {
-      color: '#f8fafc',
-      font: '14px monospace',
-    });
-    renderer.drawText(`Input: ${this.lastInputSummary}`, hudTextX, hudY + 60, { color: '#e2e8f0', font: '12px monospace' });
-    renderer.drawText(`Speed: ${this.lastSpeed.toFixed(2)} units/s`, hudTextX, hudY + 78, { color: '#e2e8f0', font: '12px monospace' });
-    renderer.drawText(`Heading: ${this.actor.heading.toFixed(2)} rad`, hudTextX, hudY + 96, { color: '#e2e8f0', font: '12px monospace' });
-    renderer.drawText(`Camera follow mode: ${this.viewState.cameraMode}`, hudTextX, hudY + 114, { color: '#e2e8f0', font: '12px monospace' });
-
-    if (isTabDebugOverlayActive(this.tabDebugOverlays, OVERLAY_PHASE16)) {
-      drawPhase16DebugOverlay(renderer, viewport, this.viewState, [
-        `Active movement model: ${formatMode(this.movementMode)}`,
-        'Use 1/2/3 or M to compare control response in real time.',
-      ], { stack: debugStack });
+    if (isTabDebugOverlayActive(this.tabDebugOverlays, OVERLAY_MOVEMENT_HUD)) {
+      drawStackedDebugPanel(renderer, debugStack, hudWidth, hudHeight, 'Movement Lab HUD', [
+        `Movement Mode: ${formatMode(this.movementMode)}`,
+        `Input: ${this.lastInputSummary}`,
+        `Speed: ${this.lastSpeed.toFixed(2)} units/s`,
+        `Heading: ${this.actor.heading.toFixed(2)} rad`,
+        `Camera follow mode: ${this.viewState.cameraMode}`,
+      ]);
     }
   }
 }

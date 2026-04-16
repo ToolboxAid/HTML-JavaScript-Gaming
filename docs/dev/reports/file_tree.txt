@@ -1,4 +1,6 @@
 docs/
+  pr/
+    BUILD_PR_LEVEL_17_52_DEBUG_OVERLAY_CYCLE_KEY_AND_SAMPLE_STACK_MAP.md
   dev/
     codex_commands.md
     commit_comment.txt
@@ -6,5 +8,3 @@ docs/
       change_summary.txt
       file_tree.txt
       validation_checklist.txt
-  pr/
-    BUILD_PR_LEVEL_09_04_ASSET_STRUCTURE_SIMPLIFICATION.md

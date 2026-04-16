@@ -44,6 +44,11 @@ function makeInput(keys = []) {
   };
 }
 
+function pressCycleKey(scene) {
+  scene.step3DPhysics(0.02, { input: makeInput(['KeyG']) });
+  scene.step3DPhysics(0.02, { input: makeInput([]) });
+}
+
 function createRendererProbe(width = 960, height = 540) {
   const texts = [];
   return {
@@ -114,26 +119,37 @@ function assertSample1704StackedPanelPlacement() {
   assert.equal(phase16PanelY, 212, 'Sample 1704 phase16 overlay should be stacked above runtime panel.');
 }
 
-function assertSample1708TabPlacement() {
+function assertSample1708CyclePlacement() {
   const scene = new RealGameplayMiniGameScene();
   scene.setCamera3D(createCameraStub());
 
   const renderer = createRendererProbe();
   scene.render(renderer);
-  const runtimeTitle = findExactText(renderer, 'Mini-Game Runtime');
-  assertBottomRightFromTitle(runtimeTitle, 300, 120, 650, 410, 'Sample 1708 runtime overlay');
+  const uiLayerTitle = findExactText(renderer, 'UI Layer');
+  assertBottomRightFromTitle(uiLayerTitle, 326, 174, 624, 356, 'Sample 1708 UI Layer overlay');
 
   scene.step3DPhysics(0.02, { input: makeInput(['Tab']) });
   scene.step3DPhysics(0.02, { input: makeInput([]) });
-  const cameraRenderer = createRendererProbe();
-  scene.render(cameraRenderer);
-  const cameraTitle = findExactText(cameraRenderer, '3D Camera');
-  assertBottomRightFromTitle(cameraTitle, 300, 150, 650, 380, 'Sample 1708 camera overlay');
+  const tabRenderer = createRendererProbe();
+  scene.render(tabRenderer);
+  const tabUiLayerTitle = findExactText(tabRenderer, 'UI Layer');
+  assertBottomRightFromTitle(tabUiLayerTitle, 326, 174, 624, 356, 'Sample 1708 should ignore Tab and keep UI Layer overlay');
+
+  pressCycleKey(scene);
+  pressCycleKey(scene);
+  pressCycleKey(scene);
+  const runtimeRenderer = createRendererProbe();
+  scene.render(runtimeRenderer);
+  const runtimeTitle = findExactText(runtimeRenderer, 'Mini-Game Runtime');
+  assertBottomRightFromTitle(runtimeTitle, 300, 120, 650, 410, 'Sample 1708 runtime overlay');
 }
 
 function assertSample1712TelemetryPlacement() {
   const scene = new GameplayMetricsTelemetryScene();
   scene.setCamera3D(createCameraStub());
+  pressCycleKey(scene);
+  pressCycleKey(scene);
+  pressCycleKey(scene);
   const renderer = createRendererProbe();
   scene.render(renderer);
   const telemetryTitle = findExactText(renderer, 'Telemetry Overlay');
@@ -144,6 +160,6 @@ export function run() {
   assertSharedStackMath();
   assertSample1701RuntimePanelPlacement();
   assertSample1704StackedPanelPlacement();
-  assertSample1708TabPlacement();
+  assertSample1708CyclePlacement();
   assertSample1712TelemetryPlacement();
 }

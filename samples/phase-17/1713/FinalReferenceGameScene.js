@@ -6,7 +6,11 @@ FinalReferenceGameScene.js
 */
 import { createBottomRightDebugPanelStack, drawStackedDebugPanel } from '/src/engine/debug/index.js';
 import GameplayMetricsTelemetryScene from '/samples/phase-17/1712/GameplayMetricsTelemetryScene.js';
+const OVERLAY_UI_LAYER = 'ui-layer';
+const OVERLAY_MISSION_FEED = 'mission-feed';
+const OVERLAY_MISSION_READY = 'mission-ready';
 const OVERLAY_FINAL_REFERENCE_RUNTIME = 'final-reference-runtime';
+const DEBUG_CYCLE_KEY = 'KeyG';
 
 function clamp(value, min, max) {
   return Math.max(min, Math.min(max, value));
@@ -58,7 +62,13 @@ export default class FinalReferenceGameScene extends GameplayMetricsTelemetrySce
       completionBonus: 0,
       phase: 'briefing',
     };
-    this.registerDebugOverlay(OVERLAY_FINAL_REFERENCE_RUNTIME, 'Final Reference Runtime', { makeActive: true });
+    this.setDebugOverlayCycleKey(DEBUG_CYCLE_KEY);
+    this.setDebugOverlayCycleMap([
+      { id: OVERLAY_UI_LAYER, label: 'UI Layer' },
+      { id: OVERLAY_MISSION_FEED, label: 'Mission Feed' },
+      { id: OVERLAY_MISSION_READY, label: 'MISSION READY' },
+      { id: OVERLAY_FINAL_REFERENCE_RUNTIME, label: 'Final Reference Runtime' },
+    ], OVERLAY_UI_LAYER);
   }
 
   step3DPhysics(dtSeconds, engine) {

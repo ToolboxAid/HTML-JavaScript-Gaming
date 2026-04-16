@@ -72,6 +72,12 @@ function assertIndexLinkPresent() {
 function assertFinalReferenceRuntimeFlow() {
   const scene = new FinalReferenceGameScene();
   scene.setCamera3D(createCameraStub());
+  assert.equal(scene.tabDebugOverlays?.cycleKey, 'KeyG', 'Reference game should use G as debug cycle key.');
+  assert.deepEqual(
+    scene.tabDebugOverlays.overlays.map((entry) => entry.label),
+    ['UI Layer', 'Mission Feed', 'MISSION READY', 'Final Reference Runtime'],
+    'Reference game should keep the required cycle map ordering.'
+  );
 
   assert.equal(scene.gameState, 'ready', 'Reference game should start in ready state.');
   const beforeX = scene.player.x;
@@ -94,28 +100,33 @@ function assertFinalReferenceRuntimeFlow() {
 
   const renderer = createRendererProbe();
   scene.render(renderer);
-  assert.equal(renderer.texts.some((text) => text.includes('Final Reference Runtime')), true, 'Final runtime panel should render.');
-  assert.equal(renderer.texts.some((text) => text.includes('profile=final-reference')), true, 'Reference runtime metrics should render.');
-  assert.equal(renderer.texts.some((text) => text.includes('activeCameraId=')), false, 'Only one debug overlay should be visible at a time.');
-  assert.equal(renderer.texts.some((text) => text.includes('overlayCount=')), false, 'Only one debug overlay should be visible at a time.');
+  assert.equal(renderer.texts.some((text) => text.includes('UI Layer')), true, 'UI Layer panel should render by default.');
+  assert.equal(renderer.texts.some((text) => text.includes('Final Reference Runtime')), false, 'Final runtime panel should not render by default.');
 
+  const indexBeforeTab = scene.tabDebugOverlays.activeIndex;
   scene.step3DPhysics(0.02, { input: makeInput(['Tab']) });
+  scene.step3DPhysics(0.02, { input: makeInput([]) });
+  assert.equal(scene.tabDebugOverlays.activeIndex, indexBeforeTab, 'Tab should not cycle reference overlays.');
+
+  scene.step3DPhysics(0.02, { input: makeInput(['KeyG']) });
+  scene.step3DPhysics(0.02, { input: makeInput([]) });
+  const missionFeedRenderer = createRendererProbe();
+  scene.render(missionFeedRenderer);
+  assert.equal(missionFeedRenderer.texts.some((text) => text.includes('Mission Feed')), true, 'First G press should cycle to Mission Feed.');
+
+  scene.step3DPhysics(0.02, { input: makeInput(['KeyG']) });
+  scene.step3DPhysics(0.02, { input: makeInput([]) });
+  const missionReadyRenderer = createRendererProbe();
+  scene.render(missionReadyRenderer);
+  assert.equal(missionReadyRenderer.texts.some((text) => text.includes('MISSION READY')), true, 'Second G press should cycle to MISSION READY.');
+
+  scene.step3DPhysics(0.02, { input: makeInput(['KeyG']) });
   scene.step3DPhysics(0.02, { input: makeInput([]) });
   const runtimeRenderer = createRendererProbe();
   scene.render(runtimeRenderer);
-  assert.equal(runtimeRenderer.texts.some((text) => text.includes('Mini-Game Runtime')), true, 'Tab should cycle from final overlay to runtime overlay.');
-
-  scene.step3DPhysics(0.02, { input: makeInput(['Tab']) });
-  scene.step3DPhysics(0.02, { input: makeInput([]) });
-  const cameraRenderer = createRendererProbe();
-  scene.render(cameraRenderer);
-  assert.equal(cameraRenderer.texts.some((text) => text.includes('activeCameraId=')), true, 'Cycle should reach camera debug summary.');
-
-  scene.step3DPhysics(0.02, { input: makeInput(['Tab']) });
-  scene.step3DPhysics(0.02, { input: makeInput([]) });
-  const collisionRenderer = createRendererProbe();
-  scene.render(collisionRenderer);
-  assert.equal(collisionRenderer.texts.some((text) => text.includes('overlayCount=')), true, 'Cycle should reach collision debug summary.');
+  assert.equal(runtimeRenderer.texts.some((text) => text.includes('Final Reference Runtime')), true, 'Third G press should cycle to Final Reference Runtime.');
+  assert.equal(runtimeRenderer.texts.some((text) => text.includes('profile=final-reference')), true, 'Reference runtime metrics should render.');
+  assert.equal(runtimeRenderer.texts.some((text) => text.includes('UI Layer')), false, 'Only one debug overlay should be visible at a time.');
 }
 
 export function run() {

@@ -1,4 +1,13 @@
-Summary
-- converts the rendering-and-animation expansion into a compact four-sample demonstrator bundle
-- uses a couple of filled samples and a couple of image-skinned samples to make the documented concepts visible
-- reduces churn by avoiding a large diffuse sample explosion while still proving the capability set
+Change target:
+- Follow-up to the prior bottom-right overlay work.
+
+Why this PR exists:
+- The current touched runtime still uses Tab in the overlay-cycle path.
+- Browser Tab behavior conflicts with deterministic in-sample cycling.
+- The user supplied exact sample-specific panel sets for 1708-1713.
+
+What Codex should deliver:
+- One replacement overlay-cycle key across the touched samples.
+- Bottom-right stack retention.
+- Exact cycle maps per sample.
+- Runtime tests that prove both key behavior and panel order/placement.

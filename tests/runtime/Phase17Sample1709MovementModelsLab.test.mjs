@@ -110,26 +110,32 @@ function assertVisibleModeLabels() {
   scene.step3DPhysics(0.01, { input: makeInput(['Digit1']) });
   const directRenderer = createRendererProbe();
   scene.render(directRenderer);
-  assert.equal(directRenderer.texts.some((text) => text.includes('Movement Mode: Direct XY')), true, 'Direct mode label should be visible.');
+  assert.equal(directRenderer.texts.some((text) => text.includes('Mode: Direct XY')), true, 'Direct mode label should be visible.');
   assert.equal(directRenderer.texts.some((text) => text.includes('Movement Runtime')), true, 'Movement runtime debug overlay should be visible by default.');
 
   scene.step3DPhysics(0.01, { input: makeInput(['Digit2']) });
   const tankRenderer = createRendererProbe();
   scene.render(tankRenderer);
-  assert.equal(tankRenderer.texts.some((text) => text.includes('Movement Mode: Tank Rotation')), true, 'Tank mode label should be visible.');
+  assert.equal(tankRenderer.texts.some((text) => text.includes('Mode: Tank Rotation')), true, 'Tank mode label should be visible.');
 
   scene.step3DPhysics(0.01, { input: makeInput(['Digit3']) });
   const weightedRenderer = createRendererProbe();
   scene.render(weightedRenderer);
-  assert.equal(weightedRenderer.texts.some((text) => text.includes('Movement Mode: Weighted')), true, 'Weighted mode label should be visible.');
+  assert.equal(weightedRenderer.texts.some((text) => text.includes('Mode: Weighted')), true, 'Weighted mode label should be visible.');
   assert.equal(weightedRenderer.lines.length > 0, true, 'Scene should render visible 3D line output.');
+  assert.equal(weightedRenderer.texts.some((text) => text.includes('Debug: G/Shift+G')), true, 'HUD instructions should advertise G debug cycling.');
 
+  const indexBeforeTab = scene.tabDebugOverlays.activeIndex;
   scene.step3DPhysics(0.02, { input: makeInput(['Tab']) });
   scene.step3DPhysics(0.02, { input: makeInput([]) });
-  const phase16Renderer = createRendererProbe();
-  scene.render(phase16Renderer);
-  assert.equal(phase16Renderer.texts.some((text) => text.includes('Toggle camera: C | Toggle debug: V')), true, 'Tab should cycle to the phase16 debug overlay.');
-  assert.equal(phase16Renderer.texts.some((text) => text.includes('Movement Runtime')), false, 'Only one debug overlay should be visible at a time.');
+  assert.equal(scene.tabDebugOverlays.activeIndex, indexBeforeTab, 'Tab should not cycle movement debug overlays.');
+
+  scene.step3DPhysics(0.02, { input: makeInput(['KeyG']) });
+  scene.step3DPhysics(0.02, { input: makeInput([]) });
+  const hudRenderer = createRendererProbe();
+  scene.render(hudRenderer);
+  assert.equal(hudRenderer.texts.some((text) => text.includes('Movement Lab HUD')), true, 'G should cycle to Movement Lab HUD.');
+  assert.equal(hudRenderer.texts.some((text) => text.includes('Movement Runtime')), false, 'Only one movement debug overlay should be visible at a time.');
 }
 
 export function run() {

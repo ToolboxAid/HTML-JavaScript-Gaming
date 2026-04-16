@@ -93,9 +93,9 @@ function assertGameplayLoopAndDebugPanels() {
   const readyRenderer = createRendererProbe();
   scene.render(readyRenderer);
   assert.equal(
-    readyRenderer.texts.some((text) => text.includes('MISSION READY')),
+    readyRenderer.texts.some((text) => text.includes('UI Layer')),
     true,
-    'Ready state should render a clear mission-ready prompt.'
+    'Ready state should render the UI Layer panel by default.'
   );
 
   scene.step3DPhysics(0.02, { input: makeInput(['Space']) });
@@ -130,25 +130,31 @@ function assertGameplayLoopAndDebugPanels() {
   scene.render(renderer);
   assert.equal(renderer.lines.length > 0, true, 'Mini-game scene should render visible wireframe lines.');
   assert.equal(renderer.texts.some((text) => text.includes('3D World - Outpost Arena')), true, 'Scene should render a clear world-layer label.');
-  assert.equal(renderer.texts.some((text) => text.includes('Mini-Game Runtime')), true, 'Runtime debug overlay should render by default.');
-  assert.equal(renderer.texts.some((text) => text.includes('activeCameraId=')), false, 'Only one debug overlay should be visible at a time.');
-  assert.equal(renderer.texts.some((text) => text.includes('overlayCount=')), false, 'Collision debug overlay should be hidden when not active.');
-  assert.equal(renderer.texts.some((text) => text.includes('UI Layer - Mission HUD')), true, 'Polished HUD header should render.');
-  assert.equal(renderer.texts.some((text) => text.includes('Mission Feed')), true, 'Mission feed panel should render.');
+  assert.equal(renderer.texts.some((text) => text.includes('UI Layer')), true, 'UI Layer panel should render by default.');
+  assert.equal(renderer.texts.some((text) => text.includes('Mission Feed')), false, 'Only one mapped overlay should be visible at a time.');
 
+  const indexBeforeTab = scene.tabDebugOverlays.activeIndex;
   scene.step3DPhysics(0.02, { input: makeInput(['Tab']) });
   scene.step3DPhysics(0.02, { input: makeInput([]) });
-  const cameraOverlayRenderer = createRendererProbe();
-  scene.render(cameraOverlayRenderer);
-  assert.equal(cameraOverlayRenderer.texts.some((text) => text.includes('activeCameraId=')), true, 'Tab should cycle to camera summary overlay.');
-  assert.equal(cameraOverlayRenderer.texts.some((text) => text.includes('overlayCount=')), false, 'Camera overlay view should hide collision overlay.');
+  assert.equal(scene.tabDebugOverlays.activeIndex, indexBeforeTab, 'Tab should not change overlay selection.');
 
-  scene.step3DPhysics(0.02, { input: makeInput(['Tab']) });
+  scene.step3DPhysics(0.02, { input: makeInput(['KeyG']) });
   scene.step3DPhysics(0.02, { input: makeInput([]) });
-  const collisionOverlayRenderer = createRendererProbe();
-  scene.render(collisionOverlayRenderer);
-  assert.equal(collisionOverlayRenderer.texts.some((text) => text.includes('overlayCount=')), true, 'Second Tab press should cycle to collision overlay.');
-  assert.equal(collisionOverlayRenderer.texts.some((text) => text.includes('activeCameraId=')), false, 'Collision overlay view should hide camera overlay.');
+  const missionFeedRenderer = createRendererProbe();
+  scene.render(missionFeedRenderer);
+  assert.equal(missionFeedRenderer.texts.some((text) => text.includes('Mission Feed')), true, 'G should cycle to mission feed panel.');
+
+  scene.step3DPhysics(0.02, { input: makeInput(['KeyG']) });
+  scene.step3DPhysics(0.02, { input: makeInput([]) });
+  const missionReadyRenderer = createRendererProbe();
+  scene.render(missionReadyRenderer);
+  assert.equal(missionReadyRenderer.texts.some((text) => text.includes('MISSION READY')), true, 'Second G press should cycle to MISSION READY panel.');
+
+  scene.step3DPhysics(0.02, { input: makeInput(['KeyG']) });
+  scene.step3DPhysics(0.02, { input: makeInput([]) });
+  const runtimeRenderer = createRendererProbe();
+  scene.render(runtimeRenderer);
+  assert.equal(runtimeRenderer.texts.some((text) => text.includes('Mini-Game Runtime')), true, 'Third G press should cycle to runtime panel.');
 }
 
 export function run() {

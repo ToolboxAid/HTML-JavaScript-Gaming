@@ -7,13 +7,8 @@ RealGameplayMiniGameScene.js
 import { Scene } from '/src/engine/scene/index.js';
 import { Theme, ThemeTokens } from '/src/engine/theme/index.js';
 import {
-  PANEL_3D_CAMERA,
-  PANEL_3D_COLLISION,
   createBottomRightDebugPanelStack,
-  createStandard3dPanels,
-  createStandard3dProviders,
   drawFrame,
-  drawPanel,
   drawStackedDebugPanel,
 } from '/src/engine/debug/index.js';
 import {
@@ -22,30 +17,29 @@ import {
   createProjectionViewport,
   drawDepthBackdrop,
   drawGroundGrid,
-  drawPhase16DebugOverlay,
   drawWireBox,
   stepPhase16ViewToggles,
 } from '/samples/phase-16/shared/threeDWireframe.js';
 import {
-  appendTabDebugOverlay,
   createTabDebugOverlayController,
   getTabDebugOverlayStatusLabel,
   isTabDebugOverlayActive,
-  setTabDebugOverlayActive,
+  setTabDebugOverlayCycleKey,
+  setTabDebugOverlayMap,
   stepTabDebugOverlayController,
 } from '/samples/phase-17/shared/tabDebugOverlayCycle.js';
 
 const theme = new Theme(ThemeTokens);
 
-const CAMERA_ID = 'sample1710.follow.camera';
 const READY_STATE = 'ready';
 const RUNNING_STATE = 'running';
 const WON_STATE = 'won';
 const LOST_STATE = 'lost';
-const OVERLAY_RUNTIME = 'runtime';
-const OVERLAY_CAMERA = 'camera';
-const OVERLAY_COLLISION = 'collision';
-const OVERLAY_PHASE16 = 'phase16';
+const DEBUG_CYCLE_KEY = 'KeyG';
+const OVERLAY_UI_LAYER = 'ui-layer';
+const OVERLAY_MISSION_FEED = 'mission-feed';
+const OVERLAY_MISSION_READY = 'mission-ready';
+const OVERLAY_MINI_GAME_RUNTIME = 'mini-game-runtime';
 
 function clamp(value, min, max) {
   return Math.max(min, Math.min(max, value));
@@ -69,28 +63,6 @@ function intersectsAabb2d(left, right) {
   );
 }
 
-function drawMeter(renderer, {
-  x,
-  y,
-  width,
-  height,
-  label,
-  value,
-  max,
-  barColor,
-  textColor = '#e2e8f0',
-}) {
-  const safeMax = Math.max(1, Number(max) || 1);
-  const ratio = clamp((Number(value) || 0) / safeMax, 0, 1);
-  renderer.drawRect(x, y, width, height, 'rgba(30, 41, 59, 0.8)');
-  renderer.drawRect(x + 1, y + 1, Math.max(0, (width - 2) * ratio), height - 2, barColor);
-  renderer.strokeRect(x, y, width, height, '#475569', 1);
-  renderer.drawText(`${label}: ${Number(value).toFixed(1)}/${safeMax.toFixed(1)}`, x + 8, y + 13, {
-    color: textColor,
-    font: '11px monospace',
-  });
-}
-
 export default class RealGameplayMiniGameScene extends Scene {
   constructor() {
     super();
@@ -111,29 +83,17 @@ export default class RealGameplayMiniGameScene extends Scene {
     this.pickupBursts = [];
     this.hitFlash = 0;
     this.pickupFlash = 0;
-    this.statePulse = 0;
 
     this.resetMatch({ toReady: true });
 
-    const { providerMap } = createStandard3dProviders({
-      adapters: {
-        cameraSummary: () => this.readCameraSummarySnapshot(),
-        collisionOverlays: () => this.readCollisionOverlaySnapshot(),
-      },
-    });
-    this.standardDebugPanels = createStandard3dPanels({
-      providerMap,
-      enabled: true,
-    });
-    this.tabDebugOverlays = createTabDebugOverlayController({
-      overlays: [
-        { id: OVERLAY_RUNTIME, label: 'Mini-Game Runtime' },
-        { id: OVERLAY_CAMERA, label: '3D Camera Summary' },
-        { id: OVERLAY_COLLISION, label: '3D Collision Overlays' },
-        { id: OVERLAY_PHASE16, label: 'Phase16 Overlay' },
-      ],
-      initialOverlayId: OVERLAY_RUNTIME,
-    });
+    this.tabDebugOverlays = createTabDebugOverlayController();
+    setTabDebugOverlayCycleKey(this.tabDebugOverlays, DEBUG_CYCLE_KEY);
+    this.setDebugOverlayCycleMap([
+      { id: OVERLAY_UI_LAYER, label: 'UI Layer' },
+      { id: OVERLAY_MISSION_FEED, label: 'Mission Feed' },
+      { id: OVERLAY_MISSION_READY, label: 'MISSION READY' },
+      { id: OVERLAY_MINI_GAME_RUNTIME, label: 'Mini-Game Runtime' },
+    ], OVERLAY_UI_LAYER);
   }
 
   addEvent(text) {
@@ -214,14 +174,15 @@ export default class RealGameplayMiniGameScene extends Scene {
     this.syncCamera();
   }
 
-  registerDebugOverlay(overlayId, label, { makeActive = false } = {}) {
-    appendTabDebugOverlay(this.tabDebugOverlays, {
-      id: overlayId,
-      label,
+  setDebugOverlayCycleMap(overlays, initialOverlayId) {
+    setTabDebugOverlayMap(this.tabDebugOverlays, {
+      overlays,
+      initialOverlayId,
     });
-    if (makeActive) {
-      setTabDebugOverlayActive(this.tabDebugOverlays, overlayId);
-    }
+  }
+
+  setDebugOverlayCycleKey(cycleKey) {
+    setTabDebugOverlayCycleKey(this.tabDebugOverlays, cycleKey);
   }
 
   isDebugOverlayActive(overlayId) {
@@ -240,29 +201,6 @@ export default class RealGameplayMiniGameScene extends Scene {
       enabled,
       order: this.debugCollisionRows.length,
     });
-  }
-
-  readCameraSummarySnapshot() {
-    const state = this.camera3D?.getState?.() || {
-      position: { x: 0, y: 8, z: 16 },
-      rotation: { x: -0.5, y: 0.55 + this.cameraYawOffset, z: 0 },
-    };
-    return {
-      activeCameraId: CAMERA_ID,
-      mode: `${this.viewState.cameraMode}:${this.gameState}`,
-      position: state.position,
-      rotation: state.rotation,
-      fov: 65,
-      zoom: 1,
-      near: 0.1,
-      far: 120,
-    };
-  }
-
-  readCollisionOverlaySnapshot() {
-    return {
-      overlayRows: this.debugCollisionRows,
-    };
   }
 
   syncCamera() {
@@ -440,7 +378,6 @@ export default class RealGameplayMiniGameScene extends Scene {
   updateFeedback(dtSeconds) {
     this.hitFlash = Math.max(0, this.hitFlash - dtSeconds * 1.8);
     this.pickupFlash = Math.max(0, this.pickupFlash - dtSeconds * 2.3);
-    this.statePulse += dtSeconds;
     for (let i = this.pickupBursts.length - 1; i >= 0; i -= 1) {
       const burst = this.pickupBursts[i];
       burst.age += dtSeconds;
@@ -493,21 +430,11 @@ export default class RealGameplayMiniGameScene extends Scene {
     this.syncCamera();
   }
 
-  renderStandardDebugPanel(renderer, panelId, stack, width, height, maxLines = 8) {
-    const panel = this.standardDebugPanels.find((candidate) => candidate.id === panelId);
-    if (!panel || typeof panel.render !== 'function') {
-      return;
-    }
-    const rendered = panel.render(panel, {});
-    const lines = Array.isArray(rendered?.lines) ? rendered.lines.slice(0, maxLines) : [];
-    drawStackedDebugPanel(renderer, stack, width, height, rendered?.title || panelId, lines);
-  }
-
   render(renderer) {
     drawFrame(renderer, theme, [
       'Sample 1710 - Real Gameplay Mini-Game (Polished)',
       'Deploy, collect data cores, survive sentry patrols, and complete mission objectives.',
-      `Start: Space/Enter | Move: W A S D | Camera yaw: Q/E or Left/Right | Restart: R | Overlay: Tab/Shift+Tab (${this.getDebugOverlayStatusLabel()})`,
+      `Start: Space/Enter | Move: W A S D | Camera yaw: Q/E or Left/Right | Restart: R | Overlay: G/Shift+G (${this.getDebugOverlayStatusLabel()})`,
     ]);
 
     const viewport = this.viewport;
@@ -605,86 +532,50 @@ export default class RealGameplayMiniGameScene extends Scene {
       renderer.drawRect(viewport.x, viewport.y, viewport.width, viewport.height, `rgba(34, 211, 238, ${alpha})`);
     }
 
-    renderer.drawRect(52, 34, 326, 174, 'rgba(15, 23, 42, 0.78)');
-    renderer.strokeRect(52, 34, 326, 174, '#4ade80', 1);
-    renderer.drawText('UI Layer - Mission HUD', 64, 52, { color: '#86efac', font: '12px monospace' });
-    renderer.drawText(`State: ${this.gameState.toUpperCase()}`, 64, 70, { color: '#e2e8f0', font: '12px monospace' });
-    renderer.drawText(`Objective: ${this.score}/${this.targetScore} cores`, 64, 86, { color: '#e2e8f0', font: '12px monospace' });
-
-    drawMeter(renderer, {
-      x: 64,
-      y: 92,
-      width: 300,
-      height: 16,
-      label: 'Score',
-      value: this.score,
-      max: this.targetScore,
-      barColor: '#22c55e',
-    });
-    drawMeter(renderer, {
-      x: 64,
-      y: 114,
-      width: 300,
-      height: 16,
-      label: 'Health',
-      value: this.health,
-      max: this.maxHealth,
-      barColor: '#ef4444',
-    });
-    drawMeter(renderer, {
-      x: 64,
-      y: 136,
-      width: 300,
-      height: 16,
-      label: 'Time',
-      value: this.timeLeft,
-      max: this.roundSeconds,
-      barColor: '#38bdf8',
-    });
-    renderer.drawText(`Camera mode: C | Overlay cycle: Tab/Shift+Tab (${this.getDebugOverlayStatusLabel()})`, 64, 166, {
-      color: '#e2e8f0',
-      font: '11px monospace',
-    });
-    renderer.drawText('Move: W A S D | Yaw: Q/E or Left/Right', 64, 182, { color: '#e2e8f0', font: '11px monospace' });
-
-    const statePulse = 0.5 + Math.sin(this.statePulse * 3.2) * 0.5;
-    if (this.gameState === READY_STATE) {
-      renderer.drawRect(268, 236, 430, 108, 'rgba(15, 23, 42, 0.86)');
-      renderer.strokeRect(268, 236, 430, 108, '#38bdf8', 2);
-      renderer.drawText('MISSION READY', 286, 264, { color: '#bae6fd', font: '16px monospace' });
-      renderer.drawText('Press Space or Enter to deploy.', 286, 286, { color: '#e2e8f0', font: '13px monospace' });
-      renderer.drawText(`Hint: secure all cores before ${this.roundSeconds}s expires.`, 286, 306, { color: '#e2e8f0', font: '12px monospace' });
-      renderer.drawRect(520, 318, 156 * statePulse, 4, 'rgba(56, 189, 248, 0.72)');
-    } else if (this.gameState !== RUNNING_STATE) {
-      const isWin = this.gameState === WON_STATE;
-      renderer.drawRect(280, 232, 408, 94, 'rgba(15, 23, 42, 0.88)');
-      renderer.strokeRect(280, 232, 408, 94, isWin ? '#4ade80' : '#f87171', 2);
-      renderer.drawText(isWin ? 'MISSION COMPLETE' : 'MISSION FAILED', 298, 258, {
-        color: isWin ? '#86efac' : '#fecaca',
-        font: '16px monospace',
-      });
-      renderer.drawText(this.resultMessage, 298, 280, {
-        color: '#e2e8f0',
-        font: '12px monospace',
-      });
-      renderer.drawText('Press R to restart mission briefing.', 298, 302, {
-        color: '#e2e8f0',
-        font: '12px monospace',
-      });
-    }
-
-    drawPanel(renderer, 52, 216, 326, 132, 'Mission Feed', [
-      ...this.eventFeed,
-      this.gameState === RUNNING_STATE
-        ? 'Status: mission active.'
-        : this.gameState === READY_STATE
-          ? 'Status: waiting for deploy.'
-          : `Status: ${this.gameState}.`,
-    ]);
+    const missionStatus = this.gameState === RUNNING_STATE
+      ? 'Status: mission active.'
+      : this.gameState === READY_STATE
+        ? 'Status: waiting for deploy.'
+        : `Status: ${this.gameState}.`;
 
     const debugStack = createBottomRightDebugPanelStack(renderer);
     this.debugOverlayStack = debugStack;
-    if (this.isDebugOverlayActive(OVERLAY_RUNTIME)) {
+
+    if (this.isDebugOverlayActive(OVERLAY_UI_LAYER)) {
+      drawStackedDebugPanel(renderer, debugStack, 326, 174, 'UI Layer', [
+        `state=${this.gameState.toUpperCase()}`,
+        `objective=${this.score}/${this.targetScore} cores`,
+        `health=${this.health}/${this.maxHealth}`,
+        `time=${this.timeLeft.toFixed(1)}s`,
+        `cameraMode=${this.viewState.cameraMode}`,
+        `overlayCycle=G/Shift+G`,
+        'controls=W/A/S/D move | Q/E yaw',
+      ]);
+    }
+
+    if (this.isDebugOverlayActive(OVERLAY_MISSION_FEED)) {
+      drawStackedDebugPanel(renderer, debugStack, 326, 160, 'Mission Feed', [
+        ...this.eventFeed,
+        missionStatus,
+      ]);
+    }
+
+    if (this.isDebugOverlayActive(OVERLAY_MISSION_READY)) {
+      const isWin = this.gameState === WON_STATE;
+      const outcomeLabel = this.gameState === READY_STATE
+        ? 'Press Space or Enter to deploy.'
+        : this.gameState === RUNNING_STATE
+          ? 'Mission is active. Complete the objective.'
+          : this.resultMessage;
+      drawStackedDebugPanel(renderer, debugStack, 408, 122, 'MISSION READY', [
+        outcomeLabel,
+        `state=${this.gameState}`,
+        isWin ? 'result=mission complete' : this.gameState === LOST_STATE ? 'result=mission failed' : 'result=pending',
+        'restart=R after mission outcome',
+      ]);
+    }
+
+    if (this.isDebugOverlayActive(OVERLAY_MINI_GAME_RUNTIME)) {
       drawStackedDebugPanel(renderer, debugStack, 300, 120, 'Mini-Game Runtime', [
         `Entities: obstacles=${this.obstacles.length} sentries=${this.enemies.length}`,
         `Remaining cores: ${this.cores.filter((core) => !core.collected).length}`,
@@ -692,20 +583,6 @@ export default class RealGameplayMiniGameScene extends Scene {
         `Collision overlays: ${this.lastCollisionCount}`,
         `Camera mode: ${this.viewState.cameraMode}`,
       ]);
-    }
-
-    if (this.isDebugOverlayActive(OVERLAY_CAMERA)) {
-      this.renderStandardDebugPanel(renderer, PANEL_3D_CAMERA, debugStack, 300, 150, 7);
-    }
-    if (this.isDebugOverlayActive(OVERLAY_COLLISION)) {
-      this.renderStandardDebugPanel(renderer, PANEL_3D_COLLISION, debugStack, 300, 210, 9);
-    }
-
-    if (this.isDebugOverlayActive(OVERLAY_PHASE16)) {
-      drawPhase16DebugOverlay(renderer, viewport, this.viewState, [
-        `Match state: ${this.gameState}`,
-        'Standard 3D camera/collision debug panels rendered from provider snapshots',
-      ], { stack: debugStack });
     }
   }
 }
