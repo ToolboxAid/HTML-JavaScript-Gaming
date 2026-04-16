@@ -1,4 +1,4 @@
-[ ] Extension works
-[ ] No regressions
-[ ] Gameplay unaffected
+[ ] Plugin registers
+[ ] Plugin activates
+[ ] Plugin removes cleanly
 [ ] Roadmap updated

@@ -818,7 +818,7 @@
 - [ ] confirm no regression across phases
 
 ### Track G — Extensibility Readiness
-- [.] validate plugin/extension patterns
+- [x] validate plugin/extension patterns
 - [ ] validate adding new systems is clean
 - [ ] validate external integration points
 - [ ] ensure future phases can build cleanly

@@ -1,5 +1,4 @@
-Introduce overlay system expansion framework.
+Add overlay plugin registry.
 
 PR Details:
-- Enables future overlay extensibility
-- Maintains compatibility with Level 19 baseline
+- Enables structured overlay registration

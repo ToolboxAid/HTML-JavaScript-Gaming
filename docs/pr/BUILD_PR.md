@@ -1,21 +1,20 @@
-# BUILD_PR_LEVEL_20_1_OVERLAY_SYSTEM_EXPANSION
+# BUILD_PR_LEVEL_20_2_OVERLAY_PLUGIN_REGISTRY
 
 ## Purpose
-Begin Level 20 by introducing a controlled expansion framework for new overlay types.
+Introduce a registry for managing overlay plugins.
 
 ## Roadmap Improvement
-Transitions from stable baseline (Level 19) to extensible overlay architecture.
+Enables structured registration and discovery of overlays.
 
 ## Scope
-- Define extension points for new overlays
-- Ensure compatibility with existing systems
-- Validate one sample extension
+- Define plugin registry
+- Allow registration/unregistration
+- Validate with one plugin
 
 ## Test Steps
-1. Load gameplay
-2. Register new overlay via extension
-3. Validate rendering + interaction
+1. Register plugin
+2. Activate overlay
+3. Remove plugin
 
 ## Expected
-- New overlays plug in cleanly
-- No regression
+- Plugins managed cleanly
