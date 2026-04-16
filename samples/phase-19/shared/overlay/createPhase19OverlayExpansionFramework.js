@@ -105,10 +105,15 @@ export default function createPhase19OverlayExpansionFramework({ extensions = []
     if (!extension) {
       return null;
     }
+    const preferenceStorageKey = String(extension.persistenceKey || '').trim()
+      ? `${String(extension.persistenceKey || '').trim()}:runtime-preferences`
+      : '';
     const runtime = createOverlayGameplayRuntime({
       runtimeExtensions: extension.runtimeExtensions,
+      preferenceStorageKey,
+      autoLoadPreferences: true,
+      cycleKey: String(extension.cycleKey || LEVEL17_OVERLAY_CYCLE_KEY).trim() || LEVEL17_OVERLAY_CYCLE_KEY,
     });
-    runtime.interactionCycleKey = String(extension.cycleKey || LEVEL17_OVERLAY_CYCLE_KEY);
     return runtime;
   }
 

@@ -638,6 +638,7 @@
 - [x] Level 22 gesture abstraction added for overlays (tap/hold/swipe mapped to runtime actions with explicit gameplay-safe gating)
 - [x] Level 22 contextual input mapping added (active overlay/layer stack-aware resolution across keybind and gesture actions)
 - [x] Level 22 adaptive overlay UI rules added (visibility/size/emphasis responsive to gameplay state, overlay context, and telemetry)
+- [x] Level 22 overlay preferences persistence added (visibility, layout overrides, and keybind profile restored on runtime load)
 
 ### Sample Phase Tracks
 - [x] 3D phase normalized

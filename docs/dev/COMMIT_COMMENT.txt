@@ -1,5 +1,5 @@
-Add adaptive UI behavior to overlay system.
+Add user preferences and persistence for overlays.
 
 PR Details:
-- Introduces runtime adaptive UI rules
-- Enhances responsiveness of overlays
+- Enables saving and restoring overlay configuration
+- Supports personalization across sessions

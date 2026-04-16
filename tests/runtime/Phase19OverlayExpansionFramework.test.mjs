@@ -16,10 +16,13 @@ import {
   enqueueOverlayGameplayRuntimeSyncEvent,
   getOverlayGameplayRuntimeCompositionSnapshot,
   getOverlayGameplayRuntimeInteractionSnapshot,
+  saveOverlayGameplayRuntimePreferences,
   renderOverlayGameplayRuntime,
   resolveOverlayGameplayRuntimeInputAction,
   setOverlayGameplayRuntimeAdaptiveUiRules,
   setOverlayGameplayRuntimeContextInputMap,
+  setOverlayGameplayRuntimeKeybindProfile,
+  setOverlayGameplayRuntimeVisible,
   stepOverlayGameplayRuntimeGestures,
   stepOverlayGameplayRuntimePointerInteractions,
   stepOverlayGameplayRuntimeControls,
@@ -849,6 +852,106 @@ function assertAdaptiveOverlayUiRulesReactToGameplayTelemetryAndContext() {
   assert.equal(rectsOverlap(runtimeC.slot, safeZone), false, 'Adaptive layout should keep active overlay clear of safe zones.');
 }
 
+function assertOverlayPreferencesPersistenceCompatibility() {
+  const framework = createPhase19OverlayExpansionFramework();
+  framework.registerExtension(definePhase19OverlayExtension({
+    id: 'phase19-overlay-preferences',
+    overlays: [
+      { id: 'runtime-a', label: 'Runtime A' },
+      { id: 'runtime-b', label: 'Runtime B' },
+    ],
+    initialOverlayId: 'runtime-a',
+    persistenceKey: 'phase19:overlay-preferences',
+    runtimeExtensions: [
+      { overlayId: 'runtime-a', compose: true, layerOrder: 10, visualPriority: 10, panelWidth: 220, panelHeight: 96, onRender() {} },
+      { overlayId: 'runtime-b', compose: true, layerOrder: 20, visualPriority: 20, panelWidth: 220, panelHeight: 96, onRender() {} },
+    ],
+  }));
+
+  const runtime = framework.createRuntimeForExtension('phase19-overlay-preferences');
+  setOverlayGameplayRuntimeKeybindProfile(runtime, {
+    id: 'profile-alt',
+    cycleKey: 'KeyH',
+    contextInputMap: {
+      byOverlayId: {
+        'runtime-b': {
+          'cycle-next': 'toggle-visibility',
+        },
+      },
+    },
+  });
+  setOverlayGameplayRuntimeVisible(runtime, false);
+  runtime.interactionLayoutOverrides['id:runtime-b'] = {
+    x: 54,
+    y: 88,
+    width: 250,
+    height: 112,
+  };
+  assert.equal(
+    saveOverlayGameplayRuntimePreferences(runtime),
+    true,
+    'Overlay runtime preferences should be persisted when a storage key is configured.'
+  );
+
+  const reloadedRuntime = framework.createRuntimeForExtension('phase19-overlay-preferences');
+  assert.equal(reloadedRuntime.interactionVisible, false, 'Reloaded runtime should restore persisted visibility preference.');
+  assert.equal(reloadedRuntime.interactionCycleKey, 'KeyH', 'Reloaded runtime should restore persisted keybind cycle key.');
+  assert.equal(reloadedRuntime.interactionKeybindProfileId, 'profile-alt', 'Reloaded runtime should restore keybind profile id.');
+
+  reloadedRuntime.interactionIndex = 1;
+  const reloadedResolution = resolveOverlayGameplayRuntimeInputAction(reloadedRuntime, 'cycle-next');
+  assert.equal(reloadedResolution.action, 'toggle-visibility', 'Reloaded contextual mapping should remain compatible with persisted keybind profile.');
+
+  setOverlayGameplayRuntimeVisible(reloadedRuntime, true);
+  const remappedCycleChanged = stepOverlayGameplayRuntimeControls(reloadedRuntime, makeInput([
+    'KeyH',
+    LEVEL19_OVERLAY_RUNTIME_TOGGLE_MODIFIERS[0],
+    LEVEL19_OVERLAY_RUNTIME_CYCLE_MODIFIERS[0],
+  ]), { dtSeconds: 0.05 });
+  assert.equal(remappedCycleChanged, true, 'Persisted keybind profile should drive runtime controls after reload.');
+  assert.equal(reloadedRuntime.interactionVisible, false, 'Persisted contextual map should still remap cycle input to visibility toggle.');
+  stepOverlayGameplayRuntimeControls(reloadedRuntime, makeInput([]), { dtSeconds: 0.05 });
+
+  setOverlayGameplayRuntimeVisible(reloadedRuntime, true);
+  reloadedRuntime.interactionIndex = 0;
+  setOverlayGameplayRuntimeAdaptiveUiRules(reloadedRuntime, [
+    {
+      id: 'compat-adaptive-after-restore',
+      priority: 10,
+      when: {
+        gameplayPhase: 'combat',
+        layerOrder: 10,
+      },
+      apply: {
+        sizeScale: 1.25,
+        emphasis: 1.3,
+      },
+    },
+  ]);
+  const layoutSnapshot = getOverlayGameplayRuntimeCompositionSnapshot(reloadedRuntime, {
+    activeOverlayId: 'runtime-b',
+    renderer: createRendererProbe(960, 540),
+    gameplayState: { phase: 'combat' },
+  });
+  const runtimeBFrame = layoutSnapshot.find((entry) => entry.overlayId === 'runtime-b');
+  assert.notEqual(runtimeBFrame, undefined, 'Reloaded runtime should retain composed overlay frames after preference restore.');
+  assert.equal(runtimeBFrame.slot.anchor, 'custom', 'Reloaded runtime should restore persisted layout override anchor.');
+  assert.equal(runtimeBFrame.slot.x, 54, 'Reloaded runtime should restore persisted layout override X position.');
+  assert.equal(runtimeBFrame.slot.y, 88, 'Reloaded runtime should restore persisted layout override Y position.');
+  assert.equal(runtimeBFrame.slot.width, 250, 'Reloaded runtime should restore persisted layout override width.');
+  assert.equal(runtimeBFrame.slot.height, 112, 'Reloaded runtime should restore persisted layout override height.');
+
+  const adaptiveSnapshot = getOverlayGameplayRuntimeCompositionSnapshot(reloadedRuntime, {
+    activeOverlayId: 'runtime-a',
+    renderer: createRendererProbe(960, 540),
+    gameplayState: { phase: 'combat' },
+  });
+  const runtimeAFrame = adaptiveSnapshot.find((entry) => entry.overlayId === 'runtime-a');
+  assert.notEqual(runtimeAFrame, undefined, 'Reloaded runtime should preserve active overlay frame after preference restore.');
+  assert.equal(runtimeAFrame.slot.width > 220, true, 'Adaptive UI rules should remain compatible and apply after preference restoration.');
+  assert.equal(runtimeAFrame.adaptiveEmphasis > 1, true, 'Adaptive UI emphasis should remain active after preference restoration.');
+}
+
 export function run() {
   assertExpansionRegistrationAndCompatibility();
   assertExtensionLifecycleMutations();
@@ -860,4 +963,5 @@ export function run() {
   assertOverlayGestureAbstractionAndCompatibility();
   assertContextualInputMappingUsesOverlayContextAndStack();
   assertAdaptiveOverlayUiRulesReactToGameplayTelemetryAndContext();
+  assertOverlayPreferencesPersistenceCompatibility();
 }

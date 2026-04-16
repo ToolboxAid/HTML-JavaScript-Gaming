@@ -1,21 +1,21 @@
-# BUILD_PR_LEVEL_22_4_OVERLAY_ADAPTIVE_UI_BEHAVIOR
+# BUILD_PR_LEVEL_22_5_OVERLAY_USER_PREFERENCES_AND_PERSISTENCE
 
 ## Purpose
-Enable overlays to adapt their UI behavior dynamically based on runtime conditions.
+Persist user preferences for overlay behavior and customization.
 
 ## Roadmap Improvement
-Extends Level 22 into adaptive UI systems layered on contextual input.
+Completes Level 22 by adding persistence and personalization.
 
 ## Scope
-- Define adaptive UI rules (visibility, size, emphasis)
-- React to gameplay state, overlay stack, and telemetry
-- Avoid conflicts with layout constraints and safe zones
+- Store user preferences (visibility, layout, keybind profile)
+- Restore preferences on load
+- Ensure compatibility with adaptive UI and contextual input systems
 
 ## Test Steps
-1. Trigger different gameplay states
-2. Verify UI adapts (size/visibility/emphasis)
-3. Confirm no layout violations
+1. Modify overlay preferences
+2. Reload runtime
+3. Verify preferences persist
 
 ## Expected
-- UI responds dynamically to context
-- No overlap or instability
+- Preferences saved and restored
+- No regression in overlay behavior

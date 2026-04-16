@@ -2,9 +2,9 @@ MODEL: GPT-5.4
 REASONING: medium
 
 COMMAND:
-Implement adaptive UI behavior for overlays:
-- Add rule system for adaptive UI (visibility, size, emphasis)
-- React to gameplay + overlay context + telemetry
-- Respect layout constraints and safe zones
-- Do not modify existing rendering pipeline unnecessarily
+Implement overlay user preferences and persistence:
+- Store preferences (visibility, layout, keybind profile)
+- Restore preferences on runtime load
+- Ensure compatibility with adaptive UI and contextual input
+- Use lightweight storage (local or existing state system)
 - Update roadmap status only

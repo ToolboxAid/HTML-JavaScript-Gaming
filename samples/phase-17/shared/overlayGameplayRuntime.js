@@ -10,6 +10,8 @@ import {
   LEVEL17_OVERLAY_CYCLE_KEY,
 } from '/samples/phase-17/shared/overlayCycleInput.js';
 
+const overlayRuntimePreferenceMemoryStore = new Map();
+
 function normalizeRuntimeExtensionEntry(entry) {
   if (!entry || typeof entry !== 'object') {
     return null;
@@ -176,6 +178,117 @@ function clearOverlayLayoutOverride(runtime, layoutKey) {
   }
   delete runtime.interactionLayoutOverrides[layoutKey];
   return true;
+}
+
+function normalizeOverlayRuntimePreferenceStorageKey(preferenceStorageKey) {
+  return String(preferenceStorageKey || '').trim();
+}
+
+function cloneJsonCompatibleValue(value) {
+  if (value === null || value === undefined) {
+    return null;
+  }
+  try {
+    return JSON.parse(JSON.stringify(value));
+  } catch {
+    return null;
+  }
+}
+
+function readOverlayRuntimePreferencePayloadFromStorage(preferenceStorageKey, storage = null) {
+  const key = normalizeOverlayRuntimePreferenceStorageKey(preferenceStorageKey);
+  if (!key) {
+    return null;
+  }
+
+  let raw = null;
+  const storageReader = storage && typeof storage.getItem === 'function'
+    ? storage
+    : (typeof localStorage !== 'undefined' ? localStorage : null);
+  if (storageReader) {
+    try {
+      raw = storageReader.getItem(key);
+    } catch {
+      raw = null;
+    }
+  }
+  if (raw === null || raw === undefined) {
+    raw = overlayRuntimePreferenceMemoryStore.get(key) ?? null;
+  }
+  if (typeof raw !== 'string' || raw.length === 0) {
+    return null;
+  }
+
+  try {
+    const parsed = JSON.parse(raw);
+    return parsed && typeof parsed === 'object' ? parsed : null;
+  } catch {
+    return null;
+  }
+}
+
+function writeOverlayRuntimePreferencePayloadToStorage(preferenceStorageKey, payload, storage = null) {
+  const key = normalizeOverlayRuntimePreferenceStorageKey(preferenceStorageKey);
+  if (!key) {
+    return false;
+  }
+  const serialized = JSON.stringify(payload || {});
+  overlayRuntimePreferenceMemoryStore.set(key, serialized);
+
+  const storageWriter = storage && typeof storage.setItem === 'function'
+    ? storage
+    : (typeof localStorage !== 'undefined' ? localStorage : null);
+  if (!storageWriter) {
+    return true;
+  }
+  try {
+    storageWriter.setItem(key, serialized);
+  } catch {
+    // Keep in-memory fallback when browser storage is unavailable.
+  }
+  return true;
+}
+
+function buildOverlayRuntimeLayoutPreferenceSnapshot(runtime) {
+  const snapshot = {};
+  const overrides = runtime?.interactionLayoutOverrides;
+  if (!overrides || typeof overrides !== 'object') {
+    return snapshot;
+  }
+  const entries = Object.entries(overrides);
+  for (let i = 0; i < entries.length; i += 1) {
+    const [layoutKey, layoutRect] = entries[i];
+    const normalizedLayoutKey = String(layoutKey || '').trim();
+    if (!normalizedLayoutKey) {
+      continue;
+    }
+    const normalizedRect = normalizeLayoutOverrideRect(layoutRect);
+    if (!normalizedRect) {
+      continue;
+    }
+    snapshot[normalizedLayoutKey] = normalizedRect;
+  }
+  return snapshot;
+}
+
+function applyOverlayRuntimeLayoutPreferences(runtime, layoutPreferences = {}) {
+  if (!runtime || !layoutPreferences || typeof layoutPreferences !== 'object') {
+    return false;
+  }
+  runtime.interactionLayoutOverrides = Object.create(null);
+  const entries = Object.entries(layoutPreferences);
+  let applied = false;
+  for (let i = 0; i < entries.length; i += 1) {
+    const [layoutKey, layoutRect] = entries[i];
+    const normalizedLayoutKey = String(layoutKey || '').trim();
+    const normalizedRect = normalizeLayoutOverrideRect(layoutRect);
+    if (!normalizedLayoutKey || !normalizedRect) {
+      continue;
+    }
+    runtime.interactionLayoutOverrides[normalizedLayoutKey] = normalizedRect;
+    applied = true;
+  }
+  return applied;
 }
 
 function normalizeSafeZoneEntry(entry) {
@@ -1204,14 +1317,21 @@ function attachCompositionSlots(frames, renderer, safeZones = [], layoutContext 
   return frames;
 }
 
-export function createOverlayGameplayRuntime({ runtimeExtensions = [] } = {}) {
-  return {
+export function createOverlayGameplayRuntime({
+  runtimeExtensions = [],
+  preferenceStorageKey = '',
+  preferenceStorage = null,
+  autoLoadPreferences = true,
+  keybindProfileId = '',
+  cycleKey = LEVEL17_OVERLAY_CYCLE_KEY,
+} = {}) {
+  const runtime = {
     runtimeExtensions: normalizeRuntimeExtensions(runtimeExtensions),
     interactionVisible: true,
     interactionIndex: 0,
     interactionCycleLatch: false,
     interactionToggleLatch: false,
-    interactionCycleKey: LEVEL17_OVERLAY_CYCLE_KEY,
+    interactionCycleKey: String(cycleKey || LEVEL17_OVERLAY_CYCLE_KEY).trim() || LEVEL17_OVERLAY_CYCLE_KEY,
     interactionActionCooldownSeconds: 0.03,
     interactionCooldownRemainingSeconds: 0,
     interactionMaxHoldSeconds: 1.25,
@@ -1226,7 +1346,16 @@ export function createOverlayGameplayRuntime({ runtimeExtensions = [] } = {}) {
     interactionGestureLastDown: false,
     interactionContextInputMap: null,
     interactionAdaptiveUiRules: Object.freeze([]),
+    interactionPreferenceStorageKey: normalizeOverlayRuntimePreferenceStorageKey(preferenceStorageKey),
+    interactionPreferenceStorage: preferenceStorage && typeof preferenceStorage === 'object'
+      ? preferenceStorage
+      : null,
+    interactionKeybindProfileId: String(keybindProfileId || '').trim(),
   };
+  if (autoLoadPreferences !== false && runtime.interactionPreferenceStorageKey) {
+    loadOverlayGameplayRuntimePreferences(runtime);
+  }
+  return runtime;
 }
 
 export function setOverlayGameplayRuntimeExtensions(runtime, runtimeExtensions) {
@@ -1247,6 +1376,127 @@ export function setOverlayGameplayRuntimeVisible(runtime, visible) {
     return false;
   }
   runtime.interactionVisible = visible !== false;
+  saveOverlayGameplayRuntimePreferences(runtime, { silent: true });
+  return true;
+}
+
+export function setOverlayGameplayRuntimePreferenceStorageKey(runtime, preferenceStorageKey, { loadExisting = true } = {}) {
+  if (!runtime) {
+    return false;
+  }
+  runtime.interactionPreferenceStorageKey = normalizeOverlayRuntimePreferenceStorageKey(preferenceStorageKey);
+  if (runtime.interactionPreferenceStorageKey && loadExisting !== false) {
+    loadOverlayGameplayRuntimePreferences(runtime);
+  }
+  return true;
+}
+
+export function setOverlayGameplayRuntimeKeybindProfile(runtime, { id = '', cycleKey = '', contextInputMap = undefined } = {}) {
+  if (!runtime) {
+    return false;
+  }
+  runtime.interactionKeybindProfileId = String(id || '').trim();
+  const normalizedCycleKey = String(cycleKey || '').trim();
+  if (normalizedCycleKey) {
+    runtime.interactionCycleKey = normalizedCycleKey;
+  }
+  if (contextInputMap !== undefined) {
+    runtime.interactionContextInputMap = contextInputMap && typeof contextInputMap === 'object'
+      ? cloneJsonCompatibleValue(contextInputMap) ?? contextInputMap
+      : null;
+  }
+  saveOverlayGameplayRuntimePreferences(runtime, { silent: true });
+  return true;
+}
+
+export function getOverlayGameplayRuntimePreferencesSnapshot(runtime) {
+  if (!runtime) {
+    return Object.freeze({
+      visibility: true,
+      layout: Object.freeze({}),
+      keybindProfile: Object.freeze({
+        id: '',
+        cycleKey: LEVEL17_OVERLAY_CYCLE_KEY,
+      }),
+    });
+  }
+  const visibility = runtime.interactionVisible !== false;
+  const layout = buildOverlayRuntimeLayoutPreferenceSnapshot(runtime);
+  const keybindProfile = {
+    id: String(runtime.interactionKeybindProfileId || '').trim(),
+    cycleKey: String(runtime.interactionCycleKey || LEVEL17_OVERLAY_CYCLE_KEY).trim() || LEVEL17_OVERLAY_CYCLE_KEY,
+  };
+  if (runtime.interactionContextInputMap && typeof runtime.interactionContextInputMap === 'object') {
+    const clonedContextInputMap = cloneJsonCompatibleValue(runtime.interactionContextInputMap);
+    if (clonedContextInputMap && typeof clonedContextInputMap === 'object') {
+      keybindProfile.contextInputMap = clonedContextInputMap;
+    }
+  }
+  return Object.freeze({
+    visibility,
+    layout: Object.freeze(layout),
+    keybindProfile: Object.freeze(keybindProfile),
+  });
+}
+
+export function saveOverlayGameplayRuntimePreferences(runtime, options = {}) {
+  if (!runtime) {
+    return false;
+  }
+  const preferenceStorageKey = normalizeOverlayRuntimePreferenceStorageKey(runtime.interactionPreferenceStorageKey);
+  if (!preferenceStorageKey) {
+    return false;
+  }
+
+  const snapshot = getOverlayGameplayRuntimePreferencesSnapshot(runtime);
+  const payload = {
+    version: 1,
+    visibility: snapshot.visibility,
+    layout: snapshot.layout,
+    keybindProfile: snapshot.keybindProfile,
+  };
+  const storage = options?.preferenceStorage && typeof options.preferenceStorage === 'object'
+    ? options.preferenceStorage
+    : runtime.interactionPreferenceStorage;
+  return writeOverlayRuntimePreferencePayloadToStorage(preferenceStorageKey, payload, storage);
+}
+
+export function loadOverlayGameplayRuntimePreferences(runtime, options = {}) {
+  if (!runtime) {
+    return false;
+  }
+  const preferenceStorageKey = normalizeOverlayRuntimePreferenceStorageKey(runtime.interactionPreferenceStorageKey);
+  if (!preferenceStorageKey) {
+    return false;
+  }
+  const storage = options?.preferenceStorage && typeof options.preferenceStorage === 'object'
+    ? options.preferenceStorage
+    : runtime.interactionPreferenceStorage;
+  const payload = readOverlayRuntimePreferencePayloadFromStorage(preferenceStorageKey, storage);
+  if (!payload || typeof payload !== 'object') {
+    return false;
+  }
+
+  if (payload.visibility === true || payload.visibility === false) {
+    runtime.interactionVisible = payload.visibility;
+  }
+  applyOverlayRuntimeLayoutPreferences(runtime, payload.layout);
+  const keybindProfile = payload.keybindProfile && typeof payload.keybindProfile === 'object'
+    ? payload.keybindProfile
+    : null;
+  if (keybindProfile) {
+    runtime.interactionKeybindProfileId = String(keybindProfile.id || '').trim();
+    const cycleKey = String(keybindProfile.cycleKey || '').trim();
+    if (cycleKey) {
+      runtime.interactionCycleKey = cycleKey;
+    }
+    if (keybindProfile.contextInputMap && typeof keybindProfile.contextInputMap === 'object') {
+      const clonedContextInputMap = cloneJsonCompatibleValue(keybindProfile.contextInputMap);
+      if (clonedContextInputMap && typeof clonedContextInputMap === 'object') {
+        runtime.interactionContextInputMap = clonedContextInputMap;
+      }
+    }
+  }
   return true;
 }
 
@@ -1257,6 +1507,7 @@ export function setOverlayGameplayRuntimeContextInputMap(runtime, contextInputMa
   runtime.interactionContextInputMap = contextInputMap && typeof contextInputMap === 'object'
     ? contextInputMap
     : null;
+  saveOverlayGameplayRuntimePreferences(runtime, { silent: true });
   return true;
 }
 
@@ -1421,6 +1672,7 @@ function applyOverlayRuntimeInputAction(runtime, requestedAction, options = {}) 
 
   if (action === 'toggle-visibility') {
     runtime.interactionVisible = runtime.interactionVisible === false;
+    saveOverlayGameplayRuntimePreferences(runtime, { silent: true });
     return {
       ...resolution,
       changed: true,
@@ -1437,6 +1689,7 @@ function applyOverlayRuntimeInputAction(runtime, requestedAction, options = {}) 
     const count = runtime.runtimeExtensions.length;
     const delta = action === 'cycle-prev' ? -1 : 1;
     runtime.interactionIndex = (runtime.interactionIndex + delta + count) % count;
+    saveOverlayGameplayRuntimePreferences(runtime, { silent: true });
     return {
       ...resolution,
       changed: true,
@@ -1930,6 +2183,7 @@ export function stepOverlayGameplayRuntimePointerInteractions(runtime, pointerSt
     const clamped = clampOverlayLayoutRect(candidate, canvasWidth, canvasHeight, minPanelWidth, minPanelHeight);
     const changed = setOverlayLayoutOverride(runtime, String(activeDragState.layoutKey || ''), clamped);
     if (changed) {
+      saveOverlayGameplayRuntimePreferences(runtime, { silent: true });
       result.changed = true;
     }
     result.consumed = true;

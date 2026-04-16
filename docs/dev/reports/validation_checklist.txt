@@ -1,4 +1,5 @@
-[ ] UI adapts to gameplay state
-[ ] No layout conflicts
-[ ] Stable rendering
+[ ] Preferences save correctly
+[ ] Preferences restore correctly
+[ ] No regression in behavior
+[ ] Compatible with adaptive UI
 [ ] Roadmap updated
