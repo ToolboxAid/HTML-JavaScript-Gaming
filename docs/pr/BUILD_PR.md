@@ -1,20 +1,18 @@
-# BUILD_PR_LEVEL_21_6_OVERLAY_SYSTEM_VALIDATION
+# BUILD_PR_LEVEL_21_7_OVERLAY_PROMOTE_BASELINE
 
 ## Purpose
-Perform full validation of Level 21 overlay system.
+Promote validated Level 21 overlay system to baseline.
 
 ## Roadmap Improvement
-Confirms stability and readiness of advanced overlay features.
+Marks Level 21 complete and stable.
 
 ## Scope
-- Validate all Level 21 features
-- Ensure no regressions
+- Promote current implementation
+- Ensure no regression
 
 ## Test Steps
-1. Run all advanced overlays
-2. Stress test system
-3. Validate performance and behavior
+1. Run advanced overlays
+2. Confirm stability
 
 ## Expected
-- Stable system
-- No regressions
+- Stable baseline

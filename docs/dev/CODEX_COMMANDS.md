@@ -1,8 +1,7 @@
 MODEL: GPT-5.4
-REASONING: medium
+REASONING: low
 
 COMMAND:
-Run full Level 21 validation:
-- Validate all features
-- Confirm stability
-- Update roadmap status only
+Promote Level 21 overlay system to baseline.
+Update roadmap status only.
+Package ZIP to <project folder>/tmp/

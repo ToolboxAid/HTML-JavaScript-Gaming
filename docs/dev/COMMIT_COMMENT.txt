@@ -1,4 +1,4 @@
-Validate Level 21 overlay system.
+Promote Level 21 overlay system to baseline.
 
 PR Details:
-- Full system validation for advanced overlays
+- Marks completion of Level 21
