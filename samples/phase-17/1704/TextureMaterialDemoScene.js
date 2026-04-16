@@ -103,12 +103,13 @@ export default class TextureMaterialDemoScene extends Scene {
 
   step3DPhysics(dt, engine) {
     const input = engine.input;
+    const step = Math.min(dt, 1 / 30);
     stepPhase16ViewToggles(this.viewState, input);
 
-    this.cameraYaw += this.cameraOrbitSpeed * dt;
-    if (input?.isDown('KeyQ')) this.cameraYaw -= 1.0 * dt;
-    if (input?.isDown('KeyE')) this.cameraYaw += 1.0 * dt;
-    this.lightPulse += dt * 2.7;
+    this.cameraYaw += this.cameraOrbitSpeed * step;
+    if (input?.isDown('KeyQ') || input?.isDown('ArrowLeft')) this.cameraYaw -= 1.0 * step;
+    if (input?.isDown('KeyE') || input?.isDown('ArrowRight')) this.cameraYaw += 1.0 * step;
+    this.lightPulse += step * 2.7;
     this.syncCamera();
   }
 
@@ -142,14 +143,14 @@ export default class TextureMaterialDemoScene extends Scene {
     drawFrame(renderer, theme, [
       'Sample 1704 - Unreal Texture + Lighting',
       'Image-backed textures mapped to sample surfaces with simple light pulse response.',
-      'Camera orbit: auto + Q/E | Camera mode: C | Debug: V',
+      'Controls: Q/E or Left/Right orbit | C camera mode | V debug',
     ]);
 
     const viewport = this.viewport;
     renderer.strokeRect(viewport.x, viewport.y, viewport.width, viewport.height, '#d8d5ff', 2);
     drawDepthBackdrop(renderer, viewport);
-    renderer.drawRect(viewport.x + 10, viewport.y + 8, 188, 20, 'rgba(56, 189, 248, 0.18)');
-    renderer.drawText('Image-Backed Material Surfaces', viewport.x + 16, viewport.y + 22, { color: '#bae6fd', font: '12px monospace' });
+    renderer.drawRect(viewport.x + 10, viewport.y + 8, 262, 20, 'rgba(56, 189, 248, 0.18)');
+    renderer.drawText('Unreal | Texture + Material Lighting', viewport.x + 16, viewport.y + 22, { color: '#bae6fd', font: '12px monospace' });
 
     const cameraState = this.camera3D?.getState?.() ?? {
       position: { x: 8, y: 8, z: 0 },

@@ -104,11 +104,12 @@ export default class ImageSkinnedCharacterDemoScene extends Scene {
 
   step3DPhysics(dt, engine) {
     const input = engine.input;
+    const step = Math.min(dt, 1 / 30);
     stepPhase16ViewToggles(this.viewState, input);
 
     this.pathTime += dt;
-    if (input?.isDown('ArrowLeft')) this.cameraYawOffset -= 0.9 * dt;
-    if (input?.isDown('ArrowRight')) this.cameraYawOffset += 0.9 * dt;
+    if (input?.isDown('ArrowLeft') || input?.isDown('KeyQ')) this.cameraYawOffset -= 0.9 * step;
+    if (input?.isDown('ArrowRight') || input?.isDown('KeyE')) this.cameraYawOffset += 0.9 * step;
     if (input?.isDown('KeyR')) this.pathTime = 0;
 
     this.character.x = this.centerPath.x + Math.cos(this.pathTime * 0.85) * this.pathRadius;
@@ -149,14 +150,14 @@ export default class ImageSkinnedCharacterDemoScene extends Scene {
     drawFrame(renderer, theme, [
       'Sample 1705 - Unreal Skinned Mesh Demo',
       'Image sprite-sheet frames animate a skinned character moving along a looping path.',
-      'Camera offset: Left/Right | Reset path: R | Camera mode: C | Debug: V',
+      'Controls: Left/Right or Q/E orbit | R reset path | C camera mode | V debug',
     ]);
 
     const viewport = this.viewport;
     renderer.strokeRect(viewport.x, viewport.y, viewport.width, viewport.height, '#d8d5ff', 2);
     drawDepthBackdrop(renderer, viewport);
-    renderer.drawRect(viewport.x + 10, viewport.y + 8, 206, 20, 'rgba(99, 102, 241, 0.20)');
-    renderer.drawText('Image-Skinned Character + Frames', viewport.x + 16, viewport.y + 22, { color: '#ddd6fe', font: '12px monospace' });
+    renderer.drawRect(viewport.x + 10, viewport.y + 8, 250, 20, 'rgba(99, 102, 241, 0.20)');
+    renderer.drawText('Unreal | Image-Skinned Character', viewport.x + 16, viewport.y + 22, { color: '#ddd6fe', font: '12px monospace' });
 
     const cameraState = this.camera3D?.getState?.() ?? {
       position: { x: 8, y: 8, z: 0 },

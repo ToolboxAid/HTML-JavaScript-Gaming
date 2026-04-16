@@ -88,13 +88,14 @@ export default class VoxelWorldDemoScene extends Scene {
 
   step3DPhysics(dt, engine) {
     const input = engine.input;
+    const step = Math.min(dt, 1 / 30);
     const panSpeed = 2.8;
-    if (input?.isDown('KeyA')) this.camera.x -= panSpeed * dt;
-    if (input?.isDown('KeyD')) this.camera.x += panSpeed * dt;
-    if (input?.isDown('KeyW')) this.camera.z -= panSpeed * dt;
-    if (input?.isDown('KeyS')) this.camera.z += panSpeed * dt;
-    if (input?.isDown('ArrowUp')) this.camera.y = clamp(this.camera.y + 1.6 * dt, -0.5, 2.4);
-    if (input?.isDown('ArrowDown')) this.camera.y = clamp(this.camera.y - 1.6 * dt, -0.5, 2.4);
+    if (input?.isDown('KeyA')) this.camera.x -= panSpeed * step;
+    if (input?.isDown('KeyD')) this.camera.x += panSpeed * step;
+    if (input?.isDown('KeyW')) this.camera.z -= panSpeed * step;
+    if (input?.isDown('KeyS')) this.camera.z += panSpeed * step;
+    if (input?.isDown('ArrowUp') || input?.isDown('KeyE')) this.camera.y = clamp(this.camera.y + 1.6 * step, -0.5, 2.4);
+    if (input?.isDown('ArrowDown') || input?.isDown('KeyQ')) this.camera.y = clamp(this.camera.y - 1.6 * step, -0.5, 2.4);
     this.camera.x = clamp(this.camera.x, -0.4, WORLD_SIZE - 0.6);
     this.camera.z = clamp(this.camera.z, -0.6, WORLD_SIZE - 0.4);
   }
@@ -103,14 +104,14 @@ export default class VoxelWorldDemoScene extends Scene {
     drawFrame(renderer, theme, [
       'Sample 1706 - Minecraft Voxel Terrain',
       'Filled voxel cubes with chunk-like terrain heights and panning camera controls.',
-      'Pan: W/A/S/D | Elevation: Up/Down',
+      'Controls: W/A/S/D pan | Up/Down or Q/E elevation',
     ]);
 
     const viewport = this.viewport;
     renderer.strokeRect(viewport.x, viewport.y, viewport.width, viewport.height, '#d8d5ff', 2);
     renderer.drawRect(viewport.x, viewport.y, viewport.width, viewport.height, '#0f172a');
-    renderer.drawRect(viewport.x + 10, viewport.y + 8, 130, 20, 'rgba(34, 197, 94, 0.22)');
-    renderer.drawText('Filled Voxel Faces', viewport.x + 16, viewport.y + 22, { color: '#bbf7d0', font: '12px monospace' });
+    renderer.drawRect(viewport.x + 10, viewport.y + 8, 232, 20, 'rgba(34, 197, 94, 0.22)');
+    renderer.drawText('Minecraft | Filled Voxel Terrain', viewport.x + 16, viewport.y + 22, { color: '#bbf7d0', font: '12px monospace' });
 
     const blocks = [];
     for (let z = 0; z < WORLD_SIZE; z += 1) {

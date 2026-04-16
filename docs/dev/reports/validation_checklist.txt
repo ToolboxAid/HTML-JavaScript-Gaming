@@ -1,4 +1,4 @@
 
-- [ ] all 1701-1707 samples load
-- [ ] index updated correctly
-- [ ] no broken paths
+- [ ] samples consistent
+- [ ] labels visible
+- [ ] controls uniform

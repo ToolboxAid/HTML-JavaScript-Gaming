@@ -123,16 +123,22 @@ export default class DoomRaycastSpritesScene extends Scene {
 
   step3DPhysics(dt, engine) {
     const input = engine.input;
-    if (input?.isDown('KeyA')) this.player.angle -= this.player.turnSpeed * dt;
-    if (input?.isDown('KeyD')) this.player.angle += this.player.turnSpeed * dt;
+    const step = Math.min(dt, 1 / 30);
+    const turnLeft = input?.isDown('KeyA') || input?.isDown('ArrowLeft');
+    const turnRight = input?.isDown('KeyD') || input?.isDown('ArrowRight');
+    if (turnLeft) this.player.angle -= this.player.turnSpeed * step;
+    if (turnRight) this.player.angle += this.player.turnSpeed * step;
+    this.player.angle = normalizeAngle(this.player.angle);
 
     const forwardX = Math.cos(this.player.angle);
     const forwardY = Math.sin(this.player.angle);
-    if (input?.isDown('KeyW')) {
-      this.tryMove(this.player.x + forwardX * this.player.moveSpeed * dt, this.player.y + forwardY * this.player.moveSpeed * dt);
+    const moveForward = input?.isDown('KeyW') || input?.isDown('ArrowUp');
+    const moveBackward = input?.isDown('KeyS') || input?.isDown('ArrowDown');
+    if (moveForward) {
+      this.tryMove(this.player.x + forwardX * this.player.moveSpeed * step, this.player.y + forwardY * this.player.moveSpeed * step);
     }
-    if (input?.isDown('KeyS')) {
-      this.tryMove(this.player.x - forwardX * this.player.moveSpeed * dt, this.player.y - forwardY * this.player.moveSpeed * dt);
+    if (moveBackward) {
+      this.tryMove(this.player.x - forwardX * this.player.moveSpeed * step, this.player.y - forwardY * this.player.moveSpeed * step);
     }
   }
 
@@ -177,13 +183,15 @@ export default class DoomRaycastSpritesScene extends Scene {
     drawFrame(renderer, theme, [
       'Sample 1701 - DOOM Raycast + Sprites',
       'DOOM-style corridor raycasting with billboard sprites composited into depth-sorted space.',
-      'Move: W/S | Turn: A/D',
+      'Controls: W/S or Up/Down move | A/D or Left/Right turn',
     ]);
 
     const viewport = this.viewport;
     renderer.strokeRect(viewport.x, viewport.y, viewport.width, viewport.height, '#d8d5ff', 2);
     renderer.drawRect(viewport.x, viewport.y, viewport.width, viewport.height * 0.48, '#334155');
     renderer.drawRect(viewport.x, viewport.y + viewport.height * 0.48, viewport.width, viewport.height * 0.52, '#111827');
+    renderer.drawRect(viewport.x + 10, viewport.y + 8, 230, 20, 'rgba(249, 115, 22, 0.20)');
+    renderer.drawText('DOOM | Raycast + Sprites', viewport.x + 16, viewport.y + 22, { color: '#fed7aa', font: '12px monospace' });
 
     const columnWidth = 2;
     const columns = Math.floor(viewport.width / columnWidth);

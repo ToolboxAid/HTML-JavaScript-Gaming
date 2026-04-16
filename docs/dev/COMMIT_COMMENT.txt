@@ -1,1 +1,1 @@
-Renumber rendering samples 1623-1629 to 1701-1707 and align index
+Final polish for Level 17 rendering track (samples 1701-1707)

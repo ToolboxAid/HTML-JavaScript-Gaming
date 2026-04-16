@@ -14,6 +14,13 @@ function clamp(value, min, max) {
   return Math.max(min, Math.min(max, value));
 }
 
+function normalizeAngle(angle) {
+  let result = angle;
+  while (result > Math.PI) result -= Math.PI * 2;
+  while (result < -Math.PI) result += Math.PI * 2;
+  return result;
+}
+
 export default class WolfGridRaycastScene extends Scene {
   constructor() {
     super();
@@ -110,26 +117,34 @@ export default class WolfGridRaycastScene extends Scene {
 
   step3DPhysics(dt, engine) {
     const input = engine.input;
-    if (input?.isDown('KeyA')) this.player.angle -= this.player.turnSpeed * dt;
-    if (input?.isDown('KeyD')) this.player.angle += this.player.turnSpeed * dt;
+    const step = Math.min(dt, 1 / 30);
+    const turnLeft = input?.isDown('KeyA') || input?.isDown('ArrowLeft');
+    const turnRight = input?.isDown('KeyD') || input?.isDown('ArrowRight');
+    if (turnLeft) this.player.angle -= this.player.turnSpeed * step;
+    if (turnRight) this.player.angle += this.player.turnSpeed * step;
+    this.player.angle = normalizeAngle(this.player.angle);
 
     const forwardX = Math.cos(this.player.angle);
     const forwardY = Math.sin(this.player.angle);
-    if (input?.isDown('KeyW')) this.tryMove(this.player.x + forwardX * this.player.moveSpeed * dt, this.player.y + forwardY * this.player.moveSpeed * dt);
-    if (input?.isDown('KeyS')) this.tryMove(this.player.x - forwardX * this.player.moveSpeed * dt, this.player.y - forwardY * this.player.moveSpeed * dt);
+    const moveForward = input?.isDown('KeyW') || input?.isDown('ArrowUp');
+    const moveBackward = input?.isDown('KeyS') || input?.isDown('ArrowDown');
+    if (moveForward) this.tryMove(this.player.x + forwardX * this.player.moveSpeed * step, this.player.y + forwardY * this.player.moveSpeed * step);
+    if (moveBackward) this.tryMove(this.player.x - forwardX * this.player.moveSpeed * step, this.player.y - forwardY * this.player.moveSpeed * step);
   }
 
   render(renderer) {
     drawFrame(renderer, theme, [
       'Sample 1702 - Wolf Grid Raycast',
       'Pure grid raycasting and flat filled walls with classic corridor readability.',
-      'Move: W/S | Turn: A/D',
+      'Controls: W/S or Up/Down move | A/D or Left/Right turn',
     ]);
 
     const viewport = this.viewport;
     renderer.strokeRect(viewport.x, viewport.y, viewport.width, viewport.height, '#d8d5ff', 2);
     renderer.drawRect(viewport.x, viewport.y, viewport.width, viewport.height * 0.5, '#1e3a8a');
     renderer.drawRect(viewport.x, viewport.y + viewport.height * 0.5, viewport.width, viewport.height * 0.5, '#0f172a');
+    renderer.drawRect(viewport.x + 10, viewport.y + 8, 198, 20, 'rgba(59, 130, 246, 0.20)');
+    renderer.drawText('Wolf | Grid Raycast', viewport.x + 16, viewport.y + 22, { color: '#bfdbfe', font: '12px monospace' });
 
     const columnWidth = 2;
     const columns = Math.floor(viewport.width / columnWidth);

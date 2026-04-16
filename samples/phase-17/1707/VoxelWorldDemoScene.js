@@ -100,13 +100,14 @@ export default class ChunkStreamingVoxelScene extends Scene {
 
   step3DPhysics(dt, engine) {
     const input = engine.input;
+    const step = Math.min(dt, 1 / 30);
     const panSpeed = 3;
-    if (input?.isDown('KeyA')) this.camera.x -= panSpeed * dt;
-    if (input?.isDown('KeyD')) this.camera.x += panSpeed * dt;
-    if (input?.isDown('KeyW')) this.camera.z -= panSpeed * dt;
-    if (input?.isDown('KeyS')) this.camera.z += panSpeed * dt;
-    if (input?.isDown('ArrowUp')) this.chunkRadius = clamp(this.chunkRadius + 1 * dt * 8, 1, 2);
-    if (input?.isDown('ArrowDown')) this.chunkRadius = clamp(this.chunkRadius - 1 * dt * 8, 1, 2);
+    if (input?.isDown('KeyA')) this.camera.x -= panSpeed * step;
+    if (input?.isDown('KeyD')) this.camera.x += panSpeed * step;
+    if (input?.isDown('KeyW')) this.camera.z -= panSpeed * step;
+    if (input?.isDown('KeyS')) this.camera.z += panSpeed * step;
+    if (input?.isDown('ArrowUp') || input?.isDown('KeyE')) this.chunkRadius = clamp(this.chunkRadius + 1 * step * 8, 1, 2);
+    if (input?.isDown('ArrowDown') || input?.isDown('KeyQ')) this.chunkRadius = clamp(this.chunkRadius - 1 * step * 8, 1, 2);
     this.chunkRadius = Math.round(this.chunkRadius);
 
     this.camera.y = clamp(this.camera.y, -0.2, 2.4);
@@ -118,14 +119,14 @@ export default class ChunkStreamingVoxelScene extends Scene {
     drawFrame(renderer, theme, [
       'Sample 1707 - Minecraft Chunk Streaming',
       'Voxel chunk-window streaming keeps nearby terrain active around the camera anchor.',
-      'Pan: W/A/S/D | Chunk radius: Up/Down',
+      'Controls: W/A/S/D pan | Up/Down or Q/E chunk radius',
     ]);
 
     const viewport = this.viewport;
     renderer.strokeRect(viewport.x, viewport.y, viewport.width, viewport.height, '#d8d5ff', 2);
     renderer.drawRect(viewport.x, viewport.y, viewport.width, viewport.height, '#0f172a');
-    renderer.drawRect(viewport.x + 10, viewport.y + 8, 176, 20, 'rgba(34, 197, 94, 0.22)');
-    renderer.drawText('Chunk Window + Filled Voxels', viewport.x + 16, viewport.y + 22, { color: '#bbf7d0', font: '12px monospace' });
+    renderer.drawRect(viewport.x + 10, viewport.y + 8, 250, 20, 'rgba(34, 197, 94, 0.22)');
+    renderer.drawText('Minecraft | Chunk Streaming Window', viewport.x + 16, viewport.y + 22, { color: '#bbf7d0', font: '12px monospace' });
 
     const blocks = [];
     const chunkSet = new Set();

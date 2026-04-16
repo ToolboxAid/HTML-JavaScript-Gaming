@@ -86,6 +86,10 @@ function createRendererProbe(width = 960, height = 540) {
   };
 }
 
+function assertTextIncludes(renderer, needle, message) {
+  assert.equal(renderer.texts.some((text) => text.includes(needle)), true, message);
+}
+
 function assertIndexLinksPresent() {
   const indexPath = path.join(repoRoot, 'samples', 'index.html');
   const indexText = fs.readFileSync(indexPath, 'utf8');
@@ -120,6 +124,8 @@ function assertDoomRaycastSprites() {
   assert.equal(scene.lastFilledColumns > 100, true, 'DOOM sprite raycast should render filled wall columns.');
   assert.equal(scene.lastSpriteDraws > 0, true, 'DOOM sprite raycast should render visible sprites.');
   assert.equal(renderer.imageFrames.length > 0, true, 'DOOM sprite raycast should issue image frame sprite draws.');
+  assertTextIncludes(renderer, 'DOOM | Raycast + Sprites', 'DOOM sample should render a clear family label overlay.');
+  assertTextIncludes(renderer, 'Controls:', 'DOOM sample should render a controls hint.');
 }
 
 function assertWolfGridRaycast() {
@@ -135,6 +141,8 @@ function assertWolfGridRaycast() {
   assert.notEqual(miniMapPanel, undefined, 'Wolf grid raycast should draw a mini map panel background.');
   assert.equal(miniMapPanel.x >= 700, true, 'Wolf grid raycast mini map should be anchored near the bottom-right (x).');
   assert.equal(miniMapPanel.y >= 400, true, 'Wolf grid raycast mini map should be anchored near the bottom-right (y).');
+  assertTextIncludes(renderer, 'Wolf | Grid Raycast', 'Wolf grid sample should render a clear family label overlay.');
+  assertTextIncludes(renderer, 'Controls:', 'Wolf grid sample should render a controls hint.');
 }
 
 function assertWolfOptimizedRaycast() {
@@ -145,6 +153,8 @@ function assertWolfOptimizedRaycast() {
   scene.render(renderer);
   assert.equal(scene.lastFilledColumns > 100, true, 'Wolf optimized raycast should render filled columns.');
   assert.equal(scene.lastDdaSteps > scene.lastFilledColumns, true, 'Wolf optimized raycast should report DDA traversal steps.');
+  assertTextIncludes(renderer, 'Wolf | DDA Raycast', 'Wolf optimized sample should render a clear family label overlay.');
+  assertTextIncludes(renderer, 'Controls:', 'Wolf optimized sample should render a controls hint.');
 }
 
 function assertUnrealTextureLighting() {
@@ -158,6 +168,8 @@ function assertUnrealTextureLighting() {
   scene.render(renderer);
   assert.equal(scene.lastImageDraws > 0, true, 'Unreal texture+lighting demo should draw image-backed textures.');
   assert.equal(renderer.imageFrames.length > 0, true, 'Unreal texture+lighting demo should issue image frame draws.');
+  assertTextIncludes(renderer, 'Unreal | Texture + Material Lighting', 'Unreal texture sample should render a clear family label overlay.');
+  assertTextIncludes(renderer, 'Controls:', 'Unreal texture sample should render a controls hint.');
 }
 
 function assertUnrealSkinnedMesh() {
@@ -171,6 +183,8 @@ function assertUnrealSkinnedMesh() {
   assert.equal(scene.currentFrameIndex !== startFrame, true, 'Unreal skinned mesh demo should animate frame changes.');
   assert.equal(scene.lastImageDraws > 0, true, 'Unreal skinned mesh demo should draw image-backed character frames.');
   assert.equal(renderer.imageFrames.length > 0, true, 'Unreal skinned mesh demo should issue image frame draws.');
+  assertTextIncludes(renderer, 'Unreal | Image-Skinned Character', 'Unreal skinned sample should render a clear family label overlay.');
+  assertTextIncludes(renderer, 'Controls:', 'Unreal skinned sample should render a controls hint.');
 }
 
 function assertMinecraftVoxelTerrain() {
@@ -181,6 +195,8 @@ function assertMinecraftVoxelTerrain() {
   scene.render(renderer);
   assert.equal(scene.lastFilledFaces > 0, true, 'Minecraft voxel terrain demo should render filled voxel faces.');
   assert.equal(renderer.polygons.length > 0, true, 'Minecraft voxel terrain demo should issue polygon draws.');
+  assertTextIncludes(renderer, 'Minecraft | Filled Voxel Terrain', 'Minecraft terrain sample should render a clear family label overlay.');
+  assertTextIncludes(renderer, 'Controls:', 'Minecraft terrain sample should render a controls hint.');
 }
 
 function assertMinecraftChunkStreaming() {
@@ -192,6 +208,8 @@ function assertMinecraftChunkStreaming() {
   assert.equal(scene.lastActiveChunks > 0, true, 'Minecraft chunk streaming demo should activate chunks.');
   assert.equal(scene.lastFilledFaces > 0, true, 'Minecraft chunk streaming demo should render filled voxel faces.');
   assert.equal(renderer.polygons.length > 0, true, 'Minecraft chunk streaming demo should issue polygon draws.');
+  assertTextIncludes(renderer, 'Minecraft | Chunk Streaming Window', 'Minecraft chunk sample should render a clear family label overlay.');
+  assertTextIncludes(renderer, 'Controls:', 'Minecraft chunk sample should render a controls hint.');
 }
 
 export function run() {
