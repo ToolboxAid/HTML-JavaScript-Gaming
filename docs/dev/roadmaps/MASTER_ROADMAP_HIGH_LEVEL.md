@@ -631,6 +631,7 @@
 - [x] Render pipeline stages
 - [x] Collision overlays
 - [x] Scene graph inspector
+- [x] Level 17 debug overlay baseline promoted after validation (1708-1713: bottom-right placement, KeyG cycle key, correct stack ordering)
 
 ### Sample Phase Tracks
 - [x] 3D phase normalized

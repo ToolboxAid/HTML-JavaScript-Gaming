@@ -1,2 +1,1 @@
-Run full Level 17 overlay validation sweep across all samples.
-Confirm consistency of placement, cycle key, and stack mappings.
+Promote Level 17 debug overlay system to baseline after validation.

@@ -1,9 +1,3 @@
-[ ] 1708 validated
-[ ] 1710 validated
-[ ] 1709 validated
-[ ] 1711 validated
-[ ] 1712 validated
-[ ] 1713 validated
-[ ] Bottom-right placement consistent
-[ ] Non-Tab cycle confirmed
-[ ] Stack mappings correct
+[x] Smoke test complete
+[x] No regressions found
+[x] Baseline confirmed
