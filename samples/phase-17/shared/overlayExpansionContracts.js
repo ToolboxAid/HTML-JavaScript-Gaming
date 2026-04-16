@@ -53,14 +53,30 @@ function normalizeRuntimeExtensionEntry(entry) {
   const overlayId = String(entry.overlayId || '').trim();
   const onStep = typeof entry.onStep === 'function' ? entry.onStep : null;
   const onRender = typeof entry.onRender === 'function' ? entry.onRender : null;
+  const resolvePanelSize = typeof entry.resolvePanelSize === 'function' ? entry.resolvePanelSize : null;
   if (!onStep && !onRender) {
     return null;
   }
+
+  const layerOrderRaw = Number(entry.layerOrder);
+  const layerOrder = Number.isFinite(layerOrderRaw) ? layerOrderRaw : 0;
+  const visualPriorityRaw = Number(entry.visualPriority);
+  const visualPriority = Number.isFinite(visualPriorityRaw) ? visualPriorityRaw : layerOrder;
+  const panelWidthRaw = Number(entry.panelWidth);
+  const panelHeightRaw = Number(entry.panelHeight);
+  const panelWidth = Number.isFinite(panelWidthRaw) && panelWidthRaw > 0 ? panelWidthRaw : 260;
+  const panelHeight = Number.isFinite(panelHeightRaw) && panelHeightRaw > 0 ? panelHeightRaw : 96;
 
   return Object.freeze({
     overlayId,
     onStep,
     onRender,
+    resolvePanelSize,
+    compose: entry.compose === true,
+    layerOrder,
+    visualPriority,
+    panelWidth,
+    panelHeight,
   });
 }
 

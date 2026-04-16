@@ -1,4 +1,4 @@
-Promote Level 20 plugin system to baseline.
+Add advanced overlay feature.
 
 PR Details:
-- Marks completion of Level 20
+- Introduces Level 21 capabilities

@@ -31,11 +31,13 @@ function normalizeRuntimeExtensionEntry(entry) {
   const panelHeightRaw = Number(entry.panelHeight);
   const panelWidth = Number.isFinite(panelWidthRaw) && panelWidthRaw > 0 ? panelWidthRaw : 260;
   const panelHeight = Number.isFinite(panelHeightRaw) && panelHeightRaw > 0 ? panelHeightRaw : 96;
+  const resolvePanelSize = typeof entry.resolvePanelSize === 'function' ? entry.resolvePanelSize : null;
 
   return Object.freeze({
     overlayId,
     onStep,
     onRender,
+    resolvePanelSize,
     compose,
     layerOrder,
     visualPriority,
@@ -255,7 +257,37 @@ function applyCompositionReadabilityLimits(frames, renderer) {
   return frames.filter((frame) => selectedSet.has(frame));
 }
 
-function attachCompositionSlots(frames, renderer, safeZones = []) {
+function normalizePanelDimension(value, fallback, minimum) {
+  const numeric = Number(value);
+  if (!Number.isFinite(numeric) || numeric <= 0) {
+    return Math.max(minimum, fallback);
+  }
+  return Math.max(minimum, numeric);
+}
+
+function resolveDynamicPanelSize(extension, layoutContext, fallbackWidth, fallbackHeight) {
+  if (!extension || typeof extension.resolvePanelSize !== 'function') {
+    return {
+      width: fallbackWidth,
+      height: fallbackHeight,
+    };
+  }
+
+  try {
+    const computed = extension.resolvePanelSize(layoutContext || {});
+    return {
+      width: normalizePanelDimension(computed?.width, fallbackWidth, 120),
+      height: normalizePanelDimension(computed?.height, fallbackHeight, 32),
+    };
+  } catch {
+    return {
+      width: fallbackWidth,
+      height: fallbackHeight,
+    };
+  }
+}
+
+function attachCompositionSlots(frames, renderer, safeZones = [], layoutContext = {}) {
   if (!Array.isArray(frames) || frames.length === 0) {
     return frames || [];
   }
@@ -330,8 +362,20 @@ function attachCompositionSlots(frames, renderer, safeZones = []) {
 
   for (let i = 0; i < frames.length; i += 1) {
     const frame = frames[i];
-    const slotWidth = Math.max(120, Number(frame.extension.panelWidth) || 260);
-    const slotHeight = Math.max(32, Number(frame.extension.panelHeight) || 96);
+    const fallbackWidth = Math.max(120, Number(frame.extension.panelWidth) || 260);
+    const fallbackHeight = Math.max(32, Number(frame.extension.panelHeight) || 96);
+    const dynamicPanelSize = resolveDynamicPanelSize(frame.extension, {
+      ...layoutContext,
+      renderer,
+      canvasSize: { width, height },
+      frameIndex: i,
+      frameCount: frames.length,
+      safeZones,
+    }, fallbackWidth, fallbackHeight);
+    const maxPanelWidth = Math.max(120, width - margin * 2);
+    const maxPanelHeight = Math.max(32, height - margin * 2);
+    const slotWidth = Math.min(maxPanelWidth, Math.max(120, Number(dynamicPanelSize.width) || fallbackWidth));
+    const slotHeight = Math.min(maxPanelHeight, Math.max(32, Number(dynamicPanelSize.height) || fallbackHeight));
     const anchorOrder = ['bottom-right', 'top-right', 'bottom-left', 'top-left'];
 
     let slot = null;
@@ -457,7 +501,8 @@ export function getOverlayGameplayRuntimeCompositionSnapshot(runtime, context = 
   const frames = deriveRenderHierarchy(attachCompositionSlots(
     getComposedRuntimeFrames(runtime, activeOverlayId),
     context?.renderer,
-    safeZones
+    safeZones,
+    context
   ));
   const visibleFrames = applyCompositionReadabilityLimits(frames, context?.renderer);
   const visibleSet = new Set(visibleFrames);
@@ -618,7 +663,8 @@ export function renderOverlayGameplayRuntime(runtime, context = {}) {
       attachCompositionSlots(
         getComposedRuntimeFrames(runtime, activeOverlayId),
         context.renderer,
-        safeZones
+        safeZones,
+        context
       )
     ),
     context.renderer

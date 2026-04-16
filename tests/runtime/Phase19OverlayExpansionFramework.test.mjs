@@ -7,6 +7,7 @@ Phase19OverlayExpansionFramework.test.mjs
 import assert from 'node:assert/strict';
 import { LEVEL17_OVERLAY_CYCLE_KEY } from '../../samples/phase-17/shared/overlayCycleInput.js';
 import {
+  getOverlayGameplayRuntimeCompositionSnapshot,
   renderOverlayGameplayRuntime,
   stepOverlayGameplayRuntime,
 } from '../../samples/phase-17/shared/overlayGameplayRuntime.js';
@@ -111,7 +112,78 @@ function assertExtensionLifecycleMutations() {
   assert.equal(framework.createRuntimeForExtension('phase19-overlay-seed'), null, 'Removed extension should no longer create runtime.');
 }
 
+function assertDynamicPanelSizingCapability() {
+  const framework = createPhase19OverlayExpansionFramework();
+  framework.registerExtension(definePhase19OverlayExtension({
+    id: 'phase19-overlay-dynamic-size',
+    overlays: [
+      { id: 'ui', label: 'UI' },
+      { id: 'runtime', label: 'Runtime' },
+    ],
+    initialOverlayId: 'ui',
+    runtimeExtensions: [
+      {
+        overlayId: 'runtime',
+        panelWidth: 220,
+        panelHeight: 90,
+        onRender() {},
+        resolvePanelSize(layoutContext) {
+          const canvasWidth = Number(layoutContext?.canvasSize?.width) || 0;
+          const canvasHeight = Number(layoutContext?.canvasSize?.height) || 0;
+          return {
+            width: Math.round(canvasWidth * 0.5),
+            height: Math.round(canvasHeight * 0.2),
+          };
+        },
+      },
+    ],
+  }));
+
+  const runtime = framework.createRuntimeForExtension('phase19-overlay-dynamic-size');
+  const wideSnapshot = getOverlayGameplayRuntimeCompositionSnapshot(runtime, {
+    activeOverlayId: 'runtime',
+    renderer: createRendererProbe(1000, 600),
+  });
+  assert.equal(wideSnapshot.length, 1, 'Dynamic panel sizing runtime should emit a composed frame snapshot.');
+  assert.equal(wideSnapshot[0].slot.width, 500, 'Dynamic sizing should scale panel width from canvas size.');
+  assert.equal(wideSnapshot[0].slot.height, 120, 'Dynamic sizing should scale panel height from canvas size.');
+
+  const compactSnapshot = getOverlayGameplayRuntimeCompositionSnapshot(runtime, {
+    activeOverlayId: 'runtime',
+    renderer: createRendererProbe(600, 400),
+  });
+  assert.equal(compactSnapshot[0].slot.width, 300, 'Dynamic sizing should recompute width for smaller canvases.');
+  assert.equal(compactSnapshot[0].slot.height, 80, 'Dynamic sizing should recompute height for smaller canvases.');
+
+  const fallbackFramework = createPhase19OverlayExpansionFramework();
+  fallbackFramework.registerExtension(definePhase19OverlayExtension({
+    id: 'phase19-overlay-dynamic-size-fallback',
+    overlays: [{ id: 'runtime', label: 'Runtime' }],
+    initialOverlayId: 'runtime',
+    runtimeExtensions: [
+      {
+        overlayId: 'runtime',
+        panelWidth: 234,
+        panelHeight: 98,
+        onRender() {},
+        resolvePanelSize() {
+          throw new Error('resolver failed');
+        },
+      },
+    ],
+  }));
+
+  const fallbackRuntime = fallbackFramework.createRuntimeForExtension('phase19-overlay-dynamic-size-fallback');
+  const fallbackSnapshot = getOverlayGameplayRuntimeCompositionSnapshot(fallbackRuntime, {
+    activeOverlayId: 'runtime',
+    renderer: createRendererProbe(960, 540),
+  });
+  assert.equal(fallbackSnapshot[0].slot.width, 234, 'Resolver failures should preserve compatibility via configured width fallback.');
+  assert.equal(fallbackSnapshot[0].slot.height, 98, 'Resolver failures should preserve compatibility via configured height fallback.');
+}
+
 export function run() {
   assertExpansionRegistrationAndCompatibility();
   assertExtensionLifecycleMutations();
+  assertDynamicPanelSizingCapability();
 }

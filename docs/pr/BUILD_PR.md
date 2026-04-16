@@ -1,18 +1,20 @@
-# BUILD_PR_LEVEL_20_10_OVERLAY_PLUGIN_PROMOTE_BASELINE
+# BUILD_PR_LEVEL_21_1_ADVANCED_OVERLAY_FEATURES
 
 ## Purpose
-Promote validated Level 20 plugin system to baseline.
+Introduce advanced overlay capabilities building on plugin system.
 
 ## Roadmap Improvement
-Marks Level 20 complete and production-ready.
+Begins Level 21 advanced feature set.
 
 ## Scope
-- Promote current plugin system
-- Ensure no regression
+- Add one advanced overlay capability (e.g. dynamic resizing or contextual display)
+- Ensure compatibility with plugin system
 
 ## Test Steps
-1. Run plugins
-2. Confirm stability
+1. Activate advanced overlay
+2. Validate behavior
+3. Confirm no regression
 
 ## Expected
-- Stable baseline
+- Advanced overlay works
+- System stable
