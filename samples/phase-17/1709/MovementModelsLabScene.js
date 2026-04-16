@@ -295,17 +295,24 @@ export default class MovementModelsLabScene extends Scene {
     );
     this.drawFacingIndicator(renderer, cameraState, projectionViewport);
 
-    renderer.drawRect(52, 34, 360, 138, 'rgba(15, 23, 42, 0.76)');
-    renderer.strokeRect(52, 34, 360, 138, '#4ade80', 1);
-    renderer.drawText('Movement Lab HUD', 64, 52, { color: '#86efac', font: '12px monospace' });
-    renderer.drawText(`Movement Mode: ${formatMode(this.movementMode)}`, 64, 74, {
+    const canvasSize = renderer.getCanvasSize?.() || { width: 960, height: 540 };
+    const hudWidth = 360;
+    const hudHeight = 138;
+    const hudX = Math.max(12, canvasSize.width - hudWidth - 22);
+    const hudY = Math.max(12, canvasSize.height - hudHeight - 18);
+    const hudTextX = hudX + 12;
+
+    renderer.drawRect(hudX, hudY, hudWidth, hudHeight, 'rgba(15, 23, 42, 0.76)');
+    renderer.strokeRect(hudX, hudY, hudWidth, hudHeight, '#4ade80', 1);
+    renderer.drawText('Movement Lab HUD', hudTextX, hudY + 18, { color: '#86efac', font: '12px monospace' });
+    renderer.drawText(`Movement Mode: ${formatMode(this.movementMode)}`, hudTextX, hudY + 40, {
       color: '#f8fafc',
       font: '14px monospace',
     });
-    renderer.drawText(`Input: ${this.lastInputSummary}`, 64, 94, { color: '#e2e8f0', font: '12px monospace' });
-    renderer.drawText(`Speed: ${this.lastSpeed.toFixed(2)} units/s`, 64, 112, { color: '#e2e8f0', font: '12px monospace' });
-    renderer.drawText(`Heading: ${this.actor.heading.toFixed(2)} rad`, 64, 130, { color: '#e2e8f0', font: '12px monospace' });
-    renderer.drawText(`Camera follow mode: ${this.viewState.cameraMode}`, 64, 148, { color: '#e2e8f0', font: '12px monospace' });
+    renderer.drawText(`Input: ${this.lastInputSummary}`, hudTextX, hudY + 60, { color: '#e2e8f0', font: '12px monospace' });
+    renderer.drawText(`Speed: ${this.lastSpeed.toFixed(2)} units/s`, hudTextX, hudY + 78, { color: '#e2e8f0', font: '12px monospace' });
+    renderer.drawText(`Heading: ${this.actor.heading.toFixed(2)} rad`, hudTextX, hudY + 96, { color: '#e2e8f0', font: '12px monospace' });
+    renderer.drawText(`Camera follow mode: ${this.viewState.cameraMode}`, hudTextX, hudY + 114, { color: '#e2e8f0', font: '12px monospace' });
 
     drawPanel(renderer, 620, 34, 300, 188, 'Movement Runtime', [
       `Mode: ${formatMode(this.movementMode)}`,
