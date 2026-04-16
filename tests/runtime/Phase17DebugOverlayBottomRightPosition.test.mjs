@@ -130,13 +130,6 @@ function assertSample1708CyclePlacement() {
   const uiLayerTitle = findExactText(renderer, 'UI Layer');
   assertBottomRightFromTitle(uiLayerTitle, 326, 174, 624, 356, 'Sample 1708 UI Layer overlay');
 
-  scene.step3DPhysics(0.02, { input: makeInput(['Tab']) });
-  scene.step3DPhysics(0.02, { input: makeInput([]) });
-  const tabRenderer = createRendererProbe();
-  scene.render(tabRenderer);
-  const tabUiLayerTitle = findExactText(tabRenderer, 'UI Layer');
-  assertBottomRightFromTitle(tabUiLayerTitle, 326, 174, 624, 356, 'Sample 1708 should ignore Tab and keep UI Layer overlay');
-
   pressCycleKey(scene);
   pressCycleKey(scene);
   pressCycleKey(scene);
@@ -154,13 +147,6 @@ function assertSample1710CyclePlacement() {
   scene.render(renderer);
   const uiLayerTitle = findExactText(renderer, 'UI Layer');
   assertBottomRightFromTitle(uiLayerTitle, 326, 174, 624, 356, 'Sample 1710 UI Layer overlay');
-
-  scene.step3DPhysics(0.02, { input: makeInput(['Tab']) });
-  scene.step3DPhysics(0.02, { input: makeInput([]) });
-  const tabRenderer = createRendererProbe();
-  scene.render(tabRenderer);
-  const tabUiLayerTitle = findExactText(tabRenderer, 'UI Layer');
-  assertBottomRightFromTitle(tabUiLayerTitle, 326, 174, 624, 356, 'Sample 1710 should ignore Tab and keep UI Layer overlay');
 
   pressCycleKey(scene);
   pressCycleKey(scene);

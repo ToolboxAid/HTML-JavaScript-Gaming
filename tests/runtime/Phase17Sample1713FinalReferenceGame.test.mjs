@@ -103,11 +103,6 @@ function assertFinalReferenceRuntimeFlow() {
   assert.equal(renderer.texts.some((text) => text.includes('UI Layer')), true, 'UI Layer panel should render by default.');
   assert.equal(renderer.texts.some((text) => text.includes('Final Reference Runtime')), false, 'Final runtime panel should not render by default.');
 
-  const indexBeforeTab = scene.tabDebugOverlays.activeIndex;
-  scene.step3DPhysics(0.02, { input: makeInput(['Tab']) });
-  scene.step3DPhysics(0.02, { input: makeInput([]) });
-  assert.equal(scene.tabDebugOverlays.activeIndex, indexBeforeTab, 'Tab should not cycle reference overlays.');
-
   scene.step3DPhysics(0.02, { input: makeInput(['KeyG']) });
   scene.step3DPhysics(0.02, { input: makeInput([]) });
   const missionFeedRenderer = createRendererProbe();

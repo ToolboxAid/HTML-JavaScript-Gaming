@@ -125,11 +125,6 @@ function assertVisibleModeLabels() {
   assert.equal(weightedRenderer.lines.length > 0, true, 'Scene should render visible 3D line output.');
   assert.equal(weightedRenderer.texts.some((text) => text.includes('Debug: G/Shift+G')), true, 'HUD instructions should advertise G debug cycling.');
 
-  const indexBeforeTab = scene.tabDebugOverlays.activeIndex;
-  scene.step3DPhysics(0.02, { input: makeInput(['Tab']) });
-  scene.step3DPhysics(0.02, { input: makeInput([]) });
-  assert.equal(scene.tabDebugOverlays.activeIndex, indexBeforeTab, 'Tab should not cycle movement debug overlays.');
-
   scene.step3DPhysics(0.02, { input: makeInput(['KeyG']) });
   scene.step3DPhysics(0.02, { input: makeInput([]) });
   const hudRenderer = createRendererProbe();

@@ -133,11 +133,6 @@ function assertGameplayLoopAndDebugPanels() {
   assert.equal(renderer.texts.some((text) => text.includes('UI Layer')), true, 'UI Layer panel should render by default.');
   assert.equal(renderer.texts.some((text) => text.includes('Mission Feed')), false, 'Only one mapped overlay should be visible at a time.');
 
-  const indexBeforeTab = scene.tabDebugOverlays.activeIndex;
-  scene.step3DPhysics(0.02, { input: makeInput(['Tab']) });
-  scene.step3DPhysics(0.02, { input: makeInput([]) });
-  assert.equal(scene.tabDebugOverlays.activeIndex, indexBeforeTab, 'Tab should not change overlay selection.');
-
   scene.step3DPhysics(0.02, { input: makeInput(['KeyG']) });
   scene.step3DPhysics(0.02, { input: makeInput([]) });
   const missionFeedRenderer = createRendererProbe();

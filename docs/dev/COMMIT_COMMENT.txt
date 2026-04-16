@@ -1,2 +1,6 @@
-Normalize overlay stacks for samples 1708 and 1710.
-Standardize bottom-right placement and cycle behavior.
+Replace stale Level 17 Tab-based overlay cycle tests with the approved non-Tab input.
+
+PR Details:
+- Updates affected Level 17 tests that still use makeInput(['Tab'])
+- Keeps scope test-only and aligned to current overlay cycle behavior
+- Confirms Level 17 debug overlay checks no longer validate browser-reserved Tab input

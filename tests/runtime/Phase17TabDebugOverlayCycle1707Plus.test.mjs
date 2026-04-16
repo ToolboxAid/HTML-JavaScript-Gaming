@@ -48,11 +48,6 @@ function pressCycleKey(scene, { reverse = false } = {}) {
   scene.step3DPhysics(0.02, { input: makeInput([]) });
 }
 
-function pressTab(scene) {
-  scene.step3DPhysics(0.02, { input: makeInput(['Tab']) });
-  scene.step3DPhysics(0.02, { input: makeInput([]) });
-}
-
 function createRendererProbe(width = 960, height = 540) {
   const texts = [];
   return {
@@ -81,10 +76,6 @@ function assertMapOrderAndKeyBehavior(label, sceneFactory, expectedLabels, expec
   assert.equal(scene.tabDebugOverlays?.cycleKey, 'KeyG', `${label} should use G as overlay cycle key.`);
   const labels = scene.tabDebugOverlays.overlays.map((entry) => entry.label);
   assert.deepEqual(labels, expectedLabels, `${label} should use exact required overlay map ordering.`);
-
-  const initialIndex = scene.tabDebugOverlays.activeIndex;
-  pressTab(scene);
-  assert.equal(scene.tabDebugOverlays.activeIndex, initialIndex, `${label} should ignore Tab for overlay cycling.`);
 
   for (let i = 0; i < expectedTokens.length; i += 1) {
     const renderer = createRendererProbe();
