@@ -1,3 +1,3 @@
-Add Sample 1709 Movement Models Lab to compare direct movement, tank controls, and optional weighted movement with camera follow and visible mode labels.
+Polish real gameplay sample into a complete mini-game with UI, feedback, and full game loop.
 
-PR: BUILD_PR_LEVEL_17_39_SAMPLE_1709_MOVEMENT_MODELS_LAB
+PR: BUILD_PR_LEVEL_17_40_SAMPLE_1710_REAL_GAMEPLAY_POLISH

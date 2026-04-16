@@ -28,6 +28,7 @@ import {
 const theme = new Theme(ThemeTokens);
 
 const CAMERA_ID = 'sample1708.follow.camera';
+const READY_STATE = 'ready';
 const RUNNING_STATE = 'running';
 const WON_STATE = 'won';
 const LOST_STATE = 'lost';
@@ -54,6 +55,28 @@ function intersectsAabb2d(left, right) {
   );
 }
 
+function drawMeter(renderer, {
+  x,
+  y,
+  width,
+  height,
+  label,
+  value,
+  max,
+  barColor,
+  textColor = '#e2e8f0',
+}) {
+  const safeMax = Math.max(1, Number(max) || 1);
+  const ratio = clamp((Number(value) || 0) / safeMax, 0, 1);
+  renderer.drawRect(x, y, width, height, 'rgba(30, 41, 59, 0.8)');
+  renderer.drawRect(x + 1, y + 1, Math.max(0, (width - 2) * ratio), height - 2, barColor);
+  renderer.strokeRect(x, y, width, height, '#475569', 1);
+  renderer.drawText(`${label}: ${Number(value).toFixed(1)}/${safeMax.toFixed(1)}`, x + 8, y + 13, {
+    color: textColor,
+    font: '11px monospace',
+  });
+}
+
 export default class RealGameplayMiniGameScene extends Scene {
   constructor() {
     super();
@@ -66,11 +89,17 @@ export default class RealGameplayMiniGameScene extends Scene {
     this.roundSeconds = 55;
     this.cameraYawOffset = 0;
     this.elapsed = 0;
-    this.resetLatch = false;
+    this.startLatch = false;
+    this.restartLatch = false;
     this.viewState = createPhase16ViewState({ defaultCameraMode: 'follow', debugOverlayEnabled: true });
     this.debugCollisionRows = [];
+    this.eventFeed = [];
+    this.pickupBursts = [];
+    this.hitFlash = 0;
+    this.pickupFlash = 0;
+    this.statePulse = 0;
 
-    this.resetMatch();
+    this.resetMatch({ toReady: true });
 
     const { providerMap } = createStandard3dProviders({
       adapters: {
@@ -84,15 +113,29 @@ export default class RealGameplayMiniGameScene extends Scene {
     });
   }
 
-  resetMatch() {
-    this.gameState = RUNNING_STATE;
-    this.resultMessage = 'Collect all data cores and avoid sentries.';
+  addEvent(text) {
+    const normalized = String(text || '').trim();
+    if (!normalized) return;
+    this.eventFeed.unshift(normalized);
+    if (this.eventFeed.length > 5) {
+      this.eventFeed.length = 5;
+    }
+  }
+
+  resetMatch({ toReady = true } = {}) {
+    this.gameState = toReady ? READY_STATE : RUNNING_STATE;
+    this.resultMessage = toReady
+      ? 'Press Space or Enter to deploy.'
+      : 'Collect all data cores and avoid sentries.';
     this.timeLeft = this.roundSeconds;
     this.score = 0;
     this.health = this.maxHealth;
     this.hitCooldown = 0;
     this.debugCollisionRows = [];
     this.lastCollisionCount = 0;
+    this.pickupBursts = [];
+    this.hitFlash = 0;
+    this.pickupFlash = 0;
 
     this.player = {
       x: -0.7,
@@ -126,7 +169,21 @@ export default class RealGameplayMiniGameScene extends Scene {
       { id: 'core-6', x: 5.6, y: 0.32, z: 10.4, width: 0.44, height: 0.44, depth: 0.44, collected: false },
     ];
 
+    this.eventFeed = [];
+    this.addEvent(`Objective: secure ${this.targetScore} cores.`);
+    this.addEvent('Avoid sentries and preserve hull integrity.');
+    if (toReady) {
+      this.addEvent('Ready: press Space/Enter to deploy.');
+    }
+
     this.syncCamera();
+  }
+
+  startMatch() {
+    if (this.gameState !== READY_STATE) return;
+    this.gameState = RUNNING_STATE;
+    this.resultMessage = 'Mission active. Collect cores and avoid sentries.';
+    this.addEvent('Mission started.');
   }
 
   setCamera3D(camera3D) {
@@ -151,7 +208,7 @@ export default class RealGameplayMiniGameScene extends Scene {
     };
     return {
       activeCameraId: CAMERA_ID,
-      mode: this.viewState.cameraMode,
+      mode: `${this.viewState.cameraMode}:${this.gameState}`,
       position: state.position,
       rotation: state.rotation,
       fov: 65,
@@ -277,6 +334,18 @@ export default class RealGameplayMiniGameScene extends Scene {
       if (distance <= 1.2) {
         core.collected = true;
         this.score += 1;
+        this.pickupFlash = 0.2;
+        this.pickupBursts.push({
+          x: core.x - core.width * 0.5,
+          y: core.y,
+          z: core.z - core.depth * 0.5,
+          age: 0,
+          ttl: 0.45,
+        });
+        if (this.pickupBursts.length > 8) {
+          this.pickupBursts.shift();
+        }
+        this.addEvent(`Core secured (${this.score}/${this.targetScore}).`);
         this.pushCollisionRow(`collect:${core.id}`, 'objective', 'collected', true);
       }
     }
@@ -295,7 +364,9 @@ export default class RealGameplayMiniGameScene extends Scene {
         continue;
       }
       this.hitCooldown = this.hitCooldownSeconds;
+      this.hitFlash = 0.28;
       this.health = Math.max(0, this.health - 1);
+      this.addEvent(`Sentry impact! Hull: ${this.health}/${this.maxHealth}`);
       this.player.x = clamp(this.player.x, this.bounds.minX, this.bounds.maxX - this.player.width);
       this.player.z = clamp(this.player.z + 1.35, this.bounds.minZ, this.bounds.maxZ - this.player.depth);
       break;
@@ -303,19 +374,38 @@ export default class RealGameplayMiniGameScene extends Scene {
   }
 
   evaluateRoundState() {
+    if (this.gameState !== RUNNING_STATE) {
+      return;
+    }
     if (this.score >= this.targetScore) {
       this.gameState = WON_STATE;
       this.resultMessage = `Objective complete: ${this.score}/${this.targetScore} cores captured.`;
+      this.addEvent('Mission complete.');
       return;
     }
     if (this.health <= 0) {
       this.gameState = LOST_STATE;
       this.resultMessage = 'Mission failed: hull integrity depleted.';
+      this.addEvent('Mission failed: hull integrity depleted.');
       return;
     }
     if (this.timeLeft <= 0) {
       this.gameState = LOST_STATE;
       this.resultMessage = 'Mission failed: timer expired before objective completion.';
+      this.addEvent('Mission failed: timer expired.');
+    }
+  }
+
+  updateFeedback(dtSeconds) {
+    this.hitFlash = Math.max(0, this.hitFlash - dtSeconds * 1.8);
+    this.pickupFlash = Math.max(0, this.pickupFlash - dtSeconds * 2.3);
+    this.statePulse += dtSeconds;
+    for (let i = this.pickupBursts.length - 1; i >= 0; i -= 1) {
+      const burst = this.pickupBursts[i];
+      burst.age += dtSeconds;
+      if (burst.age >= burst.ttl) {
+        this.pickupBursts.splice(i, 1);
+      }
     }
   }
 
@@ -326,11 +416,17 @@ export default class RealGameplayMiniGameScene extends Scene {
 
     stepPhase16ViewToggles(this.viewState, input);
 
-    const resetDown = input?.isDown('KeyR') === true;
-    if (resetDown && this.resetLatch === false) {
-      this.resetMatch();
+    const startDown = input?.isDown('Space') === true || input?.isDown('Enter') === true;
+    if (startDown && this.startLatch === false) {
+      this.startMatch();
     }
-    this.resetLatch = resetDown;
+    this.startLatch = startDown;
+
+    const restartDown = input?.isDown('KeyR') === true;
+    if (restartDown && this.restartLatch === false && this.gameState !== RUNNING_STATE) {
+      this.resetMatch({ toReady: true });
+    }
+    this.restartLatch = restartDown;
 
     if (input?.isDown('ArrowLeft') || input?.isDown('KeyQ')) {
       this.cameraYawOffset -= 0.85 * dt;
@@ -351,6 +447,7 @@ export default class RealGameplayMiniGameScene extends Scene {
     }
 
     this.lastCollisionCount = this.debugCollisionRows.length;
+    this.updateFeedback(dt);
     this.syncCamera();
   }
 
@@ -366,9 +463,9 @@ export default class RealGameplayMiniGameScene extends Scene {
 
   render(renderer) {
     drawFrame(renderer, theme, [
-      'Sample 1708 - Real Gameplay Mini-Game',
-      'Move through a 3D arena, collect data cores, and avoid moving sentries.',
-      'Move: W A S D | Camera yaw: Q/E or Left/Right | Restart: R | Camera mode: C | Debug: V',
+      'Sample 1708 - Real Gameplay Mini-Game (Polished)',
+      'Deploy, collect data cores, survive sentry patrols, and complete mission objectives.',
+      'Start: Space/Enter | Move: W A S D | Camera yaw: Q/E or Left/Right | Restart after match: R | Camera mode: C',
     ]);
 
     const viewport = this.viewport;
@@ -416,14 +513,33 @@ export default class RealGameplayMiniGameScene extends Scene {
       if (core.collected) {
         continue;
       }
+      const pulseScale = 1 + Math.sin(this.elapsed * 6 + i) * 0.12;
+      const width = core.width * pulseScale;
+      const height = core.height * pulseScale;
+      const depth = core.depth * pulseScale;
       drawWireBox(
         renderer,
-        { x: core.x - core.width * 0.5, y: core.y, z: core.z - core.depth * 0.5 },
-        { width: core.width, height: core.height, depth: core.depth },
+        { x: core.x - width * 0.5, y: core.y, z: core.z - depth * 0.5 },
+        { width, height, depth },
         cameraState,
         projectionViewport,
         '#fde047',
         { lineWidth: 2.1, depthCueEnabled: false }
+      );
+    }
+
+    for (let i = 0; i < this.pickupBursts.length; i += 1) {
+      const burst = this.pickupBursts[i];
+      const t = clamp(burst.age / burst.ttl, 0, 1);
+      const size = 0.32 + t * 1.08;
+      drawWireBox(
+        renderer,
+        { x: burst.x - size * 0.5, y: burst.y + t * 0.5, z: burst.z - size * 0.5 },
+        { width: size, height: size, depth: size },
+        cameraState,
+        projectionViewport,
+        t < 0.55 ? '#67e8f9' : '#22d3ee',
+        { lineWidth: 2.2 - t * 1.2, depthCueEnabled: false }
       );
     }
 
@@ -438,31 +554,88 @@ export default class RealGameplayMiniGameScene extends Scene {
       { lineWidth: 2.6, depthCueEnabled: true }
     );
 
-    renderer.drawRect(52, 34, 306, 124, 'rgba(15, 23, 42, 0.76)');
-    renderer.strokeRect(52, 34, 306, 124, '#4ade80', 1);
-    renderer.drawText('UI Layer - Mission HUD', 64, 52, { color: '#86efac', font: '12px monospace' });
-    renderer.drawText(`Score: ${this.score}/${this.targetScore}`, 64, 72, { color: '#e2e8f0', font: '12px monospace' });
-    renderer.drawText(`Health: ${this.health}/${this.maxHealth}`, 64, 90, { color: '#e2e8f0', font: '12px monospace' });
-    renderer.drawText(`Time: ${this.timeLeft.toFixed(1)} s`, 64, 108, { color: '#e2e8f0', font: '12px monospace' });
-    renderer.drawText(`State: ${this.gameState}`, 64, 126, { color: '#e2e8f0', font: '12px monospace' });
-    renderer.drawText('Restart: R', 220, 126, { color: '#e2e8f0', font: '12px monospace' });
+    if (this.hitFlash > 0) {
+      const alpha = (this.hitFlash * 0.26).toFixed(3);
+      renderer.drawRect(viewport.x, viewport.y, viewport.width, viewport.height, `rgba(248, 113, 113, ${alpha})`);
+    }
+    if (this.pickupFlash > 0) {
+      const alpha = (this.pickupFlash * 0.18).toFixed(3);
+      renderer.drawRect(viewport.x, viewport.y, viewport.width, viewport.height, `rgba(34, 211, 238, ${alpha})`);
+    }
 
-    if (this.gameState !== RUNNING_STATE) {
-      renderer.drawRect(300, 238, 360, 82, 'rgba(15, 23, 42, 0.84)');
-      renderer.strokeRect(300, 238, 360, 82, this.gameState === WON_STATE ? '#4ade80' : '#f87171', 2);
-      renderer.drawText(this.gameState === WON_STATE ? 'MISSION COMPLETE' : 'MISSION FAILED', 318, 266, {
-        color: this.gameState === WON_STATE ? '#86efac' : '#fecaca',
+    renderer.drawRect(52, 34, 326, 174, 'rgba(15, 23, 42, 0.78)');
+    renderer.strokeRect(52, 34, 326, 174, '#4ade80', 1);
+    renderer.drawText('UI Layer - Mission HUD', 64, 52, { color: '#86efac', font: '12px monospace' });
+    renderer.drawText(`State: ${this.gameState.toUpperCase()}`, 64, 70, { color: '#e2e8f0', font: '12px monospace' });
+    renderer.drawText(`Objective: ${this.score}/${this.targetScore} cores`, 64, 86, { color: '#e2e8f0', font: '12px monospace' });
+
+    drawMeter(renderer, {
+      x: 64,
+      y: 92,
+      width: 300,
+      height: 16,
+      label: 'Score',
+      value: this.score,
+      max: this.targetScore,
+      barColor: '#22c55e',
+    });
+    drawMeter(renderer, {
+      x: 64,
+      y: 114,
+      width: 300,
+      height: 16,
+      label: 'Health',
+      value: this.health,
+      max: this.maxHealth,
+      barColor: '#ef4444',
+    });
+    drawMeter(renderer, {
+      x: 64,
+      y: 136,
+      width: 300,
+      height: 16,
+      label: 'Time',
+      value: this.timeLeft,
+      max: this.roundSeconds,
+      barColor: '#38bdf8',
+    });
+    renderer.drawText('Camera mode: C | Debug overlay: V', 64, 166, { color: '#e2e8f0', font: '11px monospace' });
+    renderer.drawText('Move: W A S D | Yaw: Q/E or Left/Right', 64, 182, { color: '#e2e8f0', font: '11px monospace' });
+
+    const statePulse = 0.5 + Math.sin(this.statePulse * 3.2) * 0.5;
+    if (this.gameState === READY_STATE) {
+      renderer.drawRect(268, 236, 430, 108, 'rgba(15, 23, 42, 0.86)');
+      renderer.strokeRect(268, 236, 430, 108, '#38bdf8', 2);
+      renderer.drawText('MISSION READY', 286, 264, { color: '#bae6fd', font: '16px monospace' });
+      renderer.drawText('Press Space or Enter to deploy.', 286, 286, { color: '#e2e8f0', font: '13px monospace' });
+      renderer.drawText(`Hint: secure all cores before ${this.roundSeconds}s expires.`, 286, 306, { color: '#e2e8f0', font: '12px monospace' });
+      renderer.drawRect(520, 318, 156 * statePulse, 4, 'rgba(56, 189, 248, 0.72)');
+    } else if (this.gameState !== RUNNING_STATE) {
+      const isWin = this.gameState === WON_STATE;
+      renderer.drawRect(280, 232, 408, 94, 'rgba(15, 23, 42, 0.88)');
+      renderer.strokeRect(280, 232, 408, 94, isWin ? '#4ade80' : '#f87171', 2);
+      renderer.drawText(isWin ? 'MISSION COMPLETE' : 'MISSION FAILED', 298, 258, {
+        color: isWin ? '#86efac' : '#fecaca',
         font: '16px monospace',
       });
-      renderer.drawText(this.resultMessage, 318, 288, {
+      renderer.drawText(this.resultMessage, 298, 280, {
         color: '#e2e8f0',
         font: '12px monospace',
       });
-      renderer.drawText('Press R to restart.', 318, 306, {
+      renderer.drawText('Press R to restart mission briefing.', 298, 302, {
         color: '#e2e8f0',
         font: '12px monospace',
       });
     }
+
+    drawPanel(renderer, 52, 216, 326, 132, 'Mission Feed', [
+      ...this.eventFeed,
+      this.gameState === RUNNING_STATE
+        ? 'Status: mission active.'
+        : this.gameState === READY_STATE
+          ? 'Status: waiting for deploy.'
+          : `Status: ${this.gameState}.`,
+    ]);
 
     drawPanel(renderer, 620, 414, 300, 120, 'Mini-Game Runtime', [
       `Entities: obstacles=${this.obstacles.length} sentries=${this.enemies.length}`,
@@ -476,7 +649,7 @@ export default class RealGameplayMiniGameScene extends Scene {
     this.renderStandardDebugPanel(renderer, PANEL_3D_COLLISION, 620, 194, 300, 210, 9);
 
     drawPhase16DebugOverlay(renderer, viewport, this.viewState, [
-      'Objective: collect all data cores while preserving hull integrity',
+      `Match state: ${this.gameState}`,
       'Standard 3D camera/collision debug panels rendered from provider snapshots',
     ]);
   }

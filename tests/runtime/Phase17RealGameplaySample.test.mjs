@@ -89,6 +89,18 @@ function assertGameplayLoopAndDebugPanels() {
   const scene = new RealGameplayMiniGameScene();
   scene.setCamera3D(createCameraStub());
 
+  assert.equal(scene.gameState, 'ready', 'Mini-game should begin in ready state before deployment.');
+  const readyRenderer = createRendererProbe();
+  scene.render(readyRenderer);
+  assert.equal(
+    readyRenderer.texts.some((text) => text.includes('MISSION READY')),
+    true,
+    'Ready state should render a clear mission-ready prompt.'
+  );
+
+  scene.step3DPhysics(0.02, { input: makeInput(['Space']) });
+  assert.equal(scene.gameState, 'running', 'Space should transition mini-game from ready to running state.');
+
   const startX = scene.player.x;
   scene.step3DPhysics(0.25, { input: makeInput(['KeyD']) });
   assert.equal(scene.player.x > startX, true, 'Player should move with directional input.');
@@ -120,6 +132,8 @@ function assertGameplayLoopAndDebugPanels() {
   assert.equal(renderer.texts.some((text) => text.includes('3D World - Outpost Arena')), true, 'Scene should render a clear world-layer label.');
   assert.equal(renderer.texts.some((text) => text.includes('activeCameraId=')), true, 'Camera debug panel should render provider-backed lines.');
   assert.equal(renderer.texts.some((text) => text.includes('overlayCount=')), true, 'Collision debug panel should render provider-backed lines.');
+  assert.equal(renderer.texts.some((text) => text.includes('UI Layer - Mission HUD')), true, 'Polished HUD header should render.');
+  assert.equal(renderer.texts.some((text) => text.includes('Mission Feed')), true, 'Mission feed panel should render.');
 }
 
 export function run() {

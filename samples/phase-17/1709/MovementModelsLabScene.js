@@ -83,6 +83,7 @@ export default class MovementModelsLabScene extends Scene {
     this.weightedMaxSpeed = 10.5;
     this.weightedVelocity = { x: 0, z: 0 };
     this.cameraYawOffset = 0;
+    this.tankCameraSwingPhase = 0;
     this.elapsed = 0;
     this.lastModeSummary = '';
     this.lastInputSummary = '';
@@ -121,7 +122,10 @@ export default class MovementModelsLabScene extends Scene {
       z: this.actor.z + this.actor.depth * 0.5,
     };
 
-    const yaw = this.actor.heading + 0.68 + this.cameraYawOffset;
+    const tankSwingOffset = this.movementMode === MOVEMENT_MODES.TANK
+      ? Math.sin(this.tankCameraSwingPhase) * 0.42
+      : 0;
+    const yaw = this.actor.heading + 0.68 + this.cameraYawOffset + tankSwingOffset;
     const basePose = {
       position: {
         x: focusPoint.x + Math.sin(yaw) * 8.6,
@@ -221,6 +225,12 @@ export default class MovementModelsLabScene extends Scene {
     if (input?.isDown('KeyE')) this.cameraYawOffset += 0.82 * dt;
     this.cameraYawOffset = clamp(this.cameraYawOffset, -1.2, 1.2);
 
+    if (this.movementMode === MOVEMENT_MODES.TANK) {
+      this.tankCameraSwingPhase += dt * 2.2;
+    } else {
+      this.tankCameraSwingPhase = 0;
+    }
+
     if (this.movementMode === MOVEMENT_MODES.DIRECT) {
       this.applyDirectMovement(dt, input);
     } else if (this.movementMode === MOVEMENT_MODES.TANK) {
@@ -301,6 +311,22 @@ export default class MovementModelsLabScene extends Scene {
     const hudX = Math.max(12, canvasSize.width - hudWidth - 22);
     const hudY = Math.max(12, canvasSize.height - hudHeight - 18);
     const hudTextX = hudX + 12;
+    const runtimeWidth = hudWidth;
+    const runtimeHeight = 212;
+    const runtimeGap = 10;
+    const runtimeX = hudX;
+    const runtimeY = Math.max(12, hudY - runtimeHeight - runtimeGap);
+
+    drawPanel(renderer, runtimeX, runtimeY, runtimeWidth, runtimeHeight, 'Movement Runtime', [
+      `Mode: ${formatMode(this.movementMode)}`,
+      `Actor: x=${this.actor.x.toFixed(2)} z=${this.actor.z.toFixed(2)}`,
+      `Velocity (weighted): x=${this.weightedVelocity.x.toFixed(2)} z=${this.weightedVelocity.z.toFixed(2)}`,
+      `Camera yaw offset: ${this.cameraYawOffset.toFixed(2)}`,
+      this.lastModeSummary,
+      'Direct: immediate axis response',
+      'Tank: rotate + throttle',
+      'Weighted: acceleration + drag',
+    ]);
 
     renderer.drawRect(hudX, hudY, hudWidth, hudHeight, 'rgba(15, 23, 42, 0.76)');
     renderer.strokeRect(hudX, hudY, hudWidth, hudHeight, '#4ade80', 1);
@@ -313,17 +339,6 @@ export default class MovementModelsLabScene extends Scene {
     renderer.drawText(`Speed: ${this.lastSpeed.toFixed(2)} units/s`, hudTextX, hudY + 78, { color: '#e2e8f0', font: '12px monospace' });
     renderer.drawText(`Heading: ${this.actor.heading.toFixed(2)} rad`, hudTextX, hudY + 96, { color: '#e2e8f0', font: '12px monospace' });
     renderer.drawText(`Camera follow mode: ${this.viewState.cameraMode}`, hudTextX, hudY + 114, { color: '#e2e8f0', font: '12px monospace' });
-
-    drawPanel(renderer, 620, 34, 300, 188, 'Movement Runtime', [
-      `Mode: ${formatMode(this.movementMode)}`,
-      `Actor: x=${this.actor.x.toFixed(2)} z=${this.actor.z.toFixed(2)}`,
-      `Velocity (weighted): x=${this.weightedVelocity.x.toFixed(2)} z=${this.weightedVelocity.z.toFixed(2)}`,
-      `Camera yaw offset: ${this.cameraYawOffset.toFixed(2)}`,
-      this.lastModeSummary,
-      'Direct: immediate axis response',
-      'Tank: rotate + throttle',
-      'Weighted: acceleration + drag',
-    ]);
 
     drawPhase16DebugOverlay(renderer, viewport, this.viewState, [
       `Active movement model: ${formatMode(this.movementMode)}`,
