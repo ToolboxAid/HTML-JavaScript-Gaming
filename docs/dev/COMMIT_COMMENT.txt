@@ -1,5 +1,4 @@
-Add plugin security boundaries.
+Validate overlay plugin system.
 
 PR Details:
-- Restricts unsafe plugin behavior
-- Improves system safety
+- Full system validation for Level 20

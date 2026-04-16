@@ -1,21 +1,21 @@
-# BUILD_PR_LEVEL_20_8_OVERLAY_PLUGIN_SECURITY_BOUNDARIES
+# BUILD_PR_LEVEL_20_9_OVERLAY_PLUGIN_SYSTEM_VALIDATION
 
 ## Purpose
-Establish security boundaries for overlay plugins.
+Perform full validation of the overlay plugin system.
 
 ## Roadmap Improvement
-Enhances system safety by restricting plugin capabilities.
+Completes Level 20 plugin system readiness.
 
 ## Scope
-- Define allowed plugin operations
-- Restrict unsafe access
-- Validate secure execution
+- Validate registry, lifecycle, isolation, security, limits
+- Confirm no regressions
 
 ## Test Steps
-1. Attempt restricted operations
-2. Verify enforcement
-3. Confirm normal plugin behavior unaffected
+1. Load multiple plugins
+2. Trigger lifecycle events
+3. Test failures and limits
+4. Validate performance metrics
 
 ## Expected
-- Security rules enforced
-- No unsafe access
+- System stable
+- No regressions

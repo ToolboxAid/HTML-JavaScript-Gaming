@@ -825,6 +825,6 @@
 
 ### Track H — Final Stability Gate
 - [ ] full-repo validation sweep
-- [ ] zero regression requirement
+- [.] zero regression requirement
 - [ ] contract freeze readiness
 - [ ] readiness for long-term maintenance mode

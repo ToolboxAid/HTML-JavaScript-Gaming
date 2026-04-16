@@ -2,7 +2,7 @@ MODEL: GPT-5.4
 REASONING: medium
 
 COMMAND:
-Implement plugin security boundaries:
-- Restrict unsafe operations
-- Enforce access rules
+Run full plugin system validation:
+- Validate all subsystems
+- Confirm stability
 - Update roadmap status only
