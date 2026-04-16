@@ -1,31 +1,30 @@
-# BUILD_PR_LEVEL_18_4_OVERLAY_PERFORMANCE_OPTIMIZATION
+# BUILD_PR_LEVEL_18_5_OVERLAY_CONFIGURATION_EXTERNALIZATION
 
 ## PLAN
 
 ### Purpose
-Optimize overlay rendering and cycling performance under frequent updates and rapid input.
+Externalize overlay stack definitions and configuration to remove hardcoded mappings and improve maintainability.
 
 ### Goals
-- Reduce unnecessary re-renders
-- Ensure smooth cycling under load
-- Maintain stable FPS
+- Move overlay stack definitions to config
+- Allow per-sample configuration
+- Reduce hardcoded logic
 
 ---
 
 ## BUILD
 
 ### Scope
-- Optimize overlay render paths
-- Avoid redundant DOM/canvas updates
-- Ensure efficient cycle transitions
-- No behavior changes
+- Define external config structure for overlay stacks
+- Refactor runtime to read from config
+- Preserve existing behavior exactly
+- No UI or feature changes
 
 ### Test Steps
-1. Rapidly cycle overlays
-2. Monitor frame stability
-3. Switch samples quickly
-4. Confirm no lag or stutter
+1. Load samples
+2. Verify overlays match previous stacks
+3. Modify config and confirm behavior updates
 
 ### Expected
-- Smooth overlay transitions
-- No visible performance degradation
+- Same behavior as before
+- Config-driven overlay stacks

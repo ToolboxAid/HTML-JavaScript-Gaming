@@ -36,8 +36,8 @@ import {
   OVERLAY_MISSION_FEED,
   OVERLAY_MISSION_READY,
   OVERLAY_UI_LAYER,
-  createMiniGameOverlayCycleMap,
 } from '/samples/phase-17/shared/miniGameOverlayStack.js';
+import { getRequiredLevel17OverlayStackConfig } from '/samples/phase-17/shared/overlayStackBySampleConfig.js';
 
 const theme = new Theme(ThemeTokens);
 
@@ -45,7 +45,7 @@ const READY_STATE = 'ready';
 const RUNNING_STATE = 'running';
 const WON_STATE = 'won';
 const LOST_STATE = 'lost';
-const DEBUG_OVERLAY_PERSISTENCE_KEY = 'phase17:1708:overlay-index';
+const DEBUG_OVERLAY_CONFIG = getRequiredLevel17OverlayStackConfig('1708');
 
 function clamp(value, min, max) {
   return Math.max(min, Math.min(max, value));
@@ -93,9 +93,9 @@ export default class RealGameplayMiniGameScene extends Scene {
     this.resetMatch({ toReady: true });
 
     this.tabDebugOverlays = createTabDebugOverlayController();
-    setTabDebugOverlayCycleKey(this.tabDebugOverlays, MINI_GAME_DEBUG_CYCLE_KEY);
-    setTabDebugOverlayPersistenceKey(this.tabDebugOverlays, DEBUG_OVERLAY_PERSISTENCE_KEY);
-    this.setDebugOverlayCycleMap(createMiniGameOverlayCycleMap(), OVERLAY_UI_LAYER);
+    setTabDebugOverlayCycleKey(this.tabDebugOverlays, DEBUG_OVERLAY_CONFIG.cycleKey || MINI_GAME_DEBUG_CYCLE_KEY);
+    setTabDebugOverlayPersistenceKey(this.tabDebugOverlays, DEBUG_OVERLAY_CONFIG.persistenceKey);
+    this.setDebugOverlayCycleMap(DEBUG_OVERLAY_CONFIG.overlays, DEBUG_OVERLAY_CONFIG.initialOverlayId);
   }
 
   addEvent(text) {

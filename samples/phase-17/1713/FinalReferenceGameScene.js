@@ -6,12 +6,12 @@ FinalReferenceGameScene.js
 */
 import { createBottomRightDebugPanelStack, drawStackedDebugPanel } from '/src/engine/debug/index.js';
 import GameplayMetricsTelemetryScene from '/samples/phase-17/1712/GameplayMetricsTelemetryScene.js';
-import { LEVEL17_OVERLAY_CYCLE_KEY } from '/samples/phase-17/shared/overlayCycleInput.js';
+import { getRequiredLevel17OverlayStackConfig } from '/samples/phase-17/shared/overlayStackBySampleConfig.js';
 const OVERLAY_UI_LAYER = 'ui-layer';
 const OVERLAY_MISSION_FEED = 'mission-feed';
 const OVERLAY_MISSION_READY = 'mission-ready';
 const OVERLAY_FINAL_REFERENCE_RUNTIME = 'final-reference-runtime';
-const DEBUG_OVERLAY_PERSISTENCE_KEY = 'phase17:1713:overlay-index';
+const DEBUG_OVERLAY_CONFIG = getRequiredLevel17OverlayStackConfig('1713');
 
 function clamp(value, min, max) {
   return Math.max(min, Math.min(max, value));
@@ -63,14 +63,9 @@ export default class FinalReferenceGameScene extends GameplayMetricsTelemetrySce
       completionBonus: 0,
       phase: 'briefing',
     };
-    this.setDebugOverlayCycleKey(LEVEL17_OVERLAY_CYCLE_KEY);
-    this.setDebugOverlayPersistenceKey(DEBUG_OVERLAY_PERSISTENCE_KEY);
-    this.setDebugOverlayCycleMap([
-      { id: OVERLAY_UI_LAYER, label: 'UI Layer' },
-      { id: OVERLAY_MISSION_FEED, label: 'Mission Feed' },
-      { id: OVERLAY_MISSION_READY, label: 'MISSION READY' },
-      { id: OVERLAY_FINAL_REFERENCE_RUNTIME, label: 'Final Reference Runtime' },
-    ], OVERLAY_UI_LAYER);
+    this.setDebugOverlayCycleKey(DEBUG_OVERLAY_CONFIG.cycleKey);
+    this.setDebugOverlayPersistenceKey(DEBUG_OVERLAY_CONFIG.persistenceKey);
+    this.setDebugOverlayCycleMap(DEBUG_OVERLAY_CONFIG.overlays, DEBUG_OVERLAY_CONFIG.initialOverlayId || OVERLAY_UI_LAYER);
   }
 
   step3DPhysics(dtSeconds, engine) {

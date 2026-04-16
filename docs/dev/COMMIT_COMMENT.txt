@@ -1,2 +1,2 @@
-Level 18.4 overlay performance optimization.
-Improve rendering efficiency and cycle responsiveness.
+Level 18.5 overlay configuration externalization.
+Move stack definitions to config-driven model.

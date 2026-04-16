@@ -6,12 +6,12 @@ GameplayMetricsTelemetryScene.js
 */
 import { createBottomRightDebugPanelStack, drawStackedDebugPanel } from '/src/engine/debug/index.js';
 import RealGameplayMiniGameScene from '/samples/phase-17/1708/RealGameplayMiniGameScene.js';
-import { LEVEL17_OVERLAY_CYCLE_KEY } from '/samples/phase-17/shared/overlayCycleInput.js';
+import { getRequiredLevel17OverlayStackConfig } from '/samples/phase-17/shared/overlayStackBySampleConfig.js';
 const OVERLAY_UI_LAYER = 'ui-layer';
 const OVERLAY_MISSION_FEED = 'mission-feed';
 const OVERLAY_MISSION_READY = 'mission-ready';
 const OVERLAY_TELEMETRY = 'telemetry';
-const DEBUG_OVERLAY_PERSISTENCE_KEY = 'phase17:1712:overlay-index';
+const DEBUG_OVERLAY_CONFIG = getRequiredLevel17OverlayStackConfig('1712');
 
 function pushSample(history, value, limit = 48) {
   history.push(Number.isFinite(value) ? Number(value) : 0);
@@ -57,14 +57,9 @@ export default class GameplayMetricsTelemetryScene extends RealGameplayMiniGameS
       fpsHistory: [],
       collisionHistory: [],
     };
-    this.setDebugOverlayCycleKey(LEVEL17_OVERLAY_CYCLE_KEY);
-    this.setDebugOverlayPersistenceKey(DEBUG_OVERLAY_PERSISTENCE_KEY);
-    this.setDebugOverlayCycleMap([
-      { id: OVERLAY_UI_LAYER, label: 'UI Layer' },
-      { id: OVERLAY_MISSION_FEED, label: 'Mission Feed' },
-      { id: OVERLAY_MISSION_READY, label: 'MISSION READY' },
-      { id: OVERLAY_TELEMETRY, label: 'Telemetry Overlay' },
-    ], OVERLAY_UI_LAYER);
+    this.setDebugOverlayCycleKey(DEBUG_OVERLAY_CONFIG.cycleKey);
+    this.setDebugOverlayPersistenceKey(DEBUG_OVERLAY_CONFIG.persistenceKey);
+    this.setDebugOverlayCycleMap(DEBUG_OVERLAY_CONFIG.overlays, DEBUG_OVERLAY_CONFIG.initialOverlayId || OVERLAY_UI_LAYER);
   }
 
   step3DPhysics(dtSeconds, engine) {

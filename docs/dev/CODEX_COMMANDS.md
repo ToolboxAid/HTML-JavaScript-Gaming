@@ -2,9 +2,9 @@ MODEL: GPT-5.4-codex
 REASONING: medium
 
 COMMAND:
-Optimize overlay performance:
-- Minimize redundant render calls
-- Ensure efficient cycling transitions
-- Maintain current behavior
+Externalize overlay configuration:
+- Create config for overlay stacks per sample
+- Refactor runtime to consume config
+- Ensure no behavior change
 
 Package ZIP to <project folder>/tmp/

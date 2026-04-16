@@ -1,4 +1,4 @@
-[ ] No lag during rapid cycling
-[ ] Stable FPS
-[ ] No redundant renders observed
+[ ] Config file defines stacks
+[ ] Runtime reads config
 [ ] Behavior unchanged
+[ ] Per-sample mapping preserved
