@@ -801,7 +801,7 @@
 - [ ] ensure all systems expose debug data
 - [x] ensure providers are complete and consistent
 - [x] validate debug panels across systems
-- [ ] confirm production-safe debug toggling
+- [x] confirm production-safe debug toggling
 
 ### Track E — Toolchain Validation
 - [ ] verify tools integrate cleanly with engine

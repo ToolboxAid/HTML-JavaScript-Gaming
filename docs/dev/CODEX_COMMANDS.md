@@ -1,10 +1,7 @@
 MODEL: GPT-5.4
-REASONING: medium
+REASONING: low
 
 COMMAND:
-Execute full validation of overlay system:
-- Validate all integrated subsystems
-- Confirm no regressions
-- Update roadmap status only
-
+Promote Level 19 overlay system to baseline.
+Update roadmap status only.
 Package ZIP to <project folder>/tmp/
