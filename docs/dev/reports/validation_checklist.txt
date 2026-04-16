@@ -1,3 +1,3 @@
-- [ ] samples load
-- [ ] UI visible
-- [ ] no errors
+- [ ] sample loads
+- [ ] agents move
+- [ ] paths visible
