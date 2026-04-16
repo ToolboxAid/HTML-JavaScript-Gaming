@@ -1,5 +1,3 @@
-
-- [ ] mini map orientation correct (forward = up)
-- [ ] no inversion artifacts
-- [ ] 2D vs 3D clearly labeled or visually distinct
-- [ ] sample remains simple and functional
+- [ ] samples load
+- [ ] UI visible
+- [ ] no errors

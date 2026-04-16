@@ -1,1 +1,1 @@
-Fix Sample 1610 mini map orientation and clarify hybrid 2D vs 3D visualization
+Add Advanced 3D Samples batch 4 (1618-1620)
