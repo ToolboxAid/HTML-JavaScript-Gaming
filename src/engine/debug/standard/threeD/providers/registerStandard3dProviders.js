@@ -7,7 +7,7 @@ registerStandard3dProviders.js
 
 import { createCameraSummaryProvider } from "./cameraSummaryProvider.js";
 import { createCollisionSummaryProvider } from "./collisionSummaryProvider.js";
-import { createRenderStageSummaryProvider } from "./renderStageSummaryProvider.js";
+import { createRenderPipelineStagesProvider } from "./renderPipelineStagesProvider.js";
 import { createSceneGraphSummaryProvider } from "./sceneGraphSummaryProvider.js";
 import { createTransformSummaryProvider } from "./transformSummaryProvider.js";
 
@@ -16,7 +16,7 @@ export function createStandard3dProviders(options = {}) {
   const providers = [
     createTransformSummaryProvider(adapters),
     createCameraSummaryProvider(adapters),
-    createRenderStageSummaryProvider(adapters),
+    createRenderPipelineStagesProvider(adapters),
     createCollisionSummaryProvider(adapters),
     createSceneGraphSummaryProvider(adapters)
   ];

@@ -1,3 +1,3 @@
 MODEL: GPT-5.3-codex
 REASONING: high
-COMMAND: Implement camera debug panel
+COMMAND: Create BUILD_PR_LEVEL_17_18_RENDER_PIPELINE_STAGES as a docs-first, repo-structured delta. Use docs/pr/PLAN_PR_LEVEL_17_18_RENDER_PIPELINE_STAGES.md and docs/pr/BUILD_PR_LEVEL_17_18_RENDER_PIPELINE_STAGES.md as the source of truth. Implement the smallest valid read-only 3D render pipeline stages panel under src/engine/debug/standard/threeD by adding one provider, one panel, minimal registration wiring, and targeted test coverage only. Do not expand into collision overlays, scene graph inspection, transform inspector expansion, roadmap edits, start_of_day changes, or unrelated cleanup. Preserve existing camera debug panel behavior. Final step: package only this PR's created and modified files into <project folder>/tmp/BUILD_PR_LEVEL_17_18_RENDER_PIPELINE_STAGES.zip with exact repo-relative structure.

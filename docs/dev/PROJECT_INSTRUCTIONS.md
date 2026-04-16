@@ -119,3 +119,15 @@ ZIP STANDARD (ENFORCED)
 - Preserve wording unless the PR explicitly requires rewriting.
 - Keep roadmap handling status-only unless explicitly requested otherwise.
 - Do not delete roadmap content during cleanup work.
+
+## EXECUTION EFFICIENCY
+
+- Bundle PRs whenever it is safe and testable to reduce overall timeline and churn.
+- Codex must always return a ZIP artifact at:
+  <project folder>/tmp/<PR_NAME>.zip
+- Never ask whether to create the next ZIP for Codex; always assume it is required.
+- Default execution behavior:
+  - Choose the correct path automatically
+  - Reduce the number of options presented
+  - Do the right thing and complete the task fully and correctly
+

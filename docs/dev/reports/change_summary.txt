@@ -1,1 +1,4 @@
-Status-only sync for MASTER_ROADMAP_HIGH_LEVEL.md (Phase 16 markers updated to match current repo-backed progress and validation evidence).
+Summary
+- advances the 3D debug-support lane from camera debug panel to render pipeline stages
+- keeps scope to one provider, one panel, minimal wiring, and targeted validation
+- intentionally defers collision overlays and scene graph inspector to later PRs
