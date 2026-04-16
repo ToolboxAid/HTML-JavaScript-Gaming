@@ -1,21 +1,21 @@
-# BUILD_PR_LEVEL_20_3_OVERLAY_PLUGIN_LIFECYCLE
+# BUILD_PR_LEVEL_20_4_OVERLAY_PLUGIN_ISOLATION_AND_SANDBOXING
 
 ## Purpose
-Define lifecycle for overlay plugins from init to teardown.
+Ensure overlay plugins operate in isolation without impacting core systems or other plugins.
 
 ## Roadmap Improvement
-Completes plugin system foundation by standardizing lifecycle behavior.
+Enhances stability and safety of the plugin system.
 
 ## Scope
-- Define init, activate, deactivate, destroy phases
-- Ensure safe transitions between states
-- Validate lifecycle with one plugin
+- Define isolation boundaries
+- Prevent cross-plugin interference
+- Ensure safe failure handling
 
 ## Test Steps
-1. Register plugin
-2. Activate/deactivate multiple times
-3. Destroy plugin
+1. Run multiple plugins
+2. Simulate plugin failure
+3. Verify isolation maintained
 
 ## Expected
-- Clean lifecycle transitions
-- No memory or state leaks
+- No cross-plugin impact
+- Safe failure containment

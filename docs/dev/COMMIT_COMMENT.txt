@@ -1,4 +1,5 @@
-Add overlay plugin lifecycle.
+Add plugin isolation and sandboxing.
 
 PR Details:
-- Standardizes plugin lifecycle behavior
+- Prevents cross-plugin interference
+- Improves system stability

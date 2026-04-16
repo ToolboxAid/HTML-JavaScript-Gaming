@@ -1,4 +1,4 @@
-[ ] Init works
-[ ] Activate/deactivate stable
-[ ] Destroy cleans up
+[ ] Plugins isolated
+[ ] Failures contained
+[ ] No interference
 [ ] Roadmap updated

@@ -30,12 +30,17 @@ function createRendererProbe(width = 960, height = 540) {
 
 function assertPluginRegistrationAndRuntimeCompatibility() {
   const counters = { step: 0, render: 0 };
+  const accessSurface = {};
   const registry = createPhase19OverlayPluginRegistry();
   const result = registry.registerPlugin({
     id: 'phase19.runtime.plugin',
     version: '1.0.0',
     metadata: { owner: 'runtime-test' },
-    createOverlayExtension() {
+    createOverlayExtension(context) {
+      accessSurface.registryRegisterPluginType = typeof context?.registry?.registerPlugin;
+      accessSurface.registryGetPluginStateType = typeof context?.registry?.getPluginState;
+      accessSurface.frameworkRegisterExtensionType = typeof context?.expansionFramework?.registerExtension;
+      accessSurface.frameworkListExtensionIdsType = typeof context?.expansionFramework?.listExtensionIds;
       return definePhase19OverlayExtension({
         id: 'phase19.runtime.plugin.overlay',
         overlays: [
@@ -59,6 +64,11 @@ function assertPluginRegistrationAndRuntimeCompatibility() {
       });
     },
   });
+
+  assert.equal(accessSurface.registryRegisterPluginType, 'undefined', 'Plugin creation context must not expose mutating registry methods.');
+  assert.equal(accessSurface.registryGetPluginStateType, 'function', 'Plugin creation context should expose read-only registry introspection.');
+  assert.equal(accessSurface.frameworkRegisterExtensionType, 'undefined', 'Plugin creation context must not expose mutating framework methods.');
+  assert.equal(accessSurface.frameworkListExtensionIdsType, 'function', 'Plugin creation context should expose read-only framework introspection.');
 
   assert.deepEqual(
     result,
@@ -189,6 +199,94 @@ function assertPluginLifecycleFailureIsolation() {
     null,
     'Framework extension registration should remain intact after failed deactivate transition.'
   );
+
+  assert.throws(
+    () => {
+      registry.registerPlugin({
+        id: 'phase19.failure.activate',
+        createOverlayExtension() {
+          return definePhase19OverlayExtension({
+            id: 'phase19.failure.activate.overlay',
+            overlays: [{ id: 'runtime', label: 'Runtime' }],
+          });
+        },
+        activate() {
+          throw new Error('activation failure');
+        },
+      });
+    },
+    /failed lifecycle activation/,
+    'Activation failure should throw and prevent partial plugin registration.'
+  );
+  assert.equal(registry.getPlugin('phase19.failure.activate'), null, 'Failed activation should not retain plugin record.');
+  assert.equal(
+    registry.getFramework().getExtension('phase19.failure.activate.overlay'),
+    null,
+    'Failed activation should not leave extension registered in framework.'
+  );
+}
+
+function assertPluginBoundaryIsolationAndInterferenceProtection() {
+  const registry = createPhase19OverlayPluginRegistry();
+  const blockedMutations = [];
+  registry.registerPlugin({
+    id: 'phase19.isolation.pluginA',
+    createOverlayExtension() {
+      return definePhase19OverlayExtension({
+        id: 'phase19.isolation.overlayA',
+        overlays: [{ id: 'runtime', label: 'Runtime A' }],
+      });
+    },
+    activate() {
+      try {
+        registry.registerPlugin({
+          id: 'phase19.isolation.pluginB',
+          extension: definePhase19OverlayExtension({
+            id: 'phase19.isolation.overlayB',
+            overlays: [{ id: 'runtime', label: 'Runtime B' }],
+          }),
+        });
+      } catch (error) {
+        blockedMutations.push(String(error?.message || ''));
+      }
+    },
+  }, { autoActivate: false });
+
+  assert.equal(registry.activatePlugin('phase19.isolation.pluginA'), true, 'Plugin activation should succeed even if hook attempts blocked mutation.');
+  assert.equal(registry.getPlugin('phase19.isolation.pluginB'), null, 'Blocked mutation must prevent plugin cross-registration interference.');
+  assert.equal(blockedMutations.length, 1, 'Blocked mutation attempt should be captured once.');
+  assert.equal(
+    blockedMutations[0].includes('mutation is not allowed'),
+    true,
+    'Blocked mutation should report lifecycle isolation boundary.'
+  );
+
+  registry.registerPlugin({
+    id: 'phase19.isolation.owner1',
+    extension: definePhase19OverlayExtension({
+      id: 'phase19.shared.overlay',
+      overlays: [{ id: 'runtime', label: 'Shared Runtime' }],
+    }),
+  });
+
+  assert.throws(
+    () => {
+      registry.registerPlugin({
+        id: 'phase19.isolation.owner2',
+        extension: definePhase19OverlayExtension({
+          id: 'phase19.shared.overlay',
+          overlays: [{ id: 'runtime', label: 'Shared Runtime Duplicate' }],
+        }),
+      });
+    },
+    /already owned by another plugin/,
+    'Registry should prevent extension ownership collisions between plugins.'
+  );
+  assert.notEqual(
+    registry.getFramework().getExtension('phase19.shared.overlay'),
+    null,
+    'Collision rejection must keep original owner extension intact.'
+  );
 }
 
 export function run() {
@@ -196,4 +294,5 @@ export function run() {
   assertPluginUnregisterCleansFramework();
   assertPluginLifecycleTransitionsAndSafety();
   assertPluginLifecycleFailureIsolation();
+  assertPluginBoundaryIsolationAndInterferenceProtection();
 }
