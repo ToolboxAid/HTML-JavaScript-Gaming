@@ -1,16 +1,3 @@
-BUILD_PR_LEVEL_17_18_RENDER_PIPELINE_STAGES VALIDATION CHECKLIST
-
-Automated
-- [ ] targeted test file passes
-- [ ] provider normalization test covers empty and populated input
-- [ ] panel render test covers fallback state
-- [ ] panel registration visibility is verified if applicable
-
-Manual
-- [ ] app launches without new console errors
-- [ ] existing 3D debug surface still opens
-- [ ] render pipeline stages panel is visible
-- [ ] stage rows display in deterministic order
-- [ ] empty/no-data state renders safely
-- [ ] camera debug panel still renders correctly
-- [ ] no collision overlay or scene graph UI appears from this PR
+- [ ] overlay renders
+- [ ] no crashes
+- [ ] camera panel unaffected

@@ -6,12 +6,12 @@ registerStandard3dPanels.js
 */
 
 import { PROVIDER_3D_CAMERA_SUMMARY } from "../providers/cameraSummaryProvider.js";
-import { PROVIDER_3D_COLLISION_SUMMARY } from "../providers/collisionSummaryProvider.js";
+import { PROVIDER_3D_COLLISION_OVERLAYS } from "../providers/collisionOverlaysProvider.js";
 import { PROVIDER_3D_RENDER_PIPELINE_STAGES } from "../providers/renderPipelineStagesProvider.js";
 import { PROVIDER_3D_SCENE_GRAPH_SUMMARY } from "../providers/sceneGraphSummaryProvider.js";
 import { PROVIDER_3D_TRANSFORM_SUMMARY } from "../providers/transformSummaryProvider.js";
 import { create3dCameraPanel } from "./panel3dCamera.js";
-import { create3dCollisionPanel } from "./panel3dCollision.js";
+import { create3dCollisionOverlaysPanel } from "./panel3dCollisionOverlays.js";
 import { create3dRenderPipelineStagesPanel } from "./panel3dRenderPipelineStages.js";
 import { create3dSceneGraphPanel } from "./panel3dSceneGraph.js";
 import { create3dTransformPanel } from "./panel3dTransform.js";
@@ -37,7 +37,7 @@ export function createStandard3dPanels(options = {}) {
   const renderStages = create3dRenderPipelineStagesPanel(pickProvider(providerMap, PROVIDER_3D_RENDER_PIPELINE_STAGES), {
     enabled: options.enabled === true
   });
-  const collision = create3dCollisionPanel(pickProvider(providerMap, PROVIDER_3D_COLLISION_SUMMARY), {
+  const collision = create3dCollisionOverlaysPanel(pickProvider(providerMap, PROVIDER_3D_COLLISION_OVERLAYS), {
     enabled: options.enabled === true
   });
   const sceneGraph = create3dSceneGraphPanel(pickProvider(providerMap, PROVIDER_3D_SCENE_GRAPH_SUMMARY), {

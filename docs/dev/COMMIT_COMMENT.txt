@@ -1,5 +1,1 @@
-Add scoped 3D render-pipeline stages debug panel BUILD bundle
-
-- define the next Track H 3D debug-support step after camera debug panel
-- constrain implementation to a read-only provider + panel + minimal wiring + tests
-- preserve current 3D debug behavior while enabling the next validation-backed APPLY step
+Add 3D collision overlay debug panel
