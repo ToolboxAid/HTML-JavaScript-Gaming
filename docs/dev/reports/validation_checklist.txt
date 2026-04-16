@@ -1,4 +1,5 @@
-- [ ] sample runs
-- [ ] input works
+- [ ] game runs
+- [ ] player movement works
 - [ ] camera follows
-- [ ] debug panels visible
+- [ ] scoring/objective works
+- [ ] debug panels active
