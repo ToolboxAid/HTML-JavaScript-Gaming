@@ -1,2 +1,3 @@
-- [ ] plan file exists
-- [ ] no unintended changes
+- [ ] folders created
+- [ ] no runtime errors
+- [ ] index/registry loads

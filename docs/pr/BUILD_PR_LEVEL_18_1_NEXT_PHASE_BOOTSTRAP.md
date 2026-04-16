@@ -12,7 +12,7 @@ Create and finalize Level 18 bootstrap planning docs only. No code/runtime imple
 
 ## Required Outputs
 - finalized `docs/pr/PLAN_PR_LEVEL_18_1_NEXT_PHASE_BOOTSTRAP.md`
-- this `docs/pr/BUILD_PR_LEVEL_18_1_NEXT_PHASE_BOOTSTRAP.md`
+- finalized `docs/pr/BUILD_PR_LEVEL_18_1_NEXT_PHASE_BOOTSTRAP.md`
 
 ## Functional Requirements
 1. Plan must map directly to roadmap section 18 objectives.
@@ -33,4 +33,4 @@ Create and finalize Level 18 bootstrap planning docs only. No code/runtime imple
 
 ## Packaging Rule
 Package only this PR's created/modified files into:
-`tmp/PLAN_PR_LEVEL_18_1_NEXT_PHASE_BOOTSTRAP.zip`
+`tmp/BUILD_PR_LEVEL_18_1_NEXT_PHASE_BOOTSTRAP.zip`
