@@ -7,11 +7,19 @@ Phase19OverlayExpansionFramework.test.mjs
 import assert from 'node:assert/strict';
 import { LEVEL17_OVERLAY_CYCLE_KEY } from '../../samples/phase-17/shared/overlayCycleInput.js';
 import {
+  isOverlayRuntimeCycleModifierActive,
+  isOverlayRuntimeToggleModifierActive,
+  LEVEL19_OVERLAY_RUNTIME_CYCLE_MODIFIERS,
+  LEVEL19_OVERLAY_RUNTIME_TOGGLE_MODIFIERS,
+} from '../../samples/phase-17/shared/overlayCycleInput.js';
+import {
   enqueueOverlayGameplayRuntimeSyncEvent,
   getOverlayGameplayRuntimeCompositionSnapshot,
   getOverlayGameplayRuntimeInteractionSnapshot,
   renderOverlayGameplayRuntime,
+  stepOverlayGameplayRuntimeGestures,
   stepOverlayGameplayRuntimePointerInteractions,
+  stepOverlayGameplayRuntimeControls,
   stepOverlayGameplayRuntime,
 } from '../../samples/phase-17/shared/overlayGameplayRuntime.js';
 import createPhase19OverlayExpansionFramework, {
@@ -30,6 +38,15 @@ function createRendererProbe(width = 960, height = 540) {
     drawLine() {},
     drawPolygon() {},
     drawImageFrame() {},
+  };
+}
+
+function makeInput(keys = []) {
+  const down = new Set(keys);
+  return {
+    isDown(code) {
+      return down.has(code);
+    },
   };
 }
 
@@ -487,6 +504,156 @@ function assertAdvancedOverlayPointerInteractionsGameplaySafety() {
   assert.equal(afterResize[0].slot.height > dragSlot.height, true, 'Resize mode should increase panel height with pointer drag.');
 }
 
+function assertOverlayGestureAbstractionAndCompatibility() {
+  const framework = createPhase19OverlayExpansionFramework();
+  framework.registerExtension(definePhase19OverlayExtension({
+    id: 'phase19-overlay-gestures',
+    overlays: [
+      { id: 'runtime-a', label: 'Runtime A' },
+      { id: 'runtime-b', label: 'Runtime B' },
+      { id: 'runtime-c', label: 'Runtime C' },
+    ],
+    initialOverlayId: 'runtime-a',
+    runtimeExtensions: [
+      { overlayId: 'runtime-a', onRender() {} },
+      { overlayId: 'runtime-b', onRender() {} },
+      { overlayId: 'runtime-c', onRender() {} },
+    ],
+  }));
+
+  const runtime = framework.createRuntimeForExtension('phase19-overlay-gestures');
+  const unsafeTap = stepOverlayGameplayRuntimeGestures(runtime, {
+    x: 220,
+    y: 180,
+    down: true,
+    pressed: true,
+    modifiers: { alt: false, shift: false },
+  }, {
+    enableGestures: true,
+  });
+  assert.equal(unsafeTap.consumed, false, 'Gesture actions should require explicit modifier so gameplay remains primary.');
+  stepOverlayGameplayRuntimeGestures(runtime, {
+    x: 220,
+    y: 180,
+    down: false,
+    released: true,
+    modifiers: { alt: false, shift: false },
+  }, {
+    enableGestures: true,
+  });
+  assert.equal(runtime.interactionIndex, 0, 'Gesture interaction should not mutate runtime state without explicit safety modifier.');
+
+  stepOverlayGameplayRuntimeGestures(runtime, {
+    x: 240,
+    y: 180,
+    down: true,
+    pressed: true,
+    modifiers: { alt: true, shift: true },
+  }, {
+    enableGestures: true,
+    dtSeconds: 0.02,
+  });
+  const tapRelease = stepOverlayGameplayRuntimeGestures(runtime, {
+    x: 246,
+    y: 182,
+    down: false,
+    released: true,
+    modifiers: { alt: true, shift: true },
+  }, {
+    enableGestures: true,
+    dtSeconds: 0.02,
+  });
+  assert.equal(tapRelease.gesture, 'tap', 'Tap gesture should be recognized in gesture abstraction.');
+  assert.equal(tapRelease.action, 'cycle-next', 'Tap should map to overlay cycle-next action.');
+  assert.equal(runtime.interactionIndex, 1, 'Tap gesture should cycle to the next overlay.');
+
+  stepOverlayGameplayRuntimeGestures(runtime, {
+    x: 260,
+    y: 200,
+    down: true,
+    pressed: true,
+    modifiers: { alt: true, shift: true },
+  }, {
+    enableGestures: true,
+    dtSeconds: 0.02,
+  });
+  stepOverlayGameplayRuntimeGestures(runtime, {
+    x: 340,
+    y: 202,
+    down: true,
+    modifiers: { alt: true, shift: true },
+  }, {
+    enableGestures: true,
+    dtSeconds: 0.02,
+  });
+  const swipeRelease = stepOverlayGameplayRuntimeGestures(runtime, {
+    x: 340,
+    y: 202,
+    down: false,
+    released: true,
+    modifiers: { alt: true, shift: true },
+  }, {
+    enableGestures: true,
+    dtSeconds: 0.02,
+  });
+  assert.equal(swipeRelease.gesture, 'swipe', 'Swipe gesture should be recognized in gesture abstraction.');
+  assert.equal(swipeRelease.action, 'cycle-next', 'Rightward swipe should map to overlay cycle-next action.');
+  assert.equal(swipeRelease.direction, 'right', 'Swipe direction should be reported for overlay action mapping.');
+  assert.equal(runtime.interactionIndex, 2, 'Swipe gesture should cycle overlays using mapped action.');
+
+  stepOverlayGameplayRuntimeGestures(runtime, {
+    x: 300,
+    y: 220,
+    down: true,
+    pressed: true,
+    modifiers: { alt: true, shift: true },
+  }, {
+    enableGestures: true,
+    dtSeconds: 0.02,
+  });
+  stepOverlayGameplayRuntimeGestures(runtime, {
+    x: 302,
+    y: 220,
+    down: true,
+    modifiers: { alt: true, shift: true },
+  }, {
+    enableGestures: true,
+    dtSeconds: 0.2,
+  });
+  const holdTick = stepOverlayGameplayRuntimeGestures(runtime, {
+    x: 302,
+    y: 220,
+    down: true,
+    modifiers: { alt: true, shift: true },
+  }, {
+    enableGestures: true,
+    dtSeconds: 0.2,
+  });
+  assert.equal(holdTick.gesture, 'hold', 'Hold gesture should be recognized in gesture abstraction.');
+  assert.equal(holdTick.action, 'toggle-visibility', 'Hold should map to overlay visibility toggle action.');
+  assert.equal(runtime.interactionVisible, false, 'Hold gesture should toggle overlay visibility without keyboard input changes.');
+  stepOverlayGameplayRuntimeGestures(runtime, {
+    x: 302,
+    y: 220,
+    down: false,
+    released: true,
+    modifiers: { alt: true, shift: true },
+  }, {
+    enableGestures: true,
+    dtSeconds: 0.02,
+  });
+
+  assert.equal(isOverlayRuntimeToggleModifierActive(makeInput([LEVEL19_OVERLAY_RUNTIME_TOGGLE_MODIFIERS[0]])), true, 'Keyboard toggle modifier helper should remain compatible after gesture support.');
+  assert.equal(isOverlayRuntimeCycleModifierActive(makeInput([LEVEL19_OVERLAY_RUNTIME_CYCLE_MODIFIERS[0]])), true, 'Keyboard cycle modifier helper should remain compatible after gesture support.');
+
+  const toggledByKeyboard = stepOverlayGameplayRuntimeControls(runtime, makeInput([
+    LEVEL17_OVERLAY_CYCLE_KEY,
+    LEVEL19_OVERLAY_RUNTIME_TOGGLE_MODIFIERS[0],
+  ]), { dtSeconds: 0.05 });
+  assert.equal(toggledByKeyboard, true, 'Keyboard runtime toggle should remain functional after gesture abstraction changes.');
+  assert.equal(runtime.interactionVisible, true, 'Keyboard toggle should restore overlay visibility after hold gesture.');
+}
+
 export function run() {
   assertExpansionRegistrationAndCompatibility();
   assertExtensionLifecycleMutations();
@@ -495,4 +662,5 @@ export function run() {
   assertOverlayStateSynchronizationAndDesyncRecovery();
   assertOverlayEventCoalescingEfficiency();
   assertAdvancedOverlayPointerInteractionsGameplaySafety();
+  assertOverlayGestureAbstractionAndCompatibility();
 }

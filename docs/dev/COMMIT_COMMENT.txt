@@ -1,4 +1,5 @@
-Add advanced overlay interactions.
+Add gesture support to overlay system.
 
 PR Details:
-- Introduces interactive overlay elements
+- Introduces gesture abstraction layer
+- Maps gestures to overlay interactions

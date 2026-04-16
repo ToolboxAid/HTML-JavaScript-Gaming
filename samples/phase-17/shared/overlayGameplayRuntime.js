@@ -901,6 +901,8 @@ export function createOverlayGameplayRuntime({ runtimeExtensions = [] } = {}) {
     interactionSelectedLayoutKey: '',
     interactionPointerDragState: null,
     interactionPointerLastDown: false,
+    interactionGestureState: null,
+    interactionGestureLastDown: false,
   };
 }
 
@@ -1121,6 +1123,203 @@ function clampOverlayLayoutRect(rect, canvasWidth, canvasHeight, minPanelWidth, 
     width: Math.round(width),
     height: Math.round(height),
   };
+}
+
+function normalizeGesturePointerState(pointerState = {}, runtime = null) {
+  const down = pointerState?.down === true;
+  const previousDown = runtime?.interactionGestureLastDown === true;
+  const pressed = pointerState?.pressed === true || (down && !previousDown);
+  const released = pointerState?.released === true || (!down && previousDown);
+  const x = normalizePointerNumber(pointerState?.x, -1);
+  const y = normalizePointerNumber(pointerState?.y, -1);
+  const modifiers = pointerState?.modifiers && typeof pointerState.modifiers === 'object'
+    ? pointerState.modifiers
+    : {};
+  return {
+    x,
+    y,
+    down,
+    pressed,
+    released,
+    modifiers: {
+      shift: modifiers.shift === true,
+      alt: modifiers.alt === true,
+      ctrl: modifiers.ctrl === true,
+      meta: modifiers.meta === true,
+    },
+  };
+}
+
+function resolveSwipeDirection(dx, dy) {
+  const absX = Math.abs(dx);
+  const absY = Math.abs(dy);
+  if (absX >= absY) {
+    return dx >= 0 ? 'right' : 'left';
+  }
+  return dy >= 0 ? 'down' : 'up';
+}
+
+function mapGestureToOverlayAction(gesture, direction = '') {
+  if (gesture === 'hold') {
+    return 'toggle-visibility';
+  }
+  if (gesture === 'swipe') {
+    if (direction === 'left' || direction === 'up') {
+      return 'cycle-prev';
+    }
+    return 'cycle-next';
+  }
+  if (gesture === 'tap') {
+    return 'cycle-next';
+  }
+  return '';
+}
+
+function applyOverlayGestureAction(runtime, action) {
+  if (!runtime) {
+    return false;
+  }
+  if (action === 'toggle-visibility') {
+    runtime.interactionVisible = runtime.interactionVisible === false;
+    return true;
+  }
+  if (action === 'cycle-next' || action === 'cycle-prev') {
+    if (!Array.isArray(runtime.runtimeExtensions) || runtime.runtimeExtensions.length <= 1) {
+      return false;
+    }
+    normalizeInteractionIndex(runtime);
+    const count = runtime.runtimeExtensions.length;
+    const delta = action === 'cycle-prev' ? -1 : 1;
+    runtime.interactionIndex = (runtime.interactionIndex + delta + count) % count;
+    return true;
+  }
+  return false;
+}
+
+export function stepOverlayGameplayRuntimeGestures(runtime, pointerState = {}, options = {}) {
+  if (!runtime) {
+    return {
+      gesture: '',
+      action: '',
+      direction: '',
+      consumed: false,
+      changed: false,
+    };
+  }
+
+  const pointer = normalizeGesturePointerState(pointerState, runtime);
+  runtime.interactionGestureLastDown = pointer.down;
+  const result = {
+    gesture: '',
+    action: '',
+    direction: '',
+    consumed: false,
+    changed: false,
+  };
+
+  if (options?.enableGestures !== true) {
+    if (!pointer.down) {
+      runtime.interactionGestureState = null;
+    }
+    return result;
+  }
+
+  const requireModifier = options?.requireModifier !== false;
+  const modifierActive = requireModifier
+    ? (pointer.modifiers.alt === true && pointer.modifiers.shift === true)
+    : true;
+  const hasActiveGesture = runtime.interactionGestureState && typeof runtime.interactionGestureState === 'object';
+  if (!modifierActive && !hasActiveGesture) {
+    if (!pointer.down) {
+      runtime.interactionGestureState = null;
+    }
+    return result;
+  }
+
+  const tapMaxSeconds = Math.max(0.05, Number(options?.tapMaxSeconds) || 0.25);
+  const tapMaxDistance = Math.max(4, Number(options?.tapMaxDistance) || 18);
+  const holdMinSeconds = Math.max(0.1, Number(options?.holdMinSeconds) || 0.3);
+  const holdMoveTolerance = Math.max(4, Number(options?.holdMoveTolerance) || 14);
+  const swipeMinDistance = Math.max(16, Number(options?.swipeMinDistance) || 48);
+  const dtSeconds = Math.max(0, Math.min(0.25, Number(options?.dtSeconds) || 0.016));
+
+  if (pointer.pressed) {
+    runtime.interactionGestureState = {
+      startX: pointer.x,
+      startY: pointer.y,
+      lastX: pointer.x,
+      lastY: pointer.y,
+      elapsedSeconds: 0,
+      maxDistance: 0,
+      holdTriggered: false,
+    };
+  }
+
+  const gestureState = runtime.interactionGestureState;
+  if (gestureState && pointer.down) {
+    const dx = pointer.x - normalizePointerNumber(gestureState.startX, pointer.x);
+    const dy = pointer.y - normalizePointerNumber(gestureState.startY, pointer.y);
+    const distance = Math.sqrt((dx * dx) + (dy * dy));
+    gestureState.lastX = pointer.x;
+    gestureState.lastY = pointer.y;
+    gestureState.elapsedSeconds = Math.max(0, Number(gestureState.elapsedSeconds) || 0) + dtSeconds;
+    gestureState.maxDistance = Math.max(Number(gestureState.maxDistance) || 0, distance);
+
+    if (!gestureState.holdTriggered && gestureState.elapsedSeconds >= holdMinSeconds && gestureState.maxDistance <= holdMoveTolerance) {
+      const action = mapGestureToOverlayAction('hold');
+      const changed = applyOverlayGestureAction(runtime, action);
+      gestureState.holdTriggered = true;
+      result.gesture = 'hold';
+      result.action = action;
+      result.consumed = true;
+      result.changed = changed;
+      return result;
+    }
+  }
+
+  if (gestureState && pointer.released) {
+    const dx = pointer.x - normalizePointerNumber(gestureState.startX, pointer.x);
+    const dy = pointer.y - normalizePointerNumber(gestureState.startY, pointer.y);
+    const distance = Math.sqrt((dx * dx) + (dy * dy));
+    const elapsedSeconds = Math.max(0, Number(gestureState.elapsedSeconds) || 0);
+
+    runtime.interactionGestureState = null;
+    if (gestureState.holdTriggered) {
+      result.gesture = 'hold';
+      result.action = mapGestureToOverlayAction('hold');
+      result.consumed = true;
+      result.changed = false;
+      return result;
+    }
+
+    if (distance <= tapMaxDistance && elapsedSeconds <= tapMaxSeconds) {
+      const action = mapGestureToOverlayAction('tap');
+      const changed = applyOverlayGestureAction(runtime, action);
+      result.gesture = 'tap';
+      result.action = action;
+      result.consumed = true;
+      result.changed = changed;
+      return result;
+    }
+
+    if (distance >= swipeMinDistance) {
+      const direction = resolveSwipeDirection(dx, dy);
+      const action = mapGestureToOverlayAction('swipe', direction);
+      const changed = applyOverlayGestureAction(runtime, action);
+      result.gesture = 'swipe';
+      result.action = action;
+      result.direction = direction;
+      result.consumed = true;
+      result.changed = changed;
+      return result;
+    }
+  }
+
+  if (!pointer.down && !pointer.released) {
+    runtime.interactionGestureState = null;
+  }
+
+  return result;
 }
 
 export function stepOverlayGameplayRuntimePointerInteractions(runtime, pointerState = {}, options = {}) {

@@ -1,4 +1,5 @@
-[ ] Interaction works
-[ ] No gameplay interference
-[ ] Stable behavior
+[ ] Tap gesture works
+[ ] Hold gesture works
+[ ] Swipe gesture works
+[ ] No regression in keyboard/mouse input
 [ ] Roadmap updated
