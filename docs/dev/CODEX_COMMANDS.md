@@ -2,7 +2,7 @@ MODEL: GPT-5.4
 REASONING: medium
 
 COMMAND:
-Optimize overlay performance:
-- Reduce overhead
-- Improve event efficiency
+Run full Level 21 validation:
+- Validate all features
+- Confirm stability
 - Update roadmap status only

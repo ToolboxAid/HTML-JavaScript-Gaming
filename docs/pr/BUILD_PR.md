@@ -1,21 +1,20 @@
-# BUILD_PR_LEVEL_21_5_OVERLAY_PERFORMANCE_OPTIMIZATION
+# BUILD_PR_LEVEL_21_6_OVERLAY_SYSTEM_VALIDATION
 
 ## Purpose
-Optimize overlay system performance under advanced usage.
+Perform full validation of Level 21 overlay system.
 
 ## Roadmap Improvement
-Enhances efficiency and scalability of Level 21 overlays.
+Confirms stability and readiness of advanced overlay features.
 
 ## Scope
-- Reduce render overhead
-- Optimize event handling
-- Validate performance gains
+- Validate all Level 21 features
+- Ensure no regressions
 
 ## Test Steps
-1. Run multiple overlays
-2. Measure performance
-3. Compare before/after
+1. Run all advanced overlays
+2. Stress test system
+3. Validate performance and behavior
 
 ## Expected
-- Improved performance
+- Stable system
 - No regressions

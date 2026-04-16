@@ -1,4 +1,4 @@
-[ ] Performance improved
+[ ] All features validated
 [ ] No regressions
-[ ] Stable behavior
+[ ] Stable
 [ ] Roadmap updated

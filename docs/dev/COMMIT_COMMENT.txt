@@ -1,4 +1,4 @@
-Optimize overlay performance.
+Validate Level 21 overlay system.
 
 PR Details:
-- Improves efficiency and scalability
+- Full system validation for advanced overlays

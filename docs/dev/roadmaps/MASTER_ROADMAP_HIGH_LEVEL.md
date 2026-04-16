@@ -824,7 +824,7 @@
 - [x] ensure future phases can build cleanly
 
 ### Track H — Final Stability Gate
-- [.] full-repo validation sweep
+- [x] full-repo validation sweep
 - [x] zero regression requirement
 - [x] contract freeze readiness
 - [x] readiness for long-term maintenance mode
