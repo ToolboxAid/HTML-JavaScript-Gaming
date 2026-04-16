@@ -137,4 +137,5 @@ Commit Comment:
   - Do the right thing and complete the task fully and correctly
   - Don't ask if I want the next bundled PR, assume I want it.
 - Update Roadmap stutus every PR.
+- Every PRs must improve roadmap and be testable.
 

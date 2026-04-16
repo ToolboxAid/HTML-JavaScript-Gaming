@@ -78,6 +78,11 @@ export function createOverlayGameplayRuntime({ runtimeExtensions = [] } = {}) {
     interactionCycleLatch: false,
     interactionToggleLatch: false,
     interactionCycleKey: LEVEL17_OVERLAY_CYCLE_KEY,
+    interactionActionCooldownSeconds: 0.03,
+    interactionCooldownRemainingSeconds: 0,
+    interactionMaxHoldSeconds: 1.25,
+    interactionExplicitHoldSeconds: 0,
+    interactionSuppressUntilRelease: false,
   };
 }
 
@@ -112,12 +117,22 @@ export function getOverlayGameplayRuntimeInteractionSnapshot(runtime) {
     count: extensions.length,
     activeOverlayId: active?.overlayId || '',
     cycleKey: String(runtime?.interactionCycleKey || LEVEL17_OVERLAY_CYCLE_KEY),
+    suppressUntilRelease: runtime?.interactionSuppressUntilRelease === true,
+    cooldownRemainingSeconds: Math.max(0, Number(runtime?.interactionCooldownRemainingSeconds) || 0),
   };
 }
 
-export function stepOverlayGameplayRuntimeControls(runtime, input) {
+export function stepOverlayGameplayRuntimeControls(runtime, input, options = {}) {
   if (!runtime) {
     return false;
+  }
+
+  const dtSeconds = Math.max(0, Math.min(0.25, Number(options?.dtSeconds) || 0));
+  if (runtime.interactionCooldownRemainingSeconds > 0 && dtSeconds > 0) {
+    runtime.interactionCooldownRemainingSeconds = Math.max(
+      0,
+      runtime.interactionCooldownRemainingSeconds - dtSeconds
+    );
   }
 
   const cycleKey = String(runtime.interactionCycleKey || LEVEL17_OVERLAY_CYCLE_KEY);
@@ -131,6 +146,27 @@ export function stepOverlayGameplayRuntimeControls(runtime, input) {
   if (!explicitActionPressed) {
     runtime.interactionToggleLatch = false;
     runtime.interactionCycleLatch = false;
+    runtime.interactionExplicitHoldSeconds = 0;
+    runtime.interactionSuppressUntilRelease = false;
+    return false;
+  }
+
+  const holdDt = dtSeconds > 0 ? dtSeconds : 0.016;
+  runtime.interactionExplicitHoldSeconds += holdDt;
+  if (runtime.interactionExplicitHoldSeconds >= runtime.interactionMaxHoldSeconds) {
+    runtime.interactionSuppressUntilRelease = true;
+  }
+  if (runtime.interactionSuppressUntilRelease === true) {
+    return false;
+  }
+
+  if (runtime.interactionCooldownRemainingSeconds > 0) {
+    if (togglePressed) {
+      runtime.interactionToggleLatch = true;
+    }
+    if (runtimeCyclePressed) {
+      runtime.interactionCycleLatch = true;
+    }
     return false;
   }
 
@@ -138,6 +174,7 @@ export function stepOverlayGameplayRuntimeControls(runtime, input) {
     runtime.interactionToggleLatch = true;
     runtime.interactionVisible = runtime.interactionVisible === false;
     runtime.interactionCycleLatch = true;
+    runtime.interactionCooldownRemainingSeconds = runtime.interactionActionCooldownSeconds;
     return true;
   }
 
@@ -160,6 +197,7 @@ export function stepOverlayGameplayRuntimeControls(runtime, input) {
   normalizeInteractionIndex(runtime);
   const count = runtime.runtimeExtensions.length;
   runtime.interactionIndex = (runtime.interactionIndex + 1 + count) % count;
+  runtime.interactionCooldownRemainingSeconds = runtime.interactionActionCooldownSeconds;
   return true;
 }
 

@@ -487,7 +487,7 @@ export default class RealGameplayMiniGameScene extends Scene {
     this.lastCollisionCount = this.debugCollisionRows.length;
     this.updateFeedback(dt);
     this.refreshMissionFeedState();
-    stepOverlayGameplayRuntimeControls(this.overlayGameplayRuntime, input);
+    stepOverlayGameplayRuntimeControls(this.overlayGameplayRuntime, input, { dtSeconds: dt });
     stepOverlayGameplayRuntime(this.overlayGameplayRuntime, {
       scene: this,
       engine,

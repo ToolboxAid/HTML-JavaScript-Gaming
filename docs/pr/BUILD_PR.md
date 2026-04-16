@@ -1,19 +1,21 @@
-# BUILD_PR_LEVEL_19_4_OVERLAY_FOCUS_AND_INPUT_PRIORITY
+# BUILD_PR_LEVEL_19_5_OVERLAY_INPUT_EDGE_CASES
 
 ## Purpose
-Define and enforce focus + input priority rules so gameplay and overlays coexist without conflicts.
+Handle edge cases in overlay input interactions to ensure robust behavior under unusual or rapid input scenarios.
 
 ## Scope
-- Establish input priority: gameplay > overlay (except explicit overlay controls)
-- Define focus model (no hard focus steal by overlays)
-- Ensure overlay controls are scoped and non-invasive
+- Rapid key presses
+- Simultaneous input (gameplay + overlay)
+- Input buffering issues
+- Lost or stuck key states
 
 ## Test Steps
-1. Run gameplay sample
-2. Trigger overlay controls
-3. Verify gameplay input remains primary
-4. Confirm overlay controls only act when invoked
+1. Spam overlay cycle key
+2. Hold gameplay + overlay inputs simultaneously
+3. Trigger rapid show/hide toggles
+4. Validate no stuck states
 
 ## Expected
-- No input conflicts
-- Predictable priority behavior
+- No input lockups
+- No missed cycles
+- Stable behavior under stress

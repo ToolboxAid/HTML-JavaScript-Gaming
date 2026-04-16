@@ -1,4 +1,4 @@
-[ ] Gameplay input unaffected
-[ ] Overlay controls work
-[ ] No focus conflicts
-[ ] No Tab usage
+[ ] No stuck inputs
+[ ] Rapid cycling stable
+[ ] Gameplay unaffected
+[ ] No missed inputs

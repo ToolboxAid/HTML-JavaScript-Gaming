@@ -1,5 +1,4 @@
-Add overlay focus and input priority rules.
+Handle overlay input edge cases.
 
 PR Details:
-- Defines gameplay-first input priority
-- Prevents overlay focus conflicts
+- Stabilizes input under rapid and conflicting conditions
