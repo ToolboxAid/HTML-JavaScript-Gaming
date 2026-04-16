@@ -1,4 +1,4 @@
-- [ ] metrics visible
-- [ ] values update live
-- [ ] no performance issues
+- [ ] all samples present (1707–1712)
+- [ ] index updated
+- [ ] samples run independently
 - [ ] no console errors
