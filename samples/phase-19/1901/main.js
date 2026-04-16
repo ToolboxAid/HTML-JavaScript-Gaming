@@ -7,6 +7,7 @@ main.js
 import Engine from '/src/engine/core/Engine.js';
 import { InputService } from '/src/engine/input/index.js';
 import { Theme, ThemeTokens } from '/src/engine/theme/index.js';
+import createPhase19CoreServices from '/samples/phase-19/shared/coreServices/createPhase19CoreServices.js';
 import Phase19FoundationScene from './Phase19FoundationScene.js';
 
 const theme = new Theme(ThemeTokens);
@@ -23,5 +24,6 @@ const engine = new Engine({
   input,
 });
 
-engine.setScene(new Phase19FoundationScene());
+const coreServices = createPhase19CoreServices();
+engine.setScene(new Phase19FoundationScene({ coreServices }));
 engine.start();

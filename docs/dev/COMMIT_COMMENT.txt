@@ -1,3 +1,3 @@
-Establish Phase 19 foundation structure and minimal wiring
+Establish Phase 19 core services skeleton including registry, lifecycle hooks, and baseline wiring for the next runtime layer
 
-PR: BUILD_PR_LEVEL_19_2_PHASE19_FOUNDATION
+PR: BUILD_PR_LEVEL_19_3_PHASE19_CORE_SERVICES

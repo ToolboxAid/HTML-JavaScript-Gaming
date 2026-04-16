@@ -11,20 +11,45 @@ import { drawFrame, drawPanel } from '/src/engine/debug/index.js';
 const theme = new Theme(ThemeTokens);
 
 export default class Phase19FoundationScene extends Scene {
-  constructor() {
+  constructor({ coreServices = null } = {}) {
     super();
     this.elapsed = 0;
+    this.coreServices = coreServices;
+    this.lastHeartbeatTick = 0;
+    this.lastHeartbeatTime = 0;
+    this.unsubscribeHeartbeat = null;
+  }
+
+  enter(engine) {
+    if (!this.coreServices) return;
+    const channel = this.coreServices.get('phase19.channel');
+    if (channel && typeof channel.subscribe === 'function') {
+      this.unsubscribeHeartbeat = channel.subscribe('phase19.heartbeat', (payload) => {
+        this.lastHeartbeatTick = Number(payload?.tick) || 0;
+        this.lastHeartbeatTime = Number(payload?.t) || 0;
+      });
+    }
+    this.coreServices.start({ engine, scene: this });
   }
 
   update(dtSeconds) {
     this.elapsed += dtSeconds;
+    this.coreServices?.update(dtSeconds, { scene: this });
+  }
+
+  exit() {
+    if (typeof this.unsubscribeHeartbeat === 'function') {
+      this.unsubscribeHeartbeat();
+      this.unsubscribeHeartbeat = null;
+    }
+    this.coreServices?.stop({ scene: this });
   }
 
   render(renderer) {
     drawFrame(renderer, theme, [
-      'Sample 1901 - Phase 19 Foundation',
-      'Minimal Phase 19 scaffold with launcher wiring.',
-      'No feature implementation in this foundation slice.',
+      'Sample 1901 - Phase 19 Core Services',
+      'Minimal Phase 19 core-services skeleton wired into foundation sample.',
+      'No feature implementation in this core-services slice.',
     ]);
 
     renderer.drawRect(120, 212, 720, 200, '#0f172a');
@@ -38,12 +63,22 @@ export default class Phase19FoundationScene extends Scene {
       font: '16px monospace',
     });
 
+    const lifecycle = this.coreServices?.getLifecycleState?.() || {
+      running: false,
+      serviceCount: 0,
+    };
+    const channelSnapshot = this.coreServices?.get?.('phase19.channel')?.getSnapshot?.() || {
+      publishedCount: 0,
+      lastChannel: 'none',
+    };
     drawPanel(renderer, 620, 34, 300, 140, 'Phase 19 Bootstrap', [
-      'Status: initialized',
+      'Status: initialized (core services)',
       'Folder: samples/phase-19',
       'Entry sample: 1901',
-      'Scope: structure + wiring only',
-      'Features: deferred',
+      `Running: ${lifecycle.running ? 'yes' : 'no'}`,
+      `Services: ${lifecycle.serviceCount}`,
+      `Published: ${channelSnapshot.publishedCount} (${channelSnapshot.lastChannel})`,
+      `Heartbeat tick: ${this.lastHeartbeatTick} @ ${this.lastHeartbeatTime.toFixed(2)}s`,
     ]);
   }
 }
