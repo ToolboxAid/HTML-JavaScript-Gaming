@@ -1,3 +1,2 @@
-- [ ] services initialize
-- [ ] no runtime errors
-- [ ] baseline wiring loads
+- [ ] runtime initializes
+- [ ] loop runs

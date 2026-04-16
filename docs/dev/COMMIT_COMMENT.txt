@@ -1,3 +1,3 @@
-Establish Phase 19 core services skeleton including registry, lifecycle hooks, and baseline wiring for the next runtime layer
+Introduce Phase 19 runtime layer including update loop, scheduling hooks, and integration with core services
 
-PR: BUILD_PR_LEVEL_19_3_PHASE19_CORE_SERVICES
+PR: BUILD_PR_LEVEL_19_4_PHASE19_RUNTIME_LAYER
