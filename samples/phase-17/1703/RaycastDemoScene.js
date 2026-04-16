@@ -124,7 +124,7 @@ export default class WolfOptimizedRaycastScene extends Scene {
 
   render(renderer) {
     drawFrame(renderer, theme, [
-      'Sample 1625 - Wolf Optimized Raycast',
+      'Sample 1703 - Wolf Optimized Raycast',
       'DDA traversal for ray steps, preserving classic filled corridor rendering.',
       'Move: W/S | Turn: A/D',
     ]);

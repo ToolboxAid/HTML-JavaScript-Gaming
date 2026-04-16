@@ -1,4 +1,4 @@
 
-- [ ] 8 samples load
-- [ ] each technique visually distinct
-- [ ] index updated
+- [ ] all 1701-1707 samples load
+- [ ] index updated correctly
+- [ ] no broken paths

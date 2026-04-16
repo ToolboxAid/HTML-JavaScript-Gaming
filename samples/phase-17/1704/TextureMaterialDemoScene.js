@@ -140,7 +140,7 @@ export default class TextureMaterialDemoScene extends Scene {
 
   render(renderer) {
     drawFrame(renderer, theme, [
-      'Sample 1626 - Unreal Texture + Lighting',
+      'Sample 1704 - Unreal Texture + Lighting',
       'Image-backed textures mapped to sample surfaces with simple light pulse response.',
       'Camera orbit: auto + Q/E | Camera mode: C | Debug: V',
     ]);

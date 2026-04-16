@@ -147,7 +147,7 @@ export default class ImageSkinnedCharacterDemoScene extends Scene {
 
   render(renderer) {
     drawFrame(renderer, theme, [
-      'Sample 1627 - Unreal Skinned Mesh Demo',
+      'Sample 1705 - Unreal Skinned Mesh Demo',
       'Image sprite-sheet frames animate a skinned character moving along a looping path.',
       'Camera offset: Left/Right | Reset path: R | Camera mode: C | Debug: V',
     ]);

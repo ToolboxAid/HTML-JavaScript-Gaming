@@ -1,1 +1,1 @@
-Expand Level 17 rendering samples to 2 per technique (DOOM, Wolf, Unreal, Minecraft)
+Renumber rendering samples 1623-1629 to 1701-1707 and align index

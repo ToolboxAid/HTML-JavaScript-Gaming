@@ -116,7 +116,7 @@ export default class ChunkStreamingVoxelScene extends Scene {
 
   render(renderer) {
     drawFrame(renderer, theme, [
-      'Sample 1629 - Minecraft Chunk Streaming',
+      'Sample 1707 - Minecraft Chunk Streaming',
       'Voxel chunk-window streaming keeps nearby terrain active around the camera anchor.',
       'Pan: W/A/S/D | Chunk radius: Up/Down',
     ]);

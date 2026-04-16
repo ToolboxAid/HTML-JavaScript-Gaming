@@ -101,7 +101,7 @@ export default class VoxelWorldDemoScene extends Scene {
 
   render(renderer) {
     drawFrame(renderer, theme, [
-      'Sample 1628 - Minecraft Voxel Terrain',
+      'Sample 1706 - Minecraft Voxel Terrain',
       'Filled voxel cubes with chunk-like terrain heights and panning camera controls.',
       'Pan: W/A/S/D | Elevation: Up/Down',
     ]);

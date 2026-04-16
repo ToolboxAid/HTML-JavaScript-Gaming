@@ -9,13 +9,13 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import RaycastDemoScene from '../../samples/phase-16/1622/RaycastDemoScene.js';
-import DoomRaycastSpritesScene from '../../samples/phase-17/1623/RaycastDemoScene.js';
-import WolfGridRaycastScene from '../../samples/phase-17/1624/RaycastDemoScene.js';
-import WolfOptimizedRaycastScene from '../../samples/phase-17/1625/RaycastDemoScene.js';
-import TextureMaterialDemoScene from '../../samples/phase-17/1626/TextureMaterialDemoScene.js';
-import ImageSkinnedCharacterDemoScene from '../../samples/phase-17/1627/ImageSkinnedCharacterDemoScene.js';
-import VoxelWorldDemoScene from '../../samples/phase-17/1628/VoxelWorldDemoScene.js';
-import ChunkStreamingVoxelScene from '../../samples/phase-17/1629/VoxelWorldDemoScene.js';
+import DoomRaycastSpritesScene from '../../samples/phase-17/1701/RaycastDemoScene.js';
+import WolfGridRaycastScene from '../../samples/phase-17/1702/RaycastDemoScene.js';
+import WolfOptimizedRaycastScene from '../../samples/phase-17/1703/RaycastDemoScene.js';
+import TextureMaterialDemoScene from '../../samples/phase-17/1704/TextureMaterialDemoScene.js';
+import ImageSkinnedCharacterDemoScene from '../../samples/phase-17/1705/ImageSkinnedCharacterDemoScene.js';
+import VoxelWorldDemoScene from '../../samples/phase-17/1706/VoxelWorldDemoScene.js';
+import ChunkStreamingVoxelScene from '../../samples/phase-17/1707/VoxelWorldDemoScene.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -90,13 +90,13 @@ function assertIndexLinksPresent() {
   const indexPath = path.join(repoRoot, 'samples', 'index.html');
   const indexText = fs.readFileSync(indexPath, 'utf8');
   assert.equal(indexText.includes('./phase-16/1622/index.html'), true, 'Sample 1622 link should exist in samples/index.html.');
-  assert.equal(indexText.includes('./phase-17/1623/index.html'), true, 'Sample 1623 link should exist in samples/index.html.');
-  assert.equal(indexText.includes('./phase-17/1624/index.html'), true, 'Sample 1624 link should exist in samples/index.html.');
-  assert.equal(indexText.includes('./phase-17/1625/index.html'), true, 'Sample 1625 link should exist in samples/index.html.');
-  assert.equal(indexText.includes('./phase-17/1626/index.html'), true, 'Sample 1626 link should exist in samples/index.html.');
-  assert.equal(indexText.includes('./phase-17/1627/index.html'), true, 'Sample 1627 link should exist in samples/index.html.');
-  assert.equal(indexText.includes('./phase-17/1628/index.html'), true, 'Sample 1628 link should exist in samples/index.html.');
-  assert.equal(indexText.includes('./phase-17/1629/index.html'), true, 'Sample 1629 link should exist in samples/index.html.');
+  assert.equal(indexText.includes('./phase-17/1701/index.html'), true, 'Sample 1701 link should exist in samples/index.html.');
+  assert.equal(indexText.includes('./phase-17/1702/index.html'), true, 'Sample 1702 link should exist in samples/index.html.');
+  assert.equal(indexText.includes('./phase-17/1703/index.html'), true, 'Sample 1703 link should exist in samples/index.html.');
+  assert.equal(indexText.includes('./phase-17/1704/index.html'), true, 'Sample 1704 link should exist in samples/index.html.');
+  assert.equal(indexText.includes('./phase-17/1705/index.html'), true, 'Sample 1705 link should exist in samples/index.html.');
+  assert.equal(indexText.includes('./phase-17/1706/index.html'), true, 'Sample 1706 link should exist in samples/index.html.');
+  assert.equal(indexText.includes('./phase-17/1707/index.html'), true, 'Sample 1707 link should exist in samples/index.html.');
 }
 
 function assertDoomBasicRaycast() {
@@ -124,11 +124,17 @@ function assertDoomRaycastSprites() {
 
 function assertWolfGridRaycast() {
   const scene = new WolfGridRaycastScene();
-  scene.step3DPhysics(0.15, { input: makeInput(['KeyD']) });
+  const startX = scene.player.x;
+  scene.step3DPhysics(0.15, { input: makeInput(['KeyW']) });
+  assert.equal(scene.player.x > startX, true, 'Wolf grid raycast should move player forward.');
 
   const renderer = createRendererProbe();
   scene.render(renderer);
   assert.equal(scene.lastFilledColumns > 100, true, 'Wolf grid raycast should render filled columns.');
+  const miniMapPanel = renderer.rects.find((rect) => rect.color === 'rgba(2, 6, 23, 0.74)');
+  assert.notEqual(miniMapPanel, undefined, 'Wolf grid raycast should draw a mini map panel background.');
+  assert.equal(miniMapPanel.x >= 700, true, 'Wolf grid raycast mini map should be anchored near the bottom-right (x).');
+  assert.equal(miniMapPanel.y >= 400, true, 'Wolf grid raycast mini map should be anchored near the bottom-right (y).');
 }
 
 function assertWolfOptimizedRaycast() {

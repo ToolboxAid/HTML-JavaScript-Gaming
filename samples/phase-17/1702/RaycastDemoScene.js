@@ -29,7 +29,7 @@ export default class WolfGridRaycastScene extends Scene {
       '1000000000001',
       '1111111111111',
     ];
-    this.player = { x: 2.1, y: 2.1, angle: 0.2, moveSpeed: 2.6, turnSpeed: 2.0 };
+    this.player = { x: 1.5, y: 1.5, angle: 0.2, moveSpeed: 2.6, turnSpeed: 2.0 };
     this.fov = Math.PI / 3.2;
     this.maxDepth = 16;
     this.rayStep = 0.02;
@@ -76,7 +76,16 @@ export default class WolfGridRaycastScene extends Scene {
   }
 
   drawMiniMap(renderer) {
-    const panel = { x: 52, y: 44, width: 228, height: 108 };
+    const canvas = renderer.getCanvasSize?.() || { width: 960, height: 540 };
+    const margin = 24;
+    const panelWidth = 228;
+    const panelHeight = 108;
+    const panel = {
+      x: Math.max(margin, canvas.width - panelWidth - margin),
+      y: Math.max(margin, canvas.height - panelHeight - margin),
+      width: panelWidth,
+      height: panelHeight,
+    };
     const rows = this.map.length;
     const cols = this.map[0].length;
     const cellW = panel.width / cols;
@@ -112,7 +121,7 @@ export default class WolfGridRaycastScene extends Scene {
 
   render(renderer) {
     drawFrame(renderer, theme, [
-      'Sample 1624 - Wolf Grid Raycast',
+      'Sample 1702 - Wolf Grid Raycast',
       'Pure grid raycasting and flat filled walls with classic corridor readability.',
       'Move: W/S | Turn: A/D',
     ]);

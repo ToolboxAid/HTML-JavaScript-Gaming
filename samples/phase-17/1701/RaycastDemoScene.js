@@ -175,7 +175,7 @@ export default class DoomRaycastSpritesScene extends Scene {
 
   render(renderer) {
     drawFrame(renderer, theme, [
-      'Sample 1623 - DOOM Raycast + Sprites',
+      'Sample 1701 - DOOM Raycast + Sprites',
       'DOOM-style corridor raycasting with billboard sprites composited into depth-sorted space.',
       'Move: W/S | Turn: A/D',
     ]);
