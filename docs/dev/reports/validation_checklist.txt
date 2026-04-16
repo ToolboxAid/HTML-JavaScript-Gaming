@@ -1,8 +1,4 @@
-[ ] All samples load correctly
-[ ] Bottom-right placement consistent
-[ ] Non-Tab cycle works everywhere
-[ ] Mission integration verified
-[ ] Telemetry integration verified
-[ ] No performance issues
+[ ] Smoke test complete
+[ ] All integrations stable
 [ ] No regressions
-[ ] System ready for production
+[ ] Baseline confirmed

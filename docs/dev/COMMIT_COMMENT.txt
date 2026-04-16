@@ -1,2 +1,1 @@
-Level 18.9 final overlay system validation and readiness check.
-Confirm system stability and production readiness.
+Promote Level 18 overlay system to baseline after final validation.
