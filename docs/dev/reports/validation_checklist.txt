@@ -1,3 +1,2 @@
-- [ ] all 3 samples load
-- [ ] no console errors
-- [ ] visible functionality per sample
+- [ ] samples load
+- [ ] no errors
