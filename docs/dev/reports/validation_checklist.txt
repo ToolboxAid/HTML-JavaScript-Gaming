@@ -1,2 +1,3 @@
-- [ ] all systems stable
+- [ ] all validations pass
+- [ ] roadmap updated
 - [ ] no regressions
