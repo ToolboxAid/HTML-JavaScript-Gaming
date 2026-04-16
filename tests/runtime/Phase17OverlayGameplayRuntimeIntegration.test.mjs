@@ -6,7 +6,10 @@ Phase17OverlayGameplayRuntimeIntegration.test.mjs
 */
 import assert from 'node:assert/strict';
 import RealGameplayMiniGameScene from '../../samples/phase-17/1708/RealGameplayMiniGameScene.js';
-import { getOverlayCycleInputCodes } from '../../samples/phase-17/shared/overlayCycleInput.js';
+import {
+  getOverlayCycleInputCodes,
+  getOverlayRuntimeToggleInputCodes,
+} from '../../samples/phase-17/shared/overlayCycleInput.js';
 import { resetTabDebugOverlayPersistenceForTests } from '../../samples/phase-17/shared/tabDebugOverlayCycle.js';
 
 function createCameraStub() {
@@ -63,6 +66,11 @@ function pressOverlayCycle(scene) {
   scene.step3DPhysics(0.02, { input: makeInput([]) });
 }
 
+function pressOverlayRuntimeToggle(scene) {
+  scene.step3DPhysics(0.02, { input: makeInput(getOverlayRuntimeToggleInputCodes()) });
+  scene.step3DPhysics(0.02, { input: makeInput([]) });
+}
+
 function assertGameplayOverlayRuntimeHooksAreNonBlocking() {
   const scene = new RealGameplayMiniGameScene();
   scene.setCamera3D(createCameraStub());
@@ -70,15 +78,29 @@ function assertGameplayOverlayRuntimeHooksAreNonBlocking() {
   scene.step3DPhysics(0.02, { input: makeInput(['Space']) });
   assert.equal(scene.gameState, 'running', 'Gameplay sample should be running before runtime integration checks.');
 
-  const counters = { step: 0, render: 0 };
+  const counters = {
+    aStep: 0,
+    aRender: 0,
+    bStep: 0,
+    bRender: 0,
+  };
   scene.setOverlayGameplayRuntimeExtensions([
     {
-      overlayId: 'ui-layer',
+      overlayId: '',
       onStep() {
-        counters.step += 1;
+        counters.aStep += 1;
       },
       onRender() {
-        counters.render += 1;
+        counters.aRender += 1;
+      },
+    },
+    {
+      overlayId: '',
+      onStep() {
+        counters.bStep += 1;
+      },
+      onRender() {
+        counters.bRender += 1;
       },
     },
   ]);
@@ -86,17 +108,31 @@ function assertGameplayOverlayRuntimeHooksAreNonBlocking() {
   const startX = scene.player.x;
   scene.step3DPhysics(0.2, { input: makeInput(['KeyD']) });
   assert.equal(scene.player.x > startX, true, 'Overlay runtime hooks should not interfere with movement controls.');
-  assert.equal(counters.step > 0, true, 'Active overlay runtime step hook should execute during gameplay.');
+  assert.equal(counters.aStep > 0, true, 'Primary runtime overlay hook should execute during gameplay.');
+  assert.equal(counters.bStep, 0, 'Secondary runtime overlay hook should stay inactive before cycle interaction.');
 
   const renderer = createRendererProbe();
   scene.render(renderer);
-  assert.equal(counters.render > 0, true, 'Active overlay runtime render hook should execute.');
+  assert.equal(counters.aRender > 0, true, 'Primary runtime overlay render hook should execute.');
+  assert.equal(counters.bRender, 0, 'Secondary runtime overlay render hook should stay inactive before cycle interaction.');
   assert.equal(renderer.texts.some((text) => text.includes('UI Layer')), true, 'Debug overlay rendering should remain intact.');
 
-  const previousStepCount = counters.step;
+  const beforeCycleBStep = counters.bStep;
   pressOverlayCycle(scene);
+  const missionFeedRenderer = createRendererProbe();
+  scene.render(missionFeedRenderer);
+  assert.equal(missionFeedRenderer.texts.some((text) => text.includes('Mission Feed')), true, 'Debug overlay cycle behavior should remain unchanged.');
   scene.step3DPhysics(0.05, { input: makeInput([]) });
-  assert.equal(counters.step, previousStepCount, 'Overlay-specific runtime hooks should not run when a different overlay is active.');
+  assert.equal(counters.bStep > beforeCycleBStep, true, 'Gameplay overlay runtime cycle control should switch active runtime extension.');
+
+  const beforeHideStep = counters.aStep + counters.bStep;
+  pressOverlayRuntimeToggle(scene);
+  scene.step3DPhysics(0.05, { input: makeInput([]) });
+  assert.equal(counters.aStep + counters.bStep, beforeHideStep, 'Runtime overlay toggle should hide runtime overlays during gameplay.');
+
+  pressOverlayRuntimeToggle(scene);
+  scene.step3DPhysics(0.05, { input: makeInput([]) });
+  assert.equal(counters.aStep + counters.bStep > beforeHideStep, true, 'Runtime overlay toggle should restore runtime overlay execution.');
 
   scene.setOverlayGameplayRuntimeExtensions([
     {

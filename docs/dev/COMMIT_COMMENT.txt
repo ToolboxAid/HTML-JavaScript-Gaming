@@ -1,2 +1,6 @@
-Level 19.2 gameplay overlay integration.
-Enable overlays during gameplay runtime without interference.
+Add gameplay-safe overlay interaction controls.
+
+PR Details:
+- Enables show/hide/cycle controls for gameplay overlays
+- Preserves shared non-Tab input mapping
+- Adds focused validation for non-interference with gameplay controls

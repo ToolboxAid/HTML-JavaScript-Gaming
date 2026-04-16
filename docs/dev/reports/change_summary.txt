@@ -1,7 +1,7 @@
-Final validation pass for overlay system after full Level 18 integration.
+Summary:
+This PR follows Level 19.2 by adding interaction controls for gameplay overlays.
+It keeps scope limited to a testable control layer so overlays can be shown, hidden, and cycled during gameplay without interfering with core player input.
 
-Confirms:
-- Stability
-- Performance
-- Integration completeness
-- Production readiness
+Roadmap Improvement:
+- Advances Level 19 from gameplay overlay availability to gameplay-safe overlay usability
+- Keeps the change executable and validation-backed

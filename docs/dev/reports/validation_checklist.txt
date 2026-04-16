@@ -1,4 +1,6 @@
-[ ] Gameplay runs normally
-[ ] Overlays visible in gameplay
-[ ] No input conflicts
-[ ] No render issues
+[ ] Gameplay sample with overlays loads
+[ ] Overlay show/hide control works
+[ ] Overlay cycle control works
+[ ] Gameplay controls remain responsive while using overlay controls
+[ ] No Tab-based overlay interaction is introduced
+[ ] Debug overlay behavior remains unchanged

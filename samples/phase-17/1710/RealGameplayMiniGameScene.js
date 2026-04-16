@@ -41,6 +41,7 @@ import { getRequiredLevel17OverlayStackConfig } from '/samples/phase-17/shared/o
 import {
   createOverlayGameplayRuntime,
   renderOverlayGameplayRuntime,
+  stepOverlayGameplayRuntimeControls,
   setOverlayGameplayRuntimeExtensions,
   stepOverlayGameplayRuntime,
 } from '/samples/phase-17/shared/overlayGameplayRuntime.js';
@@ -486,6 +487,7 @@ export default class RealGameplayMiniGameScene extends Scene {
     this.lastCollisionCount = this.debugCollisionRows.length;
     this.updateFeedback(dt);
     this.refreshMissionFeedState();
+    stepOverlayGameplayRuntimeControls(this.overlayGameplayRuntime, input);
     stepOverlayGameplayRuntime(this.overlayGameplayRuntime, {
       scene: this,
       engine,
