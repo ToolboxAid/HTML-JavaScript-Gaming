@@ -1,2 +1,4 @@
-- [ ] integration works
-- [ ] no errors
+- [ ] sample runs
+- [ ] input works
+- [ ] camera follows
+- [ ] debug panels visible

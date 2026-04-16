@@ -1,3 +1,3 @@
-Integrate Phase 19 core services with runtime layer ensuring data flow and lifecycle coherence
+Add real gameplay sample demonstrating full engine integration (rendering, input, camera, debug)
 
-PR: BUILD_PR_LEVEL_19_5_PHASE19_INTEGRATION_PASS
+PR: PLAN_PR_LEVEL_17_38_REAL_GAMEPLAY_SAMPLE

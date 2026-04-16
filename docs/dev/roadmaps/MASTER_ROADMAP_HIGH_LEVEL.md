@@ -686,23 +686,143 @@
 ### Later Capability Lanes
 - [x] Execute phase-16 / 3D capability lanes (after full real-network capability lane completion)
 
+- [x] Stabilize networking/runtime before 3D
 
-## 18. Finalize engine
+---
 
-[ ] Verify all `samples/` and `games/` use engine systems and are not coded locally; if local, migrate to engine.
+## 18. Engine Finalization & Hardening (Deferred Execution)
+
+> Purpose: convert the built system into a clean, stable, production-grade engine after all major capability tracks are complete.  
+> This is NOT a scaffolding phase — it is a consolidation + enforcement phase.
+
+### Scope Rules
+- additive only (no blind refactors)
+- no structural churn without move-map PRs
+- all changes must be validation-backed
+- no template-driven work
+
 [ ] Some games are actually samples/demos; identify and recommend a `phase-xx` move target.
-[.] Organize/rebuild `samples/` and `games/` as if newly constructed, with proper classes/data in proper folders.
-[.] Simulated code (for example, some network samples) should be converted to real networks, with tests as needed.
-[ ] Single class per file.
-[ ] Flatten CSS layers so only a few remain; use top-layer shared classes as much as possible (for example, a button should use one standard class, with exceptions only when needed).
-[ ] Docs organization: classify all `./docs/` into buckets.
-[ ] Arrange docs into classification buckets.
-[ ] Any doc that is only move/rename/etc. should be deleted (verify content is in the correct doc before deleting).
-[ ] Consolidate PRs for easier one-stop review, so one capability does not require reading many docs (for example, bezel/background); focus on what the capability does.
-[ ] Remove imports to export (should not be import x, export x)
-[ ] Other than templates (games/samples/tools), remove the .keep file, if the folder is empty, delete
 
 [ ] Lock APIs
 [ ] Clean boundaries
 [ ] Document contracts
-[x] Stabilize networking/runtime before 3D
+
+### Track A — Engine Usage Enforcement
+- [ ] verify all `samples/` use engine systems (no local reimplementation)
+- [ ] verify all `games/` use engine systems
+- [ ] migrate any local logic into engine/shared where appropriate
+- [ ] remove sample-specific logic from engine paths
+
+### Track B — Boundary Hardening
+- [ ] enforce engine vs shared vs game vs tool boundaries
+- [ ] eliminate cross-layer leakage
+- [ ] validate dependency direction rules across repo
+- [ ] remove accidental coupling
+
+### Track C — Contract Stabilization
+- [ ] finalize engine public APIs
+- [ ] finalize shared contracts
+- [ ] ensure selectors/providers are stable
+- [ ] remove unstable or experimental surfaces
+
+### Track D — Codebase Consistency
+- [ ] single class per file enforcement
+- [ ] remove duplicate helpers
+- [ ] normalize naming consistency
+- [ ] eliminate import/export anti-patterns
+
+### Track E — CSS & UI Normalization
+- [ ] flatten CSS layers
+- [ ] enforce shared UI classes
+- [ ] remove redundant styles
+
+### Track F — Docs System Cleanup
+[ ] Docs organization: classify all `./docs/` into buckets.
+
+[ ] Arrange docs into classification buckets.
+[ ] Any doc that is only move/rename/etc. should be deleted (verify content is in the correct doc before deleting).
+
+- [ ] classify all docs into buckets
+- [ ] consolidate duplicate docs - consolidate PRs for easier one-stop review, so one capability does not require reading many docs (for example, bezel/background); focus on what the capability does.
+- [ ] remove move-only historical docs (after validation)
+- [ ] align docs to feature-based structure
+
+### Track G — Repo Hygiene
+[ ] Remove imports to export (should not be import x, export x)
+[ ] Other than templates (games/samples/tools), remove the .keep file, if the folder is empty, delete
+- [ ] remove unnecessary `.keep` files
+- [ ] remove empty folders
+- [ ] validate folder ownership rules
+- [ ] enforce clean repo structure
+
+### Track H — PR Consolidation Strategy
+- [ ] bundle related PRs into capability-level units
+- [ ] reduce multi-PR fragmentation
+- [ ] ensure each PR represents a complete capability
+
+---
+
+## 19. Architecture Maturity & Long-Term Stability (Deferred Execution)
+
+> Purpose: ensure the system is scalable, explainable, and extensible long-term.  
+> This phase turns the engine into a platform, not just a project.
+
+### Scope Rules
+- no feature creation
+- no experimental work
+- only stabilization, validation, and extensibility
+
+### Track A — System Integration Validation
+- [ ] validate all major systems working together:
+  - rendering
+  - input
+  - physics
+  - state/replay
+  - networking
+  - debug platform
+- [ ] verify no hidden coupling
+- [ ] verify predictable system interaction
+
+### Track B — Runtime Lifecycle Validation
+- [ ] validate boot → run → shutdown lifecycle
+- [ ] validate hot reload / reset flows
+- [ ] validate error handling paths
+- [ ] validate long-running stability
+
+### Track C — Performance & Scaling
+- [ ] validate large scene performance
+- [ ] validate stress scenarios (1k+ entities)
+- [ ] validate memory stability
+- [ ] identify bottlenecks
+
+### Track D — Debug & Observability Maturity
+- [ ] ensure all systems expose debug data
+- [ ] ensure providers are complete and consistent
+- [ ] validate debug panels across systems
+- [ ] confirm production-safe debug toggling
+
+### Track E — Toolchain Validation
+- [ ] verify tools integrate cleanly with engine
+- [ ] validate asset pipelines end-to-end
+- [ ] validate editor → runtime consistency
+- [ ] confirm no tool-specific logic leaks into engine
+
+### Track F — Sample & Game Validation
+- [.] Organize/rebuild `samples/` and `games/` as if newly constructed, with proper classes/data in proper folders.
+- [.] Simulated code (for example, some network samples) should be converted to real networks, with tests as needed.
+- [ ] verify all samples still function correctly
+- [ ] verify curriculum progression remains intact
+- [ ] validate games follow template strictly
+- [ ] confirm no regression across phases
+
+### Track G — Extensibility Readiness
+- [ ] validate plugin/extension patterns
+- [ ] validate adding new systems is clean
+- [ ] validate external integration points
+- [ ] ensure future phases can build cleanly
+
+### Track H — Final Stability Gate
+- [ ] full-repo validation sweep
+- [ ] zero regression requirement
+- [ ] contract freeze readiness
+- [ ] readiness for long-term maintenance mode
