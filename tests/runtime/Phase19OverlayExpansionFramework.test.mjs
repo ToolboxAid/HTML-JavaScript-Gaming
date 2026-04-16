@@ -277,6 +277,7 @@ function assertOverlayStateSynchronizationAndDesyncRecovery() {
   const idleInteraction = getOverlayGameplayRuntimeInteractionSnapshot(runtime, { gameplayState });
   assert.equal(idleInteraction.activeOverlayId, 'runtime-b', 'No-event sync should keep prior synchronized state stable.');
   assert.equal(gameplayState.overlayRuntimeState.eventsProcessed, 0, 'No queued events should avoid extra event processing.');
+  assert.equal(gameplayState.overlayRuntimeState.syncMode, 'cached', 'No-event sync should use cached state and avoid fallback re-apply.');
 
   const renderRuntimeB = renderOverlayGameplayRuntime(runtime, {
     activeOverlayId: 'runtime-b',
@@ -309,10 +310,40 @@ function assertOverlayStateSynchronizationAndDesyncRecovery() {
   assert.equal(renderRuntimeA, 1, 'Gameplay sync should recover to visible overlay rendering without desync.');
 }
 
+function assertOverlayEventCoalescingEfficiency() {
+  const framework = createPhase19OverlayExpansionFramework();
+  framework.registerExtension(definePhase19OverlayExtension({
+    id: 'phase19-overlay-event-coalesce',
+    overlays: [
+      { id: 'runtime-a', label: 'Runtime A' },
+      { id: 'runtime-b', label: 'Runtime B' },
+    ],
+    initialOverlayId: 'runtime-a',
+    runtimeExtensions: [
+      { overlayId: 'runtime-a', onRender() {} },
+      { overlayId: 'runtime-b', onRender() {} },
+    ],
+  }));
+
+  const runtime = framework.createRuntimeForExtension('phase19-overlay-event-coalesce');
+  const gameplayState = { overlayRuntimeState: {} };
+  enqueueOverlayGameplayRuntimeSyncEvent(gameplayState, { visible: true, interactionIndex: 0, activeOverlayId: 'runtime-a' });
+  enqueueOverlayGameplayRuntimeSyncEvent(gameplayState, { visible: false });
+  enqueueOverlayGameplayRuntimeSyncEvent(gameplayState, { visible: true, interactionIndex: 999, activeOverlayId: 'runtime-b' });
+
+  const interaction = getOverlayGameplayRuntimeInteractionSnapshot(runtime, { gameplayState });
+  assert.equal(interaction.activeOverlayId, 'runtime-b', 'Coalesced event processing should keep the final overlay selection.');
+  assert.equal(interaction.visible, true, 'Coalesced event processing should keep the final visibility state.');
+  assert.equal(gameplayState.overlayRuntimeState.eventsProcessed, 3, 'Event efficiency path should consume all queued events in one synchronization pass.');
+  assert.equal(gameplayState.overlayRuntimeState.desyncCorrected, true, 'Event coalescing should preserve desync correction behavior.');
+  assert.equal(gameplayState.overlayRuntimeEvents.length, 0, 'Event queue should be drained after synchronization.');
+}
+
 export function run() {
   assertExpansionRegistrationAndCompatibility();
   assertExtensionLifecycleMutations();
   assertDynamicPanelSizingCapability();
   assertContextAwareOverlayBehavior();
   assertOverlayStateSynchronizationAndDesyncRecovery();
+  assertOverlayEventCoalescingEfficiency();
 }

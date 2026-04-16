@@ -1,21 +1,21 @@
-# BUILD_PR_LEVEL_21_4_OVERLAY_EVENT_DRIVEN_UPDATES
+# BUILD_PR_LEVEL_21_5_OVERLAY_PERFORMANCE_OPTIMIZATION
 
 ## Purpose
-Move overlay updates to an event-driven model.
+Optimize overlay system performance under advanced usage.
 
 ## Roadmap Improvement
-Improves efficiency and responsiveness of overlays.
+Enhances efficiency and scalability of Level 21 overlays.
 
 ## Scope
-- Trigger overlay updates via events
-- Reduce unnecessary polling
-- Validate responsiveness
+- Reduce render overhead
+- Optimize event handling
+- Validate performance gains
 
 ## Test Steps
-1. Trigger gameplay events
-2. Verify overlay updates instantly
-3. Confirm no extra processing
+1. Run multiple overlays
+2. Measure performance
+3. Compare before/after
 
 ## Expected
-- Event-driven updates working
 - Improved performance
+- No regressions

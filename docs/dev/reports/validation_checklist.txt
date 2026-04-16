@@ -1,4 +1,4 @@
-[ ] Events trigger updates
-[ ] No polling overhead
 [ ] Performance improved
+[ ] No regressions
+[ ] Stable behavior
 [ ] Roadmap updated

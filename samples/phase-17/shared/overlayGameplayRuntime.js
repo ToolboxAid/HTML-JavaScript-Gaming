@@ -267,6 +267,30 @@ function resolveOverlayRuntimeEventQueue(context = {}, gameplayState = null, syn
   return null;
 }
 
+function hasOverlayRuntimeSyncPatch(syncPatch) {
+  if (!syncPatch || typeof syncPatch !== 'object') {
+    return false;
+  }
+  if (syncPatch.visible === true || syncPatch.visible === false) {
+    return true;
+  }
+  if (Number.isFinite(Number(syncPatch.interactionIndex))) {
+    return true;
+  }
+  return String(syncPatch.activeOverlayId || '').trim().length > 0;
+}
+
+function computeOverlayRuntimeCompatSignature(syncPatch, count) {
+  if (!hasOverlayRuntimeSyncPatch(syncPatch)) {
+    return '';
+  }
+  const visibleToken = syncPatch.visible === true ? '1' : (syncPatch.visible === false ? '0' : 'x');
+  const hasInteractionIndex = Number.isFinite(Number(syncPatch.interactionIndex));
+  const interactionToken = hasInteractionIndex ? String(Math.trunc(Number(syncPatch.interactionIndex))) : 'x';
+  const activeOverlayId = String(syncPatch.activeOverlayId || '').trim();
+  return `${visibleToken}|${interactionToken}|${activeOverlayId}|${Math.max(0, Number(count) || 0)}`;
+}
+
 export function enqueueOverlayGameplayRuntimeSyncEvent(target, event = {}) {
   if (!target || typeof target !== 'object') {
     return false;
@@ -300,6 +324,43 @@ function normalizeOverlayRuntimeSyncEvent(event) {
     visible: hasVisible ? event.visible : undefined,
     interactionIndex: hasInteractionIndex ? Number(event.interactionIndex) : undefined,
     activeOverlayId: hasActiveOverlayId ? String(event.activeOverlayId || '').trim() : '',
+  };
+}
+
+function consumeOverlayRuntimeSyncEvents(eventQueue = []) {
+  if (!Array.isArray(eventQueue) || eventQueue.length === 0) {
+    return {
+      eventsProcessed: 0,
+      patch: {},
+    };
+  }
+
+  const patch = {};
+  let eventsProcessed = 0;
+  for (let i = 0; i < eventQueue.length; i += 1) {
+    const event = normalizeOverlayRuntimeSyncEvent(eventQueue[i]);
+    if (!event) {
+      continue;
+    }
+    if (event.type !== 'overlay-runtime-sync' && event.type !== 'overlay-state-sync') {
+      continue;
+    }
+    eventsProcessed += 1;
+    if (event.visible === true || event.visible === false) {
+      patch.visible = event.visible;
+    }
+    if (Number.isFinite(event.interactionIndex)) {
+      patch.interactionIndex = event.interactionIndex;
+    }
+    if (event.activeOverlayId) {
+      patch.activeOverlayId = event.activeOverlayId;
+    }
+  }
+  eventQueue.length = 0;
+
+  return {
+    eventsProcessed,
+    patch,
   };
 }
 
@@ -372,27 +433,29 @@ export function synchronizeOverlayGameplayRuntimeState(runtime, context = {}) {
   const count = runtimeExtensions.length;
   let desyncCorrected = false;
   let eventsProcessed = 0;
+  let syncMode = 'cached';
 
   if (Array.isArray(eventQueue) && eventQueue.length > 0) {
-    const pending = eventQueue.splice(0, eventQueue.length);
-    for (let i = 0; i < pending.length; i += 1) {
-      const event = normalizeOverlayRuntimeSyncEvent(pending[i]);
-      if (!event) {
-        continue;
-      }
-      if (event.type !== 'overlay-runtime-sync' && event.type !== 'overlay-state-sync') {
-        continue;
-      }
-      const corrected = applyOverlayRuntimeSyncPatch(runtime, runtimeExtensions, event);
+    const consumedEvents = consumeOverlayRuntimeSyncEvents(eventQueue);
+    eventsProcessed = consumedEvents.eventsProcessed;
+    if (hasOverlayRuntimeSyncPatch(consumedEvents.patch)) {
+      const corrected = applyOverlayRuntimeSyncPatch(runtime, runtimeExtensions, consumedEvents.patch);
       desyncCorrected = desyncCorrected || corrected;
-      eventsProcessed += 1;
+    }
+    if (eventsProcessed > 0) {
+      syncMode = 'events';
     }
   }
 
-  // Compatibility fallback for pre-event producers.
+  // Compatibility fallback for pre-event producers with change detection to avoid repeated polling overhead.
   if (eventsProcessed === 0 && syncState) {
-    const corrected = applyOverlayRuntimeSyncPatch(runtime, runtimeExtensions, syncState);
-    desyncCorrected = desyncCorrected || corrected;
+    const compatSignature = computeOverlayRuntimeCompatSignature(syncState, count);
+    if (compatSignature && runtime.interactionCompatSyncSignature !== compatSignature) {
+      const corrected = applyOverlayRuntimeSyncPatch(runtime, runtimeExtensions, syncState);
+      desyncCorrected = desyncCorrected || corrected;
+      syncMode = 'compat';
+      runtime.interactionCompatSyncSignature = compatSignature;
+    }
   }
 
   const interactionIndex = normalizeInteractionIndex(runtime);
@@ -405,9 +468,10 @@ export function synchronizeOverlayGameplayRuntimeState(runtime, context = {}) {
     cycleKey: String(runtime.interactionCycleKey || LEVEL17_OVERLAY_CYCLE_KEY),
     desyncCorrected,
     eventsProcessed,
-    syncMode: eventsProcessed > 0 ? 'events' : 'compat',
+    syncMode,
   };
   writeOverlayRuntimeSyncSnapshot(syncState, snapshot);
+  runtime.interactionCompatSyncSignature = computeOverlayRuntimeCompatSignature(syncState, count);
   return snapshot;
 }
 

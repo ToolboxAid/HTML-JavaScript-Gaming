@@ -2,7 +2,7 @@ MODEL: GPT-5.4
 REASONING: medium
 
 COMMAND:
-Implement event-driven overlay updates:
-- Use events instead of polling
-- Improve responsiveness
+Optimize overlay performance:
+- Reduce overhead
+- Improve event efficiency
 - Update roadmap status only

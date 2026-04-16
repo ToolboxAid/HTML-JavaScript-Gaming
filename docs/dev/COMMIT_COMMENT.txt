@@ -1,4 +1,4 @@
-Add event-driven overlay updates.
+Optimize overlay performance.
 
 PR Details:
-- Improves responsiveness and efficiency
+- Improves efficiency and scalability
