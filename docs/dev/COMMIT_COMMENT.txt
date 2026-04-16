@@ -1,1 +1,1 @@
-Add 3D collision overlay debug panel
+Add 3D scene graph inspector panel
