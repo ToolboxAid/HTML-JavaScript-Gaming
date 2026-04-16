@@ -1,5 +1,5 @@
-Promote Level 19 overlay system to baseline.
+Introduce overlay system expansion framework.
 
 PR Details:
-- Marks completion of Level 19
-- Locks validated state
+- Enables future overlay extensibility
+- Maintains compatibility with Level 19 baseline

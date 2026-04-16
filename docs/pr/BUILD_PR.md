@@ -1,19 +1,21 @@
-# BUILD_PR_LEVEL_19_10_OVERLAY_PROMOTE_BASELINE
+# BUILD_PR_LEVEL_20_1_OVERLAY_SYSTEM_EXPANSION
 
 ## Purpose
-Promote validated Level 19 overlay system to baseline.
+Begin Level 20 by introducing a controlled expansion framework for new overlay types.
 
 ## Roadmap Improvement
-Marks Level 19 complete and production-ready.
+Transitions from stable baseline (Level 19) to extensible overlay architecture.
 
 ## Scope
-- Promote current implementation as baseline
-- Ensure no regression from validation state
+- Define extension points for new overlays
+- Ensure compatibility with existing systems
+- Validate one sample extension
 
 ## Test Steps
-1. Run gameplay with overlays
-2. Confirm all systems stable
+1. Load gameplay
+2. Register new overlay via extension
+3. Validate rendering + interaction
 
 ## Expected
-- Stable baseline
-- Ready for next level
+- New overlays plug in cleanly
+- No regression

@@ -1,3 +1,4 @@
-[ ] System stable
+[ ] Extension works
 [ ] No regressions
+[ ] Gameplay unaffected
 [ ] Roadmap updated
