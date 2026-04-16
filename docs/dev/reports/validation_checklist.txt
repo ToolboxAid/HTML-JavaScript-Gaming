@@ -1,5 +1,4 @@
-- [ ] game loop complete
-- [ ] score visible
-- [ ] restart works
-- [ ] debug panels intact
+- [ ] metrics visible
+- [ ] values update live
+- [ ] no performance issues
 - [ ] no console errors
