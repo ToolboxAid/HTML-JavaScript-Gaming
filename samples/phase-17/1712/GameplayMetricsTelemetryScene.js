@@ -4,7 +4,7 @@ David Quesenberry
 04/16/2026
 GameplayMetricsTelemetryScene.js
 */
-import { drawPanel } from '/src/engine/debug/index.js';
+import { createBottomRightDebugPanelStack, drawStackedDebugPanel } from '/src/engine/debug/index.js';
 import RealGameplayMiniGameScene from '/samples/phase-17/1708/RealGameplayMiniGameScene.js';
 const OVERLAY_TELEMETRY = 'telemetry';
 
@@ -96,12 +96,10 @@ export default class GameplayMetricsTelemetryScene extends RealGameplayMiniGameS
 
     const remainingCores = this.cores.filter((core) => core.collected === false).length;
     const objectCount = this.obstacles.length + this.enemies.length + this.cores.length + 1;
-    const panelX = 384;
-    const panelY = 34;
     const panelW = 228;
     const panelH = 244;
-
-    drawPanel(renderer, panelX, panelY, panelW, panelH, 'Telemetry Overlay', [
+    const debugStack = this.debugOverlayStack ?? createBottomRightDebugPanelStack(renderer);
+    const panelRect = drawStackedDebugPanel(renderer, debugStack, panelW, panelH, 'Telemetry Overlay', [
       `state=${this.gameState}`,
       `fps=${this.telemetry.avgFps.toFixed(1)} raw=${this.telemetry.rawFps.toFixed(1)}`,
       `playerSpeed=${this.telemetry.playerSpeed.toFixed(2)}`,
@@ -114,8 +112,8 @@ export default class GameplayMetricsTelemetryScene extends RealGameplayMiniGameS
 
     drawTelemetrySparkline(
       renderer,
-      panelX + 12,
-      panelY + panelH - 44,
+      panelRect.x + 12,
+      panelRect.y + panelRect.height - 44,
       panelW - 24,
       30,
       this.telemetry.speedHistory,

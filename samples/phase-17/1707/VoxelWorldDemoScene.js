@@ -6,7 +6,7 @@ VoxelWorldDemoScene.js
 */
 import { Scene } from '/src/engine/scene/index.js';
 import { Theme, ThemeTokens } from '/src/engine/theme/index.js';
-import { drawFrame, drawPanel } from '/src/engine/debug/index.js';
+import { createBottomRightDebugPanelStack, drawFrame, drawStackedDebugPanel } from '/src/engine/debug/index.js';
 import {
   createTabDebugOverlayController,
   getTabDebugOverlayStatusLabel,
@@ -174,7 +174,8 @@ export default class ChunkStreamingVoxelScene extends Scene {
     }
 
     if (isTabDebugOverlayActive(this.tabDebugOverlays, OVERLAY_CHUNK_RUNTIME)) {
-      drawPanel(renderer, 620, 34, 300, 188, 'Chunk Runtime', [
+      const debugStack = createBottomRightDebugPanelStack(renderer);
+      drawStackedDebugPanel(renderer, debugStack, 300, 188, 'Chunk Runtime', [
         `World cells: ${WORLD_SIZE}x${WORLD_SIZE}`,
         `Camera: x=${this.camera.x.toFixed(2)} z=${this.camera.z.toFixed(2)}`,
         `Chunk radius: ${this.chunkRadius}`,

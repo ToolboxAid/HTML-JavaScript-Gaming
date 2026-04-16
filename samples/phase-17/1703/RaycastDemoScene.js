@@ -6,7 +6,7 @@ RaycastDemoScene.js
 */
 import { Scene } from '/src/engine/scene/index.js';
 import { Theme, ThemeTokens } from '/src/engine/theme/index.js';
-import { drawFrame, drawPanel } from '/src/engine/debug/index.js';
+import { createBottomRightDebugPanelStack, drawFrame, drawStackedDebugPanel } from '/src/engine/debug/index.js';
 
 const theme = new Theme(ThemeTokens);
 
@@ -171,7 +171,8 @@ export default class WolfOptimizedRaycastScene extends Scene {
       this.lastFilledColumns += 1;
     }
 
-    drawPanel(renderer, 620, 34, 300, 182, 'Wolf Runtime', [
+    const debugStack = createBottomRightDebugPanelStack(renderer);
+    drawStackedDebugPanel(renderer, debugStack, 300, 182, 'Wolf Runtime', [
       `Player: x=${this.player.x.toFixed(2)} y=${this.player.y.toFixed(2)}`,
       `Angle: ${this.player.angle.toFixed(2)} rad`,
       `Filled columns: ${this.lastFilledColumns}`,

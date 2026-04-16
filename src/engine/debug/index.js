@@ -5,6 +5,11 @@ David Quesenberry
 index.js
 */
 export { drawSceneFrame, drawFrame, drawPanel } from './DebugPanel.js';
+export {
+  createBottomRightDebugPanelStack,
+  getNextBottomRightDebugPanelRect,
+  drawStackedDebugPanel,
+} from './DebugOverlayLayout.js';
 export { drawCombatDebugOverlay } from './CombatDebugOverlay.js';
 export { drawDebugBounds, drawDebugOverlay } from './DebugTools.js';
 export { drawPerformanceMetricsPanel } from './PerformanceMetricsPanel.js';

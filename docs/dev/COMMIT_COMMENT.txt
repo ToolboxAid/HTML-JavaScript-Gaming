@@ -1,3 +1,3 @@
-Standardize debug overlay behavior across samples 1707+ by introducing TAB-based cycling to prevent overlay stacking and improve usability.
+Reposition debug overlay panels to the bottom-right corner with vertical stacking to prevent interference with gameplay and HUD text.
 
-PR: BUILD_PR_LEVEL_17_48_APPLY_TAB_DEBUG_TO_SAMPLES_1707_PLUS
+PR: BUILD_PR_LEVEL_17_51_DEBUG_OVERLAY_POSITION_BOTTOM_RIGHT

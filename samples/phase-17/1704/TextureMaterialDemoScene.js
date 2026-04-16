@@ -6,7 +6,7 @@ TextureMaterialDemoScene.js
 */
 import { Scene } from '/src/engine/scene/index.js';
 import { Theme, ThemeTokens } from '/src/engine/theme/index.js';
-import { drawFrame, drawPanel } from '/src/engine/debug/index.js';
+import { createBottomRightDebugPanelStack, drawFrame, drawStackedDebugPanel } from '/src/engine/debug/index.js';
 import {
   applyPhase16CameraMode,
   createPhase16ViewState,
@@ -165,7 +165,8 @@ export default class TextureMaterialDemoScene extends Scene {
       this.drawTexturedSurface(renderer, sorted[i], cameraState, projectionViewport);
     }
 
-    drawPanel(renderer, 620, 34, 300, 188, 'Material Runtime', [
+    const debugStack = createBottomRightDebugPanelStack(renderer);
+    drawStackedDebugPanel(renderer, debugStack, 300, 188, 'Material Runtime', [
       `Textured surfaces: ${this.surfaces.length}`,
       `Image draws: ${this.lastImageDraws}`,
       `Light pulse: ${Math.sin(this.lightPulse).toFixed(2)}`,
@@ -177,6 +178,6 @@ export default class TextureMaterialDemoScene extends Scene {
     drawPhase16DebugOverlay(renderer, viewport, this.viewState, [
       'Each panel uses a distinct image texture source',
       'Tint overlay simulates lightweight material response',
-    ]);
+    ], { stack: debugStack });
   }
 }

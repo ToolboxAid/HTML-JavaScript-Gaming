@@ -6,7 +6,7 @@ ImageSkinnedCharacterDemoScene.js
 */
 import { Scene } from '/src/engine/scene/index.js';
 import { Theme, ThemeTokens } from '/src/engine/theme/index.js';
-import { drawFrame, drawPanel } from '/src/engine/debug/index.js';
+import { createBottomRightDebugPanelStack, drawFrame, drawStackedDebugPanel } from '/src/engine/debug/index.js';
 import {
   applyPhase16CameraMode,
   createPhase16ViewState,
@@ -169,7 +169,8 @@ export default class ImageSkinnedCharacterDemoScene extends Scene {
     this.lastImageDraws = 0;
     this.drawCharacter(renderer, cameraState, projectionViewport);
 
-    drawPanel(renderer, 620, 34, 300, 188, 'Character Runtime', [
+    const debugStack = createBottomRightDebugPanelStack(renderer);
+    drawStackedDebugPanel(renderer, debugStack, 300, 188, 'Character Runtime', [
       `Frame index: ${this.currentFrameIndex}`,
       `Image draws: ${this.lastImageDraws}`,
       `Character x: ${this.character.x.toFixed(2)}`,
@@ -181,6 +182,6 @@ export default class ImageSkinnedCharacterDemoScene extends Scene {
     drawPhase16DebugOverlay(renderer, viewport, this.viewState, [
       'Sprite sheet frame advances with motion cycle',
       'Character remains image-backed across all frames',
-    ]);
+    ], { stack: debugStack });
   }
 }

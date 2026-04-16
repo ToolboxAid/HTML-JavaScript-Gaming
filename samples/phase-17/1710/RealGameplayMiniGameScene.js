@@ -9,10 +9,12 @@ import { Theme, ThemeTokens } from '/src/engine/theme/index.js';
 import {
   PANEL_3D_CAMERA,
   PANEL_3D_COLLISION,
+  createBottomRightDebugPanelStack,
   createStandard3dPanels,
   createStandard3dProviders,
   drawFrame,
   drawPanel,
+  drawStackedDebugPanel,
 } from '/src/engine/debug/index.js';
 import {
   applyPhase16CameraMode,
@@ -491,14 +493,14 @@ export default class RealGameplayMiniGameScene extends Scene {
     this.syncCamera();
   }
 
-  renderStandardDebugPanel(renderer, panelId, x, y, width, height, maxLines = 8) {
+  renderStandardDebugPanel(renderer, panelId, stack, width, height, maxLines = 8) {
     const panel = this.standardDebugPanels.find((candidate) => candidate.id === panelId);
     if (!panel || typeof panel.render !== 'function') {
       return;
     }
     const rendered = panel.render(panel, {});
     const lines = Array.isArray(rendered?.lines) ? rendered.lines.slice(0, maxLines) : [];
-    drawPanel(renderer, x, y, width, height, rendered?.title || panelId, lines);
+    drawStackedDebugPanel(renderer, stack, width, height, rendered?.title || panelId, lines);
   }
 
   render(renderer) {
@@ -680,8 +682,10 @@ export default class RealGameplayMiniGameScene extends Scene {
           : `Status: ${this.gameState}.`,
     ]);
 
+    const debugStack = createBottomRightDebugPanelStack(renderer);
+    this.debugOverlayStack = debugStack;
     if (this.isDebugOverlayActive(OVERLAY_RUNTIME)) {
-      drawPanel(renderer, 620, 414, 300, 120, 'Mini-Game Runtime', [
+      drawStackedDebugPanel(renderer, debugStack, 300, 120, 'Mini-Game Runtime', [
         `Entities: obstacles=${this.obstacles.length} sentries=${this.enemies.length}`,
         `Remaining cores: ${this.cores.filter((core) => !core.collected).length}`,
         `Player: x=${this.player.x.toFixed(2)} z=${this.player.z.toFixed(2)}`,
@@ -691,17 +695,17 @@ export default class RealGameplayMiniGameScene extends Scene {
     }
 
     if (this.isDebugOverlayActive(OVERLAY_CAMERA)) {
-      this.renderStandardDebugPanel(renderer, PANEL_3D_CAMERA, 620, 34, 300, 150, 7);
+      this.renderStandardDebugPanel(renderer, PANEL_3D_CAMERA, debugStack, 300, 150, 7);
     }
     if (this.isDebugOverlayActive(OVERLAY_COLLISION)) {
-      this.renderStandardDebugPanel(renderer, PANEL_3D_COLLISION, 620, 194, 300, 210, 9);
+      this.renderStandardDebugPanel(renderer, PANEL_3D_COLLISION, debugStack, 300, 210, 9);
     }
 
     if (this.isDebugOverlayActive(OVERLAY_PHASE16)) {
       drawPhase16DebugOverlay(renderer, viewport, this.viewState, [
         `Match state: ${this.gameState}`,
         'Standard 3D camera/collision debug panels rendered from provider snapshots',
-      ]);
+      ], { stack: debugStack });
     }
   }
 }

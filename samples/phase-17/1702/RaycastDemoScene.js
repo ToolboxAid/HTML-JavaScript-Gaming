@@ -6,7 +6,7 @@ RaycastDemoScene.js
 */
 import { Scene } from '/src/engine/scene/index.js';
 import { Theme, ThemeTokens } from '/src/engine/theme/index.js';
-import { drawFrame, drawPanel } from '/src/engine/debug/index.js';
+import { createBottomRightDebugPanelStack, drawFrame, drawStackedDebugPanel } from '/src/engine/debug/index.js';
 
 const theme = new Theme(ThemeTokens);
 
@@ -166,7 +166,8 @@ export default class WolfGridRaycastScene extends Scene {
     }
 
     this.drawMiniMap(renderer);
-    drawPanel(renderer, 620, 34, 300, 170, 'Wolf Runtime', [
+    const debugStack = createBottomRightDebugPanelStack(renderer);
+    drawStackedDebugPanel(renderer, debugStack, 300, 170, 'Wolf Runtime', [
       `Player: x=${this.player.x.toFixed(2)} y=${this.player.y.toFixed(2)}`,
       `Angle: ${this.player.angle.toFixed(2)} rad`,
       `FOV: ${(this.fov * 180 / Math.PI).toFixed(0)} deg`,

@@ -6,7 +6,7 @@ VoxelWorldDemoScene.js
 */
 import { Scene } from '/src/engine/scene/index.js';
 import { Theme, ThemeTokens } from '/src/engine/theme/index.js';
-import { drawFrame, drawPanel } from '/src/engine/debug/index.js';
+import { createBottomRightDebugPanelStack, drawFrame, drawStackedDebugPanel } from '/src/engine/debug/index.js';
 
 const theme = new Theme(ThemeTokens);
 const WORLD_SIZE = 10;
@@ -130,7 +130,8 @@ export default class VoxelWorldDemoScene extends Scene {
       this.drawBlock(renderer, block.x, block.y, block.z, block.baseRgb);
     }
 
-    drawPanel(renderer, 620, 34, 300, 170, 'Voxel Runtime', [
+    const debugStack = createBottomRightDebugPanelStack(renderer);
+    drawStackedDebugPanel(renderer, debugStack, 300, 170, 'Voxel Runtime', [
       `World: ${WORLD_SIZE}x${WORLD_SIZE}`,
       `Camera: x=${this.camera.x.toFixed(2)} z=${this.camera.z.toFixed(2)} y=${this.camera.y.toFixed(2)}`,
       `Blocks drawn: ${blocks.length}`,

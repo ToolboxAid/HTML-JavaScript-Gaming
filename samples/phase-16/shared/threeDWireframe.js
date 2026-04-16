@@ -4,6 +4,8 @@ David Quesenberry
 04/15/2026
 threeDWireframe.js
 */
+import { getNextBottomRightDebugPanelRect } from '/src/engine/debug/DebugOverlayLayout.js';
+
 const BOX_EDGES = [
   [0, 1], [1, 2], [2, 3], [3, 0],
   [4, 5], [5, 6], [6, 7], [7, 4],
@@ -260,7 +262,7 @@ export function drawDepthBackdrop(renderer, viewport, {
   }
 }
 
-export function drawPhase16DebugOverlay(renderer, viewport, viewState, lines = []) {
+export function drawPhase16DebugOverlay(renderer, viewport, viewState, lines = [], { stack = null } = {}) {
   if (!viewState?.debugOverlayEnabled) {
     return;
   }
@@ -272,14 +274,17 @@ export function drawPhase16DebugOverlay(renderer, viewport, viewState, lines = [
     ...lines,
   ];
 
-  const x = viewport.x + 12;
-  const y = viewport.y + 12;
   const width = Math.min(420, viewport.width - 24);
   const height = 30 + overlayLines.length * 18;
-  renderer.drawRect(x, y, width, height, 'rgba(15, 23, 42, 0.84)');
-  renderer.strokeRect(x, y, width, height, '#475569', 1);
+  const defaultX = viewport.x + 12;
+  const defaultY = viewport.y + 12;
+  const rect = stack
+    ? getNextBottomRightDebugPanelRect(stack, width, height)
+    : { x: defaultX, y: defaultY, width, height };
+  renderer.drawRect(rect.x, rect.y, rect.width, rect.height, 'rgba(15, 23, 42, 0.84)');
+  renderer.strokeRect(rect.x, rect.y, rect.width, rect.height, '#475569', 1);
   overlayLines.forEach((line, index) => {
-    renderer.drawText(line, x + 10, y + 22 + index * 18, {
+    renderer.drawText(line, rect.x + 10, rect.y + 22 + index * 18, {
       color: '#e2e8f0',
       font: '13px monospace',
     });

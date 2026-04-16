@@ -1,3 +1,3 @@
 MODEL: GPT-5.3-codex
 REASONING: high
-COMMAND: Apply TAB-based debug overlay cycling to all samples from 1707 onward using shared debug infrastructure, ensuring only one overlay is visible at a time, preserving gameplay, and package to <project folder>/tmp/BUILD_PR_LEVEL_17_48_APPLY_TAB_DEBUG_TO_SAMPLES_1707_PLUS.zip
+COMMAND: Move debug overlay panels to bottom-right corner with vertical stacking and spacing, apply across shared debug system for samples 1701+, preserve existing behavior, and package to <project folder>/tmp/BUILD_PR_LEVEL_17_51_DEBUG_OVERLAY_POSITION_BOTTOM_RIGHT.zip

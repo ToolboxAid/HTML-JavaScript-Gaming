@@ -6,7 +6,7 @@ MovementModelsLabScene.js
 */
 import { Scene } from '/src/engine/scene/index.js';
 import { Theme, ThemeTokens } from '/src/engine/theme/index.js';
-import { drawFrame, drawPanel } from '/src/engine/debug/index.js';
+import { createBottomRightDebugPanelStack, drawFrame, drawPanel, drawStackedDebugPanel } from '/src/engine/debug/index.js';
 import {
   createTabDebugOverlayController,
   getTabDebugOverlayStatusLabel,
@@ -333,8 +333,9 @@ export default class MovementModelsLabScene extends Scene {
     const runtimeX = hudX;
     const runtimeY = Math.max(12, hudY - runtimeHeight - runtimeGap);
 
+    const debugStack = createBottomRightDebugPanelStack(renderer);
     if (isTabDebugOverlayActive(this.tabDebugOverlays, OVERLAY_MOVEMENT_RUNTIME)) {
-      drawPanel(renderer, runtimeX, runtimeY, runtimeWidth, runtimeHeight, 'Movement Runtime', [
+      drawStackedDebugPanel(renderer, debugStack, runtimeWidth, runtimeHeight, 'Movement Runtime', [
         `Mode: ${formatMode(this.movementMode)}`,
         `Actor: x=${this.actor.x.toFixed(2)} z=${this.actor.z.toFixed(2)}`,
         `Velocity (weighted): x=${this.weightedVelocity.x.toFixed(2)} z=${this.weightedVelocity.z.toFixed(2)}`,
@@ -362,7 +363,7 @@ export default class MovementModelsLabScene extends Scene {
       drawPhase16DebugOverlay(renderer, viewport, this.viewState, [
         `Active movement model: ${formatMode(this.movementMode)}`,
         'Use 1/2/3 or M to compare control response in real time.',
-      ]);
+      ], { stack: debugStack });
     }
   }
 }
