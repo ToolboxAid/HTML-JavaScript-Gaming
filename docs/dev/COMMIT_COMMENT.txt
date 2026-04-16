@@ -1,1 +1,1 @@
-Add Advanced 3D Sample 1621 (AI Navigation Demo)
+Expand Level 17 rendering samples to 2 per technique (DOOM, Wolf, Unreal, Minecraft)

@@ -1,3 +1,3 @@
 MODEL: GPT-5.3-codex
 REASONING: high
-COMMAND: Implement sample 1621 AI navigation demo with visible pathing, integrate into samples/index.html, package to <project folder>/tmp/BUILD_PR_LEVEL_17_31_ADVANCED_3D_SAMPLES_BATCH_5.zip
+COMMAND: Implement 8 rendering samples (2 per category: DOOM, Wolf, Unreal, Minecraft), move samples 1623-1625 into Phase 17 grouping, update samples/index.html, package to <project folder>/tmp/BUILD_PR_LEVEL_17_34_RENDERING_TECHNIQUE_EXPANSION.zip

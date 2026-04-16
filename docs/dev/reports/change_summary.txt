@@ -1,4 +1,4 @@
 Summary
-- bundles the final Transform Inspector completion with Track H status closeout to reduce churn
-- keeps the bundle testable and limited to the 3D debug-support lane
-- performs roadmap updates only as conservative status changes after implementation evidence exists
+- converts the rendering-and-animation expansion into a compact four-sample demonstrator bundle
+- uses a couple of filled samples and a couple of image-skinned samples to make the documented concepts visible
+- reduces churn by avoiding a large diffuse sample explosion while still proving the capability set

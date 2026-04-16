@@ -1,3 +1,4 @@
-- [ ] sample loads
-- [ ] agents move
-- [ ] paths visible
+
+- [ ] 8 samples load
+- [ ] each technique visually distinct
+- [ ] index updated
