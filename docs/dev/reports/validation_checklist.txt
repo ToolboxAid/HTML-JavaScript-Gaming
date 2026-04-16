@@ -1,6 +1,4 @@
-[ ] Gameplay sample with overlays loads
-[ ] Overlay show/hide control works
-[ ] Overlay cycle control works
-[ ] Gameplay controls remain responsive while using overlay controls
-[ ] No Tab-based overlay interaction is introduced
-[ ] Debug overlay behavior remains unchanged
+[ ] Gameplay input unaffected
+[ ] Overlay controls work
+[ ] No focus conflicts
+[ ] No Tab usage

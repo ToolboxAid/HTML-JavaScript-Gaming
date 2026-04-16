@@ -5,7 +5,7 @@ David Quesenberry
 overlayGameplayRuntime.js
 */
 import {
-  isOverlayCycleReverseModifierActive,
+  isOverlayRuntimeCycleModifierActive,
   isOverlayRuntimeToggleModifierActive,
   LEVEL17_OVERLAY_CYCLE_KEY,
 } from '/samples/phase-17/shared/overlayCycleInput.js';
@@ -123,11 +123,15 @@ export function stepOverlayGameplayRuntimeControls(runtime, input) {
   const cycleKey = String(runtime.interactionCycleKey || LEVEL17_OVERLAY_CYCLE_KEY);
   const cyclePressed = input?.isDown(cycleKey) === true;
   const toggleModifierActive = isOverlayRuntimeToggleModifierActive(input);
-  const togglePressed = cyclePressed && toggleModifierActive;
-  const reverseActive = isOverlayCycleReverseModifierActive(input);
+  const cycleModifierActive = isOverlayRuntimeCycleModifierActive(input);
+  const explicitActionPressed = cyclePressed && toggleModifierActive;
+  const togglePressed = explicitActionPressed && !cycleModifierActive;
+  const runtimeCyclePressed = explicitActionPressed && cycleModifierActive;
 
-  if (!togglePressed) {
+  if (!explicitActionPressed) {
     runtime.interactionToggleLatch = false;
+    runtime.interactionCycleLatch = false;
+    return false;
   }
 
   if (togglePressed && runtime.interactionToggleLatch === false) {
@@ -137,8 +141,10 @@ export function stepOverlayGameplayRuntimeControls(runtime, input) {
     return true;
   }
 
-  if (!cyclePressed || toggleModifierActive) {
-    runtime.interactionCycleLatch = false;
+  if (!runtimeCyclePressed) {
+    if (!togglePressed) {
+      runtime.interactionCycleLatch = false;
+    }
     return false;
   }
 
@@ -153,8 +159,7 @@ export function stepOverlayGameplayRuntimeControls(runtime, input) {
 
   normalizeInteractionIndex(runtime);
   const count = runtime.runtimeExtensions.length;
-  const delta = reverseActive ? -1 : 1;
-  runtime.interactionIndex = (runtime.interactionIndex + delta + count) % count;
+  runtime.interactionIndex = (runtime.interactionIndex + 1 + count) % count;
   return true;
 }
 

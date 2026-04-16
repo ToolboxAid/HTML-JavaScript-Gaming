@@ -1,6 +1,5 @@
-Add gameplay-safe overlay interaction controls.
+Add overlay focus and input priority rules.
 
 PR Details:
-- Enables show/hide/cycle controls for gameplay overlays
-- Preserves shared non-Tab input mapping
-- Adds focused validation for non-interference with gameplay controls
+- Defines gameplay-first input priority
+- Prevents overlay focus conflicts

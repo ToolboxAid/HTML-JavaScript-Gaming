@@ -121,6 +121,9 @@ Commit Comment:
 - Preserve wording unless the PR explicitly requires rewriting.
 - Keep roadmap handling status-only unless explicitly requested otherwise.
 - Do not delete roadmap content during cleanup work.
+- Do not modify roadmap content during cleanup work.
+- Only update status [ ] [.] [x] in roadmap content during cleanup work.
+
 
 ## EXECUTION EFFICIENCY
 
@@ -132,4 +135,6 @@ Commit Comment:
   - Choose the correct path automatically
   - Reduce the number of options presented
   - Do the right thing and complete the task fully and correctly
+  - Don't ask if I want the next bundled PR, assume I want it.
+- Update Roadmap stutus every PR.
 

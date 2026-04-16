@@ -8,6 +8,7 @@ import assert from 'node:assert/strict';
 import RealGameplayMiniGameScene from '../../samples/phase-17/1708/RealGameplayMiniGameScene.js';
 import {
   getOverlayCycleInputCodes,
+  getOverlayRuntimeCycleInputCodes,
   getOverlayRuntimeToggleInputCodes,
 } from '../../samples/phase-17/shared/overlayCycleInput.js';
 import { resetTabDebugOverlayPersistenceForTests } from '../../samples/phase-17/shared/tabDebugOverlayCycle.js';
@@ -71,7 +72,15 @@ function pressOverlayRuntimeToggle(scene) {
   scene.step3DPhysics(0.02, { input: makeInput([]) });
 }
 
+function pressOverlayRuntimeCycle(scene) {
+  scene.step3DPhysics(0.02, { input: makeInput(getOverlayRuntimeCycleInputCodes()) });
+  scene.step3DPhysics(0.02, { input: makeInput([]) });
+}
+
 function assertGameplayOverlayRuntimeHooksAreNonBlocking() {
+  assert.equal(getOverlayRuntimeToggleInputCodes().includes('Tab'), false, 'Runtime overlay toggle mapping must not use Tab.');
+  assert.equal(getOverlayRuntimeCycleInputCodes().includes('Tab'), false, 'Runtime overlay cycle mapping must not use Tab.');
+
   const scene = new RealGameplayMiniGameScene();
   scene.setCamera3D(createCameraStub());
 
@@ -123,7 +132,11 @@ function assertGameplayOverlayRuntimeHooksAreNonBlocking() {
   scene.render(missionFeedRenderer);
   assert.equal(missionFeedRenderer.texts.some((text) => text.includes('Mission Feed')), true, 'Debug overlay cycle behavior should remain unchanged.');
   scene.step3DPhysics(0.05, { input: makeInput([]) });
-  assert.equal(counters.bStep > beforeCycleBStep, true, 'Gameplay overlay runtime cycle control should switch active runtime extension.');
+  assert.equal(counters.bStep, beforeCycleBStep, 'Plain debug overlay cycle should not switch gameplay runtime overlay extension.');
+
+  pressOverlayRuntimeCycle(scene);
+  scene.step3DPhysics(0.05, { input: makeInput([]) });
+  assert.equal(counters.bStep > beforeCycleBStep, true, 'Explicit runtime overlay cycle control should switch active runtime extension.');
 
   const beforeHideStep = counters.aStep + counters.bStep;
   pressOverlayRuntimeToggle(scene);
@@ -133,6 +146,10 @@ function assertGameplayOverlayRuntimeHooksAreNonBlocking() {
   pressOverlayRuntimeToggle(scene);
   scene.step3DPhysics(0.05, { input: makeInput([]) });
   assert.equal(counters.aStep + counters.bStep > beforeHideStep, true, 'Runtime overlay toggle should restore runtime overlay execution.');
+
+  const beforeMoveWithRuntimeControl = scene.player.x;
+  scene.step3DPhysics(0.2, { input: makeInput(['KeyD', ...getOverlayRuntimeCycleInputCodes()]) });
+  assert.equal(scene.player.x > beforeMoveWithRuntimeControl, true, 'Gameplay movement input should remain primary during explicit runtime overlay control actions.');
 
   scene.setOverlayGameplayRuntimeExtensions([
     {
