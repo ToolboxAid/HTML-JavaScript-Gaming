@@ -1,2 +1,3 @@
-- [ ] services initialize
-- [ ] no runtime errors
+- [ ] runtime initializes
+- [ ] loop executes
+- [ ] no errors

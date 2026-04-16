@@ -11,30 +11,35 @@ import { drawFrame, drawPanel } from '/src/engine/debug/index.js';
 const theme = new Theme(ThemeTokens);
 
 export default class Phase18FoundationScene extends Scene {
-  constructor({ coreServices = null } = {}) {
+  constructor({ runtimeLayer = null } = {}) {
     super();
     this.elapsed = 0;
-    this.coreServices = coreServices;
+    this.runtimeLayer = runtimeLayer;
     this.lastHeartbeatTick = 0;
     this.lastHeartbeatTime = 0;
+    this.lastRuntimeTransition = 'idle';
     this.unsubscribeHeartbeat = null;
+    this.unsubscribeRuntimeState = null;
   }
 
   enter(engine) {
-    if (!this.coreServices) return;
-    const channel = this.coreServices.get('phase18.channel');
+    if (!this.runtimeLayer) return;
+    const channel = this.runtimeLayer.getService('phase18.channel');
     if (channel && typeof channel.subscribe === 'function') {
       this.unsubscribeHeartbeat = channel.subscribe('phase18.heartbeat', (payload) => {
         this.lastHeartbeatTick = Number(payload?.tick) || 0;
         this.lastHeartbeatTime = Number(payload?.t) || 0;
       });
     }
-    this.coreServices.start({ engine, scene: this });
+    this.unsubscribeRuntimeState = this.runtimeLayer.onStateChange(({ previous, next }) => {
+      this.lastRuntimeTransition = `${previous} -> ${next}`;
+    });
+    this.runtimeLayer.start({ engine, scene: this });
   }
 
   update(dtSeconds) {
     this.elapsed += dtSeconds;
-    this.coreServices?.update(dtSeconds, { scene: this });
+    this.runtimeLayer?.update(dtSeconds, { scene: this });
   }
 
   exit() {
@@ -42,13 +47,17 @@ export default class Phase18FoundationScene extends Scene {
       this.unsubscribeHeartbeat();
       this.unsubscribeHeartbeat = null;
     }
-    this.coreServices?.stop({ scene: this });
+    if (typeof this.unsubscribeRuntimeState === 'function') {
+      this.unsubscribeRuntimeState();
+      this.unsubscribeRuntimeState = null;
+    }
+    this.runtimeLayer?.stop({ scene: this });
   }
 
   render(renderer) {
     drawFrame(renderer, theme, [
       'Sample 1801 - Phase 18 Foundation',
-      'Minimal Phase 18 structure bootstrap and launcher wiring.',
+      'Minimal Phase 18 runtime-layer scaffolding integrated with core services.',
       'No feature implementation in this scaffold.',
     ]);
 
@@ -63,11 +72,18 @@ export default class Phase18FoundationScene extends Scene {
       font: '16px monospace',
     });
 
+    const runtimeSnapshot = this.runtimeLayer?.getSnapshot?.() || {
+      state: 'idle',
+      tickCount: 0,
+      serviceIds: [],
+    };
     drawPanel(renderer, 620, 34, 300, 160, 'Phase 18 Bootstrap', [
       'Status: initialized',
       'Folder: samples/phase-18',
       'Entry sample: 1801',
-      `Services: ${this.coreServices?.listServiceIds().length ?? 0}`,
+      `Runtime: ${runtimeSnapshot.state} | tick ${runtimeSnapshot.tickCount}`,
+      `Transition: ${this.lastRuntimeTransition}`,
+      `Services: ${runtimeSnapshot.serviceIds.length}`,
       `Heartbeat tick: ${this.lastHeartbeatTick} @ ${this.lastHeartbeatTime.toFixed(2)}s`,
     ]);
   }

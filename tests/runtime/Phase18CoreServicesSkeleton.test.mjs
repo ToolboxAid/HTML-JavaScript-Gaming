@@ -6,6 +6,7 @@ Phase18CoreServicesSkeleton.test.mjs
 */
 import assert from 'node:assert/strict';
 import createPhase18CoreServices from '../../samples/phase-18/shared/coreServices/createPhase18CoreServices.js';
+import createPhase18RuntimeLayer from '../../samples/phase-18/shared/runtimeLayer/createPhase18RuntimeLayer.js';
 import Phase18FoundationScene from '../../samples/phase-18/1801/Phase18FoundationScene.js';
 
 function createRendererProbe(width = 960, height = 540) {
@@ -57,7 +58,8 @@ function assertCoreServiceLifecycleAndCommunication() {
 
 function assertPhase18SampleWiring() {
   const services = createPhase18CoreServices();
-  const scene = new Phase18FoundationScene({ coreServices: services });
+  const runtimeLayer = createPhase18RuntimeLayer({ coreServices: services });
+  const scene = new Phase18FoundationScene({ runtimeLayer });
 
   scene.enter({});
   scene.update(0.55);
@@ -72,7 +74,7 @@ function assertPhase18SampleWiring() {
   );
 
   scene.exit();
-  assert.equal(services.getLifecycleState().running, false, 'Scene exit should stop core services.');
+  assert.equal(services.getLifecycleState().running, false, 'Scene exit should stop core services through runtime integration.');
 }
 
 export function run() {

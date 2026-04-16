@@ -1,1 +1,1 @@
-Phase 18 core services skeleton
+Phase 18 runtime layer scaffolding

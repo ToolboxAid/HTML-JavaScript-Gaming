@@ -8,6 +8,7 @@ import Engine from '/src/engine/core/Engine.js';
 import { InputService } from '/src/engine/input/index.js';
 import { Theme, ThemeTokens } from '/src/engine/theme/index.js';
 import createPhase18CoreServices from '/samples/phase-18/shared/coreServices/createPhase18CoreServices.js';
+import createPhase18RuntimeLayer from '/samples/phase-18/shared/runtimeLayer/createPhase18RuntimeLayer.js';
 import Phase18FoundationScene from './Phase18FoundationScene.js';
 
 const theme = new Theme(ThemeTokens);
@@ -25,5 +26,6 @@ const engine = new Engine({
 });
 
 const coreServices = createPhase18CoreServices();
-engine.setScene(new Phase18FoundationScene({ coreServices }));
+const runtimeLayer = createPhase18RuntimeLayer({ coreServices });
+engine.setScene(new Phase18FoundationScene({ runtimeLayer }));
 engine.start();
