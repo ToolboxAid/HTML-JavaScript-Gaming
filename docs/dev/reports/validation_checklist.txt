@@ -1,3 +1,4 @@
-[ ] Stable
-[ ] No regressions
+[ ] Interaction works
+[ ] No gameplay interference
+[ ] Stable behavior
 [ ] Roadmap updated

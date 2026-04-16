@@ -91,6 +91,18 @@ function normalizeInteractionIndex(runtime) {
   return normalized;
 }
 
+function getOverlayLayoutKey(overlayId, registrationIndex = -1) {
+  const normalizedOverlayId = String(overlayId || '').trim();
+  if (normalizedOverlayId) {
+    return `id:${normalizedOverlayId}`;
+  }
+  const numericIndex = Number(registrationIndex);
+  if (Number.isInteger(numericIndex) && numericIndex >= 0) {
+    return `idx:${numericIndex}`;
+  }
+  return '';
+}
+
 function findRuntimeExtensionIndexByOverlayId(runtime, overlayId) {
   if (!runtime || !Array.isArray(runtime.runtimeExtensions)) {
     return -1;
@@ -105,6 +117,65 @@ function findRuntimeExtensionIndexByOverlayId(runtime, overlayId) {
     }
   }
   return -1;
+}
+
+function normalizeLayoutOverrideRect(rect) {
+  if (!rect || typeof rect !== 'object') {
+    return null;
+  }
+  const x = Number(rect.x);
+  const y = Number(rect.y);
+  const width = Number(rect.width);
+  const height = Number(rect.height);
+  if (!Number.isFinite(x) || !Number.isFinite(y) || !Number.isFinite(width) || !Number.isFinite(height)) {
+    return null;
+  }
+  if (width <= 0 || height <= 0) {
+    return null;
+  }
+  return {
+    x,
+    y,
+    width,
+    height,
+  };
+}
+
+function getOverlayLayoutOverride(runtime, layoutKey) {
+  if (!runtime || !layoutKey) {
+    return null;
+  }
+  const overrides = runtime.interactionLayoutOverrides;
+  if (!overrides || typeof overrides !== 'object') {
+    return null;
+  }
+  return normalizeLayoutOverrideRect(overrides[layoutKey]);
+}
+
+function setOverlayLayoutOverride(runtime, layoutKey, rect) {
+  if (!runtime || !layoutKey) {
+    return false;
+  }
+  const normalizedRect = normalizeLayoutOverrideRect(rect);
+  if (!normalizedRect) {
+    return false;
+  }
+  if (!runtime.interactionLayoutOverrides || typeof runtime.interactionLayoutOverrides !== 'object') {
+    runtime.interactionLayoutOverrides = Object.create(null);
+  }
+  runtime.interactionLayoutOverrides[layoutKey] = normalizedRect;
+  return true;
+}
+
+function clearOverlayLayoutOverride(runtime, layoutKey) {
+  if (!runtime || !layoutKey || !runtime.interactionLayoutOverrides || typeof runtime.interactionLayoutOverrides !== 'object') {
+    return false;
+  }
+  if (!Object.prototype.hasOwnProperty.call(runtime.interactionLayoutOverrides, layoutKey)) {
+    return false;
+  }
+  delete runtime.interactionLayoutOverrides[layoutKey];
+  return true;
 }
 
 function normalizeSafeZoneEntry(entry) {
@@ -503,6 +574,7 @@ function getComposedRuntimeFrames(runtime, activeOverlayId, context = {}) {
       registrationIndex: i,
       isActive,
       contextBehavior,
+      layoutKey: getOverlayLayoutKey(extension.overlayId, i),
     });
   }
 
@@ -627,7 +699,7 @@ function resolveDynamicPanelSize(extension, layoutContext, fallbackWidth, fallba
   }
 }
 
-function attachCompositionSlots(frames, renderer, safeZones = [], layoutContext = {}) {
+function attachCompositionSlots(frames, renderer, safeZones = [], layoutContext = {}, runtime = null) {
   if (!Array.isArray(frames) || frames.length === 0) {
     return frames || [];
   }
@@ -725,6 +797,27 @@ function attachCompositionSlots(frames, renderer, safeZones = [], layoutContext 
     const slotHeight = Math.min(maxPanelHeight, Math.max(32, Number(dynamicPanelSize.height) || fallbackHeight));
     const anchorOrder = ['bottom-right', 'top-right', 'bottom-left', 'top-left'];
 
+    const layoutKey = String(frame.layoutKey || getOverlayLayoutKey(frame.extension?.overlayId, frame.registrationIndex)).trim();
+    const overrideRect = getOverlayLayoutOverride(runtime, layoutKey);
+    if (overrideRect) {
+      const clampedWidth = Math.max(120, Math.min(maxPanelWidth, overrideRect.width));
+      const clampedHeight = Math.max(32, Math.min(maxPanelHeight, overrideRect.height));
+      const clampedX = Math.max(0, Math.min(width - clampedWidth, overrideRect.x));
+      const clampedY = Math.max(0, Math.min(height - clampedHeight, overrideRect.y));
+      const overrideSlot = {
+        x: Math.round(clampedX),
+        y: Math.round(clampedY),
+        width: Math.round(clampedWidth),
+        height: Math.round(clampedHeight),
+        anchor: 'custom',
+      };
+      frame.slot = Object.freeze({
+        ...overrideSlot,
+      });
+      placedSlots.push(overrideSlot);
+      continue;
+    }
+
     let slot = null;
     for (let j = 0; j < anchorOrder.length; j += 1) {
       const anchor = anchorOrder[j];
@@ -803,6 +896,11 @@ export function createOverlayGameplayRuntime({ runtimeExtensions = [] } = {}) {
     interactionMaxHoldSeconds: 1.25,
     interactionExplicitHoldSeconds: 0,
     interactionSuppressUntilRelease: false,
+    interactionCompatSyncSignature: '',
+    interactionLayoutOverrides: Object.create(null),
+    interactionSelectedLayoutKey: '',
+    interactionPointerDragState: null,
+    interactionPointerLastDown: false,
   };
 }
 
@@ -851,7 +949,8 @@ export function getOverlayGameplayRuntimeCompositionSnapshot(runtime, context = 
     getComposedRuntimeFrames(runtime, activeOverlayId, context),
     context?.renderer,
     safeZones,
-    context
+    context,
+    runtime
   ));
   const visibleFrames = applyCompositionReadabilityLimits(frames, context?.renderer);
   const visibleSet = new Set(visibleFrames);
@@ -870,6 +969,7 @@ export function getOverlayGameplayRuntimeCompositionSnapshot(runtime, context = 
     isActive: frame.isActive === true,
     overlayId: frame.extension.overlayId,
     slot: frame.slot,
+    layoutKey: frame.layoutKey,
   }));
 }
 
@@ -953,6 +1053,198 @@ export function stepOverlayGameplayRuntimeControls(runtime, input, options = {})
   return true;
 }
 
+function normalizePointerNumber(value, fallback = 0) {
+  const numeric = Number(value);
+  if (!Number.isFinite(numeric)) {
+    return fallback;
+  }
+  return numeric;
+}
+
+function normalizePointerState(pointerState = {}, runtime = null) {
+  const down = pointerState?.down === true;
+  const previousDown = runtime?.interactionPointerLastDown === true;
+  const pressed = pointerState?.pressed === true || (down && !previousDown);
+  const released = pointerState?.released === true || (!down && previousDown);
+  const x = normalizePointerNumber(pointerState?.x, -1);
+  const y = normalizePointerNumber(pointerState?.y, -1);
+  const modifiers = pointerState?.modifiers && typeof pointerState.modifiers === 'object'
+    ? pointerState.modifiers
+    : {};
+  return {
+    x,
+    y,
+    down,
+    pressed,
+    released,
+    modifiers: {
+      shift: modifiers.shift === true,
+      alt: modifiers.alt === true,
+      ctrl: modifiers.ctrl === true,
+      meta: modifiers.meta === true,
+    },
+  };
+}
+
+function isPointInsideRect(x, y, rect) {
+  if (!rect) {
+    return false;
+  }
+  return x >= rect.x && y >= rect.y && x <= rect.x + rect.width && y <= rect.y + rect.height;
+}
+
+function resolveTopMostInteractiveFrame(frames, x, y) {
+  if (!Array.isArray(frames) || frames.length === 0) {
+    return null;
+  }
+  for (let i = frames.length - 1; i >= 0; i -= 1) {
+    const frame = frames[i];
+    if (frame?.hiddenByClutter === true) {
+      continue;
+    }
+    if (!isPointInsideRect(x, y, frame?.slot)) {
+      continue;
+    }
+    return frame;
+  }
+  return null;
+}
+
+function clampOverlayLayoutRect(rect, canvasWidth, canvasHeight, minPanelWidth, minPanelHeight) {
+  const width = Math.max(minPanelWidth, Math.min(canvasWidth, normalizePointerNumber(rect?.width, minPanelWidth)));
+  const height = Math.max(minPanelHeight, Math.min(canvasHeight, normalizePointerNumber(rect?.height, minPanelHeight)));
+  const x = Math.max(0, Math.min(canvasWidth - width, normalizePointerNumber(rect?.x, 0)));
+  const y = Math.max(0, Math.min(canvasHeight - height, normalizePointerNumber(rect?.y, 0)));
+  return {
+    x: Math.round(x),
+    y: Math.round(y),
+    width: Math.round(width),
+    height: Math.round(height),
+  };
+}
+
+export function stepOverlayGameplayRuntimePointerInteractions(runtime, pointerState = {}, options = {}) {
+  if (!runtime) {
+    return {
+      changed: false,
+      consumed: false,
+      selectedLayoutKey: '',
+      activeMode: '',
+    };
+  }
+
+  const normalizedPointer = normalizePointerState(pointerState, runtime);
+  runtime.interactionPointerLastDown = normalizedPointer.down;
+  const result = {
+    changed: false,
+    consumed: false,
+    selectedLayoutKey: String(runtime.interactionSelectedLayoutKey || ''),
+    activeMode: String(runtime?.interactionPointerDragState?.mode || ''),
+  };
+
+  if (options?.enablePointerInteractions !== true || runtime.interactionVisible === false) {
+    if (normalizedPointer.released || normalizedPointer.down === false) {
+      runtime.interactionPointerDragState = null;
+    }
+    return result;
+  }
+
+  const requireModifier = options?.requireModifier !== false;
+  const modifierActive = requireModifier
+    ? (normalizedPointer.modifiers.alt === true && normalizedPointer.modifiers.shift === true)
+    : true;
+  const hasActiveDragState = runtime?.interactionPointerDragState && typeof runtime.interactionPointerDragState === 'object';
+  if (!modifierActive && !hasActiveDragState) {
+    return result;
+  }
+
+  const context = {
+    ...(options?.context || {}),
+    renderer: options?.renderer || options?.context?.renderer,
+    activeOverlayId: String(options?.activeOverlayId || options?.context?.activeOverlayId || ''),
+  };
+  const canvasSize = context.renderer?.getCanvasSize?.() || { width: 960, height: 540 };
+  const canvasWidth = Math.max(320, normalizePointerNumber(canvasSize.width, 960));
+  const canvasHeight = Math.max(180, normalizePointerNumber(canvasSize.height, 540));
+  const minPanelWidth = Math.max(120, Number(options?.minPanelWidth) || 120);
+  const minPanelHeight = Math.max(32, Number(options?.minPanelHeight) || 32);
+  const resizeHandleSize = Math.max(8, Number(options?.resizeHandleSize) || 14);
+
+  const frames = getOverlayGameplayRuntimeCompositionSnapshot(runtime, context).filter((frame) => frame?.slot);
+  const activeDragState = runtime.interactionPointerDragState || null;
+
+  if (normalizedPointer.pressed) {
+    const selectedFrame = resolveTopMostInteractiveFrame(frames, normalizedPointer.x, normalizedPointer.y);
+    if (selectedFrame && selectedFrame.slot) {
+      const layoutKey = String(selectedFrame.layoutKey || '').trim();
+      if (layoutKey) {
+        const slot = selectedFrame.slot;
+        const onResizeHandle = normalizedPointer.x >= slot.x + slot.width - resizeHandleSize
+          && normalizedPointer.y >= slot.y + slot.height - resizeHandleSize;
+        runtime.interactionSelectedLayoutKey = layoutKey;
+        runtime.interactionPointerDragState = {
+          layoutKey,
+          mode: onResizeHandle ? 'resize' : 'drag',
+          pointerStartX: normalizedPointer.x,
+          pointerStartY: normalizedPointer.y,
+          originRect: {
+            x: slot.x,
+            y: slot.y,
+            width: slot.width,
+            height: slot.height,
+          },
+        };
+        result.selectedLayoutKey = layoutKey;
+        result.activeMode = runtime.interactionPointerDragState.mode;
+        result.consumed = true;
+        return result;
+      }
+    }
+  }
+
+  if (activeDragState && normalizedPointer.down) {
+    const dx = normalizedPointer.x - normalizePointerNumber(activeDragState.pointerStartX, normalizedPointer.x);
+    const dy = normalizedPointer.y - normalizePointerNumber(activeDragState.pointerStartY, normalizedPointer.y);
+    const originRect = normalizeLayoutOverrideRect(activeDragState.originRect) || {
+      x: 0,
+      y: 0,
+      width: minPanelWidth,
+      height: minPanelHeight,
+    };
+    let candidate = originRect;
+    if (activeDragState.mode === 'resize') {
+      candidate = {
+        ...originRect,
+        width: originRect.width + dx,
+        height: originRect.height + dy,
+      };
+    } else {
+      candidate = {
+        ...originRect,
+        x: originRect.x + dx,
+        y: originRect.y + dy,
+      };
+    }
+    const clamped = clampOverlayLayoutRect(candidate, canvasWidth, canvasHeight, minPanelWidth, minPanelHeight);
+    const changed = setOverlayLayoutOverride(runtime, String(activeDragState.layoutKey || ''), clamped);
+    if (changed) {
+      result.changed = true;
+    }
+    result.consumed = true;
+    result.selectedLayoutKey = String(activeDragState.layoutKey || '');
+    result.activeMode = String(activeDragState.mode || '');
+  }
+
+  if (activeDragState && normalizedPointer.released) {
+    runtime.interactionPointerDragState = null;
+    result.activeMode = '';
+    result.consumed = true;
+    result.selectedLayoutKey = String(runtime.interactionSelectedLayoutKey || '');
+  }
+
+  return result;
+}
+
 export function stepOverlayGameplayRuntime(runtime, context = {}) {
   synchronizeOverlayGameplayRuntimeState(runtime, context);
   if (
@@ -1016,7 +1308,8 @@ export function renderOverlayGameplayRuntime(runtime, context = {}) {
         getComposedRuntimeFrames(runtime, activeOverlayId, context),
         context.renderer,
         safeZones,
-        context
+        context,
+        runtime
       )
     ),
     context.renderer

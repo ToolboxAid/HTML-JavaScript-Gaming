@@ -1,7 +1,8 @@
 MODEL: GPT-5.4
-REASONING: low
+REASONING: medium
 
 COMMAND:
-Promote Level 21 overlay system to baseline.
-Update roadmap status only.
-Package ZIP to <project folder>/tmp/
+Implement advanced overlay interactions:
+- Add click/drag/resize
+- Maintain gameplay safety
+- Update roadmap status only

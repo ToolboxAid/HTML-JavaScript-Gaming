@@ -11,6 +11,7 @@ import {
   getOverlayGameplayRuntimeCompositionSnapshot,
   getOverlayGameplayRuntimeInteractionSnapshot,
   renderOverlayGameplayRuntime,
+  stepOverlayGameplayRuntimePointerInteractions,
   stepOverlayGameplayRuntime,
 } from '../../samples/phase-17/shared/overlayGameplayRuntime.js';
 import createPhase19OverlayExpansionFramework, {
@@ -339,6 +340,153 @@ function assertOverlayEventCoalescingEfficiency() {
   assert.equal(gameplayState.overlayRuntimeEvents.length, 0, 'Event queue should be drained after synchronization.');
 }
 
+function assertAdvancedOverlayPointerInteractionsGameplaySafety() {
+  const framework = createPhase19OverlayExpansionFramework();
+  framework.registerExtension(definePhase19OverlayExtension({
+    id: 'phase19-overlay-pointer-interactions',
+    overlays: [
+      { id: 'runtime', label: 'Runtime' },
+    ],
+    initialOverlayId: 'runtime',
+    runtimeExtensions: [
+      { overlayId: 'runtime', onRender() {} },
+    ],
+  }));
+
+  const runtime = framework.createRuntimeForExtension('phase19-overlay-pointer-interactions');
+  const renderer = createRendererProbe(960, 540);
+  const context = {
+    renderer,
+    activeOverlayId: 'runtime',
+  };
+
+  const before = getOverlayGameplayRuntimeCompositionSnapshot(runtime, context);
+  assert.equal(before.length, 1, 'Pointer interaction setup should produce a runtime panel snapshot.');
+  const startSlot = before[0].slot;
+
+  const unsafePress = stepOverlayGameplayRuntimePointerInteractions(runtime, {
+    x: startSlot.x + 12,
+    y: startSlot.y + 12,
+    down: true,
+    pressed: true,
+    modifiers: { alt: false, shift: false },
+  }, {
+    enablePointerInteractions: true,
+    renderer,
+    activeOverlayId: 'runtime',
+  });
+  assert.equal(unsafePress.consumed, false, 'Pointer interactions should not consume gameplay input without explicit safety modifier.');
+
+  stepOverlayGameplayRuntimePointerInteractions(runtime, {
+    x: startSlot.x + 72,
+    y: startSlot.y + 68,
+    down: true,
+    modifiers: { alt: false, shift: false },
+  }, {
+    enablePointerInteractions: true,
+    renderer,
+    activeOverlayId: 'runtime',
+  });
+  stepOverlayGameplayRuntimePointerInteractions(runtime, {
+    x: startSlot.x + 72,
+    y: startSlot.y + 68,
+    down: false,
+    released: true,
+    modifiers: { alt: false, shift: false },
+  }, {
+    enablePointerInteractions: true,
+    renderer,
+    activeOverlayId: 'runtime',
+  });
+
+  const afterUnsafe = getOverlayGameplayRuntimeCompositionSnapshot(runtime, context);
+  assert.equal(afterUnsafe[0].slot.x, startSlot.x, 'Unsafe pointer drag should not move panel and should preserve gameplay safety.');
+  assert.equal(afterUnsafe[0].slot.y, startSlot.y, 'Unsafe pointer drag should not move panel and should preserve gameplay safety.');
+
+  const safePress = stepOverlayGameplayRuntimePointerInteractions(runtime, {
+    x: startSlot.x + 12,
+    y: startSlot.y + 12,
+    down: true,
+    pressed: true,
+    modifiers: { alt: true, shift: true },
+  }, {
+    enablePointerInteractions: true,
+    renderer,
+    activeOverlayId: 'runtime',
+  });
+  assert.equal(safePress.consumed, true, 'Explicit pointer interaction mode should consume drag input for overlay manipulation.');
+  assert.equal(safePress.activeMode, 'drag', 'Pressing panel body should start drag mode.');
+
+  const safeDrag = stepOverlayGameplayRuntimePointerInteractions(runtime, {
+    x: startSlot.x + 72,
+    y: startSlot.y + 68,
+    down: true,
+    modifiers: { alt: true, shift: true },
+  }, {
+    enablePointerInteractions: true,
+    renderer,
+    activeOverlayId: 'runtime',
+  });
+  assert.equal(safeDrag.changed, true, 'Safe drag should apply layout override changes.');
+  stepOverlayGameplayRuntimePointerInteractions(runtime, {
+    x: startSlot.x + 72,
+    y: startSlot.y + 68,
+    down: false,
+    released: true,
+    modifiers: { alt: true, shift: true },
+  }, {
+    enablePointerInteractions: true,
+    renderer,
+    activeOverlayId: 'runtime',
+  });
+
+  const afterDrag = getOverlayGameplayRuntimeCompositionSnapshot(runtime, context);
+  assert.equal(afterDrag[0].slot.anchor, 'custom', 'Safe drag should persist custom overlay placement.');
+  assert.equal(afterDrag[0].slot.x > startSlot.x, true, 'Safe drag should move panel horizontally.');
+  assert.equal(afterDrag[0].slot.y > startSlot.y, true, 'Safe drag should move panel vertically.');
+
+  const dragSlot = afterDrag[0].slot;
+  const resizePress = stepOverlayGameplayRuntimePointerInteractions(runtime, {
+    x: dragSlot.x + dragSlot.width - 4,
+    y: dragSlot.y + dragSlot.height - 4,
+    down: true,
+    pressed: true,
+    modifiers: { alt: true, shift: true },
+  }, {
+    enablePointerInteractions: true,
+    renderer,
+    activeOverlayId: 'runtime',
+  });
+  assert.equal(resizePress.activeMode, 'resize', 'Pressing resize handle should start resize mode.');
+
+  const resizeDrag = stepOverlayGameplayRuntimePointerInteractions(runtime, {
+    x: dragSlot.x + dragSlot.width + 40,
+    y: dragSlot.y + dragSlot.height + 30,
+    down: true,
+    modifiers: { alt: true, shift: true },
+  }, {
+    enablePointerInteractions: true,
+    renderer,
+    activeOverlayId: 'runtime',
+  });
+  assert.equal(resizeDrag.changed, true, 'Resize drag should apply panel-size override changes.');
+  stepOverlayGameplayRuntimePointerInteractions(runtime, {
+    x: dragSlot.x + dragSlot.width + 40,
+    y: dragSlot.y + dragSlot.height + 30,
+    down: false,
+    released: true,
+    modifiers: { alt: true, shift: true },
+  }, {
+    enablePointerInteractions: true,
+    renderer,
+    activeOverlayId: 'runtime',
+  });
+
+  const afterResize = getOverlayGameplayRuntimeCompositionSnapshot(runtime, context);
+  assert.equal(afterResize[0].slot.width > dragSlot.width, true, 'Resize mode should increase panel width with pointer drag.');
+  assert.equal(afterResize[0].slot.height > dragSlot.height, true, 'Resize mode should increase panel height with pointer drag.');
+}
+
 export function run() {
   assertExpansionRegistrationAndCompatibility();
   assertExtensionLifecycleMutations();
@@ -346,4 +494,5 @@ export function run() {
   assertContextAwareOverlayBehavior();
   assertOverlayStateSynchronizationAndDesyncRecovery();
   assertOverlayEventCoalescingEfficiency();
+  assertAdvancedOverlayPointerInteractionsGameplaySafety();
 }

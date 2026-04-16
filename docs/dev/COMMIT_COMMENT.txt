@@ -1,4 +1,4 @@
-Promote Level 21 overlay system to baseline.
+Add advanced overlay interactions.
 
 PR Details:
-- Marks completion of Level 21
+- Introduces interactive overlay elements

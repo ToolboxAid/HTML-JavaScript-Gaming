@@ -1,18 +1,20 @@
-# BUILD_PR_LEVEL_21_7_OVERLAY_PROMOTE_BASELINE
+# BUILD_PR_LEVEL_22_1_OVERLAY_ADVANCED_INTERACTIONS
 
 ## Purpose
-Promote validated Level 21 overlay system to baseline.
+Introduce advanced user interactions with overlays.
 
 ## Roadmap Improvement
-Marks Level 21 complete and stable.
+Begins Level 22 interaction enhancements.
 
 ## Scope
-- Promote current implementation
-- Ensure no regression
+- Add interactive elements (click, drag, resize)
+- Ensure gameplay compatibility
 
 ## Test Steps
-1. Run advanced overlays
-2. Confirm stability
+1. Interact with overlay elements
+2. Verify behavior
+3. Confirm gameplay unaffected
 
 ## Expected
-- Stable baseline
+- Interactive overlays
+- Stable system
