@@ -1,8 +1,7 @@
 MODEL: GPT-5.4
-REASONING: medium
+REASONING: low
 
 COMMAND:
-Run full plugin system validation:
-- Validate all subsystems
-- Confirm stability
-- Update roadmap status only
+Promote Level 20 plugin system to baseline.
+Update roadmap status only.
+Package ZIP to <project folder>/tmp/

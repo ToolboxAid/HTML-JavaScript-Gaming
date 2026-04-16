@@ -1,4 +1,3 @@
-[ ] All subsystems validated
+[ ] Stable
 [ ] No regressions
-[ ] System stable
 [ ] Roadmap updated

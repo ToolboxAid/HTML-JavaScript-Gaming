@@ -1,4 +1,4 @@
-Validate overlay plugin system.
+Promote Level 20 plugin system to baseline.
 
 PR Details:
-- Full system validation for Level 20
+- Marks completion of Level 20

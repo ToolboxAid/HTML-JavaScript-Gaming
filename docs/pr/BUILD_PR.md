@@ -1,21 +1,18 @@
-# BUILD_PR_LEVEL_20_9_OVERLAY_PLUGIN_SYSTEM_VALIDATION
+# BUILD_PR_LEVEL_20_10_OVERLAY_PLUGIN_PROMOTE_BASELINE
 
 ## Purpose
-Perform full validation of the overlay plugin system.
+Promote validated Level 20 plugin system to baseline.
 
 ## Roadmap Improvement
-Completes Level 20 plugin system readiness.
+Marks Level 20 complete and production-ready.
 
 ## Scope
-- Validate registry, lifecycle, isolation, security, limits
-- Confirm no regressions
+- Promote current plugin system
+- Ensure no regression
 
 ## Test Steps
-1. Load multiple plugins
-2. Trigger lifecycle events
-3. Test failures and limits
-4. Validate performance metrics
+1. Run plugins
+2. Confirm stability
 
 ## Expected
-- System stable
-- No regressions
+- Stable baseline
