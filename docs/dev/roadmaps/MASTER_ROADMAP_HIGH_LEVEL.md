@@ -661,19 +661,19 @@
 - [x] 1608 - 3D Dungeon Crawler
 
 ### Advanced 3D Samples (1609+ EXPANDED VALIDATION TRACK)
-- [ ] 1609 - Lighting Demo
-- [ ] 1610 - Hybrid 2D/3D World Sample
-- [ ] 1611 - Multiplayer Sync Demo
-- [ ] 1612 - Stress Test (1,000 Objects)
-- [ ] 1613 - Input Lab
-- [ ] 1614 - Camera Modes Lab
-- [ ] 1615 - Entity Composition Demo
-- [ ] 1616 - World Streaming / Chunk Loader
-- [ ] 1617 - Large World Streaming Demo
-- [ ] 1618 - Lighting & Materials Lab
-- [ ] 1619 - Debug HUD Sample
-- [ ] 1620 - Mini Game (3D Reference Sample)
-- [ ] 1621 - AI Navigation Demo
+- [x] 1609 - Lighting Demo
+- [x] 1610 - Hybrid 2D/3D World Sample
+- [x] 1611 - Multiplayer Sync Demo
+- [x] 1612 - Stress Test (1,000 Objects)
+- [x] 1613 - Input Lab
+- [x] 1614 - Camera Modes Lab
+- [x] 1615 - Entity Composition Demo
+- [x] 1616 - World Streaming / Chunk Loader
+- [x] 1617 - Large World Streaming Demo
+- [x] 1618 - Lighting & Materials Lab
+- [x] 1619 - Debug HUD Sample
+- [x] 1620 - Mini Game (3D Reference Sample)
+- [x] 1621 - AI Navigation Demo
 
 ### 3D Capability Requirements
 - [x] 3D rendering

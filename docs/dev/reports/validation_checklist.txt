@@ -1,4 +1,4 @@
 
-- [ ] samples consistent
-- [ ] labels visible
-- [ ] controls uniform
+- [ ] all samples pass
+- [ ] roadmap updated
+- [ ] no regressions
