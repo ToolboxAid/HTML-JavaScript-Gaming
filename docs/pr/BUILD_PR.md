@@ -1,21 +1,21 @@
-# BUILD_PR_LEVEL_20_4_OVERLAY_PLUGIN_ISOLATION_AND_SANDBOXING
+# BUILD_PR_LEVEL_20_5_OVERLAY_PLUGIN_ERROR_HANDLING_AND_RECOVERY
 
 ## Purpose
-Ensure overlay plugins operate in isolation without impacting core systems or other plugins.
+Add robust error handling and recovery for overlay plugins.
 
 ## Roadmap Improvement
-Enhances stability and safety of the plugin system.
+Improves reliability and resilience of plugin system.
 
 ## Scope
-- Define isolation boundaries
-- Prevent cross-plugin interference
-- Ensure safe failure handling
+- Detect plugin errors
+- Recover without crashing system
+- Isolate faulty plugin
 
 ## Test Steps
-1. Run multiple plugins
-2. Simulate plugin failure
-3. Verify isolation maintained
+1. Trigger plugin error
+2. Verify recovery
+3. Confirm system stability
 
 ## Expected
-- No cross-plugin impact
-- Safe failure containment
+- Errors handled gracefully
+- System remains stable

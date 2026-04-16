@@ -1,4 +1,4 @@
-[ ] Plugins isolated
-[ ] Failures contained
-[ ] No interference
+[ ] Errors detected
+[ ] Recovery works
+[ ] System stable
 [ ] Roadmap updated

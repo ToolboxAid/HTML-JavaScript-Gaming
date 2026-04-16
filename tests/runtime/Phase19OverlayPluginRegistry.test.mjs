@@ -192,12 +192,20 @@ function assertPluginLifecycleFailureIsolation() {
   });
 
   assert.equal(registry.getPluginState(pluginId), registry.states.ACTIVE, 'Plugin should start in active state for failure isolation test.');
-  assert.equal(registry.deactivatePlugin(pluginId), false, 'Failed deactivate hook should preserve active state safely.');
-  assert.equal(registry.getPluginState(pluginId), registry.states.ACTIVE, 'Plugin state should remain active after failed deactivate.');
-  assert.notEqual(
+  assert.equal(registry.deactivatePlugin(pluginId), false, 'Failed deactivate hook should report transition failure.');
+  assert.equal(registry.getPluginState(pluginId), registry.states.FAILED, 'Failed lifecycle transition should quarantine plugin in failed state.');
+  assert.equal(
     registry.getFramework().getExtension('phase19.failure.overlay'),
     null,
-    'Framework extension registration should remain intact after failed deactivate transition.'
+    'Failed lifecycle transition should isolate plugin by removing framework extension registration.'
+  );
+  const failureSnapshot = registry.getPluginFailure(pluginId);
+  assert.equal(Boolean(failureSnapshot), true, 'Registry should provide failure snapshot for quarantined plugin.');
+  assert.equal(failureSnapshot.phase, 'deactivate', 'Failure snapshot should capture failing lifecycle phase.');
+  assert.equal(
+    registry.listPluginFailures().some((entry) => entry.pluginId === pluginId),
+    true,
+    'Failure listing should include quarantined plugin.'
   );
 
   assert.throws(
@@ -218,11 +226,52 @@ function assertPluginLifecycleFailureIsolation() {
     /failed lifecycle activation/,
     'Activation failure should throw and prevent partial plugin registration.'
   );
-  assert.equal(registry.getPlugin('phase19.failure.activate'), null, 'Failed activation should not retain plugin record.');
+  assert.equal(
+    registry.getPluginState('phase19.failure.activate'),
+    registry.states.FAILED,
+    'Activation failure should keep plugin isolated in failed state for explicit recovery.'
+  );
+  assert.equal(Boolean(registry.getPluginFailure('phase19.failure.activate')), true, 'Activation failure should be detectable through plugin failure snapshot.');
   assert.equal(
     registry.getFramework().getExtension('phase19.failure.activate.overlay'),
     null,
     'Failed activation should not leave extension registered in framework.'
+  );
+}
+
+function assertPluginFailureRecoveryFlow() {
+  const registry = createPhase19OverlayPluginRegistry();
+  const pluginId = 'phase19.failure.recover';
+  let firstActivate = true;
+  registry.registerPlugin({
+    id: pluginId,
+    createOverlayExtension() {
+      return definePhase19OverlayExtension({
+        id: 'phase19.failure.recover.overlay',
+        overlays: [{ id: 'runtime', label: 'Runtime' }],
+      });
+    },
+    activate() {
+      if (!firstActivate) {
+        return;
+      }
+      firstActivate = false;
+      throw new Error('activate once failure');
+    },
+  }, { autoActivate: false });
+
+  assert.equal(registry.activatePlugin(pluginId), false, 'Initial activation should fail for recovery test.');
+  assert.equal(registry.getPluginState(pluginId), registry.states.FAILED, 'Failed activation should move plugin into failed state.');
+  assert.equal(Boolean(registry.getPluginFailure(pluginId)), true, 'Failed activation should capture failure snapshot.');
+  assert.equal(registry.recoverPlugin(pluginId), true, 'Recover should restore plugin from failed state.');
+  assert.equal(registry.getPluginState(pluginId), registry.states.INITIALIZED, 'Recover should restore safe pre-failure state.');
+  assert.equal(registry.getPluginFailure(pluginId), null, 'Recover should clear last failure snapshot.');
+  assert.equal(registry.activatePlugin(pluginId), true, 'Recovered plugin should activate successfully after failure condition clears.');
+  assert.equal(registry.getPluginState(pluginId), registry.states.ACTIVE, 'Recovered plugin should re-enter active state.');
+  assert.equal(
+    registry.getFramework().getExtension('phase19.failure.recover.overlay') !== null,
+    true,
+    'Recovered and activated plugin should re-register extension cleanly.'
   );
 }
 
@@ -294,5 +343,6 @@ export function run() {
   assertPluginUnregisterCleansFramework();
   assertPluginLifecycleTransitionsAndSafety();
   assertPluginLifecycleFailureIsolation();
+  assertPluginFailureRecoveryFlow();
   assertPluginBoundaryIsolationAndInterferenceProtection();
 }

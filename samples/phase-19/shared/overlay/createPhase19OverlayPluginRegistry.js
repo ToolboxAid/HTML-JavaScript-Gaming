@@ -11,10 +11,24 @@ const PLUGIN_STATES = Object.freeze({
   INITIALIZED: 'initialized',
   ACTIVE: 'active',
   INACTIVE: 'inactive',
+  FAILED: 'failed',
 });
 
 function normalizePluginId(pluginId) {
   return String(pluginId || '').trim();
+}
+
+function toErrorDetails(error) {
+  if (error instanceof Error) {
+    return {
+      name: String(error.name || 'Error'),
+      message: String(error.message || 'Unknown plugin error'),
+    };
+  }
+  return {
+    name: 'Error',
+    message: String(error || 'Unknown plugin error'),
+  };
 }
 
 function deepFreezeValue(value, seen = new Set()) {
@@ -179,10 +193,63 @@ export default function createPhase19OverlayPluginRegistry({
     return !currentOwner || currentOwner === normalizedPluginId;
   }
 
+  function getRecoveryTargetState(record) {
+    if (!record) {
+      return PLUGIN_STATES.REGISTERED;
+    }
+    if (record.stateBeforeFailure === PLUGIN_STATES.ACTIVE) {
+      return PLUGIN_STATES.INACTIVE;
+    }
+    if (
+      record.stateBeforeFailure === PLUGIN_STATES.INITIALIZED
+      || record.stateBeforeFailure === PLUGIN_STATES.INACTIVE
+      || record.stateBeforeFailure === PLUGIN_STATES.REGISTERED
+    ) {
+      return record.stateBeforeFailure;
+    }
+    return PLUGIN_STATES.REGISTERED;
+  }
+
+  function isolatePluginFailure(record, phase, error, context = {}, options = {}) {
+    if (!record) {
+      return false;
+    }
+    const shouldUnregisterExtension = options.unregisterExtension !== false;
+    const shouldQuarantine = options.quarantine !== false;
+    const { name, message } = toErrorDetails(error);
+    const failureSnapshot = Object.freeze({
+      phase: String(phase || 'unknown'),
+      name,
+      message,
+      pluginId: record.plugin.id,
+      extensionId: record.extension.id,
+      timestampIso: new Date().toISOString(),
+      contextReason: String(context?.reason || ''),
+    });
+    if (shouldUnregisterExtension) {
+      try {
+        expansionFramework.unregisterExtension(record.extension.id);
+      } catch {
+        // Failure isolation must never throw.
+      }
+    }
+    record.failureCount = (Number(record.failureCount) || 0) + 1;
+    record.lastFailure = failureSnapshot;
+    record.failureHistory.push(failureSnapshot);
+    if (record.failureHistory.length > 10) {
+      record.failureHistory.shift();
+    }
+    if (shouldQuarantine) {
+      record.stateBeforeFailure = record.state;
+      record.state = PLUGIN_STATES.FAILED;
+    }
+    return true;
+  }
+
   function runLifecycleHook(record, phase, context = {}) {
     const hook = record?.plugin?.[phase];
     if (typeof hook !== 'function') {
-      return true;
+      return { ok: true };
     }
     try {
       const previousHookPluginId = activeHookPluginId;
@@ -197,12 +264,12 @@ export default function createPhase19OverlayPluginRegistry({
       });
       try {
         hook(lifecycleContext);
-        return true;
+        return { ok: true };
       } finally {
         activeHookPluginId = previousHookPluginId;
       }
-    } catch {
-      return false;
+    } catch (error) {
+      return { ok: false, error: toErrorDetails(error) };
     }
   }
 
@@ -221,7 +288,12 @@ export default function createPhase19OverlayPluginRegistry({
       if (record.state !== PLUGIN_STATES.REGISTERED) {
         return false;
       }
-      if (!runLifecycleHook(record, 'init', context)) {
+      const initResult = runLifecycleHook(record, 'init', context);
+      if (!initResult.ok) {
+        isolatePluginFailure(record, 'init', initResult.error, context, {
+          unregisterExtension: true,
+          quarantine: true,
+        });
         return false;
       }
       record.state = PLUGIN_STATES.INITIALIZED;
@@ -241,6 +313,9 @@ export default function createPhase19OverlayPluginRegistry({
       if (record.state === PLUGIN_STATES.ACTIVE) {
         return false;
       }
+      if (record.state === PLUGIN_STATES.FAILED) {
+        return false;
+      }
       if (record.state === PLUGIN_STATES.REGISTERED) {
         if (!initPlugin(pluginId, context)) {
           return false;
@@ -255,11 +330,19 @@ export default function createPhase19OverlayPluginRegistry({
 
       const registered = expansionFramework.registerExtension(record.extension);
       if (!registered || !registered.id) {
+        isolatePluginFailure(record, 'activate-register', new Error('extension registration failed'), context, {
+          unregisterExtension: true,
+          quarantine: true,
+        });
         return false;
       }
 
-      if (!runLifecycleHook(record, 'activate', context)) {
-        expansionFramework.unregisterExtension(record.extension.id);
+      const activateResult = runLifecycleHook(record, 'activate', context);
+      if (!activateResult.ok) {
+        isolatePluginFailure(record, 'activate', activateResult.error, context, {
+          unregisterExtension: true,
+          quarantine: true,
+        });
         return false;
       }
 
@@ -280,7 +363,12 @@ export default function createPhase19OverlayPluginRegistry({
       if (record.state !== PLUGIN_STATES.ACTIVE) {
         return false;
       }
-      if (!runLifecycleHook(record, 'deactivate', context)) {
+      const deactivateResult = runLifecycleHook(record, 'deactivate', context);
+      if (!deactivateResult.ok) {
+        isolatePluginFailure(record, 'deactivate', deactivateResult.error, context, {
+          unregisterExtension: true,
+          quarantine: true,
+        });
         return false;
       }
 
@@ -305,7 +393,12 @@ export default function createPhase19OverlayPluginRegistry({
           return false;
         }
       }
-      if (!runLifecycleHook(record, 'destroy', context)) {
+      const destroyResult = runLifecycleHook(record, 'destroy', context);
+      if (!destroyResult.ok) {
+        isolatePluginFailure(record, 'destroy', destroyResult.error, context, {
+          unregisterExtension: true,
+          quarantine: true,
+        });
         return false;
       }
 
@@ -351,14 +444,16 @@ export default function createPhase19OverlayPluginRegistry({
       plugin: normalizedPlugin,
       extension: resolvedExtension,
       state: PLUGIN_STATES.REGISTERED,
+      stateBeforeFailure: '',
+      failureCount: 0,
+      lastFailure: null,
+      failureHistory: [],
     };
     pluginRecordMap.set(pluginId, record);
     extensionOwnerMap.set(resolvedExtension.id, pluginId);
 
     if (autoActivate) {
       if (!activatePlugin(pluginId, context)) {
-        extensionOwnerMap.delete(resolvedExtension.id);
-        pluginRecordMap.delete(pluginId);
         throw new Error(`Overlay plugin "${pluginId}" failed lifecycle activation.`);
       }
     }
@@ -371,6 +466,34 @@ export default function createPhase19OverlayPluginRegistry({
 
   function unregisterPlugin(pluginId, context = {}) {
     return destroyPlugin(pluginId, context);
+  }
+
+  function recoverPlugin(pluginId, options = {}) {
+    if (!canMutate(pluginId)) {
+      return false;
+    }
+    const context = options?.context || {};
+    const activate = options?.activate === true;
+    const record = getPluginRecord(pluginId);
+    if (!record || record.state !== PLUGIN_STATES.FAILED) {
+      return false;
+    }
+    return withPluginTransition(record.plugin.id, () => {
+      const recoveryState = getRecoveryTargetState(record);
+      try {
+        expansionFramework.unregisterExtension(record.extension.id);
+      } catch {
+        // Recovery should continue even if extension was already removed.
+      }
+      record.state = recoveryState;
+      record.stateBeforeFailure = '';
+      record.lastFailure = null;
+      record.failureHistory = [];
+      if (!activate) {
+        return true;
+      }
+      return activatePlugin(pluginId, { ...context, reason: context?.reason || 'recover-activate' });
+    });
   }
 
   function getPlugin(pluginId) {
@@ -388,6 +511,41 @@ export default function createPhase19OverlayPluginRegistry({
     return record?.extension?.id || '';
   }
 
+  function getPluginFailure(pluginId) {
+    const record = getPluginRecord(pluginId);
+    if (!record || !record.lastFailure) {
+      return null;
+    }
+    return record.lastFailure;
+  }
+
+  function listPluginFailures() {
+    const failures = [];
+    for (const [pluginId, record] of pluginRecordMap.entries()) {
+      if (!record.lastFailure) {
+        continue;
+      }
+      failures.push({
+        pluginId,
+        extensionId: record.extension.id,
+        state: record.state,
+        failureCount: record.failureCount,
+        lastFailure: record.lastFailure,
+      });
+    }
+    return Object.freeze(failures);
+  }
+
+  function clearPluginFailure(pluginId) {
+    const record = getPluginRecord(pluginId);
+    if (!record || !record.lastFailure) {
+      return false;
+    }
+    record.lastFailure = null;
+    record.failureHistory = [];
+    return true;
+  }
+
   function listPlugins() {
     const entries = [];
     for (const [pluginId, record] of pluginRecordMap.entries()) {
@@ -396,6 +554,7 @@ export default function createPhase19OverlayPluginRegistry({
         version: record.plugin.version,
         extensionId: record.extension.id,
         state: record.state,
+        failureCount: record.failureCount,
       });
     }
     return Object.freeze(entries);
@@ -407,10 +566,14 @@ export default function createPhase19OverlayPluginRegistry({
     activatePlugin,
     deactivatePlugin,
     destroyPlugin,
+    recoverPlugin,
     unregisterPlugin,
     getPlugin,
     getPluginState,
     getPluginExtensionId,
+    getPluginFailure,
+    listPluginFailures,
+    clearPluginFailure,
     listPlugins,
     states: PLUGIN_STATES,
     getFramework() {

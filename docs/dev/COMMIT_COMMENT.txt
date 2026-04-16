@@ -1,5 +1,5 @@
-Add plugin isolation and sandboxing.
+Add plugin error handling and recovery.
 
 PR Details:
-- Prevents cross-plugin interference
-- Improves system stability
+- Improves resilience
+- Prevents crashes from plugin failures
