@@ -14,8 +14,30 @@ const PLUGIN_STATES = Object.freeze({
   FAILED: 'failed',
 });
 
+const DEFAULT_RESOURCE_LIMITS = Object.freeze({
+  maxHookDurationMs: 24,
+  maxHeapUsedBytes: 512 * 1024 * 1024,
+  maxHeapDeltaBytes: 8 * 1024 * 1024,
+});
+
 function normalizePluginId(pluginId) {
   return String(pluginId || '').trim();
+}
+
+function normalizeLimit(value, fallback) {
+  const numeric = Number(value);
+  if (!Number.isFinite(numeric) || numeric <= 0) {
+    return fallback;
+  }
+  return numeric;
+}
+
+function normalizeResourceLimits(resourceLimits = {}) {
+  return Object.freeze({
+    maxHookDurationMs: normalizeLimit(resourceLimits?.maxHookDurationMs, DEFAULT_RESOURCE_LIMITS.maxHookDurationMs),
+    maxHeapUsedBytes: normalizeLimit(resourceLimits?.maxHeapUsedBytes, DEFAULT_RESOURCE_LIMITS.maxHeapUsedBytes),
+    maxHeapDeltaBytes: normalizeLimit(resourceLimits?.maxHeapDeltaBytes, DEFAULT_RESOURCE_LIMITS.maxHeapDeltaBytes),
+  });
 }
 
 function toErrorDetails(error) {
@@ -73,6 +95,31 @@ function getNowMs() {
   return Date.now();
 }
 
+function readHeapUsageBytes() {
+  try {
+    if (typeof globalThis?.process?.memoryUsage === 'function') {
+      const usage = globalThis.process.memoryUsage();
+      const heapUsed = Number(usage?.heapUsed);
+      if (Number.isFinite(heapUsed) && heapUsed >= 0) {
+        return heapUsed;
+      }
+    }
+  } catch {
+    // Heap metrics are best-effort for diagnostics.
+  }
+
+  try {
+    const browserHeap = Number(globalThis?.performance?.memory?.usedJSHeapSize);
+    if (Number.isFinite(browserHeap) && browserHeap >= 0) {
+      return browserHeap;
+    }
+  } catch {
+    // Ignore unavailable browser heap APIs.
+  }
+
+  return 0;
+}
+
 function createHookMetrics() {
   return {
     calls: 0,
@@ -114,6 +161,14 @@ function createPluginMetrics() {
       lastRegisteredAtIso: '',
       lastExtensionId: '',
     },
+    resources: {
+      cpuViolations: 0,
+      memoryViolations: 0,
+      lastHookDurationMs: 0,
+      lastHeapUsedBytes: 0,
+      lastHeapDeltaBytes: 0,
+      lastViolationMessage: '',
+    },
     lastState: '',
     lastStateChangedAtIso: '',
   };
@@ -148,6 +203,7 @@ function normalizePluginDefinition(plugin) {
     id,
     version: String(plugin.version || '').trim(),
     metadata: Object.freeze({ ...(plugin.metadata || {}) }),
+    resourceLimits: normalizeResourceLimits(plugin.resourceLimits),
     init: typeof plugin.init === 'function' ? plugin.init : (typeof plugin.onInit === 'function' ? plugin.onInit : null),
     activate: typeof plugin.activate === 'function'
       ? plugin.activate
@@ -322,10 +378,60 @@ export default function createPhase19OverlayPluginRegistry({
     return true;
   }
 
+  function evaluateResourceLimitViolations(record, phase, durationMs, heapUsedBytes, heapDeltaBytes) {
+    const limits = record?.plugin?.resourceLimits || DEFAULT_RESOURCE_LIMITS;
+    const duration = Math.max(0, Number(durationMs) || 0);
+    const heapUsed = Math.max(0, Number(heapUsedBytes) || 0);
+    const heapDelta = Math.max(0, Number(heapDeltaBytes) || 0);
+    const cpuExceeded = duration > limits.maxHookDurationMs;
+    const heapExceeded = heapUsed > limits.maxHeapUsedBytes;
+    const heapDeltaExceeded = heapDelta > limits.maxHeapDeltaBytes;
+
+    if (record?.metrics?.resources) {
+      record.metrics.resources.lastHookDurationMs = duration;
+      record.metrics.resources.lastHeapUsedBytes = heapUsed;
+      record.metrics.resources.lastHeapDeltaBytes = heapDelta;
+      if (cpuExceeded) {
+        record.metrics.resources.cpuViolations += 1;
+      }
+      if (heapExceeded || heapDeltaExceeded) {
+        record.metrics.resources.memoryViolations += 1;
+      }
+    }
+
+    if (!cpuExceeded && !heapExceeded && !heapDeltaExceeded) {
+      return { ok: true };
+    }
+
+    const reasons = [];
+    if (cpuExceeded) {
+      reasons.push(`CPU ${duration.toFixed(3)}ms > ${limits.maxHookDurationMs}ms`);
+    }
+    if (heapExceeded) {
+      reasons.push(`heapUsed ${heapUsed}B > ${limits.maxHeapUsedBytes}B`);
+    }
+    if (heapDeltaExceeded) {
+      reasons.push(`heapDelta ${heapDelta}B > ${limits.maxHeapDeltaBytes}B`);
+    }
+    const message = `Resource limit exceeded (${reasons.join(', ')})`;
+    if (record?.metrics?.resources) {
+      record.metrics.resources.lastViolationMessage = message;
+    }
+    return {
+      ok: false,
+      phase: `${phase}-resource-limit`,
+      error: {
+        name: 'ResourceLimitError',
+        message,
+      },
+    };
+  }
+
   function runLifecycleHook(record, phase, context = {}) {
     const bucket = record?.metrics?.hooks?.[phase] || null;
     const hook = record?.plugin?.[phase];
     const startedAtMs = getNowMs();
+    const startedHeapBytes = readHeapUsageBytes();
     const startedAtIso = new Date().toISOString();
     if (bucket) {
       bucket.calls += 1;
@@ -334,6 +440,8 @@ export default function createPhase19OverlayPluginRegistry({
     if (typeof hook !== 'function') {
       const finishedAtMs = getNowMs();
       const durationMs = Math.max(0, finishedAtMs - startedAtMs);
+      const finishedHeapBytes = readHeapUsageBytes();
+      const heapDeltaBytes = Math.max(0, finishedHeapBytes - startedHeapBytes);
       if (bucket) {
         bucket.successes += 1;
         bucket.totalDurationMs += durationMs;
@@ -341,7 +449,7 @@ export default function createPhase19OverlayPluginRegistry({
         bucket.lastFinishedAtIso = new Date().toISOString();
         bucket.lastErrorMessage = '';
       }
-      return { ok: true };
+      return evaluateResourceLimitViolations(record, phase, durationMs, finishedHeapBytes, heapDeltaBytes);
     }
     try {
       const previousHookPluginId = activeHookPluginId;
@@ -358,6 +466,8 @@ export default function createPhase19OverlayPluginRegistry({
         hook(lifecycleContext);
         const finishedAtMs = getNowMs();
         const durationMs = Math.max(0, finishedAtMs - startedAtMs);
+        const finishedHeapBytes = readHeapUsageBytes();
+        const heapDeltaBytes = Math.max(0, finishedHeapBytes - startedHeapBytes);
         if (bucket) {
           bucket.successes += 1;
           bucket.totalDurationMs += durationMs;
@@ -365,7 +475,7 @@ export default function createPhase19OverlayPluginRegistry({
           bucket.lastFinishedAtIso = new Date().toISOString();
           bucket.lastErrorMessage = '';
         }
-        return { ok: true };
+        return evaluateResourceLimitViolations(record, phase, durationMs, finishedHeapBytes, heapDeltaBytes);
       } finally {
         activeHookPluginId = previousHookPluginId;
       }
@@ -404,7 +514,7 @@ export default function createPhase19OverlayPluginRegistry({
       }
       const initResult = runLifecycleHook(record, 'init', context);
       if (!initResult.ok) {
-        isolatePluginFailure(record, 'init', initResult.error, context, {
+        isolatePluginFailure(record, initResult.phase || 'init', initResult.error, context, {
           unregisterExtension: true,
           quarantine: true,
         });
@@ -473,7 +583,7 @@ export default function createPhase19OverlayPluginRegistry({
 
       const activateResult = runLifecycleHook(record, 'activate', context);
       if (!activateResult.ok) {
-        isolatePluginFailure(record, 'activate', activateResult.error, context, {
+        isolatePluginFailure(record, activateResult.phase || 'activate', activateResult.error, context, {
           unregisterExtension: true,
           quarantine: true,
         });
@@ -510,7 +620,7 @@ export default function createPhase19OverlayPluginRegistry({
       }
       const deactivateResult = runLifecycleHook(record, 'deactivate', context);
       if (!deactivateResult.ok) {
-        isolatePluginFailure(record, 'deactivate', deactivateResult.error, context, {
+        isolatePluginFailure(record, deactivateResult.phase || 'deactivate', deactivateResult.error, context, {
           unregisterExtension: true,
           quarantine: true,
         });
@@ -548,7 +658,7 @@ export default function createPhase19OverlayPluginRegistry({
       }
       const destroyResult = runLifecycleHook(record, 'destroy', context);
       if (!destroyResult.ok) {
-        isolatePluginFailure(record, 'destroy', destroyResult.error, context, {
+        isolatePluginFailure(record, destroyResult.phase || 'destroy', destroyResult.error, context, {
           unregisterExtension: true,
           quarantine: true,
         });
@@ -728,6 +838,7 @@ export default function createPhase19OverlayPluginRegistry({
       version: record.plugin.version,
       extensionId: record.extension.id,
       state: record.state,
+      resourceLimits: record.plugin.resourceLimits,
       failureCount: record.failureCount,
       lastFailure: record.lastFailure,
       metrics: snapshotPluginMetrics(record.metrics),
@@ -801,6 +912,8 @@ export default function createPhase19OverlayPluginRegistry({
         failureCount: record.failureCount,
         transitionAttempts: record.metrics?.transitions?.attempted || 0,
         transitionFailures: record.metrics?.transitions?.failed || 0,
+        cpuViolations: record.metrics?.resources?.cpuViolations || 0,
+        memoryViolations: record.metrics?.resources?.memoryViolations || 0,
       });
     }
     return Object.freeze(entries);

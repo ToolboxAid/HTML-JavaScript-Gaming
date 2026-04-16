@@ -1,4 +1,4 @@
-Add plugin performance monitoring.
+Add plugin resource limits.
 
 PR Details:
-- Enables tracking of plugin performance
+- Prevents resource abuse

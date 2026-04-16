@@ -1,4 +1,4 @@
-[ ] Metrics captured
-[ ] Reporting works
-[ ] No regression
+[ ] Limits enforced
+[ ] System stable
+[ ] No degradation
 [ ] Roadmap updated

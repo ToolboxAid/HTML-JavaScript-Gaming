@@ -1,21 +1,21 @@
-# BUILD_PR_LEVEL_20_6_OVERLAY_PLUGIN_PERFORMANCE_MONITORING
+# BUILD_PR_LEVEL_20_7_OVERLAY_PLUGIN_RESOURCE_LIMITS
 
 ## Purpose
-Introduce performance monitoring for overlay plugins.
+Enforce resource limits on overlay plugins.
 
 ## Roadmap Improvement
-Provides visibility into plugin performance and impact.
+Prevents plugins from degrading system performance.
 
 ## Scope
-- Track plugin execution time
-- Identify slow or heavy plugins
-- Provide basic diagnostics
+- Define CPU/memory limits
+- Enforce limits
+- Validate behavior under limits
 
 ## Test Steps
-1. Run plugins
-2. Monitor performance metrics
-3. Validate reporting
+1. Run heavy plugin
+2. Verify limits enforced
+3. Confirm system stability
 
 ## Expected
-- Performance metrics available
-- No performance regression
+- Limits enforced
+- No system degradation

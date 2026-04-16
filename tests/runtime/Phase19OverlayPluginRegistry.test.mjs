@@ -372,6 +372,80 @@ function assertPluginBoundaryIsolationAndInterferenceProtection() {
   );
 }
 
+function assertPluginResourceLimitEnforcementAndDiagnostics() {
+  const registry = createPhase19OverlayPluginRegistry();
+
+  registry.registerPlugin({
+    id: 'phase19.resource.cpu',
+    resourceLimits: {
+      maxHookDurationMs: 1,
+      maxHeapUsedBytes: 1024 * 1024 * 1024,
+      maxHeapDeltaBytes: 1024 * 1024 * 1024,
+    },
+    createOverlayExtension() {
+      return definePhase19OverlayExtension({
+        id: 'phase19.resource.cpu.overlay',
+        overlays: [{ id: 'runtime', label: 'Runtime' }],
+      });
+    },
+    activate() {
+      const start = Date.now();
+      while (Date.now() - start < 6) {
+        // Busy wait to force CPU cap exceedance.
+      }
+    },
+  }, { autoActivate: false });
+
+  assert.equal(registry.activatePlugin('phase19.resource.cpu'), false, 'CPU cap exceedance should block activation safely.');
+  assert.equal(registry.getPluginState('phase19.resource.cpu'), registry.states.FAILED, 'CPU cap exceedance should quarantine plugin.');
+  assert.equal(
+    String(registry.getPluginFailure('phase19.resource.cpu')?.phase || '').includes('resource-limit'),
+    true,
+    'CPU cap exceedance should be reported as resource-limit phase.'
+  );
+  const cpuMetrics = registry.getPluginMetrics('phase19.resource.cpu');
+  assert.equal(cpuMetrics.resources.cpuViolations >= 1, true, 'CPU cap exceedance should increment CPU violation metrics.');
+  assert.equal(
+    registry.getFramework().getExtension('phase19.resource.cpu.overlay'),
+    null,
+    'CPU cap exceedance should isolate plugin by removing active extension registration.'
+  );
+
+  registry.registerPlugin({
+    id: 'phase19.resource.memory',
+    resourceLimits: {
+      maxHookDurationMs: 1000,
+      maxHeapUsedBytes: 1,
+      maxHeapDeltaBytes: 1024,
+    },
+    createOverlayExtension() {
+      return definePhase19OverlayExtension({
+        id: 'phase19.resource.memory.overlay',
+        overlays: [{ id: 'runtime', label: 'Runtime' }],
+      });
+    },
+  }, { autoActivate: false });
+
+  assert.equal(registry.initPlugin('phase19.resource.memory'), false, 'Memory cap exceedance should block initialization safely.');
+  assert.equal(registry.getPluginState('phase19.resource.memory'), registry.states.FAILED, 'Memory cap exceedance should quarantine plugin.');
+  const memoryMetrics = registry.getPluginMetrics('phase19.resource.memory');
+  assert.equal(memoryMetrics.resources.memoryViolations >= 1, true, 'Memory cap exceedance should increment memory violation metrics.');
+
+  const diagnostics = registry.getPluginDiagnostics('phase19.resource.memory');
+  assert.notEqual(diagnostics, null, 'Resource-limited plugin should expose diagnostics snapshot.');
+  assert.equal(Boolean(diagnostics.resourceLimits), true, 'Diagnostics should include configured resource limits.');
+  assert.equal(
+    diagnostics.resourceLimits.maxHeapUsedBytes,
+    1,
+    'Diagnostics should expose memory cap configuration.'
+  );
+  assert.equal(
+    registry.listPluginMetrics().some((entry) => entry.pluginId === 'phase19.resource.memory'),
+    true,
+    'Metrics listing should include resource-limited plugin.'
+  );
+}
+
 export function run() {
   assertPluginRegistrationAndRuntimeCompatibility();
   assertPluginUnregisterCleansFramework();
@@ -379,4 +453,5 @@ export function run() {
   assertPluginLifecycleFailureIsolation();
   assertPluginFailureRecoveryFlow();
   assertPluginBoundaryIsolationAndInterferenceProtection();
+  assertPluginResourceLimitEnforcementAndDiagnostics();
 }
