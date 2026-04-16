@@ -1,4 +1,4 @@
-[ ] Smoke test complete
-[ ] All integrations stable
-[ ] No regressions
-[ ] Baseline confirmed
+[ ] Existing overlays load
+[ ] Extension points defined
+[ ] No regression
+[ ] Config compatibility maintained

@@ -1,1 +1,2 @@
-Promote Level 18 overlay system to baseline after final validation.
+Level 19.1 overlay system expansion framework.
+Introduce extension points for future overlay types.

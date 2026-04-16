@@ -13,33 +13,48 @@ import {
   OVERLAY_MOVEMENT_RUNTIME,
   createMovementOverlayCycleMap,
 } from '/samples/phase-17/shared/movementOverlayStack.js';
+import {
+  createOverlayExtensionContractMap,
+  defineOverlayExtensionContract,
+  getOverlayControllerConfigFromContract,
+} from '/samples/phase-17/shared/overlayExpansionContracts.js';
 
-const SAMPLE_OVERLAY_STACKS = Object.freeze({
-  '1708': Object.freeze({
+const LEVEL17_OVERLAY_EXTENSION_CONTRACTS = Object.freeze([
+  defineOverlayExtensionContract({
+    id: '1708',
+    channel: 'debug',
     overlays: Object.freeze(createMiniGameOverlayCycleMap()),
     initialOverlayId: OVERLAY_UI_LAYER,
     persistenceKey: 'phase17:1708:overlay-index',
     cycleKey: LEVEL17_OVERLAY_CYCLE_KEY,
   }),
-  '1709': Object.freeze({
+  defineOverlayExtensionContract({
+    id: '1709',
+    channel: 'debug',
     overlays: Object.freeze(createMovementOverlayCycleMap()),
     initialOverlayId: OVERLAY_MOVEMENT_RUNTIME,
     persistenceKey: 'phase17:1709:overlay-index',
     cycleKey: LEVEL17_OVERLAY_CYCLE_KEY,
   }),
-  '1710': Object.freeze({
+  defineOverlayExtensionContract({
+    id: '1710',
+    channel: 'debug',
     overlays: Object.freeze(createMiniGameOverlayCycleMap()),
     initialOverlayId: OVERLAY_UI_LAYER,
     persistenceKey: 'phase17:1710:overlay-index',
     cycleKey: LEVEL17_OVERLAY_CYCLE_KEY,
   }),
-  '1711': Object.freeze({
+  defineOverlayExtensionContract({
+    id: '1711',
+    channel: 'debug',
     overlays: Object.freeze(createMovementOverlayCycleMap()),
     initialOverlayId: OVERLAY_MOVEMENT_RUNTIME,
     persistenceKey: 'phase17:1711:overlay-index',
     cycleKey: LEVEL17_OVERLAY_CYCLE_KEY,
   }),
-  '1712': Object.freeze({
+  defineOverlayExtensionContract({
+    id: '1712',
+    channel: 'debug',
     overlays: Object.freeze([
       { id: 'ui-layer', label: 'UI Layer' },
       { id: 'mission-feed', label: 'Mission Feed' },
@@ -50,7 +65,9 @@ const SAMPLE_OVERLAY_STACKS = Object.freeze({
     persistenceKey: 'phase17:1712:overlay-index',
     cycleKey: LEVEL17_OVERLAY_CYCLE_KEY,
   }),
-  '1713': Object.freeze({
+  defineOverlayExtensionContract({
+    id: '1713',
+    channel: 'debug',
     overlays: Object.freeze([
       { id: 'ui-layer', label: 'UI Layer' },
       { id: 'mission-feed', label: 'Mission Feed' },
@@ -61,7 +78,30 @@ const SAMPLE_OVERLAY_STACKS = Object.freeze({
     persistenceKey: 'phase17:1713:overlay-index',
     cycleKey: LEVEL17_OVERLAY_CYCLE_KEY,
   }),
-});
+]);
+
+const LEVEL17_OVERLAY_EXTENSION_CONTRACT_MAP = createOverlayExtensionContractMap(LEVEL17_OVERLAY_EXTENSION_CONTRACTS);
+
+const SAMPLE_OVERLAY_STACKS = Object.freeze(
+  Object.fromEntries(
+    Array.from(LEVEL17_OVERLAY_EXTENSION_CONTRACT_MAP.entries(), ([sampleId, contract]) => [
+      sampleId,
+      getOverlayControllerConfigFromContract(contract),
+    ])
+  )
+);
+
+export function getLevel17OverlayExtensionContract(sampleId) {
+  const id = String(sampleId || '').trim();
+  if (!id) {
+    return null;
+  }
+  return LEVEL17_OVERLAY_EXTENSION_CONTRACT_MAP.get(id) ?? null;
+}
+
+export function listLevel17OverlayExtensionContracts() {
+  return LEVEL17_OVERLAY_EXTENSION_CONTRACTS;
+}
 
 export function getLevel17OverlayStackConfig(sampleId) {
   return SAMPLE_OVERLAY_STACKS[String(sampleId || '').trim()] ?? null;

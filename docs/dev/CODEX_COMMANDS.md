@@ -1,10 +1,10 @@
 MODEL: GPT-5.4-codex
-REASONING: low
+REASONING: medium
 
 COMMAND:
-Promote Level 18 overlay system to baseline.
-- Update status markers only
-- Confirm no regressions
-- Do not change runtime behavior
+Implement overlay expansion framework:
+- Define extension interfaces/contracts
+- Ensure compatibility with config-driven overlays
+- Do not change existing behavior
 
 Package ZIP to <project folder>/tmp/

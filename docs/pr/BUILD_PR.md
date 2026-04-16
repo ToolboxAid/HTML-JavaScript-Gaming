@@ -1,21 +1,30 @@
-# BUILD_PR_LEVEL_18_10_OVERLAY_PROMOTE_BASELINE
+# BUILD_PR_LEVEL_19_1_OVERLAY_SYSTEM_EXPANSION_FRAMEWORK
 
-## Purpose
-Promote Level 18 overlay system to baseline after successful validation.
+## PLAN
 
-## Scope
-- Mark Level 18 as complete
-- Confirm baseline:
-  - Config-driven stacks
-  - Non-Tab cycle key
-  - Bottom-right placement
-  - Mission + telemetry integration
-  - Diagnostics and persistence
+### Purpose
+Establish a framework for expanding the overlay system beyond debug use into reusable gameplay and tool overlays.
 
-## Test Steps
-1. Smoke test all samples
-2. Verify integrations remain stable
-3. Confirm no regressions
+### Goals
+- Define extension points for new overlays
+- Ensure compatibility with existing config-driven system
+- Maintain strict separation between debug and gameplay overlays
 
-## Expected
-- Stable production-ready baseline
+---
+
+## BUILD
+
+### Scope
+- Define overlay extension interface/contracts
+- Document integration pattern for new overlays
+- Ensure existing overlays conform to framework
+- No behavior change
+
+### Test Steps
+1. Validate existing overlays still load
+2. Confirm extension points available
+3. Verify no regression
+
+### Expected
+- Overlay system ready for expansion
+- No impact to existing behavior
