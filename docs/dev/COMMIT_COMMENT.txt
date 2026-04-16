@@ -1,5 +1,5 @@
-Add gesture support to overlay system.
+Add contextual input mapping for overlays.
 
 PR Details:
-- Introduces gesture abstraction layer
-- Maps gestures to overlay interactions
+- Enables input behavior based on active overlay context
+- Integrates with existing input systems

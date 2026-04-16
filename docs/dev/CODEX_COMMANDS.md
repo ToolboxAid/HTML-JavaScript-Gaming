@@ -2,8 +2,9 @@ MODEL: GPT-5.4
 REASONING: medium
 
 COMMAND:
-Implement gesture support for overlay system:
-- Add gesture abstraction (tap, hold, swipe)
-- Map gestures to overlay actions
-- Maintain compatibility with existing input system
+Implement contextual input mapping:
+- Add context-aware input resolution
+- Use overlay stack and active layer
+- Integrate with existing gesture + keybind systems
+- Do not duplicate gesture logic
 - Update roadmap status only

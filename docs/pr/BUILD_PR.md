@@ -1,21 +1,21 @@
-# BUILD_PR_LEVEL_22_2_OVERLAY_GESTURE_SUPPORT
+# BUILD_PR_LEVEL_22_3_OVERLAY_CONTEXTUAL_INPUT_MAPPING
 
 ## Purpose
-Extend overlay interaction system with gesture-based input support.
+Introduce context-aware input mapping for overlays based on runtime state.
 
 ## Roadmap Improvement
-Adds gesture layer on top of interaction system (Level 22).
+Advances Level 22 by aligning input behavior with active overlay context.
 
 ## Scope
-- Add gesture abstraction (tap, hold, swipe)
-- Map gestures to overlay actions
-- Ensure compatibility with keyboard/mouse input
+- Map inputs based on overlay stack/context
+- Support priority-based input resolution
+- Integrate with existing gesture and keybind systems
 
 ## Test Steps
-1. Perform tap/hold/swipe on overlays
-2. Validate correct mapping
-3. Ensure no regression in keyboard controls
+1. Activate different overlay contexts
+2. Verify input behavior changes correctly
+3. Ensure no cross-context leakage
 
 ## Expected
-- Gesture support operational
-- No input conflicts
+- Context-driven input behavior
+- Stable and predictable mapping

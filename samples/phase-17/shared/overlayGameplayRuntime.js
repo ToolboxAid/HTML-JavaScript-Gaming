@@ -903,6 +903,7 @@ export function createOverlayGameplayRuntime({ runtimeExtensions = [] } = {}) {
     interactionPointerLastDown: false,
     interactionGestureState: null,
     interactionGestureLastDown: false,
+    interactionContextInputMap: null,
   };
 }
 
@@ -927,16 +928,209 @@ export function setOverlayGameplayRuntimeVisible(runtime, visible) {
   return true;
 }
 
+export function setOverlayGameplayRuntimeContextInputMap(runtime, contextInputMap) {
+  if (!runtime) {
+    return false;
+  }
+  runtime.interactionContextInputMap = contextInputMap && typeof contextInputMap === 'object'
+    ? contextInputMap
+    : null;
+  return true;
+}
+
+function normalizeOverlayRuntimeInputAction(action) {
+  const token = String(action || '').trim().toLowerCase();
+  if (!token || token === 'none' || token === 'noop') {
+    return '';
+  }
+  if (
+    token === 'toggle-visibility' ||
+    token === 'toggle_visibility' ||
+    token === 'toggle' ||
+    token === 'toggle-overlay'
+  ) {
+    return 'toggle-visibility';
+  }
+  if (
+    token === 'cycle-next' ||
+    token === 'cycle_next' ||
+    token === 'next' ||
+    token === 'cycle'
+  ) {
+    return 'cycle-next';
+  }
+  if (
+    token === 'cycle-prev' ||
+    token === 'cycle_previous' ||
+    token === 'cycle-prevous' ||
+    token === 'prev' ||
+    token === 'previous'
+  ) {
+    return 'cycle-prev';
+  }
+  return '';
+}
+
+function resolveOverlayRuntimeInputContext(runtime) {
+  const runtimeExtensions = Array.isArray(runtime?.runtimeExtensions) ? runtime.runtimeExtensions : [];
+  const activeIndex = normalizeInteractionIndex(runtime);
+  const activeExtension = runtimeExtensions[activeIndex] || null;
+  const stack = runtimeExtensions.map((extension, index) => ({
+    index,
+    overlayId: String(extension?.overlayId || ''),
+    layerOrder: Number(extension?.layerOrder) || 0,
+    visualPriority: Number(extension?.visualPriority) || 0,
+    isActive: index === activeIndex,
+  }));
+  stack.sort((left, right) => {
+    if (left.layerOrder !== right.layerOrder) {
+      return left.layerOrder - right.layerOrder;
+    }
+    if (left.visualPriority !== right.visualPriority) {
+      return left.visualPriority - right.visualPriority;
+    }
+    return left.index - right.index;
+  });
+  let activeStackPosition = 'single';
+  if (stack.length > 1) {
+    const activeStackRank = stack.findIndex((entry) => entry.isActive === true);
+    if (activeStackRank <= 0) {
+      activeStackPosition = 'base';
+    } else if (activeStackRank >= stack.length - 1) {
+      activeStackPosition = 'top';
+    } else {
+      activeStackPosition = 'middle';
+    }
+  }
+
+  return {
+    activeIndex,
+    activeOverlayId: String(activeExtension?.overlayId || ''),
+    activeLayerOrder: Number(activeExtension?.layerOrder) || 0,
+    activeVisualPriority: Number(activeExtension?.visualPriority) || 0,
+    activeStackPosition,
+    stack,
+  };
+}
+
+function resolveMappedOverlayRuntimeInputAction(contextInputMap, requestedAction, context) {
+  if (!contextInputMap || typeof contextInputMap !== 'object') {
+    return '';
+  }
+
+  const readActionFromMap = (mapSection, key) => {
+    if (!mapSection || typeof mapSection !== 'object') {
+      return '';
+    }
+    if (!Object.prototype.hasOwnProperty.call(mapSection, key)) {
+      return '';
+    }
+    const candidate = mapSection[key];
+    if (!candidate || typeof candidate !== 'object') {
+      return '';
+    }
+    return normalizeOverlayRuntimeInputAction(candidate[requestedAction]);
+  };
+
+  const byOverlayId = readActionFromMap(contextInputMap.byOverlayId, context.activeOverlayId);
+  if (byOverlayId) {
+    return byOverlayId;
+  }
+
+  const byLayerOrder = readActionFromMap(contextInputMap.byLayerOrder, String(context.activeLayerOrder));
+  if (byLayerOrder) {
+    return byLayerOrder;
+  }
+
+  const byStackPosition = readActionFromMap(contextInputMap.byStackPosition, String(context.activeStackPosition));
+  if (byStackPosition) {
+    return byStackPosition;
+  }
+
+  const defaultMap = contextInputMap.default && typeof contextInputMap.default === 'object'
+    ? contextInputMap.default
+    : null;
+  if (!defaultMap) {
+    return '';
+  }
+  return normalizeOverlayRuntimeInputAction(defaultMap[requestedAction]);
+}
+
+export function resolveOverlayGameplayRuntimeInputAction(runtime, requestedAction, options = {}) {
+  const normalizedRequestedAction = normalizeOverlayRuntimeInputAction(requestedAction);
+  const context = resolveOverlayRuntimeInputContext(runtime);
+  const contextInputMap = options?.contextInputMap && typeof options.contextInputMap === 'object'
+    ? options.contextInputMap
+    : runtime?.interactionContextInputMap;
+  const mappedAction = resolveMappedOverlayRuntimeInputAction(contextInputMap, normalizedRequestedAction, context);
+  return {
+    requestedAction: normalizedRequestedAction,
+    action: mappedAction || normalizedRequestedAction,
+    context,
+  };
+}
+
+function applyOverlayRuntimeInputAction(runtime, requestedAction, options = {}) {
+  if (!runtime) {
+    return {
+      changed: false,
+      requestedAction: '',
+      action: '',
+      context: resolveOverlayRuntimeInputContext(runtime),
+    };
+  }
+
+  const resolution = resolveOverlayGameplayRuntimeInputAction(runtime, requestedAction, options);
+  const action = resolution.action;
+  if (!action) {
+    return {
+      ...resolution,
+      changed: false,
+    };
+  }
+
+  if (action === 'toggle-visibility') {
+    runtime.interactionVisible = runtime.interactionVisible === false;
+    return {
+      ...resolution,
+      changed: true,
+    };
+  }
+  if (action === 'cycle-next' || action === 'cycle-prev') {
+    if (!Array.isArray(runtime.runtimeExtensions) || runtime.runtimeExtensions.length <= 1) {
+      return {
+        ...resolution,
+        changed: false,
+      };
+    }
+    normalizeInteractionIndex(runtime);
+    const count = runtime.runtimeExtensions.length;
+    const delta = action === 'cycle-prev' ? -1 : 1;
+    runtime.interactionIndex = (runtime.interactionIndex + delta + count) % count;
+    return {
+      ...resolution,
+      changed: true,
+    };
+  }
+  return {
+    ...resolution,
+    changed: false,
+  };
+}
+
 export function getOverlayGameplayRuntimeInteractionSnapshot(runtime, context = {}) {
   synchronizeOverlayGameplayRuntimeState(runtime, context);
   const extensions = Array.isArray(runtime?.runtimeExtensions) ? runtime.runtimeExtensions : [];
   const index = normalizeInteractionIndex(runtime);
   const active = extensions[index] || null;
+  const inputContext = resolveOverlayRuntimeInputContext(runtime);
   return {
     visible: isOverlayGameplayRuntimeVisible(runtime),
     index,
     count: extensions.length,
     activeOverlayId: active?.overlayId || '',
+    activeLayerOrder: inputContext.activeLayerOrder,
+    activeStackPosition: inputContext.activeStackPosition,
     cycleKey: String(runtime?.interactionCycleKey || LEVEL17_OVERLAY_CYCLE_KEY),
     suppressUntilRelease: runtime?.interactionSuppressUntilRelease === true,
     cooldownRemainingSeconds: Math.max(0, Number(runtime?.interactionCooldownRemainingSeconds) || 0),
@@ -1026,8 +1220,11 @@ export function stepOverlayGameplayRuntimeControls(runtime, input, options = {})
 
   if (togglePressed && runtime.interactionToggleLatch === false) {
     runtime.interactionToggleLatch = true;
-    runtime.interactionVisible = runtime.interactionVisible === false;
     runtime.interactionCycleLatch = true;
+    const actionResult = applyOverlayRuntimeInputAction(runtime, 'toggle-visibility', options);
+    if (!actionResult.changed) {
+      return false;
+    }
     runtime.interactionCooldownRemainingSeconds = runtime.interactionActionCooldownSeconds;
     return true;
   }
@@ -1044,13 +1241,10 @@ export function stepOverlayGameplayRuntimeControls(runtime, input, options = {})
   }
   runtime.interactionCycleLatch = true;
 
-  if (!Array.isArray(runtime.runtimeExtensions) || runtime.runtimeExtensions.length <= 1) {
+  const actionResult = applyOverlayRuntimeInputAction(runtime, 'cycle-next', options);
+  if (!actionResult.changed) {
     return false;
   }
-
-  normalizeInteractionIndex(runtime);
-  const count = runtime.runtimeExtensions.length;
-  runtime.interactionIndex = (runtime.interactionIndex + 1 + count) % count;
   runtime.interactionCooldownRemainingSeconds = runtime.interactionActionCooldownSeconds;
   return true;
 }
@@ -1175,27 +1369,6 @@ function mapGestureToOverlayAction(gesture, direction = '') {
   return '';
 }
 
-function applyOverlayGestureAction(runtime, action) {
-  if (!runtime) {
-    return false;
-  }
-  if (action === 'toggle-visibility') {
-    runtime.interactionVisible = runtime.interactionVisible === false;
-    return true;
-  }
-  if (action === 'cycle-next' || action === 'cycle-prev') {
-    if (!Array.isArray(runtime.runtimeExtensions) || runtime.runtimeExtensions.length <= 1) {
-      return false;
-    }
-    normalizeInteractionIndex(runtime);
-    const count = runtime.runtimeExtensions.length;
-    const delta = action === 'cycle-prev' ? -1 : 1;
-    runtime.interactionIndex = (runtime.interactionIndex + delta + count) % count;
-    return true;
-  }
-  return false;
-}
-
 export function stepOverlayGameplayRuntimeGestures(runtime, pointerState = {}, options = {}) {
   if (!runtime) {
     return {
@@ -1266,13 +1439,12 @@ export function stepOverlayGameplayRuntimeGestures(runtime, pointerState = {}, o
     gestureState.maxDistance = Math.max(Number(gestureState.maxDistance) || 0, distance);
 
     if (!gestureState.holdTriggered && gestureState.elapsedSeconds >= holdMinSeconds && gestureState.maxDistance <= holdMoveTolerance) {
-      const action = mapGestureToOverlayAction('hold');
-      const changed = applyOverlayGestureAction(runtime, action);
+      const actionResult = applyOverlayRuntimeInputAction(runtime, mapGestureToOverlayAction('hold'), options);
       gestureState.holdTriggered = true;
       result.gesture = 'hold';
-      result.action = action;
+      result.action = actionResult.action;
       result.consumed = true;
-      result.changed = changed;
+      result.changed = actionResult.changed;
       return result;
     }
   }
@@ -1285,32 +1457,31 @@ export function stepOverlayGameplayRuntimeGestures(runtime, pointerState = {}, o
 
     runtime.interactionGestureState = null;
     if (gestureState.holdTriggered) {
+      const holdResult = resolveOverlayGameplayRuntimeInputAction(runtime, mapGestureToOverlayAction('hold'), options);
       result.gesture = 'hold';
-      result.action = mapGestureToOverlayAction('hold');
+      result.action = holdResult.action;
       result.consumed = true;
       result.changed = false;
       return result;
     }
 
     if (distance <= tapMaxDistance && elapsedSeconds <= tapMaxSeconds) {
-      const action = mapGestureToOverlayAction('tap');
-      const changed = applyOverlayGestureAction(runtime, action);
+      const actionResult = applyOverlayRuntimeInputAction(runtime, mapGestureToOverlayAction('tap'), options);
       result.gesture = 'tap';
-      result.action = action;
+      result.action = actionResult.action;
       result.consumed = true;
-      result.changed = changed;
+      result.changed = actionResult.changed;
       return result;
     }
 
     if (distance >= swipeMinDistance) {
       const direction = resolveSwipeDirection(dx, dy);
-      const action = mapGestureToOverlayAction('swipe', direction);
-      const changed = applyOverlayGestureAction(runtime, action);
+      const actionResult = applyOverlayRuntimeInputAction(runtime, mapGestureToOverlayAction('swipe', direction), options);
       result.gesture = 'swipe';
-      result.action = action;
+      result.action = actionResult.action;
       result.direction = direction;
       result.consumed = true;
-      result.changed = changed;
+      result.changed = actionResult.changed;
       return result;
     }
   }

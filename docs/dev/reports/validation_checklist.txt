@@ -1,5 +1,4 @@
-[ ] Tap gesture works
-[ ] Hold gesture works
-[ ] Swipe gesture works
-[ ] No regression in keyboard/mouse input
+[ ] Context switching updates input behavior
+[ ] No conflicts across overlays
+[ ] Gesture + keybind compatibility maintained
 [ ] Roadmap updated

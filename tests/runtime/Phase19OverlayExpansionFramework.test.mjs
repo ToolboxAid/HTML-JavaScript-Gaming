@@ -17,6 +17,8 @@ import {
   getOverlayGameplayRuntimeCompositionSnapshot,
   getOverlayGameplayRuntimeInteractionSnapshot,
   renderOverlayGameplayRuntime,
+  resolveOverlayGameplayRuntimeInputAction,
+  setOverlayGameplayRuntimeContextInputMap,
   stepOverlayGameplayRuntimeGestures,
   stepOverlayGameplayRuntimePointerInteractions,
   stepOverlayGameplayRuntimeControls,
@@ -654,6 +656,101 @@ function assertOverlayGestureAbstractionAndCompatibility() {
   assert.equal(runtime.interactionVisible, true, 'Keyboard toggle should restore overlay visibility after hold gesture.');
 }
 
+function assertContextualInputMappingUsesOverlayContextAndStack() {
+  const framework = createPhase19OverlayExpansionFramework();
+  framework.registerExtension(definePhase19OverlayExtension({
+    id: 'phase19-overlay-contextual-input-mapping',
+    overlays: [
+      { id: 'runtime-a', label: 'Runtime A' },
+      { id: 'runtime-b', label: 'Runtime B' },
+      { id: 'runtime-c', label: 'Runtime C' },
+    ],
+    initialOverlayId: 'runtime-a',
+    runtimeExtensions: [
+      { overlayId: 'runtime-a', layerOrder: 10, visualPriority: 10, onRender() {} },
+      { overlayId: 'runtime-b', layerOrder: 20, visualPriority: 20, onRender() {} },
+      { overlayId: 'runtime-c', layerOrder: 30, visualPriority: 30, onRender() {} },
+    ],
+  }));
+
+  const runtime = framework.createRuntimeForExtension('phase19-overlay-contextual-input-mapping');
+  setOverlayGameplayRuntimeContextInputMap(runtime, {
+    byOverlayId: {
+      'runtime-b': {
+        'cycle-next': 'toggle-visibility',
+      },
+    },
+    byLayerOrder: {
+      '30': {
+        'toggle-visibility': 'cycle-prev',
+      },
+    },
+    byStackPosition: {
+      top: {
+        'cycle-next': 'cycle-prev',
+      },
+    },
+  });
+
+  runtime.interactionIndex = 1;
+  const overlayResolution = resolveOverlayGameplayRuntimeInputAction(runtime, 'cycle-next');
+  assert.equal(overlayResolution.action, 'toggle-visibility', 'Overlay-id contextual map should remap cycle action for the active overlay.');
+  assert.equal(overlayResolution.context.activeOverlayId, 'runtime-b', 'Context resolver should expose active overlay id.');
+  assert.equal(overlayResolution.context.activeLayerOrder, 20, 'Context resolver should expose active overlay layer order.');
+  assert.equal(overlayResolution.context.activeStackPosition, 'middle', 'Context resolver should derive stack position from active overlay layer.');
+  assert.equal(overlayResolution.context.stack.length, 3, 'Context resolver should include the overlay stack for contextual mapping.');
+
+  const cycleInput = makeInput([
+    LEVEL17_OVERLAY_CYCLE_KEY,
+    LEVEL19_OVERLAY_RUNTIME_TOGGLE_MODIFIERS[0],
+    LEVEL19_OVERLAY_RUNTIME_CYCLE_MODIFIERS[0],
+  ]);
+  const remappedCycleChanged = stepOverlayGameplayRuntimeControls(runtime, cycleInput, { dtSeconds: 0.05 });
+  assert.equal(remappedCycleChanged, true, 'Contextual keybind mapping should apply remapped actions.');
+  assert.equal(runtime.interactionVisible, false, 'Overlay-id contextual map should remap cycle-next to visibility toggle.');
+  assert.equal(runtime.interactionIndex, 1, 'Contextual toggle remap should preserve active index when action is visibility toggle.');
+  stepOverlayGameplayRuntimeControls(runtime, makeInput([]), { dtSeconds: 0.05 });
+  runtime.interactionVisible = true;
+
+  runtime.interactionIndex = 2;
+  const layerResolution = resolveOverlayGameplayRuntimeInputAction(runtime, 'toggle-visibility');
+  assert.equal(layerResolution.action, 'cycle-prev', 'Active-layer contextual map should remap toggle action on top layer.');
+  const toggleInput = makeInput([
+    LEVEL17_OVERLAY_CYCLE_KEY,
+    LEVEL19_OVERLAY_RUNTIME_TOGGLE_MODIFIERS[0],
+  ]);
+  const remappedToggleChanged = stepOverlayGameplayRuntimeControls(runtime, toggleInput, { dtSeconds: 0.05 });
+  assert.equal(remappedToggleChanged, true, 'Layer contextual map should execute remapped toggle action.');
+  assert.equal(runtime.interactionIndex, 1, 'Layer contextual map should execute cycle-prev from top active layer.');
+  assert.equal(runtime.interactionVisible, true, 'Layer contextual cycle remap should not toggle visibility.');
+  stepOverlayGameplayRuntimeControls(runtime, makeInput([]), { dtSeconds: 0.05 });
+
+  runtime.interactionIndex = 2;
+  stepOverlayGameplayRuntimeGestures(runtime, {
+    x: 300,
+    y: 220,
+    down: true,
+    pressed: true,
+    modifiers: { alt: true, shift: true },
+  }, {
+    enableGestures: true,
+    dtSeconds: 0.02,
+  });
+  const tapGestureResult = stepOverlayGameplayRuntimeGestures(runtime, {
+    x: 305,
+    y: 221,
+    down: false,
+    released: true,
+    modifiers: { alt: true, shift: true },
+  }, {
+    enableGestures: true,
+    dtSeconds: 0.02,
+  });
+  assert.equal(tapGestureResult.gesture, 'tap', 'Gesture abstraction should remain active with contextual input mapping.');
+  assert.equal(tapGestureResult.action, 'cycle-prev', 'Gesture action should reuse contextual resolver instead of duplicating mapping logic.');
+  assert.equal(runtime.interactionIndex, 1, 'Top-stack contextual mapping should apply to gesture-triggered cycle actions.');
+}
+
 export function run() {
   assertExpansionRegistrationAndCompatibility();
   assertExtensionLifecycleMutations();
@@ -663,4 +760,5 @@ export function run() {
   assertOverlayEventCoalescingEfficiency();
   assertAdvancedOverlayPointerInteractionsGameplaySafety();
   assertOverlayGestureAbstractionAndCompatibility();
+  assertContextualInputMappingUsesOverlayContextAndStack();
 }
