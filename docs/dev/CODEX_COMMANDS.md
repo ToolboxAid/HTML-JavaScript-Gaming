@@ -2,9 +2,10 @@ MODEL: GPT-5.4-codex
 REASONING: medium
 
 COMMAND:
-Externalize overlay configuration:
-- Create config for overlay stacks per sample
-- Refactor runtime to consume config
-- Ensure no behavior change
+Add overlay diagnostics tooling:
+- Log overlay index and stack state
+- Add optional debug toggle
+- Ensure zero impact when disabled
+- Do not change overlay behavior
 
 Package ZIP to <project folder>/tmp/

@@ -8,6 +8,40 @@ import { isOverlayCycleReverseModifierActive } from '/samples/phase-17/shared/ov
 
 const overlayIndexMemoryStore = new Map();
 const overlayPersistenceKeys = new Set();
+let overlayDiagnosticsEnabled = false;
+
+function getOverlayStackSnapshot(controller) {
+  if (!controller || !Array.isArray(controller.overlays)) {
+    return [];
+  }
+  return controller.overlays.map((overlay) => ({
+    id: overlay.id,
+    label: overlay.label,
+  }));
+}
+
+function getOverlayDiagnosticsSnapshot(controller) {
+  const stack = getOverlayStackSnapshot(controller);
+  const activeIndex = normalizeActiveIndex(controller);
+  const activeEntry = stack[activeIndex] || null;
+  return {
+    activeIndex,
+    activeId: activeEntry?.id || '',
+    stack,
+    cycleKey: String(controller?.cycleKey || ''),
+    persistenceKey: String(controller?.persistenceKey || ''),
+  };
+}
+
+function logOverlayDiagnostics(eventName, controller) {
+  if (!overlayDiagnosticsEnabled) {
+    return;
+  }
+  if (typeof console === 'undefined' || typeof console.debug !== 'function') {
+    return;
+  }
+  console.debug(`[overlay-diagnostics] ${eventName}`, getOverlayDiagnosticsSnapshot(controller));
+}
 
 function normalizeOverlayEntry(entry) {
   const id = String(entry?.id ?? '').trim();
@@ -180,6 +214,7 @@ export function setTabDebugOverlayMap(controller, { overlays = [], initialOverla
   applyPersistedActiveIndex(controller);
   normalizeActiveIndex(controller);
   controller.cycleLatch = false;
+  logOverlayDiagnostics('set-map', controller);
   return true;
 }
 
@@ -190,6 +225,7 @@ export function setTabDebugOverlayCycleKey(controller, cycleKey) {
   const normalized = String(cycleKey || '').trim();
   controller.cycleKey = normalized || 'Tab';
   controller.cycleLatch = false;
+  logOverlayDiagnostics('set-cycle-key', controller);
   return true;
 }
 
@@ -206,6 +242,7 @@ export function setTabDebugOverlayPersistenceKey(controller, persistenceKey) {
   overlayPersistenceKeys.add(controller.persistenceKey);
   applyPersistedActiveIndex(controller);
   normalizeActiveIndex(controller);
+  logOverlayDiagnostics('set-persistence-key', controller);
   return true;
 }
 
@@ -241,6 +278,7 @@ export function setTabDebugOverlayActive(controller, overlayId) {
   controller.activeIndex = nextIndex;
   normalizeActiveIndex(controller);
   persistActiveIndex(controller);
+  logOverlayDiagnostics('set-active', controller);
   return true;
 }
 
@@ -269,6 +307,7 @@ export function stepTabDebugOverlayController(controller, input) {
   const count = controller.overlays.length;
   controller.activeIndex = (controller.activeIndex + delta + count) % count;
   persistActiveIndex(controller);
+  logOverlayDiagnostics('step-cycle', controller);
 }
 
 export function isTabDebugOverlayActive(controller, overlayId) {
@@ -296,4 +335,13 @@ export function resetTabDebugOverlayPersistenceForTests() {
   }
   overlayPersistenceKeys.clear();
   overlayIndexMemoryStore.clear();
+}
+
+export function setTabDebugOverlayDiagnosticsEnabled(enabled) {
+  overlayDiagnosticsEnabled = enabled === true;
+  return overlayDiagnosticsEnabled;
+}
+
+export function isTabDebugOverlayDiagnosticsEnabled() {
+  return overlayDiagnosticsEnabled;
 }

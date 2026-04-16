@@ -1,30 +1,34 @@
-# BUILD_PR_LEVEL_18_5_OVERLAY_CONFIGURATION_EXTERNALIZATION
+# BUILD_PR_LEVEL_18_6_OVERLAY_DIAGNOSTICS_DEBUG_TOOLING
 
 ## PLAN
 
 ### Purpose
-Externalize overlay stack definitions and configuration to remove hardcoded mappings and improve maintainability.
+Introduce lightweight diagnostics and debug tooling for overlay system to aid validation and future debugging.
 
 ### Goals
-- Move overlay stack definitions to config
-- Allow per-sample configuration
-- Reduce hardcoded logic
+- Provide visibility into overlay state
+- Expose current stack + index
+- Enable debug logging toggle
 
 ---
 
 ## BUILD
 
 ### Scope
-- Define external config structure for overlay stacks
-- Refactor runtime to read from config
-- Preserve existing behavior exactly
-- No UI or feature changes
+- Add diagnostic hooks (non-invasive)
+- Add debug output for:
+  - Current overlay index
+  - Active stack
+  - Cycle key events
+- Optional debug toggle (no UI change required)
+- No behavior change
 
 ### Test Steps
-1. Load samples
-2. Verify overlays match previous stacks
-3. Modify config and confirm behavior updates
+1. Enable diagnostics
+2. Cycle overlays
+3. Verify logs show correct state transitions
+4. Disable diagnostics
 
 ### Expected
-- Same behavior as before
-- Config-driven overlay stacks
+- Clear debug visibility
+- No runtime impact when disabled

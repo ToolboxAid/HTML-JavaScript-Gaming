@@ -1,2 +1,2 @@
-Level 18.5 overlay configuration externalization.
-Move stack definitions to config-driven model.
+Level 18.6 overlay diagnostics and debug tooling.
+Add visibility into overlay state and cycle behavior.

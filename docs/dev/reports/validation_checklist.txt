@@ -1,4 +1,4 @@
-[ ] Config file defines stacks
-[ ] Runtime reads config
-[ ] Behavior unchanged
-[ ] Per-sample mapping preserved
+[ ] Diagnostics output correct state
+[ ] Toggle enables/disables logs
+[ ] No performance impact when disabled
+[ ] No behavior change
