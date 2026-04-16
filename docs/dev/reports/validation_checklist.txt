@@ -1,4 +1,8 @@
-[ ] Telemetry Overlay updates with data
-[ ] Overlay cycle unaffected
-[ ] No regression in other overlays
-[ ] Stable performance
+[ ] All samples load correctly
+[ ] Bottom-right placement consistent
+[ ] Non-Tab cycle works everywhere
+[ ] Mission integration verified
+[ ] Telemetry integration verified
+[ ] No performance issues
+[ ] No regressions
+[ ] System ready for production

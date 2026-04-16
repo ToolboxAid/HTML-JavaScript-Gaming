@@ -1,10 +1,12 @@
 MODEL: GPT-5.4-codex
-REASONING: medium
+REASONING: low
 
 COMMAND:
-Integrate overlay system with telemetry system:
-- Connect Telemetry Overlay to telemetry data
-- Ensure real-time updates
-- Preserve overlay behavior and performance
+Run full overlay system validation:
+- Validate all Level 17 + 18 functionality
+- Confirm integrations (input, mission, telemetry)
+- Identify any blocking defects
+
+Do not modify behavior unless required to fix a blocker.
 
 Package ZIP to <project folder>/tmp/
