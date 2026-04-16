@@ -1,3 +1,2 @@
-- [ ] folders created
+- [ ] services initialize
 - [ ] no runtime errors
-- [ ] index/registry loads

@@ -1,1 +1,1 @@
-Phase 18 foundation structure and minimal wiring
+Phase 18 core services skeleton
