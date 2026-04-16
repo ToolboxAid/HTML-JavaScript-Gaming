@@ -1,5 +1,7 @@
-[ ] Level 17 tests using makeInput(['Tab']) were identified
-[ ] Each affected test now uses the approved non-Tab cycle key
-[ ] No runtime keybinding code was changed
-[ ] Affected Level 17 tests pass
-[ ] No remaining Level 17 overlay cycle tests reference Tab
+[ ] Sample 1709 loads
+[ ] Sample 1711 loads
+[ ] Bottom-right placement correct
+[ ] Cycle key works (non-Tab)
+[ ] Movement Runtime renders
+[ ] Movement Lab HUD renders
+[ ] Stack order correct

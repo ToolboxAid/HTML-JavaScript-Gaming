@@ -15,6 +15,12 @@ import {
   stepTabDebugOverlayController,
 } from '/samples/phase-17/shared/tabDebugOverlayCycle.js';
 import {
+  createMovementOverlayCycleMap,
+  MOVEMENT_DEBUG_CYCLE_KEY,
+  OVERLAY_MOVEMENT_HUD,
+  OVERLAY_MOVEMENT_RUNTIME,
+} from '/samples/phase-17/shared/movementOverlayStack.js';
+import {
   applyPhase16CameraMode,
   createPhase16ViewState,
   createProjectionViewport,
@@ -38,9 +44,6 @@ const MODE_ORDER = Object.freeze([
   MOVEMENT_MODES.TANK,
   MOVEMENT_MODES.WEIGHTED,
 ]);
-const DEBUG_CYCLE_KEY = 'KeyG';
-const OVERLAY_MOVEMENT_RUNTIME = 'movement-runtime';
-const OVERLAY_MOVEMENT_HUD = 'movement-lab-hud';
 
 function clamp(value, min, max) {
   return Math.max(min, Math.min(max, value));
@@ -98,13 +101,10 @@ export default class MovementModelsLabScene extends Scene {
     this.lastInputSummary = '';
     this.lastSpeed = 0;
     this.tabDebugOverlays = createTabDebugOverlayController({
-      overlays: [
-        { id: OVERLAY_MOVEMENT_RUNTIME, label: 'Movement Runtime' },
-        { id: OVERLAY_MOVEMENT_HUD, label: 'Movement Lab HUD' },
-      ],
+      overlays: createMovementOverlayCycleMap(),
       initialOverlayId: OVERLAY_MOVEMENT_RUNTIME,
     });
-    setTabDebugOverlayCycleKey(this.tabDebugOverlays, DEBUG_CYCLE_KEY);
+    setTabDebugOverlayCycleKey(this.tabDebugOverlays, MOVEMENT_DEBUG_CYCLE_KEY);
   }
 
   setCamera3D(camera3D) {

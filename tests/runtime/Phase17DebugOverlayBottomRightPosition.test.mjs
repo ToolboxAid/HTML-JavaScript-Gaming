@@ -12,7 +12,9 @@ import {
 import DoomRaycastSpritesScene from '../../samples/phase-17/1701/RaycastDemoScene.js';
 import TextureMaterialDemoScene from '../../samples/phase-17/1704/TextureMaterialDemoScene.js';
 import RealGameplayMiniGameScene from '../../samples/phase-17/1708/RealGameplayMiniGameScene.js';
+import MovementModelsLab1709Scene from '../../samples/phase-17/1709/MovementModelsLabScene.js';
 import RealGameplayMiniGame1710Scene from '../../samples/phase-17/1710/RealGameplayMiniGameScene.js';
+import MovementModelsLab1711Scene from '../../samples/phase-17/1711/MovementModelsLabScene.js';
 import GameplayMetricsTelemetryScene from '../../samples/phase-17/1712/GameplayMetricsTelemetryScene.js';
 import FinalReferenceGameScene from '../../samples/phase-17/1713/FinalReferenceGameScene.js';
 
@@ -157,6 +159,38 @@ function assertSample1710CyclePlacement() {
   assertBottomRightFromTitle(runtimeTitle, 300, 120, 650, 410, 'Sample 1710 runtime overlay');
 }
 
+function assertSample1709MovementOverlayPlacement() {
+  const scene = new MovementModelsLab1709Scene();
+  scene.setCamera3D(createCameraStub());
+
+  const runtimeRenderer = createRendererProbe();
+  scene.render(runtimeRenderer);
+  const runtimeTitle = findExactText(runtimeRenderer, 'Movement Runtime');
+  assertBottomRightFromTitle(runtimeTitle, 360, 212, 590, 318, 'Sample 1709 movement runtime overlay');
+
+  pressCycleKey(scene);
+  const hudRenderer = createRendererProbe();
+  scene.render(hudRenderer);
+  const hudTitle = findExactText(hudRenderer, 'Movement Lab HUD');
+  assertBottomRightFromTitle(hudTitle, 360, 138, 590, 392, 'Sample 1709 movement hud overlay');
+}
+
+function assertSample1711MovementOverlayPlacement() {
+  const scene = new MovementModelsLab1711Scene();
+  scene.setCamera3D(createCameraStub());
+
+  const runtimeRenderer = createRendererProbe();
+  scene.render(runtimeRenderer);
+  const runtimeTitle = findExactText(runtimeRenderer, 'Movement Runtime');
+  assertBottomRightFromTitle(runtimeTitle, 360, 212, 590, 318, 'Sample 1711 movement runtime overlay');
+
+  pressCycleKey(scene);
+  const hudRenderer = createRendererProbe();
+  scene.render(hudRenderer);
+  const hudTitle = findExactText(hudRenderer, 'Movement Lab HUD');
+  assertBottomRightFromTitle(hudTitle, 360, 138, 590, 392, 'Sample 1711 movement hud overlay');
+}
+
 function assertSample1712TelemetryPlacement() {
   const scene = new GameplayMetricsTelemetryScene();
   scene.setCamera3D(createCameraStub());
@@ -186,7 +220,9 @@ export function run() {
   assertSample1701RuntimePanelPlacement();
   assertSample1704StackedPanelPlacement();
   assertSample1708CyclePlacement();
+  assertSample1709MovementOverlayPlacement();
   assertSample1710CyclePlacement();
+  assertSample1711MovementOverlayPlacement();
   assertSample1712TelemetryPlacement();
   assertSample1713FinalRuntimePlacement();
 }

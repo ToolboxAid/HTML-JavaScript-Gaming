@@ -1,36 +1,23 @@
-# BUILD_PR_LEVEL_17_56_DEBUG_OVERLAY_TEST_INPUT_KEY_REMAP
+# BUILD_PR_LEVEL_17_57_DEBUG_OVERLAY_SAMPLE_1709_1711_MOVEMENT_ALIGNMENT
 
 ## Purpose
-Replace stale Level 17 test inputs that still simulate `Tab` for debug overlay cycling so the automated checks validate the current non-Tab interaction contract.
+Align overlay stacks for samples 1709 and 1711 (movement-focused) with correct order, bottom-right placement, and non-Tab cycle behavior.
 
 ## Scope
-This PR is limited to Level 17 test coverage and test helpers that still encode the old cycle key.
-
-Included:
-- Update Level 17 tests that currently use `makeInput(['Tab'])`
-- Align those tests to the active non-Tab overlay cycle key already established by the runtime-facing PRs
-- Verify no Level 17 debug overlay tests continue to require browser-reserved Tab behavior
-
-Excluded:
-- Runtime keybinding changes
-- Overlay layout changes
-- Sample stack mapping changes
-- Non-Level-17 test cleanup
-
-## Implementation Notes
-- Use the already-approved replacement cycle key from the current Level 17 overlay work
-- Prefer shared test constants/helpers if they already exist; otherwise introduce the smallest local test-safe normalization needed
-- Do not broaden this into a repo-wide input cleanup
-- Do not modify `start_of_day` content
+- Samples: 1709, 1711
+- Stack:
+  - Movement Runtime
+  - Movement Lab HUD
+- Bottom-right anchor
+- Non-Tab cycle key validation
 
 ## Test Steps
-1. Search Level 17 tests for `makeInput(['Tab'])`
-2. Replace each stale input with the approved non-Tab cycle key
-3. Run the affected Level 17 test files
-4. Confirm overlay cycle assertions still pass under the new input
-5. Confirm no remaining Level 17 tests reference `Tab` for overlay cycling
+1. Load samples 1709 and 1711
+2. Verify bottom-right placement
+3. Cycle overlays and confirm order
+4. Confirm Movement Runtime and HUD render correctly
 
-## Expected Result
-- Level 17 tests validate the current non-Tab overlay cycle behavior
-- No stale `makeInput(['Tab'])` calls remain in the affected Level 17 test surface
-- The change stays test-only and does not alter runtime behavior
+## Expected
+- Correct stack order
+- Stable cycling behavior
+- No Tab usage
