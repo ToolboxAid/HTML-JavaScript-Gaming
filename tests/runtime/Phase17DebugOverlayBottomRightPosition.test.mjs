@@ -13,6 +13,7 @@ import DoomRaycastSpritesScene from '../../samples/phase-17/1701/RaycastDemoScen
 import TextureMaterialDemoScene from '../../samples/phase-17/1704/TextureMaterialDemoScene.js';
 import RealGameplayMiniGameScene from '../../samples/phase-17/1708/RealGameplayMiniGameScene.js';
 import GameplayMetricsTelemetryScene from '../../samples/phase-17/1712/GameplayMetricsTelemetryScene.js';
+import FinalReferenceGameScene from '../../samples/phase-17/1713/FinalReferenceGameScene.js';
 
 function createCameraStub() {
   const state = {
@@ -156,10 +157,23 @@ function assertSample1712TelemetryPlacement() {
   assertBottomRightFromTitle(telemetryTitle, 228, 244, 722, 286, 'Sample 1712 telemetry overlay');
 }
 
+function assertSample1713FinalRuntimePlacement() {
+  const scene = new FinalReferenceGameScene();
+  scene.setCamera3D(createCameraStub());
+  pressCycleKey(scene);
+  pressCycleKey(scene);
+  pressCycleKey(scene);
+  const renderer = createRendererProbe();
+  scene.render(renderer);
+  const runtimeTitle = findExactText(renderer, 'Final Reference Runtime');
+  assertBottomRightFromTitle(runtimeTitle, 228, 248, 722, 282, 'Sample 1713 final runtime overlay');
+}
+
 export function run() {
   assertSharedStackMath();
   assertSample1701RuntimePanelPlacement();
   assertSample1704StackedPanelPlacement();
   assertSample1708CyclePlacement();
   assertSample1712TelemetryPlacement();
+  assertSample1713FinalRuntimePlacement();
 }

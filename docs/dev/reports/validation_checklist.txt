@@ -1,10 +1,4 @@
-[ ] Runtime tests pass.
-[ ] Tab no longer advances overlay cycling in touched phase-17 samples.
-[ ] Replacement key advances overlay cycling in touched phase-17 samples.
-[ ] Sample 1708 panel cycle set matches: UI Layer, Mission Feed, *ADY, Mini-Game Runtime.
-[ ] Sample 1710 panel cycle set matches: UI Layer, Mission Feed, *ADY, Mini-Game Runtime.
-[ ] Sample 1709 panel cycle set matches: Movement Runtime, Movement Lab HUD.
-[ ] Sample 1711 panel cycle set matches: Movement Runtime, Movement Lab HUD.
-[ ] Sample 1712 panel cycle set matches: UI Layer, Mission Feed, *ADY, Telemetry Overlay.
-[ ] Sample 1713 panel cycle set matches: UI Layer, Mission Feed, *ADY, Final Reference Runtime.
-[ ] Touched overlay titles render in the bottom-right stack region.
+[ ] Sample 1713 loads
+[ ] Bottom-right overlay placement correct
+[ ] Cycle key works (non-Tab)
+[ ] Stack order matches spec

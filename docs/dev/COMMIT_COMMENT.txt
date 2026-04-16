@@ -1,1 +1,2 @@
-BUILD_PR_LEVEL_17_52: replace Tab-based debug overlay cycling in touched phase-17 samples and lock bottom-right sample-specific overlay stack maps for 1708-1713 with runtime coverage
+Align sample 1713 overlay stack to Final Reference Runtime.
+Enforce bottom-right placement and remove Tab key usage.
