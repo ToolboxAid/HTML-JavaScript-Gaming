@@ -1,3 +1,4 @@
-- [ ] roadmap statuses consistent
-- [ ] no unintended edits
-- [ ] Track H marked correctly
+- [ ] all panels render
+- [ ] no console errors
+- [ ] tests pass
+- [ ] roadmap consistent
