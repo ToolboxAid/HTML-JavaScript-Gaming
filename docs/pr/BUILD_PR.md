@@ -1,24 +1,25 @@
-# BUILD_PR_LEVEL_17_53_DEBUG_OVERLAY_SAMPLE_1713_FINAL_REFERENCE_ALIGNMENT
+# BUILD_PR_LEVEL_17_55_DEBUG_OVERLAY_SAMPLE_1708_1710_STACK_NORMALIZATION
 
 ## Purpose
-Align Sample 1713 overlay stack to Final Reference Runtime and validate bottom-right positioning + cycle behavior (non-Tab key).
+Normalize overlay stacks for samples 1708 and 1710 with consistent bottom-right placement and correct cycling order.
 
 ## Scope
-- Sample 1713 overlay stack:
+- Samples: 1708, 1710
+- Stack:
   - UI Layer
   - Mission Feed
   - <...ADY>
-  - Final Reference Runtime
-- Bottom-right anchor enforcement
-- Cycle key (non-Tab) verification
+  - Mini-Game Runtime
+- Bottom-right anchor
+- Non-Tab cycle key validation
 
 ## Test Steps
-1. Load sample 1713
-2. Verify overlays render bottom-right
-3. Press cycle key → confirm correct order
-4. Confirm no Tab usage
+1. Load 1708 and 1710
+2. Verify bottom-right placement
+3. Cycle overlays → confirm order
+4. Confirm Mini-Game Runtime visibility
 
 ## Expected
-- Correct stack order
-- No overlay overlap issues
-- Stable cycling behavior
+- Identical stack behavior across both samples
+- Stable cycling
+- No Tab usage

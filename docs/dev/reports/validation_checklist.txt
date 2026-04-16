@@ -1,4 +1,6 @@
-[ ] Sample 1713 loads
-[ ] Bottom-right overlay placement correct
+[ ] Sample 1708 loads
+[ ] Sample 1710 loads
+[ ] Bottom-right placement correct
 [ ] Cycle key works (non-Tab)
-[ ] Stack order matches spec
+[ ] Mini-Game Runtime renders
+[ ] Stack order consistent

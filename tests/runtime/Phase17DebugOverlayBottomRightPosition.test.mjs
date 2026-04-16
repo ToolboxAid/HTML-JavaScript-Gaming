@@ -12,6 +12,7 @@ import {
 import DoomRaycastSpritesScene from '../../samples/phase-17/1701/RaycastDemoScene.js';
 import TextureMaterialDemoScene from '../../samples/phase-17/1704/TextureMaterialDemoScene.js';
 import RealGameplayMiniGameScene from '../../samples/phase-17/1708/RealGameplayMiniGameScene.js';
+import RealGameplayMiniGame1710Scene from '../../samples/phase-17/1710/RealGameplayMiniGameScene.js';
 import GameplayMetricsTelemetryScene from '../../samples/phase-17/1712/GameplayMetricsTelemetryScene.js';
 import FinalReferenceGameScene from '../../samples/phase-17/1713/FinalReferenceGameScene.js';
 
@@ -145,6 +146,31 @@ function assertSample1708CyclePlacement() {
   assertBottomRightFromTitle(runtimeTitle, 300, 120, 650, 410, 'Sample 1708 runtime overlay');
 }
 
+function assertSample1710CyclePlacement() {
+  const scene = new RealGameplayMiniGame1710Scene();
+  scene.setCamera3D(createCameraStub());
+
+  const renderer = createRendererProbe();
+  scene.render(renderer);
+  const uiLayerTitle = findExactText(renderer, 'UI Layer');
+  assertBottomRightFromTitle(uiLayerTitle, 326, 174, 624, 356, 'Sample 1710 UI Layer overlay');
+
+  scene.step3DPhysics(0.02, { input: makeInput(['Tab']) });
+  scene.step3DPhysics(0.02, { input: makeInput([]) });
+  const tabRenderer = createRendererProbe();
+  scene.render(tabRenderer);
+  const tabUiLayerTitle = findExactText(tabRenderer, 'UI Layer');
+  assertBottomRightFromTitle(tabUiLayerTitle, 326, 174, 624, 356, 'Sample 1710 should ignore Tab and keep UI Layer overlay');
+
+  pressCycleKey(scene);
+  pressCycleKey(scene);
+  pressCycleKey(scene);
+  const runtimeRenderer = createRendererProbe();
+  scene.render(runtimeRenderer);
+  const runtimeTitle = findExactText(runtimeRenderer, 'Mini-Game Runtime');
+  assertBottomRightFromTitle(runtimeTitle, 300, 120, 650, 410, 'Sample 1710 runtime overlay');
+}
+
 function assertSample1712TelemetryPlacement() {
   const scene = new GameplayMetricsTelemetryScene();
   scene.setCamera3D(createCameraStub());
@@ -174,6 +200,7 @@ export function run() {
   assertSample1701RuntimePanelPlacement();
   assertSample1704StackedPanelPlacement();
   assertSample1708CyclePlacement();
+  assertSample1710CyclePlacement();
   assertSample1712TelemetryPlacement();
   assertSample1713FinalRuntimePlacement();
 }

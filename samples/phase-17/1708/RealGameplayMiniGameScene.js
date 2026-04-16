@@ -28,6 +28,14 @@ import {
   setTabDebugOverlayMap,
   stepTabDebugOverlayController,
 } from '/samples/phase-17/shared/tabDebugOverlayCycle.js';
+import {
+  MINI_GAME_DEBUG_CYCLE_KEY,
+  OVERLAY_MINI_GAME_RUNTIME,
+  OVERLAY_MISSION_FEED,
+  OVERLAY_MISSION_READY,
+  OVERLAY_UI_LAYER,
+  createMiniGameOverlayCycleMap,
+} from '/samples/phase-17/shared/miniGameOverlayStack.js';
 
 const theme = new Theme(ThemeTokens);
 
@@ -35,11 +43,6 @@ const READY_STATE = 'ready';
 const RUNNING_STATE = 'running';
 const WON_STATE = 'won';
 const LOST_STATE = 'lost';
-const DEBUG_CYCLE_KEY = 'KeyG';
-const OVERLAY_UI_LAYER = 'ui-layer';
-const OVERLAY_MISSION_FEED = 'mission-feed';
-const OVERLAY_MISSION_READY = 'mission-ready';
-const OVERLAY_MINI_GAME_RUNTIME = 'mini-game-runtime';
 
 function clamp(value, min, max) {
   return Math.max(min, Math.min(max, value));
@@ -87,13 +90,8 @@ export default class RealGameplayMiniGameScene extends Scene {
     this.resetMatch({ toReady: true });
 
     this.tabDebugOverlays = createTabDebugOverlayController();
-    setTabDebugOverlayCycleKey(this.tabDebugOverlays, DEBUG_CYCLE_KEY);
-    this.setDebugOverlayCycleMap([
-      { id: OVERLAY_UI_LAYER, label: 'UI Layer' },
-      { id: OVERLAY_MISSION_FEED, label: 'Mission Feed' },
-      { id: OVERLAY_MISSION_READY, label: 'MISSION READY' },
-      { id: OVERLAY_MINI_GAME_RUNTIME, label: 'Mini-Game Runtime' },
-    ], OVERLAY_UI_LAYER);
+    setTabDebugOverlayCycleKey(this.tabDebugOverlays, MINI_GAME_DEBUG_CYCLE_KEY);
+    this.setDebugOverlayCycleMap(createMiniGameOverlayCycleMap(), OVERLAY_UI_LAYER);
   }
 
   addEvent(text) {

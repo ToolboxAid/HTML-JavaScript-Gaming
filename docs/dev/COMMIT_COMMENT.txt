@@ -1,2 +1,2 @@
-Align sample 1713 overlay stack to Final Reference Runtime.
-Enforce bottom-right placement and remove Tab key usage.
+Normalize overlay stacks for samples 1708 and 1710.
+Standardize bottom-right placement and cycle behavior.
