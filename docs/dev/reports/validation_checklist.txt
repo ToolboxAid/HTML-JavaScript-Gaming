@@ -1,5 +1,7 @@
-- [ ] game runs
-- [ ] player movement works
-- [ ] camera follows
-- [ ] scoring/objective works
-- [ ] debug panels active
+- [ ] sample loads from samples/index.html
+- [ ] direct x/y movement works
+- [ ] tank/rotation movement works
+- [ ] optional weighted movement works if implemented
+- [ ] camera follows correctly in all active modes
+- [ ] active mode label/instructions visible
+- [ ] no console errors
