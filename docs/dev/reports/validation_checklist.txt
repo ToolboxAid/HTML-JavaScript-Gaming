@@ -1,4 +1,2 @@
-
-- [ ] all samples pass
-- [ ] roadmap updated
-- [ ] no regressions
+- [ ] plan file exists
+- [ ] no unintended changes
