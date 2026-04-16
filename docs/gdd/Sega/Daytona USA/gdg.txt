@@ -1,0 +1,544 @@
+Below is a **full, production-grade Game Design Document (GDD)** for reverse-engineering **Daytona USA** (Daytona USA), including **drift handling, slipstream physics, track segmentation, AI behavior, camera system, and finishing touches** for an arcade-accurate recreation.
+
+---
+
+# 🎮 GDD — Daytona USA (Reverse Engineering Edition)
+
+**Document Type:** Full Technical + Design Spec
+**Target:** Faithful arcade recreation (Sega Model 2 feel)
+**Genre:** Arcade Racing (3D Stock Car)
+**Perspective:** Third-Person / Multi-Camera
+**Core Identity:** Drift-friendly handling + high-speed oval/track racing + arcade spectacle
+
+---
+
+# 1. 🧭 CORE GAME OVERVIEW
+
+## 1.1 Game Pillars
+
+* **Controlled Drift Handling (SIGNATURE)**
+* **Slipstream (Drafting) Mechanics**
+* **Arcade-Speed Racing**
+* **Iconic Track Design**
+* **Multiplayer Competition (optional)**
+
+---
+
+## 1.2 Player Fantasy
+
+You are a stock car racer sliding through high-speed turns, drafting opponents, and mastering tracks to win races.
+
+---
+
+# 2. 🎮 CORE GAMEPLAY LOOP
+
+1. Start race
+2. Accelerate and steer
+3. Enter turns → initiate drift
+4. Maintain speed through corners
+5. Use slipstream to gain advantage
+6. Complete laps within time/position
+7. Finish race
+
+---
+
+# 3. 🚗 PLAYER SYSTEM
+
+## 3.1 Controls
+
+* Steering (analog)
+* Accelerator
+* Brake
+* Gear (optional/manual)
+* Camera switch
+
+---
+
+## 3.2 Movement Model (ARCADE DRIFT PHYSICS)
+
+```text id="dy1p3k"
+velocity += acceleration
+velocity -= drag
+lateralSlip = steeringInput * driftFactor
+```
+
+---
+
+## 3.3 Drift System (CORE MECHANIC)
+
+### Entry
+
+```text id="dy2v7m"
+IF speed high AND steering applied:
+    enter drift
+```
+
+---
+
+### Behavior
+
+```text id="dy3k9r"
+heading ≠ velocity direction
+rear slides outward
+```
+
+---
+
+### Exit
+
+```text id="dy4z2t"
+reduce steering → regain traction
+```
+
+---
+
+## 3.4 Handling Properties
+
+```text id="dy5m1x"
+Top Speed: High
+Grip: Low-mid
+Drift Factor: Medium-high
+Recovery: Smooth
+```
+
+---
+
+## 3.5 Player States
+
+| State     | Description     |
+| --------- | --------------- |
+| Driving   | Normal          |
+| Drifting  | Sliding         |
+| Braking   | Slowing         |
+| Off-track | Reduced control |
+| Colliding | Impact          |
+| Finished  | Race complete   |
+
+---
+
+# 4. 🛣️ TRACK SYSTEM (3D)
+
+## 4.1 Track Structure
+
+```text id="dy6q8w"
+track = connected 3D segments
+```
+
+---
+
+## 4.2 Segment Properties
+
+```text id="dy7x4c"
+segment:
+    curvature
+    elevation
+    banking
+    width
+```
+
+---
+
+## 4.3 Track Types
+
+| Track    | Characteristics  |
+| -------- | ---------------- |
+| Beginner | Wide, forgiving  |
+| Advanced | Complex curves   |
+| Expert   | Tight, technical |
+
+---
+
+## 4.4 Signature Design
+
+* Wide turns for drifting
+* Banked curves (oval-style)
+
+---
+
+# 5. 🌀 SLIPSTREAM SYSTEM (SIGNATURE)
+
+## 5.1 Behavior
+
+```text id="dy8r5n"
+IF player behind another car:
+    reduce drag
+    increase speed
+```
+
+---
+
+## 5.2 Effect
+
+* Temporary speed boost
+* Enables overtaking
+
+---
+
+## 5.3 Visual Cue
+
+* Subtle speed increase
+* Close proximity required
+
+---
+
+# 6. 🎥 CAMERA SYSTEM
+
+## 6.1 Modes
+
+| Mode    | Description    |
+| ------- | -------------- |
+| Chase   | Behind car     |
+| Cockpit | First-person   |
+| Bumper  | Low front view |
+
+---
+
+## 6.2 Behavior
+
+* Smooth transitions
+* Slight lag for speed sensation
+
+---
+
+# 7. 🚦 AI SYSTEM
+
+## 7.1 Opponent Behavior
+
+```text id="dy9u6p"
+follow racing line
+→ adjust speed
+→ react to player
+```
+
+---
+
+## 7.2 Difficulty Scaling
+
+* Faster lap times
+* More aggressive overtakes
+
+---
+
+## 7.3 Rubber-Banding (MODERATE)
+
+```text id="dy10j3d"
+AI speed adjusts based on player position
+```
+
+---
+
+# 8. 🎯 COLLISION SYSTEM
+
+## 8.1 Rules
+
+| Collision      | Result              |
+| -------------- | ------------------- |
+| Player vs car  | Bounce + speed loss |
+| Player vs wall | Heavy slowdown      |
+| Off-track      | Reduced speed       |
+
+---
+
+## 8.2 Behavior
+
+```text id="dy11g9m"
+velocity reduced
+car reoriented
+```
+
+---
+
+# 9. 🚧 OFF-TRACK SYSTEM
+
+## 9.1 Behavior
+
+```text id="dy12b2v"
+IF offTrack:
+    speed -= penalty
+    handling reduced
+```
+
+---
+
+## 9.2 Risk
+
+* Loss of control at high speed
+
+---
+
+# 10. ⏱️ TIME SYSTEM
+
+## 10.1 Countdown
+
+```text id="dy13m7x"
+timer -= deltaTime
+```
+
+---
+
+## 10.2 Checkpoints
+
+* Add time per lap segment
+
+---
+
+## 10.3 Failure
+
+* Timer expires → game over
+
+---
+
+# 11. 🏁 LAP SYSTEM
+
+## 11.1 Structure
+
+* Multiple laps
+
+---
+
+## 11.2 Completion
+
+```text id="dy14p5q"
+lap++ on finish line
+```
+
+---
+
+## 11.3 Victory
+
+* Finish within required position
+
+---
+
+# 12. 🎲 RNG SYSTEM
+
+* AI variation
+* Starting grid randomness
+
+---
+
+# 13. 🎵 AUDIO DESIGN
+
+## Music
+
+* Iconic vocal track (“Daytona!”)
+
+---
+
+## SFX
+
+* Engine RPM sound
+* Tire screech (drift)
+* Collision impacts
+
+---
+
+# 14. 🎨 VISUAL DESIGN
+
+## Style
+
+* Bright arcade visuals
+* Smooth polygonal rendering
+
+---
+
+## Effects
+
+* Drift smoke
+* Motion blur (optional modern)
+* Trackside scenery
+
+---
+
+# 15. ⚙️ TECHNICAL SYSTEMS
+
+## Frame Rate
+
+* ~30–60 FPS
+
+---
+
+## Rendering
+
+* Polygonal 3D engine
+* Depth buffering
+
+---
+
+## Input
+
+* Analog steering required
+
+---
+
+# 16. 🧪 DIFFICULTY DESIGN
+
+## Core Drivers
+
+* Drift mastery
+* Track familiarity
+* AI competition
+
+---
+
+## Difficulty Curve
+
+* Beginner-friendly → high skill ceiling
+
+---
+
+# 17. 🧩 REVERSE ENGINEERING NOTES
+
+## MUST MATCH
+
+* Drift feel and entry timing
+* Slipstream boost strength
+* AI pacing
+* Track curvature feel
+
+---
+
+## QUIRKS TO PRESERVE
+
+* Slight floaty drift feel
+* Easy-to-initiate sliding
+* High-speed cornering stability
+
+---
+
+# 18. 🧠 AI STATES
+
+```text id="dy15r8t"
+Cruise
+Overtake
+Recover
+Draft
+```
+
+---
+
+# 19. 🧪 TESTING CHECKLIST
+
+* [ ] Drift system feels correct
+* [ ] Slipstream works properly
+* [ ] AI behaves correctly
+* [ ] Track rendering accurate
+* [ ] Collision system correct
+* [ ] Timer and laps function
+
+---
+
+# 20. ✨ FINISHING TOUCHES (POLISH)
+
+## 20.1 Arcade Feel
+
+* Smooth drifting
+* Fast, forgiving controls
+
+---
+
+## 20.2 Visual Polish
+
+* Clear track readability
+* Strong sense of speed
+
+---
+
+## 20.3 Audio Polish
+
+* Iconic soundtrack integration
+* Dynamic engine sound
+
+---
+
+## 20.4 UX Rules
+
+* Quick race restart
+* Minimal menus
+
+---
+
+## 20.5 Authentic “Frustrations”
+
+* Overdrifting in tight turns
+* AI pressure late race
+* Time constraints
+
+---
+
+# 21. 🧾 DATA STRUCTURES
+
+## Player
+
+```text id="dy16t2y"
+x, y, z
+velocity
+driftState
+cameraMode
+```
+
+---
+
+## Track Segment
+
+```text id="dy17v9n"
+curvature
+elevation
+banking
+width
+```
+
+---
+
+## AI Car
+
+```text id="dy18w3f"
+x, y, z
+velocity
+state
+targetLine
+```
+
+---
+
+## Game
+
+```text id="dy19x6g"
+lap
+timer
+position
+```
+
+---
+
+# 22. 🏁 SUCCESS CRITERIA
+
+A correct recreation should:
+
+* Feel **fast and smooth**
+* Reward **drift mastery**
+* Maintain **competitive racing**
+* Match **Daytona USA arcade experience**
+
+---
+
+# 🔚 FINAL SUMMARY
+
+This GDD captures:
+
+* Full **drift-based racing system**
+* Detailed **slipstream mechanics**
+* Complete **AI racing behavior**
+* Accurate **track + lap systems**
+* Authentic **Daytona USA arcade feel**
+
+---
+
+## 🚀 Next Step (auto-aligned with your repo workflow)
+
+I will generate next:
+
+* ✅ **Drift physics tuning tables**
+* ✅ **Slipstream strength curves**
+* ✅ **Track segment JSON definitions**
+* ✅ **PLAN_PR → BUILD_PR ZIP (docs-only, Codex-ready)**

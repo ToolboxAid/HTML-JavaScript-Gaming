@@ -1,0 +1,586 @@
+Below is a **comprehensive, production-grade Game Design Document (GDD)** for reverse-engineering *Ghosts ’n Goblins*, including **systems, mechanics, level layouts, enemy behaviors, and finishing touches** suitable for implementation or reconstruction.
+
+---
+
+# 🎮 GDD — Ghosts ’n Goblins (Reverse Engineering Edition)
+
+**Document Type:** Full Technical + Design Spec
+**Target:** Faithful recreation (arcade-accurate)
+**Genre:** Action Platformer
+**Perspective:** 2D Side-Scrolling
+**Difficulty Tier:** Extremely High (Punishing / Memorization-Based)
+
+---
+
+# 1. 🧭 CORE GAME OVERVIEW
+
+## 1.1 Game Pillars
+
+* **Precision Platforming**
+* **Punishing Combat**
+* **Memorization & Pattern Mastery**
+* **Limited Control / High Commitment Actions**
+* **Atmospheric Horror Fantasy**
+
+## 1.2 Player Fantasy
+
+You are **Sir Arthur**, a knight rescuing Princess Prin-Prin from a demon lord, fighting through undead hordes.
+
+---
+
+# 2. 🎮 CORE GAMEPLAY LOOP
+
+1. Player spawns at checkpoint
+2. Move forward through level
+3. Fight enemies + avoid hazards
+4. Collect weapons / power-ups
+5. Reach boss
+6. Defeat boss → advance
+7. Die → restart from checkpoint
+8. Complete all levels → forced second loop (true ending)
+
+---
+
+# 3. 🧍 PLAYER SYSTEM
+
+## 3.1 Movement
+
+* Fixed horizontal speed
+* No acceleration curve (instant velocity)
+* Jump = **committed arc (no mid-air correction)**
+* Ladder climbing: vertical snap grid
+
+### Movement Properties
+
+```
+Walk Speed: Constant
+Jump Height: Fixed
+Jump Control: NONE (critical design)
+Gravity: Moderate, arcade tuned
+```
+
+---
+
+## 3.2 Combat System
+
+### Attack Rules
+
+* 1 projectile active at a time (default)
+* Throws weapon in arc or straight line depending on weapon
+* Attack lock during animation
+
+### Weapons
+
+| Weapon | Behavior        | Notes           |
+| ------ | --------------- | --------------- |
+| Lance  | Straight        | Default, safest |
+| Knife  | Fast, straight  | Best DPS        |
+| Torch  | Arc + fire pool | Environmental   |
+| Axe    | High arc        | Anti-air        |
+| Cross  | Boomerang       | Rare            |
+| Shield | Weak            | Joke weapon     |
+
+---
+
+## 3.3 Armor System (Critical)
+
+| State     | Description      |
+| --------- | ---------------- |
+| Armor On  | 2-hit protection |
+| Underwear | 1-hit remaining  |
+| Dead      | Lose life        |
+
+### Behavior
+
+* First hit → armor explodes
+* Second hit → death
+* Armor pickup restores full protection
+
+---
+
+## 3.4 Player Constraints (IMPORTANT)
+
+* Cannot change direction mid-jump easily
+* Cannot cancel attack animation
+* Vulnerable during landing frames
+* Tight hitbox (but enemies often unfair)
+
+---
+
+# 4. 🧟 ENEMY DESIGN SYSTEM
+
+## 4.1 General Enemy Rules
+
+* Spawn via triggers or timers
+* Often infinite spawning (pressure system)
+* Predictable but punishing patterns
+
+---
+
+## 4.2 Enemy Types
+
+### Zombies
+
+* Spawn from ground
+* Randomized positions
+* Slow but persistent
+
+### Red Arremer (Gargoyle)
+
+* Highly aggressive AI
+* Dodges attacks
+* Air + ground behavior
+
+### Flying Demons
+
+* Fixed patterns
+* Swarm pressure
+
+### Knights / Armor Units
+
+* High durability
+* Projectile attacks
+
+### Boss Types
+
+* Large sprites
+* Pattern-based combat
+* Weakness often positional
+
+---
+
+## 4.3 Spawn Logic
+
+* Trigger zones tied to camera
+* Timer-based re-spawns
+* Some enemies tied to player X-position
+
+---
+
+# 5. 🌍 LEVEL DESIGN SYSTEM
+
+## 5.1 Level Structure
+
+* Linear horizontal progression
+* Vertical variation
+* Checkpoints mid-level
+* End boss area
+
+---
+
+## 5.2 Camera System
+
+* Follows player horizontally
+* Locks during boss fights
+* Slight vertical tracking
+
+---
+
+# 6. 🗺️ LEVEL-BY-LEVEL BREAKDOWN
+
+---
+
+## LEVEL 1 — Graveyard / Village
+
+### Theme
+
+* Undead rising from graves
+* Introduction level (but still hard)
+
+### Layout
+
+```
+[Start]
+ ↓
+Flat ground
+ ↓
+Graveyard (zombie spawns)
+ ↓
+Platforms + trees
+ ↓
+Elevated platforms
+ ↓
+Boss arena (Ogre)
+```
+
+### Hazards
+
+* Zombies spawning behind player
+* Jump gaps
+* Low ceilings
+
+### Boss: Ogre
+
+* Large hitbox
+* Slow movement
+* Projectile attack
+
+---
+
+## LEVEL 2 — Ice / Platform Hell
+
+### Theme
+
+* Floating platforms
+* Precision jumping
+
+### Layout
+
+```
+Moving platforms
+ ↓
+Vertical climb
+ ↓
+Wind + enemy interference
+ ↓
+Tight landing zones
+```
+
+### Key Mechanics
+
+* Platform timing critical
+* Jump commitment heavily tested
+
+---
+
+## LEVEL 3 — Cave / Darkness
+
+### Theme
+
+* Dark cavern
+* Limited visibility
+
+### Mechanics
+
+* Hidden enemies
+* Environmental traps
+
+---
+
+## LEVEL 4 — Castle Entrance
+
+### Theme
+
+* Exterior castle walls
+* Heavy enemy density
+
+### Features
+
+* Projectile enemies
+* Vertical sections
+
+---
+
+## LEVEL 5 — Interior Castle
+
+### Theme
+
+* Claustrophobic
+* Trap-heavy
+
+### Layout
+
+* Narrow corridors
+* High enemy spawn rate
+
+---
+
+## LEVEL 6 — Final Boss
+
+### Theme
+
+* Demon lair
+
+### Boss: Astaroth / Satan
+
+* Multi-phase
+* Requires specific weapon (true ending requirement)
+
+---
+
+# 7. 🔁 LOOP SYSTEM (CRITICAL DESIGN)
+
+## True Ending Mechanic
+
+* Game **forces second playthrough**
+* Must obtain specific weapon (Shield)
+* Replay entire game with higher difficulty
+
+---
+
+# 8. 🎯 HITBOX & COLLISION SYSTEM
+
+## Player Hitbox
+
+* Slightly smaller than sprite
+
+## Enemy Hitboxes
+
+* Often larger than expected (difficulty factor)
+
+## Collision Rules
+
+* Projectile vs enemy = destroy or damage
+* Player vs enemy = damage immediately
+
+---
+
+# 9. 🎲 RNG SYSTEM
+
+* Zombie spawn positions randomized
+* Some enemy timing randomized
+* Loot drops semi-random
+
+---
+
+# 10. 📦 ITEM SYSTEM
+
+### Chests
+
+Triggered by:
+
+* Player position
+* Enemy kill counts
+
+### Possible Drops
+
+* Weapons
+* Armor
+* Score items
+* Troll items (trap magician)
+
+---
+
+# 11. 🧙 MAGICIAN SYSTEM (TRAP)
+
+* Appears randomly
+* Transforms player into:
+
+  * Old man
+  * Duck
+* Temporary debuff
+
+---
+
+# 12. 🎵 AUDIO DESIGN
+
+## Music
+
+* Looping stage themes
+* Tension-driven
+
+## SFX
+
+* Armor break
+* Weapon throw
+* Enemy death
+
+---
+
+# 13. 🎨 VISUAL DESIGN
+
+## Style
+
+* Gothic horror
+* Dark fantasy
+* Pixel-art exaggerated animation
+
+## Animation Notes
+
+* Armor explosion = iconic
+* Enemy spawn from ground = signature
+
+---
+
+# 14. ⚙️ TECHNICAL SYSTEMS
+
+## Frame Timing
+
+* Fixed timestep (arcade standard)
+
+## Input Handling
+
+* Immediate response
+* No buffering
+
+## Physics
+
+* Deterministic
+* No floating point drift
+
+---
+
+# 15. 🧪 DIFFICULTY DESIGN (VERY IMPORTANT)
+
+### Key Principles
+
+* Punish mistakes instantly
+* Require memorization
+* Limit player control intentionally
+
+### Difficulty Sources
+
+* Spawn pressure
+* Jump commitment
+* Enemy unpredictability
+* Weapon randomness
+
+---
+
+# 16. 🧩 REVERSE ENGINEERING NOTES
+
+## Must Match Exactly
+
+* Jump arc physics
+* Enemy spawn triggers
+* Weapon behavior
+* Armor break timing
+
+## Known Quirks to Preserve
+
+* Slight input stiffness
+* Hitbox unfairness
+* RNG frustration
+
+---
+
+# 17. 🧱 TILEMAP & GRID SYSTEM
+
+## Tile Size
+
+* Typically 16x16 or 32x32 grid
+
+## Layers
+
+* Background
+* Collision layer
+* Foreground (visual only)
+
+---
+
+# 18. 🧠 AI BEHAVIOR MODEL
+
+### Basic AI Loop
+
+```
+IF player in range:
+    attack or move toward player
+ELSE:
+    idle or patrol
+```
+
+### Advanced AI (Red Arremer)
+
+* Dodge logic
+* Reactive movement
+* Multi-state behavior
+
+---
+
+# 19. 🧪 TESTING CHECKLIST
+
+* [ ] Jump arc identical to arcade
+* [ ] Enemy spawn timing correct
+* [ ] Armor break animation timing exact
+* [ ] Weapon trajectories match
+* [ ] Level progression accurate
+* [ ] Loop system enforced
+
+---
+
+# 20. ✨ FINISHING TOUCHES (POLISH REQUIREMENTS)
+
+## 20.1 “Arcade Feel” Requirements
+
+* No modern smoothing
+* Maintain stiffness
+* Preserve frustration balance
+
+## 20.2 Visual Polish
+
+* Pixel-perfect rendering
+* No interpolation blur
+* Authentic sprite timing
+
+## 20.3 Audio Polish
+
+* Slight delay on armor break sound
+* Punchy weapon effects
+
+## 20.4 UX (Minimal)
+
+* No hand-holding
+* No tutorials
+* Immediate restart
+
+## 20.5 Authentic Bugs to Keep
+
+* Enemy spawn unfairness
+* Weapon randomness frustration
+* Occasional unavoidable hits
+
+---
+
+# 21. 🧾 DATA STRUCTURES (REFERENCE)
+
+## Player
+
+```
+x, y
+velocityX, velocityY
+state (armor, underwear, dead)
+weaponType
+facingDirection
+```
+
+## Enemy
+
+```
+type
+x, y
+state
+aiState
+spawnTrigger
+```
+
+## Level
+
+```
+tilemap
+enemySpawns
+checkpoints
+bossData
+```
+
+---
+
+# 22. 🏁 SUCCESS CRITERIA
+
+A correct recreation should:
+
+* Feel **unfair but consistent**
+* Require memorization
+* Match original timing exactly
+* Preserve difficulty and frustration curve
+
+---
+
+# 🔚 FINAL SUMMARY
+
+This GDD captures:
+
+* Exact **movement and physics constraints**
+* Full **enemy systems and spawn logic**
+* Detailed **level layouts and progression**
+* Critical **arcade quirks and difficulty philosophy**
+* Full **reverse-engineering targets**
+
+---
+
+If you want next step, I can generate:
+
+✅ Full **tile-by-tile level maps (grid layouts)**
+✅ **Enemy spawn trigger tables per level**
+✅ **Exact physics constants (jump velocity, gravity, timing)**
+✅ **JavaScript class architecture matching your repo style**
+✅ **Sample implementation plan (PLAN_PR → BUILD_PR ZIP)**

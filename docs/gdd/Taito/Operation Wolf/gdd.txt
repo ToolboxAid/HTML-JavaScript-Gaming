@@ -1,0 +1,462 @@
+![Image](https://images.openai.com/static-rsc-4/7vPO5_ESKJHEoUrZUof8gxbDmMXx-txrqY_WUbgGYx2ovwea8CP7_0CSzz9nx1MUULjsBKCyqvjFwtIBVNJkTqETb1HD8yoayRjlLnT_KP72PRbJgxAOQ62-zSBvxFqULcE8gUaTCcbQ1z7v_-Pad57yKx8LSwsRxWcZdmPl_2QSF600jkgNNhI3Ez8i2EmF?purpose=fullsize)
+
+![Image](https://images.openai.com/static-rsc-4/qwdyAD0Kac1iz6EjAM6OE6V5cmFm4ez9TQUMGwD61HE2HFy6ny1gbAziPCtcx9SutVn-0--hDwSDlb4EnKQaI9FeLrGEInWrg3ihAKFm4vhXB1y5lLMnbMNOm2_kHORjPVfk1kFZioeqRri-9rWtdRdqN-wxD0O0YJnhzeQva293AibBjwtuKNDqICmeHvyB?purpose=fullsize)
+
+![Image](https://images.openai.com/static-rsc-4/PMHLe-ng4ERM4L-MR9bgcuq9o-JxXx0-KXmSuTcysBx96kXYr4dMjdS3G1J4nTV8QXUy_Nj4YiYnRdQ4bN3kfLv_NWTBTbIQz5grW5mYg_E3H6sReXMCUklIXEHiFkFLL25W0m9uPlJ8hOYy5IYj8xMr9eQXIFUY89zIZIQM89tRstG0-tedKvJR7gabrv68?purpose=fullsize)
+
+![Image](https://images.openai.com/static-rsc-4/d4NTqpQek6G1l9SvFctyoDRRoFlYoTdMVX3xPE5tWpaEo2l3jcpDSN5IP79kEp488lI8c7nDrlwmqGLXh-ZdUbiBgFP4LHtsf0syN-lSFHHpkAQQ1Vsvl2HzYMg1Micuf7jRVZs4MypweorVst63zb87BYIC6geDKFnWvG8sh1ksbXLymLc4Aun6bbgtVQ6C?purpose=fullsize)
+
+![Image](https://images.openai.com/static-rsc-4/2XXpFJKWbyFUgPxt1yCDTgVQG_TkV9mj69j4yIeIvUii4ik-8J-Hf4Bxi2wfxr6uWl1GtxuDAJdICp2S9HFwS8KxKXfgIddW9R0x8LaFDON2P5Z76Z8WxSoeDCjRAL3muFFH1CcArmW5ulytul5EipKM7uZK-6zZn2Z_rhY6phOP7KR5jOTqVAOMCgpICr3_?purpose=fullsize)
+
+![Image](https://images.openai.com/static-rsc-4/SJcA4UKXFdhkzgghfbBxC51MqAvCfdChe6MNBwMkkZAWuVND-WDdZ_Kd4XE-mWpLRhJaVZLJcL5GD5F4OKC6d5yYUNbMCVRn5dNw9rvggueO_QsH8ing-bljQNDGXRgKR57-WrltiEwQ_qpDq6VkGEG351XCHQsU0zZwUQkJGK0DZHbtXoVBa5nmzgOA07oe?purpose=fullsize)
+
+# OPERATION WOLF — REVERSE ENGINEERING GAME DESIGN DOCUMENT
+
+---
+
+# 1. Game Identity
+
+**Title:** Operation Wolf
+**Developer/Publisher:** Taito
+**Release:** 1987 (Arcade)
+**Genre:** Rail shooter / light gun shooter
+**Core Concept:**
+The player uses a mounted **Uzi-style light gun** to fight through enemy waves, rescue hostages, and survive a sequence of scripted combat zones.
+
+---
+
+# 2. High Concept
+
+A **fixed-path (rail) shooter** where:
+
+* The camera auto-scrolls through combat zones
+* The player aims and fires freely on screen
+* Enemies appear in waves from multiple directions
+* Resource management (ammo, grenades, health) is critical
+
+---
+
+# 3. What Makes Operation Wolf Unique
+
+* Physical **Uzi gun controller** (recoil feedback feel)
+* Blend of:
+
+  * shooting skill
+  * target prioritization
+  * resource management
+* Hostage protection system (don’t shoot civilians)
+* Semi-realistic military tone vs arcade abstraction
+
+---
+
+# 4. Player Fantasy
+
+The player is:
+
+* A lone commando behind enemy lines
+* Managing chaos under pressure
+* Making rapid decisions:
+
+  * shoot vs conserve ammo
+  * grenade vs save
+  * risk vs survival
+
+---
+
+# 5. Controls
+
+## 5.1 Arcade Controls
+
+* **Light Gun (Uzi-style):**
+
+  * Aim: point-and-shoot
+  * Trigger: fire bullets
+* **Grenade Button**
+* **Start / Coin**
+
+## 5.2 Feel Requirements
+
+* Instant hit feedback
+* High firing rate
+* Slight recoil illusion (visual + audio)
+* Smooth tracking across screen
+
+---
+
+# 6. Camera & Movement
+
+## 6.1 Rail System
+
+* Player does **not move character**
+* Screen scrolls horizontally through level
+* Player controls only:
+
+  * Aim
+  * Shooting
+
+## 6.2 Zones
+
+Each level consists of **scripted encounter segments**:
+
+* Jungle
+* Camp
+* Vehicles
+* Boss zones
+
+---
+
+# 7. Core Gameplay Loop
+
+1. Screen scrolls into combat area
+2. Enemies spawn from:
+
+   * ground
+   * buildings
+   * vehicles
+3. Player shoots targets
+4. Collect pickups
+5. Protect hostages
+6. Survive until zone ends
+7. Continue to next area
+
+---
+
+# 8. Weapons & Resources
+
+## 8.1 Primary Weapon (Uzi)
+
+* Automatic fire
+* Limited ammo
+* Reload required when empty
+
+## 8.2 Grenades
+
+* Area-of-effect attack
+* Limited count
+* Used for:
+
+  * vehicles
+  * groups
+  * bosses
+
+---
+
+# 9. Resource Systems
+
+## 9.1 Ammo
+
+* Depletes with firing
+* Reload animation/lockout
+* Can be refilled via pickups
+
+## 9.2 Grenades
+
+* Limited inventory
+* Strategic usage required
+
+## 9.3 Health
+
+* Player takes damage from:
+
+  * bullets
+  * explosions
+* Health packs restore life
+
+---
+
+# 10. Target Types
+
+## 10.1 Enemy Soldiers
+
+* Primary targets
+* Appear from cover, run, shoot
+* Different speeds and behaviors
+
+## 10.2 Vehicles
+
+* Trucks, tanks, boats
+* Require sustained fire or grenades
+
+## 10.3 Helicopters
+
+* Boss or mini-boss units
+* High durability
+* Moving targets
+
+## 10.4 Hostages (CRITICAL)
+
+* Must NOT be shot
+* Shooting them:
+
+  * penalizes player
+  * may reduce score or affect progression
+
+---
+
+# 11. Pickup System
+
+## 11.1 Types
+
+* Ammo refill
+* Grenades
+* Health packs
+
+## 11.2 Behavior
+
+* Dropped by enemies or scripted spawns
+* Must be shot to collect (classic arcade mechanic)
+
+---
+
+# 12. Enemy AI Behavior
+
+## 12.1 Spawn Patterns
+
+* Scripted by level timeline
+* Appear from:
+
+  * sides
+  * doors/windows
+  * vehicles
+
+## 12.2 Actions
+
+* Shoot at player
+* Move across screen
+* Take cover
+
+## 12.3 Target Priority Design
+
+Players must decide quickly:
+
+* Immediate threats (shooting enemies)
+* High-value targets (vehicles)
+* Resource drops
+* Avoiding hostages
+
+---
+
+# 13. Damage System
+
+## 13.1 Player Damage
+
+* Hit by enemy bullets → health decreases
+* Explosions → higher damage
+
+## 13.2 Enemy Damage
+
+* Bullet hits accumulate damage
+* Some enemies die instantly
+* Vehicles require sustained damage
+
+---
+
+# 14. Level Structure
+
+## 14.1 Stage Flow
+
+Each stage includes:
+
+1. Entry segment
+2. Combat waves
+3. Vehicle encounters
+4. Boss fight
+
+## 14.2 Boss Examples
+
+* Attack helicopter
+* Heavy armored units
+
+---
+
+# 15. Difficulty Model
+
+Difficulty scales through:
+
+* Faster enemies
+* More enemies simultaneously
+* Reduced reaction windows
+* More incoming fire
+* Tougher bosses
+* Resource scarcity
+
+---
+
+# 16. Scoring System
+
+## 16.1 Score Sources
+
+* Killing enemies
+* Destroying vehicles
+* Completing stages
+* Accuracy (implicit)
+
+## 16.2 Penalties
+
+* Shooting hostages
+* Wasting ammo (indirectly)
+
+---
+
+# 17. Game Feel Requirements (CRITICAL)
+
+To feel like Operation Wolf:
+
+* Shooting must feel **fast and responsive**
+* Enemies must create **constant pressure**
+* Player must feel **overwhelmed but capable**
+* Audio feedback (gunfire) must be strong
+* Hit feedback must be immediate and clear
+
+---
+
+# 18. Reverse-Engineering Object Model
+
+## 18.1 Core Objects
+
+* GameState
+* PlayerGun
+* Enemy
+* Projectile
+* Pickup
+* LevelScript
+* Boss
+* HUD
+
+---
+
+## 18.2 PlayerGun
+
+* ammo count
+* grenade count
+* fire rate
+* reload state
+
+---
+
+## 18.3 Enemy
+
+* type
+* position
+* health
+* behavior pattern
+* attack pattern
+
+---
+
+## 18.4 LevelScript (CRITICAL)
+
+* timeline-based event system
+* defines:
+
+  * spawn times
+  * enemy types
+  * boss triggers
+  * pickup drops
+
+---
+
+# 19. Collision System
+
+* Raycast from gun → hit detection
+* Hitboxes for:
+
+  * enemies
+  * pickups
+  * hostages
+
+Priority:
+
+1. Player shot → enemy
+2. Player shot → hostage (penalty)
+3. Player shot → pickup (collect)
+4. Enemy shot → player
+
+---
+
+# 20. Core Algorithms
+
+## 20.1 Hit Detection
+
+* Instant raycast from cursor
+* No projectile travel time (arcade style)
+
+## 20.2 Spawn System
+
+* Timeline-driven (not random)
+* Predefined encounter sequences
+
+## 20.3 Target Selection Pressure
+
+* Multiple simultaneous threats
+* Forces prioritization
+
+---
+
+# 21. Audio-Visual Identity
+
+## 21.1 Visuals
+
+* Military theme
+* Jungle/war environments
+* Explosions, muzzle flashes
+
+## 21.2 Audio
+
+* Rapid gunfire (signature sound)
+* Explosions
+* Enemy voices
+
+---
+
+# 22. Arcade Cabinet Experience
+
+Key feature:
+
+* **Mounted Uzi gun controller**
+* Physical interaction enhances immersion
+* Strong tactile + audio feedback loop
+
+---
+
+# 23. QA Checklist (Faithful Clone)
+
+Must pass:
+
+* Gun tracking is precise and immediate
+* Ammo depletion + reload works correctly
+* Grenades feel impactful
+* Hostage penalty triggers correctly
+* Enemy spawn timing matches script
+* Boss fights escalate tension
+* Pickups require shooting to collect
+
+---
+
+# 24. What Most Remakes Get Wrong
+
+* Too slow firing rate
+* Weak feedback (no punch)
+* Poor enemy pacing
+* Over-randomized spawns
+* Missing resource pressure
+* Hostage system ignored or softened
+
+---
+
+# 25. Final Summary
+
+**Operation Wolf is controlled chaos.**
+
+It succeeds because:
+
+* The player is constantly under pressure
+* Every shot matters (ammo is limited)
+* Every decision matters (targets vs hostages)
+* The game flows like a cinematic war sequence
+
+---
+
+## If you want next step:
+
+I can convert this into a **repo-ready build spec** (LevelScript format, hit detection system, event timeline JSON, and UI/HUD structure) tailored exactly to your HTML-JavaScript-Gaming workflow.

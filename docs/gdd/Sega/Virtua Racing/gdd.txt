@@ -1,0 +1,504 @@
+Below is a **full, production-grade Game Design Document (GDD)** for reverse-engineering **Virtua Racing** (Virtua Racing), including **true 3D track system, camera modes, vehicle physics, AI racing behavior, and finishing touches** for an arcade-accurate recreation.
+
+---
+
+# 🎮 GDD — Virtua Racing (Reverse Engineering Edition)
+
+**Document Type:** Full Technical + Design Spec
+**Target:** Faithful arcade recreation (Sega Model 1 3D feel)
+**Genre:** Arcade Racing (3D)
+**Perspective:** Multi-Camera (Chase / Cockpit / Aerial)
+**Core Identity:** Early true-3D racing + smooth handling + camera immersion
+
+---
+
+# 1. 🧭 CORE GAME OVERVIEW
+
+## 1.1 Game Pillars
+
+* **True 3D Polygonal Racing**
+* **Multiple Camera Modes**
+* **Arcade Handling Physics**
+* **Track Memorization**
+* **Time + Position-Based Racing**
+
+---
+
+## 1.2 Player Fantasy
+
+You are a professional race driver navigating a fully 3D circuit, switching camera perspectives while maintaining control at high speed.
+
+---
+
+# 2. 🎮 CORE GAMEPLAY LOOP
+
+1. Start race
+2. Accelerate and steer
+3. Navigate track curves
+4. Overtake AI opponents
+5. Complete laps
+6. Finish within time/position requirements
+
+---
+
+# 3. 🚗 PLAYER SYSTEM
+
+## 3.1 Controls
+
+* Steering (analog)
+* Accelerator
+* Brake
+* Gear (optional/manual depending version)
+* Camera switch
+
+---
+
+## 3.2 Movement Model (ARCADE 3D PHYSICS)
+
+```text id="vr1k3n"
+velocity += acceleration
+velocity -= drag
+velocity -= brakeForce
+```
+
+---
+
+## 3.3 Steering Model
+
+```text id="vr2p7x"
+turnRate = baseTurn * (1 - speedFactor)
+```
+
+* High speed reduces turning responsiveness
+* Requires braking before sharp turns
+
+---
+
+## 3.4 Handling Characteristics
+
+```text id="vr3m5c"
+Grip: Moderate
+Acceleration: Smooth
+Top Speed: High
+Oversteer: Mild
+```
+
+---
+
+## 3.5 Player States
+
+| State     | Description     |
+| --------- | --------------- |
+| Driving   | Normal          |
+| Braking   | Slowing         |
+| Off-track | Reduced control |
+| Colliding | Impact          |
+| Finished  | Race complete   |
+
+---
+
+# 4. 🎥 CAMERA SYSTEM (SIGNATURE)
+
+## 4.1 Camera Modes
+
+| Mode    | Description      |
+| ------- | ---------------- |
+| Chase   | Behind vehicle   |
+| Cockpit | First-person     |
+| Aerial  | Top-down dynamic |
+
+---
+
+## 4.2 Switching
+
+```text id="vr4z9t"
+player presses button → cycle camera modes
+```
+
+---
+
+## 4.3 Behavior
+
+* Smooth transitions
+* Camera adjusts to speed and turns
+
+---
+
+# 5. 🛣️ TRACK SYSTEM (TRUE 3D)
+
+## 5.1 Track Structure
+
+```text id="vr5q2w"
+track = series of 3D segments
+```
+
+---
+
+## 5.2 Segment Properties
+
+```text id="vr6x8r"
+segment:
+    curvature
+    elevation
+    width
+    banking
+```
+
+---
+
+## 5.3 Road Behavior
+
+* Fully polygonal
+* Supports elevation changes and slopes
+
+---
+
+## 5.4 Track Types
+
+* Beginner (easy curves)
+* Intermediate
+* Advanced (tight turns, elevation)
+
+---
+
+# 6. 🏁 LAP SYSTEM
+
+## 6.1 Structure
+
+* Multiple laps per race
+
+---
+
+## 6.2 Completion
+
+```text id="vr7n1k"
+lap++ when crossing finish line
+```
+
+---
+
+## 6.3 Victory Conditions
+
+* Finish within position/time requirement
+
+---
+
+# 7. 🚦 AI SYSTEM
+
+## 7.1 Opponent Behavior
+
+```text id="vr8h4s"
+follow racing line
+→ adjust speed
+→ avoid collisions
+```
+
+---
+
+## 7.2 Difficulty Scaling
+
+* Faster lap times
+* Better cornering
+* Aggressive positioning
+
+---
+
+## 7.3 Rubber-Banding (LIGHT)
+
+```text id="vr9u6p"
+AI slightly adjusts speed based on player position
+```
+
+---
+
+# 8. 🎯 COLLISION SYSTEM
+
+## 8.1 Rules
+
+| Collision         | Result            |
+| ----------------- | ----------------- |
+| Player vs car     | Speed loss        |
+| Player vs barrier | Bounce + slowdown |
+| Off-track         | Reduced speed     |
+
+---
+
+## 8.2 Behavior
+
+```text id="vr10j3d"
+velocity reduced
+car reoriented
+```
+
+---
+
+# 9. 🚧 OFF-TRACK SYSTEM
+
+## 9.1 Behavior
+
+```text id="vr11g9m"
+IF offTrack:
+    speed -= penalty
+    handling reduced
+```
+
+---
+
+## 9.2 Risk
+
+* Difficult recovery at high speed
+
+---
+
+# 10. ⏱️ TIME SYSTEM
+
+## 10.1 Countdown
+
+```text id="vr12b2v"
+timer -= deltaTime
+```
+
+---
+
+## 10.2 Checkpoints
+
+* Extend time when passed
+
+---
+
+## 10.3 Failure
+
+* Timer reaches zero → game over
+
+---
+
+# 11. 🎲 RNG SYSTEM
+
+* Minor AI variation
+* Starting grid variation
+
+---
+
+# 12. 🎵 AUDIO DESIGN
+
+## Music
+
+* Minimal background music
+
+---
+
+## SFX
+
+* Engine sound (RPM-based)
+* Tire screech
+* Collision impact
+
+---
+
+# 13. 🎨 VISUAL DESIGN
+
+## Style
+
+* Flat-shaded polygons
+* Clean, minimalistic look
+
+---
+
+## Effects
+
+* Smooth polygon rendering
+* Camera transitions
+
+---
+
+# 14. ⚙️ TECHNICAL SYSTEMS
+
+## Frame Rate
+
+* ~30–60 FPS (arcade target)
+
+---
+
+## Rendering
+
+* Polygonal 3D engine
+* Depth buffering
+
+---
+
+## Input
+
+* Analog steering preferred
+
+---
+
+# 15. 🧪 DIFFICULTY DESIGN
+
+## Core Drivers
+
+* Track complexity
+* AI speed
+* Time constraints
+
+---
+
+## Difficulty Curve
+
+* Gradual → demanding precision
+
+---
+
+# 16. 🧩 REVERSE ENGINEERING NOTES
+
+## MUST MATCH
+
+* Steering responsiveness
+* Camera transitions
+* AI racing line accuracy
+* Track geometry feel
+
+---
+
+## QUIRKS TO PRESERVE
+
+* Slight floaty handling
+* Minimal visual detail
+* Camera switching novelty
+
+---
+
+# 17. 🧠 AI STATES
+
+```text id="vr13m7x"
+Cruise
+Overtake
+Recover
+```
+
+---
+
+# 18. 🧪 TESTING CHECKLIST
+
+* [ ] Steering feels correct
+* [ ] Camera switching works
+* [ ] Track rendering accurate
+* [ ] AI behaves properly
+* [ ] Collision system correct
+* [ ] Timer works correctly
+
+---
+
+# 19. ✨ FINISHING TOUCHES (POLISH)
+
+## 19.1 Arcade Feel
+
+* Smooth control
+* Accessible handling
+
+---
+
+## 19.2 Visual Polish
+
+* Clean polygon rendering
+* Stable camera transitions
+
+---
+
+## 19.3 Audio Polish
+
+* Engine pitch realism (arcade style)
+* Clear collision sounds
+
+---
+
+## 19.4 UX Rules
+
+* Quick restart
+* Simple UI
+
+---
+
+## 19.5 Authentic “Frustrations”
+
+* Tight turns at high speed
+* AI pressure
+* Time constraints
+
+---
+
+# 20. 🧾 DATA STRUCTURES
+
+## Player
+
+```text id="vr14p5q"
+x, y, z
+velocity
+state
+cameraMode
+```
+
+---
+
+## Track Segment
+
+```text id="vr15r8t"
+curvature
+elevation
+width
+banking
+```
+
+---
+
+## AI Car
+
+```text id="vr16t2y"
+x, y, z
+velocity
+state
+targetLine
+```
+
+---
+
+## Game
+
+```text id="vr17v9n"
+lap
+timer
+position
+```
+
+---
+
+# 21. 🏁 SUCCESS CRITERIA
+
+A correct recreation should:
+
+* Feel **smooth and responsive**
+* Reward **track mastery**
+* Maintain **arcade simplicity**
+* Match **Virtua Racing arcade experience**
+
+---
+
+# 🔚 FINAL SUMMARY
+
+This GDD captures:
+
+* Full **true 3D racing system**
+* Detailed **camera switching mechanics**
+* Complete **AI racing logic**
+* Accurate **time + lap systems**
+* Authentic **Virtua Racing arcade feel**
+
+---
+
+## 🚀 Next Step (auto-aligned with your repo workflow)
+
+I will generate next:
+
+* ✅ **Track segment JSON definitions**
+* ✅ **Camera transition timing specs**
+* ✅ **AI racing line data**
+* ✅ **PLAN_PR → BUILD_PR ZIP (docs-only, Codex-ready)**

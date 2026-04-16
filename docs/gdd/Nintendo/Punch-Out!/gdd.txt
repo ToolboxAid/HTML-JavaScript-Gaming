@@ -1,0 +1,504 @@
+Below is a **full, production-grade Game Design Document (GDD)** for reverse-engineering **Punch-Out!!** (Punch-Out!!), including **timing-based combat, opponent pattern AI, stamina system, star punches, telegraphs, and finishing touches** for an arcade-accurate recreation.
+
+---
+
+# 🎮 GDD — Punch-Out!! (Reverse Engineering Edition)
+
+**Document Type:** Full Technical + Design Spec
+**Target:** Faithful arcade recreation (Nintendo timing + pattern-based combat)
+**Genre:** Boxing / Reaction-Based Combat
+**Perspective:** Third-Person (Player in foreground, opponent facing camera)
+**Core Identity:** Pattern recognition + timing + reaction-based offense/defense
+
+---
+
+# 1. 🧭 CORE GAME OVERVIEW
+
+## 1.1 Game Pillars
+
+* **Pattern-Based Opponent AI**
+* **Timing-Based Dodging & Punching**
+* **Telegraphed Attacks**
+* **Stamina & Knockdown System**
+* **Memorization + Reaction Skill**
+
+---
+
+## 1.2 Player Fantasy
+
+You are a rising boxer (Little Mac style), defeating larger opponents by reading patterns and striking at the right moment.
+
+---
+
+# 2. 🎮 CORE GAMEPLAY LOOP
+
+1. Match begins
+2. Opponent enters idle pattern
+3. Opponent telegraphs attack
+4. Player dodges or blocks
+5. Player counters with punches
+6. Build damage / earn stars
+7. Knock opponent down
+8. Win match → advance
+
+---
+
+# 3. 🧍 PLAYER SYSTEM
+
+## 3.1 Controls
+
+* Left Punch
+* Right Punch
+* Dodge Left
+* Dodge Right
+* Duck (optional depending version)
+* Star Punch (special)
+
+---
+
+## 3.2 Movement Model
+
+* Player stays in fixed position
+* Only lateral dodging and ducking
+
+---
+
+## 3.3 Player States
+
+| State        | Description      |
+| ------------ | ---------------- |
+| Idle         | Ready            |
+| Punching     | Attack animation |
+| Dodging      | Avoiding attack  |
+| Hit          | Stunned          |
+| Knocked Down | On canvas        |
+| KO           | Match loss       |
+
+---
+
+# 4. 🥊 COMBAT SYSTEM
+
+## 4.1 Punch Types
+
+| Type       | Description      |
+| ---------- | ---------------- |
+| Left Jab   | Fast, low damage |
+| Right Jab  | Fast, low damage |
+| Hook       | Medium damage    |
+| Star Punch | High damage      |
+
+---
+
+## 4.2 Punch Logic
+
+```text
+IF opponent vulnerable:
+    apply damage
+ELSE:
+    block or countered
+```
+
+---
+
+## 4.3 Star System (CRITICAL)
+
+```text
+successful timing → earn star
+use star → powerful punch
+```
+
+---
+
+## 4.4 Damage System
+
+* Each hit reduces opponent stamina
+* Vulnerability windows critical
+
+---
+
+# 5. 🧟 OPPONENT SYSTEM
+
+## 5.1 Opponent Design
+
+Each opponent has:
+
+* Unique pattern
+* Unique timing
+* Unique telegraphs
+
+---
+
+## 5.2 Example Behaviors
+
+### Glass Joe
+
+* Slow, obvious telegraphs
+* Easy timing
+
+---
+
+### King Hippo
+
+* Weak point mechanic (belly)
+* Requires specific timing
+
+---
+
+### Bald Bull
+
+* Charge attack pattern
+* Interrupt window critical
+
+---
+
+## 5.3 AI Behavior Model
+
+```text
+Idle → Telegraph → Attack → Recover → Repeat
+```
+
+---
+
+# 6. 👁️ TELEGRAPH SYSTEM (CORE MECHANIC)
+
+## 6.1 Visual Cues
+
+* Facial expressions
+* Body movement
+* Audio cues
+
+---
+
+## 6.2 Timing Window
+
+```text
+telegraphDuration → reactionWindow
+```
+
+---
+
+## 6.3 Player Response
+
+* Dodge
+* Block
+* Counterattack
+
+---
+
+# 7. 🛡️ DEFENSE SYSTEM
+
+## 7.1 Dodge
+
+```text
+IF dodge timed correctly:
+    avoid damage
+```
+
+---
+
+## 7.2 Block
+
+* Reduces damage
+* Not always effective
+
+---
+
+## 7.3 Duck
+
+* Avoids certain attacks
+
+---
+
+# 8. ⏱️ STAMINA SYSTEM
+
+## 8.1 Player Stamina
+
+* Reduced when hit
+* Restored over time
+
+---
+
+## 8.2 Opponent Stamina
+
+* Depleted via hits
+* Leads to knockdown
+
+---
+
+# 9. 🥇 KNOCKDOWN SYSTEM
+
+## 9.1 Behavior
+
+```text
+IF stamina <= 0:
+    knockdown triggered
+```
+
+---
+
+## 9.2 Recovery
+
+* Player must mash input (some versions)
+* Opponent recovers after timer
+
+---
+
+## 9.3 KO Condition
+
+* Multiple knockdowns → loss
+
+---
+
+# 10. 🎯 COLLISION SYSTEM
+
+## 10.1 Hit Detection
+
+* Based on timing windows
+* Not spatial hitboxes
+
+---
+
+## 10.2 Rules
+
+| Condition                  | Result  |
+| -------------------------- | ------- |
+| Punch during vulnerability | Hit     |
+| Punch outside window       | Blocked |
+| Late dodge                 | Hit     |
+
+---
+
+# 11. 🎲 RNG SYSTEM
+
+* Minimal RNG
+* Mostly deterministic patterns
+
+---
+
+# 12. 🎵 AUDIO DESIGN
+
+## Music
+
+* Fight theme
+* Opponent-specific themes
+
+---
+
+## SFX
+
+* Punch impact
+* Crowd reactions
+* Bell sound
+
+---
+
+# 13. 🎨 VISUAL DESIGN
+
+## Style
+
+* Large character sprites
+* Clear telegraph animations
+
+---
+
+## Animation
+
+* Telegraph clarity critical
+* Exaggerated movements
+
+---
+
+# 14. ⚙️ TECHNICAL SYSTEMS
+
+## Frame Rate
+
+* ~60 FPS equivalent
+
+---
+
+## Input
+
+* Frame-sensitive timing
+
+---
+
+## Determinism
+
+* High (pattern-based gameplay)
+
+---
+
+# 15. 🧪 DIFFICULTY DESIGN
+
+## Core Drivers
+
+* Reaction timing
+* Pattern memorization
+* Stamina management
+
+---
+
+## Difficulty Curve
+
+* Easy → extremely precise
+
+---
+
+# 16. 🧩 REVERSE ENGINEERING NOTES
+
+## MUST MATCH
+
+* Telegraph timing windows
+* Punch damage values
+* Star punch triggers
+* Opponent pattern sequences
+
+---
+
+## QUIRKS TO PRESERVE
+
+* Strict timing windows
+* Pattern memorization requirement
+* Punishing mistakes
+
+---
+
+# 17. 🧠 AI STATES
+
+```text
+Idle
+Telegraph
+Attack
+Recover
+Stunned
+```
+
+---
+
+# 18. 🧪 TESTING CHECKLIST
+
+* [ ] Telegraph timing accurate
+* [ ] Dodge timing works
+* [ ] Punch windows correct
+* [ ] Star system works
+* [ ] Knockdown behavior accurate
+* [ ] Opponent patterns correct
+
+---
+
+# 19. ✨ FINISHING TOUCHES (POLISH)
+
+## 19.1 Arcade Feel
+
+* Precise timing
+* No input buffering
+
+---
+
+## 19.2 Visual Polish
+
+* Clear telegraphs
+* Distinct animations
+
+---
+
+## 19.3 Audio Polish
+
+* Punch impact clarity
+* Crowd energy
+
+---
+
+## 19.4 UX Rules
+
+* Minimal UI
+* Immediate retry
+
+---
+
+## 19.5 Authentic “Frustrations”
+
+* Tight reaction windows
+* Pattern memorization requirement
+* Punishing mistakes
+
+---
+
+# 20. 🧾 DATA STRUCTURES
+
+## Player
+
+```text
+state
+stamina
+stars
+```
+
+---
+
+## Opponent
+
+```text
+type
+state
+pattern[]
+stamina
+```
+
+---
+
+## Attack
+
+```text
+type
+telegraphTime
+hitWindow
+damage
+```
+
+---
+
+## Game
+
+```text
+round
+score
+knockdowns
+timer
+```
+
+---
+
+# 21. 🏁 SUCCESS CRITERIA
+
+A correct recreation should:
+
+* Feel **precise and reactive**
+* Reward **pattern mastery**
+* Maintain **tight timing windows**
+* Match **Punch-Out!! arcade feel**
+
+---
+
+# 🔚 FINAL SUMMARY
+
+This GDD captures:
+
+* Full **timing-based combat system**
+* Detailed **opponent AI patterns**
+* Complete **telegraph + reaction system**
+* Accurate **stamina and knockdown mechanics**
+* Authentic **arcade boxing experience**
+
+---
+
+## 🚀 Next Step (fits your repo workflow perfectly)
+
+I can generate:
+
+* Frame-accurate **telegraph + hit window tables**
+* Full **opponent pattern scripts**
+* **Star punch timing + damage tables**
+* Or a **PLAN_PR → BUILD_PR ZIP (docs-only, Codex-ready)**
+
+Just say: **“build the PR”** and I’ll package it exactly how you want.

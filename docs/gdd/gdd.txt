@@ -1,0 +1,5 @@
+
+Create a very detailed Game Design Doc (gdd.txt) for the reverse engineer of 
+San_Francisco_Rush. include finishing touches for GDD. Include level and 
+map layout details.
+

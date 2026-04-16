@@ -1,0 +1,514 @@
+Below is a **full, production-grade Game Design Document (GDD)** for reverse-engineering *Frogger*, including **movement timing, lane systems, collision rules, hazards, level layouts, and finishing touches** for an arcade-accurate recreation.
+
+---
+
+# 🎮 GDD — Frogger (Reverse Engineering Edition)
+
+**Document Type:** Full Technical + Design Spec
+**Target:** Faithful arcade recreation (Konami/Sega 1981 behavior)
+**Genre:** Action / Reflex Arcade
+**Perspective:** Top-Down Grid-Based
+**Core Identity:** Timing + Pattern Recognition + Risk Management
+
+---
+
+# 1. 🧭 CORE GAME OVERVIEW
+
+## 1.1 Game Pillars
+
+* **Discrete Grid Movement**
+* **Strict Timing Windows**
+* **Lane-Based Hazard Systems**
+* **Pattern Recognition**
+* **Escalating Difficulty**
+
+---
+
+## 1.2 Player Fantasy
+
+You are a frog trying to cross a dangerous road and river to reach safety.
+
+---
+
+# 2. 🎮 CORE GAMEPLAY LOOP
+
+1. Player spawns at bottom
+2. Navigate road (avoid cars)
+3. Navigate river (use logs/turtles)
+4. Reach goal slot
+5. Repeat until all slots filled
+6. Advance level (increase speed/difficulty)
+7. Lose all lives → game over
+
+---
+
+# 3. 🐸 PLAYER SYSTEM
+
+## 3.1 Movement System (GRID-BASED)
+
+### Controls
+
+* Up
+* Down
+* Left
+* Right
+
+### Movement Rules
+
+* Moves **one tile per input**
+* Instant snap to grid
+* No partial movement
+
+---
+
+## 3.2 Movement Properties
+
+```text
+Tile Size: Fixed (e.g., 16x16 or 32x32)
+Move Speed: Instant tile transition
+Input Buffer: None (arcade strict)
+```
+
+---
+
+## 3.3 Player States
+
+| State        | Description       |
+| ------------ | ----------------- |
+| Idle         | Waiting for input |
+| Moving       | Transition tile   |
+| Riding       | On log/turtle     |
+| Drowning     | Water death       |
+| Crushed      | Car collision     |
+| Reached Goal | Success           |
+| Dead         | Life lost         |
+
+---
+
+# 4. 🌍 LANE SYSTEM (CORE DESIGN)
+
+## 4.1 Lane Types
+
+### Road Section
+
+* Cars / trucks
+* Instant death on collision
+
+### River Section
+
+* Logs
+* Turtles
+* Water (deadly if not on object)
+
+### Safe Zones
+
+* Start area
+* Median strip
+* Goal row
+
+---
+
+## 4.2 Lane Behavior
+
+```text
+Each lane:
+- Has direction (left/right)
+- Has speed
+- Has entity type
+- Loops infinitely
+```
+
+---
+
+# 5. 🚗 ROAD SYSTEM
+
+## 5.1 Vehicles
+
+| Type      | Size      | Speed | Notes         |
+| --------- | --------- | ----- | ------------- |
+| Small Car | 1 tile    | Fast  | Hard to dodge |
+| Truck     | 2–3 tiles | Slow  | Blocks space  |
+
+---
+
+## 5.2 Collision Rules
+
+* Any overlap = instant death
+* No forgiveness frames
+
+---
+
+# 6. 🌊 RIVER SYSTEM
+
+## 6.1 Floating Objects
+
+### Logs
+
+* Move horizontally
+* Safe to stand on
+
+### Turtles
+
+* Submerge periodically (critical mechanic)
+
+---
+
+## 6.2 Water Rules
+
+* Player dies if not on object
+* Player moves with object velocity
+
+---
+
+## 6.3 Submerging Turtles
+
+### Behavior
+
+```text
+Visible → Safe
+Blinking → Warning
+Submerged → Deadly
+```
+
+---
+
+# 7. 🎯 GOAL SYSTEM
+
+## 7.1 Goal Slots
+
+* Fixed positions at top row
+* Typically 5 slots
+
+---
+
+## 7.2 Rules
+
+* One frog per slot
+* Filling all slots advances level
+
+---
+
+## 7.3 Bonus Items
+
+* Flies (extra points)
+* Lady frog (bonus rescue)
+
+---
+
+# 8. 🎯 COLLISION SYSTEM
+
+## 8.1 Types
+
+| Collision        | Result         |
+| ---------------- | -------------- |
+| Car              | Instant death  |
+| Water            | Death          |
+| Submerged turtle | Death          |
+| Boundary         | Block movement |
+
+---
+
+## 8.2 Movement + Collision Order
+
+```text
+1. Player moves
+2. Check collision
+3. Apply lane movement (if riding)
+4. Re-check bounds
+```
+
+---
+
+# 9. ⏱️ TIME SYSTEM
+
+## Timer
+
+* Countdown per frog
+* Must reach goal before time expires
+
+---
+
+## Effects
+
+* Faster play increases score
+* Timeout = death
+
+---
+
+# 10. 🎲 RNG SYSTEM
+
+* Vehicle spacing
+* Log/turtle patterns (semi-fixed, slight variation)
+* Bonus item spawn
+
+---
+
+# 11. 🌍 LEVEL DESIGN SYSTEM
+
+## 11.1 Structure
+
+```text
+[Start]
+ ↓
+Safe Zone
+ ↓
+Road lanes (3–5 rows)
+ ↓
+Safe median
+ ↓
+River lanes (4–6 rows)
+ ↓
+Goal row
+```
+
+---
+
+# 12. 🗺️ LEVEL LAYOUT DETAIL
+
+---
+
+## STANDARD LEVEL TEMPLATE
+
+```text
+Row 0: Goal slots (5)
+Row 1: River (fast logs)
+Row 2: River (turtles)
+Row 3: River (logs opposite direction)
+Row 4: River (mixed hazards)
+Row 5: Safe median
+Row 6: Road (slow trucks)
+Row 7: Road (fast cars)
+Row 8: Road (mixed vehicles)
+Row 9: Start zone
+```
+
+---
+
+## Lane Configuration Example
+
+```text
+Lane 1: Logs → Right (slow)
+Lane 2: Turtles → Left (medium)
+Lane 3: Logs → Right (fast)
+Lane 4: Turtles → Left (submerge cycle)
+```
+
+---
+
+# 13. 🧠 PATTERN SYSTEM
+
+## Core Concept
+
+* Every lane follows a repeating pattern
+* Player learns timing
+
+---
+
+## Difficulty Increase
+
+* Faster speeds
+* Tighter gaps
+* More submerging turtles
+
+---
+
+# 14. 🎵 AUDIO DESIGN
+
+## Music
+
+* Iconic looping theme
+
+## SFX
+
+* Hop sound
+* Splash
+* Crash
+* Goal success tone
+
+---
+
+# 15. 🎨 VISUAL DESIGN
+
+## Style
+
+* Bright arcade colors
+* High contrast lanes
+
+## Animation
+
+* Frog hop animation
+* Turtle submerge animation critical
+
+---
+
+# 16. ⚙️ TECHNICAL SYSTEMS
+
+## Timing
+
+* Fixed timestep (arcade)
+
+## Input
+
+* Immediate
+* No buffering
+
+---
+
+# 17. 🧪 DIFFICULTY DESIGN
+
+## Core Drivers
+
+* Timing precision
+* Pattern memorization
+* Increasing speed
+
+---
+
+## Difficulty Curve
+
+* Early: predictable
+* Late: chaotic but patterned
+
+---
+
+# 18. 🧩 REVERSE ENGINEERING NOTES
+
+## Must Match Exactly
+
+* Tile-based movement
+* Lane speeds
+* Turtle submerge timing
+* Collision strictness
+
+---
+
+## Known Quirks
+
+* No forgiveness on collisions
+* Slight randomness in patterns
+* Tight timing windows
+
+---
+
+# 19. 🧪 TESTING CHECKLIST
+
+* [ ] Movement snaps to grid
+* [ ] Lane speeds correct
+* [ ] Turtle submerge timing accurate
+* [ ] Collision detection strict
+* [ ] Goal logic works correctly
+* [ ] Timer behavior correct
+
+---
+
+# 20. ✨ FINISHING TOUCHES (POLISH)
+
+## 20.1 Arcade Feel
+
+* No smoothing
+* Instant movement
+* Strict timing
+
+---
+
+## 20.2 Visual Polish
+
+* Crisp pixel rendering
+* No blur/interpolation
+
+---
+
+## 20.3 Audio Polish
+
+* Responsive hop sound
+* Clear success/failure cues
+
+---
+
+## 20.4 UX Rules
+
+* No tutorials
+* Immediate restart
+* Minimal UI
+
+---
+
+## 20.5 Authentic “Frustrations”
+
+* Instant death collisions
+* Tight timing windows
+* No mid-move correction
+
+---
+
+# 21. 🧾 DATA STRUCTURES
+
+## Player
+
+```text
+gridX, gridY
+state
+isOnPlatform
+currentPlatform
+```
+
+## Lane
+
+```text
+type
+direction
+speed
+entities[]
+```
+
+## Entity
+
+```text
+type
+x
+y
+velocity
+state
+```
+
+## Level
+
+```text
+lanes[]
+goalSlots[]
+timer
+difficultyLevel
+```
+
+---
+
+# 22. 🏁 SUCCESS CRITERIA
+
+A correct recreation should:
+
+* Feel **fast and unforgiving**
+* Require **pattern memorization**
+* Preserve **grid precision**
+* Match **lane timing exactly**
+
+---
+
+# 🔚 FINAL SUMMARY
+
+This GDD captures:
+
+* Full **grid-based movement system**
+* Detailed **lane + hazard mechanics**
+* Accurate **level layouts**
+* Critical **collision rules**
+* Authentic **arcade difficulty and feel**
+
+---
+
+If you want to push this further (and this would plug directly into your repo workflow), I can generate:
+
+✅ Exact **lane timing tables (frame-perfect)**
+✅ Full **tilemap JSON for each level**
+✅ **Entity spawn sequences per lane**
+✅ JavaScript class design aligned with your engine
+✅ A **PLAN_PR → BUILD_PR ZIP** ready for Codex

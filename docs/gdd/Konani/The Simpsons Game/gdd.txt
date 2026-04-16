@@ -1,0 +1,580 @@
+Below is a **full, production-grade Game Design Document (GDD)** for reverse-engineering **The Simpsons Arcade Game** (Konami, 1991), including **combat systems, character abilities, enemy AI, level layouts, co-op mechanics, and finishing touches** for an arcade-accurate recreation.
+
+---
+
+# 🎮 GDD — The Simpsons Arcade Game (Reverse Engineering Edition)
+
+**Document Type:** Full Technical + Design Spec
+**Target:** Faithful arcade recreation (Konami beat ’em up style)
+**Genre:** Side-Scrolling Beat ’em Up
+**Perspective:** 2.5D (lane-based brawler)
+**Core Identity:** Cooperative chaos + crowd control + character-specific attacks
+
+---
+
+# 1. 🧭 CORE GAME OVERVIEW
+
+## 1.1 Game Pillars
+
+* **4-Player Cooperative Combat**
+* **Character-Specific Moves**
+* **Crowd Control & Chaos**
+* **Humor + Cartoon Animation**
+* **Arcade Pacing (constant forward pressure)**
+
+---
+
+## 1.2 Player Fantasy
+
+Play as the Simpson family (Homer, Marge, Bart, Lisa) fighting through Springfield to rescue Maggie from Mr. Burns.
+
+---
+
+# 2. 🎮 CORE GAMEPLAY LOOP
+
+1. Enter stage
+2. Move right through environment
+3. Enemy wave spawns
+4. Defeat all enemies
+5. Advance to next segment
+6. Interact with environment
+7. Fight boss
+8. Progress to next level
+
+---
+
+# 3. 🧍 PLAYER SYSTEM
+
+## 3.1 Characters
+
+| Character | Weapon    | Range      | Speed  | Notes         |
+| --------- | --------- | ---------- | ------ | ------------- |
+| Homer     | Fists     | Medium     | Medium | Balanced      |
+| Marge     | Vacuum    | Long       | Medium | Best reach    |
+| Bart      | Slingshot | Short/fast | Fast   | Agile         |
+| Lisa      | Jump rope | Medium     | Fast   | Crowd control |
+
+---
+
+## 3.2 Movement System
+
+### Axes
+
+* X (horizontal progression)
+* Y (lane movement)
+
+---
+
+### Properties
+
+```text id="z1y4bt"
+Walk Speed: Character-based
+Y Speed: Slightly slower
+Run: Limited / contextual
+```
+
+---
+
+## 3.3 Player States
+
+| State        | Description         |
+| ------------ | ------------------- |
+| Idle         | Standing            |
+| Walking      | Movement            |
+| Attacking    | Combo active        |
+| Jumping      | Air attack possible |
+| Grabbed      | Enemy interaction   |
+| Knocked Down | Recovery state      |
+| Dead         | Life lost           |
+
+---
+
+# 4. 🥊 COMBAT SYSTEM
+
+## 4.1 Basic Attacks
+
+### Combo Chain
+
+```text id="cb1r9d"
+Attack → Attack → Attack → Knockdown
+```
+
+---
+
+## 4.2 Jump Attacks
+
+* Downward strike
+* Good for crowd control
+
+---
+
+## 4.3 Grab System
+
+### Trigger
+
+* Move into enemy proximity
+
+---
+
+### Options
+
+* Throw
+* Slam
+* Combo hits
+
+---
+
+## 4.4 Special Attacks
+
+### Input
+
+* Attack + Jump
+
+---
+
+### Behavior
+
+* Area damage
+* Costs health
+* Grants invulnerability
+
+---
+
+# 5. 🤝 CO-OP SYSTEM (SIGNATURE FEATURE)
+
+## 5.1 Cooperative Attacks
+
+### Team Moves
+
+```text id="g7b3sf"
+Player A grabs
+Player B attacks → combo animation
+```
+
+---
+
+### Examples
+
+* Bart + Homer combo slam
+* Lisa + Marge spin attacks
+
+---
+
+## 5.2 Friendly Collision
+
+* Players can push each other slightly
+* No friendly damage
+
+---
+
+# 6. 🎯 HITBOX & COLLISION SYSTEM
+
+## 6.1 Lane Alignment
+
+* Must align vertically (Y-axis) to hit
+
+---
+
+## 6.2 Hitbox Types
+
+| Type    | Description       |
+| ------- | ----------------- |
+| Hurtbox | Receives damage   |
+| Hitbox  | Active attack     |
+| Grabbox | Trigger for grabs |
+
+---
+
+## 6.3 Priority Rules
+
+* Player attack vs enemy attack resolved by frame timing
+* Specials override most collisions
+
+---
+
+# 7. 🧟 ENEMY SYSTEM
+
+## 7.1 Enemy Types
+
+### Basic Thugs
+
+* Walk + punch
+
+### Weapon Enemies
+
+* Use bats, knives
+
+### Projectile Enemies
+
+* Throw objects
+
+### Heavy Units
+
+* High HP, slow
+
+### Special Characters
+
+* Unique behaviors (e.g., clowns, robots)
+
+---
+
+## 7.2 Bosses
+
+### Examples
+
+* Smithers
+* Krusty Robot
+* Mr. Burns
+
+---
+
+## 7.3 AI Behavior
+
+### Core Loop
+
+```text id="j3w0xk"
+IF aligned:
+    attack
+ELSE:
+    reposition
+```
+
+---
+
+### Advanced Behavior
+
+* Surround players
+* Attack in staggered timing
+* Target weakest player
+
+---
+
+# 8. 🌍 LEVEL DESIGN SYSTEM
+
+## 8.1 Structure
+
+* Linear progression
+* Multiple combat arenas
+* Environmental storytelling
+
+---
+
+## 8.2 Camera
+
+* Locked until enemies defeated
+* Scroll resumes after clear
+
+---
+
+# 9. 🗺️ LEVEL BREAKDOWN
+
+---
+
+## STAGE 1 — Downtown Springfield
+
+### Layout
+
+```text id="3b5c1v"
+Street → park → building exterior → boss
+```
+
+---
+
+### Features
+
+* Intro enemies
+* Basic mechanics tutorial
+
+---
+
+## STAGE 2 — Krustyland
+
+### Features
+
+* Moving platforms
+* Themed enemies
+
+---
+
+## STAGE 3 — Springfield Mall
+
+### Features
+
+* Breakable objects
+* Escalators
+
+---
+
+## STAGE 4 — Channel 6 Studio
+
+### Features
+
+* Indoor combat
+* Tight spaces
+
+---
+
+## STAGE 5 — Dreamland / Fantasy
+
+### Features
+
+* Surreal enemies
+* Unique mechanics
+
+---
+
+## STAGE 6 — Nuclear Plant
+
+### Layout
+
+```text id="eq3j7k"
+Industrial corridors → boss gauntlet → final boss
+```
+
+---
+
+# 10. 🧱 ENVIRONMENT SYSTEM
+
+## Breakables
+
+* Crates
+* Signs
+* Props
+
+---
+
+## Effects
+
+* Drop items
+* Visual feedback
+
+---
+
+# 11. 📦 ITEM SYSTEM
+
+## Types
+
+* Food (health restore)
+* Weapons (temporary)
+* Score items
+
+---
+
+---
+
+# 12. 🎲 RNG SYSTEM
+
+* Enemy spawn variations
+* Item drops randomized
+
+---
+
+# 13. 🎵 AUDIO DESIGN
+
+## Music
+
+* Cartoon-style energetic tracks
+
+## SFX
+
+* Comedic hits
+* Character voice clips
+
+---
+
+# 14. 🎨 VISUAL DESIGN
+
+## Style
+
+* Bright, cartoon accurate
+* Large expressive sprites
+
+---
+
+## Animation
+
+* Exaggerated hits
+* Character personality in movement
+
+---
+
+# 15. ⚙️ TECHNICAL SYSTEMS
+
+## Frame Rate
+
+* ~60 FPS
+
+## Input
+
+* Immediate, responsive
+
+---
+
+# 16. 🧪 DIFFICULTY DESIGN
+
+## Core Drivers
+
+* Enemy swarms
+* Positioning mistakes
+* Health management
+
+---
+
+## Difficulty Curve
+
+* Gradual ramp
+* Late-game chaos
+
+---
+
+# 17. 🧩 REVERSE ENGINEERING NOTES
+
+## MUST MATCH
+
+* Character attack timing
+* Co-op combo triggers
+* Enemy spawn waves
+* Lane alignment tolerance
+
+---
+
+## QUIRKS TO PRESERVE
+
+* Occasional cheap hits
+* Grab inconsistencies
+* Chaotic enemy behavior
+
+---
+
+# 18. 🧠 AI SYSTEM
+
+## States
+
+```text id="pn0x2r"
+Idle
+Approach
+Align
+Attack
+Recover
+```
+
+---
+
+# 19. 🧪 TESTING CHECKLIST
+
+* [ ] Combo system works correctly
+* [ ] Co-op attacks trigger
+* [ ] Enemy waves accurate
+* [ ] Boss patterns correct
+* [ ] Lane alignment consistent
+
+---
+
+# 20. ✨ FINISHING TOUCHES (POLISH)
+
+## 20.1 Arcade Feel
+
+* Slight stiffness preserved
+* No input buffering
+
+---
+
+## 20.2 Visual Polish
+
+* Pixel-perfect sprites
+* Smooth animation loops
+
+---
+
+## 20.3 Audio Polish
+
+* Responsive hit sounds
+* Character voice feedback
+
+---
+
+## 20.4 UX Rules
+
+* Minimal UI
+* Immediate continuation (coin insert feel)
+
+---
+
+## 20.5 Authentic “Frustrations”
+
+* Crowd overwhelm
+* Limited health recovery
+* Boss difficulty spikes
+
+---
+
+# 21. 🧾 DATA STRUCTURES
+
+## Player
+
+```text id="a4dp8n"
+x, y
+state
+health
+characterType
+currentCombo
+```
+
+---
+
+## Enemy
+
+```text id="h2jv9p"
+type
+x, y
+state
+health
+aiState
+```
+
+---
+
+## Level
+
+```text id="g0r3vb"
+segments
+enemyWaves
+boss
+environmentObjects
+```
+
+---
+
+# 22. 🏁 SUCCESS CRITERIA
+
+A correct recreation should:
+
+* Feel **chaotic but controlled**
+* Reward **cooperative play**
+* Match **arcade pacing**
+* Preserve **humor and personality**
+
+---
+
+# 🔚 FINAL SUMMARY
+
+This GDD captures:
+
+* Full **beat ’em up combat system**
+* Detailed **co-op mechanics**
+* Complete **enemy and level design**
+* Accurate **lane-based hit detection**
+* Authentic **arcade experience**
+
+---
+
+## 🚀 Next Step (fits your repo workflow perfectly)
+
+I can generate:
+
+* Frame-accurate **combo timing + hitbox tables**
+* Full **enemy wave scripts per stage**
+* **Character-specific move sets (frame data)**
+* Or a **PLAN_PR → BUILD_PR ZIP (docs-only, Codex-ready)**
+
+Just say: **“build the PR”** and I’ll package it exactly how you want.

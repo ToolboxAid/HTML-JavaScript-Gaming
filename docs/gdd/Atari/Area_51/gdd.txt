@@ -1,0 +1,518 @@
+Below is a **complete, reverse-engineered Game Design Document** for **Area 51** in **`gdd.txt` format**, expanded with **finishing touches, systems, and full level/map breakdowns**.
+
+---
+
+# 🎮 `gdd.txt` — AREA 51 (Reverse Engineered GDD)
+
+---
+
+## 1. GAME OVERVIEW
+
+**Title:** Area 51
+**Genre:** On-Rails Light Gun Shooter
+**Platform:** Arcade (Original), later ports (PS1, PC)
+**Developer:** Atari Games
+**Release Year:** 1995
+
+### Core Concept
+
+A military containment team is deployed into a top-secret facility overrun by alien entities and infected personnel. Players progress through predefined paths, eliminating threats, rescuing survivors, and uncovering escalating extraterrestrial horrors.
+
+---
+
+## 2. CORE GAMEPLAY LOOP
+
+1. Player enters scene (fixed camera)
+2. Enemies emerge from scripted spawn points
+3. Player:
+
+   * Shoots enemies
+   * Avoids civilians
+   * Searches for hidden items
+4. Scene timer counts down
+5. Completion conditions:
+
+   * Kill quota reached OR
+   * Timer expires
+6. Transition to next scene
+
+### Failure Conditions
+
+* Player health reaches zero
+* Critical hostage deaths (optional design expansion)
+* Continue required
+
+---
+
+## 3. INPUT & CONTROLS
+
+| Action | Input              |
+| ------ | ------------------ |
+| Aim    | Light gun tracking |
+| Shoot  | Trigger            |
+| Reload | Shoot off-screen   |
+| Start  | Button             |
+
+### Expanded (Home Ports)
+
+* Controller aim via crosshair
+* Manual reload button
+
+---
+
+## 4. PLAYER SYSTEMS
+
+### Health System
+
+* Starts at 100 HP
+* Damage per hit varies (10–25)
+* No regeneration
+* Health packs: +25 / +50
+
+### Weapons (Reverse Engineered + Expanded)
+
+| Weapon         | Type    | Notes          |
+| -------------- | ------- | -------------- |
+| Standard Rifle | Default | Unlimited ammo |
+| Shotgun        | Pickup  | Spread damage  |
+| Machine Gun    | Pickup  | High fire rate |
+| Alien Weapon   | Rare    | High damage    |
+
+### Shooting Model
+
+* Hitscan (no projectile travel)
+* Per-frame collision check
+* Weak points:
+
+  * Head = instant kill
+  * Body = standard damage
+
+---
+
+## 5. ENEMY DESIGN
+
+### Enemy Categories
+
+#### 5.1 Infected Personnel
+
+* Fast, humanoid
+* Attack: melee
+* Behavior: rush player
+
+#### 5.2 Alien Grunts
+
+* Medium speed
+* Ranged attacks
+* Take multiple hits
+
+#### 5.3 Facehuggers
+
+* Small, fast targets
+* Jump toward camera
+* High difficulty to hit
+
+#### 5.4 Turrets / Machines
+
+* Stationary
+* Predictable firing pattern
+
+#### 5.5 Boss Creatures
+
+* Large hitboxes
+* Multi-phase
+* Weak points required
+
+---
+
+## 6. AI BEHAVIOR SYSTEM
+
+### State Machine
+
+* Idle (hidden)
+* Spawn animation
+* Attack phase
+* Hit reaction
+* Death animation
+
+### Targeting Logic
+
+* Always aimed at player camera
+* Predictive attack timing (illusion of intelligence)
+
+---
+
+## 7. SCORING SYSTEM
+
+| Action            | Points     |
+| ----------------- | ---------- |
+| Enemy kill        | 100–500    |
+| Headshot          | Bonus +200 |
+| Civilian hit      | -500       |
+| Hidden item found | +1000      |
+
+### Combo System (Expanded)
+
+* Consecutive hits without miss = multiplier
+* Encourages accuracy
+
+---
+
+## 8. LEVEL & MAP STRUCTURE
+
+## STRUCTURE OVERVIEW
+
+The game is divided into **linear scenes grouped into levels**:
+
+```
+Level → Scenes → Events → Enemy Waves
+```
+
+---
+
+# 8.1 LEVEL 1 — OUTER FACILITY
+
+![Image](https://images.openai.com/static-rsc-4/_mrCKjiihOQXzQg4jx6LeO9CEbexcZHcxCD8dt7JxzYZwpsvFUAtTpz-nuS-heWlB_reYuqEgFbKdNusUskvB2SvhNYm152FhyEmyA-jRRqksbKZe25ALtFLGt-1E5DEwxTmmCly9ebmO3PuhmHQcsQ-CU2QWfFcZNV0lD1F2E2zDypVbn-7IPowlzf7Oz2I?purpose=fullsize)
+
+![Image](https://images.openai.com/static-rsc-4/RxLrci4xDEAj9asQNaHVRpBHVPdG-wB0yVSLdka7qYC-fhE8P3sp_5pt0xODiknoMi0InnkuaQ7Cl3wd4PYwGPVW4tZb3Mf-PvsE_o7RMm_axstJVKuslI_7BjwiH09lwGqFKqZqs4bB_w-yY8KylQR12XHFoToVdgxhW5Ch-MZBcqHsq5NPY0ks28vizjpH?purpose=fullsize)
+
+![Image](https://images.openai.com/static-rsc-4/QmSIswpAbIz1taJZWdlPaHWMiuFIR7r7mweFKch1hdstrhVNzr3g18zTxyYsiCUgUh0V7fot-CUXXBxQVkl70pVQ2kGbvfhq3Q2_K2foAr7HLy2lEWKZ-O-3dVTRDBnZXdWn-sfiLSyR8zSRseDCV9V9XK6MvtL6S6-HL2zCAgMCCcxdcBD1200WLTdfQnbx?purpose=fullsize)
+
+![Image](https://images.openai.com/static-rsc-4/h_Dc_ls00mdyENeGBgDPPSrlwVqmptJ9p9_k8fC9VztgTTN7KzOu1B6LdJNu5MqPbOQ6Xkrxu8ulW8l8xRy0OfkpCI5R6mCAmRKhQfk1lj2sMMjO2YOCXwK_3hN4yScSXyKt35fKWAu9Sf5amVwmferVyzCwfvmmERZgfOFyun7jaTZw9ZS-mjXJDs_MdBC7?purpose=fullsize)
+
+### Theme
+
+* Desert military base
+* Early outbreak
+
+### Scene Breakdown
+
+#### Scene 1: Entrance Gate
+
+* Static camera facing gate
+* Enemies:
+
+  * 5 infected personnel
+* Events:
+
+  * Gate explosion triggers wave 2
+
+#### Scene 2: Guard Tower
+
+* Vertical enemy emergence
+* Snipers appear from tower windows
+* Hidden item: health pack behind sign
+
+#### Scene 3: Vehicle Yard
+
+* Enemies spawn behind trucks
+* Moving cover elements
+
+### Map Layout Notes
+
+* Depth illusion via scaling sprites
+* Foreground objects used for occlusion
+* Enemy spawn zones:
+
+  * Left flank
+  * Center breach
+  * Elevated positions
+
+---
+
+# 8.2 LEVEL 2 — SECURITY CHECKPOINT
+
+![Image](https://images.openai.com/static-rsc-4/-ahxgHiFHhb95GxxdJ0XAoVZTi7rQwcPhCfU58Ichd21i19YGC6XinuaKgT4zdSnzQRM3XBWEh1V80aG5MydQAilC2wwMzRm7wZ6YleUJ3gZAcPmY_W-nFLFiL6HF_nmzhL-T3gzEPreplNJioL2xjaFzitIOXoX4RezI7ZPmBDXtm3ZATftWlk8qQP3YHtw?purpose=fullsize)
+
+![Image](https://images.openai.com/static-rsc-4/mSOI1bXdjvkt2sRPlX_JfbA8N-wOwySvigX8TubBmm4f3W3murvZunxnGlOvGR7GEN3vh5nExvkIAK3H5y2MGT9o4tyXNBfKcALiChRNeLVVIxC8IOPjyjcsMpGPQlWvfW7mm4yd46V8wdnyzV-XZylblMc3t-MJrTJ9C1J7wZcEzs0-4SuUp0EF9o1Roj16?purpose=fullsize)
+
+![Image](https://images.openai.com/static-rsc-4/r_2MPUX739x_jkLtQrHIKsKfkla3392ADqPMxcfZdppEb8IMT0JAJ_LotoezGmOPuF9Rmg0BfXcDXd6t6Yhfb_qZ2FAcc88NXcChaYBGqIAIHvN37Ln_XwKE-ebGZ8dUyR2WHfavIjTao4EXIeBFry6DdWaTU9QX2QDCQbQqDOVjumH8wFE5hX8cYE6skTOU?purpose=fullsize)
+
+![Image](https://images.openai.com/static-rsc-4/vCanNxac1bx2BshpTwyy3pweLA43ySaJsFVYJ0OYSkPulqQJOpXoHbkFZ05kB98REK-WhQXGYmsQ7C4sCiwBgy8Qwn6wxME1Viclxnn1V_faVUytbpNbBrwPgLU4doEx8NfQLXVW_XFU6JGd22tdHrP2gcw5o305nwtwYXj_d7qAGqPRVN84ClEV5mZ8rjYW?purpose=fullsize)
+
+### Theme
+
+* Indoor facility
+* Emergency lighting
+
+### Scene Breakdown
+
+#### Scene 1: Entry Corridor
+
+* Narrow field of view
+* Enemies rush forward
+
+#### Scene 2: Security Room
+
+* Enemies behind desks
+* Computer explosions
+
+#### Scene 3: Holding Cells
+
+* Glass breaks → enemies released
+* Civilian present (do not shoot)
+
+### Map Mechanics
+
+* Breakable glass
+* Light flicker events
+* Sound cues trigger spawns
+
+---
+
+# 8.3 LEVEL 3 — LABORATORY COMPLEX
+
+![Image](https://images.openai.com/static-rsc-4/h9n8jNkN5gV-CF8ijDfhQdjVSOl41Y4LCZhQUcK_j6ow64sqc-1s6gufBmeL58draLTYO_qd6g0fqIsNniZtz1ueLIpwranXb6afiemGp6hQZrLKCIWGMvQ4kQjOiE4R2b0ayTRC2PYrrtX_r77_GQv0lLTjf0nqnMuWuMeEDZVlq5WXNMWYuj5MnCjbUKxw?purpose=fullsize)
+
+![Image](https://images.openai.com/static-rsc-4/u_zgAPCyY6XnJvoHbre98EbQrHbhBFVGKQCK2vDXR2-7N3jM2lZOr_18pmYL_QCsbAYEyoo2CQhQXmaYVmESRKVJFjVshWXrYgdStUzpXvmEzyz_8xGcRXX2BGAN8OkZzQrvElqGzxdjqGbl67qQTQxgwlxwdvkGc9MDD-4Qwf_pDHg56oJ2KFnvy78iORv0?purpose=fullsize)
+
+![Image](https://images.openai.com/static-rsc-4/JEdKcOaRtnjKTxt-rOw1ylt5MahBdwOfvC8iH4tA3xN8dEHqKjnZb4Kq-tmJ_F6djBaFh5sCwBC8oy-98-WjAXUTEE6QYBMy4q-PJhxwnJNvwXDy5zJb7VbjtjgRrduCbysmkh8smdCzorBltZZNDDlnGOqrNIsGU1lbc5CYO_0m7NqOBRtKGRBojABDb2jW?purpose=fullsize)
+
+![Image](https://images.openai.com/static-rsc-4/p1dhTR8C9wZmo4bl-xjQHW8K3WmOuTjpz4k1_a5pPYjBQb-VH9QaPxm5EYxAAcAPOFDjB3iluKbVhqOxvcl95gTZeIZIjVP6kAnKyoomQOccZ4oyMJHgyEw27hVu2Hrv0on8Q76mQ2e7b5LczxkKSBdGNv_QaeEkYmGswjFtn3yXSrOkhHFP_vnY7ayUJ1lG?purpose=fullsize)
+
+### Theme
+
+* Alien research lab
+* Escalation of threat
+
+### Scene Breakdown
+
+#### Scene 1: Specimen Room
+
+* Enemies spawn from tubes
+* Environmental hazard: acid spill
+
+#### Scene 2: Research Lab
+
+* Scientists (hostages)
+* Mixed enemy types
+
+#### Scene 3: Reactor Core Access
+
+* Timed survival segment
+* Increasing spawn rate
+
+### Map Design Notes
+
+* Multi-layer depth
+* Transparent surfaces (glass tubes)
+* Hidden items inside destructibles
+
+---
+
+# 8.4 LEVEL 4 — ALIEN HIVE
+
+![Image](https://images.openai.com/static-rsc-4/Jw0qlLD_LTDrjTmU1YXvducwlhLvSTQJEpgbvKVMe9u1i_5U6YXXMrJfcwWqL80K3GGs6t6tXMxNPualnWUb8k3A4tCxc0Gdg48kJVuhjAEOtvNsMkK5Ytni0HRnTRrXudWCYNIKA5Wi0T0ioMbLkNlKtikGMQAVFFCQPy6AWxJLiOsEd8JurNQvIRshS1ln?purpose=fullsize)
+
+![Image](https://images.openai.com/static-rsc-4/heIXx_bWAXSvETeLNuAVYkVUNVbjpAt6Nkbr_ZlNmmzyP07BKGw7guk_TdD0ivYDL4grDMD9uyyyybeBmptsxXV7ma5f617Bx8jv5TDVZfvQLE9uDg1hfPc3FSVsf4ss36We0G0pYm_v8marS_Ir5PqMIgsZ6R6lBDJOdDJR4CjMV2WWFybo2qnW8W_JSO-O?purpose=fullsize)
+
+![Image](https://images.openai.com/static-rsc-4/FaE7uq35-t40sohNqRkdybDb_MfgafnA0vvAUWt3Gs0TlRpwJ2ViStxortcIY7W2gzy6LUPwx3mw2cqc7nHl8viwdripAu09Dx8_NxJ3fZWzKaJhMMC0lVFwxFOeCraBwcVFYiyUHNJYXiASe0Bz7b7qIlLKUT9TDUL3gRBDvKbdbyAzk6SO8YQ1dKed83l0?purpose=fullsize)
+
+![Image](https://images.openai.com/static-rsc-4/HoRMzXDrup6dOKOWGXV6lz2d8izBjgn3Ps21POy0vAoyc6q8m1ztmV3kJ4hWvqXS_-XUqtcV3cCi8KG1p2oSobK_91jjslfPyF-HIlSudVeGQAG3t3Ljm958jhFsdEH4qAxB3RVNLg-NAgTcVFvu7xDbEqa_REGbGoxtBc7fo4hkdvgurqACxFNvJydp4j1W?purpose=fullsize)
+
+### Theme
+
+* Organic alien environment
+* Fully overrun
+
+### Scene Breakdown
+
+#### Scene 1: Hive Entrance
+
+* Facehugger swarms
+* Low visibility
+
+#### Scene 2: Egg Chamber
+
+* Eggs hatch dynamically
+* Area denial gameplay
+
+#### Scene 3: Final Boss Arena
+
+* Multi-phase boss
+* Weak points exposed over time
+
+---
+
+## 9. CAMERA & RAIL SYSTEM
+
+* Predefined camera paths
+* Transitions:
+
+  * Hard cuts
+  * Smooth pans
+* Player cannot control movement
+
+### Camera Tricks
+
+* Shake on explosions
+* Zoom for tension
+* Forced focus areas
+
+---
+
+## 10. AUDIO DESIGN
+
+### Sound Effects
+
+* Gunfire (layered)
+* Alien screeches
+* Environmental alarms
+
+### Voice Lines
+
+* “Reload!”
+* “Don’t shoot!”
+* Military chatter
+
+### Music
+
+* Ambient tension loops
+* Escalates during combat
+
+---
+
+## 11. VISUAL DESIGN
+
+### Rendering Style
+
+* Digitized actors (FMV sprites)
+* Pre-rendered backgrounds
+
+### Effects
+
+* Blood splatter overlays
+* Explosion sprites
+* Lighting flicker
+
+---
+
+## 12. UI / HUD
+
+* Crosshair
+* Health bar
+* Score counter
+* Ammo indicator (if applicable)
+* Continue countdown
+
+---
+
+## 13. TECHNICAL SYSTEMS
+
+### Engine Constraints (Arcade)
+
+* Limited memory → sprite reuse
+* Frame-based animation
+* Preloaded scene assets
+
+### Hit Detection
+
+* Screen-space bounding boxes
+* Priority targeting (closest enemy first)
+
+---
+
+## 14. DIFFICULTY & BALANCING
+
+### Difficulty Scaling
+
+* Enemy spawn rate increases
+* Reaction windows shrink
+* More simultaneous targets
+
+### Player Assistance
+
+* Aim magnetism (subtle)
+* Larger hitboxes early game
+
+---
+
+## 15. REPLAYABILITY
+
+* Score chasing
+* Hidden item discovery
+* Route memorization
+* Multiplayer competition
+
+---
+
+## 16. MULTIPLAYER
+
+* 2-player simultaneous
+* Independent crosshairs
+* Shared screen
+* Friendly fire disabled
+
+---
+
+## 17. FINISHING TOUCHES (POLISH LAYER)
+
+### Cinematic Enhancements
+
+* Scene intro stingers
+* Radio chatter transitions
+* Dynamic lighting shifts
+
+### Feedback Systems
+
+* Hit markers
+* Screen flash on damage
+* Audio confirmation for kills
+
+### Environmental Interactions
+
+* Shootable props:
+
+  * Monitors
+  * Lights
+  * Barrels (explosive)
+
+### Hidden Content
+
+* Secret targets
+* Easter eggs
+* Alternate score paths
+
+---
+
+## 18. EXPANDED MODERNIZATION (OPTIONAL)
+
+* Branching paths
+* Upgrade system
+* Boss variants
+* Procedural enemy waves
+
+---
+
+## 19. DEVELOPMENT NOTES (REVERSE ENGINEERING INSIGHTS)
+
+* Game relies heavily on:
+
+  * Scripted timing
+  * Illusion of depth
+  * Target prioritization
+
+* Core challenge:
+
+  * Balancing chaos vs fairness
+
+---
+
+## 20. SUMMARY
+
+Area 51 succeeds through:
+
+* Tight pacing
+* Visual realism (for its time)
+* Simple but intense mechanics
+
+Its design is:
+
+> **Script-driven, reaction-based, and memorization-enhanced gameplay wrapped in cinematic presentation.**
+
+---
+
+If you want next step (and this fits your repo workflow), I can generate:
+
+* ✅ **Scene JSON data structures (spawn tables, timing)**
+* ✅ **JS class breakdown (RailCamera, EnemySpawner, HitSystem)**
+* ✅ **Playable sample scaffold (Phase-style for your repo)**

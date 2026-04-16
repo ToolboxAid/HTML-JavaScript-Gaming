@@ -1,0 +1,565 @@
+Below is a **full, production-grade Game Design Document (GDD)** for reverse-engineering *Final Fight*, including **combat systems, enemy AI, hit detection, level layouts, and finishing touches** for an arcade-accurate recreation.
+
+---
+
+# 🎮 GDD — Final Fight (Reverse Engineering Edition)
+
+**Document Type:** Full Technical + Design Spec
+**Target:** Faithful arcade recreation (CPS-1 accuracy)
+**Genre:** Side-Scrolling Beat ’em Up
+**Perspective:** 2.5D (lane-based movement)
+**Core Identity:** Crowd control combat + positional mastery
+
+---
+
+# 1. 🧭 CORE GAME OVERVIEW
+
+## 1.1 Game Pillars
+
+* **Lane-Based Brawler Combat**
+* **Crowd Control & Spacing**
+* **Simple Inputs, Deep Timing**
+* **Enemy Swarm Pressure**
+* **Environmental Interaction**
+
+---
+
+## 1.2 Player Fantasy
+
+You are a street fighter cleaning up Metro City, battling gangs to rescue a kidnapped victim.
+
+---
+
+# 2. 🎮 CORE GAMEPLAY LOOP
+
+1. Enter stage
+2. Walk right (auto-scroll triggers)
+3. Enemy wave spawns
+4. Defeat all enemies
+5. Advance to next segment
+6. Repeat until boss
+7. Defeat boss → next stage
+
+---
+
+# 3. 🧍 PLAYER SYSTEM
+
+## 3.1 Characters
+
+| Character | Strength | Speed  | Notes                 |
+| --------- | -------- | ------ | --------------------- |
+| Cody      | Balanced | Medium | Beginner-friendly     |
+| Guy       | Fast     | High   | Low damage            |
+| Haggar    | Heavy    | Slow   | High damage, grappler |
+
+---
+
+## 3.2 Movement System
+
+### Axes
+
+* X = horizontal progression
+* Y = vertical lane movement
+
+### Properties
+
+```text
+Walk Speed: Character dependent
+Y-Movement: Slightly slower than X
+Run: Not present (arcade original)
+```
+
+---
+
+## 3.3 Combat System
+
+### Attack Types
+
+* Basic combo (3-hit chain)
+* Jump attack
+* Grab attack
+* Throw
+* Special attack (health cost)
+
+---
+
+## 3.4 Combo System
+
+```text
+Input: Attack repeatedly
+Result:
+  Hit 1 → light strike
+  Hit 2 → follow-up
+  Hit 3 → knockdown / finisher
+```
+
+---
+
+## 3.5 Grab System (CRITICAL)
+
+### Trigger
+
+* Walk into enemy at close range
+
+### States
+
+* Grab start
+* Hold
+* Throw / attack
+
+---
+
+## 3.6 Special Move
+
+### Input
+
+* Attack + Jump
+
+### Behavior
+
+* Area-of-effect attack
+* Costs health
+* Grants invincibility frames
+
+---
+
+## 3.7 Weapons
+
+### Types
+
+* Knife
+* Pipe
+* Katana
+
+### Rules
+
+* Limited durability
+* Can be thrown
+* Changes attack animations
+
+---
+
+# 4. 🎯 HITBOX & COLLISION SYSTEM
+
+## 4.1 Lane Alignment (CRITICAL)
+
+* Attacks only hit if Y-aligned within threshold
+* Depth illusion via vertical offset
+
+---
+
+## 4.2 Hitbox Types
+
+| Type    | Description             |
+| ------- | ----------------------- |
+| Hurtbox | Where player can be hit |
+| Hitbox  | Active attack area      |
+| Grabbox | Used for grabbing       |
+
+---
+
+## 4.3 Collision Rules
+
+* Hit confirms based on overlap + timing frame
+* Priority system determines trade outcomes
+
+---
+
+# 5. 🧟 ENEMY SYSTEM
+
+## 5.1 Enemy Types
+
+### Basic Thug
+
+* Walk + punch
+* Low intelligence
+
+### Knife Enemy
+
+* Fast attacks
+* Can throw weapon
+
+### Heavy Enemy
+
+* High HP
+* Slow attacks
+
+### Acrobat Enemy
+
+* Jump attacks
+* Unpredictable movement
+
+---
+
+## 5.2 Boss Types
+
+### Examples
+
+* Damnd (calls reinforcements)
+* Sodom (weapon + armor)
+* Abigail (high HP, rush attacks)
+
+---
+
+## 5.3 AI Behavior
+
+### Core Loop
+
+```text
+IF player aligned (Y-axis):
+    attack
+ELSE:
+    adjust position
+```
+
+---
+
+## 5.4 Advanced AI
+
+* Surround player
+* Attack in staggered timing
+* Interrupt player combos
+
+---
+
+# 6. 🌍 LEVEL DESIGN SYSTEM
+
+## 6.1 Structure
+
+* Linear progression
+* Segmented arenas
+* Enemy gates (must clear to proceed)
+
+---
+
+## 6.2 Camera System
+
+* Locked until enemies defeated
+* Scroll resumes after clearance
+
+---
+
+# 7. 🗺️ LEVEL BREAKDOWN
+
+---
+
+## STAGE 1 — Slum / Streets
+
+### Layout
+
+```text
+[Start]
+ ↓
+Open street
+ ↓
+Enemy wave 1
+ ↓
+Bar area (breakables)
+ ↓
+Enemy wave 2
+ ↓
+Boss: Damnd
+```
+
+### Features
+
+* Intro difficulty
+* Teaches crowd control
+
+---
+
+## STAGE 2 — Subway
+
+### Layout
+
+```text
+Platform
+ ↓
+Train section (moving background)
+ ↓
+Tight combat space
+ ↓
+Enemy waves
+ ↓
+Boss
+```
+
+### Hazards
+
+* Limited movement space
+* Dense enemy clusters
+
+---
+
+## STAGE 3 — Industrial
+
+### Features
+
+* Large arenas
+* Mixed enemy types
+
+---
+
+## STAGE 4 — Bay Area
+
+### Features
+
+* Wide open areas
+* Projectile enemies
+
+---
+
+## STAGE 5 — Final Base
+
+### Layout
+
+```text
+Narrow corridors
+ ↓
+High enemy density
+ ↓
+Boss gauntlet
+ ↓
+Final boss: Belger
+```
+
+---
+
+# 8. 🧱 ENVIRONMENT SYSTEM
+
+## Breakables
+
+* Barrels
+* Crates
+* Phone booths
+
+### Drops
+
+* Health items
+* Weapons
+
+---
+
+# 9. 🎲 RNG SYSTEM
+
+* Enemy spawn compositions vary slightly
+* Item drops semi-random
+
+---
+
+# 10. 🎵 AUDIO DESIGN
+
+## Music
+
+* High-energy arcade tracks
+
+## SFX
+
+* Punch impacts
+* Weapon hits
+* Enemy grunts
+
+---
+
+# 11. 🎨 VISUAL DESIGN
+
+## Style
+
+* Urban crime aesthetic
+* Large character sprites
+
+## Animation
+
+* Smooth attack chains
+* Knockback exaggeration
+
+---
+
+# 12. ⚙️ TECHNICAL SYSTEMS
+
+## Frame System
+
+* Fixed 60 FPS
+
+## Input
+
+* Immediate, no buffering
+
+---
+
+# 13. 🧪 DIFFICULTY DESIGN
+
+## Core Drivers
+
+* Enemy swarms
+* Positional mistakes
+* Limited crowd control options
+
+---
+
+## Difficulty Curve
+
+* Early levels: manageable
+* Late levels: overwhelming
+
+---
+
+# 14. 🧩 REVERSE ENGINEERING NOTES
+
+## Must Match Exactly
+
+* Hitbox alignment (Y-axis tolerance)
+* Combo timing windows
+* Grab detection logic
+* Enemy spawn triggers
+
+---
+
+## Known Quirks
+
+* “Cheap hits” from off-screen enemies
+* Grab priority inconsistencies
+* Occasional input drop feel
+
+---
+
+# 15. 🧠 AI SYSTEM DETAILS
+
+### Behavior States
+
+```text
+Idle
+Approach
+Align
+Attack
+Recover
+```
+
+---
+
+# 16. 🧱 TILEMAP & LANE SYSTEM
+
+## Grid
+
+* Background is tile-based
+* Movement is free within lanes
+
+## Lane Depth
+
+* Illusion created via scaling/offset
+
+---
+
+# 17. 🧪 TESTING CHECKLIST
+
+* [ ] Y-axis alignment works correctly
+* [ ] Combos chain properly
+* [ ] Grab system triggers reliably
+* [ ] Enemy waves spawn correctly
+* [ ] Boss behaviors accurate
+
+---
+
+# 18. ✨ FINISHING TOUCHES (POLISH)
+
+## 18.1 Arcade Feel
+
+* Slight input stiffness preserved
+* No modern combo buffering
+
+---
+
+## 18.2 Visual Polish
+
+* Pixel-perfect sprite rendering
+* No smoothing filters
+
+---
+
+## 18.3 Audio Polish
+
+* Impact sounds strong and immediate
+* Crowd noise ambiance
+
+---
+
+## 18.4 UX Rules
+
+* Minimal UI
+* No tutorials
+* Fast restart
+
+---
+
+## 18.5 Authentic “Imperfections”
+
+* Enemy cheap shots
+* Grab priority oddities
+* Overwhelming late-game difficulty
+
+---
+
+# 19. 🧾 DATA STRUCTURES
+
+## Player
+
+```text
+x, y
+velocity
+state
+health
+currentCombo
+weapon
+```
+
+## Enemy
+
+```text
+type
+x, y
+state
+health
+aiState
+```
+
+## Level
+
+```text
+segments
+enemyWaves
+boss
+environmentObjects
+```
+
+---
+
+# 20. 🏁 SUCCESS CRITERIA
+
+A correct recreation should:
+
+* Feel **tight but punishing**
+* Emphasize **positioning over button mashing**
+* Match **enemy swarm pressure**
+* Preserve **arcade pacing and difficulty**
+
+---
+
+# 🔚 FINAL SUMMARY
+
+This GDD captures:
+
+* Full **combat and combo systems**
+* Detailed **enemy AI and behaviors**
+* Complete **level layouts and progression**
+* Critical **lane-based hit detection**
+* Authentic **arcade quirks and difficulty**
+
+---
+
+If you want to go deeper (and this is where it gets really powerful for your repo), I can generate:
+
+✅ Frame-by-frame **combo timing tables**
+✅ Exact **hitbox rectangles per animation frame**
+✅ **Enemy wave scripts per stage**
+✅ JavaScript class architecture matching your engine
+✅ A **PLAN_PR → BUILD_PR ZIP** ready for Codex

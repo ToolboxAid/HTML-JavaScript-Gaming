@@ -1,0 +1,529 @@
+Below is a **full, production-grade Game Design Document (GDD)** for reverse-engineering **Pac-Man** (Namco, 1980), including **grid movement, ghost AI personalities, pellet systems, tunnel logic, timing tables, and finishing touches** for an arcade-accurate recreation.
+
+---
+
+# 🎮 GDD — Pac-Man (Reverse Engineering Edition)
+
+**Document Type:** Full Technical + Design Spec
+**Target:** Faithful arcade recreation (Namco timing + AI accuracy)
+**Genre:** Maze Chase
+**Perspective:** Top-Down Grid Maze
+**Core Identity:** Deterministic AI + pattern mastery + risk/reward timing
+
+---
+
+# 1. 🧭 CORE GAME OVERVIEW
+
+## 1.1 Game Pillars
+
+* **Grid-Based Precision Movement**
+* **Distinct Ghost Personalities**
+* **Pattern Recognition Gameplay**
+* **Risk/Reward via Power Pellets**
+* **Increasing Speed & Pressure**
+
+---
+
+## 1.2 Player Fantasy
+
+Navigate a maze, consume pellets, evade ghosts, and temporarily turn the tables using power pellets.
+
+---
+
+# 2. 🎮 CORE GAMEPLAY LOOP
+
+1. Spawn in maze
+2. Move tile-to-tile
+3. Eat pellets
+4. Avoid ghosts
+5. Eat power pellet → chase ghosts
+6. Clear all pellets → next level
+7. Lose lives on collision
+
+---
+
+# 3. 🧍 PLAYER SYSTEM (PAC-MAN)
+
+## 3.1 Movement Model (CRITICAL)
+
+### Grid-Based Movement
+
+```text id="0xk2p7"
+position snaps to tile centers
+movement occurs in discrete steps
+```
+
+---
+
+## 3.2 Input Buffering
+
+```text id="6m3r1q"
+IF nextDirection valid at intersection:
+    turn immediately
+ELSE:
+    continue current direction
+```
+
+---
+
+## 3.3 Movement Properties
+
+```text id="z9p4c2"
+Speed: Level-dependent
+Turning: Instant at nodes
+Momentum: None
+```
+
+---
+
+## 3.4 Player States
+
+| State     | Description         |
+| --------- | ------------------- |
+| Normal    | Eating pellets      |
+| Energized | Power pellet active |
+| Dead      | Life lost           |
+
+---
+
+# 4. 🧟 GHOST SYSTEM (CORE OF GAME)
+
+## 4.1 Ghost Types
+
+| Ghost  | Name   | Behavior          |
+| ------ | ------ | ----------------- |
+| Red    | Blinky | Direct chase      |
+| Pink   | Pinky  | Ambush            |
+| Cyan   | Inky   | Complex targeting |
+| Orange | Clyde  | Random / retreat  |
+
+---
+
+## 4.2 Ghost Modes
+
+### Modes Cycle (CRITICAL)
+
+```text id="u3t9vw"
+Scatter → Chase → Scatter → Chase → ...
+```
+
+---
+
+## 4.3 Scatter Mode
+
+* Ghosts move to assigned corners
+
+---
+
+## 4.4 Chase Mode (AI PERSONALITIES)
+
+### Blinky (Red)
+
+```text id="f8p2a1"
+target = playerTile
+```
+
+---
+
+### Pinky (Pink)
+
+```text id="m2k8s4"
+target = 4 tiles ahead of player
+```
+
+---
+
+### Inky (Cyan)
+
+```text id="g5r3d9"
+target = vector calculation (player + blinky offset)
+```
+
+---
+
+### Clyde (Orange)
+
+```text id="x7j1l6"
+IF far:
+    chase
+ELSE:
+    retreat to corner
+```
+
+---
+
+## 4.5 Frightened Mode
+
+Triggered by power pellet:
+
+```text id="c9y4h2"
+ghosts move randomly
+speed reduced
+can be eaten
+```
+
+---
+
+## 4.6 Ghost States
+
+| State      | Description       |
+| ---------- | ----------------- |
+| Normal     | Active            |
+| Frightened | Vulnerable        |
+| Eaten      | Returning to base |
+
+---
+
+# 5. 🧠 PATHFINDING SYSTEM
+
+## 5.1 Movement Rules
+
+* Ghosts choose direction at intersections
+* Cannot reverse unless forced
+
+---
+
+## 5.2 Target Tile System
+
+```text id="r1n8v2"
+ghost selects direction minimizing distance to target tile
+```
+
+---
+
+# 6. 🟡 PELLET SYSTEM
+
+## 6.1 Types
+
+| Type         | Effect          |
+| ------------ | --------------- |
+| Pellet       | Score           |
+| Power Pellet | Energize player |
+
+---
+
+## 6.2 Behavior
+
+```text id="h6x3k9"
+eat pellet → increase score
+```
+
+---
+
+## 6.3 Completion Condition
+
+* All pellets consumed
+
+---
+
+# 7. 🍒 BONUS ITEM SYSTEM
+
+## 7.1 Spawn Rules
+
+* Appears mid-level
+* Disappears after time
+
+---
+
+## 7.2 Examples
+
+* Cherry
+* Strawberry
+* Key
+
+---
+
+# 8. 🌍 MAZE SYSTEM
+
+## 8.1 Grid Layout
+
+* Fixed tile map
+* Nodes + corridors
+
+---
+
+## 8.2 Special Features
+
+### Warp Tunnels
+
+```text id="k3w5z8"
+left edge → right edge teleport
+```
+
+---
+
+### Ghost House
+
+* Spawn area
+* Entry/exit logic
+
+---
+
+# 9. 🎯 COLLISION SYSTEM
+
+## 9.1 Rules
+
+| Condition                         | Result    |
+| --------------------------------- | --------- |
+| Player touches ghost (normal)     | Death     |
+| Player touches ghost (frightened) | Eat ghost |
+
+---
+
+## 9.2 Tile Alignment Required
+
+* Collisions occur at tile overlap
+
+---
+
+# 10. ⏱️ LEVEL & SPEED SYSTEM
+
+## 10.1 Speed Tables (CRITICAL)
+
+| Entity            | Speed Behavior             |
+| ----------------- | -------------------------- |
+| Player            | Slower early, faster later |
+| Ghosts            | Faster each level          |
+| Frightened ghosts | Slower                     |
+
+---
+
+## 10.2 Level Progression
+
+* Difficulty increases
+* Frightened duration decreases
+
+---
+
+# 11. 🎲 RNG SYSTEM
+
+* Only in frightened ghost movement
+* Otherwise deterministic
+
+---
+
+# 12. 🎵 AUDIO DESIGN
+
+## Music
+
+* Intro jingle
+
+---
+
+## SFX
+
+* Pellet eating loop
+* Ghost eaten sound
+* Death sound
+
+---
+
+# 13. 🎨 VISUAL DESIGN
+
+## Style
+
+* Clean pixel art
+* Bright colors
+
+---
+
+## Animation
+
+* Mouth opening/closing
+* Ghost eyes movement
+
+---
+
+# 14. ⚙️ TECHNICAL SYSTEMS
+
+## Frame Rate
+
+* ~60 FPS equivalent timing
+
+---
+
+## Determinism
+
+* Critical for pattern play
+
+---
+
+## Input
+
+* Buffered turns
+
+---
+
+# 15. 🧪 DIFFICULTY DESIGN
+
+## Core Drivers
+
+* Ghost AI pressure
+* Speed increase
+* Reduced power pellet effectiveness
+
+---
+
+## Difficulty Curve
+
+* Predictable but punishing
+
+---
+
+# 16. 🧩 REVERSE ENGINEERING NOTES
+
+## MUST MATCH
+
+* Ghost targeting logic
+* Mode timing cycles
+* Movement speed tables
+* Tunnel slowdowns
+
+---
+
+## QUIRKS TO PRESERVE
+
+* Pinky overflow bug (ambush offset)
+* Ghost house release timing
+* Perfect pattern exploitability
+
+---
+
+# 17. 🧠 AI STATE MODEL
+
+```text id="v7x2k1"
+Scatter
+Chase
+Frightened
+Eaten
+```
+
+---
+
+# 18. 🧪 TESTING CHECKLIST
+
+* [ ] Movement grid alignment correct
+* [ ] Ghost AI behaves correctly
+* [ ] Mode timing matches arcade
+* [ ] Pellet system complete
+* [ ] Collision accurate
+* [ ] Warp tunnels work
+
+---
+
+# 19. ✨ FINISHING TOUCHES (POLISH)
+
+## 19.1 Arcade Feel
+
+* Precise movement
+* No smoothing
+
+---
+
+## 19.2 Visual Polish
+
+* Clear maze readability
+* Distinct ghost colors
+
+---
+
+## 19.3 Audio Polish
+
+* Looping pellet sound
+* Accurate timing cues
+
+---
+
+## 19.4 UX Rules
+
+* Immediate restart
+* Minimal UI
+
+---
+
+## 19.5 Authentic “Frustrations”
+
+* Tight turns required
+* Ghost unpredictability (perceived)
+* Increasing speed pressure
+
+---
+
+# 20. 🧾 DATA STRUCTURES
+
+## Player
+
+```text id="c2r8t6"
+tileX, tileY
+direction
+state
+```
+
+---
+
+## Ghost
+
+```text id="q1w9e4"
+type
+tileX, tileY
+mode
+targetTile
+state
+```
+
+---
+
+## Maze
+
+```text id="b8y3n2"
+tiles[][]
+pellets[]
+powerPellets[]
+```
+
+---
+
+## Game
+
+```text id="m4k7p9"
+level
+score
+lives
+modeTimer
+```
+
+---
+
+# 21. 🏁 SUCCESS CRITERIA
+
+A correct recreation should:
+
+* Feel **predictable but challenging**
+* Reward **pattern mastery**
+* Match **ghost personalities exactly**
+* Preserve **arcade timing precision**
+
+---
+
+# 🔚 FINAL SUMMARY
+
+This GDD captures:
+
+* Full **grid-based movement system**
+* Detailed **ghost AI personalities**
+* Complete **maze + pellet mechanics**
+* Accurate **timing and progression**
+* Authentic **Pac-Man arcade feel**
+
+---
+
+## 🚀 Next Step (perfect for your repo workflow)
+
+I can generate:
+
+* Exact **ghost AI timing tables (frame-accurate)**
+* Full **maze tilemap JSON**
+* **Speed + difficulty lookup tables**
+* Or a **PLAN_PR → BUILD_PR ZIP (docs-only, Codex-ready)**
+
+Just say: **“build the PR”** and I’ll package it exactly how you want.

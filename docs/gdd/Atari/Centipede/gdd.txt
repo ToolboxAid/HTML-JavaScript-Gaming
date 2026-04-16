@@ -1,0 +1,498 @@
+Below is a **complete, production-quality Game Design Document (GDD)** for a **reverse-engineered version of *Centipede***. This includes **core mechanics, systems, level generation, map logic, enemy behaviors, scoring, difficulty curves, and finishing polish details** suitable for implementation.
+
+---
+
+# **gdd.txt — Reverse Engineered: Centipede**
+
+---
+
+# **1. Game Overview**
+
+## **1.1 Title**
+
+Centipede (Reverse Engineered)
+
+## **1.2 Genre**
+
+* Arcade Shooter
+* Fixed Screen Shooter
+
+## **1.3 Platform**
+
+* Web (HTML5 Canvas / JS)
+* Desktop (optional wrapper)
+
+## **1.4 Core Concept**
+
+The player controls a shooter at the bottom of the screen and must eliminate a descending segmented centipede while avoiding and destroying other enemies. The battlefield evolves dynamically through mushrooms that alter movement patterns and difficulty.
+
+---
+
+# **2. Core Gameplay Loop**
+
+1. Player moves horizontally (and limited vertical within player area)
+2. Player fires upward
+3. Centipede moves horizontally, descending when blocked
+4. Player destroys segments → creates mushrooms
+5. New enemies spawn (Spider, Flea, Scorpion)
+6. Player survives waves → difficulty increases
+7. Repeat until death / score max
+
+---
+
+# **3. Controls**
+
+## **3.1 Input**
+
+* Arrow Keys / WASD → Movement
+* Spacebar → Fire
+
+## **3.2 Movement Constraints**
+
+* Player restricted to bottom ~20% of screen
+* Cannot move into UI or top playfield
+
+---
+
+# **4. Game World**
+
+## **4.1 Coordinate System**
+
+* Grid-based logical system
+* Continuous rendering (pixel-based)
+
+### Suggested Grid:
+
+* Width: 30 columns
+* Height: 30 rows
+* Cell size: ~16x16 px
+
+---
+
+# **5. Level & Map Design**
+
+## **5.1 Playfield Zones**
+
+### **Top Zone (Enemy Spawn Zone)**
+
+* Rows: 0–10
+* Centipede begins here
+* Fleas spawn if mushroom density low
+
+### **Middle Zone (Combat Zone)**
+
+* Rows: 10–20
+* Mushrooms accumulate heavily
+* Centipede fragmentation increases
+
+### **Player Zone (Safe Zone)**
+
+* Rows: 20–30
+* Player restricted here
+* Spider operates primarily here
+
+---
+
+## **5.2 Mushroom System**
+
+### Properties:
+
+* Health: 4 hits
+* Grid anchored
+* Alters centipede path
+
+### Effects:
+
+* Causes centipede to descend
+* Creates maze-like patterns
+
+### Spawn Rules:
+
+* Initial: Random distribution (~30–40 mushrooms)
+* Dynamic: Created when centipede segments destroyed
+
+---
+
+## **5.3 Map Evolution**
+
+Over time:
+
+* Mushroom density increases
+* Movement becomes more chaotic
+* Player visibility decreases
+* Difficulty scales organically
+
+---
+
+# **6. Player Mechanics**
+
+## **6.1 Movement**
+
+* Speed: constant
+* Pixel-based smooth movement
+* Collision with mushrooms prevents overlap
+
+## **6.2 Shooting**
+
+* Single bullet on screen (classic mode)
+* Straight vertical trajectory
+* Bullet speed faster than enemies
+
+---
+
+# **7. Enemy Systems**
+
+---
+
+## **7.1 Centipede**
+
+### Structure:
+
+* Head + body segments
+* Each segment = independent entity after split
+
+### Movement Rules:
+
+1. Move horizontally (left/right)
+2. On:
+
+   * Screen edge OR
+   * Mushroom collision
+     → Move down 1 row
+     → Reverse direction
+
+### Behavior:
+
+* Head leads
+* Segments follow previous segment path
+
+### Splitting:
+
+* When segment destroyed:
+
+  * Chain splits into two centipedes
+  * New head forms at split
+
+---
+
+## **7.2 Spider**
+
+### Zone:
+
+* Player area (bottom)
+
+### Movement:
+
+* Erratic zig-zag
+* Diagonal patterns
+* Variable speed
+
+### Behavior:
+
+* Hunts player
+* Destroys mushrooms
+
+---
+
+## **7.3 Flea**
+
+### Spawn Condition:
+
+* Mushroom count below threshold (~5)
+
+### Behavior:
+
+* Drops vertically from top
+* Leaves mushrooms behind randomly
+
+---
+
+## **7.4 Scorpion**
+
+### Movement:
+
+* Horizontal across screen
+
+### Effect:
+
+* Poisons mushrooms
+
+### Poison Effect:
+
+* Centipede ignores descent rules
+* Moves straight downward rapidly
+
+---
+
+# **8. Collision System**
+
+## **8.1 Bullet Collisions**
+
+* Bullet vs Enemy → destroy enemy
+* Bullet vs Mushroom → damage mushroom
+
+## **8.2 Player Collisions**
+
+* Player vs Enemy → death
+* Player vs poisoned centipede → instant death
+
+---
+
+# **9. Scoring System**
+
+| Action            | Points                   |
+| ----------------- | ------------------------ |
+| Centipede segment | 10                       |
+| Head              | 100                      |
+| Spider            | 300–900 (distance-based) |
+| Flea              | 200                      |
+| Scorpion          | 1000                     |
+| Mushroom destroy  | 1                        |
+
+---
+
+# **10. Difficulty Progression**
+
+## **10.1 Scaling Factors**
+
+* Centipede speed increases
+* Enemy spawn rates increase
+* Spider becomes more aggressive
+* Flea frequency increases
+
+## **10.2 Wave Progression**
+
+* New centipede spawns after full destruction
+* Later waves:
+
+  * Start lower on screen
+  * More fragmented
+
+---
+
+# **11. Game States**
+
+* Start Screen
+* Playing
+* Life Lost
+* Game Over
+* High Score Entry
+
+---
+
+# **12. Rendering**
+
+## **12.1 Visual Style**
+
+* Pixel art
+* Bright arcade colors
+* Black background
+
+## **12.2 Layers**
+
+1. Background
+2. Mushrooms
+3. Enemies
+4. Player
+5. Bullets
+6. UI
+
+---
+
+# **13. Audio**
+
+## **13.1 Sound Effects**
+
+* Shooting
+* Enemy hit
+* Mushroom hit
+* Player death
+* Enemy spawn
+
+## **13.2 Music**
+
+* Minimal or ambient arcade loop
+
+---
+
+# **14. Technical Architecture**
+
+## **14.1 Game Loop**
+
+* Fixed timestep (~60 FPS)
+
+### Loop:
+
+1. Input
+2. Update
+3. Collision
+4. Render
+
+---
+
+## **14.2 Entity System**
+
+### Base Classes:
+
+* Entity
+* DynamicEntity
+* Enemy
+* Player
+
+---
+
+## **14.3 Key Systems**
+
+* Collision Manager
+* Spawn Manager
+* Score Manager
+* Level Manager
+
+---
+
+# **15. Level Generation Logic**
+
+## **15.1 Initial State**
+
+```
+- Spawn centipede at top row
+- Generate mushrooms randomly:
+  probability ~10–15% per tile
+```
+
+## **15.2 Progressive Mutation**
+
+* Each destroyed segment adds mushroom
+* Fleas replenish missing mushrooms
+
+---
+
+## **15.3 Advanced Patterns (Optional Enhancements)**
+
+### Pattern Types:
+
+* Sparse Field
+* Dense Forest
+* Vertical Corridors
+* Random Chaos
+
+---
+
+# **16. Edge Cases**
+
+* Multiple centipede heads
+* Overlapping entities
+* Player trapped by mushrooms
+* Bullet clipping edge cases
+
+---
+
+# **17. Balancing Parameters**
+
+| Parameter       | Value      |
+| --------------- | ---------- |
+| Player speed    | Medium     |
+| Bullet speed    | Fast       |
+| Centipede speed | Increasing |
+| Mushroom HP     | 4          |
+| Max bullets     | 1          |
+
+---
+
+# **18. UI / HUD**
+
+* Score (top)
+* Lives
+* Level indicator
+
+---
+
+# **19. Polish / Finishing Touches**
+
+## **19.1 Visual Feedback**
+
+* Mushroom damage states (4 levels)
+* Enemy hit flash
+* Screen shake on death
+
+## **19.2 Juice**
+
+* Particle effects on explosions
+* Bullet trails (optional)
+* Color cycling enemies
+
+## **19.3 Accessibility**
+
+* Adjustable speed
+* Colorblind palette
+* Sound toggle
+
+---
+
+# **20. Optional Enhancements**
+
+* Multi-shot upgrade
+* Power-ups
+* Boss centipede
+* Procedural levels
+
+---
+
+# **21. Testing Checklist**
+
+* Centipede splits correctly
+* Mushrooms spawn/destroy correctly
+* All enemies spawn under correct conditions
+* Difficulty ramps smoothly
+* No collision glitches
+
+---
+
+# **22. Reverse Engineering Notes**
+
+## **Key Observations from Original Game**
+
+* Grid-based logic but smooth rendering
+* Deterministic enemy movement
+* Difficulty driven by chaos, not AI complexity
+* Emergent gameplay via mushrooms
+
+---
+
+# **23. Implementation Milestones**
+
+1. Player + shooting
+2. Mushroom grid
+3. Centipede movement
+4. Collision system
+5. Enemy types
+6. Scoring + UI
+7. Difficulty scaling
+8. Polish
+
+---
+
+# **24. Summary**
+
+Centipede’s design relies on:
+
+* Simple rules
+* Emergent complexity
+* Increasing chaos via environment mutation
+
+The key to an accurate recreation is:
+✔ Precise movement rules
+✔ Mushroom interaction fidelity
+✔ Enemy behavior timing
+✔ Difficulty curve tuning
+
+---
+
+If you want next step, I can convert this into:
+
+* **Engine architecture plan (fits your repo workflow)**
+* **Object model (ObjectStatic/ObjectDynamic integration)**
+* **Tilemap + collision grid implementation spec**
+* **Codex-ready PLAN_PR ZIP**
+
+Just tell me 👍

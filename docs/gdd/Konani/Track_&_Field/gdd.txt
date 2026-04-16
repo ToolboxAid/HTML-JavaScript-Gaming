@@ -1,0 +1,625 @@
+Got it — here is a **refined, production-ready, *deep reverse-engineering GDD*** for **Track & Field**, cleaned up, expanded, and tightened to match your repo-quality expectations (more exact systems, tighter definitions, better implementation targeting).
+
+---
+
+# 🎮 GDD — Track & Field (Arcade Reverse Engineering — Definitive Spec)
+
+**System:** Konami GX361 (Arcade)
+**Genre:** Competitive Sports / Reflex
+**Core Mechanic:** Alternating input → velocity → timed execution
+**Design Intent:** Physical exertion + precision timing under pressure
+
+---
+
+# 1. 🧭 CORE DESIGN PRINCIPLES
+
+## 1.1 Pillars
+
+* **Human Input Speed = Performance**
+* **Strict Timing Windows**
+* **No Forgiveness Physics**
+* **Short Burst Mastery**
+* **Consistency > Randomness**
+
+---
+
+## 1.2 Arcade Truths (Must Preserve)
+
+* Button rhythm matters more than raw speed
+* Timing windows are tight and unforgiving
+* Events feel physically different
+* Inputs directly map to outcome (no smoothing)
+
+---
+
+# 2. 🎮 SYSTEM ARCHITECTURE
+
+## 2.1 Core Systems
+
+* Input Alternation Engine
+* Velocity Accumulator
+* Event Logic Modules (per event)
+* Timing Window Evaluator
+* Scoring / Qualification Engine
+
+---
+
+# 3. 🕹️ INPUT ENGINE (CRITICAL — EXACT BEHAVIOR TARGET)
+
+## 3.1 Buttons
+
+* BTN_A (Run Left)
+* BTN_B (Run Right)
+* BTN_ACTION (Jump / Throw)
+
+---
+
+## 3.2 Alternation Detection
+
+```text
+IF currentButton != lastButton
+AND timeDelta <= alternationWindow
+    → valid alternation
+ELSE
+    → penalty / reduced gain
+```
+
+---
+
+## 3.3 Alternation Window
+
+```text
+alternationWindow ≈ 80–120 ms
+```
+
+* Too slow → no acceleration
+* Too fast (same button spam) → reduced gain
+
+---
+
+## 3.4 Input Gain Model
+
+```text
+velocity += baseGain * alternationMultiplier
+```
+
+### Multipliers
+
+| Condition           | Multiplier |
+| ------------------- | ---------- |
+| Perfect alternation | 1.0        |
+| Slight delay        | 0.7        |
+| Same button spam    | 0.2        |
+
+---
+
+## 3.5 Fatigue / Drop-off Simulation
+
+```text
+velocity -= decayRate * deltaTime
+```
+
+* Prevents infinite max speed
+* Forces sustained input
+
+---
+
+# 4. 🏃 VELOCITY MODEL
+
+## 4.1 Core Equation
+
+```text
+velocity = clamp(
+    velocity + inputGain - decay,
+    0,
+    maxVelocity
+)
+```
+
+---
+
+## 4.2 Constants
+
+```text
+maxVelocity: event-specific
+decayRate: small but constant
+inputGain: dependent on alternation quality
+```
+
+---
+
+## 4.3 Visual Sync Rule
+
+* Animation frame rate must scale with velocity
+* Footstep cadence tied to input rhythm
+
+---
+
+# 5. 🧍 PLAYER STATE MACHINE
+
+```text
+IDLE
+→ START_SIGNAL_WAIT
+→ RUNNING
+→ ACTION_PREP
+→ ACTION_EXECUTE
+→ RECOVERY
+→ FINISHED
+```
+
+---
+
+# 6. 🏁 EVENT MODULES (FULL BREAKDOWN)
+
+---
+
+## 🥇 EVENT 1 — 100m Dash
+
+### Objective
+
+Reach finish line under qualifying time.
+
+---
+
+### Systems Used
+
+* Input Engine
+* Velocity Model
+* Finish Timer
+
+---
+
+### False Start System
+
+```text
+IF input before "GO":
+    disqualify or delay penalty
+```
+
+---
+
+### Finish Detection
+
+* Player X ≥ finish line
+
+---
+
+### Qualification Example
+
+```text
+<= 12.0 seconds → pass
+```
+
+---
+
+### Critical Feel Notes
+
+* Smooth ramp-up from 0 → max speed
+* Slight “stickiness” at low velocity
+
+---
+
+---
+
+## 🥈 EVENT 2 — Long Jump
+
+### Phases
+
+1. Acceleration
+2. Takeoff trigger
+3. Air phase
+4. Landing
+
+---
+
+### Takeoff Window
+
+```text
+perfectWindow ≈ ±2–3 frames
+```
+
+---
+
+### Jump Calculation
+
+```text
+distance =
+    velocityAtTakeoff * multiplier
+    - penaltyForBadTiming
+```
+
+---
+
+### Foul Detection
+
+```text
+IF takeoffPosition > board:
+    FOUL
+```
+
+---
+
+### Arc Model (Simplified)
+
+```text
+x = velocity * t
+y = jumpForce * t - gravity * t²
+```
+
+---
+
+---
+
+## 🥉 EVENT 3 — Javelin Throw
+
+### Phases
+
+1. Run-up
+2. Angle charge
+3. Release
+
+---
+
+### Angle System
+
+```text
+angle += angleRate * holdTime
+```
+
+---
+
+### Optimal Angle Window
+
+```text
+~36°–42°
+```
+
+---
+
+### Distance Model
+
+```text
+distance =
+    velocity * cos(angle) * scale
+    + velocity * sin(angle) * heightFactor
+```
+
+---
+
+### Failure Modes
+
+* Too low → short throw
+* Too high → stall
+
+---
+
+---
+
+## 🏃 EVENT 4 — 110m Hurdles
+
+### Core Hybrid System
+
+* Running + timed jumps
+
+---
+
+### Hurdle Detection
+
+```text
+IF playerX == hurdleX:
+    check jump state
+```
+
+---
+
+### Collision Result
+
+* Hit hurdle → velocity drop (~30–50%)
+* Miss jump → full stop animation
+
+---
+
+### Jump Window
+
+```text
+~4–6 frames before hurdle
+```
+
+---
+
+---
+
+## 🔨 EVENT 5 — Hammer Throw
+
+### Phases
+
+1. Spin build
+2. Release
+
+---
+
+### Spin System
+
+```text
+angularVelocity += inputGain
+```
+
+---
+
+### Control Threshold
+
+```text
+IF angularVelocity > stabilityLimit:
+    accuracy penalty
+```
+
+---
+
+### Distance Model
+
+```text
+distance = angularVelocity * releaseEfficiency
+```
+
+---
+
+---
+
+## 🟦 EVENT 6 — High Jump
+
+### Phases
+
+1. Run-up
+2. Jump trigger
+3. Clearance
+
+---
+
+### Jump Timing
+
+```text
+perfect window near bar position
+```
+
+---
+
+### Clearance Check
+
+```text
+IF jumpHeight > barHeight:
+    success
+ELSE:
+    fail
+```
+
+---
+
+### Height Progression
+
+* Bar increases after success
+
+---
+
+# 7. 🎯 COLLISION / TIMING ENGINE
+
+## Order of Operations
+
+```text
+1. Process input
+2. Update velocity
+3. Advance player position
+4. Evaluate event triggers
+5. Resolve collisions
+6. Update animation
+```
+
+---
+
+# 8. ⏱️ TIMING SYSTEM
+
+## Frame Timing
+
+* ~60 FPS fixed
+
+## Critical Windows
+
+* Defined in **frames**, not ms
+
+---
+
+# 9. 🎲 RNG / VARIANCE
+
+Minimal RNG:
+
+* Wind (optional)
+* Tiny variation in thresholds
+
+**Core gameplay is deterministic**
+
+---
+
+# 10. 🎵 AUDIO SYSTEM
+
+## Key Signals
+
+* Start gun
+* Footstep cadence (input-linked)
+* Jump grunt
+* Crowd swell on success
+
+---
+
+# 11. 🎨 VISUAL SYSTEM
+
+## Key Rules
+
+* Animation tied to velocity
+* No interpolation smoothing
+* Large readable sprites
+
+---
+
+# 12. ⚙️ TECHNICAL IMPLEMENTATION TARGETS
+
+## Determinism
+
+* Must replay identical with same inputs
+
+## Input Sampling
+
+* High frequency (per frame minimum)
+
+## Physics
+
+* Simplified, not realistic
+* Tuned for responsiveness
+
+---
+
+# 13. 🧪 DIFFICULTY DESIGN
+
+## Drivers
+
+* Physical fatigue (real-world player)
+* Tight timing windows
+* Increasing qualification thresholds
+
+---
+
+# 14. 🧩 REVERSE ENGINEERING PRIORITIES
+
+## MUST MATCH EXACTLY
+
+* Alternation timing window
+* Velocity gain curve
+* Jump trigger frame window
+* Release angle sensitivity
+
+---
+
+## ACCEPTABLE APPROXIMATIONS
+
+* Exact physics constants
+* Visual animation frames
+
+---
+
+# 15. 🧪 VALIDATION CHECKLIST
+
+* [ ] Alternating input gives correct velocity ramp
+* [ ] Same-button spam penalized
+* [ ] Velocity decays correctly
+* [ ] Jump timing windows feel tight
+* [ ] Throw angles behave realistically
+* [ ] Qualification thresholds match arcade feel
+
+---
+
+# 16. ✨ FINISHING TOUCHES (CRITICAL FOR AUTHENTICITY)
+
+## 16.1 Input Feel
+
+* Slight “harshness” required
+* No buffering or smoothing
+
+---
+
+## 16.2 Visual Feedback
+
+* Faster run = faster animation
+* Immediate feedback per input
+
+---
+
+## 16.3 Audio Feedback
+
+* Footstep rhythm matches button alternation
+* Crowd reacts to performance
+
+---
+
+## 16.4 UX Rules
+
+* Instant retry
+* No menus between events
+* Flow is uninterrupted
+
+---
+
+## 16.5 Authentic Imperfections
+
+* Input sensitivity inconsistency (arcade hardware feel)
+* Slight randomness in perceived timing
+* Player fatigue becomes part of gameplay
+
+---
+
+# 17. 🧾 DATA STRUCTURES
+
+## Player
+
+```text
+velocity
+positionX
+state
+inputHistory[]
+currentEvent
+```
+
+---
+
+## Input Tracker
+
+```text
+lastButton
+lastTimestamp
+alternationStreak
+```
+
+---
+
+## Event Config
+
+```text
+type
+qualificationTarget
+maxVelocity
+timingWindows
+physicsParams
+```
+
+---
+
+# 18. 🏁 SUCCESS CRITERIA
+
+A correct recreation should:
+
+* Reward **true alternating rhythm**
+* Punish sloppy input instantly
+* Feel physically demanding
+* Match arcade pacing exactly
+
+---
+
+# 🔚 FINAL SUMMARY
+
+This refined GDD delivers:
+
+* Exact **input alternation engine**
+* Precise **velocity + decay model**
+* Full **event-by-event mechanics**
+* Frame-level **timing window definitions**
+* Authentic **arcade imperfections and feel**
+
+---
+
+## 🚀 If you want the next step (high-value for your repo)
+
+I can generate:
+
+* Frame-accurate **timing tables per event**
+* Exact **velocity curves (numbers tuned)**
+* **Event configs JSON (drop-in for your engine)**
+* Or a full **PLAN_PR → BUILD_PR ZIP** aligned to your repo workflow (no code, Codex-ready)
+
+Just say **“build the PR”** and I’ll package it exactly how you like.

@@ -1,0 +1,506 @@
+Below is a **full, production-grade Game Design Document (GDD)** for reverse-engineering **Ridge Racer** (Ridge Racer), including **drift-centric physics, track segmentation, AI rubber-banding, camera system, and finishing touches** for an arcade-accurate recreation.
+
+---
+
+# 🎮 GDD — Ridge Racer (Reverse Engineering Edition)
+
+**Document Type:** Full Technical + Design Spec
+**Target:** Faithful arcade recreation (Namco System 22 feel)
+**Genre:** Arcade Racing
+**Perspective:** Third-Person Chase Camera (3D)
+**Core Identity:** High-speed drifting + smooth handling + time attack racing
+
+---
+
+# 1. 🧭 CORE GAME OVERVIEW
+
+## 1.1 Game Pillars
+
+* **Drift-Based Cornering**
+* **High-Speed Arcade Handling**
+* **Single Track Mastery**
+* **Rubber-Band AI Competition**
+* **Flow-State Driving**
+
+---
+
+## 1.2 Player Fantasy
+
+You are a high-speed racer mastering long sweeping turns and chaining controlled drifts to maintain speed and dominate the track.
+
+---
+
+# 2. 🎮 CORE GAMEPLAY LOOP
+
+1. Start race
+2. Accelerate and steer
+3. Enter corners → initiate drift
+4. Maintain speed through drift
+5. Exit cleanly → accelerate
+6. Repeat lap progression
+7. Finish with best time / position
+
+---
+
+# 3. 🚗 PLAYER SYSTEM
+
+## 3.1 Controls
+
+* Steering (analog preferred)
+* Acceleration
+* Brake
+* (Optional) Gear (auto/manual depending version)
+
+---
+
+## 3.2 Movement Model (ARCADE DRIFT PHYSICS)
+
+```text
+velocity += acceleration
+velocity -= drag
+lateralSlip = steeringInput * driftFactor
+```
+
+---
+
+## 3.3 Core Handling Properties
+
+```text
+Top Speed: High
+Acceleration: Moderate
+Grip: Low-mid (arcade tuned)
+Drift Factor: High (signature mechanic)
+```
+
+---
+
+## 3.4 Drift System (CRITICAL)
+
+### Trigger Conditions
+
+```text
+IF speed > threshold
+AND steering angle high:
+    enter drift state
+```
+
+---
+
+### Drift Behavior
+
+```text
+carAngle != velocityDirection
+rear slides outward
+```
+
+---
+
+### Exit Condition
+
+```text
+reduce steering
+re-align velocity vector
+```
+
+---
+
+## 3.5 Drift Feel
+
+* Smooth and controllable
+* Long sustained slides
+* Encourages flow through corners
+
+---
+
+## 3.6 Player States
+
+| State     | Description |
+| --------- | ----------- |
+| Driving   | Normal      |
+| Drifting  | Sliding     |
+| Braking   | Slowing     |
+| Colliding | Impact      |
+| Finished  | Race end    |
+
+---
+
+# 4. 🛣️ TRACK SYSTEM
+
+## 4.1 Track Structure
+
+```text
+Start → Straights → Curves → Tunnels → Finish
+```
+
+---
+
+## 4.2 Track Segments
+
+| Type         | Behavior           |
+| ------------ | ------------------ |
+| Straight     | Max speed          |
+| Gentle Curve | Light drift        |
+| Sharp Turn   | Heavy drift        |
+| Tunnel       | Reduced visibility |
+
+---
+
+## 4.3 Road Properties
+
+```text
+segment:
+    curvature
+    width
+    elevation
+    surfaceGrip
+```
+
+---
+
+## 4.4 Signature Track Feel
+
+* Long flowing curves
+* Wide roads
+* Minimal obstacles
+
+---
+
+# 5. 🎯 COLLISION SYSTEM
+
+## 5.1 Types
+
+| Collision         | Result            |
+| ----------------- | ----------------- |
+| Player vs wall    | Bounce + slowdown |
+| Player vs AI      | Minor impact      |
+| Player vs barrier | Heavy slowdown    |
+
+---
+
+## 5.2 Behavior
+
+* Arcade bounce, not realistic
+* Speed loss on impact
+
+---
+
+# 6. 🚦 AI SYSTEM
+
+## 6.1 Behavior
+
+```text
+follow racing line
+→ adjust speed dynamically
+```
+
+---
+
+## 6.2 Rubber-Banding (CRITICAL)
+
+```text
+IF player ahead:
+    AI speed increases
+IF player behind:
+    AI slows slightly
+```
+
+---
+
+## 6.3 Difficulty Scaling
+
+* AI becomes more aggressive
+* Improved cornering
+
+---
+
+# 7. ⏱️ TIME / LAP SYSTEM
+
+## 7.1 Race Structure
+
+* Multi-lap race
+
+---
+
+## 7.2 Timing
+
+```text
+lapTime = currentTime - lapStart
+```
+
+---
+
+## 7.3 Progression
+
+* Faster lap times required for mastery
+
+---
+
+# 8. 🚀 SPEED SYSTEM
+
+## 8.1 Speed Curve
+
+```text
+velocity = f(acceleration, drag, gear)
+```
+
+---
+
+## 8.2 Speed Effects
+
+* Camera shake at high speed
+* Motion blur (optional modern addition)
+
+---
+
+# 9. 🎥 CAMERA SYSTEM
+
+## 9.1 Chase Camera (CRITICAL)
+
+```text
+camera follows behind car
+slight lag for speed sensation
+```
+
+---
+
+## 9.2 Behavior
+
+* Tilts during turns
+* Smooth interpolation
+
+---
+
+# 10. 🎲 RNG SYSTEM
+
+* AI variation
+* Minor traffic differences (if present)
+
+---
+
+# 11. 🎵 AUDIO DESIGN
+
+## Music
+
+* Electronic / techno (iconic Ridge Racer style)
+
+---
+
+## SFX
+
+* Engine sound (RPM-based)
+* Tire screech (drift)
+* Collision impacts
+
+---
+
+# 12. 🎨 VISUAL DESIGN
+
+## Style
+
+* Clean 3D environments
+* Bright arcade aesthetic
+
+---
+
+## Effects
+
+* Drift smoke
+* Speed blur
+* Lighting in tunnels
+
+---
+
+# 13. ⚙️ TECHNICAL SYSTEMS
+
+## Frame Rate
+
+* 30–60 FPS target (arcade style)
+
+---
+
+## Physics
+
+* Simplified arcade physics
+* Drift-focused model
+
+---
+
+## Input
+
+* Analog preferred
+
+---
+
+# 14. 🧪 DIFFICULTY DESIGN
+
+## Core Drivers
+
+* Drift mastery
+* Cornering precision
+* AI competition
+
+---
+
+## Difficulty Curve
+
+* Beginner-friendly
+* High skill ceiling
+
+---
+
+# 15. 🧩 REVERSE ENGINEERING NOTES
+
+## MUST MATCH
+
+* Drift initiation timing
+* Drift angle behavior
+* Speed retention through turns
+* AI rubber-banding
+
+---
+
+## QUIRKS TO PRESERVE
+
+* Slight floaty handling
+* Oversteer at high speed
+* AI catch-up mechanics
+
+---
+
+# 16. 🧠 AI STATES
+
+```text
+Cruise
+Chase
+AdjustSpeed
+Recover
+```
+
+---
+
+# 17. 🧪 TESTING CHECKLIST
+
+* [ ] Drift triggers correctly
+* [ ] Handling feels smooth
+* [ ] AI behaves properly
+* [ ] Lap timing accurate
+* [ ] Collision impacts correct
+* [ ] Camera feels responsive
+
+---
+
+# 18. ✨ FINISHING TOUCHES (POLISH)
+
+## 18.1 Arcade Feel
+
+* Smooth, forgiving controls
+* Flow-based driving
+
+---
+
+## 18.2 Visual Polish
+
+* Strong sense of speed
+* Clean track readability
+
+---
+
+## 18.3 Audio Polish
+
+* Dynamic engine pitch
+* Distinct drift sound
+
+---
+
+## 18.4 UX Rules
+
+* Quick race start
+* Minimal menus
+
+---
+
+## 18.5 Authentic “Frustrations”
+
+* Missing apex kills speed
+* Oversteering in tight turns
+* AI catch-up pressure
+
+---
+
+# 19. 🧾 DATA STRUCTURES
+
+## Player Vehicle
+
+```text
+x, y, z
+velocity
+driftState
+headingAngle
+```
+
+---
+
+## AI Vehicle
+
+```text
+x, y, z
+velocity
+targetPath
+state
+```
+
+---
+
+## Track
+
+```text
+segments[]
+curvature[]
+elevation[]
+```
+
+---
+
+## Game
+
+```text
+lap
+time
+position
+```
+
+---
+
+# 20. 🏁 SUCCESS CRITERIA
+
+A correct recreation should:
+
+* Feel **smooth and fast**
+* Reward **drift mastery**
+* Maintain **flow through corners**
+* Match **Ridge Racer arcade handling**
+
+---
+
+# 🔚 FINAL SUMMARY
+
+This GDD captures:
+
+* Full **drift-based racing system**
+* Detailed **track and camera behavior**
+* Complete **AI + rubber-banding**
+* Accurate **speed and handling model**
+* Authentic **Ridge Racer arcade feel**
+
+---
+
+## 🚀 Next Step (fits your repo workflow perfectly)
+
+I can generate:
+
+* Exact **drift physics constants**
+* Full **track segment JSON layouts**
+* **AI racing line + rubber-band tuning tables**
+* Or a **PLAN_PR → BUILD_PR ZIP (docs-only, Codex-ready)**
+
+Just say: **“build the PR”** and I’ll package it exactly how you want.

@@ -1,0 +1,517 @@
+Below is a **full, production-grade Game Design Document (GDD)** for reverse-engineering *Spy Hunter* (Bally Midway, 1983), including **vehicle handling physics, road system, enemy behaviors, weapon systems, mission flow, and finishing touches** for an arcade-accurate recreation.
+
+---
+
+# 🎮 GDD — Spy Hunter (Reverse Engineering Edition)
+
+**Document Type:** Full Technical + Design Spec
+**Target:** Faithful arcade recreation (top-down driving shooter feel)
+**Genre:** Vehicular Combat / Driving Shooter
+**Perspective:** Top-Down Vertical Scrolling
+**Core Identity:** High-speed driving + tactical combat + mission survival
+
+---
+
+# 1. 🧭 CORE GAME OVERVIEW
+
+## 1.1 Game Pillars
+
+* **High-Speed Vehicle Control**
+* **Weaponized Driving**
+* **Dynamic Road Navigation**
+* **Enemy Pursuit Pressure**
+* **Progressive Difficulty**
+
+---
+
+## 1.2 Player Fantasy
+
+You are a spy agent driving an advanced vehicle (Interceptor), eliminating enemy threats while navigating dangerous roads.
+
+---
+
+# 2. 🎮 CORE GAMEPLAY LOOP
+
+1. Spawn on highway
+2. Drive forward (auto-scroll environment)
+3. Avoid traffic and hazards
+4. Destroy enemy vehicles
+5. Survive wave progression
+6. Dock with weapons truck for upgrades
+7. Continue until death
+
+---
+
+# 3. 🚗 PLAYER SYSTEM
+
+## 3.1 Vehicle: Interceptor
+
+### Controls
+
+* Left / Right steering
+* Acceleration (implicit via scroll)
+* Weapons fire
+
+---
+
+## 3.2 Movement Model (CRITICAL)
+
+```text id="3u1b6n"
+velocityY = constant (forward scroll)
+velocityX += steeringInput * turnRate
+velocityX -= friction
+```
+
+---
+
+### Properties
+
+```text id="k3c8q5"
+Forward Speed: Constant increasing
+Lateral Speed: Limited
+Acceleration: Minimal (mostly constant speed)
+Drift: Slight inertia
+```
+
+---
+
+## 3.3 Handling Feel
+
+* Tight but slightly slippery
+* Oversteering possible at high speed
+* Road edges punish mistakes
+
+---
+
+## 3.4 Player States
+
+| State     | Description        |
+| --------- | ------------------ |
+| Driving   | Normal             |
+| Shooting  | Weapons active     |
+| Exploding | Death              |
+| Docking   | With weapons truck |
+
+---
+
+# 4. 🔫 WEAPON SYSTEM
+
+## 4.1 Default Weapon
+
+* Forward machine gun
+
+---
+
+## 4.2 Special Weapons
+
+| Weapon         | Behavior             |
+| -------------- | -------------------- |
+| Oil Slick      | Leaves hazard behind |
+| Smoke Screen   | Blocks enemy view    |
+| Missiles       | Forward explosive    |
+| Surface-to-Air | Anti-helicopter      |
+
+---
+
+## 4.3 Activation
+
+* Picked up via truck docking
+* Limited usage
+
+---
+
+# 5. 🚚 WEAPON TRUCK SYSTEM
+
+## 5.1 Behavior
+
+* Appears ahead of player
+* Player must align and dock
+
+---
+
+## 5.2 Docking Rules
+
+```text id="7j8t1p"
+IF player aligned with truck
+AND speed matched:
+    docking state triggered
+```
+
+---
+
+## 5.3 Result
+
+* New weapons granted
+* Refills ammo
+
+---
+
+# 6. 🧟 ENEMY SYSTEM
+
+## 6.1 Enemy Types
+
+### Enemy Cars
+
+* Ram player
+* Basic pursuit AI
+
+---
+
+### Armed Vehicles
+
+* Shoot projectiles
+
+---
+
+### Motorcycles
+
+* Fast, agile
+* Hard to hit
+
+---
+
+### Helicopters
+
+* Aerial enemies
+* Drop bombs
+
+---
+
+### Boats (Water Sections)
+
+* Appear when terrain changes
+
+---
+
+## 6.2 AI Behavior
+
+### Basic Pursuit
+
+```text id="w9h6k2"
+move toward playerX
+→ attempt collision
+```
+
+---
+
+### Attack Behavior
+
+```text id="t8m2y4"
+align with player
+→ fire or ram
+```
+
+---
+
+## 6.3 Spawn System
+
+* Enemies spawn ahead of player
+* Scroll into view
+
+---
+
+# 7. 🌍 ROAD SYSTEM (CORE DESIGN)
+
+## 7.1 Scrolling
+
+```text id="z5x1p8"
+roadY += scrollSpeed
+```
+
+---
+
+## 7.2 Road Features
+
+### Lane System
+
+* Multiple lanes
+* Center divider
+
+---
+
+### Curves
+
+* Road shifts left/right
+
+---
+
+### Hazards
+
+* Water edges
+* Narrow bridges
+
+---
+
+## 7.3 Terrain Changes
+
+* Road → water → back to road
+
+---
+
+# 8. 🎯 COLLISION SYSTEM
+
+## 8.1 Rules
+
+| Collision           | Result       |
+| ------------------- | ------------ |
+| Player vs enemy     | Damage/death |
+| Player vs edge      | Death        |
+| Player vs traffic   | Damage       |
+| Projectile vs enemy | Destroy      |
+
+---
+
+## 8.2 Physics
+
+* Collisions cause bounce or spin
+* High-speed collisions are fatal
+
+---
+
+# 9. ⏱️ SPEED & PROGRESSION
+
+## 9.1 Speed Increase
+
+* Gradual over time
+
+---
+
+## 9.2 Difficulty Scaling
+
+| Factor          | Increase |
+| --------------- | -------- |
+| Enemy count     | Yes      |
+| Enemy speed     | Yes      |
+| Road complexity | Yes      |
+
+---
+
+# 10. 🎲 RNG SYSTEM
+
+* Enemy spawn timing
+* Road variation
+* Weapon truck timing
+
+---
+
+# 11. 🎵 AUDIO DESIGN
+
+## Music
+
+* Iconic theme (looping)
+
+## SFX
+
+* Engine sound (pitch tied to speed)
+* Gunfire
+* Explosion
+
+---
+
+# 12. 🎨 VISUAL DESIGN
+
+## Style
+
+* Top-down realistic-ish vehicles
+* Clear lane visuals
+
+---
+
+## Animation
+
+* Smooth scrolling road
+* Explosion effects
+
+---
+
+# 13. ⚙️ TECHNICAL SYSTEMS
+
+## Frame Rate
+
+* ~60 FPS
+
+## Input
+
+* Continuous steering
+
+---
+
+## Rendering
+
+* Tile-based road
+* Sprite-based vehicles
+
+---
+
+# 14. 🧪 DIFFICULTY DESIGN
+
+## Core Drivers
+
+* Speed
+* Enemy density
+* Road hazards
+
+---
+
+## Difficulty Curve
+
+* Gradual ramp → intense chaos
+
+---
+
+# 15. 🧩 REVERSE ENGINEERING NOTES
+
+## MUST MATCH
+
+* Vehicle handling feel
+* Road scroll speed
+* Enemy spawn behavior
+* Docking alignment tolerance
+
+---
+
+## QUIRKS TO PRESERVE
+
+* Slight steering drift
+* Sudden difficulty spikes
+* Tight docking requirements
+
+---
+
+# 16. 🧠 AI SYSTEM STATES
+
+```text id="k1r9z4"
+Idle
+Pursue
+Attack
+Evade
+```
+
+---
+
+# 17. 🧪 TESTING CHECKLIST
+
+* [ ] Steering feels correct
+* [ ] Road scroll speed accurate
+* [ ] Enemy AI behaves correctly
+* [ ] Docking works reliably
+* [ ] Collision detection accurate
+* [ ] Weapon behavior correct
+
+---
+
+# 18. ✨ FINISHING TOUCHES (POLISH)
+
+## 18.1 Arcade Feel
+
+* Fast, responsive control
+* No smoothing
+
+---
+
+## 18.2 Visual Polish
+
+* Clear road readability
+* High-contrast enemies
+
+---
+
+## 18.3 Audio Polish
+
+* Engine pitch scaling
+* Distinct weapon sounds
+
+---
+
+## 18.4 UX Rules
+
+* Minimal UI
+* Continuous gameplay
+
+---
+
+## 18.5 Authentic “Frustrations”
+
+* Tight steering control
+* High-speed collisions
+* Docking difficulty
+
+---
+
+# 19. 🧾 DATA STRUCTURES
+
+## Player Vehicle
+
+```text id="h7q3m2"
+x, y
+velocityX
+state
+currentWeapon
+```
+
+---
+
+## Enemy
+
+```text id="n5p8r1"
+type
+x, y
+state
+aiState
+```
+
+---
+
+## Road
+
+```text id="d9w2c6"
+lanes
+curvePattern
+hazards
+```
+
+---
+
+## Level
+
+```text id="q4z7k1"
+scrollSpeed
+enemySpawnTable
+roadPattern
+```
+
+---
+
+# 20. 🏁 SUCCESS CRITERIA
+
+A correct recreation should:
+
+* Feel **fast and controlled**
+* Require **precision driving**
+* Maintain **constant pressure**
+* Match **arcade pacing**
+
+---
+
+# 🔚 FINAL SUMMARY
+
+This GDD captures:
+
+* Full **vehicle handling system**
+* Detailed **enemy behaviors**
+* Complete **road and scrolling system**
+* Accurate **weapon and docking mechanics**
+* Authentic **arcade intensity**
+
+---
+
+## 🚀 Next Step (perfect for your repo workflow)
+
+I can generate:
+
+* Frame-accurate **enemy spawn + road pattern tables**
+* Exact **vehicle physics constants**
+* Full **tilemap road layouts**
+* Or a **PLAN_PR → BUILD_PR ZIP (docs-only, Codex-ready)**
+
+Just say: **“build the PR”** and I’ll package it exactly how you want.

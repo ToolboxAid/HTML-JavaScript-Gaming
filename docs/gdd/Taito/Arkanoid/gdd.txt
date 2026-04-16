@@ -1,0 +1,629 @@
+ArkanoidBelow is a **full reverse-engineering GDD for the original 1986 arcade Arkanoid**.
+
+# ARKANOID — REVERSE ENGINEERING GAME DESIGN DOCUMENT
+
+## 1. Game Identity
+
+**Title:** Arkanoid
+**Developer/Publisher:** Taito
+**North America:** distributed by Romstar
+**Release:** 1986 arcade
+**Genre:** Block breaker / paddle action
+**Primary play style:** Single-screen stage clearing with reflex control, angle manipulation, risk-reward power-up routing, and score optimization. ([Wikipedia][1])
+
+## 2. Core High Concept
+
+The player controls the **Vaus**, a paddle-like spacecraft at the bottom of the screen, and keeps a ball in play while destroying bricks arranged in a single-screen formation. The stage ends when all required destructible bricks are cleared or when the player uses a Break capsule to exit early through a side gate. The design expands Breakout by adding varied brick behaviors, falling capsules, enemies, stronger control expression through bounce angles, and a more dramatic audiovisual identity. ([StrategyWiki][2])
+
+## 3. Reverse-Engineering Goal
+
+The goal of a faithful reverse-engine is to reproduce:
+
+* Spinner-based analog paddle movement
+* Ball rebound behavior based on contact zones on the Vaus
+* Brick durability rules
+* Falling capsule logic and effect replacement rules
+* Enemy interference patterns
+* Score, lives, stage progression, and bonus structure
+* Arcade pacing, including the increasing tension from ball speed and narrow recovery windows. ([StrategyWiki][2])
+
+---
+
+# 4. Player Fantasy
+
+The player is not just “bouncing a ball.” They are:
+
+* Piloting a responsive sci-fi paddle craft
+* Controlling trajectories with precision
+* Recovering from near-fail moments
+* Chasing favorable capsule chains
+* Turning a defensive game into an offensive one through Laser, Catch, Disruption, and Break routing. ([StrategyWiki][2])
+
+The emotional arc is:
+**calm control → rising chaos → clutch recovery → mastery through angle control.**
+
+---
+
+# 5. Cabinet / Hardware / Controls
+
+## 5.1 Cabinet Form
+
+Arkanoid shipped as a conversion/new game package through Romstar in North America, with installation materials for marquee, side art, control panel setup, wiring, and PCB mounting. The manual also references DIP-switch configuration and demo-with-sound behavior for operator setup. ([ARC ARC][3])
+
+## 5.2 Primary Controls
+
+* **Spinner / paddle control:** analog rotational input moves the Vaus left/right
+* **1 button:**
+
+  * Launch/release ball when held by Catch
+  * Fire lasers when Laser mode is active
+* **1P / 2P start**
+* **Coin inputs** ([StrategyWiki][2])
+
+## 5.3 Control Feel Requirements
+
+A faithful clone must preserve:
+
+* Immediate lateral response
+* Fine low-latency tracking
+* Ability to “sweep” for saves
+* High precision near edges for shallow rebounds
+* A sense that advanced players can intentionally aim. ([StrategyWiki][2])
+
+---
+
+# 6. Playfield Layout
+
+## 6.1 Screen Composition
+
+Single-screen fixed playfield:
+
+* Brick field occupies upper/middle screen
+* Vaus moves only on the bottom horizontal band
+* Ball bounces between walls, bricks, and Vaus
+* Side gate may open with Break effect
+* Enemies descend through play space as moving interference
+* HUD tracks score and lives/status. ([StrategyWiki][2])
+
+## 6.2 Boundaries
+
+* Left/right walls rebound ball
+* Top wall rebounds ball
+* Bottom edge is fail/life loss if the last active ball falls through
+* Gold bricks may remain and do not block stage completion because they are indestructible and not counted toward clear condition. ([StrategyWiki][2])
+
+---
+
+# 7. Core Gameplay Loop
+
+1. Start stage
+2. Ball launches into brick formation
+3. Player tracks ball and positions Vaus
+4. Ball destroys bricks and may trigger a falling capsule
+5. Player chooses whether to catch capsule or let it fall
+6. Enemies may interfere
+7. Ball speed and angle pressure increase over time
+8. Stage clears when all required destructible bricks are removed, or early through Break exit
+9. Repeat until lives are exhausted or game is completed. ([StrategyWiki][2])
+
+---
+
+# 8. Vaus Mechanics
+
+## 8.1 Base Form
+
+The Vaus is the player paddle. It slides horizontally only. Its main job is to keep the ball alive and redirect it into useful attack angles. ([StrategyWiki][2])
+
+## 8.2 Bounce Zoning
+
+A crucial reverse-engineering feature is that the outgoing angle depends on where the ball hits the Vaus:
+
+* **Center/silver area:** sharp rebound angle
+* **Red side bands:** about 45-degree rebound
+* **Extreme edges:** shallow rebound angle
+
+This is one of the main skill systems in Arkanoid and must feel deliberate rather than random. ([StrategyWiki][2])
+
+## 8.3 Transform States
+
+The Vaus can change into distinct temporary functional states:
+
+* **Normal**
+* **Enlarged**
+* **Laser**
+* **Catch**
+
+Only one active power-up state is generally in force at a time, with Disruption being a special multi-ball exception in gameplay behavior. ([StrategyWiki][2])
+
+---
+
+# 9. Ball Physics and Behavior
+
+## 9.1 Ball Role
+
+The ball is the primary attack object. It destroys bricks, triggers capsules, collides with enemies, and determines most stage tempo. ([StrategyWiki][2])
+
+## 9.2 Fundamental Properties
+
+The ball must support:
+
+* Position and velocity vector
+* Wall rebounds
+* Brick collision and destruction
+* Vaus rebound logic based on impact zone
+* Optional catch-on-contact in Catch mode
+* Split into three simultaneous balls in Disruption mode. ([StrategyWiki][2])
+
+## 9.3 Speed Behavior
+
+Orange **Slow** capsules reduce ball velocity, and multiple slows stack. However, the ball gradually speeds up again as it continues bouncing and destroying bricks, with occasional sudden-feeling increases. That acceleration pressure is important to the original feel. ([StrategyWiki][2])
+
+## 9.4 Multi-Ball
+
+Disruption creates **three balls total**. The player only loses a life when the final remaining active ball is lost. While multiple balls remain in play, new colored capsules do not fall. ([StrategyWiki][2])
+
+---
+
+# 10. Brick System
+
+## 10.1 Brick Categories
+
+Arkanoid uses three broad brick categories:
+
+### Colored bricks
+
+* Standard destructible bricks
+* One hit to destroy
+* Different colors give different point values
+
+### Silver bricks
+
+* Multi-hit bricks
+* Hits required increase as stage count rises
+* Score value scales with stage number
+
+### Gold bricks
+
+* Indestructible
+* Not required for stage clear. ([StrategyWiki][2])
+
+## 10.2 Colored Brick Point Values
+
+Standard colored bricks award values from **50 to 120 points**, depending on color. ([StrategyWiki][2])
+
+## 10.3 Silver Brick Scaling
+
+Silver bricks take more than one hit. Early on they take **two hits**, and the required hit count increases by **one every eight stages**. Their point value is **50 × stage number**. ([StrategyWiki][2])
+
+## 10.4 Gold Brick Function
+
+Gold bricks act as permanent geometry:
+
+* Route blockers
+* Angle shapers
+* Safe “walls” for ricochet design
+* Difficulty modifiers within the stage pattern. ([StrategyWiki][2])
+
+---
+
+# 11. Capsule / Power-Up System
+
+## 11.1 General Rules
+
+Power-up capsules:
+
+* Appear after a random number of **non-silver** bricks are destroyed
+* Fall downward slowly
+* Only one capsule appears at a time
+* Must be collected by the Vaus to activate
+* Normally persist until replaced by another power-up or until the current ball is lost. ([StrategyWiki][2])
+
+## 11.2 Power-Up List
+
+### L — Laser (red)
+
+Transforms Vaus into laser mode.
+Player can fire lasers upward with the button.
+Lasers damage enemies and all bricks except gold; silver still require their normal total number of hits. ([StrategyWiki][2])
+
+### E — Enlarge (blue)
+
+Extends Vaus width, improving recovery and making capsule catches easier. ([StrategyWiki][2])
+
+### C — Catch (green)
+
+Ball sticks to the Vaus on contact.
+Player presses fire to release it; ball also auto-releases after a delay.
+This allows controlled aiming and tempo reset. ([StrategyWiki][2])
+
+### S — Slow (orange)
+
+Reduces ball speed.
+Multiple Slow capsules stack.
+Ball later ramps back up as play continues. ([StrategyWiki][2])
+
+### B — Break (violet)
+
+Creates a breakout exit on the right side.
+Entering it skips to the next stage and awards a **10,000-point bonus**. ([StrategyWiki][2])
+
+### D — Disruption (cyan)
+
+Splits the ball into three active balls.
+No new capsules drop while more than one ball is active. ([StrategyWiki][2])
+
+### P — Player (gray)
+
+Awards an extra life/Vaus. ([StrategyWiki][2])
+
+## 11.3 Design Importance
+
+The capsule system is the major source of run variance and strategic adaptation. A faithful remake should preserve the feeling that:
+
+* Some capsules are immediate survival tools
+* Some are score/routing tools
+* Some can be situationally bad or risky
+* Catching everything blindly is not always optimal. ([StrategyWiki][2])
+
+---
+
+# 12. Enemy System
+
+Enemies drift into the playfield and move downward toward the bottom. They do not directly damage the Vaus on contact; instead, they interfere with ball travel and add clutter, timing disruption, and rebound unpredictability. In Laser mode they become shootable targets. ([StrategyWiki][2])
+
+For reverse engineering, enemies should be treated as:
+
+* Moving collision bodies for the ball
+* Non-lethal to Vaus on direct contact
+* Supplemental pressure, not the core win condition. ([StrategyWiki][2])
+
+---
+
+# 13. Lives, Failure, and Recovery
+
+## 13.1 Life Loss
+
+A life is lost when the last active ball falls below the Vaus and leaves play. ([StrategyWiki][2])
+
+## 13.2 Recovery State
+
+After life loss:
+
+* Stage layout remains in its current damaged state
+* Ball/Vaus reset for relaunch
+* Temporary power state does not persist in the same way as full-stage reset
+* Player resumes under reduced resources.
+
+This persistence of stage damage is a major part of Arkanoid’s tension curve and comeback design. The exact restart feel must be preserved even if internal implementation differs. This behavior is consistent with documented gameplay descriptions and the game’s arcade structure. ([StrategyWiki][2])
+
+## 13.3 Extra Lives
+
+Extra lives come from **P capsules**; operator settings may also affect baseline life count and difficulty through DIP switches. The manual explicitly references tailoring game duration with DIP switches. ([StrategyWiki][2])
+
+---
+
+# 14. Scoring
+
+## 14.1 Core Sources
+
+Score is built from:
+
+* Destroying colored bricks
+* Destroying silver bricks
+* Other incidental enemy/power interactions
+* Break capsule stage skip bonus. ([StrategyWiki][2])
+
+## 14.2 Known Values
+
+* Colored bricks: **50–120 points** by color
+* Silver bricks: **50 × current stage number**
+* Break exit bonus: **10,000 points**. ([StrategyWiki][2])
+
+## 14.3 Scoring Philosophy
+
+Arkanoid score play rewards:
+
+* Efficient destruction routes
+* Risky ball angle management
+* Maximizing brick value before using Break
+* Leveraging multi-ball and Laser for faster cleanup. ([StrategyWiki][2])
+
+---
+
+# 15. Stage Structure
+
+## 15.1 Stage Format
+
+Each stage is a single screen with a distinct brick pattern. The game is famous for handcrafted arrangements rather than procedural layouts. Taito’s developers reportedly sketched stage designs on paper before implementation. ([Wikipedia][1])
+
+## 15.2 Clear Rule
+
+A stage clears when all required destructible bricks are removed. Gold bricks do not count against completion. A Break capsule can also allow early exit by sending the ball through the opened right-side gate. ([StrategyWiki][2])
+
+## 15.3 Difficulty Progression
+
+Difficulty rises through:
+
+* Tighter brick arrangements
+* More punishing rebound corridors
+* More silver durability
+* Faster effective pace
+* Harder recovery paths
+* Greater enemy interference pressure. ([StrategyWiki][2])
+
+---
+
+# 16. Difficulty Model
+
+Arkanoid difficulty is not just “ball gets faster.” It is built from several overlapping systems:
+
+* Smaller safe recovery windows
+* Higher angle precision demand
+* Brick durability escalation
+* More dangerous geometry
+* Capsule luck versus capsule discipline
+* Increased punishment for positional drift. ([StrategyWiki][2])
+
+A faithful clone should preserve the way the game swings between:
+
+* controllable,
+* hectic,
+* then suddenly lethal.
+
+---
+
+# 17. Audio-Visual Style
+
+## 17.1 Visual Identity
+
+Arkanoid uses a futuristic neon sci-fi style, with geometric enemies and a spacecraft-themed paddle. The development background specifically cites **Tron** as visual inspiration. ([Wikipedia][1])
+
+## 17.2 Visual Priorities for Reverse Engineering
+
+Must preserve:
+
+* High contrast brick readability
+* Clear capsule letter/icon recognition
+* Immediate ball visibility
+* Distinct Vaus transform silhouettes
+* Clean stage geometry legibility under high speed. ([Wikipedia][1])
+
+## 17.3 Sound
+
+The game’s music was created by **Hisayoshi Ogura**. In arcade operation, the manual references demo-with-sound settings, indicating attract-mode sound configuration mattered in cabinet presentation. ([Wikipedia][1])
+
+---
+
+# 18. Attract Mode / Arcade Presentation
+
+A correct arcade-style reproduction should include:
+
+* Title presentation
+* Attract/demo play or demo audio behavior
+* Score display
+* Immediate readability of controls and game premise
+* Strong first-coin appeal through brisk pacing.
+
+The operator manual’s emphasis on DIP switch tuning and demo sound shows that arcade presentation and turnover length were deliberate commercial design concerns. 
+
+---
+
+# 19. Operator / DIP Considerations
+
+The manual explicitly says operators can adjust DIP switches to tailor game duration and profitability, and recommends factory settings plus demo-with-sound for initial testing. It also notes cocktail/upright behavior in board variants discussed by arcade documentation sources. 
+
+A reverse-engine should ideally expose configurable options for:
+
+* Lives
+* Difficulty
+* Coinage
+* Demo sound
+* Cabinet mode where applicable. 
+
+---
+
+# 20. Reverse-Engineering Object Model
+
+## 20.1 Main Objects
+
+* **GameState**
+* **Stage**
+* **Vaus**
+* **Ball**
+* **Brick**
+* **Capsule**
+* **Enemy**
+* **HUD/ScoreManager**
+* **Spawn/StageFlow controller**
+* **Operator settings/config**
+
+These reflect the observed gameplay divisions and cabinet/manual structure. ([StrategyWiki][2])
+
+## 20.2 State Suggestions
+
+### Vaus
+
+* x position
+* current width/state
+* fire cooldown
+* catch enabled
+* laser enabled
+
+### Ball
+
+* x/y
+* velocity x/y
+* active flag
+* caught flag
+* source mode
+* last collider
+
+### Brick
+
+* type
+* durability
+* point value
+* active/destroyed
+
+### Capsule
+
+* type
+* x/y
+* fall speed
+* active
+
+### Enemy
+
+* type
+* x/y
+* velocity
+* active
+* hitbox
+
+### Stage
+
+* brick matrix
+* enemy schedule
+* capsule rules
+* completion test.
+
+These are inferred from documented mechanics and are the minimal structures needed for faithful behavior. ([StrategyWiki][2])
+
+---
+
+# 21. Collision Priorities
+
+A practical faithful-order collision model should handle:
+
+1. Ball vs walls
+2. Ball vs bricks
+3. Ball vs enemies
+4. Ball vs Vaus
+5. Laser vs bricks/enemies
+6. Vaus vs capsules
+7. Ball vs Break gate
+
+The most important requirement is deterministic-feeling rebound and no visually unfair tunneling at speed. This is an implementation inference based on the documented mechanics. ([StrategyWiki][2])
+
+---
+
+# 22. Game Feel Requirements
+
+To feel like Arkanoid, the remake must get these right:
+
+* Spinner movement must feel exact
+* Edge hits must produce shallow “saving” or “routing” shots
+* Ball speed changes must feel dangerous, not random
+* Laser must feel powerful but not trivialize gold/silver rules
+* Catch must enable intentional shot setup
+* Multi-ball must feel chaotic but survivable
+* Capsules must be readable and desirable instantly. ([StrategyWiki][2])
+
+If these feel wrong, the game can be mechanically complete but still not feel like Arkanoid.
+
+---
+
+# 23. Stage / Content Requirements for a Faithful Clone
+
+Minimum content for a credible reverse-engine:
+
+* Authentic stage count and order if the goal is historical recreation
+* Distinct brick maps
+* Correct colored/silver/gold placement logic
+* Correct capsule alphabet/types
+* Enemies present in stage flow
+* Break routing functionality
+* Persistent score/lives/game over loop. ([StrategyWiki][2])
+
+---
+
+# 24. QA Checklist for Reverse Engineering
+
+## 24.1 Mandatory Behavior Tests
+
+* Does center/edge Vaus impact materially change rebound angle?
+* Do colored bricks break in one hit?
+* Do gold bricks never break?
+* Do silver bricks scale hits over stage progression?
+* Do capsules fall one at a time?
+* Does Disruption suppress further capsule drops while multi-ball remains?
+* Does Break open the right-side exit and award 10,000 points?
+* Does Catch hold then release properly?
+* Does Laser obey gold/silver limitations?
+* Do enemies interfere with the ball and die to lasers?
+* Does life loss occur only when the last active ball is lost? ([StrategyWiki][2])
+
+## 24.2 Cabinet/Arcade Presentation Tests
+
+* Attract loop works
+* Coin/start flow works
+* Demo sound option works
+* Difficulty/lives options configurable
+* Control sensitivity supports spinner-style precision. 
+
+---
+
+# 25. What Makes Arkanoid Different From Generic Breakout
+
+Arkanoid stands apart because it combines:
+
+* Intentional rebound geometry
+* Hand-authored stage puzzles
+* Strong power-up identity
+* Multi-hit and indestructible bricks
+* Enemy interference
+* A sci-fi aesthetic and cabinet presence
+* A much deeper sense of “trajectory mastery” than simple paddle-ball games. ([StrategyWiki][2])
+
+---
+
+# 26. Finishing Touches / Missing Details to Include in a Production GDD
+
+For a final production-grade reverse-engine doc, add these implementation annexes:
+
+### A. Stage data sheet
+
+Per stage:
+
+* brick grid coordinates
+* color/type per tile
+* enemy spawn timing
+* capsule RNG notes
+* safe/critical angle notes
+
+### B. Physics constants sheet
+
+* Vaus speed mapping from spinner input
+* ball speed tiers
+* bounce angle table by impact zone
+* laser cadence
+* catch auto-release timing
+
+### C. Operator settings sheet
+
+* difficulty modes
+* lives
+* demo sound
+* coinage
+* cabinet mode
+
+### D. Authenticity notes
+
+* preserve arcade-visible timing over “modern polish”
+* avoid floaty movement
+* avoid random bounce noise
+* avoid overanimating the board or particles if goal is historical fidelity.
+
+These annexes are partly inferred from the original structure and would be the next step for a serious recreation. ([ARC ARC][3])
+
+---
+
+# 27. Final Reverse-Engineering Summary
+
+**Arkanoid** is a precision arcade action game built on a deceptively simple loop: keep the ball alive and clear the bricks. Its real depth comes from **impact-zone aiming, stage geometry, power-up routing, rising ball speed, and pressure created by enemies and brick durability rules**. A faithful reverse-engine should prioritize control feel and rebound logic first, then capsules, then stage/authentic content. ([StrategyWiki][2])
+
+If you want, I can do the next pass as a **strict build-ready spec** with sections like **entities, state machines, formulas, stage data schema, and pseudocode behavior rules**.
+
+[1]: https://en.wikipedia.org/wiki/Arkanoid?utm_source=chatgpt.com "Arkanoid"
+[2]: https://strategywiki.org/wiki/Arkanoid/Gameplay "Arkanoid/Gameplay — StrategyWiki | Strategy guide and game reference wiki"
+[3]: https://arcarc.xmission.com/PDF_Arcade_Manuals_and_Schematics/Arkanoid.pdf?utm_source=chatgpt.com "Arkanoid.pdf"

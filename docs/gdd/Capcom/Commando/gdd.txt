@@ -1,0 +1,511 @@
+Below is a **complete, reverse-engineered Game Design Document (GDD)** for **Commando**, expanded with **production-ready finishing details, systems, level/map layouts, and implementation notes** suitable for your repo workflow.
+
+---
+
+# 📄 gdd.txt — Commando (Reverse Engineering GDD)
+
+---
+
+## 1. GAME OVERVIEW
+
+### Title
+
+Commando (Reverse Engineered)
+
+### Genre
+
+* Run-and-Gun Shooter (Top-down vertical scrolling)
+
+### Platform Targets
+
+* Web (HTML5 Canvas / JS Engine)
+* Desktop (Electron optional)
+* Arcade-accurate timing mode
+
+### Core Pillars
+
+* **Precision movement + directional shooting**
+* **Constant forward pressure (forced scroll)**
+* **Enemy density escalation**
+* **Simple controls, high mastery ceiling**
+* **Score-driven replayability**
+
+---
+
+## 2. CORE GAMEPLAY LOOP
+
+1. Player spawns at bottom of screen
+2. Screen scrolls upward continuously
+3. Player:
+
+   * Shoots enemies (primary weapon)
+   * Throws grenades (secondary weapon)
+4. Enemies spawn in patterns
+5. Player avoids bullets, collisions
+6. Score increases from kills + rescues
+7. Player reaches end-of-level bunker
+8. Loop repeats with increased difficulty
+
+---
+
+## 3. PLAYER SYSTEM
+
+### Player Entity
+
+#### Movement
+
+* 8-directional movement
+* Constant speed (no acceleration)
+* Movement vector normalized diagonally
+
+```text
+Speed: constant (e.g., 2.5 units/frame)
+```
+
+#### Shooting
+
+* Directional shooting (independent of movement)
+* Continuous fire (button hold)
+
+```text
+Fire Rate: ~6–8 bullets/sec
+Bullet Speed: fast, straight line
+```
+
+#### Grenades
+
+* Thrown in arc forward
+* Explode on impact or max range
+
+```text
+Grenade Count: limited
+Explosion Radius: medium AoE
+```
+
+#### Hit System
+
+* 1-hit death
+* No health bar
+* Instant respawn (if lives remain)
+
+---
+
+## 4. CAMERA & SCROLL SYSTEM
+
+### Vertical Scrolling
+
+* Constant upward scroll
+* Player can move slightly down but cannot stop scroll
+
+```text
+Scroll Speed: increases per level
+```
+
+### Camera Lock
+
+* Player bounded to visible screen
+* Cannot backtrack beyond lower threshold
+
+---
+
+## 5. ENEMY SYSTEM
+
+### Enemy Types
+
+#### Basic Soldier
+
+* Walks downward
+* Occasionally fires
+
+#### Rifleman
+
+* Stops and shoots directly at player
+
+#### Grenadier
+
+* Throws grenades (arc trajectory)
+
+#### Fast Scout
+
+* Runs quickly toward player
+
+#### Stationary Turret
+
+* Fixed position
+* Rotates or fires in pattern
+
+#### Prison Guards
+
+* Protect prisoners
+
+---
+
+### AI Behavior Model
+
+```text
+State Machine:
+- Spawn
+- Move Pattern
+- Attack Trigger
+- Death
+```
+
+#### Movement Patterns
+
+* Straight line
+* Zig-zag
+* Formation-based
+
+#### Attack Logic
+
+* Line-of-sight
+* Timed fire intervals
+* Distance trigger
+
+---
+
+## 6. WEAPON SYSTEM
+
+### Player Weapons
+
+#### Primary Gun
+
+* Infinite ammo
+* Directional
+
+#### Grenades
+
+* Limited ammo
+* AoE damage
+* Destroy clusters
+
+---
+
+### Enemy Weapons
+
+* Bullets (linear trajectory)
+* Grenades (parabolic arc)
+
+---
+
+## 7. COLLISION SYSTEM
+
+### Collision Types
+
+| Type                | Result     |
+| ------------------- | ---------- |
+| Player vs Enemy     | Death      |
+| Player vs Bullet    | Death      |
+| Bullet vs Enemy     | Enemy dies |
+| Grenade vs Area     | AoE kill   |
+| Player vs Structure | Block      |
+
+### Hitboxes
+
+* Slightly smaller than sprites (arcade fairness)
+
+---
+
+## 8. SCORING SYSTEM
+
+### Points
+
+| Action             | Score    |
+| ------------------ | -------- |
+| Enemy kill         | 100      |
+| Officer kill       | 500      |
+| Prisoner rescue    | 1000     |
+| End-of-level bonus | variable |
+
+### Multipliers
+
+* Optional modern addition
+* Chain kills increase score
+
+---
+
+## 9. LEVEL DESIGN
+
+## Structure Overview
+
+Each level is a **continuous vertical strip** divided into segments:
+
+```text
+Level Length: ~3–5 minutes scroll time
+Segments: 6–10 per level
+```
+
+---
+
+## 10. MAP / LEVEL LAYOUT SYSTEM
+
+### Tile Grid
+
+```text
+Tile Size: 16x16 or 32x32
+Grid: Vertical strip (e.g., 20 x 200 tiles)
+```
+
+---
+
+## 11. LEVEL SEGMENTS (DETAILED)
+
+---
+
+### Segment Type A: Open Field
+
+![Image](https://images.openai.com/static-rsc-4/ZxqKPVUCMcBixdc6xkGdm4XgRY0ruFf3rU7Xq_oPYgwIXHR81AZTtbvfkhAETmjfivhZZagLduMTWzADKgaSBGAuXEssNAh3CNgT3PICib_420jtYZ6n3j07Kj4plt1QLEh2FaBlU6gqxLPECP7lEkTiEyJQucsrd61cuovjlv-a_nu8csvTjwLndFqS8kx2?purpose=fullsize)
+
+![Image](https://images.openai.com/static-rsc-4/dqs9DXaWIX2RMON5mOjwMEBb7RLpNhPx21F-stO9UdHOk6eP7L5ikrLyaU2PQ7Ogk_wNRnnTnNSkl1FuCgRsK-86nwZFgZCGRC7xKHX8cRPsZqsD-EoQO8oEROFBqeWa6IWZy3Hl1Xu_xaRRwzmCW1BndzMORxdErzCn_W6087C1lre98vUUsdZTfsNR-C9K?purpose=fullsize)
+
+![Image](https://images.openai.com/static-rsc-4/QXeyjHxGyvbnhOe4QN-Dyc4QIBedFQ93IqgB8xBhnNkYB9gGjqN9nm6bvHh8e73ESXVHY-VpHZBoRJzL7pgEtlxEJ6leI21kH8n6oCA-JWGapz3BayXveE5VDNDfILyUsGN50sX9YysyBDthK2c9nb28RHYYoemRbw5MxCWTFqSzm6bUKZuYmLMxMhKpKhxS?purpose=fullsize)
+
+* Sparse enemies
+* Introduces formations
+* Low bullet density
+
+---
+
+### Segment Type B: Forest Corridor
+
+![Image](https://images.openai.com/static-rsc-4/6GwZ8s8vDLH8u9KywAnx1wEtHT7QJ0t68wBsOaVcJxDzOryRMfFC6fUVGk7aSQpdP4HDEgWQ8Z4Qhe5Kcjp4TiixFn9bF0SysQ52vtzRlk3C4LKGHH1dd2A-lXKd9mDOSLIqK4a1dD0ughiDkZYPWL1eUB2MdrCyW_yH0rCLvk3XauusXGBUG9Xq7vGM99Q_?purpose=fullsize)
+
+![Image](https://images.openai.com/static-rsc-4/mLSTApQx3MBWN4lqrBNsQ-Ef93YD-7PBOq-0FTjRtJP-cjI5qEjLaMEFEbexlJ8myAPRAVGqQbGauD00RaTv276x5W7f-ZYLOdKAOYQPj6dxCl7gPBX4V3phRizNXhdUu83P6YPU3ReGzk4hP_xq35L4vDonBvoP024GxjX-uIGmZLrrnZF38DwKYJ4TAzbB?purpose=fullsize)
+
+![Image](https://images.openai.com/static-rsc-4/uUh2JIYI1VAjKzrbwQ0OUh9xL3M4CEDg69TtIrNwTxUWA6rfrK6wAjWg3tHlUww6AEoxI8y_088_T8fu5ooroX6xGsDwdUbnjjhy1VXZujDqVhypscm_NykRm4fAyptvWOSAPEZYcpRyVQJKXo1AuaS0CQ0Lfkf346yXtniMlgzrlUMglxVfOKqdgp4gupep?purpose=fullsize)
+
+* Narrow pathways
+* Trees block movement
+* Ambush enemies
+
+---
+
+### Segment Type C: Enemy Camp
+
+![Image](https://images.openai.com/static-rsc-4/SCKFd4p4vNHk4dtnk50sJI4WlREdJJhe74aFeViSeQ-mDaCSo-oWsfixLC4OtBcb3Jb4h93otdDn-O_8Y5BMD1t_EaoVGVV3o1L4MXm8XkuY2QGKlDHGqmXSTxeUiQS55cI_eKTWnmUvXEwpWrgzAr6AczzoE25CjGfpANKf3WNYgCJWbOzjBFsKbrUwmzUT?purpose=fullsize)
+
+![Image](https://images.openai.com/static-rsc-4/VRgeOzRB0FqlsZ2CjrtJO6mH39SjwclE9_5nj-Qnx4h99z_CLi0Yml8LgRPyhk9B3pyFSnIrLKUqtAYWwrIUiDBu5Z_8BV3NYhDO2-2l1qLaw04IWddNKhAV6QXdtwDo5vrZ5X2pibBGNJrA65ehdj7upwRbIHNk3RvtuGUhlzGMChvhEr6_njvQiZ56VFYo?purpose=fullsize)
+
+![Image](https://images.openai.com/static-rsc-4/QYtvu9QqADx79F2H7_KiAqokjTyT-n2XUwHQAsKbP3qBusS3GH-2-hPVF3LaJ2vJ9lXR4KRsye3vMWK-d9dkcMs--t8cBnLUOA9dmHLbGu1bSByfGZTU0z8ViJ7XcxNuzRq6Mbs2Zot56LPf_J1aQwy2V9wXPSHMH4kO49MSkyRA0b5eMNA35IzzTRbIperm?purpose=fullsize)
+
+* Prisoners appear
+* Guards defend
+* High scoring opportunity
+
+---
+
+### Segment Type D: Bridge Crossing
+
+![Image](https://images.openai.com/static-rsc-4/Zzp7QE2m2NaQVTFpQ8LLkvzudmtl5ORvG13wki-h_P3RKc-re__t_6wJUK0kgYNYdKJNLyLa987Iho6RHPbLO8CSf41jrtlFo30n47u-aozFWdOEJXjaDMK7mGYsyVr7QRPdTVhFuee7vnI7y9qw1jAcZOOdD_YJa_-MnNK6c5dC6DRhY4PN8KcOEYY2DTWS?purpose=fullsize)
+
+![Image](https://images.openai.com/static-rsc-4/ryJSaAGJzny8hioZlzNtLaPaiNfUqzy1329ERLVpXlFcjGOybloqfSe8_-edjCe1oPB79hRGb5z2nS-H49ieqmgyEu7U9cptGYzJ1vGUqSporUcaP2fcY2-Dg69vbn8N4qbdeh31d9ZT3F6sad6jQ6MFIg9Jkm5xAhLwXTkjNKVOz9oedlhJI9SgKNs2cO4r?purpose=fullsize)
+
+![Image](https://images.openai.com/static-rsc-4/o1EmhscnPZOIRIslPHjmjy8lBcm2ukImHkIibVlepH-I50fUrb92bkgXkbibInWtCdnWGXZMcDZJCSYIW9B-G9cQE69pJib1hGQEAsN9xjzMfNcJXd9BpkZ5ptIpEMlPT04o-V5PF0O5kam_GB_phFxAPzndiF991nTsRDZoXF_HQvU6O0ZyYS1M0GRFn3gc?purpose=fullsize)
+
+* Narrow choke point
+* High enemy pressure
+* Grenade-heavy strategy
+
+---
+
+### Segment Type E: Fortress Approach
+
+![Image](https://images.openai.com/static-rsc-4/8iLuI-MRFantnH2r4a6iVm3mvgrL59d7x4StZr5PJpMjLf8I_bQe0zeFwEs4fH8b1dpYAlcjes5o1MZA3mFMcy0me9iFNSHr_1ml26JL2Sm6X5FoK0Th2wf8SLKOgwRhdY-ch8-TXMbU28Twg7cF0V1S6xic1lRtzB6_XrVPoG6aDwOwBtN-RAnkbJsv3GXw?purpose=fullsize)
+
+![Image](https://images.openai.com/static-rsc-4/dqs9DXaWIX2RMON5mOjwMEBb7RLpNhPx21F-stO9UdHOk6eP7L5ikrLyaU2PQ7Ogk_wNRnnTnNSkl1FuCgRsK-86nwZFgZCGRC7xKHX8cRPsZqsD-EoQO8oEROFBqeWa6IWZy3Hl1Xu_xaRRwzmCW1BndzMORxdErzCn_W6087C1lre98vUUsdZTfsNR-C9K?purpose=fullsize)
+
+![Image](https://images.openai.com/static-rsc-4/lJb1vT8k14OOc4E7k1B72zt8929lgpY-UZiIzL4OLtUYA-GU_VK2Cf3u7UNLPLlu37NP-pSG5JzD7UToWgzCeziljZ67FO4fDwPuQE7Syn5zjwvXAs0e0gGNNBSi0IPEhvTofvukkFzapYf-OQP8s9bewatyO-iURSe4i1OwQ2TivaVAYFXml11JAtHAR10K?purpose=fullsize)
+
+* Turrets + heavy enemies
+* Increased bullet density
+
+---
+
+### Segment Type F: Final Bunker
+
+![Image](https://images.openai.com/static-rsc-4/8iLuI-MRFantnH2r4a6iVm3mvgrL59d7x4StZr5PJpMjLf8I_bQe0zeFwEs4fH8b1dpYAlcjes5o1MZA3mFMcy0me9iFNSHr_1ml26JL2Sm6X5FoK0Th2wf8SLKOgwRhdY-ch8-TXMbU28Twg7cF0V1S6xic1lRtzB6_XrVPoG6aDwOwBtN-RAnkbJsv3GXw?purpose=fullsize)
+
+![Image](https://images.openai.com/static-rsc-4/bczzTUOovZZSytsnDtoVn5E-0CEaNSOWSUigemx-tXSpDuHgFEIIDw7ZpcVpNxLORVlOYEugm0J6qP-G1jGXRrWtuqQOGTWEqTzpFGtFkYieMmsp0sE5yCgajNEH8gNv3_XMXL4HZhEDJom5St0CVc1fuKF8B6njDWnwpKJOqVnDSIQAIKG1vlngZ1pIcKNK?purpose=fullsize)
+
+* Boss-like resistance
+* Level completion trigger
+
+---
+
+## 12. LEVEL PROGRESSION
+
+### Difficulty Scaling
+
+| Level | Changes           |
+| ----- | ----------------- |
+| 1     | Intro enemies     |
+| 2     | Faster fire rate  |
+| 3     | More formations   |
+| 4+    | Mixed enemy waves |
+
+---
+
+## 13. SPAWN SYSTEM
+
+### Spawn Zones
+
+* Defined per segment
+* Triggered by scroll position
+
+### Spawn Types
+
+* Timed
+* Formation-based
+* Reactive (player proximity)
+
+---
+
+## 14. UI / HUD
+
+### Elements
+
+* Score
+* Lives
+* Grenade count
+
+### Layout
+
+```text
+Top bar HUD
+Minimalistic (arcade style)
+```
+
+---
+
+## 15. AUDIO SYSTEM
+
+### Sound Effects
+
+* Gunfire
+* Explosion
+* Enemy death
+* Rescue sound
+
+### Music
+
+* Looping per level
+* Tempo increases with intensity
+
+---
+
+## 16. GAME STATES
+
+```text
+- Title Screen
+- Start
+- Playing
+- Death
+- Level Complete
+- Game Over
+```
+
+---
+
+## 17. INPUT SYSTEM
+
+### Controls
+
+| Action  | Input             |
+| ------- | ----------------- |
+| Move    | WASD / Arrow Keys |
+| Shoot   | Hold button       |
+| Grenade | Secondary button  |
+
+---
+
+## 18. TECHNICAL IMPLEMENTATION (REVERSE ENGINEER NOTES)
+
+### Core Systems Needed
+
+* ObjectDynamic (movement + velocity)
+* Collision grid
+* Spawn manager
+* Scroll manager
+* Entity pooling (bullets/enemies)
+
+---
+
+### Performance
+
+* Use object pooling
+* Avoid per-frame allocations
+* Batch render calls
+
+---
+
+## 19. FINISHING TOUCHES (PRODUCTION READY)
+
+### Visual Polish
+
+* Bullet trails
+* Explosion animations
+* Screen shake on grenade
+
+### Gameplay Feel
+
+* Slight input buffering
+* Hit flash feedback
+* Sound layering
+
+### Arcade Authenticity
+
+* Fixed timestep mode
+* Pixel-perfect collision option
+* CRT filter (optional)
+
+---
+
+## 20. OPTIONAL MODERN ENHANCEMENTS
+
+* Save system
+* Difficulty modes
+* Leaderboards
+* Twin-stick support
+
+---
+
+## 21. TESTING CHECKLIST
+
+* Movement precision verified
+* Collision accuracy
+* Enemy spawn timing correct
+* Difficulty curve validated
+* No memory leaks
+
+---
+
+## 22. EDGE CASES
+
+* Player pinned at bottom edge
+* Grenade explosion overlap
+* Enemy spawn off-screen timing
+* Bullet clipping at boundaries
+
+---
+
+## 23. SUMMARY
+
+Commando’s design is built on:
+
+* **Relentless forward motion**
+* **Tight control + high lethality**
+* **Predictable but escalating patterns**
+
+The reverse-engineered implementation must prioritize:
+
+* **Responsiveness**
+* **Deterministic behavior**
+* **Pattern clarity**
+
+---
+
+If you want next step, I can convert this into:
+
+✅ Repo-ready **PLAN_PR → BUILD_PR ZIP (docs-only)**
+✅ Sample **level JSON format + tilemap schema**
+✅ Enemy pattern scripting system (very important for Commando feel)

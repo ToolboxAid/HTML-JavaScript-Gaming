@@ -1,0 +1,575 @@
+Below is a **full, production-grade Game Design Document (GDD)** for reverse-engineering **Bubble Bobble** (Bubble Bobble), including **bubble physics, enemy trapping system, combo scoring, item drops, stage layouts, and finishing touches** for an arcade-accurate recreation.
+
+---
+
+# 🎮 GDD — Bubble Bobble (Reverse Engineering Edition)
+
+**Document Type:** Full Technical + Design Spec
+**Target:** Faithful arcade recreation (Taito timing + mechanics)
+**Genre:** Single-Screen Platform / Action
+**Perspective:** 2D Side View (Single Arena)
+**Core Identity:** Bubble trapping + chaining combos + vertical traversal
+
+---
+
+# 1. 🧭 CORE GAME OVERVIEW
+
+## 1.1 Game Pillars
+
+* **Bubble-Based Combat**
+* **Enemy Trapping + Popping**
+* **Vertical Platform Navigation**
+* **Combo Scoring System**
+* **Co-op Gameplay**
+
+---
+
+## 1.2 Player Fantasy
+
+You are a bubble-blowing dragon trapping enemies in bubbles and popping them for points while navigating a vertical maze-like stage.
+
+---
+
+# 2. 🎮 CORE GAMEPLAY LOOP
+
+1. Spawn in stage
+2. Move across platforms
+3. Blow bubbles
+4. Trap enemies
+5. Pop bubbles to defeat enemies
+6. Collect items
+7. Clear all enemies → next level
+
+---
+
+# 3. 🧍 PLAYER SYSTEM (BUB / BOB)
+
+## 3.1 Controls
+
+* Left / Right movement
+* Jump
+* Bubble (attack)
+
+---
+
+## 3.2 Movement Model
+
+```text id="bb1k3n"
+velocityX = input * speed
+velocityY = jumpImpulse - gravity
+```
+
+---
+
+## 3.3 Movement Properties
+
+```text id="bb2p7x"
+Horizontal Speed: Moderate
+Jump Height: Fixed arc
+Air Control: Moderate
+Landing: Immediate
+```
+
+---
+
+## 3.4 Player States
+
+| State         | Description        |
+| ------------- | ------------------ |
+| Idle          | Standing           |
+| Moving        | Running            |
+| Jumping       | Air                |
+| Blowing       | Creating bubble    |
+| Riding Bubble | Standing on bubble |
+| Dead          | Life lost          |
+
+---
+
+# 4. 🫧 BUBBLE SYSTEM (CORE MECHANIC)
+
+## 4.1 Bubble Creation
+
+```text id="bb3m5c"
+press attack → spawn bubble in front of player
+```
+
+---
+
+## 4.2 Bubble Behavior
+
+```text id="bb4z9t"
+bubble floats upward
+→ interacts with environment
+→ expires after time
+```
+
+---
+
+## 4.3 Properties
+
+```text id="bb5q2w"
+Float Speed: Slow upward
+Lifetime: Limited
+Collision: Solid surface (player can stand)
+```
+
+---
+
+## 4.4 Bubble Stacking
+
+* Multiple bubbles can create temporary platforms
+
+---
+
+# 5. 🧟 ENEMY SYSTEM
+
+## 5.1 Enemy Types
+
+| Type            | Behavior         |
+| --------------- | ---------------- |
+| Zen-Chan        | Basic movement   |
+| Mighta          | Stronger         |
+| Monsta          | Fast             |
+| Invaders        | Flying           |
+| Special Enemies | Unique abilities |
+
+---
+
+## 5.2 Enemy Behavior
+
+```text id="bb6x8r"
+move → jump/fly → pursue player loosely
+```
+
+---
+
+## 5.3 Rage Mode (CRITICAL)
+
+```text id="bb7n1k"
+IF enemy not defeated quickly:
+    becomes faster/aggressive
+```
+
+---
+
+# 6. 🎯 TRAP SYSTEM
+
+## 6.1 Trapping Mechanic
+
+```text id="bb8h4s"
+bubble hits enemy → enemy trapped inside
+```
+
+---
+
+## 6.2 Trapped State
+
+```text id="bb9u6p"
+enemy immobilized
+bubble floats upward
+```
+
+---
+
+## 6.3 Escape Condition
+
+* Enemy breaks free if not popped in time
+
+---
+
+# 7. 💥 POP SYSTEM
+
+## 7.1 Behavior
+
+```text id="bb10j3d"
+player touches bubble → pop → enemy defeated
+```
+
+---
+
+## 7.2 Effects
+
+* Score awarded
+* Item drop chance
+
+---
+
+## 7.3 Chain Reaction
+
+```text id="bb11g9m"
+pop multiple bubbles → combo bonus
+```
+
+---
+
+# 8. 💎 ITEM SYSTEM
+
+## 8.1 Drop Behavior
+
+```text id="bb12b2v"
+enemy defeated → drop item
+```
+
+---
+
+## 8.2 Item Types
+
+| Type        | Effect           |
+| ----------- | ---------------- |
+| Fruit       | Score            |
+| Candy       | Speed boost      |
+| Umbrella    | Skip levels      |
+| Power Items | Modify abilities |
+
+---
+
+## 8.3 Collection
+
+```text id="bb13m7x"
+player touches item → collect → apply effect
+```
+
+---
+
+# 9. 🗺️ LEVEL SYSTEM (100 STAGES)
+
+## 9.1 Structure
+
+```text id="bb14p5q"
+single-screen levels
+platform-based layouts
+```
+
+---
+
+## 9.2 Layout Features
+
+* Platforms
+* Walls
+* Gaps
+* Vertical climbing routes
+
+---
+
+## 9.3 Difficulty Progression
+
+* More enemies
+* Complex layouts
+* Faster enemies
+
+---
+
+# 10. 🎯 COLLISION SYSTEM
+
+## 10.1 Rules
+
+| Collision        | Result     |
+| ---------------- | ---------- |
+| Player vs enemy  | Death      |
+| Player vs bubble | Stand/ride |
+| Bubble vs enemy  | Trap       |
+| Player vs item   | Collect    |
+
+---
+
+## 10.2 Hitboxes
+
+* Tight, arcade-precise
+
+---
+
+# 11. 🤝 MULTIPLAYER SYSTEM
+
+## 11.1 Co-op
+
+* Two players simultaneously
+* Shared screen
+
+---
+
+## 11.2 Interaction
+
+* Cooperative combos
+* Shared items
+
+---
+
+# 12. ⏱️ TIMER SYSTEM
+
+## 12.1 Hidden Timer
+
+```text id="bb15r8t"
+IF player too slow:
+    invincible enemies spawn
+```
+
+---
+
+## 12.2 Effect
+
+* Forces faster gameplay
+
+---
+
+# 13. 🧠 AI SYSTEM
+
+## 13.1 Enemy States
+
+```text id="bb16t2y"
+Move
+Jump
+Chase
+Trapped
+Rage
+```
+
+---
+
+## 13.2 Behavior
+
+* Semi-random movement
+* Occasional pursuit
+
+---
+
+# 14. 🎲 RNG SYSTEM
+
+* Item drops
+* Enemy behavior variation
+
+---
+
+# 15. 🎵 AUDIO DESIGN
+
+## Music
+
+* Cheerful looping theme
+
+---
+
+## SFX
+
+* Bubble pop
+* Enemy trapped
+* Item collection
+
+---
+
+# 16. 🎨 VISUAL DESIGN
+
+## Style
+
+* Bright, colorful
+* Cartoon-like sprites
+
+---
+
+## Effects
+
+* Bubble animation
+* Floating physics illusion
+
+---
+
+# 17. ⚙️ TECHNICAL SYSTEMS
+
+## Frame Rate
+
+* ~60 FPS
+
+---
+
+## Physics
+
+* Simple gravity + float behavior
+
+---
+
+## Input
+
+* Immediate response
+
+---
+
+# 18. 🧪 DIFFICULTY DESIGN
+
+## Core Drivers
+
+* Enemy count
+* Rage mode timing
+* Level complexity
+
+---
+
+## Difficulty Curve
+
+* Gradual → very fast-paced
+
+---
+
+# 19. 🧩 REVERSE ENGINEERING NOTES
+
+## MUST MATCH
+
+* Bubble float timing
+* Trap duration
+* Rage trigger timing
+* Combo scoring
+
+---
+
+## QUIRKS TO PRESERVE
+
+* Floaty bubble physics
+* Sudden enemy aggression
+* Tight movement control
+
+---
+
+# 20. 🧠 AI STATES
+
+```text id="bb17v9n"
+Spawn
+Move
+Attack
+Trapped
+Escape
+```
+
+---
+
+# 21. 🧪 TESTING CHECKLIST
+
+* [ ] Bubble system works correctly
+* [ ] Enemy trapping behaves properly
+* [ ] Pop system accurate
+* [ ] Item drops correct
+* [ ] Level progression correct
+* [ ] Collision detection precise
+
+---
+
+# 22. ✨ FINISHING TOUCHES (POLISH)
+
+## 22.1 Arcade Feel
+
+* Responsive controls
+* Smooth bubble motion
+
+---
+
+## 22.2 Visual Polish
+
+* Clear bubble visibility
+* Bright colors
+
+---
+
+## 22.3 Audio Polish
+
+* Satisfying pop sound
+* Cheerful music loop
+
+---
+
+## 22.4 UX Rules
+
+* Minimal UI
+* Instant restart
+
+---
+
+## 22.5 Authentic “Frustrations”
+
+* Escaping enemies
+* Tight timing windows
+* Increasing chaos late game
+
+---
+
+# 23. 🧾 DATA STRUCTURES
+
+## Player
+
+```text id="bb18w3f"
+x, y
+velocityX, velocityY
+state
+```
+
+---
+
+## Bubble
+
+```text id="bb19x6g"
+x, y
+state
+lifetime
+containsEnemy
+```
+
+---
+
+## Enemy
+
+```text id="bb20y9h"
+type
+x, y
+state
+rage
+```
+
+---
+
+## Item
+
+```text id="bb21z2j"
+type
+x, y
+effect
+```
+
+---
+
+## Game
+
+```text id="bb22a5k"
+level
+score
+lives
+enemyCount
+```
+
+---
+
+# 24. 🏁 SUCCESS CRITERIA
+
+A correct recreation should:
+
+* Feel **smooth and playful**
+* Reward **combo chaining**
+* Maintain **constant upward movement flow**
+* Match **Bubble Bobble arcade experience**
+
+---
+
+# 🔚 FINAL SUMMARY
+
+This GDD captures:
+
+* Full **bubble physics system**
+* Detailed **enemy trapping mechanics**
+* Complete **item + combo systems**
+* Accurate **level progression**
+* Authentic **Bubble Bobble arcade feel**
+
+---
+
+## 🚀 Next Step (auto-aligned with your repo workflow)
+
+I will generate next:
+
+* ✅ **Bubble physics + timing tables**
+* ✅ **Enemy rage trigger data**
+* ✅ **Level layout definitions (tilemaps)**
+* ✅ **PLAN_PR → BUILD_PR ZIP (docs-only, Codex-ready)**

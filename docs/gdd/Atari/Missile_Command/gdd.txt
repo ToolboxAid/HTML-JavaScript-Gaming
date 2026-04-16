@@ -1,0 +1,456 @@
+Here’s a **complete, production-level GDD** for reverse engineering **Missile Command** — written as a **gdd.txt-style document**, including deep systems, map layouts, and finishing polish sections.
+
+---
+
+# 📄 gdd.txt — Missile Command (Reverse Engineering Edition)
+
+---
+
+## 1. OVERVIEW
+
+### 1.1 Game Summary
+
+Missile Command is a real-time defensive arcade game where the player protects six cities from waves of incoming ballistic threats using three missile bases. The game emphasizes reaction time, predictive aiming, and resource management.
+
+### 1.2 Core Pillars
+
+* **Precision Targeting** — Predict trajectories, not positions
+* **Resource Scarcity** — Limited ammo drives tension
+* **Escalation Pressure** — Increasing wave complexity
+* **Inevitable Failure Curve** — Game is designed to overwhelm
+
+---
+
+## 2. GAMEPLAY LOOP
+
+### 2.1 Primary Loop
+
+```
+Detect incoming threats →
+Aim and launch interceptor →
+Trigger explosion →
+Destroy threats within blast radius →
+Manage ammo →
+Survive wave →
+Score + bonus →
+Next wave (harder)
+```
+
+### 2.2 Failure Loop
+
+```
+Miss interception →
+City destroyed →
+Lose defensive coverage →
+Increased pressure →
+All cities destroyed →
+Game Over
+```
+
+---
+
+## 3. PLAYER SYSTEMS
+
+### 3.1 Input
+
+* Cursor targeting (mouse/trackball equivalent)
+* 3 fire buttons mapped to:
+
+  * Left Base
+  * Center Base
+  * Right Base
+
+### 3.2 Missile Launch Logic
+
+* Missile originates from selected base
+* Travels in straight line toward cursor
+* Cannot retarget after launch
+* Travel time is finite → requires lead prediction
+
+---
+
+## 4. DEFENSE STRUCTURES
+
+### 4.1 Missile Bases (3)
+
+| Base   | Position  | Ammo |
+| ------ | --------- | ---- |
+| Left   | Far left  | ~10  |
+| Center | Middle    | ~10  |
+| Right  | Far right | ~10  |
+
+* Destroyable by enemy hits
+* Ammo tied to base existence
+
+### 4.2 Cities (6)
+
+* Static targets between bases
+* No offensive capability
+* Required for scoring bonuses
+
+---
+
+## 5. ENEMY SYSTEMS
+
+### 5.1 Enemy Types
+
+#### 5.1.1 Ballistic Missiles
+
+* Spawn from top
+* Travel downward (linear path)
+* Primary threat
+
+#### 5.1.2 Smart Bombs
+
+* Zig-zag or adjust trajectory
+* Harder to intercept
+
+#### 5.1.3 Bombers
+
+* Horizontal movement
+* Drop additional missiles
+
+#### 5.1.4 Satellites
+
+* High altitude
+* Split into multiple threats
+
+---
+
+## 6. INTERCEPTION MECHANICS
+
+### 6.1 Explosion Behavior
+
+* Triggered when missile reaches target
+* Expands outward (circle)
+* Shrinks after peak
+
+### 6.2 Collision Detection
+
+* Any enemy inside radius → destroyed
+* Chain reactions possible
+
+### 6.3 Timing Curve
+
+* Early detonation = smaller coverage
+* Late detonation = risk of missing
+
+---
+
+## 7. PHYSICS MODEL
+
+### 7.1 Missile Movement
+
+```
+dx = target.x - base.x
+dy = target.y - base.y
+normalize vector
+apply constant speed
+```
+
+### 7.2 Explosion Radius Growth
+
+```
+radius += growth_rate per frame
+max_radius reached
+radius decreases until zero
+```
+
+---
+
+## 8. LEVEL STRUCTURE
+
+### 8.1 Wave Design
+
+Each level increases:
+
+* Enemy count
+* Enemy speed
+* Smart bomb frequency
+
+### 8.2 Difficulty Ramp Example
+
+| Level | Missiles | Smart Bombs | Speed     |
+| ----- | -------- | ----------- | --------- |
+| 1     | 10       | 0           | Slow      |
+| 3     | 15       | 2           | Medium    |
+| 5     | 20       | 5           | Fast      |
+| 8+    | 30+      | 10+         | Very Fast |
+
+---
+
+## 9. MAP / SCREEN LAYOUT
+
+### 9.1 Coordinate System
+
+* 2D screen (top = spawn zone, bottom = defense zone)
+* Y increases downward
+
+---
+
+### 9.2 Layout Diagram
+
+```
+TOP (Enemy Spawn Zone)
+----------------------------------------
+|   ↓   ↓    ↓     ↓    ↓     ↓       |
+|                                      |
+|        (mid-air interception zone)   |
+|                                      |
+|   C   C   B   C   B   C   C          |
+|                                      |
+BOTTOM (Player Defense Line)
+```
+
+Legend:
+
+* C = City
+* B = Missile Base
+
+---
+
+### 9.3 Exact Placement Model
+
+Normalized screen width: 0 → 1
+
+```
+Cities:
+0.10, 0.20, 0.40, 0.60, 0.80, 0.90
+
+Bases:
+0.30 (Left Base)
+0.50 (Center Base)
+0.70 (Right Base)
+```
+
+---
+
+## 10. TARGETING SYSTEM
+
+### 10.1 Cursor Behavior
+
+* Instant movement
+* No inertia
+
+### 10.2 Predictive Aim
+
+Player must account for:
+
+* Missile travel time
+* Enemy speed
+* Explosion delay
+
+---
+
+## 11. RESOURCE MANAGEMENT
+
+### 11.1 Ammo
+
+* Limited per base
+* Cannot replenish mid-wave
+
+### 11.2 End-of-Level Bonuses
+
+* Surviving cities
+* Remaining missiles
+
+---
+
+## 12. SCORING SYSTEM
+
+| Action             | Points |
+| ------------------ | ------ |
+| Destroy missile    | 25     |
+| Destroy smart bomb | 50     |
+| Destroy bomber     | 100    |
+| Save city          | 100    |
+
+---
+
+## 13. GAME STATES
+
+### 13.1 State Machine
+
+```
+INIT →
+START →
+PLAYING →
+WAVE_COMPLETE →
+BONUS →
+NEXT_WAVE →
+GAME_OVER
+```
+
+---
+
+## 14. AUDIO DESIGN
+
+### 14.1 Sound Types
+
+* Missile launch (sharp tone)
+* Explosion (low boom)
+* City destruction (distortion)
+* Background tension loop
+
+---
+
+## 15. VISUAL DESIGN
+
+### 15.1 Style
+
+* Vector graphics
+* Neon lines on black background
+
+### 15.2 Effects
+
+* Expanding circles
+* Flickering city destruction
+* Trail lines for missiles
+
+---
+
+## 16. AI / SPAWN SYSTEM
+
+### 16.1 Spawn Logic
+
+```
+for each wave:
+  spawn missiles at random X
+  assign random target (city/base)
+```
+
+### 16.2 Smart Targeting
+
+* Prefer cities over bases
+* Occasional clustering for difficulty spikes
+
+---
+
+## 17. DIFFICULTY SYSTEM
+
+### 17.1 Scaling Variables
+
+* Enemy count
+* Speed multiplier
+* Spawn frequency
+
+### 17.2 Pressure Mechanics
+
+* Fewer cities = harder defense angles
+* Ammo depletion forces prioritization
+
+---
+
+## 18. EDGE CASES
+
+* All bases destroyed → no shooting possible
+* Missile reaches destroyed city → no effect
+* Simultaneous explosions stack effects
+
+---
+
+## 19. TECHNICAL IMPLEMENTATION NOTES (FOR REVERSE ENGINEERING)
+
+### 19.1 Core Classes
+
+* `Missile`
+* `Explosion`
+* `City`
+* `Base`
+* `EnemySpawner`
+
+### 19.2 Update Loop
+
+```
+update():
+  move missiles
+  check collisions
+  update explosions
+  remove expired objects
+```
+
+---
+
+## 20. UX / FEEL (CRITICAL)
+
+### 20.1 Latency Sensitivity
+
+* Must feel instant input response
+
+### 20.2 Satisfaction Drivers
+
+* Chain explosions
+* Last-second saves
+* High-risk targeting
+
+---
+
+## 21. FINISHING TOUCHES (POLISH)
+
+### 21.1 Juice Effects
+
+* Screen shake on large explosions
+* Slight glow on explosion edges
+* Trail fade for missiles
+
+### 21.2 Feedback
+
+* Visual flash when city destroyed
+* Sound pitch variation per explosion size
+
+### 21.3 Psychological Pressure
+
+* Increase spawn clustering late game
+* Slight delay before impact for tension
+
+---
+
+## 22. OPTIONAL MODERN ENHANCEMENTS (KEEP CLASSIC MODE PURE)
+
+* Slow-motion on near misses
+* Heat-map targeting assist (toggle)
+* Combo scoring system
+
+---
+
+## 23. TESTING REQUIREMENTS
+
+### 23.1 Must Validate
+
+* Collision accuracy
+* Explosion radius consistency
+* Input responsiveness
+
+### 23.2 Balance Tests
+
+* Ammo sufficiency per wave
+* Difficulty curve fairness
+
+---
+
+## 24. SUCCESS CRITERIA
+
+* Matches original pacing
+* Feels increasingly overwhelming
+* Rewards skill, not randomness
+
+---
+
+## 25. FINAL DESIGN NOTES
+
+Missile Command is not about winning —
+it is about **lasting longer under inevitable loss**.
+
+The design must:
+
+* Feel fair
+* Escalate relentlessly
+* Reward mastery of prediction
+
+---
+
+If you want next step, I can:
+
+* Break this into **engine-ready class contracts**
+* Create a **pixel-perfect clone spec**
+* Or convert this into your repo **PLAN_PR → BUILD_PR ZIP bundle**

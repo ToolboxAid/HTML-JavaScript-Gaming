@@ -1,0 +1,574 @@
+Below is a **full, production-grade Game Design Document (GDD)** for reverse-engineering **NBA Jam** (Midway, 1993), including **2v2 gameplay systems, arcade physics, AI behavior, dunk mechanics, “On Fire” system, and finishing touches** for an arcade-accurate recreation.
+
+---
+
+# 🎮 GDD — NBA Jam (Reverse Engineering Edition)
+
+**Document Type:** Full Technical + Design Spec
+**Target:** Faithful arcade recreation (Midway JAM engine feel)
+**Genre:** Arcade Sports (Basketball)
+**Perspective:** 2.5D Isometric Court
+**Core Identity:** Over-the-top basketball + exaggerated physics + fast-paced scoring
+
+---
+
+# 1. 🧭 CORE GAME OVERVIEW
+
+## 1.1 Game Pillars
+
+* **Fast, High-Scoring Gameplay**
+* **Arcade Physics (Non-Realistic)**
+* **Big Moments (Dunks, Blocks, Fire Mode)**
+* **Simple Controls, High Skill Ceiling**
+* **2v2 Competitive Play**
+
+---
+
+## 1.2 Player Fantasy
+
+You are a larger-than-life NBA player performing outrageous dunks, blocks, and streaks in a high-energy arcade basketball game.
+
+---
+
+# 2. 🎮 CORE GAMEPLAY LOOP
+
+1. Tip-off
+2. Possession begins
+3. Move, pass, shoot, or dunk
+4. Score points
+5. Defense switches
+6. Repeat until timer ends
+7. Highest score wins
+
+---
+
+# 3. 🧍 PLAYER SYSTEM
+
+## 3.1 Team Structure
+
+* 2 players per team (2v2)
+* One controlled, one AI (or co-op)
+
+---
+
+## 3.2 Movement System
+
+### Axes
+
+* X/Y movement on court plane
+
+---
+
+### Properties
+
+```text
+Speed: Fast (arcade)
+Acceleration: Instant
+Turning: Sharp (no inertia)
+```
+
+---
+
+## 3.3 Player States
+
+| State    | Description      |
+| -------- | ---------------- |
+| Idle     | Standing         |
+| Running  | Movement         |
+| Jumping  | In-air           |
+| Shooting | Shot animation   |
+| Dunking  | Slam animation   |
+| Blocking | Defensive jump   |
+| Stealing | Attempting steal |
+| On Fire  | Powered state    |
+
+---
+
+# 4. 🏀 CORE GAMEPLAY SYSTEMS
+
+---
+
+## 4.1 Ball Handling
+
+### Possession Rules
+
+* Ball sticks to player
+* No dribbling simulation complexity
+
+---
+
+### Passing
+
+```text
+Press pass → ball transfers instantly
+```
+
+---
+
+## 4.2 Shooting System
+
+### Shot Types
+
+* Jump shot
+* Layup
+* Dunk
+
+---
+
+### Shot Calculation
+
+```text
+successChance =
+    baseChance
+    + timingBonus
+    - defenderPenalty
+```
+
+---
+
+### Timing Window
+
+* Peak jump = best success
+
+---
+
+---
+
+## 4.3 Dunk System (SIGNATURE)
+
+### Trigger Conditions
+
+```text
+IF near hoop AND velocity high:
+    trigger dunk animation
+```
+
+---
+
+### Behavior
+
+* Overrides normal shot
+* High success rate
+* Cinematic camera zoom (optional)
+
+---
+
+---
+
+## 4.4 Blocking System
+
+### Rules
+
+* Jump near shooter
+* Timing determines success
+
+---
+
+### Outcome
+
+* Block shot
+* Ball deflects
+
+---
+
+---
+
+## 4.5 Steal System
+
+```text
+Press steal near opponent
+→ chance to steal ball
+```
+
+---
+
+### Risk
+
+* Failed steal = vulnerability
+
+---
+
+# 5. 🔥 “ON FIRE” SYSTEM (CRITICAL FEATURE)
+
+## 5.1 Activation
+
+```text
+IF player scores 3 consecutive shots:
+    enter ON FIRE mode
+```
+
+---
+
+## 5.2 Effects
+
+| Effect             | Description             |
+| ------------------ | ----------------------- |
+| Unlimited turbo    | No stamina drain        |
+| Increased accuracy | Shots almost guaranteed |
+| Visual flames      | Player on fire          |
+| Commentary         | “He’s on fire!”         |
+
+---
+
+## 5.3 Reset Conditions
+
+* Miss shot
+* Opponent scores
+
+---
+
+# 6. ⚡ TURBO SYSTEM
+
+## 6.1 Behavior
+
+* Temporary speed boost
+
+---
+
+## 6.2 Rules
+
+```text
+Turbo drains meter
+Recharges slowly
+```
+
+---
+
+# 7. 🧠 AI SYSTEM
+
+## 7.1 Teammate AI
+
+### Behavior
+
+```text
+move to open space
+→ receive pass
+→ shoot if open
+```
+
+---
+
+## 7.2 Opponent AI
+
+### Defense
+
+```text
+guard nearest player
+→ attempt steal
+→ block shots
+```
+
+---
+
+### Offense
+
+```text
+move toward basket
+→ shoot or dunk
+```
+
+---
+
+# 8. 🎯 COLLISION SYSTEM
+
+## 8.1 Player Collision
+
+* Light pushback
+* No complex physics
+
+---
+
+## 8.2 Ball Collision
+
+* Hits rim/backboard
+* Bounces with exaggerated physics
+
+---
+
+# 9. 🏟️ COURT SYSTEM
+
+## 9.1 Layout
+
+```text
+Half court → full court → basket zones
+```
+
+---
+
+## 9.2 Boundaries
+
+* Out of bounds resets play
+
+---
+
+## 9.3 Zones
+
+* Paint (dunk zone)
+* Perimeter (shooting zone)
+
+---
+
+# 10. ⏱️ GAME FLOW SYSTEM
+
+## 10.1 Match Structure
+
+* 4 quarters (or timed halves depending version)
+
+---
+
+## 10.2 Clock
+
+* Continuous countdown
+
+---
+
+## 10.3 Possession Change
+
+* After score
+* After steal
+* After rebound
+
+---
+
+# 11. 🎲 RNG SYSTEM
+
+* Shot variance
+* AI decision variation
+* Bounce randomness
+
+---
+
+# 12. 🎵 AUDIO DESIGN
+
+## Music
+
+* High-energy hip-hop/arcade loops
+
+---
+
+## Commentary (CRITICAL)
+
+* “Boomshakalaka!”
+* “He’s on fire!”
+
+---
+
+## SFX
+
+* Rim clang
+* Net swish
+* Crowd reactions
+
+---
+
+# 13. 🎨 VISUAL DESIGN
+
+## Style
+
+* Digitized player sprites
+* Bright arcade colors
+
+---
+
+## Animation
+
+* Exaggerated dunks
+* Big air jumps
+
+---
+
+# 14. ⚙️ TECHNICAL SYSTEMS
+
+## Frame Rate
+
+* ~60 FPS
+
+---
+
+## Input
+
+* Immediate
+* No buffering
+
+---
+
+## Physics
+
+* Simplified, exaggerated
+
+---
+
+# 15. 🧪 DIFFICULTY DESIGN
+
+## Core Drivers
+
+* AI aggressiveness
+* Shot timing precision
+* Defensive pressure
+
+---
+
+## Difficulty Curve
+
+* Adjustable via AI skill
+
+---
+
+# 16. 🧩 REVERSE ENGINEERING NOTES
+
+## MUST MATCH
+
+* Dunk trigger conditions
+* On Fire activation timing
+* Shot success curve
+* Turbo behavior
+
+---
+
+## QUIRKS TO PRESERVE
+
+* Rubber-band AI (some versions)
+* Unrealistic jump height
+* High dunk frequency
+
+---
+
+# 17. 🧠 AI STATES
+
+```text
+Idle
+Move
+Attack
+Defend
+Shoot
+Recover
+```
+
+---
+
+# 18. 🧪 TESTING CHECKLIST
+
+* [ ] Dunk triggers correctly
+* [ ] On Fire activates after 3 shots
+* [ ] Turbo drains/recharges correctly
+* [ ] AI behaves properly
+* [ ] Shot timing works
+* [ ] Collision feels arcade-like
+
+---
+
+# 19. ✨ FINISHING TOUCHES (POLISH)
+
+## 19.1 Arcade Feel
+
+* Fast pace
+* No realism constraints
+
+---
+
+## 19.2 Visual Polish
+
+* Big animations
+* Clear ball visibility
+
+---
+
+## 19.3 Audio Polish
+
+* Signature commentary timing
+* Crowd intensity scaling
+
+---
+
+## 19.4 UX Rules
+
+* Immediate gameplay
+* Minimal menus
+
+---
+
+## 19.5 Authentic “Frustrations”
+
+* AI comeback mechanics
+* Missed open shots
+* Defensive steals
+
+---
+
+# 20. 🧾 DATA STRUCTURES
+
+## Player
+
+```text
+x, y
+velocity
+state
+onFire
+turboMeter
+```
+
+---
+
+## Ball
+
+```text
+x, y
+velocity
+owner
+state
+```
+
+---
+
+## Team
+
+```text
+players[]
+score
+```
+
+---
+
+## Game
+
+```text
+timer
+possession
+state
+```
+
+---
+
+# 21. 🏁 SUCCESS CRITERIA
+
+A correct recreation should:
+
+* Feel **fast and over-the-top**
+* Reward **timing and positioning**
+* Capture **arcade spectacle**
+* Match **NBA Jam pacing exactly**
+
+---
+
+# 🔚 FINAL SUMMARY
+
+This GDD captures:
+
+* Full **arcade basketball system**
+* Detailed **dunk + shot mechanics**
+* Complete **AI and gameplay flow**
+* Accurate **On Fire + Turbo systems**
+* Authentic **NBA Jam feel and chaos**
+
+---
+
+## 🚀 Next Step (perfect for your repo workflow)
+
+I can generate:
+
+* Frame-accurate **shot timing curves**
+* Exact **dunk trigger zones + physics**
+* Full **AI behavior tables**
+* Or a **PLAN_PR → BUILD_PR ZIP (docs-only, Codex-ready)**
+
+Just say: **“build the PR”** and I’ll package it exactly how you want.

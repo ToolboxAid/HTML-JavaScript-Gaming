@@ -1,0 +1,501 @@
+Below is a **full, production-grade Game Design Document (GDD)** for reverse-engineering **Pole Position** (Namco, 1982), including **pseudo-3D road system, handling physics, qualifying system, AI traffic, lap timing, and finishing touches** for an arcade-accurate recreation.
+
+---
+
+# 🎮 GDD — Pole Position (Reverse Engineering Edition)
+
+**Document Type:** Full Technical + Design Spec
+**Target:** Faithful arcade recreation (Namco pseudo-3D racer feel)
+**Genre:** Arcade Racing / Time Trial
+**Perspective:** Rear Chase Camera (Pseudo-3D projection)
+**Core Identity:** Precision driving + time pressure + technical track mastery
+
+---
+
+# 1. 🧭 CORE GAME OVERVIEW
+
+## 1.1 Game Pillars
+
+* **Precision Driving**
+* **Pseudo-3D Road Illusion**
+* **Time Trial Progression**
+* **Traffic Avoidance**
+* **Track Memorization**
+
+---
+
+## 1.2 Player Fantasy
+
+You are a Formula 1 driver racing against time and traffic, mastering a technical track with tight control and speed.
+
+---
+
+# 2. 🎮 CORE GAMEPLAY LOOP
+
+1. Qualifying lap begins
+2. Drive track as fast as possible
+3. Avoid traffic and obstacles
+4. Reach finish line within time
+5. Earn position
+6. Enter race mode
+7. Complete laps before timer expires
+
+---
+
+# 3. 🚗 PLAYER SYSTEM
+
+## 3.1 Controls
+
+* Steering (left/right)
+* Accelerator
+* Brake
+* Gear shift (Low / High)
+
+---
+
+## 3.2 Movement Model (ARCADE PHYSICS)
+
+```text id="pp1x9k"
+velocity += acceleration (based on gear)
+velocity -= friction
+velocity -= brakeForce
+```
+
+---
+
+## 3.3 Gear System (CRITICAL)
+
+### Low Gear
+
+```text id="pp2m4a"
+highAcceleration
+lowTopSpeed
+```
+
+---
+
+### High Gear
+
+```text id="pp3v7q"
+lowerAcceleration
+higherTopSpeed
+```
+
+---
+
+## 3.4 Steering Model
+
+```text id="pp4z2s"
+turnRate = baseTurn * (1 - speedFactor)
+```
+
+* Higher speed → harder to steer
+* Sharp curves require braking
+
+---
+
+## 3.5 Player States
+
+| State    | Description     |
+| -------- | --------------- |
+| Driving  | Normal          |
+| Off-road | Reduced control |
+| Crashing | Explosion       |
+| Finished | Lap complete    |
+
+---
+
+# 4. 🛣️ ROAD SYSTEM (PSEUDO-3D CORE)
+
+## 4.1 Projection Model
+
+### Concept
+
+* Road rendered as scaled horizontal segments
+
+---
+
+### Formula
+
+```text id="pp5n8e"
+screenY = projection(distance)
+scale = perspectiveFactor / distance
+```
+
+---
+
+## 4.2 Road Segments
+
+```text id="pp6r1t"
+segment:
+    curvature
+    elevation
+    length
+```
+
+---
+
+## 4.3 Curves
+
+* Road bends left/right
+* Requires steering compensation
+
+---
+
+## 4.4 Elevation
+
+* Hills affect visibility
+* Crest hides upcoming turns
+
+---
+
+# 5. ⏱️ TIME SYSTEM (CORE MECHANIC)
+
+## 5.1 Countdown Timer
+
+```text id="pp7k3w"
+timer -= deltaTime
+```
+
+---
+
+## 5.2 Checkpoint System
+
+* Passing checkpoints adds time
+
+---
+
+## 5.3 Failure
+
+* Timer reaches zero → game over
+
+---
+
+# 6. 🏁 LAP SYSTEM
+
+## 6.1 Structure
+
+* Multi-lap race
+
+---
+
+## 6.2 Completion
+
+* Complete required laps before time expires
+
+---
+
+# 7. 🚦 TRAFFIC SYSTEM
+
+## 7.1 Opponent Cars
+
+* AI-controlled vehicles
+* Move along track
+
+---
+
+## 7.2 Behavior
+
+```text id="pp8d5y"
+follow lane
+→ adjust speed
+→ occasional lane shift
+```
+
+---
+
+## 7.3 Density
+
+* Increases over time
+
+---
+
+# 8. 🎯 COLLISION SYSTEM
+
+## 8.1 Rules
+
+| Collision           | Result   |
+| ------------------- | -------- |
+| Player vs car       | Crash    |
+| Player vs billboard | Crash    |
+| Player off-road     | Slowdown |
+
+---
+
+## 8.2 Crash Behavior
+
+```text id="pp9f2x"
+velocity = 0
+trigger explosion animation
+delay recovery
+```
+
+---
+
+# 9. 🚧 OFF-ROAD SYSTEM
+
+## 9.1 Behavior
+
+```text id="pp10g6z"
+IF offRoad:
+    speed -= penalty
+    steering reduced
+```
+
+---
+
+## 9.2 Risk
+
+* Difficult recovery at high speed
+
+---
+
+# 10. 🧠 AI SYSTEM
+
+## 10.1 Opponent Behavior
+
+* Follow racing line
+* Adjust speed to simulate competition
+
+---
+
+## 10.2 Simplicity
+
+* No advanced racing logic
+* Focus on obstacle role
+
+---
+
+# 11. 🎲 RNG SYSTEM
+
+* Traffic placement
+* Minor AI variation
+
+---
+
+# 12. 🎵 AUDIO DESIGN
+
+## Music
+
+* Intro theme
+
+---
+
+## SFX
+
+* Engine pitch (gear-based)
+* Tire screech
+* Crash explosion
+
+---
+
+# 13. 🎨 VISUAL DESIGN
+
+## Style
+
+* Bright pseudo-3D road
+* Scaling sprites
+
+---
+
+## Key Features
+
+* Roadside billboards
+* Horizon scaling
+* Depth illusion
+
+---
+
+# 14. ⚙️ TECHNICAL SYSTEMS
+
+## Frame Rate
+
+* ~60 FPS target
+
+---
+
+## Rendering
+
+* Scanline-style road rendering
+* Sprite scaling
+
+---
+
+## Input
+
+* Analog-style steering preferred
+
+---
+
+# 15. 🧪 DIFFICULTY DESIGN
+
+## Core Drivers
+
+* Time pressure
+* Curve difficulty
+* Traffic density
+
+---
+
+## Difficulty Curve
+
+* Gradual increase
+* Late-game tight margins
+
+---
+
+# 16. 🧩 REVERSE ENGINEERING NOTES
+
+## MUST MATCH
+
+* Road curvature feel
+* Gear impact on speed
+* Timer pacing
+* Collision penalties
+
+---
+
+## QUIRKS TO PRESERVE
+
+* Sudden crashes
+* Tight turning at high speed
+* Limited recovery time
+
+---
+
+# 17. 🧠 AI STATES
+
+```text id="pp11h3n"
+Cruise
+AdjustSpeed
+Avoid
+```
+
+---
+
+# 18. 🧪 TESTING CHECKLIST
+
+* [ ] Steering feels correct
+* [ ] Gear shifting works
+* [ ] Road rendering accurate
+* [ ] Timer behaves correctly
+* [ ] Traffic AI consistent
+* [ ] Collision penalties correct
+
+---
+
+# 19. ✨ FINISHING TOUCHES (POLISH)
+
+## 19.1 Arcade Feel
+
+* Responsive steering
+* No realism constraints
+
+---
+
+## 19.2 Visual Polish
+
+* Smooth road scaling
+* Clear curve readability
+
+---
+
+## 19.3 Audio Polish
+
+* Engine pitch tied to gear
+* Impactful crash sound
+
+---
+
+## 19.4 UX Rules
+
+* Quick restart
+* Minimal UI
+
+---
+
+## 19.5 Authentic “Frustrations”
+
+* Tight turns at high speed
+* Sudden collisions
+* Time pressure
+
+---
+
+# 20. 🧾 DATA STRUCTURES
+
+## Player
+
+```text id="pp12j7p"
+x, z
+velocity
+gear
+state
+```
+
+---
+
+## Track Segment
+
+```text id="pp13k9r"
+curvature
+elevation
+length
+```
+
+---
+
+## Traffic Car
+
+```text id="pp14m2t"
+lane
+z
+speed
+state
+```
+
+---
+
+## Game
+
+```text id="pp15n4v"
+lap
+timer
+position
+```
+
+---
+
+# 21. 🏁 SUCCESS CRITERIA
+
+A correct recreation should:
+
+* Feel **precise and challenging**
+* Reward **track memorization**
+* Maintain **constant time pressure**
+* Match **Pole Position handling exactly**
+
+---
+
+# 🔚 FINAL SUMMARY
+
+This GDD captures:
+
+* Full **pseudo-3D racing system**
+* Detailed **gear + speed mechanics**
+* Complete **traffic and collision system**
+* Accurate **time trial gameplay**
+* Authentic **arcade driving feel**
+
+---
+
+## 🚀 Next Step (perfect for your repo workflow)
+
+I can generate:
+
+* Full **track segment definitions (JSON)**
+* **Pseudo-3D projection math spec**
+* **Gear + speed tuning tables**
+* Or a **PLAN_PR → BUILD_PR ZIP (docs-only, Codex-ready)**
+
+Just say: **“build the PR”** and I’ll package it exactly how you want.

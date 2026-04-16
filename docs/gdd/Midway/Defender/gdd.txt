@@ -1,0 +1,564 @@
+Below is a **full, production-grade Game Design Document (GDD)** for reverse-engineering *Defender* (Williams Electronics, 1981), including **free-flight physics, radar system, humanoid capture logic, enemy AI, world wrap, and finishing touches** for an arcade-accurate recreation.
+
+---
+
+# 🎮 GDD — Defender (Reverse Engineering Edition)
+
+**Document Type:** Full Technical + Design Spec
+**Target:** Faithful arcade recreation (Williams hardware feel)
+**Genre:** Horizontal Scrolling Shoot ’em Up (Free-flight)
+**Perspective:** Side-view, continuous scrolling world (wraparound)
+**Core Identity:** High-speed control + multitasking + rescue mechanics
+
+---
+
+# 1. 🧭 CORE GAME OVERVIEW
+
+## 1.1 Game Pillars
+
+* **Full 360° Flight Control**
+* **Human Rescue Priority System**
+* **High-Speed Threat Management**
+* **World Wrap Navigation**
+* **Radar Awareness**
+
+---
+
+## 1.2 Player Fantasy
+
+You pilot a defense ship protecting humanoids from alien abduction across a hostile planetary surface.
+
+---
+
+# 2. 🎮 CORE GAMEPLAY LOOP
+
+1. Spawn into scrolling world
+2. Patrol terrain (left/right)
+3. Monitor radar for threats
+4. Destroy enemies
+5. Rescue falling humanoids
+6. Prevent mutations
+7. Clear wave → next wave (increased difficulty)
+8. Death → respawn (reduced safety)
+
+---
+
+# 3. 🚀 PLAYER SYSTEM
+
+## 3.1 Movement (FREE-FLIGHT — CRITICAL)
+
+### Controls
+
+* Thrust (accelerate forward)
+* Reverse (optional depending version)
+* Rotate (not full rotation; directional thrust)
+* Smart Bomb
+* Fire
+* Hyperspace
+
+---
+
+## 3.2 Movement Model
+
+```text id="jv7q4x"
+velocityX += thrust * direction
+velocityX -= drag
+```
+
+---
+
+### Properties
+
+```text id="3y1k8w"
+Max Speed: High
+Acceleration: Gradual
+Inertia: Significant
+Deceleration: Slow (momentum-heavy)
+```
+
+---
+
+## 3.3 Flight Feel (VERY IMPORTANT)
+
+* Ship does NOT stop instantly
+* Overshooting targets is common
+* Requires anticipation
+
+---
+
+## 3.4 Player States
+
+| State      | Description       |
+| ---------- | ----------------- |
+| Flying     | Normal control    |
+| Rescuing   | Carrying humanoid |
+| Exploding  | Death             |
+| Hyperspace | Teleport state    |
+
+---
+
+# 4. 🔫 WEAPON SYSTEM
+
+## 4.1 Primary Weapon
+
+* Rapid-fire laser
+* Horizontal direction only
+
+---
+
+## 4.2 Smart Bomb
+
+### Behavior
+
+* Destroys all visible enemies
+
+---
+
+### Constraints
+
+```text id="z4q0ph"
+limitedUsesPerWave
+```
+
+---
+
+## 4.3 Hyperspace
+
+### Behavior
+
+* Teleports player to random location
+
+---
+
+### Risk
+
+* Chance of death on exit (in some versions)
+
+---
+
+# 5. 🧍 HUMANOID SYSTEM (CORE MECHANIC)
+
+## 5.1 Humanoid States
+
+| State    | Description         |
+| -------- | ------------------- |
+| Idle     | Standing on ground  |
+| Abducted | Carried by lander   |
+| Falling  | Dropped             |
+| Rescued  | Carried by player   |
+| Dead     | Hit ground or enemy |
+
+---
+
+## 5.2 Rescue Flow
+
+```text id="z3o8m4"
+Lander captures humanoid
+→ lifts upward
+→ player shoots lander
+→ humanoid falls
+→ player catches
+→ return to ground safely
+```
+
+---
+
+## 5.3 Failure Case
+
+```text id="pg1gk3"
+IF humanoid reaches top:
+    mutate into mutant enemy
+```
+
+---
+
+# 6. 🧟 ENEMY SYSTEM
+
+## 6.1 Enemy Types
+
+### Landers
+
+* Capture humanoids
+* Float slowly
+
+---
+
+### Mutants
+
+* Fast, aggressive
+* Result of failed rescue
+
+---
+
+### Baiters
+
+* Appear if player stalls
+* Chase player aggressively
+
+---
+
+### Bombers
+
+* Drop mines
+
+---
+
+### Pods
+
+* Split into swarm enemies
+
+---
+
+### Swarmers
+
+* Fast small enemies
+
+---
+
+## 6.2 AI Behavior
+
+### Landers
+
+```text id="76mbh6"
+seek humanoid
+→ capture
+→ ascend
+```
+
+---
+
+### Mutants
+
+```text id="r1bb2q"
+target player
+→ fast pursuit
+```
+
+---
+
+### Baiters
+
+```text id="x09q3d"
+spawn after delay
+→ directly attack player
+```
+
+---
+
+# 7. 🌍 WORLD SYSTEM
+
+## 7.1 Continuous World (CRITICAL)
+
+* Horizontal wraparound
+* No hard edges
+
+---
+
+## 7.2 Wrap Logic
+
+```text id="d3cc1q"
+IF playerX > worldWidth:
+    playerX = 0
+IF playerX < 0:
+    playerX = worldWidth
+```
+
+---
+
+## 7.3 Terrain
+
+* Ground surface
+* Mountains
+* Obstacles (visual + collision)
+
+---
+
+# 8. 🛰️ RADAR SYSTEM
+
+## 8.1 Purpose
+
+* Displays entire world compressed
+
+---
+
+## 8.2 Elements
+
+* Player
+* Enemies
+* Humanoids
+
+---
+
+## 8.3 Behavior
+
+```text id="0qk6kz"
+radarX = entityX / worldWidth * radarWidth
+```
+
+---
+
+# 9. 🎯 COLLISION SYSTEM
+
+## 9.1 Player Rules
+
+* Collision = death
+
+---
+
+## 9.2 Bullet Rules
+
+* Hits destroy enemies
+* Limited projectile lifespan
+
+---
+
+## 9.3 Terrain Collision
+
+* Player hitting terrain = death
+
+---
+
+# 10. ⏱️ WAVE SYSTEM
+
+## 10.1 Wave Structure
+
+* Set number of enemies
+* Increasing difficulty
+
+---
+
+## 10.2 Wave Completion
+
+* All enemies destroyed OR
+* Mutations resolved
+
+---
+
+# 11. 🎲 RNG SYSTEM
+
+* Enemy spawn timing
+* Hyperspace destination
+* Mutation timing
+
+---
+
+# 12. 🎵 AUDIO DESIGN
+
+## Music
+
+* Minimal (arcade style)
+
+## SFX
+
+* Laser fire
+* Explosion
+* Humanoid scream
+* Radar blips
+
+---
+
+# 13. 🎨 VISUAL DESIGN
+
+## Style
+
+* Vector-inspired graphics
+* High contrast objects
+
+---
+
+## Animation
+
+* Smooth flight
+* Explosion effects
+
+---
+
+# 14. ⚙️ TECHNICAL SYSTEMS
+
+## Frame Rate
+
+* ~60 FPS
+
+## Determinism
+
+* Semi-deterministic with RNG elements
+
+---
+
+# 15. 🧪 DIFFICULTY DESIGN
+
+## Core Drivers
+
+* Speed
+* Multitasking (rescue + combat)
+* Enemy escalation
+
+---
+
+## Difficulty Curve
+
+* Rapid increase
+* Overwhelming late waves
+
+---
+
+# 16. 🧩 REVERSE ENGINEERING NOTES
+
+## MUST MATCH
+
+* Flight inertia
+* World wrap behavior
+* Radar accuracy
+* Humanoid rescue timing
+
+---
+
+## QUIRKS TO PRESERVE
+
+* High speed difficulty
+* Disorientation from wrap
+* Hyperspace risk
+
+---
+
+# 17. 🧠 AI SYSTEM
+
+## States
+
+```text id="p5b6xv"
+Idle
+Seek
+Attack
+Capture
+Mutate
+```
+
+---
+
+# 18. 🧪 TESTING CHECKLIST
+
+* [ ] Flight physics correct
+* [ ] Wraparound seamless
+* [ ] Radar accurate
+* [ ] Humanoid rescue works
+* [ ] Enemy AI behaves correctly
+* [ ] Smart bomb functions properly
+
+---
+
+# 19. ✨ FINISHING TOUCHES (POLISH)
+
+## 19.1 Arcade Feel
+
+* High-speed responsiveness
+* No smoothing
+
+---
+
+## 19.2 Visual Polish
+
+* Clear radar readability
+* Bright enemy indicators
+
+---
+
+## 19.3 Audio Polish
+
+* Distinct alerts (mutants, baiters)
+* Immediate feedback
+
+---
+
+## 19.4 UX Rules
+
+* Minimal UI
+* Focus on radar + action
+
+---
+
+## 19.5 Authentic “Frustrations”
+
+* Overwhelming speed
+* Hard-to-track enemies
+* Risky hyperspace
+
+---
+
+# 20. 🧾 DATA STRUCTURES
+
+## Player
+
+```text id="xvb3yj"
+x, y
+velocity
+state
+smartBombs
+```
+
+---
+
+## Humanoid
+
+```text id="53y2mf"
+x, y
+state
+carrier
+```
+
+---
+
+## Enemy
+
+```text id="7r8fpa"
+type
+x, y
+state
+target
+```
+
+---
+
+## Level
+
+```text id="v3z6cd"
+worldWidth
+terrainMap
+enemyList
+humanoidList
+```
+
+---
+
+# 21. 🏁 SUCCESS CRITERIA
+
+A correct recreation should:
+
+* Feel **fast and overwhelming**
+* Require **constant awareness**
+* Match **flight physics exactly**
+* Preserve **rescue tension**
+
+---
+
+# 🔚 FINAL SUMMARY
+
+This GDD captures:
+
+* Full **free-flight movement system**
+* Detailed **humanoid rescue mechanics**
+* Complete **enemy behaviors**
+* Accurate **world wrap and radar system**
+* Authentic **arcade intensity and chaos**
+
+---
+
+## 🚀 Next Step (perfect for your repo workflow)
+
+I can generate:
+
+* Frame-accurate **enemy spawn + mutation tables**
+* Exact **flight physics constants**
+* Full **world + radar mapping JSON**
+* Or a **PLAN_PR → BUILD_PR ZIP (docs-only, Codex-ready)**
+
+Just say: **“build the PR”** and I’ll package it exactly to your workflow.

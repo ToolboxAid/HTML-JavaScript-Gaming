@@ -1,0 +1,476 @@
+Below is a **complete, production-ready Game Design Document (GDD)** for reverse-engineering *Paperboy*, including expanded systems, level/map layouts, and finishing touches.
+
+---
+
+# **GDD.TXT — PAPERBOY (Reverse Engineering Spec)**
+
+---
+
+# **1. GAME OVERVIEW**
+
+**Title:** Paperboy (Reverse Engineered)
+**Genre:** Arcade / Action / Delivery Simulation
+**Perspective:** Isometric / 3/4 angled scrolling
+**Platform Target:** HTML5 Canvas / Web (expandable to desktop/mobile)
+**Core Loop:**
+Deliver newspapers → avoid obstacles → maintain subscribers → survive full week
+
+---
+
+# **2. CORE GAMEPLAY PILLARS**
+
+1. **Precision Movement**
+
+   * Tight bicycle control with inertia
+   * Lane positioning is critical
+
+2. **Risk vs Reward**
+
+   * Safe delivery vs stunt paths
+   * Bonus points for risky actions
+
+3. **Pattern Recognition**
+
+   * Obstacles and hazards follow patterns
+   * Player mastery improves survival
+
+4. **Chaos Simulation**
+
+   * Neighborhood feels alive and unpredictable
+
+---
+
+# **3. PLAYER MECHANICS**
+
+## **3.1 Movement System**
+
+* Constant forward scrolling (auto-advance)
+* Player can:
+
+  * Move left/right (horizontal axis)
+  * Slight forward/back adjustment (depth illusion)
+* Speed:
+
+  * Base speed increases per day
+  * Optional sprint mechanic (temporary boost)
+
+## **3.2 Controls**
+
+* Arrow Keys / WASD:
+
+  * Left/Right → lane movement
+  * Up → speed boost
+  * Down → brake
+* Action:
+
+  * Throw paper (directional or forward)
+  * Trick button (optional advanced feature)
+
+## **3.3 Physics**
+
+* Momentum-based movement
+* Collision reactions:
+
+  * Bounce (light)
+  * Crash (heavy → knockdown)
+* Recovery delay after crash
+
+---
+
+# **4. DELIVERY SYSTEM**
+
+## **4.1 Subscribers**
+
+* Marked houses (visual indicator)
+* Must receive newspaper
+
+## **4.2 Non-Subscribers**
+
+* Optional targets
+* Can be:
+
+  * Ignored
+  * Harassed (bonus points)
+
+## **4.3 Delivery Rules**
+
+* Hit mailbox or porch
+* Miss:
+
+  * Break window → penalty
+  * Lose subscriber
+
+## **4.4 Paper Inventory**
+
+* Limited number per level
+* Running out = failure risk
+
+---
+
+# **5. LEVEL STRUCTURE**
+
+## **5.1 Week Progression**
+
+* Monday → Sunday
+* Difficulty increases daily:
+
+  * Speed
+  * Obstacles
+  * Enemy frequency
+
+## **5.2 Level Flow**
+
+1. Start screen (day intro)
+2. Main delivery route
+3. End-of-level obstacle course
+
+---
+
+# **6. MAP DESIGN (CRITICAL SECTION)**
+
+## **6.1 Core Layout Structure**
+
+The map is a **vertical scrolling corridor** divided into:
+
+```
+[LEFT SIDEWALK] [LAWN + HOUSE] [STREET] [LAWN + HOUSE] [RIGHT SIDEWALK]
+```
+
+### **Lane Breakdown**
+
+* Left sidewalk
+* Left yard
+* Street center
+* Right yard
+* Right sidewalk
+
+---
+
+## **6.2 Tile Grid System**
+
+* Grid-based but visually smooth
+* Suggested tile size: 32x32 or 64x64
+
+### **Tile Types**
+
+* Road tiles
+* Sidewalk tiles
+* Grass tiles
+* Driveway tiles
+* House plots
+
+---
+
+## **6.3 House Layout Variants**
+
+Each house has:
+
+* Mailbox position
+* Window hitbox
+* Porch delivery zone
+
+### Example:
+
+```
+| Lawn | Mailbox | Driveway | House | Window |
+```
+
+---
+
+## **6.4 Procedural + Pattern Hybrid**
+
+Map uses:
+
+* Predefined chunks (authentic feel)
+* Randomized elements (replayability)
+
+---
+
+## **6.5 Obstacle Zones**
+
+### Static Obstacles
+
+* Trash cans
+* Fire hydrants
+* parked cars
+
+### Dynamic Obstacles
+
+* Dogs (chase player)
+* Cars (cross street)
+* NPC pedestrians
+* Skateboarders
+
+---
+
+## **6.6 Hazard Timing System**
+
+* Obstacles triggered by:
+
+  * Distance traveled
+  * Timed intervals
+  * Player position
+
+---
+
+## **6.7 End-of-Level Obstacle Course**
+
+Separate map:
+
+* Linear challenge section
+* Includes:
+
+  * Ramps
+  * Narrow paths
+  * Instant-fail hazards
+
+---
+
+# **7. OBJECT SYSTEM**
+
+## **7.1 Object Types**
+
+### Player
+
+* Bicycle + rider
+* State machine:
+
+  * Riding
+  * Crashing
+  * Recovering
+
+### Paper
+
+* Projectile
+* Physics arc
+* Collision detection
+
+### Environment Objects
+
+* Static vs dynamic
+
+---
+
+## **7.2 Collision System**
+
+### Collision Types:
+
+* Player vs obstacle
+* Paper vs mailbox
+* Paper vs window
+
+### Hit Outcomes:
+
+* Success
+* Miss
+* Penalty
+
+---
+
+# **8. SCORING SYSTEM**
+
+## **8.1 Points**
+
+* Successful delivery
+* Bonus hits (windows, targets)
+* Tricks
+
+## **8.2 Penalties**
+
+* Missing subscriber
+* Crashing
+* Breaking wrong objects
+
+## **8.3 Combo System (Optional Enhancement)**
+
+* Consecutive successful deliveries = multiplier
+
+---
+
+# **9. DIFFICULTY SCALING**
+
+| Day | Speed | Obstacles | Aggression |
+| --- | ----- | --------- | ---------- |
+| Mon | Low   | Few       | Low        |
+| Tue | Low   | More      | Low        |
+| Wed | Med   | Moderate  | Medium     |
+| Thu | Med   | Heavy     | Medium     |
+| Fri | High  | Heavy     | High       |
+| Sat | High  | Very High | High       |
+| Sun | Max   | Chaos     | Extreme    |
+
+---
+
+# **10. AI SYSTEMS**
+
+## **10.1 Pedestrian AI**
+
+* Random walk
+* Cross street behavior
+
+## **10.2 Dog AI**
+
+* Trigger when near yard
+* Chase player with acceleration
+
+## **10.3 Vehicle AI**
+
+* Spawn off-screen
+* Cross predictable lanes
+
+---
+
+# **11. AUDIO DESIGN**
+
+## **11.1 SFX**
+
+* Paper throw
+* Glass break
+* Crash
+* Dog bark
+* Bicycle movement
+
+## **11.2 Music**
+
+* Looping upbeat track
+* Intensity increases per day
+
+---
+
+# **12. UI / UX**
+
+## **12.1 HUD**
+
+* Papers remaining
+* Score
+* Subscribers left
+* Day indicator
+
+## **12.2 Feedback**
+
+* Visual:
+
+  * Hit flashes
+  * Particle effects
+* Audio:
+
+  * Positive/negative cues
+
+---
+
+# **13. TECHNICAL ARCHITECTURE (FOR YOUR REPO)**
+
+## **13.1 Core Classes (Suggested)**
+
+* `PlayerBike` (extends ObjectDynamic)
+* `PaperProjectile`
+* `House`
+* `Mailbox`
+* `Obstacle`
+* `EnemyAI`
+
+## **13.2 Systems**
+
+* Collision System
+* Spawn System
+* Map Chunk Loader
+* Event Trigger System
+
+---
+
+# **14. RENDERING**
+
+## **14.1 Camera**
+
+* Locked forward scroll
+* Slight horizontal follow
+
+## **14.2 Layering**
+
+1. Background
+2. Ground tiles
+3. Houses
+4. Obstacles
+5. Player
+6. Effects
+
+---
+
+# **15. FINISHING TOUCHES (POLISH — CRITICAL)**
+
+## **15.1 Juice / Feel**
+
+* Screen shake on crash
+* Paper spin animation
+* Dust trails behind bike
+
+## **15.2 Visual Polish**
+
+* Parallax background
+* Animated lawns (subtle movement)
+* Lighting shifts per day
+
+## **15.3 Game Feel**
+
+* Input buffering
+* Slight aim assist for throws
+* Responsive recovery after crashes
+
+---
+
+# **16. EXTENSIONS (MODERN ENHANCEMENTS)**
+
+* Leaderboards
+* Endless mode
+* Custom neighborhoods
+* Power-ups:
+
+  * Rapid fire papers
+  * Shield
+  * Slow motion
+
+---
+
+# **17. TESTING CHECKLIST**
+
+* [ ] All houses reachable
+* [ ] No unavoidable obstacles
+* [ ] Difficulty curve smooth
+* [ ] Collision accuracy consistent
+* [ ] Paper physics predictable
+
+---
+
+# **18. SUCCESS CRITERIA**
+
+* Player can:
+
+  * Complete full week
+  * Maintain subscribers
+  * Improve score with skill
+
+* Game feels:
+
+  * Fast
+  * Chaotic
+  * Fair
+
+---
+
+# **19. FINAL NOTES**
+
+This reverse-engineered version must:
+
+* Preserve arcade feel
+* Maintain tight controls
+* Emphasize skill mastery over randomness
+
+---
+
+If you want next step, I can convert this into:
+
+* **Repo-ready PLAN_PR bundle (Paperboy sample implementation)**
+* **Tilemap + parallax data format for your editors**
+* **Object class breakdown aligned with your existing ObjectDynamic/ObjectKillable system**
+
+Just say the word.

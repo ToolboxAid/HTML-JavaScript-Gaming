@@ -1,0 +1,556 @@
+Below is a **full, production-grade Game Design Document (GDD)** for reverse-engineering **Altered Beast** (Altered Beast), including **transformation system, power-up orbs, enemy AI, stage progression, combat flow, and finishing touches** for an arcade-accurate recreation.
+
+---
+
+# 🎮 GDD — Altered Beast (Reverse Engineering Edition)
+
+**Document Type:** Full Technical + Design Spec
+**Target:** Faithful arcade recreation (Sega System 16 feel)
+**Genre:** Side-Scrolling Beat ’em Up / Action
+**Perspective:** 2.5D Side View (Lane-Based Depth)
+**Core Identity:** Power-up transformation + rhythmic combat + mythic bosses
+
+---
+
+# 1. 🧭 CORE GAME OVERVIEW
+
+## 1.1 Game Pillars
+
+* **Transformation-Based Power Progression**
+* **Lane-Based Brawler Combat**
+* **Enemy Wave Encounters**
+* **Boss-Focused Stages**
+* **Arcade Spectacle + Audio**
+
+---
+
+## 1.2 Player Fantasy
+
+You are a resurrected warrior empowered by Zeus, defeating enemies to absorb energy and transform into powerful beasts to defeat stage bosses.
+
+---
+
+# 2. 🎮 CORE GAMEPLAY LOOP
+
+1. Spawn in stage
+2. Move forward through environment
+3. Defeat enemies
+4. Collect power orbs
+5. Transform into beast
+6. Fight boss
+7. Complete stage → next level
+
+---
+
+# 3. 🧍 PLAYER SYSTEM
+
+## 3.1 Controls
+
+* Left / Right (movement)
+* Up / Down (lane movement)
+* Punch
+* Kick
+* Jump
+
+---
+
+## 3.2 Movement Model
+
+```text
+velocityX = inputX * speed
+velocityY = inputY * laneSpeed
+jumpArc = fixed
+```
+
+---
+
+## 3.3 Movement Properties
+
+```text
+Horizontal Speed: Moderate
+Lane Movement: Discrete or smooth (limited depth)
+Jump Height: Fixed arc
+```
+
+---
+
+## 3.4 Player States
+
+| State        | Description |
+| ------------ | ----------- |
+| Idle         | Standing    |
+| Walking      | Moving      |
+| Attacking    | Punch/Kick  |
+| Jumping      | Air         |
+| Hit          | Stagger     |
+| Knocked Down | Ground      |
+| Transformed  | Beast mode  |
+| Dead         | Life lost   |
+
+---
+
+# 4. 💥 COMBAT SYSTEM
+
+## 4.1 Attack Types
+
+| Type          | Description       |
+| ------------- | ----------------- |
+| Punch         | Fast              |
+| Kick          | Stronger          |
+| Jump Attack   | Aerial            |
+| Beast Attacks | Special abilities |
+
+---
+
+## 4.2 Combo Behavior
+
+* Limited chaining
+* Rhythm-based attacks
+
+---
+
+## 4.3 Hit Detection
+
+```text
+attackHitbox overlaps enemyHurtbox → apply damage
+```
+
+---
+
+## 4.4 Knockback
+
+* Enemies pushed back on hit
+* Some attacks cause knockdown
+
+---
+
+# 5. ⚡ POWER-UP SYSTEM (CORE MECHANIC)
+
+## 5.1 Orb System
+
+```text
+defeat specific enemies → drop orb
+collect orb → increase power level
+```
+
+---
+
+## 5.2 Power Levels
+
+| Orbs Collected | State     |
+| -------------- | --------- |
+| 0              | Normal    |
+| 1              | Powered   |
+| 2              | Strong    |
+| 3              | Transform |
+
+---
+
+## 5.3 Transformation (SIGNATURE)
+
+```text
+IF orbs == 3:
+    trigger transformation
+```
+
+---
+
+## 5.4 Effects
+
+* Increased strength
+* Special attacks
+* New abilities
+
+---
+
+# 6. 🐺 BEAST FORMS
+
+## 6.1 Examples
+
+| Form     | Ability            |
+| -------- | ------------------ |
+| Werewolf | Energy projectiles |
+| Dragon   | Lightning          |
+| Bear     | Heavy strength     |
+| Tiger    | Rapid attacks      |
+
+---
+
+## 6.2 Behavior
+
+* Different attack patterns
+* Higher damage output
+
+---
+
+## 6.3 Duration
+
+* Until boss defeated or hit limit reached
+
+---
+
+# 7. 🧟 ENEMY SYSTEM
+
+## 7.1 Enemy Types
+
+| Type    | Behavior        |
+| ------- | --------------- |
+| Zombies | Basic attackers |
+| Wolves  | Fast            |
+| Demons  | Ranged          |
+| Mutants | Strong          |
+
+---
+
+## 7.2 Behavior Model
+
+```text
+spawn → approach → attack → retreat → repeat
+```
+
+---
+
+## 7.3 Spawn System
+
+* Enemies appear in waves
+* Some rise from ground
+
+---
+
+# 8. 👑 BOSS SYSTEM
+
+## 8.1 Structure
+
+* End of each stage
+
+---
+
+## 8.2 Behavior
+
+```text
+pattern-based attacks
+→ vulnerable windows
+```
+
+---
+
+## 8.3 Examples
+
+* Neff (main villain transformations)
+
+---
+
+## 8.4 Weakness
+
+* Specific timing or beast abilities required
+
+---
+
+# 9. 🎯 COLLISION SYSTEM
+
+## 9.1 Rules
+
+| Collision               | Result       |
+| ----------------------- | ------------ |
+| Player attack vs enemy  | Damage       |
+| Enemy attack vs player  | Damage       |
+| Player vs enemy contact | Minor damage |
+
+---
+
+## 9.2 Depth Alignment
+
+* Must align on same lane to hit
+
+---
+
+# 10. 🗺️ LEVEL SYSTEM
+
+## 10.1 Structure
+
+```text
+start → enemy waves → power-ups → boss → next stage
+```
+
+---
+
+## 10.2 Environment Types
+
+* Graveyards
+* Temples
+* Mythic landscapes
+
+---
+
+## 10.3 Scrolling
+
+* Horizontal progression
+* Locked zones during fights
+
+---
+
+# 11. 🧠 AI SYSTEM
+
+## 11.1 Enemy States
+
+```text
+Idle
+Approach
+Attack
+Hit
+Recover
+```
+
+---
+
+## 11.2 Boss AI
+
+* Pattern-based
+* Increasing aggression
+
+---
+
+# 12. 🎲 RNG SYSTEM
+
+* Enemy spawn variation
+* Attack timing variation
+
+---
+
+# 13. 🎵 AUDIO DESIGN
+
+## Music
+
+* Dramatic, looping tracks
+
+---
+
+## SFX
+
+* Punch/kick impacts
+* Transformation roar (“POWER UP!”)
+* Enemy sounds
+
+---
+
+# 14. 🎨 VISUAL DESIGN
+
+## Style
+
+* Large sprites
+* Mythological theme
+
+---
+
+## Effects
+
+* Transformation animation
+* Energy attacks
+* Explosion effects
+
+---
+
+# 15. ⚙️ TECHNICAL SYSTEMS
+
+## Frame Rate
+
+* ~60 FPS
+
+---
+
+## Rendering
+
+* Sprite-based
+* Layered backgrounds
+
+---
+
+## Input
+
+* Immediate response
+
+---
+
+# 16. 🧪 DIFFICULTY DESIGN
+
+## Core Drivers
+
+* Enemy density
+* Power-up timing
+* Boss difficulty
+
+---
+
+## Difficulty Curve
+
+* Gradual → intense boss fights
+
+---
+
+# 17. 🧩 REVERSE ENGINEERING NOTES
+
+## MUST MATCH
+
+* Orb drop timing
+* Transformation trigger behavior
+* Enemy spawn pacing
+* Boss attack patterns
+
+---
+
+## QUIRKS TO PRESERVE
+
+* Limited combo depth
+* Repetitive enemy waves
+* Dramatic transformations
+
+---
+
+# 18. 🧠 AI STATES
+
+```text
+Spawn
+Move
+Attack
+Hit
+Die
+```
+
+---
+
+# 19. 🧪 TESTING CHECKLIST
+
+* [ ] Combat feels correct
+* [ ] Orb system works properly
+* [ ] Transformation triggers correctly
+* [ ] Enemy AI behaves properly
+* [ ] Boss fights function correctly
+* [ ] Collision detection accurate
+
+---
+
+# 20. ✨ FINISHING TOUCHES (POLISH)
+
+## 20.1 Arcade Feel
+
+* Weighty combat
+* Strong feedback
+
+---
+
+## 20.2 Visual Polish
+
+* Dramatic transformations
+* Clear enemy readability
+
+---
+
+## 20.3 Audio Polish
+
+* Iconic voice lines
+* Impactful hits
+
+---
+
+## 20.4 UX Rules
+
+* Minimal UI
+* Immediate restart
+
+---
+
+## 20.5 Authentic “Frustrations”
+
+* Repetitive enemies
+* Limited move variety
+* Sudden damage spikes
+
+---
+
+# 21. 🧾 DATA STRUCTURES
+
+## Player
+
+```text
+x, y
+state
+powerLevel
+form
+health
+```
+
+---
+
+## Enemy
+
+```text
+type
+x, y
+state
+health
+```
+
+---
+
+## Orb
+
+```text
+x, y
+value
+```
+
+---
+
+## Boss
+
+```text
+type
+state
+pattern[]
+health
+```
+
+---
+
+## Game
+
+```text
+stage
+score
+lives
+enemyCount
+```
+
+---
+
+# 22. 🏁 SUCCESS CRITERIA
+
+A correct recreation should:
+
+* Feel **powerful and arcade-intense**
+* Reward **power-up collection timing**
+* Maintain **enemy wave pressure**
+* Match **Altered Beast arcade experience**
+
+---
+
+# 🔚 FINAL SUMMARY
+
+This GDD captures:
+
+* Full **transformation + orb system**
+* Detailed **combat + enemy AI**
+* Complete **boss structure**
+* Accurate **stage progression**
+* Authentic **Altered Beast arcade feel**
+
+---
+
+## 🚀 Next Step (auto-aligned with your repo workflow)
+
+I will generate next:
+
+* ✅ **Orb drop + transformation timing tables**
+* ✅ **Enemy spawn wave scripts**
+* ✅ **Boss pattern definitions**
+* ✅ **PLAN_PR → BUILD_PR ZIP (docs-only, Codex-ready)**

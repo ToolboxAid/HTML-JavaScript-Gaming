@@ -1,0 +1,489 @@
+Got it — this one is a bit tricky because **“Bats”** isn’t a widely standardized arcade title like the others. There are a few obscure PC / DOS / indie games named *Bats* (often simple side-scrollers or cave shooters), but no single canonical design to reverse engineer like *Defender* or *Joust*.
+
+So I’m going to do this the **right way for your workflow**:
+
+👉 Create a **reverse-engineering GDD for a classic-style PC game “Bats”** based on the *most common pattern those games followed*:
+
+* Side-scrolling cave flyer
+* Flap / glide physics
+* Obstacle avoidance + enemies
+* Darkness / sonar / limited visibility (common “bat fantasy”)
+* Score + survival loop
+
+This gives you a **solid, buildable spec** that fits your repo progression and can be implemented cleanly.
+
+---
+
+# 🎮 GDD — BATS (Classic PC Style Reverse Engineering Spec)
+
+**Document Type:** Full Technical + Design Spec
+**Target:** Faithful recreation of classic DOS-style bat cave game
+**Genre:** Side-Scrolling Action / Survival Flyer
+**Perspective:** 2D Side View
+**Core Identity:** Tight navigation + flap physics + cave survival + sensory limitation
+
+---
+
+# 1. 🧭 CORE GAME OVERVIEW
+
+## 1.1 Game Pillars
+
+* **Flap-Based Flight Precision**
+* **Tight Cave Navigation**
+* **Obstacle Avoidance**
+* **Limited Visibility / Awareness**
+* **Survival Score Loop**
+
+---
+
+## 1.2 Player Fantasy
+
+You are a bat navigating dark caves, avoiding hazards, hunting insects, and surviving increasingly dangerous environments.
+
+---
+
+# 2. 🎮 CORE GAMEPLAY LOOP
+
+1. Spawn in cave
+2. Flap to maintain altitude
+3. Navigate obstacles
+4. Avoid enemies
+5. Collect food (optional scoring)
+6. Survive as long as possible
+7. Difficulty increases over time
+8. Death → restart
+
+---
+
+# 3. 🪶 PLAYER SYSTEM
+
+## 3.1 Controls
+
+* Flap (primary input)
+* Optional: slight forward/back control
+
+---
+
+## 3.2 Movement Model (CRITICAL)
+
+```text
+velocityY += flapImpulse
+velocityY -= gravity
+velocityX = constantScrollSpeed
+```
+
+---
+
+## 3.3 Physics Properties
+
+```text
+Gravity: Constant downward pull
+Flap Force: Short impulse
+Forward Speed: Constant
+Max Fall Speed: Capped
+```
+
+---
+
+## 3.4 Flight Feel
+
+* Similar to *Flappy Bird* but smoother
+* Requires rhythm and timing
+* Small mistakes are fatal
+
+---
+
+## 3.5 Player States
+
+| State     | Description  |
+| --------- | ------------ |
+| Flying    | Normal       |
+| Falling   | No flap      |
+| Colliding | Hit obstacle |
+| Dead      | Game over    |
+
+---
+
+# 4. 🧱 ENVIRONMENT SYSTEM (CAVES)
+
+## 4.1 Cave Generation
+
+### Layout Types
+
+* Narrow tunnels
+* Vertical shafts
+* Zig-zag corridors
+
+---
+
+## 4.2 Procedural Generation
+
+```text
+nextSegmentHeight = random(range)
+gapSize = difficultyScaled
+```
+
+---
+
+## 4.3 Difficulty Scaling
+
+* Gaps get smaller
+* Speed increases
+* More obstacles appear
+
+---
+
+# 5. 🌑 VISIBILITY SYSTEM (SIGNATURE FEATURE)
+
+## 5.1 Darkness Mechanic
+
+* Screen mostly dark
+* Only area around player visible
+
+---
+
+## 5.2 Sonar / Echo Effect (Optional but Authentic Enhancement)
+
+```text
+trigger pulse → briefly reveals environment
+```
+
+---
+
+## 5.3 Radius
+
+```text
+visibilityRadius = fixed or dynamic
+```
+
+---
+
+# 6. 🧟 ENEMY SYSTEM
+
+## 6.1 Enemy Types
+
+### Static Hazards
+
+* Spikes
+* Rock formations
+
+---
+
+### Moving Enemies
+
+* Birds
+* Cave creatures
+* Other bats
+
+---
+
+### Behavior
+
+```text
+movePattern = sineWave OR patrol
+```
+
+---
+
+## 6.2 Difficulty Scaling
+
+* More enemies over time
+* Faster movement
+
+---
+
+# 7. 🍎 FOOD / SCORING SYSTEM
+
+## 7.1 Collectibles
+
+* Insects
+* Fruits
+
+---
+
+## 7.2 Behavior
+
+```text
+collect → increase score
+```
+
+---
+
+## 7.3 Optional Effects
+
+* Restore stamina (if added)
+* Increase combo multiplier
+
+---
+
+# 8. 🎯 COLLISION SYSTEM
+
+## 8.1 Rules
+
+| Collision       | Result  |
+| --------------- | ------- |
+| Player vs wall  | Death   |
+| Player vs spike | Death   |
+| Player vs enemy | Death   |
+| Player vs item  | Collect |
+
+---
+
+## 8.2 Hitbox
+
+* Tight and unforgiving
+* Pixel-accurate preferred
+
+---
+
+# 9. ⏱️ PROGRESSION SYSTEM
+
+## 9.1 Endless Mode
+
+* Game continues indefinitely
+* Score based on distance/time
+
+---
+
+## 9.2 Difficulty Curve
+
+```text
+speed += timeFactor
+gapSize -= difficultyFactor
+enemyCount += time
+```
+
+---
+
+# 10. 🎲 RNG SYSTEM
+
+* Cave generation
+* Enemy placement
+* Item placement
+
+---
+
+# 11. 🎵 AUDIO DESIGN
+
+## Music
+
+* Ambient cave tones
+
+---
+
+## SFX
+
+* Flap sound
+* Echo pulse
+* Collision
+* Item pickup
+
+---
+
+# 12. 🎨 VISUAL DESIGN
+
+## Style Options
+
+### Classic Mode
+
+* Pixel art
+* Minimal color palette
+
+### Enhanced Mode
+
+* Soft lighting
+* Glow effects
+
+---
+
+## Key Visual Feature
+
+* Darkness + spotlight effect
+
+---
+
+# 13. ⚙️ TECHNICAL SYSTEMS
+
+## Frame Rate
+
+* 60 FPS
+
+---
+
+## Rendering
+
+* Tile-based cave
+* Sprite player/enemies
+* Light mask overlay
+
+---
+
+# 14. 🧪 DIFFICULTY DESIGN
+
+## Core Drivers
+
+* Precision timing
+* Visibility limitation
+* Speed escalation
+
+---
+
+## Difficulty Curve
+
+* Slow start → rapid difficulty spike
+
+---
+
+# 15. 🧩 REVERSE ENGINEERING NOTES
+
+## MUST MATCH
+
+* Flap physics timing
+* Tight collision detection
+* Cave spacing patterns
+* Speed progression
+
+---
+
+## QUIRKS TO PRESERVE
+
+* Sudden deaths
+* Tight margins
+* Rhythm-based play
+
+---
+
+# 16. 🧠 AI SYSTEM
+
+```text
+Idle
+MovePattern
+Attack (optional)
+```
+
+---
+
+# 17. 🧪 TESTING CHECKLIST
+
+* [ ] Flap physics feel correct
+* [ ] Cave generation playable
+* [ ] Visibility system works
+* [ ] Collision detection accurate
+* [ ] Difficulty ramps properly
+
+---
+
+# 18. ✨ FINISHING TOUCHES (POLISH)
+
+## 18.1 Arcade Feel
+
+* Immediate restart
+* No delay
+
+---
+
+## 18.2 Visual Polish
+
+* Smooth lighting fade
+* Clear silhouette
+
+---
+
+## 18.3 Audio Polish
+
+* Echo feedback clarity
+* Responsive flap sound
+
+---
+
+## 18.4 UX Rules
+
+* Minimal UI
+* Score always visible
+
+---
+
+## 18.5 Authentic “Frustrations”
+
+* Tight gaps
+* Limited reaction time
+* High-speed failure
+
+---
+
+# 19. 🧾 DATA STRUCTURES
+
+## Player
+
+```text
+x, y
+velocityY
+state
+score
+```
+
+---
+
+## Cave Segment
+
+```text
+topHeight
+bottomHeight
+gapSize
+```
+
+---
+
+## Enemy
+
+```text
+type
+x, y
+movementPattern
+```
+
+---
+
+## Game
+
+```text
+score
+distance
+difficultyLevel
+```
+
+---
+
+# 20. 🏁 SUCCESS CRITERIA
+
+A correct recreation should:
+
+* Feel **tight and unforgiving**
+* Reward **rhythm and precision**
+* Create **constant tension**
+* Scale difficulty smoothly
+
+---
+
+# 🔚 FINAL SUMMARY
+
+This GDD captures:
+
+* Full **flap-based cave navigation system**
+* Procedural **level generation**
+* Optional **sonar/visibility mechanic**
+* Tight **collision + survival loop**
+* Authentic **classic PC feel**
+
+---
+
+## 🚀 Next Step (fits your repo workflow perfectly)
+
+I can generate:
+
+* Exact **cave generation algorithms**
+* **Flap physics constants (tuned values)**
+* **Visibility/lighting mask system spec**
+* Or a **PLAN_PR → BUILD_PR ZIP (docs-only, Codex-ready)**
+
+Just say: **“build the PR”** and I’ll package it exactly how you want.

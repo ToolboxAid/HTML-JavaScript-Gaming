@@ -1,0 +1,498 @@
+Below is a **complete, production-level Game Design Document (GDD)** for a **reverse-engineered Asteroids-style game**, written as if it will drive implementation. It includes **systems, physics, data structures, level progression, map logic, UI, and finishing polish details**.
+
+---
+
+# 🎮 GDD: ASTEROIDS (Reverse Engineered)
+
+**File:** `gdd.txt`
+**Version:** 1.0 (Complete Implementation Spec)
+**Genre:** Arcade Shooter
+**Perspective:** Top-down, 2D wrap-around space
+**Target:** HTML5 Canvas / JavaScript (engine-agnostic)
+
+---
+
+# 1. 🎯 GAME OVERVIEW
+
+## 1.1 Core Concept
+
+The player controls a spaceship in open space, destroying asteroids while avoiding collisions. The game operates in a **continuous wrap-around map**, with escalating difficulty through procedural level progression.
+
+## 1.2 Design Pillars
+
+* **Pure Skill-Based Gameplay**
+* **Momentum-Based Physics**
+* **Minimal UI / Maximum Feedback**
+* **Emergent Chaos from Simple Rules**
+* **Arcade Authenticity**
+
+---
+
+# 2. 🧠 CORE GAME LOOP
+
+1. Spawn player in center
+2. Spawn asteroid field
+3. Player:
+
+   * Rotates
+   * Thrusts
+   * Shoots
+4. Destroy asteroids → split into smaller ones
+5. Avoid collisions
+6. Clear all asteroids → next level
+7. Repeat with increased difficulty
+
+---
+
+# 3. 🕹️ PLAYER SYSTEM
+
+## 3.1 Ship Properties
+
+```
+position: {x, y}
+velocity: {x, y}
+rotation: angle (degrees or radians)
+rotationSpeed: constant
+thrustPower: constant
+friction: small decay (space drift)
+radius: collision size
+```
+
+## 3.2 Controls
+
+* LEFT / RIGHT → rotate
+* UP → thrust
+* SPACE → fire
+* (Optional) HYPERSPACE → random teleport
+
+## 3.3 Movement Model
+
+* Velocity accumulates (no hard cap unless enforced)
+* Thrust applies force in facing direction
+* Friction is minimal (~0.99 multiplier per frame)
+
+---
+
+# 4. 🔫 WEAPON SYSTEM
+
+## 4.1 Bullet Properties
+
+```
+speed: fixed (higher than ship max speed)
+lifetime: ~60 frames
+maxBullets: 4 (classic constraint)
+```
+
+## 4.2 Behavior
+
+* Fired in ship direction
+* Independent of ship velocity (option: additive)
+* Destroy asteroids on contact
+
+---
+
+# 5. ☄️ ASTEROID SYSTEM
+
+## 5.1 Asteroid Sizes
+
+| Size   | Radius | Speed  | Split Into |
+| ------ | ------ | ------ | ---------- |
+| Large  | 40px   | slow   | 2 Medium   |
+| Medium | 20px   | medium | 2 Small    |
+| Small  | 10px   | fast   | none       |
+
+## 5.2 Properties
+
+```
+position
+velocity (random vector)
+rotationSpeed
+shape: jagged polygon
+```
+
+## 5.3 Splitting Logic
+
+* On hit:
+
+  * Remove current asteroid
+  * Spawn 2 smaller asteroids
+  * Apply slight directional variation
+
+---
+
+# 6. 👾 ENEMY SYSTEM (OPTIONAL ADVANCED)
+
+## 6.1 UFO Types
+
+### Small UFO
+
+* Accurate shooting
+* Targets player
+
+### Large UFO
+
+* Random shooting
+
+## 6.2 Behavior
+
+* Spawn from edges
+* Move horizontally with slight vertical drift
+* Fire periodically
+
+---
+
+# 7. 🌌 WORLD / MAP SYSTEM
+
+## 7.1 Map Type
+
+* Infinite-feeling wrap-around space
+* Fixed logical bounds:
+
+```
+width: 800
+height: 600
+```
+
+## 7.2 Wrap Logic
+
+```
+if (x < 0) → x = width
+if (x > width) → x = 0
+if (y < 0) → y = height
+if (y > height) → y = 0
+```
+
+## 7.3 Rendering Duplication
+
+Objects near edges must render on opposite side:
+
+* Draw object at:
+
+  * (x, y)
+  * (x ± width, y)
+  * (x, y ± height)
+
+---
+
+# 8. 🧱 LEVEL DESIGN & PROGRESSION
+
+## 8.1 Level Formula
+
+```
+asteroidCount = 4 + level
+```
+
+## 8.2 Spawn Rules
+
+* Asteroids spawn:
+
+  * Away from player (minimum radius)
+  * Random edges or distributed
+
+## 8.3 Difficulty Scaling
+
+| Level | Changes                  |
+| ----- | ------------------------ |
+| 1–3   | Basic                    |
+| 4–6   | Faster asteroids         |
+| 7+    | UFO spawns               |
+| 10+   | Aggressive UFO targeting |
+
+## 8.4 Level Flow
+
+1. Spawn asteroids
+2. Player clears all
+3. Short delay
+4. Next level begins
+
+---
+
+# 9. 💥 COLLISION SYSTEM
+
+## 9.1 Detection
+
+* Circle-based collision
+
+```
+distance < (r1 + r2)
+```
+
+## 9.2 Collision Types
+
+* Bullet ↔ Asteroid
+* Player ↔ Asteroid
+* Player ↔ UFO
+* Bullet ↔ UFO
+
+## 9.3 Response
+
+* Destroy object
+* Trigger explosion animation
+* Update score
+
+---
+
+# 10. 🧮 SCORING SYSTEM
+
+| Action          | Points |
+| --------------- | ------ |
+| Large asteroid  | 20     |
+| Medium asteroid | 50     |
+| Small asteroid  | 100    |
+| UFO large       | 200    |
+| UFO small       | 1000   |
+
+---
+
+# 11. ❤️ LIVES & GAME STATE
+
+## 11.1 Lives
+
+* Start with 3 lives
+* Gain extra life every 10,000 points
+
+## 11.2 States
+
+```
+START_SCREEN
+PLAYING
+RESPAWN
+GAME_OVER
+LEVEL_COMPLETE
+```
+
+## 11.3 Respawn Logic
+
+* Delay (~2 seconds)
+* Check safe spawn zone
+
+---
+
+# 12. 🎨 VISUAL DESIGN
+
+## 12.1 Style
+
+* Vector / wireframe
+* White lines on black background
+
+## 12.2 Rendering
+
+* No filled shapes
+* Stroke-based drawing
+* Slight flicker (retro authenticity)
+
+## 12.3 Asteroid Shapes
+
+* Procedurally generated irregular polygons
+* 8–12 points with jitter
+
+---
+
+# 13. 🔊 AUDIO DESIGN
+
+## 13.1 Sounds
+
+* Thrust (loop)
+* Fire
+* Explosion
+* UFO hum
+* Background pulse beat (speeds up)
+
+## 13.2 Dynamic Audio
+
+* Beat tempo increases as asteroid count decreases
+
+---
+
+# 14. 🧪 PHYSICS SYSTEM
+
+## 14.1 Core Rules
+
+* No gravity
+* Momentum preserved
+* Vector-based movement
+
+## 14.2 Equations
+
+```
+velocity += thrustVector
+position += velocity
+velocity *= friction
+```
+
+---
+
+# 15. 🧱 DATA STRUCTURES
+
+## 15.1 Entity Model
+
+```
+Entity {
+  id
+  type
+  position
+  velocity
+  rotation
+  radius
+  update()
+  draw()
+}
+```
+
+## 15.2 Game Collections
+
+```
+player
+asteroids[]
+bullets[]
+ufos[]
+particles[]
+```
+
+---
+
+# 16. ✨ PARTICLE & EFFECTS SYSTEM
+
+## 16.1 Explosion
+
+* Radial particle burst
+* Velocity-based debris
+
+## 16.2 Thrust Trail
+
+* Small fading particles behind ship
+
+---
+
+# 17. 🧭 UI / HUD
+
+## 17.1 Elements
+
+* Score (top left)
+* Lives (top right)
+* Level indicator
+
+## 17.2 Typography
+
+* Vector-style font
+* Minimalist
+
+---
+
+# 18. ⚙️ GAME FEEL (CRITICAL)
+
+## 18.1 Tuning Values
+
+* Rotation speed: responsive but not instant
+* Thrust: gradual acceleration
+* Bullet speed: fast enough to feel precise
+
+## 18.2 Responsiveness
+
+* Input latency must be near zero
+* No animation delays for control
+
+---
+
+# 19. 🧪 EDGE CASES
+
+* Player spawns inside asteroid → must avoid
+* Bullet wraps correctly across edges
+* Multiple collisions in same frame handled safely
+* Max bullet limit enforced
+
+---
+
+# 20. 🧩 EXTENSIBILITY HOOKS
+
+* Power-ups (optional)
+* Shield mechanic
+* Different ship types
+* Multiplayer mode
+
+---
+
+# 21. 🏁 FINISHING TOUCHES (POLISH)
+
+## 21.1 Visual Polish
+
+* Screen shake on explosion
+* Subtle glow effect (optional modern enhancement)
+* CRT-style scanlines (optional)
+
+## 21.2 Audio Polish
+
+* Dynamic mixing based on danger level
+* Stereo panning based on position
+
+## 21.3 Gameplay Polish
+
+* Grace period after spawn
+* Slight aim assist (optional modern tweak)
+* Difficulty smoothing curve
+
+## 21.4 Authenticity Mode
+
+Toggle:
+
+* Original physics
+* Original scoring
+* Original limits (4 bullets, etc.)
+
+---
+
+# 22. 🧾 IMPLEMENTATION CHECKLIST
+
+### Core
+
+☐ Player movement
+☐ Shooting
+☐ Asteroid splitting
+☐ Collision detection
+
+### Systems
+
+☐ Wrap-around rendering
+☐ Level progression
+☐ Scoring
+
+### Polish
+
+☐ Particles
+☐ Sound
+☐ UI
+
+---
+
+# 23. 🧠 REVERSE ENGINEERING NOTES
+
+* Original game used **vector hardware**
+* Physics intentionally “loose” for skill expression
+* Difficulty increases via **speed + spawn count**, not complexity
+* Audio pacing is tied to gameplay intensity
+
+---
+
+# ✅ FINAL SUMMARY
+
+This GDD defines a **fully implementable Asteroids clone** with:
+
+* Accurate physics
+* Authentic gameplay constraints
+* Procedural level scaling
+* Wrap-around map logic
+* Complete systems coverage
+
+It is ready to drive:
+
+* Engine implementation
+* Code architecture
+* Testing and tuning
+
+---
+
+If you want next step, I can convert this into:
+
+* ✅ **Class architecture (ObjectStatic/ObjectDynamic aligned to your repo)**
+* ✅ **Exact physics constants tuned to original arcade**
+* ✅ **Sample-by-sample implementation plan (fits your repo workflow)**

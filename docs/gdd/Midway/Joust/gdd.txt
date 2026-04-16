@@ -1,0 +1,532 @@
+Below is a **full, production-grade Game Design Document (GDD)** for reverse-engineering *Joust* (Williams, 1982), including **flap-based flight physics, enemy AI tiers, egg/hatch systems, lava hazard logic, wave progression, and finishing touches** for an arcade-accurate recreation.
+
+---
+
+# 🎮 GDD — Joust (Reverse Engineering Edition)
+
+**Document Type:** Full Technical + Design Spec
+**Target:** Faithful arcade recreation (Williams feel, physics-driven)
+**Genre:** Action / Arena Platformer
+**Perspective:** 2D Side View (single-screen arena)
+**Core Identity:** Flap-based flight + altitude combat + timing mastery
+
+---
+
+# 1. 🧭 CORE GAME OVERVIEW
+
+## 1.1 Game Pillars
+
+* **Flap-Based Flight Control (NOT jumping)**
+* **Altitude-Based Combat Priority**
+* **Egg Lifecycle (kill → egg → hatch → escalation)**
+* **Arena Awareness + Wraparound**
+* **Escalating Chaos**
+
+---
+
+## 1.2 Player Fantasy
+
+You are a knight riding a flying ostrich, defeating enemy riders by striking from above while managing the battlefield.
+
+---
+
+# 2. 🎮 CORE GAMEPLAY LOOP
+
+1. Spawn in arena
+2. Flap to gain altitude
+3. Engage enemies
+4. Defeat enemies → eggs drop
+5. Collect eggs OR allow them to hatch
+6. Survive hazards (lava, pterodactyl)
+7. Clear wave → next wave (harder)
+8. Death → respawn (if lives remain)
+
+---
+
+# 3. 🪶 PLAYER SYSTEM
+
+## 3.1 Controls
+
+* Left / Right movement
+* Flap (single button)
+
+---
+
+## 3.2 Movement Model (CRITICAL)
+
+### Flap-Based Physics
+
+```text id="s8u6yy"
+velocityY += flapForce
+velocityY -= gravity
+```
+
+---
+
+### Properties
+
+```text id="2kw8zv"
+Flap Force: Fixed impulse
+Gravity: Constant downward
+Horizontal Speed: Moderate
+Inertia: Present but light
+```
+
+---
+
+## 3.3 Flight Behavior
+
+* Each flap gives upward impulse
+* No sustained lift (must flap repeatedly)
+* Falling is constant without input
+
+---
+
+## 3.4 Player States
+
+| State   | Description     |
+| ------- | --------------- |
+| Flying  | Normal movement |
+| Falling | No flap input   |
+| Landing | On platform     |
+| Hit     | Knocked         |
+| Dead    | Life lost       |
+
+---
+
+# 4. ⚔️ COMBAT SYSTEM
+
+## 4.1 Core Rule (ALTITUDE PRIORITY)
+
+```text id="c0r9az"
+IF playerY < enemyY:
+    player wins (higher position)
+ELSE:
+    player dies
+```
+
+*(Note: lower Y = higher on screen)*
+
+---
+
+## 4.2 Collision Outcome
+
+| Condition          | Result            |
+| ------------------ | ----------------- |
+| Player above enemy | Enemy defeated    |
+| Enemy above player | Player dies       |
+| Same height        | Trade / ambiguous |
+
+---
+
+## 4.3 Combat Feel
+
+* Precision timing required
+* Slight hitbox ambiguity (intentional)
+
+---
+
+# 5. 🧟 ENEMY SYSTEM
+
+## 5.1 Enemy Types
+
+### Bounder (Basic)
+
+* Erratic movement
+* Weak AI
+
+---
+
+### Hunter
+
+* Tracks player
+* Predictive movement
+
+---
+
+### Shadow Lord
+
+* Advanced AI
+* Faster and more aggressive
+
+---
+
+### Pterodactyl (Hazard Enemy)
+
+* Spawns if player stalls
+* Nearly unbeatable except specific condition
+
+---
+
+## 5.2 AI Behavior
+
+### Basic Loop
+
+```text id="8rpl9q"
+move randomly
+→ adjust altitude
+→ attempt collision
+```
+
+---
+
+### Advanced AI
+
+```text id="p5v9p1"
+track player position
+→ attempt higher altitude
+→ intercept trajectory
+```
+
+---
+
+# 6. 🥚 EGG SYSTEM (CORE MECHANIC)
+
+## 6.1 Egg Lifecycle
+
+```text id="7zdlp2"
+Enemy defeated → egg drops
+→ egg rests
+→ timer triggers
+→ hatches into stronger enemy
+```
+
+---
+
+## 6.2 Egg States
+
+| State    | Description    |
+| -------- | -------------- |
+| Fresh    | Just dropped   |
+| Idle     | Waiting        |
+| Flashing | About to hatch |
+| Hatching | Transition     |
+| Hatched  | New enemy      |
+
+---
+
+## 6.3 Player Interaction
+
+* Collect egg → score
+* Delay hatch cycle
+
+---
+
+# 7. 🌋 ENVIRONMENT SYSTEM
+
+## 7.1 Arena Layout
+
+* Single screen
+* Multiple platforms
+* Open air
+
+---
+
+## 7.2 Lava Hazard (CRITICAL)
+
+### Behavior
+
+```text id="c2jq2n"
+lava rises and falls
+IF player touches lava:
+    death
+```
+
+---
+
+### Enemy Interaction
+
+* Lava can kill enemies
+* Lava can destroy eggs
+
+---
+
+# 8. 🌍 WORLD WRAP SYSTEM
+
+## 8.1 Horizontal Wrap
+
+```text id="4b3s4k"
+IF x > screenWidth:
+    x = 0
+IF x < 0:
+    x = screenWidth
+```
+
+---
+
+## 8.2 Tactical Impact
+
+* Enables escape
+* Enables surprise attacks
+
+---
+
+# 9. ⏱️ WAVE SYSTEM
+
+## 9.1 Wave Structure
+
+* Increasing enemy count
+* Stronger enemy types introduced
+
+---
+
+## 9.2 Progression
+
+| Wave  | Change              |
+| ----- | ------------------- |
+| Early | Bounders only       |
+| Mid   | Hunters added       |
+| Late  | Shadow Lords        |
+| Stall | Pterodactyl appears |
+
+---
+
+## 9.3 Wave Completion
+
+* All enemies + eggs cleared
+
+---
+
+# 10. 🎯 COLLISION SYSTEM
+
+## 10.1 Types
+
+| Collision       | Result        |
+| --------------- | ------------- |
+| Player vs enemy | altitude rule |
+| Player vs lava  | death         |
+| Player vs egg   | collect       |
+
+---
+
+## 10.2 Hitbox Notes
+
+* Small tolerance zone
+* Slight “unfair” edge cases preserved
+
+---
+
+# 11. 🎲 RNG SYSTEM
+
+* Enemy movement randomness (Bounders)
+* Egg hatch timing slight variation
+
+---
+
+# 12. 🎵 AUDIO DESIGN
+
+## Music
+
+* Minimal / ambient
+
+## SFX
+
+* Flap sound
+* Egg hatch
+* Collision hit
+* Lava bubbling
+
+---
+
+# 13. 🎨 VISUAL DESIGN
+
+## Style
+
+* Minimalist pixel art
+* Clean silhouettes
+
+---
+
+## Animation
+
+* Flapping wings critical timing cue
+* Egg flashing indicator important
+
+---
+
+# 14. ⚙️ TECHNICAL SYSTEMS
+
+## Frame Rate
+
+* ~60 FPS
+
+## Physics
+
+* Simple impulse + gravity
+
+---
+
+# 15. 🧪 DIFFICULTY DESIGN
+
+## Core Drivers
+
+* Altitude timing precision
+* Multiple enemies at once
+* Egg management pressure
+
+---
+
+## Difficulty Curve
+
+* Gradual → exponential chaos
+
+---
+
+# 16. 🧩 REVERSE ENGINEERING NOTES
+
+## MUST MATCH
+
+* Flap impulse strength
+* Gravity feel
+* Altitude collision logic
+* Egg hatch timing
+
+---
+
+## QUIRKS TO PRESERVE
+
+* Slight collision ambiguity
+* Enemy unpredictability
+* Pterodactyl “punishment”
+
+---
+
+# 17. 🧠 AI SYSTEM STATES
+
+```text id="y4j6uq"
+Idle
+Move
+Track
+Attack
+Escape
+```
+
+---
+
+# 18. 🧪 TESTING CHECKLIST
+
+* [ ] Flap physics feel correct
+* [ ] Altitude combat resolves properly
+* [ ] Egg lifecycle accurate
+* [ ] Lava behavior correct
+* [ ] Wraparound seamless
+* [ ] Enemy AI matches patterns
+
+---
+
+# 19. ✨ FINISHING TOUCHES (POLISH)
+
+## 19.1 Arcade Feel
+
+* Tight flap response
+* No smoothing
+
+---
+
+## 19.2 Visual Polish
+
+* Clear silhouette readability
+* Egg flashing clarity
+
+---
+
+## 19.3 Audio Polish
+
+* Responsive flap feedback
+* Distinct hatch warning
+
+---
+
+## 19.4 UX Rules
+
+* Minimal UI
+* Instant restart
+
+---
+
+## 19.5 Authentic “Frustrations”
+
+* Close-call deaths
+* Egg overwhelm
+* Fast enemy escalation
+
+---
+
+# 20. 🧾 DATA STRUCTURES
+
+## Player
+
+```text id="5c8f1k"
+x, y
+velocityX, velocityY
+state
+lives
+```
+
+---
+
+## Enemy
+
+```text id="l3n2vp"
+type
+x, y
+state
+aiState
+```
+
+---
+
+## Egg
+
+```text id="m1t8r6"
+x, y
+state
+timer
+```
+
+---
+
+## Level
+
+```text id="d8k9wq"
+platforms[]
+lavaState
+enemyList
+eggList
+```
+
+---
+
+# 21. 🏁 SUCCESS CRITERIA
+
+A correct recreation should:
+
+* Feel **precise and unforgiving**
+* Reward **altitude mastery**
+* Preserve **chaotic escalation**
+* Match **flight timing exactly**
+
+---
+
+# 🔚 FINAL SUMMARY
+
+This GDD captures:
+
+* Full **flap-based flight physics**
+* Detailed **altitude combat system**
+* Complete **enemy AI hierarchy**
+* Accurate **egg lifecycle mechanics**
+* Authentic **arcade pacing and chaos**
+
+---
+
+## 🚀 Next Step (perfect for your repo workflow)
+
+I can generate:
+
+* Frame-accurate **flap + gravity constants**
+* Exact **enemy AI tuning tables**
+* Full **arena tilemap layouts**
+* Or a **PLAN_PR → BUILD_PR ZIP (docs-only, Codex-ready)**
+
+Just say: **“build the PR”** and I’ll package it exactly how you want.

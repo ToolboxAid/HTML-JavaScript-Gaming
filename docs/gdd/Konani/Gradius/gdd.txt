@@ -1,0 +1,573 @@
+Below is a **full, production-grade Game Design Document (GDD)** for reverse-engineering *Gradius* (Konami, 1985), including **scrolling systems, option mechanics, enemy waves, hit detection, level layouts, and finishing touches** for an arcade-accurate recreation.
+
+---
+
+# 🎮 GDD — Gradius (Reverse Engineering Edition)
+
+**Document Type:** Full Technical + Design Spec
+**Target:** Faithful arcade recreation (horizontal shooter, Nemesis/Gradius behavior)
+**Genre:** Side-Scrolling Shoot ’em Up (Shmup)
+**Perspective:** 2D Horizontal Scrolling
+**Core Identity:** Power-up strategy + memorization + precision control
+
+---
+
+# 1. 🧭 CORE GAME OVERVIEW
+
+## 1.1 Game Pillars
+
+* **Power-Up Bar Strategy**
+* **Precision Movement**
+* **Pattern Memorization**
+* **Scrolling Pressure**
+* **Option (Satellite) Mastery**
+
+---
+
+## 1.2 Player Fantasy
+
+You pilot the **Vic Viper**, navigating alien environments while upgrading your ship to survive overwhelming enemy forces.
+
+---
+
+# 2. 🎮 CORE GAMEPLAY LOOP
+
+1. Spawn with base ship
+2. Destroy enemies → collect capsules
+3. Build power meter
+4. Activate upgrades strategically
+5. Survive waves + terrain
+6. Defeat boss
+7. Advance to next stage
+8. Death → lose upgrades → restart from checkpoint
+
+---
+
+# 3. 🚀 PLAYER SYSTEM
+
+## 3.1 Movement
+
+### Axes
+
+* Full 8-directional movement (free movement within screen bounds)
+
+---
+
+### Movement Properties
+
+```text id="qf3l1g"
+Speed: Adjustable via power-up
+Acceleration: Instant (arcade feel)
+Bounds: Screen-limited
+```
+
+---
+
+## 3.2 Core States
+
+| State   | Description               |
+| ------- | ------------------------- |
+| Alive   | Normal play               |
+| Hit     | Explosion                 |
+| Respawn | Temporary invulnerability |
+| Powered | Active upgrades           |
+
+---
+
+# 4. 🔋 POWER-UP SYSTEM (SIGNATURE MECHANIC)
+
+## 4.1 Capsule Collection
+
+* Destroy enemies → spawn capsule
+* Collect capsule → advance power meter
+
+---
+
+## 4.2 Power Meter Slots
+
+```text id="8x2b8u"
+[Speed Up] → [Missile] → [Double] → [Laser] → [Option] → [Shield]
+```
+
+---
+
+## 4.3 Activation Rule
+
+```text id="bb4q3g"
+Collect capsule → move cursor right
+Press activate → gain selected power
+Reset cursor
+```
+
+---
+
+## 4.4 Strategy Element
+
+* Choosing when to activate is critical
+* Mis-timing leads to difficulty spikes
+
+---
+
+# 5. 🛰️ OPTION SYSTEM (CRITICAL)
+
+## 5.1 Behavior
+
+* Options replicate player shots
+* Follow player path with delay
+
+---
+
+## 5.2 Position Logic
+
+```text id="e2l7k0"
+optionPosition[n] = playerPosition (delayed frames)
+```
+
+---
+
+## 5.3 Limits
+
+* Max 4 options
+* Spacing based on movement history
+
+---
+
+# 6. 🔫 WEAPON SYSTEM
+
+## 6.1 Types
+
+### Default Shot
+
+* Straight forward
+
+### Double
+
+* Forward + upward shot
+
+### Laser
+
+* Continuous beam
+* High damage
+
+### Missiles
+
+* Ground-following
+* Triggered separately
+
+---
+
+## 6.2 Firing Rules
+
+* Continuous fire allowed
+* Fire rate capped
+
+---
+
+# 7. 🛡️ SHIELD SYSTEM
+
+## Types
+
+* Force field bubble
+* Absorbs limited hits
+
+---
+
+## Behavior
+
+```text id="7dzk9p"
+shieldHP--
+IF shieldHP == 0:
+    shield destroyed
+```
+
+---
+
+# 8. 🧟 ENEMY SYSTEM
+
+## 8.1 Enemy Categories
+
+### Basic Flyers
+
+* Simple patterns
+
+### Turrets
+
+* Fixed to terrain
+
+### Swarm Units
+
+* High density
+
+### Environmental Enemies
+
+* Spawn from terrain
+
+---
+
+## 8.2 AI Patterns
+
+```text id="1yb3tn"
+Spawn → follow pattern → exit or collide
+```
+
+---
+
+## 8.3 Spawn System
+
+* Triggered by scroll position
+* Scripted sequences
+
+---
+
+# 9. 🌍 SCROLLING SYSTEM
+
+## 9.1 Horizontal Scrolling
+
+```text id="9k2x7c"
+cameraX += constantSpeed
+```
+
+---
+
+## 9.2 Speed Variations
+
+* Mostly constant
+* Some sections slow/fast
+
+---
+
+## 9.3 Terrain Interaction
+
+* Collision with walls = death
+* Narrow corridors critical
+
+---
+
+# 10. 🗺️ LEVEL DESIGN SYSTEM
+
+## 10.1 Structure
+
+* Continuous scrolling
+* No backtracking
+* Pattern-based enemy waves
+
+---
+
+# 11. 🗺️ LEVEL BREAKDOWN
+
+---
+
+## STAGE 1 — Volcanic Moai Zone
+
+### Layout
+
+```text id="x9q3fm"
+Open space
+ ↓
+Volcano eruptions (projectiles)
+ ↓
+Moai heads (shoot rings)
+ ↓
+Boss
+```
+
+---
+
+### Hazards
+
+* Erupting projectiles
+* Tight corridors
+
+---
+
+## STAGE 2 — Stone Head (Moai)
+
+### Features
+
+* Stationary enemies
+* Ring projectiles
+
+---
+
+## STAGE 3 — Bubble / Organic
+
+### Features
+
+* Floating obstacles
+* Slow movement zones
+
+---
+
+## STAGE 4 — Mechanical Base
+
+### Features
+
+* Turrets
+* Confined spaces
+
+---
+
+## STAGE 5 — Speed Zone
+
+### Features
+
+* High scroll speed
+* Reaction-heavy
+
+---
+
+## STAGE 6 — Final Core
+
+### Layout
+
+```text id="1y7e0o"
+Tight corridors
+ ↓
+Enemy gauntlet
+ ↓
+Core boss
+```
+
+---
+
+# 12. 🎯 COLLISION SYSTEM
+
+## Types
+
+| Collision         | Result |
+| ----------------- | ------ |
+| Player vs enemy   | Death  |
+| Player vs terrain | Death  |
+| Shot vs enemy     | Damage |
+| Missile vs ground | Damage |
+
+---
+
+## Hitbox Rules
+
+* Player hitbox smaller than sprite
+* Enemy hitboxes often larger (difficulty)
+
+---
+
+# 13. ⏱️ TIMING SYSTEM
+
+* Fixed frame rate (~60 FPS)
+* All systems tied to frame updates
+
+---
+
+# 14. 🎲 RNG SYSTEM
+
+* Minimal randomness
+* Most patterns deterministic
+
+---
+
+# 15. 🎵 AUDIO DESIGN
+
+## Music
+
+* Iconic looping themes
+
+## SFX
+
+* Shooting
+* Explosion
+* Power-up pickup
+
+---
+
+# 16. 🎨 VISUAL DESIGN
+
+## Style
+
+* Sci-fi biomechanical
+* Bright enemy projectiles
+
+---
+
+## Animation
+
+* Smooth enemy movement
+* Explosion sequences important
+
+---
+
+# 17. ⚙️ TECHNICAL SYSTEMS
+
+## Determinism
+
+* Replayable with same input
+
+## Rendering
+
+* Tile-based background
+* Sprite-based enemies
+
+---
+
+# 18. 🧪 DIFFICULTY DESIGN
+
+## Core Drivers
+
+* Loss of power-ups on death
+* Tight spaces
+* Enemy density
+
+---
+
+## Difficulty Curve
+
+* Early: manageable
+* Late: overwhelming
+
+---
+
+# 19. 🧩 REVERSE ENGINEERING NOTES
+
+## MUST MATCH
+
+* Option trailing behavior
+* Power-up bar logic
+* Scroll speed
+* Enemy spawn timing
+
+---
+
+## QUIRKS TO PRESERVE
+
+* Harsh punishment on death
+* Slow recovery after respawn
+* “Safe spots” in patterns
+
+---
+
+# 20. 🧪 TESTING CHECKLIST
+
+* [ ] Power-up system behaves correctly
+* [ ] Options follow properly
+* [ ] Enemy waves match timing
+* [ ] Collision detection accurate
+* [ ] Scroll speed correct
+* [ ] Boss patterns accurate
+
+---
+
+# 21. ✨ FINISHING TOUCHES (POLISH)
+
+## 21.1 Arcade Feel
+
+* No smoothing
+* Precise control
+
+---
+
+## 21.2 Visual Polish
+
+* Pixel-perfect rendering
+* Bright projectile clarity
+
+---
+
+## 21.3 Audio Polish
+
+* Immediate feedback on shots
+* Distinct explosion sounds
+
+---
+
+## 21.4 UX Rules
+
+* Minimal UI
+* Fast restart
+* No tutorials
+
+---
+
+## 21.5 Authentic “Frustrations”
+
+* Death resets power
+* Difficult recovery
+* Dense enemy patterns
+
+---
+
+# 22. 🧾 DATA STRUCTURES
+
+## Player
+
+```text id="svqv7d"
+x, y
+velocity
+state
+powerLevel
+options[]
+```
+
+---
+
+## Option
+
+```text id="rf2r5y"
+positionHistoryIndex
+x, y
+```
+
+---
+
+## Enemy
+
+```text id="sf3zwn"
+type
+x, y
+pattern
+state
+```
+
+---
+
+## Level
+
+```text id="3m6u1p"
+scrollSpeed
+enemyScripts
+terrainMap
+boss
+```
+
+---
+
+# 23. 🏁 SUCCESS CRITERIA
+
+A correct recreation should:
+
+* Feel **strategic via power-ups**
+* Reward **pattern memorization**
+* Maintain **tight control**
+* Preserve **arcade difficulty**
+
+---
+
+# 🔚 FINAL SUMMARY
+
+This GDD captures:
+
+* Full **power-up bar system**
+* Detailed **option (satellite) mechanics**
+* Complete **enemy and level systems**
+* Accurate **scrolling and collision behavior**
+* Authentic **arcade feel and challenge**
+
+---
+
+## 🚀 Next Step (high value for your repo)
+
+I can generate:
+
+* Frame-accurate **enemy wave scripts**
+* Exact **option trail buffer implementation spec**
+* Full **level tilemaps (scroll-ready JSON)**
+* Or a **PLAN_PR → BUILD_PR ZIP** (docs-only, Codex-ready)
+
+Just say: **“build the PR”** and I’ll package it exactly to your workflow.

@@ -1,0 +1,536 @@
+Below is a **complete, reverse-engineered Game Design Document (GDD)** for **San Francisco Rush** with added finishing touches, level/map breakdowns, and implementation-level detail.
+
+---
+
+# 🎮 GAME DESIGN DOCUMENT
+
+## San Francisco Rush (Reverse Engineering GDD)
+
+---
+
+## 1. GAME OVERVIEW
+
+**Title:** San Francisco Rush
+**Genre:** Arcade Racing (Stunt / Shortcut Exploration)
+**Platform:** Arcade (original), later ports (N64, etc.)
+**Core Pillars:**
+
+* High-speed arcade racing
+* Hidden routes & mastery through discovery
+* Stunt-based score/bonus system
+* Loose physics for fun over realism
+
+---
+
+## 2. DESIGN GOALS
+
+| Goal          | Description                              |
+| ------------- | ---------------------------------------- |
+| Accessibility | Easy to pick up, immediate fun           |
+| Mastery       | Deep shortcut system rewards exploration |
+| Replayability | Multiple routes per track                |
+| Spectacle     | Jumps, crashes, exaggerated physics      |
+| Competitive   | Lap time optimization                    |
+
+---
+
+## 3. CORE GAME LOOP
+
+1. Player selects track + car
+2. Race begins (countdown start)
+3. Player drives through track:
+
+   * Avoid traffic
+   * Discover shortcuts
+   * Perform stunts
+4. Reach checkpoints before timer expires
+5. Finish race → unlock next track
+6. Repeat with optimization mindset
+
+---
+
+## 4. GAME MODES
+
+### 4.1 Arcade Mode
+
+* Time-based progression
+* Checkpoint system
+* Unlock tracks sequentially
+
+### 4.2 Time Trial
+
+* No traffic (or reduced)
+* Focus on best lap
+
+### 4.3 Stunt Mode (Optional / Extended)
+
+* Points for:
+
+  * Air time
+  * Rotations
+  * Distance
+
+---
+
+## 5. CORE MECHANICS
+
+### 5.1 Driving Model
+
+**Type:** Arcade physics (non-simulation)
+
+| Attribute    | Behavior                       |
+| ------------ | ------------------------------ |
+| Acceleration | Instant ramp-up                |
+| Top Speed    | High, capped per vehicle       |
+| Handling     | Responsive but slippery        |
+| Drift        | Mild automatic drift           |
+| Traction     | Reduced at high speed          |
+| Gravity      | Slightly exaggerated for jumps |
+
+---
+
+### 5.2 Physics System
+
+#### Key Characteristics:
+
+* Simplified rigid body physics
+* “Sticky landing assist” (auto-correct on landing)
+* Elastic collision responses
+
+#### Systems:
+
+* Velocity vector
+* Rotation (yaw, pitch, roll during airtime)
+* Gravity modifier (lower than real-world feel)
+
+---
+
+### 5.3 Jump System
+
+* Triggered by ramps or terrain elevation
+* Mid-air control enabled:
+
+  * Pitch forward/back
+  * Slight roll/yaw
+
+**Scoring Factors:**
+
+* Height
+* Duration
+* Rotation
+* Landing stability
+
+---
+
+### 5.4 Collision System
+
+| Object Type | Behavior                 |
+| ----------- | ------------------------ |
+| Traffic     | Slowdown / bounce        |
+| Walls       | Hard collision           |
+| Props       | Breakable / destructible |
+| Terrain     | Launch / bounce          |
+
+---
+
+### 5.5 Checkpoint System
+
+* Time extension mechanic
+* Player must reach checkpoint before timer hits zero
+* Visible gates across road
+
+---
+
+## 6. CAMERA SYSTEM
+
+### Modes:
+
+* Default chase cam
+* Slight lag for cinematic feel
+* Dynamic tilt on turns
+
+### Behavior:
+
+* Smooth interpolation
+* Zoom out at high speed
+* Adjust pitch on hills
+
+---
+
+## 7. UI / HUD
+
+### Elements:
+
+* Speedometer
+* Timer
+* Position (if competitive)
+* Lap counter
+* Mini-map (optional)
+* Stunt score (if active)
+
+---
+
+## 8. VEHICLES
+
+### Attributes per Car:
+
+* Top Speed
+* Acceleration
+* Handling
+* Weight (affects jump & collisions)
+
+### Example Archetypes:
+
+* Balanced
+* Speed-focused (hard to control)
+* Heavy (stable but slow)
+
+---
+
+## 9. TRACK DESIGN PHILOSOPHY
+
+### Principles:
+
+* Multiple valid paths
+* Risk vs reward shortcuts
+* Verticality (hills, jumps)
+* Urban chaos
+
+---
+
+# 🗺️ 10. LEVEL & MAP DESIGN (DETAILED)
+
+---
+
+## 10.1 Track Structure Template
+
+Each track includes:
+
+* **Main Route**
+* **Primary Shortcut**
+* **Hidden Shortcut(s)**
+* **Stunt Opportunities**
+* **Traffic Zones**
+* **Risk Zones (tight turns, cliffs)**
+
+---
+
+## 10.2 SAN FRANCISCO CITY TRACK
+
+![Image](https://images.openai.com/static-rsc-4/519Bq-6fhruPOWCrxwqdKcGp1zoJ-wvH1lSMunU2Jx0DK833JbY1V0ZnUik_O1vos0GCkRdF1yif0YaoaTaOL28xULsfc0qjbrvzGKMwz0HtC1RQcVkvD87x0PhPRDfDv-9QeIeo68j85QMwToDXCoBMZbEIZGaXAqbzM4Muy01eHP4DIWptYVx_CAHpEqJC?purpose=fullsize)
+
+![Image](https://images.openai.com/static-rsc-4/8wRJy9EMbyi_uXhk6kUk-XHotn6XiAxELL-D2mEYBMn1mTChgzQKfGJTcgP7H8UGOR1NQ3TPI00rDni_n9B3hJvd7qX5GB9xxdv7Cv9kJH8A02-5xL363rccKCctf7QI0yXmgMM2BNCtfC0TGSxqprvT1EbhMXNwhFzGPtEjOmQRnQikuYpRN0-txWubBL6d?purpose=fullsize)
+
+![Image](https://images.openai.com/static-rsc-4/_zoge8nyiPTa_IzKV-HvDlQXhMnar8X5f8DpLq70uCwKKKCD1IGK4tist9tAtmDzKQHqcZVLmhHERQ_pH1ANEqHUoMKv6lmRejnCY9PrVm3atrHCeDDUv4L-PYuPdDo803njXpyJ0_tqT3hgNp16_0vi1TcNZDMCRCgsVSDrfpjeLZ4D1jJvo8ZBMirIM1TC?purpose=fullsize)
+
+![Image](https://images.openai.com/static-rsc-4/5Edm9NyoshGBWAOxZDjqZ--yBc0C6rkT_l3DmhGxLaEj3FwxEGk4kpSPj5mavB7YafqncozaAAWlmso7sc9tFp5r90DEYIQ3_cgIC2FcZsOGAeeDiLvZmkMONmw9u7kBxPcsLz6LLH5xT3OpKqOgiQEQX0kKI7K0kHXLcBqDG3c1DpBtTgFsnBqJtVsMV4qA?purpose=fullsize)
+
+### Layout Overview:
+
+* Inspired by real SF geography
+* Extreme elevation changes
+
+### Sections:
+
+#### 1. Downtown Start
+
+* Wide roads
+* Moderate traffic
+* Gentle turns
+
+#### 2. Hill Climb Zone
+
+* Steep inclines
+* Launch ramps at hill crests
+* First major stunt opportunity
+
+#### 3. Lombard-style Section
+
+* Tight zig-zag turns
+* Precision driving required
+
+#### 4. Rooftop Shortcut Area
+
+* Hidden ramp access
+* Leads to elevated path
+* High risk, high reward
+
+#### 5. Industrial Zone
+
+* Wide but cluttered
+* Traffic heavy
+
+#### 6. Final Descent
+
+* Long downhill straight
+* High-speed finish
+
+---
+
+## 10.3 COASTAL TRACK
+
+![Image](https://images.openai.com/static-rsc-4/l6O5Wylzj9quD6qwRRMMS1V5WtAI0S28Y-a-kWarAgXrtH2EJRqQEIUoqEcPGnRpvDZTn4Hz0AloJE_bwEwaaZoJsfacbs4CBFKQDq7qoWmtqIgwc2jK4QUVyIDdNFXVurbYr2IG-L5eSR25kWIje4yCx2GE_r5qqvU00eUSyhvmn4-QAoqGf9MLUU-BW7Fa?purpose=fullsize)
+
+![Image](https://images.openai.com/static-rsc-4/BHr7OSlUqpWsQw2lZzAsJxfrfEhzKIaw194XMnL9LkDjJx0JBMu2D1V3S11QhC4LU6EgREc2EBV2eFMlNEHnrJ6U3fVz5o5BuA7CtMJYC0VnLmZlZA4ffIPG1loczJw-gIw6fePwl73CxSKBh4g9fxG2FQr3jZp2ok9SZgYGR6kz3-zdkevBKhRe1hv08OXN?purpose=fullsize)
+
+![Image](https://images.openai.com/static-rsc-4/yLXJO949Ksfah1A1nhkrFttMAuvWJswm-xXPQ6vYxdnZVv91Bt5dTdgKGVBOf4Z4HNlBAzmEzMenGLgxv1PFrejffK2GEgGDVGGSCsG9cZ3kHP8khanlbGLY6YV-uMj9eFjxOuSPfabFwl04WuHZ4kUHowBrA-lhEYn6GfDFrP_dzlPtpKNQ47b32pDPj9p_?purpose=fullsize)
+
+![Image](https://images.openai.com/static-rsc-4/Zh5GCaP9GNktLcUY7BTfzbsYb8f16mRdoBv86QcJ4UFmKpWRIWO72iuysB62AXtqbO2mpMgHimxw-rxRv1qlbqHMNL8ScHdhYq-zXbFCvU7kFAsmca53B7yNY2KU33Fm7ysl9ev47jJXjOb7xSZ0LUlTUlbSPXaj1156xJvRkFfNjSbjdVkBC_tYxrBMw8uo?purpose=fullsize)
+
+### Layout Overview:
+
+* Cliffside driving
+* Ocean views
+* High-risk edges
+
+### Sections:
+
+#### 1. Cliff Edge Drive
+
+* Narrow roads
+* No guardrails
+
+#### 2. Tunnel System
+
+* Dark visibility
+* Sharp turns
+
+#### 3. Beach Jump Zone
+
+* Massive ramps
+* Long airtime
+
+#### 4. Split Path Decision
+
+* Safe route vs shortcut jump
+
+---
+
+## 10.4 INDUSTRIAL TRACK
+
+![Image](https://images.openai.com/static-rsc-4/kFqRsUfINwpOwY15WLI-yj1u39wrHNcocq2sGtGSmezFXx2ArCNwgKxHaiYgsDfsoN7NaQRrtwp6g4556708tff4lLVCvNNLkPjLMIh7qfUuNLIEoZaFqJfTuGdGJ-ptQnRdIz906nr6LQCvXVnBWc9kjNAwEqY-HMtcYxTn7SRmVV38pIgWybyTU27JTSCC?purpose=fullsize)
+
+![Image](https://images.openai.com/static-rsc-4/Gnotgohw6mzN4x2I4KS9Wz6_QVr1bDzFHip8-iMw6ZzSYFxmy9GQ74E7NWHO-hM4mdF_mE05-hySU3sbts_rUfNpA6_q-onavC5T1WGfoBMXslTZ3Xo8C1_8vP-je6PQRDbomOEvKrjIJ40Ro5FHM5yBpYsM97xeCtiPTrQY7kZODB8NONPR6WkyhdpOi50W?purpose=fullsize)
+
+![Image](https://images.openai.com/static-rsc-4/u48_V9Whm5NEgvEjzvet0gd9mwkxuekh0eAVYEo8ITOj19V2hKBF5MRfzayhsXCcm_Mxm8kfM2w2lCV6x0sVBgNB8D8tsJ3LchoOtmBxGYR4t8gERQk-VjDxDrcsFT1NMNTj5dPRc5dBwHKxIup3OxlDCh3AGmQx7Nf_MtV78A51vjBJ_TkkiRW9IPwtvVDS?purpose=fullsize)
+
+![Image](https://images.openai.com/static-rsc-4/lXi2-GWOXbiPP2OumGAqqNWMTXuRQpJGaZbo0KiSdFHHzuyTDIqjiWte91GFDgoLSssCyAHtoOQx9OazBFQZ2nV0VtNveFrArUpTutdNVIzjHokkYmohvB8tH1T-x6flk6KFhXtYr5VnGTsTC6eeBjrcP3KjSi1jZ6oluaJN_aafKgkYVPa7RRVWJKHZNHHs?purpose=fullsize)
+
+### Layout Overview:
+
+* Tight corridors
+* Obstacles everywhere
+
+### Sections:
+
+#### 1. Warehouse Grid
+
+* Maze-like
+* Multiple route options
+
+#### 2. Container Yard
+
+* Narrow lanes
+* Hidden gaps
+
+#### 3. Crane Jump Section
+
+* Elevated jumps
+* Precision landing
+
+#### 4. Dockside Sprint
+
+* Straightaways with obstacles
+
+---
+
+## 10.5 SECRET SHORTCUT DESIGN
+
+### Types:
+
+| Type           | Description          |
+| -------------- | -------------------- |
+| Ramp Hidden    | Off-main-road launch |
+| Breakable Wall | Secret entry         |
+| Rooftop Route  | Elevated bypass      |
+| Gap Jump       | Requires precision   |
+
+### Design Rules:
+
+* Must save time
+* Must require skill
+* Must be discoverable visually
+
+---
+
+## 11. TRAFFIC SYSTEM
+
+* AI-driven vehicles
+* Spawn ahead of player
+* Lane-based movement
+
+### Behavior:
+
+* Predictable but reactive
+* Random density variation
+
+---
+
+## 12. AI OPPONENTS
+
+* Rubber-banding system
+* Path-based navigation
+* Limited shortcut usage (lower difficulty)
+
+---
+
+## 13. AUDIO DESIGN
+
+### Categories:
+
+* Engine sounds
+* Tire screech
+* Collision impacts
+* Ambient city noise
+
+---
+
+## 14. PROGRESSION SYSTEM
+
+* Unlock tracks sequentially
+* Optional car unlocks
+* Best time tracking
+
+---
+
+## 15. TECHNICAL IMPLEMENTATION (REVERSE ENGINEERING)
+
+### Core Systems:
+
+#### Game Engine Components:
+
+* Physics Engine (arcade simplified)
+* Rendering Engine (3D mesh + textures)
+* Input System
+* AI System
+* Collision System
+
+---
+
+### Data Structures:
+
+#### Vehicle
+
+```
+{
+  position,
+  velocity,
+  rotation,
+  acceleration,
+  handling,
+  state
+}
+```
+
+#### Track Node System
+
+```
+{
+  node_id,
+  position,
+  connections[],
+  type (main, shortcut)
+}
+```
+
+---
+
+### Rendering:
+
+* Low-poly models
+* Texture-mapped surfaces
+* Skybox environment
+
+---
+
+## 16. EDGE CASES & SYSTEM HANDLING
+
+| Case     | Handling    |
+| -------- | ----------- |
+| Flip car | Auto-reset  |
+| Off map  | Respawn     |
+| Stuck    | Reset timer |
+
+---
+
+## 17. FINISHING TOUCHES (POLISH)
+
+### Juice / Feel Enhancements:
+
+* Camera shake on landing
+* Motion blur at high speed
+* Sound pitch scaling with speed
+* Tire smoke on drift
+
+---
+
+### Feedback Systems:
+
+* Visual sparks on collision
+* Screen flash on impact
+* HUD pulse on checkpoint
+
+---
+
+### Accessibility:
+
+* Adjustable difficulty
+* Steering assist option
+
+---
+
+## 18. TESTING REQUIREMENTS
+
+### Focus Areas:
+
+* Shortcut balance
+* Physics stability
+* Camera behavior
+* Traffic fairness
+
+---
+
+## 19. SUCCESS METRICS
+
+* Player replay rate
+* Shortcut discovery rate
+* Average completion time
+* Player retention
+
+---
+
+## 20. EXPANSION IDEAS
+
+* Multiplayer racing
+* Online leaderboard
+* Track editor
+* Dynamic weather
+
+---
+
+# ✅ FINAL NOTES (REVERSE ENGINEERING INSIGHT)
+
+San Francisco Rush succeeds because of:
+
+* **Non-linear track design**
+* **Arcade-first physics**
+* **Rewarding exploration**
+* **Memorable map identity**
+
+---
+
+If you want next step, I can:
+
+* Convert this into a **repo-ready GDD ZIP (gdd.txt + structured docs)**
+* Break this into **implementation tasks for your engine**
+* Or map it directly to your **Phase-based repo workflow (PLAN_PR → BUILD_PR)**

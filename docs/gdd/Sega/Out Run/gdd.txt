@@ -1,0 +1,526 @@
+Below is a **full, production-grade Game Design Document (GDD)** for reverse-engineering **Out Run** (Out Run), including **branching track system, pseudo-3D road rendering, vehicle handling, time extension logic, and finishing touches** for an arcade-accurate recreation.
+
+---
+
+# 🎮 GDD — Out Run (Reverse Engineering Edition)
+
+**Document Type:** Full Technical + Design Spec
+**Target:** Faithful arcade recreation (Sega Super Scaler feel)
+**Genre:** Arcade Racing / Time Attack
+**Perspective:** Third-Person Chase Camera (Pseudo-3D)
+**Core Identity:** High-speed cruising + branching paths + scenic driving
+
+---
+
+# 1. 🧭 CORE GAME OVERVIEW
+
+## 1.1 Game Pillars
+
+* **Pseudo-3D Super Scaler Road**
+* **Branching Route System**
+* **Time-Based Progression**
+* **Relaxed Yet Precise Driving**
+* **Visual + Audio Experience**
+
+---
+
+## 1.2 Player Fantasy
+
+You are driving a Ferrari convertible across scenic routes, choosing your path while racing against time.
+
+---
+
+# 2. 🎮 CORE GAMEPLAY LOOP
+
+1. Start driving from checkpoint
+2. Accelerate and steer
+3. Avoid traffic and obstacles
+4. Reach fork → choose path
+5. Reach next checkpoint before time expires
+6. Extend time
+7. Continue until final destination
+
+---
+
+# 3. 🚗 PLAYER SYSTEM
+
+## 3.1 Controls
+
+* Steering (left/right)
+* Accelerator
+* Brake
+* Gear shift (Low / High)
+
+---
+
+## 3.2 Movement Model (ARCADE PHYSICS)
+
+```text
+velocity += acceleration (gear dependent)
+velocity -= drag
+velocity -= brakingForce
+```
+
+---
+
+## 3.3 Gear System
+
+### Low Gear
+
+```text
+highAcceleration
+lowTopSpeed
+```
+
+---
+
+### High Gear
+
+```text
+lowerAcceleration
+higherTopSpeed
+```
+
+---
+
+## 3.4 Steering Model
+
+```text
+turnRate = baseTurn * (1 - speedFactor)
+```
+
+* Higher speed reduces turning sharpness
+* Requires braking for tight curves
+
+---
+
+## 3.5 Player States
+
+| State    | Description     |
+| -------- | --------------- |
+| Driving  | Normal          |
+| Off-road | Reduced control |
+| Crashing | Spin-out        |
+| Finished | End sequence    |
+
+---
+
+# 4. 🛣️ ROAD SYSTEM (SUPER SCALER CORE)
+
+## 4.1 Projection Model
+
+```text
+screenY = projection(distance)
+scale = perspectiveFactor / distance
+```
+
+---
+
+## 4.2 Road Segments
+
+```text
+segment:
+    curvature
+    elevation
+    sceneryType
+```
+
+---
+
+## 4.3 Visual Illusion
+
+* Scaling sprites simulate depth
+* Fast redraw for speed effect
+
+---
+
+# 5. 🌍 BRANCHING PATH SYSTEM (SIGNATURE)
+
+## 5.1 Fork Points
+
+```text
+player reaches split → choose left or right
+```
+
+---
+
+## 5.2 Structure
+
+* Tree-like route progression
+* Multiple possible endings
+
+---
+
+## 5.3 Example Path Tree
+
+```text
+Start
+ ├─ Left → Route A
+ │   ├─ Left → Ending 1
+ │   └─ Right → Ending 2
+ └─ Right → Route B
+     ├─ Left → Ending 3
+     └─ Right → Ending 4
+```
+
+---
+
+## 5.4 Design Impact
+
+* Replayability
+* Strategic path choice
+
+---
+
+# 6. ⏱️ TIME SYSTEM (CORE MECHANIC)
+
+## 6.1 Countdown Timer
+
+```text
+timer -= deltaTime
+```
+
+---
+
+## 6.2 Checkpoints
+
+```text
+reach checkpoint → add time
+```
+
+---
+
+## 6.3 Failure
+
+* Timer reaches zero → game over
+
+---
+
+# 7. 🚦 TRAFFIC SYSTEM
+
+## 7.1 AI Vehicles
+
+* Move along lanes
+* Varying speeds
+
+---
+
+## 7.2 Behavior
+
+```text
+follow path
+→ slight lane variation
+→ no advanced AI
+```
+
+---
+
+## 7.3 Density
+
+* Increases over time
+
+---
+
+# 8. 🎯 COLLISION SYSTEM
+
+## 8.1 Rules
+
+| Collision          | Result     |
+| ------------------ | ---------- |
+| Player vs car      | Spin/crash |
+| Player vs obstacle | Crash      |
+| Off-road           | Slowdown   |
+
+---
+
+## 8.2 Crash Behavior
+
+```text
+velocity → 0
+spin animation
+delay before recovery
+```
+
+---
+
+# 9. 🚧 OFF-ROAD SYSTEM
+
+## 9.1 Behavior
+
+```text
+IF offRoad:
+    speed reduced
+    control reduced
+```
+
+---
+
+## 9.2 Risk
+
+* Hard to recover at high speed
+
+---
+
+# 10. 🧠 AI SYSTEM
+
+## 10.1 Traffic AI
+
+* Simple obstacle behavior
+* No competitive racing logic
+
+---
+
+## 10.2 Randomization
+
+* Spawn timing
+* Lane positioning
+
+---
+
+# 11. 🎲 RNG SYSTEM
+
+* Traffic placement
+* Minor path variation
+
+---
+
+# 12. 🎵 AUDIO DESIGN (ICONIC)
+
+## Music Selection (SIGNATURE FEATURE)
+
+* Multiple selectable tracks
+
+---
+
+## Behavior
+
+```text
+player selects music at start
+music loops during gameplay
+```
+
+---
+
+## SFX
+
+* Engine sound (gear-based)
+* Tire screech
+* Crash impact
+
+---
+
+# 13. 🎨 VISUAL DESIGN
+
+## Style
+
+* Bright, colorful landscapes
+* Smooth scaling
+
+---
+
+## Scenery Types
+
+* Beaches
+* Mountains
+* Forests
+* Desert
+
+---
+
+## Effects
+
+* Horizon scrolling
+* Roadside object scaling
+
+---
+
+# 14. ⚙️ TECHNICAL SYSTEMS
+
+## Frame Rate
+
+* ~60 FPS
+
+---
+
+## Rendering
+
+* Sprite scaling engine
+* Scanline-style updates
+
+---
+
+## Input
+
+* Analog preferred
+
+---
+
+# 15. 🧪 DIFFICULTY DESIGN
+
+## Core Drivers
+
+* Time pressure
+* Curve difficulty
+* Traffic density
+
+---
+
+## Difficulty Curve
+
+* Gradual → challenging late game
+
+---
+
+# 16. 🧩 REVERSE ENGINEERING NOTES
+
+## MUST MATCH
+
+* Road curvature feel
+* Speed sensation
+* Checkpoint timing
+* Branch selection behavior
+
+---
+
+## QUIRKS TO PRESERVE
+
+* Floaty steering feel
+* Sudden crashes
+* Scenic pacing
+
+---
+
+# 17. 🧠 AI STATES
+
+```text
+Cruise
+AdjustSpeed
+Spawn
+```
+
+---
+
+# 18. 🧪 TESTING CHECKLIST
+
+* [ ] Steering feels correct
+* [ ] Road rendering accurate
+* [ ] Branching works correctly
+* [ ] Timer behaves correctly
+* [ ] Traffic AI consistent
+* [ ] Collision penalties correct
+
+---
+
+# 19. ✨ FINISHING TOUCHES (POLISH)
+
+## 19.1 Arcade Feel
+
+* Smooth driving
+* Relaxed but precise control
+
+---
+
+## 19.2 Visual Polish
+
+* Strong sense of speed
+* Clear road readability
+
+---
+
+## 19.3 Audio Polish
+
+* Iconic music integration
+* Engine pitch realism (arcade style)
+
+---
+
+## 19.4 UX Rules
+
+* Quick restart
+* Minimal UI
+
+---
+
+## 19.5 Authentic “Frustrations”
+
+* Tight turns at high speed
+* Sudden collisions
+* Time pressure late game
+
+---
+
+# 20. 🧾 DATA STRUCTURES
+
+## Player
+
+```text
+x, z
+velocity
+gear
+state
+```
+
+---
+
+## Track Segment
+
+```text
+curvature
+elevation
+sceneryType
+```
+
+---
+
+## Traffic Car
+
+```text
+lane
+z
+speed
+```
+
+---
+
+## Game
+
+```text
+checkpoint
+timer
+routePath[]
+```
+
+---
+
+# 21. 🏁 SUCCESS CRITERIA
+
+A correct recreation should:
+
+* Feel **fast and smooth**
+* Reward **route familiarity**
+* Maintain **constant forward momentum**
+* Match **Out Run arcade experience**
+
+---
+
+# 🔚 FINAL SUMMARY
+
+This GDD captures:
+
+* Full **pseudo-3D road system**
+* Detailed **branching route structure**
+* Complete **vehicle handling + time system**
+* Accurate **traffic and collision behavior**
+* Authentic **Out Run arcade feel**
+
+---
+
+## 🚀 Next Step (fits your repo workflow perfectly)
+
+I will generate next (no confirmation needed per your workflow):
+
+* ✅ **Full branching route map definitions (JSON)**
+* ✅ **Road segment + curvature data tables**
+* ✅ **Pseudo-3D projection math spec**
+* ✅ **PLAN_PR → BUILD_PR ZIP (docs-only, Codex-ready)**
+

@@ -1,0 +1,540 @@
+Below is a **full, production-grade Game Design Document (GDD)** for reverse-engineering **Mario Bros.** (Mario Bros.), including **platform physics, enemy phase states, shell interactions, POW system, co-op/versus dynamics, and finishing touches** for an arcade-accurate recreation.
+
+---
+
+# 🎮 GDD — Mario Bros. (Reverse Engineering Edition)
+
+**Document Type:** Full Technical + Design Spec
+**Target:** Faithful arcade recreation (Nintendo physics + enemy logic)
+**Genre:** Single-Screen Platformer
+**Perspective:** 2D Side View (Single Arena)
+**Core Identity:** Platform flipping combat + enemy phase states + co-op chaos
+
+---
+
+# 1. 🧭 CORE GAME OVERVIEW
+
+## 1.1 Game Pillars
+
+* **Platform-Based Enemy Combat (From Below)**
+* **Enemy State Transitions**
+* **Shell/Slide Physics**
+* **Co-op & Competitive Interaction**
+* **Escalating Wave Pressure**
+
+---
+
+## 1.2 Player Fantasy
+
+You are Mario (or Luigi) clearing waves of enemies from a sewer-like arena by flipping platforms and kicking stunned enemies.
+
+---
+
+# 2. 🎮 CORE GAMEPLAY LOOP
+
+1. Spawn in arena
+2. Enemies enter via pipes
+3. Hit platform from below → flip enemies
+4. Kick stunned enemies
+5. Avoid hazards and moving enemies
+6. Clear all enemies → next wave
+7. Difficulty increases
+
+---
+
+# 3. 🧍 PLAYER SYSTEM
+
+## 3.1 Controls
+
+* Left / Right movement
+* Jump
+
+---
+
+## 3.2 Movement Model
+
+```text
+velocityX = input * speed
+velocityY = jumpImpulse - gravity
+```
+
+---
+
+## 3.3 Physics Properties
+
+```text
+Horizontal Speed: Moderate
+Jump Height: Fixed arc
+Air Control: Limited
+Gravity: Constant
+```
+
+---
+
+## 3.4 Player States
+
+| State   | Description     |
+| ------- | --------------- |
+| Running | Ground movement |
+| Jumping | In air          |
+| Falling | Descending      |
+| Hit     | Knockback       |
+| Dead    | Life lost       |
+
+---
+
+# 4. 🧱 PLATFORM SYSTEM (CORE MECHANIC)
+
+## 4.1 Platform Hit Logic
+
+```text
+IF player hits platform from below:
+    trigger platform bump
+    affect entities above
+```
+
+---
+
+## 4.2 Effects
+
+* Flips enemies on platform
+* Stuns enemies
+* Interrupts enemy movement
+
+---
+
+## 4.3 Multi-Level Platforms
+
+* Several stacked layers
+* Vertical navigation critical
+
+---
+
+# 5. 🧟 ENEMY SYSTEM
+
+## 5.1 Enemy Types
+
+### Shellcreepers (Turtles)
+
+* Walk normally
+* Flip when hit
+* Recover after delay
+
+---
+
+### Sidesteppers (Crabs)
+
+* Require multiple hits
+* Speed increases after first hit
+
+---
+
+### Fighter Flies
+
+* Jump in arcs
+* Harder to predict
+
+---
+
+### Slipice (Later Levels)
+
+* Freezes platforms
+
+---
+
+## 5.2 Enemy States
+
+| State      | Description         |
+| ---------- | ------------------- |
+| Normal     | Moving              |
+| Flipped    | Upside down         |
+| Sliding    | Moving shell        |
+| Recovering | Returning to normal |
+| Dead       | Eliminated          |
+
+---
+
+## 5.3 Flip Mechanic
+
+```text
+platform hit → enemy flips
+```
+
+---
+
+## 5.4 Recovery
+
+```text
+IF time passes:
+    enemy returns upright
+```
+
+---
+
+# 6. 🥾 KICK / SLIDE SYSTEM
+
+## 6.1 Kick Action
+
+```text
+IF player touches flipped enemy:
+    enemy kicked → slides
+```
+
+---
+
+## 6.2 Slide Behavior
+
+```text
+enemy slides horizontally
+→ destroys other enemies
+```
+
+---
+
+## 6.3 Risk
+
+* Sliding enemy can hit player
+
+---
+
+# 7. ⚡ POW BLOCK SYSTEM
+
+## 7.1 Behavior
+
+```text
+activate POW → all enemies flip
+```
+
+---
+
+## 7.2 Constraints
+
+* Limited uses (typically 3)
+
+---
+
+## 7.3 Strategic Use
+
+* Emergency crowd control
+* Combo setup
+
+---
+
+# 8. 🧠 ENEMY AI
+
+## 8.1 Basic Behavior
+
+```text
+move horizontally
+→ reverse at edges
+→ react to platform bumps
+```
+
+---
+
+## 8.2 Advanced Behavior
+
+* Crabs speed up when angry
+* Flies jump unpredictably
+
+---
+
+# 9. 🎯 COLLISION SYSTEM
+
+## 9.1 Rules
+
+| Collision               | Result                  |
+| ----------------------- | ----------------------- |
+| Player vs normal enemy  | Death                   |
+| Player vs flipped enemy | Kick                    |
+| Player vs sliding enemy | Death                   |
+| Enemy vs enemy          | Possible chain reaction |
+
+---
+
+## 9.2 Hitboxes
+
+* Tight and precise
+* Platform alignment critical
+
+---
+
+# 10. 🌀 LEVEL / WAVE SYSTEM
+
+## 10.1 Wave Structure
+
+* Increasing number of enemies
+* New enemy types introduced
+
+---
+
+## 10.2 Completion
+
+* All enemies cleared
+
+---
+
+## 10.3 Bonus Phase
+
+* Collect coins
+* Avoid hazards
+
+---
+
+# 11. 🤝 MULTIPLAYER SYSTEM
+
+## 11.1 Co-op Mode
+
+* Players work together
+* Share screen
+
+---
+
+## 11.2 Competitive Elements
+
+* Steal kills
+* Indirect sabotage
+
+---
+
+## 11.3 Player Interaction
+
+```text
+player collision → push/bounce
+```
+
+---
+
+# 12. 🎲 RNG SYSTEM
+
+* Enemy spawn timing
+* Enemy movement variation
+
+---
+
+# 13. 🎵 AUDIO DESIGN
+
+## Music
+
+* Short looping tunes
+
+---
+
+## SFX
+
+* Jump sound
+* Platform bump
+* Kick sound
+* Enemy flip
+
+---
+
+# 14. 🎨 VISUAL DESIGN
+
+## Style
+
+* Bright arcade colors
+* Clear enemy silhouettes
+
+---
+
+## Animation
+
+* Flip animation critical
+* Slide motion readable
+
+---
+
+# 15. ⚙️ TECHNICAL SYSTEMS
+
+## Frame Rate
+
+* ~60 FPS
+
+---
+
+## Physics
+
+* Simple gravity + collision
+
+---
+
+## Input
+
+* Immediate response
+
+---
+
+# 16. 🧪 DIFFICULTY DESIGN
+
+## Core Drivers
+
+* Enemy count
+* Enemy speed
+* Platform positioning
+
+---
+
+## Difficulty Curve
+
+* Gradual → chaotic
+
+---
+
+# 17. 🧩 REVERSE ENGINEERING NOTES
+
+## MUST MATCH
+
+* Platform bump timing
+* Enemy flip duration
+* Slide speed
+* Enemy recovery timing
+
+---
+
+## QUIRKS TO PRESERVE
+
+* Slight enemy randomness
+* Tight timing windows
+* Chaotic interactions
+
+---
+
+# 18. 🧠 AI STATES
+
+```text
+Move
+Flipped
+Slide
+Recover
+Dead
+```
+
+---
+
+# 19. 🧪 TESTING CHECKLIST
+
+* [ ] Platform bump works correctly
+* [ ] Enemy flipping behaves correctly
+* [ ] Kick/slide system accurate
+* [ ] POW block functions properly
+* [ ] Collision detection precise
+* [ ] Multiplayer interaction correct
+
+---
+
+# 20. ✨ FINISHING TOUCHES (POLISH)
+
+## 20.1 Arcade Feel
+
+* Tight control
+* Immediate response
+
+---
+
+## 20.2 Visual Polish
+
+* Clear platform layering
+* Distinct enemy states
+
+---
+
+## 20.3 Audio Polish
+
+* Strong bump feedback
+* Clear enemy flip cues
+
+---
+
+## 20.4 UX Rules
+
+* Minimal UI
+* Instant restart
+
+---
+
+## 20.5 Authentic “Frustrations”
+
+* Sliding enemy deaths
+* Tight jump timing
+* Player collisions
+
+---
+
+# 21. 🧾 DATA STRUCTURES
+
+## Player
+
+```text
+x, y
+velocityX, velocityY
+state
+```
+
+---
+
+## Enemy
+
+```text
+type
+x, y
+state
+direction
+timer
+```
+
+---
+
+## Platform
+
+```text
+x, y
+isBumped
+```
+
+---
+
+## Game
+
+```text
+score
+lives
+wave
+enemyCount
+```
+
+---
+
+# 22. 🏁 SUCCESS CRITERIA
+
+A correct recreation should:
+
+* Feel **tight and chaotic**
+* Reward **timing and positioning**
+* Preserve **enemy state mechanics**
+* Match **Mario Bros. arcade feel**
+
+---
+
+# 🔚 FINAL SUMMARY
+
+This GDD captures:
+
+* Full **platform bump combat system**
+* Detailed **enemy state transitions**
+* Complete **kick/slide mechanics**
+* Accurate **wave progression**
+* Authentic **arcade multiplayer chaos**
+
+---
+
+## 🚀 Next Step (fits your repo workflow perfectly)
+
+I can generate:
+
+* Frame-accurate **enemy timing + recovery tables**
+* **Platform bump physics constants**
+* Full **arena layout tilemaps**
+* Or a **PLAN_PR → BUILD_PR ZIP (docs-only, Codex-ready)**
+
+Just say: **“build the PR”** and I’ll package it exactly how you want.

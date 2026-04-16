@@ -1,0 +1,562 @@
+Below is a **full, production-grade Game Design Document (GDD)** for reverse-engineering *Contra* (Arcade/NES hybrid behavior model), including **player systems, weapon logic, enemy AI, level layouts, hit detection, and finishing touches** for an arcade-accurate recreation.
+
+---
+
+# 🎮 GDD — Contra (Reverse Engineering Edition)
+
+**Document Type:** Full Technical + Design Spec
+**Target:** Faithful recreation (arcade feel + NES structure fidelity)
+**Genre:** Run-and-Gun Action Platformer
+**Perspective:** 2D Side-Scrolling + Pseudo-3D Base Stages
+**Core Identity:** High-lethality combat + weapon mastery + pattern memorization
+
+---
+
+# 1. 🧭 CORE GAME OVERVIEW
+
+## 1.1 Game Pillars
+
+* **One-Hit-Death Precision**
+* **Weapon Variety & Mastery**
+* **Relentless Enemy Pressure**
+* **Pattern Memorization**
+* **Tight Player Control**
+
+---
+
+## 1.2 Player Fantasy
+
+You are an elite commando (Bill or Lance) infiltrating alien-controlled territory, blasting through waves of enemies and destroying fortified bases.
+
+---
+
+# 2. 🎮 CORE GAMEPLAY LOOP
+
+1. Spawn at checkpoint
+2. Advance through level (auto-scroll or free scroll)
+3. Destroy enemies and turrets
+4. Collect weapon upgrades
+5. Survive hazards
+6. Defeat boss
+7. Progress to next stage
+8. Death → respawn with default weapon
+
+---
+
+# 3. 🧍 PLAYER SYSTEM
+
+## 3.1 Movement
+
+### Axes
+
+* Horizontal (left/right)
+* Vertical (jump/fall)
+* Directional aiming (8 directions)
+
+---
+
+### Movement Properties
+
+```text
+Walk Speed: Fast
+Jump Arc: Fixed but controllable slightly
+Air Control: Limited but present
+Gravity: Moderate
+```
+
+---
+
+## 3.2 Player States
+
+| State    | Description                 |
+| -------- | --------------------------- |
+| Standing | Idle                        |
+| Running  | Ground movement             |
+| Jumping  | Airborne                    |
+| Prone    | Lying down (reduced hitbox) |
+| Shooting | Firing weapon               |
+| Dead     | Instant death               |
+
+---
+
+## 3.3 Directional Shooting
+
+### Directions
+
+```text
+Up
+Down
+Left
+Right
+Diagonal (4 directions)
+```
+
+---
+
+## 3.4 Firing Rules
+
+* Continuous fire allowed (rate-limited)
+* Shots persist until off-screen or collision
+
+---
+
+# 4. 🔫 WEAPON SYSTEM
+
+## 4.1 Default Weapon
+
+* Straight single bullet
+* Moderate fire rate
+
+---
+
+## 4.2 Power-Up Weapons
+
+| Weapon          | Behavior                                   |
+| --------------- | ------------------------------------------ |
+| Machine Gun (M) | Rapid fire                                 |
+| Spread Gun (S)  | Multi-directional spread (dominant weapon) |
+| Laser (L)       | High damage, slower                        |
+| Fire (F)        | Rotating flame                             |
+| Rapid (R)       | Increased fire rate                        |
+| Barrier (B)     | Temporary shield                           |
+
+---
+
+## 4.3 Weapon Rules
+
+* Only one primary weapon active
+* Death resets to default weapon
+* Spread Gun is highest effectiveness (important balance note)
+
+---
+
+# 5. 🧟 ENEMY SYSTEM
+
+## 5.1 Enemy Types
+
+### Basic Soldiers
+
+* Run in from sides
+* Shoot occasionally
+
+### Turrets
+
+* Fixed position
+* Aim at player
+
+### Snipers
+
+* Stationary
+* Precise shots
+
+### Jumpers
+
+* Leap toward player
+
+### Flying Enemies
+
+* Spawn from air
+* Follow patterns
+
+---
+
+## 5.2 Boss Types
+
+* Large hitbox enemies
+* Multi-part weak points
+* Projectile-heavy
+
+---
+
+## 5.3 AI Behavior
+
+### Basic Loop
+
+```text
+IF player in range:
+    attack
+ELSE:
+    move or idle
+```
+
+---
+
+## 5.4 Spawn System
+
+* Triggered by camera position
+* Often infinite spawn pressure in areas
+
+---
+
+# 6. 🎯 COLLISION SYSTEM
+
+## 6.1 Player Rules
+
+* Any hit = death (no health)
+
+---
+
+## 6.2 Hitbox Design
+
+* Small player hitbox (for fairness)
+* Large enemy/projectile hitboxes (difficulty balance)
+
+---
+
+## 6.3 Collision Types
+
+| Type              | Result       |
+| ----------------- | ------------ |
+| Player vs bullet  | Death        |
+| Player vs enemy   | Death        |
+| Bullet vs enemy   | Damage       |
+| Bullet vs terrain | Destroy/stop |
+
+---
+
+# 7. 🌍 LEVEL DESIGN SYSTEM
+
+## 7.1 Level Types
+
+### Side-Scrolling Stages
+
+* Continuous horizontal progression
+
+### Base Stages (Pseudo-3D)
+
+* Player moves vertically into screen
+* Turrets on walls
+
+---
+
+# 8. 🗺️ LEVEL BREAKDOWN
+
+---
+
+## STAGE 1 — Jungle
+
+### Layout
+
+```text
+[Start]
+ ↓
+Open terrain
+ ↓
+Bridge section
+ ↓
+Waterfall area
+ ↓
+Boss: Turret core
+```
+
+---
+
+### Features
+
+* Intro difficulty
+* Teaches movement + shooting
+
+---
+
+## STAGE 2 — Base (3D)
+
+### Layout
+
+```text
+Corridor → turret walls → core
+```
+
+---
+
+### Mechanics
+
+* Shoot walls
+* Avoid projectiles
+
+---
+
+## STAGE 3 — Waterfall
+
+### Features
+
+* Vertical emphasis
+* Enemy drops
+
+---
+
+## STAGE 4 — Snowfield
+
+### Features
+
+* Slippery feel (visual only)
+* Heavy enemy fire
+
+---
+
+## STAGE 5 — Energy Zone
+
+### Features
+
+* Alien enemies
+* Organic structures
+
+---
+
+## STAGE 6 — Final Base
+
+### Layout
+
+```text
+Tight corridors
+ ↓
+Enemy gauntlet
+ ↓
+Final boss (multi-phase)
+```
+
+---
+
+# 9. 🧱 ENVIRONMENT SYSTEM
+
+## Terrain
+
+* Platforms
+* Slopes (visual only)
+* Hazards (water, pits)
+
+---
+
+## Destructibles
+
+* Turrets
+* Wall nodes
+
+---
+
+# 10. 🎲 RNG SYSTEM
+
+* Enemy spawn timing slightly varied
+* Projectile spread variation
+
+---
+
+# 11. 🎵 AUDIO DESIGN
+
+## Music
+
+* High-energy action themes
+
+## SFX
+
+* Gunfire
+* Explosion
+* Enemy death
+
+---
+
+# 12. 🎨 VISUAL DESIGN
+
+## Style
+
+* Military sci-fi
+* High contrast enemies
+
+---
+
+## Animation
+
+* Fast, responsive player animation
+* Clear projectile visibility
+
+---
+
+# 13. ⚙️ TECHNICAL SYSTEMS
+
+## Frame Rate
+
+* ~60 FPS fixed
+
+## Input
+
+* Immediate, responsive
+
+---
+
+# 14. 🧪 DIFFICULTY DESIGN
+
+## Core Drivers
+
+* One-hit death
+* Enemy density
+* Bullet patterns
+
+---
+
+## Difficulty Curve
+
+* Early: manageable
+* Late: extremely intense
+
+---
+
+# 15. 🧩 REVERSE ENGINEERING NOTES
+
+## MUST MATCH
+
+* Weapon behavior (especially Spread Gun)
+* Enemy spawn triggers
+* Player hitbox size
+* Jump arc feel
+
+---
+
+## QUIRKS TO PRESERVE
+
+* Slight input stiffness
+* Enemy spawn unfairness
+* Power loss frustration
+
+---
+
+# 16. 🧠 AI SYSTEM
+
+## States
+
+```text
+Idle
+Move
+Attack
+Cooldown
+```
+
+---
+
+# 17. 🧪 TESTING CHECKLIST
+
+* [ ] Player dies on single hit
+* [ ] Weapons behave correctly
+* [ ] Enemy spawns accurate
+* [ ] Boss patterns correct
+* [ ] Jump arc feels right
+
+---
+
+# 18. ✨ FINISHING TOUCHES (POLISH)
+
+## 18.1 Arcade Feel
+
+* Fast, tight controls
+* No modern smoothing
+
+---
+
+## 18.2 Visual Polish
+
+* Pixel-perfect rendering
+* Clear bullet visibility
+
+---
+
+## 18.3 Audio Polish
+
+* Strong weapon feedback
+* Distinct explosions
+
+---
+
+## 18.4 UX Rules
+
+* Immediate restart
+* Minimal UI
+
+---
+
+## 18.5 Authentic “Frustrations”
+
+* Instant death
+* Weapon loss on death
+* Heavy enemy pressure
+
+---
+
+# 19. 🧾 DATA STRUCTURES
+
+## Player
+
+```text
+x, y
+velocity
+state
+weaponType
+direction
+```
+
+---
+
+## Bullet
+
+```text
+x, y
+velocity
+type
+owner
+```
+
+---
+
+## Enemy
+
+```text
+type
+x, y
+state
+health
+aiState
+```
+
+---
+
+## Level
+
+```text
+tilemap
+enemySpawns
+boss
+scrollType
+```
+
+---
+
+# 20. 🏁 SUCCESS CRITERIA
+
+A correct recreation should:
+
+* Feel **fast and deadly**
+* Reward **precision and reflexes**
+* Match **weapon feel exactly**
+* Preserve **arcade intensity**
+
+---
+
+# 🔚 FINAL SUMMARY
+
+This GDD captures:
+
+* Full **run-and-gun combat system**
+* Detailed **weapon behaviors**
+* Complete **enemy and level systems**
+* Accurate **collision and difficulty model**
+* Authentic **arcade feel**
+
+---
+
+## 🚀 Next Step (fits your repo workflow perfectly)
+
+I can generate:
+
+* Frame-accurate **enemy spawn scripts per stage**
+* Exact **weapon fire tables + spread patterns**
+* Full **level tilemaps (scroll-ready JSON)**
+* Or a **PLAN_PR → BUILD_PR ZIP (docs-only, Codex-ready)**
+
+Just say: **“build the PR”** and I’ll package it exactly how you want.

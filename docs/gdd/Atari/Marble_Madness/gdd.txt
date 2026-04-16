@@ -1,0 +1,551 @@
+Below is a **complete, production-grade Game Design Document (GDD)** for reverse-engineering *Marble Madness*. It includes **mechanics, physics, camera, input, level layouts, timing systems, enemy behaviors, scoring, and finishing polish details**.
+
+---
+
+# 🎮 GDD — Marble Madness (Reverse Engineered)
+
+---
+
+## 1. Overview
+
+**Game Title:** Marble Madness (Reverse Engineered)
+**Genre:** Isometric Physics-Based Arcade Platformer
+**Perspective:** Isometric (fixed camera angle)
+**Core Pillar:** Precision control of a rolling marble through hazardous obstacle courses under time pressure.
+
+---
+
+## 2. Core Gameplay Loop
+
+1. Player starts at top of course
+2. Marble begins rolling under physics simulation
+3. Player navigates obstacles while:
+
+   * Avoiding hazards
+   * Maintaining speed and control
+4. Reach goal before timer expires
+5. Remaining time converts to bonus points
+6. Progress to next level
+
+---
+
+## 3. Controls
+
+### 3.1 Input Types
+
+| Input Type           | Description                         |
+| -------------------- | ----------------------------------- |
+| Trackball (original) | Analog velocity-based movement      |
+| Keyboard (modern)    | Directional impulse                 |
+| Gamepad              | Analog stick mapped to acceleration |
+
+---
+
+### 3.2 Control Model
+
+* Input applies **force**, not position
+* Marble has inertia
+* No instant stops
+
+```text
+Input → Force Vector → Acceleration → Velocity → Position
+```
+
+---
+
+## 4. Physics System
+
+### 4.1 Marble Properties
+
+| Property | Value    |
+| -------- | -------- |
+| Mass     | Constant |
+| Radius   | Fixed    |
+| Friction | Medium   |
+| Bounce   | Low      |
+
+---
+
+### 4.2 Movement Equations
+
+* Acceleration:
+
+  ```
+  a = F / m
+  ```
+* Velocity:
+
+  ```
+  v += a * dt
+  ```
+* Position:
+
+  ```
+  p += v * dt
+  ```
+
+---
+
+### 4.3 Surface Interaction
+
+| Surface Type          | Behavior               |
+| --------------------- | ---------------------- |
+| Flat                  | Normal roll            |
+| Incline               | Accelerates downhill   |
+| Edge                  | Drop / fall            |
+| Conveyor              | Adds directional force |
+| Ice (optional modern) | Low friction           |
+
+---
+
+### 4.4 Collision System
+
+* Sphere vs Plane
+* Sphere vs Edge
+* Sphere vs Object
+
+**Response:**
+
+* Reflect velocity vector
+* Apply damping
+
+---
+
+## 5. Camera System
+
+### 5.1 Fixed Isometric Camera
+
+* Angle: ~45° horizontal, ~30° vertical tilt
+* Follows marble center
+* Does NOT rotate
+
+---
+
+### 5.2 Camera Behavior
+
+| Feature   | Behavior        |
+| --------- | --------------- |
+| Follow    | Smooth tracking |
+| Dead zone | Minimal         |
+| Zoom      | Fixed           |
+| Rotation  | None            |
+
+---
+
+## 6. Game Systems
+
+### 6.1 Timer System
+
+* Countdown per level
+* Time carries over to next level
+* Bonus:
+
+  ```
+  score += remaining_time * multiplier
+  ```
+
+---
+
+### 6.2 Scoring
+
+| Action            | Points     |
+| ----------------- | ---------- |
+| Finish level      | Base score |
+| Time remaining    | Bonus      |
+| Enemy interaction | Optional   |
+
+---
+
+### 6.3 Lives
+
+* Typically 3 lives
+* Lose life if:
+
+  * Fall off level
+  * Hit deadly obstacle
+
+---
+
+## 7. Obstacles & Enemies
+
+### 7.1 Static Obstacles
+
+| Type         | Description         |
+| ------------ | ------------------- |
+| Narrow paths | Precision challenge |
+| Drops        | Instant fail        |
+| Ramps        | Speed control       |
+
+---
+
+### 7.2 Moving Obstacles
+
+| Type     | Behavior             |
+| -------- | -------------------- |
+| Hammers  | Periodic smash       |
+| Sliders  | Horizontal movement  |
+| Crushers | Timed vertical traps |
+
+---
+
+### 7.3 Enemies
+
+| Enemy        | Behavior        |
+| ------------ | --------------- |
+| Black Marble | Chases player   |
+| Steelie      | Heavy collision |
+| Worm         | Blocks path     |
+
+---
+
+## 8. Level Design Philosophy
+
+### Core Design Principles
+
+* Skill progression
+* Increasing complexity
+* Controlled chaos
+* Risk vs reward shortcuts
+
+---
+
+## 9. Level Structure
+
+Each level includes:
+
+* Start Zone
+* Main Path
+* Alternate Routes
+* Hazard Zones
+* Goal Platform
+
+---
+
+# 🗺️ LEVEL DETAILS
+
+---
+
+## LEVEL 1 — Practice Race
+
+### Theme
+
+Introductory
+
+### Layout
+
+```
+START
+  ↓
+Wide ramp
+  ↓
+Gentle turn
+  ↓
+Straight path
+  ↓
+GOAL
+```
+
+### Features
+
+* No enemies
+* Wide paths
+* Minimal hazards
+
+---
+
+## LEVEL 2 — Beginner Race
+
+### Layout
+
+```
+START
+  ↓
+Split path:
+   → Safe (long)
+   → Risky (short, narrow)
+  ↓
+Moving obstacles
+  ↓
+GOAL
+```
+
+### Features
+
+* Introduces choice
+* First moving hazards
+
+---
+
+## LEVEL 3 — Intermediate Race
+
+### Layout
+
+```
+START
+  ↓
+Zig-zag ramps
+  ↓
+Enemy patrol zone
+  ↓
+Narrow bridges
+  ↓
+GOAL
+```
+
+### Features
+
+* Enemy introduction
+* Precision required
+
+---
+
+## LEVEL 4 — Aerial Race
+
+### Layout
+
+```
+START
+  ↓
+Floating platforms
+  ↓
+Large gaps
+  ↓
+Moving tiles
+  ↓
+GOAL
+```
+
+### Features
+
+* Falling risk high
+* Timing critical
+
+---
+
+## LEVEL 5 — Silly Race
+
+### Layout
+
+```
+START
+  ↓
+Maze section
+  ↓
+Multiple enemy zones
+  ↓
+Fast conveyors
+  ↓
+GOAL
+```
+
+### Features
+
+* Chaos level
+* Multiple threats
+
+---
+
+## LEVEL 6 — Ultimate Race
+
+### Layout
+
+```
+START
+  ↓
+All previous mechanics combined
+  ↓
+Tight corridors
+  ↓
+Heavy enemy presence
+  ↓
+GOAL
+```
+
+### Features
+
+* Maximum difficulty
+* Precision mastery
+
+---
+
+## 10. Game Feel (Critical Section)
+
+### 10.1 Rolling Feel
+
+* Smooth acceleration
+* Momentum carries
+* Slight delay in direction change
+
+---
+
+### 10.2 Player Feedback
+
+| Feedback Type | Implementation                |
+| ------------- | ----------------------------- |
+| Visual        | Marble tilt                   |
+| Audio         | Rolling sound                 |
+| Collision     | Impact sound                  |
+| Speed         | Motion blur (optional modern) |
+
+---
+
+## 11. Audio Design
+
+### Sounds
+
+| Event     | Sound       |
+| --------- | ----------- |
+| Rolling   | Continuous  |
+| Collision | Thud        |
+| Fall      | Drop sound  |
+| Finish    | Victory cue |
+
+---
+
+### Music
+
+* Synth arcade style
+* Level-based variations
+
+---
+
+## 12. UI / HUD
+
+### Elements
+
+* Timer
+* Score
+* Lives
+* Level name
+
+---
+
+## 13. Technical Implementation Notes
+
+### 13.1 Coordinate System
+
+* 2.5D projection
+* World = 3D
+* Render = Isometric projection
+
+---
+
+### 13.2 Projection Formula
+
+```
+screenX = worldX - worldY
+screenY = (worldX + worldY) / 2 - worldZ
+```
+
+---
+
+### 13.3 Physics Tick
+
+* Fixed timestep recommended:
+
+  ```
+  dt = 1/60
+  ```
+
+---
+
+## 14. Difficulty Scaling
+
+| Level | Complexity | Speed | Hazards |
+| ----- | ---------- | ----- | ------- |
+| 1     | Low        | Low   | Minimal |
+| 6     | High       | High  | Maximum |
+
+---
+
+## 15. Edge Cases
+
+* Marble stuck → nudge force
+* Camera clipping → clamp bounds
+* Infinite roll → friction cap
+
+---
+
+## 16. Modern Enhancements (Optional)
+
+* Checkpoints (optional toggle)
+* Ghost runs
+* Time trials
+* Leaderboards
+
+---
+
+# ✨ 17. FINISHING TOUCHES (IMPORTANT)
+
+---
+
+## 17.1 Juice & Polish
+
+* Subtle camera easing
+* Marble shadow for depth
+* Particle sparks on impact
+* Screen shake (light)
+
+---
+
+## 17.2 Accessibility
+
+* Adjustable speed sensitivity
+* Assist mode (reduced friction)
+* Colorblind-safe palette
+
+---
+
+## 17.3 Replayability
+
+* Best time tracking
+* Hidden shortcuts
+* Alternate routes
+
+---
+
+## 17.4 Debug Tools (for your repo)
+
+* Toggle physics overlay
+* Show velocity vector
+* Show collision bounds
+* Level grid debug
+
+---
+
+## 18. Success Criteria
+
+✔ Marble feels weighty but responsive
+✔ Player improves with skill (not luck)
+✔ Levels teach mechanics progressively
+✔ Controls are precise but forgiving
+
+---
+
+## 19. Reverse Engineering Notes
+
+* Original used **trackball → velocity mapping**
+* Physics is simplified but tuned
+* Game feel is more important than realism
+
+---
+
+## 20. Final Summary
+
+Marble Madness is **not just physics** — it is:
+
+> **Precision + momentum + pressure**
+
+To replicate it correctly:
+
+* Prioritize **feel over math perfection**
+* Tune friction and acceleration carefully
+* Design levels around **player mastery curve**
+
+---
+
+If you want next step, I can:
+
+* Convert this into **repo-ready docs ZIP (PLAN_PR / BUILD_PR)**
+* Create **tilemap + level JSON specs for your engine**
+* Or map this directly into your **Phase-based sample progression (HTML-JS Gaming repo)**

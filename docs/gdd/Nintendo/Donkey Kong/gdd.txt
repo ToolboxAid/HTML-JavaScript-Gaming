@@ -1,0 +1,538 @@
+Below is a **full, production-grade Game Design Document (GDD)** for reverse-engineering **Donkey Kong** (Donkey Kong), including **jump physics, ladder logic, barrel AI, stage variations, scoring system, and finishing touches** for an arcade-accurate recreation.
+
+---
+
+# 🎮 GDD — Donkey Kong (Reverse Engineering Edition)
+
+**Document Type:** Full Technical + Design Spec
+**Target:** Faithful arcade recreation (Nintendo timing + physics)
+**Genre:** Platformer
+**Perspective:** 2D Side View (Single-Screen)
+**Core Identity:** Precision platforming + hazard timing + pattern mastery
+
+---
+
+# 1. 🧭 CORE GAME OVERVIEW
+
+## 1.1 Game Pillars
+
+* **Precise Jump Timing**
+* **Hazard Avoidance (Barrels, Fireballs)**
+* **Multi-Stage Variety**
+* **Climb & Traverse Mechanics**
+* **Increasing Difficulty**
+
+---
+
+## 1.2 Player Fantasy
+
+You are Mario (Jumpman), climbing construction platforms to rescue Pauline while avoiding Donkey Kong’s hazards.
+
+---
+
+# 2. 🎮 CORE GAMEPLAY LOOP
+
+1. Spawn at bottom of stage
+2. Move across platforms
+3. Climb ladders
+4. Jump over hazards
+5. Reach top goal
+6. Complete stage
+7. Progress to next stage
+
+---
+
+# 3. 🧍 PLAYER SYSTEM (JUMPMAN)
+
+## 3.1 Controls
+
+* Left / Right movement
+* Jump
+* Up / Down (ladder climb)
+
+---
+
+## 3.2 Movement Model
+
+```text
+velocityX = input * speed
+velocityY = jumpImpulse - gravity
+```
+
+---
+
+## 3.3 Jump Physics (CRITICAL)
+
+```text
+jumpImpulse = fixed
+gravity = constant
+arc = predictable
+```
+
+---
+
+### Properties
+
+```text
+Horizontal Speed: Moderate
+Jump Height: Fixed
+Air Control: Limited
+Landing: Immediate stop
+```
+
+---
+
+## 3.4 Player States
+
+| State    | Description     |
+| -------- | --------------- |
+| Running  | Ground movement |
+| Jumping  | In air          |
+| Climbing | Ladder          |
+| Falling  | Missed jump     |
+| Dead     | Life lost       |
+
+---
+
+# 4. 🧗 LADDER SYSTEM
+
+## 4.1 Behavior
+
+```text
+IF player aligned with ladder:
+    allow vertical movement
+```
+
+---
+
+## 4.2 Rules
+
+* Cannot jump while climbing
+* Must align precisely
+
+---
+
+## 4.3 Broken Ladders
+
+* Cannot climb fully
+* Must jump gaps
+
+---
+
+# 5. 🧟 ENEMY / HAZARD SYSTEM
+
+## 5.1 Barrel System (CORE MECHANIC)
+
+### Spawn
+
+```text
+Donkey Kong releases barrels
+```
+
+---
+
+### Behavior
+
+```text
+roll along platform
+→ drop at ladder intersections (random chance)
+```
+
+---
+
+### Movement Types
+
+* Straight roll
+* Ladder drop
+* Wild bounce (rare variation)
+
+---
+
+## 5.2 Fire Enemies (Oil Can)
+
+### Behavior
+
+```text
+spawn from oil barrel
+→ move unpredictably
+→ climb ladders
+```
+
+---
+
+## 5.3 Other Hazards (by stage)
+
+* Springs
+* Flames
+* Conveyor belts
+
+---
+
+# 6. 🧠 ENEMY AI SYSTEM
+
+## 6.1 Barrel Logic
+
+```text
+IF ladder encountered:
+    random chance to descend
+ELSE:
+    continue rolling
+```
+
+---
+
+## 6.2 Fire Enemy AI
+
+```text
+move randomly
+→ occasionally climb ladders
+→ pursue player loosely
+```
+
+---
+
+# 7. 🏗️ STAGE SYSTEM (MULTI-SCENE)
+
+## 7.1 Stage Types
+
+---
+
+### 1. Barrels Stage (Classic)
+
+```text
+sloped platforms
+barrels roll downward
+```
+
+---
+
+### 2. Rivets Stage
+
+* Remove rivets to collapse structure
+* Avoid enemies
+
+---
+
+### 3. Elevator Stage
+
+* Moving platforms
+* Vertical navigation
+
+---
+
+### 4. Pie Factory / Conveyor Stage
+
+* Conveyor belts
+* Fire hazards
+
+---
+
+## 7.2 Stage Rotation
+
+```text
+cycle through stage types
+increase difficulty
+```
+
+---
+
+# 8. 🎯 COLLISION SYSTEM
+
+## 8.1 Rules
+
+| Collision               | Result |
+| ----------------------- | ------ |
+| Player vs barrel        | Death  |
+| Player vs fire          | Death  |
+| Player vs fall          | Death  |
+| Player jump over barrel | Score  |
+
+---
+
+## 8.2 Hitboxes
+
+* Tight and unforgiving
+* Slight forgiveness during jumps
+
+---
+
+# 9. ⏱️ TIMER SYSTEM
+
+## 9.1 Countdown
+
+```text
+bonusTimer -= time
+```
+
+---
+
+## 9.2 Effect
+
+* Remaining time = bonus score
+
+---
+
+## 9.3 Failure
+
+* Timer reaches zero → death
+
+---
+
+# 10. 🎲 RNG SYSTEM
+
+* Barrel ladder drop chance
+* Fire enemy movement
+
+---
+
+# 11. 🎵 AUDIO DESIGN
+
+## Music
+
+* Iconic intro theme
+
+---
+
+## SFX
+
+* Jump sound
+* Barrel roll
+* Hammer smash
+* Death jingle
+
+---
+
+# 12. 🔨 HAMMER POWER-UP
+
+## 12.1 Behavior
+
+```text
+collect hammer → temporary invincibility
+→ destroys barrels/enemies
+```
+
+---
+
+## 12.2 Constraints
+
+* Cannot climb ladders while active
+
+---
+
+# 13. 🎨 VISUAL DESIGN
+
+## Style
+
+* Bright pixel art
+* Clear platform layout
+
+---
+
+## Animation
+
+* Jump arc readable
+* Barrel rolling animation
+
+---
+
+# 14. ⚙️ TECHNICAL SYSTEMS
+
+## Frame Rate
+
+* ~60 FPS equivalent
+
+---
+
+## Physics
+
+* Simple gravity + fixed jump
+
+---
+
+## Input
+
+* Immediate response
+
+---
+
+# 15. 🧪 DIFFICULTY DESIGN
+
+## Core Drivers
+
+* Timing precision
+* Hazard density
+* Movement constraints
+
+---
+
+## Difficulty Curve
+
+* Gradual → very punishing
+
+---
+
+# 16. 🧩 REVERSE ENGINEERING NOTES
+
+## MUST MATCH
+
+* Jump arc timing
+* Barrel drop probability
+* Ladder alignment precision
+* Enemy movement patterns
+
+---
+
+## QUIRKS TO PRESERVE
+
+* Slight input stiffness
+* Unpredictable barrels
+* Tight collision windows
+
+---
+
+# 17. 🧠 AI STATES
+
+```text
+Move
+Roll
+Climb
+Attack
+```
+
+---
+
+# 18. 🧪 TESTING CHECKLIST
+
+* [ ] Jump physics accurate
+* [ ] Barrel behavior correct
+* [ ] Ladder climbing works
+* [ ] Stage transitions correct
+* [ ] Collision detection precise
+* [ ] Timer works correctly
+
+---
+
+# 19. ✨ FINISHING TOUCHES (POLISH)
+
+## 19.1 Arcade Feel
+
+* Precise, unforgiving controls
+* No smoothing
+
+---
+
+## 19.2 Visual Polish
+
+* Clear platform contrast
+* Readable hazards
+
+---
+
+## 19.3 Audio Polish
+
+* Timed jump sound
+* Barrel audio cues
+
+---
+
+## 19.4 UX Rules
+
+* Minimal UI
+* Instant restart
+
+---
+
+## 19.5 Authentic “Frustrations”
+
+* Tight jumps
+* Random barrel drops
+* Ladder misalignment deaths
+
+---
+
+# 20. 🧾 DATA STRUCTURES
+
+## Player
+
+```text
+x, y
+velocityX, velocityY
+state
+```
+
+---
+
+## Barrel
+
+```text
+x, y
+direction
+state
+```
+
+---
+
+## Enemy
+
+```text
+type
+x, y
+state
+```
+
+---
+
+## Stage
+
+```text
+platforms[]
+ladders[]
+hazards[]
+```
+
+---
+
+## Game
+
+```text
+score
+lives
+level
+timer
+```
+
+---
+
+# 21. 🏁 SUCCESS CRITERIA
+
+A correct recreation should:
+
+* Feel **tight and precise**
+* Reward **timing mastery**
+* Preserve **arcade difficulty**
+* Match **Donkey Kong behavior exactly**
+
+---
+
+# 🔚 FINAL SUMMARY
+
+This GDD captures:
+
+* Full **platforming + jump system**
+* Detailed **barrel and hazard logic**
+* Complete **multi-stage gameplay**
+* Accurate **timing and scoring systems**
+* Authentic **Donkey Kong arcade feel**
+
+---
+
+## 🚀 Next Step (fits your repo workflow perfectly)
+
+I can generate:
+
+* Frame-accurate **jump + gravity constants**
+* **Barrel AI probability tables**
+* Full **stage layout tilemaps**
+* Or a **PLAN_PR → BUILD_PR ZIP (docs-only, Codex-ready)**
+
+Just say: **“build the PR”** and I’ll package it exactly how you want.

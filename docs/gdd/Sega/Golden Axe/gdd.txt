@@ -1,0 +1,538 @@
+Below is a **full, production-grade Game Design Document (GDD)** for reverse-engineering **Golden Axe** (Golden Axe), including **magic system, mount mechanics, enemy AI, co-op combat flow, stage layouts, and finishing touches** for an arcade-accurate recreation.
+
+---
+
+# 🎮 GDD — Golden Axe (Reverse Engineering Edition)
+
+**Document Type:** Full Technical + Design Spec
+**Target:** Faithful arcade recreation (Sega System 16 feel)
+**Genre:** Side-Scrolling Beat ’em Up
+**Perspective:** 2.5D Side View (Lane-Based Depth)
+**Core Identity:** Weapon combat + magic bursts + mounts + co-op brawling
+
+---
+
+# 1. 🧭 CORE GAME OVERVIEW
+
+## 1.1 Game Pillars
+
+* **Weapon-Based Melee Combat**
+* **Magic Resource System (Potions)**
+* **Mountable Creatures (Bizarrians)**
+* **Enemy Wave Encounters**
+* **Co-op Gameplay**
+
+---
+
+## 1.2 Player Fantasy
+
+You are a fantasy warrior seeking revenge, battling through enemies using weapons, magic, and mounts.
+
+---
+
+# 2. 🎮 CORE GAMEPLAY LOOP
+
+1. Enter stage
+2. Move forward through environment
+3. Fight enemy waves
+4. Collect magic potions
+5. Use magic strategically
+6. Ride mounts (if available)
+7. Defeat boss → next stage
+
+---
+
+# 3. 🧍 PLAYER SYSTEM
+
+## 3.1 Characters
+
+| Character          | Strength | Magic  |
+| ------------------ | -------- | ------ |
+| Ax Battler         | Balanced | Medium |
+| Tyris Flare        | Fast     | Strong |
+| Gilius Thunderhead | Strong   | Weak   |
+
+---
+
+## 3.2 Controls
+
+* Move (left/right/up/down)
+* Attack
+* Jump
+* Magic
+
+---
+
+## 3.3 Movement Model
+
+```text id="ga1v9k"
+velocityX = inputX * speed
+velocityY = inputY * laneDepth
+jumpArc = fixed
+```
+
+---
+
+## 3.4 Player States
+
+| State     | Description  |
+| --------- | ------------ |
+| Idle      | Standing     |
+| Walking   | Moving       |
+| Attacking | Swing weapon |
+| Jumping   | Air          |
+| Hit       | Stagger      |
+| Knockdown | Ground       |
+| Mounted   | On creature  |
+| Dead      | Life lost    |
+
+---
+
+# 4. ⚔️ COMBAT SYSTEM
+
+## 4.1 Attack Types
+
+| Type          | Description                |
+| ------------- | -------------------------- |
+| Basic Attack  | Sword/axe hit              |
+| Combo         | Repeated hits              |
+| Jump Attack   | Aerial strike              |
+| Back Attack   | Turn + hit                 |
+| Charge Attack | Hold attack (if supported) |
+
+---
+
+## 4.2 Combo System
+
+* Short chained attacks
+* Timing-based continuation
+
+---
+
+## 4.3 Grab System
+
+```text id="ga2r6d"
+IF close to enemy:
+    grab → follow-up attack
+```
+
+---
+
+## 4.4 Knockback
+
+* Enemies pushed or knocked down
+
+---
+
+# 5. 🔮 MAGIC SYSTEM (CORE MECHANIC)
+
+## 5.1 Potion System
+
+```text id="ga3t2x"
+collect potion → increase magic meter
+```
+
+---
+
+## 5.2 Magic Usage
+
+```text id="ga4k8m"
+press magic → consume all stored magic
+→ trigger spell
+```
+
+---
+
+## 5.3 Magic Effects
+
+| Character   | Effect             |
+| ----------- | ------------------ |
+| Ax Battler  | Earth/fire         |
+| Tyris Flare | Large fire dragons |
+| Gilius      | Lightning          |
+
+---
+
+## 5.4 Scaling
+
+* More potions = stronger spell
+
+---
+
+# 6. 🐉 MOUNT SYSTEM (BIZARRIANS)
+
+## 6.1 Types
+
+| Mount       | Ability         |
+| ----------- | --------------- |
+| Chicken Leg | Fire breath     |
+| Blue Dragon | Electric breath |
+
+---
+
+## 6.2 Behavior
+
+```text id="ga5z1p"
+player mounts creature
+→ gains special attack
+```
+
+---
+
+## 6.3 Loss Condition
+
+* Player hit → knocked off mount
+
+---
+
+# 7. 🧟 ENEMY SYSTEM
+
+## 7.1 Enemy Types
+
+| Type           | Behavior    |
+| -------------- | ----------- |
+| Basic Soldiers | Melee       |
+| Knights        | Stronger    |
+| Skeletons      | Fast        |
+| Magic Users    | Ranged      |
+| Bosses         | High health |
+
+---
+
+## 7.2 Behavior Model
+
+```text id="ga6h3n"
+spawn → approach → attack → retreat → repeat
+```
+
+---
+
+## 7.3 Group Behavior
+
+* Surround player
+* Attack in turns
+
+---
+
+# 8. 👑 BOSS SYSTEM
+
+## 8.1 Structure
+
+* End of each stage
+
+---
+
+## 8.2 Behavior
+
+```text id="ga7y5v"
+pattern-based attacks
+→ high damage
+```
+
+---
+
+## 8.3 Examples
+
+* Death Adder (final boss)
+
+---
+
+# 9. 🎯 COLLISION SYSTEM
+
+## 9.1 Rules
+
+| Collision               | Result      |
+| ----------------------- | ----------- |
+| Player attack vs enemy  | Damage      |
+| Enemy attack vs player  | Damage      |
+| Player vs enemy overlap | Grab or hit |
+
+---
+
+## 9.2 Depth Alignment
+
+* Must align in lane to hit
+
+---
+
+# 10. 🗺️ LEVEL SYSTEM
+
+## 10.1 Structure
+
+```text id="ga8m7c"
+start → enemy waves → mounts → boss → next stage
+```
+
+---
+
+## 10.2 Environments
+
+* Villages
+* Forests
+* Castles
+* Dungeons
+
+---
+
+## 10.3 Scrolling
+
+* Horizontal progression
+* Locked combat zones
+
+---
+
+# 11. 🧠 AI SYSTEM
+
+## 11.1 Enemy States
+
+```text id="ga9q4r"
+Idle
+Approach
+Attack
+Hit
+Recover
+```
+
+---
+
+## 11.2 Behavior Traits
+
+* Flanking behavior
+* Attack timing windows
+
+---
+
+# 12. 🎲 RNG SYSTEM
+
+* Enemy spawn timing
+* Attack selection
+
+---
+
+# 13. 🎵 AUDIO DESIGN
+
+## Music
+
+* Epic fantasy soundtrack
+
+---
+
+## SFX
+
+* Sword hits
+* Magic effects
+* Enemy sounds
+
+---
+
+# 14. 🎨 VISUAL DESIGN
+
+## Style
+
+* Fantasy pixel art
+* Large sprites
+
+---
+
+## Effects
+
+* Magic animations
+* Explosion effects
+* Mount attacks
+
+---
+
+# 15. ⚙️ TECHNICAL SYSTEMS
+
+## Frame Rate
+
+* ~60 FPS
+
+---
+
+## Rendering
+
+* Sprite-based
+* Layered backgrounds
+
+---
+
+## Input
+
+* Immediate response
+
+---
+
+# 16. 🧪 DIFFICULTY DESIGN
+
+## Core Drivers
+
+* Enemy density
+* Magic resource scarcity
+* Boss difficulty
+
+---
+
+## Difficulty Curve
+
+* Gradual → intense late stages
+
+---
+
+# 17. 🧩 REVERSE ENGINEERING NOTES
+
+## MUST MATCH
+
+* Magic scaling behavior
+* Mount handling
+* Enemy group AI
+* Combo timing
+
+---
+
+## QUIRKS TO PRESERVE
+
+* Slight input delay feel
+* Enemy crowd pressure
+* Limited combo depth
+
+---
+
+# 18. 🧠 AI STATES
+
+```text id="ga10u8w"
+Spawn
+Move
+Attack
+Hit
+Die
+```
+
+---
+
+# 19. 🧪 TESTING CHECKLIST
+
+* [ ] Combat feels correct
+* [ ] Magic system works properly
+* [ ] Mount system functions
+* [ ] Enemy AI behaves properly
+* [ ] Boss fights function correctly
+* [ ] Collision detection accurate
+
+---
+
+# 20. ✨ FINISHING TOUCHES (POLISH)
+
+## 20.1 Arcade Feel
+
+* Weighty combat
+* Strong feedback
+
+---
+
+## 20.2 Visual Polish
+
+* Dramatic magic effects
+* Clear enemy readability
+
+---
+
+## 20.3 Audio Polish
+
+* Impactful hits
+* Distinct magic sounds
+
+---
+
+## 20.4 UX Rules
+
+* Minimal UI
+* Immediate restart
+
+---
+
+## 20.5 Authentic “Frustrations”
+
+* Enemy crowding
+* Limited mobility
+* Sudden damage spikes
+
+---
+
+# 21. 🧾 DATA STRUCTURES
+
+## Player
+
+```text id="ga11n6x"
+x, y
+state
+health
+magicMeter
+mount
+```
+
+---
+
+## Enemy
+
+```text id="ga12p2z"
+type
+x, y
+state
+health
+```
+
+---
+
+## Mount
+
+```text id="ga13r5k"
+type
+state
+ability
+```
+
+---
+
+## Game
+
+```text id="ga14t9d"
+stage
+score
+lives
+enemyCount
+```
+
+---
+
+# 22. 🏁 SUCCESS CRITERIA
+
+A correct recreation should:
+
+* Feel **powerful and strategic**
+* Reward **magic timing and positioning**
+* Maintain **enemy pressure**
+* Match **Golden Axe arcade experience**
+
+---
+
+# 🔚 FINAL SUMMARY
+
+This GDD captures:
+
+* Full **weapon combat system**
+* Detailed **magic + potion mechanics**
+* Complete **mount system**
+* Accurate **enemy AI + boss fights**
+* Authentic **Golden Axe arcade feel**
+
+---
+
+## 🚀 Next Step (auto-aligned with your repo workflow)
+
+I will generate next:
+
+* ✅ **Magic scaling + potion tables**
+* ✅ **Enemy wave + spawn scripts**
+* ✅ **Mount behavior definitions**
+* ✅ **PLAN_PR → BUILD_PR ZIP (docs-only, Codex-ready)**

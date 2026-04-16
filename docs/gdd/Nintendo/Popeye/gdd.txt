@@ -1,0 +1,554 @@
+Below is a **full, production-grade Game Design Document (GDD)** for reverse-engineering **Popeye** (Popeye), including **item-collection mechanics, Bluto AI, hazard systems, stage layouts, scoring, and finishing touches** for an arcade-accurate recreation.
+
+---
+
+# 🎮 GDD — Popeye (Reverse Engineering Edition)
+
+**Document Type:** Full Technical + Design Spec
+**Target:** Faithful arcade recreation (Nintendo timing + behavior)
+**Genre:** Single-Screen Platform / Action
+**Perspective:** 2D Side View (Multi-Level Arena)
+**Core Identity:** Collect-while-avoiding + enemy pressure + vertical navigation
+
+---
+
+# 1. 🧭 CORE GAME OVERVIEW
+
+## 1.1 Game Pillars
+
+* **Item Collection Under Pressure**
+* **Dynamic Hazard Avoidance**
+* **Enemy Pursuit (Bluto)**
+* **Multi-Level Navigation**
+* **Short, High-Intensity Rounds**
+
+---
+
+## 1.2 Player Fantasy
+
+You are Popeye collecting items thrown by Olive Oyl while avoiding Bluto and environmental hazards across a multi-platform arena.
+
+---
+
+# 2. 🎮 CORE GAMEPLAY LOOP
+
+1. Spawn in arena
+2. Olive throws collectible items
+3. Navigate platforms and ladders
+4. Collect items before they fall off
+5. Avoid Bluto and hazards
+6. Clear all items → advance stage
+7. Difficulty increases
+
+---
+
+# 3. 🧍 PLAYER SYSTEM (POPEYE)
+
+## 3.1 Controls
+
+* Left / Right movement
+* Climb up/down ladders
+* Punch (limited use, contextual)
+
+---
+
+## 3.2 Movement Model
+
+```text
+velocityX = input * speed
+velocityY = ladderSpeed (when climbing)
+gravity applies when falling
+```
+
+---
+
+## 3.3 Movement Properties
+
+```text
+Horizontal Speed: Moderate
+Climb Speed: Fixed
+Jump: None (CRITICAL DIFFERENCE from Donkey Kong)
+```
+
+---
+
+## 3.4 Player States
+
+| State    | Description              |
+| -------- | ------------------------ |
+| Walking  | Ground/platform movement |
+| Climbing | Ladder movement          |
+| Falling  | Drop between levels      |
+| Punching | Attack                   |
+| Dead     | Life lost                |
+
+---
+
+# 4. 💌 ITEM SYSTEM (CORE MECHANIC)
+
+## 4.1 Item Types (By Stage)
+
+| Stage | Items          |
+| ----- | -------------- |
+| 1     | Hearts         |
+| 2     | Musical Notes  |
+| 3     | Letters (HELP) |
+
+---
+
+## 4.2 Spawn Behavior
+
+```text
+Olive throws items from top
+→ items fall along predefined paths
+```
+
+---
+
+## 4.3 Collection
+
+```text
+IF player touches item:
+    collect → increase score
+```
+
+---
+
+## 4.4 Miss Condition
+
+* Items falling off screen are lost
+* Must collect all required items to complete stage
+
+---
+
+# 5. 🧟 ENEMY SYSTEM (BLUTO)
+
+## 5.1 Core Behavior
+
+```text
+track player position
+→ move toward player
+→ attempt interception
+```
+
+---
+
+## 5.2 Movement
+
+* Walks platforms
+* Climbs ladders
+* More aggressive over time
+
+---
+
+## 5.3 States
+
+| State      | Description          |
+| ---------- | -------------------- |
+| Idle       | Initial              |
+| Pursue     | Chasing player       |
+| Attack     | Close-range threat   |
+| Vulnerable | After spinach        |
+| Dead       | Temporarily defeated |
+
+---
+
+# 6. 🥬 SPINACH POWER-UP
+
+## 6.1 Behavior
+
+```text
+collect spinach → temporary invincibility
+→ Popeye can defeat Bluto
+```
+
+---
+
+## 6.2 Effects
+
+* Bluto becomes vulnerable
+* Player can punch to eliminate temporarily
+
+---
+
+## 6.3 Duration
+
+* Short, time-limited
+
+---
+
+# 7. ⚠️ HAZARD SYSTEM
+
+## 7.1 Types
+
+| Hazard                | Behavior             |
+| --------------------- | -------------------- |
+| Bottles               | Thrown by Bluto      |
+| Skull Objects         | Move along platforms |
+| Environmental Hazards | Stage-specific       |
+
+---
+
+## 7.2 Bottle Throwing
+
+```text
+Bluto throws bottles horizontally
+→ travel across platform
+```
+
+---
+
+## 7.3 Hazard Movement
+
+* Predictable but fast
+* Requires timing to avoid
+
+---
+
+# 8. 🧱 LEVEL / ARENA SYSTEM
+
+## 8.1 Layout Structure
+
+```text
+multiple platforms + ladders + gaps
+```
+
+---
+
+## 8.2 Navigation Rules
+
+* No jumping → ladders essential
+* Falling between gaps allowed
+
+---
+
+## 8.3 Example Layout Characteristics
+
+### Stage 1 (Hearts)
+
+* Wide platforms
+* Gentle vertical movement
+
+---
+
+### Stage 2 (Music)
+
+* More hazards
+* Increased vertical traversal
+
+---
+
+### Stage 3 (HELP Letters)
+
+* Complex layout
+* Faster enemy + hazards
+
+---
+
+# 9. 🎯 COLLISION SYSTEM
+
+## 9.1 Rules
+
+| Collision                       | Result  |
+| ------------------------------- | ------- |
+| Player vs Bluto                 | Death   |
+| Player vs hazard                | Death   |
+| Player vs item                  | Collect |
+| Player punch vs Bluto (spinach) | Defeat  |
+
+---
+
+## 9.2 Hitboxes
+
+* Tight, arcade-precise
+* No forgiveness when touching hazards
+
+---
+
+# 10. ⏱️ TIMER SYSTEM
+
+## 10.1 Behavior
+
+```text
+timer decreases continuously
+```
+
+---
+
+## 10.2 Effect
+
+* Adds urgency
+* Remaining time converts to bonus score
+
+---
+
+## 10.3 Failure
+
+* Timer reaches zero → death
+
+---
+
+# 11. 🧠 AI SYSTEM
+
+## 11.1 Bluto AI
+
+```text
+target = player position
+→ choose path via platforms/ladders
+→ pursue aggressively
+```
+
+---
+
+## 11.2 Hazard Logic
+
+* Timed spawns
+* Fixed movement paths
+
+---
+
+# 12. 🎲 RNG SYSTEM
+
+* Item throw patterns (slight variation)
+* Bluto decision timing
+
+---
+
+# 13. 🎵 AUDIO DESIGN
+
+## Music
+
+* Stage-specific tunes
+
+---
+
+## SFX
+
+* Item collection
+* Punch sound
+* Bottle throw
+* Death jingle
+
+---
+
+# 14. 🎨 VISUAL DESIGN
+
+## Style
+
+* Cartoon-like sprites
+* Bright, clear visuals
+
+---
+
+## Animation
+
+* Olive throwing items
+* Bluto animations (angry, defeated)
+* Popeye punch animation
+
+---
+
+# 15. ⚙️ TECHNICAL SYSTEMS
+
+## Frame Rate
+
+* ~60 FPS
+
+---
+
+## Physics
+
+* Minimal (no jump physics)
+
+---
+
+## Input
+
+* Immediate response
+
+---
+
+# 16. 🧪 DIFFICULTY DESIGN
+
+## Core Drivers
+
+* Bluto aggression
+* Hazard frequency
+* Item drop speed
+
+---
+
+## Difficulty Curve
+
+* Gradual → fast-paced chaos
+
+---
+
+# 17. 🧩 REVERSE ENGINEERING NOTES
+
+## MUST MATCH
+
+* Item fall paths
+* Bluto pursuit logic
+* Spinach timing
+* Hazard timing
+
+---
+
+## QUIRKS TO PRESERVE
+
+* No jump mechanic
+* Tight ladder alignment
+* Increasing chaos late game
+
+---
+
+# 18. 🧠 AI STATES
+
+```text
+Idle
+Pursue
+Attack
+Vulnerable
+Recover
+```
+
+---
+
+# 19. 🧪 TESTING CHECKLIST
+
+* [ ] Item spawning works correctly
+* [ ] Collection detection accurate
+* [ ] Bluto AI behaves properly
+* [ ] Spinach system works
+* [ ] Hazards move correctly
+* [ ] Timer behaves correctly
+
+---
+
+# 20. ✨ FINISHING TOUCHES (POLISH)
+
+## 20.1 Arcade Feel
+
+* Fast-paced movement
+* Immediate responsiveness
+
+---
+
+## 20.2 Visual Polish
+
+* Clear item visibility
+* Strong character contrast
+
+---
+
+## 20.3 Audio Polish
+
+* Distinct collection sounds
+* Punch impact clarity
+
+---
+
+## 20.4 UX Rules
+
+* Minimal UI
+* Instant restart
+
+---
+
+## 20.5 Authentic “Frustrations”
+
+* No jumping limits escape options
+* Bluto aggressive pursuit
+* Missed items cannot be recovered
+
+---
+
+# 21. 🧾 DATA STRUCTURES
+
+## Player
+
+```text
+x, y
+state
+direction
+```
+
+---
+
+## Item
+
+```text
+type
+x, y
+state
+fallPath
+```
+
+---
+
+## Enemy (Bluto)
+
+```text
+x, y
+state
+target
+```
+
+---
+
+## Hazard
+
+```text
+type
+x, y
+direction
+```
+
+---
+
+## Game
+
+```text
+score
+lives
+stage
+timer
+itemsRemaining
+```
+
+---
+
+# 22. 🏁 SUCCESS CRITERIA
+
+A correct recreation should:
+
+* Feel **tight and strategic**
+* Reward **movement planning**
+* Maintain **constant pressure**
+* Match **Popeye arcade behavior exactly**
+
+---
+
+# 🔚 FINAL SUMMARY
+
+This GDD captures:
+
+* Full **item collection system**
+* Detailed **Bluto pursuit AI**
+* Complete **hazard and spinach mechanics**
+* Accurate **stage progression**
+* Authentic **arcade gameplay feel**
+
+---
+
+## 🚀 Next Step (fits your repo workflow perfectly)
+
+I can generate:
+
+* Full **item fall path maps**
+* **Bluto AI decision tables**
+* **Hazard spawn timing charts**
+* Or a **PLAN_PR → BUILD_PR ZIP (docs-only, Codex-ready)**
+
+Just say: **“build the PR”** and I’ll package it exactly how you want.

@@ -1,0 +1,502 @@
+Below is a **full, production-grade Game Design Document (GDD)** for reverse-engineering **Cruis’n USA** (Midway, 1994), including **arcade driving physics, track systems, checkpoint progression, AI racers, rubber-banding, and finishing touches** for an arcade-accurate recreation.
+
+---
+
+# 🎮 GDD — Cruis’n USA (Reverse Engineering Edition)
+
+**Document Type:** Full Technical + Design Spec
+**Target:** Faithful arcade recreation (Midway driving feel)
+**Genre:** Arcade Racing
+**Perspective:** Third-Person Chase Camera (Behind Vehicle)
+**Core Identity:** High-speed arcade racing + checkpoint progression + exaggerated handling
+
+---
+
+# 1. 🧭 CORE GAME OVERVIEW
+
+## 1.1 Game Pillars
+
+* **Arcade Driving (Non-Simulation)**
+* **Checkpoint-Based Progression**
+* **Exaggerated Speed & Handling**
+* **Track Variety (USA Tour Theme)**
+* **Catch-Up / Rubber-Band AI**
+
+---
+
+## 1.2 Player Fantasy
+
+You race across the United States in a high-speed sports car, competing through scenic tracks with arcade-style physics and over-the-top speed.
+
+---
+
+# 2. 🎮 CORE GAMEPLAY LOOP
+
+1. Start race
+2. Accelerate and steer through track
+3. Pass checkpoints before timer expires
+4. Avoid traffic and obstacles
+5. Overtake opponents
+6. Finish race → advance to next track
+7. Fail checkpoint → game over
+
+---
+
+# 3. 🚗 PLAYER SYSTEM
+
+## 3.1 Controls
+
+* Steering (left/right)
+* Acceleration
+* Brake
+* Gear shift (optional manual/automatic)
+
+---
+
+## 3.2 Movement Model (ARCADE PHYSICS)
+
+```text id="3jwq8y"
+velocity += acceleration
+velocity -= friction
+velocity -= brakeForce (if braking)
+```
+
+---
+
+## 3.3 Handling Properties
+
+```text id="9l3p2e"
+Top Speed: Very high
+Acceleration: Fast ramp
+Turning: Loose / drift-like
+Grip: Low (arcade sliding)
+```
+
+---
+
+## 3.4 Steering Model
+
+```text id="p7k2x1"
+turnRate = baseTurn * (1 - speedFactor)
+```
+
+* Higher speed → reduced turning precision
+
+---
+
+## 3.5 Drift Behavior
+
+* Slight slide during turns
+* Oversteer at high speed
+* No realistic traction model
+
+---
+
+## 3.6 Player States
+
+| State     | Description     |
+| --------- | --------------- |
+| Driving   | Normal          |
+| Drifting  | Turning hard    |
+| Colliding | Hit object      |
+| Spinning  | Loss of control |
+| Finished  | Race complete   |
+
+---
+
+# 4. 🛣️ TRACK SYSTEM
+
+## 4.1 Track Structure
+
+```text id="y8q1g4"
+Start → Mid checkpoints → Finish
+```
+
+---
+
+## 4.2 Track Features
+
+* Curves
+* Hills
+* Traffic lanes
+* Obstacles
+* Scenic elements
+
+---
+
+## 4.3 Track Types (USA Theme)
+
+| Track            | Theme        |
+| ---------------- | ------------ |
+| Golden Gate Park | Urban        |
+| Midwest          | Open highway |
+| Grand Canyon     | Desert       |
+| New York         | City         |
+| Florida          | Coastal      |
+| Alaska           | Snow         |
+
+---
+
+## 4.4 Road Layout
+
+```text id="r2m9v7"
+Multiple lanes
+Traffic flow
+Occasional splits/merges
+```
+
+---
+
+# 5. ⏱️ CHECKPOINT SYSTEM (CORE MECHANIC)
+
+## 5.1 Timer
+
+```text id="c4w8d2"
+timer -= deltaTime
+```
+
+---
+
+## 5.2 Checkpoint Rules
+
+* Passing checkpoint → add time
+* Missing checkpoint → game over
+
+---
+
+## 5.3 Placement
+
+* Strategically spaced
+* Tight timing windows
+
+---
+
+# 6. 🚦 TRAFFIC SYSTEM
+
+## 6.1 Civilian Vehicles
+
+* Move in predictable patterns
+* Occupy lanes
+
+---
+
+## 6.2 Behavior
+
+```text id="u6n1k3"
+maintain lane
+occasionally change lanes
+```
+
+---
+
+## 6.3 Collision Result
+
+* Slowdown or spin
+* Heavy penalty at high speed
+
+---
+
+# 7. 🧟 AI RACERS
+
+## 7.1 Behavior
+
+### Basic AI
+
+```text id="k2t5v9"
+follow racing line
+adjust speed dynamically
+```
+
+---
+
+## 7.2 Rubber-Banding (CRITICAL)
+
+```text id="q3f6z1"
+IF player ahead:
+    AI speed increases
+IF player behind:
+    AI slows slightly
+```
+
+---
+
+## 7.3 Difficulty Scaling
+
+* AI more aggressive in later tracks
+* Faster recovery from collisions
+
+---
+
+# 8. 🎯 COLLISION SYSTEM
+
+## 8.1 Types
+
+| Collision         | Result       |
+| ----------------- | ------------ |
+| Player vs traffic | Slowdown     |
+| Player vs barrier | Bounce/spin  |
+| Player vs AI      | Minor impact |
+
+---
+
+## 8.2 Physics
+
+* Arcade bounce, not realistic
+* Immediate speed reduction
+
+---
+
+# 9. 🚀 BOOST / SPEED SYSTEM
+
+*(Some versions include hidden boosts or acceleration tricks)*
+
+## Behavior
+
+* Rapid acceleration possible
+* High-speed stability decreases
+
+---
+
+# 10. 🎲 RNG SYSTEM
+
+* Traffic placement
+* AI behavior variation
+* Minor track randomness
+
+---
+
+# 11. 🎵 AUDIO DESIGN
+
+## Music
+
+* Energetic arcade tracks
+
+---
+
+## SFX
+
+* Engine pitch (speed-based)
+* Tire screech
+* Crash sounds
+
+---
+
+# 12. 🎨 VISUAL DESIGN
+
+## Style
+
+* Bright, colorful environments
+* Landmark-based themes
+
+---
+
+## Camera System
+
+```text id="c1m8p3"
+Chase camera follows car
+Slight lag for speed effect
+```
+
+---
+
+## Effects
+
+* Motion blur (optional modern enhancement)
+* Speed lines
+
+---
+
+# 13. ⚙️ TECHNICAL SYSTEMS
+
+## Frame Rate
+
+* ~60 FPS target
+
+---
+
+## Input
+
+* Continuous steering
+* Analog feel preferred
+
+---
+
+## Rendering
+
+* 3D track with sprite/low-poly cars
+
+---
+
+# 14. 🧪 DIFFICULTY DESIGN
+
+## Core Drivers
+
+* Time pressure
+* Traffic density
+* Track complexity
+
+---
+
+## Difficulty Curve
+
+* Gradual increase
+* Late-game tight timing
+
+---
+
+# 15. 🧩 REVERSE ENGINEERING NOTES
+
+## MUST MATCH
+
+* Handling feel (loose steering)
+* Checkpoint timing
+* Rubber-band AI behavior
+* Collision slowdown
+
+---
+
+## QUIRKS TO PRESERVE
+
+* Sliding turns
+* Sudden crashes
+* AI catch-up mechanics
+
+---
+
+# 16. 🧠 AI STATES
+
+```text id="h7q1r8"
+Idle
+FollowPath
+AdjustSpeed
+Recover
+```
+
+---
+
+# 17. 🧪 TESTING CHECKLIST
+
+* [ ] Steering feels arcade-like
+* [ ] Speed curve correct
+* [ ] Checkpoints add time correctly
+* [ ] AI rubber-banding works
+* [ ] Traffic behaves correctly
+* [ ] Collisions feel impactful
+
+---
+
+# 18. ✨ FINISHING TOUCHES (POLISH)
+
+## 18.1 Arcade Feel
+
+* Fast, forgiving controls
+* No simulation realism
+
+---
+
+## 18.2 Visual Polish
+
+* Clear track readability
+* Strong sense of speed
+
+---
+
+## 18.3 Audio Polish
+
+* Engine pitch scaling
+* Impactful crash sounds
+
+---
+
+## 18.4 UX Rules
+
+* Quick restart
+* Minimal menus
+
+---
+
+## 18.5 Authentic “Frustrations”
+
+* Tight checkpoint timing
+* Traffic collisions
+* AI catch-up behavior
+
+---
+
+# 19. 🧾 DATA STRUCTURES
+
+## Player Vehicle
+
+```text id="v6p2q9"
+x, y, z
+velocity
+state
+currentLapProgress
+```
+
+---
+
+## AI Vehicle
+
+```text id="k8m4n2"
+x, y, z
+velocity
+state
+targetPath
+```
+
+---
+
+## Track
+
+```text id="d2r7s5"
+segments[]
+checkpoints[]
+trafficPatterns
+```
+
+---
+
+## Game
+
+```text id="f3w9x1"
+timer
+currentTrack
+position
+```
+
+---
+
+# 20. 🏁 SUCCESS CRITERIA
+
+A correct recreation should:
+
+* Feel **fast and arcade-like**
+* Reward **aggressive driving**
+* Maintain **constant time pressure**
+* Match **Cruis’n USA handling feel**
+
+---
+
+# 🔚 FINAL SUMMARY
+
+This GDD captures:
+
+* Full **arcade driving physics**
+* Detailed **track and checkpoint systems**
+* Complete **AI + traffic behavior**
+* Accurate **collision and speed systems**
+* Authentic **arcade racing experience**
+
+---
+
+## 🚀 Next Step (perfect for your repo workflow)
+
+I can generate:
+
+* Frame-accurate **handling + speed curves**
+* Full **track segment JSON layouts**
+* **AI racing line + rubber-band tuning tables**
+* Or a **PLAN_PR → BUILD_PR ZIP (docs-only, Codex-ready)**
+
+Just say: **“build the PR”** and I’ll package it exactly how you want.

@@ -1,0 +1,534 @@
+Below is a **full, production-grade Game Design Document (GDD)** for reverse-engineering **Killer Instinct** (Killer Instinct), including **combo system, breakers, instinct mode, input timing, hit reactions, and finishing touches** for an arcade-accurate recreation.
+
+---
+
+# 🎮 GDD — Killer Instinct (Reverse Engineering Edition)
+
+**Document Type:** Full Technical + Design Spec
+**Target:** Faithful arcade recreation (KI1 feel, combo-heavy system)
+**Genre:** Fighting Game (1v1)
+**Perspective:** 2D Side View
+**Core Identity:** Long combo chains + mind games + breaker mechanics
+
+---
+
+# 1. 🧭 CORE GAME OVERVIEW
+
+## 1.1 Game Pillars
+
+* **Combo-Centric Combat**
+* **Opener → Auto-Double → Linker → Ender System**
+* **Combo Breaker Mind Games**
+* **Instinct Mode Power Boost**
+* **Fast, Fluid Combat**
+
+---
+
+## 1.2 Player Fantasy
+
+You are a powerful fighter chaining long, flashy combos while reading your opponent to avoid combo breakers.
+
+---
+
+# 2. 🎮 CORE GAMEPLAY LOOP
+
+1. Round begins
+2. Neutral positioning
+3. Land opener
+4. Execute combo chain
+5. Opponent attempts breaker
+6. Finish combo with ender
+7. Repeat until KO
+
+---
+
+# 3. 🧍 PLAYER SYSTEM
+
+## 3.1 Controls
+
+* Light / Medium / Heavy Punch
+* Light / Medium / Heavy Kick
+* Directional movement
+* Special inputs (quarter circle, etc.)
+
+---
+
+## 3.2 Movement Model
+
+```text
+walkSpeed = constant
+jumpArc = fixed
+dash = fast burst movement
+```
+
+---
+
+## 3.3 Player States
+
+| State     | Description    |
+| --------- | -------------- |
+| Idle      | Neutral        |
+| Attacking | Executing move |
+| Comboing  | In combo chain |
+| Hit       | Taking damage  |
+| Block     | Defensive      |
+| Knockdown | Downed         |
+| Instinct  | Powered state  |
+
+---
+
+# 4. 🥊 COMBAT SYSTEM
+
+## 4.1 Attack Types
+
+| Type          | Description       |
+| ------------- | ----------------- |
+| Normals       | Basic attacks     |
+| Specials      | Input-based moves |
+| Combo Attacks | Chainable moves   |
+
+---
+
+## 4.2 Hit Levels
+
+* High
+* Mid
+* Low
+
+---
+
+## 4.3 Frame Concepts (ABSTRACTED)
+
+```text
+startup → active → recovery
+```
+
+---
+
+# 5. 🔗 COMBO SYSTEM (CORE MECHANIC)
+
+## 5.1 Combo Structure
+
+```text
+Opener → Auto-Double → Linker → Auto-Double → Ender
+```
+
+---
+
+## 5.2 Components
+
+### Opener
+
+```text
+initiates combo
+```
+
+---
+
+### Auto-Double
+
+```text
+automatic follow-up hits
+```
+
+---
+
+### Linker
+
+```text
+special move continues combo
+```
+
+---
+
+### Ender
+
+```text
+finishes combo with effect
+```
+
+---
+
+## 5.3 Combo Rules
+
+```text
+IF opponent hit:
+    enter combo state
+    disable opponent control
+```
+
+---
+
+## 5.4 Combo Scaling
+
+* Damage decreases over long combos
+
+---
+
+# 6. 💥 COMBO BREAKER SYSTEM (SIGNATURE)
+
+## 6.1 Mechanic
+
+```text
+input correct strength (light/medium/heavy)
+→ break combo
+```
+
+---
+
+## 6.2 Conditions
+
+* Must match opponent’s attack strength
+
+---
+
+## 6.3 Risk
+
+```text
+wrong breaker → lockout (cannot break temporarily)
+```
+
+---
+
+## 6.4 Mind Game
+
+* Players mix strengths to avoid breakers
+
+---
+
+# 7. ⚡ INSTINCT SYSTEM
+
+## 7.1 Activation
+
+```text
+instinct meter full → activate mode
+```
+
+---
+
+## 7.2 Effects
+
+* Character-specific bonuses
+* Increased damage or abilities
+
+---
+
+## 7.3 Duration
+
+* Limited time
+
+---
+
+# 8. 🧠 AI / OPPONENT SYSTEM
+
+## 8.1 Behavior
+
+```text
+neutral → attack → combo → defend
+```
+
+---
+
+## 8.2 AI Difficulty
+
+* Faster reactions
+* More frequent breakers
+* Better combo execution
+
+---
+
+# 9. 🎯 COLLISION & HIT SYSTEM
+
+## 9.1 Hit Detection
+
+* Hitbox vs hurtbox system
+
+---
+
+## 9.2 Rules
+
+| Condition       | Result         |
+| --------------- | -------------- |
+| Attack connects | Damage         |
+| Block           | Reduced damage |
+| Counter hit     | Advantage      |
+
+---
+
+# 10. 🛡️ DEFENSE SYSTEM
+
+## 10.1 Blocking
+
+* Hold back to block
+* High/low distinction
+
+---
+
+## 10.2 Dodging / Movement
+
+* Spacing critical
+
+---
+
+## 10.3 Combo Escape
+
+* Breaker system only
+
+---
+
+# 11. ⏱️ ROUND SYSTEM
+
+## 11.1 Structure
+
+* Best of rounds (typical fighting format)
+
+---
+
+## 11.2 Timer
+
+* Round time limit
+
+---
+
+## 11.3 Victory
+
+* Opponent health reaches zero
+
+---
+
+# 12. 🎲 RNG SYSTEM
+
+* Minimal (mostly deterministic)
+
+---
+
+# 13. 🎵 AUDIO DESIGN
+
+## Music
+
+* Character/stage-specific tracks
+
+---
+
+## SFX
+
+* Heavy impact sounds
+* Combo announcer (“ULTRA COMBO!”)
+
+---
+
+# 14. 🎨 VISUAL DESIGN
+
+## Style
+
+* Pre-rendered 3D sprites (arcade)
+* Dark, gritty tone
+
+---
+
+## Effects
+
+* Hit sparks
+* Combo counters
+* Screen shake
+
+---
+
+# 15. ⚙️ TECHNICAL SYSTEMS
+
+## Frame Rate
+
+* ~60 FPS
+
+---
+
+## Input Buffer
+
+* Slight buffering allowed
+
+---
+
+## Physics
+
+* Fixed movement arcs
+
+---
+
+# 16. 🧪 DIFFICULTY DESIGN
+
+## Core Drivers
+
+* Combo mastery
+* Breaker timing
+* Reaction speed
+
+---
+
+## Difficulty Curve
+
+* Beginner → extremely technical
+
+---
+
+# 17. 🧩 REVERSE ENGINEERING NOTES
+
+## MUST MATCH
+
+* Combo timing windows
+* Breaker logic accuracy
+* Damage scaling
+* Instinct activation behavior
+
+---
+
+## QUIRKS TO PRESERVE
+
+* Flashy long combos
+* Lockout punishments
+* Fast-paced gameplay
+
+---
+
+# 18. 🧠 AI STATES
+
+```text
+Neutral
+Attack
+Combo
+Defend
+Break
+Recover
+```
+
+---
+
+# 19. 🧪 TESTING CHECKLIST
+
+* [ ] Combo system works correctly
+* [ ] Breaker timing accurate
+* [ ] Damage scaling correct
+* [ ] Instinct mode functions
+* [ ] Hit detection precise
+* [ ] AI behaves properly
+
+---
+
+# 20. ✨ FINISHING TOUCHES (POLISH)
+
+## 20.1 Arcade Feel
+
+* Fast, flashy combat
+* Smooth animations
+
+---
+
+## 20.2 Visual Polish
+
+* Clear combo counters
+* Strong hit feedback
+
+---
+
+## 20.3 Audio Polish
+
+* Announcer clarity
+* Impactful hits
+
+---
+
+## 20.4 UX Rules
+
+* Minimal UI clutter
+* Quick rematch
+
+---
+
+## 20.5 Authentic “Frustrations”
+
+* Breaker guess failures
+* Long punish combos
+* Lockout penalties
+
+---
+
+# 21. 🧾 DATA STRUCTURES
+
+## Player
+
+```text
+x, y
+state
+health
+instinctMeter
+comboState
+```
+
+---
+
+## Move
+
+```text
+type
+damage
+startup
+active
+recovery
+strength
+```
+
+---
+
+## Combo
+
+```text
+stage
+hits
+scalingFactor
+```
+
+---
+
+## Game
+
+```text
+round
+timer
+player1
+player2
+```
+
+---
+
+# 22. 🏁 SUCCESS CRITERIA
+
+A correct recreation should:
+
+* Feel **fast and combo-driven**
+* Reward **timing and mind games**
+* Maintain **combo breaker tension**
+* Match **Killer Instinct arcade behavior**
+
+---
+
+# 🔚 FINAL SUMMARY
+
+This GDD captures:
+
+* Full **combo system architecture**
+* Detailed **breaker mechanics**
+* Complete **instinct mode behavior**
+* Accurate **fighting game systems**
+* Authentic **Killer Instinct arcade feel**
+
+---
+
+## 🚀 Next Step (fits your repo workflow perfectly)
+
+I can generate:
+
+* Full **combo timing + frame window tables**
+* **Breaker probability + lockout logic**
+* **Character move lists + data**
+* Or a **PLAN_PR → BUILD_PR ZIP (docs-only, Codex-ready)**
+
+Just say: **“build the PR”** and I’ll package it exactly how you want.

@@ -1,0 +1,465 @@
+Below is a **full, production-grade Game Design Document (GDD)** for reverse-engineering **Hang-On** (Hang-On), including **motorcycle lean physics, pseudo-3D road system, rider input mapping, AI racers, time system, and finishing touches** for an arcade-accurate recreation.
+
+---
+
+# 🎮 GDD — Hang-On (Reverse Engineering Edition)
+
+**Document Type:** Full Technical + Design Spec
+**Target:** Faithful arcade recreation (Sega Super Scaler feel)
+**Genre:** Arcade Motorcycle Racing / Time Trial
+**Perspective:** Third-Person Chase Camera (Pseudo-3D)
+**Core Identity:** Body-lean steering + high-speed precision + time pressure
+
+---
+
+# 1. 🧭 CORE GAME OVERVIEW
+
+## 1.1 Game Pillars
+
+* **Body Lean Steering (SIGNATURE)**
+* **Pseudo-3D Road Rendering**
+* **Time-Based Progression**
+* **High-Speed Control Sensitivity**
+* **Arcade Physical Feedback**
+
+---
+
+## 1.2 Player Fantasy
+
+You are a professional motorcycle racer leaning into turns at high speed, navigating traffic and curves to beat the clock.
+
+---
+
+# 2. 🎮 CORE GAMEPLAY LOOP
+
+1. Start race
+2. Accelerate forward
+3. Lean left/right to steer
+4. Avoid traffic
+5. Navigate curves
+6. Reach checkpoint before time expires
+7. Extend time and continue
+
+---
+
+# 3. 🏍️ PLAYER SYSTEM
+
+## 3.1 Controls
+
+* Lean Left / Right (body shift or joystick)
+* Accelerator
+* Brake (optional/minimal use)
+
+---
+
+## 3.2 Movement Model (ARCADE BIKE PHYSICS)
+
+```text id="ho1k7x"
+velocity += acceleration
+velocity -= drag
+leanAngle = input * maxLean
+turnRate = leanAngle * speedFactor
+```
+
+---
+
+## 3.3 Lean System (CRITICAL)
+
+### Core Behavior
+
+```text id="ho2v9q"
+player leans → bike tilts → road position shifts
+```
+
+---
+
+### Properties
+
+```text id="ho3m2p"
+Lean Sensitivity: High
+Return to Center: Gradual
+Oversteer Risk: Present at high speed
+```
+
+---
+
+## 3.4 Player States
+
+| State    | Description     |
+| -------- | --------------- |
+| Riding   | Normal          |
+| Leaning  | Turning         |
+| Off-road | Reduced control |
+| Crashing | Fall animation  |
+| Finished | End state       |
+
+---
+
+# 4. 🛣️ ROAD SYSTEM (SUPER SCALER CORE)
+
+## 4.1 Projection Model
+
+```text id="ho4r5t"
+screenY = projection(distance)
+scale = perspectiveFactor / distance
+```
+
+---
+
+## 4.2 Road Segments
+
+```text id="ho5x1c"
+segment:
+    curvature
+    elevation
+    width
+```
+
+---
+
+## 4.3 Curve Handling
+
+* Requires lean proportional to speed
+* Late lean → drift outward
+
+---
+
+## 4.4 Elevation
+
+* Minor hills affect visibility
+
+---
+
+# 5. ⏱️ TIME SYSTEM (CORE MECHANIC)
+
+## 5.1 Countdown Timer
+
+```text id="ho6z8n"
+timer -= deltaTime
+```
+
+---
+
+## 5.2 Checkpoints
+
+```text id="ho7b3y"
+reach checkpoint → add time
+```
+
+---
+
+## 5.3 Failure
+
+* Timer reaches zero → game over
+
+---
+
+# 6. 🚦 TRAFFIC SYSTEM
+
+## 6.1 Opponent Bikes
+
+* AI-controlled riders
+* Act as obstacles
+
+---
+
+## 6.2 Behavior
+
+```text id="ho8g6u"
+follow lane
+→ slight variation
+→ no aggressive AI
+```
+
+---
+
+## 6.3 Density
+
+* Increases with progression
+
+---
+
+# 7. 🎯 COLLISION SYSTEM
+
+## 7.1 Rules
+
+| Collision          | Result   |
+| ------------------ | -------- |
+| Player vs bike     | Crash    |
+| Player vs obstacle | Crash    |
+| Off-road           | Slowdown |
+
+---
+
+## 7.2 Crash Behavior
+
+```text id="ho9t2e"
+velocity → 0
+player thrown from bike
+recovery delay
+```
+
+---
+
+# 8. 🚧 OFF-ROAD SYSTEM
+
+## 8.1 Behavior
+
+```text id="ho10n4s"
+IF offRoad:
+    speed reduced
+    control reduced
+```
+
+---
+
+## 8.2 Risk
+
+* Hard to recover at high speed
+
+---
+
+# 9. 🧠 AI SYSTEM
+
+## 9.1 Opponent Behavior
+
+* Simple forward movement
+* Minor lane shifts
+
+---
+
+## 9.2 Purpose
+
+* Obstacles rather than competitors
+
+---
+
+# 10. 🎲 RNG SYSTEM
+
+* Traffic placement
+* Minor AI variation
+
+---
+
+# 11. 🎵 AUDIO DESIGN
+
+## Music
+
+* High-energy racing track
+
+---
+
+## SFX
+
+* Engine sound (RPM-based)
+* Tire/road noise
+* Crash impact
+
+---
+
+# 12. 🎨 VISUAL DESIGN
+
+## Style
+
+* Bright pseudo-3D visuals
+* Smooth scaling
+
+---
+
+## Effects
+
+* Road scrolling
+* Lean animation of rider
+* Background parallax
+
+---
+
+# 13. ⚙️ TECHNICAL SYSTEMS
+
+## Frame Rate
+
+* ~60 FPS
+
+---
+
+## Rendering
+
+* Sprite scaling engine
+* Scanline road rendering
+
+---
+
+## Input
+
+* Analog preferred (lean)
+
+---
+
+# 14. 🧪 DIFFICULTY DESIGN
+
+## Core Drivers
+
+* Lean precision
+* Curve difficulty
+* Traffic density
+
+---
+
+## Difficulty Curve
+
+* Gradual → highly demanding
+
+---
+
+# 15. 🧩 REVERSE ENGINEERING NOTES
+
+## MUST MATCH
+
+* Lean sensitivity vs speed
+* Curve handling feel
+* Checkpoint timing
+* Crash behavior timing
+
+---
+
+## QUIRKS TO PRESERVE
+
+* Slight oversteer
+* Sudden crashes
+* High-speed instability
+
+---
+
+# 16. 🧠 AI STATES
+
+```text id="ho11k9v"
+Cruise
+AdjustLane
+Spawn
+```
+
+---
+
+# 17. 🧪 TESTING CHECKLIST
+
+* [ ] Lean system feels correct
+* [ ] Road rendering accurate
+* [ ] Timer behaves correctly
+* [ ] Traffic AI consistent
+* [ ] Collision penalties correct
+* [ ] Crash animations correct
+
+---
+
+# 18. ✨ FINISHING TOUCHES (POLISH)
+
+## 18.1 Arcade Feel
+
+* Tight, responsive leaning
+* High-speed sensation
+
+---
+
+## 18.2 Visual Polish
+
+* Clear road readability
+* Smooth lean animation
+
+---
+
+## 18.3 Audio Polish
+
+* Engine pitch clarity
+* Impactful crash sound
+
+---
+
+## 18.4 UX Rules
+
+* Minimal UI
+* Quick restart
+
+---
+
+## 18.5 Authentic “Frustrations”
+
+* Tight turns at high speed
+* Sudden crashes
+* Time pressure
+
+---
+
+# 19. 🧾 DATA STRUCTURES
+
+## Player
+
+```text id="ho12m7d"
+x, z
+velocity
+leanAngle
+state
+```
+
+---
+
+## Track Segment
+
+```text id="ho13p1f"
+curvature
+elevation
+width
+```
+
+---
+
+## Opponent Bike
+
+```text id="ho14r8q"
+lane
+z
+speed
+```
+
+---
+
+## Game
+
+```text id="ho15t3x"
+checkpoint
+timer
+stage
+```
+
+---
+
+# 20. 🏁 SUCCESS CRITERIA
+
+A correct recreation should:
+
+* Feel **fast and responsive**
+* Reward **lean precision**
+* Maintain **constant forward motion**
+* Match **Hang-On arcade experience**
+
+---
+
+# 🔚 FINAL SUMMARY
+
+This GDD captures:
+
+* Full **motorcycle lean system**
+* Detailed **pseudo-3D road mechanics**
+* Complete **time + checkpoint system**
+* Accurate **traffic and collision behavior**
+* Authentic **Hang-On arcade feel**
+
+---
+
+## 🚀 Next Step (auto-aligned with your repo workflow)
+
+I will generate next:
+
+* ✅ **Lean physics tuning tables**
+* ✅ **Road segment + curvature data**
+* ✅ **Checkpoint timing tables**
+* ✅ **PLAN_PR → BUILD_PR ZIP (docs-only, Codex-ready)**

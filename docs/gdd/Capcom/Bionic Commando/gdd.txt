@@ -1,0 +1,622 @@
+Below is a **full, production-grade Game Design Document (GDD)** for reverse-engineering *Bionic Commando* (arcade/NES hybrid behavior model), including **mechanics, physics, level layouts, AI systems, and finishing touches**.
+
+---
+
+# 🎮 GDD — Bionic Commando (Reverse Engineering Edition)
+
+**Document Type:** Full Technical + Design Spec
+**Target:** Faithful recreation (arcade feel + NES structure hybrid)
+**Genre:** Action Platformer (No Jump Mechanic)
+**Perspective:** 2D Side-Scrolling + Strategic Map Layer
+**Core Innovation:** Grappling-based movement (Bionic Arm)
+
+---
+
+# 1. 🧭 CORE GAME OVERVIEW
+
+## 1.1 Game Pillars
+
+* **Traversal via Grappling (NO JUMP BUTTON)**
+* **Momentum-Based Movement**
+* **Strategic Map Layer**
+* **Combat + Positioning**
+* **Vertical & Horizontal Level Design**
+
+---
+
+## 1.2 Player Fantasy
+
+You are **Nathan “Rad” Spencer**, a soldier using a mechanical arm to infiltrate enemy territory and rescue a captured ally.
+
+---
+
+# 2. 🎮 CORE GAMEPLAY LOOP
+
+1. Navigate overworld map
+2. Enter area (side-scrolling mission)
+3. Use bionic arm to traverse terrain
+4. Fight enemies
+5. Collect items / intel
+6. Complete objective or boss
+7. Return to map
+8. Unlock new zones
+
+---
+
+# 3. 🧍 PLAYER SYSTEM
+
+## 3.1 Movement System (CORE MECHANIC)
+
+### No Jump Rule
+
+* Player **cannot jump**
+* Movement relies entirely on:
+
+  * Walking
+  * Falling
+  * Grappling
+
+---
+
+## 3.2 Bionic Arm System
+
+### Arm Directions
+
+```text
+Up
+Up-Left
+Up-Right
+Left
+Right
+```
+
+### Arm States
+
+* Extending
+* Latched
+* Swinging
+* Retracting
+
+---
+
+## 3.3 Grapple Physics
+
+### Key Rules
+
+* Arm attaches only to valid surfaces
+* Player swings in arc (pendulum physics)
+* Release timing determines trajectory
+
+### Swing Behavior
+
+```text
+Anchor point = fixed
+Player rotates around anchor
+Velocity influenced by:
+  - gravity
+  - prior momentum
+```
+
+---
+
+## 3.4 Movement Properties
+
+```text
+Walk Speed: Moderate
+Gravity: Strong
+Swing Momentum: High influence
+Fall Speed: Fast
+```
+
+---
+
+## 3.5 Combat System
+
+### Weapon
+
+* Default rifle (horizontal fire)
+* Can shoot while:
+
+  * Standing
+  * Hanging
+  * Swinging (limited)
+
+### Fire Rules
+
+* Single direction (forward)
+* No vertical shooting (key limitation)
+
+---
+
+## 3.6 Player States
+
+| State     | Description     |
+| --------- | --------------- |
+| Idle      | Standing        |
+| Walking   | Ground movement |
+| Falling   | No grapple      |
+| Grappling | Arm extended    |
+| Swinging  | Attached        |
+| Climbing  | Vertical pull   |
+| Shooting  | Firing weapon   |
+| Hit       | Knockback       |
+| Dead      | Life lost       |
+
+---
+
+# 4. 🧲 GRAPPLE SYSTEM (CRITICAL)
+
+## 4.1 Valid Attach Points
+
+* Ceilings
+* Platforms (underside)
+* Specific surfaces only
+
+## 4.2 Invalid Attach Points
+
+* Air
+* Decorative backgrounds
+* Some enemy surfaces
+
+---
+
+## 4.3 Grapple Timing
+
+```text
+Press → extend
+Hit surface → latch
+Hold → swing
+Release → launch
+```
+
+---
+
+## 4.4 Constraints
+
+* Fixed arm length
+* No mid-air direction change without re-grapple
+* Swing arc must be mastered
+
+---
+
+# 5. 🧟 ENEMY SYSTEM
+
+## 5.1 Enemy Types
+
+### Ground Soldiers
+
+* Walk + shoot
+* Simple AI
+
+### Turrets
+
+* Fixed position
+* Fire in intervals
+
+### Snipers
+
+* Long-range
+* High damage
+
+### Flying Units
+
+* Helicopters / drones
+* Movement patterns
+
+### Shield Units
+
+* Block frontal shots
+
+---
+
+## 5.2 AI Behavior
+
+### Basic Loop
+
+```text
+IF player in range:
+    aim + fire
+ELSE:
+    patrol or idle
+```
+
+### Advanced Behaviors
+
+* Track player vertical position
+* Fire based on timing windows
+* React to grapple position
+
+---
+
+# 6. 🌍 LEVEL DESIGN SYSTEM
+
+## 6.1 Design Philosophy
+
+* Built around grappling routes
+* Vertical traversal essential
+* No fallback for missed grabs
+
+---
+
+## 6.2 Level Structure
+
+* Entry zone
+* Traversal sections
+* Combat arenas
+* Objective room / boss
+
+---
+
+# 7. 🗺️ OVERWORLD MAP SYSTEM (NES VERSION)
+
+## 7.1 Map Features
+
+* Nodes (areas)
+* Paths
+* Enemy encounters
+
+---
+
+## 7.2 Map Interaction
+
+* Move between nodes
+* Random enemy encounters
+* Enter side missions
+
+---
+
+# 8. 🗺️ LEVEL BREAKDOWN
+
+---
+
+## AREA 1 — Military Base
+
+### Layout
+
+```text
+[Start]
+ ↓
+Flat ground + low ceilings
+ ↓
+Intro grapple platforms
+ ↓
+Enemy patrol zone
+ ↓
+Vertical climb
+ ↓
+Exit door
+```
+
+### Focus
+
+* Teach grapple basics
+* Introduce enemy shooting
+
+---
+
+## AREA 2 — Industrial Zone
+
+### Layout
+
+```text
+Moving platforms
+ ↓
+Overhead grapple chains
+ ↓
+Turret corridor
+ ↓
+Multi-layer vertical section
+```
+
+### Hazards
+
+* Tight grapple timing
+* Enemy fire while swinging
+
+---
+
+## AREA 3 — Forest / Outdoor
+
+### Layout
+
+```text
+Wide gaps
+ ↓
+Tree grapple points
+ ↓
+Falling hazards
+ ↓
+Elevated sniper zones
+```
+
+---
+
+## AREA 4 — Underground
+
+### Theme
+
+* Tight corridors
+* Limited grapple points
+
+### Mechanics
+
+* Precision climbing
+* Enemy ambushes
+
+---
+
+## AREA 5 — Fortress
+
+### Layout
+
+```text
+High vertical climb
+ ↓
+Heavy enemy density
+ ↓
+Narrow grapple chains
+ ↓
+Boss room
+```
+
+---
+
+# 9. 🎯 HITBOX & COLLISION
+
+## Player
+
+* Narrow vertical hitbox
+* Extended during swing
+
+## Grapple
+
+* Detects specific tiles only
+
+## Bullets
+
+* Instant collision
+* No travel delay (NES-style fast)
+
+---
+
+# 10. 📦 ITEM SYSTEM
+
+### Pickups
+
+* Health
+* Ammo
+* Weapon upgrades
+* Communication devices
+
+---
+
+# 11. 🧠 COMMUNICATION SYSTEM (NES)
+
+* Enter rooms
+* Receive intel
+* Story progression
+* Password system
+
+---
+
+# 12. 🎵 AUDIO DESIGN
+
+## Music
+
+* Military / tension themes
+
+## SFX
+
+* Grapple extend
+* Grapple latch
+* Gunfire
+* Explosion
+
+---
+
+# 13. 🎨 VISUAL DESIGN
+
+## Style
+
+* Military sci-fi
+* Industrial environments
+
+## Animation
+
+* Smooth swing animation
+* Arm extension frames critical
+
+---
+
+# 14. ⚙️ TECHNICAL SYSTEMS
+
+## Physics
+
+* Deterministic
+* Fixed timestep
+
+## Input
+
+* Immediate response
+* No buffering
+
+---
+
+# 15. 🧪 DIFFICULTY DESIGN
+
+## Core Difficulty Drivers
+
+* No jump safety net
+* Precision grapple timing
+* Enemy pressure mid-swing
+* Punishing falls
+
+---
+
+# 16. 🧩 REVERSE ENGINEERING NOTES
+
+## Must Match Exactly
+
+* Grapple timing + latch detection
+* Swing arc physics
+* Arm length
+* Release momentum
+
+## Known Quirks
+
+* Slight delay before latch
+* Occasional missed grabs (edge cases)
+* Stiff movement feel
+
+---
+
+# 17. 🧱 TILEMAP SYSTEM
+
+## Grid
+
+* 16x16 tiles
+
+## Layers
+
+* Background
+* Collision
+* Grapple points (tagged tiles)
+
+---
+
+# 18. 🧠 AI SYSTEM
+
+## Enemy States
+
+```text
+Idle
+Patrol
+Attack
+Cooldown
+```
+
+---
+
+# 19. 🧪 TESTING CHECKLIST
+
+* [ ] Grapple attaches correctly
+* [ ] Swing arc matches original
+* [ ] Release momentum correct
+* [ ] Enemy fire timing accurate
+* [ ] Level traversal viable without jumps
+* [ ] Map navigation functional
+
+---
+
+# 20. ✨ FINISHING TOUCHES (POLISH)
+
+## 20.1 “Feel” Requirements
+
+* Slight stiffness preserved
+* No modern physics smoothing
+* Momentum must feel “earned”
+
+---
+
+## 20.2 Visual Polish
+
+* Pixel-perfect swing arcs
+* No interpolation blur
+
+---
+
+## 20.3 Audio Polish
+
+* Distinct grapple “click”
+* Immediate gun feedback
+
+---
+
+## 20.4 UX Rules
+
+* No tutorials
+* Learn by failure
+* Minimal UI
+
+---
+
+## 20.5 Authentic Frustrations
+
+* Missed grapple = fall
+* Enemy hits mid-swing
+* Tight timing windows
+
+---
+
+# 21. 🧾 DATA STRUCTURES
+
+## Player
+
+```text
+x, y
+velocityX, velocityY
+state
+armState
+anchorPoint
+weapon
+```
+
+## Grapple
+
+```text
+isActive
+anchorX, anchorY
+length
+angle
+```
+
+## Enemy
+
+```text
+type
+position
+state
+aiState
+```
+
+## Level
+
+```text
+tilemap
+grapplePoints
+enemySpawns
+objectives
+```
+
+---
+
+# 22. 🏁 SUCCESS CRITERIA
+
+A correct recreation should:
+
+* Feel **unique due to no jump**
+* Require mastery of swinging
+* Match original grapple physics
+* Preserve difficulty + frustration
+
+---
+
+# 🔚 FINAL SUMMARY
+
+This GDD captures:
+
+* Full **grapple-based movement system**
+* Complete **enemy + AI design**
+* Detailed **level layouts**
+* Strategic **map layer**
+* Critical **reverse-engineering targets**
+
+---
+
+If you want next-level detail, I can generate:
+
+✅ Full **tile-by-tile grapple maps**
+✅ Exact **swing physics equations + constants**
+✅ **Per-level enemy spawn tables**
+✅ **JavaScript class structure matching your repo**
+✅ A **PLAN_PR → BUILD_PR ZIP** for your game repo

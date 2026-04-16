@@ -1,0 +1,515 @@
+Below is a **full, production-grade Game Design Document (GDD)** for reverse-engineering **Dig Dug** (Namco, 1982), including **digging mechanics, enemy AI, inflation combat, rock physics, underground pathing, and finishing touches** for an arcade-accurate recreation.
+
+---
+
+# 🎮 GDD — Dig Dug (Reverse Engineering Edition)
+
+**Document Type:** Full Technical + Design Spec
+**Target:** Faithful arcade recreation (Namco behavior + timing)
+**Genre:** Action / Maze Digging
+**Perspective:** Top-Down Grid (Underground)
+**Core Identity:** Digging + territory control + risk/reward combat
+
+---
+
+# 1. 🧭 CORE GAME OVERVIEW
+
+## 1.1 Game Pillars
+
+* **Digging-Based Movement**
+* **Territory Creation (Player Carves Maze)**
+* **Inflation Combat Mechanic**
+* **Enemy Phase-Shifting AI**
+* **Rock Drop Strategy**
+
+---
+
+## 1.2 Player Fantasy
+
+You are a digger eliminating underground enemies by inflating them or crushing them with falling rocks while carving your own paths.
+
+---
+
+# 2. 🎮 CORE GAMEPLAY LOOP
+
+1. Spawn underground
+2. Dig tunnels
+3. Locate enemies
+4. Inflate enemies or drop rocks
+5. Avoid enemy contact/fire
+6. Clear all enemies → next round
+7. Difficulty increases
+
+---
+
+# 3. 🧍 PLAYER SYSTEM (DIG DUG)
+
+## 3.1 Controls
+
+* 4-direction movement (grid-based)
+* Pump (attack)
+
+---
+
+## 3.2 Movement Model (CRITICAL)
+
+### Digging Behavior
+
+```text id="g3r8k1"
+IF moving into dirt:
+    remove dirt tile
+    create tunnel
+```
+
+---
+
+### Movement Properties
+
+```text id="k9p2v7"
+Speed in tunnel: Fast
+Speed in dirt: Slightly slower
+Turning: Grid-based
+```
+
+---
+
+## 3.3 Player States
+
+| State   | Description      |
+| ------- | ---------------- |
+| Digging | Creating tunnels |
+| Moving  | In open tunnel   |
+| Pumping | Inflating enemy  |
+| Dead    | Life lost        |
+
+---
+
+# 4. 🧟 ENEMY SYSTEM
+
+## 4.1 Enemy Types
+
+### Pooka
+
+* Red enemy
+* Basic movement
+* Can become ghost
+
+---
+
+### Fygar
+
+* Green dragon
+* Breathes fire horizontally
+
+---
+
+## 4.2 Enemy States
+
+| State    | Description          |
+| -------- | -------------------- |
+| Normal   | Moving in tunnels    |
+| Ghost    | Passing through dirt |
+| Inflated | Being pumped         |
+| Dead     | Eliminated           |
+
+---
+
+## 4.3 Ghost Mode (CRITICAL)
+
+```text id="x2n5r8"
+enemy enters ghost state
+→ moves through dirt
+→ reappears in tunnel
+```
+
+---
+
+## 4.4 AI Behavior
+
+### Core Loop
+
+```text id="b4k9m2"
+move toward player
+→ choose path
+→ occasionally ghost
+```
+
+---
+
+### Fygar Fire Logic
+
+```text id="q7v1z3"
+IF player aligned horizontally:
+    breathe fire
+```
+
+---
+
+# 5. 🎈 INFLATION COMBAT SYSTEM (SIGNATURE)
+
+## 5.1 Pump Mechanic
+
+```text id="z8r4t1"
+press pump → extend hose
+IF connected:
+    inflate enemy
+```
+
+---
+
+## 5.2 Inflation Levels
+
+| Pumps | Result               |
+| ----- | -------------------- |
+| 1–2   | Partial inflate      |
+| 3–4   | Full inflate → death |
+
+---
+
+## 5.3 Risk Mechanic
+
+* If player stops pumping → enemy deflates
+
+---
+
+## 5.4 Timing
+
+* Must pump rhythmically
+* Vulnerable while pumping
+
+---
+
+# 6. 🪨 ROCK SYSTEM
+
+## 6.1 Behavior
+
+```text id="m6p3x2"
+rock rests until support removed
+→ falls vertically
+```
+
+---
+
+## 6.2 Effects
+
+* Crush enemies
+* Can crush multiple enemies
+* Awards bonus score
+
+---
+
+## 6.3 Player Risk
+
+* Rock can kill player
+
+---
+
+# 7. 🌍 DIGGING / TERRAIN SYSTEM
+
+## 7.1 Grid Layout
+
+* Full dirt-filled map
+* Player creates tunnels
+
+---
+
+## 7.2 Layers (Visual + Gameplay)
+
+| Layer | Description   |
+| ----- | ------------- |
+| Top   | Easy movement |
+| Mid   | Moderate      |
+| Deep  | Higher risk   |
+
+---
+
+## 7.3 Dirt Behavior
+
+* Removed permanently
+* Defines movement paths
+
+---
+
+# 8. 🎯 COLLISION SYSTEM
+
+## 8.1 Rules
+
+| Collision       | Result  |
+| --------------- | ------- |
+| Player vs enemy | Death   |
+| Player vs fire  | Death   |
+| Player vs rock  | Death   |
+| Pump vs enemy   | Inflate |
+
+---
+
+## 8.2 Alignment
+
+* Grid-based precision required
+
+---
+
+# 9. ⏱️ ROUND SYSTEM
+
+## 9.1 Structure
+
+* All enemies must be eliminated
+
+---
+
+## 9.2 Enemy Reduction
+
+* Last enemy attempts escape
+
+---
+
+## 9.3 Bonus Condition
+
+* Crush multiple enemies with one rock
+
+---
+
+# 10. 🎲 RNG SYSTEM
+
+* Enemy movement variation
+* Ghost mode timing
+
+---
+
+# 11. 🎵 AUDIO DESIGN
+
+## Music
+
+* Minimal looping theme
+
+---
+
+## SFX
+
+* Pump sound
+* Enemy pop
+* Rock falling
+* Fygar fire
+
+---
+
+# 12. 🎨 VISUAL DESIGN
+
+## Style
+
+* Bright pixel art
+* Clear dirt/tunnel contrast
+
+---
+
+## Animation
+
+* Enemy inflation stages
+* Rock wobble before falling
+
+---
+
+# 13. ⚙️ TECHNICAL SYSTEMS
+
+## Frame Rate
+
+* ~60 FPS equivalent
+
+---
+
+## Determinism
+
+* Mostly deterministic with slight variation
+
+---
+
+## Input
+
+* Immediate response
+
+---
+
+# 14. 🧪 DIFFICULTY DESIGN
+
+## Core Drivers
+
+* Enemy speed
+* Ghost frequency
+* Fygar fire usage
+
+---
+
+## Difficulty Curve
+
+* Gradual → intense late rounds
+
+---
+
+# 15. 🧩 REVERSE ENGINEERING NOTES
+
+## MUST MATCH
+
+* Pump timing and inflation count
+* Rock fall delay and trigger
+* Ghost movement logic
+* Fygar fire timing
+
+---
+
+## QUIRKS TO PRESERVE
+
+* Enemy hesitation
+* Slight ghost unpredictability
+* Last enemy escape behavior
+
+---
+
+# 16. 🧠 AI STATE MODEL
+
+```text id="t5k8p2"
+Move
+Ghost
+Attack
+Inflated
+Dead
+```
+
+---
+
+# 17. 🧪 TESTING CHECKLIST
+
+* [ ] Digging works correctly
+* [ ] Pump inflation timing accurate
+* [ ] Rock behavior correct
+* [ ] Enemy AI behaves properly
+* [ ] Collision detection precise
+* [ ] Fygar fire logic correct
+
+---
+
+# 18. ✨ FINISHING TOUCHES (POLISH)
+
+## 18.1 Arcade Feel
+
+* Tight grid movement
+* Immediate response
+
+---
+
+## 18.2 Visual Polish
+
+* Clear tunnel contrast
+* Distinct enemy animations
+
+---
+
+## 18.3 Audio Polish
+
+* Rhythmic pump feedback
+* Clear rock warning
+
+---
+
+## 18.4 UX Rules
+
+* Minimal UI
+* Instant restart
+
+---
+
+## 18.5 Authentic “Frustrations”
+
+* Pump vulnerability
+* Ghost surprise attacks
+* Rock misfires
+
+---
+
+# 19. 🧾 DATA STRUCTURES
+
+## Player
+
+```text id="y2r7m4"
+tileX, tileY
+direction
+state
+```
+
+---
+
+## Enemy
+
+```text id="k6p1x9"
+type
+tileX, tileY
+state
+isGhost
+inflateLevel
+```
+
+---
+
+## Rock
+
+```text id="n3v8q2"
+x, y
+state
+fallTimer
+```
+
+---
+
+## Map
+
+```text id="w9t4k1"
+grid[][]
+tunnels[]
+rocks[]
+```
+
+---
+
+## Game
+
+```text id="c7m2p8"
+round
+score
+lives
+enemyCount
+```
+
+---
+
+# 20. 🏁 SUCCESS CRITERIA
+
+A correct recreation should:
+
+* Feel **strategic and precise**
+* Reward **planning and timing**
+* Preserve **digging freedom**
+* Match **arcade pacing exactly**
+
+---
+
+# 🔚 FINAL SUMMARY
+
+This GDD captures:
+
+* Full **digging and terrain system**
+* Detailed **enemy AI and ghost mechanics**
+* Complete **inflation combat system**
+* Accurate **rock physics**
+* Authentic **Dig Dug arcade feel**
+
+---
+
+## 🚀 Next Step (perfect for your repo workflow)
+
+I can generate:
+
+* Frame-accurate **pump timing + inflation tables**
+* Full **map grid + dirt system spec**
+* **Enemy AI behavior tuning tables**
+* Or a **PLAN_PR → BUILD_PR ZIP (docs-only, Codex-ready)**
+
+Just say: **“build the PR”** and I’ll package it exactly how you want.

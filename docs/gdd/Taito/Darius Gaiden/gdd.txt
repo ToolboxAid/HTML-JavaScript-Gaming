@@ -1,0 +1,448 @@
+![Image](https://images.openai.com/static-rsc-4/QHDTwj87SUPdg8k_qjwXtNFnWqkIWc_twt19S8E7qzLWDa52l0PxCG5N3SPV64pU1ZWOSDUXLA2gkJ9_wiYjsXyZhZl1Q-4Dw2Y9nB5JHpD-2Bcqz88aJYx8K8TfuUa1B1ESNv9bsFk3ibs-QOC_cfLvxH3qtqS5TiVKSiEIt_ZLsBRJpLcZvDV5hR_Cua11?purpose=fullsize)
+
+![Image](https://images.openai.com/static-rsc-4/UjrqFQ7NmpmVrLjjfc2hzenMid6E4zE4t6hFmt5JwXnQge3NqxPfvbqLfQvn2xcd5T0zEf5Iq4qmtsWH8C7fbb_cGA8OxOPvcTypqhT8PyIMKRqFcbgLC4RpRQpk1pfLW-ty6NwYKdL3mHsgeoFAQ3Jcl9A-OuIWdi2DLGOXAWE6A4L2ut6rY-OKDf2X2NPV?purpose=fullsize)
+
+![Image](https://images.openai.com/static-rsc-4/wRk8hWegXrW9n-Yx2SR67hXwjyRdh5sKGv_9JdYX72yE4_mEhLLYCsgp6Fn6Zzc1_N8lLmHJDuobAcPUIkpl8-_cZqkiss_oswHSLG9295Lwm6qWBRQKwIgPI6Q2Om4159E3MUStDqsiLzTF5IkzZ_8fX76YopF9hNnQVoIlf1FVzbzL7pKNqU6JM6hSQsZ7?purpose=fullsize)
+
+![Image](https://images.openai.com/static-rsc-4/nWPkt0gAP_aHCbvEWF0nhbOKE9zI7zFjTS8p0CqkFkatxmi1aceov8NwaHtSw_Fa7_2fsYGG3UFTpRwXB57OftYCSZnHughx7uPR8Rr-I9FNFUtoZYECfEf4TTkNMWEyxOQlT6HQDFqHleMmgrsykYL_Z5L3wJ-pXfqCvVLwjdCuZyPpvStZK0U-dzHPfST6?purpose=fullsize)
+
+![Image](https://images.openai.com/static-rsc-4/CfhXIbv_Al7HKotVoIgpm_gSzbTOwDFFH7fkaIfodt1Tj07tN8OFpn-CnLzenaldgWZA74HzF-kKLd6ZMJEaozCIrfYwc6sZLNlJX2t8z5_RHsLkD5bVTI7mJYhkmr98wSgInZIwg3yRsmJQqx8d2ZrORCKtZ9Zp-JgiJsqQhG7JkQ2ew0vdlmiIe8r4m4ly?purpose=fullsize)
+
+![Image](https://images.openai.com/static-rsc-4/x16BvYxiGKepLEt3SExL7ivbWJ9WV1plGWdEhxtVa0yKmdmA1e_UZcNs0Z9QK8pu8rBHa1YFxNZdG-Zo8z4KO2ripvjAMuhfUu-c9Ou4pD7Vd7YxlpPPdSbXSbqHujsGUpUaSq4X_m49rEiGflPKXVAxnEwaCUfw1ckrumlavGIUR67V6ezH38hZSs1Q7Zo7?purpose=fullsize)
+
+# DARIUS GAIDEN — REVERSE ENGINEERING GAME DESIGN DOCUMENT
+
+---
+
+# 1. Game Identity
+
+**Title:** Darius Gaiden
+**Developer/Publisher:** Taito
+**Release:** 1994 (Arcade)
+**Genre:** Horizontal shoot ’em up (shmup)
+**Core Concept:**
+A branching-path shooter where the player pilots a Silver Hawk fighter through ocean-themed mechanical enemies, battling iconic boss creatures across multiple route choices.
+
+---
+
+# 2. High Concept
+
+* Side-scrolling shooter with **free vertical movement**
+* Heavy emphasis on:
+
+  * **route selection (branching map)**
+  * **power-up progression**
+  * **boss spectacle**
+* Signature feature:
+
+  * **“WARNING!!” boss encounters with named mechanical sea creatures**
+
+---
+
+# 3. What Makes Darius Gaiden Unique
+
+* **Branching level system** (player chooses route after each stage)
+* **Fish/mechanical enemy theme**
+* **Massive, cinematic bosses**
+* **Capture Ball system (Alpha/Beta beams)**
+* **Audio-driven atmosphere (ZUNTATA soundtrack)**
+
+---
+
+# 4. Player Fantasy
+
+The player is:
+
+* A high-tech pilot navigating a hostile biomechanical ocean war
+* Choosing their own path through danger
+* Growing stronger through upgrades
+* Facing increasingly overwhelming boss encounters
+
+---
+
+# 5. Controls
+
+## 5.1 Inputs
+
+* **Joystick (8-directional):**
+
+  * Horizontal movement (fixed scroll)
+  * Vertical movement (free)
+* **Fire button**
+* **Bomb button (smart bomb)**
+
+## 5.2 Feel Requirements
+
+* Smooth inertia-free movement
+* Immediate firing response
+* Tight hitbox control
+* Precise dodging
+
+---
+
+# 6. Core Gameplay Loop
+
+1. Enter stage
+2. Destroy enemies
+3. Collect power-ups
+4. Upgrade weapons/shields
+5. Survive bullet patterns
+6. Fight boss
+7. Choose next route
+8. Repeat
+
+---
+
+# 7. Player Ship (Silver Hawk)
+
+## 7.1 Base Capabilities
+
+* Forward-firing cannon
+* Bomb deployment
+* Shield system
+
+## 7.2 Movement
+
+* Constant forward scrolling
+* Player controls vertical + slight horizontal positioning
+
+---
+
+# 8. Weapon System
+
+## 8.1 Main Shot Upgrades
+
+Collected via red power-ups:
+
+* Single shot
+* Twin shot
+* Wide shot
+* Laser variants
+
+## 8.2 Missile/Bomb System
+
+Collected via green power-ups:
+
+* Ground bombs
+* Enhanced bomb types
+
+## 8.3 Shield System
+
+Collected via blue power-ups:
+
+* Energy shield
+* Absorbs damage
+* Degrades over time
+
+---
+
+# 9. Capture Ball System (Signature Mechanic)
+
+## 9.1 Function
+
+* Captures enemies or converts energy into powerful attacks
+
+## 9.2 Beam Types
+
+### Alpha Beam
+
+* Rapid-fire beam attack
+
+### Beta Beam
+
+* Stronger, charge-based beam
+
+## 9.3 Player Interaction
+
+* Timing-based beam duels with bosses
+* Strategic use for high damage output
+
+---
+
+# 10. Enemy Design
+
+## 10.1 Standard Enemies
+
+* Fish-inspired mechanical units
+* Movement patterns:
+
+  * waves
+  * swarms
+  * direct attacks
+
+## 10.2 Behavior Types
+
+* Straight-line attackers
+* Pattern-based shooters
+* Environmental hazards
+
+---
+
+# 11. Boss System (CORE FEATURE)
+
+## 11.1 Presentation
+
+* “WARNING!!” alert before boss
+* Boss name displayed
+* Large, screen-filling enemies
+
+## 11.2 Design
+
+* Based on marine life (e.g., mechanical fish, crabs, eels)
+* Multi-phase fights
+* Weak points and destructible parts
+
+## 11.3 Examples
+
+* Giant mechanical fish
+* Armored sea creatures
+* Multi-segment bosses
+
+---
+
+# 12. Branching Path System
+
+## 12.1 Map Structure
+
+* Zones labeled (A → Z progression style)
+* After each stage:
+
+  * Player chooses upper or lower route
+
+## 12.2 Impact
+
+* Different enemies
+* Different difficulty
+* Different bosses
+* Multiple endings
+
+---
+
+# 13. Difficulty Model
+
+Difficulty increases via:
+
+* Bullet density
+* Enemy speed
+* Boss complexity
+* Route selection (upper routes often harder)
+
+---
+
+# 14. Scoring System
+
+## 14.1 Score Sources
+
+* Enemy kills
+* Boss destruction
+* Survival bonuses
+
+## 14.2 Advanced Play
+
+* Score optimization via:
+
+  * route selection
+  * enemy chaining
+  * efficient boss kills
+
+---
+
+# 15. Bomb System
+
+## 15.1 Function
+
+* Screen-clearing attack
+* Emergency defense
+
+## 15.2 Usage Strategy
+
+* Save for:
+
+  * dense bullet patterns
+  * boss emergencies
+
+---
+
+# 16. Health & Lives
+
+## 16.1 Shield-Based Survival
+
+* Shield absorbs hits
+* Without shield:
+
+  * player dies instantly
+
+## 16.2 Lives
+
+* Limited lives
+* Game over when depleted
+
+---
+
+# 17. Level Design
+
+## 17.1 Structure
+
+Each stage includes:
+
+* Enemy waves
+* Terrain hazards
+* Power-up drops
+* Boss encounter
+
+## 17.2 Environment Themes
+
+* Oceanic
+* Mechanical/industrial
+* Alien sea worlds
+
+---
+
+# 18. Audio-Visual Identity
+
+## 18.1 Visuals
+
+* Bright, colorful pixel art
+* Large sprites
+* Dynamic bosses
+
+## 18.2 Audio
+
+* ZUNTATA soundtrack
+* Atmospheric, electronic music
+* Builds tension during boss fights
+
+---
+
+# 19. Game Feel Requirements (CRITICAL)
+
+To feel like Darius Gaiden:
+
+* Movement must be **precise and smooth**
+* Weapons must feel **progressively powerful**
+* Bosses must feel **massive and threatening**
+* Audio must reinforce tension
+* Route choices must feel meaningful
+
+---
+
+# 20. Reverse-Engineering Object Model
+
+## 20.1 Core Objects
+
+* GameState
+* PlayerShip
+* WeaponSystem
+* Enemy
+* Boss
+* Projectile
+* PowerUp
+* Level
+* RouteMap
+
+---
+
+## 20.2 PlayerShip
+
+* position
+* velocity
+* weapon level
+* shield strength
+* bomb count
+
+---
+
+## 20.3 Enemy
+
+* type
+* health
+* movement pattern
+* attack pattern
+
+---
+
+## 20.4 Boss
+
+* phases
+* weak points
+* attack sequences
+* health segments
+
+---
+
+## 20.5 RouteMap
+
+* node structure (A → Z)
+* branching connections
+* difficulty weighting
+
+---
+
+# 21. Collision System
+
+* Player vs enemy/projectile
+* Player vs terrain
+* Projectile vs enemy
+* Bomb AoE vs all enemies
+
+---
+
+# 22. Core Algorithms
+
+## 22.1 Scrolling System
+
+* Constant horizontal scroll
+* Player vertical freedom
+
+## 22.2 Spawn System
+
+* Scripted enemy waves
+* Timed events
+
+## 22.3 Boss Phases
+
+* Health thresholds trigger pattern changes
+
+---
+
+# 23. QA Checklist (Faithful Clone)
+
+Must pass:
+
+* Branching paths function correctly
+* Power-up progression feels natural
+* Boss fights are multi-phase
+* Shield behaves correctly
+* Bullet patterns scale with difficulty
+* Capture Beam system works reliably
+
+---
+
+# 24. What Most Remakes Get Wrong
+
+* Weak boss presence
+* Poor weapon progression
+* Missing route impact
+* Sluggish controls
+* Over-simplified enemy patterns
+
+---
+
+# 25. Final Summary
+
+**Darius Gaiden is about progression and spectacle.**
+
+It combines:
+
+* Strategic routing
+* Power growth
+* Massive boss encounters
+* Tight shooting mechanics
+
+to create a layered, replayable shmup experience.
+
+---
+
+## If you want next step:
+
+I can convert this into a **repo-ready build spec** (Level scripting system, boss phase state machines, route graph JSON, weapon upgrade tables) aligned to your HTML-JavaScript-Gaming workflow.

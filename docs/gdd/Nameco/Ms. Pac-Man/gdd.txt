@@ -1,0 +1,518 @@
+Below is a **full, production-grade Game Design Document (GDD)** for reverse-engineering **Ms. Pac-Man** (Midway / Namco, 1982), including **enhanced ghost AI randomness, multi-maze system, fruit paths, movement timing, and finishing touches** for an arcade-accurate recreation.
+
+---
+
+# 🎮 GDD — Ms. Pac-Man (Reverse Engineering Edition)
+
+**Document Type:** Full Technical + Design Spec
+**Target:** Faithful arcade recreation (Midway variant of Pac-Man)
+**Genre:** Maze Chase
+**Perspective:** Top-Down Grid Maze
+**Core Identity:** Pac-Man gameplay + unpredictability + dynamic mazes
+
+---
+
+# 1. 🧭 CORE GAME OVERVIEW
+
+## 1.1 Game Pillars
+
+* **Grid-Based Precision Movement**
+* **Semi-Random Ghost AI**
+* **Multiple Maze Layouts**
+* **Dynamic Fruit Movement**
+* **Faster, Less Predictable Gameplay**
+
+---
+
+## 1.2 Key Difference from Pac-Man
+
+| Feature  | Pac-Man       | Ms. Pac-Man   |
+| -------- | ------------- | ------------- |
+| Ghost AI | Deterministic | Semi-random   |
+| Mazes    | Single        | Multiple      |
+| Fruit    | Static        | Moving paths  |
+| Patterns | Exploitable   | Less reliable |
+
+---
+
+# 2. 🎮 CORE GAMEPLAY LOOP
+
+1. Spawn in maze
+2. Navigate grid
+3. Eat pellets
+4. Avoid ghosts
+5. Eat power pellets → chase ghosts
+6. Consume moving fruit
+7. Clear maze → next level
+
+---
+
+# 3. 🧍 PLAYER SYSTEM
+
+## 3.1 Movement Model
+
+```text id="p9s2k7"
+tile-based movement
+direction buffered at intersections
+```
+
+---
+
+## 3.2 Movement Properties
+
+```text id="x8v1d3"
+Speed: Slightly faster than Pac-Man
+Turning: Immediate at nodes
+Momentum: None
+```
+
+---
+
+## 3.3 Player States
+
+| State     | Description         |
+| --------- | ------------------- |
+| Normal    | Eating pellets      |
+| Energized | Power pellet active |
+| Dead      | Life lost           |
+
+---
+
+# 4. 🧟 GHOST SYSTEM (MODIFIED AI)
+
+## 4.1 Ghost Types (Same Characters)
+
+* Blinky
+* Pinky
+* Inky
+* Sue (replaces Clyde)
+
+---
+
+## 4.2 Key Difference: RANDOMNESS
+
+### Behavior Change
+
+```text id="v3r7k2"
+ghost decisions include randomness at intersections
+```
+
+---
+
+## 4.3 Modes
+
+```text id="b1x8q4"
+Scatter ↔ Chase cycles
++ Frightened mode
+```
+
+---
+
+## 4.4 Chase Behavior (Less Predictable)
+
+* Targets similar to Pac-Man
+* But includes random deviation
+
+---
+
+## 4.5 Frightened Mode
+
+```text id="q4w9e1"
+random movement
+reduced speed
+vulnerable state
+```
+
+---
+
+## 4.6 Ghost States
+
+| State      | Description       |
+| ---------- | ----------------- |
+| Normal     | Active            |
+| Frightened | Vulnerable        |
+| Eaten      | Returning to base |
+
+---
+
+# 5. 🧠 PATHFINDING SYSTEM
+
+## 5.1 Modified Targeting
+
+```text id="z6n2p8"
+targetTile += randomOffset
+```
+
+---
+
+## 5.2 Movement Rules
+
+* Cannot reverse (unless mode change)
+* Choose best direction with randomness
+
+---
+
+# 6. 🟡 PELLET SYSTEM
+
+## 6.1 Types
+
+| Type         | Effect   |
+| ------------ | -------- |
+| Pellet       | Score    |
+| Power Pellet | Energize |
+
+---
+
+## 6.2 Completion
+
+* All pellets cleared → next level
+
+---
+
+# 7. 🍒 FRUIT SYSTEM (MAJOR CHANGE)
+
+## 7.1 Behavior
+
+```text id="m2t8r5"
+fruit enters maze
+follows predefined path
+exits maze
+```
+
+---
+
+## 7.2 Spawn Points
+
+* Side tunnels
+
+---
+
+## 7.3 Path System
+
+* Fruit travels through maze corridors
+
+---
+
+## 7.4 Fruit Types
+
+* Cherry → Banana → Key (progression)
+
+---
+
+# 8. 🌍 MAZE SYSTEM (MULTI-MAP)
+
+## 8.1 Maze Variants
+
+| Maze   | Features         |
+| ------ | ---------------- |
+| Maze 1 | Classic          |
+| Maze 2 | Open center      |
+| Maze 3 | Narrow corridors |
+| Maze 4 | Complex layout   |
+
+---
+
+## 8.2 Maze Rotation
+
+```text id="g7h3n1"
+levels cycle through maze set
+```
+
+---
+
+## 8.3 Warp Tunnels
+
+```text id="r2k5d8"
+left ↔ right teleport
+ghost speed reduced in tunnels
+```
+
+---
+
+# 9. 🎯 COLLISION SYSTEM
+
+## 9.1 Rules
+
+| Condition                       | Result    |
+| ------------------------------- | --------- |
+| Player touches ghost            | Death     |
+| Player touches frightened ghost | Eat ghost |
+
+---
+
+## 9.2 Tile Alignment
+
+* Exact tile overlap required
+
+---
+
+# 10. ⏱️ SPEED & TIMING SYSTEM
+
+## 10.1 Speed Changes
+
+| Entity     | Behavior              |
+| ---------- | --------------------- |
+| Player     | Faster than Pac-Man   |
+| Ghosts     | Increased variability |
+| Frightened | Slower                |
+
+---
+
+## 10.2 Frightened Duration
+
+* Decreases faster than Pac-Man
+
+---
+
+## 10.3 Mode Timers
+
+* Similar to Pac-Man but less predictable
+
+---
+
+# 11. 🎲 RNG SYSTEM (CORE DIFFERENCE)
+
+## Used For:
+
+* Ghost direction decisions
+* Fruit path timing
+* Minor AI variations
+
+---
+
+# 12. 🎵 AUDIO DESIGN
+
+## Music
+
+* Intermission cutscenes (unique feature)
+
+---
+
+## SFX
+
+* Pellet loop
+* Ghost eat sound
+* Fruit collect
+
+---
+
+# 13. 🎨 VISUAL DESIGN
+
+## Style
+
+* Similar to Pac-Man
+* Added personality (Ms. Pac-Man bow, animations)
+
+---
+
+## Animation
+
+* Improved animations
+* Intermission scenes between levels
+
+---
+
+# 14. ⚙️ TECHNICAL SYSTEMS
+
+## Frame Rate
+
+* ~60 FPS equivalent
+
+---
+
+## Input
+
+* Buffered turning
+
+---
+
+## Determinism
+
+* Reduced vs Pac-Man due to RNG
+
+---
+
+# 15. 🧪 DIFFICULTY DESIGN
+
+## Core Drivers
+
+* Faster gameplay
+* Less predictable ghosts
+* Maze variation
+
+---
+
+## Difficulty Curve
+
+* Harder earlier
+* Less pattern reliance
+
+---
+
+# 16. 🧩 REVERSE ENGINEERING NOTES
+
+## MUST MATCH
+
+* Random ghost behavior balance
+* Fruit pathing system
+* Maze switching logic
+* Speed differences from Pac-Man
+
+---
+
+## QUIRKS TO PRESERVE
+
+* Semi-random AI (not fully random)
+* Occasional ghost hesitation
+* Fruit path quirks
+
+---
+
+# 17. 🧠 AI STATE MODEL
+
+```text id="t6x1p4"
+Scatter
+Chase
+Frightened
+Eaten
+```
+
+---
+
+# 18. 🧪 TESTING CHECKLIST
+
+* [ ] Movement grid accurate
+* [ ] Ghost randomness feels correct
+* [ ] Fruit paths work
+* [ ] Maze rotation correct
+* [ ] Speed matches arcade feel
+
+---
+
+# 19. ✨ FINISHING TOUCHES (POLISH)
+
+## 19.1 Arcade Feel
+
+* Faster pacing than Pac-Man
+* Slight unpredictability
+
+---
+
+## 19.2 Visual Polish
+
+* Distinct maze coloring
+* Clear fruit movement
+
+---
+
+## 19.3 Audio Polish
+
+* Intermission timing
+* Distinct fruit sounds
+
+---
+
+## 19.4 UX Rules
+
+* Minimal UI
+* Immediate restart
+
+---
+
+## 19.5 Authentic “Frustrations”
+
+* Unpredictable ghost turns
+* Faster speed
+* Less reliable patterns
+
+---
+
+# 20. 🧾 DATA STRUCTURES
+
+## Player
+
+```text id="u9m4k2"
+tileX, tileY
+direction
+state
+```
+
+---
+
+## Ghost
+
+```text id="n7x2v8"
+type
+tileX, tileY
+mode
+targetTile
+randomOffset
+```
+
+---
+
+## Fruit
+
+```text id="k3p5q1"
+type
+path[]
+positionIndex
+state
+```
+
+---
+
+## Maze
+
+```text id="d1r6s9"
+layout[][]
+pellets[]
+powerPellets[]
+```
+
+---
+
+## Game
+
+```text id="c8t2w4"
+level
+score
+lives
+modeTimer
+```
+
+---
+
+# 21. 🏁 SUCCESS CRITERIA
+
+A correct recreation should:
+
+* Feel **faster and less predictable than Pac-Man**
+* Maintain **tight grid movement**
+* Deliver **dynamic maze variety**
+* Preserve **semi-random ghost behavior**
+
+---
+
+# 🔚 FINAL SUMMARY
+
+This GDD captures:
+
+* Full **grid-based movement system**
+* Enhanced **ghost AI randomness**
+* Complete **multi-maze system**
+* Accurate **fruit movement mechanics**
+* Authentic **Ms. Pac-Man arcade feel**
+
+---
+
+## 🚀 Next Step (fits your repo workflow perfectly)
+
+I can generate:
+
+* Exact **ghost randomness tuning tables**
+* Full **multi-maze tilemaps (JSON)**
+* **Fruit path definitions**
+* Or a **PLAN_PR → BUILD_PR ZIP (docs-only, Codex-ready)**
+
+Just say: **“build the PR”** and I’ll package it exactly how you want.

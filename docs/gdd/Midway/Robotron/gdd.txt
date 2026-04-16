@@ -1,0 +1,537 @@
+Below is a **full, production-grade Game Design Document (GDD)** for reverse-engineering *Robotron: 2084* (Williams, 1982), including **dual-stick input model, enemy swarm AI, civilian rescue scoring, spawn systems, arena rules, and finishing touches** for an arcade-accurate recreation.
+
+---
+
+# 🎮 GDD — Robotron: 2084 (Reverse Engineering Edition)
+
+**Document Type:** Full Technical + Design Spec
+**Target:** Faithful arcade recreation (Williams twin-stick feel)
+**Genre:** Arena Shooter (Twin-Stick)
+**Perspective:** Top-Down Single-Screen Arena
+**Core Identity:** Dual-stick control + overwhelming enemy swarms + survival multitasking
+
+---
+
+# 1. 🧭 CORE GAME OVERVIEW
+
+## 1.1 Game Pillars
+
+* **Twin-Stick Precision Control**
+* **Constant 360° Threat Pressure**
+* **Civilian Rescue Risk/Reward**
+* **Escalating Enemy Density**
+* **Pure Reflex Survival**
+
+---
+
+## 1.2 Player Fantasy
+
+You are the last human defender, protecting civilians from robotic enemies in a relentless assault.
+
+---
+
+# 2. 🎮 CORE GAMEPLAY LOOP
+
+1. Spawn in arena
+2. Move with left stick (or directional input)
+3. Shoot independently with right stick
+4. Destroy enemies
+5. Rescue humans for bonus points
+6. Survive wave
+7. Next wave increases difficulty
+8. Death → immediate respawn (if lives remain)
+
+---
+
+# 3. 🕹️ INPUT SYSTEM (CRITICAL)
+
+## 3.1 Dual-Stick Controls
+
+| Input       | Function                |
+| ----------- | ----------------------- |
+| Left Stick  | Movement (8 directions) |
+| Right Stick | Shooting (8 directions) |
+
+---
+
+## 3.2 Input Behavior
+
+* Movement and shooting are **independent**
+* Player can move in one direction while firing another
+
+---
+
+## 3.3 Digital Direction Model
+
+```text id="j2u9dp"
+Directions:
+N, NE, E, SE, S, SW, W, NW
+```
+
+---
+
+# 4. 🧍 PLAYER SYSTEM
+
+## 4.1 Movement
+
+```text id="i1p7kg"
+velocity = direction * speed
+```
+
+---
+
+### Properties
+
+```text id="9d2v5x"
+Speed: Fast
+Acceleration: Instant
+Inertia: None
+```
+
+---
+
+## 4.2 Shooting
+
+* Continuous firing in selected direction
+* Projectiles travel until off-screen or hit
+
+---
+
+## 4.3 Player States
+
+| State   | Description           |
+| ------- | --------------------- |
+| Alive   | Normal                |
+| Hit     | Instant death         |
+| Respawn | Brief invulnerability |
+
+---
+
+# 5. 🔫 WEAPON SYSTEM
+
+## 5.1 Default Weapon
+
+* Rapid-fire projectiles
+* Straight trajectory
+
+---
+
+## 5.2 Rules
+
+* No weapon upgrades (pure skill game)
+* Fire rate capped
+
+---
+
+# 6. 🧟 ENEMY SYSTEM
+
+## 6.1 Enemy Types
+
+### Grunts
+
+* Move directly toward player
+* Basic threat
+
+---
+
+### Hulks
+
+* Slow, heavy
+* Absorb shots
+* Destroy other enemies
+
+---
+
+### Spheroids
+
+* Spawn Enforcers
+
+---
+
+### Enforcers
+
+* Fire projectiles in patterns
+
+---
+
+### Tanks
+
+* Shoot missiles
+
+---
+
+### Brain (CRITICAL ENEMY)
+
+* Seeks civilians
+* Converts them into enemies
+
+---
+
+### Electrodes
+
+* Static obstacles
+* Block movement
+
+---
+
+## 6.2 AI Behavior
+
+### Grunt
+
+```text id="y6n2qk"
+move directly toward player
+```
+
+---
+
+### Brain
+
+```text id="m2p4sb"
+seek civilian
+→ capture
+→ convert to enemy
+```
+
+---
+
+### Enforcer
+
+```text id="q1g7rd"
+move randomly
+→ shoot in bursts
+```
+
+---
+
+# 7. 🧍 CIVILIAN SYSTEM (CRITICAL)
+
+## 7.1 Types
+
+* Mom
+* Dad
+* Kid
+
+---
+
+## 7.2 Behavior
+
+```text id="e8v9h2"
+wander randomly
+avoid enemies (limited)
+```
+
+---
+
+## 7.3 Rescue Mechanic
+
+```text id="t6z1jc"
+IF player touches civilian:
+    add score
+    remove civilian
+```
+
+---
+
+## 7.4 Conversion
+
+```text id="7k3f9x"
+Brain captures civilian
+→ converts into enemy
+```
+
+---
+
+# 8. 🌍 ARENA SYSTEM
+
+## 8.1 Layout
+
+* Single screen
+* No scrolling
+
+---
+
+## 8.2 Boundaries
+
+* Solid edges (no wrap)
+
+---
+
+## 8.3 Obstacles
+
+* Electrodes
+* Enemy-generated barriers
+
+---
+
+# 9. 🎯 COLLISION SYSTEM
+
+## 9.1 Rules
+
+| Collision            | Result  |
+| -------------------- | ------- |
+| Player vs enemy      | Death   |
+| Player vs projectile | Death   |
+| Player vs civilian   | Rescue  |
+| Projectile vs enemy  | Destroy |
+
+---
+
+## 9.2 Hitbox Behavior
+
+* Tight player hitbox
+* Fast collision resolution
+
+---
+
+# 10. ⏱️ WAVE SYSTEM
+
+## 10.1 Wave Structure
+
+* Predefined enemy mix
+* Increasing difficulty
+
+---
+
+## 10.2 Spawn Logic
+
+```text id="5r4q1z"
+spawn enemies at edges
+→ increase density per wave
+```
+
+---
+
+## 10.3 Wave Completion
+
+* All enemies destroyed
+
+---
+
+# 11. 🎲 RNG SYSTEM
+
+* Enemy spawn timing variation
+* Brain targeting variation
+
+---
+
+# 12. 🎵 AUDIO DESIGN
+
+## Music
+
+* Minimal
+
+## SFX
+
+* Rapid firing sounds
+* Explosion bursts
+* Civilian screams
+
+---
+
+# 13. 🎨 VISUAL DESIGN
+
+## Style
+
+* Vector-inspired graphics
+* Bright enemy colors
+
+---
+
+## Animation
+
+* Fast, responsive
+* Minimal but readable
+
+---
+
+# 14. ⚙️ TECHNICAL SYSTEMS
+
+## Frame Rate
+
+* ~60 FPS
+
+## Input
+
+* Immediate, no buffering
+
+---
+
+## Determinism
+
+* Mostly deterministic with slight RNG
+
+---
+
+# 15. 🧪 DIFFICULTY DESIGN
+
+## Core Drivers
+
+* Enemy density
+* Speed
+* Multitasking (shoot + rescue)
+
+---
+
+## Difficulty Curve
+
+* Rapid escalation
+* Exponential chaos
+
+---
+
+# 16. 🧩 REVERSE ENGINEERING NOTES
+
+## MUST MATCH
+
+* Dual-stick independence
+* Enemy movement speeds
+* Spawn density
+* Civilian conversion logic
+
+---
+
+## QUIRKS TO PRESERVE
+
+* Overwhelming difficulty
+* No safe zones
+* Instant deaths
+
+---
+
+# 17. 🧠 AI STATE MODEL
+
+```text id="c8f7n2"
+Idle
+Seek
+Attack
+Spawn
+Convert
+```
+
+---
+
+# 18. 🧪 TESTING CHECKLIST
+
+* [ ] Movement + shooting independent
+* [ ] Enemy AI behaves correctly
+* [ ] Civilian rescue works
+* [ ] Spawn density scales properly
+* [ ] Collision detection accurate
+
+---
+
+# 19. ✨ FINISHING TOUCHES (POLISH)
+
+## 19.1 Arcade Feel
+
+* Instant response
+* No smoothing
+
+---
+
+## 19.2 Visual Polish
+
+* High contrast
+* Clear enemy readability
+
+---
+
+## 19.3 Audio Polish
+
+* Fast, intense feedback
+* Distinct enemy sounds
+
+---
+
+## 19.4 UX Rules
+
+* Immediate restart
+* No menus
+
+---
+
+## 19.5 Authentic “Frustrations”
+
+* Overwhelming enemy count
+* Instant death
+* No recovery time
+
+---
+
+# 20. 🧾 DATA STRUCTURES
+
+## Player
+
+```text id="h5g8r2"
+x, y
+directionMove
+directionShoot
+state
+```
+
+---
+
+## Enemy
+
+```text id="p9k3t6"
+type
+x, y
+state
+aiState
+```
+
+---
+
+## Civilian
+
+```text id="n2x4v8"
+type
+x, y
+state
+```
+
+---
+
+## Level
+
+```text id="w7z1d3"
+waveNumber
+enemyList
+civilianList
+```
+
+---
+
+# 21. 🏁 SUCCESS CRITERIA
+
+A correct recreation should:
+
+* Feel **fast and chaotic**
+* Reward **true dual-stick mastery**
+* Preserve **arcade intensity**
+* Match **enemy swarm behavior**
+
+---
+
+# 🔚 FINAL SUMMARY
+
+This GDD captures:
+
+* Full **twin-stick control system**
+* Detailed **enemy AI and behaviors**
+* Complete **civilian rescue mechanics**
+* Accurate **arena combat system**
+* Authentic **arcade chaos and pacing**
+
+---
+
+## 🚀 Next Step (perfect for your repo workflow)
+
+I can generate:
+
+* Frame-accurate **enemy spawn tables per wave**
+* Exact **movement + projectile speed constants**
+* Full **arena layouts + obstacle configs**
+* Or a **PLAN_PR → BUILD_PR ZIP (docs-only, Codex-ready)**
+
+Just say: **“build the PR”** and I’ll package it exactly how you want.

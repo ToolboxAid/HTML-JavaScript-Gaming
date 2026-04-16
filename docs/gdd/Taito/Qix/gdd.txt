@@ -1,0 +1,476 @@
+![Image](https://images.openai.com/static-rsc-4/bw-577Hwx2jv9diu_wRbfrmvVxIMePRcJPPNMblA4fkEburTikFq_vmGGN6XsOz2sGY7bZpdncMePk77exrFu90QqbX01hwltQCDWZgTMY5ISnNgrWwLexRGsQRHwkCVqnImxsI8DEoeG9Lv12_fH2suA2oZnVZXxHQQnEN38pUCDnQjppwnOwpehX6HmULf?purpose=fullsize)
+
+![Image](https://images.openai.com/static-rsc-4/XHhDZJMca_TGKTUtcrThjRkLGnZJP2QGTOauMLeYFQEwvGigWwOoiSwhzYYJLOmLa9rBxmuxSHExP5yu1LzmKbUYiCpb6U8sLGagy8zmWS581dGOJ8YDQEwdvCj80RXhWNZ6D7jF7mCZLi9aBZqV33GGxQMOLKLqyqSfz6yxtMU6u9TjcCtJ41YN-bPDoAP7?purpose=fullsize)
+
+![Image](https://images.openai.com/static-rsc-4/TGxcojM20ixsibsMtOockzhLXl2BBAgUkaP1ptLw9paLEHdAWtxdF9EtSPZklTX4dwykMFe-cPHitI5UdDLmJnchxMKLAKEtYDoXzxDHC3rTbLnockzEzvm6sv_1vtaoF7Mpm72NCqIk9IHabxmurIEZ967ARCbhR4roOkL_n3ZknpFnOS-m7l_pmRzq1Yfl?purpose=fullsize)
+
+![Image](https://images.openai.com/static-rsc-4/06xx3_DCCmUBO_QCC09p3JZd3GeYiyK8Z7DLI29NvbOdqzteIJ3nHD4n_DIECbT5xYpP6PyMXZE5oHf_y-5Nd4rTLiurQaCmmKp9p8spGNygmPinJ2fr5m452SNSfgdVpjolO7FeXLFRKFa9vIUxNo4bW5v9hD3H3q3rhLlD7eSKI0avUbKBHHkQ2pN6SlgA?purpose=fullsize)
+
+![Image](https://images.openai.com/static-rsc-4/vs5kM83CULrvrTY5UUR7xhOAC5UlXbE7VwYnpLiwdni-q-Ld7F7pzyQZhc4AGnB9Jd76b3FOtIRBLdUcf8flJm6pWNsgG4PtAlLjR1kQKrDX2AMxRQc01g7BgAQFnmKuIJyTkYv70Th3LShedqzA4vOQN1f8G9N1oF5-1Bxqlr3dQFzz3S8f8DhKl2ofjiXE?purpose=fullsize)
+
+![Image](https://images.openai.com/static-rsc-4/IODbvV3nz86sPI2qUAGK4N5I8aT2_r4TPyFdpcuOobmQOl8TO97zcDy6Nm1OVBpBMDaWQDQz-7tDBSaYcByWgiDLH7tlZrYZF2_BxcqUg6hJOh92EYu6jk7pG-4VFyym_lI-Od0qTd_0Lfl78Y-_feWBGtxIpzFn2yqqF0tlE9hVqaFaRbu2Vlz3BoTT_luv?purpose=fullsize)
+
+![Image](https://images.openai.com/static-rsc-4/35NHrmtSWTwZwBGyMnwtXIFzi0Bx8ntJiuJKG1RKgBOaMNE0h66knE21afSVT56cuSuG1UEp5ysgPgbBW0pwXD62t5yIIeyGRusJmS6_QrdsV9p0h0bXEyoTnurR4h3c256TrsXxAUeVBzHkbx2IlspPZSn5Er-SVQ-yMsA2xAhOfT5HoDuH85_1opPKrttR?purpose=fullsize)
+
+# QIX — REVERSE ENGINEERING GAME DESIGN DOCUMENT
+
+---
+
+# 1. Game Identity
+
+**Title:** Qix
+**Developer/Publisher:** Taito America
+**Release:** 1981 (Arcade)
+**Genre:** Abstract action / territory control
+**Core Idea:** Claim territory by drawing lines while avoiding enemies and protecting the vulnerable “drawing cursor.”
+
+---
+
+# 2. High Concept
+
+The player draws lines from the border of a rectangular playfield to **capture area** while avoiding:
+
+* The chaotic line entity (**Qix**)
+* Edge-traveling enemies (**Sparx**)
+* Later-stage roaming enemies (**Fuse**)
+
+The goal is to reach a **target percentage of captured area** (typically ~75%) to clear the level.
+
+---
+
+# 3. What Makes Qix Unique
+
+Unlike most arcade games:
+
+* No fixed player character sprite
+* No shooting (primary gameplay is drawing)
+* Risk/reward tied to **how long you expose yourself while drawing**
+* The “enemy” (Qix) moves in unpredictable, almost artistic patterns
+
+This makes Qix feel like:
+
+> A mix of geometry, timing, and controlled risk-taking.
+
+---
+
+# 4. Player Role & Fantasy
+
+The player is effectively:
+
+* A **cursor agent** operating on boundaries
+* A **territory controller**
+* A **risk manager** deciding how long to stay exposed
+
+Emotional loop:
+
+* Safe → Step out → Danger → Commit → Escape → Reward
+
+---
+
+# 5. Controls
+
+## 5.1 Inputs
+
+* **Joystick (4-directional)**
+* **Draw Speed Button:**
+
+  * Slow draw (safe, lower points)
+  * Fast draw (high risk, high points)
+
+## 5.2 Movement Modes
+
+* **On Border:** safe (except Sparx)
+* **Drawing (inside):** vulnerable to Qix and Fuse
+
+---
+
+# 6. Playfield Structure
+
+## 6.1 Base Layout
+
+* Large rectangular boundary
+* Empty interior space
+* Player starts on border
+
+## 6.2 Territory System
+
+* Player draws lines to split the field
+* When a shape is closed:
+
+  * One side is filled
+  * The side **without the Qix** becomes captured
+
+---
+
+# 7. Core Gameplay Loop
+
+1. Move along border
+2. Start drawing into playfield
+3. Navigate safely while exposed
+4. Close shape by reconnecting to border
+5. Area fills in
+6. Repeat until target % reached
+7. Advance to next level
+
+---
+
+# 8. The Qix (Primary Enemy)
+
+## 8.1 Behavior
+
+* Moves in erratic, abstract line patterns
+* Not bound to grid or predictable paths
+* Continuously animates as shifting lines
+
+## 8.2 Function
+
+* If Qix touches:
+
+  * Player while drawing → death
+  * Active drawing line → death
+
+## 8.3 Design Role
+
+* Creates **constant unpredictable pressure**
+* Forces player to:
+
+  * Watch positioning
+  * Time entries carefully
+
+---
+
+# 9. Sparx (Edge Enemies)
+
+## 9.1 Behavior
+
+* Move along borders and drawn lines
+* Travel clockwise or counterclockwise
+* Cannot enter open space
+
+## 9.2 Threat
+
+* Kill player on contact (even on border)
+* Block safe zones
+
+## 9.3 Design Role
+
+* Remove “safe” areas
+* Force movement and decision-making
+
+---
+
+# 10. Fuse (Later Enemy)
+
+## 10.1 Behavior
+
+* Travels along player-drawn lines
+* Appears after a delay during drawing
+* Moves toward player origin point
+
+## 10.2 Purpose
+
+* Prevents slow, overly cautious drawing
+* Forces commitment and speed
+
+---
+
+# 11. Drawing System (Core Mechanic)
+
+## 11.1 Drawing States
+
+* **Idle:** moving on border
+* **Drawing:** inside field
+* **Closing:** reconnecting to border
+
+## 11.2 Drawing Types
+
+### Slow Draw
+
+* Safer
+* Lower points
+
+### Fast Draw
+
+* Riskier
+* Higher points
+* Faster exposure window
+
+## 11.3 Completion Rule
+
+When player reconnects:
+
+* Area is evaluated
+* Region without Qix is filled
+
+---
+
+# 12. Area Capture Logic
+
+## 12.1 Core Rule
+
+> The side of the split NOT containing the Qix is captured.
+
+## 12.2 Fill Behavior
+
+* Filled region becomes:
+
+  * Safe terrain
+  * New boundary for movement
+
+## 12.3 Strategy Implications
+
+* Small safe cuts vs large risky cuts
+* Trapping Qix into smaller zones
+
+---
+
+# 13. Scoring System
+
+## 13.1 Score Sources
+
+* Area captured
+* Drawing speed (fast = more points)
+* Efficiency of cuts
+
+## 13.2 Risk/Reward
+
+| Action    | Risk | Reward |
+| --------- | ---- | ------ |
+| Small cut | Low  | Low    |
+| Large cut | High | High   |
+| Fast draw | High | High   |
+| Slow draw | Low  | Low    |
+
+---
+
+# 14. Level Progression
+
+## 14.1 Win Condition
+
+* Capture required % (≈75%)
+
+## 14.2 Difficulty Scaling
+
+* More Sparx
+* Faster movement
+* Fuse introduced
+* Less safe border time
+* Tighter Qix movement pressure
+
+---
+
+# 15. Lives & Failure
+
+## 15.1 Death Conditions
+
+* Touched by Qix while drawing
+* Qix hits active line
+* Contact with Sparx
+* Fuse reaches player
+
+## 15.2 Life System
+
+* Limited lives
+* Game continues until exhausted
+
+---
+
+# 16. Game Feel Requirements (CRITICAL)
+
+To feel like Qix:
+
+* Qix motion must feel:
+
+  * Chaotic but not random garbage
+  * Smooth and continuous
+* Drawing must feel:
+
+  * Immediate
+  * Precise
+* Risk must feel:
+
+  * Visible
+  * Increasing over time
+* Area fill must feel:
+
+  * Instant and satisfying
+
+---
+
+# 17. Reverse-Engineering Object Model
+
+## 17.1 Core Objects
+
+* GameState
+* PlayerCursor
+* DrawPath
+* Qix
+* Sparx[]
+* Fuse
+* TerritoryMap
+* ScoreManager
+
+---
+
+## 17.2 PlayerCursor
+
+* position (x,y)
+* state: BORDER / DRAWING
+* drawMode: SLOW / FAST
+* activePath
+
+---
+
+## 17.3 DrawPath
+
+* list of points
+* active flag
+* origin point
+* completion state
+
+---
+
+## 17.4 Qix
+
+* position
+* vector endpoints (line shape)
+* movement pattern
+* collision radius
+
+---
+
+## 17.5 TerritoryMap
+
+* grid or polygon map
+* filled vs empty regions
+* boundary graph
+
+---
+
+# 18. Collision Rules
+
+Priority:
+
+1. Qix vs draw line
+2. Qix vs player
+3. Sparx vs player
+4. Fuse vs draw line/player
+5. Draw completion validation
+
+---
+
+# 19. Algorithms (Key Systems)
+
+## 19.1 Area Fill (Core Problem)
+
+* Split polygon into two regions
+* Determine which region contains Qix
+* Fill the opposite region
+
+Implementation options:
+
+* Flood fill
+* Polygon partitioning
+* Grid-based occupancy
+
+---
+
+## 19.2 Qix Containment Check
+
+* After line closure:
+
+  * Determine which region contains Qix
+  * Fill the other
+
+---
+
+## 19.3 Path Validation
+
+* Ensure:
+
+  * No self-crossing
+  * Valid reconnection to boundary
+
+---
+
+# 20. Difficulty Model
+
+Qix difficulty emerges from:
+
+* Exposure time
+* Enemy density
+* Available safe zones shrinking
+* Increasing player pressure
+
+Not from speed alone.
+
+---
+
+# 21. Audio-Visual Identity
+
+## 21.1 Visual Style
+
+* Minimalist vector graphics
+* Neon lines
+* Abstract motion
+
+## 21.2 Sound
+
+* Reactive tones
+* Increasing pitch with danger
+* Minimalistic but tension-driven
+
+---
+
+# 22. Arcade Design Philosophy
+
+Qix was designed around:
+
+* **Short play sessions**
+* **High tension per second**
+* **Skill expression through risk**
+* **Replayability through unpredictability**
+
+---
+
+# 23. QA Checklist (Faithful Clone)
+
+Must pass:
+
+* Qix always stays in one region after split
+* Area fill never incorrectly captures Qix
+* Sparx never leave borders
+* Fuse forces urgency correctly
+* Fast draw scores more than slow
+* Capture % ends level correctly
+* Player always dies if line is touched mid-draw
+
+---
+
+# 24. What Most Remakes Get Wrong
+
+* Qix movement too random or too predictable
+* Area fill glitches
+* Drawing latency
+* Weak risk/reward distinction
+* Missing Fuse pressure timing
+
+---
+
+# 25. Final Summary
+
+**Qix is not about drawing shapes — it’s about controlled exposure.**
+
+The player constantly decides:
+
+* *How far do I go?*
+* *How long do I stay vulnerable?*
+* *Is this cut worth the risk?*
+
+That tension—more than visuals or scoring—is the essence of Qix.
+
+---
+
+## If you want next step:
+
+I can convert this into a **build-ready spec** for your repo (entities, state machines, exact algorithms, and data formats) matching your HTML-JavaScript-Gaming workflow.
