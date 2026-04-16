@@ -11,47 +11,40 @@ import { drawFrame, drawPanel } from '/src/engine/debug/index.js';
 const theme = new Theme(ThemeTokens);
 
 export default class Phase18FoundationScene extends Scene {
-  constructor({ runtimeLayer = null } = {}) {
+  constructor({ phase18Flow = null } = {}) {
     super();
     this.elapsed = 0;
-    this.runtimeLayer = runtimeLayer;
+    this.phase18Flow = phase18Flow;
     this.lastHeartbeatTick = 0;
     this.lastHeartbeatTime = 0;
     this.lastRuntimeTransition = 'idle';
-    this.unsubscribeHeartbeat = null;
     this.unsubscribeRuntimeState = null;
   }
 
   enter(engine) {
-    if (!this.runtimeLayer) return;
-    const channel = this.runtimeLayer.getService('phase18.channel');
-    if (channel && typeof channel.subscribe === 'function') {
-      this.unsubscribeHeartbeat = channel.subscribe('phase18.heartbeat', (payload) => {
-        this.lastHeartbeatTick = Number(payload?.tick) || 0;
-        this.lastHeartbeatTime = Number(payload?.t) || 0;
-      });
-    }
-    this.unsubscribeRuntimeState = this.runtimeLayer.onStateChange(({ previous, next }) => {
+    if (!this.phase18Flow) return;
+    this.unsubscribeRuntimeState = this.phase18Flow.onStateChange(({ previous, next }) => {
       this.lastRuntimeTransition = `${previous} -> ${next}`;
     });
-    this.runtimeLayer.start({ engine, scene: this });
+    this.phase18Flow.start({ engine, scene: this });
   }
 
   update(dtSeconds) {
     this.elapsed += dtSeconds;
-    this.runtimeLayer?.update(dtSeconds, { scene: this });
+    this.phase18Flow?.update(dtSeconds, { scene: this });
+    const snapshot = this.phase18Flow?.getSnapshot?.();
+    if (snapshot?.flow) {
+      this.lastHeartbeatTick = Number(snapshot.flow.lastHeartbeatTick) || 0;
+      this.lastHeartbeatTime = Number(snapshot.flow.lastHeartbeatSeconds) || 0;
+    }
   }
 
   exit() {
-    if (typeof this.unsubscribeHeartbeat === 'function') {
-      this.unsubscribeHeartbeat();
-      this.unsubscribeHeartbeat = null;
-    }
     if (typeof this.unsubscribeRuntimeState === 'function') {
       this.unsubscribeRuntimeState();
       this.unsubscribeRuntimeState = null;
     }
-    this.runtimeLayer?.stop({ scene: this });
+    this.phase18Flow?.stop({ scene: this });
   }
 
   render(renderer) {
@@ -72,17 +65,29 @@ export default class Phase18FoundationScene extends Scene {
       font: '16px monospace',
     });
 
-    const runtimeSnapshot = this.runtimeLayer?.getSnapshot?.() || {
+    const phase18Snapshot = this.phase18Flow?.getSnapshot?.() || {
+      runtime: {
+        state: 'idle',
+        tickCount: 0,
+        serviceIds: [],
+      },
+      flow: {
+        runtimeStateEvents: 0,
+      },
+    };
+    const runtimeSnapshot = phase18Snapshot.runtime || {
       state: 'idle',
       tickCount: 0,
       serviceIds: [],
     };
+    const flowSnapshot = phase18Snapshot.flow || { runtimeStateEvents: 0 };
     drawPanel(renderer, 620, 34, 300, 160, 'Phase 18 Bootstrap', [
       'Status: initialized',
       'Folder: samples/phase-18',
       'Entry sample: 1801',
       `Runtime: ${runtimeSnapshot.state} | tick ${runtimeSnapshot.tickCount}`,
       `Transition: ${this.lastRuntimeTransition}`,
+      `Flow events: ${flowSnapshot.runtimeStateEvents}`,
       `Services: ${runtimeSnapshot.serviceIds.length}`,
       `Heartbeat tick: ${this.lastHeartbeatTick} @ ${this.lastHeartbeatTime.toFixed(2)}s`,
     ]);

@@ -1,3 +1,2 @@
-- [ ] runtime initializes
-- [ ] loop executes
+- [ ] integration works
 - [ ] no errors
