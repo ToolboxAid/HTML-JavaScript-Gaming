@@ -1,3 +1,3 @@
 MODEL: GPT-5.3-codex
 REASONING: high
-COMMAND: Execute BUILD_PR_LEVEL_17_23_PHASE16_VALIDATION_SWEEP, validate Phase 16, fix minimal issues, package results to <project folder>/tmp/BUILD_PR_LEVEL_17_23_PHASE16_VALIDATION_SWEEP.zip
+COMMAND: Implement samples 1609-1611 as described, integrate into samples/index.html, ensure runnable, package to <project folder>/tmp/BUILD_PR_LEVEL_17_25_ADVANCED_3D_SAMPLES_BATCH_1.zip

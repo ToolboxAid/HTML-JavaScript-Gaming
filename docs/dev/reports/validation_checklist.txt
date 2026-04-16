@@ -1,4 +1,3 @@
-- [ ] all panels render
+- [ ] all 3 samples load
 - [ ] no console errors
-- [ ] tests pass
-- [ ] roadmap consistent
+- [ ] visible functionality per sample
