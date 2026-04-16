@@ -1,4 +1,7 @@
-Handle overlay input edge cases.
+Add multi-layer overlay composition for gameplay-safe overlays.
 
 PR Details:
-- Stabilizes input under rapid and conflicting conditions
+- Enables deterministic rendering of multiple active overlays
+- Preserves gameplay-first input and shared non-Tab input mapping
+- Improves roadmap progress with a testable composition milestone
+- Roadmap update must be status-only

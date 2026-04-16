@@ -22,10 +22,22 @@ function normalizeRuntimeExtensionEntry(entry) {
     return null;
   }
 
+  const layerOrderRaw = Number(entry.layerOrder);
+  const layerOrder = Number.isFinite(layerOrderRaw) ? layerOrderRaw : 0;
+  const compose = entry.compose === true;
+  const panelWidthRaw = Number(entry.panelWidth);
+  const panelHeightRaw = Number(entry.panelHeight);
+  const panelWidth = Number.isFinite(panelWidthRaw) && panelWidthRaw > 0 ? panelWidthRaw : 260;
+  const panelHeight = Number.isFinite(panelHeightRaw) && panelHeightRaw > 0 ? panelHeightRaw : 96;
+
   return Object.freeze({
     overlayId,
     onStep,
     onRender,
+    compose,
+    layerOrder,
+    panelWidth,
+    panelHeight,
   });
 }
 
@@ -68,6 +80,73 @@ function normalizeInteractionIndex(runtime) {
   const normalized = ((current % count) + count) % count;
   runtime.interactionIndex = normalized;
   return normalized;
+}
+
+function getComposedRuntimeFrames(runtime, activeOverlayId) {
+  if (!runtime || !Array.isArray(runtime.runtimeExtensions) || runtime.runtimeExtensions.length === 0) {
+    return [];
+  }
+
+  const normalizedActiveOverlayId = String(activeOverlayId || '').trim();
+  const activeIndex = normalizeInteractionIndex(runtime);
+  const frames = [];
+
+  for (let i = 0; i < runtime.runtimeExtensions.length; i += 1) {
+    const extension = runtime.runtimeExtensions[i];
+    const isActive = i === activeIndex;
+    if (!isActive && extension.compose !== true) {
+      continue;
+    }
+    if (!shouldRunRuntimeExtension(extension, normalizedActiveOverlayId)) {
+      continue;
+    }
+
+    frames.push({
+      extension,
+      registrationIndex: i,
+      isActive,
+    });
+  }
+
+  frames.sort((left, right) => {
+    if (left.extension.layerOrder !== right.extension.layerOrder) {
+      return left.extension.layerOrder - right.extension.layerOrder;
+    }
+    return left.registrationIndex - right.registrationIndex;
+  });
+
+  return frames;
+}
+
+function attachCompositionSlots(frames, renderer) {
+  if (!Array.isArray(frames) || frames.length === 0) {
+    return frames || [];
+  }
+
+  const canvasSize = renderer?.getCanvasSize?.() || { width: 960, height: 540 };
+  const width = Math.max(320, Number(canvasSize.width) || 960);
+  const height = Math.max(180, Number(canvasSize.height) || 540);
+  const margin = 16;
+  const gap = 10;
+  let cursorY = height - margin;
+
+  for (let i = 0; i < frames.length; i += 1) {
+    const frame = frames[i];
+    const slotWidth = Math.max(120, Number(frame.extension.panelWidth) || 260);
+    const slotHeight = Math.max(32, Number(frame.extension.panelHeight) || 96);
+    const slotX = Math.round(width - margin - slotWidth);
+    const slotY = Math.round(cursorY - slotHeight);
+    frame.slot = Object.freeze({
+      x: slotX,
+      y: slotY,
+      width: slotWidth,
+      height: slotHeight,
+      anchor: 'bottom-right',
+    });
+    cursorY = slotY - gap;
+  }
+
+  return frames;
 }
 
 export function createOverlayGameplayRuntime({ runtimeExtensions = [] } = {}) {
@@ -120,6 +199,24 @@ export function getOverlayGameplayRuntimeInteractionSnapshot(runtime) {
     suppressUntilRelease: runtime?.interactionSuppressUntilRelease === true,
     cooldownRemainingSeconds: Math.max(0, Number(runtime?.interactionCooldownRemainingSeconds) || 0),
   };
+}
+
+export function getOverlayGameplayRuntimeCompositionSnapshot(runtime, context = {}) {
+  const activeOverlayId = String(context?.activeOverlayId || '').trim();
+  const frames = attachCompositionSlots(
+    getComposedRuntimeFrames(runtime, activeOverlayId),
+    context?.renderer
+  );
+  return frames.map((frame, index) => ({
+    index,
+    count: frames.length,
+    registrationIndex: frame.registrationIndex,
+    layerOrder: frame.extension.layerOrder,
+    compose: frame.extension.compose === true,
+    isActive: frame.isActive === true,
+    overlayId: frame.extension.overlayId,
+    slot: frame.slot,
+  }));
 }
 
 export function stepOverlayGameplayRuntimeControls(runtime, input, options = {}) {
@@ -212,18 +309,36 @@ export function stepOverlayGameplayRuntime(runtime, context = {}) {
   }
 
   const activeOverlayId = String(context.activeOverlayId || '').trim();
-  const activeIndex = normalizeInteractionIndex(runtime);
-  const extension = runtime.runtimeExtensions[activeIndex];
-  if (!extension || !extension.onStep || !shouldRunRuntimeExtension(extension, activeOverlayId)) {
+  const frames = getComposedRuntimeFrames(runtime, activeOverlayId);
+  if (frames.length === 0) {
     return 0;
   }
-  try {
-    extension.onStep(context);
-    return 1;
-  } catch {
-    // Runtime overlays must never break gameplay execution.
-    return 0;
+
+  let invoked = 0;
+  for (let i = 0; i < frames.length; i += 1) {
+    const frame = frames[i];
+    if (!frame.extension.onStep) {
+      continue;
+    }
+    try {
+      frame.extension.onStep({
+        ...context,
+        overlayComposition: {
+          index: i,
+          count: frames.length,
+          registrationIndex: frame.registrationIndex,
+          layerOrder: frame.extension.layerOrder,
+          compose: frame.extension.compose === true,
+          isActive: frame.isActive === true,
+          slot: frame.slot || null,
+        },
+      });
+      invoked += 1;
+    } catch {
+      // Runtime overlays must never break gameplay execution.
+    }
   }
+  return invoked;
 }
 
 export function renderOverlayGameplayRuntime(runtime, context = {}) {
@@ -237,16 +352,37 @@ export function renderOverlayGameplayRuntime(runtime, context = {}) {
   }
 
   const activeOverlayId = String(context.activeOverlayId || '').trim();
-  const activeIndex = normalizeInteractionIndex(runtime);
-  const extension = runtime.runtimeExtensions[activeIndex];
-  if (!extension || !extension.onRender || !shouldRunRuntimeExtension(extension, activeOverlayId)) {
+  const frames = attachCompositionSlots(
+    getComposedRuntimeFrames(runtime, activeOverlayId),
+    context.renderer
+  );
+  if (frames.length === 0) {
     return 0;
   }
-  try {
-    extension.onRender(context);
-    return 1;
-  } catch {
-    // Runtime overlays must never break gameplay rendering.
-    return 0;
+
+  let invoked = 0;
+  for (let i = 0; i < frames.length; i += 1) {
+    const frame = frames[i];
+    if (!frame.extension.onRender) {
+      continue;
+    }
+    try {
+      frame.extension.onRender({
+        ...context,
+        overlayComposition: {
+          index: i,
+          count: frames.length,
+          registrationIndex: frame.registrationIndex,
+          layerOrder: frame.extension.layerOrder,
+          compose: frame.extension.compose === true,
+          isActive: frame.isActive === true,
+          slot: frame.slot,
+        },
+      });
+      invoked += 1;
+    } catch {
+      // Runtime overlays must never break gameplay rendering.
+    }
   }
+  return invoked;
 }

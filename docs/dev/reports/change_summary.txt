@@ -1,7 +1,7 @@
 Summary:
-This PR follows Level 19.2 by adding interaction controls for gameplay overlays.
-It keeps scope limited to a testable control layer so overlays can be shown, hidden, and cycled during gameplay without interfering with core player input.
+This PR adds a testable multi-layer composition step for Level 19 overlays.
+It allows multiple gameplay-safe overlays to render together with deterministic ordering while preserving input safety and gameplay visibility.
 
-Roadmap Improvement:
-- Advances Level 19 from gameplay overlay availability to gameplay-safe overlay usability
-- Keeps the change executable and validation-backed
+Roadmap Impact:
+- Improves Level 19 with a concrete, testable composition milestone
+- Keeps roadmap handling status-only as required by the updated instructions

@@ -1,0 +1,5 @@
+Roadmap Status Update Instruction:
+- Update the roadmap entry for BUILD_PR_LEVEL_19_6_OVERLAY_MULTI_LAYER_COMPOSITION using status markers only
+- Allowed changes: [ ] -> [.] -> [x]
+- Do not rewrite, move, or delete roadmap text
+- Do not perform cleanup edits outside the status change needed for this PR
