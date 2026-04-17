@@ -5,10 +5,14 @@ David Quesenberry
 RenderPipelineStagesDebugPanel.test.mjs
 */
 import assert from "node:assert/strict";
-import { createStandard3dPanels } from "../../src/engine/debug/standard/threeD/panels/registerStandard3dPanels.js";
-import { PANEL_3D_RENDER_PIPELINE_STAGES, create3dRenderPipelineStagesPanel } from "../../src/engine/debug/standard/threeD/panels/panel3dRenderPipelineStages.js";
-import { createStandard3dProviders } from "../../src/engine/debug/standard/threeD/providers/registerStandard3dProviders.js";
-import { PROVIDER_3D_RENDER_PIPELINE_STAGES, createRenderPipelineStagesProvider } from "../../src/engine/debug/standard/threeD/providers/renderPipelineStagesProvider.js";
+import {
+  createStandard3dPanels,
+  PANEL_3D_RENDER_PIPELINE_STAGES,
+  create3dRenderPipelineStagesPanel,
+  createStandard3dProviders,
+  PROVIDER_3D_RENDER_PIPELINE_STAGES,
+  createRenderPipelineStagesProvider
+} from "../../src/engine/debug/standard/threeD/index.js";
 
 export async function run() {
   const provider = createRenderPipelineStagesProvider({

@@ -5,8 +5,7 @@ David Quesenberry
 CameraDebugPanel.test.mjs
 */
 import assert from "node:assert/strict";
-import { create3dCameraPanel } from "../../src/engine/debug/standard/threeD/panels/panel3dCamera.js";
-import { createCameraSummaryProvider } from "../../src/engine/debug/standard/threeD/providers/cameraSummaryProvider.js";
+import { create3dCameraPanel, createCameraSummaryProvider } from "../../src/engine/debug/standard/threeD/index.js";
 
 export async function run() {
   const provider = createCameraSummaryProvider({

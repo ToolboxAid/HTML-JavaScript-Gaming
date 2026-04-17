@@ -7,7 +7,7 @@ createPromotionGate.js
 
 import { asFiniteNumber, asPositiveInteger } from '../../shared/math/numberNormalization.js';
 import { isPlainObject } from '../../shared/utils/objectUtils.js';
-import { getState as getPromotionPublicState } from '../../shared/state/getState.js';
+import { getPromotionState as getPromotionPublicState } from '../../shared/state/index.js';
 
 function normalizeCriteriaMap(input, requiredCriteria = []) {
   const normalized = {};

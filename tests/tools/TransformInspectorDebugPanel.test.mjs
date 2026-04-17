@@ -5,10 +5,14 @@ David Quesenberry
 TransformInspectorDebugPanel.test.mjs
 */
 import assert from "node:assert/strict";
-import { createStandard3dPanels } from "../../src/engine/debug/standard/threeD/panels/registerStandard3dPanels.js";
-import { PANEL_3D_TRANSFORM_INSPECTOR, create3dTransformInspectorPanel } from "../../src/engine/debug/standard/threeD/panels/panel3dTransformInspector.js";
-import { createStandard3dProviders } from "../../src/engine/debug/standard/threeD/providers/registerStandard3dProviders.js";
-import { PROVIDER_3D_TRANSFORM_INSPECTOR, createTransformInspectorProvider } from "../../src/engine/debug/standard/threeD/providers/transformInspectorProvider.js";
+import {
+  createStandard3dPanels,
+  PANEL_3D_TRANSFORM_INSPECTOR,
+  create3dTransformInspectorPanel,
+  createStandard3dProviders,
+  PROVIDER_3D_TRANSFORM_INSPECTOR,
+  createTransformInspectorProvider
+} from "../../src/engine/debug/standard/threeD/index.js";
 
 export async function run() {
   const provider = createTransformInspectorProvider({

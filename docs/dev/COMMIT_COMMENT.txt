@@ -1,1 +1,1 @@
-Contract stabilization progress (Level 18 Track C)
+Selector/provider stability enforcement (Level 18 Track C)
