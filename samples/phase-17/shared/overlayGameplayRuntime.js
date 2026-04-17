@@ -249,6 +249,149 @@ function writeOverlayRuntimePreferencePayloadToStorage(preferenceStorageKey, pay
   return true;
 }
 
+function validateOverlayRuntimePreferencePayload(payload) {
+  const errors = [];
+  if (!payload || typeof payload !== 'object' || Array.isArray(payload)) {
+    return {
+      valid: false,
+      errors: Object.freeze(['Overlay runtime profile payload must be an object.']),
+      value: null,
+    };
+  }
+
+  const hasVisibility = Object.prototype.hasOwnProperty.call(payload, 'visibility');
+  const hasLayout = Object.prototype.hasOwnProperty.call(payload, 'layout');
+  const hasKeybindProfile = Object.prototype.hasOwnProperty.call(payload, 'keybindProfile');
+  if (!hasVisibility && !hasLayout && !hasKeybindProfile) {
+    errors.push('Overlay runtime profile payload must include at least one of visibility, layout, or keybindProfile.');
+  }
+
+  const versionRaw = payload.version;
+  if (versionRaw !== undefined) {
+    const version = Number(versionRaw);
+    if (!Number.isInteger(version) || version <= 0) {
+      errors.push('Overlay runtime profile version must be a positive integer when provided.');
+    }
+  }
+
+  let visibility = null;
+  if (hasVisibility) {
+    if (payload.visibility === true || payload.visibility === false) {
+      visibility = payload.visibility;
+    } else {
+      errors.push('Overlay runtime profile visibility must be a boolean.');
+    }
+  }
+
+  let layout = null;
+  if (hasLayout) {
+    if (!payload.layout || typeof payload.layout !== 'object' || Array.isArray(payload.layout)) {
+      errors.push('Overlay runtime profile layout must be an object.');
+    } else {
+      layout = {};
+      const entries = Object.entries(payload.layout);
+      for (let i = 0; i < entries.length; i += 1) {
+        const [layoutKey, layoutRect] = entries[i];
+        const normalizedLayoutKey = String(layoutKey || '').trim();
+        const normalizedRect = normalizeLayoutOverrideRect(layoutRect);
+        if (!normalizedLayoutKey || !normalizedRect) {
+          errors.push(`Overlay runtime profile layout entry "${normalizedLayoutKey || '<empty>'}" is invalid.`);
+          continue;
+        }
+        layout[normalizedLayoutKey] = normalizedRect;
+      }
+    }
+  }
+
+  let keybindProfile = null;
+  if (hasKeybindProfile) {
+    if (!payload.keybindProfile || typeof payload.keybindProfile !== 'object' || Array.isArray(payload.keybindProfile)) {
+      errors.push('Overlay runtime profile keybindProfile must be an object.');
+    } else {
+      keybindProfile = {};
+      if (Object.prototype.hasOwnProperty.call(payload.keybindProfile, 'id')) {
+        keybindProfile.id = String(payload.keybindProfile.id || '').trim();
+      }
+      if (Object.prototype.hasOwnProperty.call(payload.keybindProfile, 'cycleKey')) {
+        const cycleKey = String(payload.keybindProfile.cycleKey || '').trim();
+        if (!cycleKey) {
+          errors.push('Overlay runtime profile keybindProfile.cycleKey must be a non-empty string when provided.');
+        } else {
+          keybindProfile.cycleKey = cycleKey;
+        }
+      }
+      if (Object.prototype.hasOwnProperty.call(payload.keybindProfile, 'contextInputMap')) {
+        const contextInputMap = payload.keybindProfile.contextInputMap;
+        if (contextInputMap === null) {
+          keybindProfile.contextInputMap = null;
+          keybindProfile.contextInputMapSpecified = true;
+        } else if (contextInputMap && typeof contextInputMap === 'object' && !Array.isArray(contextInputMap)) {
+          const clonedContextInputMap = cloneJsonCompatibleValue(contextInputMap);
+          if (clonedContextInputMap && typeof clonedContextInputMap === 'object') {
+            keybindProfile.contextInputMap = clonedContextInputMap;
+            keybindProfile.contextInputMapSpecified = true;
+          } else {
+            errors.push('Overlay runtime profile keybindProfile.contextInputMap must be JSON-compatible.');
+          }
+        } else {
+          errors.push('Overlay runtime profile keybindProfile.contextInputMap must be an object or null.');
+        }
+      }
+    }
+  }
+
+  if (errors.length > 0) {
+    return {
+      valid: false,
+      errors: Object.freeze(errors),
+      value: null,
+    };
+  }
+
+  return {
+    valid: true,
+    errors: Object.freeze([]),
+    value: Object.freeze({
+      version: Number.isInteger(Number(payload.version)) && Number(payload.version) > 0
+        ? Number(payload.version)
+        : 1,
+      hasVisibility,
+      hasLayout,
+      hasKeybindProfile,
+      visibility,
+      layout: layout || {},
+      keybindProfile: keybindProfile || {},
+    }),
+  };
+}
+
+function applyOverlayRuntimePreferencePayload(runtime, validatedPayload) {
+  if (!runtime || !validatedPayload || typeof validatedPayload !== 'object') {
+    return false;
+  }
+  if (validatedPayload.hasVisibility && (validatedPayload.visibility === true || validatedPayload.visibility === false)) {
+    runtime.interactionVisible = validatedPayload.visibility;
+  }
+  if (validatedPayload.hasLayout) {
+    applyOverlayRuntimeLayoutPreferences(runtime, validatedPayload.layout);
+  }
+  if (validatedPayload.hasKeybindProfile) {
+    const keybindProfile = validatedPayload.keybindProfile || {};
+    if (Object.prototype.hasOwnProperty.call(keybindProfile, 'id')) {
+      runtime.interactionKeybindProfileId = String(keybindProfile.id || '').trim();
+    }
+    if (Object.prototype.hasOwnProperty.call(keybindProfile, 'cycleKey')) {
+      runtime.interactionCycleKey = String(keybindProfile.cycleKey || '').trim() || LEVEL17_OVERLAY_CYCLE_KEY;
+    }
+    if (keybindProfile.contextInputMapSpecified === true) {
+      runtime.interactionContextInputMap = keybindProfile.contextInputMap === null
+        ? null
+        : (cloneJsonCompatibleValue(keybindProfile.contextInputMap) ?? null);
+    }
+  }
+  return true;
+}
+
 function buildOverlayRuntimeLayoutPreferenceSnapshot(runtime) {
   const snapshot = {};
   const overrides = runtime?.interactionLayoutOverrides;
@@ -1439,6 +1582,17 @@ export function getOverlayGameplayRuntimePreferencesSnapshot(runtime) {
   });
 }
 
+export function exportOverlayGameplayRuntimeProfile(runtime, { pretty = false } = {}) {
+  const snapshot = getOverlayGameplayRuntimePreferencesSnapshot(runtime);
+  const payload = {
+    version: 1,
+    visibility: snapshot.visibility,
+    layout: snapshot.layout,
+    keybindProfile: snapshot.keybindProfile,
+  };
+  return JSON.stringify(payload, null, pretty ? 2 : 0);
+}
+
 export function saveOverlayGameplayRuntimePreferences(runtime, options = {}) {
   if (!runtime) {
     return false;
@@ -1476,28 +1630,51 @@ export function loadOverlayGameplayRuntimePreferences(runtime, options = {}) {
   if (!payload || typeof payload !== 'object') {
     return false;
   }
+  const validated = validateOverlayRuntimePreferencePayload(payload);
+  if (!validated.valid || !validated.value) {
+    return false;
+  }
+  return applyOverlayRuntimePreferencePayload(runtime, validated.value);
+}
 
-  if (payload.visibility === true || payload.visibility === false) {
-    runtime.interactionVisible = payload.visibility;
+export function importOverlayGameplayRuntimeProfile(runtime, profileInput, options = {}) {
+  if (!runtime) {
+    return Object.freeze({
+      success: false,
+      errors: Object.freeze(['Overlay runtime is required for profile import.']),
+    });
   }
-  applyOverlayRuntimeLayoutPreferences(runtime, payload.layout);
-  const keybindProfile = payload.keybindProfile && typeof payload.keybindProfile === 'object'
-    ? payload.keybindProfile
-    : null;
-  if (keybindProfile) {
-    runtime.interactionKeybindProfileId = String(keybindProfile.id || '').trim();
-    const cycleKey = String(keybindProfile.cycleKey || '').trim();
-    if (cycleKey) {
-      runtime.interactionCycleKey = cycleKey;
+
+  let parsedInput = null;
+  if (typeof profileInput === 'string') {
+    try {
+      parsedInput = JSON.parse(profileInput);
+    } catch {
+      return Object.freeze({
+        success: false,
+        errors: Object.freeze(['Overlay runtime profile JSON is invalid.']),
+      });
     }
-    if (keybindProfile.contextInputMap && typeof keybindProfile.contextInputMap === 'object') {
-      const clonedContextInputMap = cloneJsonCompatibleValue(keybindProfile.contextInputMap);
-      if (clonedContextInputMap && typeof clonedContextInputMap === 'object') {
-        runtime.interactionContextInputMap = clonedContextInputMap;
-      }
-    }
+  } else {
+    parsedInput = cloneJsonCompatibleValue(profileInput);
   }
-  return true;
+
+  const validated = validateOverlayRuntimePreferencePayload(parsedInput);
+  if (!validated.valid || !validated.value) {
+    return Object.freeze({
+      success: false,
+      errors: validated.errors,
+    });
+  }
+
+  applyOverlayRuntimePreferencePayload(runtime, validated.value);
+  if (options?.persist !== false) {
+    saveOverlayGameplayRuntimePreferences(runtime, { silent: true });
+  }
+  return Object.freeze({
+    success: true,
+    errors: Object.freeze([]),
+  });
 }
 
 export function setOverlayGameplayRuntimeContextInputMap(runtime, contextInputMap) {

@@ -1,21 +1,17 @@
-# BUILD_PR_LEVEL_22_5_OVERLAY_USER_PREFERENCES_AND_PERSISTENCE
+# BUILD_PR_LEVEL_22_6_OVERLAY_PROFILE_EXPORT_IMPORT
 
 ## Purpose
-Persist user preferences for overlay behavior and customization.
-
-## Roadmap Improvement
-Completes Level 22 by adding persistence and personalization.
+Enable export and import of overlay user profiles.
 
 ## Scope
-- Store user preferences (visibility, layout, keybind profile)
-- Restore preferences on load
-- Ensure compatibility with adaptive UI and contextual input systems
+- Export preferences to JSON
+- Import preferences from JSON
+- Validate schema and compatibility
 
 ## Test Steps
-1. Modify overlay preferences
-2. Reload runtime
-3. Verify preferences persist
+1. Export profile
+2. Import profile
+3. Verify settings applied
 
 ## Expected
-- Preferences saved and restored
-- No regression in overlay behavior
+- Profiles portable across sessions/devices

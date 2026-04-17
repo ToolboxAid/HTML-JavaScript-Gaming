@@ -13,9 +13,11 @@ import {
   LEVEL19_OVERLAY_RUNTIME_TOGGLE_MODIFIERS,
 } from '../../samples/phase-17/shared/overlayCycleInput.js';
 import {
+  exportOverlayGameplayRuntimeProfile,
   enqueueOverlayGameplayRuntimeSyncEvent,
   getOverlayGameplayRuntimeCompositionSnapshot,
   getOverlayGameplayRuntimeInteractionSnapshot,
+  importOverlayGameplayRuntimeProfile,
   saveOverlayGameplayRuntimePreferences,
   renderOverlayGameplayRuntime,
   resolveOverlayGameplayRuntimeInputAction,
@@ -952,6 +954,73 @@ function assertOverlayPreferencesPersistenceCompatibility() {
   assert.equal(runtimeAFrame.adaptiveEmphasis > 1, true, 'Adaptive UI emphasis should remain active after preference restoration.');
 }
 
+function assertOverlayProfileExportImportValidation() {
+  const framework = createPhase19OverlayExpansionFramework();
+  framework.registerExtension(definePhase19OverlayExtension({
+    id: 'phase19-overlay-profile-export-import',
+    overlays: [
+      { id: 'runtime-a', label: 'Runtime A' },
+      { id: 'runtime-b', label: 'Runtime B' },
+    ],
+    initialOverlayId: 'runtime-a',
+    persistenceKey: 'phase19:overlay-profile-export-import',
+    runtimeExtensions: [
+      { overlayId: 'runtime-a', compose: true, layerOrder: 10, visualPriority: 10, panelWidth: 220, panelHeight: 96, onRender() {} },
+      { overlayId: 'runtime-b', compose: true, layerOrder: 20, visualPriority: 20, panelWidth: 220, panelHeight: 96, onRender() {} },
+    ],
+  }));
+
+  const sourceRuntime = framework.createRuntimeForExtension('phase19-overlay-profile-export-import');
+  setOverlayGameplayRuntimeVisible(sourceRuntime, false);
+  setOverlayGameplayRuntimeKeybindProfile(sourceRuntime, {
+    id: 'portable-profile',
+    cycleKey: 'KeyJ',
+    contextInputMap: {
+      byOverlayId: {
+        'runtime-b': {
+          'cycle-next': 'toggle-visibility',
+        },
+      },
+    },
+  });
+  sourceRuntime.interactionLayoutOverrides['id:runtime-b'] = {
+    x: 70,
+    y: 102,
+    width: 260,
+    height: 118,
+  };
+
+  const exportedJson = exportOverlayGameplayRuntimeProfile(sourceRuntime);
+  const exportedPayload = JSON.parse(exportedJson);
+  assert.equal(exportedPayload.version, 1, 'Exported overlay profile should include schema version.');
+  assert.equal(exportedPayload.visibility, false, 'Exported overlay profile should include visibility preference.');
+  assert.equal(exportedPayload.keybindProfile.cycleKey, 'KeyJ', 'Exported overlay profile should include keybind cycle key.');
+  assert.equal(exportedPayload.layout['id:runtime-b'].width, 260, 'Exported overlay profile should include layout override width.');
+
+  const importedRuntime = framework.createRuntimeForExtension('phase19-overlay-profile-export-import');
+  const importResult = importOverlayGameplayRuntimeProfile(importedRuntime, exportedJson);
+  assert.equal(importResult.success, true, 'Overlay profile import should succeed for valid exported JSON.');
+  assert.equal(importResult.errors.length, 0, 'Overlay profile import should not report errors for valid exported JSON.');
+  assert.equal(importedRuntime.interactionVisible, false, 'Imported overlay profile should restore visibility preference.');
+  assert.equal(importedRuntime.interactionCycleKey, 'KeyJ', 'Imported overlay profile should restore cycle key preference.');
+  assert.equal(importedRuntime.interactionKeybindProfileId, 'portable-profile', 'Imported overlay profile should restore keybind profile id.');
+  assert.equal(importedRuntime.interactionLayoutOverrides['id:runtime-b'].x, 70, 'Imported overlay profile should restore layout override X position.');
+  assert.equal(importedRuntime.interactionLayoutOverrides['id:runtime-b'].height, 118, 'Imported overlay profile should restore layout override height.');
+
+  importedRuntime.interactionIndex = 1;
+  const contextualAction = resolveOverlayGameplayRuntimeInputAction(importedRuntime, 'cycle-next');
+  assert.equal(contextualAction.action, 'toggle-visibility', 'Imported profile context mapping should remain compatible with contextual input resolver.');
+
+  const invalidImportResult = importOverlayGameplayRuntimeProfile(importedRuntime, '{"version":1,"visibility":"yes"}');
+  assert.equal(invalidImportResult.success, false, 'Overlay profile import should fail validation for invalid payload types.');
+  assert.equal(invalidImportResult.errors.length > 0, true, 'Overlay profile import should report validation errors for invalid payloads.');
+
+  const reloadedRuntime = framework.createRuntimeForExtension('phase19-overlay-profile-export-import');
+  assert.equal(reloadedRuntime.interactionVisible, false, 'Imported overlay profile should persist and restore visibility on runtime load.');
+  assert.equal(reloadedRuntime.interactionCycleKey, 'KeyJ', 'Imported overlay profile should persist and restore cycle key on runtime load.');
+  assert.equal(reloadedRuntime.interactionLayoutOverrides['id:runtime-b'].y, 102, 'Imported overlay profile should persist and restore layout override Y position.');
+}
+
 export function run() {
   assertExpansionRegistrationAndCompatibility();
   assertExtensionLifecycleMutations();
@@ -964,4 +1033,5 @@ export function run() {
   assertContextualInputMappingUsesOverlayContextAndStack();
   assertAdaptiveOverlayUiRulesReactToGameplayTelemetryAndContext();
   assertOverlayPreferencesPersistenceCompatibility();
+  assertOverlayProfileExportImportValidation();
 }

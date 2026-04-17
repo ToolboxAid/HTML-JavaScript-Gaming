@@ -1,5 +1,4 @@
-[ ] Preferences save correctly
-[ ] Preferences restore correctly
-[ ] No regression in behavior
-[ ] Compatible with adaptive UI
+[ ] Export works
+[ ] Import works
+[ ] Validation prevents bad data
 [ ] Roadmap updated

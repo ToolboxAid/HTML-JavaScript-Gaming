@@ -1,5 +1,3 @@
-Add user preferences and persistence for overlays.
+Add overlay profile export/import.
 
-PR Details:
-- Enables saving and restoring overlay configuration
-- Supports personalization across sessions
+- Enables sharing and portability of user settings
