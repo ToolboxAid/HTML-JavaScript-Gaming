@@ -639,3 +639,10 @@ export async function run() {
   assert.equal(failures.length, 0, `Launch smoke failures detected: ${failures.map((x) => x.entry.label).join(', ')}`);
 }
 
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
+  run().catch((error) => {
+    console.error(error);
+    process.exitCode = 1;
+  });
+}
+

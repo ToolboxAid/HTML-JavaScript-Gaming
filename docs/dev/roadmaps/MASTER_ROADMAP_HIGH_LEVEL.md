@@ -798,10 +798,10 @@
 - [x] verify predictable system interaction
 
 ### Track B � Runtime Lifecycle Validation
-- [ ] validate boot ? run ? shutdown lifecycle
-- [ ] validate hot reload / reset flows
-- [ ] validate error handling paths
-- [ ] validate long-running stability
+- [x] validate boot ? run ? shutdown lifecycle
+- [x] validate hot reload / reset flows
+- [x] validate error handling paths
+- [x] validate long-running stability
 
 ### Track C � Performance & Scaling
 - [x] validate large scene performance
