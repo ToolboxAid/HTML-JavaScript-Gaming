@@ -1,3 +1,3 @@
-Phase 19 validation summary gate
+Engine/tool boundary leak validation (Phase 19 final lane)
 
-BUILD_PR_LEVEL_19_22_TOOLCHAIN_VALIDATION_SUMMARY_GATE
+BUILD_PR_LEVEL_19_23_ENGINE_TOOL_BOUNDARY_LEAK_VALIDATION

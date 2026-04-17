@@ -1,1 +1,1 @@
-Docs-only aggregation PR for Phase 19 validation
+Docs-only PR to validate no tool logic leaks into engine

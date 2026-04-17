@@ -1,8 +1,10 @@
 MODEL: GPT-5.3-codex
 REASONING: high
 
-Execute BUILD_PR_LEVEL_19_22_TOOLCHAIN_VALIDATION_SUMMARY_GATE:
-- aggregate all Phase 19 validation reports
-- produce final summary
-- output to docs/dev/reports
-- do not modify engine or tools
+Execute BUILD_PR_LEVEL_19_23_ENGINE_TOOL_BOUNDARY_LEAK_VALIDATION:
+
+- inspect src/engine
+- detect any tool-specific references or dependencies
+- validate boundary rules
+- output findings to docs/dev/reports
+- do not modify code
