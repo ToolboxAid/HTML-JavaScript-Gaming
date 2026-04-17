@@ -2,10 +2,11 @@ MODEL: GPT-5.3-codex
 REASONING: high
 
 COMMAND:
-- Inspect overlay CSS only
-- Flatten CSS structure
-- Replace redundant styles with shared classes
-- Validate rendering + tests
+- Scan overlay-related docs only
+- Classify into buckets
+- Consolidate duplicates
+- Remove move-only docs AFTER validation
+- Output cleaned structure
 
 Output:
-<project folder>/tmp/BUILD_PR_LEVEL_18_5_CSS_UI_NORMALIZATION_OVERLAY_SLICE.zip
+<project folder>/tmp/BUILD_PR_LEVEL_18_6_DOCS_SYSTEM_CLEANUP_OVERLAY_SLICE.zip

@@ -1,4 +1,3 @@
-[ ] no visual regressions
-[ ] CSS flattened
-[ ] shared classes used
-[ ] tests pass
+[ ] docs classified
+[ ] duplicates consolidated
+[ ] no content loss

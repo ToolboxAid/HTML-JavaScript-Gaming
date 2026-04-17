@@ -1,5 +1,6 @@
-Level 18.5 CSS/UI Normalization (Overlay Slice)
+Level 18.6 Docs Cleanup (Overlay Slice)
 
-- Flattened CSS layers
-- Removed redundant styles
-- Aligned UI classes to shared system
+- Classified overlay docs
+- Consolidated duplicates
+- Removed move-only artifacts
+- Aligned to feature-based structure
