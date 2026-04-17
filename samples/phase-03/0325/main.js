@@ -7,15 +7,15 @@ main.js
 import Engine from '/src/engine/core/Engine.js';
 import { InputService } from '/src/engine/input/index.js';
 import { Theme, ThemeTokens } from '/src/engine/theme/index.js';
-import MultiBallChaosScene from './game/MultiBallChaosScene.js';
+import GravityScene from './game/GravityScene.js';
 
 const theme = new Theme(ThemeTokens);
 
-export function bootMultiBallChaos({
+export function bootGravity({
   documentRef = globalThis.document ?? null,
   EngineClass = Engine,
   InputServiceClass = InputService,
-  SceneClass = MultiBallChaosScene,
+  SceneClass = GravityScene,
 } = {}) {
   if (!documentRef) {
     return null;
@@ -42,18 +42,9 @@ export function bootMultiBallChaos({
   engine.setScene(new SceneClass());
   engine.start();
 
-  canvas.addEventListener?.('click', async () => {
-    const fullscreenState = engine.fullscreen?.getState?.();
-    if (!fullscreenState?.available || fullscreenState.active) {
-      return;
-    }
-
-    await engine.fullscreen.request();
-  });
-
   return engine;
 }
 
 if (typeof document !== 'undefined') {
-  bootMultiBallChaos();
+  bootGravity();
 }

@@ -5,8 +5,8 @@ David Quesenberry
 GravityValidation.test.mjs
 */
 import assert from 'node:assert/strict';
-import GravityScene from '../../games/Gravity/game/GravityScene.js';
-import { bootGravity } from '../../games/Gravity/main.js';
+import GravityScene from '../../samples/phase-03/0325/game/GravityScene.js';
+import { bootGravity } from '../../samples/phase-03/0325/main.js';
 
 function createCanvas() {
   const listeners = new Map();

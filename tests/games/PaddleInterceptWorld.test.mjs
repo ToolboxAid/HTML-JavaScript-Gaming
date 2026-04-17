@@ -9,7 +9,7 @@ import PaddleInterceptWorld, {
   predictFutureBallCenterY,
   predictInterceptY,
   reflectIntoLane,
-} from '../../games/PaddleIntercept/game/PaddleInterceptWorld.js';
+} from '../../samples/phase-03/0326/game/PaddleInterceptWorld.js';
 
 function createControls(overrides = {}) {
   return {

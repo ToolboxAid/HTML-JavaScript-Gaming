@@ -5,8 +5,8 @@ David Quesenberry
 PacmanLiteValidation.test.mjs
 */
 import assert from 'node:assert/strict';
-import PacmanLiteScene from '../../games/PacmanLite/game/PacmanLiteScene.js';
-import { bootPacmanLite } from '../../games/PacmanLite/main.js';
+import PacmanLiteScene from '../../samples/phase-13/1320/game/PacmanLiteScene.js';
+import { bootPacmanLite } from '../../samples/phase-13/1320/main.js';
 
 function createMutableInput() {
   let down = new Set();

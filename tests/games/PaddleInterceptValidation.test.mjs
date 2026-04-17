@@ -5,8 +5,8 @@ David Quesenberry
 PaddleInterceptValidation.test.mjs
 */
 import assert from 'node:assert/strict';
-import PaddleInterceptScene from '../../games/PaddleIntercept/game/PaddleInterceptScene.js';
-import { bootPaddleIntercept } from '../../games/PaddleIntercept/main.js';
+import PaddleInterceptScene from '../../samples/phase-03/0326/game/PaddleInterceptScene.js';
+import { bootPaddleIntercept } from '../../samples/phase-03/0326/main.js';
 
 function createCanvas() {
   const listeners = new Map();

@@ -5,7 +5,7 @@ David Quesenberry
 OrbitLabModel.test.mjs
 */
 import assert from 'node:assert/strict';
-import OrbitLabModel from '../../games/Orbit/game/OrbitLabModel.js';
+import OrbitLabModel from '../../samples/phase-06/0614/game/OrbitLabModel.js';
 
 function testPresetBehaviorOrdering() {
   const stable = new OrbitLabModel();

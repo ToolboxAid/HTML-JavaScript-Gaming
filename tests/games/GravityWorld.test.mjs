@@ -5,7 +5,7 @@ David Quesenberry
 GravityWorld.test.mjs
 */
 import assert from 'node:assert/strict';
-import GravityWorld from '../../games/Gravity/game/GravityWorld.js';
+import GravityWorld from '../../samples/phase-03/0325/game/GravityWorld.js';
 
 function createControls(overrides = {}) {
   return {

@@ -47,6 +47,72 @@ function nodeContains(parent, child) {
   return false;
 }
 
+function listChildElements(node) {
+  if (!node) {
+    return [];
+  }
+
+  if (Array.isArray(node.children)) {
+    return node.children;
+  }
+
+  if (typeof node.children?.length === "number") {
+    return Array.from(node.children);
+  }
+
+  return [];
+}
+
+function hasCanvasSiblings(parent, canvas) {
+  const children = listChildElements(parent);
+  for (const child of children) {
+    if (child !== canvas) {
+      return true;
+    }
+  }
+  return false;
+}
+
+function isRuntimeFullscreenHost(node) {
+  if (!node || typeof node.getAttribute !== "function") {
+    return false;
+  }
+  return node.getAttribute("data-runtime-fullscreen-host") === "canvas";
+}
+
+function createCanvasFullscreenHost(canvas, parent, documentRef) {
+  if (!canvas || !parent || !documentRef?.createElement) {
+    return null;
+  }
+
+  if (isRuntimeFullscreenHost(parent)) {
+    return parent;
+  }
+
+  const existingParent = canvas.parentElement || null;
+  if (isRuntimeFullscreenHost(existingParent)) {
+    return existingParent;
+  }
+
+  if (typeof parent.insertBefore !== "function") {
+    return null;
+  }
+
+  const host = documentRef.createElement("div");
+  if (!host || typeof host.appendChild !== "function") {
+    return null;
+  }
+
+  host.setAttribute?.("data-runtime-fullscreen-host", "canvas");
+  host.style.position = "relative";
+  host.style.display = "block";
+  host.style.width = "100%";
+
+  parent.insertBefore(host, canvas);
+  host.appendChild(canvas);
+  return host;
+}
+
 function ensureHostStyles(host) {
   if (!host || !host.style) {
     return;
@@ -515,6 +581,12 @@ export function resolvePreferredFullscreenTarget(options = {}) {
   }
   const parent = canvas.parentElement || null;
   if (parent && typeof parent.requestFullscreen === "function") {
+    if (hasCanvasSiblings(parent, canvas)) {
+      const wrapped = createCanvasFullscreenHost(canvas, parent, options.documentRef || null);
+      if (wrapped && typeof wrapped.requestFullscreen === "function") {
+        return wrapped;
+      }
+    }
     return parent;
   }
 
@@ -735,6 +807,50 @@ export default class fullscreenBezel {
     return true;
   }
 
+  applyCanvasFullscreenFitLayout() {
+    if (!this.canvas?.style || !this.host) {
+      return false;
+    }
+
+    const hostBounds = getHostBounds(this.host);
+    if (!hostBounds) {
+      return false;
+    }
+
+    const sourceWidth = toPositiveNumber(this.canvas.width);
+    const sourceHeight = toPositiveNumber(this.canvas.height);
+    if (sourceWidth <= 0 || sourceHeight <= 0) {
+      return false;
+    }
+
+    const fittedCanvas = fitAspectRatio(
+      sourceWidth,
+      sourceHeight,
+      hostBounds.width,
+      hostBounds.height
+    );
+    if (!fittedCanvas) {
+      return false;
+    }
+
+    const left = (hostBounds.width - fittedCanvas.width) * 0.5;
+    const top = (hostBounds.height - fittedCanvas.height) * 0.5;
+
+    this.canvas.style.position = "absolute";
+    this.canvas.style.left = toPixel(left);
+    this.canvas.style.top = toPixel(top);
+    this.canvas.style.transform = "none";
+    this.canvas.style.margin = "0";
+    this.canvas.style.width = toPixel(fittedCanvas.width);
+    this.canvas.style.height = toPixel(fittedCanvas.height);
+    this.canvas.style.maxWidth = "none";
+    this.canvas.style.maxHeight = "none";
+    this.canvas.style.display = "block";
+    this.canvas.style.zIndex = "1";
+    this.canvasLayoutMode = "fullscreen-fit";
+    return true;
+  }
+
   applyCanvasWindowFitLayout() {
     if (!this.canvas?.style || !this.transparentWindowRect || !this.imageSize || !this.host) {
       return false;
@@ -843,8 +959,10 @@ export default class fullscreenBezel {
     if (shouldShow) {
       const fitted = this.applyCanvasWindowFitLayout();
       if (!fitted) {
-        this.applyCanvasFallbackLayout();
+        this.applyCanvasFullscreenFitLayout() || this.applyCanvasFallbackLayout();
       }
+    } else if (options.fullscreenActive === true) {
+      this.applyCanvasFullscreenFitLayout() || this.applyCanvasFallbackLayout();
     } else {
       this.applyCanvasFallbackLayout();
     }

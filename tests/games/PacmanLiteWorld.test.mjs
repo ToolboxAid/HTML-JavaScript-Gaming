@@ -5,7 +5,7 @@ David Quesenberry
 PacmanLiteWorld.test.mjs
 */
 import assert from 'node:assert/strict';
-import PacmanLiteWorld from '../../games/PacmanLite/game/PacmanLiteWorld.js';
+import PacmanLiteWorld from '../../samples/phase-13/1320/game/PacmanLiteWorld.js';
 
 function createControls(overrides = {}) {
   return {

@@ -5,8 +5,8 @@ David Quesenberry
 MultiBallChaosValidation.test.mjs
 */
 import assert from 'node:assert/strict';
-import MultiBallChaosScene from '../../games/MultiBallChaos/game/MultiBallChaosScene.js';
-import { bootMultiBallChaos } from '../../games/MultiBallChaos/main.js';
+import MultiBallChaosScene from '../../samples/phase-03/0327/game/MultiBallChaosScene.js';
+import { bootMultiBallChaos } from '../../samples/phase-03/0327/main.js';
 
 function createCanvas() {
   const listeners = new Map();

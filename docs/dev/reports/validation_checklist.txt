@@ -1,6 +1,17 @@
-[ ] All listed entries inspected
-[ ] Each entry classified as remain-in-games or move-to-samples
-[ ] Each sample/demo candidate mapped to a best-fit phase target
-[ ] Classification rationale written to docs/dev/reports
-[ ] Master roadmap updated in place by Codex only under roadmap guard rules
-[ ] No roadmap text deleted or rewritten
+[x] Read BUILD doc: `docs/pr/BUILD_PR_LEVEL_18_4_GAME_TO_SAMPLE_RECLASSIFICATION_EXECUTION.md`
+[x] Used prior approved recommendation matrix as source of truth
+[x] Applied approved moves only for requested set (excluding PacmanLite)
+[x] Kept `games/Bouncing-ball` in games (approved remain-in-games)
+[x] Left `games/PacmanLite` unchanged
+[x] Updated only required references:
+    - `games/index.html`
+    - `samples/index.html`
+    - focused moved-path test imports
+[x] Wrote execution-backed reports:
+    - `docs/dev/reports/BUILD_PR_LEVEL_18_4_GAME_TO_SAMPLE_RECLASSIFICATION_EXECUTION_summary.md`
+    - `docs/dev/reports/BUILD_PR_LEVEL_18_4_GAME_TO_SAMPLE_RECLASSIFICATION_EXECUTION_validation.md`
+[x] Validation: moved-path existence checks passed
+[x] Validation: stale moved-path reference scan passed for targeted files
+[x] Validation: 12 focused tests passed
+[ ] Roadmap status transition applied
+    - no eligible directly matching pending marker existed for this execution lane without unrelated scope expansion; roadmap text was preserved unchanged

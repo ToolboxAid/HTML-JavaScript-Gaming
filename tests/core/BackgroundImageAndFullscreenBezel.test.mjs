@@ -9,7 +9,8 @@ import fullscreenBezel, {
   ensureBezelStretchConfigFile,
   resolveBezelStretchConfigPath,
   findTransparencyWindowFromEdges,
-  fitAspectRatio
+  fitAspectRatio,
+  resolvePreferredFullscreenTarget
 } from "../../src/engine/runtime/fullscreenBezel.js";
 import {
   resolveBezelStretchOverridePath,
@@ -69,9 +70,37 @@ function createElement(tagName, ownerDocument) {
     setAttribute(name, value) {
       this.attributes[name] = String(value);
     },
+    getAttribute(name) {
+      return Object.prototype.hasOwnProperty.call(this.attributes, name)
+        ? this.attributes[name]
+        : null;
+    },
     appendChild(child) {
+      if (child?.parentElement && child.parentElement !== this) {
+        const fromParent = child.parentElement;
+        const index = fromParent.children.indexOf(child);
+        if (index >= 0) {
+          fromParent.children.splice(index, 1);
+        }
+      }
       child.parentElement = this;
       this.children.push(child);
+      return child;
+    },
+    insertBefore(child, referenceChild) {
+      if (!referenceChild || !this.children.includes(referenceChild)) {
+        return this.appendChild(child);
+      }
+      if (child?.parentElement && child.parentElement !== this) {
+        const fromParent = child.parentElement;
+        const index = fromParent.children.indexOf(child);
+        if (index >= 0) {
+          fromParent.children.splice(index, 1);
+        }
+      }
+      const targetIndex = this.children.indexOf(referenceChild);
+      child.parentElement = this;
+      this.children.splice(targetIndex, 0, child);
       return child;
     },
     remove() {
@@ -229,6 +258,39 @@ function testGameImageConventionsAreGameAgnostic() {
   );
 }
 
+function testResolvePreferredFullscreenTargetKeepsCanvasOnlyParent() {
+  const documentRef = createDocumentStub("/games/Gravity/index.html");
+  const host = createElement("div", documentRef);
+  const canvas = createElement("canvas", documentRef);
+  host.appendChild(canvas);
+  documentRef.body.appendChild(host);
+
+  const target = resolvePreferredFullscreenTarget({ canvas, documentRef });
+  assert.equal(target, host);
+  assert.equal(canvas.parentElement, host);
+  assert.equal(host.children.length, 1);
+}
+
+function testResolvePreferredFullscreenTargetCreatesCanvasOnlyHost() {
+  const documentRef = createDocumentStub("/games/Gravity/index.html");
+  const main = createElement("main", documentRef);
+  const heading = createElement("h1", documentRef);
+  const canvas = createElement("canvas", documentRef);
+  const section = createElement("section", documentRef);
+  main.appendChild(heading);
+  main.appendChild(canvas);
+  main.appendChild(section);
+  documentRef.body.appendChild(main);
+
+  const target = resolvePreferredFullscreenTarget({ canvas, documentRef });
+  assert.notEqual(target, main);
+  assert.equal(target.getAttribute("data-runtime-fullscreen-host"), "canvas");
+  assert.equal(canvas.parentElement, target);
+  assert.equal(target.children.includes(canvas), true);
+  assert.equal(main.children.includes(heading), true);
+  assert.equal(main.children.includes(section), true);
+}
+
 function testNoOpWhenBackgroundMissing() {
   const layer = new backgroundImage({
     documentRef: { location: { pathname: "/games/MissingGame/index.html" } },
@@ -260,6 +322,8 @@ function testSampleGameBackgroundAndBezelNoOpWhenMissing() {
 
   const host = createElement("div", documentRef);
   const canvas = createElement("canvas", documentRef);
+  canvas.width = 960;
+  canvas.height = 720;
   host.appendChild(canvas);
   documentRef.body.appendChild(host);
 
@@ -270,7 +334,10 @@ function testSampleGameBackgroundAndBezelNoOpWhenMissing() {
   bezel.element.onerror?.();
   const bezelResult = bezel.sync({ fullscreenActive: true, fullscreenElement: host });
   assert.equal(bezelResult.visible, false);
+  assert.equal(bezelResult.canvasLayoutMode, "fullscreen-fit");
   assert.equal(bezel.element.style.display, "none");
+  assertNear(parseFloat(canvas.style.width), 1200, 0.6);
+  assertNear(parseFloat(canvas.style.height), 900, 0.6);
 }
 
 function testFullscreenBezelVisibilityAndHtmlAttachment() {
@@ -297,14 +364,14 @@ function testFullscreenBezelVisibilityAndHtmlAttachment() {
 
   result = bezel.sync({ fullscreenActive: true, fullscreenElement: host });
   assert.equal(result.visible, true);
-  assert.equal(result.canvasLayoutMode, "fallback");
+  assert.equal(result.canvasLayoutMode, "fullscreen-fit");
   assert.equal(bezel.element.style.display, "block");
   assert.equal(bezel.element.style.visibility, "visible");
   assert.equal(bezel.element.style.opacity, "1");
   assert.equal(host.style.position, "relative");
   assert.equal(host.style.overflow, "hidden");
   assert.equal(host.style.isolation, "isolate");
-  assert.equal(canvas.style.position, "relative");
+  assert.equal(canvas.style.position, "absolute");
   assert.equal(canvas.style.zIndex, "1");
   assert.equal(Number(bezel.element.style.zIndex) > Number(canvas.style.zIndex), true);
 }
@@ -313,6 +380,8 @@ function testNoOpWhenBezelMissing() {
   const documentRef = createDocumentStub("/games/MissingGame/index.html");
   const host = createElement("div", documentRef);
   const canvas = createElement("canvas", documentRef);
+  canvas.width = 960;
+  canvas.height = 720;
   host.appendChild(canvas);
   documentRef.body.appendChild(host);
 
@@ -321,7 +390,10 @@ function testNoOpWhenBezelMissing() {
   bezel.element.onerror?.();
   const result = bezel.sync({ fullscreenActive: true, fullscreenElement: host });
   assert.equal(result.visible, false);
+  assert.equal(result.canvasLayoutMode, "fullscreen-fit");
   assert.equal(bezel.element.style.display, "none");
+  assertNear(parseFloat(canvas.style.width), 1200, 0.6);
+  assertNear(parseFloat(canvas.style.height), 900, 0.6);
 }
 
 function testMalformedBezelImageIsTreatedAsUnavailable() {
@@ -344,7 +416,7 @@ function testMalformedBezelImageIsTreatedAsUnavailable() {
   const result = bezel.sync({ fullscreenActive: true, fullscreenElement: host });
   assert.equal(result.visible, false);
   assert.equal(bezel.getState().visible, false);
-  assert.equal(bezel.getState().canvasLayoutMode, "fallback");
+  assert.equal(bezel.getState().canvasLayoutMode, "fullscreen-fit");
 }
 
 function testTransparentWindowDetectionAndAspectFit() {
@@ -901,6 +973,8 @@ function testEngineRuntimeIntegration() {
 export async function run() {
   testBackgroundGameplayGatingAndOrder();
   testGameImageConventionsAreGameAgnostic();
+  testResolvePreferredFullscreenTargetKeepsCanvasOnlyParent();
+  testResolvePreferredFullscreenTargetCreatesCanvasOnlyHost();
   testNoOpWhenBackgroundMissing();
   testSampleGameBackgroundAndBezelNoOpWhenMissing();
   testFullscreenBezelVisibilityAndHtmlAttachment();

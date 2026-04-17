@@ -39,14 +39,6 @@ export function bootPacmanLite({
   engine.setScene(new SceneClass());
   engine.start();
 
-  canvas.addEventListener?.('click', async () => {
-    const fullscreenState = engine.fullscreen?.getState?.();
-    if (!fullscreenState?.available || fullscreenState.active) {
-      return;
-    }
-    await engine.fullscreen.request();
-  });
-
   return engine;
 }
 

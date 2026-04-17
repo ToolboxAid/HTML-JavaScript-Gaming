@@ -5,7 +5,7 @@ David Quesenberry
 MultiBallChaosWorld.test.mjs
 */
 import assert from 'node:assert/strict';
-import MultiBallChaosWorld from '../../games/MultiBallChaos/game/MultiBallChaosWorld.js';
+import MultiBallChaosWorld from '../../samples/phase-03/0327/game/MultiBallChaosWorld.js';
 
 function createControls(overrides = {}) {
   return {

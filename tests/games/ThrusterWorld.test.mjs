@@ -5,7 +5,7 @@ David Quesenberry
 ThrusterWorld.test.mjs
 */
 import assert from 'node:assert/strict';
-import ThrusterWorld from '../../games/Thruster/game/ThrusterWorld.js';
+import ThrusterWorld from '../../samples/phase-04/0413/game/ThrusterWorld.js';
 
 function createControls(overrides = {}) {
   return {

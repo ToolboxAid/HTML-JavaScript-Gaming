@@ -5,7 +5,7 @@ David Quesenberry
 ProjectileLabScene.test.mjs
 */
 import assert from 'node:assert/strict';
-import ProjectileLabScene from '../../games/ProjectileLab/game/ProjectileLabScene.js';
+import ProjectileLabScene from '../../samples/phase-02/0225/game/ProjectileLabScene.js';
 
 function createMutableInput() {
   let down = new Set();

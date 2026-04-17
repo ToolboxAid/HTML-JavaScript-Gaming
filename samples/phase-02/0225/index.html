@@ -8,21 +8,21 @@ index.html
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Orbit</title>
-  <link rel="stylesheet" href="../../src/engine/ui/baseLayout.css" />
+  <title>Projectile Lab</title>
+  <link rel="stylesheet" href="/samples/shared/sampleBaseLayout.css" />
 </head>
 <body>
   <main>
-    <h1>Orbit</h1>
-    <p>Arcade-clean orbit sandbox showing central-attractor trajectories with preset scenarios for stable, elliptical, inward-fall, and escape behavior.</p>
+    <h1>Projectile Lab</h1>
+    <p>Arcade-clean projectile sandbox for spawning, travel, lifetime cleanup, repeated firing stability, and preset comparison.</p>
     <canvas id="game" width="960" height="540"></canvas>
     <section>
       <h3>Controls</h3>
-      <p><code>1</code>-<code>4</code> select scenarios, <code>P</code> pauses or resumes, and <code>R</code> resets the current preset.</p>
+      <p><code>1</code>-<code>5</code> select presets, <code>Space</code> or <code>F</code> fires, <code>P</code> pauses or resumes, and <code>R</code> resets the lab.</p>
     </section>
     <section>
       <h3>Preset Set</h3>
-      <p>Stable Orbit, Elliptical Orbit, Fall Inward, and Escape Path are included so gravitational trajectory behavior can be compared under the same update loop.</p>
+      <p>Single Shot, Fast Short-Life, Slow Long-Life, Burst, and Angled Shot are provided so projectile behavior can be compared under stable repeated update conditions.</p>
     </section>
     <section>
       <h3>Engine Classes Used</h3>

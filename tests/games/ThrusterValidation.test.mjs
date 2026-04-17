@@ -5,8 +5,8 @@ David Quesenberry
 ThrusterValidation.test.mjs
 */
 import assert from 'node:assert/strict';
-import ThrusterScene from '../../games/Thruster/game/ThrusterScene.js';
-import { bootThruster } from '../../games/Thruster/main.js';
+import ThrusterScene from '../../samples/phase-04/0413/game/ThrusterScene.js';
+import { bootThruster } from '../../samples/phase-04/0413/main.js';
 
 function createCanvas() {
   const listeners = new Map();

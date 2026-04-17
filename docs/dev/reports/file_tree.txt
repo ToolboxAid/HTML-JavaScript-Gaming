@@ -1,10 +1,34 @@
-docs/
-docs/pr/
-docs/pr/BUILD_PR_LEVEL_18_3_GAME_TO_SAMPLE_RECLASSIFICATION_RECOMMENDATIONS.md
-docs/dev/
-docs/dev/codex_commands.md
-docs/dev/commit_comment.txt
 docs/dev/reports/
 docs/dev/reports/change_summary.txt
 docs/dev/reports/validation_checklist.txt
 docs/dev/reports/file_tree.txt
+docs/dev/reports/BUILD_PR_LEVEL_18_4_GAME_TO_SAMPLE_RECLASSIFICATION_EXECUTION_summary.md
+docs/dev/reports/BUILD_PR_LEVEL_18_4_GAME_TO_SAMPLE_RECLASSIFICATION_EXECUTION_validation.md
+
+games/
+games/index.html
+
+samples/
+samples/index.html
+samples/phase-02/0225/ (moved full folder from games/ProjectileLab)
+samples/phase-03/0325/ (moved full folder from games/Gravity)
+samples/phase-03/0326/ (moved full folder from games/PaddleIntercept)
+samples/phase-03/0327/ (moved full folder from games/MultiBallChaos)
+samples/phase-04/0413/ (moved full folder from games/Thruster)
+samples/phase-06/0614/ (moved full folder from games/Orbit)
+
+tests/games/
+tests/games/GravityValidation.test.mjs
+tests/games/GravityWorld.test.mjs
+tests/games/ThrusterValidation.test.mjs
+tests/games/ThrusterWorld.test.mjs
+tests/games/PaddleInterceptValidation.test.mjs
+tests/games/PaddleInterceptWorld.test.mjs
+tests/games/MultiBallChaosValidation.test.mjs
+tests/games/MultiBallChaosWorld.test.mjs
+
+tests/samples/
+tests/samples/ProjectileLabModel.test.mjs
+tests/samples/ProjectileLabScene.test.mjs
+tests/samples/OrbitLabModel.test.mjs
+tests/samples/OrbitLabScene.test.mjs
