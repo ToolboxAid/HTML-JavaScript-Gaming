@@ -1,32 +1,28 @@
 BUILD_PR_TILE_UV_WINDING_NORMAL_FIX_VALIDATION
 
 Validation checklist
-- [x] Confirm root cause before code changes.
-- [x] Keep change scope limited to tile defect in 1706/1707.
+- [x] Root cause identified before final code changes.
+- [x] Scope limited to samples 1706/1707 tile/cube face rendering.
 - [x] No broad renderer refactor.
 - [x] No unrelated cleanup.
-- [x] Preserve unaffected tile behavior.
-- [x] Re-validate with normal backface-culling orientation (via focused winding/culling assertions).
+- [x] No debug rendering behavior left behind.
+- [x] Backface-culling orientation compatibility validated via winding checks.
 
 Commands run
 1) Focused runtime test
 - command: node --input-type=module -e "... import tests/runtime/Phase17RenderingTechniqueExpansionSanity.test.mjs; run(); ..."
 - result: PASS Phase17RenderingTechniqueExpansionSanity
 
-2) Winding-sign evidence capture after fix
-- command: node --input-type=module -e "... render 1706/1707 and print first three polygon winding signs ..."
+2) Targeted face-orientation evidence capture
+- command: node --input-type=module (script) to render first block triplet and compute winding signs + side-face shared edge points
 - result:
   - 1706 signs [1,1,1]
+  - 1706 side shared edge points 2
   - 1707 signs [1,1,1]
+  - 1707 side shared edge points 2
 
-3) Pre-fix vs post-fix winding-model verification
-- command: node --input-type=module -e "... compute old and new face winding signs for 1706 projection ..."
-- result:
-  - old signs [1,-1,-1]
-  - new signs [1,1,1]
-
-Required acceptance mapping
-- [x] top face solid and not see-through under culling-consistent winding
-- [x] side faces do not reveal interior geometry from winding mismatch
-- [x] tile orientation no longer suffers from mixed-winding inversion artifacts
-- [x] no permanent debug-only rendering changes remain
+Acceptance mapping
+- [x] top face remains solid
+- [x] side faces no longer represent opposite-face pairing
+- [x] orientation artifacts from opposite side-face selection removed
+- [x] culling-orientation consistency preserved

@@ -259,6 +259,7 @@ function assertMinecraftChunkStreaming() {
   assert.equal(renderer.polygons.length > 0, true, 'Minecraft chunk streaming demo should issue polygon draws.');
   assertVoxelFaceWindingConsistency(renderer, 'Minecraft chunk streaming demo');
   assertTextIncludes(renderer, 'Minecraft | Chunk Streaming Window', 'Minecraft chunk sample should render a clear family label overlay.');
+  assert.equal(renderer.texts.some((text) => text.includes('Debug:')), false, 'Minecraft chunk sample should not advertise debug cycling when only one overlay panel is available.');
   assertTextIncludes(renderer, 'Controls:', 'Minecraft chunk sample should render a controls hint.');
 }
 
