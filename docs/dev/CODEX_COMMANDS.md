@@ -2,11 +2,10 @@ MODEL: GPT-5.3-codex
 REASONING: high
 
 COMMAND:
-- Inspect overlay-related folders only
-- Remove unnecessary `.keep` files
-- Delete empty folders (overlay scope only)
-- Validate ownership rules
-- Run tests
+- Review overlay slice PRs
+- Group into capability-level bundles
+- Update docs to reflect consolidation
+- No code changes
 
 Output:
-<project folder>/tmp/BUILD_PR_LEVEL_18_7_REPO_HYGIENE_OVERLAY_SLICE.zip
+<project folder>/tmp/BUILD_PR_LEVEL_18_8_PR_CONSOLIDATION_OVERLAY_SLICE.zip
