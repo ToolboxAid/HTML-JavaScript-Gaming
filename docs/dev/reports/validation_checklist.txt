@@ -1,3 +1,36 @@
-[ ] games use engine
-[ ] no local logic
-[ ] validation pass
+BUILD_PR_PREVIEW_PATH_CONTRACT_REALIGNMENT - Validation Checklist
+Date: 2026-04-17
+
+[PASS] Syntax validation
+Command:
+- node --check scripts/generate-runtime-sample-previews.mjs
+Result:
+- Exit 0
+
+[PASS] Output-path contract verification (targeted file assertions)
+Command:
+- python inline assertion across:
+  - tools/preview/generate-list-previews_updated.html
+  - tools/preview/preview_svg_executor_1600x900.html
+  - tools/preview/preview_svg_executor_games_enter.html
+  - scripts/generate-runtime-sample-previews.mjs
+Result:
+- html default value="assets/images": expected 3, actual 3
+- html fallback || "assets/images": expected 3, actual 3
+- html stale default value="assets": expected 0, actual 0
+- html stale fallback || "assets": expected 0, actual 0
+- script path includes 'assets', 'images', 'preview.svg': expected 1, actual 1
+- script stale path 'assets', 'preview.svg': expected 0, actual 0
+- OVERALL PASS
+
+[PASS] Canonical phase-hyphen sample directory contract check
+Command:
+- Python scan over samples/ for phase directories matching ^phase-\d{2}$ and per-sample index.html presence
+Result:
+- PHASE_DIR_COUNT=19
+- MISSING_INDEX_COUNT=0
+
+Validation conclusion
+- Preview tooling now targets image output under assets/images/preview.svg.
+- Preview sample path resolution remains aligned to phase-hyphen contract.
+

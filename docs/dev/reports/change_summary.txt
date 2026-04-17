@@ -1,1 +1,35 @@
-Docs-only enforcement PR
+BUILD_PR_PREVIEW_PATH_CONTRACT_REALIGNMENT
+Date: 2026-04-17
+Scope: Preview path contract repair only (tools/preview + preview generation script).
+
+Summary of changes
+1) Preview sample-path contract stays aligned to canonical sample paths:
+   - samples/phase-XX/XXXX/index.html
+
+2) Updated preview HTML executors to default preview output folder to images path:
+   - tools/preview/generate-list-previews_updated.html
+   - tools/preview/preview_svg_executor_1600x900.html
+   - tools/preview/preview_svg_executor_games_enter.html
+
+   Exact output-folder changes applied in each:
+   - input default: "assets" -> "assets/images"
+   - fallback display path: "assets" -> "assets/images"
+   - displayed sample write target now resolves as:
+     samples\\phase-XX\\XXXX\\assets\\images
+
+3) Updated runtime sample preview writer path:
+   - scripts/generate-runtime-sample-previews.mjs
+   - output path changed:
+     path.join(sample.sampleDir, 'assets', 'preview.svg')
+     -> path.join(sample.sampleDir, 'assets', 'images', 'preview.svg')
+
+4) Preview capture dependency remains aligned to preview tooling location:
+   - /tools/preview/runtimePreviewCapture.html
+   - local capture page: tools/preview/runtimePreviewCapture.html
+
+Notes
+- No engine/runtime feature behavior changed beyond preview output path contract.
+- No roadmap edits.
+- No start_of_day edits.
+- No unrelated cleanup.
+

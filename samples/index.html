@@ -595,6 +595,7 @@ index.html
         const parsed = parseSampleLink(href);
         const phase = parsed.phase;
         const sampleId = parsed.sampleId;
+        const defaultPreviewPath = buildDefaultSamplePreviewPath(phase, sampleId);
         const tags = parseTagTokens({ link });
         const titleText = labelText.toLowerCase();
         const descriptionText = String(link.getAttribute('title') || '').trim().toLowerCase();
@@ -609,8 +610,8 @@ index.html
           href,
           section: link.closest('section'),
           searchText,
-          thumbnail: '',
-          preview: '',
+          thumbnail: defaultPreviewPath,
+          preview: defaultPreviewPath,
           itemNode: link,
           isVisible: true,
           favoriteButton: null,
@@ -694,6 +695,13 @@ index.html
           phase: String(match[1] || ''),
           sampleId: String(match[2] || '')
         };
+      }
+
+      function buildDefaultSamplePreviewPath(phase, sampleId) {
+        if (!/^\d{2}$/.test(String(phase || '')) || !/^\d{4}$/.test(String(sampleId || ''))) {
+          return '';
+        }
+        return '/samples/phase-' + phase + '/' + sampleId + '/assets/images/preview.svg';
       }
 
       function parseTagTokens(model) {

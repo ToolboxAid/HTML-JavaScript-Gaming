@@ -3,7 +3,7 @@
 
 <head>
   <meta charset="UTF-8" />
-  <title>Preview SVG Executor</title>
+  <title>Preview SVG Generator</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -96,7 +96,7 @@
 </head>
 
 <body>
-  <h1>Preview SVG Executor</h1>
+  <h1>Preview SVG Generator</h1>
 
   <div class="row">
     <label>Target type</label>
@@ -131,19 +131,19 @@
 
   <div class="row">
     <label for="assetFolder">Asset folder</label>
-    <input id="assetFolder" type="text" value="assets" />
+    <input id="assetFolder" type="text" value="assets/images" />
   </div>
 
   <div class="row">
     <label>Write folder as sample</label>
-    <div id="writeFolderSampleValue" class="value-box">samples\phaseXX\XXXX\assets</div>
+    <div id="writeFolderSampleValue" class="value-box">samples\phase-XX\XXXX\assets</div>
   </div>
 
   <div class="row">
     <label for="sampleList">Paths or IDs</label>
     <textarea id="sampleList" placeholder="Samples examples:
-samples/phase01/0102/index.html
-samples/phase13/1303/index.html
+samples/phase-01/0102/index.html
+samples/phase-13/1303/index.html
 0107
 1305
 
@@ -165,6 +165,18 @@ Vector Map Editor"></textarea>
     <span class="inline">
       <input id="onlyCaptureTimeout" type="checkbox" checked />
       <label for="onlyCaptureTimeout" style="min-width: 0; font-weight: normal;">Only rewrite if preview.svg contains literal "Capture timeout"</label>
+    </span>
+  </div>
+
+  <div class="row">
+    <label>Capture mode</label>
+    <span class="inline">
+      <input id="captureModeFullScreen" type="radio" name="captureMode" value="fullscreen1600" />
+      <label for="captureModeFullScreen" style="min-width: 0; font-weight: normal;">Full Screen (1600x900 HTML Page)</label>
+    </span>
+    <span class="inline">
+      <input id="captureModeCanvasOnly" type="radio" name="captureMode" value="canvasOnly" checked />
+      <label for="captureModeCanvasOnly" style="min-width: 0; font-weight: normal;">Canvas Only</label>
     </span>
   </div>
 
@@ -211,6 +223,9 @@ Vector Map Editor"></textarea>
     const writeFolderActualValueEl = document.getElementById("writeFolderActualValue");
 
     const targetTypeInputs = Array.from(document.querySelectorAll('input[name="targetType"]'));
+    const captureModeInputs = Array.from(document.querySelectorAll('input[name="captureMode"]'));
+    const runtimeParams = new URLSearchParams(window.location.search);
+    const isRuntimeMode = runtimeParams.get("mode") === "runtime";
 
     let repoDirHandle = null;
     let stopRequested = false;
@@ -225,6 +240,196 @@ Vector Map Editor"></textarea>
 
     function sleep(ms) {
       return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
+    function getSelectedCaptureMode() {
+      const selected = captureModeInputs.find(x => x.checked);
+      return selected ? selected.value : "canvasOnly";
+    }
+
+    function getCaptureModeLabel(modeValue = getSelectedCaptureMode()) {
+      return modeValue === "canvasOnly"
+        ? "Canvas Only"
+        : "Full Screen (1600x900 HTML Page)";
+    }
+
+    function initializeRuntimeCaptureMode() {
+      const samplePath = String(runtimeParams.get("sample") || "").trim();
+      const width = Math.max(1, Number(runtimeParams.get("w") || 640));
+      const height = Math.max(1, Number(runtimeParams.get("h") || 360));
+      const settleMs = Math.max(0, Number(runtimeParams.get("settle") || 3000));
+      const timeoutMs = Math.max(1000, Number(runtimeParams.get("timeout") || 12000));
+      const captureModeParam = String(runtimeParams.get("capture") || "canvasOnly").trim();
+      const runtimeCaptureMode = captureModeParam === "fullscreen1600" ? "fullscreen1600" : "canvasOnly";
+
+      function setStatus(status) {
+        document.body.setAttribute("data-capture-status", status);
+        document.title = "capture:" + status;
+      }
+
+      const bodyChildren = Array.from(document.body.children);
+      for (const node of bodyChildren) {
+        node.style.display = "none";
+      }
+      document.body.style.margin = "0";
+      document.body.style.background = "#000";
+      document.body.style.overflow = "hidden";
+
+      frame.style.display = "block";
+      frame.style.position = "fixed";
+      frame.style.width = "1px";
+      frame.style.height = "1px";
+      frame.style.left = "-10000px";
+      frame.style.top = "-10000px";
+      frame.style.border = "0";
+      frame.style.visibility = "hidden";
+      frame.setAttribute("sandbox", "allow-scripts allow-same-origin");
+
+      const outputCanvas = document.createElement("canvas");
+      outputCanvas.id = "runtimeCaptureSurface";
+      outputCanvas.width = width;
+      outputCanvas.height = height;
+      outputCanvas.style.display = "block";
+      outputCanvas.style.width = "100vw";
+      outputCanvas.style.height = "100vh";
+      outputCanvas.style.background = "#000";
+      document.body.appendChild(outputCanvas);
+
+      const ctx = outputCanvas.getContext("2d");
+      if (!ctx) {
+        setStatus("error");
+        return;
+      }
+
+      function writeLabel(text, color) {
+        ctx.fillStyle = "#0b1020";
+        ctx.fillRect(0, 0, width, height);
+        ctx.strokeStyle = "#334e7a";
+        ctx.lineWidth = 2;
+        ctx.strokeRect(10, 10, width - 20, height - 20);
+        ctx.fillStyle = color;
+        ctx.font = "600 18px monospace";
+        ctx.fillText(text, 20, 40);
+      }
+
+      function drawSourceCanvas(sourceCanvas) {
+        const sw = sourceCanvas.width || sourceCanvas.clientWidth || width;
+        const sh = sourceCanvas.height || sourceCanvas.clientHeight || height;
+        if (!sw || !sh) {
+          throw new Error("Canvas has invalid size.");
+        }
+
+        const scale = Math.max(width / sw, height / sh);
+        const dw = sw * scale;
+        const dh = sh * scale;
+        const dx = (width - dw) * 0.5;
+        const dy = (height - dh) * 0.5;
+
+        ctx.fillStyle = "#000";
+        ctx.fillRect(0, 0, width, height);
+        ctx.drawImage(sourceCanvas, dx, dy, dw, dh);
+      }
+
+      function fail(message) {
+        writeLabel(message, "#ff9ca8");
+        setStatus("error");
+      }
+
+      if (!samplePath) {
+        fail("Missing sample parameter");
+        return;
+      }
+
+      writeLabel("Loading sample...", "#a5c0e6");
+      setStatus("loading");
+
+      const startTime = Date.now();
+      let settled = false;
+
+      async function captureFullScreenCanvas(frameDoc) {
+        const html2canvasFn = window.html2canvas;
+        if (typeof html2canvasFn !== "function") {
+          return frameDoc.querySelector("canvas");
+        }
+
+        const frameBody = frameDoc.body;
+        if (!frameBody) {
+          return null;
+        }
+
+        return await html2canvasFn(frameBody, {
+          backgroundColor: "#000000",
+          useCORS: true,
+          allowTaint: true,
+          logging: false,
+          width: 1600,
+          height: 900,
+          windowWidth: 1600,
+          windowHeight: 900,
+          scrollX: 0,
+          scrollY: 0
+        });
+      }
+
+      async function attemptCapture() {
+        try {
+          const frameDoc = frame.contentDocument;
+          if (!frameDoc) {
+            throw new Error("Frame document unavailable.");
+          }
+
+          let sourceCanvas;
+          if (runtimeCaptureMode === "fullscreen1600") {
+            sourceCanvas = await captureFullScreenCanvas(frameDoc);
+          } else {
+            sourceCanvas = frameDoc.querySelector("canvas");
+          }
+
+          if (!sourceCanvas) {
+            if (Date.now() - startTime > timeoutMs) {
+              fail("Canvas not found");
+              return;
+            }
+            requestAnimationFrame(() => {
+              attemptCapture();
+            });
+            return;
+          }
+
+          if (!settled) {
+            settled = true;
+            setTimeout(() => {
+              attemptCapture();
+            }, settleMs);
+            return;
+          }
+
+          drawSourceCanvas(sourceCanvas);
+          setStatus("ready");
+        } catch (_) {
+          if (Date.now() - startTime > timeoutMs) {
+            fail("Capture timeout");
+            return;
+          }
+          requestAnimationFrame(() => {
+            attemptCapture();
+          });
+        }
+      }
+
+      frame.addEventListener("load", () => {
+        requestAnimationFrame(() => {
+          attemptCapture();
+        });
+      }, { once: true });
+
+      frame.src = samplePath;
+
+      setTimeout(() => {
+        if (document.body.getAttribute("data-capture-status") !== "ready") {
+          fail("Capture timeout");
+        }
+      }, timeoutMs + settleMs + 800);
     }
 
     function normalizeSlashes(value) {
@@ -266,7 +471,7 @@ Vector Map Editor"></textarea>
 
     function getWriteFolderRelativePath(entry) {
       if (entry.targetType === "samples") {
-        return `samples/phase${entry.phase}/${entry.id}/${getAssetFolderRelativePath()}`;
+        return `samples/phase-${entry.phase}/${entry.id}/${getAssetFolderRelativePath()}`;
       }
       if (entry.targetType === "games") {
         return `games/${entry.name}/${getAssetFolderRelativePath()}`;
@@ -286,7 +491,7 @@ Vector Map Editor"></textarea>
     }
 
     function updateWriteFolderSampleLabel() {
-      const assetFolder = getAssetFolderDisplayPath() || "assets";
+      const assetFolder = getAssetFolderDisplayPath() || "assets/images";
       const targetType = getSelectedTargetType();
 
       if (targetType === "samples") {
@@ -343,17 +548,17 @@ Vector Map Editor"></textarea>
           targetType: "samples",
           id,
           phase,
-          samplePath: `samples/phase${phase}/${id}/index.html`
+          samplePath: `samples/phase-${phase}/${id}/index.html`
         };
       }
 
-      const pathMatch = normalized.match(/samples\/phase(\d{2})\/(\d{4})\/index\.html$/i);
+      const pathMatch = normalized.match(/samples\/phase-?(\d{2})\/(\d{4})\/index\.html$/i);
       if (pathMatch) {
         return {
           targetType: "samples",
           id: pathMatch[2],
           phase: pathMatch[1],
-          samplePath: `samples/phase${pathMatch[1]}/${pathMatch[2]}/index.html`
+          samplePath: `samples/phase-${pathMatch[1]}/${pathMatch[2]}/index.html`
         };
       }
 
@@ -429,7 +634,7 @@ Vector Map Editor"></textarea>
     async function getTargetDirHandle(repoHandle, entry) {
       if (entry.targetType === "samples") {
         const samplesDir = await getDirectoryHandle(repoHandle, "samples");
-        const phaseDir = await getDirectoryHandle(samplesDir, `phase${entry.phase}`);
+        const phaseDir = await getDirectoryHandle(samplesDir, `phase-${entry.phase}`);
         return await getDirectoryHandle(phaseDir, entry.id);
       }
 
@@ -629,7 +834,7 @@ Vector Map Editor"></textarea>
       return buildFallbackSvg(CAPTURE_TIMEOUT_MARKER);
     }
 
-    async function extractToolFullPageSvg(doc) {
+    async function extractFullPageSvg1600(doc) {
       const win = frame.contentWindow;
       if (!win) {
         return buildFallbackSvg(CAPTURE_TIMEOUT_MARKER);
@@ -641,25 +846,8 @@ Vector Map Editor"></textarea>
       }
 
       const body = doc.body;
-      const html = doc.documentElement;
-
-      const fullWidth = 1600; // forced
-      /*original*/ const _origWidth = Math.max(
-        body ? body.scrollWidth : 0,
-        html ? html.scrollWidth : 0,
-        body ? body.offsetWidth : 0,
-        html ? html.offsetWidth : 0,
-        1280
-      );
-
-      const fullHeight = 900; // forced
-      /*original*/ const _origHeight = Math.max(
-        body ? body.scrollHeight : 0,
-        html ? html.scrollHeight : 0,
-        body ? body.offsetHeight : 0,
-        html ? html.offsetHeight : 0,
-        800
-      );
+      const fullWidth = 1600;
+      const fullHeight = 900;
 
       try {
         const canvas = await html2canvasFn(body, {
@@ -667,10 +855,10 @@ Vector Map Editor"></textarea>
           useCORS: true,
           allowTaint: true,
           logging: false,
-          width: 1600,
-          height: 900,
-          windowWidth: 1600,
-          windowHeight: 900,
+          width: fullWidth,
+          height: fullHeight,
+          windowWidth: fullWidth,
+          windowHeight: fullHeight,
           scrollX: 0,
           scrollY: 0,
           onclone: (clonedDoc) => {
@@ -685,27 +873,38 @@ Vector Map Editor"></textarea>
       }
     }
 
+    function extractCanvasOnlySvg(doc) {
+      const canvas = doc.querySelector("canvas");
+      if (canvas) {
+        return buildCanvasWrappedSvg(canvas);
+      }
+      return buildFallbackSvg("Canvas not found");
+    }
+
     async function extractSvgFromFrame(entry) {
       const doc = frame.contentDocument;
       if (!doc) {
         return buildFallbackSvg(CAPTURE_TIMEOUT_MARKER);
       }
 
-      if (entry.targetType === "tools") {
-        return await extractToolFullPageSvg(doc);
+      if (getSelectedCaptureMode() === "canvasOnly") {
+        return extractCanvasOnlySvg(doc);
       }
 
-      const svg = doc.querySelector("svg");
-      if (svg) {
-        return svg.outerHTML;
-      }
+      return await extractFullPageSvg1600(doc);
+    }
 
-      const canvas = doc.querySelector("canvas");
-      if (canvas) {
-        return buildCanvasWrappedSvg(canvas);
-      }
+    async function triggerGameStart() {
+      try {
+        const win = frame.contentWindow;
+        if (!win) return;
 
-      return buildFallbackSvg(CAPTURE_TIMEOUT_MARKER);
+        const evtDown = new KeyboardEvent("keydown", { key: "Enter", code: "Enter", keyCode: 13, which: 13, bubbles: true });
+        const evtUp = new KeyboardEvent("keyup", { key: "Enter", code: "Enter", keyCode: 13, which: 13, bubbles: true });
+
+        win.document.dispatchEvent(evtDown);
+        win.document.dispatchEvent(evtUp);
+      } catch {}
     }
 
     async function processOne(entry, baseUrl, waitMs) {
@@ -729,7 +928,12 @@ Vector Map Editor"></textarea>
       try {
         frame.src = url;
         await waitForFrameLoad(frame, 20000);
-        await sleep(waitMs);
+        if (entry.targetType === "games") {
+          await triggerGameStart();
+          await sleep(3000);
+        } else {
+          await sleep(waitMs);
+        }
 
         const svgContent = await extractSvgFromFrame(entry);
         await writePreview(targetDirHandle, svgContent);
@@ -811,103 +1015,114 @@ Vector Map Editor"></textarea>
       log("===================");
     }
 
-    pickRepoBtn.addEventListener("click", async () => {
-      try {
-        repoDirHandle = await window.showDirectoryPicker({ mode: "readwrite" });
-        repoDisplayName = repoDirHandle.name || "selected folder";
+    if (isRuntimeMode) {
+      initializeRuntimeCaptureMode();
+    } else {
+      pickRepoBtn.addEventListener("click", async () => {
+        try {
+          repoDirHandle = await window.showDirectoryPicker({ mode: "readwrite" });
+          repoDisplayName = repoDirHandle.name || "selected folder";
 
-        repoSelectedValueEl.textContent = repoDisplayName;
-        statusEl.textContent = `Repo folder: ${repoDisplayName}`;
-        executeBtn.disabled = false;
+          repoSelectedValueEl.textContent = repoDisplayName;
+          statusEl.textContent = `Repo folder: ${repoDisplayName}`;
+          executeBtn.disabled = false;
 
-        await updatePathPreviewLabels();
-        log(`Repo selected: ${repoDisplayName}`);
-      } catch (error) {
-        log(`Repo folder selection canceled or failed: ${error.message}`);
-      }
-    });
+          await updatePathPreviewLabels();
+          log(`Repo selected: ${repoDisplayName}`);
+        } catch (error) {
+          log(`Repo folder selection canceled or failed: ${error.message}`);
+        }
+      });
 
-    executeBtn.addEventListener("click", async () => {
-      if (!repoDirHandle) {
-        log("Pick the repo folder first.");
-        return;
-      }
-
-      const lines = parseInputList(sampleListInput.value);
-      if (!lines.length) {
-        log("Paste at least one path or ID.");
-        return;
-      }
-
-      const baseUrl = baseUrlInput.value.trim().replace(/\/+$/, "");
-      const waitMs = Math.max(3000, Number(waitMsInput.value) || 3500);
-      const targetType = getSelectedTargetType();
-
-      stopRequested = false;
-      executeBtn.disabled = true;
-      stopBtn.disabled = false;
-      log("");
-      log("Starting execution...");
-      log(`Target type: ${targetType}`);
-      log(`Base URL: ${baseUrl}`);
-      log(`Wait: ${waitMs}ms`);
-      log(`Repo selected: ${repoDisplayName || "not selected"}`);
-      log(`Asset folder: ${getAssetFolderDisplayPath()}`);
-      log(`Force rewrite: ${forceRewriteInput.checked}`);
-      log(`Only literal Capture timeout: ${onlyCaptureTimeoutInput.checked}`);
-      log("");
-
-      const results = [];
-
-      try {
-        for (const line of lines) {
-          if (stopRequested) {
-            log("Stop requested. Ending run.");
-            break;
-          }
-
-          try {
-            const entry = await resolveEntry(line);
-            if (!entry) continue;
-            const result = await processOne(entry, baseUrl, waitMs);
-            results.push(result);
-          } catch (error) {
-            log(`FAIL INPUT  ${line}  (${error.message})`);
-            log("");
-            results.push({ id: line, status: "failed", reason: error.message });
-          }
+      executeBtn.addEventListener("click", async () => {
+        if (!repoDirHandle) {
+          log("Pick the repo folder first.");
+          return;
         }
 
-        printSummary(results);
-      } catch (error) {
-        log(`Unexpected error: ${error.message}`);
-      } finally {
-        executeBtn.disabled = false;
-        stopBtn.disabled = true;
-        log("Done.");
-      }
-    });
+        const lines = parseInputList(sampleListInput.value);
+        if (!lines.length) {
+          log("Paste at least one path or ID.");
+          return;
+        }
 
-    stopBtn.addEventListener("click", () => {
-      stopRequested = true;
-      log("Stop requested. Will stop after current item.");
-    });
+        const baseUrl = baseUrlInput.value.trim().replace(/\/+$/, "");
+        const waitMs = Math.max(3000, Number(waitMsInput.value) || 3500);
+        const targetType = getSelectedTargetType();
 
-    assetFolderInput.addEventListener("input", () => {
-      updatePathPreviewLabels();
-    });
+        stopRequested = false;
+        executeBtn.disabled = true;
+        stopBtn.disabled = false;
+        log("");
+        log("Starting execution...");
+        log(`Target type: ${targetType}`);
+        log(`Base URL: ${baseUrl}`);
+        log(`Wait: ${waitMs}ms`);
+        log(`Repo selected: ${repoDisplayName || "not selected"}`);
+        log(`Asset folder: ${getAssetFolderDisplayPath()}`);
+        log(`Capture mode: ${getCaptureModeLabel()}`);
+        log(`Force rewrite: ${forceRewriteInput.checked}`);
+        log(`Only literal Capture timeout: ${onlyCaptureTimeoutInput.checked}`);
+        log("");
 
-    sampleListInput.addEventListener("input", () => {
-      updatePathPreviewLabels();
-    });
+        const results = [];
 
-    targetTypeInputs.forEach(input => {
-      input.addEventListener("change", () => {
+        try {
+          for (const line of lines) {
+            if (stopRequested) {
+              log("Stop requested. Ending run.");
+              break;
+            }
+
+            try {
+              const entry = await resolveEntry(line);
+              if (!entry) continue;
+              const result = await processOne(entry, baseUrl, waitMs);
+              results.push(result);
+            } catch (error) {
+              log(`FAIL INPUT  ${line}  (${error.message})`);
+              log("");
+              results.push({ id: line, status: "failed", reason: error.message });
+            }
+          }
+
+          printSummary(results);
+        } catch (error) {
+          log(`Unexpected error: ${error.message}`);
+        } finally {
+          executeBtn.disabled = false;
+          stopBtn.disabled = true;
+          log("Done.");
+        }
+      });
+
+      stopBtn.addEventListener("click", () => {
+        stopRequested = true;
+        log("Stop requested. Will stop after current item.");
+      });
+
+      captureModeInputs.forEach(input => {
+        input.addEventListener("change", () => {
+          log(`Capture mode: ${getCaptureModeLabel()}`);
+        });
+      });
+
+      assetFolderInput.addEventListener("input", () => {
         updatePathPreviewLabels();
       });
-    });
 
-    updatePathPreviewLabels();
+      sampleListInput.addEventListener("input", () => {
+        updatePathPreviewLabels();
+      });
+
+      targetTypeInputs.forEach(input => {
+        input.addEventListener("change", () => {
+          updatePathPreviewLabels();
+        });
+      });
+
+      updatePathPreviewLabels();
+    }
   </script>
 </body>
 

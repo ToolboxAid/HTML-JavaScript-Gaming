@@ -1,3 +1,6 @@
-Engine usage enforcement completion (Level 18 Track A)
+Repair preview path contract after sample structure change.
 
-BUILD_PR_LEVEL_18_1_ENGINE_USAGE_ENFORCEMENT_COMPLETION
+BUILD_PR_PREVIEW_PATH_CONTRACT_REALIGNMENT
+- update tools/preview path resolution to current sample contract
+- validate and remove/update any stale samples/shared preview dependency
+- keep scope limited to preview-path repair

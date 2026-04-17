@@ -5,7 +5,7 @@ import { spawn } from 'node:child_process';
 
 const ROOT = process.cwd();
 const SAMPLES_DIR = path.join(ROOT, 'samples');
-const CAPTURE_PAGE_PATH = '/samples/shared/runtimePreviewCapture.html';
+const CAPTURE_PAGE_PATH = '/tools/preview/preview_svg_generator.html';
 const OUTPUT_WIDTH = 640;
 const OUTPUT_HEIGHT = 360;
 const CAPTURE_SETTLE_MS = 3000;
@@ -17,12 +17,12 @@ function discoverCanonicalSamples() {
   const results = [];
   const phaseEntries = fs.readdirSync(SAMPLES_DIR, { withFileTypes: true });
   const phaseDirs = phaseEntries
-    .filter((entry) => entry.isDirectory() && /^phase\d{2}$/.test(entry.name))
+    .filter((entry) => entry.isDirectory() && /^phase-\d{2}$/.test(entry.name))
     .map((entry) => entry.name)
     .sort();
 
   for (const phaseDir of phaseDirs) {
-    const phase = phaseDir.slice(5);
+    const phase = phaseDir.slice(6);
     const phasePath = path.join(SAMPLES_DIR, phaseDir);
     const sampleEntries = fs.readdirSync(phasePath, { withFileTypes: true });
     const sampleIds = sampleEntries
@@ -221,7 +221,9 @@ function statusFromPng(filePath) {
 function buildCaptureUrl(port, sample) {
   const samplePath = '/samples/' + sample.phaseDir + '/' + sample.id + '/index.html';
   const params = new URLSearchParams();
+  params.set('mode', 'runtime');
   params.set('sample', samplePath);
+  params.set('capture', 'canvasOnly');
   params.set('w', String(OUTPUT_WIDTH));
   params.set('h', String(OUTPUT_HEIGHT));
   params.set('settle', String(CAPTURE_SETTLE_MS));
@@ -253,7 +255,7 @@ async function generateRuntimePreviews() {
   try {
     for (const sample of samples) {
       const pngPath = path.join(tempDir, sample.id + '.png');
-      const svgPath = path.join(sample.sampleDir, 'assets', 'preview.svg');
+      const svgPath = path.join(sample.sampleDir, 'assets', 'images', 'preview.svg');
       fs.mkdirSync(path.dirname(svgPath), { recursive: true });
 
       const captureUrl = buildCaptureUrl(port, sample);
