@@ -1,7 +1,4 @@
-[ ] Engine paths inspected for sample-specific logic
-[ ] Confirmed sample-specific logic removed or relocated
-[ ] Stable engine contracts preserved
-[ ] Exact consumer/import updates completed
-[ ] Validation re-run completed
-[ ] Reports written to docs/dev/reports
-[ ] Roadmap status updated in place only if execution-backed
+[ ] samples use engine
+[ ] games use engine
+[ ] no sample logic in engine
+[ ] Track A complete

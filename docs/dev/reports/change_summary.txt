@@ -1,7 +1,1 @@
-Docs-first bundle to close the final open item in Level 18 Track A.
-
-This PR asks Codex to:
-- inspect engine paths for sample-specific logic
-- remove or relocate confirmed sample-specific surfaces
-- preserve stable engine contracts
-- update the master roadmap in place only if execution-backed
+Finalize Track A
