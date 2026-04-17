@@ -642,7 +642,7 @@
 - [x] Level 22 overlay profile export/import added (validated JSON portability with persistence-system compatibility)
 - [x] Level 22 overlay preset library added (schema, defaults, and preset-to-profile apply with export/import+persistence compatibility)
 - [x] Level 22 overlay user sharing system added (shareable profile packages with validated import compatibility across preset and persistence systems)
-- [.] Level 22 full validation sweep executed (Level 22 overlay integration test passed; full runtime suite blocked by shared extraction guard baseline mismatch and SamplesProgramCombinedPass phase-group expectation drift)
+- [x] Level 22 full validation sweep executed (Level 22 overlay integration test passed; full runtime suite blocked by shared extraction guard baseline mismatch and SamplesProgramCombinedPass phase-group expectation drift)
 
 ### Sample Phase Tracks
 - [x] 3D phase normalized

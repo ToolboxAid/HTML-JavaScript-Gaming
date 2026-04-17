@@ -1,9 +1,7 @@
 MODEL: GPT-5.4
-REASONING: medium
+REASONING: low
 
 COMMAND:
-Perform full validation sweep:
-- Validate all Level 22 features together
-- Check cross-feature compatibility
-- Ensure no regressions
-- Update roadmap status only
+Promote Level 22 to baseline:
+- Update roadmap status only ([ ] -> [x])
+- Do not modify implementation
