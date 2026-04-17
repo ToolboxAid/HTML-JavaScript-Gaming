@@ -741,9 +741,9 @@
 
 ### Track D � Codebase Consistency
 - [ ] single class per file enforcement
+- [ ] eliminate import/export anti-patterns repo wide
 - [ ] remove duplicate helpers
 - [ ] normalize naming consistency
-- [ ] eliminate import/export anti-patterns repo wide
 
 ### Track E � CSS & UI Normalization
 - [ ] flatten CSS layers
