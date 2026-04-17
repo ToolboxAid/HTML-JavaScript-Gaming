@@ -804,10 +804,10 @@
 - [ ] validate long-running stability
 
 ### Track C — Performance & Scaling
-- [ ] validate large scene performance
-- [ ] validate stress scenarios (1k+ entities)
-- [ ] validate memory stability
-- [ ] identify bottlenecks
+- [.] validate large scene performance
+- [.] validate stress scenarios (1k+ entities)
+- [.] validate memory stability
+- [.] identify bottlenecks
 
 ### Track D — Debug & Observability Maturity
 - [ ] ensure all systems expose debug data

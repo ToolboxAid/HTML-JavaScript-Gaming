@@ -1,2 +1,6 @@
+Promote Level 19 Track C performance/scaling roadmap items from planned to in-progress using execution-backed validation evidence.
 
-Advance roadmap status for Engine Usage Enforcement based on completed sample compliance and shared extraction.
+BUILD_PR_LEVEL_19_4_PERFORMANCE_SCALING_ROADMAP_PROMOTION
+- update roadmap status only for validated performance/scaling items
+- add summary + blocker reports
+- preserve explicit note that global validation certification is still blocked by unrelated failures
