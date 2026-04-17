@@ -2,28 +2,26 @@
 
 ## Commands Run
 
-1. Targeted move validation (existence checks):
-   - verified moved source paths no longer exist under `games/`
-   - verified new sample targets exist under `samples/phase-02/0225`, `samples/phase-03/0325-0327`, `samples/phase-04/0413`, `samples/phase-06/0614`
-2. Targeted stale-reference scans:
-   - `games/index.html` for removed `/games/(Gravity|Thruster|ProjectileLab|Orbit|PaddleIntercept|MultiBallChaos)/` links
-   - `tests/games` + `tests/samples` for stale `../../games/...` imports
-3. Focused runtime/unit validation via alias-hook runner:
-   - `tests/games/GravityValidation.test.mjs`
-   - `tests/games/GravityWorld.test.mjs`
-   - `tests/games/ThrusterValidation.test.mjs`
-   - `tests/games/ThrusterWorld.test.mjs`
-   - `tests/games/PaddleInterceptValidation.test.mjs`
-   - `tests/games/PaddleInterceptWorld.test.mjs`
-   - `tests/games/MultiBallChaosValidation.test.mjs`
-   - `tests/games/MultiBallChaosWorld.test.mjs`
-   - `tests/samples/ProjectileLabModel.test.mjs`
-   - `tests/samples/ProjectileLabScene.test.mjs`
-   - `tests/samples/OrbitLabModel.test.mjs`
-   - `tests/samples/OrbitLabScene.test.mjs`
+1. Recommendation source read:
+   - `docs/dev/reports/BUILD_PR_LEVEL_18_3_GAME_TO_SAMPLE_RECLASSIFICATION_RECOMMENDATIONS_matrix.md`
+2. Focused filesystem and reference validation:
+   - Node existence/reference check over approved set:
+     - `games/Gravity` -> `samples/phase-03/0325`
+     - `games/Thruster` -> `samples/phase-04/0413`
+     - `games/ProjectileLab` -> `samples/phase-02/0225`
+     - `games/Orbit` -> `samples/phase-06/0614`
+     - `games/PaddleIntercept` -> `samples/phase-03/0326`
+     - `games/MultiBallChaos` -> `samples/phase-03/0327`
+     - retention/exclusion checks for `games/Bouncing-ball` and `games/PacmanLite`
+     - stale-link scan in `games/index.html` and `samples/index.html`
+3. Focused stale test-import scan:
+   - `rg -n "games/(Gravity|Thruster|ProjectileLab|Orbit|PaddleIntercept|MultiBallChaos)/" tests/games tests/samples`
 
 ## Results
 
-- All 12 targeted tests passed.
-- No stale moved-entry links remained in `games/index.html` for the reclassified entries.
-- No stale `../../games/(Gravity|Thruster|ProjectileLab|Orbit|PaddleIntercept|MultiBallChaos)/` imports remained in focused test files.
+- Reclassification validation result: `PASS`.
+- Approved moved game paths are absent from `games/` and present at expected `samples/phase-xx` targets.
+- `games/Bouncing-ball` remains present in `games/` as approved.
+- No stale `/games/(Gravity|Thruster|ProjectileLab|Orbit|PaddleIntercept|MultiBallChaos)/` references remain in `games/index.html` or `samples/index.html`.
+- No stale test imports for `games/(Gravity|Thruster|ProjectileLab|Orbit|PaddleIntercept|MultiBallChaos)/` remain in `tests/games` or `tests/samples`.
+- `games/PacmanLite` is absent in the current repository state; this PR made no PacmanLite changes.

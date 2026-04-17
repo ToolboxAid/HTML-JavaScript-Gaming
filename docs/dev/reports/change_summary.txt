@@ -1,38 +1,7 @@
-BUILD_PR_LEVEL_18_4_GAME_TO_SAMPLE_RECLASSIFICATION_EXECUTION
+Docs-first execution bundle for the approved game-to-sample reclassification lane.
 
-Scope executed:
-- Applied only approved reclassification moves from prior reviewed recommendations for the requested set.
-- Left `games/Bouncing-ball` in `games` (approved remain-in-games decision).
-- Left `games/PacmanLite` untouched (explicit exclusion).
-
-Executed moves:
-- `games/ProjectileLab` -> `samples/phase-02/0225`
-- `games/Gravity` -> `samples/phase-03/0325`
-- `games/PaddleIntercept` -> `samples/phase-03/0326`
-- `games/MultiBallChaos` -> `samples/phase-03/0327`
-- `games/Thruster` -> `samples/phase-04/0413`
-- `games/Orbit` -> `samples/phase-06/0614`
-
-Exact reference updates applied:
-- `games/index.html`
-  - removed cards and list references for moved entries
-- `samples/index.html`
-  - added sample entries 0225, 0325, 0326, 0327, 0413, 0614
-- updated focused imports in tests:
-  - `tests/games/GravityValidation.test.mjs`
-  - `tests/games/GravityWorld.test.mjs`
-  - `tests/games/ThrusterValidation.test.mjs`
-  - `tests/games/ThrusterWorld.test.mjs`
-  - `tests/games/PaddleInterceptValidation.test.mjs`
-  - `tests/games/PaddleInterceptWorld.test.mjs`
-  - `tests/games/MultiBallChaosValidation.test.mjs`
-  - `tests/games/MultiBallChaosWorld.test.mjs`
-  - `tests/samples/ProjectileLabModel.test.mjs`
-  - `tests/samples/ProjectileLabScene.test.mjs`
-  - `tests/samples/OrbitLabModel.test.mjs`
-  - `tests/samples/OrbitLabScene.test.mjs`
-
-Roadmap handling:
-- roadmap file preserved in place.
-- no text rewrite/deletion performed.
-- no additional marker transition applied in this PR because no directly matching pending status marker for this execution lane was present without expanding scope.
+This PR asks Codex to:
+- execute the approved reclassification moves
+- leave PacmanLite alone
+- update only exact references required by those moves
+- update the master roadmap in place under the roadmap guard
