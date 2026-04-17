@@ -99,7 +99,10 @@ Commit Comment:
 - Always proceed to the next logical step
 
 ### NO COMMIT-ONLY PRs
+- Roadmap lives at: docs\dev\roadmaps\MASTER_ROADMAP_HIGH_LEVEL.md
+- Only one roadmap
 - PRs must include something testable and improve the Roadmap
+- All PRs numbe improve the roadmap [ ] to [.] or [.] to [x]
 - If a PR is doc-only, bundle with next smallest executable/testable change
 
 ### ZIP IS ALWAYS REQUIRED
