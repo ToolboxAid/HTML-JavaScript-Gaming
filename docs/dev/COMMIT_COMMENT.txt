@@ -1,6 +1,6 @@
-Enforce master roadmap guard for Phase 19 closeout.
+Embed roadmap guard into PROJECT_INSTRUCTIONS.md (additive only)
 
-BUILD_PR_LEVEL_19_20_TOOLCHAIN_ROADMAP_GUARD_ENFORCEMENT
-- docs-only enforcement PR
-- preserve roadmap text exactly
-- allow status-only roadmap transitions in place when execution-backed
+BUILD_PR_LEVEL_19_21_PROJECT_INSTRUCTIONS_ROADMAP_GUARD_EMBED
+- append-only change
+- no deletions
+- no rewrites
