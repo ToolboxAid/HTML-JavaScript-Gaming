@@ -1,0 +1,38 @@
+BUILD_PR_TILE_UV_WINDING_NORMAL_FIX_VALIDATION - Root Cause Notes
+
+Context investigated
+- Targeted samples: 1706 and 1707 voxel terrain/chunk rendering paths.
+- Investigated for:
+  - UV orientation issues
+  - triangle winding issues
+  - normals direction issues
+  - post-mesh 180-degree transform issues
+
+Findings
+1) UV mapping was not the root cause.
+- These two sample paths draw filled polygons directly via renderer.drawPolygon for each visible voxel face.
+- No UV coordinate authoring/sampling path exists in these files.
+
+2) Triangle/face winding mismatch was the root cause.
+- Pre-fix projected face winding signs for 1706 were:
+  - top: +1
+  - side-left: -1
+  - side-right: -1
+- This mixed winding means any culling stage that expects one front-face orientation will reject a subset of visible faces, causing open/interior artifacts and apparent inversion.
+
+3) Normals and post-transform were not root causes in this path.
+- There are no explicit authored normal buffers in these sample scene files.
+- No extra post-mesh transform stage rotating tiles 180 degrees was found in these render paths.
+
+Fix applied
+- Reordered side-face vertex sequences so top/left/right faces share consistent projected winding.
+- Post-fix sign checks:
+  - 1706: [1,1,1]
+  - 1707: [1,1,1]
+
+Validation evidence
+- Focused test suite PASS: Phase17RenderingTechniqueExpansionSanity.
+- Added assertions verify consistent face winding and culling-safe first-voxel face triplet survival.
+
+Residual risk
+- Low and localized: change affects only side-face vertex order in samples 1706/1707 drawBlock methods.

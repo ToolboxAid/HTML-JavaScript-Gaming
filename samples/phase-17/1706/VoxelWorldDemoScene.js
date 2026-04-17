@@ -73,12 +73,14 @@ export default class VoxelWorldDemoScene extends Scene {
       strokeColor: '#111827',
       lineWidth: 1,
     });
-    renderer.drawPolygon([p001, p011, p010, p000], {
+    // Draw the forward z+ side, not the opposite x- side.
+    renderer.drawPolygon([p011, p111, p110, p010], {
       fillColor: shadeColor(baseRgb, 0.72),
       strokeColor: '#111827',
       lineWidth: 1,
     });
-    renderer.drawPolygon([p101, p111, p110, p100], {
+    // Draw the adjacent x+ side.
+    renderer.drawPolygon([p100, p110, p111, p101], {
       fillColor: shadeColor(baseRgb, 0.84),
       strokeColor: '#111827',
       lineWidth: 1,

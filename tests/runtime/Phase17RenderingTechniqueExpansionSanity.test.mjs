@@ -90,6 +90,54 @@ function assertTextIncludes(renderer, needle, message) {
   assert.equal(renderer.texts.some((text) => text.includes(needle)), true, message);
 }
 
+function signedArea(points) {
+  let area = 0;
+  for (let index = 0; index < points.length; index += 1) {
+    const current = points[index];
+    const next = points[(index + 1) % points.length];
+    area += (current.x * next.y) - (next.x * current.y);
+  }
+  return area * 0.5;
+}
+
+function countSharedProjectedPoints(a, b) {
+  const keys = new Set(a.map((point) => `${point.x.toFixed(4)}:${point.y.toFixed(4)}`));
+  let shared = 0;
+  for (let index = 0; index < b.length; index += 1) {
+    const key = `${b[index].x.toFixed(4)}:${b[index].y.toFixed(4)}`;
+    if (keys.has(key)) {
+      shared += 1;
+    }
+  }
+  return shared;
+}
+
+function assertVoxelFaceWindingConsistency(renderer, sampleLabel) {
+  const firstFaceTriplet = renderer.polygons.slice(0, 3);
+  assert.equal(firstFaceTriplet.length, 3, `${sampleLabel} should draw top/left/right faces for the first voxel.`);
+  const topFace = firstFaceTriplet[0];
+  const leftFace = firstFaceTriplet[1];
+  const rightFace = firstFaceTriplet[2];
+
+  const signs = [topFace, leftFace, rightFace].map((entry) => Math.sign(signedArea(entry.points)));
+  assert.equal(signs.every((sign) => sign !== 0), true, `${sampleLabel} should not draw degenerate voxel faces.`);
+  assert.equal(signs.every((sign) => sign === signs[0]), true, `${sampleLabel} should keep top and side faces on the same winding orientation.`);
+
+  assert.equal(
+    countSharedProjectedPoints(leftFace.points, rightFace.points),
+    2,
+    `${sampleLabel} should render adjacent side faces that share one vertical edge.`
+  );
+
+  const frontFaceSign = signs[0];
+  const survivingFaces = [topFace, leftFace, rightFace].filter((entry) => Math.sign(signedArea(entry.points)) === frontFaceSign);
+  assert.equal(
+    survivingFaces.length,
+    3,
+    `${sampleLabel} should keep top and side faces visible under normal backface-culling orientation.`
+  );
+}
+
 function assertIndexLinksPresent() {
   const indexPath = path.join(repoRoot, 'samples', 'index.html');
   const indexText = fs.readFileSync(indexPath, 'utf8');
@@ -195,6 +243,7 @@ function assertMinecraftVoxelTerrain() {
   scene.render(renderer);
   assert.equal(scene.lastFilledFaces > 0, true, 'Minecraft voxel terrain demo should render filled voxel faces.');
   assert.equal(renderer.polygons.length > 0, true, 'Minecraft voxel terrain demo should issue polygon draws.');
+  assertVoxelFaceWindingConsistency(renderer, 'Minecraft voxel terrain demo');
   assertTextIncludes(renderer, 'Minecraft | Filled Voxel Terrain', 'Minecraft terrain sample should render a clear family label overlay.');
   assertTextIncludes(renderer, 'Controls:', 'Minecraft terrain sample should render a controls hint.');
 }
@@ -208,6 +257,7 @@ function assertMinecraftChunkStreaming() {
   assert.equal(scene.lastActiveChunks > 0, true, 'Minecraft chunk streaming demo should activate chunks.');
   assert.equal(scene.lastFilledFaces > 0, true, 'Minecraft chunk streaming demo should render filled voxel faces.');
   assert.equal(renderer.polygons.length > 0, true, 'Minecraft chunk streaming demo should issue polygon draws.');
+  assertVoxelFaceWindingConsistency(renderer, 'Minecraft chunk streaming demo');
   assertTextIncludes(renderer, 'Minecraft | Chunk Streaming Window', 'Minecraft chunk sample should render a clear family label overlay.');
   assertTextIncludes(renderer, 'Controls:', 'Minecraft chunk sample should render a controls hint.');
 }

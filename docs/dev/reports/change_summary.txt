@@ -1,1 +1,27 @@
-Finalize Track A
+BUILD_PR_TILE_UV_WINDING_NORMAL_FIX_VALIDATION
+
+Purpose
+- Fix the tile rendering defect affecting samples 1706 and 1707 where faces could appear inverted/open under backface culling.
+
+Root cause confirmed
+- UV mapping: not applicable in these samples (filled polygon voxel faces; no UV pipeline used).
+- Normals: no authored per-face normal buffers in this path.
+- Post-mesh transform rotation: not present in the sample render path.
+- Actual defect: mixed projected face winding in drawBlock.
+  - Top face winding sign: +1
+  - Side faces winding signs (pre-fix): -1, -1
+  - Mixed winding can cause top/side disagreement under backface culling and produce inside/open artifacts.
+
+Implemented fix (smallest scoped)
+- Reordered side-face vertex order in:
+  - samples/phase-17/1706/VoxelWorldDemoScene.js
+  - samples/phase-17/1707/VoxelWorldDemoScene.js
+- Added focused validation assertions in:
+  - tests/runtime/Phase17RenderingTechniqueExpansionSanity.test.mjs
+  - New assertions verify consistent voxel face winding and culling-safe survivability.
+
+Post-fix outcome
+- First voxel face winding signs now align in both samples:
+  - 1706: [1, 1, 1]
+  - 1707: [1, 1, 1]
+- No debug rendering scaffolding was added to runtime output.

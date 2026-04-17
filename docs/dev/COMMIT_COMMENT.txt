@@ -1,1 +1,7 @@
-Final confirmation of Level 18 Track A
+Fix tile UV/winding/normal defect for tiles 1706 and 1707.
+
+BUILD_PR_TILE_UV_WINDING_NORMAL_FIX_VALIDATION
+- inspect UVs, winding, normals, and post-mesh transform stages
+- apply the smallest valid root-cause fix
+- preserve normal culling behavior
+- keep scope limited to the affected tile rendering defect
