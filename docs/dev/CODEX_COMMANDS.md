@@ -2,31 +2,31 @@ MODEL: GPT-5.4-codex
 REASONING: high
 
 COMMAND:
-1. Open:
-   tests/samples/SamplesProgramCombinedPass.test.mjs
+1. Run:
+   node tools/dev/checkSharedExtractionGuard.mjs
 
-2. Locate phase expectation assertion.
+2. Capture output differences.
 
-3. Replace hardcoded phase list:
-   phase-01 → phase-15
+3. Locate baseline file (likely in tools/dev or reports).
 
-4. Update to:
-   include phase-16, phase-17, phase-18, phase-19
+4. Determine:
+   - Are new shared entries valid? If YES → update baseline
+   - If NO → fix classification logic
 
-   Preferred:
-   derive phases dynamically from filesystem OR
-   extend static list to 19
+5. Apply smallest change:
+   - update baseline JSON OR
+   - adjust guard filters
 
-5. Run:
-   node ./scripts/run-node-tests.mjs
+6. Run:
+   npm test
 
-6. Confirm:
-   SamplesProgramCombinedPass passes
+7. Confirm:
+   pretest passes (no baseline drift)
 
-7. Package ZIP:
-   <project folder>/tmp/BUILD_PR_LEVEL_19_7_FIX_SAMPLE_PHASE_EXPECTATION.zip
+8. Package:
+   <project folder>/tmp/BUILD_PR_LEVEL_19_8_FIX_SHARED_EXTRACTION_GUARD_BASELINE.zip
 
 CONSTRAINTS:
-- Do not modify unrelated tests
-- Do not change engine/runtime code
-- Smallest scoped change only
+- Do not modify unrelated systems
+- Do not remove guard
+- Preserve intent of guard

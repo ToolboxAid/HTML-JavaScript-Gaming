@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-04-10T19:01:37.948Z",
+  "generatedAt": "2026-04-17T15:24:24.499Z",
   "violations": [
     {
       "file": "games/AITargetDummy/game/AITargetDummyController.js",
@@ -117,6 +117,11 @@
       "match": "rule:number-is-finite-usage"
     },
     {
+      "file": "games/Puckman/game/PuckmanGameScene.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
       "file": "games/SpaceDuel/game/SpaceDuelHighScoreService.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-src-depth-3"
@@ -137,324 +142,944 @@
       "match": "rule:relative-shared-src-depth-3"
     },
     {
-      "file": "samples/Phase 12 - Demo Games/sample1205-multi-system/main.js",
+      "file": "samples/phase-03/0307/SlopesRampsScene.js",
       "type": "direct-shared-relative-import",
-      "match": "rule:relative-shared-src-depth-3"
+      "match": "rule:relative-shared-depth-1"
     },
     {
-      "file": "samples/Phase 12 - Demo Games/sample1208-tool-formatted-tiles-parallax/ToolFormattedTilesParallaxScene.js",
-      "type": "inline-helper-clone",
-      "match": "rule:number-is-finite-usage"
-    },
-    {
-      "file": "samples/Phase 12 - Demo Games/sample1208-tool-formatted-tiles-parallax/ToolFormattedTilesParallaxScene.js",
-      "type": "inline-helper-clone",
-      "match": "rule:number-is-finite-usage"
-    },
-    {
-      "file": "samples/Phase 12 - Demo Games/sample1208-tool-formatted-tiles-parallax/ToolFormattedTilesParallaxScene.js",
-      "type": "inline-helper-clone",
-      "match": "rule:number-is-finite-usage"
-    },
-    {
-      "file": "samples/Phase 12 - Demo Games/sample1208-tool-formatted-tiles-parallax/ToolFormattedTilesParallaxScene.js",
-      "type": "inline-helper-clone",
-      "match": "rule:number-is-finite-usage"
-    },
-    {
-      "file": "samples/Phase 12 - Demo Games/sample1208-tool-formatted-tiles-parallax/ToolFormattedTilesParallaxScene.js",
-      "type": "inline-helper-clone",
-      "match": "rule:number-is-finite-usage"
-    },
-    {
-      "file": "samples/Phase 12 - Demo Games/sample1208-tool-formatted-tiles-parallax/ToolFormattedTilesParallaxScene.js",
-      "type": "inline-helper-clone",
-      "match": "rule:number-is-finite-usage"
-    },
-    {
-      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1316_network_sample_a/debug/networkSampleADebug.js",
-      "type": "deep-relative-shared-traversal",
-      "match": "rule:deep-relative-src-shared-traversal"
-    },
-    {
-      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1316_network_sample_a/debug/networkSampleADebug.js",
+      "file": "samples/phase-03/0307/SlopesRampsScene.js",
       "type": "direct-shared-relative-import",
-      "match": "rule:relative-shared-src-depth-3"
+      "match": "rule:relative-shared-depth-2"
     },
     {
-      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1316_network_sample_a/game/FakeLoopbackNetworkModel.js",
-      "type": "deep-relative-shared-traversal",
-      "match": "rule:deep-relative-src-shared-traversal"
-    },
-    {
-      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1316_network_sample_a/game/FakeLoopbackNetworkModel.js",
+      "file": "samples/phase-03/0308/GravityZonesScene.js",
       "type": "direct-shared-relative-import",
-      "match": "rule:relative-shared-src-depth-3"
+      "match": "rule:relative-shared-depth-1"
     },
     {
-      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1316_network_sample_a/game/NetworkSampleAScene.js",
-      "type": "deep-relative-shared-traversal",
-      "match": "rule:deep-relative-src-shared-traversal"
-    },
-    {
-      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1316_network_sample_a/game/NetworkSampleAScene.js",
+      "file": "samples/phase-03/0308/GravityZonesScene.js",
       "type": "direct-shared-relative-import",
-      "match": "rule:relative-shared-src-depth-3"
+      "match": "rule:relative-shared-depth-2"
     },
     {
-      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1316_network_sample_a/main.js",
+      "file": "samples/phase-03/0309/LaddersClimbZonesScene.js",
       "type": "direct-shared-relative-import",
-      "match": "rule:relative-shared-src-depth-3"
+      "match": "rule:relative-shared-depth-1"
     },
     {
-      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1316_network_sample_a/server/networkSampleADashboardServer.mjs",
+      "file": "samples/phase-03/0309/LaddersClimbZonesScene.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-2"
+    },
+    {
+      "file": "samples/phase-03/0310/MovingPlatformsScene.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "samples/phase-03/0310/MovingPlatformsScene.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-2"
+    },
+    {
+      "file": "samples/phase-03/0311/OneWayPlatformsScene.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "samples/phase-03/0311/OneWayPlatformsScene.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-2"
+    },
+    {
+      "file": "samples/phase-03/0312/FrictionSurfacesScene.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "samples/phase-03/0312/FrictionSurfacesScene.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-2"
+    },
+    {
+      "file": "samples/phase-03/0313/TriggerZonesScene.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "samples/phase-03/0313/TriggerZonesScene.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-2"
+    },
+    {
+      "file": "samples/phase-03/0314/PickupsCollectiblesScene.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "samples/phase-03/0314/PickupsCollectiblesScene.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-2"
+    },
+    {
+      "file": "samples/phase-03/0315/SwitchesButtonsScene.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "samples/phase-03/0315/SwitchesButtonsScene.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-2"
+    },
+    {
+      "file": "samples/phase-03/0316/DoorsGatesScene.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "samples/phase-03/0316/DoorsGatesScene.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-2"
+    },
+    {
+      "file": "samples/phase-03/0317/BasicNpcEntityScene.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "samples/phase-03/0317/BasicNpcEntityScene.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-2"
+    },
+    {
+      "file": "samples/phase-03/0318/InteractionPressKeyScene.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "samples/phase-03/0318/InteractionPressKeyScene.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-2"
+    },
+    {
+      "file": "samples/phase-12/1205/main.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "samples/phase-12/1205/main.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-2"
+    },
+    {
+      "file": "samples/phase-12/1208/ToolFormattedTilesParallaxScene.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "samples/phase-12/1208/ToolFormattedTilesParallaxScene.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-2"
+    },
+    {
+      "file": "samples/phase-12/1208/ToolFormattedTilesParallaxScene.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1316_network_sample_a/server/networkSampleADashboardServer.mjs",
+      "file": "samples/phase-13/1303/AsteroidsWorldSystemsScene.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "samples/phase-13/1303/AsteroidsWorldSystemsScene.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-2"
+    },
+    {
+      "file": "samples/phase-13/1316/debug/networkSampleADebug.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "samples/phase-13/1316/debug/networkSampleADebug.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-2"
+    },
+    {
+      "file": "samples/phase-13/1316/game/FakeLoopbackNetworkModel.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "samples/phase-13/1316/game/FakeLoopbackNetworkModel.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "samples/phase-13/1316/game/FakeLoopbackNetworkModel.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-2"
+    },
+    {
+      "file": "samples/phase-13/1316/game/FakeLoopbackNetworkModel.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-2"
+    },
+    {
+      "file": "samples/phase-13/1316/game/NetworkSampleAScene.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "samples/phase-13/1316/game/NetworkSampleAScene.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-2"
+    },
+    {
+      "file": "samples/phase-13/1316/main.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "samples/phase-13/1316/main.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-2"
+    },
+    {
+      "file": "samples/phase-13/1316/server/networkSampleADashboardServer.mjs",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "samples/phase-13/1316/server/networkSampleADashboardServer.mjs",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-2"
+    },
+    {
+      "file": "samples/phase-13/1317/debug/networkSampleBDebug.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "samples/phase-13/1317/debug/networkSampleBDebug.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-2"
+    },
+    {
+      "file": "samples/phase-13/1317/game/FakeHostClientNetworkModel.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "samples/phase-13/1317/game/FakeHostClientNetworkModel.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-2"
+    },
+    {
+      "file": "samples/phase-13/1317/game/NetworkSampleBScene.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "samples/phase-13/1317/game/NetworkSampleBScene.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-2"
+    },
+    {
+      "file": "samples/phase-13/1317/main.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "samples/phase-13/1317/main.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-2"
+    },
+    {
+      "file": "samples/phase-13/1318/debug/networkSampleCDebug.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "samples/phase-13/1318/debug/networkSampleCDebug.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "samples/phase-13/1318/debug/networkSampleCDebug.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-2"
+    },
+    {
+      "file": "samples/phase-13/1318/debug/networkSampleCDebug.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-2"
+    },
+    {
+      "file": "samples/phase-13/1318/game/FakeDivergenceTraceNetworkModel.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "samples/phase-13/1318/game/FakeDivergenceTraceNetworkModel.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-2"
+    },
+    {
+      "file": "samples/phase-13/1318/game/NetworkSampleCScene.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "samples/phase-13/1318/game/NetworkSampleCScene.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-2"
+    },
+    {
+      "file": "samples/phase-13/1318/game/ReconciliationLayerAdapter.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "samples/phase-13/1318/game/ReconciliationLayerAdapter.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "samples/phase-13/1318/game/ReconciliationLayerAdapter.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-2"
+    },
+    {
+      "file": "samples/phase-13/1318/game/ReconciliationLayerAdapter.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-2"
+    },
+    {
+      "file": "samples/phase-13/1318/game/StateTimelineBuffer.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "samples/phase-13/1318/game/StateTimelineBuffer.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "samples/phase-13/1318/game/StateTimelineBuffer.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-2"
+    },
+    {
+      "file": "samples/phase-13/1318/game/StateTimelineBuffer.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-2"
+    },
+    {
+      "file": "samples/phase-13/1318/main.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "samples/phase-13/1318/main.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-2"
+    },
+    {
+      "file": "samples/phase-13/1319/game/RealNetworkLaunchScene.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1316_network_sample_a/server/networkSampleADashboardServer.mjs",
+      "file": "samples/phase-13/1319/server/realNetworkDashboard.mjs",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "samples/phase-13/1319/server/realNetworkDashboard.mjs",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "samples/phase-13/1319/server/realNetworkServer.mjs",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "samples/phase-13/1319/server/realNetworkServer.mjs",
+      "type": "local-helper-definition",
+      "match": "rule:helper-fn-asFiniteNumber"
+    },
+    {
+      "file": "samples/phase-13/1319/server/realNetworkServer.mjs",
       "type": "local-helper-definition",
       "match": "rule:helper-fn-asPositiveInteger"
     },
     {
-      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1317_network_sample_b/debug/networkSampleBDebug.js",
-      "type": "deep-relative-shared-traversal",
-      "match": "rule:deep-relative-src-shared-traversal"
-    },
-    {
-      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1317_network_sample_b/debug/networkSampleBDebug.js",
-      "type": "direct-shared-relative-import",
-      "match": "rule:relative-shared-src-depth-3"
-    },
-    {
-      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1317_network_sample_b/game/FakeHostClientNetworkModel.js",
-      "type": "deep-relative-shared-traversal",
-      "match": "rule:deep-relative-src-shared-traversal"
-    },
-    {
-      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1317_network_sample_b/game/FakeHostClientNetworkModel.js",
-      "type": "direct-shared-relative-import",
-      "match": "rule:relative-shared-src-depth-3"
-    },
-    {
-      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1317_network_sample_b/game/NetworkSampleBScene.js",
-      "type": "deep-relative-shared-traversal",
-      "match": "rule:deep-relative-src-shared-traversal"
-    },
-    {
-      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1317_network_sample_b/game/NetworkSampleBScene.js",
-      "type": "direct-shared-relative-import",
-      "match": "rule:relative-shared-src-depth-3"
-    },
-    {
-      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1317_network_sample_b/main.js",
-      "type": "direct-shared-relative-import",
-      "match": "rule:relative-shared-src-depth-3"
-    },
-    {
-      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1318_network_sample_c/debug/networkSampleCDebug.js",
-      "type": "deep-relative-shared-traversal",
-      "match": "rule:deep-relative-src-shared-traversal"
-    },
-    {
-      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1318_network_sample_c/debug/networkSampleCDebug.js",
-      "type": "direct-shared-relative-import",
-      "match": "rule:relative-shared-src-depth-3"
-    },
-    {
-      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1318_network_sample_c/debug/networkSampleCDebug.js",
-      "type": "inline-helper-clone",
-      "match": "rule:number-is-finite-usage"
-    },
-    {
-      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1318_network_sample_c/game/FakeDivergenceTraceNetworkModel.js",
-      "type": "deep-relative-shared-traversal",
-      "match": "rule:deep-relative-src-shared-traversal"
-    },
-    {
-      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1318_network_sample_c/game/FakeDivergenceTraceNetworkModel.js",
-      "type": "direct-shared-relative-import",
-      "match": "rule:relative-shared-src-depth-3"
-    },
-    {
-      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1318_network_sample_c/game/FakeDivergenceTraceNetworkModel.js",
-      "type": "inline-helper-clone",
-      "match": "rule:number-is-finite-usage"
-    },
-    {
-      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1318_network_sample_c/game/FakeDivergenceTraceNetworkModel.js",
-      "type": "inline-helper-clone",
-      "match": "rule:number-is-finite-usage"
-    },
-    {
-      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1318_network_sample_c/game/FakeDivergenceTraceNetworkModel.js",
-      "type": "inline-helper-clone",
-      "match": "rule:number-is-finite-usage"
-    },
-    {
-      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1318_network_sample_c/game/FakeDivergenceTraceNetworkModel.js",
-      "type": "inline-helper-clone",
-      "match": "rule:number-is-finite-usage"
-    },
-    {
-      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1318_network_sample_c/game/FakeDivergenceTraceNetworkModel.js",
-      "type": "inline-helper-clone",
-      "match": "rule:number-is-finite-usage"
-    },
-    {
-      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1318_network_sample_c/game/FakeDivergenceTraceNetworkModel.js",
-      "type": "inline-helper-clone",
-      "match": "rule:number-is-finite-usage"
-    },
-    {
-      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1318_network_sample_c/game/FakeDivergenceTraceNetworkModel.js",
-      "type": "inline-helper-clone",
-      "match": "rule:number-is-finite-usage"
-    },
-    {
-      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1318_network_sample_c/game/FakeDivergenceTraceNetworkModel.js",
-      "type": "inline-helper-clone",
-      "match": "rule:number-is-finite-usage"
-    },
-    {
-      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1318_network_sample_c/game/FakeDivergenceTraceNetworkModel.js",
-      "type": "inline-helper-clone",
-      "match": "rule:number-is-finite-usage"
-    },
-    {
-      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1318_network_sample_c/game/FakeDivergenceTraceNetworkModel.js",
-      "type": "inline-helper-clone",
-      "match": "rule:number-is-finite-usage"
-    },
-    {
-      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1318_network_sample_c/game/FakeDivergenceTraceNetworkModel.js",
-      "type": "inline-helper-clone",
-      "match": "rule:number-is-finite-usage"
-    },
-    {
-      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1318_network_sample_c/game/FakeDivergenceTraceNetworkModel.js",
-      "type": "inline-helper-clone",
-      "match": "rule:number-is-finite-usage"
-    },
-    {
-      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1318_network_sample_c/game/NetworkSampleCScene.js",
-      "type": "deep-relative-shared-traversal",
-      "match": "rule:deep-relative-src-shared-traversal"
-    },
-    {
-      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1318_network_sample_c/game/NetworkSampleCScene.js",
-      "type": "direct-shared-relative-import",
-      "match": "rule:relative-shared-src-depth-3"
-    },
-    {
-      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1318_network_sample_c/game/NetworkSampleCScene.js",
-      "type": "inline-helper-clone",
-      "match": "rule:number-is-finite-usage"
-    },
-    {
-      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1318_network_sample_c/game/ReconciliationLayerAdapter.js",
-      "type": "deep-relative-shared-traversal",
-      "match": "rule:deep-relative-src-shared-traversal"
-    },
-    {
-      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1318_network_sample_c/game/ReconciliationLayerAdapter.js",
-      "type": "deep-relative-shared-traversal",
-      "match": "rule:deep-relative-src-shared-traversal"
-    },
-    {
-      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1318_network_sample_c/game/ReconciliationLayerAdapter.js",
-      "type": "direct-shared-relative-import",
-      "match": "rule:relative-shared-src-depth-3"
-    },
-    {
-      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1318_network_sample_c/game/ReconciliationLayerAdapter.js",
-      "type": "direct-shared-relative-import",
-      "match": "rule:relative-shared-src-depth-3"
-    },
-    {
-      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1318_network_sample_c/game/ReconciliationLayerAdapter.js",
-      "type": "inline-helper-clone",
-      "match": "rule:number-is-finite-usage"
-    },
-    {
-      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1318_network_sample_c/game/ReconciliationLayerAdapter.js",
-      "type": "inline-helper-clone",
-      "match": "rule:number-is-finite-usage"
-    },
-    {
-      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1318_network_sample_c/game/ReconciliationLayerAdapter.js",
-      "type": "inline-helper-clone",
-      "match": "rule:number-is-finite-usage"
-    },
-    {
-      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1318_network_sample_c/game/ReconciliationLayerAdapter.js",
-      "type": "inline-helper-clone",
-      "match": "rule:number-is-finite-usage"
-    },
-    {
-      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1318_network_sample_c/game/StateTimelineBuffer.js",
-      "type": "deep-relative-shared-traversal",
-      "match": "rule:deep-relative-src-shared-traversal"
-    },
-    {
-      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1318_network_sample_c/game/StateTimelineBuffer.js",
-      "type": "deep-relative-shared-traversal",
-      "match": "rule:deep-relative-src-shared-traversal"
-    },
-    {
-      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1318_network_sample_c/game/StateTimelineBuffer.js",
-      "type": "direct-shared-relative-import",
-      "match": "rule:relative-shared-src-depth-3"
-    },
-    {
-      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1318_network_sample_c/game/StateTimelineBuffer.js",
-      "type": "direct-shared-relative-import",
-      "match": "rule:relative-shared-src-depth-3"
-    },
-    {
-      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1318_network_sample_c/game/StateTimelineBuffer.js",
-      "type": "inline-helper-clone",
-      "match": "rule:number-is-finite-usage"
-    },
-    {
-      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/1318_network_sample_c/main.js",
-      "type": "direct-shared-relative-import",
-      "match": "rule:relative-shared-src-depth-3"
-    },
-    {
-      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/sample1303-asteroids-world-systems/AsteroidsWorldSystemsScene.js",
+      "file": "samples/phase-14/1401/main.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-1"
     },
     {
-      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/sample1303-asteroids-world-systems/AsteroidsWorldSystemsScene.js",
+      "file": "samples/phase-14/1401/main.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-2"
     },
     {
-      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/sample1309-space-invaders-world-systems/SpaceInvadersWorldSystemsScene.js",
+      "file": "samples/phase-14/1402/main.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-1"
     },
     {
-      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/sample1309-space-invaders-world-systems/SpaceInvadersWorldSystemsScene.js",
+      "file": "samples/phase-14/1402/main.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-2"
     },
     {
-      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/sample1313-pacman-lite-world-systems/PacmanLiteWorldSystemsScene.js",
+      "file": "samples/phase-14/1403/main.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-1"
     },
     {
-      "file": "samples/Phase 13 - Network Concepts, Latency & Simulation (1301-1315)/sample1313-pacman-lite-world-systems/PacmanLiteWorldSystemsScene.js",
+      "file": "samples/phase-14/1403/main.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-2"
+    },
+    {
+      "file": "samples/phase-14/1404/main.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "samples/phase-14/1404/main.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-2"
+    },
+    {
+      "file": "samples/phase-14/1405/main.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "samples/phase-14/1405/main.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-2"
+    },
+    {
+      "file": "samples/phase-14/1406/main.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "samples/phase-14/1406/main.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-2"
+    },
+    {
+      "file": "samples/phase-14/1407/main.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "samples/phase-14/1407/main.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-2"
+    },
+    {
+      "file": "samples/phase-14/1408/main.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "samples/phase-14/1408/main.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-2"
+    },
+    {
+      "file": "samples/phase-14/1409/main.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "samples/phase-14/1409/main.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-2"
+    },
+    {
+      "file": "samples/phase-14/1410/main.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "samples/phase-14/1410/main.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-2"
+    },
+    {
+      "file": "samples/phase-14/1411/main.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "samples/phase-14/1411/main.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-2"
+    },
+    {
+      "file": "samples/phase-14/1412/main.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "samples/phase-14/1412/main.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-2"
+    },
+    {
+      "file": "samples/phase-14/1413/main.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "samples/phase-14/1413/main.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-2"
+    },
+    {
+      "file": "samples/phase-14/1414/main.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "samples/phase-14/1414/main.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-2"
+    },
+    {
+      "file": "samples/phase-14/1415/main.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "samples/phase-14/1415/main.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-2"
+    },
+    {
+      "file": "samples/phase-14/1416/main.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "samples/phase-14/1416/main.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-2"
+    },
+    {
+      "file": "samples/phase-14/1417/main.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "samples/phase-14/1417/main.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-2"
+    },
+    {
+      "file": "samples/phase-14/1418/main.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "samples/phase-14/1418/main.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-2"
+    },
+    {
+      "file": "samples/phase-15/1501/main.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "samples/phase-15/1501/main.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-2"
+    },
+    {
+      "file": "samples/phase-15/1502/main.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "samples/phase-15/1502/main.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-2"
+    },
+    {
+      "file": "samples/phase-15/1503/main.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "samples/phase-15/1503/main.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-2"
+    },
+    {
+      "file": "samples/phase-15/1504/main.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "samples/phase-15/1504/main.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-2"
+    },
+    {
+      "file": "samples/phase-15/1505/main.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "samples/phase-15/1505/main.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-2"
+    },
+    {
+      "file": "samples/phase-15/1506/main.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "samples/phase-15/1506/main.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-2"
+    },
+    {
+      "file": "samples/phase-16/1601/CubeExplorer3DScene.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "samples/phase-16/1602/MazeRunner3DScene.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "samples/phase-16/1603/FirstPersonWalkthroughScene.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "samples/phase-16/1604/Platformer3DBasicsScene.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "samples/phase-16/1605/DrivingSandbox3DScene.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "samples/phase-16/1606/PhysicsPlayground3DScene.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "samples/phase-16/1607/SpaceShooter3DScene.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "samples/phase-16/1608/DungeonCrawler3DScene.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "samples/phase-16/1609/LightingDemo3DScene.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "samples/phase-16/1610/Hybrid2D3DWorldScene.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "samples/phase-16/1611/MultiplayerSyncDemo3DScene.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "samples/phase-16/1612/StressTest3DScene.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "samples/phase-16/1613/InputLab3DScene.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "samples/phase-16/1614/CameraModesLab3DScene.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "samples/phase-16/1615/EntityComposition3DScene.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "samples/phase-16/1616/WorldStreaming3DScene.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "samples/phase-16/1617/LargeWorldStreaming3DScene.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "samples/phase-16/1618/LightingMaterialsLab3DScene.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "samples/phase-16/1619/DebugHud3DScene.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "samples/phase-16/1620/MiniGame3DReferenceScene.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "samples/phase-16/1621/AINavigation3DScene.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "samples/phase-17/1712/GameplayMetricsTelemetryScene.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "samples/phase-17/shared/overlayGameplayRuntime.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "samples/phase-17/shared/overlayGameplayRuntime.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "samples/phase-17/shared/overlayGameplayRuntime.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "samples/phase-17/shared/overlayGameplayRuntime.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "samples/phase-17/shared/overlayGameplayRuntime.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "samples/phase-17/shared/overlayGameplayRuntime.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "samples/phase-17/shared/overlayGameplayRuntime.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "samples/phase-17/shared/overlayGameplayRuntime.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "samples/phase-17/shared/overlayGameplayRuntime.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "samples/phase-17/shared/overlayGameplayRuntime.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "samples/phase-17/shared/overlayGameplayRuntime.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "samples/phase-17/shared/overlayGameplayRuntime.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "samples/phase-17/shared/overlayGameplayRuntime.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "samples/phase-17/shared/overlayGameplayRuntime.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "samples/phase-17/shared/overlayGameplayRuntime.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "samples/phase-17/shared/overlayGameplayRuntime.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "samples/phase-17/shared/overlayGameplayRuntime.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "samples/phase-17/shared/overlayGameplayRuntime.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "samples/phase-17/shared/overlayGameplayRuntime.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "samples/phase-17/shared/overlayGameplayRuntime.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "samples/phase-17/shared/overlayGameplayRuntime.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "samples/phase-17/shared/overlayGameplayRuntime.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "samples/phase-17/shared/overlayGameplayRuntime.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "samples/phase-17/shared/overlayGameplayRuntime.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "samples/phase-17/shared/overlayGameplayRuntime.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "samples/phase-17/shared/overlayGameplayRuntime.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "samples/phase-17/shared/overlayGameplayRuntime.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "samples/phase-17/shared/overlayGameplayRuntime.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "samples/phase-17/shared/overlayGameplayRuntime.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "samples/phase-17/shared/overlayGameplayRuntime.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "samples/phase-17/shared/overlayGameplayRuntime.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "samples/phase-17/shared/overlayGameplayRuntime.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "samples/phase-17/shared/overlayGameplayRuntime.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "samples/phase-17/shared/overlayGameplayRuntime.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "samples/phase-17/shared/overlayGameplayRuntime.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "samples/phase-17/shared/overlayRuntimeExtensionNormalization.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "samples/phase-17/shared/overlayRuntimeExtensionNormalization.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "samples/phase-17/shared/overlayRuntimeExtensionNormalization.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "samples/phase-17/shared/overlayRuntimeExtensionNormalization.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "samples/phase-19/shared/overlay/createPhase19OverlayPluginRegistry.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "samples/phase-19/shared/overlay/createPhase19OverlayPluginRegistry.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "samples/phase-19/shared/overlay/createPhase19OverlayPluginRegistry.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "samples/phase-19/shared/overlay/createPhase19OverlayPluginRegistry.js",
+      "type": "local-helper-definition",
+      "match": "rule:helper-fn-isPlainObject"
     },
     {
       "file": "samples/shared/worldGameStateSystem.js",
@@ -612,6 +1237,21 @@
       "match": "rule:number-is-finite-usage"
     },
     {
+      "file": "src/advanced/state/transitions.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "src/advanced/state/transitions.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "src/advanced/state/transitions.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
       "file": "src/advanced/state/utils.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-1"
@@ -627,6 +1267,61 @@
       "match": "rule:number-is-finite-usage"
     },
     {
+      "file": "src/engine/camera/Camera3D.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "src/engine/camera/Camera3D.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "src/engine/camera/Camera3D.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "src/engine/camera/Camera3D.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "src/engine/camera/Camera3D.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "src/engine/camera/Camera3D.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "src/engine/camera/Camera3D.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "src/engine/camera/Camera3D.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "src/engine/camera/Camera3D.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "src/engine/debug/DebugOverlayLayout.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "src/engine/debug/inspectors/bootstrap/createInspectorSurfaceIntegration.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
       "file": "src/engine/debug/inspectors/bootstrap/createInspectorSurfaceIntegration.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
@@ -639,22 +1334,17 @@
     {
       "file": "src/engine/debug/inspectors/commands/registerInspectorCommands.js",
       "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "src/engine/debug/inspectors/commands/registerInspectorCommands.js",
+      "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-2"
     },
     {
       "file": "src/engine/debug/inspectors/host/debugInspectorHost.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-1"
-    },
-    {
-      "file": "src/engine/debug/inspectors/host/debugInspectorHost.js",
-      "type": "direct-shared-relative-import",
-      "match": "rule:relative-shared-depth-2"
-    },
-    {
-      "file": "src/engine/debug/inspectors/host/debugInspectorHost.js",
-      "type": "direct-shared-relative-import",
-      "match": "rule:relative-shared-depth-4"
     },
     {
       "file": "src/engine/debug/inspectors/host/debugInspectorHost.js",
@@ -677,29 +1367,44 @@
       "match": "rule:relative-shared-depth-1"
     },
     {
-      "file": "src/engine/debug/inspectors/registry/debugInspectorRegistry.js",
+      "file": "src/engine/debug/inspectors/shared/inspectorUtils.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "src/engine/debug/inspectors/shared/inspectorUtils.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "src/engine/debug/inspectors/shared/inspectorUtils.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-2"
     },
     {
-      "file": "src/engine/debug/inspectors/registry/debugInspectorRegistry.js",
+      "file": "src/engine/debug/inspectors/shared/inspectorUtils.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-2"
+    },
+    {
+      "file": "src/engine/debug/inspectors/shared/inspectorUtils.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-4"
     },
     {
-      "file": "src/engine/debug/inspectors/viewModels/entityInspectorViewModel.js",
+      "file": "src/engine/debug/inspectors/shared/inspectorUtils.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-4"
+    },
+    {
+      "file": "src/engine/debug/inspectors/viewModels/componentInspectorViewModel.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-1"
     },
     {
       "file": "src/engine/debug/inspectors/viewModels/entityInspectorViewModel.js",
       "type": "direct-shared-relative-import",
-      "match": "rule:relative-shared-depth-2"
-    },
-    {
-      "file": "src/engine/debug/inspectors/viewModels/entityInspectorViewModel.js",
-      "type": "direct-shared-relative-import",
-      "match": "rule:relative-shared-depth-4"
+      "match": "rule:relative-shared-depth-1"
     },
     {
       "file": "src/engine/debug/inspectors/viewModels/entityInspectorViewModel.js",
@@ -713,16 +1418,6 @@
     },
     {
       "file": "src/engine/debug/inspectors/viewModels/eventStreamInspectorViewModel.js",
-      "type": "direct-shared-relative-import",
-      "match": "rule:relative-shared-depth-2"
-    },
-    {
-      "file": "src/engine/debug/inspectors/viewModels/eventStreamInspectorViewModel.js",
-      "type": "direct-shared-relative-import",
-      "match": "rule:relative-shared-depth-4"
-    },
-    {
-      "file": "src/engine/debug/inspectors/viewModels/eventStreamInspectorViewModel.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
@@ -744,32 +1439,12 @@
     {
       "file": "src/engine/debug/inspectors/viewModels/stateDiffInspectorViewModel.js",
       "type": "direct-shared-relative-import",
-      "match": "rule:relative-shared-depth-2"
-    },
-    {
-      "file": "src/engine/debug/inspectors/viewModels/stateDiffInspectorViewModel.js",
-      "type": "direct-shared-relative-import",
-      "match": "rule:relative-shared-depth-4"
-    },
-    {
-      "file": "src/engine/debug/inspectors/viewModels/stateDiffInspectorViewModel.js",
-      "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-4"
     },
     {
       "file": "src/engine/debug/inspectors/viewModels/timelineInspectorViewModel.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-1"
-    },
-    {
-      "file": "src/engine/debug/inspectors/viewModels/timelineInspectorViewModel.js",
-      "type": "direct-shared-relative-import",
-      "match": "rule:relative-shared-depth-2"
-    },
-    {
-      "file": "src/engine/debug/inspectors/viewModels/timelineInspectorViewModel.js",
-      "type": "direct-shared-relative-import",
-      "match": "rule:relative-shared-depth-4"
     },
     {
       "file": "src/engine/debug/inspectors/viewModels/timelineInspectorViewModel.js",
@@ -857,12 +1532,22 @@
       "match": "rule:relative-shared-depth-1"
     },
     {
+      "file": "src/engine/debug/network/diagnostics/networkPromotionRecommendation.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
       "file": "src/engine/debug/network/diagnostics/replicationDiagnosticsModel.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-1"
     },
     {
       "file": "src/engine/debug/network/panels/networkDebugPanelRegistry.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "src/engine/debug/network/panels/networkObservabilityPanels.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-1"
     },
@@ -917,7 +1602,32 @@
       "match": "rule:relative-shared-depth-1"
     },
     {
+      "file": "src/engine/debug/standard/threeD/panels/panel3dCamera.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "src/engine/debug/standard/threeD/panels/panel3dCamera.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "src/engine/debug/standard/threeD/panels/panel3dCamera.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
       "file": "src/engine/debug/standard/threeD/panels/panel3dCollision.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "src/engine/debug/standard/threeD/panels/panel3dCollisionOverlays.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "src/engine/debug/standard/threeD/panels/panel3dRenderPipelineStages.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-1"
     },
@@ -932,12 +1642,42 @@
       "match": "rule:relative-shared-depth-1"
     },
     {
+      "file": "src/engine/debug/standard/threeD/panels/panel3dSceneGraphInspector.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
       "file": "src/engine/debug/standard/threeD/panels/panel3dTransform.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-1"
     },
     {
+      "file": "src/engine/debug/standard/threeD/panels/panel3dTransformInspector.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "src/engine/debug/standard/threeD/panels/panel3dTransformInspector.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "src/engine/debug/standard/threeD/panels/panel3dTransformInspector.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "src/engine/debug/standard/threeD/panels/panel3dTransformInspector.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
       "file": "src/engine/debug/standard/threeD/providers/cameraSummaryProvider.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "src/engine/debug/standard/threeD/providers/collisionOverlaysProvider.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-1"
     },
@@ -947,7 +1687,17 @@
       "match": "rule:relative-shared-depth-1"
     },
     {
+      "file": "src/engine/debug/standard/threeD/providers/renderPipelineStagesProvider.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
       "file": "src/engine/debug/standard/threeD/providers/renderStageSummaryProvider.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "src/engine/debug/standard/threeD/providers/sceneGraphInspectorProvider.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-1"
     },
@@ -955,6 +1705,16 @@
       "file": "src/engine/debug/standard/threeD/providers/sceneGraphSummaryProvider.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "src/engine/debug/standard/threeD/providers/transformInspectorProvider.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "src/engine/debug/standard/threeD/providers/transformInspectorProvider.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
     },
     {
       "file": "src/engine/debug/standard/threeD/providers/transformSummaryProvider.js",
@@ -972,7 +1732,102 @@
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/shared/math/numberNormalization.js",
+      "file": "src/engine/network/replication/ReplicationMessageContract.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "src/engine/network/replication/ReplicationMessageContract.js",
+      "type": "local-helper-definition",
+      "match": "rule:helper-fn-isPlainObject"
+    },
+    {
+      "file": "src/engine/network/server/AuthoritativeInputIngestionContract.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "src/engine/network/server/AuthoritativeInputIngestionContract.js",
+      "type": "local-helper-definition",
+      "match": "rule:helper-fn-isPlainObject"
+    },
+    {
+      "file": "src/engine/network/server/AuthoritativeServerRuntime.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "src/engine/network/server/AuthoritativeServerRuntime.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "src/engine/physics/collision3d.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "src/engine/physics/integration3d.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "src/engine/replay/ReplayModel.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "src/engine/replay/ReplayModel.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-2"
+    },
+    {
+      "file": "src/engine/replay/ReplayModel.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "src/engine/replay/ReplaySystem.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "src/engine/replay/ReplaySystem.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-2"
+    },
+    {
+      "file": "src/engine/replay/ReplayTimeline.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "src/engine/replay/ReplayTimeline.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "src/engine/replay/ReplayTimeline.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-2"
+    },
+    {
+      "file": "src/engine/replay/ReplayTimeline.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-2"
+    },
+    {
+      "file": "src/engine/runtime/fullscreenBezel.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "src/engine/runtime/fullscreenBezel.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "src/engine/runtime/fullscreenBezel.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
@@ -993,6 +1848,36 @@
     },
     {
       "file": "src/shared/math/numberNormalization.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "src/shared/math/numberNormalization.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "src/shared/math/numberNormalization.js",
+      "type": "local-helper-definition",
+      "match": "rule:helper-fn-asFiniteNumber"
+    },
+    {
+      "file": "src/shared/math/numberNormalization.js",
+      "type": "local-helper-definition",
+      "match": "rule:helper-fn-asPositiveInteger"
+    },
+    {
+      "file": "src/shared/number/numberUtils.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "src/shared/state/normalization.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "src/shared/state/normalization.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
@@ -1007,32 +1892,77 @@
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "src/shared/utils/numberUtils.js",
-      "type": "inline-helper-clone",
-      "match": "rule:number-is-finite-usage"
-    },
-    {
-      "file": "src/shared/utils/numberUtils.js",
-      "type": "inline-helper-clone",
-      "match": "rule:number-is-finite-usage"
-    },
-    {
-      "file": "src/shared/utils/numberUtils.js",
-      "type": "local-helper-definition",
-      "match": "rule:helper-fn-asFiniteNumber"
-    },
-    {
-      "file": "src/shared/utils/numberUtils.js",
-      "type": "local-helper-definition",
-      "match": "rule:helper-fn-asPositiveInteger"
-    },
-    {
       "file": "src/shared/utils/objectUtils.js",
       "type": "local-helper-definition",
       "match": "rule:helper-fn-isPlainObject"
     },
     {
+      "file": "tools/3D Asset Viewer/main.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "tools/3D Asset Viewer/main.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "tools/3D Asset Viewer/main.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/3D Camera Path Editor/main.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "tools/3D Camera Path Editor/main.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "tools/3D Camera Path Editor/main.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/3D Map Editor/main.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "tools/3D Map Editor/main.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "tools/3D Map Editor/main.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
       "file": "tools/Asset Browser/main.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "tools/Asset Browser/main.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "tools/Asset Pipeline Tool/main.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "tools/Asset Pipeline Tool/main.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "tools/Asset Pipeline Tool/main.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-1"
     },
@@ -1227,6 +2157,31 @@
       "match": "rule:relative-shared-depth-1"
     },
     {
+      "file": "tools/Palette Browser/main.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "tools/Parallax Scene Studio/main.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "tools/Parallax Scene Studio/main.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "tools/Parallax Scene Studio/main.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "tools/Parallax Scene Studio/main.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
       "file": "tools/Parallax Scene Studio/main.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-1"
@@ -1275,6 +2230,46 @@
       "file": "tools/Parallax Scene Studio/main.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/Performance Profiler/main.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "tools/Performance Profiler/main.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "tools/Performance Profiler/main.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "tools/Physics Sandbox/main.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "tools/Physics Sandbox/main.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "tools/Replay Visualizer/main.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "tools/Replay Visualizer/main.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "tools/Replay Visualizer/main.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
     },
     {
       "file": "tools/shared/assetMarketplace.js",
@@ -1302,7 +2297,17 @@
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "tools/shared/devConsoleDebugOverlay.js",
+      "file": "tools/shared/debugVisualizationLayer.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/shared/debugVisualizationLayer.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/shared/debugVisualizationLayer.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
@@ -1343,6 +2348,31 @@
     },
     {
       "file": "tools/shared/devConsoleDebugOverlay.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/shared/devConsoleDebugOverlay.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/shared/livePreviewSyncChannel.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/shared/livePreviewSyncChannel.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/shared/livePreviewSyncChannel.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/shared/livePreviewSyncChannel.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
@@ -1365,6 +2395,11 @@
       "file": "tools/shared/performanceProfiler.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/shared/pipeline/runtimeAssetLookup.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-src-depth-3"
     },
     {
       "file": "tools/shared/pluginArchitecture.js",
@@ -1642,6 +2677,11 @@
       "match": "rule:relative-shared-src-depth-3"
     },
     {
+      "file": "tools/Sprite Editor/main.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
       "file": "tools/Sprite Editor/modules/projectModel.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
@@ -1679,7 +2719,7 @@
     {
       "file": "tools/Sprite Editor/modules/spriteEditorApp.js",
       "type": "direct-shared-relative-import",
-      "match": "rule:relative-shared-depth-2"
+      "match": "rule:relative-shared-depth-1"
     },
     {
       "file": "tools/Sprite Editor/modules/spriteEditorApp.js",
@@ -1708,8 +2748,13 @@
     },
     {
       "file": "tools/Sprite Editor/modules/spriteEditorApp.js",
-      "type": "inline-helper-clone",
-      "match": "rule:number-is-finite-usage"
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-2"
+    },
+    {
+      "file": "tools/Sprite Editor/modules/spriteEditorApp.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-2"
     },
     {
       "file": "tools/Sprite Editor/modules/spriteEditorApp.js",
@@ -1722,47 +2767,42 @@
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "tools/SpriteEditor_old_keep/modules/appCommands.js",
+      "file": "tools/Sprite Editor/modules/spriteEditorApp.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/State Inspector/main.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-1"
     },
     {
-      "file": "tools/SpriteEditor_old_keep/modules/appCommands.js",
-      "type": "inline-helper-clone",
-      "match": "rule:number-is-finite-usage"
-    },
-    {
-      "file": "tools/SpriteEditor_old_keep/modules/appIO.js",
-      "type": "inline-helper-clone",
-      "match": "rule:number-is-finite-usage"
-    },
-    {
-      "file": "tools/SpriteEditor_old_keep/modules/appPalette.js",
+      "file": "tools/State Inspector/main.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-1"
     },
     {
-      "file": "tools/SpriteEditor_old_keep/modules/appPalette.js",
-      "type": "inline-helper-clone",
-      "match": "rule:number-is-finite-usage"
-    },
-    {
-      "file": "tools/SpriteEditor_old_keep/modules/appPalette.js",
-      "type": "inline-helper-clone",
-      "match": "rule:number-is-finite-usage"
-    },
-    {
-      "file": "tools/SpriteEditor_old_keep/modules/integration/integrationContracts.js",
-      "type": "local-helper-definition",
-      "match": "rule:helper-fn-isPlainObject"
-    },
-    {
-      "file": "tools/Tilemap Studio/main.js",
+      "file": "tools/State Inspector/main.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-1"
     },
     {
-      "file": "tools/Tilemap Studio/main.js",
+      "file": "tools/State Inspector/main.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "tools/Tile Model Converter/main.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "tools/Tile Model Converter/main.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "tools/Tile Model Converter/main.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-1"
     },
@@ -1788,8 +2828,33 @@
     },
     {
       "file": "tools/Tilemap Studio/main.js",
-      "type": "inline-helper-clone",
-      "match": "rule:number-is-finite-usage"
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "tools/Tilemap Studio/main.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "tools/Tilemap Studio/main.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "tools/Tilemap Studio/main.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "tools/Tilemap Studio/main.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "tools/Tilemap Studio/main.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
     },
     {
       "file": "tools/Tilemap Studio/main.js",
@@ -1805,6 +2870,21 @@
       "file": "tools/Tilemap Studio/main.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/Tilemap Studio/main.js",
+      "type": "inline-helper-clone",
+      "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/Vector Asset Studio/main.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
+    },
+    {
+      "file": "tools/Vector Asset Studio/main.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
     },
     {
       "file": "tools/Vector Asset Studio/main.js",
@@ -1985,6 +3065,11 @@
       "file": "tools/Vector Map Editor/editor/VectorMapTransformController.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
+    },
+    {
+      "file": "tools/Vector Map Editor/main.js",
+      "type": "direct-shared-relative-import",
+      "match": "rule:relative-shared-depth-1"
     }
   ]
 }

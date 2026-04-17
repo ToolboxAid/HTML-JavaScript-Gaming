@@ -1,3 +1,3 @@
-Fix sample phase expectation mismatch (phase-16–19)
+Fix shared extraction guard baseline drift
 
-BUILD_PR_LEVEL_19_7_FIX_SAMPLE_PHASE_EXPECTATION
+BUILD_PR_LEVEL_19_8_FIX_SHARED_EXTRACTION_GUARD_BASELINE
