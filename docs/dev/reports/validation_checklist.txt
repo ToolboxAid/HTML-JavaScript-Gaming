@@ -1,3 +1,4 @@
-[ ] contracts documented
-[ ] no breaking changes
+[ ] naming consistent
+[ ] no duplicate helpers
+[ ] imports clean
 [ ] tests pass

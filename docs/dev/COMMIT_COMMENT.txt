@@ -1,5 +1,6 @@
-Level 18.3 Contract Stabilization (Overlay Slice)
+Level 18.4 Codebase Consistency (Overlay Slice)
 
-- Stabilized overlay APIs
-- Locked selectors/providers
-- Removed unstable surfaces
+- Normalized naming
+- Removed duplicate helpers
+- Fixed import/export anti-patterns
+- Enforced consistency rules

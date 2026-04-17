@@ -4,6 +4,7 @@ David Quesenberry
 04/16/2026
 overlayExpansionContracts.js
 */
+import { normalizeOverlayRuntimeExtensions } from '/samples/phase-17/shared/overlayRuntimeExtensionNormalization.js';
 
 const DEFAULT_CHANNEL = 'debug';
 
@@ -45,61 +46,6 @@ function resolveInitialOverlayId(overlays, initialOverlayId) {
   return exists ? requestedId : overlays[0].id;
 }
 
-function normalizeRuntimeExtensionEntry(entry) {
-  if (!entry || typeof entry !== 'object') {
-    return null;
-  }
-
-  const overlayId = String(entry.overlayId || '').trim();
-  const onStep = typeof entry.onStep === 'function' ? entry.onStep : null;
-  const onRender = typeof entry.onRender === 'function' ? entry.onRender : null;
-  const resolvePanelSize = typeof entry.resolvePanelSize === 'function' ? entry.resolvePanelSize : null;
-  const resolveContextBehavior = typeof entry.resolveContextBehavior === 'function'
-    ? entry.resolveContextBehavior
-    : null;
-  if (!onStep && !onRender) {
-    return null;
-  }
-
-  const layerOrderRaw = Number(entry.layerOrder);
-  const layerOrder = Number.isFinite(layerOrderRaw) ? layerOrderRaw : 0;
-  const visualPriorityRaw = Number(entry.visualPriority);
-  const visualPriority = Number.isFinite(visualPriorityRaw) ? visualPriorityRaw : layerOrder;
-  const panelWidthRaw = Number(entry.panelWidth);
-  const panelHeightRaw = Number(entry.panelHeight);
-  const panelWidth = Number.isFinite(panelWidthRaw) && panelWidthRaw > 0 ? panelWidthRaw : 260;
-  const panelHeight = Number.isFinite(panelHeightRaw) && panelHeightRaw > 0 ? panelHeightRaw : 96;
-
-  return Object.freeze({
-    overlayId,
-    onStep,
-    onRender,
-    resolvePanelSize,
-    resolveContextBehavior,
-    compose: entry.compose === true,
-    layerOrder,
-    visualPriority,
-    panelWidth,
-    panelHeight,
-  });
-}
-
-function normalizeRuntimeExtensions(runtimeExtensions) {
-  if (!Array.isArray(runtimeExtensions) || runtimeExtensions.length === 0) {
-    return Object.freeze([]);
-  }
-
-  const normalized = [];
-  for (let i = 0; i < runtimeExtensions.length; i += 1) {
-    const candidate = normalizeRuntimeExtensionEntry(runtimeExtensions[i]);
-    if (!candidate) {
-      continue;
-    }
-    normalized.push(candidate);
-  }
-  return Object.freeze(normalized);
-}
-
 export function defineOverlayExtensionContract({
   id = '',
   overlays = [],
@@ -124,7 +70,7 @@ export function defineOverlayExtensionContract({
   const normalizedPersistenceKey = String(persistenceKey || '').trim();
   const normalizedChannel = String(channel || DEFAULT_CHANNEL).trim() || DEFAULT_CHANNEL;
   const normalizedInitialOverlayId = resolveInitialOverlayId(normalizedOverlays, initialOverlayId);
-  const normalizedRuntimeExtensions = normalizeRuntimeExtensions(runtimeExtensions);
+  const normalizedRuntimeExtensions = normalizeOverlayRuntimeExtensions(runtimeExtensions);
 
   return Object.freeze({
     id: normalizedId,

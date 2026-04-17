@@ -75,6 +75,14 @@ function assertOverlayRuntimeSliceUsesSharedFiniteNumberHelper() {
     new URL('../../samples/phase-17/shared/overlayGameplayRuntime.js', import.meta.url),
     'utf8'
   );
+  const contractsSource = readFileSync(
+    new URL('../../samples/phase-17/shared/overlayExpansionContracts.js', import.meta.url),
+    'utf8'
+  );
+  const normalizationSource = readFileSync(
+    new URL('../../samples/phase-17/shared/overlayRuntimeExtensionNormalization.js', import.meta.url),
+    'utf8'
+  );
   const importSpecifiers = Array.from(
     runtimeSource.matchAll(/^\s*import\s+[\s\S]*?\sfrom\s+['"]([^'"]+)['"]\s*;?\s*$/gm),
     (match) => String(match[1] || '').trim()
@@ -98,6 +106,36 @@ function assertOverlayRuntimeSliceUsesSharedFiniteNumberHelper() {
     runtimeSource.includes('function cloneJsonCompatibleValue('),
     false,
     'Overlay runtime slice should not keep a local duplicate JSON-clone helper.'
+  );
+  assert.equal(
+    runtimeSource.includes("import { normalizeOverlayRuntimeExtensions } from '/samples/phase-17/shared/overlayRuntimeExtensionNormalization.js';"),
+    true,
+    'Overlay runtime slice should import shared runtime-extension normalization helper.'
+  );
+  assert.equal(
+    contractsSource.includes("import { normalizeOverlayRuntimeExtensions } from '/samples/phase-17/shared/overlayRuntimeExtensionNormalization.js';"),
+    true,
+    'Overlay runtime contracts should import shared runtime-extension normalization helper.'
+  );
+  assert.equal(
+    runtimeSource.includes('function normalizeRuntimeExtensionEntry('),
+    false,
+    'Overlay runtime slice should not duplicate runtime-extension entry normalization locally.'
+  );
+  assert.equal(
+    contractsSource.includes('function normalizeRuntimeExtensionEntry('),
+    false,
+    'Overlay runtime contracts should not duplicate runtime-extension entry normalization locally.'
+  );
+  assert.equal(
+    normalizationSource.includes('export function normalizeOverlayRuntimeExtensionEntry('),
+    true,
+    'Shared runtime-extension normalization helper should expose entry normalization.'
+  );
+  assert.equal(
+    normalizationSource.includes('export function normalizeOverlayRuntimeExtensions('),
+    true,
+    'Shared runtime-extension normalization helper should expose list normalization.'
   );
   assert.equal(
     runtimeSource.includes('export function synchronizeOverlayGameplayRuntimeState('),

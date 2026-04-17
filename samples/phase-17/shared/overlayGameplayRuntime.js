@@ -9,6 +9,7 @@ import {
   isOverlayRuntimeToggleModifierActive,
   LEVEL17_OVERLAY_CYCLE_KEY,
 } from '/samples/phase-17/shared/overlayCycleInput.js';
+import { normalizeOverlayRuntimeExtensions } from '/samples/phase-17/shared/overlayRuntimeExtensionNormalization.js';
 import { cloneJsonData, safeJsonParse, safeJsonStringify } from '/src/shared/io/index.js';
 import { asFiniteNumber } from '/src/shared/number/index.js';
 
@@ -63,62 +64,6 @@ const OVERLAY_RUNTIME_DEFAULT_PRESET_DEFINITIONS = Object.freeze([
     }),
   }),
 ]);
-
-function normalizeRuntimeExtensionEntry(entry) {
-  if (!entry || typeof entry !== 'object') {
-    return null;
-  }
-
-  const overlayId = String(entry.overlayId || '').trim();
-  const onStep = typeof entry.onStep === 'function' ? entry.onStep : null;
-  const onRender = typeof entry.onRender === 'function' ? entry.onRender : null;
-  if (!onStep && !onRender) {
-    return null;
-  }
-
-  const layerOrderRaw = Number(entry.layerOrder);
-  const layerOrder = Number.isFinite(layerOrderRaw) ? layerOrderRaw : 0;
-  const visualPriorityRaw = Number(entry.visualPriority);
-  const visualPriority = Number.isFinite(visualPriorityRaw) ? visualPriorityRaw : layerOrder;
-  const compose = entry.compose === true;
-  const panelWidthRaw = Number(entry.panelWidth);
-  const panelHeightRaw = Number(entry.panelHeight);
-  const panelWidth = Number.isFinite(panelWidthRaw) && panelWidthRaw > 0 ? panelWidthRaw : 260;
-  const panelHeight = Number.isFinite(panelHeightRaw) && panelHeightRaw > 0 ? panelHeightRaw : 96;
-  const resolvePanelSize = typeof entry.resolvePanelSize === 'function' ? entry.resolvePanelSize : null;
-  const resolveContextBehavior = typeof entry.resolveContextBehavior === 'function'
-    ? entry.resolveContextBehavior
-    : null;
-
-  return Object.freeze({
-    overlayId,
-    onStep,
-    onRender,
-    resolvePanelSize,
-    resolveContextBehavior,
-    compose,
-    layerOrder,
-    visualPriority,
-    panelWidth,
-    panelHeight,
-  });
-}
-
-function normalizeRuntimeExtensions(runtimeExtensions) {
-  if (!Array.isArray(runtimeExtensions) || runtimeExtensions.length === 0) {
-    return Object.freeze([]);
-  }
-
-  const normalized = [];
-  for (let i = 0; i < runtimeExtensions.length; i += 1) {
-    const candidate = normalizeRuntimeExtensionEntry(runtimeExtensions[i]);
-    if (!candidate) {
-      continue;
-    }
-    normalized.push(candidate);
-  }
-  return Object.freeze(normalized);
-}
 
 function shouldRunRuntimeExtension(extension, activeOverlayId) {
   if (!extension) {
@@ -1697,7 +1642,7 @@ export function createOverlayGameplayRuntime({
   cycleKey = LEVEL17_OVERLAY_CYCLE_KEY,
 } = {}) {
   const runtime = {
-    runtimeExtensions: normalizeRuntimeExtensions(runtimeExtensions),
+    runtimeExtensions: normalizeOverlayRuntimeExtensions(runtimeExtensions),
     interactionVisible: true,
     interactionIndex: 0,
     interactionCycleLatch: false,
@@ -1734,7 +1679,7 @@ export function setOverlayGameplayRuntimeExtensions(runtime, runtimeExtensions) 
   if (!runtime) {
     return false;
   }
-  runtime.runtimeExtensions = normalizeRuntimeExtensions(runtimeExtensions);
+  runtime.runtimeExtensions = normalizeOverlayRuntimeExtensions(runtimeExtensions);
   normalizeInteractionIndex(runtime);
   return true;
 }
