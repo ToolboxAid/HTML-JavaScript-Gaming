@@ -2,8 +2,8 @@ MODEL: GPT-5.4
 REASONING: medium
 
 COMMAND:
-Implement overlay user sharing system:
-- Create shareable profile packages
-- Import with validation and compatibility checks
-- Integrate with preset and persistence systems
+Perform full validation sweep:
+- Validate all Level 22 features together
+- Check cross-feature compatibility
+- Ensure no regressions
 - Update roadmap status only

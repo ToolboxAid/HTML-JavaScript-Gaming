@@ -1,4 +1,8 @@
-[ ] Share package export works
-[ ] Import works across environments
-[ ] Validation prevents incompatible data
+[ ] Interaction system validated
+[ ] Contextual input validated
+[ ] Adaptive UI validated
+[ ] Persistence validated
+[ ] Presets validated
+[ ] Sharing validated
+[ ] No regressions detected
 [ ] Roadmap updated
