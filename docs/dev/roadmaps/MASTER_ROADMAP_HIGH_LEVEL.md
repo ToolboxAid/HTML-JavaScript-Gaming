@@ -787,15 +787,15 @@
 - only stabilization, validation, and extensibility
 
 ### Track A — System Integration Validation
-- [.] validate all major systems working together:
+- [x] validate all major systems working together:
   - rendering
   - input
   - physics
   - state/replay
   - networking
   - debug platform
-- [.] verify no hidden coupling
-- [.] verify predictable system interaction
+- [x] verify no hidden coupling
+- [x] verify predictable system interaction
 
 ### Track B — Runtime Lifecycle Validation
 - [ ] validate boot ? run ? shutdown lifecycle
@@ -804,10 +804,10 @@
 - [ ] validate long-running stability
 
 ### Track C — Performance & Scaling
-- [.] validate large scene performance
-- [.] validate stress scenarios (1k+ entities)
-- [.] validate memory stability
-- [.] identify bottlenecks
+- [x] validate large scene performance
+- [x] validate stress scenarios (1k+ entities)
+- [x] validate memory stability
+- [x] identify bottlenecks
 
 ### Track D — Debug & Observability Maturity
 - [ ] ensure all systems expose debug data
@@ -840,4 +840,5 @@
 - [x] zero regression requirement
 - [x] contract freeze readiness
 - [x] readiness for long-term maintenance mode
+
 
