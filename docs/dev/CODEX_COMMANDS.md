@@ -1,58 +1,25 @@
-MODEL: GPT-5.4-codex
+MODEL: GPT-5.4
 REASONING: high
 
 COMMAND:
-1. Open the roadmap at:
-   docs/dev/roadmaps/MASTER_ROADMAP_HIGH_LEVEL.md
+Create BUILD_PR_LEVEL_19_16_TOOLCHAIN_ENGINE_INTEGRATION_VALIDATION as a narrow, execution-backed PR bundle.
 
-2. Execute the smallest real PR needed to complete Level 19 Track D:
-   - ensure all systems expose debug data
+Constraints:
+- You, Codex, must perform all code, test, and script work required for this PR.
+- Do not rely on ChatGPT-authored implementation, tests, or scripts.
+- Keep this PR focused only on Phase 19 Track E toolchain validation.
+- No broad repo scans unless required by the scoped validation lane.
+- Preserve engine/shared/game/tool boundaries.
+- Update roadmap status only if backed by successful execution and validation.
+- Package the final repo-structured ZIP to:
+  <project folder>/tmp/BUILD_PR_LEVEL_19_16_TOOLCHAIN_ENGINE_INTEGRATION_VALIDATION.zip
 
-3. Search only where needed:
-   - existing debug providers
-   - debug panels / registries
-   - rendering/input/physics/state/replay/networking runtime data surfaces
-   - focused tests validating debug exposure
-
-4. Verify debug-data exposure for:
-   - rendering
-   - input
-   - physics
-   - state/replay
-   - networking
-
-5. If any target system is missing exposure, apply the smallest valid fix:
-   - add minimal provider output or wiring
-   - add/update focused tests proving the data reaches the existing debug surface
-   - do not add new features or broad UX changes
-
-6. Run validation using the deduplicated command set:
-   - node ./scripts/run-node-tests.mjs
-   - npm run test:launch-smoke only if needed for runtime/debug coverage
-
-7. Produce reports:
-   - docs/dev/reports/BUILD_PR_LEVEL_19_15_DEBUG_OBSERVABILITY_VALIDATION_summary.md
-   - docs/dev/reports/BUILD_PR_LEVEL_19_15_DEBUG_OBSERVABILITY_VALIDATION_coverage.md
-   - docs/dev/reports/BUILD_PR_LEVEL_19_15_DEBUG_OBSERVABILITY_VALIDATION_results.md
-
-8. In the reports, record:
-   - which systems were checked
-   - what debug data each system exposes
-   - files changed
-   - commands run
-   - pass/fail results
-   - any bounded caveats
-
-9. Update the roadmap only if this PR proves the remaining Track D item:
-   - [x] ensure all systems expose debug data
-
-10. Package the repo-structured ZIP to:
-   <project folder>/tmp/BUILD_PR_LEVEL_19_15_DEBUG_OBSERVABILITY_VALIDATION.zip
-
-CONSTRAINTS:
-- one PR purpose only
-- smallest scoped valid change
-- no vague wording
-- no repo-wide scanning unless required
-- do not run both npm test and node ./scripts/run-node-tests.mjs when they cover the same suite
-- no roadmap-only promotion without executed validation
+Required outputs inside your final ZIP:
+- docs/pr/BUILD_PR_LEVEL_19_16_TOOLCHAIN_ENGINE_INTEGRATION_VALIDATION.md
+- docs/dev/codex_commands.md
+- docs/dev/commit_comment.txt
+- docs/dev/reports/change_summary.txt
+- docs/dev/reports/validation_checklist.txt
+- docs/dev/reports/file_tree.txt
+- any implementation/tests/scripts you create
+- roadmap status update only if execution-backed

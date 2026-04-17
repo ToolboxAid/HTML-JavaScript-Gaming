@@ -65,6 +65,7 @@ import { run as runPrecisionCollisionSystems } from './final/PrecisionCollisionS
 import { run as runMultiplayerNetworkingStack } from './final/MultiplayerNetworkingStack.test.mjs';
 import { run as runNetworkDebugAndServerDashboardCloseout } from './final/NetworkDebugAndServerDashboardCloseout.test.mjs';
 import { run as runDebugObservabilityMaturity } from './final/DebugObservabilityMaturity.test.mjs';
+import { run as runToolchainEngineIntegrationValidation } from './final/ToolchainEngineIntegrationValidation.test.mjs';
 import { run as runEditorAutomationSecurityPipeline } from './final/EditorAutomationSecurityPipeline.test.mjs';
 import { run as runDeveloperToolingSystems } from './final/DeveloperToolingSystems.test.mjs';
 import { run as runReleaseReadinessSystems } from './final/ReleaseReadinessSystems.test.mjs';
@@ -160,6 +161,7 @@ const tests = [
     ['MultiplayerNetworkingStack', runMultiplayerNetworkingStack],
     ['NetworkDebugAndServerDashboardCloseout', runNetworkDebugAndServerDashboardCloseout],
     ['DebugObservabilityMaturity', runDebugObservabilityMaturity],
+    ['ToolchainEngineIntegrationValidation', runToolchainEngineIntegrationValidation],
     ['EditorAutomationSecurityPipeline', runEditorAutomationSecurityPipeline],
     ['DeveloperToolingSystems', runDeveloperToolingSystems],
     ['ReleaseReadinessSystems', runReleaseReadinessSystems],
