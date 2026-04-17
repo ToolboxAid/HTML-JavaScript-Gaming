@@ -1,17 +1,16 @@
 MODEL: GPT-5.4-codex
-REASONING: medium
+REASONING: high
 
 COMMAND:
-1. Review roadmap:
-   docs/dev/roadmaps/MASTER_ROADMAP_HIGH_LEVEL.md
+1. Search engine paths for sample-specific references.
+2. Extract/move logic to samples or adapters.
+3. Ensure engine remains generic.
+4. Run:
+   node ./scripts/run-node-tests.mjs
+   npm test
+5. Package:
+   <project folder>/tmp/BUILD_PR_LEVEL_18_2_REMOVE_SAMPLE_LOGIC_FROM_ENGINE.zip
 
-2. Identify remaining [ ] and [.] in Level 18 and 19
-
-3. DO NOT modify yet
-
-4. Prepare next BUILD PR:
-   - finish Level 18 last item
-   - validate Level 19 completion
-
-5. Package ZIP:
-   <project folder>/tmp/PLAN_PR_LEVEL_19_12_COMPLETE_REMAINING_18_19.zip
+CONSTRAINTS:
+- Smallest scoped change
+- Do not modify unrelated systems
