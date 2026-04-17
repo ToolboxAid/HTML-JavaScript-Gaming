@@ -1273,7 +1273,7 @@ function writeOverlayRuntimeSyncSnapshot(container, snapshot) {
   }
 }
 
-export function synchronizeOverlayGameplayRuntimeState(runtime, context = {}) {
+function synchronizeOverlayGameplayRuntimeState(runtime, context = {}) {
   if (!runtime) {
     return null;
   }
@@ -1739,7 +1739,7 @@ export function setOverlayGameplayRuntimeExtensions(runtime, runtimeExtensions) 
   return true;
 }
 
-export function isOverlayGameplayRuntimeVisible(runtime) {
+function isOverlayGameplayRuntimeVisible(runtime) {
   return runtime?.interactionVisible !== false;
 }
 
@@ -1752,7 +1752,7 @@ export function setOverlayGameplayRuntimeVisible(runtime, visible) {
   return true;
 }
 
-export function setOverlayGameplayRuntimePreferenceStorageKey(runtime, preferenceStorageKey, { loadExisting = true } = {}) {
+function setOverlayGameplayRuntimePreferenceStorageKey(runtime, preferenceStorageKey, { loadExisting = true } = {}) {
   if (!runtime) {
     return false;
   }
@@ -1850,7 +1850,7 @@ export function setOverlayGameplayRuntimeKeybindProfile(runtime, { id = '', cycl
   return true;
 }
 
-export function getOverlayGameplayRuntimePreferencesSnapshot(runtime) {
+function getOverlayGameplayRuntimePreferencesSnapshot(runtime) {
   if (!runtime) {
     return Object.freeze({
       visibility: true,
@@ -1952,7 +1952,7 @@ export function saveOverlayGameplayRuntimePreferences(runtime, options = {}) {
   return writeOverlayRuntimePreferencePayloadToStorage(preferenceStorageKey, payload, storage);
 }
 
-export function loadOverlayGameplayRuntimePreferences(runtime, options = {}) {
+function loadOverlayGameplayRuntimePreferences(runtime, options = {}) {
   if (!runtime) {
     return false;
   }
@@ -2873,3 +2873,30 @@ export function renderOverlayGameplayRuntime(runtime, context = {}) {
   }
   return invoked;
 }
+
+export const OVERLAY_GAMEPLAY_RUNTIME_PUBLIC_API_NAMES = Object.freeze([
+  'applyOverlayGameplayRuntimePreset',
+  'createOverlayGameplayRuntime',
+  'enqueueOverlayGameplayRuntimeSyncEvent',
+  'exportOverlayGameplayRuntimeProfile',
+  'exportOverlayGameplayRuntimeSharePackage',
+  'getOverlayGameplayRuntimeCompositionSnapshot',
+  'getOverlayGameplayRuntimeDefaultPresets',
+  'getOverlayGameplayRuntimeInteractionSnapshot',
+  'getOverlayGameplayRuntimePresetLibrary',
+  'importOverlayGameplayRuntimeProfile',
+  'importOverlayGameplayRuntimeSharePackage',
+  'renderOverlayGameplayRuntime',
+  'resolveOverlayGameplayRuntimeInputAction',
+  'saveOverlayGameplayRuntimePreferences',
+  'setOverlayGameplayRuntimeAdaptiveUiRules',
+  'setOverlayGameplayRuntimeContextInputMap',
+  'setOverlayGameplayRuntimeExtensions',
+  'setOverlayGameplayRuntimeKeybindProfile',
+  'setOverlayGameplayRuntimePresetLibrary',
+  'setOverlayGameplayRuntimeVisible',
+  'stepOverlayGameplayRuntime',
+  'stepOverlayGameplayRuntimeControls',
+  'stepOverlayGameplayRuntimeGestures',
+  'stepOverlayGameplayRuntimePointerInteractions',
+]);

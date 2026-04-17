@@ -6,6 +6,7 @@ Phase19OverlayExpansionFramework.test.mjs
 */
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
+import * as overlayRuntimeModule from '../../samples/phase-17/shared/overlayGameplayRuntime.js';
 import { LEVEL17_OVERLAY_CYCLE_KEY } from '../../samples/phase-17/shared/overlayCycleInput.js';
 import {
   isOverlayRuntimeCycleModifierActive,
@@ -99,6 +100,16 @@ function assertOverlayRuntimeSliceUsesSharedFiniteNumberHelper() {
     'Overlay runtime slice should not keep a local duplicate JSON-clone helper.'
   );
   assert.equal(
+    runtimeSource.includes('export function synchronizeOverlayGameplayRuntimeState('),
+    false,
+    'Overlay runtime slice contract should not expose internal synchronization mutators directly.'
+  );
+  assert.equal(
+    runtimeSource.includes('export function getOverlayGameplayRuntimePreferencesSnapshot('),
+    false,
+    'Overlay runtime slice contract should not expose internal preference snapshot helpers directly.'
+  );
+  assert.equal(
     importSpecifiers.some((specifier) => specifier.startsWith('/src/engine/')),
     false,
     'Overlay runtime slice boundary hardening should avoid direct engine-layer imports.'
@@ -107,6 +118,33 @@ function assertOverlayRuntimeSliceUsesSharedFiniteNumberHelper() {
     importSpecifiers.some((specifier) => specifier.startsWith('../') || specifier.startsWith('./')),
     false,
     'Overlay runtime slice boundary hardening should use root-layer imports and avoid relative cross-layer traversal.'
+  );
+}
+
+function assertOverlayRuntimePublicApiContractFrozen() {
+  const exportedKeys = Object.keys(overlayRuntimeModule).sort();
+  const contractNames = [...overlayRuntimeModule.OVERLAY_GAMEPLAY_RUNTIME_PUBLIC_API_NAMES].sort();
+  const expectedExportedKeys = [...contractNames, 'OVERLAY_GAMEPLAY_RUNTIME_PUBLIC_API_NAMES'].sort();
+
+  assert.deepEqual(
+    exportedKeys,
+    expectedExportedKeys,
+    'Overlay runtime module export surface should match the frozen public API contract exactly.'
+  );
+  assert.equal(
+    Object.isFrozen(overlayRuntimeModule.OVERLAY_GAMEPLAY_RUNTIME_PUBLIC_API_NAMES),
+    true,
+    'Overlay runtime public API name contract should be immutable.'
+  );
+  assert.equal(
+    overlayRuntimeModule.OVERLAY_GAMEPLAY_RUNTIME_PUBLIC_API_NAMES.includes('synchronizeOverlayGameplayRuntimeState'),
+    false,
+    'Internal synchronization helpers should be excluded from the public API contract.'
+  );
+  assert.equal(
+    overlayRuntimeModule.OVERLAY_GAMEPLAY_RUNTIME_PUBLIC_API_NAMES.includes('getOverlayGameplayRuntimePreferencesSnapshot'),
+    false,
+    'Internal preference snapshot helpers should be excluded from the public API contract.'
   );
 }
 
@@ -1250,6 +1288,7 @@ function assertOverlaySharePackageExportImportCompatibility() {
 
 export function run() {
   assertOverlayRuntimeSliceUsesSharedFiniteNumberHelper();
+  assertOverlayRuntimePublicApiContractFrozen();
   assertExpansionRegistrationAndCompatibility();
   assertExtensionLifecycleMutations();
   assertDynamicPanelSizingCapability();

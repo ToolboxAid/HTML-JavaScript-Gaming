@@ -1,5 +1,5 @@
-Level 18.2 Boundary Hardening (Overlay Slice)
+Level 18.3 Contract Stabilization (Overlay Slice)
 
-- Enforced layer boundaries in overlay runtime
-- Removed cross-layer leakage
-- Maintained test pass status
+- Stabilized overlay APIs
+- Locked selectors/providers
+- Removed unstable surfaces

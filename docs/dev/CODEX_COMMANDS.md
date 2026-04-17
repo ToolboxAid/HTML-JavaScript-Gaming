@@ -2,10 +2,10 @@ MODEL: GPT-5.3-codex
 REASONING: high
 
 COMMAND:
-Apply boundary enforcement rules to overlay runtime:
-- Remove cross-layer leakage
-- Enforce engine/shared separation
-- Validate imports
+- Identify overlay public APIs
+- Freeze contracts
+- Remove unstable/internal exposure
+- Validate tests
 
-Output ZIP to:
-<project folder>/tmp/BUILD_PR_LEVEL_18_2_BOUNDARY_HARDENING_OVERLAY_SLICE.zip
+Output:
+<project folder>/tmp/BUILD_PR_LEVEL_18_3_CONTRACT_STABILIZATION_OVERLAY_SLICE.zip
