@@ -1,36 +1,44 @@
-BUILD_PR_PREVIEW_PATH_CONTRACT_REALIGNMENT - Validation Checklist
+BUILD_PR_LEVEL_18_2_BOUNDARY_HARDENING_ENFORCEMENT - Validation Checklist
 Date: 2026-04-17
 
-[PASS] Syntax validation
-Command:
-- node --check scripts/generate-runtime-sample-previews.mjs
-Result:
-- Exit 0
+[PASS] Build input read
+- docs/pr/BUILD_PR_LEVEL_18_2_BOUNDARY_HARDENING_ENFORCEMENT.md
 
-[PASS] Output-path contract verification (targeted file assertions)
+[PASS] Targeted boundary scan (pre-fix)
 Command:
-- python inline assertion across:
-  - tools/preview/generate-list-previews_updated.html
-  - tools/preview/preview_svg_executor_1600x900.html
-  - tools/preview/preview_svg_executor_games_enter.html
-  - scripts/generate-runtime-sample-previews.mjs
+- node tools/dev/checkBoundaryHardeningGuard.mjs
 Result:
-- html default value="assets/images": expected 3, actual 3
-- html fallback || "assets/images": expected 3, actual 3
-- html stale default value="assets": expected 0, actual 0
-- html stale fallback || "assets": expected 0, actual 0
-- script path includes 'assets', 'images', 'preview.svg': expected 1, actual 1
-- script stale path 'assets', 'preview.svg': expected 0, actual 0
-- OVERALL PASS
+- scanned files: 712
+- violations: 2
+- games/breakout/main.js -> ../../tools/dev/devConsoleIntegration.js
+- games/Asteroids/index.js -> ../../tools/dev/devConsoleIntegration.js
 
-[PASS] Canonical phase-hyphen sample directory contract check
+[PASS] Boundary hardening implementation applied
+- Added boundary guard script
+- Removed games -> tools coupling in the two violating files
+- Added boundary-safe shared no-op integration default
+
+[PASS] Targeted boundary scan (post-fix)
 Command:
-- Python scan over samples/ for phase directories matching ^phase-\d{2}$ and per-sample index.html presence
+- node tools/dev/checkBoundaryHardeningGuard.mjs
 Result:
-- PHASE_DIR_COUNT=19
-- MISSING_INDEX_COUNT=0
+- scanned files: 713
+- violations: 0
+
+[PASS] Focused regression checks
+Commands:
+- node --input-type=module -e "... import('./tests/games/AsteroidsValidation.test.mjs') ..."
+- node --input-type=module -e "... import('./tests/games/BreakoutValidation.test.mjs') ..."
+- node --input-type=module -e "... import('./tests/tools/ToolBoundaryEnforcement.test.mjs') ..."
+Results:
+- PASS AsteroidsValidation
+- PASS BreakoutValidation
+- PASS ToolBoundaryEnforcement
+
+[PASS] Roadmap status-only update
+- Updated Level 18 Track B markers only in place.
+- No roadmap text rewrite.
 
 Validation conclusion
-- Preview tooling now targets image output under assets/images/preview.svg.
-- Preview sample path resolution remains aligned to phase-hyphen contract.
-
+- Cross-layer leakage identified and removed in scoped targets.
+- Dependency-direction rules are now enforced by a concrete guard and validated clean.

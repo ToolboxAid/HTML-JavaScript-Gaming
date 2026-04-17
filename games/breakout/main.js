@@ -15,7 +15,7 @@ import {
   isLocalDebugEnvironment,
   resolveDebugConfig,
 } from '../../src/shared/utils/debugConfigUtils.js';
-import { createSampleGameDevConsoleIntegration } from '../../tools/dev/devConsoleIntegration.js';
+import { createNoopDevConsoleIntegration } from '../../src/shared/utils/createNoopDevConsoleIntegration.js';
 import BreakoutScene from './game/BreakoutScene.js';
 
 const theme = new Theme(ThemeTokens);
@@ -92,7 +92,7 @@ export function bootBreakout({
   EngineClass = Engine,
   InputServiceClass = InputService,
   SceneClass = BreakoutScene,
-  createDevConsoleIntegration = createSampleGameDevConsoleIntegration,
+  createDevConsoleIntegration = createNoopDevConsoleIntegration,
 } = {}) {
   if (!documentRef) {
     return null;

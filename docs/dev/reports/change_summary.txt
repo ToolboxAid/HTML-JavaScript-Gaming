@@ -1,35 +1,37 @@
-BUILD_PR_PREVIEW_PATH_CONTRACT_REALIGNMENT
+BUILD_PR_LEVEL_18_2_BOUNDARY_HARDENING_ENFORCEMENT
 Date: 2026-04-17
-Scope: Preview path contract repair only (tools/preview + preview generation script).
+Scope: Engine/shared/games/tools boundary hardening with smallest valid coupling removal.
 
-Summary of changes
-1) Preview sample-path contract stays aligned to canonical sample paths:
-   - samples/phase-XX/XXXX/index.html
+Summary
+1) Added boundary guard implementation
+- Added tools/dev/checkBoundaryHardeningGuard.mjs
+- Scans src/engine, src/shared, games, tools for dependency-direction violations.
+- Enforces:
+  - engine must not depend on games/tools/samples/docs
+  - shared must not depend on engine/games/tools/samples/docs
+  - games must not depend on tools/samples/docs
+  - tools must not depend on games/samples/docs
 
-2) Updated preview HTML executors to default preview output folder to images path:
-   - tools/preview/generate-list-previews_updated.html
-   - tools/preview/preview_svg_executor_1600x900.html
-   - tools/preview/preview_svg_executor_games_enter.html
+2) Findings before fix (execution evidence)
+- games/breakout/main.js imported ../../tools/dev/devConsoleIntegration.js
+- games/Asteroids/index.js imported ../../tools/dev/devConsoleIntegration.js
+- These were cross-layer leakage from games -> tools.
 
-   Exact output-folder changes applied in each:
-   - input default: "assets" -> "assets/images"
-   - fallback display path: "assets" -> "assets/images"
-   - displayed sample write target now resolves as:
-     samples\\phase-XX\\XXXX\\assets\\images
+3) Smallest valid hardening implementation applied
+- Added src/shared/utils/createNoopDevConsoleIntegration.js as a boundary-safe default integration surface.
+- Updated games/breakout/main.js to use createNoopDevConsoleIntegration default.
+- Updated games/Asteroids/index.js to use createNoopDevConsoleIntegration default.
+- Removed direct games -> tools imports for dev console integration.
 
-3) Updated runtime sample preview writer path:
-   - scripts/generate-runtime-sample-previews.mjs
-   - output path changed:
-     path.join(sample.sampleDir, 'assets', 'preview.svg')
-     -> path.join(sample.sampleDir, 'assets', 'images', 'preview.svg')
-
-4) Preview capture dependency remains aligned to preview tooling location:
-   - /tools/preview/runtimePreviewCapture.html
-   - local capture page: tools/preview/runtimePreviewCapture.html
+4) Roadmap status-only update (execution-backed)
+- docs/dev/roadmaps/MASTER_ROADMAP_HIGH_LEVEL.md
+- Level 18 Track B updated in place:
+  - [.] -> [x] enforce engine vs shared vs game vs tool boundaries
+  - [.] -> [x] eliminate cross-layer leakage
+  - [.] -> [x] validate dependency direction rules across repo
+  - [ ] -> [x] remove accidental coupling
 
 Notes
-- No engine/runtime feature behavior changed beyond preview output path contract.
-- No roadmap edits.
+- No broad refactor performed.
 - No start_of_day edits.
-- No unrelated cleanup.
-
+- No engine-core behavior changes introduced beyond boundary-safe debug integration defaulting for two games.

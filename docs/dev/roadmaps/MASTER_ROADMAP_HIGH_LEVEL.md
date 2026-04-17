@@ -728,10 +728,10 @@
 - [ ] remove sample-specific logic from engine paths
 
 ### Track B � Boundary Hardening
-- [.] enforce engine vs shared vs game vs tool boundaries
-- [.] eliminate cross-layer leakage
-- [.] validate dependency direction rules across repo
-- [ ] remove accidental coupling
+- [x] enforce engine vs shared vs game vs tool boundaries
+- [x] eliminate cross-layer leakage
+- [x] validate dependency direction rules across repo
+- [x] remove accidental coupling
 
 ### Track C � Contract Stabilization
 - [.] finalize engine public APIs

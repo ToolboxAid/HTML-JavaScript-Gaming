@@ -1,19 +1,26 @@
-BUILD_PR_PREVIEW_PATH_CONTRACT_REALIGNMENT file tree
+BUILD_PR_LEVEL_18_2_BOUNDARY_HARDENING_ENFORCEMENT file tree
 
-scripts/
-  generate-runtime-sample-previews.mjs  (modified)
+src/
+  shared/
+    utils/
+      createNoopDevConsoleIntegration.js      (added)
+
+games/
+  Asteroids/
+    index.js                                  (modified)
+  Breakout/
+    main.js                                   (modified)
 
 tools/
-  preview/
-    generate-list-previews_updated.html      (modified)
-    preview_svg_executor_1600x900.html       (modified)
-    preview_svg_executor_games_enter.html    (modified)
-    runtimePreviewCapture.html               (added)
+  dev/
+    checkBoundaryHardeningGuard.mjs           (added)
 
 docs/
   dev/
+    roadmaps/
+      MASTER_ROADMAP_HIGH_LEVEL.md            (modified: Track B status markers only)
     reports/
-      change_summary.txt         (updated)
-      validation_checklist.txt   (updated)
-      file_tree.txt              (updated)
-
+      BUILD_PR_LEVEL_18_2_BOUNDARY_HARDENING_ENFORCEMENT_report.md (added)
+      change_summary.txt                       (updated)
+      validation_checklist.txt                 (updated)
+      file_tree.txt                            (updated)

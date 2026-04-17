@@ -1,6 +1,6 @@
-Repair preview path contract after sample structure change.
+Boundary hardening enforcement for Level 18 Track B
 
-BUILD_PR_PREVIEW_PATH_CONTRACT_REALIGNMENT
-- update tools/preview path resolution to current sample contract
-- validate and remove/update any stale samples/shared preview dependency
-- keep scope limited to preview-path repair
+BUILD_PR_LEVEL_18_2_BOUNDARY_HARDENING_ENFORCEMENT
+- enforce engine/shared/games/tools boundaries
+- reduce cross-layer leakage
+- validate dependency direction after changes
