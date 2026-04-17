@@ -5,8 +5,8 @@ David Quesenberry
 PacmanFullAIValidation.test.mjs
 */
 import assert from 'node:assert/strict';
-import PacmanFullAIScene from '../../games/PacmanFullAI/game/PacmanFullAIScene.js';
-import { bootPacmanFullAI } from '../../games/PacmanFullAI/main.js';
+import PacmanFullAIScene from '../../games/Pacman/game/PacmanFullAIScene.js';
+import { bootPacmanFullAI } from '../../games/Pacman/main.js';
 
 function createMutableInput() {
   let down = new Set();

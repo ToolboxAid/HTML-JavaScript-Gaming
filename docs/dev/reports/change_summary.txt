@@ -1,37 +1,6 @@
-BUILD_PR_LEVEL_18_2_BOUNDARY_HARDENING_ENFORCEMENT
-Date: 2026-04-17
-Scope: Engine/shared/games/tools boundary hardening with smallest valid coupling removal.
+Docs-only PR bundle for classification of selected game entries as true games vs sample/demo candidates.
 
-Summary
-1) Added boundary guard implementation
-- Added tools/dev/checkBoundaryHardeningGuard.mjs
-- Scans src/engine, src/shared, games, tools for dependency-direction violations.
-- Enforces:
-  - engine must not depend on games/tools/samples/docs
-  - shared must not depend on engine/games/tools/samples/docs
-  - games must not depend on tools/samples/docs
-  - tools must not depend on games/samples/docs
-
-2) Findings before fix (execution evidence)
-- games/breakout/main.js imported ../../tools/dev/devConsoleIntegration.js
-- games/Asteroids/index.js imported ../../tools/dev/devConsoleIntegration.js
-- These were cross-layer leakage from games -> tools.
-
-3) Smallest valid hardening implementation applied
-- Added src/shared/utils/createNoopDevConsoleIntegration.js as a boundary-safe default integration surface.
-- Updated games/breakout/main.js to use createNoopDevConsoleIntegration default.
-- Updated games/Asteroids/index.js to use createNoopDevConsoleIntegration default.
-- Removed direct games -> tools imports for dev console integration.
-
-4) Roadmap status-only update (execution-backed)
-- docs/dev/roadmaps/MASTER_ROADMAP_HIGH_LEVEL.md
-- Level 18 Track B updated in place:
-  - [.] -> [x] enforce engine vs shared vs game vs tool boundaries
-  - [.] -> [x] eliminate cross-layer leakage
-  - [.] -> [x] validate dependency direction rules across repo
-  - [ ] -> [x] remove accidental coupling
-
-Notes
-- No broad refactor performed.
-- No start_of_day edits.
-- No engine-core behavior changes introduced beyond boundary-safe debug integration defaulting for two games.
+This PR asks Codex to:
+- inspect the listed entries
+- recommend phase move targets for sample/demo candidates
+- update the master roadmap in place under the existing roadmap guard

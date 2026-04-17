@@ -1,44 +1,6 @@
-BUILD_PR_LEVEL_18_2_BOUNDARY_HARDENING_ENFORCEMENT - Validation Checklist
-Date: 2026-04-17
-
-[PASS] Build input read
-- docs/pr/BUILD_PR_LEVEL_18_2_BOUNDARY_HARDENING_ENFORCEMENT.md
-
-[PASS] Targeted boundary scan (pre-fix)
-Command:
-- node tools/dev/checkBoundaryHardeningGuard.mjs
-Result:
-- scanned files: 712
-- violations: 2
-- games/breakout/main.js -> ../../tools/dev/devConsoleIntegration.js
-- games/Asteroids/index.js -> ../../tools/dev/devConsoleIntegration.js
-
-[PASS] Boundary hardening implementation applied
-- Added boundary guard script
-- Removed games -> tools coupling in the two violating files
-- Added boundary-safe shared no-op integration default
-
-[PASS] Targeted boundary scan (post-fix)
-Command:
-- node tools/dev/checkBoundaryHardeningGuard.mjs
-Result:
-- scanned files: 713
-- violations: 0
-
-[PASS] Focused regression checks
-Commands:
-- node --input-type=module -e "... import('./tests/games/AsteroidsValidation.test.mjs') ..."
-- node --input-type=module -e "... import('./tests/games/BreakoutValidation.test.mjs') ..."
-- node --input-type=module -e "... import('./tests/tools/ToolBoundaryEnforcement.test.mjs') ..."
-Results:
-- PASS AsteroidsValidation
-- PASS BreakoutValidation
-- PASS ToolBoundaryEnforcement
-
-[PASS] Roadmap status-only update
-- Updated Level 18 Track B markers only in place.
-- No roadmap text rewrite.
-
-Validation conclusion
-- Cross-layer leakage identified and removed in scoped targets.
-- Dependency-direction rules are now enforced by a concrete guard and validated clean.
+[ ] All listed entries inspected
+[ ] Each entry classified as remain-in-games or move-to-samples
+[ ] Each sample/demo candidate mapped to a best-fit phase target
+[ ] Classification rationale written to docs/dev/reports
+[ ] Master roadmap updated in place by Codex only under roadmap guard rules
+[ ] No roadmap text deleted or rewritten

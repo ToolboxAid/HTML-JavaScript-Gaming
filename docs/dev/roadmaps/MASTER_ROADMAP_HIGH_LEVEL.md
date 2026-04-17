@@ -715,7 +715,7 @@
 - all changes must be validation-backed
 - no template-driven work
 
-[ ] Some games are actually samples/demos; identify and recommend a `phase-xx` move target.
+[x] Some games are actually samples/demos; identify and recommend a `phase-xx` move target.
 
 [ ] Lock APIs
 [ ] Clean boundaries

@@ -5,7 +5,7 @@ David Quesenberry
 PacmanFullAIWorld.test.mjs
 */
 import assert from 'node:assert/strict';
-import PacmanFullAIWorld from '../../games/PacmanFullAI/game/PacmanFullAIWorld.js';
+import PacmanFullAIWorld from '../../games/Pacman/game/PacmanFullAIWorld.js';
 
 function controls(overrides = {}) {
   return {

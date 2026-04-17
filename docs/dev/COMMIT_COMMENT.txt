@@ -1,6 +1,6 @@
-Boundary hardening enforcement for Level 18 Track B
+Classify game entries that are actually sample/demo candidates and recommend phase move targets.
 
-BUILD_PR_LEVEL_18_2_BOUNDARY_HARDENING_ENFORCEMENT
-- enforce engine/shared/games/tools boundaries
-- reduce cross-layer leakage
-- validate dependency direction after changes
+BUILD_PR_LEVEL_18_3_GAME_TO_SAMPLE_RECLASSIFICATION_RECOMMENDATIONS
+- inspect listed games for true game vs sample/demo classification
+- recommend best-fit phase target for sample/demo entries
+- update master roadmap in place under roadmap guard rules
