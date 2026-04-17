@@ -734,10 +734,10 @@
 - [x] remove accidental coupling
 
 ### Track C � Contract Stabilization
-- [.] finalize engine public APIs
-- [.] finalize shared contracts
+- [x] finalize engine public APIs
+- [x] finalize shared contracts
 - [x] ensure selectors/providers are stable
-- [.] remove unstable or experimental surfaces
+- [x] remove unstable or experimental surfaces
 
 ### Track D � Codebase Consistency
 - [ ] single class per file enforcement

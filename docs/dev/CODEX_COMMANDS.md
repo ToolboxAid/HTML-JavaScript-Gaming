@@ -1,10 +1,14 @@
 MODEL: GPT-5.3-codex
 REASONING: high
 
-Execute BUILD_PR_LEVEL_18_7_UNSTABLE_SURFACE_REMOVAL_OR_ISOLATION:
+Execute BUILD_PR_LEVEL_18_9_TRACK_C_FINALIZATION:
 
-- identify unstable/experimental surfaces
-- remove or isolate safely
-- update consumers if required
-- validate contract stability
-- output report
+- finalize engine public APIs
+- finalize shared contracts
+- remove remaining unstable surfaces
+- validate all consumers
+- produce final report
+
+Roadmap rules:
+- update only Track C markers [.] -> [x]
+- do not rewrite or delete roadmap text

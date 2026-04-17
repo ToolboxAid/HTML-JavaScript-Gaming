@@ -1,3 +1,4 @@
-[ ] unstable surfaces handled
-[ ] consumers updated
-[ ] validation complete
+[ ] engine APIs finalized
+[ ] shared contracts finalized
+[ ] no unstable surfaces
+[ ] Track C complete
