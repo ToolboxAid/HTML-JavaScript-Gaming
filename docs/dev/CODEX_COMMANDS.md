@@ -2,11 +2,10 @@ MODEL: GPT-5.3-codex
 REASONING: high
 
 COMMAND:
-- Scan overlay runtime files only
-- Normalize naming conventions
-- Deduplicate helpers
-- Fix import/export patterns
-- Validate tests
+- Inspect overlay CSS only
+- Flatten CSS structure
+- Replace redundant styles with shared classes
+- Validate rendering + tests
 
 Output:
-<project folder>/tmp/BUILD_PR_LEVEL_18_4_CODEBASE_CONSISTENCY_OVERLAY_SLICE.zip
+<project folder>/tmp/BUILD_PR_LEVEL_18_5_CSS_UI_NORMALIZATION_OVERLAY_SLICE.zip

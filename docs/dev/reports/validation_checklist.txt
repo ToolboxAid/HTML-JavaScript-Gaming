@@ -1,4 +1,4 @@
-[ ] naming consistent
-[ ] no duplicate helpers
-[ ] imports clean
+[ ] no visual regressions
+[ ] CSS flattened
+[ ] shared classes used
 [ ] tests pass
