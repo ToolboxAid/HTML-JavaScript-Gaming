@@ -74,15 +74,39 @@ function assertOverlayRuntimeSliceUsesSharedFiniteNumberHelper() {
     new URL('../../samples/phase-17/shared/overlayGameplayRuntime.js', import.meta.url),
     'utf8'
   );
+  const importSpecifiers = Array.from(
+    runtimeSource.matchAll(/^\s*import\s+[\s\S]*?\sfrom\s+['"]([^'"]+)['"]\s*;?\s*$/gm),
+    (match) => String(match[1] || '').trim()
+  );
   assert.equal(
     runtimeSource.includes("import { asFiniteNumber } from '/src/shared/number/index.js';"),
     true,
     'Overlay runtime slice should import finite-number normalization from shared number helpers.'
   );
   assert.equal(
+    runtimeSource.includes("import { cloneJsonData, safeJsonParse, safeJsonStringify } from '/src/shared/io/index.js';"),
+    true,
+    'Overlay runtime slice should import shared JSON IO helpers instead of local JSON clone/parse/stringify logic.'
+  );
+  assert.equal(
     runtimeSource.includes('function normalizePointerNumber('),
     false,
     'Overlay runtime slice should not keep a local duplicate pointer-number normalization helper.'
+  );
+  assert.equal(
+    runtimeSource.includes('function cloneJsonCompatibleValue('),
+    false,
+    'Overlay runtime slice should not keep a local duplicate JSON-clone helper.'
+  );
+  assert.equal(
+    importSpecifiers.some((specifier) => specifier.startsWith('/src/engine/')),
+    false,
+    'Overlay runtime slice boundary hardening should avoid direct engine-layer imports.'
+  );
+  assert.equal(
+    importSpecifiers.some((specifier) => specifier.startsWith('../') || specifier.startsWith('./')),
+    false,
+    'Overlay runtime slice boundary hardening should use root-layer imports and avoid relative cross-layer traversal.'
   );
 }
 

@@ -9,12 +9,14 @@ import {
   isOverlayRuntimeToggleModifierActive,
   LEVEL17_OVERLAY_CYCLE_KEY,
 } from '/samples/phase-17/shared/overlayCycleInput.js';
+import { cloneJsonData, safeJsonParse, safeJsonStringify } from '/src/shared/io/index.js';
 import { asFiniteNumber } from '/src/shared/number/index.js';
 
 const overlayRuntimePreferenceMemoryStore = new Map();
 const OVERLAY_RUNTIME_SHARE_PACKAGE_FORMAT = 'overlay-runtime-share-package';
 const OVERLAY_RUNTIME_SHARE_PACKAGE_VERSION = 1;
 const OVERLAY_RUNTIME_PROFILE_SCHEMA_VERSION = 1;
+const OVERLAY_RUNTIME_INVALID_JSON_PARSE = Symbol('overlay-runtime-invalid-json-parse');
 const OVERLAY_RUNTIME_DEFAULT_PRESET_DEFINITIONS = Object.freeze([
   Object.freeze({
     id: 'minimal',
@@ -234,17 +236,6 @@ function normalizeOverlayRuntimePreferenceStorageKey(preferenceStorageKey) {
   return String(preferenceStorageKey || '').trim();
 }
 
-function cloneJsonCompatibleValue(value) {
-  if (value === null || value === undefined) {
-    return null;
-  }
-  try {
-    return JSON.parse(JSON.stringify(value));
-  } catch {
-    return null;
-  }
-}
-
 function readOverlayRuntimePreferencePayloadFromStorage(preferenceStorageKey, storage = null) {
   const key = normalizeOverlayRuntimePreferenceStorageKey(preferenceStorageKey);
   if (!key) {
@@ -269,12 +260,8 @@ function readOverlayRuntimePreferencePayloadFromStorage(preferenceStorageKey, st
     return null;
   }
 
-  try {
-    const parsed = JSON.parse(raw);
-    return parsed && typeof parsed === 'object' ? parsed : null;
-  } catch {
-    return null;
-  }
+  const parsed = safeJsonParse(raw, null);
+  return parsed && typeof parsed === 'object' ? parsed : null;
 }
 
 function writeOverlayRuntimePreferencePayloadToStorage(preferenceStorageKey, payload, storage = null) {
@@ -282,7 +269,7 @@ function writeOverlayRuntimePreferencePayloadToStorage(preferenceStorageKey, pay
   if (!key) {
     return false;
   }
-  const serialized = JSON.stringify(payload || {});
+  const serialized = safeJsonStringify(payload || {}, '{}');
   overlayRuntimePreferenceMemoryStore.set(key, serialized);
 
   const storageWriter = storage && typeof storage.setItem === 'function'
@@ -376,7 +363,7 @@ function validateOverlayRuntimePreferencePayload(payload) {
           keybindProfile.contextInputMap = null;
           keybindProfile.contextInputMapSpecified = true;
         } else if (contextInputMap && typeof contextInputMap === 'object' && !Array.isArray(contextInputMap)) {
-          const clonedContextInputMap = cloneJsonCompatibleValue(contextInputMap);
+          const clonedContextInputMap = cloneJsonData(contextInputMap);
           if (clonedContextInputMap && typeof clonedContextInputMap === 'object') {
             keybindProfile.contextInputMap = clonedContextInputMap;
             keybindProfile.contextInputMapSpecified = true;
@@ -436,7 +423,7 @@ function applyOverlayRuntimePreferencePayload(runtime, validatedPayload) {
     if (keybindProfile.contextInputMapSpecified === true) {
       runtime.interactionContextInputMap = keybindProfile.contextInputMap === null
         ? null
-        : (cloneJsonCompatibleValue(keybindProfile.contextInputMap) ?? null);
+        : (cloneJsonData(keybindProfile.contextInputMap) ?? null);
     }
   }
   return true;
@@ -455,7 +442,7 @@ function createOverlayRuntimePreferencePayloadFromValidated(validatedPayload) {
     payload.visibility = validatedPayload.visibility === true;
   }
   if (validatedPayload.hasLayout) {
-    payload.layout = cloneJsonCompatibleValue(validatedPayload.layout) || {};
+    payload.layout = cloneJsonData(validatedPayload.layout) || {};
   }
   if (validatedPayload.hasKeybindProfile) {
     const keybindProfile = {};
@@ -468,7 +455,7 @@ function createOverlayRuntimePreferencePayloadFromValidated(validatedPayload) {
     if (validatedPayload.keybindProfile.contextInputMapSpecified === true) {
       keybindProfile.contextInputMap = validatedPayload.keybindProfile.contextInputMap === null
         ? null
-        : (cloneJsonCompatibleValue(validatedPayload.keybindProfile.contextInputMap) || {});
+        : (cloneJsonData(validatedPayload.keybindProfile.contextInputMap) || {});
     }
     payload.keybindProfile = keybindProfile;
   }
@@ -1856,7 +1843,7 @@ export function setOverlayGameplayRuntimeKeybindProfile(runtime, { id = '', cycl
   }
   if (contextInputMap !== undefined) {
     runtime.interactionContextInputMap = contextInputMap && typeof contextInputMap === 'object'
-      ? cloneJsonCompatibleValue(contextInputMap) ?? contextInputMap
+      ? cloneJsonData(contextInputMap) ?? contextInputMap
       : null;
   }
   saveOverlayGameplayRuntimePreferences(runtime, { silent: true });
@@ -1881,7 +1868,7 @@ export function getOverlayGameplayRuntimePreferencesSnapshot(runtime) {
     cycleKey: String(runtime.interactionCycleKey || LEVEL17_OVERLAY_CYCLE_KEY).trim() || LEVEL17_OVERLAY_CYCLE_KEY,
   };
   if (runtime.interactionContextInputMap && typeof runtime.interactionContextInputMap === 'object') {
-    const clonedContextInputMap = cloneJsonCompatibleValue(runtime.interactionContextInputMap);
+    const clonedContextInputMap = cloneJsonData(runtime.interactionContextInputMap);
     if (clonedContextInputMap && typeof clonedContextInputMap === 'object') {
       keybindProfile.contextInputMap = clonedContextInputMap;
     }
@@ -1997,16 +1984,15 @@ export function importOverlayGameplayRuntimeProfile(runtime, profileInput, optio
 
   let parsedInput = null;
   if (typeof profileInput === 'string') {
-    try {
-      parsedInput = JSON.parse(profileInput);
-    } catch {
+    parsedInput = safeJsonParse(profileInput, OVERLAY_RUNTIME_INVALID_JSON_PARSE);
+    if (parsedInput === OVERLAY_RUNTIME_INVALID_JSON_PARSE) {
       return Object.freeze({
         success: false,
         errors: Object.freeze(['Overlay runtime profile JSON is invalid.']),
       });
     }
   } else {
-    parsedInput = cloneJsonCompatibleValue(profileInput);
+    parsedInput = cloneJsonData(profileInput);
   }
 
   const validated = validateOverlayRuntimePreferencePayload(parsedInput);
@@ -2039,9 +2025,8 @@ export function importOverlayGameplayRuntimeSharePackage(runtime, sharePackageIn
 
   let parsedInput = null;
   if (typeof sharePackageInput === 'string') {
-    try {
-      parsedInput = JSON.parse(sharePackageInput);
-    } catch {
+    parsedInput = safeJsonParse(sharePackageInput, OVERLAY_RUNTIME_INVALID_JSON_PARSE);
+    if (parsedInput === OVERLAY_RUNTIME_INVALID_JSON_PARSE) {
       return Object.freeze({
         success: false,
         errors: Object.freeze(['Overlay runtime share package JSON is invalid.']),
@@ -2050,7 +2035,7 @@ export function importOverlayGameplayRuntimeSharePackage(runtime, sharePackageIn
       });
     }
   } else {
-    parsedInput = cloneJsonCompatibleValue(sharePackageInput);
+    parsedInput = cloneJsonData(sharePackageInput);
   }
 
   const validated = validateOverlayRuntimeSharePackagePayload(parsedInput, runtime);

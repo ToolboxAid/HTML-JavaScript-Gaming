@@ -1,2 +1,5 @@
-Level 18 hardening: audit bounded overlay runtime slice for engine/shared usage, remove local reimplementation where stable shared surfaces already exist, and add validation-backed enforcement
-BUILD_PR_LEVEL_18_1_ENGINE_USAGE_ENFORCEMENT_AUDIT_SLICE
+Level 18.2 Boundary Hardening (Overlay Slice)
+
+- Enforced layer boundaries in overlay runtime
+- Removed cross-layer leakage
+- Maintained test pass status
