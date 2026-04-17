@@ -1,3 +1,4 @@
-Promote Level 22 overlay system to baseline.
+Rebase to Level 18 after confirming Level 17 completion.
 
-- Marks completion of Level 22
+- Resets progression starting point
+- Ensures correct roadmap alignment

@@ -1,18 +1,18 @@
-# BUILD_PR_LEVEL_22_10_OVERLAY_PROMOTE_BASELINE
+# BUILD_PR_LEVEL_18_1_OVERLAY_RUNTIME_HARDENING (REBASE)
 
 ## Purpose
-Promote Level 22 overlay system to baseline.
+Rebase workflow to resume from Level 18 after confirming Level 17 completion.
 
 ## Scope
-- Mark Level 22 as complete
-- Ensure roadmap reflects completion
-- Confirm system stability
+- Resume Level 18 progression
+- Validate baseline assumptions from Level 17
+- Ensure runtime stability before continuing
 
 ## Test Steps
-1. Verify all validation checks passed
-2. Confirm no outstanding issues
-3. Update roadmap markers
+1. Run Level 17 validation suite
+2. Confirm baseline stability
+3. Proceed with Level 18 runtime hardening
 
 ## Expected
-- Level 22 marked complete
-- System ready for next phase
+- Clean transition from Level 17 to Level 18
+- Stable baseline for continued development

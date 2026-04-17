@@ -1,3 +1,4 @@
-[ ] All Level 22 validation complete
-[ ] No regressions
-[ ] Roadmap updated to complete
+[ ] Level 17 complete
+[ ] Baseline stable
+[ ] Level 18 ready to proceed
+[ ] Roadmap updated
