@@ -1,6 +1,4 @@
-[ ] rendering integrated
-[ ] input integrated
-[ ] physics integrated
-[ ] state/replay integrated
-[ ] networking integrated
-[ ] debug platform integrated
+[ ] boot stable
+[ ] runtime stable
+[ ] shutdown clean
+[ ] reset flows valid
