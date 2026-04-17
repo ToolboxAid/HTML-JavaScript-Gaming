@@ -1,7 +1,7 @@
-﻿Phase 08 status correction after BUILD_PR_LEVEL_08_04_PUCKMAN_BOUNDARY_NORMALIZATION
+Phase 08 status correction after BUILD_PR_LEVEL_08_04_PACMAN_BOUNDARY_NORMALIZATION
 
 Earned now
-- [x] puckman normalized
+- [x] pacman normalized
 
 Still not earned repo-wide
 - [ ] game flow pattern standardized (`flow/attract.js`, `flow/intro.js`, `flow/highscore.js`)
@@ -11,5 +11,5 @@ Still not earned repo-wide
 - [ ] future games follow template-first path
 
 Notes
-- This PR normalizes Puckman only.
+- This PR normalizes Pacman only.
 - Repo-wide completion markers remain unchanged unless globally satisfied.

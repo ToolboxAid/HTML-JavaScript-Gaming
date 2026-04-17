@@ -117,7 +117,7 @@
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "games/Puckman/game/PuckmanGameScene.js",
+      "file": "games/Pacman/game/PacmanGameScene.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },

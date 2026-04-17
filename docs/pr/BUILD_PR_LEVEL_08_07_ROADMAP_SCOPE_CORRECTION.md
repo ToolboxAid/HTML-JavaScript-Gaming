@@ -7,7 +7,7 @@ Correct Section 8 roadmap status so it reflects the actual repo state after boun
 The repo-wide boundary scan shows that only the normalized core games currently satisfy the strict
 `flow/game/rules` boundary contract:
 - Asteroids
-- Puckman
+- Pacman
 - SpaceInvaders
 
 Many other game folders still contain placeholder-only `rules/` directories and do not contain the
@@ -30,7 +30,7 @@ Section 8 should distinguish between:
 
 ## Recommended status model
 - [x] `games/_template/` created
-- [x] core target games normalized (`Asteroids`, `Puckman`, `SpaceInvaders`)
+- [x] core target games normalized (`Asteroids`, `Pacman`, `SpaceInvaders`)
 - [.] per-game structure normalized
 - [.] current games migrated to target structure
 - [ ] game flow pattern standardized repo-wide
@@ -44,5 +44,5 @@ Do not count placeholder folders as completion.
 Do not expand this PR into code changes.
 
 ## Validation input used
-- Latest boundary scan result: no violations for `Asteroids`, `Puckman`, `SpaceInvaders`.
+- Latest boundary scan result: no violations for `Asteroids`, `Pacman`, `SpaceInvaders`.
 - Boundary violations still present in multiple other `games/*` folders.

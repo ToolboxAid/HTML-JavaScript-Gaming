@@ -1,7 +1,7 @@
 # BUILD_PR — LEVEL 08.05 SPACE INVADERS COMPLETION
 
 ## Purpose
-Complete Space Invaders boundary normalization to match Asteroids and Puckman.
+Complete Space Invaders boundary normalization to match Asteroids and Pacman.
 
 ## Scope
 - Only Space Invaders game folder

@@ -1,7 +1,7 @@
-# BUILD_PR_LEVEL_08_04_PUCKMAN_BOUNDARY_NORMALIZATION
+# BUILD_PR_LEVEL_08_04_PACMAN_BOUNDARY_NORMALIZATION
 
 ## Purpose
-Normalize **Puckman** to the Phase 08 games-layer boundary model only.
+Normalize **Pacman** to the Phase 08 games-layer boundary model only.
 
 This PR is intentionally narrow:
 - no engine edits
@@ -20,37 +20,37 @@ What is now true:
 What is still not true:
 - repo-wide flow standardization is not earned
 - shared-vs-game utility enforcement is not earned
-- Puckman normalization is still not earned
+- Pacman normalization is still not earned
 - full current-games migration is still not earned
 
 The smallest valid next move is:
-1. normalize **Puckman** to the same game-local boundary model used for focused game migrations,
+1. normalize **Pacman** to the same game-local boundary model used for focused game migrations,
 2. keep the PR game-local and surgical,
 3. update Phase 08 status only where actually earned.
 
 ## Required boundary target
-Puckman should follow this ownership model:
+Pacman should follow this ownership model:
 
-- `games/Puckman/flow/*`
+- `games/Pacman/flow/*`
   - attract / intro / highscore flow modules when those states exist
   - no duplicated rule constants
-- `games/Puckman/game/*`
+- `games/Pacman/game/*`
   - runtime orchestration and scene wiring only
-- `games/Puckman/entities/*`
+- `games/Pacman/entities/*`
   - player, ghost, pellet, fruit, tunnel, collision-domain entities
-- `games/Puckman/levels/*`
+- `games/Pacman/levels/*`
   - maze/layout/start-state progression definitions
-- `games/Puckman/rules/*`
+- `games/Pacman/rules/*`
   - authoritative game-local constants and flow/rules contracts
-- `games/Puckman/assets/*` and platform-local assets
-  - only Puckman-owned media/content
-- `games/Puckman/systems/*` and `games/Puckman/utils/*`
+- `games/Pacman/assets/*` and platform-local assets
+  - only Pacman-owned media/content
+- `games/Pacman/systems/*` and `games/Pacman/utils/*`
   - game-specific helpers only
 
 ## Implementation goals
 Codex should make only the smallest changes needed to achieve the following:
 
-1. Create or normalize a Puckman rules surface
+1. Create or normalize a Pacman rules surface
    - add a game-local rules module if missing
    - move duplicated flow/gameplay constants there
    - make flow + gameplay import from one source of truth
@@ -65,7 +65,7 @@ Codex should make only the smallest changes needed to achieve the following:
    - keep scene/runtime files focused on orchestration
 
 4. Preserve game-local ownership
-   - do not move Puckman assets/utilities into shared unless they are already clearly cross-game
+   - do not move Pacman assets/utilities into shared unless they are already clearly cross-game
    - do not pull engine utilities into the game folder
 
 5. Update status truthfully
@@ -82,14 +82,14 @@ Codex should make only the smallest changes needed to achieve the following:
 - no Phase 09+ work
 
 ## Expected touched areas
-- `games/Puckman/flow/*`
-- `games/Puckman/game/*`
-- `games/Puckman/rules/*`
-- optional: `games/Puckman/entities/*`, `levels/*`, `systems/*`, `utils/*`
+- `games/Pacman/flow/*`
+- `games/Pacman/game/*`
+- `games/Pacman/rules/*`
+- optional: `games/Pacman/entities/*`, `levels/*`, `systems/*`, `utils/*`
 - roadmap/status docs only if already part of the repo’s active tracking files
 
 ## Acceptance criteria
-- Puckman has a clear local boundary split for flow/game/rules
+- Pacman has a clear local boundary split for flow/game/rules
 - no duplicated flow-rule constants across flow and gameplay
 - gameplay scene/runtime files consume rules constants instead of defining them
 - no engine files changed
@@ -108,14 +108,14 @@ Still not earned from the uploaded PRs:
 - [ ] gameplay/entities/levels/rules/assets boundaries normalized
 - [ ] shared-vs-game utility boundaries enforced
 - [ ] space_invaders normalized
-- [ ] puckman normalized
+- [ ] pacman normalized
 - [ ] future games follow template-first path
 
 ## Suggested commit title
-`build(games): normalize puckman boundaries for phase 08`
+`build(games): normalize pacman boundaries for phase 08`
 
 ## After this PR
-Phase 08 should be reassessed strictly from repo truth. Likely remaining work after Puckman will be:
+Phase 08 should be reassessed strictly from repo truth. Likely remaining work after Pacman will be:
 - Space Invaders normalization, if not already fully implemented in repo
 - shared-vs-game utility boundary enforcement
 - final truthful status alignment

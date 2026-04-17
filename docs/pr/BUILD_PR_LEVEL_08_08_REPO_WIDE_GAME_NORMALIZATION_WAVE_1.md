@@ -6,7 +6,7 @@ all in-scope games satisfy the Phase 08 boundary contract.
 
 ## Why this PR exists
 The boundary scan confirmed:
-- Compliant: `Asteroids`, `Puckman`, `SpaceInvaders`
+- Compliant: `Asteroids`, `Pacman`, `SpaceInvaders`
 - Non-compliant: multiple remaining games with placeholder-only `rules/` and missing
   `flow/{attract.js,intro.js,highscore.js}`
 

@@ -1,15 +1,15 @@
-﻿PR: BUILD_PR_LEVEL_08_04_PUCKMAN_BOUNDARY_NORMALIZATION
+PR: BUILD_PR_LEVEL_08_04_PACMAN_BOUNDARY_NORMALIZATION
 
-Puckman boundary normalization (smallest scope)
-- Added game-local boundary folders under games/Puckman.
-- Added rules source of truth at games/Puckman/rules/gameFlowRules.js.
+Pacman boundary normalization (smallest scope)
+- Added game-local boundary folders under games/Pacman.
+- Added rules source of truth at games/Pacman/rules/gameFlowRules.js.
 - Added flow modules consuming rules constants:
-  - games/Puckman/flow/attract.js
-  - games/Puckman/flow/intro.js
-  - games/Puckman/flow/highscore.js
+  - games/Pacman/flow/attract.js
+  - games/Pacman/flow/intro.js
+  - games/Pacman/flow/highscore.js
 - Added gameplay runtime/scene modules consuming rules constants:
-  - games/Puckman/game/PuckmanRuntime.js
-  - games/Puckman/game/PuckmanGameScene.js
+  - games/Pacman/game/PacmanRuntime.js
+  - games/Pacman/game/PacmanGameScene.js
 
 Boundary ownership
 - flow: descriptors only, no duplicated constants
