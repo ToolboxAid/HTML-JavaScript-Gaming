@@ -1,10 +1,1 @@
-[x] Codex implemented the scoped toolchain validation work
-[x] Codex created or updated required tests/scripts
-[x] Tool entry/launch validation passes for scoped tools
-[x] Tool project/data contracts validate against runtime consumers
-[x] Asset pipeline handoff validates end-to-end in scope
-[x] Editor/runtime consistency validated in scope (via runtime scene loader + hot reload integration contract)
-[ ] No tool-specific engine leakage remains in verified scope (not promoted by this PR)
-[x] Reports captured under docs/dev/reports
-[x] Roadmap updated status-only and only if execution-backed
-[x] Final ZIP produced at <project folder>/tmp/BUILD_PR_LEVEL_19_16_TOOLCHAIN_ENGINE_INTEGRATION_VALIDATION.zip
+codex to validate consistency

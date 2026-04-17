@@ -817,8 +817,8 @@
 
 ### Track E � Toolchain Validation
 - [x] verify tools integrate cleanly with engine
-- [ ] validate asset pipelines end-to-end
-- [ ] validate editor ? runtime consistency
+- [x] validate asset pipelines end-to-end
+- [x] validate editor ? runtime consistency
 - [ ] confirm no tool-specific logic leaks into engine
 
 ### Track F � Sample & Game Validation
