@@ -1,1 +1,12 @@
-docs-only PR
+This bundle is a docs-only regeneration of the previously skipped roadmap-guard lane.
+
+Included:
+- PR doc defining roadmap preservation rules
+- Codex command instructing in-place status-only roadmap handling
+- report placeholders for Codex validation output
+
+Excluded on purpose:
+- no implementation code
+- no tests
+- no scripts
+- no replacement roadmap file

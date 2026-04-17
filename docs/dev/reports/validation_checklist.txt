@@ -1,1 +1,5 @@
-codex to validate consistency
+[ ] Bundle remains docs-only
+[ ] No roadmap file replacement is included in this ZIP
+[ ] Codex validates roadmap edits against guard rules
+[ ] Any roadmap update is in-place and status-only
+[ ] No roadmap text deletion or rewrite occurs
