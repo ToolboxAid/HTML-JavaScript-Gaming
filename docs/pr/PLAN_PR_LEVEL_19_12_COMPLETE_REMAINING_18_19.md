@@ -34,7 +34,6 @@ Close the active Level 18 overlay hardening lane by finishing the last in-scope 
 - Smallest scoped valid tests only.
 
 ## Validation Targets (for BUILD)
-- `npm test`
 - `node ./scripts/run-node-tests.mjs`
 - `npm run test:launch-smoke`
 - Any focused overlay/runtime tests touched by the Level 18 closure item

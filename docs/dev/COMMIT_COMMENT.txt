@@ -1,8 +1,3 @@
-Execute runtime lifecycle validation for Level 19 Track B.
+Deduplicate test commands, standardize on run-node-tests
 
-BUILD_PR_LEVEL_19_13_RUNTIME_LIFECYCLE_VALIDATION
-- validate boot/run/shutdown lifecycle
-- validate hot reload/reset flows
-- validate error handling paths
-- validate long-running stability
-- update roadmap only for execution-backed results
+BUILD_PR_LEVEL_19_14_TEST_COMMAND_DEDUP

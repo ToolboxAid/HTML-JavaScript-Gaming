@@ -43,7 +43,6 @@ Avoid:
 
 ## Validation
 Run as applicable:
-- `npm test`
 - `node ./scripts/run-node-tests.mjs`
 - `npm run test:launch-smoke`
 

@@ -15,10 +15,8 @@ Promote roadmap items to [x] if validation is clean.
 
 ## Steps
 1. Run:
-   npm test
-2. Run:
    node ./scripts/run-node-tests.mjs
-3. Run:
+2. Run:
    npm run test:launch-smoke
 
 4. If ALL PASS:
