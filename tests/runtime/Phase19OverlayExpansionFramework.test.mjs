@@ -5,6 +5,7 @@ David Quesenberry
 Phase19OverlayExpansionFramework.test.mjs
 */
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
 import { LEVEL17_OVERLAY_CYCLE_KEY } from '../../samples/phase-17/shared/overlayCycleInput.js';
 import {
   isOverlayRuntimeCycleModifierActive,
@@ -66,6 +67,23 @@ function makeInput(keys = []) {
       return down.has(code);
     },
   };
+}
+
+function assertOverlayRuntimeSliceUsesSharedFiniteNumberHelper() {
+  const runtimeSource = readFileSync(
+    new URL('../../samples/phase-17/shared/overlayGameplayRuntime.js', import.meta.url),
+    'utf8'
+  );
+  assert.equal(
+    runtimeSource.includes("import { asFiniteNumber } from '/src/shared/number/index.js';"),
+    true,
+    'Overlay runtime slice should import finite-number normalization from shared number helpers.'
+  );
+  assert.equal(
+    runtimeSource.includes('function normalizePointerNumber('),
+    false,
+    'Overlay runtime slice should not keep a local duplicate pointer-number normalization helper.'
+  );
 }
 
 function assertExpansionRegistrationAndCompatibility() {
@@ -1207,6 +1225,7 @@ function assertOverlaySharePackageExportImportCompatibility() {
 }
 
 export function run() {
+  assertOverlayRuntimeSliceUsesSharedFiniteNumberHelper();
   assertExpansionRegistrationAndCompatibility();
   assertExtensionLifecycleMutations();
   assertDynamicPanelSizingCapability();

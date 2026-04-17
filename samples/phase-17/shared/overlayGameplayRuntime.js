@@ -9,6 +9,7 @@ import {
   isOverlayRuntimeToggleModifierActive,
   LEVEL17_OVERLAY_CYCLE_KEY,
 } from '/samples/phase-17/shared/overlayCycleInput.js';
+import { asFiniteNumber } from '/src/shared/number/index.js';
 
 const overlayRuntimePreferenceMemoryStore = new Map();
 const OVERLAY_RUNTIME_SHARE_PACKAGE_FORMAT = 'overlay-runtime-share-package';
@@ -2424,21 +2425,13 @@ export function stepOverlayGameplayRuntimeControls(runtime, input, options = {})
   return true;
 }
 
-function normalizePointerNumber(value, fallback = 0) {
-  const numeric = Number(value);
-  if (!Number.isFinite(numeric)) {
-    return fallback;
-  }
-  return numeric;
-}
-
 function normalizePointerState(pointerState = {}, runtime = null) {
   const down = pointerState?.down === true;
   const previousDown = runtime?.interactionPointerLastDown === true;
   const pressed = pointerState?.pressed === true || (down && !previousDown);
   const released = pointerState?.released === true || (!down && previousDown);
-  const x = normalizePointerNumber(pointerState?.x, -1);
-  const y = normalizePointerNumber(pointerState?.y, -1);
+  const x = asFiniteNumber(pointerState?.x, -1);
+  const y = asFiniteNumber(pointerState?.y, -1);
   const modifiers = pointerState?.modifiers && typeof pointerState.modifiers === 'object'
     ? pointerState.modifiers
     : {};
@@ -2482,10 +2475,10 @@ function resolveTopMostInteractiveFrame(frames, x, y) {
 }
 
 function clampOverlayLayoutRect(rect, canvasWidth, canvasHeight, minPanelWidth, minPanelHeight) {
-  const width = Math.max(minPanelWidth, Math.min(canvasWidth, normalizePointerNumber(rect?.width, minPanelWidth)));
-  const height = Math.max(minPanelHeight, Math.min(canvasHeight, normalizePointerNumber(rect?.height, minPanelHeight)));
-  const x = Math.max(0, Math.min(canvasWidth - width, normalizePointerNumber(rect?.x, 0)));
-  const y = Math.max(0, Math.min(canvasHeight - height, normalizePointerNumber(rect?.y, 0)));
+  const width = Math.max(minPanelWidth, Math.min(canvasWidth, asFiniteNumber(rect?.width, minPanelWidth)));
+  const height = Math.max(minPanelHeight, Math.min(canvasHeight, asFiniteNumber(rect?.height, minPanelHeight)));
+  const x = Math.max(0, Math.min(canvasWidth - width, asFiniteNumber(rect?.x, 0)));
+  const y = Math.max(0, Math.min(canvasHeight - height, asFiniteNumber(rect?.y, 0)));
   return {
     x: Math.round(x),
     y: Math.round(y),
@@ -2499,8 +2492,8 @@ function normalizeGesturePointerState(pointerState = {}, runtime = null) {
   const previousDown = runtime?.interactionGestureLastDown === true;
   const pressed = pointerState?.pressed === true || (down && !previousDown);
   const released = pointerState?.released === true || (!down && previousDown);
-  const x = normalizePointerNumber(pointerState?.x, -1);
-  const y = normalizePointerNumber(pointerState?.y, -1);
+  const x = asFiniteNumber(pointerState?.x, -1);
+  const y = asFiniteNumber(pointerState?.y, -1);
   const modifiers = pointerState?.modifiers && typeof pointerState.modifiers === 'object'
     ? pointerState.modifiers
     : {};
@@ -2605,8 +2598,8 @@ export function stepOverlayGameplayRuntimeGestures(runtime, pointerState = {}, o
 
   const gestureState = runtime.interactionGestureState;
   if (gestureState && pointer.down) {
-    const dx = pointer.x - normalizePointerNumber(gestureState.startX, pointer.x);
-    const dy = pointer.y - normalizePointerNumber(gestureState.startY, pointer.y);
+    const dx = pointer.x - asFiniteNumber(gestureState.startX, pointer.x);
+    const dy = pointer.y - asFiniteNumber(gestureState.startY, pointer.y);
     const distance = Math.sqrt((dx * dx) + (dy * dy));
     gestureState.lastX = pointer.x;
     gestureState.lastY = pointer.y;
@@ -2625,8 +2618,8 @@ export function stepOverlayGameplayRuntimeGestures(runtime, pointerState = {}, o
   }
 
   if (gestureState && pointer.released) {
-    const dx = pointer.x - normalizePointerNumber(gestureState.startX, pointer.x);
-    const dy = pointer.y - normalizePointerNumber(gestureState.startY, pointer.y);
+    const dx = pointer.x - asFiniteNumber(gestureState.startX, pointer.x);
+    const dy = pointer.y - asFiniteNumber(gestureState.startY, pointer.y);
     const distance = Math.sqrt((dx * dx) + (dy * dy));
     const elapsedSeconds = Math.max(0, Number(gestureState.elapsedSeconds) || 0);
 
@@ -2709,8 +2702,8 @@ export function stepOverlayGameplayRuntimePointerInteractions(runtime, pointerSt
     activeOverlayId: String(options?.activeOverlayId || options?.context?.activeOverlayId || ''),
   };
   const canvasSize = context.renderer?.getCanvasSize?.() || { width: 960, height: 540 };
-  const canvasWidth = Math.max(320, normalizePointerNumber(canvasSize.width, 960));
-  const canvasHeight = Math.max(180, normalizePointerNumber(canvasSize.height, 540));
+  const canvasWidth = Math.max(320, asFiniteNumber(canvasSize.width, 960));
+  const canvasHeight = Math.max(180, asFiniteNumber(canvasSize.height, 540));
   const minPanelWidth = Math.max(120, Number(options?.minPanelWidth) || 120);
   const minPanelHeight = Math.max(32, Number(options?.minPanelHeight) || 32);
   const resizeHandleSize = Math.max(8, Number(options?.resizeHandleSize) || 14);
@@ -2748,8 +2741,8 @@ export function stepOverlayGameplayRuntimePointerInteractions(runtime, pointerSt
   }
 
   if (activeDragState && normalizedPointer.down) {
-    const dx = normalizedPointer.x - normalizePointerNumber(activeDragState.pointerStartX, normalizedPointer.x);
-    const dy = normalizedPointer.y - normalizePointerNumber(activeDragState.pointerStartY, normalizedPointer.y);
+    const dx = normalizedPointer.x - asFiniteNumber(activeDragState.pointerStartX, normalizedPointer.x);
+    const dy = normalizedPointer.y - asFiniteNumber(activeDragState.pointerStartY, normalizedPointer.y);
     const originRect = normalizeLayoutOverrideRect(activeDragState.originRect) || {
       x: 0,
       y: 0,

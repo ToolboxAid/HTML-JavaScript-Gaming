@@ -1,4 +1,19 @@
-[ ] Level 17 complete
-[ ] Baseline stable
-[ ] Level 18 ready to proceed
-[ ] Roadmap updated
+Validation checklist for Codex:
+- [x] Run targeted tests covering edited overlay runtime files
+  Command: custom Node runner with alias hooks for:
+  - `./tests/runtime/Phase19OverlayExpansionFramework.test.mjs`
+  - `./tests/runtime/Phase17OverlayGameplayRuntimeIntegration.test.mjs`
+  - `./tests/runtime/Phase17OverlayInputEdgeCases.test.mjs`
+  Result: PASS all three tests.
+- [x] Run existing overlay integration tests impacted by edited imports
+  Covered by:
+  - `Phase19OverlayExpansionFramework.test.mjs` (includes pointer/gesture/runtime coverage and new enforcement assertion)
+  - `Phase17OverlayGameplayRuntimeIntegration.test.mjs`
+  - `Phase17OverlayInputEdgeCases.test.mjs`
+- [x] Confirm no unrelated files changed
+  Changed implementation/test/roadmap files are limited to this audit slice plus required report artifacts.
+- [x] Confirm no gameplay behavior drift beyond duplicate-removal remediation
+  Existing Phase17 and Phase19 overlay runtime integration tests passed after migration.
+- [x] Confirm roadmap wording unchanged except status markers
+  Updated only marker states in Level 18 Track A items.
+- [x] Confirm ZIP written to `<project folder>/tmp/BUILD_PR_LEVEL_18_1_ENGINE_USAGE_ENFORCEMENT_AUDIT_SLICE.zip`

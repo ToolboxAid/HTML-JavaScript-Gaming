@@ -1,4 +1,2 @@
-Rebase to Level 18 after confirming Level 17 completion.
-
-- Resets progression starting point
-- Ensures correct roadmap alignment
+Level 18 hardening: audit bounded overlay runtime slice for engine/shared usage, remove local reimplementation where stable shared surfaces already exist, and add validation-backed enforcement
+BUILD_PR_LEVEL_18_1_ENGINE_USAGE_ENFORCEMENT_AUDIT_SLICE

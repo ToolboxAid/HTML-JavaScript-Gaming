@@ -722,9 +722,9 @@
 [ ] Document contracts
 
 ### Track A — Engine Usage Enforcement
-- [ ] verify all `samples/` use engine systems (no local reimplementation)
+- [.] verify all `samples/` use engine systems (no local reimplementation)
 - [ ] verify all `games/` use engine systems
-- [ ] migrate any local logic into engine/shared where appropriate
+- [.] migrate any local logic into engine/shared where appropriate
 - [ ] remove sample-specific logic from engine paths
 
 ### Track B — Boundary Hardening
