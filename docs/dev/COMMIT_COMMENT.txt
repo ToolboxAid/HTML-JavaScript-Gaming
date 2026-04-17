@@ -1,3 +1,7 @@
-Deduplicate test commands, standardize on run-node-tests
+Execute debug observability validation for Level 19 Track D.
 
-BUILD_PR_LEVEL_19_14_TEST_COMMAND_DEDUP
+BUILD_PR_LEVEL_19_15_DEBUG_OBSERVABILITY_VALIDATION
+- validate debug-data exposure for rendering/input/physics/state-replay/networking
+- add only minimal provider or test wiring if required
+- use deduplicated validation commands
+- update roadmap only for execution-backed results

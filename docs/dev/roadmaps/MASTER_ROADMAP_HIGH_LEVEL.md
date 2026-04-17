@@ -810,7 +810,7 @@
 - [x] identify bottlenecks
 
 ### Track D � Debug & Observability Maturity
-- [ ] ensure all systems expose debug data
+- [x] ensure all systems expose debug data
 - [x] ensure providers are complete and consistent
 - [x] validate debug panels across systems
 - [x] confirm production-safe debug toggling
