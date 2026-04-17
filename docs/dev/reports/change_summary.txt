@@ -1,1 +1,1 @@
-Docs-only final confirmation gate
+Docs-only enforcement PR

@@ -723,7 +723,7 @@
 
 ### Track A � Engine Usage Enforcement
 - [x] verify all `samples/` use engine systems (no local reimplementation)
-- [.] verify all `games/` use engine systems
+- [x] verify all `games/` use engine systems
 - [x] migrate any local logic into engine/shared where appropriate
 - [ ] remove sample-specific logic from engine paths
 

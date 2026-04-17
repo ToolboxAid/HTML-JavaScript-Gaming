@@ -8,6 +8,7 @@ import { Scene } from '/src/engine/scene/index.js';
 import BreakoutAudio from './BreakoutAudio.js';
 import BreakoutInputController from './BreakoutInputController.js';
 import BreakoutWorld from './BreakoutWorld.js';
+import { wrapTextByCharacterCount } from '/src/shared/utils/index.js';
 
 const VIEW = {
   width: 960,
@@ -23,28 +24,6 @@ const COLORS = {
   muted: '#a0a0a0',
   panel: '#000000',
 };
-
-function wrapText(text, maxCharacters = 34) {
-  const words = String(text ?? '').split(/\s+/).filter(Boolean);
-  const lines = [];
-  let current = '';
-
-  words.forEach((word) => {
-    const next = current ? `${current} ${word}` : word;
-    if (next.length > maxCharacters && current) {
-      lines.push(current);
-      current = word;
-      return;
-    }
-    current = next;
-  });
-
-  if (current) {
-    lines.push(current);
-  }
-
-  return lines;
-}
 
 export default class BreakoutScene extends Scene {
   constructor(options = {}) {
@@ -273,7 +252,7 @@ export default class BreakoutScene extends Scene {
       textBaseline: 'top',
     });
 
-    wrapText(copy.body).forEach((line, index) => {
+    wrapTextByCharacterCount(copy.body, 34).forEach((line, index) => {
       renderer.drawText(line, VIEW.width / 2, 336 + (index * 24), {
         color: COLORS.muted,
         font: '18px monospace',

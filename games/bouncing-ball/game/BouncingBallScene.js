@@ -8,6 +8,7 @@ import { Scene } from '/src/engine/scene/index.js';
 import BouncingBallAudio from './BouncingBallAudio.js';
 import BouncingBallInputController from './BouncingBallInputController.js';
 import BouncingBallWorld from './BouncingBallWorld.js';
+import { wrapTextByCharacterCount } from '/src/shared/utils/index.js';
 
 const VIEW = {
   width: 960,
@@ -22,28 +23,6 @@ const COLORS = {
   panel: '#05070a',
   ball: '#f4f4ef',
 };
-
-function wrapText(text, maxCharacters = 38) {
-  const words = String(text ?? '').split(/\s+/).filter(Boolean);
-  const lines = [];
-  let current = '';
-
-  words.forEach((word) => {
-    const next = current ? `${current} ${word}` : word;
-    if (next.length > maxCharacters && current) {
-      lines.push(current);
-      current = word;
-      return;
-    }
-    current = next;
-  });
-
-  if (current) {
-    lines.push(current);
-  }
-
-  return lines;
-}
 
 export default class BouncingBallScene extends Scene {
   constructor() {
@@ -180,7 +159,7 @@ export default class BouncingBallScene extends Scene {
       textBaseline: 'top',
     });
 
-    wrapText(copy.body).forEach((line, index) => {
+    wrapTextByCharacterCount(copy.body, 38).forEach((line, index) => {
       renderer.drawText(line, VIEW.width / 2, 336 + (index * 24), {
         color: COLORS.muted,
         font: '18px monospace',

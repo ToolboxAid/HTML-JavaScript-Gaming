@@ -4,6 +4,8 @@ David Quesenberry
 03/25/2026
 PacmanLiteNavigator.js
 */
+import { oppositeCardinalDirection } from '/src/shared/utils/index.js';
+
 const DIRS = Object.freeze({
   left: { x: -1, y: 0 },
   right: { x: 1, y: 0 },
@@ -12,14 +14,6 @@ const DIRS = Object.freeze({
 });
 
 export { DIRS };
-
-function opposite(direction) {
-  if (direction === 'left') return 'right';
-  if (direction === 'right') return 'left';
-  if (direction === 'up') return 'down';
-  if (direction === 'down') return 'up';
-  return null;
-}
 
 export function getLegalDirections(grid, tileX, tileY) {
   return Object.keys(DIRS).filter((name) => {
@@ -30,7 +24,7 @@ export function getLegalDirections(grid, tileX, tileY) {
 
 export function chooseDirectionTowardTarget(grid, tileX, tileY, currentDirection, targetX, targetY) {
   const legal = getLegalDirections(grid, tileX, tileY);
-  const disallow = opposite(currentDirection);
+  const disallow = oppositeCardinalDirection(currentDirection);
   const filtered = legal.filter((dir) => dir !== disallow);
   const candidates = filtered.length ? filtered : legal;
   if (!candidates.length) {

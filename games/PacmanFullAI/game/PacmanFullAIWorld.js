@@ -10,6 +10,7 @@ import PacmanFullAIGhostHouseController from './PacmanFullAIGhostHouseController
 import PacmanFullAIGhostModeScheduler from './PacmanFullAIGhostModeScheduler.js';
 import PacmanFullAIGrid from './PacmanFullAIGrid.js';
 import { DIRS } from './PacmanFullAINavigator.js';
+import { oppositeCardinalDirection } from '/src/shared/utils/index.js';
 
 const MAX_STEP_SECONDS = 1 / 120;
 
@@ -17,16 +18,8 @@ function near(a, b, epsilon = 0.5) {
   return Math.abs(a - b) <= epsilon;
 }
 
-function opposite(direction) {
-  if (direction === 'left') return 'right';
-  if (direction === 'right') return 'left';
-  if (direction === 'up') return 'down';
-  if (direction === 'down') return 'up';
-  return null;
-}
-
 function isOppositePair(a, b) {
-  return Boolean(a && b && opposite(a) === b);
+  return Boolean(a && b && oppositeCardinalDirection(a) === b);
 }
 
 function canMove(grid, tile, dirName) {

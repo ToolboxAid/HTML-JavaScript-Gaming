@@ -25,3 +25,5 @@ export { isFiniteNumber, toFiniteNumber, asFiniteNumber, asPositiveInteger, asPo
 export { isObject, isPlainObject, asObject, asArray as asObjectArray } from "./objectUtils.js";
 export { cloneJson } from "./jsonUtils.js";
 export { stringifyValue } from "./stringifyValueUtils.js";
+export { oppositeCardinalDirection } from "./directionUtils.js";
+export { wrapTextByCharacterCount } from "./textWrapUtils.js";

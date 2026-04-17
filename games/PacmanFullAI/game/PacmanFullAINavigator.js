@@ -4,20 +4,14 @@ David Quesenberry
 03/25/2026
 PacmanFullAINavigator.js
 */
+import { oppositeCardinalDirection as opposite } from '/src/shared/utils/index.js';
+
 const DIRS = Object.freeze({
   left: { x: -1, y: 0 },
   right: { x: 1, y: 0 },
   up: { x: 0, y: -1 },
   down: { x: 0, y: 1 },
 });
-
-function opposite(direction) {
-  if (direction === 'left') return 'right';
-  if (direction === 'right') return 'left';
-  if (direction === 'up') return 'down';
-  if (direction === 'down') return 'up';
-  return null;
-}
 
 function getLegalDirections(grid, tileX, tileY) {
   return Object.keys(DIRS).filter((name) => {

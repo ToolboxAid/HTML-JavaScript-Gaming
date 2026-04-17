@@ -8,6 +8,7 @@ import { Scene } from '/src/engine/scene/index.js';
 import PongInputController from './PongInputController.js';
 import PongAudio from './PongAudio.js';
 import { getPongModes } from './PongModeConfig.js';
+import { wrapTextByCharacterCount } from '/src/shared/utils/index.js';
 
 const COURT = {
   width: 960,
@@ -29,36 +30,6 @@ const COLORS = {
   warn: '#ffd37d',
   danger: '#ff9a9a',
 };
-
-function wrapOverlayText(text, maxCharacters = 44) {
-  const paragraphs = String(text ?? '').split('\n');
-  const lines = [];
-
-  paragraphs.forEach((paragraph) => {
-    const words = paragraph.split(/\s+/).filter(Boolean);
-    let currentLine = '';
-
-    words.forEach((word) => {
-      const nextLine = currentLine ? `${currentLine} ${word}` : word;
-      if (nextLine.length > maxCharacters && currentLine) {
-        lines.push(currentLine);
-        currentLine = word;
-        return;
-      }
-      currentLine = nextLine;
-    });
-
-    if (currentLine) {
-      lines.push(currentLine);
-    }
-
-    if (!words.length) {
-      lines.push('');
-    }
-  });
-
-  return lines;
-}
 
 export default class PongScene extends Scene {
   constructor() {
@@ -518,9 +489,9 @@ export default class PongScene extends Scene {
   drawOverlay(renderer, title, body) {
     const showModeList = this.roundOver && !this.winnerText;
     const bodySections = String(body ?? '').split('\n');
-    const descriptionLines = wrapOverlayText(bodySections[0] ?? '', showModeList ? 46 : 50);
-    const promptLines = wrapOverlayText(bodySections.slice(1).join(' ').trim(), 46);
-    const bodyLines = showModeList ? descriptionLines : wrapOverlayText(body, 50);
+    const descriptionLines = wrapTextByCharacterCount(bodySections[0] ?? '', showModeList ? 46 : 50, { preserveParagraphs: true });
+    const promptLines = wrapTextByCharacterCount(bodySections.slice(1).join(' ').trim(), 46, { preserveParagraphs: true });
+    const bodyLines = showModeList ? descriptionLines : wrapTextByCharacterCount(body, 50, { preserveParagraphs: true });
     const panelHeight = showModeList ? 346 : Math.max(150, 112 + (bodyLines.length * 26));
     renderer.drawRect(160, 250, 640, panelHeight, 'rgba(8, 12, 18, 0.86)');
     renderer.strokeRect(160, 250, 640, panelHeight, COLORS.ink, 2);

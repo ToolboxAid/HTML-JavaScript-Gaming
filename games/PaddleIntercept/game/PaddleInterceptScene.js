@@ -8,6 +8,7 @@ import { Scene } from '/src/engine/scene/index.js';
 import PaddleInterceptAudio from './PaddleInterceptAudio.js';
 import PaddleInterceptInputController from './PaddleInterceptInputController.js';
 import PaddleInterceptWorld from './PaddleInterceptWorld.js';
+import { wrapTextByCharacterCount } from '/src/shared/utils/index.js';
 
 const VIEW = { width: 960, height: 720 };
 
@@ -23,28 +24,6 @@ const COLORS = {
   marker: '#34d399',
   lane: '#111c30',
 };
-
-function wrapText(text, maxCharacters = 42) {
-  const words = String(text ?? '').split(/\s+/).filter(Boolean);
-  const lines = [];
-  let current = '';
-
-  words.forEach((word) => {
-    const next = current ? `${current} ${word}` : word;
-    if (next.length > maxCharacters && current) {
-      lines.push(current);
-      current = word;
-      return;
-    }
-    current = next;
-  });
-
-  if (current) {
-    lines.push(current);
-  }
-
-  return lines;
-}
 
 export default class PaddleInterceptScene extends Scene {
   constructor() {
@@ -210,7 +189,7 @@ export default class PaddleInterceptScene extends Scene {
       textAlign: 'center',
       textBaseline: 'top',
     });
-    wrapText(copy.body).forEach((line, index) => {
+    wrapTextByCharacterCount(copy.body, 42).forEach((line, index) => {
       renderer.drawText(line, VIEW.width / 2, 336 + (index * 24), {
         color: COLORS.muted,
         font: '18px monospace',
