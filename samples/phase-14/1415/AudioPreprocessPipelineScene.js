@@ -1,4 +1,4 @@
-import { Scene } from '/src/engine/scene/index.js'; import { drawFrame, drawPanel } from '/src/engine/debug/index.js'; import { Theme, ThemeTokens } from '/src/engine/theme/index.js'; import { AudioPreprocessPipeline } from '/src/engine/pipeline/index.js';
+import { Scene } from '/src/engine/scene/index.js'; import { drawFrame, drawPanel } from '/src/engine/debug/index.js'; import { Theme, ThemeTokens } from '/src/engine/theme/index.js'; import { AudioPreprocessPipeline } from '/tools/shared/pipeline/index.js';
 const theme = new Theme(ThemeTokens);
 export default class AudioPreprocessPipelineScene extends Scene {
   constructor() { super(); this.pipeline = new AudioPreprocessPipeline(); this.audio = null; this.status = 'Preprocess an audio record.'; }

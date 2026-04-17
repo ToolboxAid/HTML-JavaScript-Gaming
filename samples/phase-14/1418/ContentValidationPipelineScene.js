@@ -1,4 +1,4 @@
-import { Scene } from '/src/engine/scene/index.js'; import { drawFrame, drawPanel } from '/src/engine/debug/index.js'; import { Theme, ThemeTokens } from '/src/engine/theme/index.js'; import { ContentValidationPipeline } from '/src/engine/pipeline/index.js';
+import { Scene } from '/src/engine/scene/index.js'; import { drawFrame, drawPanel } from '/src/engine/debug/index.js'; import { Theme, ThemeTokens } from '/src/engine/theme/index.js'; import { ContentValidationPipeline } from '/tools/shared/pipeline/index.js';
 const theme = new Theme(ThemeTokens);
 export default class ContentValidationPipelineScene extends Scene {
   constructor() { super(); this.pipeline = new ContentValidationPipeline([(content) => ({ passed: Boolean(content.id), detail: 'id required' }), (content) => ({ passed: Boolean(content.path), detail: 'path required' })]); this.report = null; this.status = 'Validate a content record.'; }

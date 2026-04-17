@@ -1,1 +1,3 @@
-[ ] criteria defined
+[ ] violations removed
+[ ] validation re-run
+[ ] pass confirmed

@@ -819,7 +819,7 @@
 - [x] verify tools integrate cleanly with engine
 - [x] validate asset pipelines end-to-end
 - [x] validate editor ? runtime consistency
-- [ ] confirm no tool-specific logic leaks into engine
+- [x] confirm no tool-specific logic leaks into engine
 
 ### Track F � Sample & Game Validation
 - [x] Organize/rebuild `samples/` and `games/` as if newly constructed, with proper classes/data in proper folders.

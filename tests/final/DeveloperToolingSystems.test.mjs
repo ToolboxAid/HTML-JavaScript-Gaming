@@ -12,7 +12,7 @@ import {
   PropertyEditor,
   RuntimeInspector,
   SceneGraphViewer,
-} from '../../src/engine/tooling/index.js';
+} from '../../tools/shared/tooling/index.js';
 
 export async function run() {
   const consoleTool = new DeveloperConsole();
