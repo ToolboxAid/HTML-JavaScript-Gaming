@@ -1,4 +1,3 @@
-[ ] boot stable
-[ ] runtime stable
-[ ] shutdown clean
-[ ] reset flows valid
+[ ] stable FPS under load
+[ ] no memory leaks
+[ ] bottlenecks identified
