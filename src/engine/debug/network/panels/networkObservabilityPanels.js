@@ -9,14 +9,14 @@ import { asArray, asObject, sanitizeText } from "../shared/networkDebugUtils.js"
 import { createLatencyDiagnosticsModel } from "../diagnostics/latencyDiagnosticsModel.js";
 import { createReplicationDiagnosticsModel } from "../diagnostics/replicationDiagnosticsModel.js";
 
-function readNetworkSnapshot(snapshot = {}, sampleKey = "network") {
+function readNetworkSnapshot(snapshot = {}, snapshotKey = "network") {
   const source = asObject(snapshot);
-  return asObject(asObject(source.assets)[sampleKey]);
+  return asObject(asObject(source.assets)[snapshotKey]);
 }
 
 export function createLatencyRttPanel(options = {}) {
   const source = asObject(options);
-  const sampleKey = sanitizeText(source.sampleKey) || "network";
+  const snapshotKey = sanitizeText(source.snapshotKey) || "network";
 
   return {
     id: sanitizeText(source.id) || "network-latency-rtt",
@@ -26,7 +26,7 @@ export function createLatencyRttPanel(options = {}) {
     source: sanitizeText(source.source) || "assets",
     renderMode: "text-block",
     render(panel, snapshot) {
-      const model = createLatencyDiagnosticsModel(readNetworkSnapshot(snapshot, sampleKey));
+      const model = createLatencyDiagnosticsModel(readNetworkSnapshot(snapshot, snapshotKey));
       return {
         id: sanitizeText(panel?.id) || "network-latency-rtt",
         title: sanitizeText(panel?.title) || "Latency / RTT",
@@ -43,7 +43,7 @@ export function createLatencyRttPanel(options = {}) {
 
 export function createReplicationStatePanel(options = {}) {
   const source = asObject(options);
-  const sampleKey = sanitizeText(source.sampleKey) || "network";
+  const snapshotKey = sanitizeText(source.snapshotKey) || "network";
 
   return {
     id: sanitizeText(source.id) || "network-replication-state",
@@ -53,7 +53,7 @@ export function createReplicationStatePanel(options = {}) {
     source: sanitizeText(source.source) || "assets",
     renderMode: "text-block",
     render(panel, snapshot) {
-      const model = createReplicationDiagnosticsModel(readNetworkSnapshot(snapshot, sampleKey));
+      const model = createReplicationDiagnosticsModel(readNetworkSnapshot(snapshot, snapshotKey));
       const lines = [
         `hostTick=${model.hostTick}`,
         `highestBacklog=${model.highestBacklog}`,

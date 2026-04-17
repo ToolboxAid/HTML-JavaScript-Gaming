@@ -725,7 +725,7 @@
 - [x] verify all `samples/` use engine systems (no local reimplementation)
 - [x] verify all `games/` use engine systems
 - [x] migrate any local logic into engine/shared where appropriate
-- [ ] remove sample-specific logic from engine paths
+- [x] remove sample-specific logic from engine paths
 
 ### Track B � Boundary Hardening
 - [x] enforce engine vs shared vs game vs tool boundaries
@@ -743,7 +743,7 @@
 - [ ] single class per file enforcement
 - [ ] remove duplicate helpers
 - [ ] normalize naming consistency
-- [ ] eliminate import/export anti-patterns
+- [ ] eliminate import/export anti-patterns repo wide
 
 ### Track E � CSS & UI Normalization
 - [ ] flatten CSS layers
@@ -752,7 +752,6 @@
 
 ### Track F � Docs System Cleanup
 [ ] Docs organization: classify all `./docs/` into buckets.
-
 [ ] Arrange docs into classification buckets.
 [ ] Any doc that is only move/rename/etc. should be deleted (verify content is in the correct doc before deleting).
 

@@ -13,7 +13,7 @@ import {
   createNetworkObservabilityPanels,
   createNetworkHelpCommand,
   createNetworkReplicationCommand,
-  createNetworkSampleCommand,
+  createNetworkStatusCommand,
   createNetworkCommandPack,
   createReadOnlyNetworkProviders,
   createServerDashboardRegistry,
@@ -84,7 +84,7 @@ export async function run() {
   const helpResult = helpCommand.handler();
   assert.equal(helpCommand.name, "network.help");
   assert.match(helpResult.lines.join("\n"), /network\.replication/);
-  assert.match(helpResult.lines.join("\n"), /network\.sample\.status/);
+  assert.match(helpResult.lines.join("\n"), /network\.status/);
 
   const replicationCommand = createNetworkReplicationCommand();
   const replicationResult = replicationCommand.handler(snapshot);
@@ -92,26 +92,26 @@ export async function run() {
   assert.match(replicationResult.lines.join("\n"), /hostTick=440/);
   assert.match(replicationResult.lines.join("\n"), /hasPressure=true/);
 
-  const sampleCommand = createNetworkSampleCommand({ sampleCommandId: "repro" });
-  const sampleResult = sampleCommand.handler(snapshot);
-  assert.equal(sampleCommand.name, "network.sample.repro");
-  assert.match(sampleResult.lines.join("\n"), /sampleKey=network/);
+  const statusCommand = createNetworkStatusCommand({ commandId: "repro" });
+  const statusResult = statusCommand.handler(snapshot);
+  assert.equal(statusCommand.name, "network.status.repro");
+  assert.match(statusResult.lines.join("\n"), /snapshotKey=network/);
 
   const commandPack = createNetworkCommandPack({
-    commands: [helpCommand, replicationCommand, sampleCommand]
+    commands: [helpCommand, replicationCommand, statusCommand]
   });
   assert.equal(commandPack.commands.length, 3);
 
   const providers = createReadOnlyNetworkProviders([
     {
-      providerId: "network.sample.provider",
-      title: "Sample-backed Provider",
+      providerId: "network.debug.provider",
+      title: "Network-backed Provider",
       sourcePath: "assets.network"
     }
   ]);
   assert.equal(providers.length, 1);
   assert.equal(providers[0].readOnly, true);
-  assert.equal(providers[0].providerId, "network.sample.provider");
+  assert.equal(providers[0].providerId, "network.debug.provider");
 
   const dashboardSnapshot = {
     timestampMs: 12345,
@@ -193,8 +193,8 @@ export async function run() {
   assert.equal(debugDisabledHost.getStatus().debugAccessEnabled, false);
 
   const promotion = createNetworkPromotionRecommendation({
-    sampleProviderValidation: true,
-    samplePanelValidation: true,
+    providerValidation: true,
+    panelValidation: true,
     operatorCommandValidation: true,
     debugOnlyGatingValidation: true
   });

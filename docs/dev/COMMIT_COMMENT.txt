@@ -1,1 +1,8 @@
-Finalize Level 18 Track C (contract stabilization complete)
+Remove remaining sample-specific logic from engine paths.
+
+BUILD_PR_LEVEL_18_10_REMOVE_SAMPLE_SPECIFIC_LOGIC_FROM_ENGINE_PATHS
+- inspect engine paths for sample-specific logic
+- remove or relocate confirmed sample-specific surfaces
+- preserve engine contracts
+- update exact consumers/imports required by the scoped change
+- update master roadmap in place under roadmap guard rules

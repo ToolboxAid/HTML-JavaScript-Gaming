@@ -1,1 +1,10 @@
-generated
+docs/
+docs/pr/
+docs/pr/BUILD_PR_LEVEL_18_10_REMOVE_SAMPLE_SPECIFIC_LOGIC_FROM_ENGINE_PATHS.md
+docs/dev/
+docs/dev/codex_commands.md
+docs/dev/commit_comment.txt
+docs/dev/reports/
+docs/dev/reports/change_summary.txt
+docs/dev/reports/validation_checklist.txt
+docs/dev/reports/file_tree.txt

@@ -36,7 +36,7 @@ export function createNetworkHelpCommand(options = {}) {
   const fallbackLines = [
     "network.help",
     "network.replication",
-    "network.sample.status"
+    "network.status"
   ];
 
   return {
@@ -54,14 +54,14 @@ export function createNetworkHelpCommand(options = {}) {
   };
 }
 
-function readNetworkSnapshot(context = {}, sampleKey = "network") {
+function readNetworkSnapshot(context = {}, snapshotKey = "network") {
   const source = asObject(context);
   const assets = asObject(source.assets);
-  return asObject(assets[sampleKey]);
+  return asObject(assets[snapshotKey]);
 }
 
-function createReplicationLines(context = {}, sampleKey = "network") {
-  const model = createReplicationDiagnosticsModel(readNetworkSnapshot(context, sampleKey));
+function createReplicationLines(context = {}, snapshotKey = "network") {
+  const model = createReplicationDiagnosticsModel(readNetworkSnapshot(context, snapshotKey));
   const lines = [
     `hostTick=${model.hostTick}`,
     `highestBacklog=${model.highestBacklog}`,
@@ -80,10 +80,10 @@ function createReplicationLines(context = {}, sampleKey = "network") {
 
 export function createNetworkReplicationCommand(options = {}) {
   const source = asObject(options);
-  const sampleKey = sanitizeText(source.sampleKey) || "network";
+  const snapshotKey = sanitizeText(source.snapshotKey) || "network";
   const linesFactory = typeof source.createLines === "function"
     ? source.createLines
-    : (context) => createReplicationLines(context, sampleKey);
+    : (context) => createReplicationLines(context, snapshotKey);
 
   return {
     name: sanitizeText(source.name) || "network.replication",
@@ -100,32 +100,32 @@ export function createNetworkReplicationCommand(options = {}) {
   };
 }
 
-export function createNetworkSampleCommand(options = {}) {
+export function createNetworkStatusCommand(options = {}) {
   const source = asObject(options);
-  const sampleCommandId = sanitizeText(source.sampleCommandId) || "status";
-  const commandName = sanitizeText(source.name) || `network.sample.${sampleCommandId}`;
-  const sampleKey = sanitizeText(source.sampleKey) || "network";
+  const commandId = sanitizeText(source.commandId) || "status";
+  const commandName = sanitizeText(source.name) || (commandId === "status" ? "network.status" : `network.status.${commandId}`);
+  const snapshotKey = sanitizeText(source.snapshotKey) || "network";
   const linesFactory = typeof source.createLines === "function"
     ? source.createLines
     : (context = {}) => {
-      const snapshot = readNetworkSnapshot(context, sampleKey);
+      const snapshot = readNetworkSnapshot(context, snapshotKey);
       const keys = Object.keys(snapshot);
       return [
-        `sampleKey=${sampleKey}`,
+        `snapshotKey=${snapshotKey}`,
         `fields=${keys.length > 0 ? keys.join(",") : "none"}`
       ];
     };
 
   return {
     name: commandName,
-    summary: sanitizeText(source.summary) || "Show sample-specific network diagnostics.",
+    summary: sanitizeText(source.summary) || "Show network diagnostics for the selected snapshot key.",
     usage: sanitizeText(source.usage) || commandName,
     handler(context = {}, args = []) {
       return {
         status: "ready",
-        title: sanitizeText(source.title) || "Network Sample Diagnostics",
+        title: sanitizeText(source.title) || "Network Diagnostics",
         lines: asArray(linesFactory(context, asArray(args))).map((line) => String(line)),
-        code: sanitizeText(source.code) || "NETWORK_SAMPLE"
+        code: sanitizeText(source.code) || "NETWORK_STATUS"
       };
     }
   };

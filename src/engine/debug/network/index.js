@@ -26,7 +26,7 @@ export {
 export {
   createNetworkHelpCommand,
   createNetworkReplicationCommand,
-  createNetworkSampleCommand,
+  createNetworkStatusCommand,
   createNetworkCommandPack
 } from "./commands/networkDebugCommandPackBridge.js";
 

@@ -10,8 +10,8 @@ import { asBoolean, asObject } from "../shared/networkDebugUtils.js";
 function normalizeChecks(input = {}) {
   const source = asObject(input);
   return {
-    sampleProviderValidation: asBoolean(source.sampleProviderValidation, false),
-    samplePanelValidation: asBoolean(source.samplePanelValidation, false),
+    providerValidation: asBoolean(source.providerValidation, false),
+    panelValidation: asBoolean(source.panelValidation, false),
     operatorCommandValidation: asBoolean(source.operatorCommandValidation, false),
     debugOnlyGatingValidation: asBoolean(source.debugOnlyGatingValidation, false)
   };
@@ -26,8 +26,8 @@ export function createNetworkPromotionRecommendation(checks = {}) {
     recommendation: allPassing ? "promote" : "hold",
     checks: normalized,
     lines: [
-      `sampleProviderValidation=${normalized.sampleProviderValidation}`,
-      `samplePanelValidation=${normalized.samplePanelValidation}`,
+      `providerValidation=${normalized.providerValidation}`,
+      `panelValidation=${normalized.panelValidation}`,
       `operatorCommandValidation=${normalized.operatorCommandValidation}`,
       `debugOnlyGatingValidation=${normalized.debugOnlyGatingValidation}`,
       `recommendation=${allPassing ? "promote" : "hold"}`
