@@ -1,7 +1,1 @@
-Execute approved game-to-sample reclassification moves.
-
-BUILD_PR_LEVEL_18_4_GAME_TO_SAMPLE_RECLASSIFICATION_EXECUTION
-- move approved game/demo entries into recommended sample phase targets
-- leave PacmanLite unchanged
-- update exact references required by the moves
-- update master roadmap in place under roadmap guard rules
+Contract stabilization progress (Level 18 Track C)

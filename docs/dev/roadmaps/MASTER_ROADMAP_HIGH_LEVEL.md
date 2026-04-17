@@ -736,7 +736,7 @@
 ### Track C � Contract Stabilization
 - [.] finalize engine public APIs
 - [.] finalize shared contracts
-- [ ] ensure selectors/providers are stable
+- [.] ensure selectors/providers are stable
 - [.] remove unstable or experimental surfaces
 
 ### Track D � Codebase Consistency

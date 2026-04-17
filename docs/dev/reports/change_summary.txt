@@ -1,7 +1,1 @@
-Docs-first execution bundle for the approved game-to-sample reclassification lane.
-
-This PR asks Codex to:
-- execute the approved reclassification moves
-- leave PacmanLite alone
-- update only exact references required by those moves
-- update the master roadmap in place under the roadmap guard
+Docs-only PR

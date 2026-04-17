@@ -1,6 +1,3 @@
-[ ] Prior reviewed recommendations used as source of truth
-[ ] Approved entries moved from games to samples
-[ ] PacmanLite left unchanged
-[ ] Exact path/reference updates completed
-[ ] Reports written to docs/dev/reports
-[ ] Master roadmap updated in place under guard rules
+[ ] unstable surfaces identified
+[ ] stabilization applied
+[ ] validation done
