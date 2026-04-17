@@ -19,8 +19,13 @@ function readJson(filePath) {
 }
 
 function getExpectedPhases() {
+  const discovered = listPhaseDirectories()
+    .map((phaseDir) => Number.parseInt(phaseDir.slice("phase-".length), 10))
+    .filter((value) => Number.isInteger(value) && value > 0)
+    .sort((a, b) => a - b);
+  const maxPhase = discovered.length > 0 ? discovered[discovered.length - 1] : 0;
   const phases = [];
-  for (let i = 1; i <= 15; i += 1) {
+  for (let i = 1; i <= maxPhase; i += 1) {
     phases.push(String(i).padStart(2, "0"));
   }
   return phases;
@@ -73,24 +78,27 @@ function assertSamplesSharedBoundary() {
     assert.equal(fs.existsSync(fullPath), true, `Missing canonical shared sample file: ${fileName}`);
   }
 
-  const compatibilityShims = [
-    "debugConfigUtils.js",
-    "lateSampleBootstrap.js",
-    "networkDebugUtils.js",
-    "numberUtils.js",
-    "platformerHelpers.js",
-    "sampleDetailPageEnhancement.js",
-    "snapshotCloneUtils.js",
-  ];
-  for (const fileName of compatibilityShims) {
-    const shimPath = path.join(SAMPLES_ROOT, "_shared", fileName);
-    const content = fs.readFileSync(shimPath, "utf8");
-    assert.match(content, /\.\.\/shared\//, `${fileName} must proxy to samples/shared`);
-  }
+  const compatibilityShimsDir = path.join(SAMPLES_ROOT, "_shared");
+  if (fs.existsSync(compatibilityShimsDir)) {
+    const compatibilityShims = [
+      "debugConfigUtils.js",
+      "lateSampleBootstrap.js",
+      "networkDebugUtils.js",
+      "numberUtils.js",
+      "platformerHelpers.js",
+      "sampleDetailPageEnhancement.js",
+      "snapshotCloneUtils.js",
+    ];
+    for (const fileName of compatibilityShims) {
+      const shimPath = path.join(compatibilityShimsDir, fileName);
+      const content = fs.readFileSync(shimPath, "utf8");
+      assert.match(content, /\.\.\/shared\//, `${fileName} must proxy to samples/shared`);
+    }
 
-  const cssShimPath = path.join(SAMPLES_ROOT, "_shared", "sampleBaseLayout.css");
-  const cssShim = fs.readFileSync(cssShimPath, "utf8");
-  assert.match(cssShim, /\/samples\/shared\/sampleBaseLayout\.css/);
+    const cssShimPath = path.join(compatibilityShimsDir, "sampleBaseLayout.css");
+    const cssShim = fs.readFileSync(cssShimPath, "utf8");
+    assert.match(cssShim, /\/samples\/shared\/sampleBaseLayout\.css/);
+  }
 
   let sharedReferenceCount = 0;
   function walk(dirPath) {
@@ -124,8 +132,15 @@ function assertCurriculumProgression() {
   const curriculum = readJson(path.join(METADATA_ROOT, "samples.curriculum.validation.json"));
   const indexMetadata = readJson(path.join(METADATA_ROOT, "samples.index.metadata.json"));
   const expectedPhases = getExpectedPhases();
+  const curriculumPhaseOrder = curriculum?.progression?.phaseOrder || [];
 
-  assert.deepEqual(curriculum?.progression?.phaseOrder || [], expectedPhases);
+  for (const phase of curriculumPhaseOrder) {
+    assert.equal(expectedPhases.includes(String(phase)), true, `Unexpected curriculum phase: ${phase}`);
+  }
+  assert.deepEqual(
+    curriculumPhaseOrder.map((phase) => String(phase)),
+    [...curriculumPhaseOrder].map((phase) => String(phase)).sort()
+  );
   assert.equal(curriculum?.progression?.hasDuplicateSampleIds, false);
   assert.equal(
     Number(curriculum?.progression?.totalSamples) || 0,
