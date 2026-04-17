@@ -13,8 +13,11 @@ import {
   LEVEL19_OVERLAY_RUNTIME_TOGGLE_MODIFIERS,
 } from '../../samples/phase-17/shared/overlayCycleInput.js';
 import {
+  applyOverlayGameplayRuntimePreset,
   exportOverlayGameplayRuntimeProfile,
   enqueueOverlayGameplayRuntimeSyncEvent,
+  getOverlayGameplayRuntimeDefaultPresets,
+  getOverlayGameplayRuntimePresetLibrary,
   getOverlayGameplayRuntimeCompositionSnapshot,
   getOverlayGameplayRuntimeInteractionSnapshot,
   importOverlayGameplayRuntimeProfile,
@@ -24,6 +27,7 @@ import {
   setOverlayGameplayRuntimeAdaptiveUiRules,
   setOverlayGameplayRuntimeContextInputMap,
   setOverlayGameplayRuntimeKeybindProfile,
+  setOverlayGameplayRuntimePresetLibrary,
   setOverlayGameplayRuntimeVisible,
   stepOverlayGameplayRuntimeGestures,
   stepOverlayGameplayRuntimePointerInteractions,
@@ -1021,6 +1025,83 @@ function assertOverlayProfileExportImportValidation() {
   assert.equal(reloadedRuntime.interactionLayoutOverrides['id:runtime-b'].y, 102, 'Imported overlay profile should persist and restore layout override Y position.');
 }
 
+function assertOverlayPresetLibraryApplyAndCompatibility() {
+  const framework = createPhase19OverlayExpansionFramework();
+  framework.registerExtension(definePhase19OverlayExtension({
+    id: 'phase19-overlay-preset-library',
+    overlays: [
+      { id: 'runtime-a', label: 'Runtime A' },
+      { id: 'runtime-b', label: 'Runtime B' },
+    ],
+    initialOverlayId: 'runtime-a',
+    persistenceKey: 'phase19:overlay-preset-library',
+    runtimeExtensions: [
+      { overlayId: 'runtime-a', compose: true, layerOrder: 10, visualPriority: 10, panelWidth: 220, panelHeight: 96, onRender() {} },
+      { overlayId: 'runtime-b', compose: true, layerOrder: 20, visualPriority: 20, panelWidth: 220, panelHeight: 96, onRender() {} },
+    ],
+  }));
+
+  const runtime = framework.createRuntimeForExtension('phase19-overlay-preset-library');
+  const defaultPresets = getOverlayGameplayRuntimeDefaultPresets();
+  const defaultPresetIds = defaultPresets.map((preset) => preset.id);
+  assert.equal(defaultPresetIds.includes('minimal'), true, 'Default preset library should include minimal preset.');
+  assert.equal(defaultPresetIds.includes('debug'), true, 'Default preset library should include debug preset.');
+  assert.equal(defaultPresetIds.includes('full-telemetry'), true, 'Default preset library should include full-telemetry preset.');
+  assert.equal(defaultPresets.every((preset) => preset.profile?.version === 1), true, 'Default preset schema should normalize profile payloads to version 1.');
+
+  const minimalApplyResult = applyOverlayGameplayRuntimePreset(runtime, 'minimal');
+  assert.equal(minimalApplyResult.success, true, 'Applying default minimal preset should succeed.');
+  assert.equal(minimalApplyResult.presetId, 'minimal', 'Preset apply result should return the applied preset id.');
+  assert.equal(runtime.interactionVisible, false, 'Minimal preset should apply visibility preference to runtime profile.');
+  assert.equal(runtime.interactionKeybindProfileId, 'preset-minimal', 'Minimal preset should apply keybind profile id.');
+
+  const telemetryApplyResult = applyOverlayGameplayRuntimePreset(runtime, 'full-telemetry');
+  assert.equal(telemetryApplyResult.success, true, 'Applying default full-telemetry preset should succeed.');
+  assert.equal(runtime.interactionVisible, true, 'Full-telemetry preset should re-enable visibility preference.');
+  assert.equal(runtime.interactionKeybindProfileId, 'preset-full-telemetry', 'Full-telemetry preset should apply profile id.');
+  assert.equal(
+    runtime.interactionContextInputMap?.byStackPosition?.top?.['cycle-next'],
+    'cycle-prev',
+    'Full-telemetry preset should apply contextual input mapping profile data.'
+  );
+
+  setOverlayGameplayRuntimePresetLibrary(runtime, [
+    {
+      id: 'studio-profile',
+      label: 'Studio Profile',
+      description: 'Custom profile for focused debugging.',
+      profile: {
+        visibility: true,
+        keybindProfile: {
+          id: 'studio-profile',
+          cycleKey: 'KeyY',
+        },
+      },
+    },
+  ]);
+  const combinedPresetLibrary = getOverlayGameplayRuntimePresetLibrary(runtime);
+  assert.equal(
+    combinedPresetLibrary.some((preset) => preset.id === 'studio-profile'),
+    true,
+    'Preset library should merge custom presets with defaults.'
+  );
+
+  const customApplyResult = applyOverlayGameplayRuntimePreset(runtime, 'studio-profile');
+  assert.equal(customApplyResult.success, true, 'Applying custom preset should succeed.');
+  assert.equal(runtime.interactionCycleKey, 'KeyY', 'Custom preset should apply keybind cycle key to runtime profile.');
+  assert.equal(runtime.interactionKeybindProfileId, 'studio-profile', 'Custom preset should apply keybind profile id.');
+
+  const exportedJson = exportOverlayGameplayRuntimeProfile(runtime);
+  const importedRuntime = framework.createRuntimeForExtension('phase19-overlay-preset-library');
+  const importResult = importOverlayGameplayRuntimeProfile(importedRuntime, exportedJson);
+  assert.equal(importResult.success, true, 'Preset-applied profiles should remain compatible with export/import JSON flow.');
+  assert.equal(importedRuntime.interactionCycleKey, 'KeyY', 'Imported profile should preserve cycle key applied by preset.');
+
+  const reloadedRuntime = framework.createRuntimeForExtension('phase19-overlay-preset-library');
+  assert.equal(reloadedRuntime.interactionCycleKey, 'KeyY', 'Preset application should remain compatible with persistence restore.');
+  assert.equal(reloadedRuntime.interactionKeybindProfileId, 'studio-profile', 'Persisted runtime should restore keybind profile applied via preset.');
+}
+
 export function run() {
   assertExpansionRegistrationAndCompatibility();
   assertExtensionLifecycleMutations();
@@ -1034,4 +1115,5 @@ export function run() {
   assertAdaptiveOverlayUiRulesReactToGameplayTelemetryAndContext();
   assertOverlayPreferencesPersistenceCompatibility();
   assertOverlayProfileExportImportValidation();
+  assertOverlayPresetLibraryApplyAndCompatibility();
 }

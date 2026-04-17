@@ -11,6 +11,52 @@ import {
 } from '/samples/phase-17/shared/overlayCycleInput.js';
 
 const overlayRuntimePreferenceMemoryStore = new Map();
+const OVERLAY_RUNTIME_DEFAULT_PRESET_DEFINITIONS = Object.freeze([
+  Object.freeze({
+    id: 'minimal',
+    label: 'Minimal',
+    description: 'Hide overlays and keep controls lightweight.',
+    profile: Object.freeze({
+      visibility: false,
+      keybindProfile: Object.freeze({
+        id: 'preset-minimal',
+        cycleKey: LEVEL17_OVERLAY_CYCLE_KEY,
+        contextInputMap: null,
+      }),
+    }),
+  }),
+  Object.freeze({
+    id: 'debug',
+    label: 'Debug',
+    description: 'Enable baseline debug overlays with default cycle key.',
+    profile: Object.freeze({
+      visibility: true,
+      keybindProfile: Object.freeze({
+        id: 'preset-debug',
+        cycleKey: LEVEL17_OVERLAY_CYCLE_KEY,
+      }),
+    }),
+  }),
+  Object.freeze({
+    id: 'full-telemetry',
+    label: 'Full Telemetry',
+    description: 'Enable telemetry-focused overlay controls with top-layer emphasis mapping.',
+    profile: Object.freeze({
+      visibility: true,
+      keybindProfile: Object.freeze({
+        id: 'preset-full-telemetry',
+        cycleKey: LEVEL17_OVERLAY_CYCLE_KEY,
+        contextInputMap: Object.freeze({
+          byStackPosition: Object.freeze({
+            top: Object.freeze({
+              'cycle-next': 'cycle-prev',
+            }),
+          }),
+        }),
+      }),
+    }),
+  }),
+]);
 
 function normalizeRuntimeExtensionEntry(entry) {
   if (!entry || typeof entry !== 'object') {
@@ -390,6 +436,107 @@ function applyOverlayRuntimePreferencePayload(runtime, validatedPayload) {
     }
   }
   return true;
+}
+
+function createOverlayRuntimePreferencePayloadFromValidated(validatedPayload) {
+  if (!validatedPayload || typeof validatedPayload !== 'object') {
+    return null;
+  }
+  const payload = {
+    version: Number.isInteger(Number(validatedPayload.version)) && Number(validatedPayload.version) > 0
+      ? Number(validatedPayload.version)
+      : 1,
+  };
+  if (validatedPayload.hasVisibility) {
+    payload.visibility = validatedPayload.visibility === true;
+  }
+  if (validatedPayload.hasLayout) {
+    payload.layout = cloneJsonCompatibleValue(validatedPayload.layout) || {};
+  }
+  if (validatedPayload.hasKeybindProfile) {
+    const keybindProfile = {};
+    if (Object.prototype.hasOwnProperty.call(validatedPayload.keybindProfile, 'id')) {
+      keybindProfile.id = String(validatedPayload.keybindProfile.id || '').trim();
+    }
+    if (Object.prototype.hasOwnProperty.call(validatedPayload.keybindProfile, 'cycleKey')) {
+      keybindProfile.cycleKey = String(validatedPayload.keybindProfile.cycleKey || '').trim() || LEVEL17_OVERLAY_CYCLE_KEY;
+    }
+    if (validatedPayload.keybindProfile.contextInputMapSpecified === true) {
+      keybindProfile.contextInputMap = validatedPayload.keybindProfile.contextInputMap === null
+        ? null
+        : (cloneJsonCompatibleValue(validatedPayload.keybindProfile.contextInputMap) || {});
+    }
+    payload.keybindProfile = keybindProfile;
+  }
+  return payload;
+}
+
+function normalizeOverlayRuntimePresetEntry(preset, index = 0) {
+  if (!preset || typeof preset !== 'object' || Array.isArray(preset)) {
+    return null;
+  }
+  const id = String(preset.id || `preset-${index + 1}`).trim();
+  if (!id) {
+    return null;
+  }
+  const label = String(preset.label || id).trim() || id;
+  const description = String(preset.description || '').trim();
+  const profileInput = preset.profile && typeof preset.profile === 'object'
+    ? preset.profile
+    : (preset.preferences && typeof preset.preferences === 'object' ? preset.preferences : null);
+  if (!profileInput) {
+    return null;
+  }
+  const validatedProfile = validateOverlayRuntimePreferencePayload(profileInput);
+  if (!validatedProfile.valid || !validatedProfile.value) {
+    return null;
+  }
+  const profilePayload = createOverlayRuntimePreferencePayloadFromValidated(validatedProfile.value);
+  if (!profilePayload) {
+    return null;
+  }
+  return Object.freeze({
+    id,
+    label,
+    description,
+    profile: Object.freeze(profilePayload),
+  });
+}
+
+function normalizeOverlayRuntimePresetLibrary(presets) {
+  if (!Array.isArray(presets) || presets.length === 0) {
+    return Object.freeze([]);
+  }
+  const normalized = [];
+  for (let i = 0; i < presets.length; i += 1) {
+    const candidate = normalizeOverlayRuntimePresetEntry(presets[i], i);
+    if (!candidate) {
+      continue;
+    }
+    if (normalized.some((entry) => entry.id === candidate.id)) {
+      continue;
+    }
+    normalized.push(candidate);
+  }
+  return Object.freeze(normalized);
+}
+
+const OVERLAY_RUNTIME_DEFAULT_PRESET_LIBRARY = normalizeOverlayRuntimePresetLibrary(OVERLAY_RUNTIME_DEFAULT_PRESET_DEFINITIONS);
+
+function resolveOverlayRuntimePresetFromLibrary(library = [], presetOrId = '') {
+  if (typeof presetOrId === 'string') {
+    const requestedId = String(presetOrId || '').trim();
+    if (!requestedId) {
+      return null;
+    }
+    for (let i = 0; i < library.length; i += 1) {
+      if (library[i]?.id === requestedId) {
+        return library[i];
+      }
+    }
+    return null;
+  }
+  return normalizeOverlayRuntimePresetEntry(presetOrId);
 }
 
 function buildOverlayRuntimeLayoutPreferenceSnapshot(runtime) {
@@ -1489,6 +1636,7 @@ export function createOverlayGameplayRuntime({
     interactionGestureLastDown: false,
     interactionContextInputMap: null,
     interactionAdaptiveUiRules: Object.freeze([]),
+    interactionPresetLibrary: Object.freeze([]),
     interactionPreferenceStorageKey: normalizeOverlayRuntimePreferenceStorageKey(preferenceStorageKey),
     interactionPreferenceStorage: preferenceStorage && typeof preferenceStorage === 'object'
       ? preferenceStorage
@@ -1532,6 +1680,75 @@ export function setOverlayGameplayRuntimePreferenceStorageKey(runtime, preferenc
     loadOverlayGameplayRuntimePreferences(runtime);
   }
   return true;
+}
+
+export function getOverlayGameplayRuntimeDefaultPresets() {
+  return OVERLAY_RUNTIME_DEFAULT_PRESET_LIBRARY;
+}
+
+export function setOverlayGameplayRuntimePresetLibrary(runtime, presets = []) {
+  if (!runtime) {
+    return false;
+  }
+  runtime.interactionPresetLibrary = normalizeOverlayRuntimePresetLibrary(presets);
+  return true;
+}
+
+export function getOverlayGameplayRuntimePresetLibrary(runtime, { includeDefaults = true } = {}) {
+  const customLibrary = Array.isArray(runtime?.interactionPresetLibrary)
+    ? runtime.interactionPresetLibrary
+    : [];
+  if (includeDefaults === false) {
+    return customLibrary;
+  }
+  if (customLibrary.length === 0) {
+    return OVERLAY_RUNTIME_DEFAULT_PRESET_LIBRARY;
+  }
+  const combined = [...OVERLAY_RUNTIME_DEFAULT_PRESET_LIBRARY];
+  for (let i = 0; i < customLibrary.length; i += 1) {
+    const preset = customLibrary[i];
+    if (!preset || typeof preset !== 'object') {
+      continue;
+    }
+    const existingIndex = combined.findIndex((entry) => entry.id === preset.id);
+    if (existingIndex >= 0) {
+      combined[existingIndex] = preset;
+      continue;
+    }
+    combined.push(preset);
+  }
+  return Object.freeze(combined);
+}
+
+export function applyOverlayGameplayRuntimePreset(runtime, presetOrId, options = {}) {
+  if (!runtime) {
+    return Object.freeze({
+      success: false,
+      errors: Object.freeze(['Overlay runtime is required for preset application.']),
+      presetId: '',
+    });
+  }
+
+  const presetLibrary = getOverlayGameplayRuntimePresetLibrary(runtime, {
+    includeDefaults: options?.includeDefaults !== false,
+  });
+  const resolvedPreset = resolveOverlayRuntimePresetFromLibrary(presetLibrary, presetOrId);
+  if (!resolvedPreset) {
+    return Object.freeze({
+      success: false,
+      errors: Object.freeze(['Requested overlay preset is missing or invalid.']),
+      presetId: '',
+    });
+  }
+
+  const importResult = importOverlayGameplayRuntimeProfile(runtime, resolvedPreset.profile, {
+    persist: options?.persist !== false,
+  });
+  return Object.freeze({
+    success: importResult.success === true,
+    errors: importResult.errors,
+    presetId: resolvedPreset.id,
+  });
 }
 
 export function setOverlayGameplayRuntimeKeybindProfile(runtime, { id = '', cycleKey = '', contextInputMap = undefined } = {}) {

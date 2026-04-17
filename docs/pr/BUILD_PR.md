@@ -1,17 +1,18 @@
-# BUILD_PR_LEVEL_22_6_OVERLAY_PROFILE_EXPORT_IMPORT
+# BUILD_PR_LEVEL_22_7_OVERLAY_PRESET_LIBRARY
 
 ## Purpose
-Enable export and import of overlay user profiles.
+Provide a library of predefined overlay configurations (presets).
 
 ## Scope
-- Export preferences to JSON
-- Import preferences from JSON
-- Validate schema and compatibility
+- Define preset schema
+- Include default presets (minimal, debug, full telemetry)
+- Allow loading presets into active profile
 
 ## Test Steps
-1. Export profile
-2. Import profile
-3. Verify settings applied
+1. Load preset
+2. Verify overlay changes
+3. Ensure compatibility with persistence
 
 ## Expected
-- Profiles portable across sessions/devices
+- Presets apply correctly
+- No conflicts with user settings

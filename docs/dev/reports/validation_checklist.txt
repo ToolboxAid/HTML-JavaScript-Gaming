@@ -1,4 +1,4 @@
-[ ] Export works
-[ ] Import works
-[ ] Validation prevents bad data
+[ ] Presets load correctly
+[ ] Presets apply without conflicts
+[ ] Compatible with persistence
 [ ] Roadmap updated

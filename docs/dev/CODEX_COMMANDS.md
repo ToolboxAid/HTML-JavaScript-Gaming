@@ -2,8 +2,9 @@ MODEL: GPT-5.4
 REASONING: medium
 
 COMMAND:
-Implement profile export/import:
-- Export overlay preferences to JSON
-- Import with validation
-- Ensure compatibility with persistence system
+Implement overlay preset library:
+- Define preset schema
+- Provide default presets
+- Allow applying presets to profiles
+- Ensure compatibility with export/import and persistence
 - Update roadmap status only

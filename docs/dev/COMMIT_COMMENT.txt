@@ -1,3 +1,4 @@
-Add overlay profile export/import.
+Add overlay preset library.
 
-- Enables sharing and portability of user settings
+- Provides predefined configurations
+- Enables quick switching of overlay setups

@@ -640,6 +640,7 @@
 - [x] Level 22 adaptive overlay UI rules added (visibility/size/emphasis responsive to gameplay state, overlay context, and telemetry)
 - [x] Level 22 overlay preferences persistence added (visibility, layout overrides, and keybind profile restored on runtime load)
 - [x] Level 22 overlay profile export/import added (validated JSON portability with persistence-system compatibility)
+- [x] Level 22 overlay preset library added (schema, defaults, and preset-to-profile apply with export/import+persistence compatibility)
 
 ### Sample Phase Tracks
 - [x] 3D phase normalized
