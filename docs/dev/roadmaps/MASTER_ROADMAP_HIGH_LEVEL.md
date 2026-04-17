@@ -641,6 +641,7 @@
 - [x] Level 22 overlay preferences persistence added (visibility, layout overrides, and keybind profile restored on runtime load)
 - [x] Level 22 overlay profile export/import added (validated JSON portability with persistence-system compatibility)
 - [x] Level 22 overlay preset library added (schema, defaults, and preset-to-profile apply with export/import+persistence compatibility)
+- [x] Level 22 overlay user sharing system added (shareable profile packages with validated import compatibility across preset and persistence systems)
 
 ### Sample Phase Tracks
 - [x] 3D phase normalized

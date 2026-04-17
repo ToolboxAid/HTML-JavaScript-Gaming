@@ -11,6 +11,9 @@ import {
 } from '/samples/phase-17/shared/overlayCycleInput.js';
 
 const overlayRuntimePreferenceMemoryStore = new Map();
+const OVERLAY_RUNTIME_SHARE_PACKAGE_FORMAT = 'overlay-runtime-share-package';
+const OVERLAY_RUNTIME_SHARE_PACKAGE_VERSION = 1;
+const OVERLAY_RUNTIME_PROFILE_SCHEMA_VERSION = 1;
 const OVERLAY_RUNTIME_DEFAULT_PRESET_DEFINITIONS = Object.freeze([
   Object.freeze({
     id: 'minimal',
@@ -537,6 +540,96 @@ function resolveOverlayRuntimePresetFromLibrary(library = [], presetOrId = '') {
     return null;
   }
   return normalizeOverlayRuntimePresetEntry(presetOrId);
+}
+
+function validateOverlayRuntimeSharePackagePayload(payload, runtime = null) {
+  const errors = [];
+  if (!payload || typeof payload !== 'object' || Array.isArray(payload)) {
+    return {
+      valid: false,
+      errors: Object.freeze(['Overlay runtime share package must be an object.']),
+      value: null,
+    };
+  }
+
+  const format = String(payload.format || '').trim();
+  if (format !== OVERLAY_RUNTIME_SHARE_PACKAGE_FORMAT) {
+    errors.push(`Overlay runtime share package format must be "${OVERLAY_RUNTIME_SHARE_PACKAGE_FORMAT}".`);
+  }
+
+  const packageVersion = Number(payload.packageVersion);
+  if (!Number.isInteger(packageVersion) || packageVersion <= 0) {
+    errors.push('Overlay runtime share package version must be a positive integer.');
+  } else if (packageVersion > OVERLAY_RUNTIME_SHARE_PACKAGE_VERSION) {
+    errors.push(`Overlay runtime share package version ${packageVersion} is not supported by this runtime.`);
+  }
+
+  if (payload.compatibility !== undefined) {
+    if (!payload.compatibility || typeof payload.compatibility !== 'object' || Array.isArray(payload.compatibility)) {
+      errors.push('Overlay runtime share package compatibility must be an object when provided.');
+    } else if (payload.compatibility.profileSchemaVersion !== undefined) {
+      const profileSchemaVersion = Number(payload.compatibility.profileSchemaVersion);
+      if (!Number.isInteger(profileSchemaVersion) || profileSchemaVersion <= 0) {
+        errors.push('Overlay runtime share package compatibility.profileSchemaVersion must be a positive integer when provided.');
+      } else if (profileSchemaVersion > OVERLAY_RUNTIME_PROFILE_SCHEMA_VERSION) {
+        errors.push(
+          `Overlay runtime share package profile schema version ${profileSchemaVersion} is not supported by this runtime.`
+        );
+      }
+    }
+  }
+
+  const validatedProfile = validateOverlayRuntimePreferencePayload(payload.profile);
+  if (!validatedProfile.valid || !validatedProfile.value) {
+    for (let i = 0; i < validatedProfile.errors.length; i += 1) {
+      errors.push(`Share package profile: ${validatedProfile.errors[i]}`);
+    }
+  }
+
+  let preset = null;
+  if (Object.prototype.hasOwnProperty.call(payload, 'preset')) {
+    const normalizedPreset = normalizeOverlayRuntimePresetEntry(payload.preset, 0);
+    if (!normalizedPreset) {
+      errors.push('Overlay runtime share package preset is invalid.');
+    } else {
+      preset = normalizedPreset;
+    }
+  }
+
+  const rawPresetId = String(payload.presetId || '').trim();
+  const presetId = rawPresetId || (preset ? preset.id : '');
+  if (rawPresetId && preset && preset.id !== rawPresetId) {
+    errors.push('Overlay runtime share package presetId does not match included preset id.');
+  }
+  if (presetId && !preset) {
+    const availablePreset = resolveOverlayRuntimePresetFromLibrary(
+      getOverlayGameplayRuntimePresetLibrary(runtime, { includeDefaults: true }),
+      presetId
+    );
+    if (!availablePreset) {
+      errors.push(`Overlay runtime share package requires preset "${presetId}" which is not available in this runtime.`);
+    }
+  }
+
+  if (errors.length > 0) {
+    return {
+      valid: false,
+      errors: Object.freeze(errors),
+      value: null,
+    };
+  }
+
+  return {
+    valid: true,
+    errors: Object.freeze([]),
+    value: Object.freeze({
+      format,
+      packageVersion,
+      profile: validatedProfile.value,
+      presetId,
+      preset,
+    }),
+  };
 }
 
 function buildOverlayRuntimeLayoutPreferenceSnapshot(runtime) {
@@ -1802,12 +1895,51 @@ export function getOverlayGameplayRuntimePreferencesSnapshot(runtime) {
 export function exportOverlayGameplayRuntimeProfile(runtime, { pretty = false } = {}) {
   const snapshot = getOverlayGameplayRuntimePreferencesSnapshot(runtime);
   const payload = {
-    version: 1,
+    version: OVERLAY_RUNTIME_PROFILE_SCHEMA_VERSION,
     visibility: snapshot.visibility,
     layout: snapshot.layout,
     keybindProfile: snapshot.keybindProfile,
   };
   return JSON.stringify(payload, null, pretty ? 2 : 0);
+}
+
+export function exportOverlayGameplayRuntimeSharePackage(runtime, options = {}) {
+  const snapshot = getOverlayGameplayRuntimePreferencesSnapshot(runtime);
+  const profile = {
+    version: OVERLAY_RUNTIME_PROFILE_SCHEMA_VERSION,
+    visibility: snapshot.visibility,
+    layout: snapshot.layout,
+    keybindProfile: snapshot.keybindProfile,
+  };
+
+  const sharePackage = {
+    format: OVERLAY_RUNTIME_SHARE_PACKAGE_FORMAT,
+    packageVersion: OVERLAY_RUNTIME_SHARE_PACKAGE_VERSION,
+    compatibility: {
+      profileSchemaVersion: OVERLAY_RUNTIME_PROFILE_SCHEMA_VERSION,
+    },
+    source: String(options?.source || 'overlay-gameplay-runtime').trim() || 'overlay-gameplay-runtime',
+    exportedAt: typeof options?.exportedAt === 'string' && options.exportedAt.trim()
+      ? options.exportedAt.trim()
+      : new Date().toISOString(),
+    profile,
+  };
+
+  const hasPresetSelection = options?.presetOrId !== undefined && options?.presetOrId !== null && options?.presetOrId !== '';
+  if (hasPresetSelection) {
+    const presetLibrary = getOverlayGameplayRuntimePresetLibrary(runtime, {
+      includeDefaults: options?.includeDefaults !== false,
+    });
+    const resolvedPreset = resolveOverlayRuntimePresetFromLibrary(presetLibrary, options.presetOrId);
+    if (resolvedPreset) {
+      sharePackage.presetId = resolvedPreset.id;
+      if (options?.includePreset !== false) {
+        sharePackage.preset = resolvedPreset;
+      }
+    }
+  }
+
+  return JSON.stringify(sharePackage, null, options?.pretty === true ? 2 : 0);
 }
 
 export function saveOverlayGameplayRuntimePreferences(runtime, options = {}) {
@@ -1891,6 +2023,70 @@ export function importOverlayGameplayRuntimeProfile(runtime, profileInput, optio
   return Object.freeze({
     success: true,
     errors: Object.freeze([]),
+  });
+}
+
+export function importOverlayGameplayRuntimeSharePackage(runtime, sharePackageInput, options = {}) {
+  if (!runtime) {
+    return Object.freeze({
+      success: false,
+      errors: Object.freeze(['Overlay runtime is required for share package import.']),
+      presetId: '',
+      presetRegistered: false,
+    });
+  }
+
+  let parsedInput = null;
+  if (typeof sharePackageInput === 'string') {
+    try {
+      parsedInput = JSON.parse(sharePackageInput);
+    } catch {
+      return Object.freeze({
+        success: false,
+        errors: Object.freeze(['Overlay runtime share package JSON is invalid.']),
+        presetId: '',
+        presetRegistered: false,
+      });
+    }
+  } else {
+    parsedInput = cloneJsonCompatibleValue(sharePackageInput);
+  }
+
+  const validated = validateOverlayRuntimeSharePackagePayload(parsedInput, runtime);
+  if (!validated.valid || !validated.value) {
+    return Object.freeze({
+      success: false,
+      errors: validated.errors,
+      presetId: '',
+      presetRegistered: false,
+    });
+  }
+
+  let presetRegistered = false;
+  if (validated.value.preset && options?.registerPreset !== false) {
+    const customLibrary = getOverlayGameplayRuntimePresetLibrary(runtime, { includeDefaults: false });
+    setOverlayGameplayRuntimePresetLibrary(runtime, [...customLibrary, validated.value.preset]);
+    presetRegistered = true;
+  }
+
+  const profilePayload = createOverlayRuntimePreferencePayloadFromValidated(validated.value.profile);
+  const importResult = importOverlayGameplayRuntimeProfile(runtime, profilePayload, {
+    persist: options?.persist !== false,
+  });
+  if (importResult.success !== true) {
+    return Object.freeze({
+      success: false,
+      errors: importResult.errors,
+      presetId: validated.value.presetId,
+      presetRegistered,
+    });
+  }
+
+  return Object.freeze({
+    success: true,
+    errors: Object.freeze([]),
+    presetId: validated.value.presetId,
+    presetRegistered,
   });
 }
 

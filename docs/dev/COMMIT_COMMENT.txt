@@ -1,4 +1,4 @@
-Add overlay preset library.
+Add overlay user sharing system.
 
-- Provides predefined configurations
-- Enables quick switching of overlay setups
+- Enables sharing of overlay profiles and presets
+- Supports cross-environment portability

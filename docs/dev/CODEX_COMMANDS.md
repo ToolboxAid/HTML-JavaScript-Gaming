@@ -2,9 +2,8 @@ MODEL: GPT-5.4
 REASONING: medium
 
 COMMAND:
-Implement overlay preset library:
-- Define preset schema
-- Provide default presets
-- Allow applying presets to profiles
-- Ensure compatibility with export/import and persistence
+Implement overlay user sharing system:
+- Create shareable profile packages
+- Import with validation and compatibility checks
+- Integrate with preset and persistence systems
 - Update roadmap status only

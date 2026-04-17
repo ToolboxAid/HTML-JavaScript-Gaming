@@ -1,4 +1,4 @@
-[ ] Presets load correctly
-[ ] Presets apply without conflicts
-[ ] Compatible with persistence
+[ ] Share package export works
+[ ] Import works across environments
+[ ] Validation prevents incompatible data
 [ ] Roadmap updated

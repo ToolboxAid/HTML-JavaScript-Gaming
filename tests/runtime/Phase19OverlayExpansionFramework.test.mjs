@@ -15,12 +15,14 @@ import {
 import {
   applyOverlayGameplayRuntimePreset,
   exportOverlayGameplayRuntimeProfile,
+  exportOverlayGameplayRuntimeSharePackage,
   enqueueOverlayGameplayRuntimeSyncEvent,
   getOverlayGameplayRuntimeDefaultPresets,
   getOverlayGameplayRuntimePresetLibrary,
   getOverlayGameplayRuntimeCompositionSnapshot,
   getOverlayGameplayRuntimeInteractionSnapshot,
   importOverlayGameplayRuntimeProfile,
+  importOverlayGameplayRuntimeSharePackage,
   saveOverlayGameplayRuntimePreferences,
   renderOverlayGameplayRuntime,
   resolveOverlayGameplayRuntimeInputAction,
@@ -1102,6 +1104,108 @@ function assertOverlayPresetLibraryApplyAndCompatibility() {
   assert.equal(reloadedRuntime.interactionKeybindProfileId, 'studio-profile', 'Persisted runtime should restore keybind profile applied via preset.');
 }
 
+function assertOverlaySharePackageExportImportCompatibility() {
+  const framework = createPhase19OverlayExpansionFramework();
+  framework.registerExtension(definePhase19OverlayExtension({
+    id: 'phase19-overlay-share-package',
+    overlays: [
+      { id: 'runtime-a', label: 'Runtime A' },
+      { id: 'runtime-b', label: 'Runtime B' },
+    ],
+    initialOverlayId: 'runtime-a',
+    persistenceKey: 'phase19:overlay-share-package',
+    runtimeExtensions: [
+      { overlayId: 'runtime-a', compose: true, layerOrder: 10, visualPriority: 10, panelWidth: 220, panelHeight: 96, onRender() {} },
+      { overlayId: 'runtime-b', compose: true, layerOrder: 20, visualPriority: 20, panelWidth: 220, panelHeight: 96, onRender() {} },
+    ],
+  }));
+
+  const sourceRuntime = framework.createRuntimeForExtension('phase19-overlay-share-package');
+  setOverlayGameplayRuntimePresetLibrary(sourceRuntime, [
+    {
+      id: 'team-share',
+      label: 'Team Share',
+      description: 'Shared profile package preset.',
+      profile: {
+        visibility: false,
+        keybindProfile: {
+          id: 'team-share',
+          cycleKey: 'KeyV',
+        },
+      },
+    },
+  ]);
+  setOverlayGameplayRuntimeVisible(sourceRuntime, false);
+  setOverlayGameplayRuntimeKeybindProfile(sourceRuntime, {
+    id: 'portable-share',
+    cycleKey: 'KeyV',
+  });
+  sourceRuntime.interactionLayoutOverrides['id:runtime-b'] = {
+    x: 44,
+    y: 122,
+    width: 244,
+    height: 130,
+  };
+
+  const sharePackageJson = exportOverlayGameplayRuntimeSharePackage(sourceRuntime, {
+    presetOrId: 'team-share',
+  });
+  const sharePackagePayload = JSON.parse(sharePackageJson);
+  assert.equal(sharePackagePayload.format, 'overlay-runtime-share-package', 'Share package export should include expected package format.');
+  assert.equal(sharePackagePayload.packageVersion, 1, 'Share package export should include current package version.');
+  assert.equal(sharePackagePayload.compatibility.profileSchemaVersion, 1, 'Share package export should include profile schema compatibility marker.');
+  assert.equal(sharePackagePayload.presetId, 'team-share', 'Share package export should include selected preset id.');
+  assert.equal(sharePackagePayload.profile.layout['id:runtime-b'].height, 130, 'Share package export should include profile layout overrides.');
+  assert.equal(sharePackagePayload.preset.profile.keybindProfile.cycleKey, 'KeyV', 'Share package export should include preset payload when selected.');
+
+  const importedRuntime = framework.createRuntimeForExtension('phase19-overlay-share-package');
+  const importResult = importOverlayGameplayRuntimeSharePackage(importedRuntime, sharePackageJson);
+  assert.equal(importResult.success, true, 'Share package import should succeed for valid package payload.');
+  assert.equal(importResult.presetId, 'team-share', 'Share package import should report resolved preset id.');
+  assert.equal(importResult.presetRegistered, true, 'Share package import should register included preset into runtime preset library.');
+  assert.equal(importedRuntime.interactionVisible, false, 'Share package import should apply visibility preference.');
+  assert.equal(importedRuntime.interactionCycleKey, 'KeyV', 'Share package import should apply keybind cycle key.');
+  assert.equal(importedRuntime.interactionLayoutOverrides['id:runtime-b'].x, 44, 'Share package import should apply layout override X position.');
+  assert.equal(importedRuntime.interactionLayoutOverrides['id:runtime-b'].width, 244, 'Share package import should apply layout override width.');
+  assert.equal(
+    getOverlayGameplayRuntimePresetLibrary(importedRuntime).some((preset) => preset.id === 'team-share'),
+    true,
+    'Share package import should keep included preset compatible with preset library APIs.'
+  );
+
+  const unsupportedVersionPayload = {
+    ...sharePackagePayload,
+    packageVersion: 99,
+  };
+  const unsupportedVersionResult = importOverlayGameplayRuntimeSharePackage(importedRuntime, JSON.stringify(unsupportedVersionPayload));
+  assert.equal(unsupportedVersionResult.success, false, 'Share package import should fail compatibility checks for unsupported package versions.');
+  assert.equal(
+    unsupportedVersionResult.errors.some((error) => error.includes('not supported')),
+    true,
+    'Share package import should report unsupported package version errors.'
+  );
+
+  const missingPresetPayload = {
+    format: 'overlay-runtime-share-package',
+    packageVersion: 1,
+    profile: {
+      visibility: true,
+    },
+    presetId: 'missing-shared-preset',
+  };
+  const missingPresetResult = importOverlayGameplayRuntimeSharePackage(importedRuntime, JSON.stringify(missingPresetPayload));
+  assert.equal(missingPresetResult.success, false, 'Share package import should fail when required preset compatibility cannot be resolved.');
+  assert.equal(
+    missingPresetResult.errors.some((error) => error.includes('missing-shared-preset')),
+    true,
+    'Share package import should report missing required preset compatibility errors.'
+  );
+
+  const reloadedRuntime = framework.createRuntimeForExtension('phase19-overlay-share-package');
+  assert.equal(reloadedRuntime.interactionCycleKey, 'KeyV', 'Share package import should remain compatible with persisted profile restoration.');
+  assert.equal(reloadedRuntime.interactionLayoutOverrides['id:runtime-b'].y, 122, 'Persisted share-package profile should restore layout overrides on reload.');
+}
+
 export function run() {
   assertExpansionRegistrationAndCompatibility();
   assertExtensionLifecycleMutations();
@@ -1116,4 +1220,5 @@ export function run() {
   assertOverlayPreferencesPersistenceCompatibility();
   assertOverlayProfileExportImportValidation();
   assertOverlayPresetLibraryApplyAndCompatibility();
+  assertOverlaySharePackageExportImportCompatibility();
 }

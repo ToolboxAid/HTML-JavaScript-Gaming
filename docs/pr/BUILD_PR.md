@@ -1,18 +1,18 @@
-# BUILD_PR_LEVEL_22_7_OVERLAY_PRESET_LIBRARY
+# BUILD_PR_LEVEL_22_8_OVERLAY_USER_SHARING_SYSTEM
 
 ## Purpose
-Provide a library of predefined overlay configurations (presets).
+Enable sharing of overlay profiles and presets between users.
 
 ## Scope
-- Define preset schema
-- Include default presets (minimal, debug, full telemetry)
-- Allow loading presets into active profile
+- Generate shareable profile packages (JSON)
+- Import shared profiles safely
+- Provide version compatibility checks
 
 ## Test Steps
-1. Load preset
-2. Verify overlay changes
-3. Ensure compatibility with persistence
+1. Export share package
+2. Import into another environment
+3. Validate correct behavior
 
 ## Expected
-- Presets apply correctly
-- No conflicts with user settings
+- Profiles transferable between users
+- Safe import with validation
