@@ -1,3 +1,3 @@
-Remove sample-specific logic from engine to complete Level 18
+Re-validate and conditionally promote Level 19 to complete
 
-BUILD_PR_LEVEL_18_2_REMOVE_SAMPLE_LOGIC_FROM_ENGINE
+BUILD_PR_LEVEL_19_12_REVALIDATE_AND_PROMOTE

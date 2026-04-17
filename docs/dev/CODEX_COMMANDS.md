@@ -2,15 +2,21 @@ MODEL: GPT-5.4-codex
 REASONING: high
 
 COMMAND:
-1. Search engine paths for sample-specific references.
-2. Extract/move logic to samples or adapters.
-3. Ensure engine remains generic.
-4. Run:
-   node ./scripts/run-node-tests.mjs
+1. Run:
    npm test
-5. Package:
-   <project folder>/tmp/BUILD_PR_LEVEL_18_2_REMOVE_SAMPLE_LOGIC_FROM_ENGINE.zip
+   node ./scripts/run-node-tests.mjs
+   npm run test:launch-smoke
+
+2. If all pass:
+   update docs/dev/roadmaps/MASTER_ROADMAP_HIGH_LEVEL.md
+   set remaining Level 19 [.] to [x]
+
+3. If any fail:
+   write docs/dev/reports/LEVEL_19_REVALIDATION_FAILURES.md
+
+4. Package:
+   <project folder>/tmp/BUILD_PR_LEVEL_19_12_REVALIDATE_AND_PROMOTE.zip
 
 CONSTRAINTS:
-- Smallest scoped change
-- Do not modify unrelated systems
+- No code changes
+- Status-only update

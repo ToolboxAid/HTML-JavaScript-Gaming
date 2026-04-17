@@ -1,4 +1,4 @@
-# MASTER ROADMAP - HIGH LEVEL (v7 ADDITIVE)
+ï»¿# MASTER ROADMAP - HIGH LEVEL (v7 ADDITIVE)
 
 ## Status Key
 - [x] complete
@@ -707,7 +707,7 @@
 ## 18. Engine Finalization & Hardening (Deferred Execution)
 
 > Purpose: convert the built system into a clean, stable, production-grade engine after all major capability tracks are complete.  
-> This is NOT a scaffolding phase — it is a consolidation + enforcement phase.
+> This is NOT a scaffolding phase ï¿½ it is a consolidation + enforcement phase.
 
 ### Scope Rules
 - additive only (no blind refactors)
@@ -721,36 +721,36 @@
 [ ] Clean boundaries
 [ ] Document contracts
 
-### Track A — Engine Usage Enforcement
+### Track A ï¿½ Engine Usage Enforcement
 - [x] verify all `samples/` use engine systems (no local reimplementation)
 - [.] verify all `games/` use engine systems
 - [x] migrate any local logic into engine/shared where appropriate
 - [ ] remove sample-specific logic from engine paths
 
-### Track B — Boundary Hardening
+### Track B ï¿½ Boundary Hardening
 - [.] enforce engine vs shared vs game vs tool boundaries
 - [.] eliminate cross-layer leakage
 - [.] validate dependency direction rules across repo
 - [ ] remove accidental coupling
 
-### Track C — Contract Stabilization
+### Track C ï¿½ Contract Stabilization
 - [.] finalize engine public APIs
 - [.] finalize shared contracts
 - [ ] ensure selectors/providers are stable
 - [.] remove unstable or experimental surfaces
 
-### Track D — Codebase Consistency
+### Track D ï¿½ Codebase Consistency
 - [ ] single class per file enforcement
 - [ ] remove duplicate helpers
 - [ ] normalize naming consistency
 - [ ] eliminate import/export anti-patterns
 
-### Track E — CSS & UI Normalization
+### Track E ï¿½ CSS & UI Normalization
 - [ ] flatten CSS layers
 - [ ] enforce shared UI classes
 - [ ] remove redundant styles
 
-### Track F — Docs System Cleanup
+### Track F ï¿½ Docs System Cleanup
 [ ] Docs organization: classify all `./docs/` into buckets.
 
 [ ] Arrange docs into classification buckets.
@@ -761,7 +761,7 @@
 - [ ] remove move-only historical docs (after validation)
 - [ ] align docs to feature-based structure
 
-### Track G — Repo Hygiene
+### Track G ï¿½ Repo Hygiene
 [ ] Remove imports to export (should not be import x, export x)
 [ ] Other than templates (games/samples/tools), remove the .keep file, if the folder is empty, delete
 - [ ] remove unnecessary `.keep` files
@@ -769,7 +769,7 @@
 - [ ] validate folder ownership rules
 - [ ] enforce clean repo structure
 
-### Track H — PR Consolidation Strategy
+### Track H ï¿½ PR Consolidation Strategy
 - [ ] bundle related PRs into capability-level units
 - [ ] reduce multi-PR fragmentation
 - [ ] ensure each PR represents a complete capability
@@ -786,7 +786,7 @@
 - no experimental work
 - only stabilization, validation, and extensibility
 
-### Track A — System Integration Validation
+### Track A ï¿½ System Integration Validation
 - [x] validate all major systems working together:
   - rendering
   - input
@@ -797,31 +797,31 @@
 - [x] verify no hidden coupling
 - [x] verify predictable system interaction
 
-### Track B — Runtime Lifecycle Validation
+### Track B ï¿½ Runtime Lifecycle Validation
 - [ ] validate boot ? run ? shutdown lifecycle
 - [ ] validate hot reload / reset flows
 - [ ] validate error handling paths
 - [ ] validate long-running stability
 
-### Track C — Performance & Scaling
+### Track C ï¿½ Performance & Scaling
 - [x] validate large scene performance
 - [x] validate stress scenarios (1k+ entities)
 - [x] validate memory stability
 - [x] identify bottlenecks
 
-### Track D — Debug & Observability Maturity
+### Track D ï¿½ Debug & Observability Maturity
 - [ ] ensure all systems expose debug data
 - [x] ensure providers are complete and consistent
 - [x] validate debug panels across systems
 - [x] confirm production-safe debug toggling
 
-### Track E — Toolchain Validation
+### Track E ï¿½ Toolchain Validation
 - [ ] verify tools integrate cleanly with engine
 - [ ] validate asset pipelines end-to-end
 - [ ] validate editor ? runtime consistency
 - [ ] confirm no tool-specific logic leaks into engine
 
-### Track F — Sample & Game Validation
+### Track F ï¿½ Sample & Game Validation
 - [x] Organize/rebuild `samples/` and `games/` as if newly constructed, with proper classes/data in proper folders.
 - [x] Simulated code (for example, some network samples) should be converted to real networks, with tests as needed.
 - [x] verify all samples still function correctly
@@ -829,19 +829,17 @@
 - [x] validate games follow template strictly
 - [x] confirm no regression across phases
 
-### Track G — Extensibility Readiness
+### Track G ï¿½ Extensibility Readiness
 - [x] validate plugin/extension patterns
 - [x] validate adding new systems is clean
 - [x] validate external integration points
 - [x] ensure future phases can build cleanly
 
-### Track H — Final Stability Gate
+### Track H ï¿½ Final Stability Gate
 - [x] full-repo validation sweep
 - [x] zero regression requirement
 - [x] contract freeze readiness
 - [x] readiness for long-term maintenance mode
-
-
 
 ---
 
