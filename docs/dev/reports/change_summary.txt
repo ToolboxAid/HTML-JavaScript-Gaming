@@ -1,1 +1,1 @@
-Docs-only remediation gate
+Docs-only final confirmation gate
