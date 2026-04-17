@@ -787,15 +787,15 @@
 - only stabilization, validation, and extensibility
 
 ### Track A — System Integration Validation
-- [ ] validate all major systems working together:
+- [.] validate all major systems working together:
   - rendering
   - input
   - physics
   - state/replay
   - networking
   - debug platform
-- [ ] verify no hidden coupling
-- [ ] verify predictable system interaction
+- [.] verify no hidden coupling
+- [.] verify predictable system interaction
 
 ### Track B — Runtime Lifecycle Validation
 - [ ] validate boot → run → shutdown lifecycle
@@ -824,7 +824,7 @@
 ### Track F — Sample & Game Validation
 - [.] Organize/rebuild `samples/` and `games/` as if newly constructed, with proper classes/data in proper folders.
 - [.] Simulated code (for example, some network samples) should be converted to real networks, with tests as needed.
-- [ ] verify all samples still function correctly
+- [.] verify all samples still function correctly
 - [ ] verify curriculum progression remains intact
 - [ ] validate games follow template strictly
 - [ ] confirm no regression across phases
