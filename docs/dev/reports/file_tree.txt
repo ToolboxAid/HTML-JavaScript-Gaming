@@ -1,10 +1,10 @@
-BUILD_PR_TILE_UV_WINDING_NORMAL_FIX_VALIDATION
-
-Changed files
-- samples/phase-17/1706/VoxelWorldDemoScene.js
-- samples/phase-17/1707/VoxelWorldDemoScene.js
-- tests/runtime/Phase17RenderingTechniqueExpansionSanity.test.mjs
-- docs/dev/reports/change_summary.txt
-- docs/dev/reports/validation_checklist.txt
-- docs/dev/reports/file_tree.txt
-- docs/dev/reports/root_cause_notes.txt
+docs/
+docs/pr/
+docs/pr/BUILD_PR_LEVEL_16_1_PHASE16_NETWORK_GATE_COMPLETION.md
+docs/dev/
+docs/dev/codex_commands.md
+docs/dev/commit_comment.txt
+docs/dev/reports/
+docs/dev/reports/change_summary.txt
+docs/dev/reports/validation_checklist.txt
+docs/dev/reports/file_tree.txt

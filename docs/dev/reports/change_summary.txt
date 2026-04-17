@@ -1,22 +1,4 @@
-BUILD_PR_TILE_UV_WINDING_NORMAL_FIX_VALIDATION
+Docs-first closeout bundle for the remaining Section 16 dependency gate.
 
-Purpose
-- Fix the visible tile/cube rendering defect in samples 1706 and 1707.
-
-Confirmed root cause
-- The block renderer drew two opposite side faces (x- and x+) instead of two adjacent visible side faces (z+ and x+).
-- This made cubes appear visually inverted/open and exposed interior-like surfaces.
-- UV mapping, authored normal buffers, and post-mesh 180-degree transforms are not used in this path.
-
-Implemented fix (smallest scoped)
-- Updated face selection in drawBlock for:
-  - samples/phase-17/1706/VoxelWorldDemoScene.js
-  - samples/phase-17/1707/VoxelWorldDemoScene.js
-- Kept winding consistent for visible faces.
-- Added focused validation checks in:
-  - tests/runtime/Phase17RenderingTechniqueExpansionSanity.test.mjs
-  - checks now verify adjacent side-face edge sharing plus winding/culling-orientation consistency.
-
-Post-fix evidence
-- 1706 signs: [1,1,1], side shared edge points: 2
-- 1707 signs: [1,1,1], side shared edge points: 2
+This PR asks Codex to confirm that the full real-network capability lane is complete
+and, if execution-backed, close the roadmap item that gates active phase-16 / 3D execution.

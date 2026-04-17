@@ -1,28 +1,6 @@
-BUILD_PR_TILE_UV_WINDING_NORMAL_FIX_VALIDATION
-
-Validation checklist
-- [x] Root cause identified before final code changes.
-- [x] Scope limited to samples 1706/1707 tile/cube face rendering.
-- [x] No broad renderer refactor.
-- [x] No unrelated cleanup.
-- [x] No debug rendering behavior left behind.
-- [x] Backface-culling orientation compatibility validated via winding checks.
-
-Commands run
-1) Focused runtime test
-- command: node --input-type=module -e "... import tests/runtime/Phase17RenderingTechniqueExpansionSanity.test.mjs; run(); ..."
-- result: PASS Phase17RenderingTechniqueExpansionSanity
-
-2) Targeted face-orientation evidence capture
-- command: node --input-type=module (script) to render first block triplet and compute winding signs + side-face shared edge points
-- result:
-  - 1706 signs [1,1,1]
-  - 1706 side shared edge points 2
-  - 1707 signs [1,1,1]
-  - 1707 side shared edge points 2
-
-Acceptance mapping
-- [x] top face remains solid
-- [x] side faces no longer represent opposite-face pairing
-- [x] orientation artifacts from opposite side-face selection removed
-- [x] culling-orientation consistency preserved
+[ ] Real-network capability lane inspected
+[ ] Required evidence gathered for all dependency-gate subareas
+[ ] Closure report written to docs/dev/reports
+[ ] Master roadmap updated in place only if execution-backed
+[ ] No roadmap text deleted or rewritten
+[ ] Scope remained limited to the single gate item

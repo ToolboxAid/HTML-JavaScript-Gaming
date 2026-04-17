@@ -562,7 +562,7 @@
 - [x] include samples for phase 13
 
 ### 3D Execution Dependency Gate
-- [ ] begin active phase-16 / 3D execution only after the full real-network capability lane is complete
+- [x] begin active phase-16 / 3D execution only after the full real-network capability lane is complete
 
 ### Later Capability Lanes
 - [x] FEATURE: Fullscreen Bezel Overlay System - Render game in full screen with optional bezel artwork layer (static or animated) surrounding the active playfield, preserving aspect ratio and supporting per-game/theme bezel assets without modifying core engine rendering.

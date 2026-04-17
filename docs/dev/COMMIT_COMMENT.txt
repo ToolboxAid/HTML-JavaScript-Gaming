@@ -1,7 +1,6 @@
-Fix tile UV/winding/normal defect for tiles 1706 and 1707.
+Close the remaining Phase 16 network dependency gate item.
 
-BUILD_PR_TILE_UV_WINDING_NORMAL_FIX_VALIDATION
-- inspect UVs, winding, normals, and post-mesh transform stages
-- apply the smallest valid root-cause fix
-- preserve normal culling behavior
-- keep scope limited to the affected tile rendering defect
+BUILD_PR_LEVEL_16_1_PHASE16_NETWORK_GATE_COMPLETION
+- confirm full real-network capability lane completion with execution-backed evidence
+- update the master roadmap in place if closure is supported
+- keep scope limited to the single Section 16 dependency gate item
