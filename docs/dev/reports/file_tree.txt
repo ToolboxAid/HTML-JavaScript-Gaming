@@ -1,4 +1,1 @@
-docs/pr/BUILD_PR_LEVEL_19_23_ENGINE_TOOL_BOUNDARY_LEAK_VALIDATION.md
-docs/dev/codex_commands.md
-docs/dev/commit_comment.txt
-docs/dev/reports/*
+generated

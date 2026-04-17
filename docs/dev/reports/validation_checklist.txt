@@ -1,4 +1,1 @@
-[ ] No tool imports in engine
-[ ] No tool assumptions in engine
-[ ] Boundary rules enforced
-[ ] Report generated
+[ ] criteria defined
