@@ -1,6 +1,3 @@
-Embed roadmap guard into PROJECT_INSTRUCTIONS.md (additive only)
+Phase 19 validation summary gate
 
-BUILD_PR_LEVEL_19_21_PROJECT_INSTRUCTIONS_ROADMAP_GUARD_EMBED
-- append-only change
-- no deletions
-- no rewrites
+BUILD_PR_LEVEL_19_22_TOOLCHAIN_VALIDATION_SUMMARY_GATE

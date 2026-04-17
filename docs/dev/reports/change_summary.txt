@@ -1,1 +1,1 @@
-Additive embed of roadmap guard into PROJECT_INSTRUCTIONS.md
+Docs-only aggregation PR for Phase 19 validation
