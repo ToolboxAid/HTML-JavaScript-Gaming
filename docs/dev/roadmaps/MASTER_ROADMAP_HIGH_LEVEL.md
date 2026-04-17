@@ -822,12 +822,12 @@
 - [ ] confirm no tool-specific logic leaks into engine
 
 ### Track F — Sample & Game Validation
-- [.] Organize/rebuild `samples/` and `games/` as if newly constructed, with proper classes/data in proper folders.
-- [.] Simulated code (for example, some network samples) should be converted to real networks, with tests as needed.
-- [.] verify all samples still function correctly
-- [ ] verify curriculum progression remains intact
-- [ ] validate games follow template strictly
-- [ ] confirm no regression across phases
+- [x] Organize/rebuild `samples/` and `games/` as if newly constructed, with proper classes/data in proper folders.
+- [x] Simulated code (for example, some network samples) should be converted to real networks, with tests as needed.
+- [x] verify all samples still function correctly
+- [x] verify curriculum progression remains intact
+- [x] validate games follow template strictly
+- [x] confirm no regression across phases
 
 ### Track G — Extensibility Readiness
 - [x] validate plugin/extension patterns
@@ -840,3 +840,4 @@
 - [x] zero regression requirement
 - [x] contract freeze readiness
 - [x] readiness for long-term maintenance mode
+

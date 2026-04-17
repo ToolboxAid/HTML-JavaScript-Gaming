@@ -1,3 +1,3 @@
-Rename Puckman → Pacman across repo
+Validate Pacman rename and promote sample validation if clean
 
-BUILD_PR_LEVEL_19_9_RENAME_PUCKMAN_TO_PACMAN
+BUILD_PR_LEVEL_19_10_VALIDATE_PACMAN_RENAME_AND_TESTS
