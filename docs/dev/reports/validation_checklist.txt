@@ -1,3 +1,6 @@
-[ ] PRs grouped logically
-[ ] no functional changes
-[ ] docs updated
+[ ] rendering integrated
+[ ] input integrated
+[ ] physics integrated
+[ ] state/replay integrated
+[ ] networking integrated
+[ ] debug platform integrated

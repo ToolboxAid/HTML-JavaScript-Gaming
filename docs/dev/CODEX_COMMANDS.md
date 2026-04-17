@@ -2,10 +2,10 @@ MODEL: GPT-5.3-codex
 REASONING: high
 
 COMMAND:
-- Review overlay slice PRs
-- Group into capability-level bundles
-- Update docs to reflect consolidation
-- No code changes
+- Execute cross-system validation
+- Validate integration points
+- Identify hidden coupling
+- Run full test suite
 
 Output:
-<project folder>/tmp/BUILD_PR_LEVEL_18_8_PR_CONSOLIDATION_OVERLAY_SLICE.zip
+<project folder>/tmp/BUILD_PR_LEVEL_19_1_SYSTEM_INTEGRATION_VALIDATION.zip
