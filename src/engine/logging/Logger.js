@@ -22,11 +22,16 @@ export default class Logger {
       return null;
     }
 
+    const normalizedMessage = typeof message === 'string' ? message : String(message);
+    const metaSource = (meta && typeof meta === 'object') ? meta : { value: meta };
+    const { event = `${this.channel}.${level}`, ...normalizedMeta } = metaSource;
     const entry = {
+      format: 'engine.log.v1',
       level,
       channel: this.channel,
-      message,
-      meta: { ...meta },
+      event,
+      message: normalizedMessage,
+      meta: { ...normalizedMeta },
       timestamp: new Date().toISOString(),
     };
 

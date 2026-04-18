@@ -32,6 +32,7 @@ export default class Engine {
     audio = null,
     logger = null,
     camera3D = null,
+    runtimeHooks = null,
   } = {}) {
     if (!canvas) {
       throw new Error('Engine requires a canvas.');
@@ -70,6 +71,10 @@ export default class Engine {
     });
     this.audio = audio || new AudioService();
     this.logger = logger || new Logger({ channel: 'engine' });
+    this.runtimeHooks = {
+      onError: typeof runtimeHooks?.onError === 'function' ? runtimeHooks.onError : null,
+      onPerformance: typeof runtimeHooks?.onPerformance === 'function' ? runtimeHooks.onPerformance : null,
+    };
     this.camera3D = camera3D || new Camera3D();
     this.settings = new SettingsSystem({
       namespace: 'toolboxaid:engine-settings',
@@ -116,8 +121,10 @@ export default class Engine {
       try {
         scene.setCamera3D(this.camera3D, this);
       } catch (error) {
-        this.logger?.warn?.('Engine scene setCamera3D hook failed.', {
-          error: error?.message || String(error),
+        this.trackRuntimeError('scene.setCamera3D', error, {
+          severity: 'warn',
+          isolated: true,
+          message: 'Engine scene setCamera3D hook failed.',
         });
       }
       return;
@@ -130,10 +137,48 @@ export default class Engine {
     try {
       scene.camera3D = this.camera3D;
     } catch (error) {
-      this.logger?.warn?.('Engine scene camera3D assignment failed.', {
-        error: error?.message || String(error),
+      this.trackRuntimeError('scene.camera3D.assign', error, {
+        severity: 'warn',
+        isolated: true,
+        message: 'Engine scene camera3D assignment failed.',
       });
     }
+  }
+
+  trackRuntimeError(stage, error, { severity = 'error', isolated = false, context = {}, message = null } = {}) {
+    const payload = {
+      stage,
+      isolated: isolated === true,
+      severity,
+      error: error?.message || String(error),
+      timestamp: new Date().toISOString(),
+      context: { ...context },
+    };
+
+    const loggerMethod = severity === 'warn' ? 'warn' : 'error';
+    this.logger?.[loggerMethod]?.(message || 'Engine runtime issue tracked.', {
+      event: 'engine.runtime.error',
+      stage: payload.stage,
+      isolated: payload.isolated,
+      error: payload.error,
+      ...payload.context,
+    });
+
+    this.events?.emit?.('engine:runtime-error', payload);
+    this.runtimeHooks.onError?.(payload);
+    return payload;
+  }
+
+  publishPerformanceFrame(frameData) {
+    const snapshot = typeof this.metrics?.getSnapshot === 'function' ? this.metrics.getSnapshot() : null;
+    const payload = {
+      ...frameData,
+      snapshot: snapshot ? { ...snapshot } : null,
+      timestamp: new Date().toISOString(),
+    };
+    this.events?.emit?.('engine:performance-frame', payload);
+    this.runtimeHooks.onPerformance?.(payload);
+    return payload;
   }
 
   start() {
@@ -188,10 +233,20 @@ export default class Engine {
     let fixedUpdates = 0;
 
     if (this.input && typeof this.input.update === 'function') {
-      this.input.update(deltaSeconds);
+      try {
+        this.input.update(deltaSeconds);
+      } catch (error) {
+        this.trackRuntimeError('input.update', error, { severity: 'error' });
+        throw error;
+      }
     }
     if (this.audio && typeof this.audio.update === 'function') {
-      this.audio.update(deltaSeconds);
+      try {
+        this.audio.update(deltaSeconds);
+      } catch (error) {
+        this.trackRuntimeError('audio.update', error, { severity: 'error' });
+        throw error;
+      }
     }
 
     const updateStart = performance.now();
@@ -200,14 +255,21 @@ export default class Engine {
         try {
           this.scene.step3DPhysics(stepSeconds, this);
         } catch (error) {
-          this.logger?.warn?.('Engine scene step3DPhysics hook failed.', {
-            error: error?.message || String(error),
+          this.trackRuntimeError('scene.step3DPhysics', error, {
+            severity: 'warn',
+            isolated: true,
+            message: 'Engine scene step3DPhysics hook failed.',
           });
         }
       }
 
       if (this.scene && typeof this.scene.update === 'function') {
-        this.scene.update(stepSeconds, this);
+        try {
+          this.scene.update(stepSeconds, this);
+        } catch (error) {
+          this.trackRuntimeError('scene.update', error, { severity: 'error' });
+          throw error;
+        }
       }
     });
     fixedUpdates = tickerResult.steps;
@@ -217,7 +279,12 @@ export default class Engine {
     this.renderer.clear();
     this.backgroundImageLayer?.render?.(this.renderer, { scene: this.scene, engine: this });
     if (this.scene && typeof this.scene.render === 'function') {
-      this.scene.render(this.renderer, this);
+      try {
+        this.scene.render(this.renderer, this);
+      } catch (error) {
+        this.trackRuntimeError('scene.render', error, { severity: 'error' });
+        throw error;
+      }
     }
     const fullscreenActive = this.fullscreen?.getState?.().active === true;
     const fullscreenElement = this.fullscreen?.documentRef?.fullscreenElement
@@ -226,13 +293,15 @@ export default class Engine {
     this.fullscreenBezelLayer?.sync?.({ fullscreenActive, fullscreenElement });
     renderDurationMs = performance.now() - renderStart;
 
-    this.metrics.recordFrame({
+    const frameData = {
       dtSeconds: deltaSeconds,
       frameMs: performance.now() - frameStart,
       updateMs: updateDurationMs,
       renderMs: renderDurationMs,
       fixedUpdates,
-    });
+    };
+    this.metrics.recordFrame(frameData);
+    this.publishPerformanceFrame(frameData);
 
     this.rafId = requestAnimationFrame(this.tick);
   }

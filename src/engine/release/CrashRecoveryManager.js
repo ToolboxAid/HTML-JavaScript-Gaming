@@ -32,6 +32,7 @@ export default class CrashRecoveryManager {
       };
     } catch (error) {
       this.logger?.error('Operation failed gracefully.', {
+        event: 'engine.crash-recovery.operation-failed',
         error: error?.message || 'Unknown error',
         label,
       });

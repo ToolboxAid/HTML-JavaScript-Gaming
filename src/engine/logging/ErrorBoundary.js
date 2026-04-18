@@ -14,6 +14,7 @@ export default class ErrorBoundary {
       return operation();
     } catch (error) {
       this.logger?.error('Operation failed gracefully.', {
+        event: 'engine.error-boundary.operation-failed',
         error: error?.message || 'Unknown error',
       });
       return fallback;

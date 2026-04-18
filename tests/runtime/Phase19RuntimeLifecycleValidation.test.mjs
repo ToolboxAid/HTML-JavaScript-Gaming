@@ -6,6 +6,7 @@ Phase19RuntimeLifecycleValidation.test.mjs
 */
 import assert from 'node:assert/strict';
 import Engine from '../../src/engine/core/Engine.js';
+import { Logger } from '../../src/engine/logging/index.js';
 
 function createCanvas() {
   const canvas = {
@@ -76,6 +77,8 @@ function createHarness({
   fixedStepMs = 16,
   scene = null,
   logger = null,
+  events = null,
+  runtimeHooks = null,
 } = {}) {
   const attachCounts = {
     input: 0,
@@ -135,6 +138,10 @@ function createHarness({
       recordFrame(frame) {
         metrics.push(frame);
       },
+      getSnapshot() {
+        const latest = metrics.length > 0 ? metrics[metrics.length - 1] : null;
+        return latest ? { ...latest } : { frameMs: 0, updateMs: 0, renderMs: 0, fixedUpdates: 0 };
+      },
     },
     input: {
       attach() {
@@ -171,6 +178,8 @@ function createHarness({
       warn() {},
       error() {},
     },
+    events,
+    runtimeHooks,
   });
 
   if (scene) {
@@ -350,9 +359,82 @@ function assertLongRunningStability() {
   }
 }
 
+function assertRuntimeMonitoringHooksAndLoggingFormat() {
+  const animationFrame = createAnimationFrameStub();
+  try {
+    const runtimeErrors = [];
+    const performanceFrames = [];
+    const emittedEvents = [];
+    const logger = new Logger({ channel: 'runtime-test', level: 'debug' });
+
+    const harness = createHarness({
+      logger,
+      runtimeHooks: {
+        onError(payload) {
+          runtimeErrors.push(payload);
+        },
+        onPerformance(payload) {
+          performanceFrames.push(payload);
+        },
+      },
+      events: {
+        emit(name, payload) {
+          emittedEvents.push({ name, payload });
+          return 0;
+        },
+      },
+      scene: {
+        step3DPhysics() {
+          throw new Error('monitoring-hook-physics-failure');
+        },
+        update() {},
+        render() {},
+      },
+    });
+
+    harness.engine.start();
+    harness.engine.tick(1016);
+    harness.engine.stop();
+
+    assert.equal(runtimeErrors.length >= 1, true, 'Runtime error hook should receive isolated runtime error payloads.');
+    assert.equal(
+      runtimeErrors.some((entry) => entry.stage === 'scene.step3DPhysics' && entry.isolated === true),
+      true,
+      'Runtime error hook should include scene.step3DPhysics stage metadata.'
+    );
+    assert.equal(performanceFrames.length >= 1, true, 'Performance monitoring hook should receive frame payloads.');
+    assert.equal(
+      performanceFrames.some((entry) => typeof entry.snapshot === 'object' && entry.snapshot !== null),
+      true,
+      'Performance monitoring hook payload should include metrics snapshot.'
+    );
+    assert.equal(
+      emittedEvents.some((entry) => entry.name === 'engine:runtime-error'),
+      true,
+      'Engine should emit engine:runtime-error event when runtime errors are tracked.'
+    );
+    assert.equal(
+      emittedEvents.some((entry) => entry.name === 'engine:performance-frame'),
+      true,
+      'Engine should emit engine:performance-frame event for monitoring consumers.'
+    );
+
+    const entries = logger.getEntries();
+    assert.equal(entries.length >= 1, true, 'Standardized logger should capture runtime monitoring logs.');
+    assert.equal(
+      entries.every((entry) => entry.format === 'engine.log.v1' && typeof entry.event === 'string' && entry.event.length > 0),
+      true,
+      'Logger entries should use the standardized log format and include event codes.'
+    );
+  } finally {
+    animationFrame.restore();
+  }
+}
+
 export function run() {
   assertBootRunShutdownLifecycle();
   assertHotReloadAndResetFlows();
   assertErrorHandlingPaths();
   assertLongRunningStability();
+  assertRuntimeMonitoringHooksAndLoggingFormat();
 }
