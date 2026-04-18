@@ -1,7 +1,7 @@
 # PR_01_02_REPO_STRUCTURE_APPLY
 
 ## Purpose
-Apply the validated repo structure move map exactly as captured in `docs/reports/move_map.txt`.
+Apply the validated repo structure move map exactly as captured in `docs/reference/features/docs-system/move-history-preserved.md`.
 
 ## Scope
 - file/folder moves only from validated move map
@@ -11,7 +11,7 @@ Apply the validated repo structure move map exactly as captured in `docs/reports
 - no deletes unless explicitly listed in move_map.txt
 
 ## Inputs
-- docs/reports/move_map.txt
+- docs/reference/features/docs-system/move-history-preserved.md
 - docs/reports/validation_checklist.txt
 
 ## Required Work

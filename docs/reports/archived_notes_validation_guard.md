@@ -49,7 +49,7 @@ git status --short -- docs/dev/start_of_day/chatGPT docs/dev/start_of_day/codex
 
 2. Governance surfaces:
 - `docs/reports/cleanup_live_reference_inventory.txt`
-- `docs/reports/cleanup_keep_move_future_delete_matrix.md`
+- `docs/reference/features/docs-system/move-history-preserved.md`
 - `docs/reports/repo_cleanup_targets.txt`
 - `docs/roadmaps/MASTER_ROADMAP_HIGH_LEVEL.md`
 

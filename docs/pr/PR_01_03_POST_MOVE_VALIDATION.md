@@ -9,7 +9,7 @@ Lock repo-structure normalization by validating the applied move map and confirm
 - no engine/game/tool logic refactors
 
 ## Inputs
-- docs/reports/move_map.txt
+- docs/reference/features/docs-system/move-history-preserved.md
 - docs/reports/validation_checklist.txt
 
 ## Required Work

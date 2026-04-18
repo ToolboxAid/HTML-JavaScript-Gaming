@@ -23,7 +23,7 @@ This pass is wording-only and does not change cleanup meaning.
 - docs/dev/reports/legacy class-retention policy marker_policy_decision.md
 - docs/dev/reports/legacy class-retention policy marker_policy_inventory.md
 - docs/dev/reports/legacy class-retention policy marker_validation_guard.md
-- docs/reports/cleanup_keep_move_future_delete_matrix.md
+- docs/reference/features/docs-system/move-history-preserved.md
 - docs/reports/cleanup_live_reference_inventory.txt
 - docs/reports/cleanup_target_enforcement_map.md
 - docs/reports/cleanup_target_normalization_report.md

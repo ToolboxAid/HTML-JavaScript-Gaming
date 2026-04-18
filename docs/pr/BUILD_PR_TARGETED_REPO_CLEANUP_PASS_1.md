@@ -42,7 +42,7 @@ This BUILD narrows the next step to one purpose only:
 ## Approved Source Of Truth
 Use only these existing artifacts as source evidence for this BUILD:
 - `docs/reports/cleanup_live_reference_inventory.txt`
-- `docs/reports/cleanup_keep_move_future_delete_matrix.md`
+- `docs/reference/features/docs-system/move-history-preserved.md`
 - `docs/reports/BUILD_PR_REPO_CLEANUP_AND_ROADMAP_UPDATE_report.md`
 - `docs/reports/templates_live_usage_inventory.md`
 - `docs/reports/templates_policy_decision.md`
@@ -122,7 +122,7 @@ Create `docs/reports/cleanup_target_normalization_report.md`.
 For each approved cleanup target, compare consistency across:
 - `docs/reports/repo_cleanup_targets.txt`
 - `docs/reports/cleanup_live_reference_inventory.txt`
-- `docs/reports/cleanup_keep_move_future_delete_matrix.md`
+- `docs/reference/features/docs-system/move-history-preserved.md`
 - `docs/roadmaps/MASTER_ROADMAP_HIGH_LEVEL.md`
 - templates-policy reports where relevant
 

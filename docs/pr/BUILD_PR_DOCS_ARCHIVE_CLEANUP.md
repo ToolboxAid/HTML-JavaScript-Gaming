@@ -5,8 +5,8 @@ Execute a non-destructive archive pass for legacy PR markdown files so the activ
 
 ## Exact Scope
 1. Create `docs/archive/pr/legacy-pr-history/` if missing.
-2. Move the exact files in `docs/reports/docs_archive_pr_move_manifest.txt` from `docs/pr/` to `docs/archive/pr/legacy-pr-history/`.
-3. Leave the exact files in `docs/reports/docs_archive_pr_keep_manifest.txt` in place.
+2. Move the exact files in `docs/reference/features/docs-system/move-history-preserved.md` from `docs/pr/` to `docs/archive/pr/legacy-pr-history/`.
+3. Leave the exact files in `docs/reference/features/docs-system/move-history-preserved.md` in place.
 4. Preserve `docs/pr/.keep`.
 5. Do not modify file contents while moving.
 

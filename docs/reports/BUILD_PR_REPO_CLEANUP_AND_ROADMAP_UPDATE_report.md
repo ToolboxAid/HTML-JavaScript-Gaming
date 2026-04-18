@@ -9,7 +9,7 @@
 
 ## Exact Files Created
 - `docs/reports/cleanup_live_reference_inventory.txt`
-- `docs/reports/cleanup_keep_move_future_delete_matrix.md`
+- `docs/reference/features/docs-system/move-history-preserved.md`
 - `docs/reports/BUILD_PR_REPO_CLEANUP_AND_ROADMAP_UPDATE_report.md`
 
 ## Optional Alignment Files

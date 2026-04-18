@@ -9,7 +9,7 @@ Scope: `docs/archive/` policy surface only (non-destructive, docs-only lane).
   - Exists: yes
   - Assessment: `live-reference`
   - Notes: archive location is active/documented; policy item still incomplete.
-- `docs/reports/cleanup_keep_move_future_delete_matrix.md`:
+- `docs/reference/features/docs-system/move-history-preserved.md`:
   - Target row: ``docs/archive/` archived-notes policy``
   - Proposed classification: `keep`
   - Recommended future scope: policy-definition PR.
@@ -51,14 +51,14 @@ Unique active consumer files found:
 - `docs/operations/dev/validation_checklist.txt`
 - `docs/reports/README.md`
 - `docs/reports/cleanup_live_reference_inventory.txt`
-- `docs/reports/cleanup_keep_move_future_delete_matrix.md`
+- `docs/reference/features/docs-system/move-history-preserved.md`
 - `docs/reports/BUILD_PR_REPO_CLEANUP_AND_ROADMAP_UPDATE_report.md`
 - `docs/reports/BUILD_PR_TARGETED_REPO_CLEANUP_PASS_1_report.md`
 - `docs/reports/cleanup_execution_guard.md`
 - `docs/reports/cleanup_target_enforcement_map.md`
 - `docs/reports/cleanup_target_normalization_report.md`
 - `docs/reports/templates_validation_guard.md`
-- `docs/reports/docs_path_cleanup_plan.txt`
+- `docs/reference/features/docs-system/move-history-preserved.md`
 - `docs/pr/PLAN_PR_DOCS_ARCHIVE_CLEANUP.md`
 - `docs/pr/BUILD_PR_DOCS_ARCHIVE_CLEANUP.md`
 - `docs/pr/BUILD_PR_TARGETED_REPO_CLEANUP_PASS_1.md`

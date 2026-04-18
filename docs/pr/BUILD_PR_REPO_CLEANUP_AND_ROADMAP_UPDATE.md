@@ -27,7 +27,7 @@ The prior PLAN established that cleanup must be staged and that `templates/` mus
 
 ### Must create or overwrite
 - `docs/reports/cleanup_live_reference_inventory.txt`
-- `docs/reports/cleanup_keep_move_future_delete_matrix.md`
+- `docs/reference/features/docs-system/move-history-preserved.md`
 - `docs/reports/BUILD_PR_REPO_CLEANUP_AND_ROADMAP_UPDATE_report.md`
 - `docs/reports/validation_checklist.txt`
 
@@ -87,7 +87,7 @@ For each target, capture:
 Use exact repo searches. Do not guess.
 
 ### 3) Keep / move / future-delete matrix
-Create `docs/reports/cleanup_keep_move_future_delete_matrix.md` as a decision-prep matrix.
+Create `docs/reference/features/docs-system/move-history-preserved.md` as a decision-prep matrix.
 For each cleanup target, include:
 - target
 - exists? (yes/no)

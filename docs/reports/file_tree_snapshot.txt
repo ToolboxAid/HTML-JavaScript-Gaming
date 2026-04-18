@@ -294,14 +294,14 @@ docs/dev/reports/
   docs/reports/classes_old_keep_removal_change_log.md
   docs/reports/classes_old_keep_validation_guard.md
   docs/reports/cleanup_execution_guard.md
-  docs/reports/cleanup_keep_move_future_delete_matrix.md
+  docs/reference/features/docs-system/move-history-preserved.md
   docs/reports/cleanup_live_reference_inventory.txt
   docs/reports/cleanup_target_enforcement_map.md
   docs/reports/cleanup_target_normalization_report.md
   docs/reports/debug_inspector_tools_targets.txt
-  docs/reports/docs_archive_pr_keep_manifest.txt
-  docs/reports/docs_archive_pr_move_manifest.txt
-  docs/reports/docs_path_cleanup_plan.txt
+  docs/reference/features/docs-system/move-history-preserved.md
+  docs/reference/features/docs-system/move-history-preserved.md
+  docs/reference/features/docs-system/move-history-preserved.md
   docs/reports/duplication_candidates.txt
   docs/reports/engine_import_baseline_report.md
   docs/reports/engine_import_contract_decision.md
@@ -313,24 +313,24 @@ docs/dev/reports/
   docs/reports/games_template_contract_validation.txt
   docs/reports/launch_smoke_report.md
   docs/reports/legacy_import_guard_report.md
-  docs/reports/move_map.txt
+  docs/reference/features/docs-system/move-history-preserved.md
   docs/reports/PLAN_PR_REPO_CLEANUP_AND_ROADMAP_UPDATE_report.md
   docs/reports/project_tool_integration_targets.txt
   docs/reports/README.md
   docs/reports/repo_cleanup_targets.txt
-  docs/reports/roadmap_move_manifest.txt
+  docs/reference/features/docs-system/move-history-preserved.md
   docs/reports/roadmap_status_delta.txt
   docs/reports/samples_directory_normalization_mapping_expectations.txt
-  docs/reports/spriteeditor_archive_move_report.md
-  docs/reports/spriteeditor_archive_move_validation.md
-  docs/reports/starter_project_template_move_report.md
+  docs/reference/features/docs-system/move-history-preserved.md
+  docs/reference/features/docs-system/move-history-preserved.md
+  docs/reference/features/docs-system/move-history-preserved.md
   docs/reports/templates_blockers_from_ps.txt
   docs/reports/templates_live_usage_inventory.md
   docs/reports/templates_policy_decision.md
   docs/reports/templates_root_removal_validation.md
   docs/reports/templates_validation_guard.md
-  docs/reports/templates_vector_native_active_relocation_report.md
-  docs/reports/templates_vector_native_active_relocation_validation.md
+  docs/reference/features/docs-system/move-history-preserved.md
+  docs/reference/features/docs-system/move-history-preserved.md
   docs/reports/tool_host_foundation_read_set.txt
   docs/reports/tool_host_foundation_targets.txt
   docs/reports/tool_host_multi_switch_targets.txt

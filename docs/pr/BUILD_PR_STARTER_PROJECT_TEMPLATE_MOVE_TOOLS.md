@@ -17,7 +17,7 @@ This PR is single-purpose:
 - to `tools/templates/starter-project-template/`
 
 ### Must create or overwrite
-- `docs/reports/starter_project_template_move_report.md`
+- `docs/reference/features/docs-system/move-history-preserved.md`
 - `docs/reports/validation_checklist.txt`
 
 ### May modify only if required for correctness

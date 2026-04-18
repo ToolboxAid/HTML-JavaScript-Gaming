@@ -34,7 +34,7 @@ Expected for current policy: `False`.
 - `docs/roadmaps/MASTER_ROADMAP_HIGH_LEVEL.md`
 - `docs/reports/repo_cleanup_targets.txt`
 - `docs/reports/cleanup_live_reference_inventory.txt`
-- `docs/reports/cleanup_keep_move_future_delete_matrix.md`
+- `docs/reference/features/docs-system/move-history-preserved.md`
 - `docs/reports/cleanup_target_enforcement_map.md`
 - `docs/reports/cleanup_target_normalization_report.md`
 - active `docs/pr/*` specs referencing `legacy class-retention policy marker`

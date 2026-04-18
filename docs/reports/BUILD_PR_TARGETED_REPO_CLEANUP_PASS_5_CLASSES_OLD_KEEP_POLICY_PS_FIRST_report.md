@@ -19,7 +19,7 @@ Bundle type: execution-ready BUILD docs (legacy class-retention policy marker po
 
 ## Supporting Existing Cleanup Evidence
 - `docs/reports/cleanup_live_reference_inventory.txt` (docs-reference-only, path missing)
-- `docs/reports/cleanup_keep_move_future_delete_matrix.md` (`needs-manual-review` planning target)
+- `docs/reference/features/docs-system/move-history-preserved.md` (`needs-manual-review` planning target)
 
 ## Chosen Policy Classification
 - `keep-as-doc-placeholder`

@@ -23,7 +23,7 @@ This PR is single-purpose:
 - to `tools/templates/vector-native-arcade/`
 
 ### Must create or overwrite
-- `docs/reports/templates_vector_native_active_relocation_report.md`
+- `docs/reference/features/docs-system/move-history-preserved.md`
 - `docs/reports/validation_checklist.txt`
 
 ## Required Work

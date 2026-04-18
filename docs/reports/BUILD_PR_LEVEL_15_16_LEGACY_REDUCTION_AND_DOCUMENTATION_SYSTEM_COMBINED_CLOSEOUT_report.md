@@ -11,11 +11,11 @@ No engine/runtime/tool implementation files were changed.
 - `legacy inventory completed`
   - Evidence: `docs/reports/cleanup_live_reference_inventory.txt`
 - `keep vs migrate vs future-delete decisions recorded`
-  - Evidence: `docs/reports/cleanup_keep_move_future_delete_matrix.md`
+  - Evidence: `docs/reference/features/docs-system/move-history-preserved.md`
 - ``legacy class-retention policy marker` policy defined`
   - Evidence: `docs/reports/classes_old_keep_policy_decision.md`
 - ``SpriteEditor_old_keep` policy defined`
-  - Evidence: `docs/reports/cleanup_keep_move_future_delete_matrix.md` (`docs/archive/tools/SpriteEditor_old_keep/` policy row)
+  - Evidence: `docs/reference/features/docs-system/move-history-preserved.md` (`docs/archive/tools/SpriteEditor_old_keep/` policy row)
 - `archived notes policy defined`
   - Evidence: `docs/reports/archived_notes_policy_decision.md`
 - `roadmap for eventual legacy retirement defined`

@@ -31,7 +31,7 @@ docs/archive/tools/SpriteEditor_old_keep/
 
 ### 3. Validation report
 Create:
-docs/reports/spriteeditor_archive_move_report.md
+docs/reference/features/docs-system/move-history-preserved.md
 
 Must include:
 - files moved count

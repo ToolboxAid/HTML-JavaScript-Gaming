@@ -57,7 +57,7 @@ Included PR docs:
 
 Supporting structure docs:
 - `docs/pr/overlay/OVERLAY_DOCS_BUCKETS.md`
-- `docs/reports/overlay/MOVE_CLEANUP_MANIFEST_LEVEL_18_6.md`
+- `docs/reference/features/docs-system/move-history-preserved.md`
 - `docs/reports/overlay/README.md`
 
 ## Bundle D: Gameplay Overlay Runtime Expansion (Level 19)

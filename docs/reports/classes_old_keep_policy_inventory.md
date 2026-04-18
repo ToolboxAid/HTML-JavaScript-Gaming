@@ -18,7 +18,7 @@ This lane treats the above as authoritative baseline and avoids broad rediscover
   - Exists: no
   - Inbound references: roadmap + cleanup targets + build spec docs
   - Assessment: docs-reference-only
-- `docs/reports/cleanup_keep_move_future_delete_matrix.md`
+- `docs/reference/features/docs-system/move-history-preserved.md`
   - Target row: `legacy class-retention policy marker` policy target
   - Proposed classification: `needs-manual-review`
   - Evidence summary: planning references only; no on-disk path
@@ -29,7 +29,7 @@ This lane treats the above as authoritative baseline and avoids broad rediscover
 - `docs/reports/cleanup_live_reference_inventory.txt`
 
 ### Cleanup Matrix / Normalization / Enforcement Reports
-- `docs/reports/cleanup_keep_move_future_delete_matrix.md`
+- `docs/reference/features/docs-system/move-history-preserved.md`
 - `docs/reports/cleanup_target_normalization_report.md` (tracking context)
 - `docs/reports/cleanup_target_enforcement_map.md` (tracking context)
 

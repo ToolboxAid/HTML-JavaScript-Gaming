@@ -34,7 +34,7 @@ Lane: BUILD_PR_TARGETED_REPO_CLEANUP_PASS_8_REMOVE_CLASSES_OLD_KEEP_REFERENCES
 - legacy marker normalization report (`docs/dev/reports/*_normalization_report.md`)
 - legacy marker validation guard (`docs/dev/reports/*_validation_guard.md`)
 - `docs/reports/cleanup_execution_guard.md`
-- `docs/reports/cleanup_keep_move_future_delete_matrix.md`
+- `docs/reference/features/docs-system/move-history-preserved.md`
 - `docs/reports/cleanup_live_reference_inventory.txt`
 - `docs/reports/cleanup_target_normalization_report.md`
 - `docs/reports/cleanup_target_enforcement_map.md`

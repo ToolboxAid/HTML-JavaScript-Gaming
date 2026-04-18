@@ -24,7 +24,7 @@ Scope: Global execution rules for future cleanup PRs, derived from approved clea
    - Synchronize relevant docs in the same PR when path/policy states change:
      - `docs/reports/repo_cleanup_targets.txt`
      - `docs/reports/cleanup_live_reference_inventory.txt`
-     - `docs/reports/cleanup_keep_move_future_delete_matrix.md`
+     - `docs/reference/features/docs-system/move-history-preserved.md`
      - `docs/roadmaps/MASTER_ROADMAP_HIGH_LEVEL.md`
      - target-specific policy/guard reports (including templates reports where relevant)
 3. Target-specific tests if path change is attempted:

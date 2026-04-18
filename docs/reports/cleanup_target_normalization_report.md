@@ -6,7 +6,7 @@ Scope: Consistency check across approved sources only.
 Compared Sources:
 - `docs/reports/repo_cleanup_targets.txt`
 - `docs/reports/cleanup_live_reference_inventory.txt`
-- `docs/reports/cleanup_keep_move_future_delete_matrix.md`
+- `docs/reference/features/docs-system/move-history-preserved.md`
 - `docs/roadmaps/MASTER_ROADMAP_HIGH_LEVEL.md`
 - templates-policy artifacts where relevant
 

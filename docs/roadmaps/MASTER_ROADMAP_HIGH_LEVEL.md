@@ -751,14 +751,14 @@
 - [x] remove redundant styles
 
 ### Track F � Docs System Cleanup
-[.] Docs organization: classify all `./docs/` into buckets.
+[x] Docs organization: classify all `./docs/` into buckets.
 [x] Arrange docs into classification buckets.
 [ ] Any doc that is only move/rename/etc. should be deleted (verify content is in the correct doc before deleting).
 
 - [x] classify all docs into buckets
-- [ ] consolidate duplicate docs - consolidate PRs for easier one-stop review, so one capability does not require reading many docs (for example, bezel/background); focus on what the capability does.
-- [ ] remove move-only historical docs (after validation)
-- [ ] align docs to feature-based structure
+- [x] consolidate duplicate docs - consolidate PRs for easier one-stop review, so one capability does not require reading many docs (for example, bezel/background); focus on what the capability does.
+- [x] remove move-only historical docs (after validation)
+- [x] align docs to feature-based structure
 
 ### Track G � Repo Hygiene
 [ ] Remove imports to export (should not be import x, export x)

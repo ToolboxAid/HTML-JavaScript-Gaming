@@ -1,0 +1,11 @@
+- [x] duplicate/overlapping doc clusters identified
+- [x] authoritative primary docs selected per cluster
+- [x] unique content merged before any deletion
+- [x] move-only historical docs removed only after preservation validation
+- [x] feature-based structure alignment completed
+- [x] internal references updated
+- [x] deletion map produced with source->destination proof
+- [x] no unique content lost
+- [x] no start_of_day changes
+- [x] unrelated working-tree changes preserved
+- [x] roadmap updated by status-only transitions only after successful validation
