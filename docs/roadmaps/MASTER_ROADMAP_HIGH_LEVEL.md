@@ -761,12 +761,12 @@
 - [x] align docs to feature-based structure
 
 ### Track G � Repo Hygiene
-[ ] Remove imports to export (should not be import x, export x)
-[ ] Other than templates (games/samples/tools), remove the .keep file, if the folder is empty, delete
-- [ ] remove unnecessary `.keep` files
-- [ ] remove empty folders
-- [ ] validate folder ownership rules
-- [ ] enforce clean repo structure
+[x] Remove imports to export (should not be import x, export x)
+[x] Other than templates (games/samples/tools), remove the .keep file, if the folder is empty, delete
+- [x] remove unnecessary `.keep` files
+- [x] remove empty folders
+- [x] validate folder ownership rules
+- [x] enforce clean repo structure
 
 ### Track H � PR Consolidation Strategy
 - [ ] bundle related PRs into capability-level units

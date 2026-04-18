@@ -1,16 +1,2 @@
-BUILD_PR_LEVEL_18_18_TRACK_F_DOCS_SYSTEM_COMPLETION
-
-Scope:
-- docs-only Track F completion slice
-- consolidated duplicate/overlapping docs into authoritative paths
-- preserved unique move-history content in docs/reference/features/docs-system/move-history-preserved.md
-- deleted only move-only historical docs after preservation
-- aligned docs to a feature-based hub under docs/reference/features/docs-system
-- updated impacted internal references to the preserved canonical doc
-- updated roadmap status markers only for Track F completion items
-
-Primary outputs:
-- docs/dev/reports/BUILD_PR_LEVEL_18_18_TRACK_F_DOCS_SYSTEM_COMPLETION_*.md (5 required reports)
-- docs/reference/features/docs-system/README.md
-- docs/reference/features/docs-system/move-history-preserved.md
-- docs/reference/features/README.md
+This bundle targets the next execution-backed roadmap lane after Track F: Track G repo hygiene.
+It is scoped to real cleanup work only, with roadmap advancement permitted only after successful validation.
