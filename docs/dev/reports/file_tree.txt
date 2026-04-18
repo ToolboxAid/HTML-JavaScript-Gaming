@@ -1,25 +1,11 @@
-BUILD_PR_LEVEL_18_12_TRACK_D_CODEBASE_CONSISTENCY_COMPLETION
-
-Modified
-- docs/dev/roadmaps/MASTER_ROADMAP_HIGH_LEVEL.md
-- games/Pacman/game/PacmanFullAINavigator.js
-- samples/phase-03/0326/game/PaddleInterceptWorld.js
-- samples/phase-06/0609/SpawnSystemScene.js
-- samples/shared/worldSystems.js
-- src/advanced/state/utils.js
-- src/engine/debug/inspectors/shared/inspectorUtils.js
-- src/engine/debug/network/shared/networkDebugUtils.js
-- src/engine/systems/PhysicsSystem.js
-- src/shared/number/numberUtils.js
-- src/shared/utils/networkDebugUtils.js
-
-Added
-- samples/phase-06/0609/SampleLifecycleSystem.js
-- samples/phase-06/0609/SampleSpawnSystem.js
-- samples/phase-06/0609/SampleWorldEventsSystem.js
-- samples/phase-06/0609/SampleWorldStateSystem.js
-- samples/shared/worldSystems/EventsSystem.js
-- samples/shared/worldSystems/LifecycleSystem.js
-- samples/shared/worldSystems/SpawnSystem.js
-- samples/shared/worldSystems/WorldStateSystem.js
-- samples/shared/worldSystems/distanceSq.js
+docs/
+  pr/
+    BUILD_PR_LEVEL_18_13_TRACK_E_CSS_UI_NORMALIZATION_FOUNDATION.md
+  dev/
+    codex_commands.md
+    commit_comment.txt
+    reports/
+      change_summary.txt
+      file_tree.txt
+      roadmap_status_update_instructions.txt
+      validation_checklist.txt

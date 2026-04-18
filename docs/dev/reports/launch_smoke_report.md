@@ -1,6 +1,6 @@
 # Launch Smoke Report
 
-Generated: 2026-04-17T18:22:44.903Z
+Generated: 2026-04-18T04:35:25.463Z
 
 Filters: games=true, samples=true, tools=true, sampleRange=all
 
@@ -11,19 +11,12 @@ Filters: games=true, samples=true, tools=true, sampleRange=all
 | PASS | game | Asteroids | games\Asteroids\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
 | PASS | game | Bouncing-ball | games\Bouncing-ball\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
 | PASS | game | Breakout | games\Breakout\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
-| PASS | game | Gravity | games\Gravity\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
 | PASS | game | GravityWell | games\GravityWell\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
-| PASS | game | MultiBallChaos | games\MultiBallChaos\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
-| PASS | game | Orbit | games\Orbit\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
-| PASS | game | PacmanFullAI | games\PacmanFullAI\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
-| PASS | game | PacmanLite | games\PacmanLite\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
-| PASS | game | PaddleIntercept | games\PaddleIntercept\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | game | Pacman | games\Pacman\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
 | PASS | game | Pong | games\Pong\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
-| PASS | game | ProjectileLab | games\ProjectileLab\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
 | PASS | game | SolarSystem | games\SolarSystem\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
 | PASS | game | SpaceDuel | games\SpaceDuel\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
 | PASS | game | SpaceInvaders | games\SpaceInvaders\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
-| PASS | game | Thruster | games\Thruster\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
 | PASS | game | vector-arcade-sample | games\vector-arcade-sample\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
 | PASS | sample | 0101 | samples\phase-01\0101\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
 | PASS | sample | 0102 | samples\phase-01\0102\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
@@ -73,6 +66,7 @@ Filters: games=true, samples=true, tools=true, sampleRange=all
 | PASS | sample | 0222 | samples\phase-02\0222\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
 | PASS | sample | 0223 | samples\phase-02\0223\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
 | PASS | sample | 0224 | samples\phase-02\0224\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 0225 | samples\phase-02\0225\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
 | PASS | sample | 0301 | samples\phase-03\0301\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
 | PASS | sample | 0302 | samples\phase-03\0302\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
 | PASS | sample | 0303 | samples\phase-03\0303\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
@@ -97,6 +91,9 @@ Filters: games=true, samples=true, tools=true, sampleRange=all
 | PASS | sample | 0322 | samples\phase-03\0322\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
 | PASS | sample | 0323 | samples\phase-03\0323\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
 | PASS | sample | 0324 | samples\phase-03\0324\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 0325 | samples\phase-03\0325\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 0326 | samples\phase-03\0326\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 0327 | samples\phase-03\0327\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
 | PASS | sample | 0401 | samples\phase-04\0401\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
 | PASS | sample | 0402 | samples\phase-04\0402\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
 | PASS | sample | 0403 | samples\phase-04\0403\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
@@ -109,6 +106,7 @@ Filters: games=true, samples=true, tools=true, sampleRange=all
 | PASS | sample | 0410 | samples\phase-04\0410\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
 | PASS | sample | 0411 | samples\phase-04\0411\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
 | PASS | sample | 0412 | samples\phase-04\0412\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 0413 | samples\phase-04\0413\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
 | PASS | sample | 0501 | samples\phase-05\0501\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
 | PASS | sample | 0502 | samples\phase-05\0502\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
 | PASS | sample | 0503 | samples\phase-05\0503\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
@@ -134,6 +132,7 @@ Filters: games=true, samples=true, tools=true, sampleRange=all
 | PASS | sample | 0611 | samples\phase-06\0611\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
 | PASS | sample | 0612 | samples\phase-06\0612\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
 | PASS | sample | 0613 | samples\phase-06\0613\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 0614 | samples\phase-06\0614\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
 | PASS | sample | 0701 | samples\phase-07\0701\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
 | PASS | sample | 0702 | samples\phase-07\0702\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
 | PASS | sample | 0703 | samples\phase-07\0703\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
@@ -199,6 +198,7 @@ Filters: games=true, samples=true, tools=true, sampleRange=all
 | PASS | sample | 1317 | samples\phase-13\1317\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
 | PASS | sample | 1318 | samples\phase-13\1318\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
 | PASS | sample | 1319 | samples\phase-13\1319\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 1320 | samples\phase-13\1320\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
 | PASS | sample | 1401 | samples\phase-14\1401\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
 | PASS | sample | 1402 | samples\phase-14\1402\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
 | PASS | sample | 1403 | samples\phase-14\1403\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |

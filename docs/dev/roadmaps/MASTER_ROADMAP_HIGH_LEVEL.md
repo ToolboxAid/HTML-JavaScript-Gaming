@@ -746,9 +746,9 @@
 - [x] normalize naming consistency
 
 ### Track E � CSS & UI Normalization
-- [ ] flatten CSS layers
-- [ ] enforce shared UI classes
-- [ ] remove redundant styles
+- [.] flatten CSS layers
+- [.] enforce shared UI classes
+- [.] remove redundant styles
 
 ### Track F � Docs System Cleanup
 [ ] Docs organization: classify all `./docs/` into buckets.

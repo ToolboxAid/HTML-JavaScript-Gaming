@@ -3,33 +3,16 @@ Overlay sample page layout normalization.
 Scope is intentionally limited to phase-17 overlay sample pages.
 */
 
-.overlay-sample-main {
-  width: min(100%, 1000px);
-  margin: 0 auto;
-  padding: 20px;
-  box-sizing: border-box;
-}
-
 .overlay-sample-title {
   margin: 0 0 10px;
 }
 
 .overlay-sample-summary {
   margin: 0 0 14px;
-  line-height: 1.5;
-}
-
-.overlay-sample-canvas {
-  display: block;
-  width: 100%;
-  max-width: 960px;
-  height: auto;
-  border: 1px solid #334155;
 }
 
 .overlay-sample-engine-section {
   margin-top: 14px;
-  color: #dddddd;
 }
 
 .overlay-sample-engine-title {

@@ -43,14 +43,16 @@ body::before {
   pointer-events: none;
 }
 
-main {
+main,
+.ui-chrome-main {
   width: min(100%, 1000px);
   margin: 0 auto;
   padding: 20px;
   box-sizing: border-box;
 }
 
-canvas {
+canvas,
+.ui-chrome-canvas {
   display: block;
   width: 100%;
   max-width: 960px;
@@ -58,10 +60,12 @@ canvas {
   border: 1px solid #334155;
 }
 
-p {
+p,
+.ui-chrome-copy {
   line-height: 1.5;
 }
 
-section {
+section,
+.ui-chrome-section-muted {
   color: #dddddd;
 }

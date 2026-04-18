@@ -1,34 +1,27 @@
-MODEL: GPT-5.3-codex
+MODEL: GPT-5.4-codex
 REASONING: high
 
-Execute BUILD_PR_LEVEL_16_1_PHASE16_NETWORK_GATE_COMPLETION.
+COMMAND:
+Create `BUILD_PR_LEVEL_18_13_TRACK_E_CSS_UI_NORMALIZATION_FOUNDATION` as a single-purpose, one-pass executable PR bundle.
 
-Goal:
-Close the remaining Section 16 dependency gate item for beginning active phase-16 / 3D execution.
+Requirements:
+- Advance Roadmap 18 Track E using the smallest testable UI/CSS normalization slice.
+- Choose exactly one existing shared UI chrome cluster reused by more than one surface.
+- Normalize only that cluster and its direct consumers.
+- Flatten duplicated CSS layer usage inside that cluster.
+- Enforce shared UI classes for that cluster.
+- Remove redundant styles only where the normalized shared class path replaces them.
+- No repo-wide CSS sweep.
+- No visual redesign.
+- No game-specific styling changes.
+- No docs reorganization.
+- Update `docs/dev/roadmaps/MASTER_ROADMAP_HIGH_LEVEL.md` with status-only progression only if execution-backed.
+- Produce reports in `docs/dev/reports/` covering scope, touched files, validation, and roadmap status reasoning.
+- Package the final repo-structured ZIP to:
+  `<project folder>/tmp/BUILD_PR_LEVEL_18_13_TRACK_E_CSS_UI_NORMALIZATION_FOUNDATION.zip`
 
-Required work:
-1. Inspect the current repo state and confirm whether the full real-network capability lane is complete.
-2. Gather execution-backed evidence for:
-   - real transport/session layer
-   - authoritative live server runtime
-   - replication/client application
-   - playable real multiplayer validation
-   - server hosting + Docker containerization
-   - promotion/readiness gate
-   - phase 13 real-network samples included
-3. Write a concise closure report to docs/dev/reports.
-4. If the evidence supports closure, update:
-   docs/dev/roadmaps/MASTER_ROADMAP_HIGH_LEVEL.md
-   in place only, with:
-   - [ ] -> [x]
-5. Do not rewrite, delete, shorten, or paraphrase any roadmap text.
-
-Constraints:
-- no broad cleanup
-- no unrelated 3D or networking refactors
-- no roadmap rewrite
-- keep scope limited to this single gate item
-
-Packaging:
-- produce final ZIP at:
-  <project folder>/tmp/BUILD_PR_LEVEL_16_1_PHASE16_NETWORK_GATE_COMPLETION.zip
+Validation minimums:
+- affected UI surfaces load correctly
+- no broken class references in touched files
+- no duplicate redundant style block remains in the chosen cluster when replaced by shared class usage
+- roadmap edits are status-only
