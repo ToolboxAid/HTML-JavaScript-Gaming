@@ -865,3 +865,4 @@
 - [x] validation sweep executed across samples, runtime, and engine boundaries (BUILD_PR_LEVEL_23_1)
 - [x] integration fixes applied and validated for 23.1-reported runtime/guard gaps (BUILD_PR_LEVEL_23_2)
 - [x] sample system validation and repair executed with post-fix clean sample launch/runtime checks (BUILD_PR_LEVEL_23_4)
+- [x] sample index and routing normalization validated (BUILD_PR_LEVEL_23_5)
