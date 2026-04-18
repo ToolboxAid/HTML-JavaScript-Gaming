@@ -17,6 +17,7 @@ const refs = {
 
 const manifest = createToolHostManifest();
 const toolIds = manifest.tools.map((tool) => tool.id);
+const hasAvailableTools = toolIds.length > 0;
 
 function readSelectedToolId() {
   return refs.toolSelect instanceof HTMLSelectElement ? refs.toolSelect.value : "";
@@ -72,7 +73,12 @@ function updateStandaloneHref(toolId) {
     return;
   }
   const entry = getToolHostEntryById(manifest, toolId);
-  refs.standaloneLink.href = entry ? entry.launchPath : "#";
+  const enabled = !!entry;
+  refs.standaloneLink.href = enabled ? entry.launchPath : "#";
+  refs.standaloneLink.setAttribute("aria-disabled", enabled ? "false" : "true");
+  refs.standaloneLink.tabIndex = enabled ? 0 : -1;
+  refs.standaloneLink.style.pointerEvents = enabled ? "" : "none";
+  refs.standaloneLink.style.opacity = enabled ? "" : "0.6";
 }
 
 function writeQueryToolId(toolId, replace = false) {
@@ -95,6 +101,25 @@ function readInitialToolId() {
   return manifest.tools[0]?.id || "";
 }
 
+function syncControlState() {
+  const selectedToolId = readSelectedToolId();
+  const hasSelection = !!selectedToolId && !!getToolHostEntryById(manifest, selectedToolId);
+  const hasMount = !!runtime.getCurrentMount();
+
+  if (refs.mountButton instanceof HTMLButtonElement) {
+    refs.mountButton.disabled = !hasSelection;
+  }
+  if (refs.prevButton instanceof HTMLButtonElement) {
+    refs.prevButton.disabled = !hasAvailableTools;
+  }
+  if (refs.nextButton instanceof HTMLButtonElement) {
+    refs.nextButton.disabled = !hasAvailableTools;
+  }
+  if (refs.unmountButton instanceof HTMLButtonElement) {
+    refs.unmountButton.disabled = !hasMount;
+  }
+}
+
 function populateToolSelect(initialToolId) {
   if (!(refs.toolSelect instanceof HTMLSelectElement)) {
     return;
@@ -115,9 +140,11 @@ const runtime = createToolHostRuntime({
   },
   onMounted(tool) {
     setCurrentLabel(`Mounted: ${tool.displayName}`);
+    syncControlState();
   },
   onUnmounted() {
     setCurrentLabel("No tool mounted.");
+    syncControlState();
   }
 });
 
@@ -153,6 +180,7 @@ function mountSelectedTool(source = "manual") {
     },
     state: optionalState
   });
+  syncControlState();
 }
 
 function bindEvents() {
@@ -183,6 +211,7 @@ function bindEvents() {
   if (refs.unmountButton instanceof HTMLButtonElement) {
     refs.unmountButton.addEventListener("click", () => {
       runtime.unmountCurrentTool("manual");
+      syncControlState();
     });
   }
 
@@ -202,15 +231,22 @@ function bindEvents() {
     updateSwitchMeta();
     updateStandaloneHref(toolId);
     mountSelectedTool("popstate");
+    syncControlState();
   });
 }
 
 function init() {
+  if (!hasAvailableTools) {
+    writeStatus("No active tools are currently available for Tool Host.");
+  }
   const initialToolId = readInitialToolId();
   populateToolSelect(initialToolId);
   updateStandaloneHref(initialToolId);
+  syncControlState();
   bindEvents();
-  mountSelectedTool("init");
+  if (hasAvailableTools) {
+    mountSelectedTool("init");
+  }
 }
 
 init();

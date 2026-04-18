@@ -81,6 +81,6 @@ Track all tool-related improvements, gaps, and future work.
 
 ## 10. Finalization
 - [ ] each tool reaches stable state
-- [ ] all critical bugs resolved
+- [x] all critical bugs resolved
 - [ ] documentation complete
 - [ ] ready for long-term maintenance
