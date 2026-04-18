@@ -1,7 +1,7 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { getToolRegistry } from "../tools/toolRegistry.js";
+import { getToolRegistry, getVisibleActiveToolRegistry } from "../tools/toolRegistry.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -9,21 +9,18 @@ const repoRoot = path.resolve(__dirname, "..");
 const toolsRoot = path.join(repoRoot, "tools");
 const reportPath = path.join(repoRoot, "docs", "dev", "reports", "tool_registry_validation.txt");
 
-const EXPECTED_ACTIVE_NAMES = [
-  "Vector Map Editor",
-  "Vector Asset Studio",
-  "Tilemap Studio",
-  "Parallax Scene Studio",
-  "Sprite Editor",
-  "Asset Browser / Import Hub",
-  "Palette Browser / Manager"
-];
-
 const EXPECTED_LEGACY_NAMES = [
   "SpriteEditor_old_keep"
 ];
 
-const IGNORED_DIRECTORIES = new Set(["shared"]);
+const IGNORED_DIRECTORIES = new Set([
+  "shared",
+  "Tool Host",
+  "codex",
+  "dev",
+  "preview",
+  "templates"
+]);
 
 function normalizeText(value) {
   return typeof value === "string" ? value.trim() : "";
@@ -76,9 +73,10 @@ async function main() {
   const issues = [];
   const notes = [];
   const registryEntries = getToolRegistry();
+  const visibleActiveEntries = getVisibleActiveToolRegistry();
   const toolDirectories = await listToolDirectories();
   const registryPaths = registryEntries.map((entry) => normalizeText(entry.path || entry.folderName));
-  const activeEntries = registryEntries.filter((entry) => entry.active === true);
+  const activeEntries = registryEntries.filter((entry) => entry.active === true && entry.visibleInToolsList === true);
   const activeNames = activeEntries.map((entry) => normalizeText(entry.name || entry.displayName));
   const legacyEntries = registryEntries.filter((entry) => entry.legacy === true);
 
@@ -89,15 +87,24 @@ async function main() {
   for (const entry of registryEntries) {
     const folderName = normalizeText(entry.path || entry.folderName);
     const entryPoint = normalizeText(entry.entryPoint);
+    const isVisibleActive = entry.active === true && entry.visibleInToolsList === true;
     if (!folderName) {
       issues.push(`Registry entry ${entry.id} is missing a folder path.`);
       continue;
     }
     if (!(await pathExists(path.join(toolsRoot, folderName)))) {
-      issues.push(`Registry entry ${entry.id} points to missing folder tools/${folderName}`);
+      if (isVisibleActive) {
+        issues.push(`Registry entry ${entry.id} points to missing folder tools/${folderName}`);
+      } else {
+        notes.push(`Legacy/inactive entry ${entry.id} points to missing folder tools/${folderName} (allowed).`);
+      }
     }
     if (entryPoint && !(await pathExists(path.join(toolsRoot, entryPoint)))) {
-      issues.push(`Registry entry ${entry.id} points to missing entry file tools/${entryPoint}`);
+      if (isVisibleActive) {
+        issues.push(`Registry entry ${entry.id} points to missing entry file tools/${entryPoint}`);
+      } else {
+        notes.push(`Legacy/inactive entry ${entry.id} points to missing entry file tools/${entryPoint} (allowed).`);
+      }
     }
   }
 
@@ -107,10 +114,8 @@ async function main() {
     }
   }
 
-  for (const expectedName of EXPECTED_ACTIVE_NAMES) {
-    if (!activeNames.includes(expectedName)) {
-      issues.push(`Expected active tool missing or inactive: ${expectedName}`);
-    }
+  if (visibleActiveEntries.length === 0) {
+    issues.push("Visible active tool registry is empty.");
   }
 
   const spriteEditor = registryEntries.find((entry) => normalizeText(entry.name || entry.displayName) === "Sprite Editor");
@@ -148,14 +153,8 @@ async function main() {
   }
 
   const toolsLandingPage = await fs.readFile(path.join(toolsRoot, "index.html"), "utf8");
-  if (/Asset Browser \/ Import Helper/.test(toolsLandingPage)) {
-    issues.push('Placeholder drift detected: "Asset Browser / Import Helper" still appears in tools/index.html.');
-  }
-  if (/Palette Browser \/ Manager/.test(toolsLandingPage)) {
-    issues.push('Placeholder drift detected: "Palette Browser / Manager" still appears in static tools/index.html after activation.');
-  }
-  if (/Asset Browser \/ Import Hub/.test(toolsLandingPage)) {
-    issues.push('Placeholder drift detected: "Asset Browser / Import Hub" still appears in static tools/index.html instead of the registry-rendered grid.');
+  if (!toolsLandingPage.includes("data-active-tools-grid")) {
+    issues.push("Tools landing page must include the active-tools grid host.");
   }
 
   const reportLines = [

@@ -105,6 +105,7 @@ import { run as runRuntimeAssetLookupConsolidation } from './tools/RuntimeAssetL
 import { run as runRuntimeAssetValidation } from './tools/RuntimeAssetValidation.test.mjs';
 import { run as runToolEntryLaunchContract } from './tools/ToolEntryLaunchContract.test.mjs';
 import { run as runToolsIndexRegistrySmoke } from './tools/ToolsIndexRegistrySmoke.test.mjs';
+import { run as runToolHostDispatchContract } from './tools/ToolHostDispatchContract.test.mjs';
 import { run as runPlatformShellHeaderAlignment } from './tools/PlatformShellHeaderAlignment.test.mjs';
 import { run as runRuntimeObservabilityFoundation } from './tools/RuntimeObservabilityFoundation.test.mjs';
 import { run as runToolLayoutDockingControlNormalization } from './tools/ToolLayoutDockingControlNormalization.test.mjs';
@@ -240,6 +241,7 @@ const tests = [
     ['RuntimeAssetValidation', runRuntimeAssetValidation],
     ['ToolEntryLaunchContract', runToolEntryLaunchContract],
     ['ToolsIndexRegistrySmoke', runToolsIndexRegistrySmoke],
+    ['ToolHostDispatchContract', runToolHostDispatchContract],
     ['PlatformShellHeaderAlignment', runPlatformShellHeaderAlignment],
     ['RuntimeObservabilityFoundation', runRuntimeObservabilityFoundation],
     ['ToolLayoutDockingControlNormalization', runToolLayoutDockingControlNormalization],

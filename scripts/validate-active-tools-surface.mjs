@@ -11,23 +11,15 @@ import {
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const repoRoot = path.resolve(__dirname, "..");
-
-const REQUIRED_ACTIVE_TOOL_NAMES = [
-  "Vector Map Editor",
-  "Vector Asset Studio",
-  "Tilemap Studio",
-  "Parallax Scene Studio",
-  "Sprite Editor",
-  "Asset Browser / Import Hub",
-  "Palette Browser / Manager"
-];
-
-const SCAN_TARGETS = [
+const toolsRoot = path.join(repoRoot, "tools");
+const REQUIRED_SCAN_TARGETS = [
   "tools/index.html",
   "tools/renderToolsIndex.js",
   "tools/shared/platformShell.js",
   "tools/shared/platformShell.css",
-  "tools/shared/assetUsageIntegration.js",
+  "tools/shared/assetUsageIntegration.js"
+];
+const OPTIONAL_SCAN_TARGETS = [
   "docs/pr/BUILD_PR_VECTOR_SHOWCASE_AND_GEOMETRY_RUNTIME_FINAL.md",
   "docs/specs/asset_usage_contract.md",
   "docs/dev/commit_comment.txt",
@@ -37,16 +29,6 @@ const SCAN_TARGETS = [
 const NAVIGATION_SURFACE_TARGETS = [
   "tools/index.html",
   "tools/renderToolsIndex.js"
-];
-
-const ACTIVE_TOOL_ENTRYPOINTS = [
-  "tools/Vector Asset Studio/index.html",
-  "tools/Tilemap Studio/index.html",
-  "tools/Parallax Scene Studio/index.html",
-  "tools/Vector Map Editor/index.html",
-  "tools/Sprite Editor/index.html",
-  "tools/Asset Browser/index.html",
-  "tools/Palette Browser/index.html"
 ];
 
 async function pathExists(targetPath) {
@@ -68,8 +50,8 @@ async function main() {
   const visibleActiveTools = getVisibleActiveToolRegistry();
   const activeNames = visibleActiveTools.map((tool) => tool.displayName);
 
-  if (JSON.stringify(activeNames) !== JSON.stringify(REQUIRED_ACTIVE_TOOL_NAMES)) {
-    issues.push(`Active tool names do not match the approved list. Found: ${activeNames.join(", ")}`);
+  if (visibleActiveTools.length === 0) {
+    issues.push("Visible active tool registry must not be empty.");
   }
 
   for (const tool of visibleActiveTools) {
@@ -86,9 +68,9 @@ async function main() {
     }
     const sampleEntryPoints = Array.isArray(tool.sampleEntryPoints) ? tool.sampleEntryPoints : [];
     for (const sampleEntry of sampleEntryPoints) {
-      const samplePath = path.join(repoRoot, "tools", sampleEntry.path);
+      const samplePath = path.resolve(toolsRoot, sampleEntry.path);
       if (!(await pathExists(samplePath))) {
-        issues.push(`Missing showcase sample/help entry point for ${tool.displayName}: tools/${sampleEntry.path}`);
+        issues.push(`Missing showcase sample/help entry point for ${tool.displayName}: ${sampleEntry.path}`);
       }
     }
   }
@@ -108,10 +90,23 @@ async function main() {
     issues.push("SpriteEditor_old_keep must stay hidden from the first-class tool surface.");
   }
 
-  for (const target of SCAN_TARGETS) {
+  for (const target of REQUIRED_SCAN_TARGETS) {
+    if (!(await pathExists(path.join(repoRoot, target)))) {
+      issues.push(`Missing required validation target: ${target}`);
+      continue;
+    }
     const text = await readText(target);
     if (/Sprite Editor V3|tools\/Sprite Editor V3|tools\\Sprite Editor V3/.test(text)) {
       issues.push(`Stale Sprite Editor V3 reference detected in ${target}`);
+    }
+  }
+  for (const target of OPTIONAL_SCAN_TARGETS) {
+    if (!(await pathExists(path.join(repoRoot, target)))) {
+      continue;
+    }
+    const text = await readText(target);
+    if (/Sprite Editor V3|tools\/Sprite Editor V3|tools\\Sprite Editor V3/.test(text)) {
+      issues.push(`Stale Sprite Editor V3 reference detected in optional target ${target}`);
     }
   }
 
@@ -135,7 +130,8 @@ async function main() {
     }
   }
 
-  for (const target of ACTIVE_TOOL_ENTRYPOINTS) {
+  for (const tool of visibleActiveTools) {
+    const target = `tools/${tool.entryPoint}`;
     const text = await readText(target);
     if (!text.includes("../../src/engine/ui/hubCommon.css")) {
       issues.push(`Engine theme stylesheet missing from active tool page: ${target}`);

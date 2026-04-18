@@ -59,7 +59,7 @@ Track all tool-related improvements, gaps, and future work.
 - [ ] reduce rendering overhead in editors
 - [ ] improve load times for large assets
 - [ ] memory usage optimization
-- [ ] error handling consistency
+- [.] error handling consistency
 
 ---
 
