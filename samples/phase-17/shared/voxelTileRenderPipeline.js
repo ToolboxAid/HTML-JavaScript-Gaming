@@ -4,6 +4,8 @@ David Quesenberry
 04/17/2026
 voxelTileRenderPipeline.js
 */
+import { asFiniteNumber } from '/src/shared/number/index.js';
+
 export const TILE_RENDER_FACE_ORDER = Object.freeze(['top', 'south', 'east']);
 
 export const NORMALIZED_TILE_UV_RING = Object.freeze([
@@ -79,7 +81,7 @@ export function drawVoxelTileFaces(renderer, worldToScreen, x, y, z, options = {
   const faces = buildVoxelTileFaces(worldToScreen, x, y, z);
   for (let index = 0; index < faces.length; index += 1) {
     const face = faces[index];
-    const shadeScale = Number.isFinite(faceShading[face.id]) ? faceShading[face.id] : 1;
+    const shadeScale = asFiniteNumber(faceShading[face.id], 1);
     renderer.drawPolygon(face.points, {
       fillColor: shadeColor(baseRgb, shadeScale),
       strokeColor,

@@ -59,7 +59,15 @@ export function createRuntimeMonitoringHooks({
   const errorHandler = typeof onError === 'function' ? onError : null;
   const performanceHandler = typeof onPerformance === 'function' ? onPerformance : null;
   const normalizedSource = typeof source === 'string' && source.length > 0 ? source : 'runtime';
-  const intervalMs = Number.isFinite(sampleIntervalMs) && sampleIntervalMs > 0 ? Number(sampleIntervalMs) : 0;
+  const normalizedSampleIntervalMs = Number(sampleIntervalMs);
+  const intervalMs = (
+    Number.isNaN(normalizedSampleIntervalMs)
+    || normalizedSampleIntervalMs <= 0
+    || normalizedSampleIntervalMs === Infinity
+    || normalizedSampleIntervalMs === -Infinity
+  )
+    ? 0
+    : normalizedSampleIntervalMs;
   const basePerformance = performanceRef && typeof performanceRef.now === 'function' ? performanceRef : null;
 
   let globalErrorListener = null;
