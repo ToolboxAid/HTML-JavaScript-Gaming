@@ -18,7 +18,7 @@ index.html
   <div data-tools-platform-header></div>
   <div class="app-shell">
     <header class="toolbar">
-      <div class="toolbar-group">
+      <div class="toolbar-group tools-platform-control-cluster tools-platform-control-cluster--primary">
         <button id="newProjectButton" type="button">New Project</button>
         <button id="loadProjectButton" type="button">Load Project</button>
         <input id="loadProjectInput" class="hidden-file-input" type="file" accept=".json,application/json" />
@@ -35,7 +35,7 @@ index.html
         <button id="packageProjectButton" type="button">Package Project</button>
       </div>
 
-      <div class="toolbar-group">
+      <div class="toolbar-group tools-platform-control-cluster tools-platform-control-cluster--workflow">
         <label>
           Project Name
           <input id="projectNameInput" type="text" value="untitled-map" />
@@ -55,7 +55,7 @@ index.html
         <button id="applyMapMetaButton" type="button">Apply Map Meta</button>
       </div>
 
-      <div class="toolbar-group">
+      <div class="toolbar-group tools-platform-control-cluster tools-platform-control-cluster--preview">
         <label>
           Samples
           <select id="sampleSelect">
@@ -66,8 +66,8 @@ index.html
       </div>
     </header>
 
-    <div class="workspace">
-      <aside class="sidebar left-sidebar">
+    <div class="workspace tools-platform-layout-grid">
+      <aside class="sidebar left-sidebar tools-platform-resize-panel" data-panel-side="left">
         <section class="panel">
           <h3>Parallax Layers</h3>
           <ul id="layerList" class="layer-list"></ul>
@@ -102,7 +102,7 @@ index.html
         </section>
       </aside>
 
-      <main class="preview-panel">
+      <main class="preview-panel tools-platform-dock-panel">
         <div class="preview-toolbar">
           <strong>Parallax Preview</strong>
           <span id="previewMeta" class="muted"></span>
@@ -114,7 +114,7 @@ index.html
         <div id="statusText" class="status-text">Ready.</div>
       </main>
 
-      <aside class="sidebar right-sidebar">
+      <aside class="sidebar right-sidebar tools-platform-resize-panel" data-panel-side="right">
         <section class="panel">
           <h3>Selected Layer</h3>
           <label>

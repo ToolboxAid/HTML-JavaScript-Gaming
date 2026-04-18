@@ -16,8 +16,8 @@
       <p>Browse approved asset locations, preview current platform content, and generate non-destructive import plans for vectors, sprites, tilemaps, parallax scenes, palettes, and workflow JSON.</p>
     </header>
 
-    <div class="asset-browser__layout">
-      <aside class="panel asset-browser__panel">
+    <div class="asset-browser__layout tools-platform-layout-grid">
+      <aside class="panel asset-browser__panel tools-platform-resize-panel" data-panel-side="left">
         <h3>Browse Approved Assets</h3>
         <div id="launchContextText" class="asset-browser__hint">Shared asset flow ready.</div>
         <label class="field">
@@ -38,13 +38,13 @@
         <div id="assetPreviewCanvas" class="asset-browser__preview">
           <p class="asset-browser__empty">No asset selected.</p>
         </div>
-        <div class="asset-browser__actions">
+        <div class="asset-browser__actions tools-platform-control-row">
           <button id="useAssetInToolButton" type="button">Use In Active Tool</button>
         </div>
         <pre id="assetPreviewText" class="asset-browser__text-preview">Choose a file to inspect metadata and content.</pre>
       </main>
 
-      <aside class="panel asset-browser__panel">
+      <aside class="panel asset-browser__panel tools-platform-resize-panel" data-panel-side="right">
         <h3>Import Plan</h3>
         <p class="asset-browser__hint">This tool does not write files into the repo. It validates a local file and generates an import plan that targets approved project folders.</p>
         <label class="field">
@@ -63,7 +63,7 @@
           Import name
           <input id="importNameInput" type="text" placeholder="lowercase-name.ext" />
         </label>
-        <div class="asset-browser__actions">
+        <div class="asset-browser__actions tools-platform-control-row">
           <button id="validateImportButton" type="button">Validate Plan</button>
           <button id="downloadImportPlanButton" type="button">Download Plan JSON</button>
         </div>

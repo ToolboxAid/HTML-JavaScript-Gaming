@@ -13,19 +13,19 @@
     <section class="panel">
       <h2>Tool Host Foundation</h2>
       <p>Load one active tool at a time through a shared host container while keeping direct standalone tool pages unchanged.</p>
-      <div class="meta">
+      <div class="meta tools-platform-control-row">
         <label class="field">
           Tool
           <select data-tool-host-select></select>
         </label>
       </div>
-      <div class="meta">
+      <div class="meta tools-platform-control-row">
         <label class="field" style="width:100%;">
           Optional State JSON
           <textarea data-tool-host-state-input rows="5" style="width:100%;" placeholder='{"example":"value"}'></textarea>
         </label>
       </div>
-      <div class="meta">
+      <div class="meta tools-platform-control-row">
         <button type="button" data-tool-host-mount>Load Selected Tool</button>
         <button type="button" data-tool-host-prev>Previous Tool</button>
         <button type="button" data-tool-host-next>Next Tool</button>
@@ -38,7 +38,7 @@
 
     <section class="panel">
       <h3 data-tool-host-current-label>No tool mounted.</h3>
-      <div data-tool-host-mount-container style="min-height: 980px; border: 1px solid rgba(148, 163, 184, 0.35); border-radius: 10px; overflow: hidden; background: rgba(15, 23, 42, 0.45);"></div>
+      <div data-tool-host-mount-container class="tools-platform-dock-panel" style="min-height: 420px; border: 1px solid rgba(148, 163, 184, 0.35); border-radius: 10px; overflow: hidden; background: rgba(15, 23, 42, 0.45);"></div>
     </section>
   </div>
   <div data-tools-platform-status></div>

@@ -18,7 +18,7 @@ index.html
   <div data-tools-platform-header></div>
   <div class="app-shell" id="appShell">
     <header class="toolbar">
-      <div class="toolbar-group">
+      <div class="toolbar-group tools-platform-control-cluster tools-platform-control-cluster--primary">
         <button id="newProjectButton" type="button">New Project</button>
         <button id="loadProjectButton" type="button">Load Project</button>
         <input id="loadProjectInput" class="hidden-file-input" type="file" accept=".json,application/json" />
@@ -42,7 +42,7 @@ index.html
         <button id="packageProjectButton" type="button">Package Project</button>
       </div>
 
-      <div class="toolbar-group">
+      <div class="toolbar-group tools-platform-control-cluster tools-platform-control-cluster--workflow">
         <label>
           Map Name
           <input id="mapNameInput" type="text" value="untitled-map" />
@@ -62,7 +62,7 @@ index.html
         <button id="applyMapSizeButton" type="button">Apply Size</button>
       </div>
 
-      <div class="toolbar-group">
+      <div class="toolbar-group tools-platform-control-cluster tools-platform-control-cluster--preview">
         <label>
           Tool
           <select id="activeToolSelect">
@@ -79,8 +79,8 @@ index.html
       </div>
     </header>
 
-    <div class="workspace">
-      <aside class="sidebar left-sidebar">
+    <div class="workspace tools-platform-layout-grid">
+      <aside class="sidebar left-sidebar tools-platform-resize-panel" data-panel-side="left">
         <section class="panel">
           <h3>Tileset</h3>
           <div class="button-row">
@@ -142,7 +142,7 @@ index.html
         <div id="statusText" class="status-text">Ready.</div>
       </main>
 
-      <aside class="sidebar right-sidebar">
+      <aside class="sidebar right-sidebar tools-platform-resize-panel" data-panel-side="right">
         <section class="panel">
           <h3>Layers</h3>
           <ul id="layerList" class="layer-list"></ul>

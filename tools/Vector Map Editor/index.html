@@ -18,7 +18,7 @@ index.html
   <div data-tools-platform-header></div>
   <div class="app" id="appRoot">
     <div class="toolbar">
-      <div class="toolbar-group">
+      <div class="toolbar-group tools-platform-control-cluster tools-platform-control-cluster--primary">
         <button id="newDocumentButton">New</button>
         <button id="undoButton" type="button" disabled>Undo</button>
         <button id="redoButton" type="button" disabled>Redo</button>
@@ -30,7 +30,7 @@ index.html
         </label>
       </div>
 
-      <div class="toolbar-group">
+      <div class="toolbar-group tools-platform-control-cluster tools-platform-control-cluster--workflow">
         <select id="workspaceModeSelect" title="Workspace mode">
           <option value="2d">2D Edit</option>
           <option value="3d">3D Wireframe</option>
@@ -55,7 +55,7 @@ index.html
         <button id="toggleJsonDockButton">JSON Dock</button>
       </div>
 
-      <div class="toolbar-group">
+      <div class="toolbar-group tools-platform-control-cluster tools-platform-control-cluster--preview">
         <label>
           Snap
           <input id="snapSizeInput" type="number" min="1" step="1" value="10" />
@@ -70,7 +70,7 @@ index.html
       </div>
     </div>
 
-    <aside class="sidebar" id="leftSidebar">
+    <aside class="sidebar tools-platform-resize-panel" data-panel-side="left" id="leftSidebar">
       <div class="panel">
         <h3>Objects</h3>
         <div class="button-row">
@@ -114,7 +114,7 @@ index.html
       <button id="showRightPanelButton" class="fullscreen-overlay-button">Properties</button>
       <canvas id="editorCanvas" class="canvas-layer"></canvas>
 
-      <div id="jsonDock" class="dock hidden">
+      <div id="jsonDock" class="dock hidden tools-platform-dock-panel">
         <div class="dock-header">
           <strong>Manual JSON Editor</strong>
           <div class="button-row">
@@ -128,7 +128,7 @@ index.html
       </div>
     </main>
 
-    <aside class="rightbar" id="rightSidebar">
+    <aside class="rightbar tools-platform-resize-panel" data-panel-side="right" id="rightSidebar">
       <div class="panel">
         <h3>Selected Object</h3>
         <label>

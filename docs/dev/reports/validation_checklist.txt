@@ -1,8 +1,10 @@
-- [ ] header real-estate audit completed
-- [ ] in-scope tool headers compacted where feasible
+- [ ] layout/spacing audit completed
+- [ ] in-scope tool layouts normalized where feasible
+- [ ] docking/resizing matrix completed
+- [ ] docking/resizing improved where applicable
+- [ ] control placement matrix completed
+- [ ] common controls aligned across in-scope tools
 - [ ] before/after differences documented
-- [ ] shared cross-tool behaviors aligned where applicable
-- [ ] alignment matrix completed
 - [ ] no start_of_day changes
 - [ ] unrelated working-tree changes preserved
 - [ ] roadmap updated only for completed items

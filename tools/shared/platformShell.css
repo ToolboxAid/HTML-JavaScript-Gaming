@@ -272,6 +272,74 @@ body.tools-platform-surface {
   font-size: 0.86rem;
 }
 
+/* Shared tool polish contract: layout spacing, control grouping, docking/resizing affordances. */
+body.tools-platform-surface .tools-platform-layout-grid {
+  gap: 12px;
+  align-items: stretch;
+}
+
+body.tools-platform-surface .tools-platform-control-cluster {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+body.tools-platform-surface .tools-platform-control-cluster--primary {
+  order: 1;
+}
+
+body.tools-platform-surface .tools-platform-control-cluster--workflow {
+  order: 2;
+}
+
+body.tools-platform-surface .tools-platform-control-cluster--preview {
+  order: 3;
+  margin-left: auto;
+}
+
+body.tools-platform-surface .tools-platform-control-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+body.tools-platform-surface .tools-platform-control-row > button,
+body.tools-platform-surface .tools-platform-control-row > a,
+body.tools-platform-surface .tools-platform-control-row > label {
+  margin: 0;
+}
+
+body.tools-platform-surface .tools-platform-dock-panel {
+  min-height: 180px;
+  max-height: 70vh;
+  resize: vertical;
+  overflow: auto;
+}
+
+@media (min-width: 1201px) {
+  body.tools-platform-surface .tools-platform-resize-panel {
+    min-width: 220px;
+    max-width: min(42vw, 520px);
+    resize: horizontal;
+    overflow: auto;
+  }
+}
+
+@media (max-width: 1200px) {
+  body.tools-platform-surface .tools-platform-control-cluster--preview {
+    margin-left: 0;
+  }
+
+  body.tools-platform-surface .tools-platform-resize-panel,
+  body.tools-platform-surface .tools-platform-dock-panel {
+    resize: none;
+    max-width: none;
+    max-height: none;
+  }
+}
+
 body.tools-platform-surface .wrap,
 body.tools-platform-surface .app-shell,
 body.tools-platform-surface .app {

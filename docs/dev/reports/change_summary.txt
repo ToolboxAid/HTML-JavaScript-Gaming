@@ -1,2 +1,2 @@
-This bundle combines the next safe tools lanes into one execution pass:
-header compaction and shared functionality alignment based on the 21.3 quality baseline.
+This bundle combines the remaining closely related tools UX polish items into one execution pass:
+layout/spacing normalization, docking/resizing consistency, and control placement consistency.

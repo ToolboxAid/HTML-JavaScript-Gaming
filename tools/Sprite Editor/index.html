@@ -24,7 +24,7 @@ index.html
     </header>
 
     <section class="toolbar-row">
-      <div class="toolbar-group">
+      <div class="toolbar-group tools-platform-control-cluster tools-platform-control-cluster--primary">
         <label>Width
           <input id="canvasWidthInput" type="number" min="1" max="256" value="32" />
         </label>
@@ -34,7 +34,7 @@ index.html
         <button id="newCanvasButton" type="button">Create New Canvas</button>
       </div>
 
-      <div class="toolbar-group">
+      <div class="toolbar-group tools-platform-control-cluster tools-platform-control-cluster--workflow">
         <label>Zoom
           <input id="pixelSizeInput" type="range" min="4" max="40" value="18" />
         </label>
@@ -45,7 +45,7 @@ index.html
         </label>
       </div>
 
-      <div class="toolbar-group tools-group" id="toolButtons">
+      <div class="toolbar-group tools-group tools-platform-control-cluster tools-platform-control-cluster--preview" id="toolButtons">
         <button type="button" data-tool="pencil" class="tool-button active">Pencil</button>
         <button type="button" data-tool="eraser" class="tool-button">Eraser</button>
         <button type="button" data-tool="fill" class="tool-button">Fill</button>
@@ -60,8 +60,8 @@ index.html
       <p id="statusBarText" class="state-pill">Canvas: 32x32 | Zoom: 18 | Cursor: -, -</p>
     </section>
 
-    <section class="workspace">
-      <div class="left-panel">
+    <section class="workspace tools-platform-layout-grid">
+      <div class="left-panel tools-platform-resize-panel" data-panel-side="left">
         <div class="panel-block">
           <h2>Colors</h2>
           <label>Palette Source (Engine)
@@ -128,7 +128,7 @@ index.html
         </div>
       </div>
 
-      <div class="right-panel">
+      <div class="right-panel tools-platform-resize-panel" data-panel-side="right">
         <div class="panel-block">
           <h2>Preview</h2>
           <canvas id="previewCanvas" aria-label="Animation preview"></canvas>
