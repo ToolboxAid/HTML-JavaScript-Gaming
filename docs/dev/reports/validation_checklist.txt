@@ -1,6 +1,46 @@
-[ ] Real-network capability lane inspected
-[ ] Required evidence gathered for all dependency-gate subareas
-[ ] Closure report written to docs/dev/reports
-[ ] Master roadmap updated in place only if execution-backed
-[ ] No roadmap text deleted or rewritten
-[ ] Scope remained limited to the single gate item
+Validation Checklist - BUILD_PR_LEVEL_18_12_TRACK_D_CODEBASE_CONSISTENCY_COMPLETION
+
+1) Consistency scan (execution-backed)
+- Command: custom node scanner (repo JS/MJS surfaces, excluding tests for class-per-file enforcement count)
+- Baseline findings:
+  - CLASS_ISSUES: 2
+    - samples/phase-06/0609/SpawnSystemScene.js (4 classes)
+    - samples/shared/worldSystems.js (4 classes)
+  - IMPORT_EXPORT overlaps: 8
+    - games/Pacman/game/PacmanFullAINavigator.js
+    - samples/phase-03/0326/game/PaddleInterceptWorld.js
+    - src/advanced/state/utils.js
+    - src/engine/debug/inspectors/shared/inspectorUtils.js
+    - src/engine/debug/network/shared/networkDebugUtils.js
+    - src/engine/systems/PhysicsSystem.js
+    - src/shared/number/numberUtils.js
+    - src/shared/utils/networkDebugUtils.js
+- Post-change findings:
+  - CLASS_ISSUES: 0
+  - IMPORT_EXPORT overlaps: 0
+
+2) Repo test execution
+- Command: node ./scripts/run-node-tests.mjs
+- Result: FAIL (out-of-scope pre-existing failure)
+  - Failing test: tests/games/GravityValidation.test.mjs:147
+  - Assertion: expected 1, actual 0
+
+3) Focused touched-surface test execution
+- Command: custom node runner with module hooks over targeted tests
+- Result: PASS (8/8)
+  - tests/games/PaddleInterceptWorld.test.mjs
+  - tests/games/PacmanFullAIValidation.test.mjs
+  - tests/final/NetworkDebugAndServerDashboardCloseout.test.mjs
+  - tests/final/DebugObservabilityMaturity.test.mjs
+  - tests/samples/SamplesProgramCombinedPass.test.mjs
+  - tests/shared/SharedNumberStringIdCloseout.test.mjs
+  - tests/tools/DevConsoleIntegration.test.mjs
+  - tests/runtime/Phase19RuntimeLifecycleValidation.test.mjs
+
+4) Syntax validation
+- Command: node --check on all changed/new JS files (19 files)
+- Result: PASS
+
+Conclusion
+- Track D scoped consistency violations resolved in touched scope and validated by execution.
+- Full-suite failure is recorded and isolated to an existing unrelated Gravity validation path.

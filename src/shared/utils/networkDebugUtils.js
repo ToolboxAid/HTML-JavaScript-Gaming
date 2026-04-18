@@ -1,4 +1,4 @@
-import { asNumber } from "../math/numberNormalization.js";
+import { asNumber as toNumber } from "../math/numberNormalization.js";
 import { asObject, asArray } from "./objectUtils.js";
 import { safeTrim } from "./stringUtils.js";
 
@@ -6,11 +6,10 @@ function toSafeKey(value) {
   return safeTrim(value);
 }
 
-export { asNumber };
+export { asNumber } from "../math/numberNormalization.js";
 export const sanitizeText = safeTrim;
 
-export function toNetworkSnapshot(snapshot) {
-  const sampleKey = arguments[1];
+export function toNetworkSnapshot(snapshot, sampleKey) {
   const key = toSafeKey(sampleKey);
   if (!key) {
     return {};
@@ -18,8 +17,7 @@ export function toNetworkSnapshot(snapshot) {
   return asObject(snapshot?.assets?.[key]);
 }
 
-export function getCommandSnapshot(context) {
-  const sampleKey = arguments[1];
+export function getCommandSnapshot(context, sampleKey) {
   const key = toSafeKey(sampleKey);
   if (!key) {
     return {};
@@ -27,14 +25,16 @@ export function getCommandSnapshot(context) {
   return asObject(context?.assets?.[key]);
 }
 
-export function commandLinesForTrace(context, args = []) {
-  const options = asObject(arguments[2]);
-  const sanitize = typeof options?.sanitizeText === "function" ? options.sanitizeText : sanitizeText;
-  const formatNumber = typeof options?.formatNumber === "function"
-    ? options.formatNumber
-    : asNumber;
+export function commandLinesForTrace(context, args = [], options = {}) {
+  const normalizedOptions = asObject(options);
+  const sanitize = typeof normalizedOptions?.sanitizeText === "function"
+    ? normalizedOptions.sanitizeText
+    : sanitizeText;
+  const formatNumber = typeof normalizedOptions?.formatNumber === "function"
+    ? normalizedOptions.formatNumber
+    : toNumber;
 
-  const snapshot = getCommandSnapshot(context, options?.sampleKey);
+  const snapshot = getCommandSnapshot(context, normalizedOptions?.sampleKey);
   const trace = asObject(snapshot.trace);
   const events = asArray(trace.events);
 
@@ -47,7 +47,7 @@ export function commandLinesForTrace(context, args = []) {
     return ["No network trace events recorded."];
   }
 
-  const phaseField = toSafeKey(options?.phaseField) || "phase";
+  const phaseField = toSafeKey(normalizedOptions?.phaseField) || "phase";
   return events
     .slice(-count)
     .reverse()

@@ -1,0 +1,25 @@
+Violation Inventory - Level 18 Track D
+
+Detection method
+- Repo scanner for JS/MJS files.
+- Class-per-file inventory excludes tests for enforcement applicability.
+- Import/export anti-pattern inventory flags files that import named symbols and also re-export same imported symbols from same file surface.
+
+Baseline inventory
+- Multi-class files (2):
+  - samples/phase-06/0609/SpawnSystemScene.js (4)
+  - samples/shared/worldSystems.js (4)
+
+- Import/export anti-pattern files (8):
+  - games/Pacman/game/PacmanFullAINavigator.js (opposite)
+  - samples/phase-03/0326/game/PaddleInterceptWorld.js (clamp)
+  - src/advanced/state/utils.js (isPlainObject)
+  - src/engine/debug/inspectors/shared/inspectorUtils.js (asNonNegativeInteger, asPositiveInteger, sanitizeText, toFiniteNumber)
+  - src/engine/debug/network/shared/networkDebugUtils.js (asObject, asArray, asNumber)
+  - src/engine/systems/PhysicsSystem.js (stepArcadeBody, applyDrag)
+  - src/shared/number/numberUtils.js (toFiniteNumber, asFiniteNumber, asPositiveInteger)
+  - src/shared/utils/networkDebugUtils.js (asNumber)
+
+Post-change inventory
+- Multi-class files: 0
+- Import/export anti-pattern files: 0

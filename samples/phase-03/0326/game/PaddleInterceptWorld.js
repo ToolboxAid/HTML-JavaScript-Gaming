@@ -241,4 +241,4 @@ export default class PaddleInterceptWorld {
   }
 }
 
-export { clamp, reflectIntoLane, predictFutureBallCenterY, predictInterceptY };
+export { reflectIntoLane, predictFutureBallCenterY, predictInterceptY };

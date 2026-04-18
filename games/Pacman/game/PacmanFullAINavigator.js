@@ -4,7 +4,7 @@ David Quesenberry
 03/25/2026
 PacmanFullAINavigator.js
 */
-import { oppositeCardinalDirection as opposite } from '/src/shared/utils/index.js';
+import { oppositeCardinalDirection as reverseDirection } from '/src/shared/utils/index.js';
 
 const DIRS = Object.freeze({
   left: { x: -1, y: 0 },
@@ -23,7 +23,7 @@ function getLegalDirections(grid, tileX, tileY) {
 function chooseDirectionTowardTarget(grid, tileX, tileY, currentDirection, targetTile, tieBreakOrder) {
   const legal = getLegalDirections(grid, tileX, tileY);
   if (!legal.length) return null;
-  const blockedReverse = opposite(currentDirection);
+  const blockedReverse = reverseDirection(currentDirection);
   const candidates = legal.filter((d) => d !== blockedReverse);
   const valid = candidates.length ? candidates : legal;
 
@@ -38,4 +38,5 @@ function chooseDirectionTowardTarget(grid, tileX, tileY, currentDirection, targe
   return ranked[0].dir;
 }
 
-export { DIRS, opposite, getLegalDirections, chooseDirectionTowardTarget };
+export { oppositeCardinalDirection as opposite } from '/src/shared/utils/index.js';
+export { DIRS, getLegalDirections, chooseDirectionTowardTarget };

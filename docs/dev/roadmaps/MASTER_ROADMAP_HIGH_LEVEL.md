@@ -740,10 +740,10 @@
 - [x] remove unstable or experimental surfaces
 
 ### Track D � Codebase Consistency
-- [ ] single class per file enforcement
-- [ ] eliminate import/export anti-patterns repo wide
-- [ ] remove duplicate helpers
-- [ ] normalize naming consistency
+- [x] single class per file enforcement
+- [x] eliminate import/export anti-patterns repo wide
+- [x] remove duplicate helpers
+- [x] normalize naming consistency
 
 ### Track E � CSS & UI Normalization
 - [ ] flatten CSS layers

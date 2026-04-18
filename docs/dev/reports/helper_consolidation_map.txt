@@ -1,0 +1,27 @@
+Helper Consolidation Map - Level 18 Track D
+
+Consolidated to stable shared homes
+
+1) Object helpers
+- Stable home: src/shared/utils/objectUtils.js
+- Consumers normalized:
+  - src/engine/debug/inspectors/shared/inspectorUtils.js
+  - src/engine/debug/network/shared/networkDebugUtils.js
+
+2) String sanitization helpers
+- Stable home: src/shared/utils/stringUtils.js (re-export surface)
+- Consumers normalized:
+  - src/engine/debug/network/shared/networkDebugUtils.js
+  - src/engine/debug/inspectors/shared/inspectorUtils.js
+
+3) Number normalization helpers
+- Stable home: src/shared/math/numberNormalization.js
+- Consumers normalized:
+  - src/shared/number/numberUtils.js
+  - src/engine/debug/network/shared/networkDebugUtils.js
+  - src/shared/utils/networkDebugUtils.js
+
+4) Sample world systems class extraction
+- Stable grouped surface retained: samples/shared/worldSystems.js (barrel)
+- Implementation split to single-class modules under:
+  - samples/shared/worldSystems/

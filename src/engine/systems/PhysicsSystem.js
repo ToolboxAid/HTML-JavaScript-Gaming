@@ -4,11 +4,11 @@ David Quesenberry
 04/15/2026
 PhysicsSystem.js
 */
-import { applyDrag, resolveAabbCollision3D, stepArcadeBody } from '../physics/index.js';
+import { resolveAabbCollision3D } from '../physics/index.js';
 import { moveEntities3D } from './MovementSystem.js';
 import { getSystemEntities, requireSystemComponents } from './SystemUtils.js';
 
-export { stepArcadeBody, applyDrag };
+export { stepArcadeBody, applyDrag } from '../physics/index.js';
 
 export function stepWorldPhysics3D(world, dt, { worldBounds = null } = {}) {
   if (!world) {

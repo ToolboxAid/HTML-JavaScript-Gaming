@@ -1,0 +1,20 @@
+Naming Normalization Summary - Level 18 Track D
+
+Scope
+- Naming normalization was limited to touched files in this PR.
+
+Applied normalization
+
+1) Explicit parameter naming (removed implicit arguments access)
+- File: src/shared/utils/networkDebugUtils.js
+- Changes:
+  - `toNetworkSnapshot(snapshot)` -> `toNetworkSnapshot(snapshot, sampleKey)`
+  - `getCommandSnapshot(context)` -> `getCommandSnapshot(context, sampleKey)`
+  - `commandLinesForTrace(context, args = [])` -> `commandLinesForTrace(context, args = [], options = {})`
+  - Removed `arguments[1]`/`arguments[2]` usage.
+
+2) Alias naming for clarity where re-exports remain
+- Applied consistent aliasing (`toNumber`, `reverseDirection`, etc.) to avoid symbol ambiguity and import/export overlap.
+
+Result
+- Naming consistency improved in touched scope without runtime behavior changes.

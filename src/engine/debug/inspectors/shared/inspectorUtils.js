@@ -5,24 +5,10 @@ David Quesenberry
 inspectorUtils.js
 */
 
-import { sanitizeText } from "../../../../shared/utils/stringUtils.js";
-import {
-  asNonNegativeInteger,
-  asPositiveInteger,
-  toFiniteNumber
-} from "../../../../shared/math/numberNormalization.js";
-
-export { asNonNegativeInteger, asPositiveInteger, sanitizeText, toFiniteNumber };
-
-export function asObject(value) {
-  return value !== null && typeof value === "object" && !Array.isArray(value)
-    ? value
-    : {};
-}
-
-export function asArray(value) {
-  return Array.isArray(value) ? value : [];
-}
+import { asArray as ensureArray } from "../../../../shared/utils/objectUtils.js";
+export { asNonNegativeInteger, asPositiveInteger, toFiniteNumber } from "../../../../shared/math/numberNormalization.js";
+export { sanitizeText } from "../../../../shared/utils/stringUtils.js";
+export { asArray, asObject } from "../../../../shared/utils/objectUtils.js";
 
 export function cloneJson(value) {
   if (typeof structuredClone === "function") {
@@ -32,7 +18,7 @@ export function cloneJson(value) {
 }
 
 export function boundedPush(buffer, item, max) {
-  const safeBuffer = asArray(buffer);
+  const safeBuffer = ensureArray(buffer);
   safeBuffer.push(item);
   if (safeBuffer.length > max) {
     safeBuffer.splice(0, safeBuffer.length - max);

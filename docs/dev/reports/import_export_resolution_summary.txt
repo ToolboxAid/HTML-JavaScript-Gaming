@@ -1,0 +1,34 @@
+Import/Export Resolution Summary - Level 18 Track D
+
+Resolved files and approach
+
+- games/Pacman/game/PacmanFullAINavigator.js
+  - replaced import+re-export overlap with direct re-export and alias for local usage.
+
+- samples/phase-03/0326/game/PaddleInterceptWorld.js
+  - removed re-export of imported `clamp` (kept local import-only use).
+
+- src/advanced/state/utils.js
+  - switched to aliased local import and direct source re-export for `isPlainObject`.
+
+- src/engine/debug/inspectors/shared/inspectorUtils.js
+  - replaced local duplicate object helpers with shared re-exports/import aliases.
+  - converted numeric/string helper exports to direct source re-exports.
+
+- src/engine/debug/network/shared/networkDebugUtils.js
+  - converted object/number/string exports to direct source re-exports.
+  - aliased local imports for internal helper operations.
+
+- src/engine/systems/PhysicsSystem.js
+  - removed import+re-export overlap for physics helpers.
+  - retained direct re-export from physics barrel.
+
+- src/shared/number/numberUtils.js
+  - removed import+re-export overlap.
+  - kept direct source re-exports and alias import for local function use.
+
+- src/shared/utils/networkDebugUtils.js
+  - removed import+re-export overlap for `asNumber` via alias import + direct re-export.
+
+Result
+- Post-change anti-pattern scan count: 0
