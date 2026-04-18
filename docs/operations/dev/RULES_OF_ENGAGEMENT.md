@@ -23,7 +23,7 @@ This file is the canonical workflow and rules document for active repo operation
 - Planning/docs bundle defines scope and acceptance.
 - Implementation applies approved scope only.
 - Active execution control files are in `docs/dev/`.
-- Update docs/operations/dev/BIG_PICTURE_ROADMAP.md when needed [ ] Todo to [.] inprogress to [x] complete.
+- Update docs/dev/roadmaps/MASTER_ROADMAP_ENGINE.md when needed [ ] Todo to [.] inprogress to [x] complete.
 
 ## Active Dev Controls
 - `docs/operations/dev/codex_commands.md`

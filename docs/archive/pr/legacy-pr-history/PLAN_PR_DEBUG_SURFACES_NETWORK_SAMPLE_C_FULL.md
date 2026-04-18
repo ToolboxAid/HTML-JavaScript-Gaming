@@ -20,7 +20,7 @@ PLAN_PR -> BUILD_PR -> APPLY_PR
 - `docs/dev/NETWORK_SAMPLES_PLAN.md`
   - advance Track P to in-progress for Sample C planning
   - keep Track T and Track U visible as upcoming tracks, not falsely marked complete unless code is actually delivered
-- `docs/operations/dev/BIG_PICTURE_ROADMAP.md`
+- `docs/archive/dev-ops/BIG_PICTURE_ROADMAP.md`
   - remove broken icon usage in the relevant network/debug roadmap area
   - keep text-only headings for Track T and Track U
   - align Level 11 / Phase 13 wording with the network sample sequence

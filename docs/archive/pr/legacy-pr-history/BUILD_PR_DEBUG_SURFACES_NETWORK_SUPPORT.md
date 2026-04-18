@@ -42,7 +42,7 @@ Built the full docs-first network debug support path for multiplayer diagnostics
 - Preserve debug-only gating.
 
 ## Roadmap State
-Bracket-only update in `docs/operations/dev/BIG_PICTURE_ROADMAP.md`:
+Bracket-only update in `docs/archive/dev-ops/BIG_PICTURE_ROADMAP.md`:
 - `BUILD_PR_DEBUG_SURFACES_NETWORK_SUPPORT` -> `[x]`
 
 ## Scope Safety

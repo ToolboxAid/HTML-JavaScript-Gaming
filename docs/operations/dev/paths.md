@@ -1,7 +1,7 @@
 # Repo Path Contracts
 
 ## Active Paths
-- ROADMAP_PATH = `docs/roadmaps/`
+- ROADMAP_PATH = `docs/dev/roadmaps/`
 - MASTER_ROADMAP = `docs/dev/roadmaps/MASTER_ROADMAP_ENGINE.md`
 - PR_PATH = `docs/pr/`
 - REPORTS_PATH = `docs/dev/reports/`
@@ -12,8 +12,8 @@
 - PR_HISTORY_ARCHIVE = `docs/archive/pr/legacy-pr-history/`
 
 ## Strict Rules
-1. Active roadmap files must live in `docs/roadmaps/`.
-2. Do not keep duplicate active roadmap copies outside `docs/roadmaps/`.
-3. Transitional roadmap files outside `docs/roadmaps/` must be archived.
+1. Active roadmap files must live in `docs/dev/roadmaps/`.
+2. Do not keep duplicate active roadmap copies outside `docs/dev/roadmaps/`.
+3. Transitional roadmap files outside `docs/dev/roadmaps/` must be archived.
 4. Reports belong in `docs/dev/reports/`.
 5. PR history belongs in `docs/pr/` or `docs/archive/pr/legacy-pr-history/`.

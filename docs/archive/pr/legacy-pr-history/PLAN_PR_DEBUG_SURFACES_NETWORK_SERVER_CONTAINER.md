@@ -40,4 +40,4 @@ PLAN_PR -> BUILD_PR -> APPLY_PR
 - Environment variables are documented and supported.
 - Optional compose example is provided.
 - Track U checklist items in `docs/dev/NETWORK_SAMPLES_PLAN.md` move to `[.]` or `[x]`.
-- `docs/operations/dev/BIG_PICTURE_ROADMAP.md` remains unchanged.
+- `docs/archive/dev-ops/BIG_PICTURE_ROADMAP.md` remains unchanged.

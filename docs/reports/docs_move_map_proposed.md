@@ -529,7 +529,7 @@ This move map is a proposal for follow-up cleanup PRs. No files are deleted in t
 | `docs/operations/dev/3D_SAMPLE_ADAPTER_HARNESS.md` | DEV_OPERATIONS | `docs/operations/dev/3D_SAMPLE_ADAPTER_HARNESS.md` | yes |
 | `docs/operations/dev/APPLY_VALIDATION_SPEC.md` | DEV_OPERATIONS | `docs/operations/dev/APPLY_VALIDATION_SPEC.md` | yes |
 | `docs/operations/dev/AUTHORITATIVE_INJECTION_SPEC.md` | DEV_OPERATIONS | `docs/operations/dev/AUTHORITATIVE_INJECTION_SPEC.md` | yes |
-| `docs/operations/dev/BIG_PICTURE_ROADMAP.md` | DEV_OPERATIONS | `docs/operations/dev/BIG_PICTURE_ROADMAP.md` | yes |
+| `docs/archive/dev-ops/BIG_PICTURE_ROADMAP.md` | DEV_OPERATIONS | `docs/archive/dev-ops/BIG_PICTURE_ROADMAP.md` | yes |
 | `docs/operations/dev/CODEX_PLAN_AND_API_KEY_SCRIPTING.md` | DEV_OPERATIONS | `docs/operations/dev/CODEX_PLAN_AND_API_KEY_SCRIPTING.md` | yes |
 | `docs/operations/dev/CODEX_TEMPLATE_GAME_CREATION_SCRIPTING.md` | DEV_OPERATIONS | `docs/operations/dev/CODEX_TEMPLATE_GAME_CREATION_SCRIPTING.md` | yes |
 | `docs/operations/dev/CODEX_WEBSITE_REPO_DEPLOYMENT_SCRIPTING.md` | DEV_OPERATIONS | `docs/operations/dev/CODEX_WEBSITE_REPO_DEPLOYMENT_SCRIPTING.md` | yes |

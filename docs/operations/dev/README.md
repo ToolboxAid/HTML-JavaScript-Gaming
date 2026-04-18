@@ -9,7 +9,7 @@ The active master roadmap path is:
 - `docs/dev/roadmaps/MASTER_ROADMAP_ENGINE.md`
 
 Do not use superseded roadmap surfaces:
-- `docs/operations/dev/BIG_PICTURE_ROADMAP.md` for the active master roadmap
+- `docs/archive/dev-ops/BIG_PICTURE_ROADMAP.md` for the active master roadmap
 - any other duplicate roadmap location
 
 ### Active Dev Files

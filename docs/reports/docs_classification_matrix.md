@@ -530,7 +530,7 @@
 | `docs/operations/dev/3D_SAMPLE_ADAPTER_HARNESS.md` | DEV_OPERATIONS | Developer operations docs not in roadmap/report/start_of_day buckets. |
 | `docs/operations/dev/APPLY_VALIDATION_SPEC.md` | DEV_OPERATIONS | Developer operations docs not in roadmap/report/start_of_day buckets. |
 | `docs/operations/dev/AUTHORITATIVE_INJECTION_SPEC.md` | DEV_OPERATIONS | Developer operations docs not in roadmap/report/start_of_day buckets. |
-| `docs/operations/dev/BIG_PICTURE_ROADMAP.md` | DEV_OPERATIONS | Developer operations docs not in roadmap/report/start_of_day buckets. |
+| `docs/archive/dev-ops/BIG_PICTURE_ROADMAP.md` | DEV_OPERATIONS | Developer operations docs not in roadmap/report/start_of_day buckets. |
 | `docs/operations/dev/CODEX_PLAN_AND_API_KEY_SCRIPTING.md` | DEV_OPERATIONS | Developer operations docs not in roadmap/report/start_of_day buckets. |
 | `docs/operations/dev/CODEX_TEMPLATE_GAME_CREATION_SCRIPTING.md` | DEV_OPERATIONS | Developer operations docs not in roadmap/report/start_of_day buckets. |
 | `docs/operations/dev/CODEX_WEBSITE_REPO_DEPLOYMENT_SCRIPTING.md` | DEV_OPERATIONS | Developer operations docs not in roadmap/report/start_of_day buckets. |

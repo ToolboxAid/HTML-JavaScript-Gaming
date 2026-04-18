@@ -19,7 +19,7 @@ PLAN_PR -> BUILD_PR -> APPLY_PR
 
 ## Out of Scope
 - Engine/runtime implementation changes.
-- Any edits to `docs/operations/dev/BIG_PICTURE_ROADMAP.md`.
+- Any edits to `docs/archive/dev-ops/BIG_PICTURE_ROADMAP.md`.
 - Non-roadmap feature work.
 
 ## Guardrails

@@ -13,7 +13,7 @@ Apply the docs-first Sample C planning slice and use it as the Codex-ready instr
 - `docs/pr/BUILD_PR_DEBUG_SURFACES_NETWORK_SAMPLE_C_FULL.md`
 - `docs/pr/APPLY_PR_DEBUG_SURFACES_NETWORK_SAMPLE_C_FULL.md`
 - `docs/dev/NETWORK_SAMPLES_PLAN.md`
-- `docs/operations/dev/BIG_PICTURE_ROADMAP.md`
+- `docs/archive/dev-ops/BIG_PICTURE_ROADMAP.md`
 - `docs/operations/dev/codex_commands.md`
 - `docs/operations/dev/commit_comment.txt`
 - `docs/operations/dev/next_command.txt`

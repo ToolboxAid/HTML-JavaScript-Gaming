@@ -38,7 +38,7 @@ Included contracts:
 - No regressions outside inspector scope
 
 ## Roadmap Update
-Update only bracket states in docs/operations/dev/BIG_PICTURE_ROADMAP.md
+Update only bracket states in docs/archive/dev-ops/BIG_PICTURE_ROADMAP.md
 
 Track I:
 - Entity inspector -> [x]

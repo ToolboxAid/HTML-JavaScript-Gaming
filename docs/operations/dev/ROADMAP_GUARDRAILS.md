@@ -10,7 +10,7 @@ The active master roadmap file is:
 
 ### Allowed Changes
 - Change ONLY bracket states:
-  - `[ ]` → `[.]` → `[x]`
+  - `[ ]` -> `[.]` -> `[x]`
 
 ### Forbidden Changes
 - Adding/removing sections
@@ -18,23 +18,23 @@ The active master roadmap file is:
 - Reordering items
 - Renaming tracks
 - Collapsing or expanding content
-- Moving the active master roadmap out of `docs/roadmaps/`
+- Moving the active master roadmap out of `docs/dev/roadmaps/`
 - Creating duplicate active roadmap copies elsewhere
 
 ## PATH RULE
 Active roadmap files must live in:
-- `docs/roadmaps/`
+- `docs/dev/roadmaps/`
 
 Never use:
-- `docs/operations/dev/BIG_PICTURE_ROADMAP.md` as the active master roadmap
-- duplicate roadmap copies outside `docs/roadmaps/`
+- `docs/archive/dev-ops/BIG_PICTURE_ROADMAP.md` as the active master roadmap
+- duplicate roadmap copies outside `docs/dev/roadmaps/`
 
 ## Validation Check
 Any change to the active master roadmap must pass:
 - headings unchanged
 - no text modified outside brackets
 - only bracket states updated
-- file path remains under `docs/roadmaps/`
+- file path remains under `docs/dev/roadmaps/`
 
 ## Codex Rule
 Codex must treat the active roadmap as immutable structure and perform surgical edits only.

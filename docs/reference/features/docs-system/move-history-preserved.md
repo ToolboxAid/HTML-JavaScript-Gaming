@@ -481,7 +481,7 @@ KEEP WHERE IT IS
 - docs/archive/*
 
 MOVE
-- docs/operations/dev/BIG_PICTURE_ROADMAP.md
+- docs/archive/dev-ops/BIG_PICTURE_ROADMAP.md
   -> move to docs/dev/roadmaps/BIG_PICTURE_ROADMAP.md if still needed as an active roadmap
   -> otherwise archive to docs/archive/dev-ops/ if superseded
 

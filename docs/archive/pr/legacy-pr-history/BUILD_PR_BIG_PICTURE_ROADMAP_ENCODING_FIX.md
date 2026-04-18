@@ -6,7 +6,7 @@ BUILD_PR_BIG_PICTURE_ROADMAP_ENCODING_FIX.md
 # BUILD_PR_BIG_PICTURE_ROADMAP_ENCODING_FIX
 
 ## Build Summary
-Built a surgical encoding-normalization slice for `docs/operations/dev/BIG_PICTURE_ROADMAP.md`.
+Built a surgical encoding-normalization slice for `docs/archive/dev-ops/BIG_PICTURE_ROADMAP.md`.
 
 ## Implemented Changes
 1. Normalized roadmap file write encoding to UTF-8 with BOM.

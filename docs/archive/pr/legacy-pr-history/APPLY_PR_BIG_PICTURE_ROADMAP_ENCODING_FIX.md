@@ -6,7 +6,7 @@ APPLY_PR_BIG_PICTURE_ROADMAP_ENCODING_FIX.md
 # APPLY_PR_BIG_PICTURE_ROADMAP_ENCODING_FIX
 
 ## Apply Scope
-Apply the approved encoding-only fix for `docs/operations/dev/BIG_PICTURE_ROADMAP.md` and associated docs/dev control/report updates.
+Apply the approved encoding-only fix for `docs/archive/dev-ops/BIG_PICTURE_ROADMAP.md` and associated docs/dev control/report updates.
 
 ## Apply Requirements
 1. Keep roadmap content unchanged.
