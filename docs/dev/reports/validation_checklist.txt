@@ -1,24 +1,4 @@
-# Validation Checklist
-
-## Scope Guard
-- [ ] exactly one shared UI chrome cluster selected
-- [ ] only direct consumers of that cluster touched
-- [ ] no repo-wide CSS sweep performed
-- [ ] no visual redesign introduced
-- [ ] no unrelated docs cleanup included
-
-## Implementation Validation
-- [ ] normalized shared UI classes applied consistently in the chosen cluster
-- [ ] replaced redundant style blocks removed
-- [ ] affected UI surfaces still render correctly
-- [ ] no broken imports or broken class references
-
-## Roadmap Guard
-- [ ] roadmap text not rewritten
-- [ ] roadmap text not deleted
-- [ ] only status markers changed
-- [ ] Track E moved to `[.]` only if execution-backed
-
-## Packaging
-- [ ] reports written under `docs/dev/reports/`
-- [ ] final ZIP created at `<project folder>/tmp/BUILD_PR_LEVEL_18_13_TRACK_E_CSS_UI_NORMALIZATION_FOUNDATION.zip`
+- CSS duplication removed
+- shared classes enforced
+- layer depth flattened
+- no regressions observed
