@@ -7,10 +7,10 @@ Track all tool-related improvements, gaps, and future work.
 ---
 
 ## 1. Testing & Validation
-- [ ] create full testing documentation for each tool
-- [ ] define manual test cases per tool
+- [x] create full testing documentation for each tool
+- [x] define manual test cases per tool
 - [ ] add automated validation where possible
-- [ ] standardize validation reports under docs/dev/reports
+- [x] standardize validation reports under docs/dev/reports
 
 ---
 

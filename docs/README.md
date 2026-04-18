@@ -15,6 +15,8 @@ This is the root onboarding entry for active project documentation.
 4. Tooling docs:
    - `docs/operations/dev/POWERSHELL_SCRIPT_STRUCTURE.md`
    - `docs/operations/dev/CODEX_WEBSITE_REPO_DEPLOYMENT_SCRIPTING.md`
+   - `docs/tools/README.md`
+   - `docs/tools/testing/README.md`
 5. PR and capability review surfaces:
    - `docs/pr/capabilities/README.md`
 6. Active reports:

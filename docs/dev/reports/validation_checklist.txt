@@ -1,28 +1,8 @@
-Validation Checklist
-
-1) Template structure untouched
-- command: git status --short -- games/_template
-- result: PASS (no output; no template changes)
-
-2) Docs structure and roadmap location guard
-- command: node tools/dev/checkDocsStructureGuard.mjs
-- result: PASS
-  - no invalid docs/roadmaps/ directory
-  - docs/dev/roadmaps exists
-  - docs structure validation complete
-
-3) Empty directory validation (excluding template)
-- command: python empty-dir scan excluding games/_template/**, .git, node_modules, tmp
-- result: PASS (0 empty directories remain)
-
-4) .keep audit (excluding template)
-- command: rg --files -g "**/.keep" --glob "!tmp/**" --glob "!.git/**" --glob "!node_modules/**"
-- result: PASS (no matches)
-
-5) Legacy roadmap path reference check
-- command: rg -n "docs[/\]roadmaps[/\](MASTER_ROADMAP_HIGH_LEVEL\.md|README\.md|phases\.txt)" . --glob "!tmp/**" --glob "!.git/**" --glob "!node_modules/**"
-- result: PASS (no matches)
-
-6) Repo cleanliness note
-- command: git status --porcelain
-- result: INFO (working tree contains intentional scoped changes for this BUILD; unrelated pre-existing changes preserved)
+- [ ] active tool inventory completed
+- [ ] testing doc exists for every active tool
+- [ ] manual test cases exist for every active tool
+- [ ] standardized validation template created under docs/dev/reports
+- [ ] affected tool-doc navigation updated if needed
+- [ ] no start_of_day changes
+- [ ] unrelated working-tree changes preserved
+- [ ] roadmap updated only for completed items
