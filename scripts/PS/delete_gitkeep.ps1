@@ -1,6 +1,13 @@
 $targets = @(
     ".\samples",
-    ".\tools"
+    ".\tools",
+    ".\games\AITargetDummy",
+    ".\games\Asteroids",
+    ".\games\Bouncing-ball",
+    ".\games\GravityWell",
+    ".\games\Pong",
+    ".\games\SolarSystem",
+    ".\games\SpaceInvaders"
 )
 
 foreach ($path in $targets) {
