@@ -4,7 +4,7 @@
 Initialize Level 18 ("Finalize engine") as a docs-first phase bootstrap after Level 17 completion, without implementing engine/sample/tool changes yet.
 
 ## Source of Truth
-- `docs/dev/roadmaps/MASTER_ROADMAP_HIGH_LEVEL.md` (Section: `## 18. Finalize engine`)
+- `docs/roadmaps/MASTER_ROADMAP_HIGH_LEVEL.md` (Section: `## 18. Finalize engine`)
 
 ## Scope
 - define Level 18 objectives directly from roadmap section 18

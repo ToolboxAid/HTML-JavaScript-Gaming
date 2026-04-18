@@ -34,12 +34,12 @@ Implemented contract outcomes:
 
 ### Track J External Documentation Finalization
 - Added durable external integration guide:
-  - `docs/architecture/debug-surfaces-external-integration.md`
+  - `docs/reference/architecture-standards/architecture/debug-surfaces-external-integration.md`
 - Wired discoverability via:
-  - `docs/architecture/README.md`
-  - `docs/README.md`
+  - `docs/reference/architecture-standards/architecture/README.md`
+  - `docs/reference/root/README.md`
   - `README.md`
-  - `docs/dev/ENGINE_MATURITY_DOCUMENTATION_MAP.md`
+  - `docs/operations/dev/ENGINE_MATURITY_DOCUMENTATION_MAP.md`
 
 ## Guardrails Preserved
 - No Track G edits.

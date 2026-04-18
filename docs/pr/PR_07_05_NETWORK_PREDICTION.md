@@ -16,7 +16,7 @@ Introduce client-side prediction model for Phase 13 simulation.
 
 ## Deliverables
 - docs/dev/reports/prediction_model.txt
-- docs/dev/reports/validation_checklist.txt
+- docs/reports/validation_checklist.txt
 
 ## Validation
 - prediction smooths perceived latency

@@ -20,8 +20,8 @@ No new structural move in this PR.
 4. Verify the four known blocker files now reference `tools/templates/vector-native-arcade/`.
 5. Verify no protected start_of_day directories were changed.
 6. Create:
-   - `docs/dev/reports/templates_vector_native_active_relocation_validation.md`
-   - `docs/dev/reports/validation_checklist.txt`
+   - `docs/reports/templates_vector_native_active_relocation_validation.md`
+   - `docs/reports/validation_checklist.txt`
 
 ## Validation Targets
 - `tools/shared/vectorNativeTemplate.js`

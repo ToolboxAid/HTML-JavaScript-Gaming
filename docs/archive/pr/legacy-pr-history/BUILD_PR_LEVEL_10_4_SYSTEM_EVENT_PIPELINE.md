@@ -24,7 +24,7 @@ BUILD_PR_LEVEL_10_4_SYSTEM_EVENT_PIPELINE.md
 - `docs/dev/CODEX_COMMANDS.md`
 - `docs/dev/COMMIT_COMMENT.txt`
 - `docs/dev/NEXT_COMMAND.txt`
-- `docs/dev/README.md`
+- `docs/operations/dev/README.md`
 
 ## Deliverable Summary
 - centralized event pipeline definition

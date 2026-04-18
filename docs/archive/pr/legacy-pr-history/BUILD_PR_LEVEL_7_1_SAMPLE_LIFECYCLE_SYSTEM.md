@@ -20,7 +20,7 @@ BUILD_PR_LEVEL_7_1_SAMPLE_LIFECYCLE_SYSTEM.md
 - `docs/dev/CODEX_COMMANDS.md`
 - `docs/dev/COMMIT_COMMENT.txt`
 - `docs/dev/NEXT_COMMAND.txt`
-- `docs/dev/README.md`
+- `docs/operations/dev/README.md`
 
 ## Implementation Summary
 - Added local `SampleLifecycleSystem` to the sample scene.

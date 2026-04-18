@@ -26,7 +26,7 @@ This PR remains testable through deterministic execution:
 
 ## Roadmap Update Rule
 Update:
-`docs/dev/roadmaps/MASTER_ROADMAP_HIGH_LEVEL.md`
+`docs/roadmaps/MASTER_ROADMAP_HIGH_LEVEL.md`
 
 Allowed:
 - status markers only: `[ ]` `[.]` `[x]`

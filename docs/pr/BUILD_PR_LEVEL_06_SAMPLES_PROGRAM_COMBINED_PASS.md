@@ -57,4 +57,4 @@ Validation assertions include:
 - `samples/_shared/snapshotCloneUtils.js`
 - `tests/samples/SamplesProgramCombinedPass.test.mjs`
 - `tests/run-tests.mjs`
-- `docs/dev/roadmaps/MASTER_ROADMAP_HIGH_LEVEL.md`
+- `docs/roadmaps/MASTER_ROADMAP_HIGH_LEVEL.md`

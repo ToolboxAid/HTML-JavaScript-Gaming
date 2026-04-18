@@ -16,7 +16,7 @@ Finalize Phase 13 by integrating simulation, latency, reconciliation, and predic
 
 ## Deliverables
 - docs/dev/reports/integration_flow.txt
-- docs/dev/reports/validation_checklist.txt
+- docs/reports/validation_checklist.txt
 
 ## Validation
 - smooth simulation under latency

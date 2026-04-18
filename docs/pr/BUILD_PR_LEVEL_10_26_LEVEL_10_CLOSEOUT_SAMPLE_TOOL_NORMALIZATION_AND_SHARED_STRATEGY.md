@@ -109,8 +109,8 @@ Codex must package all changed files into:
 
 ## Implementation Delta
 - Added final local-first strategy + promotion-by-rule specification:
-  - `docs/specs/asset_ownership_strategy.md`
-  - `docs/specs/shared_asset_promotion_registry.json` (explicit registry, currently empty)
+  - `docs/reference/architecture-standards/specs/asset_ownership_strategy.md`
+  - `docs/reference/architecture-standards/specs/shared_asset_promotion_registry.json` (explicit registry, currently empty)
 - Added focused enforcement validator:
   - `scripts/validate-asset-ownership-strategy.mjs`
   - `tests/tools/AssetOwnershipStrategyCloseout.test.mjs`
@@ -145,7 +145,7 @@ Codex must package all changed files into:
 
 ## Roadmap Handling
 - Full roadmap version check: already full version (`639` lines), so no restore action was required.
-- Updated status markers only for section-10 items in `docs/dev/roadmaps/MASTER_ROADMAP_HIGH_LEVEL.md`.
+- Updated status markers only for section-10 items in `docs/roadmaps/MASTER_ROADMAP_HIGH_LEVEL.md`.
 - No roadmap prose rewrites were performed.
 
 ## Final Section-10 Status

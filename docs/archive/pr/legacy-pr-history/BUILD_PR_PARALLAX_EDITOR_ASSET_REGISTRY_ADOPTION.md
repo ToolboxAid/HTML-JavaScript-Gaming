@@ -32,7 +32,7 @@ Integrate Parallax Editor with the shared project asset registry using ID-based 
 - Syntax checks passed:
   - `node --check tools/shared/projectAssetRegistry.js`
   - `node --check tools/Parallax Scene Studio/main.js`
-- Validation checklist updated and all items marked pass in `docs/dev/reports/validation_checklist.txt`.
+- Validation checklist updated and all items marked pass in `docs/reports/validation_checklist.txt`.
 
 ## Packaging
 - Delta ZIP: `tmp/BUILD_PR_PARALLAX_EDITOR_ASSET_REGISTRY_ADOPTION_delta.zip`

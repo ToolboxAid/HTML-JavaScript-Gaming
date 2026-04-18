@@ -11,7 +11,7 @@ Prepared the next docs-first implementation package for the Level 11 network seq
 ## Deliverables In This Bundle
 1. PR planning docs for Sample C full implementation
 2. Updated `docs/dev/NETWORK_SAMPLES_PLAN.md`
-3. Roadmap guidance for `docs/dev/BIG_PICTURE_ROADMAP.md`
+3. Roadmap guidance for `docs/operations/dev/BIG_PICTURE_ROADMAP.md`
 4. Codex command, commit comment, next command, and validation reports
 
 ## Implementation Direction

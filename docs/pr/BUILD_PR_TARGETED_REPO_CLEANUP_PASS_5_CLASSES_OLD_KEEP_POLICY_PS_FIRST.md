@@ -43,12 +43,12 @@ Codex may quote/summarize these results in the reports, but should not rerun bro
 - `docs/dev/reports/legacy class-retention policy marker_policy_inventory.md`
 - `docs/dev/reports/legacy class-retention policy marker_policy_decision.md`
 - `docs/dev/reports/legacy class-retention policy marker_validation_guard.md`
-- `docs/dev/reports/BUILD_PR_TARGETED_REPO_CLEANUP_PASS_5_CLASSES_OLD_KEEP_POLICY_PS_FIRST_report.md`
-- `docs/dev/reports/validation_checklist.txt`
+- `docs/reports/BUILD_PR_TARGETED_REPO_CLEANUP_PASS_5_CLASSES_OLD_KEEP_POLICY_PS_FIRST_report.md`
+- `docs/reports/validation_checklist.txt`
 
 ### May update only if already present and only to align with this PR
-- `docs/dev/roadmaps/MASTER_ROADMAP_HIGH_LEVEL.md`
-- `docs/dev/reports/repo_cleanup_targets.txt`
+- `docs/roadmaps/MASTER_ROADMAP_HIGH_LEVEL.md`
+- `docs/reports/repo_cleanup_targets.txt`
 
 ## Required Work
 
@@ -101,7 +101,7 @@ At minimum include:
 
 ### 4) Optional roadmap alignment
 Only if exact wording already exists, Codex may apply bracket-only state changes for the `legacy class-retention policy marker` policy tracking item in:
-- `docs/dev/roadmaps/MASTER_ROADMAP_HIGH_LEVEL.md`
+- `docs/roadmaps/MASTER_ROADMAP_HIGH_LEVEL.md`
 
 Rules:
 - no wording edits
@@ -109,7 +109,7 @@ Rules:
 - if exact text match is not clean, record the issue in the BUILD report under `Unapplied Planned Delta`
 
 ### 5) BUILD report
-Create `docs/dev/reports/BUILD_PR_TARGETED_REPO_CLEANUP_PASS_5_CLASSES_OLD_KEEP_POLICY_PS_FIRST_report.md` with:
+Create `docs/reports/BUILD_PR_TARGETED_REPO_CLEANUP_PASS_5_CLASSES_OLD_KEEP_POLICY_PS_FIRST_report.md` with:
 - bundle type: execution-ready BUILD docs
 - exact files changed
 - exact files created
@@ -122,7 +122,7 @@ Create `docs/dev/reports/BUILD_PR_TARGETED_REPO_CLEANUP_PASS_5_CLASSES_OLD_KEEP_
 - validation results
 
 ### 6) Validation checklist
-Create `docs/dev/reports/validation_checklist.txt` that records pass/fail for:
+Create `docs/reports/validation_checklist.txt` that records pass/fail for:
 - protected start_of_day directories untouched
 - no `legacy class-retention marker path` directory created/moved/deleted
 - `templates/` untouched

@@ -16,7 +16,7 @@ Introduce reconciliation model for Phase 13 simulation.
 
 ## Deliverables
 - docs/dev/reports/reconciliation_model.txt
-- docs/dev/reports/validation_checklist.txt
+- docs/reports/validation_checklist.txt
 
 ## Validation
 - divergence corrected deterministically

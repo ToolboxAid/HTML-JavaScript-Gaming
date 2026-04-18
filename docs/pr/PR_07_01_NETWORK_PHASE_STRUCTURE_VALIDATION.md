@@ -16,7 +16,7 @@ Validate and stabilize Phase 13 (Network Concepts / Latency / Simulation) struct
 
 ## Deliverables
 - docs/dev/reports/network_phase_scan.txt
-- docs/dev/reports/validation_checklist.txt
+- docs/reports/validation_checklist.txt
 
 ## Validation
 - all phase-13 samples resolve correctly

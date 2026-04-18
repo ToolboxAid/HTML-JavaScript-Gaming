@@ -68,7 +68,7 @@ Complete the Section-3 Shared Foundation lane in one coherent pass centered on `
   - no top-level Section-3 residue identified for the target item list.
 
 ## Roadmap handling
-- Updated Section-3 status markers only in `docs/dev/roadmaps/MASTER_ROADMAP_HIGH_LEVEL.md`.
+- Updated Section-3 status markers only in `docs/roadmaps/MASTER_ROADMAP_HIGH_LEVEL.md`.
 - No roadmap prose rewrites.
 
 ## Validation run

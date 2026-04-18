@@ -19,7 +19,7 @@ Combined Level 11 setup PR that sets the next runtime direction and adds explici
   - `+ [.] Execute 2D capability polish lanes`
 
 ### 2) Rule-Move Guards
-- Added `## Roadmap Instruction Move Guards` in `docs/dev/PROJECT_INSTRUCTIONS.md` with explicit rules:
+- Added `## Roadmap Instruction Move Guards` in `docs/operations/dev/PROJECT_INSTRUCTIONS.md` with explicit rules:
   - move content instead of deleting during roadmap-to-instruction migration
   - destination text must exist before source removal
   - preserve wording unless rewrite is explicitly requested
@@ -29,5 +29,5 @@ Combined Level 11 setup PR that sets the next runtime direction and adds explici
 ## Validation Notes
 - Confirmed only status marker changes were made in roadmap content.
 - Confirmed no roadmap prose was rewritten.
-- Confirmed move-guard rules now exist in `docs/dev/PROJECT_INSTRUCTIONS.md`.
+- Confirmed move-guard rules now exist in `docs/operations/dev/PROJECT_INSTRUCTIONS.md`.
 - Confirmed docs-only scope (no engine/runtime/tool code edits).

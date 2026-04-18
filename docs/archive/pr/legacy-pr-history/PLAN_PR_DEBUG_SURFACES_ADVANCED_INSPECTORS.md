@@ -84,6 +84,6 @@ src/engine/debug/inspectors/
 - docs/dev/CODEX_COMMANDS.md
 - docs/dev/COMMIT_COMMENT.txt
 - docs/dev/NEXT_COMMAND.txt
-- docs/dev/reports/change_summary.txt
-- docs/dev/reports/file_tree.txt
-- docs/dev/reports/validation_checklist.txt
+- docs/reports/change_summary.txt
+- docs/reports/file_tree.txt
+- docs/reports/validation_checklist.txt

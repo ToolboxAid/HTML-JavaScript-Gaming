@@ -14,6 +14,6 @@ Introduce a protected BUILD template to standardize constraints across all BUILD
 - No changes to protected start_of_day directories
 
 ## Acceptance Criteria
-- `docs/dev/templates/BUILD_TEMPLATE_PROTECTED.md` exists
+- `docs/operations/dev/templates/BUILD_TEMPLATE_PROTECTED.md` exists
 - Template includes mandatory constraints section
 - Future BUILD PRs can reuse the exact constraints block

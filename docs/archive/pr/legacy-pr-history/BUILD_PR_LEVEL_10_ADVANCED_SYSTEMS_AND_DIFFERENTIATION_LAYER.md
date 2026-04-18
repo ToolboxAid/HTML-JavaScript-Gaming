@@ -21,7 +21,7 @@ BUILD_PR_LEVEL_10_ADVANCED_SYSTEMS_AND_DIFFERENTIATION_LAYER.md
 - `docs/dev/CODEX_COMMANDS.md`
 - `docs/dev/COMMIT_COMMENT.txt`
 - `docs/dev/NEXT_COMMAND.txt`
-- `docs/dev/README.md`
+- `docs/operations/dev/README.md`
 
 ## Deliverable Summary
 - advanced optional system candidates list

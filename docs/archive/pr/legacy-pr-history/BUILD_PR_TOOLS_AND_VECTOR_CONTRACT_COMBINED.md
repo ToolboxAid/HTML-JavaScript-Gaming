@@ -95,7 +95,7 @@ Old `tools/SpriteEditor_old_keep/` was intentionally excluded except for active 
 
 ## Vector Asset Contract Outputs
 - planning/build workflow documented through the combined repo docs bundle
-- canonical spec produced at `docs/specs/vector_asset_contract.md`
+- canonical spec produced at `docs/reference/architecture-standards/specs/vector_asset_contract.md`
 - contract output covers:
   - purpose and scope
   - canonical vector asset file role

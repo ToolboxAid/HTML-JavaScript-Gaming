@@ -13,8 +13,8 @@ Enable live preview syncing between tools and running samples.
 3. Validate sync stability.
 
 ## Deliverables
-- docs/dev/reports/live_sync_model.txt
-- docs/dev/reports/validation_checklist.txt
+- docs/reports/live_sync_model.txt
+- docs/reports/validation_checklist.txt
 
 ## Output
 <project folder>/tmp/PR_08_03_TOOL_LIVE_PREVIEW_SYNC.zip

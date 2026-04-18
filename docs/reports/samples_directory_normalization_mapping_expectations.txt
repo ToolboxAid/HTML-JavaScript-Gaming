@@ -1,0 +1,40 @@
+SAMPLES DIRECTORY NORMALIZATION - MAPPING/REPORT EXPECTATIONS
+
+Contract:
+- samples/phasexx/xxyy/index.html
+- xx = phase number
+- yy = sample number
+
+Mapping table requirements (mandatory columns):
+1) old_path
+2) new_path
+3) phase_xx
+4) sample_xxyy
+5) index_tile_updated (yes/no)
+6) sample_header_preserved (yes/no)
+7) relative_paths_validated (yes/no)
+8) behavior_check (pass/fail)
+9) notes
+
+Report outputs expected from BUILD/APPLY:
+- docs/reports/change_summary.txt
+- docs/reports/file_tree_delta.txt
+- docs/reports/validation_checklist.txt
+- optional: docs/dev/reports/samples_directory_normalization_mapping.csv
+
+Reporting rules:
+- Report only normalization-related files.
+- Distinguish renamed paths from edited files.
+- Include explicit old->new mapping lines.
+- Record unresolved or deferred items separately.
+- Do not include unrelated repo edits.
+
+Index/report expectations:
+- samples/index links must target normalized paths.
+- Any previous non-normalized path exposure must be listed and removed in report.
+- Human-readable titles must be preserved in UI text and called out as validated.
+
+Completion signal:
+- Mapping table complete for all samples.
+- Validation checklist all green.
+- Scope clean (samples normalization only).

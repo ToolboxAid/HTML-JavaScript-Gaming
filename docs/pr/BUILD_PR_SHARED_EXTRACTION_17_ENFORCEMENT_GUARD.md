@@ -25,8 +25,8 @@ Edit only these 4 files:
 
 1. `tools/dev/checkSharedExtractionGuard.mjs` **(new file)**
 2. `package.json` **only if a minimal script entry is needed**
-3. `docs/dev/commit_comment.txt` **inside this BUILD bundle only**
-4. `docs/dev/next_command.txt` **inside this BUILD bundle only**
+3. `docs/operations/dev/commit_comment.txt` **inside this BUILD bundle only**
+4. `docs/operations/dev/next_command.txt` **inside this BUILD bundle only**
 
 Do not edit any source/runtime file other than the one new guard script.
 Do not edit any other repo file.

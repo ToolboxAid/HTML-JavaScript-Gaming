@@ -13,7 +13,7 @@ Complete the first combined Section-2 baseline pass with one coherent engine-cor
   - camera integration (`Camera2D`, `followCameraTarget`, `worldRectToScreen`, `updateZoneCamera`)
 
 ### 2) Engine-level contracts + public boundary documentation
-- Updated `docs/architecture/engine-api-boundary.md` with:
+- Updated `docs/reference/architecture-standards/architecture/engine-api-boundary.md` with:
   - explicit Section-2 baseline public homes for `core`, `scene`, `rendering`, `input`, `physics`, `audio`, `systems`
   - practical public-contract rules for domain `index.js` boundaries
   - explicit combined service cluster contract (timing/frame + events + camera)
@@ -46,7 +46,7 @@ Complete the first combined Section-2 baseline pass with one coherent engine-cor
   - none identified in Section-2 checklist after this pass
 
 ## Roadmap handling
-- Updated Section-2 status markers only in `docs/dev/roadmaps/MASTER_ROADMAP_HIGH_LEVEL.md`.
+- Updated Section-2 status markers only in `docs/roadmaps/MASTER_ROADMAP_HIGH_LEVEL.md`.
 - No roadmap prose rewrites were performed.
 
 ## Validation run

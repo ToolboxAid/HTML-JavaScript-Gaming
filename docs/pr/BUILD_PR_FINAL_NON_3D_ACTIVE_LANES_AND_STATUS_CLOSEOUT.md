@@ -4,7 +4,7 @@
 Validate and close the remaining non-3D active-lane/status residue in the master roadmap using status-marker updates only.
 
 ## Scope
-- `docs/dev/roadmaps/MASTER_ROADMAP_HIGH_LEVEL.md`
+- `docs/roadmaps/MASTER_ROADMAP_HIGH_LEVEL.md`
 - target items under:
   - Active Execution Lanes
   - Immediate Next High-Level Actions

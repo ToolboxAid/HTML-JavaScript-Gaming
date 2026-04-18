@@ -24,9 +24,9 @@ Restore the sample launcher phase dropdown and tag filter behavior without chang
 - no changes to phase/sample content except what is required to restore filters
 
 ## Deliverables
-- docs/dev/reports/launcher_filter_regression_scan.txt
-- docs/dev/reports/launcher_filter_fix_map.txt
-- docs/dev/reports/validation_checklist.txt
+- docs/reports/launcher_filter_regression_scan.txt
+- docs/reports/launcher_filter_fix_map.txt
+- docs/reports/validation_checklist.txt
 
 ## Validation
 - phase dropdown renders and filters correctly

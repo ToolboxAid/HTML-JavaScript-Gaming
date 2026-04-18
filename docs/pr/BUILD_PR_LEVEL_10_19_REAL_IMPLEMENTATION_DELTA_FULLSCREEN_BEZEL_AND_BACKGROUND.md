@@ -55,8 +55,8 @@ The ZIP must include:
 1. changed implementation files
 2. changed tests/validation files
 3. docs/pr/*
-4. docs/dev/codex_commands.md
-5. docs/dev/commit_comment.txt
+4. docs/operations/dev/codex_commands.md
+5. docs/operations/dev/commit_comment.txt
 6. docs/dev/reports/*
 
 If no implementation files are changed, this PR is considered failed.

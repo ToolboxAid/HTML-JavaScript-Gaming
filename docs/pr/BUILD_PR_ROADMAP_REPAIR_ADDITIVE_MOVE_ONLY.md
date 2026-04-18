@@ -1,7 +1,7 @@
 # BUILD_PR_ROADMAP_REPAIR_ADDITIVE_MOVE_ONLY
 
 ## Purpose
-Repair `docs/dev/roadmaps/MASTER_ROADMAP_HIGH_LEVEL.md` under strict additive/move-only rules.
+Repair `docs/roadmaps/MASTER_ROADMAP_HIGH_LEVEL.md` under strict additive/move-only rules.
 
 ## Non-negotiable rules
 - NO delete

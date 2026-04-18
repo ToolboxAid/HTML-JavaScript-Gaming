@@ -10,7 +10,7 @@ Finish the Network Sample A index integration safely using the current code base
 - place Network Sample A under `Level 11 - Network Games`
 - add documentation links on the card
 - update `docs/dev/NETWORK_SAMPLES_PLAN.md`
-- apply bracket-only updates to `docs/dev/BIG_PICTURE_ROADMAP.md`
+- apply bracket-only updates to `docs/operations/dev/BIG_PICTURE_ROADMAP.md`
 
 ## Constraints
 - do not add a top showcase section

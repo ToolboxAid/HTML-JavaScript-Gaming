@@ -29,7 +29,7 @@ Repo Cleanup Phase 1D - Sprite Editor Post-Normalization Extraction Gate
 - `docs/dev/CODEX_COMMANDS.md`
 - `docs/dev/COMMIT_COMMENT.txt`
 - `docs/dev/NEXT_COMMAND.txt`
-- `docs/dev/README.md`
+- `docs/operations/dev/README.md`
 
 ## Helper Inventory (Post-Phase-1C Baseline)
 | helper family | primary paths | ownership domain | reuse signal | UI coupling | classification |

@@ -39,7 +39,7 @@ This PR cleans that up and leaves one clear, durable documentation structure.
 Keep these as first-class active areas:
 - `docs/pr/` as project/architecture history
 - `docs/dev/WORKFLOW_RULES.md`
-- `docs/dev/README.md`
+- `docs/operations/dev/README.md`
 - active `docs/dev/CODEX_COMMANDS.md`
 - active `docs/dev/COMMIT_COMMENT.txt`
 - active `docs/dev/NEXT_COMMAND.txt`
@@ -65,7 +65,7 @@ These are safe deletion or move-out/archive candidates if confirmed redundant:
 ## Required Reorg
 Codex should normalize to this documentation shape:
 
-- `docs/README.md`
+- `docs/reference/root/README.md`
   - top-level docs map
 - `docs/architecture/`
   - durable architecture references only
@@ -84,7 +84,7 @@ Codex should normalize to this documentation shape:
 1. Move or rewrite `docs/dev/ARCHITECTURE.txt`
    - into a durable architecture-facing document under `docs/architecture/`
    - preferred target:
-     `docs/architecture/repo-operating-model.md`
+     `docs/reference/architecture-standards/architecture/repo-operating-model.md`
    - then remove the dev-side duplicate
 
 2. Consolidate workflow docs
@@ -105,13 +105,13 @@ Codex should normalize to this documentation shape:
 ## Required Doc Updates
 Update these docs to reflect the cleaned structure and current operating model:
 - `README.md`
-- `docs/README.md`
-- `docs/getting-started.md`
-- `docs/architecture/README.md`
-- `docs/architecture/engine-api-boundary.md`
-- `docs/dev/README.md`
-- `docs/repo-directory-structure.md` if present
-- `docs/review-checklist.md` if present
+- `docs/reference/root/README.md`
+- `docs/reference/root/getting-started.md`
+- `docs/reference/architecture-standards/architecture/README.md`
+- `docs/reference/architecture-standards/architecture/engine-api-boundary.md`
+- `docs/operations/dev/README.md`
+- `docs/reference/root/repo-directory-structure.md` if present
+- `docs/reference/root/review-checklist.md` if present
 
 ## Acceptance Criteria
 - `docs/dev/` contains only active workflow controls and active handoff files

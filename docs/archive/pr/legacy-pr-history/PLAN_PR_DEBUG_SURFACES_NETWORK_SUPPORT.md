@@ -14,7 +14,7 @@ PLAN_PR -> BUILD_PR -> APPLY_PR
 ## In Scope
 - Network debug support plan, build contract, and apply contract.
 - `docs/dev/NETWORK_SAMPLES_PLAN.md` staged execution model.
-- Bracket-only updates to `docs/dev/BIG_PICTURE_ROADMAP.md` Track G state markers.
+- Bracket-only updates to `docs/operations/dev/BIG_PICTURE_ROADMAP.md` Track G state markers.
 
 ## Out Of Scope
 - Engine-core implementation changes.

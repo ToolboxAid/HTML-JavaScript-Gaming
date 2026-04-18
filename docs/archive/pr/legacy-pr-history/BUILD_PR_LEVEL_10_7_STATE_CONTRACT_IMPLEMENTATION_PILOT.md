@@ -43,7 +43,7 @@ BUILD_PR_LEVEL_10_7_STATE_CONTRACT_IMPLEMENTATION_PILOT.md
 - `docs/dev/CODEX_COMMANDS.md`
 - `docs/dev/COMMIT_COMMENT.txt`
 - `docs/dev/NEXT_COMMAND.txt`
-- `docs/dev/README.md`
+- `docs/operations/dev/README.md`
 
 ## Deliverable Summary
 - initial state factory with canonical world/game state shape

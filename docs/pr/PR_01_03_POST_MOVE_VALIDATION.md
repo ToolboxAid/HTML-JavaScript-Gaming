@@ -9,8 +9,8 @@ Lock repo-structure normalization by validating the applied move map and confirm
 - no engine/game/tool logic refactors
 
 ## Inputs
-- docs/dev/reports/move_map.txt
-- docs/dev/reports/validation_checklist.txt
+- docs/reports/move_map.txt
+- docs/reports/validation_checklist.txt
 
 ## Required Work
 1. Re-run post-move validation across moved structure.
@@ -21,9 +21,9 @@ Lock repo-structure normalization by validating the applied move map and confirm
 6. Produce final validation artifacts.
 
 ## Deliverables
-- docs/dev/reports/file_tree_snapshot.txt
-- docs/dev/reports/validation_results.txt
-- docs/dev/reports/orphan_scan.txt
+- docs/reports/file_tree_snapshot.txt
+- docs/reports/validation_results.txt
+- docs/reports/orphan_scan.txt
 
 ## Validation
 - move-map targets exist as expected

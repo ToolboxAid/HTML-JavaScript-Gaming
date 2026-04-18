@@ -29,11 +29,11 @@ These are not part of the long-term docs system and can be removed from the repo
 
 ### Generated report artifacts
 These are useful during review, but should not accumulate indefinitely if their conclusions are already captured elsewhere:
-- `docs/dev/reports/change_summary.txt`
+- `docs/reports/change_summary.txt`
 - `docs/dev/reports/expansion_decision.txt`
-- `docs/dev/reports/file_tree.txt`
+- `docs/reports/file_tree.txt`
 - `docs/dev/reports/readiness_decision.txt`
-- `docs/dev/reports/validation_checklist.txt`
+- `docs/reports/validation_checklist.txt`
 
 Recommended rule:
 - keep only the latest report set for the currently active PR, or
@@ -76,7 +76,7 @@ Why keep them:
 ### Keep in `docs/dev/`
 These should remain as the active operating files:
 - `docs/dev/WORKFLOW_RULES.md`
-- `docs/dev/README.md`
+- `docs/operations/dev/README.md`
 - `docs/dev/CODEX_COMMANDS.md` (active PR only)
 - `docs/dev/COMMIT_COMMENT.txt` (active PR only)
 - `docs/dev/NEXT_COMMAND.txt` (active PR only)
@@ -94,21 +94,21 @@ Update to reflect:
 - current recommended path is template-based new project startup
 - docs-first / Codex-build workflow
 
-### 2. `docs/README.md`
+### 2. `docs/reference/root/README.md`
 Update to explain:
 - `docs/pr/` = architectural and PR history
 - `docs/dev/` = active workflow and temporary execution controls
 - `docs/dev/reports/` = generated review artifacts
 - `docs/architecture/` = engine boundary / architecture references
 
-### 3. `docs/repo-directory-structure.md`
+### 3. `docs/reference/root/repo-directory-structure.md`
 This needs explicit updates for:
 - `src/advanced/state/`
 - `docs/dev/reports/`
 - current purpose of `games/`, `tools/`, `samples/`
 - distinction between `src/engine/` and `src/advanced/`
 
-### 4. `docs/getting-started.md`
+### 4. `docs/reference/root/getting-started.md`
 Update onboarding to current reality:
 - use docs-first workflow
 - PLAN_PR → BUILD_PR → APPLY_PR
@@ -116,7 +116,7 @@ Update onboarding to current reality:
 - reports now live under `docs/dev/reports/`
 - new projects should start from the template snapshot pattern
 
-### 5. `docs/review-checklist.md`
+### 5. `docs/reference/root/review-checklist.md`
 Update review checklist to include:
 - check for `docs/dev/reports/`
 - verify no engine-boundary violations
@@ -124,7 +124,7 @@ Update review checklist to include:
 - verify PR docs are in `docs/pr/`
 - verify ZIP output path uses `<project folder>/tmp/...`
 
-### 6. `docs/architecture/README.md`
+### 6. `docs/reference/architecture-standards/architecture/README.md`
 Update to include the current layered model:
 - `src/engine/` = stable foundational systems
 - `src/advanced/` = composable optional architecture layer
@@ -132,14 +132,14 @@ Update to include the current layered model:
 - `tools/` = optional consumers
 - `samples/` = demonstration only
 
-### 7. `docs/architecture/engine-api-boundary.md`
+### 7. `docs/reference/architecture-standards/architecture/engine-api-boundary.md`
 Update to explicitly state:
 - authoritative state belongs in `src/advanced/state/`, not `src/engine/state/`
 - engine must not import advanced systems
 - reusable + foundational goes to `src/engine/`
 - reusable + composable goes to `src/advanced/`
 
-### 8. `docs/dev/README.md`
+### 8. `docs/operations/dev/README.md`
 Update to current operating model:
 - docs-only bundles from planning
 - Codex performs implementation
@@ -152,7 +152,7 @@ Update to current operating model:
 
 ### Canonical files to keep active
 - `docs/dev/WORKFLOW_RULES.md`
-- `docs/dev/README.md`
+- `docs/operations/dev/README.md`
 - `docs/dev/CODEX_COMMANDS.md`
 - `docs/dev/COMMIT_COMMENT.txt`
 - `docs/dev/NEXT_COMMAND.txt`
@@ -188,13 +188,13 @@ If you want the cleanest current-state repo:
 
 ### Update now
 - `README.md`
-- `docs/README.md`
-- `docs/repo-directory-structure.md`
-- `docs/getting-started.md`
-- `docs/review-checklist.md`
-- `docs/architecture/README.md`
-- `docs/architecture/engine-api-boundary.md`
-- `docs/dev/README.md`
+- `docs/reference/root/README.md`
+- `docs/reference/root/repo-directory-structure.md`
+- `docs/reference/root/getting-started.md`
+- `docs/reference/root/review-checklist.md`
+- `docs/reference/architecture-standards/architecture/README.md`
+- `docs/reference/architecture-standards/architecture/engine-api-boundary.md`
+- `docs/operations/dev/README.md`
 
 ### Keep
 - `docs/pr/` history

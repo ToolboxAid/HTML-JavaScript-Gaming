@@ -18,12 +18,12 @@ This PR has one purpose only:
 
 ### Delivery docs to include/update in this bundle
 - `docs/pr/BUILD_PR_SHARED_EXTRACTION_51_STATE_SAMPLE_TOFINITENUMBER_MIGRATION.md`
-- `docs/dev/codex_commands.md`
-- `docs/dev/commit_comment.txt`
-- `docs/dev/next_command.txt`
-- `docs/dev/reports/file_tree.txt`
-- `docs/dev/reports/change_summary.txt`
-- `docs/dev/reports/validation_checklist.txt`
+- `docs/operations/dev/codex_commands.md`
+- `docs/operations/dev/commit_comment.txt`
+- `docs/operations/dev/next_command.txt`
+- `docs/reports/file_tree.txt`
+- `docs/reports/change_summary.txt`
+- `docs/reports/validation_checklist.txt`
 
 ## Preconditions
 Assume BUILD 50 has already landed and the canonical helper exists in:

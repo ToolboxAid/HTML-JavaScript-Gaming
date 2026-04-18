@@ -10,7 +10,7 @@ Define a single real, playable Level 17 sample that proves existing 3D engine ca
 - implement a minimal but complete loop: movement, obstacle/enemy interaction, and objective/score state
 
 ## Source of Truth
-- `docs/dev/roadmaps/MASTER_ROADMAP_HIGH_LEVEL.md` (`## 17. 3D Activation, Validation, and Execution (Phase 16)`)
+- `docs/roadmaps/MASTER_ROADMAP_HIGH_LEVEL.md` (`## 17. 3D Activation, Validation, and Execution (Phase 16)`)
 - existing Level 17 sample range `samples/phase-17/1701` through `samples/phase-17/1707`
 
 ## Functional Requirements

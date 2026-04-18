@@ -30,7 +30,7 @@ Repo Cleanup Phase 1G - Engine Promotion From Strong Candidates
 - `docs/dev/CODEX_COMMANDS.md`
 - `docs/dev/COMMIT_COMMENT.txt`
 - `docs/dev/NEXT_COMMAND.txt`
-- `docs/dev/README.md`
+- `docs/operations/dev/README.md`
 
 ## Helper Ownership Before/After
 | helper | before owner | after owner | placement justification | behavior change |

@@ -39,8 +39,8 @@ Archive every other markdown file currently under `docs/pr/` into:
 
 ## Acceptance Criteria
 - `docs/archive/pr/legacy-pr-history/` exists.
-- Every file listed in `docs/dev/reports/docs_archive_pr_move_manifest.txt` is moved there.
-- Every file listed in `docs/dev/reports/docs_archive_pr_keep_manifest.txt` remains in `docs/pr/`.
+- Every file listed in `docs/reports/docs_archive_pr_move_manifest.txt` is moved there.
+- Every file listed in `docs/reports/docs_archive_pr_keep_manifest.txt` remains in `docs/pr/`.
 - `docs/pr/.keep` remains.
 - No files inside `docs/dev/start_of_day/` are touched.
 - No files inside `docs/roadmaps/` are changed.

@@ -1,7 +1,7 @@
 # BUILD_PR_LEVEL_10_23_RESTORE_MASTER_ROADMAP_STATUS_ONLY
 
 ## Purpose
-Restore `docs/dev/roadmaps/MASTER_ROADMAP_HIGH_LEVEL.md` to the correct full file, then apply status-only updates.
+Restore `docs/roadmaps/MASTER_ROADMAP_HIGH_LEVEL.md` to the correct full file, then apply status-only updates.
 
 ## Critical correction
 The prior restore was wrong.

@@ -90,8 +90,8 @@ If migration is unstable:
 - `docs/pr/PLAN_PR_DEBUG_SURFACES_PROMOTION.md`
 - `docs/pr/BUILD_PR_DEBUG_SURFACES_PROMOTION.md`
 - `docs/pr/APPLY_PR_DEBUG_SURFACES_PROMOTION.md`
-- `docs/dev/codex_commands.md`
-- `docs/dev/commit_comment.txt`
-- `docs/dev/reports/change_summary.txt`
-- `docs/dev/reports/validation_checklist.txt`
-- `docs/dev/reports/file_tree.txt`
+- `docs/operations/dev/codex_commands.md`
+- `docs/operations/dev/commit_comment.txt`
+- `docs/reports/change_summary.txt`
+- `docs/reports/validation_checklist.txt`
+- `docs/reports/file_tree.txt`

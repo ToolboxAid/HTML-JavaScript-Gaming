@@ -2,7 +2,7 @@
 
 ## PR Purpose
 Create one execution-ready, testable cleanup-evidence lane that:
-1. updates `docs/dev/roadmaps/MASTER_ROADMAP_HIGH_LEVEL.md` conservatively using bracket-only state changes
+1. updates `docs/roadmaps/MASTER_ROADMAP_HIGH_LEVEL.md` conservatively using bracket-only state changes
 2. generates cleanup inventory/reference evidence for later exact-scope cleanup PRs
 3. does **not** delete, move, rename, or rewrite repo structure in this lane
 
@@ -19,21 +19,21 @@ The prior PLAN established that cleanup must be staged and that `templates/` mus
 - Do **not** change anything under `templates/`.
 - Do **not** mix in unrelated implementation work.
 - Do **not** rewrite roadmap wording, reorder roadmap items, collapse roadmap sections, or replace roadmap content.
-- In `docs/dev/roadmaps/MASTER_ROADMAP_HIGH_LEVEL.md`, only bracket-state updates are allowed: `[ ]`, `[.]`, `[x]`.
+- In `docs/roadmaps/MASTER_ROADMAP_HIGH_LEVEL.md`, only bracket-state updates are allowed: `[ ]`, `[.]`, `[x]`.
 
 ## Exact Target Files
 ### Must modify
-- `docs/dev/roadmaps/MASTER_ROADMAP_HIGH_LEVEL.md`
+- `docs/roadmaps/MASTER_ROADMAP_HIGH_LEVEL.md`
 
 ### Must create or overwrite
-- `docs/dev/reports/cleanup_live_reference_inventory.txt`
-- `docs/dev/reports/cleanup_keep_move_future_delete_matrix.md`
-- `docs/dev/reports/BUILD_PR_REPO_CLEANUP_AND_ROADMAP_UPDATE_report.md`
-- `docs/dev/reports/validation_checklist.txt`
+- `docs/reports/cleanup_live_reference_inventory.txt`
+- `docs/reports/cleanup_keep_move_future_delete_matrix.md`
+- `docs/reports/BUILD_PR_REPO_CLEANUP_AND_ROADMAP_UPDATE_report.md`
+- `docs/reports/validation_checklist.txt`
 
 ### May update only if already present and only to align with this PR
-- `docs/dev/reports/repo_cleanup_targets.txt`
-- `docs/dev/reports/roadmap_status_delta.txt`
+- `docs/reports/repo_cleanup_targets.txt`
+- `docs/reports/roadmap_status_delta.txt`
 
 ## Cleanup Evidence Scope
 Codex must inspect and report on these cleanup targets only:
@@ -47,7 +47,7 @@ Codex must inspect and report on these cleanup targets only:
 ## Required Work
 
 ### 1) Roadmap bracket-only status update
-Apply only conservative bracket-state updates in `docs/dev/roadmaps/MASTER_ROADMAP_HIGH_LEVEL.md` for the already-planned status deltas below.
+Apply only conservative bracket-state updates in `docs/roadmaps/MASTER_ROADMAP_HIGH_LEVEL.md` for the already-planned status deltas below.
 
 Allowed status intent:
 - Advanced to in-progress:
@@ -76,7 +76,7 @@ Important:
 - Instead, leave the roadmap wording intact and record the unmatched item in the BUILD report under `Unapplied Planned Delta`.
 
 ### 2) Reference-safe cleanup inventory
-Create `docs/dev/reports/cleanup_live_reference_inventory.txt` with a precise inventory for each cleanup target.
+Create `docs/reports/cleanup_live_reference_inventory.txt` with a precise inventory for each cleanup target.
 For each target, capture:
 - exact path
 - whether it currently exists
@@ -87,7 +87,7 @@ For each target, capture:
 Use exact repo searches. Do not guess.
 
 ### 3) Keep / move / future-delete matrix
-Create `docs/dev/reports/cleanup_keep_move_future_delete_matrix.md` as a decision-prep matrix.
+Create `docs/reports/cleanup_keep_move_future_delete_matrix.md` as a decision-prep matrix.
 For each cleanup target, include:
 - target
 - exists? (yes/no)
@@ -100,7 +100,7 @@ For each cleanup target, include:
 Do not perform the future action. Only classify.
 
 ### 4) BUILD report
-Create `docs/dev/reports/BUILD_PR_REPO_CLEANUP_AND_ROADMAP_UPDATE_report.md` with:
+Create `docs/reports/BUILD_PR_REPO_CLEANUP_AND_ROADMAP_UPDATE_report.md` with:
 - bundle type: execution-ready BUILD docs
 - exact files changed
 - exact files created
@@ -112,7 +112,7 @@ Create `docs/dev/reports/BUILD_PR_REPO_CLEANUP_AND_ROADMAP_UPDATE_report.md` wit
 - validation results
 
 ### 5) Validation checklist
-Create `docs/dev/reports/validation_checklist.txt` that records pass/fail for:
+Create `docs/reports/validation_checklist.txt` that records pass/fail for:
 - roadmap wording preserved
 - roadmap changes bracket-only
 - no protected start_of_day directories touched

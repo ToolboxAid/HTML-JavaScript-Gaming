@@ -17,7 +17,7 @@ Establish deterministic simulation baseline for Phase 13.
 
 ## Deliverables
 - docs/dev/reports/simulation_tick_model.txt
-- docs/dev/reports/validation_checklist.txt
+- docs/reports/validation_checklist.txt
 
 ## Validation
 - deterministic update loop confirmed

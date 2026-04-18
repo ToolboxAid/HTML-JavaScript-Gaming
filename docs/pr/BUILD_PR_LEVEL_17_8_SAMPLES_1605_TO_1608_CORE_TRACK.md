@@ -69,5 +69,5 @@ Implement and register the remaining core sample track:
 ## Validation
 - extend targeted Phase 16 sanity as needed without broadening scope
 - run targeted launch smoke for 1601-1608
-- update docs/dev/reports/change_summary.txt
-- update docs/dev/reports/validation_checklist.txt
+- update docs/reports/change_summary.txt
+- update docs/reports/validation_checklist.txt

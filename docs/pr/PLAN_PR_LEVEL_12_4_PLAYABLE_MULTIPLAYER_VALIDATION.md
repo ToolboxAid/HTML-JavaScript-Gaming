@@ -52,7 +52,7 @@ Use one minimal multiplayer scenario that proves:
 
 ## Roadmap Update Rule
 Codex must update:
-docs/dev/roadmaps/MASTER_ROADMAP_HIGH_LEVEL.md
+docs/roadmaps/MASTER_ROADMAP_HIGH_LEVEL.md
 
 Rule:
 - only update status markers [ ] [.] [x]

@@ -31,7 +31,7 @@ Repo Cleanup Phase 1H - Engine Consolidation and Controlled Expansion
 - `docs/dev/CODEX_COMMANDS.md`
 - `docs/dev/COMMIT_COMMENT.txt`
 - `docs/dev/NEXT_COMMAND.txt`
-- `docs/dev/README.md`
+- `docs/operations/dev/README.md`
 
 ## Promoted Helpers (This Phase)
 | helper | before owner | after owner | engine domain | behavior change |

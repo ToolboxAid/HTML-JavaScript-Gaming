@@ -12,9 +12,9 @@ Prepared a docs-first Level 11.2 follow-up that defines the reconciliation-layer
 PLAN_PR -> BUILD_PR -> APPLY_PR
 
 ## Source Guidance Used
-- `docs/dev/RECONCILIATION_LAYER_SPEC.md`
-- `docs/dev/STATE_TIMELINE_SPEC.md`
-- `docs/dev/DEBUG_SURFACE_CONTRACT.md`
+- `docs/operations/dev/RECONCILIATION_LAYER_SPEC.md`
+- `docs/operations/dev/STATE_TIMELINE_SPEC.md`
+- `docs/operations/dev/DEBUG_SURFACE_CONTRACT.md`
 
 ## Scope Safety
 - docs/planning only

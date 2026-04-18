@@ -8,5 +8,5 @@ Verification-only APPLY. No structural changes.
 
 ## Outputs
 - docs/dev/reports/legacy class-retention policy marker_final_decision_validation.md
-- docs/dev/reports/validation_checklist.txt
+- docs/reports/validation_checklist.txt
 

@@ -24,21 +24,21 @@ The previous cleanup-evidence BUILD established that `templates/` exists, has li
 
 ## Exact Target Files
 ### Must create or overwrite
-- `docs/dev/reports/templates_live_usage_inventory.md`
-- `docs/dev/reports/templates_policy_decision.md`
-- `docs/dev/reports/templates_validation_guard.md`
-- `docs/dev/reports/BUILD_PR_TEMPLATES_POLICY_CLASSIFICATION_report.md`
-- `docs/dev/reports/validation_checklist.txt`
+- `docs/reports/templates_live_usage_inventory.md`
+- `docs/reports/templates_policy_decision.md`
+- `docs/reports/templates_validation_guard.md`
+- `docs/reports/BUILD_PR_TEMPLATES_POLICY_CLASSIFICATION_report.md`
+- `docs/reports/validation_checklist.txt`
 
 ### May update only if already present and only to align with this PR
-- `docs/dev/roadmaps/MASTER_ROADMAP_HIGH_LEVEL.md`
-- `docs/dev/reports/repo_cleanup_targets.txt`
-- `docs/dev/reports/roadmap_status_delta.txt`
+- `docs/roadmaps/MASTER_ROADMAP_HIGH_LEVEL.md`
+- `docs/reports/repo_cleanup_targets.txt`
+- `docs/reports/roadmap_status_delta.txt`
 
 ## Required Work
 
 ### 1) Live usage inventory for `templates/`
-Create `docs/dev/reports/templates_live_usage_inventory.md`.
+Create `docs/reports/templates_live_usage_inventory.md`.
 
 Capture, using exact repo searches:
 - exact files under `templates/`
@@ -55,7 +55,7 @@ The report must separate:
 Do not guess. Ground every section in repo evidence.
 
 ### 2) Templates policy decision
-Create `docs/dev/reports/templates_policy_decision.md`.
+Create `docs/reports/templates_policy_decision.md`.
 
 This file must include:
 - current classification: `keep-in-place-for-now`, `migrate-later`, or `needs-manual-review`
@@ -71,7 +71,7 @@ Expected outcome for this PR:
 - no move/delete action is allowed in this PR
 
 ### 3) Validation guard document
-Create `docs/dev/reports/templates_validation_guard.md`.
+Create `docs/reports/templates_validation_guard.md`.
 
 This must define the exact before/after checks future cleanup PRs must pass before `templates/` can move.
 At minimum include:
@@ -83,7 +83,7 @@ At minimum include:
 
 ### 4) Optional roadmap alignment
 Only if exact wording already exists, Codex may apply bracket-only state changes for the templates cleanup tracking item in:
-- `docs/dev/roadmaps/MASTER_ROADMAP_HIGH_LEVEL.md`
+- `docs/roadmaps/MASTER_ROADMAP_HIGH_LEVEL.md`
 
 Rules:
 - no wording edits
@@ -91,7 +91,7 @@ Rules:
 - if exact text match is not clean, record the issue in the BUILD report under `Unapplied Planned Delta`
 
 ### 5) BUILD report
-Create `docs/dev/reports/BUILD_PR_TEMPLATES_POLICY_CLASSIFICATION_report.md` with:
+Create `docs/reports/BUILD_PR_TEMPLATES_POLICY_CLASSIFICATION_report.md` with:
 - bundle type: execution-ready BUILD docs
 - exact files changed
 - exact files created
@@ -103,7 +103,7 @@ Create `docs/dev/reports/BUILD_PR_TEMPLATES_POLICY_CLASSIFICATION_report.md` wit
 - validation results
 
 ### 6) Validation checklist
-Create `docs/dev/reports/validation_checklist.txt` that records pass/fail for:
+Create `docs/reports/validation_checklist.txt` that records pass/fail for:
 - protected start_of_day directories untouched
 - `templates/` not moved/renamed/deleted
 - no runtime import rewrites performed

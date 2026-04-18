@@ -37,8 +37,8 @@ Deliver one executable PR that:
 - tests/tools/*TransformInspector*.test.*
 - docs/roadmaps/MASTER_ROADMAP_HIGH_LEVEL.md
 - docs/dev/reports/*
-- docs/dev/codex_commands.md
-- docs/dev/commit_comment.txt
+- docs/operations/dev/codex_commands.md
+- docs/operations/dev/commit_comment.txt
 
 ## Validation Standard
 - targeted Transform Inspector test passes

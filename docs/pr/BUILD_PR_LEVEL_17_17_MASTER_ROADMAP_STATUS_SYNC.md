@@ -2,7 +2,7 @@
 # BUILD PR: MASTER_ROADMAP_HIGH_LEVEL Status Sync
 
 ## Purpose
-Update `docs/dev/roadmaps/MASTER_ROADMAP_HIGH_LEVEL.md` using status markers only.
+Update `docs/roadmaps/MASTER_ROADMAP_HIGH_LEVEL.md` using status markers only.
 
 ## Scope
 - change only [ ] [.] [x]

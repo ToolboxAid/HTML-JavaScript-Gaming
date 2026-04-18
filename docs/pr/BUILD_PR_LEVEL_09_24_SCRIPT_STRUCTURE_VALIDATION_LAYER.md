@@ -97,8 +97,8 @@ Return a repo-structured ZIP at:
 
 Include:
 - docs/pr/BUILD_PR_LEVEL_09_24_SCRIPT_STRUCTURE_VALIDATION_LAYER.md
-- docs/dev/codex_commands.md
-- docs/dev/commit_comment.txt
-- docs/dev/next_command.txt
-- docs/dev/reports/change_summary.txt
-- docs/dev/reports/validation_checklist.txt
+- docs/operations/dev/codex_commands.md
+- docs/operations/dev/commit_comment.txt
+- docs/operations/dev/next_command.txt
+- docs/reports/change_summary.txt
+- docs/reports/validation_checklist.txt

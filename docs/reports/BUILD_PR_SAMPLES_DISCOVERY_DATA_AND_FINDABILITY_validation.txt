@@ -1,0 +1,41 @@
+BUILD_PR_SAMPLES_DISCOVERY_DATA_AND_FINDABILITY
+
+Scope confirmation:
+- No gameplay files changed
+- No engine-core files changed
+- Canonical sample paths preserved
+
+Files changed for this BUILD:
+- scripts/generate-samples-index.mjs
+- samples/metadata/samples.index.metadata.json
+- samples/index.html
+- docs/reports/BUILD_PR_SAMPLES_DISCOVERY_DATA_AND_FINDABILITY_validation.txt
+
+Validation executed:
+1) node scripts/generate-samples-index.mjs --check
+   - Result: OK phases=15 samples=197 metadata=197 mode=check
+
+2) node scripts/generate-samples-index.mjs --self-test
+   - Result: OK self-test metadata validation and tag normalization
+   - Confirms:
+     - invalid metadata is rejected
+     - duplicate sample IDs are detected and rejected
+     - tag normalization is deterministic
+
+3) Normalized tags present in generated launcher links
+   - Result: pass
+   - Verified `data-tags` values for:
+     - 1316 => network, phase-13, sample-a
+     - 1317 => network, phase-13, sample-b
+     - 1318 => network, phase-13, sample-c
+
+4) Filter/search predictability checks against generated launcher links
+   - Result: pass
+   - Verified tag filter `network` includes 1316/1317/1318
+   - Verified combined filter + search resolves `network sample b` to 1317
+
+5) Console-clean guard check for tested UI files
+   - Result: pass
+   - No `console.log` / `console.warn` / `console.error` statements found in:
+     - samples/index.html
+     - samples/shared/sampleDetailPageEnhancement.js

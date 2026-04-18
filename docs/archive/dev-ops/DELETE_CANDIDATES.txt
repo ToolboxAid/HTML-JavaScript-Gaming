@@ -5,11 +5,11 @@ ROOT:
 - state_11_1.txt
 
 GENERATED REPORTS (if already consumed):
-- docs/dev/reports/change_summary.txt
+- docs/reports/change_summary.txt
 - docs/dev/reports/expansion_decision.txt
-- docs/dev/reports/file_tree.txt
+- docs/reports/file_tree.txt
 - docs/dev/reports/readiness_decision.txt
-- docs/dev/reports/validation_checklist.txt
+- docs/reports/validation_checklist.txt
 
 DUPLICATE / CONSOLIDATE CANDIDATES:
 - docs/dev/---patches-fixes.txt

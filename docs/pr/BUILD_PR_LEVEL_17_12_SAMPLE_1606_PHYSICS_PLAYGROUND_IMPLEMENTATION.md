@@ -18,8 +18,8 @@ Implement a real Sample 1606 improvement only:
 - samples/phase-16/1606/PhysicsPlayground3DScene.js
 - sample-local helpers only if required
 - tests/runtime/Phase16VisibilitySanity.test.mjs (targeted extension only if useful)
-- docs/dev/reports/change_summary.txt
-- docs/dev/reports/validation_checklist.txt
+- docs/reports/change_summary.txt
+- docs/reports/validation_checklist.txt
 
 ## Out of Scope
 - no engine-wide physics rewrite
@@ -59,5 +59,5 @@ Use the smallest valid implementation that creates obvious learning value:
 ## Validation
 - targeted behavioral/runtime check for 1606
 - targeted smoke for 1606
-- update docs/dev/reports/change_summary.txt
-- update docs/dev/reports/validation_checklist.txt
+- update docs/reports/change_summary.txt
+- update docs/reports/validation_checklist.txt

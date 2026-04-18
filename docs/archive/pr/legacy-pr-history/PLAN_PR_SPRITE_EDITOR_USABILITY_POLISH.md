@@ -63,9 +63,9 @@ Optional integration target:
 Required docs/report targets:
 - `docs/pr/BUILD_PR_SPRITE_EDITOR_USABILITY_POLISH.md`
 - `CODEX_COMMANDS.md`
-- `docs/dev/reports/change_summary.txt`
-- `docs/dev/reports/validation_checklist.txt`
-- `docs/dev/reports/file_tree.txt`
+- `docs/reports/change_summary.txt`
+- `docs/reports/validation_checklist.txt`
+- `docs/reports/file_tree.txt`
 
 ## UX behavior contract by polish item
 1. Better tool-state visibility

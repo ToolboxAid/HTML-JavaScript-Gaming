@@ -5,8 +5,8 @@ Execute a docs-only bootstrap for Level 19 so follow-on PRs can proceed in small
 
 ## Source of Truth
 - `docs/pr/PLAN_PR_LEVEL_19_1_NEXT_PHASE_BOOTSTRAP.md`
-- `docs/dev/roadmaps/MASTER_ROADMAP_HIGH_LEVEL.md` (`## 18. Finalize engine`)
-- `docs/dev/roadmaps/phases.txt`
+- `docs/roadmaps/MASTER_ROADMAP_HIGH_LEVEL.md` (`## 18. Finalize engine`)
+- `docs/roadmaps/phases.txt`
 
 ## Exact Build Target
 Create and finalize Level 19 bootstrap planning structure docs only. No code/runtime implementation is allowed in this PR.

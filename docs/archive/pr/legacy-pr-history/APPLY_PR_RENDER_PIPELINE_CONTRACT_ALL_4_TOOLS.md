@@ -169,8 +169,8 @@ Likely targets:
 - `tools/shared/` vector-compatible contract helpers only if required by existing runtime path
 - `tests/tools/` and/or `tests/src/src/engine/` new contract tests
 - `docs/pr/APPLY_PR_RENDER_PIPELINE_CONTRACT_ALL_4_TOOLS.md`
-- `docs/dev/change_summary.txt`
-- `docs/dev/validation_checklist.txt`
+- `docs/operations/dev/change_summary.txt`
+- `docs/operations/dev/validation_checklist.txt`
 
 ## Acceptance Criteria
 - All four tool document types load through one approved contract path

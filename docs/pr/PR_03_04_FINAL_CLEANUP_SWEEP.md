@@ -15,7 +15,7 @@ Final cleanup sweep for shared extraction ensuring no residual duplicates or inc
 
 ## Deliverables
 - docs/dev/reports/final_cleanup_scan.txt
-- docs/dev/reports/validation_checklist.txt
+- docs/reports/validation_checklist.txt
 
 ## Validation
 - no duplicate helpers/selectors remain in scope

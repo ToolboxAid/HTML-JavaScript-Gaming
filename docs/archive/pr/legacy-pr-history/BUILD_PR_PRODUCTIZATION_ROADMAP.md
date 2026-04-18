@@ -24,12 +24,12 @@ Built a docs-only productization roadmap bundle with no runtime changes.
 - `docs/pr/APPLY_PR_PRODUCTIZATION_ROADMAP.md`
 
 3. Dev control/report updates
-- `docs/dev/codex_commands.md`
-- `docs/dev/commit_comment.txt`
-- `docs/dev/next_command.txt`
-- `docs/dev/reports/change_summary.txt`
-- `docs/dev/reports/validation_checklist.txt`
-- `docs/dev/reports/file_tree.txt`
+- `docs/operations/dev/codex_commands.md`
+- `docs/operations/dev/commit_comment.txt`
+- `docs/operations/dev/next_command.txt`
+- `docs/reports/change_summary.txt`
+- `docs/reports/validation_checklist.txt`
+- `docs/reports/file_tree.txt`
 
 ## Validation
 - Roadmap file is present.

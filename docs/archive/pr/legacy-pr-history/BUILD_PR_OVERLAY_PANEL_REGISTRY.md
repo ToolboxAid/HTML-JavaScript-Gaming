@@ -161,10 +161,10 @@ If implementation becomes noisy or starts expanding scope:
 ## Deliverables
 Codex should produce:
 - updated docs in `docs/pr/`
-- `docs/dev/codex_commands.md`
-- `docs/dev/commit_comment.txt`
-- `docs/dev/next_command.txt`
-- `docs/dev/reports/change_summary.txt`
-- `docs/dev/reports/validation_checklist.txt`
-- `docs/dev/reports/file_tree.txt`
+- `docs/operations/dev/codex_commands.md`
+- `docs/operations/dev/commit_comment.txt`
+- `docs/operations/dev/next_command.txt`
+- `docs/reports/change_summary.txt`
+- `docs/reports/validation_checklist.txt`
+- `docs/reports/file_tree.txt`
 - implementation changes only if this BUILD_PR is executed outside the docs-only planning workflow

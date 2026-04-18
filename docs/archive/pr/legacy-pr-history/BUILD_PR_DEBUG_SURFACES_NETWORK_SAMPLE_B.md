@@ -41,7 +41,7 @@ Implemented Sample B host/client diagnostics using sample-owned fake peer simula
 
 6. Roadmap/checklist updates
 - updated Track O items in `docs/dev/NETWORK_SAMPLES_PLAN.md` to complete
-- no required changes to `docs/dev/BIG_PICTURE_ROADMAP.md`
+- no required changes to `docs/operations/dev/BIG_PICTURE_ROADMAP.md`
 
 ## Scope Safety
 - no src/engine/core changes

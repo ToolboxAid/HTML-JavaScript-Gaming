@@ -24,7 +24,7 @@ BUILD_PR_LEVEL_8_3_SYSTEM_STRESS_AND_EDGE_CASE_VALIDATION.md
 - `docs/dev/CODEX_COMMANDS.md`
 - `docs/dev/COMMIT_COMMENT.txt`
 - `docs/dev/NEXT_COMMAND.txt`
-- `docs/dev/README.md`
+- `docs/operations/dev/README.md`
 
 ## Implementation Summary
 - Added validation-mode config hooks to three existing game samples:

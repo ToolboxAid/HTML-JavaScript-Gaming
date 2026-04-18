@@ -6,7 +6,7 @@ Checks:
 - found tools/shared/projectManifestContract.js
 - found tools/shared/projectSystem.js
 - found tools/shared/projectSystemAdapters.js
-- found docs/specs/project_manifest_contract.md
+- found docs/reference/architecture-standards/specs/project_manifest_contract.md
 - active tools match expected first-class list (7)
 - Sprite Editor remains first-class and visible
 - SpriteEditor_old_keep remains hidden legacy

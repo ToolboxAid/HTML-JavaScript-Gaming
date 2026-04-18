@@ -24,8 +24,8 @@ The build stays surgical: both tools use the shared engine theme and platform sh
 - `scripts/validate-tool-registry.mjs`
 - `scripts/validate-active-tools-surface.mjs`
 - `docs/dev/COMMIT_COMMENT.txt`
-- `docs/dev/reports/change_summary.txt`
-- `docs/dev/reports/validation_checklist.txt`
+- `docs/reports/change_summary.txt`
+- `docs/reports/validation_checklist.txt`
 
 ## Implementation Summary
 

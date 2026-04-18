@@ -6,10 +6,10 @@ Add minimal documentation describing how to run and interpret the shared-extract
 ## Single PR Purpose
 Create one doc file:
 
-docs/dev/SHARED_EXTRACTION_GUARD_USAGE.md
+docs/operations/dev/SHARED_EXTRACTION_GUARD_USAGE.md
 
 ## Exact Files Allowed
-1. docs/dev/SHARED_EXTRACTION_GUARD_USAGE.md (new file)
+1. docs/operations/dev/SHARED_EXTRACTION_GUARD_USAGE.md (new file)
 
 ## Exact Content
 

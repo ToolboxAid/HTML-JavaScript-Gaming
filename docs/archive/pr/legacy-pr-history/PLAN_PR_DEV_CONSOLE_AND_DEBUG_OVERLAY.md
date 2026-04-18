@@ -345,7 +345,7 @@ BUILD_PR_DEV_CONSOLE_AND_DEBUG_OVERLAY must produce docs that:
 - define engine mappings explicitly
 - define hot reload survival rules
 - define tests and validation details precisely
-- preserve header rules, including no header on docs/dev/commit_comment.txt
+- preserve header rules, including no header on docs/operations/dev/commit_comment.txt
 
 ## Exit Criteria for This PLAN_PR
 This plan is complete when the future BUILD_PR can proceed without guessing:

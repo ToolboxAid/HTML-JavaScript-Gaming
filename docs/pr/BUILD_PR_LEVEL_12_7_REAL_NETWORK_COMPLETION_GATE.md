@@ -97,7 +97,7 @@ Do not advance the final completion marker unless all required validation areas 
 
 ## Roadmap Update Rule
 Update:
-`docs/dev/roadmaps/MASTER_ROADMAP_HIGH_LEVEL.md`
+`docs/roadmaps/MASTER_ROADMAP_HIGH_LEVEL.md`
 
 Allowed:
 - status markers only: `[ ]` `[.]` `[x]`

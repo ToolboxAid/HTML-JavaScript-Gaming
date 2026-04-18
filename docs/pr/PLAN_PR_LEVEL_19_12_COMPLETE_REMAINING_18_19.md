@@ -41,9 +41,9 @@ Close the active Level 18 overlay hardening lane by finishing the last in-scope 
 ## Required BUILD Outputs
 - Implementation/status changes for the in-scope Level 18 item
 - Roadmap status marker updates for directly validated Level 19 items only
-- `docs/dev/reports/change_summary.txt`
-- `docs/dev/reports/validation_checklist.txt`
-- `docs/dev/reports/file_tree.txt`
+- `docs/reports/change_summary.txt`
+- `docs/reports/validation_checklist.txt`
+- `docs/reports/file_tree.txt`
 - `docs/dev/reports/BUILD_PR_LEVEL_19_12_COMPLETE_REMAINING_18_19_evidence.md`
 
 ## Exit Criteria

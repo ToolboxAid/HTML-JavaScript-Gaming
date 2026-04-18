@@ -1,7 +1,7 @@
 # PR_01_02_REPO_STRUCTURE_APPLY
 
 ## Purpose
-Apply the validated repo structure move map exactly as captured in `docs/dev/reports/move_map.txt`.
+Apply the validated repo structure move map exactly as captured in `docs/reports/move_map.txt`.
 
 ## Scope
 - file/folder moves only from validated move map
@@ -11,8 +11,8 @@ Apply the validated repo structure move map exactly as captured in `docs/dev/rep
 - no deletes unless explicitly listed in move_map.txt
 
 ## Inputs
-- docs/dev/reports/move_map.txt
-- docs/dev/reports/validation_checklist.txt
+- docs/reports/move_map.txt
+- docs/reports/validation_checklist.txt
 
 ## Required Work
 1. Apply every move in `move_map.txt` exactly.

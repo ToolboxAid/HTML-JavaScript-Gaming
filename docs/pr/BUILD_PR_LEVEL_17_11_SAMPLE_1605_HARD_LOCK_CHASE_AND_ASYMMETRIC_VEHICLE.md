@@ -61,5 +61,5 @@ Implement the smallest valid correction that the user can clearly see:
 ## Validation
 - targeted behavioral check for 1605 heading readability and chase-camera lock
 - targeted smoke for 1605
-- update docs/dev/reports/change_summary.txt
-- update docs/dev/reports/validation_checklist.txt
+- update docs/reports/change_summary.txt
+- update docs/reports/validation_checklist.txt

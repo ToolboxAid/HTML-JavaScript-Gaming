@@ -45,7 +45,7 @@ Confirmed existing first-class required tools remain normalized:
 - `tools/toolRegistry.js`
 - `tests/tools/ToolEntryLaunchContract.test.mjs`
 - `tests/tools/ToolBoundaryEnforcement.test.mjs`
-- `docs/dev/roadmaps/MASTER_ROADMAP_HIGH_LEVEL.md`
+- `docs/roadmaps/MASTER_ROADMAP_HIGH_LEVEL.md`
 
 ## Validation
 

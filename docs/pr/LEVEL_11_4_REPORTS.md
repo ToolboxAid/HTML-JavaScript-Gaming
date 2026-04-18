@@ -2,6 +2,6 @@
 
 REQUIRED OUTPUT:
 
-docs/dev/reports/file_tree.txt
-docs/dev/reports/change_summary.txt
-docs/dev/reports/validation_checklist.txt
+docs/reports/file_tree.txt
+docs/reports/change_summary.txt
+docs/reports/validation_checklist.txt

@@ -5,7 +5,7 @@ Establish a minimal runnable Phase 19 foundation scaffold and launcher wiring, w
 
 ## Source of Truth
 - `docs/pr/PLAN_PR_LEVEL_19_1_NEXT_PHASE_BOOTSTRAP.md`
-- `docs/dev/roadmaps/MASTER_ROADMAP_HIGH_LEVEL.md` (Section: `## 18. Finalize engine`)
+- `docs/roadmaps/MASTER_ROADMAP_HIGH_LEVEL.md` (Section: `## 18. Finalize engine`)
 
 ## Scope
 - create a new `samples/phase-19/1901/` scaffold folder

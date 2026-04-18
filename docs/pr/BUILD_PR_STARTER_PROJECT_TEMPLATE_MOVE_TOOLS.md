@@ -17,8 +17,8 @@ This PR is single-purpose:
 - to `tools/templates/starter-project-template/`
 
 ### Must create or overwrite
-- `docs/dev/reports/starter_project_template_move_report.md`
-- `docs/dev/reports/validation_checklist.txt`
+- `docs/reports/starter_project_template_move_report.md`
+- `docs/reports/validation_checklist.txt`
 
 ### May modify only if required for correctness
 - direct references to `templates/starter-project-template/`

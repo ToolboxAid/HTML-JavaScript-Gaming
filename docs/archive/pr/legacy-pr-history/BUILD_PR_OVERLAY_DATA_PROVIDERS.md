@@ -101,6 +101,6 @@ Not allowed:
 - `docs/pr/PLAN_PR_OVERLAY_DATA_PROVIDERS.md`
 - `docs/pr/BUILD_PR_OVERLAY_DATA_PROVIDERS.md`
 - `docs/pr/APPLY_PR_OVERLAY_DATA_PROVIDERS.md`
-- `docs/dev/reports/change_summary.txt`
-- `docs/dev/reports/validation_checklist.txt`
-- `docs/dev/reports/file_tree.txt`
+- `docs/reports/change_summary.txt`
+- `docs/reports/validation_checklist.txt`
+- `docs/reports/file_tree.txt`

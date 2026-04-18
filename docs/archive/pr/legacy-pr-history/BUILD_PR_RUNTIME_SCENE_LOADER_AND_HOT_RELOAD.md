@@ -165,12 +165,12 @@ Manual validation checklist (APPLY PR):
 
 ## Deliverables For This BUILD PR (Docs-Only)
 - `docs/pr/BUILD_PR_RUNTIME_SCENE_LOADER_AND_HOT_RELOAD.md`
-- `docs/dev/codex_commands.md`
-- `docs/dev/commit_comment.txt`
-- `docs/dev/change_summary.txt`
-- `docs/dev/validation_checklist.txt`
-- `docs/dev/file_tree.txt`
-- `docs/dev/next_command.txt`
+- `docs/operations/dev/codex_commands.md`
+- `docs/operations/dev/commit_comment.txt`
+- `docs/operations/dev/change_summary.txt`
+- `docs/operations/dev/validation_checklist.txt`
+- `docs/operations/dev/file_tree.txt`
+- `docs/operations/dev/next_command.txt`
 
 ## Packaging
 Output delta zip path:

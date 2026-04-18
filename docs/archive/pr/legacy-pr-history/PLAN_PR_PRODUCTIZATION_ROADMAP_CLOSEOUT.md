@@ -17,7 +17,7 @@ PLAN_PR -> BUILD_PR -> APPLY_PR
 - Update docs/pr files, docs/dev control files, and reports for this closeout bundle.
 
 ## Out of Scope
-- `docs/dev/BIG_PICTURE_ROADMAP.md` edits.
+- `docs/operations/dev/BIG_PICTURE_ROADMAP.md` edits.
 - Engine/runtime/UI code changes.
 - Non-roadmap feature work.
 

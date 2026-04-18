@@ -58,11 +58,11 @@ If broken references are found, Codex must fix them in the same pass.
 After Phase 1 and Phase 2 are complete, Codex must create:
 
 - `docs/pr/PLAN_PR_VECTOR_ASSET_CONTRACT.md`
-- `docs/dev/codex_commands.md` (updated for the vector asset contract plan output)
-- `docs/dev/commit_comment.txt`
-- `docs/dev/reports/file_tree.txt`
-- `docs/dev/reports/change_summary.txt`
-- `docs/dev/reports/validation_checklist.txt`
+- `docs/operations/dev/codex_commands.md` (updated for the vector asset contract plan output)
+- `docs/operations/dev/commit_comment.txt`
+- `docs/reports/file_tree.txt`
+- `docs/reports/change_summary.txt`
+- `docs/reports/validation_checklist.txt`
 
 The vector asset contract plan must define the future planning/documentation needed to lock:
 - vector asset file contract
@@ -79,14 +79,14 @@ The vector asset contract plan must define the future planning/documentation nee
 ## Deliverables for this combined Codex run
 ### Build/consolidation docs
 - `docs/pr/BUILD_PR_TOOLS_FOLDER_CONSOLIDATION.md`
-- `docs/dev/reports/file_tree.txt`
-- `docs/dev/reports/change_summary.txt`
-- `docs/dev/reports/validation_checklist.txt`
+- `docs/reports/file_tree.txt`
+- `docs/reports/change_summary.txt`
+- `docs/reports/validation_checklist.txt`
 
 ### Follow-on plan docs
 - `docs/pr/PLAN_PR_VECTOR_ASSET_CONTRACT.md`
-- refreshed `docs/dev/codex_commands.md`
-- refreshed `docs/dev/commit_comment.txt`
+- refreshed `docs/operations/dev/codex_commands.md`
+- refreshed `docs/operations/dev/commit_comment.txt`
 
 ## Success criteria
 - One canonical folder per active tool under `tools/`

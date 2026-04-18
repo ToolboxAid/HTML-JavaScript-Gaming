@@ -16,7 +16,7 @@ Introduce latency modeling for Phase 13 simulation.
 
 ## Deliverables
 - docs/dev/reports/latency_model.txt
-- docs/dev/reports/validation_checklist.txt
+- docs/reports/validation_checklist.txt
 
 ## Validation
 - latency effects observable

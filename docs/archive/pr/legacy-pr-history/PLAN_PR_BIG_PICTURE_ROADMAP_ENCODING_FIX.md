@@ -6,13 +6,13 @@ PLAN_PR_BIG_PICTURE_ROADMAP_ENCODING_FIX.md
 # PLAN_PR_BIG_PICTURE_ROADMAP_ENCODING_FIX
 
 ## Goal
-Normalize `docs/dev/BIG_PICTURE_ROADMAP.md` encoding so the file renders consistently across Windows tooling without changing roadmap content or bracket states.
+Normalize `docs/operations/dev/BIG_PICTURE_ROADMAP.md` encoding so the file renders consistently across Windows tooling without changing roadmap content or bracket states.
 
 ## Workflow
 PLAN_PR -> BUILD_PR -> APPLY_PR
 
 ## In Scope
-- Encoding normalization for `docs/dev/BIG_PICTURE_ROADMAP.md`.
+- Encoding normalization for `docs/operations/dev/BIG_PICTURE_ROADMAP.md`.
 - Validation that bracket-state rows remain unchanged.
 - Docs/dev control files and reports for this one PR purpose.
 

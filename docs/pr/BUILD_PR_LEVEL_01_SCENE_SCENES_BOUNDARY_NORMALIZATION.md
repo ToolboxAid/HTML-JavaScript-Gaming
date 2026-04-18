@@ -31,8 +31,8 @@ Normalize engine scene runtime to one boundary: `src/engine/scene`.
   - `tests/core/EngineSceneLifecycle.test.mjs`
   - `tests/final/PlatformUxSystems.test.mjs`
 - Updated documentation path references where touched:
-  - `docs/architecture/engine-scene-transitions.md`
-  - `docs/samples/sample-template.md`
+  - `docs/reference/architecture-standards/architecture/engine-scene-transitions.md`
+  - `docs/reference/misc/samples/sample-template.md`
 - Updated sample metadata references:
   - `samples/metadata/samples.shared.boundaries.report.json`
   - `samples/metadata/samples.index.metadata.json`

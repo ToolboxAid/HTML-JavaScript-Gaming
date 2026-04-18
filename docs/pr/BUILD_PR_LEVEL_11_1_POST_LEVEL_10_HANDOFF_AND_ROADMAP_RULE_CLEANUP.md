@@ -28,7 +28,7 @@ Start Level 11 and clean up roadmap misuse of rules vs tasks.
 - Removed the roadmap checkbox block under `## 11. Productization & Distribution`:
   - `### Productization Rule`
   - its two checkbox bullets
-- Added productization guidance to `docs/dev/PROJECT_INSTRUCTIONS.md` as requested:
+- Added productization guidance to `docs/operations/dev/PROJECT_INSTRUCTIONS.md` as requested:
   - `## Productization Rules`
   - `- Do not create standalone showcase tracks in future roadmaps`
   - `- Fold showcase importance into the main feature or sample title when needed`

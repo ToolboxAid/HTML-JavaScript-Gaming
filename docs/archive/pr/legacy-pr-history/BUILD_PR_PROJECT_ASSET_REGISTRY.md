@@ -49,7 +49,7 @@ Implement project-level asset registry support for Sprite Editor, Tile Map Edito
   - `node --check tools/Sprite Editor/main.js`
   - `node --check tools/Tilemap Studio/main.js`
   - `node --check tools/Parallax Scene Studio/main.js`
-- Manual contract checklist updated and marked pass in `docs/dev/reports/validation_checklist.txt`.
+- Manual contract checklist updated and marked pass in `docs/reports/validation_checklist.txt`.
 
 ## Packaging
 - Delta ZIP: `tmp/BUILD_PR_PROJECT_ASSET_REGISTRY_delta.zip`

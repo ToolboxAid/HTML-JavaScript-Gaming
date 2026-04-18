@@ -13,7 +13,7 @@ Apply the approved Sample A implementation only:
 - update docs/dev controls and reports for this PR
 
 ## Roadmap Updates (Bracket-Only)
-In `docs/dev/BIG_PICTURE_ROADMAP.md`:
+In `docs/operations/dev/BIG_PICTURE_ROADMAP.md`:
 - Connection status panel -> `[x]`
 - Latency / RTT panel -> `[x]`
 - Event tracing -> `[x]`

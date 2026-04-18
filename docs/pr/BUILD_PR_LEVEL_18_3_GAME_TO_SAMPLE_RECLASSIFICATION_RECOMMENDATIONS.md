@@ -28,7 +28,7 @@ Advance Level 18 by identifying game entries that are actually sample/demo candi
    - a sample/demo that should move to `samples/`
 3. For each item classified as a sample/demo, recommend the best-fit `phase-xx` target and explain why.
 4. Produce a concise classification matrix in `docs/dev/reports`.
-5. Update `docs/dev/roadmaps/MASTER_ROADMAP_HIGH_LEVEL.md` in place as part of this bundle:
+5. Update `docs/roadmaps/MASTER_ROADMAP_HIGH_LEVEL.md` in place as part of this bundle:
    - preserve all existing roadmap text
    - do not delete content
    - do not rewrite existing roadmap wording

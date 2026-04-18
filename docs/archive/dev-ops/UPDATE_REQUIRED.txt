@@ -1,13 +1,13 @@
 UPDATE TO CURRENT STATE
 
 - README.md
-- docs/README.md
-- docs/repo-directory-structure.md
-- docs/getting-started.md
-- docs/review-checklist.md
-- docs/architecture/README.md
-- docs/architecture/engine-api-boundary.md
-- docs/dev/README.md
+- docs/reference/root/README.md
+- docs/reference/root/repo-directory-structure.md
+- docs/reference/root/getting-started.md
+- docs/reference/root/review-checklist.md
+- docs/reference/architecture-standards/architecture/README.md
+- docs/reference/architecture-standards/architecture/engine-api-boundary.md
+- docs/operations/dev/README.md
 
 CURRENT-STATE ITEMS TO REFLECT
 - src/advanced/state/ exists

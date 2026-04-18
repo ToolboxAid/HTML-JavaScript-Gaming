@@ -43,11 +43,11 @@ Define the reconciliation architecture before code is written so future implemen
 4. Allow future Sample D / hub work to reuse contracts without duplicating ad hoc wiring.
 
 ## Proposed Deliverables
-- `docs/dev/RECONCILIATION_LAYER_SPEC.md`
-- `docs/dev/STATE_TIMELINE_SPEC.md`
-- `docs/dev/DEBUG_SURFACE_CONTRACT.md`
-- `docs/dev/codex_commands.md`
-- `docs/dev/commit_comment.txt`
+- `docs/operations/dev/RECONCILIATION_LAYER_SPEC.md`
+- `docs/operations/dev/STATE_TIMELINE_SPEC.md`
+- `docs/operations/dev/DEBUG_SURFACE_CONTRACT.md`
+- `docs/operations/dev/codex_commands.md`
+- `docs/operations/dev/commit_comment.txt`
 - supporting report files under `docs/dev/reports/`
 
 ## Recommended Future BUILD PR Name

@@ -21,7 +21,7 @@ BUILD_PR_LEVEL_9_1_ENGINE_API_STABILIZATION.md
 - `docs/dev/CODEX_COMMANDS.md`
 - `docs/dev/COMMIT_COMMENT.txt`
 - `docs/dev/NEXT_COMMAND.txt`
-- `docs/dev/README.md`
+- `docs/operations/dev/README.md`
 
 ## Stabilization Output Summary
 - Defined explicit public API contracts for Spawn, Lifecycle, World State, Events.

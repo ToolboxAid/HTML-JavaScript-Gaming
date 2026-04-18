@@ -1,0 +1,39 @@
+BUILD_PR_SAMPLES_RUNTIME_PREVIEW_SVG_CAPTURE
+
+Scope confirmation:
+- No gameplay logic changes made
+- No engine-core changes made
+- No sample layout/tag/title/related/engine-class presentation changes made
+- samples 1316/1317/1318 preserved unchanged
+
+Implementation:
+- Updated runtime capture orchestration to wait exactly 3000ms before capture
+- Excluded frozen samples 1316/1317/1318 from regeneration
+- Regenerated runtime-derived preview SVGs for non-frozen samples via headless browser capture
+
+Validation:
+- Runtime generation run: OK runtime previews generated=194 skipped=3 (frozen samples)
+- Changed preview files: 125
+- Frozen preview files touched by status: 0
+- Placeholder hash matches in changed previews: 0
+- Representative runtime capture checks (not placeholder):
+  - /samples/phase01/0101/index.html size=16474 notPlaceholder=true
+  - /samples/phase06/0606/index.html size=16476 notPlaceholder=true
+  - /samples/phase10/1002/index.html size=18083 notPlaceholder=true
+  - /samples/phase15/1506/index.html size=14675 notPlaceholder=true
+  - /samples/phase13/1316/index.html size=20907 notPlaceholder=true
+  - /samples/phase13/1317/index.html size=47689 notPlaceholder=true
+  - /samples/phase13/1318/index.html size=66962 notPlaceholder=true
+- Frozen hash checks:
+  - samples/phase13/1316/assets/preview.svg unchanged=true
+  - samples/phase13/1317/assets/preview.svg unchanged=true
+  - samples/phase13/1318/assets/preview.svg unchanged=true
+  - samples/phase13/1316/index.html unchanged=true
+  - samples/phase13/1317/index.html unchanged=true
+  - samples/phase13/1318/index.html unchanged=true
+  - samples/index.html unchanged=true
+- Console guard for tested representative sample entry files: clean=true
+
+Artifacts:
+- docs/reports/BUILD_PR_SAMPLES_RUNTIME_PREVIEW_SVG_CAPTURE_validation.json
+- docs/reports/BUILD_PR_SAMPLES_RUNTIME_PREVIEW_SVG_CAPTURE_validation.txt

@@ -169,7 +169,7 @@ Requirements:
 - No Parallax Editor work in this PR
 
 Validation:
-- All checklist items in `docs/dev/reports/validation_checklist.txt` must pass
+- All checklist items in `docs/reports/validation_checklist.txt` must pass
 - Include syntax validation for changed JS files
 - Package delta zip only
 

@@ -1,0 +1,41 @@
+BUILD_PR_SAMPLES_BROWSE_VISUALS_AND_NAVIGATION
+
+Scope confirmation:
+- No gameplay files changed
+- No engine-core files changed
+- Canonical sample paths preserved
+
+Files changed for this BUILD:
+- samples/index.html
+- samples/shared/sampleDetailPageEnhancement.js
+- samples/metadata/samples.index.metadata.json
+- docs/reports/BUILD_PR_SAMPLES_BROWSE_VISUALS_AND_NAVIGATION_validation.txt
+
+Validation executed:
+1) node scripts/generate-samples-index.mjs --check
+   - Result: OK phases=15 samples=197 metadata=197 mode=check
+
+2) node --check samples/shared/sampleDetailPageEnhancement.js
+   - Result: pass (no syntax errors)
+
+3) samples/index.html inline script parse + visual CSS presence checks
+   - Result: pass
+   - Verified thumbnail and hover-preview CSS selectors exist
+
+4) metadata preview entries and preview asset existence for 1316/1317/1318
+   - Result: pass
+   - Verified thumbnail + preview metadata fields point to existing assets
+
+5) detail-page navigation model checks via shared enhancer module
+   - Result: pass
+   - Verified previous/next/related links resolve to canonical sample paths
+   - Verified fallback preview/thumbnail behavior for samples without assets
+
+6) hover-preview guard checks in samples/index.html
+   - Result: pass
+   - Verified fixed overlay behavior and non-layout-breaking guard styles
+
+7) representative phase 13 sample checks
+   - Result: pass
+   - Verified 1316, 1317, 1318 links remain in samples/index.html
+   - Verified 1316/1317/1318 sample pages still include enhancer + main script tags

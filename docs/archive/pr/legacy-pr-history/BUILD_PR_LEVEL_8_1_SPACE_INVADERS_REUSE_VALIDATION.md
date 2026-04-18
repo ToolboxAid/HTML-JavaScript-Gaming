@@ -25,7 +25,7 @@ BUILD_PR_LEVEL_8_1_SPACE_INVADERS_REUSE_VALIDATION.md
 - `docs/dev/CODEX_COMMANDS.md`
 - `docs/dev/COMMIT_COMMENT.txt`
 - `docs/dev/NEXT_COMMAND.txt`
-- `docs/dev/README.md`
+- `docs/operations/dev/README.md`
 
 ## Reuse Validation Implementation
 - Extracted shared world systems into `samples/shared/worldSystems.js`:

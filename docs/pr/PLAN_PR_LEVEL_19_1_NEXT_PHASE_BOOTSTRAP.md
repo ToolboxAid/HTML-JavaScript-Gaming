@@ -4,8 +4,8 @@
 Prepare a docs-first Level 19 planning bootstrap as the next execution wrapper after the Phase 18 completion gate, without adding implementation scope.
 
 ## Source of Truth
-- `docs/dev/roadmaps/MASTER_ROADMAP_HIGH_LEVEL.md` (Section: `## 18. Finalize engine`)
-- `docs/dev/roadmaps/phases.txt` (note: no formal Phase 19+ lane is currently defined)
+- `docs/roadmaps/MASTER_ROADMAP_HIGH_LEVEL.md` (Section: `## 18. Finalize engine`)
+- `docs/roadmaps/phases.txt` (note: no formal Phase 19+ lane is currently defined)
 
 ## Scope
 - define Level 19 planning objectives as dependency-ordered completion slices for remaining Section 18 checklist items

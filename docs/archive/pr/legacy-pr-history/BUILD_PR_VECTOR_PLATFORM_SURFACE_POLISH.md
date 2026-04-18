@@ -40,7 +40,7 @@ Out of scope:
 - `tools/Vector Map Editor/index.html`
 - `scripts/validate-active-tools-surface.mjs`
 - `docs/pr/BUILD_PR_VECTOR_PLATFORM_SURFACE_POLISH.md`
-- `docs/dev/commit_comment.txt`
+- `docs/operations/dev/commit_comment.txt`
 
 ## Public Surface Boundaries
 - `tools/toolRegistry.js` is the single source of truth for active-tool metadata

@@ -35,9 +35,9 @@ Provide the execution checklist for implementing the overlay panel registry cont
 - validate `node --check` or equivalent on touched JS files
 
 ### Docs / Reporting
-- update `docs/dev/reports/change_summary.txt`
-- update `docs/dev/reports/validation_checklist.txt`
-- update `docs/dev/reports/file_tree.txt`
+- update `docs/reports/change_summary.txt`
+- update `docs/reports/validation_checklist.txt`
+- update `docs/reports/file_tree.txt`
 - keep all BUILD/APPLY notes scoped to this PR purpose only
 
 ## Commit Comment Guidance

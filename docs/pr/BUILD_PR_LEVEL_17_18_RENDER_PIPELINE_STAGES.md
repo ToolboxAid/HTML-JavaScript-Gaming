@@ -49,7 +49,7 @@ Add or update targeted test(s) to verify:
 - registration visibility if registration is file-driven
 
 ## Manual Validation
-Follow `docs/dev/reports/validation_checklist.txt`.
+Follow `docs/reports/validation_checklist.txt`.
 
 ## Packaging Rule
 Package only files relevant to this PR into the final repo-structured ZIP.

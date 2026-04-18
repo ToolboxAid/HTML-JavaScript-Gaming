@@ -14,7 +14,7 @@ engine/... → src/engine/...
 
 ## Output
 docs/dev/reports/engine_import_enforce_minimal_report.md
-docs/dev/reports/validation_checklist.txt
+docs/reports/validation_checklist.txt
 
 Package:
 <project folder>/tmp/BUILD_PR_ENGINE_IMPORT_ENFORCE_MINIMAL.zip

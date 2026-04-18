@@ -15,7 +15,7 @@ This PR closes that enforcement gap.
 
 ## Source Baseline
 Treat these as the architectural baseline for this PR:
-- `docs/specs/asset_usage_contract.md`
+- `docs/reference/architecture-standards/specs/asset_usage_contract.md`
 - `tools/shared/vectorAssetSystem.js`
 - `tools/Asset Browser/main.js`
 - `tools/templates/starter-project-template/config/starter.project.json`
@@ -49,7 +49,7 @@ For active first-class tools in scope, shared actions must continue using these 
 Do not introduce tool-specific label drift.
 
 ### 2. Shared launch query contract must be real
-When an in-scope tool launches the shared Asset Browser or Palette Browser flow, it must use the normalized query-parameter contract defined in `docs/specs/asset_usage_contract.md`:
+When an in-scope tool launches the shared Asset Browser or Palette Browser flow, it must use the normalized query-parameter contract defined in `docs/reference/architecture-standards/specs/asset_usage_contract.md`:
 - `view`
 - `sourceToolId`
 

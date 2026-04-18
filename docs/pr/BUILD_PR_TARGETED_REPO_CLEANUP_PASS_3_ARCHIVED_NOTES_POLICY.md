@@ -25,20 +25,20 @@ Prior cleanup evidence established that `docs/archive/` exists and is actively r
 ## Exact Target Files
 
 ### Must create or overwrite
-- `docs/dev/reports/archived_notes_policy_inventory.md`
-- `docs/dev/reports/archived_notes_policy_decision.md`
-- `docs/dev/reports/archived_notes_validation_guard.md`
-- `docs/dev/reports/BUILD_PR_TARGETED_REPO_CLEANUP_PASS_3_ARCHIVED_NOTES_POLICY_report.md`
-- `docs/dev/reports/validation_checklist.txt`
+- `docs/reports/archived_notes_policy_inventory.md`
+- `docs/reports/archived_notes_policy_decision.md`
+- `docs/reports/archived_notes_validation_guard.md`
+- `docs/reports/BUILD_PR_TARGETED_REPO_CLEANUP_PASS_3_ARCHIVED_NOTES_POLICY_report.md`
+- `docs/reports/validation_checklist.txt`
 
 ### May update only if already present and only to align with this PR
-- `docs/dev/roadmaps/MASTER_ROADMAP_HIGH_LEVEL.md`
-- `docs/dev/reports/repo_cleanup_targets.txt`
+- `docs/roadmaps/MASTER_ROADMAP_HIGH_LEVEL.md`
+- `docs/reports/repo_cleanup_targets.txt`
 
 ## Required Work
 
 ### 1) Archived notes policy inventory
-Create `docs/dev/reports/archived_notes_policy_inventory.md`.
+Create `docs/reports/archived_notes_policy_inventory.md`.
 
 Capture, using exact repo searches:
 - exact `docs/archive/` path existence
@@ -55,7 +55,7 @@ The report must separate:
 Do not guess. Ground every section in repo evidence.
 
 ### 2) Archived notes policy decision
-Create `docs/dev/reports/archived_notes_policy_decision.md`.
+Create `docs/reports/archived_notes_policy_decision.md`.
 
 This file must include:
 - classification options considered: `keep-in-place-for-now`, `migrate-later`, `needs-manual-review`
@@ -71,7 +71,7 @@ Expected outcome for this PR:
 - no move/delete action is allowed in this PR
 
 ### 3) Archived notes validation guard
-Create `docs/dev/reports/archived_notes_validation_guard.md`.
+Create `docs/reports/archived_notes_validation_guard.md`.
 
 This must define the exact before/after checks future cleanup PRs must pass before archived notes can move.
 At minimum include:
@@ -82,7 +82,7 @@ At minimum include:
 
 ### 4) Optional roadmap alignment
 Only if exact wording already exists, Codex may apply bracket-only state changes for the archived notes policy tracking item in:
-- `docs/dev/roadmaps/MASTER_ROADMAP_HIGH_LEVEL.md`
+- `docs/roadmaps/MASTER_ROADMAP_HIGH_LEVEL.md`
 
 Rules:
 - no wording edits
@@ -90,7 +90,7 @@ Rules:
 - if exact text match is not clean, record the issue in the BUILD report under `Unapplied Planned Delta`
 
 ### 5) BUILD report
-Create `docs/dev/reports/BUILD_PR_TARGETED_REPO_CLEANUP_PASS_3_ARCHIVED_NOTES_POLICY_report.md` with:
+Create `docs/reports/BUILD_PR_TARGETED_REPO_CLEANUP_PASS_3_ARCHIVED_NOTES_POLICY_report.md` with:
 - bundle type: execution-ready BUILD docs
 - exact files changed
 - exact files created
@@ -103,7 +103,7 @@ Create `docs/dev/reports/BUILD_PR_TARGETED_REPO_CLEANUP_PASS_3_ARCHIVED_NOTES_PO
 - validation results
 
 ### 6) Validation checklist
-Create `docs/dev/reports/validation_checklist.txt` that records pass/fail for:
+Create `docs/reports/validation_checklist.txt` that records pass/fail for:
 - protected start_of_day directories untouched
 - `docs/archive/` not moved/renamed/deleted
 - `templates/` untouched

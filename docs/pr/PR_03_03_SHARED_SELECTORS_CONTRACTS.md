@@ -35,9 +35,9 @@ Standardize shared selector usage and confirm state contract boundaries without 
 - preserve public contracts
 
 ## Deliverables
-- docs/dev/reports/selector_usage_scan.txt
-- docs/dev/reports/contract_map.txt
-- docs/dev/reports/validation_checklist.txt
+- docs/reports/selector_usage_scan.txt
+- docs/reports/contract_map.txt
+- docs/reports/validation_checklist.txt
 
 ## Validation
 - shared selector/contract surfaces are canonical for this PR scope

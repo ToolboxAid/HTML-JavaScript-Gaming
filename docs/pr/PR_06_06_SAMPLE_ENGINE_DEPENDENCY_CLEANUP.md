@@ -23,9 +23,9 @@ Complete sample-to-engine dependency cleanup so samples consume only approved pu
 - preserve runtime/sample navigation
 
 ## Deliverables
-- docs/dev/reports/sample_dependency_scan.txt
-- docs/dev/reports/dependency_cleanup_map.txt
-- docs/dev/reports/validation_checklist.txt
+- docs/reports/sample_dependency_scan.txt
+- docs/reports/dependency_cleanup_map.txt
+- docs/reports/validation_checklist.txt
 
 ## Validation
 - samples in scope no longer depend on non-public engine internals

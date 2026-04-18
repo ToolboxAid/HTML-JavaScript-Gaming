@@ -54,4 +54,4 @@ Residual blockers:
 - `tests/replay/ReplaySystem.test.mjs`
 - `tests/replay/ReplayTimeline.test.mjs`
 - `tests/run-tests.mjs`
-- `docs/dev/roadmaps/MASTER_ROADMAP_HIGH_LEVEL.md`
+- `docs/roadmaps/MASTER_ROADMAP_HIGH_LEVEL.md`

@@ -40,9 +40,9 @@ Optional tiny integration point:
 Required BUILD docs/report files:
 - `docs/pr/BUILD_PR_SPRITE_EDITOR_PROJECT_INTEGRATION.md`
 - `CODEX_COMMANDS.md`
-- `docs/dev/reports/change_summary.txt`
-- `docs/dev/reports/validation_checklist.txt`
-- `docs/dev/reports/file_tree.txt`
+- `docs/reports/change_summary.txt`
+- `docs/reports/validation_checklist.txt`
+- `docs/reports/file_tree.txt`
 
 ## 4. Engine Integration Contract For paletteList
 Authoritative source:

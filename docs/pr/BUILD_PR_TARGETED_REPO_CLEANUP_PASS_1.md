@@ -29,34 +29,34 @@ This BUILD narrows the next step to one purpose only:
 
 ## Exact Target Files
 ### Must create or overwrite
-- `docs/dev/reports/cleanup_target_enforcement_map.md`
-- `docs/dev/reports/cleanup_execution_guard.md`
-- `docs/dev/reports/cleanup_target_normalization_report.md`
-- `docs/dev/reports/BUILD_PR_TARGETED_REPO_CLEANUP_PASS_1_report.md`
-- `docs/dev/reports/validation_checklist.txt`
+- `docs/reports/cleanup_target_enforcement_map.md`
+- `docs/reports/cleanup_execution_guard.md`
+- `docs/reports/cleanup_target_normalization_report.md`
+- `docs/reports/BUILD_PR_TARGETED_REPO_CLEANUP_PASS_1_report.md`
+- `docs/reports/validation_checklist.txt`
 
 ### May update only if already present and only to align with this PR
-- `docs/dev/reports/repo_cleanup_targets.txt`
-- `docs/dev/roadmaps/MASTER_ROADMAP_HIGH_LEVEL.md`
+- `docs/reports/repo_cleanup_targets.txt`
+- `docs/roadmaps/MASTER_ROADMAP_HIGH_LEVEL.md`
 
 ## Approved Source Of Truth
 Use only these existing artifacts as source evidence for this BUILD:
-- `docs/dev/reports/cleanup_live_reference_inventory.txt`
-- `docs/dev/reports/cleanup_keep_move_future_delete_matrix.md`
-- `docs/dev/reports/BUILD_PR_REPO_CLEANUP_AND_ROADMAP_UPDATE_report.md`
-- `docs/dev/reports/templates_live_usage_inventory.md`
-- `docs/dev/reports/templates_policy_decision.md`
-- `docs/dev/reports/templates_validation_guard.md`
-- `docs/dev/reports/BUILD_PR_TEMPLATES_POLICY_CLASSIFICATION_report.md`
-- `docs/dev/reports/repo_cleanup_targets.txt`
-- `docs/dev/roadmaps/MASTER_ROADMAP_HIGH_LEVEL.md`
+- `docs/reports/cleanup_live_reference_inventory.txt`
+- `docs/reports/cleanup_keep_move_future_delete_matrix.md`
+- `docs/reports/BUILD_PR_REPO_CLEANUP_AND_ROADMAP_UPDATE_report.md`
+- `docs/reports/templates_live_usage_inventory.md`
+- `docs/reports/templates_policy_decision.md`
+- `docs/reports/templates_validation_guard.md`
+- `docs/reports/BUILD_PR_TEMPLATES_POLICY_CLASSIFICATION_report.md`
+- `docs/reports/repo_cleanup_targets.txt`
+- `docs/roadmaps/MASTER_ROADMAP_HIGH_LEVEL.md`
 
 Do not guess beyond those files.
 
 ## Required Work
 
 ### 1) Cleanup target enforcement map
-Create `docs/dev/reports/cleanup_target_enforcement_map.md`.
+Create `docs/reports/cleanup_target_enforcement_map.md`.
 
 For each approved cleanup target, capture:
 - exact target name/path
@@ -80,7 +80,7 @@ The target list is limited to:
 The enforcement map must remain evidence-grounded and must not invent new targets or actions.
 
 ### 2) Cleanup execution guard
-Create `docs/dev/reports/cleanup_execution_guard.md`.
+Create `docs/reports/cleanup_execution_guard.md`.
 
 This file must define the global rules all future cleanup PRs must satisfy.
 
@@ -117,13 +117,13 @@ At minimum block:
 Define exact blocker conditions that must stop a future cleanup PR.
 
 ### 3) Cleanup target normalization report
-Create `docs/dev/reports/cleanup_target_normalization_report.md`.
+Create `docs/reports/cleanup_target_normalization_report.md`.
 
 For each approved cleanup target, compare consistency across:
-- `docs/dev/reports/repo_cleanup_targets.txt`
-- `docs/dev/reports/cleanup_live_reference_inventory.txt`
-- `docs/dev/reports/cleanup_keep_move_future_delete_matrix.md`
-- `docs/dev/roadmaps/MASTER_ROADMAP_HIGH_LEVEL.md`
+- `docs/reports/repo_cleanup_targets.txt`
+- `docs/reports/cleanup_live_reference_inventory.txt`
+- `docs/reports/cleanup_keep_move_future_delete_matrix.md`
+- `docs/roadmaps/MASTER_ROADMAP_HIGH_LEVEL.md`
 - templates-policy reports where relevant
 
 For each target, record:
@@ -150,7 +150,7 @@ Rules:
 - if exact text match is not clean, leave roadmap untouched and record the issue under `Unapplied Planned Delta`
 
 ### 5) BUILD report
-Create `docs/dev/reports/BUILD_PR_TARGETED_REPO_CLEANUP_PASS_1_report.md` with:
+Create `docs/reports/BUILD_PR_TARGETED_REPO_CLEANUP_PASS_1_report.md` with:
 - bundle type: execution-ready BUILD docs
 - exact files created
 - exact files changed
@@ -165,7 +165,7 @@ Create `docs/dev/reports/BUILD_PR_TARGETED_REPO_CLEANUP_PASS_1_report.md` with:
 - validation results
 
 ### 6) Validation checklist
-Create `docs/dev/reports/validation_checklist.txt` that records pass/fail for:
+Create `docs/reports/validation_checklist.txt` that records pass/fail for:
 - no deletion/move/rename executed
 - `templates/` untouched
 - no runtime code changes
@@ -190,7 +190,7 @@ Codex must run and use the results in the BUILD report:
    - `git status --short -- docs/dev/start_of_day/chatGPT docs/dev/start_of_day/codex`
 
 4. If roadmap changed, verify bracket-only diff:
-   - `git diff --unified=0 -- docs/dev/roadmaps/MASTER_ROADMAP_HIGH_LEVEL.md`
+   - `git diff --unified=0 -- docs/roadmaps/MASTER_ROADMAP_HIGH_LEVEL.md`
 
 5. Confirm no runtime/test files changed:
    - `git diff --name-only -- tools src games samples tests`

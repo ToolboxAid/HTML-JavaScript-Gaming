@@ -20,7 +20,7 @@ Promote roadmap status for Level 19 Track C performance/scaling work from planne
 
 ## Required Changes
 1. Copy the master roadmap into the repo tracker location:
-   - `docs/dev/roadmaps/MASTER_ROADMAP_HIGH_LEVEL.md`
+   - `docs/roadmaps/MASTER_ROADMAP_HIGH_LEVEL.md`
 2. In **19. Architecture Maturity & Long-Term Stability → Track C — Performance & Scaling**, update only these status lines:
    - `validate large scene performance` → `[.]`
    - `validate stress scenarios (1k+ entities)` → `[.]`

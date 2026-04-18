@@ -18,18 +18,18 @@ Recent cleanup work reduced noise and removed active template blockers. This mak
 ## Exact Target Files
 
 ### Must create or overwrite
-- `docs/dev/reports/engine_import_baseline_report.md`
-- `docs/dev/reports/engine_import_contract_decision.md`
-- `docs/dev/reports/BUILD_PR_ENGINE_IMPORT_BASELINE_AND_CONTRACT_report.md`
-- `docs/dev/reports/validation_checklist.txt`
+- `docs/reports/engine_import_baseline_report.md`
+- `docs/reports/engine_import_contract_decision.md`
+- `docs/reports/BUILD_PR_ENGINE_IMPORT_BASELINE_AND_CONTRACT_report.md`
+- `docs/reports/validation_checklist.txt`
 
 ### May update only if already present and only to align with this PR
-- `docs/dev/roadmaps/MASTER_ROADMAP_HIGH_LEVEL.md`
+- `docs/roadmaps/MASTER_ROADMAP_HIGH_LEVEL.md`
 
 ## Required Work
 
 ### 1) Baseline report
-Create `docs/dev/reports/engine_import_baseline_report.md`.
+Create `docs/reports/engine_import_baseline_report.md`.
 
 This report must:
 - summarize current `/src/engine/` usage in active repo surfaces
@@ -44,7 +44,7 @@ This report must:
 - capture exact validation commands used
 
 ### 2) Contract decision
-Create `docs/dev/reports/engine_import_contract_decision.md`.
+Create `docs/reports/engine_import_contract_decision.md`.
 
 This file must include:
 - current contract candidate:
@@ -70,7 +70,7 @@ Rules:
 - if exact text is not cleanly applicable, record it in the BUILD report under `Unapplied Planned Delta`
 
 ### 4) BUILD report
-Create `docs/dev/reports/BUILD_PR_ENGINE_IMPORT_BASELINE_AND_CONTRACT_report.md` with:
+Create `docs/reports/BUILD_PR_ENGINE_IMPORT_BASELINE_AND_CONTRACT_report.md` with:
 - bundle type
 - exact files created
 - exact files changed
@@ -81,7 +81,7 @@ Create `docs/dev/reports/BUILD_PR_ENGINE_IMPORT_BASELINE_AND_CONTRACT_report.md`
 - explicit statement that no runtime code, file moves, or import rewrites occurred
 
 ### 5) Validation checklist
-Create `docs/dev/reports/validation_checklist.txt` with pass/fail for:
+Create `docs/reports/validation_checklist.txt` with pass/fail for:
 - protected start_of_day directories untouched
 - no runtime import rewrites performed
 - required reports created

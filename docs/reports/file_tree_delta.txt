@@ -1,0 +1,17 @@
+EXPECTED DELTA (implementation-dependent, keep minimal)
+
+MODIFIED:
+- samples/index.html
+- sample metadata source(s) directly controlling titles, tags, related items, and engine-classes-used presentation
+- minimal sample detail rendering files/templates/helpers controlling page layout
+
+ADDED:
+- runtime-derived preview SVG assets for samples or the minimal generator/mapping path directly required to produce them
+
+REPORT ONLY:
+- docs/pr/BUILD_PR_SAMPLES_PRESENTATION_PREVIEW_AND_METADATA_NORMALIZATION.md
+- docs/operations/dev/codex_commands.md
+- docs/operations/dev/commit_comment.txt
+- docs/reports/change_summary.txt
+- docs/reports/validation_checklist.txt
+- docs/reports/file_tree_delta.txt

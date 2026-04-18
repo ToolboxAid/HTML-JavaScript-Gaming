@@ -24,7 +24,7 @@ BUILD_PR_LEVEL_10_6_WORLD_STATE_GAME_STATE_SYSTEM.md
 - `docs/dev/CODEX_COMMANDS.md`
 - `docs/dev/COMMIT_COMMENT.txt`
 - `docs/dev/NEXT_COMMAND.txt`
-- `docs/dev/README.md`
+- `docs/operations/dev/README.md`
 
 ## Deliverable Summary
 - canonical shared world/game state shape

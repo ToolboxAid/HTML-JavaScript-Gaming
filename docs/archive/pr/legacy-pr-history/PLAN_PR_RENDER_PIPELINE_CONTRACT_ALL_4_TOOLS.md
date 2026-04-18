@@ -321,9 +321,9 @@ The subsequent BUILD_PR should create or update docs such as:
 - docs/pr/BUILD_PR_RENDER_PIPELINE_CONTRACT_ALL_4_TOOLS.md
 - docs/architecture/render_pipeline_contract.md
 - docs/architecture/tool_output_mapping.md
-- docs/dev/validation_checklist.txt
-- docs/dev/change_summary.txt
-- docs/dev/file_tree.txt
+- docs/operations/dev/validation_checklist.txt
+- docs/operations/dev/change_summary.txt
+- docs/operations/dev/file_tree.txt
 
 Codex may refine filenames if existing repo patterns require a nearby equivalent, but the purpose must remain unchanged.
 

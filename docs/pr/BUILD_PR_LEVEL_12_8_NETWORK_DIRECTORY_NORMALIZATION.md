@@ -138,7 +138,7 @@ The BUILD implementation must be testable and must validate all of the following
 
 ## Roadmap Update Rule
 Update:
-`docs/dev/roadmaps/MASTER_ROADMAP_HIGH_LEVEL.md`
+`docs/roadmaps/MASTER_ROADMAP_HIGH_LEVEL.md`
 
 Allowed:
 - status markers only: `[ ]` `[.]` `[x]`

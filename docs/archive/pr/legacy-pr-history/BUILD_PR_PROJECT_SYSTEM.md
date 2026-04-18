@@ -11,7 +11,7 @@
 - `tools/shared/projectManifestContract.js`
 - `tools/shared/projectSystem.js`
 - `tools/shared/projectSystemAdapters.js`
-- `docs/specs/project_manifest_contract.md`
+- `docs/reference/architecture-standards/specs/project_manifest_contract.md`
 - `scripts/validate-project-system.mjs`
 
 ## Modules changed

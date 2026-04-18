@@ -21,7 +21,7 @@ Out of scope:
 
 ## Files Added
 - `tools/shared/assetUsageIntegration.js`
-- `docs/specs/asset_usage_contract.md`
+- `docs/reference/architecture-standards/specs/asset_usage_contract.md`
 
 ## Files Updated
 - `tools/shared/platformShell.js`
@@ -32,8 +32,8 @@ Out of scope:
 - `tools/Palette Browser/main.js`
 - `scripts/validate-active-tools-surface.mjs`
 - `docs/dev/COMMIT_COMMENT.txt`
-- `docs/dev/reports/change_summary.txt`
-- `docs/dev/reports/validation_checklist.txt`
+- `docs/reports/change_summary.txt`
+- `docs/reports/validation_checklist.txt`
 
 ## Implementation Summary
 
@@ -47,7 +47,7 @@ Out of scope:
 - The shared shell also shows the current shared asset and shared palette handoff summaries.
 
 ### Shared Handoff Contracts
-- Added a documented contract in `docs/specs/asset_usage_contract.md`.
+- Added a documented contract in `docs/reference/architecture-standards/specs/asset_usage_contract.md`.
 - Normalized shared storage keys:
   - `toolboxaid.shared.assetHandoff`
   - `toolboxaid.shared.paletteHandoff`

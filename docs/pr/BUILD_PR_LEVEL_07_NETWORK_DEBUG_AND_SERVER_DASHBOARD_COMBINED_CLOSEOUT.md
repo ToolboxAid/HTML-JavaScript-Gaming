@@ -53,4 +53,4 @@ Close the remaining network-observability lane in one coherent pass across debug
 - `src/engine/debug/network/index.js`
 - `tests/final/NetworkDebugAndServerDashboardCloseout.test.mjs`
 - `tests/run-tests.mjs`
-- `docs/dev/roadmaps/MASTER_ROADMAP_HIGH_LEVEL.md`
+- `docs/roadmaps/MASTER_ROADMAP_HIGH_LEVEL.md`

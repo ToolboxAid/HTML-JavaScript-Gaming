@@ -33,9 +33,9 @@ Normalize duplicated numeric helper usage into the shared math layer.
 - preserve public contracts
 
 ## Deliverables
-- docs/dev/reports/number_usage_scan.txt
-- docs/dev/reports/extraction_map.txt
-- docs/dev/reports/validation_checklist.txt
+- docs/reports/number_usage_scan.txt
+- docs/reports/extraction_map.txt
+- docs/reports/validation_checklist.txt
 
 ## Validation
 - shared numeric helpers are canonical for this PR scope

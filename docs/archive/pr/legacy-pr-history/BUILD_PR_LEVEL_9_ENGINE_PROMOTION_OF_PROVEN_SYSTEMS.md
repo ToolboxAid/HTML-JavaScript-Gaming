@@ -20,7 +20,7 @@ BUILD_PR_LEVEL_9_ENGINE_PROMOTION_OF_PROVEN_SYSTEMS.md
 - `docs/dev/CODEX_COMMANDS.md`
 - `docs/dev/COMMIT_COMMENT.txt`
 - `docs/dev/NEXT_COMMAND.txt`
-- `docs/dev/README.md`
+- `docs/operations/dev/README.md`
 
 ## Promotion Targets
 - Spawn System

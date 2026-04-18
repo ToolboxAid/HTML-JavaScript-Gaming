@@ -31,10 +31,10 @@ Implement the active `tools/` product surface cleanup by standardizing the canon
 - `tools/Sprite Editor/README.md`
 - `scripts/validate-active-tools-surface.mjs`
 - `docs/pr/BUILD_PR_TOOLS_REGISTRY_AND_SPRITE_RENAME.md`
-- `docs/dev/commit_comment.txt`
-- `docs/dev/reports/file_tree.txt`
-- `docs/dev/reports/change_summary.txt`
-- `docs/dev/reports/validation_checklist.txt`
+- `docs/operations/dev/commit_comment.txt`
+- `docs/reports/file_tree.txt`
+- `docs/reports/change_summary.txt`
+- `docs/reports/validation_checklist.txt`
 
 ## Build Notes
 - The canonical sprite tool folder is now `tools/Sprite Editor/`.

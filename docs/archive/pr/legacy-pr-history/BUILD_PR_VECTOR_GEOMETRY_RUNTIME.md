@@ -1,7 +1,7 @@
 # BUILD_PR_VECTOR_GEOMETRY_RUNTIME
 
 ## Purpose
-Implement the first production-ready vector geometry runtime aligned to `docs/specs/vector_asset_contract.md` so vector-native sample games can consume validated vector assets as runtime-ready geometry without engine core API changes.
+Implement the first production-ready vector geometry runtime aligned to `docs/reference/architecture-standards/specs/vector_asset_contract.md` so vector-native sample games can consume validated vector assets as runtime-ready geometry without engine core API changes.
 
 ## Runtime Scope
 - ingest canonical vector asset documents and normalize legacy SVG-bridge vector entries for transition-safe runtime use

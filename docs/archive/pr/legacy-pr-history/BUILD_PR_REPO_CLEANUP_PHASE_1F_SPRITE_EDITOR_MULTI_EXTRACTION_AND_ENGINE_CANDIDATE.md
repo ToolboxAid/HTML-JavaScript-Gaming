@@ -32,7 +32,7 @@ Repo Cleanup Phase 1F - Controlled Multi-Helper Extraction and Engine Candidate 
 - `docs/dev/CODEX_COMMANDS.md`
 - `docs/dev/COMMIT_COMMENT.txt`
 - `docs/dev/NEXT_COMMAND.txt`
-- `docs/dev/README.md`
+- `docs/operations/dev/README.md`
 
 ## Helper Inventory (Extracted in Phase 1F)
 | helper | before owner | after owner | usage points in module flow | behavior delta |

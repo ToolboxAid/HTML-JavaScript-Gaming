@@ -33,9 +33,9 @@ Normalize duplicated string helper usage into the shared layer.
 - preserve public contracts
 
 ## Deliverables
-- docs/dev/reports/string_usage_scan.txt
-- docs/dev/reports/extraction_map.txt
-- docs/dev/reports/validation_checklist.txt
+- docs/reports/string_usage_scan.txt
+- docs/reports/extraction_map.txt
+- docs/reports/validation_checklist.txt
 
 ## Validation
 - shared string helpers are canonical for this PR scope

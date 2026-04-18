@@ -23,8 +23,8 @@ This PR is single-purpose:
 - to `tools/templates/vector-native-arcade/`
 
 ### Must create or overwrite
-- `docs/dev/reports/templates_vector_native_active_relocation_report.md`
-- `docs/dev/reports/validation_checklist.txt`
+- `docs/reports/templates_vector_native_active_relocation_report.md`
+- `docs/reports/validation_checklist.txt`
 
 ## Required Work
 1. Move `templates/vector-native-arcade/` to `tools/templates/vector-native-arcade/`.

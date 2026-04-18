@@ -37,7 +37,7 @@ PLAN_PR -> BUILD_PR -> APPLY_PR
 ## Guardrails
 - Sample-level integration only.
 - No engine core changes.
-- Do not modify `docs/dev/BIG_PICTURE_ROADMAP.md`.
+- Do not modify `docs/operations/dev/BIG_PICTURE_ROADMAP.md`.
 - If `docs/dev/PRODUCTIZATION_ROADMAP.md` changes, bracket-only edits only.
 - No Track G or Track H work.
 

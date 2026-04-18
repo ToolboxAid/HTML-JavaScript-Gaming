@@ -31,10 +31,10 @@ Targeted test behavior added:
   - `tests/world/WorldGameStateAuthoritativeHandoff.test.mjs`
 - APPLY closeout reporting files modified:
   - `docs/pr/APPLY_PR_LEVEL_11_1_AUTHORITATIVE_STATE_HANDOFF_CANDIDATE.md`
-  - `docs/dev/commit_comment.txt`
-  - `docs/dev/next_command.txt`
-  - `docs/dev/reports/change_summary.txt`
-  - `docs/dev/reports/validation_checklist.txt`
+  - `docs/operations/dev/commit_comment.txt`
+  - `docs/operations/dev/next_command.txt`
+  - `docs/reports/change_summary.txt`
+  - `docs/reports/validation_checklist.txt`
 - No engine core API files changed for this closeout.
 - No repo refactor or unrelated implementation expansion performed.
 

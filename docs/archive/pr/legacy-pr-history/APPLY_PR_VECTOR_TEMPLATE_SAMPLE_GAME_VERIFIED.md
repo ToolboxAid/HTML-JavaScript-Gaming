@@ -49,8 +49,8 @@ Apply the accepted vector-native template sample-game boundary as a docs-only ve
 
 ## Package Contents
 - `docs/pr/APPLY_PR_VECTOR_TEMPLATE_SAMPLE_GAME_VERIFIED.md`
-- `docs/dev/codex_commands.md`
-- `docs/dev/commit_comment.txt`
-- `docs/dev/change_summary.txt`
-- `docs/dev/file_tree.txt`
-- `docs/dev/validation_checklist.txt`
+- `docs/operations/dev/codex_commands.md`
+- `docs/operations/dev/commit_comment.txt`
+- `docs/operations/dev/change_summary.txt`
+- `docs/operations/dev/file_tree.txt`
+- `docs/operations/dev/validation_checklist.txt`
