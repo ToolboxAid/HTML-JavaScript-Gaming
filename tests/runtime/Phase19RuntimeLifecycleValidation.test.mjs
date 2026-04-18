@@ -418,6 +418,11 @@ function assertRuntimeMonitoringHooksAndLoggingFormat() {
       true,
       'Engine should emit engine:performance-frame event for monitoring consumers.'
     );
+    assert.equal(
+      emittedEvents.some((entry) => entry.name === 'engine:runtime-monitoring-performance'),
+      true,
+      'Engine should emit engine:runtime-monitoring-performance events when runtime monitoring hooks start.'
+    );
 
     const entries = logger.getEntries();
     assert.equal(entries.length >= 1, true, 'Standardized logger should capture runtime monitoring logs.');

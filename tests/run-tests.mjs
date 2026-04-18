@@ -146,6 +146,7 @@ import { run as runProjectileLabModel } from './samples/ProjectileLabModel.test.
 import { run as runProjectileLabScene } from './samples/ProjectileLabScene.test.mjs';
 import './theme.test.js';
 import { run as runLaunchSmokeAllEntries } from './runtime/LaunchSmokeAllEntries.test.mjs';
+import { run as runRuntimeMonitoringHooks } from './runtime/RuntimeMonitoringHooks.test.mjs';
 import { run as runPhase19RuntimeLifecycleValidation } from './runtime/Phase19RuntimeLifecycleValidation.test.mjs';
 
 const tests = [
@@ -287,6 +288,7 @@ const tests = [
     ['WorldGameStateSystem', runWorldGameStateSystem],
     ['WorldGameStateAuthoritativeHandoff', runWorldGameStateAuthoritativeHandoff],
     ['WorldGameStateAuthoritativeScore', runWorldGameStateAuthoritativeScore],
+    ['RuntimeMonitoringHooks', runRuntimeMonitoringHooks],
     ['Phase19RuntimeLifecycleValidation', runPhase19RuntimeLifecycleValidation],
     ['LaunchSmokeAllEntries', runLaunchSmokeAllEntries],
 ];

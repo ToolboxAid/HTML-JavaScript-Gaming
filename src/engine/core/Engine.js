@@ -10,7 +10,13 @@ import FrameClock from './FrameClock.js';
 import FixedTicker from './FixedTicker.js';
 import EventBus from '../events/EventBus.js';
 import { Camera3D } from '../camera/index.js';
-import { backgroundImage, fullscreenBezel, FullscreenService, resolvePreferredFullscreenTarget } from '../runtime/index.js';
+import {
+  backgroundImage,
+  fullscreenBezel,
+  FullscreenService,
+  resolvePreferredFullscreenTarget,
+  createRuntimeMonitoringHooks
+} from '../runtime/index.js';
 import { AudioService } from '../audio/index.js';
 import { Logger } from '../logging/index.js';
 import { SettingsSystem } from '../release/index.js';
@@ -33,6 +39,7 @@ export default class Engine {
     logger = null,
     camera3D = null,
     runtimeHooks = null,
+    runtimeMonitoring = null,
   } = {}) {
     if (!canvas) {
       throw new Error('Engine requires a canvas.');
@@ -75,6 +82,20 @@ export default class Engine {
       onError: typeof runtimeHooks?.onError === 'function' ? runtimeHooks.onError : null,
       onPerformance: typeof runtimeHooks?.onPerformance === 'function' ? runtimeHooks.onPerformance : null,
     };
+    this.runtimeMonitoring = runtimeMonitoring || createRuntimeMonitoringHooks({
+      logger: this.logger,
+      source: 'engine',
+      sampleIntervalMs: 10000,
+      onError: (payload) => {
+        this.events?.emit?.('engine:runtime-monitoring-error', payload);
+      },
+      onPerformance: (payload) => {
+        this.events?.emit?.('engine:runtime-monitoring-performance', payload);
+      },
+      contextProvider: () => ({
+        sceneType: this.scene?.constructor?.name || '',
+      }),
+    });
     this.camera3D = camera3D || new Camera3D();
     this.settings = new SettingsSystem({
       namespace: 'toolboxaid:engine-settings',
@@ -202,6 +223,15 @@ export default class Engine {
 
     this.frameClock.reset();
     this.fixedTicker.reset();
+    try {
+      this.runtimeMonitoring?.start?.();
+    } catch (error) {
+      this.trackRuntimeError('runtimeMonitoring.start', error, {
+        severity: 'warn',
+        isolated: true,
+        message: 'Engine runtime monitoring hooks failed to start.',
+      });
+    }
     this.rafId = requestAnimationFrame(this.tick);
   }
 
@@ -222,6 +252,15 @@ export default class Engine {
     }
     if (this.fullscreenBezelLayer && typeof this.fullscreenBezelLayer.detach === 'function') {
       this.fullscreenBezelLayer.detach();
+    }
+    try {
+      this.runtimeMonitoring?.stop?.();
+    } catch (error) {
+      this.trackRuntimeError('runtimeMonitoring.stop', error, {
+        severity: 'warn',
+        isolated: true,
+        message: 'Engine runtime monitoring hooks failed to stop.',
+      });
     }
   }
 

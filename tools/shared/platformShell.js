@@ -8,12 +8,16 @@ import { createProjectSystemController } from "./projectSystem.js";
 import { bindEventHandlers, createCommandDispatcher } from "./eventCommandUtils.js";
 import { asHtmlInput, queryAll, queryFirst, readDataAttribute, setTextContent } from "./uiSafeUtils.js";
 import { escapeHtml } from "../../src/shared/string/stringUtil.js";
+import { Logger } from "../../src/engine/logging/index.js";
+import { createRuntimeMonitoringHooks } from "../../src/engine/runtime/index.js";
 
 let projectController = null;
 let headerExpandedState = null;
+let runtimeMonitoringHooks = null;
 
 const HEADER_EXPANDED_STORAGE_KEY = "toolboxaid.toolsPlatform.headerExpanded";
 const HEADER_EXPANDED_FALLBACK_TOOL = "tool-host";
+const TOOLS_PLATFORM_LOGGER = new Logger({ channel: "tools.platform", level: "debug" });
 
 function getPageMode() {
   return document.body.dataset.toolsPlatformPage || "tool";
@@ -314,7 +318,36 @@ function renderShell(currentTool) {
   bindProjectShellEvents(currentTool);
 }
 
+function ensureRuntimeMonitoring() {
+  if (runtimeMonitoringHooks) {
+    return;
+  }
+
+  runtimeMonitoringHooks = createRuntimeMonitoringHooks({
+    logger: TOOLS_PLATFORM_LOGGER,
+    source: "tools.platform",
+    sampleIntervalMs: 10000,
+    contextProvider: () => ({
+      pageMode: getPageMode(),
+      toolId: document.body.dataset.toolId || "",
+    }),
+    onError(payload) {
+      window.__TOOLS_PLATFORM_RUNTIME_LAST_ERROR__ = payload;
+    },
+    onPerformance(payload) {
+      window.__TOOLS_PLATFORM_RUNTIME_LAST_PERFORMANCE__ = payload;
+    },
+  });
+
+  runtimeMonitoringHooks.start();
+  window.addEventListener("beforeunload", () => {
+    runtimeMonitoringHooks?.stop?.();
+  }, { once: true });
+}
+
 function initPlatformShell() {
+  ensureRuntimeMonitoring();
+
   const currentToolId = document.body.dataset.toolId || "";
   const currentTool = currentToolId ? getToolById(currentToolId) : null;
 

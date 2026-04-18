@@ -10,3 +10,4 @@ export { default as BrowserDownloadService } from './BrowserDownloadService.js';
 export { default as backgroundImage } from './backgroundImage.js';
 export { default as fullscreenBezel, resolvePreferredFullscreenTarget } from './fullscreenBezel.js';
 export { resolveGameImageConventionPaths } from './gameImageConvention.js';
+export { createRuntimeMonitoringHooks } from './RuntimeMonitoringHooks.js';
