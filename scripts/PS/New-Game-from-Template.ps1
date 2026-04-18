@@ -1,3 +1,36 @@
+<#
+.SYNOPSIS
+Creates a new game from the template structure.
+
+.DESCRIPTION
+Copies the games/_template structure into a new game folder and initializes it.
+
+.PARAMETER Name
+Name of the new game (required).
+
+.PARAMETER Destination
+Target directory where the new game will be created.
+Default: .\games
+
+.PARAMETER Force
+Overwrite existing target directory if it exists.
+
+.PARAMETER NoAssets
+Skip copying assets folder.
+
+.EXAMPLE
+.\New-Game-from-Template.ps1 -Name "Asteroids"
+
+.EXAMPLE
+.\New-Game-from-Template.ps1 -Name "Shooter" -Destination ".\games\arcade"
+
+.EXAMPLE
+.\New-Game-from-Template.ps1 -Name "TestGame" -Force -NoAssets
+
+.NOTES
+Part of HTML-JavaScript-Gaming workflow.
+#>
+
 [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = "Medium")]
 param(
     [Parameter(Mandatory = $true)]
