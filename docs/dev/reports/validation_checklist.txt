@@ -1,12 +1,9 @@
-- [ ] import/export anti-patterns identified and fixed
-- [ ] in-scope files recorded in cleanup report
-- [ ] .keep files audited
-- [ ] unnecessary .keep files removed
-- [ ] protected template keepers preserved where required
-- [ ] eligible empty folders removed
-- [ ] no non-empty folders deleted
-- [ ] folder ownership rules validated
-- [ ] clean repo structure enforced within hygiene scope
+- [ ] fragmented PR clusters audited
+- [ ] capability groups documented
+- [ ] authoritative capability-level review docs created/updated
+- [ ] original PR traceability preserved
+- [ ] active navigation references updated where applicable
+- [ ] capability-bundle checklist created/updated
 - [ ] no start_of_day changes
 - [ ] unrelated working-tree changes preserved
 - [ ] roadmap updated by status-only transitions only after successful validation

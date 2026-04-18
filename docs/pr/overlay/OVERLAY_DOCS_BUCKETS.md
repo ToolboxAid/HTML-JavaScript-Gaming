@@ -4,7 +4,8 @@ Purpose: classify overlay-related docs into stable buckets and provide an index 
 
 ## Capability Consolidation Index (Level 18.8)
 - Primary bundle map:
-  - `docs/pr/overlay/OVERLAY_PR_CAPABILITY_BUNDLES_LEVEL_18_8.md`
+  - `docs/pr/capabilities/README.md` (canonical capability-level navigation)
+  - `docs/pr/overlay/OVERLAY_PR_CAPABILITY_BUNDLES_LEVEL_18_8.md` (overlay traceability source)
 - Bundles:
   - Bundle A: 3D Debug Panel Surface
   - Bundle B: Overlay Input And Stack Mapping

@@ -769,9 +769,9 @@
 - [x] enforce clean repo structure
 
 ### Track H � PR Consolidation Strategy
-- [ ] bundle related PRs into capability-level units
-- [ ] reduce multi-PR fragmentation
-- [ ] ensure each PR represents a complete capability
+- [x] bundle related PRs into capability-level units
+- [x] reduce multi-PR fragmentation
+- [x] ensure each PR represents a complete capability
 
 ---
 

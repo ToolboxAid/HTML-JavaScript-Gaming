@@ -6,6 +6,10 @@ Scope:
 - overlay slice PR docs and overlay reports only
 - no implementation/runtime changes
 
+Canonical capability-level index:
+- `docs/pr/capabilities/README.md`
+- `docs/pr/capabilities/CAPABILITY_OVERLAY_DEBUG_AND_OBSERVABILITY.md`
+
 ## Consolidation Rules
 - Each bundle represents one complete overlay capability area.
 - Bundle membership is additive and traceable to existing PR docs/reports.

@@ -1,2 +1,2 @@
-This bundle targets the next execution-backed roadmap lane after Track F: Track G repo hygiene.
-It is scoped to real cleanup work only, with roadmap advancement permitted only after successful validation.
+This bundle targets the next execution-backed roadmap lane after Track G: Track H PR Consolidation Strategy.
+It performs real consolidation work on PR review surfaces and adds enforceable guidance so future PRs package complete capabilities.
