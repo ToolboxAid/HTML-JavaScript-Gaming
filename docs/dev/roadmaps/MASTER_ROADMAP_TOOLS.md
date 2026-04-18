@@ -9,7 +9,7 @@ Track all tool-related improvements, gaps, and future work.
 ## 1. Testing & Validation
 - [x] create full testing documentation for each tool
 - [x] define manual test cases per tool
-- [ ] add automated validation where possible
+- [x] add automated validation where possible
 - [x] standardize validation reports under docs/dev/reports
 
 ---
@@ -23,17 +23,17 @@ Track all tool-related improvements, gaps, and future work.
 ---
 
 ## 3. Known Bugs
-- [ ] document all known bugs per tool
-- [ ] classify by severity (low / medium / high)
-- [ ] track reproduction steps
-- [ ] ensure each bug has an owner or resolution path
+- [x] document all known bugs per tool
+- [x] classify by severity (low / medium / high)
+- [x] track reproduction steps
+- [x] ensure each bug has an owner or resolution path
 
 ---
 
 ## 4. Missing Functionality
-- [ ] identify gaps in each tool
-- [ ] define expected vs current behavior
-- [ ] prioritize missing features
+- [x] identify gaps in each tool
+- [x] define expected vs current behavior
+- [x] prioritize missing features
 - [ ] align functionality across tools where applicable
 
 ---

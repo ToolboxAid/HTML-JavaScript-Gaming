@@ -1,8 +1,13 @@
-- [ ] active tool inventory completed
-- [ ] testing doc exists for every active tool
-- [ ] manual test cases exist for every active tool
-- [ ] standardized validation template created under docs/dev/reports
-- [ ] affected tool-doc navigation updated if needed
+- [ ] automation added where feasible
+- [ ] automation pass executed
+- [ ] automation coverage and blockers documented
+- [ ] known bugs register created/updated
+- [ ] each bug includes severity
+- [ ] each bug includes reproduction steps
+- [ ] each bug includes owner or resolution path
+- [ ] missing functionality matrix created/updated
+- [ ] expected vs current behavior documented
+- [ ] priorities assigned to gaps
 - [ ] no start_of_day changes
 - [ ] unrelated working-tree changes preserved
 - [ ] roadmap updated only for completed items

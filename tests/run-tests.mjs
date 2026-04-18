@@ -104,6 +104,7 @@ import { run as runRuntimeAssetBinding } from './tools/RuntimeAssetBinding.test.
 import { run as runRuntimeAssetLookupConsolidation } from './tools/RuntimeAssetLookupConsolidation.test.mjs';
 import { run as runRuntimeAssetValidation } from './tools/RuntimeAssetValidation.test.mjs';
 import { run as runToolEntryLaunchContract } from './tools/ToolEntryLaunchContract.test.mjs';
+import { run as runToolsIndexRegistrySmoke } from './tools/ToolsIndexRegistrySmoke.test.mjs';
 import { run as runProjectPackagingSystem } from './tools/ProjectPackagingSystem.test.mjs';
 import { run as runRuntimeAssetLoader } from './tools/RuntimeAssetLoader.test.mjs';
 import { run as runEditorExperienceLayer } from './tools/EditorExperienceLayer.test.mjs';
@@ -234,6 +235,7 @@ const tests = [
     ['RuntimeAssetLookupConsolidation', runRuntimeAssetLookupConsolidation],
     ['RuntimeAssetValidation', runRuntimeAssetValidation],
     ['ToolEntryLaunchContract', runToolEntryLaunchContract],
+    ['ToolsIndexRegistrySmoke', runToolsIndexRegistrySmoke],
     ['ProjectPackagingSystem', runProjectPackagingSystem],
     ['RuntimeAssetLoader', runRuntimeAssetLoader],
     ['EditorExperienceLayer', runEditorExperienceLayer],

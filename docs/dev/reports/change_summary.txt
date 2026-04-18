@@ -1,2 +1,2 @@
-This bundle starts the Tools roadmap testing lane with execution-capable documentation and report standardization work.
-It intentionally leaves automated validation for the next PR.
+This bundle combines the next safe adjacent tools lanes so one execution pass can advance more roadmap items:
+automation coverage, known bugs baselining, and missing-functionality baselining.
