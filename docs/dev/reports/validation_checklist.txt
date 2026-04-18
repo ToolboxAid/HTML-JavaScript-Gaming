@@ -1,8 +1,8 @@
-- [ ] inventory completed for tools/shared and tools/dev/shared
-- [ ] move map completed
-- [ ] dedupe/merge decisions documented
-- [ ] imports and references updated
-- [ ] no live references to tools/dev/shared remain
-- [ ] affected tools load successfully
+- [ ] sample inventory completed
+- [ ] sample discovery/index validated
+- [ ] representative sample launch/boot coverage executed
+- [ ] failures documented
+- [ ] validated fixes applied
+- [ ] revalidation completed after fixes
 - [ ] no start_of_day changes
 - [ ] unrelated working-tree changes preserved

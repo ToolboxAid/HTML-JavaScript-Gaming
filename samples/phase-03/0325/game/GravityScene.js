@@ -4,11 +4,11 @@ David Quesenberry
 03/24/2026
 GravityScene.js
 */
-import { Scene } from '/src/engine/scene/index.js';
+import { Scene } from '../../../../src/engine/scene/index.js';
 import GravityAudio from './GravityAudio.js';
 import GravityInputController from './GravityInputController.js';
 import GravityWorld from './GravityWorld.js';
-import { wrapTextByCharacterCount } from '/src/shared/utils/index.js';
+import { wrapTextByCharacterCount } from '../../../../src/shared/utils/index.js';
 
 const VIEW = {
   width: 960,
