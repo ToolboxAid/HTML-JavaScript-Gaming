@@ -11,7 +11,7 @@ Bundle type: execution-ready BUILD docs (non-destructive templates policy lane)
 
 ## Exact Files Changed
 - `docs/reports/validation_checklist.txt`
-- `docs/roadmaps/MASTER_ROADMAP_HIGH_LEVEL.md` (single bracket-only state change)
+- `docs/dev/roadmaps/MASTER_ROADMAP_ENGINE.md` (single bracket-only state change)
 
 ## Template Inventory Findings (Evidence Summary)
 - `templates/` currently contains 17 files (starter-project-template + vector-native-arcade trees).
@@ -29,7 +29,7 @@ Bundle type: execution-ready BUILD docs (non-destructive templates policy lane)
 - Rationale: live runtime/test/docs path coupling makes move/delete unsafe without synchronized migration work.
 
 ## Roadmap Bracket Changes Applied
-- Applied exactly one bracket-state update in `docs/roadmaps/MASTER_ROADMAP_HIGH_LEVEL.md`:
+- Applied exactly one bracket-state update in `docs/dev/roadmaps/MASTER_ROADMAP_ENGINE.md`:
   - `- [ ] templates/ folder evaluated for keep vs move vs future-delete ...`
   - `+ [.] templates/ folder evaluated for keep vs move vs future-delete ...`
 - No wording rewrite and no item reordering.
@@ -59,7 +59,7 @@ Bundle type: execution-ready BUILD docs (non-destructive templates policy lane)
    - Result: no entries.
 
 4. If roadmap changed, verify bracket-only:
-   - `git diff --unified=0 -- docs/roadmaps/MASTER_ROADMAP_HIGH_LEVEL.md`
+   - `git diff --unified=0 -- docs/dev/roadmaps/MASTER_ROADMAP_ENGINE.md`
    - Result: one checkbox state change only.
    - Automated guard result: `BRACKET_ONLY_CHECK: PASS`.
 

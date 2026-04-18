@@ -43,5 +43,5 @@ Results:
 - No tool-specific logic remains in `src/engine` per this validation gate.
 
 ## Roadmap Status
-- Track E final item is already set to `[x]` in `docs/roadmaps/MASTER_ROADMAP_HIGH_LEVEL.md`.
+- Track E final item is already set to `[x]` in `docs/dev/roadmaps/MASTER_ROADMAP_ENGINE.md`.
 - No roadmap text or status marker changes were required in this PR.

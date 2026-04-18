@@ -37,7 +37,7 @@ This BUILD narrows the next step to one purpose only:
 
 ### May update only if already present and only to align with this PR
 - `docs/reports/repo_cleanup_targets.txt`
-- `docs/roadmaps/MASTER_ROADMAP_HIGH_LEVEL.md`
+- `docs/dev/roadmaps/MASTER_ROADMAP_ENGINE.md`
 
 ## Approved Source Of Truth
 Use only these existing artifacts as source evidence for this BUILD:
@@ -49,7 +49,7 @@ Use only these existing artifacts as source evidence for this BUILD:
 - `docs/reports/templates_validation_guard.md`
 - `docs/reports/BUILD_PR_TEMPLATES_POLICY_CLASSIFICATION_report.md`
 - `docs/reports/repo_cleanup_targets.txt`
-- `docs/roadmaps/MASTER_ROADMAP_HIGH_LEVEL.md`
+- `docs/dev/roadmaps/MASTER_ROADMAP_ENGINE.md`
 
 Do not guess beyond those files.
 
@@ -123,7 +123,7 @@ For each approved cleanup target, compare consistency across:
 - `docs/reports/repo_cleanup_targets.txt`
 - `docs/reports/cleanup_live_reference_inventory.txt`
 - `docs/reference/features/docs-system/move-history-preserved.md`
-- `docs/roadmaps/MASTER_ROADMAP_HIGH_LEVEL.md`
+- `docs/dev/roadmaps/MASTER_ROADMAP_ENGINE.md`
 - templates-policy reports where relevant
 
 For each target, record:
@@ -190,7 +190,7 @@ Codex must run and use the results in the BUILD report:
    - `git status --short -- docs/dev/start_of_day/chatGPT docs/dev/start_of_day/codex`
 
 4. If roadmap changed, verify bracket-only diff:
-   - `git diff --unified=0 -- docs/roadmaps/MASTER_ROADMAP_HIGH_LEVEL.md`
+   - `git diff --unified=0 -- docs/dev/roadmaps/MASTER_ROADMAP_ENGINE.md`
 
 5. Confirm no runtime/test files changed:
    - `git diff --name-only -- tools src games samples tests`

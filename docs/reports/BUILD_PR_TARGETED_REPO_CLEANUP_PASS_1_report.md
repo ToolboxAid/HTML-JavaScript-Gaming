@@ -70,7 +70,7 @@ Bundle type: execution-ready BUILD docs
    - Guard result: `PROTECTED_DIR_CHECK: PASS`.
 
 4. If roadmap changed, verify bracket-only diff:
-   - `git diff --unified=0 -- docs/roadmaps/MASTER_ROADMAP_HIGH_LEVEL.md`
+   - `git diff --unified=0 -- docs/dev/roadmaps/MASTER_ROADMAP_ENGINE.md`
    - Result: no roadmap diff in this lane.
    - Guard result: `ROADMAP_DIFF_PRESENT: NO (check not required)`.
 

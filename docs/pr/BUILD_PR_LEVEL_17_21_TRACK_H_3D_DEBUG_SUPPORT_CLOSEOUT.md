@@ -16,7 +16,7 @@ Deliver one executable PR that:
 - update roadmap status only where implementation is now actually complete
 
 ## Required Docs/Status Updates
-- update MASTER_ROADMAP_HIGH_LEVEL.md status only for:
+- update MASTER_ROADMAP_ENGINE.md status only for:
   - Transform inspector
   - Track H closeout if fully supported
   - 3D debug support status if fully supported
@@ -35,7 +35,7 @@ Deliver one executable PR that:
 - src/engine/debug/standard/threeD/providers/*
 - src/engine/debug/standard/threeD/panels/*
 - tests/tools/*TransformInspector*.test.*
-- docs/roadmaps/MASTER_ROADMAP_HIGH_LEVEL.md
+- docs/dev/roadmaps/MASTER_ROADMAP_ENGINE.md
 - docs/dev/reports/*
 - docs/operations/dev/codex_commands.md
 - docs/operations/dev/commit_comment.txt

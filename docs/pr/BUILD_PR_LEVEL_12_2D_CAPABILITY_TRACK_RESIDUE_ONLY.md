@@ -6,7 +6,7 @@ Close ONLY the remaining residue from the combined 2D capability pass.
 ## Residue Inspection
 Inspected:
 - `docs/pr/BUILD_PR_LEVEL_12_2D_CAPABILITY_TRACK_COMBINED_CLOSEOUT.md`
-- `docs/roadmaps/MASTER_ROADMAP_HIGH_LEVEL.md` Section 12
+- `docs/dev/roadmaps/MASTER_ROADMAP_ENGINE.md` Section 12
 
 Current Section-12 status markers:
 - `[x] camera systems stabilized`

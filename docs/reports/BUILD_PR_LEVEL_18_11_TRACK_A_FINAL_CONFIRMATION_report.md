@@ -12,7 +12,7 @@ Final confirmation gate for Level 18 Track A.
 ## Commands Executed
 1. Build doc + roadmap checkpoint:
 - `Get-Content docs/pr/BUILD_PR_LEVEL_18_11_TRACK_A_FINAL_CONFIRMATION.md`
-- `rg -n "### Track A|remove sample-specific logic from engine paths" docs/roadmaps/MASTER_ROADMAP_HIGH_LEVEL.md`
+- `rg -n "### Track A|remove sample-specific logic from engine paths" docs/dev/roadmaps/MASTER_ROADMAP_ENGINE.md`
 
 2. Entry dependency validation (`samples/` + `games/`):
 - Node recursive analysis over all `main.js` files in `samples/` and `games/`.

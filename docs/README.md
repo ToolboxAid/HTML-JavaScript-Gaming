@@ -7,7 +7,7 @@ This is the root onboarding entry for active project documentation.
    - `docs/operations/dev/README.md`
    - `docs/operations/dev/PROJECT_INSTRUCTIONS.md`
 2. Master roadmap:
-   - `docs/roadmaps/MASTER_ROADMAP_HIGH_LEVEL.md`
+   - `docs/dev/roadmaps/MASTER_ROADMAP_ENGINE.md`
 3. Architecture and reference:
    - `docs/reference/root/README.md`
    - `docs/reference/architecture-standards/architecture/README.md`

@@ -2,7 +2,7 @@
 
 ## Commands executed
 1. Roadmap target check:
-   - rg -n "Track G|Remove imports to export|remove unnecessary|remove empty folders|validate folder ownership rules|enforce clean repo structure" docs/roadmaps/MASTER_ROADMAP_HIGH_LEVEL.md
+   - rg -n "Track G|Remove imports to export|remove unnecessary|remove empty folders|validate folder ownership rules|enforce clean repo structure" docs/dev/roadmaps/MASTER_ROADMAP_ENGINE.md
 2. `.keep` inventory:
    - rg --files -g "**/.keep"
 3. Import/export anti-pattern scan:

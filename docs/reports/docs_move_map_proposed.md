@@ -808,9 +808,9 @@ This move map is a proposal for follow-up cleanup PRs. No files are deleted in t
 | `docs/reports/validation_report.txt` | EXECUTION_REPORTS | `docs/reports/validation_report.txt` | yes |
 | `docs/reports/validation_results.txt` | EXECUTION_REPORTS | `docs/reports/validation_results.txt` | yes |
 | `docs/reports/violation_inventory.txt` | EXECUTION_REPORTS | `docs/reports/violation_inventory.txt` | yes |
-| `docs/roadmaps/MASTER_ROADMAP_HIGH_LEVEL.md` | ROADMAPS | `docs/roadmaps/MASTER_ROADMAP_HIGH_LEVEL.md` | yes |
-| `docs/roadmaps/README.md` | ROADMAPS | `docs/roadmaps/README.md` | yes |
-| `docs/roadmaps/phases.txt` | ROADMAPS | `docs/roadmaps/phases.txt` | yes |
+| `docs/dev/roadmaps/MASTER_ROADMAP_ENGINE.md` | ROADMAPS | `docs/dev/roadmaps/MASTER_ROADMAP_ENGINE.md` | yes |
+| `docs/dev/roadmaps/README.md` | ROADMAPS | `docs/dev/roadmaps/README.md` | yes |
+| `docs/dev/roadmaps/phases.txt` | ROADMAPS | `docs/dev/roadmaps/phases.txt` | yes |
 | `docs/operations/dev/run_commands.ps1` | DEV_OPERATIONS | `docs/operations/dev/run_commands.ps1` | yes |
 | `docs/operations/dev/run_commands.txt` | DEV_OPERATIONS | `docs/operations/dev/run_commands.txt` | yes |
 | `docs/dev/start_of_day/CODEX_SESSION_PROMPT.md` | START_OF_DAY_PROTECTED | `docs/dev/start_of_day/CODEX_SESSION_PROMPT.md` | no |

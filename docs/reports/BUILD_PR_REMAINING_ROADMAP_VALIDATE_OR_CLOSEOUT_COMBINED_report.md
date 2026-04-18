@@ -14,8 +14,8 @@
 - `Apply master roadmap baseline`
   - classification: already complete
   - evidence:
-    - active-roadmap location/rule in `docs/roadmaps/README.md`
-    - active master roadmap maintained at `docs/roadmaps/MASTER_ROADMAP_HIGH_LEVEL.md`
+    - active-roadmap location/rule in `docs/dev/roadmaps/README.md`
+    - active master roadmap maintained at `docs/dev/roadmaps/MASTER_ROADMAP_ENGINE.md`
 - `Normalize samples phase structure`
   - classification: already complete
   - evidence:

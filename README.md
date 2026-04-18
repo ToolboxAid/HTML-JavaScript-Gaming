@@ -29,7 +29,7 @@ This repository follows a docs-first game/runtime model, combining a stable engi
 ## ▶️ Start Here
 
 1. Review the repo model in [docs/README.md](docs/README.md)
-2. Explore the roadmap in [docs/dev/roadmaps/MASTER_ROADMAP_HIGH_LEVEL.md](docs/dev/roadmaps/MASTER_ROADMAP_HIGH_LEVEL.md)
+2. Explore the roadmap in [docs/dev/roadmaps/MASTER_ROADMAP_ENGINE.md](docs/dev/roadmaps/MASTER_ROADMAP_ENGINE.md)
 3. Browse samples from [samples/index.html](samples/index.html)
 4. Explore tools under [tools/](tools/)
 5. Review engine and architecture boundaries in [docs/architecture/](docs/architecture/)

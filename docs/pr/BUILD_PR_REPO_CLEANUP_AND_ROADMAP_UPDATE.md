@@ -2,7 +2,7 @@
 
 ## PR Purpose
 Create one execution-ready, testable cleanup-evidence lane that:
-1. updates `docs/roadmaps/MASTER_ROADMAP_HIGH_LEVEL.md` conservatively using bracket-only state changes
+1. updates `docs/dev/roadmaps/MASTER_ROADMAP_ENGINE.md` conservatively using bracket-only state changes
 2. generates cleanup inventory/reference evidence for later exact-scope cleanup PRs
 3. does **not** delete, move, rename, or rewrite repo structure in this lane
 
@@ -19,11 +19,11 @@ The prior PLAN established that cleanup must be staged and that `templates/` mus
 - Do **not** change anything under `templates/`.
 - Do **not** mix in unrelated implementation work.
 - Do **not** rewrite roadmap wording, reorder roadmap items, collapse roadmap sections, or replace roadmap content.
-- In `docs/roadmaps/MASTER_ROADMAP_HIGH_LEVEL.md`, only bracket-state updates are allowed: `[ ]`, `[.]`, `[x]`.
+- In `docs/dev/roadmaps/MASTER_ROADMAP_ENGINE.md`, only bracket-state updates are allowed: `[ ]`, `[.]`, `[x]`.
 
 ## Exact Target Files
 ### Must modify
-- `docs/roadmaps/MASTER_ROADMAP_HIGH_LEVEL.md`
+- `docs/dev/roadmaps/MASTER_ROADMAP_ENGINE.md`
 
 ### Must create or overwrite
 - `docs/reports/cleanup_live_reference_inventory.txt`
@@ -47,7 +47,7 @@ Codex must inspect and report on these cleanup targets only:
 ## Required Work
 
 ### 1) Roadmap bracket-only status update
-Apply only conservative bracket-state updates in `docs/roadmaps/MASTER_ROADMAP_HIGH_LEVEL.md` for the already-planned status deltas below.
+Apply only conservative bracket-state updates in `docs/dev/roadmaps/MASTER_ROADMAP_ENGINE.md` for the already-planned status deltas below.
 
 Allowed status intent:
 - Advanced to in-progress:

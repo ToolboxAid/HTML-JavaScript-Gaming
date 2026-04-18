@@ -2,7 +2,7 @@
 
 ## Guard Checks Performed
 1. Confirmed the roadmap target exists:
-   - `docs/roadmaps/MASTER_ROADMAP_HIGH_LEVEL.md`
+   - `docs/dev/roadmaps/MASTER_ROADMAP_ENGINE.md`
 2. Captured roadmap fingerprint for preservation evidence:
    - SHA-256
    - byte size

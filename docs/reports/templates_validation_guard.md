@@ -60,7 +60,7 @@ node -e "import('./tests/tools/GameTemplates.test.mjs').then(m=>m.run())"
 2. Any test suite asserting template path text/contract output must be updated and rerun in the same PR.
 
 ## E) Docs/Contracts Requiring Synchronized Updates (If Path Changes)
-- `docs/roadmaps/MASTER_ROADMAP_HIGH_LEVEL.md`
+- `docs/dev/roadmaps/MASTER_ROADMAP_ENGINE.md`
 - `docs/reports/repo_cleanup_targets.txt`
 - `docs/reports/roadmap_status_delta.txt`
 - `docs/reports/templates_live_usage_inventory.md`

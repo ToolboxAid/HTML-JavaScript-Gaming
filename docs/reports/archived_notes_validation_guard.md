@@ -51,7 +51,7 @@ git status --short -- docs/dev/start_of_day/chatGPT docs/dev/start_of_day/codex
 - `docs/reports/cleanup_live_reference_inventory.txt`
 - `docs/reference/features/docs-system/move-history-preserved.md`
 - `docs/reports/repo_cleanup_targets.txt`
-- `docs/roadmaps/MASTER_ROADMAP_HIGH_LEVEL.md`
+- `docs/dev/roadmaps/MASTER_ROADMAP_ENGINE.md`
 
 3. Recommended smoke run if movement lane also touches tooling/docs integrations:
 ```powershell
@@ -60,7 +60,7 @@ npm run test:launch-smoke -- --tools
 
 ## D) Roadmap Check Rule (Only if Roadmap Is Modified)
 ```powershell
-git diff --unified=0 -- docs/roadmaps/MASTER_ROADMAP_HIGH_LEVEL.md
+git diff --unified=0 -- docs/dev/roadmaps/MASTER_ROADMAP_ENGINE.md
 ```
 Accept only bracket-state changes on exact existing lines.
 

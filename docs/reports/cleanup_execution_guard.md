@@ -25,7 +25,7 @@ Scope: Global execution rules for future cleanup PRs, derived from approved clea
      - `docs/reports/repo_cleanup_targets.txt`
      - `docs/reports/cleanup_live_reference_inventory.txt`
      - `docs/reference/features/docs-system/move-history-preserved.md`
-     - `docs/roadmaps/MASTER_ROADMAP_HIGH_LEVEL.md`
+     - `docs/dev/roadmaps/MASTER_ROADMAP_ENGINE.md`
      - target-specific policy/guard reports (including templates reports where relevant)
 3. Target-specific tests if path change is attempted:
    - For `templates/`, rerun template contract tests from `templates_validation_guard.md`.
@@ -59,7 +59,7 @@ git diff --name-only -- tools src games samples tests
 
 5. Roadmap diff checks (when roadmap is modified):
 ```powershell
-git diff --unified=0 -- docs/roadmaps/MASTER_ROADMAP_HIGH_LEVEL.md
+git diff --unified=0 -- docs/dev/roadmaps/MASTER_ROADMAP_ENGINE.md
 ```
 
 ## D) Global Forbidden Actions

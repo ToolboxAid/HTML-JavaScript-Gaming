@@ -24,7 +24,7 @@ Validation was execution-backed using `node ./scripts/run-node-tests.mjs` with a
 ## Files Changed
 - `tests/final/DebugObservabilityMaturity.test.mjs` (added)
 - `tests/run-tests.mjs` (wired focused test into node suite)
-- `docs/roadmaps/MASTER_ROADMAP_HIGH_LEVEL.md` (Track D status-only update)
+- `docs/dev/roadmaps/MASTER_ROADMAP_ENGINE.md` (Track D status-only update)
 - `docs/reports/BUILD_PR_LEVEL_19_15_DEBUG_OBSERVABILITY_VALIDATION_summary.md`
 - `docs/reports/BUILD_PR_LEVEL_19_15_DEBUG_OBSERVABILITY_VALIDATION_coverage.md`
 - `docs/reports/BUILD_PR_LEVEL_19_15_DEBUG_OBSERVABILITY_VALIDATION_results.md`

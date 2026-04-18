@@ -6,7 +6,7 @@
 
 ## Duplicate or superseded developer/tool doc surfaces addressed
 1. `docs/operations/dev/pr_naming_convention.md.md` (superseded duplicate) -> consolidated into `docs/operations/dev/pr_naming_convention.md` and removed.
-2. Outdated roadmap-path guidance in active developer docs -> consolidated to `docs/roadmaps/MASTER_ROADMAP_HIGH_LEVEL.md` as authoritative.
+2. Outdated roadmap-path guidance in active developer docs -> consolidated to `docs/dev/roadmaps/MASTER_ROADMAP_ENGINE.md` as authoritative.
 3. Outdated architecture-path references (`docs/architecture/`) in active reference docs -> consolidated to `docs/reference/architecture-standards/architecture/`.
 
 ## Files updated for consolidation
@@ -15,7 +15,7 @@
 - `docs/operations/dev/ROADMAP_GUARDRAILS.md`
 - `docs/operations/dev/paths.md`
 - `docs/operations/dev/run_commands.ps1`
-- `docs/roadmaps/README.md`
+- `docs/dev/roadmaps/README.md`
 - `docs/reference/root/README.md`
 - `docs/reference/root/getting-started.md`
 - `docs/reference/root/repo-directory-structure.md`

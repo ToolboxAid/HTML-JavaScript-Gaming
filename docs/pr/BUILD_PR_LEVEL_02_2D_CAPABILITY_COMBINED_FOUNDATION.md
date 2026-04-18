@@ -26,7 +26,7 @@ Complete the 2D Engine Capability cluster as one coherent engine-facing slice wi
 
 ### 4) Roadmap status updates
 - Updated only status markers for Section-2 2D capability items in:
-  - `docs/roadmaps/MASTER_ROADMAP_HIGH_LEVEL.md`
+  - `docs/dev/roadmaps/MASTER_ROADMAP_ENGINE.md`
 
 ## 2D capability completion status
 - Completed in this PR:

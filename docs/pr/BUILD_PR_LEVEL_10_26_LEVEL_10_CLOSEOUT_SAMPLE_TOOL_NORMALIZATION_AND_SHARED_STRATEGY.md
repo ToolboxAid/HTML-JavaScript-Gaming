@@ -81,7 +81,7 @@ Use this PR to close the remaining duplication question in a controlled way:
 
 ### G. Roadmap rule
 After validation:
-- restore the correct full `MASTER_ROADMAP_HIGH_LEVEL.md` if needed
+- restore the correct full `MASTER_ROADMAP_ENGINE.md` if needed
 - update roadmap status markers only
 - no other roadmap text changes
 
@@ -145,7 +145,7 @@ Codex must package all changed files into:
 
 ## Roadmap Handling
 - Full roadmap version check: already full version (`639` lines), so no restore action was required.
-- Updated status markers only for section-10 items in `docs/roadmaps/MASTER_ROADMAP_HIGH_LEVEL.md`.
+- Updated status markers only for section-10 items in `docs/dev/roadmaps/MASTER_ROADMAP_ENGINE.md`.
 - No roadmap prose rewrites were performed.
 
 ## Final Section-10 Status

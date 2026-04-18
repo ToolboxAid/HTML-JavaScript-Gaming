@@ -6,7 +6,7 @@ Prevent accidental corruption or path drift of the active master roadmap.
 ## TRACKER FILE PROTECTION
 The active master roadmap file is:
 
-`docs/roadmaps/MASTER_ROADMAP_HIGH_LEVEL.md`
+`docs/dev/roadmaps/MASTER_ROADMAP_ENGINE.md`
 
 ### Allowed Changes
 - Change ONLY bracket states:

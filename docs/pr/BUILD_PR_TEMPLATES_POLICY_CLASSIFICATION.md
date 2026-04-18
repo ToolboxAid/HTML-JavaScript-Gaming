@@ -31,7 +31,7 @@ The previous cleanup-evidence BUILD established that `templates/` exists, has li
 - `docs/reports/validation_checklist.txt`
 
 ### May update only if already present and only to align with this PR
-- `docs/roadmaps/MASTER_ROADMAP_HIGH_LEVEL.md`
+- `docs/dev/roadmaps/MASTER_ROADMAP_ENGINE.md`
 - `docs/reports/repo_cleanup_targets.txt`
 - `docs/reports/roadmap_status_delta.txt`
 
@@ -83,7 +83,7 @@ At minimum include:
 
 ### 4) Optional roadmap alignment
 Only if exact wording already exists, Codex may apply bracket-only state changes for the templates cleanup tracking item in:
-- `docs/roadmaps/MASTER_ROADMAP_HIGH_LEVEL.md`
+- `docs/dev/roadmaps/MASTER_ROADMAP_ENGINE.md`
 
 Rules:
 - no wording edits

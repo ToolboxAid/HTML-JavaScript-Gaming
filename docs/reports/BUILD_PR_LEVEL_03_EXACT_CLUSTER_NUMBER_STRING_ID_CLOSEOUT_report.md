@@ -33,8 +33,8 @@
 - Updated to complete:
   - `remaining number/string/id helpers still need exact-cluster normalization`
   - in both roadmap copies:
-    - `docs/roadmaps/MASTER_ROADMAP_HIGH_LEVEL.md`
-    - `docs/MASTER_ROADMAP_HIGH_LEVEL.md`
+    - `docs/dev/roadmaps/MASTER_ROADMAP_ENGINE.md`
+    - `docs/MASTER_ROADMAP_ENGINE.md`
 
 ## Completion Decision
 - The checkpoint item is now truthfully complete based on canonical `src/shared/{string,id,number}` cluster homes, compatibility-preserving wrappers, and passing focused validation.

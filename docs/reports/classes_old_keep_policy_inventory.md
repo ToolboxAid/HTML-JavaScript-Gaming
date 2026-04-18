@@ -34,7 +34,7 @@ This lane treats the above as authoritative baseline and avoids broad rediscover
 - `docs/reports/cleanup_target_enforcement_map.md` (tracking context)
 
 ### Roadmap
-- `docs/roadmaps/MASTER_ROADMAP_HIGH_LEVEL.md` (`legacy class-retention policy marker` policy tracking item)
+- `docs/dev/roadmaps/MASTER_ROADMAP_ENGINE.md` (`legacy class-retention policy marker` policy tracking item)
 
 ### PR / BUILD Spec
 - `docs/pr/BUILD_PR_REPO_CLEANUP_AND_ROADMAP_UPDATE.md` (historical cleanup evidence lane)

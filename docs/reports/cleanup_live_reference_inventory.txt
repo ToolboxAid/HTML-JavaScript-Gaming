@@ -14,7 +14,7 @@ Target 1: templates/
   - docs refs (active docs):
     - docs/pr/BUILD_PR_REPO_CLEANUP_AND_ROADMAP_UPDATE.md
     - docs/reports/repo_cleanup_targets.txt
-    - docs/roadmaps/MASTER_ROADMAP_HIGH_LEVEL.md
+    - docs/dev/roadmaps/MASTER_ROADMAP_ENGINE.md
 - Reference count snapshot (non-archive scan): 63 matches
 - Assessment: live-reference
 - Notes: path is active for template-backed tooling and tests; cleanup decision must be deferred and reference-safe.
@@ -29,7 +29,7 @@ Target 2: SpriteEditor_old_keep policy locations/references
   - docs refs:
     - docs/reference/architecture-standards/specs/project_manifest_contract.md
     - docs/reference/architecture-standards/specs/asset_usage_contract.md
-    - docs/roadmaps/MASTER_ROADMAP_HIGH_LEVEL.md
+    - docs/dev/roadmaps/MASTER_ROADMAP_ENGINE.md
     - docs/reports/repo_cleanup_targets.txt
 - Reference count snapshot (non-archive scan): 44 matches
 - Assessment: live-reference
@@ -40,7 +40,7 @@ Target 3: legacy class-retention policy marker policy locations/references
 - Exists: no
 - Inbound references:
   - docs planning refs:
-    - docs/roadmaps/MASTER_ROADMAP_HIGH_LEVEL.md
+    - docs/dev/roadmaps/MASTER_ROADMAP_ENGINE.md
     - docs/reports/repo_cleanup_targets.txt
     - docs/pr/BUILD_PR_REPO_CLEANUP_AND_ROADMAP_UPDATE.md
 - Reference count snapshot: 3 matches
@@ -57,7 +57,7 @@ Target 4: archived notes policy locations/references
     - docs/operations/dev/README.md
     - docs/operations/dev/paths.md
     - docs/reference/root/review-checklist.md
-    - docs/roadmaps/MASTER_ROADMAP_HIGH_LEVEL.md (policy item still planned)
+    - docs/dev/roadmaps/MASTER_ROADMAP_ENGINE.md (policy item still planned)
 - Reference count snapshot (non-archive docs scan): 34 matches
 - Assessment: live-reference
 - Notes: archive location is active and documented, but explicit legacy 'archived notes policy' checklist item remains incomplete.
@@ -82,7 +82,7 @@ Target 6: eventual legacy-retirement candidates already called out in cleanup pl
 - Exact planning paths:
   - docs/reports/repo_cleanup_targets.txt
   - docs/reports/roadmap_status_delta.txt
-  - docs/roadmaps/MASTER_ROADMAP_HIGH_LEVEL.md
+  - docs/dev/roadmaps/MASTER_ROADMAP_ENGINE.md
   - docs/pr/BUILD_PR_REPO_CLEANUP_AND_ROADMAP_UPDATE.md
 - Exists: yes
 - Inbound references:

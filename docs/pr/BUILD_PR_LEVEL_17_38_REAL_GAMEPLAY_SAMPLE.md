@@ -5,7 +5,7 @@ Build one real, playable Level 17 mini-game sample using existing engine systems
 
 ## Source of Truth
 - `docs/pr/PLAN_PR_LEVEL_17_38_REAL_GAMEPLAY_SAMPLE.md`
-- `docs/roadmaps/MASTER_ROADMAP_HIGH_LEVEL.md` (`## 17. 3D Activation, Validation, and Execution (Phase 16)`)
+- `docs/dev/roadmaps/MASTER_ROADMAP_ENGINE.md` (`## 17. 3D Activation, Validation, and Execution (Phase 16)`)
 
 ## Exact Build Target
 1. Add new sample `samples/phase-17/1708/` with:

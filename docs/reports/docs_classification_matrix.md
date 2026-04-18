@@ -809,9 +809,9 @@
 | `docs/reports/validation_report.txt` | EXECUTION_REPORTS | Execution/validation/change reports and run outputs. |
 | `docs/reports/validation_results.txt` | EXECUTION_REPORTS | Execution/validation/change reports and run outputs. |
 | `docs/reports/violation_inventory.txt` | EXECUTION_REPORTS | Execution/validation/change reports and run outputs. |
-| `docs/roadmaps/MASTER_ROADMAP_HIGH_LEVEL.md` | ROADMAPS | Master and auxiliary roadmap trackers. |
-| `docs/roadmaps/README.md` | ROADMAPS | Master and auxiliary roadmap trackers. |
-| `docs/roadmaps/phases.txt` | ROADMAPS | Master and auxiliary roadmap trackers. |
+| `docs/dev/roadmaps/MASTER_ROADMAP_ENGINE.md` | ROADMAPS | Master and auxiliary roadmap trackers. |
+| `docs/dev/roadmaps/README.md` | ROADMAPS | Master and auxiliary roadmap trackers. |
+| `docs/dev/roadmaps/phases.txt` | ROADMAPS | Master and auxiliary roadmap trackers. |
 | `docs/operations/dev/run_commands.ps1` | DEV_OPERATIONS | Developer operations docs not in roadmap/report/start_of_day buckets. |
 | `docs/operations/dev/run_commands.txt` | DEV_OPERATIONS | Developer operations docs not in roadmap/report/start_of_day buckets. |
 | `docs/dev/start_of_day/CODEX_SESSION_PROMPT.md` | START_OF_DAY_PROTECTED | Protected start_of_day operational context and instructions. |

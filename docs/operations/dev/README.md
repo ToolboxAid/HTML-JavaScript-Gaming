@@ -6,7 +6,7 @@
 
 ### Roadmaps
 The active master roadmap path is:
-- `docs/roadmaps/MASTER_ROADMAP_HIGH_LEVEL.md`
+- `docs/dev/roadmaps/MASTER_ROADMAP_ENGINE.md`
 
 Do not use superseded roadmap surfaces:
 - `docs/operations/dev/BIG_PICTURE_ROADMAP.md` for the active master roadmap
@@ -38,6 +38,6 @@ Archived/generated/historical material should live in:
 
 ## Rules
 - Keep `docs/dev/` minimal and current.
-- Keep active roadmap updates in `docs/roadmaps/MASTER_ROADMAP_HIGH_LEVEL.md`.
+- Keep active roadmap updates in `docs/dev/roadmaps/MASTER_ROADMAP_ENGINE.md`.
 - Do not leave transitional roadmap files duplicated in `docs/dev/`.
 - Preserve `docs/pr/` as historical PR record.

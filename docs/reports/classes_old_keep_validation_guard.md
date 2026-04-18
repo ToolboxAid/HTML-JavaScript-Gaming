@@ -31,7 +31,7 @@ Test-Path legacy class-retention policy marker
 Expected for current policy: `False`.
 
 ## C) Required Docs Synchronization Surfaces (If References Are Renamed/Removed)
-- `docs/roadmaps/MASTER_ROADMAP_HIGH_LEVEL.md`
+- `docs/dev/roadmaps/MASTER_ROADMAP_ENGINE.md`
 - `docs/reports/repo_cleanup_targets.txt`
 - `docs/reports/cleanup_live_reference_inventory.txt`
 - `docs/reference/features/docs-system/move-history-preserved.md`

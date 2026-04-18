@@ -57,7 +57,7 @@ Bundle type: execution-ready BUILD docs (archived-notes policy lane)
    - Result: no entries.
 
 4. Roadmap bracket-only check (if roadmap changed):
-   - `git diff --unified=0 -- docs/roadmaps/MASTER_ROADMAP_HIGH_LEVEL.md`
+   - `git diff --unified=0 -- docs/dev/roadmaps/MASTER_ROADMAP_ENGINE.md`
    - Result: no roadmap diff in this lane; bracket-only check not required.
 
 5. Templates untouched confirmation:

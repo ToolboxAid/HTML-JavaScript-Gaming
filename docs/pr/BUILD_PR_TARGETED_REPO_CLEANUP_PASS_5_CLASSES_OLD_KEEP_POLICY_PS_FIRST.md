@@ -47,7 +47,7 @@ Codex may quote/summarize these results in the reports, but should not rerun bro
 - `docs/reports/validation_checklist.txt`
 
 ### May update only if already present and only to align with this PR
-- `docs/roadmaps/MASTER_ROADMAP_HIGH_LEVEL.md`
+- `docs/dev/roadmaps/MASTER_ROADMAP_ENGINE.md`
 - `docs/reports/repo_cleanup_targets.txt`
 
 ## Required Work
@@ -101,7 +101,7 @@ At minimum include:
 
 ### 4) Optional roadmap alignment
 Only if exact wording already exists, Codex may apply bracket-only state changes for the `legacy class-retention policy marker` policy tracking item in:
-- `docs/roadmaps/MASTER_ROADMAP_HIGH_LEVEL.md`
+- `docs/dev/roadmaps/MASTER_ROADMAP_ENGINE.md`
 
 Rules:
 - no wording edits

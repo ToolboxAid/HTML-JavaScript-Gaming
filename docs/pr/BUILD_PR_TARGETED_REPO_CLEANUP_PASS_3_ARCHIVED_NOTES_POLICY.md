@@ -32,7 +32,7 @@ Prior cleanup evidence established that `docs/archive/` exists and is actively r
 - `docs/reports/validation_checklist.txt`
 
 ### May update only if already present and only to align with this PR
-- `docs/roadmaps/MASTER_ROADMAP_HIGH_LEVEL.md`
+- `docs/dev/roadmaps/MASTER_ROADMAP_ENGINE.md`
 - `docs/reports/repo_cleanup_targets.txt`
 
 ## Required Work
@@ -82,7 +82,7 @@ At minimum include:
 
 ### 4) Optional roadmap alignment
 Only if exact wording already exists, Codex may apply bracket-only state changes for the archived notes policy tracking item in:
-- `docs/roadmaps/MASTER_ROADMAP_HIGH_LEVEL.md`
+- `docs/dev/roadmaps/MASTER_ROADMAP_ENGINE.md`
 
 Rules:
 - no wording edits

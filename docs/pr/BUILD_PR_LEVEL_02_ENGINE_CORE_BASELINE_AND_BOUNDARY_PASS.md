@@ -46,7 +46,7 @@ Complete the first combined Section-2 baseline pass with one coherent engine-cor
   - none identified in Section-2 checklist after this pass
 
 ## Roadmap handling
-- Updated Section-2 status markers only in `docs/roadmaps/MASTER_ROADMAP_HIGH_LEVEL.md`.
+- Updated Section-2 status markers only in `docs/dev/roadmaps/MASTER_ROADMAP_ENGINE.md`.
 - No roadmap prose rewrites were performed.
 
 ## Validation run
