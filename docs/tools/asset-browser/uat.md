@@ -1,90 +1,93 @@
-# Asset Browser — UAT (User Acceptance Validation)
+# Asset Browser / Import Hub - UAT
 
 ## Purpose
-Validate that the Asset Browser meets user expectations for primary workflows, stability, and acceptance readiness.
+Validate user acceptance readiness for Asset Browser / Import Hub across launch, core workflow, and handoff behavior.
 
-## Environment
-- Browser: Chrome (latest)
-- OS: Windows 10/11
-- Repo: HTML-JavaScript-Gaming (latest)
-
-## Setup
-1. Open the tool entry point.
-2. Launch the tool in browser.
-3. Confirm the tool loads without blocking errors.
+## Scope
+- Tool: `asset-browser`
+- Entry point: `tools/Asset Browser/index.html`
 
 ## Validation Scenarios
 
-### VS-001: Launch Tool
+### VS-001 Launch And Boot
 **Steps**
-1. Open the tool.
+1. Open the tool entry point.
+2. Wait for initial UI render.
 
 **Acceptance Criteria**
-- UI loads correctly
-- No blocking console errors
+- Tool UI renders without blocking errors.
+- No uncaught console exceptions during initial load.
 
 **Outcome**
 - [ ] PASS
 - [ ] FAIL
+- [ ] BLOCKED
 
-### VS-002: Core Workflow
+### VS-002 Open Or Load Workflow
 **Steps**
-1. Perform the primary create/edit workflow for this tool.
+1. Load a default, sample, or existing document/state where applicable.
+2. Confirm data appears in the expected UI surfaces.
 
 **Acceptance Criteria**
-- Main workflow behaves correctly
-- State remains consistent
-- No unexpected reset/crash
+- Loaded content matches expected structure.
+- Tool remains responsive after load.
 
 **Outcome**
 - [ ] PASS
 - [ ] FAIL
+- [ ] BLOCKED
 
-### VS-003: Save / Export / Handoff
+### VS-003 Create Or Edit Workflow
 **Steps**
-1. Save, export, or hand off data if applicable.
+1. Create new content or edit existing content.
+2. Verify state updates in the active panels/canvas.
 
 **Acceptance Criteria**
-- Output is created correctly
-- Reload/reuse path works if supported
+- Core workflow executes without crash or silent data loss.
+- Visual/state feedback reflects edits consistently.
 
 **Outcome**
 - [ ] PASS
 - [ ] FAIL
+- [ ] BLOCKED
 
-## Boundary Conditions
+### VS-004 Save Export Or Handoff
+**Steps**
+1. Execute save/export/handoff path where applicable.
+2. Reopen or consume output in downstream surface if available.
 
-### BC-001: Invalid Input
-- [ ] Tool does not crash
-- [ ] Error is handled clearly
+**Acceptance Criteria**
+- Output artifact or handoff payload is produced correctly.
+- Reopen or downstream consumption path behaves as expected.
 
-### BC-002: Larger Dataset / Stress Case
-- [ ] Tool remains responsive
-- [ ] No blocking corruption or freeze
+**Outcome**
+- [ ] PASS
+- [ ] FAIL
+- [ ] BLOCKED
 
-## Stability Validation
-- [ ] Existing sample content still loads if applicable
-- [ ] No visible UI regressions
-- [ ] No blocking console errors during normal use
+### VS-005 Invalid Input And Error Handling
+**Steps**
+1. Provide invalid or malformed input where possible.
+2. Observe error handling behavior.
 
-## Known Limitations
-- Record current constraints here.
+**Acceptance Criteria**
+- Tool handles errors safely without crash.
+- Error messaging is visible and actionable.
 
-## Validation Artifacts
-- Screenshots
-- Exported files or saved data
-- Console log notes
+**Outcome**
+- [ ] PASS
+- [ ] FAIL
+- [ ] BLOCKED
 
 ## Acceptance Criteria
-Tool is **ACCEPTED** when:
-- All critical scenarios pass
-- No blocking issues remain
-- No crashes occur in normal use
+- All critical validation scenarios are PASS.
+- No blocking defects remain open for launch, edit, or handoff paths.
+- No crash observed during normal UAT execution.
 
-## Final Status
+## Outcome
 - [ ] ACCEPTED
 - [ ] REJECTED
 - [ ] BLOCKED
 
 ## Notes
-Document findings, issues, and follow-up work.
+- Attach screenshots, logs, and artifact paths used during UAT execution.

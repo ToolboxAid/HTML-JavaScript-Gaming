@@ -2,7 +2,7 @@
 
 ## Commands Run
 1. `node --input-type=module -` (reads `getActiveToolRegistry()` from `tools/toolRegistry.js` and validates per-tool docs + required sections)
-2. `Get-ChildItem docs/tools/testing -Filter *.md | Where-Object { $_.Name -ne 'README.md' } | Select-String -Pattern '^## Manual Test Cases' | Measure-Object`
+2. `Get-ChildItem docs/tools -Filter *.md | Where-Object { $_.Name -ne 'README.md' } | Select-String -Pattern '^## Manual Test Cases' | Measure-Object`
 3. `git status --short -- docs/dev/start_of_day`
 
 ## Scope Validation Results
@@ -11,7 +11,7 @@
 - Required sections present per tool doc: **PASS** (`missingSectionCount=0`).
 - Manual test-case section coverage: **PASS** (`16` docs include `## Manual Test Cases`).
 - Standardized template exists: **PASS** (`docs/dev/reports/tool_validation_report_template.md`).
-- Tool testing index exists: **PASS** (`docs/tools/testing/README.md`).
+- Tool testing index exists: **PASS** (`docs/tools/README.md`).
 
 ## Guardrail Validation
 - No `start_of_day` modifications: **PASS**.
@@ -22,7 +22,7 @@
 - `docs/README.md`
 - `docs/reference/root/README.md`
 - `docs/tools/README.md`
-- `docs/tools/testing/README.md`
+- `docs/tools/README.md`
 
 ## Roadmap Status Updates (Execution-Backed)
 Updated in `docs/dev/roadmaps/MASTER_ROADMAP_TOOLS.md`:

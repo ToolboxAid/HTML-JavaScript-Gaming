@@ -1,24 +1,36 @@
 # Tool UAT Template
 
-## File Path
-`docs/tools/<tool-name>/uat.md`
+## Tool Metadata
+- Tool name:
+- Tool id:
+- Entry point:
+- Date:
+- Environment:
 
-## Required Sections
-- Purpose
-- Environment
-- Setup
-- Validation Scenarios
-- Boundary Conditions
-- Stability Validation
-- Known Limitations
-- Validation Artifacts
-- Acceptance Criteria
-- Final Status
-- Notes
+## Validation Scenarios
+### VS-001
+**Steps**
+1.
 
-## Terminology Standard
-- Use `UAT`
-- Use `Validation Scenarios`
-- Use `Acceptance Criteria`
-- Do not use `testing.md`
-- Do not use `docs/tools/testing/`
+**Acceptance Criteria**
+-
+
+**Outcome**
+- [ ] PASS
+- [ ] FAIL
+- [ ] BLOCKED
+
+## Acceptance Criteria
+-
+
+## Outcome
+- [ ] ACCEPTED
+- [ ] REJECTED
+- [ ] BLOCKED
+
+## Notes
+-
+
+## Path Standard
+- Use `docs/tools/<tool-name>/uat.md`.
+- Do not use legacy testing-path standards.
