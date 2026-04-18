@@ -1,8 +1,8 @@
-- [ ] runtime errors captured and documented
-- [ ] logging outputs follow standard
-- [ ] performance timing outputs verified
-- [ ] observability matrix completed
-- [ ] validation report includes real examples
+- [ ] inventory completed for tools/shared and tools/dev/shared
+- [ ] move map completed
+- [ ] dedupe/merge decisions documented
+- [ ] imports and references updated
+- [ ] no live references to tools/dev/shared remain
+- [ ] affected tools load successfully
 - [ ] no start_of_day changes
 - [ ] unrelated working-tree changes preserved
-- [ ] roadmap updated only after validation

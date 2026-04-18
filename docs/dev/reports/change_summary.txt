@@ -1,2 +1,1 @@
-This PR establishes the first real observability layer across tools and runtime,
-combining error tracking, performance monitoring, and logging into a validated system.
+This PR removes ambiguity in the tools shared layer by consolidating overlapping shared surfaces into a single authoritative location: tools/shared.
