@@ -42,7 +42,7 @@ Exception:
 
 ## Active vs Archived Documentation
 - Active operations live in `docs/dev/` and should remain minimal.
-- Durable architecture belongs in `docs/architecture/`.
+- Durable architecture belongs in `docs/reference/architecture-standards/architecture/`.
 - Historical PR narrative belongs in `docs/pr/`.
 - Older operational notes and generated outputs live in:
   - `docs/archive/dev-ops/`

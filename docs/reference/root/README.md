@@ -9,15 +9,16 @@ README.md
 - `docs/pr/`: full PR history (kept intact as historical record)
 - `docs/dev/`: active workflow controls only
 - `docs/dev/reports/`: active current reports only
-- `docs/architecture/`: durable architecture and boundary documentation
+- `docs/reference/architecture-standards/architecture/`: durable architecture and boundary documentation
+- `docs/reference/architecture-standards/standards/`: standards and review quality rules
 - `docs/release/`: release/readiness and showcase documentation sets
 - `docs/archive/dev-ops/`: archived operational notes and superseded workflow docs
 - `docs/archive/generated-reports/`: archived generated validation/report artifacts
 
 ## Key Entry Points
-- [Getting Started](getting-started.md)
-- [Architecture Overview](architecture/README.md)
-- [Debug Surfaces External Integration](architecture/debug-surfaces-external-integration.md)
-- [Release Docs](release/README.md)
-- [Repo Directory Structure](repo-directory-structure.md)
-- [Review Checklist](review-checklist.md)
+- [Docs Home](../../README.md)
+- [Workflow Surface](../../operations/dev/README.md)
+- [Master Roadmap](../../roadmaps/MASTER_ROADMAP_HIGH_LEVEL.md)
+- [Architecture Overview](../architecture-standards/architecture/README.md)
+- [Standards](../architecture-standards/standards/README.md)
+- [PR Capability Bundles](../../pr/capabilities/README.md)

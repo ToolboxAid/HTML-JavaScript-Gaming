@@ -18,23 +18,23 @@ The active master roadmap file is:
 - Reordering items
 - Renaming tracks
 - Collapsing or expanding content
-- Moving the active master roadmap out of `docs/dev/roadmaps/`
+- Moving the active master roadmap out of `docs/roadmaps/`
 - Creating duplicate active roadmap copies elsewhere
 
 ## PATH RULE
-All active roadmap files MUST live in:
-- `docs/dev/roadmaps/`
+Active roadmap files must live in:
+- `docs/roadmaps/`
 
 Never use:
-- `docs/roadmaps/`
 - `docs/operations/dev/BIG_PICTURE_ROADMAP.md` as the active master roadmap
+- duplicate roadmap copies outside `docs/roadmaps/`
 
 ## Validation Check
 Any change to the active master roadmap must pass:
 - headings unchanged
 - no text modified outside brackets
 - only bracket states updated
-- file path remains under `docs/dev/roadmaps/`
+- file path remains under `docs/roadmaps/`
 
 ## Codex Rule
 Codex must treat the active roadmap as immutable structure and perform surgical edits only.

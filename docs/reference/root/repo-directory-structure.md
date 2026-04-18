@@ -12,7 +12,8 @@
 - `docs/pr/`: preserved PR history
 - `docs/dev/`: active workflow controls
 - `docs/dev/reports/`: active reports
-- `docs/architecture/`: durable architecture and boundary references
+- `docs/reference/architecture-standards/architecture/`: durable architecture and boundary references
+- `docs/reference/architecture-standards/standards/`: standards and review references
 - `docs/archive/dev-ops/`: archived operational notes
 - `docs/archive/generated-reports/`: archived generated reports
 

@@ -1,9 +1,11 @@
-- [ ] fragmented PR clusters audited
-- [ ] capability groups documented
-- [ ] authoritative capability-level review docs created/updated
-- [ ] original PR traceability preserved
-- [ ] active navigation references updated where applicable
-- [ ] capability-bundle checklist created/updated
+- [ ] confirmed Track 20A docs already exist and are not re-done here
+- [ ] duplicate/superseded doc surfaces identified
+- [ ] authoritative current docs selected
+- [ ] unique content preserved before any deletion
+- [ ] duplicate/superseded docs removed safely
+- [ ] empty documentation directories removed safely
+- [ ] active references updated
+- [ ] onboarding flow validated end-to-end
 - [ ] no start_of_day changes
 - [ ] unrelated working-tree changes preserved
 - [ ] roadmap updated by status-only transitions only after successful validation

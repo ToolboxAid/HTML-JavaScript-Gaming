@@ -30,7 +30,8 @@ Active files are in `docs/dev/`:
 
 ## 4) Know Where History Lives
 - `docs/pr/`: historical PR and architecture evolution
-- `docs/architecture/`: durable architecture and boundary docs
+- `docs/reference/architecture-standards/architecture/`: durable architecture and boundary docs
+- `docs/reference/architecture-standards/standards/`: standards and review docs
 - `docs/archive/`: archived dev-ops and generated-report artifacts
 
 ## 5) Package Build/Apply Output

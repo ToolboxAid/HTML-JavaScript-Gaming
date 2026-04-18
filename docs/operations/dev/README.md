@@ -5,14 +5,10 @@
 ## Required Path Rules
 
 ### Roadmaps
-All active roadmap files MUST live in:
-- `docs/dev/roadmaps/`
-
-The current master roadmap path is:
+The active master roadmap path is:
 - `docs/roadmaps/MASTER_ROADMAP_HIGH_LEVEL.md`
 
-Never use:
-- `docs/roadmaps/`
+Do not use superseded roadmap surfaces:
 - `docs/operations/dev/BIG_PICTURE_ROADMAP.md` for the active master roadmap
 - any other duplicate roadmap location
 
@@ -22,8 +18,8 @@ These may live directly under `docs/dev/` only when they are active operating fi
 - `paths.md`
 - `PLANNING_SYSTEM_RULES.md`
 - `ROADMAP_GUARDRAILS.md`
-- `CODEX_COMMANDS.md`
-- `COMMIT_COMMENT.txt`
+- `codex_commands.md`
+- `commit_comment.txt`
 - `next_command.txt`
 
 ### Reports
@@ -42,7 +38,6 @@ Archived/generated/historical material should live in:
 
 ## Rules
 - Keep `docs/dev/` minimal and current.
-- Keep active roadmap files only in `docs/dev/roadmaps/`.
-- Do not create `docs/roadmaps/`.
+- Keep active roadmap updates in `docs/roadmaps/MASTER_ROADMAP_HIGH_LEVEL.md`.
 - Do not leave transitional roadmap files duplicated in `docs/dev/`.
 - Preserve `docs/pr/` as historical PR record.
