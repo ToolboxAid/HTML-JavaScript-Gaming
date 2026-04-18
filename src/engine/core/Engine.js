@@ -108,6 +108,7 @@ export default class Engine {
     this.fixedStepMs = fixedStepMs;
     this.fixedStepSeconds = fixedStepMs / 1000;
     this.scene = null;
+    this.runtimeCreatedAtMs = Date.now();
 
     this.rafId = null;
 
@@ -225,6 +226,10 @@ export default class Engine {
     this.fixedTicker.reset();
     try {
       this.runtimeMonitoring?.start?.();
+      this.runtimeMonitoring?.emitPerformanceSample?.('load', {
+        surface: 'engine.start',
+        loadDurationMs: Math.max(0, Date.now() - this.runtimeCreatedAtMs),
+      });
     } catch (error) {
       this.trackRuntimeError('runtimeMonitoring.start', error, {
         severity: 'warn',

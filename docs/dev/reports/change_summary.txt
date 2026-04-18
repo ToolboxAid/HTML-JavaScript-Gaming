@@ -1,2 +1,2 @@
-This bundle combines the remaining closely related tools UX polish items into one execution pass:
-layout/spacing normalization, docking/resizing consistency, and control placement consistency.
+This PR establishes the first real observability layer across tools and runtime,
+combining error tracking, performance monitoring, and logging into a validated system.

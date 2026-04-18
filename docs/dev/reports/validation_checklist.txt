@@ -1,10 +1,8 @@
-- [ ] layout/spacing audit completed
-- [ ] in-scope tool layouts normalized where feasible
-- [ ] docking/resizing matrix completed
-- [ ] docking/resizing improved where applicable
-- [ ] control placement matrix completed
-- [ ] common controls aligned across in-scope tools
-- [ ] before/after differences documented
+- [ ] runtime errors captured and documented
+- [ ] logging outputs follow standard
+- [ ] performance timing outputs verified
+- [ ] observability matrix completed
+- [ ] validation report includes real examples
 - [ ] no start_of_day changes
 - [ ] unrelated working-tree changes preserved
-- [ ] roadmap updated only for completed items
+- [ ] roadmap updated only after validation

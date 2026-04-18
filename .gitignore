@@ -14,18 +14,18 @@
 /*.zip
 
 # Ignore specific files in the docs/dev directory
-docs/dev/COMMIT_COMMENT.txt
-docs/dev/commit_comment.txt
+#docs/dev/COMMIT_COMMENT.txt
+#docs/dev/commit_comment.txt
 
-docs/dev/CODEX_COMMANDS.md
-docs/dev/codex_commands.md
+#docs/dev/CODEX_COMMANDS.md
+#docs/dev/codex_commands.md
 
-docs/dev/NEXT_COMMAND.txt
+#docs/dev/NEXT_COMMAND.txt
 
-COMMIT_COMMENT.txt
-commit_comment.txt
-CODEX_COMMANDS.md
-codex_commands.md
+#COMMIT_COMMENT.txt
+#commit_comment.txt
+#CODEX_COMMANDS.md
+#codex_commands.md
 NEXT_COMMAND.txt
 
 node_modules/

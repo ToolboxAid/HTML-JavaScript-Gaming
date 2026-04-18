@@ -36,6 +36,13 @@ function toSafeContext(contextProvider) {
   }
 }
 
+function resolvePerformanceLogLevel(reason) {
+  if (reason === 'load' || reason === 'start') {
+    return 'info';
+  }
+  return 'debug';
+}
+
 export function createRuntimeMonitoringHooks({
   logger = null,
   onError = null,
@@ -111,7 +118,8 @@ export function createRuntimeMonitoringHooks({
       },
     };
 
-    logger?.debug?.('Runtime monitoring captured a performance sample.', {
+    const logLevel = resolvePerformanceLogLevel(reason);
+    logger?.[logLevel]?.('Runtime monitoring captured a performance sample.', {
       event: 'runtime.monitoring.performance',
       source: payload.source,
       reason: payload.reason,

@@ -149,4 +149,9 @@ export function run() {
     true,
     'Logger should capture runtime.monitoring.performance events.'
   );
+  assert.equal(
+    entries.some((entry) => entry.level === 'info' && entry.event === 'runtime.monitoring.performance'),
+    true,
+    'Logger should capture info-level performance events for startup/load timing.'
+  );
 }

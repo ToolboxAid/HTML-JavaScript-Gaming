@@ -18,6 +18,7 @@ let runtimeMonitoringHooks = null;
 const HEADER_EXPANDED_STORAGE_KEY = "toolboxaid.toolsPlatform.headerExpanded";
 const HEADER_EXPANDED_FALLBACK_TOOL = "tool-host";
 const TOOLS_PLATFORM_LOGGER = new Logger({ channel: "tools.platform", level: "debug" });
+const TOOLS_PLATFORM_BOOT_MS = Date.now();
 
 function getPageMode() {
   return document.body.dataset.toolsPlatformPage || "tool";
@@ -340,6 +341,10 @@ function ensureRuntimeMonitoring() {
   });
 
   runtimeMonitoringHooks.start();
+  runtimeMonitoringHooks.emitPerformanceSample("load", {
+    surface: "tools.platform.init",
+    loadDurationMs: Math.max(0, Date.now() - TOOLS_PLATFORM_BOOT_MS),
+  });
   window.addEventListener("beforeunload", () => {
     runtimeMonitoringHooks?.stop?.();
   }, { once: true });
