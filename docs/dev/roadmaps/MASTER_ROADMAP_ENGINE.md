@@ -858,3 +858,8 @@
 - [x] finalize developer docs
 - [x] finalize tool documentation
 - [x] validate onboarding flow
+
+---
+
+## 23. Engine Runtime Validation Sweep
+- [x] validation sweep executed across samples, runtime, and engine boundaries (BUILD_PR_LEVEL_23_1)
