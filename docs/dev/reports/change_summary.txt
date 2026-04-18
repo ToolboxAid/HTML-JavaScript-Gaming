@@ -1,1 +1,2 @@
-Track E completed and marked [x] based on validation-backed normalization.
+This bundle starts the Docs System Cleanup lane using the smallest executable foundation pass.
+It limits scope to docs classification, bucket rules, a proposed move map, and execution-backed roadmap status progression only.

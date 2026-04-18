@@ -1,8 +1,12 @@
-Complete Track E CSS/UI normalization
+Start Track F docs system classification foundation
 
-- flattened CSS layers
-- enforced shared UI classes
-- removed redundant styles
+- inventory docs tree
+- classify docs into explicit buckets
+- define bucket ownership rules
+- propose move map for later cleanup PRs
+- preserve historical docs in this lane
+- update roadmap status only where execution-backed
 
-Roadmap:
-18 Track E [.] → [x]
+PR Details
+- advances 18 / Track F from [ ] to [.]
+- advances 'classify all docs into buckets' from [ ] to [x] when validation passes

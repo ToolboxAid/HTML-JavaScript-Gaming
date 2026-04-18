@@ -1,4 +1,10 @@
-- CSS duplication removed
-- shared classes enforced
-- layer depth flattened
-- no regressions observed
+- [ ] scanned repo docs tree only
+- [ ] produced docs inventory report
+- [ ] produced docs classification matrix
+- [ ] produced bucket rules
+- [ ] produced proposed move map
+- [ ] produced validation report
+- [ ] preserved historical docs
+- [ ] no deletions performed
+- [ ] roadmap updated by status-only transitions only
+- [ ] unrelated working-tree changes preserved
