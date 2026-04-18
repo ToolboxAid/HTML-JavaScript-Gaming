@@ -15,7 +15,7 @@ Track all tool-related improvements, gaps, and future work.
 ---
 
 ## 2. UI / UX Improvements
-- [ ] reduce screen real estate used by headers
+- [x] reduce screen real estate used by headers
 - [ ] normalize tool layout and spacing
 - [ ] improve panel resizing and docking behavior
 - [ ] ensure consistent control placement across tools
@@ -34,7 +34,7 @@ Track all tool-related improvements, gaps, and future work.
 - [x] identify gaps in each tool
 - [x] define expected vs current behavior
 - [x] prioritize missing features
-- [ ] align functionality across tools where applicable
+- [x] align functionality across tools where applicable
 
 ---
 

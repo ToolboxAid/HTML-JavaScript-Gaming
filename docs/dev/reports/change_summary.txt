@@ -1,2 +1,2 @@
-This bundle combines the next safe adjacent tools lanes so one execution pass can advance more roadmap items:
-automation coverage, known bugs baselining, and missing-functionality baselining.
+This bundle combines the next safe tools lanes into one execution pass:
+header compaction and shared functionality alignment based on the 21.3 quality baseline.

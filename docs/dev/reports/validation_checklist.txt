@@ -1,13 +1,8 @@
-- [ ] automation added where feasible
-- [ ] automation pass executed
-- [ ] automation coverage and blockers documented
-- [ ] known bugs register created/updated
-- [ ] each bug includes severity
-- [ ] each bug includes reproduction steps
-- [ ] each bug includes owner or resolution path
-- [ ] missing functionality matrix created/updated
-- [ ] expected vs current behavior documented
-- [ ] priorities assigned to gaps
+- [ ] header real-estate audit completed
+- [ ] in-scope tool headers compacted where feasible
+- [ ] before/after differences documented
+- [ ] shared cross-tool behaviors aligned where applicable
+- [ ] alignment matrix completed
 - [ ] no start_of_day changes
 - [ ] unrelated working-tree changes preserved
 - [ ] roadmap updated only for completed items
