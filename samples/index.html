@@ -6,10 +6,12 @@ index.html
 -->
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <title>ToolboxAid - Sample Launcher</title>
   <link rel="stylesheet" href="../src/engine/ui/hubCommon.css" />
+  <link rel="stylesheet" href="../src/engine/theme/toolboxaid-header.css" />
   <style>
     .samples-filters {
       display: grid;
@@ -18,11 +20,13 @@ index.html
       grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
       align-items: end;
     }
+
     .samples-filters label {
       display: block;
       margin-bottom: 0.25rem;
       font-weight: 600;
     }
+
     .samples-filters select,
     .samples-filters input {
       width: 100%;
@@ -32,11 +36,13 @@ index.html
       font: inherit;
       box-sizing: border-box;
     }
+
     .samples-filters .status {
       margin: 0;
       font-size: 0.95rem;
       align-self: center;
     }
+
     .samples-favorites {
       margin: 0 0 1rem;
       padding: 0.75rem;
@@ -44,20 +50,24 @@ index.html
       border-radius: 8px;
       background: #0e1702;
     }
+
     .samples-favorites h2 {
       margin: 0 0 0.5rem;
       font-size: 1rem;
     }
+
     .samples-favorites .hint {
       margin: 0.25rem 0 0.75rem;
       font-size: 0.9rem;
       color: #b8c7df;
     }
+
     .samples-favorites .empty {
       margin: 0;
       color: #9db1d0;
       font-size: 0.9rem;
     }
+
     .sample-item {
       display: grid;
       grid-template-columns: 1fr auto;
@@ -68,10 +78,12 @@ index.html
       padding: 6px;
       background: #111a2b;
     }
+
     .sample-item.is-favorite {
       border-color: #c8a74f;
       background: #1a1f2a;
     }
+
     .sample-favorite-toggle {
       border: 1px solid #5a6f93;
       background: #172236;
@@ -83,10 +95,12 @@ index.html
       font-size: 1rem;
       line-height: 1;
     }
+
     .sample-favorite-toggle[aria-pressed="true"] {
       border-color: #d9b35b;
       background: #3b2f15;
     }
+
     .sample-tile {
       display: grid;
       grid-template-columns: 88px 1fr;
@@ -94,6 +108,7 @@ index.html
       align-items: center;
       text-decoration: none;
     }
+
     .sample-thumb {
       width: 88px;
       height: 50px;
@@ -103,10 +118,12 @@ index.html
       background: #0f1727;
       display: block;
     }
+
     .sample-tile-label {
       display: block;
       line-height: 1.25;
     }
+
     #sample-hover-preview {
       position: fixed;
       z-index: 1200;
@@ -122,10 +139,12 @@ index.html
       transition: opacity 90ms ease-out, transform 90ms ease-out;
       overflow: hidden;
     }
+
     #sample-hover-preview.is-visible {
       opacity: 1;
       transform: translateY(0);
     }
+
     #sample-hover-preview img {
       width: 100%;
       display: block;
@@ -133,6 +152,7 @@ index.html
       border-bottom: 1px solid #2e4363;
       background: #0f1727;
     }
+
     #sample-hover-preview .caption {
       margin: 0;
       padding: 8px 10px;
@@ -142,17 +162,19 @@ index.html
     }
   </style>
 </head>
+
 <body class="hub-page-samples">
   <div class="wrap">
-    <div class="topnav">
-      <a href="../index.html">Home</a>
-      <a href="../games/index.html">Games Hub</a>
-      <a href="../tools/index.html">Tools Hub</a>
+    <div class="hideme">
+      <div id="shared-theme-header"></div>
+      <section class="samples-favorites" aria-label="Pinned samples">
+        <h2>Pinned Samples</h2>
+        <p class="hint">Pin samples with the star button to keep quick access between visits.</p>
+        <div class="grid" id="samples-favorites-grid"></div>
+        <p class="empty" id="samples-favorites-empty">No pinned samples yet.</p>
+      </section>
     </div>
-    <section class="hero">
-      <h1>ToolboxAid - Sample Launcher</h1>
-      <p class="subtitle">Samples are regrouped into phase folders and renumbered as LLSS (Level + Sample).</p>
-    </section>
+
     <section class="samples-filters" aria-label="Sample filters">
       <div>
         <label for="sample-phase-filter">Phase</label>
@@ -173,371 +195,1045 @@ index.html
       </div>
       <p class="status" id="samples-filter-status" role="status" aria-live="polite"></p>
     </section>
-    <section class="samples-favorites" aria-label="Pinned samples">
-      <h2>Pinned Samples</h2>
-      <p class="hint">Pin samples with the star button to keep quick access between visits.</p>
-      <div class="grid" id="samples-favorites-grid"></div>
-      <p class="empty" id="samples-favorites-empty">No pinned samples yet.</p>
-    </section>
+
     <!-- AUTO-GENERATED SAMPLE SECTIONS START -->
     <section>
       <h2>Phase 01 - Core Engine</h2>
-      <p>Builds the game loop, input handling, rendering basics, collision foundations, ECS structure, and debug visibility.</p>
+      <p>Builds the game loop, input handling, rendering basics, collision foundations, ECS structure, and debug
+        visibility.</p>
       <div class="grid">
-        <a class="live" href="./phase-01/0101/index.html" title="Demonstrates the core engine loop with simple bounded motion." data-tags="scene, themetokens" data-primary="basic-loop">Sample 0101 - Basic Loop</a>
-        <a class="live" href="./phase-01/0102/index.html" title="Demonstrates keyboard-driven movement inside a bounded play area." data-tags="inputservice, scene, themetokens" data-primary="keyboard-move">Sample 0102 - Keyboard Move</a>
-        <a class="live" href="./phase-01/0103/index.html" title="Demonstrates mouse input tracking and renderer-based feedback." data-tags="inputservice, scene, themetokens" data-primary="mouse-input">Sample 0103 - Mouse Input</a>
-        <a class="live" href="./phase-01/0104/index.html" title="Demonstrates basic gamepad input and live control feedback." data-tags="inputservice, scene, themetokens" data-primary="gamepad-input">Sample 0104 - Gamepad Input</a>
-        <a class="live" href="./phase-01/0105/index.html" title="Demonstrates scene transitions and shared engine scene flow." data-tags="inputservice, scenetransition, themetokens, transitionscene" data-primary="scene-switch">Sample 0105 - Scene Switch</a>
-        <a class="live" href="./phase-01/0106/index.html" title="Demonstrates action-based input mapping using shared bindings." data-tags="inputmap, inputservice, scene, themetokens" data-primary="input-mapping">Sample 0106 - Input Mapping</a>
-        <a class="live" href="./phase-01/0107/index.html" title="Demonstrates entity movement driven by shared engine input patterns." data-tags="bounds, inputmap, inputservice, scene, themetokens, transform, velocity" data-primary="entity-movement">Sample 0107 - Entity Movement</a>
-        <a class="live" href="./phase-01/0108/index.html" title="Demonstrates renderer abstraction through the render adapter." data-tags="bounds, entity, inputservice, scene, themetokens, transform, velocity" data-primary="render-adapter">Sample 0108 - Render Adapter</a>
-        <a class="live" href="./phase-01/0109/index.html" title="Demonstrates axis-aligned bounding box collision detection with visual debug feedback and keyboard-controlled movement." data-tags="inputservice, scene, themetokens" data-primary="collision">Sample 0109 - Collision</a>
-        <a class="live" href="./phase-01/0110/index.html" title="Demonstrates single-block collision response by stopping player movement at the obstacle instead of allowing overlap." data-tags="inputservice, scene, themetokens" data-primary="collision-response">Sample 0110 - Collision Response</a>
-        <a class="live" href="./phase-01/0111/index.html" title="Demonstrates collision response against several blocking rectangles using one shared collision loop." data-tags="inputservice, scene, themetokens" data-primary="multiple-solids">Sample 0111 - Multiple Solids</a>
-        <a class="live" href="./phase-01/0112/index.html" title="Demonstrates separate X and Y collision resolution so the player can slide cleanly along blocking surfaces." data-tags="inputservice, scene, themetokens" data-primary="axis-separated">Sample 0112 - Axis Separated Collision</a>
-        <a class="live" href="./phase-01/0113/index.html" title="Demonstrates tile-based collision by treating selected grid cells as solid blockers with axis-separated movement." data-tags="inputservice, scene, themetokens" data-primary="tile-collision">Sample 0113 - Tile Collision</a>
-        <a class="live" href="./phase-01/0114/index.html" title="Demonstrates collision inspection tools such as candidate highlights, nearest blocker emphasis, and live overlap status text." data-tags="inputservice, scene, themetokens" data-primary="collision-debug">Sample 0114 - Collision Debug Tools</a>
-        <a class="live" href="./phase-01/0115/index.html" title="Demonstrates a minimal entity-component world with reusable component storage and renderer-driven drawing." data-tags="drawsceneframe, inputservice, scene, themetokens, world" data-primary="ecs-foundation">Sample 0115 - ECS Foundation</a>
-        <a class="live" href="./phase-01/0116/index.html" title="Demonstrates an ECS movement system that updates entity positions from transform and velocity components." data-tags="bounceentitieshorizontallyinbounds, createrenderable, createsize, createtransform, createvelocity, drawsceneframe, inputservice, moveentities, renderrectentities, scene, themetokens, world" data-primary="ecs-movement">Sample 0116 - ECS Movement System</a>
-        <a class="live" href="./phase-01/0117/index.html" title="Demonstrates an ECS input system that controls one entity through input and speed components." data-tags="applyinputcontrol, clampentitiestobounds, createinputcontrolled, createrenderable, createsize, createspeed, createtransform, createvelocity, drawsceneframe, inputservice, moveentities, renderrectentities, scene, themetokens, world" data-primary="ecs-input">Sample 0117 - ECS Input System</a>
-        <a class="live" href="./phase-01/0118/index.html" title="Demonstrates an ECS collision system that blocks a controlled entity against solids using collider and solid components." data-tags="applyinputcontrol, blockcollidingentities, createcollider, createinputcontrolled, createrenderable, createsize, createsolid, createspeed, createtransform, createvelocity, drawsceneframe, inputservice, moveentities, renderrectentities, scene, themetokens, world" data-primary="ecs-collision">Sample 0118 - ECS Collision System</a>
-        <a class="live" href="./phase-01/0119/index.html" title="Demonstrates a dedicated ECS render pass that draws multiple entities from transform, size, and renderable components." data-tags="drawsceneframe, inputservice, renderrectentities, scene, themetokens, world" data-primary="ecs-render">Sample 0119 - ECS Render System</a>
-        <a class="live" href="./phase-01/0120/index.html" title="Demonstrates a scene that delegates interaction to ECS-style systems for input, movement, collision, and rendering." data-tags="applyinputcontrol, blockcollidingentities, createcollider, createinputcontrolled, createrenderable, createsize, createsolid, createspeed, createtransform, createvelocity, drawsceneframe, drawvalidationpanel, inputservice, moveentities, renderrectentities, themetokens, validateworldentities" data-primary="ecs-scene">Sample 0120 - ECS Scene World</a>
-        <a class="live" href="./phase-01/0121/index.html" title="HUD and debug overlay rendered separately from world." data-tags="applyinputcontrol, createinputcontrolled, createrenderable, createsize, createspeed, createtransform, createvelocity, drawpanel, drawsceneframe, inputservice, moveentities, renderrectentities, scene, themetokens, world" data-primary="ui-overlay">Sample 0121 - UI Overlay</a>
-        <a class="live" href="./phase-01/0122/index.html" title="Spawning, collecting, and removing entities." data-tags="applyinputcontrol, collectoverlappingentities, createinputcontrolled, createlifetime, createrenderable, createsize, createspeed, createtag, createtransform, createvelocity, drawpanel, drawsceneframe, inputservice, moveentities, renderrectentities, scene, themetokens, ticklifetimes, world" data-primary="entity-lifecycle">Sample 0122 - Entity Lifecycle</a>
-        <a class="live" href="./phase-01/0123/index.html" title="FPS, entity counts, debug toggle." data-tags="bounceentitieshorizontallyinbounds, createrenderable, createsize, createtransform, createvelocity, drawpanel, drawsceneframe, inputservice, moveentities, renderrectentities, scene, statstracker, themetokens, world" data-primary="debug-stats">Sample 0123 - Debug Stats</a>
-        <a class="live" href="./phase-01/0124/index.html" title="Scene built from config data." data-tags="applyinputcontrol, blockcollidingentities, createcollider, createinputcontrolled, createsize, createspeed, createtransform, createvelocity, drawpanel, drawsceneframe, drawvalidationpanel, inputservice, moveentities, renderrectentities, scene, themetokens, validateworldentities" data-primary="data-driven">Sample 0124 - Data Driven World</a>
+        <a class="live" href="./phase-01/0101/index.html"
+          title="Demonstrates the core engine loop with simple bounded motion." data-tags="scene, themetokens"
+          data-primary="basic-loop">Sample 0101 - Basic Loop</a>
+        <a class="live" href="./phase-01/0102/index.html"
+          title="Demonstrates keyboard-driven movement inside a bounded play area."
+          data-tags="inputservice, scene, themetokens" data-primary="keyboard-move">Sample 0102 - Keyboard Move</a>
+        <a class="live" href="./phase-01/0103/index.html"
+          title="Demonstrates mouse input tracking and renderer-based feedback."
+          data-tags="inputservice, scene, themetokens" data-primary="mouse-input">Sample 0103 - Mouse Input</a>
+        <a class="live" href="./phase-01/0104/index.html"
+          title="Demonstrates basic gamepad input and live control feedback."
+          data-tags="inputservice, scene, themetokens" data-primary="gamepad-input">Sample 0104 - Gamepad Input</a>
+        <a class="live" href="./phase-01/0105/index.html"
+          title="Demonstrates scene transitions and shared engine scene flow."
+          data-tags="inputservice, scenetransition, themetokens, transitionscene" data-primary="scene-switch">Sample
+          0105 - Scene Switch</a>
+        <a class="live" href="./phase-01/0106/index.html"
+          title="Demonstrates action-based input mapping using shared bindings."
+          data-tags="inputmap, inputservice, scene, themetokens" data-primary="input-mapping">Sample 0106 - Input
+          Mapping</a>
+        <a class="live" href="./phase-01/0107/index.html"
+          title="Demonstrates entity movement driven by shared engine input patterns."
+          data-tags="bounds, inputmap, inputservice, scene, themetokens, transform, velocity"
+          data-primary="entity-movement">Sample 0107 - Entity Movement</a>
+        <a class="live" href="./phase-01/0108/index.html"
+          title="Demonstrates renderer abstraction through the render adapter."
+          data-tags="bounds, entity, inputservice, scene, themetokens, transform, velocity"
+          data-primary="render-adapter">Sample 0108 - Render Adapter</a>
+        <a class="live" href="./phase-01/0109/index.html"
+          title="Demonstrates axis-aligned bounding box collision detection with visual debug feedback and keyboard-controlled movement."
+          data-tags="inputservice, scene, themetokens" data-primary="collision">Sample 0109 - Collision</a>
+        <a class="live" href="./phase-01/0110/index.html"
+          title="Demonstrates single-block collision response by stopping player movement at the obstacle instead of allowing overlap."
+          data-tags="inputservice, scene, themetokens" data-primary="collision-response">Sample 0110 - Collision
+          Response</a>
+        <a class="live" href="./phase-01/0111/index.html"
+          title="Demonstrates collision response against several blocking rectangles using one shared collision loop."
+          data-tags="inputservice, scene, themetokens" data-primary="multiple-solids">Sample 0111 - Multiple Solids</a>
+        <a class="live" href="./phase-01/0112/index.html"
+          title="Demonstrates separate X and Y collision resolution so the player can slide cleanly along blocking surfaces."
+          data-tags="inputservice, scene, themetokens" data-primary="axis-separated">Sample 0112 - Axis Separated
+          Collision</a>
+        <a class="live" href="./phase-01/0113/index.html"
+          title="Demonstrates tile-based collision by treating selected grid cells as solid blockers with axis-separated movement."
+          data-tags="inputservice, scene, themetokens" data-primary="tile-collision">Sample 0113 - Tile Collision</a>
+        <a class="live" href="./phase-01/0114/index.html"
+          title="Demonstrates collision inspection tools such as candidate highlights, nearest blocker emphasis, and live overlap status text."
+          data-tags="inputservice, scene, themetokens" data-primary="collision-debug">Sample 0114 - Collision Debug
+          Tools</a>
+        <a class="live" href="./phase-01/0115/index.html"
+          title="Demonstrates a minimal entity-component world with reusable component storage and renderer-driven drawing."
+          data-tags="drawsceneframe, inputservice, scene, themetokens, world" data-primary="ecs-foundation">Sample 0115
+          - ECS Foundation</a>
+        <a class="live" href="./phase-01/0116/index.html"
+          title="Demonstrates an ECS movement system that updates entity positions from transform and velocity components."
+          data-tags="bounceentitieshorizontallyinbounds, createrenderable, createsize, createtransform, createvelocity, drawsceneframe, inputservice, moveentities, renderrectentities, scene, themetokens, world"
+          data-primary="ecs-movement">Sample 0116 - ECS Movement System</a>
+        <a class="live" href="./phase-01/0117/index.html"
+          title="Demonstrates an ECS input system that controls one entity through input and speed components."
+          data-tags="applyinputcontrol, clampentitiestobounds, createinputcontrolled, createrenderable, createsize, createspeed, createtransform, createvelocity, drawsceneframe, inputservice, moveentities, renderrectentities, scene, themetokens, world"
+          data-primary="ecs-input">Sample 0117 - ECS Input System</a>
+        <a class="live" href="./phase-01/0118/index.html"
+          title="Demonstrates an ECS collision system that blocks a controlled entity against solids using collider and solid components."
+          data-tags="applyinputcontrol, blockcollidingentities, createcollider, createinputcontrolled, createrenderable, createsize, createsolid, createspeed, createtransform, createvelocity, drawsceneframe, inputservice, moveentities, renderrectentities, scene, themetokens, world"
+          data-primary="ecs-collision">Sample 0118 - ECS Collision System</a>
+        <a class="live" href="./phase-01/0119/index.html"
+          title="Demonstrates a dedicated ECS render pass that draws multiple entities from transform, size, and renderable components."
+          data-tags="drawsceneframe, inputservice, renderrectentities, scene, themetokens, world"
+          data-primary="ecs-render">Sample 0119 - ECS Render System</a>
+        <a class="live" href="./phase-01/0120/index.html"
+          title="Demonstrates a scene that delegates interaction to ECS-style systems for input, movement, collision, and rendering."
+          data-tags="applyinputcontrol, blockcollidingentities, createcollider, createinputcontrolled, createrenderable, createsize, createsolid, createspeed, createtransform, createvelocity, drawsceneframe, drawvalidationpanel, inputservice, moveentities, renderrectentities, themetokens, validateworldentities"
+          data-primary="ecs-scene">Sample 0120 - ECS Scene World</a>
+        <a class="live" href="./phase-01/0121/index.html" title="HUD and debug overlay rendered separately from world."
+          data-tags="applyinputcontrol, createinputcontrolled, createrenderable, createsize, createspeed, createtransform, createvelocity, drawpanel, drawsceneframe, inputservice, moveentities, renderrectentities, scene, themetokens, world"
+          data-primary="ui-overlay">Sample 0121 - UI Overlay</a>
+        <a class="live" href="./phase-01/0122/index.html" title="Spawning, collecting, and removing entities."
+          data-tags="applyinputcontrol, collectoverlappingentities, createinputcontrolled, createlifetime, createrenderable, createsize, createspeed, createtag, createtransform, createvelocity, drawpanel, drawsceneframe, inputservice, moveentities, renderrectentities, scene, themetokens, ticklifetimes, world"
+          data-primary="entity-lifecycle">Sample 0122 - Entity Lifecycle</a>
+        <a class="live" href="./phase-01/0123/index.html" title="FPS, entity counts, debug toggle."
+          data-tags="bounceentitieshorizontallyinbounds, createrenderable, createsize, createtransform, createvelocity, drawpanel, drawsceneframe, inputservice, moveentities, renderrectentities, scene, statstracker, themetokens, world"
+          data-primary="debug-stats">Sample 0123 - Debug Stats</a>
+        <a class="live" href="./phase-01/0124/index.html" title="Scene built from config data."
+          data-tags="applyinputcontrol, blockcollidingentities, createcollider, createinputcontrolled, createsize, createspeed, createtransform, createvelocity, drawpanel, drawsceneframe, drawvalidationpanel, inputservice, moveentities, renderrectentities, scene, themetokens, validateworldentities"
+          data-primary="data-driven">Sample 0124 - Data Driven World</a>
       </div>
     </section>
     <section>
       <h2>Phase 02 - World + Visual</h2>
       <p>Expands into cameras, assets, animation, prefabs, tilemaps, serialization, and playable world slices.</p>
       <div class="grid">
-        <a class="live" href="./phase-02/0201/index.html" title="Demonstrates a larger world with a camera that follows the player as the viewport scrolls across the map." data-tags="camera2d, clamp, drawframe, inputservice, scene, themetokens" data-primary="camera-follow">Sample 0201 - Camera Follow</a>
-        <a class="live" href="./phase-02/0202/index.html" title="Demonstrates camera follow with camera clamping so the viewport never shows beyond the world edges." data-tags="camera2d, clamp, drawframe, inputservice, scene, themetokens" data-primary="camera-bounds">Sample 0202 - Camera Bounds</a>
-        <a class="live" href="./phase-02/0203/index.html" title="Demonstrates a minimap overlay that shows world bounds, player position, and obstacle placement at a reduced scale." data-tags="camera2d, clamp, drawframe, drawminimap, inputservice, scene, themetokens" data-primary="minimap">Sample 0203 - Minimap</a>
-        <a class="live" href="./phase-02/0204/index.html" title="Demonstrates a simple asset registry pattern for centralizing image, audio, and data references before real loading is added." data-tags="assetregistry, drawframe, drawpanel, index, inputservice, scene, themetokens" data-primary="asset-registry">Sample 0204 - Asset Registry</a>
-        <a class="live" href="./phase-02/0205/index.html" title="Demonstrates saving and restoring player state with browser storage so a scene can persist position between actions." data-tags="clamp, drawframe, drawpanel, inputservice, scene, storageservice, themetokens" data-primary="save-load">Sample 0205 - Save Load State</a>
-        <a class="live" href="./phase-02/0206/index.html" title="Demonstrates loading a level definition from structured data so scene content is configured outside the scene class." data-tags="clamp, drawframe, drawpanel, inputservice, iscolliding, levelloader, scene, themetokens" data-primary="level-loader">Sample 0206 - Level Loader</a>
-        <a class="live" href="./phase-02/0207/index.html" title="Demonstrates animation state playback with idle and move loops driven by the hardened engine." data-tags="animationcontroller, clamp, drawframe, drawpanel, inputservice, scene, themetokens" data-primary="animation-system">Sample 0207 - Animation System</a>
-        <a class="live" href="./phase-02/0208/index.html" title="Demonstrates state-driven behavior using a reusable engine state machine." data-tags="clamp, drawframe, drawpanel, inputservice, scene, statemachine, themetokens" data-primary="state-machine">Sample 0208 - State Machine</a>
-        <a class="live" href="./phase-02/0209/index.html" title="Demonstrates prompts and interactions using engine-owned interaction helpers." data-tags="clamp, drawframe, drawpanel, findnearestinteractable, inputservice, resolveinteraction, scene, themetokens" data-primary="interaction-system">Sample 0209 - Interaction System</a>
-        <a class="live" href="./phase-02/0210/index.html" title="Demonstrates runtime spawning and updating of projectiles using shared engine projectile helpers." data-tags="clamp, drawframe, drawpanel, inputservice, scene, spawnprojectile, themetokens, updateprojectiles" data-primary="projectile-system">Sample 0210 - Projectile System</a>
-        <a class="live" href="./phase-02/0211/index.html" title="Demonstrates a patrol behavior and player detection using engine AI helpers." data-tags="clamp, drawframe, drawpanel, inputservice, iswithindetectionrange, scene, themetokens, updatepatrolentity" data-primary="enemy-patrol">Sample 0211 - Enemy Patrol AI</a>
-        <a class="live" href="./phase-02/0212/index.html" title="Combines the hardened engine pieces into a small playable slice with interaction, enemy patrol, goal, and projectiles." data-tags="clamp, drawframe, drawpanel, inputservice, iswithindetectionrange, resolveinteraction, scene, spawnprojectile, themetokens, updatepatrolentity, updateprojectiles" data-primary="playable-micro">Sample 0212 - Playable Micro Level</a>
-        <a class="live" href="./phase-02/0213/index.html" title="Demonstrates a sprite-ready render path with color-rect fallback using the engine render layer." data-tags="drawframe, drawpanel, inputservice, renderspritereadyentities, scene, themetokens" data-primary="sprite-render">Sample 0213 - Sprite Render Layer</a>
-        <a class="live" href="./phase-02/0214/index.html" title="Demonstrates binding animation state to sprite-frame-like render output." data-tags="animationcontroller, clamp, drawframe, drawpanel, inputservice, renderspritereadyentities, scene, themetokens" data-primary="animation-sprite">Sample 0214 - Animation Sprite Binding</a>
-        <a class="live" href="./phase-02/0215/index.html" title="Demonstrates layered draw ordering for background, world, actors, projectiles, UI, and debug." data-tags="drawframe, drawpanel, inputservice, renderbylayers, scene, themetokens" data-primary="z-layer">Sample 0215 - Z Layer Ordering</a>
-        <a class="live" href="./phase-02/0216/index.html" title="Demonstrates prefab-based entity creation for players, enemies, pickups, and projectiles." data-tags="createenemyprefab, createpickupprefab, createplayerprefab, createprojectileprefab, drawframe, drawpanel, inputservice, renderspritereadyentities, scene, themetokens" data-primary="prefab-system">Sample 0216 - Prefab System</a>
-        <a class="live" href="./phase-02/0217/index.html" title="Demonstrates higher-level game mode flow for title, play, pause, win, and lose states." data-tags="drawframe, drawpanel, gamemodestate, inputservice, scene, themetokens" data-primary="game-mode">Sample 0217 - Game Mode State</a>
-        <a class="live" href="./phase-02/0218/index.html" title="Combines prefabs, render layers, game modes, interaction, AI, and projectiles into a cleaner mini-game slice." data-tags="clamp, createenemyprefab, createplayerprefab, drawframe, drawpanel, gamemodestate, inputservice, iswithindetectionrange, renderbylayers, renderspritereadyentities, resolveinteraction, scene, spawnprojectile, themetokens, updatepatrolentity, updateprojectiles" data-primary="polished-playable">Sample 0218 - Polished Playable Slice</a>
-        <a class="live" href="./phase-02/0219/index.html" title="Demonstrates sprite-atlas-style frame lookup and image-loader-ready rendering proxies." data-tags="drawframe, drawpanel, imageassetloader, inputservice, renderspritereadyentities, scene, spriteatlas, themetokens" data-primary="sprite-atlas">Sample 0219 - Sprite Atlas Image Rendering</a>
-        <a class="live" href="./phase-02/0220/index.html" title="Demonstrates a world-space camera system so scenes stop doing ad hoc offset math." data-tags="camera2d, clamp, drawframe, drawpanel, followcameratarget, inputservice, scene, themetokens, worldrecttoscreen" data-primary="camera-system">Sample 0220 - Camera System</a>
-        <a class="live" href="./phase-02/0221/index.html" title="Demonstrates tilemap rendering and tile-based collision as the foundation for map-driven games." data-tags="clamp, drawframe, drawpanel, inputservice, rendertilemap, resolverectvstilemap, scene, themetokens" data-primary="tilemap-system">Sample 0221 - Tilemap System</a>
-        <a class="live" href="./phase-02/0222/index.html" title="Demonstrates action-based input mapping so gameplay is decoupled from physical keys." data-tags="actioninputmap, actioninputservice, clamp, drawframe, drawpanel, scene, themetokens" data-primary="input-action">Sample 0222 - Input Action Mapping</a>
-        <a class="live" href="./phase-02/0223/index.html" title="Demonstrates saving and restoring a world snapshot through shared serialization helpers." data-tags="clamp, deserializeworldstate, drawframe, drawpanel, inputservice, scene, serializeworldstate, themetokens" data-primary="world-serialization">Sample 0223 - World Serialization</a>
-        <a class="live" href="./phase-02/0224/index.html" title="Combines tilemap, camera, action input, sprite-atlas-style rendering, and world serialization into a playable slice." data-tags="actioninputmap, actioninputservice, camera2d, deserializeworldstate, drawframe, drawpanel, followcameratarget, renderspritereadyentities, rendertilemap, resolverectvstilemap, scene, serializeworldstate, spriteatlas, themetokens, tilemap, worldrecttoscreen" data-primary="tile-camera">Sample 0224 - Tile Camera Sprite Slice</a>
-        <a class="live" href="./phase-02/0225/index.html" title="Projectile behavior lab with preset firing patterns, travel tuning, and cleanup stability checks." data-tags="inputservice, scene, themetokens" data-primary="projectile-lab">Sample 0225 - Projectile Lab</a>
+        <a class="live" href="./phase-02/0201/index.html"
+          title="Demonstrates a larger world with a camera that follows the player as the viewport scrolls across the map."
+          data-tags="camera2d, clamp, drawframe, inputservice, scene, themetokens" data-primary="camera-follow">Sample
+          0201 - Camera Follow</a>
+        <a class="live" href="./phase-02/0202/index.html"
+          title="Demonstrates camera follow with camera clamping so the viewport never shows beyond the world edges."
+          data-tags="camera2d, clamp, drawframe, inputservice, scene, themetokens" data-primary="camera-bounds">Sample
+          0202 - Camera Bounds</a>
+        <a class="live" href="./phase-02/0203/index.html"
+          title="Demonstrates a minimap overlay that shows world bounds, player position, and obstacle placement at a reduced scale."
+          data-tags="camera2d, clamp, drawframe, drawminimap, inputservice, scene, themetokens"
+          data-primary="minimap">Sample 0203 - Minimap</a>
+        <a class="live" href="./phase-02/0204/index.html"
+          title="Demonstrates a simple asset registry pattern for centralizing image, audio, and data references before real loading is added."
+          data-tags="assetregistry, drawframe, drawpanel, index, inputservice, scene, themetokens"
+          data-primary="asset-registry">Sample 0204 - Asset Registry</a>
+        <a class="live" href="./phase-02/0205/index.html"
+          title="Demonstrates saving and restoring player state with browser storage so a scene can persist position between actions."
+          data-tags="clamp, drawframe, drawpanel, inputservice, scene, storageservice, themetokens"
+          data-primary="save-load">Sample 0205 - Save Load State</a>
+        <a class="live" href="./phase-02/0206/index.html"
+          title="Demonstrates loading a level definition from structured data so scene content is configured outside the scene class."
+          data-tags="clamp, drawframe, drawpanel, inputservice, iscolliding, levelloader, scene, themetokens"
+          data-primary="level-loader">Sample 0206 - Level Loader</a>
+        <a class="live" href="./phase-02/0207/index.html"
+          title="Demonstrates animation state playback with idle and move loops driven by the hardened engine."
+          data-tags="animationcontroller, clamp, drawframe, drawpanel, inputservice, scene, themetokens"
+          data-primary="animation-system">Sample 0207 - Animation System</a>
+        <a class="live" href="./phase-02/0208/index.html"
+          title="Demonstrates state-driven behavior using a reusable engine state machine."
+          data-tags="clamp, drawframe, drawpanel, inputservice, scene, statemachine, themetokens"
+          data-primary="state-machine">Sample 0208 - State Machine</a>
+        <a class="live" href="./phase-02/0209/index.html"
+          title="Demonstrates prompts and interactions using engine-owned interaction helpers."
+          data-tags="clamp, drawframe, drawpanel, findnearestinteractable, inputservice, resolveinteraction, scene, themetokens"
+          data-primary="interaction-system">Sample 0209 - Interaction System</a>
+        <a class="live" href="./phase-02/0210/index.html"
+          title="Demonstrates runtime spawning and updating of projectiles using shared engine projectile helpers."
+          data-tags="clamp, drawframe, drawpanel, inputservice, scene, spawnprojectile, themetokens, updateprojectiles"
+          data-primary="projectile-system">Sample 0210 - Projectile System</a>
+        <a class="live" href="./phase-02/0211/index.html"
+          title="Demonstrates a patrol behavior and player detection using engine AI helpers."
+          data-tags="clamp, drawframe, drawpanel, inputservice, iswithindetectionrange, scene, themetokens, updatepatrolentity"
+          data-primary="enemy-patrol">Sample 0211 - Enemy Patrol AI</a>
+        <a class="live" href="./phase-02/0212/index.html"
+          title="Combines the hardened engine pieces into a small playable slice with interaction, enemy patrol, goal, and projectiles."
+          data-tags="clamp, drawframe, drawpanel, inputservice, iswithindetectionrange, resolveinteraction, scene, spawnprojectile, themetokens, updatepatrolentity, updateprojectiles"
+          data-primary="playable-micro">Sample 0212 - Playable Micro Level</a>
+        <a class="live" href="./phase-02/0213/index.html"
+          title="Demonstrates a sprite-ready render path with color-rect fallback using the engine render layer."
+          data-tags="drawframe, drawpanel, inputservice, renderspritereadyentities, scene, themetokens"
+          data-primary="sprite-render">Sample 0213 - Sprite Render Layer</a>
+        <a class="live" href="./phase-02/0214/index.html"
+          title="Demonstrates binding animation state to sprite-frame-like render output."
+          data-tags="animationcontroller, clamp, drawframe, drawpanel, inputservice, renderspritereadyentities, scene, themetokens"
+          data-primary="animation-sprite">Sample 0214 - Animation Sprite Binding</a>
+        <a class="live" href="./phase-02/0215/index.html"
+          title="Demonstrates layered draw ordering for background, world, actors, projectiles, UI, and debug."
+          data-tags="drawframe, drawpanel, inputservice, renderbylayers, scene, themetokens"
+          data-primary="z-layer">Sample 0215 - Z Layer Ordering</a>
+        <a class="live" href="./phase-02/0216/index.html"
+          title="Demonstrates prefab-based entity creation for players, enemies, pickups, and projectiles."
+          data-tags="createenemyprefab, createpickupprefab, createplayerprefab, createprojectileprefab, drawframe, drawpanel, inputservice, renderspritereadyentities, scene, themetokens"
+          data-primary="prefab-system">Sample 0216 - Prefab System</a>
+        <a class="live" href="./phase-02/0217/index.html"
+          title="Demonstrates higher-level game mode flow for title, play, pause, win, and lose states."
+          data-tags="drawframe, drawpanel, gamemodestate, inputservice, scene, themetokens"
+          data-primary="game-mode">Sample 0217 - Game Mode State</a>
+        <a class="live" href="./phase-02/0218/index.html"
+          title="Combines prefabs, render layers, game modes, interaction, AI, and projectiles into a cleaner mini-game slice."
+          data-tags="clamp, createenemyprefab, createplayerprefab, drawframe, drawpanel, gamemodestate, inputservice, iswithindetectionrange, renderbylayers, renderspritereadyentities, resolveinteraction, scene, spawnprojectile, themetokens, updatepatrolentity, updateprojectiles"
+          data-primary="polished-playable">Sample 0218 - Polished Playable Slice</a>
+        <a class="live" href="./phase-02/0219/index.html"
+          title="Demonstrates sprite-atlas-style frame lookup and image-loader-ready rendering proxies."
+          data-tags="drawframe, drawpanel, imageassetloader, inputservice, renderspritereadyentities, scene, spriteatlas, themetokens"
+          data-primary="sprite-atlas">Sample 0219 - Sprite Atlas Image Rendering</a>
+        <a class="live" href="./phase-02/0220/index.html"
+          title="Demonstrates a world-space camera system so scenes stop doing ad hoc offset math."
+          data-tags="camera2d, clamp, drawframe, drawpanel, followcameratarget, inputservice, scene, themetokens, worldrecttoscreen"
+          data-primary="camera-system">Sample 0220 - Camera System</a>
+        <a class="live" href="./phase-02/0221/index.html"
+          title="Demonstrates tilemap rendering and tile-based collision as the foundation for map-driven games."
+          data-tags="clamp, drawframe, drawpanel, inputservice, rendertilemap, resolverectvstilemap, scene, themetokens"
+          data-primary="tilemap-system">Sample 0221 - Tilemap System</a>
+        <a class="live" href="./phase-02/0222/index.html"
+          title="Demonstrates action-based input mapping so gameplay is decoupled from physical keys."
+          data-tags="actioninputmap, actioninputservice, clamp, drawframe, drawpanel, scene, themetokens"
+          data-primary="input-action">Sample 0222 - Input Action Mapping</a>
+        <a class="live" href="./phase-02/0223/index.html"
+          title="Demonstrates saving and restoring a world snapshot through shared serialization helpers."
+          data-tags="clamp, deserializeworldstate, drawframe, drawpanel, inputservice, scene, serializeworldstate, themetokens"
+          data-primary="world-serialization">Sample 0223 - World Serialization</a>
+        <a class="live" href="./phase-02/0224/index.html"
+          title="Combines tilemap, camera, action input, sprite-atlas-style rendering, and world serialization into a playable slice."
+          data-tags="actioninputmap, actioninputservice, camera2d, deserializeworldstate, drawframe, drawpanel, followcameratarget, renderspritereadyentities, rendertilemap, resolverectvstilemap, scene, serializeworldstate, spriteatlas, themetokens, tilemap, worldrecttoscreen"
+          data-primary="tile-camera">Sample 0224 - Tile Camera Sprite Slice</a>
+        <a class="live" href="./phase-02/0225/index.html"
+          title="Projectile behavior lab with preset firing patterns, travel tuning, and cleanup stability checks."
+          data-tags="inputservice, scene, themetokens" data-primary="projectile-lab">Sample 0225 - Projectile Lab</a>
       </div>
     </section>
     <section>
       <h2>Phase 03 - Gameplay Systems</h2>
-      <p>Introduces movement rules, interaction systems, combat foundations, hazards, pickups, NPCs, and enemy behavior patterns.</p>
+      <p>Introduces movement rules, interaction systems, combat foundations, hazards, pickups, NPCs, and enemy behavior
+        patterns.</p>
       <div class="grid">
-        <a class="live" href="./phase-03/0301/index.html" title="Makes image-backed sprite rendering the standard actor path instead of color-box placeholders." data-tags="actioninputmap, actioninputservice, camera2d, drawframe, drawpanel, followcameratarget, imageassetloader, moverectwithtilemapcollision, renderspritereadyentities, rendertilemap, scene, spriteatlas, themetokens, tilemap, worldrecttoscreen" data-primary="real-sprite">Sample 0301 - Real Sprite Rendering</a>
-        <a class="live" href="./phase-03/0302/index.html" title="Adds stable timing, loop control, and a one-shot action animation on top of the real sprite path." data-tags="actioninputmap, actioninputservice, animationcontroller, camera2d, drawframe, drawpanel, followcameratarget, imageassetloader, moverectwithtilemapcollision, renderspritereadyentities, rendertilemap, scene, spriteatlas, themetokens, tilemap, worldrecttoscreen" data-primary="animation-system">Sample 0302 - Animation System</a>
-        <a class="live" href="./phase-03/0303/index.html" title="Introduces reusable velocity, acceleration, and drag based movement for a more game-ready motion model." data-tags="actioninputmap, actioninputservice, animationcontroller, camera2d, drawframe, drawpanel, followcameratarget, imageassetloader, renderspritereadyentities, rendertilemap, scene, spriteatlas, steparcadebody, themetokens, tilemap, worldrecttoscreen" data-primary="physics-system">Sample 0303 - Physics System</a>
-        <a class="live" href="./phase-03/0304/index.html" title="Improves tile collision response with axis-separated resolution and better wall sliding behavior." data-tags="actioninputmap, actioninputservice, animationcontroller, camera2d, drawframe, drawpanel, followcameratarget, imageassetloader, moverectwithtilemapcollision, renderspritereadyentities, rendertilemap, scene, spriteatlas, steparcadebody, themetokens, tilemap, worldrecttoscreen" data-primary="collision-resolution">Sample 0304 - Collision Resolution</a>
-        <a class="live" href="./phase-03/0305/index.html" title="Adds hazard, trigger, and slope-style metadata definitions to the tilemap system." data-tags="actioninputmap, actioninputservice, animationcontroller, camera2d, drawframe, drawpanel, followcameratarget, imageassetloader, moverectwithtilemapcollision, renderspritereadyentities, rendertilemap, scene, spriteatlas, steparcadebody, themetokens, tilemap, worldrecttoscreen" data-primary="tile-metadata">Sample 0305 - Tile Metadata</a>
-        <a class="live" href="./phase-03/0306/index.html" title="Demonstrates section-based camera zones and simple parallax layers inspired by classic side scrollers." data-tags="actioninputmap, actioninputservice, animationcontroller, camera2d, drawframe, drawpanel, followcameratarget, imageassetloader, moverectwithtilemapcollision, renderspritereadyentities, rendertilemap, scene, spriteatlas, steparcadebody, themetokens, tilemap, worldrecttoscreen" data-primary="nes-zones">Sample 0306 - Nes Style Zones Parallax</a>
-        <a class="live" href="./phase-03/0307/index.html" title="First-pass slope and ramp sample. Move across the purple ramp surfaces to verify the actor can climb an angled floor instead of colliding as if it were a wall." data-tags="actioninputmap, actioninputservice, camera2d, drawframe, drawpanel, followcameratarget, scene, themetokens" data-primary="slopes-ramps">Sample 0307 - Slopes Ramps</a>
-        <a class="live" href="./phase-03/0308/index.html" title="Colored zones change the direction of gravity. Move through the blue, orange, and green fields to verify that gravity can be authored per-zone instead of globally. Press Space to jump opposite the current gravity direction." data-tags="actioninputmap, actioninputservice, camera2d, drawframe, drawpanel, followcameratarget, scene, themetokens" data-primary="gravity-zones">Sample 0308 - Gravity Zones</a>
-        <a class="live" href="./phase-03/0309/index.html" title="Yellow ladder volumes let the actor climb vertically and suspend falling. Enter a ladder, climb up to the next platform, and step off to resume normal gravity." data-tags="actioninputmap, actioninputservice, camera2d, drawframe, drawpanel, followcameratarget, scene, themetokens" data-primary="ladders-climb">Sample 0309 - Ladders Climb Zones</a>
-        <a class="live" href="./phase-03/0310/index.html" title="Two moving platforms demonstrate ride/carry behavior. Stand on the cyan platforms and verify that the actor is translated with the platform instead of slipping off every frame." data-tags="actioninputmap, actioninputservice, camera2d, drawframe, drawpanel, followcameratarget, scene, themetokens" data-primary="moving-platforms">Sample 0310 - Moving Platforms</a>
-        <a class="live" href="./phase-03/0311/index.html" title="Orange platforms only collide when the actor falls onto them from above. Jump upward through them, land on them from above, and press Down + Space to drop through." data-tags="actioninputmap, actioninputservice, camera2d, drawframe, drawpanel, followcameratarget, scene, themetokens" data-primary="one-way">Sample 0311 - One Way Platforms</a>
-        <a class="live" href="./phase-03/0312/index.html" title="Blue ice and brown mud surfaces alter horizontal movement feel. Compare momentum retention and traction as you move across each authored surface strip." data-tags="actioninputmap, actioninputservice, camera2d, drawframe, drawpanel, followcameratarget, scene, themetokens" data-primary="friction-surfaces">Sample 0312 - Friction Surfaces</a>
-        <a class="live" href="./phase-03/0313/index.html" title="Demonstrates enter and exit trigger zones. Walk through the colored fields to see one-time enter events, active states, and exit messages without requiring button presses." data-tags="actioninputmap, actioninputservice, camera2d, drawframe, drawpanel, followcameratarget, scene, themetokens" data-primary="trigger-zones">Sample 0313 - Trigger Zones</a>
-        <a class="live" href="./phase-03/0314/index.html" title="Demonstrates collectibles that disappear when touched, increment score, and can require jumping to reach elevated items." data-tags="actioninputmap, actioninputservice, camera2d, drawframe, drawpanel, followcameratarget, scene, themetokens" data-primary="pickups-collectibles">Sample 0314 - Pickups Collectibles</a>
-        <a class="live" href="./phase-03/0315/index.html" title="Demonstrates floor buttons and toggled switches. Contact with the red floor pad and interact with the yellow wall switch to change linked state." data-tags="actioninputmap, actioninputservice, camera2d, drawframe, drawpanel, followcameratarget, scene, themetokens" data-primary="switches-buttons">Sample 0315 - Switches Buttons</a>
-        <a class="live" href="./phase-03/0316/index.html" title="Demonstrates linked buttons and a door gate. Step on the red button to open the center gate and walk through before it closes again." data-tags="actioninputmap, actioninputservice, camera2d, drawframe, drawpanel, followcameratarget, scene, themetokens" data-primary="doors-gates">Sample 0316 - Doors Gates</a>
-        <a class="live" href="./phase-03/0317/index.html" title="Demonstrates a basic NPC entity with patrol motion, facing direction, and a simple speech bubble when the player gets close." data-tags="actioninputmap, actioninputservice, camera2d, drawframe, drawpanel, followcameratarget, scene, themetokens" data-primary="basic-npc">Sample 0317 - Basic NPC Entity</a>
-        <a class="live" href="./phase-03/0318/index.html" title="Demonstrates a generic press-key interaction system. Walk up to the console, see the prompt, and press E to toggle the target state." data-tags="actioninputmap, actioninputservice, camera2d, drawframe, drawpanel, followcameratarget, scene, themetokens" data-primary="interaction-press">Sample 0318 - Interaction Press Key</a>
-        <a class="live" href="./phase-03/0319/index.html" title="Demonstrates the difference between an attack hitbox and a hurtbox. Move the player into range and press Space to test overlap." data-tags="actioninputmap, actioninputservice, drawframe, drawpanel, scene, themetokens" data-primary="hitboxes-hurtboxes">Sample 0319 - Hitboxes Hurtboxes</a>
-        <a class="live" href="./phase-03/0320/index.html" title="Introduces spawned projectiles with travel, lifetime, cleanup, and simple hit detection. Press F to fire." data-tags="actioninputmap, actioninputservice, drawframe, drawpanel, scene, themetokens" data-primary="projectile-system">Sample 0320 - Projectile System</a>
-        <a class="live" href="./phase-03/0321/index.html" title="Adds health values, simple damage application, HUD readout, and reset behavior for combat testing." data-tags="actioninputmap, actioninputservice, drawframe, drawpanel, scene, themetokens" data-primary="health-system">Sample 0321 - Health System</a>
-        <a class="live" href="./phase-03/0322/index.html" title="Adds directional knockback when damage lands so hits feel physical instead of purely numeric." data-tags="actioninputmap, actioninputservice, drawframe, drawpanel, scene, themetokens" data-primary="damage-knockback">Sample 0322 - Damage Knockback</a>
-        <a class="live" href="./phase-03/0323/index.html" title="Prevents repeated damage every frame during overlap. The target flashes while temporarily invulnerable." data-tags="actioninputmap, actioninputservice, drawframe, drawpanel, scene, themetokens" data-primary="invulnerability-frames">Sample 0323 - Invulnerability Frames</a>
-        <a class="live" href="./phase-03/0324/index.html" title="Adds a simple enemy that idles until the player comes near, then follows. Contact shows the first end-to-end mini combat loop." data-tags="actioninputmap, actioninputservice, drawframe, drawpanel, scene, themetokens" data-primary="simple-enemy">Sample 0324 - Simple Enemy AI</a>
-        <a class="live" href="./phase-03/0325/index.html" title="Force-driven gravity chamber focused on acceleration, rebound damping, and horizontal influence control." data-tags="inputservice, scene, themetokens" data-primary="gravity-arcade">Sample 0325 - Gravity Arcade</a>
-        <a class="live" href="./phase-03/0326/index.html" title="Intercept prediction sample where a tracking paddle solves future ball contact under wall reflections." data-tags="inputservice, scene, themetokens" data-primary="paddle-intercept">Sample 0326 - Paddle Intercept</a>
-        <a class="live" href="./phase-03/0327/index.html" title="Multi-ball collision stability sample with preset counts, speed variants, and long-run containment checks." data-tags="inputservice, scene, themetokens" data-primary="multi-ball-chaos">Sample 0327 - Multi-Ball Chaos</a>
+        <a class="live" href="./phase-03/0301/index.html"
+          title="Makes image-backed sprite rendering the standard actor path instead of color-box placeholders."
+          data-tags="actioninputmap, actioninputservice, camera2d, drawframe, drawpanel, followcameratarget, imageassetloader, moverectwithtilemapcollision, renderspritereadyentities, rendertilemap, scene, spriteatlas, themetokens, tilemap, worldrecttoscreen"
+          data-primary="real-sprite">Sample 0301 - Real Sprite Rendering</a>
+        <a class="live" href="./phase-03/0302/index.html"
+          title="Adds stable timing, loop control, and a one-shot action animation on top of the real sprite path."
+          data-tags="actioninputmap, actioninputservice, animationcontroller, camera2d, drawframe, drawpanel, followcameratarget, imageassetloader, moverectwithtilemapcollision, renderspritereadyentities, rendertilemap, scene, spriteatlas, themetokens, tilemap, worldrecttoscreen"
+          data-primary="animation-system">Sample 0302 - Animation System</a>
+        <a class="live" href="./phase-03/0303/index.html"
+          title="Introduces reusable velocity, acceleration, and drag based movement for a more game-ready motion model."
+          data-tags="actioninputmap, actioninputservice, animationcontroller, camera2d, drawframe, drawpanel, followcameratarget, imageassetloader, renderspritereadyentities, rendertilemap, scene, spriteatlas, steparcadebody, themetokens, tilemap, worldrecttoscreen"
+          data-primary="physics-system">Sample 0303 - Physics System</a>
+        <a class="live" href="./phase-03/0304/index.html"
+          title="Improves tile collision response with axis-separated resolution and better wall sliding behavior."
+          data-tags="actioninputmap, actioninputservice, animationcontroller, camera2d, drawframe, drawpanel, followcameratarget, imageassetloader, moverectwithtilemapcollision, renderspritereadyentities, rendertilemap, scene, spriteatlas, steparcadebody, themetokens, tilemap, worldrecttoscreen"
+          data-primary="collision-resolution">Sample 0304 - Collision Resolution</a>
+        <a class="live" href="./phase-03/0305/index.html"
+          title="Adds hazard, trigger, and slope-style metadata definitions to the tilemap system."
+          data-tags="actioninputmap, actioninputservice, animationcontroller, camera2d, drawframe, drawpanel, followcameratarget, imageassetloader, moverectwithtilemapcollision, renderspritereadyentities, rendertilemap, scene, spriteatlas, steparcadebody, themetokens, tilemap, worldrecttoscreen"
+          data-primary="tile-metadata">Sample 0305 - Tile Metadata</a>
+        <a class="live" href="./phase-03/0306/index.html"
+          title="Demonstrates section-based camera zones and simple parallax layers inspired by classic side scrollers."
+          data-tags="actioninputmap, actioninputservice, animationcontroller, camera2d, drawframe, drawpanel, followcameratarget, imageassetloader, moverectwithtilemapcollision, renderspritereadyentities, rendertilemap, scene, spriteatlas, steparcadebody, themetokens, tilemap, worldrecttoscreen"
+          data-primary="nes-zones">Sample 0306 - Nes Style Zones Parallax</a>
+        <a class="live" href="./phase-03/0307/index.html"
+          title="First-pass slope and ramp sample. Move across the purple ramp surfaces to verify the actor can climb an angled floor instead of colliding as if it were a wall."
+          data-tags="actioninputmap, actioninputservice, camera2d, drawframe, drawpanel, followcameratarget, scene, themetokens"
+          data-primary="slopes-ramps">Sample 0307 - Slopes Ramps</a>
+        <a class="live" href="./phase-03/0308/index.html"
+          title="Colored zones change the direction of gravity. Move through the blue, orange, and green fields to verify that gravity can be authored per-zone instead of globally. Press Space to jump opposite the current gravity direction."
+          data-tags="actioninputmap, actioninputservice, camera2d, drawframe, drawpanel, followcameratarget, scene, themetokens"
+          data-primary="gravity-zones">Sample 0308 - Gravity Zones</a>
+        <a class="live" href="./phase-03/0309/index.html"
+          title="Yellow ladder volumes let the actor climb vertically and suspend falling. Enter a ladder, climb up to the next platform, and step off to resume normal gravity."
+          data-tags="actioninputmap, actioninputservice, camera2d, drawframe, drawpanel, followcameratarget, scene, themetokens"
+          data-primary="ladders-climb">Sample 0309 - Ladders Climb Zones</a>
+        <a class="live" href="./phase-03/0310/index.html"
+          title="Two moving platforms demonstrate ride/carry behavior. Stand on the cyan platforms and verify that the actor is translated with the platform instead of slipping off every frame."
+          data-tags="actioninputmap, actioninputservice, camera2d, drawframe, drawpanel, followcameratarget, scene, themetokens"
+          data-primary="moving-platforms">Sample 0310 - Moving Platforms</a>
+        <a class="live" href="./phase-03/0311/index.html"
+          title="Orange platforms only collide when the actor falls onto them from above. Jump upward through them, land on them from above, and press Down + Space to drop through."
+          data-tags="actioninputmap, actioninputservice, camera2d, drawframe, drawpanel, followcameratarget, scene, themetokens"
+          data-primary="one-way">Sample 0311 - One Way Platforms</a>
+        <a class="live" href="./phase-03/0312/index.html"
+          title="Blue ice and brown mud surfaces alter horizontal movement feel. Compare momentum retention and traction as you move across each authored surface strip."
+          data-tags="actioninputmap, actioninputservice, camera2d, drawframe, drawpanel, followcameratarget, scene, themetokens"
+          data-primary="friction-surfaces">Sample 0312 - Friction Surfaces</a>
+        <a class="live" href="./phase-03/0313/index.html"
+          title="Demonstrates enter and exit trigger zones. Walk through the colored fields to see one-time enter events, active states, and exit messages without requiring button presses."
+          data-tags="actioninputmap, actioninputservice, camera2d, drawframe, drawpanel, followcameratarget, scene, themetokens"
+          data-primary="trigger-zones">Sample 0313 - Trigger Zones</a>
+        <a class="live" href="./phase-03/0314/index.html"
+          title="Demonstrates collectibles that disappear when touched, increment score, and can require jumping to reach elevated items."
+          data-tags="actioninputmap, actioninputservice, camera2d, drawframe, drawpanel, followcameratarget, scene, themetokens"
+          data-primary="pickups-collectibles">Sample 0314 - Pickups Collectibles</a>
+        <a class="live" href="./phase-03/0315/index.html"
+          title="Demonstrates floor buttons and toggled switches. Contact with the red floor pad and interact with the yellow wall switch to change linked state."
+          data-tags="actioninputmap, actioninputservice, camera2d, drawframe, drawpanel, followcameratarget, scene, themetokens"
+          data-primary="switches-buttons">Sample 0315 - Switches Buttons</a>
+        <a class="live" href="./phase-03/0316/index.html"
+          title="Demonstrates linked buttons and a door gate. Step on the red button to open the center gate and walk through before it closes again."
+          data-tags="actioninputmap, actioninputservice, camera2d, drawframe, drawpanel, followcameratarget, scene, themetokens"
+          data-primary="doors-gates">Sample 0316 - Doors Gates</a>
+        <a class="live" href="./phase-03/0317/index.html"
+          title="Demonstrates a basic NPC entity with patrol motion, facing direction, and a simple speech bubble when the player gets close."
+          data-tags="actioninputmap, actioninputservice, camera2d, drawframe, drawpanel, followcameratarget, scene, themetokens"
+          data-primary="basic-npc">Sample 0317 - Basic NPC Entity</a>
+        <a class="live" href="./phase-03/0318/index.html"
+          title="Demonstrates a generic press-key interaction system. Walk up to the console, see the prompt, and press E to toggle the target state."
+          data-tags="actioninputmap, actioninputservice, camera2d, drawframe, drawpanel, followcameratarget, scene, themetokens"
+          data-primary="interaction-press">Sample 0318 - Interaction Press Key</a>
+        <a class="live" href="./phase-03/0319/index.html"
+          title="Demonstrates the difference between an attack hitbox and a hurtbox. Move the player into range and press Space to test overlap."
+          data-tags="actioninputmap, actioninputservice, drawframe, drawpanel, scene, themetokens"
+          data-primary="hitboxes-hurtboxes">Sample 0319 - Hitboxes Hurtboxes</a>
+        <a class="live" href="./phase-03/0320/index.html"
+          title="Introduces spawned projectiles with travel, lifetime, cleanup, and simple hit detection. Press F to fire."
+          data-tags="actioninputmap, actioninputservice, drawframe, drawpanel, scene, themetokens"
+          data-primary="projectile-system">Sample 0320 - Projectile System</a>
+        <a class="live" href="./phase-03/0321/index.html"
+          title="Adds health values, simple damage application, HUD readout, and reset behavior for combat testing."
+          data-tags="actioninputmap, actioninputservice, drawframe, drawpanel, scene, themetokens"
+          data-primary="health-system">Sample 0321 - Health System</a>
+        <a class="live" href="./phase-03/0322/index.html"
+          title="Adds directional knockback when damage lands so hits feel physical instead of purely numeric."
+          data-tags="actioninputmap, actioninputservice, drawframe, drawpanel, scene, themetokens"
+          data-primary="damage-knockback">Sample 0322 - Damage Knockback</a>
+        <a class="live" href="./phase-03/0323/index.html"
+          title="Prevents repeated damage every frame during overlap. The target flashes while temporarily invulnerable."
+          data-tags="actioninputmap, actioninputservice, drawframe, drawpanel, scene, themetokens"
+          data-primary="invulnerability-frames">Sample 0323 - Invulnerability Frames</a>
+        <a class="live" href="./phase-03/0324/index.html"
+          title="Adds a simple enemy that idles until the player comes near, then follows. Contact shows the first end-to-end mini combat loop."
+          data-tags="actioninputmap, actioninputservice, drawframe, drawpanel, scene, themetokens"
+          data-primary="simple-enemy">Sample 0324 - Simple Enemy AI</a>
+        <a class="live" href="./phase-03/0325/index.html"
+          title="Force-driven gravity chamber focused on acceleration, rebound damping, and horizontal influence control."
+          data-tags="inputservice, scene, themetokens" data-primary="gravity-arcade">Sample 0325 - Gravity Arcade</a>
+        <a class="live" href="./phase-03/0326/index.html"
+          title="Intercept prediction sample where a tracking paddle solves future ball contact under wall reflections."
+          data-tags="inputservice, scene, themetokens" data-primary="paddle-intercept">Sample 0326 - Paddle
+          Intercept</a>
+        <a class="live" href="./phase-03/0327/index.html"
+          title="Multi-ball collision stability sample with preset counts, speed variants, and long-run containment checks."
+          data-tags="inputservice, scene, themetokens" data-primary="multi-ball-chaos">Sample 0327 - Multi-Ball
+          Chaos</a>
       </div>
     </section>
     <section>
       <h2>Phase 04 - Camera + Feel</h2>
-      <p>Focuses on camera behavior and input feel, covering dead zones, smoothing, shake, buffering, queues, and timing windows.</p>
+      <p>Focuses on camera behavior and input feel, covering dead zones, smoothing, shake, buffering, queues, and timing
+        windows.</p>
       <div class="grid">
-        <a class="live" href="./phase-04/0401/index.html" title="Demonstrates a dead zone where the camera waits before following the actor." data-tags="scene, themetokens" data-primary="camera-dead">Sample 0401 - Camera Dead Zone</a>
-        <a class="live" href="./phase-04/0402/index.html" title="Demonstrates look-ahead camera movement that anticipates actor direction." data-tags="scene, themetokens" data-primary="camera-look">Sample 0402 - Camera Look Ahead</a>
-        <a class="live" href="./phase-04/0403/index.html" title="Demonstrates smoothed camera movement instead of a hard snap follow." data-tags="scene, themetokens" data-primary="camera-smoothing">Sample 0403 - Camera Smoothing</a>
-        <a class="live" href="./phase-04/0404/index.html" title="Demonstrates clamped camera travel inside world bounds." data-tags="scene, themetokens" data-primary="camera-bounds">Sample 0404 - Camera Bounds</a>
-        <a class="live" href="./phase-04/0405/index.html" title="Demonstrates a simple camera shake effect triggered during play." data-tags="scene, themetokens" data-primary="camera-shake">Sample 0405 - Camera Shake</a>
-        <a class="live" href="./phase-04/0406/index.html" title="Demonstrates the same actor-centered world at multiple camera zoom levels." data-tags="scene, themetokens" data-primary="camera-zoom">Sample 0406 - Camera Zoom</a>
-        <a class="live" href="./phase-04/0407/index.html" title="Demonstrates queued input that executes when the action becomes valid." data-tags="actioninputmap, actioninputservice, drawframe, drawpanel, scene, themetokens" data-primary="input-buffering">Sample 0407 - Input Buffering</a>
-        <a class="live" href="./phase-04/0408/index.html" title="Demonstrates queued actions resolving by configured priority." data-tags="actioninputmap, actioninputservice, drawframe, drawpanel, scene, themetokens" data-primary="input-queue">Sample 0408 - Input Queue Priority</a>
-        <a class="live" href="./phase-04/0409/index.html" title="Demonstrates valid input only during configured timing windows." data-tags="actioninputmap, actioninputservice, drawframe, drawpanel, scene, themetokens" data-primary="input-timing">Sample 0409 - Input Timing Windows</a>
-        <a class="live" href="./phase-04/0410/index.html" title="Demonstrates reusable cooldown timers for actions." data-tags="actioninputmap, actioninputservice, drawframe, drawpanel, scene, themetokens" data-primary="action-cooldowns">Sample 0410 - Action Cooldowns</a>
-        <a class="live" href="./phase-04/0411/index.html" title="Demonstrates named input sequences triggering chained actions." data-tags="actioninputmap, actioninputservice, drawframe, drawpanel, scene, themetokens" data-primary="input-chaining">Sample 0411 - Input Chaining</a>
-        <a class="live" href="./phase-04/0412/index.html" title="Demonstrates a live debug overlay for action input states." data-tags="actioninputmap, actioninputservice, drawactioninputdebugoverlay, drawframe, scene, themetokens" data-primary="input-state">Sample 0412 - Input State Debug Overlay</a>
-        <a class="live" href="./phase-04/0413/index.html" title="Inertial ship movement lab covering tank-style rotation, thrust, drift, and bounded wall response." data-tags="inputservice, scene, themetokens" data-primary="thruster-lab">Sample 0413 - Thruster Inertia Lab</a>
+        <a class="live" href="./phase-04/0401/index.html"
+          title="Demonstrates a dead zone where the camera waits before following the actor."
+          data-tags="scene, themetokens" data-primary="camera-dead">Sample 0401 - Camera Dead Zone</a>
+        <a class="live" href="./phase-04/0402/index.html"
+          title="Demonstrates look-ahead camera movement that anticipates actor direction."
+          data-tags="scene, themetokens" data-primary="camera-look">Sample 0402 - Camera Look Ahead</a>
+        <a class="live" href="./phase-04/0403/index.html"
+          title="Demonstrates smoothed camera movement instead of a hard snap follow." data-tags="scene, themetokens"
+          data-primary="camera-smoothing">Sample 0403 - Camera Smoothing</a>
+        <a class="live" href="./phase-04/0404/index.html"
+          title="Demonstrates clamped camera travel inside world bounds." data-tags="scene, themetokens"
+          data-primary="camera-bounds">Sample 0404 - Camera Bounds</a>
+        <a class="live" href="./phase-04/0405/index.html"
+          title="Demonstrates a simple camera shake effect triggered during play." data-tags="scene, themetokens"
+          data-primary="camera-shake">Sample 0405 - Camera Shake</a>
+        <a class="live" href="./phase-04/0406/index.html"
+          title="Demonstrates the same actor-centered world at multiple camera zoom levels."
+          data-tags="scene, themetokens" data-primary="camera-zoom">Sample 0406 - Camera Zoom</a>
+        <a class="live" href="./phase-04/0407/index.html"
+          title="Demonstrates queued input that executes when the action becomes valid."
+          data-tags="actioninputmap, actioninputservice, drawframe, drawpanel, scene, themetokens"
+          data-primary="input-buffering">Sample 0407 - Input Buffering</a>
+        <a class="live" href="./phase-04/0408/index.html"
+          title="Demonstrates queued actions resolving by configured priority."
+          data-tags="actioninputmap, actioninputservice, drawframe, drawpanel, scene, themetokens"
+          data-primary="input-queue">Sample 0408 - Input Queue Priority</a>
+        <a class="live" href="./phase-04/0409/index.html"
+          title="Demonstrates valid input only during configured timing windows."
+          data-tags="actioninputmap, actioninputservice, drawframe, drawpanel, scene, themetokens"
+          data-primary="input-timing">Sample 0409 - Input Timing Windows</a>
+        <a class="live" href="./phase-04/0410/index.html" title="Demonstrates reusable cooldown timers for actions."
+          data-tags="actioninputmap, actioninputservice, drawframe, drawpanel, scene, themetokens"
+          data-primary="action-cooldowns">Sample 0410 - Action Cooldowns</a>
+        <a class="live" href="./phase-04/0411/index.html"
+          title="Demonstrates named input sequences triggering chained actions."
+          data-tags="actioninputmap, actioninputservice, drawframe, drawpanel, scene, themetokens"
+          data-primary="input-chaining">Sample 0411 - Input Chaining</a>
+        <a class="live" href="./phase-04/0412/index.html"
+          title="Demonstrates a live debug overlay for action input states."
+          data-tags="actioninputmap, actioninputservice, drawactioninputdebugoverlay, drawframe, scene, themetokens"
+          data-primary="input-state">Sample 0412 - Input State Debug Overlay</a>
+        <a class="live" href="./phase-04/0413/index.html"
+          title="Inertial ship movement lab covering tank-style rotation, thrust, drift, and bounded wall response."
+          data-tags="inputservice, scene, themetokens" data-primary="thruster-lab">Sample 0413 - Thruster Inertia
+          Lab</a>
       </div>
     </section>
     <section>
       <h2>Phase 05 - UI + Systems</h2>
-      <p>Builds combat-facing UI and reusable support systems such as events, state machines, config loading, debugging, and metrics.</p>
+      <p>Builds combat-facing UI and reusable support systems such as events, state machines, config loading, debugging,
+        and metrics.</p>
       <div class="grid">
-        <a class="live" href="./phase-05/0501/index.html" title="Demonstrates reusable attack overlap regions and target hurtboxes." data-tags="actioninputmap, actioninputservice, createattackprofile, createcombatant, drawframe, drawpanel, findattackoverlaps, getattackhitboxes, getcombatanthurtboxes, isattackactive, scene, startattack, themetokens, updateattackstate" data-primary="hitboxes-hurtboxes">Sample 0501 - Hitboxes Hurtboxes</a>
-        <a class="live" href="./phase-05/0502/index.html" title="Demonstrates startup, active, and recovery timing windows for attacks." data-tags="actioninputmap, actioninputservice, createattackprofile, createcombatant, drawframe, drawpanel, findattackoverlaps, getattackphaseprogress, isattackactive, scene, startattack, themetokens, updateattackstate" data-primary="attack-timing">Sample 0502 - Attack Timing Windows</a>
-        <a class="live" href="./phase-05/0503/index.html" title="Demonstrates damage application with temporary invulnerability after a hit." data-tags="actioninputmap, actioninputservice, applyattackoverlaps, createattackprofile, createcombatant, drawframe, drawpanel, scene, startattack, themetokens, updateattackstate, updatecombatant" data-primary="damage-invulnerability">Sample 0503 - Damage Invulnerability</a>
-        <a class="live" href="./phase-05/0504/index.html" title="Demonstrates reusable directional knockback when damage lands." data-tags="actioninputmap, actioninputservice, applyattackoverlaps, createattackprofile, createcombatant, drawframe, drawpanel, scene, startattack, themetokens, updateattackstate, updatecombatant" data-primary="knockback-response">Sample 0504 - Knockback Response</a>
-        <a class="live" href="./phase-05/0505/index.html" title="Demonstrates health reduction to zero and a reusable dead disabled state." data-tags="actioninputmap, actioninputservice, applyattackoverlaps, createattackprofile, createcombatant, drawframe, drawpanel, scene, startattack, themetokens, updateattackstate, updatecombatant" data-primary="health-death">Sample 0505 - Health Death State</a>
-        <a class="live" href="./phase-05/0506/index.html" title="Demonstrates an engine-owned overlay for hitboxes, hurtboxes, timing, health, and invulnerability." data-tags="actioninputmap, actioninputservice, applyattackoverlaps, createattackprofile, createcombatant, drawcombatdebugoverlay, drawframe, drawpanel, scene, startattack, themetokens, updateattackstate, updatecombatant" data-primary="combat-debug">Sample 0506 - Combat Debug Overlay</a>
-        <a class="live" href="./phase-05/0507/index.html" title="Demonstrates engine-owned publish and subscribe flow without direct object coupling." data-tags="actioninputmap, actioninputservice, drawframe, drawpanel, scene, themetokens" data-primary="event-bus">Sample 0507 - Event Bus</a>
-        <a class="live" href="./phase-05/0508/index.html" title="Demonstrates reusable state definitions with enter, update, exit, and guarded transitions." data-tags="actioninputmap, actioninputservice, drawframe, drawpanel, scene, statemachine, themetokens" data-primary="state-machine">Sample 0508 - State Machine Framework</a>
-        <a class="live" href="./phase-05/0509/index.html" title="Demonstrates JSON-driven configuration loaded through an engine-owned config store." data-tags="actioninputmap, actioninputservice, configstore, drawframe, drawpanel, scene, themetokens" data-primary="config-system">Sample 0509 - Config System</a>
-        <a class="live" href="./phase-05/0510/index.html" title="Demonstrates deterministic engine-owned asset loading and status reporting." data-tags="assetloadersystem, assetregistry, drawframe, drawpanel, imageassetloader, scene, themetokens" data-primary="asset-loader">Sample 0510 - Asset Loader System</a>
-        <a class="live" href="./phase-05/0511/index.html" title="Demonstrates reusable overlays and bounds visualization through engine debug helpers." data-tags="actioninputmap, actioninputservice, drawdebugbounds, drawdebugoverlay, drawframe, scene, themetokens" data-primary="debug-tools">Sample 0511 - Debug Tools</a>
-        <a class="live" href="./phase-05/0512/index.html" title="Demonstrates engine-owned runtime timing instrumentation through a reusable metrics panel." data-tags="drawframe, drawperformancemetricspanel, scene, themetokens" data-primary="performance-metrics">Sample 0512 - Performance Metrics</a>
+        <a class="live" href="./phase-05/0501/index.html"
+          title="Demonstrates reusable attack overlap regions and target hurtboxes."
+          data-tags="actioninputmap, actioninputservice, createattackprofile, createcombatant, drawframe, drawpanel, findattackoverlaps, getattackhitboxes, getcombatanthurtboxes, isattackactive, scene, startattack, themetokens, updateattackstate"
+          data-primary="hitboxes-hurtboxes">Sample 0501 - Hitboxes Hurtboxes</a>
+        <a class="live" href="./phase-05/0502/index.html"
+          title="Demonstrates startup, active, and recovery timing windows for attacks."
+          data-tags="actioninputmap, actioninputservice, createattackprofile, createcombatant, drawframe, drawpanel, findattackoverlaps, getattackphaseprogress, isattackactive, scene, startattack, themetokens, updateattackstate"
+          data-primary="attack-timing">Sample 0502 - Attack Timing Windows</a>
+        <a class="live" href="./phase-05/0503/index.html"
+          title="Demonstrates damage application with temporary invulnerability after a hit."
+          data-tags="actioninputmap, actioninputservice, applyattackoverlaps, createattackprofile, createcombatant, drawframe, drawpanel, scene, startattack, themetokens, updateattackstate, updatecombatant"
+          data-primary="damage-invulnerability">Sample 0503 - Damage Invulnerability</a>
+        <a class="live" href="./phase-05/0504/index.html"
+          title="Demonstrates reusable directional knockback when damage lands."
+          data-tags="actioninputmap, actioninputservice, applyattackoverlaps, createattackprofile, createcombatant, drawframe, drawpanel, scene, startattack, themetokens, updateattackstate, updatecombatant"
+          data-primary="knockback-response">Sample 0504 - Knockback Response</a>
+        <a class="live" href="./phase-05/0505/index.html"
+          title="Demonstrates health reduction to zero and a reusable dead disabled state."
+          data-tags="actioninputmap, actioninputservice, applyattackoverlaps, createattackprofile, createcombatant, drawframe, drawpanel, scene, startattack, themetokens, updateattackstate, updatecombatant"
+          data-primary="health-death">Sample 0505 - Health Death State</a>
+        <a class="live" href="./phase-05/0506/index.html"
+          title="Demonstrates an engine-owned overlay for hitboxes, hurtboxes, timing, health, and invulnerability."
+          data-tags="actioninputmap, actioninputservice, applyattackoverlaps, createattackprofile, createcombatant, drawcombatdebugoverlay, drawframe, drawpanel, scene, startattack, themetokens, updateattackstate, updatecombatant"
+          data-primary="combat-debug">Sample 0506 - Combat Debug Overlay</a>
+        <a class="live" href="./phase-05/0507/index.html"
+          title="Demonstrates engine-owned publish and subscribe flow without direct object coupling."
+          data-tags="actioninputmap, actioninputservice, drawframe, drawpanel, scene, themetokens"
+          data-primary="event-bus">Sample 0507 - Event Bus</a>
+        <a class="live" href="./phase-05/0508/index.html"
+          title="Demonstrates reusable state definitions with enter, update, exit, and guarded transitions."
+          data-tags="actioninputmap, actioninputservice, drawframe, drawpanel, scene, statemachine, themetokens"
+          data-primary="state-machine">Sample 0508 - State Machine Framework</a>
+        <a class="live" href="./phase-05/0509/index.html"
+          title="Demonstrates JSON-driven configuration loaded through an engine-owned config store."
+          data-tags="actioninputmap, actioninputservice, configstore, drawframe, drawpanel, scene, themetokens"
+          data-primary="config-system">Sample 0509 - Config System</a>
+        <a class="live" href="./phase-05/0510/index.html"
+          title="Demonstrates deterministic engine-owned asset loading and status reporting."
+          data-tags="assetloadersystem, assetregistry, drawframe, drawpanel, imageassetloader, scene, themetokens"
+          data-primary="asset-loader">Sample 0510 - Asset Loader System</a>
+        <a class="live" href="./phase-05/0511/index.html"
+          title="Demonstrates reusable overlays and bounds visualization through engine debug helpers."
+          data-tags="actioninputmap, actioninputservice, drawdebugbounds, drawdebugoverlay, drawframe, scene, themetokens"
+          data-primary="debug-tools">Sample 0511 - Debug Tools</a>
+        <a class="live" href="./phase-05/0512/index.html"
+          title="Demonstrates engine-owned runtime timing instrumentation through a reusable metrics panel."
+          data-tags="drawframe, drawperformancemetricspanel, scene, themetokens"
+          data-primary="performance-metrics">Sample 0512 - Performance Metrics</a>
       </div>
     </section>
     <section>
       <h2>Phase 06 - AI + World Simulation</h2>
-      <p>Explores navigation, AI behaviors, questing, scripting, cutscenes, spawning, weather, and broader world simulation features.</p>
+      <p>Explores navigation, AI behaviors, questing, scripting, cutscenes, spawning, weather, and broader world
+        simulation features.</p>
       <div class="grid">
-        <a class="live" href="./phase-06/0601/index.html" title="Demonstrates engine-owned A* pathfinding across a blocked grid." data-tags="advancepatrolroute, drawframe, drawpanel, findgridpath, scene, themetokens" data-primary="grid-pathfinding">Sample 0601 - Grid Pathfinding</a>
-        <a class="live" href="./phase-06/0602/index.html" title="Demonstrates reusable patrol movement across a data-driven route." data-tags="advancepatrolroute, drawframe, drawpanel, scene, themetokens" data-primary="patrol-ai">Sample 0602 - Patrol AI</a>
-        <a class="live" href="./phase-06/0603/index.html" title="Demonstrates reusable steering behaviors for pursuit and avoidance." data-tags="actioninputmap, actioninputservice, drawframe, drawpanel, scene, stepchasebehavior, stepevadebehavior, themetokens" data-primary="chase-evade">Sample 0603 - Chase Evade AI</a>
-        <a class="live" href="./phase-06/0604/index.html" title="Demonstrates reusable AI orchestration switching behaviors through state control." data-tags="actioninputmap, actioninputservice, advancepatrolroute, aistatecontroller, drawframe, drawpanel, scene, stepchasebehavior, themetokens" data-primary="state-driven">Sample 0604 - State Driven AI</a>
-        <a class="live" href="./phase-06/0605/index.html" title="Demonstrates reusable coordinated movement tendencies across a group of agents." data-tags="drawframe, drawpanel, scene, stepgroupbehavior, themetokens" data-primary="group-behaviors">Sample 0605 - Group Behaviors</a>
-        <a class="live" href="./phase-06/0606/index.html" title="Demonstrates data-driven quest tracking through an engine-owned system." data-tags="actioninputmap, actioninputservice, drawframe, drawpanel, questsystem, scene, themetokens" data-primary="quest-system">Sample 0606 - Quest System</a>
-        <a class="live" href="./phase-06/0607/index.html" title="Demonstrates reusable event-driven scripting through engine-owned script registration." data-tags="actioninputmap, actioninputservice, drawframe, drawpanel, eventscriptsystem, scene, themetokens" data-primary="scripting-system">Sample 0607 - Scripting System</a>
-        <a class="live" href="./phase-06/0608/index.html" title="Demonstrates reusable timed sequencing for scripted cutscene steps." data-tags="cutscenesystem, drawframe, drawpanel, scene, themetokens" data-primary="cutscene-system">Sample 0608 - Cutscene System</a>
-        <a class="live" href="./phase-06/0609/index.html" title="Demonstrates reusable timed spawning rules through an engine-owned spawn system." data-tags="drawframe, drawpanel, scene, themetokens" data-primary="spawn-system">Sample 0609 - Spawn System</a>
-        <a class="live" href="./phase-06/0610/index.html" title="Demonstrates reusable time-of-day tracking affecting world presentation." data-tags="daynightcycle, drawframe, drawpanel, scene, themetokens" data-primary="day-night">Sample 0610 - Day Night Cycle</a>
-        <a class="live" href="./phase-06/0611/index.html" title="Demonstrates animated rain and wind layered on top of the engine weather state system." data-tags="drawframe, drawpanel, scene, themetokens, weathersystem" data-primary="weather-animation">Sample 0611 - Weather Animation</a>
-        <a class="live" href="./phase-06/0612/index.html" title="Demonstrates reusable weather state management affecting presentation." data-tags="drawframe, drawpanel, scene, themetokens, weathersystem" data-primary="weather-system">Sample 0612 - Weather System</a>
-        <a class="live" href="./phase-06/0613/index.html" title="Demonstrates reusable chunk loading logic driven by player position." data-tags="actioninputmap, actioninputservice, drawframe, drawpanel, scene, themetokens, worldstreamingsystem" data-primary="world-streaming">Sample 0613 - World Streaming</a>
-        <a class="live" href="./phase-06/0614/index.html" title="Central-attractor orbit lab for comparing stable, elliptical, fall-inward, and escape trajectories." data-tags="inputservice, scene, themetokens" data-primary="orbit-lab">Sample 0614 - Orbit Lab</a>
+        <a class="live" href="./phase-06/0601/index.html"
+          title="Demonstrates engine-owned A* pathfinding across a blocked grid."
+          data-tags="advancepatrolroute, drawframe, drawpanel, findgridpath, scene, themetokens"
+          data-primary="grid-pathfinding">Sample 0601 - Grid Pathfinding</a>
+        <a class="live" href="./phase-06/0602/index.html"
+          title="Demonstrates reusable patrol movement across a data-driven route."
+          data-tags="advancepatrolroute, drawframe, drawpanel, scene, themetokens" data-primary="patrol-ai">Sample 0602
+          - Patrol AI</a>
+        <a class="live" href="./phase-06/0603/index.html"
+          title="Demonstrates reusable steering behaviors for pursuit and avoidance."
+          data-tags="actioninputmap, actioninputservice, drawframe, drawpanel, scene, stepchasebehavior, stepevadebehavior, themetokens"
+          data-primary="chase-evade">Sample 0603 - Chase Evade AI</a>
+        <a class="live" href="./phase-06/0604/index.html"
+          title="Demonstrates reusable AI orchestration switching behaviors through state control."
+          data-tags="actioninputmap, actioninputservice, advancepatrolroute, aistatecontroller, drawframe, drawpanel, scene, stepchasebehavior, themetokens"
+          data-primary="state-driven">Sample 0604 - State Driven AI</a>
+        <a class="live" href="./phase-06/0605/index.html"
+          title="Demonstrates reusable coordinated movement tendencies across a group of agents."
+          data-tags="drawframe, drawpanel, scene, stepgroupbehavior, themetokens" data-primary="group-behaviors">Sample
+          0605 - Group Behaviors</a>
+        <a class="live" href="./phase-06/0606/index.html"
+          title="Demonstrates data-driven quest tracking through an engine-owned system."
+          data-tags="actioninputmap, actioninputservice, drawframe, drawpanel, questsystem, scene, themetokens"
+          data-primary="quest-system">Sample 0606 - Quest System</a>
+        <a class="live" href="./phase-06/0607/index.html"
+          title="Demonstrates reusable event-driven scripting through engine-owned script registration."
+          data-tags="actioninputmap, actioninputservice, drawframe, drawpanel, eventscriptsystem, scene, themetokens"
+          data-primary="scripting-system">Sample 0607 - Scripting System</a>
+        <a class="live" href="./phase-06/0608/index.html"
+          title="Demonstrates reusable timed sequencing for scripted cutscene steps."
+          data-tags="cutscenesystem, drawframe, drawpanel, scene, themetokens" data-primary="cutscene-system">Sample
+          0608 - Cutscene System</a>
+        <a class="live" href="./phase-06/0609/index.html"
+          title="Demonstrates reusable timed spawning rules through an engine-owned spawn system."
+          data-tags="drawframe, drawpanel, scene, themetokens" data-primary="spawn-system">Sample 0609 - Spawn
+          System</a>
+        <a class="live" href="./phase-06/0610/index.html"
+          title="Demonstrates reusable time-of-day tracking affecting world presentation."
+          data-tags="daynightcycle, drawframe, drawpanel, scene, themetokens" data-primary="day-night">Sample 0610 - Day
+          Night Cycle</a>
+        <a class="live" href="./phase-06/0611/index.html"
+          title="Demonstrates animated rain and wind layered on top of the engine weather state system."
+          data-tags="drawframe, drawpanel, scene, themetokens, weathersystem" data-primary="weather-animation">Sample
+          0611 - Weather Animation</a>
+        <a class="live" href="./phase-06/0612/index.html"
+          title="Demonstrates reusable weather state management affecting presentation."
+          data-tags="drawframe, drawpanel, scene, themetokens, weathersystem" data-primary="weather-system">Sample 0612
+          - Weather System</a>
+        <a class="live" href="./phase-06/0613/index.html"
+          title="Demonstrates reusable chunk loading logic driven by player position."
+          data-tags="actioninputmap, actioninputservice, drawframe, drawpanel, scene, themetokens, worldstreamingsystem"
+          data-primary="world-streaming">Sample 0613 - World Streaming</a>
+        <a class="live" href="./phase-06/0614/index.html"
+          title="Central-attractor orbit lab for comparing stable, elliptical, fall-inward, and escape trajectories."
+          data-tags="inputservice, scene, themetokens" data-primary="orbit-lab">Sample 0614 - Orbit Lab</a>
       </div>
     </section>
     <section>
       <h2>Phase 07 - Polish + Scale</h2>
-      <p>Improves usability and production readiness with remapping, controller support, optimization, saves, replays, localization, and packaging.</p>
+      <p>Improves usability and production readiness with remapping, controller support, optimization, saves, replays,
+        localization, and packaging.</p>
       <div class="grid">
-        <a class="live" href="./phase-07/0701/index.html" title="Demonstrates engine-owned action remapping without changing scene logic." data-tags="actioninputmap, actioninputservice, drawframe, drawpanel, scene, themetokens" data-primary="input-remapping">Sample 0701 - Input Remapping</a>
-        <a class="live" href="./phase-07/0702/index.html" title="Demonstrates controller-style bindings mapped through the normal action input system." data-tags="actioninputmap, actioninputservice, drawframe, drawpanel, scene, themetokens" data-primary="controller-support">Sample 0702 - Controller Support</a>
-        <a class="live" href="./phase-07/0703/index.html" title="Demonstrates reusable scale-driven presentation sizing." data-tags="actioninputmap, actioninputservice, drawframe, drawpanel, resolutionscaler, scene, themetokens" data-primary="resolution-scaling">Sample 0703 - Resolution Scaling</a>
-        <a class="live" href="./phase-07/0704/index.html" title="Demonstrates reusable mobile-oriented runtime sizing adjustments." data-tags="drawframe, drawpanel, mobileruntimetweaks, scene, themetokens" data-primary="mobile-support">Sample 0704 - Mobile Support</a>
-        <a class="live" href="./phase-07/0705/index.html" title="Demonstrates engine-owned asset caching and reuse." data-tags="assetloadersystem, assetoptimizer, assetregistry, drawframe, drawpanel, imageassetloader, scene, themetokens" data-primary="asset-optimization">Sample 0705 - Asset Optimization</a>
-        <a class="live" href="./phase-07/0706/index.html" title="Demonstrates engine-owned pooling and cleanup patterns for long-running samples." data-tags="disposablestore, drawframe, drawpanel, objectpool, scene, themetokens" data-primary="memory-management">Sample 0706 - Memory Management</a>
-        <a class="live" href="./phase-07/0707/index.html" title="Demonstrates engine-owned compressed save and restore flow." data-tags="actioninputmap, actioninputservice, compressjson, decompressjson, drawframe, drawpanel, scene, themetokens" data-primary="save-compression">Sample 0707 - Save Compression</a>
-        <a class="live" href="./phase-07/0708/index.html" title="Demonstrates engine-owned session recording and playback." data-tags="actioninputmap, actioninputservice, drawframe, drawpanel, replaysystem, scene, themetokens" data-primary="replay-system">Sample 0708 - Replay System</a>
-        <a class="live" href="./phase-07/0709/index.html" title="Demonstrates reusable mini-map presentation through engine-owned paths." data-tags="actioninputmap, actioninputservice, drawframe, drawminimap, scene, themetokens" data-primary="mini-map">Sample 0709 - Mini Map System</a>
-        <a class="live" href="./phase-07/0710/index.html" title="Demonstrates reusable milestone tracking and unlocks." data-tags="achievementsystem, actioninputmap, actioninputservice, drawframe, drawpanel, scene, themetokens" data-primary="achievements-system">Sample 0710 - Achievements System</a>
-        <a class="live" href="./phase-07/0711/index.html" title="Demonstrates engine-owned language lookup and visible language switching." data-tags="actioninputmap, actioninputservice, drawframe, drawpanel, localizationservice, scene, themetokens" data-primary="localization-system">Sample 0711 - Localization System</a>
-        <a class="live" href="./phase-07/0712/index.html" title="Demonstrates the repo-owned packaging/build direction through a repeatable manifest step." data-tags="drawframe, drawpanel, scene, themetokens" data-primary="packaging-build">Sample 0712 - Packaging Build System</a>
-        <a class="live" href="./phase-07/0713/index.html" title="Demonstrates reusable fullscreen enter, exit, and state reporting." data-tags="scene, themetokens" data-primary="fullscreen-ability">Sample 0713 - Fullscreen Ability</a>
+        <a class="live" href="./phase-07/0701/index.html"
+          title="Demonstrates engine-owned action remapping without changing scene logic."
+          data-tags="actioninputmap, actioninputservice, drawframe, drawpanel, scene, themetokens"
+          data-primary="input-remapping">Sample 0701 - Input Remapping</a>
+        <a class="live" href="./phase-07/0702/index.html"
+          title="Demonstrates controller-style bindings mapped through the normal action input system."
+          data-tags="actioninputmap, actioninputservice, drawframe, drawpanel, scene, themetokens"
+          data-primary="controller-support">Sample 0702 - Controller Support</a>
+        <a class="live" href="./phase-07/0703/index.html"
+          title="Demonstrates reusable scale-driven presentation sizing."
+          data-tags="actioninputmap, actioninputservice, drawframe, drawpanel, resolutionscaler, scene, themetokens"
+          data-primary="resolution-scaling">Sample 0703 - Resolution Scaling</a>
+        <a class="live" href="./phase-07/0704/index.html"
+          title="Demonstrates reusable mobile-oriented runtime sizing adjustments."
+          data-tags="drawframe, drawpanel, mobileruntimetweaks, scene, themetokens" data-primary="mobile-support">Sample
+          0704 - Mobile Support</a>
+        <a class="live" href="./phase-07/0705/index.html" title="Demonstrates engine-owned asset caching and reuse."
+          data-tags="assetloadersystem, assetoptimizer, assetregistry, drawframe, drawpanel, imageassetloader, scene, themetokens"
+          data-primary="asset-optimization">Sample 0705 - Asset Optimization</a>
+        <a class="live" href="./phase-07/0706/index.html"
+          title="Demonstrates engine-owned pooling and cleanup patterns for long-running samples."
+          data-tags="disposablestore, drawframe, drawpanel, objectpool, scene, themetokens"
+          data-primary="memory-management">Sample 0706 - Memory Management</a>
+        <a class="live" href="./phase-07/0707/index.html"
+          title="Demonstrates engine-owned compressed save and restore flow."
+          data-tags="actioninputmap, actioninputservice, compressjson, decompressjson, drawframe, drawpanel, scene, themetokens"
+          data-primary="save-compression">Sample 0707 - Save Compression</a>
+        <a class="live" href="./phase-07/0708/index.html"
+          title="Demonstrates engine-owned session recording and playback."
+          data-tags="actioninputmap, actioninputservice, drawframe, drawpanel, replaysystem, scene, themetokens"
+          data-primary="replay-system">Sample 0708 - Replay System</a>
+        <a class="live" href="./phase-07/0709/index.html"
+          title="Demonstrates reusable mini-map presentation through engine-owned paths."
+          data-tags="actioninputmap, actioninputservice, drawframe, drawminimap, scene, themetokens"
+          data-primary="mini-map">Sample 0709 - Mini Map System</a>
+        <a class="live" href="./phase-07/0710/index.html" title="Demonstrates reusable milestone tracking and unlocks."
+          data-tags="achievementsystem, actioninputmap, actioninputservice, drawframe, drawpanel, scene, themetokens"
+          data-primary="achievements-system">Sample 0710 - Achievements System</a>
+        <a class="live" href="./phase-07/0711/index.html"
+          title="Demonstrates engine-owned language lookup and visible language switching."
+          data-tags="actioninputmap, actioninputservice, drawframe, drawpanel, localizationservice, scene, themetokens"
+          data-primary="localization-system">Sample 0711 - Localization System</a>
+        <a class="live" href="./phase-07/0712/index.html"
+          title="Demonstrates the repo-owned packaging/build direction through a repeatable manifest step."
+          data-tags="drawframe, drawpanel, scene, themetokens" data-primary="packaging-build">Sample 0712 - Packaging
+          Build System</a>
+        <a class="live" href="./phase-07/0713/index.html"
+          title="Demonstrates reusable fullscreen enter, exit, and state reporting." data-tags="scene, themetokens"
+          data-primary="fullscreen-ability">Sample 0713 - Fullscreen Ability</a>
       </div>
     </section>
     <section>
       <h2>Phase 08 - Platform + UX</h2>
-      <p>Rounds out audio, UI framework work, scene flow, profile handling, and platform-facing error and logging support.</p>
+      <p>Rounds out audio, UI framework work, scene flow, profile handling, and platform-facing error and logging
+        support.</p>
       <div class="grid">
-        <a class="live" href="./phase-08/0801/index.html" title="Demonstrates engine-owned music and one-shot sound effect playback." data-tags="drawframe, drawpanel, scene, themetokens" data-primary="audio-system">Sample 0801 - Audio System</a>
-        <a class="live" href="./phase-08/0802/index.html" title="Demonstrates engine-owned timed note playback." data-tags="drawframe, drawpanel, midiplayer, scene, themetokens" data-primary="midi-player">Sample 0802 - Midi Player</a>
-        <a class="live" href="./phase-08/0803/index.html" title="Demonstrates generated sound output through a reusable synth capability." data-tags="drawframe, drawpanel, scene, themetokens" data-primary="synthesizer">Sample 0803 - Synthesizer</a>
-        <a class="live" href="./phase-08/0804/index.html" title="Demonstrates discrete frequency playback through a reusable engine contract." data-tags="drawframe, drawpanel, frequencyplayer, scene, themetokens" data-primary="frequency-player">Sample 0804 - Frequency Player</a>
-        <a class="live" href="./phase-08/0805/index.html" title="Demonstrates reusable explosion and particle effect lifecycle." data-tags="drawframe, drawpanel, particlesystem, scene, themetokens" data-primary="particle-fx">Sample 0805 - Particle FX</a>
-        <a class="live" href="./phase-08/0806/index.html" title="Demonstrates reusable canvas UI elements and interaction routing." data-tags="drawframe, scene, themetokens, uiframework" data-primary="ui-framework">Sample 0806 - UI Framework</a>
-        <a class="live" href="./phase-08/0807/index.html" title="Demonstrates switching between gameplay and menu action maps." data-tags="drawframe, drawpanel, inputcontextservice, scene, themetokens" data-primary="input-context">Sample 0807 - Input Context System</a>
-        <a class="live" href="./phase-08/0808/index.html" title="Demonstrates reusable fade-based scene handoff." data-tags="drawframe, drawpanel, scenetransitioncontroller, themetokens" data-primary="scene-transitions">Sample 0808 - Scene Transitions</a>
-        <a class="live" href="./phase-08/0809/index.html" title="Demonstrates multiple persisted identities through a reusable save-slot manager." data-tags="drawframe, drawpanel, saveslotmanager, scene, themetokens" data-primary="save-slots">Sample 0809 - Save Slots Profiles</a>
-        <a class="live" href="./phase-08/0810/index.html" title="Demonstrates structured logs and graceful error handling." data-tags="drawframe, drawpanel, errorboundary, scene, themetokens" data-primary="logging-error">Sample 0810 - Logging Error System</a>
+        <a class="live" href="./phase-08/0801/index.html"
+          title="Demonstrates engine-owned music and one-shot sound effect playback."
+          data-tags="drawframe, drawpanel, scene, themetokens" data-primary="audio-system">Sample 0801 - Audio
+          System</a>
+        <a class="live" href="./phase-08/0802/index.html" title="Demonstrates engine-owned timed note playback."
+          data-tags="drawframe, drawpanel, midiplayer, scene, themetokens" data-primary="midi-player">Sample 0802 - Midi
+          Player</a>
+        <a class="live" href="./phase-08/0803/index.html"
+          title="Demonstrates generated sound output through a reusable synth capability."
+          data-tags="drawframe, drawpanel, scene, themetokens" data-primary="synthesizer">Sample 0803 - Synthesizer</a>
+        <a class="live" href="./phase-08/0804/index.html"
+          title="Demonstrates discrete frequency playback through a reusable engine contract."
+          data-tags="drawframe, drawpanel, frequencyplayer, scene, themetokens" data-primary="frequency-player">Sample
+          0804 - Frequency Player</a>
+        <a class="live" href="./phase-08/0805/index.html"
+          title="Demonstrates reusable explosion and particle effect lifecycle."
+          data-tags="drawframe, drawpanel, particlesystem, scene, themetokens" data-primary="particle-fx">Sample 0805 -
+          Particle FX</a>
+        <a class="live" href="./phase-08/0806/index.html"
+          title="Demonstrates reusable canvas UI elements and interaction routing."
+          data-tags="drawframe, scene, themetokens, uiframework" data-primary="ui-framework">Sample 0806 - UI
+          Framework</a>
+        <a class="live" href="./phase-08/0807/index.html"
+          title="Demonstrates switching between gameplay and menu action maps."
+          data-tags="drawframe, drawpanel, inputcontextservice, scene, themetokens" data-primary="input-context">Sample
+          0807 - Input Context System</a>
+        <a class="live" href="./phase-08/0808/index.html" title="Demonstrates reusable fade-based scene handoff."
+          data-tags="drawframe, drawpanel, scenetransitioncontroller, themetokens"
+          data-primary="scene-transitions">Sample 0808 - Scene Transitions</a>
+        <a class="live" href="./phase-08/0809/index.html"
+          title="Demonstrates multiple persisted identities through a reusable save-slot manager."
+          data-tags="drawframe, drawpanel, saveslotmanager, scene, themetokens" data-primary="save-slots">Sample 0809 -
+          Save Slots Profiles</a>
+        <a class="live" href="./phase-08/0810/index.html"
+          title="Demonstrates structured logs and graceful error handling."
+          data-tags="drawframe, drawpanel, errorboundary, scene, themetokens" data-primary="logging-error">Sample 0810 -
+          Logging Error System</a>
       </div>
     </section>
     <section>
       <h2>Phase 09 - Graphics + Precision Collision</h2>
-      <p>Moves into advanced rendering and collision precision with vector, polygon, mask, pixel-perfect, and hybrid approaches.</p>
+      <p>Moves into advanced rendering and collision precision with vector, polygon, mask, pixel-perfect, and hybrid
+        approaches.</p>
       <div class="grid">
-        <a class="live" href="./phase-09/0901/index.html" title="Demonstrates reusable vector-rendered shapes with transforms." data-tags="drawframe, drawpanel, drawvectorshape, scene, themetokens, transformpoints" data-primary="vector-rendering">Sample 0901 - Vector Rendering System</a>
-        <a class="live" href="./phase-09/0902/index.html" title="Demonstrates reusable polygon-based collision testing." data-tags="arepolygonscolliding, drawframe, drawpanel, drawvectorshape, scene, themetokens, transformpoints" data-primary="polygon-collision">Sample 0902 - Polygon Collision</a>
-        <a class="live" href="./phase-09/0903/index.html" title="Demonstrates a moving probe being tested against a shape interior." data-tags="drawframe, drawpanel, drawvectorshape, ispointinpolygon, scene, themetokens" data-primary="point-polygon">Sample 0903 - Point In Polygon</a>
-        <a class="live" href="./phase-09/0904/index.html" title="Demonstrates mask-based occupancy checks beyond coarse bounds." data-tags="aremaskscolliding, createrastermask, drawframe, drawpanel, getmaskbounds, iscolliding, scene, themetokens" data-primary="raster-mask">Sample 0904 - Raster Mask Collision</a>
-        <a class="live" href="./phase-09/0905/index.html" title="Demonstrates occupied-pixel overlap being more precise than broad checks." data-tags="aremaskscolliding, createrastermask, drawframe, drawpanel, getmaskbounds, iscolliding, scene, themetokens" data-primary="pixel-perfect">Sample 0905 - Pixel Perfect Collision</a>
-        <a class="live" href="./phase-09/0906/index.html" title="Demonstrates staged collision flow from broad bounds to precise checks." data-tags="createrastermask, drawframe, drawpanel, drawvectorshape, getcollisionboundsfrompolygon, runhybridcollision, scene, themetokens, transformpoints" data-primary="hybrid-collision">Sample 0906 - Hybrid Collision</a>
+        <a class="live" href="./phase-09/0901/index.html"
+          title="Demonstrates reusable vector-rendered shapes with transforms."
+          data-tags="drawframe, drawpanel, drawvectorshape, scene, themetokens, transformpoints"
+          data-primary="vector-rendering">Sample 0901 - Vector Rendering System</a>
+        <a class="live" href="./phase-09/0902/index.html" title="Demonstrates reusable polygon-based collision testing."
+          data-tags="arepolygonscolliding, drawframe, drawpanel, drawvectorshape, scene, themetokens, transformpoints"
+          data-primary="polygon-collision">Sample 0902 - Polygon Collision</a>
+        <a class="live" href="./phase-09/0903/index.html"
+          title="Demonstrates a moving probe being tested against a shape interior."
+          data-tags="drawframe, drawpanel, drawvectorshape, ispointinpolygon, scene, themetokens"
+          data-primary="point-polygon">Sample 0903 - Point In Polygon</a>
+        <a class="live" href="./phase-09/0904/index.html"
+          title="Demonstrates mask-based occupancy checks beyond coarse bounds."
+          data-tags="aremaskscolliding, createrastermask, drawframe, drawpanel, getmaskbounds, iscolliding, scene, themetokens"
+          data-primary="raster-mask">Sample 0904 - Raster Mask Collision</a>
+        <a class="live" href="./phase-09/0905/index.html"
+          title="Demonstrates occupied-pixel overlap being more precise than broad checks."
+          data-tags="aremaskscolliding, createrastermask, drawframe, drawpanel, getmaskbounds, iscolliding, scene, themetokens"
+          data-primary="pixel-perfect">Sample 0905 - Pixel Perfect Collision</a>
+        <a class="live" href="./phase-09/0906/index.html"
+          title="Demonstrates staged collision flow from broad bounds to precise checks."
+          data-tags="createrastermask, drawframe, drawpanel, drawvectorshape, getcollisionboundsfrompolygon, runhybridcollision, scene, themetokens, transformpoints"
+          data-primary="hybrid-collision">Sample 0906 - Hybrid Collision</a>
       </div>
     </section>
     <section>
       <h2>Phase 10 - Platform Utilities</h2>
       <p>Covers platform utility features for audio playback, browser storage helpers, and playlist management.</p>
       <div class="grid">
-        <a class="live" href="./phase-10/1001/index.html" title="Demonstrates engine-owned MP3-style media controls." data-tags="drawframe, drawpanel, mediatrackservice, scene, themetokens" data-primary="mp3-player">Sample 1001 - MP3 Player</a>
-        <a class="live" href="./phase-10/1002/index.html" title="Demonstrates cookie persistence through an engine-owned wrapper." data-tags="cookiestorageservice, drawframe, drawpanel, scene, themetokens" data-primary="cookie-write">Sample 1002 - Cookie Write Read System</a>
-        <a class="live" href="./phase-10/1003/index.html" title="Demonstrates track ordering and playlist-style audio control." data-tags="drawframe, drawpanel, mediatrackservice, playlistmanager, scene, themetokens" data-primary="audio-playlist">Sample 1003 - Audio Playlist Track Management</a>
+        <a class="live" href="./phase-10/1001/index.html" title="Demonstrates engine-owned MP3-style media controls."
+          data-tags="drawframe, drawpanel, mediatrackservice, scene, themetokens" data-primary="mp3-player">Sample 1001
+          - MP3 Player</a>
+        <a class="live" href="./phase-10/1002/index.html"
+          title="Demonstrates cookie persistence through an engine-owned wrapper."
+          data-tags="cookiestorageservice, drawframe, drawpanel, scene, themetokens" data-primary="cookie-write">Sample
+          1002 - Cookie Write Read System</a>
+        <a class="live" href="./phase-10/1003/index.html"
+          title="Demonstrates track ordering and playlist-style audio control."
+          data-tags="drawframe, drawpanel, mediatrackservice, playlistmanager, scene, themetokens"
+          data-primary="audio-playlist">Sample 1003 - Audio Playlist Track Management</a>
       </div>
     </section>
     <section>
       <h2>Phase 11 - Release + Deployment</h2>
-      <p>Prepares projects for shipping with settings, accessibility, packaging, deployment profiles, and release validation workflows.</p>
+      <p>Prepares projects for shipping with settings, accessibility, packaging, deployment profiles, and release
+        validation workflows.</p>
       <div class="grid">
-        <a class="live" href="./phase-11/1101/index.html" title="Stores reusable audio, video, and gameplay preferences through an engine-owned settings service." data-tags="drawframe, drawpanel, scene, settingssystem, themetokens" data-primary="settings-system">Sample 1101 - Settings System</a>
-        <a class="live" href="./phase-11/1102/index.html" title="Demonstrates high contrast, reduced motion, scalable UI, and input comfort presets." data-tags="accessibilityoptions, drawframe, drawpanel, scene, themetokens" data-primary="accessibility-options">Sample 1102 - Accessibility Options</a>
-        <a class="live" href="./phase-11/1103/index.html" title="Switches between reusable build profiles such as debug, demo, and production." data-tags="deploymentprofiles, drawframe, drawpanel, scene, themetokens" data-primary="deployment-profiles">Sample 1103 - Deployment Profiles</a>
-        <a class="live" href="./phase-11/1104/index.html" title="Builds consistent release descriptors for testing, sharing, and production packaging." data-tags="deploymentprofiles, distributionpackager, drawframe, drawpanel, scene, themetokens" data-primary="distribution-packaging">Sample 1104 - Distribution Packaging</a>
-        <a class="live" href="./phase-11/1105/index.html" title="Handles runtime failures gracefully and restores a usable fallback state." data-tags="crashrecoverymanager, drawframe, drawpanel, logger, scene, themetokens" data-primary="crash-recovery">Sample 1105 - Crash Recovery Fallback Flow</a>
-        <a class="live" href="./phase-11/1106/index.html" title="Runs a structured release-readiness checklist before a build is shipped." data-tags="drawframe, drawpanel, releasevalidationchecklist, scene, themetokens" data-primary="release-validation">Sample 1106 - Release Validation Checklist Flow</a>
+        <a class="live" href="./phase-11/1101/index.html"
+          title="Stores reusable audio, video, and gameplay preferences through an engine-owned settings service."
+          data-tags="drawframe, drawpanel, scene, settingssystem, themetokens" data-primary="settings-system">Sample
+          1101 - Settings System</a>
+        <a class="live" href="./phase-11/1102/index.html"
+          title="Demonstrates high contrast, reduced motion, scalable UI, and input comfort presets."
+          data-tags="accessibilityoptions, drawframe, drawpanel, scene, themetokens"
+          data-primary="accessibility-options">Sample 1102 - Accessibility Options</a>
+        <a class="live" href="./phase-11/1103/index.html"
+          title="Switches between reusable build profiles such as debug, demo, and production."
+          data-tags="deploymentprofiles, drawframe, drawpanel, scene, themetokens"
+          data-primary="deployment-profiles">Sample 1103 - Deployment Profiles</a>
+        <a class="live" href="./phase-11/1104/index.html"
+          title="Builds consistent release descriptors for testing, sharing, and production packaging."
+          data-tags="deploymentprofiles, distributionpackager, drawframe, drawpanel, scene, themetokens"
+          data-primary="distribution-packaging">Sample 1104 - Distribution Packaging</a>
+        <a class="live" href="./phase-11/1105/index.html"
+          title="Handles runtime failures gracefully and restores a usable fallback state."
+          data-tags="crashrecoverymanager, drawframe, drawpanel, logger, scene, themetokens"
+          data-primary="crash-recovery">Sample 1105 - Crash Recovery Fallback Flow</a>
+        <a class="live" href="./phase-11/1106/index.html"
+          title="Runs a structured release-readiness checklist before a build is shipped."
+          data-tags="drawframe, drawpanel, releasevalidationchecklist, scene, themetokens"
+          data-primary="release-validation">Sample 1106 - Release Validation Checklist Flow</a>
       </div>
     </section>
     <section>
       <h2>Phase 12 - Demo Games</h2>
       <p>Playable demo-game track for hero movement, jump timing, camera follow, and layered world presentation.</p>
       <div class="grid">
-        <a class="live" href="./phase-12/1201/index.html" title="Renders a stable tilemap larger than the viewport. Use Arrow keys to pan the viewer camera." data-tags="camera2d, drawframe, drawpanel, inputservice, rendertilemap, scene, themetokens" data-primary="tilemap-viewer">Sample 1201 - Tilemap Viewer</a>
-        <a class="live" href="./phase-12/1202/index.html" title="Use Left/Right Arrow to move the hero. The camera follows horizontally across a wide tilemap." data-tags="camera2d, clamp, drawframe, drawpanel, inputservice, rendertilemap, scene, themetokens, worldrecttoscreen" data-primary="tilemap-hero">Sample 1202 - Tilemap Hero Movement</a>
-        <a class="live" href="./phase-12/1203/index.html" title="Move with Left/Right and jump with Space. Gravity and tile collisions drive grounded landing behavior." data-tags="camera2d, clamp, drawframe, drawpanel, inputservice, rendertilemap, resolverectvstilemap, scene, themetokens, worldrecttoscreen" data-primary="tilemap-hero">Sample 1203 - Tilemap Hero Jump Collision</a>
-        <a class="live" href="./phase-12/1204/index.html" title="Move with Left/Right and jump with Space. Camera-relative parallax layers add background depth while gameplay remains focused on platform traversal." data-tags="camera2d, clamp, drawframe, drawpanel, inputservice, rendertilemap, resolverectvstilemap, scene, themetokens, worldrecttoscreen" data-primary="tilemap-parallax">Sample 1204 - Tilemap Parallax Hero</a>
-        <a class="live" href="./phase-12/1205/index.html" title="Move with Left/Right and jump with Space. Collect the pickups while traversal, collision, camera follow, and parallax remain active. Debug is production-safe and opt-in: use ?debug=1 (and optionally &amp;amp;debugMode=qa ) to enable console/overlay." data-tags="camera2d, clamp, drawframe, drawpanel, inputservice, rendertilemap, resolverectvstilemap, scene, themetokens, tilemap, worldrecttoscreen" data-primary="multi-system">Sample 1205 - Multi-System Demo</a>
-        <a class="live" href="./phase-12/1206/index.html" title="Move with Left/Right and jump with Space. Reach the trigger zone to activate success state." data-tags="camera2d, clamp, drawframe, drawpanel, inputservice, rendertilemap, resolverectvstilemap, scene, themetokens, tilemap, worldrecttoscreen" data-primary="trigger-zone">Sample 1206 - Trigger Zone</a>
-        <a class="live" href="./phase-12/1207/index.html" title="Move with Left/Right and jump with Space. Touch the activator to toggle checkpoint state and marker visuals." data-tags="camera2d, clamp, drawframe, drawpanel, inputservice, rendertilemap, resolverectvstilemap, scene, themetokens, tilemap, worldrecttoscreen" data-primary="switch-checkpoint">Sample 1207 - Switch Checkpoint Marker</a>
-        <a class="live" href="./phase-12/1208/index.html" title="Move with Left/Right and jump with Space across a scrolling world rendered from tool-formatted tile and parallax assets." data-tags="camera2d, clamp, inputservice, resolverectvstilemap, scene, themetokens, tilemap, worldrecttoscreen" data-primary="tool-formatted">Sample 1208 - Tool Formatted Tiles Parallax</a>
+        <a class="live" href="./phase-12/1201/index.html"
+          title="Renders a stable tilemap larger than the viewport. Use Arrow keys to pan the viewer camera."
+          data-tags="camera2d, drawframe, drawpanel, inputservice, rendertilemap, scene, themetokens"
+          data-primary="tilemap-viewer">Sample 1201 - Tilemap Viewer</a>
+        <a class="live" href="./phase-12/1202/index.html"
+          title="Use Left/Right Arrow to move the hero. The camera follows horizontally across a wide tilemap."
+          data-tags="camera2d, clamp, drawframe, drawpanel, inputservice, rendertilemap, scene, themetokens, worldrecttoscreen"
+          data-primary="tilemap-hero">Sample 1202 - Tilemap Hero Movement</a>
+        <a class="live" href="./phase-12/1203/index.html"
+          title="Move with Left/Right and jump with Space. Gravity and tile collisions drive grounded landing behavior."
+          data-tags="camera2d, clamp, drawframe, drawpanel, inputservice, rendertilemap, resolverectvstilemap, scene, themetokens, worldrecttoscreen"
+          data-primary="tilemap-hero">Sample 1203 - Tilemap Hero Jump Collision</a>
+        <a class="live" href="./phase-12/1204/index.html"
+          title="Move with Left/Right and jump with Space. Camera-relative parallax layers add background depth while gameplay remains focused on platform traversal."
+          data-tags="camera2d, clamp, drawframe, drawpanel, inputservice, rendertilemap, resolverectvstilemap, scene, themetokens, worldrecttoscreen"
+          data-primary="tilemap-parallax">Sample 1204 - Tilemap Parallax Hero</a>
+        <a class="live" href="./phase-12/1205/index.html"
+          title="Move with Left/Right and jump with Space. Collect the pickups while traversal, collision, camera follow, and parallax remain active. Debug is production-safe and opt-in: use ?debug=1 (and optionally &amp;amp;debugMode=qa ) to enable console/overlay."
+          data-tags="camera2d, clamp, drawframe, drawpanel, inputservice, rendertilemap, resolverectvstilemap, scene, themetokens, tilemap, worldrecttoscreen"
+          data-primary="multi-system">Sample 1205 - Multi-System Demo</a>
+        <a class="live" href="./phase-12/1206/index.html"
+          title="Move with Left/Right and jump with Space. Reach the trigger zone to activate success state."
+          data-tags="camera2d, clamp, drawframe, drawpanel, inputservice, rendertilemap, resolverectvstilemap, scene, themetokens, tilemap, worldrecttoscreen"
+          data-primary="trigger-zone">Sample 1206 - Trigger Zone</a>
+        <a class="live" href="./phase-12/1207/index.html"
+          title="Move with Left/Right and jump with Space. Touch the activator to toggle checkpoint state and marker visuals."
+          data-tags="camera2d, clamp, drawframe, drawpanel, inputservice, rendertilemap, resolverectvstilemap, scene, themetokens, tilemap, worldrecttoscreen"
+          data-primary="switch-checkpoint">Sample 1207 - Switch Checkpoint Marker</a>
+        <a class="live" href="./phase-12/1208/index.html"
+          title="Move with Left/Right and jump with Space across a scrolling world rendered from tool-formatted tile and parallax assets."
+          data-tags="camera2d, clamp, inputservice, resolverectvstilemap, scene, themetokens, tilemap, worldrecttoscreen"
+          data-primary="tool-formatted">Sample 1208 - Tool Formatted Tiles Parallax</a>
       </div>
     </section>
     <section>
       <h2>Phase 13 - Network Concepts, Latency &amp; Simulation</h2>
-      <p>Introduces networking concepts using local and simulated systems (event bus, input models, latency simulation).</p>
+      <p>Introduces networking concepts using local and simulated systems (event bus, input models, latency simulation).
+      </p>
       <div class="grid">
-        <a class="live" href="./phase-13/1301/index.html" title="Shows connect, send, receive, and disconnect flow through an engine-owned network layer." data-tags="drawframe, drawpanel, networkinglayer, scene, themetokens" data-primary="networking-layer">Sample 1301 - Networking Layer</a>
-        <a class="live" href="./phase-13/1302/index.html" title="Demonstrates authoritative state snapshots being replicated to a remote side." data-tags="drawframe, drawpanel, networkinglayer, scene, statereplication, themetokens" data-primary="state-sync">Sample 1302 - State Sync Replication</a>
-        <a class="live" href="./phase-13/1303/index.html" title="Asteroids-style sample built with local Spawn, Lifecycle, World State, and Events systems." data-tags="drawframe, drawpanel, scene, themetokens" data-primary="asteroids-world">Sample 1303 - Asteroids World Systems</a>
-        <a class="live" href="./phase-13/1304/index.html" title="Shows immediate local prediction with later authoritative correction." data-tags="drawframe, drawpanel, predictionreconciler, scene, themetokens" data-primary="client-prediction">Sample 1304 - Client Prediction Reconciliation</a>
-        <a class="live" href="./phase-13/1305/index.html" title="Demonstrates stable encode/decode round trips for multiplayer-style payloads." data-tags="drawframe, drawpanel, scene, serializer, themetokens" data-primary="serialization-system">Sample 1305 - Serialization System</a>
-        <a class="live" href="./phase-13/1306/index.html" title="Displays connection state, ping, and message flow through a reusable overlay." data-tags="drawframe, drawnetworkdebugoverlay, networkconditionsimulator, networkinglayer, scene, themetokens" data-primary="network-debug">Sample 1306 - Network Debug Overlay</a>
-        <a class="live" href="./phase-13/1307/index.html" title="Compares raw network snapshots with smoothed remote interpolation." data-tags="drawframe, drawpanel, remoteinterpolationbuffer, scene, themetokens" data-primary="remote-entity">Sample 1307 - Remote Entity Interpolation</a>
-        <a class="live" href="./phase-13/1308/index.html" title="Demonstrates create, join, leave, and presence management for multiplayer sessions." data-tags="drawframe, drawpanel, lobbysessionmanager, scene, themetokens" data-primary="lobby-session">Sample 1308 - Lobby Session System</a>
-        <a class="live" href="./phase-13/1309/index.html" title="Space Invaders-style sample built by composing the shared world-systems stack from Level 8 pattern." data-tags="drawframe, drawpanel, scene, themetokens" data-primary="space-invaders">Sample 1309 - Space Invaders World Systems</a>
-        <a class="live" href="./phase-13/1310/index.html" title="Shows repeatable authoritative host startup and client attachment." data-tags="drawframe, drawpanel, hostserverbootstrap, scene, themetokens" data-primary="host-server">Sample 1310 - Host Server Bootstrap</a>
-        <a class="live" href="./phase-13/1311/index.html" title="Filters world state so each client sees only nearby or relevant entities." data-tags="drawframe, drawpanel, interestmanager, scene, themetokens" data-primary="interest-management">Sample 1311 - Interest Management</a>
-        <a class="live" href="./phase-13/1312/index.html" title="Tests network behavior under reusable lag, jitter, and packet-loss conditions." data-tags="drawframe, drawpanel, networkconditionsimulator, networkinglayer, scene, themetokens" data-primary="lag-packet">Sample 1312 - Lag Packet Loss Simulation</a>
-        <a class="live" href="./phase-13/1313/index.html" title="Pacman Lite sample built with shared Spawn, Lifecycle, World State, and Events systems." data-tags="drawframe, drawpanel, scene, themetokens" data-primary="pacman-world">Sample 1313 - Pacman Lite World Systems</a>
-        <a class="live" href="./phase-13/1314/index.html" title="Shows reusable player presence and lightweight session chat." data-tags="chatpresencelayer, drawframe, drawpanel, scene, themetokens" data-primary="chat-presence">Sample 1314 - Chat Presence Layer</a>
-        <a class="live" href="./phase-13/1315/index.html" title="Exposes correction and replay behavior for prediction diagnostics." data-tags="drawframe, drawpanel, predictionreconciler, rollbackdiagnostics, scene, themetokens" data-primary="rollback-replay">Sample 1315 - Rollback Replay Diagnostics</a>
-        <a class="live" href="./phase-13/1316/index.html" title="Sample-backed network diagnostics with no real transport. This validates read-only providers, passive overlay panels, and operator-safe command surfaces before host/client wiring." data-tags="asarray, asobject, clamp, createnetworkdebugplugindefinition, inputservice, scene, themetokens" data-primary="local-loopback">Sample 1316 - Local Loopback / Fake Network</a>
-        <a class="live" href="./phase-13/1317/index.html" title="Sample-backed multi-role diagnostics that simulate host and client peers with read-only debug surfaces and no real transport layer." data-tags="asarray, asobject, clamp, createnetworkdebugplugindefinition, inputservice, scene, themetokens" data-primary="host-client">Sample 1317 - Host / Client Diagnostics</a>
-        <a class="live" href="./phase-13/1318/index.html" title="Deterministic mismatch and trace-validation showcase with timeline sequencing, divergence explanation notes, reproduction guidance, and checklist-driven verification." data-tags="asarray, asobject, clamp, createnetworkdebugplugindefinition, inputservice, scene, themetokens" data-primary="divergence-trace">Sample 1318 - Divergence / Trace Validation</a>
-        <a class="live" href="./phase-13/1319/index.html" title="Real-network launchable sample with live server session telemetry dashboard and authoritative multi-client updates." data-tags="authoritativeserverruntime, clientreplicationapplicationlayer, networkinglayer, realtime, scene, websocket" data-primary="real-network-live">Sample 1319 - Real Network + Live Dashboard</a>
-        <a class="live" href="./phase-13/1320/index.html" title="Grid-locked maze loop with buffered turns, legal intersections, pellets, and simplified ghost routing pressure." data-tags="inputservice, scene, themetokens" data-primary="pacman-lite-gameplay">Sample 1320 - Pacman Lite Gameplay</a>
+        <a class="live" href="./phase-13/1301/index.html"
+          title="Shows connect, send, receive, and disconnect flow through an engine-owned network layer."
+          data-tags="drawframe, drawpanel, networkinglayer, scene, themetokens" data-primary="networking-layer">Sample
+          1301 - Networking Layer</a>
+        <a class="live" href="./phase-13/1302/index.html"
+          title="Demonstrates authoritative state snapshots being replicated to a remote side."
+          data-tags="drawframe, drawpanel, networkinglayer, scene, statereplication, themetokens"
+          data-primary="state-sync">Sample 1302 - State Sync Replication</a>
+        <a class="live" href="./phase-13/1303/index.html"
+          title="Asteroids-style sample built with local Spawn, Lifecycle, World State, and Events systems."
+          data-tags="drawframe, drawpanel, scene, themetokens" data-primary="asteroids-world">Sample 1303 - Asteroids
+          World Systems</a>
+        <a class="live" href="./phase-13/1304/index.html"
+          title="Shows immediate local prediction with later authoritative correction."
+          data-tags="drawframe, drawpanel, predictionreconciler, scene, themetokens"
+          data-primary="client-prediction">Sample 1304 - Client Prediction Reconciliation</a>
+        <a class="live" href="./phase-13/1305/index.html"
+          title="Demonstrates stable encode/decode round trips for multiplayer-style payloads."
+          data-tags="drawframe, drawpanel, scene, serializer, themetokens" data-primary="serialization-system">Sample
+          1305 - Serialization System</a>
+        <a class="live" href="./phase-13/1306/index.html"
+          title="Displays connection state, ping, and message flow through a reusable overlay."
+          data-tags="drawframe, drawnetworkdebugoverlay, networkconditionsimulator, networkinglayer, scene, themetokens"
+          data-primary="network-debug">Sample 1306 - Network Debug Overlay</a>
+        <a class="live" href="./phase-13/1307/index.html"
+          title="Compares raw network snapshots with smoothed remote interpolation."
+          data-tags="drawframe, drawpanel, remoteinterpolationbuffer, scene, themetokens"
+          data-primary="remote-entity">Sample 1307 - Remote Entity Interpolation</a>
+        <a class="live" href="./phase-13/1308/index.html"
+          title="Demonstrates create, join, leave, and presence management for multiplayer sessions."
+          data-tags="drawframe, drawpanel, lobbysessionmanager, scene, themetokens" data-primary="lobby-session">Sample
+          1308 - Lobby Session System</a>
+        <a class="live" href="./phase-13/1309/index.html"
+          title="Space Invaders-style sample built by composing the shared world-systems stack from Level 8 pattern."
+          data-tags="drawframe, drawpanel, scene, themetokens" data-primary="space-invaders">Sample 1309 - Space
+          Invaders World Systems</a>
+        <a class="live" href="./phase-13/1310/index.html"
+          title="Shows repeatable authoritative host startup and client attachment."
+          data-tags="drawframe, drawpanel, hostserverbootstrap, scene, themetokens" data-primary="host-server">Sample
+          1310 - Host Server Bootstrap</a>
+        <a class="live" href="./phase-13/1311/index.html"
+          title="Filters world state so each client sees only nearby or relevant entities."
+          data-tags="drawframe, drawpanel, interestmanager, scene, themetokens"
+          data-primary="interest-management">Sample 1311 - Interest Management</a>
+        <a class="live" href="./phase-13/1312/index.html"
+          title="Tests network behavior under reusable lag, jitter, and packet-loss conditions."
+          data-tags="drawframe, drawpanel, networkconditionsimulator, networkinglayer, scene, themetokens"
+          data-primary="lag-packet">Sample 1312 - Lag Packet Loss Simulation</a>
+        <a class="live" href="./phase-13/1313/index.html"
+          title="Pacman Lite sample built with shared Spawn, Lifecycle, World State, and Events systems."
+          data-tags="drawframe, drawpanel, scene, themetokens" data-primary="pacman-world">Sample 1313 - Pacman Lite
+          World Systems</a>
+        <a class="live" href="./phase-13/1314/index.html"
+          title="Shows reusable player presence and lightweight session chat."
+          data-tags="chatpresencelayer, drawframe, drawpanel, scene, themetokens" data-primary="chat-presence">Sample
+          1314 - Chat Presence Layer</a>
+        <a class="live" href="./phase-13/1315/index.html"
+          title="Exposes correction and replay behavior for prediction diagnostics."
+          data-tags="drawframe, drawpanel, predictionreconciler, rollbackdiagnostics, scene, themetokens"
+          data-primary="rollback-replay">Sample 1315 - Rollback Replay Diagnostics</a>
+        <a class="live" href="./phase-13/1316/index.html"
+          title="Sample-backed network diagnostics with no real transport. This validates read-only providers, passive overlay panels, and operator-safe command surfaces before host/client wiring."
+          data-tags="asarray, asobject, clamp, createnetworkdebugplugindefinition, inputservice, scene, themetokens"
+          data-primary="local-loopback">Sample 1316 - Local Loopback / Fake Network</a>
+        <a class="live" href="./phase-13/1317/index.html"
+          title="Sample-backed multi-role diagnostics that simulate host and client peers with read-only debug surfaces and no real transport layer."
+          data-tags="asarray, asobject, clamp, createnetworkdebugplugindefinition, inputservice, scene, themetokens"
+          data-primary="host-client">Sample 1317 - Host / Client Diagnostics</a>
+        <a class="live" href="./phase-13/1318/index.html"
+          title="Deterministic mismatch and trace-validation showcase with timeline sequencing, divergence explanation notes, reproduction guidance, and checklist-driven verification."
+          data-tags="asarray, asobject, clamp, createnetworkdebugplugindefinition, inputservice, scene, themetokens"
+          data-primary="divergence-trace">Sample 1318 - Divergence / Trace Validation</a>
+        <a class="live" href="./phase-13/1319/index.html"
+          title="Real-network launchable sample with live server session telemetry dashboard and authoritative multi-client updates."
+          data-tags="authoritativeserverruntime, clientreplicationapplicationlayer, networkinglayer, realtime, scene, websocket"
+          data-primary="real-network-live">Sample 1319 - Real Network + Live Dashboard</a>
+        <a class="live" href="./phase-13/1320/index.html"
+          title="Grid-locked maze loop with buffered turns, legal intersections, pellets, and simplified ghost routing pressure."
+          data-tags="inputservice, scene, themetokens" data-primary="pacman-lite-gameplay">Sample 1320 - Pacman Lite
+          Gameplay</a>
       </div>
     </section>
     <section>
       <h2>Phase 14 - Editor + Automation + Trust + Pipeline</h2>
-      <p>Builds authoring tools, automated validation, CI flows, trust checks, and import pipelines for a reliable workflow.</p>
+      <p>Builds authoring tools, automated validation, CI flows, trust checks, and import pipelines for a reliable
+        workflow.</p>
       <div class="grid">
-        <a class="live" href="./phase-14/1401/index.html" title="Demonstrates reusable level editing state." data-tags="drawframe, drawpanel, leveleditor, scene, themetokens" data-primary="level-editor">Sample 1401 - Level Editor</a>
-        <a class="live" href="./phase-14/1402/index.html" title="Shows grid tile editing with an active palette choice." data-tags="scene" data-primary="tile-map">Sample 1402 - Tile Map Editor</a>
-        <a class="live" href="./phase-14/1403/index.html" title="Places and moves authored entities visually." data-tags="scene" data-primary="entity-placement">Sample 1403 - Entity Placement Editor</a>
-        <a class="live" href="./phase-14/1404/index.html" title="Authors sequence clips without scene-hardcoded timing." data-tags="scene" data-primary="timeline-cutscene">Sample 1404 - Timeline Cutscene Editor</a>
-        <a class="live" href="./phase-14/1405/index.html" title="Runs centralized proof checks with pass/fail output." data-tags="scene" data-primary="automated-test">Sample 1405 - Automated Test Runner</a>
-        <a class="live" href="./phase-14/1406/index.html" title="Replays a stored scenario for behavioral verification." data-tags="scene" data-primary="regression-playback">Sample 1406 - Regression Playback Harness</a>
-        <a class="live" href="./phase-14/1407/index.html" title="Runs reusable benchmark cases and shows timing output." data-tags="scene" data-primary="performance-benchmark">Sample 1407 - Performance Benchmark Runner</a>
-        <a class="live" href="./phase-14/1408/index.html" title="Shows automation-friendly pass/fail validation steps." data-tags="scene" data-primary="ci-validation">Sample 1408 - CI Validation Flow</a>
-        <a class="live" href="./phase-14/1409/index.html" title="Validates network packets and rejects suspicious ones." data-tags="scene" data-primary="packet-validation">Sample 1409 - Packet Validation Anti Cheat</a>
-        <a class="live" href="./phase-14/1410/index.html" title="Seals and verifies persisted data for tamper detection." data-tags="scene" data-primary="save-data">Sample 1410 - Save Data Integrity Checks</a>
-        <a class="live" href="./phase-14/1411/index.html" title="Compares allowed and blocked capabilities by role." data-tags="scene" data-primary="permissions-capability">Sample 1411 - Permissions Capability Gating</a>
-        <a class="live" href="./phase-14/1412/index.html" title="Detects stale or invalid session state before use." data-tags="scene" data-primary="trust-session">Sample 1412 - Trust Session Validation</a>
-        <a class="live" href="./phase-14/1413/index.html" title="Runs imported content through structured pipeline steps." data-tags="scene" data-primary="asset-import">Sample 1413 - Asset Import Pipeline</a>
-        <a class="live" href="./phase-14/1414/index.html" title="Prepares texture metadata consistently before engine use." data-tags="scene" data-primary="texture-sprite">Sample 1414 - Texture Sprite Preprocess Pipeline</a>
-        <a class="live" href="./phase-14/1415/index.html" title="Prepares audio assets through a reusable preprocess path." data-tags="scene" data-primary="audio-preprocess">Sample 1415 - Audio Preprocess Pipeline</a>
-        <a class="live" href="./phase-14/1416/index.html" title="Migrates older content to a current structure." data-tags="scene" data-primary="content-versioning">Sample 1416 - Content Versioning Migration</a>
-        <a class="live" href="./phase-14/1417/index.html" title="Generates and validates a structured asset manifest." data-tags="scene" data-primary="build-asset">Sample 1417 - Build Asset Manifest System</a>
-        <a class="live" href="./phase-14/1418/index.html" title="Detects invalid content before runtime use." data-tags="scene" data-primary="content-validation">Sample 1418 - Content Validation Pipeline</a>
+        <a class="live" href="./phase-14/1401/index.html" title="Demonstrates reusable level editing state."
+          data-tags="drawframe, drawpanel, leveleditor, scene, themetokens" data-primary="level-editor">Sample 1401 -
+          Level Editor</a>
+        <a class="live" href="./phase-14/1402/index.html" title="Shows grid tile editing with an active palette choice."
+          data-tags="scene" data-primary="tile-map">Sample 1402 - Tile Map Editor</a>
+        <a class="live" href="./phase-14/1403/index.html" title="Places and moves authored entities visually."
+          data-tags="scene" data-primary="entity-placement">Sample 1403 - Entity Placement Editor</a>
+        <a class="live" href="./phase-14/1404/index.html" title="Authors sequence clips without scene-hardcoded timing."
+          data-tags="scene" data-primary="timeline-cutscene">Sample 1404 - Timeline Cutscene Editor</a>
+        <a class="live" href="./phase-14/1405/index.html" title="Runs centralized proof checks with pass/fail output."
+          data-tags="scene" data-primary="automated-test">Sample 1405 - Automated Test Runner</a>
+        <a class="live" href="./phase-14/1406/index.html" title="Replays a stored scenario for behavioral verification."
+          data-tags="scene" data-primary="regression-playback">Sample 1406 - Regression Playback Harness</a>
+        <a class="live" href="./phase-14/1407/index.html" title="Runs reusable benchmark cases and shows timing output."
+          data-tags="scene" data-primary="performance-benchmark">Sample 1407 - Performance Benchmark Runner</a>
+        <a class="live" href="./phase-14/1408/index.html" title="Shows automation-friendly pass/fail validation steps."
+          data-tags="scene" data-primary="ci-validation">Sample 1408 - CI Validation Flow</a>
+        <a class="live" href="./phase-14/1409/index.html" title="Validates network packets and rejects suspicious ones."
+          data-tags="scene" data-primary="packet-validation">Sample 1409 - Packet Validation Anti Cheat</a>
+        <a class="live" href="./phase-14/1410/index.html"
+          title="Seals and verifies persisted data for tamper detection." data-tags="scene"
+          data-primary="save-data">Sample 1410 - Save Data Integrity Checks</a>
+        <a class="live" href="./phase-14/1411/index.html" title="Compares allowed and blocked capabilities by role."
+          data-tags="scene" data-primary="permissions-capability">Sample 1411 - Permissions Capability Gating</a>
+        <a class="live" href="./phase-14/1412/index.html" title="Detects stale or invalid session state before use."
+          data-tags="scene" data-primary="trust-session">Sample 1412 - Trust Session Validation</a>
+        <a class="live" href="./phase-14/1413/index.html"
+          title="Runs imported content through structured pipeline steps." data-tags="scene"
+          data-primary="asset-import">Sample 1413 - Asset Import Pipeline</a>
+        <a class="live" href="./phase-14/1414/index.html"
+          title="Prepares texture metadata consistently before engine use." data-tags="scene"
+          data-primary="texture-sprite">Sample 1414 - Texture Sprite Preprocess Pipeline</a>
+        <a class="live" href="./phase-14/1415/index.html"
+          title="Prepares audio assets through a reusable preprocess path." data-tags="scene"
+          data-primary="audio-preprocess">Sample 1415 - Audio Preprocess Pipeline</a>
+        <a class="live" href="./phase-14/1416/index.html" title="Migrates older content to a current structure."
+          data-tags="scene" data-primary="content-versioning">Sample 1416 - Content Versioning Migration</a>
+        <a class="live" href="./phase-14/1417/index.html" title="Generates and validates a structured asset manifest."
+          data-tags="scene" data-primary="build-asset">Sample 1417 - Build Asset Manifest System</a>
+        <a class="live" href="./phase-14/1418/index.html" title="Detects invalid content before runtime use."
+          data-tags="scene" data-primary="content-validation">Sample 1418 - Content Validation Pipeline</a>
       </div>
     </section>
     <section>
       <h2>Phase 15 - Advanced Systems</h2>
       <p>Introduces deterministic scheduling, replay-friendly state handling, diffing, and verification systems.</p>
       <div class="grid">
-        <a class="live" href="./phase-15/1501/index.html" title="Executes runtime commands through a reusable developer console." data-tags="developerconsole, drawframe, drawpanel, scene, themetokens" data-primary="developer-console">Sample 1501 - Developer Console</a>
-        <a class="live" href="./phase-15/1502/index.html" title="Inspects runtime object state through an engine-owned tooling view." data-tags="drawframe, drawpanel, runtimeinspector, scene, themetokens" data-primary="engine-inspector">Sample 1502 - In Engine Inspector</a>
-        <a class="live" href="./phase-15/1503/index.html" title="Modifies runtime values through a reusable property editing tool." data-tags="drawframe, drawpanel, propertyeditor, scene, themetokens" data-primary="property-editor">Sample 1503 - Property Editor</a>
-        <a class="live" href="./phase-15/1504/index.html" title="Adjusts live data without restarting the runtime." data-tags="drawframe, drawpanel, livetuningservice, scene, themetokens" data-primary="live-tuning">Sample 1504 - Live Tuning Hot Reload</a>
-        <a class="live" href="./phase-15/1505/index.html" title="Browses and selects project asset records through a tooling view." data-tags="assetbrowser, drawframe, drawpanel, scene, themetokens" data-primary="asset-browser">Sample 1505 - Asset Browser</a>
-        <a class="live" href="./phase-15/1506/index.html" title="Views hierarchy relationships through a reusable scene graph tool." data-tags="drawframe, drawpanel, scenegraphviewer, themetokens" data-primary="scene-graph">Sample 1506 - Scene Graph Entity Hierarchy Viewer</a>
+        <a class="live" href="./phase-15/1501/index.html"
+          title="Executes runtime commands through a reusable developer console."
+          data-tags="developerconsole, drawframe, drawpanel, scene, themetokens" data-primary="developer-console">Sample
+          1501 - Developer Console</a>
+        <a class="live" href="./phase-15/1502/index.html"
+          title="Inspects runtime object state through an engine-owned tooling view."
+          data-tags="drawframe, drawpanel, runtimeinspector, scene, themetokens" data-primary="engine-inspector">Sample
+          1502 - In Engine Inspector</a>
+        <a class="live" href="./phase-15/1503/index.html"
+          title="Modifies runtime values through a reusable property editing tool."
+          data-tags="drawframe, drawpanel, propertyeditor, scene, themetokens" data-primary="property-editor">Sample
+          1503 - Property Editor</a>
+        <a class="live" href="./phase-15/1504/index.html" title="Adjusts live data without restarting the runtime."
+          data-tags="drawframe, drawpanel, livetuningservice, scene, themetokens" data-primary="live-tuning">Sample 1504
+          - Live Tuning Hot Reload</a>
+        <a class="live" href="./phase-15/1505/index.html"
+          title="Browses and selects project asset records through a tooling view."
+          data-tags="assetbrowser, drawframe, drawpanel, scene, themetokens" data-primary="asset-browser">Sample 1505 -
+          Asset Browser</a>
+        <a class="live" href="./phase-15/1506/index.html"
+          title="Views hierarchy relationships through a reusable scene graph tool."
+          data-tags="drawframe, drawpanel, scenegraphviewer, themetokens" data-primary="scene-graph">Sample 1506 - Scene
+          Graph Entity Hierarchy Viewer</a>
       </div>
     </section>
     <!-- AUTO-GENERATED SAMPLE SECTIONS END -->
-<section>
+    <section>
       <h2>Phase 16 - 3D Capability Track</h2>
-      <p>Playable 3D sample games showcasing camera systems, 3D movement, rendering, physics, and world interaction built on the engine.</p>
+      <p>Playable 3D sample games showcasing camera systems, 3D movement, rendering, physics, and world interaction
+        built on the engine.</p>
       <div class="grid">
-        <a class="live" href="./phase-16/1601/index.html" title="Minimal 3D cube movement, camera orbit, and AABB collision on top of the engine loop." data-tags="camera3d, movement3d, physics3d, scene, themetokens" data-primary="cube-explorer">Sample 1601 - 3D Cube Explorer</a>
-        <a class="live" href="./phase-16/1602/index.html" title="Navigate a compact 3D maze with collision-aware movement." data-tags="camera3d, maze3d, movement3d, physics3d, scene, themetokens" data-primary="maze-runner">Sample 1602 - 3D Maze Runner</a>
-        <a class="live" href="./phase-16/1603/index.html" title="Walk through a first-person 3D lane using camera-relative movement." data-tags="camera3d, firstperson, movement3d, physics3d, scene, themetokens" data-primary="first-person">Sample 1603 - First Person Walkthrough</a>
-        <a class="live" href="./phase-16/1604/index.html" title="Run and jump across a 3D platform lane with gravity and AABB collisions." data-tags="camera3d, gravity, jump, movement3d, physics3d, platformer3d, scene, themetokens" data-primary="platformer-3d">Sample 1604 - 3D Platformer</a>
-        <a class="live" href="./phase-16/1605/index.html" title="Drive a compact 3D sandbox track with acceleration, steering, and collision blockers." data-tags="camera3d, driving3d, movement3d, physics3d, scene, themetokens" data-primary="driving-sandbox">Sample 1605 - 3D Driving Sandbox</a>
-        <a class="live" href="./phase-16/1606/index.html" title="Experiment with gravity, bounce, and impulse controls in a constrained 3D arena." data-tags="camera3d, gravity, impulse, physics3d, scene, themetokens" data-primary="physics-playground">Sample 1606 - 3D Physics Playground</a>
-        <a class="live" href="./phase-16/1607/index.html" title="Pilot and fire in a minimal 3D lane shooter against incoming asteroids." data-tags="camera3d, movement3d, shooter3d, collision3d, scene, themetokens" data-primary="space-shooter">Sample 1607 - 3D Space Shooter</a>
-        <a class="live" href="./phase-16/1608/index.html" title="Crawl a compact 3D dungeon, collect a relic, and unlock the exit route." data-tags="camera3d, crawler3d, maze3d, movement3d, physics3d, scene, themetokens" data-primary="dungeon-crawler">Sample 1608 - 3D Dungeon Crawler</a>
-        <a class="live" href="./phase-16/1609/index.html" title="Showcases dynamic light movement and wireframe shading changes across a compact 3D set." data-tags="camera3d, lighting3d, render3d, scene, themetokens" data-primary="lighting-demo">Sample 1609 - Lighting Demo</a>
-        <a class="live" href="./phase-16/1610/index.html" title="Renders one shared world in both a 2D tactical map and a 3D perspective viewport." data-tags="camera3d, hybrid2d3d, render3d, scene, themetokens" data-primary="hybrid-2d-3d">Sample 1610 - Hybrid 2D/3D World</a>
-        <a class="live" href="./phase-16/1611/index.html" title="Demonstrates client prediction, delayed authority updates, and replica sync in a 3D lane." data-tags="camera3d, multiplayer3d, networking, sync, scene, themetokens" data-primary="multiplayer-sync">Sample 1611 - Multiplayer Sync Demo</a>
-        <a class="live" href="./phase-16/1612/index.html" title="Renders a dense 1,000-object 3D wireframe field to stress visibility and frame throughput." data-tags="camera3d, stress3d, render3d, scene, themetokens" data-primary="stress-test">Sample 1612 - Stress Test (1,000 Objects)</a>
-        <a class="live" href="./phase-16/1613/index.html" title="Explores movement, sprint, crouch, and jump input diagnostics in a controlled 3D lane." data-tags="camera3d, input3d, movement3d, scene, themetokens" data-primary="input-lab">Sample 1613 - Input Lab</a>
-        <a class="live" href="./phase-16/1614/index.html" title="Compares follow, wide, and overhead camera modes around a moving target path." data-tags="camera3d, camera-modes, render3d, scene, themetokens" data-primary="camera-modes-lab">Sample 1614 - Camera Modes Lab</a>
-        <a class="live" href="./phase-16/1615/index.html" title="Assembles one 3D actor from modular parts to demonstrate composition and local transforms." data-tags="camera3d, composition3d, entity3d, render3d, scene, themetokens" data-primary="entity-composition">Sample 1615 - Entity Composition</a>
-        <a class="live" href="./phase-16/1616/index.html" title="Streams nearby chunks around a moving anchor to visualize real-time world activation." data-tags="camera3d, streaming3d, world3d, scene, themetokens" data-primary="world-streaming">Sample 1616 - World Streaming</a>
-        <a class="live" href="./phase-16/1617/index.html" title="Demonstrates capped streaming windows for a larger world grid with movement and visibility budgeting." data-tags="camera3d, streaming3d, largeworld3d, scene, themetokens" data-primary="large-world-streaming">Sample 1617 - Large World Streaming</a>
-        <a class="live" href="./phase-16/1618/index.html" title="Examines moving light behavior against multiple material swatches with visible camera orbit motion." data-tags="camera3d, lighting3d, materials3d, render3d, scene, themetokens" data-primary="lighting-materials-lab">Sample 1618 - Lighting & Materials Lab</a>
-        <a class="live" href="./phase-16/1619/index.html" title="Demonstrates a readable debug HUD layered above an active 3D scene with explicit world/UI labels." data-tags="camera3d, debughud3d, ui-overlay, render3d, scene, themetokens" data-primary="debug-hud-sample">Sample 1619 - Debug HUD Sample</a>
-        <a class="live" href="./phase-16/1620/index.html" title="Provides a compact 3D pickup mini game reference with follow camera movement and clear HUD scoring." data-tags="camera3d, minigame3d, pickups, hud, scene, themetokens" data-primary="mini-game-reference">Sample 1620 - Mini Game (3D Reference)</a>
-        <a class="live" href="./phase-16/1621/index.html" title="Demonstrates visible AI pathfinding routes and movement across a blocked 3D navigation grid." data-tags="camera3d, ai3d, pathfinding, navigation, scene, themetokens" data-primary="ai-navigation-demo">Sample 1621 - AI Navigation Demo</a>
-        <a class="live" href="./phase-16/1622/index.html" title="DOOM-style basic raycast wall rendering with movement and turning controls." data-tags="camera3d, raycast, doom-style, filled-render, navigation, scene, themetokens" data-primary="doom-basic-raycast">Sample 1622 - Basic Raycast Walls</a>
+        <a class="live" href="./phase-16/1601/index.html"
+          title="Minimal 3D cube movement, camera orbit, and AABB collision on top of the engine loop."
+          data-tags="camera3d, movement3d, physics3d, scene, themetokens" data-primary="cube-explorer">Sample 1601 - 3D
+          Cube Explorer</a>
+        <a class="live" href="./phase-16/1602/index.html"
+          title="Navigate a compact 3D maze with collision-aware movement."
+          data-tags="camera3d, maze3d, movement3d, physics3d, scene, themetokens" data-primary="maze-runner">Sample 1602
+          - 3D Maze Runner</a>
+        <a class="live" href="./phase-16/1603/index.html"
+          title="Walk through a first-person 3D lane using camera-relative movement."
+          data-tags="camera3d, firstperson, movement3d, physics3d, scene, themetokens"
+          data-primary="first-person">Sample 1603 - First Person Walkthrough</a>
+        <a class="live" href="./phase-16/1604/index.html"
+          title="Run and jump across a 3D platform lane with gravity and AABB collisions."
+          data-tags="camera3d, gravity, jump, movement3d, physics3d, platformer3d, scene, themetokens"
+          data-primary="platformer-3d">Sample 1604 - 3D Platformer</a>
+        <a class="live" href="./phase-16/1605/index.html"
+          title="Drive a compact 3D sandbox track with acceleration, steering, and collision blockers."
+          data-tags="camera3d, driving3d, movement3d, physics3d, scene, themetokens"
+          data-primary="driving-sandbox">Sample 1605 - 3D Driving Sandbox</a>
+        <a class="live" href="./phase-16/1606/index.html"
+          title="Experiment with gravity, bounce, and impulse controls in a constrained 3D arena."
+          data-tags="camera3d, gravity, impulse, physics3d, scene, themetokens" data-primary="physics-playground">Sample
+          1606 - 3D Physics Playground</a>
+        <a class="live" href="./phase-16/1607/index.html"
+          title="Pilot and fire in a minimal 3D lane shooter against incoming asteroids."
+          data-tags="camera3d, movement3d, shooter3d, collision3d, scene, themetokens"
+          data-primary="space-shooter">Sample 1607 - 3D Space Shooter</a>
+        <a class="live" href="./phase-16/1608/index.html"
+          title="Crawl a compact 3D dungeon, collect a relic, and unlock the exit route."
+          data-tags="camera3d, crawler3d, maze3d, movement3d, physics3d, scene, themetokens"
+          data-primary="dungeon-crawler">Sample 1608 - 3D Dungeon Crawler</a>
+        <a class="live" href="./phase-16/1609/index.html"
+          title="Showcases dynamic light movement and wireframe shading changes across a compact 3D set."
+          data-tags="camera3d, lighting3d, render3d, scene, themetokens" data-primary="lighting-demo">Sample 1609 -
+          Lighting Demo</a>
+        <a class="live" href="./phase-16/1610/index.html"
+          title="Renders one shared world in both a 2D tactical map and a 3D perspective viewport."
+          data-tags="camera3d, hybrid2d3d, render3d, scene, themetokens" data-primary="hybrid-2d-3d">Sample 1610 -
+          Hybrid 2D/3D World</a>
+        <a class="live" href="./phase-16/1611/index.html"
+          title="Demonstrates client prediction, delayed authority updates, and replica sync in a 3D lane."
+          data-tags="camera3d, multiplayer3d, networking, sync, scene, themetokens"
+          data-primary="multiplayer-sync">Sample 1611 - Multiplayer Sync Demo</a>
+        <a class="live" href="./phase-16/1612/index.html"
+          title="Renders a dense 1,000-object 3D wireframe field to stress visibility and frame throughput."
+          data-tags="camera3d, stress3d, render3d, scene, themetokens" data-primary="stress-test">Sample 1612 - Stress
+          Test (1,000 Objects)</a>
+        <a class="live" href="./phase-16/1613/index.html"
+          title="Explores movement, sprint, crouch, and jump input diagnostics in a controlled 3D lane."
+          data-tags="camera3d, input3d, movement3d, scene, themetokens" data-primary="input-lab">Sample 1613 - Input
+          Lab</a>
+        <a class="live" href="./phase-16/1614/index.html"
+          title="Compares follow, wide, and overhead camera modes around a moving target path."
+          data-tags="camera3d, camera-modes, render3d, scene, themetokens" data-primary="camera-modes-lab">Sample 1614 -
+          Camera Modes Lab</a>
+        <a class="live" href="./phase-16/1615/index.html"
+          title="Assembles one 3D actor from modular parts to demonstrate composition and local transforms."
+          data-tags="camera3d, composition3d, entity3d, render3d, scene, themetokens"
+          data-primary="entity-composition">Sample 1615 - Entity Composition</a>
+        <a class="live" href="./phase-16/1616/index.html"
+          title="Streams nearby chunks around a moving anchor to visualize real-time world activation."
+          data-tags="camera3d, streaming3d, world3d, scene, themetokens" data-primary="world-streaming">Sample 1616 -
+          World Streaming</a>
+        <a class="live" href="./phase-16/1617/index.html"
+          title="Demonstrates capped streaming windows for a larger world grid with movement and visibility budgeting."
+          data-tags="camera3d, streaming3d, largeworld3d, scene, themetokens"
+          data-primary="large-world-streaming">Sample 1617 - Large World Streaming</a>
+        <a class="live" href="./phase-16/1618/index.html"
+          title="Examines moving light behavior against multiple material swatches with visible camera orbit motion."
+          data-tags="camera3d, lighting3d, materials3d, render3d, scene, themetokens"
+          data-primary="lighting-materials-lab">Sample 1618 - Lighting & Materials Lab</a>
+        <a class="live" href="./phase-16/1619/index.html"
+          title="Demonstrates a readable debug HUD layered above an active 3D scene with explicit world/UI labels."
+          data-tags="camera3d, debughud3d, ui-overlay, render3d, scene, themetokens"
+          data-primary="debug-hud-sample">Sample 1619 - Debug HUD Sample</a>
+        <a class="live" href="./phase-16/1620/index.html"
+          title="Provides a compact 3D pickup mini game reference with follow camera movement and clear HUD scoring."
+          data-tags="camera3d, minigame3d, pickups, hud, scene, themetokens" data-primary="mini-game-reference">Sample
+          1620 - Mini Game (3D Reference)</a>
+        <a class="live" href="./phase-16/1621/index.html"
+          title="Demonstrates visible AI pathfinding routes and movement across a blocked 3D navigation grid."
+          data-tags="camera3d, ai3d, pathfinding, navigation, scene, themetokens"
+          data-primary="ai-navigation-demo">Sample 1621 - AI Navigation Demo</a>
+        <a class="live" href="./phase-16/1622/index.html"
+          title="DOOM-style basic raycast wall rendering with movement and turning controls."
+          data-tags="camera3d, raycast, doom-style, filled-render, navigation, scene, themetokens"
+          data-primary="doom-basic-raycast">Sample 1622 - Basic Raycast Walls</a>
       </div>
     </section>
     <section>
       <h2>Phase 17 - Rendering Technique Expansion</h2>
-      <p>Technique-focused rendering demos across DOOM, Wolfenstein, Unreal-style visuals, and Minecraft-style voxel worlds.</p>
+      <p>Technique-focused rendering demos across DOOM, Wolfenstein, Unreal-style visuals, and Minecraft-style voxel
+        worlds.</p>
       <div class="grid">
-        <a class="live" href="./phase-17/1701/index.html" title="DOOM-style raycast corridor rendering with depth-sorted billboard sprites." data-tags="camera3d, doom-style, raycast, sprites, filled-render, scene, themetokens" data-primary="doom-raycast-sprites">Sample 1701 - DOOM Raycast + Sprites</a>
-        <a class="live" href="./phase-17/1702/index.html" title="Wolfenstein-style pure grid raycast with flat filled wall columns." data-tags="camera3d, wolf-style, raycast, grid, filled-render, scene, themetokens" data-primary="wolf-grid-raycast">Sample 1702 - Wolf Grid Raycast</a>
-        <a class="live" href="./phase-17/1703/index.html" title="Optimized DDA-based Wolf-style raycast traversal and filled corridor output." data-tags="camera3d, wolf-style, raycast, dda, optimization, filled-render, scene, themetokens" data-primary="wolf-optimized-raycast">Sample 1703 - Wolf Optimized Raycast</a>
-        <a class="live" href="./phase-17/1704/index.html" title="Unreal-style textured surfaces with lightweight dynamic lighting cues." data-tags="camera3d, unreal-style, textures, lighting, image-backed, scene, themetokens" data-primary="unreal-texture-lighting">Sample 1704 - Unreal Texture + Lighting</a>
-        <a class="live" href="./phase-17/1705/index.html" title="Unreal-style skinned character presentation with image-backed animation frames." data-tags="camera3d, unreal-style, image-skinned, animation, character, scene, themetokens" data-primary="unreal-skinned-mesh">Sample 1705 - Unreal Skinned Mesh Demo</a>
-        <a class="live" href="./phase-17/1706/index.html" title="Minecraft-style filled voxel terrain blocks with visible height variation." data-tags="camera3d, minecraft-style, voxel, terrain, filled-render, scene, themetokens" data-primary="minecraft-voxel-terrain">Sample 1706 - Minecraft Voxel Terrain</a>
-        <a class="live" href="./phase-17/1707/index.html" title="Minecraft-style voxel chunk-window streaming around a movable camera anchor with TAB-cycled debug runtime overlay." data-tags="camera3d, minecraft-style, voxel, chunk-streaming, filled-render, scene, themetokens" data-primary="minecraft-chunk-streaming">Sample 1707 - Minecraft Chunk Streaming</a>
-        <a class="live" href="./phase-17/1708/index.html" title="Real 3D mini-game loop with movement, hazard interaction, objective scoring, camera follow, and TAB-cycled debug overlays." data-tags="camera3d, gameplay, objective, hazards, debug-panels, scene, themetokens" data-primary="real-gameplay-mini-game">Sample 1708 - Real Gameplay Mini-Game</a>
-        <a class="live" href="./phase-17/1709/index.html" title="Compares direct axis movement, tank rotation controls, and weighted movement with follow-camera framing and TAB-cycled overlays." data-tags="camera3d, movement-models, direct-controls, tank-controls, weighted-motion, scene, themetokens" data-primary="movement-models-lab">Sample 1709 - Movement Models Lab</a>
-        <a class="live" href="./phase-17/1710/index.html" title="Polished gameplay loop variant with mission-state feedback, objective progression, and TAB-cycled debug overlays." data-tags="camera3d, gameplay, polished-loop, objective, hazards, debug-panels, scene, themetokens" data-primary="real-gameplay-mini-game-polished">Sample 1710 - Real Gameplay Mini-Game</a>
-        <a class="live" href="./phase-17/1711/index.html" title="Movement-models lab variant for sequence alignment with direct, tank, and weighted controls plus TAB-cycled overlays." data-tags="camera3d, movement-models, direct-controls, tank-controls, weighted-motion, scene, themetokens" data-primary="movement-models-lab-sequence">Sample 1711 - Movement Models Lab</a>
-        <a class="live" href="./phase-17/1712/index.html" title="Gameplay telemetry overlay for mini-game state, speed, collisions, actions, and live FPS trend with TAB-cycled debug views." data-tags="camera3d, gameplay, telemetry, metrics, debug-overlay, scene, themetokens" data-primary="gameplay-metrics-telemetry">Sample 1712 - Gameplay Metrics & Telemetry</a>
-        <a class="live" href="./phase-17/1713/index.html" title="Final reference game sample that combines complete mission loop, camera/collision debug output, and runtime telemetry with TAB-cycled overlays." data-tags="camera3d, gameplay, reference-game, telemetry, debug-panels, mission-loop, scene, themetokens" data-primary="final-reference-game">Sample 1713 - Final Reference Game</a>
+        <a class="live" href="./phase-17/1701/index.html"
+          title="DOOM-style raycast corridor rendering with depth-sorted billboard sprites."
+          data-tags="camera3d, doom-style, raycast, sprites, filled-render, scene, themetokens"
+          data-primary="doom-raycast-sprites">Sample 1701 - DOOM Raycast + Sprites</a>
+        <a class="live" href="./phase-17/1702/index.html"
+          title="Wolfenstein-style pure grid raycast with flat filled wall columns."
+          data-tags="camera3d, wolf-style, raycast, grid, filled-render, scene, themetokens"
+          data-primary="wolf-grid-raycast">Sample 1702 - Wolf Grid Raycast</a>
+        <a class="live" href="./phase-17/1703/index.html"
+          title="Optimized DDA-based Wolf-style raycast traversal and filled corridor output."
+          data-tags="camera3d, wolf-style, raycast, dda, optimization, filled-render, scene, themetokens"
+          data-primary="wolf-optimized-raycast">Sample 1703 - Wolf Optimized Raycast</a>
+        <a class="live" href="./phase-17/1704/index.html"
+          title="Unreal-style textured surfaces with lightweight dynamic lighting cues."
+          data-tags="camera3d, unreal-style, textures, lighting, image-backed, scene, themetokens"
+          data-primary="unreal-texture-lighting">Sample 1704 - Unreal Texture + Lighting</a>
+        <a class="live" href="./phase-17/1705/index.html"
+          title="Unreal-style skinned character presentation with image-backed animation frames."
+          data-tags="camera3d, unreal-style, image-skinned, animation, character, scene, themetokens"
+          data-primary="unreal-skinned-mesh">Sample 1705 - Unreal Skinned Mesh Demo</a>
+        <a class="live" href="./phase-17/1706/index.html"
+          title="Minecraft-style filled voxel terrain blocks with visible height variation."
+          data-tags="camera3d, minecraft-style, voxel, terrain, filled-render, scene, themetokens"
+          data-primary="minecraft-voxel-terrain">Sample 1706 - Minecraft Voxel Terrain</a>
+        <a class="live" href="./phase-17/1707/index.html"
+          title="Minecraft-style voxel chunk-window streaming around a movable camera anchor with TAB-cycled debug runtime overlay."
+          data-tags="camera3d, minecraft-style, voxel, chunk-streaming, filled-render, scene, themetokens"
+          data-primary="minecraft-chunk-streaming">Sample 1707 - Minecraft Chunk Streaming</a>
+        <a class="live" href="./phase-17/1708/index.html"
+          title="Real 3D mini-game loop with movement, hazard interaction, objective scoring, camera follow, and TAB-cycled debug overlays."
+          data-tags="camera3d, gameplay, objective, hazards, debug-panels, scene, themetokens"
+          data-primary="real-gameplay-mini-game">Sample 1708 - Real Gameplay Mini-Game</a>
+        <a class="live" href="./phase-17/1709/index.html"
+          title="Compares direct axis movement, tank rotation controls, and weighted movement with follow-camera framing and TAB-cycled overlays."
+          data-tags="camera3d, movement-models, direct-controls, tank-controls, weighted-motion, scene, themetokens"
+          data-primary="movement-models-lab">Sample 1709 - Movement Models Lab</a>
+        <a class="live" href="./phase-17/1710/index.html"
+          title="Polished gameplay loop variant with mission-state feedback, objective progression, and TAB-cycled debug overlays."
+          data-tags="camera3d, gameplay, polished-loop, objective, hazards, debug-panels, scene, themetokens"
+          data-primary="real-gameplay-mini-game-polished">Sample 1710 - Real Gameplay Mini-Game</a>
+        <a class="live" href="./phase-17/1711/index.html"
+          title="Movement-models lab variant for sequence alignment with direct, tank, and weighted controls plus TAB-cycled overlays."
+          data-tags="camera3d, movement-models, direct-controls, tank-controls, weighted-motion, scene, themetokens"
+          data-primary="movement-models-lab-sequence">Sample 1711 - Movement Models Lab</a>
+        <a class="live" href="./phase-17/1712/index.html"
+          title="Gameplay telemetry overlay for mini-game state, speed, collisions, actions, and live FPS trend with TAB-cycled debug views."
+          data-tags="camera3d, gameplay, telemetry, metrics, debug-overlay, scene, themetokens"
+          data-primary="gameplay-metrics-telemetry">Sample 1712 - Gameplay Metrics & Telemetry</a>
+        <a class="live" href="./phase-17/1713/index.html"
+          title="Final reference game sample that combines complete mission loop, camera/collision debug output, and runtime telemetry with TAB-cycled overlays."
+          data-tags="camera3d, gameplay, reference-game, telemetry, debug-panels, mission-loop, scene, themetokens"
+          data-primary="final-reference-game">Sample 1713 - Final Reference Game</a>
       </div>
     </section>
     <section>
       <h2>Phase 18 - Engine Finalization Bootstrap</h2>
       <p>Initial scaffold and wiring entry points for Level 18 finalization work, kept intentionally minimal.</p>
       <div class="grid">
-        <a class="live" href="./phase-18/1801/index.html" title="Bootstrap sample that establishes the Phase 18 folder, entry points, and launcher wiring without feature logic." data-tags="phase-bootstrap, foundation, scene, themetokens" data-primary="phase18-foundation">Sample 1801 - Phase 18 Foundation</a>
+        <a class="live" href="./phase-18/1801/index.html"
+          title="Bootstrap sample that establishes the Phase 18 folder, entry points, and launcher wiring without feature logic."
+          data-tags="phase-bootstrap, foundation, scene, themetokens" data-primary="phase18-foundation">Sample 1801 -
+          Phase 18 Foundation</a>
       </div>
     </section>
     <section>
       <h2>Phase 19 - Next Phase Bootstrap</h2>
       <p>Initial scaffold and wiring entry points for Level 19 follow-on execution, kept intentionally minimal.</p>
       <div class="grid">
-        <a class="live" href="./phase-19/1901/index.html" title="Bootstrap sample that establishes the Phase 19 folder, entry points, and launcher wiring without feature logic." data-tags="phase-bootstrap, foundation, scene, themetokens" data-primary="phase19-foundation">Sample 1901 - Phase 19 Foundation</a>
+        <a class="live" href="./phase-19/1901/index.html"
+          title="Bootstrap sample that establishes the Phase 19 folder, entry points, and launcher wiring without feature logic."
+          data-tags="phase-bootstrap, foundation, scene, themetokens" data-primary="phase19-foundation">Sample 1901 -
+          Phase 19 Foundation</a>
       </div>
     </section>
   </div>
+  <script type="module" src="../src/engine/theme/mount-shared-header.js"></script>
   <script>
     (function () {
       const METADATA_URL = '/samples/metadata/samples.index.metadata.json';
@@ -1055,4 +1751,5 @@ index.html
     })();
   </script>
 </body>
+
 </html>

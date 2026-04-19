@@ -1,4 +1,4 @@
-﻿<!--
+<!--
 Toolbox Aid
 David Quesenberry
 03/23/2026
@@ -6,24 +6,27 @@ index.html
 -->
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Tools</title>
   <link rel="stylesheet" href="../src/engine/ui/hubCommon.css" />
+  <link rel="stylesheet" href="../src/engine/theme/toolboxaid-header.css" />
   <link rel="stylesheet" href="./shared/platformShell.css" />
 </head>
+
 <body class="hub-page-tools" data-tools-platform-page="landing">
-  <div data-tools-platform-header></div>
+
+  <div class="hideme">
+    <div id="shared-theme-header"></div>
+    <div data-tools-platform-header></div>
+  </div>
   <div class="wrap">
-    <div class="topnav">
-      <a href="../index.html">Home</a>
-      <a href="../games/index.html">Games Hub</a>
-    </div>
 
     <section class="hero">
-      <h1>ToolboxAid - Tools</h1>
-      <p class="subtitle">Launch the first-class art and scene tools from one registry-driven surface. The landing page shows only active, user-facing tools and keeps preserved legacy content out of the main launcher.</p>
+      <p class="subtitle">Launch the first-class art and scene tools from one registry-driven surface. The landing page
+        shows only active, user-facing tools and keeps preserved legacy content out of the main launcher.</p>
     </section>
 
     <section>
@@ -31,13 +34,15 @@ index.html
       <div class="grid" data-active-tools-grid>
       </div>
       <noscript>
-        <p class="callout"><strong>JavaScript required:</strong> the active tools list is generated from the shared tools registry.</p>
+        <p class="callout"><strong>JavaScript required:</strong> the active tools list is generated from the shared
+          tools registry.</p>
       </noscript>
     </section>
 
     <section>
       <h2>Planned Next</h2>
-      <p>Additional workflow tools are next priorities after the active browser and manager surfaces now live in the shared tools registry.</p>
+      <p>Additional workflow tools are next priorities after the active browser and manager surfaces now live in the
+        shared tools registry.</p>
       <div class="grid">
 
         <div class="card">
@@ -89,13 +94,15 @@ index.html
         </div>
       </div>
     </section>
-    
+
     <div class="callout">
       <strong>Registry rule:</strong> this page shows only launchable first-class tools from the shared registry.
     </div>
   </div>
   <div data-tools-platform-status></div>
+  <script type="module" src="../src/engine/theme/mount-shared-header.js"></script>
   <script type="module" src="./renderToolsIndex.js"></script>
   <script type="module" src="./shared/platformShell.js"></script>
 </body>
+
 </html>

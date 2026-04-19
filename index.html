@@ -6,121 +6,131 @@ index.html
 -->
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>HTML JavaScript Gaming</title>
     <link rel="icon" href="favicon.ico" />
     <link rel="stylesheet" href="src/engine/ui/hubCommon.css" />
+    <link rel="stylesheet" href="src/engine/theme/toolboxaid-header.css" />
 </head>
+
 <body class="hub-page-home">
     <div class="wrap">
+<div class="hideme">
+        <div id="shared-theme-header"></div>
+        <p class="subtitle">A home base for playable arcade builds, sample-driven engine patterns, and shared tooling.
+            Start with the hubs below to jump into games, samples, or the asset pipeline.</p>
+</div>
+
         <section class="hero">
-            <h1>HTML JavaScript Gaming</h1>
-            <p class="subtitle">
-                A home base for playable arcade builds, sample-driven engine patterns, and shared tooling. Start with the hubs below to jump into games, samples, or the asset pipeline.
-            </p>
-            <div class="hero-links">
-                <a class="cta primary" href="games/index.html">Open Games Hub</a>
-                <a class="cta" href="samples/index.html">Browse Samples</a>
-                <a class="cta" href="tools/index.html">Open Tools Hub</a>
+
+
+            <section class="section">
+                <h2>Start Here</h2>
+                <p>Three primary hubs: explore sample patterns, play shipped games, and open the supporting tools.</p>
+                <div class="grid">
+                    <a class="card" href="samples/index.html">
+                        <div class="eyebrow">Samples</div>
+                        <h3>Samples Hub</h3>
+                        <p>Explore 182 micro-demos (001-182) that showcase engine patterns, input/camera/collision
+                            systems, and UI helpers.</p>
+                        <div class="path">samples/index.html</div>
+                        <div class="badges">
+                            <span class="badge sample">Patterns</span>
+                            <span class="badge sample">Demos</span>
+                        </div>
+                    </a>
+
+                    <a class="card" href="games/index.html">
+                        <div class="eyebrow">Games</div>
+                        <h3>Games Hub</h3>
+                        <p>Launch the current playable titles, see Pong queued up next, and track the broader classic
+                            arcade roadmap.</p>
+                        <div class="path">games/index.html</div>
+                        <div class="badges">
+                            <span class="badge game">Playable Games</span>
+                            <span class="badge roadmap">Roadmap</span>
+                        </div>
+                    </a>
+
+                    <a class="card" href="tools/index.html">
+                        <div class="eyebrow">Tools</div>
+                        <h3>Tools Hub</h3>
+                        <p>Open the Sprite Editor, review the Tilemap Editor priority, and see how the shared palette
+                            workflow fits into future asset tools.</p>
+                        <div class="path">tools/index.html</div>
+                        <div class="badges">
+                            <span class="badge tool">Sprite Editor</span>
+                            <span class="badge roadmap">Tool Roadmap</span>
+                        </div>
+                    </a>
+                </div>
+            </section>
+
+            <section class="section">
+                <h2>Playable Today</h2>
+                <p>These are the games currently linked from the launcher and ready to open from the repo.</p>
+                <div class="grid">
+                    <a class="card" href="games/GravityWell/index.html">
+                        <div class="eyebrow">Live Game</div>
+                        <h3>Gravity Well</h3>
+                        <p>Vector-style orbital flight built around gravity assists, route planning, and collecting
+                            every beacon in one run.</p>
+                        <div class="path">games/GravityWell/index.html</div>
+                        <div class="badges">
+                            <span class="badge game">Playable</span>
+                        </div>
+                    </a>
+
+                    <a class="card" href="games/Asteroids/index.html">
+                        <div class="eyebrow">Live Game</div>
+                        <h3>Asteroids</h3>
+                        <p>Classic arcade shooter with vector presentation, score chase flow, and polished
+                            moment-to-moment ship combat.</p>
+                        <div class="path">games/Asteroids/index.html</div>
+                        <div class="badges">
+                            <span class="badge game">Playable</span>
+                        </div>
+                    </a>
+                </div>
+            </section>
+
+            <section class="section">
+                <h2>Build Direction</h2>
+                <p>This PR keeps the focus on navigation and planning: Pong is next, and the tools work stays centered
+                    on asset creation rather than engine changes.</p>
+                <div class="grid">
+                    <a class="card" href="games/index.html">
+                        <div class="eyebrow">Next Game</div>
+                        <h3>Pong</h3>
+                        <p>The next build target, positioned as the foundation for more classic arcade releases.</p>
+                        <div class="path">games/index.html</div>
+                        <div class="badges">
+                            <span class="badge roadmap">Next Build</span>
+                        </div>
+                    </a>
+
+                    <a class="card" href="tools/index.html">
+                        <div class="eyebrow">Next Tooling</div>
+                        <h3>Tilemap + Palette Workflow</h3>
+                        <p>The tool roadmap prioritizes a Tilemap Editor and a palette-driven asset workflow that stays
+                            aligned with shared data.</p>
+                        <div class="path">tools/index.html</div>
+                        <div class="badges">
+                            <span class="badge roadmap">Planned</span>
+                        </div>
+                    </a>
+                </div>
+            </section>
+
+            <div class="footer-note">
+                Open the repo through a local web server for the best results. Some browsers restrict module loading and
+                asset access when pages are opened directly with <code>file:///</code>.
             </div>
-        </section>
-
-        <section class="section">
-            <h2>Start Here</h2>
-            <p>Three primary hubs: explore sample patterns, play shipped games, and open the supporting tools.</p>
-            <div class="grid">
-                <a class="card" href="samples/index.html">
-                    <div class="eyebrow">Samples</div>
-                    <h3>Samples Hub</h3>
-                    <p>Explore 182 micro-demos (001-182) that showcase engine patterns, input/camera/collision systems, and UI helpers.</p>
-                    <div class="path">samples/index.html</div>
-                    <div class="badges">
-                        <span class="badge sample">Patterns</span>
-                        <span class="badge sample">Demos</span>
-                    </div>
-                </a>
-
-                <a class="card" href="games/index.html">
-                    <div class="eyebrow">Games</div>
-                    <h3>Games Hub</h3>
-                    <p>Launch the current playable titles, see Pong queued up next, and track the broader classic arcade roadmap.</p>
-                    <div class="path">games/index.html</div>
-                    <div class="badges">
-                        <span class="badge game">Playable Games</span>
-                        <span class="badge roadmap">Roadmap</span>
-                    </div>
-                </a>
-
-                <a class="card" href="tools/index.html">
-                    <div class="eyebrow">Tools</div>
-                    <h3>Tools Hub</h3>
-                    <p>Open the Sprite Editor, review the Tilemap Editor priority, and see how the shared palette workflow fits into future asset tools.</p>
-                    <div class="path">tools/index.html</div>
-                    <div class="badges">
-                        <span class="badge tool">Sprite Editor</span>
-                        <span class="badge roadmap">Tool Roadmap</span>
-                    </div>
-                </a>
-            </div>
-        </section>
-
-        <section class="section">
-            <h2>Playable Today</h2>
-            <p>These are the games currently linked from the launcher and ready to open from the repo.</p>
-            <div class="grid">
-                <a class="card" href="games/GravityWell/index.html">
-                    <div class="eyebrow">Live Game</div>
-                    <h3>Gravity Well</h3>
-                    <p>Vector-style orbital flight built around gravity assists, route planning, and collecting every beacon in one run.</p>
-                    <div class="path">games/GravityWell/index.html</div>
-                    <div class="badges">
-                        <span class="badge game">Playable</span>
-                    </div>
-                </a>
-
-                <a class="card" href="games/Asteroids/index.html">
-                    <div class="eyebrow">Live Game</div>
-                    <h3>Asteroids</h3>
-                    <p>Classic arcade shooter with vector presentation, score chase flow, and polished moment-to-moment ship combat.</p>
-                    <div class="path">games/Asteroids/index.html</div>
-                    <div class="badges">
-                        <span class="badge game">Playable</span>
-                    </div>
-                </a>
-            </div>
-        </section>
-
-        <section class="section">
-            <h2>Build Direction</h2>
-            <p>This PR keeps the focus on navigation and planning: Pong is next, and the tools work stays centered on asset creation rather than engine changes.</p>
-            <div class="grid">
-                <a class="card" href="games/index.html">
-                    <div class="eyebrow">Next Game</div>
-                    <h3>Pong</h3>
-                    <p>The next build target, positioned as the foundation for more classic arcade releases.</p>
-                    <div class="path">games/index.html</div>
-                    <div class="badges">
-                        <span class="badge roadmap">Next Build</span>
-                    </div>
-                </a>
-
-                <a class="card" href="tools/index.html">
-                    <div class="eyebrow">Next Tooling</div>
-                    <h3>Tilemap + Palette Workflow</h3>
-                    <p>The tool roadmap prioritizes a Tilemap Editor and a palette-driven asset workflow that stays aligned with shared data.</p>
-                    <div class="path">tools/index.html</div>
-                    <div class="badges">
-                        <span class="badge roadmap">Planned</span>
-                    </div>
-                </a>
-            </div>
-        </section>
-
-        <div class="footer-note">
-            Open the repo through a local web server for the best results. Some browsers restrict module loading and asset access when pages are opened directly with <code>file:///</code>.
-        </div>
     </div>
+    <script type="module" src="./src/engine/theme/mount-shared-header.js"></script>
 </body>
+
 </html>

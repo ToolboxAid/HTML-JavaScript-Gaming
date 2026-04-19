@@ -1,8 +1,3 @@
-/*
-Toolbox Aid
-David Quesenberry
-03/21/2026
-index.js
-*/
+export { TOOLBOXAID_HEADER_HTML, createToolboxAidHeader, mountToolboxAidHeader } from './toolboxaid-header.js';
 export { Theme } from './Theme.js';
 export { ThemeTokens } from './ThemeTokens.js';
