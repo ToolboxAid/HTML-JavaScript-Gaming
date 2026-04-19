@@ -1,0 +1,32 @@
+Docs Cleanup Deletion Ledger
+
+Objective
+Close roadmap item:
+[ ] Any doc that is only move/rename/etc. should be deleted (verify content is in the correct doc before deleting).
+
+Audit scope
+- Active docs surfaces under docs/dev, docs/operations, docs/pr, docs/reference
+- Candidate identification by content semantics (move/rename-only acceptance artifacts)
+
+Deletion decisions
+1) source: docs/pr/APPLY_PR_TARGETED_REPO_CLEANUP_PASS_4B_SPRITEEDITOR_MOVE_TO_ARCHIVE.md
+   destination: docs/archive/tools/SpriteEditor_old_keep/
+   reason: move-only acceptance record; no unique capability/spec content
+   destination coverage verification:
+   - destination path exists: yes
+   - destination contains archived asset + module tree: yes
+   - move result described by source is materially represented at destination: yes
+   deletion decision: delete
+
+Retained candidates (not deleted)
+- docs/pr/APPLY_PR_LEVEL_6_1_SAMPLES_PHASE_ALIGNMENT.md
+  reason retained: not move/rename-only; records phase-alignment apply result outside move-only criterion.
+- docs/pr/BUILD_PR_LEVEL_19_5_VALIDATION_BLOCKERS_ALIGNMENT.md
+  reason retained: validation status report, not move/rename-only.
+
+Post-delete validation
+- Source doc path removed: yes
+- Destination coverage remained intact: yes
+
+Status recommendation
+- `Any doc that is only move/rename/etc. should be deleted (verify content is in the correct doc before deleting).` => [x]

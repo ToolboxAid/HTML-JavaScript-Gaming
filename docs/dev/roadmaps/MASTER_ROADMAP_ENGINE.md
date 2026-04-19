@@ -717,9 +717,9 @@
 
 [x] Some games are actually samples/demos; identify and recommend a `phase-xx` move target.
 
-[ ] Lock APIs
-[ ] Clean boundaries
-[ ] Document contracts
+[x] Lock APIs
+[x] Clean boundaries
+[x] Document contracts
 
 ### Track A � Engine Usage Enforcement
 - [x] verify all `samples/` use engine systems (no local reimplementation)
@@ -753,7 +753,7 @@
 ### Track F � Docs System Cleanup
 [x] Docs organization: classify all `./docs/` into buckets.
 [x] Arrange docs into classification buckets.
-[ ] Any doc that is only move/rename/etc. should be deleted (verify content is in the correct doc before deleting).
+[x] Any doc that is only move/rename/etc. should be deleted (verify content is in the correct doc before deleting).
 
 - [x] classify all docs into buckets
 - [x] consolidate duplicate docs - consolidate PRs for easier one-stop review, so one capability does not require reading many docs (for example, bezel/background); focus on what the capability does.

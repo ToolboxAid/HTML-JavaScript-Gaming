@@ -1,0 +1,32 @@
+API Lock Closeout Report
+
+Objective
+Close roadmap item: [ ] Lock APIs
+
+Validation executed
+1) Public API usage aggregation across samples/games/tools imports targeting /src/engine/*/index.js
+2) Focused validation tests:
+   - tests/production/EnginePublicBarrelImports.test.mjs
+   - tests/production/TestsValidationCombinedPass.test.mjs
+
+Execution evidence
+- Public engine subsystem barrels actively consumed: 38
+- Highest-consumption public barrels include:
+  - theme (534 import sites)
+  - scene (251 import sites)
+  - debug (216 import sites)
+  - input (176 import sites)
+- Focused tests: PASS
+  - EnginePublicBarrelImports: PASS
+  - TestsValidationCombinedPass: PASS
+
+Locked public API rule (execution-backed)
+- Public surfaces are subsystem barrels under `src/engine/*/index.js`.
+- Consumer imports in samples/games/tools are expected to target barrel exports, not deep internals.
+
+Excluded from lock
+- Deep implementation modules not exported through subsystem barrel `index.js`.
+- Transitional/internal helper files under subsystem internals.
+
+Status recommendation
+- `Lock APIs` => [x]

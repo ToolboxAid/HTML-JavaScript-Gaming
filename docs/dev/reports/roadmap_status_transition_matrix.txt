@@ -1,0 +1,34 @@
+Roadmap Status Transition Matrix
+
+Target roadmap file
+- docs/dev/roadmaps/MASTER_ROADMAP_ENGINE.md
+
+Candidate transitions reviewed
+- [ ] Lock APIs
+- [ ] Clean boundaries
+- [ ] Document contracts
+- [ ] Any doc that is only move/rename/etc. should be deleted (verify content is in the correct doc before deleting).
+
+Validation-backed evidence mapping
+- Lock APIs:
+  - docs/dev/reports/api_lock_closeout_report.txt
+  - tests/production/EnginePublicBarrelImports.test.mjs PASS
+  - tests/production/TestsValidationCombinedPass.test.mjs PASS
+- Clean boundaries:
+  - docs/dev/reports/boundary_cleanup_closeout_report.txt
+  - tests/tools/ToolBoundaryEnforcement.test.mjs PASS
+  - tests/tools/ProjectToolDataContracts.test.mjs PASS
+- Document contracts:
+  - docs/dev/reports/contract_documentation_closeout_report.txt
+  - validated contract surfaces under docs/reference/architecture-standards/
+- Move/rename-only docs cleanup:
+  - docs/dev/reports/docs_cleanup_deletion_ledger.txt
+  - verified deletion with destination coverage
+
+Applied transitions (status-only)
+- [ ] -> [x] Lock APIs
+- [ ] -> [x] Clean boundaries
+- [ ] -> [x] Document contracts
+- [ ] -> [x] Any doc that is only move/rename/etc. should be deleted (verify content is in the correct doc before deleting).
+
+No roadmap text was rewritten or deleted.

@@ -1,0 +1,40 @@
+Boundary Cleanup Closeout Report
+
+Objective
+Close roadmap item: [ ] Clean boundaries
+
+Validation executed
+1) Static import edge scan for prohibited dependency directions:
+   - src/engine -> games|samples|tools (forbidden)
+   - src/shared -> src/engine|games|samples|tools (forbidden)
+   - games -> tools (forbidden)
+   - samples -> tools (allowed only where tool-linked sample tracks exist)
+   - tools -> games (forbidden)
+2) Focused boundary tests:
+   - tests/tools/ToolBoundaryEnforcement.test.mjs
+   - tests/tools/ProjectToolDataContracts.test.mjs
+
+Boundary map (validated)
+Allowed edges
+- samples/games/tools -> src/engine public barrel surfaces
+- tools -> tools/shared
+- samples -> tools/shared for explicit tool-linked curriculum tracks
+Prohibited edges
+- src/engine -> games|samples|tools
+- src/shared -> src/engine|games|samples|tools
+- games -> tools
+- tools -> games
+
+Execution evidence
+- engine_imports_app_layers: 0 violations
+- shared_imports_forbidden_layers: 0 violations
+- games_imports_tools: 0 violations
+- tools_imports_games: 0 violations
+- ToolBoundaryEnforcement: PASS
+- ProjectToolDataContracts: PASS
+
+Notes
+- samples->tools hits detected are confined to explicit tool-linked sample lanes and are not treated as blocking boundary violations for this closeout.
+
+Status recommendation
+- `Clean boundaries` => [x]
