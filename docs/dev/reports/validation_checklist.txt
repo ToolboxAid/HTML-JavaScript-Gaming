@@ -1,6 +1,9 @@
 Validation Checklist
 
-[ ] Validation rules defined
-[ ] Violations detectable
-[ ] Sample 0713 validated
-[ ] No false positives
+[x] Fullscreen usage scan completed
+[x] OUTSIDE_0713 = 0
+[x] Only two fullscreen hits remain and both are in sample 0713
+[x] Focused fullscreen enforcement test passed
+[x] Focused 0713 viewport-fit test passed
+[x] No engine changes made in validation-only pass
+[ ] Master roadmap status updated using execution-backed status-only transitions
