@@ -1,0 +1,7 @@
+Validation Rules
+
+1. engine.fullscreen must ONLY exist in sample 0713
+2. Any other occurrence = failure
+3. Sample 0713 must:
+   - Fill full screen
+   - Maintain aspect ratio

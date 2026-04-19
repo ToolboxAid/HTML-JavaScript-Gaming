@@ -1,8 +1,6 @@
 Validation Checklist
 
-[ ] Only sample 0713 has fullscreen
-[ ] No other sample contains fullscreen flags
-[ ] Sample 0713 fills screen fully (no unused space)
-[ ] Aspect ratio preserved correctly
-[ ] No engine-level fullscreen enforcement added
-[ ] Codex respects rule in future PRs
+[ ] Validation rules defined
+[ ] Violations detectable
+[ ] Sample 0713 validated
+[ ] No false positives
