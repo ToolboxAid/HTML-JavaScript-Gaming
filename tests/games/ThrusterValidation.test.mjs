@@ -93,20 +93,10 @@ export async function run() {
   const canvas = createCanvas();
   let installedScene = null;
   let started = 0;
-  let fullscreenRequests = 0;
-  let fullscreenState = { available: true, active: false };
   class TestEngine {
     constructor(options) {
       this.canvas = options.canvas;
       this.input = options.input;
-      this.fullscreen = {
-        getState() {
-          return fullscreenState;
-        },
-        async request() {
-          fullscreenRequests += 1;
-        },
-      };
     }
 
     setScene(scene) {
@@ -142,10 +132,6 @@ export async function run() {
   assert.equal(started, 1);
   assert.equal(installedScene instanceof ThrusterScene, true);
   await canvas.trigger('click');
-  assert.equal(fullscreenRequests, 1);
-  fullscreenState = { available: false, active: false };
-  await canvas.trigger('click');
-  assert.equal(fullscreenRequests, 1);
 
   const input = createMutableInput();
   const scene = new ThrusterScene();

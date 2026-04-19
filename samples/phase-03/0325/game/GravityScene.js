@@ -8,7 +8,6 @@ import { Scene } from '../../../../src/engine/scene/index.js';
 import GravityAudio from './GravityAudio.js';
 import GravityInputController from './GravityInputController.js';
 import GravityWorld from './GravityWorld.js';
-import { wrapTextByCharacterCount } from '../../../../src/shared/utils/index.js';
 
 const VIEW = {
   width: 960,
@@ -25,6 +24,31 @@ const COLORS = {
   ball: '#f6f2d8',
   gravity: '#f59e0b',
 };
+
+function wrapTextByCharacterCount(value, maxChars = 40) {
+  const text = String(value ?? '').trim();
+  if (!text) {
+    return [];
+  }
+  const words = text.split(/\s+/g);
+  const lines = [];
+  let current = '';
+  for (const word of words) {
+    const next = current ? `${current} ${word}` : word;
+    if (next.length <= maxChars) {
+      current = next;
+      continue;
+    }
+    if (current) {
+      lines.push(current);
+    }
+    current = word;
+  }
+  if (current) {
+    lines.push(current);
+  }
+  return lines;
+}
 
 export default class GravityScene extends Scene {
   constructor() {

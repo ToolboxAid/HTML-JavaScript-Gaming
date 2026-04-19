@@ -1,0 +1,14 @@
+BUILD_PR_GAMES_TEMPLATE_CONTRACT_ENFORCEMENT validation report
+
+STATUS: PASS
+
+Targets:
+- games/_template
+- games/Pacman
+
+Checks:
+- _template: structure and shell contract checks passed.
+- Pacman: structure and shell contract checks passed.
+
+Issues:
+- none

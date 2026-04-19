@@ -18,7 +18,6 @@ const settings = new SettingsSystem({
   namespace: 'toolboxaid:sample 1101',
   defaults: {
     audio: { musicVolume: 0.6, sfxVolume: 0.8 },
-    video: { fullscreenPreferred: false },
     gameplay: { difficulty: 'normal' },
   },
 });
@@ -31,6 +30,5 @@ engine.start();
 document.getElementById('settings-load')?.addEventListener('click', () => scene.load());
 document.getElementById('settings-save')?.addEventListener('click', () => scene.save());
 document.getElementById('settings-volume')?.addEventListener('click', () => scene.bumpVolume());
-document.getElementById('settings-fullscreen')?.addEventListener('click', () => scene.toggleFullscreenPref());
 document.getElementById('settings-difficulty')?.addEventListener('click', () => scene.cycleDifficulty());
 document.getElementById('settings-reset')?.addEventListener('click', () => scene.reset());

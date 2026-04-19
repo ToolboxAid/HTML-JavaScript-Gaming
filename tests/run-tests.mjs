@@ -142,6 +142,8 @@ import './render/Renderer.test.mjs';
 import { run as runReplaySystem } from './replay/ReplaySystem.test.mjs';
 import { run as runReplayTimeline } from './replay/ReplayTimeline.test.mjs';
 import { run as runSamplesProgramCombinedPass } from './samples/SamplesProgramCombinedPass.test.mjs';
+import { run as runFullscreenRuleEnforcement } from './samples/FullscreenRuleEnforcement.test.mjs';
+import { run as runFullscreenAbility0713ViewportFit } from './samples/FullscreenAbility0713ViewportFit.test.mjs';
 import { run as runOrbitLabModel } from './samples/OrbitLabModel.test.mjs';
 import { run as runOrbitLabScene } from './samples/OrbitLabScene.test.mjs';
 import { run as runProjectileLabModel } from './samples/ProjectileLabModel.test.mjs';
@@ -277,6 +279,8 @@ const tests = [
     ['ReplaySystem', runReplaySystem],
     ['ReplayTimeline', runReplayTimeline],
     ['SamplesProgramCombinedPass', runSamplesProgramCombinedPass],
+    ['FullscreenRuleEnforcement', runFullscreenRuleEnforcement],
+    ['FullscreenAbility0713ViewportFit', runFullscreenAbility0713ViewportFit],
     ['OrbitLabModel', runOrbitLabModel],
     ['OrbitLabScene', runOrbitLabScene],
     ['ProjectileLabModel', runProjectileLabModel],

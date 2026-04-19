@@ -6,8 +6,14 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const repoRoot = path.resolve(__dirname, "..");
 
-const STRATEGY_PATH = "docs/specs/asset_ownership_strategy.md";
-const REGISTRY_PATH = "docs/specs/shared_asset_promotion_registry.json";
+const STRATEGY_PATH_CANDIDATES = [
+  "docs/reference/architecture-standards/specs/asset_ownership_strategy.md",
+  "docs/specs/asset_ownership_strategy.md"
+];
+const REGISTRY_PATH_CANDIDATES = [
+  "docs/reference/architecture-standards/specs/shared_asset_promotion_registry.json",
+  "docs/specs/shared_asset_promotion_registry.json"
+];
 const ASTEROIDS_MANIFEST_PATH = "games/Asteroids/assets/tools.manifest.json";
 const TEMPLATE_MANIFEST_PATH = "games/_template/assets/tools.manifest.json";
 const SAMPLE_ASSET_BROWSER_SCENE_PATH = "samples/phase-15/1505/AssetBrowserScene.js";
@@ -34,6 +40,15 @@ async function pathExists(repoPath) {
   } catch {
     return false;
   }
+}
+
+async function resolveFirstExistingPath(candidates) {
+  for (const candidate of candidates) {
+    if (await pathExists(candidate)) {
+      return candidate;
+    }
+  }
+  return "";
 }
 
 function ownerPrefixForPath(repoPath) {
@@ -132,20 +147,27 @@ export async function validateAssetOwnershipStrategy({ emitLogs = true } = {}) {
   const issues = [];
   const notes = [];
 
-  if (!(await pathExists(STRATEGY_PATH))) {
-    issues.push(`Missing strategy doc: ${STRATEGY_PATH}`);
+  const strategyPath = await resolveFirstExistingPath(STRATEGY_PATH_CANDIDATES);
+  const registryPath = await resolveFirstExistingPath(REGISTRY_PATH_CANDIDATES);
+
+  if (!strategyPath) {
+    issues.push(
+      `Missing strategy doc: ${STRATEGY_PATH_CANDIDATES.join(" OR ")}`
+    );
   } else {
-    notes.push(`Strategy doc present: ${STRATEGY_PATH}`);
+    notes.push(`Strategy doc present: ${strategyPath}`);
   }
 
   let promotedSet = new Set();
-  if (!(await pathExists(REGISTRY_PATH))) {
-    issues.push(`Missing promotion registry: ${REGISTRY_PATH}`);
+  if (!registryPath) {
+    issues.push(
+      `Missing promotion registry: ${REGISTRY_PATH_CANDIDATES.join(" OR ")}`
+    );
   } else {
-    const registry = await readJson(REGISTRY_PATH);
+    const registry = await readJson(registryPath);
     const promoted = Array.isArray(registry?.promotedAssets) ? registry.promotedAssets : [];
     promotedSet = new Set(promoted.map((entry) => toRepoPath(entry?.path || entry)));
-    notes.push(`Promotion registry present: ${REGISTRY_PATH}`);
+    notes.push(`Promotion registry present: ${registryPath}`);
   }
 
   const asteroidsManifest = await readJson(ASTEROIDS_MANIFEST_PATH);

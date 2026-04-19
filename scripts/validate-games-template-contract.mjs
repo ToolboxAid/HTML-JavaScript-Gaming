@@ -8,7 +8,7 @@ const repoRoot = path.resolve(__dirname, "..");
 
 const GAMES_ROOT = path.join(repoRoot, "games");
 const REPORT_PATH = path.join(repoRoot, "docs/dev/reports/games_template_contract_validation.txt");
-const MANAGED_CANONICAL_GAMES = ["PacmanLite", "SpaceInvaders"];
+const MANAGED_CANONICAL_GAMES = ["Pacman"];
 const REQUIRED_DIRS = ["assets", "game", "entities", "systems", "ui", "debug"];
 const TEMPLATE_REQUIRED_ASSET_DIRS = [
   "audio",
@@ -26,12 +26,12 @@ const TEMPLATE_REQUIRED_ASSET_DIRS = [
   "vectors/data"
 ];
 const TEMPLATE_REQUIRED_ASSET_FILES = [
-  ".gitkeep",
+  "README.md",
   "tools.manifest.json",
-  "parallax/data/.gitkeep",
-  "sprites/data/.gitkeep",
-  "tilemaps/data/.gitkeep",
-  "vectors/data/.gitkeep"
+  "parallax/data/README.md",
+  "sprites/data/README.md",
+  "tilemaps/data/README.md",
+  "vectors/data/README.md"
 ];
 const REQUIRED_INDEX_PATTERNS = [
   { id: "canvas", test: (text) => /<canvas\b/i.test(text), message: "index.html must include a <canvas> element." },

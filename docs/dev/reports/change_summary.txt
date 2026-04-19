@@ -1,1 +1,1 @@
-This PR moves the post-tools effort into the sample system by combining validation and repair in one execution pass, so broken sample paths and contract issues are fixed immediately instead of deferred.
+This PR corrects unauthorized fullscreen drift across samples and fixes the one authorized fullscreen sample so it behaves correctly.

@@ -34,12 +34,6 @@ export default class SettingsSystemScene extends Scene {
     this.status = `Music volume set to ${Math.round(next * 100)}%.`;
   }
 
-  toggleFullscreenPref() {
-    const next = !this.settings.get('video.fullscreenPreferred', false);
-    this.settings.set('video.fullscreenPreferred', next);
-    this.status = `Fullscreen preference ${next ? 'enabled' : 'disabled'}.`;
-  }
-
   cycleDifficulty() {
     const current = this.settings.get('gameplay.difficulty', 'normal');
     const index = DIFFICULTIES.indexOf(current);
@@ -68,17 +62,9 @@ export default class SettingsSystemScene extends Scene {
     renderer.drawRect(120, 280, volumeWidth, 18, '#334155');
     renderer.drawRect(120, 280, volumeWidth * snapshot.audio.musicVolume, 18, '#14b8a6');
 
-    renderer.drawText('Video', 120, 335, { color: '#e2e8f0', font: '18px monospace' });
-    renderer.drawRect(120, 350, 160, 34, snapshot.video.fullscreenPreferred ? '#22c55e' : '#475569');
-    renderer.drawText(snapshot.video.fullscreenPreferred ? 'Fullscreen On' : 'Windowed', 200, 373, {
-      color: '#ffffff',
-      font: '15px monospace',
-      textAlign: 'center',
-    });
-
-    renderer.drawText('Gameplay', 320, 335, { color: '#e2e8f0', font: '18px monospace' });
-    renderer.drawRect(320, 350, 120, 34, '#7c3aed');
-    renderer.drawText(snapshot.gameplay.difficulty.toUpperCase(), 380, 373, {
+    renderer.drawText('Gameplay', 120, 335, { color: '#e2e8f0', font: '18px monospace' });
+    renderer.drawRect(120, 350, 160, 34, '#7c3aed');
+    renderer.drawText(snapshot.gameplay.difficulty.toUpperCase(), 200, 373, {
       color: '#ffffff',
       font: '15px monospace',
       textAlign: 'center',
@@ -86,7 +72,6 @@ export default class SettingsSystemScene extends Scene {
 
     drawPanel(renderer, 600, 40, 300, 220, 'Settings Snapshot', [
       `Music Volume: ${Math.round(snapshot.audio.musicVolume * 100)}%`,
-      `Fullscreen Preferred: ${snapshot.video.fullscreenPreferred}`,
       `Difficulty: ${snapshot.gameplay.difficulty}`,
       `Saved Namespace: ${this.settings.namespace}`,
       `Last Applied: ${this.settings.lastApplied ? 'yes' : 'no'}`,

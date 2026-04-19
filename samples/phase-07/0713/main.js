@@ -6,6 +6,7 @@ main.js
 */
 import Engine from '/src/engine/core/Engine.js';
 import FullscreenAbilityScene from './FullscreenAbilityScene.js';
+import { attachFullscreenViewportFit } from './fullscreenViewportFit.js';
 import { Theme, ThemeTokens } from '/src/engine/theme/index.js';
 
 const theme = new Theme(ThemeTokens);
@@ -23,13 +24,22 @@ const engine = new Engine({
 const scene = new FullscreenAbilityScene();
 engine.setScene(scene);
 engine.start();
+const fullscreenViewportFit = attachFullscreenViewportFit({
+  canvas,
+  documentRef: document,
+  windowRef: window,
+  designWidth: 960,
+  designHeight: 540,
+});
 
 enterButton?.addEventListener('click', async () => {
   await engine.fullscreen.request();
+  fullscreenViewportFit.apply();
 });
 
 exitButton?.addEventListener('click', async () => {
   await engine.fullscreen.exit();
+  fullscreenViewportFit.reset();
 });
 
 canvas?.addEventListener('click', async (event) => {
