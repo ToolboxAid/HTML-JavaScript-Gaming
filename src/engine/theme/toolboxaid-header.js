@@ -26,10 +26,10 @@ async function loadTemplate() {
     return templateCache;
   }
 
-  const templateUrl = new URL('./toolboxaid-header.template.html', import.meta.url);
+  const templateUrl = new URL('./toolboxaid-header.html', import.meta.url);
   const response = await fetch(templateUrl);
   if (!response.ok) {
-    throw new Error('Failed to load toolboxaid-header.template.html');
+    throw new Error('Failed to load toolboxaid-header.html');
   }
 
   templateCache = await response.text();

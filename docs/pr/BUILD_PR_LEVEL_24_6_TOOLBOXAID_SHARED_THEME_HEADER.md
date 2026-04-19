@@ -4,7 +4,7 @@
 Provide the shared Toolbox Aid header as real importable source under `src/engine/theme`.
 
 ## Required Shared Source
-- `src/engine/theme/toolboxaid-header.template.html`
+- `src/engine/theme/toolboxaid-header.html`
 - `src/engine/theme/toolboxaid-header.css`
 - `src/engine/theme/toolboxaid-header.js`
 - `src/engine/theme/index.js`

@@ -29,7 +29,7 @@ body::before {
   inset: 0;
   z-index: -1;
   background-color: #4c1d95;
-  background-image: linear-gradient(
+  /* background-image: linear-gradient(
     to bottom,
     #c4b5fd,
     #a78bfa,
@@ -38,7 +38,7 @@ body::before {
     #6d28d9,
     #5b21b6,
     #4c1d95
-  );
+  ); */
   background-repeat: no-repeat;
   pointer-events: none;
 }
