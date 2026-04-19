@@ -1,0 +1,13 @@
+Style Migration Notes
+
+Confirmed live Toolbox Aid visible header structure:
+- site title: Toolbox Aid
+- tagline: Enhancing Skills
+- top navigation row with four items
+
+Project adaptation requested by user:
+- shared header source under src/engine/theme
+- tagline becomes HTML-JavaScript Gaming
+- menu becomes Home / Games / Samples / Tools
+- no embedded styling in HTML or JS
+- start with /index.html only
