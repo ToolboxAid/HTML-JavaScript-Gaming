@@ -1,0 +1,9 @@
+Post Closeout Monitoring
+
+- Rule remains: fullscreen only in sample 0713
+- Any future addition outside 0713 = violation
+- Validation automation must be rerun on PRs touching samples
+- Required automation reuse for future PRs that touch `samples/`:
+  - `rg -n --glob "samples/**" "requestFullscreen|webkitRequestFullscreen|engine\\.fullscreen|fullscreenPreferred|settings-fullscreen"`
+  - `node --input-type=module -e "import('./tests/samples/FullscreenRuleEnforcement.test.mjs').then(m=>m.run())"`
+  - `node --input-type=module -e "import('./tests/samples/FullscreenAbility0713ViewportFit.test.mjs').then(m=>m.run())"`

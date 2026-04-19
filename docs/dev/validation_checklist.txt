@@ -1,0 +1,8 @@
+Validation Checklist
+
+[x] Guard rules persist
+[x] Monitoring defined
+[x] No regression introduced
+[x] Fullscreen scan command documented for reuse
+[x] `FullscreenRuleEnforcement` test reuse documented
+[x] `FullscreenAbility0713ViewportFit` test reuse documented
