@@ -1,0 +1,21 @@
+Phase 24 Closeout Execution Guard Spec
+
+Goal:
+End Level 24 with a real runnable guard, not a commit-only or status-only tail.
+
+Required checks:
+1. Roadmap file path remains:
+   docs/dev/roadmaps/MASTER_ROADMAP_ENGINE.md
+2. Roadmap lock policy remains enforced:
+   - allow only [ ] -> [.]
+   - allow only [.] -> [x]
+   - reject all non-status edits
+   - reject file replacement/rename
+3. Fullscreen policy remains enforced:
+   - allow fullscreen only in samples/phase-07/0713
+   - fail on any hit outside 0713
+
+Suggested outputs:
+- PASS/FAIL summary
+- offending file list when failing
+- non-zero exit on failure

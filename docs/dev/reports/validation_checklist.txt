@@ -1,7 +1,11 @@
 Validation Checklist
 
-[x] API lock validated
-[x] Boundaries validated
-[x] Contracts documented
-[x] Docs cleanup verified
-[x] Status-only roadmap update applied
+[x] Runnable guard added
+[x] Guard executes in one pass from repo root
+[x] Roadmap file path lock checked
+[x] Roadmap non-status edit lock checked
+[x] Fullscreen outside 0713 checked
+[x] Clear PASS/FAIL output produced
+[x] No roadmap text edits made
+[x] No engine changes made
+[x] No gameplay changes made
