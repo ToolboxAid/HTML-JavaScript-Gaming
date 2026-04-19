@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import {
   attachFullscreenViewportFit,
-  computeContainSize,
+  computeCoverSize,
 } from "../../samples/phase-07/0713/fullscreenViewportFit.js";
 import FullscreenAbilityScene from "../../samples/phase-07/0713/FullscreenAbilityScene.js";
 
@@ -22,7 +22,7 @@ function createEventTarget(initialState = {}) {
 }
 
 export function run() {
-  const exactFit = computeContainSize({
+  const exactFit = computeCoverSize({
     viewportWidth: 1920,
     viewportHeight: 1080,
     designWidth: 960,
@@ -30,13 +30,13 @@ export function run() {
   });
   assert.deepEqual(exactFit, { width: 1920, height: 1080 });
 
-  const letterboxed = computeContainSize({
+  const covered = computeCoverSize({
     viewportWidth: 1920,
     viewportHeight: 1200,
     designWidth: 960,
     designHeight: 540,
   });
-  assert.deepEqual(letterboxed, { width: 1920, height: 1080 });
+  assert.deepEqual(covered, { width: 2133, height: 1200 });
 
   const canvas = {
     style: {
@@ -46,6 +46,10 @@ export function run() {
       maxHeight: "",
       margin: "",
       display: "",
+      position: "",
+      left: "",
+      top: "",
+      transform: "",
     },
   };
   const documentRef = createEventTarget({ fullscreenElement: null });
@@ -60,21 +64,29 @@ export function run() {
 
   documentRef.fullscreenElement = canvas;
   fit.apply();
-  assert.equal(canvas.style.width, "1920px");
-  assert.equal(canvas.style.height, "1080px");
+  assert.equal(canvas.style.width, "2133px");
+  assert.equal(canvas.style.height, "1200px");
   assert.equal(canvas.style.maxWidth, "none");
+  assert.equal(canvas.style.position, "fixed");
+  assert.equal(canvas.style.left, "50%");
+  assert.equal(canvas.style.top, "50%");
+  assert.equal(canvas.style.transform, "translate(-50%, -50%)");
 
   windowRef.innerWidth = 1280;
   windowRef.innerHeight = 1024;
   windowRef.trigger("resize");
-  assert.equal(canvas.style.width, "1280px");
-  assert.equal(canvas.style.height, "720px");
+  assert.equal(canvas.style.width, "1820px");
+  assert.equal(canvas.style.height, "1024px");
 
   documentRef.fullscreenElement = null;
   documentRef.trigger("fullscreenchange");
   assert.equal(canvas.style.width, "");
   assert.equal(canvas.style.height, "");
   assert.equal(canvas.style.maxWidth, "960px");
+  assert.equal(canvas.style.position, "");
+  assert.equal(canvas.style.left, "");
+  assert.equal(canvas.style.top, "");
+  assert.equal(canvas.style.transform, "");
 
   const scene = new FullscreenAbilityScene();
   let requestCount = 0;

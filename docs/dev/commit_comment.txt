@@ -1,0 +1,6 @@
+Enforce fullscreen rule across all samples and fix sample 0713 scaling.
+
+Locks fullscreen capability to sample 0713 only.
+Adds requirement to fully fill screen while maintaining aspect ratio.
+
+PR: LEVEL 23.8 FULLSCREEN REGRESSION LOCK + FIX

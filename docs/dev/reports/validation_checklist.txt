@@ -1,8 +1,8 @@
-- [ ] fullscreen usage audit completed across samples
-- [ ] unauthorized fullscreen removed from all non-0713 samples
-- [ ] sample 0713 fullscreen fills screen correctly
-- [ ] sample 0713 maintains aspect ratio
-- [ ] fullscreen enter/exit validated for 0713
-- [ ] no unauthorized fullscreen behavior remains
-- [ ] no start_of_day changes
-- [ ] unrelated working-tree changes preserved
+Validation Checklist
+
+[ ] Only sample 0713 has fullscreen
+[ ] No other sample contains fullscreen flags
+[ ] Sample 0713 fills screen fully (no unused space)
+[ ] Aspect ratio preserved correctly
+[ ] No engine-level fullscreen enforcement added
+[ ] Codex respects rule in future PRs

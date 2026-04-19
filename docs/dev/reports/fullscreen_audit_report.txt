@@ -1,0 +1,9 @@
+Fullscreen Audit Report
+
+- Sample 0713: VALID (allowed fullscreen) — FIX REQUIRED: does not fully fill screen while maintaining aspect ratio
+- All other samples: MUST NOT include fullscreen
+
+Violations:
+- Any sample using engine.fullscreen = TRUE must be removed
+
+Status: LOCK ENFORCED + FIX REQUIRED

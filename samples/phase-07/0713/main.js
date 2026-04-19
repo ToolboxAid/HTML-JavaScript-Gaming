@@ -19,6 +19,18 @@ const engine = new Engine({
   canvas,
   width: 960,
   height: 540,
+  // Sample 0713 owns fullscreen sizing behavior directly. Disable bezel-driven
+  // canvas relayout so cover-fit fullscreen can fill the viewport.
+  fullscreenBezelLayer: {
+    attach() {},
+    detach() {},
+    sync() {
+      return {
+        visible: false,
+        reason: 'sample-managed-fullscreen-layout',
+      };
+    },
+  },
 });
 
 const scene = new FullscreenAbilityScene();
