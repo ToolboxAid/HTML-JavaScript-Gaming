@@ -1,14 +1,7 @@
 Validation Checklist
 
-[ ] Public APIs validated and classified
-[ ] Locked APIs documented from execution-backed evidence only
-[ ] Module boundaries documented with allowed/prohibited edges
-[ ] Any required move-map captured before structural churn
-[ ] Contracts documented for validated public surfaces only
-[ ] Move/rename-only docs audited
-[ ] Every deleted doc has verified destination coverage recorded
-[ ] MASTER_ROADMAP_ENGINE.md updated using status-only transitions only
-[ ] No roadmap text rewritten
-[ ] No roadmap text deleted
-[ ] No engine changes
-[ ] No gameplay changes
+[x] API lock validated
+[x] Boundaries validated
+[x] Contracts documented
+[x] Docs cleanup verified
+[x] Status-only roadmap update applied

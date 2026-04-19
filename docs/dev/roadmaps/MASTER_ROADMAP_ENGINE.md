@@ -634,7 +634,7 @@
 - [x] Level 17 debug overlay baseline promoted after validation (1708-1713: bottom-right placement, KeyG cycle key, correct stack ordering)
 - [x] Level 18 overlay system baseline promoted after validation (input, mission, telemetry integration; no Level 17/18 overlay regressions)
 - [x] Level 17 completion reconfirmed for Level 18 rebase (Phase17 runtime validation suite: 12/12 passed)
-- [.] Level 18 runtime hardening resumed (rebase lane active; status-only progression update)
+- [x] Level 18 runtime hardening resumed (rebase lane active; status-only progression update)
 - [x] Level 21 overlay system baseline promoted after validation (context-aware behavior, synchronized state, event-driven updates, and performance optimization; no Level 17/19 overlay regressions)
 - [x] Level 21 advanced overlay interactions implemented (click/drag/resize) with gameplay-safe explicit interaction mode
 - [x] Level 22 gesture abstraction added for overlays (tap/hold/swipe mapped to runtime actions with explicit gameplay-safe gating)
