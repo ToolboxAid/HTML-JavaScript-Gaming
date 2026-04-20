@@ -1,0 +1,15 @@
+STYLE_08 planning note
+
+Goal:
+- make tools denser and reduce scrolling without changing the shared shell architecture
+
+Primary levers:
+- clamp-based rail sizing
+- tighter shell spacing
+- tighter panel spacing
+- preserve readable usability
+
+Roadmap handling:
+- append STYLE_08 only
+- do not delete or rewrite existing roadmap text
+- update completion markers only when earned

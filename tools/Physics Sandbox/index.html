@@ -4,33 +4,40 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Physics Sandbox</title>
+  <link rel="stylesheet" href="../../src/engine/theme/main.css" />
   <link rel="stylesheet" href="../../src/engine/ui/hubCommon.css" />
   <link rel="stylesheet" href="../shared/platformShell.css" />
   <link rel="stylesheet" href="../shared/debugInspectorTools.css" />
 </head>
-<body class="tools-platform-tool-page" data-tool-id="physics-sandbox" data-tools-platform-page="tool">
+<body class="tools-platform-tool-page tool-shell-page" data-tool-id="physics-sandbox" data-tools-platform-page="tool">
   <div data-tools-platform-header></div>
-  <div class="debug-tool-shell app-shell">
-    <section class="panel debug-tool-panel">
-      <h2>Physics Sandbox</h2>
-      <p>Preview reusable physics helpers for acceleration, drag, and velocity integration.</p>
-      <div class="debug-tool-actions">
-        <button type="button" id="runPhysicsStepButton">Run Step</button>
-      </div>
-      <div id="physicsSandboxStatus" class="debug-tool-meta">Sandbox ready.</div>
-    </section>
+  <div class="tool-shell-container">
+    <div class="tool-shell app-shell">
+      <aside class="tool-shell__left">
+        <section class="panel debug-tool-panel">
+          <h2>Physics Sandbox</h2>
+          <p>Preview reusable physics helpers for acceleration, drag, and velocity integration.</p>
+          <div class="debug-tool-actions">
+            <button type="button" id="runPhysicsStepButton">Run Step</button>
+          </div>
+          <div id="physicsSandboxStatus" class="debug-tool-meta">Sandbox ready.</div>
+        </section>
+      </aside>
 
-    <section class="debug-tool-grid">
-      <section class="panel debug-tool-panel">
-        <h3>Body Input</h3>
-        <textarea id="physicsBodyInput" rows="14" placeholder='{"x":0,"y":0,"velocityX":100,"velocityY":0,"accelerationX":-10,"dragX":12}'></textarea>
-      </section>
+      <main class="tool-shell__center">
+        <section class="panel debug-tool-panel">
+          <h3>Body Input</h3>
+          <textarea id="physicsBodyInput" rows="14" placeholder='{"x":0,"y":0,"velocityX":100,"velocityY":0,"accelerationX":-10,"dragX":12}'></textarea>
+        </section>
+      </main>
 
-      <section class="panel debug-tool-panel">
-        <h3>Step Output</h3>
-        <pre id="physicsSandboxOutput" class="debug-tool-readout">Run a step to inspect updated body state.</pre>
-      </section>
-    </section>
+      <aside class="tool-shell__right">
+        <section class="panel debug-tool-panel">
+          <h3>Step Output</h3>
+          <pre id="physicsSandboxOutput" class="debug-tool-readout">Run a step to inspect updated body state.</pre>
+        </section>
+      </aside>
+    </div>
   </div>
   <div data-tools-platform-status></div>
   <script type="module" src="../shared/platformShell.js"></script>

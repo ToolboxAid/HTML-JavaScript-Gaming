@@ -21,3 +21,17 @@
 [x] `src/engine/theme/tool-shell.css` provides fixed left/right + flexible center shell
 [x] Migrated tool page keeps script wiring unchanged (`platformShell.js`, `main.js`)
 [x] No embedded `<style>` or inline `style=""` added in migrated tool page
+
+### STYLE_08 — Adaptive Tool Density
+
+[x] Shared tool-shell CSS refined for denser layout
+[x] Left/right rails use responsive `clamp()` sizing where appropriate
+[x] Shell-level spacing reduced where safe
+[x] Panel-level spacing reduced where safe
+[x] Horizontal scrolling avoided at normal desktop widths for migrated shell tools
+[x] Vertical scrolling reduced where practical in migrated shell tools
+[x] Refined shell validated against migrated shell tools:
+- `tools/State Inspector/index.html`
+- `tools/Performance Profiler/index.html`
+- `tools/Replay Visualizer/index.html`
+- `tools/Physics Sandbox/index.html`
