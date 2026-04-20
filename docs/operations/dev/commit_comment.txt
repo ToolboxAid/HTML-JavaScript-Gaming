@@ -1,6 +1,5 @@
-Remove the remaining targeted inline style="" attributes and move the rules into shared CSS.
+Finish the style lane by executing STYLE_16 and STYLE_17, then close the remaining roadmap items only where execution-backed evidence supports completion.
 
-Prefer reuse of higher-level existing CSS when the rules already match or are close enough.
-Create new shared CSS classes/selectors only when necessary.
+Preserve roadmap text, avoid false completions, and leave any unsupported item unchanged.
 
-PR: BUILD_PR_STYLE_INLINE_ATTR_CLEANUP_FINAL
+PR: BUILD_PR_STYLE_16_17_PERF_FINAL_QA_AND_ROADMAP_CLOSEOUT

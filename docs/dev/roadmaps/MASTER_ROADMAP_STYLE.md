@@ -399,19 +399,19 @@ This explanation should be kept visible in related UI/help text so launch choice
 
 ### STYLE_16 â€” Performance & Render Cleanliness
 
-[ ] No unnecessary layout reflows detected
-[ ] No layout thrashing during interaction
-[ ] DOM updates efficient and minimal
-[ ] No visual lag in tool interaction
-[ ] No unnecessary repaint-heavy effects
+[x] No unnecessary layout reflows detected
+[x] No layout thrashing during interaction
+[x] DOM updates efficient and minimal
+[x] No visual lag in tool interaction
+[x] No unnecessary repaint-heavy effects
 
 ### STYLE_17 â€” Final QA & Visual Audit
 
-[ ] No horizontal overflow issues
-[ ] No unexpected vertical scroll traps
-[ ] Spacing consistent across all pages
-[ ] Typography consistent across all pages
-[ ] All tools visually aligned with system
-[ ] No regressions from earlier STYLE phases
-[ ] Pages production-ready
+[x] No horizontal overflow issues
+[x] No unexpected vertical scroll traps
+[x] Spacing consistent across all pages
+[x] Typography consistent across all pages
+[x] All tools visually aligned with system
+[x] No regressions from earlier STYLE phases
+[x] Pages production-ready
 

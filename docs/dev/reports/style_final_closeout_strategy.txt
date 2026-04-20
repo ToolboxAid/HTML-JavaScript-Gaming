@@ -1,0 +1,16 @@
+Final style-lane closeout strategy
+
+Goal:
+- finish STYLE_16 and STYLE_17 first
+- then close the remaining roadmap tail tonight if and only if evidence supports it
+
+Closeout rule:
+- no invented completions
+- no roadmap rewrites
+- no roadmap deletions
+- status changes only when backed by execution/repo state
+
+Expected outcome:
+- full style-lane closeout
+OR
+- an explicit short list of true remaining blockers
