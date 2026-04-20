@@ -1,0 +1,12 @@
+body.hub-page-tools .hero {
+  margin-bottom: var(--space-6);
+}
+
+body.hub-page-tools .subtitle {
+  color: var(--theme-muted);
+  line-height: var(--line-height-body);
+}
+
+body.hub-page-tools .callout {
+  margin-top: var(--space-6);
+}

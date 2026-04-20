@@ -1,0 +1,7 @@
+body .footer-note {
+  font-size: var(--font-size-helper);
+}
+
+body .page-intro p {
+  line-height: var(--line-height-body);
+}

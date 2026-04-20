@@ -27,38 +27,41 @@ body {
   font-family: Arial, sans-serif;
   color: var(--theme-text);
   background: linear-gradient(180deg, #e8eef7 0%, #f5f8fc 100%);
+  font-size: var(--font-size-body);
+  line-height: var(--line-height-body);
 }
 
 .page-shell {
   max-width: var(--theme-max);
   margin: 0 auto;
-  padding: 20px 16px 48px;
+  padding: var(--space-5) var(--space-4) var(--space-8);
 }
 
 .content-section {
-  margin-top: 18px;
+  margin-top: var(--space-5);
 }
 
 .content-section h2 {
-  margin: 0 0 10px;
-  font-size: 1.25rem;
+  margin: 0 0 var(--space-2);
+  font-size: var(--font-size-h2);
+  line-height: var(--line-height-heading);
 }
 
 .content-section > p {
-  margin: 0 0 14px;
+  margin: 0 0 var(--space-3);
   color: var(--theme-muted);
-  line-height: 1.55;
+  line-height: var(--line-height-body);
 }
 
 .card-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-  gap: 14px;
+  gap: var(--space-3);
 }
 
 .card-link {
   display: block;
-  padding: 14px 15px;
+  padding: var(--space-3) var(--space-4);
   text-decoration: none;
   color: inherit;
   background: var(--theme-surface);
@@ -72,8 +75,10 @@ body {
 }
 
 .card-link h3 {
-  margin: 0 0 8px;
+  margin: 0 0 var(--space-2);
   color: var(--theme-link);
+  font-size: var(--font-size-h3);
+  line-height: var(--line-height-heading);
 }
 
 .card-link:hover h3 {
@@ -83,5 +88,5 @@ body {
 .card-link p {
   margin: 0;
   color: var(--theme-muted);
-  line-height: 1.5;
+  line-height: var(--line-height-body);
 }

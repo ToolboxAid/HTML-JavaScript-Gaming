@@ -2,40 +2,39 @@ MODEL: GPT-5.4-codex
 REASONING: high
 
 COMMAND:
-Create BUILD_PR_STYLE_16_17_PERF_FINAL_QA_AND_ROADMAP_CLOSEOUT
+Create BUILD_PR_STYLE_FINAL_SYSTEM_COMPLETION_AND_UAT_READY
 
 Rules:
-- continue the lowest unfinished STYLE first
-- complete STYLE_16 and STYLE_17 first
-- then close remaining roadmap items only if execution-backed
 - output ONLY the final zip to:
-  <project folder>/tmp/BUILD_PR_STYLE_16_17_PERF_FINAL_QA_AND_ROADMAP_CLOSEOUT.zip
+  <project folder>/tmp/BUILD_PR_STYLE_FINAL_SYSTEM_COMPLETION_AND_UAT_READY.zip
 - do NOT create staging folders in <project folder>/tmp
 - do NOT modify roadmap in the PR bundle
 - Codex updates roadmap during execution only
-- roadmap changes are status-only / append-only as needed from execution-backed evidence
+- roadmap changes must be execution-backed
 - do NOT delete existing roadmap text
 - do NOT rewrite existing roadmap text
-- do NOT invent completions
+- no embedded <style> blocks
+- no inline style=""
+- no JS-generated styling introduced
 
 Required work:
-1. Execute STYLE_16 Performance & Render Cleanliness.
-2. Execute STYLE_17 Final QA & Visual Audit.
-3. Audit all remaining open/partial items in MASTER_ROADMAP_STYLE.md.
-4. Mark complete only the items directly supported by the repo state and execution evidence.
-5. Leave any item unchanged if support is incomplete.
-6. Include a closeout mapping report that shows:
-   - roadmap item
-   - status set
-   - evidence/source in repo
-7. Keep the change narrow, testable, and free of inline/embedded styling.
+1. Audit remaining unfinished items in Tracks A, B, E, F, and G of MASTER_ROADMAP_STYLE.md.
+2. Implement the minimum execution-backed work needed to complete them.
+3. Complete Track F:
+   - explicit spacing scale
+   - margin/padding audit
+   - typography standardization
+4. Complete Track G:
+   - per-PR migration rule
+   - validation rule
+   - old-style retirement rule
+5. Close remaining partials in Tracks A, B, and E only if repo state supports them.
+6. Mark roadmap items complete only when execution-backed.
+7. Include a closeout report mapping each newly completed roadmap item to repo evidence.
+8. End with the repo UAT-ready.
 
-Validation emphasis:
-- no horizontal overflow
-- no unexpected vertical scroll traps
-- spacing consistency
-- typography consistency
-- header full-width responsive behavior with preserved image aspect ratio
-- collapsible stability
-- tool-shell stability
-- no avoidable reflow/thrashing patterns in touched flows
+UAT-ready means:
+- no inline style system violations
+- shared theme/tokens/spacing/typography are coherent
+- rules are documented and enforced by repo state
+- no false roadmap completions

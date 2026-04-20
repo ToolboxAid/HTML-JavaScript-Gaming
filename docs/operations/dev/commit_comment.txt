@@ -1,5 +1,5 @@
-Finish the style lane by executing STYLE_16 and STYLE_17, then close the remaining roadmap items only where execution-backed evidence supports completion.
+Finish the remaining style-system foundation and rules work before UAT.
 
-Preserve roadmap text, avoid false completions, and leave any unsupported item unchanged.
+Complete Track F and Track G, then close the remaining partial roadmap items only where execution-backed by the repo state.
 
-PR: BUILD_PR_STYLE_16_17_PERF_FINAL_QA_AND_ROADMAP_CLOSEOUT
+PR: BUILD_PR_STYLE_FINAL_SYSTEM_COMPLETION_AND_UAT_READY

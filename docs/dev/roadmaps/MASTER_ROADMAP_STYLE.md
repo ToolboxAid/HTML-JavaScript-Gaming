@@ -78,24 +78,24 @@ This explanation should be kept visible in related UI/help text so launch choice
 
 ### A1. Establish Toolbox Aid-derived base theme
 [x] Create `src/engine/theme/main.css` as the shared base theme.
-[.] Base tokens:
+[x] Base tokens:
 - colors
 - spacing
 - typography
 - border radius
 - shadows
 - transition timings
-[.] Base layout primitives:
+[x] Base layout primitives:
 - page shell
 - content container
 - full-width section
 - intro/title block
 - nav row
-[.] Document which live Toolbox Aid behaviors are intentionally carried forward.
-[ ] Do not pull from existing project styling.
+[x] Document which live Toolbox Aid behaviors are intentionally carried forward.
+[x] Do not pull from existing project styling.
 
 ### A2. Establish shared file layout
-[.] Create/confirm:
+[x] Create/confirm:
 - `src/engine/theme/main.css`
 - `src/engine/theme/header.css` or fold into main if still clean
 - `src/engine/theme/accordion.css`
@@ -105,9 +105,9 @@ This explanation should be kept visible in related UI/help text so launch choice
 [x] Keep `main.css` foundational, not a dumping ground.
 
 ### A3. Shared selector hygiene
-[.] Do not preserve existing project classes/ids unless intentionally adopted.
-[.] Introduce new consistent naming where needed.
-[.] Remove embedded styling from migrated pages only.
+[x] Do not preserve existing project classes/ids unless intentionally adopted.
+[x] Introduce new consistent naming where needed.
+[x] Remove embedded styling from migrated pages only.
 [x] Ban new embedded styling in HTML and JS.
 
 ---
@@ -117,7 +117,7 @@ This explanation should be kept visible in related UI/help text so launch choice
 ### B1. Shared header source
 [x] Pull the `<header>` from Toolbox Aid and store it in:
 - `src/engine/theme/toolboxaid-header.html`
-[.] Keep structure unchanged except:
+[x] Keep structure unchanged except:
 - tagline becomes `HTML-JavaScript Gaming`
 - menu becomes:
   - Home
@@ -136,7 +136,7 @@ This explanation should be kept visible in related UI/help text so launch choice
 - tagline
 - nav row
 - social area if retained
-[.] Preserve the menu hover line effect from Toolbox Aid baseline.
+[x] Preserve the menu hover line effect from Toolbox Aid baseline.
 
 ### B3. Header loading
 [x] Provide one shared import path.
@@ -171,7 +171,7 @@ This explanation should be kept visible in related UI/help text so launch choice
 ### C4. Reset `/tools/index.html`
 [x] Apply same shell and shared header.
 [x] Keep page visually very close to `/index.html`.
-[.] Use `tools.css` only for content-specific differences.
+[x] Use `tools.css` only for content-specific differences.
 
 ---
 
@@ -202,7 +202,7 @@ This explanation should be kept visible in related UI/help text so launch choice
 ### E2. Tool shell migration
 [x] Apply tool shell to one tool first as proof.
 [.] Then roll out tool-by-tool.
-[.] Keep header behavior compact enough not to crowd tool workspaces.
+[x] Keep header behavior compact enough not to crowd tool workspaces.
 
 ### E3. Launch clarity
 [x] Add visible explanation near launch controls:
@@ -214,8 +214,8 @@ This explanation should be kept visible in related UI/help text so launch choice
 ## Track F — Spacing, Typography, and Consistency
 
 ### F1. Spacing scale
-[ ] Define one spacing scale.
-[ ] Apply consistently to:
+[x] Define one spacing scale.
+[x] Apply consistently to:
 - page shells
 - section spacing
 - cards/panels
@@ -224,11 +224,11 @@ This explanation should be kept visible in related UI/help text so launch choice
 - intro/title blocks
 
 ### F2. Margin and padding audit
-[ ] Standardize margin and padding rules on migrated pages.
-[ ] Remove ad hoc spacing in migrated pages.
+[x] Standardize margin and padding rules on migrated pages.
+[x] Remove ad hoc spacing in migrated pages.
 
 ### F3. Typography
-[ ] Standardize:
+[x] Standardize:
 - page titles
 - section titles
 - body text
@@ -241,19 +241,19 @@ This explanation should be kept visible in related UI/help text so launch choice
 ## Track G — Migration Rules
 
 ### G1. Per-PR migration rule
-[ ] Each PR migrates one narrow slice.
-[ ] Remove old CSS only where the new theme fully covers that slice.
-[ ] Never orphan a page between systems.
+[x] Each PR migrates one narrow slice.
+[x] Remove old CSS only where the new theme fully covers that slice.
+[x] Never orphan a page between systems.
 
 ### G2. Validation rule
-[ ] Every style PR must be visually testable.
-[ ] Every style PR must have rollback clarity.
-[ ] Every style PR must avoid repo-wide churn.
+[x] Every style PR must be visually testable.
+[x] Every style PR must have rollback clarity.
+[x] Every style PR must avoid repo-wide churn.
 
 ### G3. Old-style retirement
-[ ] Delete old page-local CSS only after migrated coverage is validated.
-[ ] Delete embedded `<style>` only after migrated coverage is validated.
-[ ] Delete JS styling only after migrated coverage is validated.
+[x] Delete old page-local CSS only after migrated coverage is validated.
+[x] Delete embedded `<style>` only after migrated coverage is validated.
+[x] Delete JS styling only after migrated coverage is validated.
 
 ---
 

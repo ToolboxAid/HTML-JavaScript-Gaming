@@ -6,6 +6,7 @@
     "build:manifest": "node ./scripts/generate-sample-manifest.mjs",
     "check:shared-extraction-guard": "node tools/dev/checkSharedExtractionGuard.mjs",
     "check:phase24-closeout-guard": "node tools/dev/checkPhase24CloseoutExecutionGuard.mjs",
+    "check:style-system-guard": "node tools/dev/checkStyleSystemGuard.mjs",
     "check:games-template-contract": "node ./scripts/validate-games-template-contract.mjs",
     "test:launch-smoke": "node ./tests/runtime/LaunchSmokeAllEntries.test.mjs"
   },

@@ -1,0 +1,7 @@
+body .content-section h2 {
+  font-size: var(--font-size-h2);
+}
+
+body .card-link p {
+  line-height: var(--line-height-body);
+}

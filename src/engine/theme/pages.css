@@ -1,6 +1,6 @@
 .page-intro {
-  margin: 16px 0 22px;
-  padding: 16px 18px;
+  margin: var(--space-4) 0 var(--space-6);
+  padding: var(--space-4) var(--space-5);
   border: 1px solid var(--theme-border);
   border-radius: var(--theme-radius);
   background: var(--theme-surface);
@@ -8,19 +8,21 @@
 }
 
 .page-intro h1 {
-  margin: 0 0 6px;
-  font-size: clamp(1.5rem, 2.8vw, 2rem);
+  margin: 0 0 var(--space-1);
+  font-size: var(--font-size-h1);
+  line-height: var(--line-height-heading);
 }
 
 .page-intro p {
   margin: 0;
   color: var(--theme-muted);
-  line-height: 1.55;
+  line-height: var(--line-height-body);
 }
 
 .footer-note {
-  margin-top: 26px;
-  padding-top: 14px;
+  margin-top: var(--space-7);
+  padding-top: var(--space-3);
   border-top: 1px solid var(--theme-border);
   color: var(--theme-muted);
+  font-size: var(--font-size-helper);
 }

@@ -1,0 +1,13 @@
+Final style-system completion strategy
+
+Goal:
+- finish the remaining foundation/rules tail before UAT
+- do not invent completion
+- do not rewrite roadmap text
+- do not start new feature work
+
+Priority:
+1. Complete Track F (spacing / typography / consistency)
+2. Complete Track G (migration / validation / retirement rules)
+3. Close remaining partials in Tracks A, B, and E only if repo state supports it
+4. Exit with repo UAT-ready

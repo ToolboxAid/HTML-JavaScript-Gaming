@@ -1,0 +1,24 @@
+:root {
+  /* Spacing scale */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-7: 32px;
+  --space-8: 48px;
+
+  /* Typography scale */
+  --font-size-body: 1rem;
+  --font-size-helper: 0.92rem;
+  --font-size-h3: clamp(1.05rem, 1.4vw, 1.3rem);
+  --font-size-h2: clamp(1.25rem, 2vw, 1.65rem);
+  --font-size-h1: clamp(1.5rem, 2.8vw, 2rem);
+  --line-height-body: 1.55;
+  --line-height-heading: 1.2;
+
+  /* Motion timings */
+  --motion-fast: 120ms;
+  --motion-medium: 180ms;
+}
