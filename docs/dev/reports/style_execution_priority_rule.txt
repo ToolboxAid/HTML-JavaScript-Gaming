@@ -1,0 +1,10 @@
+Execution priority rule for style lane
+
+- Complete the lowest unfinished STYLE number first.
+- Do not skip to STYLE_10+ implementation before STYLE_07 is done.
+- Roadmap updates in this PR:
+  - append STYLE_07 checklist
+  - append STYLE_10 through STYLE_17 sections
+  - no deletions
+  - no rewrites
+  - status markers only if execution-backed

@@ -1,5 +1,6 @@
-Improve tool viewport fit on top of the shared CSS Grid shell.
+Complete STYLE_07 first by adding clear launch/help text for Open Tool vs Open In Host.
 
-Reduce page-level vertical scrolling where practical, localize scrolling to panels when needed, and preserve STYLE_08 adaptive density improvements.
+Append the queued STYLE_10 through STYLE_17 roadmap sections without rewriting existing roadmap text.
+Keep roadmap handling append-only plus execution-backed status updates.
 
-PR: BUILD_PR_STYLE_09_TOOL_HEIGHT_AND_VIEWPORT_FIT
+PR: BUILD_PR_STYLE_07_LAUNCH_CLARITY_AND_ROADMAP_APPEND_ONLY

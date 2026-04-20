@@ -2,33 +2,25 @@ MODEL: GPT-5.4-codex
 REASONING: high
 
 COMMAND:
-Create BUILD_PR_STYLE_09_TOOL_HEIGHT_AND_VIEWPORT_FIT as one focused, testable PR.
+Create BUILD_PR_STYLE_07_LAUNCH_CLARITY_AND_ROADMAP_APPEND_ONLY
 
 Rules:
-- one PR purpose only
-- refine the existing shared tool shell only
-- no legacy styling as the baseline
-- keep CSS Grid for the primary shell
-- preserve STYLE_08 adaptive density improvements
-- no embedded <style> in HTML
-- no inline style=""
-- no JS-generated styling
-- keep theme under src/engine/theme
-- do NOT create or leave staging folders in <project folder>/tmp/
 - output ONLY the final zip to:
-  <project folder>/tmp/BUILD_PR_STYLE_09_TOOL_HEIGHT_AND_VIEWPORT_FIT.zip
-
-Roadmap rule:
-- Codex updates MASTER_ROADMAP_STYLE.md during execution only
-- append STYLE_09 checklist/results only
-- do not delete existing text
-- do not rewrite existing text
-- update completion markers only if execution-backed
+  <project folder>/tmp/BUILD_PR_STYLE_07_LAUNCH_CLARITY_AND_ROADMAP_APPEND_ONLY.zip
+- do NOT create staging folders in <project folder>/tmp
+- complete existing unfinished STYLE items before new ones
+- lowest unfinished STYLE number first
+- do NOT start STYLE_10 implementation work in this PR
+- roadmap updates happen during execution only
+- roadmap changes are append-only except for execution-backed status markers
+- do NOT delete existing roadmap text
+- do NOT rewrite existing roadmap text
 
 Required work:
-1. Refine the shared tool-shell CSS for better viewport-height fit.
-2. Reduce page-level vertical scrolling where practical.
-3. Localize scrolling to panels/readouts where needed.
-4. Preserve the shared shell structure and adaptive density work from STYLE_08.
-5. Validate against the current migrated shell tools.
-6. Package only the final zip to the project tmp path above.
+1. Implement STYLE_07 launch clarity/help text in the relevant UI.
+2. Use exactly this wording:
+   - Open Tool = launch the tool directly/standalone
+   - Open In Host = launch the same tool inside a shared host shell/container
+3. Append the bundled STYLE_07 and STYLE_10 through STYLE_17 sections to docs/dev/roadmaps/MASTER_ROADMAP_STYLE.md.
+4. Mark STYLE_07 completion boxes only if execution-backed by the implemented change.
+5. Keep the change narrow, testable, and free of inline/embedded styling.

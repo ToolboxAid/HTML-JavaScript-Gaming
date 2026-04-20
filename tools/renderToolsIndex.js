@@ -25,6 +25,10 @@ function renderToolCard(tool) {
         <a class="tools-platform-card__action" href="${escapeHtml(tool.entryPoint)}">Open Tool</a>
         <a class="tools-platform-card__action tools-platform-card__action--secondary" href="${escapeHtml(hostHref)}">Open In Host</a>
       </div>
+      <p class="tools-platform-card__launch-help">
+        Open Tool = launch the tool directly/standalone<br />
+        Open In Host = launch the same tool inside a shared host shell/container
+      </p>
       ${sampleLinks}
     </div>
   `;
