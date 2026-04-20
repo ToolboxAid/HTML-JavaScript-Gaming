@@ -1,5 +1,5 @@
-Fix the main entry pages so they match the working tools/index.html baseline for full-width header behavior and shared body/theme colors.
+Restore the missing filter UI and full phase listing on /samples/index.html.
 
-Scope is limited to the four main entry pages and shared consistency fixes only.
+Keep the shared style/header consistency work intact while restoring expected samples page behavior.
 
-PR: BUILD_PR_STYLE_INDEX_HEADER_AND_BODY_CONSISTENCY_FIX
+PR: BUILD_PR_STYLE_SAMPLES_INDEX_FILTER_AND_PHASE_LIST_RESTORE

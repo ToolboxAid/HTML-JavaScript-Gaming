@@ -1,0 +1,13 @@
+Samples index restore strategy
+
+Goal:
+- restore missing filter UI
+- restore full phase listing
+- keep shared style migration intact
+
+Compare against:
+- prior known-good samples index behavior if available
+- current rendered DOM/data path
+- current header/body/shared-shell changes
+
+Keep scope surgical and behavior-focused.

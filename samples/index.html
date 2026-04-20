@@ -31,41 +31,17 @@ index.html
   </details>
 
   <main class="page-shell">
-
     <section class="content-section">
-      <h2>Core Phases</h2>
-      <div class="card-grid">
-        <a class="card-link" href="./phase-01/0101/index.html">
-          <h3>Phase 01</h3>
-          <p>Core engine loop, input, rendering, and foundational ECS patterns.</p>
-        </a>
-        <a class="card-link" href="./phase-02/0201/index.html">
-          <h3>Phase 02</h3>
-          <p>World systems, camera behavior, and visual/runtime progression samples.</p>
-        </a>
-        <a class="card-link" href="./phase-03/0301/index.html">
-          <h3>Phase 03</h3>
-          <p>Extended systems and integration slices for gameplay scaffolding.</p>
-        </a>
-      </div>
+      <h2>Filter Phases</h2>
+      <p>Filter by phase number, phase title, or description.</p>
+      <label for="samples-phase-filter-input">Search</label>
+      <input id="samples-phase-filter-input" type="text" placeholder="Phase 17, rendering, runtime..." autocomplete="off" />
+      <p id="samples-phase-filter-status" aria-live="polite"></p>
     </section>
 
     <section class="content-section">
-      <h2>Advanced Phases</h2>
-      <div class="card-grid">
-        <a class="card-link" href="./phase-16/1601/index.html">
-          <h3>Phase 16</h3>
-          <p>3D support and debug-oriented execution slices.</p>
-        </a>
-        <a class="card-link" href="./phase-17/1701/index.html">
-          <h3>Phase 17</h3>
-          <p>Advanced rendering and gameplay sample expansion lane.</p>
-        </a>
-        <a class="card-link" href="./phase-19/1901/index.html">
-          <h3>Phase 19</h3>
-          <p>Runtime and integration validation-focused samples.</p>
-        </a>
-      </div>
+      <h2>All Phases</h2>
+      <div id="samples-phase-list" class="card-grid"></div>
     </section>
 
     <div class="footer-note">
@@ -73,5 +49,6 @@ index.html
     </div>
   </main>
   <script type="module" src="../src/engine/theme/mount-shared-header.js"></script>
+  <script type="module" src="./index.render.js"></script>
 </body>
 </html>
