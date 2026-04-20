@@ -1,30 +1,37 @@
-MODEL: GPT-5.4-codex
-REASONING: high
+MODEL: GPT-5.3-codex
+REASONING: medium
 
 COMMAND:
-Create BUILD_PR_SAMPLES_METADATA_TAG_NORMALIZATION_AND_FILTER_BAR_UX
+Implement BUILD_PR_HEADER_INTRO_OVERLAY_COLLAPSED_HEADER_RESTYLE as one narrow style PR.
 
-Rules:
-- output ONLY the final zip to:
-  <project folder>/tmp/BUILD_PR_SAMPLES_METADATA_TAG_NORMALIZATION_AND_FILTER_BAR_UX.zip
-- do NOT create staging folders in <project folder>/tmp
-- do NOT modify roadmap in the PR bundle
-- Codex updates roadmap during execution only if execution-backed status changes are earned
-- no embedded <style> blocks
-- no inline style=""
-- no JS-generated styling
-- keep scope limited to /samples/index.html and directly related sample metadata/rendering/filter dependencies
-- preserve the current accepted page shell and shared header/body consistency
+Requirements:
+- Move the shared Header and Intro visual block on top of the hero image
+- No background behind the overlaid Header and Intro block
+- Overlay foreground color: #ed9700
+- Collapsed header background color: #7a00df
+- Remove corner rounding from the header container
+- Exclude page-shell from this PR; do not modify page-shell selectors/rules
 
-Required work:
-1. Normalize sample metadata so tags are real descriptive tags instead of duplicates of class values.
-2. Keep/assign a clear class value for each sample.
-3. If classes are shown for each sample, show them outside the description text.
-4. Do NOT append classes/tags/phase metadata into the sample description body.
-5. Ensure class filter values are sorted alphabetically and contain no duplicates.
-6. Ensure tag filter values are sorted alphabetically and contain no duplicates.
-7. Put search on the same row as Phase, Class, and Tag.
-8. Use explicit `Pinned` / `Unpinned` text values instead of a red/green icon treatment.
-9. Preserve preview image launch behavior and hover zoom.
-10. Keep filtering and pinning behavior working.
-11. Keep the change narrow, testable, and behavior-focused rather than redesigning the page.
+Constraints:
+- shared theme CSS only where possible under src/engine/theme/
+- no embedded <style>
+- no inline style=
+- no JS style string injection
+- no repo-wide cleanup
+- smallest scoped valid change
+- preserve existing collapse behavior
+
+Validation:
+- targeted shared entry pages show overlay correctly
+- collapsed state shows #7a00df background
+- header border radius removed
+- no page-shell changes
+- no regressions / no console errors
+
+Roadmap:
+- update roadmap status only if there is an existing matching item for this work
+- do not rewrite roadmap text
+- status-only transition backed by the implemented/tested change
+
+Package output to:
+<project folder>/tmp/BUILD_PR_HEADER_INTRO_OVERLAY_COLLAPSED_HEADER_RESTYLE.zip

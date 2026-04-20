@@ -67,3 +67,54 @@
   font-weight: 700;
   color: var(--theme-muted);
 }
+
+.toolboxaid-theme-header .site-tagline {
+  color: #3600af;
+  font-size: clamp(3px, 3vw, 21px);
+  letter-spacing: 2px;
+  text-shadow: 2px 2px 4px #3600af;
+}
+
+body.hub-page-home .toolboxaid-theme-header,
+body.hub-page-games .toolboxaid-theme-header,
+body.hub-page-samples .toolboxaid-theme-header,
+body.hub-page-tools .toolboxaid-theme-header {
+  background: #3600af;
+  border-bottom: 0;
+  padding: 0;
+}
+
+body.hub-page-home .toolboxaid-theme-header .header-content,
+body.hub-page-games .toolboxaid-theme-header .header-content,
+body.hub-page-samples .toolboxaid-theme-header .header-content,
+body.hub-page-tools .toolboxaid-theme-header .header-content {
+  gap: 0;
+}
+
+body.hub-page-home .toolboxaid-theme-header #image,
+body.hub-page-games .toolboxaid-theme-header #image,
+body.hub-page-samples .toolboxaid-theme-header #image,
+body.hub-page-tools .toolboxaid-theme-header #image {
+  border-radius: 0;
+  box-shadow: none;
+}
+
+body.hub-page-home .toolboxaid-theme-header #tagline,
+body.hub-page-games .toolboxaid-theme-header #tagline,
+body.hub-page-samples .toolboxaid-theme-header #tagline,
+body.hub-page-tools .toolboxaid-theme-header #tagline {
+  width: 100%;
+  padding: 0;
+  margin: 0;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  border-bottom: 8px solid #3600af;
+}
+
+body.hub-page-home .toolboxaid-theme-header .header-content > div,
+body.hub-page-games .toolboxaid-theme-header .header-content > div,
+body.hub-page-samples .toolboxaid-theme-header .header-content > div,
+body.hub-page-tools .toolboxaid-theme-header .header-content > div {
+  border-bottom: 8px solid #3600af;
+}

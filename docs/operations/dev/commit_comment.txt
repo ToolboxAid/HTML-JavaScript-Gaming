@@ -1,5 +1,2 @@
-Tighten the samples index metadata and filter/tile UX behavior.
-
-Make tags real, sort dropdowns alphabetically with no duplicates, keep classes out of the description text, and use explicit Pinned/Unpinned text values while preserving preview-image launch behavior.
-
-PR: BUILD_PR_SAMPLES_METADATA_TAG_NORMALIZATION_AND_FILTER_BAR_UX
+Restyle shared header/intro to overlay image with transparent background and requested colors.
+Exclude page-shell, remove header rounding, preserve collapse behavior.

@@ -22,13 +22,13 @@
 }
 
 .is-collapsible__summary::before {
-  content: '+';
+  content: '▾';
   display: inline-block;
   width: 1.1rem;
 }
 
 .is-collapsible[open] > .is-collapsible__summary::before {
-  content: '-';
+  content: '▴';
 }
 
 .is-collapsible__content {
@@ -39,3 +39,72 @@
   border-bottom: 0;
 }
 
+body.hub-page-home .is-collapsible,
+body.hub-page-games .is-collapsible,
+body.hub-page-samples .is-collapsible,
+body.hub-page-tools .is-collapsible {
+  border-radius: 0;
+  border: 0;
+  background: #c0a3ff;
+  box-shadow: var(--theme-shadow);
+  position: relative;
+  overflow: hidden;
+  border-bottom: 8px solid #3600af;
+}
+
+body.hub-page-home .is-collapsible__summary,
+body.hub-page-games .is-collapsible__summary,
+body.hub-page-samples .is-collapsible__summary,
+body.hub-page-tools .is-collapsible__summary {
+  color: #ffffff;
+  background: transparent;
+  border-bottom: 0;
+  position: static;
+  padding: 8px 12px;
+  margin: 0;
+  border-radius: 0;
+  display: inline-flex;
+  align-items: center;
+}
+
+body.hub-page-home .is-collapsible__summary::before,
+body.hub-page-games .is-collapsible__summary::before,
+body.hub-page-samples .is-collapsible__summary::before,
+body.hub-page-tools .is-collapsible__summary::before {
+  color: #ffffff;
+  font-size: 2em;
+  width: auto;
+  line-height: 1;
+  vertical-align: middle;
+  margin-right: 4px;
+}
+
+body.hub-page-home .is-collapsible[open] > .is-collapsible__summary,
+body.hub-page-games .is-collapsible[open] > .is-collapsible__summary,
+body.hub-page-samples .is-collapsible[open] > .is-collapsible__summary,
+body.hub-page-tools .is-collapsible[open] > .is-collapsible__summary {
+  position: absolute;
+  top: 15px;
+  left: 15px;
+  z-index: 4;
+}
+
+body.hub-page-home .is-collapsible__content,
+body.hub-page-games .is-collapsible__content,
+body.hub-page-samples .is-collapsible__content,
+body.hub-page-tools .is-collapsible__content {
+  padding: 0;
+}
+
+body.hub-page-home .is-collapsible__content > .page-shell,
+body.hub-page-samples .is-collapsible__content > .page-shell {
+  margin-top: 16px;
+}
+
+body.hub-page-home .is-collapsible:not([open]) > .is-collapsible__summary,
+body.hub-page-games .is-collapsible:not([open]) > .is-collapsible__summary,
+body.hub-page-samples .is-collapsible:not([open]) > .is-collapsible__summary,
+body.hub-page-tools .is-collapsible:not([open]) > .is-collapsible__summary {
+  background: transparent;
+  color: #ffffff;
+}

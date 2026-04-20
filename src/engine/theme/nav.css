@@ -27,9 +27,13 @@
   text-decoration: none;
   color: var(--theme-link);
   font-weight: 700;
-  border-radius: 999px;
+  border-radius: 0;
   position: relative;
-  transition: color var(--motion-fast) ease, background-color var(--motion-fast) ease;
+  background-image: linear-gradient(#3600af, #3600af);
+  background-repeat: no-repeat;
+  background-position: 0 100%;
+  background-size: 100% 0%;
+  transition: color 0.75s ease, background-size 0.75s ease;
 }
 
 .toolboxaid-theme-header .menu-item a::after {
@@ -42,17 +46,33 @@
   border-radius: 999px;
   transform: scaleX(0);
   transform-origin: center;
-  background: currentColor;
-  transition: transform var(--motion-fast) ease;
+  background: #ed9700;
+  transition: transform 0.75s ease;
+}
+
+.toolboxaid-theme-header .menu-item a::before {
+  content: "";
+  position: absolute;
+  left: 12px;
+  right: 12px;
+  top: 4px;
+  height: 2px;
+  border-radius: 999px;
+  transform: scaleX(0);
+  transform-origin: center;
+  background: #ed9700;
+  transition: transform 0.75s ease;
 }
 
 .toolboxaid-theme-header .menu-item a:hover,
 .toolboxaid-theme-header .menu-item a:focus-visible {
-  color: var(--theme-link-hover);
-  background: rgba(31, 107, 209, 0.08);
+  color: #ed9700;
+  background-size: 100% 100%;
   outline: none;
 }
 
+.toolboxaid-theme-header .menu-item a:hover::before,
+.toolboxaid-theme-header .menu-item a:focus-visible::before,
 .toolboxaid-theme-header .menu-item a:hover::after,
 .toolboxaid-theme-header .menu-item a:focus-visible::after {
   transform: scaleX(1);
@@ -62,4 +82,35 @@
   content: '\2197';
   margin-left: 6px;
   font-size: 0.85em;
+}
+
+body.hub-page-home .toolboxaid-theme-header #nav,
+body.hub-page-games .toolboxaid-theme-header #nav,
+body.hub-page-samples .toolboxaid-theme-header #nav,
+body.hub-page-tools .toolboxaid-theme-header #nav {
+  width: 100%;
+  padding: 0;
+  margin: 0;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  border-bottom: 8px solid #3600af;
+}
+
+body.hub-page-home .toolboxaid-theme-header .menu-item a,
+body.hub-page-games .toolboxaid-theme-header .menu-item a,
+body.hub-page-samples .toolboxaid-theme-header .menu-item a,
+body.hub-page-tools .toolboxaid-theme-header .menu-item a {
+  color: #3600af;
+}
+
+body.hub-page-home .toolboxaid-theme-header .menu-item a:hover,
+body.hub-page-home .toolboxaid-theme-header .menu-item a:focus-visible,
+body.hub-page-games .toolboxaid-theme-header .menu-item a:hover,
+body.hub-page-games .toolboxaid-theme-header .menu-item a:focus-visible,
+body.hub-page-samples .toolboxaid-theme-header .menu-item a:hover,
+body.hub-page-samples .toolboxaid-theme-header .menu-item a:focus-visible,
+body.hub-page-tools .toolboxaid-theme-header .menu-item a:hover,
+body.hub-page-tools .toolboxaid-theme-header .menu-item a:focus-visible {
+  color: #ed9700;
 }

@@ -1,11 +1,15 @@
-Validation Checklist
+Scope summary
+- Single-purpose style PR
+- Header + Intro overlay only
+- Transparent overlay background
+- Foreground #ed9700
+- Collapsed header background #7a00df
+- Header border radius removed
+- page-shell excluded
 
-[x] Runnable guard added
-[x] Guard executes in one pass from repo root
-[x] Roadmap file path lock checked
-[x] Roadmap non-status edit lock checked
-[x] Fullscreen outside 0713 checked
-[x] Clear PASS/FAIL output produced
-[x] No roadmap text edits made
-[x] No engine changes made
-[x] No gameplay changes made
+Validation checklist
+- Visual overlay confirmed on targeted shared entry pages
+- Collapsed state color confirmed
+- No page-shell edits
+- No layout regressions
+- No console errors

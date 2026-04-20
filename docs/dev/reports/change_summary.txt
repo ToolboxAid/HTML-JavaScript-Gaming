@@ -1,1 +1,15 @@
-This PR corrects unauthorized fullscreen drift across samples and fixes the one authorized fullscreen sample so it behaves correctly.
+Scope summary
+- Single-purpose style PR
+- Header + Intro overlay only
+- Transparent overlay background
+- Foreground #ed9700
+- Collapsed header background #7a00df
+- Header border radius removed
+- page-shell excluded
+
+Validation checklist
+- Visual overlay confirmed on targeted shared entry pages
+- Collapsed state color confirmed
+- No page-shell edits
+- No layout regressions
+- No console errors
