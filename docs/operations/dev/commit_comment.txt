@@ -1,7 +1,6 @@
-Reset /games/index.html to the new shared theme system and lock the updated shared-header rules.
+Create the shared tool-shell foundation and migrate one tool as the first proof slice.
 
-Add Toolbox Aid as the first external menu item.
-Keep the shared header full width regardless of content.
-Require the header image to retain aspect ratio as viewport width changes.
+Establish full-width tool layout with fixed left/right rails and a flexible center workspace.
+Keep the PR narrow, testable, and aligned with the new style system.
 
-PR: BUILD_PR_STYLE_04_GAMES_INDEX_RESET_AND_HEADER_LOCKS
+PR: BUILD_PR_STYLE_06_TOOL_SHELL_FOUNDATION_AND_FIRST_TOOL_MIGRATION

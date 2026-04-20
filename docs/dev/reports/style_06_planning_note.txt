@@ -1,0 +1,11 @@
+STYLE_06 planning note
+
+This PR is the first tool UX foundation slice.
+It establishes the common shell needed for later tool migrations:
+- fixed left rail
+- flexible center
+- fixed right rail
+
+Roadmap update rule for this PR:
+- append STYLE_06 only
+- do not delete or rewrite existing STYLE_05 text
