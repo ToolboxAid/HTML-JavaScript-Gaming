@@ -157,39 +157,32 @@ function renderHeaderMarkup(currentTool, isHeaderExpanded) {
 
   return `
     <section class="tools-platform-frame">
-      <details class="tools-platform-frame__accordion"${isHeaderExpanded ? " open" : ""}>
-        <summary class="tools-platform-frame__accordion-summary" aria-label="Toggle tools platform header details">
+      <div class="tools-platform-frame__accordion-content">
+        <div class="tools-platform-frame__accordion-summary">
           <div class="tools-platform-frame__summary-copy">
             <h1 class="tools-platform-frame__title">${escapeHtml(title)}</h1>
             <h2 class="tools-platform-frame__eyebrow">First-Class Tools Surface</h2>
           </div>
           <div class="tools-platform-frame__summary-meta">
             <div class="tools-platform-frame__meta">${escapeHtml(meta)}</div>
-            <span class="tools-platform-frame__accordion-icon">&#9662;</span>
           </div>
-        </summary>
-        <div class="tools-platform-frame__accordion-content">
-          <div class="tools-platform-frame__topline">
-            <p class="tools-platform-frame__description">${escapeHtml(description)}</p>
-            <div class="tools-platform-frame__links">
-              <a class="tools-platform-frame__link" href="${escapeHtml(getRelativeRepoHomePath())}">Repo Home</a>
-              <a class="tools-platform-frame__link" href="${escapeHtml(getRelativeToolsHomePath())}">Tools Home</a>
-            </div>
-          </div>
-          <div class="tools-platform-frame__bottomline">
-            <nav class="tools-platform-frame__nav" aria-label="Active tools">
-              ${renderToolLinks(currentTool?.id ?? "")}
-            </nav>
-          </div>
-          ${renderProjectSummary(currentTool)}
-          ${!isLanding ? `
-            <div class="tools-platform-frame__actions" aria-label="Shared asset and palette actions">
-              ${renderSharedActionLinks(currentTool?.id ?? "")}
-            </div>
-            ${renderSharedSelectionSummary()}
-          ` : ""}
         </div>
-      </details>
+        <div class="tools-platform-frame__topline">
+          <p class="tools-platform-frame__description">${escapeHtml(description)}</p>
+        </div>
+        <div class="tools-platform-frame__bottomline">
+          <nav class="tools-platform-frame__nav" aria-label="Active tools">
+            ${renderToolLinks(currentTool?.id ?? "")}
+          </nav>
+        </div>
+        ${renderProjectSummary(currentTool)}
+        ${!isLanding ? `
+          <div class="tools-platform-frame__actions" aria-label="Shared asset and palette actions">
+            ${renderSharedActionLinks(currentTool?.id ?? "")}
+          </div>
+          ${renderSharedSelectionSummary()}
+        ` : ""}
+      </div>
     </section>
   `;
 }
