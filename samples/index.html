@@ -32,16 +32,18 @@ index.html
 
   <main class="page-shell">
     <section class="content-section">
-      <h2>Filter Phases</h2>
-      <p>Filter by phase number, phase title, or description.</p>
+      <h2>Filter Samples</h2>
+      <p>Filter by phase, sample id, title, description, or tags.</p>
       <label for="samples-phase-filter-input">Search</label>
       <input id="samples-phase-filter-input" type="text" placeholder="Phase 17, rendering, runtime..." autocomplete="off" />
+      <label for="samples-phase-filter-pinned-only">Pinned only</label>
+      <input id="samples-phase-filter-pinned-only" type="checkbox" />
       <p id="samples-phase-filter-status" aria-live="polite"></p>
     </section>
 
     <section class="content-section">
-      <h2>All Phases</h2>
-      <div id="samples-phase-list" class="card-grid"></div>
+      <h2>All Phases and Samples</h2>
+      <div id="samples-phase-list"></div>
     </section>
 
     <div class="footer-note">

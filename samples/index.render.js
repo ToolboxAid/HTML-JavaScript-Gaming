@@ -1,113 +1,209 @@
 const METADATA_PATH = "./metadata/samples.index.metadata.json";
-const BASE_PHASES = [
-  "01", "02", "03", "04", "05", "06", "07", "08", "09", "10",
-  "11", "12", "13", "14", "15", "16", "17", "18", "19"
-];
-const PHASE_FALLBACK_DETAILS = {
-  "16": {
-    title: "Phase 16 - 3D Foundations",
-    description: "3D execution track including camera, input, lighting, and runtime debug slices."
-  },
-  "17": {
-    title: "Phase 17 - Advanced 3D + Gameplay",
-    description: "Extended rendering and gameplay-focused 3D samples with integrated debug surfaces."
-  },
-  "18": {
-    title: "Phase 18 - Runtime Hardening",
-    description: "Runtime and boundary hardening slices that preserve engine/shared separation."
-  },
-  "19": {
-    title: "Phase 19 - Integration Validation",
-    description: "System integration and lifecycle validation for stable execution flow."
-  }
-};
+const PINNED_KEY = "samples-index-pinned";
 
 export function normalize(value) {
   return typeof value === "string" ? value.trim() : "";
 }
 
-export function dedupeSortedPhases(samples, phaseDetails) {
-  const phaseSet = new Set();
-  for (const detail of phaseDetails) {
-    const id = normalize(detail.phase);
-    if (/^\d{2}$/.test(id)) {
-      phaseSet.add(id);
-    }
-  }
-  for (const sample of samples) {
-    const id = normalize(sample.phase);
-    if (/^\d{2}$/.test(id)) {
-      phaseSet.add(id);
-    }
-  }
-  return [...phaseSet].sort((a, b) => Number(a) - Number(b));
+function normalizeTag(tag) {
+  return normalize(tag).toLowerCase().replace(/[_\s]+/g, "-").replace(/-+/g, "-");
 }
 
-export function buildPhaseRows(metadata) {
-  const samples = Array.isArray(metadata?.samples) ? metadata.samples : [];
-  const phaseDetails = Array.isArray(metadata?.phases) ? metadata.phases : [];
-  const detailByPhase = new Map(
-    phaseDetails
-      .map((detail) => [normalize(detail.phase), detail])
-      .filter(([phase]) => /^\d{2}$/.test(phase))
-  );
-  const phases = dedupeSortedPhases(samples, phaseDetails);
-  for (const basePhase of BASE_PHASES) {
-    phases.push(basePhase);
+function safeArray(value) {
+  return Array.isArray(value) ? value : [];
+}
+
+function sortPhaseIds(values) {
+  return [...new Set(values.filter((value) => /^\d{2}$/.test(value)))].sort((a, b) => Number(a) - Number(b));
+}
+
+function readPinnedSet() {
+  try {
+    const raw = window.localStorage.getItem(PINNED_KEY);
+    if (!raw) {
+      return new Set();
+    }
+    const parsed = JSON.parse(raw);
+    if (!Array.isArray(parsed)) {
+      return new Set();
+    }
+    return new Set(parsed.map((value) => normalize(value)).filter((value) => /^\d{4}$/.test(value)));
+  } catch {
+    return new Set();
   }
-  const normalizedPhases = [...new Set(phases)].sort((a, b) => Number(a) - Number(b));
-  return normalizedPhases.map((phase) => {
-    const sampleCount = samples.filter((entry) => normalize(entry.phase) === phase).length;
-    const detail = detailByPhase.get(phase) || PHASE_FALLBACK_DETAILS[phase];
-    const title = normalize(detail?.title) || `Phase ${phase}`;
-    const description =
-      normalize(detail?.description) || "Phase content available in the sample lane.";
+}
+
+function savePinnedSet(pinnedSet) {
+  const ordered = [...pinnedSet].sort();
+  window.localStorage.setItem(PINNED_KEY, JSON.stringify(ordered));
+}
+
+export function buildPhaseModel(metadata, pinnedSet = new Set()) {
+  const phaseDetails = new Map(
+    safeArray(metadata?.phases)
+      .map((phase) => {
+        const id = normalize(phase?.phase);
+        return [id, {
+          phase: id,
+          title: normalize(phase?.title) || `Phase ${id}`,
+          description: normalize(phase?.description)
+        }];
+      })
+      .filter(([id]) => /^\d{2}$/.test(id))
+  );
+
+  const samples = safeArray(metadata?.samples)
+    .map((sample) => {
+      const id = normalize(sample?.id);
+      const phase = normalize(sample?.phase);
+      if (!/^\d{4}$/.test(id) || !/^\d{2}$/.test(phase)) {
+        return null;
+      }
+      const title = normalize(sample?.indexLabel) || `Sample ${id} - ${normalize(sample?.title) || "Untitled"}`;
+      const description = normalize(sample?.description) || "No description available.";
+      const href = normalize(sample?.href) || `./phase-${phase}/${id}/index.html`;
+      const tags = safeArray(sample?.tags).map((tag) => normalizeTag(tag)).filter(Boolean);
+      const thumbnail = normalize(sample?.thumbnail) || normalize(sample?.preview) || "";
+      return {
+        id,
+        phase,
+        title,
+        description,
+        href,
+        tags,
+        thumbnail,
+        pinned: pinnedSet.has(id)
+      };
+    })
+    .filter(Boolean)
+    .sort((a, b) => a.id.localeCompare(b.id));
+
+  const phaseIds = sortPhaseIds([
+    ...[...phaseDetails.keys()],
+    ...samples.map((sample) => sample.phase)
+  ]);
+
+  return phaseIds.map((phase) => {
+    const detail = phaseDetails.get(phase) || {
+      phase,
+      title: `Phase ${phase}`,
+      description: "Phase samples"
+    };
+    const phaseSamples = samples.filter((sample) => sample.phase === phase);
     return {
       phase,
-      href: `./phase-${phase}/${phase}01/index.html`,
-      title,
-      description
+      title: detail.title,
+      description: detail.description || `Samples for phase ${phase}.`,
+      samples: phaseSamples
     };
   });
 }
 
-export function renderPhaseCards(container, rows) {
-  container.innerHTML = "";
-  for (const row of rows) {
-    const card = document.createElement("a");
-    card.className = "card-link";
-    card.href = row.href;
-    card.dataset.phase = row.phase;
-    card.innerHTML = `<h3>${row.title}</h3><p>${row.description}</p>`;
-    container.appendChild(card);
-  }
-}
-
-export function filterPhaseRows(rows, query) {
+export function filterPhaseModel(phaseModel, query, pinnedOnly) {
   const normalizedQuery = normalize(query).toLowerCase();
-  if (!normalizedQuery) {
-    return rows;
-  }
-  return rows.filter((row) => {
-    const haystack = `${row.phase} ${row.title} ${row.description}`.toLowerCase();
-    return haystack.includes(normalizedQuery);
-  });
+  return phaseModel
+    .map((phase) => {
+      const phaseText = `${phase.phase} ${phase.title} ${phase.description}`.toLowerCase();
+      const samples = phase.samples.filter((sample) => {
+        if (pinnedOnly && !sample.pinned) {
+          return false;
+        }
+        if (!normalizedQuery) {
+          return true;
+        }
+        const sampleText = `${sample.id} ${sample.title} ${sample.description} ${sample.tags.join(" ")}`.toLowerCase();
+        return phaseText.includes(normalizedQuery) || sampleText.includes(normalizedQuery);
+      });
+      if (!normalizedQuery && !pinnedOnly) {
+        return phase;
+      }
+      return { ...phase, samples };
+    })
+    .filter((phase) => phase.samples.length > 0);
 }
 
-export function updateStatus(statusNode, shown, total, query) {
-  const label = normalize(query);
-  if (!label) {
-    statusNode.textContent = `Showing all ${total} phases.`;
+function buildSampleCard(sample) {
+  const card = document.createElement("article");
+  card.className = "card-link";
+  card.dataset.sampleId = sample.id;
+
+  const header = document.createElement("p");
+  header.textContent = `Sample ${sample.id}`;
+
+  const title = document.createElement("h3");
+  const titleLink = document.createElement("a");
+  titleLink.href = sample.href;
+  titleLink.textContent = sample.title;
+  titleLink.className = "sample-link";
+  title.appendChild(titleLink);
+
+  const description = document.createElement("p");
+  description.textContent = sample.description;
+
+  const tagLine = document.createElement("p");
+  tagLine.textContent = sample.tags.length > 0 ? `Tags: ${sample.tags.join(", ")}` : "Tags: none";
+
+  const actions = document.createElement("p");
+  const pinButton = document.createElement("button");
+  pinButton.type = "button";
+  pinButton.dataset.samplePin = sample.id;
+  pinButton.textContent = sample.pinned ? "Unpin" : "Pin";
+  actions.appendChild(pinButton);
+
+  card.appendChild(header);
+  card.appendChild(title);
+  card.appendChild(description);
+  card.appendChild(tagLine);
+  card.appendChild(actions);
+  return card;
+}
+
+export function renderPhaseModel(container, phaseModel) {
+  container.innerHTML = "";
+  for (const phase of phaseModel) {
+    const section = document.createElement("section");
+    section.className = "content-section";
+    section.dataset.phase = phase.phase;
+
+    const h = document.createElement("h2");
+    h.textContent = phase.title;
+
+    const d = document.createElement("p");
+    d.textContent = phase.description;
+
+    const grid = document.createElement("div");
+    grid.className = "card-grid";
+    for (const sample of phase.samples) {
+      grid.appendChild(buildSampleCard(sample));
+    }
+
+    section.appendChild(h);
+    section.appendChild(d);
+    section.appendChild(grid);
+    container.appendChild(section);
+  }
+}
+
+export function updateStatus(statusNode, visiblePhases, totalPhases, visibleSamples, totalSamples, query, pinnedOnly) {
+  const q = normalize(query);
+  const pinnedLabel = pinnedOnly ? " (pinned only)" : "";
+  if (!q) {
+    statusNode.textContent = `Showing ${visibleSamples} of ${totalSamples} samples across ${visiblePhases} of ${totalPhases} phases${pinnedLabel}.`;
     return;
   }
-  statusNode.textContent = `Showing ${shown} of ${total} phases for "${label}".`;
+  statusNode.textContent = `Showing ${visibleSamples} of ${totalSamples} samples across ${visiblePhases} of ${totalPhases} phases for "${q}"${pinnedLabel}.`;
+}
+
+function countSamples(phaseModel) {
+  return phaseModel.reduce((total, phase) => total + phase.samples.length, 0);
 }
 
 export async function initSamplesIndex() {
   const container = document.getElementById("samples-phase-list");
   const input = document.getElementById("samples-phase-filter-input");
+  const pinnedOnlyInput = document.getElementById("samples-phase-filter-pinned-only");
   const statusNode = document.getElementById("samples-phase-filter-status");
-  if (!container || !input || !statusNode) {
+  if (!container || !input || !statusNode || !pinnedOnlyInput) {
     return;
   }
 
@@ -116,18 +212,49 @@ export async function initSamplesIndex() {
     if (!response.ok) {
       throw new Error(`Failed to load samples metadata (${response.status})`);
     }
+
     const metadata = await response.json();
-    const allRows = buildPhaseRows(metadata);
-    const applyFilter = () => {
-      const filteredRows = filterPhaseRows(allRows, input.value);
-      renderPhaseCards(container, filteredRows);
-      updateStatus(statusNode, filteredRows.length, allRows.length, input.value);
+    let pinnedSet = readPinnedSet();
+
+    const apply = () => {
+      const allPhases = buildPhaseModel(metadata, pinnedSet);
+      const filtered = filterPhaseModel(allPhases, input.value, pinnedOnlyInput.checked);
+      renderPhaseModel(container, filtered);
+      updateStatus(
+        statusNode,
+        filtered.length,
+        allPhases.length,
+        countSamples(filtered),
+        countSamples(allPhases),
+        input.value,
+        pinnedOnlyInput.checked
+      );
     };
-    input.addEventListener("input", applyFilter);
-    applyFilter();
+
+    container.addEventListener("click", (event) => {
+      const target = event.target;
+      if (!(target instanceof HTMLButtonElement)) {
+        return;
+      }
+      const id = normalize(target.dataset.samplePin);
+      if (!/^\d{4}$/.test(id)) {
+        return;
+      }
+      if (pinnedSet.has(id)) {
+        pinnedSet.delete(id);
+      } else {
+        pinnedSet.add(id);
+      }
+      savePinnedSet(pinnedSet);
+      apply();
+    });
+
+    input.addEventListener("input", apply);
+    pinnedOnlyInput.addEventListener("change", apply);
+    apply();
   } catch (error) {
     container.innerHTML = "";
-    statusNode.textContent = "Unable to load phase list. Verify local server access to sample metadata.";
+    statusNode.textContent = "Unable to load sample list. Verify local server access to sample metadata.";
     console.error(error);
   }
 }

@@ -1,0 +1,17 @@
+Samples index data-driven restore strategy
+
+The regression is not just missing UI.
+The page is rendering the wrong model:
+- phase shell only
+- one xx01 launch entry
+instead of:
+- phase description
+- full sample list
+- per-sample details
+- pinning
+
+Fix priority:
+1. restore the true data source
+2. restore full iteration/rendering
+3. restore pinning state/UI
+4. preserve shared style/header consistency

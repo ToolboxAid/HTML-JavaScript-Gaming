@@ -75,6 +75,26 @@
       "phase": "15",
       "title": "Phase 15 - Advanced Systems",
       "description": "Introduces deterministic scheduling, replay-friendly state handling, diffing, and verification systems."
+    },
+    {
+      "phase": "16",
+      "title": "Phase 16 - 3D Foundations",
+      "description": "3D execution track including camera, input, lighting, and runtime debug slices."
+    },
+    {
+      "phase": "17",
+      "title": "Phase 17 - Advanced 3D + Gameplay",
+      "description": "Extended rendering and gameplay-focused 3D samples with integrated debug surfaces."
+    },
+    {
+      "phase": "18",
+      "title": "Phase 18 - Runtime Hardening",
+      "description": "Runtime and boundary hardening slices that preserve engine/shared separation."
+    },
+    {
+      "phase": "19",
+      "title": "Phase 19 - Integration Validation",
+      "description": "System integration and lifecycle validation for stable execution flow."
     }
   ],
   "samples": [
@@ -92,7 +112,8 @@
         "engine/scene/index/Scene"
       ],
       "thumbnail": "/samples/phase-01/0101/assets/images/preview.svg",
-      "preview": "/samples/phase-01/0101/assets/images/preview.svg"
+      "preview": "/samples/phase-01/0101/assets/images/preview.svg",
+      "href": "./phase-01/0101/index.html"
     },
     {
       "id": "0102",
@@ -110,7 +131,8 @@
         "engine/scene/index/Scene"
       ],
       "thumbnail": "/samples/phase-01/0102/assets/images/preview.svg",
-      "preview": "/samples/phase-01/0102/assets/images/preview.svg"
+      "preview": "/samples/phase-01/0102/assets/images/preview.svg",
+      "href": "./phase-01/0102/index.html"
     },
     {
       "id": "0103",
@@ -128,7 +150,8 @@
         "engine/scene/index/Scene"
       ],
       "thumbnail": "/samples/phase-01/0103/assets/images/preview.svg",
-      "preview": "/samples/phase-01/0103/assets/images/preview.svg"
+      "preview": "/samples/phase-01/0103/assets/images/preview.svg",
+      "href": "./phase-01/0103/index.html"
     },
     {
       "id": "0104",
@@ -146,7 +169,8 @@
         "engine/scene/index/Scene"
       ],
       "thumbnail": "/samples/phase-01/0104/assets/images/preview.svg",
-      "preview": "/samples/phase-01/0104/assets/images/preview.svg"
+      "preview": "/samples/phase-01/0104/assets/images/preview.svg",
+      "href": "./phase-01/0104/index.html"
     },
     {
       "id": "0105",
@@ -167,7 +191,8 @@
         "engine/scene/index/TransitionScene"
       ],
       "thumbnail": "/samples/phase-01/0105/assets/images/preview.svg",
-      "preview": "/samples/phase-01/0105/assets/images/preview.svg"
+      "preview": "/samples/phase-01/0105/assets/images/preview.svg",
+      "href": "./phase-01/0105/index.html"
     },
     {
       "id": "0106",
@@ -187,7 +212,8 @@
         "engine/scene/index/Scene"
       ],
       "thumbnail": "/samples/phase-01/0106/assets/images/preview.svg",
-      "preview": "/samples/phase-01/0106/assets/images/preview.svg"
+      "preview": "/samples/phase-01/0106/assets/images/preview.svg",
+      "href": "./phase-01/0106/index.html"
     },
     {
       "id": "0107",
@@ -214,7 +240,8 @@
         "engine/scene/index/Scene"
       ],
       "thumbnail": "/samples/phase-01/0107/assets/images/preview.svg",
-      "preview": "/samples/phase-01/0107/assets/images/preview.svg"
+      "preview": "/samples/phase-01/0107/assets/images/preview.svg",
+      "href": "./phase-01/0107/index.html"
     },
     {
       "id": "0108",
@@ -240,7 +267,8 @@
         "engine/scene/index/Scene"
       ],
       "thumbnail": "/samples/phase-01/0108/assets/images/preview.svg",
-      "preview": "/samples/phase-01/0108/assets/images/preview.svg"
+      "preview": "/samples/phase-01/0108/assets/images/preview.svg",
+      "href": "./phase-01/0108/index.html"
     },
     {
       "id": "0109",
@@ -258,7 +286,8 @@
         "engine/scene/index/Scene"
       ],
       "thumbnail": "/samples/phase-01/0109/assets/images/preview.svg",
-      "preview": "/samples/phase-01/0109/assets/images/preview.svg"
+      "preview": "/samples/phase-01/0109/assets/images/preview.svg",
+      "href": "./phase-01/0109/index.html"
     },
     {
       "id": "0110",
@@ -276,7 +305,8 @@
         "engine/scene/index/Scene"
       ],
       "thumbnail": "/samples/phase-01/0110/assets/images/preview.svg",
-      "preview": "/samples/phase-01/0110/assets/images/preview.svg"
+      "preview": "/samples/phase-01/0110/assets/images/preview.svg",
+      "href": "./phase-01/0110/index.html"
     },
     {
       "id": "0111",
@@ -294,7 +324,8 @@
         "engine/scene/index/Scene"
       ],
       "thumbnail": "/samples/phase-01/0111/assets/images/preview.svg",
-      "preview": "/samples/phase-01/0111/assets/images/preview.svg"
+      "preview": "/samples/phase-01/0111/assets/images/preview.svg",
+      "href": "./phase-01/0111/index.html"
     },
     {
       "id": "0112",
@@ -312,7 +343,8 @@
         "engine/scene/index/Scene"
       ],
       "thumbnail": "/samples/phase-01/0112/assets/images/preview.svg",
-      "preview": "/samples/phase-01/0112/assets/images/preview.svg"
+      "preview": "/samples/phase-01/0112/assets/images/preview.svg",
+      "href": "./phase-01/0112/index.html"
     },
     {
       "id": "0113",
@@ -330,7 +362,8 @@
         "engine/scene/index/Scene"
       ],
       "thumbnail": "/samples/phase-01/0113/assets/images/preview.svg",
-      "preview": "/samples/phase-01/0113/assets/images/preview.svg"
+      "preview": "/samples/phase-01/0113/assets/images/preview.svg",
+      "href": "./phase-01/0113/index.html"
     },
     {
       "id": "0114",
@@ -348,7 +381,8 @@
         "engine/scene/index/Scene"
       ],
       "thumbnail": "/samples/phase-01/0114/assets/images/preview.svg",
-      "preview": "/samples/phase-01/0114/assets/images/preview.svg"
+      "preview": "/samples/phase-01/0114/assets/images/preview.svg",
+      "href": "./phase-01/0114/index.html"
     },
     {
       "id": "0115",
@@ -370,7 +404,8 @@
         "engine/scene/index/Scene"
       ],
       "thumbnail": "/samples/phase-01/0115/assets/images/preview.svg",
-      "preview": "/samples/phase-01/0115/assets/images/preview.svg"
+      "preview": "/samples/phase-01/0115/assets/images/preview.svg",
+      "href": "./phase-01/0115/index.html"
     },
     {
       "id": "0116",
@@ -406,7 +441,8 @@
         "engine/systems/index/renderRectEntities"
       ],
       "thumbnail": "/samples/phase-01/0116/assets/images/preview.svg",
-      "preview": "/samples/phase-01/0116/assets/images/preview.svg"
+      "preview": "/samples/phase-01/0116/assets/images/preview.svg",
+      "href": "./phase-01/0116/index.html"
     },
     {
       "id": "0117",
@@ -448,7 +484,8 @@
         "engine/systems/index/renderRectEntities"
       ],
       "thumbnail": "/samples/phase-01/0117/assets/images/preview.svg",
-      "preview": "/samples/phase-01/0117/assets/images/preview.svg"
+      "preview": "/samples/phase-01/0117/assets/images/preview.svg",
+      "href": "./phase-01/0117/index.html"
     },
     {
       "id": "0118",
@@ -494,7 +531,8 @@
         "engine/systems/index/renderRectEntities"
       ],
       "thumbnail": "/samples/phase-01/0118/assets/images/preview.svg",
-      "preview": "/samples/phase-01/0118/assets/images/preview.svg"
+      "preview": "/samples/phase-01/0118/assets/images/preview.svg",
+      "href": "./phase-01/0118/index.html"
     },
     {
       "id": "0119",
@@ -518,7 +556,8 @@
         "engine/systems/index/renderRectEntities"
       ],
       "thumbnail": "/samples/phase-01/0119/assets/images/preview.svg",
-      "preview": "/samples/phase-01/0119/assets/images/preview.svg"
+      "preview": "/samples/phase-01/0119/assets/images/preview.svg",
+      "href": "./phase-01/0119/index.html"
     },
     {
       "id": "0120",
@@ -566,7 +605,8 @@
         "engine/systems/index/renderRectEntities"
       ],
       "thumbnail": "/samples/phase-01/0120/assets/images/preview.svg",
-      "preview": "/samples/phase-01/0120/assets/images/preview.svg"
+      "preview": "/samples/phase-01/0120/assets/images/preview.svg",
+      "href": "./phase-01/0120/index.html"
     },
     {
       "id": "0121",
@@ -608,7 +648,8 @@
         "engine/systems/index/renderRectEntities"
       ],
       "thumbnail": "/samples/phase-01/0121/assets/images/preview.svg",
-      "preview": "/samples/phase-01/0121/assets/images/preview.svg"
+      "preview": "/samples/phase-01/0121/assets/images/preview.svg",
+      "href": "./phase-01/0121/index.html"
     },
     {
       "id": "0122",
@@ -658,7 +699,8 @@
         "engine/systems/index/tickLifetimes"
       ],
       "thumbnail": "/samples/phase-01/0122/assets/images/preview.svg",
-      "preview": "/samples/phase-01/0122/assets/images/preview.svg"
+      "preview": "/samples/phase-01/0122/assets/images/preview.svg",
+      "href": "./phase-01/0122/index.html"
     },
     {
       "id": "0123",
@@ -698,7 +740,8 @@
         "engine/systems/index/renderRectEntities"
       ],
       "thumbnail": "/samples/phase-01/0123/assets/images/preview.svg",
-      "preview": "/samples/phase-01/0123/assets/images/preview.svg"
+      "preview": "/samples/phase-01/0123/assets/images/preview.svg",
+      "href": "./phase-01/0123/index.html"
     },
     {
       "id": "0124",
@@ -745,7 +788,8 @@
         "engine/systems/index/renderRectEntities"
       ],
       "thumbnail": "/samples/phase-01/0124/assets/images/preview.svg",
-      "preview": "/samples/phase-01/0124/assets/images/preview.svg"
+      "preview": "/samples/phase-01/0124/assets/images/preview.svg",
+      "href": "./phase-01/0124/index.html"
     },
     {
       "id": "0201",
@@ -771,7 +815,8 @@
         "engine/utils/index/clamp"
       ],
       "thumbnail": "/samples/phase-02/0201/assets/images/preview.svg",
-      "preview": "/samples/phase-02/0201/assets/images/preview.svg"
+      "preview": "/samples/phase-02/0201/assets/images/preview.svg",
+      "href": "./phase-02/0201/index.html"
     },
     {
       "id": "0202",
@@ -797,7 +842,8 @@
         "engine/utils/index/clamp"
       ],
       "thumbnail": "/samples/phase-02/0202/assets/images/preview.svg",
-      "preview": "/samples/phase-02/0202/assets/images/preview.svg"
+      "preview": "/samples/phase-02/0202/assets/images/preview.svg",
+      "href": "./phase-02/0202/index.html"
     },
     {
       "id": "0203",
@@ -825,7 +871,8 @@
         "engine/utils/index/clamp"
       ],
       "thumbnail": "/samples/phase-02/0203/assets/images/preview.svg",
-      "preview": "/samples/phase-02/0203/assets/images/preview.svg"
+      "preview": "/samples/phase-02/0203/assets/images/preview.svg",
+      "href": "./phase-02/0203/index.html"
     },
     {
       "id": "0204",
@@ -851,7 +898,8 @@
         "engine/scene/index/Scene"
       ],
       "thumbnail": "/samples/phase-02/0204/assets/images/preview.svg",
-      "preview": "/samples/phase-02/0204/assets/images/preview.svg"
+      "preview": "/samples/phase-02/0204/assets/images/preview.svg",
+      "href": "./phase-02/0204/index.html"
     },
     {
       "id": "0205",
@@ -879,7 +927,8 @@
         "engine/utils/index/clamp"
       ],
       "thumbnail": "/samples/phase-02/0205/assets/images/preview.svg",
-      "preview": "/samples/phase-02/0205/assets/images/preview.svg"
+      "preview": "/samples/phase-02/0205/assets/images/preview.svg",
+      "href": "./phase-02/0205/index.html"
     },
     {
       "id": "0206",
@@ -909,7 +958,8 @@
         "engine/utils/index/clamp"
       ],
       "thumbnail": "/samples/phase-02/0206/assets/images/preview.svg",
-      "preview": "/samples/phase-02/0206/assets/images/preview.svg"
+      "preview": "/samples/phase-02/0206/assets/images/preview.svg",
+      "href": "./phase-02/0206/index.html"
     },
     {
       "id": "0207",
@@ -937,7 +987,8 @@
         "engine/utils/index/clamp"
       ],
       "thumbnail": "/samples/phase-02/0207/assets/images/preview.svg",
-      "preview": "/samples/phase-02/0207/assets/images/preview.svg"
+      "preview": "/samples/phase-02/0207/assets/images/preview.svg",
+      "href": "./phase-02/0207/index.html"
     },
     {
       "id": "0208",
@@ -965,7 +1016,8 @@
         "engine/utils/index/clamp"
       ],
       "thumbnail": "/samples/phase-02/0208/assets/images/preview.svg",
-      "preview": "/samples/phase-02/0208/assets/images/preview.svg"
+      "preview": "/samples/phase-02/0208/assets/images/preview.svg",
+      "href": "./phase-02/0208/index.html"
     },
     {
       "id": "0209",
@@ -995,7 +1047,8 @@
         "engine/utils/index/clamp"
       ],
       "thumbnail": "/samples/phase-02/0209/assets/images/preview.svg",
-      "preview": "/samples/phase-02/0209/assets/images/preview.svg"
+      "preview": "/samples/phase-02/0209/assets/images/preview.svg",
+      "href": "./phase-02/0209/index.html"
     },
     {
       "id": "0210",
@@ -1025,7 +1078,8 @@
         "engine/utils/index/clamp"
       ],
       "thumbnail": "/samples/phase-02/0210/assets/images/preview.svg",
-      "preview": "/samples/phase-02/0210/assets/images/preview.svg"
+      "preview": "/samples/phase-02/0210/assets/images/preview.svg",
+      "href": "./phase-02/0210/index.html"
     },
     {
       "id": "0211",
@@ -1055,7 +1109,8 @@
         "engine/utils/index/clamp"
       ],
       "thumbnail": "/samples/phase-02/0211/assets/images/preview.svg",
-      "preview": "/samples/phase-02/0211/assets/images/preview.svg"
+      "preview": "/samples/phase-02/0211/assets/images/preview.svg",
+      "href": "./phase-02/0211/index.html"
     },
     {
       "id": "0212",
@@ -1091,7 +1146,8 @@
         "engine/utils/index/clamp"
       ],
       "thumbnail": "/samples/phase-02/0212/assets/images/preview.svg",
-      "preview": "/samples/phase-02/0212/assets/images/preview.svg"
+      "preview": "/samples/phase-02/0212/assets/images/preview.svg",
+      "href": "./phase-02/0212/index.html"
     },
     {
       "id": "0213",
@@ -1115,7 +1171,8 @@
         "engine/scene/index/Scene"
       ],
       "thumbnail": "/samples/phase-02/0213/assets/images/preview.svg",
-      "preview": "/samples/phase-02/0213/assets/images/preview.svg"
+      "preview": "/samples/phase-02/0213/assets/images/preview.svg",
+      "href": "./phase-02/0213/index.html"
     },
     {
       "id": "0214",
@@ -1145,7 +1202,8 @@
         "engine/utils/index/clamp"
       ],
       "thumbnail": "/samples/phase-02/0214/assets/images/preview.svg",
-      "preview": "/samples/phase-02/0214/assets/images/preview.svg"
+      "preview": "/samples/phase-02/0214/assets/images/preview.svg",
+      "href": "./phase-02/0214/index.html"
     },
     {
       "id": "0215",
@@ -1171,7 +1229,8 @@
         "engine/theme/index/ThemeTokens"
       ],
       "thumbnail": "/samples/phase-02/0215/assets/images/preview.svg",
-      "preview": "/samples/phase-02/0215/assets/images/preview.svg"
+      "preview": "/samples/phase-02/0215/assets/images/preview.svg",
+      "href": "./phase-02/0215/index.html"
     },
     {
       "id": "0216",
@@ -1205,7 +1264,8 @@
         "engine/theme/index/ThemeTokens"
       ],
       "thumbnail": "/samples/phase-02/0216/assets/images/preview.svg",
-      "preview": "/samples/phase-02/0216/assets/images/preview.svg"
+      "preview": "/samples/phase-02/0216/assets/images/preview.svg",
+      "href": "./phase-02/0216/index.html"
     },
     {
       "id": "0217",
@@ -1231,7 +1291,8 @@
         "engine/theme/index/ThemeTokens"
       ],
       "thumbnail": "/samples/phase-02/0217/assets/images/preview.svg",
-      "preview": "/samples/phase-02/0217/assets/images/preview.svg"
+      "preview": "/samples/phase-02/0217/assets/images/preview.svg",
+      "href": "./phase-02/0217/index.html"
     },
     {
       "id": "0218",
@@ -1277,7 +1338,8 @@
         "engine/utils/index/clamp"
       ],
       "thumbnail": "/samples/phase-02/0218/assets/images/preview.svg",
-      "preview": "/samples/phase-02/0218/assets/images/preview.svg"
+      "preview": "/samples/phase-02/0218/assets/images/preview.svg",
+      "href": "./phase-02/0218/index.html"
     },
     {
       "id": "0219",
@@ -1307,7 +1369,8 @@
         "engine/theme/index/ThemeTokens"
       ],
       "thumbnail": "/samples/phase-02/0219/assets/images/preview.svg",
-      "preview": "/samples/phase-02/0219/assets/images/preview.svg"
+      "preview": "/samples/phase-02/0219/assets/images/preview.svg",
+      "href": "./phase-02/0219/index.html"
     },
     {
       "id": "0220",
@@ -1339,7 +1402,8 @@
         "engine/utils/index/clamp"
       ],
       "thumbnail": "/samples/phase-02/0220/assets/images/preview.svg",
-      "preview": "/samples/phase-02/0220/assets/images/preview.svg"
+      "preview": "/samples/phase-02/0220/assets/images/preview.svg",
+      "href": "./phase-02/0220/index.html"
     },
     {
       "id": "0221",
@@ -1370,7 +1434,8 @@
         "engine/utils/index/clamp"
       ],
       "thumbnail": "/samples/phase-02/0221/assets/images/preview.svg",
-      "preview": "/samples/phase-02/0221/assets/images/preview.svg"
+      "preview": "/samples/phase-02/0221/assets/images/preview.svg",
+      "href": "./phase-02/0221/index.html"
     },
     {
       "id": "0222",
@@ -1398,7 +1463,8 @@
         "engine/utils/index/clamp"
       ],
       "thumbnail": "/samples/phase-02/0222/assets/images/preview.svg",
-      "preview": "/samples/phase-02/0222/assets/images/preview.svg"
+      "preview": "/samples/phase-02/0222/assets/images/preview.svg",
+      "href": "./phase-02/0222/index.html"
     },
     {
       "id": "0223",
@@ -1428,7 +1494,8 @@
         "engine/utils/index/clamp"
       ],
       "thumbnail": "/samples/phase-02/0223/assets/images/preview.svg",
-      "preview": "/samples/phase-02/0223/assets/images/preview.svg"
+      "preview": "/samples/phase-02/0223/assets/images/preview.svg",
+      "href": "./phase-02/0223/index.html"
     },
     {
       "id": "0224",
@@ -1474,7 +1541,18 @@
         "engine/tilemap/index/resolveRectVsTilemap"
       ],
       "thumbnail": "/samples/phase-02/0224/assets/images/preview.svg",
-      "preview": "/samples/phase-02/0224/assets/images/preview.svg"
+      "preview": "/samples/phase-02/0224/assets/images/preview.svg",
+      "href": "./phase-02/0224/index.html"
+    },
+    {
+      "id": "0225",
+      "phase": "02",
+      "title": "Projectile Lab",
+      "description": "Arcade-clean projectile sandbox for spawning, travel, lifetime cleanup, repeated firing stability, and preset comparison.",
+      "href": "./phase-02/0225/index.html",
+      "tags": [],
+      "thumbnail": "/samples/phase-02/0225/assets/images/preview.svg",
+      "preview": "/samples/phase-02/0225/assets/images/preview.svg"
     },
     {
       "id": "0301",
@@ -1518,7 +1596,8 @@
         "engine/tilemap/index/renderTilemap"
       ],
       "thumbnail": "/samples/phase-03/0301/assets/images/preview.svg",
-      "preview": "/samples/phase-03/0301/assets/images/preview.svg"
+      "preview": "/samples/phase-03/0301/assets/images/preview.svg",
+      "href": "./phase-03/0301/index.html"
     },
     {
       "id": "0302",
@@ -1564,7 +1643,8 @@
         "engine/tilemap/index/renderTilemap"
       ],
       "thumbnail": "/samples/phase-03/0302/assets/images/preview.svg",
-      "preview": "/samples/phase-03/0302/assets/images/preview.svg"
+      "preview": "/samples/phase-03/0302/assets/images/preview.svg",
+      "href": "./phase-03/0302/index.html"
     },
     {
       "id": "0303",
@@ -1610,7 +1690,8 @@
         "engine/tilemap/index/renderTilemap"
       ],
       "thumbnail": "/samples/phase-03/0303/assets/images/preview.svg",
-      "preview": "/samples/phase-03/0303/assets/images/preview.svg"
+      "preview": "/samples/phase-03/0303/assets/images/preview.svg",
+      "href": "./phase-03/0303/index.html"
     },
     {
       "id": "0304",
@@ -1658,7 +1739,8 @@
         "engine/tilemap/index/renderTilemap"
       ],
       "thumbnail": "/samples/phase-03/0304/assets/images/preview.svg",
-      "preview": "/samples/phase-03/0304/assets/images/preview.svg"
+      "preview": "/samples/phase-03/0304/assets/images/preview.svg",
+      "href": "./phase-03/0304/index.html"
     },
     {
       "id": "0305",
@@ -1706,7 +1788,8 @@
         "engine/tilemap/index/renderTilemap"
       ],
       "thumbnail": "/samples/phase-03/0305/assets/images/preview.svg",
-      "preview": "/samples/phase-03/0305/assets/images/preview.svg"
+      "preview": "/samples/phase-03/0305/assets/images/preview.svg",
+      "href": "./phase-03/0305/index.html"
     },
     {
       "id": "0306",
@@ -1754,7 +1837,8 @@
         "engine/tilemap/index/renderTilemap"
       ],
       "thumbnail": "/samples/phase-03/0306/assets/images/preview.svg",
-      "preview": "/samples/phase-03/0306/assets/images/preview.svg"
+      "preview": "/samples/phase-03/0306/assets/images/preview.svg",
+      "href": "./phase-03/0306/index.html"
     },
     {
       "id": "0307",
@@ -1784,7 +1868,8 @@
         "engine/theme/index/ThemeTokens"
       ],
       "thumbnail": "/samples/phase-03/0307/assets/images/preview.svg",
-      "preview": "/samples/phase-03/0307/assets/images/preview.svg"
+      "preview": "/samples/phase-03/0307/assets/images/preview.svg",
+      "href": "./phase-03/0307/index.html"
     },
     {
       "id": "0308",
@@ -1814,7 +1899,8 @@
         "engine/theme/index/ThemeTokens"
       ],
       "thumbnail": "/samples/phase-03/0308/assets/images/preview.svg",
-      "preview": "/samples/phase-03/0308/assets/images/preview.svg"
+      "preview": "/samples/phase-03/0308/assets/images/preview.svg",
+      "href": "./phase-03/0308/index.html"
     },
     {
       "id": "0309",
@@ -1844,7 +1930,8 @@
         "engine/theme/index/ThemeTokens"
       ],
       "thumbnail": "/samples/phase-03/0309/assets/images/preview.svg",
-      "preview": "/samples/phase-03/0309/assets/images/preview.svg"
+      "preview": "/samples/phase-03/0309/assets/images/preview.svg",
+      "href": "./phase-03/0309/index.html"
     },
     {
       "id": "0310",
@@ -1874,7 +1961,8 @@
         "engine/theme/index/ThemeTokens"
       ],
       "thumbnail": "/samples/phase-03/0310/assets/images/preview.svg",
-      "preview": "/samples/phase-03/0310/assets/images/preview.svg"
+      "preview": "/samples/phase-03/0310/assets/images/preview.svg",
+      "href": "./phase-03/0310/index.html"
     },
     {
       "id": "0311",
@@ -1904,7 +1992,8 @@
         "engine/theme/index/ThemeTokens"
       ],
       "thumbnail": "/samples/phase-03/0311/assets/images/preview.svg",
-      "preview": "/samples/phase-03/0311/assets/images/preview.svg"
+      "preview": "/samples/phase-03/0311/assets/images/preview.svg",
+      "href": "./phase-03/0311/index.html"
     },
     {
       "id": "0312",
@@ -1934,7 +2023,8 @@
         "engine/theme/index/ThemeTokens"
       ],
       "thumbnail": "/samples/phase-03/0312/assets/images/preview.svg",
-      "preview": "/samples/phase-03/0312/assets/images/preview.svg"
+      "preview": "/samples/phase-03/0312/assets/images/preview.svg",
+      "href": "./phase-03/0312/index.html"
     },
     {
       "id": "0313",
@@ -1964,7 +2054,8 @@
         "engine/theme/index/ThemeTokens"
       ],
       "thumbnail": "/samples/phase-03/0313/assets/images/preview.svg",
-      "preview": "/samples/phase-03/0313/assets/images/preview.svg"
+      "preview": "/samples/phase-03/0313/assets/images/preview.svg",
+      "href": "./phase-03/0313/index.html"
     },
     {
       "id": "0314",
@@ -1994,7 +2085,8 @@
         "engine/theme/index/ThemeTokens"
       ],
       "thumbnail": "/samples/phase-03/0314/assets/images/preview.svg",
-      "preview": "/samples/phase-03/0314/assets/images/preview.svg"
+      "preview": "/samples/phase-03/0314/assets/images/preview.svg",
+      "href": "./phase-03/0314/index.html"
     },
     {
       "id": "0315",
@@ -2024,7 +2116,8 @@
         "engine/theme/index/ThemeTokens"
       ],
       "thumbnail": "/samples/phase-03/0315/assets/images/preview.svg",
-      "preview": "/samples/phase-03/0315/assets/images/preview.svg"
+      "preview": "/samples/phase-03/0315/assets/images/preview.svg",
+      "href": "./phase-03/0315/index.html"
     },
     {
       "id": "0316",
@@ -2054,7 +2147,8 @@
         "engine/theme/index/ThemeTokens"
       ],
       "thumbnail": "/samples/phase-03/0316/assets/images/preview.svg",
-      "preview": "/samples/phase-03/0316/assets/images/preview.svg"
+      "preview": "/samples/phase-03/0316/assets/images/preview.svg",
+      "href": "./phase-03/0316/index.html"
     },
     {
       "id": "0317",
@@ -2084,7 +2178,8 @@
         "engine/theme/index/ThemeTokens"
       ],
       "thumbnail": "/samples/phase-03/0317/assets/images/preview.svg",
-      "preview": "/samples/phase-03/0317/assets/images/preview.svg"
+      "preview": "/samples/phase-03/0317/assets/images/preview.svg",
+      "href": "./phase-03/0317/index.html"
     },
     {
       "id": "0318",
@@ -2114,7 +2209,8 @@
         "engine/theme/index/ThemeTokens"
       ],
       "thumbnail": "/samples/phase-03/0318/assets/images/preview.svg",
-      "preview": "/samples/phase-03/0318/assets/images/preview.svg"
+      "preview": "/samples/phase-03/0318/assets/images/preview.svg",
+      "href": "./phase-03/0318/index.html"
     },
     {
       "id": "0319",
@@ -2140,7 +2236,8 @@
         "engine/theme/index/ThemeTokens"
       ],
       "thumbnail": "/samples/phase-03/0319/assets/images/preview.svg",
-      "preview": "/samples/phase-03/0319/assets/images/preview.svg"
+      "preview": "/samples/phase-03/0319/assets/images/preview.svg",
+      "href": "./phase-03/0319/index.html"
     },
     {
       "id": "0320",
@@ -2166,7 +2263,8 @@
         "engine/theme/index/ThemeTokens"
       ],
       "thumbnail": "/samples/phase-03/0320/assets/images/preview.svg",
-      "preview": "/samples/phase-03/0320/assets/images/preview.svg"
+      "preview": "/samples/phase-03/0320/assets/images/preview.svg",
+      "href": "./phase-03/0320/index.html"
     },
     {
       "id": "0321",
@@ -2192,7 +2290,8 @@
         "engine/theme/index/ThemeTokens"
       ],
       "thumbnail": "/samples/phase-03/0321/assets/images/preview.svg",
-      "preview": "/samples/phase-03/0321/assets/images/preview.svg"
+      "preview": "/samples/phase-03/0321/assets/images/preview.svg",
+      "href": "./phase-03/0321/index.html"
     },
     {
       "id": "0322",
@@ -2218,7 +2317,8 @@
         "engine/theme/index/ThemeTokens"
       ],
       "thumbnail": "/samples/phase-03/0322/assets/images/preview.svg",
-      "preview": "/samples/phase-03/0322/assets/images/preview.svg"
+      "preview": "/samples/phase-03/0322/assets/images/preview.svg",
+      "href": "./phase-03/0322/index.html"
     },
     {
       "id": "0323",
@@ -2244,7 +2344,8 @@
         "engine/theme/index/ThemeTokens"
       ],
       "thumbnail": "/samples/phase-03/0323/assets/images/preview.svg",
-      "preview": "/samples/phase-03/0323/assets/images/preview.svg"
+      "preview": "/samples/phase-03/0323/assets/images/preview.svg",
+      "href": "./phase-03/0323/index.html"
     },
     {
       "id": "0324",
@@ -2270,7 +2371,38 @@
         "engine/theme/index/ThemeTokens"
       ],
       "thumbnail": "/samples/phase-03/0324/assets/images/preview.svg",
-      "preview": "/samples/phase-03/0324/assets/images/preview.svg"
+      "preview": "/samples/phase-03/0324/assets/images/preview.svg",
+      "href": "./phase-03/0324/index.html"
+    },
+    {
+      "id": "0325",
+      "phase": "03",
+      "title": "Gravity",
+      "description": "A small force-driven arcade build: one ball, constant downward pull, stable wall rebounds, a damped floor bounce, and simple start/pause/reset flow.",
+      "href": "./phase-03/0325/index.html",
+      "tags": [],
+      "thumbnail": "/samples/phase-03/0325/assets/images/preview.svg",
+      "preview": "/samples/phase-03/0325/assets/images/preview.svg"
+    },
+    {
+      "id": "0326",
+      "phase": "03",
+      "title": "Paddle Intercept",
+      "description": "A bounded one-ball interception game where the paddle predicts the future arrival lane using time-to-intercept math and wall-aware Y reflection.",
+      "href": "./phase-03/0326/index.html",
+      "tags": [],
+      "thumbnail": "/samples/phase-03/0326/assets/images/preview.svg",
+      "preview": "/samples/phase-03/0326/assets/images/preview.svg"
+    },
+    {
+      "id": "0327",
+      "phase": "03",
+      "title": "Multi-Ball Chaos",
+      "description": "A beginner-friendly multi-ball motion game: pick a preset, start the chamber, and watch a clean bounded playfield stay stable under increasing ball counts.",
+      "href": "./phase-03/0327/index.html",
+      "tags": [],
+      "thumbnail": "/samples/phase-03/0327/assets/images/preview.svg",
+      "preview": "/samples/phase-03/0327/assets/images/preview.svg"
     },
     {
       "id": "0401",
@@ -2288,7 +2420,8 @@
         "engine/theme/index/ThemeTokens"
       ],
       "thumbnail": "/samples/phase-04/0401/assets/images/preview.svg",
-      "preview": "/samples/phase-04/0401/assets/images/preview.svg"
+      "preview": "/samples/phase-04/0401/assets/images/preview.svg",
+      "href": "./phase-04/0401/index.html"
     },
     {
       "id": "0402",
@@ -2306,7 +2439,8 @@
         "engine/theme/index/ThemeTokens"
       ],
       "thumbnail": "/samples/phase-04/0402/assets/images/preview.svg",
-      "preview": "/samples/phase-04/0402/assets/images/preview.svg"
+      "preview": "/samples/phase-04/0402/assets/images/preview.svg",
+      "href": "./phase-04/0402/index.html"
     },
     {
       "id": "0403",
@@ -2324,7 +2458,8 @@
         "engine/theme/index/ThemeTokens"
       ],
       "thumbnail": "/samples/phase-04/0403/assets/images/preview.svg",
-      "preview": "/samples/phase-04/0403/assets/images/preview.svg"
+      "preview": "/samples/phase-04/0403/assets/images/preview.svg",
+      "href": "./phase-04/0403/index.html"
     },
     {
       "id": "0404",
@@ -2342,7 +2477,8 @@
         "engine/theme/index/ThemeTokens"
       ],
       "thumbnail": "/samples/phase-04/0404/assets/images/preview.svg",
-      "preview": "/samples/phase-04/0404/assets/images/preview.svg"
+      "preview": "/samples/phase-04/0404/assets/images/preview.svg",
+      "href": "./phase-04/0404/index.html"
     },
     {
       "id": "0405",
@@ -2360,7 +2496,8 @@
         "engine/theme/index/ThemeTokens"
       ],
       "thumbnail": "/samples/phase-04/0405/assets/images/preview.svg",
-      "preview": "/samples/phase-04/0405/assets/images/preview.svg"
+      "preview": "/samples/phase-04/0405/assets/images/preview.svg",
+      "href": "./phase-04/0405/index.html"
     },
     {
       "id": "0406",
@@ -2378,7 +2515,8 @@
         "engine/theme/index/ThemeTokens"
       ],
       "thumbnail": "/samples/phase-04/0406/assets/images/preview.svg",
-      "preview": "/samples/phase-04/0406/assets/images/preview.svg"
+      "preview": "/samples/phase-04/0406/assets/images/preview.svg",
+      "href": "./phase-04/0406/index.html"
     },
     {
       "id": "0407",
@@ -2404,7 +2542,8 @@
         "engine/theme/index/ThemeTokens"
       ],
       "thumbnail": "/samples/phase-04/0407/assets/images/preview.svg",
-      "preview": "/samples/phase-04/0407/assets/images/preview.svg"
+      "preview": "/samples/phase-04/0407/assets/images/preview.svg",
+      "href": "./phase-04/0407/index.html"
     },
     {
       "id": "0408",
@@ -2430,7 +2569,8 @@
         "engine/theme/index/ThemeTokens"
       ],
       "thumbnail": "/samples/phase-04/0408/assets/images/preview.svg",
-      "preview": "/samples/phase-04/0408/assets/images/preview.svg"
+      "preview": "/samples/phase-04/0408/assets/images/preview.svg",
+      "href": "./phase-04/0408/index.html"
     },
     {
       "id": "0409",
@@ -2456,7 +2596,8 @@
         "engine/theme/index/ThemeTokens"
       ],
       "thumbnail": "/samples/phase-04/0409/assets/images/preview.svg",
-      "preview": "/samples/phase-04/0409/assets/images/preview.svg"
+      "preview": "/samples/phase-04/0409/assets/images/preview.svg",
+      "href": "./phase-04/0409/index.html"
     },
     {
       "id": "0410",
@@ -2482,7 +2623,8 @@
         "engine/theme/index/ThemeTokens"
       ],
       "thumbnail": "/samples/phase-04/0410/assets/images/preview.svg",
-      "preview": "/samples/phase-04/0410/assets/images/preview.svg"
+      "preview": "/samples/phase-04/0410/assets/images/preview.svg",
+      "href": "./phase-04/0410/index.html"
     },
     {
       "id": "0411",
@@ -2508,7 +2650,8 @@
         "engine/theme/index/ThemeTokens"
       ],
       "thumbnail": "/samples/phase-04/0411/assets/images/preview.svg",
-      "preview": "/samples/phase-04/0411/assets/images/preview.svg"
+      "preview": "/samples/phase-04/0411/assets/images/preview.svg",
+      "href": "./phase-04/0411/index.html"
     },
     {
       "id": "0412",
@@ -2534,7 +2677,18 @@
         "engine/theme/index/ThemeTokens"
       ],
       "thumbnail": "/samples/phase-04/0412/assets/images/preview.svg",
-      "preview": "/samples/phase-04/0412/assets/images/preview.svg"
+      "preview": "/samples/phase-04/0412/assets/images/preview.svg",
+      "href": "./phase-04/0412/index.html"
+    },
+    {
+      "id": "0413",
+      "phase": "04",
+      "title": "Thruster",
+      "description": "A compact inertial ship-control game: rotate, burn thrust, drift through a bounded chamber, and manage momentum without shooting or gravity fields.",
+      "href": "./phase-04/0413/index.html",
+      "tags": [],
+      "thumbnail": "/samples/phase-04/0413/assets/images/preview.svg",
+      "preview": "/samples/phase-04/0413/assets/images/preview.svg"
     },
     {
       "id": "0501",
@@ -2576,7 +2730,8 @@
         "engine/theme/index/ThemeTokens"
       ],
       "thumbnail": "/samples/phase-05/0501/assets/images/preview.svg",
-      "preview": "/samples/phase-05/0501/assets/images/preview.svg"
+      "preview": "/samples/phase-05/0501/assets/images/preview.svg",
+      "href": "./phase-05/0501/index.html"
     },
     {
       "id": "0502",
@@ -2616,7 +2771,8 @@
         "engine/theme/index/ThemeTokens"
       ],
       "thumbnail": "/samples/phase-05/0502/assets/images/preview.svg",
-      "preview": "/samples/phase-05/0502/assets/images/preview.svg"
+      "preview": "/samples/phase-05/0502/assets/images/preview.svg",
+      "href": "./phase-05/0502/index.html"
     },
     {
       "id": "0503",
@@ -2654,7 +2810,8 @@
         "engine/theme/index/ThemeTokens"
       ],
       "thumbnail": "/samples/phase-05/0503/assets/images/preview.svg",
-      "preview": "/samples/phase-05/0503/assets/images/preview.svg"
+      "preview": "/samples/phase-05/0503/assets/images/preview.svg",
+      "href": "./phase-05/0503/index.html"
     },
     {
       "id": "0504",
@@ -2692,7 +2849,8 @@
         "engine/theme/index/ThemeTokens"
       ],
       "thumbnail": "/samples/phase-05/0504/assets/images/preview.svg",
-      "preview": "/samples/phase-05/0504/assets/images/preview.svg"
+      "preview": "/samples/phase-05/0504/assets/images/preview.svg",
+      "href": "./phase-05/0504/index.html"
     },
     {
       "id": "0505",
@@ -2730,7 +2888,8 @@
         "engine/theme/index/ThemeTokens"
       ],
       "thumbnail": "/samples/phase-05/0505/assets/images/preview.svg",
-      "preview": "/samples/phase-05/0505/assets/images/preview.svg"
+      "preview": "/samples/phase-05/0505/assets/images/preview.svg",
+      "href": "./phase-05/0505/index.html"
     },
     {
       "id": "0506",
@@ -2770,7 +2929,8 @@
         "engine/theme/index/ThemeTokens"
       ],
       "thumbnail": "/samples/phase-05/0506/assets/images/preview.svg",
-      "preview": "/samples/phase-05/0506/assets/images/preview.svg"
+      "preview": "/samples/phase-05/0506/assets/images/preview.svg",
+      "href": "./phase-05/0506/index.html"
     },
     {
       "id": "0507",
@@ -2796,7 +2956,8 @@
         "engine/theme/index/ThemeTokens"
       ],
       "thumbnail": "/samples/phase-05/0507/assets/images/preview.svg",
-      "preview": "/samples/phase-05/0507/assets/images/preview.svg"
+      "preview": "/samples/phase-05/0507/assets/images/preview.svg",
+      "href": "./phase-05/0507/index.html"
     },
     {
       "id": "0508",
@@ -2822,7 +2983,8 @@
         "engine/state/index/StateMachine"
       ],
       "thumbnail": "/samples/phase-05/0508/assets/images/preview.svg",
-      "preview": "/samples/phase-05/0508/assets/images/preview.svg"
+      "preview": "/samples/phase-05/0508/assets/images/preview.svg",
+      "href": "./phase-05/0508/index.html"
     },
     {
       "id": "0509",
@@ -2850,7 +3012,8 @@
         "engine/theme/index/ThemeTokens"
       ],
       "thumbnail": "/samples/phase-05/0509/assets/images/preview.svg",
-      "preview": "/samples/phase-05/0509/assets/images/preview.svg"
+      "preview": "/samples/phase-05/0509/assets/images/preview.svg",
+      "href": "./phase-05/0509/index.html"
     },
     {
       "id": "0510",
@@ -2878,7 +3041,8 @@
         "engine/theme/index/ThemeTokens"
       ],
       "thumbnail": "/samples/phase-05/0510/assets/images/preview.svg",
-      "preview": "/samples/phase-05/0510/assets/images/preview.svg"
+      "preview": "/samples/phase-05/0510/assets/images/preview.svg",
+      "href": "./phase-05/0510/index.html"
     },
     {
       "id": "0511",
@@ -2906,7 +3070,8 @@
         "engine/theme/index/ThemeTokens"
       ],
       "thumbnail": "/samples/phase-05/0511/assets/images/preview.svg",
-      "preview": "/samples/phase-05/0511/assets/images/preview.svg"
+      "preview": "/samples/phase-05/0511/assets/images/preview.svg",
+      "href": "./phase-05/0511/index.html"
     },
     {
       "id": "0512",
@@ -2928,7 +3093,8 @@
         "engine/theme/index/ThemeTokens"
       ],
       "thumbnail": "/samples/phase-05/0512/assets/images/preview.svg",
-      "preview": "/samples/phase-05/0512/assets/images/preview.svg"
+      "preview": "/samples/phase-05/0512/assets/images/preview.svg",
+      "href": "./phase-05/0512/index.html"
     },
     {
       "id": "0601",
@@ -2954,7 +3120,8 @@
         "engine/theme/index/ThemeTokens"
       ],
       "thumbnail": "/samples/phase-06/0601/assets/images/preview.svg",
-      "preview": "/samples/phase-06/0601/assets/images/preview.svg"
+      "preview": "/samples/phase-06/0601/assets/images/preview.svg",
+      "href": "./phase-06/0601/index.html"
     },
     {
       "id": "0602",
@@ -2978,7 +3145,8 @@
         "engine/theme/index/ThemeTokens"
       ],
       "thumbnail": "/samples/phase-06/0602/assets/images/preview.svg",
-      "preview": "/samples/phase-06/0602/assets/images/preview.svg"
+      "preview": "/samples/phase-06/0602/assets/images/preview.svg",
+      "href": "./phase-06/0602/index.html"
     },
     {
       "id": "0603",
@@ -3008,7 +3176,8 @@
         "engine/theme/index/ThemeTokens"
       ],
       "thumbnail": "/samples/phase-06/0603/assets/images/preview.svg",
-      "preview": "/samples/phase-06/0603/assets/images/preview.svg"
+      "preview": "/samples/phase-06/0603/assets/images/preview.svg",
+      "href": "./phase-06/0603/index.html"
     },
     {
       "id": "0604",
@@ -3040,7 +3209,8 @@
         "engine/theme/index/ThemeTokens"
       ],
       "thumbnail": "/samples/phase-06/0604/assets/images/preview.svg",
-      "preview": "/samples/phase-06/0604/assets/images/preview.svg"
+      "preview": "/samples/phase-06/0604/assets/images/preview.svg",
+      "href": "./phase-06/0604/index.html"
     },
     {
       "id": "0605",
@@ -3064,7 +3234,8 @@
         "engine/theme/index/ThemeTokens"
       ],
       "thumbnail": "/samples/phase-06/0605/assets/images/preview.svg",
-      "preview": "/samples/phase-06/0605/assets/images/preview.svg"
+      "preview": "/samples/phase-06/0605/assets/images/preview.svg",
+      "href": "./phase-06/0605/index.html"
     },
     {
       "id": "0606",
@@ -3092,7 +3263,8 @@
         "engine/world/index/QuestSystem"
       ],
       "thumbnail": "/samples/phase-06/0606/assets/images/preview.svg",
-      "preview": "/samples/phase-06/0606/assets/images/preview.svg"
+      "preview": "/samples/phase-06/0606/assets/images/preview.svg",
+      "href": "./phase-06/0606/index.html"
     },
     {
       "id": "0607",
@@ -3120,7 +3292,8 @@
         "engine/world/index/EventScriptSystem"
       ],
       "thumbnail": "/samples/phase-06/0607/assets/images/preview.svg",
-      "preview": "/samples/phase-06/0607/assets/images/preview.svg"
+      "preview": "/samples/phase-06/0607/assets/images/preview.svg",
+      "href": "./phase-06/0607/index.html"
     },
     {
       "id": "0608",
@@ -3144,7 +3317,8 @@
         "engine/world/index/CutsceneSystem"
       ],
       "thumbnail": "/samples/phase-06/0608/assets/images/preview.svg",
-      "preview": "/samples/phase-06/0608/assets/images/preview.svg"
+      "preview": "/samples/phase-06/0608/assets/images/preview.svg",
+      "href": "./phase-06/0608/index.html"
     },
     {
       "id": "0609",
@@ -3166,7 +3340,8 @@
         "engine/theme/index/ThemeTokens"
       ],
       "thumbnail": "/samples/phase-06/0609/assets/images/preview.svg",
-      "preview": "/samples/phase-06/0609/assets/images/preview.svg"
+      "preview": "/samples/phase-06/0609/assets/images/preview.svg",
+      "href": "./phase-06/0609/index.html"
     },
     {
       "id": "0610",
@@ -3190,7 +3365,8 @@
         "engine/world/index/DayNightCycle"
       ],
       "thumbnail": "/samples/phase-06/0610/assets/images/preview.svg",
-      "preview": "/samples/phase-06/0610/assets/images/preview.svg"
+      "preview": "/samples/phase-06/0610/assets/images/preview.svg",
+      "href": "./phase-06/0610/index.html"
     },
     {
       "id": "0611",
@@ -3214,7 +3390,8 @@
         "engine/world/index/WeatherSystem"
       ],
       "thumbnail": "/samples/phase-06/0611/assets/images/preview.svg",
-      "preview": "/samples/phase-06/0611/assets/images/preview.svg"
+      "preview": "/samples/phase-06/0611/assets/images/preview.svg",
+      "href": "./phase-06/0611/index.html"
     },
     {
       "id": "0612",
@@ -3238,7 +3415,8 @@
         "engine/world/index/WeatherSystem"
       ],
       "thumbnail": "/samples/phase-06/0612/assets/images/preview.svg",
-      "preview": "/samples/phase-06/0612/assets/images/preview.svg"
+      "preview": "/samples/phase-06/0612/assets/images/preview.svg",
+      "href": "./phase-06/0612/index.html"
     },
     {
       "id": "0613",
@@ -3266,7 +3444,18 @@
         "engine/world/index/WorldStreamingSystem"
       ],
       "thumbnail": "/samples/phase-06/0613/assets/images/preview.svg",
-      "preview": "/samples/phase-06/0613/assets/images/preview.svg"
+      "preview": "/samples/phase-06/0613/assets/images/preview.svg",
+      "href": "./phase-06/0613/index.html"
+    },
+    {
+      "id": "0614",
+      "phase": "06",
+      "title": "Orbit",
+      "description": "Arcade-clean orbit sandbox showing central-attractor trajectories with preset scenarios for stable, elliptical, inward-fall, and escape behavior.",
+      "href": "./phase-06/0614/index.html",
+      "tags": [],
+      "thumbnail": "/samples/phase-06/0614/assets/images/preview.svg",
+      "preview": "/samples/phase-06/0614/assets/images/preview.svg"
     },
     {
       "id": "0701",
@@ -3292,7 +3481,8 @@
         "engine/theme/index/ThemeTokens"
       ],
       "thumbnail": "/samples/phase-07/0701/assets/images/preview.svg",
-      "preview": "/samples/phase-07/0701/assets/images/preview.svg"
+      "preview": "/samples/phase-07/0701/assets/images/preview.svg",
+      "href": "./phase-07/0701/index.html"
     },
     {
       "id": "0702",
@@ -3318,7 +3508,8 @@
         "engine/theme/index/ThemeTokens"
       ],
       "thumbnail": "/samples/phase-07/0702/assets/images/preview.svg",
-      "preview": "/samples/phase-07/0702/assets/images/preview.svg"
+      "preview": "/samples/phase-07/0702/assets/images/preview.svg",
+      "href": "./phase-07/0702/index.html"
     },
     {
       "id": "0703",
@@ -3346,7 +3537,8 @@
         "engine/theme/index/ThemeTokens"
       ],
       "thumbnail": "/samples/phase-07/0703/assets/images/preview.svg",
-      "preview": "/samples/phase-07/0703/assets/images/preview.svg"
+      "preview": "/samples/phase-07/0703/assets/images/preview.svg",
+      "href": "./phase-07/0703/index.html"
     },
     {
       "id": "0704",
@@ -3370,7 +3562,8 @@
         "engine/theme/index/ThemeTokens"
       ],
       "thumbnail": "/samples/phase-07/0704/assets/images/preview.svg",
-      "preview": "/samples/phase-07/0704/assets/images/preview.svg"
+      "preview": "/samples/phase-07/0704/assets/images/preview.svg",
+      "href": "./phase-07/0704/index.html"
     },
     {
       "id": "0705",
@@ -3400,7 +3593,8 @@
         "engine/theme/index/ThemeTokens"
       ],
       "thumbnail": "/samples/phase-07/0705/assets/images/preview.svg",
-      "preview": "/samples/phase-07/0705/assets/images/preview.svg"
+      "preview": "/samples/phase-07/0705/assets/images/preview.svg",
+      "href": "./phase-07/0705/index.html"
     },
     {
       "id": "0706",
@@ -3426,7 +3620,8 @@
         "engine/theme/index/ThemeTokens"
       ],
       "thumbnail": "/samples/phase-07/0706/assets/images/preview.svg",
-      "preview": "/samples/phase-07/0706/assets/images/preview.svg"
+      "preview": "/samples/phase-07/0706/assets/images/preview.svg",
+      "href": "./phase-07/0706/index.html"
     },
     {
       "id": "0707",
@@ -3456,7 +3651,8 @@
         "engine/theme/index/ThemeTokens"
       ],
       "thumbnail": "/samples/phase-07/0707/assets/images/preview.svg",
-      "preview": "/samples/phase-07/0707/assets/images/preview.svg"
+      "preview": "/samples/phase-07/0707/assets/images/preview.svg",
+      "href": "./phase-07/0707/index.html"
     },
     {
       "id": "0708",
@@ -3484,7 +3680,8 @@
         "engine/theme/index/ThemeTokens"
       ],
       "thumbnail": "/samples/phase-07/0708/assets/images/preview.svg",
-      "preview": "/samples/phase-07/0708/assets/images/preview.svg"
+      "preview": "/samples/phase-07/0708/assets/images/preview.svg",
+      "href": "./phase-07/0708/index.html"
     },
     {
       "id": "0709",
@@ -3510,7 +3707,8 @@
         "engine/theme/index/ThemeTokens"
       ],
       "thumbnail": "/samples/phase-07/0709/assets/images/preview.svg",
-      "preview": "/samples/phase-07/0709/assets/images/preview.svg"
+      "preview": "/samples/phase-07/0709/assets/images/preview.svg",
+      "href": "./phase-07/0709/index.html"
     },
     {
       "id": "0710",
@@ -3538,7 +3736,8 @@
         "engine/world/index/AchievementSystem"
       ],
       "thumbnail": "/samples/phase-07/0710/assets/images/preview.svg",
-      "preview": "/samples/phase-07/0710/assets/images/preview.svg"
+      "preview": "/samples/phase-07/0710/assets/images/preview.svg",
+      "href": "./phase-07/0710/index.html"
     },
     {
       "id": "0711",
@@ -3566,7 +3765,8 @@
         "engine/theme/index/ThemeTokens"
       ],
       "thumbnail": "/samples/phase-07/0711/assets/images/preview.svg",
-      "preview": "/samples/phase-07/0711/assets/images/preview.svg"
+      "preview": "/samples/phase-07/0711/assets/images/preview.svg",
+      "href": "./phase-07/0711/index.html"
     },
     {
       "id": "0712",
@@ -3588,7 +3788,8 @@
         "engine/theme/index/ThemeTokens"
       ],
       "thumbnail": "/samples/phase-07/0712/assets/images/preview.svg",
-      "preview": "/samples/phase-07/0712/assets/images/preview.svg"
+      "preview": "/samples/phase-07/0712/assets/images/preview.svg",
+      "href": "./phase-07/0712/index.html"
     },
     {
       "id": "0713",
@@ -3606,7 +3807,8 @@
         "engine/theme/index/ThemeTokens"
       ],
       "thumbnail": "/samples/phase-07/0713/assets/images/preview.svg",
-      "preview": "/samples/phase-07/0713/assets/images/preview.svg"
+      "preview": "/samples/phase-07/0713/assets/images/preview.svg",
+      "href": "./phase-07/0713/index.html"
     },
     {
       "id": "0801",
@@ -3628,7 +3830,8 @@
         "engine/theme/index/ThemeTokens"
       ],
       "thumbnail": "/samples/phase-08/0801/assets/images/preview.svg",
-      "preview": "/samples/phase-08/0801/assets/images/preview.svg"
+      "preview": "/samples/phase-08/0801/assets/images/preview.svg",
+      "href": "./phase-08/0801/index.html"
     },
     {
       "id": "0802",
@@ -3652,7 +3855,8 @@
         "engine/theme/index/ThemeTokens"
       ],
       "thumbnail": "/samples/phase-08/0802/assets/images/preview.svg",
-      "preview": "/samples/phase-08/0802/assets/images/preview.svg"
+      "preview": "/samples/phase-08/0802/assets/images/preview.svg",
+      "href": "./phase-08/0802/index.html"
     },
     {
       "id": "0803",
@@ -3675,7 +3879,8 @@
         "engine/theme/index/ThemeTokens"
       ],
       "thumbnail": "/samples/phase-08/0803/assets/images/preview.svg",
-      "preview": "/samples/phase-08/0803/assets/images/preview.svg"
+      "preview": "/samples/phase-08/0803/assets/images/preview.svg",
+      "href": "./phase-08/0803/index.html"
     },
     {
       "id": "0804",
@@ -3699,7 +3904,8 @@
         "engine/theme/index/ThemeTokens"
       ],
       "thumbnail": "/samples/phase-08/0804/assets/images/preview.svg",
-      "preview": "/samples/phase-08/0804/assets/images/preview.svg"
+      "preview": "/samples/phase-08/0804/assets/images/preview.svg",
+      "href": "./phase-08/0804/index.html"
     },
     {
       "id": "0805",
@@ -3723,7 +3929,8 @@
         "engine/theme/index/ThemeTokens"
       ],
       "thumbnail": "/samples/phase-08/0805/assets/images/preview.svg",
-      "preview": "/samples/phase-08/0805/assets/images/preview.svg"
+      "preview": "/samples/phase-08/0805/assets/images/preview.svg",
+      "href": "./phase-08/0805/index.html"
     },
     {
       "id": "0806",
@@ -3745,7 +3952,8 @@
         "engine/ui/index/UIFramework"
       ],
       "thumbnail": "/samples/phase-08/0806/assets/images/preview.svg",
-      "preview": "/samples/phase-08/0806/assets/images/preview.svg"
+      "preview": "/samples/phase-08/0806/assets/images/preview.svg",
+      "href": "./phase-08/0806/index.html"
     },
     {
       "id": "0807",
@@ -3769,7 +3977,8 @@
         "engine/theme/index/ThemeTokens"
       ],
       "thumbnail": "/samples/phase-08/0807/assets/images/preview.svg",
-      "preview": "/samples/phase-08/0807/assets/images/preview.svg"
+      "preview": "/samples/phase-08/0807/assets/images/preview.svg",
+      "href": "./phase-08/0807/index.html"
     },
     {
       "id": "0808",
@@ -3792,7 +4001,8 @@
         "engine/theme/index/ThemeTokens"
       ],
       "thumbnail": "/samples/phase-08/0808/assets/images/preview.svg",
-      "preview": "/samples/phase-08/0808/assets/images/preview.svg"
+      "preview": "/samples/phase-08/0808/assets/images/preview.svg",
+      "href": "./phase-08/0808/index.html"
     },
     {
       "id": "0809",
@@ -3816,7 +4026,8 @@
         "engine/theme/index/ThemeTokens"
       ],
       "thumbnail": "/samples/phase-08/0809/assets/images/preview.svg",
-      "preview": "/samples/phase-08/0809/assets/images/preview.svg"
+      "preview": "/samples/phase-08/0809/assets/images/preview.svg",
+      "href": "./phase-08/0809/index.html"
     },
     {
       "id": "0810",
@@ -3840,7 +4051,8 @@
         "engine/theme/index/ThemeTokens"
       ],
       "thumbnail": "/samples/phase-08/0810/assets/images/preview.svg",
-      "preview": "/samples/phase-08/0810/assets/images/preview.svg"
+      "preview": "/samples/phase-08/0810/assets/images/preview.svg",
+      "href": "./phase-08/0810/index.html"
     },
     {
       "id": "0901",
@@ -3866,7 +4078,8 @@
         "engine/rendering/index/transformPoints"
       ],
       "thumbnail": "/samples/phase-09/0901/assets/images/preview.svg",
-      "preview": "/samples/phase-09/0901/assets/images/preview.svg"
+      "preview": "/samples/phase-09/0901/assets/images/preview.svg",
+      "href": "./phase-09/0901/index.html"
     },
     {
       "id": "0902",
@@ -3894,7 +4107,8 @@
         "engine/rendering/index/transformPoints"
       ],
       "thumbnail": "/samples/phase-09/0902/assets/images/preview.svg",
-      "preview": "/samples/phase-09/0902/assets/images/preview.svg"
+      "preview": "/samples/phase-09/0902/assets/images/preview.svg",
+      "href": "./phase-09/0902/index.html"
     },
     {
       "id": "0903",
@@ -3920,7 +4134,8 @@
         "engine/rendering/index/drawVectorShape"
       ],
       "thumbnail": "/samples/phase-09/0903/assets/images/preview.svg",
-      "preview": "/samples/phase-09/0903/assets/images/preview.svg"
+      "preview": "/samples/phase-09/0903/assets/images/preview.svg",
+      "href": "./phase-09/0903/index.html"
     },
     {
       "id": "0904",
@@ -3950,7 +4165,8 @@
         "engine/theme/index/ThemeTokens"
       ],
       "thumbnail": "/samples/phase-09/0904/assets/images/preview.svg",
-      "preview": "/samples/phase-09/0904/assets/images/preview.svg"
+      "preview": "/samples/phase-09/0904/assets/images/preview.svg",
+      "href": "./phase-09/0904/index.html"
     },
     {
       "id": "0905",
@@ -3980,7 +4196,8 @@
         "engine/theme/index/ThemeTokens"
       ],
       "thumbnail": "/samples/phase-09/0905/assets/images/preview.svg",
-      "preview": "/samples/phase-09/0905/assets/images/preview.svg"
+      "preview": "/samples/phase-09/0905/assets/images/preview.svg",
+      "href": "./phase-09/0905/index.html"
     },
     {
       "id": "0906",
@@ -4012,7 +4229,8 @@
         "engine/rendering/index/transformPoints"
       ],
       "thumbnail": "/samples/phase-09/0906/assets/images/preview.svg",
-      "preview": "/samples/phase-09/0906/assets/images/preview.svg"
+      "preview": "/samples/phase-09/0906/assets/images/preview.svg",
+      "href": "./phase-09/0906/index.html"
     },
     {
       "id": "1001",
@@ -4036,7 +4254,8 @@
         "engine/theme/index/ThemeTokens"
       ],
       "thumbnail": "/samples/phase-10/1001/assets/images/preview.svg",
-      "preview": "/samples/phase-10/1001/assets/images/preview.svg"
+      "preview": "/samples/phase-10/1001/assets/images/preview.svg",
+      "href": "./phase-10/1001/index.html"
     },
     {
       "id": "1002",
@@ -4060,7 +4279,8 @@
         "engine/theme/index/ThemeTokens"
       ],
       "thumbnail": "/samples/phase-10/1002/assets/images/preview.svg",
-      "preview": "/samples/phase-10/1002/assets/images/preview.svg"
+      "preview": "/samples/phase-10/1002/assets/images/preview.svg",
+      "href": "./phase-10/1002/index.html"
     },
     {
       "id": "1003",
@@ -4086,7 +4306,8 @@
         "engine/theme/index/ThemeTokens"
       ],
       "thumbnail": "/samples/phase-10/1003/assets/images/preview.svg",
-      "preview": "/samples/phase-10/1003/assets/images/preview.svg"
+      "preview": "/samples/phase-10/1003/assets/images/preview.svg",
+      "href": "./phase-10/1003/index.html"
     },
     {
       "id": "1101",
@@ -4110,7 +4331,8 @@
         "engine/theme/index/ThemeTokens"
       ],
       "thumbnail": "/samples/phase-11/1101/assets/images/preview.svg",
-      "preview": "/samples/phase-11/1101/assets/images/preview.svg"
+      "preview": "/samples/phase-11/1101/assets/images/preview.svg",
+      "href": "./phase-11/1101/index.html"
     },
     {
       "id": "1102",
@@ -4134,7 +4356,8 @@
         "engine/theme/index/ThemeTokens"
       ],
       "thumbnail": "/samples/phase-11/1102/assets/images/preview.svg",
-      "preview": "/samples/phase-11/1102/assets/images/preview.svg"
+      "preview": "/samples/phase-11/1102/assets/images/preview.svg",
+      "href": "./phase-11/1102/index.html"
     },
     {
       "id": "1103",
@@ -4158,7 +4381,8 @@
         "engine/theme/index/ThemeTokens"
       ],
       "thumbnail": "/samples/phase-11/1103/assets/images/preview.svg",
-      "preview": "/samples/phase-11/1103/assets/images/preview.svg"
+      "preview": "/samples/phase-11/1103/assets/images/preview.svg",
+      "href": "./phase-11/1103/index.html"
     },
     {
       "id": "1104",
@@ -4184,7 +4408,8 @@
         "engine/theme/index/ThemeTokens"
       ],
       "thumbnail": "/samples/phase-11/1104/assets/images/preview.svg",
-      "preview": "/samples/phase-11/1104/assets/images/preview.svg"
+      "preview": "/samples/phase-11/1104/assets/images/preview.svg",
+      "href": "./phase-11/1104/index.html"
     },
     {
       "id": "1105",
@@ -4210,7 +4435,8 @@
         "engine/theme/index/ThemeTokens"
       ],
       "thumbnail": "/samples/phase-11/1105/assets/images/preview.svg",
-      "preview": "/samples/phase-11/1105/assets/images/preview.svg"
+      "preview": "/samples/phase-11/1105/assets/images/preview.svg",
+      "href": "./phase-11/1105/index.html"
     },
     {
       "id": "1106",
@@ -4234,7 +4460,8 @@
         "engine/theme/index/ThemeTokens"
       ],
       "thumbnail": "/samples/phase-11/1106/assets/images/preview.svg",
-      "preview": "/samples/phase-11/1106/assets/images/preview.svg"
+      "preview": "/samples/phase-11/1106/assets/images/preview.svg",
+      "href": "./phase-11/1106/index.html"
     },
     {
       "id": "1201",
@@ -4263,7 +4490,8 @@
         "engine/tilemap/index/renderTilemap"
       ],
       "thumbnail": "/samples/phase-12/1201/assets/images/preview.svg",
-      "preview": "/samples/phase-12/1201/assets/images/preview.svg"
+      "preview": "/samples/phase-12/1201/assets/images/preview.svg",
+      "href": "./phase-12/1201/index.html"
     },
     {
       "id": "1202",
@@ -4296,7 +4524,8 @@
         "engine/utils/index/clamp"
       ],
       "thumbnail": "/samples/phase-12/1202/assets/images/preview.svg",
-      "preview": "/samples/phase-12/1202/assets/images/preview.svg"
+      "preview": "/samples/phase-12/1202/assets/images/preview.svg",
+      "href": "./phase-12/1202/index.html"
     },
     {
       "id": "1203",
@@ -4331,7 +4560,8 @@
         "engine/utils/index/clamp"
       ],
       "thumbnail": "/samples/phase-12/1203/assets/images/preview.svg",
-      "preview": "/samples/phase-12/1203/assets/images/preview.svg"
+      "preview": "/samples/phase-12/1203/assets/images/preview.svg",
+      "href": "./phase-12/1203/index.html"
     },
     {
       "id": "1204",
@@ -4366,7 +4596,8 @@
         "engine/utils/index/clamp"
       ],
       "thumbnail": "/samples/phase-12/1204/assets/images/preview.svg",
-      "preview": "/samples/phase-12/1204/assets/images/preview.svg"
+      "preview": "/samples/phase-12/1204/assets/images/preview.svg",
+      "href": "./phase-12/1204/index.html"
     },
     {
       "id": "1205",
@@ -4402,7 +4633,8 @@
         "engine/utils/index/clamp"
       ],
       "thumbnail": "/samples/phase-12/1205/assets/images/preview.svg",
-      "preview": "/samples/phase-12/1205/assets/images/preview.svg"
+      "preview": "/samples/phase-12/1205/assets/images/preview.svg",
+      "href": "./phase-12/1205/index.html"
     },
     {
       "id": "1206",
@@ -4438,7 +4670,8 @@
         "engine/utils/index/clamp"
       ],
       "thumbnail": "/samples/phase-12/1206/assets/images/preview.svg",
-      "preview": "/samples/phase-12/1206/assets/images/preview.svg"
+      "preview": "/samples/phase-12/1206/assets/images/preview.svg",
+      "href": "./phase-12/1206/index.html"
     },
     {
       "id": "1207",
@@ -4474,7 +4707,8 @@
         "engine/utils/index/clamp"
       ],
       "thumbnail": "/samples/phase-12/1207/assets/images/preview.svg",
-      "preview": "/samples/phase-12/1207/assets/images/preview.svg"
+      "preview": "/samples/phase-12/1207/assets/images/preview.svg",
+      "href": "./phase-12/1207/index.html"
     },
     {
       "id": "1208",
@@ -4504,7 +4738,8 @@
         "engine/utils/index/clamp"
       ],
       "thumbnail": "/samples/phase-12/1208/assets/images/preview.svg",
-      "preview": "/samples/phase-12/1208/assets/images/preview.svg"
+      "preview": "/samples/phase-12/1208/assets/images/preview.svg",
+      "href": "./phase-12/1208/index.html"
     },
     {
       "id": "1301",
@@ -4528,7 +4763,8 @@
         "engine/theme/index/ThemeTokens"
       ],
       "thumbnail": "/samples/phase-13/1301/assets/images/preview.svg",
-      "preview": "/samples/phase-13/1301/assets/images/preview.svg"
+      "preview": "/samples/phase-13/1301/assets/images/preview.svg",
+      "href": "./phase-13/1301/index.html"
     },
     {
       "id": "1302",
@@ -4554,7 +4790,8 @@
         "engine/theme/index/ThemeTokens"
       ],
       "thumbnail": "/samples/phase-13/1302/assets/images/preview.svg",
-      "preview": "/samples/phase-13/1302/assets/images/preview.svg"
+      "preview": "/samples/phase-13/1302/assets/images/preview.svg",
+      "href": "./phase-13/1302/index.html"
     },
     {
       "id": "1303",
@@ -4576,7 +4813,8 @@
         "engine/theme/index/ThemeTokens"
       ],
       "thumbnail": "/samples/phase-13/1303/assets/images/preview.svg",
-      "preview": "/samples/phase-13/1303/assets/images/preview.svg"
+      "preview": "/samples/phase-13/1303/assets/images/preview.svg",
+      "href": "./phase-13/1303/index.html"
     },
     {
       "id": "1304",
@@ -4600,7 +4838,8 @@
         "engine/theme/index/ThemeTokens"
       ],
       "thumbnail": "/samples/phase-13/1304/assets/images/preview.svg",
-      "preview": "/samples/phase-13/1304/assets/images/preview.svg"
+      "preview": "/samples/phase-13/1304/assets/images/preview.svg",
+      "href": "./phase-13/1304/index.html"
     },
     {
       "id": "1305",
@@ -4624,7 +4863,8 @@
         "engine/theme/index/ThemeTokens"
       ],
       "thumbnail": "/samples/phase-13/1305/assets/images/preview.svg",
-      "preview": "/samples/phase-13/1305/assets/images/preview.svg"
+      "preview": "/samples/phase-13/1305/assets/images/preview.svg",
+      "href": "./phase-13/1305/index.html"
     },
     {
       "id": "1306",
@@ -4650,7 +4890,8 @@
         "engine/theme/index/ThemeTokens"
       ],
       "thumbnail": "/samples/phase-13/1306/assets/images/preview.svg",
-      "preview": "/samples/phase-13/1306/assets/images/preview.svg"
+      "preview": "/samples/phase-13/1306/assets/images/preview.svg",
+      "href": "./phase-13/1306/index.html"
     },
     {
       "id": "1307",
@@ -4674,7 +4915,8 @@
         "engine/theme/index/ThemeTokens"
       ],
       "thumbnail": "/samples/phase-13/1307/assets/images/preview.svg",
-      "preview": "/samples/phase-13/1307/assets/images/preview.svg"
+      "preview": "/samples/phase-13/1307/assets/images/preview.svg",
+      "href": "./phase-13/1307/index.html"
     },
     {
       "id": "1308",
@@ -4698,7 +4940,8 @@
         "engine/theme/index/ThemeTokens"
       ],
       "thumbnail": "/samples/phase-13/1308/assets/images/preview.svg",
-      "preview": "/samples/phase-13/1308/assets/images/preview.svg"
+      "preview": "/samples/phase-13/1308/assets/images/preview.svg",
+      "href": "./phase-13/1308/index.html"
     },
     {
       "id": "1309",
@@ -4720,7 +4963,8 @@
         "engine/theme/index/ThemeTokens"
       ],
       "thumbnail": "/samples/phase-13/1309/assets/images/preview.svg",
-      "preview": "/samples/phase-13/1309/assets/images/preview.svg"
+      "preview": "/samples/phase-13/1309/assets/images/preview.svg",
+      "href": "./phase-13/1309/index.html"
     },
     {
       "id": "1310",
@@ -4744,7 +4988,8 @@
         "engine/theme/index/ThemeTokens"
       ],
       "thumbnail": "/samples/phase-13/1310/assets/images/preview.svg",
-      "preview": "/samples/phase-13/1310/assets/images/preview.svg"
+      "preview": "/samples/phase-13/1310/assets/images/preview.svg",
+      "href": "./phase-13/1310/index.html"
     },
     {
       "id": "1311",
@@ -4768,7 +5013,8 @@
         "engine/theme/index/ThemeTokens"
       ],
       "thumbnail": "/samples/phase-13/1311/assets/images/preview.svg",
-      "preview": "/samples/phase-13/1311/assets/images/preview.svg"
+      "preview": "/samples/phase-13/1311/assets/images/preview.svg",
+      "href": "./phase-13/1311/index.html"
     },
     {
       "id": "1312",
@@ -4794,7 +5040,8 @@
         "engine/theme/index/ThemeTokens"
       ],
       "thumbnail": "/samples/phase-13/1312/assets/images/preview.svg",
-      "preview": "/samples/phase-13/1312/assets/images/preview.svg"
+      "preview": "/samples/phase-13/1312/assets/images/preview.svg",
+      "href": "./phase-13/1312/index.html"
     },
     {
       "id": "1313",
@@ -4816,7 +5063,8 @@
         "engine/theme/index/ThemeTokens"
       ],
       "thumbnail": "/samples/phase-13/1313/assets/images/preview.svg",
-      "preview": "/samples/phase-13/1313/assets/images/preview.svg"
+      "preview": "/samples/phase-13/1313/assets/images/preview.svg",
+      "href": "./phase-13/1313/index.html"
     },
     {
       "id": "1314",
@@ -4840,7 +5088,8 @@
         "engine/theme/index/ThemeTokens"
       ],
       "thumbnail": "/samples/phase-13/1314/assets/images/preview.svg",
-      "preview": "/samples/phase-13/1314/assets/images/preview.svg"
+      "preview": "/samples/phase-13/1314/assets/images/preview.svg",
+      "href": "./phase-13/1314/index.html"
     },
     {
       "id": "1315",
@@ -4866,7 +5115,8 @@
         "engine/theme/index/ThemeTokens"
       ],
       "thumbnail": "/samples/phase-13/1315/assets/images/preview.svg",
-      "preview": "/samples/phase-13/1315/assets/images/preview.svg"
+      "preview": "/samples/phase-13/1315/assets/images/preview.svg",
+      "href": "./phase-13/1315/index.html"
     },
     {
       "id": "1316",
@@ -4895,7 +5145,8 @@
         "engine/theme/index/ThemeTokens",
         "engine/utils/math/clamp"
       ],
-      "indexLabel": "Network Sample A - Local Loopback / Fake Network"
+      "indexLabel": "Network Sample A - Local Loopback / Fake Network",
+      "href": "./phase-13/1316/index.html"
     },
     {
       "id": "1317",
@@ -4924,7 +5175,8 @@
         "engine/theme/index/ThemeTokens",
         "engine/utils/math/clamp"
       ],
-      "indexLabel": "Network Sample B - Host / Client Diagnostics"
+      "indexLabel": "Network Sample B - Host / Client Diagnostics",
+      "href": "./phase-13/1317/index.html"
     },
     {
       "id": "1318",
@@ -4953,7 +5205,26 @@
         "engine/theme/index/ThemeTokens",
         "engine/utils/math/clamp"
       ],
-      "indexLabel": "Network Sample C - Divergence / Trace Validation"
+      "indexLabel": "Network Sample C - Divergence / Trace Validation",
+      "href": "./phase-13/1318/index.html"
+    },
+    {
+      "id": "1319",
+      "phase": "13",
+      "title": "Sample 1319 - Real Network + Live Dashboard",
+      "description": "Minimal authoritative real-network sample. The client connects over WebSocket to a live server endpoint and renders authoritative player snapshots.",
+      "href": "./phase-13/1319/index.html",
+      "tags": []
+    },
+    {
+      "id": "1320",
+      "phase": "13",
+      "title": "Pacman Lite",
+      "description": "Grid-locked maze runner with buffered turns, legal intersections, and simplified ghost pressure.",
+      "href": "./phase-13/1320/index.html",
+      "tags": [],
+      "thumbnail": "/samples/phase-13/1320/assets/images/preview.svg",
+      "preview": "/samples/phase-13/1320/assets/images/preview.svg"
     },
     {
       "id": "1401",
@@ -4976,7 +5247,8 @@
         "engine/theme/index/ThemeTokens"
       ],
       "thumbnail": "/samples/phase-14/1401/assets/images/preview.svg",
-      "preview": "/samples/phase-14/1401/assets/images/preview.svg"
+      "preview": "/samples/phase-14/1401/assets/images/preview.svg",
+      "href": "./phase-14/1401/index.html"
     },
     {
       "id": "1402",
@@ -4990,7 +5262,8 @@
         "engine/scene/index/Scene"
       ],
       "thumbnail": "/samples/phase-14/1402/assets/images/preview.svg",
-      "preview": "/samples/phase-14/1402/assets/images/preview.svg"
+      "preview": "/samples/phase-14/1402/assets/images/preview.svg",
+      "href": "./phase-14/1402/index.html"
     },
     {
       "id": "1403",
@@ -5004,7 +5277,8 @@
         "engine/scene/index/Scene"
       ],
       "thumbnail": "/samples/phase-14/1403/assets/images/preview.svg",
-      "preview": "/samples/phase-14/1403/assets/images/preview.svg"
+      "preview": "/samples/phase-14/1403/assets/images/preview.svg",
+      "href": "./phase-14/1403/index.html"
     },
     {
       "id": "1404",
@@ -5018,7 +5292,8 @@
         "engine/scene/index/Scene"
       ],
       "thumbnail": "/samples/phase-14/1404/assets/images/preview.svg",
-      "preview": "/samples/phase-14/1404/assets/images/preview.svg"
+      "preview": "/samples/phase-14/1404/assets/images/preview.svg",
+      "href": "./phase-14/1404/index.html"
     },
     {
       "id": "1405",
@@ -5032,7 +5307,8 @@
         "engine/scene/index/Scene"
       ],
       "thumbnail": "/samples/phase-14/1405/assets/images/preview.svg",
-      "preview": "/samples/phase-14/1405/assets/images/preview.svg"
+      "preview": "/samples/phase-14/1405/assets/images/preview.svg",
+      "href": "./phase-14/1405/index.html"
     },
     {
       "id": "1406",
@@ -5046,7 +5322,8 @@
         "engine/scene/index/Scene"
       ],
       "thumbnail": "/samples/phase-14/1406/assets/images/preview.svg",
-      "preview": "/samples/phase-14/1406/assets/images/preview.svg"
+      "preview": "/samples/phase-14/1406/assets/images/preview.svg",
+      "href": "./phase-14/1406/index.html"
     },
     {
       "id": "1407",
@@ -5060,7 +5337,8 @@
         "engine/scene/index/Scene"
       ],
       "thumbnail": "/samples/phase-14/1407/assets/images/preview.svg",
-      "preview": "/samples/phase-14/1407/assets/images/preview.svg"
+      "preview": "/samples/phase-14/1407/assets/images/preview.svg",
+      "href": "./phase-14/1407/index.html"
     },
     {
       "id": "1408",
@@ -5074,7 +5352,8 @@
         "engine/scene/index/Scene"
       ],
       "thumbnail": "/samples/phase-14/1408/assets/images/preview.svg",
-      "preview": "/samples/phase-14/1408/assets/images/preview.svg"
+      "preview": "/samples/phase-14/1408/assets/images/preview.svg",
+      "href": "./phase-14/1408/index.html"
     },
     {
       "id": "1409",
@@ -5088,7 +5367,8 @@
         "engine/scene/index/Scene"
       ],
       "thumbnail": "/samples/phase-14/1409/assets/images/preview.svg",
-      "preview": "/samples/phase-14/1409/assets/images/preview.svg"
+      "preview": "/samples/phase-14/1409/assets/images/preview.svg",
+      "href": "./phase-14/1409/index.html"
     },
     {
       "id": "1410",
@@ -5102,7 +5382,8 @@
         "engine/scene/index/Scene"
       ],
       "thumbnail": "/samples/phase-14/1410/assets/images/preview.svg",
-      "preview": "/samples/phase-14/1410/assets/images/preview.svg"
+      "preview": "/samples/phase-14/1410/assets/images/preview.svg",
+      "href": "./phase-14/1410/index.html"
     },
     {
       "id": "1411",
@@ -5116,7 +5397,8 @@
         "engine/scene/index/Scene"
       ],
       "thumbnail": "/samples/phase-14/1411/assets/images/preview.svg",
-      "preview": "/samples/phase-14/1411/assets/images/preview.svg"
+      "preview": "/samples/phase-14/1411/assets/images/preview.svg",
+      "href": "./phase-14/1411/index.html"
     },
     {
       "id": "1412",
@@ -5130,7 +5412,8 @@
         "engine/scene/index/Scene"
       ],
       "thumbnail": "/samples/phase-14/1412/assets/images/preview.svg",
-      "preview": "/samples/phase-14/1412/assets/images/preview.svg"
+      "preview": "/samples/phase-14/1412/assets/images/preview.svg",
+      "href": "./phase-14/1412/index.html"
     },
     {
       "id": "1413",
@@ -5144,7 +5427,8 @@
         "engine/scene/index/Scene"
       ],
       "thumbnail": "/samples/phase-14/1413/assets/images/preview.svg",
-      "preview": "/samples/phase-14/1413/assets/images/preview.svg"
+      "preview": "/samples/phase-14/1413/assets/images/preview.svg",
+      "href": "./phase-14/1413/index.html"
     },
     {
       "id": "1414",
@@ -5158,7 +5442,8 @@
         "engine/scene/index/Scene"
       ],
       "thumbnail": "/samples/phase-14/1414/assets/images/preview.svg",
-      "preview": "/samples/phase-14/1414/assets/images/preview.svg"
+      "preview": "/samples/phase-14/1414/assets/images/preview.svg",
+      "href": "./phase-14/1414/index.html"
     },
     {
       "id": "1415",
@@ -5172,7 +5457,8 @@
         "engine/scene/index/Scene"
       ],
       "thumbnail": "/samples/phase-14/1415/assets/images/preview.svg",
-      "preview": "/samples/phase-14/1415/assets/images/preview.svg"
+      "preview": "/samples/phase-14/1415/assets/images/preview.svg",
+      "href": "./phase-14/1415/index.html"
     },
     {
       "id": "1416",
@@ -5186,7 +5472,8 @@
         "engine/scene/index/Scene"
       ],
       "thumbnail": "/samples/phase-14/1416/assets/images/preview.svg",
-      "preview": "/samples/phase-14/1416/assets/images/preview.svg"
+      "preview": "/samples/phase-14/1416/assets/images/preview.svg",
+      "href": "./phase-14/1416/index.html"
     },
     {
       "id": "1417",
@@ -5200,7 +5487,8 @@
         "engine/scene/index/Scene"
       ],
       "thumbnail": "/samples/phase-14/1417/assets/images/preview.svg",
-      "preview": "/samples/phase-14/1417/assets/images/preview.svg"
+      "preview": "/samples/phase-14/1417/assets/images/preview.svg",
+      "href": "./phase-14/1417/index.html"
     },
     {
       "id": "1418",
@@ -5214,7 +5502,8 @@
         "engine/scene/index/Scene"
       ],
       "thumbnail": "/samples/phase-14/1418/assets/images/preview.svg",
-      "preview": "/samples/phase-14/1418/assets/images/preview.svg"
+      "preview": "/samples/phase-14/1418/assets/images/preview.svg",
+      "href": "./phase-14/1418/index.html"
     },
     {
       "id": "1501",
@@ -5237,7 +5526,8 @@
         "engine/tooling/index/DeveloperConsole"
       ],
       "thumbnail": "/samples/phase-15/1501/assets/images/preview.svg",
-      "preview": "/samples/phase-15/1501/assets/images/preview.svg"
+      "preview": "/samples/phase-15/1501/assets/images/preview.svg",
+      "href": "./phase-15/1501/index.html"
     },
     {
       "id": "1502",
@@ -5260,7 +5550,8 @@
         "engine/tooling/index/RuntimeInspector"
       ],
       "thumbnail": "/samples/phase-15/1502/assets/images/preview.svg",
-      "preview": "/samples/phase-15/1502/assets/images/preview.svg"
+      "preview": "/samples/phase-15/1502/assets/images/preview.svg",
+      "href": "./phase-15/1502/index.html"
     },
     {
       "id": "1503",
@@ -5283,7 +5574,8 @@
         "engine/tooling/index/PropertyEditor"
       ],
       "thumbnail": "/samples/phase-15/1503/assets/images/preview.svg",
-      "preview": "/samples/phase-15/1503/assets/images/preview.svg"
+      "preview": "/samples/phase-15/1503/assets/images/preview.svg",
+      "href": "./phase-15/1503/index.html"
     },
     {
       "id": "1504",
@@ -5306,7 +5598,8 @@
         "engine/tooling/index/LiveTuningService"
       ],
       "thumbnail": "/samples/phase-15/1504/assets/images/preview.svg",
-      "preview": "/samples/phase-15/1504/assets/images/preview.svg"
+      "preview": "/samples/phase-15/1504/assets/images/preview.svg",
+      "href": "./phase-15/1504/index.html"
     },
     {
       "id": "1505",
@@ -5329,7 +5622,8 @@
         "engine/tooling/index/AssetBrowser"
       ],
       "thumbnail": "/samples/phase-15/1505/assets/images/preview.svg",
-      "preview": "/samples/phase-15/1505/assets/images/preview.svg"
+      "preview": "/samples/phase-15/1505/assets/images/preview.svg",
+      "href": "./phase-15/1505/index.html"
     },
     {
       "id": "1506",
@@ -5351,8 +5645,378 @@
         "engine/tooling/index/SceneGraphViewer"
       ],
       "thumbnail": "/samples/phase-15/1506/assets/images/preview.svg",
-      "preview": "/samples/phase-15/1506/assets/images/preview.svg"
+      "preview": "/samples/phase-15/1506/assets/images/preview.svg",
+      "href": "./phase-15/1506/index.html"
+    },
+    {
+      "id": "1601",
+      "phase": "16",
+      "title": "Sample 1601 - 3D Cube Explorer",
+      "description": "Minimal 3D movement, camera orbit, and AABB collision on the engine runtime.",
+      "href": "./phase-16/1601/index.html",
+      "tags": [],
+      "thumbnail": "/samples/phase-16/1601/assets/images/preview.svg",
+      "preview": "/samples/phase-16/1601/assets/images/preview.svg"
+    },
+    {
+      "id": "1602",
+      "phase": "16",
+      "title": "Sample 1602 - 3D Maze Runner",
+      "description": "Navigate a small 3D maze using movement + AABB collision from the engine systems layer.",
+      "href": "./phase-16/1602/index.html",
+      "tags": [],
+      "thumbnail": "/samples/phase-16/1602/assets/images/preview.svg",
+      "preview": "/samples/phase-16/1602/assets/images/preview.svg"
+    },
+    {
+      "id": "1603",
+      "phase": "16",
+      "title": "Sample 1603 - First Person Walkthrough",
+      "description": "Walk a compact 3D route with first-person camera controls and collision-aware movement.",
+      "href": "./phase-16/1603/index.html",
+      "tags": [],
+      "thumbnail": "/samples/phase-16/1603/assets/images/preview.svg",
+      "preview": "/samples/phase-16/1603/assets/images/preview.svg"
+    },
+    {
+      "id": "1604",
+      "phase": "16",
+      "title": "Sample 1604 - 3D Platformer Basics",
+      "description": "A minimal 3D platforming lane with gravity, jump input, and AABB world/platform collisions.",
+      "href": "./phase-16/1604/index.html",
+      "tags": [],
+      "thumbnail": "/samples/phase-16/1604/assets/images/preview.svg",
+      "preview": "/samples/phase-16/1604/assets/images/preview.svg"
+    },
+    {
+      "id": "1605",
+      "phase": "16",
+      "title": "Sample 1605 - 3D Driving Sandbox",
+      "description": "Drive a lightweight 3D test track with acceleration, steering, and collision blockers.",
+      "href": "./phase-16/1605/index.html",
+      "tags": [],
+      "thumbnail": "/samples/phase-16/1605/assets/images/preview.svg",
+      "preview": "/samples/phase-16/1605/assets/images/preview.svg"
+    },
+    {
+      "id": "1606",
+      "phase": "16",
+      "title": "Sample 1606 - 3D Physics Playground",
+      "description": "Experiment with gravity, bounce, impulses, and damping in a constrained 3D arena.",
+      "href": "./phase-16/1606/index.html",
+      "tags": [],
+      "thumbnail": "/samples/phase-16/1606/assets/images/preview.svg",
+      "preview": "/samples/phase-16/1606/assets/images/preview.svg"
+    },
+    {
+      "id": "1607",
+      "phase": "16",
+      "title": "Sample 1607 - 3D Space Shooter",
+      "description": "Control a 3D ship lane, fire at incoming asteroids, and track hit/miss flow.",
+      "href": "./phase-16/1607/index.html",
+      "tags": [],
+      "thumbnail": "/samples/phase-16/1607/assets/images/preview.svg",
+      "preview": "/samples/phase-16/1607/assets/images/preview.svg"
+    },
+    {
+      "id": "1608",
+      "phase": "16",
+      "title": "Sample 1608 - 3D Dungeon Crawler",
+      "description": "Navigate dungeon corridors, collect the relic, unlock the gate, and reach the exit marker.",
+      "href": "./phase-16/1608/index.html",
+      "tags": [],
+      "thumbnail": "/samples/phase-16/1608/assets/images/preview.svg",
+      "preview": "/samples/phase-16/1608/assets/images/preview.svg"
+    },
+    {
+      "id": "1609",
+      "phase": "16",
+      "title": "Sample 1609 - 3D Lighting Demo",
+      "description": "Demonstrates simple dynamic lighting on wireframe geometry with movable light direction.",
+      "href": "./phase-16/1609/index.html",
+      "tags": [],
+      "thumbnail": "/samples/phase-16/1609/assets/images/preview.svg",
+      "preview": "/samples/phase-16/1609/assets/images/preview.svg"
+    },
+    {
+      "id": "1610",
+      "phase": "16",
+      "title": "Sample 1610 - Hybrid 2D/3D World",
+      "description": "Demonstrates one shared world rendered as both a 2D tactical view and a 3D perspective view.",
+      "href": "./phase-16/1610/index.html",
+      "tags": [],
+      "thumbnail": "/samples/phase-16/1610/assets/images/preview.svg",
+      "preview": "/samples/phase-16/1610/assets/images/preview.svg"
+    },
+    {
+      "id": "1611",
+      "phase": "16",
+      "title": "Sample 1611 - Multiplayer Sync Demo",
+      "description": "Demonstrates client prediction and delayed authoritative sync in a compact 3D lane.",
+      "href": "./phase-16/1611/index.html",
+      "tags": [],
+      "thumbnail": "/samples/phase-16/1611/assets/images/preview.svg",
+      "preview": "/samples/phase-16/1611/assets/images/preview.svg"
+    },
+    {
+      "id": "1612",
+      "phase": "16",
+      "title": "Sample 1612 - 3D Stress Test (1,000 Objects)",
+      "description": "Demonstrates dense 3D wireframe rendering pressure with 1,000 animated objects.",
+      "href": "./phase-16/1612/index.html",
+      "tags": [],
+      "thumbnail": "/samples/phase-16/1612/assets/images/preview.svg",
+      "preview": "/samples/phase-16/1612/assets/images/preview.svg"
+    },
+    {
+      "id": "1613",
+      "phase": "16",
+      "title": "Sample 1613 - 3D Input Lab",
+      "description": "Demonstrates 3D movement input, sprint modulation, jump impulse, and live input diagnostics.",
+      "href": "./phase-16/1613/index.html",
+      "tags": [],
+      "thumbnail": "/samples/phase-16/1613/assets/images/preview.svg",
+      "preview": "/samples/phase-16/1613/assets/images/preview.svg"
+    },
+    {
+      "id": "1614",
+      "phase": "16",
+      "title": "Sample 1614 - 3D Camera Modes Lab",
+      "description": "Demonstrates follow, wide, and overhead camera mode transitions around a moving target.",
+      "href": "./phase-16/1614/index.html",
+      "tags": [],
+      "thumbnail": "/samples/phase-16/1614/assets/images/preview.svg",
+      "preview": "/samples/phase-16/1614/assets/images/preview.svg"
+    },
+    {
+      "id": "1615",
+      "phase": "16",
+      "title": "Sample 1615 - 3D Entity Composition",
+      "description": "Demonstrates a composed 3D entity built from modular parts with live spacing and rotation controls.",
+      "href": "./phase-16/1615/index.html",
+      "tags": [],
+      "thumbnail": "/samples/phase-16/1615/assets/images/preview.svg",
+      "preview": "/samples/phase-16/1615/assets/images/preview.svg"
+    },
+    {
+      "id": "1616",
+      "phase": "16",
+      "title": "Sample 1616 - 3D World Streaming",
+      "description": "Demonstrates chunk activation around a moving player with a configurable stream radius.",
+      "href": "./phase-16/1616/index.html",
+      "tags": [],
+      "thumbnail": "/samples/phase-16/1616/assets/images/preview.svg",
+      "preview": "/samples/phase-16/1616/assets/images/preview.svg"
+    },
+    {
+      "id": "1617",
+      "phase": "16",
+      "title": "Sample 1617 - 3D Large World Streaming",
+      "description": "Demonstrates bounded streaming and visibility budgets across a larger virtual world grid.",
+      "href": "./phase-16/1617/index.html",
+      "tags": [],
+      "thumbnail": "/samples/phase-16/1617/assets/images/preview.svg",
+      "preview": "/samples/phase-16/1617/assets/images/preview.svg"
+    },
+    {
+      "id": "1618",
+      "phase": "16",
+      "title": "Sample 1618 - 3D Lighting & Materials Lab",
+      "description": "Demonstrates moving light controls, material color response, and camera orbit readability in a 3D lab.",
+      "href": "./phase-16/1618/index.html",
+      "tags": [],
+      "thumbnail": "/samples/phase-16/1618/assets/images/preview.svg",
+      "preview": "/samples/phase-16/1618/assets/images/preview.svg"
+    },
+    {
+      "id": "1619",
+      "phase": "16",
+      "title": "Sample 1619 - 3D Debug HUD Sample",
+      "description": "Demonstrates a readable debug HUD over a moving 3D scene with explicit world/UI separation.",
+      "href": "./phase-16/1619/index.html",
+      "tags": [],
+      "thumbnail": "/samples/phase-16/1619/assets/images/preview.svg",
+      "preview": "/samples/phase-16/1619/assets/images/preview.svg"
+    },
+    {
+      "id": "1620",
+      "phase": "16",
+      "title": "Sample 1620 - 3D Mini Game Reference",
+      "description": "Demonstrates a compact 3D pickup mini game with clear HUD feedback and follow-camera motion.",
+      "href": "./phase-16/1620/index.html",
+      "tags": [],
+      "thumbnail": "/samples/phase-16/1620/assets/images/preview.svg",
+      "preview": "/samples/phase-16/1620/assets/images/preview.svg"
+    },
+    {
+      "id": "1621",
+      "phase": "16",
+      "title": "Sample 1621 - 3D AI Navigation Demo",
+      "description": "Demonstrates 3D grid navigation with visible pathing, moving AI agent behavior, and optional path debug overlay.",
+      "href": "./phase-16/1621/index.html",
+      "tags": [],
+      "thumbnail": "/samples/phase-16/1621/assets/images/preview.svg",
+      "preview": "/samples/phase-16/1621/assets/images/preview.svg"
+    },
+    {
+      "id": "1622",
+      "phase": "16",
+      "title": "Sample 1622 - Basic Raycast Walls",
+      "description": "Demonstrates DOOM-style basic filled raycast wall rendering with movement and turning.",
+      "href": "./phase-16/1622/index.html",
+      "tags": [],
+      "thumbnail": "/samples/phase-16/1622/assets/images/preview.svg",
+      "preview": "/samples/phase-16/1622/assets/images/preview.svg"
+    },
+    {
+      "id": "1701",
+      "phase": "17",
+      "title": "Sample 1701 - DOOM Raycast + Sprites",
+      "description": "Demonstrates DOOM-style raycast walls with depth-sorted billboard sprites rendered into the corridor.",
+      "href": "./phase-17/1701/index.html",
+      "tags": [],
+      "thumbnail": "/samples/phase-17/1701/assets/images/preview.svg",
+      "preview": "/samples/phase-17/1701/assets/images/preview.svg"
+    },
+    {
+      "id": "1702",
+      "phase": "17",
+      "title": "Sample 1702 - Wolf Grid Raycast",
+      "description": "Demonstrates Wolfenstein-style pure grid raycasting with flat filled walls and tactical mini map.",
+      "href": "./phase-17/1702/index.html",
+      "tags": [],
+      "thumbnail": "/samples/phase-17/1702/assets/images/preview.svg",
+      "preview": "/samples/phase-17/1702/assets/images/preview.svg"
+    },
+    {
+      "id": "1703",
+      "phase": "17",
+      "title": "Sample 1703 - Wolf Optimized Raycast",
+      "description": "Demonstrates an optimized DDA raycast traversal variant with stable filled corridor output.",
+      "href": "./phase-17/1703/index.html",
+      "tags": [],
+      "thumbnail": "/samples/phase-17/1703/assets/images/preview.svg",
+      "preview": "/samples/phase-17/1703/assets/images/preview.svg"
+    },
+    {
+      "id": "1704",
+      "phase": "17",
+      "title": "Sample 1704 - Unreal Texture + Lighting",
+      "description": "Demonstrates Unreal-style textured surfaces with lightweight dynamic lighting response cues.",
+      "href": "./phase-17/1704/index.html",
+      "tags": [],
+      "thumbnail": "/samples/phase-17/1704/assets/images/preview.svg",
+      "preview": "/samples/phase-17/1704/assets/images/preview.svg"
+    },
+    {
+      "id": "1705",
+      "phase": "17",
+      "title": "Sample 1705 - Unreal Skinned Mesh Demo",
+      "description": "Demonstrates lightweight image-skinned mesh-style character animation with pose/frame cycling.",
+      "href": "./phase-17/1705/index.html",
+      "tags": [],
+      "thumbnail": "/samples/phase-17/1705/assets/images/preview.svg",
+      "preview": "/samples/phase-17/1705/assets/images/preview.svg"
+    },
+    {
+      "id": "1706",
+      "phase": "17",
+      "title": "Sample 1706 - Minecraft Voxel Terrain",
+      "description": "Demonstrates Minecraft-style filled voxel terrain blocks with height variation and camera panning.",
+      "href": "./phase-17/1706/index.html",
+      "tags": [],
+      "thumbnail": "/samples/phase-17/1706/assets/images/preview.svg",
+      "preview": "/samples/phase-17/1706/assets/images/preview.svg"
+    },
+    {
+      "id": "1707",
+      "phase": "17",
+      "title": "Sample 1707 - Minecraft Chunk Streaming",
+      "description": "Demonstrates Minecraft-style voxel chunk-window streaming around a movable camera anchor.",
+      "href": "./phase-17/1707/index.html",
+      "tags": [],
+      "thumbnail": "/samples/phase-17/1707/assets/images/preview.svg",
+      "preview": "/samples/phase-17/1707/assets/images/preview.svg"
+    },
+    {
+      "id": "1708",
+      "phase": "17",
+      "title": "Sample 1708 - Real Gameplay Mini-Game",
+      "description": "Playable 3D mini-game using existing engine systems: movement, hazards, objective scoring, camera follow, and debug panels.",
+      "href": "./phase-17/1708/index.html",
+      "tags": [],
+      "thumbnail": "/samples/phase-17/1708/assets/images/preview.svg",
+      "preview": "/samples/phase-17/1708/assets/images/preview.svg"
+    },
+    {
+      "id": "1709",
+      "phase": "17",
+      "title": "Sample 1709 - Movement Models Lab",
+      "description": "Compares direct axis movement, tank rotation controls, and weighted movement using existing engine systems.",
+      "href": "./phase-17/1709/index.html",
+      "tags": [],
+      "thumbnail": "/samples/phase-17/1709/assets/images/preview.svg",
+      "preview": "/samples/phase-17/1709/assets/images/preview.svg"
+    },
+    {
+      "id": "1710",
+      "phase": "17",
+      "title": "Sample 1710 - Real Gameplay Mini-Game",
+      "description": "Playable 3D mini-game using existing engine systems: movement, hazards, objective scoring, camera follow, and debug panels.",
+      "href": "./phase-17/1710/index.html",
+      "tags": [],
+      "thumbnail": "/samples/phase-17/1710/assets/images/preview.svg",
+      "preview": "/samples/phase-17/1710/assets/images/preview.svg"
+    },
+    {
+      "id": "1711",
+      "phase": "17",
+      "title": "Sample 1711 - Movement Models Lab",
+      "description": "Compares direct axis movement, tank rotation controls, and weighted movement using existing engine systems.",
+      "href": "./phase-17/1711/index.html",
+      "tags": [],
+      "thumbnail": "/samples/phase-17/1711/assets/images/preview.svg",
+      "preview": "/samples/phase-17/1711/assets/images/preview.svg"
+    },
+    {
+      "id": "1712",
+      "phase": "17",
+      "title": "Sample 1712 - Gameplay Metrics & Telemetry",
+      "description": "Adds live gameplay metrics and telemetry overlay to a real mini-game using existing debug systems only.",
+      "href": "./phase-17/1712/index.html",
+      "tags": [],
+      "thumbnail": "/samples/phase-17/1712/assets/images/preview.svg",
+      "preview": "/samples/phase-17/1712/assets/images/preview.svg"
+    },
+    {
+      "id": "1713",
+      "phase": "17",
+      "title": "Sample 1713 - Final Reference Game",
+      "description": "Final reference mini-game that combines gameplay loop, camera debug panels, collision overlays, and telemetry in one bounded sample.",
+      "href": "./phase-17/1713/index.html",
+      "tags": [],
+      "thumbnail": "/samples/phase-17/1713/assets/images/preview.svg",
+      "preview": "/samples/phase-17/1713/assets/images/preview.svg"
+    },
+    {
+      "id": "1801",
+      "phase": "18",
+      "title": "Sample 1801 - Phase 18 Foundation",
+      "description": "Bootstrap scaffold for Phase 18 with minimal runtime-layer and core-service wiring, without feature logic.",
+      "href": "./phase-18/1801/index.html",
+      "tags": [],
+      "thumbnail": "/samples/phase-18/1801/assets/images/preview.svg",
+      "preview": "/samples/phase-18/1801/assets/images/preview.svg"
+    },
+    {
+      "id": "1901",
+      "phase": "19",
+      "title": "Sample 1901 - Phase 19 Foundation",
+      "description": "Bootstrap scaffold for Phase 19 with minimal scene wiring and no feature logic.",
+      "href": "./phase-19/1901/index.html",
+      "tags": [],
+      "thumbnail": "/samples/phase-19/1901/assets/images/preview.svg",
+      "preview": "/samples/phase-19/1901/assets/images/preview.svg"
     }
   ]
 }
-
