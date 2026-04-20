@@ -181,12 +181,16 @@ function renderCard(row, instanceKey = "main") {
 
   const classText = row.classValues.length > 0 ? row.classValues.map((value) => value.split("/").at(-1) || value).join(", ") : "none";
   const tagText = row.tags.length > 0 ? row.tags.join(", ") : "none";
+  const asteroidDebugLink = row.id === "Asteroids"
+    ? '<p><a class="game-title-link" href="/games/Asteroids/index.html?debug=1">Debug Mode</a></p>'
+    : "";
 
   article.innerHTML = `
     ${titleHtml}
     <div class="game-badges">${badges}</div>
     ${previewHtml}
     <p>${escapeHtml(row.description)}</p>
+    ${asteroidDebugLink}
     <p>Classes: ${escapeHtml(classText)}</p>
     <p>Tags: ${escapeHtml(tagText)}</p>
     ${row.requiresService ? '<p class="game-service-note">Requires background service.</p>' : ""}

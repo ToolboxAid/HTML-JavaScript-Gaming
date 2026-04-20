@@ -1,5 +1,2 @@
-Add shared .is-collapsible system and replace hideme usage.
-
-Enable collapsible header/intro sections for better vertical space usage.
-
-PR: BUILD_PR_STYLE_05_COLLAPSIBLE_SYSTEM
+Restore Asteroids Debug Mode link (?debug=1).
+Scoped fix. No changes to other samples.
