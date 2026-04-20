@@ -3,14 +3,13 @@ Samples metadata + filter/tile UX strategy
 Goals:
 - convert tags into real metadata
 - keep class as a broad category
-- surface class values clearly
-- sort class filter values alphabetically
+- keep classes separate from description text
+- sort dropdown values alphabetically with no duplicates
 - keep search on the same row as Phase/Class/Tag
-- move pin affordance to preview top-right if cleanly supported
-- use green for pinned state
+- use explicit Pinned/Unpinned text instead of colored pin icons
+- preserve preview image launch behavior
+- preserve hover zoom behavior
 
 Preserve:
 - current accepted page shell
-- preview image launch behavior
-- hover zoom behavior
 - shared header/body consistency

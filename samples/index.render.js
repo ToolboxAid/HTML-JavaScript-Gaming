@@ -87,7 +87,9 @@ function buildSampleRows(metadata, pinnedSet) {
       }
       const titleText = normalize(sample?.title) || "Untitled";
       const phaseInfo = phaseInfoMap.get(phase);
-      const title = normalize(sample?.indexLabel) || `Sample ${id} - ${titleText}`;
+      const explicitLabel = normalize(sample?.indexLabel);
+      const titleAlreadyPrefixed = new RegExp(`^sample\\s+${id}\\s*-`, "i").test(titleText);
+      const title = explicitLabel || (titleAlreadyPrefixed ? titleText : `Sample ${id} - ${titleText}`);
       const description = normalize(sample?.description) || "No description available.";
       const href = normalize(sample?.href) || `./phase-${phase}/${id}/index.html`;
       const tags = asArray(sample?.tags).map((tag) => normalizeTag(tag)).filter(Boolean);
@@ -191,27 +193,26 @@ function buildSampleCard(sample) {
   pinLabel.setAttribute("for", pinInputId);
   pinLabel.setAttribute("title", sample.pinned ? "Unpin" : "Pin");
   pinLabel.setAttribute("aria-label", sample.pinned ? "Unpin sample" : "Pin sample");
-  pinLabel.textContent = "??";
+  pinLabel.innerHTML = `<span class="sample-pin-icon" aria-hidden="true"></span>`;
 
   previewWrap.appendChild(launch);
-  previewWrap.appendChild(pinInput);
-  previewWrap.appendChild(pinLabel);
 
   const title = document.createElement("h3");
-  title.innerHTML = `<a class="sample-title-link" href="${escapeHtml(sample.href)}">${escapeHtml(sample.title)}</a>`;
+  title.className = "sample-title-row";
+  title.appendChild(pinInput);
+  title.appendChild(pinLabel);
+  const titleLink = document.createElement("a");
+  titleLink.className = "sample-title-link";
+  titleLink.href = sample.href;
+  titleLink.textContent = sample.title;
+  title.appendChild(titleLink);
 
   const description = document.createElement("p");
   description.textContent = sample.description;
 
-  const meta = document.createElement("p");
-  const classLabel = sample.classTokens.length > 0 ? sample.classTokens.map((token) => token.label).join(", ") : "none";
-  const tagLabel = sample.tags.length > 0 ? sample.tags.join(", ") : "none";
-  meta.textContent = `Phase ${sample.phase} | Classes: ${classLabel} | Tags: ${tagLabel}`;
-
-  card.appendChild(previewWrap);
   card.appendChild(title);
+  card.appendChild(previewWrap);
   card.appendChild(description);
-  card.appendChild(meta);
   return card;
 }
 

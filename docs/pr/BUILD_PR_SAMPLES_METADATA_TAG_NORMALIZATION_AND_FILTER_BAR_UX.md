@@ -6,55 +6,66 @@ Improve `/samples/index.html` sample discovery by normalizing metadata and tight
 ## Single PR Purpose
 Fix the samples metadata and filter/tile behavior in one focused pass:
 - make tags real tags instead of duplicated class values
-- expose the sample class list clearly
-- sort classes alphabetically
+- expose the sample class list correctly
+- sort dropdown values alphabetically with no duplicates
 - align search on the same row as Phase / Class / Tag
-- move the pin affordance to the top-right over the preview image if allowed by the current tile structure
-- use green instead of red when pinned
+- restore pin behavior using explicit text values instead of colored icons
+- keep preview image as the launch link with hover zoom
 
 ## Metadata Rules
 ### Class
 - each sample must have a clear class value
 - class values should be broad categories
-- class options presented in the UI must be sorted alphabetically
+- class filter options presented in the UI must be sorted alphabetically
+- class filter options must not contain duplicates
 
 ### Tags
 - tags must be meaningful descriptive labels, not copies of class values
 - tags should reflect capabilities, behaviors, systems, or topics in the sample
-- examples:
-  - physics
-  - collision
-  - parallax
-  - networking
-  - debug
-  - editor
-  - tilemap
-  - input
-  - particles
-  - replay
+- tag filter options must be sorted alphabetically
+- tag filter options must not contain duplicates
 - tag filtering must use the real tag values
 
-### Class List Visibility
-- include/display the class list for each sample
-- keep it readable and clearly distinct from tags
+### Class List Display
+- class information may be shown in a dedicated class area/list for each sample if needed
+- do NOT append or inject the class list into the main sample description text
+- the sample description must remain a human-readable description only
+
+## Description Rule
+Do NOT include classes in the description text.
+
+Example of what must NOT happen:
+`Phase 03 | Classes: ... | Tags: ...` appended into the description body.
+
+Keep:
+- sample title
+- human-readable description
+
+Separate from description if shown elsewhere:
+- phase
+- classes
+- tags
 
 ## Filter Bar UX Rules
 - search must be on the same line as:
   - Phase
   - Class
   - Tag
+- dropdown options must be alphabetically sorted
+- dropdown options must not contain duplicates
 - keep the filter bar compact and readable
 - preserve existing functionality
 - do not redesign the entire page
 
-## Tile UX Rules
-### Pin
-- move pinned control/indicator to the top-right over the preview image if the tile structure allows it cleanly
-- pin should look like a pin, not a generic button
-- pinned visual state should change from red to green
-- preserve pinning behavior and pinned list behavior
+## Pin UX Rules
+- do NOT use a colored icon for pin/unpin state
+- pinned/unpinned must show explicit text values:
+  - `Pinned`
+  - `Unpinned`
+- pinning behavior and pinned list behavior must be preserved/restored
+- if placement over the preview image is retained, the text treatment must remain readable and clean
 
-### Preview Image
+## Preview Image Rules
 - keep preview image as the launch anchor
 - preserve hover zoom behavior
 - do not break launch behavior
@@ -64,14 +75,14 @@ Fix the samples metadata and filter/tile behavior in one focused pass:
 - no inline `style=""`
 - no JS-generated styling
 - keep scope limited to `/samples/index.html` and directly related sample metadata/rendering/filter dependencies
-- preserve the accepted page shell and shared header/body consistency
+- preserve the current accepted page shell and shared header/body consistency
 
 ## Acceptance
 - tags are real descriptive tags, not class duplicates
-- class values/lists are clearly available and class filter options are alphabetical
+- class/tag dropdown values are alphabetical and contain no duplicates
+- classes are not appended into the description text
 - search is on the same line as Phase / Class / Tag
-- pinned control is top-right over the preview image when allowed
-- pinned state uses green, not red
-- preview image remains the launch anchor with hover zoom
+- pin state shows `Pinned` / `Unpinned` text, not red/green icon treatment
+- preview image remains the launch link with hover zoom
 - filtering and pinning continue to work
 - change is visually and functionally testable

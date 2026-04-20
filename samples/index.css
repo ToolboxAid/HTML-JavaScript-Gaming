@@ -64,23 +64,40 @@
 }
 
 .sample-pin-label {
-  position: absolute;
-  top: 8px;
-  right: 8px;
-  z-index: 2;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-width: 32px;
-  min-height: 32px;
-  border-radius: 999px;
-  border: 1px solid rgba(34, 197, 94, 0.75);
-  background: rgba(15, 23, 42, 0.72);
+  min-width: 1.15em;
+  min-height: 1.15em;
+  margin-right: 8px;
+  padding: 0;
   cursor: pointer;
   user-select: none;
+  font-size: 1.15em;
+  color: rgb(239, 68, 68);
 }
 
 .sample-pin-toggle:checked + .sample-pin-label {
-  background: rgba(34, 197, 94, 0.35);
-  border-color: rgba(34, 197, 94, 0.95);
+  color: rgb(34, 197, 94);
+}
+
+.sample-title-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.sample-pin-icon {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  background-color: currentColor;
+  -webkit-mask-image: url("./assets/icons/pin-monocolor.svg");
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  -webkit-mask-size: contain;
+  mask-image: url("./assets/icons/pin-monocolor.svg");
+  mask-repeat: no-repeat;
+  mask-position: center;
+  mask-size: contain;
 }

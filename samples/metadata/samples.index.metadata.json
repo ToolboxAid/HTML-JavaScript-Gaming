@@ -1986,7 +1986,9 @@
       ],
       "thumbnail": "/samples/phase-02/0225/assets/images/preview.svg",
       "preview": "/samples/phase-02/0225/assets/images/preview.svg",
-      "classValues": []
+      "classValues": [
+        "samples/projectile-lab"
+      ]
     },
     {
       "id": "0301",
@@ -3055,7 +3057,6 @@
       "description": "A small force-driven arcade build: one ball, constant downward pull, stable wall rebounds, a damped floor bounce, and simple start/pause/reset flow.",
       "href": "./phase-03/0325/index.html",
       "tags": [
-        "gravity",
         "small",
         "force",
         "driven",
@@ -3064,7 +3065,9 @@
       ],
       "thumbnail": "/samples/phase-03/0325/assets/images/preview.svg",
       "preview": "/samples/phase-03/0325/assets/images/preview.svg",
-      "classValues": []
+      "classValues": [
+        "samples/gravity"
+      ]
     },
     {
       "id": "0326",
@@ -3082,7 +3085,9 @@
       ],
       "thumbnail": "/samples/phase-03/0326/assets/images/preview.svg",
       "preview": "/samples/phase-03/0326/assets/images/preview.svg",
-      "classValues": []
+      "classValues": [
+        "samples/paddle-intercept"
+      ]
     },
     {
       "id": "0327",
@@ -3100,7 +3105,9 @@
       ],
       "thumbnail": "/samples/phase-03/0327/assets/images/preview.svg",
       "preview": "/samples/phase-03/0327/assets/images/preview.svg",
-      "classValues": []
+      "classValues": [
+        "samples/multi-ball-chaos"
+      ]
     },
     {
       "id": "0401",
@@ -3505,7 +3512,6 @@
       "description": "A compact inertial ship-control game: rotate, burn thrust, drift through a bounded chamber, and manage momentum without shooting or gravity fields.",
       "href": "./phase-04/0413/index.html",
       "tags": [
-        "thruster",
         "compact",
         "inertial",
         "ship",
@@ -3514,7 +3520,9 @@
       ],
       "thumbnail": "/samples/phase-04/0413/assets/images/preview.svg",
       "preview": "/samples/phase-04/0413/assets/images/preview.svg",
-      "classValues": []
+      "classValues": [
+        "samples/thruster"
+      ]
     },
     {
       "id": "0501",
@@ -4524,7 +4532,6 @@
       "description": "Arcade-clean orbit sandbox showing central-attractor trajectories with preset scenarios for stable, elliptical, inward-fall, and escape behavior.",
       "href": "./phase-06/0614/index.html",
       "tags": [
-        "orbit",
         "arcade",
         "clean",
         "sandbox",
@@ -4533,7 +4540,9 @@
       ],
       "thumbnail": "/samples/phase-06/0614/assets/images/preview.svg",
       "preview": "/samples/phase-06/0614/assets/images/preview.svg",
-      "classValues": []
+      "classValues": [
+        "samples/orbit"
+      ]
     },
     {
       "id": "0701",
@@ -6937,7 +6946,9 @@
         "minimal",
         "authoritative"
       ],
-      "classValues": []
+      "classValues": [
+        "samples/sample-1319-real-network-live-dashboard"
+      ]
     },
     {
       "id": "1320",
@@ -6955,7 +6966,9 @@
       ],
       "thumbnail": "/samples/phase-13/1320/assets/images/preview.svg",
       "preview": "/samples/phase-13/1320/assets/images/preview.svg",
-      "classValues": []
+      "classValues": [
+        "samples/pacman-lite"
+      ]
     },
     {
       "id": "1401",
@@ -7591,7 +7604,9 @@
       ],
       "thumbnail": "/samples/phase-16/1601/assets/images/preview.svg",
       "preview": "/samples/phase-16/1601/assets/images/preview.svg",
-      "classValues": []
+      "classValues": [
+        "samples/sample-1601-3d-cube-explorer"
+      ]
     },
     {
       "id": "1602",
@@ -7609,7 +7624,9 @@
       ],
       "thumbnail": "/samples/phase-16/1602/assets/images/preview.svg",
       "preview": "/samples/phase-16/1602/assets/images/preview.svg",
-      "classValues": []
+      "classValues": [
+        "samples/sample-1602-3d-maze-runner"
+      ]
     },
     {
       "id": "1603",
@@ -7627,7 +7644,9 @@
       ],
       "thumbnail": "/samples/phase-16/1603/assets/images/preview.svg",
       "preview": "/samples/phase-16/1603/assets/images/preview.svg",
-      "classValues": []
+      "classValues": [
+        "samples/sample-1603-first-person-walkthrough"
+      ]
     },
     {
       "id": "1604",
@@ -7645,7 +7664,9 @@
       ],
       "thumbnail": "/samples/phase-16/1604/assets/images/preview.svg",
       "preview": "/samples/phase-16/1604/assets/images/preview.svg",
-      "classValues": []
+      "classValues": [
+        "samples/sample-1604-3d-platformer-basics"
+      ]
     },
     {
       "id": "1605",
@@ -7663,7 +7684,9 @@
       ],
       "thumbnail": "/samples/phase-16/1605/assets/images/preview.svg",
       "preview": "/samples/phase-16/1605/assets/images/preview.svg",
-      "classValues": []
+      "classValues": [
+        "samples/sample-1605-3d-driving-sandbox"
+      ]
     },
     {
       "id": "1606",
@@ -7681,7 +7704,9 @@
       ],
       "thumbnail": "/samples/phase-16/1606/assets/images/preview.svg",
       "preview": "/samples/phase-16/1606/assets/images/preview.svg",
-      "classValues": []
+      "classValues": [
+        "samples/sample-1606-3d-physics-playground"
+      ]
     },
     {
       "id": "1607",
@@ -7699,7 +7724,9 @@
       ],
       "thumbnail": "/samples/phase-16/1607/assets/images/preview.svg",
       "preview": "/samples/phase-16/1607/assets/images/preview.svg",
-      "classValues": []
+      "classValues": [
+        "samples/sample-1607-3d-space-shooter"
+      ]
     },
     {
       "id": "1608",
@@ -7717,7 +7744,9 @@
       ],
       "thumbnail": "/samples/phase-16/1608/assets/images/preview.svg",
       "preview": "/samples/phase-16/1608/assets/images/preview.svg",
-      "classValues": []
+      "classValues": [
+        "samples/sample-1608-3d-dungeon-crawler"
+      ]
     },
     {
       "id": "1609",
@@ -7735,7 +7764,9 @@
       ],
       "thumbnail": "/samples/phase-16/1609/assets/images/preview.svg",
       "preview": "/samples/phase-16/1609/assets/images/preview.svg",
-      "classValues": []
+      "classValues": [
+        "samples/sample-1609-3d-lighting-demo"
+      ]
     },
     {
       "id": "1610",
@@ -7753,7 +7784,9 @@
       ],
       "thumbnail": "/samples/phase-16/1610/assets/images/preview.svg",
       "preview": "/samples/phase-16/1610/assets/images/preview.svg",
-      "classValues": []
+      "classValues": [
+        "samples/sample-1610-hybrid-2d-3d-world"
+      ]
     },
     {
       "id": "1611",
@@ -7771,7 +7804,9 @@
       ],
       "thumbnail": "/samples/phase-16/1611/assets/images/preview.svg",
       "preview": "/samples/phase-16/1611/assets/images/preview.svg",
-      "classValues": []
+      "classValues": [
+        "samples/sample-1611-multiplayer-sync-demo"
+      ]
     },
     {
       "id": "1612",
@@ -7789,7 +7824,9 @@
       ],
       "thumbnail": "/samples/phase-16/1612/assets/images/preview.svg",
       "preview": "/samples/phase-16/1612/assets/images/preview.svg",
-      "classValues": []
+      "classValues": [
+        "samples/sample-1612-3d-stress-test-1-000-objects"
+      ]
     },
     {
       "id": "1613",
@@ -7807,7 +7844,9 @@
       ],
       "thumbnail": "/samples/phase-16/1613/assets/images/preview.svg",
       "preview": "/samples/phase-16/1613/assets/images/preview.svg",
-      "classValues": []
+      "classValues": [
+        "samples/sample-1613-3d-input-lab"
+      ]
     },
     {
       "id": "1614",
@@ -7825,7 +7864,9 @@
       ],
       "thumbnail": "/samples/phase-16/1614/assets/images/preview.svg",
       "preview": "/samples/phase-16/1614/assets/images/preview.svg",
-      "classValues": []
+      "classValues": [
+        "samples/sample-1614-3d-camera-modes-lab"
+      ]
     },
     {
       "id": "1615",
@@ -7843,7 +7884,9 @@
       ],
       "thumbnail": "/samples/phase-16/1615/assets/images/preview.svg",
       "preview": "/samples/phase-16/1615/assets/images/preview.svg",
-      "classValues": []
+      "classValues": [
+        "samples/sample-1615-3d-entity-composition"
+      ]
     },
     {
       "id": "1616",
@@ -7861,7 +7904,9 @@
       ],
       "thumbnail": "/samples/phase-16/1616/assets/images/preview.svg",
       "preview": "/samples/phase-16/1616/assets/images/preview.svg",
-      "classValues": []
+      "classValues": [
+        "samples/sample-1616-3d-world-streaming"
+      ]
     },
     {
       "id": "1617",
@@ -7879,7 +7924,9 @@
       ],
       "thumbnail": "/samples/phase-16/1617/assets/images/preview.svg",
       "preview": "/samples/phase-16/1617/assets/images/preview.svg",
-      "classValues": []
+      "classValues": [
+        "samples/sample-1617-3d-large-world-streaming"
+      ]
     },
     {
       "id": "1618",
@@ -7897,7 +7944,9 @@
       ],
       "thumbnail": "/samples/phase-16/1618/assets/images/preview.svg",
       "preview": "/samples/phase-16/1618/assets/images/preview.svg",
-      "classValues": []
+      "classValues": [
+        "samples/sample-1618-3d-lighting-materials-lab"
+      ]
     },
     {
       "id": "1619",
@@ -7915,7 +7964,9 @@
       ],
       "thumbnail": "/samples/phase-16/1619/assets/images/preview.svg",
       "preview": "/samples/phase-16/1619/assets/images/preview.svg",
-      "classValues": []
+      "classValues": [
+        "samples/sample-1619-3d-debug-hud-sample"
+      ]
     },
     {
       "id": "1620",
@@ -7933,7 +7984,9 @@
       ],
       "thumbnail": "/samples/phase-16/1620/assets/images/preview.svg",
       "preview": "/samples/phase-16/1620/assets/images/preview.svg",
-      "classValues": []
+      "classValues": [
+        "samples/sample-1620-3d-mini-game-reference"
+      ]
     },
     {
       "id": "1621",
@@ -7951,7 +8004,9 @@
       ],
       "thumbnail": "/samples/phase-16/1621/assets/images/preview.svg",
       "preview": "/samples/phase-16/1621/assets/images/preview.svg",
-      "classValues": []
+      "classValues": [
+        "samples/sample-1621-3d-ai-navigation-demo"
+      ]
     },
     {
       "id": "1622",
@@ -7969,7 +8024,9 @@
       ],
       "thumbnail": "/samples/phase-16/1622/assets/images/preview.svg",
       "preview": "/samples/phase-16/1622/assets/images/preview.svg",
-      "classValues": []
+      "classValues": [
+        "samples/sample-1622-basic-raycast-walls"
+      ]
     },
     {
       "id": "1701",
@@ -7987,7 +8044,9 @@
       ],
       "thumbnail": "/samples/phase-17/1701/assets/images/preview.svg",
       "preview": "/samples/phase-17/1701/assets/images/preview.svg",
-      "classValues": []
+      "classValues": [
+        "samples/sample-1701-doom-raycast-sprites"
+      ]
     },
     {
       "id": "1702",
@@ -8005,7 +8064,9 @@
       ],
       "thumbnail": "/samples/phase-17/1702/assets/images/preview.svg",
       "preview": "/samples/phase-17/1702/assets/images/preview.svg",
-      "classValues": []
+      "classValues": [
+        "samples/sample-1702-wolf-grid-raycast"
+      ]
     },
     {
       "id": "1703",
@@ -8023,7 +8084,9 @@
       ],
       "thumbnail": "/samples/phase-17/1703/assets/images/preview.svg",
       "preview": "/samples/phase-17/1703/assets/images/preview.svg",
-      "classValues": []
+      "classValues": [
+        "samples/sample-1703-wolf-optimized-raycast"
+      ]
     },
     {
       "id": "1704",
@@ -8041,7 +8104,9 @@
       ],
       "thumbnail": "/samples/phase-17/1704/assets/images/preview.svg",
       "preview": "/samples/phase-17/1704/assets/images/preview.svg",
-      "classValues": []
+      "classValues": [
+        "samples/sample-1704-unreal-texture-lighting"
+      ]
     },
     {
       "id": "1705",
@@ -8059,7 +8124,9 @@
       ],
       "thumbnail": "/samples/phase-17/1705/assets/images/preview.svg",
       "preview": "/samples/phase-17/1705/assets/images/preview.svg",
-      "classValues": []
+      "classValues": [
+        "samples/sample-1705-unreal-skinned-mesh-demo"
+      ]
     },
     {
       "id": "1706",
@@ -8077,7 +8144,9 @@
       ],
       "thumbnail": "/samples/phase-17/1706/assets/images/preview.svg",
       "preview": "/samples/phase-17/1706/assets/images/preview.svg",
-      "classValues": []
+      "classValues": [
+        "samples/sample-1706-minecraft-voxel-terrain"
+      ]
     },
     {
       "id": "1707",
@@ -8095,7 +8164,9 @@
       ],
       "thumbnail": "/samples/phase-17/1707/assets/images/preview.svg",
       "preview": "/samples/phase-17/1707/assets/images/preview.svg",
-      "classValues": []
+      "classValues": [
+        "samples/sample-1707-minecraft-chunk-streaming"
+      ]
     },
     {
       "id": "1708",
@@ -8113,7 +8184,9 @@
       ],
       "thumbnail": "/samples/phase-17/1708/assets/images/preview.svg",
       "preview": "/samples/phase-17/1708/assets/images/preview.svg",
-      "classValues": []
+      "classValues": [
+        "samples/sample-1708-real-gameplay-mini-game"
+      ]
     },
     {
       "id": "1709",
@@ -8131,7 +8204,9 @@
       ],
       "thumbnail": "/samples/phase-17/1709/assets/images/preview.svg",
       "preview": "/samples/phase-17/1709/assets/images/preview.svg",
-      "classValues": []
+      "classValues": [
+        "samples/sample-1709-movement-models-lab"
+      ]
     },
     {
       "id": "1710",
@@ -8149,7 +8224,9 @@
       ],
       "thumbnail": "/samples/phase-17/1710/assets/images/preview.svg",
       "preview": "/samples/phase-17/1710/assets/images/preview.svg",
-      "classValues": []
+      "classValues": [
+        "samples/sample-1710-real-gameplay-mini-game"
+      ]
     },
     {
       "id": "1711",
@@ -8167,7 +8244,9 @@
       ],
       "thumbnail": "/samples/phase-17/1711/assets/images/preview.svg",
       "preview": "/samples/phase-17/1711/assets/images/preview.svg",
-      "classValues": []
+      "classValues": [
+        "samples/sample-1711-movement-models-lab"
+      ]
     },
     {
       "id": "1712",
@@ -8185,7 +8264,9 @@
       ],
       "thumbnail": "/samples/phase-17/1712/assets/images/preview.svg",
       "preview": "/samples/phase-17/1712/assets/images/preview.svg",
-      "classValues": []
+      "classValues": [
+        "samples/sample-1712-gameplay-metrics-telemetry"
+      ]
     },
     {
       "id": "1713",
@@ -8203,7 +8284,9 @@
       ],
       "thumbnail": "/samples/phase-17/1713/assets/images/preview.svg",
       "preview": "/samples/phase-17/1713/assets/images/preview.svg",
-      "classValues": []
+      "classValues": [
+        "samples/sample-1713-final-reference-game"
+      ]
     },
     {
       "id": "1801",
@@ -8221,7 +8304,9 @@
       ],
       "thumbnail": "/samples/phase-18/1801/assets/images/preview.svg",
       "preview": "/samples/phase-18/1801/assets/images/preview.svg",
-      "classValues": []
+      "classValues": [
+        "samples/sample-1801-phase-18-foundation"
+      ]
     },
     {
       "id": "1901",
@@ -8239,7 +8324,9 @@
       ],
       "thumbnail": "/samples/phase-19/1901/assets/images/preview.svg",
       "preview": "/samples/phase-19/1901/assets/images/preview.svg",
-      "classValues": []
+      "classValues": [
+        "samples/sample-1901-phase-19-foundation"
+      ]
     }
   ]
 }

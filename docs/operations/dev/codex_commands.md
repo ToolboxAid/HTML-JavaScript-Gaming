@@ -19,11 +19,12 @@ Rules:
 Required work:
 1. Normalize sample metadata so tags are real descriptive tags instead of duplicates of class values.
 2. Keep/assign a clear class value for each sample.
-3. Include/display the class list for each sample.
-4. Ensure class filter values are sorted alphabetically.
-5. Put search on the same row as Phase, Class, and Tag.
-6. Move the pin affordance to the top-right over the preview image if the current tile structure allows it cleanly.
-7. Make the pinned visual state green instead of red.
-8. Preserve preview image launch behavior and hover zoom.
-9. Keep filtering and pinning behavior working.
-10. Keep the change narrow, testable, and behavior-focused rather than redesigning the page.
+3. If classes are shown for each sample, show them outside the description text.
+4. Do NOT append classes/tags/phase metadata into the sample description body.
+5. Ensure class filter values are sorted alphabetically and contain no duplicates.
+6. Ensure tag filter values are sorted alphabetically and contain no duplicates.
+7. Put search on the same row as Phase, Class, and Tag.
+8. Use explicit `Pinned` / `Unpinned` text values instead of a red/green icon treatment.
+9. Preserve preview image launch behavior and hover zoom.
+10. Keep filtering and pinning behavior working.
+11. Keep the change narrow, testable, and behavior-focused rather than redesigning the page.

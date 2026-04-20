@@ -1,5 +1,5 @@
-Normalize samples metadata and tighten samples index filter/tile UX.
+Tighten the samples index metadata and filter/tile UX behavior.
 
-Convert tags into real descriptive tags, surface class values clearly, alphabetize class filter options, align search with Phase/Class/Tag, and move the pin affordance to the preview top-right with a green pinned state.
+Make tags real, sort dropdowns alphabetically with no duplicates, keep classes out of the description text, and use explicit Pinned/Unpinned text values while preserving preview-image launch behavior.
 
 PR: BUILD_PR_SAMPLES_METADATA_TAG_NORMALIZATION_AND_FILTER_BAR_UX
