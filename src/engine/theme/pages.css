@@ -26,3 +26,80 @@
   color: var(--theme-muted);
   font-size: var(--font-size-helper);
 }
+
+body.hub-page-home .page-shell,
+body.hub-page-games .page-shell,
+body.hub-page-samples .page-shell {
+  width: min(1600px, calc(100% - 32px));
+  margin: 0 auto 16px;
+  padding: 24px;
+  border-radius: 20px;
+  border: 1px solid var(--line, rgba(221, 214, 254, 0.26));
+  background: linear-gradient(180deg, var(--panel, rgba(76, 29, 149, 0.88)) 0%, var(--panel2, rgba(49, 17, 102, 0.94)) 100%);
+  box-shadow: 0 20px 44px rgba(0, 0, 0, 0.26);
+}
+
+body.hub-page-home .page-intro,
+body.hub-page-games .page-intro,
+body.hub-page-samples .page-intro {
+  border-color: var(--line, rgba(221, 214, 254, 0.26));
+  background: rgba(43, 16, 91, 0.5);
+  box-shadow: none;
+}
+
+body.hub-page-home .page-intro h1,
+body.hub-page-games .page-intro h1,
+body.hub-page-samples .page-intro h1,
+body.hub-page-home .content-section h2,
+body.hub-page-games .content-section h2,
+body.hub-page-samples .content-section h2 {
+  color: var(--text, #f7f4ff);
+}
+
+body.hub-page-home .page-intro p,
+body.hub-page-games .page-intro p,
+body.hub-page-samples .page-intro p,
+body.hub-page-home .content-section > p,
+body.hub-page-games .content-section > p,
+body.hub-page-samples .content-section > p,
+body.hub-page-home .footer-note,
+body.hub-page-games .footer-note,
+body.hub-page-samples .footer-note {
+  color: var(--muted, #e9ddff);
+  border-color: var(--line, rgba(221, 214, 254, 0.26));
+}
+
+body.hub-page-home .card-link,
+body.hub-page-games .card-link,
+body.hub-page-samples .card-link {
+  border-color: var(--line, rgba(221, 214, 254, 0.26));
+  background: linear-gradient(180deg, var(--panel, rgba(76, 29, 149, 0.88)) 0%, var(--panel2, rgba(49, 17, 102, 0.94)) 100%);
+  box-shadow: 0 18px 36px rgba(0, 0, 0, 0.22);
+}
+
+body.hub-page-home .card-link:hover,
+body.hub-page-games .card-link:hover,
+body.hub-page-samples .card-link:hover {
+  border-color: var(--card-hover-border, #c4b5fd);
+}
+
+body.hub-page-home .card-link h3,
+body.hub-page-games .card-link h3,
+body.hub-page-samples .card-link h3 {
+  color: var(--accent, #ddd6fe);
+}
+
+body.hub-page-home .card-link p,
+body.hub-page-games .card-link p,
+body.hub-page-samples .card-link p {
+  color: var(--muted, #e9ddff);
+}
+
+@media (max-width: 900px) {
+  body.hub-page-home .page-shell,
+  body.hub-page-games .page-shell,
+  body.hub-page-samples .page-shell {
+    width: min(100%, calc(100% - 20px));
+    padding: 18px;
+  }
+}

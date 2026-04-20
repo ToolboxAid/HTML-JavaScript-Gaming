@@ -2,39 +2,27 @@ MODEL: GPT-5.4-codex
 REASONING: high
 
 COMMAND:
-Create BUILD_PR_STYLE_FINAL_SYSTEM_COMPLETION_AND_UAT_READY
+Create BUILD_PR_STYLE_INDEX_HEADER_AND_BODY_CONSISTENCY_FIX
 
 Rules:
 - output ONLY the final zip to:
-  <project folder>/tmp/BUILD_PR_STYLE_FINAL_SYSTEM_COMPLETION_AND_UAT_READY.zip
+  <project folder>/tmp/BUILD_PR_STYLE_INDEX_HEADER_AND_BODY_CONSISTENCY_FIX.zip
 - do NOT create staging folders in <project folder>/tmp
 - do NOT modify roadmap in the PR bundle
-- Codex updates roadmap during execution only
-- roadmap changes must be execution-backed
-- do NOT delete existing roadmap text
-- do NOT rewrite existing roadmap text
+- Codex updates roadmap during execution only if execution-backed status changes are earned
 - no embedded <style> blocks
 - no inline style=""
-- no JS-generated styling introduced
+- no JS-generated styling
+- keep scope limited to:
+  /index.html
+  /games/index.html
+  /samples/index.html
+  /tools/index.html only as needed for shared consistency
 
 Required work:
-1. Audit remaining unfinished items in Tracks A, B, E, F, and G of MASTER_ROADMAP_STYLE.md.
-2. Implement the minimum execution-backed work needed to complete them.
-3. Complete Track F:
-   - explicit spacing scale
-   - margin/padding audit
-   - typography standardization
-4. Complete Track G:
-   - per-PR migration rule
-   - validation rule
-   - old-style retirement rule
-5. Close remaining partials in Tracks A, B, and E only if repo state supports them.
-6. Mark roadmap items complete only when execution-backed.
-7. Include a closeout report mapping each newly completed roadmap item to repo evidence.
-8. End with the repo UAT-ready.
-
-UAT-ready means:
-- no inline style system violations
-- shared theme/tokens/spacing/typography are coherent
-- rules are documented and enforced by repo state
-- no false roadmap completions
+1. Treat /tools/index.html as the current good visual baseline.
+2. Compare it against /index.html, /games/index.html, and /samples/index.html.
+3. Normalize the three non-matching pages so the shared header stretches full width the same way.
+4. Normalize the three non-matching pages so the body/theme colors match the tools page.
+5. Prefer fixing shared CSS imports, body classes, and shared shell usage over ad hoc page-specific hacks.
+6. Keep the change narrow, testable, and visually consistent.

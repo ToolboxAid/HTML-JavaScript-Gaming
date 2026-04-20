@@ -1,0 +1,17 @@
+Entry page consistency fix strategy
+
+Known good baseline:
+- tools/index.html
+
+Known mismatches:
+- index.html
+- games/index.html
+- samples/index.html
+
+Fix method:
+- compare shared CSS imports
+- compare body classes
+- compare page shell/header wrapper structure
+- normalize the three non-matching pages to the same working shared-theme path as tools/index.html
+
+Keep scope surgical.

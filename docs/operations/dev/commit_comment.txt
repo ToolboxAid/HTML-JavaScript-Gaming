@@ -1,5 +1,5 @@
-Finish the remaining style-system foundation and rules work before UAT.
+Fix the main entry pages so they match the working tools/index.html baseline for full-width header behavior and shared body/theme colors.
 
-Complete Track F and Track G, then close the remaining partial roadmap items only where execution-backed by the repo state.
+Scope is limited to the four main entry pages and shared consistency fixes only.
 
-PR: BUILD_PR_STYLE_FINAL_SYSTEM_COMPLETION_AND_UAT_READY
+PR: BUILD_PR_STYLE_INDEX_HEADER_AND_BODY_CONSISTENCY_FIX
