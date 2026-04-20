@@ -1,0 +1,11 @@
+Header lock carry-forward notes
+
+Locked for implementation:
+- first menu item = Toolbox Aid external link
+- external link standard = class is-external + target _blank + rel noopener noreferrer
+- header stretches full width regardless of content
+- no centered container may constrain the header
+- header image preserves aspect ratio
+
+Execution slice:
+- reset /games/index.html only

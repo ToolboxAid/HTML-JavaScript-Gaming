@@ -6,7 +6,9 @@
 
 .toolboxaid-theme-header {
   box-sizing: border-box;
-  width: 100%;
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+  margin-right: calc(50% - 50vw);
   padding: 20px 16px 10px;
   background: #eef3f9;
   border-bottom: 1px solid rgba(21, 37, 61, 0.08);
@@ -23,8 +25,9 @@
 }
 
 .toolboxaid-theme-header .header-content {
-  max-width: var(--theme-max);
-  margin: 0 auto;
+  width: 100%;
+  max-width: none;
+  margin: 0;
   display: grid;
   grid-template-columns: 1fr;
   grid-template-areas:
@@ -41,7 +44,7 @@
   align-items: center;
   justify-content: center;
   padding: 18px 20px;
-  border-radius: var(--theme-radius);
+  border-radius: 0;
   background-size: cover;
   background-position: center;
   box-shadow: var(--theme-shadow);

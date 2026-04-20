@@ -1,7 +1,7 @@
-Expand MASTER_ROADMAP_STYLE with the missing style-system guardrails and implement the first real /index.html migration slice.
+Reset /games/index.html to the new shared theme system and lock the updated shared-header rules.
 
-Add the missing roadmap items so they are not forgotten.
-Reset /index.html onto the new Toolbox Aid-derived theme foundation.
-Keep the implementation narrow, testable, and free of embedded styling.
+Add Toolbox Aid as the first external menu item.
+Keep the shared header full width regardless of content.
+Preserve shared header sourcing under src/engine/theme.
 
-PR: BUILD_PR_STYLE_02_INDEX_IMPLEMENTATION_AND_ROADMAP_EXPANSION
+PR: BUILD_PR_STYLE_04_GAMES_INDEX_RESET_AND_HEADER_LOCKS

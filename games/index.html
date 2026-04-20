@@ -1,377 +1,82 @@
 <!--
 Toolbox Aid
 David Quesenberry
-03/24/2026
+04/19/2026
 index.html
 -->
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ToolboxAid - Games</title>
-  <link rel="stylesheet" href="../src/engine/ui/hubCommon.css" />
-  <link rel="stylesheet" href="../src/engine/theme/toolboxaid-header.css" />
-  <style>
-    .badge.debug-showcase {
-      background: #14b8a6;
-      border: 1px solid #7ce9dc;
-      color: #032320;
-      text-shadow: none;
-    }
-
-    .showcaseCardMeta {
-      margin-top: 8px;
-      color: #c5d2e4;
-      font-size: 0.84rem;
-      line-height: 1.35;
-    }
-
-    .showcaseCardMeta a {
-      color: #b8e8ff;
-      text-decoration: underline;
-    }
-  </style>
+  <title>Games - HTML JavaScript Gaming</title>
+  <link rel="stylesheet" href="../src/engine/theme/main.css" />
 </head>
+<body>
+  <div id="shared-theme-header"></div>
+  <main class="page-shell">
+    <section class="page-intro">
+      <h1>Games Hub</h1>
+      <p>
+        Launch playable game builds and follow the current progression from foundational arcade loops
+        through advanced systems.
+      </p>
+    </section>
 
-<body class="hub-page-games">
-  <main class="wrap">
-
-    <div class="hideme">
-      <div id="shared-theme-header"></div>
-      <section class="hero">
-        <p class="subtitle">Playable games live here. This page also tracks the current planned, build order from easier
-          project to harder projects so the engine grows in a contrlled way.
-        </p>
-      </section>
-    </div>
-
-    <div class="legend">
-      <span class="badge playable">Playable Now</span>
-      <span class="badge inprogress">In Progress</span>
-      <span class="badge planned">Planned Game</span>
-      <span class="badge sample">Better in /samples</span>
-      <span class="badge debug-showcase">Debug Showcase</span>
-    </div>
-
-    <section class="section">
+    <section class="content-section">
       <h2>Playable Now</h2>
-      <p>Current integrated game builds grouped under the roadmap level they belong to.</p>
+      <div class="card-grid">
+        <a class="card-link" href="/games/GravityWell/index.html">
+          <h3>Gravity Well</h3>
+          <p>Orbital route-planning gameplay with gravity assists and beacon collection objectives.</p>
+        </a>
+        <a class="card-link" href="/games/Asteroids/index.html">
+          <h3>Asteroids</h3>
+          <p>Classic arcade combat with tuned ship handling and score-chase progression.</p>
+        </a>
+        <a class="card-link" href="/games/SpaceInvaders/index.html">
+          <h3>Space Invaders</h3>
+          <p>Formation shooter gameplay with wave pacing, lives, and escalating pressure.</p>
+        </a>
+      </div>
+    </section>
 
-      <section class="playableLevel">
-        <h3>Level 1 - Basic Motion</h3>
-        <p>This level matters because it proves the fundamentals first: immediate movement, readable collisions, and a
-          simple arcade loop that feels good before bigger systems are layered on top.</p>
-        <div class="grid">
-          <a class="card" href="/games/Bouncing-ball/index.html">
-            <img class="thumb" src="/games/Bouncing-ball/assets/images/preview.svg"
-              alt="Bouncing Ball gameplay preview" />
-            <div class="cardBody">
-              <div class="tagRow"><span class="badge playable">Playable Now</span></div>
-              <div class="cardTitle">Bouncing Ball</div>
-              <div class="cardDesc">A minimal bounded-arena ball motion game focused on clean wall rebounds, stable
-                motion, and no-gravity arcade feel.</div>
-            </div>
-          </a>
+    <section class="content-section">
+      <h2>In Progress</h2>
+      <div class="card-grid">
+        <a class="card-link" href="/games/SpaceDuel/index.html">
+          <h3>Space Duel</h3>
+          <p>Vector-style inertial combat and wave-based scenario tuning.</p>
+        </a>
+        <a class="card-link" href="/games/Pong/index.html">
+          <h3>Pong</h3>
+          <p>Multi-mode paddle gameplay and input polish across keyboard and gamepad flows.</p>
+        </a>
+      </div>
+    </section>
 
-          <div class="card">
-            <img class="thumb" src="/games/Breakout/assets/images/preview.svg" alt="Breakout gameplay preview" />
-            <div class="cardBody">
-              <div class="tagRow"><span class="badge playable">Playable Now</span><span
-                  class="badge debug-showcase">Debug Showcase</span></div>
-              <div class="cardTitle">Breakout (Debug Showcase)</div>
-              <div class="cardDesc">Arcade brick breaker aligned to the official debug showcase flow with safe
-                card-level Play/Debug and onboarding guidance.</div>
-              <div class="showcaseCardMeta">Play: <a href="/games/Breakout/index.html">/games/Breakout/index.html</a> |
-                Debug Mode: <a href="/games/Breakout/index.html?debug=1">/games/Breakout/index.html?debug=1</a></div>
-              <div class="showcaseCardMeta">Docs: <a href="/docs/release/debug_showcase_tour.md">Debug Tour</a>, <a
-                  href="/docs/release/debug_showcase_getting_started.md">Getting Started</a>.</div>
-              <div class="showcaseCardMeta">Onboarding: Open Play first to confirm baseline behavior, then open Debug
-                Mode intentionally.</div>
-            </div>
-          </div>
-        </div>
-      </section>
+    <section class="content-section">
+      <h2>Roadmap Anchors</h2>
+      <div class="card-grid">
+        <a class="card-link" href="/games/Breakout/index.html">
+          <h3>Breakout</h3>
+          <p>Debug-showcase-aligned brick-breaker loop with onboarding-ready flow.</p>
+        </a>
+        <a class="card-link" href="/games/Pacman/index.html">
+          <h3>Pacman</h3>
+          <p>Personality-driven ghost behaviors and deterministic routing lane.</p>
+        </a>
+        <a class="card-link" href="/games/AITargetDummy/index.html">
+          <h3>AI Target Dummy</h3>
+          <p>Behavior-state validation lane for idle, chase, attack, and recover cycles.</p>
+        </a>
+      </div>
+    </section>
 
-      <section class="playableLevel">
-        <h3>Level 2 - Physics Systems</h3>
-        <p>This level is where motion starts to become more expressive: forces, orbital pull, and field interaction
-          matter more than simple straight-line arcade response.</p>
-        <div class="grid">
-          <a class="card" href="/games/SolarSystem/index.html">
-            <img class="thumb" src="/games/SolarSystem/assets/images/preview.svg" alt="Solar System gameplay preview" />
-            <div class="cardBody">
-              <div class="tagRow"><span class="badge playable">Playable Now</span></div>
-              <div class="cardTitle">Solar System</div>
-              <div class="cardDesc">A readable solar-system simulation with the Sun, eight planets, selected moons,
-                label toggles, and time controls.</div>
-            </div>
-          </a>
-
-          <a class="card" href="/games/GravityWell/index.html">
-            <img class="thumb" src="/games/GravityWell/assets/images/preview.svg" alt="Gravity Well gameplay preview" />
-            <div class="cardBody">
-              <div class="tagRow"><span class="badge playable">Playable Now</span></div>
-              <div class="cardTitle">Gravity Well</div>
-              <div class="cardDesc">Vector-based orbital flight game focused on slingshotting through planetary gravity
-                fields to collect every beacon in one run.</div>
-            </div>
-          </a>
-        </div>
-      </section>
-
-      <section class="playableLevel">
-        <h3>Level 3 - Collision Mastery</h3>
-        <p>This level is important because arcade feel starts depending on contact quality, rebound angles, pacing under
-          pressure, and controls that stay predictable at speed.</p>
-        <div class="grid">
-          <a class="card" href="/games/Pong/index.html">
-            <img class="thumb" src="/games/Pong/assets/images/preview.svg" alt="Pong gameplay preview" />
-            <div class="cardBody">
-              <div class="tagRow"><span class="badge playable">Playable Now</span></div>
-              <div class="cardTitle">Pong</div>
-              <div class="cardDesc">Arcade-style Pong with Tennis, Hockey, Handball, and Jai-Alai modes, paddle english,
-                and keyboard plus gamepad play.</div>
-            </div>
-          </a>
-        </div>
-      </section>
-
-      <section class="playableLevel">
-        <h3>Level 4 - Classic Arcade</h3>
-        <p>This level matters because it combines the earlier mechanics into fuller arcade games with hazards, scoring
-          pressure, enemy pacing, and recognizable long-run play loops.</p>
-        <div class="grid">
-
-
-          <div class="card">
-            <img class="thumb" src="/games/Asteroids/assets/images/preview.png" alt="Asteroids gameplay screenshot" />
-            <div class="cardBody">
-              <div class="tagRow"><span class="badge playable">Playable Now</span><span
-                  class="badge debug-showcase">Debug Showcase</span></div>
-              <div class="cardTitle">Asteroids (Debug Showcase)</div>
-              <div class="cardDesc">Classic-style space shooter with official debug showcase coverage and safe
-                card-level Play/Debug onboarding guidance.</div>
-              <div class="showcaseCardMeta">Play: <a href="/games/Asteroids/index.html">/games/Asteroids/index.html</a>
-                | Debug Mode: <a href="/games/Asteroids/index.html?debug=1">/games/Asteroids/index.html?debug=1</a>
-              </div>
-              <div class="showcaseCardMeta">Docs: <a href="/docs/release/debug_showcase_tour.md">Debug Tour</a>, <a
-                  href="/docs/release/debug_showcase_getting_started.md">Getting Started</a>.</div>
-              <div class="showcaseCardMeta">Onboarding: Open Play first, then open Debug Mode, and follow the docs for
-                guided onboarding.</div>
-            </div>
-          </div>
-          <a class="card" href="/games/SpaceDuel/index.html">
-            <img class="thumb" src="/games/SpaceDuel/assets/images/preview.svg" alt="Space Duel gameplay preview" />
-            <div class="cardBody">
-              <div class="tagRow"><span class="badge inprogress">In Progress</span></div>
-              <div class="cardTitle">Space Duel</div>
-              <div class="cardDesc">Vector-style inertial ship combat with one or two players, enemy split behavior,
-                hazards, and wave escalation.</div>
-            </div>
-          </a>
-
-          <a class="card" href="/games/SpaceInvaders/index.html">
-            <img class="thumb" src="/games/SpaceInvaders/assets/images/preview.svg"
-              alt="Space Invaders gameplay preview" />
-            <div class="cardBody">
-              <div class="tagRow"><span class="badge playable">Playable Now</span></div>
-              <div class="cardTitle">Space Invaders</div>
-              <div class="cardDesc">Classic formation shooter with disciplined firing, edge-hit reversals, alien
-                volleys, lives, score, and wave escalation.</div>
-            </div>
-          </a>
-
-        </div>
-      </section>
-
-      <section class="playableLevel">
-        <h3>Level 6 - AI Systems</h3>
-        <p>This level focuses on behavior and decision loops where enemy sensing, pressure windows, and state
-          transitions are the core challenge.</p>
-        <div class="grid">
-          <a class="card" href="/games/AITargetDummy/index.html">
-            <img class="thumb" src="/games/AITargetDummy/assets/images/preview.svg"
-              alt="AI Target Dummy gameplay preview" />
-            <div class="cardBody">
-              <div class="tagRow"><span class="badge playable">Playable Now</span></div>
-              <div class="cardTitle">AI Target Dummy</div>
-              <div class="cardDesc">AI behavior lab for deterministic idle/chase/attack/cooldown/recover flow with
-                readable debug telemetry.</div>
-            </div>
-          </a>
-          <a class="card" href="/games/Pacman/index.html">
-            <img class="thumb" src="/games/Pacman/assets/images/preview.png" alt="Pacman gameplay preview" />
-            <div class="cardBody">
-              <div class="tagRow"><span class="badge playable">Playable Now</span></div>
-              <div class="cardTitle">Pacman</div>
-              <div class="cardDesc">Arcade-style Pac-Man with personality ghosts, scatter/chase/frightened timing, and
-                deterministic target-tile routing.</div>
-            </div>
-          </a>
-        </div>
-
-      </section>
-
-      <section class="section">
-        <h2>Planned Game Difficulty Progression</h2>
-        <p>Ordered from easier to harder. This preserves the roadmap while also flagging which entries are better fits
-          for <strong>/samples</strong> instead of staying in <strong>/games</strong>.</p>
-
-        <div class="levels">
-          <article class="levelCard">
-            <div class="tagRow"><span class="badge playable">Playable Now</span></div>
-            <h3>Level 1 - Basic Motion</h3>
-            <p>Foundational arcade builds that prove immediate movement, simple collision, and the basic feel of direct
-              player control before larger systems pile on.</p>
-            <ul>
-              <li>Bouncing Ball</li>
-              <li>Breakout</li>
-            </ul>
-          </article>
-
-          <article class="levelCard">
-            <div class="tagRow"><span class="badge playable">Playable Now</span><span class="badge sample">Sample
-                Track</span></div>
-            <h3>Level 2 - Physics Systems</h3>
-            <p>Motion and force experiments that deepen acceleration, orbital behavior, and projectile tuning without
-              requiring full game structure yet.</p>
-            <ul>
-              <li>Solar System</li>
-              <li>Gravity Well</li>
-            </ul>
-          </article>
-
-          <article class="levelCard">
-            <div class="tagRow"><span class="badge playable">Playable Now</span><span class="badge sample">Sample
-                Track</span></div>
-            <h3>Level 3 - Collision Mastery</h3>
-            <p>Projects centered on collision quality: reading contact points, handling rebounds cleanly, and building
-              confidence in fast-moving arcade response.</p>
-            <ul>
-              <li>Pong</li>
-            </ul>
-          </article>
-
-          <article class="levelCard">
-            <div class="tagRow"><span class="badge inprogress">In Progress</Progress></span>
-              <span class="badge debug-showcase">Debug Showcase</span>
-            </div>
-            <h3>Level 4 - Classic Arcade</h3>
-            <p>Recognizable arcade conversions that start combining combat, hazards, enemy pacing, and progression into
-              broader playable loops.</p>
-            <ul>
-              <li>Asteroids <span class="inline-status">(Debug Showcase)</span></li>
-              <li>Space Duel <span class="inline-status">(Parshall Playable)</span></li>
-              <li>Space Invaders</li>
-              <li>Frogger</li>
-            </ul>
-          </article>
-
-          <article class="levelCard">
-            <div class="tagRow"><span class="badge planned">Planned Game</span></div>
-            <h3>Level 5 - Skill + Input</h3>
-            <p>Games that push responsiveness, multi-axis control, and higher player dexterity, especially where aiming
-              and movement must stay readable together.</p>
-            <ul>
-              <li>Dual Stick Arena</li>
-              <li>Arena Shooter</li>
-              <li>Robotron 2084</li>
-            </ul>
-          </article>
-
-          <article class="levelCard">
-            <div class="tagRow"><span class="badge playable">Playable Now</span><span class="badge sample">Sample
-                Track</span></div>
-            <h3>Level 6 - AI Systems</h3>
-            <p>Builds where enemy behavior and navigation become central, requiring believable pursuit, evasion,
-              routing, and pressure over time.</p>
-            <ul>
-              <li>AI Target Dummy</li>
-              <li>Pacman</li>
-            </ul>
-          </article>
-
-          <article class="levelCard">
-            <div class="tagRow"><span class="badge planned">Planned Game</span><span class="badge sample">Sample
-                Track</span></div>
-            <h3>Level 7 - World Systems</h3>
-            <p>Larger spaces and scrolling maps become the focus here, with more emphasis on traversal, streaming, and
-              keeping simulation stable across a broader playfield.</p>
-            <ul>
-              <li>Scrolling World Test <strong>(sample track)</strong></li>
-              <li>Tile Collision Demo <strong>(sample track)</strong></li>
-              <li>Defender (Lite)</li>
-            </ul>
-          </article>
-
-          <article class="levelCard">
-            <div class="tagRow"><span class="badge planned">Planned Game</span><span class="badge sample">Sample
-                Track</span></div>
-            <h3>Level 8 - Platforming</h3>
-            <p>Precision jump timing, grounded motion, and collision edge cases dominate this level, making feel and
-              consistency more important than raw feature count.</p>
-            <ul>
-              <li>Donkey Kong</li>
-              <li>Platformer Demo <strong>(sample track)</strong></li>
-            </ul>
-          </article>
-
-          <article class="levelCard">
-            <div class="tagRow"><span class="badge planned">Planned Game</span></div>
-            <h3>Level 9 - Advanced Arcade</h3>
-            <p>These titles demand denser enemy patterns, layered scoring pressure, and more simultaneous systems while
-              still feeling like tight classic arcade games.</p>
-            <ul>
-              <li>Galaga</li>
-              <li>Rally-X</li>
-            </ul>
-          </article>
-
-          <article class="levelCard">
-            <div class="tagRow"><span class="badge planned">Planned Game</span><span class="badge sample">Sample
-                Track</span></div>
-            <h3>Level 10 - Full Systems</h3>
-            <p>The final tier is where replay, multiplayer, tooling, and richer production constraints become worth
-              validating after the core arcade foundation is proven.</p>
-            <ul>
-              <li>Full Arena Shooter</li>
-              <li>Replay System <strong>(sample track)</strong></li>
-              <li>Multiplayer (Optional) <strong>(sample track)</strong></li>
-            </ul>
-          </article>
-
-          <article class="levelCard">
-            <div class="tagRow"><span class="badge planned">Planned Game</span></div>
-            <h3>Level 11 - Network Games</h3>
-            <p></p>
-            <ul>
-              <li>Tic Tac Toe</li>
-              <li>Connect Four</li>
-              <li>Othello</li>
-
-            </ul>
-          </article>
-
-          <article class="levelCard">
-            <div class="tagRow"><span class="badge planned">Planned Game</span></div>
-            <h3>Level xx - Original Games</h3>
-            <p>This level is for original projects that build on the engine and arcade foundation without following a
-              direct classic-game template.</p>
-            <ul>
-              <li>King of the Iceberg</li>
-              <li>Maze runner</li>
-              <li>Head to Head mario style</li>
-            </ul>
-          </article>
-
-
-
-        </div>
-      </section>
+    <div class="footer-note">
+      Open game pages through a local web server for stable module and asset loading.
+    </div>
   </main>
   <script type="module" src="../src/engine/theme/mount-shared-header.js"></script>
 </body>
-
 </html>
