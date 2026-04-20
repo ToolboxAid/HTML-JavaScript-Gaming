@@ -11,8 +11,10 @@ index.html
   <title>Breakout - Debug Showcase</title>
   <link rel="stylesheet" href="/src/engine/ui/baseLayout.css" />
   <link rel="stylesheet" href="/samples/shared/debugShowcaseControls.css" />
+  <link rel="stylesheet" href="../../src/engine/theme/main.css" />
 </head>
-<body>
+<body class="hub-page-games">
+  <div id="shared-theme-header"></div>
   <main>
     <h1>Breakout - Debug Showcase</h1>
     <p>Classic single-screen brick breaker debug showcase with crisp paddle control, rectangular arcade visuals, keyboard and gamepad support, and a minimal score-and-lives HUD.</p>
@@ -50,6 +52,7 @@ index.html
     </section>
   </main>
   <script type="module" src="./main.js"></script>
+  <script type="module" src="../../src/engine/theme/mount-shared-header.js"></script>
 </body>
 </html>
 
