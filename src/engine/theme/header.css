@@ -1,6 +1,5 @@
 .header-image {
   background-color: #3600af;
-  background-image: url('/src/engine/theme/toolboxaid-header.png');
   border-bottom: 8px solid #3600af;
 }
 
@@ -39,24 +38,18 @@
 
 .toolboxaid-theme-header #image {
   grid-area: image;
-  min-height: 126px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 18px 20px;
+  display: block;
+  padding: 0;
   border-radius: 0;
-  background-size: cover;
-  background-position: center;
   box-shadow: var(--theme-shadow);
-  overflow: hidden;
-  position: relative;
+  overflow: visible;
+  position: static;
 }
 
-.toolboxaid-theme-header #image::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(180deg, rgba(9, 19, 33, 0.18), rgba(9, 19, 33, 0.38));
+.toolboxaid-theme-header #image img {
+  display: block;
+  width: 100%;
+  height: auto;
 }
 
 .toolboxaid-theme-header #tagline {

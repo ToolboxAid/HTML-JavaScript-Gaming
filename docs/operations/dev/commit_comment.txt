@@ -2,6 +2,6 @@ Reset /games/index.html to the new shared theme system and lock the updated shar
 
 Add Toolbox Aid as the first external menu item.
 Keep the shared header full width regardless of content.
-Preserve shared header sourcing under src/engine/theme.
+Require the header image to retain aspect ratio as viewport width changes.
 
 PR: BUILD_PR_STYLE_04_GAMES_INDEX_RESET_AND_HEADER_LOCKS

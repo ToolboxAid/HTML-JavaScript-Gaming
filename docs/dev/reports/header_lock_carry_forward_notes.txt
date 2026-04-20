@@ -5,7 +5,8 @@ Locked for implementation:
 - external link standard = class is-external + target _blank + rel noopener noreferrer
 - header stretches full width regardless of content
 - no centered container may constrain the header
-- header image preserves aspect ratio
+- header image retains aspect ratio as width changes
+- fixed-height header image behavior must be removed
 
 Execution slice:
 - reset /games/index.html only

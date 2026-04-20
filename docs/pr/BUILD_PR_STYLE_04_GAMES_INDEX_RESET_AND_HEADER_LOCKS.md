@@ -18,12 +18,18 @@ Reset `/games/index.html` onto the new Toolbox Aid-derived theme while carrying 
 2. Header must stretch the full width of the screen regardless of content.
    - no centered max-width wrapper may constrain the header
    - header image area must remain full-width
-   - image behavior must preserve aspect ratio
 
-3. Shared header source remains under:
+3. Header image must retain aspect ratio as page width changes.
+   - image width may scale up/down with viewport
+   - image height must scale proportionally
+   - do not hold image container to a fixed height
+   - do not crop, squash, or distort the image
+   - remove any fixed-height rule that prevents proportional scaling
+
+4. Shared header source remains under:
    - `src/engine/theme/toolboxaid-header.html`
 
-4. Shared header styling remains under:
+5. Shared header styling remains under:
    - `src/engine/theme/header.css`
    - plus shared base support in `src/engine/theme/main.css` as needed
 
@@ -49,5 +55,7 @@ Optional shared visual cue:
 - header renders from shared source
 - Toolbox Aid link is first in menu and opens in new tab safely
 - header remains full width regardless of content
+- header image scales proportionally with viewport width
+- no fixed-height header image behavior remains
 - no embedded styling remains on `/games/index.html`
 - page is testable and narrow in scope

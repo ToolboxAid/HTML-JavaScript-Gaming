@@ -21,7 +21,11 @@ Required work:
      <a href="https://toolboxaid.com" class="is-external" target="_blank" rel="noopener noreferrer">Toolbox Aid</a>
    </li>
 4. Ensure header styling keeps the header full width regardless of content.
-5. Ensure the header image area preserves aspect ratio and is not constrained by a centered content wrapper.
+5. Ensure the header image scales proportionally with viewport width:
+   - retain aspect ratio
+   - no fixed-height lock
+   - no distortion
+   - no cropping used to fake responsiveness
 6. Add or keep shared external-link styling under theme CSS if useful.
 7. Keep `/games/index.html` structurally close to `/index.html` and `/samples/index.html`.
 8. Package to:
