@@ -31,7 +31,8 @@ hubCommon.css
   --status-live: #2f9e44;
   --status-tool: #9c36b5;
   --status-roadmap: #f59f00;
-  --pin-icon-mask: url("/src/engine/ui/assets/icons/pin-monocolor.svg");
+    /* --pin-icon-mask: url("/src/engine/ui/assets/icons/pin-monocolor.svg"); */
+  --pin-icon-mask: url("/src/engine/ui/assets/icons/pin-monocolor-filled.svg");
 }
 
 * {
