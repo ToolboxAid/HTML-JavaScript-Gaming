@@ -318,6 +318,22 @@ body.tools-platform-surface .tools-platform-dock-panel {
   overflow: auto;
 }
 
+body.tools-platform-surface .tools-platform-field-full {
+  width: 100%;
+}
+
+body.tools-platform-surface .tools-platform-field-full textarea {
+  width: 100%;
+}
+
+body.tools-platform-surface .tools-platform-mount-container {
+  min-height: 420px;
+  border: 1px solid rgba(148, 163, 184, 0.35);
+  border-radius: 10px;
+  overflow: hidden;
+  background: rgba(15, 23, 42, 0.45);
+}
+
 @media (min-width: 1201px) {
   body.tools-platform-surface .tools-platform-resize-panel {
     min-width: 220px;

@@ -384,6 +384,10 @@ body.vector-editor-page {
   line-height: 1.45;
 }
 
+.vector-map-help-page .callout.callout--spaced {
+  margin-top: 16px;
+}
+
 .vector-editor-page .muted {
   color: var(--muted);
 }

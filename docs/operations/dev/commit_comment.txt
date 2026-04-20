@@ -1,6 +1,6 @@
-Remove the remaining targeted inline <style> blocks and move the styles into shared CSS.
+Remove the remaining targeted inline style="" attributes and move the rules into shared CSS.
 
 Prefer reuse of higher-level existing CSS when the rules already match or are close enough.
-Create new shared CSS only when necessary.
+Create new shared CSS classes/selectors only when necessary.
 
-PR: BUILD_PR_STYLE_INLINE_CLEANUP_REUSE_HIGHER_LEVEL_CSS
+PR: BUILD_PR_STYLE_INLINE_ATTR_CLEANUP_FINAL
