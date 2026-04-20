@@ -15,6 +15,7 @@ Track the style-system migration for HTML-JavaScript-Gaming using Toolbox Aid as
 - No style strings injected from JS.
 - Shared theme CSS lives under `src/engine/theme/`.
 - Theme does not move into `src/engine/ui/`.
+- No deletes from this roadmap during style migration planning; only additive roadmap updates unless explicit closeout status changes are earned.
 
 ## Folder Responsibilities
 ### src/engine/theme/
@@ -59,6 +60,9 @@ Behavior only:
   - fixed right column
   - only center grows/shrinks
 - Minimal JS for HTML pages.
+- Normal content pages use a centered content-width policy.
+- Tool pages use a full-width policy.
+- Header area may gain a compact mode for tool pages if needed after validation, but only as an explicit tracked slice.
 
 ## UX Clarification
 ### Tool launch labels
@@ -85,23 +89,29 @@ This explanation should be kept visible in related UI/help text so launch choice
 - border radius
 - shadows
 - transition timings
+- content widths
+- rail widths for tool layouts
 [ ] Base layout primitives:
 - page shell
 - content container
 - full-width section
 - intro/title block
 - nav row
+- fixed-rail / fluid-center tool shell
 [ ] Document which live Toolbox Aid behaviors are intentionally carried forward.
 [ ] Do not pull from existing project styling.
 
 ### A2. Establish shared file layout
 [ ] Create/confirm:
 - `src/engine/theme/main.css`
-- `src/engine/theme/header.css` or fold into main if still clean
+- `src/engine/theme/header.css`
+- `src/engine/theme/nav.css`
+- `src/engine/theme/layout.css`
 - `src/engine/theme/accordion.css`
 - `src/engine/theme/tools.css`
 - `src/engine/theme/games.css`
 - `src/engine/theme/samples.css`
+- `src/engine/theme/pages.css`
 [ ] Keep `main.css` foundational, not a dumping ground.
 
 ### A3. Shared selector hygiene
@@ -109,6 +119,13 @@ This explanation should be kept visible in related UI/help text so launch choice
 [ ] Introduce new consistent naming where needed.
 [ ] Remove embedded styling from migrated pages only.
 [ ] Ban new embedded styling in HTML and JS.
+
+### A4. Theme baseline details
+[ ] Define font baseline and font stack policy.
+[ ] Define spacing scale and usage policy.
+[ ] Define container-width policy for content pages.
+[ ] Define full-width policy for tools.
+[ ] Define shadow/border/radius policy so ad hoc visual drift does not return.
 
 ---
 
@@ -127,6 +144,7 @@ This explanation should be kept visible in related UI/help text so launch choice
 
 ### B2. Shared header assets and styling
 [ ] Pull the required Toolbox Aid CSS needed to reproduce the header look.
+[ ] Extract the minimum required CSS for correct rendering; do not rely on unrelated project CSS.
 [ ] Keep the header image behavior:
 - full-width feel
 - maintain aspect ratio
@@ -137,12 +155,17 @@ This explanation should be kept visible in related UI/help text so launch choice
 - nav row
 - social area if retained
 [ ] Preserve the menu hover line effect from Toolbox Aid baseline.
+[ ] Validate the header against missing global dependencies such as resets, fonts, spacing, and wrappers.
 
 ### B3. Header loading
 [ ] Provide one shared import path.
 [ ] Avoid duplicating header markup across pages.
 [ ] Minimize JS required to place the shared header into HTML pages.
 [ ] Keep HTML-page JS minimal and boring.
+
+### B4. Header modes
+[ ] Evaluate whether tools need a compact header mode after the main entry pages land.
+[ ] If needed, implement compact mode as a tracked, explicit slice rather than as ad hoc page-specific overrides.
 
 ---
 
@@ -157,6 +180,7 @@ This explanation should be kept visible in related UI/help text so launch choice
 [ ] Validate spacing consistency.
 [ ] Validate nav behavior.
 [ ] Validate responsive behavior.
+[ ] Validate that `/index.html` uses no embedded styling and no JS-driven styling.
 
 ### C2. Reset `/samples/index.html`
 [ ] Apply same shell and shared header.
@@ -173,6 +197,14 @@ This explanation should be kept visible in related UI/help text so launch choice
 [ ] Keep page visually very close to `/index.html`.
 [ ] Use `tools.css` only for content-specific differences.
 
+### C5. Shared page-shell standard
+[ ] Standardize all four main pages around:
+- shared header
+- shared intro/title area
+- shared content shell
+- shared footer policy if footer is used later
+[ ] Avoid page-by-page shell drift.
+
 ---
 
 ## Track D — Collapsible Pattern
@@ -186,6 +218,14 @@ This explanation should be kept visible in related UI/help text so launch choice
 [ ] Prefer CSS-first.
 [ ] Add minimal JS only if needed for accessibility or state persistence.
 [ ] Use for shared header/page intro compaction where appropriate.
+
+### D3. Collapsible structure
+[ ] Standardize collapsible naming:
+- `.is-collapsible`
+- `.is-collapsible__summary`
+- `.is-collapsible__content`
+- `.is-collapsible--collapsed`
+[ ] Avoid vague state naming.
 
 ---
 
@@ -208,6 +248,10 @@ This explanation should be kept visible in related UI/help text so launch choice
 [ ] Add visible explanation near launch controls:
 - Open Tool = launch the tool directly/standalone
 - Open In Host = launch the same tool inside a shared host shell/container
+
+### E4. Host strategy clarity
+[ ] Decide whether both launch modes remain permanent, get relabeled later, or eventually converge.
+[ ] Keep the current explanation visible until that decision is made.
 
 ---
 
@@ -236,6 +280,12 @@ This explanation should be kept visible in related UI/help text so launch choice
 - helper text
 - tool labels
 
+### F4. Hover, focus, and active states
+[ ] Standardize hover behavior.
+[ ] Standardize focus-visible behavior.
+[ ] Standardize active/current-nav states.
+[ ] Preserve Toolbox Aid-style hover line treatment where adopted.
+
 ---
 
 ## Track G — Migration Rules
@@ -255,6 +305,27 @@ This explanation should be kept visible in related UI/help text so launch choice
 [ ] Delete embedded `<style>` only after migrated coverage is validated.
 [ ] Delete JS styling only after migrated coverage is validated.
 
+### G4. No-legacy-dependency verification
+[ ] For each migrated page, verify that no old project-local style dependency remains.
+[ ] Record what was removed and what replaced it.
+
+---
+
+## Track H — Accessibility and Interaction Baseline
+
+### H1. Shared interaction states
+[ ] Ensure nav, buttons, and accordions have keyboard-usable states.
+[ ] Keep focus-visible styling consistent.
+
+### H2. Minimal-JS HTML policy
+[ ] Document what JS is allowed on plain HTML pages.
+[ ] Keep header loading and collapsible behavior minimal and auditable.
+
+### H3. Responsive baseline
+[ ] Validate common desktop widths first.
+[ ] Validate narrower widths for page-shell wrapping and nav behavior.
+[ ] Prevent fixed rails from collapsing the center below usable limits.
+
 ---
 
 ## Suggested Execution Order
@@ -265,4 +336,19 @@ This explanation should be kept visible in related UI/help text so launch choice
 [ ] STYLE_05 — Add `.is-collapsible` shared accordion behavior.
 [ ] STYLE_06 — Establish shared tool shell and migrate one tool.
 [ ] STYLE_07 — Clarify tool launch labels/help text.
-[ ] STYLE_08+ — Continue tool UX migration tool-by-tool.
+[ ] STYLE_08 — Evaluate compact tool-header mode if still needed.
+[ ] STYLE_09+ — Continue tool UX migration tool-by-tool.
+
+---
+
+## STYLE_02 Additive Expansion Bundle
+
+The following additive requirements are explicitly tracked for STYLE_02 implementation and validation:
+
+- [ ] Confirm `/index.html` imports only `src/engine/theme/main.css` for page styling.
+- [ ] Confirm shared header styles are resolved through theme-level imports rather than page-local overrides.
+- [ ] Confirm header template content changes remain limited to:
+  - tagline = `HTML-JavaScript Gaming`
+  - menu = Home / Games / Samples / Tools
+- [ ] Confirm `/index.html` contains no embedded `<style>` and no inline `style=""`.
+- [ ] Confirm plain-page JS remains minimal and limited to shared-header mounting.

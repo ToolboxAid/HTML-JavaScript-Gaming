@@ -1,0 +1,17 @@
+Style roadmap expansion summary
+
+Added tracking for:
+- font baseline policy
+- spacing scale policy
+- container-width vs full-width policy
+- header CSS dependency extraction
+- compact tool-header evaluation
+- shared page shell standard
+- collapsible structure naming
+- host strategy clarity
+- hover/focus/active state standardization
+- no-legacy-dependency verification
+- minimal-JS policy and responsive baseline
+
+Execution slice:
+- implement /index.html only
