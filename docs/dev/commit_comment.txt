@@ -1,6 +1,5 @@
-Add automated validation for fullscreen rules.
+Add shared .is-collapsible system and replace hideme usage.
 
-Ensures no regression beyond sample 0713.
-Validates proper fullscreen scaling behavior.
+Enable collapsible header/intro sections for better vertical space usage.
 
-PR: LEVEL 23.9 FULLSCREEN VALIDATION AUTOMATION
+PR: BUILD_PR_STYLE_05_COLLAPSIBLE_SYSTEM

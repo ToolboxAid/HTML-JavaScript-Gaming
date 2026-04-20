@@ -11,17 +11,20 @@ index.html
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Tools</title>
+  <link rel="stylesheet" href="../src/engine/theme/main.css" />
   <link rel="stylesheet" href="../src/engine/ui/hubCommon.css" />
   <link rel="stylesheet" href="../src/engine/theme/toolboxaid-header.css" />
   <link rel="stylesheet" href="./shared/platformShell.css" />
 </head>
 
 <body class="hub-page-tools" data-tools-platform-page="landing">
-
-  <div class="hideme">
-    <div id="shared-theme-header"></div>
-    <div data-tools-platform-header></div>
-  </div>
+  <details class="is-collapsible is-collapsible--collapsed" open>
+    <summary class="is-collapsible__summary">Header and Intro</summary>
+    <div class="is-collapsible__content">
+      <div id="shared-theme-header"></div>
+      <div data-tools-platform-header></div>
+    </div>
+  </details>
   <div class="wrap">
 
     <section class="hero">
