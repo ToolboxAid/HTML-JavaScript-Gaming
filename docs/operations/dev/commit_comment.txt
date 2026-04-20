@@ -1,5 +1,5 @@
-Restore the remaining samples index UI capabilities without redesigning the page shell.
+Normalize samples metadata and tighten samples index filter/tile UX.
 
-Bring back all filter dropdowns, pinned list behavior, pin affordance, preview images, image-launch links, and hover zoom on /samples/index.html.
+Convert tags into real descriptive tags, surface class values clearly, alphabetize class filter options, align search with Phase/Class/Tag, and move the pin affordance to the preview top-right with a green pinned state.
 
-PR: BUILD_PR_STYLE_SAMPLES_INDEX_UI_BEHAVIOR_RESTORE
+PR: BUILD_PR_SAMPLES_METADATA_TAG_NORMALIZATION_AND_FILTER_BAR_UX

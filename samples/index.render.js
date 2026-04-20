@@ -50,14 +50,15 @@ function writePinnedSet(pinnedSet) {
   window.localStorage.setItem(PINNED_KEY, JSON.stringify([...pinnedSet].sort()));
 }
 
-function buildClassTokens(engineClassesUsed) {
-  const classEntries = asArray(engineClassesUsed)
-    .map((entry) => normalize(entry))
-    .filter(Boolean);
-  return classEntries.map((entry) => {
-    const name = entry.split("/").at(-1) || entry;
-    return { value: entry, label: name };
-  });
+function buildClassTokens(classValues, engineClassesUsed) {
+  const classEntries = asArray(classValues).length > 0 ? asArray(classValues) : asArray(engineClassesUsed);
+  const deduped = [...new Set(classEntries.map((entry) => normalize(entry)).filter(Boolean))];
+  return deduped
+    .map((entry) => {
+      const name = entry.split("/").at(-1) || entry;
+      return { value: entry, label: name };
+    })
+    .sort((a, b) => a.label.localeCompare(b.label, undefined, { sensitivity: "base" }));
 }
 
 function buildSampleRows(metadata, pinnedSet) {
@@ -90,7 +91,7 @@ function buildSampleRows(metadata, pinnedSet) {
       const description = normalize(sample?.description) || "No description available.";
       const href = normalize(sample?.href) || `./phase-${phase}/${id}/index.html`;
       const tags = asArray(sample?.tags).map((tag) => normalizeTag(tag)).filter(Boolean);
-      const classTokens = buildClassTokens(sample?.engineClassesUsed);
+      const classTokens = buildClassTokens(sample?.classValues, sample?.engineClassesUsed);
       const previewSrc = normalize(sample?.thumbnail) || normalize(sample?.preview) || "";
       return {
         id,
@@ -110,7 +111,11 @@ function buildSampleRows(metadata, pinnedSet) {
     .sort((a, b) => a.id.localeCompare(b.id));
 
   const phases = [...new Set(sampleRows.map((sample) => sample.phase))].sort(sortPhase);
-  const classes = [...new Set(sampleRows.flatMap((sample) => sample.classTokens.map((token) => token.value)))].sort();
+  const classes = [...new Map(
+    sampleRows.flatMap((sample) => sample.classTokens).map((token) => [token.value, token.label])
+  ).entries()]
+    .map(([value, label]) => ({ value, label }))
+    .sort((a, b) => a.label.localeCompare(b.label, undefined, { sensitivity: "base" }));
   const tags = [...new Set(sampleRows.flatMap((sample) => sample.tags))].sort();
 
   return { sampleRows, phases, classes, tags, phaseInfoMap };
@@ -154,23 +159,13 @@ function groupByPhase(sampleRows, phaseInfoMap) {
   return [...grouped.values()].sort((a, b) => sortPhase(a.phase, b.phase));
 }
 
-function renderPinnedList(container, rows) {
-  container.innerHTML = "";
-  if (rows.length === 0) {
-    const note = document.createElement("p");
-    note.textContent = "No pinned samples yet.";
-    container.appendChild(note);
-    return;
-  }
-  for (const sample of rows) {
-    container.appendChild(buildSampleCard(sample));
-  }
-}
-
 function buildSampleCard(sample) {
   const card = document.createElement("article");
   card.className = "card-link sample-card";
   card.dataset.sampleId = sample.id;
+
+  const previewWrap = document.createElement("div");
+  previewWrap.className = "sample-preview-wrap";
 
   const launch = document.createElement("a");
   launch.className = "sample-preview-link";
@@ -183,6 +178,25 @@ function buildSampleCard(sample) {
     launch.classList.add("sample-preview-missing");
   }
 
+  const pinInputId = `sample-pin-${sample.id}`;
+  const pinInput = document.createElement("input");
+  pinInput.id = pinInputId;
+  pinInput.type = "checkbox";
+  pinInput.className = "sample-pin-toggle";
+  pinInput.dataset.samplePin = sample.id;
+  pinInput.checked = sample.pinned;
+
+  const pinLabel = document.createElement("label");
+  pinLabel.className = "sample-pin-label";
+  pinLabel.setAttribute("for", pinInputId);
+  pinLabel.setAttribute("title", sample.pinned ? "Unpin" : "Pin");
+  pinLabel.setAttribute("aria-label", sample.pinned ? "Unpin sample" : "Pin sample");
+  pinLabel.textContent = "??";
+
+  previewWrap.appendChild(launch);
+  previewWrap.appendChild(pinInput);
+  previewWrap.appendChild(pinLabel);
+
   const title = document.createElement("h3");
   title.innerHTML = `<a class="sample-title-link" href="${escapeHtml(sample.href)}">${escapeHtml(sample.title)}</a>`;
 
@@ -190,23 +204,28 @@ function buildSampleCard(sample) {
   description.textContent = sample.description;
 
   const meta = document.createElement("p");
-  const classLabel = sample.classTokens.length > 0
-    ? sample.classTokens.map((token) => token.label).join(", ")
-    : "none";
+  const classLabel = sample.classTokens.length > 0 ? sample.classTokens.map((token) => token.label).join(", ") : "none";
   const tagLabel = sample.tags.length > 0 ? sample.tags.join(", ") : "none";
   meta.textContent = `Phase ${sample.phase} | Classes: ${classLabel} | Tags: ${tagLabel}`;
 
-  const pinRow = document.createElement("div");
-  pinRow.className = "sample-pin-row";
-  const pinInputId = `sample-pin-${sample.id}`;
-  pinRow.innerHTML = `<input id="${pinInputId}" type="checkbox" class="sample-pin-toggle" data-sample-pin="${sample.id}" ${sample.pinned ? "checked" : ""}><label for="${pinInputId}" class="sample-pin-label" title="${sample.pinned ? "Unpin" : "Pin"}">📌</label>`;
-
-  card.appendChild(launch);
+  card.appendChild(previewWrap);
   card.appendChild(title);
   card.appendChild(description);
   card.appendChild(meta);
-  card.appendChild(pinRow);
   return card;
+}
+
+function renderPinnedList(container, rows) {
+  container.innerHTML = "";
+  if (rows.length === 0) {
+    const note = document.createElement("p");
+    note.textContent = "No pinned samples yet.";
+    container.appendChild(note);
+    return;
+  }
+  for (const sample of rows) {
+    container.appendChild(buildSampleCard(sample));
+  }
 }
 
 function renderPhaseSections(container, phaseGroups) {
@@ -267,23 +286,26 @@ export async function initSamplesIndex() {
 
   const model = buildSampleRows(metadata, pinnedSet);
   setSelectOptions(phaseSelect, model.phases, (value) => `Phase ${value}`);
-  setSelectOptions(classSelect, model.classes, (value) => value.split("/").at(-1) || value);
+  setSelectOptions(classSelect, model.classes.map((entry) => entry.value), (value) => {
+    const found = model.classes.find((entry) => entry.value === value);
+    return found?.label || value.split("/").at(-1) || value;
+  });
   setSelectOptions(tagSelect, model.tags, (value) => value);
 
   const render = () => {
-    const model = buildSampleRows(metadata, pinnedSet);
+    const nextModel = buildSampleRows(metadata, pinnedSet);
     const filterState = {
       phase: normalize(phaseSelect.value),
       className: normalize(classSelect.value),
       tag: normalize(tagSelect.value),
       query: normalize(searchInput.value)
     };
-    const filteredRows = filterSampleRows(model.sampleRows, filterState);
+    const filteredRows = filterSampleRows(nextModel.sampleRows, filterState);
     const pinnedRows = filteredRows.filter((entry) => entry.pinned);
-    const phaseGroups = groupByPhase(filteredRows, model.phaseInfoMap);
+    const phaseGroups = groupByPhase(filteredRows, nextModel.phaseInfoMap);
     renderPinnedList(pinnedContainer, pinnedRows);
     renderPhaseSections(listContainer, phaseGroups);
-    updateStatus(statusNode, filteredRows, model.sampleRows, phaseGroups);
+    updateStatus(statusNode, filteredRows, nextModel.sampleRows, phaseGroups);
   };
 
   const handlePinEvent = (event) => {

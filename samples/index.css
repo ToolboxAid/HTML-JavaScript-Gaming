@@ -10,12 +10,13 @@
   gap: 6px;
 }
 
-.samples-filter-search {
-  grid-column: 1 / -1;
-}
-
 .sample-card {
   overflow: hidden;
+}
+
+.sample-preview-wrap {
+  position: relative;
+  margin-bottom: 10px;
 }
 
 .sample-preview-link {
@@ -23,7 +24,6 @@
   border-radius: 10px;
   overflow: hidden;
   border: 1px solid var(--line, rgba(221, 214, 254, 0.26));
-  margin-bottom: 10px;
 }
 
 .sample-thumb {
@@ -57,11 +57,6 @@
   text-decoration: underline;
 }
 
-.sample-pin-row {
-  display: flex;
-  justify-content: flex-end;
-}
-
 .sample-pin-toggle {
   position: absolute;
   opacity: 0;
@@ -69,18 +64,23 @@
 }
 
 .sample-pin-label {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 2;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   min-width: 32px;
   min-height: 32px;
   border-radius: 999px;
-  border: 1px solid var(--line, rgba(221, 214, 254, 0.26));
+  border: 1px solid rgba(34, 197, 94, 0.75);
+  background: rgba(15, 23, 42, 0.72);
   cursor: pointer;
   user-select: none;
 }
 
 .sample-pin-toggle:checked + .sample-pin-label {
-  background: rgba(167, 139, 250, 0.34);
-  border-color: var(--card-hover-border, #c4b5fd);
+  background: rgba(34, 197, 94, 0.35);
+  border-color: rgba(34, 197, 94, 0.95);
 }
