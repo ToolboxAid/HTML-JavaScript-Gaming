@@ -1,7 +1,7 @@
 # Validation Checklist
 
-- [ ] Asteroids Play link resolves to /games/Asteroids/index.html
-- [ ] Asteroids Debug link resolves to /games/Asteroids/index.html?debug=1
-- [ ] No asteroids_new reference remains in the Asteroids sample link target
-- [ ] No other sample cards changed
-- [ ] No duplicate Asteroids launch links
+- [ ] All game pages include header structure
+- [ ] Header overlays correctly
+- [ ] No color changes introduced
+- [ ] No regressions in gameplay
+- [ ] No layout issues

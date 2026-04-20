@@ -10,9 +10,13 @@ index.html
   <meta charset="UTF-8" />
   <title>Solar System</title>
   <link rel="stylesheet" href="/src/engine/ui/baseLayout.css" />
+  <link rel="stylesheet" href="/src/engine/theme/main.css" />
+  <link rel="stylesheet" href="/src/engine/ui/hubCommon.css" />
 </head>
-<body>
-  <main>
+<body class="hub-page-games" data-header-title="Solar System" data-header-details="A readable stylized solar-system simulation with the Sun, all eight planets, selected moons, scaled orbital motion, and simple time controls.">
+  <div id="shared-theme-header-root"></div>
+
+<main>
     <h1>Solar System</h1>
     <p>A readable stylized solar-system simulation with the Sun, all eight planets, selected moons, scaled orbital motion, and simple time controls.</p>
     <canvas id="game" width="960" height="720"></canvas>
@@ -34,7 +38,8 @@ index.html
         <li>theme / Theme</li>
       </ul>
     </section>
-  </main>
+  </main>  <script type="module" src="/src/engine/theme/mount-shared-header.js"></script>
+
   <script type="module" src="./main.js"></script>
 </body>
 </html>
