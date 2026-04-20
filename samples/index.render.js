@@ -1,20 +1,33 @@
 const METADATA_PATH = "./metadata/samples.index.metadata.json";
 const PINNED_KEY = "samples-index-pinned";
 
-export function normalize(value) {
+function normalize(value) {
   return typeof value === "string" ? value.trim() : "";
 }
 
-function normalizeTag(tag) {
-  return normalize(tag).toLowerCase().replace(/[_\s]+/g, "-").replace(/-+/g, "-");
+function normalizeToken(value) {
+  return normalize(value).toLowerCase();
 }
 
-function safeArray(value) {
+function normalizeTag(value) {
+  return normalizeToken(value).replace(/[_\s]+/g, "-").replace(/-+/g, "-");
+}
+
+function asArray(value) {
   return Array.isArray(value) ? value : [];
 }
 
-function sortPhaseIds(values) {
-  return [...new Set(values.filter((value) => /^\d{2}$/.test(value)))].sort((a, b) => Number(a) - Number(b));
+function sortPhase(phaseA, phaseB) {
+  return Number(phaseA) - Number(phaseB);
+}
+
+function escapeHtml(value) {
+  return String(value)
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#39;");
 }
 
 function readPinnedSet() {
@@ -27,236 +40,279 @@ function readPinnedSet() {
     if (!Array.isArray(parsed)) {
       return new Set();
     }
-    return new Set(parsed.map((value) => normalize(value)).filter((value) => /^\d{4}$/.test(value)));
+    return new Set(parsed.map((entry) => normalize(entry)).filter((entry) => /^\d{4}$/.test(entry)));
   } catch {
     return new Set();
   }
 }
 
-function savePinnedSet(pinnedSet) {
-  const ordered = [...pinnedSet].sort();
-  window.localStorage.setItem(PINNED_KEY, JSON.stringify(ordered));
+function writePinnedSet(pinnedSet) {
+  window.localStorage.setItem(PINNED_KEY, JSON.stringify([...pinnedSet].sort()));
 }
 
-export function buildPhaseModel(metadata, pinnedSet = new Set()) {
-  const phaseDetails = new Map(
-    safeArray(metadata?.phases)
+function buildClassTokens(engineClassesUsed) {
+  const classEntries = asArray(engineClassesUsed)
+    .map((entry) => normalize(entry))
+    .filter(Boolean);
+  return classEntries.map((entry) => {
+    const name = entry.split("/").at(-1) || entry;
+    return { value: entry, label: name };
+  });
+}
+
+function buildSampleRows(metadata, pinnedSet) {
+  const phaseInfoMap = new Map(
+    asArray(metadata?.phases)
       .map((phase) => {
-        const id = normalize(phase?.phase);
-        return [id, {
-          phase: id,
-          title: normalize(phase?.title) || `Phase ${id}`,
-          description: normalize(phase?.description)
-        }];
+        const phaseId = normalize(phase?.phase);
+        return [
+          phaseId,
+          {
+            phase: phaseId,
+            title: normalize(phase?.title) || `Phase ${phaseId}`,
+            description: normalize(phase?.description) || `Samples for phase ${phaseId}.`
+          }
+        ];
       })
-      .filter(([id]) => /^\d{2}$/.test(id))
+      .filter(([phaseId]) => /^\d{2}$/.test(phaseId))
   );
 
-  const samples = safeArray(metadata?.samples)
+  const sampleRows = asArray(metadata?.samples)
     .map((sample) => {
       const id = normalize(sample?.id);
       const phase = normalize(sample?.phase);
       if (!/^\d{4}$/.test(id) || !/^\d{2}$/.test(phase)) {
         return null;
       }
-      const title = normalize(sample?.indexLabel) || `Sample ${id} - ${normalize(sample?.title) || "Untitled"}`;
+      const titleText = normalize(sample?.title) || "Untitled";
+      const phaseInfo = phaseInfoMap.get(phase);
+      const title = normalize(sample?.indexLabel) || `Sample ${id} - ${titleText}`;
       const description = normalize(sample?.description) || "No description available.";
       const href = normalize(sample?.href) || `./phase-${phase}/${id}/index.html`;
-      const tags = safeArray(sample?.tags).map((tag) => normalizeTag(tag)).filter(Boolean);
-      const thumbnail = normalize(sample?.thumbnail) || normalize(sample?.preview) || "";
+      const tags = asArray(sample?.tags).map((tag) => normalizeTag(tag)).filter(Boolean);
+      const classTokens = buildClassTokens(sample?.engineClassesUsed);
+      const previewSrc = normalize(sample?.thumbnail) || normalize(sample?.preview) || "";
       return {
         id,
         phase,
+        phaseTitle: phaseInfo?.title || `Phase ${phase}`,
+        phaseDescription: phaseInfo?.description || `Samples for phase ${phase}.`,
         title,
         description,
         href,
         tags,
-        thumbnail,
+        classTokens,
+        previewSrc,
         pinned: pinnedSet.has(id)
       };
     })
     .filter(Boolean)
     .sort((a, b) => a.id.localeCompare(b.id));
 
-  const phaseIds = sortPhaseIds([
-    ...[...phaseDetails.keys()],
-    ...samples.map((sample) => sample.phase)
-  ]);
+  const phases = [...new Set(sampleRows.map((sample) => sample.phase))].sort(sortPhase);
+  const classes = [...new Set(sampleRows.flatMap((sample) => sample.classTokens.map((token) => token.value)))].sort();
+  const tags = [...new Set(sampleRows.flatMap((sample) => sample.tags))].sort();
 
-  return phaseIds.map((phase) => {
-    const detail = phaseDetails.get(phase) || {
-      phase,
-      title: `Phase ${phase}`,
-      description: "Phase samples"
-    };
-    const phaseSamples = samples.filter((sample) => sample.phase === phase);
-    return {
-      phase,
-      title: detail.title,
-      description: detail.description || `Samples for phase ${phase}.`,
-      samples: phaseSamples
-    };
+  return { sampleRows, phases, classes, tags, phaseInfoMap };
+}
+
+function filterSampleRows(sampleRows, filterState) {
+  const query = normalizeToken(filterState.query);
+  return sampleRows.filter((sample) => {
+    if (filterState.phase && sample.phase !== filterState.phase) {
+      return false;
+    }
+    if (filterState.className && !sample.classTokens.some((token) => token.value === filterState.className)) {
+      return false;
+    }
+    if (filterState.tag && !sample.tags.includes(filterState.tag)) {
+      return false;
+    }
+    if (!query) {
+      return true;
+    }
+    const classText = sample.classTokens.map((token) => `${token.label} ${token.value}`).join(" ");
+    const haystack = `${sample.phase} ${sample.phaseTitle} ${sample.id} ${sample.title} ${sample.description} ${sample.tags.join(" ")} ${classText}`.toLowerCase();
+    return haystack.includes(query);
   });
 }
 
-export function filterPhaseModel(phaseModel, query, pinnedOnly) {
-  const normalizedQuery = normalize(query).toLowerCase();
-  return phaseModel
-    .map((phase) => {
-      const phaseText = `${phase.phase} ${phase.title} ${phase.description}`.toLowerCase();
-      const samples = phase.samples.filter((sample) => {
-        if (pinnedOnly && !sample.pinned) {
-          return false;
-        }
-        if (!normalizedQuery) {
-          return true;
-        }
-        const sampleText = `${sample.id} ${sample.title} ${sample.description} ${sample.tags.join(" ")}`.toLowerCase();
-        return phaseText.includes(normalizedQuery) || sampleText.includes(normalizedQuery);
+function groupByPhase(sampleRows, phaseInfoMap) {
+  const grouped = new Map();
+  for (const sample of sampleRows) {
+    if (!grouped.has(sample.phase)) {
+      const phaseInfo = phaseInfoMap.get(sample.phase);
+      grouped.set(sample.phase, {
+        phase: sample.phase,
+        title: phaseInfo?.title || `Phase ${sample.phase}`,
+        description: phaseInfo?.description || `Samples for phase ${sample.phase}.`,
+        samples: []
       });
-      if (!normalizedQuery && !pinnedOnly) {
-        return phase;
-      }
-      return { ...phase, samples };
-    })
-    .filter((phase) => phase.samples.length > 0);
+    }
+    grouped.get(sample.phase).samples.push(sample);
+  }
+  return [...grouped.values()].sort((a, b) => sortPhase(a.phase, b.phase));
+}
+
+function renderPinnedList(container, rows) {
+  container.innerHTML = "";
+  if (rows.length === 0) {
+    const note = document.createElement("p");
+    note.textContent = "No pinned samples yet.";
+    container.appendChild(note);
+    return;
+  }
+  for (const sample of rows) {
+    container.appendChild(buildSampleCard(sample));
+  }
 }
 
 function buildSampleCard(sample) {
   const card = document.createElement("article");
-  card.className = "card-link";
+  card.className = "card-link sample-card";
   card.dataset.sampleId = sample.id;
 
-  const header = document.createElement("p");
-  header.textContent = `Sample ${sample.id}`;
+  const launch = document.createElement("a");
+  launch.className = "sample-preview-link";
+  launch.href = sample.href;
+  launch.setAttribute("aria-label", `${sample.title} preview`);
+  if (sample.previewSrc) {
+    launch.innerHTML = `<img class="sample-thumb" loading="lazy" decoding="async" alt="${escapeHtml(sample.title)} thumbnail" src="${escapeHtml(sample.previewSrc)}">`;
+  } else {
+    launch.textContent = "No Preview";
+    launch.classList.add("sample-preview-missing");
+  }
 
   const title = document.createElement("h3");
-  const titleLink = document.createElement("a");
-  titleLink.href = sample.href;
-  titleLink.textContent = sample.title;
-  titleLink.className = "sample-link";
-  title.appendChild(titleLink);
+  title.innerHTML = `<a class="sample-title-link" href="${escapeHtml(sample.href)}">${escapeHtml(sample.title)}</a>`;
 
   const description = document.createElement("p");
   description.textContent = sample.description;
 
-  const tagLine = document.createElement("p");
-  tagLine.textContent = sample.tags.length > 0 ? `Tags: ${sample.tags.join(", ")}` : "Tags: none";
+  const meta = document.createElement("p");
+  const classLabel = sample.classTokens.length > 0
+    ? sample.classTokens.map((token) => token.label).join(", ")
+    : "none";
+  const tagLabel = sample.tags.length > 0 ? sample.tags.join(", ") : "none";
+  meta.textContent = `Phase ${sample.phase} | Classes: ${classLabel} | Tags: ${tagLabel}`;
 
-  const actions = document.createElement("p");
-  const pinButton = document.createElement("button");
-  pinButton.type = "button";
-  pinButton.dataset.samplePin = sample.id;
-  pinButton.textContent = sample.pinned ? "Unpin" : "Pin";
-  actions.appendChild(pinButton);
+  const pinRow = document.createElement("div");
+  pinRow.className = "sample-pin-row";
+  const pinInputId = `sample-pin-${sample.id}`;
+  pinRow.innerHTML = `<input id="${pinInputId}" type="checkbox" class="sample-pin-toggle" data-sample-pin="${sample.id}" ${sample.pinned ? "checked" : ""}><label for="${pinInputId}" class="sample-pin-label" title="${sample.pinned ? "Unpin" : "Pin"}">📌</label>`;
 
-  card.appendChild(header);
+  card.appendChild(launch);
   card.appendChild(title);
   card.appendChild(description);
-  card.appendChild(tagLine);
-  card.appendChild(actions);
+  card.appendChild(meta);
+  card.appendChild(pinRow);
   return card;
 }
 
-export function renderPhaseModel(container, phaseModel) {
+function renderPhaseSections(container, phaseGroups) {
   container.innerHTML = "";
-  for (const phase of phaseModel) {
+  for (const phaseGroup of phaseGroups) {
     const section = document.createElement("section");
     section.className = "content-section";
-    section.dataset.phase = phase.phase;
-
-    const h = document.createElement("h2");
-    h.textContent = phase.title;
-
-    const d = document.createElement("p");
-    d.textContent = phase.description;
-
+    section.dataset.phase = phaseGroup.phase;
+    section.innerHTML = `<h2>${escapeHtml(phaseGroup.title)}</h2><p>${escapeHtml(phaseGroup.description)}</p>`;
     const grid = document.createElement("div");
     grid.className = "card-grid";
-    for (const sample of phase.samples) {
+    for (const sample of phaseGroup.samples) {
       grid.appendChild(buildSampleCard(sample));
     }
-
-    section.appendChild(h);
-    section.appendChild(d);
     section.appendChild(grid);
     container.appendChild(section);
   }
 }
 
-export function updateStatus(statusNode, visiblePhases, totalPhases, visibleSamples, totalSamples, query, pinnedOnly) {
-  const q = normalize(query);
-  const pinnedLabel = pinnedOnly ? " (pinned only)" : "";
-  if (!q) {
-    statusNode.textContent = `Showing ${visibleSamples} of ${totalSamples} samples across ${visiblePhases} of ${totalPhases} phases${pinnedLabel}.`;
-    return;
-  }
-  statusNode.textContent = `Showing ${visibleSamples} of ${totalSamples} samples across ${visiblePhases} of ${totalPhases} phases for "${q}"${pinnedLabel}.`;
+function updateStatus(node, filteredRows, totalRows, phaseGroups) {
+  const totalPhases = new Set(totalRows.map((entry) => entry.phase)).size;
+  node.textContent = `Showing ${filteredRows.length} of ${totalRows.length} samples across ${phaseGroups.length} of ${totalPhases} phases.`;
 }
 
-function countSamples(phaseModel) {
-  return phaseModel.reduce((total, phase) => total + phase.samples.length, 0);
+function setSelectOptions(selectNode, values, labelResolver) {
+  const first = selectNode.querySelector("option");
+  selectNode.innerHTML = "";
+  if (first) {
+    selectNode.appendChild(first);
+  }
+  for (const value of values) {
+    const option = document.createElement("option");
+    option.value = value;
+    option.textContent = labelResolver(value);
+    selectNode.appendChild(option);
+  }
 }
 
 export async function initSamplesIndex() {
-  const container = document.getElementById("samples-phase-list");
-  const input = document.getElementById("samples-phase-filter-input");
-  const pinnedOnlyInput = document.getElementById("samples-phase-filter-pinned-only");
+  const listContainer = document.getElementById("samples-phase-list");
+  const pinnedContainer = document.getElementById("samples-pinned-list");
+  const phaseSelect = document.getElementById("samples-filter-phase");
+  const classSelect = document.getElementById("samples-filter-class");
+  const tagSelect = document.getElementById("samples-filter-tag");
+  const searchInput = document.getElementById("samples-phase-filter-input");
   const statusNode = document.getElementById("samples-phase-filter-status");
-  if (!container || !input || !statusNode || !pinnedOnlyInput) {
+  if (!listContainer || !pinnedContainer || !phaseSelect || !classSelect || !tagSelect || !searchInput || !statusNode) {
     return;
   }
 
-  try {
-    const response = await fetch(METADATA_PATH, { cache: "no-store" });
-    if (!response.ok) {
-      throw new Error(`Failed to load samples metadata (${response.status})`);
-    }
-
-    const metadata = await response.json();
-    let pinnedSet = readPinnedSet();
-
-    const apply = () => {
-      const allPhases = buildPhaseModel(metadata, pinnedSet);
-      const filtered = filterPhaseModel(allPhases, input.value, pinnedOnlyInput.checked);
-      renderPhaseModel(container, filtered);
-      updateStatus(
-        statusNode,
-        filtered.length,
-        allPhases.length,
-        countSamples(filtered),
-        countSamples(allPhases),
-        input.value,
-        pinnedOnlyInput.checked
-      );
-    };
-
-    container.addEventListener("click", (event) => {
-      const target = event.target;
-      if (!(target instanceof HTMLButtonElement)) {
-        return;
-      }
-      const id = normalize(target.dataset.samplePin);
-      if (!/^\d{4}$/.test(id)) {
-        return;
-      }
-      if (pinnedSet.has(id)) {
-        pinnedSet.delete(id);
-      } else {
-        pinnedSet.add(id);
-      }
-      savePinnedSet(pinnedSet);
-      apply();
-    });
-
-    input.addEventListener("input", apply);
-    pinnedOnlyInput.addEventListener("change", apply);
-    apply();
-  } catch (error) {
-    container.innerHTML = "";
-    statusNode.textContent = "Unable to load sample list. Verify local server access to sample metadata.";
-    console.error(error);
+  const response = await fetch(METADATA_PATH, { cache: "no-store" });
+  if (!response.ok) {
+    statusNode.textContent = "Unable to load sample list metadata.";
+    return;
   }
+  const metadata = await response.json();
+  let pinnedSet = readPinnedSet();
+
+  const model = buildSampleRows(metadata, pinnedSet);
+  setSelectOptions(phaseSelect, model.phases, (value) => `Phase ${value}`);
+  setSelectOptions(classSelect, model.classes, (value) => value.split("/").at(-1) || value);
+  setSelectOptions(tagSelect, model.tags, (value) => value);
+
+  const render = () => {
+    const model = buildSampleRows(metadata, pinnedSet);
+    const filterState = {
+      phase: normalize(phaseSelect.value),
+      className: normalize(classSelect.value),
+      tag: normalize(tagSelect.value),
+      query: normalize(searchInput.value)
+    };
+    const filteredRows = filterSampleRows(model.sampleRows, filterState);
+    const pinnedRows = filteredRows.filter((entry) => entry.pinned);
+    const phaseGroups = groupByPhase(filteredRows, model.phaseInfoMap);
+    renderPinnedList(pinnedContainer, pinnedRows);
+    renderPhaseSections(listContainer, phaseGroups);
+    updateStatus(statusNode, filteredRows, model.sampleRows, phaseGroups);
+  };
+
+  const handlePinEvent = (event) => {
+    const target = event.target;
+    if (!(target instanceof HTMLInputElement) || target.type !== "checkbox") {
+      return;
+    }
+    const sampleId = normalize(target.dataset.samplePin);
+    if (!/^\d{4}$/.test(sampleId)) {
+      return;
+    }
+    if (target.checked) {
+      pinnedSet.add(sampleId);
+    } else {
+      pinnedSet.delete(sampleId);
+    }
+    writePinnedSet(pinnedSet);
+    render();
+  };
+
+  listContainer.addEventListener("change", handlePinEvent);
+  pinnedContainer.addEventListener("change", handlePinEvent);
+
+  phaseSelect.addEventListener("change", render);
+  classSelect.addEventListener("change", render);
+  tagSelect.addEventListener("change", render);
+  searchInput.addEventListener("input", render);
+
+  render();
 }
 
 if (typeof window !== "undefined" && typeof document !== "undefined") {

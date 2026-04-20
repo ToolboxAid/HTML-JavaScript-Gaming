@@ -1,5 +1,5 @@
-Restore the real data-driven samples index rendering.
+Restore the remaining samples index UI capabilities without redesigning the page shell.
 
-Bring back phase descriptions, full per-phase sample lists, per-sample details, and sample pinning behavior on /samples/index.html while preserving the shared style/header consistency work.
+Bring back all filter dropdowns, pinned list behavior, pin affordance, preview images, image-launch links, and hover zoom on /samples/index.html.
 
-PR: BUILD_PR_STYLE_SAMPLES_INDEX_DATA_DRIVEN_LIST_RESTORE
+PR: BUILD_PR_STYLE_SAMPLES_INDEX_UI_BEHAVIOR_RESTORE

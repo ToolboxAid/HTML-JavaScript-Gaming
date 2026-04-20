@@ -1,0 +1,16 @@
+Samples index UI behavior restore strategy
+
+Keep:
+- current page shell
+- current header/body consistency
+- current overall render structure
+
+Restore only:
+- full filter set
+- pinned list
+- pin affordance
+- preview image rendering
+- preview-image-as-launch-link behavior
+- hover zoom behavior
+
+This is a capability restore, not a redesign.

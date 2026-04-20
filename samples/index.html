@@ -12,6 +12,7 @@ index.html
   <title>Samples - HTML JavaScript Gaming</title>
   <link rel="stylesheet" href="../src/engine/theme/main.css" />
   <link rel="stylesheet" href="../src/engine/ui/hubCommon.css" />
+  <link rel="stylesheet" href="./index.css" />
 </head>
 <body class="hub-page-samples">
   <details class="is-collapsible" open>
@@ -33,12 +34,37 @@ index.html
   <main class="page-shell">
     <section class="content-section">
       <h2>Filter Samples</h2>
-      <p>Filter by phase, sample id, title, description, or tags.</p>
-      <label for="samples-phase-filter-input">Search</label>
-      <input id="samples-phase-filter-input" type="text" placeholder="Phase 17, rendering, runtime..." autocomplete="off" />
-      <label for="samples-phase-filter-pinned-only">Pinned only</label>
-      <input id="samples-phase-filter-pinned-only" type="checkbox" />
+      <p>Filter by phase, engine class, tag, or free-text search.</p>
+      <div class="samples-filter-grid">
+        <div class="samples-filter-field">
+          <label for="samples-filter-phase">Phase</label>
+          <select id="samples-filter-phase">
+            <option value="">All phases</option>
+          </select>
+        </div>
+        <div class="samples-filter-field">
+          <label for="samples-filter-class">Class</label>
+          <select id="samples-filter-class">
+            <option value="">All classes</option>
+          </select>
+        </div>
+        <div class="samples-filter-field">
+          <label for="samples-filter-tag">Tag</label>
+          <select id="samples-filter-tag">
+            <option value="">All tags</option>
+          </select>
+        </div>
+        <div class="samples-filter-field samples-filter-search">
+          <label for="samples-phase-filter-input">Search</label>
+          <input id="samples-phase-filter-input" type="text" placeholder="Phase 17, rendering, runtime..." autocomplete="off" />
+        </div>
+      </div>
       <p id="samples-phase-filter-status" aria-live="polite"></p>
+    </section>
+
+    <section class="content-section">
+      <h2>Pinned Samples</h2>
+      <div id="samples-pinned-list" class="card-grid"></div>
     </section>
 
     <section class="content-section">
