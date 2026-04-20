@@ -1,2 +1,2 @@
-Restore Asteroids Debug Mode link (?debug=1).
-Scoped fix. No changes to other samples.
+Ensure index page fills viewport height and add SEO intro text.
+Scoped to /index.html only.

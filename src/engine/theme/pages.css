@@ -27,6 +27,21 @@
   font-size: var(--font-size-helper);
 }
 
+body.hub-page-home--viewport {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+}
+
+body.hub-page-home--viewport > .is-collapsible,
+body.hub-page-home--viewport > .page-shell:last-of-type {
+  width: 100%;
+}
+
+body.hub-page-home--viewport > .page-shell:last-of-type {
+  flex: 1 0 auto;
+}
+
 body.hub-page-home .page-shell,
 body.hub-page-games .page-shell,
 body.hub-page-samples .page-shell {

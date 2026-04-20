@@ -45,7 +45,8 @@ body.hub-page-samples .is-collapsible,
 body.hub-page-tools .is-collapsible {
   border-radius: 0;
   border: 0;
-  background: #c0a3ff;
+  background: #ed9700;
+  /* background: #ed9700; */
   box-shadow: var(--theme-shadow);
   position: relative;
   overflow: hidden;
