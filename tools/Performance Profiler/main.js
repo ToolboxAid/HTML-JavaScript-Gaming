@@ -6,6 +6,7 @@ import {
 import { readToolHostSharedContextFromLocation } from "../shared/toolHostSharedContext.js";
 import { registerToolBootContract } from "../shared/toolBootContract.js";
 import { isFiniteNumber } from "../../src/shared/number/index.js";
+import { setupDebugToolInteractionFlow } from "../shared/debugToolInteractionFlow.js";
 
 const refs = {
   runWorkloadButton: document.getElementById("runWorkloadButton"),
@@ -22,6 +23,8 @@ const state = {
   frameHandle: 0,
   frameSampling: false
 };
+
+let disposeInteractionFlow = null;
 
 function setStatus(message) {
   if (refs.statusText instanceof HTMLElement) {
@@ -75,6 +78,20 @@ function stopFrameSampling() {
     state.frameHandle = 0;
   }
   state.frameSampling = false;
+  updateControlState();
+}
+
+function updateControlState() {
+  const running = state.frameSampling;
+  if (refs.runWorkloadButton instanceof HTMLButtonElement) {
+    refs.runWorkloadButton.disabled = running;
+  }
+  if (refs.runFrameSampleButton instanceof HTMLButtonElement) {
+    refs.runFrameSampleButton.disabled = running;
+  }
+  if (refs.stopButton instanceof HTMLButtonElement) {
+    refs.stopButton.disabled = !running;
+  }
 }
 
 function runFrameSample() {
@@ -84,6 +101,7 @@ function runFrameSample() {
   let lastTimestamp = 0;
   let sampleCount = 0;
   state.frameSampling = true;
+  updateControlState();
 
   function tick(timestamp) {
     if (!state.frameSampling) {
@@ -159,6 +177,15 @@ const performanceProfilerApi = {
 function bootPerformanceProfiler() {
   if (!initialized) {
     bindEvents();
+    disposeInteractionFlow = setupDebugToolInteractionFlow({
+      primaryButton: refs.runWorkloadButton,
+      escapeAction: () => {
+        stopFrameSampling();
+        setStatus("Profiler reset to idle.");
+      },
+      statusElement: refs.statusText
+    });
+    updateControlState();
     const hostContext = readToolHostSharedContextFromLocation(window.location);
     if (hostContext?.state && typeof hostContext.state === "object") {
       performanceProfilerApi.applyProjectState(hostContext.state);
@@ -174,6 +201,10 @@ registerToolBootContract("performance-profiler", {
   init: bootPerformanceProfiler,
   destroy() {
     stopFrameSampling();
+    if (typeof disposeInteractionFlow === "function") {
+      disposeInteractionFlow();
+      disposeInteractionFlow = null;
+    }
     return true;
   },
   getApi() {

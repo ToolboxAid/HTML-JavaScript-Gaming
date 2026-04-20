@@ -8,6 +8,7 @@ import {
 import { readToolHostSharedContextFromLocation } from "../shared/toolHostSharedContext.js";
 import { registerToolBootContract } from "../shared/toolBootContract.js";
 import { isFiniteNumber } from "../../src/shared/number/index.js";
+import { setupDebugToolInteractionFlow } from "../shared/debugToolInteractionFlow.js";
 
 const refs = {
   loadButton: document.getElementById("loadReplayButton"),
@@ -30,6 +31,8 @@ const state = {
   playing: false,
   timerId: 0
 };
+
+let disposeInteractionFlow = null;
 
 function setStatus(message) {
   if (refs.statusText instanceof HTMLElement) {
@@ -122,11 +125,23 @@ function stopPlayback() {
     window.clearInterval(state.timerId);
     state.timerId = 0;
   }
+  updateControlState();
+}
+
+function updateControlState() {
+  const running = state.playing;
+  if (refs.playButton instanceof HTMLButtonElement) {
+    refs.playButton.disabled = running;
+  }
+  if (refs.pauseButton instanceof HTMLButtonElement) {
+    refs.pauseButton.disabled = !running;
+  }
 }
 
 function playReplay() {
   stopPlayback();
   state.playing = true;
+  updateControlState();
   state.timerId = window.setInterval(() => {
     const next = state.currentTimeMs + 33;
     if (next >= state.durationMs) {
@@ -222,6 +237,17 @@ const replayVisualizerApi = {
 function bootReplayVisualizer() {
   if (!initialized) {
     bindEvents();
+    disposeInteractionFlow = setupDebugToolInteractionFlow({
+      primaryButton: refs.loadButton,
+      escapeAction: () => {
+        stopPlayback();
+        setCurrentTimeMs(0);
+        renderCurrentEvent();
+        setStatus("Replay reset to start.");
+      },
+      statusElement: refs.statusText
+    });
+    updateControlState();
     const hostContext = readToolHostSharedContextFromLocation(window.location);
     const hostReplay = hostContext?.state?.replay || hostContext?.state?.events || null;
     if (hostReplay) {
@@ -245,6 +271,10 @@ registerToolBootContract("replay-visualizer", {
   init: bootReplayVisualizer,
   destroy() {
     stopPlayback();
+    if (typeof disposeInteractionFlow === "function") {
+      disposeInteractionFlow();
+      disposeInteractionFlow = null;
+    }
     return true;
   },
   getApi() {

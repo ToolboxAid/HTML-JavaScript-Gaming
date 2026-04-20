@@ -1,6 +1,5 @@
-Complete STYLE_07 first by adding clear launch/help text for Open Tool vs Open In Host.
+Bundle STYLE_10 through STYLE_12 into one focused usability standardization PR.
 
-Append the queued STYLE_10 through STYLE_17 roadmap sections without rewriting existing roadmap text.
-Keep roadmap handling append-only plus execution-backed status updates.
+Implement interaction flow, visual hierarchy/readability, and component consistency on the migrated shell tools while preserving the shared shell/layout foundation.
 
-PR: BUILD_PR_STYLE_07_LAUNCH_CLARITY_AND_ROADMAP_APPEND_ONLY
+PR: BUILD_PR_STYLE_10_12_INTERACTION_HIERARCHY_AND_COMPONENT_STANDARDIZATION

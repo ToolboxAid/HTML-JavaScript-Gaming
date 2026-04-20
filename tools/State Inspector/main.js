@@ -6,6 +6,7 @@ import {
 } from "../shared/debugInspectorData.js";
 import { readToolHostSharedContextFromLocation } from "../shared/toolHostSharedContext.js";
 import { registerToolBootContract } from "../shared/toolBootContract.js";
+import { setupDebugToolInteractionFlow } from "../shared/debugToolInteractionFlow.js";
 
 const refs = {
   refreshButton: document.getElementById("refreshSnapshotButton"),
@@ -18,6 +19,8 @@ const refs = {
 const state = {
   snapshot: null
 };
+
+let disposeInteractionFlow = null;
 
 function setStatus(message) {
   if (refs.statusText instanceof HTMLElement) {
@@ -147,6 +150,11 @@ const stateInspectorApi = {
 function bootStateInspector() {
   if (!initialized) {
     bindEvents();
+    disposeInteractionFlow = setupDebugToolInteractionFlow({
+      primaryButton: refs.refreshButton,
+      escapeAction: refreshSnapshot,
+      statusElement: refs.statusText
+    });
     refreshSnapshot();
     initialized = true;
   }
@@ -157,6 +165,10 @@ function bootStateInspector() {
 registerToolBootContract("state-inspector", {
   init: bootStateInspector,
   destroy() {
+    if (typeof disposeInteractionFlow === "function") {
+      disposeInteractionFlow();
+      disposeInteractionFlow = null;
+    }
     return true;
   },
   getApi() {

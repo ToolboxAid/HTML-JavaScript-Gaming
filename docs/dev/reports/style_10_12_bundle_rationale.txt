@@ -1,0 +1,9 @@
+Bundling rationale
+
+User requested as few PRs as possible.
+This bundle safely groups:
+- STYLE_10 Interaction & Flow
+- STYLE_11 Visual Hierarchy & Readability
+- STYLE_12 Component Standardization
+
+These three items are tightly related and can be validated together on the same migrated tool set without starting broader theming/color work.

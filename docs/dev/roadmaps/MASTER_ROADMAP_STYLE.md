@@ -336,39 +336,39 @@ This explanation should be kept visible in related UI/help text so launch choice
 
 ### STYLE_10 â€” Interaction & Flow
 
-[ ] Primary actions accessible via keyboard (Enter)
-[ ] Escape cancels or resets where applicable
-[ ] Logical tab flow across panels (left â†’ center â†’ right)
-[ ] Initial focus set correctly on load
-[ ] Focus preserved after actions
-[ ] Buttons reflect active/disabled state
-[ ] No layout shift during interaction
-[ ] Interaction patterns consistent across migrated tools
-[ ] No inline `style=""`
-[ ] No JS-driven layout changes
-[ ] Pages are visually stable and usable
+[x] Primary actions accessible via keyboard (Enter)
+[x] Escape cancels or resets where applicable
+[x] Logical tab flow across panels (left â†’ center â†’ right)
+[x] Initial focus set correctly on load
+[x] Focus preserved after actions
+[x] Buttons reflect active/disabled state
+[x] No layout shift during interaction
+[x] Interaction patterns consistent across migrated tools
+[x] No inline `style=""`
+[x] No JS-driven layout changes
+[x] Pages are visually stable and usable
 
 ### STYLE_11 â€” Visual Hierarchy & Readability
 
-[ ] Clear heading hierarchy across tools
-[ ] Panel titles consistent in size and spacing
-[ ] Section grouping visually obvious
-[ ] Spacing rhythm consistent across panels
-[ ] Labels and helper text clearly distinguishable
-[ ] No visual clutter in dense layouts
-[ ] No layout breakage
-[ ] Pages remain easy to scan quickly
+[x] Clear heading hierarchy across tools
+[x] Panel titles consistent in size and spacing
+[x] Section grouping visually obvious
+[x] Spacing rhythm consistent across panels
+[x] Labels and helper text clearly distinguishable
+[x] No visual clutter in dense layouts
+[x] No layout breakage
+[x] Pages remain easy to scan quickly
 
 ### STYLE_12 â€” Component Standardization
 
-[ ] Buttons visually consistent across all tools
-[ ] Inputs and textareas standardized
-[ ] Labels aligned and consistently styled
-[ ] Panels share common structure and spacing
-[ ] Debug/readout areas visually consistent
-[ ] No one-off component styling remains
-[ ] No inline `style=""`
-[ ] No layout regressions
+[x] Buttons visually consistent across all tools
+[x] Inputs and textareas standardized
+[x] Labels aligned and consistently styled
+[x] Panels share common structure and spacing
+[x] Debug/readout areas visually consistent
+[x] No one-off component styling remains
+[x] No inline `style=""`
+[x] No layout regressions
 
 ### STYLE_13 â€” Color System & Theming
 

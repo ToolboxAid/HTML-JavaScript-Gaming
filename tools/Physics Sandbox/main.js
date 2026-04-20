@@ -1,6 +1,7 @@
 import { integrateVelocity2D, stepArcadeBody } from "../../src/engine/physics/index.js";
 import { safeParseJson, toPrettyJson } from "../shared/debugInspectorData.js";
 import { registerToolBootContract } from "../shared/toolBootContract.js";
+import { setupDebugToolInteractionFlow } from "../shared/debugToolInteractionFlow.js";
 
 const refs = {
   runButton: document.getElementById("runPhysicsStepButton"),
@@ -8,6 +9,9 @@ const refs = {
   input: document.getElementById("physicsBodyInput"),
   output: document.getElementById("physicsSandboxOutput")
 };
+
+let disposeInteractionFlow = null;
+let initialized = false;
 
 function setStatus(message) {
   if (refs.statusText instanceof HTMLElement) {
@@ -46,9 +50,24 @@ function runStep() {
 }
 
 function bootPhysicsSandbox() {
+  if (initialized) {
+    return {
+      runStep
+    };
+  }
   if (refs.runButton instanceof HTMLButtonElement) {
     refs.runButton.addEventListener("click", runStep);
   }
+  disposeInteractionFlow = setupDebugToolInteractionFlow({
+    primaryButton: refs.runButton,
+    escapeAction: () => {
+      if (refs.output instanceof HTMLElement) {
+        refs.output.textContent = "Run a step to inspect updated body state.";
+      }
+      setStatus("Sandbox reset to ready state.");
+    },
+    statusElement: refs.statusText
+  });
   if (refs.input instanceof HTMLTextAreaElement && !refs.input.value.trim()) {
     refs.input.value = toPrettyJson({
       x: 0,
@@ -63,6 +82,7 @@ function bootPhysicsSandbox() {
       maxSpeedY: 140
     });
   }
+  initialized = true;
   return {
     runStep
   };
@@ -71,6 +91,10 @@ function bootPhysicsSandbox() {
 registerToolBootContract("physics-sandbox", {
   init: bootPhysicsSandbox,
   destroy() {
+    if (typeof disposeInteractionFlow === "function") {
+      disposeInteractionFlow();
+      disposeInteractionFlow = null;
+    }
     return true;
   },
   getApi() {
