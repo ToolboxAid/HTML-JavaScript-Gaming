@@ -1,0 +1,14 @@
+STYLE_09 planning note
+
+Goal:
+- improve viewport-height fit for shared-shell tools
+- reduce whole-page vertical scrolling
+- keep scrolling localized to tall panels/readouts when necessary
+
+Packaging rule:
+- no staging folders in <project folder>/tmp/
+- final zip only in project tmp
+
+Roadmap rule:
+- assistant does not modify MASTER_ROADMAP_STYLE.md in this bundle
+- Codex updates roadmap during execution only

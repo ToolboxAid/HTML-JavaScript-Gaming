@@ -1,5 +1,5 @@
-Refine the shared tool shell for adaptive density.
+Improve tool viewport fit on top of the shared CSS Grid shell.
 
-Use clamp-based rail sizing, reduce excess spacing, and improve tool usability with less scrolling while preserving the shared CSS Grid shell.
+Reduce page-level vertical scrolling where practical, localize scrolling to panels when needed, and preserve STYLE_08 adaptive density improvements.
 
-PR: BUILD_PR_STYLE_08_ADAPTIVE_TOOL_DENSITY
+PR: BUILD_PR_STYLE_09_TOOL_HEIGHT_AND_VIEWPORT_FIT
