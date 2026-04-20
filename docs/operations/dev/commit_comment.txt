@@ -1,5 +1,6 @@
-Bundle STYLE_10 through STYLE_12 into one focused usability standardization PR.
+Remove the remaining targeted inline <style> blocks and move the styles into shared CSS.
 
-Implement interaction flow, visual hierarchy/readability, and component consistency on the migrated shell tools while preserving the shared shell/layout foundation.
+Prefer reuse of higher-level existing CSS when the rules already match or are close enough.
+Create new shared CSS only when necessary.
 
-PR: BUILD_PR_STYLE_10_12_INTERACTION_HIERARCHY_AND_COMPONENT_STANDARDIZATION
+PR: BUILD_PR_STYLE_INLINE_CLEANUP_REUSE_HIGHER_LEVEL_CSS

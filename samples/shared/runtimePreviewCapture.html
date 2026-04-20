@@ -3,30 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <title>Runtime Preview Capture</title>
-  <style>
-    html, body {
-      margin: 0;
-      width: 100%;
-      height: 100%;
-      overflow: hidden;
-      background: #000;
-    }
-    #frame {
-      position: fixed;
-      width: 1px;
-      height: 1px;
-      left: -10000px;
-      top: -10000px;
-      border: 0;
-      visibility: hidden;
-    }
-    #surface {
-      display: block;
-      width: 100vw;
-      height: 100vh;
-      background: #000;
-    }
-  </style>
+  <link rel="stylesheet" href="./runtimePreviewCapture.css" />
 </head>
 <body>
   <iframe id="frame" title="sample frame" sandbox="allow-scripts allow-same-origin"></iframe>

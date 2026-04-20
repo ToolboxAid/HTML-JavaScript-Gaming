@@ -18,6 +18,7 @@ const DEFAULT_ADMIN_KEY = "sample-a-admin";
 const DASHBOARD_PATH = "/admin/network-sample-a/dashboard";
 const METRICS_PATH = "/admin/network-sample-a/api/metrics";
 const HEALTH_PATH = "/admin/network-sample-a/health";
+const DASHBOARD_CSS_PATH = "/admin/network-sample-a/dashboard.css";
 
 function isLoopbackAddress(address) {
   const value = typeof address === "string" ? address.trim() : "";
@@ -43,6 +44,92 @@ function toHtmlResponse(response, statusCode, body) {
     "Cache-Control": "no-store"
   });
   response.end(body);
+}
+
+function toCssResponse(response, statusCode, body) {
+  response.writeHead(statusCode, {
+    "Content-Type": "text/css; charset=utf-8",
+    "Cache-Control": "no-store"
+  });
+  response.end(body);
+}
+
+function createDashboardCss() {
+  return `body {
+  margin: 0;
+  font-family: "Consolas", "Courier New", monospace;
+  background: #0a1220;
+  color: #e2edf8;
+}
+main {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 20px;
+}
+h1 {
+  margin: 0 0 8px;
+  font-size: 28px;
+}
+.subtitle {
+  margin: 0 0 18px;
+  color: #9eb5cc;
+  line-height: 1.35;
+}
+.meta {
+  margin: 0 0 18px;
+  color: #7f96b0;
+  font-size: 13px;
+}
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 12px;
+  margin-bottom: 18px;
+}
+.card {
+  border: 1px solid #264465;
+  background: #10223a;
+  border-radius: 8px;
+  padding: 12px;
+}
+.card h3 {
+  margin: 0 0 6px;
+  font-size: 14px;
+  color: #8db7e3;
+}
+.value {
+  font-size: 22px;
+  font-weight: 700;
+  color: #e8f5ff;
+}
+.value.small {
+  font-size: 16px;
+  font-weight: 600;
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+  border: 1px solid #284667;
+  background: #0f1e33;
+}
+th, td {
+  text-align: left;
+  padding: 8px 10px;
+  border-bottom: 1px solid #203752;
+  font-size: 13px;
+}
+th {
+  color: #9dc2e8;
+  background: #132842;
+}
+.state-healthy { color: #34d399; }
+.state-degraded { color: #f59e0b; }
+.state-offline { color: #f87171; }
+.footer {
+  margin-top: 14px;
+  color: #7f96b0;
+  font-size: 12px;
+}`;
 }
 
 class SampleAFakeNetworkTelemetrySource {
@@ -211,83 +298,7 @@ function createDashboardPage(config) {
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Network Sample A - Server Dashboard</title>
-  <style>
-    body {
-      margin: 0;
-      font-family: "Consolas", "Courier New", monospace;
-      background: #0a1220;
-      color: #e2edf8;
-    }
-    main {
-      max-width: 1100px;
-      margin: 0 auto;
-      padding: 20px;
-    }
-    h1 {
-      margin: 0 0 8px;
-      font-size: 28px;
-    }
-    .subtitle {
-      margin: 0 0 18px;
-      color: #9eb5cc;
-      line-height: 1.35;
-    }
-    .meta {
-      margin: 0 0 18px;
-      color: #7f96b0;
-      font-size: 13px;
-    }
-    .cards {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 12px;
-      margin-bottom: 18px;
-    }
-    .card {
-      border: 1px solid #264465;
-      background: #10223a;
-      border-radius: 8px;
-      padding: 12px;
-    }
-    .card h3 {
-      margin: 0 0 6px;
-      font-size: 14px;
-      color: #8db7e3;
-    }
-    .value {
-      font-size: 22px;
-      font-weight: 700;
-      color: #e8f5ff;
-    }
-    .value.small {
-      font-size: 16px;
-      font-weight: 600;
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      border: 1px solid #284667;
-      background: #0f1e33;
-    }
-    th, td {
-      text-align: left;
-      padding: 8px 10px;
-      border-bottom: 1px solid #203752;
-      font-size: 13px;
-    }
-    th {
-      color: #9dc2e8;
-      background: #132842;
-    }
-    .state-healthy { color: #34d399; }
-    .state-degraded { color: #f59e0b; }
-    .state-offline { color: #f87171; }
-    .footer {
-      margin-top: 14px;
-      color: #7f96b0;
-      font-size: 12px;
-    }
-  </style>
+  <link rel="stylesheet" href="${DASHBOARD_CSS_PATH}" />
 </head>
 <body>
   <main>
@@ -479,6 +490,11 @@ export function createNetworkSampleADashboardServer(options = {}) {
       return;
     }
 
+    if (requestUrl.pathname === DASHBOARD_CSS_PATH) {
+      toCssResponse(response, 200, createDashboardCss());
+      return;
+    }
+
     const access = checkAccess(requestUrl, request, config);
     if (!access.ok) {
       toJsonResponse(response, 403, {
@@ -503,7 +519,7 @@ export function createNetworkSampleADashboardServer(options = {}) {
       status: "failed",
       code: "NOT_FOUND",
       message: "Route not found.",
-      routes: [config.dashboardPath, config.metricsPath, config.healthPath]
+      routes: [config.dashboardPath, config.metricsPath, config.healthPath, DASHBOARD_CSS_PATH]
     });
   });
 

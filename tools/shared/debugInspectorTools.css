@@ -1,3 +1,18 @@
+:root {
+  --debug-tool-color-primary: #a78bfa;
+  --debug-tool-color-primary-strong: #7c3aed;
+  --debug-tool-color-success: #22c55e;
+  --debug-tool-color-warning: #f59e0b;
+  --debug-tool-color-danger: #ef4444;
+  --debug-tool-color-info: #38bdf8;
+  --debug-tool-surface: rgba(28, 13, 60, 0.82);
+  --debug-tool-surface-elevated: rgba(43, 16, 91, 0.62);
+  --debug-tool-text: #f7f4ff;
+  --debug-tool-text-muted: #e9ddff;
+  --debug-tool-border: rgba(221, 214, 254, 0.28);
+  --debug-tool-focus: rgba(221, 214, 254, 0.8);
+}
+
 .debug-tool-shell {
   width: min(1500px, calc(100% - 32px));
   margin: 0 auto 16px;
@@ -14,6 +29,7 @@
 .debug-tool-panel {
   display: grid;
   gap: 9px;
+  color: var(--debug-tool-text);
 }
 
 .debug-tool-actions {
@@ -21,11 +37,19 @@
   flex-wrap: wrap;
   gap: 8px;
   align-items: center;
+  justify-content: flex-start;
 }
 
-.debug-tool-actions button {
-  min-height: 32px;
-  padding: 0 11px;
+.debug-tool-actions .debug-tool-control:first-child {
+  border-color: rgba(167, 139, 250, 0.8);
+  background: linear-gradient(180deg, rgba(167, 139, 250, 0.48) 0%, rgba(91, 33, 182, 0.88) 100%);
+  color: #ffffff;
+}
+
+.debug-tool-actions .debug-tool-control:not(:first-child) {
+  border-color: var(--debug-tool-border);
+  background: linear-gradient(180deg, var(--debug-tool-surface-elevated) 0%, var(--debug-tool-surface) 100%);
+  color: var(--debug-tool-text);
 }
 
 .debug-tool-readout {
@@ -34,10 +58,11 @@
   overflow: auto;
   white-space: pre-wrap;
   word-break: break-word;
-  border: 1px solid rgba(148, 163, 184, 0.35);
+  border: 1px solid var(--debug-tool-border);
   border-radius: 10px;
   padding: 12px;
-  background: rgba(15, 23, 42, 0.42);
+  background: linear-gradient(180deg, var(--debug-tool-surface) 0%, rgba(20, 10, 44, 0.86) 100%);
+  color: var(--debug-tool-text);
 }
 
 .debug-tool-list {
@@ -55,8 +80,9 @@
 }
 
 .debug-tool-list button.is-current {
-  border-color: rgba(221, 214, 254, 0.65);
+  border-color: rgba(167, 139, 250, 0.82);
   background: linear-gradient(180deg, rgba(167, 139, 250, 0.34) 0%, rgba(91, 33, 182, 0.78) 100%);
+  color: #ffffff;
 }
 
 .debug-tool-timeline {
@@ -67,13 +93,13 @@
 .debug-tool-chart {
   width: 100%;
   min-height: 220px;
-  border: 1px solid rgba(148, 163, 184, 0.35);
+  border: 1px solid var(--debug-tool-border);
   border-radius: 10px;
-  background: rgba(15, 23, 42, 0.42);
+  background: linear-gradient(180deg, var(--debug-tool-surface) 0%, rgba(20, 10, 44, 0.86) 100%);
 }
 
 .debug-tool-meta {
-  color: #e9ddff;
+  color: var(--debug-tool-text-muted);
   min-height: 1.2rem;
   font-size: 0.92rem;
   line-height: 1.3;
@@ -82,6 +108,7 @@
 .debug-tool-status {
   min-height: 1.2rem;
   line-height: 1.3;
+  color: var(--debug-tool-color-info);
 }
 
 .debug-tool-panel h2,
@@ -100,7 +127,7 @@
 
 .debug-tool-panel p {
   margin: 0;
-  color: #e9ddff;
+  color: var(--debug-tool-text-muted);
   line-height: 1.4;
 }
 
@@ -108,27 +135,58 @@
   display: grid;
   gap: 4px;
   font-size: 0.9rem;
-  color: #f5efff;
+  color: var(--debug-tool-text);
 }
 
 .debug-tool-field {
   min-height: 32px;
   border-radius: 8px;
+  border: 1px solid var(--debug-tool-border);
+  background: rgba(15, 10, 32, 0.72);
+  color: var(--debug-tool-text);
+  padding-inline: 8px;
+  transition: border-color 120ms ease, box-shadow 120ms ease, background-color 120ms ease;
 }
 
 .debug-tool-control {
   min-height: 32px;
+  border: 1px solid var(--debug-tool-border);
+  border-radius: 8px;
+  background: linear-gradient(180deg, var(--debug-tool-surface-elevated) 0%, var(--debug-tool-surface) 100%);
+  color: var(--debug-tool-text);
+  transition: transform 120ms ease, border-color 120ms ease, box-shadow 120ms ease, background-color 120ms ease;
 }
 
 .debug-tool-control:disabled {
-  opacity: 0.6;
+  opacity: 0.58;
+  filter: saturate(0.72);
   cursor: not-allowed;
+}
+
+.debug-tool-control:not(:disabled):hover {
+  transform: translateY(-1px);
+  border-color: rgba(167, 139, 250, 0.75);
+  box-shadow: 0 6px 18px rgba(76, 29, 149, 0.28);
 }
 
 .debug-tool-control:focus-visible,
 .debug-tool-field:focus-visible {
-  outline: 2px solid rgba(221, 214, 254, 0.8);
+  outline: 2px solid var(--debug-tool-focus);
   outline-offset: 1px;
+}
+
+.debug-tool-readout::-webkit-scrollbar,
+.debug-tool-list::-webkit-scrollbar,
+.debug-tool-field::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+.debug-tool-readout::-webkit-scrollbar-thumb,
+.debug-tool-list::-webkit-scrollbar-thumb,
+.debug-tool-field::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  background: rgba(167, 139, 250, 0.45);
 }
 
 @media (max-width: 980px) {

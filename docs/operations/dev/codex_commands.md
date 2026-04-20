@@ -2,29 +2,40 @@ MODEL: GPT-5.4-codex
 REASONING: high
 
 COMMAND:
-Create BUILD_PR_STYLE_10_12_INTERACTION_HIERARCHY_AND_COMPONENT_STANDARDIZATION
+Create BUILD_PR_STYLE_INLINE_CLEANUP_REUSE_HIGHER_LEVEL_CSS
 
 Rules:
-- complete the lowest unfinished STYLE first
-- this PR is valid only after STYLE_07 is complete
-- bundle STYLE_10 through STYLE_12 in this PR only
-- do NOT start STYLE_13+ implementation work
 - output ONLY the final zip to:
-  <project folder>/tmp/BUILD_PR_STYLE_10_12_INTERACTION_HIERARCHY_AND_COMPONENT_STANDARDIZATION.zip
+  <project folder>/tmp/BUILD_PR_STYLE_INLINE_CLEANUP_REUSE_HIGHER_LEVEL_CSS.zip
 - do NOT create staging folders in <project folder>/tmp
 - do NOT modify roadmap in the PR bundle
-- Codex updates roadmap during execution only
-- roadmap changes are append-only except for execution-backed status markers
-- do NOT delete existing roadmap text
-- do NOT rewrite existing roadmap text
+- Codex updates roadmap during execution only if this PR touches an existing STYLE item execution-backed
+- remove all targeted inline <style> blocks
+- if the inline styles match or are close to a higher-level existing CSS path, reuse it
+- create new shared CSS only when necessary
+- do NOT introduce inline style=""
+- do NOT introduce JS-generated styling
+- preserve behavior/layout as closely as possible
+
+Targets:
+- games/Breakout/index.html
+- samples/phase-13/1316/index.html
+- samples/phase-13/1316/server/networkSampleADashboardServer.mjs
+- samples/phase-13/1317/index.html
+- samples/phase-13/1318/index.html
+- samples/phase-13/1319/index.html
+- samples/phase-13/1319/server/realNetworkDashboard.mjs
+- samples/shared/runtimePreviewCapture.html
+- tests/index.html
+- tests/testRunner.html
+- tools/preview/preview_svg_generator.html
+- tools/shared/preview/generate-list-previews.html
+- tools/shared/preview/generate-previews.html
 
 Required work:
-1. Implement STYLE_10 interaction and flow improvements on the migrated shell tools.
-2. Implement STYLE_11 visual hierarchy and readability improvements on the same tool set.
-3. Implement STYLE_12 component standardization on the same tool set.
-4. Preserve the shared shell/layout from STYLE_06–09.
-5. Keep the change narrow, testable, and free of inline/embedded styling.
-6. Update MASTER_ROADMAP_STYLE.md during execution:
-   - mark STYLE_10, STYLE_11, STYLE_12 only if execution-backed
-   - append STYLE_10–STYLE_17 sections only if any are still missing
-   - do not delete or rewrite existing roadmap text
+1. Audit each inline <style> block.
+2. Reuse higher-level existing CSS when the rules already match or are close enough.
+3. Create new shared CSS only if reuse would be incorrect.
+4. Remove the inline <style> blocks.
+5. Add/adjust stylesheet links accordingly.
+6. Keep the change narrow, testable, and free of inline/embedded styling in the targeted files.

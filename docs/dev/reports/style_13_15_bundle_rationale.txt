@@ -1,0 +1,9 @@
+Bundling rationale
+
+User requested as few PRs as possible.
+This bundle safely groups:
+- STYLE_13 Color System & Theming
+- STYLE_14 Micro Polish & Feedback
+- STYLE_15 Tool UX Consistency Pass
+
+These are tightly related visual/consistency layers and can be validated together without starting performance/final QA work.

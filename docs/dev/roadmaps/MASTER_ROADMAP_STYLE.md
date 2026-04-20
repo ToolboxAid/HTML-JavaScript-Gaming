@@ -372,30 +372,30 @@ This explanation should be kept visible in related UI/help text so launch choice
 
 ### STYLE_13 â€” Color System & Theming
 
-[ ] Semantic color tokens defined (primary, success, warning, danger)
-[ ] Panel background layers consistent
-[ ] Text contrast validated for readability
-[ ] Accent usage consistent across tools
-[ ] No arbitrary color usage in tool pages
-[ ] Theme remains cohesive across all entry points
+[x] Semantic color tokens defined (primary, success, warning, danger)
+[x] Panel background layers consistent
+[x] Text contrast validated for readability
+[x] Accent usage consistent across tools
+[x] No arbitrary color usage in tool pages
+[x] Theme remains cohesive across all entry points
 
 ### STYLE_14 â€” Micro Polish & Feedback
 
-[ ] Buttons have consistent hover states
-[ ] Disabled states clearly visible
-[ ] Subtle transitions applied (fast, non-distracting)
-[ ] No visual jitter during updates
-[ ] Feedback (status/messages) does not shift layout
-[ ] Interaction feels responsive and immediate
+[x] Buttons have consistent hover states
+[x] Disabled states clearly visible
+[x] Subtle transitions applied (fast, non-distracting)
+[x] No visual jitter during updates
+[x] Feedback (status/messages) does not shift layout
+[x] Interaction feels responsive and immediate
 
 ### STYLE_15 â€” Tool UX Consistency Pass
 
-[ ] All tools follow same layout pattern
-[ ] Primary actions consistently placed
-[ ] Secondary actions consistently placed
-[ ] Panel ordering consistent across tools
-[ ] No tool-specific UX deviations without justification
-[ ] Navigation and interaction patterns unified
+[x] All tools follow same layout pattern
+[x] Primary actions consistently placed
+[x] Secondary actions consistently placed
+[x] Panel ordering consistent across tools
+[x] No tool-specific UX deviations without justification
+[x] Navigation and interaction patterns unified
 
 ### STYLE_16 â€” Performance & Render Cleanliness
 

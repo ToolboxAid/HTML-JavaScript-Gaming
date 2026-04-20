@@ -4,94 +4,7 @@
 <head>
   <meta charset="UTF-8" />
   <title>Preview SVG Generator</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 16px;
-      line-height: 1.4;
-    }
-
-    h1 {
-      margin-top: 0;
-    }
-
-    .row {
-      margin: 10px 0;
-    }
-
-    label {
-      display: inline-block;
-      min-width: 170px;
-      vertical-align: top;
-      font-weight: 600;
-    }
-
-    input[type="text"],
-    input[type="number"],
-    textarea {
-      width: 700px;
-      max-width: 100%;
-      padding: 6px;
-      box-sizing: border-box;
-    }
-
-    textarea {
-      height: 220px;
-      font-family: Consolas, monospace;
-      font-size: 13px;
-      white-space: pre;
-    }
-
-    button {
-      padding: 8px 14px;
-      margin-right: 8px;
-      cursor: pointer;
-    }
-
-    #log {
-      margin-top: 16px;
-      border: 1px solid #ccc;
-      padding: 12px;
-      height: 320px;
-      overflow: auto;
-      white-space: pre-wrap;
-      background: #fafafa;
-      font-family: Consolas, monospace;
-      font-size: 13px;
-    }
-
-    #frame {
-      width: 1280px;
-      height: 800px;
-      border: 1px solid #ddd;
-      margin-top: 16px;
-      display: none;
-    }
-
-    .note {
-      color: #444;
-      margin-top: 6px;
-    }
-
-    .inline {
-      display: inline-block;
-      margin-right: 16px;
-    }
-
-    .value-box {
-      display: inline-block;
-      min-width: 700px;
-      max-width: 100%;
-      padding: 6px 8px;
-      box-sizing: border-box;
-      border: 1px solid #ccc;
-      background: #f7f7f7;
-      font-family: Consolas, monospace;
-      font-size: 13px;
-      white-space: pre-wrap;
-      word-break: break-word;
-    }
-  </style>
+  <link rel="stylesheet" href="../shared/preview/preview-pages.css" />
   <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 </head>
 
@@ -102,15 +15,15 @@
     <label>Target type</label>
     <span class="inline">
       <input id="targetTypeSamples" type="radio" name="targetType" value="samples" checked />
-      <label for="targetTypeSamples" style="min-width: 0; font-weight: normal;">Samples</label>
+      <label for="targetTypeSamples" class="inline-label">Samples</label>
     </span>
     <span class="inline">
       <input id="targetTypeGames" type="radio" name="targetType" value="games" />
-      <label for="targetTypeGames" style="min-width: 0; font-weight: normal;">Games</label>
+      <label for="targetTypeGames" class="inline-label">Games</label>
     </span>
     <span class="inline">
       <input id="targetTypeTools" type="radio" name="targetType" value="tools" />
-      <label for="targetTypeTools" style="min-width: 0; font-weight: normal;">Tools</label>
+      <label for="targetTypeTools" class="inline-label">Tools</label>
     </span>
   </div>
 
@@ -160,11 +73,11 @@ Vector Map Editor"></textarea>
     <label>Options</label>
     <span class="inline">
       <input id="forceRewrite" type="checkbox" />
-      <label for="forceRewrite" style="min-width: 0; font-weight: normal;">Force rewrite</label>
+      <label for="forceRewrite" class="inline-label">Force rewrite</label>
     </span>
     <span class="inline">
       <input id="onlyCaptureTimeout" type="checkbox" checked />
-      <label for="onlyCaptureTimeout" style="min-width: 0; font-weight: normal;">Only rewrite if preview.svg contains literal "Capture timeout"</label>
+      <label for="onlyCaptureTimeout" class="inline-label">Only rewrite if preview.svg contains literal "Capture timeout"</label>
     </span>
   </div>
 
@@ -172,11 +85,11 @@ Vector Map Editor"></textarea>
     <label>Capture mode</label>
     <span class="inline">
       <input id="captureModeFullScreen" type="radio" name="captureMode" value="fullscreen1600" />
-      <label for="captureModeFullScreen" style="min-width: 0; font-weight: normal;">Full Screen (1600x900 HTML Page)</label>
+      <label for="captureModeFullScreen" class="inline-label">Full Screen (1600x900 HTML Page)</label>
     </span>
     <span class="inline">
       <input id="captureModeCanvasOnly" type="radio" name="captureMode" value="canvasOnly" checked />
-      <label for="captureModeCanvasOnly" style="min-width: 0; font-weight: normal;">Canvas Only</label>
+      <label for="captureModeCanvasOnly" class="inline-label">Canvas Only</label>
     </span>
   </div>
 

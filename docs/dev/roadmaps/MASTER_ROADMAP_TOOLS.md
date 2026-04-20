@@ -84,3 +84,10 @@ Track all tool-related improvements, gaps, and future work.
 - [x] all critical bugs resolved
 - [ ] documentation complete
 - [ ] ready for long-term maintenance
+
+## 11. How to
+- [ ] Every tool should have a how to use
+
+## 12.  
+- [ ] 
+

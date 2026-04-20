@@ -10,6 +10,89 @@ realNetworkDashboard.mjs
 export const DASHBOARD_PATH = "/admin/network-sample-1319/dashboard";
 export const METRICS_PATH = "/admin/network-sample-1319/api/metrics";
 export const HEALTH_PATH = "/admin/network-sample-1319/health";
+export const DASHBOARD_CSS_PATH = "/admin/network-sample-1319/dashboard.css";
+
+export function createDashboardCss() {
+  return `body {
+  margin: 0;
+  font-family: "Consolas", "Courier New", monospace;
+  background: #081120;
+  color: #e2edf8;
+}
+main {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 18px;
+}
+h1 {
+  margin: 0 0 8px;
+  font-size: 28px;
+}
+.subtitle {
+  margin: 0 0 14px;
+  color: #9eb5cc;
+  line-height: 1.35;
+}
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 10px;
+  margin-bottom: 14px;
+}
+.card {
+  border: 1px solid #2d4868;
+  background: #0d2139;
+  border-radius: 8px;
+  padding: 10px;
+}
+.card h3 {
+  margin: 0 0 6px;
+  font-size: 14px;
+  color: #8db7e3;
+}
+.value {
+  font-size: 22px;
+  font-weight: 700;
+  color: #f8fbff;
+}
+.value.small {
+  font-size: 16px;
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+  border: 1px solid #284667;
+  background: #0f1e33;
+}
+th, td {
+  text-align: left;
+  padding: 8px 9px;
+  border-bottom: 1px solid #203752;
+  font-size: 13px;
+  white-space: nowrap;
+}
+th {
+  color: #9dc2e8;
+  background: #132842;
+  position: sticky;
+  top: 0;
+}
+.state-connected { color: #22c55e; }
+.state-disconnected { color: #ef4444; }
+.state-connecting { color: #f59e0b; }
+.footer {
+  margin-top: 10px;
+  color: #89a4c7;
+  font-size: 12px;
+}
+code {
+  color: #dbeafe;
+  background: #1a2a44;
+  padding: 2px 4px;
+  border-radius: 4px;
+  border: 1px solid #2b4367;
+}`;
+}
 
 export function createDashboardPage({
   metricsPath = METRICS_PATH,
@@ -23,87 +106,7 @@ export function createDashboardPage({
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>${title}</title>
-  <style>
-    body {
-      margin: 0;
-      font-family: "Consolas", "Courier New", monospace;
-      background: #081120;
-      color: #e2edf8;
-    }
-    main {
-      max-width: 1180px;
-      margin: 0 auto;
-      padding: 18px;
-    }
-    h1 {
-      margin: 0 0 8px;
-      font-size: 28px;
-    }
-    .subtitle {
-      margin: 0 0 14px;
-      color: #9eb5cc;
-      line-height: 1.35;
-    }
-    .cards {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 10px;
-      margin-bottom: 14px;
-    }
-    .card {
-      border: 1px solid #2d4868;
-      background: #0d2139;
-      border-radius: 8px;
-      padding: 10px;
-    }
-    .card h3 {
-      margin: 0 0 6px;
-      font-size: 14px;
-      color: #8db7e3;
-    }
-    .value {
-      font-size: 22px;
-      font-weight: 700;
-      color: #f8fbff;
-    }
-    .value.small {
-      font-size: 16px;
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      border: 1px solid #284667;
-      background: #0f1e33;
-    }
-    th, td {
-      text-align: left;
-      padding: 8px 9px;
-      border-bottom: 1px solid #203752;
-      font-size: 13px;
-      white-space: nowrap;
-    }
-    th {
-      color: #9dc2e8;
-      background: #132842;
-      position: sticky;
-      top: 0;
-    }
-    .state-connected { color: #22c55e; }
-    .state-disconnected { color: #ef4444; }
-    .state-connecting { color: #f59e0b; }
-    .footer {
-      margin-top: 10px;
-      color: #89a4c7;
-      font-size: 12px;
-    }
-    code {
-      color: #dbeafe;
-      background: #1a2a44;
-      padding: 2px 4px;
-      border-radius: 4px;
-      border: 1px solid #2b4367;
-    }
-  </style>
+  <link rel="stylesheet" href="${DASHBOARD_CSS_PATH}" />
 </head>
 <body>
   <main>

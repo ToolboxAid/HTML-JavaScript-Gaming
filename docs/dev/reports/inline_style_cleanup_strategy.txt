@@ -1,0 +1,8 @@
+Inline style cleanup strategy
+
+Priority:
+1. Reuse existing higher-level shared CSS when the inline styles already match or are close enough.
+2. Create new shared CSS only when reuse would be incorrect.
+3. Preserve visual behavior/layout as closely as possible.
+
+This PR is intentionally surgical and limited to the remaining targeted inline <style> blocks.

@@ -14,8 +14,10 @@ import {
 } from "../../../../src/engine/network/index.js";
 import {
   DASHBOARD_PATH,
+  DASHBOARD_CSS_PATH,
   METRICS_PATH,
   HEALTH_PATH,
+  createDashboardCss,
   createDashboardPage
 } from "./realNetworkDashboard.mjs";
 
@@ -65,6 +67,14 @@ function toHtml(response, statusCode, html) {
     "Cache-Control": "no-store"
   });
   response.end(html);
+}
+
+function toCss(response, statusCode, css) {
+  response.writeHead(statusCode, {
+    "Content-Type": "text/css; charset=utf-8",
+    "Cache-Control": "no-store"
+  });
+  response.end(css);
 }
 
 function nowMs() {
@@ -152,6 +162,11 @@ export function createRealNetworkSampleServer(options = {}) {
       return;
     }
 
+    if (requestUrl.pathname === DASHBOARD_CSS_PATH) {
+      toCss(response, 200, createDashboardCss());
+      return;
+    }
+
     if (requestUrl.pathname === DASHBOARD_PATH) {
       toHtml(response, 200, createDashboardPage({
         metricsPath: METRICS_PATH,
@@ -163,7 +178,7 @@ export function createRealNetworkSampleServer(options = {}) {
     toJson(response, 404, {
       status: "failed",
       code: "NOT_FOUND",
-      routes: [HEALTH_PATH, METRICS_PATH, DASHBOARD_PATH, WS_PATH]
+      routes: [HEALTH_PATH, METRICS_PATH, DASHBOARD_CSS_PATH, DASHBOARD_PATH, WS_PATH]
     });
   });
 
