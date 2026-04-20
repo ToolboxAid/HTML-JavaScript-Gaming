@@ -81,8 +81,9 @@
 
 .toolboxaid-theme-header .menu-item a.is-external::after {
   content: '\2197';
-  margin-left: 6px;
-  font-size: 0.85em;
+  margin-left: 3px;
+  font-size: 1.25em;
+  color: #fff;
 }
 
 body.hub-page-home .toolboxaid-theme-header #nav,
