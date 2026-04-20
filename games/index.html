@@ -12,6 +12,7 @@ index.html
   <title>Games - HTML JavaScript Gaming</title>
   <link rel="stylesheet" href="../src/engine/theme/main.css" />
   <link rel="stylesheet" href="../src/engine/ui/hubCommon.css" />
+  <link rel="stylesheet" href="./index.css" />
 </head>
 <body class="hub-page-games">
   <details class="is-collapsible" open>
@@ -31,55 +32,45 @@ index.html
   </details>
 
   <main class="page-shell">
-
     <section class="content-section">
-      <h2>Playable Now</h2>
-      <div class="card-grid">
-        <a class="card-link" href="/games/GravityWell/index.html">
-          <h3>Gravity Well</h3>
-          <p>Orbital route-planning gameplay with gravity assists and beacon collection objectives.</p>
-        </a>
-        <a class="card-link" href="/games/Asteroids/index.html">
-          <h3>Asteroids</h3>
-          <p>Classic arcade combat with tuned ship handling and score-chase progression.</p>
-        </a>
-        <a class="card-link" href="/games/SpaceInvaders/index.html">
-          <h3>Space Invaders</h3>
-          <p>Formation shooter gameplay with wave pacing, lives, and escalating pressure.</p>
-        </a>
-      </div>
+      <h2>Pinned Games</h2>
+      <div id="games-pinned-list" class="game-level-grid"></div>
     </section>
 
     <section class="content-section">
-      <h2>In Progress</h2>
-      <div class="card-grid">
-        <a class="card-link" href="/games/SpaceDuel/index.html">
-          <h3>Space Duel</h3>
-          <p>Vector-style inertial combat and wave-based scenario tuning.</p>
-        </a>
-        <a class="card-link" href="/games/Pong/index.html">
-          <h3>Pong</h3>
-          <p>Multi-mode paddle gameplay and input polish across keyboard and gamepad flows.</p>
-        </a>
+      <h2>Filter Games</h2>
+      <p>Filter by level, class, tag, or free-text search.</p>
+      <div class="games-filter-grid">
+        <div class="games-filter-field">
+          <label for="games-filter-level">Level</label>
+          <select id="games-filter-level">
+            <option value="">All levels</option>
+          </select>
+        </div>
+        <div class="games-filter-field">
+          <label for="games-filter-class">Class</label>
+          <select id="games-filter-class">
+            <option value="">All classes</option>
+          </select>
+        </div>
+        <div class="games-filter-field">
+          <label for="games-filter-tag">Tag</label>
+          <select id="games-filter-tag">
+            <option value="">All tags</option>
+          </select>
+        </div>
+        <div class="games-filter-field">
+          <label for="games-filter-search">Search</label>
+          <input id="games-filter-search" type="text" placeholder="arcade, physics, planned..." autocomplete="off" />
+        </div>
       </div>
+      <p id="games-filter-status" aria-live="polite"></p>
     </section>
 
     <section class="content-section">
-      <h2>Roadmap Anchors</h2>
-      <div class="card-grid">
-        <a class="card-link" href="/games/Breakout/index.html">
-          <h3>Breakout</h3>
-          <p>Debug-showcase-aligned brick-breaker loop with onboarding-ready flow.</p>
-        </a>
-        <a class="card-link" href="/games/Pacman/index.html">
-          <h3>Pacman</h3>
-          <p>Personality-driven ghost behaviors and deterministic routing lane.</p>
-        </a>
-        <a class="card-link" href="/games/AITargetDummy/index.html">
-          <h3>AI Target Dummy</h3>
-          <p>Behavior-state validation lane for idle, chase, attack, and recover cycles.</p>
-        </a>
-      </div>
+      <h2>Games By Level</h2>
+      <p>Data-driven catalog of playable, in-progress, and planned games with roadmap grouping.</p>
+      <div id="games-index-list"></div>
     </section>
 
     <div class="footer-note">
@@ -87,5 +78,6 @@ index.html
     </div>
   </main>
   <script type="module" src="../src/engine/theme/mount-shared-header.js"></script>
+  <script type="module" src="./index.render.js"></script>
 </body>
 </html>

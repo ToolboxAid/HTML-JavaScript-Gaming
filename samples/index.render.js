@@ -113,6 +113,14 @@ function buildSampleRows(metadata, pinnedSet) {
     .sort((a, b) => a.id.localeCompare(b.id));
 
   const phases = [...new Set(sampleRows.map((sample) => sample.phase))].sort(sortPhase);
+  const phaseOptions = phases.map((phase) => {
+    const info = phaseInfoMap.get(phase);
+    const phaseTitle = normalize(info?.title) || `Phase ${phase}`;
+    return {
+      value: phase,
+      label: phaseTitle
+    };
+  });
   const classes = [...new Map(
     sampleRows.flatMap((sample) => sample.classTokens).map((token) => [token.value, token.label])
   ).entries()]
@@ -120,7 +128,7 @@ function buildSampleRows(metadata, pinnedSet) {
     .sort((a, b) => a.label.localeCompare(b.label, undefined, { sensitivity: "base" }));
   const tags = [...new Set(sampleRows.flatMap((sample) => sample.tags))].sort();
 
-  return { sampleRows, phases, classes, tags, phaseInfoMap };
+  return { sampleRows, phases, phaseOptions, classes, tags, phaseInfoMap };
 }
 
 function filterSampleRows(sampleRows, filterState) {
@@ -184,16 +192,16 @@ function buildSampleCard(sample) {
   const pinInput = document.createElement("input");
   pinInput.id = pinInputId;
   pinInput.type = "checkbox";
-  pinInput.className = "sample-pin-toggle";
+  pinInput.className = "pin-toggle";
   pinInput.dataset.samplePin = sample.id;
   pinInput.checked = sample.pinned;
 
   const pinLabel = document.createElement("label");
-  pinLabel.className = "sample-pin-label";
+  pinLabel.className = "pin-label";
   pinLabel.setAttribute("for", pinInputId);
   pinLabel.setAttribute("title", sample.pinned ? "Unpin" : "Pin");
   pinLabel.setAttribute("aria-label", sample.pinned ? "Unpin sample" : "Pin sample");
-  pinLabel.innerHTML = `<span class="sample-pin-icon" aria-hidden="true"></span>`;
+  pinLabel.innerHTML = `<span class="pin-icon" aria-hidden="true"></span>`;
 
   previewWrap.appendChild(launch);
 
@@ -286,7 +294,10 @@ export async function initSamplesIndex() {
   let pinnedSet = readPinnedSet();
 
   const model = buildSampleRows(metadata, pinnedSet);
-  setSelectOptions(phaseSelect, model.phases, (value) => `Phase ${value}`);
+  setSelectOptions(phaseSelect, model.phaseOptions.map((entry) => entry.value), (value) => {
+    const found = model.phaseOptions.find((entry) => entry.value === value);
+    return found?.label || `Phase ${value}`;
+  });
   setSelectOptions(classSelect, model.classes.map((entry) => entry.value), (value) => {
     const found = model.classes.find((entry) => entry.value === value);
     return found?.label || value.split("/").at(-1) || value;

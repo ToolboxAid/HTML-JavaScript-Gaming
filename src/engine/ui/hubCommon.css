@@ -31,6 +31,7 @@ hubCommon.css
   --status-live: #2f9e44;
   --status-tool: #9c36b5;
   --status-roadmap: #f59f00;
+  --pin-icon-mask: url("/src/engine/ui/assets/icons/pin-monocolor.svg");
 }
 
 * {
@@ -517,4 +518,43 @@ body.hub-page-samples {
   color: #7d8798;
   border-style: dashed;
   cursor: not-allowed;
+}
+
+.pin-toggle {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.pin-label {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.15em;
+  min-height: 1.15em;
+  margin-right: 8px;
+  padding: 0;
+  cursor: pointer;
+  user-select: none;
+  font-size: 1.15em;
+  color: rgb(239, 68, 68);
+}
+
+.pin-toggle:checked + .pin-label {
+  color: rgb(34, 197, 94);
+}
+
+.pin-icon {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  background-color: currentColor;
+  -webkit-mask-image: var(--pin-icon-mask);
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  -webkit-mask-size: contain;
+  mask-image: var(--pin-icon-mask);
+  mask-repeat: no-repeat;
+  mask-position: center;
+  mask-size: contain;
 }
