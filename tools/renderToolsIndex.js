@@ -94,6 +94,14 @@ function renderWorkspaceManagerCard() {
   `;
 }
 
+function renderWorkspaceManagerSection() {
+  const grid = document.querySelector("[data-workspace-manager-grid]");
+  if (!grid) {
+    return;
+  }
+  grid.innerHTML = renderWorkspaceManagerCard();
+}
+
 function renderActiveToolsList() {
   const grid = document.querySelector("[data-active-tools-grid]");
   if (!grid) {
@@ -104,7 +112,6 @@ function renderActiveToolsList() {
     .filter((entry) => entry.visibleInToolsList === true)
     .sort((left, right) => String(left.displayName || "").localeCompare(String(right.displayName || "")))
     .map((tool) => renderToolCard(tool));
-  toolCards.push(renderWorkspaceManagerCard());
   grid.innerHTML = toolCards.join("\n");
 }
 
@@ -123,5 +130,6 @@ function sortPlannedCardsAlphabetically() {
     .forEach((card) => grid.appendChild(card));
 }
 
+renderWorkspaceManagerSection();
 renderActiveToolsList();
 sortPlannedCardsAlphabetically();

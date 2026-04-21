@@ -60,7 +60,7 @@ h1 {
 
 .subtitle {
   margin: 0;
-  max-width: 980px;
+  max-width: 1024px;
   color: var(--muted, #a9b3c3);
   line-height: 1.6;
 }
