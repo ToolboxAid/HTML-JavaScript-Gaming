@@ -32,7 +32,7 @@ body.tools-platform-surface {
 .tools-platform-statusbar {
   border: 1px solid var(--line, rgba(221, 214, 254, 0.26));
   border-radius: 18px;
-  background: linear-gradient(180deg, var(--panel, rgba(76, 29, 149, 0.88)) 0%, var(--panel2, rgba(49, 17, 102, 0.94)) 100%);
+  background: var(--bg-gradient, linear-gradient(180deg, #c4b5fd 0%, #a78bfa 18%, #8b5cf6 36%, #7c3aed 54%, #6d28d9 74%, #5b21b6 88%, #4c1d95 100%));
   box-shadow: var(--tools-shell-shadow);
 }
 
@@ -101,6 +101,17 @@ body.tools-platform-surface {
 
 .tools-platform-frame__bottomline {
   margin: 0 0 36px;
+}
+
+.tools-platform-frame__divider {
+  margin: 10px 0;
+  border: 0;
+  border-top: 1px solid var(--line, rgba(221, 214, 254, 0.26));
+}
+
+.tools-platform-frame__controls-stack {
+  display: grid;
+  gap: 8px;
 }
 
 .tools-platform-frame__eyebrow {
@@ -192,9 +203,9 @@ body.tools-platform-surface {
   flex-direction: column;
   gap: 14px;
   flex-wrap: wrap;
-  margin-top: 10px;
-  padding-top: 10px;
-  border-top: 1px solid var(--line, rgba(221, 214, 254, 0.26));
+  margin-top: 0;
+  padding-top: 0;
+  border-top: 0;
 }
 
 .tools-platform-frame__project-copy,
@@ -205,6 +216,7 @@ body.tools-platform-surface {
   gap: 10px;
   flex-wrap: wrap;
   text-align: center;
+  width: 100%;
 }
 
 .tools-platform-frame__project-label,

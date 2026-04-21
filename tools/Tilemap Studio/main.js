@@ -644,15 +644,23 @@ class TileMapEditorApp {
   }
 
   attachEvents() {
-    this.refs.newProjectButton.addEventListener("click", () => this.handleNewProject());
-    this.refs.loadProjectButton.addEventListener("click", () => this.refs.loadProjectInput.click());
-    this.refs.loadProjectInput.addEventListener("change", (event) => this.handleLoadProject(event));
+    if (this.refs.newProjectButton) {
+      this.refs.newProjectButton.addEventListener("click", () => this.handleNewProject());
+    }
+    if (this.refs.loadProjectButton && this.refs.loadProjectInput) {
+      this.refs.loadProjectButton.addEventListener("click", () => this.refs.loadProjectInput.click());
+    }
+    if (this.refs.loadProjectInput) {
+      this.refs.loadProjectInput.addEventListener("change", (event) => this.handleLoadProject(event));
+    }
     this.refs.loadSampleButton.addEventListener("click", () => this.handleLoadSelectedSample());
     this.refs.sampleSelect.addEventListener("change", () => this.handleSampleSelectionChanged());
     this.refs.sampleSelect.addEventListener("focus", () => {
       void this.loadSampleManifest({ quiet: true });
     });
-    this.refs.saveProjectButton.addEventListener("click", () => this.handleSaveProject());
+    if (this.refs.saveProjectButton) {
+      this.refs.saveProjectButton.addEventListener("click", () => this.handleSaveProject());
+    }
     this.refs.loadAssetRegistryButton.addEventListener("click", () => this.refs.loadAssetRegistryInput.click());
     this.refs.loadAssetRegistryInput.addEventListener("change", (event) => this.handleLoadAssetRegistry(event));
     this.refs.saveAssetRegistryButton.addEventListener("click", () => this.handleSaveAssetRegistry());
@@ -943,7 +951,9 @@ class TileMapEditorApp {
         this.updateStatus(`Load failed: ${error instanceof Error ? error.message : "invalid JSON"}`);
       }
 
-      this.refs.loadProjectInput.value = "";
+      if (this.refs.loadProjectInput) {
+        this.refs.loadProjectInput.value = "";
+      }
     };
 
     reader.readAsText(file);

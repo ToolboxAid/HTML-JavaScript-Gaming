@@ -4,14 +4,14 @@ import {
   readSharedAssetHandoff,
   readSharedPaletteHandoff
 } from "./assetUsageIntegration.js";
-import { createProjectSystemController } from "./projectSystem.js";
+import { createWorkspaceSystemController } from "./projectSystem.js";
 import { bindEventHandlers, createCommandDispatcher } from "./eventCommandUtils.js";
 import { asHtmlInput, queryAll, queryFirst, readDataAttribute, setTextContent } from "./uiSafeUtils.js";
 import { escapeHtml } from "../../src/shared/string/stringUtil.js";
 import { Logger } from "../../src/engine/logging/index.js";
 import { createRuntimeMonitoringHooks } from "../../src/engine/runtime/index.js";
 
-let projectController = null;
+let workspaceController = null;
 let headerExpandedState = null;
 let runtimeMonitoringHooks = null;
 
@@ -70,7 +70,7 @@ function getRegistryEntryHref(entryPoint) {
 }
 
 function getManifest() {
-  return projectController ? projectController.getManifest() : null;
+  return workspaceController ? workspaceController.getManifest() : null;
 }
 
 function renderToolLinks(currentToolId) {
@@ -142,41 +142,47 @@ function renderSharedSelectionSummary() {
   `;
 }
 
-function renderProjectSummary(currentTool) {
-  if (!currentTool || !projectController) {
+function renderWorkspaceSummary(currentTool) {
+  if (!currentTool || !workspaceController) {
     return "";
   }
 
   const manifest = getManifest();
-  const projectName = manifest?.name || "Untitled Project";
+  const workspaceName = manifest?.name || "Untitled Workspace";
   const dirtyMark = manifest?.dirty === true ? " *" : "";
   const readiness = manifest?.tools?.[currentTool.id]
-    ? "shared project state synced"
-    : "shared project shell ready";
-  const sharedSelectionSummary = renderSharedSelectionSummary();
+    ? "shared workspace state synced"
+    : "shared workspace shell ready";
 
   return `
-    <div class="tools-platform-frame__project" aria-label="Project system controls">
-      <div class="tools-platform-frame__project-copy">
-        <span class="tools-platform-frame__project-label">Project</span>
-        <strong class="tools-platform-frame__project-name">${escapeHtml(projectName)}${escapeHtml(dirtyMark)}</strong>
-        <span class="tools-platform-frame__project-meta">${escapeHtml(readiness)}</span>
-      </div>
+    <div class="tools-platform-frame__project" aria-label="Workspace system controls">
       <div class="tools-platform-frame__project-actions">
-        <button type="button" class="tools-platform-frame__project-button" data-project-action="new">New Project</button>
-        <button type="button" class="tools-platform-frame__project-button" data-project-action="open">Open Project</button>
-        <button type="button" class="tools-platform-frame__project-button" data-project-action="save">Save Project</button>
-        <button type="button" class="tools-platform-frame__project-button" data-project-action="save-as">Save Project As</button>
-        <button type="button" class="tools-platform-frame__project-button is-secondary" data-project-action="close">Close Project</button>
-        <input type="file" class="tools-platform-frame__project-input" data-project-open-input accept=".json,application/json" />
+        <button type="button" class="tools-platform-frame__project-button" data-workspace-action="new">New Workspace</button>
+        <button type="button" class="tools-platform-frame__project-button" data-workspace-action="open">Open Workspace</button>
+        <button type="button" class="tools-platform-frame__project-button" data-workspace-action="save">Save Workspace</button>
+        <button type="button" class="tools-platform-frame__project-button" data-workspace-action="save-as">Save Workspace As</button>
+        <button type="button" class="tools-platform-frame__project-button is-secondary" data-workspace-action="close">Close Workspace</button>
+        <input type="file" class="tools-platform-frame__project-input" data-workspace-open-input accept=".json,application/json" />
       </div>
-      ${sharedSelectionSummary}
+      <div class="tools-platform-frame__project-copy">
+        <span class="tools-platform-frame__project-label">Workspace</span>
+        <strong class="tools-platform-frame__project-name">${escapeHtml(workspaceName)}${escapeHtml(dirtyMark)}</strong>
+        <span class="tools-platform-frame__project-meta">${escapeHtml(readiness)}</span>
+      </div>      
     </div>
   `;
 }
 
 function renderHeaderMarkup(currentTool, isHeaderExpanded) {
   const isLanding = getPageMode() === "landing";
+  const currentPath = typeof window !== "undefined" ? window.location.pathname : "";
+  const searchParams = typeof window !== "undefined"
+    ? new URLSearchParams(window.location.search)
+    : null;
+  const isHostedWorkspaceView = searchParams?.get("hosted") === "1";
+  const showNavThroughTiles = isHostedWorkspaceView
+    || /\/tools\/Workspace%20Manager\//i.test(currentPath)
+    || /\/tools\/Workspace Manager\//i.test(currentPath);
   const sharedActionLinks = !isLanding ? renderSharedActionLinks(currentTool?.id ?? "") : "";
   const title = currentTool ? currentTool.displayName : (document.body.dataset.toolTitle || "Tools Platform");
   const description = currentTool
@@ -184,7 +190,7 @@ function renderHeaderMarkup(currentTool, isHeaderExpanded) {
     : "Registry-driven, engine-themed entry surface for vector maps, vector assets, tilemaps, parallax scenes, and sprite workspaces.";
   const meta = isLanding
     ? `${getToolRegistry().filter((entry) => entry.active === true && entry.visibleInToolsList === true).length} active tools | hubCommon.css theme`
-    : "Shared shell, engine theme, and project context applied from the active tool registry";
+    : "Shared shell, engine theme, and workspace context applied from the active tool registry";
 
   return `
     <section class="tools-platform-frame">
@@ -201,18 +207,25 @@ function renderHeaderMarkup(currentTool, isHeaderExpanded) {
         <div class="tools-platform-frame__topline">
           <p class="tools-platform-frame__description">${escapeHtml(description)}</p>
         </div>
-        <div class="tools-platform-frame__bottomline">
-          <nav class="tools-platform-frame__nav" aria-label="Active tools">
-            ${renderToolLinks(currentTool?.id ?? "")}
-          </nav>
-        </div>
-        ${renderProjectSummary(currentTool)}
-        ${!isLanding ? `
-          ${sharedActionLinks ? `
-            <div class="tools-platform-frame__actions" aria-label="Shared asset and palette actions">
-              ${sharedActionLinks}
+        ${showNavThroughTiles ? `
+          <div class="tools-platform-frame__bottomline">
+            ${!isLanding ? `<hr class="tools-platform-frame__divider" />` : ""}
+            ${!isLanding ? `
+            <div class="tools-platform-frame__controls-stack">
+              ${sharedActionLinks ? `
+                <div class="tools-platform-frame__actions" aria-label="Shared asset and palette actions">
+                  ${sharedActionLinks}
+                </div>
+              ` : ""}
+              ${renderWorkspaceSummary(currentTool)}
+              ${renderSharedSelectionSummary()}
             </div>
-          ` : ""}
+            ` : ""}
+            ${!isLanding ? `<hr class="tools-platform-frame__divider" />` : ""}
+            <nav class="tools-platform-frame__nav" aria-label="Active tools">
+              ${renderToolLinks(currentTool?.id ?? "")}
+            </nav>
+          </div>
         ` : ""}
       </div>
     </section>
@@ -224,12 +237,12 @@ function renderStatusMarkup(currentTool) {
     ? currentTool.displayName
     : (getPageMode() === "landing" ? "Landing Surface" : (document.body.dataset.toolTitle || "Tool Surface"));
   const manifest = getManifest();
-  const projectName = manifest?.name || "No active project";
+  const workspaceName = manifest?.name || "No active workspace";
   const dirtyLabel = manifest?.dirty === true ? "Unsaved changes" : "Saved";
   return `
     <div class="tools-platform-statusbar">
-      <span>Registry-driven navigation, engine theme, and project system are active.</span>
-      <span>${escapeHtml(label)} | ${escapeHtml(projectName)}</span>
+      <span>Registry-driven navigation, engine theme, and workspace system are active.</span>
+      <span>${escapeHtml(label)} | ${escapeHtml(workspaceName)}</span>
       <span>${escapeHtml(dirtyLabel)}</span>
       <span>${getToolRegistry().filter((entry) => entry.active === true && entry.visibleInToolsList === true).length} first-class tools</span>
     </div>
@@ -248,45 +261,45 @@ function applyDocumentMetadata(currentTool) {
   }
 }
 
-function bindProjectShellEvents(currentTool) {
-  if (!projectController || !currentTool) {
+function bindWorkspaceShellEvents(currentTool) {
+  if (!workspaceController || !currentTool) {
     return;
   }
 
-  const actionButtons = queryAll("[data-project-action]");
-  const openInputElement = asHtmlInput(queryFirst("[data-project-open-input]"));
+  const actionButtons = queryAll("[data-workspace-action]");
+  const openInputElement = asHtmlInput(queryFirst("[data-workspace-open-input]"));
 
-  const dispatchProjectAction = createCommandDispatcher({
+  const dispatchWorkspaceAction = createCommandDispatcher({
     async new() {
-      if (!projectController.shouldConfirmDiscard("Discard unsaved project changes and create a new project?")) {
+      if (!workspaceController.shouldConfirmDiscard("Discard unsaved workspace changes and create a new workspace?")) {
         return;
       }
-      await projectController.handleNewProject();
+      await workspaceController.handleNewWorkspace();
     },
     async open() {
-      if (!projectController.shouldConfirmDiscard("Discard unsaved project changes and open another project?")) {
+      if (!workspaceController.shouldConfirmDiscard("Discard unsaved workspace changes and open another workspace?")) {
         return;
       }
       openInputElement?.click();
     },
     async save() {
-      projectController.handleSaveProject();
+      workspaceController.handleSaveWorkspace();
     },
     async "save-as"() {
-      projectController.handleSaveProjectAs();
+      workspaceController.handleSaveWorkspaceAs();
     },
     async close() {
-      if (!projectController.shouldConfirmDiscard("Close the active project and clear unsaved changes?")) {
+      if (!workspaceController.shouldConfirmDiscard("Close the active workspace and clear unsaved changes?")) {
         return;
       }
-      projectController.handleCloseProject();
+      workspaceController.handleCloseWorkspace();
     }
   });
 
   bindEventHandlers(actionButtons, "click", async (event) => {
     const button = event.currentTarget instanceof Element ? event.currentTarget : null;
-    const action = readDataAttribute(button, "data-project-action");
-    await dispatchProjectAction(action);
+    const action = readDataAttribute(button, "data-workspace-action");
+    await dispatchWorkspaceAction(action);
   });
 
   if (openInputElement) {
@@ -298,15 +311,15 @@ function bindProjectShellEvents(currentTool) {
       }
 
       try {
-        await projectController.handleOpenProject(file);
+        await workspaceController.handleOpenWorkspace(file);
       } catch (error) {
-        window.alert(`Open Project failed: ${error instanceof Error ? error.message : "unknown error"}`);
+        window.alert(`Open Workspace failed: ${error instanceof Error ? error.message : "unknown error"}`);
       }
     });
   }
 
   bindEventHandlers(queryAll(".tools-platform-frame__nav-link"), "click", (event) => {
-      if (projectController.shouldConfirmDiscard("You have unsaved project changes. Continue to another tool?")) {
+      if (workspaceController.shouldConfirmDiscard("You have unsaved workspace changes. Continue to another tool?")) {
         return;
       }
       event.preventDefault();
@@ -341,7 +354,7 @@ function renderShell(currentTool) {
     statusHost.innerHTML = renderStatusMarkup(currentTool);
   }
 
-  bindProjectShellEvents(currentTool);
+  bindWorkspaceShellEvents(currentTool);
 }
 
 function ensureRuntimeMonitoring() {
@@ -382,7 +395,7 @@ function initPlatformShell() {
   const currentTool = currentToolId ? getToolById(currentToolId) : null;
 
   if (currentToolId) {
-    projectController = createProjectSystemController({
+    workspaceController = createWorkspaceSystemController({
       toolId: currentToolId,
       onChange() {
         renderShell(currentTool);
@@ -398,7 +411,7 @@ function initPlatformShell() {
         }
       }
     });
-    projectController.startWatching();
+    workspaceController.startWatching();
   }
 
   renderShell(currentTool);

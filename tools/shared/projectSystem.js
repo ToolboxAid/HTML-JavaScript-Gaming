@@ -59,13 +59,13 @@ function buildStatusSummary(validation) {
   if (validation.valid) {
     const warningCount = validation.warnings.length;
     return warningCount > 0
-      ? `Project opened with ${warningCount} warning${warningCount === 1 ? "" : "s"}.`
-      : "Project ready.";
+      ? `Workspace opened with ${warningCount} warning${warningCount === 1 ? "" : "s"}.`
+      : "Workspace ready.";
   }
-  return `Project invalid: ${validation.issues.join(" ")}`;
+  return `Workspace invalid: ${validation.issues.join(" ")}`;
 }
 
-export function createProjectSystemController(options = {}) {
+export function createWorkspaceSystemController(options = {}) {
   const toolId = safeString(options.toolId, "");
   const onChange = typeof options.onChange === "function" ? options.onChange : () => {};
   const onStatus = typeof options.onStatus === "function" ? options.onStatus : () => {};
@@ -84,7 +84,7 @@ export function createProjectSystemController(options = {}) {
     const currentManifest = state.manifest
       ? cloneValue(state.manifest)
       : createEmptyProjectManifest({
-        name: toolAdapter.getProjectName?.() || getToolById(toolId)?.displayName || "Untitled Project",
+        name: toolAdapter.getProjectName?.() || getToolById(toolId)?.displayName || "Untitled Workspace",
         toolId
       });
 
@@ -146,10 +146,10 @@ export function createProjectSystemController(options = {}) {
     return state.manifest;
   }
 
-  function ensureProjectManifest() {
+  function ensureWorkspaceManifest() {
     if (!state.manifest) {
       state.manifest = createEmptyProjectManifest({
-        name: adapter().getProjectName?.() || getToolById(toolId)?.displayName || "Untitled Project",
+        name: adapter().getProjectName?.() || getToolById(toolId)?.displayName || "Untitled Workspace",
         toolId
       });
     }
@@ -166,7 +166,7 @@ export function createProjectSystemController(options = {}) {
       return;
     }
 
-    const manifest = ensureProjectManifest();
+    const manifest = ensureWorkspaceManifest();
     const toolState = manifest.tools?.[toolId];
     if (toolState) {
       toolAdapter.applyState(cloneValue(unwrapToolStateForAdapter(toolId, toolState)));
@@ -176,10 +176,10 @@ export function createProjectSystemController(options = {}) {
     markSaved("initial-apply");
   }
 
-  async function handleNewProject() {
+  async function handleNewWorkspace() {
     const toolAdapter = adapter();
-    const suggestedName = toolAdapter.getProjectName?.() || getToolById(toolId)?.displayName || "Untitled Project";
-    const nextName = safeString(window.prompt("Project name", suggestedName), suggestedName);
+    const suggestedName = toolAdapter.getProjectName?.() || getToolById(toolId)?.displayName || "Untitled Workspace";
+    const nextName = safeString(window.prompt("Workspace name", suggestedName), suggestedName);
     const nextManifest = createEmptyProjectManifest({
       name: nextName,
       toolId
@@ -196,7 +196,7 @@ export function createProjectSystemController(options = {}) {
     onStatus(`Started ${nextName}.`);
   }
 
-  async function handleOpenProject(file) {
+  async function handleOpenWorkspace(file) {
     const text = await readFileAsText(file);
     const validation = validateProjectManifest(JSON.parse(text));
     if (!validation.valid) {
@@ -219,24 +219,24 @@ export function createProjectSystemController(options = {}) {
     onStatus(`${nextManifest.name} opened. ${buildStatusSummary(validation)}`);
   }
 
-  function handleSaveProject() {
+  function handleSaveWorkspace() {
     const manifest = markSaved("save-project");
     downloadTextFile(`${serializeProjectManifest(manifest)}\n`, normalizeProjectFileName(manifest.name));
     onStatus(`Saved ${normalizeProjectFileName(manifest.name)}.`);
   }
 
-  function handleSaveProjectAs() {
-    const manifest = ensureProjectManifest();
-    const nextName = safeString(window.prompt("Save project as", manifest.name), manifest.name);
+  function handleSaveWorkspaceAs() {
+    const manifest = ensureWorkspaceManifest();
+    const nextName = safeString(window.prompt("Save workspace as", manifest.name), manifest.name);
     manifest.name = nextName;
     const saved = markSaved("save-project-as");
     downloadTextFile(`${serializeProjectManifest(saved)}\n`, normalizeProjectFileName(saved.name));
     onStatus(`Saved ${normalizeProjectFileName(saved.name)}.`);
   }
 
-  function handleCloseProject() {
+  function handleCloseWorkspace() {
     const toolAdapter = adapter();
-    const fallbackName = getToolById(toolId)?.displayName || "Untitled Project";
+    const fallbackName = getToolById(toolId)?.displayName || "Untitled Workspace";
     const nextManifest = createEmptyProjectManifest({
       name: fallbackName,
       toolId
@@ -252,7 +252,7 @@ export function createProjectSystemController(options = {}) {
     state.baselineHash = "";
     clearStorage();
     updateDirtyState("close-project");
-    onStatus("Project closed.");
+    onStatus("Workspace closed.");
   }
 
   function shouldConfirmDiscard(message) {
@@ -284,21 +284,30 @@ export function createProjectSystemController(options = {}) {
     return () => window.clearInterval(intervalId);
   }
 
-  return {
+    return {
     getManifest() {
-      return cloneValue(ensureProjectManifest());
+      return cloneValue(ensureWorkspaceManifest());
     },
     isDirty() {
       updateDirtyState("is-dirty");
       return state.manifest?.dirty === true;
     },
     shouldConfirmDiscard,
-    handleNewProject,
-    handleOpenProject,
-    handleSaveProject,
-    handleSaveProjectAs,
-    handleCloseProject,
+    handleNewWorkspace,
+    handleOpenWorkspace,
+    handleSaveWorkspace,
+    handleSaveWorkspaceAs,
+    handleCloseWorkspace,
+    // Backward-compatible aliases for older call-sites.
+    handleNewProject: handleNewWorkspace,
+    handleOpenProject: handleOpenWorkspace,
+    handleSaveProject: handleSaveWorkspace,
+    handleSaveProjectAs: handleSaveWorkspaceAs,
+    handleCloseProject: handleCloseWorkspace,
     updateDirtyState,
     startWatching
   };
 }
+
+// Backward-compatible export alias for older imports.
+export const createProjectSystemController = createWorkspaceSystemController;

@@ -7,7 +7,7 @@ function toStandaloneHref(entryPoint) {
 }
 
 function toHostHref(toolId) {
-  return `/tools/Tool%20Host/index.html?tool=${encodeURIComponent(toolId)}`;
+  return `/tools/Workspace%20Manager/index.html?tool=${encodeURIComponent(toolId)}`;
 }
 
 function renderToolCard(tool) {
@@ -33,11 +33,11 @@ function renderToolCard(tool) {
       <p>${escapeHtml(tool.description)}</p>
       <div class="meta">
         <a class="tools-platform-card__action" href="${escapeHtml(standaloneHref)}">Open Tool</a>
-        <a class="tools-platform-card__action tools-platform-card__action--secondary" href="${escapeHtml(hostHref)}">Open In Host</a>
+        <a class="tools-platform-card__action tools-platform-card__action--secondary" href="${escapeHtml(hostHref)}">Open In Workspace Manager</a>
       </div>
       <p class="tools-platform-card__launch-help">
         Open Tool = launch the tool directly/standalone<br />
-        Open In Host = launch the same tool inside a shared host shell/container
+        Open In Workspace Manager = launch the same tool inside a shared host shell/container
       </p>
       ${sampleLinks}
     </div>

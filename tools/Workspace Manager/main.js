@@ -236,7 +236,7 @@ function bindEvents() {
 
 function init() {
   if (!hasAvailableTools) {
-    writeStatus("No active tools are currently available for Tool Host.");
+    writeStatus("No active tools are currently available for Workspace Manager.");
   }
   const initialToolId = readInitialToolId();
   populateToolSelect(initialToolId);
