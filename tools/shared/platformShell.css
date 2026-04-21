@@ -548,6 +548,22 @@ body.tools-platform-surface .app > .toolbar:first-child {
   border-top: 1px solid var(--surface-border, rgba(221, 214, 254, 0.22));
 }
 
+body.tools-howto-page {
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+
+body.tools-howto-page h1,
+body.tools-howto-page .section h2,
+body.tools-howto-page .card p,
+body.tools-howto-page .card strong {
+  color: #ffffff;
+}
+
+body.tools-howto-page #shared-theme-header + main.wrap {
+  margin-top: 24px;
+}
+
 @media (max-width: 900px) {
   .tools-platform-header,
   .tools-platform-status,

@@ -1,16 +1,22 @@
+﻿Toolbox Aid
+David Quesenberry
+04/21/2026
+README.md
+
 # Palette Browser / Manager
 
-Palette Browser / Manager is a first-class tools surface for shared engine palettes and local editable palette workflows.
+High-level overview for 'Palette Browser / Manager' under 'tools/Palette Browser/'.
 
-## Phase 1
-- Browse built-in palettes from `src/engine/paletteList.js`.
-- Duplicate a palette into a local editable copy.
-- Rename custom palettes and add or remove swatches.
-- Validate duplicate names, missing metadata, and invalid color values.
-- Copy or export palette JSON.
-- Publish a lightweight shared palette handoff for active art tools.
+## Purpose
+- Provide a focused workspace for this tool's primary authoring/debug workflow.
+- Keep output deterministic and compatible with shared Toolbox Aid contracts.
+- Integrate cleanly with shared header, workspace lifecycle, and tool navigation.
 
-## Boundary
-- Built-in engine palettes remain source-of-truth references.
-- Local edits stay in browser storage until exported.
-- This tool does not change engine runtime behavior.
+## What To Expect
+- Browser-based tool interface with panel/workspace controls.
+- Shared header context and status integration.
+- Safe workflows for loading, editing, previewing, and exporting relevant data.
+
+## Entry Points
+- Tool UI: 'tools/Palette Browser/index.html'
+- How-to guide: 'tools/Palette Browser/how_to_use.html'

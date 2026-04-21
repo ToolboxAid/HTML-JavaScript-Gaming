@@ -179,8 +179,26 @@ function renderHeaderMarkup(currentTool, isHeaderExpanded) {
   const searchParams = typeof window !== "undefined"
     ? new URLSearchParams(window.location.search)
     : null;
-  const isHostedWorkspaceView = searchParams?.get("hosted") === "1";
+  const isHostedWorkspaceView = searchParams?.get("hosted") === "1"
+    || searchParams?.has("hostToolId") === true
+    || searchParams?.has("hostContextId") === true;
+  const isWorkspaceManagerReferrer = typeof document !== "undefined"
+    ? /\/tools\/Workspace(?:%20| )Manager\//i.test(document.referrer || "")
+    : false;
+  const isWorkspaceManagerParent = (() => {
+    if (typeof window === "undefined") {
+      return false;
+    }
+    try {
+      return window.top !== window
+        && /\/tools\/Workspace(?:%20| )Manager\//i.test(window.top.location.pathname || "");
+    } catch {
+      return false;
+    }
+  })();
   const showNavThroughTiles = isHostedWorkspaceView
+    || isWorkspaceManagerReferrer
+    || isWorkspaceManagerParent
     || /\/tools\/Workspace%20Manager\//i.test(currentPath)
     || /\/tools\/Workspace Manager\//i.test(currentPath);
   const sharedActionLinks = !isLanding ? renderSharedActionLinks(currentTool?.id ?? "") : "";

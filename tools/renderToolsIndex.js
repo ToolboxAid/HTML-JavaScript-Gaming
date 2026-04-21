@@ -10,13 +10,45 @@ function toHostHref(toolId) {
   return `/tools/Workspace%20Manager/index.html?tool=${encodeURIComponent(toolId)}`;
 }
 
+function buildDocumentationLinks(tool) {
+  const folder = String(tool.folderName || tool.path || "").trim();
+  if (!folder) {
+    return [];
+  }
+  return [
+    { label: "README", path: `${folder}/README.md` },
+    { label: "How To Use", path: `${folder}/how_to_use.html` }
+  ];
+}
+
+function buildCardLinks(tool) {
+  const existing = Array.isArray(tool.sampleEntryPoints) ? tool.sampleEntryPoints : [];
+  const docs = buildDocumentationLinks(tool);
+  const merged = [...docs, ...existing];
+  const seen = new Set();
+  return merged.filter((entry) => {
+    const label = String(entry?.label || "").trim();
+    const path = String(entry?.path || "").trim();
+    if (!label || !path) {
+      return false;
+    }
+    const key = `${label.toLowerCase()}|${path.toLowerCase()}`;
+    if (seen.has(key)) {
+      return false;
+    }
+    seen.add(key);
+    return true;
+  });
+}
+
 function renderToolCard(tool) {
   const standaloneHref = toStandaloneHref(tool.entryPoint);
   const hostHref = toHostHref(tool.id);
-  const sampleLinks = Array.isArray(tool.sampleEntryPoints) && tool.sampleEntryPoints.length > 0
+  const cardLinks = buildCardLinks(tool);
+  const sampleLinks = cardLinks.length > 0
     ? `
       <div class="meta">
-        ${tool.sampleEntryPoints.map((entry) => `
+        ${cardLinks.map((entry) => `
           <a class="tools-platform-card__action tools-platform-card__action--secondary" href="${escapeHtml(entry.path)}">${escapeHtml(entry.label)}</a>
         `).join("")}
       </div>
@@ -44,17 +76,36 @@ function renderToolCard(tool) {
   `;
 }
 
+function renderWorkspaceManagerCard() {
+  return `
+    <div class="card tools-platform-card">
+      <div class="meta">
+        <span class="pill live">Workspace</span>
+        <span class="pill planned">Manager</span>
+      </div>
+      <h3><a href="/tools/Workspace%20Manager/index.html">Workspace Manager</a></h3>
+      <p>Shared hosted launcher for opening tools inside a managed workspace container.</p>
+      <div class="meta">
+        <a class="tools-platform-card__action" href="/tools/Workspace%20Manager/index.html">Open Workspace Manager</a>
+        <a class="tools-platform-card__action tools-platform-card__action--secondary" href="Workspace Manager/README.md">README</a>
+        <a class="tools-platform-card__action tools-platform-card__action--secondary" href="Workspace Manager/how_to_use.html">How To Use</a>
+      </div>
+    </div>
+  `;
+}
+
 function renderActiveToolsList() {
   const grid = document.querySelector("[data-active-tools-grid]");
   if (!grid) {
     return;
   }
-  grid.innerHTML = getToolRegistry()
+  const toolCards = getToolRegistry()
     .filter((entry) => entry.active === true)
     .filter((entry) => entry.visibleInToolsList === true)
     .sort((left, right) => String(left.displayName || "").localeCompare(String(right.displayName || "")))
-    .map((tool) => renderToolCard(tool))
-    .join("\n");
+    .map((tool) => renderToolCard(tool));
+  toolCards.push(renderWorkspaceManagerCard());
+  grid.innerHTML = toolCards.join("\n");
 }
 
 function sortPlannedCardsAlphabetically() {
