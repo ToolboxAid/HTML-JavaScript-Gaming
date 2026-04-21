@@ -301,6 +301,7 @@ export const TOOL_REGISTRY = Object.freeze([
     description: "Baseline 3D asset metadata viewer for vertices, bounds, and normalized runtime payload inspection.",
     showcaseTag: "3D",
     showcaseStatus: "3D Baseline",
+    readOnly: true,
     active: true,
     legacy: false,
     order: 15,

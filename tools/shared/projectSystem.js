@@ -67,6 +67,8 @@ function buildStatusSummary(validation) {
 
 export function createWorkspaceSystemController(options = {}) {
   const toolId = safeString(options.toolId, "");
+  const toolEntry = getToolById(toolId);
+  const isReadOnlyTool = toolEntry?.readOnly === true;
   const onChange = typeof options.onChange === "function" ? options.onChange : () => {};
   const onStatus = typeof options.onStatus === "function" ? options.onStatus : () => {};
   const adapter = () => getProjectAdapter(toolId);
@@ -257,7 +259,7 @@ export function createWorkspaceSystemController(options = {}) {
 
   function shouldConfirmDiscard(message) {
     updateDirtyState("confirm-check");
-    if (state.manifest?.dirty !== true) {
+    if (state.manifest?.dirty !== true || isReadOnlyTool) {
       return true;
     }
     return typeof window.confirm === "function"
@@ -275,13 +277,49 @@ export function createWorkspaceSystemController(options = {}) {
 
     window.addEventListener("beforeunload", (event) => {
       updateDirtyState("beforeunload");
-      if (state.manifest?.dirty === true) {
+      if (state.manifest?.dirty === true && !isReadOnlyTool) {
         event.preventDefault();
         event.returnValue = "";
       }
     });
 
     return () => window.clearInterval(intervalId);
+  }
+
+  function applyExternalToolState(payload = {}) {
+    const toolAdapter = adapter();
+    const stateInput = Object.prototype.hasOwnProperty.call(payload, "state")
+      ? payload.state
+      : payload;
+    const normalizedState = normalizeToolStateForProjectManifest(toolId, cloneValue(stateInput));
+    const manifest = ensureWorkspaceManifest();
+    manifest.tools[toolId] = cloneValue(normalizedState);
+    manifest.toolIntegration = buildProjectToolIntegration(manifest.tools);
+    state.manifest = manifest;
+
+    let applied = false;
+    if (toolAdapter.ready) {
+      try {
+        applied = toolAdapter.applyState(cloneValue(unwrapToolStateForAdapter(toolId, normalizedState))) === true;
+      } catch {
+        applied = false;
+      }
+    }
+
+    state.appliedInitialState = true;
+    markSaved("external-preset");
+    const label = safeString(payload.label, "external preset");
+    if (applied) {
+      onStatus(`Preset applied: ${label}.`);
+    } else {
+      onStatus(`Preset staged: ${label}.`);
+    }
+
+    return {
+      applied,
+      adapterReady: toolAdapter.ready === true,
+      toolId
+    };
   }
 
     return {
@@ -305,7 +343,8 @@ export function createWorkspaceSystemController(options = {}) {
     handleSaveProjectAs: handleSaveWorkspaceAs,
     handleCloseProject: handleCloseWorkspace,
     updateDirtyState,
-    startWatching
+    startWatching,
+    applyExternalToolState
   };
 }
 

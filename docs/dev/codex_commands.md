@@ -1,43 +1,48 @@
+# Codex Commands
+
 MODEL: GPT-5.4
 REASONING: high
 
-COMMAND:
-Implement BUILD_PR_LEVEL_20_1_TOOL_SAMPLE_DROPDOWN_FOUNDATION as a one-pass, testable PR in the HTML-JavaScript-Gaming repo.
+## Command
+Implement `BUILD_PR_LEVEL_20_1_PHASE20_TOOL_PRESET_INTEGRATION` in `HTML-JavaScript-Gaming` as one small executable PR.
 
-Constraints:
-- fullscreen is complete; do not modify fullscreen behavior
-- docs-first repo workflow
-- one PR purpose only: sample packs + dropdown loading
-- active tools only:
-  - tools/Tile Map Editor
-  - tools/Parallax Editor
-  - tools/Vector Map Editor
-  - tools/Vector Asset Studio
-- 3 shipped samples per active tool
-- sample data must live in each tool's local samples structure
-- each tool must expose a Sample dropdown and be able to load all 3 samples
-- preserve manual editing flows
-- no repo-wide scanning unless required
-- no destructive cleanup
-- do not modify start_of_day folders
-- keep legacy preserved paths intact unless strictly required
-- update roadmap status only in docs/dev/roadmaps/MASTER_ROADMAP_ENGINE.md
-- no roadmap rewrites; status-only changes unless explicit additive line is required
+Requirements:
+- use numbered sample folders only
+- use `samples/phase-20/2001` through `samples/phase-20/2051`
+- allocate exactly 3 Phase 20 samples per listed tool
+- do not create `samples/phase-20/<tool>` folders
+- when a Phase 20 sample is clicked, open the matching tool with that sample's preset data already applied
+- fullscreen is already complete; do not modify it
+- preserve repo conventions for sample folder contents and sample discovery
+- keep the change surgical; do not scan or rewrite unrelated areas
+- update roadmap status only if execution-backed and only with marker transitions
 
-Required outputs:
-- implementation changes for dropdown sample loading in all 4 active tools
-- tool-local sample files/assets/manifests as needed
-- docs/pr/BUILD_PR_LEVEL_20_1_TOOL_SAMPLE_DROPDOWN_FOUNDATION.md aligned to delivered work
-- docs/dev/reports/change_summary.txt
-- docs/dev/reports/file_tree.txt
-- docs/dev/reports/validation_checklist.txt
-- docs/dev/commit_comment.txt
-- package final artifact to:
-  <project folder>/tmp/BUILD_PR_LEVEL_20_1_TOOL_SAMPLE_DROPDOWN_FOUNDATION.zip
+Listed tools:
+- 3D Asset Viewer
+- 3D Camera Path Editor
+- 3D Map Editor
+- Asset Browser
+- Asset Pipeline Tool
+- Palette Browser
+- Parallax Scene Studio
+- Performance Profiler
+- Physics Sandbox
+- Replay Visualizer
+- Sprite Editor
+- State Inspector
+- Tile Model Converter
+- Tilemap Studio
+- Vector Asset Studio
+- Vector Map Editor
+- Workspace Manager
 
-Validation target:
-- open each tool
-- verify dropdown visible
-- verify exactly 3 samples per tool
-- verify each sample loads and visibly changes content
-- verify no fullscreen regression
+Implementation target:
+- executable sample lane under `samples/phase-20`
+- clickable sample-to-tool launch path
+- preset data applied at open
+
+Validation:
+- prove all 51 Phase 20 samples are mapped
+- prove each sample opens the correct tool
+- prove preset data is visible/applied after open
+- place findings in `docs/dev/reports`

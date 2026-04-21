@@ -198,3 +198,50 @@
     grid-template-columns: 1fr;
   }
 }
+
+body[data-tool-id="3d-asset-viewer"] .debug-tool-shell {
+  min-height: calc(46dvh - 240px);
+}
+
+body[data-tool-id="3d-asset-viewer"] .debug-tool-shell > .debug-tool-panel,
+body[data-tool-id="3d-asset-viewer"] .debug-tool-grid > .debug-tool-panel {
+  padding: 10px;
+  gap: 6px;
+}
+
+body[data-tool-id="3d-asset-viewer"] .debug-tool-shell > .debug-tool-panel {
+  padding: 6px 10px;
+}
+
+body[data-tool-id="3d-asset-viewer"] #asset3dStatus {
+  margin: 0;
+  min-height: 0;
+}
+
+body[data-tool-id="3d-asset-viewer"] .debug-tool-grid {
+  align-items: stretch;
+  min-height: 0;
+  flex: 1 1 auto;
+}
+
+body[data-tool-id="3d-asset-viewer"] .debug-tool-grid .debug-tool-panel {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  margin: 0;
+  align-content: start;
+}
+
+body[data-tool-id="3d-asset-viewer"] .debug-tool-grid .debug-tool-panel h3 {
+  margin: 0;
+  min-height: 1.2em;
+  line-height: 1.1;
+}
+
+body[data-tool-id="3d-asset-viewer"] #asset3dInput,
+body[data-tool-id="3d-asset-viewer"] #asset3dOutput {
+  margin: 0;
+  min-height: 520px;
+  height: auto;
+  flex: 1 1 auto;
+}

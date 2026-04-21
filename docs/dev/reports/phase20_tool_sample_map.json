@@ -1,0 +1,313 @@
+{
+  "phase": "phase-20",
+  "folder_pattern": "samples/phase-20/####",
+  "total_samples": 51,
+  "samples": [
+    {
+      "sample_id": "2001",
+      "tool": "3D Asset Viewer",
+      "sample_number_for_tool": 1,
+      "folder": "samples/phase-20/2001"
+    },
+    {
+      "sample_id": "2002",
+      "tool": "3D Asset Viewer",
+      "sample_number_for_tool": 2,
+      "folder": "samples/phase-20/2002"
+    },
+    {
+      "sample_id": "2003",
+      "tool": "3D Asset Viewer",
+      "sample_number_for_tool": 3,
+      "folder": "samples/phase-20/2003"
+    },
+    {
+      "sample_id": "2004",
+      "tool": "3D Camera Path Editor",
+      "sample_number_for_tool": 1,
+      "folder": "samples/phase-20/2004"
+    },
+    {
+      "sample_id": "2005",
+      "tool": "3D Camera Path Editor",
+      "sample_number_for_tool": 2,
+      "folder": "samples/phase-20/2005"
+    },
+    {
+      "sample_id": "2006",
+      "tool": "3D Camera Path Editor",
+      "sample_number_for_tool": 3,
+      "folder": "samples/phase-20/2006"
+    },
+    {
+      "sample_id": "2007",
+      "tool": "3D Map Editor",
+      "sample_number_for_tool": 1,
+      "folder": "samples/phase-20/2007"
+    },
+    {
+      "sample_id": "2008",
+      "tool": "3D Map Editor",
+      "sample_number_for_tool": 2,
+      "folder": "samples/phase-20/2008"
+    },
+    {
+      "sample_id": "2009",
+      "tool": "3D Map Editor",
+      "sample_number_for_tool": 3,
+      "folder": "samples/phase-20/2009"
+    },
+    {
+      "sample_id": "2010",
+      "tool": "Asset Browser",
+      "sample_number_for_tool": 1,
+      "folder": "samples/phase-20/2010"
+    },
+    {
+      "sample_id": "2011",
+      "tool": "Asset Browser",
+      "sample_number_for_tool": 2,
+      "folder": "samples/phase-20/2011"
+    },
+    {
+      "sample_id": "2012",
+      "tool": "Asset Browser",
+      "sample_number_for_tool": 3,
+      "folder": "samples/phase-20/2012"
+    },
+    {
+      "sample_id": "2013",
+      "tool": "Asset Pipeline Tool",
+      "sample_number_for_tool": 1,
+      "folder": "samples/phase-20/2013"
+    },
+    {
+      "sample_id": "2014",
+      "tool": "Asset Pipeline Tool",
+      "sample_number_for_tool": 2,
+      "folder": "samples/phase-20/2014"
+    },
+    {
+      "sample_id": "2015",
+      "tool": "Asset Pipeline Tool",
+      "sample_number_for_tool": 3,
+      "folder": "samples/phase-20/2015"
+    },
+    {
+      "sample_id": "2016",
+      "tool": "Palette Browser",
+      "sample_number_for_tool": 1,
+      "folder": "samples/phase-20/2016"
+    },
+    {
+      "sample_id": "2017",
+      "tool": "Palette Browser",
+      "sample_number_for_tool": 2,
+      "folder": "samples/phase-20/2017"
+    },
+    {
+      "sample_id": "2018",
+      "tool": "Palette Browser",
+      "sample_number_for_tool": 3,
+      "folder": "samples/phase-20/2018"
+    },
+    {
+      "sample_id": "2019",
+      "tool": "Parallax Scene Studio",
+      "sample_number_for_tool": 1,
+      "folder": "samples/phase-20/2019"
+    },
+    {
+      "sample_id": "2020",
+      "tool": "Parallax Scene Studio",
+      "sample_number_for_tool": 2,
+      "folder": "samples/phase-20/2020"
+    },
+    {
+      "sample_id": "2021",
+      "tool": "Parallax Scene Studio",
+      "sample_number_for_tool": 3,
+      "folder": "samples/phase-20/2021"
+    },
+    {
+      "sample_id": "2022",
+      "tool": "Performance Profiler",
+      "sample_number_for_tool": 1,
+      "folder": "samples/phase-20/2022"
+    },
+    {
+      "sample_id": "2023",
+      "tool": "Performance Profiler",
+      "sample_number_for_tool": 2,
+      "folder": "samples/phase-20/2023"
+    },
+    {
+      "sample_id": "2024",
+      "tool": "Performance Profiler",
+      "sample_number_for_tool": 3,
+      "folder": "samples/phase-20/2024"
+    },
+    {
+      "sample_id": "2025",
+      "tool": "Physics Sandbox",
+      "sample_number_for_tool": 1,
+      "folder": "samples/phase-20/2025"
+    },
+    {
+      "sample_id": "2026",
+      "tool": "Physics Sandbox",
+      "sample_number_for_tool": 2,
+      "folder": "samples/phase-20/2026"
+    },
+    {
+      "sample_id": "2027",
+      "tool": "Physics Sandbox",
+      "sample_number_for_tool": 3,
+      "folder": "samples/phase-20/2027"
+    },
+    {
+      "sample_id": "2028",
+      "tool": "Replay Visualizer",
+      "sample_number_for_tool": 1,
+      "folder": "samples/phase-20/2028"
+    },
+    {
+      "sample_id": "2029",
+      "tool": "Replay Visualizer",
+      "sample_number_for_tool": 2,
+      "folder": "samples/phase-20/2029"
+    },
+    {
+      "sample_id": "2030",
+      "tool": "Replay Visualizer",
+      "sample_number_for_tool": 3,
+      "folder": "samples/phase-20/2030"
+    },
+    {
+      "sample_id": "2031",
+      "tool": "Sprite Editor",
+      "sample_number_for_tool": 1,
+      "folder": "samples/phase-20/2031"
+    },
+    {
+      "sample_id": "2032",
+      "tool": "Sprite Editor",
+      "sample_number_for_tool": 2,
+      "folder": "samples/phase-20/2032"
+    },
+    {
+      "sample_id": "2033",
+      "tool": "Sprite Editor",
+      "sample_number_for_tool": 3,
+      "folder": "samples/phase-20/2033"
+    },
+    {
+      "sample_id": "2034",
+      "tool": "State Inspector",
+      "sample_number_for_tool": 1,
+      "folder": "samples/phase-20/2034"
+    },
+    {
+      "sample_id": "2035",
+      "tool": "State Inspector",
+      "sample_number_for_tool": 2,
+      "folder": "samples/phase-20/2035"
+    },
+    {
+      "sample_id": "2036",
+      "tool": "State Inspector",
+      "sample_number_for_tool": 3,
+      "folder": "samples/phase-20/2036"
+    },
+    {
+      "sample_id": "2037",
+      "tool": "Tile Model Converter",
+      "sample_number_for_tool": 1,
+      "folder": "samples/phase-20/2037"
+    },
+    {
+      "sample_id": "2038",
+      "tool": "Tile Model Converter",
+      "sample_number_for_tool": 2,
+      "folder": "samples/phase-20/2038"
+    },
+    {
+      "sample_id": "2039",
+      "tool": "Tile Model Converter",
+      "sample_number_for_tool": 3,
+      "folder": "samples/phase-20/2039"
+    },
+    {
+      "sample_id": "2040",
+      "tool": "Tilemap Studio",
+      "sample_number_for_tool": 1,
+      "folder": "samples/phase-20/2040"
+    },
+    {
+      "sample_id": "2041",
+      "tool": "Tilemap Studio",
+      "sample_number_for_tool": 2,
+      "folder": "samples/phase-20/2041"
+    },
+    {
+      "sample_id": "2042",
+      "tool": "Tilemap Studio",
+      "sample_number_for_tool": 3,
+      "folder": "samples/phase-20/2042"
+    },
+    {
+      "sample_id": "2043",
+      "tool": "Vector Asset Studio",
+      "sample_number_for_tool": 1,
+      "folder": "samples/phase-20/2043"
+    },
+    {
+      "sample_id": "2044",
+      "tool": "Vector Asset Studio",
+      "sample_number_for_tool": 2,
+      "folder": "samples/phase-20/2044"
+    },
+    {
+      "sample_id": "2045",
+      "tool": "Vector Asset Studio",
+      "sample_number_for_tool": 3,
+      "folder": "samples/phase-20/2045"
+    },
+    {
+      "sample_id": "2046",
+      "tool": "Vector Map Editor",
+      "sample_number_for_tool": 1,
+      "folder": "samples/phase-20/2046"
+    },
+    {
+      "sample_id": "2047",
+      "tool": "Vector Map Editor",
+      "sample_number_for_tool": 2,
+      "folder": "samples/phase-20/2047"
+    },
+    {
+      "sample_id": "2048",
+      "tool": "Vector Map Editor",
+      "sample_number_for_tool": 3,
+      "folder": "samples/phase-20/2048"
+    },
+    {
+      "sample_id": "2049",
+      "tool": "Workspace Manager",
+      "sample_number_for_tool": 1,
+      "folder": "samples/phase-20/2049"
+    },
+    {
+      "sample_id": "2050",
+      "tool": "Workspace Manager",
+      "sample_number_for_tool": 2,
+      "folder": "samples/phase-20/2050"
+    },
+    {
+      "sample_id": "2051",
+      "tool": "Workspace Manager",
+      "sample_number_for_tool": 3,
+      "folder": "samples/phase-20/2051"
+    }
+  ]
+}

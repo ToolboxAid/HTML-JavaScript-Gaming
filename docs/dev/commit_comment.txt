@@ -1,7 +1,3 @@
-BUILD_PR_LEVEL_20_1_TOOL_SAMPLE_DROPDOWN_FOUNDATION
+Add Phase 20 numbered tool presets and sample-to-tool launch integration
 
-- Add Sample dropdown + explicit Load Sample action to Vector Map Editor.
-- Add Vector Map Editor local sample manifest with exactly 3 shipped sample JSON files.
-- Preserve manual editing flow and avoid fullscreen behavior changes.
-- Confirm all 4 active tool manifests expose exactly 3 local samples.
-- Update roadmap with status-only additive marker for tool sample packs + dropdown loading.
+<BUILD_PR_LEVEL_20_1_PHASE20_TOOL_PRESET_INTEGRATION>

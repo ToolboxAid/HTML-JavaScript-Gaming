@@ -95,6 +95,11 @@
       "phase": "19",
       "title": "Phase 19 - Integration Validation",
       "description": "System integration and lifecycle validation for stable execution flow."
+    },
+    {
+      "phase": "20",
+      "title": "Phase 20 - Tool Preset Integration",
+      "description": "Executable tool-launch samples that open tools with Phase 20 preset payloads applied through query-driven integration."
     }
   ],
   "samples": [
@@ -8326,6 +8331,822 @@
       "preview": "/samples/phase-19/1901/assets/images/preview.svg",
       "classValues": [
         "samples/sample-1901-phase-19-foundation"
+      ]
+    },
+    {
+      "id": "2001",
+      "phase": "20",
+      "title": "3D Asset Viewer Preset 1",
+      "description": "Launches 3D Asset Viewer with Phase 20 preset payload 1 preloaded.",
+      "href": "./phase-20/2001/index.html",
+      "tags": [
+        "phase20",
+        "tool-preset",
+        "3d-asset-viewer"
+      ],
+      "classValues": [
+        "samples/phase-20/2001",
+        "tools/3d-asset-viewer"
+      ]
+    },
+    {
+      "id": "2002",
+      "phase": "20",
+      "title": "3D Asset Viewer Preset 2",
+      "description": "Launches 3D Asset Viewer with Phase 20 preset payload 2 preloaded.",
+      "href": "./phase-20/2002/index.html",
+      "tags": [
+        "phase20",
+        "tool-preset",
+        "3d-asset-viewer"
+      ],
+      "classValues": [
+        "samples/phase-20/2002",
+        "tools/3d-asset-viewer"
+      ]
+    },
+    {
+      "id": "2003",
+      "phase": "20",
+      "title": "3D Asset Viewer Preset 3",
+      "description": "Launches 3D Asset Viewer with Phase 20 preset payload 3 preloaded.",
+      "href": "./phase-20/2003/index.html",
+      "tags": [
+        "phase20",
+        "tool-preset",
+        "3d-asset-viewer"
+      ],
+      "classValues": [
+        "samples/phase-20/2003",
+        "tools/3d-asset-viewer"
+      ]
+    },
+    {
+      "id": "2004",
+      "phase": "20",
+      "title": "3D Camera Path Editor Preset 1",
+      "description": "Launches 3D Camera Path Editor with Phase 20 preset payload 1 preloaded.",
+      "href": "./phase-20/2004/index.html",
+      "tags": [
+        "phase20",
+        "tool-preset",
+        "3d-camera-path-editor"
+      ],
+      "classValues": [
+        "samples/phase-20/2004",
+        "tools/3d-camera-path-editor"
+      ]
+    },
+    {
+      "id": "2005",
+      "phase": "20",
+      "title": "3D Camera Path Editor Preset 2",
+      "description": "Launches 3D Camera Path Editor with Phase 20 preset payload 2 preloaded.",
+      "href": "./phase-20/2005/index.html",
+      "tags": [
+        "phase20",
+        "tool-preset",
+        "3d-camera-path-editor"
+      ],
+      "classValues": [
+        "samples/phase-20/2005",
+        "tools/3d-camera-path-editor"
+      ]
+    },
+    {
+      "id": "2006",
+      "phase": "20",
+      "title": "3D Camera Path Editor Preset 3",
+      "description": "Launches 3D Camera Path Editor with Phase 20 preset payload 3 preloaded.",
+      "href": "./phase-20/2006/index.html",
+      "tags": [
+        "phase20",
+        "tool-preset",
+        "3d-camera-path-editor"
+      ],
+      "classValues": [
+        "samples/phase-20/2006",
+        "tools/3d-camera-path-editor"
+      ]
+    },
+    {
+      "id": "2007",
+      "phase": "20",
+      "title": "3D Map Editor Preset 1",
+      "description": "Launches 3D Map Editor with Phase 20 preset payload 1 preloaded.",
+      "href": "./phase-20/2007/index.html",
+      "tags": [
+        "phase20",
+        "tool-preset",
+        "3d-map-editor"
+      ],
+      "classValues": [
+        "samples/phase-20/2007",
+        "tools/3d-map-editor"
+      ]
+    },
+    {
+      "id": "2008",
+      "phase": "20",
+      "title": "3D Map Editor Preset 2",
+      "description": "Launches 3D Map Editor with Phase 20 preset payload 2 preloaded.",
+      "href": "./phase-20/2008/index.html",
+      "tags": [
+        "phase20",
+        "tool-preset",
+        "3d-map-editor"
+      ],
+      "classValues": [
+        "samples/phase-20/2008",
+        "tools/3d-map-editor"
+      ]
+    },
+    {
+      "id": "2009",
+      "phase": "20",
+      "title": "3D Map Editor Preset 3",
+      "description": "Launches 3D Map Editor with Phase 20 preset payload 3 preloaded.",
+      "href": "./phase-20/2009/index.html",
+      "tags": [
+        "phase20",
+        "tool-preset",
+        "3d-map-editor"
+      ],
+      "classValues": [
+        "samples/phase-20/2009",
+        "tools/3d-map-editor"
+      ]
+    },
+    {
+      "id": "2010",
+      "phase": "20",
+      "title": "Asset Browser Preset 1",
+      "description": "Launches Asset Browser with Phase 20 preset payload 1 preloaded.",
+      "href": "./phase-20/2010/index.html",
+      "tags": [
+        "phase20",
+        "tool-preset",
+        "asset-browser"
+      ],
+      "classValues": [
+        "samples/phase-20/2010",
+        "tools/asset-browser"
+      ]
+    },
+    {
+      "id": "2011",
+      "phase": "20",
+      "title": "Asset Browser Preset 2",
+      "description": "Launches Asset Browser with Phase 20 preset payload 2 preloaded.",
+      "href": "./phase-20/2011/index.html",
+      "tags": [
+        "phase20",
+        "tool-preset",
+        "asset-browser"
+      ],
+      "classValues": [
+        "samples/phase-20/2011",
+        "tools/asset-browser"
+      ]
+    },
+    {
+      "id": "2012",
+      "phase": "20",
+      "title": "Asset Browser Preset 3",
+      "description": "Launches Asset Browser with Phase 20 preset payload 3 preloaded.",
+      "href": "./phase-20/2012/index.html",
+      "tags": [
+        "phase20",
+        "tool-preset",
+        "asset-browser"
+      ],
+      "classValues": [
+        "samples/phase-20/2012",
+        "tools/asset-browser"
+      ]
+    },
+    {
+      "id": "2013",
+      "phase": "20",
+      "title": "Asset Pipeline Tool Preset 1",
+      "description": "Launches Asset Pipeline Tool with Phase 20 preset payload 1 preloaded.",
+      "href": "./phase-20/2013/index.html",
+      "tags": [
+        "phase20",
+        "tool-preset",
+        "asset-pipeline-tool"
+      ],
+      "classValues": [
+        "samples/phase-20/2013",
+        "tools/asset-pipeline-tool"
+      ]
+    },
+    {
+      "id": "2014",
+      "phase": "20",
+      "title": "Asset Pipeline Tool Preset 2",
+      "description": "Launches Asset Pipeline Tool with Phase 20 preset payload 2 preloaded.",
+      "href": "./phase-20/2014/index.html",
+      "tags": [
+        "phase20",
+        "tool-preset",
+        "asset-pipeline-tool"
+      ],
+      "classValues": [
+        "samples/phase-20/2014",
+        "tools/asset-pipeline-tool"
+      ]
+    },
+    {
+      "id": "2015",
+      "phase": "20",
+      "title": "Asset Pipeline Tool Preset 3",
+      "description": "Launches Asset Pipeline Tool with Phase 20 preset payload 3 preloaded.",
+      "href": "./phase-20/2015/index.html",
+      "tags": [
+        "phase20",
+        "tool-preset",
+        "asset-pipeline-tool"
+      ],
+      "classValues": [
+        "samples/phase-20/2015",
+        "tools/asset-pipeline-tool"
+      ]
+    },
+    {
+      "id": "2016",
+      "phase": "20",
+      "title": "Palette Browser Preset 1",
+      "description": "Launches Palette Browser with Phase 20 preset payload 1 preloaded.",
+      "href": "./phase-20/2016/index.html",
+      "tags": [
+        "phase20",
+        "tool-preset",
+        "palette-browser"
+      ],
+      "classValues": [
+        "samples/phase-20/2016",
+        "tools/palette-browser"
+      ]
+    },
+    {
+      "id": "2017",
+      "phase": "20",
+      "title": "Palette Browser Preset 2",
+      "description": "Launches Palette Browser with Phase 20 preset payload 2 preloaded.",
+      "href": "./phase-20/2017/index.html",
+      "tags": [
+        "phase20",
+        "tool-preset",
+        "palette-browser"
+      ],
+      "classValues": [
+        "samples/phase-20/2017",
+        "tools/palette-browser"
+      ]
+    },
+    {
+      "id": "2018",
+      "phase": "20",
+      "title": "Palette Browser Preset 3",
+      "description": "Launches Palette Browser with Phase 20 preset payload 3 preloaded.",
+      "href": "./phase-20/2018/index.html",
+      "tags": [
+        "phase20",
+        "tool-preset",
+        "palette-browser"
+      ],
+      "classValues": [
+        "samples/phase-20/2018",
+        "tools/palette-browser"
+      ]
+    },
+    {
+      "id": "2019",
+      "phase": "20",
+      "title": "Parallax Scene Studio Preset 1",
+      "description": "Launches Parallax Scene Studio with Phase 20 preset payload 1 preloaded.",
+      "href": "./phase-20/2019/index.html",
+      "tags": [
+        "phase20",
+        "tool-preset",
+        "parallax-editor"
+      ],
+      "classValues": [
+        "samples/phase-20/2019",
+        "tools/parallax-editor"
+      ]
+    },
+    {
+      "id": "2020",
+      "phase": "20",
+      "title": "Parallax Scene Studio Preset 2",
+      "description": "Launches Parallax Scene Studio with Phase 20 preset payload 2 preloaded.",
+      "href": "./phase-20/2020/index.html",
+      "tags": [
+        "phase20",
+        "tool-preset",
+        "parallax-editor"
+      ],
+      "classValues": [
+        "samples/phase-20/2020",
+        "tools/parallax-editor"
+      ]
+    },
+    {
+      "id": "2021",
+      "phase": "20",
+      "title": "Parallax Scene Studio Preset 3",
+      "description": "Launches Parallax Scene Studio with Phase 20 preset payload 3 preloaded.",
+      "href": "./phase-20/2021/index.html",
+      "tags": [
+        "phase20",
+        "tool-preset",
+        "parallax-editor"
+      ],
+      "classValues": [
+        "samples/phase-20/2021",
+        "tools/parallax-editor"
+      ]
+    },
+    {
+      "id": "2022",
+      "phase": "20",
+      "title": "Performance Profiler Preset 1",
+      "description": "Launches Performance Profiler with Phase 20 preset payload 1 preloaded.",
+      "href": "./phase-20/2022/index.html",
+      "tags": [
+        "phase20",
+        "tool-preset",
+        "performance-profiler"
+      ],
+      "classValues": [
+        "samples/phase-20/2022",
+        "tools/performance-profiler"
+      ]
+    },
+    {
+      "id": "2023",
+      "phase": "20",
+      "title": "Performance Profiler Preset 2",
+      "description": "Launches Performance Profiler with Phase 20 preset payload 2 preloaded.",
+      "href": "./phase-20/2023/index.html",
+      "tags": [
+        "phase20",
+        "tool-preset",
+        "performance-profiler"
+      ],
+      "classValues": [
+        "samples/phase-20/2023",
+        "tools/performance-profiler"
+      ]
+    },
+    {
+      "id": "2024",
+      "phase": "20",
+      "title": "Performance Profiler Preset 3",
+      "description": "Launches Performance Profiler with Phase 20 preset payload 3 preloaded.",
+      "href": "./phase-20/2024/index.html",
+      "tags": [
+        "phase20",
+        "tool-preset",
+        "performance-profiler"
+      ],
+      "classValues": [
+        "samples/phase-20/2024",
+        "tools/performance-profiler"
+      ]
+    },
+    {
+      "id": "2025",
+      "phase": "20",
+      "title": "Physics Sandbox Preset 1",
+      "description": "Launches Physics Sandbox with Phase 20 preset payload 1 preloaded.",
+      "href": "./phase-20/2025/index.html",
+      "tags": [
+        "phase20",
+        "tool-preset",
+        "physics-sandbox"
+      ],
+      "classValues": [
+        "samples/phase-20/2025",
+        "tools/physics-sandbox"
+      ]
+    },
+    {
+      "id": "2026",
+      "phase": "20",
+      "title": "Physics Sandbox Preset 2",
+      "description": "Launches Physics Sandbox with Phase 20 preset payload 2 preloaded.",
+      "href": "./phase-20/2026/index.html",
+      "tags": [
+        "phase20",
+        "tool-preset",
+        "physics-sandbox"
+      ],
+      "classValues": [
+        "samples/phase-20/2026",
+        "tools/physics-sandbox"
+      ]
+    },
+    {
+      "id": "2027",
+      "phase": "20",
+      "title": "Physics Sandbox Preset 3",
+      "description": "Launches Physics Sandbox with Phase 20 preset payload 3 preloaded.",
+      "href": "./phase-20/2027/index.html",
+      "tags": [
+        "phase20",
+        "tool-preset",
+        "physics-sandbox"
+      ],
+      "classValues": [
+        "samples/phase-20/2027",
+        "tools/physics-sandbox"
+      ]
+    },
+    {
+      "id": "2028",
+      "phase": "20",
+      "title": "Replay Visualizer Preset 1",
+      "description": "Launches Replay Visualizer with Phase 20 preset payload 1 preloaded.",
+      "href": "./phase-20/2028/index.html",
+      "tags": [
+        "phase20",
+        "tool-preset",
+        "replay-visualizer"
+      ],
+      "classValues": [
+        "samples/phase-20/2028",
+        "tools/replay-visualizer"
+      ]
+    },
+    {
+      "id": "2029",
+      "phase": "20",
+      "title": "Replay Visualizer Preset 2",
+      "description": "Launches Replay Visualizer with Phase 20 preset payload 2 preloaded.",
+      "href": "./phase-20/2029/index.html",
+      "tags": [
+        "phase20",
+        "tool-preset",
+        "replay-visualizer"
+      ],
+      "classValues": [
+        "samples/phase-20/2029",
+        "tools/replay-visualizer"
+      ]
+    },
+    {
+      "id": "2030",
+      "phase": "20",
+      "title": "Replay Visualizer Preset 3",
+      "description": "Launches Replay Visualizer with Phase 20 preset payload 3 preloaded.",
+      "href": "./phase-20/2030/index.html",
+      "tags": [
+        "phase20",
+        "tool-preset",
+        "replay-visualizer"
+      ],
+      "classValues": [
+        "samples/phase-20/2030",
+        "tools/replay-visualizer"
+      ]
+    },
+    {
+      "id": "2031",
+      "phase": "20",
+      "title": "Sprite Editor Preset 1",
+      "description": "Launches Sprite Editor with Phase 20 preset payload 1 preloaded.",
+      "href": "./phase-20/2031/index.html",
+      "tags": [
+        "phase20",
+        "tool-preset",
+        "sprite-editor"
+      ],
+      "classValues": [
+        "samples/phase-20/2031",
+        "tools/sprite-editor"
+      ]
+    },
+    {
+      "id": "2032",
+      "phase": "20",
+      "title": "Sprite Editor Preset 2",
+      "description": "Launches Sprite Editor with Phase 20 preset payload 2 preloaded.",
+      "href": "./phase-20/2032/index.html",
+      "tags": [
+        "phase20",
+        "tool-preset",
+        "sprite-editor"
+      ],
+      "classValues": [
+        "samples/phase-20/2032",
+        "tools/sprite-editor"
+      ]
+    },
+    {
+      "id": "2033",
+      "phase": "20",
+      "title": "Sprite Editor Preset 3",
+      "description": "Launches Sprite Editor with Phase 20 preset payload 3 preloaded.",
+      "href": "./phase-20/2033/index.html",
+      "tags": [
+        "phase20",
+        "tool-preset",
+        "sprite-editor"
+      ],
+      "classValues": [
+        "samples/phase-20/2033",
+        "tools/sprite-editor"
+      ]
+    },
+    {
+      "id": "2034",
+      "phase": "20",
+      "title": "State Inspector Preset 1",
+      "description": "Launches State Inspector with Phase 20 preset payload 1 preloaded.",
+      "href": "./phase-20/2034/index.html",
+      "tags": [
+        "phase20",
+        "tool-preset",
+        "state-inspector"
+      ],
+      "classValues": [
+        "samples/phase-20/2034",
+        "tools/state-inspector"
+      ]
+    },
+    {
+      "id": "2035",
+      "phase": "20",
+      "title": "State Inspector Preset 2",
+      "description": "Launches State Inspector with Phase 20 preset payload 2 preloaded.",
+      "href": "./phase-20/2035/index.html",
+      "tags": [
+        "phase20",
+        "tool-preset",
+        "state-inspector"
+      ],
+      "classValues": [
+        "samples/phase-20/2035",
+        "tools/state-inspector"
+      ]
+    },
+    {
+      "id": "2036",
+      "phase": "20",
+      "title": "State Inspector Preset 3",
+      "description": "Launches State Inspector with Phase 20 preset payload 3 preloaded.",
+      "href": "./phase-20/2036/index.html",
+      "tags": [
+        "phase20",
+        "tool-preset",
+        "state-inspector"
+      ],
+      "classValues": [
+        "samples/phase-20/2036",
+        "tools/state-inspector"
+      ]
+    },
+    {
+      "id": "2037",
+      "phase": "20",
+      "title": "Tile Model Converter Preset 1",
+      "description": "Launches Tile Model Converter with Phase 20 preset payload 1 preloaded.",
+      "href": "./phase-20/2037/index.html",
+      "tags": [
+        "phase20",
+        "tool-preset",
+        "tile-model-converter"
+      ],
+      "classValues": [
+        "samples/phase-20/2037",
+        "tools/tile-model-converter"
+      ]
+    },
+    {
+      "id": "2038",
+      "phase": "20",
+      "title": "Tile Model Converter Preset 2",
+      "description": "Launches Tile Model Converter with Phase 20 preset payload 2 preloaded.",
+      "href": "./phase-20/2038/index.html",
+      "tags": [
+        "phase20",
+        "tool-preset",
+        "tile-model-converter"
+      ],
+      "classValues": [
+        "samples/phase-20/2038",
+        "tools/tile-model-converter"
+      ]
+    },
+    {
+      "id": "2039",
+      "phase": "20",
+      "title": "Tile Model Converter Preset 3",
+      "description": "Launches Tile Model Converter with Phase 20 preset payload 3 preloaded.",
+      "href": "./phase-20/2039/index.html",
+      "tags": [
+        "phase20",
+        "tool-preset",
+        "tile-model-converter"
+      ],
+      "classValues": [
+        "samples/phase-20/2039",
+        "tools/tile-model-converter"
+      ]
+    },
+    {
+      "id": "2040",
+      "phase": "20",
+      "title": "Tilemap Studio Preset 1",
+      "description": "Launches Tilemap Studio with Phase 20 preset payload 1 preloaded.",
+      "href": "./phase-20/2040/index.html",
+      "tags": [
+        "phase20",
+        "tool-preset",
+        "tile-map-editor"
+      ],
+      "classValues": [
+        "samples/phase-20/2040",
+        "tools/tile-map-editor"
+      ]
+    },
+    {
+      "id": "2041",
+      "phase": "20",
+      "title": "Tilemap Studio Preset 2",
+      "description": "Launches Tilemap Studio with Phase 20 preset payload 2 preloaded.",
+      "href": "./phase-20/2041/index.html",
+      "tags": [
+        "phase20",
+        "tool-preset",
+        "tile-map-editor"
+      ],
+      "classValues": [
+        "samples/phase-20/2041",
+        "tools/tile-map-editor"
+      ]
+    },
+    {
+      "id": "2042",
+      "phase": "20",
+      "title": "Tilemap Studio Preset 3",
+      "description": "Launches Tilemap Studio with Phase 20 preset payload 3 preloaded.",
+      "href": "./phase-20/2042/index.html",
+      "tags": [
+        "phase20",
+        "tool-preset",
+        "tile-map-editor"
+      ],
+      "classValues": [
+        "samples/phase-20/2042",
+        "tools/tile-map-editor"
+      ]
+    },
+    {
+      "id": "2043",
+      "phase": "20",
+      "title": "Vector Asset Studio Preset 1",
+      "description": "Launches Vector Asset Studio with Phase 20 preset payload 1 preloaded.",
+      "href": "./phase-20/2043/index.html",
+      "tags": [
+        "phase20",
+        "tool-preset",
+        "vector-asset-studio"
+      ],
+      "classValues": [
+        "samples/phase-20/2043",
+        "tools/vector-asset-studio"
+      ]
+    },
+    {
+      "id": "2044",
+      "phase": "20",
+      "title": "Vector Asset Studio Preset 2",
+      "description": "Launches Vector Asset Studio with Phase 20 preset payload 2 preloaded.",
+      "href": "./phase-20/2044/index.html",
+      "tags": [
+        "phase20",
+        "tool-preset",
+        "vector-asset-studio"
+      ],
+      "classValues": [
+        "samples/phase-20/2044",
+        "tools/vector-asset-studio"
+      ]
+    },
+    {
+      "id": "2045",
+      "phase": "20",
+      "title": "Vector Asset Studio Preset 3",
+      "description": "Launches Vector Asset Studio with Phase 20 preset payload 3 preloaded.",
+      "href": "./phase-20/2045/index.html",
+      "tags": [
+        "phase20",
+        "tool-preset",
+        "vector-asset-studio"
+      ],
+      "classValues": [
+        "samples/phase-20/2045",
+        "tools/vector-asset-studio"
+      ]
+    },
+    {
+      "id": "2046",
+      "phase": "20",
+      "title": "Vector Map Editor Preset 1",
+      "description": "Launches Vector Map Editor with Phase 20 preset payload 1 preloaded.",
+      "href": "./phase-20/2046/index.html",
+      "tags": [
+        "phase20",
+        "tool-preset",
+        "vector-map-editor"
+      ],
+      "classValues": [
+        "samples/phase-20/2046",
+        "tools/vector-map-editor"
+      ]
+    },
+    {
+      "id": "2047",
+      "phase": "20",
+      "title": "Vector Map Editor Preset 2",
+      "description": "Launches Vector Map Editor with Phase 20 preset payload 2 preloaded.",
+      "href": "./phase-20/2047/index.html",
+      "tags": [
+        "phase20",
+        "tool-preset",
+        "vector-map-editor"
+      ],
+      "classValues": [
+        "samples/phase-20/2047",
+        "tools/vector-map-editor"
+      ]
+    },
+    {
+      "id": "2048",
+      "phase": "20",
+      "title": "Vector Map Editor Preset 3",
+      "description": "Launches Vector Map Editor with Phase 20 preset payload 3 preloaded.",
+      "href": "./phase-20/2048/index.html",
+      "tags": [
+        "phase20",
+        "tool-preset",
+        "vector-map-editor"
+      ],
+      "classValues": [
+        "samples/phase-20/2048",
+        "tools/vector-map-editor"
+      ]
+    },
+    {
+      "id": "2049",
+      "phase": "20",
+      "title": "Workspace Manager Preset 1",
+      "description": "Launches Workspace Manager with Phase 20 preset payload 1 preloaded.",
+      "href": "./phase-20/2049/index.html",
+      "tags": [
+        "phase20",
+        "tool-preset",
+        "workspace-manager"
+      ],
+      "classValues": [
+        "samples/phase-20/2049",
+        "tools/workspace-manager"
+      ]
+    },
+    {
+      "id": "2050",
+      "phase": "20",
+      "title": "Workspace Manager Preset 2",
+      "description": "Launches Workspace Manager with Phase 20 preset payload 2 preloaded.",
+      "href": "./phase-20/2050/index.html",
+      "tags": [
+        "phase20",
+        "tool-preset",
+        "workspace-manager"
+      ],
+      "classValues": [
+        "samples/phase-20/2050",
+        "tools/workspace-manager"
+      ]
+    },
+    {
+      "id": "2051",
+      "phase": "20",
+      "title": "Workspace Manager Preset 3",
+      "description": "Launches Workspace Manager with Phase 20 preset payload 3 preloaded.",
+      "href": "./phase-20/2051/index.html",
+      "tags": [
+        "phase20",
+        "tool-preset",
+        "workspace-manager"
+      ],
+      "classValues": [
+        "samples/phase-20/2051",
+        "tools/workspace-manager"
       ]
     }
   ]

@@ -1,0 +1,32 @@
+BUILD_PR_LEVEL_20_1_PHASE20_TOOL_PRESET_INTEGRATION validation findings
+
+Phase 20 metadata entries: 51
+Missing IDs (2001-2051): 0
+Unexpected extra IDs: 0
+Launch mapping checks: 51/51 passed
+Preset payload checks: 51/51 passed
+Combined sample->tool mapping checks: 51/51 passed
+
+Per listed-tool sample allocations (must be 3 each):
+- 3D Asset Viewer (3d-asset-viewer): 3
+- 3D Camera Path Editor (3d-camera-path-editor): 3
+- 3D Map Editor (3d-map-editor): 3
+- Asset Browser (asset-browser): 3
+- Asset Pipeline Tool (asset-pipeline-tool): 3
+- Palette Browser (palette-browser): 3
+- Parallax Scene Studio (parallax-editor): 3
+- Performance Profiler (performance-profiler): 3
+- Physics Sandbox (physics-sandbox): 3
+- Replay Visualizer (replay-visualizer): 3
+- Sprite Editor (sprite-editor): 3
+- State Inspector (state-inspector): 3
+- Tile Model Converter (tile-model-converter): 3
+- Tilemap Studio (tile-map-editor): 3
+- Vector Asset Studio (vector-asset-studio): 3
+- Vector Map Editor (vector-map-editor): 3
+- Workspace Manager (workspace-manager): 3
+
+Preset visibility/apply evidence in runtime code:
+- tools/shared/platformShell.js decodes `samplePreset` query and calls workspaceController.applyExternalToolState(...) when toolId matches current tool.
+- tools/shared/projectSystem.js applyExternalToolState() stores incoming preset state and applies it through available adapters, with status emission.
+- tools/Workspace Manager/main.js decodes `samplePreset` and forwards state into hosted tool mount config.

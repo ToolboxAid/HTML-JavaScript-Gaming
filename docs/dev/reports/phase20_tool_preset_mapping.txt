@@ -1,0 +1,53 @@
+Phase 20 sample mapping (2001-2051)
+id | title | href
+2001 | 3D Asset Viewer Preset 1 | ./phase-20/2001/index.html
+2002 | 3D Asset Viewer Preset 2 | ./phase-20/2002/index.html
+2003 | 3D Asset Viewer Preset 3 | ./phase-20/2003/index.html
+2004 | 3D Camera Path Editor Preset 1 | ./phase-20/2004/index.html
+2005 | 3D Camera Path Editor Preset 2 | ./phase-20/2005/index.html
+2006 | 3D Camera Path Editor Preset 3 | ./phase-20/2006/index.html
+2007 | 3D Map Editor Preset 1 | ./phase-20/2007/index.html
+2008 | 3D Map Editor Preset 2 | ./phase-20/2008/index.html
+2009 | 3D Map Editor Preset 3 | ./phase-20/2009/index.html
+2010 | Asset Browser Preset 1 | ./phase-20/2010/index.html
+2011 | Asset Browser Preset 2 | ./phase-20/2011/index.html
+2012 | Asset Browser Preset 3 | ./phase-20/2012/index.html
+2013 | Asset Pipeline Tool Preset 1 | ./phase-20/2013/index.html
+2014 | Asset Pipeline Tool Preset 2 | ./phase-20/2014/index.html
+2015 | Asset Pipeline Tool Preset 3 | ./phase-20/2015/index.html
+2016 | Palette Browser Preset 1 | ./phase-20/2016/index.html
+2017 | Palette Browser Preset 2 | ./phase-20/2017/index.html
+2018 | Palette Browser Preset 3 | ./phase-20/2018/index.html
+2019 | Parallax Scene Studio Preset 1 | ./phase-20/2019/index.html
+2020 | Parallax Scene Studio Preset 2 | ./phase-20/2020/index.html
+2021 | Parallax Scene Studio Preset 3 | ./phase-20/2021/index.html
+2022 | Performance Profiler Preset 1 | ./phase-20/2022/index.html
+2023 | Performance Profiler Preset 2 | ./phase-20/2023/index.html
+2024 | Performance Profiler Preset 3 | ./phase-20/2024/index.html
+2025 | Physics Sandbox Preset 1 | ./phase-20/2025/index.html
+2026 | Physics Sandbox Preset 2 | ./phase-20/2026/index.html
+2027 | Physics Sandbox Preset 3 | ./phase-20/2027/index.html
+2028 | Replay Visualizer Preset 1 | ./phase-20/2028/index.html
+2029 | Replay Visualizer Preset 2 | ./phase-20/2029/index.html
+2030 | Replay Visualizer Preset 3 | ./phase-20/2030/index.html
+2031 | Sprite Editor Preset 1 | ./phase-20/2031/index.html
+2032 | Sprite Editor Preset 2 | ./phase-20/2032/index.html
+2033 | Sprite Editor Preset 3 | ./phase-20/2033/index.html
+2034 | State Inspector Preset 1 | ./phase-20/2034/index.html
+2035 | State Inspector Preset 2 | ./phase-20/2035/index.html
+2036 | State Inspector Preset 3 | ./phase-20/2036/index.html
+2037 | Tile Model Converter Preset 1 | ./phase-20/2037/index.html
+2038 | Tile Model Converter Preset 2 | ./phase-20/2038/index.html
+2039 | Tile Model Converter Preset 3 | ./phase-20/2039/index.html
+2040 | Tilemap Studio Preset 1 | ./phase-20/2040/index.html
+2041 | Tilemap Studio Preset 2 | ./phase-20/2041/index.html
+2042 | Tilemap Studio Preset 3 | ./phase-20/2042/index.html
+2043 | Vector Asset Studio Preset 1 | ./phase-20/2043/index.html
+2044 | Vector Asset Studio Preset 2 | ./phase-20/2044/index.html
+2045 | Vector Asset Studio Preset 3 | ./phase-20/2045/index.html
+2046 | Vector Map Editor Preset 1 | ./phase-20/2046/index.html
+2047 | Vector Map Editor Preset 2 | ./phase-20/2047/index.html
+2048 | Vector Map Editor Preset 3 | ./phase-20/2048/index.html
+2049 | Workspace Manager Preset 1 | ./phase-20/2049/index.html
+2050 | Workspace Manager Preset 2 | ./phase-20/2050/index.html
+2051 | Workspace Manager Preset 3 | ./phase-20/2051/index.html
