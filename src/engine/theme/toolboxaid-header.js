@@ -53,7 +53,7 @@ async function loadTemplate() {
   const templateUrl = new URL('./toolboxaid-header.html', import.meta.url);
   const response = await fetch(templateUrl);
   if (!response.ok) {
-    throw new Error('Failed to load src/engine/theme/toolboxaid-header.html');
+    throw new Error('Failed to load toolboxaid-header.html');
   }
 
   templateCache = await response.text();

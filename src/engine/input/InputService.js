@@ -169,6 +169,13 @@ export default class InputService {
     }
 
     onMouseMove(event) {
+        const eventTarget = event?.target ?? null;
+        const isCanvasTarget = typeof HTMLCanvasElement !== 'undefined'
+            && eventTarget instanceof HTMLCanvasElement;
+        if (!isCanvasTarget) {
+            return;
+        }
+
         const nextX = event.offsetX ?? event.clientX ?? 0;
         const nextY = event.offsetY ?? event.clientY ?? 0;
         this.mouseDelta.x += nextX - this.mousePosition.x;

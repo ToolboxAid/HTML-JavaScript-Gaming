@@ -1,2 +1,3 @@
-Apply header structure parity to all game detail pages.
-No color or style changes. Structure reuse only.
+Correct Asteroids sample play/debug links to existing game path.
+Remove incorrect target usage that referenced nonexistent asteroids_new assets.
+Scoped fix only.
