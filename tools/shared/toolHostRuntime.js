@@ -36,10 +36,6 @@ function createHostFrame(toolEntry, sourceUrl) {
   frame.setAttribute("data-tool-host-frame", toolEntry.id);
   frame.setAttribute("title", `${toolEntry.displayName} Host Frame`);
   frame.setAttribute("loading", "eager");
-  frame.style.width = "100%";
-  frame.style.minHeight = "960px";
-  frame.style.border = "0";
-  frame.style.background = "transparent";
   frame.src = sourceUrl;
   return frame;
 }

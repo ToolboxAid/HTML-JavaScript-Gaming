@@ -176,8 +176,15 @@ body.vector-editor-page > .is-collapsible {
 .vector-editor-page .rightbar {
   padding: 12px;
   overflow: auto;
+  scrollbar-width: none;
   background: var(--panel);
   min-width: 0;
+}
+
+.vector-editor-page .sidebar::-webkit-scrollbar,
+.vector-editor-page .rightbar::-webkit-scrollbar {
+  width: 0;
+  height: 0;
 }
 
 .vector-editor-page .sidebar {

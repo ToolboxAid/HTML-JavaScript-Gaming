@@ -20,8 +20,12 @@ body.tools-platform-surface {
 .tools-platform-status,
 [data-tools-platform-header],
 [data-tools-platform-status] {
-  width: min(1600px, calc(100% - 32px));
+  width: calc(100% - 32px);
   margin: 10px auto;
+}
+
+[data-tools-platform-header] {
+  width: calc(100% - 140px);
 }
 
 .tools-platform-frame,
@@ -92,11 +96,11 @@ body.tools-platform-surface {
 
 .tools-platform-frame__topline,
 .tools-platform-frame__bottomline {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-  flex-wrap: wrap;
+  display: block;
+}
+
+.tools-platform-frame__bottomline {
+  margin: 0 0 36px;
 }
 
 .tools-platform-frame__eyebrow {
@@ -127,6 +131,49 @@ body.tools-platform-surface {
   align-items: center;
   gap: 10px;
   flex-wrap: wrap;
+}
+
+.tools-platform-frame__nav-bucket {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 10px;
+  border: 1px solid var(--line, rgba(221, 214, 254, 0.26));
+  border-radius: 12px;
+  background: linear-gradient(180deg, var(--panel, rgba(76, 29, 149, 0.88)) 0%, var(--panel2, rgba(49, 17, 102, 0.94)) 100%);
+  box-shadow: var(--tools-shell-shadow);
+  min-width: 220px;
+  min-height: 156px;
+  height: 100%;
+  align-self: stretch;
+  justify-content: flex-start;
+}
+
+.tools-platform-frame__nav-bucket-title {
+  margin: 0;
+  font-size: 0.75rem;
+  line-height: 1.2;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted, #e9ddff);
+}
+
+.tools-platform-frame__nav-bucket-links {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.tools-platform-frame__nav {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  grid-auto-rows: 1fr;
+  gap: 12px;
+  align-items: stretch;
+  align-content: start;
+  justify-items: stretch;
+  width: 100%;
 }
 
 .tools-platform-frame__actions,
@@ -398,6 +445,10 @@ body.tools-platform-surface .card {
   background: linear-gradient(180deg, var(--panel, rgba(76, 29, 149, 0.88)) 0%, var(--panel2, rgba(49, 17, 102, 0.94)) 100%);
   box-shadow: var(--tools-shell-shadow);
   color: var(--text, #f7f4ff);
+}
+
+body.tools-platform-surface section.panel.debug-tool-panel {
+  padding: 16px;
 }
 
 body.tools-platform-surface .tools-platform-card {

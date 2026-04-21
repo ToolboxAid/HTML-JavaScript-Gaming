@@ -74,13 +74,35 @@ function getManifest() {
 }
 
 function renderToolLinks(currentToolId) {
-  return getToolRegistry()
+  const tools = getToolRegistry()
     .filter((entry) => entry.active === true)
     .filter((entry) => entry.visibleInToolsList === true)
+    .sort((left, right) => String(left.displayName || "").localeCompare(String(right.displayName || "")));
+
+  const bucketMap = new Map();
+  tools.forEach((tool) => {
+    const bucket = String(tool.showcaseTag || "Other").trim() || "Other";
+    if (!bucketMap.has(bucket)) {
+      bucketMap.set(bucket, []);
+    }
+    bucketMap.get(bucket).push(tool);
+  });
+
+  return Array.from(bucketMap.entries())
+    .sort((left, right) => left[0].localeCompare(right[0]))
+    .map(([bucketName, bucketTools]) => `
+      <div class="tools-platform-frame__nav-bucket" aria-label="${escapeHtml(bucketName)} tools">
+        <h3 class="tools-platform-frame__nav-bucket-title">${escapeHtml(bucketName)}</h3>
+        <div class="tools-platform-frame__nav-bucket-links">
+          ${bucketTools
     .map((tool) => {
       const currentClass = tool.id === currentToolId ? " is-current" : "";
       return `<a class="tools-platform-frame__nav-link${currentClass}" href="${escapeHtml(getRegistryEntryHref(tool.entryPoint))}">${escapeHtml(tool.displayName)}</a>`;
     })
+    .join("")}
+        </div>
+      </div>
+    `)
     .join("");
 }
 

@@ -1,7 +1,11 @@
 # Validation Checklist
 
-- [ ] Asteroids Play link resolves to /games/Asteroids/index.html
-- [ ] Asteroids Debug link resolves to /games/Asteroids/index.html?debug=1
-- [ ] No asteroids_new reference remains in the Asteroids sample link target
-- [ ] No other sample cards changed
-- [ ] No duplicate Asteroids launch links
+- [x] Hosted tool workspace feels near-identical to direct launch
+- [x] Tool Host does not present obvious extra page chrome around the iframe
+- [x] Host-specific controls/help exist only in the collapsible imported section
+- [x] Collapsing host controls leaves the hosted tool visually close to direct-open mode
+- [x] Open In Host still loads tools correctly (selector and runtime mount flow preserved)
+- [x] Direct tool launch still works (manifest launchPath behavior unchanged)
+- [x] Any fullscreen button is optional and non-essential (none added)
+- [x] No inline styles or embedded style blocks added
+- [x] No JS style-string injection in Tool Host runtime/main

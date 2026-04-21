@@ -4,53 +4,12 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Tool Host</title>
-  <link rel="stylesheet" href="../../src/engine/ui/hubCommon.css" />
-  <link rel="stylesheet" href="../shared/platformShell.css" />
-  <link rel="stylesheet" href="../../src/engine/theme/main.css" />
+  <link rel="stylesheet" href="./toolHost.css" />
 </head>
-<body class="tools-platform-tool-page hub-page-tools" data-tools-platform-page="tool" data-tool-title="Tool Host">
-  <details class="is-collapsible" open>
-    <summary class="is-collapsible__summary">Header and Intro</summary>
-    <div class="is-collapsible__content">
-      <div id="shared-theme-header"></div>
-      <div data-tools-platform-header></div>
-    </div>
-  </details>
-  <div class="wrap app-shell">
-    <section class="panel">
-      <h2>Tool Host Foundation</h2>
-      <p>Load one active tool at a time through a shared host container while keeping direct standalone tool pages unchanged.</p>
-      <div class="meta tools-platform-control-row">
-        <label class="field">
-          Tool
-          <select data-tool-host-select></select>
-        </label>
-      </div>
-      <div class="meta tools-platform-control-row">
-        <label class="field tools-platform-field-full">
-          Optional State JSON
-          <textarea data-tool-host-state-input rows="5" placeholder='{"example":"value"}'></textarea>
-        </label>
-      </div>
-      <div class="meta tools-platform-control-row">
-        <button type="button" data-tool-host-mount>Load Selected Tool</button>
-        <button type="button" data-tool-host-prev>Previous Tool</button>
-        <button type="button" data-tool-host-next>Next Tool</button>
-        <button type="button" data-tool-host-unmount>Unmount Tool</button>
-        <a data-tool-host-standalone href="#" target="_blank" rel="noopener noreferrer">Open Standalone</a>
-      </div>
-      <p data-tool-host-switch-meta aria-live="polite">Switching disabled until tools are loaded.</p>
-      <p data-tool-host-status aria-live="polite">Tool host idle.</p>
-    </section>
-
-    <section class="panel">
-      <h3 data-tool-host-current-label>No tool mounted.</h3>
-      <div data-tool-host-mount-container class="tools-platform-dock-panel tools-platform-mount-container"></div>
-    </section>
-  </div>
-  <div data-tools-platform-status></div>
-  <script type="module" src="../shared/platformShell.js"></script>
+<body class="tool-host-page">
+  <main class="tool-host-workspace">
+    <div data-tool-host-mount-container class="tool-host-workspace__mount"></div>
+  </main>
   <script type="module" src="./main.js"></script>
-  <script type="module" src="../../src/engine/theme/mount-shared-header.js"></script>
 </body>
 </html>

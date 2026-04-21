@@ -77,8 +77,7 @@ function updateStandaloneHref(toolId) {
   refs.standaloneLink.href = enabled ? entry.launchPath : "#";
   refs.standaloneLink.setAttribute("aria-disabled", enabled ? "false" : "true");
   refs.standaloneLink.tabIndex = enabled ? 0 : -1;
-  refs.standaloneLink.style.pointerEvents = enabled ? "" : "none";
-  refs.standaloneLink.style.opacity = enabled ? "" : "0.6";
+  refs.standaloneLink.classList.toggle("is-disabled", !enabled);
 }
 
 function writeQueryToolId(toolId, replace = false) {
@@ -149,7 +148,7 @@ const runtime = createToolHostRuntime({
 });
 
 function mountSelectedTool(source = "manual") {
-  const toolId = readSelectedToolId();
+  const toolId = readSelectedToolId() || readInitialToolId();
   if (!toolId) {
     writeStatus("Select a tool to mount.");
     return;

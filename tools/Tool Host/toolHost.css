@@ -1,0 +1,27 @@
+html,
+body.tool-host-page {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+body.tool-host-page {
+  background: transparent;
+}
+
+.tool-host-workspace,
+.tool-host-workspace__mount {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+.tool-host-workspace__mount > iframe[data-tool-host-frame] {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
