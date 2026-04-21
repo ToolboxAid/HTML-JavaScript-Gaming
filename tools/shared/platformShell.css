@@ -188,7 +188,8 @@ body.tools-platform-surface {
 .tools-platform-frame__project {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
+  flex-direction: column;
   gap: 14px;
   flex-wrap: wrap;
   margin-top: 10px;
@@ -200,8 +201,10 @@ body.tools-platform-surface {
 .tools-platform-frame__project-actions {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 10px;
   flex-wrap: wrap;
+  text-align: center;
 }
 
 .tools-platform-frame__project-label,
@@ -291,6 +294,8 @@ body.tools-platform-surface {
 .tools-platform-frame__shared-status {
   color: var(--muted, #e9ddff);
   font-size: 0.92rem;
+  justify-content: center;
+  text-align: center;
 }
 
 .tools-platform-frame__shared-status strong {

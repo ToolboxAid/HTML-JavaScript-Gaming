@@ -111,7 +111,13 @@ function renderSharedActionLinks(currentToolId) {
     return "";
   }
   const sourceToolId = currentToolId || HEADER_EXPANDED_FALLBACK_TOOL;
+  const visibleToolIds = new Set(
+    getToolRegistry()
+      .filter((entry) => entry.active === true && entry.visibleInToolsList === true)
+      .map((entry) => entry.id)
+  );
   return getSharedShellActions(sourceToolId, getPageMode())
+    .filter((action) => !action.targetToolId || !visibleToolIds.has(action.targetToolId))
     .map((action) => {
       const currentClass = action.current ? " is-current" : "";
       return `<a class="tools-platform-frame__action-link${currentClass}" href="${escapeHtml(action.href)}">${escapeHtml(action.label)}</a>`;
@@ -147,6 +153,7 @@ function renderProjectSummary(currentTool) {
   const readiness = manifest?.tools?.[currentTool.id]
     ? "shared project state synced"
     : "shared project shell ready";
+  const sharedSelectionSummary = renderSharedSelectionSummary();
 
   return `
     <div class="tools-platform-frame__project" aria-label="Project system controls">
@@ -163,12 +170,14 @@ function renderProjectSummary(currentTool) {
         <button type="button" class="tools-platform-frame__project-button is-secondary" data-project-action="close">Close Project</button>
         <input type="file" class="tools-platform-frame__project-input" data-project-open-input accept=".json,application/json" />
       </div>
+      ${sharedSelectionSummary}
     </div>
   `;
 }
 
 function renderHeaderMarkup(currentTool, isHeaderExpanded) {
   const isLanding = getPageMode() === "landing";
+  const sharedActionLinks = !isLanding ? renderSharedActionLinks(currentTool?.id ?? "") : "";
   const title = currentTool ? currentTool.displayName : (document.body.dataset.toolTitle || "Tools Platform");
   const description = currentTool
     ? currentTool.description
@@ -199,10 +208,11 @@ function renderHeaderMarkup(currentTool, isHeaderExpanded) {
         </div>
         ${renderProjectSummary(currentTool)}
         ${!isLanding ? `
-          <div class="tools-platform-frame__actions" aria-label="Shared asset and palette actions">
-            ${renderSharedActionLinks(currentTool?.id ?? "")}
-          </div>
-          ${renderSharedSelectionSummary()}
+          ${sharedActionLinks ? `
+            <div class="tools-platform-frame__actions" aria-label="Shared asset and palette actions">
+              ${sharedActionLinks}
+            </div>
+          ` : ""}
         ` : ""}
       </div>
     </section>

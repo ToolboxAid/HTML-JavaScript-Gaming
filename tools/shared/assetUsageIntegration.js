@@ -145,24 +145,28 @@ export function getSharedShellActions(currentToolId, pageMode = "tool") {
   return [
     {
       id: "browse-assets",
+      targetToolId: "asset-browser",
       label: SHARED_ACTION_LABELS.browseAssets,
       href: getSharedToolHref("asset-browser", pageMode, { view: "browse", sourceToolId: currentToolId }),
       current: currentToolId === "asset-browser" && view !== "import"
     },
     {
       id: "import-assets",
+      targetToolId: "asset-browser",
       label: SHARED_ACTION_LABELS.importAssets,
       href: getSharedToolHref("asset-browser", pageMode, { view: "import", sourceToolId: currentToolId }),
       current: currentToolId === "asset-browser" && view === "import"
     },
     {
       id: "browse-palettes",
+      targetToolId: "palette-browser",
       label: SHARED_ACTION_LABELS.browsePalettes,
       href: getSharedToolHref("palette-browser", pageMode, { view: "browse", sourceToolId: currentToolId }),
       current: currentToolId === "palette-browser" && view !== "manage"
     },
     {
       id: "manage-palettes",
+      targetToolId: "palette-browser",
       label: SHARED_ACTION_LABELS.managePalettes,
       href: getSharedToolHref("palette-browser", pageMode, { view: "manage", sourceToolId: currentToolId }),
       current: currentToolId === "palette-browser" && view === "manage"
