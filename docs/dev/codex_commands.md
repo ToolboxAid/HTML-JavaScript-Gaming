@@ -1,33 +1,43 @@
-MODEL: GPT-5.3-codex
-REASONING: medium
+MODEL: GPT-5.4
+REASONING: high
 
 COMMAND:
-Create BUILD_PR_TOOL_HOST_SEAMLESS_IFRAME_PARITY.
+Implement BUILD_PR_LEVEL_20_1_TOOL_SAMPLE_DROPDOWN_FOUNDATION as a one-pass, testable PR in the HTML-JavaScript-Gaming repo.
 
-Refactor Tool Host so opening a tool in host feels visually equivalent to opening the tool directly, except for compact host controls/help inside the collapsible imported section.
+Constraints:
+- fullscreen is complete; do not modify fullscreen behavior
+- docs-first repo workflow
+- one PR purpose only: sample packs + dropdown loading
+- active tools only:
+  - tools/Tile Map Editor
+  - tools/Parallax Editor
+  - tools/Vector Map Editor
+  - tools/Vector Asset Studio
+- 3 shipped samples per active tool
+- sample data must live in each tool's local samples structure
+- each tool must expose a Sample dropdown and be able to load all 3 samples
+- preserve manual editing flows
+- no repo-wide scanning unless required
+- no destructive cleanup
+- do not modify start_of_day folders
+- keep legacy preserved paths intact unless strictly required
+- update roadmap status only in docs/dev/roadmaps/MASTER_ROADMAP_ENGINE.md
+- no roadmap rewrites; status-only changes unless explicit additive line is required
 
-Requirements:
-- iframe-hosted tool should use the available workspace as if opened directly
-- remove obvious host chrome/wrappers that make hosted mode visibly different
-- keep Tool Host HTML minimal
-- host-specific UI should live only in the collapsible imported section
-- collapsing that section should make the hosted tool appear nearly identical to direct launch
-- optional small fullscreen button is allowed, but do not depend on browser fullscreen as the main solution
-- preserve Open In Host behavior
-- preserve direct launch behavior
-- no inline styles
-- no embedded style blocks
-- no JS style-string injection
-- no color/token changes
-- no unnecessary per-tool hacks
-
-Outputs:
-- repo-structured ZIP at <project folder>/tmp/BUILD_PR_TOOL_HOST_SEAMLESS_IFRAME_PARITY.zip
-- docs/pr/BUILD_PR_TOOL_HOST_SEAMLESS_IFRAME_PARITY.md
-- docs/dev/codex_commands.md
-- docs/dev/commit_comment.txt
+Required outputs:
+- implementation changes for dropdown sample loading in all 4 active tools
+- tool-local sample files/assets/manifests as needed
+- docs/pr/BUILD_PR_LEVEL_20_1_TOOL_SAMPLE_DROPDOWN_FOUNDATION.md aligned to delivered work
+- docs/dev/reports/change_summary.txt
+- docs/dev/reports/file_tree.txt
 - docs/dev/reports/validation_checklist.txt
+- docs/dev/commit_comment.txt
+- package final artifact to:
+  <project folder>/tmp/BUILD_PR_LEVEL_20_1_TOOL_SAMPLE_DROPDOWN_FOUNDATION.zip
 
-Roadmap:
-- update status only if execution-backed
-- status-only roadmap edits only
+Validation target:
+- open each tool
+- verify dropdown visible
+- verify exactly 3 samples per tool
+- verify each sample loads and visibly changes content
+- verify no fullscreen regression

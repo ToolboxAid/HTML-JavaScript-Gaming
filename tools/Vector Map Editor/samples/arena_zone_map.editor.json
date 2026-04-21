@@ -1,0 +1,62 @@
+{
+  "version": 3,
+  "name": "arena-zone-map",
+  "mode": "2d",
+  "width": 1680,
+  "height": 960,
+  "background": "#101827",
+  "objects": [
+    {
+      "id": "obj-arena-boundary",
+      "name": "Arena Boundary",
+      "kind": "polygon",
+      "space": "2d",
+      "closed": true,
+      "center": { "x": 840, "y": 480, "z": 0 },
+      "rotation": { "x": 0, "y": 0, "z": 0 },
+      "style": { "stroke": "#60a5fa", "fill": "#172554", "lineWidth": 4, "colorMode": "object" },
+      "flags": { "collidable": true, "deadly": false, "trigger": false, "spawnBlocker": true, "projectileBlocker": true, "playerOnly": false, "enemyOnly": false, "tag": "arena" },
+      "points": [
+        { "x": 140, "y": 120, "z": 0, "color": "#60a5fa" },
+        { "x": 1540, "y": 120, "z": 0, "color": "#60a5fa" },
+        { "x": 1620, "y": 860, "z": 0, "color": "#60a5fa" },
+        { "x": 80, "y": 860, "z": 0, "color": "#60a5fa" }
+      ]
+    },
+    {
+      "id": "obj-safe-zone",
+      "name": "Safe Zone",
+      "kind": "polygon",
+      "space": "2d",
+      "closed": true,
+      "center": { "x": 360, "y": 730, "z": 0 },
+      "rotation": { "x": 0, "y": 0, "z": 0 },
+      "style": { "stroke": "#34d399", "fill": "#064e3b", "lineWidth": 3, "colorMode": "object" },
+      "flags": { "collidable": false, "deadly": false, "trigger": true, "spawnBlocker": false, "projectileBlocker": false, "playerOnly": true, "enemyOnly": false, "tag": "safe-zone" },
+      "points": [
+        { "x": 200, "y": 640, "z": 0, "color": "#34d399" },
+        { "x": 520, "y": 640, "z": 0, "color": "#34d399" },
+        { "x": 520, "y": 820, "z": 0, "color": "#34d399" },
+        { "x": 200, "y": 820, "z": 0, "color": "#34d399" }
+      ]
+    },
+    {
+      "id": "obj-hazard-lane",
+      "name": "Hazard Lane",
+      "kind": "polyline",
+      "space": "2d",
+      "closed": false,
+      "center": { "x": 930, "y": 500, "z": 0 },
+      "rotation": { "x": 0, "y": 0, "z": 0 },
+      "style": { "stroke": "#f97316", "fill": null, "lineWidth": 7, "colorMode": "object" },
+      "flags": { "collidable": false, "deadly": true, "trigger": true, "spawnBlocker": false, "projectileBlocker": false, "playerOnly": false, "enemyOnly": false, "tag": "hazard" },
+      "points": [
+        { "x": 580, "y": 260, "z": 0, "color": "#f97316" },
+        { "x": 760, "y": 420, "z": 0, "color": "#f97316" },
+        { "x": 980, "y": 520, "z": 0, "color": "#f97316" },
+        { "x": 1190, "y": 640, "z": 0, "color": "#f97316" },
+        { "x": 1360, "y": 770, "z": 0, "color": "#f97316" }
+      ]
+    }
+  ]
+}

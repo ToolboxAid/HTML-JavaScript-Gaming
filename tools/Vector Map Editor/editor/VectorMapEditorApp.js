@@ -16,6 +16,9 @@ import { VectorMapFullscreenController } from "./VectorMapFullscreenController.j
 import { VectorMapCollisionTester } from "./VectorMapCollisionTester.js";
 import { VectorMapRuntimeExporter } from "./VectorMapRuntimeExporter.js";
 import { VectorMapHistoryManager } from "./VectorMapHistoryManager.js";
+import { normalizeToolSamplePath, toToolSampleLabel } from "../../shared/toolSampleCatalog.js";
+
+const SAMPLE_MANIFEST_PATH = "./samples/sample-manifest.json";
 
 function normalizeDegrees(value) {
   const numeric = Number(value || 0);
@@ -56,6 +59,7 @@ export class VectorMapEditorApp {
     this.lastCollisionResult = null;
     this.pendingHistoryEntry = null;
     this.spinAnimationFrame = null;
+    this.sampleEntries = [];
 
     this.elements = this.cacheElements(rootDocument);
     this.jsonEditor = new VectorMapJsonEditor(this.elements.jsonEditor);
@@ -102,6 +106,8 @@ export class VectorMapEditorApp {
       newDocumentButton: doc.getElementById("newDocumentButton"),
       undoButton: doc.getElementById("undoButton"),
       redoButton: doc.getElementById("redoButton"),
+      sampleSelect: doc.getElementById("sampleSelect"),
+      loadSampleButton: doc.getElementById("loadSampleButton"),
       saveDocumentButton: doc.getElementById("saveDocumentButton"),
       exportRuntimeButton: doc.getElementById("exportRuntimeButton"),
       loadDocumentInput: doc.getElementById("loadDocumentInput"),
@@ -172,6 +178,104 @@ export class VectorMapEditorApp {
     this.render();
     window.addEventListener("resize", () => this.resizeCanvas());
     this.setStatus("Vector Map Editor ready.");
+    void this.loadSampleManifest({ quiet: true });
+  }
+
+  async loadSampleManifest(options = {}) {
+    const quiet = options.quiet === true;
+    const select = this.elements.sampleSelect;
+    const loadButton = this.elements.loadSampleButton;
+    if (!(select instanceof HTMLSelectElement) || !(loadButton instanceof HTMLButtonElement)) {
+      return;
+    }
+
+    const previousValue = select.value;
+    select.innerHTML = "";
+    this.sampleEntries = [];
+
+    try {
+      const manifestUrl = new URL(SAMPLE_MANIFEST_PATH, window.location.href);
+      const response = await fetch(manifestUrl.toString(), { cache: "no-store" });
+      if (!response.ok) {
+        throw new Error(`manifest request failed: ${response.status}`);
+      }
+      const manifest = await response.json();
+      const sampleRows = Array.isArray(manifest?.samples) ? manifest.samples : [];
+      const seen = new Set();
+      sampleRows.forEach((entry, index) => {
+        const path = normalizeToolSamplePath(entry?.path);
+        if (!path || seen.has(path)) {
+          return;
+        }
+        seen.add(path);
+        this.sampleEntries.push({
+          id: typeof entry?.id === "string" && entry.id.trim() ? entry.id.trim() : `sample-${index + 1}`,
+          label: toToolSampleLabel(entry?.label, `Sample ${index + 1}`),
+          path
+        });
+      });
+    } catch (error) {
+      if (!quiet) {
+        this.setStatus(`Sample manifest unavailable (${error.message}).`);
+      }
+    }
+
+    if (this.sampleEntries.length === 0) {
+      const option = document.createElement("option");
+      option.value = "";
+      option.textContent = "No samples loaded";
+      select.appendChild(option);
+      loadButton.disabled = true;
+      return;
+    }
+
+    this.sampleEntries.forEach((entry) => {
+      const option = document.createElement("option");
+      option.value = entry.path;
+      option.textContent = entry.label;
+      select.appendChild(option);
+    });
+
+    if (this.sampleEntries.some((entry) => entry.path === previousValue)) {
+      select.value = previousValue;
+    } else {
+      select.value = this.sampleEntries[0].path;
+    }
+    loadButton.disabled = false;
+  }
+
+  async handleLoadSelectedSample() {
+    const select = this.elements.sampleSelect;
+    if (!(select instanceof HTMLSelectElement)) {
+      return;
+    }
+    const selectedPath = select.value;
+    if (!selectedPath) {
+      this.setStatus("No sample selected.");
+      return;
+    }
+
+    const sampleUrl = new URL(selectedPath, window.location.href);
+    const response = await fetch(sampleUrl.toString(), { cache: "no-store" });
+    if (!response.ok) {
+      throw new Error(`sample request failed: ${response.status}`);
+    }
+
+    const sampleData = await response.json();
+    this.cancelSpinAnimation();
+    this.documentModel.setData(sampleData);
+    this.selectionModel.clear();
+    this.lastCollisionResult = null;
+    this.historyManager.reset();
+    this.pendingHistoryEntry = null;
+    this.workspaceViewMode = this.documentModel.getData().mode;
+    this.elements.workspaceModeSelect.value = this.workspaceViewMode;
+    this.createInteractionController();
+    this.interactionController.setToolMode(this.elements.toolModeSelect.value);
+    this.syncUIFromDocument();
+    this.render();
+    const sampleName = selectedPath.split("/").pop() || "sample";
+    this.setStatus(`Loaded sample ${sampleName}.`);
   }
 
   wireEvents() {
@@ -308,6 +412,18 @@ export class VectorMapEditorApp {
 
     this.elements.undoButton.addEventListener("click", () => this.undo());
     this.elements.redoButton.addEventListener("click", () => this.redo());
+
+    this.elements.loadSampleButton?.addEventListener("click", async () => {
+      try {
+        await this.handleLoadSelectedSample();
+      } catch (error) {
+        this.setStatus(`Failed to load sample (${error.message}).`);
+      }
+    });
+
+    this.elements.sampleSelect?.addEventListener("focus", () => {
+      void this.loadSampleManifest({ quiet: true });
+    });
 
     this.elements.saveDocumentButton.addEventListener("click", () => {
       this.syncDocumentFromInputs();

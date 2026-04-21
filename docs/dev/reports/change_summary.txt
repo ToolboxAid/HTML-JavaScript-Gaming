@@ -1,15 +1,10 @@
-Scope summary
-- Single-purpose style PR
-- Header + Intro overlay only
-- Transparent overlay background
-- Foreground #ed9700
-- Collapsed header background #7a00df
-- Header border radius removed
-- page-shell excluded
+BUILD_PR_LEVEL_20_1_TOOL_SAMPLE_DROPDOWN_FOUNDATION
 
-Validation checklist
-- Visual overlay confirmed on targeted shared entry pages
-- Collapsed state color confirmed
-- No page-shell edits
-- No layout regressions
-- No console errors
+Summary:
+- Completed sample-pack + dropdown foundation for active tools with single PR purpose.
+- Added missing Vector Map Editor sample dropdown/load support.
+- Added 3 shipped local samples for Vector Map Editor.
+- Verified all 4 active tools now have exactly 3 local manifest samples.
+- Updated roadmap with execution-backed status line only.
+
+No fullscreen behavior changes were made.

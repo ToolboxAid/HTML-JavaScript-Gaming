@@ -1,0 +1,21 @@
+{
+  "schema": "toolbox.vector-map-sample-manifest/1",
+  "version": 1,
+  "samples": [
+    {
+      "id": "overworld-route-map",
+      "label": "Overworld Route Map",
+      "path": "./samples/overworld_route_map.editor.json"
+    },
+    {
+      "id": "dungeon-layout-map",
+      "label": "Dungeon Layout Map",
+      "path": "./samples/dungeon_layout_map.editor.json"
+    },
+    {
+      "id": "arena-zone-map",
+      "label": "Arena Zone Map",
+      "path": "./samples/arena_zone_map.editor.json"
+    }
+  ]
+}

@@ -1,11 +1,16 @@
-# Validation Checklist
+BUILD_PR_LEVEL_20_1_TOOL_SAMPLE_DROPDOWN_FOUNDATION Validation Checklist
 
-- [x] Hosted tool workspace feels near-identical to direct launch
-- [x] Tool Host does not present obvious extra page chrome around the iframe
-- [x] Host-specific controls/help exist only in the collapsible imported section
-- [x] Collapsing host controls leaves the hosted tool visually close to direct-open mode
-- [x] Open In Host still loads tools correctly (selector and runtime mount flow preserved)
-- [x] Direct tool launch still works (manifest launchPath behavior unchanged)
-- [x] Any fullscreen button is optional and non-essential (none added)
-- [x] No inline styles or embedded style blocks added
-- [x] No JS style-string injection in Tool Host runtime/main
+Execution-backed checks completed:
+[x] Verified sample dropdown (`#sampleSelect`) exists in all active tool index pages.
+[x] Verified load sample action (`#loadSampleButton`) exists in all active tool index pages.
+[x] Verified each active tool local sample manifest has exactly 3 samples.
+[x] Verified every sample manifest path resolves to an existing local file.
+[x] Verified fullscreen path references remain present and were not altered as feature work.
+
+Manual browser checks required to fully close acceptance:
+[ ] Open Tilemap Studio and load all 3 samples; confirm visible content changes.
+[ ] Open Parallax Scene Studio and load all 3 samples; confirm visible content changes.
+[ ] Open Vector Map Editor and load all 3 samples; confirm visible content changes.
+[ ] Open Vector Asset Studio and load all 3 samples; confirm visible content changes.
+[ ] Confirm manual editing flows remain functional after sample loading in each tool.
+[ ] Confirm no fullscreen regression in each tool.

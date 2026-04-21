@@ -421,6 +421,7 @@
 - [x] ParallaxEditor normalized
 - [x] VectorMapEditor normalized
 - [x] VectorAssetStudio normalized
+- [x] Tool sample packs + dropdown loading (3 samples per active tool)
 
 ### New Required Tools (By Dependency)
 - [x] 3DMapEditor

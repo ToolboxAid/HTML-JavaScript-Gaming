@@ -1,2 +1,7 @@
-Refactor Tool Host iframe presentation for near direct-launch parity by removing host chrome wrappers,
-keeping host controls inside the collapsible imported section, and eliminating JS/inline style injection.
+BUILD_PR_LEVEL_20_1_TOOL_SAMPLE_DROPDOWN_FOUNDATION
+
+- Add Sample dropdown + explicit Load Sample action to Vector Map Editor.
+- Add Vector Map Editor local sample manifest with exactly 3 shipped sample JSON files.
+- Preserve manual editing flow and avoid fullscreen behavior changes.
+- Confirm all 4 active tool manifests expose exactly 3 local samples.
+- Update roadmap with status-only additive marker for tool sample packs + dropdown loading.
