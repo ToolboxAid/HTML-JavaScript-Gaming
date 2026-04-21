@@ -18,21 +18,21 @@ const APPROVED_DESTINATIONS = Object.freeze({
 const ASSET_CATALOG = Object.freeze([
   {
     id: "asset-vector-player",
-    label: "Asteroids Ship Vector",
+    label: "Vector Arcade Player Vector",
     category: "Vector Assets",
-    path: "../../games/Asteroids/assets/vectors/ship.json"
+    path: "../../games/vector-arcade-sample/assets/data/vectors/template-player.vector.json"
   },
   {
     id: "asset-vector-title",
-    label: "Asteroids Title Vector",
+    label: "Vector Arcade Title Vector",
     category: "Vector Assets",
-    path: "../../games/Asteroids/assets/vectors/title.json"
+    path: "../../games/vector-arcade-sample/assets/data/vectors/template-title.vector.json"
   },
   {
     id: "asset-sprite-demo",
-    label: "Asteroids Sprite Project",
+    label: "Vector Arcade Sprite Project",
     category: "Sprite Projects",
-    path: "../../games/Asteroids/assets/sprites/demo.json"
+    path: "../../games/vector-arcade-sample/assets/data/sprites/template-player.sprite.json"
   },
   {
     id: "asset-tilemap-template",

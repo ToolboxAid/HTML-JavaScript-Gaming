@@ -1,0 +1,16 @@
+{
+  "schema": "toolbox.sprite-project/1",
+  "version": 1,
+  "projectId": "vector-arcade-template-sprite",
+  "name": "Vector Arcade Template Sprite",
+  "frames": [
+    {
+      "id": "idle-0",
+      "width": 16,
+      "height": 16,
+      "durationMs": 120,
+      "pixels": []
+    }
+  ],
+  "palette": ["#000000", "#ffffff", "#60a5fa", "#f59e0b"]
+}

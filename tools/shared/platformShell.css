@@ -434,6 +434,12 @@ body.tools-platform-surface .app {
   box-shadow: var(--tools-shell-shadow-strong);
 }
 
+body.tools-platform-surface .is-collapsible + .wrap,
+body.tools-platform-surface .is-collapsible + .app-shell,
+body.tools-platform-surface .is-collapsible + .app {
+  margin-top: 12px;
+}
+
 body.tools-platform-surface .wrap {
   background: linear-gradient(180deg, var(--panel, rgba(76, 29, 149, 0.88)) 0%, var(--panel2, rgba(49, 17, 102, 0.94)) 100%);
 }
