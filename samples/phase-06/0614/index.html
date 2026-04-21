@@ -10,8 +10,10 @@ index.html
   <meta charset="UTF-8" />
   <title>Orbit</title>
   <link rel="stylesheet" href="/samples/shared/sampleBaseLayout.css" />
+  <link rel="stylesheet" href="../../../src/engine/theme/main.css" />
 </head>
-<body>
+<body class="hub-page-samples">
+  <div id="shared-theme-header"></div>
   <main>
     <h1>Orbit</h1>
     <p>Arcade-clean orbit sandbox showing central-attractor trajectories with preset scenarios for stable, elliptical, inward-fall, and escape behavior.</p>
@@ -36,5 +38,6 @@ index.html
     </section>
   </main>
   <script type="module" src="./main.js"></script>
+  <script type="module" src="../../../src/engine/theme/mount-shared-header.js"></script>
 </body>
 </html>

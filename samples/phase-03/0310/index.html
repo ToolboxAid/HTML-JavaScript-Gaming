@@ -10,8 +10,10 @@ index.html
   <meta charset="UTF-8" />
   <title>sample 0310 - Moving Platforms</title>
   <link rel="stylesheet" href="../../../src/engine/ui/baseLayout.css" />
+  <link rel="stylesheet" href="../../../src/engine/theme/main.css" />
 </head>
-<body>
+<body class="hub-page-samples">
+  <div id="shared-theme-header"></div>
 <!--
 Sample: sample 0310 - Moving Platforms
 Description: Two moving platforms demonstrate ride/carry behavior. Stand on the cyan platforms and verify that the actor is translated with the platform instead of slipping off every frame.
@@ -35,6 +37,7 @@ Description: Two moving platforms demonstrate ride/carry behavior. Stand on the 
 
     <script type="module" src="/samples/shared/sampleDetailPageEnhancement.js"></script>
   <script type="module" src="./main.js"></script>
+  <script type="module" src="../../../src/engine/theme/mount-shared-header.js"></script>
 </body>
 </html>
 

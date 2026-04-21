@@ -284,10 +284,10 @@ function bindProjectShellEvents(currentTool) {
 function renderShell(currentTool) {
   const headerHost = queryFirst("[data-tools-platform-header]");
   const statusHost = queryFirst("[data-tools-platform-status]");
+  const pageHeaderAccordion = queryFirst(".is-collapsible");
 
-  const existingAccordion = headerHost?.querySelector(".tools-platform-frame__accordion");
-  const isHeaderExpanded = existingAccordion
-    ? existingAccordion.hasAttribute("open")
+  const isHeaderExpanded = pageHeaderAccordion instanceof HTMLDetailsElement
+    ? pageHeaderAccordion.open
     : (headerExpandedState ?? readStoredHeaderExpandedState());
   headerExpandedState = isHeaderExpanded;
 
@@ -295,14 +295,14 @@ function renderShell(currentTool) {
 
   if (headerHost) {
     headerHost.innerHTML = renderHeaderMarkup(currentTool, isHeaderExpanded);
+  }
 
-    const newAccordion = headerHost.querySelector(".tools-platform-frame__accordion");
-    if (newAccordion instanceof HTMLDetailsElement) {
-      bindEventHandlers(newAccordion, "toggle", () => {
-        headerExpandedState = newAccordion.open;
-        writeStoredHeaderExpandedState(newAccordion.open);
-      });
-    }
+  if (pageHeaderAccordion instanceof HTMLDetailsElement) {
+    pageHeaderAccordion.open = isHeaderExpanded;
+    bindEventHandlers(pageHeaderAccordion, "toggle", () => {
+      headerExpandedState = pageHeaderAccordion.open;
+      writeStoredHeaderExpandedState(pageHeaderAccordion.open);
+    });
   }
 
   if (statusHost) {

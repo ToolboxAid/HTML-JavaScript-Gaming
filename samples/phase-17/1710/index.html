@@ -11,8 +11,10 @@ index.html
   <title>Sample 1710 - Real Gameplay Mini-Game</title>
   <link rel="stylesheet" href="../../../src/engine/ui/baseLayout.css" />
   <link rel="stylesheet" href="../shared/overlaySampleLayout.css" />
+  <link rel="stylesheet" href="../../../src/engine/theme/main.css" />
 </head>
-<body>
+<body class="hub-page-samples">
+  <div id="shared-theme-header"></div>
   <main class="overlay-sample-main ui-chrome-main">
     <h1 class="overlay-sample-title">Sample 1710 - Real Gameplay Mini-Game</h1>
     <p class="overlay-sample-summary ui-chrome-copy">Playable 3D mini-game using existing engine systems: movement, hazards, objective scoring, camera follow, and debug panels.</p>
@@ -29,5 +31,6 @@ index.html
 
   <script type="module" src="/samples/shared/sampleDetailPageEnhancement.js"></script>
   <script type="module" src="./main.js"></script>
+  <script type="module" src="../../../src/engine/theme/mount-shared-header.js"></script>
 </body>
 </html>

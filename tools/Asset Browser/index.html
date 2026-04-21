@@ -7,9 +7,16 @@
   <link rel="stylesheet" href="../../src/engine/ui/hubCommon.css" />
   <link rel="stylesheet" href="../shared/platformShell.css" />
   <link rel="stylesheet" href="./assetBrowser.css" />
+  <link rel="stylesheet" href="../../src/engine/theme/main.css" />
 </head>
-<body class="tools-platform-tool-page" data-tool-id="asset-browser" data-tools-platform-page="tool">
-  <div data-tools-platform-header></div>
+<body class="tools-platform-tool-page hub-page-tools" data-tool-id="asset-browser" data-tools-platform-page="tool">
+  <details class="is-collapsible" open>
+    <summary class="is-collapsible__summary">Header and Intro</summary>
+    <div class="is-collapsible__content">
+      <div id="shared-theme-header"></div>
+      <div data-tools-platform-header></div>
+    </div>
+  </details>
   <div class="asset-browser app-shell">
     <header class="asset-browser__hero panel">
       <h2>Asset Browser / Import Hub</h2>
@@ -75,5 +82,6 @@
   <div data-tools-platform-status></div>
   <script type="module" src="../shared/platformShell.js"></script>
   <script type="module" src="./main.js"></script>
+  <script type="module" src="../../src/engine/theme/mount-shared-header.js"></script>
 </body>
 </html>

@@ -10,13 +10,11 @@ index.html
   <meta charset="UTF-8" />
   <title>Gravity Well</title>
   <link rel="stylesheet" href="/src/engine/ui/baseLayout.css" />
-  <link rel="stylesheet" href="/src/engine/theme/main.css" />
-  <link rel="stylesheet" href="/src/engine/ui/hubCommon.css" />
+  <link rel="stylesheet" href="../../src/engine/theme/main.css" />
 </head>
-<body class="hub-page-games" data-header-title="Gravity Well" data-header-details="Vector-space flight game built around orbital pull. Rotate, thrust, and slingshot through gravity wells to collect all beacons without crashing into a planet or drifting out of bounds.">
-  <div id="shared-theme-header-root"></div>
-
-<main>
+<body class="hub-page-games">
+  <div id="shared-theme-header"></div>
+  <main>
     <h1>Gravity Well</h1>
     <p>Vector-space flight game built around orbital pull. Rotate, thrust, and slingshot through gravity wells to collect all beacons without crashing into a planet or drifting out of bounds.</p>
     <canvas id="game" width="960" height="720"></canvas>
@@ -49,9 +47,9 @@ index.html
       </ul>
     </section>
 
-  </main>  <script type="module" src="/src/engine/theme/mount-shared-header.js"></script>
-
+  </main>
   <script type="module" src="./main.js"></script>
+  <script type="module" src="../../src/engine/theme/mount-shared-header.js"></script>
 </body>
 </html>
 

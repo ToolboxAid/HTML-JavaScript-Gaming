@@ -10,13 +10,11 @@ index.html
   <meta charset="UTF-8" />
   <title>Bouncing Ball</title>
   <link rel="stylesheet" href="/src/engine/ui/baseLayout.css" />
-  <link rel="stylesheet" href="/src/engine/theme/main.css" />
-  <link rel="stylesheet" href="/src/engine/ui/hubCommon.css" />
+  <link rel="stylesheet" href="../../src/engine/theme/main.css" />
 </head>
-<body class="hub-page-games" data-header-title="Bouncing Ball" data-header-details="A minimal arcade-style ball motion test built as a standalone game: one ball, one rectangular arena, clean wall bounces, and no gravity.">
-  <div id="shared-theme-header-root"></div>
-
-<main>
+<body class="hub-page-games">
+  <div id="shared-theme-header"></div>
+  <main>
     <h1>Bouncing Ball</h1>
     <p>A minimal arcade-style ball motion test built as a standalone game: one ball, one rectangular arena, clean wall bounces, and no gravity.</p>
     <canvas id="game" width="960" height="720"></canvas>
@@ -38,9 +36,9 @@ index.html
         <li>input / GamepadInputAdapter</li>
       </ul>
     </section>
-  </main>  <script type="module" src="/src/engine/theme/mount-shared-header.js"></script>
-
+  </main>
   <script type="module" src="./main.js"></script>
+  <script type="module" src="../../src/engine/theme/mount-shared-header.js"></script>
 </body>
 </html>
 
