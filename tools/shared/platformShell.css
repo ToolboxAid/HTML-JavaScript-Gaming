@@ -7,6 +7,8 @@
 }
 
 body.tools-platform-surface {
+  min-height: 100vh;
+  min-height: 100dvh;
   color: var(--text, #f7f4ff);
   background: var(--bg-gradient, linear-gradient(180deg, #c4b5fd 0%, #a78bfa 18%, #8b5cf6 36%, #7c3aed 54%, #6d28d9 74%, #5b21b6 88%, #4c1d95 100%));
 }

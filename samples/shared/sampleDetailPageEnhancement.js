@@ -83,22 +83,22 @@ function removePriorGeneratedBlocks(main) {
 
 export function parseSampleFromPathname(pathname) {
   const text = String(pathname || '');
-  const direct = text.match(/\/samples\/phase(\d{2})\/(\d{4})(?:\/index\.html)?\/?$/);
+  const direct = text.match(/\/samples\/phase-?(\d{2})\/(\d{4})(?:\/index\.html)?\/?$/);
   if (direct) {
     return { phase: direct[1], id: direct[2] };
   }
 
   const parts = text.split('/').filter(Boolean);
   for (let i = 0; i < parts.length - 1; i += 1) {
-    if (/^phase\d{2}$/.test(parts[i]) && /^\d{4}$/.test(parts[i + 1])) {
-      return { phase: parts[i].slice(5), id: parts[i + 1] };
+    if (/^phase-?\d{2}$/i.test(parts[i]) && /^\d{4}$/.test(parts[i + 1])) {
+      return { phase: parts[i].replace(/^phase-?/i, ''), id: parts[i + 1] };
     }
   }
   return null;
 }
 
 export function canonicalSampleHref(sample) {
-  return '/samples/phase' + sample.phase + '/' + sample.id + '/index.html';
+  return '/samples/phase-' + sample.phase + '/' + sample.id + '/index.html';
 }
 
 export function normalizeMetadata(raw) {
