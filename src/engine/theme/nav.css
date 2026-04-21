@@ -72,6 +72,14 @@
   outline: none;
 }
 
+.toolboxaid-theme-header .menu-item a.is-active,
+.toolboxaid-theme-header .menu-item a.is-active:hover,
+.toolboxaid-theme-header .menu-item a.is-active:focus-visible {
+  color: #fff !important;
+  background-size: 100% 100%;
+  outline: none;
+}
+
 .toolboxaid-theme-header .menu-item a:hover::before,
 .toolboxaid-theme-header .menu-item a:focus-visible::before,
 .toolboxaid-theme-header .menu-item a:hover::after,

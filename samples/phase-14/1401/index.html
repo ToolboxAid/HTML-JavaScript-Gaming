@@ -6,8 +6,10 @@ index.html
 -->
 <!DOCTYPE html>
 <html lang="en">
-<head><meta charset="UTF-8" /><title>Sample 1401 - Level Editor</title><link rel="stylesheet" href="../../../src/engine/ui/baseLayout.css" /></head>
-<body><main><h1>Sample 1401 - Level Editor</h1><p>Demonstrates reusable level editing state.</p><canvas id="game" width="960" height="540"></canvas><section><button id="level-paint" type="button">Paint Pattern</button></section>    <section>
+<head><meta charset="UTF-8" /><title>Sample 1401 - Level Editor</title><link rel="stylesheet" href="../../../src/engine/ui/baseLayout.css" />  <link rel="stylesheet" href="../../../src/engine/theme/main.css" />
+</head>
+<body class="hub-page-samples">
+  <div id="shared-theme-header"></div><main><h1>Sample 1401 - Level Editor</h1><p>Demonstrates reusable level editing state.</p><canvas id="game" width="960" height="540"></canvas><section><button id="level-paint" type="button">Paint Pattern</button></section>    <section>
       <h3>Engine Classes Used</h3>
       <ul>
         <li>Engine</li>
@@ -17,6 +19,7 @@ index.html
       </ul>
     </section>
   </main><script type="module" src="/samples/shared/sampleDetailPageEnhancement.js"></script>
-  <script type="module" src="./main.js"></script></body>
+  <script type="module" src="./main.js"></script>  <script type="module" src="../../../src/engine/theme/mount-shared-header.js"></script>
+</body>
 </html>
 
