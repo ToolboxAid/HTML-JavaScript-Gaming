@@ -13,9 +13,42 @@ index.html
   <link rel="stylesheet" href="../../src/engine/ui/hubCommon.css" />
   <link rel="stylesheet" href="../shared/platformShell.css" />
   <link rel="stylesheet" href="./vectorMapEditor.css" />
+  <link rel="stylesheet" href="../../src/engine/theme/main.css" />
 </head>
-<body class="vector-editor-page" data-tool-id="vector-map-editor" data-tools-platform-page="tool">
-  <div data-tools-platform-header></div>
+<body class="vector-editor-page hub-page-tools" data-tool-id="vector-map-editor" data-tools-platform-page="tool">
+  <details class="is-collapsible" open>
+    <summary class="is-collapsible__summary">Header and Intro</summary>
+    <div class="is-collapsible__content">
+      <div id="shared-theme-header">
+        <header class="toolboxaid-theme-header">
+          <div class="flex header-content">
+            <div id="image" class="header-image bg-image-fill site-tagline">
+              <img src="/src/engine/theme/toolboxaid-header.png" alt="Toolbox Aid Header Banner" />
+            </div>
+            <div id="tagline" class="site-tagline site-tagline-alt align-center">
+              <h2>HTML-JavaScript Gaming</h2>
+            </div>
+            <div id="nav" class="site-nav align-center">
+              <nav>
+                <div class="menu-header-container">
+                  <ul id="menu-header" class="menu">
+                    <li class="menu-item">
+                      <a href="https://toolboxaid.com" class="is-external" target="_blank" rel="noopener noreferrer">Toolbox Aid</a>
+                    </li>
+                    <li class="menu-item"><a href="/index.html">Home</a></li>
+                    <li class="menu-item"><a href="/games/index.html">Games</a></li>
+                    <li class="menu-item"><a href="/samples/index.html">Samples</a></li>
+                    <li class="menu-item"><a href="/tools/index.html">Tools</a></li>
+                  </ul>
+                </div>
+              </nav>
+            </div>
+          </div>
+        </header>
+      </div>
+      <div data-tools-platform-header></div>
+    </div>
+  </details>
   <div class="app" id="appRoot">
     <div class="toolbar">
       <div class="toolbar-group tools-platform-control-cluster tools-platform-control-cluster--primary">
@@ -276,5 +309,6 @@ index.html
   <div data-tools-platform-status></div>
   <script type="module" src="../shared/platformShell.js"></script>
   <script type="module" src="./main.js"></script>
+  <script type="module" src="../../src/engine/theme/mount-shared-header.js"></script>
 </body>
 </html>
