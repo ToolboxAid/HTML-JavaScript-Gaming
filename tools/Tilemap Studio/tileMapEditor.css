@@ -140,6 +140,7 @@ select {
   display: flex;
   flex-direction: column;
   padding: 10px;
+  min-height: 0;
 }
 
 .canvas-toolbar {
@@ -158,7 +159,8 @@ select {
 
 .canvas-wrap {
   flex: 1;
-  min-height: 260px;
+  min-height: 0;
+  height: 100%;
   overflow: auto;
   border: 1px solid var(--editor-border);
   border-radius: 8px;
