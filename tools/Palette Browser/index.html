@@ -19,13 +19,6 @@
     </div>
   </details>
   <div class="palette-browser app-shell">
-    <details class="accordion palette-browser__accordion" open>
-      <summary class="accordion__summary">
-        <span class="accordion__icon">▼</span>
-      </summary>
-      <div class="accordion__content">
-      </div>
-    </details>
     <div class="palette-browser__layout tools-platform-layout-grid">
       <aside class="panel palette-browser__panel tools-platform-resize-panel" data-panel-side="left">
         <h3>Palette List</h3>
@@ -61,10 +54,13 @@
               <input id="swatchSymbolInput" type="text" maxlength="2" placeholder="A" />
             </label>
           </div>
-          <div class="palette-browser__actions tools-platform-control-row">
+          <div class="palette-browser__actions palette-browser__actions--palette tools-platform-control-row">
             <button id="newPaletteButton" type="button">New Palette</button>
             <button id="duplicatePaletteButton" type="button">Duplicate Selected</button>
             <button id="renamePaletteButton" type="button">Rename Palette</button>
+            <button id="deletePaletteButton" type="button">Delete Palette</button>
+          </div>
+          <div class="palette-browser__actions palette-browser__actions--swatch tools-platform-control-row">
             <button id="addSwatchButton" type="button">Add Swatch</button>
             <button id="deleteSwatchButton" type="button">Delete Swatch</button>
           </div>
