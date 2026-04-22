@@ -296,6 +296,10 @@ body.hub-page-home {
   --grid-min: 260px;
 }
 
+body.hub-page-home > #shared-theme-header + .page-shell {
+  margin-top: 14px;
+}
+
 .hub-page-home h1 {
   font-size: 2.4rem;
 }
@@ -473,6 +477,10 @@ body.hub-page-samples {
   --grid-min: 240px;
   --grid-gap: 10px;
   --section-gap: 28px;
+}
+
+body.hub-page-samples > #shared-theme-header + .page-shell {
+  margin-top: 14px;
 }
 
 .hub-page-samples .grid {
