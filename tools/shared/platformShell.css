@@ -201,6 +201,7 @@ body.tools-platform-surface {
   flex-wrap: wrap;
   gap: 6px;
   margin: 0;
+  pointer-events: none;
 }
 
 .tools-platform-frame__binding-badge {
@@ -213,6 +214,7 @@ body.tools-platform-surface {
   font-size: 0.74rem;
   color: var(--muted, #e9ddff);
   background: rgba(43, 16, 91, 0.75);
+  pointer-events: none;
 }
 
 .tools-platform-frame__binding-badge.is-active {
@@ -357,7 +359,7 @@ body.tools-platform-surface {
 .tools-platform-frame__link:focus-visible,
 .tools-platform-frame__nav-link:hover,
 .tools-platform-frame__nav-link:focus-visible {
-  transform: translateY(-1px);
+  transform: none;
   border-color: var(--card-hover-border, #c4b5fd);
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
   outline: none;
@@ -653,6 +655,17 @@ body.tools-howto-page #shared-theme-header + main.wrap {
   margin-top: 24px;
 }
 
+body.tools-howto-page .tools-howto-workflow-compare {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+body.tools-howto-page .tools-howto-workflow-column h3 {
+  margin: 0 0 10px;
+  color: #ffffff;
+}
+
 @media (max-width: 900px) {
   .tools-platform-header,
   .tools-platform-status,
@@ -666,5 +679,9 @@ body.tools-howto-page #shared-theme-header + main.wrap {
 
   .tools-platform-frame {
     padding: 10px;
+  }
+
+  body.tools-howto-page .tools-howto-workflow-compare {
+    grid-template-columns: 1fr;
   }
 }

@@ -84,12 +84,16 @@ function createProjectId() {
 }
 
 export function normalizeProjectFileName(projectName) {
-  const safeBase = sanitizeString(projectName, "untitled-project")
+  const safeBase = sanitizeString(projectName, "untitled-workspace")
     .toLowerCase()
     .replace(/[^a-z0-9._-]+/g, "-")
     .replace(/-+/g, "-")
     .replace(/^-|-$/g, "");
-  return `${safeBase || "untitled-project"}.project.json`;
+  const normalizedBase = safeBase || "untitled-workspace";
+  const baseWithWorkspace = normalizedBase.includes("workspace")
+    ? normalizedBase
+    : `${normalizedBase}-workspace`;
+  return `${baseWithWorkspace}.project.json`;
 }
 
 export function createEmptyProjectManifest(options = {}) {

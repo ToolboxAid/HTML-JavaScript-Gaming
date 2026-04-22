@@ -8,6 +8,7 @@ import {
   serializeProjectManifest,
   validateProjectManifest
 } from "./projectManifestContract.js";
+import { clearSharedAssetHandoff, clearSharedPaletteHandoff } from "./assetUsageIntegration.js";
 import { getProjectAdapter } from "./projectSystemAdapters.js";
 import { cloneValue, safeString } from "./projectSystemValueUtils.js";
 import {
@@ -110,7 +111,12 @@ export function createWorkspaceSystemController(options = {}) {
         toolAdapter.captureState()
       );
       const adapterName = safeString(toolAdapter.getProjectName?.(), "");
-      if (adapterName) {
+      const manifestName = safeString(currentManifest.name, "");
+      const defaultManifestName = safeString(
+        getToolById(toolId)?.displayName || "Untitled Workspace",
+        "Untitled Workspace"
+      );
+      if (adapterName && (!manifestName || manifestName === defaultManifestName)) {
         currentManifest.name = adapterName;
       }
     }
@@ -200,6 +206,8 @@ export function createWorkspaceSystemController(options = {}) {
       nextManifest.toolIntegration = buildProjectToolIntegration(nextManifest.tools);
       toolAdapter.applyState(cloneValue(unwrapToolStateForAdapter(toolId, defaultState)));
     }
+    clearSharedAssetHandoff();
+    clearSharedPaletteHandoff();
     state.manifest = nextManifest;
     state.appliedInitialState = true;
     markSaved("new-project");
@@ -246,11 +254,12 @@ export function createWorkspaceSystemController(options = {}) {
 
   function handleCloseWorkspace() {
     const toolAdapter = adapter();
-    const fallbackName = getToolById(toolId)?.displayName || "Untitled Workspace";
+    const fallbackName = "No Active Workspace";
     const nextManifest = createEmptyProjectManifest({
       name: fallbackName,
       toolId
     });
+    nextManifest.workspace.notes = "closed";
     if (toolAdapter.ready) {
       const defaultState = normalizeToolStateForProjectManifest(toolId, toolAdapter.createDefaultState(fallbackName));
       nextManifest.tools[toolId] = defaultState;
@@ -261,6 +270,8 @@ export function createWorkspaceSystemController(options = {}) {
     state.appliedInitialState = true;
     state.baselineHash = "";
     clearStorage();
+    clearSharedAssetHandoff();
+    clearSharedPaletteHandoff();
     updateDirtyState("close-project");
     onStatus("Workspace closed.");
   }

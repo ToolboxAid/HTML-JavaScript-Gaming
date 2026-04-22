@@ -249,3 +249,19 @@ export function writeSharedPaletteHandoff(handoff) {
   window.localStorage.setItem(SHARED_PALETTE_HANDOFF_KEY, JSON.stringify(normalized));
   return true;
 }
+
+export function clearSharedAssetHandoff() {
+  if (typeof window === "undefined") {
+    return false;
+  }
+  window.localStorage.removeItem(SHARED_ASSET_HANDOFF_KEY);
+  return true;
+}
+
+export function clearSharedPaletteHandoff() {
+  if (typeof window === "undefined") {
+    return false;
+  }
+  window.localStorage.removeItem(SHARED_PALETTE_HANDOFF_KEY);
+  return true;
+}

@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -13,23 +13,82 @@
   <main class="wrap">
     <section class="hero">
       <h1>Parallax Scene Studio: How To Use</h1>
-      <p class="subtitle">Detailed workflow with action guidance and why each step matters for day-to-day usage.</p>
+      <p class="subtitle">Detailed workflow with practical steps and control guidance.</p>
     </section>
 
     <section class="section">
-      <h2>Step-by-Step</h2>
+      <h2>Details</h2>
       <div class="card">
-        <p><strong>1. Open the tool</strong><br />Action: Open <code>tools/Parallax Scene Studio/index.html</code> from Tools index.<br />Why: Tool loads with shared header and ready status.</p>
-        <p><strong>2. Start a workspace session</strong><br />Action: Use Workspace controls (New/Open) when available.<br />Why: A clean working state is created or loaded for editing.</p>
-        <p><strong>3. Configure input/settings</strong><br />Action: Set core options (mode, dimensions, source, or filters) for this tool task.<br />Why: Canvas/panels update to reflect the active configuration.</p>
-        <p><strong>4. Perform edits</strong><br />Action: Use primary controls to create/adjust data in the main workspace.<br />Why: Visible output changes and status reflects latest edits.</p>
-        <p><strong>5. Validate/preview</strong><br />Action: Use built-in preview, inspection, or validation actions.<br />Why: Errors and warnings are surfaced before export/save.</p>
-        <p><strong>6. Save/export</strong><br />Action: Save workspace and export artifact/payload as needed.<br />Why: Reusable output is produced for tools, samples, or game flows.</p>
+        <p>Parallax composition studio for layered scene depth, sample loading, simulation, and export flows.</p>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Tool vs Workspace Saves</h2>
+      <div class="card">
+        <p><strong>Tool save/export</strong><br />Action: Use tool save/export controls for JSON, PNG, sheets, runtime payloads, and tool-local artifacts.<br />Why this step matters: Creates the actual outputs consumed by samples/games/pipeline steps.</p>
+        <p><strong>Workspace save</strong><br />Action: Use Workspace Manager save controls to persist cross-tool session state.<br />Why this step matters: Restores coordinated context (selected tool state, shared refs) but does not replace explicit artifact exports.</p>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Workflow</h2>
+      <div class="tools-howto-workflow-compare">
+        <article class="card tools-howto-workflow-column">
+          <h3>Tool Mode</h3>
+          <p><strong>1. Open the tool directly</strong><br />Action: Launch this tool from <code>tools/&lt;tool&gt;/index.html</code> (not through Workspace Manager).<br />Why this step matters: Keeps the session focused on one tool and its local outputs.</p>
+          <p><strong>2. Build/edit in the tool</strong><br />Action: Perform core edits using the tool controls and validate output in-place.<br />Why this step matters: Produces the working data and preview state for this specific tool.</p>
+          <p><strong>3. Save/export deliverables</strong><br />Action: Use tool save/export controls (JSON/PNG/sheets/runtime payloads as applicable).<br />Why this step matters: Creates the real files consumed by games, samples, and pipeline steps.</p>
+          <p><strong>4. Continue or close</strong><br />Action: Open another tool directly as needed.
+<br />Why this step matters: Tool mode is best for isolated tasks and fast single-tool iteration.</p>
+        </article>
+
+        <article class="card tools-howto-workflow-column">
+          <h3>Workspace Mode</h3>
+          <p><strong>1. Create a named workspace</strong><br />Action: Click <code>New Workspace</code> and enter a meaningful name (example: <code>UAT 001 Workspace</code>).<br />Why this step matters: Starts from a clear baseline and makes saved snapshots easy to identify.</p>
+          <p><strong>2. Open tools from Workspace Manager tiles</strong><br />Action: Select needed tool tiles and make edits across tools.<br />Why this step matters: Keeps multi-tool work coordinated under one shared context.</p>
+          <p><strong>3. Save both levels intentionally</strong><br />Action: Use tool-level save/export for artifacts, then click <code>Save Workspace</code> for session state.
+<br />Why this step matters: Preserves both deliverable files and cross-tool orchestration state.</p>
+          <p><strong>4. Checkpoint and resume</strong><br />Action: Use <code>Save Workspace As</code> for milestones and <code>Open Workspace</code> to resume later.<br />Why this step matters: Supports versioned progress and reliable continuation.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Buttons</h2>
+      <div class="card">
+        <p><strong>Add Layer</strong> <code>#addLayerButton</code><br />Details: Triggers a tool action that updates your current workflow state.</p>
+        <p><strong>Apply Layer Settings</strong> <code>#applyLayerSettingsButton</code><br />Details: Triggers a tool action that updates your current workflow state.</p>
+        <p><strong>Apply Map Meta</strong> <code>#applyMapMetaButton</code><br />Details: Triggers a tool action that updates your current workflow state.</p>
+        <p><strong>Apply Source</strong> <code>#applyImageSourceButton</code><br />Details: Triggers a tool action that updates your current workflow state.</p>
+        <p><strong>Apply Suggested Fix</strong> <code>#applyRemediationButton</code><br />Details: Triggers a tool action that updates your current workflow state.</p>
+        <p><strong>Choose File (layerImageFileInput)</strong> <code>#layerImageFileInput</code><br />Details: Triggers a tool action that updates your current workflow state.</p>
+        <p><strong>Choose File (loadAssetRegistryInput)</strong> <code>#loadAssetRegistryInput</code><br />Details: Loads saved data so you can continue existing work.</p>
+        <p><strong>Choose File (loadProjectInput)</strong> <code>#loadProjectInput</code><br />Details: Loads saved data so you can continue existing work.</p>
+        <p><strong>Duplicate</strong> <code>#duplicateLayerButton</code><br />Details: Clones current content to speed iterative changes.</p>
+        <p><strong>Exit Simulation</strong> <code>#exitSimulationButton</code><br />Details: Triggers a tool action that updates your current workflow state.</p>
+        <p><strong>Export Tilemap Patch</strong> <code>#exportParallaxPatchButton</code><br />Details: Writes deliverable output for downstream use.</p>
+        <p><strong>Inspect Issues</strong> <code>#inspectRemediationButton</code><br />Details: Checks state/output so issues are caught before final save/export.</p>
+        <p><strong>Jump to Problem</strong> <code>#jumpToProblemButton</code><br />Details: Triggers a tool action that updates your current workflow state.</p>
+        <p><strong>Load Assets Registry</strong> <code>#loadAssetRegistryButton</code><br />Details: Loads saved data so you can continue existing work.</p>
+        <p><strong>Load Project</strong> <code>#loadProjectButton</code><br />Details: Loads saved data so you can continue existing work.</p>
+        <p><strong>Load Sample</strong> <code>#loadSampleButton</code><br />Details: Loads saved data so you can continue existing work.</p>
+        <p><strong>Move Down</strong> <code>#moveLayerDownButton</code><br />Details: Triggers a tool action that updates your current workflow state.</p>
+        <p><strong>Move Up</strong> <code>#moveLayerUpButton</code><br />Details: Triggers a tool action that updates your current workflow state.</p>
+        <p><strong>New Project</strong> <code>#newProjectButton</code><br />Details: Starts a fresh working baseline for the next task.</p>
+        <p><strong>Package Project</strong> <code>#packageProjectButton</code><br />Details: Writes deliverable output for downstream use.</p>
+        <p><strong>Pause</strong> <code>#pauseSimulationButton</code><br />Details: Triggers a tool action that updates your current workflow state.</p>
+        <p><strong>Play</strong> <code>#playSimulationButton</code><br />Details: Triggers a tool action that updates your current workflow state.</p>
+        <p><strong>Refresh Debug View</strong> <code>#refreshDebugVisualizationButton</code><br />Details: Checks state/output so issues are caught before final save/export.</p>
+        <p><strong>Refresh Pipeline View</strong> <code>#refreshExperienceButton</code><br />Details: Checks state/output so issues are caught before final save/export.</p>
+        <p><strong>Remove Layer</strong> <code>#removeLayerButton</code><br />Details: Removes current selection or closes the active context.</p>
+        <p><strong>Restart Position</strong> <code>#restartSimulationButton</code><br />Details: Triggers a tool action that updates your current workflow state.</p>
+        <p><strong>Save Assets Registry</strong> <code>#saveAssetRegistryButton</code><br />Details: Persists current state to prevent data loss and preserve progress.</p>
+        <p><strong>Save Project</strong> <code>#saveProjectButton</code><br />Details: Persists current state to prevent data loss and preserve progress.</p>
+        <p><strong>Simulate</strong> <code>#simulateButton</code><br />Details: Triggers a tool action that updates your current workflow state.</p>
       </div>
     </section>
   </main>
   <script type="module" src="../../src/engine/theme/mount-shared-header.js"></script>
 </body>
 </html>
-
-

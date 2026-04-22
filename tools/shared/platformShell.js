@@ -15,6 +15,7 @@ let workspaceController = null;
 let headerExpandedState = null;
 let runtimeMonitoringHooks = null;
 let bindingRefreshHandlersBound = false;
+let lastWorkspaceUiStateKey = "";
 
 const HEADER_EXPANDED_STORAGE_KEY = "toolboxaid.toolsPlatform.headerExpanded";
 const HEADER_EXPANDED_FALLBACK_TOOL = "tool-host";
@@ -111,56 +112,24 @@ function getDisplaySurfaceName(currentTool) {
   return document.body.dataset.toolTitle || "Tools Platform";
 }
 
-function formatBindingValue(label, value, fallback = "none") {
-  const safe = String(value || "").trim();
-  return `${label}: ${safe || fallback}`;
-}
-
 function resolveProjectBindingLabel() {
   const manifest = getManifest();
   if (!manifest) {
     return "none";
   }
+  if (manifest.workspace?.notes === "closed") {
+    return "Closed";
+  }
   return manifest.dirty === true ? "Unsaved" : "Loaded";
 }
 
-function getToolBindingCompatibility(toolId) {
-  const paletteCapable = new Set([
-    "palette-browser",
-    "sprite-editor",
-    "vector-asset-studio"
-  ]);
-  const assetCapable = new Set([
-    "asset-browser",
-    "sprite-editor"
-  ]);
-  return {
-    palette: paletteCapable.has(toolId),
-    asset: assetCapable.has(toolId)
-  };
-}
-
-function renderToolBindingBadges(tool) {
-  const palette = readSharedPaletteHandoff();
+function renderToolAssetBadge() {
   const asset = readSharedAssetHandoff();
-  const compatibility = getToolBindingCompatibility(tool.id);
-  const paletteLabel = compatibility.palette
-    ? formatBindingValue("Palette", palette?.displayName, "none")
-    : "Palette: Not used";
-  const assetLabel = compatibility.asset
-    ? formatBindingValue("Asset", asset?.displayName, "none")
-    : "Asset: Not used";
-  const paletteTitle = compatibility.palette
-    ? `Updated: ${escapeHtml(palette?.selectedAt || "not-set")}`
-    : "Not used by this tool";
-  const assetTitle = compatibility.asset
-    ? `Updated: ${escapeHtml(asset?.selectedAt || "not-set")}`
-    : "Not used by this tool";
-
+  const assetLabel = asset?.displayName || "none";
+  const assetTitle = `Updated: ${escapeHtml(asset?.selectedAt || "not-set")}`;
   return `
-    <div class="tools-platform-frame__binding-badges" aria-label="Tool data bindings">
-      <span class="tools-platform-frame__binding-badge${compatibility.palette ? " is-active" : " is-muted"}" title="${paletteTitle}">${escapeHtml(paletteLabel)}</span>
-      <span class="tools-platform-frame__binding-badge${compatibility.asset ? " is-active" : " is-muted"}" title="${assetTitle}">${escapeHtml(assetLabel)}</span>
+    <div class="tools-platform-frame__binding-badges" aria-label="Tool asset binding">
+      <span class="tools-platform-frame__binding-badge is-active" title="${assetTitle}">${escapeHtml(`Asset: ${assetLabel}`)}</span>
     </div>
   `;
 }
@@ -199,7 +168,7 @@ function renderToolLinks(currentToolId) {
         return `
           <div class="tools-platform-frame__nav-tool-row">
             <a class="tools-platform-frame__nav-link${currentClass}" href="${escapeHtml(getRegistryEntryHref(tool.entryPoint))}">${escapeHtml(tool.displayName)}</a>
-            ${renderToolBindingBadges(tool)}
+            ${renderToolAssetBadge()}
           </div>
         `;
       })
@@ -251,7 +220,7 @@ function renderToolLinks(currentToolId) {
       return `
         <div class="tools-platform-frame__nav-tool-row">
           <a class="tools-platform-frame__nav-link${currentClass}" href="${escapeHtml(getRegistryEntryHref(tool.entryPoint))}">${escapeHtml(tool.displayName)}</a>
-          ${renderToolBindingBadges(tool)}
+          ${renderToolAssetBadge()}
         </div>
       `;
     })
@@ -294,8 +263,8 @@ function renderSharedSelectionSummary() {
   return `
     <div class="tools-platform-frame__shared-status" aria-label="Shared asset and palette status">
       <span><strong>Workspace:</strong> ${escapeHtml(workspaceLabel)}</span>
-      <span><strong>Shared Assets:</strong> ${escapeHtml(assetLabel)}</span>
       <span><strong>Shared Palette:</strong> ${escapeHtml(paletteLabel)}</span>
+      <span><strong>Shared Assets:</strong> ${escapeHtml(assetLabel)}</span>
     </div>
   `;
 }
@@ -502,6 +471,18 @@ function bindWorkspaceShellEvents(currentTool) {
       }
       event.preventDefault();
   });
+
+  bindEventHandlers(queryAll(".tools-platform-frame__nav-tool-row"), "click", (event) => {
+    const target = event.target instanceof Element ? event.target : null;
+    if (target?.closest(".tools-platform-frame__nav-link")) {
+      return;
+    }
+    const row = event.currentTarget instanceof Element ? event.currentTarget : null;
+    const link = row?.querySelector(".tools-platform-frame__nav-link");
+    if (link instanceof HTMLAnchorElement) {
+      link.click();
+    }
+  });
 }
 
 function renderShell(currentTool) {
@@ -641,7 +622,21 @@ function initPlatformShell() {
   if (currentToolId) {
     workspaceController = createWorkspaceSystemController({
       toolId: currentToolId,
-      onChange() {
+      onChange(payload) {
+        const manifest = payload?.manifest || {};
+        const uiStateKey = JSON.stringify({
+          dirty: payload?.dirty === true,
+          ready: payload?.ready === true,
+          workspaceName: manifest?.name || "",
+          workspaceNotes: manifest?.workspace?.notes || "",
+          activeToolId: manifest?.activeToolId || "",
+          sharedAsset: manifest?.sharedReferences?.asset?.displayName || "",
+          sharedPalette: manifest?.sharedReferences?.palette?.displayName || ""
+        });
+        if (uiStateKey === lastWorkspaceUiStateKey) {
+          return;
+        }
+        lastWorkspaceUiStateKey = uiStateKey;
         renderShell(currentTool);
       },
       onStatus(message) {
