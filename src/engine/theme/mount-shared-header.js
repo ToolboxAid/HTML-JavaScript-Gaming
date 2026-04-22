@@ -22,5 +22,38 @@ async function mountSampleDetailEnhancementIfNeeded() {
 }
 
 if (typeof window !== 'undefined' && typeof document !== 'undefined') {
+  const headerIntroAccordion = document.querySelector('.is-collapsible');
+  const headerIntroSummary = headerIntroAccordion?.querySelector('.is-collapsible__summary');
+  const isHeaderIntroAccordion = headerIntroAccordion instanceof HTMLDetailsElement
+    && headerIntroSummary instanceof HTMLElement
+    && headerIntroSummary.textContent?.trim().toLowerCase() === 'header and intro';
+
+  if (isHeaderIntroAccordion) {
+    headerIntroAccordion.addEventListener('toggle', async () => {
+      if (!document.fullscreenEnabled) {
+        return;
+      }
+
+      if (headerIntroAccordion.open) {
+        if (document.fullscreenElement) {
+          try {
+            await document.exitFullscreen();
+          } catch {
+            // Ignore fullscreen exit failures because accordion state remains usable.
+          }
+        }
+        return;
+      }
+
+      if (!document.fullscreenElement && typeof document.documentElement?.requestFullscreen === 'function') {
+        try {
+          await document.documentElement.requestFullscreen();
+        } catch {
+          // Ignore fullscreen request failures because accordion state remains usable.
+        }
+      }
+    });
+  }
+
   void mountSampleDetailEnhancementIfNeeded();
 }
