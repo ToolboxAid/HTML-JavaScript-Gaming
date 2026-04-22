@@ -56,7 +56,9 @@ spriteEditor.css
 .state-row {
   display: flex;
   flex-wrap: wrap;
+  align-items: flex-start;
   gap: 0.45rem;
+  width: 100%;
   border: 1px solid var(--se-panel-border);
   border-radius: 12px;
   padding: 0.6rem;
@@ -64,6 +66,7 @@ spriteEditor.css
 }
 
 .state-pill {
+  flex: 0 0 auto;
   margin: 0;
   border: 1px solid var(--se-panel-border);
   border-radius: 999px;
@@ -71,6 +74,7 @@ spriteEditor.css
   font-size: 0.82rem;
   color: var(--se-muted);
   background: var(--surface-inline, rgba(43, 16, 91, 0.9));
+  white-space: nowrap;
 }
 
 .toolbar-group {
@@ -104,6 +108,35 @@ spriteEditor.css
   border-color: var(--se-accent);
   box-shadow: inset 0 0 0 1px var(--se-accent);
   background: color-mix(in srgb, var(--se-panel) 68%, var(--se-accent));
+}
+
+.sprite-editor-page .fullscreen-overlay-button {
+  display: none;
+  position: fixed;
+  z-index: 1200;
+  min-height: 32px;
+  padding: 0 12px;
+  border: 1px solid var(--se-panel-border);
+  border-radius: 999px;
+  background: linear-gradient(180deg, var(--se-panel) 0%, color-mix(in srgb, var(--se-panel) 70%, var(--panel2, rgba(49, 17, 102, 0.94))) 100%);
+  color: var(--se-text);
+  font-weight: 600;
+}
+
+.sprite-editor-page .overlay-close-button {
+  display: none;
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  z-index: 1300;
+  min-height: 28px;
+  min-width: 28px;
+  padding: 0 8px;
+  border-radius: 999px;
+  border: 1px solid var(--se-panel-border);
+  background: #ed9700;
+  color: #ffffff;
+  font-weight: 700;
 }
 
 .workspace {
@@ -150,19 +183,20 @@ spriteEditor.css
   border-radius: 12px;
   background: var(--surface-inline, rgba(43, 16, 91, 0.9));
   display: grid;
-  justify-items: center;
-  align-items: start;
+  justify-items: stretch;
+  align-items: stretch;
   padding: 0.9rem;
   overflow: auto;
 }
 
 .canvas-wrap {
+  width: 100%;
   border: 1px solid var(--se-panel-border);
   border-radius: 10px;
   background: linear-gradient(45deg, var(--se-canvas-bg-a) 25%, var(--se-canvas-bg-b) 25%, var(--se-canvas-bg-b) 50%, var(--se-canvas-bg-a) 50%, var(--se-canvas-bg-a) 75%, var(--se-canvas-bg-b) 75%, var(--se-canvas-bg-b) 100%);
   background-size: 20px 20px;
   padding: 0.5rem;
-  margin-top: 20px;
+  margin-top: 0;
 }
 
 #editorCanvas {
@@ -245,6 +279,131 @@ spriteEditor.css
 .status-text {
   margin: 0 0 0.5rem;
   color: var(--se-muted);
+}
+
+#statusPanel {
+  height: 530px;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+#statusPanel pre.status-text {
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+#projectIoPanel {
+  resize: none;
+}
+
+body[data-tool-id="sprite-editor"] .tools-platform-resize-panel {
+  resize: none;
+}
+
+body.sprite-editor-page.fullscreen-mode .left-panel,
+body.sprite-editor-page.fullscreen-mode .right-panel {
+  position: fixed;
+  top: 96px;
+  bottom: 72px;
+  width: min(360px, 40vw);
+  max-width: min(360px, 40vw);
+  overflow: auto;
+  z-index: 1250;
+  margin: 0;
+  border-radius: 12px;
+  box-shadow: 0 18px 36px rgba(0, 0, 0, 0.28);
+  transform: translateX(-120%);
+  transition: transform 140ms ease;
+}
+
+body.sprite-editor-page.fullscreen-mode .right-panel {
+  transform: translateX(120%);
+}
+
+body.sprite-editor-page.fullscreen-mode .workspace {
+  grid-template-columns: minmax(0, 1fr);
+  min-height: 0;
+}
+
+body.sprite-editor-page.fullscreen-mode .toolbar-row {
+  align-items: center;
+  align-content: flex-start;
+  gap: 0.45rem;
+  padding: 0.45rem 0.55rem;
+  min-height: 0;
+  height: auto;
+}
+
+body.sprite-editor-page.fullscreen-mode .state-row {
+  flex-wrap: nowrap;
+  align-items: center;
+  gap: 0.28rem;
+  padding: 0.25rem 0.35rem;
+  overflow-x: auto;
+  overflow-y: hidden;
+  margin: 0;
+}
+
+body.sprite-editor-page.fullscreen-mode .app-shell {
+  height: calc(100dvh - 120px);
+  grid-template-rows: auto minmax(0, 1fr);
+  align-content: start;
+}
+
+body.sprite-editor-page.fullscreen-mode .state-pill {
+  padding: 0.15rem 0.45rem;
+  font-size: 0.78rem;
+}
+
+body.sprite-editor-page.fullscreen-mode .center-panel {
+  width: 100%;
+  min-width: 0;
+}
+
+body.sprite-editor-page.fullscreen-mode .left-panel,
+body.sprite-editor-page.fullscreen-mode .right-panel {
+  display: none;
+}
+
+body.sprite-editor-page.fullscreen-mode .left-panel.visible-overlay,
+body.sprite-editor-page.fullscreen-mode .right-panel.visible-overlay {
+  display: grid;
+}
+
+body.sprite-editor-page.fullscreen-mode .left-panel {
+  left: 10px;
+}
+
+body.sprite-editor-page.fullscreen-mode .right-panel {
+  right: 10px;
+}
+
+body.sprite-editor-page.fullscreen-mode .left-panel.visible-overlay,
+body.sprite-editor-page.fullscreen-mode .right-panel.visible-overlay {
+  transform: translateX(0);
+}
+
+body.sprite-editor-page.fullscreen-mode .left-panel.visible-overlay .overlay-close-button,
+body.sprite-editor-page.fullscreen-mode .right-panel.visible-overlay .overlay-close-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+body.sprite-editor-page.fullscreen-mode .fullscreen-overlay-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+body.sprite-editor-page.fullscreen-mode #showLeftPanelButton {
+  top: 152px;
+  left: 14px;
+}
+
+body.sprite-editor-page.fullscreen-mode #showRightPanelButton {
+  top: 152px;
+  right: 14px;
 }
 
 button,
