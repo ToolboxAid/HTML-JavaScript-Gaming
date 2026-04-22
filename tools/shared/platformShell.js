@@ -485,6 +485,69 @@ function bindWorkspaceShellEvents(currentTool) {
   });
 }
 
+function asHeadingElement(element) {
+  if (!(element instanceof HTMLElement)) {
+    return null;
+  }
+  const tag = element.tagName.toUpperCase();
+  if (tag === "H2" || tag === "H3" || tag === "H4") {
+    return element;
+  }
+  return null;
+}
+
+function convertPanelToAccordion(panelElement) {
+  if (!(panelElement instanceof HTMLElement)) {
+    return null;
+  }
+  const heading = asHeadingElement(panelElement.querySelector(":scope > h2, :scope > h3, :scope > h4"));
+  const titleText = heading?.textContent?.trim() || "Panel";
+  const summaryHeadingTag = heading?.tagName?.toLowerCase() || "h3";
+
+  const accordion = document.createElement("details");
+  accordion.className = "panel-accordion";
+  const summary = document.createElement("summary");
+  summary.className = "panel-accordion__summary";
+  summary.innerHTML = `<${summaryHeadingTag}>${escapeHtml(titleText)}</${summaryHeadingTag}>`;
+
+  const body = document.createElement("div");
+  body.className = "panel-accordion__body";
+
+  if (heading && heading.parentElement === panelElement) {
+    heading.remove();
+  }
+  while (panelElement.firstChild) {
+    body.appendChild(panelElement.firstChild);
+  }
+  accordion.append(summary, body);
+  panelElement.replaceWith(accordion);
+  return accordion;
+}
+
+function applySidebarAccordionRules() {
+  if (getPageMode() !== "tool") {
+    return;
+  }
+  const sidebars = queryAll(".tools-platform-resize-panel");
+  sidebars.forEach((sidebar) => {
+    if (!(sidebar instanceof HTMLElement)) {
+      return;
+    }
+
+    const directPanelElements = Array.from(sidebar.children).filter((child) =>
+      child instanceof HTMLElement && (child.matches("section.panel") || child.matches("div.panel"))
+    );
+    directPanelElements.forEach((panelElement) => {
+      convertPanelToAccordion(panelElement);
+    });
+
+    const accordions = Array.from(sidebar.querySelectorAll(":scope > details.panel-accordion"));
+    accordions.forEach((accordion, index) => {
+      accordion.open = index === 0;
+    });
+  });
+}
+
 function renderShell(currentTool) {
   const headerHost = queryFirst("[data-tools-platform-header]");
   const statusHost = queryFirst("[data-tools-platform-status]");
@@ -513,6 +576,7 @@ function renderShell(currentTool) {
     statusHost.innerHTML = renderStatusMarkup(currentTool);
   }
 
+  applySidebarAccordionRules();
   bindWorkspaceShellEvents(currentTool);
 }
 

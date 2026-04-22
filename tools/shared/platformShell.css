@@ -549,6 +549,39 @@ body.tools-platform-surface .right-sidebar {
   background: var(--tools-shell-glass);
 }
 
+body.tools-platform-surface .panel-accordion {
+  margin: 0 0 12px;
+  border: 1px solid var(--line, rgba(221, 214, 254, 0.26));
+  border-radius: 10px;
+  background: linear-gradient(180deg, var(--panel, rgba(76, 29, 149, 0.88)) 0%, var(--panel2, rgba(49, 17, 102, 0.94)) 100%);
+  overflow: hidden;
+}
+
+body.tools-platform-surface .panel-accordion__summary {
+  list-style: none;
+  cursor: pointer;
+  padding: 10px;
+  border-bottom: 1px solid transparent;
+}
+
+body.tools-platform-surface .panel-accordion__summary::-webkit-details-marker {
+  display: none;
+}
+
+body.tools-platform-surface .panel-accordion__summary h2,
+body.tools-platform-surface .panel-accordion__summary h3,
+body.tools-platform-surface .panel-accordion__summary h4 {
+  margin: 0;
+}
+
+body.tools-platform-surface .panel-accordion[open] .panel-accordion__summary {
+  border-bottom-color: var(--line, rgba(221, 214, 254, 0.26));
+}
+
+body.tools-platform-surface .panel-accordion__body {
+  padding: 10px;
+}
+
 body.tools-platform-surface .panel,
 body.tools-platform-surface .dock,
 body.tools-platform-surface .card {
@@ -637,6 +670,45 @@ body.tools-platform-surface #statusRight {
 body.tools-platform-surface .app-shell > .toolbar:first-child,
 body.tools-platform-surface .app > .toolbar:first-child {
   border-top: 1px solid var(--surface-border, rgba(221, 214, 254, 0.22));
+}
+
+html:fullscreen body.tools-platform-surface {
+  height: 100dvh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+html:fullscreen body.tools-platform-surface > .is-collapsible,
+html:fullscreen body.tools-platform-surface > [data-tools-platform-status] {
+  flex: 0 0 auto;
+}
+
+html:fullscreen body.tools-platform-surface > .wrap,
+html:fullscreen body.tools-platform-surface > .app-shell,
+html:fullscreen body.tools-platform-surface > .app {
+  flex: 1 1 auto;
+  min-height: 0 !important;
+  height: auto !important;
+  margin-bottom: 8px;
+}
+
+html:fullscreen body.tools-platform-surface .workspace,
+html:fullscreen body.tools-platform-surface .canvas-shell,
+html:fullscreen body.tools-platform-surface .canvas-wrap,
+html:fullscreen body.tools-platform-surface .preview-wrap,
+html:fullscreen body.tools-platform-surface .left-sidebar,
+html:fullscreen body.tools-platform-surface .right-sidebar,
+html:fullscreen body.tools-platform-surface .sidebar,
+html:fullscreen body.tools-platform-surface .rightbar {
+  min-height: 0;
+}
+
+html:fullscreen body.tools-platform-surface .left-sidebar,
+html:fullscreen body.tools-platform-surface .right-sidebar,
+html:fullscreen body.tools-platform-surface .sidebar.visible-overlay,
+html:fullscreen body.tools-platform-surface .rightbar.visible-overlay {
+  overflow-y: auto;
 }
 
 body.tools-howto-page {
