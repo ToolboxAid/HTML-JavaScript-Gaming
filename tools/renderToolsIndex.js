@@ -43,7 +43,6 @@ function buildCardLinks(tool) {
 
 function renderToolCard(tool) {
   const standaloneHref = toStandaloneHref(tool.entryPoint);
-  const hostHref = toHostHref(tool.id);
   const cardLinks = buildCardLinks(tool);
   const sampleLinks = cardLinks.length > 0
     ? `
@@ -63,14 +62,6 @@ function renderToolCard(tool) {
       </div>
       <h3><a href="${escapeHtml(standaloneHref)}">${escapeHtml(tool.displayName)}</a></h3>
       <p>${escapeHtml(tool.description)}</p>
-      <div class="meta">
-        <a class="tools-platform-card__action" href="${escapeHtml(standaloneHref)}">Open Tool</a>
-        <a class="tools-platform-card__action tools-platform-card__action--secondary" href="${escapeHtml(hostHref)}">Open In Workspace Manager</a>
-      </div>
-      <p class="tools-platform-card__launch-help">
-        Open Tool = launch the tool directly/standalone<br />
-        Open In Workspace Manager = launch the same tool inside a shared host shell/container
-      </p>
       ${sampleLinks}
     </div>
   `;

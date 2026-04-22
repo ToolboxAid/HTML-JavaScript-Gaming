@@ -30,25 +30,22 @@
         <p><strong>Workspace save</strong><br />Action: Use Workspace Manager save controls to persist cross-tool session state.<br />Why this step matters: Restores coordinated context (selected tool state, shared refs) but does not replace explicit artifact exports.</p>
       </div>
     </section>
-
     <section class="section">
       <h2>Workflow</h2>
       <div class="tools-howto-workflow-compare">
         <article class="card tools-howto-workflow-column">
           <h3>Tool Mode</h3>
-          <p><strong>1. Open the tool directly</strong><br />Action: Launch this tool from <code>tools/&lt;tool&gt;/index.html</code> (not through Workspace Manager).<br />Why this step matters: Keeps the session focused on one tool and its local outputs.</p>
-          <p><strong>2. Build/edit in the tool</strong><br />Action: Perform core edits using the tool controls and validate output in-place.<br />Why this step matters: Produces the working data and preview state for this specific tool.</p>
-          <p><strong>3. Save/export deliverables</strong><br />Action: Use tool save/export controls (JSON/PNG/sheets/runtime payloads as applicable).<br />Why this step matters: Creates the real files consumed by games, samples, and pipeline steps.</p>
-          <p><strong>4. Continue or close</strong><br />Action: Open another tool directly as needed.
-<br />Why this step matters: Tool mode is best for isolated tasks and fast single-tool iteration.</p>
+          <p><strong>1. Author vector map geometry</strong><br />Action: Launch this tool from <code>tools/&lt;tool&gt;/index.html</code> (not through Workspace Manager).<br />Why this step matters: Uses this tool as a focused single-tool surface.</p>
+          <p><strong>2. Build/edit in the tool</strong><br />Action: Create/edit map objects, validate collision/layout data, and inspect structure.<br />Why this step matters: Builds deterministic map data for gameplay/runtime integration.</p>
+          <p><strong>3. Save/export deliverables</strong><br />Action: Save map JSON snapshots and export validated runtime payloads.<br />Why this step matters: Ensures geometry work is reusable and traceable.</p>
+          <p><strong>4. Continue or close</strong><br />Action: Open another tool directly as needed.<br />Why this step matters: Tool mode is best for isolated tasks and rapid single-tool iteration.</p>
         </article>
 
         <article class="card tools-howto-workflow-column">
           <h3>Workspace Mode</h3>
           <p><strong>1. Create a named workspace</strong><br />Action: Click <code>New Workspace</code> and enter a meaningful name (example: <code>UAT 001 Workspace</code>).<br />Why this step matters: Starts from a clear baseline and makes saved snapshots easy to identify.</p>
-          <p><strong>2. Open tools from Workspace Manager tiles</strong><br />Action: Select needed tool tiles and make edits across tools.<br />Why this step matters: Keeps multi-tool work coordinated under one shared context.</p>
-          <p><strong>3. Save both levels intentionally</strong><br />Action: Use tool-level save/export for artifacts, then click <code>Save Workspace</code> for session state.
-<br />Why this step matters: Preserves both deliverable files and cross-tool orchestration state.</p>
+          <p><strong>2. Open tools from Workspace Manager tiles</strong><br />Action: Select needed tool tiles and perform each tool's primary task.<br />Why this step matters: Keeps multi-tool work coordinated under one shared context.</p>
+          <p><strong>3. Save both levels intentionally</strong><br />Action: Use tool-level save/export for artifacts, then click <code>Save Workspace</code> for session state.<br />Why this step matters: Preserves both deliverable files and cross-tool orchestration state.</p>
           <p><strong>4. Checkpoint and resume</strong><br />Action: Use <code>Save Workspace As</code> for milestones and <code>Open Workspace</code> to resume later.<br />Why this step matters: Supports versioned progress and reliable continuation.</p>
         </article>
       </div>
