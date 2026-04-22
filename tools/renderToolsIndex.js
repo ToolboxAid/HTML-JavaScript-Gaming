@@ -16,8 +16,8 @@ function buildDocumentationLinks(tool) {
     return [];
   }
   return [
-    { label: "README", path: `${folder}/README.md` },
-    { label: "How To Use", path: `${folder}/how_to_use.html` }
+    { label: "How To Use", path: `${folder}/how_to_use.html` },
+    { label: "README", path: `${folder}/README.md` }
   ];
 }
 
@@ -78,8 +78,8 @@ function renderWorkspaceManagerCard() {
       <p>Shared hosted launcher for opening tools inside a managed workspace container.</p>
       <div class="meta">
         <a class="tools-platform-card__action" href="/tools/Workspace%20Manager/index.html">Open Workspace Manager</a>
-        <a class="tools-platform-card__action tools-platform-card__action--secondary" href="Workspace Manager/README.md">README</a>
         <a class="tools-platform-card__action tools-platform-card__action--secondary" href="Workspace Manager/how_to_use.html">How To Use</a>
+        <a class="tools-platform-card__action tools-platform-card__action--secondary" href="Workspace Manager/README.md">README</a>
       </div>
     </div>
   `;
