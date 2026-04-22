@@ -386,3 +386,85 @@ body[data-tool-id="asset-pipeline-tool"] #assetPipelineOutput {
   height: auto;
   flex: 1 1 auto;
 }
+
+body[data-tool-id="tile-model-converter"] .debug-tool-shell {
+  min-height: calc(46dvh - 240px);
+}
+
+body[data-tool-id="tile-model-converter"] .debug-tool-shell > .debug-tool-panel,
+body[data-tool-id="tile-model-converter"] .debug-tool-grid > .debug-tool-panel {
+  padding: 10px;
+  gap: 6px;
+}
+
+body[data-tool-id="tile-model-converter"] .debug-tool-shell > .debug-tool-panel {
+  padding: 6px 10px;
+}
+
+body[data-tool-id="tile-model-converter"] #converterStatus {
+  margin: 0;
+  min-height: 0;
+}
+
+body[data-tool-id="tile-model-converter"] .debug-tool-grid {
+  align-items: stretch;
+  min-height: 0;
+  flex: 1 1 auto;
+}
+
+body[data-tool-id="tile-model-converter"] .debug-tool-grid .debug-tool-panel {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  margin: 0;
+  align-content: start;
+}
+
+body[data-tool-id="tile-model-converter"] .debug-tool-grid .debug-tool-panel h3 {
+  margin: 0;
+  min-height: 1.2em;
+  line-height: 1.1;
+}
+
+body[data-tool-id="tile-model-converter"] #converterInput,
+body[data-tool-id="tile-model-converter"] #converterOutput {
+  margin: 0;
+  min-height: 520px;
+  height: auto;
+  flex: 1 1 auto;
+}
+
+body[data-tool-id="tile-model-converter"] #converterOutput {
+  min-height: 0;
+  height: 100%;
+  max-height: none;
+}
+
+body[data-tool-id="tile-model-converter"] {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+}
+
+body[data-tool-id="tile-model-converter"] > .is-collapsible,
+body[data-tool-id="tile-model-converter"] > [data-tools-platform-status] {
+  flex: 0 0 auto;
+}
+
+body[data-tool-id="tile-model-converter"] .debug-tool-shell {
+  flex: 1 1 auto;
+  min-height: 0;
+  height: calc(100dvh - 120px);
+  display: flex;
+  flex-direction: column;
+}
+
+body[data-tool-id="tile-model-converter"] .debug-tool-grid {
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+body[data-tool-id="tile-model-converter"] .debug-tool-grid .debug-tool-panel {
+  min-height: 0;
+  height: 100%;
+}
