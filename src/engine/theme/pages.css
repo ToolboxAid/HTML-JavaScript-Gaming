@@ -118,3 +118,111 @@ body.hub-page-samples .card-link p {
     padding: 18px;
   }
 }
+
+i.fa.fa-arrow-up {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 23px;
+  font-weight: 900;
+  font-style: normal;
+  color: #eeeeee;
+}
+
+.ball-loc {
+  position: fixed;
+  left: 92vw;
+  top: 86vh;
+  z-index: 1000;
+}
+
+.ball {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  position: absolute;
+  transform: translate(-50%, -50%);
+  z-index: 1;
+}
+
+.static-ball {
+  opacity: 1;
+  background-color: #ed9700;
+}
+
+.wave1,
+.wave2,
+.wave3 {
+  animation: wave-animation 3s infinite;
+  background-color: #ed9700;
+}
+
+.wave1 {
+  animation-delay: 0s;
+}
+
+.wave2 {
+  animation-delay: 0.3s;
+}
+
+.wave3 {
+  animation-delay: 0.6s;
+}
+
+.bounce:hover {
+  animation-name: bounce;
+  animation-timing-function: ease;
+  animation-duration: 0.75s;
+  animation-iteration-count: 3;
+  cursor: pointer;
+}
+
+@keyframes wave-animation {
+  0% {
+    opacity: 0.75;
+    width: 0;
+    height: 0;
+  }
+  100% {
+    opacity: 0;
+    width: 167px;
+    height: 167px;
+  }
+}
+
+@keyframes bounce {
+  0% {
+    transform: translate(1px, 1px) rotate(0deg);
+  }
+  10% {
+    transform: translate(-1px, -2px) rotate(-1deg);
+  }
+  20% {
+    transform: translate(-3px, 0) rotate(1deg);
+  }
+  30% {
+    transform: translate(3px, 2px) rotate(0deg);
+  }
+  40% {
+    transform: translate(1px, -1px) rotate(1deg);
+  }
+  50% {
+    transform: translate(-1px, 2px) rotate(-1deg);
+  }
+  60% {
+    transform: translate(-3px, 1px) rotate(0deg);
+  }
+  70% {
+    transform: translate(3px, 1px) rotate(-1deg);
+  }
+  80% {
+    transform: translate(-1px, -1px) rotate(1deg);
+  }
+  90% {
+    transform: translate(1px, 2px) rotate(0deg);
+  }
+  100% {
+    transform: translate(1px, -2px) rotate(-1deg);
+  }
+}
