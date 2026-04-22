@@ -75,6 +75,42 @@ function getManifest() {
   return workspaceController ? workspaceController.getManifest() : null;
 }
 
+function isWorkspaceManagerContext() {
+  if (typeof window === "undefined") {
+    return false;
+  }
+  const currentPath = window.location.pathname || "";
+  const searchParams = new URLSearchParams(window.location.search);
+  const isHostedWorkspaceView = searchParams.get("hosted") === "1"
+    || searchParams.has("hostToolId")
+    || searchParams.has("hostContextId");
+  const isWorkspaceManagerReferrer = /\/tools\/Workspace(?:%20| )Manager\//i.test(document.referrer || "");
+  const isWorkspaceManagerParent = (() => {
+    try {
+      return window.top !== window
+        && /\/tools\/Workspace(?:%20| )Manager\//i.test(window.top.location.pathname || "");
+    } catch {
+      return false;
+    }
+  })();
+  return isHostedWorkspaceView
+    || isWorkspaceManagerReferrer
+    || isWorkspaceManagerParent
+    || /\/tools\/Workspace%20Manager\//i.test(currentPath)
+    || /\/tools\/Workspace Manager\//i.test(currentPath);
+}
+
+function getDisplaySurfaceName(currentTool) {
+  if (isWorkspaceManagerContext()) {
+    const toolName = currentTool?.displayName || document.body.dataset.toolTitle || "Tool";
+    return `Workspace Manager (${toolName})`;
+  }
+  if (currentTool) {
+    return currentTool.displayName;
+  }
+  return document.body.dataset.toolTitle || "Tools Platform";
+}
+
 function formatBindingValue(label, value, fallback = "none") {
   const safe = String(value || "").trim();
   return `${label}: ${safe || fallback}`;
@@ -265,7 +301,7 @@ function renderHeaderMarkup(currentTool, isHeaderExpanded) {
     || /\/tools\/Workspace%20Manager\//i.test(currentPath)
     || /\/tools\/Workspace Manager\//i.test(currentPath);
   const sharedActionLinks = !isLanding ? renderSharedActionLinks(currentTool?.id ?? "") : "";
-  const title = currentTool ? currentTool.displayName : (document.body.dataset.toolTitle || "Tools Platform");
+  const title = isLanding ? (document.body.dataset.toolTitle || "Tools Platform") : getDisplaySurfaceName(currentTool);
   const description = currentTool
     ? currentTool.description
     : "Registry-driven, engine-themed entry surface for vector maps, vector assets, tilemaps, parallax scenes, and sprite workspaces.";
@@ -314,9 +350,9 @@ function renderHeaderMarkup(currentTool, isHeaderExpanded) {
 }
 
 function renderStatusMarkup(currentTool) {
-  const label = currentTool
-    ? currentTool.displayName
-    : (getPageMode() === "landing" ? "Landing Surface" : (document.body.dataset.toolTitle || "Tool Surface"));
+  const label = getPageMode() === "landing"
+    ? "Landing Surface"
+    : getDisplaySurfaceName(currentTool);
   const manifest = getManifest();
   const workspaceName = manifest?.name || "No active workspace";
   const dirtyLabel = manifest?.dirty === true ? "Unsaved changes" : "Saved";
@@ -332,8 +368,9 @@ function renderStatusMarkup(currentTool) {
 
 function applyDocumentMetadata(currentTool) {
   document.body.classList.add("tools-platform-surface");
-  if (currentTool) {
-    document.title = `${currentTool.displayName} | Tools Platform`;
+  const surfaceName = getDisplaySurfaceName(currentTool);
+  if (currentTool || isWorkspaceManagerContext()) {
+    document.title = `${surfaceName} | Tools Platform`;
   } else if (getPageMode() === "landing") {
     document.title = "Tools Platform";
   } else {
