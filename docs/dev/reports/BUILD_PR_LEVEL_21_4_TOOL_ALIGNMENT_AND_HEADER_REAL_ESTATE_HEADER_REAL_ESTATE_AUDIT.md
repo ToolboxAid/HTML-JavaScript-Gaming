@@ -19,7 +19,7 @@
 - Vector Asset Studio
 - Vector Map Editor
 - Tool Host
-- Additional shared-shell consumers: 3D Asset Viewer, 3D Camera Path Editor, 3D Map Editor, Performance Profiler, Physics Sandbox, Replay Visualizer, State Inspector, Tile Model Converter, Asset Pipeline Tool, Tools Index
+- Additional shared-shell consumers: 3D Asset Viewer, 3D Camera Path Editor, 3D JSON Payload Normalizer, Performance Profiler, Physics Sandbox, Replay Visualizer, State Inspector, Tile Model Converter, Asset Pipeline Tool, Tools Index
 
 ## Header Real-Estate Changes (Shared Shell)
 | Surface | Before | After | Result |

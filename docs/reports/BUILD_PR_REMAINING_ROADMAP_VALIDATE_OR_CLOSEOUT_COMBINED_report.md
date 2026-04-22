@@ -7,7 +7,7 @@
   - classification: already complete
   - evidence:
     - 2D/active tool cluster present: `tools/Tilemap Studio`, `tools/Parallax Scene Studio`, `tools/Vector Map Editor`, `tools/Vector Asset Studio`, `tools/Physics Sandbox`, `tools/State Inspector`, `tools/Replay Visualizer`, `tools/Performance Profiler`, `tools/Asset Pipeline Tool`, `tools/Tile Model Converter`
-    - 3D expansion tools present as a separate follow-on cluster: `tools/3D Map Editor`, `tools/3D Asset Viewer`, `tools/3D Camera Path Editor`
+    - 3D expansion tools present as a separate follow-on cluster: `tools/3D JSON Payload Normalizer`, `tools/3D Asset Viewer`, `tools/3D Camera Path Editor`
     - prior docs lane sequencing confirms 2D normalization cluster and then 3D residue add-on (`docs/pr/BUILD_PR_LEVEL_09_TOOLS_NORMALIZATION_AND_REQUIRED_TOOLS_COMBINED_PASS.md`, `docs/pr/BUILD_PR_LEVEL_09_TOOLS_RESIDUE_ONLY.md`)
 
 ### Next Planning / Normalization Lanes

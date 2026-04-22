@@ -3,6 +3,7 @@ import { registerToolBootContract } from "../shared/toolBootContract.js";
 
 const refs = {
   normalizeButton: document.getElementById("normalize3dMapButton"),
+  howToUseButton: document.getElementById("openHowToUse3dMapButton"),
   statusText: document.getElementById("map3dStatus"),
   input: document.getElementById("map3dInput"),
   output: document.getElementById("map3dOutput")
@@ -39,7 +40,7 @@ function normalizeSegment(rawSegment, fallbackStart, fallbackEnd) {
 
 function buildDefaultPayload() {
   return {
-    schema: "tools.3d-map-editor.document/1",
+    schema: "tools.3d-json-payload-normalizer.document/1",
     mapId: "map-3d-baseline",
     points: [
       { id: "p1", x: -10, y: 0, z: 5 },
@@ -60,7 +61,7 @@ function normalizeMapPayload() {
 
   const parsed = safeParseJson(refs.input.value);
   if (!parsed || typeof parsed !== "object") {
-    setStatus("Input JSON is invalid. Provide a map object.");
+    setStatus("Input JSON is invalid. Provide a payload object.");
     return;
   }
 
@@ -78,7 +79,7 @@ function normalizeMapPayload() {
     : [];
 
   const normalized = {
-    schema: "tools.3d-map-editor.document/1",
+    schema: "tools.3d-json-payload-normalizer.document/1",
     mapId: typeof parsed.mapId === "string" && parsed.mapId.trim() ? parsed.mapId.trim() : "map-3d-baseline",
     points,
     segments
@@ -87,12 +88,17 @@ function normalizeMapPayload() {
   if (refs.output instanceof HTMLElement) {
     refs.output.textContent = toPrettyJson(normalized);
   }
-  setStatus(`Map normalized. points=${points.length}, segments=${segments.length}.`);
+  setStatus(`Payload normalized. points=${points.length}, segments=${segments.length}.`);
 }
 
 function boot3dMapEditor() {
   if (refs.normalizeButton instanceof HTMLButtonElement) {
     refs.normalizeButton.addEventListener("click", normalizeMapPayload);
+  }
+  if (refs.howToUseButton instanceof HTMLButtonElement) {
+    refs.howToUseButton.addEventListener("click", () => {
+      window.location.href = "./how_to_use.html";
+    });
   }
   if (refs.input instanceof HTMLTextAreaElement && !refs.input.value.trim()) {
     refs.input.value = toPrettyJson(buildDefaultPayload());
@@ -102,7 +108,7 @@ function boot3dMapEditor() {
   };
 }
 
-registerToolBootContract("3d-map-editor", {
+registerToolBootContract("3d-json-payload-normalizer", {
   init: boot3dMapEditor,
   destroy() {
     return true;

@@ -58,7 +58,7 @@ Excluded:
 Use the primary tool inventory established in the UAT standardization lane, including:
 - 3D Asset Viewer
 - 3D Camera Path Editor
-- 3D Map Editor
+- 3D JSON Payload Normalizer
 - Asset Browser
 - Asset Pipeline Tool
 - Palette Browser

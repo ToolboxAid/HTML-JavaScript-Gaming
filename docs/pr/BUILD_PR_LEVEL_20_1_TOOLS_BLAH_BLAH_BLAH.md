@@ -36,7 +36,7 @@ Use repo-safe folder slugs based on tool names.
 |---|---|---|---|---|
 | 3D Asset Viewer | `3d-asset-viewer` | `crate_turntable` | `robot_parts_breakout` | `retro_arcade_cabinet` |
 | 3D Camera Path Editor | `3d-camera-path-editor` | `intro_flythrough` | `boss_reveal_orbit` | `side_scroll_pan` |
-| 3D Map Editor | `3d-map-editor` | `mini_dungeon_room` | `outdoor_hub_blockout` | `stacked_platform_arena` |
+| 3D JSON Payload Normalizer | `3d-json-payload-normalizer` | `mini_dungeon_room` | `outdoor_hub_blockout` | `stacked_platform_arena` |
 | Asset Browser | `asset-browser` | `retro_ui_pack` | `platformer_tiles_pack` | `enemy_sprite_pack` |
 | Asset Pipeline Tool | `asset-pipeline-tool` | `png_to_atlas` | `svg_to_runtime_mesh` | `tileset_batch_import` |
 | Palette Browser | `palette-browser` | `cga_classic` | `sunset_arcade` | `forest_night` |
@@ -69,7 +69,7 @@ Each tool must resolve its own Phase 20 folder and present exactly its three pre
 ## Tool-by-tool acceptance
 - **3D Asset Viewer** opens each preset with the correct asset/model selection and default view state.
 - **3D Camera Path Editor** opens each preset with path nodes/timings ready for editing.
-- **3D Map Editor** opens each preset as an editable map scene.
+- **3D JSON Payload Normalizer** opens each preset as an editable map scene.
 - **Asset Browser** opens each preset as a filtered/organized asset view.
 - **Asset Pipeline Tool** opens each preset as a ready pipeline configuration.
 - **Palette Browser** opens each preset palette collection.

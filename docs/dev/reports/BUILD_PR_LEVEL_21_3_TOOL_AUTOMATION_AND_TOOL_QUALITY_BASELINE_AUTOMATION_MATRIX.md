@@ -5,7 +5,7 @@
 | --- | --- | --- | --- | --- | --- |
 | 3D Asset Viewer | `RequiredToolsBaseline.test.mjs` | `LaunchSmokeAllEntries.test.mjs --tools` | Covered through shared registry/index tests | Not automated | Add one fixture-driven load/edit/export test for 3D tool family. |
 | 3D Camera Path Editor | `RequiredToolsBaseline.test.mjs` | `LaunchSmokeAllEntries.test.mjs --tools` | Covered through shared registry/index tests | Not automated | Add deterministic camera-path fixture import/export test. |
-| 3D Map Editor | `RequiredToolsBaseline.test.mjs` | `LaunchSmokeAllEntries.test.mjs --tools` | Covered through shared registry/index tests | Not automated | Add deterministic map-document open/save test. |
+| 3D JSON Payload Normalizer | `RequiredToolsBaseline.test.mjs` | `LaunchSmokeAllEntries.test.mjs --tools` | Covered through shared registry/index tests | Not automated | Add deterministic map-document open/save test. |
 | Asset Browser / Import Hub | `ToolEntryLaunchContract.test.mjs` | `LaunchSmokeAllEntries.test.mjs --tools` | Covered through shared registry/index tests | Not automated | Add import-plan fixture smoke with expected handoff payload check. |
 | Asset Pipeline Tool | `RequiredToolsBaseline.test.mjs` | `LaunchSmokeAllEntries.test.mjs --tools` | Covered through shared registry/index tests | Not automated | Add one baseline conversion/validation fixture assertion. |
 | Palette Browser / Manager | `ToolEntryLaunchContract.test.mjs` | `LaunchSmokeAllEntries.test.mjs --tools` | Covered through shared registry/index tests | Not automated | Add palette create/edit persistence smoke test. |

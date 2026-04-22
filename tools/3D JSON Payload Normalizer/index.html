@@ -3,13 +3,13 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>3D Map Editor</title>
+  <title>3D JSON Payload Normalizer</title>
   <link rel="stylesheet" href="../../src/engine/ui/hubCommon.css" />
   <link rel="stylesheet" href="../shared/platformShell.css" />
   <link rel="stylesheet" href="../shared/debugInspectorTools.css" />
   <link rel="stylesheet" href="../../src/engine/theme/main.css" />
 </head>
-<body class="tools-platform-tool-page hub-page-tools" data-tool-id="3d-map-editor" data-tools-platform-page="tool">
+<body class="tools-platform-tool-page hub-page-tools" data-tool-id="3d-json-payload-normalizer" data-tools-platform-page="tool">
   <details class="is-collapsible" open>
     <summary class="is-collapsible__summary">Header and Intro</summary>
     <div class="is-collapsible__content">
@@ -20,19 +20,20 @@
   <div class="debug-tool-shell app-shell">
     <section class="panel debug-tool-panel">
       <div class="debug-tool-actions">
-        <button type="button" id="normalize3dMapButton">Normalize Map</button>
+        <button type="button" id="normalize3dMapButton">Normalize JSON Payload</button>
+        <button type="button" id="openHowToUse3dMapButton">How to Use</button>
       </div>
-      <div id="map3dStatus" class="debug-tool-meta">3D map editor ready.</div>
+      <div id="map3dStatus" class="debug-tool-meta">3D JSON payload normalizer ready.</div>
     </section>
 
     <section class="debug-tool-grid">
       <section class="panel debug-tool-panel">
-        <h3>Map Input</h3>
+        <h3>Payload Input</h3>
         <textarea id="map3dInput" rows="16"></textarea>
       </section>
       <section class="panel debug-tool-panel">
-        <h3>Map Output</h3>
-        <pre id="map3dOutput" class="debug-tool-readout">Run normalize to inspect the map payload.</pre>
+        <h3>Normalized Output</h3>
+        <pre id="map3dOutput" class="debug-tool-readout">Run normalize to inspect the normalized payload.</pre>
       </section>
     </section>
   </div>

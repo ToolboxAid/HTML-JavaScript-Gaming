@@ -5,7 +5,7 @@
 | --- | --- | --- |
 | 3D Asset Viewer | PASS | none in this pass |
 | 3D Camera Path Editor | PASS | none in this pass |
-| 3D Map Editor | PASS | none in this pass |
+| 3D JSON Payload Normalizer | PASS | none in this pass |
 | Asset Browser / Import Hub | PASS | none in this pass |
 | Asset Pipeline Tool | PASS | none in this pass |
 | Palette Browser / Manager | PASS | none in this pass |

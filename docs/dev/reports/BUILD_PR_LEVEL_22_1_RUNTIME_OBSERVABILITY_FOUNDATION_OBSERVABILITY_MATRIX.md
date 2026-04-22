@@ -18,7 +18,7 @@
 | Tool: Physics Sandbox (physics-sandbox) | Yes (inherits platform shell monitoring entry hook) | `engine.log.v1` via shared tools channel | Entry-point monitoring via shared platform shell hooks |
 | Tool: Asset Pipeline Tool (asset-pipeline-tool) | Yes (inherits platform shell monitoring entry hook) | `engine.log.v1` via shared tools channel | Entry-point monitoring via shared platform shell hooks |
 | Tool: Tile Model Converter (tile-model-converter) | Yes (inherits platform shell monitoring entry hook) | `engine.log.v1` via shared tools channel | Entry-point monitoring via shared platform shell hooks |
-| Tool: 3D Map Editor (3d-map-editor) | Yes (inherits platform shell monitoring entry hook) | `engine.log.v1` via shared tools channel | Entry-point monitoring via shared platform shell hooks |
+| Tool: 3D JSON Payload Normalizer (3d-json-payload-normalizer) | Yes (inherits platform shell monitoring entry hook) | `engine.log.v1` via shared tools channel | Entry-point monitoring via shared platform shell hooks |
 | Tool: 3D Asset Viewer (3d-asset-viewer) | Yes (inherits platform shell monitoring entry hook) | `engine.log.v1` via shared tools channel | Entry-point monitoring via shared platform shell hooks |
 | Tool: 3D Camera Path Editor (3d-camera-path-editor) | Yes (inherits platform shell monitoring entry hook) | `engine.log.v1` via shared tools channel | Entry-point monitoring via shared platform shell hooks |
 

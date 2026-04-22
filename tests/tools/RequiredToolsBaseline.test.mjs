@@ -13,7 +13,7 @@ const REQUIRED_TOOLS = Object.freeze([
   { id: "performance-profiler", folder: "Performance Profiler" },
   { id: "asset-pipeline-tool", folder: "Asset Pipeline Tool" },
   { id: "tile-model-converter", folder: "Tile Model Converter" },
-  { id: "3d-map-editor", folder: "3D Map Editor" },
+  { id: "3d-json-payload-normalizer", folder: "3D JSON Payload Normalizer" },
   { id: "3d-asset-viewer", folder: "3D Asset Viewer" },
   { id: "3d-camera-path-editor", folder: "3D Camera Path Editor" }
 ]);

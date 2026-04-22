@@ -41,19 +41,19 @@
     },
     {
       "sample_id": "2007",
-      "tool": "3D Map Editor",
+      "tool": "3D JSON Payload Normalizer",
       "sample_number_for_tool": 1,
       "folder": "samples/phase-20/2007"
     },
     {
       "sample_id": "2008",
-      "tool": "3D Map Editor",
+      "tool": "3D JSON Payload Normalizer",
       "sample_number_for_tool": 2,
       "folder": "samples/phase-20/2008"
     },
     {
       "sample_id": "2009",
-      "tool": "3D Map Editor",
+      "tool": "3D JSON Payload Normalizer",
       "sample_number_for_tool": 3,
       "folder": "samples/phase-20/2009"
     },

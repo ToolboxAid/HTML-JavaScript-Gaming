@@ -19,7 +19,7 @@ This folder is standardized on UAT documentation.
 - [Physics Sandbox](./physics-sandbox/uat.md)
 - [Asset Pipeline Tool](./asset-pipeline-tool/uat.md)
 - [Tile Model Converter](./tile-model-converter/uat.md)
-- [3D Map Editor](./3d-map-editor/uat.md)
+- [3D JSON Payload Normalizer](./3d-json-payload-normalizer/uat.md)
 - [3D Asset Viewer](./3d-asset-viewer/uat.md)
 - [3D Camera Path Editor](./3d-camera-path-editor/uat.md)
 - [Tool Host](./tool-host/uat.md)

@@ -1,11 +1,11 @@
-# 3D Map Editor - UAT
+# 3D JSON Payload Normalizer - UAT
 
 ## Purpose
-Validate user acceptance readiness for 3D Map Editor across launch, core workflow, and handoff behavior.
+Validate user acceptance readiness for 3D JSON Payload Normalizer across launch, core workflow, and handoff behavior.
 
 ## Scope
-- Tool: `3d-map-editor`
-- Entry point: `tools/3D Map Editor/index.html`
+- Tool: `3d-json-payload-normalizer`
+- Entry point: `tools/3D JSON Payload Normalizer/index.html`
 
 ## Validation Scenarios
 

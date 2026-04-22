@@ -8432,49 +8432,49 @@
     {
       "id": "2007",
       "phase": "20",
-      "title": "3D Map Editor Preset 1",
-      "description": "Launches 3D Map Editor with Phase 20 preset payload 1 preloaded.",
+      "title": "3D JSON Payload Normalizer Preset 1",
+      "description": "Launches 3D JSON Payload Normalizer with Phase 20 preset payload 1 preloaded.",
       "href": "./phase-20/2007/index.html",
       "tags": [
         "phase20",
         "tool-preset",
-        "3d-map-editor"
+        "3d-json-payload-normalizer"
       ],
       "classValues": [
         "samples/phase-20/2007",
-        "tools/3d-map-editor"
+        "tools/3d-json-payload-normalizer"
       ]
     },
     {
       "id": "2008",
       "phase": "20",
-      "title": "3D Map Editor Preset 2",
-      "description": "Launches 3D Map Editor with Phase 20 preset payload 2 preloaded.",
+      "title": "3D JSON Payload Normalizer Preset 2",
+      "description": "Launches 3D JSON Payload Normalizer with Phase 20 preset payload 2 preloaded.",
       "href": "./phase-20/2008/index.html",
       "tags": [
         "phase20",
         "tool-preset",
-        "3d-map-editor"
+        "3d-json-payload-normalizer"
       ],
       "classValues": [
         "samples/phase-20/2008",
-        "tools/3d-map-editor"
+        "tools/3d-json-payload-normalizer"
       ]
     },
     {
       "id": "2009",
       "phase": "20",
-      "title": "3D Map Editor Preset 3",
-      "description": "Launches 3D Map Editor with Phase 20 preset payload 3 preloaded.",
+      "title": "3D JSON Payload Normalizer Preset 3",
+      "description": "Launches 3D JSON Payload Normalizer with Phase 20 preset payload 3 preloaded.",
       "href": "./phase-20/2009/index.html",
       "tags": [
         "phase20",
         "tool-preset",
-        "3d-map-editor"
+        "3d-json-payload-normalizer"
       ],
       "classValues": [
         "samples/phase-20/2009",
-        "tools/3d-map-editor"
+        "tools/3d-json-payload-normalizer"
       ]
     },
     {

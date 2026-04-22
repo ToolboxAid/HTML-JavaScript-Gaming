@@ -1927,17 +1927,17 @@
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "tools/3D Map Editor/main.js",
+      "file": "tools/3D JSON Payload Normalizer/main.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-1"
     },
     {
-      "file": "tools/3D Map Editor/main.js",
+      "file": "tools/3D JSON Payload Normalizer/main.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-1"
     },
     {
-      "file": "tools/3D Map Editor/main.js",
+      "file": "tools/3D JSON Payload Normalizer/main.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },

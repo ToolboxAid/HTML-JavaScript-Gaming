@@ -1,11 +1,11 @@
 TOOL_REGISTRY_VALIDATION
 status=PASS
-active=Vector Map Editor, Vector Asset Studio, Tilemap Studio, Parallax Scene Studio, Sprite Editor, Asset Browser / Import Hub, Palette Browser / Manager, State Inspector, Replay Visualizer, Performance Profiler, Physics Sandbox, Asset Pipeline Tool, Tile Model Converter, 3D Map Editor, 3D Asset Viewer, 3D Camera Path Editor
+active=Vector Map Editor, Vector Asset Studio, Tilemap Studio, Parallax Scene Studio, Sprite Editor, Asset Browser / Import Hub, Palette Browser / Manager, State Inspector, Replay Visualizer, Performance Profiler, Physics Sandbox, Asset Pipeline Tool, Tile Model Converter, 3D JSON Payload Normalizer, 3D Asset Viewer, 3D Camera Path Editor
 legacy=SpriteEditor_old_keep
 Filesystem Directories
 - 3D Asset Viewer
 - 3D Camera Path Editor
-- 3D Map Editor
+- 3D JSON Payload Normalizer
 - Asset Browser
 - Asset Pipeline Tool
 - Palette Browser
@@ -33,7 +33,7 @@ Registry Paths
 - Physics Sandbox
 - Asset Pipeline Tool
 - Tile Model Converter
-- 3D Map Editor
+- 3D JSON Payload Normalizer
 - 3D Asset Viewer
 - 3D Camera Path Editor
 - SpriteEditor_old_keep

@@ -262,7 +262,7 @@ Filters: games=true, samples=true, tools=true, sampleRange=all
 | PASS | sample | 1901 | samples\phase-19\1901\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
 | PASS | tool | 3D Asset Viewer | tools\3D Asset Viewer\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
 | PASS | tool | 3D Camera Path Editor | tools\3D Camera Path Editor\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
-| PASS | tool | 3D Map Editor | tools\3D Map Editor\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | tool | 3D JSON Payload Normalizer | tools\3D JSON Payload Normalizer\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
 | PASS | tool | Asset Browser | tools\Asset Browser\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
 | PASS | tool | Asset Pipeline Tool | tools\Asset Pipeline Tool\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
 | PASS | tool | Palette Browser | tools\Palette Browser\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |

@@ -12,7 +12,7 @@ Open required-tool items after the prior combined pass:
 ## Implemented Changes
 
 ### New first-class tools
-- `tools/3D Map Editor/`
+- `tools/3D JSON Payload Normalizer/`
 - `tools/3D Asset Viewer/`
 - `tools/3D Camera Path Editor/`
 

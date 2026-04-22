@@ -3,9 +3,9 @@ David Quesenberry
 04/21/2026
 README.md
 
-# 3D Map Editor
+# 3D JSON Payload Normalizer
 
-High-level overview for '3D Map Editor' under 'tools/3D Map Editor/'.
+High-level overview for '3D JSON Payload Normalizer' under 'tools/3D JSON Payload Normalizer/'.
 
 ## Purpose
 - Provide a focused workspace for this tool's primary authoring/debug workflow.
@@ -18,5 +18,5 @@ High-level overview for '3D Map Editor' under 'tools/3D Map Editor/'.
 - Safe workflows for loading, editing, previewing, and exporting relevant data.
 
 ## Entry Points
-- Tool UI: 'tools/3D Map Editor/index.html'
-- How-to guide: 'tools/3D Map Editor/how_to_use.html'
+- Tool UI: 'tools/3D JSON Payload Normalizer/index.html'
+- How-to guide: 'tools/3D JSON Payload Normalizer/how_to_use.html'

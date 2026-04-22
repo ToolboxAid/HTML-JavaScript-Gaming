@@ -10,7 +10,7 @@ Combined sample->tool mapping checks: 51/51 passed
 Per listed-tool sample allocations (must be 3 each):
 - 3D Asset Viewer (3d-asset-viewer): 3
 - 3D Camera Path Editor (3d-camera-path-editor): 3
-- 3D Map Editor (3d-map-editor): 3
+- 3D JSON Payload Normalizer (3d-json-payload-normalizer): 3
 - Asset Browser (asset-browser): 3
 - Asset Pipeline Tool (asset-pipeline-tool): 3
 - Palette Browser (palette-browser): 3

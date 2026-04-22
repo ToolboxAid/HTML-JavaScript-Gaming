@@ -16,7 +16,7 @@ const ACTIVE_TOOL_FOLDERS = Object.freeze([
   "Physics Sandbox",
   "Asset Pipeline Tool",
   "Tile Model Converter",
-  "3D Map Editor",
+  "3D JSON Payload Normalizer",
   "3D Asset Viewer",
   "3D Camera Path Editor"
 ]);

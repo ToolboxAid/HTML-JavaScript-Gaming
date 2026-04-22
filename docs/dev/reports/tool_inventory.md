@@ -18,7 +18,7 @@
 | 11 | Physics Sandbox | `physics-sandbox` | `tools/Physics Sandbox/index.html` | `docs/tools/physics-sandbox/uat.md` |
 | 12 | Asset Pipeline Tool | `asset-pipeline-tool` | `tools/Asset Pipeline Tool/index.html` | `docs/tools/asset-pipeline-tool/uat.md` |
 | 13 | Tile Model Converter | `tile-model-converter` | `tools/Tile Model Converter/index.html` | `docs/tools/tile-model-converter/uat.md` |
-| 14 | 3D Map Editor | `3d-map-editor` | `tools/3D Map Editor/index.html` | `docs/tools/3d-map-editor/uat.md` |
+| 14 | 3D JSON Payload Normalizer | `3d-json-payload-normalizer` | `tools/3D JSON Payload Normalizer/index.html` | `docs/tools/3d-json-payload-normalizer/uat.md` |
 | 15 | 3D Asset Viewer | `3d-asset-viewer` | `tools/3D Asset Viewer/index.html` | `docs/tools/3d-asset-viewer/uat.md` |
 | 16 | 3D Camera Path Editor | `3d-camera-path-editor` | `tools/3D Camera Path Editor/index.html` | `docs/tools/3d-camera-path-editor/uat.md` |
 | 17 | Tool Host | `tool-host` | `tools/Tool Host/index.html` | `docs/tools/tool-host/uat.md` |

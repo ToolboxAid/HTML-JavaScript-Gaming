@@ -13,6 +13,6 @@ Checks:
 
 Issues:
 - Missing required shared project-system file: docs/specs/project_manifest_contract.md
-- Visible active tools do not match expected project-system surface. Found: Vector Map Editor, Vector Asset Studio, Tilemap Studio, Parallax Scene Studio, Sprite Editor, Asset Browser / Import Hub, Palette Browser / Manager, State Inspector, Replay Visualizer, Performance Profiler, Physics Sandbox, Asset Pipeline Tool, Tile Model Converter, 3D Map Editor, 3D Asset Viewer, 3D Camera Path Editor
+- Visible active tools do not match expected project-system surface. Found: Vector Map Editor, Vector Asset Studio, Tilemap Studio, Parallax Scene Studio, Sprite Editor, Asset Browser / Import Hub, Palette Browser / Manager, State Inspector, Replay Visualizer, Performance Profiler, Physics Sandbox, Asset Pipeline Tool, Tile Model Converter, 3D JSON Payload Normalizer, 3D Asset Viewer, 3D Camera Path Editor
 - Missing project adapter bootstrap in tools/Tilemap Studio/main.js: window.tileMapStudioApp = app;
 - Missing project adapter bootstrap in tools/Parallax Scene Studio/main.js: window.parallaxSceneStudioApp = app;

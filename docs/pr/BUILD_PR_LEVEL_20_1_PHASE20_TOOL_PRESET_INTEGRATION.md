@@ -45,9 +45,9 @@ This belongs in **Phase 20** because it is a cross-tool executable sample lane t
 | 2004 | 3D Camera Path Editor | 1 | `samples/phase-20/2004` |
 | 2005 | 3D Camera Path Editor | 2 | `samples/phase-20/2005` |
 | 2006 | 3D Camera Path Editor | 3 | `samples/phase-20/2006` |
-| 2007 | 3D Map Editor | 1 | `samples/phase-20/2007` |
-| 2008 | 3D Map Editor | 2 | `samples/phase-20/2008` |
-| 2009 | 3D Map Editor | 3 | `samples/phase-20/2009` |
+| 2007 | 3D JSON Payload Normalizer | 1 | `samples/phase-20/2007` |
+| 2008 | 3D JSON Payload Normalizer | 2 | `samples/phase-20/2008` |
+| 2009 | 3D JSON Payload Normalizer | 3 | `samples/phase-20/2009` |
 | 2010 | Asset Browser | 1 | `samples/phase-20/2010` |
 | 2011 | Asset Browser | 2 | `samples/phase-20/2011` |
 | 2012 | Asset Browser | 3 | `samples/phase-20/2012` |
