@@ -119,9 +119,9 @@ function formatBindingValue(label, value, fallback = "none") {
 function resolveProjectBindingLabel() {
   const manifest = getManifest();
   if (!manifest) {
-    return "Workspace: none";
+    return "none";
   }
-  return manifest.dirty === true ? "Workspace: Unsaved" : "Workspace: Loaded";
+  return manifest.dirty === true ? "Unsaved" : "Loaded";
 }
 
 function getToolBindingCompatibility(toolId) {
@@ -150,7 +150,6 @@ function renderToolBindingBadges(tool) {
   const assetLabel = compatibility.asset
     ? formatBindingValue("Asset", asset?.displayName, "none")
     : "Asset: Not used";
-  const projectLabel = resolveProjectBindingLabel();
   const paletteTitle = compatibility.palette
     ? `Updated: ${escapeHtml(palette?.selectedAt || "not-set")}`
     : "Not used by this tool";
@@ -162,7 +161,6 @@ function renderToolBindingBadges(tool) {
     <div class="tools-platform-frame__binding-badges" aria-label="Tool data bindings">
       <span class="tools-platform-frame__binding-badge${compatibility.palette ? " is-active" : " is-muted"}" title="${paletteTitle}">${escapeHtml(paletteLabel)}</span>
       <span class="tools-platform-frame__binding-badge${compatibility.asset ? " is-active" : " is-muted"}" title="${assetTitle}">${escapeHtml(assetLabel)}</span>
-      <span class="tools-platform-frame__binding-badge is-project" title="Workspace manifest dirty state">${escapeHtml(projectLabel)}</span>
     </div>
   `;
 }
@@ -287,6 +285,7 @@ function renderSharedSelectionSummary() {
   if (getPageMode() === "landing") {
     return "";
   }
+  const workspaceLabel = resolveProjectBindingLabel();
   const asset = readSharedAssetHandoff();
   const palette = readSharedPaletteHandoff();
   const assetLabel = asset?.displayName || "No shared asset selected";
@@ -294,7 +293,8 @@ function renderSharedSelectionSummary() {
 
   return `
     <div class="tools-platform-frame__shared-status" aria-label="Shared asset and palette status">
-      <span><strong>Shared Asset:</strong> ${escapeHtml(assetLabel)}</span>
+      <span><strong>Workspace:</strong> ${escapeHtml(workspaceLabel)}</span>
+      <span><strong>Shared Assets:</strong> ${escapeHtml(assetLabel)}</span>
       <span><strong>Shared Palette:</strong> ${escapeHtml(paletteLabel)}</span>
     </div>
   `;
