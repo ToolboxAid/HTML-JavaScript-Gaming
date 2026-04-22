@@ -137,10 +137,6 @@
   flex-wrap: nowrap;
 }
 
-.palette-browser__actions--stacked {
-  display: grid;
-}
-
 .palette-browser__json-preview {
   margin: 0;
   min-height: 0;

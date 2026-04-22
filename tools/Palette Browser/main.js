@@ -44,6 +44,31 @@ const state = {
   hiddenBuiltInPaletteIds: loadHiddenBuiltInPaletteIds()
 };
 
+function isWorkspaceContext() {
+  if (typeof window === "undefined") {
+    return false;
+  }
+  const searchParams = new URLSearchParams(window.location.search);
+  const currentPath = window.location.pathname || "";
+  const isHostedWorkspaceView = searchParams.get("hosted") === "1"
+    || searchParams.has("hostToolId")
+    || searchParams.has("hostContextId");
+  const isWorkspaceManagerReferrer = /\/tools\/Workspace(?:%20| )Manager\//i.test(document.referrer || "");
+  const isWorkspaceManagerParent = (() => {
+    try {
+      return window.top !== window
+        && /\/tools\/Workspace(?:%20| )Manager\//i.test(window.top.location.pathname || "");
+    } catch {
+      return false;
+    }
+  })();
+  return isHostedWorkspaceView
+    || isWorkspaceManagerReferrer
+    || isWorkspaceManagerParent
+    || /\/tools\/Workspace%20Manager\//i.test(currentPath)
+    || /\/tools\/Workspace Manager\//i.test(currentPath);
+}
+
 function hasDeleteOverrideParam() {
   const params = new URLSearchParams(window.location.search);
   const raw = params.get("overridReserveWorkBlock")
@@ -208,6 +233,7 @@ function renderPaletteList() {
 
 function renderSelectedPalette() {
   const palette = getSelectedPalette();
+  const canUseInActiveTools = isWorkspaceContext();
   if (!palette) {
     refs.paletteTitle.textContent = "Palette Preview";
     refs.paletteSummaryText.textContent = "Select a palette to inspect its swatches.";
@@ -221,6 +247,7 @@ function renderSelectedPalette() {
     refs.deletePaletteButton.disabled = true;
     refs.addSwatchButton.disabled = true;
     refs.deleteSwatchButton.disabled = true;
+    refs.usePaletteButton.disabled = true;
     refs.jsonPreview.textContent = "Palette JSON preview will appear here.";
     refs.validationText.textContent = "Validation summary will appear here.";
     return;
@@ -239,6 +266,7 @@ function renderSelectedPalette() {
   refs.deletePaletteButton.disabled = canOverrideDeleteGuard ? false : readOnly;
   refs.addSwatchButton.disabled = readOnly;
   refs.deleteSwatchButton.disabled = readOnly;
+  refs.usePaletteButton.disabled = !canUseInActiveTools;
 
   refs.paletteSwatches.innerHTML = palette.entries.map((entry, index) => {
     const currentClass = index === state.selectedSwatchIndex ? " is-current" : "";
@@ -438,6 +466,10 @@ function exportPaletteJson() {
 function usePaletteInActiveTools() {
   const palette = getSelectedPalette();
   if (!palette) {
+    return;
+  }
+  if (!isWorkspaceContext()) {
+    refs.selectionText.textContent = "Use in Workspace Manager is available only in Workspace Manager context.";
     return;
   }
   const context = getSharedLaunchContext();

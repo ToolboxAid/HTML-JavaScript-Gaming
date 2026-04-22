@@ -14,6 +14,7 @@ import { createRuntimeMonitoringHooks } from "../../src/engine/runtime/index.js"
 let workspaceController = null;
 let headerExpandedState = null;
 let runtimeMonitoringHooks = null;
+let bindingRefreshHandlersBound = false;
 
 const HEADER_EXPANDED_STORAGE_KEY = "toolboxaid.toolsPlatform.headerExpanded";
 const HEADER_EXPANDED_FALLBACK_TOOL = "tool-host";
@@ -74,6 +75,62 @@ function getManifest() {
   return workspaceController ? workspaceController.getManifest() : null;
 }
 
+function formatBindingValue(label, value, fallback = "none") {
+  const safe = String(value || "").trim();
+  return `${label}: ${safe || fallback}`;
+}
+
+function resolveProjectBindingLabel() {
+  const manifest = getManifest();
+  if (!manifest) {
+    return "Workspace: none";
+  }
+  return manifest.dirty === true ? "Workspace: Unsaved" : "Workspace: Loaded";
+}
+
+function getToolBindingCompatibility(toolId) {
+  const paletteCapable = new Set([
+    "palette-browser",
+    "sprite-editor",
+    "vector-asset-studio"
+  ]);
+  const assetCapable = new Set([
+    "asset-browser",
+    "sprite-editor"
+  ]);
+  return {
+    palette: paletteCapable.has(toolId),
+    asset: assetCapable.has(toolId)
+  };
+}
+
+function renderToolBindingBadges(tool) {
+  const palette = readSharedPaletteHandoff();
+  const asset = readSharedAssetHandoff();
+  const compatibility = getToolBindingCompatibility(tool.id);
+  const paletteLabel = compatibility.palette
+    ? formatBindingValue("Palette", palette?.displayName, "none")
+    : "Palette: Not used";
+  const assetLabel = compatibility.asset
+    ? formatBindingValue("Asset", asset?.displayName, "none")
+    : "Asset: Not used";
+  const projectLabel = resolveProjectBindingLabel();
+  const paletteTitle = compatibility.palette
+    ? `Updated: ${escapeHtml(palette?.selectedAt || "not-set")}`
+    : "Not used by this tool";
+  const assetTitle = compatibility.asset
+    ? `Updated: ${escapeHtml(asset?.selectedAt || "not-set")}`
+    : "Not used by this tool";
+
+  return `
+    <div class="tools-platform-frame__binding-badges" aria-label="Tool data bindings">
+      <span class="tools-platform-frame__binding-badge${compatibility.palette ? " is-active" : " is-muted"}" title="${paletteTitle}">${escapeHtml(paletteLabel)}</span>
+      <span class="tools-platform-frame__binding-badge${compatibility.asset ? " is-active" : " is-muted"}" title="${assetTitle}">${escapeHtml(assetLabel)}</span>
+      <span class="tools-platform-frame__binding-badge is-project" title="Workspace manifest dirty state">${escapeHtml(projectLabel)}</span>
+    </div>
+  `;
+}
+
 function renderToolLinks(currentToolId) {
   const tools = getToolRegistry()
     .filter((entry) => entry.active === true)
@@ -98,7 +155,12 @@ function renderToolLinks(currentToolId) {
           ${bucketTools
     .map((tool) => {
       const currentClass = tool.id === currentToolId ? " is-current" : "";
-      return `<a class="tools-platform-frame__nav-link${currentClass}" href="${escapeHtml(getRegistryEntryHref(tool.entryPoint))}">${escapeHtml(tool.displayName)}</a>`;
+      return `
+        <div class="tools-platform-frame__nav-tool-row">
+          <a class="tools-platform-frame__nav-link${currentClass}" href="${escapeHtml(getRegistryEntryHref(tool.entryPoint))}">${escapeHtml(tool.displayName)}</a>
+          ${renderToolBindingBadges(tool)}
+        </div>
+      `;
     })
     .join("")}
         </div>
@@ -376,6 +438,25 @@ function renderShell(currentTool) {
   bindWorkspaceShellEvents(currentTool);
 }
 
+function bindLiveBindingRefresh(currentTool) {
+  if (bindingRefreshHandlersBound || typeof window === "undefined") {
+    return;
+  }
+  bindingRefreshHandlersBound = true;
+
+  const rerender = () => {
+    renderShell(currentTool);
+  };
+
+  window.addEventListener("storage", rerender);
+  window.addEventListener("focus", rerender);
+  document.addEventListener("visibilitychange", () => {
+    if (document.visibilityState === "visible") {
+      rerender();
+    }
+  });
+}
+
 function ensureRuntimeMonitoring() {
   if (runtimeMonitoringHooks) {
     return;
@@ -482,6 +563,7 @@ function initPlatformShell() {
   }
 
   renderShell(currentTool);
+  bindLiveBindingRefresh(currentTool);
 }
 
 initPlatformShell();

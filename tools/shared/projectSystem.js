@@ -81,6 +81,12 @@ export function createWorkspaceSystemController(options = {}) {
     appliedInitialState: false
   };
 
+  function serializeForDirtyComparison(manifest) {
+    const normalized = cloneValue(manifest);
+    normalized.dirty = false;
+    return serializeProjectManifest(normalized);
+  }
+
   function computeObservedManifest() {
     const toolAdapter = adapter();
     const currentManifest = state.manifest
@@ -92,7 +98,7 @@ export function createWorkspaceSystemController(options = {}) {
 
     currentManifest.activeToolId = toolId;
     currentManifest.workspace.lastOpenTool = toolId;
-    currentManifest.updatedAt = new Date().toISOString();
+    currentManifest.updatedAt = safeString(currentManifest.updatedAt, new Date().toISOString());
     currentManifest.sharedReferences = captureSharedReferenceSnapshot();
     currentManifest.tools = currentManifest.tools && typeof currentManifest.tools === "object"
       ? currentManifest.tools
@@ -116,7 +122,7 @@ export function createWorkspaceSystemController(options = {}) {
 
   function updateDirtyState(reason = "") {
     const observed = computeObservedManifest();
-    const observedHash = serializeProjectManifest(observed);
+    const observedHash = serializeForDirtyComparison(observed);
     state.manifest = observed;
     state.lastObservedHash = observedHash;
     state.adapterReady = adapter().ready;
@@ -133,7 +139,9 @@ export function createWorkspaceSystemController(options = {}) {
 
   function markSaved(reason = "") {
     const observed = computeObservedManifest();
-    const serialized = serializeProjectManifest(observed);
+    observed.updatedAt = new Date().toISOString();
+    observed.dirty = false;
+    const serialized = serializeForDirtyComparison(observed);
     state.manifest = observed;
     state.baselineHash = serialized;
     state.lastObservedHash = serialized;
