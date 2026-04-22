@@ -167,6 +167,20 @@ button:hover,
   margin-top: 8px;
 }
 
+.preview-details-text {
+  margin: 8px 0 0;
+  min-height: 84px;
+  max-height: 180px;
+  overflow: auto;
+  border: 1px solid var(--parallax-border);
+  border-radius: 8px;
+  padding: 10px;
+  background: rgba(15, 23, 42, 0.72);
+  color: #dbeafe;
+  font: 12px/1.35 Consolas, Monaco, monospace;
+  white-space: pre-wrap;
+}
+
 .layer-list {
   list-style: none;
   margin: 0;
@@ -234,6 +248,10 @@ button:hover,
   padding: 0 10px;
 }
 
+.parallax-editor-page .overlay-close-button {
+  display: none;
+}
+
 .parallax-editor-page #showLeftPanelButton {
   left: 10px;
 }
@@ -278,6 +296,29 @@ body.parallax-editor-page.fullscreen-mode .sidebar.visible-overlay {
   width: min(360px, calc(100vw - 24px));
   z-index: 50;
   overflow: auto;
+  padding-top: 48px;
+}
+
+body.parallax-editor-page.fullscreen-mode .sidebar.visible-overlay .overlay-close-button {
+  position: absolute;
+  top: 13px;
+  right: 13px;
+  z-index: 80;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  min-height: 34px;
+  padding: 0;
+  border-radius: 999px;
+  font-size: 16px;
+  font-weight: 900;
+  line-height: 1;
+  border: 2px solid #ffffff;
+  background: #ed9700;
+  color: #ffffff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.45);
 }
 
 body.parallax-editor-page.fullscreen-mode .left-sidebar.visible-overlay {
@@ -308,8 +349,23 @@ body.parallax-editor-page.fullscreen-mode #previewCanvas {
 
 body.parallax-editor-page.fullscreen-mode .fullscreen-overlay-button {
   display: inline-flex;
+  position: fixed;
   align-items: center;
   justify-content: center;
+  top: 96px;
+  z-index: 60;
+}
+
+body.parallax-editor-page.fullscreen-mode #showLeftPanelButton {
+  left: 10px;
+}
+
+body.parallax-editor-page.fullscreen-mode #showRightPanelButton {
+  right: 10px;
+}
+
+body.parallax-editor-page.fullscreen-mode .preview-details-text {
+  max-height: 150px;
 }
 
 @media (max-width: 1260px) {

@@ -452,12 +452,15 @@ class ParallaxEditorApp {
 
     this.refs.previewMeta = rootDocument.getElementById("previewMeta");
     this.refs.simulationContext = rootDocument.getElementById("simulationContext");
+    this.refs.previewDetailsText = rootDocument.getElementById("previewDetailsText");
     this.refs.statusText = rootDocument.getElementById("statusText");
     this.refs.appShell = rootDocument.querySelector(".app-shell");
     this.refs.leftSidebar = rootDocument.getElementById("leftSidebar");
     this.refs.rightSidebar = rootDocument.getElementById("rightSidebar");
     this.refs.showLeftPanelButton = rootDocument.getElementById("showLeftPanelButton");
     this.refs.showRightPanelButton = rootDocument.getElementById("showRightPanelButton");
+    this.refs.closeLeftOverlayButton = rootDocument.getElementById("closeLeftOverlayButton");
+    this.refs.closeRightOverlayButton = rootDocument.getElementById("closeRightOverlayButton");
     this.refs.previewWrap = rootDocument.querySelector(".preview-wrap");
     this.refs.previewCanvas = rootDocument.getElementById("previewCanvas");
     this.refs.previewContext = this.refs.previewCanvas.getContext("2d", { alpha: false });
@@ -485,14 +488,25 @@ class ParallaxEditorApp {
     this.refs.applyRemediationButton.addEventListener("click", () => this.applyRemediationAction());
     this.refs.showLeftPanelButton?.addEventListener("click", () => {
       this.refs.leftSidebar?.classList.toggle("visible-overlay");
+      this.syncOverlayToggleButtons();
     });
     this.refs.showRightPanelButton?.addEventListener("click", () => {
       this.refs.rightSidebar?.classList.toggle("visible-overlay");
+      this.syncOverlayToggleButtons();
+    });
+    this.refs.closeLeftOverlayButton?.addEventListener("click", () => {
+      this.refs.leftSidebar?.classList.remove("visible-overlay");
+      this.syncOverlayToggleButtons();
+    });
+    this.refs.closeRightOverlayButton?.addEventListener("click", () => {
+      this.refs.rightSidebar?.classList.remove("visible-overlay");
+      this.syncOverlayToggleButtons();
     });
     document.addEventListener("fullscreenchange", () => {
       this.syncFullscreenState();
       this.refs.leftSidebar?.classList.remove("visible-overlay");
       this.refs.rightSidebar?.classList.remove("visible-overlay");
+      this.syncOverlayToggleButtons();
     });
 
     this.refs.applyMapMetaButton.addEventListener("click", () => this.applyMapMetaFromInputs());
@@ -532,6 +546,18 @@ class ParallaxEditorApp {
 
   syncFullscreenState() {
     document.body.classList.toggle("fullscreen-mode", Boolean(document.fullscreenElement));
+    this.syncOverlayToggleButtons();
+  }
+
+  syncOverlayToggleButtons() {
+    const leftVisible = this.refs.leftSidebar?.classList.contains("visible-overlay") === true;
+    const rightVisible = this.refs.rightSidebar?.classList.contains("visible-overlay") === true;
+    if (this.refs.showLeftPanelButton instanceof HTMLElement) {
+      this.refs.showLeftPanelButton.style.display = leftVisible ? "none" : "";
+    }
+    if (this.refs.showRightPanelButton instanceof HTMLElement) {
+      this.refs.showRightPanelButton.style.display = rightVisible ? "none" : "";
+    }
   }
 
   getSelectedLayer() {
@@ -1731,27 +1757,25 @@ class ParallaxEditorApp {
     context.strokeRect(mapOriginX, mapOriginY, worldWidth, worldHeight);
     this.ensureSimulationViewportFocus(proxyX);
 
-    context.fillStyle = "rgba(15, 23, 42, 0.72)";
-    context.fillRect(10, 10, Math.min(860, viewportWidth - 20), 148);
-    context.fillStyle = "#dbeafe";
-    context.font = "12px monospace";
-    context.textBaseline = "top";
     const modeText = this.isSimulationMode
       ? `SIMULATION ${this.simulation.playing ? "PLAY" : "PAUSE"}`
       : "EDIT";
     const repeatCount = sortedLayers.filter((layer) => layer.repeatX || layer.repeatY).length;
     const wrapCount = sortedLayers.filter((layer) => layer.wrapMode === "wrap").length;
 
-    context.fillText(`Mode: ${modeText}`, 18, 18);
-    context.fillText(`Map: ${this.documentModel.map.name}`, 18, 34);
-    context.fillText(`Camera: ${this.cameraX}, ${this.cameraY}`, 18, 50);
-    context.fillText(`Traverse: ${Math.round(progress * 100)}% (${Math.round(this.simulation.traversedDistance)}/${Math.round(this.simulation.traversalDistance || 0)} px)`, 18, 66);
-    context.fillText(`Layers: ${sortedLayers.length} repeat=${repeatCount} wrap=${wrapCount}`, 18, 82);
-    sortedLayers.slice(0, 3).forEach((layer, index) => {
-      const y = 100 + (index * 16);
-      const row = `${layer.drawOrder}:${layer.name} sf(${layer.scrollFactorX.toFixed(2)},${layer.scrollFactorY.toFixed(2)}) ${layer.repeatX ? "RX" : "--"}/${layer.repeatY ? "RY" : "--"} ${layer.wrapMode}`;
-      context.fillText(row, 18, y);
-    });
+    if (this.refs.previewDetailsText instanceof HTMLElement) {
+      const lines = [
+        `Mode: ${modeText}`,
+        `Map: ${this.documentModel.map.name}`,
+        `Camera: ${this.cameraX}, ${this.cameraY}`,
+        `Traverse: ${Math.round(progress * 100)}% (${Math.round(this.simulation.traversedDistance)}/${Math.round(this.simulation.traversalDistance || 0)} px)`,
+        `Layers: ${sortedLayers.length} repeat=${repeatCount} wrap=${wrapCount}`
+      ];
+      sortedLayers.slice(0, 3).forEach((layer) => {
+        lines.push(`${layer.drawOrder}:${layer.name} sf(${layer.scrollFactorX.toFixed(2)},${layer.scrollFactorY.toFixed(2)}) ${layer.repeatX ? "RX" : "--"}/${layer.repeatY ? "RY" : "--"} ${layer.wrapMode}`);
+      });
+      this.refs.previewDetailsText.textContent = lines.join("\n");
+    }
     this.updateSimulationContextReadout();
   }
 

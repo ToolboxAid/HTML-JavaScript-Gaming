@@ -75,6 +75,7 @@ index.html
 
     <div class="workspace tools-platform-layout-grid">
       <aside class="sidebar left-sidebar tools-platform-resize-panel" data-panel-side="left" id="leftSidebar">
+        <button id="closeLeftOverlayButton" class="overlay-close-button" type="button" aria-label="Close Layers Panel">X</button>
         <section class="panel">
           <h3>Parallax Layers</h3>
           <ul id="layerList" class="layer-list"></ul>
@@ -120,10 +121,12 @@ index.html
           <button id="showLeftPanelButton" class="fullscreen-overlay-button" type="button">Layers</button>
           <button id="showRightPanelButton" class="fullscreen-overlay-button" type="button">Properties</button>
         </div>
+        <pre id="previewDetailsText" class="preview-details-text">Mode: EDIT</pre>
         <div id="statusText" class="status-text">Ready.</div>
       </main>
 
       <aside class="sidebar right-sidebar tools-platform-resize-panel" data-panel-side="right" id="rightSidebar">
+        <button id="closeRightOverlayButton" class="overlay-close-button" type="button" aria-label="Close Properties Panel">X</button>
         <section class="panel">
           <h3>Selected Layer</h3>
           <label>
