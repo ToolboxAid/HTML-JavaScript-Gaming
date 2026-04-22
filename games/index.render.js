@@ -217,15 +217,26 @@ function render(container, statusNode, rows, state) {
   const groups = groupByLevel(filtered);
   container.innerHTML = "";
   for (const group of groups) {
-    const section = document.createElement("section");
-    section.className = "content-section";
-    section.innerHTML = `<h2>${escapeHtml(group.level)}</h2>`;
+    const section = document.createElement("details");
+    section.className = "is-collapsible games-level-accordion";
+    section.dataset.level = group.level;
+    section.open = true;
+    const summary = document.createElement("summary");
+    summary.className = "is-collapsible__summary";
+    summary.innerHTML = `
+      <span class="games-level-accordion__title">${escapeHtml(group.level)}</span>
+      <span class="games-level-accordion__count">${group.items.length} game${group.items.length === 1 ? "" : "s"}</span>
+    `;
+    const content = document.createElement("div");
+    content.className = "is-collapsible__content games-level-accordion__content";
     const grid = document.createElement("div");
     grid.className = "game-level-grid";
     for (const row of group.items) {
       grid.appendChild(renderCard(row, `main-${row.id}`));
     }
-    section.appendChild(grid);
+    content.appendChild(grid);
+    section.appendChild(summary);
+    section.appendChild(content);
     container.appendChild(section);
   }
   const totalLevels = new Set(rows.map((row) => row.level)).size;

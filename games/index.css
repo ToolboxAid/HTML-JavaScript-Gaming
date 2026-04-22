@@ -115,3 +115,46 @@
 .hub-page-games .pin-label {
   margin-right: 6px;
 }
+
+body.hub-page-games .games-level-accordion {
+  margin: 0 0 12px;
+  border: 1px solid var(--line, rgba(221, 214, 254, 0.26));
+  border-radius: 12px;
+  background: linear-gradient(180deg, var(--panel, rgba(76, 29, 149, 0.88)) 0%, var(--panel2, rgba(49, 17, 102, 0.94)) 100%);
+  overflow: hidden;
+  border-bottom: 1px solid var(--line, rgba(221, 214, 254, 0.26));
+}
+
+body.hub-page-games .games-level-accordion > .is-collapsible__summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 12px 14px;
+  font-size: 1.35rem;
+  background: rgba(43, 16, 91, 0.78);
+  color: var(--text, #f7f4ff);
+  position: static;
+  top: auto;
+  left: auto;
+  z-index: auto;
+}
+
+body.hub-page-games .games-level-accordion > .is-collapsible__summary::before {
+  font-size: 2em;
+  margin-right: 6px;
+}
+
+body.hub-page-games .games-level-accordion[open] > .is-collapsible__summary {
+  position: static;
+}
+
+.games-level-accordion__count {
+  color: var(--muted, #e9ddff);
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.games-level-accordion__content {
+  padding: 12px;
+}
