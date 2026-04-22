@@ -168,10 +168,69 @@ function renderToolBindingBadges(tool) {
 }
 
 function renderToolLinks(currentToolId) {
+  const viewerToolIds = new Set([
+    "3d-asset-viewer",
+    "state-inspector",
+    "replay-visualizer",
+    "performance-profiler"
+  ]);
   const tools = getToolRegistry()
     .filter((entry) => entry.active === true)
     .filter((entry) => entry.visibleInToolsList === true)
     .sort((left, right) => String(left.displayName || "").localeCompare(String(right.displayName || "")));
+
+  function renderBucketGrid(toolEntries) {
+    const bucketMap = new Map();
+    toolEntries.forEach((tool) => {
+      const bucket = String(tool.showcaseTag || "Other").trim() || "Other";
+      if (!bucketMap.has(bucket)) {
+        bucketMap.set(bucket, []);
+      }
+      bucketMap.get(bucket).push(tool);
+    });
+
+    return Array.from(bucketMap.entries())
+      .sort((left, right) => left[0].localeCompare(right[0]))
+      .map(([bucketName, bucketTools]) => `
+        <div class="tools-platform-frame__nav-bucket" aria-label="${escapeHtml(bucketName)} tools">
+          <h3 class="tools-platform-frame__nav-bucket-title">${escapeHtml(bucketName)}</h3>
+          <div class="tools-platform-frame__nav-bucket-links">
+            ${bucketTools
+      .map((tool) => {
+        const currentClass = tool.id === currentToolId ? " is-current" : "";
+        return `
+          <div class="tools-platform-frame__nav-tool-row">
+            <a class="tools-platform-frame__nav-link${currentClass}" href="${escapeHtml(getRegistryEntryHref(tool.entryPoint))}">${escapeHtml(tool.displayName)}</a>
+            ${renderToolBindingBadges(tool)}
+          </div>
+        `;
+      })
+      .join("")}
+          </div>
+        </div>
+      `)
+      .join("");
+  }
+
+  if (isWorkspaceManagerContext()) {
+    const creatorTools = tools.filter((tool) => !viewerToolIds.has(tool.id));
+    const viewerTools = tools.filter((tool) => viewerToolIds.has(tool.id));
+    return `
+      <section class="tools-platform-frame__nav-section" aria-label="Editor and creator tools">
+        <h1 class="tools-platform-frame__nav-section-title">Editors and Creators</h1>
+        <div class="tools-platform-frame__nav-grid">
+          ${renderBucketGrid(creatorTools)}
+        </div>
+      </section>
+      <hr class="tools-platform-frame__divider tools-platform-frame__divider--nav-split" />
+      <section class="tools-platform-frame__nav-section" aria-label="Viewer tools">
+        <h1 class="tools-platform-frame__nav-section-title">Viewers</h1>
+        <div class="tools-platform-frame__nav-grid">
+          ${renderBucketGrid(viewerTools)}
+        </div>
+      </section>
+    `;
+  }
 
   const bucketMap = new Map();
   tools.forEach((tool) => {
@@ -368,6 +427,7 @@ function renderStatusMarkup(currentTool) {
 
 function applyDocumentMetadata(currentTool) {
   document.body.classList.add("tools-platform-surface");
+  document.body.classList.toggle("tools-platform-workspace-context", isWorkspaceManagerContext());
   const surfaceName = getDisplaySurfaceName(currentTool);
   if (currentTool || isWorkspaceManagerContext()) {
     document.title = `${surfaceName} | Tools Platform`;
