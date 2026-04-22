@@ -54,6 +54,14 @@ function buildClassTokens(classValues, engineClassesUsed) {
   const classEntries = asArray(classValues).length > 0 ? asArray(classValues) : asArray(engineClassesUsed);
   const deduped = [...new Set(classEntries.map((entry) => normalize(entry)).filter(Boolean))];
   return deduped
+    .filter((entry) => {
+      const phase20SampleMatch = entry.match(/^samples\/phase-20\/(\d{4})$/i);
+      if (!phase20SampleMatch) {
+        return true;
+      }
+      const sampleNumber = Number(phase20SampleMatch[1]);
+      return !Number.isInteger(sampleNumber) || sampleNumber < 2001 || sampleNumber > 2051;
+    })
     .map((entry) => {
       const name = entry.split("/").at(-1) || entry;
       return { value: entry, label: name };
@@ -240,16 +248,30 @@ function renderPinnedList(container, rows) {
 function renderPhaseSections(container, phaseGroups) {
   container.innerHTML = "";
   for (const phaseGroup of phaseGroups) {
-    const section = document.createElement("section");
-    section.className = "content-section";
+    const section = document.createElement("details");
+    section.className = "is-collapsible samples-phase-accordion";
     section.dataset.phase = phaseGroup.phase;
-    section.innerHTML = `<h2>${escapeHtml(phaseGroup.title)}</h2><p>${escapeHtml(phaseGroup.description)}</p>`;
+    section.open = true;
+
+    const summary = document.createElement("summary");
+    summary.className = "is-collapsible__summary";
+    summary.innerHTML = `
+      <span class="samples-phase-accordion__title">${escapeHtml(phaseGroup.title)}</span>
+      <span class="samples-phase-accordion__count">${phaseGroup.samples.length} sample${phaseGroup.samples.length === 1 ? "" : "s"}</span>
+    `;
+
+    const content = document.createElement("div");
+    content.className = "is-collapsible__content samples-phase-accordion__content";
+    content.innerHTML = `<p>${escapeHtml(phaseGroup.description)}</p>`;
+
     const grid = document.createElement("div");
     grid.className = "card-grid";
     for (const sample of phaseGroup.samples) {
       grid.appendChild(buildSampleCard(sample));
     }
-    section.appendChild(grid);
+    content.appendChild(grid);
+    section.appendChild(summary);
+    section.appendChild(content);
     container.appendChild(section);
   }
 }
