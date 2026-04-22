@@ -183,6 +183,70 @@ body[data-tool-id="physics-sandbox"].tool-shell-page #physicsSandboxOutput {
   overflow: auto;
 }
 
+body[data-tool-id="replay-visualizer"].tool-shell-page .tool-shell-container {
+  flex: 1 1 auto;
+  height: calc(100dvh - 120px);
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+body[data-tool-id="replay-visualizer"].tool-shell-page {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+}
+
+body[data-tool-id="replay-visualizer"].tool-shell-page > .is-collapsible,
+body[data-tool-id="replay-visualizer"].tool-shell-page > [data-tools-platform-status] {
+  flex: 0 0 auto;
+}
+
+body[data-tool-id="replay-visualizer"].tool-shell-page .tool-shell-container {
+  min-height: 420px;
+}
+
+body[data-tool-id="replay-visualizer"].tool-shell-page .tool-shell {
+  min-height: 0;
+  max-height: none;
+  height: 100%;
+  flex: 1 1 auto;
+}
+
+body[data-tool-id="replay-visualizer"].tool-shell-page .tool-shell__left,
+body[data-tool-id="replay-visualizer"].tool-shell-page .tool-shell__center,
+body[data-tool-id="replay-visualizer"].tool-shell-page .tool-shell__right {
+  min-height: 0;
+}
+
+body[data-tool-id="replay-visualizer"].tool-shell-page .tool-shell__left > .debug-tool-panel,
+body[data-tool-id="replay-visualizer"].tool-shell-page .tool-shell__center > .debug-tool-panel,
+body[data-tool-id="replay-visualizer"].tool-shell-page .tool-shell__right > .debug-tool-panel {
+  min-height: 0;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+body[data-tool-id="replay-visualizer"].tool-shell-page #replayJsonInput,
+body[data-tool-id="replay-visualizer"].tool-shell-page #replayEventList,
+body[data-tool-id="replay-visualizer"].tool-shell-page #replayEventOutput {
+  min-height: 0;
+  max-height: none;
+}
+
+body[data-tool-id="replay-visualizer"].tool-shell-page #replayJsonInput,
+body[data-tool-id="replay-visualizer"].tool-shell-page #replayEventOutput {
+  height: 100%;
+  flex: 1 1 auto;
+  overflow: auto;
+}
+
+body[data-tool-id="replay-visualizer"].tool-shell-page #replayEventList {
+  flex: 1 1 auto;
+  overflow: auto;
+}
+
 @media (max-width: 980px) {
   .tool-shell-page .tool-shell-container {
     width: min(100%, calc(100% - 16px));
