@@ -354,6 +354,41 @@ body[data-tool-id="3d-json-payload-normalizer"] .debug-tool-actions > button {
   visibility: visible;
 }
 
+body[data-tool-id="3d-json-payload-normalizer"] {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+}
+
+body[data-tool-id="3d-json-payload-normalizer"] > .is-collapsible,
+body[data-tool-id="3d-json-payload-normalizer"] > [data-tools-platform-status] {
+  flex: 0 0 auto;
+}
+
+body[data-tool-id="3d-json-payload-normalizer"] .debug-tool-shell {
+  flex: 1 1 auto;
+  min-height: 0;
+  height: calc(100dvh - 120px);
+  display: flex;
+  flex-direction: column;
+  align-content: flex-start;
+}
+
+body[data-tool-id="3d-json-payload-normalizer"] .debug-tool-shell > .debug-tool-panel {
+  flex: 0 0 auto;
+}
+
+body[data-tool-id="3d-json-payload-normalizer"] .debug-tool-grid {
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+body[data-tool-id="3d-json-payload-normalizer"] #map3dOutput {
+  min-height: 0;
+  height: 100%;
+  max-height: none;
+}
+
 body[data-tool-id="asset-pipeline-tool"] .debug-tool-shell {
   min-height: calc(46dvh - 240px);
 }
