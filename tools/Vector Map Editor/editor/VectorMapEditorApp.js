@@ -84,8 +84,12 @@ export class VectorMapEditorApp {
   cacheElements(doc) {
     return {
       appRoot: doc.getElementById("appRoot"),
+      headerAccordion: doc.querySelector(".is-collapsible"),
+      toolsPlatformStatusHost: doc.querySelector("[data-tools-platform-status]"),
       leftSidebar: doc.getElementById("leftSidebar"),
       rightSidebar: doc.getElementById("rightSidebar"),
+      closeLeftOverlayButton: doc.getElementById("closeLeftOverlayButton"),
+      closeRightOverlayButton: doc.getElementById("closeRightOverlayButton"),
       showLeftPanelButton: doc.getElementById("showLeftPanelButton"),
       showRightPanelButton: doc.getElementById("showRightPanelButton"),
       canvasShell: doc.getElementById("canvasShell"),
@@ -111,7 +115,6 @@ export class VectorMapEditorApp {
       saveDocumentButton: doc.getElementById("saveDocumentButton"),
       exportRuntimeButton: doc.getElementById("exportRuntimeButton"),
       loadDocumentInput: doc.getElementById("loadDocumentInput"),
-      toggleFullscreenButton: doc.getElementById("toggleFullscreenButton"),
       toggleJsonDockButton: doc.getElementById("toggleJsonDockButton"),
       duplicateObjectButton: doc.getElementById("duplicateObjectButton"),
       deleteObjectButton: doc.getElementById("deleteObjectButton"),
@@ -172,11 +175,15 @@ export class VectorMapEditorApp {
   start() {
     this.ctx = this.elements.canvas.getContext("2d");
     this.historyManager.reset();
+    this.syncFullscreenLayoutHeight();
     this.resizeCanvas();
     this.wireEvents();
     this.syncUIFromDocument();
     this.render();
-    window.addEventListener("resize", () => this.resizeCanvas());
+    window.addEventListener("resize", () => {
+      this.syncFullscreenLayoutHeight();
+      this.resizeCanvas();
+    });
     this.setStatus("Vector Map Editor ready.");
     void this.loadSampleManifest({ quiet: true });
   }
@@ -374,6 +381,7 @@ export class VectorMapEditorApp {
 
     document.addEventListener("fullscreenchange", () => {
       this.fullscreenController.syncBodyClass();
+      this.syncFullscreenLayoutHeight();
       this.elements.leftSidebar.classList.remove("visible-overlay");
       this.elements.rightSidebar.classList.remove("visible-overlay");
       this.resizeCanvas();
@@ -458,18 +466,20 @@ export class VectorMapEditorApp {
       this.setStatus(`Loaded ${file.name}.`);
     });
 
-    this.elements.toggleFullscreenButton.addEventListener("click", async () => {
-      await this.fullscreenController.toggle();
-      this.resizeCanvas();
-      this.render();
-    });
-
     this.elements.showLeftPanelButton.addEventListener("click", () => {
       this.elements.leftSidebar.classList.toggle("visible-overlay");
     });
 
     this.elements.showRightPanelButton.addEventListener("click", () => {
       this.elements.rightSidebar.classList.toggle("visible-overlay");
+    });
+
+    this.elements.closeLeftOverlayButton?.addEventListener("click", () => {
+      this.elements.leftSidebar.classList.remove("visible-overlay");
+    });
+
+    this.elements.closeRightOverlayButton?.addEventListener("click", () => {
+      this.elements.rightSidebar.classList.remove("visible-overlay");
     });
 
     this.elements.toggleJsonDockButton.addEventListener("click", () => {
@@ -701,6 +711,35 @@ export class VectorMapEditorApp {
       this.syncJsonEditor();
       this.setStatus("JSON reverted.");
     });
+  }
+
+  syncFullscreenLayoutHeight() {
+    const appRoot = this.elements.appRoot;
+    if (!(appRoot instanceof HTMLElement)) {
+      return;
+    }
+
+    if (!document.fullscreenElement) {
+      appRoot.style.height = "";
+      appRoot.style.maxHeight = "";
+      document.body.style.overflow = "";
+      document.documentElement.style.overflow = "";
+      return;
+    }
+
+    const viewportHeight = window.innerHeight || document.documentElement.clientHeight || 0;
+    const headerHeight = this.elements.headerAccordion instanceof HTMLElement
+      ? this.elements.headerAccordion.getBoundingClientRect().height
+      : 0;
+    const statusHeight = this.elements.toolsPlatformStatusHost instanceof HTMLElement
+      ? this.elements.toolsPlatformStatusHost.getBoundingClientRect().height
+      : 0;
+    const availableHeight = Math.max(320, Math.floor(viewportHeight - headerHeight - statusHeight - 4));
+
+    appRoot.style.height = `${availableHeight}px`;
+    appRoot.style.maxHeight = `${availableHeight}px`;
+    document.body.style.overflow = "hidden";
+    document.documentElement.style.overflow = "hidden";
   }
 
   wireSpinButton(button, axis, direction) {

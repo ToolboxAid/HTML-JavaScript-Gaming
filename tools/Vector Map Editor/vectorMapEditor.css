@@ -232,6 +232,38 @@ body.vector-editor-page > .is-collapsible {
   font-size: 14px;
 }
 
+.vector-editor-page .panel-accordion {
+  margin: 0 0 12px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--panel2);
+  overflow: hidden;
+}
+
+.vector-editor-page .panel-accordion__summary {
+  list-style: none;
+  cursor: pointer;
+  padding: 10px;
+  border-bottom: 1px solid transparent;
+}
+
+.vector-editor-page .panel-accordion__summary::-webkit-details-marker {
+  display: none;
+}
+
+.vector-editor-page .panel-accordion__summary h3 {
+  margin: 0;
+  font-size: 14px;
+}
+
+.vector-editor-page .panel-accordion[open] .panel-accordion__summary {
+  border-bottom-color: var(--line);
+}
+
+.vector-editor-page .panel-accordion__body {
+  padding: 10px;
+}
+
 .vector-editor-page .toolbar button,
 .vector-editor-page .toolbar select,
 .vector-editor-page .toolbar input[type="number"],
@@ -443,6 +475,10 @@ body.vector-editor-page > .is-collapsible {
   background: var(--surface-inline, rgba(43, 16, 91, 0.9));
 }
 
+.vector-editor-page .overlay-close-button {
+  display: none;
+}
+
 .vector-editor-page #showLeftPanelButton {
   left: 12px;
 }
@@ -453,7 +489,9 @@ body.vector-editor-page > .is-collapsible {
 
 body.vector-editor-page.fullscreen-mode .app {
   width: 100vw;
-  height: 100vh;
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
   grid-template-columns: 1fr;
   grid-template-rows: auto 1fr auto;
   grid-template-areas:
@@ -476,6 +514,29 @@ body.vector-editor-page.fullscreen-mode .rightbar {
 body.vector-editor-page.fullscreen-mode .sidebar.visible-overlay,
 body.vector-editor-page.fullscreen-mode .rightbar.visible-overlay {
   display: block;
+  padding-top: 44px;
+}
+
+body.vector-editor-page.fullscreen-mode .sidebar.visible-overlay .overlay-close-button,
+body.vector-editor-page.fullscreen-mode .rightbar.visible-overlay .overlay-close-button {
+  position: absolute;
+  top: 13px;
+  right: 13px;
+  z-index: 80;
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  border-radius: 999px;
+  font-size: 16px;
+  font-weight: 900;
+  line-height: 1;
+  border: 2px solid #ffffff;
+  background: #ed9700;
+  color: #ffffff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.45);
 }
 
 body.vector-editor-page.fullscreen-mode .sidebar {

@@ -143,6 +143,7 @@ button:hover,
 }
 
 .preview-wrap {
+  position: relative;
   flex: 1;
   min-height: 260px;
   border: 1px solid var(--parallax-border);
@@ -222,6 +223,93 @@ button:hover,
   padding-left: 18px;
   color: var(--parallax-muted);
   font-size: 12px;
+}
+
+.parallax-editor-page .fullscreen-overlay-button {
+  position: absolute;
+  top: 10px;
+  z-index: 20;
+  display: none;
+  min-height: 32px;
+  padding: 0 10px;
+}
+
+.parallax-editor-page #showLeftPanelButton {
+  left: 10px;
+}
+
+.parallax-editor-page #showRightPanelButton {
+  right: 10px;
+}
+
+body.parallax-editor-page.fullscreen-mode .app-shell {
+  min-height: 100vh;
+  min-height: 100dvh;
+  overflow: hidden;
+  padding: 8px;
+  gap: 8px;
+}
+
+body.parallax-editor-page.fullscreen-mode .toolbar {
+  padding: 8px;
+  gap: 8px;
+}
+
+body.parallax-editor-page.fullscreen-mode .toolbar-group.tools-platform-control-cluster--workflow,
+body.parallax-editor-page.fullscreen-mode .toolbar-group.tools-platform-control-cluster--preview {
+  display: none;
+}
+
+body.parallax-editor-page.fullscreen-mode .workspace {
+  grid-template-columns: minmax(0, 1fr);
+  height: calc(100dvh - 90px);
+  gap: 8px;
+}
+
+body.parallax-editor-page.fullscreen-mode .sidebar {
+  display: none;
+}
+
+body.parallax-editor-page.fullscreen-mode .sidebar.visible-overlay {
+  display: block;
+  position: fixed;
+  top: 70px;
+  bottom: 8px;
+  width: min(360px, calc(100vw - 24px));
+  z-index: 50;
+  overflow: auto;
+}
+
+body.parallax-editor-page.fullscreen-mode .left-sidebar.visible-overlay {
+  left: 12px;
+}
+
+body.parallax-editor-page.fullscreen-mode .right-sidebar.visible-overlay {
+  right: 12px;
+}
+
+body.parallax-editor-page.fullscreen-mode .preview-panel {
+  width: 100%;
+  min-width: 0;
+  height: 100%;
+  padding: 8px;
+}
+
+body.parallax-editor-page.fullscreen-mode .preview-wrap {
+  overflow: hidden;
+  min-height: 0;
+  height: 100%;
+}
+
+body.parallax-editor-page.fullscreen-mode #previewCanvas {
+  width: 100%;
+  height: 100%;
+}
+
+body.parallax-editor-page.fullscreen-mode .fullscreen-overlay-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 @media (max-width: 1260px) {

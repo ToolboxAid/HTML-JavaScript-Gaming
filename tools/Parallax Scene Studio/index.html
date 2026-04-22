@@ -74,7 +74,7 @@ index.html
     </header>
 
     <div class="workspace tools-platform-layout-grid">
-      <aside class="sidebar left-sidebar tools-platform-resize-panel" data-panel-side="left">
+      <aside class="sidebar left-sidebar tools-platform-resize-panel" data-panel-side="left" id="leftSidebar">
         <section class="panel">
           <h3>Parallax Layers</h3>
           <ul id="layerList" class="layer-list"></ul>
@@ -117,11 +117,13 @@ index.html
         </div>
         <div class="preview-wrap">
           <canvas id="previewCanvas" width="960" height="540"></canvas>
+          <button id="showLeftPanelButton" class="fullscreen-overlay-button" type="button">Layers</button>
+          <button id="showRightPanelButton" class="fullscreen-overlay-button" type="button">Properties</button>
         </div>
         <div id="statusText" class="status-text">Ready.</div>
       </main>
 
-      <aside class="sidebar right-sidebar tools-platform-resize-panel" data-panel-side="right">
+      <aside class="sidebar right-sidebar tools-platform-resize-panel" data-panel-side="right" id="rightSidebar">
         <section class="panel">
           <h3>Selected Layer</h3>
           <label>

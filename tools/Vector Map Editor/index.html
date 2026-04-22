@@ -91,7 +91,6 @@ index.html
           <option value="delete">Delete</option>
         </select>
 
-        <button id="toggleFullscreenButton">Fullscreen</button>
         <button id="toggleJsonDockButton">JSON Dock</button>
       </div>
 
@@ -111,42 +110,64 @@ index.html
     </div>
 
     <aside class="sidebar tools-platform-resize-panel" data-panel-side="left" id="leftSidebar">
-      <div class="panel">
-        <h3>Objects</h3>
-        <div class="button-row">
-          <button id="duplicateObjectButton">Duplicate</button>
-          <button id="deleteObjectButton">Delete</button>
+      <button id="closeLeftOverlayButton" class="overlay-close-button" type="button" aria-label="Close Objects Panel">X</button>
+      <details class="panel-accordion" open>
+        <summary class="panel-accordion__summary"><h3>Objects</h3></summary>
+        <div class="panel-accordion__body">
+          <div class="button-row">
+            <button id="duplicateObjectButton">Duplicate</button>
+            <button id="deleteObjectButton">Delete</button>
+          </div>
+          <ul id="objectList" class="object-list"></ul>
         </div>
-        <ul id="objectList" class="object-list"></ul>
-      </div>
+      </details>
 
-      <div class="panel">
-        <h3>Document</h3>
-        <label>
-          Name
-          <input id="documentNameInput" type="text" value="untitled" />
-        </label>
-        <div class="field-grid">
+      <details class="panel-accordion">
+        <summary class="panel-accordion__summary"><h3>Document</h3></summary>
+        <div class="panel-accordion__body">
           <label>
-            Width
-            <input id="documentWidthInput" type="number" min="64" step="1" value="1280" />
+            Name
+            <input id="documentNameInput" type="text" value="untitled" />
           </label>
-          <label>
-            Height
-            <input id="documentHeightInput" type="number" min="64" step="1" value="720" />
-          </label>
-          <label>
-            Background
-            <input id="documentBackgroundInput" type="text" value="#000000" />
-          </label>
+          <div class="field-grid">
+            <label>
+              Width
+              <input id="documentWidthInput" type="number" min="64" step="1" value="1280" />
+            </label>
+            <label>
+              Height
+              <input id="documentHeightInput" type="number" min="64" step="1" value="720" />
+            </label>
+            <label>
+              Background
+              <input id="documentBackgroundInput" type="text" value="#000000" />
+            </label>
+          </div>
+          <p class="help">Point, line, polyline, and polygon tools create objects in the current workspace. Double-click to finish polyline/polygon. Collision Vector drags a test ray across flagged geometry.</p>
         </div>
-        <p class="help">Point, line, polyline, and polygon tools create objects in the current workspace. Double-click to finish polyline/polygon. Collision Vector drags a test ray across flagged geometry.</p>
-      </div>
+      </details>
 
-      <div class="panel">
-        <h3>Collision Result</h3>
-        <div id="collisionSummary" class="help">No collision test yet.</div>
-      </div>
+      <details class="panel-accordion">
+        <summary class="panel-accordion__summary"><h3>Collision Result</h3></summary>
+        <div class="panel-accordion__body">
+          <div id="collisionSummary" class="help">No collision test yet.</div>
+        </div>
+      </details>
+
+      <details class="panel-accordion">
+        <summary class="panel-accordion__summary"><h3>Keyboard & Mouse</h3></summary>
+        <div class="panel-accordion__body">
+          <div class="help">
+            <div><strong>Pan:</strong> Space + drag or Pan tool</div>
+            <div><strong>Select:</strong> Click object/point</div>
+            <div><strong>Move:</strong> Drag selected point/object</div>
+            <div><strong>Rotate:</strong> Rotate tool + drag left/right</div>
+            <div><strong>Set Center:</strong> Click to place center</div>
+            <div><strong>Collision Vector:</strong> Drag a ray to inspect first hit</div>
+            <div><strong>Delete:</strong> Delete tool or Delete key</div>
+          </div>
+        </div>
+      </details>
     </aside>
 
     <main class="canvas-shell" id="canvasShell">
@@ -169,141 +190,141 @@ index.html
     </main>
 
     <aside class="rightbar tools-platform-resize-panel" data-panel-side="right" id="rightSidebar">
-      <div class="panel">
-        <h3>Selected Object</h3>
-        <label>
-          Name
-          <input id="selectedObjectNameInput" type="text" />
-        </label>
-        <div class="field-row">
+      <button id="closeRightOverlayButton" class="overlay-close-button" type="button" aria-label="Close Properties Panel">X</button>
+      <details class="panel-accordion" open>
+        <summary class="panel-accordion__summary"><h3>Selected Object</h3></summary>
+        <div class="panel-accordion__body">
           <label>
-            Kind
-            <input id="selectedObjectKindInput" type="text" readonly />
+            Name
+            <input id="selectedObjectNameInput" type="text" />
           </label>
+          <div class="field-row">
+            <label>
+              Kind
+              <input id="selectedObjectKindInput" type="text" readonly />
+            </label>
+            <label>
+              Space
+              <input id="selectedObjectSpaceInput" type="text" readonly />
+            </label>
+          </div>
+        </div>
+      </details>
+
+      <details class="panel-accordion">
+        <summary class="panel-accordion__summary"><h3>Center Point</h3></summary>
+        <div class="panel-accordion__body">
+          <div class="button-row">
+            <button id="autoCenterBoundsButton">Bounds</button>
+            <button id="autoCenterCentroidButton">Centroid</button>
+            <button id="autoCenterOriginButton">Origin</button>
+            <button id="autoCenterSelectionButton">Selection</button>
+          </div>
+          <div class="field-grid">
+            <label>X <input id="centerXInput" type="number" step="0.1" /></label>
+            <label>Y <input id="centerYInput" type="number" step="0.1" /></label>
+            <label>Z <input id="centerZInput" type="number" step="0.1" /></label>
+          </div>
+          <div class="button-row">
+            <button id="applyCenterButton">Apply XYZ</button>
+            <button id="setCenterFromSelectionButton">Use Selected Point</button>
+          </div>
+        </div>
+      </details>
+
+      <details class="panel-accordion">
+        <summary class="panel-accordion__summary"><h3>Rotation</h3></summary>
+        <div class="panel-accordion__body">
+          <div id="rotationDegreesDisplay" class="help rotation-readout">X: 0deg | Y: 0deg | Z: 0deg</div>
+          <div class="single-field-grid">
+            <label>X
+              <div class="spin-row">
+                <button id="rotationXDownButton" class="spin-button">-</button>
+                <input id="rotationXInput" type="number" step="1" />
+                <button id="rotationXUpButton" class="spin-button">+</button>
+              </div>
+            </label>
+            <label>Y
+              <div class="spin-row">
+                <button id="rotationYDownButton" class="spin-button">-</button>
+                <input id="rotationYInput" type="number" step="1" />
+                <button id="rotationYUpButton" class="spin-button">+</button>
+              </div>
+            </label>
+            <label>Z
+              <div class="spin-row">
+                <button id="rotationZDownButton" class="spin-button">-</button>
+                <input id="rotationZInput" type="number" step="1" />
+                <button id="rotationZUpButton" class="spin-button">+</button>
+              </div>
+            </label>
+          </div>
+          <div class="button-row">
+            <button id="applyRotationButton">Apply Rotation</button>
+            <button id="resetRotationButton">Reset Rotation</button>
+          </div>
+          <div class="field-row">
+            <label>Rotate Points (deg)
+              <input id="rotatePointsDegreesInput" type="number" step="1" value="15" />
+            </label>
+          </div>
+          <div class="button-row">
+            <button id="rotatePointsDegreesButton">Rotate Points</button>
+            <button id="spinAllPointsButton">Spin 360</button>
+          </div>
+        </div>
+      </details>
+
+      <details class="panel-accordion">
+        <summary class="panel-accordion__summary"><h3>Appearance</h3></summary>
+        <div class="panel-accordion__body">
+          <div class="field-grid">
+            <label>Stroke <input id="objectStrokeInput" type="color" value="#ffffff" /></label>
+            <label>Fill <input id="objectFillInput" type="text" value="" placeholder="null or #rrggbb" /></label>
+            <label>Line Width <input id="objectLineWidthInput" type="number" min="1" step="1" value="2" /></label>
+          </div>
+          <div class="field-grid">
+            <label>Color Mode
+              <select id="objectColorModeSelect">
+                <option value="object">Object</option>
+                <option value="point">Point-to-point</option>
+              </select>
+            </label>
+            <label>Selected Point Color
+              <input id="selectedPointColorInput" type="color" value="#ffffff" />
+            </label>
+            <label>&nbsp;
+              <button id="applyPointColorButton">Apply Point Color</button>
+            </label>
+          </div>
+        </div>
+      </details>
+
+      <details class="panel-accordion">
+        <summary class="panel-accordion__summary"><h3>Collision Flags</h3></summary>
+        <div class="panel-accordion__body">
+          <div class="flag-grid">
+            <label><input id="flagCollidableInput" type="checkbox" /> Collidable</label>
+            <label><input id="flagDeadlyInput" type="checkbox" /> Deadly</label>
+            <label><input id="flagTriggerInput" type="checkbox" /> Trigger</label>
+            <label><input id="flagSpawnBlockerInput" type="checkbox" /> Spawn Blocker</label>
+            <label><input id="flagProjectileBlockerInput" type="checkbox" /> Projectile Blocker</label>
+            <label><input id="flagPlayerOnlyInput" type="checkbox" /> Player Only</label>
+            <label><input id="flagEnemyOnlyInput" type="checkbox" /> Enemy Only</label>
+          </div>
           <label>
-            Space
-            <input id="selectedObjectSpaceInput" type="text" readonly />
+            Tag
+            <input id="flagTagInput" type="text" placeholder="wall / trigger / zone" />
           </label>
         </div>
-      </div>
+      </details>
 
-      <div class="panel">
-        <h3>Center Point</h3>
-        <div class="button-row">
-          <button id="autoCenterBoundsButton">Bounds</button>
-          <button id="autoCenterCentroidButton">Centroid</button>
-          <button id="autoCenterOriginButton">Origin</button>
-          <button id="autoCenterSelectionButton">Selection</button>
+      <details class="panel-accordion">
+        <summary class="panel-accordion__summary"><h3>Points</h3></summary>
+        <div class="panel-accordion__body">
+          <div id="pointsSummary" class="help">No selection.</div>
         </div>
-        <div class="field-grid">
-          <label>X <input id="centerXInput" type="number" step="0.1" /></label>
-          <label>Y <input id="centerYInput" type="number" step="0.1" /></label>
-          <label>Z <input id="centerZInput" type="number" step="0.1" /></label>
-        </div>
-        <div class="button-row">
-          <button id="applyCenterButton">Apply XYZ</button>
-          <button id="setCenterFromSelectionButton">Use Selected Point</button>
-        </div>
-      </div>
-
-      <div class="panel">
-        <h3>Rotation</h3>
-        <div id="rotationDegreesDisplay" class="help rotation-readout">X: 0deg | Y: 0deg | Z: 0deg</div>
-        <div class="single-field-grid">
-          <label>X
-            <div class="spin-row">
-              <button id="rotationXDownButton" class="spin-button">-</button>
-              <input id="rotationXInput" type="number" step="1" />
-              <button id="rotationXUpButton" class="spin-button">+</button>
-            </div>
-          </label>
-          <label>Y
-            <div class="spin-row">
-              <button id="rotationYDownButton" class="spin-button">-</button>
-              <input id="rotationYInput" type="number" step="1" />
-              <button id="rotationYUpButton" class="spin-button">+</button>
-            </div>
-          </label>
-          <label>Z
-            <div class="spin-row">
-              <button id="rotationZDownButton" class="spin-button">-</button>
-              <input id="rotationZInput" type="number" step="1" />
-              <button id="rotationZUpButton" class="spin-button">+</button>
-            </div>
-          </label>
-        </div>
-        <div class="button-row">
-          <button id="applyRotationButton">Apply Rotation</button>
-          <button id="resetRotationButton">Reset Rotation</button>
-        </div>
-        <div class="field-row">
-          <label>Rotate Points (deg)
-            <input id="rotatePointsDegreesInput" type="number" step="1" value="15" />
-          </label>
-        </div>
-        <div class="button-row">
-          <button id="rotatePointsDegreesButton">Rotate Points</button>
-          <button id="spinAllPointsButton">Spin 360</button>
-        </div>
-      </div>
-
-      <div class="panel">
-        <h3>Appearance</h3>
-        <div class="field-grid">
-          <label>Stroke <input id="objectStrokeInput" type="color" value="#ffffff" /></label>
-          <label>Fill <input id="objectFillInput" type="text" value="" placeholder="null or #rrggbb" /></label>
-          <label>Line Width <input id="objectLineWidthInput" type="number" min="1" step="1" value="2" /></label>
-        </div>
-        <div class="field-grid">
-          <label>Color Mode
-            <select id="objectColorModeSelect">
-              <option value="object">Object</option>
-              <option value="point">Point-to-point</option>
-            </select>
-          </label>
-          <label>Selected Point Color
-            <input id="selectedPointColorInput" type="color" value="#ffffff" />
-          </label>
-          <label>&nbsp;
-            <button id="applyPointColorButton">Apply Point Color</button>
-          </label>
-        </div>
-      </div>
-
-      <div class="panel">
-        <h3>Collision Flags</h3>
-        <div class="flag-grid">
-          <label><input id="flagCollidableInput" type="checkbox" /> Collidable</label>
-          <label><input id="flagDeadlyInput" type="checkbox" /> Deadly</label>
-          <label><input id="flagTriggerInput" type="checkbox" /> Trigger</label>
-          <label><input id="flagSpawnBlockerInput" type="checkbox" /> Spawn Blocker</label>
-          <label><input id="flagProjectileBlockerInput" type="checkbox" /> Projectile Blocker</label>
-          <label><input id="flagPlayerOnlyInput" type="checkbox" /> Player Only</label>
-          <label><input id="flagEnemyOnlyInput" type="checkbox" /> Enemy Only</label>
-        </div>
-        <label>
-          Tag
-          <input id="flagTagInput" type="text" placeholder="wall / trigger / zone" />
-        </label>
-      </div>
-
-      <div class="panel">
-        <h3>Points</h3>
-        <div id="pointsSummary" class="help">No selection.</div>
-      </div>
-
-      <div class="panel">
-        <h3>Keyboard & Mouse</h3>
-        <div class="help">
-          <div><strong>Pan:</strong> Space + drag or Pan tool</div>
-          <div><strong>Select:</strong> Click object/point</div>
-          <div><strong>Move:</strong> Drag selected point/object</div>
-          <div><strong>Rotate:</strong> Rotate tool + drag left/right</div>
-          <div><strong>Set Center:</strong> Click to place center</div>
-          <div><strong>Collision Vector:</strong> Drag a ray to inspect first hit</div>
-          <div><strong>Delete:</strong> Delete tool or Delete key</div>
-        </div>
-      </div>
+      </details>
     </aside>
 
     <div class="statusbar">

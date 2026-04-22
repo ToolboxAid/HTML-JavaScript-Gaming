@@ -378,6 +378,7 @@ class ParallaxEditorApp {
   init(rootDocument) {
     this.captureRefs(rootDocument);
     this.attachEvents();
+    this.syncFullscreenState();
     this.syncInputsFromDocument();
     this.renderAll();
     this.bindRuntimeStateSync();
@@ -452,6 +453,11 @@ class ParallaxEditorApp {
     this.refs.previewMeta = rootDocument.getElementById("previewMeta");
     this.refs.simulationContext = rootDocument.getElementById("simulationContext");
     this.refs.statusText = rootDocument.getElementById("statusText");
+    this.refs.appShell = rootDocument.querySelector(".app-shell");
+    this.refs.leftSidebar = rootDocument.getElementById("leftSidebar");
+    this.refs.rightSidebar = rootDocument.getElementById("rightSidebar");
+    this.refs.showLeftPanelButton = rootDocument.getElementById("showLeftPanelButton");
+    this.refs.showRightPanelButton = rootDocument.getElementById("showRightPanelButton");
     this.refs.previewWrap = rootDocument.querySelector(".preview-wrap");
     this.refs.previewCanvas = rootDocument.getElementById("previewCanvas");
     this.refs.previewContext = this.refs.previewCanvas.getContext("2d", { alpha: false });
@@ -477,6 +483,17 @@ class ParallaxEditorApp {
     this.refs.inspectRemediationButton.addEventListener("click", () => this.inspectRemediationActions());
     this.refs.jumpToProblemButton.addEventListener("click", () => this.jumpToRemediationProblem());
     this.refs.applyRemediationButton.addEventListener("click", () => this.applyRemediationAction());
+    this.refs.showLeftPanelButton?.addEventListener("click", () => {
+      this.refs.leftSidebar?.classList.toggle("visible-overlay");
+    });
+    this.refs.showRightPanelButton?.addEventListener("click", () => {
+      this.refs.rightSidebar?.classList.toggle("visible-overlay");
+    });
+    document.addEventListener("fullscreenchange", () => {
+      this.syncFullscreenState();
+      this.refs.leftSidebar?.classList.remove("visible-overlay");
+      this.refs.rightSidebar?.classList.remove("visible-overlay");
+    });
 
     this.refs.applyMapMetaButton.addEventListener("click", () => this.applyMapMetaFromInputs());
     this.refs.projectNameInput.addEventListener("change", () => this.applyMapMetaFromInputs());
@@ -511,6 +528,10 @@ class ParallaxEditorApp {
         }
       });
     }
+  }
+
+  syncFullscreenState() {
+    document.body.classList.toggle("fullscreen-mode", Boolean(document.fullscreenElement));
   }
 
   getSelectedLayer() {
