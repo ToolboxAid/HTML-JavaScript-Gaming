@@ -244,6 +244,7 @@ button:disabled {
   display: flex;
   flex-direction: column;
   padding: 10px;
+  min-height: 0;
 }
 
 .canvas-toolbar {
@@ -258,7 +259,8 @@ button:disabled {
 .canvas-viewport {
   position: relative;
   flex: 1;
-  min-height: 260px;
+  min-height: 0;
+  height: 100%;
   border: 1px solid var(--svg-border);
   border-radius: 8px;
   overflow: hidden;
