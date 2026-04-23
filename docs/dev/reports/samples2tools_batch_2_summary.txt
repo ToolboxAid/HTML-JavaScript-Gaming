@@ -1,6 +1,6 @@
 Samples2Tools Batch 2 Summary
 Generated: 2026-04-23T23:17:40.888Z
-Scope: non-Phase-20 sample->tool mappings via metadata toolHints + 1208 vertical-slice evidence
+Scope: phase-01-phase-19 sample->tool mappings via metadata toolHints + 1208 vertical-slice evidence
 
 Mapped tools: 3
 Mapped sample links: 9
