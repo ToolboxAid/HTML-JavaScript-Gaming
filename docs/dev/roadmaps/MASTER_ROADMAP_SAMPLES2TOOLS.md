@@ -77,7 +77,7 @@
 - [ ] Validate end-to-end parity for the slice (sample load + tool preload + visible content match).
 
 ### Phase 1 - Foundation + One Vertical Slice
-- [.] Add shared adapter guidance document for sample-to-tool loading.
+- [x] Add shared adapter guidance document for sample-to-tool loading.
 - [x] Implement one full reference flow:
 - sample page loads `sample-xxxx.json`
 - same file is passed to tool launch
