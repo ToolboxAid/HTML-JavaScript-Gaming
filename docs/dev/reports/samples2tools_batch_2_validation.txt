@@ -1,0 +1,20 @@
+Samples2Tools Batch 2 Validation
+Generated: 2026-04-23T23:17:40.888Z
+
+[x] Canonical sample preset exists for 1208
+[x] Sample 1208 runtime loads shared sample JSON
+[x] Sample 1208 roundtrip links pass sampleId + samplePresetPath
+[x] Parallax tool query preload flow is implemented
+[x] Tilemap tool query preload flow is implemented
+[x] Vector Asset Studio query preload flow is implemented
+[x] Non-Phase-20 metadata tool mappings available
+
+Execution evidence:
+- Canonical sample preset exists for 1208: samples/phase-12/1208/sample-1208.json
+- Sample 1208 runtime loads shared sample JSON: samples/phase-12/1208/main.js
+- Sample 1208 roundtrip links pass sampleId + samplePresetPath: samples/phase-12/1208/index.html
+- Parallax tool query preload flow is implemented: tools/Parallax Scene Studio/main.js
+- Tilemap tool query preload flow is implemented: tools/Tilemap Studio/main.js
+- Vector Asset Studio query preload flow is implemented: tools/Vector Asset Studio/main.js
+- Non-Phase-20 metadata tool mappings available: 9 links across 3 tools
+- overall: pass

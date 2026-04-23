@@ -1,0 +1,84 @@
+{
+  "generatedAt": "2026-04-23T23:17:40.888Z",
+  "scope": "phase-01-phase-19",
+  "totalLinks": 9,
+  "tools": [
+    {
+      "toolId": "parallax-editor",
+      "count": 4
+    },
+    {
+      "toolId": "tile-map-editor",
+      "count": 4
+    },
+    {
+      "toolId": "vector-asset-studio",
+      "count": 1
+    }
+  ],
+  "links": [
+    {
+      "toolId": "parallax-editor",
+      "sampleId": "0306",
+      "phase": "03",
+      "title": "Nes Style Zones Parallax",
+      "href": "./phase-03/0306/index.html"
+    },
+    {
+      "toolId": "parallax-editor",
+      "sampleId": "1204",
+      "phase": "12",
+      "title": "Tilemap Parallax Hero",
+      "href": "./phase-12/1204/index.html"
+    },
+    {
+      "toolId": "parallax-editor",
+      "sampleId": "1205",
+      "phase": "12",
+      "title": "Multi-System Demo",
+      "href": "./phase-12/1205/index.html"
+    },
+    {
+      "toolId": "parallax-editor",
+      "sampleId": "1208",
+      "phase": "12",
+      "title": "Tool Formatted Tiles Parallax",
+      "href": "./phase-12/1208/index.html"
+    },
+    {
+      "toolId": "tile-map-editor",
+      "sampleId": "1208",
+      "phase": "12",
+      "title": "Tool Formatted Tiles Parallax",
+      "href": "./phase-12/1208/index.html"
+    },
+    {
+      "toolId": "tile-map-editor",
+      "sampleId": "1209",
+      "phase": "12",
+      "title": "Tilemap Basic Layout Preset",
+      "href": "./phase-12/1209/index.html"
+    },
+    {
+      "toolId": "tile-map-editor",
+      "sampleId": "1210",
+      "phase": "12",
+      "title": "Tilemap Objective Layout Preset",
+      "href": "./phase-12/1210/index.html"
+    },
+    {
+      "toolId": "tile-map-editor",
+      "sampleId": "1211",
+      "phase": "12",
+      "title": "Tilemap Mario Learning Layout Preset",
+      "href": "./phase-12/1211/index.html"
+    },
+    {
+      "toolId": "vector-asset-studio",
+      "sampleId": "1208",
+      "phase": "12",
+      "title": "Tool Formatted Tiles Parallax",
+      "href": "./phase-12/1208/index.html"
+    }
+  ]
+}

@@ -17,9 +17,9 @@
 - `tools/toolRegistry.js` (active tool registry and ids)
 
 ## Kickoff Status (2026-04-23)
-- [.] Roadmap kickoff started
-- [.] Phase 1 vertical slice target selected: `Parallax Scene Studio`
-- [.] Batch 1 implementation start
+- [x] Roadmap kickoff started
+- [x] Phase 1 vertical slice target selected: `Parallax Scene Studio`
+- [x] Batch 1 implementation start
 - [x] Next execution queued: remove all `imageDataUrl` usage/dependency across Samples2Tools lane
 
 ## Next Execution - imageDataUrl Elimination
@@ -49,7 +49,7 @@
 - `provenance` (path, createdAt, version)
 
 ## Launch Contract (Shared)
-- [.] Standard query parameters for tool launch:
+- [x] Standard query parameters for tool launch:
 - `sampleId=<id>`
 - `samplePresetPath=/samples/phase-xx/xxxx/sample-xxxx.json`
 - [ ] Tool boot behavior:
@@ -69,20 +69,20 @@
 ## Rollout Plan
 
 ### Batch 1 - Active Work (Phase 1 Slice)
-- [.] Add `samples/phase-12/1208/sample-1208.json` as shared sample/tool preset source.
-- [.] Wire Sample 1208 page/tool link to pass:
+- [x] Add `samples/phase-12/1208/sample-1208.json` as shared sample/tool preset source.
+- [x] Wire Sample 1208 page/tool link to pass:
 - `sampleId=1208`
 - `samplePresetPath=/samples/phase-12/1208/sample-1208.json`
-- [.] Wire `Parallax Scene Studio` launch path to load and hydrate from `samplePresetPath` when provided.
+- [x] Wire `Parallax Scene Studio` launch path to load and hydrate from `samplePresetPath` when provided.
 - [ ] Validate end-to-end parity for the slice (sample load + tool preload + visible content match).
 
 ### Phase 1 - Foundation + One Vertical Slice
 - [.] Add shared adapter guidance document for sample-to-tool loading.
-- [.] Implement one full reference flow:
+- [x] Implement one full reference flow:
 - sample page loads `sample-xxxx.json`
 - same file is passed to tool launch
 - tool hydrates from same file
-- [.] Suggested first slice: `Parallax Scene Studio` (clear, low candidate count).
+- [x] Suggested first slice: `Parallax Scene Studio` (clear, low candidate count).
 - [ ] Validate:
 - sample runs using file
 - tool opens from sample and loads matching content
@@ -120,7 +120,9 @@
 - [ ] Select precise, semantically aligned samples only (avoid broad keyword-only linkage).
 
 ### Phase 5 - Games
-- [ ] Do the same thing for games.
+- [ ] Do the same thing for games, but use Workspace Manager.
+- [ ] 100% of the game data needs to be generated from Workspace Manager
+- [ ] No Tool should be used independantly
 
 ### Phase 6 - Phase 20 Decommission (After Parity)
 - [ ] Keep `Phase 20 - Tool Preset Integration` active until Samples2Tools parity is execution-validated.
