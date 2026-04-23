@@ -58,9 +58,36 @@ export default class MultiSystemDemoScene extends Scene {
     this.landingTimer = 0;
 
     this.parallaxLayers = [
-      { speed: 0.16, y: 16, height: 56, width: 210, gap: 70, color: 'rgba(148, 163, 184, 0.34)' },
-      { speed: 0.30, y: 72, height: 96, width: 180, gap: 36, color: 'rgba(99, 102, 241, 0.28)' },
-      { speed: 0.52, y: 128, height: 92, width: 140, gap: 24, color: 'rgba(45, 212, 191, 0.22)' },
+      {
+        speed: 0.16,
+        y: 16,
+        height: 56,
+        width: 210,
+        gap: 70,
+        color: 'rgba(148, 163, 184, 0.34)',
+        imagePath: './assets/data/parallax/sample-1205-far.svg',
+        image: null,
+      },
+      {
+        speed: 0.30,
+        y: 72,
+        height: 96,
+        width: 180,
+        gap: 36,
+        color: 'rgba(99, 102, 241, 0.28)',
+        imagePath: './assets/data/parallax/sample-1205-mid.svg',
+        image: null,
+      },
+      {
+        speed: 0.52,
+        y: 128,
+        height: 92,
+        width: 140,
+        gap: 24,
+        color: 'rgba(45, 212, 191, 0.22)',
+        imagePath: './assets/data/parallax/sample-1205-near.svg',
+        image: null,
+      },
     ];
 
     this.collectibles = [
@@ -75,6 +102,10 @@ export default class MultiSystemDemoScene extends Scene {
     this.totalCollectibles = this.collectibles.length;
     this.lastDeltaTime = 0;
     this.lastResolvedRenderOrder = [];
+  }
+
+  enter() {
+    this.loadParallaxImages();
   }
 
   exit() {
@@ -279,7 +310,7 @@ export default class MultiSystemDemoScene extends Scene {
       `Collected: ${this.collectedCount}/${this.totalCollectibles}`,
       `Goal: ${complete}`,
       `Camera X: ${this.camera.x.toFixed(1)}`,
-      `Parallax Far/Near: ${this.parallaxLayers[0].speed}/${this.parallaxLayers[2].speed}`,
+      `Parallax Far/Near: ${this.parallaxLayers[0].speed}/${this.parallaxLayers[this.parallaxLayers.length - 1].speed}`,
       `Debug: ${this.debugConfig.debugEnabled ? 'enabled' : 'disabled'} (${this.debugConfig.debugMode})`,
       'Controls: Left/Right + Space + Shift+` (console input while open)',
     ]);
@@ -314,20 +345,56 @@ export default class MultiSystemDemoScene extends Scene {
     const endX = this.screen.x + this.camera.viewportWidth + segment;
 
     for (let x = this.screen.x + offset - segment; x < endX; x += segment) {
-      renderer.drawRect(
-        x,
-        this.screen.y + layer.y,
-        layer.width,
-        layer.height,
-        layer.color
-      );
-      renderer.drawRect(
-        x + layer.width * 0.2,
-        this.screen.y + layer.y - layer.height * 0.25,
-        layer.width * 0.35,
-        layer.height * 0.35,
-        layer.color
-      );
+      if (layer.image) {
+        const sourceWidth = layer.image.naturalWidth || layer.image.width || layer.width;
+        const sourceHeight = layer.image.naturalHeight || layer.image.height || layer.height;
+        renderer.drawImageFrame(
+          layer.image,
+          0,
+          0,
+          sourceWidth,
+          sourceHeight,
+          x,
+          this.screen.y + layer.y,
+          layer.width,
+          layer.height
+        );
+      } else {
+        renderer.drawRect(
+          x,
+          this.screen.y + layer.y,
+          layer.width,
+          layer.height,
+          layer.color
+        );
+        renderer.drawRect(
+          x + layer.width * 0.2,
+          this.screen.y + layer.y - layer.height * 0.25,
+          layer.width * 0.35,
+          layer.height * 0.35,
+          layer.color
+        );
+      }
+    }
+  }
+
+  loadParallaxImages() {
+    if (typeof Image !== 'function') {
+      return;
+    }
+
+    for (const layer of this.parallaxLayers) {
+      if (!layer.imagePath) {
+        continue;
+      }
+      const image = new Image();
+      image.onload = () => {
+        layer.image = image;
+      };
+      image.onerror = () => {
+        layer.image = null;
+      };
+      image.src = new URL(layer.imagePath, import.meta.url).href;
     }
   }
 

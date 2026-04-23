@@ -1,0 +1,34 @@
+{
+  "generatedAt": "2026-04-23T17:05:53.819Z",
+  "scope": "non-phase-20",
+  "links": [
+    {
+      "toolId": "parallax-editor",
+      "sampleId": "0306",
+      "phase": "03",
+      "title": "Nes Style Zones Parallax",
+      "href": "./phase-03/0306/index.html"
+    },
+    {
+      "toolId": "parallax-editor",
+      "sampleId": "1204",
+      "phase": "12",
+      "title": "Tilemap Parallax Hero",
+      "href": "./phase-12/1204/index.html"
+    },
+    {
+      "toolId": "parallax-editor",
+      "sampleId": "1205",
+      "phase": "12",
+      "title": "Multi-System Demo",
+      "href": "./phase-12/1205/index.html"
+    },
+    {
+      "toolId": "parallax-editor",
+      "sampleId": "1208",
+      "phase": "12",
+      "title": "Tool Formatted Tiles Parallax",
+      "href": "./phase-12/1208/index.html"
+    }
+  ]
+}

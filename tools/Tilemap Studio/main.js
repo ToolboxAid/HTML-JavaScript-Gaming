@@ -56,6 +56,56 @@ const SAMPLE_DIRECTORY_PATH = "./samples/";
 const SAMPLE_MANIFEST_PATH = "./samples/sample-manifest.json";
 const DEFAULT_TILESET_SWATCH_COLOR = "#64748b";
 
+function normalizeSamplePresetPath(pathValue) {
+  if (typeof pathValue !== "string") {
+    return "";
+  }
+  const trimmed = pathValue.trim().replace(/\\/g, "/");
+  if (!trimmed || trimmed.includes("..")) {
+    return "";
+  }
+  if (trimmed.startsWith("/samples/")) {
+    return trimmed;
+  }
+  if (trimmed.startsWith("./samples/")) {
+    return trimmed;
+  }
+  if (trimmed.startsWith("samples/")) {
+    return `./${trimmed}`;
+  }
+  return "";
+}
+
+function extractTileMapDocumentFromSamplePreset(rawPreset) {
+  if (!rawPreset || typeof rawPreset !== "object") {
+    return rawPreset;
+  }
+
+  const payload = rawPreset.payload;
+  if (payload && typeof payload === "object") {
+    if (payload.tilemapDocument && typeof payload.tilemapDocument === "object") {
+      return payload.tilemapDocument;
+    }
+    if (payload.tileMapDocument && typeof payload.tileMapDocument === "object") {
+      return payload.tileMapDocument;
+    }
+    if (payload.tilemap && typeof payload.tilemap === "object") {
+      return payload.tilemap;
+    }
+    if (payload.tileMap && typeof payload.tileMap === "object") {
+      return payload.tileMap;
+    }
+    if (typeof payload.tilemapDocumentPath === "string") {
+      return payload.tilemapDocumentPath;
+    }
+    if (typeof payload.tileMapDocumentPath === "string") {
+      return payload.tileMapDocumentPath;
+    }
+  }
+
+  return rawPreset;
+}
+
 function createDefaultTilesetAtlas(tileSize = 24) {
   const normalizedTileSize = clampInteger(tileSize, 1, 256, 24);
   return {
@@ -527,6 +577,7 @@ class TileMapEditorApp {
     this.selectedMarkerId = "";
     this.refs = {};
     this.sampleEntries = [];
+    this.skipExternalProjectStateUntil = 0;
     this.isSimulationMode = false;
     this.simulation = {
       rafId: 0,
@@ -572,6 +623,7 @@ class TileMapEditorApp {
     void this.reloadTilesetImageFromDocument({ quiet: true });
     void this.preloadIndividualTileImages({ quiet: true });
     this.loadSampleManifest();
+    void this.tryLoadPresetFromQuery();
   }
 
   captureRefs(rootDocument) {
@@ -1818,6 +1870,71 @@ class TileMapEditorApp {
     }
   }
 
+  async tryLoadPresetFromQuery() {
+    const searchParams = new URLSearchParams(window.location.search);
+    const samplePresetPath = normalizeSamplePresetPath(searchParams.get("samplePresetPath") || "");
+    if (!samplePresetPath) {
+      return;
+    }
+
+    const sampleId = String(searchParams.get("sampleId") || "").trim();
+    this.exitSimulationMode();
+
+    try {
+      const presetUrl = new URL(samplePresetPath, window.location.href);
+      const presetResponse = await fetch(presetUrl.toString(), { cache: "no-store" });
+      if (!presetResponse.ok) {
+        throw new Error(`Preset request failed (${presetResponse.status}).`);
+      }
+
+      const rawPreset = await presetResponse.json();
+      const extracted = extractTileMapDocumentFromSamplePreset(rawPreset);
+      let toolDocument = null;
+
+      if (typeof extracted === "string" && extracted.trim()) {
+        const documentPath = normalizeSamplePresetPath(extracted) || normalizeToolSamplePath(extracted);
+        if (!documentPath) {
+          throw new Error("Preset did not resolve to a valid tilemap document path.");
+        }
+        const documentUrl = new URL(documentPath, window.location.href);
+        if (documentPath.toLowerCase().endsWith(".js")) {
+          const moduleUrl = new URL(documentUrl.toString());
+          moduleUrl.searchParams.set("presetLoadAt", String(Date.now()));
+          const importedModule = await import(moduleUrl.toString());
+          toolDocument = importedModule?.default ?? importedModule;
+        } else {
+          const documentResponse = await fetch(documentUrl.toString(), { cache: "no-store" });
+          if (!documentResponse.ok) {
+            throw new Error(`Tilemap document request failed (${documentResponse.status}).`);
+          }
+          toolDocument = await documentResponse.json();
+        }
+      } else if (extracted && typeof extracted === "object") {
+        toolDocument = extracted;
+      }
+
+      if (!toolDocument || typeof toolDocument !== "object") {
+        throw new Error("Preset payload did not include a tilemap document.");
+      }
+
+      this.skipExternalProjectStateUntil = Date.now() + 3000;
+      this.documentModel = sanitizeDocument(toolDocument);
+      this.resolveAssetRefsFromRegistry();
+      this.selectedLayerId = this.documentModel.layers[0]?.id || "";
+      this.selectedMarkerId = "";
+      this.activeTileId = this.findFirstNonEmptyTileId();
+      this.tilesetImageCache = new Map();
+      this.syncInputsFromDocument();
+      this.renderAll();
+      void this.reloadTilesetImageFromDocument({ quiet: true });
+      void this.preloadIndividualTileImages({ quiet: true });
+      const sourceLabel = sampleId ? `sample ${sampleId}` : samplePresetPath;
+      this.updateStatus(`Loaded preset from ${sourceLabel}.`);
+    } catch (error) {
+      this.updateStatus(`Preset load failed: ${error instanceof Error ? error.message : "unknown error"}`);
+    }
+  }
+
   getSimulationStartCell() {
     const spawnMarker = this.documentModel.markers.find((marker) => marker.type === "spawn");
     const fallbackMarker = spawnMarker || this.documentModel.markers[0] || null;
@@ -2731,6 +2848,10 @@ function bootTileMapStudio() {
   const app = new TileMapEditorApp(initialDocument);
   app.init(document);
   app.applyProjectSystemState = function applyProjectSystemState(snapshot) {
+    if (Date.now() <= Number(this.skipExternalProjectStateUntil || 0)) {
+      this.skipExternalProjectStateUntil = 0;
+      return;
+    }
     const nextDocument = sanitizeDocument(snapshot?.documentModel);
     this.documentModel = nextDocument;
     this.assetRegistry = snapshot?.assetRegistry && typeof snapshot.assetRegistry === "object"

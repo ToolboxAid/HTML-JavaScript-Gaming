@@ -182,7 +182,8 @@ function ensureStyles() {
     '.sample-detail-row a { color: #ffffff; }',
     '.sample-detail-nav { display: flex; flex-wrap: wrap; gap: 12px; margin: 10px 0; }',
     '.sample-detail-nav a { color: #ffffff; }',
-    '.sample-detail-muted { color: #ffffff; margin: 6px 0 0; }'
+    '.sample-detail-muted { color: #ffffff; margin: 6px 0 0; }',
+    '.sample-tool-roundtrip h3, .sample-tool-roundtrip h4, .sample-tool-roundtrip p, .sample-tool-roundtrip li, .sample-tool-roundtrip a { color: #ffffff; }'
   ].join('\n');
   document.head.appendChild(style);
 }

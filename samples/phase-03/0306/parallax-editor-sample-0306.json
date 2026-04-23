@@ -1,0 +1,74 @@
+{
+  "sampleId": "0306",
+  "phase": "03",
+  "title": "NES-Style Zones + Parallax",
+  "description": "Parallax preset payload derived from Sample 0306 scene band settings.",
+  "toolHints": [
+    "parallax-editor"
+  ],
+  "payload": {
+    "parallaxDocument": {
+      "schema": "toolbox.parallax/1",
+      "version": 1,
+      "companionEditor": "ParallaxEditor",
+      "map": {
+        "name": "sample-0306-nes-zones-parallax",
+        "width": 24,
+        "height": 7,
+        "tileSize": 48,
+        "pixelWidth": 1152,
+        "pixelHeight": 336
+      },
+      "layers": [
+        {
+          "id": "zone-band-far",
+          "name": "Zone Band Far",
+          "drawOrder": 0,
+          "imageSource": "/samples/phase-03/0306/assets/data/parallax/sample-0306-far.svg",
+          "imageDataUrl": "",
+          "scrollFactorX": 0.2,
+          "scrollFactorY": 0,
+          "offsetX": 0,
+          "offsetY": 110,
+          "repeatX": true,
+          "repeatY": false,
+          "wrapMode": "wrap",
+          "opacity": 1,
+          "visible": true
+        },
+        {
+          "id": "zone-band-near",
+          "name": "Zone Band Near",
+          "drawOrder": 1,
+          "imageSource": "/samples/phase-03/0306/assets/data/parallax/sample-0306-near.svg",
+          "imageDataUrl": "",
+          "scrollFactorX": 0.45,
+          "scrollFactorY": 0,
+          "offsetX": 0,
+          "offsetY": 140,
+          "repeatX": true,
+          "repeatY": false,
+          "wrapMode": "wrap",
+          "opacity": 1,
+          "visible": true
+        }
+      ],
+      "metadata": {
+        "createdAt": "2026-04-23T00:00:00.000Z",
+        "updatedAt": "2026-04-23T00:00:00.000Z",
+        "source": "samples2tools-parallax-roundtrip"
+      }
+    }
+  },
+  "runtime": {
+    "sampleEntryPoint": "/samples/phase-03/0306/index.html"
+  },
+  "toolState": {
+    "preferredToolId": "parallax-editor"
+  },
+  "provenance": {
+    "path": "/samples/phase-03/0306/parallax-editor-sample-0306.json",
+    "createdAt": "2026-04-23T00:00:00.000Z",
+    "version": 1
+  }
+}

@@ -134,11 +134,11 @@
 - [ ] No regressions to direct tool launch without sample params.
 
 ## Reporting Outputs (per execution batch)
-- [ ] `docs/dev/reports/samples2tools_batch_<n>_summary.txt`
-- [ ] `docs/dev/reports/samples2tools_batch_<n>_validation.txt`
-- [ ] `docs/dev/reports/samples2tools_link_map_<n>.json`
+- [x] `docs/dev/reports/samples2tools_batch_<n>_summary.txt`
+- [x] `docs/dev/reports/samples2tools_batch_<n>_validation.txt`
+- [x] `docs/dev/reports/samples2tools_link_map_<n>.json`
 
 ## Current Snapshot (from tools_used.txt)
-- [x] Current tagged samples across active tools: `1` (excluding Phase 20)
+- [x] Current tagged samples across active tools: `4` (excluding Phase 20)
 - [x] Candidate coverage inventory exists for all active tools
 - [.] Convert candidates into curated, validated sample-to-tool links

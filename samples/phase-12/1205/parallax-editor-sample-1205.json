@@ -1,22 +1,18 @@
 {
-  "sampleId": "1208",
+  "sampleId": "1205",
   "phase": "12",
-  "title": "Tool Formatted Tiles Parallax",
-  "description": "Shared sample preset for Sample 1208 and Parallax Scene Studio preload.",
+  "title": "Multi-System Demo",
+  "description": "Parallax preset payload derived from Sample 1205 multi-system scene bands.",
   "toolHints": [
-    "tile-map-editor",
-    "parallax-editor",
-    "vector-asset-studio"
+    "parallax-editor"
   ],
   "payload": {
-    "tilemapDocumentPath": "/samples/phase-12/1208/data/toolFormattedTileMap.js",
-    "vectorAssetSvgPath": "/samples/phase-12/1208/assets/data/parallax/layer-near-forest.svg",
     "parallaxDocument": {
       "schema": "toolbox.parallax/1",
       "version": 1,
       "companionEditor": "ParallaxEditor",
       "map": {
-        "name": "demo1208-tool-formatted-parallax-world",
+        "name": "sample-1205-multi-system-demo",
         "width": 72,
         "height": 18,
         "tileSize": 48,
@@ -25,15 +21,15 @@
       },
       "layers": [
         {
-          "id": "far-mountains",
-          "name": "Far Mountains",
+          "id": "multi-band-far",
+          "name": "Multi Band Far",
           "drawOrder": 0,
-          "imageSource": "/samples/phase-12/1208/assets/data/parallax/layer-far-mountains.svg",
+          "imageSource": "/samples/phase-12/1205/assets/data/parallax/sample-1205-far.svg",
           "imageDataUrl": "",
-          "scrollFactorX": 0.2,
-          "scrollFactorY": 0.05,
+          "scrollFactorX": 0.16,
+          "scrollFactorY": 0,
           "offsetX": 0,
-          "offsetY": 6,
+          "offsetY": 16,
           "repeatX": true,
           "repeatY": false,
           "wrapMode": "wrap",
@@ -41,15 +37,15 @@
           "visible": true
         },
         {
-          "id": "mid-cliffs",
-          "name": "Mid Cliffs",
+          "id": "multi-band-mid",
+          "name": "Multi Band Mid",
           "drawOrder": 1,
-          "imageSource": "/samples/phase-12/1208/assets/data/parallax/layer-mid-cliffs.svg",
+          "imageSource": "/samples/phase-12/1205/assets/data/parallax/sample-1205-mid.svg",
           "imageDataUrl": "",
-          "scrollFactorX": 0.45,
-          "scrollFactorY": 0.16,
+          "scrollFactorX": 0.3,
+          "scrollFactorY": 0,
           "offsetX": 0,
-          "offsetY": 36,
+          "offsetY": 72,
           "repeatX": true,
           "repeatY": false,
           "wrapMode": "wrap",
@@ -57,15 +53,15 @@
           "visible": true
         },
         {
-          "id": "near-forest",
-          "name": "Near Forest",
+          "id": "multi-band-near",
+          "name": "Multi Band Near",
           "drawOrder": 2,
-          "imageSource": "/samples/phase-12/1208/assets/data/parallax/layer-near-forest.svg",
+          "imageSource": "/samples/phase-12/1205/assets/data/parallax/sample-1205-near.svg",
           "imageDataUrl": "",
-          "scrollFactorX": 0.7,
-          "scrollFactorY": 0.28,
+          "scrollFactorX": 0.52,
+          "scrollFactorY": 0,
           "offsetX": 0,
-          "offsetY": 72,
+          "offsetY": 128,
           "repeatX": true,
           "repeatY": false,
           "wrapMode": "wrap",
@@ -76,18 +72,18 @@
       "metadata": {
         "createdAt": "2026-04-23T00:00:00.000Z",
         "updatedAt": "2026-04-23T00:00:00.000Z",
-        "source": "samples2tools-phase1"
+        "source": "samples2tools-parallax-roundtrip"
       }
     }
   },
   "runtime": {
-    "sampleEntryPoint": "/samples/phase-12/1208/index.html"
+    "sampleEntryPoint": "/samples/phase-12/1205/index.html"
   },
   "toolState": {
     "preferredToolId": "parallax-editor"
   },
   "provenance": {
-    "path": "/samples/phase-12/1208/sample-1208.json",
+    "path": "/samples/phase-12/1205/parallax-editor-sample-1205.json",
     "createdAt": "2026-04-23T00:00:00.000Z",
     "version": 1
   }

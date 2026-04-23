@@ -1,0 +1,14 @@
+Samples2Tools Batch 1 Validation
+Generated: 2026-04-23T17:05:53.818Z
+
+[x] samples/index.render.js syntax check
+[x] tools/renderToolsIndex.js syntax check
+[x] samples index has Tool filter control
+[x] samples index supports ?tool=<toolId> preselect
+[x] tools cards can render Samples (x) links from metadata toolHints
+[x] workspace-manager excluded from tool return-path filter
+
+Execution evidence:
+- mapped tools: 1
+- mapped sample links: 4
+- tool ids: parallax-editor

@@ -56,10 +56,31 @@ export default class TilemapParallaxHeroScene extends Scene {
     this.landingTimer = 0;
 
     this.parallaxLayers = [
-      { speed: 0.16, y: 16, height: 56, width: 210, gap: 70, color: 'rgba(148, 163, 184, 0.34)' },
-      { speed: 0.30, y: 72, height: 96, width: 180, gap: 36, color: 'rgba(99, 102, 241, 0.28)' },
-      { speed: 0.52, y: 128, height: 92, width: 140, gap: 24, color: 'rgba(45, 212, 191, 0.22)' },
+      {
+        speed: 0.18,
+        y: 24,
+        height: 116,
+        width: 360,
+        gap: 64,
+        color: 'rgba(148, 163, 184, 0.34)',
+        imagePath: './assets/data/parallax/sample-1204-far.svg',
+        image: null,
+      },
+      {
+        speed: 0.52,
+        y: 116,
+        height: 128,
+        width: 300,
+        gap: 28,
+        color: 'rgba(45, 212, 191, 0.22)',
+        imagePath: './assets/data/parallax/sample-1204-near.svg',
+        image: null,
+      },
     ];
+  }
+
+  enter() {
+    this.loadParallaxImages();
   }
 
   update(dt, engine) {
@@ -169,7 +190,7 @@ export default class TilemapParallaxHeroScene extends Scene {
       `State: ${stateLabel}`,
       `World: ${this.tilemap.width}x${this.tilemap.height} tiles`,
       `Camera X: ${this.camera.x.toFixed(1)}`,
-      `Far/Near speed: ${this.parallaxLayers[0].speed} / ${this.parallaxLayers[2].speed}`,
+      `Far/Near speed: ${this.parallaxLayers[0].speed} / ${this.parallaxLayers[this.parallaxLayers.length - 1].speed}`,
       'Controls: Left/Right + Space',
     ]);
   }
@@ -194,20 +215,56 @@ export default class TilemapParallaxHeroScene extends Scene {
     const endX = this.screen.x + this.camera.viewportWidth + segment;
 
     for (let x = this.screen.x + offset - segment; x < endX; x += segment) {
-      renderer.drawRect(
-        x,
-        this.screen.y + layer.y,
-        layer.width,
-        layer.height,
-        layer.color
-      );
-      renderer.drawRect(
-        x + layer.width * 0.2,
-        this.screen.y + layer.y - layer.height * 0.25,
-        layer.width * 0.35,
-        layer.height * 0.35,
-        layer.color
-      );
+      if (layer.image) {
+        const sourceWidth = layer.image.naturalWidth || layer.image.width || layer.width;
+        const sourceHeight = layer.image.naturalHeight || layer.image.height || layer.height;
+        renderer.drawImageFrame(
+          layer.image,
+          0,
+          0,
+          sourceWidth,
+          sourceHeight,
+          x,
+          this.screen.y + layer.y,
+          layer.width,
+          layer.height
+        );
+      } else {
+        renderer.drawRect(
+          x,
+          this.screen.y + layer.y,
+          layer.width,
+          layer.height,
+          layer.color
+        );
+        renderer.drawRect(
+          x + layer.width * 0.2,
+          this.screen.y + layer.y - layer.height * 0.25,
+          layer.width * 0.35,
+          layer.height * 0.35,
+          layer.color
+        );
+      }
+    }
+  }
+
+  loadParallaxImages() {
+    if (typeof Image !== 'function') {
+      return;
+    }
+
+    for (const layer of this.parallaxLayers) {
+      if (!layer.imagePath) {
+        continue;
+      }
+      const image = new Image();
+      image.onload = () => {
+        layer.image = image;
+      };
+      image.onerror = () => {
+        layer.image = null;
+      };
+      image.src = new URL(layer.imagePath, import.meta.url).href;
     }
   }
 }

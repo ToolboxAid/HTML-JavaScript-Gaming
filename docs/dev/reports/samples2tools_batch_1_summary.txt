@@ -1,0 +1,14 @@
+Samples2Tools Batch 1 Summary
+Generated: 2026-04-23T17:05:53.817Z
+Scope: non-Phase-20 sample->tool mappings via metadata toolHints
+
+Mapped tools: 1
+Mapped sample links: 4
+
+parallax-editor: 4 sample(s)
+
+Mapped links:
+- parallax-editor <= Phase 03 Sample 0306 | Nes Style Zones Parallax | ./phase-03/0306/index.html
+- parallax-editor <= Phase 12 Sample 1204 | Tilemap Parallax Hero | ./phase-12/1204/index.html
+- parallax-editor <= Phase 12 Sample 1205 | Multi-System Demo | ./phase-12/1205/index.html
+- parallax-editor <= Phase 12 Sample 1208 | Tool Formatted Tiles Parallax | ./phase-12/1208/index.html

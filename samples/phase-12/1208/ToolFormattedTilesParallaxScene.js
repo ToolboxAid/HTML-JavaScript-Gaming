@@ -44,6 +44,7 @@ export default class ToolFormattedTilesParallaxScene extends Scene {
     this.runtimeBindingPublisher = null;
     this.lastRuntimeBindingTimestamp = 0;
     this.tilesetAssetPath = '';
+    this.tilesetAssetCandidates = [];
     this.tilesetImage = null;
     this.tileFrameById = {};
     this.parallaxLayers = [];
@@ -83,6 +84,7 @@ export default class ToolFormattedTilesParallaxScene extends Scene {
     const tilePalette = extractTileEntries(tileExport);
     const definitions = {};
     this.tilesetAssetPath = extractTilesetImagePath(tileExport, atlas);
+    this.tilesetAssetCandidates = extractTilesetImageCandidates(tileExport, atlas);
     this.tilesetImage = null;
     this.tileFrameById = {};
     const atlasColumns = Number(atlas?.columns)
@@ -181,8 +183,28 @@ export default class ToolFormattedTilesParallaxScene extends Scene {
       }
     }
 
-    this.tilesetImage = await loadImageFromRelativePath(this.tilesetAssetPath, import.meta.url);
-    return 1;
+    const candidates = this.tilesetAssetCandidates && this.tilesetAssetCandidates.length > 0
+      ? this.tilesetAssetCandidates
+      : [this.tilesetAssetPath];
+
+    let lastError = null;
+    for (const candidate of candidates) {
+      if (typeof candidate !== 'string' || !candidate.trim()) {
+        continue;
+      }
+      try {
+        this.tilesetImage = await loadImageFromRelativePath(candidate, import.meta.url);
+        this.tilesetAssetPath = candidate;
+        return 1;
+      } catch (error) {
+        lastError = error;
+      }
+    }
+
+    throw new Error(
+      `Unable to load tileset atlas image from candidates: ${candidates.join(', ')}`
+        + (lastError ? ` (${lastError.message || String(lastError)})` : '')
+    );
   }
 
   async loadParallaxAssets(layerDefinitions) {
@@ -699,6 +721,27 @@ function extractTilesetImagePath(tileExport, atlas) {
     return atlas.imageDataUrl;
   }
   return '';
+}
+
+function extractTilesetImageCandidates(tileExport, atlas) {
+  const candidates = [];
+  const add = (value) => {
+    if (typeof value !== 'string' || !value.trim()) {
+      return;
+    }
+    if (!candidates.includes(value)) {
+      candidates.push(value);
+    }
+  };
+
+  add(tileExport?.tileset?.image);
+  add(atlas?.imageName);
+  if (typeof atlas?.imageName === 'string' && atlas.imageName.includes('/assets/tileset/')) {
+    add(atlas.imageName.replace('/assets/tileset/', '/assets/images/tileset/'));
+  }
+  add(atlas?.imageDataUrl);
+
+  return candidates;
 }
 
 function extractCameraViewport(tileExport) {

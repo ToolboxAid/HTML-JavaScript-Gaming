@@ -407,6 +407,7 @@ class ParallaxEditorApp {
     this.pendingLivePreviewReason = "init";
     this.boundRuntimeState = null;
     this.lastRuntimeBindingStatusAt = 0;
+    this.skipExternalProjectStateUntil = 0;
   }
 
   invalidateImageCache() {
@@ -1135,6 +1136,7 @@ class ParallaxEditorApp {
       }
       const rawPreset = await response.json();
       const toolDocument = extractParallaxDocumentFromSamplePreset(rawPreset);
+      this.skipExternalProjectStateUntil = Date.now() + 3000;
       this.applyParallaxDocument(extractParallaxDocument(toolDocument));
       this.queueLivePreviewSync("sample-preset");
       const sourceLabel = sampleId ? `sample ${sampleId}` : samplePresetPath;
@@ -1515,7 +1517,10 @@ class ParallaxEditorApp {
 
     const [layer] = this.documentModel.layers.splice(currentIndex, 1);
     this.documentModel.layers.splice(nextIndex, 0, layer);
-    normalizeDrawOrderSequence(this.documentModel.layers);
+    // Preserve the user-driven array move, then reindex drawOrder without re-sorting.
+    this.documentModel.layers.forEach((entry, index) => {
+      entry.drawOrder = index;
+    });
     this.selectedLayerId = layer.id;
     this.touchDocument();
     this.renderAll();
@@ -2095,6 +2100,10 @@ function bootParallaxSceneStudio() {
   const app = new ParallaxEditorApp(initialDocument);
   app.init(document);
   app.applyProjectSystemState = function applyProjectSystemState(snapshot) {
+    if (Date.now() <= Number(this.skipExternalProjectStateUntil || 0)) {
+      this.skipExternalProjectStateUntil = 0;
+      return;
+    }
     const nextDocument = sanitizeParallaxDocument(snapshot?.documentModel);
     this.documentModel = nextDocument;
     this.assetRegistry = snapshot?.assetRegistry && typeof snapshot.assetRegistry === "object"

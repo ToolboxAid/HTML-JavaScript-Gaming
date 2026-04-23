@@ -2358,6 +2358,9 @@
         "engine/theme/index/ThemeTokens",
         "engine/tilemap/index/renderTilemap",
         "engine/tilemap/index/Tilemap"
+      ],
+      "toolHints": [
+        "parallax-editor"
       ]
     },
     {
@@ -6200,6 +6203,9 @@
         "engine/tilemap/index/resolveRectVsTilemap",
         "engine/tilemap/index/Tilemap",
         "engine/utils/index/clamp"
+      ],
+      "toolHints": [
+        "parallax-editor"
       ]
     },
     {
@@ -6247,6 +6253,9 @@
         "engine/tilemap/index/resolveRectVsTilemap",
         "engine/tilemap/index/Tilemap",
         "engine/utils/index/clamp"
+      ],
+      "toolHints": [
+        "parallax-editor"
       ]
     },
     {
@@ -6384,7 +6393,9 @@
         "engine/utils/index/clamp"
       ],
       "toolHints": [
-        "parallax-editor"
+        "tile-map-editor",
+        "parallax-editor",
+        "vector-asset-studio"
       ]
     },
     {

@@ -32,6 +32,61 @@ function escapeHtml(value) {
     .replaceAll("'", "&#39;");
 }
 
+function toStandaloneToolHref(entryPoint) {
+  const normalized = String(entryPoint || "").replace(/^\.?\/*/, "");
+  return normalized ? `/tools/${encodeURI(normalized)}` : "";
+}
+
+function shouldUsePresetRoundtrip(sample, toolId) {
+  const sampleId = normalize(sample?.id);
+  const samplePhase = normalize(sample?.phase);
+  if (!sampleId || !samplePhase) {
+    return false;
+  }
+  if (sampleId === "1208" && samplePhase === "12") {
+    return toolId === "tile-map-editor"
+      || toolId === "parallax-editor"
+      || toolId === "vector-asset-studio";
+  }
+  if (toolId !== "parallax-editor") {
+    return false;
+  }
+  return (sampleId === "0306" && samplePhase === "03")
+    || (sampleId === "1204" && samplePhase === "12")
+    || (sampleId === "1205" && samplePhase === "12");
+}
+
+function buildRoundtripLinks(sample, toolRegistryMap) {
+  const orderedToolHints = asArray(sample?.toolHints)
+    .map((entry) => normalizeToken(entry))
+    .filter(Boolean)
+    .filter((toolId) => toolId !== "workspace-manager");
+  const dedupedToolHints = [...new Set(orderedToolHints)];
+  const links = [];
+
+  dedupedToolHints.forEach((toolId) => {
+    const tool = toolRegistryMap.get(toolId);
+    if (!tool) {
+      return;
+    }
+    const baseHref = toStandaloneToolHref(tool.entryPoint);
+    if (!baseHref) {
+      return;
+    }
+
+    let href = baseHref;
+    let label = `Open ${normalize(tool.displayName) || normalize(tool.name) || toolId}`;
+    if (shouldUsePresetRoundtrip(sample, toolId)) {
+      const presetPath = `/samples/phase-${sample.phase}/${sample.id}/${toolId}-sample-${sample.id}.json`;
+      href = `${baseHref}?sampleId=${encodeURIComponent(sample.id)}&samplePresetPath=${encodeURIComponent(presetPath)}`;
+    }
+
+    links.push({ toolId, href, label });
+  });
+
+  return links;
+}
+
 function readPinnedSet() {
   try {
     const raw = window.localStorage.getItem(PINNED_KEY);
@@ -82,7 +137,7 @@ function buildToolTokens(toolHints, toolLabelMap) {
     .sort((a, b) => a.label.localeCompare(b.label, undefined, { sensitivity: "base" }));
 }
 
-function buildSampleRows(metadata, pinnedSet, toolLabelMap) {
+function buildSampleRows(metadata, pinnedSet, toolLabelMap, toolRegistryMap) {
   const phaseInfoMap = new Map(
     asArray(metadata?.phases)
       .map((phase) => {
@@ -116,6 +171,7 @@ function buildSampleRows(metadata, pinnedSet, toolLabelMap) {
       const tags = asArray(sample?.tags).map((tag) => normalizeTag(tag)).filter(Boolean);
       const classTokens = buildClassTokens(sample?.classValues, sample?.engineClassesUsed);
       const toolTokens = buildToolTokens(sample?.toolHints, toolLabelMap);
+      const roundtripLinks = buildRoundtripLinks({ id, phase, toolHints: sample?.toolHints }, toolRegistryMap);
       const previewSrc = normalize(sample?.thumbnail) || normalize(sample?.preview) || "";
       return {
         id,
@@ -128,6 +184,7 @@ function buildSampleRows(metadata, pinnedSet, toolLabelMap) {
         tags,
         classTokens,
         toolTokens,
+        roundtripLinks,
         previewSrc,
         pinned: pinnedSet.has(id)
       };
@@ -253,6 +310,18 @@ function buildSampleCard(sample) {
   card.appendChild(title);
   card.appendChild(previewWrap);
   card.appendChild(description);
+  if (Array.isArray(sample.roundtripLinks) && sample.roundtripLinks.length > 0) {
+    const roundtripSection = document.createElement("section");
+    roundtripSection.className = "sample-tool-roundtrip";
+    roundtripSection.innerHTML = `
+      <h4>Tool Roundtrip Links</h4>
+      <p>Use these to validate tool to sample and sample back to tool workflows.</p>
+      <ul>
+        ${sample.roundtripLinks.map((entry) => `<li><a href="${escapeHtml(entry.href)}">${escapeHtml(entry.label)}</a></li>`).join("")}
+      </ul>
+    `;
+    card.appendChild(roundtripSection);
+  }
   return card;
 }
 
@@ -339,14 +408,21 @@ export async function initSamplesIndex() {
   }
   const metadata = await response.json();
   let pinnedSet = readPinnedSet();
+  const toolRegistry = getToolRegistry();
   const toolLabelMap = new Map(
-    getToolRegistry()
+    toolRegistry
       .filter((tool) => tool.id !== "workspace-manager")
       .map((tool) => [normalizeToken(tool.id), normalize(tool.displayName) || normalize(tool.name) || normalize(tool.id)])
       .filter((entry) => entry[0] && entry[1])
   );
+  const toolRegistryMap = new Map(
+    toolRegistry
+      .filter((tool) => tool.id !== "workspace-manager")
+      .map((tool) => [normalizeToken(tool.id), tool])
+      .filter((entry) => entry[0] && entry[1])
+  );
 
-  const model = buildSampleRows(metadata, pinnedSet, toolLabelMap);
+  const model = buildSampleRows(metadata, pinnedSet, toolLabelMap, toolRegistryMap);
   setSelectOptions(phaseSelect, model.phaseOptions.map((entry) => entry.value), (value) => {
     const found = model.phaseOptions.find((entry) => entry.value === value);
     return found?.label || `Phase ${value}`;
@@ -366,7 +442,7 @@ export async function initSamplesIndex() {
   }
 
   const render = () => {
-    const nextModel = buildSampleRows(metadata, pinnedSet, toolLabelMap);
+    const nextModel = buildSampleRows(metadata, pinnedSet, toolLabelMap, toolRegistryMap);
     const filterState = {
       phase: normalize(phaseSelect.value),
       className: normalize(classSelect.value),

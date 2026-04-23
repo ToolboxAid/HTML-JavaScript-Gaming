@@ -63,6 +63,30 @@
   gap: 4px;
 }
 
+.sample-tool-roundtrip {
+  margin-top: 10px;
+}
+
+.sample-tool-roundtrip h4,
+.sample-tool-roundtrip p,
+.sample-tool-roundtrip li,
+.sample-tool-roundtrip a {
+  color: #ffffff;
+}
+
+.sample-tool-roundtrip h4 {
+  margin: 0 0 6px;
+}
+
+.sample-tool-roundtrip p {
+  margin: 0 0 6px;
+}
+
+.sample-tool-roundtrip ul {
+  margin: 0;
+  padding-left: 18px;
+}
+
 body.hub-page-samples .samples-phase-accordion {
   margin: 0 0 12px;
   border: 1px solid var(--line, rgba(221, 214, 254, 0.26));
