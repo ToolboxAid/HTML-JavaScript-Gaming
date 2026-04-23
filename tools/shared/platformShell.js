@@ -16,6 +16,7 @@ let headerExpandedState = null;
 let runtimeMonitoringHooks = null;
 let bindingRefreshHandlersBound = false;
 let lastWorkspaceUiStateKey = "";
+let lastLockedSurfaceElement = null;
 
 const HEADER_EXPANDED_STORAGE_KEY = "toolboxaid.toolsPlatform.headerExpanded";
 const HEADER_EXPANDED_FALLBACK_TOOL = "tool-host";
@@ -134,17 +135,58 @@ function renderToolAssetBadge() {
   `;
 }
 
-function renderToolLinks(currentToolId) {
+function classifyToolGroup(toolId) {
   const viewerToolIds = new Set([
     "3d-asset-viewer",
     "state-inspector",
     "replay-visualizer",
     "performance-profiler"
   ]);
+  const utilityToolIds = new Set([
+    "asset-browser",
+    "asset-pipeline-tool",
+    "tile-model-converter",
+    "physics-sandbox",
+    "3d-json-payload-normalizer"
+  ]);
+
+  if (viewerToolIds.has(toolId)) {
+    return "viewers";
+  }
+  if (utilityToolIds.has(toolId)) {
+    return "utilities";
+  }
+  return "editors";
+}
+
+function resolveWorkspaceToolLockState() {
+  const manifest = getManifest();
+  const palette = readSharedPaletteHandoff();
+  const workspaceReady = Boolean(manifest && manifest.workspace?.notes !== "closed");
+  const paletteReady = Boolean(palette && typeof palette.displayName === "string" && palette.displayName.trim());
+  return { workspaceReady, paletteReady };
+}
+
+function renderToolLinks(currentToolId) {
   const tools = getToolRegistry()
     .filter((entry) => entry.active === true)
     .filter((entry) => entry.visibleInToolsList === true)
     .sort((left, right) => String(left.displayName || "").localeCompare(String(right.displayName || "")));
+  const lockState = resolveWorkspaceToolLockState();
+  const isWorkspaceContext = isWorkspaceManagerContext();
+
+  function isToolDisabled(toolId) {
+    if (!isWorkspaceContext) {
+      return false;
+    }
+    if (!lockState.workspaceReady) {
+      return true;
+    }
+    if (!lockState.paletteReady && toolId !== "palette-browser") {
+      return true;
+    }
+    return false;
+  }
 
   function renderBucketGrid(toolEntries) {
     const bucketMap = new Map();
@@ -165,9 +207,12 @@ function renderToolLinks(currentToolId) {
             ${bucketTools
       .map((tool) => {
         const currentClass = tool.id === currentToolId ? " is-current" : "";
+        const disabled = isToolDisabled(tool.id);
+        const disabledClass = disabled ? " is-disabled" : "";
+        const disabledAttrs = disabled ? ' aria-disabled="true" tabindex="-1"' : "";
         return `
-          <div class="tools-platform-frame__nav-tool-row">
-            <a class="tools-platform-frame__nav-link${currentClass}" href="${escapeHtml(getRegistryEntryHref(tool.entryPoint))}">${escapeHtml(tool.displayName)}</a>
+          <div class="tools-platform-frame__nav-tool-row${disabledClass}">
+            <a class="tools-platform-frame__nav-link${currentClass}${disabledClass}" href="${escapeHtml(getRegistryEntryHref(tool.entryPoint))}"${disabledAttrs}>${escapeHtml(tool.displayName)}</a>
             ${renderToolAssetBadge()}
           </div>
         `;
@@ -180,13 +225,21 @@ function renderToolLinks(currentToolId) {
   }
 
   if (isWorkspaceManagerContext()) {
-    const creatorTools = tools.filter((tool) => !viewerToolIds.has(tool.id));
-    const viewerTools = tools.filter((tool) => viewerToolIds.has(tool.id));
+    const editorTools = tools.filter((tool) => classifyToolGroup(tool.id) === "editors");
+    const utilityTools = tools.filter((tool) => classifyToolGroup(tool.id) === "utilities");
+    const viewerTools = tools.filter((tool) => classifyToolGroup(tool.id) === "viewers");
     return `
-      <section class="tools-platform-frame__nav-section" aria-label="Editor and creator tools">
-        <h1 class="tools-platform-frame__nav-section-title">Editors and Creators</h1>
+      <section class="tools-platform-frame__nav-section" aria-label="Editor tools">
+        <h1 class="tools-platform-frame__nav-section-title">Editors</h1>
         <div class="tools-platform-frame__nav-grid">
-          ${renderBucketGrid(creatorTools)}
+          ${renderBucketGrid(editorTools)}
+        </div>
+      </section>
+      <hr class="tools-platform-frame__divider tools-platform-frame__divider--nav-split" />
+      <section class="tools-platform-frame__nav-section" aria-label="Utility tools">
+        <h1 class="tools-platform-frame__nav-section-title">Utilities</h1>
+        <div class="tools-platform-frame__nav-grid">
+          ${renderBucketGrid(utilityTools)}
         </div>
       </section>
       <hr class="tools-platform-frame__divider tools-platform-frame__divider--nav-split" />
@@ -217,9 +270,12 @@ function renderToolLinks(currentToolId) {
           ${bucketTools
     .map((tool) => {
       const currentClass = tool.id === currentToolId ? " is-current" : "";
+      const disabled = isToolDisabled(tool.id);
+      const disabledClass = disabled ? " is-disabled" : "";
+      const disabledAttrs = disabled ? ' aria-disabled="true" tabindex="-1"' : "";
       return `
-        <div class="tools-platform-frame__nav-tool-row">
-          <a class="tools-platform-frame__nav-link${currentClass}" href="${escapeHtml(getRegistryEntryHref(tool.entryPoint))}">${escapeHtml(tool.displayName)}</a>
+        <div class="tools-platform-frame__nav-tool-row${disabledClass}">
+          <a class="tools-platform-frame__nav-link${currentClass}${disabledClass}" href="${escapeHtml(getRegistryEntryHref(tool.entryPoint))}"${disabledAttrs}>${escapeHtml(tool.displayName)}</a>
           ${renderToolAssetBadge()}
         </div>
       `;
@@ -274,6 +330,10 @@ function renderWorkspaceSummary(currentTool) {
     return "";
   }
 
+  const lockState = resolveWorkspaceToolLockState();
+  const workspaceActionDisabled = !lockState.workspaceReady
+    ? ' disabled aria-disabled="true"'
+    : "";
   const manifest = getManifest();
   const workspaceName = manifest?.name || "Untitled Workspace";
   const dirtyMark = manifest?.dirty === true ? " *" : "";
@@ -286,9 +346,9 @@ function renderWorkspaceSummary(currentTool) {
       <div class="tools-platform-frame__project-actions">
         <button type="button" class="tools-platform-frame__project-button" data-workspace-action="new">New Workspace</button>
         <button type="button" class="tools-platform-frame__project-button" data-workspace-action="open">Open Workspace</button>
-        <button type="button" class="tools-platform-frame__project-button" data-workspace-action="save">Save Workspace</button>
-        <button type="button" class="tools-platform-frame__project-button" data-workspace-action="save-as">Save Workspace As</button>
-        <button type="button" class="tools-platform-frame__project-button is-secondary" data-workspace-action="close">Close Workspace</button>
+        <button type="button" class="tools-platform-frame__project-button" data-workspace-action="save"${workspaceActionDisabled}>Save Workspace</button>
+        <button type="button" class="tools-platform-frame__project-button" data-workspace-action="save-as"${workspaceActionDisabled}>Save Workspace As</button>
+        <button type="button" class="tools-platform-frame__project-button is-secondary" data-workspace-action="close"${workspaceActionDisabled}>Close Workspace</button>
         <input type="file" class="tools-platform-frame__project-input" data-workspace-open-input accept=".json,application/json" />
       </div>
       <div class="tools-platform-frame__project-copy">
@@ -328,6 +388,8 @@ function renderHeaderMarkup(currentTool, isHeaderExpanded) {
     || isWorkspaceManagerParent
     || /\/tools\/Workspace%20Manager\//i.test(currentPath)
     || /\/tools\/Workspace Manager\//i.test(currentPath);
+  const lockState = resolveWorkspaceToolLockState();
+  const navWorkspaceLockClass = showNavThroughTiles && !lockState.workspaceReady ? " is-workspace-locked" : "";
   const sharedActionLinks = !isLanding ? renderSharedActionLinks(currentTool?.id ?? "") : "";
   const title = isLanding ? (document.body.dataset.toolTitle || "Tools Platform") : getDisplaySurfaceName(currentTool);
   const description = currentTool
@@ -367,7 +429,7 @@ function renderHeaderMarkup(currentTool, isHeaderExpanded) {
             </div>
             ` : ""}
             ${!isLanding ? `<hr class="tools-platform-frame__divider" />` : ""}
-            <nav class="tools-platform-frame__nav" aria-label="Active tools">
+            <nav class="tools-platform-frame__nav${navWorkspaceLockClass}" aria-label="Active tools">
               ${renderToolLinks(currentTool?.id ?? "")}
             </nav>
           </div>
@@ -396,7 +458,37 @@ function renderStatusMarkup(currentTool) {
 
 function applyDocumentMetadata(currentTool) {
   document.body.classList.add("tools-platform-surface");
-  document.body.classList.toggle("tools-platform-workspace-context", isWorkspaceManagerContext());
+  const workspaceContext = isWorkspaceManagerContext();
+  const lockState = resolveWorkspaceToolLockState();
+  const isToolSurfacePage = getPageMode() !== "landing";
+  const isPaletteBrowser = currentTool?.id === "palette-browser";
+  const workspaceMissingLock = workspaceContext && isToolSurfacePage && !lockState.workspaceReady;
+  const paletteMissingLock = workspaceContext
+    && isToolSurfacePage
+    && lockState.workspaceReady
+    && !lockState.paletteReady
+    && !isPaletteBrowser;
+  const shouldLockToolSurface = workspaceMissingLock || paletteMissingLock;
+  const lockMessage = workspaceMissingLock
+    ? "Create or open a workspace to use this tool."
+    : "Select a shared palette in Palette Browser to use this tool.";
+  document.body.classList.toggle("tools-platform-workspace-context", workspaceContext);
+  document.body.classList.toggle("tools-platform-workspace-tool-locked", shouldLockToolSurface);
+  if (lastLockedSurfaceElement) {
+    lastLockedSurfaceElement.removeAttribute("data-tools-platform-lock-message");
+    lastLockedSurfaceElement.classList.remove("tools-platform-lock-surface");
+    lastLockedSurfaceElement = null;
+  }
+  if (shouldLockToolSurface) {
+    const lockSurface = document.querySelector(
+      "#appRoot, .app, .tool-shell-container, .tools-playground-layout, .workspace-shell, .app-shell, .page-shell, .canvas-shell, main"
+    );
+    if (lockSurface instanceof HTMLElement) {
+      lockSurface.setAttribute("data-tools-platform-lock-message", lockMessage);
+      lockSurface.classList.add("tools-platform-lock-surface");
+      lastLockedSurfaceElement = lockSurface;
+    }
+  }
   const surfaceName = getDisplaySurfaceName(currentTool);
   if (currentTool || isWorkspaceManagerContext()) {
     document.title = `${surfaceName} | Tools Platform`;
@@ -466,6 +558,11 @@ function bindWorkspaceShellEvents(currentTool) {
   }
 
   bindEventHandlers(queryAll(".tools-platform-frame__nav-link"), "click", (event) => {
+      const target = event.currentTarget instanceof Element ? event.currentTarget : null;
+      if (target?.classList.contains("is-disabled") || target?.getAttribute("aria-disabled") === "true") {
+        event.preventDefault();
+        return;
+      }
       if (workspaceController.shouldConfirmDiscard("You have unsaved workspace changes. Continue to another tool?")) {
         return;
       }
@@ -479,6 +576,10 @@ function bindWorkspaceShellEvents(currentTool) {
     }
     const row = event.currentTarget instanceof Element ? event.currentTarget : null;
     const link = row?.querySelector(".tools-platform-frame__nav-link");
+    if (link?.classList.contains("is-disabled") || link?.getAttribute("aria-disabled") === "true") {
+      event.preventDefault();
+      return;
+    }
     if (link instanceof HTMLAnchorElement) {
       link.click();
     }

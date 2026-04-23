@@ -234,6 +234,7 @@ function renderPaletteList() {
 function renderSelectedPalette() {
   const palette = getSelectedPalette();
   const canUseInActiveTools = isWorkspaceContext();
+  const existingSharedPalette = readSharedPaletteHandoff();
   if (!palette) {
     refs.paletteTitle.textContent = "Palette Preview";
     refs.paletteSummaryText.textContent = "Select a palette to inspect its swatches.";
@@ -470,6 +471,33 @@ function usePaletteInActiveTools() {
   }
   if (!isWorkspaceContext()) {
     refs.selectionText.textContent = "Use in Workspace Manager is available only in Workspace Manager context.";
+    return;
+  }
+  if (hasReservedPaletteKeyword(palette.name)) {
+    const message = "Reserved palette names cannot be used for workspace shared palette. Duplicate and rename first.";
+    refs.selectionText.textContent = message;
+    window.alert(message);
+    return;
+  }
+  const existingSharedPalette = readSharedPaletteHandoff();
+  if (
+    existingSharedPalette
+    && existingSharedPalette.paletteId
+    && existingSharedPalette.paletteId !== palette.id
+  ) {
+    const message = `Shared palette is locked to ${existingSharedPalette.displayName}. Edit swatches instead.`;
+    refs.selectionText.textContent = message;
+    window.alert(message);
+    return;
+  }
+  if (
+    existingSharedPalette
+    && existingSharedPalette.paletteId
+    && existingSharedPalette.paletteId === palette.id
+  ) {
+    const message = "Shared palette is locked. Edit swatches instead.";
+    refs.selectionText.textContent = message;
+    window.alert(message);
     return;
   }
   const context = getSharedLaunchContext();

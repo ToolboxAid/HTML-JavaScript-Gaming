@@ -196,6 +196,10 @@ body.tools-platform-surface {
   border-bottom: 0;
 }
 
+.tools-platform-frame__nav-tool-row.is-disabled {
+  opacity: 0.55;
+}
+
 .tools-platform-frame__binding-badges {
   display: inline-flex;
   flex-wrap: wrap;
@@ -240,6 +244,54 @@ body.tools-platform-surface {
   align-content: start;
   justify-items: stretch;
   width: 100%;
+}
+
+.tools-platform-frame__nav.is-workspace-locked {
+  position: relative;
+}
+
+.tools-platform-frame__nav.is-workspace-locked::after {
+  content: "Create or open a workspace to enable tools.";
+  position: absolute;
+  inset: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 16px;
+  color: #ffffff;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  border-radius: 12px;
+  background: rgba(28, 13, 60, 0.52);
+  border: 1px solid rgba(221, 214, 254, 0.26);
+  backdrop-filter: blur(1px);
+  pointer-events: auto;
+}
+
+.tools-platform-lock-surface {
+  position: relative;
+}
+
+.tools-platform-lock-surface::after {
+  content: attr(data-tools-platform-lock-message);
+  position: absolute;
+  inset: 0;
+  z-index: 30;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 20px;
+  color: #ffffff;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  border-radius: 12px;
+  background: rgba(28, 13, 60, 0.44);
+  border: 1px solid rgba(221, 214, 254, 0.26);
+  backdrop-filter: blur(1px);
+  pointer-events: auto;
 }
 
 .tools-platform-frame__nav-section {
@@ -335,6 +387,15 @@ body.tools-platform-surface {
   background: linear-gradient(180deg, var(--panel, rgba(76, 29, 149, 0.88)) 0%, var(--panel2, rgba(49, 17, 102, 0.94)) 100%);
 }
 
+.tools-platform-frame__project-button:disabled,
+.tools-platform-frame__project-button[aria-disabled="true"] {
+  color: #b3a7c9;
+  border-color: rgba(179, 167, 201, 0.5);
+  background: linear-gradient(180deg, rgba(89, 72, 126, 0.42) 0%, rgba(58, 44, 88, 0.66) 100%);
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
 .tools-platform-frame__project-input {
   display: none;
 }
@@ -370,6 +431,14 @@ body.tools-platform-surface {
   padding: 0 10px;
   color: var(--muted, #e9ddff);
   font-size: 0.88rem;
+}
+
+.tools-platform-frame__nav-link.is-disabled {
+  color: #b3a7c9;
+  border-color: rgba(221, 214, 254, 0.16);
+  background: linear-gradient(180deg, rgba(76, 29, 149, 0.55) 0%, rgba(49, 17, 102, 0.7) 100%);
+  pointer-events: none;
+  box-shadow: none;
 }
 
 .tools-platform-frame__action-link {

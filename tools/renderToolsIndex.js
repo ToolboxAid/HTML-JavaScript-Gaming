@@ -61,6 +61,29 @@ function renderToolCard(tool) {
   `;
 }
 
+function classifyToolGroup(toolId) {
+  const viewerToolIds = new Set([
+    "3d-asset-viewer",
+    "state-inspector",
+    "replay-visualizer",
+    "performance-profiler"
+  ]);
+  const utilityToolIds = new Set([
+    "asset-browser",
+    "asset-pipeline-tool",
+    "tile-model-converter",
+    "physics-sandbox",
+    "3d-json-payload-normalizer"
+  ]);
+  if (viewerToolIds.has(toolId)) {
+    return "viewers";
+  }
+  if (utilityToolIds.has(toolId)) {
+    return "utilities";
+  }
+  return "editors";
+}
+
 function renderWorkspaceManagerCard() {
   return `
     <div class="card tools-platform-card">
@@ -88,16 +111,24 @@ function renderWorkspaceManagerSection() {
 }
 
 function renderActiveToolsList() {
-  const grid = document.querySelector("[data-active-tools-grid]");
-  if (!grid) {
+  const editorsGrid = document.querySelector("[data-active-tools-editors-grid]");
+  const utilitiesGrid = document.querySelector("[data-active-tools-utilities-grid]");
+  const viewersGrid = document.querySelector("[data-active-tools-viewers-grid]");
+  if (!editorsGrid || !utilitiesGrid || !viewersGrid) {
     return;
   }
-  const toolCards = getToolRegistry()
+  const tools = getToolRegistry()
     .filter((entry) => entry.active === true)
     .filter((entry) => entry.visibleInToolsList === true)
-    .sort((left, right) => String(left.displayName || "").localeCompare(String(right.displayName || "")))
-    .map((tool) => renderToolCard(tool));
-  grid.innerHTML = toolCards.join("\n");
+    .sort((left, right) => String(left.displayName || "").localeCompare(String(right.displayName || "")));
+
+  const editors = tools.filter((tool) => classifyToolGroup(tool.id) === "editors").map((tool) => renderToolCard(tool));
+  const utilities = tools.filter((tool) => classifyToolGroup(tool.id) === "utilities").map((tool) => renderToolCard(tool));
+  const viewers = tools.filter((tool) => classifyToolGroup(tool.id) === "viewers").map((tool) => renderToolCard(tool));
+
+  editorsGrid.innerHTML = editors.join("\n");
+  utilitiesGrid.innerHTML = utilities.join("\n");
+  viewersGrid.innerHTML = viewers.join("\n");
 }
 
 function sortPlannedCardsAlphabetically() {
