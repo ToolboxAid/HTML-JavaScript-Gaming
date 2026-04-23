@@ -38,6 +38,26 @@ import { addToolModeMetadata, assertStandaloneToolDocument, offerImportMismatchO
 const SAMPLE_DIRECTORY_PATH = "./samples/";
 const SAMPLE_MANIFEST_PATH = "./samples/sample-manifest.json";
 
+function normalizeSamplePresetPath(pathValue) {
+  if (typeof pathValue !== "string") {
+    return "";
+  }
+  const trimmed = pathValue.trim().replace(/\\/g, "/");
+  if (!trimmed || trimmed.includes("..")) {
+    return "";
+  }
+  if (trimmed.startsWith("/samples/")) {
+    return trimmed;
+  }
+  if (trimmed.startsWith("./samples/")) {
+    return trimmed;
+  }
+  if (trimmed.startsWith("samples/")) {
+    return `./${trimmed}`;
+  }
+  return "";
+}
+
 function clamp(value, min, max, fallback) {
   const number = Number(value);
   if (!Number.isFinite(number)) {
@@ -276,6 +296,24 @@ function extractParallaxDocument(rawAnyDocument) {
   throw new Error("Unsupported schema. Expected toolbox.tilemap/1 or toolbox.parallax/1.");
 }
 
+function extractParallaxDocumentFromSamplePreset(rawPreset) {
+  if (!rawPreset || typeof rawPreset !== "object") {
+    return rawPreset;
+  }
+
+  const payload = rawPreset.payload;
+  if (payload && typeof payload === "object") {
+    if (payload.parallaxDocument && typeof payload.parallaxDocument === "object") {
+      return payload.parallaxDocument;
+    }
+    if (payload.parallax && typeof payload.parallax === "object") {
+      return payload.parallax;
+    }
+  }
+
+  return rawPreset;
+}
+
 function createTilemapParallaxPatch(parallaxDocument) {
   return {
     schema: "toolbox.tilemap-parallax-patch/1",
@@ -385,6 +423,7 @@ class ParallaxEditorApp {
     this.bindRuntimeStateSync();
     this.queueLivePreviewSync("init");
     this.loadSampleManifest();
+    void this.tryLoadPresetFromQuery();
   }
 
   captureRefs(rootDocument) {
@@ -1071,20 +1110,50 @@ class ParallaxEditorApp {
       }
 
       const raw = await response.json();
-      this.documentModel = extractParallaxDocument(raw);
-      this.resolveAssetRefsFromRegistry();
-      normalizeDrawOrderSequence(this.documentModel.layers);
-      this.selectedLayerId = this.documentModel.layers[0]?.id || "";
-      this.invalidateImageCache();
-      this.cameraX = 0;
-      this.cameraY = 0;
-      this.syncInputsFromDocument();
-      this.renderAll();
+      this.applyParallaxDocument(extractParallaxDocument(raw));
       this.queueLivePreviewSync("load-sample");
       this.updateStatus(`Loaded sample ${selectedPath}.`);
     } catch (error) {
       this.updateStatus(`Sample load failed: ${error instanceof Error ? error.message : "unknown error"}`);
     }
+  }
+
+  async tryLoadPresetFromQuery() {
+    const searchParams = new URLSearchParams(window.location.search);
+    const samplePresetPath = normalizeSamplePresetPath(searchParams.get("samplePresetPath") || "");
+    if (!samplePresetPath) {
+      return;
+    }
+
+    const sampleId = String(searchParams.get("sampleId") || "").trim();
+    this.exitSimulationMode();
+    try {
+      const presetUrl = new URL(samplePresetPath, window.location.href);
+      const response = await fetch(presetUrl.toString(), { cache: "no-store" });
+      if (!response.ok) {
+        throw new Error(`Preset request failed (${response.status}).`);
+      }
+      const rawPreset = await response.json();
+      const toolDocument = extractParallaxDocumentFromSamplePreset(rawPreset);
+      this.applyParallaxDocument(extractParallaxDocument(toolDocument));
+      this.queueLivePreviewSync("sample-preset");
+      const sourceLabel = sampleId ? `sample ${sampleId}` : samplePresetPath;
+      this.updateStatus(`Loaded preset from ${sourceLabel}.`);
+    } catch (error) {
+      this.updateStatus(`Preset load failed: ${error instanceof Error ? error.message : "unknown error"}`);
+    }
+  }
+
+  applyParallaxDocument(nextDocument) {
+    this.documentModel = nextDocument;
+    this.resolveAssetRefsFromRegistry();
+    normalizeDrawOrderSequence(this.documentModel.layers);
+    this.selectedLayerId = this.documentModel.layers[0]?.id || "";
+    this.invalidateImageCache();
+    this.cameraX = 0;
+    this.cameraY = 0;
+    this.syncInputsFromDocument();
+    this.renderAll();
   }
 
   handleNewProject() {

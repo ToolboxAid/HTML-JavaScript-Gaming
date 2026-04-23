@@ -16,8 +16,13 @@
 - `samples/metadata/samples.index.metadata.json` (sample catalog metadata)
 - `tools/toolRegistry.js` (active tool registry and ids)
 
+## Kickoff Status (2026-04-23)
+- [.] Roadmap kickoff started
+- [.] Phase 1 vertical slice target selected: `Parallax Scene Studio`
+- [.] Batch 1 implementation start
+
 ## Canonical Data Contract
-- [ ] File naming standard: `samples/phase-xx/xxxx/sample-xxxx.json`
+- [.] File naming standard: `samples/phase-xx/xxxx/sample-xxxx.json`
 - [ ] Required fields:
 - `sampleId` (string)
 - `phase` (string)
@@ -31,7 +36,7 @@
 - `provenance` (path, createdAt, version)
 
 ## Launch Contract (Shared)
-- [ ] Standard query parameters for tool launch:
+- [.] Standard query parameters for tool launch:
 - `sampleId=<id>`
 - `samplePresetPath=/samples/phase-xx/xxxx/sample-xxxx.json`
 - [ ] Tool boot behavior:
@@ -50,13 +55,21 @@
 
 ## Rollout Plan
 
+### Batch 1 - Active Work (Phase 1 Slice)
+- [.] Add `samples/phase-12/1208/sample-1208.json` as shared sample/tool preset source.
+- [.] Wire Sample 1208 page/tool link to pass:
+- `sampleId=1208`
+- `samplePresetPath=/samples/phase-12/1208/sample-1208.json`
+- [.] Wire `Parallax Scene Studio` launch path to load and hydrate from `samplePresetPath` when provided.
+- [ ] Validate end-to-end parity for the slice (sample load + tool preload + visible content match).
+
 ### Phase 1 - Foundation + One Vertical Slice
-- [ ] Add shared adapter guidance document for sample-to-tool loading.
-- [ ] Implement one full reference flow:
+- [.] Add shared adapter guidance document for sample-to-tool loading.
+- [.] Implement one full reference flow:
 - sample page loads `sample-xxxx.json`
 - same file is passed to tool launch
 - tool hydrates from same file
-- [ ] Suggested first slice: `Parallax Scene Studio` (clear, low candidate count).
+- [.] Suggested first slice: `Parallax Scene Studio` (clear, low candidate count).
 - [ ] Validate:
 - sample runs using file
 - tool opens from sample and loads matching content
@@ -125,4 +138,4 @@
 ## Current Snapshot (from tools_used.txt)
 - [x] Current tagged samples across active tools: `0` (excluding Phase 20)
 - [x] Candidate coverage inventory exists for all active tools
-- [ ] Convert candidates into curated, validated sample-to-tool links
+- [.] Convert candidates into curated, validated sample-to-tool links

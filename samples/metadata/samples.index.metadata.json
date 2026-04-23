@@ -903,9 +903,9 @@
         "engine/components/index/createTransform",
         "engine/components/index/createVelocity",
         "engine/core/Engine",
-        "engine/debug/index/StatsTracker",
         "engine/debug/index/drawPanel",
         "engine/debug/index/drawSceneFrame",
+        "engine/debug/index/StatsTracker",
         "engine/ecs/index/World",
         "engine/input/index/InputService",
         "engine/scene/index/Scene",
@@ -922,9 +922,9 @@
         "engine/components/index/createTransform",
         "engine/components/index/createVelocity",
         "engine/core/Engine",
-        "engine/debug/index/StatsTracker",
         "engine/debug/index/drawPanel",
         "engine/debug/index/drawSceneFrame",
+        "engine/debug/index/StatsTracker",
         "engine/ecs/index/World",
         "engine/input/index/InputService",
         "engine/scene/index/Scene",
@@ -1816,9 +1816,9 @@
         "engine/scene/index/Scene",
         "engine/theme/index/Theme",
         "engine/theme/index/ThemeTokens",
-        "engine/tilemap/index/Tilemap",
         "engine/tilemap/index/renderTilemap",
         "engine/tilemap/index/resolveRectVsTilemap",
+        "engine/tilemap/index/Tilemap",
         "engine/utils/index/clamp"
       ],
       "thumbnail": "/samples/phase-02/0221/assets/images/preview.svg",
@@ -1832,9 +1832,9 @@
         "engine/scene/index/Scene",
         "engine/theme/index/Theme",
         "engine/theme/index/ThemeTokens",
-        "engine/tilemap/index/Tilemap",
         "engine/tilemap/index/renderTilemap",
         "engine/tilemap/index/resolveRectVsTilemap",
+        "engine/tilemap/index/Tilemap",
         "engine/utils/index/clamp"
       ]
     },
@@ -1947,9 +1947,9 @@
         "engine/scene/index/Scene",
         "engine/theme/index/Theme",
         "engine/theme/index/ThemeTokens",
-        "engine/tilemap/index/Tilemap",
         "engine/tilemap/index/renderTilemap",
-        "engine/tilemap/index/resolveRectVsTilemap"
+        "engine/tilemap/index/resolveRectVsTilemap",
+        "engine/tilemap/index/Tilemap"
       ],
       "thumbnail": "/samples/phase-02/0224/assets/images/preview.svg",
       "preview": "/samples/phase-02/0224/assets/images/preview.svg",
@@ -1970,9 +1970,9 @@
         "engine/scene/index/Scene",
         "engine/theme/index/Theme",
         "engine/theme/index/ThemeTokens",
-        "engine/tilemap/index/Tilemap",
         "engine/tilemap/index/renderTilemap",
-        "engine/tilemap/index/resolveRectVsTilemap"
+        "engine/tilemap/index/resolveRectVsTilemap",
+        "engine/tilemap/index/Tilemap"
       ]
     },
     {
@@ -1992,7 +1992,26 @@
       "thumbnail": "/samples/phase-02/0225/assets/images/preview.svg",
       "preview": "/samples/phase-02/0225/assets/images/preview.svg",
       "classValues": [
-        "samples/projectile-lab"
+        "engine/core/Engine",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawPanel",
+        "engine/input/index/InputService",
+        "engine/scene/index/Scene",
+        "engine/systems/index/spawnProjectile",
+        "engine/systems/index/updateProjectiles",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
+      ],
+      "engineClassesUsed": [
+        "engine/core/Engine",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawPanel",
+        "engine/input/index/InputService",
+        "engine/scene/index/Scene",
+        "engine/systems/index/spawnProjectile",
+        "engine/systems/index/updateProjectiles",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
       ]
     },
     {
@@ -2024,8 +2043,8 @@
         "engine/systems/index/moveRectWithTilemapCollision",
         "engine/theme/index/Theme",
         "engine/theme/index/ThemeTokens",
-        "engine/tilemap/index/Tilemap",
-        "engine/tilemap/index/renderTilemap"
+        "engine/tilemap/index/renderTilemap",
+        "engine/tilemap/index/Tilemap"
       ],
       "thumbnail": "/samples/phase-03/0301/assets/images/preview.svg",
       "preview": "/samples/phase-03/0301/assets/images/preview.svg",
@@ -2046,8 +2065,8 @@
         "engine/systems/index/moveRectWithTilemapCollision",
         "engine/theme/index/Theme",
         "engine/theme/index/ThemeTokens",
-        "engine/tilemap/index/Tilemap",
-        "engine/tilemap/index/renderTilemap"
+        "engine/tilemap/index/renderTilemap",
+        "engine/tilemap/index/Tilemap"
       ]
     },
     {
@@ -2080,8 +2099,8 @@
         "engine/systems/index/moveRectWithTilemapCollision",
         "engine/theme/index/Theme",
         "engine/theme/index/ThemeTokens",
-        "engine/tilemap/index/Tilemap",
-        "engine/tilemap/index/renderTilemap"
+        "engine/tilemap/index/renderTilemap",
+        "engine/tilemap/index/Tilemap"
       ],
       "thumbnail": "/samples/phase-03/0302/assets/images/preview.svg",
       "preview": "/samples/phase-03/0302/assets/images/preview.svg",
@@ -2103,8 +2122,8 @@
         "engine/systems/index/moveRectWithTilemapCollision",
         "engine/theme/index/Theme",
         "engine/theme/index/ThemeTokens",
-        "engine/tilemap/index/Tilemap",
-        "engine/tilemap/index/renderTilemap"
+        "engine/tilemap/index/renderTilemap",
+        "engine/tilemap/index/Tilemap"
       ]
     },
     {
@@ -2137,8 +2156,8 @@
         "engine/systems/index/stepArcadeBody",
         "engine/theme/index/Theme",
         "engine/theme/index/ThemeTokens",
-        "engine/tilemap/index/Tilemap",
-        "engine/tilemap/index/renderTilemap"
+        "engine/tilemap/index/renderTilemap",
+        "engine/tilemap/index/Tilemap"
       ],
       "thumbnail": "/samples/phase-03/0303/assets/images/preview.svg",
       "preview": "/samples/phase-03/0303/assets/images/preview.svg",
@@ -2160,8 +2179,8 @@
         "engine/systems/index/stepArcadeBody",
         "engine/theme/index/Theme",
         "engine/theme/index/ThemeTokens",
-        "engine/tilemap/index/Tilemap",
-        "engine/tilemap/index/renderTilemap"
+        "engine/tilemap/index/renderTilemap",
+        "engine/tilemap/index/Tilemap"
       ]
     },
     {
@@ -2195,8 +2214,8 @@
         "engine/systems/index/stepArcadeBody",
         "engine/theme/index/Theme",
         "engine/theme/index/ThemeTokens",
-        "engine/tilemap/index/Tilemap",
-        "engine/tilemap/index/renderTilemap"
+        "engine/tilemap/index/renderTilemap",
+        "engine/tilemap/index/Tilemap"
       ],
       "thumbnail": "/samples/phase-03/0304/assets/images/preview.svg",
       "preview": "/samples/phase-03/0304/assets/images/preview.svg",
@@ -2219,8 +2238,8 @@
         "engine/systems/index/stepArcadeBody",
         "engine/theme/index/Theme",
         "engine/theme/index/ThemeTokens",
-        "engine/tilemap/index/Tilemap",
-        "engine/tilemap/index/renderTilemap"
+        "engine/tilemap/index/renderTilemap",
+        "engine/tilemap/index/Tilemap"
       ]
     },
     {
@@ -2254,8 +2273,8 @@
         "engine/systems/index/stepArcadeBody",
         "engine/theme/index/Theme",
         "engine/theme/index/ThemeTokens",
-        "engine/tilemap/index/Tilemap",
-        "engine/tilemap/index/renderTilemap"
+        "engine/tilemap/index/renderTilemap",
+        "engine/tilemap/index/Tilemap"
       ],
       "thumbnail": "/samples/phase-03/0305/assets/images/preview.svg",
       "preview": "/samples/phase-03/0305/assets/images/preview.svg",
@@ -2278,8 +2297,8 @@
         "engine/systems/index/stepArcadeBody",
         "engine/theme/index/Theme",
         "engine/theme/index/ThemeTokens",
-        "engine/tilemap/index/Tilemap",
-        "engine/tilemap/index/renderTilemap"
+        "engine/tilemap/index/renderTilemap",
+        "engine/tilemap/index/Tilemap"
       ]
     },
     {
@@ -2313,8 +2332,8 @@
         "engine/systems/index/stepArcadeBody",
         "engine/theme/index/Theme",
         "engine/theme/index/ThemeTokens",
-        "engine/tilemap/index/Tilemap",
-        "engine/tilemap/index/renderTilemap"
+        "engine/tilemap/index/renderTilemap",
+        "engine/tilemap/index/Tilemap"
       ],
       "thumbnail": "/samples/phase-03/0306/assets/images/preview.svg",
       "preview": "/samples/phase-03/0306/assets/images/preview.svg",
@@ -2337,8 +2356,8 @@
         "engine/systems/index/stepArcadeBody",
         "engine/theme/index/Theme",
         "engine/theme/index/ThemeTokens",
-        "engine/tilemap/index/Tilemap",
-        "engine/tilemap/index/renderTilemap"
+        "engine/tilemap/index/renderTilemap",
+        "engine/tilemap/index/Tilemap"
       ]
     },
     {
@@ -3071,7 +3090,22 @@
       "thumbnail": "/samples/phase-03/0325/assets/images/preview.svg",
       "preview": "/samples/phase-03/0325/assets/images/preview.svg",
       "classValues": [
-        "samples/gravity"
+        "engine/core/Engine",
+        "engine/input/index/GamepadInputAdapter",
+        "engine/input/index/InputService",
+        "engine/scene/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens",
+        "engine/utils/math/clamp"
+      ],
+      "engineClassesUsed": [
+        "engine/core/Engine",
+        "engine/input/index/GamepadInputAdapter",
+        "engine/input/index/InputService",
+        "engine/scene/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens",
+        "engine/utils/math/clamp"
       ]
     },
     {
@@ -3091,7 +3125,22 @@
       "thumbnail": "/samples/phase-03/0326/assets/images/preview.svg",
       "preview": "/samples/phase-03/0326/assets/images/preview.svg",
       "classValues": [
-        "samples/paddle-intercept"
+        "engine/core/Engine",
+        "engine/input/index/GamepadInputAdapter",
+        "engine/input/index/InputService",
+        "engine/scene/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens",
+        "engine/utils/math/clamp"
+      ],
+      "engineClassesUsed": [
+        "engine/core/Engine",
+        "engine/input/index/GamepadInputAdapter",
+        "engine/input/index/InputService",
+        "engine/scene/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens",
+        "engine/utils/math/clamp"
       ]
     },
     {
@@ -3111,7 +3160,22 @@
       "thumbnail": "/samples/phase-03/0327/assets/images/preview.svg",
       "preview": "/samples/phase-03/0327/assets/images/preview.svg",
       "classValues": [
-        "samples/multi-ball-chaos"
+        "engine/core/Engine",
+        "engine/input/index/GamepadInputAdapter",
+        "engine/input/index/InputService",
+        "engine/scene/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens",
+        "engine/utils/math/clamp"
+      ],
+      "engineClassesUsed": [
+        "engine/core/Engine",
+        "engine/input/index/GamepadInputAdapter",
+        "engine/input/index/InputService",
+        "engine/scene/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens",
+        "engine/utils/math/clamp"
       ]
     },
     {
@@ -3526,7 +3590,22 @@
       "thumbnail": "/samples/phase-04/0413/assets/images/preview.svg",
       "preview": "/samples/phase-04/0413/assets/images/preview.svg",
       "classValues": [
-        "samples/thruster"
+        "engine/core/Engine",
+        "engine/input/index/GamepadInputAdapter",
+        "engine/input/index/InputService",
+        "engine/scene/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens",
+        "engine/utils/math/clamp"
+      ],
+      "engineClassesUsed": [
+        "engine/core/Engine",
+        "engine/input/index/GamepadInputAdapter",
+        "engine/input/index/InputService",
+        "engine/scene/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens",
+        "engine/utils/math/clamp"
       ]
     },
     {
@@ -4178,8 +4257,8 @@
         "behaviors"
       ],
       "engineClassesUsed": [
-        "engine/ai/index/AIStateController",
         "engine/ai/index/advancePatrolRoute",
+        "engine/ai/index/AIStateController",
         "engine/ai/index/stepChaseBehavior",
         "engine/core/Engine",
         "engine/debug/index/drawFrame",
@@ -4194,8 +4273,8 @@
       "preview": "/samples/phase-06/0604/assets/images/preview.svg",
       "href": "./phase-06/0604/index.html",
       "classValues": [
-        "engine/ai/index/AIStateController",
         "engine/ai/index/advancePatrolRoute",
+        "engine/ai/index/AIStateController",
         "engine/ai/index/stepChaseBehavior",
         "engine/core/Engine",
         "engine/debug/index/drawFrame",
@@ -4546,7 +4625,22 @@
       "thumbnail": "/samples/phase-06/0614/assets/images/preview.svg",
       "preview": "/samples/phase-06/0614/assets/images/preview.svg",
       "classValues": [
-        "samples/orbit"
+        "engine/core/Engine",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawPanel",
+        "engine/input/index/InputService",
+        "engine/scene/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
+      ],
+      "engineClassesUsed": [
+        "engine/core/Engine",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawPanel",
+        "engine/input/index/InputService",
+        "engine/scene/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
       ]
     },
     {
@@ -5388,11 +5482,11 @@
         "engine/core/Engine",
         "engine/debug/index/drawFrame",
         "engine/debug/index/drawPanel",
+        "engine/rendering/index/drawVectorShape",
+        "engine/rendering/index/transformPoints",
         "engine/scene/index/Scene",
         "engine/theme/index/Theme",
-        "engine/theme/index/ThemeTokens",
-        "engine/rendering/index/drawVectorShape",
-        "engine/rendering/index/transformPoints"
+        "engine/theme/index/ThemeTokens"
       ],
       "thumbnail": "/samples/phase-09/0901/assets/images/preview.svg",
       "preview": "/samples/phase-09/0901/assets/images/preview.svg",
@@ -5401,11 +5495,11 @@
         "engine/core/Engine",
         "engine/debug/index/drawFrame",
         "engine/debug/index/drawPanel",
+        "engine/rendering/index/drawVectorShape",
+        "engine/rendering/index/transformPoints",
         "engine/scene/index/Scene",
         "engine/theme/index/Theme",
-        "engine/theme/index/ThemeTokens",
-        "engine/rendering/index/drawVectorShape",
-        "engine/rendering/index/transformPoints"
+        "engine/theme/index/ThemeTokens"
       ]
     },
     {
@@ -5424,11 +5518,11 @@
         "engine/core/Engine",
         "engine/debug/index/drawFrame",
         "engine/debug/index/drawPanel",
+        "engine/rendering/index/drawVectorShape",
+        "engine/rendering/index/transformPoints",
         "engine/scene/index/Scene",
         "engine/theme/index/Theme",
-        "engine/theme/index/ThemeTokens",
-        "engine/rendering/index/drawVectorShape",
-        "engine/rendering/index/transformPoints"
+        "engine/theme/index/ThemeTokens"
       ],
       "thumbnail": "/samples/phase-09/0902/assets/images/preview.svg",
       "preview": "/samples/phase-09/0902/assets/images/preview.svg",
@@ -5438,11 +5532,11 @@
         "engine/core/Engine",
         "engine/debug/index/drawFrame",
         "engine/debug/index/drawPanel",
+        "engine/rendering/index/drawVectorShape",
+        "engine/rendering/index/transformPoints",
         "engine/scene/index/Scene",
         "engine/theme/index/Theme",
-        "engine/theme/index/ThemeTokens",
-        "engine/rendering/index/drawVectorShape",
-        "engine/rendering/index/transformPoints"
+        "engine/theme/index/ThemeTokens"
       ]
     },
     {
@@ -5463,10 +5557,10 @@
         "engine/core/Engine",
         "engine/debug/index/drawFrame",
         "engine/debug/index/drawPanel",
+        "engine/rendering/index/drawVectorShape",
         "engine/scene/index/Scene",
         "engine/theme/index/Theme",
-        "engine/theme/index/ThemeTokens",
-        "engine/rendering/index/drawVectorShape"
+        "engine/theme/index/ThemeTokens"
       ],
       "thumbnail": "/samples/phase-09/0903/assets/images/preview.svg",
       "preview": "/samples/phase-09/0903/assets/images/preview.svg",
@@ -5476,10 +5570,10 @@
         "engine/core/Engine",
         "engine/debug/index/drawFrame",
         "engine/debug/index/drawPanel",
+        "engine/rendering/index/drawVectorShape",
         "engine/scene/index/Scene",
         "engine/theme/index/Theme",
-        "engine/theme/index/ThemeTokens",
-        "engine/rendering/index/drawVectorShape"
+        "engine/theme/index/ThemeTokens"
       ]
     },
     {
@@ -5584,11 +5678,11 @@
         "engine/core/Engine",
         "engine/debug/index/drawFrame",
         "engine/debug/index/drawPanel",
+        "engine/rendering/index/drawVectorShape",
+        "engine/rendering/index/transformPoints",
         "engine/scene/index/Scene",
         "engine/theme/index/Theme",
-        "engine/theme/index/ThemeTokens",
-        "engine/rendering/index/drawVectorShape",
-        "engine/rendering/index/transformPoints"
+        "engine/theme/index/ThemeTokens"
       ],
       "thumbnail": "/samples/phase-09/0906/assets/images/preview.svg",
       "preview": "/samples/phase-09/0906/assets/images/preview.svg",
@@ -5600,11 +5694,11 @@
         "engine/core/Engine",
         "engine/debug/index/drawFrame",
         "engine/debug/index/drawPanel",
+        "engine/rendering/index/drawVectorShape",
+        "engine/rendering/index/transformPoints",
         "engine/scene/index/Scene",
         "engine/theme/index/Theme",
-        "engine/theme/index/ThemeTokens",
-        "engine/rendering/index/drawVectorShape",
-        "engine/rendering/index/transformPoints"
+        "engine/theme/index/ThemeTokens"
       ]
     },
     {
@@ -5950,8 +6044,8 @@
         "engine/scene/index/Scene",
         "engine/theme/index/Theme",
         "engine/theme/index/ThemeTokens",
-        "engine/tilemap/index/Tilemap",
-        "engine/tilemap/index/renderTilemap"
+        "engine/tilemap/index/renderTilemap",
+        "engine/tilemap/index/Tilemap"
       ],
       "thumbnail": "/samples/phase-12/1201/assets/images/preview.svg",
       "preview": "/samples/phase-12/1201/assets/images/preview.svg",
@@ -5965,8 +6059,8 @@
         "engine/scene/index/Scene",
         "engine/theme/index/Theme",
         "engine/theme/index/ThemeTokens",
-        "engine/tilemap/index/Tilemap",
-        "engine/tilemap/index/renderTilemap"
+        "engine/tilemap/index/renderTilemap",
+        "engine/tilemap/index/Tilemap"
       ]
     },
     {
@@ -5992,8 +6086,8 @@
         "engine/scene/index/Scene",
         "engine/theme/index/Theme",
         "engine/theme/index/ThemeTokens",
-        "engine/tilemap/index/Tilemap",
         "engine/tilemap/index/renderTilemap",
+        "engine/tilemap/index/Tilemap",
         "engine/utils/index/clamp"
       ],
       "thumbnail": "/samples/phase-12/1202/assets/images/preview.svg",
@@ -6009,8 +6103,8 @@
         "engine/scene/index/Scene",
         "engine/theme/index/Theme",
         "engine/theme/index/ThemeTokens",
-        "engine/tilemap/index/Tilemap",
         "engine/tilemap/index/renderTilemap",
+        "engine/tilemap/index/Tilemap",
         "engine/utils/index/clamp"
       ]
     },
@@ -6037,9 +6131,9 @@
         "engine/scene/index/Scene",
         "engine/theme/index/Theme",
         "engine/theme/index/ThemeTokens",
-        "engine/tilemap/index/Tilemap",
         "engine/tilemap/index/renderTilemap",
         "engine/tilemap/index/resolveRectVsTilemap",
+        "engine/tilemap/index/Tilemap",
         "engine/utils/index/clamp"
       ],
       "thumbnail": "/samples/phase-12/1203/assets/images/preview.svg",
@@ -6055,9 +6149,9 @@
         "engine/scene/index/Scene",
         "engine/theme/index/Theme",
         "engine/theme/index/ThemeTokens",
-        "engine/tilemap/index/Tilemap",
         "engine/tilemap/index/renderTilemap",
         "engine/tilemap/index/resolveRectVsTilemap",
+        "engine/tilemap/index/Tilemap",
         "engine/utils/index/clamp"
       ]
     },
@@ -6084,9 +6178,9 @@
         "engine/scene/index/Scene",
         "engine/theme/index/Theme",
         "engine/theme/index/ThemeTokens",
-        "engine/tilemap/index/Tilemap",
         "engine/tilemap/index/renderTilemap",
         "engine/tilemap/index/resolveRectVsTilemap",
+        "engine/tilemap/index/Tilemap",
         "engine/utils/index/clamp"
       ],
       "thumbnail": "/samples/phase-12/1204/assets/images/preview.svg",
@@ -6102,9 +6196,9 @@
         "engine/scene/index/Scene",
         "engine/theme/index/Theme",
         "engine/theme/index/ThemeTokens",
-        "engine/tilemap/index/Tilemap",
         "engine/tilemap/index/renderTilemap",
         "engine/tilemap/index/resolveRectVsTilemap",
+        "engine/tilemap/index/Tilemap",
         "engine/utils/index/clamp"
       ]
     },
@@ -6131,9 +6225,9 @@
         "engine/scene/index/Scene",
         "engine/theme/index/Theme",
         "engine/theme/index/ThemeTokens",
-        "engine/tilemap/index/Tilemap",
         "engine/tilemap/index/renderTilemap",
         "engine/tilemap/index/resolveRectVsTilemap",
+        "engine/tilemap/index/Tilemap",
         "engine/utils/index/clamp"
       ],
       "thumbnail": "/samples/phase-12/1205/assets/images/preview.svg",
@@ -6149,9 +6243,9 @@
         "engine/scene/index/Scene",
         "engine/theme/index/Theme",
         "engine/theme/index/ThemeTokens",
-        "engine/tilemap/index/Tilemap",
         "engine/tilemap/index/renderTilemap",
         "engine/tilemap/index/resolveRectVsTilemap",
+        "engine/tilemap/index/Tilemap",
         "engine/utils/index/clamp"
       ]
     },
@@ -6178,9 +6272,9 @@
         "engine/scene/index/Scene",
         "engine/theme/index/Theme",
         "engine/theme/index/ThemeTokens",
-        "engine/tilemap/index/Tilemap",
         "engine/tilemap/index/renderTilemap",
         "engine/tilemap/index/resolveRectVsTilemap",
+        "engine/tilemap/index/Tilemap",
         "engine/utils/index/clamp"
       ],
       "thumbnail": "/samples/phase-12/1206/assets/images/preview.svg",
@@ -6196,9 +6290,9 @@
         "engine/scene/index/Scene",
         "engine/theme/index/Theme",
         "engine/theme/index/ThemeTokens",
-        "engine/tilemap/index/Tilemap",
         "engine/tilemap/index/renderTilemap",
         "engine/tilemap/index/resolveRectVsTilemap",
+        "engine/tilemap/index/Tilemap",
         "engine/utils/index/clamp"
       ]
     },
@@ -6225,9 +6319,9 @@
         "engine/scene/index/Scene",
         "engine/theme/index/Theme",
         "engine/theme/index/ThemeTokens",
-        "engine/tilemap/index/Tilemap",
         "engine/tilemap/index/renderTilemap",
         "engine/tilemap/index/resolveRectVsTilemap",
+        "engine/tilemap/index/Tilemap",
         "engine/utils/index/clamp"
       ],
       "thumbnail": "/samples/phase-12/1207/assets/images/preview.svg",
@@ -6243,9 +6337,9 @@
         "engine/scene/index/Scene",
         "engine/theme/index/Theme",
         "engine/theme/index/ThemeTokens",
-        "engine/tilemap/index/Tilemap",
         "engine/tilemap/index/renderTilemap",
         "engine/tilemap/index/resolveRectVsTilemap",
+        "engine/tilemap/index/Tilemap",
         "engine/utils/index/clamp"
       ]
     },
@@ -6270,8 +6364,8 @@
         "engine/scene/index/Scene",
         "engine/theme/index/Theme",
         "engine/theme/index/ThemeTokens",
-        "engine/tilemap/index/Tilemap",
         "engine/tilemap/index/resolveRectVsTilemap",
+        "engine/tilemap/index/Tilemap",
         "engine/utils/index/clamp"
       ],
       "thumbnail": "/samples/phase-12/1208/assets/images/preview.svg",
@@ -6285,8 +6379,8 @@
         "engine/scene/index/Scene",
         "engine/theme/index/Theme",
         "engine/theme/index/ThemeTokens",
-        "engine/tilemap/index/Tilemap",
         "engine/tilemap/index/resolveRectVsTilemap",
+        "engine/tilemap/index/Tilemap",
         "engine/utils/index/clamp"
       ]
     },
@@ -6481,9 +6575,9 @@
       "engineClassesUsed": [
         "engine/core/Engine",
         "engine/debug/index/drawFrame",
+        "engine/network/index/drawNetworkDebugOverlay",
         "engine/network/index/NetworkConditionSimulator",
         "engine/network/index/NetworkingLayer",
-        "engine/network/index/drawNetworkDebugOverlay",
         "engine/scene/index/Scene",
         "engine/theme/index/Theme",
         "engine/theme/index/ThemeTokens"
@@ -6494,9 +6588,9 @@
       "classValues": [
         "engine/core/Engine",
         "engine/debug/index/drawFrame",
+        "engine/network/index/drawNetworkDebugOverlay",
         "engine/network/index/NetworkConditionSimulator",
         "engine/network/index/NetworkingLayer",
-        "engine/network/index/drawNetworkDebugOverlay",
         "engine/scene/index/Scene",
         "engine/theme/index/Theme",
         "engine/theme/index/ThemeTokens"
@@ -6952,7 +7046,26 @@
         "authoritative"
       ],
       "classValues": [
-        "samples/sample-1319-real-network-live-dashboard"
+        "engine/core/Engine",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawPanel",
+        "engine/input/index/InputService",
+        "engine/network/index/AuthoritativeServerRuntime",
+        "engine/scene/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens",
+        "engine/utils/index/clamp"
+      ],
+      "engineClassesUsed": [
+        "engine/core/Engine",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawPanel",
+        "engine/input/index/InputService",
+        "engine/network/index/AuthoritativeServerRuntime",
+        "engine/scene/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens",
+        "engine/utils/index/clamp"
       ]
     },
     {
@@ -6972,7 +7085,22 @@
       "thumbnail": "/samples/phase-13/1320/assets/images/preview.svg",
       "preview": "/samples/phase-13/1320/assets/images/preview.svg",
       "classValues": [
-        "samples/pacman-lite"
+        "engine/core/Engine",
+        "engine/input/index/GamepadInputAdapter",
+        "engine/input/index/InputService",
+        "engine/scene/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens",
+        "engine/utils/math/clamp"
+      ],
+      "engineClassesUsed": [
+        "engine/core/Engine",
+        "engine/input/index/GamepadInputAdapter",
+        "engine/input/index/InputService",
+        "engine/scene/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens",
+        "engine/utils/math/clamp"
       ]
     },
     {
@@ -7610,7 +7738,26 @@
       "thumbnail": "/samples/phase-16/1601/assets/images/preview.svg",
       "preview": "/samples/phase-16/1601/assets/images/preview.svg",
       "classValues": [
-        "samples/sample-1601-3d-cube-explorer"
+        "engine/core/Engine",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawPanel",
+        "engine/ecs/index/World",
+        "engine/input/index/InputService",
+        "engine/scene/index/Scene",
+        "engine/systems/index/stepWorldPhysics3D",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
+      ],
+      "engineClassesUsed": [
+        "engine/core/Engine",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawPanel",
+        "engine/ecs/index/World",
+        "engine/input/index/InputService",
+        "engine/scene/index/Scene",
+        "engine/systems/index/stepWorldPhysics3D",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
       ]
     },
     {
@@ -7630,7 +7777,28 @@
       "thumbnail": "/samples/phase-16/1602/assets/images/preview.svg",
       "preview": "/samples/phase-16/1602/assets/images/preview.svg",
       "classValues": [
-        "samples/sample-1602-3d-maze-runner"
+        "engine/core/Engine",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawPanel",
+        "engine/ecs/index/World",
+        "engine/input/index/InputService",
+        "engine/physics/index/isAabbColliding3D",
+        "engine/scene/index/Scene",
+        "engine/systems/index/stepWorldPhysics3D",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
+      ],
+      "engineClassesUsed": [
+        "engine/core/Engine",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawPanel",
+        "engine/ecs/index/World",
+        "engine/input/index/InputService",
+        "engine/physics/index/isAabbColliding3D",
+        "engine/scene/index/Scene",
+        "engine/systems/index/stepWorldPhysics3D",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
       ]
     },
     {
@@ -7650,7 +7818,26 @@
       "thumbnail": "/samples/phase-16/1603/assets/images/preview.svg",
       "preview": "/samples/phase-16/1603/assets/images/preview.svg",
       "classValues": [
-        "samples/sample-1603-first-person-walkthrough"
+        "engine/core/Engine",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawPanel",
+        "engine/ecs/index/World",
+        "engine/input/index/InputService",
+        "engine/scene/index/Scene",
+        "engine/systems/index/stepWorldPhysics3D",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
+      ],
+      "engineClassesUsed": [
+        "engine/core/Engine",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawPanel",
+        "engine/ecs/index/World",
+        "engine/input/index/InputService",
+        "engine/scene/index/Scene",
+        "engine/systems/index/stepWorldPhysics3D",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
       ]
     },
     {
@@ -7670,7 +7857,28 @@
       "thumbnail": "/samples/phase-16/1604/assets/images/preview.svg",
       "preview": "/samples/phase-16/1604/assets/images/preview.svg",
       "classValues": [
-        "samples/sample-1604-3d-platformer-basics"
+        "engine/core/Engine",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawPanel",
+        "engine/ecs/index/World",
+        "engine/input/index/InputService",
+        "engine/physics/index/isAabbColliding3D",
+        "engine/scene/index/Scene",
+        "engine/systems/index/stepWorldPhysics3D",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
+      ],
+      "engineClassesUsed": [
+        "engine/core/Engine",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawPanel",
+        "engine/ecs/index/World",
+        "engine/input/index/InputService",
+        "engine/physics/index/isAabbColliding3D",
+        "engine/scene/index/Scene",
+        "engine/systems/index/stepWorldPhysics3D",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
       ]
     },
     {
@@ -7690,7 +7898,26 @@
       "thumbnail": "/samples/phase-16/1605/assets/images/preview.svg",
       "preview": "/samples/phase-16/1605/assets/images/preview.svg",
       "classValues": [
-        "samples/sample-1605-3d-driving-sandbox"
+        "engine/core/Engine",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawPanel",
+        "engine/ecs/index/World",
+        "engine/input/index/InputService",
+        "engine/scene/index/Scene",
+        "engine/systems/index/stepWorldPhysics3D",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
+      ],
+      "engineClassesUsed": [
+        "engine/core/Engine",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawPanel",
+        "engine/ecs/index/World",
+        "engine/input/index/InputService",
+        "engine/scene/index/Scene",
+        "engine/systems/index/stepWorldPhysics3D",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
       ]
     },
     {
@@ -7710,7 +7937,22 @@
       "thumbnail": "/samples/phase-16/1606/assets/images/preview.svg",
       "preview": "/samples/phase-16/1606/assets/images/preview.svg",
       "classValues": [
-        "samples/sample-1606-3d-physics-playground"
+        "engine/core/Engine",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawPanel",
+        "engine/input/index/InputService",
+        "engine/scene/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
+      ],
+      "engineClassesUsed": [
+        "engine/core/Engine",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawPanel",
+        "engine/input/index/InputService",
+        "engine/scene/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
       ]
     },
     {
@@ -7730,7 +7972,24 @@
       "thumbnail": "/samples/phase-16/1607/assets/images/preview.svg",
       "preview": "/samples/phase-16/1607/assets/images/preview.svg",
       "classValues": [
-        "samples/sample-1607-3d-space-shooter"
+        "engine/core/Engine",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawPanel",
+        "engine/input/index/InputService",
+        "engine/physics/index/isAabbColliding3D",
+        "engine/scene/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
+      ],
+      "engineClassesUsed": [
+        "engine/core/Engine",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawPanel",
+        "engine/input/index/InputService",
+        "engine/physics/index/isAabbColliding3D",
+        "engine/scene/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
       ]
     },
     {
@@ -7750,7 +8009,28 @@
       "thumbnail": "/samples/phase-16/1608/assets/images/preview.svg",
       "preview": "/samples/phase-16/1608/assets/images/preview.svg",
       "classValues": [
-        "samples/sample-1608-3d-dungeon-crawler"
+        "engine/core/Engine",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawPanel",
+        "engine/ecs/index/World",
+        "engine/input/index/InputService",
+        "engine/physics/index/isAabbColliding3D",
+        "engine/scene/index/Scene",
+        "engine/systems/index/stepWorldPhysics3D",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
+      ],
+      "engineClassesUsed": [
+        "engine/core/Engine",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawPanel",
+        "engine/ecs/index/World",
+        "engine/input/index/InputService",
+        "engine/physics/index/isAabbColliding3D",
+        "engine/scene/index/Scene",
+        "engine/systems/index/stepWorldPhysics3D",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
       ]
     },
     {
@@ -7770,7 +8050,22 @@
       "thumbnail": "/samples/phase-16/1609/assets/images/preview.svg",
       "preview": "/samples/phase-16/1609/assets/images/preview.svg",
       "classValues": [
-        "samples/sample-1609-3d-lighting-demo"
+        "engine/core/Engine",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawPanel",
+        "engine/input/index/InputService",
+        "engine/scene/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
+      ],
+      "engineClassesUsed": [
+        "engine/core/Engine",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawPanel",
+        "engine/input/index/InputService",
+        "engine/scene/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
       ]
     },
     {
@@ -7790,7 +8085,22 @@
       "thumbnail": "/samples/phase-16/1610/assets/images/preview.svg",
       "preview": "/samples/phase-16/1610/assets/images/preview.svg",
       "classValues": [
-        "samples/sample-1610-hybrid-2d-3d-world"
+        "engine/core/Engine",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawPanel",
+        "engine/input/index/InputService",
+        "engine/scene/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
+      ],
+      "engineClassesUsed": [
+        "engine/core/Engine",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawPanel",
+        "engine/input/index/InputService",
+        "engine/scene/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
       ]
     },
     {
@@ -7810,7 +8120,22 @@
       "thumbnail": "/samples/phase-16/1611/assets/images/preview.svg",
       "preview": "/samples/phase-16/1611/assets/images/preview.svg",
       "classValues": [
-        "samples/sample-1611-multiplayer-sync-demo"
+        "engine/core/Engine",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawPanel",
+        "engine/input/index/InputService",
+        "engine/scene/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
+      ],
+      "engineClassesUsed": [
+        "engine/core/Engine",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawPanel",
+        "engine/input/index/InputService",
+        "engine/scene/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
       ]
     },
     {
@@ -7830,7 +8155,22 @@
       "thumbnail": "/samples/phase-16/1612/assets/images/preview.svg",
       "preview": "/samples/phase-16/1612/assets/images/preview.svg",
       "classValues": [
-        "samples/sample-1612-3d-stress-test-1-000-objects"
+        "engine/core/Engine",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawPanel",
+        "engine/input/index/InputService",
+        "engine/scene/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
+      ],
+      "engineClassesUsed": [
+        "engine/core/Engine",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawPanel",
+        "engine/input/index/InputService",
+        "engine/scene/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
       ]
     },
     {
@@ -7850,7 +8190,22 @@
       "thumbnail": "/samples/phase-16/1613/assets/images/preview.svg",
       "preview": "/samples/phase-16/1613/assets/images/preview.svg",
       "classValues": [
-        "samples/sample-1613-3d-input-lab"
+        "engine/core/Engine",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawPanel",
+        "engine/input/index/InputService",
+        "engine/scene/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
+      ],
+      "engineClassesUsed": [
+        "engine/core/Engine",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawPanel",
+        "engine/input/index/InputService",
+        "engine/scene/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
       ]
     },
     {
@@ -7870,7 +8225,22 @@
       "thumbnail": "/samples/phase-16/1614/assets/images/preview.svg",
       "preview": "/samples/phase-16/1614/assets/images/preview.svg",
       "classValues": [
-        "samples/sample-1614-3d-camera-modes-lab"
+        "engine/core/Engine",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawPanel",
+        "engine/input/index/InputService",
+        "engine/scene/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
+      ],
+      "engineClassesUsed": [
+        "engine/core/Engine",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawPanel",
+        "engine/input/index/InputService",
+        "engine/scene/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
       ]
     },
     {
@@ -7890,7 +8260,22 @@
       "thumbnail": "/samples/phase-16/1615/assets/images/preview.svg",
       "preview": "/samples/phase-16/1615/assets/images/preview.svg",
       "classValues": [
-        "samples/sample-1615-3d-entity-composition"
+        "engine/core/Engine",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawPanel",
+        "engine/input/index/InputService",
+        "engine/scene/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
+      ],
+      "engineClassesUsed": [
+        "engine/core/Engine",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawPanel",
+        "engine/input/index/InputService",
+        "engine/scene/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
       ]
     },
     {
@@ -7910,7 +8295,22 @@
       "thumbnail": "/samples/phase-16/1616/assets/images/preview.svg",
       "preview": "/samples/phase-16/1616/assets/images/preview.svg",
       "classValues": [
-        "samples/sample-1616-3d-world-streaming"
+        "engine/core/Engine",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawPanel",
+        "engine/input/index/InputService",
+        "engine/scene/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
+      ],
+      "engineClassesUsed": [
+        "engine/core/Engine",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawPanel",
+        "engine/input/index/InputService",
+        "engine/scene/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
       ]
     },
     {
@@ -7930,7 +8330,22 @@
       "thumbnail": "/samples/phase-16/1617/assets/images/preview.svg",
       "preview": "/samples/phase-16/1617/assets/images/preview.svg",
       "classValues": [
-        "samples/sample-1617-3d-large-world-streaming"
+        "engine/core/Engine",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawPanel",
+        "engine/input/index/InputService",
+        "engine/scene/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
+      ],
+      "engineClassesUsed": [
+        "engine/core/Engine",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawPanel",
+        "engine/input/index/InputService",
+        "engine/scene/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
       ]
     },
     {
@@ -7950,7 +8365,22 @@
       "thumbnail": "/samples/phase-16/1618/assets/images/preview.svg",
       "preview": "/samples/phase-16/1618/assets/images/preview.svg",
       "classValues": [
-        "samples/sample-1618-3d-lighting-materials-lab"
+        "engine/core/Engine",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawPanel",
+        "engine/input/index/InputService",
+        "engine/scene/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
+      ],
+      "engineClassesUsed": [
+        "engine/core/Engine",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawPanel",
+        "engine/input/index/InputService",
+        "engine/scene/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
       ]
     },
     {
@@ -7970,7 +8400,22 @@
       "thumbnail": "/samples/phase-16/1619/assets/images/preview.svg",
       "preview": "/samples/phase-16/1619/assets/images/preview.svg",
       "classValues": [
-        "samples/sample-1619-3d-debug-hud-sample"
+        "engine/core/Engine",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawPanel",
+        "engine/input/index/InputService",
+        "engine/scene/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
+      ],
+      "engineClassesUsed": [
+        "engine/core/Engine",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawPanel",
+        "engine/input/index/InputService",
+        "engine/scene/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
       ]
     },
     {
@@ -7990,7 +8435,22 @@
       "thumbnail": "/samples/phase-16/1620/assets/images/preview.svg",
       "preview": "/samples/phase-16/1620/assets/images/preview.svg",
       "classValues": [
-        "samples/sample-1620-3d-mini-game-reference"
+        "engine/core/Engine",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawPanel",
+        "engine/input/index/InputService",
+        "engine/scene/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
+      ],
+      "engineClassesUsed": [
+        "engine/core/Engine",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawPanel",
+        "engine/input/index/InputService",
+        "engine/scene/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
       ]
     },
     {
@@ -8010,7 +8470,22 @@
       "thumbnail": "/samples/phase-16/1621/assets/images/preview.svg",
       "preview": "/samples/phase-16/1621/assets/images/preview.svg",
       "classValues": [
-        "samples/sample-1621-3d-ai-navigation-demo"
+        "engine/core/Engine",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawPanel",
+        "engine/input/index/InputService",
+        "engine/scene/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
+      ],
+      "engineClassesUsed": [
+        "engine/core/Engine",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawPanel",
+        "engine/input/index/InputService",
+        "engine/scene/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
       ]
     },
     {
@@ -8030,7 +8505,22 @@
       "thumbnail": "/samples/phase-16/1622/assets/images/preview.svg",
       "preview": "/samples/phase-16/1622/assets/images/preview.svg",
       "classValues": [
-        "samples/sample-1622-basic-raycast-walls"
+        "engine/core/Engine",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawPanel",
+        "engine/input/index/InputService",
+        "engine/scene/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
+      ],
+      "engineClassesUsed": [
+        "engine/core/Engine",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawPanel",
+        "engine/input/index/InputService",
+        "engine/scene/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
       ]
     },
     {
@@ -8050,7 +8540,24 @@
       "thumbnail": "/samples/phase-17/1701/assets/images/preview.svg",
       "preview": "/samples/phase-17/1701/assets/images/preview.svg",
       "classValues": [
-        "samples/sample-1701-doom-raycast-sprites"
+        "engine/core/Engine",
+        "engine/debug/index/createBottomRightDebugPanelStack",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawStackedDebugPanel",
+        "engine/input/index/InputService",
+        "engine/scene/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
+      ],
+      "engineClassesUsed": [
+        "engine/core/Engine",
+        "engine/debug/index/createBottomRightDebugPanelStack",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawStackedDebugPanel",
+        "engine/input/index/InputService",
+        "engine/scene/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
       ]
     },
     {
@@ -8070,7 +8577,24 @@
       "thumbnail": "/samples/phase-17/1702/assets/images/preview.svg",
       "preview": "/samples/phase-17/1702/assets/images/preview.svg",
       "classValues": [
-        "samples/sample-1702-wolf-grid-raycast"
+        "engine/core/Engine",
+        "engine/debug/index/createBottomRightDebugPanelStack",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawStackedDebugPanel",
+        "engine/input/index/InputService",
+        "engine/scene/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
+      ],
+      "engineClassesUsed": [
+        "engine/core/Engine",
+        "engine/debug/index/createBottomRightDebugPanelStack",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawStackedDebugPanel",
+        "engine/input/index/InputService",
+        "engine/scene/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
       ]
     },
     {
@@ -8090,7 +8614,24 @@
       "thumbnail": "/samples/phase-17/1703/assets/images/preview.svg",
       "preview": "/samples/phase-17/1703/assets/images/preview.svg",
       "classValues": [
-        "samples/sample-1703-wolf-optimized-raycast"
+        "engine/core/Engine",
+        "engine/debug/index/createBottomRightDebugPanelStack",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawStackedDebugPanel",
+        "engine/input/index/InputService",
+        "engine/scene/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
+      ],
+      "engineClassesUsed": [
+        "engine/core/Engine",
+        "engine/debug/index/createBottomRightDebugPanelStack",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawStackedDebugPanel",
+        "engine/input/index/InputService",
+        "engine/scene/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
       ]
     },
     {
@@ -8110,7 +8651,24 @@
       "thumbnail": "/samples/phase-17/1704/assets/images/preview.svg",
       "preview": "/samples/phase-17/1704/assets/images/preview.svg",
       "classValues": [
-        "samples/sample-1704-unreal-texture-lighting"
+        "engine/core/Engine",
+        "engine/debug/index/createBottomRightDebugPanelStack",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawStackedDebugPanel",
+        "engine/input/index/InputService",
+        "engine/scene/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
+      ],
+      "engineClassesUsed": [
+        "engine/core/Engine",
+        "engine/debug/index/createBottomRightDebugPanelStack",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawStackedDebugPanel",
+        "engine/input/index/InputService",
+        "engine/scene/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
       ]
     },
     {
@@ -8130,7 +8688,24 @@
       "thumbnail": "/samples/phase-17/1705/assets/images/preview.svg",
       "preview": "/samples/phase-17/1705/assets/images/preview.svg",
       "classValues": [
-        "samples/sample-1705-unreal-skinned-mesh-demo"
+        "engine/core/Engine",
+        "engine/debug/index/createBottomRightDebugPanelStack",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawStackedDebugPanel",
+        "engine/input/index/InputService",
+        "engine/scene/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
+      ],
+      "engineClassesUsed": [
+        "engine/core/Engine",
+        "engine/debug/index/createBottomRightDebugPanelStack",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawStackedDebugPanel",
+        "engine/input/index/InputService",
+        "engine/scene/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
       ]
     },
     {
@@ -8150,7 +8725,24 @@
       "thumbnail": "/samples/phase-17/1706/assets/images/preview.svg",
       "preview": "/samples/phase-17/1706/assets/images/preview.svg",
       "classValues": [
-        "samples/sample-1706-minecraft-voxel-terrain"
+        "engine/core/Engine",
+        "engine/debug/index/createBottomRightDebugPanelStack",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawStackedDebugPanel",
+        "engine/input/index/InputService",
+        "engine/scene/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
+      ],
+      "engineClassesUsed": [
+        "engine/core/Engine",
+        "engine/debug/index/createBottomRightDebugPanelStack",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawStackedDebugPanel",
+        "engine/input/index/InputService",
+        "engine/scene/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
       ]
     },
     {
@@ -8170,7 +8762,24 @@
       "thumbnail": "/samples/phase-17/1707/assets/images/preview.svg",
       "preview": "/samples/phase-17/1707/assets/images/preview.svg",
       "classValues": [
-        "samples/sample-1707-minecraft-chunk-streaming"
+        "engine/core/Engine",
+        "engine/debug/index/createBottomRightDebugPanelStack",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawStackedDebugPanel",
+        "engine/input/index/InputService",
+        "engine/scene/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
+      ],
+      "engineClassesUsed": [
+        "engine/core/Engine",
+        "engine/debug/index/createBottomRightDebugPanelStack",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawStackedDebugPanel",
+        "engine/input/index/InputService",
+        "engine/scene/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
       ]
     },
     {
@@ -8190,7 +8799,24 @@
       "thumbnail": "/samples/phase-17/1708/assets/images/preview.svg",
       "preview": "/samples/phase-17/1708/assets/images/preview.svg",
       "classValues": [
-        "samples/sample-1708-real-gameplay-mini-game"
+        "engine/core/Engine",
+        "engine/debug/index/createBottomRightDebugPanelStack",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawStackedDebugPanel",
+        "engine/input/index/InputService",
+        "engine/scene/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
+      ],
+      "engineClassesUsed": [
+        "engine/core/Engine",
+        "engine/debug/index/createBottomRightDebugPanelStack",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawStackedDebugPanel",
+        "engine/input/index/InputService",
+        "engine/scene/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
       ]
     },
     {
@@ -8210,7 +8836,24 @@
       "thumbnail": "/samples/phase-17/1709/assets/images/preview.svg",
       "preview": "/samples/phase-17/1709/assets/images/preview.svg",
       "classValues": [
-        "samples/sample-1709-movement-models-lab"
+        "engine/core/Engine",
+        "engine/debug/index/createBottomRightDebugPanelStack",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawStackedDebugPanel",
+        "engine/input/index/InputService",
+        "engine/scene/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
+      ],
+      "engineClassesUsed": [
+        "engine/core/Engine",
+        "engine/debug/index/createBottomRightDebugPanelStack",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawStackedDebugPanel",
+        "engine/input/index/InputService",
+        "engine/scene/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
       ]
     },
     {
@@ -8230,7 +8873,24 @@
       "thumbnail": "/samples/phase-17/1710/assets/images/preview.svg",
       "preview": "/samples/phase-17/1710/assets/images/preview.svg",
       "classValues": [
-        "samples/sample-1710-real-gameplay-mini-game"
+        "engine/core/Engine",
+        "engine/debug/index/createBottomRightDebugPanelStack",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawStackedDebugPanel",
+        "engine/input/index/InputService",
+        "engine/scene/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
+      ],
+      "engineClassesUsed": [
+        "engine/core/Engine",
+        "engine/debug/index/createBottomRightDebugPanelStack",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawStackedDebugPanel",
+        "engine/input/index/InputService",
+        "engine/scene/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
       ]
     },
     {
@@ -8250,7 +8910,24 @@
       "thumbnail": "/samples/phase-17/1711/assets/images/preview.svg",
       "preview": "/samples/phase-17/1711/assets/images/preview.svg",
       "classValues": [
-        "samples/sample-1711-movement-models-lab"
+        "engine/core/Engine",
+        "engine/debug/index/createBottomRightDebugPanelStack",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawStackedDebugPanel",
+        "engine/input/index/InputService",
+        "engine/scene/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
+      ],
+      "engineClassesUsed": [
+        "engine/core/Engine",
+        "engine/debug/index/createBottomRightDebugPanelStack",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawStackedDebugPanel",
+        "engine/input/index/InputService",
+        "engine/scene/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
       ]
     },
     {
@@ -8270,7 +8947,20 @@
       "thumbnail": "/samples/phase-17/1712/assets/images/preview.svg",
       "preview": "/samples/phase-17/1712/assets/images/preview.svg",
       "classValues": [
-        "samples/sample-1712-gameplay-metrics-telemetry"
+        "engine/core/Engine",
+        "engine/debug/index/createBottomRightDebugPanelStack",
+        "engine/debug/index/drawStackedDebugPanel",
+        "engine/input/index/InputService",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
+      ],
+      "engineClassesUsed": [
+        "engine/core/Engine",
+        "engine/debug/index/createBottomRightDebugPanelStack",
+        "engine/debug/index/drawStackedDebugPanel",
+        "engine/input/index/InputService",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
       ]
     },
     {
@@ -8290,7 +8980,20 @@
       "thumbnail": "/samples/phase-17/1713/assets/images/preview.svg",
       "preview": "/samples/phase-17/1713/assets/images/preview.svg",
       "classValues": [
-        "samples/sample-1713-final-reference-game"
+        "engine/core/Engine",
+        "engine/debug/index/createBottomRightDebugPanelStack",
+        "engine/debug/index/drawStackedDebugPanel",
+        "engine/input/index/InputService",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
+      ],
+      "engineClassesUsed": [
+        "engine/core/Engine",
+        "engine/debug/index/createBottomRightDebugPanelStack",
+        "engine/debug/index/drawStackedDebugPanel",
+        "engine/input/index/InputService",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
       ]
     },
     {
@@ -8310,7 +9013,22 @@
       "thumbnail": "/samples/phase-18/1801/assets/images/preview.svg",
       "preview": "/samples/phase-18/1801/assets/images/preview.svg",
       "classValues": [
-        "samples/sample-1801-phase-18-foundation"
+        "engine/core/Engine",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawPanel",
+        "engine/input/index/InputService",
+        "engine/scene/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
+      ],
+      "engineClassesUsed": [
+        "engine/core/Engine",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawPanel",
+        "engine/input/index/InputService",
+        "engine/scene/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
       ]
     },
     {
@@ -8330,7 +9048,22 @@
       "thumbnail": "/samples/phase-19/1901/assets/images/preview.svg",
       "preview": "/samples/phase-19/1901/assets/images/preview.svg",
       "classValues": [
-        "samples/sample-1901-phase-19-foundation"
+        "engine/core/Engine",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawPanel",
+        "engine/input/index/InputService",
+        "engine/scene/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
+      ],
+      "engineClassesUsed": [
+        "engine/core/Engine",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawPanel",
+        "engine/input/index/InputService",
+        "engine/scene/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
       ]
     },
     {

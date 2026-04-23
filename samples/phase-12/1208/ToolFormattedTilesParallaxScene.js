@@ -16,7 +16,7 @@ import fallbackParallaxToolExport from './data/toolFormattedParallax.js';
 const theme = new Theme(ThemeTokens);
 
 export default class ToolFormattedTilesParallaxScene extends Scene {
-  constructor() {
+  constructor(options = {}) {
     super();
     this.screen = { x: 40, y: 180 };
     this.moveSpeed = 280;
@@ -47,6 +47,7 @@ export default class ToolFormattedTilesParallaxScene extends Scene {
     this.tilesetImage = null;
     this.tileFrameById = {};
     this.parallaxLayers = [];
+    this.samplePreset = options && typeof options.samplePreset === 'object' ? options.samplePreset : null;
 
     this.applyTileExportData(getFallbackTileExport());
   }
@@ -59,7 +60,8 @@ export default class ToolFormattedTilesParallaxScene extends Scene {
     try {
       this.applyTileExportData(tileMapToolExport);
       const tileAssetCount = await this.loadTileAssets(extractTileEntries(tileMapToolExport));
-      const parallaxDocument = await loadParallaxDocument(fallbackParallaxToolExport);
+      const presetParallaxDocument = extractParallaxDocumentFromSamplePreset(this.samplePreset);
+      const parallaxDocument = presetParallaxDocument || await loadParallaxDocument(fallbackParallaxToolExport);
       this.parallaxLayers = await this.loadParallaxAssets(extractParallaxLayers(parallaxDocument));
 
       this.contentLoaded = tileAssetCount > 0 && this.parallaxLayers.length === 3;
@@ -479,6 +481,24 @@ export default class ToolFormattedTilesParallaxScene extends Scene {
       },
     });
   }
+}
+
+function extractParallaxDocumentFromSamplePreset(samplePreset) {
+  if (!samplePreset || typeof samplePreset !== 'object') {
+    return null;
+  }
+  const payload = samplePreset.payload;
+  if (!payload || typeof payload !== 'object') {
+    return null;
+  }
+  const document = payload.parallaxDocument;
+  if (!document || typeof document !== 'object') {
+    return null;
+  }
+  if (document.schema !== 'toolbox.parallax/1') {
+    return null;
+  }
+  return document;
 }
 
 function loadImageFromRelativePath(relativePath, baseUrl) {
