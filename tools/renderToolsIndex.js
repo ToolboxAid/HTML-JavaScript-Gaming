@@ -6,10 +6,6 @@ function toStandaloneHref(entryPoint) {
   return normalized ? `/tools/${normalized}` : "#";
 }
 
-function toHostHref(toolId) {
-  return `/tools/Workspace%20Manager/index.html?tool=${encodeURIComponent(toolId)}`;
-}
-
 function buildDocumentationLinks(tool) {
   const folder = String(tool.folderName || tool.path || "").trim();
   if (!folder) {
@@ -22,11 +18,9 @@ function buildDocumentationLinks(tool) {
 }
 
 function buildCardLinks(tool) {
-  const existing = Array.isArray(tool.sampleEntryPoints) ? tool.sampleEntryPoints : [];
   const docs = buildDocumentationLinks(tool);
-  const merged = [...docs, ...existing];
   const seen = new Set();
-  return merged.filter((entry) => {
+  return docs.filter((entry) => {
     const label = String(entry?.label || "").trim();
     const path = String(entry?.path || "").trim();
     if (!label || !path) {
