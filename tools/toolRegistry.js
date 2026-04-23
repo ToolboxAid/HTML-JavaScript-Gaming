@@ -69,12 +69,24 @@ export const TOOL_REGISTRY = Object.freeze([
     order: 3,
     sampleEntryPoints: [
       {
-        label: "Sample Manifest",
-        path: "Tilemap Studio/samples/sample-manifest.json"
+        label: "How To Use",
+        path: "Tilemap Studio/how_to_use.html"
       },
       {
         label: "Sample 1208 - Tool Formatted Tiles Parallax",
         path: "../samples/phase-12/1208/index.html"
+      },
+      {
+        label: "Sample 1209 - Tilemap Basic Layout Preset",
+        path: "../samples/phase-12/1209/index.html"
+      },
+      {
+        label: "Sample 1210 - Tilemap Objective Layout Preset",
+        path: "../samples/phase-12/1210/index.html"
+      },
+      {
+        label: "Sample 1211 - Tilemap Mario Learning Layout Preset",
+        path: "../samples/phase-12/1211/index.html"
       }
     ],
     visibleInToolsList: true

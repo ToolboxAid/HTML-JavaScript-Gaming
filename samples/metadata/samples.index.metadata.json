@@ -6399,6 +6399,81 @@
       ]
     },
     {
+      "id": "1209",
+      "phase": "12",
+      "title": "Tilemap Basic Layout Preset",
+      "description": "Launches Tilemap Studio with the legacy basic layout preset preloaded.",
+      "href": "./phase-12/1209/index.html",
+      "tags": [
+        "tilemap",
+        "preset",
+        "layout",
+        "editor",
+        "basic",
+        "tool"
+      ],
+      "engineClassesUsed": [
+        "engine/tilemap/index/Tilemap"
+      ],
+      "classValues": [
+        "engine/tilemap/index/Tilemap",
+        "tools/tile-map-editor"
+      ],
+      "toolHints": [
+        "tile-map-editor"
+      ]
+    },
+    {
+      "id": "1210",
+      "phase": "12",
+      "title": "Tilemap Objective Layout Preset",
+      "description": "Launches Tilemap Studio with the legacy objective/data layout preset preloaded.",
+      "href": "./phase-12/1210/index.html",
+      "tags": [
+        "tilemap",
+        "preset",
+        "layout",
+        "editor",
+        "objective",
+        "tool"
+      ],
+      "engineClassesUsed": [
+        "engine/tilemap/index/Tilemap"
+      ],
+      "classValues": [
+        "engine/tilemap/index/Tilemap",
+        "tools/tile-map-editor"
+      ],
+      "toolHints": [
+        "tile-map-editor"
+      ]
+    },
+    {
+      "id": "1211",
+      "phase": "12",
+      "title": "Tilemap Mario Learning Layout Preset",
+      "description": "Launches Tilemap Studio with the legacy mario-style learning layout preset preloaded.",
+      "href": "./phase-12/1211/index.html",
+      "tags": [
+        "tilemap",
+        "preset",
+        "layout",
+        "editor",
+        "mario",
+        "tool"
+      ],
+      "engineClassesUsed": [
+        "engine/tilemap/index/Tilemap"
+      ],
+      "classValues": [
+        "engine/tilemap/index/Tilemap",
+        "tools/tile-map-editor"
+      ],
+      "toolHints": [
+        "tile-map-editor"
+      ]
+    },
+    {
       "id": "1301",
       "phase": "13",
       "title": "Networking Layer",

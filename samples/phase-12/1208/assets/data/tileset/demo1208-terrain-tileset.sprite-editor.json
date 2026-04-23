@@ -177,7 +177,7 @@
     "order": []
   },
   "referenceImage": {
-    "src": "./demo1208-terrain-tileset.png",
+    "src": "./demo1208-terrain-tileset-orig.png",
     "visible": false,
     "opacity": 0.45,
     "xCells": 0,

@@ -32,7 +32,6 @@ import { buildEditorExperienceLayer, summarizeEditorExperienceLayer } from "../s
 import { buildDebugVisualizationLayer, summarizeDebugVisualizationLayer } from "../shared/debugVisualizationLayer.js";
 import { registerToolBootContract } from "../shared/toolBootContract.js";
 import { createLivePreviewSyncBridge, validateStateBindingPayload } from "../shared/livePreviewSyncChannel.js";
-import { normalizeToolSamplePath, toToolSampleLabel } from "../shared/toolSampleCatalog.js";
 import { addToolModeMetadata, assertStandaloneToolDocument, offerImportMismatchOptions } from "../shared/documentModeGuards.js";
 
 const DEFAULT_TILESET = [
@@ -52,8 +51,6 @@ const RESERVED_PARALLAX_BLOCK = Object.freeze({
   layers: []
 });
 
-const SAMPLE_DIRECTORY_PATH = "./samples/";
-const SAMPLE_MANIFEST_PATH = "./samples/sample-manifest.json";
 const DEFAULT_TILESET_SWATCH_COLOR = "#64748b";
 
 function normalizeSamplePresetPath(pathValue) {
@@ -577,7 +574,6 @@ class TileMapEditorApp {
     this.isPointerPainting = false;
     this.selectedMarkerId = "";
     this.refs = {};
-    this.sampleEntries = [];
     this.skipExternalProjectStateUntil = 0;
     this.isSimulationMode = false;
     this.simulation = {
@@ -624,7 +620,6 @@ class TileMapEditorApp {
     this.queueLivePreviewSync("init");
     void this.reloadTilesetImageFromDocument({ quiet: true });
     void this.preloadIndividualTileImages({ quiet: true });
-    this.loadSampleManifest();
     void this.tryLoadPresetFromQuery();
   }
 
@@ -632,8 +627,6 @@ class TileMapEditorApp {
     this.refs.newProjectButton = rootDocument.getElementById("newProjectButton");
     this.refs.loadProjectButton = rootDocument.getElementById("loadProjectButton");
     this.refs.loadProjectInput = rootDocument.getElementById("loadProjectInput");
-    this.refs.sampleSelect = rootDocument.getElementById("sampleSelect");
-    this.refs.loadSampleButton = rootDocument.getElementById("loadSampleButton");
     this.refs.saveProjectButton = rootDocument.getElementById("saveProjectButton");
     this.refs.loadAssetRegistryButton = rootDocument.getElementById("loadAssetRegistryButton");
     this.refs.loadAssetRegistryInput = rootDocument.getElementById("loadAssetRegistryInput");
@@ -715,11 +708,6 @@ class TileMapEditorApp {
     if (this.refs.loadProjectInput) {
       this.refs.loadProjectInput.addEventListener("change", (event) => this.handleLoadProject(event));
     }
-    this.refs.loadSampleButton.addEventListener("click", () => this.handleLoadSelectedSample());
-    this.refs.sampleSelect.addEventListener("change", () => this.handleSampleSelectionChanged());
-    this.refs.sampleSelect.addEventListener("focus", () => {
-      void this.loadSampleManifest({ quiet: true });
-    });
     if (this.refs.saveProjectButton) {
       this.refs.saveProjectButton.addEventListener("click", () => this.handleSaveProject());
     }
@@ -1852,186 +1840,6 @@ class TileMapEditorApp {
     this.refs.exitSimulationButton.disabled = !inSimulation;
   }
 
-  createSampleEntry(pathValue, labelHint = "", idHint = "") {
-    const path = normalizeToolSamplePath(pathValue);
-    if (!path) {
-      return null;
-    }
-    const normalizedLabel = typeof labelHint === "string" ? labelHint.trim() : "";
-    const fallbackLabel = toToolSampleLabel(path);
-    return {
-      id: typeof idHint === "string" && idHint.trim() ? idHint.trim() : path,
-      label: normalizedLabel && !/[\\/]/.test(normalizedLabel) ? normalizedLabel : fallbackLabel,
-      path
-    };
-  }
-
-  async discoverSampleEntriesFromDirectory() {
-    const directoryUrl = new URL(SAMPLE_DIRECTORY_PATH, window.location.href);
-    const response = await fetch(directoryUrl.toString(), { cache: "no-store" });
-    if (!response.ok) {
-      throw new Error(`Directory request failed (${response.status}).`);
-    }
-
-    const html = await response.text();
-    const parser = new DOMParser();
-    const documentModel = parser.parseFromString(html, "text/html");
-    const anchors = Array.from(documentModel.querySelectorAll("a[href]"));
-    const discovered = [];
-    const seenPaths = new Set();
-
-    anchors.forEach((anchor) => {
-      const href = anchor.getAttribute("href");
-      if (!href) {
-        return;
-      }
-      const resolved = new URL(href, directoryUrl);
-      const fileName = decodeURIComponent((resolved.pathname.split("/").pop() || "").trim());
-      if (!fileName || !fileName.toLowerCase().endsWith(".json")) {
-        return;
-      }
-      if (fileName.toLowerCase() === "sample-manifest.json") {
-        return;
-      }
-
-      const entry = this.createSampleEntry(fileName, anchor.textContent || "", fileName);
-      if (!entry || seenPaths.has(entry.path)) {
-        return;
-      }
-      seenPaths.add(entry.path);
-      discovered.push(entry);
-    });
-
-    discovered.sort((left, right) => left.label.localeCompare(right.label));
-    return discovered;
-  }
-
-  collectSampleEntriesFromManifest(manifest) {
-    const rawSamples = Array.isArray(manifest?.samples) ? manifest.samples : [];
-    return rawSamples
-      .map((entry) => this.createSampleEntry(entry?.path, entry?.label, entry?.id))
-      .filter((entry) => entry !== null);
-  }
-
-  async loadSampleManifest(options = {}) {
-    const quiet = options.quiet === true;
-    const previousSelection = normalizeToolSamplePath(this.refs.sampleSelect.value);
-    if (!quiet) {
-      this.refs.sampleSelect.innerHTML = "<option value=\"\">Loading samples...</option>";
-      this.refs.loadSampleButton.disabled = true;
-    }
-
-    try {
-      const sampleEntries = await this.discoverSampleEntriesFromDirectory();
-      if (sampleEntries.length === 0) {
-        throw new Error("No sample JSON files were discovered in ./samples/.");
-      }
-
-      this.sampleEntries = sampleEntries;
-      this.renderSampleOptions(previousSelection);
-      if (!quiet) {
-        this.updateStatus(`Loaded ${sampleEntries.length} local tile-map samples from ${SAMPLE_DIRECTORY_PATH}.`);
-      }
-      return;
-    } catch (directoryError) {
-      try {
-        const manifestUrl = new URL(SAMPLE_MANIFEST_PATH, window.location.href);
-        const response = await fetch(manifestUrl.toString(), { cache: "no-store" });
-        if (!response.ok) {
-          throw new Error(`Manifest request failed (${response.status}).`);
-        }
-
-        const manifest = await response.json();
-        const sampleEntries = this.collectSampleEntriesFromManifest(manifest);
-        if (sampleEntries.length === 0) {
-          throw new Error("Sample manifest had no valid entries.");
-        }
-
-        this.sampleEntries = sampleEntries;
-        this.renderSampleOptions(previousSelection);
-        if (!quiet) {
-          this.updateStatus(`Loaded ${sampleEntries.length} local tile-map samples from ${SAMPLE_MANIFEST_PATH}.`);
-        }
-      } catch (error) {
-        this.sampleEntries = [];
-        this.renderSampleOptions(previousSelection);
-        if (!quiet) {
-          this.updateStatus(`Sample discovery unavailable: ${error instanceof Error ? error.message : "unknown error"}`);
-        }
-      }
-    }
-  }
-
-  renderSampleOptions(preferredPath = "") {
-    const select = this.refs.sampleSelect;
-    select.innerHTML = "";
-
-    if (this.sampleEntries.length === 0) {
-      const option = document.createElement("option");
-      option.value = "";
-      option.textContent = "No samples available";
-      select.appendChild(option);
-      this.refs.loadSampleButton.disabled = true;
-      return;
-    }
-
-    const promptOption = document.createElement("option");
-    promptOption.value = "";
-    promptOption.textContent = "Select a sample...";
-    select.appendChild(promptOption);
-
-    this.sampleEntries.forEach((entry) => {
-      const option = document.createElement("option");
-      option.value = entry.path;
-      option.textContent = entry.label;
-      select.appendChild(option);
-    });
-
-    if (preferredPath && this.sampleEntries.some((entry) => entry.path === preferredPath)) {
-      select.value = preferredPath;
-    }
-    this.refs.loadSampleButton.disabled = false;
-  }
-
-  handleSampleSelectionChanged() {
-    const selectedPath = normalizeToolSamplePath(this.refs.sampleSelect.value);
-    if (selectedPath) {
-      this.updateStatus(`Sample selected: ${selectedPath}`);
-    }
-  }
-
-  async handleLoadSelectedSample() {
-    const selectedPath = normalizeToolSamplePath(this.refs.sampleSelect.value);
-    if (!selectedPath) {
-      this.updateStatus("Select a sample before loading.");
-      return;
-    }
-
-    this.exitSimulationMode();
-    try {
-      const sampleUrl = new URL(selectedPath, window.location.href);
-      const response = await fetch(sampleUrl.toString(), { cache: "no-store" });
-      if (!response.ok) {
-        throw new Error(`Sample request failed (${response.status}).`);
-      }
-
-      const raw = await response.json();
-      this.documentModel = sanitizeDocument(raw);
-      this.resolveAssetRefsFromRegistry();
-      this.selectedLayerId = this.documentModel.layers[0]?.id || "";
-      this.selectedMarkerId = "";
-      this.activeTileId = this.findFirstNonEmptyTileId();
-      this.tilesetImageCache = new Map();
-      this.syncInputsFromDocument();
-      this.renderAll();
-      void this.reloadTilesetImageFromDocument({ quiet: true });
-      void this.preloadIndividualTileImages({ quiet: true });
-      this.updateStatus(`Loaded sample ${selectedPath}.`);
-    } catch (error) {
-      this.updateStatus(`Sample load failed: ${error instanceof Error ? error.message : "unknown error"}`);
-    }
-  }
-
   async tryLoadPresetFromQuery() {
     const searchParams = new URLSearchParams(window.location.search);
     const samplePresetPath = normalizeSamplePresetPath(searchParams.get("samplePresetPath") || "");
@@ -2054,7 +1862,7 @@ class TileMapEditorApp {
       let toolDocument = null;
 
       if (typeof extracted === "string" && extracted.trim()) {
-        const documentPath = normalizeSamplePresetPath(extracted) || normalizeToolSamplePath(extracted);
+        const documentPath = normalizeSamplePresetPath(extracted);
         if (!documentPath) {
           throw new Error("Preset did not resolve to a valid tilemap document path.");
         }
