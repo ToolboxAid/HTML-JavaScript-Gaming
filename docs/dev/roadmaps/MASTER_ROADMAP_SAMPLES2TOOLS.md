@@ -41,6 +41,13 @@
 - map to tool state via tool-specific adapter
 - render status indicating source sample
 
+## Return Path (Tools -> Samples)
+- [ ] Add a `Tool` filter in Samples.
+- [ ] In Tools, add a link label pattern: `Samples (x)` where `x` is count for that tool.
+- [ ] Tools `Samples (x)` link passes tool argument back to Samples page.
+- [ ] Samples page prepopulates the `Tool` dropdown from query argument and applies filter automatically.
+- [ ] Samples return path filter uses `Tool` only (exclude `Workspace Manager` from this filter lane).
+
 ## Rollout Plan
 
 ### Phase 1 - Foundation + One Vertical Slice
