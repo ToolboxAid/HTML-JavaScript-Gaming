@@ -1,3 +1,5 @@
+import { getToolRegistry } from "../tools/toolRegistry.js";
+
 const METADATA_PATH = "./metadata/samples.index.metadata.json";
 const PINNED_KEY = "samples-index-pinned";
 
@@ -69,7 +71,18 @@ function buildClassTokens(classValues, engineClassesUsed) {
     .sort((a, b) => a.label.localeCompare(b.label, undefined, { sensitivity: "base" }));
 }
 
-function buildSampleRows(metadata, pinnedSet) {
+function buildToolTokens(toolHints, toolLabelMap) {
+  const deduped = [...new Set(asArray(toolHints).map((entry) => normalizeToken(entry)).filter(Boolean))];
+  return deduped
+    .filter((toolId) => toolId !== "workspace-manager")
+    .map((toolId) => ({
+      value: toolId,
+      label: toolLabelMap.get(toolId) || toolId
+    }))
+    .sort((a, b) => a.label.localeCompare(b.label, undefined, { sensitivity: "base" }));
+}
+
+function buildSampleRows(metadata, pinnedSet, toolLabelMap) {
   const phaseInfoMap = new Map(
     asArray(metadata?.phases)
       .map((phase) => {
@@ -102,6 +115,7 @@ function buildSampleRows(metadata, pinnedSet) {
       const href = normalize(sample?.href) || `./phase-${phase}/${id}/index.html`;
       const tags = asArray(sample?.tags).map((tag) => normalizeTag(tag)).filter(Boolean);
       const classTokens = buildClassTokens(sample?.classValues, sample?.engineClassesUsed);
+      const toolTokens = buildToolTokens(sample?.toolHints, toolLabelMap);
       const previewSrc = normalize(sample?.thumbnail) || normalize(sample?.preview) || "";
       return {
         id,
@@ -113,6 +127,7 @@ function buildSampleRows(metadata, pinnedSet) {
         href,
         tags,
         classTokens,
+        toolTokens,
         previewSrc,
         pinned: pinnedSet.has(id)
       };
@@ -134,9 +149,14 @@ function buildSampleRows(metadata, pinnedSet) {
   ).entries()]
     .map(([value, label]) => ({ value, label }))
     .sort((a, b) => a.label.localeCompare(b.label, undefined, { sensitivity: "base" }));
+  const tools = [...new Map(
+    sampleRows.flatMap((sample) => sample.toolTokens).map((token) => [token.value, token.label])
+  ).entries()]
+    .map(([value, label]) => ({ value, label }))
+    .sort((a, b) => a.label.localeCompare(b.label, undefined, { sensitivity: "base" }));
   const tags = [...new Set(sampleRows.flatMap((sample) => sample.tags))].sort();
 
-  return { sampleRows, phases, phaseOptions, classes, tags, phaseInfoMap };
+  return { sampleRows, phases, phaseOptions, classes, tools, tags, phaseInfoMap };
 }
 
 function filterSampleRows(sampleRows, filterState) {
@@ -148,6 +168,9 @@ function filterSampleRows(sampleRows, filterState) {
     if (filterState.className && !sample.classTokens.some((token) => token.value === filterState.className)) {
       return false;
     }
+    if (filterState.toolId && !sample.toolTokens.some((token) => token.value === filterState.toolId)) {
+      return false;
+    }
     if (filterState.tag && !sample.tags.includes(filterState.tag)) {
       return false;
     }
@@ -155,7 +178,8 @@ function filterSampleRows(sampleRows, filterState) {
       return true;
     }
     const classText = sample.classTokens.map((token) => `${token.label} ${token.value}`).join(" ");
-    const haystack = `${sample.phase} ${sample.phaseTitle} ${sample.id} ${sample.title} ${sample.description} ${sample.tags.join(" ")} ${classText}`.toLowerCase();
+    const toolText = sample.toolTokens.map((token) => `${token.label} ${token.value}`).join(" ");
+    const haystack = `${sample.phase} ${sample.phaseTitle} ${sample.id} ${sample.title} ${sample.description} ${sample.tags.join(" ")} ${classText} ${toolText}`.toLowerCase();
     return haystack.includes(query);
   });
 }
@@ -300,10 +324,11 @@ export async function initSamplesIndex() {
   const pinnedContainer = document.getElementById("samples-pinned-list");
   const phaseSelect = document.getElementById("samples-filter-phase");
   const classSelect = document.getElementById("samples-filter-class");
+  const toolSelect = document.getElementById("samples-filter-tool");
   const tagSelect = document.getElementById("samples-filter-tag");
   const searchInput = document.getElementById("samples-phase-filter-input");
   const statusNode = document.getElementById("samples-phase-filter-status");
-  if (!listContainer || !pinnedContainer || !phaseSelect || !classSelect || !tagSelect || !searchInput || !statusNode) {
+  if (!listContainer || !pinnedContainer || !phaseSelect || !classSelect || !toolSelect || !tagSelect || !searchInput || !statusNode) {
     return;
   }
 
@@ -314,8 +339,14 @@ export async function initSamplesIndex() {
   }
   const metadata = await response.json();
   let pinnedSet = readPinnedSet();
+  const toolLabelMap = new Map(
+    getToolRegistry()
+      .filter((tool) => tool.id !== "workspace-manager")
+      .map((tool) => [normalizeToken(tool.id), normalize(tool.displayName) || normalize(tool.name) || normalize(tool.id)])
+      .filter((entry) => entry[0] && entry[1])
+  );
 
-  const model = buildSampleRows(metadata, pinnedSet);
+  const model = buildSampleRows(metadata, pinnedSet, toolLabelMap);
   setSelectOptions(phaseSelect, model.phaseOptions.map((entry) => entry.value), (value) => {
     const found = model.phaseOptions.find((entry) => entry.value === value);
     return found?.label || `Phase ${value}`;
@@ -324,13 +355,22 @@ export async function initSamplesIndex() {
     const found = model.classes.find((entry) => entry.value === value);
     return found?.label || value.split("/").at(-1) || value;
   });
+  setSelectOptions(toolSelect, model.tools.map((entry) => entry.value), (value) => {
+    const found = model.tools.find((entry) => entry.value === value);
+    return found?.label || value;
+  });
   setSelectOptions(tagSelect, model.tags, (value) => value);
+  const toolQuery = normalizeToken(new URLSearchParams(window.location.search).get("tool"));
+  if (toolQuery && model.tools.some((entry) => entry.value === toolQuery)) {
+    toolSelect.value = toolQuery;
+  }
 
   const render = () => {
-    const nextModel = buildSampleRows(metadata, pinnedSet);
+    const nextModel = buildSampleRows(metadata, pinnedSet, toolLabelMap);
     const filterState = {
       phase: normalize(phaseSelect.value),
       className: normalize(classSelect.value),
+      toolId: normalizeToken(toolSelect.value),
       tag: normalize(tagSelect.value),
       query: normalize(searchInput.value)
     };
@@ -365,6 +405,7 @@ export async function initSamplesIndex() {
 
   phaseSelect.addEventListener("change", render);
   classSelect.addEventListener("change", render);
+  toolSelect.addEventListener("change", render);
   tagSelect.addEventListener("change", render);
   searchInput.addEventListener("input", render);
 

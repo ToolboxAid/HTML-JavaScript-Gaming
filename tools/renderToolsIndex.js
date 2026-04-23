@@ -1,6 +1,9 @@
 import { getToolRegistry } from "./toolRegistry.js";
 import { escapeHtml } from "../src/shared/string/stringUtil.js";
 
+const SAMPLES_INDEX_PATH = "/samples/index.html";
+const SAMPLES_METADATA_PATH = "/samples/metadata/samples.index.metadata.json";
+
 function toStandaloneHref(entryPoint) {
   const normalized = String(entryPoint || "").replace(/^\.?\/*/, "");
   return normalized ? `/tools/${normalized}` : "#";
@@ -17,10 +20,17 @@ function buildDocumentationLinks(tool) {
   ];
 }
 
-function buildCardLinks(tool) {
+function buildCardLinks(tool, sampleCount) {
   const docs = buildDocumentationLinks(tool);
+  const links = [...docs];
+  if (Number.isInteger(sampleCount) && sampleCount > 0) {
+    links.push({
+      label: `Samples (${sampleCount})`,
+      path: `${SAMPLES_INDEX_PATH}?tool=${encodeURIComponent(tool.id)}`
+    });
+  }
   const seen = new Set();
-  return docs.filter((entry) => {
+  return links.filter((entry) => {
     const label = String(entry?.label || "").trim();
     const path = String(entry?.path || "").trim();
     if (!label || !path) {
@@ -35,9 +45,10 @@ function buildCardLinks(tool) {
   });
 }
 
-function renderToolCard(tool) {
+function renderToolCard(tool, sampleCountByToolId) {
   const standaloneHref = toStandaloneHref(tool.entryPoint);
-  const cardLinks = buildCardLinks(tool);
+  const sampleCount = Number(sampleCountByToolId.get(tool.id) || 0);
+  const cardLinks = buildCardLinks(tool, sampleCount);
   const sampleLinks = cardLinks.length > 0
     ? `
       <div class="meta">
@@ -109,7 +120,35 @@ function renderWorkspaceManagerSection() {
   grid.innerHTML = renderWorkspaceManagerCard();
 }
 
-function renderActiveToolsList() {
+async function loadSampleCountByToolId() {
+  const counts = new Map();
+  try {
+    const response = await fetch(SAMPLES_METADATA_PATH, { cache: "no-store" });
+    if (!response.ok) {
+      return counts;
+    }
+    const metadata = await response.json();
+    const samples = Array.isArray(metadata?.samples) ? metadata.samples : [];
+    for (const sample of samples) {
+      if (String(sample?.phase || "").trim() === "20") {
+        continue;
+      }
+      const toolHints = Array.isArray(sample?.toolHints) ? sample.toolHints : [];
+      for (const rawToolId of toolHints) {
+        const toolId = String(rawToolId || "").trim().toLowerCase();
+        if (!toolId || toolId === "workspace-manager") {
+          continue;
+        }
+        counts.set(toolId, Number(counts.get(toolId) || 0) + 1);
+      }
+    }
+    return counts;
+  } catch {
+    return counts;
+  }
+}
+
+function renderActiveToolsList(sampleCountByToolId) {
   const editorsGrid = document.querySelector("[data-active-tools-editors-grid]");
   const utilitiesGrid = document.querySelector("[data-active-tools-utilities-grid]");
   const viewersGrid = document.querySelector("[data-active-tools-viewers-grid]");
@@ -122,9 +161,9 @@ function renderActiveToolsList() {
     .filter((entry) => entry.id !== "state-inspector")
     .sort((left, right) => String(left.displayName || "").localeCompare(String(right.displayName || "")));
 
-  const editors = tools.filter((tool) => classifyToolGroup(tool.id) === "editors").map((tool) => renderToolCard(tool));
-  const utilities = tools.filter((tool) => classifyToolGroup(tool.id) === "utilities").map((tool) => renderToolCard(tool));
-  const viewers = tools.filter((tool) => classifyToolGroup(tool.id) === "viewers").map((tool) => renderToolCard(tool));
+  const editors = tools.filter((tool) => classifyToolGroup(tool.id) === "editors").map((tool) => renderToolCard(tool, sampleCountByToolId));
+  const utilities = tools.filter((tool) => classifyToolGroup(tool.id) === "utilities").map((tool) => renderToolCard(tool, sampleCountByToolId));
+  const viewers = tools.filter((tool) => classifyToolGroup(tool.id) === "viewers").map((tool) => renderToolCard(tool, sampleCountByToolId));
 
   editorsGrid.innerHTML = editors.join("\n");
   utilitiesGrid.innerHTML = utilities.join("\n");
@@ -146,6 +185,11 @@ function sortPlannedCardsAlphabetically() {
     .forEach((card) => grid.appendChild(card));
 }
 
-renderWorkspaceManagerSection();
-renderActiveToolsList();
-sortPlannedCardsAlphabetically();
+async function initToolsIndex() {
+  const sampleCountByToolId = await loadSampleCountByToolId();
+  renderWorkspaceManagerSection();
+  renderActiveToolsList(sampleCountByToolId);
+  sortPlannedCardsAlphabetically();
+}
+
+void initToolsIndex();

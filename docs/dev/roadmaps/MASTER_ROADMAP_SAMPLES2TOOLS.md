@@ -47,11 +47,11 @@
 - render status indicating source sample
 
 ## Return Path (Tools -> Samples)
-- [ ] Add a `Tool` filter in Samples.
-- [ ] In Tools, add a link label pattern: `Samples (x)` where `x` is count for that tool.
-- [ ] Tools `Samples (x)` link passes tool argument back to Samples page.
-- [ ] Samples page prepopulates the `Tool` dropdown from query argument and applies filter automatically.
-- [ ] Samples return path filter uses `Tool` only (exclude `Workspace Manager` from this filter lane).
+- [x] Add a `Tool` filter in Samples.
+- [x] In Tools, add a link label pattern: `Samples (x)` where `x` is count for that tool.
+- [x] Tools `Samples (x)` link passes tool argument back to Samples page.
+- [x] Samples page prepopulates the `Tool` dropdown from query argument and applies filter automatically.
+- [x] Samples return path filter uses `Tool` only (exclude `Workspace Manager` from this filter lane).
 
 ## Rollout Plan
 
@@ -106,7 +106,10 @@
 - [ ] 3D Camera Path Editor (47 candidates; prioritize camera/path-centric samples)
 - [ ] Select precise, semantically aligned samples only (avoid broad keyword-only linkage).
 
-### Phase 5 - Phase 20 Decommission (After Parity)
+### Phase 5 - Games
+- [ ] Do the same thing for games.
+
+### Phase 6 - Phase 20 Decommission (After Parity)
 - [ ] Keep `Phase 20 - Tool Preset Integration` active until Samples2Tools parity is execution-validated.
 - [ ] Define parity gate:
 - sample-to-tool launch coverage equals or exceeds current Phase 20 matrix intent.
@@ -136,6 +139,6 @@
 - [ ] `docs/dev/reports/samples2tools_link_map_<n>.json`
 
 ## Current Snapshot (from tools_used.txt)
-- [x] Current tagged samples across active tools: `0` (excluding Phase 20)
+- [x] Current tagged samples across active tools: `1` (excluding Phase 20)
 - [x] Candidate coverage inventory exists for all active tools
 - [.] Convert candidates into curated, validated sample-to-tool links
