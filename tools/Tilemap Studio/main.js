@@ -572,6 +572,7 @@ class TileMapEditorApp {
     this.selectedLayerId = documentModel.layers[0]?.id || "";
     this.activeTileId = 1;
     this.activeTool = "paint";
+    this.canvasZoom = 1;
     this.hoverCell = null;
     this.isPointerPainting = false;
     this.selectedMarkerId = "";
@@ -616,6 +617,7 @@ class TileMapEditorApp {
   init(rootDocument) {
     this.captureRefs(rootDocument);
     this.attachEvents();
+    this.syncFullscreenState();
     this.syncInputsFromDocument();
     this.renderAll();
     this.bindRuntimeStateSync();
@@ -663,6 +665,8 @@ class TileMapEditorApp {
     this.refs.activeToolSelect = rootDocument.getElementById("activeToolSelect");
     this.refs.selectedLayerKindBadge = rootDocument.getElementById("selectedLayerKindBadge");
     this.refs.activeLayerName = rootDocument.getElementById("activeLayerName");
+    this.refs.canvasZoomInput = rootDocument.getElementById("canvasZoomInput");
+    this.refs.canvasZoomReadout = rootDocument.getElementById("canvasZoomReadout");
     this.refs.canvasMeta = rootDocument.getElementById("canvasMeta");
     this.refs.simulationContext = rootDocument.getElementById("simulationContext");
 
@@ -694,6 +698,11 @@ class TileMapEditorApp {
     this.refs.canvasWrap = rootDocument.querySelector(".canvas-wrap");
     this.refs.mapCanvas = rootDocument.getElementById("mapCanvas");
     this.refs.canvasContext = this.refs.mapCanvas.getContext("2d", { alpha: false });
+    this.refs.leftSidebar = rootDocument.getElementById("leftSidebar");
+    this.refs.rightSidebar = rootDocument.getElementById("rightSidebar");
+    this.refs.leftPanelAccordions = Array.from(rootDocument.querySelectorAll("#leftSidebar .panel-accordion"));
+    this.refs.rightPanelAccordions = Array.from(rootDocument.querySelectorAll("#rightSidebar .panel-accordion"));
+    this.refs.overlayToggleButtons = Array.from(rootDocument.querySelectorAll("[data-overlay-toggle]"));
   }
 
   attachEvents() {
@@ -746,6 +755,14 @@ class TileMapEditorApp {
       this.activeTool = this.refs.activeToolSelect.value;
       this.updateStatus(`Tool changed to ${this.activeTool}.`);
     });
+    if (this.refs.canvasZoomInput instanceof HTMLInputElement) {
+      this.refs.canvasZoomInput.addEventListener("input", () => {
+        this.setCanvasZoomFromPercent(this.refs.canvasZoomInput.value);
+      });
+      this.refs.canvasZoomInput.addEventListener("change", () => {
+        this.setCanvasZoomFromPercent(this.refs.canvasZoomInput.value);
+      });
+    }
 
     this.refs.addLayerButton.addEventListener("click", () => this.addLayer());
     this.refs.removeLayerButton.addEventListener("click", () => this.removeSelectedLayer());
@@ -777,6 +794,25 @@ class TileMapEditorApp {
     this.refs.mapCanvas.addEventListener("mousemove", (event) => this.handleCanvasPointerMove(event));
     this.refs.mapCanvas.addEventListener("mouseleave", () => this.handleCanvasPointerLeave());
     this.refs.mapCanvas.addEventListener("contextmenu", (event) => event.preventDefault());
+    this.refs.overlayToggleButtons.forEach((button) => {
+      button.addEventListener("click", () => {
+        const side = button.dataset.overlaySide === "left" ? "left" : "right";
+        const targetId = button.dataset.overlayTarget || "";
+        this.toggleOverlayPanel(side, targetId);
+      });
+    });
+    this.refs.leftPanelAccordions.forEach((panel) => {
+      panel.addEventListener("toggle", () => this.handleOverlayAccordionToggle("left", panel));
+    });
+    this.refs.rightPanelAccordions.forEach((panel) => {
+      panel.addEventListener("toggle", () => this.handleOverlayAccordionToggle("right", panel));
+    });
+    document.addEventListener("fullscreenchange", () => {
+      this.syncFullscreenState();
+      this.refs.leftSidebar?.classList.remove("visible-overlay");
+      this.refs.rightSidebar?.classList.remove("visible-overlay");
+      this.syncOverlayToggleButtons();
+    });
     if (this.refs.canvasWrap) {
       this.refs.canvasWrap.addEventListener("scroll", () => {
         if (this.isSimulationMode) {
@@ -788,6 +824,128 @@ class TileMapEditorApp {
     window.addEventListener("mouseup", () => {
       this.isPointerPainting = false;
     });
+  }
+
+  syncFullscreenState() {
+    document.body.classList.toggle("fullscreen-mode", Boolean(document.fullscreenElement));
+    this.syncOverlayToggleButtons();
+    this.applyCanvasZoom();
+  }
+
+  setCanvasZoomFromPercent(percentValue) {
+    const numeric = Number(percentValue);
+    if (!Number.isFinite(numeric)) {
+      return;
+    }
+    const clampedPercent = Math.max(25, Math.min(400, Math.round(numeric)));
+    this.canvasZoom = clampedPercent / 100;
+    if (this.refs.canvasZoomInput instanceof HTMLInputElement) {
+      this.refs.canvasZoomInput.value = String(clampedPercent);
+    }
+    this.updateCanvasZoomReadout();
+    this.applyCanvasZoom();
+  }
+
+  updateCanvasZoomReadout() {
+    if (!(this.refs.canvasZoomReadout instanceof HTMLElement)) {
+      return;
+    }
+    this.refs.canvasZoomReadout.textContent = `${Math.round(this.canvasZoom * 100)}%`;
+  }
+
+  applyCanvasZoom() {
+    if (!(this.refs.mapCanvas instanceof HTMLCanvasElement)) {
+      return;
+    }
+    const widthPx = Math.max(1, Math.round(this.refs.mapCanvas.width * this.canvasZoom));
+    const heightPx = Math.max(1, Math.round(this.refs.mapCanvas.height * this.canvasZoom));
+    this.refs.mapCanvas.style.width = `${widthPx}px`;
+    this.refs.mapCanvas.style.height = `${heightPx}px`;
+  }
+
+  syncOverlayToggleButtons() {
+    const fullscreenActive = Boolean(document.fullscreenElement);
+    this.refs.overlayToggleButtons.forEach((button) => {
+      const side = button.dataset.overlaySide === "left" ? "left" : "right";
+      const targetId = button.dataset.overlayTarget || "";
+      const sidebar = this.getOverlaySidebar(side);
+      const target = targetId ? document.getElementById(targetId) : null;
+      const active = Boolean(
+        fullscreenActive
+        && sidebar instanceof HTMLElement
+        && sidebar.classList.contains("visible-overlay")
+        && target instanceof HTMLElement
+        && target.open
+      );
+      button.setAttribute("aria-expanded", active ? "true" : "false");
+      const symbol = button.querySelector(".overlay-toggle-symbol");
+      if (symbol) {
+        symbol.textContent = active ? "-" : "+";
+      }
+      const hideWhileOverlayOpen = Boolean(
+        fullscreenActive
+        && sidebar instanceof HTMLElement
+        && sidebar.classList.contains("visible-overlay")
+      );
+      button.classList.toggle("is-hidden-while-overlay-open", hideWhileOverlayOpen);
+    });
+  }
+
+  getOverlaySidebar(side) {
+    return side === "left" ? this.refs.leftSidebar : this.refs.rightSidebar;
+  }
+
+  getOverlayPanels(side) {
+    return side === "left" ? this.refs.leftPanelAccordions : this.refs.rightPanelAccordions;
+  }
+
+  toggleOverlayPanel(side, targetId) {
+    const sidebar = this.getOverlaySidebar(side);
+    const panels = this.getOverlayPanels(side);
+    if (!(sidebar instanceof HTMLElement) || !Array.isArray(panels) || panels.length === 0) {
+      return;
+    }
+    const target = panels.find((panel) => panel.id === targetId);
+    if (!(target instanceof HTMLElement)) {
+      return;
+    }
+
+    const fullscreenActive = Boolean(document.fullscreenElement);
+    if (!fullscreenActive) {
+      target.open = !target.open;
+      this.syncOverlayToggleButtons();
+      return;
+    }
+
+    const overlayVisible = sidebar.classList.contains("visible-overlay");
+    if (!overlayVisible) {
+      sidebar.classList.add("visible-overlay");
+      target.open = true;
+    } else {
+      target.open = !target.open;
+    }
+    if (!panels.some((panel) => panel.open)) {
+      sidebar.classList.remove("visible-overlay");
+    }
+
+    this.syncOverlayToggleButtons();
+  }
+
+  handleOverlayAccordionToggle(side, panel) {
+    if (!document.fullscreenElement) {
+      return;
+    }
+    const sidebar = this.getOverlaySidebar(side);
+    const panels = this.getOverlayPanels(side);
+    if (!(sidebar instanceof HTMLElement) || !Array.isArray(panels)) {
+      return;
+    }
+    if (panel.open) {
+      sidebar.classList.add("visible-overlay");
+    } else if (!panels.some((entry) => entry.open)) {
+      sidebar.classList.remove("visible-overlay");
+    }
+    this.syncOverlayToggleButtons();
   }
 
   handleNewProject() {
@@ -1678,6 +1836,10 @@ class TileMapEditorApp {
     this.refs.tilesetTileHeightInput.value = String(atlas.tileHeight);
     this.refs.tilesetSpacingInput.value = String(atlas.spacing);
     this.refs.tilesetMarginInput.value = String(atlas.margin);
+    if (this.refs.canvasZoomInput instanceof HTMLInputElement) {
+      this.refs.canvasZoomInput.value = String(Math.round(this.canvasZoom * 100));
+    }
+    this.updateCanvasZoomReadout();
     this.renderTilesetMeta();
   }
 
@@ -2524,6 +2686,8 @@ class TileMapEditorApp {
         tileSize - 2
       );
     }
+
+    this.applyCanvasZoom();
   }
 
   drawSimulationOverlay(context, tileSize) {

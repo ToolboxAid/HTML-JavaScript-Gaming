@@ -83,127 +83,166 @@ index.html
     </header>
 
     <div class="workspace tools-platform-layout-grid">
-      <aside class="sidebar left-sidebar tools-platform-resize-panel" data-panel-side="left">
-        <section class="panel">
-          <h3>Tileset</h3>
-          <div class="button-row">
-            <button id="loadTilesetPngButton" type="button">Load Tileset PNG</button>
-            <input id="loadTilesetPngInput" class="hidden-file-input" type="file" accept=".png,image/png" />
-            <button id="loadTilePngAssetsButton" type="button">Load Tile PNG(s)</button>
-            <input id="loadTilePngAssetsInput" class="hidden-file-input" type="file" accept=".png,image/png" multiple />
-            <button id="generateTilesetButton" type="button">Generate Tile Grid</button>
+      <aside class="sidebar left-sidebar tools-platform-resize-panel" data-panel-side="left" id="leftSidebar">
+        <details class="panel-accordion" id="leftPanelTileset" open>
+          <summary class="panel-accordion__summary"><h3>Tileset</h3></summary>
+          <div class="panel-accordion__body">
+            <div class="button-row">
+              <button id="loadTilesetPngButton" type="button">Load Tileset PNG</button>
+              <input id="loadTilesetPngInput" class="hidden-file-input" type="file" accept=".png,image/png" />
+              <button id="loadTilePngAssetsButton" type="button">Load Tile PNG(s)</button>
+              <input id="loadTilePngAssetsInput" class="hidden-file-input" type="file" accept=".png,image/png" multiple />
+              <button id="generateTilesetButton" type="button">Generate Tile Grid</button>
+            </div>
+            <div class="tileset-config-grid">
+              <label>
+                Tile W
+                <input id="tilesetTileWidthInput" type="number" min="1" max="512" step="1" value="24" />
+              </label>
+              <label>
+                Tile H
+                <input id="tilesetTileHeightInput" type="number" min="1" max="512" step="1" value="24" />
+              </label>
+              <label>
+                Spacing
+                <input id="tilesetSpacingInput" type="number" min="0" max="256" step="1" value="0" />
+              </label>
+              <label>
+                Margin
+                <input id="tilesetMarginInput" type="number" min="0" max="256" step="1" value="0" />
+              </label>
+            </div>
+            <p id="tilesetMeta" class="help-text">No tileset PNG loaded. Load a PNG and generate a tile grid.</p>
+            <div id="tilePalette" class="tile-palette"></div>
           </div>
-          <div class="tileset-config-grid">
-            <label>
-              Tile W
-              <input id="tilesetTileWidthInput" type="number" min="1" max="512" step="1" value="24" />
-            </label>
-            <label>
-              Tile H
-              <input id="tilesetTileHeightInput" type="number" min="1" max="512" step="1" value="24" />
-            </label>
-            <label>
-              Spacing
-              <input id="tilesetSpacingInput" type="number" min="0" max="256" step="1" value="0" />
-            </label>
-            <label>
-              Margin
-              <input id="tilesetMarginInput" type="number" min="0" max="256" step="1" value="0" />
-            </label>
-          </div>
-          <p id="tilesetMeta" class="help-text">No tileset PNG loaded. Load a PNG and generate a tile grid.</p>
-          <div id="tilePalette" class="tile-palette"></div>
-        </section>
+        </details>
 
-        <section class="panel">
-          <h3>Markers</h3>
-          <label>
-            Marker Type
-            <select id="markerTypeSelect">
-              <option value="spawn">Spawn</option>
-              <option value="object">Object</option>
-            </select>
-          </label>
-          <label>
-            Marker Name
-            <input id="markerNameInput" type="text" value="spawn-point" />
-          </label>
-          <button id="clearMarkersButton" type="button">Clear Markers</button>
-          <ul id="markerList" class="marker-list"></ul>
-        </section>
+        <details class="panel-accordion" id="leftPanelMarkers">
+          <summary class="panel-accordion__summary"><h3>Markers</h3></summary>
+          <div class="panel-accordion__body">
+            <label>
+              Marker Type
+              <select id="markerTypeSelect">
+                <option value="spawn">Spawn</option>
+                <option value="object">Object</option>
+              </select>
+            </label>
+            <label>
+              Marker Name
+              <input id="markerNameInput" type="text" value="spawn-point" />
+            </label>
+            <button id="clearMarkersButton" type="button">Clear Markers</button>
+            <ul id="markerList" class="marker-list"></ul>
+          </div>
+        </details>
       </aside>
 
       <main class="canvas-panel">
         <div class="canvas-toolbar">
           <strong>Map Canvas</strong>
+          <label class="canvas-zoom-control" for="canvasZoomInput">
+            Zoom
+            <input id="canvasZoomInput" type="range" min="25" max="400" step="25" value="100" />
+            <span id="canvasZoomReadout" class="muted">100%</span>
+          </label>
           <span id="canvasMeta" class="muted"></span>
           <span id="simulationContext" class="muted"></span>
         </div>
         <div class="canvas-wrap">
           <canvas id="mapCanvas" width="768" height="432"></canvas>
+          <div class="fullscreen-overlay-toggle-group fullscreen-overlay-toggle-group--left">
+            <button type="button" class="fullscreen-overlay-button" data-overlay-toggle data-overlay-side="left" data-overlay-target="leftPanelTileset" aria-expanded="false">
+              <span class="overlay-toggle-symbol" aria-hidden="true">+</span>
+              <span class="overlay-toggle-label">Tileset</span>
+            </button>
+            <button type="button" class="fullscreen-overlay-button" data-overlay-toggle data-overlay-side="left" data-overlay-target="leftPanelMarkers" aria-expanded="false">
+              <span class="overlay-toggle-symbol" aria-hidden="true">+</span>
+              <span class="overlay-toggle-label">Markers</span>
+            </button>
+          </div>
+          <div class="fullscreen-overlay-toggle-group fullscreen-overlay-toggle-group--right">
+            <button type="button" class="fullscreen-overlay-button" data-overlay-toggle data-overlay-side="right" data-overlay-target="rightPanelLayers" aria-expanded="false">
+              <span class="overlay-toggle-symbol" aria-hidden="true">+</span>
+              <span class="overlay-toggle-label">Layers</span>
+            </button>
+            <button type="button" class="fullscreen-overlay-button" data-overlay-toggle data-overlay-side="right" data-overlay-target="rightPanelUsage" aria-expanded="false">
+              <span class="overlay-toggle-symbol" aria-hidden="true">+</span>
+              <span class="overlay-toggle-label">Usage</span>
+            </button>
+            <button type="button" class="fullscreen-overlay-button" data-overlay-toggle data-overlay-side="right" data-overlay-target="rightPanelRemediation" aria-expanded="false">
+              <span class="overlay-toggle-symbol" aria-hidden="true">+</span>
+              <span class="overlay-toggle-label">Remediation</span>
+            </button>
+          </div>
         </div>
         <div id="statusText" class="status-text">Ready.</div>
       </main>
 
-      <aside class="sidebar right-sidebar tools-platform-resize-panel" data-panel-side="right">
-        <section class="panel">
-          <h3>Layers</h3>
-          <ul id="layerList" class="layer-list"></ul>
-          <div class="inline-row">
-            <label>
-              Name
-              <input id="newLayerNameInput" type="text" value="Layer" />
-            </label>
+      <aside class="sidebar right-sidebar tools-platform-resize-panel" data-panel-side="right" id="rightSidebar">
+        <details class="panel-accordion" id="rightPanelLayers" open>
+          <summary class="panel-accordion__summary"><h3>Layers</h3></summary>
+          <div class="panel-accordion__body">
+            <ul id="layerList" class="layer-list"></ul>
+            <div class="inline-row">
+              <label>
+                Name
+                <input id="newLayerNameInput" type="text" value="Layer" />
+              </label>
+            </div>
+            <div class="inline-row">
+              <label>
+                Kind
+                <select id="newLayerKindSelect">
+                  <option value="tile">Tile</option>
+                  <option value="collision">Collision</option>
+                  <option value="data">Data</option>
+                </select>
+              </label>
+            </div>
+            <div class="button-row">
+              <button id="addLayerButton" type="button">Add Layer</button>
+              <button id="removeLayerButton" type="button">Remove Layer</button>
+              <button id="layerVisibilityToggle" type="button">Toggle Visibility</button>
+            </div>
+            <p class="help-text">Collision and Data layers are first-class map layers in this foundation. Parallax remains reserved for a separate companion editor.</p>
           </div>
-          <div class="inline-row">
-            <label>
-              Kind
-              <select id="newLayerKindSelect">
-                <option value="tile">Tile</option>
-                <option value="collision">Collision</option>
-                <option value="data">Data</option>
-              </select>
-            </label>
-          </div>
-          <div class="button-row">
-            <button id="addLayerButton" type="button">Add Layer</button>
-            <button id="removeLayerButton" type="button">Remove Layer</button>
-            <button id="layerVisibilityToggle" type="button">Toggle Visibility</button>
-          </div>
-          <p class="help-text">Collision and Data layers are first-class map layers in this foundation. Parallax remains reserved for a separate companion editor.</p>
-        </section>
+        </details>
 
-        <section class="panel">
-          <h3>Usage</h3>
-          <ul class="usage-list">
-            <li>Paint and Erase write to the selected layer.</li>
-            <li>Picker reads current cell value into active tile.</li>
-            <li>Marker tool places object or spawn markers per cell.</li>
-            <li>Right click on the canvas erases or removes a marker.</li>
-            <li>Use Simulate to preview tile/data/object state in motion.</li>
-            <li>Saved JSON keeps a reserved parallax block for future companion tooling.</li>
-          </ul>
-        </section>
+        <details class="panel-accordion" id="rightPanelUsage">
+          <summary class="panel-accordion__summary"><h3>Usage</h3></summary>
+          <div class="panel-accordion__body">
+            <ul class="usage-list">
+              <li>Paint and Erase write to the selected layer.</li>
+              <li>Picker reads current cell value into active tile.</li>
+              <li>Marker tool places object or spawn markers per cell.</li>
+              <li>Right click on the canvas erases or removes a marker.</li>
+              <li>Use Simulate to preview tile/data/object state in motion.</li>
+              <li>Saved JSON keeps a reserved parallax block for future companion tooling.</li>
+            </ul>
+          </div>
+        </details>
 
-        <section class="panel">
-          <h3>Remediation</h3>
-          <p id="remediationSummaryText" class="help-text">No remediation actions available.</p>
-          <div class="button-row">
-            <button id="inspectRemediationButton" type="button">Inspect Issues</button>
-            <button id="jumpToProblemButton" type="button">Jump to Problem</button>
-            <button id="applyRemediationButton" type="button">Apply Suggested Fix</button>
+        <details class="panel-accordion" id="rightPanelRemediation">
+          <summary class="panel-accordion__summary"><h3>Remediation</h3></summary>
+          <div class="panel-accordion__body">
+            <p id="remediationSummaryText" class="help-text">No remediation actions available.</p>
+            <div class="button-row">
+              <button id="inspectRemediationButton" type="button">Inspect Issues</button>
+              <button id="jumpToProblemButton" type="button">Jump to Problem</button>
+              <button id="applyRemediationButton" type="button">Apply Suggested Fix</button>
+            </div>
+            <p id="experienceSummaryText" class="help-text">Experience snapshot unavailable.</p>
+            <div class="button-row">
+              <button id="refreshExperienceButton" type="button">Refresh Pipeline View</button>
+            </div>
+            <pre id="experienceDetailsText" class="help-text">No experience snapshot available.</pre>
+            <p id="debugSummaryText" class="help-text">Debug visualization unavailable.</p>
+            <div class="button-row">
+              <button id="refreshDebugVisualizationButton" type="button">Refresh Debug View</button>
+            </div>
+            <pre id="debugDetailsText" class="help-text">No debug visualization available.</pre>
           </div>
-          <p id="experienceSummaryText" class="help-text">Experience snapshot unavailable.</p>
-          <div class="button-row">
-            <button id="refreshExperienceButton" type="button">Refresh Pipeline View</button>
-          </div>
-          <pre id="experienceDetailsText" class="help-text">No experience snapshot available.</pre>
-          <p id="debugSummaryText" class="help-text">Debug visualization unavailable.</p>
-          <div class="button-row">
-            <button id="refreshDebugVisualizationButton" type="button">Refresh Debug View</button>
-          </div>
-          <pre id="debugDetailsText" class="help-text">No debug visualization available.</pre>
-        </section>
+        </details>
       </aside>
     </div>
   </div>

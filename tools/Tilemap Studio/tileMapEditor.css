@@ -26,6 +26,10 @@ tileMapEditor.css
   box-sizing: border-box;
 }
 
+body.tools-platform-surface.tile-map-editor-page .app-shell {
+  width: min(1860px, calc(100% - 20px));
+}
+
 .toolbar {
   display: flex;
   flex-wrap: wrap;
@@ -105,7 +109,7 @@ select {
 .workspace {
   display: grid;
   gap: 12px;
-  grid-template-columns: minmax(220px, 280px) minmax(420px, 1fr) minmax(240px, 320px);
+  grid-template-columns: minmax(200px, 240px) minmax(560px, 1fr) minmax(220px, 280px);
   flex: 1;
   min-height: 0;
 }
@@ -150,6 +154,18 @@ select {
   flex-wrap: wrap;
   gap: 8px;
   margin-bottom: 8px;
+}
+
+.canvas-zoom-control {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--editor-muted);
+}
+
+.canvas-zoom-control input[type="range"] {
+  width: 140px;
 }
 
 .muted {
@@ -281,6 +297,147 @@ select {
 
 .usage-list {
   padding-left: 18px;
+}
+
+.tile-map-editor-page .fullscreen-overlay-button {
+  position: relative;
+  z-index: 80;
+  display: none;
+  min-height: 32px;
+  padding: 0 10px;
+}
+
+.tile-map-editor-page .fullscreen-overlay-toggle-group {
+  display: none;
+  position: fixed;
+  top: 220px;
+  z-index: 80;
+  gap: 8px;
+  flex-direction: column;
+}
+
+.tile-map-editor-page .fullscreen-overlay-toggle-group--left {
+  left: 10px;
+  align-items: flex-start;
+}
+
+.tile-map-editor-page .fullscreen-overlay-toggle-group--right {
+  right: 10px;
+  align-items: flex-end;
+}
+
+.tile-map-editor-page .overlay-toggle-symbol {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 14px;
+  font-weight: 900;
+  line-height: 1;
+}
+
+body.tile-map-editor-page.fullscreen-mode .app-shell {
+  min-height: 100vh;
+  min-height: 100dvh;
+  overflow: hidden;
+  padding: 8px;
+  gap: 8px;
+  width: calc(100% - 8px);
+  margin: 0 auto 8px;
+}
+
+body.tile-map-editor-page.fullscreen-mode .toolbar {
+  padding: 8px;
+  gap: 8px;
+}
+
+body.tile-map-editor-page.fullscreen-mode .workspace {
+  grid-template-columns: minmax(0, 1fr);
+  gap: 8px;
+}
+
+body.tile-map-editor-page.fullscreen-mode .sidebar {
+  display: none;
+}
+
+body.tile-map-editor-page.fullscreen-mode .sidebar.visible-overlay {
+  display: block;
+  position: fixed;
+  top: 70px;
+  bottom: 8px;
+  width: min(360px, calc(100vw - 24px));
+  z-index: 50;
+  overflow: auto;
+  padding-top: 10px;
+}
+
+body.tile-map-editor-page.fullscreen-mode .left-sidebar.visible-overlay {
+  left: 12px;
+}
+
+body.tile-map-editor-page.fullscreen-mode .right-sidebar.visible-overlay {
+  right: 12px;
+}
+
+body.tile-map-editor-page.fullscreen-mode .canvas-panel {
+  width: calc(100% - 300px);
+  min-width: 0;
+  height: 100%;
+  padding: 8px;
+  margin: 0 auto;
+}
+
+body.tile-map-editor-page.fullscreen-mode .canvas-wrap {
+  overflow: auto;
+  min-height: 0;
+  height: 100%;
+  padding-left: 0;
+  padding-right: 0;
+  justify-content: flex-start;
+  align-items: flex-start;
+}
+
+body.tile-map-editor-page.fullscreen-mode #mapCanvas {
+  width: auto;
+  height: auto;
+  max-width: none;
+  max-height: none;
+  margin: 0;
+}
+
+body.tile-map-editor-page.fullscreen-mode .fullscreen-overlay-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+body.tile-map-editor-page.fullscreen-mode .fullscreen-overlay-toggle-group {
+  display: flex;
+}
+
+body.tile-map-editor-page.fullscreen-mode .fullscreen-overlay-button.is-hidden-while-overlay-open {
+  visibility: hidden;
+  pointer-events: none;
+}
+
+body.tile-map-editor-page.fullscreen-mode .sidebar.visible-overlay .panel-accordion__summary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+body.tile-map-editor-page.fullscreen-mode .sidebar.visible-overlay .panel-accordion__summary::before {
+  content: "+";
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 14px;
+  font-weight: 900;
+  line-height: 1;
+}
+
+body.tile-map-editor-page.fullscreen-mode .sidebar.visible-overlay .panel-accordion[open] > .panel-accordion__summary::before {
+  content: "-";
 }
 
 .hidden-file-input {
