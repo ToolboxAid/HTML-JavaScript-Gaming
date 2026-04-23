@@ -146,7 +146,6 @@
         ],
         "tilesetAtlas": {
           "schema": "toolbox.tileset-atlas/1",
-          "imageDataUrl": "",
           "imageName": "templates/vector-native-arcade/assets/tilemaps/template-ui.tileset.json",
           "imageWidth": 0,
           "imageHeight": 0,
@@ -163,10 +162,30 @@
             "visible": true,
             "locked": false,
             "data": [
-              [1, 1, 1, 1],
-              [1, 0, 0, 1],
-              [1, 0, 0, 1],
-              [1, 1, 1, 1]
+              [
+                1,
+                1,
+                1,
+                1
+              ],
+              [
+                1,
+                0,
+                0,
+                1
+              ],
+              [
+                1,
+                0,
+                0,
+                1
+              ],
+              [
+                1,
+                1,
+                1,
+                1
+              ]
             ]
           },
           {
@@ -176,10 +195,30 @@
             "visible": true,
             "locked": false,
             "data": [
-              [0, 0, 0, 0],
-              [0, 1, 1, 0],
-              [0, 1, 1, 0],
-              [0, 0, 0, 0]
+              [
+                0,
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                1,
+                1,
+                0
+              ],
+              [
+                0,
+                1,
+                1,
+                0
+              ],
+              [
+                0,
+                0,
+                0,
+                0
+              ]
             ]
           },
           {
@@ -189,10 +228,30 @@
             "visible": true,
             "locked": false,
             "data": [
-              [0, 0, 0, 0],
-              [0, 2, 0, 0],
-              [0, 0, 3, 0],
-              [0, 0, 0, 0]
+              [
+                0,
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                2,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                3,
+                0
+              ],
+              [
+                0,
+                0,
+                0,
+                0
+              ]
             ]
           }
         ],
@@ -273,7 +332,6 @@
             "parallaxSourceId": "parallax.template.backdrop",
             "drawOrder": 0,
             "imageSource": "templates/vector-native-arcade/assets/parallax/template-backdrop.svg",
-            "imageDataUrl": "",
             "scrollFactorX": 0.4,
             "scrollFactorY": 0.2,
             "offsetX": 0,
@@ -446,4 +504,3 @@
     "applied": []
   }
 }
-

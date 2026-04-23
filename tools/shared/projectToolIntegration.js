@@ -100,7 +100,7 @@ function stripVolatileToolFields(input) {
   }
   const output = {};
   Object.entries(input).forEach(([key, value]) => {
-    if (key === "capturedAt") {
+    if (key === "capturedAt" || key === "imageDataUrl") {
       return;
     }
     output[key] = stripVolatileToolFields(value);

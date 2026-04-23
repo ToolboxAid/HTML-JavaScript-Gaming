@@ -178,6 +178,78 @@ function loadImageElement(source) {
   });
 }
 
+function toProjectAssetUrl(value) {
+  if (typeof value !== "string") {
+    return "";
+  }
+
+  const trimmed = value.trim().replace(/\\/g, "/");
+  if (!trimmed) {
+    return "";
+  }
+  if (trimmed.startsWith("data:") || trimmed.startsWith("blob:")) {
+    return trimmed;
+  }
+  if (/^[a-z]+:\/\//i.test(trimmed)) {
+    return trimmed;
+  }
+
+  let normalized = trimmed;
+  if (normalized.startsWith("./")) {
+    normalized = normalized.slice(2);
+  }
+  while (normalized.startsWith("/")) {
+    normalized = normalized.slice(1);
+  }
+
+  if (!normalized || normalized.includes("..")) {
+    return "";
+  }
+  return `/${normalized}`;
+}
+
+function getOrderedImageSources(options = {}) {
+  const sources = [];
+  const imageNameSource = toProjectAssetUrl(options.imageName || "");
+  const imageDataSource = typeof options.imageDataUrl === "string" && options.imageDataUrl.trim()
+    ? options.imageDataUrl.trim()
+    : "";
+  if (imageNameSource) {
+    sources.push(imageNameSource);
+  }
+  if (imageDataSource && !sources.includes(imageDataSource)) {
+    sources.push(imageDataSource);
+  }
+  return sources;
+}
+
+function getPrimaryImageSource(options = {}) {
+  const sources = getOrderedImageSources(options);
+  return sources[0] || "";
+}
+
+function stripImageDataUrlsDeep(input) {
+  if (Array.isArray(input)) {
+    return input.map((entry) => stripImageDataUrlsDeep(entry));
+  }
+  if (!input || typeof input !== "object") {
+    return input;
+  }
+
+  const output = {};
+  Object.entries(input).forEach(([key, value]) => {
+    if (key === "imageDataUrl") {
+      return;
+    }
+    output[key] = stripImageDataUrlsDeep(value);
+  });
+  return output;
+}
+
+function createPersistableTileMapDocument(documentModel) {
+  return stripImageDataUrlsDeep(cloneDeep(documentModel));
+}
+
 function computeAtlasGridMetrics(config) {
   const imageWidth = clampInteger(config?.imageWidth, 0, 8192, 0);
   const imageHeight = clampInteger(config?.imageHeight, 0, 8192, 0);
@@ -331,19 +403,22 @@ function sanitizeTileset(rawTileset) {
       return null;
     }
 
-    const inferredKind = rawSource.kind === "image" || (typeof rawSource.imageDataUrl === "string" && rawSource.imageDataUrl.trim())
+    const hasImageDataUrl = typeof rawSource.imageDataUrl === "string" && rawSource.imageDataUrl.trim();
+    const imageName = typeof rawSource.imageName === "string" ? rawSource.imageName.trim() : "";
+    const hasImageName = normalizeProjectRelativePath(imageName) !== "";
+    const inferredKind = rawSource.kind === "image" || hasImageDataUrl || hasImageName
       ? "image"
       : "atlas";
 
     if (inferredKind === "image") {
       const imageDataUrl = typeof rawSource.imageDataUrl === "string" ? rawSource.imageDataUrl : "";
-      if (!imageDataUrl) {
+      if (!imageDataUrl && !hasImageName) {
         return null;
       }
       return {
         kind: "image",
         imageDataUrl,
-        imageName: typeof rawSource.imageName === "string" && rawSource.imageName.trim() ? rawSource.imageName.trim() : "tile.png",
+        imageName: imageName || "tile.png",
         width: clampInteger(rawSource.width ?? rawSource.sourceWidth, 1, 512, 24),
         height: clampInteger(rawSource.height ?? rawSource.sourceHeight, 1, 512, 24)
       };
@@ -1040,7 +1115,8 @@ class TileMapEditorApp {
     }
     const { graph, findings } = buildAssetDependencyGraph(this.assetRegistry);
     this.assetDependencyGraphSnapshot = graph;
-    const output = addToolModeMetadata(cloneDeep(this.documentModel), { toolId: "tile-map-editor" });
+    const persistableDocument = createPersistableTileMapDocument(this.documentModel);
+    const output = addToolModeMetadata(persistableDocument, { toolId: "tile-map-editor" });
     output.project = {
       ...(output.project && typeof output.project === "object" ? output.project : {}),
       assetDependencyGraph: graph
@@ -1072,7 +1148,7 @@ class TileMapEditorApp {
       this.updateStatus(`${getBlockingAssetValidationMessage("Export Runtime", validation)} (${summarizeAssetValidation(validation)}).`);
       return;
     }
-    const runtimePayload = createRuntimeExport(this.documentModel);
+    const runtimePayload = createRuntimeExport(createPersistableTileMapDocument(this.documentModel));
     const serialized = JSON.stringify(runtimePayload, null, 2);
     const fileName = `${this.documentModel.map.name || "tile-map"}.runtime.json`;
     downloadTextFile(fileName, serialized);
@@ -1083,10 +1159,11 @@ class TileMapEditorApp {
     this.touchDocument();
     this.syncAssetRegistryFromDocument();
     const validation = this.validateProjectAssets();
+    const persistableDocument = createPersistableTileMapDocument(this.documentModel);
     const packageResult = buildProjectPackage({
       registry: this.assetRegistry,
       validationResult: validation,
-      tileMapDocument: this.documentModel
+      tileMapDocument: persistableDocument
     });
     this.lastPackageResult = packageResult;
     this.editorExperienceResult = buildEditorExperienceLayer({
@@ -1241,7 +1318,11 @@ class TileMapEditorApp {
     const quiet = options.quiet === true;
     const atlas = sanitizeTilesetAtlas(this.documentModel.tilesetAtlas, this.documentModel.map.tileSize);
     this.documentModel.tilesetAtlas = atlas;
-    if (!atlas.imageDataUrl) {
+    const atlasImageSources = getOrderedImageSources({
+      imageName: atlas.imageName,
+      imageDataUrl: atlas.imageDataUrl
+    });
+    if (atlasImageSources.length === 0) {
       this.tilesetImage = null;
       this.renderTileset();
       this.renderTilesetMeta();
@@ -1249,23 +1330,33 @@ class TileMapEditorApp {
       return;
     }
 
-    try {
-      const image = await loadImageElement(atlas.imageDataUrl);
-      this.tilesetImage = image;
-      atlas.imageWidth = image.naturalWidth || atlas.imageWidth;
-      atlas.imageHeight = image.naturalHeight || atlas.imageHeight;
+    let loadedImage = null;
+    let lastError = null;
+    for (let index = 0; index < atlasImageSources.length; index += 1) {
+      try {
+        loadedImage = await loadImageElement(atlasImageSources[index]);
+        break;
+      } catch (error) {
+        lastError = error;
+      }
+    }
+    if (loadedImage) {
+      this.tilesetImage = loadedImage;
+      atlas.imageWidth = loadedImage.naturalWidth || atlas.imageWidth;
+      atlas.imageHeight = loadedImage.naturalHeight || atlas.imageHeight;
       this.documentModel.tilesetAtlas = atlas;
       this.renderTileset();
       this.renderTilesetMeta();
       this.renderCanvas();
-    } catch (error) {
-      this.tilesetImage = null;
-      this.renderTileset();
-      this.renderTilesetMeta();
-      this.renderCanvas();
-      if (!quiet) {
-        this.updateStatus(`Tileset PNG failed to load: ${error instanceof Error ? error.message : "unknown error"}`);
-      }
+      return;
+    }
+
+    this.tilesetImage = null;
+    this.renderTileset();
+    this.renderTilesetMeta();
+    this.renderCanvas();
+    if (!quiet) {
+      this.updateStatus(`Tileset PNG failed to load: ${lastError instanceof Error ? lastError.message : "unknown error"}`);
     }
   }
 
@@ -1332,21 +1423,28 @@ class TileMapEditorApp {
     for (let index = 0; index < this.documentModel.tileset.length; index += 1) {
       const tile = this.documentModel.tileset[index];
       const source = tile?.source;
-      if (!source || source.kind !== "image" || !source.imageDataUrl) {
+      if (!source || source.kind !== "image") {
         continue;
       }
-      if (loadedUrls.has(source.imageDataUrl)) {
+      const resolvedSource = getPrimaryImageSource({
+        imageName: source.imageName,
+        imageDataUrl: source.imageDataUrl
+      });
+      if (!resolvedSource) {
+        continue;
+      }
+      if (loadedUrls.has(resolvedSource)) {
         continue;
       }
 
-      loadedUrls.add(source.imageDataUrl);
-      if (this.tilesetImageCache.has(source.imageDataUrl)) {
+      loadedUrls.add(resolvedSource);
+      if (this.tilesetImageCache.has(resolvedSource)) {
         continue;
       }
 
       try {
-        const image = await loadImageElement(source.imageDataUrl);
-        this.tilesetImageCache.set(source.imageDataUrl, image);
+        const image = await loadImageElement(resolvedSource);
+        this.tilesetImageCache.set(resolvedSource, image);
       } catch (error) {
         if (!quiet) {
           this.updateStatus(`Tile PNG failed to load (${source.imageName || "tile"}): ${error instanceof Error ? error.message : "unknown error"}`);
@@ -1434,6 +1532,13 @@ class TileMapEditorApp {
             height
           }
         });
+        const cacheKey = getPrimaryImageSource({
+          imageName: file.name || `${safeName}.png`,
+          imageDataUrl
+        });
+        if (cacheKey) {
+          this.tilesetImageCache.set(cacheKey, image);
+        }
         this.tilesetImageCache.set(imageDataUrl, image);
         importedCount += 1;
         if (firstImportedTileId === null) {
@@ -1467,18 +1572,32 @@ class TileMapEditorApp {
     }
 
     const atlas = this.applyTilesetAtlasSettingsFromInputs();
-    if (!atlas.imageDataUrl) {
+    const atlasImageSources = getOrderedImageSources({
+      imageName: atlas.imageName,
+      imageDataUrl: atlas.imageDataUrl
+    });
+    if (atlasImageSources.length === 0) {
       this.updateStatus("Load a tileset PNG before generating tiles.");
       return;
     }
 
     let image = this.tilesetImage;
     if (!image) {
-      try {
-        image = await loadImageElement(atlas.imageDataUrl);
-        this.tilesetImage = image;
-      } catch (error) {
-        const failureMessage = `Tileset image decode failed: ${error instanceof Error ? error.message : "unknown error"}`;
+      let loadedImage = null;
+      let lastError = null;
+      for (let index = 0; index < atlasImageSources.length; index += 1) {
+        try {
+          loadedImage = await loadImageElement(atlasImageSources[index]);
+          break;
+        } catch (error) {
+          lastError = error;
+        }
+      }
+      if (loadedImage) {
+        image = loadedImage;
+        this.tilesetImage = loadedImage;
+      } else {
+        const failureMessage = `Tileset image decode failed: ${lastError instanceof Error ? lastError.message : "unknown error"}`;
         this.updateStatus(failureMessage);
         if (typeof globalThis.alert === "function") {
           globalThis.alert(failureMessage);
@@ -2222,11 +2341,14 @@ class TileMapEditorApp {
     const source = tile.source;
     const sourceKind = source.kind === "image" ? "image" : "atlas";
     if (sourceKind === "image") {
-      const imageDataUrl = typeof source.imageDataUrl === "string" ? source.imageDataUrl : "";
-      if (!imageDataUrl || !this.tilesetImageCache.has(imageDataUrl)) {
+      const imageSource = getPrimaryImageSource({
+        imageName: source.imageName,
+        imageDataUrl: source.imageDataUrl
+      });
+      if (!imageSource || !this.tilesetImageCache.has(imageSource)) {
         return null;
       }
-      const image = this.tilesetImageCache.get(imageDataUrl);
+      const image = this.tilesetImageCache.get(imageSource);
       const sourceWidth = Math.max(1, clampInteger(image?.naturalWidth, 1, 8192, clampInteger(source.width, 1, 8192, 1)));
       const sourceHeight = Math.max(1, clampInteger(image?.naturalHeight, 1, 8192, clampInteger(source.height, 1, 8192, 1)));
       return {
@@ -2322,7 +2444,11 @@ class TileMapEditorApp {
     const atlas = sanitizeTilesetAtlas(this.documentModel.tilesetAtlas, this.documentModel.map.tileSize);
     const metrics = computeAtlasGridMetrics(atlas);
     const importedPngCount = this.documentModel.tileset.filter((tile) => tile.id > 0 && tile?.source?.kind === "image").length;
-    if (!atlas.imageDataUrl) {
+    const atlasSource = getPrimaryImageSource({
+      imageName: atlas.imageName,
+      imageDataUrl: atlas.imageDataUrl
+    });
+    if (!atlasSource) {
       this.refs.tilesetMeta.textContent = `No tileset PNG loaded. Load a PNG and generate a tile grid. Imported PNG tiles: ${importedPngCount}.`;
       return;
     }

@@ -214,7 +214,6 @@ export default class ToolFormattedTilesParallaxScene extends Scene {
 
     const loadOperations = layerDefinitions.map(async (layerDefinition, index) => {
       const assetPath = layerDefinition.asset
-        || layerDefinition.imageDataUrl
         || layerDefinition.imageSource;
       if (!assetPath) {
         throw new Error(`Parallax layer ${layerDefinition.id || index} missing image source.`);
@@ -637,7 +636,6 @@ function extractParallaxLayers(parallaxExport) {
       .map((layer) => ({
         id: layer.id,
         imageSource: layer.imageSource,
-        imageDataUrl: layer.imageDataUrl,
         scrollFactorX: Number(layer.scrollFactorX),
         offsetY: Number(layer.offsetY) || 0,
         opacity: Number(layer.opacity),
@@ -717,9 +715,6 @@ function extractTilesetImagePath(tileExport, atlas) {
   if (typeof atlas?.imageName === 'string' && atlas.imageName) {
     return atlas.imageName;
   }
-  if (typeof atlas?.imageDataUrl === 'string' && atlas.imageDataUrl) {
-    return atlas.imageDataUrl;
-  }
   return '';
 }
 
@@ -739,7 +734,6 @@ function extractTilesetImageCandidates(tileExport, atlas) {
   if (typeof atlas?.imageName === 'string' && atlas.imageName.includes('/assets/tileset/')) {
     add(atlas.imageName.replace('/assets/tileset/', '/assets/images/tileset/'));
   }
-  add(atlas?.imageDataUrl);
 
   return candidates;
 }

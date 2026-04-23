@@ -23,7 +23,6 @@
       "parallaxSourceId": "parallax.sky-clouds",
       "drawOrder": 0,
       "imageSource": "tools/shared/samples/project-asset-registry-demo/assets/images/clouds-layer.svg",
-      "imageDataUrl": "",
       "scrollFactorX": 0.2,
       "scrollFactorY": 0.05,
       "offsetX": 0,
@@ -36,7 +35,9 @@
     }
   ],
   "assetRefs": {
-    "parallaxSourceIds": ["parallax.sky-clouds"]
+    "parallaxSourceIds": [
+      "parallax.sky-clouds"
+    ]
   },
   "metadata": {
     "createdAt": "2026-04-03T00:00:00.000Z",

@@ -73,6 +73,23 @@ function cloneDeep(value) {
   return JSON.parse(JSON.stringify(value));
 }
 
+function stripImageDataUrlsDeep(input) {
+  if (Array.isArray(input)) {
+    return input.map((entry) => stripImageDataUrlsDeep(entry));
+  }
+  if (!input || typeof input !== "object") {
+    return input;
+  }
+  const output = {};
+  Object.entries(input).forEach(([key, value]) => {
+    if (key === "imageDataUrl") {
+      return;
+    }
+    output[key] = stripImageDataUrlsDeep(value);
+  });
+  return output;
+}
+
 function normalizeMapMeta(rawMap) {
   const width = clamp(rawMap?.width, 4, 1024, 32);
   const height = clamp(rawMap?.height, 4, 1024, 18);
@@ -178,7 +195,7 @@ function createRegistryManagedParallaxSaveDocument(documentModel) {
     return nextLayer;
   });
 
-  return output;
+  return stripImageDataUrlsDeep(output);
 }
 
 function createInitialParallaxDocument(options = {}) {
@@ -1318,10 +1335,11 @@ class ParallaxEditorApp {
     this.touchDocument();
     this.syncAssetRegistryFromDocument();
     const validation = this.validateProjectAssets();
+    const persistableDocument = createRegistryManagedParallaxSaveDocument(this.documentModel);
     const packageResult = buildProjectPackage({
       registry: this.assetRegistry,
       validationResult: validation,
-      parallaxDocument: this.documentModel
+      parallaxDocument: persistableDocument
     });
     this.lastPackageResult = packageResult;
     this.editorExperienceResult = buildEditorExperienceLayer({

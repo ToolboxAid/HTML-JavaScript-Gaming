@@ -13,6 +13,7 @@
 - Stop and report on ambiguity
 - Do not modify engine core unless explicitly in scope
 - Do not modify start_of_day folders unless explicitly requested
+- Never use `imageDataUrl` in project/runtime/workspace JSON contracts; use file/path fields (for example `imageName` or equivalent) as the only persisted source of truth
 
 ## Windows Execution
 - Prefer Node.js or Python for file operations, rename work, path handling, and ZIP work

@@ -54,8 +54,7 @@ export default {
   ],
   "tilesetAtlas": {
     "schema": "toolbox.tileset-atlas/1",
-    "imageDataUrl": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAJAAAAAwCAYAAAD+WvNWAAAB60lEQVR4AeyWMU7DMBiFrUychYlDcAJ2DoCEQIIrMCKkIiFugdhYWGFm4gJcgq0oQ6KmNnbbyPn97K+SVcV2/L//vS9pu6fV/XpzfPzcTa6HNZX5Qa/K9+vb51p5dI4PDsxwYALQydmv+3o58o5TmfeEM5HdgQlA2atRoDoHRoBU3jL/6awuGZGGRoBCP119DyrzvVbG8g6MAC1fmoo1OHAwQDU0Tw/zHQCg+R42fYI8QA+Pz0553F6eO+UhD1DTj38BzXfKT2+vvQAPm5bAG6jp+Oc3Lw/Q6vTYKY/5EdqesDxAtv1KVr+5unDbo5RGAMg4iW0wQtchiaF9FnMAFEqHuZ0dAKCdrWJjyAEPoM0/pKEbrNdDmpizc8ADyE4KlRUdACDF1ArS7AF0/f7thhHSOaz138uuh6oxZ+2AB5C1IOprOQBAWnkVpxaAiotESxAAaeVVnFoAKi4SLUEApJVXcWpbAKg402sSBEA1pWnQCwAZmF5TSQCqKU2DXgDIwPSaSgJQTWka9AJABqbXVBKAImmylHYAgNIesSPiAABFzGEp7QAApT1iR8QBAIqYw1LaAQBKe8SOiAMAFDGHpbQDAJT2aP8dDd0BQA2FnaNVAMrhakNnAlBDYedoFYByuNrQmQDUUNg5Wv0DAAD//6PRWCUAAAAGSURBVAMAfqRVji4/TksAAAAASUVORK5CYII=",
-    "imageName": "./assets/images/tileset/demo1208-terrain-tileset-orig.png",
+    "imageName": "/samples/phase-12/1208/assets/images/tileset/demo1208-terrain-tileset-orig.png",
     "imageWidth": 144,
     "imageHeight": 48,
     "tileWidth": 48,
@@ -4114,3 +4113,4 @@ export default {
     "notes": "Tile Map Editor toolbox.tilemap/1 format for Sample 1208 runtime import."
   }
 };
+

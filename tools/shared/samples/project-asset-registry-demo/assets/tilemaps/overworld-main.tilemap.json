@@ -14,12 +14,27 @@
     "tileSize": 24
   },
   "tileset": [
-    { "id": 0, "name": "Empty", "color": "transparent", "source": null },
-    { "id": 1, "name": "Grass", "color": "#4a8f39", "source": { "kind": "atlas", "x": 0, "y": 0, "width": 24, "height": 24 } }
+    {
+      "id": 0,
+      "name": "Empty",
+      "color": "transparent",
+      "source": null
+    },
+    {
+      "id": 1,
+      "name": "Grass",
+      "color": "#4a8f39",
+      "source": {
+        "kind": "atlas",
+        "x": 0,
+        "y": 0,
+        "width": 24,
+        "height": 24
+      }
+    }
   ],
   "tilesetAtlas": {
     "schema": "toolbox.tileset-atlas/1",
-    "imageDataUrl": "",
     "imageName": "tools/shared/samples/project-asset-registry-demo/assets/tiles/overworld-main.png",
     "imageWidth": 0,
     "imageHeight": 0,
@@ -29,20 +44,80 @@
     "margin": 0
   },
   "layers": [
-    { "id": "ground", "name": "Ground", "kind": "tile", "visible": true, "locked": false, "data": [[1, 1, 1], [1, 0, 1]] },
-    { "id": "collision", "name": "Collision", "kind": "collision", "visible": true, "locked": false, "data": [[0, 0, 0], [0, 0, 0]] },
-    { "id": "data", "name": "Data", "kind": "data", "visible": true, "locked": false, "data": [[0, 0, 0], [0, 0, 0]] }
+    {
+      "id": "ground",
+      "name": "Ground",
+      "kind": "tile",
+      "visible": true,
+      "locked": false,
+      "data": [
+        [
+          1,
+          1,
+          1
+        ],
+        [
+          1,
+          0,
+          1
+        ]
+      ]
+    },
+    {
+      "id": "collision",
+      "name": "Collision",
+      "kind": "collision",
+      "visible": true,
+      "locked": false,
+      "data": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ]
+      ]
+    },
+    {
+      "id": "data",
+      "name": "Data",
+      "kind": "data",
+      "visible": true,
+      "locked": false,
+      "data": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ]
+      ]
+    }
   ],
   "markers": [],
   "assetRefs": {
     "tilesetId": "tileset.overworld-main",
-    "parallaxSourceIds": ["parallax.sky-clouds"]
+    "parallaxSourceIds": [
+      "parallax.sky-clouds"
+    ]
   },
   "parallax": {
     "schema": "toolbox.parallax/1",
     "companionEditor": "ParallaxEditor",
     "layers": [
-      { "id": "sky", "name": "Sky", "imageSource": "tools/shared/samples/project-asset-registry-demo/assets/images/clouds-layer.svg" }
+      {
+        "id": "sky",
+        "name": "Sky",
+        "imageSource": "tools/shared/samples/project-asset-registry-demo/assets/images/clouds-layer.svg"
+      }
     ]
   }
 }

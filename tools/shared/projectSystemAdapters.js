@@ -145,7 +145,6 @@ function createTilemapAdapter() {
           tileset: [],
           tilesetAtlas: {
             schema: "toolbox.tileset-atlas/1",
-            imageDataUrl: "",
             imageName: "",
             imageWidth: 0,
             imageHeight: 0,
