@@ -468,23 +468,42 @@ body.vector-editor-page > .is-collapsible {
 
 .vector-editor-page .fullscreen-overlay-button {
   display: none;
-  position: absolute;
-  top: 12px;
-  z-index: 15;
+  position: relative;
+  z-index: 80;
   padding: 8px 10px;
   background: var(--surface-inline, rgba(43, 16, 91, 0.9));
 }
 
-.vector-editor-page .overlay-close-button {
+.vector-editor-page .fullscreen-overlay-toggle-group {
   display: none;
+  position: absolute;
+  top: 12px;
+  z-index: 80;
+  gap: 8px;
+  flex-direction: column;
 }
 
-.vector-editor-page #showLeftPanelButton {
+.vector-editor-page .fullscreen-overlay-toggle-group--left {
   left: 12px;
+  align-items: flex-start;
 }
 
-.vector-editor-page #showRightPanelButton {
+.vector-editor-page .fullscreen-overlay-toggle-group--right {
   right: 12px;
+  align-items: flex-end;
+}
+
+.vector-editor-page .overlay-toggle-symbol {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 14px;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.vector-editor-page .fullscreen-overlay-button.is-active {
+  border-color: var(--accent);
 }
 
 body.vector-editor-page.fullscreen-mode .app {
@@ -514,29 +533,7 @@ body.vector-editor-page.fullscreen-mode .rightbar {
 body.vector-editor-page.fullscreen-mode .sidebar.visible-overlay,
 body.vector-editor-page.fullscreen-mode .rightbar.visible-overlay {
   display: block;
-  padding-top: 44px;
-}
-
-body.vector-editor-page.fullscreen-mode .sidebar.visible-overlay .overlay-close-button,
-body.vector-editor-page.fullscreen-mode .rightbar.visible-overlay .overlay-close-button {
-  position: absolute;
-  top: 13px;
-  right: 13px;
-  z-index: 80;
-  display: flex !important;
-  align-items: center;
-  justify-content: center;
-  width: 34px;
-  height: 34px;
-  padding: 0;
-  border-radius: 999px;
-  font-size: 16px;
-  font-weight: 900;
-  line-height: 1;
-  border: 2px solid #ffffff;
-  background: #ed9700;
-  color: #ffffff;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.45);
+  padding-top: 12px;
 }
 
 body.vector-editor-page.fullscreen-mode .sidebar {
@@ -555,6 +552,39 @@ body.vector-editor-page.fullscreen-mode .canvas-shell {
 body.vector-editor-page.fullscreen-mode .fullscreen-overlay-button {
   display: inline-flex;
   align-items: center;
+  gap: 6px;
+}
+
+body.vector-editor-page.fullscreen-mode .fullscreen-overlay-button.is-hidden-while-overlay-open {
+  visibility: hidden;
+  pointer-events: none;
+}
+
+body.vector-editor-page.fullscreen-mode .fullscreen-overlay-toggle-group {
+  display: flex;
+}
+
+body.vector-editor-page.fullscreen-mode .sidebar.visible-overlay .panel-accordion__summary,
+body.vector-editor-page.fullscreen-mode .rightbar.visible-overlay .panel-accordion__summary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+body.vector-editor-page.fullscreen-mode .sidebar.visible-overlay .panel-accordion__summary::before,
+body.vector-editor-page.fullscreen-mode .rightbar.visible-overlay .panel-accordion__summary::before {
+  content: "+";
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 14px;
+  font-weight: 900;
+  line-height: 1;
+}
+
+body.vector-editor-page.fullscreen-mode .sidebar.visible-overlay .panel-accordion[open] > .panel-accordion__summary::before,
+body.vector-editor-page.fullscreen-mode .rightbar.visible-overlay .panel-accordion[open] > .panel-accordion__summary::before {
+  content: "-";
 }
 
 @media (max-width: 1280px) {

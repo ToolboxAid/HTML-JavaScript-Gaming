@@ -112,8 +112,8 @@ spriteEditor.css
 
 .sprite-editor-page .fullscreen-overlay-button {
   display: none;
-  position: fixed;
-  z-index: 1200;
+  position: relative;
+  z-index: 1300;
   min-height: 32px;
   padding: 0 12px;
   border: 1px solid var(--se-panel-border);
@@ -123,20 +123,32 @@ spriteEditor.css
   font-weight: 600;
 }
 
-.sprite-editor-page .overlay-close-button {
+.sprite-editor-page .fullscreen-overlay-toggle-group {
   display: none;
-  position: absolute;
-  top: 5px;
-  right: 5px;
+  position: fixed;
+  top: 152px;
   z-index: 1300;
-  min-height: 28px;
-  min-width: 28px;
-  padding: 0 8px;
-  border-radius: 999px;
-  border: 1px solid var(--se-panel-border);
-  background: #ed9700;
-  color: #ffffff;
-  font-weight: 700;
+  gap: 8px;
+  flex-direction: column;
+}
+
+.sprite-editor-page .fullscreen-overlay-toggle-group--left {
+  left: 14px;
+  align-items: flex-start;
+}
+
+.sprite-editor-page .fullscreen-overlay-toggle-group--right {
+  right: 14px;
+  align-items: flex-end;
+}
+
+.sprite-editor-page .overlay-toggle-symbol {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 14px;
+  font-weight: 900;
+  line-height: 1;
 }
 
 .workspace {
@@ -176,6 +188,38 @@ spriteEditor.css
   margin-top: 0.7rem;
   color: var(--se-muted);
   font-size: 0.85rem;
+}
+
+.panel-accordion {
+  margin: 0 0 0.8rem;
+  border: 1px solid var(--se-panel-border);
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--se-panel) 90%, black);
+  overflow: hidden;
+}
+
+.panel-accordion__summary {
+  list-style: none;
+  cursor: pointer;
+  padding: 0.75rem;
+  border-bottom: 1px solid transparent;
+}
+
+.panel-accordion__summary::-webkit-details-marker {
+  display: none;
+}
+
+.panel-accordion__summary h2 {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.panel-accordion[open] .panel-accordion__summary {
+  border-bottom-color: var(--se-panel-border);
+}
+
+.panel-accordion__body {
+  padding: 0.75rem;
 }
 
 .center-panel {
@@ -383,27 +427,43 @@ body.sprite-editor-page.fullscreen-mode .right-panel.visible-overlay {
   transform: translateX(0);
 }
 
-body.sprite-editor-page.fullscreen-mode .left-panel.visible-overlay .overlay-close-button,
-body.sprite-editor-page.fullscreen-mode .right-panel.visible-overlay .overlay-close-button {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-}
-
 body.sprite-editor-page.fullscreen-mode .fullscreen-overlay-button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  gap: 6px;
 }
 
-body.sprite-editor-page.fullscreen-mode #showLeftPanelButton {
-  top: 152px;
-  left: 14px;
+body.sprite-editor-page.fullscreen-mode .fullscreen-overlay-toggle-group {
+  display: flex;
 }
 
-body.sprite-editor-page.fullscreen-mode #showRightPanelButton {
-  top: 152px;
-  right: 14px;
+body.sprite-editor-page.fullscreen-mode .fullscreen-overlay-button.is-hidden-while-overlay-open {
+  visibility: hidden;
+  pointer-events: none;
+}
+
+body.sprite-editor-page.fullscreen-mode .left-panel.visible-overlay .panel-accordion__summary,
+body.sprite-editor-page.fullscreen-mode .right-panel.visible-overlay .panel-accordion__summary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+body.sprite-editor-page.fullscreen-mode .left-panel.visible-overlay .panel-accordion__summary::before,
+body.sprite-editor-page.fullscreen-mode .right-panel.visible-overlay .panel-accordion__summary::before {
+  content: "+";
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 14px;
+  font-weight: 900;
+  line-height: 1;
+}
+
+body.sprite-editor-page.fullscreen-mode .left-panel.visible-overlay .panel-accordion[open] > .panel-accordion__summary::before,
+body.sprite-editor-page.fullscreen-mode .right-panel.visible-overlay .panel-accordion[open] > .panel-accordion__summary::before {
+  content: "-";
 }
 
 button,

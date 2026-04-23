@@ -110,8 +110,7 @@ index.html
     </div>
 
     <aside class="sidebar tools-platform-resize-panel" data-panel-side="left" id="leftSidebar">
-      <button id="closeLeftOverlayButton" class="overlay-close-button" type="button" aria-label="Close Objects Panel">X</button>
-      <details class="panel-accordion" open>
+      <details class="panel-accordion" id="leftPanelObjects" open>
         <summary class="panel-accordion__summary"><h3>Objects</h3></summary>
         <div class="panel-accordion__body">
           <div class="button-row">
@@ -122,7 +121,7 @@ index.html
         </div>
       </details>
 
-      <details class="panel-accordion">
+      <details class="panel-accordion" id="leftPanelDocument">
         <summary class="panel-accordion__summary"><h3>Document</h3></summary>
         <div class="panel-accordion__body">
           <label>
@@ -147,14 +146,14 @@ index.html
         </div>
       </details>
 
-      <details class="panel-accordion">
+      <details class="panel-accordion" id="leftPanelCollisionResult">
         <summary class="panel-accordion__summary"><h3>Collision Result</h3></summary>
         <div class="panel-accordion__body">
           <div id="collisionSummary" class="help">No collision test yet.</div>
         </div>
       </details>
 
-      <details class="panel-accordion">
+      <details class="panel-accordion" id="leftPanelKeyboardMouse">
         <summary class="panel-accordion__summary"><h3>Keyboard & Mouse</h3></summary>
         <div class="panel-accordion__body">
           <div class="help">
@@ -171,8 +170,50 @@ index.html
     </aside>
 
     <main class="canvas-shell" id="canvasShell">
-      <button id="showLeftPanelButton" class="fullscreen-overlay-button">Objects</button>
-      <button id="showRightPanelButton" class="fullscreen-overlay-button">Properties</button>
+      <div class="fullscreen-overlay-toggle-group fullscreen-overlay-toggle-group--left">
+        <button type="button" class="fullscreen-overlay-button" data-overlay-toggle data-overlay-side="left" data-overlay-target="leftPanelObjects" aria-expanded="false">
+          <span class="overlay-toggle-symbol" aria-hidden="true">+</span>
+          <span class="overlay-toggle-label">Objects</span>
+        </button>
+        <button type="button" class="fullscreen-overlay-button" data-overlay-toggle data-overlay-side="left" data-overlay-target="leftPanelDocument" aria-expanded="false">
+          <span class="overlay-toggle-symbol" aria-hidden="true">+</span>
+          <span class="overlay-toggle-label">Document</span>
+        </button>
+        <button type="button" class="fullscreen-overlay-button" data-overlay-toggle data-overlay-side="left" data-overlay-target="leftPanelCollisionResult" aria-expanded="false">
+          <span class="overlay-toggle-symbol" aria-hidden="true">+</span>
+          <span class="overlay-toggle-label">Collision Result</span>
+        </button>
+        <button type="button" class="fullscreen-overlay-button" data-overlay-toggle data-overlay-side="left" data-overlay-target="leftPanelKeyboardMouse" aria-expanded="false">
+          <span class="overlay-toggle-symbol" aria-hidden="true">+</span>
+          <span class="overlay-toggle-label">Keyboard &amp; Mouse</span>
+        </button>
+      </div>
+      <div class="fullscreen-overlay-toggle-group fullscreen-overlay-toggle-group--right">
+        <button type="button" class="fullscreen-overlay-button" data-overlay-toggle data-overlay-side="right" data-overlay-target="rightPanelSelectedObject" aria-expanded="false">
+          <span class="overlay-toggle-symbol" aria-hidden="true">+</span>
+          <span class="overlay-toggle-label">Selected Object</span>
+        </button>
+        <button type="button" class="fullscreen-overlay-button" data-overlay-toggle data-overlay-side="right" data-overlay-target="rightPanelCenterPoint" aria-expanded="false">
+          <span class="overlay-toggle-symbol" aria-hidden="true">+</span>
+          <span class="overlay-toggle-label">Center Point</span>
+        </button>
+        <button type="button" class="fullscreen-overlay-button" data-overlay-toggle data-overlay-side="right" data-overlay-target="rightPanelRotation" aria-expanded="false">
+          <span class="overlay-toggle-symbol" aria-hidden="true">+</span>
+          <span class="overlay-toggle-label">Rotation</span>
+        </button>
+        <button type="button" class="fullscreen-overlay-button" data-overlay-toggle data-overlay-side="right" data-overlay-target="rightPanelAppearance" aria-expanded="false">
+          <span class="overlay-toggle-symbol" aria-hidden="true">+</span>
+          <span class="overlay-toggle-label">Appearance</span>
+        </button>
+        <button type="button" class="fullscreen-overlay-button" data-overlay-toggle data-overlay-side="right" data-overlay-target="rightPanelCollisionFlags" aria-expanded="false">
+          <span class="overlay-toggle-symbol" aria-hidden="true">+</span>
+          <span class="overlay-toggle-label">Collision Flags</span>
+        </button>
+        <button type="button" class="fullscreen-overlay-button" data-overlay-toggle data-overlay-side="right" data-overlay-target="rightPanelPoints" aria-expanded="false">
+          <span class="overlay-toggle-symbol" aria-hidden="true">+</span>
+          <span class="overlay-toggle-label">Points</span>
+        </button>
+      </div>
       <canvas id="editorCanvas" class="canvas-layer"></canvas>
 
       <div id="jsonDock" class="dock hidden tools-platform-dock-panel">
@@ -190,8 +231,7 @@ index.html
     </main>
 
     <aside class="rightbar tools-platform-resize-panel" data-panel-side="right" id="rightSidebar">
-      <button id="closeRightOverlayButton" class="overlay-close-button" type="button" aria-label="Close Properties Panel">X</button>
-      <details class="panel-accordion" open>
+      <details class="panel-accordion" id="rightPanelSelectedObject" open>
         <summary class="panel-accordion__summary"><h3>Selected Object</h3></summary>
         <div class="panel-accordion__body">
           <label>
@@ -211,7 +251,7 @@ index.html
         </div>
       </details>
 
-      <details class="panel-accordion">
+      <details class="panel-accordion" id="rightPanelCenterPoint">
         <summary class="panel-accordion__summary"><h3>Center Point</h3></summary>
         <div class="panel-accordion__body">
           <div class="button-row">
@@ -232,7 +272,7 @@ index.html
         </div>
       </details>
 
-      <details class="panel-accordion">
+      <details class="panel-accordion" id="rightPanelRotation">
         <summary class="panel-accordion__summary"><h3>Rotation</h3></summary>
         <div class="panel-accordion__body">
           <div id="rotationDegreesDisplay" class="help rotation-readout">X: 0deg | Y: 0deg | Z: 0deg</div>
@@ -275,7 +315,7 @@ index.html
         </div>
       </details>
 
-      <details class="panel-accordion">
+      <details class="panel-accordion" id="rightPanelAppearance">
         <summary class="panel-accordion__summary"><h3>Appearance</h3></summary>
         <div class="panel-accordion__body">
           <div class="field-grid">
@@ -300,7 +340,7 @@ index.html
         </div>
       </details>
 
-      <details class="panel-accordion">
+      <details class="panel-accordion" id="rightPanelCollisionFlags">
         <summary class="panel-accordion__summary"><h3>Collision Flags</h3></summary>
         <div class="panel-accordion__body">
           <div class="flag-grid">
@@ -319,7 +359,7 @@ index.html
         </div>
       </details>
 
-      <details class="panel-accordion">
+      <details class="panel-accordion" id="rightPanelPoints">
         <summary class="panel-accordion__summary"><h3>Points</h3></summary>
         <div class="panel-accordion__body">
           <div id="pointsSummary" class="help">No selection.</div>

@@ -89,10 +89,9 @@ export class VectorMapEditorApp {
       toolsPlatformStatusHost: doc.querySelector("[data-tools-platform-status]"),
       leftSidebar: doc.getElementById("leftSidebar"),
       rightSidebar: doc.getElementById("rightSidebar"),
-      closeLeftOverlayButton: doc.getElementById("closeLeftOverlayButton"),
-      closeRightOverlayButton: doc.getElementById("closeRightOverlayButton"),
-      showLeftPanelButton: doc.getElementById("showLeftPanelButton"),
-      showRightPanelButton: doc.getElementById("showRightPanelButton"),
+      leftPanelAccordions: Array.from(doc.querySelectorAll("#leftSidebar .panel-accordion")),
+      rightPanelAccordions: Array.from(doc.querySelectorAll("#rightSidebar .panel-accordion")),
+      overlayToggleButtons: Array.from(doc.querySelectorAll("[data-overlay-toggle]")),
       canvasShell: doc.getElementById("canvasShell"),
       canvas: doc.getElementById("editorCanvas"),
       objectList: doc.getElementById("objectList"),
@@ -180,6 +179,7 @@ export class VectorMapEditorApp {
     this.resizeCanvas();
     this.wireEvents();
     this.syncUIFromDocument();
+    this.syncOverlayToggleButtons();
     this.render();
     window.addEventListener("resize", () => {
       this.syncFullscreenLayoutHeight();
@@ -385,6 +385,7 @@ export class VectorMapEditorApp {
       this.syncFullscreenLayoutHeight();
       this.elements.leftSidebar.classList.remove("visible-overlay");
       this.elements.rightSidebar.classList.remove("visible-overlay");
+      this.syncOverlayToggleButtons();
       this.resizeCanvas();
       this.render();
     });
@@ -488,20 +489,19 @@ export class VectorMapEditorApp {
       }
     });
 
-    this.elements.showLeftPanelButton.addEventListener("click", () => {
-      this.elements.leftSidebar.classList.toggle("visible-overlay");
+    this.elements.overlayToggleButtons.forEach((button) => {
+      button.addEventListener("click", () => {
+        const side = button.dataset.overlaySide === "left" ? "left" : "right";
+        const targetId = button.dataset.overlayTarget || "";
+        this.toggleOverlayPanel(side, targetId);
+      });
     });
 
-    this.elements.showRightPanelButton.addEventListener("click", () => {
-      this.elements.rightSidebar.classList.toggle("visible-overlay");
+    this.elements.leftPanelAccordions.forEach((panel) => {
+      panel.addEventListener("toggle", () => this.handleOverlayAccordionToggle("left", panel));
     });
-
-    this.elements.closeLeftOverlayButton?.addEventListener("click", () => {
-      this.elements.leftSidebar.classList.remove("visible-overlay");
-    });
-
-    this.elements.closeRightOverlayButton?.addEventListener("click", () => {
-      this.elements.rightSidebar.classList.remove("visible-overlay");
+    this.elements.rightPanelAccordions.forEach((panel) => {
+      panel.addEventListener("toggle", () => this.handleOverlayAccordionToggle("right", panel));
     });
 
     this.elements.toggleJsonDockButton.addEventListener("click", () => {
@@ -732,6 +732,99 @@ export class VectorMapEditorApp {
     this.elements.jsonRevertButton.addEventListener("click", () => {
       this.syncJsonEditor();
       this.setStatus("JSON reverted.");
+    });
+  }
+
+  getOverlaySidebar(side) {
+    return side === "left" ? this.elements.leftSidebar : this.elements.rightSidebar;
+  }
+
+  getOverlayPanels(side) {
+    return side === "left" ? this.elements.leftPanelAccordions : this.elements.rightPanelAccordions;
+  }
+
+  toggleOverlayPanel(side, targetId) {
+    const sidebar = this.getOverlaySidebar(side);
+    const panels = this.getOverlayPanels(side);
+    if (!(sidebar instanceof HTMLElement) || !Array.isArray(panels) || panels.length === 0) {
+      return;
+    }
+    const target = panels.find((panel) => panel.id === targetId);
+    if (!(target instanceof HTMLElement)) {
+      return;
+    }
+
+    const fullscreenActive = Boolean(document.fullscreenElement);
+    if (!fullscreenActive) {
+      target.open = !target.open;
+      this.syncOverlayToggleButtons();
+      return;
+    }
+
+    const overlayVisible = sidebar.classList.contains("visible-overlay");
+    if (!overlayVisible) {
+      sidebar.classList.add("visible-overlay");
+      target.open = true;
+    } else {
+      target.open = !target.open;
+    }
+
+    if (!panels.some((panel) => panel.open)) {
+      sidebar.classList.remove("visible-overlay");
+    }
+
+    this.syncOverlayToggleButtons();
+    this.resizeCanvas();
+    this.render();
+  }
+
+  handleOverlayAccordionToggle(side, panel) {
+    if (!document.fullscreenElement) {
+      return;
+    }
+    const sidebar = this.getOverlaySidebar(side);
+    const panels = this.getOverlayPanels(side);
+    if (!(sidebar instanceof HTMLElement) || !Array.isArray(panels)) {
+      return;
+    }
+
+    if (panel.open) {
+      sidebar.classList.add("visible-overlay");
+    } else if (!panels.some((entry) => entry.open)) {
+      sidebar.classList.remove("visible-overlay");
+    }
+
+    this.syncOverlayToggleButtons();
+    this.resizeCanvas();
+    this.render();
+  }
+
+  syncOverlayToggleButtons() {
+    const fullscreenActive = Boolean(document.fullscreenElement);
+    this.elements.overlayToggleButtons.forEach((button) => {
+      const side = button.dataset.overlaySide === "left" ? "left" : "right";
+      const targetId = button.dataset.overlayTarget || "";
+      const sidebar = this.getOverlaySidebar(side);
+      const target = targetId ? this.rootDocument.getElementById(targetId) : null;
+      const active = Boolean(
+        fullscreenActive
+        && sidebar instanceof HTMLElement
+        && sidebar.classList.contains("visible-overlay")
+        && target instanceof HTMLElement
+        && target.open
+      );
+      button.classList.toggle("is-active", active);
+      button.setAttribute("aria-expanded", active ? "true" : "false");
+      const symbol = button.querySelector(".overlay-toggle-symbol");
+      if (symbol) {
+        symbol.textContent = active ? "-" : "+";
+      }
+      const hideWhileOverlayOpen = Boolean(
+        fullscreenActive
+        && sidebar instanceof HTMLElement
+        && sidebar.classList.contains("visible-overlay")
+      );
+      button.classList.toggle("is-hidden-while-overlay-open", hideWhileOverlayOpen);
     });
   }
 

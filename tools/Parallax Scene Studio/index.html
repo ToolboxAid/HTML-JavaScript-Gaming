@@ -75,39 +75,42 @@ index.html
 
     <div class="workspace tools-platform-layout-grid">
       <aside class="sidebar left-sidebar tools-platform-resize-panel" data-panel-side="left" id="leftSidebar">
-        <button id="closeLeftOverlayButton" class="overlay-close-button" type="button" aria-label="Close Layers Panel">X</button>
-        <section class="panel">
-          <h3>Parallax Layers</h3>
-          <ul id="layerList" class="layer-list"></ul>
-          <div class="row">
-            <label>
-              New Layer Name
-              <input id="newLayerNameInput" type="text" value="Parallax Layer" />
-            </label>
+        <details class="panel-accordion" id="leftPanelLayers" open>
+          <summary class="panel-accordion__summary"><h3>Parallax Layers</h3></summary>
+          <div class="panel-accordion__body">
+            <ul id="layerList" class="layer-list"></ul>
+            <div class="row">
+              <label>
+                New Layer Name
+                <input id="newLayerNameInput" type="text" value="Parallax Layer" />
+              </label>
+            </div>
+            <div class="row buttons">
+              <button id="addLayerButton" type="button">Add Layer</button>
+              <button id="removeLayerButton" type="button">Remove Layer</button>
+              <button id="duplicateLayerButton" type="button">Duplicate</button>
+            </div>
+            <div class="row buttons">
+              <button id="moveLayerUpButton" type="button">Move Up</button>
+              <button id="moveLayerDownButton" type="button">Move Down</button>
+            </div>
           </div>
-          <div class="row buttons">
-            <button id="addLayerButton" type="button">Add Layer</button>
-            <button id="removeLayerButton" type="button">Remove Layer</button>
-            <button id="duplicateLayerButton" type="button">Duplicate</button>
-          </div>
-          <div class="row buttons">
-            <button id="moveLayerUpButton" type="button">Move Up</button>
-            <button id="moveLayerDownButton" type="button">Move Down</button>
-          </div>
-        </section>
+        </details>
 
-        <section class="panel">
-          <h3>Preview Camera</h3>
-          <label>
-            Camera X
-            <input id="cameraXInput" type="range" min="-1024" max="1024" step="1" value="0" />
-          </label>
-          <label>
-            Camera Y
-            <input id="cameraYInput" type="range" min="-1024" max="1024" step="1" value="0" />
-          </label>
-          <div id="cameraReadout" class="muted">camera: 0, 0</div>
-        </section>
+        <details class="panel-accordion" id="leftPanelPreviewCamera">
+          <summary class="panel-accordion__summary"><h3>Preview Camera</h3></summary>
+          <div class="panel-accordion__body">
+            <label>
+              Camera X
+              <input id="cameraXInput" type="range" min="-1024" max="1024" step="1" value="0" />
+            </label>
+            <label>
+              Camera Y
+              <input id="cameraYInput" type="range" min="-1024" max="1024" step="1" value="0" />
+            </label>
+            <div id="cameraReadout" class="muted">camera: 0, 0</div>
+          </div>
+        </details>
       </aside>
 
       <main class="preview-panel tools-platform-dock-panel">
@@ -118,123 +121,162 @@ index.html
         </div>
         <div class="preview-wrap">
           <canvas id="previewCanvas" width="960" height="540"></canvas>
-          <button id="showLeftPanelButton" class="fullscreen-overlay-button" type="button">Layers</button>
-          <button id="showRightPanelButton" class="fullscreen-overlay-button" type="button">Properties</button>
+          <div class="fullscreen-overlay-toggle-group fullscreen-overlay-toggle-group--left">
+            <button type="button" class="fullscreen-overlay-button" data-overlay-toggle data-overlay-side="left" data-overlay-target="leftPanelLayers" aria-expanded="false">
+              <span class="overlay-toggle-symbol" aria-hidden="true">+</span>
+              <span class="overlay-toggle-label">Parallax Layers</span>
+            </button>
+            <button type="button" class="fullscreen-overlay-button" data-overlay-toggle data-overlay-side="left" data-overlay-target="leftPanelPreviewCamera" aria-expanded="false">
+              <span class="overlay-toggle-symbol" aria-hidden="true">+</span>
+              <span class="overlay-toggle-label">Preview Camera</span>
+            </button>
+          </div>
+          <div class="fullscreen-overlay-toggle-group fullscreen-overlay-toggle-group--right">
+            <button type="button" class="fullscreen-overlay-button" data-overlay-toggle data-overlay-side="right" data-overlay-target="rightPanelSelectedLayer" aria-expanded="false">
+              <span class="overlay-toggle-symbol" aria-hidden="true">+</span>
+              <span class="overlay-toggle-label">Selected Layer</span>
+            </button>
+            <button type="button" class="fullscreen-overlay-button" data-overlay-toggle data-overlay-side="right" data-overlay-target="rightPanelImageAssignment" aria-expanded="false">
+              <span class="overlay-toggle-symbol" aria-hidden="true">+</span>
+              <span class="overlay-toggle-label">Image Assignment</span>
+            </button>
+            <button type="button" class="fullscreen-overlay-button" data-overlay-toggle data-overlay-side="right" data-overlay-target="rightPanelScrollRepeat" aria-expanded="false">
+              <span class="overlay-toggle-symbol" aria-hidden="true">+</span>
+              <span class="overlay-toggle-label">Scroll + Repeat</span>
+            </button>
+            <button type="button" class="fullscreen-overlay-button" data-overlay-toggle data-overlay-side="right" data-overlay-target="rightPanelBoundaries" aria-expanded="false">
+              <span class="overlay-toggle-symbol" aria-hidden="true">+</span>
+              <span class="overlay-toggle-label">Boundaries</span>
+            </button>
+            <button type="button" class="fullscreen-overlay-button" data-overlay-toggle data-overlay-side="right" data-overlay-target="rightPanelRemediation" aria-expanded="false">
+              <span class="overlay-toggle-symbol" aria-hidden="true">+</span>
+              <span class="overlay-toggle-label">Remediation</span>
+            </button>
+          </div>
         </div>
         <pre id="previewDetailsText" class="preview-details-text">Mode: EDIT</pre>
         <div id="statusText" class="status-text">Ready.</div>
       </main>
 
       <aside class="sidebar right-sidebar tools-platform-resize-panel" data-panel-side="right" id="rightSidebar">
-        <button id="closeRightOverlayButton" class="overlay-close-button" type="button" aria-label="Close Properties Panel">X</button>
-        <section class="panel">
-          <h3>Selected Layer</h3>
-          <label>
-            Name
-            <input id="layerNameInput" type="text" />
-          </label>
-          <label>
-            Draw Order
-            <input id="layerDrawOrderInput" type="number" min="-999" max="999" step="1" value="0" />
-          </label>
-          <label>
-            Opacity
-            <input id="layerOpacityInput" type="number" min="0" max="1" step="0.05" value="1" />
-          </label>
-          <label>
-            Visible
-            <select id="layerVisibleSelect">
-              <option value="true">Visible</option>
-              <option value="false">Hidden</option>
-            </select>
-          </label>
-        </section>
-
-        <section class="panel">
-          <h3>Image Assignment</h3>
-          <label>
-            Image Source (URL or repo-relative path)
-            <input id="layerImageSourceInput" type="text" placeholder="assets/backgrounds/clouds.png" />
-          </label>
-          <div class="row buttons">
-            <button id="applyImageSourceButton" type="button">Apply Source</button>
-            <label class="file-input-label inline-label" for="layerImageFileInput">Use Local File</label>
-            <input id="layerImageFileInput" class="hidden-file-input" type="file" accept="image/*" />
+        <details class="panel-accordion" id="rightPanelSelectedLayer" open>
+          <summary class="panel-accordion__summary"><h3>Selected Layer</h3></summary>
+          <div class="panel-accordion__body">
+            <label>
+              Name
+              <input id="layerNameInput" type="text" />
+            </label>
+            <label>
+              Draw Order
+              <input id="layerDrawOrderInput" type="number" min="-999" max="999" step="1" value="0" />
+            </label>
+            <label>
+              Opacity
+              <input id="layerOpacityInput" type="number" min="0" max="1" step="0.05" value="1" />
+            </label>
+            <label>
+              Visible
+              <select id="layerVisibleSelect">
+                <option value="true">Visible</option>
+                <option value="false">Hidden</option>
+              </select>
+            </label>
           </div>
-        </section>
+        </details>
 
-        <section class="panel">
-          <h3>Scroll + Repeat</h3>
-          <label>
-            Scroll Factor X
-            <input id="scrollFactorXInput" type="number" min="-4" max="4" step="0.05" value="0.5" />
-          </label>
-          <label>
-            Scroll Factor Y
-            <input id="scrollFactorYInput" type="number" min="-4" max="4" step="0.05" value="0.5" />
-          </label>
-          <label>
-            Offset X
-            <input id="offsetXInput" type="number" min="-4096" max="4096" step="1" value="0" />
-          </label>
-          <label>
-            Offset Y
-            <input id="offsetYInput" type="number" min="-4096" max="4096" step="1" value="0" />
-          </label>
-          <label>
-            Repeat X
-            <select id="repeatXSelect">
-              <option value="true">Repeat</option>
-              <option value="false">No Repeat</option>
-            </select>
-          </label>
-          <label>
-            Repeat Y
-            <select id="repeatYSelect">
-              <option value="true">Repeat</option>
-              <option value="false">No Repeat</option>
-            </select>
-          </label>
-          <label>
-            Wrap Mode
-            <select id="wrapModeSelect">
-              <option value="wrap">Wrap</option>
-              <option value="clamp">Clamp</option>
-            </select>
-          </label>
-          <button id="applyLayerSettingsButton" type="button">Apply Layer Settings</button>
-        </section>
+        <details class="panel-accordion" id="rightPanelImageAssignment">
+          <summary class="panel-accordion__summary"><h3>Image Assignment</h3></summary>
+          <div class="panel-accordion__body">
+            <label>
+              Image Source (URL or repo-relative path)
+              <input id="layerImageSourceInput" type="text" placeholder="assets/backgrounds/clouds.png" />
+            </label>
+            <div class="row buttons">
+              <button id="applyImageSourceButton" type="button">Apply Source</button>
+              <label class="file-input-label inline-label" for="layerImageFileInput">Use Local File</label>
+              <input id="layerImageFileInput" class="hidden-file-input" type="file" accept="image/*" />
+            </div>
+          </div>
+        </details>
 
-        <section class="panel">
-          <h3>Boundaries</h3>
-          <ul class="usage-list">
-            <li>Parallax-only authoring tool.</li>
-            <li>Compatible with Tilemap Studio `toolbox.tilemap/1` files.</li>
-            <li>Use Simulate to preview depth and camera-relative motion.</li>
-            <li>No map tile/collision/data editing in this UI.</li>
-            <li>No engine core API modifications.</li>
-          </ul>
-        </section>
+        <details class="panel-accordion" id="rightPanelScrollRepeat">
+          <summary class="panel-accordion__summary"><h3>Scroll + Repeat</h3></summary>
+          <div class="panel-accordion__body">
+            <label>
+              Scroll Factor X
+              <input id="scrollFactorXInput" type="number" min="-4" max="4" step="0.05" value="0.5" />
+            </label>
+            <label>
+              Scroll Factor Y
+              <input id="scrollFactorYInput" type="number" min="-4" max="4" step="0.05" value="0.5" />
+            </label>
+            <label>
+              Offset X
+              <input id="offsetXInput" type="number" min="-4096" max="4096" step="1" value="0" />
+            </label>
+            <label>
+              Offset Y
+              <input id="offsetYInput" type="number" min="-4096" max="4096" step="1" value="0" />
+            </label>
+            <label>
+              Repeat X
+              <select id="repeatXSelect">
+                <option value="true">Repeat</option>
+                <option value="false">No Repeat</option>
+              </select>
+            </label>
+            <label>
+              Repeat Y
+              <select id="repeatYSelect">
+                <option value="true">Repeat</option>
+                <option value="false">No Repeat</option>
+              </select>
+            </label>
+            <label>
+              Wrap Mode
+              <select id="wrapModeSelect">
+                <option value="wrap">Wrap</option>
+                <option value="clamp">Clamp</option>
+              </select>
+            </label>
+            <button id="applyLayerSettingsButton" type="button">Apply Layer Settings</button>
+          </div>
+        </details>
 
-        <section class="panel">
-          <h3>Remediation</h3>
-          <p id="remediationSummaryText" class="help-text">No remediation actions available.</p>
-          <div class="row buttons">
-            <button id="inspectRemediationButton" type="button">Inspect Issues</button>
-            <button id="jumpToProblemButton" type="button">Jump to Problem</button>
-            <button id="applyRemediationButton" type="button">Apply Suggested Fix</button>
+        <details class="panel-accordion" id="rightPanelBoundaries">
+          <summary class="panel-accordion__summary"><h3>Boundaries</h3></summary>
+          <div class="panel-accordion__body">
+            <ul class="usage-list">
+              <li>Parallax-only authoring tool.</li>
+              <li>Compatible with Tilemap Studio `toolbox.tilemap/1` files.</li>
+              <li>Use Simulate to preview depth and camera-relative motion.</li>
+              <li>No map tile/collision/data editing in this UI.</li>
+              <li>No engine core API modifications.</li>
+            </ul>
           </div>
-          <p id="experienceSummaryText" class="help-text">Experience snapshot unavailable.</p>
-          <div class="row buttons">
-            <button id="refreshExperienceButton" type="button">Refresh Pipeline View</button>
+        </details>
+
+        <details class="panel-accordion" id="rightPanelRemediation">
+          <summary class="panel-accordion__summary"><h3>Remediation</h3></summary>
+          <div class="panel-accordion__body">
+            <p id="remediationSummaryText" class="help-text">No remediation actions available.</p>
+            <div class="row buttons">
+              <button id="inspectRemediationButton" type="button">Inspect Issues</button>
+              <button id="jumpToProblemButton" type="button">Jump to Problem</button>
+              <button id="applyRemediationButton" type="button">Apply Suggested Fix</button>
+            </div>
+            <p id="experienceSummaryText" class="help-text">Experience snapshot unavailable.</p>
+            <div class="row buttons">
+              <button id="refreshExperienceButton" type="button">Refresh Pipeline View</button>
+            </div>
+            <pre id="experienceDetailsText" class="help-text">No experience snapshot available.</pre>
+            <p id="debugSummaryText" class="help-text">Debug visualization unavailable.</p>
+            <div class="row buttons">
+              <button id="refreshDebugVisualizationButton" type="button">Refresh Debug View</button>
+            </div>
+            <pre id="debugDetailsText" class="help-text">No debug visualization available.</pre>
           </div>
-          <pre id="experienceDetailsText" class="help-text">No experience snapshot available.</pre>
-          <p id="debugSummaryText" class="help-text">Debug visualization unavailable.</p>
-          <div class="row buttons">
-            <button id="refreshDebugVisualizationButton" type="button">Refresh Debug View</button>
-          </div>
-          <pre id="debugDetailsText" class="help-text">No debug visualization available.</pre>
-        </section>
+        </details>
       </aside>
     </div>
   </div>

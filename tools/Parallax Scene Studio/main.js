@@ -458,10 +458,9 @@ class ParallaxEditorApp {
     this.refs.appShell = rootDocument.querySelector(".app-shell");
     this.refs.leftSidebar = rootDocument.getElementById("leftSidebar");
     this.refs.rightSidebar = rootDocument.getElementById("rightSidebar");
-    this.refs.showLeftPanelButton = rootDocument.getElementById("showLeftPanelButton");
-    this.refs.showRightPanelButton = rootDocument.getElementById("showRightPanelButton");
-    this.refs.closeLeftOverlayButton = rootDocument.getElementById("closeLeftOverlayButton");
-    this.refs.closeRightOverlayButton = rootDocument.getElementById("closeRightOverlayButton");
+    this.refs.leftPanelAccordions = Array.from(rootDocument.querySelectorAll("#leftSidebar .panel-accordion"));
+    this.refs.rightPanelAccordions = Array.from(rootDocument.querySelectorAll("#rightSidebar .panel-accordion"));
+    this.refs.overlayToggleButtons = Array.from(rootDocument.querySelectorAll("[data-overlay-toggle]"));
     this.refs.previewWrap = rootDocument.querySelector(".preview-wrap");
     this.refs.previewCanvas = rootDocument.getElementById("previewCanvas");
     this.refs.previewContext = this.refs.previewCanvas.getContext("2d", { alpha: false });
@@ -487,21 +486,18 @@ class ParallaxEditorApp {
     this.refs.inspectRemediationButton.addEventListener("click", () => this.inspectRemediationActions());
     this.refs.jumpToProblemButton.addEventListener("click", () => this.jumpToRemediationProblem());
     this.refs.applyRemediationButton.addEventListener("click", () => this.applyRemediationAction());
-    this.refs.showLeftPanelButton?.addEventListener("click", () => {
-      this.refs.leftSidebar?.classList.toggle("visible-overlay");
-      this.syncOverlayToggleButtons();
+    this.refs.overlayToggleButtons.forEach((button) => {
+      button.addEventListener("click", () => {
+        const side = button.dataset.overlaySide === "left" ? "left" : "right";
+        const targetId = button.dataset.overlayTarget || "";
+        this.toggleOverlayPanel(side, targetId);
+      });
     });
-    this.refs.showRightPanelButton?.addEventListener("click", () => {
-      this.refs.rightSidebar?.classList.toggle("visible-overlay");
-      this.syncOverlayToggleButtons();
+    this.refs.leftPanelAccordions.forEach((panel) => {
+      panel.addEventListener("toggle", () => this.handleOverlayAccordionToggle("left", panel));
     });
-    this.refs.closeLeftOverlayButton?.addEventListener("click", () => {
-      this.refs.leftSidebar?.classList.remove("visible-overlay");
-      this.syncOverlayToggleButtons();
-    });
-    this.refs.closeRightOverlayButton?.addEventListener("click", () => {
-      this.refs.rightSidebar?.classList.remove("visible-overlay");
-      this.syncOverlayToggleButtons();
+    this.refs.rightPanelAccordions.forEach((panel) => {
+      panel.addEventListener("toggle", () => this.handleOverlayAccordionToggle("right", panel));
     });
     document.addEventListener("fullscreenchange", () => {
       this.syncFullscreenState();
@@ -551,14 +547,88 @@ class ParallaxEditorApp {
   }
 
   syncOverlayToggleButtons() {
-    const leftVisible = this.refs.leftSidebar?.classList.contains("visible-overlay") === true;
-    const rightVisible = this.refs.rightSidebar?.classList.contains("visible-overlay") === true;
-    if (this.refs.showLeftPanelButton instanceof HTMLElement) {
-      this.refs.showLeftPanelButton.style.display = leftVisible ? "none" : "";
+    const fullscreenActive = Boolean(document.fullscreenElement);
+    this.refs.overlayToggleButtons.forEach((button) => {
+      const side = button.dataset.overlaySide === "left" ? "left" : "right";
+      const targetId = button.dataset.overlayTarget || "";
+      const sidebar = this.getOverlaySidebar(side);
+      const target = targetId ? document.getElementById(targetId) : null;
+      const active = Boolean(
+        fullscreenActive
+        && sidebar instanceof HTMLElement
+        && sidebar.classList.contains("visible-overlay")
+        && target instanceof HTMLElement
+        && target.open
+      );
+      button.setAttribute("aria-expanded", active ? "true" : "false");
+      const symbol = button.querySelector(".overlay-toggle-symbol");
+      if (symbol) {
+        symbol.textContent = active ? "-" : "+";
+      }
+      const hideWhileOverlayOpen = Boolean(
+        fullscreenActive
+        && sidebar instanceof HTMLElement
+        && sidebar.classList.contains("visible-overlay")
+      );
+      button.classList.toggle("is-hidden-while-overlay-open", hideWhileOverlayOpen);
+    });
+  }
+
+  getOverlaySidebar(side) {
+    return side === "left" ? this.refs.leftSidebar : this.refs.rightSidebar;
+  }
+
+  getOverlayPanels(side) {
+    return side === "left" ? this.refs.leftPanelAccordions : this.refs.rightPanelAccordions;
+  }
+
+  toggleOverlayPanel(side, targetId) {
+    const sidebar = this.getOverlaySidebar(side);
+    const panels = this.getOverlayPanels(side);
+    if (!(sidebar instanceof HTMLElement) || !Array.isArray(panels) || panels.length === 0) {
+      return;
     }
-    if (this.refs.showRightPanelButton instanceof HTMLElement) {
-      this.refs.showRightPanelButton.style.display = rightVisible ? "none" : "";
+    const target = panels.find((panel) => panel.id === targetId);
+    if (!(target instanceof HTMLElement)) {
+      return;
     }
+
+    const fullscreenActive = Boolean(document.fullscreenElement);
+    if (!fullscreenActive) {
+      target.open = !target.open;
+      this.syncOverlayToggleButtons();
+      return;
+    }
+
+    const overlayVisible = sidebar.classList.contains("visible-overlay");
+    if (!overlayVisible) {
+      sidebar.classList.add("visible-overlay");
+      target.open = true;
+    } else {
+      target.open = !target.open;
+    }
+    if (!panels.some((panel) => panel.open)) {
+      sidebar.classList.remove("visible-overlay");
+    }
+
+    this.syncOverlayToggleButtons();
+  }
+
+  handleOverlayAccordionToggle(side, panel) {
+    if (!document.fullscreenElement) {
+      return;
+    }
+    const sidebar = this.getOverlaySidebar(side);
+    const panels = this.getOverlayPanels(side);
+    if (!(sidebar instanceof HTMLElement) || !Array.isArray(panels)) {
+      return;
+    }
+    if (panel.open) {
+      sidebar.classList.add("visible-overlay");
+    } else if (!panels.some((entry) => entry.open)) {
+      sidebar.classList.remove("visible-overlay");
+    }
+    this.syncOverlayToggleButtons();
   }
 
   getSelectedLayer() {

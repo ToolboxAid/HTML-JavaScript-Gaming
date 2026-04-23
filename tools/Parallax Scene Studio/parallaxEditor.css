@@ -127,6 +127,38 @@ button:hover,
   font-size: 14px;
 }
 
+.panel-accordion {
+  margin: 0 0 10px;
+  border: 1px solid var(--parallax-border);
+  border-radius: 8px;
+  background: linear-gradient(180deg, var(--panel, rgba(76, 29, 149, 0.88)) 0%, var(--panel2, rgba(49, 17, 102, 0.94)) 100%);
+  overflow: hidden;
+}
+
+.panel-accordion__summary {
+  list-style: none;
+  cursor: pointer;
+  padding: 8px;
+  border-bottom: 1px solid transparent;
+}
+
+.panel-accordion__summary::-webkit-details-marker {
+  display: none;
+}
+
+.panel-accordion__summary h3 {
+  margin: 0;
+  font-size: 14px;
+}
+
+.panel-accordion[open] .panel-accordion__summary {
+  border-bottom-color: var(--parallax-border);
+}
+
+.panel-accordion__body {
+  padding: 8px;
+}
+
 .preview-panel {
   display: flex;
   flex-direction: column;
@@ -240,24 +272,39 @@ button:hover,
 }
 
 .parallax-editor-page .fullscreen-overlay-button {
-  position: absolute;
-  top: 10px;
-  z-index: 20;
+  position: relative;
+  z-index: 80;
   display: none;
   min-height: 32px;
   padding: 0 10px;
 }
 
-.parallax-editor-page .overlay-close-button {
+.parallax-editor-page .fullscreen-overlay-toggle-group {
   display: none;
+  position: fixed;
+  top: 96px;
+  z-index: 80;
+  gap: 8px;
+  flex-direction: column;
 }
 
-.parallax-editor-page #showLeftPanelButton {
+.parallax-editor-page .fullscreen-overlay-toggle-group--left {
   left: 10px;
+  align-items: flex-start;
 }
 
-.parallax-editor-page #showRightPanelButton {
+.parallax-editor-page .fullscreen-overlay-toggle-group--right {
   right: 10px;
+  align-items: flex-end;
+}
+
+.parallax-editor-page .overlay-toggle-symbol {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 14px;
+  font-weight: 900;
+  line-height: 1;
 }
 
 body.parallax-editor-page.fullscreen-mode .app-shell {
@@ -296,29 +343,7 @@ body.parallax-editor-page.fullscreen-mode .sidebar.visible-overlay {
   width: min(360px, calc(100vw - 24px));
   z-index: 50;
   overflow: auto;
-  padding-top: 48px;
-}
-
-body.parallax-editor-page.fullscreen-mode .sidebar.visible-overlay .overlay-close-button {
-  position: absolute;
-  top: 13px;
-  right: 13px;
-  z-index: 80;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 34px;
-  height: 34px;
-  min-height: 34px;
-  padding: 0;
-  border-radius: 999px;
-  font-size: 16px;
-  font-weight: 900;
-  line-height: 1;
-  border: 2px solid #ffffff;
-  background: #ed9700;
-  color: #ffffff;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.45);
+  padding-top: 10px;
 }
 
 body.parallax-editor-page.fullscreen-mode .left-sidebar.visible-overlay {
@@ -349,19 +374,38 @@ body.parallax-editor-page.fullscreen-mode #previewCanvas {
 
 body.parallax-editor-page.fullscreen-mode .fullscreen-overlay-button {
   display: inline-flex;
-  position: fixed;
   align-items: center;
   justify-content: center;
-  top: 96px;
-  z-index: 60;
+  gap: 6px;
 }
 
-body.parallax-editor-page.fullscreen-mode #showLeftPanelButton {
-  left: 10px;
+body.parallax-editor-page.fullscreen-mode .fullscreen-overlay-toggle-group {
+  display: flex;
 }
 
-body.parallax-editor-page.fullscreen-mode #showRightPanelButton {
-  right: 10px;
+body.parallax-editor-page.fullscreen-mode .fullscreen-overlay-button.is-hidden-while-overlay-open {
+  visibility: hidden;
+  pointer-events: none;
+}
+
+body.parallax-editor-page.fullscreen-mode .sidebar.visible-overlay .panel-accordion__summary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+body.parallax-editor-page.fullscreen-mode .sidebar.visible-overlay .panel-accordion__summary::before {
+  content: "+";
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 14px;
+  font-weight: 900;
+  line-height: 1;
+}
+
+body.parallax-editor-page.fullscreen-mode .sidebar.visible-overlay .panel-accordion[open] > .panel-accordion__summary::before {
+  content: "-";
 }
 
 body.parallax-editor-page.fullscreen-mode .preview-details-text {
