@@ -20,19 +20,19 @@
 - [.] Roadmap kickoff started
 - [.] Phase 1 vertical slice target selected: `Parallax Scene Studio`
 - [.] Batch 1 implementation start
-- [ ] Next execution queued: remove all `imageDataUrl` usage/dependency across Samples2Tools lane
+- [x] Next execution queued: remove all `imageDataUrl` usage/dependency across Samples2Tools lane
 
 ## Next Execution - imageDataUrl Elimination
-- [ ] 1) Remove dependency
-- [ ] Remove all code paths that require or rely on `imageDataUrl` for normal sample/tool/workspace flow.
-- [ ] Persist and pass only file/path-based image references (`imageName` or equivalent canonical path fields).
-- [ ] 2) Remove fallback
-- [ ] Remove `imageDataUrl` fallback reads (`imageDataUrl || imageSource`) after path-based flow is fully validated.
-- [ ] Remove temporary/in-memory-only fallback logic once equivalent preview behavior exists without `imageDataUrl`.
-- [ ] 3) Legacy needs to be updated and remove any dependency
-- [ ] Update legacy sample/tool payloads to canonical path-based image references.
-- [ ] Remove any remaining legacy compatibility branches tied to `imageDataUrl`.
-- [ ] Validate that older payloads in active lanes are migrated and no active launcher depends on `imageDataUrl`.
+- [x] 1) Remove dependency
+- [x] Remove all code paths that require or rely on `imageDataUrl` for normal sample/tool/workspace flow.
+- [x] Persist and pass only file/path-based image references (`imageName` or equivalent canonical path fields).
+- [x] 2) Remove fallback
+- [x] Remove `imageDataUrl` fallback reads (`imageDataUrl || imageSource`) after path-based flow is fully validated.
+- [x] Remove temporary/in-memory-only fallback logic once equivalent preview behavior exists without `imageDataUrl`.
+- [x] 3) Legacy needs to be updated and remove any dependency
+- [x] Update legacy sample/tool payloads to canonical path-based image references.
+- [x] Remove any remaining legacy compatibility branches tied to `imageDataUrl`.
+- [x] Validate that older payloads in active lanes are migrated and no active launcher depends on `imageDataUrl`.
 
 ## Canonical Data Contract
 - [.] File naming standard: `samples/phase-xx/xxxx/sample-xxxx.json`

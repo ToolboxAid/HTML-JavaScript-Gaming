@@ -1424,7 +1424,7 @@ class ParallaxEditorApp {
         if (resolution.resolvedCount > 0) {
           this.updateStatus(`Loaded ${file.name} (${resolution.resolvedCount} layer image refs restored from asset registry, validation: ${summarizeAssetValidation(validation)}).`);
         } else if (resolution.unresolvedCount > 0) {
-          this.updateStatus(`Loaded ${file.name} (${resolution.unresolvedCount} registry image refs unresolved; legacy fallback preserved, validation: ${summarizeAssetValidation(validation)}).`);
+          this.updateStatus(`Loaded ${file.name} (${resolution.unresolvedCount} registry image refs unresolved; layer image paths are missing, validation: ${summarizeAssetValidation(validation)}).`);
         } else {
           this.updateStatus(`Loaded ${file.name} (validation: ${summarizeAssetValidation(validation)}).`);
         }
