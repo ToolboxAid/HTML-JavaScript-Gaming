@@ -6421,7 +6421,9 @@
       ],
       "toolHints": [
         "tile-map-editor"
-      ]
+      ],
+      "thumbnail": "/samples/phase-12/1209/assets/images/preview.svg",
+      "preview": "/samples/phase-12/1209/assets/images/preview.svg"   
     },
     {
       "id": "1210",
@@ -6446,7 +6448,9 @@
       ],
       "toolHints": [
         "tile-map-editor"
-      ]
+      ],
+      "thumbnail": "/samples/phase-12/1210/assets/images/preview.svg",
+      "preview": "/samples/phase-12/1210/assets/images/preview.svg"  
     },
     {
       "id": "1211",
@@ -6471,7 +6475,9 @@
       ],
       "toolHints": [
         "tile-map-editor"
-      ]
+      ],
+      "thumbnail": "/samples/phase-12/1211/assets/images/preview.svg",
+      "preview": "/samples/phase-12/1211/assets/images/preview.svg"  
     },
     {
       "id": "1301",

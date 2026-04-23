@@ -73,23 +73,6 @@ function cloneDeep(value) {
   return JSON.parse(JSON.stringify(value));
 }
 
-function stripImageDataUrlsDeep(input) {
-  if (Array.isArray(input)) {
-    return input.map((entry) => stripImageDataUrlsDeep(entry));
-  }
-  if (!input || typeof input !== "object") {
-    return input;
-  }
-  const output = {};
-  Object.entries(input).forEach(([key, value]) => {
-    if (key === "imageDataUrl") {
-      return;
-    }
-    output[key] = stripImageDataUrlsDeep(value);
-  });
-  return output;
-}
-
 function normalizeMapMeta(rawMap) {
   const width = clamp(rawMap?.width, 4, 1024, 32);
   const height = clamp(rawMap?.height, 4, 1024, 18);
@@ -113,7 +96,6 @@ function createDefaultLayer(index = 0, name = "Parallax Layer") {
     parallaxSourceId: "",
     drawOrder: index,
     imageSource: "",
-    imageDataUrl: "",
     scrollFactorX: 0.4,
     scrollFactorY: 0.3,
     offsetX: 0,
@@ -138,7 +120,6 @@ function normalizeLayer(rawLayer, index = 0) {
     parallaxSourceId: typeof rawLayer?.parallaxSourceId === "string" ? rawLayer.parallaxSourceId.trim() : "",
     drawOrder: Math.trunc(clamp(rawLayer?.drawOrder, -999, 999, index)),
     imageSource: typeof rawLayer?.imageSource === "string" ? rawLayer.imageSource : "",
-    imageDataUrl: typeof rawLayer?.imageDataUrl === "string" ? rawLayer.imageDataUrl : "",
     scrollFactorX: clamp(rawLayer?.scrollFactorX, -4, 4, fallback.scrollFactorX),
     scrollFactorY: clamp(rawLayer?.scrollFactorY, -4, 4, fallback.scrollFactorY),
     offsetX: Math.trunc(clamp(rawLayer?.offsetX, -4096, 4096, 0)),
@@ -189,13 +170,13 @@ function createRegistryManagedParallaxSaveDocument(documentModel) {
 
   output.layers = (Array.isArray(output.layers) ? output.layers : []).map((layer) => {
     const nextLayer = normalizeLayer(layer);
-    if (nextLayer.parallaxSourceId && !nextLayer.imageDataUrl) {
+    if (nextLayer.parallaxSourceId && !normalizeProjectRelativePath(nextLayer.imageSource || "")) {
       nextLayer.imageSource = "";
     }
     return nextLayer;
   });
 
-  return stripImageDataUrlsDeep(output);
+  return output;
 }
 
 function createInitialParallaxDocument(options = {}) {
@@ -425,11 +406,41 @@ class ParallaxEditorApp {
     this.boundRuntimeState = null;
     this.lastRuntimeBindingStatusAt = 0;
     this.skipExternalProjectStateUntil = 0;
+    this.transientLayerImageSourceByName = new Map();
   }
 
   invalidateImageCache() {
     this.imageCache.clear();
     this.imageCacheVersion += 1;
+  }
+
+  clearTransientLayerImageSources() {
+    this.transientLayerImageSourceByName.forEach((objectUrl) => {
+      if (typeof objectUrl === "string" && objectUrl.startsWith("blob:")) {
+        URL.revokeObjectURL(objectUrl);
+      }
+    });
+    this.transientLayerImageSourceByName.clear();
+  }
+
+  setTransientLayerImageSource(imageSource, objectUrl) {
+    const key = typeof imageSource === "string" ? imageSource.trim() : "";
+    if (!key || typeof objectUrl !== "string" || !objectUrl.trim()) {
+      return;
+    }
+    const existing = this.transientLayerImageSourceByName.get(key);
+    if (typeof existing === "string" && existing.startsWith("blob:")) {
+      URL.revokeObjectURL(existing);
+    }
+    this.transientLayerImageSourceByName.set(key, objectUrl.trim());
+  }
+
+  getTransientLayerImageSource(imageSource) {
+    const key = typeof imageSource === "string" ? imageSource.trim() : "";
+    if (!key) {
+      return "";
+    }
+    return this.transientLayerImageSourceByName.get(key) || "";
   }
 
   init(rootDocument) {
@@ -1168,6 +1179,7 @@ class ParallaxEditorApp {
     this.resolveAssetRefsFromRegistry();
     normalizeDrawOrderSequence(this.documentModel.layers);
     this.selectedLayerId = this.documentModel.layers[0]?.id || "";
+    this.clearTransientLayerImageSources();
     this.invalidateImageCache();
     this.cameraX = 0;
     this.cameraY = 0;
@@ -1179,6 +1191,7 @@ class ParallaxEditorApp {
     this.exitSimulationMode();
     this.documentModel = createInitialParallaxDocument({ map: this.documentModel.map });
     this.selectedLayerId = this.documentModel.layers[0]?.id || "";
+    this.clearTransientLayerImageSources();
     this.invalidateImageCache();
     this.cameraX = 0;
     this.cameraY = 0;
@@ -1400,6 +1413,7 @@ class ParallaxEditorApp {
         const resolution = this.resolveAssetRefsFromRegistry();
         normalizeDrawOrderSequence(this.documentModel.layers);
         this.selectedLayerId = this.documentModel.layers[0]?.id || "";
+        this.clearTransientLayerImageSources();
         this.invalidateImageCache();
         this.cameraX = 0;
         this.cameraY = 0;
@@ -1588,10 +1602,14 @@ class ParallaxEditorApp {
     }
 
     const source = this.refs.layerImageSourceInput.value.trim();
-    layer.imageSource = source;
-    if (source) {
-      layer.imageDataUrl = "";
+    if (layer.imageSource && layer.imageSource !== source) {
+      const previousTransient = this.getTransientLayerImageSource(layer.imageSource);
+      if (previousTransient) {
+        URL.revokeObjectURL(previousTransient);
+        this.transientLayerImageSourceByName.delete(layer.imageSource.trim());
+      }
     }
+    layer.imageSource = source;
 
     this.invalidateImageCache();
     this.touchDocument();
@@ -1610,18 +1628,22 @@ class ParallaxEditorApp {
       return;
     }
 
-    const reader = new FileReader();
-    reader.onload = () => {
-      layer.imageDataUrl = String(reader.result || "");
-      layer.imageSource = file.name;
-      this.invalidateImageCache();
-      this.touchDocument();
-      this.renderAll();
-      this.updateStatus(`Assigned local image file ${file.name} to ${layer.name}.`);
-      this.refs.layerImageFileInput.value = "";
-    };
-
-    reader.readAsDataURL(file);
+    const previousSource = layer.imageSource;
+    const objectUrl = URL.createObjectURL(file);
+    layer.imageSource = file.name;
+    this.setTransientLayerImageSource(layer.imageSource, objectUrl);
+    if (previousSource && previousSource !== layer.imageSource) {
+      const previousTransient = this.getTransientLayerImageSource(previousSource);
+      if (previousTransient) {
+        URL.revokeObjectURL(previousTransient);
+        this.transientLayerImageSourceByName.delete(previousSource.trim());
+      }
+    }
+    this.invalidateImageCache();
+    this.touchDocument();
+    this.renderAll();
+    this.updateStatus(`Assigned local image file ${file.name} to ${layer.name}.`);
+    this.refs.layerImageFileInput.value = "";
   }
 
   handleCameraChange() {
@@ -1707,7 +1729,7 @@ class ParallaxEditorApp {
   }
 
   resolveLayerImageUrl(source) {
-    if (!source || source.startsWith("data:")) {
+    if (!source || source.startsWith("blob:")) {
       return source;
     }
 
@@ -1722,7 +1744,7 @@ class ParallaxEditorApp {
   }
 
   getLayerImageRecord(layer) {
-    const source = layer.imageDataUrl || layer.imageSource;
+    const source = this.getTransientLayerImageSource(layer.imageSource) || layer.imageSource;
     if (!source) {
       return null;
     }
@@ -1748,7 +1770,7 @@ class ParallaxEditorApp {
       this.renderPreview();
     };
 
-    if (!source.startsWith("data:")) {
+    if (!source.startsWith("blob:")) {
       record.image.crossOrigin = "anonymous";
     }
     record.image.src = this.resolveLayerImageUrl(source);
@@ -2133,6 +2155,7 @@ function bootParallaxSceneStudio() {
     this.cameraX = Number.isFinite(Number(snapshot?.cameraX)) ? Number(snapshot.cameraX) : 0;
     this.cameraY = Number.isFinite(Number(snapshot?.cameraY)) ? Number(snapshot.cameraY) : 0;
     this.resolveAssetRefsFromRegistry();
+    this.clearTransientLayerImageSources();
     this.invalidateImageCache();
     this.syncInputsFromDocument();
     this.renderAll();
