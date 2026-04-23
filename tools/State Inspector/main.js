@@ -28,6 +28,59 @@ function setStatus(message) {
   }
 }
 
+function clearRoutedPayloadQueryParam() {
+  if (typeof window === "undefined") {
+    return;
+  }
+  const url = new URL(window.location.href);
+  if (!url.searchParams.has("inspectPayloadKey")) {
+    return;
+  }
+  url.searchParams.delete("inspectPayloadKey");
+  window.history.replaceState({}, "", url.toString());
+}
+
+function readRoutedInspectionPayload() {
+  if (typeof window === "undefined") {
+    return null;
+  }
+  const params = new URLSearchParams(window.location.search);
+  const payloadId = params.get("inspectPayloadKey");
+  if (!payloadId) {
+    return null;
+  }
+  const storageKey = `toolboxaid.viewerPayload.${String(payloadId).trim()}`;
+  let raw = null;
+  try {
+    raw = window.sessionStorage.getItem(storageKey);
+    if (raw) {
+      window.sessionStorage.removeItem(storageKey);
+    }
+  } catch {
+    raw = null;
+  }
+  if (!raw) {
+    try {
+      raw = window.localStorage.getItem(storageKey);
+      if (raw) {
+        window.localStorage.removeItem(storageKey);
+      }
+    } catch {
+      raw = null;
+    }
+  }
+
+  clearRoutedPayloadQueryParam();
+  const parsed = safeParseJson(raw);
+  if (!parsed || typeof parsed !== "object") {
+    return null;
+  }
+  const payload = parsed.payload && typeof parsed.payload === "object"
+    ? parsed.payload
+    : parsed;
+  return payload && typeof payload === "object" ? payload : null;
+}
+
 function readStorageEntries(storageLike, prefix = "") {
   const entries = [];
   if (!storageLike || typeof storageLike.length !== "number") {
@@ -155,7 +208,16 @@ function bootStateInspector() {
       escapeAction: refreshSnapshot,
       statusElement: refs.statusText
     });
-    refreshSnapshot();
+    const routedPayload = readRoutedInspectionPayload();
+    if (routedPayload) {
+      if (refs.input instanceof HTMLTextAreaElement) {
+        refs.input.value = toPrettyJson(routedPayload);
+      }
+      renderSnapshot(routedPayload);
+      setStatus("Imported JSON payload loaded into inspector view.");
+    } else {
+      refreshSnapshot();
+    }
     initialized = true;
   }
   window.stateInspectorApp = stateInspectorApi;

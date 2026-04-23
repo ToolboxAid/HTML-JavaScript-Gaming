@@ -9,6 +9,7 @@ import {
   validateProjectManifest
 } from "./projectManifestContract.js";
 import { clearSharedAssetHandoff, clearSharedPaletteHandoff } from "./assetUsageIntegration.js";
+import { detectWorkspaceDocument, getDocumentMode } from "./documentModeGuards.js";
 import { getProjectAdapter } from "./projectSystemAdapters.js";
 import { cloneValue, safeString } from "./projectSystemValueUtils.js";
 import {
@@ -216,7 +217,15 @@ export function createWorkspaceSystemController(options = {}) {
 
   async function handleOpenWorkspace(file) {
     const text = await readFileAsText(file);
-    const validation = validateProjectManifest(JSON.parse(text));
+    const parsed = JSON.parse(text);
+    if (!detectWorkspaceDocument(parsed)) {
+      throw new Error("Selected file is not a Workspace manifest. Open tool documents inside their matching standalone tool.");
+    }
+    const mode = getDocumentMode(parsed);
+    if (mode && mode !== "workspace") {
+      throw new Error(`Selected file is marked for ${mode} mode. Use a workspace-mode manifest.`);
+    }
+    const validation = validateProjectManifest(parsed);
     if (!validation.valid) {
       throw new Error(validation.issues.join(" "));
     }

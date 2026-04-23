@@ -13,6 +13,7 @@ import {
   MAX_RECENT_COLORS,
   NO_PALETTE_ID,
   PALETTE_SOURCE_ID,
+  PROJECT_FORMAT,
   TOOL_IDS
 } from "./constants.js";
 import { colorToPickerValue, dedupeColors, isTransparent, normalizeColor, rgbaToHex } from "./colorUtils.js";
@@ -51,6 +52,7 @@ import {
 import { buildProjectPackage, summarizeProjectPackaging } from "../../shared/projectPackaging.js";
 import { buildEditorExperienceLayer, summarizeEditorExperienceLayer } from "../../shared/editorExperienceLayer.js";
 import { buildDebugVisualizationLayer, summarizeDebugVisualizationLayer } from "../../shared/debugVisualizationLayer.js";
+import { addToolModeMetadata, assertStandaloneToolDocument, offerImportMismatchOptions } from "../../shared/documentModeGuards.js";
 
 function getRequiredElement(id) {
   const element = document.getElementById(id);
@@ -1321,7 +1323,7 @@ async function saveProjectJson(state) {
   }
   const { graph, findings } = buildAssetDependencyGraph(state.assetRegistry);
   state.assetDependencyGraphSnapshot = graph;
-  const payload = serializeProject(state.project);
+  const payload = addToolModeMetadata(serializeProject(state.project), { toolId: "sprite-editor" });
   payload.project = {
     ...(payload.project && typeof payload.project === "object" ? payload.project : {}),
     assetDependencyGraph: graph
@@ -1338,6 +1340,22 @@ async function saveProjectJson(state) {
 async function loadProjectJson(state, file) {
   const text = await fileToText(file);
   const parsed = JSON.parse(text);
+  const guard = assertStandaloneToolDocument(parsed, {
+    expectedLabel: "Sprite Editor project",
+    acceptedFormats: [PROJECT_FORMAT],
+    requiredToolId: "sprite-editor"
+  });
+  if (!guard.ok) {
+    const handled = offerImportMismatchOptions(guard, {
+      viewerToolId: "state-inspector",
+      viewerPayload: parsed,
+      sourceToolId: "sprite-editor"
+    });
+    if (handled) {
+      return;
+    }
+    throw new Error(guard.reason);
+  }
   const nextProject = ensureProjectShape(parsed);
   state.project = nextProject;
   state.assetDependencyGraphSnapshot = parsed?.project?.assetDependencyGraph || null;

@@ -33,6 +33,7 @@ import { buildDebugVisualizationLayer, summarizeDebugVisualizationLayer } from "
 import { registerToolBootContract } from "../shared/toolBootContract.js";
 import { createLivePreviewSyncBridge, validateStateBindingPayload } from "../shared/livePreviewSyncChannel.js";
 import { normalizeToolSamplePath, toToolSampleLabel } from "../shared/toolSampleCatalog.js";
+import { addToolModeMetadata, assertStandaloneToolDocument, offerImportMismatchOptions } from "../shared/documentModeGuards.js";
 
 const SAMPLE_DIRECTORY_PATH = "./samples/";
 const SAMPLE_MANIFEST_PATH = "./samples/sample-manifest.json";
@@ -1133,7 +1134,7 @@ class ParallaxEditorApp {
       this.updateStatus(`${getBlockingAssetValidationMessage("Save Project", validation)} (${summarizeAssetValidation(validation)}).`);
       return;
     }
-    const output = createRegistryManagedParallaxSaveDocument(this.documentModel);
+    const output = addToolModeMetadata(createRegistryManagedParallaxSaveDocument(this.documentModel), { toolId: "parallax-editor" });
     const { graph, findings } = buildAssetDependencyGraph(this.assetRegistry);
     this.assetDependencyGraphSnapshot = graph;
     output.project = {
@@ -1219,6 +1220,22 @@ class ParallaxEditorApp {
     reader.onload = () => {
       try {
         const raw = JSON.parse(String(reader.result));
+        const guard = assertStandaloneToolDocument(raw, {
+          expectedLabel: "Parallax project",
+          acceptedSchemas: ["toolbox.parallax/1", "toolbox.tilemap/1"],
+          requiredToolId: "parallax-editor"
+        });
+        if (!guard.ok) {
+          const handled = offerImportMismatchOptions(guard, {
+            viewerToolId: "state-inspector",
+            viewerPayload: raw,
+            sourceToolId: "parallax-editor"
+          });
+          if (handled) {
+            return;
+          }
+          throw new Error(guard.reason);
+        }
         this.documentModel = extractParallaxDocument(raw);
         this.assetDependencyGraphSnapshot = raw?.project?.assetDependencyGraph || null;
         const resolution = this.resolveAssetRefsFromRegistry();

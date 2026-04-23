@@ -43,6 +43,10 @@
   font-size: 0.95rem;
 }
 
+.palette-browser__hint.is-context-muted {
+  color: #b3a7c9;
+}
+
 .palette-browser__list {
   display: grid;
   gap: 0.18rem;

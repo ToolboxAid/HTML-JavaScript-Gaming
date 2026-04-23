@@ -72,8 +72,10 @@
         <pre id="paletteJsonPreview" class="palette-browser__json-preview">Palette JSON preview will appear here.</pre>
         <div id="paletteValidationText" class="palette-browser__hint">Validation summary will appear here.</div>
         <div class="palette-browser__actions tools-platform-control-row">
-          <button id="copyPaletteJsonButton" type="button">Copy Palette JSON</button>
+          <button id="importPaletteJsonButton" type="button">Import Palette JSON</button>
+          <input id="importPaletteJsonInput" type="file" accept=".json,application/json" hidden />
           <button id="exportPaletteJsonButton" type="button">Export Palette JSON</button>
+          <button id="copyPaletteJsonButton" type="button">Copy Palette JSON</button>
           <button id="usePaletteButton" type="button">Use in Workspace Manager</button>
         </div>
         <div id="paletteSelectionText" class="palette-browser__hint">No handoff recorded yet.</div>

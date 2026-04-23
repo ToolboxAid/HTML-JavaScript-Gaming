@@ -33,6 +33,7 @@ import { buildDebugVisualizationLayer, summarizeDebugVisualizationLayer } from "
 import { registerToolBootContract } from "../shared/toolBootContract.js";
 import { createLivePreviewSyncBridge, validateStateBindingPayload } from "../shared/livePreviewSyncChannel.js";
 import { normalizeToolSamplePath, toToolSampleLabel } from "../shared/toolSampleCatalog.js";
+import { addToolModeMetadata, assertStandaloneToolDocument, offerImportMismatchOptions } from "../shared/documentModeGuards.js";
 
 const DEFAULT_TILESET = [
   { id: 0, name: "Empty", color: "transparent" },
@@ -841,7 +842,7 @@ class TileMapEditorApp {
     }
     const { graph, findings } = buildAssetDependencyGraph(this.assetRegistry);
     this.assetDependencyGraphSnapshot = graph;
-    const output = cloneDeep(this.documentModel);
+    const output = addToolModeMetadata(cloneDeep(this.documentModel), { toolId: "tile-map-editor" });
     output.project = {
       ...(output.project && typeof output.project === "object" ? output.project : {}),
       assetDependencyGraph: graph
@@ -927,6 +928,22 @@ class TileMapEditorApp {
     reader.onload = () => {
       try {
         const parsed = JSON.parse(String(reader.result));
+        const guard = assertStandaloneToolDocument(parsed, {
+          expectedLabel: "Tilemap project",
+          acceptedSchemas: ["toolbox.tilemap/1"],
+          requiredToolId: "tile-map-editor"
+        });
+        if (!guard.ok) {
+          const handled = offerImportMismatchOptions(guard, {
+            viewerToolId: "state-inspector",
+            viewerPayload: parsed,
+            sourceToolId: "tile-map-editor"
+          });
+          if (handled) {
+            return;
+          }
+          throw new Error(guard.reason);
+        }
         this.documentModel = sanitizeDocument(parsed);
         this.assetDependencyGraphSnapshot = parsed?.project?.assetDependencyGraph || null;
         const resolution = this.resolveAssetRefsFromRegistry();

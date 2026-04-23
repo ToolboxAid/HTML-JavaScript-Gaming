@@ -6,6 +6,7 @@ import {
   writeSharedPaletteHandoff
 } from "../shared/assetUsageIntegration.js";
 import { registerToolBootContract } from "../shared/toolBootContract.js";
+import { addToolModeMetadata, assertStandaloneToolDocument, offerImportMismatchOptions } from "../shared/documentModeGuards.js";
 
 const CUSTOM_PALETTES_STORAGE_KEY = "toolboxaid.paletteBrowser.customPalettes";
 const HIDDEN_BUILTIN_PALETTES_STORAGE_KEY = "toolboxaid.paletteBrowser.hiddenBuiltins";
@@ -31,6 +32,8 @@ const refs = {
   validationText: document.getElementById("paletteValidationText"),
   selectionText: document.getElementById("paletteSelectionText"),
   jsonPreview: document.getElementById("paletteJsonPreview"),
+  importPaletteJsonButton: document.getElementById("importPaletteJsonButton"),
+  importPaletteJsonInput: document.getElementById("importPaletteJsonInput"),
   copyPaletteJsonButton: document.getElementById("copyPaletteJsonButton"),
   exportPaletteJsonButton: document.getElementById("exportPaletteJsonButton"),
   usePaletteButton: document.getElementById("usePaletteButton")
@@ -43,6 +46,12 @@ const state = {
   customPalettes: loadCustomPalettes(),
   hiddenBuiltInPaletteIds: loadHiddenBuiltInPaletteIds()
 };
+
+function setSelectionText(text, options = {}) {
+  const muted = options?.muted === true;
+  refs.selectionText.textContent = String(text || "");
+  refs.selectionText.classList.toggle("is-context-muted", muted);
+}
 
 function isWorkspaceContext() {
   if (typeof window === "undefined") {
@@ -317,6 +326,99 @@ function createCustomPalette(name, entries) {
   };
 }
 
+function makeUniquePaletteName(baseName) {
+  const fallback = "imported-palette";
+  const seed = String(baseName || "").trim() || fallback;
+  const normalizedSeed = seed.toLowerCase();
+  const existing = new Set(getAllPalettes().map((palette) => String(palette.name || "").trim().toLowerCase()));
+  if (!existing.has(normalizedSeed)) {
+    return seed;
+  }
+  let index = 2;
+  while (index < 1000) {
+    const candidate = `${seed}-${index}`;
+    if (!existing.has(candidate.toLowerCase())) {
+      return candidate;
+    }
+    index += 1;
+  }
+  return `${seed}-${Date.now().toString(36)}`;
+}
+
+function normalizeImportedPalette(rawPayload) {
+  if (!rawPayload || typeof rawPayload !== "object") {
+    throw new Error("Palette JSON must be an object.");
+  }
+  const payload = rawPayload.palette && typeof rawPayload.palette === "object"
+    ? rawPayload.palette
+    : rawPayload;
+  const baseName = String(payload.name || "").trim();
+  const entries = Array.isArray(payload.entries) ? payload.entries : [];
+  if (!entries.length) {
+    throw new Error("Palette JSON must include at least one swatch entry.");
+  }
+  const normalizedEntries = entries.map((entry, index) => ({
+    symbol: String(entry?.symbol || "").trim().slice(0, 2),
+    hex: String(entry?.hex || "").trim(),
+    name: String(entry?.name || `Swatch ${index + 1}`).trim() || `Swatch ${index + 1}`
+  }));
+  return {
+    name: baseName || "imported-palette",
+    entries: normalizedEntries
+  };
+}
+
+async function importPaletteJsonFromFile(file) {
+  if (!file) {
+    return;
+  }
+  const text = await file.text();
+  const parsed = JSON.parse(text);
+  const guard = assertStandaloneToolDocument(parsed, {
+    expectedLabel: "Palette Browser palette",
+    requiredToolId: "palette-browser"
+  });
+  if (!guard.ok) {
+    const handled = offerImportMismatchOptions(guard, {
+      viewerToolId: "state-inspector",
+      viewerPayload: parsed,
+      sourceToolId: "palette-browser"
+    });
+    if (handled) {
+      return;
+    }
+    throw new Error(guard.reason);
+  }
+  const imported = normalizeImportedPalette(parsed);
+  let nextName = imported.name;
+  if (hasReservedPaletteKeyword(nextName)) {
+    nextName = `${nextName}-copy`;
+  }
+  if (hasReservedPaletteKeyword(nextName)) {
+    while (true) {
+      const requested = window.prompt(
+        "Imported palette name contains reserved terms. Enter a new name:",
+        "imported-palette"
+      );
+      if (requested === null) {
+        setSelectionText("Palette import canceled.");
+        return;
+      }
+      const trimmed = requested.trim() || "imported-palette";
+      if (!hasReservedPaletteKeyword(trimmed)) {
+        nextName = trimmed;
+        break;
+      }
+    }
+  }
+  nextName = makeUniquePaletteName(nextName);
+  const importedPalette = createCustomPalette(nextName, imported.entries);
+  state.customPalettes.unshift(importedPalette);
+  saveCustomPalettes();
+  setSelectedPalette(importedPalette.id);
+  setSelectionText(`Imported palette: ${importedPalette.name}.`);
+}
+
 function createNewPalette() {
   const requestedName = window.prompt("Name for new palette:", "new-palette");
   if (requestedName === null) {
@@ -440,9 +542,9 @@ async function copyPaletteJson() {
   }, null, 2);
   try {
     await navigator.clipboard.writeText(payload);
-    refs.selectionText.textContent = "Palette JSON copied to clipboard.";
+    setSelectionText("Palette JSON copied to clipboard.");
   } catch {
-    refs.selectionText.textContent = "Clipboard copy unavailable in this environment.";
+    setSelectionText("Clipboard copy unavailable in this environment.");
   }
 }
 
@@ -451,10 +553,10 @@ function exportPaletteJson() {
   if (!palette) {
     return;
   }
-  const payload = JSON.stringify({
+  const payload = JSON.stringify(addToolModeMetadata({
     name: palette.name,
     entries: palette.entries
-  }, null, 2);
+  }, { toolId: "palette-browser" }), null, 2);
   const blob = new Blob([payload], { type: "application/json" });
   const objectUrl = URL.createObjectURL(blob);
   const link = document.createElement("a");
@@ -470,12 +572,12 @@ function usePaletteInActiveTools() {
     return;
   }
   if (!isWorkspaceContext()) {
-    refs.selectionText.textContent = "Use in Workspace Manager is available only in Workspace Manager context.";
+    setSelectionText("Use in Workspace Manager is available only in Workspace Manager context.");
     return;
   }
   if (hasReservedPaletteKeyword(palette.name)) {
     const message = "Reserved palette names cannot be used for workspace shared palette. Duplicate and rename first.";
-    refs.selectionText.textContent = message;
+    setSelectionText(message);
     window.alert(message);
     return;
   }
@@ -486,7 +588,7 @@ function usePaletteInActiveTools() {
     && existingSharedPalette.paletteId !== palette.id
   ) {
     const message = `Shared palette is locked to ${existingSharedPalette.displayName}. Edit swatches instead.`;
-    refs.selectionText.textContent = message;
+    setSelectionText(message);
     window.alert(message);
     return;
   }
@@ -496,7 +598,7 @@ function usePaletteInActiveTools() {
     && existingSharedPalette.paletteId === palette.id
   ) {
     const message = "Shared palette is locked. Edit swatches instead.";
-    refs.selectionText.textContent = message;
+    setSelectionText(message);
     window.alert(message);
     return;
   }
@@ -511,9 +613,9 @@ function usePaletteInActiveTools() {
     sourceToolId: context.sourceToolId || "palette-browser"
   });
   const stored = writeSharedPaletteHandoff(handoff);
-  refs.selectionText.textContent = stored
+  setSelectionText(stored
     ? `Shared palette handoff updated for ${getToolDisplayName(context.sourceToolId, "active tool")}: ${palette.name}`
-    : "Shared palette handoff was not updated because the payload was invalid.";
+    : "Shared palette handoff was not updated because the payload was invalid.");
 }
 
 function deleteSelectedPalette() {
@@ -543,12 +645,17 @@ function deleteSelectedPalette() {
 }
 
 function renderStoredSelection() {
+  const workspaceMode = isWorkspaceContext();
   const handoff = readSharedPaletteHandoff();
   if (!handoff) {
-    refs.selectionText.textContent = "No handoff recorded yet.";
+    setSelectionText(workspaceMode
+      ? "No handoff recorded yet."
+      : "No workspace handoff recorded yet.", { muted: !workspaceMode });
     return;
   }
-  refs.selectionText.textContent = `Active handoff: ${handoff.displayName} (${handoff.selectedAt})`;
+  setSelectionText(workspaceMode
+    ? `Active handoff: ${handoff.displayName} (${handoff.selectedAt})`
+    : `Last workspace handoff: ${handoff.displayName} (${handoff.selectedAt})`, { muted: !workspaceMode });
 }
 
 function bindEvents() {
@@ -584,6 +691,23 @@ function bindEvents() {
   refs.swatchColorInput.addEventListener("input", updateSelectedSwatchFromInputs);
   refs.swatchNameInput.addEventListener("input", updateSelectedSwatchFromInputs);
   refs.swatchSymbolInput.addEventListener("input", updateSelectedSwatchFromInputs);
+  refs.importPaletteJsonButton.addEventListener("click", () => {
+    refs.importPaletteJsonInput?.click();
+  });
+  refs.importPaletteJsonInput?.addEventListener("change", async () => {
+    const file = refs.importPaletteJsonInput.files?.[0];
+    refs.importPaletteJsonInput.value = "";
+    if (!file) {
+      return;
+    }
+    try {
+      await importPaletteJsonFromFile(file);
+    } catch (error) {
+      const message = `Import failed: ${error instanceof Error ? error.message : "invalid JSON"}`;
+      setSelectionText(message);
+      window.alert(message);
+    }
+  });
   refs.copyPaletteJsonButton.addEventListener("click", copyPaletteJson);
   refs.exportPaletteJsonButton.addEventListener("click", exportPaletteJson);
   refs.usePaletteButton.addEventListener("click", usePaletteInActiveTools);

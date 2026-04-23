@@ -64,7 +64,6 @@ function renderToolCard(tool) {
 function classifyToolGroup(toolId) {
   const viewerToolIds = new Set([
     "3d-asset-viewer",
-    "state-inspector",
     "replay-visualizer",
     "performance-profiler"
   ]);
@@ -120,6 +119,7 @@ function renderActiveToolsList() {
   const tools = getToolRegistry()
     .filter((entry) => entry.active === true)
     .filter((entry) => entry.visibleInToolsList === true)
+    .filter((entry) => entry.id !== "state-inspector")
     .sort((left, right) => String(left.displayName || "").localeCompare(String(right.displayName || "")));
 
   const editors = tools.filter((tool) => classifyToolGroup(tool.id) === "editors").map((tool) => renderToolCard(tool));

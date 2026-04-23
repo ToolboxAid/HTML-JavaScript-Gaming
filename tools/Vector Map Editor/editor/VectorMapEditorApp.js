@@ -17,6 +17,7 @@ import { VectorMapCollisionTester } from "./VectorMapCollisionTester.js";
 import { VectorMapRuntimeExporter } from "./VectorMapRuntimeExporter.js";
 import { VectorMapHistoryManager } from "./VectorMapHistoryManager.js";
 import { normalizeToolSamplePath, toToolSampleLabel } from "../../shared/toolSampleCatalog.js";
+import { assertStandaloneToolDocument, offerImportMismatchOptions } from "../../shared/documentModeGuards.js";
 
 const SAMPLE_MANIFEST_PATH = "./samples/sample-manifest.json";
 
@@ -450,20 +451,41 @@ export class VectorMapEditorApp {
       if (!file) {
         return;
       }
-      const data = await this.serializer.readFile(file);
-      this.cancelSpinAnimation();
-      this.documentModel.setData(data);
-      this.selectionModel.clear();
-      this.lastCollisionResult = null;
-      this.historyManager.reset();
-      this.pendingHistoryEntry = null;
-      this.workspaceViewMode = this.documentModel.getData().mode;
-      this.elements.workspaceModeSelect.value = this.workspaceViewMode;
-      this.createInteractionController();
-      this.interactionController.setToolMode(this.elements.toolModeSelect.value);
-      this.syncUIFromDocument();
-      this.render();
-      this.setStatus(`Loaded ${file.name}.`);
+      try {
+        const data = await this.serializer.readFile(file);
+        const guard = assertStandaloneToolDocument(data, {
+          expectedLabel: "Vector Map document",
+          requiredToolId: "vector-map-editor"
+        });
+        if (!guard.ok) {
+          const handled = offerImportMismatchOptions(guard, {
+            viewerToolId: "state-inspector",
+            viewerPayload: data,
+            sourceToolId: "vector-map-editor"
+          });
+          if (handled) {
+            return;
+          }
+          throw new Error(guard.reason);
+        }
+        this.cancelSpinAnimation();
+        this.documentModel.setData(data);
+        this.selectionModel.clear();
+        this.lastCollisionResult = null;
+        this.historyManager.reset();
+        this.pendingHistoryEntry = null;
+        this.workspaceViewMode = this.documentModel.getData().mode;
+        this.elements.workspaceModeSelect.value = this.workspaceViewMode;
+        this.createInteractionController();
+        this.interactionController.setToolMode(this.elements.toolModeSelect.value);
+        this.syncUIFromDocument();
+        this.render();
+        this.setStatus(`Loaded ${file.name}.`);
+      } catch (error) {
+        this.setStatus(`Load failed: ${error instanceof Error ? error.message : "invalid JSON"}`);
+      } finally {
+        this.elements.loadDocumentInput.value = "";
+      }
     });
 
     this.elements.showLeftPanelButton.addEventListener("click", () => {

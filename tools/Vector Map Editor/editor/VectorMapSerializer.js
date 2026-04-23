@@ -4,9 +4,11 @@ David Quesenberry
 03/25/2026
 VectorMapSerializer.js
 */
+import { addToolModeMetadata } from "../../shared/documentModeGuards.js";
+
 export class VectorMapSerializer {
   toPrettyJSON(documentModel) {
-    return JSON.stringify(documentModel.toJSON(), null, 2);
+    return JSON.stringify(addToolModeMetadata(documentModel.toJSON(), { toolId: "vector-map-editor" }), null, 2);
   }
 
   parseJSON(jsonText) {
