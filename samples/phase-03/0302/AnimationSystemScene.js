@@ -14,7 +14,9 @@ import { AnimationController } from '/src/engine/animation/index.js';
 import { renderSpriteReadyEntities } from '/src/engine/rendering/index.js';
 import { moveRectWithTilemapCollision } from '/src/engine/systems/index.js';
 import { createDemoSpriteSheet } from '../0301/demoSpriteFactory.js';
+import { drawSpriteProjectFrame, loadSpriteProjectPreset } from '/samples/shared/spritePresetRuntime.js';
 const theme = new Theme(ThemeTokens);
+const SPRITE_PRESET_PATH = '/samples/phase-03/0302/sample-0302-sprite-editor.json';
 
 export default class AnimationSystemScene extends Scene {
   constructor() {
@@ -65,6 +67,37 @@ export default class AnimationSystemScene extends Scene {
         action: { frames: ['action_0', 'move_1', 'idle_0'], frameDuration: 0.11, loop: false },
       },
     });
+    this.spriteProject = null;
+    this.spriteStatus = 'loading';
+    this.spriteError = '';
+    this.frameIndexByName = {
+      idle_0: 0,
+      move_0: 1,
+      move_1: 2,
+      action_0: 3
+    };
+    void this.loadSpriteProject();
+  }
+
+  async loadSpriteProject() {
+    try {
+      this.spriteProject = await loadSpriteProjectPreset(SPRITE_PRESET_PATH);
+      this.spriteStatus = 'loaded';
+      this.spriteError = '';
+    } catch (error) {
+      this.spriteProject = null;
+      this.spriteStatus = 'fallback';
+      this.spriteError = error instanceof Error ? error.message : 'unknown preset error';
+    }
+  }
+
+  resolveFrameIndex(frameName) {
+    if (!this.spriteProject || !Array.isArray(this.spriteProject.frames) || this.spriteProject.frames.length === 0) {
+      return 0;
+    }
+    const mapped = this.frameIndexByName[String(frameName || '')];
+    const safe = Number.isInteger(mapped) ? mapped : 0;
+    return safe % this.spriteProject.frames.length;
   }
 
   update(dt, engine) {
@@ -94,12 +127,19 @@ export default class AnimationSystemScene extends Scene {
   }
 
   render(renderer) {
+    const presetStatus = this.spriteStatus === 'loaded'
+      ? 'Sprite preset loaded from sample-0302-sprite-editor.json'
+      : this.spriteStatus === 'loading'
+        ? 'Loading shared sprite preset...'
+        : `Sprite preset unavailable (${this.spriteError || 'using fallback'})`;
+
     drawFrame(renderer, theme, [
       'Engine sample 0302',
       'Adds predictable timing, loop control, and a one-shot action animation',
       'Move with Arrow keys/WASD, press Space for a non-looping test action',
       'Idle and move states no longer flicker or reset on every input poll',
       `State: ${this.animation.getStateName()}`,
+      presetStatus
     ]);
 
     renderer.strokeRect(this.screen.x, this.screen.y, this.camera.viewportWidth, this.camera.viewportHeight, '#fbbf24', 2);
@@ -109,22 +149,37 @@ export default class AnimationSystemScene extends Scene {
     });
 
     const playerRect = worldRectToScreen(this.camera, this.player, this.screen.x, this.screen.y);
-    renderSpriteReadyEntities(renderer, [{
-      ...playerRect,
-      frame: this.animation.getFrame(),
-      label: this.animation.getStateName(),
-    }], {
-      label: true,
-      labelOffsetY: 52,
-      getFrame: (entity) => this.atlas.getFrame(entity.frame),
-      getImage: () => this.asset?.image || null,
-    });
+    if (this.spriteProject) {
+      const frameName = this.animation.getFrame();
+      const pixelSize = Math.max(2, Math.floor(this.player.width / this.spriteProject.width));
+      drawSpriteProjectFrame(renderer, this.spriteProject, this.resolveFrameIndex(frameName), {
+        x: playerRect.x,
+        y: playerRect.y,
+        pixelSize
+      });
+      renderer.drawText(this.animation.getStateName(), playerRect.x + ((this.spriteProject.width * pixelSize) / 2), playerRect.y + (this.spriteProject.height * pixelSize) + 12, {
+        color: '#d8d5ff',
+        font: '12px monospace',
+        textAlign: 'center'
+      });
+    } else {
+      renderSpriteReadyEntities(renderer, [{
+        ...playerRect,
+        frame: this.animation.getFrame(),
+        label: this.animation.getStateName(),
+      }], {
+        label: true,
+        labelOffsetY: 52,
+        getFrame: (entity) => this.atlas.getFrame(entity.frame),
+        getImage: () => this.asset?.image || null,
+      });
+    }
 
     drawPanel(renderer, 620, 34, 300, 126, 'Animation', [
       `State: ${this.animation.getStateName()}`,
       `Frame: ${this.animation.getFrame()}`,
       `Finished: ${this.animation.isFinished()}`,
-      'Action animation is one-shot; move and idle loop',
+      this.spriteProject ? 'Source: sample-0302-sprite-editor.json' : 'Action animation is one-shot; move and idle loop',
     ]);
   }
 }

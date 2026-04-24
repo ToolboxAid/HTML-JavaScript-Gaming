@@ -10,8 +10,10 @@ import { clamp } from '/src/engine/utils/index.js';
 import { drawFrame, drawPanel } from '/src/engine/debug/index.js';
 import { AnimationController } from '/src/engine/animation/index.js';
 import { renderSpriteReadyEntities } from '/src/engine/rendering/index.js';
+import { drawSpriteProjectFrame, loadSpriteProjectPreset } from '/samples/shared/spritePresetRuntime.js';
 
 const theme = new Theme(ThemeTokens);
+const SPRITE_PRESET_PATH = '/samples/phase-02/0214/sample-0214-sprite-editor.json';
 
 export default class AnimationSpriteBindingScene extends Scene {
   constructor() {
@@ -25,6 +27,31 @@ export default class AnimationSpriteBindingScene extends Scene {
       },
       initial: 'idle',
     });
+    this.spriteProject = null;
+    this.spriteStatus = 'loading';
+    this.spriteError = '';
+    void this.loadSpriteProject();
+  }
+
+  async loadSpriteProject() {
+    try {
+      this.spriteProject = await loadSpriteProjectPreset(SPRITE_PRESET_PATH);
+      this.spriteStatus = 'loaded';
+      this.spriteError = '';
+    } catch (error) {
+      this.spriteProject = null;
+      this.spriteStatus = 'fallback';
+      this.spriteError = error instanceof Error ? error.message : 'unknown preset error';
+    }
+  }
+
+  resolvePresetFrameIndex(animationFrameId) {
+    if (!this.spriteProject || !Array.isArray(this.spriteProject.frames) || this.spriteProject.frames.length === 0) {
+      return 0;
+    }
+    const match = String(animationFrameId || '').match(/(\d+)$/);
+    const numericIndex = match ? Number.parseInt(match[1], 10) : 0;
+    return Math.max(0, numericIndex) % this.spriteProject.frames.length;
   }
 
   update(dt, engine) {
@@ -45,27 +72,48 @@ export default class AnimationSpriteBindingScene extends Scene {
 
   render(renderer) {
     const frame = this.animation.getFrame() || { id: 'fallback', color: theme.getColor('actorFill') };
+    const presetStatus = this.spriteStatus === 'loaded'
+      ? 'Sprite preset loaded from sample-0214-sprite-editor.json'
+      : this.spriteStatus === 'loading'
+        ? 'Loading shared sprite preset...'
+        : `Sprite preset unavailable (${this.spriteError || 'using fallback'})`;
 
     drawFrame(renderer, theme, [
       'Engine Sample 0214',
       'Demonstrates binding animation state to sprite-frame-like output',
       'Use Arrow keys to move and switch between animation frame sets',
       `Frame id: ${frame.id}`,
-      'This sample connects animation output to the render path',
+      'This sample and Sprite Editor load the same sample-0214-sprite-editor.json source',
+      presetStatus
     ]);
 
-    renderSpriteReadyEntities(renderer, [{
-      ...this.actor,
-      spriteColor: frame.color,
-    }], { label: true, labelOffsetY: 82 });
+    if (this.spriteProject) {
+      const frameIndex = this.resolvePresetFrameIndex(frame.id);
+      const pixelSize = Math.max(2, Math.floor(this.actor.height / this.spriteProject.height));
+      drawSpriteProjectFrame(renderer, this.spriteProject, frameIndex, {
+        x: this.actor.x,
+        y: this.actor.y,
+        pixelSize
+      });
+      renderer.drawText(this.actor.label, this.actor.x + ((this.spriteProject.width * pixelSize) / 2), this.actor.y + (this.spriteProject.height * pixelSize) + 20, {
+        color: '#d8d5ff',
+        font: '14px monospace',
+        textAlign: 'center'
+      });
+    } else {
+      renderSpriteReadyEntities(renderer, [{
+        ...this.actor,
+        spriteColor: frame.color,
+      }], { label: true, labelOffsetY: 82 });
+    }
 
     renderer.strokeRect(this.bounds.x, this.bounds.y, this.bounds.width, this.bounds.height, '#d8d5ff', 3);
 
     drawPanel(renderer, 620, 184, 300, 126, 'Animation Binding', [
       `State: ${this.animation.getStateName()}`,
       `Frame: ${frame.id}`,
-      `Color: ${frame.color}`,
-      'Next step: atlas frame lookup',
+      this.spriteProject ? 'Rendering preset frame pixels' : `Color fallback: ${frame.color}`,
+      'Source: sample-0214-sprite-editor.json',
     ]);
   }
 }

@@ -1,0 +1,15 @@
+Samples2Tools Batch 11 Validation
+Generated: 2026-04-24T15:33:38.158Z
+
+[x] Sprite Editor has 8 mapped samples (phase-01 through phase-19)
+[x] All mapped Sprite Editor preset files exist on disk
+[x] Samples index roundtrip logic contains mapped sample ids and sprite-editor branch
+[x] Sprite linked samples load visual sprite data from the same sample-xxxx-sprite-editor.json source used by Sprite Editor preload
+[x] Metadata toolHints include sprite-editor for expanded mapped sample ids
+
+Execution evidence:
+- Added/validated sample ids: 0224, 0301, 0302, 0905, 1414
+- Existing sample ids retained: 0213, 0214, 0219
+- Roundtrip mapping branch: samples/index.render.js:shouldUsePresetRoundtrip
+- Shared sample runtime helper: samples/shared/spritePresetRuntime.js
+- overall: pass

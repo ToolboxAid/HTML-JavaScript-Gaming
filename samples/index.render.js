@@ -75,9 +75,15 @@ function shouldUsePresetRoundtrip(sample, toolId) {
     return sampleId === "0901" && samplePhase === "09";
   }
   if (toolId === "sprite-editor") {
-    return (sampleId === "0213" && samplePhase === "02")
+    return (sampleId === "0207" && samplePhase === "02")
+      || (sampleId === "0213" && samplePhase === "02")
       || (sampleId === "0214" && samplePhase === "02")
-      || (sampleId === "0219" && samplePhase === "02");
+      || (sampleId === "0219" && samplePhase === "02")
+      || (sampleId === "0224" && samplePhase === "02")
+      || (sampleId === "0301" && samplePhase === "03")
+      || (sampleId === "0302" && samplePhase === "03")
+      || (sampleId === "0905" && samplePhase === "09")
+      || (sampleId === "1414" && samplePhase === "14");
   }
   return false;
 }

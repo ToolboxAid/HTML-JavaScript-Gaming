@@ -12,8 +12,10 @@ import { Tilemap, renderTilemap, resolveRectVsTilemap } from '/src/engine/tilema
 import { SpriteAtlas } from '/src/engine/assets/index.js';
 import { renderSpriteReadyEntities } from '/src/engine/rendering/index.js';
 import { serializeWorldState, deserializeWorldState } from '/src/engine/persistence/index.js';
+import { drawSpriteProjectFrame, loadSpriteProjectPreset } from '/samples/shared/spritePresetRuntime.js';
 
 const theme = new Theme(ThemeTokens);
+const SPRITE_PRESET_PATH = '/samples/phase-02/0224/sample-0224-sprite-editor.json';
 
 export default class TileCameraSpriteSliceScene extends Scene {
   constructor() {
@@ -57,6 +59,22 @@ export default class TileCameraSpriteSliceScene extends Scene {
     this.saved = '';
     this.lastK = false;
     this.lastL = false;
+    this.spriteProject = null;
+    this.spriteStatus = 'loading';
+    this.spriteError = '';
+    void this.loadSpriteProject();
+  }
+
+  async loadSpriteProject() {
+    try {
+      this.spriteProject = await loadSpriteProjectPreset(SPRITE_PRESET_PATH);
+      this.spriteStatus = 'loaded';
+      this.spriteError = '';
+    } catch (error) {
+      this.spriteProject = null;
+      this.spriteStatus = 'fallback';
+      this.spriteError = error instanceof Error ? error.message : 'unknown preset error';
+    }
   }
 
   update(dt, engine) {
@@ -135,12 +153,19 @@ export default class TileCameraSpriteSliceScene extends Scene {
   }
 
   render(renderer) {
+    const presetStatus = this.spriteStatus === 'loaded'
+      ? 'Sprite preset loaded from sample-0224-sprite-editor.json'
+      : this.spriteStatus === 'loading'
+        ? 'Loading shared sprite preset...'
+        : `Sprite preset unavailable (${this.spriteError || 'using fallback'})`;
+
     drawFrame(renderer, theme, [
       'Engine Sample 0224',
       'Combines tilemap, camera, action input, sprite-style frames, and snapshots',
       'Use Arrow keys or WASD to move, KeyK to save, KeyL to load',
       this.message,
-      'This sample is the first tile + camera + sprite-style playable slice',
+      'This sample and Sprite Editor load the same sample-0224-sprite-editor.json source',
+      presetStatus
     ]);
 
     renderer.strokeRect(this.screen.x, this.screen.y, this.camera.viewportWidth, this.camera.viewportHeight, '#d8d5ff', 2);
@@ -156,17 +181,32 @@ export default class TileCameraSpriteSliceScene extends Scene {
     renderer.strokeRect(goalRect.x, goalRect.y, goalRect.width, goalRect.height, '#ffffff', 1);
 
     const playerRect = worldRectToScreen(this.camera, this.player, this.screen.x, this.screen.y);
-    renderSpriteReadyEntities(renderer, [{
-      ...playerRect,
-      spriteColor: this.atlas.getFrame(this.player.frame)?.color || theme.getColor('actorFill'),
-      label: this.player.frame,
-    }], { label: true, labelOffsetY: -8 });
+    if (this.spriteProject) {
+      const frameIndex = this.player.frame === 'move_0' ? 1 : 0;
+      const pixelSize = Math.max(2, Math.floor(this.player.width / this.spriteProject.width));
+      drawSpriteProjectFrame(renderer, this.spriteProject, frameIndex, {
+        x: playerRect.x,
+        y: playerRect.y,
+        pixelSize
+      });
+      renderer.drawText(this.player.frame, playerRect.x + ((this.spriteProject.width * pixelSize) / 2), playerRect.y - 8, {
+        color: '#d8d5ff',
+        font: '12px monospace',
+        textAlign: 'center'
+      });
+    } else {
+      renderSpriteReadyEntities(renderer, [{
+        ...playerRect,
+        spriteColor: this.atlas.getFrame(this.player.frame)?.color || theme.getColor('actorFill'),
+        label: this.player.frame,
+      }], { label: true, labelOffsetY: -8 });
+    }
 
     drawPanel(renderer, 620, 34, 300, 126, 'Slice', [
       `Frame: ${this.player.frame}`,
       `Camera: ${this.camera.x.toFixed(1)}, ${this.camera.y.toFixed(1)}`,
       `Saved text: ${this.saved.length}`,
-      'Goal is the yellow tile',
+      this.spriteProject ? 'Rendering preset frame pixels' : 'Goal is the yellow tile',
     ]);
   }
 }

@@ -1,0 +1,79 @@
+{
+  "generatedAt": "2026-04-24T15:44:15.444Z",
+  "scope": "phase-01-phase-19",
+  "purpose": "batch-12-sprite-editor-complete-candidate-lane",
+  "links": [
+    {
+      "sampleId": "0207",
+      "phase": "02",
+      "title": "Animation System",
+      "toolId": "sprite-editor",
+      "href": "./phase-02/0207/index.html",
+      "presetPath": "/samples/phase-02/0207/sample-0207-sprite-editor.json"
+    },
+    {
+      "sampleId": "0213",
+      "phase": "02",
+      "title": "Sprite Render Layer",
+      "toolId": "sprite-editor",
+      "href": "./phase-02/0213/index.html",
+      "presetPath": "/samples/phase-02/0213/sample-0213-sprite-editor.json"
+    },
+    {
+      "sampleId": "0214",
+      "phase": "02",
+      "title": "Animation Sprite Binding",
+      "toolId": "sprite-editor",
+      "href": "./phase-02/0214/index.html",
+      "presetPath": "/samples/phase-02/0214/sample-0214-sprite-editor.json"
+    },
+    {
+      "sampleId": "0219",
+      "phase": "02",
+      "title": "Sprite Atlas Image Rendering",
+      "toolId": "sprite-editor",
+      "href": "./phase-02/0219/index.html",
+      "presetPath": "/samples/phase-02/0219/sample-0219-sprite-editor.json"
+    },
+    {
+      "sampleId": "0224",
+      "phase": "02",
+      "title": "Tile Camera Sprite Slice",
+      "toolId": "sprite-editor",
+      "href": "./phase-02/0224/index.html",
+      "presetPath": "/samples/phase-02/0224/sample-0224-sprite-editor.json"
+    },
+    {
+      "sampleId": "0301",
+      "phase": "03",
+      "title": "Real Sprite Rendering",
+      "toolId": "sprite-editor",
+      "href": "./phase-03/0301/index.html",
+      "presetPath": "/samples/phase-03/0301/sample-0301-sprite-editor.json"
+    },
+    {
+      "sampleId": "0302",
+      "phase": "03",
+      "title": "Animation System",
+      "toolId": "sprite-editor",
+      "href": "./phase-03/0302/index.html",
+      "presetPath": "/samples/phase-03/0302/sample-0302-sprite-editor.json"
+    },
+    {
+      "sampleId": "0905",
+      "phase": "09",
+      "title": "Pixel Perfect Collision",
+      "toolId": "sprite-editor",
+      "href": "./phase-09/0905/index.html",
+      "presetPath": "/samples/phase-09/0905/sample-0905-sprite-editor.json"
+    },
+    {
+      "sampleId": "1414",
+      "phase": "14",
+      "title": "Texture Sprite Preprocess Pipeline",
+      "toolId": "sprite-editor",
+      "href": "./phase-14/1414/index.html",
+      "presetPath": "/samples/phase-14/1414/sample-1414-sprite-editor.json"
+    }
+  ]
+}

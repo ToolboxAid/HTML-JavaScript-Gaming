@@ -1253,6 +1253,9 @@
         "engine/theme/index/Theme",
         "engine/theme/index/ThemeTokens",
         "engine/utils/index/clamp"
+      ],
+      "toolHints": [
+        "sprite-editor"
       ]
     },
     {
@@ -1982,6 +1985,9 @@
         "engine/tilemap/index/renderTilemap",
         "engine/tilemap/index/resolveRectVsTilemap",
         "engine/tilemap/index/Tilemap"
+      ],
+      "toolHints": [
+        "sprite-editor"
       ]
     },
     {
@@ -2076,6 +2082,9 @@
         "engine/theme/index/ThemeTokens",
         "engine/tilemap/index/renderTilemap",
         "engine/tilemap/index/Tilemap"
+      ],
+      "toolHints": [
+        "sprite-editor"
       ]
     },
     {
@@ -2133,6 +2142,9 @@
         "engine/theme/index/ThemeTokens",
         "engine/tilemap/index/renderTilemap",
         "engine/tilemap/index/Tilemap"
+      ],
+      "toolHints": [
+        "sprite-editor"
       ]
     },
     {
@@ -5680,6 +5692,9 @@
         "engine/scene/index/Scene",
         "engine/theme/index/Theme",
         "engine/theme/index/ThemeTokens"
+      ],
+      "toolHints": [
+        "sprite-editor"
       ]
     },
     {
@@ -7556,6 +7571,9 @@
       "href": "./phase-14/1414/index.html",
       "classValues": [
         "engine/scene/index/Scene"
+      ],
+      "toolHints": [
+        "sprite-editor"
       ]
     },
     {

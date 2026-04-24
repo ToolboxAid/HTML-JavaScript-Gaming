@@ -689,6 +689,48 @@ function buildPresetLoadedStatus(sampleId, samplePresetPath) {
   return normalizedPath ? `Loaded preset from ${normalizedPath}.` : "Loaded preset.";
 }
 
+function normalizeSampleLabel(rawLabel) {
+  if (typeof rawLabel !== "string") {
+    return "";
+  }
+  return rawLabel.trim().replace(/\s+/g, " ");
+}
+
+function buildSampleSourceLabel(source = {}) {
+  const mode = typeof source.mode === "string" ? source.mode.trim() : "";
+  const sampleId = typeof source.sampleId === "string" ? source.sampleId.trim() : "";
+  const sampleTitle = normalizeSampleLabel(source.sampleTitle);
+  const samplePresetPath = typeof source.samplePresetPath === "string" ? source.samplePresetPath.trim() : "";
+  const fileName = typeof source.fileName === "string" ? source.fileName.trim() : "";
+
+  if (sampleId && sampleTitle) {
+    return `Sample ${sampleId} - ${sampleTitle}`;
+  }
+  if (sampleId) {
+    return `Sample ${sampleId}`;
+  }
+  if (samplePresetPath) {
+    return `Sample preset: ${samplePresetPath}`;
+  }
+  if (fileName) {
+    return `File: ${fileName}`;
+  }
+  if (mode === "workspace") {
+    return "Workspace state";
+  }
+  return "Tool mode";
+}
+
+function setSampleSource(state, source = {}) {
+  state.sampleSource = {
+    mode: typeof source.mode === "string" ? source.mode.trim() : "tool",
+    sampleId: typeof source.sampleId === "string" ? source.sampleId.trim() : "",
+    sampleTitle: normalizeSampleLabel(source.sampleTitle),
+    samplePresetPath: typeof source.samplePresetPath === "string" ? source.samplePresetPath.trim() : "",
+    fileName: typeof source.fileName === "string" ? source.fileName.trim() : ""
+  };
+}
+
 function isPaletteSelected(project) {
   return Boolean(project.paletteRef?.id && project.paletteRef.id !== NO_PALETTE_ID);
 }
@@ -939,6 +981,7 @@ function updateStatusBar(state) {
 function updateToolStateText(state) {
   const toolName = state.projectTool[0].toUpperCase() + state.projectTool.slice(1);
   state.elements.toolStateText.textContent = `Tool: ${toolName}`;
+  state.elements.sampleSourceText.textContent = `Source: ${buildSampleSourceLabel(state.sampleSource)}`;
   state.elements.activeColorText.textContent = `Color: ${state.project.activeColor ?? "none"}`;
   state.elements.frameStateText.textContent = `Frame: ${state.project.currentFrameIndex + 1} / ${state.project.frames.length}`;
   state.elements.toggleStateText.textContent = `Grid: ${state.project.showGrid ? "On" : "Off"} | Onion: ${state.project.onionSkin ? "On" : "Off"}`;
@@ -1122,6 +1165,7 @@ function resetProject(state) {
   });
 
   clearPaletteLock(state);
+  setSampleSource(state, { mode: "tool" });
   syncControlsFromProject(state);
   state.preview.frameIndex = 0;
   setStatus(state, `Created fresh ${width}x${height} project. Select a palette to enable editing.`);
@@ -1400,6 +1444,7 @@ async function loadProjectJson(state, file) {
   }
 
   const validation = validateSpriteProjectAssets(state);
+  setSampleSource(state, { mode: "tool", fileName: file?.name || "" });
   syncControlsFromProject(state);
   state.preview.frameIndex = state.project.currentFrameIndex;
   setStatus(state, `Loaded ${file.name} (${state.project.width}x${state.project.height}, ${state.project.frames.length} frames, ${lockMessage}, validation: ${summarizeAssetValidation(validation)}).`);
@@ -1450,6 +1495,9 @@ function applySamplePreset(state, rawPreset, sampleId, samplePresetPath) {
   state.project = ensureProjectShape(presetProject);
 
   const presetAssetRegistry = extractSpriteAssetRegistryFromSamplePreset(rawPreset);
+  const presetTitle = typeof rawPreset?.title === "string"
+    ? rawPreset.title
+    : (typeof rawPreset?.payload?.title === "string" ? rawPreset.payload.title : "");
   state.assetRegistry = presetAssetRegistry
     ? sanitizeAssetRegistry(presetAssetRegistry)
     : createAssetRegistry({ projectId: "sprite-project" });
@@ -1461,6 +1509,12 @@ function applySamplePreset(state, rawPreset, sampleId, samplePresetPath) {
   state.history.undoStack = [];
   state.history.redoStack = [];
   state.assetDependencyGraphSnapshot = null;
+  setSampleSource(state, {
+    mode: "sample",
+    sampleId: typeof sampleId === "string" ? sampleId : "",
+    sampleTitle: presetTitle,
+    samplePresetPath: typeof samplePresetPath === "string" ? samplePresetPath : ""
+  });
 
   if (!hydratePaletteFromRefIfPossible(state) && !resolvePaletteFromAssetRegistry(state)) {
     clearPaletteLock(state);
@@ -2072,6 +2126,13 @@ export function initializeSpriteEditorApp() {
     lastRuntimeResult: null,
     editorExperienceResult: null,
     debugVisualizationResult: null,
+    sampleSource: {
+      mode: "tool",
+      sampleId: "",
+      sampleTitle: "",
+      samplePresetPath: "",
+      fileName: ""
+    },
     skipExternalProjectStateUntil: 0,
     cursor: {
       x: null,
@@ -2128,6 +2189,7 @@ export function initializeSpriteEditorApp() {
       applyRemediationButton: getRequiredElement("applyRemediationButton"),
       saveAssetRegistryButton: getRequiredElement("saveAssetRegistryButton"),
       saveProjectButton: getRequiredElement("saveProjectButton"),
+      sampleSourceText: getRequiredElement("sampleSourceText"),
       statusBarText: getRequiredElement("statusBarText"),
       statusText: getRequiredElement("statusText"),
       toggleStateText: getRequiredElement("toggleStateText"),
@@ -2173,6 +2235,7 @@ export function initializeSpriteEditorApp() {
     state.preview.fps = Number.isFinite(Number(snapshot?.preview?.fps)) ? Number(snapshot.preview.fps) : DEFAULT_FPS;
     state.preview.frameIndex = Number.isFinite(Number(snapshot?.preview?.frameIndex)) ? Number(snapshot.preview.frameIndex) : state.project.currentFrameIndex;
     state.preview.playing = snapshot?.preview?.playing === true;
+    setSampleSource(state, { mode: "workspace" });
     validateSpriteProjectAssets(state);
     syncControlsFromProject(state);
     renderAll(state);

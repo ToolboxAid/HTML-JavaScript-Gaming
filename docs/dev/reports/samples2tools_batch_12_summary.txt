@@ -1,0 +1,14 @@
+BUILD_PR_LEVEL_20_1_PHASE20_TOOL_PRESET_INTEGRATION - Samples2Tools Batch 12 Summary
+
+Scope: phase-01 through phase-19 Phase 3 Sprite Editor candidate completion
+
+Sprite Editor mapped samples: 9
+- Phase 02 Sample 0207 | Animation System | preset: /samples/phase-02/0207/sample-0207-sprite-editor.json
+- Phase 02 Sample 0213 | Sprite Render Layer | preset: /samples/phase-02/0213/sample-0213-sprite-editor.json
+- Phase 02 Sample 0214 | Animation Sprite Binding | preset: /samples/phase-02/0214/sample-0214-sprite-editor.json
+- Phase 02 Sample 0219 | Sprite Atlas Image Rendering | preset: /samples/phase-02/0219/sample-0219-sprite-editor.json
+- Phase 02 Sample 0224 | Tile Camera Sprite Slice | preset: /samples/phase-02/0224/sample-0224-sprite-editor.json
+- Phase 03 Sample 0301 | Real Sprite Rendering | preset: /samples/phase-03/0301/sample-0301-sprite-editor.json
+- Phase 03 Sample 0302 | Animation System | preset: /samples/phase-03/0302/sample-0302-sprite-editor.json
+- Phase 09 Sample 0905 | Pixel Perfect Collision | preset: /samples/phase-09/0905/sample-0905-sprite-editor.json
+- Phase 14 Sample 1414 | Texture Sprite Preprocess Pipeline | preset: /samples/phase-14/1414/sample-1414-sprite-editor.json
