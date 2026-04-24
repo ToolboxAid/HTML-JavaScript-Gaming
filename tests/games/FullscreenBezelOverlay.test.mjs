@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import FullscreenBezelOverlay, {
-  DEFAULT_FULLSCREEN_BEZEL_ASSET_PATH,
+  DEFAULT_FULLSCREEN_BEZEL_ASSET_ID,
   FULLSCREEN_BEZEL_DRAW_MODES,
   normalizeFullscreenBezelDrawMode
 } from "../../games/Asteroids/game/FullscreenBezelOverlay.js";
@@ -19,13 +19,14 @@ function createRendererSpy() {
 }
 
 export function run() {
-  assert.equal(DEFAULT_FULLSCREEN_BEZEL_ASSET_PATH, "games/Asteroids/assets/images/bezel.png");
-  assert.equal(DEFAULT_FULLSCREEN_BEZEL_ASSET_PATH.includes("/parallax/"), false);
+  assert.equal(DEFAULT_FULLSCREEN_BEZEL_ASSET_ID, "image.asteroids.bezel");
   assert.deepEqual(FULLSCREEN_BEZEL_DRAW_MODES, ["overlay", "underlay"]);
   assert.equal(normalizeFullscreenBezelDrawMode("UNDERLAY"), "underlay");
   assert.equal(normalizeFullscreenBezelDrawMode("unknown"), "overlay");
 
+  const explicitAssetPath = "/games/Asteroids/assets/images/bezel.png";
   const overlay = new FullscreenBezelOverlay({
+    assetPath: explicitAssetPath,
     image: { width: 1920, height: 1080 },
     drawMode: "overlay"
   });
@@ -34,7 +35,7 @@ export function run() {
 
   assert.equal(contract.fullscreenOnly, true);
   assert.equal(contract.coordinateSpace, "screen-space");
-  assert.equal(contract.assetPath, DEFAULT_FULLSCREEN_BEZEL_ASSET_PATH);
+  assert.equal(contract.assetPath, explicitAssetPath);
   assert.equal(contract.drawMode, "overlay");
 
   const blocked = overlay.render(renderer, {

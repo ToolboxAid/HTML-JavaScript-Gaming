@@ -1,4 +1,7 @@
-const DEFAULT_FULLSCREEN_BEZEL_ASSET_PATH = "games/Asteroids/assets/images/bezel.png";
+import { resolveWorkspaceGameAssetPath } from "../../shared/workspaceGameAssetCatalog.js";
+
+const ASTEROIDS_GAME_ID = "Asteroids";
+const DEFAULT_FULLSCREEN_BEZEL_ASSET_ID = "image.asteroids.bezel";
 const FULLSCREEN_BEZEL_DRAW_MODES = Object.freeze(["overlay", "underlay"]);
 
 function toSafeString(value, fallback = "") {
@@ -6,7 +9,14 @@ function toSafeString(value, fallback = "") {
 }
 
 export function resolveFullscreenBezelAssetPath(assetPath) {
-  return toSafeString(assetPath, DEFAULT_FULLSCREEN_BEZEL_ASSET_PATH);
+  const explicitPath = toSafeString(assetPath, "");
+  if (explicitPath) {
+    return explicitPath;
+  }
+  return toSafeString(
+    resolveWorkspaceGameAssetPath(ASTEROIDS_GAME_ID, DEFAULT_FULLSCREEN_BEZEL_ASSET_ID),
+    ""
+  );
 }
 
 export function normalizeFullscreenBezelDrawMode(drawMode) {
@@ -14,7 +24,7 @@ export function normalizeFullscreenBezelDrawMode(drawMode) {
   return FULLSCREEN_BEZEL_DRAW_MODES.includes(normalized) ? normalized : "overlay";
 }
 
-export { DEFAULT_FULLSCREEN_BEZEL_ASSET_PATH, FULLSCREEN_BEZEL_DRAW_MODES };
+export { DEFAULT_FULLSCREEN_BEZEL_ASSET_ID, FULLSCREEN_BEZEL_DRAW_MODES };
 
 export default class FullscreenBezelOverlay {
   constructor(options = {}) {

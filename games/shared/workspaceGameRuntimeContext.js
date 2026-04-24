@@ -6,6 +6,27 @@ function readContextFromWindow() {
   return context && typeof context === "object" ? context : null;
 }
 
+function cloneAssetCatalogEntries(value) {
+  const source = value && typeof value === "object" ? value : {};
+  const cloned = {};
+  Object.entries(source).forEach(([assetId, entry]) => {
+    const safeAssetId = typeof assetId === "string" ? assetId.trim() : "";
+    if (!safeAssetId || !entry || typeof entry !== "object") {
+      return;
+    }
+    const path = typeof entry.path === "string" ? entry.path.trim() : "";
+    if (!path) {
+      return;
+    }
+    cloned[safeAssetId] = {
+      path,
+      kind: typeof entry.kind === "string" ? entry.kind.trim() : "",
+      source: typeof entry.source === "string" ? entry.source.trim() : ""
+    };
+  });
+  return cloned;
+}
+
 export function getWorkspaceGameRuntimeContext() {
   const context = readContextFromWindow();
   if (!context) {
@@ -31,7 +52,9 @@ export function getWorkspaceGameRuntimeContext() {
       sampleTrack: game.sampleTrack === true,
       debugShowcase: game.debugShowcase === true,
       requiresService: game.requiresService === true,
-      hostedAt: typeof game.hostedAt === "string" ? game.hostedAt : ""
+      hostedAt: typeof game.hostedAt === "string" ? game.hostedAt : "",
+      assetCatalogPath: typeof game.assetCatalogPath === "string" ? game.assetCatalogPath : "",
+      assetCatalog: cloneAssetCatalogEntries(game.assetCatalog)
     }
   };
 }

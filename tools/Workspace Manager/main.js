@@ -6,6 +6,81 @@ import {
 } from "../../tools/shared/toolHostSharedContext.js";
 
 const GAMES_METADATA_PATH = "/games/metadata/games.index.metadata.json";
+const DEFAULT_GAME_ASSET_CATALOG_FILENAME = "workspace.asset-catalog.json";
+const GAME_ASSET_CATALOG_SCHEMA = "html-js-gaming.game-asset-catalog";
+const GAME_ASSET_CATALOG_VERSION = 1;
+const gameAssetCatalogCache = new Map();
+
+function deriveGameAssetCatalogPath(gameHref) {
+  const href = normalizeGameHref(gameHref);
+  if (!href) {
+    return "";
+  }
+  if (href.endsWith("/index.html")) {
+    return `${href.slice(0, -"/index.html".length)}/assets/${DEFAULT_GAME_ASSET_CATALOG_FILENAME}`;
+  }
+  if (href.endsWith("/")) {
+    return `${href}assets/${DEFAULT_GAME_ASSET_CATALOG_FILENAME}`;
+  }
+  return "";
+}
+
+function normalizeGameAssetCatalogEntries(value) {
+  const source = value && typeof value === "object" ? value : {};
+  const entries = {};
+  Object.entries(source).forEach(([assetId, rawEntry]) => {
+    const safeAssetId = typeof assetId === "string" ? assetId.trim() : "";
+    const entry = rawEntry && typeof rawEntry === "object" ? rawEntry : null;
+    const path = typeof entry?.path === "string" ? entry.path.trim() : "";
+    if (!safeAssetId || !path) {
+      return;
+    }
+    entries[safeAssetId] = {
+      path,
+      kind: typeof entry.kind === "string" ? entry.kind.trim() : "",
+      source: typeof entry.source === "string" ? entry.source.trim() : ""
+    };
+  });
+  return entries;
+}
+
+function parseGameAssetCatalogPayload(payload) {
+  const source = payload && typeof payload === "object" ? payload : {};
+  const schema = typeof source.schema === "string" ? source.schema.trim() : "";
+  const version = Number(source.version);
+  const entries = normalizeGameAssetCatalogEntries(source.assets || source.entries);
+  return {
+    schema,
+    version,
+    entries
+  };
+}
+
+async function readGameAssetCatalog(assetCatalogPath) {
+  const normalizedPath = typeof assetCatalogPath === "string" ? assetCatalogPath.trim() : "";
+  if (!normalizedPath) {
+    return {};
+  }
+  if (gameAssetCatalogCache.has(normalizedPath)) {
+    return gameAssetCatalogCache.get(normalizedPath);
+  }
+  try {
+    const response = await fetch(normalizedPath, { cache: "no-store" });
+    if (!response.ok) {
+      gameAssetCatalogCache.set(normalizedPath, {});
+      return {};
+    }
+    const payload = parseGameAssetCatalogPayload(await response.json());
+    const validSchema = payload.schema === GAME_ASSET_CATALOG_SCHEMA;
+    const validVersion = payload.version === GAME_ASSET_CATALOG_VERSION;
+    const entries = validSchema && validVersion ? payload.entries : {};
+    gameAssetCatalogCache.set(normalizedPath, entries);
+    return entries;
+  } catch {
+    gameAssetCatalogCache.set(normalizedPath, {});
+    return {};
+  }
+}
 
 const refs = {
   toolSelect: document.querySelector("[data-tool-host-select]"),
@@ -156,6 +231,7 @@ async function readGameEntryById(gameId) {
       id: String(entry.id || "").trim(),
       title: String(entry.title || entry.id || "Game").trim(),
       href,
+      assetCatalogPath: deriveGameAssetCatalogPath(href),
       level: String(entry.level || "").trim(),
       status: String(entry.status || "").trim(),
       description: String(entry.description || "").trim(),
@@ -189,13 +265,15 @@ function unmountGameFrame() {
   }
 }
 
-function mountGameFrame(gameEntry) {
+async function mountGameFrame(gameEntry) {
   if (!(refs.mountContainer instanceof HTMLElement)) {
     writeStatus("Workspace container is unavailable.");
     return false;
   }
   runtime.unmountCurrentTool("switch-to-game");
   unmountGameFrame();
+  const assetCatalogPath = typeof gameEntry?.assetCatalogPath === "string" ? gameEntry.assetCatalogPath : "";
+  const assetCatalog = await readGameAssetCatalog(assetCatalogPath);
 
   const hostContext = writeToolHostSharedContext({
     toolId: "workspace-manager",
@@ -219,6 +297,8 @@ function mountGameFrame(gameEntry) {
         sampleTrack: gameEntry.sampleTrack,
         debugShowcase: gameEntry.debugShowcase,
         requiresService: gameEntry.requiresService,
+        assetCatalogPath,
+        assetCatalog,
         hostedAt: new Date().toISOString()
       }
     }
@@ -379,7 +459,7 @@ function bindEvents() {
           writeStatus(`Game "${gameId}" is not available for Workspace Manager launch.`);
           return;
         }
-        mountGameFrame(gameEntry);
+        void mountGameFrame(gameEntry);
       });
       return;
     }
@@ -403,7 +483,7 @@ async function init() {
   if (initialGameId) {
     const gameEntry = await readGameEntryById(initialGameId);
     if (gameEntry) {
-      mountGameFrame(gameEntry);
+      await mountGameFrame(gameEntry);
       return;
     }
     writeStatus(`Game "${initialGameId}" is not available for Workspace Manager launch.`);

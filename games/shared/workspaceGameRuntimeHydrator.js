@@ -1,4 +1,5 @@
 import { getWorkspaceGameRuntimeContext } from "/games/shared/workspaceGameRuntimeContext.js";
+import { primeWorkspaceGameAssetCatalog } from "/games/shared/workspaceGameAssetCatalog.js";
 
 function normalizeGameId(value) {
   return typeof value === "string" ? value.trim() : "";
@@ -37,15 +38,24 @@ export function hydrateWorkspaceGameRuntime(gameId) {
       sampleTrack: context.game.sampleTrack === true,
       debugShowcase: context.game.debugShowcase === true,
       requiresService: context.game.requiresService === true,
-      hostedAt: context.game.hostedAt
+      hostedAt: context.game.hostedAt,
+      assetCatalogPath: context.game.assetCatalogPath,
+      assetCatalog: { ...context.game.assetCatalog }
     }
   };
 
   Object.freeze(runtime.game.classValues);
   Object.freeze(runtime.game.tags);
+  Object.values(runtime.game.assetCatalog).forEach((entry) => Object.freeze(entry));
+  Object.freeze(runtime.game.assetCatalog);
   Object.freeze(runtime.game);
   Object.freeze(runtime);
 
   window.__WORKSPACE_GAME_RUNTIME__ = runtime;
+  primeWorkspaceGameAssetCatalog({
+    gameId: runtime.game.id,
+    assetCatalogPath: runtime.game.assetCatalogPath,
+    assetCatalog: runtime.game.assetCatalog
+  });
   return runtime;
 }

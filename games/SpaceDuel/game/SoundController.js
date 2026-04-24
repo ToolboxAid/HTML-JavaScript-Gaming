@@ -4,16 +4,19 @@ David Quesenberry
 03/25/2026
 SoundController.js
 */
-const EFFECTS = {
-  thrust: '../assets/effects/thrust.wav',
-  fire: '../assets/effects/fire.wav',
-  explosion: '../assets/effects/explosion.wav',
-  playerDeath: '../assets/effects/player_death.wav',
-  enemySplit: '../assets/effects/enemy_split.wav',
-  bonus: '../assets/effects/bonus.wav',
-  start: '../assets/effects/start.wav',
-  gameOver: '../assets/effects/game_over.wav',
-};
+import { resolveWorkspaceGameAssetPath } from "../../shared/workspaceGameAssetCatalog.js";
+
+const SPACE_DUEL_GAME_ID = "SpaceDuel";
+const EFFECT_ASSET_IDS = Object.freeze({
+  thrust: "audio.space-duel.thrust",
+  fire: "audio.space-duel.fire",
+  explosion: "audio.space-duel.explosion",
+  playerDeath: "audio.space-duel.player-death",
+  enemySplit: "audio.space-duel.enemy-split",
+  bonus: "audio.space-duel.bonus",
+  start: "audio.space-duel.start",
+  gameOver: "audio.space-duel.game-over"
+});
 
 export default class SoundController {
   constructor({ baseUrl = import.meta.url } = {}) {
@@ -23,8 +26,16 @@ export default class SoundController {
     this.lastPlayedAt = new Map();
   }
 
+  resolveEffectPath(effectId) {
+    const assetId = EFFECT_ASSET_IDS[effectId];
+    if (!assetId) {
+      return "";
+    }
+    return resolveWorkspaceGameAssetPath(SPACE_DUEL_GAME_ID, assetId);
+  }
+
   play(effectId, { volume = 0.42 } = {}) {
-    const path = EFFECTS[effectId];
+    const path = this.resolveEffectPath(effectId);
     if (!this.enabled || !path) {
       return null;
     }

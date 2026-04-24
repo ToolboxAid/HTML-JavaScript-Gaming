@@ -4,18 +4,20 @@ David Quesenberry
 03/24/2026
 SpaceInvadersAudio.js
 */
-const EFFECTS = {
-  // Serve from existing effects directory; fx paths kept as fallback if ever added.
-  shoot: ['../assets/effects/shoot.wav', '../assets/fx/shoot.wav'],
-  invaderkilled: ['../assets/effects/invaderkilled.wav', '../assets/fx/invaderkilled.wav'],
-  explosion: ['../assets/effects/explosion.wav', '../assets/fx/explosion.wav'],
-  fastinvader1: ['../assets/effects/fastinvader1.wav', '../assets/fx/fastinvader1.wav'],
-  fastinvader2: ['../assets/effects/fastinvader2.wav', '../assets/fx/fastinvader2.wav'],
-  fastinvader3: ['../assets/effects/fastinvader3.wav', '../assets/fx/fastinvader3.wav'],
-  fastinvader4: ['../assets/effects/fastinvader4.wav', '../assets/fx/fastinvader4.wav'],
-  ufo_lowpitch: ['../assets/effects/ufo_lowpitch.wav', '../assets/fx/ufo_lowpitch.wav'],
-  ufo_highpitch: ['../assets/effects/ufo_highpitch.wav', '../assets/fx/ufo_highpitch.wav'],
-};
+import { resolveWorkspaceGameAssetPath } from "../../shared/workspaceGameAssetCatalog.js";
+
+const SPACE_INVADERS_GAME_ID = "SpaceInvaders";
+const EFFECT_ASSET_IDS = Object.freeze({
+  shoot: "audio.space-invaders.shoot",
+  invaderkilled: "audio.space-invaders.invaderkilled",
+  explosion: "audio.space-invaders.explosion",
+  fastinvader1: "audio.space-invaders.fastinvader1",
+  fastinvader2: "audio.space-invaders.fastinvader2",
+  fastinvader3: "audio.space-invaders.fastinvader3",
+  fastinvader4: "audio.space-invaders.fastinvader4",
+  ufo_lowpitch: "audio.space-invaders.ufo-lowpitch",
+  ufo_highpitch: "audio.space-invaders.ufo-highpitch"
+});
 
 export default class SpaceInvadersAudio {
   constructor({ baseUrl = import.meta.url } = {}) {
@@ -26,6 +28,14 @@ export default class SpaceInvadersAudio {
     this.ufoLoopId = null;
   }
 
+  resolveEffectPath(effectId) {
+    const assetId = EFFECT_ASSET_IDS[effectId];
+    if (!assetId) {
+      return "";
+    }
+    return resolveWorkspaceGameAssetPath(SPACE_INVADERS_GAME_ID, assetId);
+  }
+
   setMuted(muted) {
     this.muted = Boolean(muted);
     if (this.muted) {
@@ -34,24 +44,14 @@ export default class SpaceInvadersAudio {
   }
 
   play(effectId) {
-    const candidates = EFFECTS[effectId];
-    if (!this.enabled || this.muted || !candidates?.length) {
+    const path = this.resolveEffectPath(effectId);
+    if (!this.enabled || this.muted || !path) {
       return null;
     }
 
     try {
-      const [firstCandidate, ...fallbackCandidates] = candidates;
-      const audio = new Audio(new URL(firstCandidate, this.baseUrl).href);
+      const audio = new Audio(new URL(path, this.baseUrl).href);
       audio.volume = effectId.startsWith('ufo_') ? 0.32 : 0.42;
-      if (fallbackCandidates.length && typeof audio.addEventListener === 'function') {
-        audio.addEventListener('error', () => {
-          const fallback = fallbackCandidates.shift();
-          if (fallback) {
-            audio.src = new URL(fallback, this.baseUrl).href;
-            audio.play().catch(() => {});
-          }
-        }, { once: true });
-      }
       audio.play().catch(() => {});
       return audio;
     } catch {
@@ -76,11 +76,11 @@ export default class SpaceInvadersAudio {
       return;
     }
     this.stopUfoLoop();
-    const candidates = EFFECTS[desiredId] ?? [];
-    if (!candidates.length) {
+    const path = this.resolveEffectPath(desiredId);
+    if (!path) {
       return;
     }
-    const audio = new Audio(new URL(candidates[0], this.baseUrl).href);
+    const audio = new Audio(new URL(path, this.baseUrl).href);
     audio.loop = true;
     audio.volume = 0.35;
     if (typeof audio.addEventListener === 'function') {
