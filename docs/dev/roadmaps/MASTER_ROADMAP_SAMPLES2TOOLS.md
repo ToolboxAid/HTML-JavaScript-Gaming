@@ -123,7 +123,7 @@
 ### Phase 5 - Games
 - [x] Do the same thing for games, but use Workspace Manager.
 - [x] 100% of the game data needs to be generated from Workspace Manager
-- [ ] No Tool should be used independantly
+- [x] No Tool should be used independantly
 
 ### Phase 6 - Phase 20 Decommission (After Parity)
 - [x] Keep `Phase 20 - Tool Preset Integration` active until Samples2Tools parity is execution-validated.

@@ -1,0 +1,14 @@
+Samples2Tools batch 45 validation
+Generated: 2026-04-24T22:41:06.788Z
+Scope: Phase 5 closure - prove launchable games cannot be used independently of Workspace Manager.
+
+- [PASS] Games Hub card launch href is Workspace-only :: games/index.render.js
+- [PASS] Games Hub has no standalone launch action labels :: games/index.render.js
+- [PASS] Launch guard has no standalone bypass path :: games/shared/workspaceGameLaunchGuard.js
+- [PASS] Launch guard redirects non-hosted direct opens to Workspace Manager :: games/shared/workspaceGameLaunchGuard.js
+- [PASS] Workspace game host appends hosted + hostToolId + hostContextId :: tools/Workspace Manager/main.js
+- [PASS] All launchable game pages enforce guard+hydrator :: launchable=11, issues=0
+
+Checks: 6
+Failures: 0
+Result: PASS
