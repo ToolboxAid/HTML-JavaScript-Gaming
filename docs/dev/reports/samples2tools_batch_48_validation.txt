@@ -1,0 +1,11 @@
+Samples2Tools batch 48 validation
+Generated: 2026-04-24T22:49:16.610Z
+Scope: prevent invalid hosted-game mount when shared host context cannot be persisted.
+
+- [PASS] Game mount blocks when host context storage is unavailable :: tools/Workspace Manager/main.js
+- [PASS] Game mount always appends hostContextId when mounting :: tools/Workspace Manager/main.js
+- [PASS] No legacy nullable hostContextId fallback branch remains :: tools/Workspace Manager/main.js
+
+Checks: 3
+Failures: 0
+Result: PASS

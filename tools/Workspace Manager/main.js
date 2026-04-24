@@ -223,6 +223,11 @@ function mountGameFrame(gameEntry) {
       }
     }
   });
+  if (!hostContext?.contextId) {
+    writeStatus("Unable to mount game: workspace host context storage is unavailable in this browser session.");
+    setCurrentLabel("No game mounted.");
+    return false;
+  }
 
   const frame = document.createElement("iframe");
   frame.setAttribute("data-game-host-frame", gameEntry.id);
@@ -232,12 +237,8 @@ function mountGameFrame(gameEntry) {
   gameUrl.searchParams.set("hosted", "1");
   gameUrl.searchParams.set("hostToolId", "workspace-manager");
   gameUrl.searchParams.set("hostGameId", gameEntry.id);
-  if (hostContext?.contextId) {
-    currentGameHostContextId = hostContext.contextId;
-    gameUrl.searchParams.set("hostContextId", hostContext.contextId);
-  } else {
-    currentGameHostContextId = "";
-  }
+  currentGameHostContextId = hostContext.contextId;
+  gameUrl.searchParams.set("hostContextId", hostContext.contextId);
   frame.src = gameUrl.toString();
   refs.mountContainer.replaceChildren(frame);
   currentGameFrame = frame;

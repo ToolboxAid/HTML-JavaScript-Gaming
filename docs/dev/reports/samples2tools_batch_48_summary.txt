@@ -1,0 +1,11 @@
+Samples2Tools batch 48 summary
+Generated: 2026-04-24T22:49:16.610Z
+Purpose: harden Workspace Manager game mount flow for sessions where host context storage is unavailable.
+
+Completed this batch:
+- Added explicit mount block + status message when host context cannot be written
+- Required hostContextId on every hosted game iframe mount URL
+- Removed nullable hostContextId fallback branch
+
+Primary validation artifact:
+- docs/dev/reports/samples2tools_batch_48_validation.txt (PASS)
