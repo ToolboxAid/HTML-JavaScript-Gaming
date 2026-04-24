@@ -1,0 +1,23 @@
+{
+  "sampleId": "0221",
+  "phase": "02",
+  "title": "Tilemap System",
+  "description": "Shared sample preset for Sample 0221 and Tilemap Studio preload.",
+  "toolHints": [
+    "tile-map-editor"
+  ],
+  "payload": {
+    "tileMapDocumentPath": "/samples/phase-02/0221/sample-0221-tile-map-editor-document.json"
+  },
+  "runtime": {
+    "sampleEntryPoint": "/samples/phase-02/0221/index.html"
+  },
+  "toolState": {
+    "preferredToolId": "tile-map-editor"
+  },
+  "provenance": {
+    "path": "/samples/phase-02/0221/sample-0221-tile-map-editor.json",
+    "createdAt": "2026-04-24T00:00:00.000Z",
+    "version": 1
+  }
+}

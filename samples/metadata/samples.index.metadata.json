@@ -1848,6 +1848,9 @@
         "engine/tilemap/index/resolveRectVsTilemap",
         "engine/tilemap/index/Tilemap",
         "engine/utils/index/clamp"
+      ],
+      "toolHints": [
+        "tile-map-editor"
       ]
     },
     {

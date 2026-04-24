@@ -54,7 +54,8 @@ function shouldUsePresetRoundtrip(sample, toolId) {
       || (sampleId === "1205" && samplePhase === "12");
   }
   if (toolId === "tile-map-editor") {
-    return (sampleId === "1209" && samplePhase === "12")
+    return (sampleId === "0221" && samplePhase === "02")
+      || (sampleId === "1209" && samplePhase === "12")
       || (sampleId === "1210" && samplePhase === "12")
       || (sampleId === "1211" && samplePhase === "12");
   }
