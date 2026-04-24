@@ -1,0 +1,12 @@
+Samples2Tools batch 42 summary
+Generated: 2026-04-24T22:34:32.900Z
+Purpose: require valid Workspace host context for game execution and remove remaining card-level standalone launch fallback.
+
+Completed this batch:
+- Added strict hostContext validation in shared game launch guard
+- Bound hosted game run approval to hostMode=game plus matching gameId from shared context
+- Exposed validated workspace game context to runtime via window.__WORKSPACE_GAME_CONTEXT__
+- Removed Games Hub launch fallback to direct href and kept Workspace-only launch URLs
+
+Primary validation artifact:
+- docs/dev/reports/samples2tools_batch_42_validation.txt (PASS)

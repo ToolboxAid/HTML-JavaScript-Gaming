@@ -1,0 +1,15 @@
+Samples2Tools batch 42 validation
+Generated: 2026-04-24T22:34:32.900Z
+Scope: enforce Workspace-originated game runtime context for launchable games.
+
+- [PASS] Guard imports tool-host shared-context reader :: games/shared/workspaceGameLaunchGuard.js
+- [PASS] Guard requires hosted workspace + hostContextId before allowing run :: games/shared/workspaceGameLaunchGuard.js
+- [PASS] Guard validates hostMode=game and matching gameId :: games/shared/workspaceGameLaunchGuard.js
+- [PASS] Guard exposes workspace context to game runtime :: games/shared/workspaceGameLaunchGuard.js
+- [PASS] Games Hub launch href is workspace-only (no row.href fallback) :: games/index.render.js
+- [PASS] Workspace manager writes game host context state :: tools/Workspace Manager/main.js
+- [PASS] All launchable game pages include guard module :: launchable=11, issues=0
+
+Checks: 7
+Failures: 0
+Result: PASS

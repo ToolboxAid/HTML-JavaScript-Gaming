@@ -177,10 +177,24 @@ async function readGameEntryById(gameId) {
     if (!href) {
       return null;
     }
+    const classValues = Array.isArray(entry.classValues)
+      ? entry.classValues.map((value) => String(value || "").trim()).filter(Boolean)
+      : [];
+    const tags = Array.isArray(entry.tags)
+      ? entry.tags.map((value) => String(value || "").trim()).filter(Boolean)
+      : [];
     return {
       id: String(entry.id || "").trim(),
       title: String(entry.title || entry.id || "Game").trim(),
-      href
+      href,
+      level: String(entry.level || "").trim(),
+      status: String(entry.status || "").trim(),
+      description: String(entry.description || "").trim(),
+      classValues,
+      tags,
+      sampleTrack: entry.sampleTrack === true,
+      debugShowcase: entry.debugShowcase === true,
+      requiresService: entry.requiresService === true
     };
   } catch {
     return null;
@@ -227,7 +241,16 @@ function mountGameFrame(gameEntry) {
       game: {
         id: gameEntry.id,
         title: gameEntry.title,
-        href: gameEntry.href
+        href: gameEntry.href,
+        level: gameEntry.level,
+        status: gameEntry.status,
+        description: gameEntry.description,
+        classValues: gameEntry.classValues,
+        tags: gameEntry.tags,
+        sampleTrack: gameEntry.sampleTrack,
+        debugShowcase: gameEntry.debugShowcase,
+        requiresService: gameEntry.requiresService,
+        hostedAt: new Date().toISOString()
       }
     }
   });

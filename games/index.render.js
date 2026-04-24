@@ -164,7 +164,7 @@ function renderCard(row, instanceKey = "main") {
   article.className = "card-link game-card";
   article.dataset.gameId = row.id;
 
-  const launchHref = row.workspaceHref || row.href || "";
+  const launchHref = row.workspaceHref || "";
   const previewHtml = row.preview
     ? `<a class="game-preview-link" href="${escapeHtml(launchHref || "#")}" ${launchHref ? "" : "aria-disabled=\"true\""}><img class="game-thumb" loading="lazy" decoding="async" alt="${escapeHtml(row.title)} thumbnail" src="${escapeHtml(row.preview)}"></a>`
     : `<span class="game-preview-link game-preview-missing">No Preview</span>`;

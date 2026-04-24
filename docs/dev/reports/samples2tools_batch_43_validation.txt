@@ -1,0 +1,12 @@
+Samples2Tools batch 43 validation
+Generated: 2026-04-24T22:35:41.329Z
+Scope: expand Workspace-generated game runtime context payload and expose shared runtime context reader.
+
+- [PASS] Workspace game context state includes metadata fields (level/status/description/classValues/tags) :: tools/Workspace Manager/main.js
+- [PASS] Workspace game context state includes lifecycle timestamp hostedAt :: tools/Workspace Manager/main.js
+- [PASS] Runtime context helper exists for games :: games/shared/workspaceGameRuntimeContext.js
+- [PASS] Runtime context helper returns normalized game payload :: games/shared/workspaceGameRuntimeContext.js
+
+Checks: 4
+Failures: 0
+Result: PASS
