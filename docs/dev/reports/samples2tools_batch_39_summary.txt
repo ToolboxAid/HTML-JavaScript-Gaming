@@ -1,0 +1,12 @@
+Samples2Tools batch 39 summary
+Generated: 2026-04-24T22:25:29.424Z
+Purpose: harden games lane so Workspace Manager is the canonical launch surface.
+
+Completed this batch:
+- Added a shared game launch guard that redirects non-hosted direct game page opens to Workspace Manager
+- Applied guard to all launchable game index pages from games metadata
+- Ensured Games Hub card actions no longer advertise standalone game launch
+- Ensured Workspace Manager game-host iframe passes hosted context params
+
+Primary validation artifact:
+- docs/dev/reports/samples2tools_batch_39_validation.txt (PASS)

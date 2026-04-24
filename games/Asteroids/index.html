@@ -12,6 +12,10 @@ index.html
   <link rel="stylesheet" href="/src/engine/ui/baseLayout.css" />
   <link rel="stylesheet" href="/games/shared/styles/vectorBattleFont.css" />
   <link rel="stylesheet" href="../../src/engine/theme/main.css" />
+  <script type="module">
+    import { enforceWorkspaceGameLaunch } from "/games/shared/workspaceGameLaunchGuard.js";
+    enforceWorkspaceGameLaunch("Asteroids");
+  </script>
 </head>
 <body class="hub-page-games">
   <div id="shared-theme-header"></div>

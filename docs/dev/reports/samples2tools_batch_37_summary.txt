@@ -1,0 +1,11 @@
+Samples2Tools batch 37 summary
+Generated: 2026-04-24T22:19:25.278Z
+Purpose: deliver first executable Phase 5 slice by making Games Hub launch through Workspace Manager.
+
+Completed this batch:
+- Added Workspace Manager game-host mode (`?game=<id>`) that resolves game href from games metadata
+- Updated Games Hub cards to route launchable games to Workspace Manager
+- Kept optional standalone game link available for side-by-side verification
+
+Primary validation artifact:
+- docs/dev/reports/samples2tools_batch_37_validation.txt (PASS)

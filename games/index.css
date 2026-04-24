@@ -112,6 +112,10 @@
   font-size: 0.9rem;
 }
 
+.game-launch-actions {
+  margin: 6px 0 8px;
+}
+
 .hub-page-games .pin-label {
   margin-right: 6px;
 }

@@ -1,0 +1,12 @@
+Samples2Tools batch 39 validation
+Generated: 2026-04-24T22:25:29.424Z
+Scope: Phase 5 hardening - enforce Workspace-first launches for game pages and Games Hub cards.
+
+- [PASS] Workspace game-host mode appends hosted params :: tools/Workspace Manager/main.js
+- [PASS] Games Hub card actions are Workspace-only (no standalone action) :: games/index.render.js
+- [PASS] Shared workspace game launch guard exists :: games/shared/workspaceGameLaunchGuard.js
+- [PASS] All launchable games include workspace launch guard :: launchable=11, guardIssues=0, missingFiles=0
+
+Checks: 4
+Failures: 0
+Result: PASS

@@ -1,0 +1,11 @@
+Samples2Tools batch 38 summary
+Generated: 2026-04-24T22:22:54.716Z
+Purpose: remove standalone game launch actions from the primary Games Hub surface.
+
+Completed this batch:
+- Removed standalone game launch link from game card actions
+- Kept Workspace Manager launch action as the only explicit game card launch action
+- Revalidated launchable game coverage for workspace launch path construction
+
+Primary validation artifact:
+- docs/dev/reports/samples2tools_batch_38_validation.txt (PASS)

@@ -1,0 +1,11 @@
+Samples2Tools batch 38 validation
+Generated: 2026-04-24T22:22:54.716Z
+Scope: Phase 5 harden primary games surface to Workspace-only launch actions.
+
+- [PASS] Games card actions no longer render standalone game launch link :: games/index.render.js
+- [PASS] Games card actions keep Workspace Manager launch link :: games/index.render.js
+- [PASS] All launchable games have workspace launch path pattern :: launchable=11
+
+Checks: 3
+Failures: 0
+Result: PASS

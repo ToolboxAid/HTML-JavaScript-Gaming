@@ -11,6 +11,10 @@ index.html
   <title>Gravity Well</title>
   <link rel="stylesheet" href="/src/engine/ui/baseLayout.css" />
   <link rel="stylesheet" href="../../src/engine/theme/main.css" />
+  <script type="module">
+    import { enforceWorkspaceGameLaunch } from "/games/shared/workspaceGameLaunchGuard.js";
+    enforceWorkspaceGameLaunch("GravityWell");
+  </script>
 </head>
 <body class="hub-page-games">
   <div id="shared-theme-header"></div>

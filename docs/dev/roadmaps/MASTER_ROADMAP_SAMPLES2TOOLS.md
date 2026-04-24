@@ -121,7 +121,7 @@
 - [x] Select precise, semantically aligned samples only (avoid broad keyword-only linkage).
 
 ### Phase 5 - Games
-- [ ] Do the same thing for games, but use Workspace Manager.
+- [x] Do the same thing for games, but use Workspace Manager.
 - [ ] 100% of the game data needs to be generated from Workspace Manager
 - [ ] No Tool should be used independantly
 

@@ -106,6 +106,7 @@ function buildRows(metadata, pinnedSet) {
         tags,
         preview: normalize(game?.preview),
         href: normalize(game?.href),
+        workspaceHref: normalize(game?.href) ? `/tools/Workspace%20Manager/index.html?game=${encodeURIComponent(id)}` : "",
         sampleTrack: game?.sampleTrack === true,
         debugShowcase: game?.debugShowcase === true,
         requiresService: game?.requiresService === true
@@ -163,13 +164,14 @@ function renderCard(row, instanceKey = "main") {
   article.className = "card-link game-card";
   article.dataset.gameId = row.id;
 
+  const launchHref = row.workspaceHref || row.href || "";
   const previewHtml = row.preview
-    ? `<a class="game-preview-link" href="${escapeHtml(row.href || "#")}" ${row.href ? "" : "aria-disabled=\"true\""}><img class="game-thumb" loading="lazy" decoding="async" alt="${escapeHtml(row.title)} thumbnail" src="${escapeHtml(row.preview)}"></a>`
+    ? `<a class="game-preview-link" href="${escapeHtml(launchHref || "#")}" ${launchHref ? "" : "aria-disabled=\"true\""}><img class="game-thumb" loading="lazy" decoding="async" alt="${escapeHtml(row.title)} thumbnail" src="${escapeHtml(row.preview)}"></a>`
     : `<span class="game-preview-link game-preview-missing">No Preview</span>`;
 
   const pinInputId = `game-pin-${escapeHtml(row.id)}-${escapeHtml(instanceKey)}`;
-  const titleLabel = row.href
-    ? `<a class="game-title-link" href="${escapeHtml(row.href)}">${escapeHtml(row.title)}</a>`
+  const titleLabel = launchHref
+    ? `<a class="game-title-link" href="${escapeHtml(launchHref)}">${escapeHtml(row.title)}</a>`
     : `${escapeHtml(row.title)}`;
   const titleHtml = `<h3 class="game-title-row"><input id="${pinInputId}" type="checkbox" class="pin-toggle" data-game-pin="${escapeHtml(row.id)}" ${row.pinned ? "checked" : ""}><label for="${pinInputId}" class="pin-label" title="${row.pinned ? "Unpin" : "Pin"}" aria-label="${row.pinned ? "Unpin game" : "Pin game"}"><span class="pin-icon" aria-hidden="true"></span></label>${titleLabel}</h3>`;
 
@@ -184,12 +186,16 @@ function renderCard(row, instanceKey = "main") {
   const asteroidDebugLink = row.id === "Asteroids"
     ? '<p><a class="game-title-link" href="/games/Asteroids/index.html?debug=1">Debug Mode</a></p>'
     : "";
+  const launchActions = row.workspaceHref
+    ? `<p class="game-launch-actions"><a class="game-title-link" href="${escapeHtml(row.workspaceHref)}">Open In Workspace Manager</a></p>`
+    : "";
 
   article.innerHTML = `
     ${titleHtml}
     <div class="game-badges">${badges}</div>
     ${previewHtml}
     <p>${escapeHtml(row.description)}</p>
+    ${launchActions}
     ${asteroidDebugLink}
     <p>Classes: ${escapeHtml(classText)}</p>
     <p>Tags: ${escapeHtml(tagText)}</p>

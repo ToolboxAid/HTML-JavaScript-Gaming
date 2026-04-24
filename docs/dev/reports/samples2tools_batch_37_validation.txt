@@ -1,0 +1,14 @@
+Samples2Tools batch 37 validation
+Generated: 2026-04-24T22:19:25.278Z
+Scope: Phase 5 slice - launch games via Workspace Manager from Games Hub.
+
+- [PASS] Workspace Manager reads game query parameter :: tools/Workspace Manager/main.js
+- [PASS] Workspace Manager resolves game entry from games metadata :: tools/Workspace Manager/main.js
+- [PASS] Workspace Manager can mount game iframe mode :: tools/Workspace Manager/main.js
+- [PASS] Games index routes launchable games to Workspace Manager :: games/index.render.js
+- [PASS] Launchable games available for Workspace flow :: count=11
+- [PASS] Workspace game launch href construction sane :: issues=0
+
+Checks: 6
+Failures: 0
+Result: PASS
