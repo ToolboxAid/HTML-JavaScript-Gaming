@@ -104,7 +104,7 @@
 ### Phase 3 - Core Editor/Workflow Tools
 - [x] Sprite Editor (9 candidates)
 - [.] Tilemap Studio (15 candidates)
-- [ ] Tile Model Converter (18 candidates)
+- [.] Tile Model Converter (18 candidates)
 - [ ] Asset Browser / Import Hub (8 candidates)
 - [ ] Asset Pipeline Tool (10 candidates)
 - [ ] Palette Browser / Manager (6 candidates)
@@ -155,6 +155,6 @@
 - [x] `docs/dev/reports/samples2tools_link_map_<n>.json`
 
 ## Current Snapshot (from tools_used.txt)
-- [x] Current tagged samples across active tools: `29` (phase-01 through phase-19)
+- [x] Current tagged samples across active tools: `30` (phase-01 through phase-19)
 - [x] Candidate coverage inventory exists for all active tools
 - [.] Convert candidates into curated, validated sample-to-tool links
