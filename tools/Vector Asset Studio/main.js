@@ -2921,7 +2921,6 @@ const vectorAssetStudioApi = {
   },
   applyProjectState(snapshot) {
     if (Date.now() <= Number(state.skipExternalProjectStateUntil || 0)) {
-      state.skipExternalProjectStateUntil = 0;
       return true;
     }
     if (snapshot?.svgText) {

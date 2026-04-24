@@ -1,0 +1,14 @@
+Samples2Tools batch 24 validation
+Generated: 2026-04-24T21:27:20.913Z
+Scope: vector-asset-studio preset integrity checks
+
+Checked mappings: 3
+Issues: 1
+
+Results:
+- sample 0901: drawableSvg=true svgPathFallback=false (/samples/phase-09/0901/sample-0901-vector-asset-studio.json)
+- sample 1204: drawableSvg=false svgPathFallback=true (/samples/phase-12/1204/sample-1204-vector-asset-studio.json)
+- sample 1208: drawableSvg=false svgPathFallback=false (/samples/phase-12/1208/sample-1208-vector-asset-studio.json)
+
+Issues:
+- Preset has no drawable svgText and no svgPath fallback: /samples/phase-12/1208/sample-1208-vector-asset-studio.json

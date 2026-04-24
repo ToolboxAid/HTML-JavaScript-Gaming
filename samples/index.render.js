@@ -191,7 +191,13 @@ function buildSampleRows(metadata, pinnedSet, toolLabelMap, toolRegistryMap) {
       const tags = asArray(sample?.tags).map((tag) => normalizeTag(tag)).filter(Boolean);
       const classTokens = buildClassTokens(sample?.classValues, sample?.engineClassesUsed);
       const toolTokens = buildToolTokens(sample?.toolHints, toolLabelMap);
-      const roundtripLinks = buildRoundtripLinks({ id, phase, toolHints: sample?.toolHints }, toolRegistryMap);
+      const roundtripLinks = buildRoundtripLinks({
+        id,
+        phase,
+        title: sample?.title,
+        toolHints: sample?.toolHints,
+        roundtripToolPresets: sample?.roundtripToolPresets
+      }, toolRegistryMap);
       const previewSrc = normalize(sample?.thumbnail) || normalize(sample?.preview) || "";
       return {
         id,

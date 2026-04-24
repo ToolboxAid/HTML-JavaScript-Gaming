@@ -1,0 +1,23 @@
+{
+  "generatedAt": "2026-04-24T21:19:17.483Z",
+  "scope": "phase-01-phase-19",
+  "purpose": "batch-22-low-coverage-tool-completion",
+  "links": [
+    {
+      "sampleId": "1319",
+      "phase": "13",
+      "title": "Sample 1319 - Real Network + Live Dashboard",
+      "toolId": "performance-profiler",
+      "href": "./phase-13/1319/index.html",
+      "presetPath": "/samples/phase-13/1319/sample-1319-performance-profiler.json"
+    },
+    {
+      "sampleId": "0210",
+      "phase": "02",
+      "title": "Projectile System",
+      "toolId": "physics-sandbox",
+      "href": "./phase-02/0210/index.html",
+      "presetPath": "/samples/phase-02/0210/sample-0210-physics-sandbox.json"
+    }
+  ]
+}

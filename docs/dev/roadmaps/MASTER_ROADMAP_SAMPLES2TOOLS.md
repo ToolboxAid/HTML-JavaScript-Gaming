@@ -146,7 +146,7 @@
 - [ ] Sample page consumes same JSON it passes to tool.
 - [ ] Tool launch with `samplePresetPath` succeeds without manual edits.
 - [ ] Tool status includes loaded sample id/path.
-- [ ] Metadata and tool card links resolve correctly.
+- [x] Metadata and tool card links resolve correctly.
 - [ ] No regressions to direct tool launch without sample params.
 
 ## Reporting Outputs (per execution batch)
@@ -155,7 +155,7 @@
 - [x] `docs/dev/reports/samples2tools_link_map_<n>.json`
 
 ## Current Snapshot (from tools_used.txt)
-- [x] Current tagged samples across active tools: `39` (phase-01 through phase-19)
+- [x] Current tagged samples across active tools: `59` (phase-01 through phase-19)
 - [x] Candidate coverage inventory exists for all active tools
 - [x] Legacy `sprite-editor-old-keep` is intentionally excluded from Samples2Tools mapping.
 - [.] Convert candidates into curated, validated sample-to-tool links

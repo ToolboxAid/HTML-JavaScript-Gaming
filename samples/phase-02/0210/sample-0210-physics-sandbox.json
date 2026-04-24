@@ -1,0 +1,35 @@
+{
+  "sampleId": "0210",
+  "phase": "02",
+  "title": "Projectile System",
+  "description": "Shared sample preset for Sample 0210 and Physics Sandbox preload.",
+  "toolHints": [
+    "physics-sandbox"
+  ],
+  "payload": {
+    "physicsBody": {
+      "x": 32,
+      "y": 16,
+      "velocityX": 180,
+      "velocityY": -30,
+      "accelerationX": -14,
+      "accelerationY": 24,
+      "dragX": 8,
+      "dragY": 3,
+      "maxSpeedX": 260,
+      "maxSpeedY": 240,
+      "dt": 0.0166666667
+    }
+  },
+  "runtime": {
+    "sampleEntryPoint": "/samples/phase-02/0210/index.html"
+  },
+  "toolState": {
+    "preferredToolId": "physics-sandbox"
+  },
+  "provenance": {
+    "path": "/samples/phase-02/0210/sample-0210-physics-sandbox.json",
+    "createdAt": "2026-04-24T00:00:00.000Z",
+    "version": 1
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "sampleId": "1319",
+  "phase": "13",
+  "title": "Sample 1319 - Real Network + Live Dashboard",
+  "description": "Shared sample preset for Sample 1319 and Performance Profiler preload.",
+  "toolHints": [
+    "performance-profiler"
+  ],
+  "payload": {
+    "profileSettings": {
+      "workloadIterations": 420,
+      "workSize": 18000,
+      "frameSamples": 240
+    }
+  },
+  "runtime": {
+    "sampleEntryPoint": "/samples/phase-13/1319/index.html"
+  },
+  "toolState": {
+    "preferredToolId": "performance-profiler"
+  },
+  "provenance": {
+    "path": "/samples/phase-13/1319/sample-1319-performance-profiler.json",
+    "createdAt": "2026-04-24T00:00:00.000Z",
+    "version": 1
+  }
+}

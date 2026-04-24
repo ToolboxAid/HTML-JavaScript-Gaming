@@ -1,0 +1,20 @@
+Samples2Tools batch 22 summary
+Generated: 2026-04-24T21:19:17.480Z
+Purpose: bring performance-profiler and physics-sandbox to 3 mappings each using existing samples.
+
+Counts:
+- vector-asset-studio: 3
+- vector-map-editor: 3
+- 3d-asset-viewer: 3
+- 3d-camera-path-editor: 3
+- 3d-json-payload-normalizer: 3
+- asset-browser: 3
+- asset-pipeline-tool: 3
+- palette-browser: 3
+- state-inspector: 3
+- performance-profiler: 3
+- physics-sandbox: 3
+
+Added mappings:
+- performance-profiler <- sample 1319 (/samples/phase-13/1319/sample-1319-performance-profiler.json)
+- physics-sandbox <- sample 0210 (/samples/phase-02/0210/sample-0210-physics-sandbox.json)

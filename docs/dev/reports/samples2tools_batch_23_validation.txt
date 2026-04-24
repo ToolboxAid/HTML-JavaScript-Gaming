@@ -1,0 +1,10 @@
+Samples2Tools batch 23 validation
+Generated: 2026-04-24T21:23:47.558Z
+Scope: roundtrip query parameter wiring validation
+
+Total roundtrip mappings checked: 59
+Failures: 0
+
+Sample 0901 expected roundtrip launch URLs:
+- vector-asset-studio: /tools/Vector%20Asset%20Studio/index.html?sampleId=0901&sampleTitle=Vector%20Rendering%20System&samplePresetPath=%2Fsamples%2Fphase-09%2F0901%2Fsample-0901-vector-asset-studio.json
+- vector-map-editor: /tools/Vector%20Map%20Editor/index.html?sampleId=0901&sampleTitle=Vector%20Rendering%20System&samplePresetPath=%2Fsamples%2Fphase-09%2F0901%2Fsample-0901-vector-map-editor.json

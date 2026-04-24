@@ -1430,6 +1430,15 @@
         "engine/theme/index/Theme",
         "engine/theme/index/ThemeTokens",
         "engine/utils/index/clamp"
+      ],
+      "toolHints": [
+        "physics-sandbox"
+      ],
+      "roundtripToolPresets": [
+        {
+          "toolId": "physics-sandbox",
+          "presetPath": "/samples/phase-02/0210/sample-0210-physics-sandbox.json"
+        }
       ]
     },
     {
@@ -7506,6 +7515,15 @@
         "engine/theme/index/Theme",
         "engine/theme/index/ThemeTokens",
         "engine/utils/index/clamp"
+      ],
+      "toolHints": [
+        "performance-profiler"
+      ],
+      "roundtripToolPresets": [
+        {
+          "toolId": "performance-profiler",
+          "presetPath": "/samples/phase-13/1319/sample-1319-performance-profiler.json"
+        }
       ]
     },
     {

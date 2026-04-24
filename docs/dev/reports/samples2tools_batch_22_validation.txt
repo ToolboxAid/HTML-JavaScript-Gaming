@@ -1,0 +1,8 @@
+Samples2Tools batch 22 validation
+Validated at: 2026-04-24T21:19:17.484Z
+
+[x] Existing sample folders reused (no new sample pages)
+[x] Added sample-xxxx-toolID.json for each new mapping
+[x] Metadata includes toolHints and roundtripToolPresets for new mappings
+[x] performance-profiler now has 3 mappings
+[x] physics-sandbox now has 3 mappings
