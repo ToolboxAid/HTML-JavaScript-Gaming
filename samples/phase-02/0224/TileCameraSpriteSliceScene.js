@@ -16,23 +16,31 @@ import { drawSpriteProjectFrame, loadSpriteProjectPreset } from '/samples/shared
 
 const theme = new Theme(ThemeTokens);
 const SPRITE_PRESET_PATH = '/samples/phase-02/0224/sample-0224-sprite-editor.json';
+const TILEMAP_PRESET_PATH = '/samples/phase-02/0224/sample-0224-tile-map-editor.json';
+const FALLBACK_TILEMAP_ROWS = [
+  [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+  [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+  [1, 0, 1, 1, 0, 0, 1, 0, 0, 1, 1, 0, 0, 0, 0, 1],
+  [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1],
+  [1, 0, 0, 1, 1, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 1],
+  [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1],
+  [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+];
+const FALLBACK_TILEMAP_COLLISION_ROWS = FALLBACK_TILEMAP_ROWS.map((row) => row.map((value) => (value === 1 ? 1 : 0)));
 
 export default class TileCameraSpriteSliceScene extends Scene {
   constructor() {
     super();
     this.screen = { x: 60, y: 180 };
+    this.tilemapStatus = 'loading';
+    this.tilemapError = '';
     this.tilemap = new Tilemap({
       tileSize: 48,
-      tiles: [
-        [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
-        [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
-        [1,0,1,1,0,0,1,0,0,1,1,0,0,0,0,1],
-        [1,0,0,0,0,0,0,0,0,0,0,0,1,0,0,1],
-        [1,0,0,1,1,0,0,1,0,0,1,0,0,0,0,1],
-        [1,0,0,0,0,0,0,0,0,0,0,0,0,1,0,1],
-        [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
-      ],
+      tiles: FALLBACK_TILEMAP_ROWS,
       palette: { 0: '#1f2937', 1: '#4f46e5' },
+      definitions: {
+        1: { solid: true, color: '#4f46e5', label: 'wall' }
+      }
     });
     this.worldOffset = { x: 0, y: 0 };
     this.world = {
@@ -62,7 +70,155 @@ export default class TileCameraSpriteSliceScene extends Scene {
     this.spriteProject = null;
     this.spriteStatus = 'loading';
     this.spriteError = '';
+    void this.loadTileMapProject();
     void this.loadSpriteProject();
+  }
+
+  extractTileMapDocumentFromSamplePreset(rawPreset) {
+    if (!rawPreset || typeof rawPreset !== 'object') {
+      return null;
+    }
+
+    const payload = rawPreset.payload;
+    if (payload && typeof payload === 'object') {
+      if (payload.tilemapDocument && typeof payload.tilemapDocument === 'object') {
+        return payload.tilemapDocument;
+      }
+      if (payload.tileMapDocument && typeof payload.tileMapDocument === 'object') {
+        return payload.tileMapDocument;
+      }
+      if (payload.tilemap && typeof payload.tilemap === 'object') {
+        return payload.tilemap;
+      }
+      if (payload.tileMap && typeof payload.tileMap === 'object') {
+        return payload.tileMap;
+      }
+      if (typeof payload.tilemapDocumentPath === 'string' && payload.tilemapDocumentPath.trim()) {
+        return payload.tilemapDocumentPath.trim();
+      }
+      if (typeof payload.tileMapDocumentPath === 'string' && payload.tileMapDocumentPath.trim()) {
+        return payload.tileMapDocumentPath.trim();
+      }
+    }
+    return null;
+  }
+
+  applyTileMapDocument(documentModel) {
+    if (!documentModel || typeof documentModel !== 'object') {
+      throw new Error('Tilemap document is missing.');
+    }
+
+    const map = documentModel.map || {};
+    const tileSize = Number(map.tileSize) > 0 ? Number(map.tileSize) : 48;
+    const layers = Array.isArray(documentModel.layers) ? documentModel.layers : [];
+    const tileLayer = layers.find((layer) => layer && layer.kind === 'tile') || layers[0] || null;
+    const collisionLayer = layers.find((layer) => layer && layer.kind === 'collision') || null;
+
+    if (!tileLayer || !Array.isArray(tileLayer.data) || tileLayer.data.length === 0) {
+      throw new Error('Tilemap document did not include tile rows.');
+    }
+
+    const tileRows = tileLayer.data.map((row) => Array.isArray(row) ? row.map((value) => Number.parseInt(value, 10) || 0) : []);
+    const collisionRows = collisionLayer && Array.isArray(collisionLayer.data)
+      ? collisionLayer.data.map((row) => Array.isArray(row) ? row.map((value) => Number.parseInt(value, 10) || 0) : [])
+      : FALLBACK_TILEMAP_COLLISION_ROWS;
+
+    const tilesetEntries = Array.isArray(documentModel.tileset) ? documentModel.tileset : [];
+    const palette = {};
+    tilesetEntries.forEach((entry) => {
+      const tileId = Number.parseInt(entry?.id, 10);
+      const color = typeof entry?.color === 'string' ? entry.color : '';
+      if (Number.isInteger(tileId) && color) {
+        palette[tileId] = color;
+      }
+    });
+    if (!palette[0]) {
+      palette[0] = '#1f2937';
+    }
+    if (!palette[1]) {
+      palette[1] = '#4f46e5';
+    }
+
+    const definitions = {};
+    collisionRows.forEach((row, rowIndex) => {
+      if (!Array.isArray(row)) {
+        return;
+      }
+      row.forEach((cell, colIndex) => {
+        if (Number(cell) === 1) {
+          const tileId = Number(tileRows[rowIndex]?.[colIndex]) || 0;
+          if (tileId > 0) {
+            definitions[tileId] = {
+              solid: true,
+              color: palette[tileId] || '#4f46e5',
+              label: `tile-${tileId}`
+            };
+          }
+        }
+      });
+    });
+
+    this.tilemap = new Tilemap({
+      tileSize,
+      tiles: tileRows,
+      palette,
+      definitions
+    });
+
+    this.world.width = this.tilemap.width * this.tilemap.tileSize;
+    this.world.height = this.tilemap.height * this.tilemap.tileSize;
+    this.camera.worldWidth = this.world.width;
+    this.camera.worldHeight = this.world.height;
+
+    const markers = Array.isArray(documentModel.markers) ? documentModel.markers : [];
+    const spawnMarker = markers.find((marker) => marker && marker.type === 'spawn');
+    const goalMarker = markers.find((marker) => marker && marker.type === 'goal');
+    const spawnCol = Number.parseInt(spawnMarker?.col, 10);
+    const spawnRow = Number.parseInt(spawnMarker?.row, 10);
+    if (Number.isInteger(spawnCol) && Number.isInteger(spawnRow)) {
+      this.player.x = (spawnCol * this.tilemap.tileSize) + 8;
+      this.player.y = (spawnRow * this.tilemap.tileSize) + 8;
+    }
+
+    const goalCol = Number.parseInt(goalMarker?.col, 10);
+    const goalRow = Number.parseInt(goalMarker?.row, 10);
+    if (Number.isInteger(goalCol) && Number.isInteger(goalRow)) {
+      this.goal.x = (goalCol * this.tilemap.tileSize) + 6;
+      this.goal.y = (goalRow * this.tilemap.tileSize) + 6;
+    }
+  }
+
+  async loadTileMapProject() {
+    try {
+      const presetResponse = await fetch(TILEMAP_PRESET_PATH, { cache: 'no-store' });
+      if (!presetResponse.ok) {
+        throw new Error(`Preset request failed (${presetResponse.status}).`);
+      }
+      const samplePreset = await presetResponse.json();
+      const extracted = this.extractTileMapDocumentFromSamplePreset(samplePreset);
+      let documentModel = null;
+
+      if (typeof extracted === 'string' && extracted.trim()) {
+        const documentResponse = await fetch(extracted.trim(), { cache: 'no-store' });
+        if (!documentResponse.ok) {
+          throw new Error(`Tilemap document request failed (${documentResponse.status}).`);
+        }
+        documentModel = await documentResponse.json();
+      } else if (extracted && typeof extracted === 'object') {
+        documentModel = extracted;
+      }
+
+      if (!documentModel || typeof documentModel !== 'object') {
+        throw new Error('Preset payload did not include a tilemap document.');
+      }
+
+      this.applyTileMapDocument(documentModel);
+      this.tilemapStatus = 'loaded';
+      this.tilemapError = '';
+    } catch (error) {
+      this.tilemapStatus = 'fallback';
+      this.tilemapError = error instanceof Error ? error.message : String(error);
+    }
   }
 
   async loadSpriteProject() {
@@ -153,19 +309,26 @@ export default class TileCameraSpriteSliceScene extends Scene {
   }
 
   render(renderer) {
-    const presetStatus = this.spriteStatus === 'loaded'
+    const spritePresetStatus = this.spriteStatus === 'loaded'
       ? 'Sprite preset loaded from sample-0224-sprite-editor.json'
       : this.spriteStatus === 'loading'
         ? 'Loading shared sprite preset...'
         : `Sprite preset unavailable (${this.spriteError || 'using fallback'})`;
+    const tileMapPresetStatus = this.tilemapStatus === 'loaded'
+      ? 'Tilemap preset loaded from sample-0224-tile-map-editor.json'
+      : this.tilemapStatus === 'loading'
+        ? 'Loading shared tilemap preset...'
+        : `Tilemap preset unavailable (${this.tilemapError || 'using fallback'})`;
 
     drawFrame(renderer, theme, [
       'Engine Sample 0224',
       'Combines tilemap, camera, action input, sprite-style frames, and snapshots',
       'Use Arrow keys or WASD to move, KeyK to save, KeyL to load',
       this.message,
+      'This sample and Tilemap Studio load the same sample-0224-tile-map-editor.json source',
       'This sample and Sprite Editor load the same sample-0224-sprite-editor.json source',
-      presetStatus
+      tileMapPresetStatus,
+      spritePresetStatus
     ]);
 
     renderer.strokeRect(this.screen.x, this.screen.y, this.camera.viewportWidth, this.camera.viewportHeight, '#d8d5ff', 2);

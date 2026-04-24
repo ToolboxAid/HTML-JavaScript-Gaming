@@ -2020,12 +2020,17 @@
         "engine/tilemap/index/Tilemap"
       ],
       "toolHints": [
-        "sprite-editor"
+        "sprite-editor",
+        "tile-map-editor"
       ],
       "roundtripToolPresets": [
         {
           "toolId": "sprite-editor",
           "presetPath": "/samples/phase-02/0224/sample-0224-sprite-editor.json"
+        },
+        {
+          "toolId": "tile-map-editor",
+          "presetPath": "/samples/phase-02/0224/sample-0224-tile-map-editor.json"
         }
       ]
     },

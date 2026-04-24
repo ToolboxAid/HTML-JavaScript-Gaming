@@ -18,3 +18,7 @@ Builds a tile-based playable slice using camera, action input, sprite-style rend
 
 ## Behavior
 Move through the tile world, avoid walls, and reach the goal while using action input and snapshot support.
+
+## Samples2Tools Source
+- `sample-0224-sprite-editor.json` is shared by this sample and Sprite Editor.
+- `sample-0224-tile-map-editor.json` is shared by this sample and Tilemap Studio.
