@@ -155,6 +155,6 @@
 - [x] `docs/dev/reports/samples2tools_link_map_<n>.json`
 
 ## Current Snapshot (from tools_used.txt)
-- [x] Current tagged samples across active tools: `30` (phase-01 through phase-19)
+- [x] Current tagged samples across active tools: `31` (phase-01 through phase-19)
 - [x] Candidate coverage inventory exists for all active tools
 - [.] Convert candidates into curated, validated sample-to-tool links

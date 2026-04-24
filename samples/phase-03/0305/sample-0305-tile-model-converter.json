@@ -1,0 +1,35 @@
+{
+  "sampleId": "0305",
+  "phase": "03",
+  "title": "Tile Metadata",
+  "description": "Shared sample preset for Sample 0305 and Tile Model Converter preload.",
+  "toolHints": [
+    "tile-model-converter"
+  ],
+  "payload": {
+    "candidate": {
+      "id": "sample-0305-tile-metadata",
+      "name": "sample-0305-tile-metadata",
+      "section": "tilemaps",
+      "type": "tilemap",
+      "path": "samples/phase-03/0305/sample-0305-tile-map-editor-document.json",
+      "sourceSampleId": "0305",
+      "sourceToolId": "tile-map-editor"
+    },
+    "conversion": {
+      "targetSection": "vectors",
+      "targetType": "vector"
+    }
+  },
+  "runtime": {
+    "sampleEntryPoint": "/samples/phase-03/0305/index.html"
+  },
+  "toolState": {
+    "preferredToolId": "tile-model-converter"
+  },
+  "provenance": {
+    "path": "/samples/phase-03/0305/sample-0305-tile-model-converter.json",
+    "createdAt": "2026-04-24T00:00:00.000Z",
+    "version": 1
+  }
+}

@@ -15,3 +15,7 @@ Extends the tilemap into richer gameplay data.
 
 ## Behavior
 Walking onto red hazard tiles resets the actor, green trigger tiles set a goal flag, and purple slope tiles demonstrate schema room for future slope handling.
+
+## Samples2Tools Source
+- `sample-0305-tile-map-editor.json` is shared by this sample and Tilemap Studio.
+- `sample-0305-tile-model-converter.json` is used to preload Tile Model Converter from this sample.

@@ -1,0 +1,16 @@
+BUILD_PR_LEVEL_20_1_PHASE20_TOOL_PRESET_INTEGRATION - Samples2Tools Batch 18 Summary
+
+Scope: phase-01 through phase-19 metadata-driven roundtrip mapping (added 0305 -> tile-model-converter)
+
+Total metadata roundtrip mappings: 31
+- parallax-editor: 4 mapped samples
+- performance-profiler: 2 mapped samples
+- physics-sandbox: 2 mapped samples
+- replay-visualizer: 3 mapped samples
+- sprite-editor: 9 mapped samples
+- tile-map-editor: 7 mapped samples
+- tile-model-converter: 2 mapped samples
+- vector-asset-studio: 1 mapped samples
+- vector-map-editor: 1 mapped samples
+
+Source of truth: samples/metadata/samples.index.metadata.json -> samples[].roundtripToolPresets

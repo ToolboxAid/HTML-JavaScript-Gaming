@@ -2392,12 +2392,17 @@
         "engine/tilemap/index/Tilemap"
       ],
       "toolHints": [
-        "tile-map-editor"
+        "tile-map-editor",
+        "tile-model-converter"
       ],
       "roundtripToolPresets": [
         {
           "toolId": "tile-map-editor",
           "presetPath": "/samples/phase-03/0305/sample-0305-tile-map-editor.json"
+        },
+        {
+          "toolId": "tile-model-converter",
+          "presetPath": "/samples/phase-03/0305/sample-0305-tile-model-converter.json"
         }
       ]
     },

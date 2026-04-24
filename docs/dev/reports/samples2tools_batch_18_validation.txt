@@ -1,0 +1,10 @@
+BUILD_PR_LEVEL_20_1_PHASE20_TOOL_PRESET_INTEGRATION - Samples2Tools Batch 18 Validation
+
+[x] Metadata mapping exists for sample 0305 -> tile-model-converter (present)
+[x] Sample 0305 tile-model-converter preset file exists and is parse-valid JSON
+[x] Tile Model Converter query-preset flow is reused without per-sample code changes
+[x] Link map report regenerated from metadata mappings (samples2tools_link_map_18.json)
+
+Validation checks performed
+- JSON parse of sample-0305-tile-model-converter.json and metadata index
+- metadata extraction confirms explicit 0305 tile-model-converter preset path
