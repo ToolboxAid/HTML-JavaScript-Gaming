@@ -1,0 +1,8 @@
+Phase 20 Deprecation Note
+Generated: 2026-04-24T22:11:27.628Z
+
+Status:
+- Phase 20 remains on disk for compatibility/regression checks.
+- Phase 20 is deprecated as a primary launch surface for Samples2Tools lane.
+- Primary sample discovery now excludes phase 20 in samples/index.render.js.
+- Replacement non-Phase-20 mapping coverage and launch parity are validated in batch 34.

@@ -1,0 +1,11 @@
+Samples2Tools batch 36 summary
+Generated: 2026-04-24T22:14:29.453Z
+Purpose: remove Phase 20 instead of carrying filter-based deprecation logic.
+
+Completed this batch:
+- Removed samples/phase-20 artifacts from repository
+- Removed phase-20 entries from samples metadata (samples + phases)
+- Removed temporary phase-20 exclusion/filter code from samples index renderer
+
+Primary validation artifact:
+- docs/dev/reports/samples2tools_batch_36_validation.txt (PASS)

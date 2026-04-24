@@ -126,14 +126,14 @@
 - [ ] No Tool should be used independantly
 
 ### Phase 6 - Phase 20 Decommission (After Parity)
-- [ ] Keep `Phase 20 - Tool Preset Integration` active until Samples2Tools parity is execution-validated.
+- [x] Keep `Phase 20 - Tool Preset Integration` active until Samples2Tools parity is execution-validated.
 - [x] Define parity gate:
 - sample-to-tool launch coverage equals or exceeds current Phase 20 matrix intent.
 - preset/state preload behavior is validated in replacement lane.
 - replacement reports exist and are repeatable.
-- [ ] Mark Phase 20 as `deprecated` in docs once parity gate passes.
-- [ ] Remove Phase 20 links from primary launch surfaces after deprecation window.
-- [ ] Remove Phase 20 artifacts only after final signoff (no dangling references in docs/tests/reports).
+- [x] Mark Phase 20 as `deprecated` in docs once parity gate passes.
+- [x] Remove Phase 20 links from primary launch surfaces after deprecation window.
+- [x] Remove Phase 20 artifacts only after final signoff (no dangling references in docs/tests/reports).
 
 ## Prioritization Rules
 - [x] Prefer semantically exact sample-tool matches over high volume.

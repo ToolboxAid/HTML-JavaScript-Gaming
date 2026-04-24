@@ -131,14 +131,6 @@ function buildClassTokens(classValues, engineClassesUsed) {
   const classEntries = asArray(classValues).length > 0 ? asArray(classValues) : asArray(engineClassesUsed);
   const deduped = [...new Set(classEntries.map((entry) => normalize(entry)).filter(Boolean))];
   return deduped
-    .filter((entry) => {
-      const phase20SampleMatch = entry.match(/^samples\/phase-20\/(\d{4})$/i);
-      if (!phase20SampleMatch) {
-        return true;
-      }
-      const sampleNumber = Number(phase20SampleMatch[1]);
-      return !Number.isInteger(sampleNumber) || sampleNumber < 2001 || sampleNumber > 2051;
-    })
     .map((entry) => {
       const name = entry.split("/").at(-1) || entry;
       return { value: entry, label: name };

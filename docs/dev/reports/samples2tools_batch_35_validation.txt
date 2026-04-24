@@ -1,0 +1,12 @@
+Samples2Tools batch 35 validation
+Generated: 2026-04-24T22:11:27.631Z
+Scope: Phase-20 deprecation execution (hide from primary surface, retain artifacts, parity-gate backed).
+
+- [PASS] Phase 20 metadata samples are still present (artifacts retained) :: count=51
+- [PASS] Phase 20 sample pages remain on disk :: pages=51
+- [PASS] Samples index excludes Phase 20 from primary surface :: samples/index.render.js
+- [PASS] Parity gate evidence exists and passes :: docs/dev/reports/samples2tools_batch_34_validation.txt
+
+Checks: 4
+Failures: 0
+Result: PASS

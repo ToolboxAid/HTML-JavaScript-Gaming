@@ -1,0 +1,12 @@
+Samples2Tools batch 35 summary
+Generated: 2026-04-24T22:11:27.631Z
+Purpose: execute Phase-20 deprecation-in-place without deleting artifacts.
+
+Completed this batch:
+- Excluded Phase 20 from the primary samples launch surface
+- Retained all Phase 20 sample artifacts/pages on disk
+- Captured explicit Phase 20 deprecation note in reports
+- Validated deprecation is backed by parity-gate PASS evidence
+
+Primary validation artifact:
+- docs/dev/reports/samples2tools_batch_35_validation.txt (PASS)
