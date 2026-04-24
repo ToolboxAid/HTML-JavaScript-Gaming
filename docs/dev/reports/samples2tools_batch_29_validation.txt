@@ -1,0 +1,15 @@
+Samples2Tools batch 29 validation
+Generated: 2026-04-24T21:46:25.083Z
+Scope: contract completeness + launch behavior + sample consumption + direct launch guard
+
+Mapped links checked: 59
+Preset files parsed: 59
+
+Required field issues: 0
+Optional field issues: 0
+Tool schema issues: 0
+Naming issues: 0
+Phase-20 lane issues: 0
+Sample consumption issues: 0
+Launch wiring issues: 0
+Direct-launch guard issues: 0

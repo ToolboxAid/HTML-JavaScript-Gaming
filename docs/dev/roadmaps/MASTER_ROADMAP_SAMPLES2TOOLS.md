@@ -36,14 +36,14 @@
 
 ## Canonical Data Contract
 - [x] File naming standard: `samples/phase-xx/xxxx/sample-xxxx-toolID.json`
-- [ ] Required fields:
+- [x] Required fields:
 - `sampleId` (string)
 - `phase` (string)
 - `title` (string)
 - `description` (string)
 - `toolHints` (array of tool ids)
 - `payload` (object, tool-consumable source data)
-- [ ] Optional fields:
+- [x] Optional fields:
 - `runtime` (sample-only materialization hints)
 - `toolState` (tool-specific hydration hints)
 - `provenance` (path, createdAt, version)
@@ -53,7 +53,7 @@
 - `sampleId=<id>`
 - `samplePresetPath=/samples/phase-xx/xxxx/sample-xxxx-toolID.json`
 - [x] Explicit sample-to-tool preset routing now lives in metadata via `samples[].roundtripToolPresets` (no hard-coded sample/tool matrix in `samples/index.render.js`).
-- [.] Tool boot behavior:
+- [x] Tool boot behavior:
 - detect contract params
 - fetch JSON from `samplePresetPath`
 - validate minimal schema
@@ -103,21 +103,21 @@
 
 ### Phase 3 - Core Editor/Workflow Tools
 - [x] Sprite Editor (9 candidates)
-- [.] Tilemap Studio (15 candidates)
-- [.] Tile Model Converter (18 candidates)
-- [.] Asset Browser / Import Hub (8 candidates)
-- [.] Asset Pipeline Tool (10 candidates)
-- [.] Palette Browser / Manager (6 candidates)
-- [.] State Inspector (26 candidates)
-- [ ] For each tool:
+- [x] Tilemap Studio (15 candidates)
+- [x] Tile Model Converter (18 candidates)
+- [x] Asset Browser / Import Hub (8 candidates)
+- [x] Asset Pipeline Tool (10 candidates)
+- [x] Palette Browser / Manager (6 candidates)
+- [x] State Inspector (26 candidates)
+- [x] For each tool:
 - select top 3-5 high-signal non-Phase-20 samples first
 - wire shared JSON loading
 - confirm deterministic load behavior
 
 ### Phase 4 - 3D Utility Surfaces
-- [.] 3D JSON Payload Normalizer (41 candidates; prioritize strict map/payload samples)
-- [.] 3D Asset Viewer (31 candidates; prioritize asset-centric samples)
-- [.] 3D Camera Path Editor (47 candidates; prioritize camera/path-centric samples)
+- [x] 3D JSON Payload Normalizer (41 candidates; prioritize strict map/payload samples)
+- [x] 3D Asset Viewer (31 candidates; prioritize asset-centric samples)
+- [x] 3D Camera Path Editor (47 candidates; prioritize camera/path-centric samples)
 - [ ] Select precise, semantically aligned samples only (avoid broad keyword-only linkage).
 
 ### Phase 5 - Games
@@ -138,16 +138,16 @@
 ## Prioritization Rules
 - [ ] Prefer semantically exact sample-tool matches over high volume.
 - [ ] Limit initial additions per tool card to 2-5 links.
-- [ ] Use non-Phase-20 samples only in this lane.
-- [ ] Maintain stable sample identity (`sample-xxxx-toolID.json`) for reproducibility.
+- [x] Use non-Phase-20 samples only in this lane.
+- [x] Maintain stable sample identity (`sample-xxxx-toolID.json`) for reproducibility.
 
 ## Validation Checklist
 - [x] Every linked sample has `sample-xxxx-toolID.json`.
-- [ ] Sample page consumes same JSON it passes to tool.
-- [ ] Tool launch with `samplePresetPath` succeeds without manual edits.
+- [x] Sample page consumes same JSON it passes to tool.
+- [x] Tool launch with `samplePresetPath` succeeds without manual edits.
 - [x] Tool status includes loaded sample id/path.
 - [x] Metadata and tool card links resolve correctly.
-- [ ] No regressions to direct tool launch without sample params.
+- [x] No regressions to direct tool launch without sample params.
 
 ## Reporting Outputs (per execution batch)
 - [x] `docs/dev/reports/samples2tools_batch_<n>_summary.txt`

@@ -1,0 +1,15 @@
+Samples2Tools batch 29 summary
+Generated: 2026-04-24T21:47:17.264Z
+Purpose: close top-of-roadmap contract/launch/checklist items with execution-backed validation.
+
+Completed this batch:
+- Added sample-page preset consumption in samples/shared/sampleDetailPageEnhancement.js
+- Validated required+optional preset fields for all mapped links
+- Validated tool-specific schema compatibility for all mapped links
+- Validated stable sample preset naming convention
+- Validated non-Phase-20 mapping lane for current links
+- Validated mapped-tool launch wiring and direct-launch no-param guards
+- Updated roadmap markers for execution-backed items only
+
+Primary validation artifact:
+- docs/dev/reports/samples2tools_batch_29_validation.txt (PASS)

@@ -1,4 +1,5 @@
 import { isFiniteNumber } from './numberUtils.js';
+import { getToolRegistry } from '/tools/toolRegistry.js';
 
 const METADATA_URL = '/samples/metadata/samples.index.metadata.json';
 const BACK_TO_SAMPLES_HREF = '/samples/index.html';
@@ -7,9 +8,36 @@ const TAGS_BLOCK_ID = 'sample-detail-tags';
 const NAV_BLOCK_ID = 'sample-detail-navigation';
 const RELATED_BLOCK_ID = 'sample-detail-related';
 const ENGINE_BLOCK_ID = 'sample-detail-engine-classes';
+const PRESET_BLOCK_ID = 'sample-detail-tool-presets';
 
 function asOptionalPath(value) {
   return typeof value === 'string' ? value.trim() : '';
+}
+
+function normalizeToken(value) {
+  return String(value || '').trim().toLowerCase();
+}
+
+function normalizePresetPath(value) {
+  const normalized = String(value || '').trim().replace(/\\/g, '/');
+  if (!normalized || normalized.includes('..')) {
+    return '';
+  }
+  if (normalized.startsWith('/samples/')) {
+    return normalized;
+  }
+  if (normalized.startsWith('./samples/')) {
+    return '/' + normalized.slice(2);
+  }
+  if (normalized.startsWith('samples/')) {
+    return '/' + normalized;
+  }
+  return '';
+}
+
+function toStandaloneToolHref(entryPoint) {
+  const normalized = String(entryPoint || '').replace(/^\.?\/*/, '');
+  return normalized ? '/tools/' + encodeURI(normalized) : '';
 }
 
 function normalizeWhitespace(value) {
@@ -59,7 +87,7 @@ function normalizeEngineClassRef(value) {
 }
 
 function removePriorGeneratedBlocks(main) {
-  const staleIds = [TAGS_BLOCK_ID, NAV_BLOCK_ID, RELATED_BLOCK_ID, ENGINE_BLOCK_ID];
+  const staleIds = [TAGS_BLOCK_ID, NAV_BLOCK_ID, RELATED_BLOCK_ID, ENGINE_BLOCK_ID, PRESET_BLOCK_ID];
   for (const id of staleIds) {
     const element = main.querySelector('#' + id);
     if (element) {
@@ -126,7 +154,18 @@ export function normalizeMetadata(raw) {
       tags: normalizedTags,
       engineClassesUsed: normalizedEngineClasses,
       thumbnail: asOptionalPath(entry.thumbnail),
-      preview: asOptionalPath(entry.preview)
+      preview: asOptionalPath(entry.preview),
+      toolHints: Array.isArray(entry.toolHints)
+        ? [...new Set(entry.toolHints.map((toolId) => normalizeToken(toolId)).filter(Boolean))]
+        : [],
+      roundtripToolPresets: Array.isArray(entry.roundtripToolPresets)
+        ? entry.roundtripToolPresets
+          .map((preset) => ({
+            toolId: normalizeToken(preset && preset.toolId),
+            presetPath: normalizePresetPath(preset && preset.presetPath)
+          }))
+          .filter((preset) => preset.toolId && preset.presetPath)
+        : []
     };
   });
 
@@ -321,6 +360,102 @@ function buildEngineClassesBlock(model) {
   return section;
 }
 
+function buildRoundtripLinks(currentSample, toolRegistryMap) {
+  const dedupedToolHints = [
+    ...new Set((Array.isArray(currentSample.toolHints) ? currentSample.toolHints : []).map((toolId) => normalizeToken(toolId)).filter(Boolean))
+  ].filter((toolId) => toolId !== 'workspace-manager');
+
+  const links = [];
+  for (const toolId of dedupedToolHints) {
+    const tool = toolRegistryMap.get(toolId);
+    if (!tool) {
+      continue;
+    }
+
+    const baseHref = toStandaloneToolHref(tool.entryPoint);
+    if (!baseHref) {
+      continue;
+    }
+
+    const mapping = (Array.isArray(currentSample.roundtripToolPresets) ? currentSample.roundtripToolPresets : [])
+      .find((entry) => normalizeToken(entry && entry.toolId) === toolId);
+
+    const presetPath = normalizePresetPath(mapping && mapping.presetPath);
+    let href = baseHref;
+    if (presetPath) {
+      href = `${baseHref}?sampleId=${encodeURIComponent(currentSample.id)}&sampleTitle=${encodeURIComponent(currentSample.title || '')}&samplePresetPath=${encodeURIComponent(presetPath)}`;
+    }
+
+    links.push({
+      toolId,
+      label: tool.displayName || tool.name || toolId,
+      href,
+      presetPath
+    });
+  }
+  return links;
+}
+
+async function fetchPresetStatus(presetPath) {
+  if (!presetPath) {
+    return { ok: false, detail: 'missing preset path' };
+  }
+  try {
+    const response = await fetch(presetPath, { cache: 'no-store' });
+    if (!response.ok) {
+      return { ok: false, detail: `request failed (${response.status})` };
+    }
+    const parsed = await response.json();
+    if (!parsed || typeof parsed !== 'object') {
+      return { ok: false, detail: 'invalid JSON object' };
+    }
+    return { ok: true, detail: 'loaded' };
+  } catch (error) {
+    return { ok: false, detail: error instanceof Error ? error.message : 'unknown error' };
+  }
+}
+
+async function buildToolPresetBlock(model, toolRegistryMap) {
+  const section = document.createElement('section');
+  section.id = PRESET_BLOCK_ID;
+  section.className = 'sample-detail-row sample-tool-roundtrip';
+
+  const heading = document.createElement('h3');
+  heading.textContent = 'Tool Preset Sources';
+  section.appendChild(heading);
+
+  const links = buildRoundtripLinks(model.current, toolRegistryMap);
+  if (!links.length) {
+    const empty = document.createElement('p');
+    empty.className = 'sample-detail-muted';
+    empty.textContent = 'No tool preset links available for this sample.';
+    section.appendChild(empty);
+    return section;
+  }
+
+  const statuses = await Promise.all(links.map((entry) => fetchPresetStatus(entry.presetPath)));
+  const successful = statuses.filter((status) => status.ok).length;
+
+  const summary = document.createElement('p');
+  summary.textContent = `Sample consumed ${successful}/${links.length} tool preset JSON files used by roundtrip launch links.`;
+  section.appendChild(summary);
+
+  const list = document.createElement('ul');
+  links.forEach((entry, index) => {
+    const item = document.createElement('li');
+    const link = createLink(entry.href, `Open ${entry.label}`);
+    item.appendChild(link);
+
+    const presetText = document.createElement('span');
+    const status = statuses[index];
+    presetText.textContent = ` | Preset: ${entry.presetPath || '(none)'} | Status: ${status.ok ? 'loaded' : `failed (${status.detail})`}`;
+    item.appendChild(presetText);
+    list.appendChild(item);
+  });
+  section.appendChild(list);
+  return section;
+}
+
 function reorderMainChildren(main, orderedNodes) {
   const orderedSet = new Set(orderedNodes.filter(Boolean));
   const extras = Array.from(main.children).filter((child) => !orderedSet.has(child));
@@ -358,6 +493,14 @@ export async function applySampleDetailEnhancement() {
     return;
   }
 
+  const toolRegistry = getToolRegistry();
+  const toolRegistryMap = new Map(
+    toolRegistry
+      .filter((tool) => normalizeToken(tool.id) !== 'workspace-manager')
+      .map((tool) => [normalizeToken(tool.id), tool])
+      .filter((entry) => entry[0] && entry[1])
+  );
+
   ensureStyles();
   removePriorGeneratedBlocks(main);
 
@@ -375,8 +518,10 @@ export async function applySampleDetailEnhancement() {
 
   const relatedBlock = buildRelatedBlock(model);
   const engineClassesBlock = buildEngineClassesBlock(model);
+  const toolPresetBlock = await buildToolPresetBlock(model, toolRegistryMap);
   canvas.insertAdjacentElement('afterend', relatedBlock);
   relatedBlock.insertAdjacentElement('afterend', engineClassesBlock);
+  engineClassesBlock.insertAdjacentElement('afterend', toolPresetBlock);
 
   reorderMainChildren(main, [
     titleAndDescription.h1,
@@ -385,7 +530,8 @@ export async function applySampleDetailEnhancement() {
     navBlock,
     canvas,
     relatedBlock,
-    engineClassesBlock
+    engineClassesBlock,
+    toolPresetBlock
   ]);
 
   if (model.current.indexLabel) {
