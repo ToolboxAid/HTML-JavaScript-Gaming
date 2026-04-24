@@ -1,0 +1,16 @@
+Samples2Tools batch 30 summary
+Generated: 2026-04-24T21:53:45.969Z
+Purpose: enforce roadmap cap of 2-5 links per tool card and reduce high-volume outliers.
+
+Completed this batch:
+- Curated sprite-editor mapping from 9 links to 5 semantically strong links
+- Curated tile-map-editor mapping from 7 links to 5 semantically strong links
+- Kept toolHints and roundtripToolPresets aligned for curated tools
+- Preserved metadata-driven roundtrip wiring (no hard-coded sample/tool matrix)
+
+Curated tools:
+- sprite-editor: 5 links -> 0219, 0301, 0302, 0905, 1414
+- tile-map-editor: 5 links -> 0221, 0305, 1208, 1209, 1210
+
+Primary validation artifact:
+- docs/dev/reports/samples2tools_batch_30_validation.txt (PASS)

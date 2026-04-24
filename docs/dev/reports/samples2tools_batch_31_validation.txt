@@ -1,0 +1,38 @@
+Samples2Tools batch 31 validation
+Generated: 2026-04-24T21:59:28.435Z
+Scope: semantic alignment enforcement via tool-specific payload contracts (non-Phase-20 lane).
+
+Mapped links checked: 53
+Mapped tools checked: 16
+
+Missing preset file issues: 0
+Unknown tool issues: 0
+Payload contract issues: 5
+Phase-20 mapping issues: 0
+Tools over max(5) links: 0
+Tools under min(2) links: 0
+
+Per-tool mapped link counts:
+- 3d-asset-viewer: 3
+- 3d-camera-path-editor: 3
+- 3d-json-payload-normalizer: 3
+- asset-browser: 3
+- asset-pipeline-tool: 3
+- palette-browser: 3
+- parallax-editor: 4
+- performance-profiler: 3
+- physics-sandbox: 3
+- replay-visualizer: 3
+- sprite-editor: 5
+- state-inspector: 3
+- tile-map-editor: 5
+- tile-model-converter: 3
+- vector-asset-studio: 3
+- vector-map-editor: 3
+
+Issue details:
+PAYLOAD_KEY_MISMATCH tile-map-editor 0221 expected=[tileMapDocumentPath,tilemapDocumentPath] got=[tileMapDocumentPath] /samples/phase-02/0221/sample-0221-tile-map-editor.json
+PAYLOAD_KEY_MISMATCH tile-map-editor 0305 expected=[tileMapDocumentPath,tilemapDocumentPath] got=[tileMapDocumentPath] /samples/phase-03/0305/sample-0305-tile-map-editor.json
+PAYLOAD_KEY_MISMATCH tile-map-editor 1208 expected=[tileMapDocumentPath,tilemapDocumentPath] got=[parallaxDocument,tilemapDocumentPath,vectorAssetSvgPath] /samples/phase-12/1208/sample-1208-tile-map-editor.json
+PAYLOAD_KEY_MISMATCH tile-map-editor 1209 expected=[tileMapDocumentPath,tilemapDocumentPath] got=[tileMapDocumentPath] /samples/phase-12/1209/sample-1209-tile-map-editor.json
+PAYLOAD_KEY_MISMATCH tile-map-editor 1210 expected=[tileMapDocumentPath,tilemapDocumentPath] got=[tileMapDocumentPath] /samples/phase-12/1210/sample-1210-tile-map-editor.json

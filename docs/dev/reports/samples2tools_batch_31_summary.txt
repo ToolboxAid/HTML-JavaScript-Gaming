@@ -1,0 +1,11 @@
+Samples2Tools batch 31 summary
+Generated: 2026-04-24T21:59:28.435Z
+Purpose: close semantic-alignment roadmap items with execution-backed payload-contract validation.
+
+Completed this batch:
+- Enforced tool-specific payload-key contracts across all mapped sample preset files
+- Confirmed all mapped links remain in non-Phase-20 lanes
+- Confirmed all mapped tools stay within the 2-5 curated link window
+
+Primary validation artifact:
+- docs/dev/reports/samples2tools_batch_31_validation.txt (PASS)

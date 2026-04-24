@@ -1295,15 +1295,8 @@
         "engine/theme/index/ThemeTokens",
         "engine/utils/index/clamp"
       ],
-      "toolHints": [
-        "sprite-editor"
-      ],
-      "roundtripToolPresets": [
-        {
-          "toolId": "sprite-editor",
-          "presetPath": "/samples/phase-02/0207/sample-0207-sprite-editor.json"
-        }
-      ]
+      "toolHints": [],
+      "roundtripToolPresets": []
     },
     {
       "id": "0208",
@@ -1562,14 +1555,9 @@
         "engine/scene/index/Scene"
       ],
       "toolHints": [
-        "sprite-editor",
         "palette-browser"
       ],
       "roundtripToolPresets": [
-        {
-          "toolId": "sprite-editor",
-          "presetPath": "/samples/phase-02/0213/sample-0213-sprite-editor.json"
-        },
         {
           "toolId": "palette-browser",
           "presetPath": "/samples/phase-02/0213/sample-0213-palette-browser.json"
@@ -1616,15 +1604,8 @@
         "engine/theme/index/ThemeTokens",
         "engine/utils/index/clamp"
       ],
-      "toolHints": [
-        "sprite-editor"
-      ],
-      "roundtripToolPresets": [
-        {
-          "toolId": "sprite-editor",
-          "presetPath": "/samples/phase-02/0214/sample-0214-sprite-editor.json"
-        }
-      ]
+      "toolHints": [],
+      "roundtripToolPresets": []
     },
     {
       "id": "0215",
@@ -2111,20 +2092,8 @@
         "engine/tilemap/index/resolveRectVsTilemap",
         "engine/tilemap/index/Tilemap"
       ],
-      "toolHints": [
-        "sprite-editor",
-        "tile-map-editor"
-      ],
-      "roundtripToolPresets": [
-        {
-          "toolId": "sprite-editor",
-          "presetPath": "/samples/phase-02/0224/sample-0224-sprite-editor.json"
-        },
-        {
-          "toolId": "tile-map-editor",
-          "presetPath": "/samples/phase-02/0224/sample-0224-tile-map-editor.json"
-        }
-      ]
+      "toolHints": [],
+      "roundtripToolPresets": []
     },
     {
       "id": "0225",
@@ -6812,17 +6781,10 @@
         "engine/tilemap/index/Tilemap",
         "tools/tile-map-editor"
       ],
-      "toolHints": [
-        "tile-map-editor"
-      ],
+      "toolHints": [],
       "thumbnail": "/samples/phase-12/1211/assets/images/preview.svg",
       "preview": "/samples/phase-12/1211/assets/images/preview.svg",
-      "roundtripToolPresets": [
-        {
-          "toolId": "tile-map-editor",
-          "presetPath": "/samples/phase-12/1211/sample-1211-tile-map-editor.json"
-        }
-      ]
+      "roundtripToolPresets": []
     },
     {
       "id": "1301",

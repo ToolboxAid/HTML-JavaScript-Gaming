@@ -1,0 +1,32 @@
+Samples2Tools batch 30 validation
+Generated: 2026-04-24T21:53:45.969Z
+Scope: link-count cap enforcement + metadata integrity for curated tools
+
+Mapped tools checked: 16
+Mapped preset links checked: 53
+
+Tools over max(5) preset links: 0
+Tools under min(2) preset links: 0
+toolHints vs roundtripToolPresets count mismatches: 0
+
+Counts by tool (preset links):
+- 3d-asset-viewer: 3
+- 3d-camera-path-editor: 3
+- 3d-json-payload-normalizer: 3
+- asset-browser: 3
+- asset-pipeline-tool: 3
+- palette-browser: 3
+- parallax-editor: 4
+- performance-profiler: 3
+- physics-sandbox: 3
+- replay-visualizer: 3
+- sprite-editor: 5
+- state-inspector: 3
+- tile-map-editor: 5
+- tile-model-converter: 3
+- vector-asset-studio: 3
+- vector-map-editor: 3
+
+Curated-tool sample ids:
+- sprite-editor: 5 links -> 0219, 0301, 0302, 0905, 1414
+- tile-map-editor: 5 links -> 0221, 0305, 1208, 1209, 1210

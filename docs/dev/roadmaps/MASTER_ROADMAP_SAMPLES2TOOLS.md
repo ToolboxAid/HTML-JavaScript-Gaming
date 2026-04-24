@@ -137,7 +137,7 @@
 
 ## Prioritization Rules
 - [ ] Prefer semantically exact sample-tool matches over high volume.
-- [ ] Limit initial additions per tool card to 2-5 links.
+- [x] Limit initial additions per tool card to 2-5 links.
 - [x] Use non-Phase-20 samples only in this lane.
 - [x] Maintain stable sample identity (`sample-xxxx-toolID.json`) for reproducibility.
 
@@ -158,4 +158,4 @@
 - [x] Current tagged samples across active tools: `59` (phase-01 through phase-19)
 - [x] Candidate coverage inventory exists for all active tools
 - [x] Legacy `sprite-editor-old-keep` is intentionally excluded from Samples2Tools mapping.
-- [.] Convert candidates into curated, validated sample-to-tool links
+- [x] Convert candidates into curated, validated sample-to-tool links
