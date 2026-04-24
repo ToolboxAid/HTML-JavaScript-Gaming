@@ -1,0 +1,35 @@
+{
+  "sampleId": "1606",
+  "phase": "16",
+  "title": "3D Physics Playground",
+  "description": "Shared sample preset for Sample 1606 and Physics Sandbox preload.",
+  "toolHints": [
+    "physics-sandbox"
+  ],
+  "payload": {
+    "physicsBody": {
+      "x": 12,
+      "y": 48,
+      "velocityX": 0,
+      "velocityY": -140,
+      "accelerationX": 0,
+      "accelerationY": 38,
+      "dragX": 2,
+      "dragY": 1,
+      "maxSpeedX": 240,
+      "maxSpeedY": 260,
+      "dt": 0.0166666667
+    }
+  },
+  "runtime": {
+    "sampleEntryPoint": "/samples/phase-16/1606/index.html"
+  },
+  "toolState": {
+    "preferredToolId": "physics-sandbox"
+  },
+  "provenance": {
+    "path": "/samples/phase-16/1606/sample-1606-physics-sandbox.json",
+    "createdAt": "2026-04-24T00:00:00.000Z",
+    "version": 1
+  }
+}

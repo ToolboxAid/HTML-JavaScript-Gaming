@@ -73,6 +73,15 @@ function normalizeSamplePresetPath(pathValue) {
   return "";
 }
 
+function buildPresetLoadedStatus(sampleId, samplePresetPath) {
+  const normalizedSampleId = typeof sampleId === "string" ? sampleId.trim() : "";
+  if (normalizedSampleId) {
+    return `Loaded preset from sample ${normalizedSampleId}.`;
+  }
+  const normalizedPath = typeof samplePresetPath === "string" ? samplePresetPath.trim() : "";
+  return normalizedPath ? `Loaded preset from ${normalizedPath}.` : "Loaded preset.";
+}
+
 function extractTileMapDocumentFromSamplePreset(rawPreset) {
   if (!rawPreset || typeof rawPreset !== "object") {
     return rawPreset;
@@ -2026,8 +2035,7 @@ class TileMapEditorApp {
       this.renderAll();
       void this.reloadTilesetImageFromDocument({ quiet: true });
       void this.preloadIndividualTileImages({ quiet: true });
-      const sourceLabel = sampleId ? `sample ${sampleId}` : samplePresetPath;
-      this.updateStatus(`Loaded preset from ${sourceLabel}.`);
+      this.updateStatus(buildPresetLoadedStatus(sampleId, samplePresetPath));
     } catch (error) {
       this.updateStatus(`Preset load failed: ${error instanceof Error ? error.message : "unknown error"}`);
     }

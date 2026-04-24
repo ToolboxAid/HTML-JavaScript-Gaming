@@ -47,6 +47,15 @@ function normalizeSamplePresetPath(pathValue) {
   return "";
 }
 
+function buildPresetLoadedStatus(sampleId, samplePresetPath) {
+  const normalizedSampleId = typeof sampleId === "string" ? sampleId.trim() : "";
+  if (normalizedSampleId) {
+    return `Loaded preset from sample ${normalizedSampleId}.`;
+  }
+  const normalizedPath = typeof samplePresetPath === "string" ? samplePresetPath.trim() : "";
+  return normalizedPath ? `Loaded preset from ${normalizedPath}.` : "Loaded preset.";
+}
+
 const state = {
   documentName: "untitled-background",
   canvasWidth: 1600,
@@ -2556,8 +2565,7 @@ async function tryLoadPresetFromQuery() {
     if (extractedPreset.editorOptions) {
       applySampleEditorOptions(extractedPreset.editorOptions);
     }
-    const sourceLabel = sampleId ? `sample ${sampleId}` : samplePresetPath;
-    setStatus(`Loaded preset from ${sourceLabel}.`);
+    setStatus(buildPresetLoadedStatus(sampleId, samplePresetPath));
     return true;
   } catch (error) {
     setStatus(`Preset load failed: ${error instanceof Error ? error.message : "unknown error"}`);

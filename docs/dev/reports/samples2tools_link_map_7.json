@@ -1,0 +1,23 @@
+{
+  "generatedAt": "2026-04-24T14:30:04.422Z",
+  "scope": "phase-01-phase-19",
+  "purpose": "batch-7-physics-sandbox",
+  "links": [
+    {
+      "toolId": "physics-sandbox",
+      "sampleId": "0303",
+      "phase": "03",
+      "title": "Physics System",
+      "href": "./phase-03/0303/index.html",
+      "presetPath": "/samples/phase-03/0303/sample-0303-physics-sandbox.json"
+    },
+    {
+      "toolId": "physics-sandbox",
+      "sampleId": "1606",
+      "phase": "16",
+      "title": "3D Physics Playground",
+      "href": "./phase-16/1606/index.html",
+      "presetPath": "/samples/phase-16/1606/sample-1606-physics-sandbox.json"
+    }
+  ]
+}

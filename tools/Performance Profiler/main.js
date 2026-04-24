@@ -46,6 +46,15 @@ function normalizeSamplePresetPath(pathValue) {
   return "";
 }
 
+function buildPresetLoadedStatus(sampleId, samplePresetPath) {
+  const normalizedSampleId = typeof sampleId === "string" ? sampleId.trim() : "";
+  if (normalizedSampleId) {
+    return `Loaded preset from sample ${normalizedSampleId}.`;
+  }
+  const normalizedPath = typeof samplePresetPath === "string" ? samplePresetPath.trim() : "";
+  return normalizedPath ? `Loaded preset from ${normalizedPath}.` : "Loaded preset.";
+}
+
 function setStatus(message) {
   if (refs.statusText instanceof HTMLElement) {
     refs.statusText.textContent = message;
@@ -234,8 +243,7 @@ async function tryLoadPresetFromQuery() {
       throw new Error("Preset payload did not include profileSettings.");
     }
     performanceProfilerApi.applyProjectState(presetSettings);
-    const sourceLabel = sampleId ? `sample ${sampleId}` : samplePresetPath;
-    setStatus(`Loaded preset from ${sourceLabel}.`);
+    setStatus(buildPresetLoadedStatus(sampleId, samplePresetPath));
   } catch (error) {
     setStatus(`Preset load failed: ${error instanceof Error ? error.message : "unknown error"}`);
   }

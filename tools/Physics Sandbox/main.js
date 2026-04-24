@@ -13,6 +13,35 @@ const refs = {
 let disposeInteractionFlow = null;
 let initialized = false;
 
+function normalizeSamplePresetPath(pathValue) {
+  if (typeof pathValue !== "string") {
+    return "";
+  }
+  const trimmed = pathValue.trim().replace(/\\/g, "/");
+  if (!trimmed || trimmed.includes("..")) {
+    return "";
+  }
+  if (trimmed.startsWith("/samples/")) {
+    return trimmed;
+  }
+  if (trimmed.startsWith("./samples/")) {
+    return trimmed;
+  }
+  if (trimmed.startsWith("samples/")) {
+    return `./${trimmed}`;
+  }
+  return "";
+}
+
+function buildPresetLoadedStatus(sampleId, samplePresetPath) {
+  const normalizedSampleId = typeof sampleId === "string" ? sampleId.trim() : "";
+  if (normalizedSampleId) {
+    return `Loaded preset from sample ${normalizedSampleId}.`;
+  }
+  const normalizedPath = typeof samplePresetPath === "string" ? samplePresetPath.trim() : "";
+  return normalizedPath ? `Loaded preset from ${normalizedPath}.` : "Loaded preset.";
+}
+
 function setStatus(message) {
   if (refs.statusText instanceof HTMLElement) {
     refs.statusText.textContent = message;
@@ -28,6 +57,50 @@ function parseBody() {
     return null;
   }
   return { ...parsed };
+}
+
+function extractPhysicsBodyFromPreset(rawPreset) {
+  if (!rawPreset || typeof rawPreset !== "object") {
+    return null;
+  }
+  const payloadBody = rawPreset?.payload?.physicsBody;
+  if (payloadBody && typeof payloadBody === "object" && !Array.isArray(payloadBody)) {
+    return { ...payloadBody };
+  }
+  const directBody = rawPreset?.physicsBody;
+  if (directBody && typeof directBody === "object" && !Array.isArray(directBody)) {
+    return { ...directBody };
+  }
+  return null;
+}
+
+async function tryLoadPresetFromQuery() {
+  const searchParams = new URLSearchParams(window.location.search);
+  const samplePresetPath = normalizeSamplePresetPath(searchParams.get("samplePresetPath") || "");
+  if (!samplePresetPath) {
+    return;
+  }
+
+  const sampleId = String(searchParams.get("sampleId") || "").trim();
+  try {
+    const presetUrl = new URL(samplePresetPath, window.location.href);
+    const response = await fetch(presetUrl.toString(), { cache: "no-store" });
+    if (!response.ok) {
+      throw new Error(`Preset request failed (${response.status}).`);
+    }
+    const rawPreset = await response.json();
+    const body = extractPhysicsBodyFromPreset(rawPreset);
+    if (!body) {
+      throw new Error("Preset payload did not include physicsBody.");
+    }
+    if (!(refs.input instanceof HTMLTextAreaElement)) {
+      throw new Error("Physics body input is unavailable.");
+    }
+    refs.input.value = toPrettyJson(body);
+    setStatus(buildPresetLoadedStatus(sampleId, samplePresetPath));
+  } catch (error) {
+    setStatus(`Preset load failed: ${error instanceof Error ? error.message : "unknown error"}`);
+  }
 }
 
 function runStep() {
@@ -82,6 +155,7 @@ function bootPhysicsSandbox() {
       maxSpeedY: 140
     });
   }
+  void tryLoadPresetFromQuery();
   initialized = true;
   return {
     runStep

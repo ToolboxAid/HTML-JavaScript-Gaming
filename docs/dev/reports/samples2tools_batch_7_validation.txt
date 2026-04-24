@@ -1,0 +1,14 @@
+Samples2Tools Batch 7 Validation
+Generated: 2026-04-24T14:30:04.422Z
+
+[x] Physics Sandbox has exactly 2 mapped samples (phase-01 through phase-19)
+[x] Mapped Physics Sandbox preset files exist on disk
+[x] Samples index roundtrip logic contains mapped sample ids and tool branch
+[x] Physics Sandbox supports samplePresetPath preload and sets loaded preset status
+
+Execution evidence:
+- Physics Sandbox has exactly 2 mapped samples (phase-01 through phase-19): metadata sampleIds=0303,1606
+- Mapped Physics Sandbox preset files exist on disk: /samples/phase-03/0303/sample-0303-physics-sandbox.json; /samples/phase-16/1606/sample-1606-physics-sandbox.json
+- Samples index roundtrip logic contains mapped sample ids and tool branch: samples/index.render.js:shouldUsePresetRoundtrip
+- Physics Sandbox supports samplePresetPath preload and sets loaded preset status: tools/Physics Sandbox/main.js:tryLoadPresetFromQuery
+- overall: pass

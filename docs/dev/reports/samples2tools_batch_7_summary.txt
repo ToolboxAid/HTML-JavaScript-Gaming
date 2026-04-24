@@ -1,0 +1,9 @@
+Samples2Tools Batch 7 Summary
+Generated: 2026-04-24T14:30:04.422Z
+Scope: phase-01 through phase-19 Phase 2 coverage check for Physics Sandbox
+
+Physics Sandbox mapped samples: 2
+- Phase 03 Sample 0303 | Physics System | preset: /samples/phase-03/0303/sample-0303-physics-sandbox.json
+- Phase 16 Sample 1606 | 3D Physics Playground | preset: /samples/phase-16/1606/sample-1606-physics-sandbox.json
+
+Overall: pass

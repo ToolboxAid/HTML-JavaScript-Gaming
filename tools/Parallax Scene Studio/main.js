@@ -58,6 +58,15 @@ function normalizeSamplePresetPath(pathValue) {
   return "";
 }
 
+function buildPresetLoadedStatus(sampleId, samplePresetPath) {
+  const normalizedSampleId = typeof sampleId === "string" ? sampleId.trim() : "";
+  if (normalizedSampleId) {
+    return `Loaded preset from sample ${normalizedSampleId}.`;
+  }
+  const normalizedPath = typeof samplePresetPath === "string" ? samplePresetPath.trim() : "";
+  return normalizedPath ? `Loaded preset from ${normalizedPath}.` : "Loaded preset.";
+}
+
 function clamp(value, min, max, fallback) {
   const number = Number(value);
   if (!Number.isFinite(number)) {
@@ -451,7 +460,8 @@ class ParallaxEditorApp {
     this.renderAll();
     this.bindRuntimeStateSync();
     this.queueLivePreviewSync("init");
-    this.loadSampleManifest();
+    const hasSamplePresetQuery = new URLSearchParams(window.location.search).has("samplePresetPath");
+    this.loadSampleManifest({ quiet: hasSamplePresetQuery });
     void this.tryLoadPresetFromQuery();
   }
 
@@ -1167,8 +1177,7 @@ class ParallaxEditorApp {
       this.skipExternalProjectStateUntil = Date.now() + 3000;
       this.applyParallaxDocument(extractParallaxDocument(toolDocument));
       this.queueLivePreviewSync("sample-preset");
-      const sourceLabel = sampleId ? `sample ${sampleId}` : samplePresetPath;
-      this.updateStatus(`Loaded preset from ${sourceLabel}.`);
+      this.updateStatus(buildPresetLoadedStatus(sampleId, samplePresetPath));
     } catch (error) {
       this.updateStatus(`Preset load failed: ${error instanceof Error ? error.message : "unknown error"}`);
     }

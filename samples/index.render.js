@@ -62,6 +62,10 @@ function shouldUsePresetRoundtrip(sample, toolId) {
     return (sampleId === "0512" && samplePhase === "05")
       || (sampleId === "1407" && samplePhase === "14");
   }
+  if (toolId === "physics-sandbox") {
+    return (sampleId === "0303" && samplePhase === "03")
+      || (sampleId === "1606" && samplePhase === "16");
+  }
   return false;
 }
 
