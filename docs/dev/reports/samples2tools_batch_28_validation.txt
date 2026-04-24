@@ -1,0 +1,22 @@
+Samples2Tools batch 28 validation
+Generated: 2026-04-24T21:38:40.924Z
+Scope: mapped tools expose preset-loaded status messaging
+
+- 3d-asset-viewer: PASS (tools/3D Asset Viewer/main.js)
+- 3d-camera-path-editor: PASS (tools/3D Camera Path Editor/main.js)
+- 3d-json-payload-normalizer: PASS (tools/3D JSON Payload Normalizer/main.js)
+- asset-browser: PASS (tools/Asset Browser/main.js)
+- asset-pipeline-tool: PASS (tools/Asset Pipeline Tool/main.js)
+- palette-browser: PASS (tools/Palette Browser/main.js)
+- parallax-editor: PASS (tools/Parallax Scene Studio/main.js)
+- performance-profiler: PASS (tools/Performance Profiler/main.js)
+- physics-sandbox: PASS (tools/Physics Sandbox/main.js)
+- replay-visualizer: PASS (tools/Replay Visualizer/main.js)
+- sprite-editor: PASS (tools/Sprite Editor/modules/spriteEditorApp.js)
+- state-inspector: PASS (tools/State Inspector/main.js)
+- tile-map-editor: PASS (tools/Tilemap Studio/main.js)
+- tile-model-converter: PASS (tools/Tile Model Converter/main.js)
+- vector-asset-studio: PASS (tools/Vector Asset Studio/main.js)
+- vector-map-editor: PASS (tools/Vector Map Editor/editor/VectorMapEditorApp.js)
+
+Result: 16/16 tools pass status-message checks.

@@ -1,0 +1,24 @@
+Samples2Tools batch 27 validation
+Generated: 2026-04-24T21:37:40.421Z
+Scope: all metadata roundtrip mappings validated against tool-specific preset loaders
+
+Checked mappings: 59
+Issues: 0
+
+Tool summary:
+- 3d-asset-viewer: 3/3 valid
+- 3d-camera-path-editor: 3/3 valid
+- 3d-json-payload-normalizer: 3/3 valid
+- asset-browser: 3/3 valid
+- asset-pipeline-tool: 3/3 valid
+- palette-browser: 3/3 valid
+- parallax-editor: 4/4 valid
+- performance-profiler: 3/3 valid
+- physics-sandbox: 3/3 valid
+- replay-visualizer: 3/3 valid
+- sprite-editor: 9/9 valid
+- state-inspector: 3/3 valid
+- tile-map-editor: 7/7 valid
+- tile-model-converter: 3/3 valid
+- vector-asset-studio: 3/3 valid
+- vector-map-editor: 3/3 valid

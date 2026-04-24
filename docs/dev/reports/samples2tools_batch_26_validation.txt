@@ -1,0 +1,18 @@
+Samples2Tools batch 26 validation
+Generated: 2026-04-24T21:35:34.527Z
+Scope: all metadata roundtrip mappings vs tool preset schema expectations
+
+Checked mappings: 59
+Issues: 10
+
+Issues:
+- sample 0221 tool tile-map-editor (/samples/phase-02/0221/sample-0221-tile-map-editor.json): schema-mismatch
+- sample 0221 tool tile-model-converter (/samples/phase-02/0221/sample-0221-tile-model-converter.json): schema-mismatch
+- sample 0224 tool tile-map-editor (/samples/phase-02/0224/sample-0224-tile-map-editor.json): schema-mismatch
+- sample 0305 tool tile-map-editor (/samples/phase-03/0305/sample-0305-tile-map-editor.json): schema-mismatch
+- sample 0305 tool tile-model-converter (/samples/phase-03/0305/sample-0305-tile-model-converter.json): schema-mismatch
+- sample 1208 tool tile-map-editor (/samples/phase-12/1208/sample-1208-tile-map-editor.json): schema-mismatch
+- sample 1209 tool tile-map-editor (/samples/phase-12/1209/sample-1209-tile-map-editor.json): schema-mismatch
+- sample 1209 tool tile-model-converter (/samples/phase-12/1209/sample-1209-tile-model-converter.json): schema-mismatch
+- sample 1210 tool tile-map-editor (/samples/phase-12/1210/sample-1210-tile-map-editor.json): schema-mismatch
+- sample 1211 tool tile-map-editor (/samples/phase-12/1211/sample-1211-tile-map-editor.json): schema-mismatch

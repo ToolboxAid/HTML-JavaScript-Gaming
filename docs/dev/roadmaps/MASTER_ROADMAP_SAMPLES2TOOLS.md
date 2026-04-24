@@ -145,7 +145,7 @@
 - [x] Every linked sample has `sample-xxxx-toolID.json`.
 - [ ] Sample page consumes same JSON it passes to tool.
 - [ ] Tool launch with `samplePresetPath` succeeds without manual edits.
-- [ ] Tool status includes loaded sample id/path.
+- [x] Tool status includes loaded sample id/path.
 - [x] Metadata and tool card links resolve correctly.
 - [ ] No regressions to direct tool launch without sample params.
 
