@@ -1,0 +1,231 @@
+{
+  "generatedAt": "2026-04-24T16:46:11.137Z",
+  "scope": "phase-01-phase-19",
+  "purpose": "batch-15-metadata-roundtrip-routing",
+  "links": [
+    {
+      "sampleId": "0207",
+      "phase": "02",
+      "title": "Animation System",
+      "toolId": "sprite-editor",
+      "href": "./phase-02/0207/index.html",
+      "presetPath": "/samples/phase-02/0207/sample-0207-sprite-editor.json"
+    },
+    {
+      "sampleId": "0213",
+      "phase": "02",
+      "title": "Sprite Render Layer",
+      "toolId": "sprite-editor",
+      "href": "./phase-02/0213/index.html",
+      "presetPath": "/samples/phase-02/0213/sample-0213-sprite-editor.json"
+    },
+    {
+      "sampleId": "0214",
+      "phase": "02",
+      "title": "Animation Sprite Binding",
+      "toolId": "sprite-editor",
+      "href": "./phase-02/0214/index.html",
+      "presetPath": "/samples/phase-02/0214/sample-0214-sprite-editor.json"
+    },
+    {
+      "sampleId": "0219",
+      "phase": "02",
+      "title": "Sprite Atlas Image Rendering",
+      "toolId": "sprite-editor",
+      "href": "./phase-02/0219/index.html",
+      "presetPath": "/samples/phase-02/0219/sample-0219-sprite-editor.json"
+    },
+    {
+      "sampleId": "0221",
+      "phase": "02",
+      "title": "Tilemap System",
+      "toolId": "tile-map-editor",
+      "href": "./phase-02/0221/index.html",
+      "presetPath": "/samples/phase-02/0221/sample-0221-tile-map-editor.json"
+    },
+    {
+      "sampleId": "0224",
+      "phase": "02",
+      "title": "Tile Camera Sprite Slice",
+      "toolId": "sprite-editor",
+      "href": "./phase-02/0224/index.html",
+      "presetPath": "/samples/phase-02/0224/sample-0224-sprite-editor.json"
+    },
+    {
+      "sampleId": "0301",
+      "phase": "03",
+      "title": "Real Sprite Rendering",
+      "toolId": "sprite-editor",
+      "href": "./phase-03/0301/index.html",
+      "presetPath": "/samples/phase-03/0301/sample-0301-sprite-editor.json"
+    },
+    {
+      "sampleId": "0302",
+      "phase": "03",
+      "title": "Animation System",
+      "toolId": "sprite-editor",
+      "href": "./phase-03/0302/index.html",
+      "presetPath": "/samples/phase-03/0302/sample-0302-sprite-editor.json"
+    },
+    {
+      "sampleId": "0303",
+      "phase": "03",
+      "title": "Physics System",
+      "toolId": "physics-sandbox",
+      "href": "./phase-03/0303/index.html",
+      "presetPath": "/samples/phase-03/0303/sample-0303-physics-sandbox.json"
+    },
+    {
+      "sampleId": "0305",
+      "phase": "03",
+      "title": "Tile Metadata",
+      "toolId": "tile-map-editor",
+      "href": "./phase-03/0305/index.html",
+      "presetPath": "/samples/phase-03/0305/sample-0305-tile-map-editor.json"
+    },
+    {
+      "sampleId": "0306",
+      "phase": "03",
+      "title": "Nes Style Zones Parallax",
+      "toolId": "parallax-editor",
+      "href": "./phase-03/0306/index.html",
+      "presetPath": "/samples/phase-03/0306/sample-0306-parallax-editor.json"
+    },
+    {
+      "sampleId": "0512",
+      "phase": "05",
+      "title": "Performance Metrics",
+      "toolId": "performance-profiler",
+      "href": "./phase-05/0512/index.html",
+      "presetPath": "/samples/phase-05/0512/sample-0512-performance-profiler.json"
+    },
+    {
+      "sampleId": "0708",
+      "phase": "07",
+      "title": "Replay System",
+      "toolId": "replay-visualizer",
+      "href": "./phase-07/0708/index.html",
+      "presetPath": "/samples/phase-07/0708/sample-0708-replay-visualizer.json"
+    },
+    {
+      "sampleId": "0901",
+      "phase": "09",
+      "title": "Vector Rendering System",
+      "toolId": "vector-map-editor",
+      "href": "./phase-09/0901/index.html",
+      "presetPath": "/samples/phase-09/0901/sample-0901-vector-map-editor.json"
+    },
+    {
+      "sampleId": "0905",
+      "phase": "09",
+      "title": "Pixel Perfect Collision",
+      "toolId": "sprite-editor",
+      "href": "./phase-09/0905/index.html",
+      "presetPath": "/samples/phase-09/0905/sample-0905-sprite-editor.json"
+    },
+    {
+      "sampleId": "1204",
+      "phase": "12",
+      "title": "Tilemap Parallax Hero",
+      "toolId": "parallax-editor",
+      "href": "./phase-12/1204/index.html",
+      "presetPath": "/samples/phase-12/1204/sample-1204-parallax-editor.json"
+    },
+    {
+      "sampleId": "1205",
+      "phase": "12",
+      "title": "Multi-System Demo",
+      "toolId": "parallax-editor",
+      "href": "./phase-12/1205/index.html",
+      "presetPath": "/samples/phase-12/1205/sample-1205-parallax-editor.json"
+    },
+    {
+      "sampleId": "1208",
+      "phase": "12",
+      "title": "Tool Formatted Tiles Parallax",
+      "toolId": "parallax-editor",
+      "href": "./phase-12/1208/index.html",
+      "presetPath": "/samples/phase-12/1208/sample-1208-parallax-editor.json"
+    },
+    {
+      "sampleId": "1208",
+      "phase": "12",
+      "title": "Tool Formatted Tiles Parallax",
+      "toolId": "tile-map-editor",
+      "href": "./phase-12/1208/index.html",
+      "presetPath": "/samples/phase-12/1208/sample-1208-tile-map-editor.json"
+    },
+    {
+      "sampleId": "1208",
+      "phase": "12",
+      "title": "Tool Formatted Tiles Parallax",
+      "toolId": "vector-asset-studio",
+      "href": "./phase-12/1208/index.html",
+      "presetPath": "/samples/phase-12/1208/sample-1208-vector-asset-studio.json"
+    },
+    {
+      "sampleId": "1209",
+      "phase": "12",
+      "title": "Tilemap Basic Layout Preset",
+      "toolId": "tile-map-editor",
+      "href": "./phase-12/1209/index.html",
+      "presetPath": "/samples/phase-12/1209/sample-1209-tile-map-editor.json"
+    },
+    {
+      "sampleId": "1210",
+      "phase": "12",
+      "title": "Tilemap Objective Layout Preset",
+      "toolId": "tile-map-editor",
+      "href": "./phase-12/1210/index.html",
+      "presetPath": "/samples/phase-12/1210/sample-1210-tile-map-editor.json"
+    },
+    {
+      "sampleId": "1211",
+      "phase": "12",
+      "title": "Tilemap Mario Learning Layout Preset",
+      "toolId": "tile-map-editor",
+      "href": "./phase-12/1211/index.html",
+      "presetPath": "/samples/phase-12/1211/sample-1211-tile-map-editor.json"
+    },
+    {
+      "sampleId": "1315",
+      "phase": "13",
+      "title": "Rollback Replay Diagnostics",
+      "toolId": "replay-visualizer",
+      "href": "./phase-13/1315/index.html",
+      "presetPath": "/samples/phase-13/1315/sample-1315-replay-visualizer.json"
+    },
+    {
+      "sampleId": "1406",
+      "phase": "14",
+      "title": "Regression Playback Harness",
+      "toolId": "replay-visualizer",
+      "href": "./phase-14/1406/index.html",
+      "presetPath": "/samples/phase-14/1406/sample-1406-replay-visualizer.json"
+    },
+    {
+      "sampleId": "1407",
+      "phase": "14",
+      "title": "Performance Benchmark Runner",
+      "toolId": "performance-profiler",
+      "href": "./phase-14/1407/index.html",
+      "presetPath": "/samples/phase-14/1407/sample-1407-performance-profiler.json"
+    },
+    {
+      "sampleId": "1414",
+      "phase": "14",
+      "title": "Texture Sprite Preprocess Pipeline",
+      "toolId": "sprite-editor",
+      "href": "./phase-14/1414/index.html",
+      "presetPath": "/samples/phase-14/1414/sample-1414-sprite-editor.json"
+    },
+    {
+      "sampleId": "1606",
+      "phase": "16",
+      "title": "Sample 1606 - 3D Physics Playground",
+      "toolId": "physics-sandbox",
+      "href": "./phase-16/1606/index.html",
+      "presetPath": "/samples/phase-16/1606/sample-1606-physics-sandbox.json"
+    }
+  ]
+}

@@ -52,6 +52,7 @@
 - [x] Standard query parameters for tool launch:
 - `sampleId=<id>`
 - `samplePresetPath=/samples/phase-xx/xxxx/sample-xxxx-toolID.json`
+- [x] Explicit sample-to-tool preset routing now lives in metadata via `samples[].roundtripToolPresets` (no hard-coded sample/tool matrix in `samples/index.render.js`).
 - [.] Tool boot behavior:
 - detect contract params
 - fetch JSON from `samplePresetPath`
