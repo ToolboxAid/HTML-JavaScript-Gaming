@@ -34,6 +34,35 @@ const state = {
 
 let disposeInteractionFlow = null;
 
+function normalizeSamplePresetPath(pathValue) {
+  if (typeof pathValue !== "string") {
+    return "";
+  }
+  const trimmed = pathValue.trim().replace(/\\/g, "/");
+  if (!trimmed || trimmed.includes("..")) {
+    return "";
+  }
+  if (trimmed.startsWith("/samples/")) {
+    return trimmed;
+  }
+  if (trimmed.startsWith("./samples/")) {
+    return trimmed;
+  }
+  if (trimmed.startsWith("samples/")) {
+    return `./${trimmed}`;
+  }
+  return "";
+}
+
+function buildPresetLoadedStatus(sampleId, samplePresetPath) {
+  const normalizedSampleId = typeof sampleId === "string" ? sampleId.trim() : "";
+  if (normalizedSampleId) {
+    return `Loaded preset from sample ${normalizedSampleId}.`;
+  }
+  const normalizedPath = typeof samplePresetPath === "string" ? samplePresetPath.trim() : "";
+  return normalizedPath ? `Loaded preset from ${normalizedPath}.` : "Loaded preset.";
+}
+
 function setStatus(message) {
   if (refs.statusText instanceof HTMLElement) {
     refs.statusText.textContent = message;
@@ -105,6 +134,66 @@ function applyEvents(events, sourceLabel = "payload") {
   }
   renderCurrentEvent();
   setStatus(`Loaded ${state.events.length} events from ${sourceLabel}.`);
+}
+
+function extractReplayEventsFromSamplePreset(rawPreset) {
+  if (Array.isArray(rawPreset)) {
+    return rawPreset;
+  }
+  if (!rawPreset || typeof rawPreset !== "object") {
+    return null;
+  }
+
+  const payload = rawPreset.payload && typeof rawPreset.payload === "object"
+    ? rawPreset.payload
+    : rawPreset;
+
+  if (Array.isArray(payload.events)) {
+    return payload.events;
+  }
+  if (Array.isArray(payload.replayEvents)) {
+    return payload.replayEvents;
+  }
+  if (payload.replay && typeof payload.replay === "object") {
+    if (Array.isArray(payload.replay.events)) {
+      return payload.replay.events;
+    }
+    if (Array.isArray(payload.replay.replayEvents)) {
+      return payload.replay.replayEvents;
+    }
+  }
+  return null;
+}
+
+async function tryLoadPresetFromQuery() {
+  const searchParams = new URLSearchParams(window.location.search);
+  const samplePresetPath = normalizeSamplePresetPath(searchParams.get("samplePresetPath") || "");
+  if (!samplePresetPath) {
+    return false;
+  }
+  const sampleId = String(searchParams.get("sampleId") || "").trim();
+  try {
+    const presetUrl = new URL(samplePresetPath, window.location.href);
+    const response = await fetch(presetUrl.toString(), { cache: "no-store" });
+    if (!response.ok) {
+      throw new Error(`Preset request failed (${response.status}).`);
+    }
+    const rawPreset = await response.json();
+    const events = extractReplayEventsFromSamplePreset(rawPreset);
+    if (!Array.isArray(events)) {
+      throw new Error("Preset payload did not include replay events.");
+    }
+    stopPlayback();
+    applyEvents(events, "sample preset");
+    if (refs.input instanceof HTMLTextAreaElement) {
+      refs.input.value = toPrettyJson({ events: normalizeReplayEvents(events) });
+    }
+    setStatus(buildPresetLoadedStatus(sampleId, samplePresetPath));
+    return true;
+  } catch (error) {
+    setStatus(`Preset load failed: ${error instanceof Error ? error.message : "unknown error"}`);
+    return false;
+  }
 }
 
 function loadReplayFromInput() {
@@ -261,6 +350,7 @@ function bootReplayVisualizer() {
         refs.input.value = toPrettyJson({ events: state.events });
       }
     }
+    void tryLoadPresetFromQuery();
     initialized = true;
   }
   window.replayVisualizerApp = replayVisualizerApi;

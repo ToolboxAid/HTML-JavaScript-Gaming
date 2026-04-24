@@ -1,0 +1,15 @@
+{
+  "generatedAt": "2026-04-24T14:52:28.974Z",
+  "scope": "phase-01-phase-19",
+  "purpose": "batch-9-vector-map-editor",
+  "links": [
+    {
+      "toolId": "vector-map-editor",
+      "sampleId": "0901",
+      "phase": "09",
+      "title": "Vector Rendering System",
+      "href": "./phase-09/0901/index.html",
+      "presetPath": "/samples/phase-09/0901/sample-0901-vector-map-editor.json"
+    }
+  ]
+}

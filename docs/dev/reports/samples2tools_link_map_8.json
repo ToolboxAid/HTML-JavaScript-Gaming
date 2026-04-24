@@ -1,0 +1,31 @@
+{
+  "generatedAt": "2026-04-24T14:48:18.574Z",
+  "scope": "phase-01-phase-19",
+  "purpose": "batch-8-replay-visualizer",
+  "links": [
+    {
+      "toolId": "replay-visualizer",
+      "sampleId": "0708",
+      "phase": "07",
+      "title": "Replay System",
+      "href": "./phase-07/0708/index.html",
+      "presetPath": "/samples/phase-07/0708/sample-0708-replay-visualizer.json"
+    },
+    {
+      "toolId": "replay-visualizer",
+      "sampleId": "1315",
+      "phase": "13",
+      "title": "Rollback Replay Diagnostics",
+      "href": "./phase-13/1315/index.html",
+      "presetPath": "/samples/phase-13/1315/sample-1315-replay-visualizer.json"
+    },
+    {
+      "toolId": "replay-visualizer",
+      "sampleId": "1406",
+      "phase": "14",
+      "title": "Regression Playback Harness",
+      "href": "./phase-14/1406/index.html",
+      "presetPath": "/samples/phase-14/1406/sample-1406-replay-visualizer.json"
+    }
+  ]
+}

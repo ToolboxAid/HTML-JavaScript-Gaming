@@ -4952,6 +4952,9 @@
         "engine/scene/index/Scene",
         "engine/theme/index/Theme",
         "engine/theme/index/ThemeTokens"
+      ],
+      "toolHints": [
+        "replay-visualizer"
       ]
     },
     {
@@ -5509,6 +5512,9 @@
         "engine/scene/index/Scene",
         "engine/theme/index/Theme",
         "engine/theme/index/ThemeTokens"
+      ],
+      "toolHints": [
+        "vector-map-editor"
       ]
     },
     {
@@ -7010,6 +7016,9 @@
         "engine/scene/index/Scene",
         "engine/theme/index/Theme",
         "engine/theme/index/ThemeTokens"
+      ],
+      "toolHints": [
+        "replay-visualizer"
       ]
     },
     {
@@ -7348,6 +7357,9 @@
       "href": "./phase-14/1406/index.html",
       "classValues": [
         "engine/scene/index/Scene"
+      ],
+      "toolHints": [
+        "replay-visualizer"
       ]
     },
     {

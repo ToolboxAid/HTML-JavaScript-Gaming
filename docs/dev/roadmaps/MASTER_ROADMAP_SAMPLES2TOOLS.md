@@ -92,9 +92,9 @@
 - [x] Parallax Scene Studio (4 candidate samples)
 - [x] Performance Profiler (2 candidate samples)
 - [x] Physics Sandbox (2 candidate samples)
-- [ ] Replay Visualizer (3 candidate samples)
+- [x] Replay Visualizer (3 candidate samples)
 - [x] Vector Asset Studio (1 candidate sample)
-- [ ] Vector Map Editor (1 candidate sample)
+- [x] Vector Map Editor (1 candidate sample)
 - [ ] For each:
 - create/link `sample-xxxx-toolID.json` in selected sample folders
 - add/open tool link with shared launch contract
@@ -154,6 +154,6 @@
 - [x] `docs/dev/reports/samples2tools_link_map_<n>.json`
 
 ## Current Snapshot (from tools_used.txt)
-- [x] Current tagged samples across active tools: `13` (phase-01 through phase-19)
+- [x] Current tagged samples across active tools: `17` (phase-01 through phase-19)
 - [x] Candidate coverage inventory exists for all active tools
 - [.] Convert candidates into curated, validated sample-to-tool links

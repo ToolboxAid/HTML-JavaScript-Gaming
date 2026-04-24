@@ -42,6 +42,54 @@ function parseNumericInput(value) {
   return Number.isFinite(numeric) ? numeric : null;
 }
 
+function normalizeSamplePresetPath(pathValue) {
+  if (typeof pathValue !== "string") {
+    return "";
+  }
+  const trimmed = pathValue.trim().replace(/\\/g, "/");
+  if (!trimmed || trimmed.includes("..")) {
+    return "";
+  }
+  if (trimmed.startsWith("/samples/")) {
+    return trimmed;
+  }
+  if (trimmed.startsWith("./samples/")) {
+    return trimmed;
+  }
+  if (trimmed.startsWith("samples/")) {
+    return `./${trimmed}`;
+  }
+  return "";
+}
+
+function buildPresetLoadedStatus(sampleId, samplePresetPath) {
+  const normalizedSampleId = typeof sampleId === "string" ? sampleId.trim() : "";
+  if (normalizedSampleId) {
+    return `Loaded preset from sample ${normalizedSampleId}.`;
+  }
+  const normalizedPath = typeof samplePresetPath === "string" ? samplePresetPath.trim() : "";
+  return normalizedPath ? `Loaded preset from ${normalizedPath}.` : "Loaded preset.";
+}
+
+function extractVectorMapDocumentFromSamplePreset(rawPreset) {
+  if (!rawPreset || typeof rawPreset !== "object") {
+    return rawPreset;
+  }
+  const payload = rawPreset.payload && typeof rawPreset.payload === "object"
+    ? rawPreset.payload
+    : rawPreset;
+  if (payload.vectorMapDocument && typeof payload.vectorMapDocument === "object") {
+    return payload.vectorMapDocument;
+  }
+  if (payload.vectorMap && typeof payload.vectorMap === "object") {
+    return payload.vectorMap;
+  }
+  if (payload.document && typeof payload.document === "object") {
+    return payload.document;
+  }
+  return payload;
+}
+
 export class VectorMapEditorApp {
   constructor(rootDocument) {
     this.rootDocument = rootDocument;
@@ -187,6 +235,7 @@ export class VectorMapEditorApp {
     });
     this.setStatus("Vector Map Editor ready.");
     void this.loadSampleManifest({ quiet: true });
+    void this.tryLoadPresetFromQuery();
   }
 
   async loadSampleManifest(options = {}) {
@@ -284,6 +333,41 @@ export class VectorMapEditorApp {
     this.render();
     const sampleName = selectedPath.split("/").pop() || "sample";
     this.setStatus(`Loaded sample ${sampleName}.`);
+  }
+
+  async tryLoadPresetFromQuery() {
+    const searchParams = new URLSearchParams(window.location.search);
+    const samplePresetPath = normalizeSamplePresetPath(searchParams.get("samplePresetPath") || "");
+    if (!samplePresetPath) {
+      return false;
+    }
+    const sampleId = String(searchParams.get("sampleId") || "").trim();
+    try {
+      const presetUrl = new URL(samplePresetPath, window.location.href);
+      const response = await fetch(presetUrl.toString(), { cache: "no-store" });
+      if (!response.ok) {
+        throw new Error(`preset request failed: ${response.status}`);
+      }
+      const rawPreset = await response.json();
+      const toolDocument = extractVectorMapDocumentFromSamplePreset(rawPreset);
+      this.cancelSpinAnimation();
+      this.documentModel.setData(toolDocument);
+      this.selectionModel.clear();
+      this.lastCollisionResult = null;
+      this.historyManager.reset();
+      this.pendingHistoryEntry = null;
+      this.workspaceViewMode = this.documentModel.getData().mode;
+      this.elements.workspaceModeSelect.value = this.workspaceViewMode;
+      this.createInteractionController();
+      this.interactionController.setToolMode(this.elements.toolModeSelect.value);
+      this.syncUIFromDocument();
+      this.render();
+      this.setStatus(buildPresetLoadedStatus(sampleId, samplePresetPath));
+      return true;
+    } catch (error) {
+      this.setStatus(`Preset load failed: ${error instanceof Error ? error.message : "unknown error"}`);
+      return false;
+    }
   }
 
   wireEvents() {

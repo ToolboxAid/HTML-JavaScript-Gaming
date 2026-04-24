@@ -1,0 +1,14 @@
+Samples2Tools Batch 8 Validation
+Generated: 2026-04-24T14:48:18.574Z
+
+[x] Replay Visualizer has exactly 3 mapped samples (phase-01 through phase-19)
+[x] Mapped Replay Visualizer preset files exist on disk
+[x] Samples index roundtrip logic contains mapped sample ids and tool branch
+[x] Replay Visualizer supports samplePresetPath preload and sets standardized loaded preset status
+
+Execution evidence:
+- Replay Visualizer has exactly 3 mapped samples (phase-01 through phase-19): metadata sampleIds=0708,1315,1406
+- Mapped Replay Visualizer preset files exist on disk: /samples/phase-07/0708/sample-0708-replay-visualizer.json; /samples/phase-13/1315/sample-1315-replay-visualizer.json; /samples/phase-14/1406/sample-1406-replay-visualizer.json
+- Samples index roundtrip logic contains mapped sample ids and tool branch: samples/index.render.js:shouldUsePresetRoundtrip
+- Replay Visualizer supports samplePresetPath preload and sets standardized loaded preset status: tools/Replay Visualizer/main.js:tryLoadPresetFromQuery
+- overall: pass

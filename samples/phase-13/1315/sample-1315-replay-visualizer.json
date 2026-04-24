@@ -1,0 +1,59 @@
+{
+  "sampleId": "1315",
+  "phase": "13",
+  "title": "Rollback Replay Diagnostics",
+  "description": "Shared sample preset for Sample 1315 and Replay Visualizer preload.",
+  "toolHints": [
+    "replay-visualizer"
+  ],
+  "payload": {
+    "events": [
+      {
+        "id": "predict-1",
+        "timeMs": 0,
+        "type": "predict",
+        "label": "Predict Input #1",
+        "payload": { "dx": 24, "stateX": 164 }
+      },
+      {
+        "id": "predict-2",
+        "timeMs": 120,
+        "type": "predict",
+        "label": "Predict Input #2",
+        "payload": { "dx": 24, "stateX": 188 }
+      },
+      {
+        "id": "authority-correct",
+        "timeMs": 320,
+        "type": "rollback",
+        "label": "Authority Correction",
+        "payload": { "authoritativeX": 152, "frame": 1 }
+      },
+      {
+        "id": "replay-inputs",
+        "timeMs": 480,
+        "type": "replay",
+        "label": "Replay Predicted Inputs",
+        "payload": { "replayedInputs": 1, "resultX": 176 }
+      },
+      {
+        "id": "diag-summary",
+        "timeMs": 760,
+        "type": "diagnostic",
+        "label": "Rollback Summary",
+        "payload": { "corrections": 1, "events": 1 }
+      }
+    ]
+  },
+  "runtime": {
+    "sampleEntryPoint": "/samples/phase-13/1315/index.html"
+  },
+  "toolState": {
+    "preferredToolId": "replay-visualizer"
+  },
+  "provenance": {
+    "path": "/samples/phase-13/1315/sample-1315-replay-visualizer.json",
+    "createdAt": "2026-04-24T00:00:00.000Z",
+    "version": 1
+  }
+}

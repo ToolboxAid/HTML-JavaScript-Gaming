@@ -1,0 +1,14 @@
+Samples2Tools Batch 9 Validation
+Generated: 2026-04-24T14:52:28.974Z
+
+[x] Vector Map Editor has exactly 1 mapped sample (phase-01 through phase-19)
+[x] Mapped Vector Map Editor preset file exists on disk
+[x] Samples index roundtrip logic contains mapped sample id and tool branch
+[x] Vector Map Editor supports samplePresetPath preload and sets standardized loaded preset status
+
+Execution evidence:
+- Vector Map Editor has exactly 1 mapped sample (phase-01 through phase-19): metadata sampleId=0901
+- Mapped Vector Map Editor preset file exists on disk: /samples/phase-09/0901/sample-0901-vector-map-editor.json
+- Samples index roundtrip logic contains mapped sample id and tool branch: samples/index.render.js:shouldUsePresetRoundtrip
+- Vector Map Editor supports samplePresetPath preload and sets standardized loaded preset status: tools/Vector Map Editor/editor/VectorMapEditorApp.js:tryLoadPresetFromQuery
+- overall: pass

@@ -1,0 +1,59 @@
+{
+  "sampleId": "0708",
+  "phase": "07",
+  "title": "Replay System",
+  "description": "Shared sample preset for Sample 0708 and Replay Visualizer preload.",
+  "toolHints": [
+    "replay-visualizer"
+  ],
+  "payload": {
+    "events": [
+      {
+        "id": "boot-0708",
+        "timeMs": 0,
+        "type": "boot",
+        "label": "Replay Runtime Boot",
+        "payload": { "scene": "replay-system" }
+      },
+      {
+        "id": "record-start",
+        "timeMs": 120,
+        "type": "record",
+        "label": "Start Recording",
+        "payload": { "actor": "runner", "x": 120 }
+      },
+      {
+        "id": "record-stop",
+        "timeMs": 620,
+        "type": "record",
+        "label": "Stop Recording",
+        "payload": { "frames": 30, "x": 760 }
+      },
+      {
+        "id": "playback-start",
+        "timeMs": 700,
+        "type": "playback",
+        "label": "Start Playback",
+        "payload": { "mode": "deterministic" }
+      },
+      {
+        "id": "playback-end",
+        "timeMs": 1120,
+        "type": "playback",
+        "label": "Playback Complete",
+        "payload": { "result": "match" }
+      }
+    ]
+  },
+  "runtime": {
+    "sampleEntryPoint": "/samples/phase-07/0708/index.html"
+  },
+  "toolState": {
+    "preferredToolId": "replay-visualizer"
+  },
+  "provenance": {
+    "path": "/samples/phase-07/0708/sample-0708-replay-visualizer.json",
+    "createdAt": "2026-04-24T00:00:00.000Z",
+    "version": 1
+  }
+}

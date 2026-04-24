@@ -66,6 +66,14 @@ function shouldUsePresetRoundtrip(sample, toolId) {
     return (sampleId === "0303" && samplePhase === "03")
       || (sampleId === "1606" && samplePhase === "16");
   }
+  if (toolId === "replay-visualizer") {
+    return (sampleId === "0708" && samplePhase === "07")
+      || (sampleId === "1315" && samplePhase === "13")
+      || (sampleId === "1406" && samplePhase === "14");
+  }
+  if (toolId === "vector-map-editor") {
+    return sampleId === "0901" && samplePhase === "09";
+  }
   return false;
 }
 

@@ -1,0 +1,10 @@
+Samples2Tools Batch 8 Summary
+Generated: 2026-04-24T14:48:18.574Z
+Scope: phase-01 through phase-19 Phase 2 coverage check for Replay Visualizer
+
+Replay Visualizer mapped samples: 3
+- Phase 07 Sample 0708 | Replay System | preset: /samples/phase-07/0708/sample-0708-replay-visualizer.json
+- Phase 13 Sample 1315 | Rollback Replay Diagnostics | preset: /samples/phase-13/1315/sample-1315-replay-visualizer.json
+- Phase 14 Sample 1406 | Regression Playback Harness | preset: /samples/phase-14/1406/sample-1406-replay-visualizer.json
+
+Overall: pass
