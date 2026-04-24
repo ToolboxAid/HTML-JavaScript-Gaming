@@ -26,6 +26,26 @@ const state = {
 
 let disposeInteractionFlow = null;
 
+function normalizeSamplePresetPath(pathValue) {
+  if (typeof pathValue !== "string") {
+    return "";
+  }
+  const trimmed = pathValue.trim().replace(/\\/g, "/");
+  if (!trimmed || trimmed.includes("..")) {
+    return "";
+  }
+  if (trimmed.startsWith("/samples/")) {
+    return trimmed;
+  }
+  if (trimmed.startsWith("./samples/")) {
+    return trimmed;
+  }
+  if (trimmed.startsWith("samples/")) {
+    return `./${trimmed}`;
+  }
+  return "";
+}
+
 function setStatus(message) {
   if (refs.statusText instanceof HTMLElement) {
     refs.statusText.textContent = message;
@@ -174,6 +194,53 @@ const performanceProfilerApi = {
   }
 };
 
+function extractProfileSettingsFromPreset(rawPreset) {
+  if (!rawPreset || typeof rawPreset !== "object") {
+    return null;
+  }
+  const payload = rawPreset.payload;
+  const fromPayload = payload && typeof payload === "object"
+    ? payload.profileSettings
+    : null;
+  const candidate = fromPayload && typeof fromPayload === "object"
+    ? fromPayload
+    : (rawPreset.profileSettings && typeof rawPreset.profileSettings === "object" ? rawPreset.profileSettings : null);
+  if (!candidate) {
+    return null;
+  }
+  return {
+    workloadIterations: Number(candidate.workloadIterations),
+    workSize: Number(candidate.workSize),
+    frameSamples: Number(candidate.frameSamples)
+  };
+}
+
+async function tryLoadPresetFromQuery() {
+  const searchParams = new URLSearchParams(window.location.search);
+  const samplePresetPath = normalizeSamplePresetPath(searchParams.get("samplePresetPath") || "");
+  if (!samplePresetPath) {
+    return;
+  }
+  const sampleId = String(searchParams.get("sampleId") || "").trim();
+  try {
+    const presetUrl = new URL(samplePresetPath, window.location.href);
+    const response = await fetch(presetUrl.toString(), { cache: "no-store" });
+    if (!response.ok) {
+      throw new Error(`Preset request failed (${response.status}).`);
+    }
+    const rawPreset = await response.json();
+    const presetSettings = extractProfileSettingsFromPreset(rawPreset);
+    if (!presetSettings) {
+      throw new Error("Preset payload did not include profileSettings.");
+    }
+    performanceProfilerApi.applyProjectState(presetSettings);
+    const sourceLabel = sampleId ? `sample ${sampleId}` : samplePresetPath;
+    setStatus(`Loaded preset from ${sourceLabel}.`);
+  } catch (error) {
+    setStatus(`Preset load failed: ${error instanceof Error ? error.message : "unknown error"}`);
+  }
+}
+
 function bootPerformanceProfiler() {
   if (!initialized) {
     bindEvents();
@@ -191,6 +258,7 @@ function bootPerformanceProfiler() {
       performanceProfilerApi.applyProjectState(hostContext.state);
       setStatus("Profiler initialized from host context state.");
     }
+    void tryLoadPresetFromQuery();
     initialized = true;
   }
   window.performanceProfilerApp = performanceProfilerApi;

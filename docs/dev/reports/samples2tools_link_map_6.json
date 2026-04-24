@@ -1,0 +1,23 @@
+{
+  "generatedAt": "2026-04-24T00:58:14.358Z",
+  "scope": "phase-01-phase-19",
+  "purpose": "batch-6-performance-profiler",
+  "links": [
+    {
+      "toolId": "performance-profiler",
+      "sampleId": "0512",
+      "phase": "05",
+      "title": "Performance Metrics",
+      "href": "./phase-05/0512/index.html",
+      "presetPath": "/samples/phase-05/0512/sample-0512-performance-profiler.json"
+    },
+    {
+      "toolId": "performance-profiler",
+      "sampleId": "1407",
+      "phase": "14",
+      "title": "Performance Benchmark Runner",
+      "href": "./phase-14/1407/index.html",
+      "presetPath": "/samples/phase-14/1407/sample-1407-performance-profiler.json"
+    }
+  ]
+}

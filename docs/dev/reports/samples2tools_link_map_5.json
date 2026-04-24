@@ -1,0 +1,79 @@
+{
+  "generatedAt": "2026-04-24T00:51:08.490Z",
+  "scope": "phase-01-phase-19",
+  "purpose": "batch-5-validation-support",
+  "links": [
+    {
+      "toolId": "parallax-editor",
+      "sampleId": "0306",
+      "phase": "03",
+      "title": "Nes Style Zones Parallax",
+      "href": "./phase-03/0306/index.html",
+      "presetPath": "/samples/phase-03/0306/sample-0306-parallax-editor.json"
+    },
+    {
+      "toolId": "parallax-editor",
+      "sampleId": "1204",
+      "phase": "12",
+      "title": "Tilemap Parallax Hero",
+      "href": "./phase-12/1204/index.html",
+      "presetPath": "/samples/phase-12/1204/sample-1204-parallax-editor.json"
+    },
+    {
+      "toolId": "parallax-editor",
+      "sampleId": "1205",
+      "phase": "12",
+      "title": "Multi-System Demo",
+      "href": "./phase-12/1205/index.html",
+      "presetPath": "/samples/phase-12/1205/sample-1205-parallax-editor.json"
+    },
+    {
+      "toolId": "parallax-editor",
+      "sampleId": "1208",
+      "phase": "12",
+      "title": "Tool Formatted Tiles Parallax",
+      "href": "./phase-12/1208/index.html",
+      "presetPath": "/samples/phase-12/1208/sample-1208-parallax-editor.json"
+    },
+    {
+      "toolId": "tile-map-editor",
+      "sampleId": "1208",
+      "phase": "12",
+      "title": "Tool Formatted Tiles Parallax",
+      "href": "./phase-12/1208/index.html",
+      "presetPath": "/samples/phase-12/1208/sample-1208-tile-map-editor.json"
+    },
+    {
+      "toolId": "tile-map-editor",
+      "sampleId": "1209",
+      "phase": "12",
+      "title": "Tilemap Basic Layout Preset",
+      "href": "./phase-12/1209/index.html",
+      "presetPath": "/samples/phase-12/1209/sample-1209-tile-map-editor.json"
+    },
+    {
+      "toolId": "tile-map-editor",
+      "sampleId": "1210",
+      "phase": "12",
+      "title": "Tilemap Objective Layout Preset",
+      "href": "./phase-12/1210/index.html",
+      "presetPath": "/samples/phase-12/1210/sample-1210-tile-map-editor.json"
+    },
+    {
+      "toolId": "tile-map-editor",
+      "sampleId": "1211",
+      "phase": "12",
+      "title": "Tilemap Mario Learning Layout Preset",
+      "href": "./phase-12/1211/index.html",
+      "presetPath": "/samples/phase-12/1211/sample-1211-tile-map-editor.json"
+    },
+    {
+      "toolId": "vector-asset-studio",
+      "sampleId": "1208",
+      "phase": "12",
+      "title": "Tool Formatted Tiles Parallax",
+      "href": "./phase-12/1208/index.html",
+      "presetPath": "/samples/phase-12/1208/sample-1208-vector-asset-studio.json"
+    }
+  ]
+}

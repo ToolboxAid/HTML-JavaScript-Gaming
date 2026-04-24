@@ -4133,6 +4133,9 @@
         "engine/scene/index/Scene",
         "engine/theme/index/Theme",
         "engine/theme/index/ThemeTokens"
+      ],
+      "toolHints": [
+        "performance-profiler"
       ]
     },
     {
@@ -7365,6 +7368,9 @@
       "href": "./phase-14/1407/index.html",
       "classValues": [
         "engine/scene/index/Scene"
+      ],
+      "toolHints": [
+        "performance-profiler"
       ]
     },
     {

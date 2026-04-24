@@ -1,0 +1,9 @@
+Samples2Tools Batch 6 Summary
+Generated: 2026-04-24T00:58:14.358Z
+Scope: phase-01 through phase-19 Phase 2 coverage check for Performance Profiler
+
+Performance Profiler mapped samples: 2
+- Phase 05 Sample 0512 | Performance Metrics | preset: /samples/phase-05/0512/sample-0512-performance-profiler.json
+- Phase 14 Sample 1407 | Performance Benchmark Runner | preset: /samples/phase-14/1407/sample-1407-performance-profiler.json
+
+Overall: pass

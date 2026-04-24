@@ -35,7 +35,7 @@
 - [x] Validate that older payloads in active lanes are migrated and no active launcher depends on `imageDataUrl`.
 
 ## Canonical Data Contract
-- [.] File naming standard: `samples/phase-xx/xxxx/sample-xxxx-toolID.json`
+- [x] File naming standard: `samples/phase-xx/xxxx/sample-xxxx-toolID.json`
 - [ ] Required fields:
 - `sampleId` (string)
 - `phase` (string)
@@ -52,7 +52,7 @@
 - [x] Standard query parameters for tool launch:
 - `sampleId=<id>`
 - `samplePresetPath=/samples/phase-xx/xxxx/sample-xxxx-toolID.json`
-- [ ] Tool boot behavior:
+- [.] Tool boot behavior:
 - detect contract params
 - fetch JSON from `samplePresetPath`
 - validate minimal schema
@@ -89,11 +89,11 @@
 - no Phase 20 coupling
 
 ### Phase 2 - Highest Value Tools (from tools_used.txt)
-- [ ] Parallax Scene Studio (4 candidate samples)
-- [ ] Performance Profiler (2 candidate samples)
+- [x] Parallax Scene Studio (4 candidate samples)
+- [x] Performance Profiler (2 candidate samples)
 - [ ] Physics Sandbox (2 candidate samples)
 - [ ] Replay Visualizer (3 candidate samples)
-- [ ] Vector Asset Studio (1 candidate sample)
+- [x] Vector Asset Studio (1 candidate sample)
 - [ ] Vector Map Editor (1 candidate sample)
 - [ ] For each:
 - create/link `sample-xxxx-toolID.json` in selected sample folders
@@ -154,6 +154,6 @@
 - [x] `docs/dev/reports/samples2tools_link_map_<n>.json`
 
 ## Current Snapshot (from tools_used.txt)
-- [x] Current tagged samples across active tools: `9` (phase-01 through phase-19)
+- [x] Current tagged samples across active tools: `11` (phase-01 through phase-19)
 - [x] Candidate coverage inventory exists for all active tools
 - [.] Convert candidates into curated, validated sample-to-tool links

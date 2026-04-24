@@ -1,0 +1,14 @@
+Samples2Tools Batch 6 Validation
+Generated: 2026-04-24T00:58:14.358Z
+
+[x] Performance Profiler has exactly 2 mapped samples (phase-01 through phase-19)
+[x] Mapped Performance Profiler preset files exist on disk
+[x] Samples index roundtrip logic contains mapped sample ids and tool branch
+[x] Performance Profiler supports samplePresetPath preload and sets loaded preset status
+
+Execution evidence:
+- Performance Profiler has exactly 2 mapped samples (phase-01 through phase-19): metadata sampleIds=0512,1407
+- Mapped Performance Profiler preset files exist on disk: /samples/phase-05/0512/sample-0512-performance-profiler.json; /samples/phase-14/1407/sample-1407-performance-profiler.json
+- Samples index roundtrip logic contains mapped sample ids and tool branch: samples/index.render.js:shouldUsePresetRoundtrip
+- Performance Profiler supports samplePresetPath preload and sets loaded preset status: tools/Performance Profiler/main.js:tryLoadPresetFromQuery
+- overall: pass

@@ -1,0 +1,27 @@
+{
+  "sampleId": "0512",
+  "phase": "05",
+  "title": "Performance Metrics",
+  "description": "Shared sample preset for Sample 0512 and Performance Profiler preload.",
+  "toolHints": [
+    "performance-profiler"
+  ],
+  "payload": {
+    "profileSettings": {
+      "workloadIterations": 300,
+      "workSize": 3000,
+      "frameSamples": 120
+    }
+  },
+  "runtime": {
+    "sampleEntryPoint": "/samples/phase-05/0512/index.html"
+  },
+  "toolState": {
+    "preferredToolId": "performance-profiler"
+  },
+  "provenance": {
+    "path": "/samples/phase-05/0512/sample-0512-performance-profiler.json",
+    "createdAt": "2026-04-24T00:00:00.000Z",
+    "version": 1
+  }
+}

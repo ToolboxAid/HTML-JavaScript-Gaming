@@ -1,0 +1,14 @@
+Samples2Tools Batch 4 Validation
+Generated: 2026-04-24T00:48:01.323Z
+
+[x] Parallax Scene Studio has exactly 4 mapped samples (phase-01 through phase-19)
+[x] Vector Asset Studio has exactly 1 mapped sample (phase-01 through phase-19)
+[x] Mapped Parallax/Vector preset files exist on disk
+[x] Samples index roundtrip logic contains mapped sample ids and tool branches
+
+Execution evidence:
+- Parallax Scene Studio has exactly 4 mapped samples (phase-01 through phase-19): parallax-editor links=4
+- Vector Asset Studio has exactly 1 mapped sample (phase-01 through phase-19): vector-asset-studio links=1
+- Mapped Parallax/Vector preset files exist on disk: missing parallax=0, missing vector=0
+- Samples index roundtrip logic contains mapped sample ids and tool branches: samples/index.render.js:shouldUsePresetRoundtrip
+- overall: pass

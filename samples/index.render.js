@@ -58,6 +58,10 @@ function shouldUsePresetRoundtrip(sample, toolId) {
       || (sampleId === "1210" && samplePhase === "12")
       || (sampleId === "1211" && samplePhase === "12");
   }
+  if (toolId === "performance-profiler") {
+    return (sampleId === "0512" && samplePhase === "05")
+      || (sampleId === "1407" && samplePhase === "14");
+  }
   return false;
 }
 
