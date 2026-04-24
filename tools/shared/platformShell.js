@@ -72,6 +72,74 @@ function getRegistryEntryHref(entryPoint) {
   return getPageMode() === "landing" ? `./${entryPoint}` : `../${entryPoint}`;
 }
 
+function normalizeTextValue(value) {
+  return typeof value === "string" ? value.trim() : "";
+}
+
+function normalizeLocalHref(value, allowedPrefixes) {
+  const normalized = normalizeTextValue(value).replace(/\\/g, "/");
+  if (!normalized || normalized.includes("..") || !normalized.startsWith("/")) {
+    return "";
+  }
+  if (!Array.isArray(allowedPrefixes) || allowedPrefixes.length === 0) {
+    return normalized;
+  }
+  return allowedPrefixes.some((prefix) => normalized.startsWith(prefix)) ? normalized : "";
+}
+
+function buildWorkspaceHrefFromGameId(gameId) {
+  const normalizedGameId = normalizeTextValue(gameId);
+  return normalizedGameId
+    ? `/tools/Workspace%20Manager/index.html?game=${encodeURIComponent(normalizedGameId)}`
+    : "";
+}
+
+function readGameLaunchContext() {
+  if (typeof window === "undefined") {
+    return null;
+  }
+  const searchParams = new URLSearchParams(window.location.search);
+  const gameId = normalizeTextValue(searchParams.get("gameId"));
+  const gameTitle = normalizeTextValue(searchParams.get("gameTitle"));
+  const gameHref = normalizeLocalHref(searchParams.get("gameHref"), ["/games/"]);
+  const returnTo = normalizeLocalHref(searchParams.get("returnTo"), ["/games/"]);
+  const workspaceHrefParam = normalizeLocalHref(searchParams.get("workspaceHref"), ["/tools/Workspace%20Manager/", "/tools/Workspace Manager/"]);
+  const workspaceHref = workspaceHrefParam || buildWorkspaceHrefFromGameId(gameId);
+  if (!gameId && !gameTitle && !gameHref && !returnTo && !workspaceHref) {
+    return null;
+  }
+  return {
+    gameId,
+    gameTitle,
+    gameHref,
+    returnTo,
+    workspaceHref
+  };
+}
+
+function renderGameReturnLine() {
+  const context = readGameLaunchContext();
+  if (!context) {
+    return "";
+  }
+  const gameLabel = context.gameTitle || context.gameId || "Game";
+  const returnHref = context.returnTo || "/games/index.html";
+  const gamePageLink = context.gameHref
+    ? `<a class="tools-platform-frame__action-link" href="${escapeHtml(context.gameHref)}">Open Game</a>`
+    : "";
+  const workspaceLink = context.workspaceHref
+    ? `<a class="tools-platform-frame__action-link" href="${escapeHtml(context.workspaceHref)}">Open in Workspace Manager</a>`
+    : "";
+  return `
+    <div class="tools-platform-frame__return-line" aria-label="Game launch context">
+      <span class="tools-platform-frame__return-copy"><strong>Game Source:</strong> ${escapeHtml(gameLabel)}</span>
+      <a class="tools-platform-frame__action-link" href="${escapeHtml(returnHref)}">Return to Games</a>
+      ${gamePageLink}
+      ${workspaceLink}
+    </div>
+  `;
+}
+
 function getManifest() {
   return workspaceController ? workspaceController.getManifest() : null;
 }
@@ -390,6 +458,7 @@ function renderHeaderMarkup(currentTool, isHeaderExpanded) {
   const lockState = resolveWorkspaceToolLockState();
   const navWorkspaceLockClass = showNavThroughTiles && !lockState.workspaceReady ? " is-workspace-locked" : "";
   const sharedActionLinks = !isLanding ? renderSharedActionLinks(currentTool?.id ?? "") : "";
+  const gameReturnLine = !isLanding ? renderGameReturnLine() : "";
   const title = isLanding ? (document.body.dataset.toolTitle || "Tools Platform") : getDisplaySurfaceName(currentTool);
   const description = currentTool
     ? currentTool.description
@@ -418,6 +487,7 @@ function renderHeaderMarkup(currentTool, isHeaderExpanded) {
             ${!isLanding ? `<hr class="tools-platform-frame__divider" />` : ""}
             ${!isLanding ? `
             <div class="tools-platform-frame__controls-stack">
+              ${gameReturnLine}
               ${sharedActionLinks ? `
                 <div class="tools-platform-frame__actions" aria-label="Shared asset and palette actions">
                   ${sharedActionLinks}

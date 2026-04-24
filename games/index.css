@@ -116,6 +116,30 @@
   margin: 6px 0 8px;
 }
 
+.game-tool-roundtrip {
+  margin: 10px 0 0;
+}
+
+.game-tool-roundtrip h4,
+.game-tool-roundtrip p,
+.game-tool-roundtrip li,
+.game-tool-roundtrip a {
+  color: #ffffff;
+}
+
+.game-tool-roundtrip h4 {
+  margin: 0 0 6px;
+}
+
+.game-tool-roundtrip p {
+  margin: 0 0 6px;
+}
+
+.game-tool-roundtrip ul {
+  margin: 0;
+  padding-left: 18px;
+}
+
 .hub-page-games .pin-label {
   margin-right: 6px;
 }

@@ -1,3 +1,5 @@
+import { getToolRegistry } from "../tools/toolRegistry.js";
+
 const METADATA_PATH = "./metadata/games.index.metadata.json";
 const GAMES_PINNED_KEY = "games-index-pinned";
 
@@ -50,6 +52,79 @@ function escapeHtml(value) {
     .replaceAll("'", "&#39;");
 }
 
+function toStandaloneToolHref(entryPoint) {
+  const normalized = String(entryPoint || "").replace(/^\.?\/*/, "");
+  return normalized ? `/tools/${encodeURI(normalized)}` : "";
+}
+
+function normalizeGameHref(value) {
+  const href = normalize(value).replace(/\\/g, "/");
+  if (!href || href.includes("..") || !href.startsWith("/games/")) {
+    return "";
+  }
+  return href;
+}
+
+function buildWorkspaceManagerHref(gameId) {
+  const normalizedGameId = normalize(gameId);
+  return normalizedGameId
+    ? `/tools/Workspace%20Manager/index.html?game=${encodeURIComponent(normalizedGameId)}`
+    : "/tools/Workspace%20Manager/index.html";
+}
+
+function buildReturnHref(toolId) {
+  const normalizedToolId = normalizeToken(toolId);
+  return normalizedToolId
+    ? `/games/index.html?tool=${encodeURIComponent(normalizedToolId)}`
+    : "/games/index.html";
+}
+
+function buildToolTokens(toolHints, toolLabelMap) {
+  const deduped = [...new Set(asArray(toolHints).map((entry) => normalizeToken(entry)).filter(Boolean))];
+  return deduped
+    .filter((toolId) => toolId !== "workspace-manager")
+    .map((toolId) => ({
+      value: toolId,
+      label: toolLabelMap.get(toolId) || toolId
+    }))
+    .sort((a, b) => a.label.localeCompare(b.label, undefined, { sensitivity: "base" }));
+}
+
+function buildRoundtripLinks(game, toolRegistryMap) {
+  const orderedToolHints = asArray(game?.toolHints)
+    .map((entry) => normalizeToken(entry))
+    .filter(Boolean)
+    .filter((toolId) => toolId !== "workspace-manager");
+  const dedupedToolHints = [...new Set(orderedToolHints)];
+  const links = [];
+
+  dedupedToolHints.forEach((toolId) => {
+    const tool = toolRegistryMap.get(toolId);
+    if (!tool) {
+      return;
+    }
+    const baseHref = toStandaloneToolHref(tool.entryPoint);
+    if (!baseHref) {
+      return;
+    }
+    const query = new URLSearchParams();
+    query.set("gameId", game.id);
+    if (game.title) {
+      query.set("gameTitle", game.title);
+    }
+    if (game.href) {
+      query.set("gameHref", game.href);
+    }
+    query.set("workspaceHref", buildWorkspaceManagerHref(game.id));
+    query.set("returnTo", buildReturnHref(tool.id));
+    const href = `${baseHref}?${query.toString()}`;
+    const label = `Open ${normalize(tool.displayName) || normalize(tool.name) || toolId}`;
+    links.push({ toolId, href, label });
+  });
+
+  return links;
+}
+
 function statusLabel(status) {
   switch (status) {
     case "playable":
@@ -83,7 +158,7 @@ function writePinnedSet(pinnedSet) {
   window.localStorage.setItem(GAMES_PINNED_KEY, JSON.stringify([...pinnedSet].sort()));
 }
 
-function buildRows(metadata, pinnedSet) {
+function buildRows(metadata, pinnedSet, toolLabelMap, toolRegistryMap) {
   const rows = asArray(metadata?.games)
     .map((game) => {
       const id = normalize(game?.id);
@@ -96,6 +171,14 @@ function buildRows(metadata, pinnedSet) {
         .sort((a, b) => a.localeCompare(b, undefined, { sensitivity: "base" }));
       const tags = [...new Set(asArray(game?.tags).map((value) => normalizeTag(value)).filter(Boolean))]
         .sort((a, b) => a.localeCompare(b, undefined, { sensitivity: "base" }));
+      const href = normalizeGameHref(game?.href);
+      const toolTokens = buildToolTokens(game?.toolHints, toolLabelMap);
+      const roundtripLinks = buildRoundtripLinks({
+        id,
+        title,
+        href,
+        toolHints: game?.toolHints
+      }, toolRegistryMap);
       return {
         id,
         title,
@@ -103,10 +186,12 @@ function buildRows(metadata, pinnedSet) {
         level,
         status: normalize(game?.status) || "planned",
         classValues,
+        toolTokens,
+        roundtripLinks,
         tags,
         preview: normalize(game?.preview),
-        href: normalize(game?.href),
-        workspaceHref: normalize(game?.href) ? `/tools/Workspace%20Manager/index.html?game=${encodeURIComponent(id)}` : "",
+        href,
+        workspaceHref: href ? buildWorkspaceManagerHref(id) : "",
         sampleTrack: game?.sampleTrack === true,
         debugShowcase: game?.debugShowcase === true,
         requiresService: game?.requiresService === true
@@ -118,8 +203,13 @@ function buildRows(metadata, pinnedSet) {
 
   const levels = [...new Set(rows.map((row) => row.level))].sort(sortLevels);
   const classes = [...new Set(rows.flatMap((row) => row.classValues))].sort((a, b) => a.localeCompare(b, undefined, { sensitivity: "base" }));
+  const tools = [...new Map(
+    rows.flatMap((row) => row.toolTokens).map((token) => [token.value, token.label])
+  ).entries()]
+    .map(([value, label]) => ({ value, label }))
+    .sort((a, b) => a.label.localeCompare(b.label, undefined, { sensitivity: "base" }));
   const tags = [...new Set(rows.flatMap((row) => row.tags))].sort((a, b) => a.localeCompare(b, undefined, { sensitivity: "base" }));
-  return { rows, levels, classes, tags };
+  return { rows, levels, classes, tools, tags };
 }
 
 function filterRows(rows, state) {
@@ -131,13 +221,17 @@ function filterRows(rows, state) {
     if (state.classValue && !row.classValues.includes(state.classValue)) {
       return false;
     }
+    if (state.toolId && !row.toolTokens.some((token) => token.value === state.toolId)) {
+      return false;
+    }
     if (state.tag && !row.tags.includes(state.tag)) {
       return false;
     }
     if (!query) {
       return true;
     }
-    const haystack = `${row.level} ${row.title} ${row.description} ${row.classValues.join(" ")} ${row.tags.join(" ")}`.toLowerCase();
+    const toolText = row.toolTokens.map((token) => `${token.label} ${token.value}`).join(" ");
+    const haystack = `${row.level} ${row.title} ${row.description} ${row.classValues.join(" ")} ${toolText} ${row.tags.join(" ")}`.toLowerCase();
     return haystack.includes(query);
   });
 }
@@ -186,6 +280,17 @@ function renderCard(row, instanceKey = "main") {
   const launchActions = row.workspaceHref
     ? `<p class="game-launch-actions"><a class="game-title-link" href="${escapeHtml(row.workspaceHref)}">Open In Workspace Manager</a></p>`
     : "";
+  const roundtripSection = Array.isArray(row.roundtripLinks) && row.roundtripLinks.length > 0
+    ? `
+      <section class="game-tool-roundtrip">
+        <h4>Tool Roundtrip Links</h4>
+        <p>Open game-related tools with workspace context and a return path back to Games.</p>
+        <ul>
+          ${row.roundtripLinks.map((entry) => `<li><a href="${escapeHtml(entry.href)}">${escapeHtml(entry.label)}</a></li>`).join("")}
+        </ul>
+      </section>
+    `
+    : "";
 
   article.innerHTML = `
     ${titleHtml}
@@ -193,6 +298,7 @@ function renderCard(row, instanceKey = "main") {
     ${previewHtml}
     <p>${escapeHtml(row.description)}</p>
     ${launchActions}
+    ${roundtripSection}
     <p>Classes: ${escapeHtml(classText)}</p>
     <p>Tags: ${escapeHtml(tagText)}</p>
     ${row.requiresService ? '<p class="game-service-note">Requires background service.</p>' : ""}
@@ -262,9 +368,10 @@ export async function initGamesIndex() {
   const statusNode = document.getElementById("games-filter-status");
   const levelSelect = document.getElementById("games-filter-level");
   const classSelect = document.getElementById("games-filter-class");
+  const toolSelect = document.getElementById("games-filter-tool");
   const tagSelect = document.getElementById("games-filter-tag");
   const searchInput = document.getElementById("games-filter-search");
-  if (!container || !pinnedContainer || !statusNode || !levelSelect || !classSelect || !tagSelect || !searchInput) {
+  if (!container || !pinnedContainer || !statusNode || !levelSelect || !classSelect || !toolSelect || !tagSelect || !searchInput) {
     return;
   }
 
@@ -274,17 +381,39 @@ export async function initGamesIndex() {
     return;
   }
   const metadata = await response.json();
+  const toolRegistry = getToolRegistry();
+  const toolLabelMap = new Map(
+    toolRegistry
+      .filter((tool) => tool.id !== "workspace-manager")
+      .map((tool) => [normalizeToken(tool.id), normalize(tool.displayName) || normalize(tool.name) || normalize(tool.id)])
+      .filter((entry) => entry[0] && entry[1])
+  );
+  const toolRegistryMap = new Map(
+    toolRegistry
+      .filter((tool) => tool.id !== "workspace-manager")
+      .map((tool) => [normalizeToken(tool.id), tool])
+      .filter((entry) => entry[0] && entry[1])
+  );
   let pinnedSet = readPinnedSet();
-  let model = buildRows(metadata, pinnedSet);
+  let model = buildRows(metadata, pinnedSet, toolLabelMap, toolRegistryMap);
   setSelect(levelSelect, model.levels, (value) => value);
   setSelect(classSelect, model.classes, (value) => value.split("/").at(-1) || value);
+  setSelect(toolSelect, model.tools.map((entry) => entry.value), (value) => {
+    const found = model.tools.find((entry) => entry.value === value);
+    return found?.label || value;
+  });
   setSelect(tagSelect, model.tags, (value) => value);
+  const toolQuery = normalizeToken(new URLSearchParams(window.location.search).get("tool"));
+  if (toolQuery && model.tools.some((entry) => entry.value === toolQuery)) {
+    toolSelect.value = toolQuery;
+  }
 
   const apply = () => {
-    model = buildRows(metadata, pinnedSet);
+    model = buildRows(metadata, pinnedSet, toolLabelMap, toolRegistryMap);
     const state = {
       level: normalize(levelSelect.value),
       classValue: normalize(classSelect.value),
+      toolId: normalizeToken(toolSelect.value),
       tag: normalize(tagSelect.value),
       query: normalize(searchInput.value)
     };
@@ -312,6 +441,7 @@ export async function initGamesIndex() {
 
   levelSelect.addEventListener("change", apply);
   classSelect.addEventListener("change", apply);
+  toolSelect.addEventListener("change", apply);
   tagSelect.addEventListener("change", apply);
   searchInput.addEventListener("input", apply);
   container.addEventListener("change", handlePin);

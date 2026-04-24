@@ -336,6 +336,21 @@ body.tools-platform-surface {
   margin-top: 8px;
 }
 
+.tools-platform-frame__return-line {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 8px;
+  color: var(--muted, #e9ddff);
+  text-align: center;
+}
+
+.tools-platform-frame__return-copy strong {
+  color: var(--text, #f7f4ff);
+}
+
 .tools-platform-frame__project {
   display: flex;
   align-items: center;

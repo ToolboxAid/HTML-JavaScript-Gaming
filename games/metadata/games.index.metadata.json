@@ -13,7 +13,8 @@
       "href": "/games/Bouncing-ball/index.html",
       "sampleTrack": false,
       "debugShowcase": false,
-      "requiresService": false
+      "requiresService": false,
+      "toolHints": ["physics-sandbox", "state-inspector", "replay-visualizer"]
     },
     {
       "id": "Breakout",
@@ -27,7 +28,8 @@
       "href": "/games/Breakout/index.html",
       "sampleTrack": false,
       "debugShowcase": true,
-      "requiresService": false
+      "requiresService": false,
+      "toolHints": ["sprite-editor", "tile-map-editor", "replay-visualizer"]
     },
     {
       "id": "SolarSystem",
@@ -41,7 +43,8 @@
       "href": "/games/SolarSystem/index.html",
       "sampleTrack": true,
       "debugShowcase": false,
-      "requiresService": false
+      "requiresService": false,
+      "toolHints": ["physics-sandbox", "performance-profiler", "state-inspector"]
     },
     {
       "id": "GravityWell",
@@ -55,7 +58,8 @@
       "href": "/games/GravityWell/index.html",
       "sampleTrack": true,
       "debugShowcase": false,
-      "requiresService": false
+      "requiresService": false,
+      "toolHints": ["vector-asset-studio", "vector-map-editor", "physics-sandbox"]
     },
     {
       "id": "Pong",
@@ -69,7 +73,8 @@
       "href": "/games/Pong/index.html",
       "sampleTrack": true,
       "debugShowcase": false,
-      "requiresService": false
+      "requiresService": false,
+      "toolHints": ["sprite-editor", "tile-map-editor", "replay-visualizer"]
     },
     {
       "id": "Asteroids",
@@ -83,7 +88,8 @@
       "href": "/games/Asteroids/index.html",
       "sampleTrack": false,
       "debugShowcase": true,
-      "requiresService": false
+      "requiresService": false,
+      "toolHints": ["vector-asset-studio", "vector-map-editor", "asset-pipeline-tool"]
     },
     {
       "id": "SpaceInvaders",
@@ -97,7 +103,8 @@
       "href": "/games/SpaceInvaders/index.html",
       "sampleTrack": false,
       "debugShowcase": false,
-      "requiresService": false
+      "requiresService": false,
+      "toolHints": ["sprite-editor", "tile-map-editor", "asset-pipeline-tool"]
     },
     {
       "id": "SpaceDuel",
@@ -111,7 +118,8 @@
       "href": "/games/SpaceDuel/index.html",
       "sampleTrack": false,
       "debugShowcase": false,
-      "requiresService": false
+      "requiresService": false,
+      "toolHints": ["vector-asset-studio", "replay-visualizer", "state-inspector"]
     },
     {
       "id": "AITargetDummy",
@@ -125,7 +133,8 @@
       "href": "/games/AITargetDummy/index.html",
       "sampleTrack": true,
       "debugShowcase": false,
-      "requiresService": false
+      "requiresService": false,
+      "toolHints": ["state-inspector", "replay-visualizer", "performance-profiler"]
     },
     {
       "id": "Pacman",
@@ -139,7 +148,8 @@
       "href": "/games/Pacman/index.html",
       "sampleTrack": true,
       "debugShowcase": false,
-      "requiresService": false
+      "requiresService": false,
+      "toolHints": ["tile-map-editor", "sprite-editor", "state-inspector"]
     },
     {
       "id": "vector-arcade-sample",
@@ -153,7 +163,8 @@
       "href": "/games/vector-arcade-sample/index.html",
       "sampleTrack": true,
       "debugShowcase": false,
-      "requiresService": false
+      "requiresService": false,
+      "toolHints": ["vector-asset-studio", "vector-map-editor", "tile-map-editor"]
     },
 
     { "id": "Frogger", "title": "Frogger", "description": "Classic lane-crossing timing game.", "level": "Level 4 - Classic Arcade", "status": "planned", "classValues": ["games/planned/arcade"], "tags": ["planned", "arcade", "timing"], "preview": "", "href": "", "sampleTrack": false, "debugShowcase": false, "requiresService": false },
