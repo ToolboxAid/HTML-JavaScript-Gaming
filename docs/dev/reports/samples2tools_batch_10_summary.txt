@@ -1,0 +1,10 @@
+Samples2Tools Batch 10 Summary
+Generated: 2026-04-24T15:05:09.637Z
+Scope: phase-01 through phase-19 Phase 3 coverage check for Sprite Editor
+
+Sprite Editor mapped samples: 3
+- Phase 02 Sample 0213 | Sprite Render Layer | preset: /samples/phase-02/0213/sample-0213-sprite-editor.json
+- Phase 02 Sample 0214 | Animation Sprite Binding | preset: /samples/phase-02/0214/sample-0214-sprite-editor.json
+- Phase 02 Sample 0219 | Sprite Atlas Image Rendering | preset: /samples/phase-02/0219/sample-0219-sprite-editor.json
+
+Overall: pass

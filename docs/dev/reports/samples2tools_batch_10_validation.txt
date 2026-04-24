@@ -1,0 +1,16 @@
+Samples2Tools Batch 10 Validation
+Generated: 2026-04-24T15:05:09.637Z
+
+[x] Sprite Editor has 3 mapped samples (phase-01 through phase-19)
+[x] All mapped Sprite Editor preset files exist on disk
+[x] Samples index roundtrip logic contains mapped sample ids and sprite-editor branch
+[x] Sprite Editor supports samplePresetPath preload and sets standardized loaded preset status
+[x] Metadata toolHints include sprite-editor for mapped sample ids
+
+Execution evidence:
+- Sprite Editor mapped sample ids: 0213, 0214, 0219
+- Preset files: /samples/phase-02/0213/sample-0213-sprite-editor.json, /samples/phase-02/0214/sample-0214-sprite-editor.json, /samples/phase-02/0219/sample-0219-sprite-editor.json
+- Roundtrip mapping branch: samples/index.render.js:shouldUsePresetRoundtrip
+- Preload handler: tools/Sprite Editor/modules/spriteEditorApp.js:tryLoadPresetFromQuery
+- Loaded status format: "Loaded preset from sample <id>."
+- overall: pass

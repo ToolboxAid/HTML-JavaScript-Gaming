@@ -1492,6 +1492,9 @@
         "engine/input/index/InputService",
         "engine/rendering/index/renderSpriteReadyEntities",
         "engine/scene/index/Scene"
+      ],
+      "toolHints": [
+        "sprite-editor"
       ]
     },
     {
@@ -1533,6 +1536,9 @@
         "engine/theme/index/Theme",
         "engine/theme/index/ThemeTokens",
         "engine/utils/index/clamp"
+      ],
+      "toolHints": [
+        "sprite-editor"
       ]
     },
     {
@@ -1750,6 +1756,9 @@
         "engine/scene/index/Scene",
         "engine/theme/index/Theme",
         "engine/theme/index/ThemeTokens"
+      ],
+      "toolHints": [
+        "sprite-editor"
       ]
     },
     {
@@ -6435,7 +6444,7 @@
         "tile-map-editor"
       ],
       "thumbnail": "/samples/phase-12/1209/assets/images/preview.svg",
-      "preview": "/samples/phase-12/1209/assets/images/preview.svg"   
+      "preview": "/samples/phase-12/1209/assets/images/preview.svg"
     },
     {
       "id": "1210",
@@ -6462,7 +6471,7 @@
         "tile-map-editor"
       ],
       "thumbnail": "/samples/phase-12/1210/assets/images/preview.svg",
-      "preview": "/samples/phase-12/1210/assets/images/preview.svg"  
+      "preview": "/samples/phase-12/1210/assets/images/preview.svg"
     },
     {
       "id": "1211",
@@ -6489,7 +6498,7 @@
         "tile-map-editor"
       ],
       "thumbnail": "/samples/phase-12/1211/assets/images/preview.svg",
-      "preview": "/samples/phase-12/1211/assets/images/preview.svg"  
+      "preview": "/samples/phase-12/1211/assets/images/preview.svg"
     },
     {
       "id": "1301",

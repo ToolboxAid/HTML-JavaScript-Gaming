@@ -1,0 +1,31 @@
+{
+  "generatedAt": "2026-04-24T15:05:09.637Z",
+  "scope": "phase-01-phase-19",
+  "purpose": "batch-10-sprite-editor",
+  "links": [
+    {
+      "toolId": "sprite-editor",
+      "sampleId": "0213",
+      "phase": "02",
+      "title": "Sprite Render Layer",
+      "href": "./phase-02/0213/index.html",
+      "presetPath": "/samples/phase-02/0213/sample-0213-sprite-editor.json"
+    },
+    {
+      "toolId": "sprite-editor",
+      "sampleId": "0214",
+      "phase": "02",
+      "title": "Animation Sprite Binding",
+      "href": "./phase-02/0214/index.html",
+      "presetPath": "/samples/phase-02/0214/sample-0214-sprite-editor.json"
+    },
+    {
+      "toolId": "sprite-editor",
+      "sampleId": "0219",
+      "phase": "02",
+      "title": "Sprite Atlas Image Rendering",
+      "href": "./phase-02/0219/index.html",
+      "presetPath": "/samples/phase-02/0219/sample-0219-sprite-editor.json"
+    }
+  ]
+}

@@ -660,6 +660,35 @@ function setStatus(state, message) {
   state.elements.statusText.textContent = message;
 }
 
+function normalizeSamplePresetPath(pathValue) {
+  if (typeof pathValue !== "string") {
+    return "";
+  }
+  const trimmed = pathValue.trim().replace(/\\/g, "/");
+  if (!trimmed || trimmed.includes("..")) {
+    return "";
+  }
+  if (trimmed.startsWith("/samples/")) {
+    return trimmed;
+  }
+  if (trimmed.startsWith("./samples/")) {
+    return trimmed;
+  }
+  if (trimmed.startsWith("samples/")) {
+    return `./${trimmed}`;
+  }
+  return "";
+}
+
+function buildPresetLoadedStatus(sampleId, samplePresetPath) {
+  const normalizedSampleId = typeof sampleId === "string" ? sampleId.trim() : "";
+  if (normalizedSampleId) {
+    return `Loaded preset from sample ${normalizedSampleId}.`;
+  }
+  const normalizedPath = typeof samplePresetPath === "string" ? samplePresetPath.trim() : "";
+  return normalizedPath ? `Loaded preset from ${normalizedPath}.` : "Loaded preset.";
+}
+
 function isPaletteSelected(project) {
   return Boolean(project.paletteRef?.id && project.paletteRef.id !== NO_PALETTE_ID);
 }
@@ -1377,6 +1406,94 @@ async function loadProjectJson(state, file) {
   renderAll(state);
 }
 
+function extractSpriteProjectFromSamplePreset(rawPreset) {
+  if (!rawPreset || typeof rawPreset !== "object") {
+    return null;
+  }
+  if (typeof rawPreset.format === "string" && Array.isArray(rawPreset.frames)) {
+    return rawPreset;
+  }
+  const payload = rawPreset.payload && typeof rawPreset.payload === "object"
+    ? rawPreset.payload
+    : rawPreset;
+  if (payload.spriteProject && typeof payload.spriteProject === "object") {
+    return payload.spriteProject;
+  }
+  if (payload.project && typeof payload.project === "object") {
+    return payload.project;
+  }
+  return null;
+}
+
+function extractSpriteAssetRegistryFromSamplePreset(rawPreset) {
+  if (!rawPreset || typeof rawPreset !== "object") {
+    return null;
+  }
+  if (rawPreset.assetRegistry && typeof rawPreset.assetRegistry === "object") {
+    return rawPreset.assetRegistry;
+  }
+  const payload = rawPreset.payload && typeof rawPreset.payload === "object"
+    ? rawPreset.payload
+    : null;
+  if (payload && payload.assetRegistry && typeof payload.assetRegistry === "object") {
+    return payload.assetRegistry;
+  }
+  return null;
+}
+
+function applySamplePreset(state, rawPreset, sampleId, samplePresetPath) {
+  const presetProject = extractSpriteProjectFromSamplePreset(rawPreset);
+  if (!presetProject || typeof presetProject !== "object") {
+    throw new Error("Preset payload did not include a sprite project.");
+  }
+
+  state.project = ensureProjectShape(presetProject);
+
+  const presetAssetRegistry = extractSpriteAssetRegistryFromSamplePreset(rawPreset);
+  state.assetRegistry = presetAssetRegistry
+    ? sanitizeAssetRegistry(presetAssetRegistry)
+    : createAssetRegistry({ projectId: "sprite-project" });
+  state.projectTool = TOOL_IDS.PENCIL;
+  state.preview.playing = false;
+  state.preview.frameIndex = state.project.currentFrameIndex;
+  state.preview.accumulatorMs = 0;
+  state.skipExternalProjectStateUntil = Date.now() + 3000;
+  state.history.undoStack = [];
+  state.history.redoStack = [];
+  state.assetDependencyGraphSnapshot = null;
+
+  if (!hydratePaletteFromRefIfPossible(state) && !resolvePaletteFromAssetRegistry(state)) {
+    clearPaletteLock(state);
+  }
+
+  validateSpriteProjectAssets(state);
+  syncControlsFromProject(state);
+  renderAll(state);
+  setStatus(state, buildPresetLoadedStatus(sampleId, samplePresetPath));
+}
+
+async function tryLoadPresetFromQuery(state) {
+  const searchParams = new URLSearchParams(window.location.search);
+  const samplePresetPath = normalizeSamplePresetPath(searchParams.get("samplePresetPath") || "");
+  if (!samplePresetPath) {
+    return false;
+  }
+  const sampleId = String(searchParams.get("sampleId") || "").trim();
+  try {
+    const presetUrl = new URL(samplePresetPath, window.location.href);
+    const response = await fetch(presetUrl.toString(), { cache: "no-store" });
+    if (!response.ok) {
+      throw new Error(`Preset request failed (${response.status}).`);
+    }
+    const rawPreset = await response.json();
+    applySamplePreset(state, rawPreset, sampleId, samplePresetPath);
+    return true;
+  } catch (error) {
+    setStatus(state, `Preset load failed: ${error instanceof Error ? error.message : "unknown error"}`);
+    return false;
+  }
+}
+
 function bindPointerDrawing(state) {
   const canvas = state.elements.editorCanvas;
   let pointerDown = false;
@@ -1955,6 +2072,7 @@ export function initializeSpriteEditorApp() {
     lastRuntimeResult: null,
     editorExperienceResult: null,
     debugVisualizationResult: null,
+    skipExternalProjectStateUntil: 0,
     cursor: {
       x: null,
       y: null
@@ -2038,6 +2156,10 @@ export function initializeSpriteEditorApp() {
   }
 
   state.applyProjectSystemState = (snapshot) => {
+    if (Date.now() <= Number(state.skipExternalProjectStateUntil || 0)) {
+      state.skipExternalProjectStateUntil = 0;
+      return;
+    }
     const nextProject = ensureProjectShape(snapshot?.project || createNewProject({
       width: DEFAULT_WIDTH,
       height: DEFAULT_HEIGHT,
@@ -2056,6 +2178,8 @@ export function initializeSpriteEditorApp() {
     renderAll(state);
     setStatus(state, `Project state loaded (${state.project.width}x${state.project.height}, ${state.project.frames.length} frames).`);
   };
+
+  void tryLoadPresetFromQuery(state);
 
   return state;
 }

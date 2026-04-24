@@ -74,6 +74,11 @@ function shouldUsePresetRoundtrip(sample, toolId) {
   if (toolId === "vector-map-editor") {
     return sampleId === "0901" && samplePhase === "09";
   }
+  if (toolId === "sprite-editor") {
+    return (sampleId === "0213" && samplePhase === "02")
+      || (sampleId === "0214" && samplePhase === "02")
+      || (sampleId === "0219" && samplePhase === "02");
+  }
   return false;
 }
 
