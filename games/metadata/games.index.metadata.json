@@ -7,14 +7,24 @@
       "description": "A minimal arcade-style ball motion test with clean wall rebounds.",
       "level": "Level 1 - Basic Motion",
       "status": "playable",
-      "classValues": ["games/motion/basic"],
-      "tags": ["arcade", "motion", "collision"],
+      "classValues": [
+        "games/motion/basic"
+      ],
+      "tags": [
+        "arcade",
+        "motion",
+        "collision"
+      ],
       "preview": "/games/Bouncing-ball/assets/images/preview.svg",
       "href": "/games/Bouncing-ball/index.html",
       "sampleTrack": false,
       "debugShowcase": false,
       "requiresService": false,
-      "toolHints": ["physics-sandbox", "state-inspector", "replay-visualizer"]
+      "toolHints": [
+        "physics-sandbox",
+        "state-inspector",
+        "replay-visualizer"
+      ]
     },
     {
       "id": "Breakout",
@@ -22,14 +32,24 @@
       "description": "Classic brick-breaker loop aligned to the debug-showcase lane.",
       "level": "Level 1 - Basic Motion",
       "status": "playable",
-      "classValues": ["games/arcade/breaker"],
-      "tags": ["arcade", "paddle", "showcase"],
+      "classValues": [
+        "games/arcade/breaker"
+      ],
+      "tags": [
+        "arcade",
+        "paddle",
+        "showcase"
+      ],
       "preview": "/games/Breakout/assets/images/preview.svg",
       "href": "/games/Breakout/index.html",
       "sampleTrack": false,
       "debugShowcase": true,
       "requiresService": false,
-      "toolHints": ["sprite-editor", "tile-map-editor", "replay-visualizer"]
+      "toolHints": [
+        "sprite-editor",
+        "tile-map-editor",
+        "replay-visualizer"
+      ]
     },
     {
       "id": "SolarSystem",
@@ -37,14 +57,24 @@
       "description": "Readable stylized solar-system simulation with time controls.",
       "level": "Level 2 - Physics Systems",
       "status": "playable",
-      "classValues": ["games/physics/orbital"],
-      "tags": ["physics", "orbit", "simulation"],
+      "classValues": [
+        "games/physics/orbital"
+      ],
+      "tags": [
+        "physics",
+        "orbit",
+        "simulation"
+      ],
       "preview": "/games/SolarSystem/assets/images/preview.svg",
       "href": "/games/SolarSystem/index.html",
       "sampleTrack": true,
       "debugShowcase": false,
       "requiresService": false,
-      "toolHints": ["physics-sandbox", "performance-profiler", "state-inspector"]
+      "toolHints": [
+        "physics-sandbox",
+        "performance-profiler",
+        "state-inspector"
+      ]
     },
     {
       "id": "GravityWell",
@@ -52,14 +82,24 @@
       "description": "Vector-space flight game using gravity slingshots and beacon collection.",
       "level": "Level 2 - Physics Systems",
       "status": "playable",
-      "classValues": ["games/physics/gravity"],
-      "tags": ["physics", "vector", "flight"],
+      "classValues": [
+        "games/physics/gravity"
+      ],
+      "tags": [
+        "physics",
+        "vector",
+        "flight"
+      ],
       "preview": "/games/GravityWell/assets/images/preview.svg",
       "href": "/games/GravityWell/index.html",
       "sampleTrack": true,
       "debugShowcase": false,
       "requiresService": false,
-      "toolHints": ["vector-asset-studio", "vector-map-editor", "physics-sandbox"]
+      "toolHints": [
+        "vector-asset-studio",
+        "vector-map-editor",
+        "physics-sandbox"
+      ]
     },
     {
       "id": "Pong",
@@ -67,14 +107,24 @@
       "description": "Arcade-style Pong with multiple modes and keyboard/gamepad support.",
       "level": "Level 3 - Collision Mastery",
       "status": "playable",
-      "classValues": ["games/collision/paddle"],
-      "tags": ["arcade", "collision", "multimode"],
+      "classValues": [
+        "games/collision/paddle"
+      ],
+      "tags": [
+        "arcade",
+        "collision",
+        "multimode"
+      ],
       "preview": "/games/Pong/assets/images/preview.svg",
       "href": "/games/Pong/index.html",
       "sampleTrack": true,
       "debugShowcase": false,
       "requiresService": false,
-      "toolHints": ["sprite-editor", "tile-map-editor", "replay-visualizer"]
+      "toolHints": [
+        "sprite-editor",
+        "tile-map-editor",
+        "replay-visualizer"
+      ]
     },
     {
       "id": "Asteroids",
@@ -82,14 +132,24 @@
       "description": "Classic asteroid-field shooter with thrust, rotation, and precision firing.",
       "level": "Level 4 - Classic Arcade",
       "status": "playable",
-      "classValues": ["games/arcade/shooter"],
-      "tags": ["arcade", "space", "showcase"],
+      "classValues": [
+        "games/arcade/shooter"
+      ],
+      "tags": [
+        "arcade",
+        "space",
+        "showcase"
+      ],
       "preview": "/games/Asteroids/assets/images/preview.png",
       "href": "/games/Asteroids/index.html",
       "sampleTrack": false,
       "debugShowcase": true,
       "requiresService": false,
-      "toolHints": ["vector-asset-studio", "vector-map-editor", "asset-pipeline-tool"]
+      "toolHints": [
+        "vector-asset-studio",
+        "vector-map-editor",
+        "asset-pipeline-tool"
+      ]
     },
     {
       "id": "SpaceInvaders",
@@ -97,14 +157,24 @@
       "description": "Classic alien formation shooter with wave progression.",
       "level": "Level 4 - Classic Arcade",
       "status": "playable",
-      "classValues": ["games/arcade/shooter"],
-      "tags": ["arcade", "formation", "waves"],
+      "classValues": [
+        "games/arcade/shooter"
+      ],
+      "tags": [
+        "arcade",
+        "formation",
+        "waves"
+      ],
       "preview": "/games/SpaceInvaders/assets/images/preview.svg",
       "href": "/games/SpaceInvaders/index.html",
       "sampleTrack": false,
       "debugShowcase": false,
       "requiresService": false,
-      "toolHints": ["sprite-editor", "tile-map-editor", "asset-pipeline-tool"]
+      "toolHints": [
+        "sprite-editor",
+        "tile-map-editor",
+        "asset-pipeline-tool"
+      ]
     },
     {
       "id": "SpaceDuel",
@@ -112,14 +182,24 @@
       "description": "Vector-style inertial combat with one or two players.",
       "level": "Level 4 - Classic Arcade",
       "status": "in-progress",
-      "classValues": ["games/arcade/combat"],
-      "tags": ["arcade", "vector", "co-op"],
+      "classValues": [
+        "games/arcade/combat"
+      ],
+      "tags": [
+        "arcade",
+        "vector",
+        "co-op"
+      ],
       "preview": "/games/SpaceDuel/assets/images/preview.svg",
       "href": "/games/SpaceDuel/index.html",
       "sampleTrack": false,
       "debugShowcase": false,
       "requiresService": false,
-      "toolHints": ["vector-asset-studio", "replay-visualizer", "state-inspector"]
+      "toolHints": [
+        "vector-asset-studio",
+        "replay-visualizer",
+        "state-inspector"
+      ]
     },
     {
       "id": "AITargetDummy",
@@ -127,14 +207,24 @@
       "description": "AI behavior lab focused on deterministic state transitions.",
       "level": "Level 6 - AI Systems",
       "status": "playable",
-      "classValues": ["games/ai/behavior"],
-      "tags": ["ai", "state-machine", "debug"],
+      "classValues": [
+        "games/ai/behavior"
+      ],
+      "tags": [
+        "ai",
+        "state-machine",
+        "debug"
+      ],
       "preview": "/games/AITargetDummy/assets/images/preview.svg",
       "href": "/games/AITargetDummy/index.html",
       "sampleTrack": true,
       "debugShowcase": false,
       "requiresService": false,
-      "toolHints": ["state-inspector", "replay-visualizer", "performance-profiler"]
+      "toolHints": [
+        "state-inspector",
+        "replay-visualizer",
+        "performance-profiler"
+      ]
     },
     {
       "id": "Pacman",
@@ -142,14 +232,24 @@
       "description": "Arcade-style Pac-Man with personality ghost routing.",
       "level": "Level 6 - AI Systems",
       "status": "playable",
-      "classValues": ["games/ai/navigation"],
-      "tags": ["ai", "maze", "arcade"],
+      "classValues": [
+        "games/ai/navigation"
+      ],
+      "tags": [
+        "ai",
+        "maze",
+        "arcade"
+      ],
       "preview": "/games/Pacman/assets/images/preview.svg",
       "href": "/games/Pacman/index.html",
       "sampleTrack": true,
       "debugShowcase": false,
       "requiresService": false,
-      "toolHints": ["tile-map-editor", "sprite-editor", "state-inspector"]
+      "toolHints": [
+        "tile-map-editor",
+        "sprite-editor",
+        "state-inspector"
+      ]
     },
     {
       "id": "vector-arcade-sample",
@@ -157,39 +257,474 @@
       "description": "Standalone sample game from the vector-native template.",
       "level": "Level 10 - Full Systems",
       "status": "playable",
-      "classValues": ["games/template/vector"],
-      "tags": ["template", "vector", "sample"],
+      "classValues": [
+        "games/template/vector"
+      ],
+      "tags": [
+        "template",
+        "vector",
+        "sample"
+      ],
       "preview": "",
       "href": "/games/vector-arcade-sample/index.html",
       "sampleTrack": true,
       "debugShowcase": false,
       "requiresService": false,
-      "toolHints": ["vector-asset-studio", "vector-map-editor", "tile-map-editor"]
+      "toolHints": [
+        "vector-asset-studio",
+        "vector-map-editor",
+        "tile-map-editor"
+      ]
     },
-
-    { "id": "Frogger", "title": "Frogger", "description": "Classic lane-crossing timing game.", "level": "Level 4 - Classic Arcade", "status": "planned", "classValues": ["games/planned/arcade"], "tags": ["planned", "arcade", "timing"], "preview": "", "href": "", "sampleTrack": false, "debugShowcase": false, "requiresService": false },
-    { "id": "DualStickArena", "title": "Dual Stick Arena", "description": "High-input arena shooter control loop.", "level": "Level 5 - Skill + Input", "status": "planned", "classValues": ["games/planned/skill"], "tags": ["planned", "input", "arena"], "preview": "", "href": "", "sampleTrack": false, "debugShowcase": false, "requiresService": false },
-    { "id": "ArenaShooter", "title": "Arena Shooter", "description": "Full arena combat progression lane.", "level": "Level 5 - Skill + Input", "status": "planned", "classValues": ["games/planned/skill"], "tags": ["planned", "shooter", "arena"], "preview": "", "href": "", "sampleTrack": false, "debugShowcase": false, "requiresService": false },
-    { "id": "Robotron2084", "title": "Robotron 2084", "description": "Fast-paced survival-style twin-stick pressure loop.", "level": "Level 5 - Skill + Input", "status": "planned", "classValues": ["games/planned/skill"], "tags": ["planned", "arcade", "survival"], "preview": "", "href": "", "sampleTrack": false, "debugShowcase": false, "requiresService": false },
-
-    { "id": "ScrollingWorldTest", "title": "Scrolling World Test", "description": "Large-space scrolling world validation lane.", "level": "Level 7 - World Systems", "status": "planned", "classValues": ["games/planned/world"], "tags": ["planned", "world", "scrolling"], "preview": "", "href": "", "sampleTrack": true, "debugShowcase": false, "requiresService": false },
-    { "id": "TileCollisionDemo", "title": "Tile Collision Demo", "description": "Tile-driven collision behavior validation lane.", "level": "Level 7 - World Systems", "status": "planned", "classValues": ["games/planned/world"], "tags": ["planned", "tile", "collision"], "preview": "", "href": "", "sampleTrack": true, "debugShowcase": false, "requiresService": false },
-    { "id": "DefenderLite", "title": "Defender (Lite)", "description": "Side-scroll shooter with simpler progression.", "level": "Level 7 - World Systems", "status": "planned", "classValues": ["games/planned/world"], "tags": ["planned", "shooter", "side-scroll"], "preview": "", "href": "", "sampleTrack": false, "debugShowcase": false, "requiresService": false },
-
-    { "id": "DonkeyKong", "title": "Donkey Kong", "description": "Platforming precision and jump timing lane.", "level": "Level 8 - Platforming", "status": "planned", "classValues": ["games/planned/platforming"], "tags": ["planned", "platforming", "jump"], "preview": "", "href": "", "sampleTrack": false, "debugShowcase": false, "requiresService": false },
-    { "id": "PlatformerDemo", "title": "Platformer Demo", "description": "Platforming systems prototype lane.", "level": "Level 8 - Platforming", "status": "planned", "classValues": ["games/planned/platforming"], "tags": ["planned", "platforming", "sample-track"], "preview": "", "href": "", "sampleTrack": true, "debugShowcase": false, "requiresService": false },
-
-    { "id": "Galaga", "title": "Galaga", "description": "Dense arcade formation shooter lane.", "level": "Level 9 - Advanced Arcade", "status": "planned", "classValues": ["games/planned/advanced-arcade"], "tags": ["planned", "arcade", "formation"], "preview": "", "href": "", "sampleTrack": false, "debugShowcase": false, "requiresService": false },
-    { "id": "RallyX", "title": "Rally-X", "description": "Advanced arcade objective and pursuit gameplay lane.", "level": "Level 9 - Advanced Arcade", "status": "planned", "classValues": ["games/planned/advanced-arcade"], "tags": ["planned", "arcade", "pursuit"], "preview": "", "href": "", "sampleTrack": false, "debugShowcase": false, "requiresService": false },
-
-    { "id": "FullArenaShooter", "title": "Full Arena Shooter", "description": "Full systems combat game lane.", "level": "Level 10 - Full Systems", "status": "planned", "classValues": ["games/planned/full-systems"], "tags": ["planned", "systems", "arena"], "preview": "", "href": "", "sampleTrack": false, "debugShowcase": false, "requiresService": false },
-    { "id": "ReplaySystem", "title": "Replay System", "description": "Replay-focused system validation lane.", "level": "Level 10 - Full Systems", "status": "planned", "classValues": ["games/planned/full-systems"], "tags": ["planned", "replay", "sample-track"], "preview": "", "href": "", "sampleTrack": true, "debugShowcase": false, "requiresService": false },
-    { "id": "MultiplayerOptional", "title": "Multiplayer (Optional)", "description": "Optional multiplayer extension lane.", "level": "Level 10 - Full Systems", "status": "planned", "classValues": ["games/planned/full-systems"], "tags": ["planned", "multiplayer", "sample-track"], "preview": "", "href": "", "sampleTrack": true, "debugShowcase": false, "requiresService": true },
-
-    { "id": "KingOfTheIceberg", "title": "King of the Iceberg", "description": "Original game concept lane.", "level": "LovelXX - Original Games", "status": "planned", "classValues": ["games/planned/original"], "tags": ["planned", "original", "concept"], "preview": "", "href": "", "sampleTrack": false, "debugShowcase": false, "requiresService": false },
-
-    { "id": "TicTacToe", "title": "Tic Tac Toe", "description": "Network-ready board game lane.", "level": "LovelXX - Network Games", "status": "planned", "classValues": ["games/planned/network"], "tags": ["planned", "network", "board"], "preview": "", "href": "", "sampleTrack": false, "debugShowcase": false, "requiresService": true },
-    { "id": "ConnectFour", "title": "Connect Four", "description": "Network-ready strategy board game lane.", "level": "LovelXX - Network Games", "status": "planned", "classValues": ["games/planned/network"], "tags": ["planned", "network", "board"], "preview": "", "href": "", "sampleTrack": false, "debugShowcase": false, "requiresService": true },
-    { "id": "Othello", "title": "Othello", "description": "Network-ready board strategy lane.", "level": "LovelXX - Network Games", "status": "planned", "classValues": ["games/planned/network"], "tags": ["planned", "network", "board"], "preview": "", "href": "", "sampleTrack": false, "debugShowcase": false, "requiresService": true }
+    {
+      "id": "Frogger",
+      "title": "Frogger",
+      "description": "Classic lane-crossing timing game.",
+      "level": "Level 4 - Classic Arcade",
+      "status": "planned",
+      "classValues": [
+        "games/planned/arcade"
+      ],
+      "tags": [
+        "planned",
+        "arcade",
+        "timing"
+      ],
+      "preview": "",
+      "href": "",
+      "sampleTrack": false,
+      "debugShowcase": false,
+      "requiresService": false,
+      "toolHints": [
+        "tile-map-editor",
+        "sprite-editor",
+        "state-inspector"
+      ]
+    },
+    {
+      "id": "DualStickArena",
+      "title": "Dual Stick Arena",
+      "description": "High-input arena shooter control loop.",
+      "level": "Level 5 - Skill + Input",
+      "status": "planned",
+      "classValues": [
+        "games/planned/skill"
+      ],
+      "tags": [
+        "planned",
+        "input",
+        "arena"
+      ],
+      "preview": "",
+      "href": "",
+      "sampleTrack": false,
+      "debugShowcase": false,
+      "requiresService": false,
+      "toolHints": [
+        "sprite-editor",
+        "vector-map-editor",
+        "performance-profiler"
+      ]
+    },
+    {
+      "id": "ArenaShooter",
+      "title": "Arena Shooter",
+      "description": "Full arena combat progression lane.",
+      "level": "Level 5 - Skill + Input",
+      "status": "planned",
+      "classValues": [
+        "games/planned/skill"
+      ],
+      "tags": [
+        "planned",
+        "shooter",
+        "arena"
+      ],
+      "preview": "",
+      "href": "",
+      "sampleTrack": false,
+      "debugShowcase": false,
+      "requiresService": false,
+      "toolHints": [
+        "sprite-editor",
+        "asset-pipeline-tool",
+        "replay-visualizer"
+      ]
+    },
+    {
+      "id": "Robotron2084",
+      "title": "Robotron 2084",
+      "description": "Fast-paced survival-style twin-stick pressure loop.",
+      "level": "Level 5 - Skill + Input",
+      "status": "planned",
+      "classValues": [
+        "games/planned/skill"
+      ],
+      "tags": [
+        "planned",
+        "arcade",
+        "survival"
+      ],
+      "preview": "",
+      "href": "",
+      "sampleTrack": false,
+      "debugShowcase": false,
+      "requiresService": false,
+      "toolHints": [
+        "sprite-editor",
+        "replay-visualizer",
+        "performance-profiler"
+      ]
+    },
+    {
+      "id": "ScrollingWorldTest",
+      "title": "Scrolling World Test",
+      "description": "Large-space scrolling world validation lane.",
+      "level": "Level 7 - World Systems",
+      "status": "planned",
+      "classValues": [
+        "games/planned/world"
+      ],
+      "tags": [
+        "planned",
+        "world",
+        "scrolling"
+      ],
+      "preview": "",
+      "href": "",
+      "sampleTrack": true,
+      "debugShowcase": false,
+      "requiresService": false,
+      "toolHints": [
+        "tile-map-editor",
+        "parallax-editor",
+        "performance-profiler"
+      ]
+    },
+    {
+      "id": "TileCollisionDemo",
+      "title": "Tile Collision Demo",
+      "description": "Tile-driven collision behavior validation lane.",
+      "level": "Level 7 - World Systems",
+      "status": "planned",
+      "classValues": [
+        "games/planned/world"
+      ],
+      "tags": [
+        "planned",
+        "tile",
+        "collision"
+      ],
+      "preview": "",
+      "href": "",
+      "sampleTrack": true,
+      "debugShowcase": false,
+      "requiresService": false,
+      "toolHints": [
+        "tile-map-editor",
+        "physics-sandbox",
+        "state-inspector"
+      ]
+    },
+    {
+      "id": "DefenderLite",
+      "title": "Defender (Lite)",
+      "description": "Side-scroll shooter with simpler progression.",
+      "level": "Level 7 - World Systems",
+      "status": "planned",
+      "classValues": [
+        "games/planned/world"
+      ],
+      "tags": [
+        "planned",
+        "shooter",
+        "side-scroll"
+      ],
+      "preview": "",
+      "href": "",
+      "sampleTrack": false,
+      "debugShowcase": false,
+      "requiresService": false,
+      "toolHints": [
+        "parallax-editor",
+        "tile-map-editor",
+        "vector-asset-studio"
+      ]
+    },
+    {
+      "id": "DonkeyKong",
+      "title": "Donkey Kong",
+      "description": "Platforming precision and jump timing lane.",
+      "level": "Level 8 - Platforming",
+      "status": "planned",
+      "classValues": [
+        "games/planned/platforming"
+      ],
+      "tags": [
+        "planned",
+        "platforming",
+        "jump"
+      ],
+      "preview": "",
+      "href": "",
+      "sampleTrack": false,
+      "debugShowcase": false,
+      "requiresService": false,
+      "toolHints": [
+        "tile-map-editor",
+        "sprite-editor",
+        "physics-sandbox"
+      ]
+    },
+    {
+      "id": "PlatformerDemo",
+      "title": "Platformer Demo",
+      "description": "Platforming systems prototype lane.",
+      "level": "Level 8 - Platforming",
+      "status": "planned",
+      "classValues": [
+        "games/planned/platforming"
+      ],
+      "tags": [
+        "planned",
+        "platforming",
+        "sample-track"
+      ],
+      "preview": "",
+      "href": "",
+      "sampleTrack": true,
+      "debugShowcase": false,
+      "requiresService": false,
+      "toolHints": [
+        "tile-map-editor",
+        "sprite-editor",
+        "state-inspector"
+      ]
+    },
+    {
+      "id": "Galaga",
+      "title": "Galaga",
+      "description": "Dense arcade formation shooter lane.",
+      "level": "Level 9 - Advanced Arcade",
+      "status": "planned",
+      "classValues": [
+        "games/planned/advanced-arcade"
+      ],
+      "tags": [
+        "planned",
+        "arcade",
+        "formation"
+      ],
+      "preview": "",
+      "href": "",
+      "sampleTrack": false,
+      "debugShowcase": false,
+      "requiresService": false,
+      "toolHints": [
+        "sprite-editor",
+        "replay-visualizer",
+        "performance-profiler"
+      ]
+    },
+    {
+      "id": "RallyX",
+      "title": "Rally-X",
+      "description": "Advanced arcade objective and pursuit gameplay lane.",
+      "level": "Level 9 - Advanced Arcade",
+      "status": "planned",
+      "classValues": [
+        "games/planned/advanced-arcade"
+      ],
+      "tags": [
+        "planned",
+        "arcade",
+        "pursuit"
+      ],
+      "preview": "",
+      "href": "",
+      "sampleTrack": false,
+      "debugShowcase": false,
+      "requiresService": false,
+      "toolHints": [
+        "tile-map-editor",
+        "vector-map-editor",
+        "state-inspector"
+      ]
+    },
+    {
+      "id": "FullArenaShooter",
+      "title": "Full Arena Shooter",
+      "description": "Full systems combat game lane.",
+      "level": "Level 10 - Full Systems",
+      "status": "planned",
+      "classValues": [
+        "games/planned/full-systems"
+      ],
+      "tags": [
+        "planned",
+        "systems",
+        "arena"
+      ],
+      "preview": "",
+      "href": "",
+      "sampleTrack": false,
+      "debugShowcase": false,
+      "requiresService": false,
+      "toolHints": [
+        "asset-pipeline-tool",
+        "replay-visualizer",
+        "performance-profiler"
+      ]
+    },
+    {
+      "id": "ReplaySystem",
+      "title": "Replay System",
+      "description": "Replay-focused system validation lane.",
+      "level": "Level 10 - Full Systems",
+      "status": "planned",
+      "classValues": [
+        "games/planned/full-systems"
+      ],
+      "tags": [
+        "planned",
+        "replay",
+        "sample-track"
+      ],
+      "preview": "",
+      "href": "",
+      "sampleTrack": true,
+      "debugShowcase": false,
+      "requiresService": false,
+      "toolHints": [
+        "replay-visualizer",
+        "state-inspector",
+        "performance-profiler"
+      ]
+    },
+    {
+      "id": "MultiplayerOptional",
+      "title": "Multiplayer (Optional)",
+      "description": "Optional multiplayer extension lane.",
+      "level": "Level 10 - Full Systems",
+      "status": "planned",
+      "classValues": [
+        "games/planned/full-systems"
+      ],
+      "tags": [
+        "planned",
+        "multiplayer",
+        "sample-track"
+      ],
+      "preview": "",
+      "href": "",
+      "sampleTrack": true,
+      "debugShowcase": false,
+      "requiresService": true,
+      "toolHints": [
+        "state-inspector",
+        "replay-visualizer",
+        "performance-profiler"
+      ]
+    },
+    {
+      "id": "KingOfTheIceberg",
+      "title": "King of the Iceberg",
+      "description": "Original game concept lane.",
+      "level": "LovelXX - Original Games",
+      "status": "planned",
+      "classValues": [
+        "games/planned/original"
+      ],
+      "tags": [
+        "planned",
+        "original",
+        "concept"
+      ],
+      "preview": "",
+      "href": "",
+      "sampleTrack": false,
+      "debugShowcase": false,
+      "requiresService": false,
+      "toolHints": [
+        "vector-map-editor",
+        "vector-asset-studio",
+        "tile-map-editor"
+      ]
+    },
+    {
+      "id": "TicTacToe",
+      "title": "Tic Tac Toe",
+      "description": "Network-ready board game lane.",
+      "level": "LovelXX - Network Games",
+      "status": "planned",
+      "classValues": [
+        "games/planned/network"
+      ],
+      "tags": [
+        "planned",
+        "network",
+        "board"
+      ],
+      "preview": "",
+      "href": "",
+      "sampleTrack": false,
+      "debugShowcase": false,
+      "requiresService": true,
+      "toolHints": [
+        "state-inspector",
+        "replay-visualizer",
+        "performance-profiler"
+      ]
+    },
+    {
+      "id": "ConnectFour",
+      "title": "Connect Four",
+      "description": "Network-ready strategy board game lane.",
+      "level": "LovelXX - Network Games",
+      "status": "planned",
+      "classValues": [
+        "games/planned/network"
+      ],
+      "tags": [
+        "planned",
+        "network",
+        "board"
+      ],
+      "preview": "",
+      "href": "",
+      "sampleTrack": false,
+      "debugShowcase": false,
+      "requiresService": true,
+      "toolHints": [
+        "state-inspector",
+        "replay-visualizer",
+        "performance-profiler"
+      ]
+    },
+    {
+      "id": "Othello",
+      "title": "Othello",
+      "description": "Network-ready board strategy lane.",
+      "level": "LovelXX - Network Games",
+      "status": "planned",
+      "classValues": [
+        "games/planned/network"
+      ],
+      "tags": [
+        "planned",
+        "network",
+        "board"
+      ],
+      "preview": "",
+      "href": "",
+      "sampleTrack": false,
+      "debugShowcase": false,
+      "requiresService": true,
+      "toolHints": [
+        "state-inspector",
+        "replay-visualizer",
+        "performance-profiler"
+      ]
+    }
   ]
 }
