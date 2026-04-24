@@ -9,6 +9,35 @@ const refs = {
   output: document.getElementById("map3dOutput")
 };
 
+function normalizeSamplePresetPath(pathValue) {
+  if (typeof pathValue !== "string") {
+    return "";
+  }
+  const trimmed = pathValue.trim().replace(/\\/g, "/");
+  if (!trimmed || trimmed.includes("..")) {
+    return "";
+  }
+  if (trimmed.startsWith("/samples/")) {
+    return trimmed;
+  }
+  if (trimmed.startsWith("./samples/")) {
+    return trimmed;
+  }
+  if (trimmed.startsWith("samples/")) {
+    return `./${trimmed}`;
+  }
+  return "";
+}
+
+function buildPresetLoadedStatus(sampleId, samplePresetPath) {
+  const normalizedSampleId = typeof sampleId === "string" ? sampleId.trim() : "";
+  if (normalizedSampleId) {
+    return `Loaded preset from sample ${normalizedSampleId}.`;
+  }
+  const normalizedPath = typeof samplePresetPath === "string" ? samplePresetPath.trim() : "";
+  return normalizedPath ? `Loaded preset from ${normalizedPath}.` : "Loaded preset.";
+}
+
 function setStatus(message) {
   if (refs.statusText instanceof HTMLElement) {
     refs.statusText.textContent = message;
@@ -52,6 +81,55 @@ function buildDefaultPayload() {
       { from: "p2", to: "p3" }
     ]
   };
+}
+
+function extractMapPayloadFromPreset(rawPreset) {
+  if (!rawPreset || typeof rawPreset !== "object") {
+    return null;
+  }
+  const payload = rawPreset.payload && typeof rawPreset.payload === "object"
+    ? rawPreset.payload
+    : rawPreset;
+
+  const candidateKeys = ["mapPayload", "mapDocument", "normalizerPayload", "document"];
+  for (const key of candidateKeys) {
+    const value = payload[key];
+    if (value && typeof value === "object" && Array.isArray(value.points)) {
+      return value;
+    }
+  }
+  if (Array.isArray(payload.points)) {
+    return payload;
+  }
+  return null;
+}
+
+async function tryLoadPresetFromQuery() {
+  const searchParams = new URLSearchParams(window.location.search);
+  const samplePresetPath = normalizeSamplePresetPath(searchParams.get("samplePresetPath") || "");
+  if (!samplePresetPath) {
+    return;
+  }
+  const sampleId = String(searchParams.get("sampleId") || "").trim();
+  try {
+    const presetUrl = new URL(samplePresetPath, window.location.href);
+    const response = await fetch(presetUrl.toString(), { cache: "no-store" });
+    if (!response.ok) {
+      throw new Error(`Preset request failed (${response.status}).`);
+    }
+    const rawPreset = await response.json();
+    const mapPayload = extractMapPayloadFromPreset(rawPreset);
+    if (!mapPayload) {
+      throw new Error("Preset payload did not include a map payload.");
+    }
+    if (!(refs.input instanceof HTMLTextAreaElement)) {
+      throw new Error("Map payload input is unavailable.");
+    }
+    refs.input.value = toPrettyJson(mapPayload);
+    setStatus(buildPresetLoadedStatus(sampleId, samplePresetPath));
+  } catch (error) {
+    setStatus(`Preset load failed: ${error instanceof Error ? error.message : "unknown error"}`);
+  }
 }
 
 function normalizeMapPayload() {
@@ -103,6 +181,7 @@ function boot3dMapEditor() {
   if (refs.input instanceof HTMLTextAreaElement && !refs.input.value.trim()) {
     refs.input.value = toPrettyJson(buildDefaultPayload());
   }
+  void tryLoadPresetFromQuery();
   return {
     normalize: normalizeMapPayload
   };

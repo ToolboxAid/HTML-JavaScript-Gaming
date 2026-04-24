@@ -1,0 +1,55 @@
+{
+  "sampleId": "1417",
+  "phase": "14",
+  "title": "Build Asset Manifest System",
+  "description": "Shared sample preset for Sample 1417 and Asset Pipeline Tool preload.",
+  "toolHints": [
+    "asset-pipeline-tool"
+  ],
+  "payload": {
+    "pipelinePayload": {
+      "gameId": "sample-1417",
+      "domainInputs": {
+        "sprites": [
+          {
+            "assetId": "hero-idle",
+            "runtimeFileName": "hero-idle.runtime.json",
+            "toolDataFileName": "hero-idle.tool.json",
+            "sourceToolId": "sprite-editor"
+          }
+        ],
+        "tilemaps": [
+          {
+            "assetId": "arena-main",
+            "runtimeFileName": "arena-main.runtime.json",
+            "toolDataFileName": "arena-main.tool.json",
+            "sourceToolId": "tile-map-editor"
+          }
+        ]
+      },
+      "toolStates": {
+        "asset-pipeline-tool": {
+          "schema": "html-js-gaming.tool-state",
+          "version": 1,
+          "toolId": "asset-pipeline-tool",
+          "projectId": "sample-1417",
+          "savedAtIso": "2026-04-24T00:00:00.000Z",
+          "state": {
+            "mode": "manifest-build"
+          }
+        }
+      }
+    }
+  },
+  "runtime": {
+    "sampleEntryPoint": "/samples/phase-14/1417/index.html"
+  },
+  "toolState": {
+    "preferredToolId": "asset-pipeline-tool"
+  },
+  "provenance": {
+    "path": "/samples/phase-14/1417/sample-1417-asset-pipeline-tool.json",
+    "createdAt": "2026-04-24T00:00:00.000Z",
+    "version": 1
+  }
+}

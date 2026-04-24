@@ -89,11 +89,117 @@ const refs = {
   importPlanText: document.getElementById("importPlanText")
 };
 
+function normalizeSamplePresetPath(pathValue) {
+  if (typeof pathValue !== "string") {
+    return "";
+  }
+  const trimmed = pathValue.trim().replace(/\\/g, "/");
+  if (!trimmed || trimmed.includes("..")) {
+    return "";
+  }
+  if (trimmed.startsWith("/samples/")) {
+    return trimmed;
+  }
+  if (trimmed.startsWith("./samples/")) {
+    return trimmed;
+  }
+  if (trimmed.startsWith("samples/")) {
+    return `./${trimmed}`;
+  }
+  return "";
+}
+
+function buildPresetLoadedStatus(sampleId, samplePresetPath) {
+  const normalizedSampleId = typeof sampleId === "string" ? sampleId.trim() : "";
+  if (normalizedSampleId) {
+    return `Loaded preset from sample ${normalizedSampleId}.`;
+  }
+  const normalizedPath = typeof samplePresetPath === "string" ? samplePresetPath.trim() : "";
+  return normalizedPath ? `Loaded preset from ${normalizedPath}.` : "Loaded preset.";
+}
+
 const state = {
   selectedCategory: "All",
   search: "",
   selectedAssetId: ASSET_CATALOG[0]?.id ?? ""
 };
+
+function extractAssetBrowserPreset(rawPreset) {
+  if (!rawPreset || typeof rawPreset !== "object") {
+    return null;
+  }
+  const payload = rawPreset.payload && typeof rawPreset.payload === "object"
+    ? rawPreset.payload
+    : rawPreset;
+
+  const direct = payload.assetBrowserPreset;
+  if (direct && typeof direct === "object") {
+    return direct;
+  }
+  if (
+    typeof payload.selectedAssetId === "string"
+    || typeof payload.selectedCategory === "string"
+    || typeof payload.search === "string"
+  ) {
+    return payload;
+  }
+  return null;
+}
+
+function applyAssetBrowserPreset(preset) {
+  if (!preset || typeof preset !== "object") {
+    return false;
+  }
+  if (typeof preset.selectedCategory === "string" && CATEGORY_ORDER.includes(preset.selectedCategory)) {
+    state.selectedCategory = preset.selectedCategory;
+    refs.categoryFilter.value = preset.selectedCategory;
+  }
+  if (typeof preset.search === "string") {
+    state.search = preset.search;
+    refs.searchInput.value = preset.search;
+  }
+  if (typeof preset.selectedAssetId === "string" && ASSET_CATALOG.some((entry) => entry.id === preset.selectedAssetId)) {
+    state.selectedAssetId = preset.selectedAssetId;
+  }
+  if (typeof preset.importCategory === "string" && APPROVED_DESTINATIONS[preset.importCategory]) {
+    refs.importCategorySelect.value = preset.importCategory;
+    populateDestinationOptions(preset.importCategory);
+  }
+  if (typeof preset.importDestination === "string") {
+    refs.importDestinationSelect.value = preset.importDestination;
+  }
+  if (typeof preset.importName === "string") {
+    refs.importNameInput.value = preset.importName;
+  }
+  renderAssetList();
+  renderPreview();
+  renderImportPlan();
+  return true;
+}
+
+async function tryLoadPresetFromQuery() {
+  const searchParams = new URLSearchParams(window.location.search);
+  const samplePresetPath = normalizeSamplePresetPath(searchParams.get("samplePresetPath") || "");
+  if (!samplePresetPath) {
+    return;
+  }
+  const sampleId = String(searchParams.get("sampleId") || "").trim();
+  try {
+    const presetUrl = new URL(samplePresetPath, window.location.href);
+    const response = await fetch(presetUrl.toString(), { cache: "no-store" });
+    if (!response.ok) {
+      throw new Error(`Preset request failed (${response.status}).`);
+    }
+    const rawPreset = await response.json();
+    const preset = extractAssetBrowserPreset(rawPreset);
+    if (!preset || !applyAssetBrowserPreset(preset)) {
+      throw new Error("Preset payload did not include Asset Browser preset fields.");
+    }
+    refs.importStatusText.textContent = buildPresetLoadedStatus(sampleId, samplePresetPath);
+  } catch (error) {
+    refs.importStatusText.textContent = `Preset load failed: ${error instanceof Error ? error.message : "unknown error"}`;
+  }
+}
 
 function getAssetTypeFromCategory(category) {
   switch (category) {
@@ -445,6 +551,7 @@ const assetBrowserApi = {
 function bootAssetBrowser() {
   if (!initialized) {
     init();
+    void tryLoadPresetFromQuery();
     initialized = true;
   }
   window.assetBrowserApp = assetBrowserApi;

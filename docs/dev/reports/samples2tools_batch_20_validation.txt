@@ -1,0 +1,16 @@
+BUILD_PR_LEVEL_20_1_PHASE20_TOOL_PRESET_INTEGRATION - Samples2Tools Batch 20 Validation
+
+[x] 0201 -> 3d-camera-path-editor mapping present (yes) at /samples/phase-02/0201/sample-0201-3d-camera-path-editor.json
+[x] 0205 -> state-inspector mapping present (yes) at /samples/phase-02/0205/sample-0205-state-inspector.json
+[x] 0213 -> palette-browser mapping present (yes) at /samples/phase-02/0213/sample-0213-palette-browser.json
+[x] 0221 -> 3d-json-payload-normalizer mapping present (yes) at /samples/phase-02/0221/sample-0221-3d-json-payload-normalizer.json
+[x] 1208 -> 3d-asset-viewer mapping present (yes) at /samples/phase-12/1208/sample-1208-3d-asset-viewer.json
+[x] 1417 -> asset-pipeline-tool mapping present (yes) at /samples/phase-14/1417/sample-1417-asset-pipeline-tool.json
+[x] 1505 -> asset-browser mapping present (yes) at /samples/phase-15/1505/sample-1505-asset-browser.json
+[x] Query-preset loading added for: 3d-asset-viewer, 3d-camera-path-editor, 3d-json-payload-normalizer, asset-browser, asset-pipeline-tool, palette-browser, state-inspector
+[x] Link map report regenerated from metadata mappings (samples2tools_link_map_20.json)
+
+Validation checks performed
+- node --check for all updated tool entry scripts
+- JSON parse for all new sample preset files
+- metadata extraction confirms all new mappings

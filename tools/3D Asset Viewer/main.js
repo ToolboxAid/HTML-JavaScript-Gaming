@@ -8,6 +8,35 @@ const refs = {
   output: document.getElementById("asset3dOutput")
 };
 
+function normalizeSamplePresetPath(pathValue) {
+  if (typeof pathValue !== "string") {
+    return "";
+  }
+  const trimmed = pathValue.trim().replace(/\\/g, "/");
+  if (!trimmed || trimmed.includes("..")) {
+    return "";
+  }
+  if (trimmed.startsWith("/samples/")) {
+    return trimmed;
+  }
+  if (trimmed.startsWith("./samples/")) {
+    return trimmed;
+  }
+  if (trimmed.startsWith("samples/")) {
+    return `./${trimmed}`;
+  }
+  return "";
+}
+
+function buildPresetLoadedStatus(sampleId, samplePresetPath) {
+  const normalizedSampleId = typeof sampleId === "string" ? sampleId.trim() : "";
+  if (normalizedSampleId) {
+    return `Loaded preset from sample ${normalizedSampleId}.`;
+  }
+  const normalizedPath = typeof samplePresetPath === "string" ? samplePresetPath.trim() : "";
+  return normalizedPath ? `Loaded preset from ${normalizedPath}.` : "Loaded preset.";
+}
+
 function setStatus(message) {
   if (refs.statusText instanceof HTMLElement) {
     refs.statusText.textContent = message;
@@ -64,6 +93,55 @@ function buildDefaultPayload() {
   };
 }
 
+function extractAssetPayloadFromPreset(rawPreset) {
+  if (!rawPreset || typeof rawPreset !== "object") {
+    return null;
+  }
+  const payload = rawPreset.payload && typeof rawPreset.payload === "object"
+    ? rawPreset.payload
+    : rawPreset;
+
+  const candidateKeys = ["asset3d", "asset", "assetPayload", "viewerPayload"];
+  for (const key of candidateKeys) {
+    const value = payload[key];
+    if (value && typeof value === "object" && Array.isArray(value.vertices)) {
+      return value;
+    }
+  }
+  if (Array.isArray(payload.vertices)) {
+    return payload;
+  }
+  return null;
+}
+
+async function tryLoadPresetFromQuery() {
+  const searchParams = new URLSearchParams(window.location.search);
+  const samplePresetPath = normalizeSamplePresetPath(searchParams.get("samplePresetPath") || "");
+  if (!samplePresetPath) {
+    return;
+  }
+  const sampleId = String(searchParams.get("sampleId") || "").trim();
+  try {
+    const presetUrl = new URL(samplePresetPath, window.location.href);
+    const response = await fetch(presetUrl.toString(), { cache: "no-store" });
+    if (!response.ok) {
+      throw new Error(`Preset request failed (${response.status}).`);
+    }
+    const rawPreset = await response.json();
+    const assetPayload = extractAssetPayloadFromPreset(rawPreset);
+    if (!assetPayload) {
+      throw new Error("Preset payload did not include a 3D asset payload.");
+    }
+    if (!(refs.input instanceof HTMLTextAreaElement)) {
+      throw new Error("Asset input is unavailable.");
+    }
+    refs.input.value = toPrettyJson(assetPayload);
+    setStatus(buildPresetLoadedStatus(sampleId, samplePresetPath));
+  } catch (error) {
+    setStatus(`Preset load failed: ${error instanceof Error ? error.message : "unknown error"}`);
+  }
+}
+
 function inspectAssetPayload() {
   if (!(refs.input instanceof HTMLTextAreaElement)) {
     return;
@@ -97,6 +175,7 @@ function boot3dAssetViewer() {
   if (refs.input instanceof HTMLTextAreaElement && !refs.input.value.trim()) {
     refs.input.value = toPrettyJson(buildDefaultPayload());
   }
+  void tryLoadPresetFromQuery();
   return {
     inspect: inspectAssetPayload
   };

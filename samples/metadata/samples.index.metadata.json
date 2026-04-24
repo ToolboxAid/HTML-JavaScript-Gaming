@@ -1023,6 +1023,15 @@
         "engine/theme/index/Theme",
         "engine/theme/index/ThemeTokens",
         "engine/utils/index/clamp"
+      ],
+      "toolHints": [
+        "3d-camera-path-editor"
+      ],
+      "roundtripToolPresets": [
+        {
+          "toolId": "3d-camera-path-editor",
+          "presetPath": "/samples/phase-02/0201/sample-0201-3d-camera-path-editor.json"
+        }
       ]
     },
     {
@@ -1173,6 +1182,15 @@
         "engine/theme/index/Theme",
         "engine/theme/index/ThemeTokens",
         "engine/utils/index/clamp"
+      ],
+      "toolHints": [
+        "state-inspector"
+      ],
+      "roundtripToolPresets": [
+        {
+          "toolId": "state-inspector",
+          "presetPath": "/samples/phase-02/0205/sample-0205-state-inspector.json"
+        }
       ]
     },
     {
@@ -1503,12 +1521,17 @@
         "engine/scene/index/Scene"
       ],
       "toolHints": [
-        "sprite-editor"
+        "sprite-editor",
+        "palette-browser"
       ],
       "roundtripToolPresets": [
         {
           "toolId": "sprite-editor",
           "presetPath": "/samples/phase-02/0213/sample-0213-sprite-editor.json"
+        },
+        {
+          "toolId": "palette-browser",
+          "presetPath": "/samples/phase-02/0213/sample-0213-palette-browser.json"
         }
       ]
     },
@@ -1875,7 +1898,8 @@
       ],
       "toolHints": [
         "tile-map-editor",
-        "tile-model-converter"
+        "tile-model-converter",
+        "3d-json-payload-normalizer"
       ],
       "roundtripToolPresets": [
         {
@@ -1885,6 +1909,10 @@
         {
           "toolId": "tile-model-converter",
           "presetPath": "/samples/phase-02/0221/sample-0221-tile-model-converter.json"
+        },
+        {
+          "toolId": "3d-json-payload-normalizer",
+          "presetPath": "/samples/phase-02/0221/sample-0221-3d-json-payload-normalizer.json"
         }
       ]
     },
@@ -6554,7 +6582,8 @@
       "toolHints": [
         "tile-map-editor",
         "parallax-editor",
-        "vector-asset-studio"
+        "vector-asset-studio",
+        "3d-asset-viewer"
       ],
       "roundtripToolPresets": [
         {
@@ -6568,6 +6597,10 @@
         {
           "toolId": "vector-asset-studio",
           "presetPath": "/samples/phase-12/1208/sample-1208-vector-asset-studio.json"
+        },
+        {
+          "toolId": "3d-asset-viewer",
+          "presetPath": "/samples/phase-12/1208/sample-1208-3d-asset-viewer.json"
         }
       ]
     },
@@ -7827,6 +7860,15 @@
       "href": "./phase-14/1417/index.html",
       "classValues": [
         "engine/scene/index/Scene"
+      ],
+      "toolHints": [
+        "asset-pipeline-tool"
+      ],
+      "roundtripToolPresets": [
+        {
+          "toolId": "asset-pipeline-tool",
+          "presetPath": "/samples/phase-14/1417/sample-1417-asset-pipeline-tool.json"
+        }
       ]
     },
     {
@@ -8013,6 +8055,15 @@
         "engine/theme/index/Theme",
         "engine/theme/index/ThemeTokens",
         "engine/tooling/index/AssetBrowser"
+      ],
+      "toolHints": [
+        "asset-browser"
+      ],
+      "roundtripToolPresets": [
+        {
+          "toolId": "asset-browser",
+          "presetPath": "/samples/phase-15/1505/sample-1505-asset-browser.json"
+        }
       ]
     },
     {

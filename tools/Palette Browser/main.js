@@ -47,6 +47,35 @@ const state = {
   hiddenBuiltInPaletteIds: loadHiddenBuiltInPaletteIds()
 };
 
+function normalizeSamplePresetPath(pathValue) {
+  if (typeof pathValue !== "string") {
+    return "";
+  }
+  const trimmed = pathValue.trim().replace(/\\/g, "/");
+  if (!trimmed || trimmed.includes("..")) {
+    return "";
+  }
+  if (trimmed.startsWith("/samples/")) {
+    return trimmed;
+  }
+  if (trimmed.startsWith("./samples/")) {
+    return trimmed;
+  }
+  if (trimmed.startsWith("samples/")) {
+    return `./${trimmed}`;
+  }
+  return "";
+}
+
+function buildPresetLoadedStatus(sampleId, samplePresetPath) {
+  const normalizedSampleId = typeof sampleId === "string" ? sampleId.trim() : "";
+  if (normalizedSampleId) {
+    return `Loaded preset from sample ${normalizedSampleId}.`;
+  }
+  const normalizedPath = typeof samplePresetPath === "string" ? samplePresetPath.trim() : "";
+  return normalizedPath ? `Loaded preset from ${normalizedPath}.` : "Loaded preset.";
+}
+
 function setSelectionText(text, options = {}) {
   const muted = options?.muted === true;
   refs.selectionText.textContent = String(text || "");
@@ -366,6 +395,64 @@ function normalizeImportedPalette(rawPayload) {
     name: baseName || "imported-palette",
     entries: normalizedEntries
   };
+}
+
+function extractPaletteFromSamplePreset(rawPreset) {
+  if (!rawPreset || typeof rawPreset !== "object") {
+    return null;
+  }
+  const payload = rawPreset.payload && typeof rawPreset.payload === "object"
+    ? rawPreset.payload
+    : rawPreset;
+  if (payload.palette && typeof payload.palette === "object") {
+    return payload.palette;
+  }
+  if (Array.isArray(payload.entries)) {
+    return payload;
+  }
+  return null;
+}
+
+function importPaletteFromPresetPayload(rawPalette) {
+  const imported = normalizeImportedPalette(rawPalette);
+  let nextName = imported.name;
+  if (hasReservedPaletteKeyword(nextName)) {
+    nextName = `${nextName}-copy`;
+  }
+  if (hasReservedPaletteKeyword(nextName)) {
+    nextName = "imported-palette";
+  }
+  nextName = makeUniquePaletteName(nextName);
+  const importedPalette = createCustomPalette(nextName, imported.entries);
+  state.customPalettes.unshift(importedPalette);
+  saveCustomPalettes();
+  setSelectedPalette(importedPalette.id);
+  return importedPalette;
+}
+
+async function tryLoadPresetFromQuery() {
+  const searchParams = new URLSearchParams(window.location.search);
+  const samplePresetPath = normalizeSamplePresetPath(searchParams.get("samplePresetPath") || "");
+  if (!samplePresetPath) {
+    return;
+  }
+  const sampleId = String(searchParams.get("sampleId") || "").trim();
+  try {
+    const presetUrl = new URL(samplePresetPath, window.location.href);
+    const response = await fetch(presetUrl.toString(), { cache: "no-store" });
+    if (!response.ok) {
+      throw new Error(`Preset request failed (${response.status}).`);
+    }
+    const rawPreset = await response.json();
+    const palettePayload = extractPaletteFromSamplePreset(rawPreset);
+    if (!palettePayload) {
+      throw new Error("Preset payload did not include a palette.");
+    }
+    importPaletteFromPresetPayload(palettePayload);
+    setSelectionText(buildPresetLoadedStatus(sampleId, samplePresetPath));
+  } catch (error) {
+    setSelectionText(`Preset load failed: ${error instanceof Error ? error.message : "unknown error"}`);
+  }
 }
 
 async function importPaletteJsonFromFile(file) {
@@ -751,6 +838,7 @@ const paletteBrowserApi = {
 function bootPaletteBrowser() {
   if (!initialized) {
     init();
+    void tryLoadPresetFromQuery();
     initialized = true;
   }
   window.paletteBrowserApp = paletteBrowserApi;

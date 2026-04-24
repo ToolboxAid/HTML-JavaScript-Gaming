@@ -22,6 +22,35 @@ const state = {
 
 let disposeInteractionFlow = null;
 
+function normalizeSamplePresetPath(pathValue) {
+  if (typeof pathValue !== "string") {
+    return "";
+  }
+  const trimmed = pathValue.trim().replace(/\\/g, "/");
+  if (!trimmed || trimmed.includes("..")) {
+    return "";
+  }
+  if (trimmed.startsWith("/samples/")) {
+    return trimmed;
+  }
+  if (trimmed.startsWith("./samples/")) {
+    return trimmed;
+  }
+  if (trimmed.startsWith("samples/")) {
+    return `./${trimmed}`;
+  }
+  return "";
+}
+
+function buildPresetLoadedStatus(sampleId, samplePresetPath) {
+  const normalizedSampleId = typeof sampleId === "string" ? sampleId.trim() : "";
+  if (normalizedSampleId) {
+    return `Loaded preset from sample ${normalizedSampleId}.`;
+  }
+  const normalizedPath = typeof samplePresetPath === "string" ? samplePresetPath.trim() : "";
+  return normalizedPath ? `Loaded preset from ${normalizedPath}.` : "Loaded preset.";
+}
+
 function setStatus(message) {
   if (refs.statusText instanceof HTMLElement) {
     refs.statusText.textContent = message;
@@ -140,6 +169,58 @@ function buildLiveSnapshot() {
   });
 }
 
+function extractSnapshotFromSamplePreset(rawPreset) {
+  if (!rawPreset || typeof rawPreset !== "object") {
+    return null;
+  }
+  const payload = rawPreset.payload && typeof rawPreset.payload === "object"
+    ? rawPreset.payload
+    : rawPreset;
+  if (payload.snapshot && typeof payload.snapshot === "object") {
+    return payload.snapshot;
+  }
+  if (payload.inspectJson && typeof payload.inspectJson === "object") {
+    return payload.inspectJson;
+  }
+  if (payload.stateSnapshot && typeof payload.stateSnapshot === "object") {
+    return payload.stateSnapshot;
+  }
+  if (payload.schema && typeof payload.schema === "string" && payload.schema.includes("snapshot")) {
+    return payload;
+  }
+  return null;
+}
+
+async function tryLoadPresetFromQuery() {
+  const searchParams = new URLSearchParams(window.location.search);
+  const samplePresetPath = normalizeSamplePresetPath(searchParams.get("samplePresetPath") || "");
+  if (!samplePresetPath) {
+    return false;
+  }
+  const sampleId = String(searchParams.get("sampleId") || "").trim();
+  try {
+    const presetUrl = new URL(samplePresetPath, window.location.href);
+    const response = await fetch(presetUrl.toString(), { cache: "no-store" });
+    if (!response.ok) {
+      throw new Error(`Preset request failed (${response.status}).`);
+    }
+    const rawPreset = await response.json();
+    const snapshot = extractSnapshotFromSamplePreset(rawPreset);
+    if (!snapshot) {
+      throw new Error("Preset payload did not include an inspector snapshot payload.");
+    }
+    if (refs.input instanceof HTMLTextAreaElement) {
+      refs.input.value = toPrettyJson(snapshot);
+    }
+    renderSnapshot(snapshot);
+    setStatus(buildPresetLoadedStatus(sampleId, samplePresetPath));
+    return true;
+  } catch (error) {
+    setStatus(`Preset load failed: ${error instanceof Error ? error.message : "unknown error"}`);
+    return false;
+  }
+}
+
 function renderSnapshot(snapshot) {
   state.snapshot = snapshot;
   if (refs.output instanceof HTMLElement) {
@@ -216,7 +297,11 @@ function bootStateInspector() {
       renderSnapshot(routedPayload);
       setStatus("Imported JSON payload loaded into inspector view.");
     } else {
-      refreshSnapshot();
+      void tryLoadPresetFromQuery().then((loaded) => {
+        if (!loaded) {
+          refreshSnapshot();
+        }
+      });
     }
     initialized = true;
   }

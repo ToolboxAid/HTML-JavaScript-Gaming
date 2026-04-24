@@ -105,19 +105,19 @@
 - [x] Sprite Editor (9 candidates)
 - [.] Tilemap Studio (15 candidates)
 - [.] Tile Model Converter (18 candidates)
-- [ ] Asset Browser / Import Hub (8 candidates)
-- [ ] Asset Pipeline Tool (10 candidates)
-- [ ] Palette Browser / Manager (6 candidates)
-- [ ] State Inspector (26 candidates)
+- [.] Asset Browser / Import Hub (8 candidates)
+- [.] Asset Pipeline Tool (10 candidates)
+- [.] Palette Browser / Manager (6 candidates)
+- [.] State Inspector (26 candidates)
 - [ ] For each tool:
 - select top 3-5 high-signal non-Phase-20 samples first
 - wire shared JSON loading
 - confirm deterministic load behavior
 
 ### Phase 4 - 3D Utility Surfaces
-- [ ] 3D JSON Payload Normalizer (41 candidates; prioritize strict map/payload samples)
-- [ ] 3D Asset Viewer (31 candidates; prioritize asset-centric samples)
-- [ ] 3D Camera Path Editor (47 candidates; prioritize camera/path-centric samples)
+- [.] 3D JSON Payload Normalizer (41 candidates; prioritize strict map/payload samples)
+- [.] 3D Asset Viewer (31 candidates; prioritize asset-centric samples)
+- [.] 3D Camera Path Editor (47 candidates; prioritize camera/path-centric samples)
 - [ ] Select precise, semantically aligned samples only (avoid broad keyword-only linkage).
 
 ### Phase 5 - Games
@@ -155,6 +155,7 @@
 - [x] `docs/dev/reports/samples2tools_link_map_<n>.json`
 
 ## Current Snapshot (from tools_used.txt)
-- [x] Current tagged samples across active tools: `32` (phase-01 through phase-19)
+- [x] Current tagged samples across active tools: `39` (phase-01 through phase-19)
 - [x] Candidate coverage inventory exists for all active tools
+- [x] Legacy `sprite-editor-old-keep` is intentionally excluded from Samples2Tools mapping.
 - [.] Convert candidates into curated, validated sample-to-tool links

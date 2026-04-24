@@ -1,0 +1,38 @@
+{
+  "sampleId": "0221",
+  "phase": "02",
+  "title": "Tilemap System",
+  "description": "Shared sample preset for Sample 0221 and 3D JSON Payload Normalizer preload.",
+  "toolHints": [
+    "3d-json-payload-normalizer"
+  ],
+  "payload": {
+    "mapPayload": {
+      "schema": "tools.3d-json-payload-normalizer.document/1",
+      "mapId": "sample-0221-collision-loop",
+      "points": [
+        { "id": "p1", "x": -18, "y": 0, "z": -10 },
+        { "id": "p2", "x": 18, "y": 0, "z": -10 },
+        { "id": "p3", "x": 20, "y": 0, "z": 10 },
+        { "id": "p4", "x": -20, "y": 0, "z": 10 }
+      ],
+      "segments": [
+        { "from": "p1", "to": "p2" },
+        { "from": "p2", "to": "p3" },
+        { "from": "p3", "to": "p4" },
+        { "from": "p4", "to": "p1" }
+      ]
+    }
+  },
+  "runtime": {
+    "sampleEntryPoint": "/samples/phase-02/0221/index.html"
+  },
+  "toolState": {
+    "preferredToolId": "3d-json-payload-normalizer"
+  },
+  "provenance": {
+    "path": "/samples/phase-02/0221/sample-0221-3d-json-payload-normalizer.json",
+    "createdAt": "2026-04-24T00:00:00.000Z",
+    "version": 1
+  }
+}

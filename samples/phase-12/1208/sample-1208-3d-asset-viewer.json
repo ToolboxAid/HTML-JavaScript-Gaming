@@ -1,0 +1,38 @@
+{
+  "sampleId": "1208",
+  "phase": "12",
+  "title": "Tool Formatted Tiles Parallax",
+  "description": "Shared sample preset for Sample 1208 and 3D Asset Viewer preload.",
+  "toolHints": [
+    "3d-asset-viewer"
+  ],
+  "payload": {
+    "asset3d": {
+      "schema": "tools.3d-asset-viewer.asset/1",
+      "assetId": "sample-1208-near-forest-shape",
+      "vertices": [
+        { "x": -16, "y": 0, "z": -24 },
+        { "x": 16, "y": 0, "z": -24 },
+        { "x": 24, "y": 0, "z": 0 },
+        { "x": 8, "y": 12, "z": 18 },
+        { "x": -8, "y": 10, "z": 20 },
+        { "x": -22, "y": 0, "z": 4 }
+      ],
+      "metadata": {
+        "sourceSampleId": "1208",
+        "sourceToolId": "vector-asset-studio"
+      }
+    }
+  },
+  "runtime": {
+    "sampleEntryPoint": "/samples/phase-12/1208/index.html"
+  },
+  "toolState": {
+    "preferredToolId": "3d-asset-viewer"
+  },
+  "provenance": {
+    "path": "/samples/phase-12/1208/sample-1208-3d-asset-viewer.json",
+    "createdAt": "2026-04-24T00:00:00.000Z",
+    "version": 1
+  }
+}

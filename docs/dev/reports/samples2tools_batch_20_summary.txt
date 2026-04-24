@@ -1,0 +1,33 @@
+BUILD_PR_LEVEL_20_1_PHASE20_TOOL_PRESET_INTEGRATION - Samples2Tools Batch 20 Summary
+
+Scope: phase-01 through phase-19 metadata-driven roundtrip mapping for priority toolset foundation
+
+Added mappings in this batch:
+- 0201 -> 3d-camera-path-editor
+- 0205 -> state-inspector
+- 0213 -> palette-browser
+- 0221 -> 3d-json-payload-normalizer
+- 1208 -> 3d-asset-viewer
+- 1417 -> asset-pipeline-tool
+- 1505 -> asset-browser
+
+Total metadata roundtrip mappings: 39
+- 3d-asset-viewer: 1 mapped samples
+- 3d-camera-path-editor: 1 mapped samples
+- 3d-json-payload-normalizer: 1 mapped samples
+- asset-browser: 1 mapped samples
+- asset-pipeline-tool: 1 mapped samples
+- palette-browser: 1 mapped samples
+- parallax-editor: 4 mapped samples
+- performance-profiler: 2 mapped samples
+- physics-sandbox: 2 mapped samples
+- replay-visualizer: 3 mapped samples
+- sprite-editor: 9 mapped samples
+- state-inspector: 1 mapped samples
+- tile-map-editor: 7 mapped samples
+- tile-model-converter: 3 mapped samples
+- vector-asset-studio: 1 mapped samples
+- vector-map-editor: 1 mapped samples
+
+Legacy exclusion: sprite-editor-old-keep remains intentionally unmapped in this lane.
+Source of truth: samples/metadata/samples.index.metadata.json -> samples[].roundtripToolPresets

@@ -1,0 +1,32 @@
+{
+  "sampleId": "0213",
+  "phase": "02",
+  "title": "Sprite Render Layer",
+  "description": "Shared sample preset for Sample 0213 and Palette Browser preload.",
+  "toolHints": [
+    "palette-browser"
+  ],
+  "payload": {
+    "palette": {
+      "name": "sample-0213-sprite-layer",
+      "entries": [
+        { "symbol": "A", "hex": "#1E1B4B", "name": "Backdrop Violet" },
+        { "symbol": "B", "hex": "#1CAC78", "name": "Sprite Accent Green" },
+        { "symbol": "C", "hex": "#FF7538", "name": "Sprite Warm Orange" },
+        { "symbol": "D", "hex": "#FCE883", "name": "Highlight Yellow" },
+        { "symbol": "E", "hex": "#1F75FE", "name": "UI Blue" }
+      ]
+    }
+  },
+  "runtime": {
+    "sampleEntryPoint": "/samples/phase-02/0213/index.html"
+  },
+  "toolState": {
+    "preferredToolId": "palette-browser"
+  },
+  "provenance": {
+    "path": "/samples/phase-02/0213/sample-0213-palette-browser.json",
+    "createdAt": "2026-04-24T00:00:00.000Z",
+    "version": 1
+  }
+}
