@@ -1,0 +1,51 @@
+Samples2Tools batch 34 validation
+Generated: 2026-04-24T22:05:51.621Z
+Scope: Phase-20 decommission parity-gate definition and current-state evaluation.
+
+Phase-20 baseline tool counts:
+- 3d-asset-viewer: 3
+- 3d-camera-path-editor: 3
+- 3d-json-payload-normalizer: 3
+- asset-browser: 3
+- asset-pipeline-tool: 3
+- palette-browser: 3
+- parallax-editor: 3
+- performance-profiler: 3
+- physics-sandbox: 3
+- replay-visualizer: 3
+- sprite-editor: 3
+- state-inspector: 3
+- tile-map-editor: 3
+- tile-model-converter: 3
+- vector-asset-studio: 3
+- vector-map-editor: 3
+- workspace-manager: 3
+
+Non-Phase-20 replacement tool counts:
+- 3d-asset-viewer: 3
+- 3d-camera-path-editor: 3
+- 3d-json-payload-normalizer: 3
+- asset-browser: 3
+- asset-pipeline-tool: 3
+- palette-browser: 3
+- parallax-editor: 4
+- performance-profiler: 3
+- physics-sandbox: 3
+- replay-visualizer: 3
+- sprite-editor: 5
+- state-inspector: 3
+- tile-map-editor: 5
+- tile-model-converter: 3
+- vector-asset-studio: 3
+- vector-map-editor: 3
+
+Parity gate checks:
+- [PASS] Coverage equals/exceeds Phase-20 matrix intent for non-workspace tools :: missing=0, underBaseline=0
+- [PASS] Preset/state preload behavior has repeatable validation artifacts :: missingReports=0
+- [PASS] Phase-20 baseline remains available while decommission gate is being evaluated :: phase20SamplePages=51
+
+Missing replacement tools: none
+Under-baseline tools: none
+Missing replacement reports: none
+
+Result: PASS

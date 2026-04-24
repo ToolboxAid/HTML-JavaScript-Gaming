@@ -1,0 +1,21 @@
+Samples2Tools batch 32 validation
+Generated: 2026-04-24T22:01:46.184Z
+Scope: Phase-1 vertical slice parity validation (Sample 1208 <-> Parallax Scene Studio).
+
+- [PASS] metadata sample 1208 exists :: samples.index.metadata.json includes id=1208
+- [PASS] metadata has parallax roundtrip mapping :: sample 1208 includes toolId=parallax-editor mapping
+- [PASS] metadata parallax preset path is canonical :: /samples/phase-12/1208/sample-1208-parallax-editor.json
+- [PASS] sample detail page link passes sampleId + samplePresetPath to tool :: samples/phase-12/1208/index.html
+- [PASS] sample runtime fetches sample-1208-parallax-editor.json :: samples/phase-12/1208/main.js loadSamplePreset()
+- [PASS] parallax preset file exists :: samples/phase-12/1208/sample-1208-parallax-editor.json
+- [PASS] preset payload has parallaxDocument :: payload.parallaxDocument
+- [PASS] preset payload has tilemapDocumentPath :: payload.tilemapDocumentPath
+- [PASS] preset parallax schema is toolbox.parallax/1 :: toolbox.parallax/1
+- [PASS] sample scene consumes parallaxDocument from sample preset :: ToolFormattedTilesParallaxScene loads preset parallax data
+- [PASS] tool launch contract reads samplePresetPath query :: tools/Parallax Scene Studio/main.js
+- [PASS] tool fetches preset from samplePresetPath :: tools/Parallax Scene Studio/main.js
+- [PASS] tool status shows loaded sample message :: buildPresetLoadedStatus()
+
+Checks: 13
+Failures: 0
+Result: PASS

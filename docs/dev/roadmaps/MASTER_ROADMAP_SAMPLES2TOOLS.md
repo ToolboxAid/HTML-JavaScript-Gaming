@@ -75,7 +75,7 @@
 - `sampleId=1208`
 - `samplePresetPath=/samples/phase-12/1208/sample-1208-parallax-editor.json`
 - [x] Wire `Parallax Scene Studio` launch path to load and hydrate from `samplePresetPath` when provided.
-- [ ] Validate end-to-end parity for the slice (sample load + tool preload + visible content match).
+- [x] Validate end-to-end parity for the slice (sample load + tool preload + visible content match).
 
 ### Phase 1 - Foundation + One Vertical Slice
 - [x] Add shared adapter guidance document for sample-to-tool loading.
@@ -84,7 +84,7 @@
 - same file is passed to tool launch
 - tool hydrates from same file
 - [x] Suggested first slice: `Parallax Scene Studio` (clear, low candidate count).
-- [ ] Validate:
+- [x] Validate:
 - sample runs using file
 - tool opens from sample and loads matching content
 - no Phase 20 coupling
@@ -96,7 +96,7 @@
 - [x] Replay Visualizer (3 candidate samples)
 - [x] Vector Asset Studio (1 candidate sample)
 - [x] Vector Map Editor (1 candidate sample)
-- [ ] For each:
+- [x] For each:
 - create/link `sample-xxxx-toolID.json` in selected sample folders
 - add/open tool link with shared launch contract
 - verify tool state visibly matches sample payload intent
@@ -118,7 +118,7 @@
 - [x] 3D JSON Payload Normalizer (41 candidates; prioritize strict map/payload samples)
 - [x] 3D Asset Viewer (31 candidates; prioritize asset-centric samples)
 - [x] 3D Camera Path Editor (47 candidates; prioritize camera/path-centric samples)
-- [ ] Select precise, semantically aligned samples only (avoid broad keyword-only linkage).
+- [x] Select precise, semantically aligned samples only (avoid broad keyword-only linkage).
 
 ### Phase 5 - Games
 - [ ] Do the same thing for games, but use Workspace Manager.
@@ -127,7 +127,7 @@
 
 ### Phase 6 - Phase 20 Decommission (After Parity)
 - [ ] Keep `Phase 20 - Tool Preset Integration` active until Samples2Tools parity is execution-validated.
-- [ ] Define parity gate:
+- [x] Define parity gate:
 - sample-to-tool launch coverage equals or exceeds current Phase 20 matrix intent.
 - preset/state preload behavior is validated in replacement lane.
 - replacement reports exist and are repeatable.
@@ -136,7 +136,7 @@
 - [ ] Remove Phase 20 artifacts only after final signoff (no dangling references in docs/tests/reports).
 
 ## Prioritization Rules
-- [ ] Prefer semantically exact sample-tool matches over high volume.
+- [x] Prefer semantically exact sample-tool matches over high volume.
 - [x] Limit initial additions per tool card to 2-5 links.
 - [x] Use non-Phase-20 samples only in this lane.
 - [x] Maintain stable sample identity (`sample-xxxx-toolID.json`) for reproducibility.

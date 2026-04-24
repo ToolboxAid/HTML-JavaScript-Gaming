@@ -1,0 +1,44 @@
+Samples2Tools batch 33 validation
+Generated: 2026-04-24T22:03:16.467Z
+Scope: Phase-2 highest-value tools completion checks (mapping + contract + launch wiring).
+
+- [PASS] parallax-editor has mapped samples :: count=4
+- [PASS] parallax-editor link count within 2-5 :: count=4
+- [PASS] parallax-editor mappings are non-Phase-20 :: 03-0306,12-1204,12-1205,12-1208
+- [PASS] parallax-editor mapped preset files satisfy payload contract :: {"anyOf":["parallaxDocument"]}
+- [PASS] parallax-editor source handles samplePresetPath :: tools/Parallax Scene Studio/main.js
+- [PASS] parallax-editor source renders loaded preset status :: tools/Parallax Scene Studio/main.js
+- [PASS] performance-profiler has mapped samples :: count=3
+- [PASS] performance-profiler link count within 2-5 :: count=3
+- [PASS] performance-profiler mappings are non-Phase-20 :: 05-0512,13-1319,14-1407
+- [PASS] performance-profiler mapped preset files satisfy payload contract :: {"anyOf":["profileSettings"]}
+- [PASS] performance-profiler source handles samplePresetPath :: tools/Performance Profiler/main.js
+- [PASS] performance-profiler source renders loaded preset status :: tools/Performance Profiler/main.js
+- [PASS] physics-sandbox has mapped samples :: count=3
+- [PASS] physics-sandbox link count within 2-5 :: count=3
+- [PASS] physics-sandbox mappings are non-Phase-20 :: 02-0210,03-0303,16-1606
+- [PASS] physics-sandbox mapped preset files satisfy payload contract :: {"anyOf":["physicsBody"]}
+- [PASS] physics-sandbox source handles samplePresetPath :: tools/Physics Sandbox/main.js
+- [PASS] physics-sandbox source renders loaded preset status :: tools/Physics Sandbox/main.js
+- [PASS] replay-visualizer has mapped samples :: count=3
+- [PASS] replay-visualizer link count within 2-5 :: count=3
+- [PASS] replay-visualizer mappings are non-Phase-20 :: 07-0708,13-1315,14-1406
+- [PASS] replay-visualizer mapped preset files satisfy payload contract :: {"anyOf":["events"]}
+- [PASS] replay-visualizer source handles samplePresetPath :: tools/Replay Visualizer/main.js
+- [PASS] replay-visualizer source renders loaded preset status :: tools/Replay Visualizer/main.js
+- [PASS] vector-asset-studio has mapped samples :: count=3
+- [PASS] vector-asset-studio link count within 2-5 :: count=3
+- [PASS] vector-asset-studio mappings are non-Phase-20 :: 09-0901,12-1204,12-1208
+- [PASS] vector-asset-studio mapped preset files satisfy payload contract :: {"anyOf":["vectorAssetDocument"]}
+- [PASS] vector-asset-studio source handles samplePresetPath :: tools/Vector Asset Studio/main.js
+- [PASS] vector-asset-studio source renders loaded preset status :: tools/Vector Asset Studio/main.js
+- [PASS] vector-map-editor has mapped samples :: count=3
+- [PASS] vector-map-editor link count within 2-5 :: count=3
+- [PASS] vector-map-editor mappings are non-Phase-20 :: 09-0901,12-1204,12-1205
+- [PASS] vector-map-editor mapped preset files satisfy payload contract :: {"anyOf":["vectorMapDocument"]}
+- [PASS] vector-map-editor source handles samplePresetPath :: tools/Vector Map Editor/editor/VectorMapEditorApp.js
+- [PASS] vector-map-editor source renders loaded preset status :: tools/Vector Map Editor/editor/VectorMapEditorApp.js
+
+Checks: 36
+Failures: 0
+Result: PASS

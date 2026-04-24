@@ -1,0 +1,11 @@
+Samples2Tools batch 32 summary
+Generated: 2026-04-24T22:01:46.184Z
+Purpose: execution-backed parity closure for the original Phase-1 parallax reference slice.
+
+Completed this batch:
+- Verified Sample 1208 runtime consumes the same preset JSON file used for tool preload
+- Verified sample page launch URL passes sampleId + samplePresetPath contract to Parallax Scene Studio
+- Verified tool-side samplePresetPath loader and loaded-sample status behavior
+
+Primary validation artifact:
+- docs/dev/reports/samples2tools_batch_32_validation.txt (PASS)
