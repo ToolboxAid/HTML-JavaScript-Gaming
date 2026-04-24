@@ -1,0 +1,10 @@
+Samples2Tools batch 47 summary
+Generated: 2026-04-24T22:47:34.464Z
+Purpose: update stale Phase-20 deprecation reporting after hard removal.
+
+Completed this batch:
+- Updated phase-20 note from deprecation-on-disk wording to full-removal wording
+- Revalidated metadata and filesystem state for removed phase-20 artifacts
+
+Primary validation artifact:
+- docs/dev/reports/samples2tools_batch_47_validation.txt (PASS)

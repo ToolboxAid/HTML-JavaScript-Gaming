@@ -1,0 +1,12 @@
+Samples2Tools batch 47 validation
+Generated: 2026-04-24T22:47:34.464Z
+Scope: reconcile Phase-20 reporting artifacts with current hard-removal state.
+
+- [PASS] Phase-20 sample entries are removed from metadata :: count=0
+- [PASS] Phase-20 phase descriptor removed from metadata :: count=0
+- [PASS] Phase-20 directory removed :: exists=false
+- [PASS] Phase-20 note reflects removal state :: docs/dev/reports/samples2tools_phase20_deprecation_note.txt
+
+Checks: 4
+Failures: 0
+Result: PASS
