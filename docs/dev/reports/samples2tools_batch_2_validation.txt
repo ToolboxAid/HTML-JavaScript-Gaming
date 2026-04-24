@@ -10,7 +10,7 @@ Generated: 2026-04-23T23:17:40.888Z
 [x] Non-Phase-20 metadata tool mappings available
 
 Execution evidence:
-- Canonical sample preset exists for 1208: samples/phase-12/1208/sample-1208.json
+- Canonical sample preset exists for 1208: samples/phase-12/1208/sample-1208-parallax-editor.json
 - Sample 1208 runtime loads shared sample JSON: samples/phase-12/1208/main.js
 - Sample 1208 roundtrip links pass sampleId + samplePresetPath: samples/phase-12/1208/index.html
 - Parallax tool query preload flow is implemented: tools/Parallax Scene Studio/main.js

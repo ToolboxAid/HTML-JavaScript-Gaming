@@ -1,0 +1,16 @@
+Samples2Tools Batch 3 Validation
+Generated: 2026-04-23T23:35:45.186Z
+
+[x] Roundtrip naming uses sample-xxxx-toolID.json
+[x] Expected tool preset files exist for mapped roundtrip samples
+[x] 1208 sample roundtrip links use sample-xxxx-toolID naming
+[x] 1209-1211 redirects use sample-xxxx-toolID naming
+[x] phase-01 through phase-19 scope excludes phase-20 mappings
+
+Execution evidence:
+- Roundtrip naming uses sample-xxxx-toolID.json: samples/index.render.js:getRoundtripPresetPath
+- Expected tool preset files exist for mapped roundtrip samples: 9 preset files present
+- 1208 sample roundtrip links use sample-xxxx-toolID naming: samples/phase-12/1208/index.html
+- 1209-1211 redirects use sample-xxxx-toolID naming: samples/phase-12/1209-1211/index.html
+- phase-01 through phase-19 scope excludes phase-20 mappings: 9 links within phases 01-19
+- overall: pass

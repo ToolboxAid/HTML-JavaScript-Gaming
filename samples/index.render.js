@@ -43,17 +43,28 @@ function shouldUsePresetRoundtrip(sample, toolId) {
   if (!sampleId || !samplePhase) {
     return false;
   }
-  if (sampleId === "1208" && samplePhase === "12") {
+  if (samplePhase === "12" && sampleId === "1208") {
     return toolId === "tile-map-editor"
       || toolId === "parallax-editor"
       || toolId === "vector-asset-studio";
   }
-  if (toolId !== "parallax-editor") {
-    return false;
+  if (toolId === "parallax-editor") {
+    return (sampleId === "0306" && samplePhase === "03")
+      || (sampleId === "1204" && samplePhase === "12")
+      || (sampleId === "1205" && samplePhase === "12");
   }
-  return (sampleId === "0306" && samplePhase === "03")
-    || (sampleId === "1204" && samplePhase === "12")
-    || (sampleId === "1205" && samplePhase === "12");
+  if (toolId === "tile-map-editor") {
+    return (sampleId === "1209" && samplePhase === "12")
+      || (sampleId === "1210" && samplePhase === "12")
+      || (sampleId === "1211" && samplePhase === "12");
+  }
+  return false;
+}
+
+function getRoundtripPresetPath(sample, toolId) {
+  const sampleId = normalize(sample?.id);
+  const samplePhase = normalize(sample?.phase);
+  return `/samples/phase-${samplePhase}/${sampleId}/sample-${sampleId}-${toolId}.json`;
 }
 
 function buildRoundtripLinks(sample, toolRegistryMap) {
@@ -77,7 +88,7 @@ function buildRoundtripLinks(sample, toolRegistryMap) {
     let href = baseHref;
     let label = `Open ${normalize(tool.displayName) || normalize(tool.name) || toolId}`;
     if (shouldUsePresetRoundtrip(sample, toolId)) {
-      const presetPath = `/samples/phase-${sample.phase}/${sample.id}/${toolId}-sample-${sample.id}.json`;
+      const presetPath = getRoundtripPresetPath(sample, toolId);
       href = `${baseHref}?sampleId=${encodeURIComponent(sample.id)}&samplePresetPath=${encodeURIComponent(presetPath)}`;
     }
 

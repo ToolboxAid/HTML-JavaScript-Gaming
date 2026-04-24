@@ -12,7 +12,7 @@ import { createLivePreviewSyncBridge } from '/tools/shared/livePreviewSyncChanne
 
 async function loadSamplePreset() {
   try {
-    const response = await fetch('./sample-1208.json', { cache: 'no-store' });
+    const response = await fetch('./sample-1208-parallax-editor.json', { cache: 'no-store' });
     if (!response.ok) {
       return null;
     }

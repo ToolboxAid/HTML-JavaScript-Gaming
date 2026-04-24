@@ -1,0 +1,21 @@
+Samples2Tools Batch 3 Summary
+Generated: 2026-04-23T23:35:45.186Z
+Scope: phase-01 through phase-19 sample->tool mappings with sample-xxxx-toolID preset naming
+
+Mapped tools: 3
+Mapped sample links: 9
+
+parallax-editor: 4 sample(s)
+tile-map-editor: 4 sample(s)
+vector-asset-studio: 1 sample(s)
+
+Mapped links:
+- parallax-editor <= Phase 03 Sample 0306 | Nes Style Zones Parallax | ./phase-03/0306/index.html | preset: /samples/phase-03/0306/sample-0306-parallax-editor.json
+- parallax-editor <= Phase 12 Sample 1204 | Tilemap Parallax Hero | ./phase-12/1204/index.html | preset: /samples/phase-12/1204/sample-1204-parallax-editor.json
+- parallax-editor <= Phase 12 Sample 1205 | Multi-System Demo | ./phase-12/1205/index.html | preset: /samples/phase-12/1205/sample-1205-parallax-editor.json
+- parallax-editor <= Phase 12 Sample 1208 | Tool Formatted Tiles Parallax | ./phase-12/1208/index.html | preset: /samples/phase-12/1208/sample-1208-parallax-editor.json
+- tile-map-editor <= Phase 12 Sample 1208 | Tool Formatted Tiles Parallax | ./phase-12/1208/index.html | preset: /samples/phase-12/1208/sample-1208-tile-map-editor.json
+- tile-map-editor <= Phase 12 Sample 1209 | Tilemap Basic Layout Preset | ./phase-12/1209/index.html | preset: /samples/phase-12/1209/sample-1209-tile-map-editor.json
+- tile-map-editor <= Phase 12 Sample 1210 | Tilemap Objective Layout Preset | ./phase-12/1210/index.html | preset: /samples/phase-12/1210/sample-1210-tile-map-editor.json
+- tile-map-editor <= Phase 12 Sample 1211 | Tilemap Mario Learning Layout Preset | ./phase-12/1211/index.html | preset: /samples/phase-12/1211/sample-1211-tile-map-editor.json
+- vector-asset-studio <= Phase 12 Sample 1208 | Tool Formatted Tiles Parallax | ./phase-12/1208/index.html | preset: /samples/phase-12/1208/sample-1208-vector-asset-studio.json

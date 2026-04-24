@@ -4,9 +4,7 @@
   "title": "Tool Formatted Tiles Parallax",
   "description": "Shared sample preset for Sample 1208 and Parallax Scene Studio preload.",
   "toolHints": [
-    "tile-map-editor",
-    "parallax-editor",
-    "vector-asset-studio"
+    "tile-map-editor"
   ],
   "payload": {
     "tilemapDocumentPath": "/samples/phase-12/1208/data/toolFormattedTileMap.js",
@@ -81,10 +79,10 @@
     "sampleEntryPoint": "/samples/phase-12/1208/index.html"
   },
   "toolState": {
-    "preferredToolId": "parallax-editor"
+    "preferredToolId": "tile-map-editor"
   },
   "provenance": {
-    "path": "/samples/phase-12/1208/sample-1208.json",
+    "path": "/samples/phase-12/1208/sample-1208-tile-map-editor.json",
     "createdAt": "2026-04-23T00:00:00.000Z",
     "version": 1
   }

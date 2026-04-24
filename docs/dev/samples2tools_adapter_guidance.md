@@ -7,7 +7,7 @@
 ## Shared Launch Contract
 - Query params:
 - `sampleId=<id>`
-- `samplePresetPath=/samples/phase-xx/xxxx/<tool-or-sample-name>.json`
+- `samplePresetPath=/samples/phase-xx/xxxx/sample-xxxx-toolID.json`
 - Rules:
 - Reject empty/invalid paths.
 - Normalize path separators to `/`.
@@ -66,6 +66,6 @@
 
 ## Current Verified Vertical Slice
 - Sample `1208`:
-- shared preset file exists
+- tool-specific preset files exist (`sample-1208-tile-map-editor.json`, `sample-1208-parallax-editor.json`, `sample-1208-vector-asset-studio.json`)
 - roundtrip links pass `sampleId` + `samplePresetPath`
 - Parallax, Tilemap, and Vector Asset Studio implement query preload adapters

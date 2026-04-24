@@ -1,8 +1,8 @@
 {
-  "sampleId": "1204",
+  "sampleId": "1205",
   "phase": "12",
-  "title": "Tilemap Parallax Hero",
-  "description": "Parallax preset payload derived from Sample 1204 hero traversal bands.",
+  "title": "Multi-System Demo",
+  "description": "Parallax preset payload derived from Sample 1205 multi-system scene bands.",
   "toolHints": [
     "parallax-editor"
   ],
@@ -12,7 +12,7 @@
       "version": 1,
       "companionEditor": "ParallaxEditor",
       "map": {
-        "name": "sample-1204-tilemap-parallax-hero",
+        "name": "sample-1205-multi-system-demo",
         "width": 72,
         "height": 18,
         "tileSize": 48,
@@ -21,10 +21,10 @@
       },
       "layers": [
         {
-          "id": "hero-band-far",
-          "name": "Hero Band Far",
+          "id": "multi-band-far",
+          "name": "Multi Band Far",
           "drawOrder": 0,
-          "imageSource": "/samples/phase-12/1204/assets/data/parallax/sample-1204-far.svg",
+          "imageSource": "/samples/phase-12/1205/assets/data/parallax/sample-1205-far.svg",
           "scrollFactorX": 0.16,
           "scrollFactorY": 0,
           "offsetX": 0,
@@ -36,10 +36,10 @@
           "visible": true
         },
         {
-          "id": "hero-band-mid",
-          "name": "Hero Band Mid",
+          "id": "multi-band-mid",
+          "name": "Multi Band Mid",
           "drawOrder": 1,
-          "imageSource": "/samples/phase-12/1204/assets/data/parallax/sample-1204-mid.svg",
+          "imageSource": "/samples/phase-12/1205/assets/data/parallax/sample-1205-mid.svg",
           "scrollFactorX": 0.3,
           "scrollFactorY": 0,
           "offsetX": 0,
@@ -51,10 +51,10 @@
           "visible": true
         },
         {
-          "id": "hero-band-near",
-          "name": "Hero Band Near",
+          "id": "multi-band-near",
+          "name": "Multi Band Near",
           "drawOrder": 2,
-          "imageSource": "/samples/phase-12/1204/assets/data/parallax/sample-1204-near.svg",
+          "imageSource": "/samples/phase-12/1205/assets/data/parallax/sample-1205-near.svg",
           "scrollFactorX": 0.52,
           "scrollFactorY": 0,
           "offsetX": 0,
@@ -74,13 +74,13 @@
     }
   },
   "runtime": {
-    "sampleEntryPoint": "/samples/phase-12/1204/index.html"
+    "sampleEntryPoint": "/samples/phase-12/1205/index.html"
   },
   "toolState": {
     "preferredToolId": "parallax-editor"
   },
   "provenance": {
-    "path": "/samples/phase-12/1204/parallax-editor-sample-1204.json",
+    "path": "/samples/phase-12/1205/sample-1205-parallax-editor.json",
     "createdAt": "2026-04-23T00:00:00.000Z",
     "version": 1
   }

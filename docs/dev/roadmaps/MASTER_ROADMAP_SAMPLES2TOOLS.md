@@ -35,7 +35,7 @@
 - [x] Validate that older payloads in active lanes are migrated and no active launcher depends on `imageDataUrl`.
 
 ## Canonical Data Contract
-- [.] File naming standard: `samples/phase-xx/xxxx/sample-xxxx.json`
+- [.] File naming standard: `samples/phase-xx/xxxx/sample-xxxx-toolID.json`
 - [ ] Required fields:
 - `sampleId` (string)
 - `phase` (string)
@@ -51,7 +51,7 @@
 ## Launch Contract (Shared)
 - [x] Standard query parameters for tool launch:
 - `sampleId=<id>`
-- `samplePresetPath=/samples/phase-xx/xxxx/sample-xxxx.json`
+- `samplePresetPath=/samples/phase-xx/xxxx/sample-xxxx-toolID.json`
 - [ ] Tool boot behavior:
 - detect contract params
 - fetch JSON from `samplePresetPath`
@@ -69,17 +69,17 @@
 ## Rollout Plan
 
 ### Batch 1 - Active Work (Phase 1 Slice)
-- [x] Add `samples/phase-12/1208/sample-1208.json` as shared sample/tool preset source.
+- [x] Add `samples/phase-12/1208/sample-1208-parallax-editor.json` as shared sample/tool preset source.
 - [x] Wire Sample 1208 page/tool link to pass:
 - `sampleId=1208`
-- `samplePresetPath=/samples/phase-12/1208/sample-1208.json`
+- `samplePresetPath=/samples/phase-12/1208/sample-1208-parallax-editor.json`
 - [x] Wire `Parallax Scene Studio` launch path to load and hydrate from `samplePresetPath` when provided.
 - [ ] Validate end-to-end parity for the slice (sample load + tool preload + visible content match).
 
 ### Phase 1 - Foundation + One Vertical Slice
 - [x] Add shared adapter guidance document for sample-to-tool loading.
 - [x] Implement one full reference flow:
-- sample page loads `sample-xxxx.json`
+- sample page loads `sample-xxxx-toolID.json`
 - same file is passed to tool launch
 - tool hydrates from same file
 - [x] Suggested first slice: `Parallax Scene Studio` (clear, low candidate count).
@@ -96,7 +96,7 @@
 - [ ] Vector Asset Studio (1 candidate sample)
 - [ ] Vector Map Editor (1 candidate sample)
 - [ ] For each:
-- create/link `sample-xxxx.json` in selected sample folders
+- create/link `sample-xxxx-toolID.json` in selected sample folders
 - add/open tool link with shared launch contract
 - verify tool state visibly matches sample payload intent
 
@@ -138,10 +138,10 @@
 - [ ] Prefer semantically exact sample-tool matches over high volume.
 - [ ] Limit initial additions per tool card to 2-5 links.
 - [ ] Use non-Phase-20 samples only in this lane.
-- [ ] Maintain stable sample identity (`sample-xxxx.json`) for reproducibility.
+- [ ] Maintain stable sample identity (`sample-xxxx-toolID.json`) for reproducibility.
 
 ## Validation Checklist
-- [ ] Every linked sample has `sample-xxxx.json`.
+- [x] Every linked sample has `sample-xxxx-toolID.json`.
 - [ ] Sample page consumes same JSON it passes to tool.
 - [ ] Tool launch with `samplePresetPath` succeeds without manual edits.
 - [ ] Tool status includes loaded sample id/path.
@@ -154,6 +154,6 @@
 - [x] `docs/dev/reports/samples2tools_link_map_<n>.json`
 
 ## Current Snapshot (from tools_used.txt)
-- [x] Current tagged samples across active tools: `4` (excluding Phase 20)
+- [x] Current tagged samples across active tools: `9` (phase-01 through phase-19)
 - [x] Candidate coverage inventory exists for all active tools
 - [.] Convert candidates into curated, validated sample-to-tool links
