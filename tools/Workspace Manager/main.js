@@ -27,37 +27,6 @@ const hasAvailableTools = toolIds.length > 0;
 let currentGameFrame = null;
 let currentGameHostContextId = "";
 
-function decodeSamplePresetPayload(encoded) {
-  if (typeof encoded !== "string" || !encoded.trim()) {
-    return null;
-  }
-  try {
-    const base64 = encoded.replace(/-/g, "+").replace(/_/g, "/");
-    const padded = `${base64}${"=".repeat((4 - (base64.length % 4)) % 4)}`;
-    const jsonText = atob(padded);
-    const parsed = JSON.parse(jsonText);
-    return parsed && typeof parsed === "object" ? parsed : null;
-  } catch {
-    return null;
-  }
-}
-
-function readPhase20PresetFromQuery() {
-  const url = new URL(window.location.href);
-  const parsed = decodeSamplePresetPayload(url.searchParams.get("samplePreset") || "");
-  if (!parsed || typeof parsed.state !== "object") {
-    return null;
-  }
-  return {
-    toolId: typeof parsed.toolId === "string" ? parsed.toolId : "",
-    sampleId: typeof parsed.sampleId === "string" ? parsed.sampleId : "",
-    label: typeof parsed.label === "string" ? parsed.label : "",
-    state: parsed.state
-  };
-}
-
-const phase20Preset = readPhase20PresetFromQuery();
-
 function readSelectedToolId() {
   return refs.toolSelect instanceof HTMLSelectElement ? refs.toolSelect.value : "";
 }
@@ -344,9 +313,6 @@ function mountSelectedTool(source = "manual") {
       }
     }
   }
-  if (!optionalState && phase20Preset && (phase20Preset.toolId === toolId || phase20Preset.toolId === "workspace-manager")) {
-    optionalState = phase20Preset.state;
-  }
   updateSwitchMeta();
   updateStandaloneHref(toolId);
   writeQueryToolId(toolId, source === "init");
@@ -361,9 +327,6 @@ function mountSelectedTool(source = "manual") {
     },
     state: optionalState
   });
-  if (phase20Preset && (phase20Preset.toolId === toolId || phase20Preset.toolId === "workspace-manager")) {
-    writeStatus(`Mounting ${toolId} with preset ${phase20Preset.sampleId || phase20Preset.label || "state"}.`);
-  }
   syncControlState();
 }
 

@@ -1,0 +1,11 @@
+Samples2Tools batch 46 validation
+Generated: 2026-04-24T22:43:44.280Z
+Scope: remove residual Phase-20 compatibility paths from Workspace Manager runtime.
+
+- [PASS] Workspace Manager main has no legacy phase20 decode/query helpers :: tools/Workspace Manager/main.js
+- [PASS] Workspace Manager still supports normal tool mount state injection from UI JSON :: tools/Workspace Manager/main.js
+- [PASS] Workspace Manager still supports game host context wiring :: tools/Workspace Manager/main.js
+
+Checks: 3
+Failures: 0
+Result: PASS
