@@ -1,0 +1,12 @@
+Samples2Tools batch 40 summary
+Generated: 2026-04-24T22:28:28.115Z
+Purpose: remove remaining standalone bypass risk and make hosted game sessions context-aware.
+
+Completed this batch:
+- Removed standalone bypass parameter from game launch guard
+- Added Workspace Manager shared host context write/remove around hosted game mount lifecycle
+- Propagated hostContextId into hosted game iframe URLs
+- Revalidated guard coverage across all launchable game pages
+
+Primary validation artifact:
+- docs/dev/reports/samples2tools_batch_40_validation.txt (PASS)

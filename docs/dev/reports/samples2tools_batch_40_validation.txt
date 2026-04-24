@@ -1,0 +1,14 @@
+Samples2Tools batch 40 validation
+Generated: 2026-04-24T22:28:28.115Z
+Scope: Workspace-only game execution hardening (no bypass + hosted context propagation).
+
+- [PASS] Game launch guard has no standalone bypass flag :: games/shared/workspaceGameLaunchGuard.js
+- [PASS] Game launch guard allows only Workspace-hosted mode :: games/shared/workspaceGameLaunchGuard.js
+- [PASS] Workspace Manager writes shared host context for game mounts :: tools/Workspace Manager/main.js
+- [PASS] Workspace Manager passes hostContextId to game frame URL :: tools/Workspace Manager/main.js
+- [PASS] Workspace Manager removes game host context on unmount :: tools/Workspace Manager/main.js
+- [PASS] All launchable game pages include workspace launch guard :: launchable=11, guardIssues=0, missingFiles=0
+
+Checks: 6
+Failures: 0
+Result: PASS

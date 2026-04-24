@@ -15,9 +15,7 @@ export function enforceWorkspaceGameLaunch(gameId) {
   const params = url.searchParams;
   const hosted = params.get("hosted") === "1";
   const hostToolId = (params.get("hostToolId") || "").trim().toLowerCase();
-  const allowStandalone = params.get("allowStandalone") === "1";
-
-  if (allowStandalone || (hosted && hostToolId === "workspace-manager")) {
+  if (hosted && hostToolId === "workspace-manager") {
     return;
   }
 

@@ -1,0 +1,11 @@
+Samples2Tools batch 41 validation
+Generated: 2026-04-24T22:29:21.567Z
+Scope: remove remaining direct standalone launch affordances from primary Games Hub cards.
+
+- [PASS] Removed Asteroids direct debug standalone link :: games/index.render.js
+- [PASS] Primary game card launch action is Workspace Manager only :: games/index.render.js
+- [PASS] Game card title launch uses workspaceHref-or-href fallback path :: games/index.render.js
+
+Checks: 3
+Failures: 0
+Result: PASS

@@ -1,0 +1,10 @@
+Samples2Tools batch 41 summary
+Generated: 2026-04-24T22:29:21.567Z
+Purpose: ensure primary Games Hub no longer exposes direct standalone debug launch affordances.
+
+Completed this batch:
+- Removed Asteroids direct standalone debug link from game cards
+- Kept Workspace Manager as the only explicit card-level launch action
+
+Primary validation artifact:
+- docs/dev/reports/samples2tools_batch_41_validation.txt (PASS)

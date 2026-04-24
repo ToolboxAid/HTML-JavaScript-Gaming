@@ -1,5 +1,9 @@
 import { createToolHostManifest, getToolHostEntryById } from "../../tools/shared/toolHostManifest.js";
 import { createToolHostRuntime } from "../../tools/shared/toolHostRuntime.js";
+import {
+  removeToolHostSharedContextById,
+  writeToolHostSharedContext
+} from "../../tools/shared/toolHostSharedContext.js";
 
 const GAMES_METADATA_PATH = "/games/metadata/games.index.metadata.json";
 
@@ -21,6 +25,7 @@ const manifest = createToolHostManifest();
 const toolIds = manifest.tools.map((tool) => tool.id);
 const hasAvailableTools = toolIds.length > 0;
 let currentGameFrame = null;
+let currentGameHostContextId = "";
 
 function decodeSamplePresetPayload(encoded) {
   if (typeof encoded !== "string" || !encoded.trim()) {
@@ -184,6 +189,10 @@ async function readGameEntryById(gameId) {
 
 function unmountGameFrame() {
   if (!currentGameFrame) {
+    if (currentGameHostContextId) {
+      removeToolHostSharedContextById(currentGameHostContextId);
+      currentGameHostContextId = "";
+    }
     return;
   }
   if (currentGameFrame.parentElement === refs.mountContainer) {
@@ -191,6 +200,10 @@ function unmountGameFrame() {
     refs.mountContainer.removeChild(currentGameFrame);
   }
   currentGameFrame = null;
+  if (currentGameHostContextId) {
+    removeToolHostSharedContextById(currentGameHostContextId);
+    currentGameHostContextId = "";
+  }
 }
 
 function mountGameFrame(gameEntry) {
@@ -201,6 +214,24 @@ function mountGameFrame(gameEntry) {
   runtime.unmountCurrentTool("switch-to-game");
   unmountGameFrame();
 
+  const hostContext = writeToolHostSharedContext({
+    toolId: "workspace-manager",
+    source: "game-host",
+    requestedAt: new Date().toISOString(),
+    sharedContext: {
+      hostMode: "game",
+      gameId: gameEntry.id,
+      gameTitle: gameEntry.title
+    },
+    state: {
+      game: {
+        id: gameEntry.id,
+        title: gameEntry.title,
+        href: gameEntry.href
+      }
+    }
+  });
+
   const frame = document.createElement("iframe");
   frame.setAttribute("data-game-host-frame", gameEntry.id);
   frame.setAttribute("title", `${gameEntry.title} Workspace Frame`);
@@ -209,6 +240,12 @@ function mountGameFrame(gameEntry) {
   gameUrl.searchParams.set("hosted", "1");
   gameUrl.searchParams.set("hostToolId", "workspace-manager");
   gameUrl.searchParams.set("hostGameId", gameEntry.id);
+  if (hostContext?.contextId) {
+    currentGameHostContextId = hostContext.contextId;
+    gameUrl.searchParams.set("hostContextId", hostContext.contextId);
+  } else {
+    currentGameHostContextId = "";
+  }
   frame.src = gameUrl.toString();
   refs.mountContainer.replaceChildren(frame);
   currentGameFrame = frame;
@@ -348,6 +385,17 @@ function bindEvents() {
   }
 
   window.addEventListener("popstate", () => {
+    const gameId = readInitialGameId();
+    if (gameId) {
+      void readGameEntryById(gameId).then((gameEntry) => {
+        if (!gameEntry) {
+          writeStatus(`Game "${gameId}" is not available for Workspace Manager launch.`);
+          return;
+        }
+        mountGameFrame(gameEntry);
+      });
+      return;
+    }
     const toolId = readInitialToolId();
     if (refs.toolSelect instanceof HTMLSelectElement) {
       refs.toolSelect.value = toolId;
@@ -356,6 +404,10 @@ function bindEvents() {
     updateStandaloneHref(toolId);
     mountSelectedTool("popstate");
     syncControlState();
+  });
+
+  window.addEventListener("beforeunload", () => {
+    unmountGameFrame();
   });
 }
 
