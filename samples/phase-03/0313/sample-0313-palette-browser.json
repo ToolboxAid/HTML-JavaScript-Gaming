@@ -1,0 +1,52 @@
+{
+  "sampleId": "0313",
+  "phase": "03",
+  "title": "Trigger Zones",
+  "description": "Shared sample preset for Sample 0313 and Palette Browser preload.",
+  "toolHints": [
+    "palette-browser"
+  ],
+  "payload": {
+    "palette": {
+      "name": "sample-0313-trigger-zones",
+      "entries": [
+        {
+          "symbol": "A",
+          "hex": "#111827",
+          "name": "Background"
+        },
+        {
+          "symbol": "B",
+          "hex": "#1CAC78",
+          "name": "Safe Trigger"
+        },
+        {
+          "symbol": "C",
+          "hex": "#1F75FE",
+          "name": "Info Trigger"
+        },
+        {
+          "symbol": "D",
+          "hex": "#EE204D",
+          "name": "Hazard Trigger"
+        },
+        {
+          "symbol": "E",
+          "hex": "#FCE883",
+          "name": "Objective Trigger"
+        }
+      ]
+    }
+  },
+  "runtime": {
+    "sampleEntryPoint": "/samples/phase-03/0313/index.html"
+  },
+  "toolState": {
+    "preferredToolId": "palette-browser"
+  },
+  "provenance": {
+    "path": "/samples/phase-03/0313/sample-0313-palette-browser.json",
+    "createdAt": "2026-04-24T00:00:00.000Z",
+    "version": 1
+  }
+}

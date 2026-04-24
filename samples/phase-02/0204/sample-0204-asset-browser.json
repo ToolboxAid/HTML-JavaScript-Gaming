@@ -1,0 +1,30 @@
+{
+  "sampleId": "0204",
+  "phase": "02",
+  "title": "Asset Registry",
+  "description": "Shared sample preset for Sample 0204 and Asset Browser / Import Hub preload.",
+  "toolHints": [
+    "asset-browser"
+  ],
+  "payload": {
+    "assetBrowserPreset": {
+      "selectedCategory": "Vector Assets",
+      "selectedAssetId": "asset-vector-player",
+      "search": "vector",
+      "importCategory": "Vector Assets",
+      "importDestination": "games/<project>/assets/vectors/",
+      "importName": "sample-0204-import.vector.json"
+    }
+  },
+  "runtime": {
+    "sampleEntryPoint": "/samples/phase-02/0204/index.html"
+  },
+  "toolState": {
+    "preferredToolId": "asset-browser"
+  },
+  "provenance": {
+    "path": "/samples/phase-02/0204/sample-0204-asset-browser.json",
+    "createdAt": "2026-04-24T00:00:00.000Z",
+    "version": 1
+  }
+}

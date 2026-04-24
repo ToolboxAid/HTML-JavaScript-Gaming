@@ -1,0 +1,57 @@
+{
+  "sampleId": "1204",
+  "phase": "12",
+  "title": "Tilemap Parallax Hero",
+  "description": "Shared sample preset for Sample 1204 and Vector Asset Studio preload.",
+  "toolHints": [
+    "vector-asset-studio"
+  ],
+  "payload": {
+    "vectorAssetDocument": {
+      "sourceName": "sample-1204-near.svg",
+      "svgPath": "/samples/phase-12/1204/assets/data/parallax/sample-1204-near.svg",
+      "editorOptions": {
+        "palette": {
+          "id": "sample1204-parallax",
+          "name": "sample1204-parallax",
+          "entries": [
+            {
+              "hex": "#8EC5F4",
+              "name": "Sky Mid"
+            },
+            {
+              "hex": "#5568D2",
+              "name": "Cliff Mid"
+            },
+            {
+              "hex": "#218F86",
+              "name": "Forest Base"
+            },
+            {
+              "hex": "#62DCCC",
+              "name": "Forest Highlight"
+            }
+          ],
+          "paint": "#218F86",
+          "stroke": "#62DCCC",
+          "strokeWidth": 2,
+          "gradientStart": "#5568D2",
+          "gradientEnd": "#62DCCC",
+          "gradientAngle": 35,
+          "activeTarget": "paint"
+        }
+      }
+    }
+  },
+  "runtime": {
+    "sampleEntryPoint": "/samples/phase-12/1204/index.html"
+  },
+  "toolState": {
+    "preferredToolId": "vector-asset-studio"
+  },
+  "provenance": {
+    "path": "/samples/phase-12/1204/sample-1204-vector-asset-studio.json",
+    "createdAt": "2026-04-24T00:00:00.000Z",
+    "version": 1
+  }
+}

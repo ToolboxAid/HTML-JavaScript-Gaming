@@ -1,0 +1,57 @@
+{
+  "sampleId": "0204",
+  "phase": "02",
+  "title": "Asset Registry",
+  "description": "Shared sample preset for Sample 0204 and 3D Asset Viewer preload.",
+  "toolHints": [
+    "3d-asset-viewer"
+  ],
+  "payload": {
+    "asset3d": {
+      "schema": "tools.3d-asset-viewer.asset/1",
+      "assetId": "sample-0204-registry-node",
+      "vertices": [
+        {
+          "x": -10,
+          "y": -4,
+          "z": -10
+        },
+        {
+          "x": 10,
+          "y": -4,
+          "z": -10
+        },
+        {
+          "x": 12,
+          "y": -4,
+          "z": 8
+        },
+        {
+          "x": -12,
+          "y": -4,
+          "z": 8
+        },
+        {
+          "x": 0,
+          "y": 10,
+          "z": 0
+        }
+      ],
+      "metadata": {
+        "sourceSampleId": "0204",
+        "sourceToolId": "asset-browser"
+      }
+    }
+  },
+  "runtime": {
+    "sampleEntryPoint": "/samples/phase-02/0204/index.html"
+  },
+  "toolState": {
+    "preferredToolId": "3d-asset-viewer"
+  },
+  "provenance": {
+    "path": "/samples/phase-02/0204/sample-0204-3d-asset-viewer.json",
+    "createdAt": "2026-04-24T00:00:00.000Z",
+    "version": 1
+  }
+}

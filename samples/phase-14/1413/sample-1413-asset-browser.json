@@ -1,0 +1,30 @@
+{
+  "sampleId": "1413",
+  "phase": "14",
+  "title": "Asset Import Pipeline",
+  "description": "Shared sample preset for Sample 1413 and Asset Browser / Import Hub preload.",
+  "toolHints": [
+    "asset-browser"
+  ],
+  "payload": {
+    "assetBrowserPreset": {
+      "selectedCategory": "Sprite Projects",
+      "selectedAssetId": "asset-sprite-player-sheet",
+      "search": "sprite",
+      "importCategory": "Sprite Projects",
+      "importDestination": "games/<project>/assets/sprites/",
+      "importName": "sample-1413-import.sprite.json"
+    }
+  },
+  "runtime": {
+    "sampleEntryPoint": "/samples/phase-14/1413/index.html"
+  },
+  "toolState": {
+    "preferredToolId": "asset-browser"
+  },
+  "provenance": {
+    "path": "/samples/phase-14/1413/sample-1413-asset-browser.json",
+    "createdAt": "2026-04-24T00:00:00.000Z",
+    "version": 1
+  }
+}
