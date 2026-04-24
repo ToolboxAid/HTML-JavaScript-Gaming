@@ -1,0 +1,14 @@
+BUILD_PR_LEVEL_20_1_PHASE20_TOOL_PRESET_INTEGRATION - Samples2Tools Batch 14 Validation
+
+[x] Tilemap Studio has 6 mapped samples (phase-01 through phase-19)
+[x] All 6 mapped Tilemap Studio preset wrapper files exist on disk
+[x] Samples index roundtrip logic includes 0305 tile-map-editor mapping
+[x] Sample 0305 runtime loads the same sample-0305-tile-map-editor.json lane used by Tilemap Studio preload
+[x] Metadata toolHints include tile-map-editor for mapped sample ids
+
+Validation details
+- Added/validated sample id: 0305
+- Existing mapped sample ids retained: 0221, 1208, 1209, 1210, 1211
+- New files: /samples/phase-03/0305/sample-0305-tile-map-editor.json, /samples/phase-03/0305/sample-0305-tile-map-editor-document.json
+- Roundtrip launcher path: samples/index.render.js
+- Sample runtime loader path: samples/phase-03/0305/TileMetadataScene.js

@@ -1,0 +1,455 @@
+{
+  "schema": "toolbox.tilemap/1",
+  "version": 1,
+  "map": {
+    "name": "sample-0305-tile-metadata",
+    "width": 14,
+    "height": 7,
+    "tileSize": 48
+  },
+  "tileset": [
+    {
+      "id": 0,
+      "name": "Floor",
+      "color": "#1f2937"
+    },
+    {
+      "id": 1,
+      "name": "Wall",
+      "color": "#4338ca"
+    },
+    {
+      "id": 2,
+      "name": "Hazard",
+      "color": "#dc2626"
+    },
+    {
+      "id": 3,
+      "name": "Trigger",
+      "color": "#059669"
+    },
+    {
+      "id": 4,
+      "name": "Slope",
+      "color": "#a855f7"
+    }
+  ],
+  "layers": [
+    {
+      "id": "ground",
+      "name": "Ground",
+      "kind": "tile",
+      "visible": true,
+      "locked": false,
+      "data": [
+        [
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1
+        ],
+        [
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          4,
+          0,
+          0,
+          0,
+          0,
+          0,
+          1
+        ],
+        [
+          1,
+          0,
+          0,
+          2,
+          2,
+          0,
+          0,
+          0,
+          0,
+          3,
+          3,
+          0,
+          0,
+          1
+        ],
+        [
+          1,
+          0,
+          0,
+          2,
+          2,
+          0,
+          0,
+          0,
+          0,
+          3,
+          3,
+          0,
+          0,
+          1
+        ],
+        [
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          1
+        ],
+        [
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          4,
+          0,
+          0,
+          1
+        ],
+        [
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1
+        ]
+      ]
+    },
+    {
+      "id": "collision",
+      "name": "Collision",
+      "kind": "collision",
+      "visible": true,
+      "locked": false,
+      "data": [
+        [
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1
+        ],
+        [
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          1
+        ],
+        [
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          1
+        ],
+        [
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          1
+        ],
+        [
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          1
+        ],
+        [
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          1
+        ],
+        [
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1
+        ]
+      ]
+    },
+    {
+      "id": "data",
+      "name": "Data",
+      "kind": "data",
+      "visible": true,
+      "locked": false,
+      "data": [
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      ]
+    }
+  ],
+  "markers": [
+    {
+      "id": "spawn-1",
+      "type": "spawn",
+      "name": "player-start",
+      "col": 12,
+      "row": 5,
+      "properties": {}
+    }
+  ],
+  "tileMetadataDefinitions": {
+    "0": {
+      "label": "floor",
+      "color": "#1f2937",
+      "solid": false
+    },
+    "1": {
+      "label": "wall",
+      "color": "#4338ca",
+      "solid": true
+    },
+    "2": {
+      "label": "hazard",
+      "color": "#dc2626",
+      "solid": false,
+      "hazard": true,
+      "respawnMessage": "Hazard tile touched. Reset."
+    },
+    "3": {
+      "label": "trigger",
+      "color": "#059669",
+      "solid": false,
+      "trigger": "goal-flag",
+      "message": "Trigger tile activated."
+    },
+    "4": {
+      "label": "slope",
+      "color": "#a855f7",
+      "solid": false,
+      "slope": "placeholder-up-right",
+      "message": "Slope metadata placeholder."
+    }
+  },
+  "parallax": {
+    "schema": "toolbox.parallax/1",
+    "companionEditor": "ParallaxEditor",
+    "layers": []
+  },
+  "metadata": {
+    "createdAt": "2026-04-24T00:00:00.000Z",
+    "updatedAt": "2026-04-24T00:00:00.000Z",
+    "notes": "Sample 0305 shared tilemap document for sample/tool parity"
+  }
+}

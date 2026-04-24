@@ -1,0 +1,11 @@
+BUILD_PR_LEVEL_20_1_PHASE20_TOOL_PRESET_INTEGRATION - Samples2Tools Batch 14 Summary
+
+Scope: phase-01 through phase-19 Phase 3 Tilemap Studio expansion
+
+Tilemap Studio mapped samples: 6
+- Phase 02 Sample 0221 | Tilemap System | preset: /samples/phase-02/0221/sample-0221-tile-map-editor.json
+- Phase 03 Sample 0305 | Tile Metadata | preset: /samples/phase-03/0305/sample-0305-tile-map-editor.json
+- Phase 12 Sample 1208 | Tool Formatted Tiles Parallax | preset: /samples/phase-12/1208/sample-1208-tile-map-editor.json
+- Phase 12 Sample 1209 | Tilemap Basic Layout Preset | preset: /samples/phase-12/1209/sample-1209-tile-map-editor.json
+- Phase 12 Sample 1210 | Tilemap Objective Layout Preset | preset: /samples/phase-12/1210/sample-1210-tile-map-editor.json
+- Phase 12 Sample 1211 | Tilemap Mario Learning Layout Preset | preset: /samples/phase-12/1211/sample-1211-tile-map-editor.json

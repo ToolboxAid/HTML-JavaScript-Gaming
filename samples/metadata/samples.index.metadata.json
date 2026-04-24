@@ -2326,6 +2326,9 @@
         "engine/theme/index/ThemeTokens",
         "engine/tilemap/index/renderTilemap",
         "engine/tilemap/index/Tilemap"
+      ],
+      "toolHints": [
+        "tile-map-editor"
       ]
     },
     {

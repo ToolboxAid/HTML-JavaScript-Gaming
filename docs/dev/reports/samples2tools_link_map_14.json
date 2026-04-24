@@ -1,0 +1,55 @@
+{
+  "generatedAt": "2026-04-24T16:28:42.042Z",
+  "scope": "phase-01-phase-19",
+  "purpose": "batch-14-tilemap-studio-expansion",
+  "links": [
+    {
+      "sampleId": "0221",
+      "phase": "02",
+      "title": "Tilemap System",
+      "toolId": "tile-map-editor",
+      "href": "./phase-02/0221/index.html",
+      "presetPath": "/samples/phase-02/0221/sample-0221-tile-map-editor.json"
+    },
+    {
+      "sampleId": "0305",
+      "phase": "03",
+      "title": "Tile Metadata",
+      "toolId": "tile-map-editor",
+      "href": "./phase-03/0305/index.html",
+      "presetPath": "/samples/phase-03/0305/sample-0305-tile-map-editor.json"
+    },
+    {
+      "sampleId": "1208",
+      "phase": "12",
+      "title": "Tool Formatted Tiles Parallax",
+      "toolId": "tile-map-editor",
+      "href": "./phase-12/1208/index.html",
+      "presetPath": "/samples/phase-12/1208/sample-1208-tile-map-editor.json"
+    },
+    {
+      "sampleId": "1209",
+      "phase": "12",
+      "title": "Tilemap Basic Layout Preset",
+      "toolId": "tile-map-editor",
+      "href": "./phase-12/1209/index.html",
+      "presetPath": "/samples/phase-12/1209/sample-1209-tile-map-editor.json"
+    },
+    {
+      "sampleId": "1210",
+      "phase": "12",
+      "title": "Tilemap Objective Layout Preset",
+      "toolId": "tile-map-editor",
+      "href": "./phase-12/1210/index.html",
+      "presetPath": "/samples/phase-12/1210/sample-1210-tile-map-editor.json"
+    },
+    {
+      "sampleId": "1211",
+      "phase": "12",
+      "title": "Tilemap Mario Learning Layout Preset",
+      "toolId": "tile-map-editor",
+      "href": "./phase-12/1211/index.html",
+      "presetPath": "/samples/phase-12/1211/sample-1211-tile-map-editor.json"
+    }
+  ]
+}
