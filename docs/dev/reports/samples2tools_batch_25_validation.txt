@@ -1,0 +1,11 @@
+Samples2Tools batch 25 validation
+Generated: 2026-04-24T21:32:06.431Z
+Scope: Vector Asset Studio preset payload integrity
+
+Checked mappings: 3
+Issues: 0
+
+Results:
+- sample 0901: drawableSvg=true svgPath=false svgPathExists=false (/samples/phase-09/0901/sample-0901-vector-asset-studio.json)
+- sample 1204: drawableSvg=false svgPath=true svgPathExists=true (/samples/phase-12/1204/sample-1204-vector-asset-studio.json)
+- sample 1208: drawableSvg=false svgPath=true svgPathExists=true (/samples/phase-12/1208/sample-1208-vector-asset-studio.json)
