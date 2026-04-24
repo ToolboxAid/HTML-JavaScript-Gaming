@@ -22,7 +22,6 @@ const HEADER_EXPANDED_STORAGE_KEY = "toolboxaid.toolsPlatform.headerExpanded";
 const HEADER_EXPANDED_FALLBACK_TOOL = "tool-host";
 const TOOLS_PLATFORM_LOGGER = new Logger({ channel: "tools.platform", level: "debug" });
 const TOOLS_PLATFORM_BOOT_MS = Date.now();
-const APPLIED_PRESET_KEY = "__TOOLS_PLATFORM_PHASE20_PRESET_APPLIED__";
 
 function getPageMode() {
   return document.body.dataset.toolsPlatformPage || "tool";
@@ -731,53 +730,6 @@ function ensureRuntimeMonitoring() {
   }, { once: true });
 }
 
-function decodeSamplePresetPayload(encoded) {
-  if (typeof encoded !== "string" || !encoded.trim()) {
-    return null;
-  }
-  try {
-    const base64 = encoded.replace(/-/g, "+").replace(/_/g, "/");
-    const padded = `${base64}${"=".repeat((4 - (base64.length % 4)) % 4)}`;
-    const jsonText = atob(padded);
-    const parsed = JSON.parse(jsonText);
-    return parsed && typeof parsed === "object" ? parsed : null;
-  } catch {
-    return null;
-  }
-}
-
-function readPhase20PresetFromLocation(currentToolId = "") {
-  if (typeof window === "undefined") {
-    return null;
-  }
-  const params = new URLSearchParams(window.location.search);
-  const samplePreset = decodeSamplePresetPayload(params.get("samplePreset") || "");
-  if (!samplePreset || samplePreset.toolId !== currentToolId || !samplePreset.state || typeof samplePreset.state !== "object") {
-    return null;
-  }
-  return {
-    sampleId: typeof samplePreset.sampleId === "string" ? samplePreset.sampleId : "",
-    label: typeof samplePreset.label === "string" ? samplePreset.label : "",
-    state: samplePreset.state
-  };
-}
-
-function maybeApplyPhase20Preset(currentToolId = "") {
-  if (!workspaceController || !currentToolId || window[APPLIED_PRESET_KEY] === true) {
-    return;
-  }
-  const preset = readPhase20PresetFromLocation(currentToolId);
-  if (!preset) {
-    return;
-  }
-  const label = preset.label || `Phase 20 sample ${preset.sampleId || "preset"}`;
-  workspaceController.applyExternalToolState({
-    state: preset.state,
-    label
-  });
-  window[APPLIED_PRESET_KEY] = true;
-}
-
 function initPlatformShell() {
   ensureRuntimeMonitoring();
 
@@ -821,7 +773,6 @@ function initPlatformShell() {
       }
     });
     workspaceController.startWatching();
-    maybeApplyPhase20Preset(currentToolId);
   }
 
   renderShell(currentTool);

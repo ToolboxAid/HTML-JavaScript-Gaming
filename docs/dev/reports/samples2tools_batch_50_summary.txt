@@ -1,0 +1,11 @@
+Samples2Tools batch 50 summary
+Generated: 2026-04-24T22:55:13.374Z
+Purpose: remove final Phase-20 runtime wiring from shared tool platform shell.
+
+Completed this batch:
+- Deleted legacy Phase-20 preset decode/read/apply functions from platformShell
+- Removed one-time Phase-20 preset apply call during platform shell init
+- Kept active samplePresetPath and workspace controller behavior intact
+
+Primary validation artifact:
+- docs/dev/reports/samples2tools_batch_50_validation.txt (PASS)
