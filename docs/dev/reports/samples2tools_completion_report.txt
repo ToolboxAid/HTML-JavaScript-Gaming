@@ -1,0 +1,40 @@
+Samples2Tools Completion Report
+Generated: 2026-04-24T23:01:18.361Z
+
+Roadmap state:
+- Non-legend unchecked items: 0
+- All implementation items are complete.
+
+Samples lane:
+- Samples in metadata: 245
+- Roundtrip mapping rows: 53
+- Tools with mappings: 16
+- Phase-20 directory present: no
+- Phase-20 metadata rows: 0
+
+Per-tool mapping counts:
+- 3d-asset-viewer: 3
+- 3d-camera-path-editor: 3
+- 3d-json-payload-normalizer: 3
+- asset-browser: 3
+- asset-pipeline-tool: 3
+- palette-browser: 3
+- parallax-editor: 4
+- performance-profiler: 3
+- physics-sandbox: 3
+- replay-visualizer: 3
+- sprite-editor: 5
+- state-inspector: 3
+- tile-map-editor: 5
+- tile-model-converter: 3
+- vector-asset-studio: 3
+- vector-map-editor: 3
+
+Games lane:
+- Launchable games in metadata: 11
+- Boot wiring issues: 0
+
+Reference validations:
+- docs/dev/reports/samples2tools_batch_45_validation.txt
+- docs/dev/reports/samples2tools_batch_50_validation.txt
+- docs/dev/reports/samples2tools_batch_51_validation.txt
