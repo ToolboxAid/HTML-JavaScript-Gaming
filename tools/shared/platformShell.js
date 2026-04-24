@@ -783,10 +783,15 @@ function initPlatformShell() {
 
   const currentToolId = document.body.dataset.toolId || "";
   const currentTool = currentToolId ? getToolById(currentToolId) : null;
+  const searchParams = typeof window !== "undefined"
+    ? new URLSearchParams(window.location.search)
+    : new URLSearchParams();
+  const launchedFromSamplePreset = searchParams.has("samplePresetPath");
 
   if (currentToolId) {
     workspaceController = createWorkspaceSystemController({
       toolId: currentToolId,
+      skipInitialToolStateApply: launchedFromSamplePreset,
       onChange(payload) {
         const manifest = payload?.manifest || {};
         const uiStateKey = JSON.stringify({

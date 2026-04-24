@@ -731,6 +731,14 @@ function setSampleSource(state, source = {}) {
   };
 }
 
+function buildSampleSourceDetailLabel(source = {}) {
+  const summary = buildSampleSourceLabel(source);
+  const samplePresetPath = typeof source.samplePresetPath === "string" ? source.samplePresetPath.trim() : "";
+  const fileName = typeof source.fileName === "string" ? source.fileName.trim() : "";
+  const detail = samplePresetPath || fileName;
+  return detail ? `${summary} (${detail})` : summary;
+}
+
 function isPaletteSelected(project) {
   return Boolean(project.paletteRef?.id && project.paletteRef.id !== NO_PALETTE_ID);
 }
@@ -982,6 +990,7 @@ function updateToolStateText(state) {
   const toolName = state.projectTool[0].toUpperCase() + state.projectTool.slice(1);
   state.elements.toolStateText.textContent = `Tool: ${toolName}`;
   state.elements.sampleSourceText.textContent = `Source: ${buildSampleSourceLabel(state.sampleSource)}`;
+  state.elements.sampleSourceDetailText.textContent = `Source details: ${buildSampleSourceDetailLabel(state.sampleSource)}.`;
   state.elements.activeColorText.textContent = `Color: ${state.project.activeColor ?? "none"}`;
   state.elements.frameStateText.textContent = `Frame: ${state.project.currentFrameIndex + 1} / ${state.project.frames.length}`;
   state.elements.toggleStateText.textContent = `Grid: ${state.project.showGrid ? "On" : "Off"} | Onion: ${state.project.onionSkin ? "On" : "Off"}`;
@@ -1486,7 +1495,7 @@ function extractSpriteAssetRegistryFromSamplePreset(rawPreset) {
   return null;
 }
 
-function applySamplePreset(state, rawPreset, sampleId, samplePresetPath) {
+function applySamplePreset(state, rawPreset, sampleId, samplePresetPath, sampleTitleHint = "") {
   const presetProject = extractSpriteProjectFromSamplePreset(rawPreset);
   if (!presetProject || typeof presetProject !== "object") {
     throw new Error("Preset payload did not include a sprite project.");
@@ -1495,9 +1504,11 @@ function applySamplePreset(state, rawPreset, sampleId, samplePresetPath) {
   state.project = ensureProjectShape(presetProject);
 
   const presetAssetRegistry = extractSpriteAssetRegistryFromSamplePreset(rawPreset);
-  const presetTitle = typeof rawPreset?.title === "string"
-    ? rawPreset.title
-    : (typeof rawPreset?.payload?.title === "string" ? rawPreset.payload.title : "");
+  const presetTitle = typeof sampleTitleHint === "string" && sampleTitleHint.trim()
+    ? sampleTitleHint.trim()
+    : (typeof rawPreset?.title === "string"
+      ? rawPreset.title
+      : (typeof rawPreset?.payload?.title === "string" ? rawPreset.payload.title : ""));
   state.assetRegistry = presetAssetRegistry
     ? sanitizeAssetRegistry(presetAssetRegistry)
     : createAssetRegistry({ projectId: "sprite-project" });
@@ -1533,6 +1544,14 @@ async function tryLoadPresetFromQuery(state) {
     return false;
   }
   const sampleId = String(searchParams.get("sampleId") || "").trim();
+  const sampleTitle = normalizeSampleLabel(searchParams.get("sampleTitle") || "");
+  setSampleSource(state, {
+    mode: "sample",
+    sampleId,
+    sampleTitle,
+    samplePresetPath
+  });
+  renderHud(state);
   try {
     const presetUrl = new URL(samplePresetPath, window.location.href);
     const response = await fetch(presetUrl.toString(), { cache: "no-store" });
@@ -1540,9 +1559,16 @@ async function tryLoadPresetFromQuery(state) {
       throw new Error(`Preset request failed (${response.status}).`);
     }
     const rawPreset = await response.json();
-    applySamplePreset(state, rawPreset, sampleId, samplePresetPath);
+    applySamplePreset(state, rawPreset, sampleId, samplePresetPath, sampleTitle);
     return true;
   } catch (error) {
+    setSampleSource(state, {
+      mode: "sample",
+      sampleId,
+      sampleTitle,
+      samplePresetPath
+    });
+    renderHud(state);
     setStatus(state, `Preset load failed: ${error instanceof Error ? error.message : "unknown error"}`);
     return false;
   }
@@ -2189,6 +2215,7 @@ export function initializeSpriteEditorApp() {
       applyRemediationButton: getRequiredElement("applyRemediationButton"),
       saveAssetRegistryButton: getRequiredElement("saveAssetRegistryButton"),
       saveProjectButton: getRequiredElement("saveProjectButton"),
+      sampleSourceDetailText: getRequiredElement("sampleSourceDetailText"),
       sampleSourceText: getRequiredElement("sampleSourceText"),
       statusBarText: getRequiredElement("statusBarText"),
       statusText: getRequiredElement("statusText"),

@@ -116,7 +116,7 @@ function buildRoundtripLinks(sample, toolRegistryMap) {
     let label = `Open ${normalize(tool.displayName) || normalize(tool.name) || toolId}`;
     if (shouldUsePresetRoundtrip(sample, toolId)) {
       const presetPath = getRoundtripPresetPath(sample, toolId);
-      href = `${baseHref}?sampleId=${encodeURIComponent(sample.id)}&samplePresetPath=${encodeURIComponent(presetPath)}`;
+      href = `${baseHref}?sampleId=${encodeURIComponent(sample.id)}&sampleTitle=${encodeURIComponent(sample.title || "")}&samplePresetPath=${encodeURIComponent(presetPath)}`;
     }
 
     links.push({ toolId, href, label });

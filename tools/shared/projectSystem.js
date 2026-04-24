@@ -71,6 +71,7 @@ export function createWorkspaceSystemController(options = {}) {
   const toolId = safeString(options.toolId, "");
   const toolEntry = getToolById(toolId);
   const isReadOnlyTool = toolEntry?.readOnly === true;
+  const skipInitialToolStateApply = options.skipInitialToolStateApply === true;
   const onChange = typeof options.onChange === "function" ? options.onChange : () => {};
   const onStatus = typeof options.onStatus === "function" ? options.onStatus : () => {};
   const adapter = () => getProjectAdapter(toolId);
@@ -80,7 +81,7 @@ export function createWorkspaceSystemController(options = {}) {
     baselineHash: "",
     lastObservedHash: "",
     adapterReady: false,
-    appliedInitialState: false
+    appliedInitialState: skipInitialToolStateApply
   };
 
   function serializeForDirtyComparison(manifest) {
