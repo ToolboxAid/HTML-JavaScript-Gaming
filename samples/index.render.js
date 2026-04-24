@@ -37,63 +37,43 @@ function toStandaloneToolHref(entryPoint) {
   return normalized ? `/tools/${encodeURI(normalized)}` : "";
 }
 
-function shouldUsePresetRoundtrip(sample, toolId) {
-  const sampleId = normalize(sample?.id);
-  const samplePhase = normalize(sample?.phase);
-  if (!sampleId || !samplePhase) {
-    return false;
+function normalizePresetPath(value) {
+  const normalized = normalize(value).replace(/\\/g, "/");
+  if (!normalized || normalized.includes("..")) {
+    return "";
   }
-  if (samplePhase === "12" && sampleId === "1208") {
-    return toolId === "tile-map-editor"
-      || toolId === "parallax-editor"
-      || toolId === "vector-asset-studio";
+  if (normalized.startsWith("/samples/")) {
+    return normalized;
   }
-  if (toolId === "parallax-editor") {
-    return (sampleId === "0306" && samplePhase === "03")
-      || (sampleId === "1204" && samplePhase === "12")
-      || (sampleId === "1205" && samplePhase === "12");
+  if (normalized.startsWith("samples/")) {
+    return `/${normalized}`;
   }
-  if (toolId === "tile-map-editor") {
-    return (sampleId === "0221" && samplePhase === "02")
-      || (sampleId === "0305" && samplePhase === "03")
-      || (sampleId === "1209" && samplePhase === "12")
-      || (sampleId === "1210" && samplePhase === "12")
-      || (sampleId === "1211" && samplePhase === "12");
+  if (normalized.startsWith("./samples/")) {
+    return `/${normalized.slice(2)}`;
   }
-  if (toolId === "performance-profiler") {
-    return (sampleId === "0512" && samplePhase === "05")
-      || (sampleId === "1407" && samplePhase === "14");
-  }
-  if (toolId === "physics-sandbox") {
-    return (sampleId === "0303" && samplePhase === "03")
-      || (sampleId === "1606" && samplePhase === "16");
-  }
-  if (toolId === "replay-visualizer") {
-    return (sampleId === "0708" && samplePhase === "07")
-      || (sampleId === "1315" && samplePhase === "13")
-      || (sampleId === "1406" && samplePhase === "14");
-  }
-  if (toolId === "vector-map-editor") {
-    return sampleId === "0901" && samplePhase === "09";
-  }
-  if (toolId === "sprite-editor") {
-    return (sampleId === "0207" && samplePhase === "02")
-      || (sampleId === "0213" && samplePhase === "02")
-      || (sampleId === "0214" && samplePhase === "02")
-      || (sampleId === "0219" && samplePhase === "02")
-      || (sampleId === "0224" && samplePhase === "02")
-      || (sampleId === "0301" && samplePhase === "03")
-      || (sampleId === "0302" && samplePhase === "03")
-      || (sampleId === "0905" && samplePhase === "09")
-      || (sampleId === "1414" && samplePhase === "14");
-  }
-  return false;
+  return "";
 }
 
-function getRoundtripPresetPath(sample, toolId) {
-  const sampleId = normalize(sample?.id);
-  const samplePhase = normalize(sample?.phase);
-  return `/samples/phase-${samplePhase}/${sampleId}/sample-${sampleId}-${toolId}.json`;
+function getExplicitRoundtripPresetPath(sample, toolId) {
+  const safeToolId = normalizeToken(toolId);
+  if (!safeToolId) {
+    return "";
+  }
+  const mappedEntries = asArray(sample?.roundtripToolPresets);
+  for (const entry of mappedEntries) {
+    if (!entry || typeof entry !== "object") {
+      continue;
+    }
+    const mappedToolId = normalizeToken(entry.toolId);
+    if (mappedToolId !== safeToolId) {
+      continue;
+    }
+    const presetPath = normalizePresetPath(entry.presetPath);
+    if (presetPath) {
+      return presetPath;
+    }
+  }
+  return "";
 }
 
 function buildRoundtripLinks(sample, toolRegistryMap) {
@@ -116,8 +96,8 @@ function buildRoundtripLinks(sample, toolRegistryMap) {
 
     let href = baseHref;
     let label = `Open ${normalize(tool.displayName) || normalize(tool.name) || toolId}`;
-    if (shouldUsePresetRoundtrip(sample, toolId)) {
-      const presetPath = getRoundtripPresetPath(sample, toolId);
+    const presetPath = getExplicitRoundtripPresetPath(sample, toolId);
+    if (presetPath) {
       href = `${baseHref}?sampleId=${encodeURIComponent(sample.id)}&sampleTitle=${encodeURIComponent(sample.title || "")}&samplePresetPath=${encodeURIComponent(presetPath)}`;
     }
 

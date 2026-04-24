@@ -1256,6 +1256,12 @@
       ],
       "toolHints": [
         "sprite-editor"
+      ],
+      "roundtripToolPresets": [
+        {
+          "toolId": "sprite-editor",
+          "presetPath": "/samples/phase-02/0207/sample-0207-sprite-editor.json"
+        }
       ]
     },
     {
@@ -1498,6 +1504,12 @@
       ],
       "toolHints": [
         "sprite-editor"
+      ],
+      "roundtripToolPresets": [
+        {
+          "toolId": "sprite-editor",
+          "presetPath": "/samples/phase-02/0213/sample-0213-sprite-editor.json"
+        }
       ]
     },
     {
@@ -1542,6 +1554,12 @@
       ],
       "toolHints": [
         "sprite-editor"
+      ],
+      "roundtripToolPresets": [
+        {
+          "toolId": "sprite-editor",
+          "presetPath": "/samples/phase-02/0214/sample-0214-sprite-editor.json"
+        }
       ]
     },
     {
@@ -1762,6 +1780,12 @@
       ],
       "toolHints": [
         "sprite-editor"
+      ],
+      "roundtripToolPresets": [
+        {
+          "toolId": "sprite-editor",
+          "presetPath": "/samples/phase-02/0219/sample-0219-sprite-editor.json"
+        }
       ]
     },
     {
@@ -1851,6 +1875,12 @@
       ],
       "toolHints": [
         "tile-map-editor"
+      ],
+      "roundtripToolPresets": [
+        {
+          "toolId": "tile-map-editor",
+          "presetPath": "/samples/phase-02/0221/sample-0221-tile-map-editor.json"
+        }
       ]
     },
     {
@@ -1991,6 +2021,12 @@
       ],
       "toolHints": [
         "sprite-editor"
+      ],
+      "roundtripToolPresets": [
+        {
+          "toolId": "sprite-editor",
+          "presetPath": "/samples/phase-02/0224/sample-0224-sprite-editor.json"
+        }
       ]
     },
     {
@@ -2088,6 +2124,12 @@
       ],
       "toolHints": [
         "sprite-editor"
+      ],
+      "roundtripToolPresets": [
+        {
+          "toolId": "sprite-editor",
+          "presetPath": "/samples/phase-03/0301/sample-0301-sprite-editor.json"
+        }
       ]
     },
     {
@@ -2148,6 +2190,12 @@
       ],
       "toolHints": [
         "sprite-editor"
+      ],
+      "roundtripToolPresets": [
+        {
+          "toolId": "sprite-editor",
+          "presetPath": "/samples/phase-03/0302/sample-0302-sprite-editor.json"
+        }
       ]
     },
     {
@@ -2208,6 +2256,12 @@
       ],
       "toolHints": [
         "physics-sandbox"
+      ],
+      "roundtripToolPresets": [
+        {
+          "toolId": "physics-sandbox",
+          "presetPath": "/samples/phase-03/0303/sample-0303-physics-sandbox.json"
+        }
       ]
     },
     {
@@ -2329,6 +2383,12 @@
       ],
       "toolHints": [
         "tile-map-editor"
+      ],
+      "roundtripToolPresets": [
+        {
+          "toolId": "tile-map-editor",
+          "presetPath": "/samples/phase-03/0305/sample-0305-tile-map-editor.json"
+        }
       ]
     },
     {
@@ -2391,6 +2451,12 @@
       ],
       "toolHints": [
         "parallax-editor"
+      ],
+      "roundtripToolPresets": [
+        {
+          "toolId": "parallax-editor",
+          "presetPath": "/samples/phase-03/0306/sample-0306-parallax-editor.json"
+        }
       ]
     },
     {
@@ -4166,6 +4232,12 @@
       ],
       "toolHints": [
         "performance-profiler"
+      ],
+      "roundtripToolPresets": [
+        {
+          "toolId": "performance-profiler",
+          "presetPath": "/samples/phase-05/0512/sample-0512-performance-profiler.json"
+        }
       ]
     },
     {
@@ -4982,6 +5054,12 @@
       ],
       "toolHints": [
         "replay-visualizer"
+      ],
+      "roundtripToolPresets": [
+        {
+          "toolId": "replay-visualizer",
+          "presetPath": "/samples/phase-07/0708/sample-0708-replay-visualizer.json"
+        }
       ]
     },
     {
@@ -5542,6 +5620,12 @@
       ],
       "toolHints": [
         "vector-map-editor"
+      ],
+      "roundtripToolPresets": [
+        {
+          "toolId": "vector-map-editor",
+          "presetPath": "/samples/phase-09/0901/sample-0901-vector-map-editor.json"
+        }
       ]
     },
     {
@@ -5701,6 +5785,12 @@
       ],
       "toolHints": [
         "sprite-editor"
+      ],
+      "roundtripToolPresets": [
+        {
+          "toolId": "sprite-editor",
+          "presetPath": "/samples/phase-09/0905/sample-0905-sprite-editor.json"
+        }
       ]
     },
     {
@@ -6248,6 +6338,12 @@
       ],
       "toolHints": [
         "parallax-editor"
+      ],
+      "roundtripToolPresets": [
+        {
+          "toolId": "parallax-editor",
+          "presetPath": "/samples/phase-12/1204/sample-1204-parallax-editor.json"
+        }
       ]
     },
     {
@@ -6298,6 +6394,12 @@
       ],
       "toolHints": [
         "parallax-editor"
+      ],
+      "roundtripToolPresets": [
+        {
+          "toolId": "parallax-editor",
+          "presetPath": "/samples/phase-12/1205/sample-1205-parallax-editor.json"
+        }
       ]
     },
     {
@@ -6438,6 +6540,20 @@
         "tile-map-editor",
         "parallax-editor",
         "vector-asset-studio"
+      ],
+      "roundtripToolPresets": [
+        {
+          "toolId": "parallax-editor",
+          "presetPath": "/samples/phase-12/1208/sample-1208-parallax-editor.json"
+        },
+        {
+          "toolId": "tile-map-editor",
+          "presetPath": "/samples/phase-12/1208/sample-1208-tile-map-editor.json"
+        },
+        {
+          "toolId": "vector-asset-studio",
+          "presetPath": "/samples/phase-12/1208/sample-1208-vector-asset-studio.json"
+        }
       ]
     },
     {
@@ -6465,7 +6581,13 @@
         "tile-map-editor"
       ],
       "thumbnail": "/samples/phase-12/1209/assets/images/preview.svg",
-      "preview": "/samples/phase-12/1209/assets/images/preview.svg"
+      "preview": "/samples/phase-12/1209/assets/images/preview.svg",
+      "roundtripToolPresets": [
+        {
+          "toolId": "tile-map-editor",
+          "presetPath": "/samples/phase-12/1209/sample-1209-tile-map-editor.json"
+        }
+      ]
     },
     {
       "id": "1210",
@@ -6492,7 +6614,13 @@
         "tile-map-editor"
       ],
       "thumbnail": "/samples/phase-12/1210/assets/images/preview.svg",
-      "preview": "/samples/phase-12/1210/assets/images/preview.svg"
+      "preview": "/samples/phase-12/1210/assets/images/preview.svg",
+      "roundtripToolPresets": [
+        {
+          "toolId": "tile-map-editor",
+          "presetPath": "/samples/phase-12/1210/sample-1210-tile-map-editor.json"
+        }
+      ]
     },
     {
       "id": "1211",
@@ -6519,7 +6647,13 @@
         "tile-map-editor"
       ],
       "thumbnail": "/samples/phase-12/1211/assets/images/preview.svg",
-      "preview": "/samples/phase-12/1211/assets/images/preview.svg"
+      "preview": "/samples/phase-12/1211/assets/images/preview.svg",
+      "roundtripToolPresets": [
+        {
+          "toolId": "tile-map-editor",
+          "presetPath": "/samples/phase-12/1211/sample-1211-tile-map-editor.json"
+        }
+      ]
     },
     {
       "id": "1301",
@@ -7049,6 +7183,12 @@
       ],
       "toolHints": [
         "replay-visualizer"
+      ],
+      "roundtripToolPresets": [
+        {
+          "toolId": "replay-visualizer",
+          "presetPath": "/samples/phase-13/1315/sample-1315-replay-visualizer.json"
+        }
       ]
     },
     {
@@ -7390,6 +7530,12 @@
       ],
       "toolHints": [
         "replay-visualizer"
+      ],
+      "roundtripToolPresets": [
+        {
+          "toolId": "replay-visualizer",
+          "presetPath": "/samples/phase-14/1406/sample-1406-replay-visualizer.json"
+        }
       ]
     },
     {
@@ -7416,6 +7562,12 @@
       ],
       "toolHints": [
         "performance-profiler"
+      ],
+      "roundtripToolPresets": [
+        {
+          "toolId": "performance-profiler",
+          "presetPath": "/samples/phase-14/1407/sample-1407-performance-profiler.json"
+        }
       ]
     },
     {
@@ -7580,6 +7732,12 @@
       ],
       "toolHints": [
         "sprite-editor"
+      ],
+      "roundtripToolPresets": [
+        {
+          "toolId": "sprite-editor",
+          "presetPath": "/samples/phase-14/1414/sample-1414-sprite-editor.json"
+        }
       ]
     },
     {
@@ -8105,6 +8263,12 @@
       ],
       "toolHints": [
         "physics-sandbox"
+      ],
+      "roundtripToolPresets": [
+        {
+          "toolId": "physics-sandbox",
+          "presetPath": "/samples/phase-16/1606/sample-1606-physics-sandbox.json"
+        }
       ]
     },
     {
