@@ -1,0 +1,33 @@
+Games2Tools Roundtrip Matrix
+Generated: 2026-04-24T23:23:52.091Z
+
+Columns: gameId | launchable | tools
+Bouncing-ball | yes | physics-sandbox, state-inspector, replay-visualizer
+Breakout | yes | sprite-editor, tile-map-editor, replay-visualizer
+SolarSystem | yes | physics-sandbox, performance-profiler, state-inspector
+GravityWell | yes | vector-asset-studio, vector-map-editor, physics-sandbox
+Pong | yes | sprite-editor, tile-map-editor, replay-visualizer
+Asteroids | yes | vector-asset-studio, vector-map-editor, asset-pipeline-tool
+SpaceInvaders | yes | sprite-editor, tile-map-editor, asset-pipeline-tool
+SpaceDuel | yes | vector-asset-studio, replay-visualizer, state-inspector
+AITargetDummy | yes | state-inspector, replay-visualizer, performance-profiler
+Pacman | yes | tile-map-editor, sprite-editor, state-inspector
+vector-arcade-sample | yes | vector-asset-studio, vector-map-editor, tile-map-editor
+Frogger | no | tile-map-editor, sprite-editor, state-inspector
+DualStickArena | no | sprite-editor, vector-map-editor, performance-profiler
+ArenaShooter | no | sprite-editor, asset-pipeline-tool, replay-visualizer
+Robotron2084 | no | sprite-editor, replay-visualizer, performance-profiler
+ScrollingWorldTest | no | tile-map-editor, parallax-editor, performance-profiler
+TileCollisionDemo | no | tile-map-editor, physics-sandbox, state-inspector
+DefenderLite | no | parallax-editor, tile-map-editor, vector-asset-studio
+DonkeyKong | no | tile-map-editor, sprite-editor, physics-sandbox
+PlatformerDemo | no | tile-map-editor, sprite-editor, state-inspector
+Galaga | no | sprite-editor, replay-visualizer, performance-profiler
+RallyX | no | tile-map-editor, vector-map-editor, state-inspector
+FullArenaShooter | no | asset-pipeline-tool, replay-visualizer, performance-profiler
+ReplaySystem | no | replay-visualizer, state-inspector, performance-profiler
+MultiplayerOptional | no | state-inspector, replay-visualizer, performance-profiler
+KingOfTheIceberg | no | vector-map-editor, vector-asset-studio, tile-map-editor
+TicTacToe | no | state-inspector, replay-visualizer, performance-profiler
+ConnectFour | no | state-inspector, replay-visualizer, performance-profiler
+Othello | no | state-inspector, replay-visualizer, performance-profiler

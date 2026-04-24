@@ -124,6 +124,11 @@
 - [x] Do the same thing for games, but use Workspace Manager.
 - [x] 100% of the game data needs to be generated from Workspace Manager
 - [x] No Tool should be used independently
+- [x] Add `Tool` filter to `games/index.html` and prepopulate from `?tool=<toolId>`.
+- [x] Render metadata-driven game-to-tool roundtrip links from `games[].toolHints`.
+- [x] Pass game launch context in roundtrip links (`gameId`, `gameTitle`, `gameHref`, `workspaceHref`, `returnTo`).
+- [x] Render game return line in tools header when launched from game roundtrip links.
+- [x] Expand `games[].toolHints` coverage to all games in metadata (`29/29`, including planned/non-launchable entries).
 
 ### Phase 6 - Phase 20 Decommission (After Parity)
 - [x] Keep `Phase 20 - Tool Preset Integration` active until Samples2Tools parity is execution-validated.
@@ -154,6 +159,9 @@
 - [x] `docs/dev/reports/samples2tools_batch_<n>_validation.txt`
 - [x] `docs/dev/reports/samples2tools_link_map_<n>.json`
 - [x] `docs/dev/reports/samples2tools_completion_report.txt` (final completion artifact)
+- [x] `docs/dev/reports/games2tools_roundtrip_validation.txt`
+- [x] `docs/dev/reports/games2tools_manual_qa_checklist.txt`
+- [x] `docs/dev/reports/games2tools_roundtrip_matrix.txt`
 
 ## Current Snapshot (from tools_used.txt)
 - [x] Current tagged samples across active tools: `59` (phase-01 through phase-19)

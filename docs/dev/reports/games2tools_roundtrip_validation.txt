@@ -1,5 +1,5 @@
 Games2Tools Validation Report
-Generated: 2026-04-24T23:17:27.512Z
+Generated: 2026-04-24T23:23:52.082Z
 
 [x] Games hub includes Tool filter control (games-filter-tool).
 [x] Games index rendering supports tool token filtering and query prepopulation (?tool=<toolId>).
@@ -7,21 +7,18 @@ Generated: 2026-04-24T23:17:27.512Z
 [x] Roundtrip links pass gameId, gameTitle, gameHref, workspaceHref, returnTo query params.
 [x] Tools shell renders Game Source return line when launched from game links.
 
+Total games in metadata: 29
+Games with toolHints: 29
+Games missing toolHints: 0
 Launchable games: 11
 Launchable games with toolHints: 11
 Launchable games missing toolHints: 0
+Planned/non-launchable games: 18
+Planned/non-launchable games with toolHints: 18
+Planned/non-launchable games missing toolHints: 0
 
-Launchable game IDs with toolHints:
-- Bouncing-ball (3 tools)
-- Breakout (3 tools)
-- SolarSystem (3 tools)
-- GravityWell (3 tools)
-- Pong (3 tools)
-- Asteroids (3 tools)
-- SpaceInvaders (3 tools)
-- SpaceDuel (3 tools)
-- AITargetDummy (3 tools)
-- Pacman (3 tools)
-- vector-arcade-sample (3 tools)
+Coverage result:
+[PASS] All games include toolHints for Games2Tools filtering and roundtrip link rendering.
 
-Launchable game IDs missing toolHints:
+Games missing toolHints:
+- none
