@@ -16,6 +16,11 @@ index.html
     import { enforceWorkspaceGameLaunch } from "/games/shared/workspaceGameLaunchGuard.js";
     enforceWorkspaceGameLaunch("Asteroids");
   </script>
+  <script type="module">
+    import { hydrateWorkspaceGameRuntime } from "/games/shared/workspaceGameRuntimeHydrator.js";
+    hydrateWorkspaceGameRuntime("Asteroids");
+  </script>
+
 </head>
 <body class="hub-page-games">
   <div id="shared-theme-header"></div>

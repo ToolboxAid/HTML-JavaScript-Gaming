@@ -15,6 +15,11 @@ index.html
     import { enforceWorkspaceGameLaunch } from "/games/shared/workspaceGameLaunchGuard.js";
     enforceWorkspaceGameLaunch("GravityWell");
   </script>
+  <script type="module">
+    import { hydrateWorkspaceGameRuntime } from "/games/shared/workspaceGameRuntimeHydrator.js";
+    hydrateWorkspaceGameRuntime("GravityWell");
+  </script>
+
 </head>
 <body class="hub-page-games">
   <div id="shared-theme-header"></div>

@@ -15,6 +15,11 @@ index.html
     import { enforceWorkspaceGameLaunch } from "/games/shared/workspaceGameLaunchGuard.js";
     enforceWorkspaceGameLaunch("SpaceDuel");
   </script>
+  <script type="module">
+    import { hydrateWorkspaceGameRuntime } from "/games/shared/workspaceGameRuntimeHydrator.js";
+    hydrateWorkspaceGameRuntime("SpaceDuel");
+  </script>
+
 </head>
 <body class="hub-page-games">
   <div id="shared-theme-header"></div>

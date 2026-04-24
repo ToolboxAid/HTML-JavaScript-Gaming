@@ -122,7 +122,7 @@
 
 ### Phase 5 - Games
 - [x] Do the same thing for games, but use Workspace Manager.
-- [ ] 100% of the game data needs to be generated from Workspace Manager
+- [x] 100% of the game data needs to be generated from Workspace Manager
 - [ ] No Tool should be used independantly
 
 ### Phase 6 - Phase 20 Decommission (After Parity)

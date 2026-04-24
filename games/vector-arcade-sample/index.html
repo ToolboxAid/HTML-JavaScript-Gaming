@@ -10,6 +10,11 @@
     import { enforceWorkspaceGameLaunch } from "/games/shared/workspaceGameLaunchGuard.js";
     enforceWorkspaceGameLaunch("vector-arcade-sample");
   </script>
+  <script type="module">
+    import { hydrateWorkspaceGameRuntime } from "/games/shared/workspaceGameRuntimeHydrator.js";
+    hydrateWorkspaceGameRuntime("vector-arcade-sample");
+  </script>
+
 </head>
 <body class="hub-page-games">
   <div id="shared-theme-header"></div>

@@ -1,0 +1,11 @@
+Samples2Tools batch 44 summary
+Generated: 2026-04-24T22:38:54.623Z
+Purpose: make hosted game runtime metadata originate from Workspace Manager context and normalize it for game runtime consumption.
+
+Completed this batch:
+- Added shared game runtime hydrator and wired it across all launchable game pages
+- Kept strict launch guard + host context validation in front of runtime hydration
+- Confirmed Workspace Manager host context is now the source for hosted game runtime metadata contract
+
+Primary validation artifact:
+- docs/dev/reports/samples2tools_batch_44_validation.txt (PASS)
