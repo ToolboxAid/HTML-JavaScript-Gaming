@@ -7,12 +7,8 @@
   <link rel="stylesheet" href="/games/shared/styles/vectorBattleFont.css" />
   <link rel="stylesheet" href="../../src/engine/theme/main.css" />
   <script type="module">
-    import { enforceWorkspaceGameLaunch } from "/games/shared/workspaceGameLaunchGuard.js";
-    enforceWorkspaceGameLaunch("vector-arcade-sample");
-  </script>
-  <script type="module">
-    import { hydrateWorkspaceGameRuntime } from "/games/shared/workspaceGameRuntimeHydrator.js";
-    hydrateWorkspaceGameRuntime("vector-arcade-sample");
+    import { bootWorkspaceGame } from "/games/shared/workspaceGameBoot.js";
+    bootWorkspaceGame("vector-arcade-sample");
   </script>
 
 </head>

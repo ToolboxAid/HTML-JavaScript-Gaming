@@ -13,12 +13,8 @@ index.html
   <link rel="stylesheet" href="/samples/shared/debugShowcaseControls.css" />
   <link rel="stylesheet" href="../../src/engine/theme/main.css" />
   <script type="module">
-    import { enforceWorkspaceGameLaunch } from "/games/shared/workspaceGameLaunchGuard.js";
-    enforceWorkspaceGameLaunch("Breakout");
-  </script>
-  <script type="module">
-    import { hydrateWorkspaceGameRuntime } from "/games/shared/workspaceGameRuntimeHydrator.js";
-    hydrateWorkspaceGameRuntime("Breakout");
+    import { bootWorkspaceGame } from "/games/shared/workspaceGameBoot.js";
+    bootWorkspaceGame("Breakout");
   </script>
 
 </head>
