@@ -2,27 +2,13 @@ import {
   preloadWorkspaceGameAssetCatalog,
   resolveWorkspaceGameAssetPath
 } from "/games/shared/workspaceGameAssetCatalog.js";
+import {
+  mapSolarSystemObjectsToLegacy,
+  validateSolarSystemSkinObjects
+} from "/games/SolarSystem/game/solarSkinContract.js";
 
 const SKIN_DOCUMENT_KIND = "game-skin";
 const BREAKOUT_BRICK_KEYS = Object.freeze(["brick1", "brick2", "brick3", "brick4", "brick5", "brick6"]);
-const SOLAR_PLANET_IDS = Object.freeze([
-  "mercury",
-  "venus",
-  "earth",
-  "mars",
-  "jupiter",
-  "saturn",
-  "uranus",
-  "neptune"
-]);
-const SOLAR_MOON_IDS = Object.freeze(["moon", "io", "europa", "ganymede", "titan"]);
-const SOLAR_RING_IDS = Object.freeze(["jupiter", "saturn", "uranus", "neptune"]);
-const SOLAR_RING_KEY_BY_PLANET = Object.freeze({
-  jupiter: "ringJupiter",
-  saturn: "ringSaturn",
-  uranus: "ringUranus",
-  neptune: "ringNeptune"
-});
 const SUPPORTED_OBJECT_SHAPES = Object.freeze([
   "circle",
   "oval",
@@ -177,43 +163,11 @@ function validateGameSkinObjects(gameId, objects) {
   }
 
   if (normalizedGameId === "solarsystem") {
-    const requiredPlanets = SOLAR_PLANET_IDS;
-    const requiredMoons = SOLAR_MOON_IDS;
-    const requiredRings = SOLAR_RING_IDS;
-    return hasExpectedShape(source?.background, ["hud-color"])
-      && isHexColor(source?.background?.color)
-      && hasExpectedShape(source?.frame, ["hud-color"])
-      && isHexColor(source?.frame?.color)
-      && hasExpectedShape(source?.orbit, ["hud-color"])
-      && isHexColor(source?.orbit?.color)
-      && hasExpectedShape(source?.hudText, ["hud-color"])
-      && isHexColor(source?.hudText?.color)
-      && hasExpectedShape(source?.hudMuted, ["hud-color"])
-      && isHexColor(source?.hudMuted?.color)
-      && hasExpectedShape(source?.hudPanel, ["hud-color"])
-      && isHexColor(source?.hudPanel?.color)
-      && hasExpectedShape(source?.sun, ["circle"])
-      && isHexColor(source?.sun?.color)
-      && isPositiveNumber(source?.sun?.radius)
-      && requiredPlanets.every((id) => (
-        hasExpectedShape(source?.[id], ["circle"])
-        && isHexColor(source?.[id]?.color)
-        && isPositiveNumber(source?.[id]?.radius)
-      ))
-      && requiredMoons.every((id) => (
-        hasExpectedShape(source?.[id], ["circle"])
-        && isHexColor(source?.[id]?.color)
-        && isPositiveNumber(source?.[id]?.radius)
-      ))
-      && requiredRings.every((id) => {
-        const ringObjectKey = SOLAR_RING_KEY_BY_PLANET[id];
-        const ring = source?.[ringObjectKey];
-        return hasExpectedShape(ring, ["ring"])
-          && isHexColor(ring?.color)
-          && isPositiveNumber(ring?.innerRadius)
-          && isPositiveNumber(ring?.outerRadius)
-          && Number(ring.outerRadius) > Number(ring.innerRadius);
-      });
+    return validateSolarSystemSkinObjects(source, {
+      hasExpectedShape,
+      isHexColor,
+      isPositiveNumber
+    });
   }
 
   return true;
@@ -285,52 +239,7 @@ function mapObjectsToLegacy(gameId, objects, entities) {
   }
 
   if (normalizedGameId === "solarsystem") {
-    return {
-      colors: {
-        background: normalizeText(source?.background?.color),
-        frame: normalizeText(source?.frame?.color),
-        orbit: normalizeText(source?.orbit?.color),
-        text: normalizeText(source?.hudText?.color),
-        muted: normalizeText(source?.hudMuted?.color),
-        panel: normalizeText(source?.hudPanel?.color)
-      },
-      sizing: {},
-      entities: {
-        sun: {
-          color: normalizeText(source?.sun?.color),
-          radius: Number(source?.sun?.radius)
-        },
-        planets: Object.fromEntries(
-          SOLAR_PLANET_IDS.map((id) => {
-            const body = toObject(source?.[id]);
-            return [id, {
-              color: normalizeText(body.color),
-              radius: Number(body.radius)
-            }];
-          })
-        ),
-        moons: Object.fromEntries(
-          SOLAR_MOON_IDS.map((id) => {
-            const body = toObject(source?.[id]);
-            return [id, {
-              color: normalizeText(body.color),
-              radius: Number(body.radius)
-            }];
-          })
-        ),
-        rings: Object.fromEntries(
-          SOLAR_RING_IDS.map((id) => {
-            const ringObjectKey = SOLAR_RING_KEY_BY_PLANET[id];
-            const ring = toObject(source?.[ringObjectKey]);
-            return [id, {
-              color: normalizeText(ring.color),
-              innerRadius: Number(ring.innerRadius),
-              outerRadius: Number(ring.outerRadius)
-            }];
-          })
-        )
-      }
-    };
+    return mapSolarSystemObjectsToLegacy(source, entities);
   }
 
   if (normalizedGameId === "bouncing-ball") {
