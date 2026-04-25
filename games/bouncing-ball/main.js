@@ -42,7 +42,7 @@ export function bootBouncingBall({
 
   void loadGameSkin({
     gameId: 'Bouncing-ball',
-    fallbackSchema: 'games.bouncing-ball.skin/1'
+    expectedSchema: 'games.bouncing-ball.skin/1'
   }).then(({ skin }) => {
     const scene = new SceneClass({ skin });
     engine.setScene(scene);

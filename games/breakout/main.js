@@ -139,7 +139,7 @@ export function bootBreakout({
 
   void loadGameSkin({
     gameId: 'Breakout',
-    fallbackSchema: 'games.breakout.skin/1'
+    expectedSchema: 'games.breakout.skin/1'
   }).then(({ skin }) => {
     const scene = new SceneClass({
       devConsoleIntegration,

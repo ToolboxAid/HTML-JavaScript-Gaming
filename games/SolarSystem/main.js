@@ -42,7 +42,7 @@ export function bootSolarSystem({
 
   void loadGameSkin({
     gameId: 'SolarSystem',
-    fallbackSchema: 'games.solar-system.skin/1'
+    expectedSchema: 'games.solar-system.skin/1'
   }).then(({ skin }) => {
     const scene = new SceneClass({ skin });
     engine.setScene(scene);

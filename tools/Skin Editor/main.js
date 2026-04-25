@@ -2,10 +2,8 @@ import { safeParseJson, toPrettyJson } from "../shared/debugInspectorData.js";
 import { registerToolBootContract } from "../shared/toolBootContract.js";
 import { readSharedPaletteHandoff } from "../shared/assetUsageIntegration.js";
 import {
-  clearGameSkinOverride,
   loadGameSkin,
-  normalizeGameSkinDocument,
-  writeGameSkinOverride
+  normalizeGameSkinDocument
 } from "/games/shared/gameSkinLoader.js";
 
 const GAME_OPTIONS = Object.freeze([
@@ -13,25 +11,25 @@ const GAME_OPTIONS = Object.freeze([
     id: "Breakout",
     label: "Breakout",
     gameHref: "/games/Breakout/index.html",
-    fallbackSchema: "games.breakout.skin/1"
+    expectedSchema: "games.breakout.skin/1"
   },
   {
     id: "Pong",
     label: "Pong",
     gameHref: "/games/Pong/index.html",
-    fallbackSchema: "games.pong.skin/1"
+    expectedSchema: "games.pong.skin/1"
   },
   {
     id: "SolarSystem",
     label: "Solar System",
     gameHref: "/games/SolarSystem/index.html",
-    fallbackSchema: "games.solar-system.skin/1"
+    expectedSchema: "games.solar-system.skin/1"
   },
   {
     id: "Bouncing-ball",
     label: "Bouncing Ball",
     gameHref: "/games/Bouncing-ball/index.html",
-    fallbackSchema: "games.bouncing-ball.skin/1"
+    expectedSchema: "games.bouncing-ball.skin/1"
   }
 ]);
 
@@ -296,7 +294,7 @@ function downloadTextFile(filename, contents) {
 function buildNormalizedSkinDocument(game, parsedSkin) {
   return normalizeGameSkinDocument(parsedSkin, {
     expectedGameId: game.id,
-    fallbackSchema: game.fallbackSchema
+    expectedSchema: game.expectedSchema
   });
 }
 
@@ -306,29 +304,23 @@ function toObjectCentricSkinDocument(game, rawSkin) {
     return null;
   }
   return {
-    documentKind: normalizeText(normalized?.documentKind) || "game-skin",
-    version: Number.isFinite(Number(normalized?.version)) ? Number(normalized.version) : 1,
-    schema: normalizeText(normalized?.schema) || game.fallbackSchema,
-    gameId: normalizeText(normalized?.gameId) || game.id,
-    name: normalizeText(normalized?.name) || `${game.label} Skin`,
+    documentKind: normalizeText(normalized?.documentKind),
+    version: Number(normalized?.version),
+    schema: normalizeText(normalized?.schema),
+    gameId: normalizeText(normalized?.gameId),
+    name: normalizeText(normalized?.name),
     objects: deepClone(toObject(normalized?.objects)) || {},
     entities: {}
   };
 }
 
-function resolveCurrentSkinDocument({ allowStateFallback = true } = {}) {
+function resolveCurrentSkinDocument() {
   const game = getSelectedGameOption();
   if (!game) {
     return null;
   }
   const parsed = parseEditorSkin();
-  if (parsed) {
-    return toObjectCentricSkinDocument(game, parsed);
-  }
-  if (allowStateFallback && state.activeSkin && typeof state.activeSkin === "object") {
-    return toObjectCentricSkinDocument(game, state.activeSkin);
-  }
-  return null;
+  return parsed ? toObjectCentricSkinDocument(game, parsed) : null;
 }
 
 function getSkinShapeIssues(skinDocument) {
@@ -1168,12 +1160,13 @@ function drawSelectedObjectPreview() {
   context.lineWidth = 2;
   context.strokeRect(12, 12, previewWidth - 24, previewHeight - 24);
 
-  const drawObjectInPreview = (objectValue, fallbackColor = "") => {
+  const drawObjectInPreview = (objectValue) => {
     const object = toObject(objectValue);
     const objectColor = normalizeText(object.color);
-    const drawColor = parseHexForPicker(objectColor)
-      ? objectColor
-      : (parseHexForPicker(fallbackColor) ? fallbackColor : "#f8f8f2");
+    if (!parseHexForPicker(objectColor)) {
+      return;
+    }
+    const drawColor = objectColor;
     const shapeType = normalizeText(object.shape).toLowerCase();
     const centerX = Math.round(previewWidth / 2);
     const centerY = Math.round(previewHeight / 2);
@@ -1454,7 +1447,7 @@ async function loadActiveSkinForSelectedGame() {
   try {
     result = await loadGameSkin({
       gameId: game.id,
-      fallbackSchema: game.fallbackSchema,
+      expectedSchema: game.expectedSchema,
       catalogPath: deriveCatalogPathFromGameHref(game.gameHref)
     });
   } catch (error) {
@@ -1470,39 +1463,11 @@ async function loadActiveSkinForSelectedGame() {
 }
 
 async function applySkinOverride() {
-  const game = getSelectedGameOption();
-  if (!game) {
-    setStatus("No supported game context was resolved.");
-    return;
-  }
-  const normalized = resolveCurrentSkinDocument({ allowStateFallback: true });
-  if (!normalized) {
-    setStatus("Skin JSON is invalid.");
-    return;
-  }
-
-  state.presetSkin = null;
-  const saved = writeGameSkinOverride(game.id, normalized, { fallbackSchema: game.fallbackSchema });
-  if (!saved) {
-    setStatus("Unable to save override in this browser session.");
-    return;
-  }
-
-  if (!setCurrentSkinDocument(normalized, "local-storage")) {
-    return;
-  }
-  setStatus(`Saved override for ${game.label}. Open the game to verify live skin changes.`);
+  setStatus("Save Override is disabled. Skin Editor now uses source-of-truth workspace skin JSON only.");
 }
 
 async function clearSkinOverride() {
-  const game = getSelectedGameOption();
-  if (!game) {
-    setStatus("No supported game context was resolved.");
-    return;
-  }
-  clearGameSkinOverride(game.id);
-  setStatus(`Cleared override for ${game.label}.`);
-  await loadActiveSkinForSelectedGame();
+  setStatus("Clear Override is disabled. Skin Editor now uses source-of-truth workspace skin JSON only.");
 }
 
 function exportSkinJson() {
@@ -1511,7 +1476,7 @@ function exportSkinJson() {
     setStatus("No supported game context was resolved.");
     return;
   }
-  const normalized = resolveCurrentSkinDocument({ allowStateFallback: true });
+  const normalized = resolveCurrentSkinDocument();
   if (!normalized) {
     setStatus("Skin JSON is invalid.");
     return;
@@ -1567,7 +1532,11 @@ function addShapeFromControls() {
     setStatus("Load a skin before adding a shape.");
     return;
   }
-  const selectedType = getSelectedShapeTypeValue() || "rectangle";
+  const selectedType = getSelectedShapeTypeValue();
+  if (!selectedType) {
+    setStatus("Select an object Shape/Type before adding.");
+    return;
+  }
   if (selectedType === "flattened") {
     updateAddShapeButtonState();
     setStatus("Flattened objects are created only with the Flatten button.");
@@ -1576,8 +1545,11 @@ function addShapeFromControls() {
   const typedName = refs.newShapeName instanceof HTMLInputElement
     ? refs.newShapeName.value
     : "";
-  const defaultKey = selectedType === "hud-color" ? "color" : selectedType;
-  const baseKey = normalizeObjectKey(typedName) || defaultKey || "shape";
+  const baseKey = normalizeObjectKey(typedName);
+  if (!baseKey) {
+    setStatus("Enter an object name before adding.");
+    return;
+  }
   const nextKey = ensureUniqueObjectKey(baseKey);
   const preset = createShapePreset(selectedType);
 
@@ -1819,6 +1791,14 @@ function bindEvents() {
   updateAddShapeButtonState();
   updateFlattenButtonState();
   updateObjectOrderButtonState();
+  if (refs.saveOverrideButton instanceof HTMLButtonElement) {
+    refs.saveOverrideButton.disabled = true;
+    refs.saveOverrideButton.title = "Disabled: source-of-truth workspace JSON only.";
+  }
+  if (refs.clearOverrideButton instanceof HTMLButtonElement) {
+    refs.clearOverrideButton.disabled = true;
+    refs.clearOverrideButton.title = "Disabled: source-of-truth workspace JSON only.";
+  }
   refs.loadButton?.addEventListener("click", () => {
     void loadActiveSkinForSelectedGame();
   });

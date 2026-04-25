@@ -131,6 +131,9 @@ function applyLaunchContext() {
 }
 
 function loadCustomPalettes() {
+  if (isWorkspaceContext()) {
+    return [];
+  }
   try {
     const raw = localStorage.getItem(CUSTOM_PALETTES_STORAGE_KEY);
     if (!raw) {
@@ -144,10 +147,16 @@ function loadCustomPalettes() {
 }
 
 function saveCustomPalettes() {
+  if (isWorkspaceContext()) {
+    return;
+  }
   localStorage.setItem(CUSTOM_PALETTES_STORAGE_KEY, JSON.stringify(state.customPalettes));
 }
 
 function loadHiddenBuiltInPaletteIds() {
+  if (isWorkspaceContext()) {
+    return [];
+  }
   try {
     const raw = localStorage.getItem(HIDDEN_BUILTIN_PALETTES_STORAGE_KEY);
     if (!raw) {
@@ -161,10 +170,16 @@ function loadHiddenBuiltInPaletteIds() {
 }
 
 function saveHiddenBuiltInPaletteIds() {
+  if (isWorkspaceContext()) {
+    return;
+  }
   localStorage.setItem(HIDDEN_BUILTIN_PALETTES_STORAGE_KEY, JSON.stringify(state.hiddenBuiltInPaletteIds));
 }
 
 function getBuiltInPalettes() {
+  if (isWorkspaceContext()) {
+    return [];
+  }
   const paletteSource = globalThis.palettesList && typeof globalThis.palettesList === "object"
     ? globalThis.palettesList
     : {};
@@ -371,7 +386,7 @@ function renderPaletteList() {
   }).join("");
 
   if (!palettes.some((palette) => palette.id === state.selectedPaletteId)) {
-    state.selectedPaletteId = palettes[0]?.id ?? "";
+    state.selectedPaletteId = "";
   }
 }
 
@@ -424,11 +439,11 @@ function renderSelectedPalette() {
     `;
   }).join("");
 
-  const activeEntry = palette.entries[state.selectedSwatchIndex] ?? palette.entries[0] ?? { hex: "#ffffff", name: "", symbol: "" };
   state.selectedSwatchIndex = Math.min(state.selectedSwatchIndex, Math.max(0, palette.entries.length - 1));
-  refs.swatchColorInput.value = /^#([0-9a-f]{6}|[0-9a-f]{8})$/i.test(activeEntry.hex || "") ? activeEntry.hex.slice(0, 7) : "#ffffff";
-  refs.swatchNameInput.value = activeEntry.name || "";
-  refs.swatchSymbolInput.value = activeEntry.symbol || "";
+  const activeEntry = palette.entries[state.selectedSwatchIndex] ?? palette.entries[0] ?? null;
+  refs.swatchColorInput.value = activeEntry && /^#([0-9a-f]{6}|[0-9a-f]{8})$/i.test(activeEntry.hex || "") ? activeEntry.hex.slice(0, 7) : "";
+  refs.swatchNameInput.value = activeEntry?.name || "";
+  refs.swatchSymbolInput.value = activeEntry?.symbol || "";
 
   const issues = validatePalette(palette);
   refs.validationText.textContent = issues.length === 0
@@ -458,8 +473,10 @@ function createCustomPalette(name, entries) {
 }
 
 function makeUniquePaletteName(baseName) {
-  const fallback = "imported-palette";
-  const seed = String(baseName || "").trim() || fallback;
+  const seed = String(baseName || "").trim();
+  if (!seed) {
+    throw new Error("Palette name is required.");
+  }
   const normalizedSeed = seed.toLowerCase();
   const existing = new Set(getAllPalettes().map((palette) => String(palette.name || "").trim().toLowerCase()));
   if (!existing.has(normalizedSeed)) {
@@ -500,8 +517,12 @@ function normalizeImportedPalette(rawPayload, options = {}) {
     throw new Error(validation.issues.join(" "));
   }
   const normalized = validation.palette || normalizePaletteDocument(payload);
+  const normalizedName = String(normalized.name || "").trim();
+  if (!normalizedName) {
+    throw new Error("Palette name is required.");
+  }
   return {
-    name: String(normalized.name || "").trim() || "imported-palette",
+    name: normalizedName,
     source: String(normalized.source || "custom").trim() || "custom",
     entries: Array.isArray(normalized.entries) ? normalized.entries : []
   };
@@ -896,10 +917,13 @@ function bindEvents() {
 }
 
 function init() {
+  if (isWorkspaceContext()) {
+    state.customPalettes = [];
+    state.hiddenBuiltInPaletteIds = [];
+  }
   const selectedFromHandoff = syncSelectionFromSharedHandoff();
   if (!selectedFromHandoff) {
-    const firstPalette = getAllPalettes()[0] ?? null;
-    state.selectedPaletteId = firstPalette?.id ?? "";
+    state.selectedPaletteId = "";
   }
   applyLaunchContext();
   renderPaletteList();
@@ -926,7 +950,9 @@ const paletteBrowserApi = {
     state.search = typeof snapshot?.search === "string" ? snapshot.search : "";
     state.selectedPaletteId = typeof snapshot?.selectedPaletteId === "string" ? snapshot.selectedPaletteId : state.selectedPaletteId;
     state.selectedSwatchIndex = Number.isInteger(snapshot?.selectedSwatchIndex) ? snapshot.selectedSwatchIndex : 0;
-    state.customPalettes = Array.isArray(snapshot?.customPalettes) ? structuredClone(snapshot.customPalettes) : [];
+    state.customPalettes = isWorkspaceContext()
+      ? []
+      : (Array.isArray(snapshot?.customPalettes) ? structuredClone(snapshot.customPalettes) : []);
     if (isWorkspaceContext()) {
       syncSelectionFromSharedHandoff();
     }

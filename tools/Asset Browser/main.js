@@ -106,16 +106,6 @@ function humanizeAssetId(assetId) {
   return normalized ? toTitleCase(normalized) : "Shared Asset";
 }
 
-function inferLabelFromPath(pathValue) {
-  const normalized = normalizeLocalPath(pathValue);
-  if (!normalized) {
-    return "";
-  }
-  const fileName = normalized.split("/").pop() || "";
-  const stripped = fileName.replace(/\.[^.]+$/g, "").replace(/\.[^.]+$/g, "");
-  return stripped ? toTitleCase(stripped.replace(/[._-]+/g, " ")) : "";
-}
-
 function deriveCatalogPathFromGameHref(gameHref) {
   const href = normalizeLocalPath(gameHref);
   if (!href || !href.startsWith("/games/")) {
@@ -266,8 +256,7 @@ async function hydrateCatalogLabels(entries) {
   const source = Array.isArray(entries) ? entries : [];
   const labeledEntries = await Promise.all(source.map(async (entry) => {
     if (!entry.path.toLowerCase().endsWith(".json")) {
-      const fallbackLabel = inferLabelFromPath(entry.path);
-      return fallbackLabel ? { ...entry, label: fallbackLabel } : entry;
+      return entry;
     }
     try {
       const response = await fetch(entry.path, { cache: "no-store" });
@@ -279,11 +268,9 @@ async function hydrateCatalogLabels(entries) {
       if (payloadName) {
         return { ...entry, label: payloadName };
       }
-      const fallbackLabel = inferLabelFromPath(entry.path);
-      return fallbackLabel ? { ...entry, label: fallbackLabel } : entry;
+      return entry;
     } catch {
-      const fallbackLabel = inferLabelFromPath(entry.path);
-      return fallbackLabel ? { ...entry, label: fallbackLabel } : entry;
+      return entry;
     }
   }));
   return labeledEntries;
@@ -373,7 +360,7 @@ function resolveInitialSelectedAssetId() {
   if (sharedId && state.assetCatalog.some((entry) => entry.id === sharedId)) {
     return sharedId;
   }
-  return state.assetCatalog[0]?.id || "";
+  return "";
 }
 
 async function hydrateApprovedAssetCatalog() {
@@ -504,7 +491,7 @@ function renderAssetList() {
     : '<p class="asset-browser__empty">No approved assets found for this workspace context.</p>';
 
   if (!entries.some((entry) => entry.id === state.selectedAssetId)) {
-    state.selectedAssetId = entries[0]?.id ?? "";
+    state.selectedAssetId = "";
   }
 }
 

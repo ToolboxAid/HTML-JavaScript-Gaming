@@ -225,10 +225,10 @@ function getCatalogEntries(gameIdInput) {
   return (primed || getCachedCatalogRecord(gameId))?.entries || {};
 }
 
-export function resolveWorkspaceGameAssetPath(gameId, assetId, fallbackPath = "") {
+export function resolveWorkspaceGameAssetPath(gameId, assetId) {
   const safeAssetId = typeof assetId === "string" ? assetId.trim() : "";
   if (!safeAssetId) {
-    return normalizeCatalogPath(fallbackPath);
+    return "";
   }
 
   const entries = getCatalogEntries(gameId);
@@ -236,7 +236,7 @@ export function resolveWorkspaceGameAssetPath(gameId, assetId, fallbackPath = ""
   if (entry?.path) {
     return entry.path;
   }
-  return normalizeCatalogPath(fallbackPath);
+  return "";
 }
 
 export function getWorkspaceGameAssetCatalogPath(gameIdInput) {

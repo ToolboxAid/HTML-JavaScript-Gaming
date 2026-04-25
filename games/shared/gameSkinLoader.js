@@ -3,34 +3,20 @@ import {
   resolveWorkspaceGameAssetPath
 } from "/games/shared/workspaceGameAssetCatalog.js";
 
-const SKIN_OVERRIDE_STORAGE_PREFIX = "toolbox.game.skin.override.";
 const SKIN_DOCUMENT_KIND = "game-skin";
-const SKIN_DOCUMENT_VERSION = 1;
 const BREAKOUT_BRICK_KEYS = Object.freeze(["brick1", "brick2", "brick3", "brick4", "brick5", "brick6"]);
-const SOLAR_SUN_DEFAULT = Object.freeze({ color: "#fbbf24", radius: 30 });
-const SOLAR_PLANET_DEFAULTS = Object.freeze({
-  mercury: Object.freeze({ color: "#9ca3af", radius: 4 }),
-  venus: Object.freeze({ color: "#fde68a", radius: 6 }),
-  earth: Object.freeze({ color: "#38bdf8", radius: 6 }),
-  mars: Object.freeze({ color: "#fb7185", radius: 5 }),
-  jupiter: Object.freeze({ color: "#f59e0b", radius: 14 }),
-  saturn: Object.freeze({ color: "#eab308", radius: 12 }),
-  uranus: Object.freeze({ color: "#67e8f9", radius: 10 }),
-  neptune: Object.freeze({ color: "#60a5fa", radius: 10 })
-});
-const SOLAR_MOON_DEFAULTS = Object.freeze({
-  moon: Object.freeze({ color: "#e5e7eb", radius: 2 }),
-  io: Object.freeze({ color: "#fde68a", radius: 2 }),
-  europa: Object.freeze({ color: "#dbeafe", radius: 2 }),
-  ganymede: Object.freeze({ color: "#cbd5e1", radius: 3 }),
-  titan: Object.freeze({ color: "#fef3c7", radius: 3 })
-});
-const SOLAR_RING_DEFAULTS = Object.freeze({
-  jupiter: Object.freeze({ color: "#f59e0b", innerRadius: 18, outerRadius: 22 }),
-  saturn: Object.freeze({ color: "#fde68a", innerRadius: 18, outerRadius: 30 }),
-  uranus: Object.freeze({ color: "#67e8f9", innerRadius: 15, outerRadius: 20 }),
-  neptune: Object.freeze({ color: "#60a5fa", innerRadius: 15, outerRadius: 19 })
-});
+const SOLAR_PLANET_IDS = Object.freeze([
+  "mercury",
+  "venus",
+  "earth",
+  "mars",
+  "jupiter",
+  "saturn",
+  "uranus",
+  "neptune"
+]);
+const SOLAR_MOON_IDS = Object.freeze(["moon", "io", "europa", "ganymede", "titan"]);
+const SOLAR_RING_IDS = Object.freeze(["jupiter", "saturn", "uranus", "neptune"]);
 const SOLAR_RING_KEY_BY_PLANET = Object.freeze({
   jupiter: "ringJupiter",
   saturn: "ringSaturn",
@@ -79,41 +65,12 @@ function toObject(value) {
   return value && typeof value === "object" ? value : {};
 }
 
-function toNonEmptyString(value, fallback = "") {
-  const normalized = normalizeText(value);
-  return normalized || fallback;
-}
-
-function toFiniteNumber(value, fallback = 0) {
-  const numeric = Number(value);
-  return Number.isFinite(numeric) ? numeric : fallback;
-}
-
 function deepClone(value) {
   try {
     return JSON.parse(JSON.stringify(value));
   } catch {
     return null;
   }
-}
-
-function deepMerge(baseValue, patchValue) {
-  if (Array.isArray(baseValue) || Array.isArray(patchValue)) {
-    return Array.isArray(patchValue) ? patchValue.slice() : [];
-  }
-  const base = toObject(baseValue);
-  const patch = toObject(patchValue);
-  const merged = { ...base };
-  Object.keys(patch).forEach((key) => {
-    const baseChild = base[key];
-    const patchChild = patch[key];
-    if (patchChild && typeof patchChild === "object" && !Array.isArray(patchChild)) {
-      merged[key] = deepMerge(baseChild, patchChild);
-      return;
-    }
-    merged[key] = patchChild;
-  });
-  return merged;
 }
 
 function isHexColor(value) {
@@ -141,153 +98,6 @@ function hasExpectedShape(value, expectedShapes = []) {
     return true;
   }
   return expectedShapes.includes(shape);
-}
-
-function normalizeFlatObjects(gameId, objects) {
-  const normalizedGameId = normalizeGameId(gameId);
-  const source = deepClone(toObject(objects)) || {};
-
-  if (normalizedGameId === "breakout") {
-    const legacyBrick = toObject(source.brick);
-    const legacyHud = toObject(source.hud);
-    const legacyRows = Array.isArray(legacyBrick.rows) ? legacyBrick.rows : [];
-    const result = { ...source };
-
-    if (!hasKeys(result.hudText) && normalizeText(legacyHud.textColor)) {
-      result.hudText = { color: normalizeText(legacyHud.textColor) };
-    }
-    if (!hasKeys(result.hudMuted) && normalizeText(legacyHud.mutedColor)) {
-      result.hudMuted = { color: normalizeText(legacyHud.mutedColor) };
-    }
-    if (!hasKeys(result.hudPanel) && normalizeText(legacyHud.panelColor)) {
-      result.hudPanel = { color: normalizeText(legacyHud.panelColor) };
-    }
-    if (!hasKeys(result.brickLayout) && Number.isFinite(Number(legacyBrick.gap))) {
-      result.brickLayout = { gap: Number(legacyBrick.gap) };
-    }
-    BREAKOUT_BRICK_KEYS.forEach((brickKey, index) => {
-      if (hasKeys(result[brickKey])) {
-        return;
-      }
-      const legacyColor = normalizeText(legacyRows[index]);
-      if (!legacyColor && !Number.isFinite(Number(legacyBrick.width)) && !Number.isFinite(Number(legacyBrick.height))) {
-        return;
-      }
-      result[brickKey] = {
-        color: legacyColor,
-        width: Number(legacyBrick.width),
-        height: Number(legacyBrick.height)
-      };
-    });
-    delete result.brick;
-    delete result.hud;
-    return result;
-  }
-
-  if (normalizedGameId === "pong") {
-    const legacyHud = toObject(source.hud);
-    const result = { ...source };
-    if (!hasKeys(result.hudInk) && normalizeText(legacyHud.inkColor)) {
-      result.hudInk = { color: normalizeText(legacyHud.inkColor) };
-    }
-    if (!hasKeys(result.hudMuted) && normalizeText(legacyHud.mutedColor)) {
-      result.hudMuted = { color: normalizeText(legacyHud.mutedColor) };
-    }
-    if (!hasKeys(result.hudAccent) && normalizeText(legacyHud.accentColor)) {
-      result.hudAccent = { color: normalizeText(legacyHud.accentColor) };
-    }
-    if (!hasKeys(result.hudGood) && normalizeText(legacyHud.goodColor)) {
-      result.hudGood = { color: normalizeText(legacyHud.goodColor) };
-    }
-    if (!hasKeys(result.hudWarn) && normalizeText(legacyHud.warnColor)) {
-      result.hudWarn = { color: normalizeText(legacyHud.warnColor) };
-    }
-    if (!hasKeys(result.hudDanger) && normalizeText(legacyHud.dangerColor)) {
-      result.hudDanger = { color: normalizeText(legacyHud.dangerColor) };
-    }
-    delete result.hud;
-    return result;
-  }
-
-  if (normalizedGameId === "bouncing-ball") {
-    const legacyHud = toObject(source.hud);
-    const result = { ...source };
-    if (!hasKeys(result.hudText) && normalizeText(legacyHud.textColor)) {
-      result.hudText = { color: normalizeText(legacyHud.textColor) };
-    }
-    if (!hasKeys(result.hudMuted) && normalizeText(legacyHud.mutedColor)) {
-      result.hudMuted = { color: normalizeText(legacyHud.mutedColor) };
-    }
-    if (!hasKeys(result.hudPanel) && normalizeText(legacyHud.panelColor)) {
-      result.hudPanel = { color: normalizeText(legacyHud.panelColor) };
-    }
-    delete result.hud;
-    return result;
-  }
-
-  if (normalizedGameId === "solarsystem") {
-    const legacyHud = toObject(source.hud);
-    const legacyPlanets = toObject(source.planets);
-    const legacyMoons = toObject(source.moons);
-    const legacyRings = toObject(source.rings);
-    const result = { ...source };
-    if (!hasKeys(result.hudText) && normalizeText(legacyHud.textColor)) {
-      result.hudText = { color: normalizeText(legacyHud.textColor) };
-    }
-    if (!hasKeys(result.hudMuted) && normalizeText(legacyHud.mutedColor)) {
-      result.hudMuted = { color: normalizeText(legacyHud.mutedColor) };
-    }
-    if (!hasKeys(result.hudPanel) && normalizeText(legacyHud.panelColor)) {
-      result.hudPanel = { color: normalizeText(legacyHud.panelColor) };
-    }
-    Object.keys(SOLAR_PLANET_DEFAULTS).forEach((planetId) => {
-      if (hasKeys(result[planetId])) {
-        return;
-      }
-      const body = toObject(legacyPlanets[planetId]);
-      if (!hasKeys(body)) {
-        return;
-      }
-      result[planetId] = {
-        color: normalizeText(body.color),
-        radius: Number(body.radius)
-      };
-    });
-    Object.keys(SOLAR_MOON_DEFAULTS).forEach((moonId) => {
-      if (hasKeys(result[moonId])) {
-        return;
-      }
-      const body = toObject(legacyMoons[moonId]);
-      if (!hasKeys(body)) {
-        return;
-      }
-      result[moonId] = {
-        color: normalizeText(body.color),
-        radius: Number(body.radius)
-      };
-    });
-    Object.entries(SOLAR_RING_KEY_BY_PLANET).forEach(([planetId, ringObjectKey]) => {
-      if (hasKeys(result[ringObjectKey])) {
-        return;
-      }
-      const ring = toObject(legacyRings[planetId]);
-      if (!hasKeys(ring)) {
-        return;
-      }
-      result[ringObjectKey] = {
-        color: normalizeText(ring.color),
-        innerRadius: Number(ring.innerRadius),
-        outerRadius: Number(ring.outerRadius)
-      };
-    });
-    delete result.hud;
-    delete result.planets;
-    delete result.moons;
-    delete result.rings;
-    return result;
-  }
-
-  return source;
 }
 
 function validateGameSkinObjects(gameId, objects) {
@@ -367,9 +177,9 @@ function validateGameSkinObjects(gameId, objects) {
   }
 
   if (normalizedGameId === "solarsystem") {
-    const requiredPlanets = Object.keys(SOLAR_PLANET_DEFAULTS);
-    const requiredMoons = Object.keys(SOLAR_MOON_DEFAULTS);
-    const requiredRings = Object.keys(SOLAR_RING_DEFAULTS);
+    const requiredPlanets = SOLAR_PLANET_IDS;
+    const requiredMoons = SOLAR_MOON_IDS;
+    const requiredRings = SOLAR_RING_IDS;
     return hasExpectedShape(source?.background, ["hud-color"])
       && isHexColor(source?.background?.color)
       && hasExpectedShape(source?.frame, ["hud-color"])
@@ -409,50 +219,6 @@ function validateGameSkinObjects(gameId, objects) {
   return true;
 }
 
-function mapSolarBodyDefaults(sourceBodies, defaults) {
-  const source = toObject(sourceBodies);
-  return Object.fromEntries(
-    Object.entries(defaults).map(([id, fallback]) => {
-      const entry = toObject(source[id]);
-      return [
-        id,
-        {
-          color: toNonEmptyString(entry.color, fallback.color),
-          radius: Math.max(1, toFiniteNumber(entry.radius, fallback.radius))
-        }
-      ];
-    })
-  );
-}
-
-function mapSolarRingDefaults(sourceRings, defaults) {
-  const source = toObject(sourceRings);
-  return Object.fromEntries(
-    Object.entries(defaults).map(([id, fallback]) => {
-      const entry = source[id];
-      if (typeof entry === "string") {
-        return [
-          id,
-          {
-            color: toNonEmptyString(entry, fallback.color),
-            innerRadius: Math.max(1, toFiniteNumber(fallback.innerRadius, 1)),
-            outerRadius: Math.max(1, toFiniteNumber(fallback.outerRadius, 2))
-          }
-        ];
-      }
-      const entryObject = toObject(entry);
-      return [
-        id,
-        {
-          color: toNonEmptyString(entryObject.color, fallback.color),
-          innerRadius: Math.max(1, toFiniteNumber(entryObject.innerRadius, fallback.innerRadius)),
-          outerRadius: Math.max(1, toFiniteNumber(entryObject.outerRadius, fallback.outerRadius))
-        }
-      ];
-    })
-  );
-}
-
 function extractSkinObject(rawValue) {
   const raw = toObject(rawValue);
   if (raw.documentKind === SKIN_DOCUMENT_KIND) {
@@ -465,124 +231,6 @@ function extractSkinObject(rawValue) {
     return raw.payload.skin;
   }
   return raw;
-}
-
-function mapLegacyToObjects(gameId, source) {
-  const normalizedGameId = normalizeGameId(gameId);
-  const colors = toObject(source?.colors);
-  const sizing = toObject(source?.sizing);
-
-  if (normalizedGameId === "breakout") {
-    return {
-      background: {
-        color: toNonEmptyString(colors.background, "#000000")
-      },
-      wall: {
-        color: toNonEmptyString(colors.wall, "#f8f8f2"),
-        thickness: Math.max(8, toFiniteNumber(sizing.wallThickness, 16))
-      },
-      paddle: {
-        color: toNonEmptyString(colors.paddle, "#f8f8f2"),
-        width: Math.max(40, toFiniteNumber(sizing.paddleWidth, 118)),
-        height: Math.max(8, toFiniteNumber(sizing.paddleHeight, 18))
-      },
-      ball: {
-        color: toNonEmptyString(colors.ball, "#f8f8f2"),
-        size: Math.max(6, toFiniteNumber(sizing.ballSize, 14))
-      },
-      brick: {
-        width: Math.max(24, toFiniteNumber(sizing.brickWidth, 78)),
-        height: Math.max(10, toFiniteNumber(sizing.brickHeight, 24)),
-        gap: Math.max(0, toFiniteNumber(sizing.brickGap, 6)),
-        rows: Array.isArray(colors.brickRows)
-          ? colors.brickRows.map((entry) => normalizeText(entry)).filter(Boolean)
-          : []
-      },
-      hud: {
-        textColor: toNonEmptyString(colors.text, "#04040A"),
-        mutedColor: toNonEmptyString(colors.muted, "#a0a0a0"),
-        panelColor: toNonEmptyString(colors.panel, "#000000")
-      }
-    };
-  }
-
-  if (normalizedGameId === "pong") {
-    return {
-      background: {
-        color: toNonEmptyString(colors.background, "#05070a")
-      },
-      paddle: {
-        color: toNonEmptyString(colors.ink, "#f4f7fb"),
-        width: Math.max(8, toFiniteNumber(sizing.paddleWidth, 14))
-      },
-      ball: {
-        color: toNonEmptyString(colors.ink, "#f4f7fb"),
-        radius: Math.max(3, toFiniteNumber(sizing.ballRadius, 8))
-      },
-      hud: {
-        inkColor: toNonEmptyString(colors.ink, "#f4f7fb"),
-        mutedColor: toNonEmptyString(colors.muted, "#a6b0bf"),
-        accentColor: toNonEmptyString(colors.accent, "#7de2ff"),
-        goodColor: toNonEmptyString(colors.good, "#8bf0c8"),
-        warnColor: toNonEmptyString(colors.warn, "#ffd37d"),
-        dangerColor: toNonEmptyString(colors.danger, "#ff9a9a")
-      }
-    };
-  }
-
-  if (normalizedGameId === "solarsystem") {
-    const entities = toObject(source?.entities);
-    const sun = toObject(entities.sun);
-    return {
-      background: {
-        color: toNonEmptyString(colors.background, "#030712")
-      },
-      frame: {
-        color: toNonEmptyString(colors.frame, "#dbeafe")
-      },
-      orbit: {
-        color: toNonEmptyString(colors.orbit, "#334155")
-      },
-      hud: {
-        textColor: toNonEmptyString(colors.text, "#dbeafe"),
-        mutedColor: toNonEmptyString(colors.muted, "#94a3b8"),
-        panelColor: toNonEmptyString(colors.panel, "#07101d")
-      },
-      sun: {
-        color: toNonEmptyString(sun.color, SOLAR_SUN_DEFAULT.color),
-        radius: Math.max(8, toFiniteNumber(sun.radius, SOLAR_SUN_DEFAULT.radius))
-      },
-      planets: mapSolarBodyDefaults(entities.planets, SOLAR_PLANET_DEFAULTS),
-      moons: mapSolarBodyDefaults(entities.moons, SOLAR_MOON_DEFAULTS),
-      rings: mapSolarRingDefaults(entities.rings, SOLAR_RING_DEFAULTS)
-    };
-  }
-
-  if (normalizedGameId === "bouncing-ball") {
-    return {
-      background: {
-        color: toNonEmptyString(colors.background, "#05070a")
-      },
-      wall: {
-        color: toNonEmptyString(colors.wall, "#f4f4ef"),
-        thickness: Math.max(8, toFiniteNumber(sizing.wallThickness, 18))
-      },
-      ball: {
-        color: toNonEmptyString(colors.ball, "#f4f4ef"),
-        size: Math.max(8, toFiniteNumber(sizing.ballSize, 22))
-      },
-      hud: {
-        textColor: toNonEmptyString(colors.text, "#f4f4ef"),
-        mutedColor: toNonEmptyString(colors.muted, "#9ba3b3"),
-        panelColor: toNonEmptyString(colors.panel, "#05070a")
-      }
-    };
-  }
-
-  return {
-    colors: toObject(source?.colors),
-    sizing: toObject(source?.sizing)
-  };
 }
 
 function mapObjectsToLegacy(gameId, objects, entities) {
@@ -653,7 +301,7 @@ function mapObjectsToLegacy(gameId, objects, entities) {
           radius: Number(source?.sun?.radius)
         },
         planets: Object.fromEntries(
-          Object.keys(SOLAR_PLANET_DEFAULTS).map((id) => {
+          SOLAR_PLANET_IDS.map((id) => {
             const body = toObject(source?.[id]);
             return [id, {
               color: normalizeText(body.color),
@@ -662,7 +310,7 @@ function mapObjectsToLegacy(gameId, objects, entities) {
           })
         ),
         moons: Object.fromEntries(
-          Object.keys(SOLAR_MOON_DEFAULTS).map((id) => {
+          SOLAR_MOON_IDS.map((id) => {
             const body = toObject(source?.[id]);
             return [id, {
               color: normalizeText(body.color),
@@ -671,7 +319,7 @@ function mapObjectsToLegacy(gameId, objects, entities) {
           })
         ),
         rings: Object.fromEntries(
-          Object.keys(SOLAR_RING_DEFAULTS).map((id) => {
+          SOLAR_RING_IDS.map((id) => {
             const ringObjectKey = SOLAR_RING_KEY_BY_PLANET[id];
             const ring = toObject(source?.[ringObjectKey]);
             return [id, {
@@ -712,7 +360,10 @@ function mapObjectsToLegacy(gameId, objects, entities) {
 
 export function normalizeGameSkinDocument(rawValue, options = {}) {
   const expectedGameId = normalizeText(options.expectedGameId);
-  const fallbackSchema = normalizeText(options.fallbackSchema) || "games.generic.skin/1";
+  const expectedSchema = normalizeText(options.expectedSchema);
+  if (!expectedSchema) {
+    return null;
+  }
   const source = extractSkinObject(rawValue);
   if (!source || typeof source !== "object" || Object.keys(source).length === 0) {
     return null;
@@ -730,7 +381,7 @@ export function normalizeGameSkinDocument(rawValue, options = {}) {
   if (!normalized.schema) {
     return null;
   }
-  if (fallbackSchema && fallbackSchema !== "games.generic.skin/1" && normalized.schema !== fallbackSchema) {
+  if (normalized.schema !== expectedSchema) {
     return null;
   }
   normalized.gameId = normalizeText(normalized.gameId) || expectedGameId;
@@ -750,88 +401,19 @@ export function normalizeGameSkinDocument(rawValue, options = {}) {
   if (!hasKeys(sourceObjects)) {
     return null;
   }
-  normalized.objects = normalizeFlatObjects(normalized.gameId, sourceObjects);
+  normalized.objects = deepClone(sourceObjects) || {};
   if (!validateGameSkinObjects(normalized.gameId, normalized.objects)) {
     return null;
   }
 
   const projectedLegacy = mapObjectsToLegacy(normalized.gameId, normalized.objects, normalized.entities);
-  normalized.colors = deepMerge(toObject(normalized.colors), toObject(projectedLegacy.colors));
-  normalized.sizing = deepMerge(toObject(normalized.sizing), toObject(projectedLegacy.sizing));
-  normalized.entities = deepMerge(toObject(projectedLegacy.entities), toObject(normalized.entities));
+  normalized.colors = toObject(projectedLegacy.colors);
+  normalized.sizing = toObject(projectedLegacy.sizing);
+  normalized.entities = toObject(projectedLegacy.entities);
   return normalized;
 }
 
-function toStorageSkinDocument(normalizedSkin) {
-  const source = toObject(normalizedSkin);
-  return {
-    documentKind: SKIN_DOCUMENT_KIND,
-    version: Number.isFinite(Number(source.version)) ? Number(source.version) : SKIN_DOCUMENT_VERSION,
-    schema: normalizeText(source.schema) || "games.generic.skin/1",
-    gameId: normalizeText(source.gameId),
-    name: normalizeText(source.name) || `${normalizeText(source.gameId) || "Game"} Skin`,
-    objects: deepClone(toObject(source.objects)) || {},
-    entities: {}
-  };
-}
-
-function getStorageKey(gameId) {
-  const safeGameId = normalizeGameId(gameId);
-  return safeGameId ? `${SKIN_OVERRIDE_STORAGE_PREFIX}${safeGameId}` : "";
-}
-
-export function readGameSkinOverride(gameId, options = {}) {
-  if (typeof window === "undefined" || !window.localStorage) {
-    return null;
-  }
-  const storageKey = getStorageKey(gameId);
-  if (!storageKey) {
-    return null;
-  }
-  const fallbackSchema = normalizeText(options.fallbackSchema) || "games.generic.skin/1";
-  try {
-    const rawValue = window.localStorage.getItem(storageKey);
-    if (!rawValue) {
-      return null;
-    }
-    const parsed = JSON.parse(rawValue);
-    return normalizeGameSkinDocument(parsed, { expectedGameId: normalizeText(gameId), fallbackSchema });
-  } catch {
-    return null;
-  }
-}
-
-export function writeGameSkinOverride(gameId, skinDocument, options = {}) {
-  if (typeof window === "undefined" || !window.localStorage) {
-    return false;
-  }
-  const storageKey = getStorageKey(gameId);
-  if (!storageKey) {
-    return false;
-  }
-  const fallbackSchema = normalizeText(options.fallbackSchema) || "games.generic.skin/1";
-  const normalized = normalizeGameSkinDocument(skinDocument, { expectedGameId: normalizeText(gameId), fallbackSchema });
-  if (!normalized) {
-    return false;
-  }
-  const storageDocument = toStorageSkinDocument(normalized);
-  window.localStorage.setItem(storageKey, JSON.stringify(storageDocument, null, 2));
-  return true;
-}
-
-export function clearGameSkinOverride(gameId) {
-  if (typeof window === "undefined" || !window.localStorage) {
-    return false;
-  }
-  const storageKey = getStorageKey(gameId);
-  if (!storageKey) {
-    return false;
-  }
-  window.localStorage.removeItem(storageKey);
-  return true;
-}
-
-async function fetchSkinDocumentFromPath(path, expectedGameId, fallbackSchema) {
+async function fetchSkinDocumentFromPath(path, expectedGameId, expectedSchema) {
   const normalizedPath = normalizePath(path);
   if (!normalizedPath) {
     throw new Error("Skin path is missing or invalid.");
@@ -845,7 +427,7 @@ async function fetchSkinDocumentFromPath(path, expectedGameId, fallbackSchema) {
       throw new Error(`Skin request failed (${response.status}) for ${normalizedPath}.`);
     }
     const payload = await response.json();
-    const normalized = normalizeGameSkinDocument(payload, { expectedGameId, fallbackSchema });
+    const normalized = normalizeGameSkinDocument(payload, { expectedGameId, expectedSchema });
     if (!normalized) {
       throw new Error(`Skin document is invalid: ${normalizedPath}.`);
     }
@@ -856,7 +438,7 @@ async function fetchSkinDocumentFromPath(path, expectedGameId, fallbackSchema) {
 }
 
 function resolveSkinAssetPath(gameId) {
-  return resolveWorkspaceGameAssetPath(gameId, "skin.main", "");
+  return resolveWorkspaceGameAssetPath(gameId, "skin.main");
 }
 
 function deriveWorkspaceCatalogPath(gameId) {
@@ -872,15 +454,9 @@ export async function loadGameSkin(options = {}) {
   if (!expectedGameId) {
     throw new Error("loadGameSkin requires gameId.");
   }
-  const fallbackSchema = normalizeText(options.fallbackSchema) || "games.generic.skin/1";
-
-  const storedSkin = readGameSkinOverride(expectedGameId, { fallbackSchema });
-  if (storedSkin) {
-    return {
-      skin: storedSkin,
-      source: "local-storage",
-      path: ""
-    };
+  const expectedSchema = normalizeText(options.expectedSchema);
+  if (!expectedSchema) {
+    throw new Error("loadGameSkin requires expectedSchema.");
   }
 
   const explicitCatalogPath = normalizePath(options.catalogPath);
@@ -891,7 +467,7 @@ export async function loadGameSkin(options = {}) {
   if (!skinPath) {
     throw new Error(`No skin.main asset path resolved for ${expectedGameId}.`);
   }
-  const loadedSkin = await fetchSkinDocumentFromPath(skinPath, expectedGameId, fallbackSchema);
+  const loadedSkin = await fetchSkinDocumentFromPath(skinPath, expectedGameId, expectedSchema);
   return {
     skin: loadedSkin,
     source: "skin-file",

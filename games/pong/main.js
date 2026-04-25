@@ -42,7 +42,7 @@ export function bootPong({
 
   void loadGameSkin({
     gameId: 'Pong',
-    fallbackSchema: 'games.pong.skin/1'
+    expectedSchema: 'games.pong.skin/1'
   }).then(({ skin }) => {
     const scene = new SceneClass({ skin });
     engine.setScene(scene);
