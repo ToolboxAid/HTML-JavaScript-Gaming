@@ -211,6 +211,8 @@ function buildRows(metadata, pinnedSet, toolLabelMap, toolRegistryMap) {
       }
       const classValues = [...new Set(asArray(game?.classValues).map((value) => normalize(value)).filter(Boolean))]
         .sort((a, b) => a.localeCompare(b, undefined, { sensitivity: "base" }));
+      const engineClasses = [...new Set(asArray(game?.engineClassesUsed).map((value) => normalize(value)).filter(Boolean))]
+        .sort((a, b) => a.localeCompare(b, undefined, { sensitivity: "base" }));
       const tags = [...new Set(asArray(game?.tags).map((value) => normalizeTag(value)).filter(Boolean))]
         .sort((a, b) => a.localeCompare(b, undefined, { sensitivity: "base" }));
       const href = normalizeGameHref(game?.href);
@@ -229,6 +231,7 @@ function buildRows(metadata, pinnedSet, toolLabelMap, toolRegistryMap) {
         level,
         status: normalize(game?.status) || "planned",
         classValues,
+        engineClasses,
         toolTokens,
         roundtripLinks,
         tags,
@@ -323,26 +326,12 @@ function renderCard(row, instanceKey = "main") {
     row.debugShowcase ? badge("game-badge--debug-showcase", "Debug Showcase") : ""
   ].filter(Boolean).join("");
 
-  const classText = row.classValues.length > 0 ? row.classValues.map((value) => value.split("/").at(-1) || value).join(", ") : "none";
+  const classEntries = row.engineClasses;
   const tagText = row.tags.length > 0 ? row.tags.join(", ") : "none";
   const workspaceSection = row.workspaceHref
     ? `
       <section class="game-tool-roundtrip">
-        <h4>Open with Workspace Manager</h4>
         <p><a href="${escapeHtml(row.workspaceHref)}">Open with Workspace Manager</a></p>
-        <h4>JSON Input</h4>
-        <p>Paste JSON to inspect arbitrary state payloads.</p>
-      </section>
-    `
-    : "";
-  const roundtripSection = Array.isArray(row.roundtripLinks) && row.roundtripLinks.length > 0
-    ? `
-      <section class="game-tool-roundtrip">
-        <h4>Tool Roundtrip Links</h4>
-        <p>Open game-related tools with workspace context and a return path back to Games.</p>
-        <ul>
-          ${row.roundtripLinks.map((entry) => `<li><a href="${escapeHtml(entry.href)}">${escapeHtml(entry.label)}</a></li>`).join("")}
-        </ul>
       </section>
     `
     : "";
@@ -353,9 +342,13 @@ function renderCard(row, instanceKey = "main") {
     ${previewHtml}
     <p>${escapeHtml(row.description)}</p>
     ${workspaceSection}
-    ${roundtripSection}
-    <p>Classes: ${escapeHtml(classText)}</p>
     <p>Tags: ${escapeHtml(tagText)}</p>
+    <section class="game-tool-roundtrip">
+      <h4>Engine Classes Used</h4>
+      ${classEntries.length > 0
+    ? `<ul>${classEntries.map((value) => `<li>${escapeHtml(value)}</li>`).join("")}</ul>`
+    : "<p>none</p>"}
+    </section>
     ${row.requiresService ? '<p class="game-service-note">Requires background service.</p>' : ""}
   `;
   return article;

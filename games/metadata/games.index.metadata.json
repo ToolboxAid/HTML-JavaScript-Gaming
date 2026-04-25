@@ -10,6 +10,12 @@
       "classValues": [
         "games/motion/basic"
       ],
+      "engineClassesUsed": [
+        "engine/core/Engine",
+        "engine/input/index/InputService",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
+      ],
       "tags": [
         "arcade",
         "motion",
@@ -79,6 +85,12 @@
           "toolId": "replay-visualizer",
           "presetPath": "/samples/phase-07/0708/sample-0708-replay-visualizer.json"
         }
+      ],
+      "engineClassesUsed": [
+        "engine/core/Engine",
+        "engine/input/index/InputService",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
       ]
     },
     {
@@ -119,6 +131,12 @@
           "toolId": "state-inspector",
           "presetPath": "/samples/phase-02/0205/sample-0205-state-inspector.json"
         }
+      ],
+      "engineClassesUsed": [
+        "engine/core/Engine",
+        "engine/input/index/InputService",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
       ]
     },
     {
@@ -158,6 +176,12 @@
           "toolId": "physics-sandbox",
           "presetPath": "/samples/phase-03/0303/sample-0303-physics-sandbox.json"
         }
+      ],
+      "engineClassesUsed": [
+        "engine/core/Engine",
+        "engine/input/index/InputService",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
       ]
     },
     {
@@ -198,6 +222,12 @@
           "toolId": "replay-visualizer",
           "presetPath": "/samples/phase-07/0708/sample-0708-replay-visualizer.json"
         }
+      ],
+      "engineClassesUsed": [
+        "engine/core/Engine",
+        "engine/input/index/InputService",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
       ]
     },
     {
@@ -276,6 +306,12 @@
           "toolId": "asset-pipeline-tool",
           "presetPath": "/samples/phase-14/1413/sample-1413-asset-pipeline-tool.json"
         }
+      ],
+      "engineClassesUsed": [
+        "engine/core/Engine",
+        "engine/input/index/InputService",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
       ]
     },
     {
@@ -315,6 +351,13 @@
           "toolId": "state-inspector",
           "presetPath": "/samples/phase-02/0205/sample-0205-state-inspector.json"
         }
+      ],
+      "engineClassesUsed": [
+        "engine/core/Engine",
+        "engine/input/index/ActionInputMap",
+        "engine/input/index/ActionInputService",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
       ]
     },
     {
@@ -354,6 +397,12 @@
           "toolId": "performance-profiler",
           "presetPath": "/samples/phase-13/1319/sample-1319-performance-profiler.json"
         }
+      ],
+      "engineClassesUsed": [
+        "engine/core/Engine",
+        "engine/input/index/InputService",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
       ]
     },
     {
@@ -393,6 +442,12 @@
           "toolId": "state-inspector",
           "presetPath": "/samples/phase-02/0205/sample-0205-state-inspector.json"
         }
+      ],
+      "engineClassesUsed": [
+        "engine/core/Engine",
+        "engine/input/index/InputService",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
       ]
     },
     {
