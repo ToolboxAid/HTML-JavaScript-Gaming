@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Skin Editor</title>
+  <link rel="stylesheet" href="../../src/engine/ui/hubCommon.css" />
+  <link rel="stylesheet" href="../shared/platformShell.css" />
+  <link rel="stylesheet" href="../shared/debugInspectorTools.css" />
+  <link rel="stylesheet" href="../../src/engine/theme/main.css" />
+</head>
+<body class="tools-platform-tool-page hub-page-tools" data-tool-id="skin-editor" data-tools-platform-page="tool">
+  <details class="is-collapsible" open>
+    <summary class="is-collapsible__summary">Header and Intro</summary>
+    <div class="is-collapsible__content">
+      <div id="shared-theme-header"></div>
+      <div data-tools-platform-header></div>
+    </div>
+  </details>
+
+  <div class="debug-tool-shell app-shell">
+    <section class="panel debug-tool-panel">
+      <div class="debug-tool-actions">
+        <label class="debug-tool-label" for="skinEditorGameSelect">
+          Game
+          <select id="skinEditorGameSelect" class="debug-tool-field"></select>
+        </label>
+        <button type="button" id="skinEditorLoadButton" class="debug-tool-control">Load Active Skin</button>
+        <button type="button" id="skinEditorSaveOverrideButton" class="debug-tool-control">Apply Skin Override</button>
+        <button type="button" id="skinEditorClearOverrideButton" class="debug-tool-control">Clear Override</button>
+        <label class="debug-tool-control" for="skinEditorImportInput">Import Skin JSON</label>
+        <input id="skinEditorImportInput" type="file" accept="application/json,.json" hidden />
+        <button type="button" id="skinEditorExportButton" class="debug-tool-control">Export Skin JSON</button>
+        <button type="button" id="skinEditorOpenGameButton" class="debug-tool-control">Open Game</button>
+        <button type="button" id="skinEditorHowToUseButton" class="debug-tool-control">How to Use</button>
+      </div>
+      <div id="skinEditorStatus" class="debug-tool-meta">Skin editor ready.</div>
+    </section>
+
+    <section class="debug-tool-grid">
+      <section class="panel debug-tool-panel">
+        <h3>Skin JSON Input</h3>
+        <textarea id="skinEditorInput" class="debug-tool-field" rows="28"></textarea>
+      </section>
+      <section class="panel debug-tool-panel">
+        <h3>Skin Summary</h3>
+        <pre id="skinEditorSummary" class="debug-tool-readout">Select a game to load its active skin payload.</pre>
+      </section>
+    </section>
+  </div>
+
+  <div data-tools-platform-status></div>
+  <script type="module" src="../shared/platformShell.js"></script>
+  <script type="module" src="./main.js"></script>
+  <script type="module" src="../../src/engine/theme/mount-shared-header.js"></script>
+</body>
+</html>

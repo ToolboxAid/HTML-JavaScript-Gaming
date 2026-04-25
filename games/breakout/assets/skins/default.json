@@ -1,0 +1,32 @@
+{
+  "documentKind": "game-skin",
+  "schema": "games.breakout.skin/1",
+  "version": 1,
+  "gameId": "Breakout",
+  "name": "Breakout Classic Skin",
+  "colors": {
+    "background": "#000000",
+    "wall": "#f8f8f2",
+    "paddle": "#f8f8f2",
+    "ball": "#f8f8f2",
+    "text": "#04040A",
+    "muted": "#a0a0a0",
+    "panel": "#000000",
+    "brickRows": [
+      "#ff595e",
+      "#ff924c",
+      "#ffca3a",
+      "#8ac926",
+      "#1982c4",
+      "#6a4c93"
+    ]
+  },
+  "sizing": {
+    "paddleWidth": 118,
+    "paddleHeight": 18,
+    "ballSize": 14,
+    "brickWidth": 78,
+    "brickHeight": 24,
+    "brickGap": 6
+  }
+}

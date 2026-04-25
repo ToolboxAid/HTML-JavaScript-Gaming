@@ -68,8 +68,45 @@ const MOON_DEFINITIONS = [
   { id: 'titan', name: 'Titan', parentId: 'saturn', radius: 3, orbitRadius: 26, periodDays: 16, color: '#fef3c7', angle: 5.2 },
 ];
 
+const DEFAULT_SOLAR_WORLD_SKIN = Object.freeze({
+  entities: {
+    sun: {
+      color: '#fbbf24',
+      radius: 30
+    },
+    planets: {},
+    moons: {},
+    rings: {}
+  }
+});
+
 function clampIndex(value, max) {
   return Math.max(0, Math.min(max, value));
+}
+
+function toObject(value) {
+  return value && typeof value === 'object' ? value : {};
+}
+
+function toFiniteNumber(value, fallback) {
+  const numeric = Number(value);
+  return Number.isFinite(numeric) ? numeric : fallback;
+}
+
+function sanitizeSolarWorldSkin(skin) {
+  const entities = toObject(skin?.entities);
+  const sun = toObject(entities.sun);
+  return {
+    entities: {
+      sun: {
+        color: typeof sun.color === 'string' && sun.color.trim() ? sun.color.trim() : DEFAULT_SOLAR_WORLD_SKIN.entities.sun.color,
+        radius: Math.max(8, toFiniteNumber(sun.radius, DEFAULT_SOLAR_WORLD_SKIN.entities.sun.radius))
+      },
+      planets: toObject(entities.planets),
+      moons: toObject(entities.moons),
+      rings: toObject(entities.rings)
+    }
+  };
 }
 
 function bodyPosition(centerX, centerY, orbitRadius, angleRadians, orbitScaleY = 0.72) {
@@ -80,9 +117,10 @@ function bodyPosition(centerX, centerY, orbitRadius, angleRadians, orbitScaleY =
 }
 
 export default class SolarSystemWorld {
-  constructor({ width = 960, height = 720 } = {}) {
+  constructor({ width = 960, height = 720, skin = null } = {}) {
     this.width = width;
     this.height = height;
+    this.skin = sanitizeSolarWorldSkin(skin);
     this.bounds = {
       left: 38,
       right: width - 38,
@@ -95,8 +133,8 @@ export default class SolarSystemWorld {
     };
     this.sun = {
       name: 'Sun',
-      radius: 30,
-      color: '#fbbf24',
+      radius: this.skin.entities.sun.radius,
+      color: this.skin.entities.sun.color,
       x: this.center.x,
       y: this.center.y,
     };
@@ -106,6 +144,41 @@ export default class SolarSystemWorld {
     this.planets = [];
     this.moons = [];
     this.reset();
+  }
+
+  applySkin(nextSkin) {
+    this.skin = sanitizeSolarWorldSkin(nextSkin);
+    this.sun.color = this.skin.entities.sun.color;
+    this.sun.radius = this.skin.entities.sun.radius;
+    this.applyEntityColors();
+  }
+
+  applyEntityColors() {
+    this.planets.forEach((planet) => {
+      const skinPlanet = toObject(this.skin.entities.planets[planet.id]);
+      if (typeof skinPlanet.color === 'string' && skinPlanet.color.trim()) {
+        planet.color = skinPlanet.color.trim();
+      }
+      const ringColor = this.skin.entities.rings[planet.id];
+      if (planet.ring) {
+        if (typeof ringColor === 'string' && ringColor.trim()) {
+          planet.ring.color = ringColor.trim();
+        }
+      } else if (typeof ringColor === 'string' && ringColor.trim()) {
+        planet.ring = {
+          innerRadius: Math.max(planet.radius + 2, planet.radius * 1.5),
+          outerRadius: Math.max(planet.radius + 5, planet.radius * 2),
+          color: ringColor.trim()
+        };
+      }
+    });
+
+    this.moons.forEach((moon) => {
+      const skinMoon = toObject(this.skin.entities.moons[moon.id]);
+      if (typeof skinMoon.color === 'string' && skinMoon.color.trim()) {
+        moon.color = skinMoon.color.trim();
+      }
+    });
   }
 
   reset() {
@@ -120,6 +193,7 @@ export default class SolarSystemWorld {
       x: 0,
       y: 0,
     }));
+    this.applyEntityColors();
     this.recomputePositions();
   }
 

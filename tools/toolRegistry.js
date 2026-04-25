@@ -140,6 +140,32 @@ export const TOOL_REGISTRY = Object.freeze([
     visibleInToolsList: true
   },
   {
+    id: "skin-editor",
+    name: "Skin Editor",
+    displayName: "Skin Editor",
+    shortLabel: "Skin",
+    path: "Skin Editor",
+    folderName: "Skin Editor",
+    entryPoint: "Skin Editor/index.html",
+    description: "JSON skin authoring and override workflow for game color and sizing presets across playable arcade titles.",
+    showcaseTag: "Asset Workflow",
+    showcaseStatus: "Game Skin Ready",
+    active: true,
+    legacy: false,
+    order: 5.5,
+    sampleEntryPoints: [
+      {
+        label: "How To Use",
+        path: "Skin Editor/how_to_use.html"
+      },
+      {
+        label: "README",
+        path: "Skin Editor/README.md"
+      }
+    ],
+    visibleInToolsList: true
+  },
+  {
     id: "asset-browser",
     name: "Asset Browser / Import Hub",
     displayName: "Asset Browser / Import Hub",

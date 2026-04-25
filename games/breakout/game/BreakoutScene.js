@@ -15,7 +15,7 @@ const VIEW = {
   height: 720,
 };
 
-const COLORS = {
+const DEFAULT_COLORS = {
   background: '#000000',
   wall: '#f8f8f2',
   paddle: '#f8f8f2',
@@ -25,6 +25,23 @@ const COLORS = {
   panel: '#000000',
 };
 
+function toObject(value) {
+  return value && typeof value === 'object' ? value : {};
+}
+
+function sanitizeBreakoutSceneColors(skin) {
+  const colors = toObject(skin?.colors);
+  return {
+    background: typeof colors.background === 'string' && colors.background.trim() ? colors.background.trim() : DEFAULT_COLORS.background,
+    wall: typeof colors.wall === 'string' && colors.wall.trim() ? colors.wall.trim() : DEFAULT_COLORS.wall,
+    paddle: typeof colors.paddle === 'string' && colors.paddle.trim() ? colors.paddle.trim() : DEFAULT_COLORS.paddle,
+    ball: typeof colors.ball === 'string' && colors.ball.trim() ? colors.ball.trim() : DEFAULT_COLORS.ball,
+    text: typeof colors.text === 'string' && colors.text.trim() ? colors.text.trim() : DEFAULT_COLORS.text,
+    muted: typeof colors.muted === 'string' && colors.muted.trim() ? colors.muted.trim() : DEFAULT_COLORS.muted,
+    panel: typeof colors.panel === 'string' && colors.panel.trim() ? colors.panel.trim() : DEFAULT_COLORS.panel
+  };
+}
+
 export default class BreakoutScene extends Scene {
   constructor(options = {}) {
     super();
@@ -33,11 +50,17 @@ export default class BreakoutScene extends Scene {
       debugMode: 'prod',
       debugEnabled: Boolean(this.devConsoleIntegration),
     };
-    this.world = new BreakoutWorld(VIEW);
+    this.world = new BreakoutWorld({ ...VIEW, skin: options.skin || null });
+    this.colors = sanitizeBreakoutSceneColors(options.skin);
     this.inputController = null;
     this.audio = new BreakoutAudio();
     this.isPaused = false;
     this.engineRef = null;
+  }
+
+  applySkin(nextSkin) {
+    this.colors = sanitizeBreakoutSceneColors(nextSkin);
+    this.world.applySkin(nextSkin);
   }
 
   enter(engine) {
@@ -149,7 +172,7 @@ export default class BreakoutScene extends Scene {
   }
 
   render(renderer) {
-    renderer.clear(COLORS.background);
+    renderer.clear(this.colors.background);
     this.drawWalls(renderer);
     this.drawBricks(renderer);
     this.drawHud(renderer);
@@ -175,9 +198,9 @@ export default class BreakoutScene extends Scene {
   }
 
   drawWalls(renderer) {
-    renderer.drawRect(0, 0, VIEW.width, this.world.topBoundary, COLORS.wall);
-    renderer.drawRect(0, 0, this.world.wallThickness, VIEW.height, COLORS.wall);
-    renderer.drawRect(VIEW.width - this.world.wallThickness, 0, this.world.wallThickness, VIEW.height, COLORS.wall);
+    renderer.drawRect(0, 0, VIEW.width, this.world.topBoundary, this.colors.wall);
+    renderer.drawRect(0, 0, this.world.wallThickness, VIEW.height, this.colors.wall);
+    renderer.drawRect(VIEW.width - this.world.wallThickness, 0, this.world.wallThickness, VIEW.height, this.colors.wall);
   }
 
   drawBricks(renderer) {
@@ -191,30 +214,30 @@ export default class BreakoutScene extends Scene {
 
   drawHud(renderer) {
     renderer.drawText('BREAKOUT', 28, 18, {
-      color: COLORS.text,
+      color: this.colors.text,
       font: 'bold 26px monospace',
       textBaseline: 'top',
     });
     renderer.drawText(`Score ${this.world.score}`, 350, 18, {
-      color: COLORS.text,
+      color: this.colors.text,
       font: 'bold 22px monospace',
       textBaseline: 'top',
     });
     renderer.drawText(`Lives ${this.world.lives}`, 744, 18, {
-      color: COLORS.text,
+      color: this.colors.text,
       font: 'bold 22px monospace',
       textBaseline: 'top',
     });
 
     if (this.world.status === 'playing' || this.world.status === 'serve') {
       renderer.drawText('P pause', 928, 10, {
-        color: COLORS.text,
+        color: this.colors.text,
         font: '16px monospace',
         textAlign: 'right',
         textBaseline: 'top',
       });
       renderer.drawText('X menu', 928, 30, {
-        color: COLORS.text,
+        color: this.colors.text,
         font: '16px monospace',
         textAlign: 'right',
         textBaseline: 'top',
@@ -228,7 +251,7 @@ export default class BreakoutScene extends Scene {
       this.world.paddle.y,
       this.world.paddle.width,
       this.world.paddle.height,
-      COLORS.paddle,
+      this.colors.paddle,
     );
   }
 
@@ -238,15 +261,15 @@ export default class BreakoutScene extends Scene {
       this.world.ball.y,
       this.world.ball.size,
       this.world.ball.size,
-      COLORS.ball,
+      this.colors.ball,
     );
   }
 
   drawOverlay(renderer, copy = this.getOverlayCopy()) {
-    renderer.drawRect(180, 258, 600, 192, COLORS.panel);
-    renderer.strokeRect(180, 258, 600, 192, COLORS.wall, 2);
+    renderer.drawRect(180, 258, 600, 192, this.colors.panel);
+    renderer.strokeRect(180, 258, 600, 192, this.colors.wall, 2);
     renderer.drawText(copy.title, VIEW.width / 2, 292, {
-      color: COLORS.text,
+      color: this.colors.text,
       font: 'bold 28px monospace',
       textAlign: 'center',
       textBaseline: 'top',
@@ -254,7 +277,7 @@ export default class BreakoutScene extends Scene {
 
     wrapTextByCharacterCount(copy.body, 34).forEach((line, index) => {
       renderer.drawText(line, VIEW.width / 2, 336 + (index * 24), {
-        color: COLORS.muted,
+        color: this.colors.muted,
         font: '18px monospace',
         textAlign: 'center',
         textBaseline: 'top',
@@ -262,7 +285,7 @@ export default class BreakoutScene extends Scene {
     });
 
     renderer.drawText(copy.prompt, VIEW.width / 2, 426, {
-      color: COLORS.text,
+      color: this.colors.text,
       font: '18px monospace',
       textAlign: 'center',
       textBaseline: 'top',

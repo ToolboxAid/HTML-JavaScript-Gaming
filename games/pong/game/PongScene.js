@@ -21,7 +21,7 @@ const COURT = {
   centerY: 380,
 };
 
-const COLORS = {
+const DEFAULT_COLORS = {
   background: '#05070a',
   ink: '#f4f7fb',
   muted: '#a6b0bf',
@@ -31,9 +31,45 @@ const COLORS = {
   danger: '#ff9a9a',
 };
 
+const DEFAULT_SIZING = {
+  paddleWidth: 14,
+  ballRadius: 8
+};
+
+function toObject(value) {
+  return value && typeof value === 'object' ? value : {};
+}
+
+function toFiniteNumber(value, fallback) {
+  const numeric = Number(value);
+  return Number.isFinite(numeric) ? numeric : fallback;
+}
+
+function sanitizePongSkin(skin) {
+  const colors = toObject(skin?.colors);
+  const sizing = toObject(skin?.sizing);
+  return {
+    colors: {
+      background: typeof colors.background === 'string' && colors.background.trim() ? colors.background.trim() : DEFAULT_COLORS.background,
+      ink: typeof colors.ink === 'string' && colors.ink.trim() ? colors.ink.trim() : DEFAULT_COLORS.ink,
+      muted: typeof colors.muted === 'string' && colors.muted.trim() ? colors.muted.trim() : DEFAULT_COLORS.muted,
+      accent: typeof colors.accent === 'string' && colors.accent.trim() ? colors.accent.trim() : DEFAULT_COLORS.accent,
+      good: typeof colors.good === 'string' && colors.good.trim() ? colors.good.trim() : DEFAULT_COLORS.good,
+      warn: typeof colors.warn === 'string' && colors.warn.trim() ? colors.warn.trim() : DEFAULT_COLORS.warn,
+      danger: typeof colors.danger === 'string' && colors.danger.trim() ? colors.danger.trim() : DEFAULT_COLORS.danger
+    },
+    sizing: {
+      paddleWidth: Math.max(8, toFiniteNumber(sizing.paddleWidth, DEFAULT_SIZING.paddleWidth)),
+      ballRadius: Math.max(3, toFiniteNumber(sizing.ballRadius, DEFAULT_SIZING.ballRadius))
+    }
+  };
+}
+
 export default class PongScene extends Scene {
-  constructor() {
+  constructor(options = {}) {
     super();
+    this.skin = sanitizePongSkin(options.skin);
+    this.colors = this.skin.colors;
     this.modes = getPongModes();
     this.modeIndex = 0;
     this.mode = this.modes[this.modeIndex];
@@ -53,6 +89,18 @@ export default class PongScene extends Scene {
   enter(engine) {
     this.inputController = new PongInputController(engine.input);
     this.audio.setAudioService(engine.audio ?? null);
+    this.applyMode();
+  }
+
+  applySkin(nextSkin) {
+    this.skin = sanitizePongSkin(nextSkin);
+    this.colors = this.skin.colors;
+    this.leftPaddle.width = this.skin.sizing.paddleWidth;
+    this.rightPaddle.width = this.skin.sizing.paddleWidth;
+    this.leftPaddle.color = this.colors.ink;
+    this.rightPaddle.color = this.colors.ink;
+    this.ball.radius = this.skin.sizing.ballRadius;
+    this.ball.color = this.colors.ink;
     this.applyMode();
   }
 
@@ -124,14 +172,14 @@ export default class PongScene extends Scene {
   }
 
   render(renderer) {
-    renderer.clear(COLORS.background);
+    renderer.clear(this.colors.background);
     this.drawCourt(renderer);
     this.drawHud(renderer);
     this.drawPaddle(renderer, this.leftPaddle);
     if (this.mode.twoPaddles) {
       this.drawPaddle(renderer, this.rightPaddle);
     }
-    renderer.drawCircle(this.ball.x, this.ball.y, this.ball.radius, COLORS.ink);
+    renderer.drawCircle(this.ball.x, this.ball.y, this.ball.radius, this.colors.ink);
 
     if (this.isPaused) {
       renderer.drawRect(0, 0, COURT.width, COURT.height, 'rgba(0, 0, 0, 0.5)');
@@ -146,11 +194,11 @@ export default class PongScene extends Scene {
       side,
       x: side === 'left' ? 54 : 892,
       y: COURT.centerY - 56,
-      width: 14,
+      width: this.skin.sizing.paddleWidth,
       height: 112,
       speed: 540,
       velocityY: 0,
-      color: COLORS.ink,
+      color: this.colors.ink,
     };
   }
 
@@ -158,10 +206,10 @@ export default class PongScene extends Scene {
     return {
       x: COURT.centerX,
       y: COURT.centerY,
-      radius: 8,
+      radius: this.skin.sizing.ballRadius,
       vx: 0,
       vy: 0,
-      color: COLORS.ink,
+      color: this.colors.ink,
     };
   }
 
@@ -422,22 +470,22 @@ export default class PongScene extends Scene {
   }
 
   drawCourt(renderer) {
-    renderer.strokeRect(COURT.left, COURT.top, COURT.right - COURT.left, COURT.bottom - COURT.top, COLORS.ink, 2);
+    renderer.strokeRect(COURT.left, COURT.top, COURT.right - COURT.left, COURT.bottom - COURT.top, this.colors.ink, 2);
     for (let y = COURT.top + 16; y < COURT.bottom; y += 28) {
       renderer.drawRect(COURT.centerX - 2, y, 4, 14, '#6a7482');
     }
 
     if (this.mode.key === 'hockey') {
       const goalTop = COURT.centerY - this.mode.goalHeight / 2;
-      renderer.drawRect(COURT.left - 2, goalTop, 4, this.mode.goalHeight, COLORS.accent);
-      renderer.drawRect(COURT.right - 2, goalTop, 4, this.mode.goalHeight, COLORS.accent);
+      renderer.drawRect(COURT.left - 2, goalTop, 4, this.mode.goalHeight, this.colors.accent);
+      renderer.drawRect(COURT.right - 2, goalTop, 4, this.mode.goalHeight, this.colors.accent);
     }
   }
 
   drawHud(renderer) {
-    renderer.drawText('PONG', 34, 24, { color: COLORS.ink, font: 'bold 26px monospace', textBaseline: 'top' });
+    renderer.drawText('PONG', 34, 24, { color: this.colors.ink, font: 'bold 26px monospace', textBaseline: 'top' });
     renderer.drawText(this.mode.name.toUpperCase(), COURT.centerX, 24, {
-      color: COLORS.accent,
+      color: this.colors.accent,
       font: 'bold 22px monospace',
       textAlign: 'center',
       textBaseline: 'top',
@@ -445,22 +493,22 @@ export default class PongScene extends Scene {
 
     if (this.mode.twoPaddles) {
       renderer.drawText(String(this.score.left), 426, 118, {
-        color: COLORS.ink,
+        color: this.colors.ink,
         font: 'bold 44px monospace',
         textAlign: 'right',
       });
       renderer.drawText(String(this.score.right), 534, 118, {
-        color: COLORS.ink,
+        color: this.colors.ink,
         font: 'bold 44px monospace',
       });
     } else {
       renderer.drawText(`Score ${this.score.left}`, 34, 88, {
-        color: COLORS.good,
+        color: this.colors.good,
         font: 'bold 20px monospace',
         textBaseline: 'top',
       });
       renderer.drawText(`Best ${this.score.bestRally}`, 34, 114, {
-        color: COLORS.warn,
+        color: this.colors.warn,
         font: '18px monospace',
         textBaseline: 'top',
       });
@@ -468,13 +516,13 @@ export default class PongScene extends Scene {
 
     if (!this.roundOver || this.winnerText) {
       renderer.drawText('P pause', 926, 24, {
-        color: COLORS.muted,
+        color: this.colors.muted,
         font: '16px monospace',
         textAlign: 'right',
         textBaseline: 'top',
       });
       renderer.drawText('X menu', 926, 48, {
-        color: COLORS.muted,
+        color: this.colors.muted,
         font: '16px monospace',
         textAlign: 'right',
         textBaseline: 'top',
@@ -494,9 +542,9 @@ export default class PongScene extends Scene {
     const bodyLines = showModeList ? descriptionLines : wrapTextByCharacterCount(body, 50, { preserveParagraphs: true });
     const panelHeight = showModeList ? 346 : Math.max(150, 112 + (bodyLines.length * 26));
     renderer.drawRect(160, 250, 640, panelHeight, 'rgba(8, 12, 18, 0.86)');
-    renderer.strokeRect(160, 250, 640, panelHeight, COLORS.ink, 2);
+    renderer.strokeRect(160, 250, 640, panelHeight, this.colors.ink, 2);
     renderer.drawText(title, COURT.centerX, 288, {
-      color: COLORS.ink,
+      color: this.colors.ink,
       font: 'bold 28px monospace',
       textAlign: 'center',
       textBaseline: 'top',
@@ -504,7 +552,7 @@ export default class PongScene extends Scene {
 
     bodyLines.forEach((line, index) => {
       renderer.drawText(line, COURT.centerX, 330 + (index * 24), {
-        color: COLORS.muted,
+        color: this.colors.muted,
         font: '18px monospace',
         textAlign: 'center',
         textBaseline: 'top',
@@ -517,7 +565,7 @@ export default class PongScene extends Scene {
 
     const modeHeaderY = 364 + ((descriptionLines.length - 1) * 24);
     renderer.drawText('Modes: M next, N previous', COURT.centerX, modeHeaderY, {
-      color: COLORS.accent,
+      color: this.colors.accent,
       font: '16px monospace',
       textAlign: 'center',
       textBaseline: 'top',
@@ -529,7 +577,7 @@ export default class PongScene extends Scene {
         COURT.centerX,
         modeHeaderY + 28 + (index * 26),
         {
-          color: index === this.modeIndex ? COLORS.good : COLORS.muted,
+          color: index === this.modeIndex ? this.colors.good : this.colors.muted,
           font: '18px monospace',
           textAlign: 'center',
           textBaseline: 'top',
@@ -539,7 +587,7 @@ export default class PongScene extends Scene {
 
     promptLines.forEach((line, index) => {
       renderer.drawText(line, COURT.centerX, modeHeaderY + 146 + (index * 22), {
-        color: COLORS.warn,
+        color: this.colors.warn,
         font: '16px monospace',
         textAlign: 'center',
         textBaseline: 'top',

@@ -8,7 +8,7 @@ import { clamp } from '/src/engine/utils/math.js';
 
 const MAX_STEP_SECONDS = 1 / 120;
 
-const DEFAULT_COLORS = [
+const DEFAULT_BRICK_COLORS = [
   '#ff595e',
   '#ff924c',
   '#ffca3a',
@@ -17,12 +17,61 @@ const DEFAULT_COLORS = [
   '#6a4c93',
 ];
 
-function createBrickLayout(width) {
+const DEFAULT_BREAKOUT_SKIN = Object.freeze({
+  colors: {
+    paddle: '#f8f8f2',
+    ball: '#f8f8f2',
+    brickRows: DEFAULT_BRICK_COLORS
+  },
+  sizing: {
+    paddleWidth: 118,
+    paddleHeight: 18,
+    ballSize: 14,
+    brickWidth: 78,
+    brickHeight: 24,
+    brickGap: 6
+  }
+});
+
+function toObject(value) {
+  return value && typeof value === 'object' ? value : {};
+}
+
+function toFiniteNumber(value, fallback) {
+  const numeric = Number(value);
+  return Number.isFinite(numeric) ? numeric : fallback;
+}
+
+function sanitizeBreakoutWorldSkin(value) {
+  const source = toObject(value);
+  const colors = toObject(source.colors);
+  const sizing = toObject(source.sizing);
+  const brickRows = Array.isArray(colors.brickRows) && colors.brickRows.length > 0
+    ? colors.brickRows.filter((entry) => typeof entry === 'string' && entry.trim()).map((entry) => entry.trim())
+    : DEFAULT_BRICK_COLORS.slice();
+  return {
+    colors: {
+      paddle: typeof colors.paddle === 'string' && colors.paddle.trim() ? colors.paddle.trim() : DEFAULT_BREAKOUT_SKIN.colors.paddle,
+      ball: typeof colors.ball === 'string' && colors.ball.trim() ? colors.ball.trim() : DEFAULT_BREAKOUT_SKIN.colors.ball,
+      brickRows
+    },
+    sizing: {
+      paddleWidth: Math.max(40, toFiniteNumber(sizing.paddleWidth, DEFAULT_BREAKOUT_SKIN.sizing.paddleWidth)),
+      paddleHeight: Math.max(8, toFiniteNumber(sizing.paddleHeight, DEFAULT_BREAKOUT_SKIN.sizing.paddleHeight)),
+      ballSize: Math.max(6, toFiniteNumber(sizing.ballSize, DEFAULT_BREAKOUT_SKIN.sizing.ballSize)),
+      brickWidth: Math.max(24, toFiniteNumber(sizing.brickWidth, DEFAULT_BREAKOUT_SKIN.sizing.brickWidth)),
+      brickHeight: Math.max(10, toFiniteNumber(sizing.brickHeight, DEFAULT_BREAKOUT_SKIN.sizing.brickHeight)),
+      brickGap: Math.max(0, toFiniteNumber(sizing.brickGap, DEFAULT_BREAKOUT_SKIN.sizing.brickGap))
+    }
+  };
+}
+
+function createBrickLayout(width, skin) {
   const columns = 10;
   const rows = 6;
-  const gap = 6;
-  const brickWidth = 78;
-  const brickHeight = 24;
+  const gap = skin.sizing.brickGap;
+  const brickWidth = skin.sizing.brickWidth;
+  const brickHeight = skin.sizing.brickHeight;
   const totalWidth = (columns * brickWidth) + ((columns - 1) * gap);
   const startX = Math.round((width - totalWidth) / 2);
   const startY = 96;
@@ -35,7 +84,7 @@ function createBrickLayout(width) {
         y: startY + (row * (brickHeight + gap)),
         width: brickWidth,
         height: brickHeight,
-        color: DEFAULT_COLORS[row % DEFAULT_COLORS.length],
+        color: skin.colors.brickRows[row % skin.colors.brickRows.length],
         points: (rows - row) * 10,
         alive: true,
       });
@@ -46,11 +95,12 @@ function createBrickLayout(width) {
 }
 
 export default class BreakoutWorld {
-  constructor({ width = 960, height = 720 } = {}) {
+  constructor({ width = 960, height = 720, skin = null } = {}) {
     this.width = width;
     this.height = height;
     this.wallThickness = 18;
     this.topBoundary = 56;
+    this.skin = sanitizeBreakoutWorldSkin(skin);
     this.paddle = this.createPaddle();
     this.ball = this.createBall();
     this.lives = 3;
@@ -62,31 +112,43 @@ export default class BreakoutWorld {
     this.resetPaddleAndBall();
   }
 
+  applySkin(nextSkin) {
+    this.skin = sanitizeBreakoutWorldSkin(nextSkin);
+    this.paddle.width = this.skin.sizing.paddleWidth;
+    this.paddle.height = this.skin.sizing.paddleHeight;
+    this.paddle.color = this.skin.colors.paddle;
+    this.paddle.y = this.height - 62;
+    this.ball.size = this.skin.sizing.ballSize;
+    this.ball.color = this.skin.colors.ball;
+    this.resetBoard();
+    this.resetPaddleAndBall();
+  }
+
   createPaddle() {
     return {
-      width: 118,
-      height: 18,
+      width: this.skin.sizing.paddleWidth,
+      height: this.skin.sizing.paddleHeight,
       x: 0,
       y: this.height - 62,
       speed: 680,
       velocityX: 0,
-      color: '#f8f8f2',
+      color: this.skin.colors.paddle,
     };
   }
 
   createBall() {
     return {
-      size: 14,
+      size: this.skin.sizing.ballSize,
       x: 0,
       y: 0,
       vx: 0,
       vy: 0,
-      color: '#f8f8f2',
+      color: this.skin.colors.ball,
     };
   }
 
   resetBoard() {
-    this.bricks = createBrickLayout(this.width);
+    this.bricks = createBrickLayout(this.width, this.skin);
     this.remainingBricks = this.bricks.length;
   }
 

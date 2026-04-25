@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Skin Editor - How To Use</title>
+  <link rel="stylesheet" href="../../src/engine/ui/hubCommon.css" />
+  <link rel="stylesheet" href="../shared/platformShell.css" />
+  <link rel="stylesheet" href="../../src/engine/theme/main.css" />
+</head>
+<body class="hub-page-tools tools-platform-surface tools-howto-page" data-tools-platform-page="tool">
+  <div id="shared-theme-header"></div>
+  <main class="wrap">
+    <section class="hero">
+      <h1>Skin Editor: How To Use</h1>
+      <p class="subtitle">Edit game skin JSON for Breakout, Pong, Solar System, and Bouncing Ball.</p>
+    </section>
+
+    <section class="section">
+      <h2>Details</h2>
+      <div class="card">
+        <p>Skin Editor manages color/size skin payloads for arcade games and stores overrides in browser local storage for immediate play-test loops.</p>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Tool vs Workspace Saves</h2>
+      <div class="card">
+        <p><strong>Tool save/export</strong><br />Action: Export skin JSON files from Skin Editor when you want disk artifacts.<br />Why this step matters: Creates sharable skin files you can version or move between environments.</p>
+        <p><strong>Workspace save</strong><br />Action: Save workspace state separately in Workspace Manager.<br />Why this step matters: Workspace save captures orchestration context, while skin overrides remain tool/browser state unless exported.</p>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Workflow</h2>
+      <div class="tools-howto-workflow-compare">
+        <article class="card tools-howto-workflow-column">
+          <h3>Tool Mode</h3>
+          <p><strong>1. Select a game</strong><br />Action: Choose Breakout, Pong, Solar System, or Bouncing Ball in the Game dropdown.<br />Why this step matters: Targets the correct skin schema and runtime destination.</p>
+          <p><strong>2. Load active skin</strong><br />Action: Click <code>Load Active Skin</code>.<br />Why this step matters: Pulls the current skin from local override (if present) or the default game skin file.</p>
+          <p><strong>3. Edit and apply override</strong><br />Action: Update JSON and click <code>Apply Skin Override</code>.<br />Why this step matters: Stores the override so the game uses your edited skin immediately.</p>
+          <p><strong>4. Verify in-game</strong><br />Action: Click <code>Open Game</code> and validate visuals.<br />Why this step matters: Confirms edits in live gameplay rendering.</p>
+        </article>
+
+        <article class="card tools-howto-workflow-column">
+          <h3>Workspace Mode</h3>
+          <p><strong>1. Launch from Workspace Manager</strong><br />Action: Open Skin Editor in workspace context for your active game flow.<br />Why this step matters: Keeps tool usage aligned with your broader workspace session.</p>
+          <p><strong>2. Apply skin override</strong><br />Action: Update skin JSON and apply override for the selected game.<br />Why this step matters: Lets you test visual updates while staying in the workspace loop.</p>
+          <p><strong>3. Open game and validate</strong><br />Action: Launch the game and confirm skin changes.<br />Why this step matters: Ensures game output matches edited payload.</p>
+          <p><strong>4. Export when ready</strong><br />Action: Export final skin JSON for sharing/versioning.<br />Why this step matters: Preserves the approved skin artifact outside browser storage.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Buttons</h2>
+      <div class="card">
+        <p><strong>Apply Skin Override</strong> <code>#skinEditorSaveOverrideButton</code><br />Details: Saves the current JSON as the active local override for the selected game.</p>
+        <p><strong>Clear Override</strong> <code>#skinEditorClearOverrideButton</code><br />Details: Removes local override and reloads the default skin source.</p>
+        <p><strong>Export Skin JSON</strong> <code>#skinEditorExportButton</code><br />Details: Downloads the current skin document.</p>
+        <p><strong>How to Use</strong> <code>#skinEditorHowToUseButton</code><br />Details: Opens this page.</p>
+        <p><strong>Import Skin JSON</strong> <code>#skinEditorImportInput</code><br />Details: Loads a local JSON file into the editor for review/apply.</p>
+        <p><strong>Load Active Skin</strong> <code>#skinEditorLoadButton</code><br />Details: Loads active skin from override or game file.</p>
+        <p><strong>Open Game</strong> <code>#skinEditorOpenGameButton</code><br />Details: Launches the selected game for live visual verification.</p>
+      </div>
+    </section>
+  </main>
+  <script type="module" src="../../src/engine/theme/mount-shared-header.js"></script>
+</body>
+</html>

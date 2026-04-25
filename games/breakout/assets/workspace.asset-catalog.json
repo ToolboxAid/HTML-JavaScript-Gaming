@@ -1,0 +1,12 @@
+{
+  "schema": "html-js-gaming.game-asset-catalog",
+  "version": 1,
+  "gameId": "breakout",
+  "assets": {
+    "skin.main": {
+      "path": "/games/Breakout/assets/skins/default.json",
+      "kind": "skin",
+      "source": "workspace-manager"
+    }
+  }
+}

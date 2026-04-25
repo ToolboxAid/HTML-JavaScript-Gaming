@@ -7,31 +7,81 @@ BouncingBallWorld.js
 import { clamp } from '/src/engine/utils/math.js';
 
 const MAX_STEP_SECONDS = 1 / 120;
+const DEFAULT_BOUNCING_BALL_WORLD_SKIN = Object.freeze({
+  colors: {
+    ball: '#f4f4ef'
+  },
+  sizing: {
+    wallThickness: 18,
+    ballSize: 22
+  }
+});
+
+function toObject(value) {
+  return value && typeof value === 'object' ? value : {};
+}
+
+function toFiniteNumber(value, fallback) {
+  const numeric = Number(value);
+  return Number.isFinite(numeric) ? numeric : fallback;
+}
+
+function sanitizeBouncingBallWorldSkin(skin) {
+  const colors = toObject(skin?.colors);
+  const sizing = toObject(skin?.sizing);
+  return {
+    colors: {
+      ball: typeof colors.ball === 'string' && colors.ball.trim() ? colors.ball.trim() : DEFAULT_BOUNCING_BALL_WORLD_SKIN.colors.ball
+    },
+    sizing: {
+      wallThickness: Math.max(8, toFiniteNumber(sizing.wallThickness, DEFAULT_BOUNCING_BALL_WORLD_SKIN.sizing.wallThickness)),
+      ballSize: Math.max(8, toFiniteNumber(sizing.ballSize, DEFAULT_BOUNCING_BALL_WORLD_SKIN.sizing.ballSize))
+    }
+  };
+}
 
 export default class BouncingBallWorld {
-  constructor({ width = 960, height = 720 } = {}) {
+  constructor({ width = 960, height = 720, skin = null } = {}) {
     this.width = width;
     this.height = height;
-    this.wallThickness = 18;
-    this.playfield = {
-      left: 42,
-      right: width - 42,
-      top: 82,
-      bottom: height - 42,
-    };
+    this.skin = sanitizeBouncingBallWorldSkin(skin);
+    this.wallThickness = this.skin.sizing.wallThickness;
+    this.playfield = { left: 42, right: width - 42, top: 82, bottom: height - 42 };
+    this.updatePlayfield();
     this.status = 'menu';
     this.ball = this.createBall();
     this.resetBall();
   }
 
+  updatePlayfield() {
+    const sideInset = this.wallThickness + 24;
+    const topInset = this.wallThickness + 64;
+    const bottomInset = this.wallThickness + 24;
+    this.playfield = {
+      left: sideInset,
+      right: this.width - sideInset,
+      top: topInset,
+      bottom: this.height - bottomInset
+    };
+  }
+
+  applySkin(nextSkin) {
+    this.skin = sanitizeBouncingBallWorldSkin(nextSkin);
+    this.wallThickness = this.skin.sizing.wallThickness;
+    this.updatePlayfield();
+    this.ball.size = this.skin.sizing.ballSize;
+    this.ball.color = this.skin.colors.ball;
+    this.resetBall();
+  }
+
   createBall() {
     return {
-      size: 22,
+      size: this.skin.sizing.ballSize,
       x: 0,
       y: 0,
       vx: 280,
       vy: 220,
-      color: '#f4f4ef',
+      color: this.skin.colors.ball,
     };
   }
 

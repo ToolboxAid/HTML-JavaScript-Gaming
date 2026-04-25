@@ -9,7 +9,7 @@ import SolarSystemWorld from './SolarSystemWorld.js';
 
 const VIEW = { width: 960, height: 720 };
 
-const COLORS = {
+const DEFAULT_COLORS = {
   background: '#030712',
   frame: '#dbeafe',
   orbit: '#334155',
@@ -18,14 +18,36 @@ const COLORS = {
   panel: '#07101d',
 };
 
+function toObject(value) {
+  return value && typeof value === 'object' ? value : {};
+}
+
+function sanitizeSolarSceneColors(skin) {
+  const colors = toObject(skin?.colors);
+  return {
+    background: typeof colors.background === 'string' && colors.background.trim() ? colors.background.trim() : DEFAULT_COLORS.background,
+    frame: typeof colors.frame === 'string' && colors.frame.trim() ? colors.frame.trim() : DEFAULT_COLORS.frame,
+    orbit: typeof colors.orbit === 'string' && colors.orbit.trim() ? colors.orbit.trim() : DEFAULT_COLORS.orbit,
+    text: typeof colors.text === 'string' && colors.text.trim() ? colors.text.trim() : DEFAULT_COLORS.text,
+    muted: typeof colors.muted === 'string' && colors.muted.trim() ? colors.muted.trim() : DEFAULT_COLORS.muted,
+    panel: typeof colors.panel === 'string' && colors.panel.trim() ? colors.panel.trim() : DEFAULT_COLORS.panel
+  };
+}
+
 export default class SolarSystemScene extends Scene {
-  constructor() {
+  constructor(options = {}) {
     super();
-    this.world = new SolarSystemWorld(VIEW);
+    this.world = new SolarSystemWorld({ ...VIEW, skin: options.skin || null });
+    this.colors = sanitizeSolarSceneColors(options.skin);
     this.isPaused = false;
     this.lastPausePressed = false;
     this.lastLabelsPressed = false;
     this.lastResetPressed = false;
+  }
+
+  applySkin(nextSkin) {
+    this.colors = sanitizeSolarSceneColors(nextSkin);
+    this.world.applySkin(nextSkin);
   }
 
   update(dt, engine) {
@@ -62,7 +84,7 @@ export default class SolarSystemScene extends Scene {
   }
 
   render(renderer) {
-    renderer.clear(COLORS.background);
+    renderer.clear(this.colors.background);
     this.drawFrame(renderer);
     this.drawOrbits(renderer);
     this.drawBodies(renderer);
@@ -71,7 +93,7 @@ export default class SolarSystemScene extends Scene {
     if (this.isPaused) {
       renderer.drawRect(0, 0, VIEW.width, VIEW.height, 'rgba(0, 0, 0, 0.42)');
       renderer.drawText('PAUSED', VIEW.width / 2, 324, {
-        color: COLORS.text,
+        color: this.colors.text,
         font: 'bold 30px monospace',
         textAlign: 'center',
       });
@@ -85,11 +107,11 @@ export default class SolarSystemScene extends Scene {
 
   drawFrame(renderer) {
     const { bounds } = this.world;
-    renderer.drawRect(0, 0, VIEW.width, 18, COLORS.frame);
-    renderer.drawRect(0, VIEW.height - 18, VIEW.width, 18, COLORS.frame);
-    renderer.drawRect(0, 0, 18, VIEW.height, COLORS.frame);
-    renderer.drawRect(VIEW.width - 18, 0, 18, VIEW.height, COLORS.frame);
-    renderer.strokeRect(bounds.left, bounds.top, bounds.right - bounds.left, bounds.bottom - bounds.top, COLORS.frame, 2);
+    renderer.drawRect(0, 0, VIEW.width, 18, this.colors.frame);
+    renderer.drawRect(0, VIEW.height - 18, VIEW.width, 18, this.colors.frame);
+    renderer.drawRect(0, 0, 18, VIEW.height, this.colors.frame);
+    renderer.drawRect(VIEW.width - 18, 0, 18, VIEW.height, this.colors.frame);
+    renderer.strokeRect(bounds.left, bounds.top, bounds.right - bounds.left, bounds.bottom - bounds.top, this.colors.frame, 2);
   }
 
   drawOrbits(renderer) {
@@ -98,7 +120,7 @@ export default class SolarSystemScene extends Scene {
     });
   }
 
-  drawOrbitRing(renderer, centerX, centerY, radiusX, radiusY, color = COLORS.orbit, lineWidth = 1) {
+  drawOrbitRing(renderer, centerX, centerY, radiusX, radiusY, color = this.colors.orbit, lineWidth = 1) {
     const segments = 48;
     let previous = null;
 
@@ -165,7 +187,7 @@ export default class SolarSystemScene extends Scene {
 
   drawLabel(renderer, text, x, y, font = '14px monospace') {
     renderer.drawText(text, x, y, {
-      color: COLORS.text,
+      color: this.colors.text,
       font,
       textBaseline: 'top',
     });
@@ -174,54 +196,54 @@ export default class SolarSystemScene extends Scene {
   drawHud(renderer) {
     const { bounds } = this.world;
     renderer.drawText('SOLAR SYSTEM', 28, 24, {
-      color: COLORS.text,
+      color: this.colors.text,
       font: 'bold 24px monospace',
       textBaseline: 'top',
     });
 
-    renderer.drawRect(642, 128, 264, 168, COLORS.panel);
-    renderer.strokeRect(642, 128, 264, 168, COLORS.frame, 2);
+    renderer.drawRect(642, 128, 264, 168, this.colors.panel);
+    renderer.strokeRect(642, 128, 264, 168, this.colors.frame, 2);
     renderer.drawText('System View', 660, 148, {
-      color: COLORS.text,
+      color: this.colors.text,
       font: 'bold 18px monospace',
       textBaseline: 'top',
     });
     renderer.drawText(`Time: ${this.world.elapsedDays.toFixed(1)} days`, 660, 182, {
-      color: COLORS.text,
+      color: this.colors.text,
       font: '16px monospace',
       textBaseline: 'top',
     });
     renderer.drawText(`Rate: ${this.world.getTimeScale().label}`, 660, 208, {
-      color: COLORS.text,
+      color: this.colors.text,
       font: '16px monospace',
       textBaseline: 'top',
     });
     renderer.drawText(`Labels: ${this.world.labelsVisible ? 'ON' : 'OFF'}`, 660, 234, {
-      color: COLORS.text,
+      color: this.colors.text,
       font: '16px monospace',
       textBaseline: 'top',
     });
     renderer.drawText(`Bodies: ${1 + this.world.planets.length + this.world.moons.length}`, 660, 260, {
-      color: COLORS.text,
+      color: this.colors.text,
       font: '16px monospace',
       textBaseline: 'top',
     });
 
-    renderer.drawRect(642, 314, 264, 192, COLORS.panel);
-    renderer.strokeRect(642, 314, 264, 192, COLORS.frame, 2);
+    renderer.drawRect(642, 314, 264, 192, this.colors.panel);
+    renderer.strokeRect(642, 314, 264, 192, this.colors.frame, 2);
     renderer.drawText('Controls', 660, 334, {
-      color: COLORS.text,
+      color: this.colors.text,
       font: 'bold 18px monospace',
       textBaseline: 'top',
     });
-    renderer.drawText('P pause / resume', 660, 368, { color: COLORS.muted, font: '16px monospace', textBaseline: 'top' });
-    renderer.drawText('L toggle labels', 660, 394, { color: COLORS.muted, font: '16px monospace', textBaseline: 'top' });
-    renderer.drawText('R reset clock', 660, 420, { color: COLORS.muted, font: '16px monospace', textBaseline: 'top' });
-    renderer.drawText('1 x1   2 x2', 660, 446, { color: COLORS.muted, font: '16px monospace', textBaseline: 'top' });
-    renderer.drawText('3 x3   4 x4', 660, 472, { color: COLORS.muted, font: '16px monospace', textBaseline: 'top' });
+    renderer.drawText('P pause / resume', 660, 368, { color: this.colors.muted, font: '16px monospace', textBaseline: 'top' });
+    renderer.drawText('L toggle labels', 660, 394, { color: this.colors.muted, font: '16px monospace', textBaseline: 'top' });
+    renderer.drawText('R reset clock', 660, 420, { color: this.colors.muted, font: '16px monospace', textBaseline: 'top' });
+    renderer.drawText('1 x1   2 x2', 660, 446, { color: this.colors.muted, font: '16px monospace', textBaseline: 'top' });
+    renderer.drawText('3 x3   4 x4', 660, 472, { color: this.colors.muted, font: '16px monospace', textBaseline: 'top' });
 
     renderer.drawText('Readable orbital motion, not exact scale.', bounds.left, 686, {
-      color: COLORS.muted,
+      color: this.colors.muted,
       font: '16px monospace',
       textBaseline: 'top',
     });

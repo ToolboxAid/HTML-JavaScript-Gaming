@@ -1,0 +1,12 @@
+{
+  "schema": "html-js-gaming.game-asset-catalog",
+  "version": 1,
+  "gameId": "pong",
+  "assets": {
+    "skin.main": {
+      "path": "/games/Pong/assets/skins/default.json",
+      "kind": "skin",
+      "source": "workspace-manager"
+    }
+  }
+}

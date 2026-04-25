@@ -1,0 +1,19 @@
+{
+  "documentKind": "game-skin",
+  "schema": "games.bouncing-ball.skin/1",
+  "version": 1,
+  "gameId": "Bouncing-ball",
+  "name": "Bouncing Ball Classic Skin",
+  "colors": {
+    "background": "#05070a",
+    "wall": "#f4f4ef",
+    "text": "#f4f4ef",
+    "muted": "#9ba3b3",
+    "panel": "#05070a",
+    "ball": "#f4f4ef"
+  },
+  "sizing": {
+    "wallThickness": 18,
+    "ballSize": 22
+  }
+}

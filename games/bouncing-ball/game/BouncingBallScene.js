@@ -15,7 +15,7 @@ const VIEW = {
   height: 720,
 };
 
-const COLORS = {
+const DEFAULT_COLORS = {
   background: '#05070a',
   wall: '#f4f4ef',
   text: '#f4f4ef',
@@ -24,13 +24,35 @@ const COLORS = {
   ball: '#f4f4ef',
 };
 
+function toObject(value) {
+  return value && typeof value === 'object' ? value : {};
+}
+
+function sanitizeBouncingBallSceneColors(skin) {
+  const colors = toObject(skin?.colors);
+  return {
+    background: typeof colors.background === 'string' && colors.background.trim() ? colors.background.trim() : DEFAULT_COLORS.background,
+    wall: typeof colors.wall === 'string' && colors.wall.trim() ? colors.wall.trim() : DEFAULT_COLORS.wall,
+    text: typeof colors.text === 'string' && colors.text.trim() ? colors.text.trim() : DEFAULT_COLORS.text,
+    muted: typeof colors.muted === 'string' && colors.muted.trim() ? colors.muted.trim() : DEFAULT_COLORS.muted,
+    panel: typeof colors.panel === 'string' && colors.panel.trim() ? colors.panel.trim() : DEFAULT_COLORS.panel,
+    ball: typeof colors.ball === 'string' && colors.ball.trim() ? colors.ball.trim() : DEFAULT_COLORS.ball
+  };
+}
+
 export default class BouncingBallScene extends Scene {
-  constructor() {
+  constructor(options = {}) {
     super();
-    this.world = new BouncingBallWorld(VIEW);
+    this.world = new BouncingBallWorld({ ...VIEW, skin: options.skin || null });
+    this.colors = sanitizeBouncingBallSceneColors(options.skin);
     this.inputController = null;
     this.audio = new BouncingBallAudio();
     this.isPaused = false;
+  }
+
+  applySkin(nextSkin) {
+    this.colors = sanitizeBouncingBallSceneColors(nextSkin);
+    this.world.applySkin(nextSkin);
   }
 
   enter(engine) {
@@ -72,7 +94,7 @@ export default class BouncingBallScene extends Scene {
   }
 
   render(renderer) {
-    renderer.clear(COLORS.background);
+    renderer.clear(this.colors.background);
     this.drawArena(renderer);
     this.drawHud(renderer);
     this.drawBall(renderer);
@@ -95,29 +117,29 @@ export default class BouncingBallScene extends Scene {
 
   drawArena(renderer) {
     const { playfield, wallThickness } = this.world;
-    renderer.drawRect(0, 0, VIEW.width, wallThickness, COLORS.wall);
-    renderer.drawRect(0, VIEW.height - wallThickness, VIEW.width, wallThickness, COLORS.wall);
-    renderer.drawRect(0, 0, wallThickness, VIEW.height, COLORS.wall);
-    renderer.drawRect(VIEW.width - wallThickness, 0, wallThickness, VIEW.height, COLORS.wall);
+    renderer.drawRect(0, 0, VIEW.width, wallThickness, this.colors.wall);
+    renderer.drawRect(0, VIEW.height - wallThickness, VIEW.width, wallThickness, this.colors.wall);
+    renderer.drawRect(0, 0, wallThickness, VIEW.height, this.colors.wall);
+    renderer.drawRect(VIEW.width - wallThickness, 0, wallThickness, VIEW.height, this.colors.wall);
     renderer.strokeRect(
       playfield.left,
       playfield.top,
       playfield.right - playfield.left,
       playfield.bottom - playfield.top,
-      COLORS.wall,
+      this.colors.wall,
       2,
     );
   }
 
   drawHud(renderer) {
     renderer.drawText('BOUNCING BALL', 28, 20, {
-      color: COLORS.text,
+      color: this.colors.text,
       font: 'bold 24px monospace',
       textBaseline: 'top',
     });
 
     renderer.drawText(this.world.status === 'playing' ? 'LIVE' : 'READY', 930, 20, {
-      color: COLORS.text,
+      color: this.colors.text,
       font: '18px monospace',
       textAlign: 'right',
       textBaseline: 'top',
@@ -125,13 +147,13 @@ export default class BouncingBallScene extends Scene {
 
     if (this.world.status === 'playing') {
       renderer.drawText('P pause', 930, 38, {
-        color: COLORS.muted,
+        color: this.colors.muted,
         font: '16px monospace',
         textAlign: 'right',
         textBaseline: 'top',
       });
       renderer.drawText('R reset', 930, 58, {
-        color: COLORS.muted,
+        color: this.colors.muted,
         font: '16px monospace',
         textAlign: 'right',
         textBaseline: 'top',
@@ -145,15 +167,15 @@ export default class BouncingBallScene extends Scene {
       this.world.ball.y,
       this.world.ball.size,
       this.world.ball.size,
-      COLORS.ball,
+      this.colors.ball,
     );
   }
 
   drawOverlay(renderer, copy) {
-    renderer.drawRect(180, 258, 600, 192, COLORS.panel);
-    renderer.strokeRect(180, 258, 600, 192, COLORS.wall, 2);
+    renderer.drawRect(180, 258, 600, 192, this.colors.panel);
+    renderer.strokeRect(180, 258, 600, 192, this.colors.wall, 2);
     renderer.drawText(copy.title, VIEW.width / 2, 292, {
-      color: COLORS.text,
+      color: this.colors.text,
       font: 'bold 28px monospace',
       textAlign: 'center',
       textBaseline: 'top',
@@ -161,7 +183,7 @@ export default class BouncingBallScene extends Scene {
 
     wrapTextByCharacterCount(copy.body, 38).forEach((line, index) => {
       renderer.drawText(line, VIEW.width / 2, 336 + (index * 24), {
-        color: COLORS.muted,
+        color: this.colors.muted,
         font: '18px monospace',
         textAlign: 'center',
         textBaseline: 'top',
@@ -169,7 +191,7 @@ export default class BouncingBallScene extends Scene {
     });
 
     renderer.drawText(copy.prompt, VIEW.width / 2, 422, {
-      color: COLORS.text,
+      color: this.colors.text,
       font: '18px monospace',
       textAlign: 'center',
       textBaseline: 'top',
