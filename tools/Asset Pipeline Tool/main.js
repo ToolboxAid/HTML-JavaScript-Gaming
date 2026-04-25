@@ -1,9 +1,23 @@
 import { runAssetPipelineTooling } from "../shared/pipeline/assetPipelineTooling.js";
 import { safeParseJson, toPrettyJson } from "../shared/debugInspectorData.js";
 import { registerToolBootContract } from "../shared/toolBootContract.js";
+import { ACTIVE_PROJECT_STORAGE_KEY } from "../shared/projectManifestContract.js";
+
+const GAME_ASSET_CATALOG_SCHEMA = "html-js-gaming.game-asset-catalog";
+const GAME_ASSET_CATALOG_VERSION = 1;
+const ASSET_PIPELINE_DOMAINS = Object.freeze({
+  sprites: "sprites",
+  tilemaps: "tilemaps",
+  parallax: "parallax",
+  vectors: "vectors"
+});
 
 const refs = {
   runButton: document.getElementById("runAssetPipelineButton"),
+  loadFromPresetButton: document.getElementById("loadPipelineFromPresetButton"),
+  loadFromWorkspaceButton: document.getElementById("loadPipelineFromWorkspaceButton"),
+  loadJsonFileButton: document.getElementById("loadPipelineJsonFileButton"),
+  jsonFileInput: document.getElementById("pipelineJsonFileInput"),
   statusText: document.getElementById("assetPipelineStatus"),
   input: document.getElementById("assetPipelineInput"),
   output: document.getElementById("assetPipelineOutput")
@@ -41,7 +55,8 @@ function readLaunchContextFromQuery() {
   const searchParams = new URLSearchParams(window.location.search);
   return {
     gameId: normalizeText(searchParams.get("gameId")),
-    gameTitle: normalizeText(searchParams.get("gameTitle"))
+    gameTitle: normalizeText(searchParams.get("gameTitle")),
+    gameHref: normalizeText(searchParams.get("gameHref"))
   };
 }
 
@@ -167,6 +182,308 @@ function setStatus(message) {
   }
 }
 
+function setInputValue(value) {
+  if (!(refs.input instanceof HTMLTextAreaElement)) {
+    return false;
+  }
+  refs.input.value = typeof value === "string" ? value : toPrettyJson(value);
+  return true;
+}
+
+function parseJsonObjectString(value) {
+  const parsed = safeParseJson(value);
+  if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) {
+    return null;
+  }
+  return parsed;
+}
+
+function createEmptyDomainInputs() {
+  return {
+    sprites: [],
+    tilemaps: [],
+    parallax: [],
+    vectors: []
+  };
+}
+
+function normalizeAssetId(value, fallback = "asset") {
+  return toSlug(normalizeText(value), fallback);
+}
+
+function deriveGameIdFromManifest(manifest) {
+  const launchContext = readLaunchContextFromQuery();
+  const launchGameId = normalizeText(launchContext.gameId);
+  if (launchGameId) {
+    return launchGameId;
+  }
+
+  const sourceToolStates = manifest?.tools && typeof manifest.tools === "object"
+    ? Object.values(manifest.tools)
+    : [];
+  for (const toolState of sourceToolStates) {
+    const projectId = normalizeText(toolState?.projectId);
+    if (projectId) {
+      return projectId;
+    }
+  }
+
+  const metadataGameId = normalizeText(manifest?.sharedReferences?.asset?.metadata?.gameId)
+    || normalizeText(manifest?.sharedReferences?.palette?.metadata?.gameId);
+  if (metadataGameId) {
+    return metadataGameId;
+  }
+
+  return normalizeText(manifest?.name);
+}
+
+function appendDomainRecord(domainInputs, domain, assetId, sourceToolId) {
+  if (!domainInputs || typeof domainInputs !== "object") {
+    return;
+  }
+  const targetDomain = normalizeText(domain);
+  if (!Object.prototype.hasOwnProperty.call(domainInputs, targetDomain) || !Array.isArray(domainInputs[targetDomain])) {
+    return;
+  }
+  const normalizedAssetId = normalizeAssetId(assetId, `${targetDomain}-asset`);
+  if (!normalizedAssetId) {
+    return;
+  }
+  const entries = domainInputs[targetDomain];
+  if (entries.some((entry) => normalizeText(entry?.assetId) === normalizedAssetId)) {
+    return;
+  }
+  entries.push({
+    assetId: normalizedAssetId,
+    runtimeFileName: `${normalizedAssetId}.runtime.json`,
+    toolDataFileName: `${normalizedAssetId}.tool.json`,
+    sourceToolId: normalizeText(sourceToolId)
+  });
+}
+
+function appendDomainRecordsFromToolIntegration(domainInputs, manifest) {
+  const assetReferences = manifest?.toolIntegration?.assetReferences || {};
+  const spriteIds = Array.isArray(assetReferences.spriteIds) ? assetReferences.spriteIds : [];
+  const tilemapIds = Array.isArray(assetReferences.tilemapIds) ? assetReferences.tilemapIds : [];
+  const parallaxSourceIds = Array.isArray(assetReferences.parallaxSourceIds) ? assetReferences.parallaxSourceIds : [];
+  const vectorIds = Array.isArray(assetReferences.vectorIds) ? assetReferences.vectorIds : [];
+
+  spriteIds.forEach((assetId) => appendDomainRecord(domainInputs, ASSET_PIPELINE_DOMAINS.sprites, assetId, "sprite-editor"));
+  tilemapIds.forEach((assetId) => appendDomainRecord(domainInputs, ASSET_PIPELINE_DOMAINS.tilemaps, assetId, "tile-map-editor"));
+  parallaxSourceIds.forEach((assetId) => appendDomainRecord(domainInputs, ASSET_PIPELINE_DOMAINS.parallax, assetId, "parallax-editor"));
+  vectorIds.forEach((assetId) => appendDomainRecord(domainInputs, ASSET_PIPELINE_DOMAINS.vectors, assetId, "vector-asset-studio"));
+}
+
+function normalizeCatalogPath(pathValue) {
+  const value = normalizeText(pathValue).replace(/\\/g, "/");
+  if (!value || value.includes("..") || !value.startsWith("/")) {
+    return "";
+  }
+  return value;
+}
+
+function buildCatalogPathCandidates(gameId, manifest) {
+  const candidates = new Set();
+  const launchContext = readLaunchContextFromQuery();
+  const launchGameHref = normalizeCatalogPath(launchContext.gameHref);
+  if (launchGameHref && launchGameHref.startsWith("/games/")) {
+    if (launchGameHref.endsWith("/index.html")) {
+      candidates.add(`${launchGameHref.slice(0, -"/index.html".length)}/assets/workspace.asset-catalog.json`);
+    } else if (launchGameHref.endsWith("/")) {
+      candidates.add(`${launchGameHref}assets/workspace.asset-catalog.json`);
+    }
+  }
+
+  const assetSourcePath = normalizeCatalogPath(manifest?.sharedReferences?.asset?.sourcePath || manifest?.sharedReferences?.asset?.metadata?.sourcePath);
+  if (assetSourcePath.startsWith("/games/")) {
+    const marker = "/assets/";
+    const markerIndex = assetSourcePath.toLowerCase().indexOf(marker);
+    if (markerIndex > 0) {
+      candidates.add(`${assetSourcePath.slice(0, markerIndex)}/assets/workspace.asset-catalog.json`);
+    }
+  }
+
+  const normalizedGameId = normalizeAssetId(gameId, "game");
+  candidates.add(`/games/${normalizedGameId}/assets/workspace.asset-catalog.json`);
+  candidates.add(`/games/${gameId}/assets/workspace.asset-catalog.json`);
+
+  return Array.from(candidates).filter(Boolean);
+}
+
+function inferDomainFromCatalogKind(kind) {
+  const normalizedKind = normalizeText(kind).toLowerCase();
+  if (normalizedKind === "sprite") {
+    return ASSET_PIPELINE_DOMAINS.sprites;
+  }
+  if (normalizedKind === "tilemap" || normalizedKind === "tileset") {
+    return ASSET_PIPELINE_DOMAINS.tilemaps;
+  }
+  if (normalizedKind === "parallax" || normalizedKind === "background") {
+    return ASSET_PIPELINE_DOMAINS.parallax;
+  }
+  if (normalizedKind === "vector") {
+    return ASSET_PIPELINE_DOMAINS.vectors;
+  }
+  return "";
+}
+
+function inferSourceToolIdForDomain(domain) {
+  if (domain === ASSET_PIPELINE_DOMAINS.sprites) {
+    return "sprite-editor";
+  }
+  if (domain === ASSET_PIPELINE_DOMAINS.tilemaps) {
+    return "tile-map-editor";
+  }
+  if (domain === ASSET_PIPELINE_DOMAINS.parallax) {
+    return "parallax-editor";
+  }
+  if (domain === ASSET_PIPELINE_DOMAINS.vectors) {
+    return "vector-asset-studio";
+  }
+  return "";
+}
+
+function appendDomainRecordsFromCatalogEntries(domainInputs, catalogAssets) {
+  if (!catalogAssets || typeof catalogAssets !== "object") {
+    return;
+  }
+  Object.entries(catalogAssets).forEach(([assetId, entry]) => {
+    const safeAssetId = normalizeText(assetId);
+    const safeEntry = entry && typeof entry === "object" ? entry : {};
+    const domain = inferDomainFromCatalogKind(safeEntry.kind);
+    if (!domain) {
+      return;
+    }
+    const sourceToolId = inferSourceToolIdForDomain(domain);
+    const normalizedAssetId = normalizeAssetId(safeAssetId, `${domain}-asset`);
+    if (!normalizedAssetId) {
+      return;
+    }
+    const entries = domainInputs[domain];
+    if (!Array.isArray(entries) || entries.some((record) => normalizeText(record?.assetId) === normalizedAssetId)) {
+      return;
+    }
+    entries.push({
+      assetId: normalizedAssetId,
+      runtimeFileName: `${normalizedAssetId}.runtime.json`,
+      toolDataFileName: `${normalizedAssetId}.tool.json`,
+      sourceToolId
+    });
+  });
+}
+
+async function readWorkspaceAssetCatalog(gameId, manifest) {
+  const candidates = buildCatalogPathCandidates(gameId, manifest);
+  for (const pathValue of candidates) {
+    try {
+      const response = await fetch(pathValue, { cache: "no-store" });
+      if (!response.ok) {
+        continue;
+      }
+      const payload = await response.json();
+      const schema = normalizeText(payload?.schema);
+      const version = Number(payload?.version);
+      if (schema !== GAME_ASSET_CATALOG_SCHEMA || version !== GAME_ASSET_CATALOG_VERSION) {
+        continue;
+      }
+      const assets = payload.assets && typeof payload.assets === "object" ? payload.assets : {};
+      return { path: pathValue, assets };
+    } catch {
+      // Try the next candidate path.
+    }
+  }
+  return null;
+}
+
+async function buildPipelinePayloadFromWorkspace(manifest) {
+  if (!manifest || typeof manifest !== "object") {
+    return null;
+  }
+  const gameId = deriveGameIdFromManifest(manifest);
+  if (!gameId) {
+    return null;
+  }
+  const domainInputs = createEmptyDomainInputs();
+  appendDomainRecordsFromToolIntegration(domainInputs, manifest);
+
+  const catalog = await readWorkspaceAssetCatalog(gameId, manifest);
+  if (catalog) {
+    appendDomainRecordsFromCatalogEntries(domainInputs, catalog.assets);
+  }
+
+  const toolStates = manifest.tools && typeof manifest.tools === "object"
+    ? cloneJson(manifest.tools) || {}
+    : {};
+
+  return {
+    payload: {
+      gameId,
+      domainInputs,
+      toolStates
+    },
+    catalogPath: catalog?.path || ""
+  };
+}
+
+function extractPipelinePayloadFromSource(rawSource) {
+  if (!rawSource || typeof rawSource !== "object") {
+    return null;
+  }
+
+  const source = rawSource && typeof rawSource === "object" ? rawSource : {};
+  const directKeys = ["pipelinePayload", "pipelineOptions", "assetPipelinePayload"];
+  for (const key of directKeys) {
+    const value = source[key];
+    if (value && typeof value === "object" && !Array.isArray(value)) {
+      return value;
+    }
+  }
+
+  const textKeys = ["pipelineInput", "input"];
+  for (const key of textKeys) {
+    if (typeof source[key] !== "string") {
+      continue;
+    }
+    const parsed = parseJsonObjectString(source[key]);
+    if (parsed) {
+      return parsed;
+    }
+  }
+
+  if (source.snapshot && typeof source.snapshot === "object") {
+    const nested = extractPipelinePayloadFromSource(source.snapshot);
+    if (nested) {
+      return nested;
+    }
+  }
+
+  if (source.state && typeof source.state === "object") {
+    const nested = extractPipelinePayloadFromSource(source.state);
+    if (nested) {
+      return nested;
+    }
+  }
+
+  if (source.gameId || source.domainInputs || source.toolStates) {
+    return source;
+  }
+
+  return null;
+}
+
+function readActiveProjectManifest() {
+  try {
+    const raw = window.localStorage.getItem(ACTIVE_PROJECT_STORAGE_KEY);
+    if (!raw) {
+      return null;
+    }
+    const parsed = JSON.parse(raw);
+    return parsed && typeof parsed === "object" ? parsed : null;
+  } catch {
+    return null;
+  }
+}
+
 function getInputPayload() {
   if (!(refs.input instanceof HTMLTextAreaElement)) {
     return null;
@@ -224,10 +541,84 @@ function extractPipelinePayloadFromPreset(rawPreset) {
   return null;
 }
 
-async function tryLoadPresetFromQuery() {
+function loadPipelinePayloadIntoInput(payload, statusMessage) {
+  if (!setInputValue(payload)) {
+    throw new Error("Pipeline input is unavailable.");
+  }
+  setStatus(statusMessage);
+}
+
+async function loadPipelineFromWorkspaceState() {
+  const manifest = readActiveProjectManifest();
+  if (!manifest) {
+    setStatus("Workspace load failed: no active workspace manifest found.");
+    return;
+  }
+  const toolState = manifest.tools && typeof manifest.tools === "object"
+    ? manifest.tools["asset-pipeline-tool"]
+    : null;
+  const payload = toolState && typeof toolState === "object"
+    ? extractPipelinePayloadFromSource(toolState)
+    : null;
+  if (payload) {
+    const workspaceName = normalizeText(manifest.name);
+    loadPipelinePayloadIntoInput(
+      payload,
+      workspaceName
+        ? `Loaded pipeline input from workspace state (${workspaceName}).`
+        : "Loaded pipeline input from workspace state."
+    );
+    return;
+  }
+
+  const built = await buildPipelinePayloadFromWorkspace(manifest);
+  if (!built?.payload) {
+    setStatus("Workspace load failed: no saved pipeline state and unable to build payload from active workspace manifest.");
+    return;
+  }
+
+  const totalRecords = Object.values(built.payload.domainInputs || {}).reduce((sum, records) => (
+    sum + (Array.isArray(records) ? records.length : 0)
+  ), 0);
+  const workspaceName = normalizeText(manifest.name);
+  const catalogDetail = built.catalogPath ? ` Catalog: ${built.catalogPath}.` : "";
+  loadPipelinePayloadIntoInput(
+    built.payload,
+    workspaceName
+      ? `Built pipeline input from workspace manifest (${workspaceName}); records=${totalRecords}.${catalogDetail}`
+      : `Built pipeline input from workspace manifest; records=${totalRecords}.${catalogDetail}`
+  );
+}
+
+async function loadPipelineFromJsonFile(file) {
+  if (!file) {
+    setStatus("JSON file load canceled.");
+    return;
+  }
+  try {
+    const text = await file.text();
+    const parsed = parseJsonObjectString(text);
+    if (!parsed) {
+      throw new Error("Selected file must contain a valid JSON object.");
+    }
+    const payload = extractPipelinePayloadFromSource(parsed);
+    if (!payload) {
+      throw new Error("Selected file does not contain pipeline options.");
+    }
+    loadPipelinePayloadIntoInput(payload, `Loaded pipeline input from file ${file.name}.`);
+  } catch (error) {
+    setStatus(`JSON file load failed: ${error instanceof Error ? error.message : "unknown error"}`);
+  }
+}
+
+async function tryLoadPresetFromQuery(options = {}) {
+  const reportMissing = options && options.reportMissing === true;
   const searchParams = new URLSearchParams(window.location.search);
   const samplePresetPath = normalizeSamplePresetPath(searchParams.get("samplePresetPath") || "");
   if (!samplePresetPath) {
+    if (reportMissing) {
+      setStatus("Preset load failed: samplePresetPath is missing from the URL query.");
+    }
     return;
   }
   const sampleId = normalizeText(searchParams.get("sampleId"));
@@ -244,10 +635,9 @@ async function tryLoadPresetFromQuery() {
       throw new Error("Preset payload did not include pipeline options.");
     }
     const adapted = applyLaunchContextToPayload(pipelinePayload, launchContext);
-    if (!(refs.input instanceof HTMLTextAreaElement)) {
+    if (!setInputValue(adapted.payload)) {
       throw new Error("Pipeline input is unavailable.");
     }
-    refs.input.value = toPrettyJson(adapted.payload);
     const loadedStatus = buildPresetLoadedStatus(sampleId, samplePresetPath);
     if (adapted.overridden && launchContext.gameId) {
       setStatus(buildPresetLoadedWithContextStatus(launchContext.gameId, samplePresetPath));
@@ -262,6 +652,26 @@ async function tryLoadPresetFromQuery() {
 function bootAssetPipelineTool() {
   if (refs.runButton instanceof HTMLButtonElement) {
     refs.runButton.addEventListener("click", runPipeline);
+  }
+  if (refs.loadFromPresetButton instanceof HTMLButtonElement) {
+    refs.loadFromPresetButton.addEventListener("click", () => {
+      void tryLoadPresetFromQuery({ reportMissing: true });
+    });
+  }
+  if (refs.loadFromWorkspaceButton instanceof HTMLButtonElement) {
+    refs.loadFromWorkspaceButton.addEventListener("click", () => {
+      void loadPipelineFromWorkspaceState();
+    });
+  }
+  if (refs.loadJsonFileButton instanceof HTMLButtonElement && refs.jsonFileInput instanceof HTMLInputElement) {
+    refs.loadJsonFileButton.addEventListener("click", () => {
+      refs.jsonFileInput.value = "";
+      refs.jsonFileInput.click();
+    });
+    refs.jsonFileInput.addEventListener("change", () => {
+      const file = refs.jsonFileInput instanceof HTMLInputElement ? refs.jsonFileInput.files?.[0] : null;
+      void loadPipelineFromJsonFile(file ?? null);
+    });
   }
   if (refs.input instanceof HTMLTextAreaElement && !refs.input.value.trim()) {
     setStatus("Awaiting source pipeline JSON. No default payload is applied.");

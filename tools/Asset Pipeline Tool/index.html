@@ -21,8 +21,12 @@
     <section class="panel debug-tool-panel">
       <div class="debug-tool-actions asset-pipeline-actions">
         <button type="button" id="runAssetPipelineButton">Run Pipeline</button>
+        <button type="button" id="loadPipelineFromPresetButton">Load Launch Preset</button>
+        <button type="button" id="loadPipelineFromWorkspaceButton">Load Workspace State</button>
+        <button type="button" id="loadPipelineJsonFileButton">Load JSON File</button>
+        <input type="file" id="pipelineJsonFileInput" class="tools-platform-frame__project-input" accept=".json,application/json" />
         <p class="asset-pipeline-quick-guide">
-          Paste or load pipeline options JSON in <strong>Pipeline Input</strong>, run the pipeline, then review
+          Load pipeline options JSON with buttons (launch preset, workspace state, or JSON file), then run the pipeline and review
           normalization/validation results and manifest output in <strong>Pipeline Output</strong>. Use this to verify
           IDs, paths, types, and references. This tool emits nested game paths such as
           <code>games/sample-1413/assets/sprites/*.json</code> plus a coordinator manifest at
