@@ -156,6 +156,24 @@ function getSelectedObjectKeysInObjectOrder() {
   return keys.filter((key) => selectedKeySet.has(key));
 }
 
+function getSelectedShapeTypeValue() {
+  return refs.newShapeType instanceof HTMLSelectElement
+    ? normalizeText(refs.newShapeType.value).toLowerCase()
+    : "";
+}
+
+function updateAddShapeButtonState() {
+  if (!(refs.addShapeButton instanceof HTMLButtonElement)) {
+    return;
+  }
+  const selectedType = getSelectedShapeTypeValue();
+  const disabled = selectedType === "flattened";
+  refs.addShapeButton.disabled = disabled;
+  refs.addShapeButton.title = disabled
+    ? "Flattened objects are created only with the Flatten button."
+    : "";
+}
+
 function updateFlattenButtonState() {
   const validSelection = getValidSelectedObjectKeys();
   state.selectedObjectKeys = validSelection;
@@ -421,6 +439,12 @@ function createShapePreset(shapeType) {
       color: "#f8f8f2"
     };
   }
+  if (type === "flattened") {
+    return {
+      shape: "flattened",
+      components: []
+    };
+  }
   if (type === "polygon") {
     return {
       shape: "polygon",
@@ -438,7 +462,7 @@ function createShapePreset(shapeType) {
       innerRadius: 26
     };
   }
-  if (type === "wall-3-sides") {
+  if (type === "wall-multi-side") {
     return {
       shape: "wall",
       color: "#f8f8f2",
@@ -453,7 +477,12 @@ function createShapePreset(shapeType) {
     return { color: "#f8f8f2", radius: 42 };
   }
   if (type === "oval") {
-    return { color: "#f8f8f2", width: 140, height: 90 };
+    return {
+      shape: "oval",
+      color: "#f8f8f2",
+      width: 140,
+      height: 90
+    };
   }
   if (type === "square") {
     return { color: "#f8f8f2", width: 96, height: 96 };
@@ -565,12 +594,14 @@ function inferShapeTypeFromSelectedObject() {
 }
 
 function inferShapeTypeFromObjectKey(objectKey) {
+  const game = getSelectedGameOption();
+  const normalizedGameId = normalizeText(game?.id).toLowerCase();
   const selectedObject = toObject(state.activeSkin?.objects?.[objectKey]);
   const shape = normalizeText(selectedObject.shape).toLowerCase();
   if (shape === "wall") {
-    return "wall-3-sides";
+    return "wall-multi-side";
   }
-  if (shape && ["circle", "oval", "rectangle", "square", "polygon", "star", "ring", "hud-color"].includes(shape)) {
+  if (shape && ["circle", "oval", "rectangle", "square", "polygon", "star", "ring", "flattened", "hud-color"].includes(shape)) {
     return shape;
   }
   const hasSides = Number.isFinite(Number(selectedObject.sides));
@@ -580,13 +611,14 @@ function inferShapeTypeFromObjectKey(objectKey) {
   const hasWidth = Number.isFinite(Number(selectedObject.width));
   const hasHeight = Number.isFinite(Number(selectedObject.height));
   const hasThickness = Number.isFinite(Number(selectedObject.thickness));
+  const hasComponents = Array.isArray(selectedObject.components);
   const hasWallFlags = ["left", "right", "top", "bottom"].some((key) => typeof selectedObject[key] === "boolean");
   const colorPropertyCount = Object.values(selectedObject)
     .filter((value) => typeof value === "string" && parseHexForPicker(value))
     .length;
 
   if (hasThickness && hasWallFlags) {
-    return "wall-3-sides";
+    return "wall-multi-side";
   }
   if (hasSides && hasOuter && hasInner) {
     return "star";
@@ -596,6 +628,12 @@ function inferShapeTypeFromObjectKey(objectKey) {
   }
   if (hasOuter && hasInner) {
     return "ring";
+  }
+  if (normalizedGameId === "breakout" && normalizeText(objectKey).toLowerCase() === "wall" && hasThickness) {
+    return "flattened";
+  }
+  if (hasComponents) {
+    return "flattened";
   }
   if (hasRadius && hasWidth && hasHeight) {
     return "oval";
@@ -626,6 +664,7 @@ function syncShapeTypeControlFromSelection() {
   if (optionExists) {
     refs.newShapeType.value = inferredShapeType;
   }
+  updateAddShapeButtonState();
 }
 
 function syncSelectedObjectUiFromSelection() {
@@ -677,6 +716,23 @@ function setObjectPropertyValue(objectKey, propertyKey, value) {
   const nextValue = typeof value === "number"
     ? clampNumericProperty(propertyKey, value)
     : value;
+  const normalizedPropertyKey = normalizeText(propertyKey).toLowerCase();
+  const isSquareObject = inferShapeTypeFromObjectKey(objectKey) === "square";
+  if (isSquareObject
+    && typeof nextValue === "number"
+    && Number.isFinite(nextValue)
+    && ["size", "width", "height"].includes(normalizedPropertyKey)) {
+    const squareSize = clampNumericProperty("size", nextValue);
+    state.activeSkin.objects[objectKey].size = squareSize;
+    state.activeSkin.objects[objectKey].width = squareSize;
+    state.activeSkin.objects[objectKey].height = squareSize;
+    updateEditorFromState("visual-editor");
+    syncSelectedObjectUiFromSelection();
+    renderPaletteList();
+    renderObjectControls();
+    drawSelectedObjectPreview();
+    return;
+  }
   state.activeSkin.objects[objectKey][propertyKey] = nextValue;
   updateEditorFromState("visual-editor");
   syncSelectedObjectUiFromSelection();
@@ -735,10 +791,10 @@ function renderPaletteList() {
       }
       const swatchName = normalizeText(entry?.name) || `Swatch ${index + 1}`;
       const swatchSymbol = normalizeText(entry?.symbol);
-      const suffix = swatchSymbol ? ` [${swatchSymbol}]` : "";
+      const prefix = swatchSymbol ? `${swatchSymbol} ` : "";
       return {
         id: `${sharedPalette?.paletteId || "shared-palette"}.${index}`,
-        label: `${swatchName}${suffix}`,
+        label: `${prefix}${swatchName}`,
         color
       };
     })
@@ -858,6 +914,7 @@ function renderObjectControls() {
 
   const selectedKey = state.selectedObjectKey;
   const selectedObject = toObject(state.activeSkin?.objects?.[selectedKey]);
+  const inferredShapeType = inferShapeTypeFromObjectKey(selectedKey);
   const entries = Object.entries(selectedObject);
   if (!selectedKey || entries.length === 0) {
     const note = document.createElement("p");
@@ -867,8 +924,37 @@ function renderObjectControls() {
     return;
   }
 
+  if (inferredShapeType === "square") {
+    const sizeCandidates = [Number(selectedObject.size), Number(selectedObject.width), Number(selectedObject.height)]
+      .filter((entry) => Number.isFinite(entry));
+    const sizeValue = clampNumericProperty("size", sizeCandidates.find((entry) => entry > 0) ?? sizeCandidates[0] ?? 96);
+    const sizeRow = document.createElement("div");
+    sizeRow.className = "skin-editor-row skin-editor-row--number";
+    const sizeLabel = document.createElement("span");
+    sizeLabel.className = "skin-editor-row-label";
+    sizeLabel.textContent = "Size";
+    const sizeInput = createBasicField("skin-editor-field", String(sizeValue));
+    sizeInput.type = "number";
+    sizeInput.step = numberStep(sizeValue);
+    sizeInput.min = "1";
+    sizeInput.addEventListener("input", () => {
+      const parsed = clampNumericProperty("size", Number(sizeInput.value));
+      if (!Number.isFinite(parsed)) {
+        return;
+      }
+      sizeInput.value = String(parsed);
+      setObjectPropertyValue(selectedKey, "size", parsed);
+    });
+    sizeRow.appendChild(sizeLabel);
+    sizeRow.appendChild(sizeInput);
+    refs.objectControls.appendChild(sizeRow);
+  }
+
   entries.forEach(([propertyKey, propertyValue]) => {
     if (propertyKey === "shape") {
+      return;
+    }
+    if (inferredShapeType === "square" && ["width", "height", "size"].includes(normalizeText(propertyKey).toLowerCase())) {
       return;
     }
     if (typeof propertyValue === "number" && Number.isFinite(propertyValue)) {
@@ -1026,6 +1112,20 @@ function drawSelectedObjectPreview() {
     }
     if (shapeType === "polygon") {
       drawRegularPolygonPath(context, centerX, centerY, radius, polygonSides);
+      context.fill();
+      return;
+    }
+    if (shapeType === "oval") {
+      context.beginPath();
+      context.ellipse(
+        centerX,
+        centerY,
+        Math.max(6, width / 2),
+        Math.max(6, height / 2),
+        0,
+        0,
+        Math.PI * 2
+      );
       context.fill();
       return;
     }
@@ -1271,9 +1371,12 @@ function addShapeFromControls() {
     setStatus("Load a skin before adding a shape.");
     return;
   }
-  const selectedType = refs.newShapeType instanceof HTMLSelectElement
-    ? normalizeText(refs.newShapeType.value).toLowerCase()
-    : "rectangle";
+  const selectedType = getSelectedShapeTypeValue() || "rectangle";
+  if (selectedType === "flattened") {
+    updateAddShapeButtonState();
+    setStatus("Flattened objects are created only with the Flatten button.");
+    return;
+  }
   const typedName = refs.newShapeName instanceof HTMLInputElement
     ? refs.newShapeName.value
     : "";
@@ -1517,6 +1620,7 @@ async function loadPresetFromQuery() {
 }
 
 function bindEvents() {
+  updateAddShapeButtonState();
   updateFlattenButtonState();
   updateObjectOrderButtonState();
   refs.loadButton?.addEventListener("click", () => {
@@ -1532,6 +1636,9 @@ function bindEvents() {
   refs.openGameButton?.addEventListener("click", openSelectedGame);
   refs.howToUseButton?.addEventListener("click", () => {
     window.location.href = "./how_to_use.html";
+  });
+  refs.newShapeType?.addEventListener("change", () => {
+    updateAddShapeButtonState();
   });
   refs.syncVisualButton?.addEventListener("click", syncVisualFromJson);
   refs.addShapeButton?.addEventListener("click", addShapeFromControls);

@@ -9,6 +9,7 @@
       "color": "#000000"
     },
     "wall": {
+      "shape": "flattened",
       "color": "#f8f8f2",
       "thickness": 16
     },
