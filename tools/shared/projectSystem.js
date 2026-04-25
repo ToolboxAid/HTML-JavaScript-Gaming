@@ -77,8 +77,6 @@ export function createWorkspaceSystemController(options = {}) {
     : {};
   const launchGameId = safeString(launchContext.gameId, "");
   const launchGameTitle = safeString(launchContext.gameTitle, launchGameId);
-  const launchReturnTo = safeString(launchContext.returnTo, "");
-  const isGameReturnLaunch = launchReturnTo.startsWith("/games/");
   const onChange = typeof options.onChange === "function" ? options.onChange : () => {};
   const onStatus = typeof options.onStatus === "function" ? options.onStatus : () => {};
   const adapter = () => getProjectAdapter(toolId);
@@ -120,7 +118,7 @@ export function createWorkspaceSystemController(options = {}) {
       });
 
     if (launchGameId) {
-      if (isGameReturnLaunch && !state.launchContextHydrated) {
+      if (!state.launchContextHydrated) {
         clearSharedAssetHandoff();
         clearSharedPaletteHandoff();
       }

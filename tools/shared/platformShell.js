@@ -1,5 +1,7 @@
 import { getToolById, getToolRegistry } from "../toolRegistry.js";
 import {
+  clearSharedAssetHandoff,
+  clearSharedPaletteHandoff,
   getSharedShellActions,
   readSharedAssetHandoff,
   readSharedPaletteHandoff,
@@ -27,6 +29,7 @@ const TOOLS_PLATFORM_LOGGER = new Logger({ channel: "tools.platform", level: "de
 const TOOLS_PLATFORM_BOOT_MS = Date.now();
 const GAME_ASSET_CATALOG_SCHEMA = "html-js-gaming.game-asset-catalog";
 const GAME_ASSET_CATALOG_VERSION = 1;
+const WORKSPACE_LAUNCH_SIGNATURE_STORAGE_KEY = "toolboxaid.toolsPlatform.launchSignature";
 
 function getPageMode() {
   return document.body.dataset.toolsPlatformPage || "tool";
@@ -99,12 +102,76 @@ function buildWorkspaceHrefFromGameId(gameId) {
     : "";
 }
 
+function normalizeSamplePresetPath(value) {
+  return normalizeLocalHref(value, ["/samples/", "/games/"]);
+}
+
+function readLaunchPayloadSignature(searchParams) {
+  if (!(searchParams instanceof URLSearchParams)) {
+    return "";
+  }
+  const gameId = normalizeTextValue(searchParams.get("gameId") || searchParams.get("game"));
+  const gameHref = normalizeLocalHref(searchParams.get("gameHref"), ["/games/"]);
+  const samplePresetPath = normalizeSamplePresetPath(searchParams.get("samplePresetPath"));
+  const parts = [];
+  if (gameId) {
+    parts.push(`gameId=${gameId.toLowerCase()}`);
+  }
+  if (gameHref) {
+    parts.push(`gameHref=${gameHref.toLowerCase()}`);
+  }
+  if (samplePresetPath) {
+    parts.push(`samplePresetPath=${samplePresetPath}`);
+  }
+  return parts.join("|");
+}
+
+function readStoredLaunchSignature() {
+  if (typeof window === "undefined") {
+    return "";
+  }
+  try {
+    return normalizeTextValue(window.localStorage.getItem(WORKSPACE_LAUNCH_SIGNATURE_STORAGE_KEY));
+  } catch {
+    return "";
+  }
+}
+
+function writeStoredLaunchSignature(signature) {
+  if (typeof window === "undefined") {
+    return;
+  }
+  try {
+    if (signature) {
+      window.localStorage.setItem(WORKSPACE_LAUNCH_SIGNATURE_STORAGE_KEY, signature);
+      return;
+    }
+    window.localStorage.removeItem(WORKSPACE_LAUNCH_SIGNATURE_STORAGE_KEY);
+  } catch {
+    // Ignore storage failures and continue.
+  }
+}
+
+function clearSharedBindingsForNewLaunch(signature) {
+  if (!signature) {
+    return false;
+  }
+  const previous = readStoredLaunchSignature();
+  if (previous && previous === signature) {
+    return false;
+  }
+  clearSharedAssetHandoff();
+  clearSharedPaletteHandoff();
+  writeStoredLaunchSignature(signature);
+  return true;
+}
+
 function readGameLaunchContext() {
   if (typeof window === "undefined") {
     return null;
   }
   const searchParams = new URLSearchParams(window.location.search);
-  const gameId = normalizeTextValue(searchParams.get("gameId"));
+  const gameId = normalizeTextValue(searchParams.get("gameId") || searchParams.get("game"));
   const gameTitle = normalizeTextValue(searchParams.get("gameTitle"));
   const gameHref = normalizeLocalHref(searchParams.get("gameHref"), ["/games/"]);
   const workspaceHrefParam = normalizeLocalHref(searchParams.get("workspaceHref"), ["/tools/Workspace%20Manager/", "/tools/Workspace Manager/"]);
@@ -1069,10 +1136,12 @@ async function initPlatformShell() {
 
   const currentToolId = document.body.dataset.toolId || "";
   const currentTool = currentToolId ? getToolById(currentToolId) : null;
-  const launchContext = readGameLaunchContext();
   const searchParams = typeof window !== "undefined"
     ? new URLSearchParams(window.location.search)
     : new URLSearchParams();
+  const launchSignature = readLaunchPayloadSignature(searchParams);
+  const clearedForLaunch = clearSharedBindingsForNewLaunch(launchSignature);
+  const launchContext = readGameLaunchContext();
   const launchedFromSamplePreset = searchParams.has("samplePresetPath");
 
   if (currentToolId) {
@@ -1115,6 +1184,9 @@ async function initPlatformShell() {
   const hydratedAsset = await hydrateSharedAssetFromGameLaunchContext(catalogContext);
   const hydratedPalette = await hydrateSharedPaletteFromGameLaunchContext(catalogContext);
   renderShell(currentTool);
+  if (clearedForLaunch) {
+    TOOLS_PLATFORM_LOGGER.debug("cleared shared workspace bindings for new launch payload");
+  }
   if (hydratedAsset) {
     TOOLS_PLATFORM_LOGGER.debug("shared asset hydrated from game asset catalog");
   }
