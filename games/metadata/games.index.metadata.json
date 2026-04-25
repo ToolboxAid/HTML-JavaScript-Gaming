@@ -31,7 +31,8 @@
         "skin-editor",
         "physics-sandbox",
         "state-inspector",
-        "replay-visualizer"
+        "replay-visualizer",
+        "palette-browser"
       ]
     },
     {
@@ -57,7 +58,8 @@
         "skin-editor",
         "sprite-editor",
         "tile-map-editor",
-        "replay-visualizer"
+        "replay-visualizer",
+        "palette-browser"
       ],
       "engineClassesUsed": [
         "engine/core/Engine",
@@ -90,7 +92,8 @@
         "skin-editor",
         "physics-sandbox",
         "performance-profiler",
-        "state-inspector"
+        "state-inspector",
+        "palette-browser"
       ],
       "engineClassesUsed": [
         "engine/core/Engine",
@@ -157,7 +160,8 @@
         "skin-editor",
         "sprite-editor",
         "tile-map-editor",
-        "replay-visualizer"
+        "replay-visualizer",
+        "palette-browser"
       ],
       "engineClassesUsed": [
         "engine/core/Engine",
@@ -189,7 +193,12 @@
       "toolHints": [
         "vector-asset-studio",
         "vector-map-editor",
-        "asset-pipeline-tool"
+        "asset-pipeline-tool",
+        "palette-browser",
+        "asset-browser",
+        "sprite-editor",
+        "tile-map-editor",
+        "parallax-editor"
       ],
       "engineClassesUsed": [
         "engine/audio/index/GaplessLoopPlayer",
@@ -233,7 +242,9 @@
       "toolHints": [
         "sprite-editor",
         "tile-map-editor",
-        "asset-pipeline-tool"
+        "asset-pipeline-tool",
+        "palette-browser",
+        "asset-browser"
       ],
       "engineClassesUsed": [
         "engine/core/Engine",
@@ -267,7 +278,9 @@
       "toolHints": [
         "vector-asset-studio",
         "replay-visualizer",
-        "state-inspector"
+        "state-inspector",
+        "palette-browser",
+        "asset-browser"
       ],
       "engineClassesUsed": [
         "engine/core/Engine",

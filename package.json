@@ -4,6 +4,7 @@
     "pretest": "node tools/dev/checkSharedExtractionGuard.mjs",
     "test": "node ./scripts/run-node-tests.mjs",
     "build:manifest": "node ./scripts/generate-sample-manifest.mjs",
+    "sync:tool-hints": "node ./scripts/sync-tool-hints-from-workspace-manager.mjs",
     "normalize:games-presentation": "node ./scripts/normalize-games-presentation.mjs",
     "check:shared-extraction-guard": "node tools/dev/checkSharedExtractionGuard.mjs",
     "check:phase24-closeout-guard": "node tools/dev/checkPhase24CloseoutExecutionGuard.mjs",
