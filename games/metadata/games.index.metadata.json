@@ -12,7 +12,10 @@
       ],
       "engineClassesUsed": [
         "engine/core/Engine",
-        "engine/input/index/InputService"
+        "engine/input/index/GamepadInputAdapter",
+        "engine/input/index/InputService",
+        "engine/scene/index/Scene",
+        "engine/utils/math/clamp"
       ],
       "tags": [
         "arcade",
@@ -58,7 +61,10 @@
       ],
       "engineClassesUsed": [
         "engine/core/Engine",
-        "engine/input/index/InputService"
+        "engine/input/index/GamepadInputAdapter",
+        "engine/input/index/InputService",
+        "engine/scene/index/Scene",
+        "engine/utils/math/clamp"
       ]
     },
     {
@@ -88,7 +94,8 @@
       ],
       "engineClassesUsed": [
         "engine/core/Engine",
-        "engine/input/index/InputService"
+        "engine/input/index/InputService",
+        "engine/scene/index/Scene"
       ]
     },
     {
@@ -117,7 +124,14 @@
       ],
       "engineClassesUsed": [
         "engine/core/Engine",
-        "engine/input/index/InputService"
+        "engine/debug/index/drawPanel",
+        "engine/input/index/InputService",
+        "engine/rendering/VectorDrawing/drawVectorShape",
+        "engine/rendering/VectorDrawing/transformPoints",
+        "engine/replay/index/ReplaySystem",
+        "engine/scene/index/Scene",
+        "engine/utils/index/clamp",
+        "engine/utils/index/distance"
       ]
     },
     {
@@ -147,7 +161,10 @@
       ],
       "engineClassesUsed": [
         "engine/core/Engine",
-        "engine/input/index/InputService"
+        "engine/input/index/GamepadInputAdapter",
+        "engine/input/index/InputService",
+        "engine/scene/index/Scene",
+        "engine/utils/math/clamp"
       ]
     },
     {
@@ -173,6 +190,25 @@
         "vector-asset-studio",
         "vector-map-editor",
         "asset-pipeline-tool"
+      ],
+      "engineClassesUsed": [
+        "engine/audio/index/GaplessLoopPlayer",
+        "engine/audio/index/HtmlAudioMediaBackend",
+        "engine/audio/index/MediaTrackService",
+        "engine/collision/index/arePolygonsColliding",
+        "engine/core/Engine",
+        "engine/debug/inspectors/shared/inspectorUtils/asArray",
+        "engine/debug/inspectors/shared/inspectorUtils/asObject",
+        "engine/fx/index/ParticleSystem",
+        "engine/input/index/InputService",
+        "engine/persistence/index/StorageService",
+        "engine/rendering/index/transformPoints",
+        "engine/scene/index/AttractModeController",
+        "engine/scene/index/Scene",
+        "engine/utils/index/distance",
+        "engine/utils/index/randomRange",
+        "engine/utils/index/wrap",
+        "engine/utils/math/clamp"
       ]
     },
     {
@@ -201,7 +237,12 @@
       ],
       "engineClassesUsed": [
         "engine/core/Engine",
-        "engine/input/index/InputService"
+        "engine/input/index/GamepadInputAdapter",
+        "engine/input/index/InputService",
+        "engine/persistence/index/StorageService",
+        "engine/scene/index/AttractModeController",
+        "engine/scene/index/Scene",
+        "engine/utils/math/clamp"
       ]
     },
     {
@@ -231,7 +272,11 @@
       "engineClassesUsed": [
         "engine/core/Engine",
         "engine/input/index/ActionInputMap",
-        "engine/input/index/ActionInputService"
+        "engine/input/index/ActionInputService",
+        "engine/persistence/index/StorageService",
+        "engine/scene/index/AttractModeController",
+        "engine/scene/index/Scene",
+        "engine/utils/math/clamp"
       ]
     },
     {
@@ -260,7 +305,10 @@
       ],
       "engineClassesUsed": [
         "engine/core/Engine",
-        "engine/input/index/InputService"
+        "engine/input/index/GamepadInputAdapter",
+        "engine/input/index/InputService",
+        "engine/scene/index/Scene",
+        "engine/utils/math/clamp"
       ]
     },
     {
@@ -289,7 +337,9 @@
       ],
       "engineClassesUsed": [
         "engine/core/Engine",
-        "engine/input/index/InputService"
+        "engine/input/index/GamepadInputAdapter",
+        "engine/input/index/InputService",
+        "engine/scene/index/Scene"
       ]
     },
     {
