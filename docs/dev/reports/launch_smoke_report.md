@@ -1,6 +1,6 @@
 # Launch Smoke Report
 
-Generated: 2026-04-18T23:16:10.723Z
+Generated: 2026-04-25T19:23:15.787Z
 
 Filters: games=true, samples=true, tools=true, sampleRange=all
 
@@ -179,6 +179,9 @@ Filters: games=true, samples=true, tools=true, sampleRange=all
 | PASS | sample | 1206 | samples\phase-12\1206\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
 | PASS | sample | 1207 | samples\phase-12\1207\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
 | PASS | sample | 1208 | samples\phase-12\1208\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 1209 | samples\phase-12\1209\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 1210 | samples\phase-12\1210\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | sample | 1211 | samples\phase-12\1211\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
 | PASS | sample | 1301 | samples\phase-13\1301\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
 | PASS | sample | 1302 | samples\phase-13\1302\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
 | PASS | sample | 1303 | samples\phase-13\1303\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
@@ -270,10 +273,11 @@ Filters: games=true, samples=true, tools=true, sampleRange=all
 | PASS | tool | Performance Profiler | tools\Performance Profiler\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
 | PASS | tool | Physics Sandbox | tools\Physics Sandbox\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
 | PASS | tool | Replay Visualizer | tools\Replay Visualizer\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | tool | Skin Editor | tools\Skin Editor\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
 | PASS | tool | Sprite Editor | tools\Sprite Editor\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
 | PASS | tool | State Inspector | tools\State Inspector\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
 | PASS | tool | Tile Model Converter | tools\Tile Model Converter\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
 | PASS | tool | Tilemap Studio | tools\Tilemap Studio\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
-| PASS | tool | Tool Host | tools\Tool Host\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
 | PASS | tool | Vector Asset Studio | tools\Vector Asset Studio\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
 | PASS | tool | Vector Map Editor | tools\Vector Map Editor\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | tool | Workspace Manager | tools\Workspace Manager\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |

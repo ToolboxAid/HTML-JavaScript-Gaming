@@ -28,10 +28,6 @@
       ],
       "roundtripToolPresets": [
         {
-          "toolId": "skin-editor",
-          "presetPath": "/games/Bouncing-ball/assets/presets/game-bouncing-ball-skin-editor.json"
-        },
-        {
           "toolId": "physics-sandbox",
           "presetPath": "/samples/phase-03/0303/sample-0303-physics-sandbox.json"
         },
@@ -72,10 +68,6 @@
       ],
       "roundtripToolPresets": [
         {
-          "toolId": "skin-editor",
-          "presetPath": "/games/Breakout/assets/presets/game-breakout-skin-editor.json"
-        },
-        {
           "toolId": "sprite-editor",
           "presetPath": "/games/Breakout/assets/presets/game-breakout-sprite-editor.json"
         },
@@ -115,10 +107,6 @@
         "state-inspector"
       ],
       "roundtripToolPresets": [
-        {
-          "toolId": "skin-editor",
-          "presetPath": "/games/SolarSystem/assets/presets/game-solarsystem-skin-editor.json"
-        },
         {
           "toolId": "physics-sandbox",
           "presetPath": "/samples/phase-03/0303/sample-0303-physics-sandbox.json"
@@ -198,10 +186,6 @@
         "replay-visualizer"
       ],
       "roundtripToolPresets": [
-        {
-          "toolId": "skin-editor",
-          "presetPath": "/games/Pong/assets/presets/game-pong-skin-editor.json"
-        },
         {
           "toolId": "sprite-editor",
           "presetPath": "/samples/phase-14/1414/sample-1414-sprite-editor.json"
