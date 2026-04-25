@@ -10,47 +10,107 @@
     "skinPath": "/games/SolarSystem/assets/skins/default.json",
     "skin": {
       "documentKind": "game-skin",
-      "schema": "games.solar-system.skin/1",
       "version": 1,
+      "schema": "games.solar-system.skin/1",
       "gameId": "SolarSystem",
       "name": "Solar System Classic Skin",
-      "colors": {
-        "background": "#030712",
-        "frame": "#dbeafe",
-        "orbit": "#334155",
-        "text": "#dbeafe",
-        "muted": "#94a3b8",
-        "panel": "#07101d"
-      },
-      "entities": {
+      "objects": {
+        "background": {
+          "color": "#030712"
+        },
+        "frame": {
+          "color": "#dbeafe"
+        },
+        "orbit": {
+          "color": "#334155"
+        },
         "sun": {
           "color": "#fbbf24",
           "radius": 30
         },
-        "planets": {
-          "mercury": { "color": "#9ca3af" },
-          "venus": { "color": "#fde68a" },
-          "earth": { "color": "#38bdf8" },
-          "mars": { "color": "#fb7185" },
-          "jupiter": { "color": "#f59e0b" },
-          "saturn": { "color": "#eab308" },
-          "uranus": { "color": "#67e8f9" },
-          "neptune": { "color": "#60a5fa" }
+        "hudText": {
+          "color": "#dbeafe"
         },
-        "moons": {
-          "moon": { "color": "#e5e7eb" },
-          "io": { "color": "#fde68a" },
-          "europa": { "color": "#dbeafe" },
-          "ganymede": { "color": "#cbd5e1" },
-          "titan": { "color": "#fef3c7" }
+        "hudMuted": {
+          "color": "#94a3b8"
         },
-        "rings": {
-          "jupiter": "rgba(245, 158, 11, 0.22)",
-          "saturn": "rgba(253, 230, 138, 0.55)",
-          "uranus": "rgba(103, 232, 249, 0.28)",
-          "neptune": "rgba(96, 165, 250, 0.24)"
+        "hudPanel": {
+          "color": "#07101d"
+        },
+        "mercury": {
+          "color": "#9ca3af",
+          "radius": 4
+        },
+        "venus": {
+          "color": "#fde68a",
+          "radius": 6
+        },
+        "earth": {
+          "color": "#38bdf8",
+          "radius": 6
+        },
+        "mars": {
+          "color": "#fb7185",
+          "radius": 5
+        },
+        "jupiter": {
+          "color": "#f59e0b",
+          "radius": 14
+        },
+        "saturn": {
+          "color": "#eab308",
+          "radius": 12
+        },
+        "uranus": {
+          "color": "#67e8f9",
+          "radius": 10
+        },
+        "neptune": {
+          "color": "#60a5fa",
+          "radius": 10
+        },
+        "moon": {
+          "color": "#e5e7eb",
+          "radius": 2
+        },
+        "io": {
+          "color": "#fde68a",
+          "radius": 2
+        },
+        "europa": {
+          "color": "#dbeafe",
+          "radius": 2
+        },
+        "ganymede": {
+          "color": "#cbd5e1",
+          "radius": 3
+        },
+        "titan": {
+          "color": "#fef3c7",
+          "radius": 3
+        },
+        "ringJupiter": {
+          "color": "#f59e0b",
+          "innerRadius": 18,
+          "outerRadius": 22
+        },
+        "ringSaturn": {
+          "color": "#fde68a",
+          "innerRadius": 18,
+          "outerRadius": 30
+        },
+        "ringUranus": {
+          "color": "#67e8f9",
+          "innerRadius": 15,
+          "outerRadius": 20
+        },
+        "ringNeptune": {
+          "color": "#60a5fa",
+          "innerRadius": 15,
+          "outerRadius": 19
         }
-      }
+      },
+      "entities": {}
     }
   }
 }

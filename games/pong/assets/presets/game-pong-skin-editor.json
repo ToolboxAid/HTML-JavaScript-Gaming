@@ -10,23 +10,42 @@
     "skinPath": "/games/Pong/assets/skins/default.json",
     "skin": {
       "documentKind": "game-skin",
-      "schema": "games.pong.skin/1",
       "version": 1,
+      "schema": "games.pong.skin/1",
       "gameId": "Pong",
       "name": "Pong Classic Skin",
-      "colors": {
-        "background": "#05070a",
-        "ink": "#f4f7fb",
-        "muted": "#a6b0bf",
-        "accent": "#7de2ff",
-        "good": "#8bf0c8",
-        "warn": "#ffd37d",
-        "danger": "#ff9a9a"
+      "objects": {
+        "background": {
+          "color": "#05070a"
+        },
+        "paddle": {
+          "color": "#f4f7fb",
+          "width": 14
+        },
+        "ball": {
+          "color": "#f4f7fb",
+          "radius": 8
+        },
+        "hudInk": {
+          "color": "#f4f7fb"
+        },
+        "hudMuted": {
+          "color": "#a6b0bf"
+        },
+        "hudAccent": {
+          "color": "#7de2ff"
+        },
+        "hudGood": {
+          "color": "#8bf0c8"
+        },
+        "hudWarn": {
+          "color": "#ffd37d"
+        },
+        "hudDanger": {
+          "color": "#ff9a9a"
+        }
       },
-      "sizing": {
-        "paddleWidth": 14,
-        "ballRadius": 8
-      }
+      "entities": {}
     }
   }
 }

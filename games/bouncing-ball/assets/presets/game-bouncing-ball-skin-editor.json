@@ -10,22 +10,33 @@
     "skinPath": "/games/Bouncing-ball/assets/skins/default.json",
     "skin": {
       "documentKind": "game-skin",
-      "schema": "games.bouncing-ball.skin/1",
       "version": 1,
+      "schema": "games.bouncing-ball.skin/1",
       "gameId": "Bouncing-ball",
       "name": "Bouncing Ball Classic Skin",
-      "colors": {
-        "background": "#05070a",
-        "wall": "#f4f4ef",
-        "text": "#f4f4ef",
-        "muted": "#9ba3b3",
-        "panel": "#05070a",
-        "ball": "#f4f4ef"
+      "objects": {
+        "background": {
+          "color": "#05070a"
+        },
+        "wall": {
+          "color": "#f4f4ef",
+          "thickness": 18
+        },
+        "ball": {
+          "color": "#f4f4ef",
+          "size": 22
+        },
+        "hudText": {
+          "color": "#f4f4ef"
+        },
+        "hudMuted": {
+          "color": "#9ba3b3"
+        },
+        "hudPanel": {
+          "color": "#05070a"
+        }
       },
-      "sizing": {
-        "wallThickness": 18,
-        "ballSize": 22
-      }
+      "entities": {}
     }
   }
 }

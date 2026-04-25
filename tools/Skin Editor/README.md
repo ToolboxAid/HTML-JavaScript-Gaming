@@ -1,13 +1,13 @@
 # Skin Editor
 
-Skin Editor is a JSON-based skin workflow tool for:
+Skin Editor is a visual-plus-JSON skin workflow tool for:
 
 - Breakout
 - Pong
 - Solar System
 - Bouncing Ball
 
-It supports loading active skin payloads, importing/exporting JSON, applying browser-local overrides for live game previews, and clearing overrides to return to default game skin files.
+It supports loading active skin payloads, editing via visual controls (colors, sizing, entities), importing/exporting JSON, applying browser-local overrides for live game previews, and clearing overrides to return to default game skin files.
 
 ## Runtime Behavior
 
@@ -17,8 +17,9 @@ It supports loading active skin payloads, importing/exporting JSON, applying bro
 
 ## Typical Flow
 
-1. Choose a game in Skin Editor.
+1. Open Skin Editor from a game or sample context.
 2. Click `Load Active Skin`.
-3. Edit JSON and click `Apply Skin Override`.
-4. Open the game and verify.
-5. Export JSON when ready.
+3. Use visual controls and/or JSON editing.
+4. Click `Apply Skin Override`.
+5. Open the game and verify.
+6. Export JSON when ready.

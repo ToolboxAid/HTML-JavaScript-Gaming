@@ -109,6 +109,14 @@ function sanitizeSolarWorldSkin(skin) {
   };
 }
 
+function toOptionalPositiveNumber(value) {
+  const numeric = Number(value);
+  if (!Number.isFinite(numeric)) {
+    return null;
+  }
+  return numeric > 0 ? numeric : null;
+}
+
 function bodyPosition(centerX, centerY, orbitRadius, angleRadians, orbitScaleY = 0.72) {
   return {
     x: centerX + Math.cos(angleRadians) * orbitRadius,
@@ -159,10 +167,26 @@ export default class SolarSystemWorld {
       if (typeof skinPlanet.color === 'string' && skinPlanet.color.trim()) {
         planet.color = skinPlanet.color.trim();
       }
-      const ringColor = this.skin.entities.rings[planet.id];
+      const skinPlanetRadius = toOptionalPositiveNumber(skinPlanet.radius);
+      if (skinPlanetRadius !== null) {
+        planet.radius = skinPlanetRadius;
+      }
+      const ringEntry = this.skin.entities.rings[planet.id];
+      const ringColor = typeof ringEntry === 'string'
+        ? ringEntry
+        : toObject(ringEntry).color;
       if (planet.ring) {
         if (typeof ringColor === 'string' && ringColor.trim()) {
           planet.ring.color = ringColor.trim();
+        }
+        const ringDetails = toObject(ringEntry);
+        const nextInner = toOptionalPositiveNumber(ringDetails.innerRadius);
+        const nextOuter = toOptionalPositiveNumber(ringDetails.outerRadius);
+        if (nextInner !== null) {
+          planet.ring.innerRadius = nextInner;
+        }
+        if (nextOuter !== null) {
+          planet.ring.outerRadius = nextOuter;
         }
       } else if (typeof ringColor === 'string' && ringColor.trim()) {
         planet.ring = {
@@ -177,6 +201,10 @@ export default class SolarSystemWorld {
       const skinMoon = toObject(this.skin.entities.moons[moon.id]);
       if (typeof skinMoon.color === 'string' && skinMoon.color.trim()) {
         moon.color = skinMoon.color.trim();
+      }
+      const skinMoonRadius = toOptionalPositiveNumber(skinMoon.radius);
+      if (skinMoonRadius !== null) {
+        moon.radius = skinMoonRadius;
       }
     });
   }

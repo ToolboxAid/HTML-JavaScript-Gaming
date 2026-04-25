@@ -12,26 +12,6 @@ import { loadGameSkin } from '/games/shared/gameSkinLoader.js';
 
 const theme = new Theme(ThemeTokens);
 const PONG_DEFAULT_SKIN_PATH = '/games/Pong/assets/skins/default.json';
-const PONG_FALLBACK_SKIN = Object.freeze({
-  documentKind: 'game-skin',
-  schema: 'games.pong.skin/1',
-  version: 1,
-  gameId: 'Pong',
-  name: 'Pong Classic Skin',
-  colors: {
-    background: '#05070a',
-    ink: '#f4f7fb',
-    muted: '#a6b0bf',
-    accent: '#7de2ff',
-    good: '#8bf0c8',
-    warn: '#ffd37d',
-    danger: '#ff9a9a'
-  },
-  sizing: {
-    paddleWidth: 14,
-    ballRadius: 8
-  }
-});
 
 export function bootPong({
   documentRef = globalThis.document ?? null,
@@ -61,17 +41,17 @@ export function bootPong({
     input,
   });
 
-  const scene = new SceneClass({ skin: PONG_FALLBACK_SKIN });
   void loadGameSkin({
     gameId: 'Pong',
     defaultSkinPath: PONG_DEFAULT_SKIN_PATH,
-    fallbackSkin: PONG_FALLBACK_SKIN,
     fallbackSchema: 'games.pong.skin/1'
   }).then(({ skin }) => {
-    scene.applySkin?.(skin);
+    const scene = new SceneClass({ skin });
+    engine.setScene(scene);
+    engine.start();
+  }).catch((error) => {
+    console.error('[Pong] Skin load failed. Game startup stopped.', error);
   });
-  engine.setScene(scene);
-  engine.start();
 
   canvas.addEventListener?.('click', async () => {
     const fullscreenState = engine.fullscreen?.getState?.();

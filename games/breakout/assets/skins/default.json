@@ -1,32 +1,68 @@
 {
   "documentKind": "game-skin",
-  "schema": "games.breakout.skin/1",
   "version": 1,
+  "schema": "games.breakout.skin/1",
   "gameId": "Breakout",
   "name": "Breakout Classic Skin",
-  "colors": {
-    "background": "#000000",
-    "wall": "#f8f8f2",
-    "paddle": "#f8f8f2",
-    "ball": "#f8f8f2",
-    "text": "#04040A",
-    "muted": "#a0a0a0",
-    "panel": "#000000",
-    "brickRows": [
-      "#ff595e",
-      "#ff924c",
-      "#ffca3a",
-      "#8ac926",
-      "#1982c4",
-      "#6a4c93"
-    ]
+  "objects": {
+    "background": {
+      "color": "#000000"
+    },
+    "wall": {
+      "color": "#f8f8f2",
+      "thickness": 16
+    },
+    "paddle": {
+      "color": "#f8f8f2",
+      "width": 118,
+      "height": 18
+    },
+    "ball": {
+      "color": "#f8f8f2",
+      "size": 14
+    },
+    "brickLayout": {
+      "gap": 6
+    },
+    "brick1": {
+      "width": 78,
+      "height": 24,
+      "color": "#ff595e"
+    },
+    "brick2": {
+      "width": 78,
+      "height": 24,
+      "color": "#ff924c"
+    },
+    "brick3": {
+      "width": 78,
+      "height": 24,
+      "color": "#ffca3a"
+    },
+    "brick4": {
+      "width": 78,
+      "height": 24,
+      "color": "#8ac926"
+    },
+    "brick5": {
+      "width": 78,
+      "height": 24,
+      "color": "#1982c4"
+    },
+    "brick6": {
+      "width": 78,
+      "height": 24,
+      "color": "#6a4c93"
+    },
+    "hudText": {
+      "color": "#04040a"
+    },
+    "hudMuted": {
+      "color": "#a0a0a0"
+    },
+    "hudPanel": {
+      "color": "#000000"
+    }
   },
-  "sizing": {
-    "paddleWidth": 118,
-    "paddleHeight": 18,
-    "ballSize": 14,
-    "brickWidth": 78,
-    "brickHeight": 24,
-    "brickGap": 6
-  }
+  "entities": {}
 }

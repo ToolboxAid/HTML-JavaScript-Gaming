@@ -7,6 +7,7 @@
   <link rel="stylesheet" href="../../src/engine/ui/hubCommon.css" />
   <link rel="stylesheet" href="../shared/platformShell.css" />
   <link rel="stylesheet" href="../shared/debugInspectorTools.css" />
+  <link rel="stylesheet" href="./skinEditor.css" />
   <link rel="stylesheet" href="../../src/engine/theme/main.css" />
 </head>
 <body class="tools-platform-tool-page hub-page-tools" data-tool-id="skin-editor" data-tools-platform-page="tool">
@@ -33,12 +34,56 @@
       <div id="skinEditorStatus" class="debug-tool-meta">Skin editor ready.</div>
     </section>
 
-    <section class="debug-tool-grid">
-      <section class="panel debug-tool-panel">
-        <h3>Skin JSON Input</h3>
-        <textarea id="skinEditorInput" class="debug-tool-field" rows="28"></textarea>
+    <section class="debug-tool-grid skin-editor-grid">
+      <section class="panel debug-tool-panel skin-editor-visual-panel">
+        <h3>Visual Controls</h3>
+        <div class="skin-editor-context">
+          <span id="skinEditorContextGame" class="skin-editor-chip">Game: n/a</span>
+          <span id="skinEditorContextSchema" class="skin-editor-chip">Schema: n/a</span>
+          <span id="skinEditorContextSource" class="skin-editor-chip">Source: n/a</span>
+        </div>
+        <section class="skin-editor-section">
+          <h4>Live Preview Canvas</h4>
+          <div class="skin-editor-preview-toolbar">
+            <label class="debug-tool-label" for="skinEditorPreviewItemSelect">
+              Focus Item
+              <select id="skinEditorPreviewItemSelect" class="debug-tool-field">
+                <option value="paddle">Paddle</option>
+                <option value="ball">Ball</option>
+                <option value="brick">Brick</option>
+              </select>
+            </label>
+          </div>
+          <canvas
+            id="skinEditorPreviewCanvas"
+            class="skin-editor-preview-canvas"
+            width="720"
+            height="260"
+            aria-label="Skin preview canvas"
+          ></canvas>
+          <p id="skinEditorPreviewNote" class="skin-editor-empty"></p>
+          <h4>Focused Item Controls</h4>
+          <div id="skinEditorFocusedControls" class="skin-editor-list"></div>
+        </section>
+        <section class="skin-editor-section">
+          <h4>Object Colors</h4>
+          <div id="skinEditorColorList" class="skin-editor-list"></div>
+        </section>
+        <section class="skin-editor-section">
+          <h4>Object Metrics</h4>
+          <div id="skinEditorSizingList" class="skin-editor-list"></div>
+        </section>
+        <section class="skin-editor-section">
+          <h4>Entities</h4>
+          <div id="skinEditorEntitiesList" class="skin-editor-entities"></div>
+        </section>
       </section>
       <section class="panel debug-tool-panel">
+        <h3>Skin JSON Input</h3>
+        <textarea id="skinEditorInput" class="debug-tool-field skin-editor-json" rows="18"></textarea>
+        <div class="debug-tool-actions">
+          <button type="button" id="skinEditorSyncVisualButton" class="debug-tool-control">Sync Visual From JSON</button>
+        </div>
         <h3>Skin Summary</h3>
         <pre id="skinEditorSummary" class="debug-tool-readout">Load active skin to inspect its payload.</pre>
       </section>

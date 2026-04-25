@@ -12,25 +12,6 @@ import { loadGameSkin } from '/games/shared/gameSkinLoader.js';
 
 const theme = new Theme(ThemeTokens);
 const BOUNCING_BALL_DEFAULT_SKIN_PATH = '/games/Bouncing-ball/assets/skins/default.json';
-const BOUNCING_BALL_FALLBACK_SKIN = Object.freeze({
-  documentKind: 'game-skin',
-  schema: 'games.bouncing-ball.skin/1',
-  version: 1,
-  gameId: 'Bouncing-ball',
-  name: 'Bouncing Ball Classic Skin',
-  colors: {
-    background: '#05070a',
-    wall: '#f4f4ef',
-    text: '#f4f4ef',
-    muted: '#9ba3b3',
-    panel: '#05070a',
-    ball: '#f4f4ef'
-  },
-  sizing: {
-    wallThickness: 18,
-    ballSize: 22
-  }
-});
 
 export function bootBouncingBall({
   documentRef = globalThis.document ?? null,
@@ -60,17 +41,17 @@ export function bootBouncingBall({
     input,
   });
 
-  const scene = new SceneClass({ skin: BOUNCING_BALL_FALLBACK_SKIN });
   void loadGameSkin({
     gameId: 'Bouncing-ball',
     defaultSkinPath: BOUNCING_BALL_DEFAULT_SKIN_PATH,
-    fallbackSkin: BOUNCING_BALL_FALLBACK_SKIN,
     fallbackSchema: 'games.bouncing-ball.skin/1'
   }).then(({ skin }) => {
-    scene.applySkin?.(skin);
+    const scene = new SceneClass({ skin });
+    engine.setScene(scene);
+    engine.start();
+  }).catch((error) => {
+    console.error('[Bouncing Ball] Skin load failed. Game startup stopped.', error);
   });
-  engine.setScene(scene);
-  engine.start();
 
   canvas.addEventListener?.('click', async () => {
     const fullscreenState = engine.fullscreen?.getState?.();

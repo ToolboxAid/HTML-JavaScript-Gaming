@@ -1,0 +1,165 @@
+body[data-tool-id="skin-editor"] .skin-editor-grid {
+  grid-template-columns: minmax(420px, 1fr) minmax(420px, 1fr);
+  align-items: start;
+}
+
+body[data-tool-id="skin-editor"] .skin-editor-visual-panel {
+  max-height: 76vh;
+  overflow: auto;
+}
+
+body[data-tool-id="skin-editor"] .skin-editor-context {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+body[data-tool-id="skin-editor"] .skin-editor-chip {
+  border: 1px solid var(--debug-tool-border);
+  border-radius: 999px;
+  padding: 4px 10px;
+  background: rgba(15, 10, 32, 0.72);
+  color: var(--debug-tool-text);
+  font-size: 0.84rem;
+}
+
+body[data-tool-id="skin-editor"] .skin-editor-section {
+  border: 1px solid var(--debug-tool-border);
+  border-radius: 10px;
+  padding: 10px;
+  background: linear-gradient(180deg, rgba(56, 18, 120, 0.36) 0%, rgba(32, 11, 68, 0.5) 100%);
+}
+
+body[data-tool-id="skin-editor"] .skin-editor-section h4 {
+  margin: 0 0 8px;
+  font-size: 0.98rem;
+  color: #ffffff;
+}
+
+body[data-tool-id="skin-editor"] .skin-editor-preview-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+body[data-tool-id="skin-editor"] .skin-editor-preview-canvas {
+  width: 100%;
+  min-height: 220px;
+  border-radius: 10px;
+  border: 1px solid var(--debug-tool-border);
+  background: rgba(9, 6, 18, 0.9);
+}
+
+body[data-tool-id="skin-editor"] .skin-editor-list {
+  display: grid;
+  gap: 8px;
+}
+
+body[data-tool-id="skin-editor"] .skin-editor-row {
+  display: grid;
+  grid-template-columns: minmax(160px, 1fr) 52px minmax(140px, 1fr);
+  gap: 8px;
+  align-items: center;
+}
+
+body[data-tool-id="skin-editor"] .skin-editor-row--number {
+  grid-template-columns: minmax(160px, 1fr) minmax(100px, 1fr) minmax(90px, 120px);
+}
+
+body[data-tool-id="skin-editor"] .skin-editor-row--brick-row {
+  grid-template-columns: minmax(160px, 1fr) 152px minmax(140px, 1fr);
+}
+
+body[data-tool-id="skin-editor"] .skin-editor-row-label {
+  color: var(--debug-tool-text);
+  font-size: 0.9rem;
+  line-height: 1.2;
+  word-break: break-word;
+}
+
+body[data-tool-id="skin-editor"] .skin-editor-color-input {
+  width: 46px;
+  min-width: 46px;
+  height: 32px;
+  padding: 0;
+  border-radius: 8px;
+  border: 1px solid var(--debug-tool-border);
+  background: rgba(15, 10, 32, 0.72);
+  cursor: pointer;
+}
+
+body[data-tool-id="skin-editor"] .skin-editor-field,
+body[data-tool-id="skin-editor"] .skin-editor-slider,
+body[data-tool-id="skin-editor"] .skin-editor-checkbox {
+  min-height: 32px;
+  border-radius: 8px;
+  border: 1px solid var(--debug-tool-border);
+  background: rgba(15, 10, 32, 0.72);
+  color: var(--debug-tool-text);
+}
+
+body[data-tool-id="skin-editor"] .skin-editor-field {
+  padding-inline: 8px;
+}
+
+body[data-tool-id="skin-editor"] .skin-editor-slider {
+  padding: 0 6px;
+}
+
+body[data-tool-id="skin-editor"] .skin-editor-checkbox-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+body[data-tool-id="skin-editor"] .skin-editor-checkbox {
+  width: 18px;
+  height: 18px;
+  min-height: 18px;
+}
+
+body[data-tool-id="skin-editor"] .skin-editor-empty {
+  margin: 0;
+  color: var(--debug-tool-text-muted);
+  font-size: 0.9rem;
+}
+
+body[data-tool-id="skin-editor"] .skin-editor-entities {
+  display: grid;
+  gap: 10px;
+}
+
+body[data-tool-id="skin-editor"] .skin-editor-entity-group {
+  border: 1px solid var(--debug-tool-border);
+  border-radius: 10px;
+  padding: 8px;
+  background: rgba(23, 10, 50, 0.58);
+}
+
+body[data-tool-id="skin-editor"] .skin-editor-entity-group > summary {
+  cursor: pointer;
+  color: #ffffff;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+body[data-tool-id="skin-editor"] .skin-editor-entity-fields {
+  display: grid;
+  gap: 8px;
+}
+
+body[data-tool-id="skin-editor"] .skin-editor-json {
+  min-height: 340px;
+  font-family: "Cascadia Code", Consolas, "Courier New", monospace;
+}
+
+@media (max-width: 1100px) {
+  body[data-tool-id="skin-editor"] .skin-editor-grid {
+    grid-template-columns: 1fr;
+  }
+
+  body[data-tool-id="skin-editor"] .skin-editor-visual-panel {
+    max-height: none;
+  }
+}

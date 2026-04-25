@@ -24,31 +24,6 @@ const BUILD_DEBUG_MODE = 'prod';
 const BUILD_DEBUG_ENABLED = false;
 const DEBUG_STATE_STORAGE_KEY = 'toolbox.sample.breakout.debug.enabled';
 const BREAKOUT_DEFAULT_SKIN_PATH = '/games/Breakout/assets/skins/default.json';
-const BREAKOUT_FALLBACK_SKIN = Object.freeze({
-  documentKind: 'game-skin',
-  schema: 'games.breakout.skin/1',
-  version: 1,
-  gameId: 'Breakout',
-  name: 'Breakout Classic Skin',
-  colors: {
-    background: '#000000',
-    wall: '#f8f8f2',
-    paddle: '#f8f8f2',
-    ball: '#f8f8f2',
-    text: '#04040A',
-    muted: '#a0a0a0',
-    panel: '#000000',
-    brickRows: ['#ff595e', '#ff924c', '#ffca3a', '#8ac926', '#1982c4', '#6a4c93']
-  },
-  sizing: {
-    paddleWidth: 118,
-    paddleHeight: 18,
-    ballSize: 14,
-    brickWidth: 78,
-    brickHeight: 24,
-    brickGap: 6
-  }
-});
 
 function sanitizeText(value) {
   return typeof value === 'string' ? value.trim() : '';
@@ -163,23 +138,21 @@ export function bootBreakout({
 
   updateDebugShowcaseUi(documentRef, debugConfig, devConsoleIntegration, appliedPresetCommand);
 
-  const scene = new SceneClass({
-    devConsoleIntegration,
-    debugConfig,
-    skin: BREAKOUT_FALLBACK_SKIN
-  });
-
   void loadGameSkin({
     gameId: 'Breakout',
     defaultSkinPath: BREAKOUT_DEFAULT_SKIN_PATH,
-    fallbackSkin: BREAKOUT_FALLBACK_SKIN,
     fallbackSchema: 'games.breakout.skin/1'
   }).then(({ skin }) => {
-    scene.applySkin?.(skin);
+    const scene = new SceneClass({
+      devConsoleIntegration,
+      debugConfig,
+      skin
+    });
+    engine.setScene(scene);
+    engine.start();
+  }).catch((error) => {
+    console.error('[Breakout] Skin load failed. Game startup stopped.', error);
   });
-
-  engine.setScene(scene);
-  engine.start();
 
   canvas.addEventListener?.('click', async () => {
     const fullscreenState = engine.fullscreen?.getState?.();
