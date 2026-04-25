@@ -127,6 +127,11 @@
   color: #ffffff;
 }
 
+.game-tool-roundtrip p > a {
+  font-size: calc(1em + 1px);
+  font-weight: 700;
+}
+
 .game-tool-roundtrip h4 {
   margin: 0 0 6px;
 }

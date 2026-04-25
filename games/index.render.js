@@ -237,8 +237,9 @@ function renderCard(row, instanceKey = "main") {
   article.dataset.gameId = row.id;
 
   const launchHref = row.workspaceHref || "";
+  const previewLaunchHref = row.href || "";
   const previewHtml = row.preview
-    ? `<a class="game-preview-link" href="${escapeHtml(launchHref || "#")}" ${launchHref ? "" : "aria-disabled=\"true\""}><img class="game-thumb" loading="lazy" decoding="async" alt="${escapeHtml(row.title)} thumbnail" src="${escapeHtml(row.preview)}"></a>`
+    ? `<a class="game-preview-link" href="${escapeHtml(previewLaunchHref || "#")}" ${previewLaunchHref ? "" : "aria-disabled=\"true\""}><img class="game-thumb" loading="lazy" decoding="async" alt="${escapeHtml(row.title)} thumbnail" src="${escapeHtml(row.preview)}"></a>`
     : `<span class="game-preview-link game-preview-missing">No Preview</span>`;
 
   const pinInputId = `game-pin-${escapeHtml(row.id)}-${escapeHtml(instanceKey)}`;
