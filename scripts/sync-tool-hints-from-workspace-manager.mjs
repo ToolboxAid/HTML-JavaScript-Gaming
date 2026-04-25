@@ -193,6 +193,7 @@ function syncToolHints(metadata) {
     const gameDir = getGameDirFromHref(game?.href);
     const existing = normalizeToolHints(game?.toolHints);
     const derivedFromKinds = [];
+    const hasCatalog = !!gameDir && fs.existsSync(path.join(gameDir, "assets", GAME_ASSET_CATALOG_FILENAME));
 
     readWorkspaceAssetKinds(gameDir).forEach((kind) => {
       const mapped = KIND_TO_TOOL_HINTS[kind] || [];
@@ -200,8 +201,9 @@ function syncToolHints(metadata) {
     });
 
     const derivedFromToolsManifest = readToolHintsFromToolsManifest(gameDir);
-    const merged = normalizeToolHints([...existing, ...derivedFromKinds, ...derivedFromToolsManifest]);
-    const invalid = merged.filter((toolId) => !knownToolIds.has(toolId));
+    const derived = normalizeToolHints([...derivedFromKinds, ...derivedFromToolsManifest]);
+    const next = hasCatalog ? derived : existing;
+    const invalid = next.filter((toolId) => !knownToolIds.has(toolId));
     if (invalid.length > 0) {
       throw new Error(`${gameId}: unknown tool id(s): ${invalid.join(", ")}`);
     }
@@ -212,8 +214,8 @@ function syncToolHints(metadata) {
       warnings.push(`${gameId}: no ${GAME_ASSET_CATALOG_FILENAME}`);
     }
 
-    if (JSON.stringify(existing) !== JSON.stringify(merged) || !Array.isArray(game.toolHints)) {
-      game.toolHints = merged;
+    if (JSON.stringify(existing) !== JSON.stringify(next) || !Array.isArray(game.toolHints)) {
+      game.toolHints = next;
       updated += 1;
     }
   }

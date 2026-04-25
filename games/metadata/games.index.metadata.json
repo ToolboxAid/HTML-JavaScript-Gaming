@@ -28,11 +28,8 @@
       "debugShowcase": false,
       "requiresService": false,
       "toolHints": [
-        "skin-editor",
-        "physics-sandbox",
-        "state-inspector",
-        "replay-visualizer",
-        "palette-browser"
+        "palette-browser",
+        "skin-editor"
       ]
     },
     {
@@ -55,11 +52,8 @@
       "debugShowcase": true,
       "requiresService": false,
       "toolHints": [
-        "skin-editor",
-        "sprite-editor",
-        "tile-map-editor",
-        "replay-visualizer",
-        "palette-browser"
+        "palette-browser",
+        "skin-editor"
       ],
       "engineClassesUsed": [
         "engine/core/Engine",
@@ -89,11 +83,8 @@
       "debugShowcase": false,
       "requiresService": false,
       "toolHints": [
-        "skin-editor",
-        "physics-sandbox",
-        "performance-profiler",
-        "state-inspector",
-        "palette-browser"
+        "palette-browser",
+        "skin-editor"
       ],
       "engineClassesUsed": [
         "engine/core/Engine",
@@ -157,11 +148,8 @@
       "debugShowcase": false,
       "requiresService": false,
       "toolHints": [
-        "skin-editor",
-        "sprite-editor",
-        "tile-map-editor",
-        "replay-visualizer",
-        "palette-browser"
+        "palette-browser",
+        "skin-editor"
       ],
       "engineClassesUsed": [
         "engine/core/Engine",
@@ -191,14 +179,13 @@
       "debugShowcase": true,
       "requiresService": false,
       "toolHints": [
-        "vector-asset-studio",
-        "vector-map-editor",
-        "asset-pipeline-tool",
         "palette-browser",
         "asset-browser",
         "sprite-editor",
         "tile-map-editor",
-        "parallax-editor"
+        "parallax-editor",
+        "vector-asset-studio",
+        "asset-pipeline-tool"
       ],
       "engineClassesUsed": [
         "engine/audio/index/GaplessLoopPlayer",
@@ -240,9 +227,6 @@
       "debugShowcase": false,
       "requiresService": false,
       "toolHints": [
-        "sprite-editor",
-        "tile-map-editor",
-        "asset-pipeline-tool",
         "palette-browser",
         "asset-browser"
       ],
@@ -276,9 +260,6 @@
       "debugShowcase": false,
       "requiresService": false,
       "toolHints": [
-        "vector-asset-studio",
-        "replay-visualizer",
-        "state-inspector",
         "palette-browser",
         "asset-browser"
       ],
