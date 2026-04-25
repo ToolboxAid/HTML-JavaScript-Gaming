@@ -9,6 +9,13 @@ const refs = {
   output: document.getElementById("assetPipelineOutput")
 };
 
+function setOutput(value) {
+  if (!(refs.output instanceof HTMLElement)) {
+    return;
+  }
+  refs.output.textContent = typeof value === "string" ? value : toPrettyJson(value);
+}
+
 function normalizeText(value) {
   return typeof value === "string" ? value.trim() : "";
 }
@@ -175,12 +182,23 @@ function runPipeline() {
   const payload = getInputPayload();
   if (!payload) {
     setStatus("Input JSON is invalid. Provide a pipeline options object.");
+    setOutput({
+      schema: "html-js-gaming.asset-pipeline-tooling",
+      version: 1,
+      status: "invalid",
+      errors: [
+        {
+          code: "PIPELINE_INPUT_INVALID",
+          stage: "load",
+          message: "Pipeline input must be a valid JSON object."
+        }
+      ],
+      records: []
+    });
     return;
   }
   const result = runAssetPipelineTooling(payload);
-  if (refs.output instanceof HTMLElement) {
-    refs.output.textContent = toPrettyJson(result);
-  }
+  setOutput(result);
   const recordCount = Array.isArray(result.records) ? result.records.length : 0;
   setStatus(`Pipeline ${result.status || "unknown"}; records=${recordCount}.`);
 }
@@ -249,8 +267,34 @@ function bootAssetPipelineTool() {
     setStatus("Awaiting source pipeline JSON. No default payload is applied.");
   }
   void tryLoadPresetFromQuery();
-  return { runPipeline };
+  window.assetPipelineToolApp = assetPipelineToolApi;
+  return assetPipelineToolApi;
 }
+
+const assetPipelineToolApi = {
+  captureProjectState() {
+    return {
+      pipelineInput: refs.input instanceof HTMLTextAreaElement ? refs.input.value : ""
+    };
+  },
+  applyProjectState(snapshot) {
+    if (!(refs.input instanceof HTMLTextAreaElement)) {
+      return false;
+    }
+    const nextInput = typeof snapshot?.pipelineInput === "string"
+      ? snapshot.pipelineInput
+      : (snapshot?.pipelinePayload && typeof snapshot.pipelinePayload === "object"
+        ? toPrettyJson(snapshot.pipelinePayload)
+        : "");
+    if (!nextInput) {
+      return false;
+    }
+    refs.input.value = nextInput;
+    setStatus("Pipeline state loaded from workspace source data.");
+    return true;
+  },
+  runPipeline
+};
 
 registerToolBootContract("asset-pipeline-tool", {
   init: bootAssetPipelineTool,
@@ -258,7 +302,7 @@ registerToolBootContract("asset-pipeline-tool", {
     return true;
   },
   getApi() {
-    return { runPipeline };
+    return window.assetPipelineToolApp || assetPipelineToolApi;
   }
 });
 

@@ -605,7 +605,7 @@ function resolveAcceptedAssetKindsForTool(toolId = "") {
     "3d-asset-viewer": ["3d", "model", "mesh"],
     "3d-camera-path-editor": ["camera-path", "3d-camera-path"],
     "asset-browser": ["*"],
-    "asset-pipeline-tool": ["*"],
+    "asset-pipeline-tool": [],
     "tile-model-converter": ["tilemap", "tileset", "vector", "model", "3d"]
   };
   return byTool[normalizedToolId] || [];

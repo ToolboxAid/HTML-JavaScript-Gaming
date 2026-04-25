@@ -236,6 +236,27 @@ function createPaletteBrowserAdapter() {
   };
 }
 
+function createAssetPipelineAdapter() {
+  const api = readToolApi("asset-pipeline-tool", "assetPipelineToolApp");
+  if (!api || typeof api.captureProjectState !== "function" || typeof api.applyProjectState !== "function") {
+    return buildUnavailableAdapter("asset-pipeline-tool");
+  }
+
+  return {
+    toolId: "asset-pipeline-tool",
+    ready: true,
+    getProjectName() {
+      return "Asset Pipeline Workflow";
+    },
+    captureState() {
+      return cloneValue(api.captureProjectState());
+    },
+    applyState(state) {
+      return api.applyProjectState(cloneValue(state)) === true;
+    }
+  };
+}
+
 export function getProjectAdapter(toolId) {
   switch (toolId) {
     case "vector-map-editor":
@@ -252,6 +273,8 @@ export function getProjectAdapter(toolId) {
       return createAssetBrowserAdapter();
     case "palette-browser":
       return createPaletteBrowserAdapter();
+    case "asset-pipeline-tool":
+      return createAssetPipelineAdapter();
     default:
       return buildUnavailableAdapter(toolId);
   }
