@@ -1,5 +1,6 @@
 import { safeParseJson, toPrettyJson } from "../shared/debugInspectorData.js";
 import { registerToolBootContract } from "../shared/toolBootContract.js";
+import { readSharedPaletteHandoff } from "../shared/assetUsageIntegration.js";
 import {
   clearGameSkinOverride,
   loadGameSkin,
@@ -76,7 +77,8 @@ const state = {
   presetSkin: null,
   selectedObjectKey: "",
   selectedObjectKeys: [],
-  selectedColorSwatch: ""
+  selectedColorSwatch: "",
+  skipAutoSelectOnce: false
 };
 
 function normalizeText(value) {
@@ -118,11 +120,11 @@ function getGameOptionById(gameId) {
 }
 
 function getSelectedGameOption() {
-  return getGameOptionById(state.activeGameId) || GAME_OPTIONS[0] || null;
+  return getGameOptionById(state.activeGameId);
 }
 
 function resolveActiveGameOption(initialGameId = "") {
-  const selected = getGameOptionById(initialGameId) || GAME_OPTIONS[0] || null;
+  const selected = getGameOptionById(initialGameId);
   state.activeGameId = selected ? selected.id : "";
   return selected;
 }
@@ -130,6 +132,22 @@ function resolveActiveGameOption(initialGameId = "") {
 function getObjectKeys() {
   const objects = toObject(state.activeSkin?.objects);
   return Object.keys(objects);
+}
+
+function getValidSelectedObjectKeys() {
+  const keys = getObjectKeys();
+  if (!keys.length || !Array.isArray(state.selectedObjectKeys)) {
+    return [];
+  }
+  return Array.from(new Set(state.selectedObjectKeys.filter((key) => keys.includes(key))));
+}
+
+function updateFlattenButtonState() {
+  const validSelection = getValidSelectedObjectKeys();
+  state.selectedObjectKeys = validSelection;
+  if (refs.flattenObjectsButton instanceof HTMLButtonElement) {
+    refs.flattenObjectsButton.disabled = validSelection.length < 2;
+  }
 }
 
 function setStatus(message) {
@@ -249,18 +267,26 @@ function ensureSelectedObjectKey() {
   if (!keys.length) {
     state.selectedObjectKey = "";
     state.selectedObjectKeys = [];
+    updateFlattenButtonState();
     return;
   }
+
+  const normalizedSelection = getValidSelectedObjectKeys();
+  if (state.skipAutoSelectOnce && !normalizeText(state.selectedObjectKey)) {
+    state.skipAutoSelectOnce = false;
+    state.selectedObjectKeys = normalizedSelection;
+    updateFlattenButtonState();
+    return;
+  }
+
   if (!keys.includes(state.selectedObjectKey)) {
     state.selectedObjectKey = keys[0];
   }
-  const normalizedSelection = Array.isArray(state.selectedObjectKeys)
-    ? state.selectedObjectKeys.filter((key) => keys.includes(key))
-    : [];
   if (!normalizedSelection.includes(state.selectedObjectKey)) {
     normalizedSelection.unshift(state.selectedObjectKey);
   }
   state.selectedObjectKeys = Array.from(new Set(normalizedSelection));
+  updateFlattenButtonState();
 }
 
 function parseHexForPicker(value) {
@@ -611,6 +637,7 @@ function syncSelectedObjectUiFromSelection() {
 function selectObjectKey(objectKey) {
   state.selectedObjectKey = objectKey;
   syncSelectedObjectUiFromSelection();
+  updateFlattenButtonState();
   renderObjectList();
   renderPaletteList();
   renderObjectControls();
@@ -624,6 +651,7 @@ function setObjectSelected(objectKey, selected) {
     : currentSelection.filter((key) => key !== objectKey);
   state.selectedObjectKeys = nextSelection;
   syncSelectedObjectUiFromSelection();
+  updateFlattenButtonState();
   renderObjectList();
   renderPaletteList();
   renderObjectControls();
@@ -691,38 +719,45 @@ function renderPaletteList() {
     return;
   }
   refs.paletteList.innerHTML = "";
-  const objects = toObject(state.activeSkin?.objects);
-  const colorMap = new Map();
-  Object.entries(objects).forEach(([objectKey, objectValue]) => {
-    const shapeObject = toObject(objectValue);
-    Object.entries(shapeObject).forEach(([propertyKey, propertyValue]) => {
-      const color = typeof propertyValue === "string" ? normalizeText(propertyValue) : "";
+  const sharedPalette = readSharedPaletteHandoff();
+  const entries = Array.isArray(sharedPalette?.colors) ? sharedPalette.colors : [];
+  const swatches = entries
+    .map((entry, index) => {
+      const color = normalizeText(entry?.hex);
       if (!parseHexForPicker(color)) {
-        return;
+        return null;
       }
-      const token = color.toLowerCase();
-      if (!colorMap.has(token)) {
-        colorMap.set(token, {
-          id: `${objectKey}.${propertyKey}`,
-          label: `${objectKey}.${propertyKey}`,
-          color
-        });
-      }
-    });
-  });
-  const swatches = Array.from(colorMap.values());
+      const swatchName = normalizeText(entry?.name) || `Swatch ${index + 1}`;
+      const swatchSymbol = normalizeText(entry?.symbol);
+      const suffix = swatchSymbol ? ` [${swatchSymbol}]` : "";
+      return {
+        id: `${sharedPalette?.paletteId || "shared-palette"}.${index}`,
+        label: `${swatchName}${suffix}`,
+        color
+      };
+    })
+    .filter((entry) => Boolean(entry));
+
+  if (!sharedPalette) {
+    const empty = document.createElement("p");
+    empty.className = "skin-editor-empty";
+    empty.textContent = "No shared palette selected. Open Palette Browser and select Use in Workspace Manager.";
+    refs.paletteList.appendChild(empty);
+    return;
+  }
 
   if (!swatches.length) {
     const empty = document.createElement("p");
     empty.className = "skin-editor-empty";
-    empty.textContent = "No object colors found.";
+    empty.textContent = "Shared palette has no valid swatches.";
     refs.paletteList.appendChild(empty);
     return;
   }
 
   const paletteLabel = document.createElement("p");
   paletteLabel.className = "skin-editor-empty";
-  paletteLabel.textContent = `Palette rebuilt from object colors (${swatches.length}).`;
+  const paletteName = normalizeText(sharedPalette.displayName) || normalizeText(sharedPalette.paletteId) || "Shared Palette";
+  paletteLabel.textContent = `Shared palette '${paletteName}' (${swatches.length}).`;
   refs.paletteList.appendChild(paletteLabel);
 
   const selectedObjectColor = normalizeText(state.selectedColorSwatch || getSelectedObjectColorValue()).toLowerCase();
@@ -757,6 +792,9 @@ function renderObjectList() {
   }
   refs.objectList.innerHTML = "";
   const keys = getObjectKeys();
+  const selectedObjectKeys = getValidSelectedObjectKeys();
+  state.selectedObjectKeys = selectedObjectKeys;
+  updateFlattenButtonState();
   if (!keys.length) {
     const note = document.createElement("p");
     note.className = "skin-editor-empty";
@@ -772,7 +810,7 @@ function renderObjectList() {
     const checkbox = document.createElement("input");
     checkbox.type = "checkbox";
     checkbox.className = "skin-editor-object-check";
-    checkbox.checked = state.selectedObjectKeys.includes(objectKey);
+    checkbox.checked = selectedObjectKeys.includes(objectKey);
     checkbox.addEventListener("click", (event) => {
       event.stopPropagation();
     });
@@ -1062,6 +1100,7 @@ function drawSelectedObjectPreview() {
 
 function renderWorkbench() {
   ensureSelectedObjectKey();
+  updateFlattenButtonState();
   syncSelectedObjectUiFromSelection();
   renderObjectList();
   renderPaletteList();
@@ -1077,6 +1116,7 @@ function setCurrentSkinDocument(rawSkin, source = "loaded") {
   const normalized = sanitizePositiveDimensionsInDocument(toObjectCentricSkinDocument(game, rawSkin));
   state.activeSkin = deepClone(normalized) || normalized;
   state.selectedObjectKeys = [];
+  state.skipAutoSelectOnce = false;
   updateEditorFromState(source);
   renderWorkbench();
 }
@@ -1084,7 +1124,7 @@ function setCurrentSkinDocument(rawSkin, source = "loaded") {
 async function loadActiveSkinForSelectedGame() {
   const game = getSelectedGameOption();
   if (!game) {
-    setStatus("No supported game context was resolved.");
+    setStatus("Missing game context. Launch Skin Editor from a game/workspace link that includes a valid gameId.");
     return;
   }
   const fallbackSkin = {
@@ -1333,9 +1373,10 @@ function flattenSelectedObjects() {
     state.activeSkin.objects = {};
   }
   const objects = state.activeSkin.objects;
-  const selectedKeys = Array.from(
-    new Set(state.selectedObjectKeys.filter((key) => Object.prototype.hasOwnProperty.call(objects, key)))
-  );
+  const selectedKeys = getValidSelectedObjectKeys()
+    .filter((key) => Object.prototype.hasOwnProperty.call(objects, key));
+  state.selectedObjectKeys = selectedKeys;
+  updateFlattenButtonState();
   if (selectedKeys.length < 2) {
     setStatus("Select at least 2 objects to flatten.");
     return;
@@ -1361,10 +1402,11 @@ function flattenSelectedObjects() {
     color: firstColor,
     components
   };
-  state.selectedObjectKey = nextKey;
-  state.selectedObjectKeys = [nextKey];
+  state.selectedObjectKey = "";
+  state.selectedObjectKeys = [];
+  state.skipAutoSelectOnce = true;
   if (refs.newShapeName instanceof HTMLInputElement) {
-    refs.newShapeName.value = nextKey;
+    refs.newShapeName.value = "";
   }
   updateEditorFromState("visual-editor");
   renderWorkbench();
@@ -1416,6 +1458,7 @@ async function loadPresetFromQuery() {
 }
 
 function bindEvents() {
+  updateFlattenButtonState();
   refs.loadButton?.addEventListener("click", () => {
     void loadActiveSkinForSelectedGame();
   });
@@ -1453,9 +1496,19 @@ function bindEvents() {
 
 async function bootSkinEditor() {
   const { gameId, presetLoaded } = await loadPresetFromQuery();
-  resolveActiveGameOption(gameId);
+  const resolvedGame = resolveActiveGameOption(gameId);
   bindEvents();
+  if (!resolvedGame) {
+    setStatus("Missing game context. Launch Skin Editor from a game/workspace link that includes a valid gameId.");
+    updateFlattenButtonState();
+    renderPaletteList();
+    return;
+  }
   await loadActiveSkinForSelectedGame();
+  if (!readSharedPaletteHandoff()) {
+    setStatus("Shared palette is required. Open Palette Browser and use 'Use in Workspace Manager' first.");
+    return;
+  }
   if (presetLoaded) {
     setStatus("Loaded game preset. Object workbench is ready.");
   }
