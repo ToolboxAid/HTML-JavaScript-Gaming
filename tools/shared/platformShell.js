@@ -35,15 +35,6 @@ const PRESERVED_TOOL_STATE_KEYS = new Set([
   HEADER_EXPANDED_STORAGE_KEY,
   WORKSPACE_LAUNCH_SIGNATURE_STORAGE_KEY
 ]);
-const TOOLS_REQUIRING_WORKSPACE_TOOL_STATE = new Set([
-  "skin-editor",
-  "sprite-editor",
-  "tile-map-editor",
-  "parallax-editor",
-  "vector-map-editor",
-  "vector-asset-studio"
-]);
-
 function getPageMode() {
   return document.body.dataset.toolsPlatformPage || "tool";
 }
@@ -982,30 +973,18 @@ function applyDocumentMetadata(currentTool) {
   document.body.classList.add("tools-platform-surface");
   const workspaceContext = isWorkspaceManagerContext();
   const lockState = resolveWorkspaceToolLockState();
-  const searchParams = typeof window !== "undefined"
-    ? new URLSearchParams(window.location.search)
-    : null;
-  const launchHasSourcePreset = searchParams?.has("samplePresetPath") === true;
   const isToolSurfacePage = getPageMode() !== "landing";
   const isPaletteBrowser = currentTool?.id === "palette-browser";
-  const toolRequiresState = TOOLS_REQUIRING_WORKSPACE_TOOL_STATE.has(currentTool?.id || "");
-  const toolStateMissingLock = workspaceContext
-    && isToolSurfacePage
-    && toolRequiresState
-    && !launchHasSourcePreset
-    && !lockState.hasToolState(currentTool?.id);
   const workspaceMissingLock = workspaceContext && isToolSurfacePage && !lockState.workspaceReady;
   const paletteMissingLock = workspaceContext
     && isToolSurfacePage
     && lockState.workspaceReady
     && !lockState.paletteReady
     && !isPaletteBrowser;
-  const shouldLockToolSurface = workspaceMissingLock || paletteMissingLock || toolStateMissingLock;
+  const shouldLockToolSurface = workspaceMissingLock || paletteMissingLock;
   const lockMessage = workspaceMissingLock
     ? "Create or open a workspace to use this tool."
-    : toolStateMissingLock
-      ? "Workspace loaded with no source tool JSON for this tool. Load workspace JSON that includes this tool state."
-      : "Select a shared palette in Palette Browser to use this tool.";
+    : "Select a shared palette in Palette Browser to use this tool.";
   document.body.classList.toggle("tools-platform-workspace-context", workspaceContext);
   document.body.classList.toggle("tools-platform-workspace-tool-locked", shouldLockToolSurface);
   if (lastLockedSurfaceElement) {

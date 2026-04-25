@@ -2,6 +2,7 @@ import {
   createPaletteHandoff,
   getSharedLaunchContext,
   getToolDisplayName,
+  SHARED_PALETTE_HANDOFF_EVENT,
   readSharedPaletteHandoff,
   writeSharedPaletteHandoff
 } from "../shared/assetUsageIntegration.js";
@@ -280,6 +281,24 @@ function selectSharedPaletteFromHandoff() {
     return false;
   }
   state.selectedPaletteId = mirrored.id;
+  return true;
+}
+
+function syncSelectionFromSharedHandoff(options = {}) {
+  const shouldRender = options.render === true;
+  const previousPaletteId = state.selectedPaletteId;
+  const selected = selectSharedPaletteFromHandoff();
+  if (!selected) {
+    return false;
+  }
+  if (previousPaletteId !== state.selectedPaletteId) {
+    state.selectedSwatchIndex = 0;
+  }
+  if (shouldRender) {
+    renderPaletteList();
+    renderSelectedPalette();
+    renderStoredSelection();
+  }
   return true;
 }
 
@@ -871,10 +890,13 @@ function bindEvents() {
   refs.copyPaletteJsonButton.addEventListener("click", copyPaletteJson);
   refs.exportPaletteJsonButton.addEventListener("click", exportPaletteJson);
   refs.usePaletteButton.addEventListener("click", usePaletteInActiveTools);
+  window.addEventListener(SHARED_PALETTE_HANDOFF_EVENT, () => {
+    syncSelectionFromSharedHandoff({ render: true });
+  });
 }
 
 function init() {
-  const selectedFromHandoff = selectSharedPaletteFromHandoff();
+  const selectedFromHandoff = syncSelectionFromSharedHandoff();
   if (!selectedFromHandoff) {
     const firstPalette = getAllPalettes()[0] ?? null;
     state.selectedPaletteId = firstPalette?.id ?? "";
@@ -884,6 +906,9 @@ function init() {
   renderSelectedPalette();
   renderStoredSelection();
   bindEvents();
+  window.setTimeout(() => {
+    syncSelectionFromSharedHandoff({ render: true });
+  }, 400);
 }
 
 let initialized = false;
@@ -903,7 +928,7 @@ const paletteBrowserApi = {
     state.selectedSwatchIndex = Number.isInteger(snapshot?.selectedSwatchIndex) ? snapshot.selectedSwatchIndex : 0;
     state.customPalettes = Array.isArray(snapshot?.customPalettes) ? structuredClone(snapshot.customPalettes) : [];
     if (isWorkspaceContext()) {
-      selectSharedPaletteFromHandoff();
+      syncSelectionFromSharedHandoff();
     }
     saveCustomPalettes();
     refs.searchInput.value = state.search;

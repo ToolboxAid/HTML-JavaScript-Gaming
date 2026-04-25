@@ -2,6 +2,8 @@ import { getToolById } from "../toolRegistry.js";
 
 export const SHARED_ASSET_HANDOFF_KEY = "toolboxaid.shared.assetHandoff";
 export const SHARED_PALETTE_HANDOFF_KEY = "toolboxaid.shared.paletteHandoff";
+export const SHARED_ASSET_HANDOFF_EVENT = "toolboxaid.shared.assetHandoff.changed";
+export const SHARED_PALETTE_HANDOFF_EVENT = "toolboxaid.shared.paletteHandoff.changed";
 
 export const SHARED_ACTION_LABELS = Object.freeze({
   browseAssets: "Browse Assets",
@@ -63,6 +65,13 @@ function normalizePaletteColors(value) {
       hex: sanitizeText(entry.hex),
       name: sanitizeText(entry.name)
     }));
+}
+
+function dispatchHandoffChanged(eventName, detail = {}) {
+  if (typeof window === "undefined" || typeof window.dispatchEvent !== "function") {
+    return;
+  }
+  window.dispatchEvent(new CustomEvent(eventName, { detail }));
 }
 
 export function normalizeSharedAssetHandoff(raw) {
@@ -235,6 +244,11 @@ export function writeSharedAssetHandoff(handoff) {
     return false;
   }
   window.localStorage.setItem(SHARED_ASSET_HANDOFF_KEY, JSON.stringify(normalized));
+  dispatchHandoffChanged(SHARED_ASSET_HANDOFF_EVENT, {
+    key: SHARED_ASSET_HANDOFF_KEY,
+    action: "write",
+    handoff: normalized
+  });
   return true;
 }
 
@@ -247,6 +261,11 @@ export function writeSharedPaletteHandoff(handoff) {
     return false;
   }
   window.localStorage.setItem(SHARED_PALETTE_HANDOFF_KEY, JSON.stringify(normalized));
+  dispatchHandoffChanged(SHARED_PALETTE_HANDOFF_EVENT, {
+    key: SHARED_PALETTE_HANDOFF_KEY,
+    action: "write",
+    handoff: normalized
+  });
   return true;
 }
 
@@ -255,6 +274,10 @@ export function clearSharedAssetHandoff() {
     return false;
   }
   window.localStorage.removeItem(SHARED_ASSET_HANDOFF_KEY);
+  dispatchHandoffChanged(SHARED_ASSET_HANDOFF_EVENT, {
+    key: SHARED_ASSET_HANDOFF_KEY,
+    action: "clear"
+  });
   return true;
 }
 
@@ -263,5 +286,9 @@ export function clearSharedPaletteHandoff() {
     return false;
   }
   window.localStorage.removeItem(SHARED_PALETTE_HANDOFF_KEY);
+  dispatchHandoffChanged(SHARED_PALETTE_HANDOFF_EVENT, {
+    key: SHARED_PALETTE_HANDOFF_KEY,
+    action: "clear"
+  });
   return true;
 }
