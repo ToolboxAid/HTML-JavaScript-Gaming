@@ -115,9 +115,7 @@
       "debugShowcase": false,
       "requiresService": false,
       "toolHints": [
-        "vector-asset-studio",
-        "vector-map-editor",
-        "physics-sandbox"
+        "asset-browser"
       ],
       "engineClassesUsed": [
         "engine/core/Engine",
@@ -297,9 +295,7 @@
       "debugShowcase": false,
       "requiresService": false,
       "toolHints": [
-        "state-inspector",
-        "replay-visualizer",
-        "performance-profiler"
+        "asset-browser"
       ],
       "engineClassesUsed": [
         "engine/core/Engine",
@@ -329,9 +325,7 @@
       "debugShowcase": false,
       "requiresService": false,
       "toolHints": [
-        "tile-map-editor",
-        "sprite-editor",
-        "state-inspector"
+        "asset-browser"
       ],
       "engineClassesUsed": [
         "engine/core/Engine",
@@ -354,15 +348,18 @@
         "vector",
         "sample"
       ],
-      "preview": "",
+      "preview": "/games/vector-arcade-sample/assets/data/parallax/template-backdrop.svg",
       "href": "/games/vector-arcade-sample/index.html",
       "sampleTrack": true,
       "debugShowcase": false,
       "requiresService": false,
       "toolHints": [
-        "vector-asset-studio",
-        "vector-map-editor",
-        "tile-map-editor"
+        "palette-browser",
+        "parallax-editor",
+        "asset-browser",
+        "sprite-editor",
+        "tile-map-editor",
+        "vector-asset-studio"
       ]
     },
     {

@@ -1,0 +1,62 @@
+{
+  "schema": "html-js-gaming.game-asset-catalog",
+  "version": 1,
+  "gameId": "vector-arcade-sample",
+  "assets": {
+    "palette.vector-arcade.primary": {
+      "path": "/games/vector-arcade-sample/assets/data/palettes/vector-native-primary.palette.json",
+      "kind": "palette",
+      "source": "workspace-manager"
+    },
+    "parallax.vector-arcade.backdrop": {
+      "path": "/games/vector-arcade-sample/assets/data/parallax/template-backdrop.parallax.json",
+      "kind": "parallax",
+      "source": "workspace-manager"
+    },
+    "image.vector-arcade.backdrop-svg": {
+      "path": "/games/vector-arcade-sample/assets/data/parallax/template-backdrop.svg",
+      "kind": "image",
+      "source": "workspace-manager"
+    },
+    "sprite.vector-arcade.player": {
+      "path": "/games/vector-arcade-sample/assets/data/sprites/template-player.sprite.json",
+      "kind": "sprite",
+      "source": "workspace-manager"
+    },
+    "tilemap.vector-arcade.arena": {
+      "path": "/games/vector-arcade-sample/assets/data/tilemaps/template-arena.tilemap.json",
+      "kind": "tilemap",
+      "source": "workspace-manager"
+    },
+    "tileset.vector-arcade.ui": {
+      "path": "/games/vector-arcade-sample/assets/data/tilemaps/template-ui.tileset.json",
+      "kind": "tileset",
+      "source": "workspace-manager"
+    },
+    "vector.vector-arcade.player": {
+      "path": "/games/vector-arcade-sample/assets/data/vectors/template-player.vector.json",
+      "kind": "vector",
+      "source": "workspace-manager"
+    },
+    "vector.vector-arcade.title": {
+      "path": "/games/vector-arcade-sample/assets/data/vectors/template-title.vector.json",
+      "kind": "vector",
+      "source": "workspace-manager"
+    },
+    "vector.vector-arcade.hud": {
+      "path": "/games/vector-arcade-sample/assets/data/vectors/template-hud.vector.json",
+      "kind": "vector",
+      "source": "workspace-manager"
+    },
+    "vector.vector-arcade.obstacle-small": {
+      "path": "/games/vector-arcade-sample/assets/data/vectors/template-obstacle-small.vector.json",
+      "kind": "vector",
+      "source": "workspace-manager"
+    },
+    "vector.vector-arcade.obstacle-large": {
+      "path": "/games/vector-arcade-sample/assets/data/vectors/template-obstacle-large.vector.json",
+      "kind": "vector",
+      "source": "workspace-manager"
+    }
+  }
+}

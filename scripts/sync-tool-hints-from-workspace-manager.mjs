@@ -32,6 +32,7 @@ const KIND_TO_TOOL_HINTS = Object.freeze({
   skin: ["skin-editor"],
   sprite: ["sprite-editor"],
   tilemap: ["tile-map-editor"],
+  tileset: ["tile-map-editor"],
   parallax: ["parallax-editor"],
   vector: ["vector-asset-studio"],
   image: ["asset-browser"],

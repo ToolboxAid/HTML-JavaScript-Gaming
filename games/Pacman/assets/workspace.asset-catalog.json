@@ -1,0 +1,17 @@
+{
+  "schema": "html-js-gaming.game-asset-catalog",
+  "version": 1,
+  "gameId": "pacman",
+  "assets": {
+    "image.pacman.preview-svg": {
+      "path": "/games/Pacman/assets/images/preview.svg",
+      "kind": "image",
+      "source": "workspace-manager"
+    },
+    "image.pacman.preview-png": {
+      "path": "/games/Pacman/assets/images/preview.png",
+      "kind": "image",
+      "source": "workspace-manager"
+    }
+  }
+}

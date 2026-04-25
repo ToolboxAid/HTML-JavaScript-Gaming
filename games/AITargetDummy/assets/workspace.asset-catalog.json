@@ -1,0 +1,12 @@
+{
+  "schema": "html-js-gaming.game-asset-catalog",
+  "version": 1,
+  "gameId": "aitargetdummy",
+  "assets": {
+    "image.ai-target-dummy.preview": {
+      "path": "/games/AITargetDummy/assets/images/preview.svg",
+      "kind": "image",
+      "source": "workspace-manager"
+    }
+  }
+}
