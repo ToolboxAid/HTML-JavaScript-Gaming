@@ -101,6 +101,66 @@ const toolIds = manifest.tools.map((tool) => tool.id);
 const hasAvailableTools = toolIds.length > 0;
 let currentGameFrame = null;
 let currentGameHostContextId = "";
+const TOOL_LAUNCH_PARAM_PREFIXES = Object.freeze({
+  samplePresetPath: ["/samples/"],
+  gameHref: ["/games/"],
+  workspaceHref: ["/tools/Workspace%20Manager/", "/tools/Workspace Manager/"],
+  returnTo: ["/games/", "/samples/"]
+});
+
+function normalizeTextParam(value) {
+  return typeof value === "string" ? value.trim() : "";
+}
+
+function normalizeLocalHrefParam(value, allowedPrefixes = []) {
+  const normalized = normalizeTextParam(value).replace(/\\/g, "/");
+  if (!normalized || !normalized.startsWith("/") || normalized.includes("..")) {
+    return "";
+  }
+  return allowedPrefixes.some((prefix) => normalized.startsWith(prefix)) ? normalized : "";
+}
+
+function readForwardedToolLaunchParams() {
+  const searchParams = new URL(window.location.href).searchParams;
+  const forwarded = {};
+  const sampleId = normalizeTextParam(searchParams.get("sampleId"));
+  const sampleTitle = normalizeTextParam(searchParams.get("sampleTitle"));
+  const samplePresetPath = normalizeLocalHrefParam(
+    searchParams.get("samplePresetPath"),
+    TOOL_LAUNCH_PARAM_PREFIXES.samplePresetPath
+  );
+  const gameId = normalizeTextParam(searchParams.get("gameId"));
+  const gameTitle = normalizeTextParam(searchParams.get("gameTitle"));
+  const gameHref = normalizeLocalHrefParam(searchParams.get("gameHref"), TOOL_LAUNCH_PARAM_PREFIXES.gameHref);
+  const workspaceHref = normalizeLocalHrefParam(searchParams.get("workspaceHref"), TOOL_LAUNCH_PARAM_PREFIXES.workspaceHref);
+  const returnTo = normalizeLocalHrefParam(searchParams.get("returnTo"), TOOL_LAUNCH_PARAM_PREFIXES.returnTo);
+
+  if (sampleId) {
+    forwarded.sampleId = sampleId;
+  }
+  if (sampleTitle) {
+    forwarded.sampleTitle = sampleTitle;
+  }
+  if (samplePresetPath) {
+    forwarded.samplePresetPath = samplePresetPath;
+  }
+  if (gameId) {
+    forwarded.gameId = gameId;
+  }
+  if (gameTitle) {
+    forwarded.gameTitle = gameTitle;
+  }
+  if (gameHref) {
+    forwarded.gameHref = gameHref;
+  }
+  if (workspaceHref) {
+    forwarded.workspaceHref = workspaceHref;
+  }
+  if (returnTo) {
+    forwarded.returnTo = returnTo;
+  }
+  return forwarded;
+}
 
 function readSelectedToolId() {
   return refs.toolSelect instanceof HTMLSelectElement ? refs.toolSelect.value : "";
@@ -398,6 +458,7 @@ function mountSelectedTool(source = "manual") {
   updateStandaloneHref(toolId);
   writeQueryToolId(toolId, source === "init");
   const previousMount = runtime.getCurrentMount();
+  const launchParams = readForwardedToolLaunchParams();
   runtime.mountTool(toolId, {
     source,
     requestedAt: new Date().toISOString(),
@@ -406,7 +467,8 @@ function mountSelectedTool(source = "manual") {
       previousToolId: previousMount?.tool?.id || "",
       switchPosition: `${Math.max(1, getSelectedToolIndex() + 1)}/${Math.max(1, toolIds.length)}`
     },
-    state: optionalState
+    state: optionalState,
+    launchParams
   });
   syncControlState();
 }

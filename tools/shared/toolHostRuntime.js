@@ -16,9 +16,22 @@ function buildHostLaunchUrl(toolEntry, config = {}, hostContextId = "") {
     url.searchParams.set("hostContextId", hostContextId);
   }
 
+  if (config.launchParams && typeof config.launchParams === "object") {
+    Object.entries(config.launchParams).forEach(([key, value]) => {
+      const normalizedKey = typeof key === "string" ? key.trim() : "";
+      if (!normalizedKey || normalizedKey === "hosted" || normalizedKey === "hostToolId" || normalizedKey === "hostContextId") {
+        return;
+      }
+      if (value === undefined || value === null || typeof value === "object") {
+        return;
+      }
+      url.searchParams.set(normalizedKey, String(value));
+    });
+  }
+
   if (config && typeof config === "object") {
     Object.entries(config).forEach(([key, value]) => {
-      if (key === "state" || key === "sharedContext") {
+      if (key === "state" || key === "sharedContext" || key === "launchParams") {
         return;
       }
       if (value === undefined || value === null || typeof value === "object") {

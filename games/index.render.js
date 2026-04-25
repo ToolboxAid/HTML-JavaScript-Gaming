@@ -52,17 +52,51 @@ function escapeHtml(value) {
     .replaceAll("'", "&#39;");
 }
 
-function toStandaloneToolHref(entryPoint) {
-  const normalized = String(entryPoint || "").replace(/^\.?\/*/, "");
-  return normalized ? `/tools/${encodeURI(normalized)}` : "";
-}
-
 function normalizeGameHref(value) {
   const href = normalize(value).replace(/\\/g, "/");
   if (!href || href.includes("..") || !href.startsWith("/games/")) {
     return "";
   }
   return href;
+}
+
+function normalizePresetPath(value) {
+  const normalized = normalize(value).replace(/\\/g, "/");
+  if (!normalized || normalized.includes("..")) {
+    return "";
+  }
+  if (normalized.startsWith("/samples/")) {
+    return normalized;
+  }
+  if (normalized.startsWith("samples/")) {
+    return `/${normalized}`;
+  }
+  if (normalized.startsWith("./samples/")) {
+    return `/${normalized.slice(2)}`;
+  }
+  return "";
+}
+
+function getExplicitRoundtripPresetPath(game, toolId) {
+  const safeToolId = normalizeToken(toolId);
+  if (!safeToolId) {
+    return "";
+  }
+  const mappedEntries = asArray(game?.roundtripToolPresets);
+  for (const entry of mappedEntries) {
+    if (!entry || typeof entry !== "object") {
+      continue;
+    }
+    const mappedToolId = normalizeToken(entry.toolId);
+    if (mappedToolId !== safeToolId) {
+      continue;
+    }
+    const presetPath = normalizePresetPath(entry.presetPath);
+    if (presetPath) {
+      return presetPath;
+    }
+  }
+  return "";
 }
 
 function buildWorkspaceManagerHref(gameId) {
@@ -103,11 +137,9 @@ function buildRoundtripLinks(game, toolRegistryMap) {
     if (!tool) {
       return;
     }
-    const baseHref = toStandaloneToolHref(tool.entryPoint);
-    if (!baseHref) {
-      return;
-    }
+    const workspaceHref = "/tools/Workspace%20Manager/index.html";
     const query = new URLSearchParams();
+    query.set("tool", tool.id);
     query.set("gameId", game.id);
     if (game.title) {
       query.set("gameTitle", game.title);
@@ -115,9 +147,17 @@ function buildRoundtripLinks(game, toolRegistryMap) {
     if (game.href) {
       query.set("gameHref", game.href);
     }
+    const presetPath = getExplicitRoundtripPresetPath(game, tool.id);
+    if (presetPath) {
+      query.set("samplePresetPath", presetPath);
+      const sampleIdMatch = /sample-(\d{4})-[^.]+\.json$/i.exec(presetPath);
+      if (sampleIdMatch?.[1]) {
+        query.set("sampleId", sampleIdMatch[1]);
+      }
+    }
     query.set("workspaceHref", buildWorkspaceManagerHref(game.id));
     query.set("returnTo", buildReturnHref(tool.id));
-    const href = `${baseHref}?${query.toString()}`;
+    const href = `${workspaceHref}?${query.toString()}`;
     const label = `Open ${normalize(tool.displayName) || normalize(tool.name) || toolId}`;
     links.push({ toolId, href, label });
   });
@@ -177,7 +217,8 @@ function buildRows(metadata, pinnedSet, toolLabelMap, toolRegistryMap) {
         id,
         title,
         href,
-        toolHints: game?.toolHints
+        toolHints: game?.toolHints,
+        roundtripToolPresets: game?.roundtripToolPresets
       }, toolRegistryMap);
       return {
         id,
