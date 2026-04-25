@@ -791,7 +791,7 @@ function renderPaletteList() {
       }
       const swatchName = normalizeText(entry?.name) || `Swatch ${index + 1}`;
       const swatchSymbol = normalizeText(entry?.symbol);
-      const prefix = swatchSymbol ? `${swatchSymbol} ` : "";
+      const prefix = swatchSymbol ? `\`${swatchSymbol}\` ` : "";
       return {
         id: `${sharedPalette?.paletteId || "shared-palette"}.${index}`,
         label: `${prefix}${swatchName}`,
