@@ -1,5 +1,4 @@
-import { createAssetRegistry } from "./projectAssetRegistry.js";
-import { createNewProject, ensureProjectShape, serializeProject } from "../Sprite Editor/modules/projectModel.js";
+import { serializeProject } from "../Sprite Editor/modules/projectModel.js";
 import { cloneValue, safeString } from "./projectSystemValueUtils.js";
 import { getToolBootContract } from "./toolBootContract.js";
 
@@ -43,9 +42,6 @@ function buildUnavailableAdapter(toolId) {
     },
     applyState() {
       return false;
-    },
-    createDefaultState(projectName) {
-      return { name: safeString(projectName, "Untitled Project") };
     }
   };
 }
@@ -74,27 +70,6 @@ function createVectorMapAdapter() {
       }
       api.applyHistorySnapshot(cloneValue(state.snapshot));
       return true;
-    },
-    createDefaultState(projectName) {
-      return {
-        snapshot: {
-          documentData: {
-            schema: "toolbox.vector-map/1",
-            version: 1,
-            name: safeString(projectName, "Untitled Vector Map"),
-            width: 1280,
-            height: 720,
-            background: "#000000",
-            mode: "2d",
-            objects: []
-          },
-          selection: {
-            objectId: null,
-            pointIndex: null
-          },
-          workspaceViewMode: "2d"
-        }
-      };
     }
   };
 }
@@ -130,38 +105,6 @@ function createTilemapAdapter() {
         return true;
       }
       return false;
-    },
-    createDefaultState(projectName) {
-      return {
-        documentModel: {
-          schema: "toolbox.tilemap/1",
-          version: 1,
-          map: {
-            name: safeString(projectName, "untitled-map"),
-            width: 32,
-            height: 18,
-            tileSize: 24
-          },
-          tileset: [],
-          tilesetAtlas: {
-            schema: "toolbox.tileset-atlas/1",
-            imageName: "",
-            imageWidth: 0,
-            imageHeight: 0,
-            tileWidth: 24,
-            tileHeight: 24,
-            spacing: 0,
-            margin: 0
-          },
-          layers: [],
-          markers: [],
-          assetRefs: {
-            tilemapId: "",
-            tilesetId: ""
-          }
-        },
-        assetRegistry: createAssetRegistry({ projectId: safeString(projectName, "tilemap-project") })
-      };
     }
   };
 }
@@ -197,28 +140,6 @@ function createParallaxAdapter() {
         return true;
       }
       return false;
-    },
-    createDefaultState(projectName) {
-      return {
-        documentModel: {
-          schema: "toolbox.parallax/1",
-          version: 1,
-          companionEditor: "ParallaxEditor",
-          map: {
-            name: safeString(projectName, "untitled-map"),
-            width: 32,
-            height: 18,
-            tileSize: 24,
-            pixelWidth: 768,
-            pixelHeight: 432
-          },
-          layers: [],
-          assetRefs: {
-            parallaxSourceIds: []
-          }
-        },
-        assetRegistry: createAssetRegistry({ projectId: safeString(projectName, "parallax-project") })
-      };
     }
   };
 }
@@ -251,18 +172,6 @@ function createSpriteAdapter() {
     applyState(state) {
       api.applyProjectSystemState(cloneValue(state));
       return true;
-    },
-    createDefaultState(projectName) {
-      return {
-        project: serializeProject(createNewProject({ name: safeString(projectName, "Untitled Sprite Project") }), { includePalette: true }),
-        assetRegistry: createAssetRegistry({ projectId: "sprite-project" }),
-        preview: {
-          fps: 8,
-          frameIndex: 0,
-          playing: false
-        },
-        projectTool: "pencil"
-      };
     }
   };
 }
@@ -284,16 +193,6 @@ function createVectorAssetAdapter() {
     },
     applyState(state) {
       return api.applyProjectState(cloneValue(state)) === true;
-    },
-    createDefaultState(projectName) {
-      return api.createDefaultProjectState
-        ? cloneValue(api.createDefaultProjectState(projectName))
-        : {
-          documentName: safeString(projectName, "untitled-background"),
-          svgText: "",
-          canvasWidth: 1600,
-          canvasHeight: 900
-        };
     }
   };
 }
@@ -315,15 +214,6 @@ function createAssetBrowserAdapter() {
     },
     applyState(state) {
       return api.applyProjectState(cloneValue(state)) === true;
-    },
-    createDefaultState() {
-      return {
-        selectedCategory: "All",
-        search: "",
-        selectedAssetId: "",
-        importCategory: "Vector Assets",
-        importName: ""
-      };
     }
   };
 }
@@ -345,14 +235,6 @@ function createPaletteBrowserAdapter() {
     },
     applyState(state) {
       return api.applyProjectState(cloneValue(state)) === true;
-    },
-    createDefaultState() {
-      return {
-        search: "",
-        selectedPaletteId: "",
-        selectedSwatchIndex: 0,
-        customPalettes: []
-      };
     }
   };
 }

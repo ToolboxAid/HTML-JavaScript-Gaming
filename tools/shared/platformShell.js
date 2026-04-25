@@ -30,6 +30,19 @@ const TOOLS_PLATFORM_BOOT_MS = Date.now();
 const GAME_ASSET_CATALOG_SCHEMA = "html-js-gaming.game-asset-catalog";
 const GAME_ASSET_CATALOG_VERSION = 1;
 const WORKSPACE_LAUNCH_SIGNATURE_STORAGE_KEY = "toolboxaid.toolsPlatform.launchSignature";
+const TOOL_STATE_STORAGE_KEY_PREFIX = "toolboxaid.";
+const PRESERVED_TOOL_STATE_KEYS = new Set([
+  HEADER_EXPANDED_STORAGE_KEY,
+  WORKSPACE_LAUNCH_SIGNATURE_STORAGE_KEY
+]);
+const TOOLS_REQUIRING_WORKSPACE_TOOL_STATE = new Set([
+  "skin-editor",
+  "sprite-editor",
+  "tile-map-editor",
+  "parallax-editor",
+  "vector-map-editor",
+  "vector-asset-studio"
+]);
 
 function getPageMode() {
   return document.body.dataset.toolsPlatformPage || "tool";
@@ -220,10 +233,52 @@ function clearSharedBindingsForNewLaunch(signature) {
   if (previous && previous === signature) {
     return false;
   }
+  clearToolStateStorageForWorkspaceLaunch();
   clearSharedAssetHandoff();
   clearSharedPaletteHandoff();
   writeStoredLaunchSignature(signature);
   return true;
+}
+
+function clearToolStateStorageForWorkspaceLaunch() {
+  if (typeof window === "undefined") {
+    return;
+  }
+
+  const clearStorageLike = (storageLike) => {
+    if (!storageLike || typeof storageLike.length !== "number") {
+      return;
+    }
+    const keysToRemove = [];
+    for (let index = 0; index < storageLike.length; index += 1) {
+      const key = normalizeTextValue(storageLike.key(index));
+      if (!key || !key.startsWith(TOOL_STATE_STORAGE_KEY_PREFIX)) {
+        continue;
+      }
+      if (PRESERVED_TOOL_STATE_KEYS.has(key)) {
+        continue;
+      }
+      keysToRemove.push(key);
+    }
+    keysToRemove.forEach((key) => {
+      try {
+        storageLike.removeItem(key);
+      } catch {
+        // Ignore storage write failures and continue.
+      }
+    });
+  };
+
+  try {
+    clearStorageLike(window.localStorage);
+  } catch {
+    // Ignore storage read/write failures and continue.
+  }
+  try {
+    clearStorageLike(window.sessionStorage);
+  } catch {
+    // Ignore storage read/write failures and continue.
+  }
 }
 
 function readGameLaunchContext() {
@@ -622,7 +677,14 @@ function resolveWorkspaceToolLockState() {
   const palette = readSharedPaletteHandoff();
   const workspaceReady = Boolean(manifest && manifest.workspace?.notes !== "closed");
   const paletteReady = Boolean(palette && typeof palette.displayName === "string" && palette.displayName.trim());
-  return { workspaceReady, paletteReady };
+  const hasToolState = (toolId) => {
+    const normalizedToolId = normalizeTextValue(toolId);
+    if (!normalizedToolId || !manifest || typeof manifest !== "object") {
+      return false;
+    }
+    return Boolean(manifest.tools && manifest.tools[normalizedToolId]);
+  };
+  return { workspaceReady, paletteReady, hasToolState };
 }
 
 function renderToolLinks(currentToolId) {
@@ -920,18 +982,30 @@ function applyDocumentMetadata(currentTool) {
   document.body.classList.add("tools-platform-surface");
   const workspaceContext = isWorkspaceManagerContext();
   const lockState = resolveWorkspaceToolLockState();
+  const searchParams = typeof window !== "undefined"
+    ? new URLSearchParams(window.location.search)
+    : null;
+  const launchHasSourcePreset = searchParams?.has("samplePresetPath") === true;
   const isToolSurfacePage = getPageMode() !== "landing";
   const isPaletteBrowser = currentTool?.id === "palette-browser";
+  const toolRequiresState = TOOLS_REQUIRING_WORKSPACE_TOOL_STATE.has(currentTool?.id || "");
+  const toolStateMissingLock = workspaceContext
+    && isToolSurfacePage
+    && toolRequiresState
+    && !launchHasSourcePreset
+    && !lockState.hasToolState(currentTool?.id);
   const workspaceMissingLock = workspaceContext && isToolSurfacePage && !lockState.workspaceReady;
   const paletteMissingLock = workspaceContext
     && isToolSurfacePage
     && lockState.workspaceReady
     && !lockState.paletteReady
     && !isPaletteBrowser;
-  const shouldLockToolSurface = workspaceMissingLock || paletteMissingLock;
+  const shouldLockToolSurface = workspaceMissingLock || paletteMissingLock || toolStateMissingLock;
   const lockMessage = workspaceMissingLock
     ? "Create or open a workspace to use this tool."
-    : "Select a shared palette in Palette Browser to use this tool.";
+    : toolStateMissingLock
+      ? "Workspace loaded with no source tool JSON for this tool. Load workspace JSON that includes this tool state."
+      : "Select a shared palette in Palette Browser to use this tool.";
   document.body.classList.toggle("tools-platform-workspace-context", workspaceContext);
   document.body.classList.toggle("tools-platform-workspace-tool-locked", shouldLockToolSurface);
   if (lastLockedSurfaceElement) {
@@ -1208,6 +1282,7 @@ async function initPlatformShell() {
     workspaceController = createWorkspaceSystemController({
       toolId: currentToolId,
       launchContext,
+      launchHasSourcePreset: launchedFromSamplePreset,
       skipInitialToolStateApply: launchedFromSamplePreset,
       onChange(payload) {
         const manifest = payload?.manifest || {};
@@ -1237,7 +1312,13 @@ async function initPlatformShell() {
         }
       }
     });
-    workspaceController.startWatching();
+    if (launchedFromSamplePreset) {
+      window.setTimeout(() => {
+        workspaceController?.startWatching();
+      }, 600);
+    } else {
+      workspaceController.startWatching();
+    }
   }
 
   const catalogContext = await readCatalogContextFromLaunchContext(launchContext);

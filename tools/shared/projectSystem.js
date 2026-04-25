@@ -72,11 +72,13 @@ export function createWorkspaceSystemController(options = {}) {
   const toolEntry = getToolById(toolId);
   const isReadOnlyTool = toolEntry?.readOnly === true;
   const skipInitialToolStateApply = options.skipInitialToolStateApply === true;
+  const launchHasSourcePreset = options.launchHasSourcePreset === true;
   const launchContext = options.launchContext && typeof options.launchContext === "object"
     ? options.launchContext
     : {};
   const launchGameId = safeString(launchContext.gameId, "");
   const launchGameTitle = safeString(launchContext.gameTitle, launchGameId);
+  const strictLaunchMode = Boolean(launchGameId);
   const onChange = typeof options.onChange === "function" ? options.onChange : () => {};
   const onStatus = typeof options.onStatus === "function" ? options.onStatus : () => {};
   const adapter = () => getProjectAdapter(toolId);
@@ -87,7 +89,8 @@ export function createWorkspaceSystemController(options = {}) {
     lastObservedHash: "",
     adapterReady: false,
     appliedInitialState: skipInitialToolStateApply,
-    launchContextHydrated: false
+    launchContextHydrated: false,
+    toolStateSourceValidated: strictLaunchMode ? launchHasSourcePreset : true
   };
 
   function isGenericWorkspaceName(name) {
@@ -110,7 +113,7 @@ export function createWorkspaceSystemController(options = {}) {
 
   function computeObservedManifest() {
     const toolAdapter = adapter();
-    const currentManifest = state.manifest
+    let currentManifest = state.manifest
       ? cloneValue(state.manifest)
       : createEmptyProjectManifest({
         name: toolAdapter.getProjectName?.() || getToolById(toolId)?.displayName || "Untitled Workspace",
@@ -121,6 +124,11 @@ export function createWorkspaceSystemController(options = {}) {
       if (!state.launchContextHydrated) {
         clearSharedAssetHandoff();
         clearSharedPaletteHandoff();
+        currentManifest = createEmptyProjectManifest({
+          name: launchGameTitle || launchGameId,
+          toolId
+        });
+        state.manifest = cloneValue(currentManifest);
       }
       currentManifest.workspace = currentManifest.workspace && typeof currentManifest.workspace === "object"
         ? currentManifest.workspace
@@ -142,7 +150,7 @@ export function createWorkspaceSystemController(options = {}) {
       ? currentManifest.tools
       : {};
 
-    if (toolAdapter.ready) {
+    if (toolAdapter.ready && (!strictLaunchMode || state.toolStateSourceValidated)) {
       currentManifest.tools[toolId] = normalizeToolStateForProjectManifest(
         toolId,
         toolAdapter.captureState()
@@ -156,6 +164,8 @@ export function createWorkspaceSystemController(options = {}) {
       if (adapterName && (!manifestName || manifestName === defaultManifestName)) {
         currentManifest.name = adapterName;
       }
+    } else if (strictLaunchMode && !state.toolStateSourceValidated && currentManifest.tools?.[toolId]) {
+      delete currentManifest.tools[toolId];
     }
 
     currentManifest.toolIntegration = buildProjectToolIntegration(currentManifest.tools);
@@ -223,7 +233,10 @@ export function createWorkspaceSystemController(options = {}) {
     const toolState = manifest.tools?.[toolId];
     if (toolState) {
       toolAdapter.applyState(cloneValue(unwrapToolStateForAdapter(toolId, toolState)));
+      state.toolStateSourceValidated = true;
       onStatus(buildStatusSummary(validateProjectManifest(manifest)));
+    } else if (strictLaunchMode) {
+      onStatus(`Workspace launched for ${launchGameTitle || launchGameId}. Waiting for source tool JSON for ${toolId}.`);
     }
     state.appliedInitialState = true;
     markSaved("initial-apply");
@@ -237,16 +250,13 @@ export function createWorkspaceSystemController(options = {}) {
       name: nextName,
       toolId
     });
-    if (toolAdapter.ready) {
-      const defaultState = normalizeToolStateForProjectManifest(toolId, toolAdapter.createDefaultState(nextName));
-      nextManifest.tools[toolId] = defaultState;
-      nextManifest.toolIntegration = buildProjectToolIntegration(nextManifest.tools);
-      toolAdapter.applyState(cloneValue(unwrapToolStateForAdapter(toolId, defaultState)));
-    }
+    nextManifest.tools = {};
+    nextManifest.toolIntegration = buildProjectToolIntegration(nextManifest.tools);
     clearSharedAssetHandoff();
     clearSharedPaletteHandoff();
     state.manifest = nextManifest;
     state.appliedInitialState = true;
+    state.toolStateSourceValidated = !strictLaunchMode;
     markSaved("new-project");
     onStatus(`Started ${nextName}.`);
   }
@@ -270,12 +280,14 @@ export function createWorkspaceSystemController(options = {}) {
     state.manifest = nextManifest;
     const toolAdapter = adapter();
     if (toolAdapter.ready) {
-      const nextToolState = nextManifest.tools?.[toolId]
-        ? normalizeToolStateForProjectManifest(toolId, nextManifest.tools[toolId])
-        : normalizeToolStateForProjectManifest(toolId, toolAdapter.createDefaultState(nextManifest.name));
+      if (!nextManifest.tools?.[toolId]) {
+        throw new Error(`Workspace manifest is missing required state for ${toolId}.`);
+      }
+      const nextToolState = normalizeToolStateForProjectManifest(toolId, nextManifest.tools[toolId]);
       toolAdapter.applyState(cloneValue(unwrapToolStateForAdapter(toolId, nextToolState)));
       nextManifest.tools[toolId] = cloneValue(nextToolState);
       nextManifest.toolIntegration = buildProjectToolIntegration(nextManifest.tools);
+      state.toolStateSourceValidated = true;
     }
     state.appliedInitialState = true;
     markSaved("open-project");
@@ -298,26 +310,28 @@ export function createWorkspaceSystemController(options = {}) {
   }
 
   function handleCloseWorkspace() {
-    const toolAdapter = adapter();
     const fallbackName = "No Active Workspace";
     const nextManifest = createEmptyProjectManifest({
       name: fallbackName,
       toolId
     });
     nextManifest.workspace.notes = "closed";
-    if (toolAdapter.ready) {
-      const defaultState = normalizeToolStateForProjectManifest(toolId, toolAdapter.createDefaultState(fallbackName));
-      nextManifest.tools[toolId] = defaultState;
-      nextManifest.toolIntegration = buildProjectToolIntegration(nextManifest.tools);
-      toolAdapter.applyState(cloneValue(unwrapToolStateForAdapter(toolId, defaultState)));
-    }
+    nextManifest.tools = {};
+    nextManifest.toolIntegration = buildProjectToolIntegration(nextManifest.tools);
     state.manifest = nextManifest;
     state.appliedInitialState = true;
+    state.toolStateSourceValidated = !strictLaunchMode;
     state.baselineHash = "";
+    state.lastObservedHash = "";
     clearStorage();
     clearSharedAssetHandoff();
     clearSharedPaletteHandoff();
-    updateDirtyState("close-project");
+    onChange({
+      manifest: cloneValue(state.manifest),
+      dirty: false,
+      ready: adapter().ready,
+      reason: "close-project"
+    });
     onStatus("Workspace closed.");
   }
 
@@ -371,6 +385,7 @@ export function createWorkspaceSystemController(options = {}) {
     }
 
     state.appliedInitialState = true;
+    state.toolStateSourceValidated = true;
     markSaved("external-preset");
     const label = safeString(payload.label, "external preset");
     if (applied) {
