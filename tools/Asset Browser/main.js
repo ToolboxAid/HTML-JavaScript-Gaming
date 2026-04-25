@@ -2,9 +2,11 @@ import {
   createAssetHandoff,
   getSharedLaunchContext,
   getToolDisplayName,
+  readSharedAssetHandoff,
   writeSharedAssetHandoff
 } from "../shared/assetUsageIntegration.js";
 import { registerToolBootContract } from "../shared/toolBootContract.js";
+import { ACTIVE_PROJECT_STORAGE_KEY } from "../shared/projectManifestContract.js";
 
 const APPROVED_DESTINATIONS = Object.freeze({
   "Vector Assets": "games/<project>/assets/vectors/",
@@ -12,61 +14,13 @@ const APPROVED_DESTINATIONS = Object.freeze({
   "Tilemaps": "games/<project>/assets/tilemaps/",
   "Parallax Scenes": "games/<project>/assets/parallax/",
   "Palettes": "games/<project>/assets/palettes/",
+  "Skins": "games/<project>/assets/skins/",
   "Workflow JSON": "games/<project>/config/"
 });
 
-const ASSET_CATALOG = Object.freeze([
-  {
-    id: "asset-vector-player",
-    label: "Vector Arcade Player Vector",
-    category: "Vector Assets",
-    path: "../../games/vector-arcade-sample/assets/data/vectors/template-player.vector.json"
-  },
-  {
-    id: "asset-vector-title",
-    label: "Vector Arcade Title Vector",
-    category: "Vector Assets",
-    path: "../../games/vector-arcade-sample/assets/data/vectors/template-title.vector.json"
-  },
-  {
-    id: "asset-sprite-demo",
-    label: "Vector Arcade Sprite Project",
-    category: "Sprite Projects",
-    path: "../../games/vector-arcade-sample/assets/data/sprites/template-player.sprite.json"
-  },
-  {
-    id: "asset-tilemap-template",
-    label: "Vector Arcade Template Tilemap",
-    category: "Tilemaps",
-    path: "../../games/vector-arcade-sample/assets/data/tilemaps/template-arena.tilemap.json"
-  },
-  {
-    id: "asset-parallax-template",
-    label: "Template Backdrop Parallax",
-    category: "Parallax Scenes",
-    path: "../../games/vector-arcade-sample/assets/data/parallax/template-backdrop.parallax.json"
-  },
-  {
-    id: "asset-parallax-svg",
-    label: "Template Backdrop SVG",
-    category: "Parallax Scenes",
-    path: "../../games/vector-arcade-sample/assets/data/parallax/template-backdrop.svg"
-  },
-  {
-    id: "asset-palette-primary",
-    label: "Vector Native Primary Palette",
-    category: "Palettes",
-    path: "../../games/vector-arcade-sample/assets/data/palettes/vector-native-primary.palette.json"
-  },
-  {
-    id: "asset-project-config",
-    label: "Vector Arcade Sample Project Config",
-    category: "Workflow JSON",
-    path: "../../games/vector-arcade-sample/config/sample.project.json"
-  }
-]);
-
-const CATEGORY_ORDER = ["All", ...Object.keys(APPROVED_DESTINATIONS)];
+const GAME_ASSET_CATALOG_SCHEMA = "html-js-gaming.game-asset-catalog";
+const GAME_ASSET_CATALOG_VERSION = 1;
+const DEFAULT_GAME_ASSET_CATALOG_FILENAME = "workspace.asset-catalog.json";
 
 const refs = {
   categoryFilter: document.getElementById("assetCategoryFilter"),
@@ -121,8 +75,240 @@ function buildPresetLoadedStatus(sampleId, samplePresetPath) {
 const state = {
   selectedCategory: "All",
   search: "",
-  selectedAssetId: ASSET_CATALOG[0]?.id ?? ""
+  selectedAssetId: "",
+  assetCatalog: []
 };
+
+function sanitizeText(value) {
+  return typeof value === "string" ? value.trim() : "";
+}
+
+function normalizeLocalPath(pathValue) {
+  const text = sanitizeText(pathValue).replace(/\\/g, "/");
+  if (!text || text.includes("..")) {
+    return "";
+  }
+  return text;
+}
+
+function toTitleCase(value) {
+  return String(value || "")
+    .split(/\s+/)
+    .filter(Boolean)
+    .map((token) => token.charAt(0).toUpperCase() + token.slice(1).toLowerCase())
+    .join(" ");
+}
+
+function humanizeAssetId(assetId) {
+  const normalized = sanitizeText(assetId)
+    .replace(/[._-]+/g, " ")
+    .replace(/\s+/g, " ");
+  return normalized ? toTitleCase(normalized) : "Shared Asset";
+}
+
+function inferLabelFromPath(pathValue) {
+  const normalized = normalizeLocalPath(pathValue);
+  if (!normalized) {
+    return "";
+  }
+  const fileName = normalized.split("/").pop() || "";
+  const stripped = fileName.replace(/\.[^.]+$/g, "").replace(/\.[^.]+$/g, "");
+  return stripped ? toTitleCase(stripped.replace(/[._-]+/g, " ")) : "";
+}
+
+function deriveCatalogPathFromGameHref(gameHref) {
+  const href = normalizeLocalPath(gameHref);
+  if (!href || !href.startsWith("/games/")) {
+    return "";
+  }
+  if (href.endsWith("/index.html")) {
+    return `${href.slice(0, -"/index.html".length)}/assets/${DEFAULT_GAME_ASSET_CATALOG_FILENAME}`;
+  }
+  if (href.endsWith("/")) {
+    return `${href}assets/${DEFAULT_GAME_ASSET_CATALOG_FILENAME}`;
+  }
+  return "";
+}
+
+function deriveCatalogPathFromAssetPath(assetPath) {
+  const normalized = normalizeLocalPath(assetPath);
+  if (!normalized) {
+    return "";
+  }
+  const marker = "/assets/";
+  const markerIndex = normalized.toLowerCase().indexOf(marker);
+  if (markerIndex <= 0) {
+    return "";
+  }
+  const gameRoot = normalized.slice(0, markerIndex);
+  if (!gameRoot.toLowerCase().startsWith("/games/")) {
+    return "";
+  }
+  return `${gameRoot}/assets/${DEFAULT_GAME_ASSET_CATALOG_FILENAME}`;
+}
+
+function deriveCatalogPathFromGameId(gameId) {
+  const safeGameId = sanitizeText(gameId);
+  if (!safeGameId) {
+    return "";
+  }
+  return `/games/${safeGameId}/assets/${DEFAULT_GAME_ASSET_CATALOG_FILENAME}`;
+}
+
+function readActiveProjectManifest() {
+  try {
+    const raw = window.localStorage.getItem(ACTIVE_PROJECT_STORAGE_KEY);
+    if (!raw) {
+      return null;
+    }
+    const parsed = JSON.parse(raw);
+    return parsed && typeof parsed === "object" ? parsed : null;
+  } catch {
+    return null;
+  }
+}
+
+function collectCatalogPathCandidates() {
+  const candidates = new Set();
+  const params = new URLSearchParams(window.location.search);
+  const gameHref = params.get("gameHref") || "";
+  const gameId = params.get("gameId") || params.get("game") || "";
+  const directCatalog = params.get("assetCatalogPath") || "";
+  const sharedAsset = readSharedAssetHandoff();
+  const manifest = readActiveProjectManifest();
+  const manifestAsset = manifest?.sharedReferences?.asset || null;
+  const manifestPalette = manifest?.sharedReferences?.palette || null;
+
+  [
+    normalizeLocalPath(directCatalog),
+    deriveCatalogPathFromGameHref(gameHref),
+    deriveCatalogPathFromGameId(gameId),
+    deriveCatalogPathFromAssetPath(sharedAsset?.metadata?.sourcePath || sharedAsset?.sourcePath || ""),
+    deriveCatalogPathFromAssetPath(manifestAsset?.metadata?.sourcePath || manifestAsset?.sourcePath || ""),
+    deriveCatalogPathFromAssetPath(manifestPalette?.metadata?.sourcePath || manifestPalette?.sourcePath || "")
+  ].forEach((candidate) => {
+    if (candidate) {
+      candidates.add(candidate);
+    }
+  });
+
+  return Array.from(candidates);
+}
+
+function mapKindToCategory(kind) {
+  const normalizedKind = sanitizeText(kind).toLowerCase();
+  switch (normalizedKind) {
+    case "vector":
+      return "Vector Assets";
+    case "sprite":
+      return "Sprite Projects";
+    case "tilemap":
+    case "tileset":
+      return "Tilemaps";
+    case "parallax":
+    case "background":
+      return "Parallax Scenes";
+    case "palette":
+      return "Palettes";
+    case "skin":
+      return "Skins";
+    default:
+      return "Workflow JSON";
+  }
+}
+
+function normalizeCatalogEntries(rawEntries) {
+  const source = rawEntries && typeof rawEntries === "object" ? rawEntries : {};
+  const entries = [];
+  Object.entries(source).forEach(([assetId, rawEntry]) => {
+    const safeAssetId = sanitizeText(assetId);
+    const entry = rawEntry && typeof rawEntry === "object" ? rawEntry : null;
+    const path = normalizeLocalPath(entry?.path || entry?.runtimePath || entry?.href || "");
+    const kind = sanitizeText(entry?.kind || "other").toLowerCase();
+    if (!safeAssetId || !path) {
+      return;
+    }
+    entries.push({
+      id: safeAssetId,
+      label: humanizeAssetId(safeAssetId),
+      category: mapKindToCategory(kind),
+      kind: kind || "other",
+      path
+    });
+  });
+  return entries;
+}
+
+async function readCatalogEntriesFromPath(catalogPath) {
+  const safeCatalogPath = normalizeLocalPath(catalogPath);
+  if (!safeCatalogPath) {
+    return [];
+  }
+  try {
+    const response = await fetch(safeCatalogPath, { cache: "no-store" });
+    if (!response.ok) {
+      return [];
+    }
+    const payload = await response.json();
+    const schema = sanitizeText(payload?.schema);
+    const version = Number(payload?.version);
+    if (schema !== GAME_ASSET_CATALOG_SCHEMA || version !== GAME_ASSET_CATALOG_VERSION) {
+      return [];
+    }
+    const entries = normalizeCatalogEntries(payload.assets || payload.entries);
+    return entries;
+  } catch {
+    return [];
+  }
+}
+
+async function hydrateCatalogLabels(entries) {
+  const source = Array.isArray(entries) ? entries : [];
+  const labeledEntries = await Promise.all(source.map(async (entry) => {
+    if (!entry.path.toLowerCase().endsWith(".json")) {
+      const fallbackLabel = inferLabelFromPath(entry.path);
+      return fallbackLabel ? { ...entry, label: fallbackLabel } : entry;
+    }
+    try {
+      const response = await fetch(entry.path, { cache: "no-store" });
+      if (!response.ok) {
+        throw new Error("missing");
+      }
+      const payload = await response.json();
+      const payloadName = sanitizeText(payload?.name);
+      if (payloadName) {
+        return { ...entry, label: payloadName };
+      }
+      const fallbackLabel = inferLabelFromPath(entry.path);
+      return fallbackLabel ? { ...entry, label: fallbackLabel } : entry;
+    } catch {
+      const fallbackLabel = inferLabelFromPath(entry.path);
+      return fallbackLabel ? { ...entry, label: fallbackLabel } : entry;
+    }
+  }));
+  return labeledEntries;
+}
+
+async function loadCatalogEntriesFromContext() {
+  const candidates = collectCatalogPathCandidates();
+  for (const candidate of candidates) {
+    const entries = await readCatalogEntriesFromPath(candidate);
+    if (entries.length > 0) {
+      return hydrateCatalogLabels(entries);
+    }
+  }
+  return [];
+}
+
+function getCategoryOrder() {
+  const categories = new Set(Object.keys(APPROVED_DESTINATIONS));
+  state.assetCatalog.forEach((entry) => {
+    if (entry?.category) {
+      categories.add(entry.category);
+    }
+  });
+  return ["All", ...Array.from(categories)];
+}
 
 function extractAssetBrowserPreset(rawPreset) {
   if (!rawPreset || typeof rawPreset !== "object") {
@@ -150,7 +336,7 @@ function applyAssetBrowserPreset(preset) {
   if (!preset || typeof preset !== "object") {
     return false;
   }
-  if (typeof preset.selectedCategory === "string" && CATEGORY_ORDER.includes(preset.selectedCategory)) {
+  if (typeof preset.selectedCategory === "string" && getCategoryOrder().includes(preset.selectedCategory)) {
     state.selectedCategory = preset.selectedCategory;
     refs.categoryFilter.value = preset.selectedCategory;
   }
@@ -158,7 +344,7 @@ function applyAssetBrowserPreset(preset) {
     state.search = preset.search;
     refs.searchInput.value = preset.search;
   }
-  if (typeof preset.selectedAssetId === "string" && ASSET_CATALOG.some((entry) => entry.id === preset.selectedAssetId)) {
+  if (typeof preset.selectedAssetId === "string" && state.assetCatalog.some((entry) => entry.id === preset.selectedAssetId)) {
     state.selectedAssetId = preset.selectedAssetId;
   }
   if (typeof preset.importCategory === "string" && APPROVED_DESTINATIONS[preset.importCategory]) {
@@ -175,6 +361,28 @@ function applyAssetBrowserPreset(preset) {
   renderPreview();
   renderImportPlan();
   return true;
+}
+
+function resolveInitialSelectedAssetId() {
+  const current = sanitizeText(state.selectedAssetId);
+  if (current && state.assetCatalog.some((entry) => entry.id === current)) {
+    return current;
+  }
+  const shared = readSharedAssetHandoff();
+  const sharedId = sanitizeText(shared?.assetId);
+  if (sharedId && state.assetCatalog.some((entry) => entry.id === sharedId)) {
+    return sharedId;
+  }
+  return state.assetCatalog[0]?.id || "";
+}
+
+async function hydrateApprovedAssetCatalog() {
+  state.assetCatalog = await loadCatalogEntriesFromContext();
+  state.selectedAssetId = resolveInitialSelectedAssetId();
+  const categories = getCategoryOrder();
+  if (!categories.includes(state.selectedCategory)) {
+    state.selectedCategory = "All";
+  }
 }
 
 async function tryLoadPresetFromQuery() {
@@ -213,6 +421,8 @@ function getAssetTypeFromCategory(category) {
       return "background";
     case "Palettes":
       return "palette";
+    case "Skins":
+      return "skin";
     default:
       return "other";
   }
@@ -235,7 +445,7 @@ function applyLaunchContext() {
 
 function getVisibleAssets() {
   const query = state.search.trim().toLowerCase();
-  return ASSET_CATALOG.filter((entry) => {
+  return state.assetCatalog.filter((entry) => {
     const categoryMatch = state.selectedCategory === "All" || entry.category === state.selectedCategory;
     if (!categoryMatch) {
       return false;
@@ -248,7 +458,7 @@ function getVisibleAssets() {
 }
 
 function getSelectedAsset() {
-  return ASSET_CATALOG.find((entry) => entry.id === state.selectedAssetId) ?? null;
+  return state.assetCatalog.find((entry) => entry.id === state.selectedAssetId) ?? null;
 }
 
 function getPathExtension(assetPath) {
@@ -258,7 +468,7 @@ function getPathExtension(assetPath) {
 }
 
 function populateCategoryControls() {
-  refs.categoryFilter.innerHTML = CATEGORY_ORDER
+  refs.categoryFilter.innerHTML = getCategoryOrder()
     .map((label) => `<option value="${label}">${label}</option>`)
     .join("");
   refs.importCategorySelect.innerHTML = Object.keys(APPROVED_DESTINATIONS)
@@ -280,16 +490,18 @@ function populateDestinationOptions(category) {
 function renderAssetList() {
   const entries = getVisibleAssets();
   refs.countText.textContent = `${entries.length} approved asset${entries.length === 1 ? "" : "s"}`;
-  refs.assetList.innerHTML = entries.map((entry) => {
-    const currentClass = entry.id === state.selectedAssetId ? " is-current" : "";
-    return `
+  refs.assetList.innerHTML = entries.length > 0
+    ? entries.map((entry) => {
+      const currentClass = entry.id === state.selectedAssetId ? " is-current" : "";
+      return `
       <button type="button" data-asset-id="${entry.id}" class="${currentClass.trim()}">
         <strong>${entry.label}</strong>
         <span>${entry.category}</span>
         <span>${entry.path}</span>
       </button>
     `;
-  }).join("");
+    }).join("")
+    : '<p class="asset-browser__empty">No approved assets found for this workspace context.</p>';
 
   if (!entries.some((entry) => entry.id === state.selectedAssetId)) {
     state.selectedAssetId = entries[0]?.id ?? "";
@@ -307,7 +519,8 @@ async function renderPreview() {
   }
 
   refs.previewTitle.textContent = selectedAsset.label;
-  refs.previewMeta.textContent = `${selectedAsset.category} | ${selectedAsset.path} | Suggested destination: ${APPROVED_DESTINATIONS[selectedAsset.category]}`;
+  const suggestedDestination = APPROVED_DESTINATIONS[selectedAsset.category] || "games/<project>/assets/";
+  refs.previewMeta.textContent = `${selectedAsset.category} | ${selectedAsset.path} | Suggested destination: ${suggestedDestination}`;
 
   const extension = getPathExtension(selectedAsset.path);
   try {
@@ -356,6 +569,9 @@ function inferCategoryFromFileName(fileName) {
   if (lower.endsWith(".palette.json")) {
     return "Palettes";
   }
+  if (lower.endsWith(".skin.json")) {
+    return "Skins";
+  }
   return "Workflow JSON";
 }
 
@@ -377,7 +593,7 @@ function buildImportPlan() {
   const destinationFolder = refs.importDestinationSelect.value || APPROVED_DESTINATIONS[importCategory];
   const normalizedName = normalizeImportName(refs.importNameInput.value || file.name);
   const validName = /^[a-z0-9][a-z0-9._-]*$/.test(normalizedName);
-  const conflicts = ASSET_CATALOG.filter((entry) => entry.category === importCategory)
+  const conflicts = state.assetCatalog.filter((entry) => entry.category === importCategory)
     .map((entry) => entry.path.split("/").pop()?.toLowerCase() || "")
     .filter((name) => name === normalizedName);
 
@@ -508,12 +724,16 @@ function bindEvents() {
   refs.useAssetInToolButton.addEventListener("click", useSelectedAssetInActiveTool);
 }
 
-function init() {
+async function init() {
+  await hydrateApprovedAssetCatalog();
   populateCategoryControls();
   populateDestinationOptions(refs.importCategorySelect.value);
   applyLaunchContext();
+  if (state.assetCatalog.length === 0) {
+    refs.importStatusText.textContent = "No workspace asset catalog found. Launch this tool from a game workspace to browse approved assets.";
+  }
   renderAssetList();
-  renderPreview();
+  await renderPreview();
   renderImportPlan();
   bindEvents();
 }
@@ -550,8 +770,7 @@ const assetBrowserApi = {
 
 function bootAssetBrowser() {
   if (!initialized) {
-    init();
-    void tryLoadPresetFromQuery();
+    void init().then(() => tryLoadPresetFromQuery());
     initialized = true;
   }
   window.assetBrowserApp = assetBrowserApi;

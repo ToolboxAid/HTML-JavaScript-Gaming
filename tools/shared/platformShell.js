@@ -80,6 +80,66 @@ function getRegistryEntryHref(entryPoint) {
   return getPageMode() === "landing" ? `./${entryPoint}` : `../${entryPoint}`;
 }
 
+function normalizeForwardedLaunchParam(key, value) {
+  const normalizedValue = normalizeTextValue(value);
+  if (!normalizedValue) {
+    return "";
+  }
+  if (key === "gameHref") {
+    return normalizeLocalHref(normalizedValue, ["/games/"]);
+  }
+  if (key === "workspaceHref") {
+    return normalizeLocalHref(normalizedValue, ["/tools/Workspace%20Manager/", "/tools/Workspace Manager/"]);
+  }
+  if (key === "returnTo") {
+    return normalizeLocalHref(normalizedValue, ["/games/", "/samples/"]);
+  }
+  if (key === "samplePresetPath") {
+    return normalizeSamplePresetPath(normalizedValue);
+  }
+  return normalizedValue;
+}
+
+function buildHostedRegistryEntryHref(toolEntry) {
+  const defaultHref = getRegistryEntryHref(toolEntry.entryPoint);
+  if (typeof window === "undefined") {
+    return defaultHref;
+  }
+  const currentParams = new URLSearchParams(window.location.search);
+  if (currentParams.get("hosted") !== "1") {
+    return defaultHref;
+  }
+
+  const nextUrl = new URL(defaultHref, window.location.href);
+  nextUrl.searchParams.set("hosted", "1");
+  nextUrl.searchParams.set("hostToolId", normalizeTextValue(toolEntry.id));
+
+  const hostContextId = normalizeTextValue(currentParams.get("hostContextId"));
+  if (hostContextId) {
+    nextUrl.searchParams.set("hostContextId", hostContextId);
+  }
+
+  [
+    "game",
+    "gameId",
+    "gameTitle",
+    "gameHref",
+    "workspaceHref",
+    "samplePresetPath",
+    "sampleId",
+    "sampleTitle",
+    "returnTo"
+  ].forEach((key) => {
+    const normalizedValue = normalizeForwardedLaunchParam(key, currentParams.get(key));
+    if (!normalizedValue) {
+      return;
+    }
+    nextUrl.searchParams.set(key, normalizedValue);
+  });
+
+  return `${nextUrl.pathname}${nextUrl.search}`;
+}
+
 function normalizeTextValue(value) {
   return typeof value === "string" ? value.trim() : "";
 }
@@ -610,7 +670,7 @@ function renderToolLinks(currentToolId) {
         const disabledAttrs = disabled ? ' aria-disabled="true" tabindex="-1"' : "";
         return `
           <div class="tools-platform-frame__nav-tool-row${disabledClass}">
-            <a class="tools-platform-frame__nav-link${currentClass}${disabledClass}" href="${escapeHtml(getRegistryEntryHref(tool.entryPoint))}"${disabledAttrs}>${escapeHtml(tool.displayName)}</a>
+            <a class="tools-platform-frame__nav-link${currentClass}${disabledClass}" href="${escapeHtml(buildHostedRegistryEntryHref(tool))}"${disabledAttrs}>${escapeHtml(tool.displayName)}</a>
             ${renderToolAssetBadge(tool.id)}
           </div>
         `;
@@ -673,7 +733,7 @@ function renderToolLinks(currentToolId) {
       const disabledAttrs = disabled ? ' aria-disabled="true" tabindex="-1"' : "";
       return `
         <div class="tools-platform-frame__nav-tool-row${disabledClass}">
-          <a class="tools-platform-frame__nav-link${currentClass}${disabledClass}" href="${escapeHtml(getRegistryEntryHref(tool.entryPoint))}"${disabledAttrs}>${escapeHtml(tool.displayName)}</a>
+          <a class="tools-platform-frame__nav-link${currentClass}${disabledClass}" href="${escapeHtml(buildHostedRegistryEntryHref(tool))}"${disabledAttrs}>${escapeHtml(tool.displayName)}</a>
           ${renderToolAssetBadge(tool.id)}
         </div>
       `;

@@ -30,5 +30,6 @@ export function enforceWorkspaceGameLaunch(gameId) {
 
   const redirectUrl = new URL("/tools/Workspace%20Manager/index.html", window.location.origin);
   redirectUrl.searchParams.set("game", normalizedGameId);
+  redirectUrl.searchParams.set("mount", "game");
   window.location.replace(redirectUrl.toString());
 }

@@ -264,6 +264,12 @@ function readInitialGameId() {
   return gameId || "";
 }
 
+function shouldMountGameFrameFromQuery() {
+  const url = new URL(window.location.href);
+  const mode = (url.searchParams.get("mount") || "").trim().toLowerCase();
+  return mode === "game";
+}
+
 function normalizeGameHref(value) {
   const href = typeof value === "string" ? value.trim() : "";
   if (!href || !href.startsWith("/games/")) {
@@ -530,7 +536,7 @@ function bindEvents() {
   window.addEventListener("popstate", () => {
     const gameId = readInitialGameId();
     const requestedToolId = readRequestedToolIdFromQuery();
-    if (gameId && !requestedToolId) {
+    if (gameId && !requestedToolId && shouldMountGameFrameFromQuery()) {
       void readGameEntryById(gameId).then((gameEntry) => {
         if (!gameEntry) {
           writeStatus(`Game "${gameId}" is not available for Workspace Manager launch.`);
@@ -564,7 +570,7 @@ async function init() {
   bindEvents();
 
   const initialGameId = readInitialGameId();
-  if (initialGameId && !requestedToolId) {
+  if (initialGameId && !requestedToolId && shouldMountGameFrameFromQuery()) {
     const gameEntry = await readGameEntryById(initialGameId);
     if (gameEntry) {
       await mountGameFrame(gameEntry);

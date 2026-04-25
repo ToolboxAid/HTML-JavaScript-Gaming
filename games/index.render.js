@@ -325,8 +325,15 @@ function renderCard(row, instanceKey = "main") {
 
   const classText = row.classValues.length > 0 ? row.classValues.map((value) => value.split("/").at(-1) || value).join(", ") : "none";
   const tagText = row.tags.length > 0 ? row.tags.join(", ") : "none";
-  const launchActions = row.workspaceHref
-    ? `<p class="game-launch-actions"><a class="game-title-link" href="${escapeHtml(row.workspaceHref)}">Open In Workspace Manager</a></p>`
+  const workspaceSection = row.workspaceHref
+    ? `
+      <section class="game-tool-roundtrip">
+        <h4>Open with Workspace Manager</h4>
+        <p><a href="${escapeHtml(row.workspaceHref)}">Open with Workspace Manager</a></p>
+        <h4>JSON Input</h4>
+        <p>Paste JSON to inspect arbitrary state payloads.</p>
+      </section>
+    `
     : "";
   const roundtripSection = Array.isArray(row.roundtripLinks) && row.roundtripLinks.length > 0
     ? `
@@ -345,7 +352,7 @@ function renderCard(row, instanceKey = "main") {
     <div class="game-badges">${badges}</div>
     ${previewHtml}
     <p>${escapeHtml(row.description)}</p>
-    ${launchActions}
+    ${workspaceSection}
     ${roundtripSection}
     <p>Classes: ${escapeHtml(classText)}</p>
     <p>Tags: ${escapeHtml(tagText)}</p>
