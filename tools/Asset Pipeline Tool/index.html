@@ -19,8 +19,19 @@
   </details>
   <div class="debug-tool-shell app-shell">
     <section class="panel debug-tool-panel">
-      <div class="debug-tool-actions">
+      <div class="debug-tool-actions asset-pipeline-actions">
         <button type="button" id="runAssetPipelineButton">Run Pipeline</button>
+        <p class="asset-pipeline-quick-guide">
+          Paste or load pipeline options JSON in <strong>Pipeline Input</strong>, run the pipeline, then review
+          normalization/validation results and manifest output in <strong>Pipeline Output</strong>. Use this to verify
+          IDs, paths, types, and references. This tool emits nested game paths such as
+          <code>games/sample-1413/assets/sprites/*.json</code> plus a coordinator manifest at
+          <code>games/sample-1413/assets/tools.manifest.json</code>. Input data comes from your JSON (or loaded sample
+          preset), then the pipeline normalizes records across sprites/tilemaps/parallax/vectors, validates tool-state
+          contracts, and reports stage results (`load`, `validate`, `normalize`, `emit`) with `ready`/`invalid` status.
+          Runtime manifest lookup/loader utilities consume this output for discoverable `runtimeAssetSources`; this is
+          forward coordination (games/samples to normalized manifest), not reverse sync back into editor project state.
+        </p>
       </div>
       <div id="assetPipelineStatus" class="debug-tool-meta">Asset pipeline ready.</div>
     </section>

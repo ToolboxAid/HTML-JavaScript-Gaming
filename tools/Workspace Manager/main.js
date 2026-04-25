@@ -129,7 +129,7 @@ function readForwardedToolLaunchParams() {
     searchParams.get("samplePresetPath"),
     TOOL_LAUNCH_PARAM_PREFIXES.samplePresetPath
   );
-  const gameId = normalizeTextParam(searchParams.get("gameId"));
+  const gameId = normalizeTextParam(searchParams.get("gameId") || searchParams.get("game"));
   const gameTitle = normalizeTextParam(searchParams.get("gameTitle"));
   const gameHref = normalizeLocalHrefParam(searchParams.get("gameHref"), TOOL_LAUNCH_PARAM_PREFIXES.gameHref);
   const workspaceHref = normalizeLocalHrefParam(searchParams.get("workspaceHref"), TOOL_LAUNCH_PARAM_PREFIXES.workspaceHref);
@@ -244,9 +244,18 @@ function readInitialToolId() {
   return manifest.tools[0]?.id || "";
 }
 
+function readRequestedToolIdFromQuery() {
+  const url = new URL(window.location.href);
+  const requested = (url.searchParams.get("tool") || "").trim();
+  if (!requested || !getToolHostEntryById(manifest, requested)) {
+    return "";
+  }
+  return requested;
+}
+
 function readInitialGameId() {
   const url = new URL(window.location.href);
-  const gameId = (url.searchParams.get("game") || "").trim();
+  const gameId = (url.searchParams.get("game") || url.searchParams.get("gameId") || "").trim();
   return gameId || "";
 }
 
@@ -515,7 +524,8 @@ function bindEvents() {
 
   window.addEventListener("popstate", () => {
     const gameId = readInitialGameId();
-    if (gameId) {
+    const requestedToolId = readRequestedToolIdFromQuery();
+    if (gameId && !requestedToolId) {
       void readGameEntryById(gameId).then((gameEntry) => {
         if (!gameEntry) {
           writeStatus(`Game "${gameId}" is not available for Workspace Manager launch.`);
@@ -525,7 +535,7 @@ function bindEvents() {
       });
       return;
     }
-    const toolId = readInitialToolId();
+    const toolId = requestedToolId || readInitialToolId();
     if (refs.toolSelect instanceof HTMLSelectElement) {
       refs.toolSelect.value = toolId;
     }
@@ -541,8 +551,15 @@ function bindEvents() {
 }
 
 async function init() {
+  const requestedToolId = readRequestedToolIdFromQuery();
+  const initialToolId = requestedToolId || readInitialToolId();
+  populateToolSelect(initialToolId);
+  updateStandaloneHref(initialToolId);
+  syncControlState();
+  bindEvents();
+
   const initialGameId = readInitialGameId();
-  if (initialGameId) {
+  if (initialGameId && !requestedToolId) {
     const gameEntry = await readGameEntryById(initialGameId);
     if (gameEntry) {
       await mountGameFrame(gameEntry);
@@ -554,11 +571,6 @@ async function init() {
   if (!hasAvailableTools) {
     writeStatus("No active tools are currently available for Workspace Manager.");
   }
-  const initialToolId = readInitialToolId();
-  populateToolSelect(initialToolId);
-  updateStandaloneHref(initialToolId);
-  syncControlState();
-  bindEvents();
   if (hasAvailableTools) {
     mountSelectedTool("init");
   }

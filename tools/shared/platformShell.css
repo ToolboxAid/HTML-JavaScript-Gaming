@@ -139,6 +139,10 @@ body.tools-platform-surface {
   line-height: 1.45;
 }
 
+body.tools-platform-workspace-context .tools-platform-frame__description {
+  color: #3600af;
+}
+
 .tools-platform-frame__links,
 .tools-platform-frame__nav {
   display: flex;
@@ -349,6 +353,20 @@ body.tools-platform-surface {
 
 .tools-platform-frame__return-copy strong {
   color: var(--text, #f7f4ff);
+}
+
+body.tools-platform-workspace-context .tools-platform-frame__return-line,
+body.tools-platform-workspace-context .tools-platform-frame__return-copy strong,
+body.tools-platform-workspace-context .tools-platform-frame__return-line .tools-platform-frame__action-link {
+  color: #3600af;
+}
+
+body.tools-platform-workspace-context .tools-platform-frame__project-label,
+body.tools-platform-workspace-context .tools-platform-frame__project-name,
+body.tools-platform-workspace-context .tools-platform-frame__project-meta,
+body.tools-platform-workspace-context .tools-platform-frame__shared-status,
+body.tools-platform-workspace-context .tools-platform-frame__shared-status strong {
+  color: #3600af;
 }
 
 .tools-platform-frame__project {

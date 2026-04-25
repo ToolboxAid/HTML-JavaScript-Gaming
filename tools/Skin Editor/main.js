@@ -610,9 +610,6 @@ function syncSelectedObjectUiFromSelection() {
 
 function selectObjectKey(objectKey) {
   state.selectedObjectKey = objectKey;
-  if (!state.selectedObjectKeys.includes(objectKey)) {
-    state.selectedObjectKeys = [...state.selectedObjectKeys, objectKey];
-  }
   syncSelectedObjectUiFromSelection();
   renderObjectList();
   renderPaletteList();
@@ -626,9 +623,6 @@ function setObjectSelected(objectKey, selected) {
     ? Array.from(new Set([...currentSelection, objectKey]))
     : currentSelection.filter((key) => key !== objectKey);
   state.selectedObjectKeys = nextSelection;
-  if (!state.selectedObjectKeys.includes(state.selectedObjectKey)) {
-    state.selectedObjectKey = state.selectedObjectKeys[0] || "";
-  }
   syncSelectedObjectUiFromSelection();
   renderObjectList();
   renderPaletteList();
@@ -779,6 +773,9 @@ function renderObjectList() {
     checkbox.type = "checkbox";
     checkbox.className = "skin-editor-object-check";
     checkbox.checked = state.selectedObjectKeys.includes(objectKey);
+    checkbox.addEventListener("click", (event) => {
+      event.stopPropagation();
+    });
     checkbox.addEventListener("change", () => {
       setObjectSelected(objectKey, checkbox.checked);
     });

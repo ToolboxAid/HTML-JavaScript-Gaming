@@ -149,6 +149,7 @@ function buildRoundtripLinks(game, toolRegistryMap) {
     const workspaceHref = "/tools/Workspace%20Manager/index.html";
     const query = new URLSearchParams();
     query.set("tool", tool.id);
+    query.set("game", game.id);
     query.set("gameId", game.id);
     if (game.title) {
       query.set("gameTitle", game.title);

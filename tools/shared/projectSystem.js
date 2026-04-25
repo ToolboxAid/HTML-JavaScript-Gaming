@@ -72,6 +72,13 @@ export function createWorkspaceSystemController(options = {}) {
   const toolEntry = getToolById(toolId);
   const isReadOnlyTool = toolEntry?.readOnly === true;
   const skipInitialToolStateApply = options.skipInitialToolStateApply === true;
+  const launchContext = options.launchContext && typeof options.launchContext === "object"
+    ? options.launchContext
+    : {};
+  const launchGameId = safeString(launchContext.gameId, "");
+  const launchGameTitle = safeString(launchContext.gameTitle, launchGameId);
+  const launchReturnTo = safeString(launchContext.returnTo, "");
+  const isGameReturnLaunch = launchReturnTo.startsWith("/games/");
   const onChange = typeof options.onChange === "function" ? options.onChange : () => {};
   const onStatus = typeof options.onStatus === "function" ? options.onStatus : () => {};
   const adapter = () => getProjectAdapter(toolId);
@@ -81,8 +88,21 @@ export function createWorkspaceSystemController(options = {}) {
     baselineHash: "",
     lastObservedHash: "",
     adapterReady: false,
-    appliedInitialState: skipInitialToolStateApply
+    appliedInitialState: skipInitialToolStateApply,
+    launchContextHydrated: false
   };
+
+  function isGenericWorkspaceName(name) {
+    const normalized = safeString(name, "").toLowerCase();
+    if (!normalized) {
+      return true;
+    }
+    if (normalized === "untitled project" || normalized === "untitled workspace" || normalized === "no active workspace") {
+      return true;
+    }
+    const toolDisplayName = safeString(toolEntry?.displayName, "").toLowerCase();
+    return Boolean(toolDisplayName) && normalized === toolDisplayName;
+  }
 
   function serializeForDirtyComparison(manifest) {
     const normalized = cloneValue(manifest);
@@ -98,6 +118,23 @@ export function createWorkspaceSystemController(options = {}) {
         name: toolAdapter.getProjectName?.() || getToolById(toolId)?.displayName || "Untitled Workspace",
         toolId
       });
+
+    if (launchGameId) {
+      if (isGameReturnLaunch && !state.launchContextHydrated) {
+        clearSharedAssetHandoff();
+        clearSharedPaletteHandoff();
+      }
+      currentManifest.workspace = currentManifest.workspace && typeof currentManifest.workspace === "object"
+        ? currentManifest.workspace
+        : {};
+      if (safeString(currentManifest.workspace.notes, "") === "closed") {
+        currentManifest.workspace.notes = "";
+      }
+      if (isGenericWorkspaceName(currentManifest.name)) {
+        currentManifest.name = launchGameTitle || launchGameId;
+      }
+      state.launchContextHydrated = true;
+    }
 
     currentManifest.activeToolId = toolId;
     currentManifest.workspace.lastOpenTool = toolId;

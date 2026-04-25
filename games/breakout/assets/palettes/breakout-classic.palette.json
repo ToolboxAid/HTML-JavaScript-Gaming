@@ -1,0 +1,58 @@
+{
+  "schema": "html-js-gaming.palette",
+  "version": 1,
+  "name": "Breakout Classic Palette",
+  "source": "custom",
+  "entries": [
+    {
+      "symbol": "!",
+      "hex": "#000000",
+      "name": "Background"
+    },
+    {
+      "symbol": "#",
+      "hex": "#F8F8F2",
+      "name": "Wall/Paddle/Ball"
+    },
+    {
+      "symbol": "$",
+      "hex": "#FF595E",
+      "name": "Brick Row 1"
+    },
+    {
+      "symbol": "%",
+      "hex": "#FF924C",
+      "name": "Brick Row 2"
+    },
+    {
+      "symbol": "&",
+      "hex": "#FFCA3A",
+      "name": "Brick Row 3"
+    },
+    {
+      "symbol": "(",
+      "hex": "#8AC926",
+      "name": "Brick Row 4"
+    },
+    {
+      "symbol": ")",
+      "hex": "#1982C4",
+      "name": "Brick Row 5"
+    },
+    {
+      "symbol": "*",
+      "hex": "#6A4C93",
+      "name": "Brick Row 6"
+    },
+    {
+      "symbol": "+",
+      "hex": "#04040A",
+      "name": "HUD Text"
+    },
+    {
+      "symbol": ",",
+      "hex": "#A0A0A0",
+      "name": "HUD Muted"
+    }
+  ]
+}

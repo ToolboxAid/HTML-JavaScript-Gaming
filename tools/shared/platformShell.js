@@ -2,7 +2,8 @@ import { getToolById, getToolRegistry } from "../toolRegistry.js";
 import {
   getSharedShellActions,
   readSharedAssetHandoff,
-  readSharedPaletteHandoff
+  readSharedPaletteHandoff,
+  writeSharedPaletteHandoff
 } from "./assetUsageIntegration.js";
 import { createWorkspaceSystemController } from "./projectSystem.js";
 import { bindEventHandlers, createCommandDispatcher } from "./eventCommandUtils.js";
@@ -10,6 +11,7 @@ import { asHtmlInput, queryAll, queryFirst, readDataAttribute, setTextContent } 
 import { escapeHtml } from "../../src/shared/string/stringUtil.js";
 import { Logger } from "../../src/engine/logging/index.js";
 import { createRuntimeMonitoringHooks } from "../../src/engine/runtime/index.js";
+import { validatePaletteDocument } from "./paletteDocumentContract.js";
 
 let workspaceController = null;
 let headerExpandedState = null;
@@ -22,6 +24,8 @@ const HEADER_EXPANDED_STORAGE_KEY = "toolboxaid.toolsPlatform.headerExpanded";
 const HEADER_EXPANDED_FALLBACK_TOOL = "tool-host";
 const TOOLS_PLATFORM_LOGGER = new Logger({ channel: "tools.platform", level: "debug" });
 const TOOLS_PLATFORM_BOOT_MS = Date.now();
+const GAME_ASSET_CATALOG_SCHEMA = "html-js-gaming.game-asset-catalog";
+const GAME_ASSET_CATALOG_VERSION = 1;
 
 function getPageMode() {
   return document.body.dataset.toolsPlatformPage || "tool";
@@ -117,6 +121,100 @@ function readGameLaunchContext() {
   };
 }
 
+function deriveGameAssetCatalogPath(context) {
+  const gameHref = normalizeTextValue(context?.gameHref);
+  if (gameHref.endsWith("/index.html")) {
+    return `${gameHref.slice(0, -"/index.html".length)}/assets/workspace.asset-catalog.json`;
+  }
+  if (gameHref.endsWith("/")) {
+    return `${gameHref}assets/workspace.asset-catalog.json`;
+  }
+  const gameId = normalizeTextValue(context?.gameId);
+  return gameId ? `/games/${encodeURIComponent(gameId)}/assets/workspace.asset-catalog.json` : "";
+}
+
+function normalizePaletteCatalogEntries(value) {
+  const source = value && typeof value === "object" ? value : {};
+  return Object.entries(source)
+    .map(([assetId, rawEntry]) => {
+      const safeAssetId = normalizeTextValue(assetId);
+      const entry = rawEntry && typeof rawEntry === "object" ? rawEntry : {};
+      const kind = normalizeTextValue(entry.kind).toLowerCase();
+      const path = normalizeTextValue(entry.path || entry.runtimePath || entry.href);
+      return { assetId: safeAssetId, kind, path };
+    })
+    .filter((entry) => Boolean(entry.assetId && entry.kind === "palette" && entry.path));
+}
+
+async function readJsonDocument(pathValue) {
+  const safePath = normalizeTextValue(pathValue);
+  if (!safePath || typeof fetch !== "function") {
+    return null;
+  }
+  try {
+    const response = await fetch(safePath, { cache: "no-store" });
+    if (!response.ok) {
+      return null;
+    }
+    return await response.json();
+  } catch {
+    return null;
+  }
+}
+
+async function hydrateSharedPaletteFromGameLaunchContext() {
+  const existingPalette = readSharedPaletteHandoff();
+  if (existingPalette?.paletteId) {
+    return false;
+  }
+
+  const launchContext = readGameLaunchContext();
+  if (!launchContext?.gameId && !launchContext?.gameHref) {
+    return false;
+  }
+
+  const catalogPath = deriveGameAssetCatalogPath(launchContext);
+  if (!catalogPath) {
+    return false;
+  }
+
+  const catalogPayload = await readJsonDocument(catalogPath);
+  if (!catalogPayload || typeof catalogPayload !== "object") {
+    return false;
+  }
+
+  const schema = normalizeTextValue(catalogPayload.schema);
+  const version = Number(catalogPayload.version);
+  if (schema !== GAME_ASSET_CATALOG_SCHEMA || version !== GAME_ASSET_CATALOG_VERSION) {
+    return false;
+  }
+
+  const paletteEntries = normalizePaletteCatalogEntries(catalogPayload.assets || catalogPayload.entries);
+  const primaryPalette = paletteEntries[0];
+  if (!primaryPalette) {
+    return false;
+  }
+
+  const palettePayload = await readJsonDocument(primaryPalette.path);
+  const validation = validatePaletteDocument(palettePayload, { requireSchema: false });
+  if (!validation.valid) {
+    return false;
+  }
+
+  return writeSharedPaletteHandoff({
+    paletteId: primaryPalette.assetId,
+    displayName: validation.palette.name || primaryPalette.assetId,
+    colors: validation.palette.entries,
+    metadata: {
+      source: "workspace-game-catalog",
+      gameId: launchContext.gameId || "",
+      sourcePath: primaryPalette.path
+    },
+    sourceToolId: "workspace-manager",
+    selectedAt: new Date().toISOString()
+  });
+}
+
 function renderGameReturnLine() {
   const context = readGameLaunchContext();
   if (!context) {
@@ -127,15 +225,11 @@ function renderGameReturnLine() {
   const gamePageLink = context.gameHref
     ? `<a class="tools-platform-frame__action-link" href="${escapeHtml(context.gameHref)}">Open Game</a>`
     : "";
-  const workspaceLink = context.workspaceHref
-    ? `<a class="tools-platform-frame__action-link" href="${escapeHtml(context.workspaceHref)}">Open in Workspace Manager</a>`
-    : "";
   return `
     <div class="tools-platform-frame__return-line" aria-label="Game launch context">
       <span class="tools-platform-frame__return-copy"><strong>Game Source:</strong> ${escapeHtml(gameLabel)}</span>
       <a class="tools-platform-frame__action-link" href="${escapeHtml(returnHref)}">Return to Games</a>
       ${gamePageLink}
-      ${workspaceLink}
     </div>
   `;
 }
@@ -191,7 +285,19 @@ function resolveProjectBindingLabel() {
   return manifest.dirty === true ? "Unsaved" : "Loaded";
 }
 
-function renderToolAssetBadge() {
+function renderToolAssetBadge(toolId = "") {
+  const normalizedToolId = normalizeTextValue(toolId).toLowerCase();
+  if (normalizedToolId === "palette-browser") {
+    const palette = readSharedPaletteHandoff();
+    const paletteLabel = palette?.displayName || "none";
+    const paletteTitle = `Updated: ${escapeHtml(palette?.selectedAt || "not-set")}`;
+    return `
+      <div class="tools-platform-frame__binding-badges" aria-label="Tool asset binding">
+        <span class="tools-platform-frame__binding-badge is-active" title="${paletteTitle}">${escapeHtml(`Palette: ${paletteLabel}`)}</span>
+      </div>
+    `;
+  }
+
   const asset = readSharedAssetHandoff();
   const assetLabel = asset?.displayName || "none";
   const assetTitle = `Updated: ${escapeHtml(asset?.selectedAt || "not-set")}`;
@@ -280,7 +386,7 @@ function renderToolLinks(currentToolId) {
         return `
           <div class="tools-platform-frame__nav-tool-row${disabledClass}">
             <a class="tools-platform-frame__nav-link${currentClass}${disabledClass}" href="${escapeHtml(getRegistryEntryHref(tool.entryPoint))}"${disabledAttrs}>${escapeHtml(tool.displayName)}</a>
-            ${renderToolAssetBadge()}
+            ${renderToolAssetBadge(tool.id)}
           </div>
         `;
       })
@@ -343,7 +449,7 @@ function renderToolLinks(currentToolId) {
       return `
         <div class="tools-platform-frame__nav-tool-row${disabledClass}">
           <a class="tools-platform-frame__nav-link${currentClass}${disabledClass}" href="${escapeHtml(getRegistryEntryHref(tool.entryPoint))}"${disabledAttrs}>${escapeHtml(tool.displayName)}</a>
-          ${renderToolAssetBadge()}
+          ${renderToolAssetBadge(tool.id)}
         </div>
       `;
     })
@@ -800,11 +906,12 @@ function ensureRuntimeMonitoring() {
   }, { once: true });
 }
 
-function initPlatformShell() {
+async function initPlatformShell() {
   ensureRuntimeMonitoring();
 
   const currentToolId = document.body.dataset.toolId || "";
   const currentTool = currentToolId ? getToolById(currentToolId) : null;
+  const launchContext = readGameLaunchContext();
   const searchParams = typeof window !== "undefined"
     ? new URLSearchParams(window.location.search)
     : new URLSearchParams();
@@ -813,6 +920,7 @@ function initPlatformShell() {
   if (currentToolId) {
     workspaceController = createWorkspaceSystemController({
       toolId: currentToolId,
+      launchContext,
       skipInitialToolStateApply: launchedFromSamplePreset,
       onChange(payload) {
         const manifest = payload?.manifest || {};
@@ -845,8 +953,12 @@ function initPlatformShell() {
     workspaceController.startWatching();
   }
 
+  const hydratedPalette = await hydrateSharedPaletteFromGameLaunchContext();
   renderShell(currentTool);
+  if (hydratedPalette) {
+    TOOLS_PLATFORM_LOGGER.debug("shared palette hydrated from game asset catalog");
+  }
   bindLiveBindingRefresh(currentTool);
 }
 
-initPlatformShell();
+void initPlatformShell();

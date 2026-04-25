@@ -9,6 +9,35 @@ const refs = {
   output: document.getElementById("assetPipelineOutput")
 };
 
+function normalizeText(value) {
+  return typeof value === "string" ? value.trim() : "";
+}
+
+function cloneJson(value) {
+  try {
+    return JSON.parse(JSON.stringify(value));
+  } catch {
+    return null;
+  }
+}
+
+function toSlug(value, fallback = "game") {
+  const text = normalizeText(value)
+    .toLowerCase()
+    .replace(/[^a-z0-9._-]+/g, "-")
+    .replace(/-+/g, "-")
+    .replace(/^-|-$/g, "");
+  return text || fallback;
+}
+
+function readLaunchContextFromQuery() {
+  const searchParams = new URLSearchParams(window.location.search);
+  return {
+    gameId: normalizeText(searchParams.get("gameId")),
+    gameTitle: normalizeText(searchParams.get("gameTitle"))
+  };
+}
+
 function normalizeSamplePresetPath(pathValue) {
   if (typeof pathValue !== "string") {
     return "";
@@ -30,12 +59,99 @@ function normalizeSamplePresetPath(pathValue) {
 }
 
 function buildPresetLoadedStatus(sampleId, samplePresetPath) {
-  const normalizedSampleId = typeof sampleId === "string" ? sampleId.trim() : "";
+  const normalizedSampleId = normalizeText(sampleId);
   if (normalizedSampleId) {
     return `Loaded preset from sample ${normalizedSampleId}.`;
   }
-  const normalizedPath = typeof samplePresetPath === "string" ? samplePresetPath.trim() : "";
+  const normalizedPath = normalizeText(samplePresetPath);
   return normalizedPath ? `Loaded preset from ${normalizedPath}.` : "Loaded preset.";
+}
+
+function buildPresetLoadedWithContextStatus(launchGameId, samplePresetPath) {
+  const safeGameId = normalizeText(launchGameId);
+  const safePresetPath = normalizeText(samplePresetPath);
+  if (!safeGameId) {
+    return "Loaded preset with launch context.";
+  }
+  if (safePresetPath.startsWith("/samples/")) {
+    return `Loaded shared sample preset template. Launch context applied for game ${safeGameId}.`;
+  }
+  return `Loaded preset. Launch context applied for game ${safeGameId}.`;
+}
+
+function applyLaunchContextToPayload(rawPayload, launchContext = {}) {
+  const payload = rawPayload && typeof rawPayload === "object" ? cloneJson(rawPayload) : null;
+  if (!payload || typeof payload !== "object") {
+    return {
+      payload: rawPayload,
+      overridden: false
+    };
+  }
+
+  const gameId = normalizeText(launchContext.gameId);
+  if (!gameId) {
+    return {
+      payload,
+      overridden: false
+    };
+  }
+
+  let overridden = false;
+  const originalGameId = normalizeText(payload.gameId);
+  if (normalizeText(payload.gameId) !== gameId) {
+    payload.gameId = gameId;
+    overridden = true;
+  }
+
+  if (/^sample-\d{4}$/i.test(originalGameId)) {
+    const gameSlug = toSlug(gameId, "game");
+    const rewrite = (value) => normalizeText(value).replace(/^sample-\d{4}/i, gameSlug);
+    const domains = payload.domainInputs && typeof payload.domainInputs === "object"
+      ? payload.domainInputs
+      : {};
+    Object.values(domains).forEach((records) => {
+      if (!Array.isArray(records)) {
+        return;
+      }
+      records.forEach((record) => {
+        if (!record || typeof record !== "object") {
+          return;
+        }
+        const nextAssetId = rewrite(record.assetId);
+        if (nextAssetId && nextAssetId !== record.assetId) {
+          record.assetId = nextAssetId;
+          overridden = true;
+        }
+        const nextRuntimeFileName = rewrite(record.runtimeFileName);
+        if (nextRuntimeFileName && nextRuntimeFileName !== record.runtimeFileName) {
+          record.runtimeFileName = nextRuntimeFileName;
+          overridden = true;
+        }
+        const nextToolDataFileName = rewrite(record.toolDataFileName);
+        if (nextToolDataFileName && nextToolDataFileName !== record.toolDataFileName) {
+          record.toolDataFileName = nextToolDataFileName;
+          overridden = true;
+        }
+      });
+    });
+  }
+
+  if (payload.toolStates && typeof payload.toolStates === "object") {
+    Object.values(payload.toolStates).forEach((toolState) => {
+      if (!toolState || typeof toolState !== "object") {
+        return;
+      }
+      if (normalizeText(toolState.projectId) !== gameId) {
+        toolState.projectId = gameId;
+        overridden = true;
+      }
+    });
+  }
+
+  return {
+    payload,
+    overridden
+  };
 }
 
 function setStatus(message) {
@@ -124,7 +240,8 @@ async function tryLoadPresetFromQuery() {
   if (!samplePresetPath) {
     return;
   }
-  const sampleId = String(searchParams.get("sampleId") || "").trim();
+  const sampleId = normalizeText(searchParams.get("sampleId"));
+  const launchContext = readLaunchContextFromQuery();
   try {
     const presetUrl = new URL(samplePresetPath, window.location.href);
     const response = await fetch(presetUrl.toString(), { cache: "no-store" });
@@ -136,22 +253,31 @@ async function tryLoadPresetFromQuery() {
     if (!pipelinePayload) {
       throw new Error("Preset payload did not include pipeline options.");
     }
+    const adapted = applyLaunchContextToPayload(pipelinePayload, launchContext);
     if (!(refs.input instanceof HTMLTextAreaElement)) {
       throw new Error("Pipeline input is unavailable.");
     }
-    refs.input.value = toPrettyJson(pipelinePayload);
-    setStatus(buildPresetLoadedStatus(sampleId, samplePresetPath));
+    refs.input.value = toPrettyJson(adapted.payload);
+    const loadedStatus = buildPresetLoadedStatus(sampleId, samplePresetPath);
+    if (adapted.overridden && launchContext.gameId) {
+      setStatus(buildPresetLoadedWithContextStatus(launchContext.gameId, samplePresetPath));
+      return;
+    }
+    setStatus(loadedStatus);
   } catch (error) {
     setStatus(`Preset load failed: ${error instanceof Error ? error.message : "unknown error"}`);
   }
 }
 
 function bootAssetPipelineTool() {
+  const launchContext = readLaunchContextFromQuery();
   if (refs.runButton instanceof HTMLButtonElement) {
     refs.runButton.addEventListener("click", runPipeline);
   }
   if (refs.input instanceof HTMLTextAreaElement && !refs.input.value.trim()) {
-    refs.input.value = toPrettyJson(createDefaultPayload());
+    const defaultPayload = createDefaultPayload();
+    const adapted = applyLaunchContextToPayload(defaultPayload, launchContext);
+    refs.input.value = toPrettyJson(adapted.payload);
   }
   void tryLoadPresetFromQuery();
   return { runPipeline };
