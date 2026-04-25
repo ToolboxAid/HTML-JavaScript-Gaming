@@ -34,59 +34,87 @@
       <div id="skinEditorStatus" class="debug-tool-meta">Skin editor ready.</div>
     </section>
 
-    <section class="debug-tool-grid skin-editor-grid">
-      <section class="panel debug-tool-panel skin-editor-visual-panel">
-        <h3>Visual Controls</h3>
+    <section class="skin-editor-workbench">
+      <aside class="panel debug-tool-panel skin-editor-column skin-editor-column--left">
         <div class="skin-editor-context">
           <span id="skinEditorContextGame" class="skin-editor-chip">Game: n/a</span>
           <span id="skinEditorContextSchema" class="skin-editor-chip">Schema: n/a</span>
           <span id="skinEditorContextSource" class="skin-editor-chip">Source: n/a</span>
         </div>
-        <section class="skin-editor-section">
-          <h4>Live Preview Canvas</h4>
-          <div class="skin-editor-preview-toolbar">
-            <label class="debug-tool-label" for="skinEditorPreviewItemSelect">
-              Focus Item
-              <select id="skinEditorPreviewItemSelect" class="debug-tool-field">
-                <option value="paddle">Paddle</option>
-                <option value="ball">Ball</option>
-                <option value="brick">Brick</option>
-              </select>
-            </label>
+        <section class="skin-editor-section skin-editor-section--shape-add">
+          <h4>Object Shape/Type</h4>
+          <div class="skin-editor-shape-add-row">
+            <label for="skinEditorNewShapeType">Object Shape/Type</label>
+            <select id="skinEditorNewShapeType" class="skin-editor-field">
+              <option value="circle">Circle</option>
+              <option value="oval">Oval</option>
+              <option value="rectangle">Rectangle</option>
+              <option value="square">Square</option>
+              <option value="polygon">Polygon</option>
+              <option value="star">Star</option>
+              <option value="ring">Ring</option>
+              <option value="wall-3-sides">Wall (3 Sides)</option>
+              <option value="hud-color">HUD Color</option>
+            </select>
           </div>
+          <div class="skin-editor-shape-add-row">
+            <label for="skinEditorNewShapeName">Name</label>
+            <input
+              id="skinEditorNewShapeName"
+              class="skin-editor-field"
+              type="text"
+              placeholder="example: paddle, hudText, hudPanel"
+              autocomplete="off"
+            />
+          </div>
+          <div class="debug-tool-actions">
+            <button type="button" id="skinEditorAddShapeButton" class="debug-tool-control">Add</button>
+            <button type="button" id="skinEditorRenameObjectButton" class="debug-tool-control">Rename</button>
+            <button type="button" id="skinEditorDeleteObjectButton" class="debug-tool-control">Delete</button>
+            <button type="button" id="skinEditorFlattenObjectsButton" class="debug-tool-control">Flatten</button>
+          </div>
+        </section>
+        <h3>Objects</h3>
+        <div id="skinEditorObjectList" class="skin-editor-object-list" role="listbox" aria-label="Skin objects"></div>
+      </aside>
+
+      <section class="panel debug-tool-panel skin-editor-canvas-panel">
+        <h3>Canvas Preview</h3>
+        <div class="skin-editor-canvas-wrap">
           <canvas
             id="skinEditorPreviewCanvas"
             class="skin-editor-preview-canvas"
-            width="720"
-            height="260"
-            aria-label="Skin preview canvas"
+            width="960"
+            height="560"
+            aria-label="Selected object preview"
           ></canvas>
-          <p id="skinEditorPreviewNote" class="skin-editor-empty"></p>
-          <h4>Focused Item Controls</h4>
-          <div id="skinEditorFocusedControls" class="skin-editor-list"></div>
-        </section>
-        <section class="skin-editor-section">
-          <h4>Object Colors</h4>
-          <div id="skinEditorColorList" class="skin-editor-list"></div>
-        </section>
-        <section class="skin-editor-section">
-          <h4>Object Metrics</h4>
-          <div id="skinEditorSizingList" class="skin-editor-list"></div>
-        </section>
-        <section class="skin-editor-section">
-          <h4>Entities</h4>
-          <div id="skinEditorEntitiesList" class="skin-editor-entities"></div>
-        </section>
-      </section>
-      <section class="panel debug-tool-panel">
-        <h3>Skin JSON Input</h3>
-        <textarea id="skinEditorInput" class="debug-tool-field skin-editor-json" rows="18"></textarea>
-        <div class="debug-tool-actions">
-          <button type="button" id="skinEditorSyncVisualButton" class="debug-tool-control">Sync Visual From JSON</button>
         </div>
-        <h3>Skin Summary</h3>
-        <pre id="skinEditorSummary" class="debug-tool-readout">Load active skin to inspect its payload.</pre>
+        <p id="skinEditorPreviewNote" class="skin-editor-empty"></p>
       </section>
+
+      <aside class="panel debug-tool-panel skin-editor-column skin-editor-column--right">
+        <h3>Inspector</h3>
+        <section class="skin-editor-section">
+          <h4>Palette</h4>
+          <div id="skinEditorPaletteList" class="skin-editor-palette-list"></div>
+        </section>
+        <section class="skin-editor-section">
+          <h4>Selected Object</h4>
+          <div id="skinEditorObjectControls" class="skin-editor-list"></div>
+        </section>
+
+        <section class="skin-editor-section">
+          <h4>Skin JSON Input</h4>
+          <textarea id="skinEditorInput" class="debug-tool-field skin-editor-json" rows="14"></textarea>
+          <div class="debug-tool-actions">
+            <button type="button" id="skinEditorSyncVisualButton" class="debug-tool-control">Sync Visual From JSON</button>
+          </div>
+        </section>
+        <section class="skin-editor-section">
+          <h4>Skin Summary</h4>
+          <pre id="skinEditorSummary" class="debug-tool-readout">Load active skin to inspect its payload.</pre>
+        </section>
+      </aside>
     </section>
   </div>
 

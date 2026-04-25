@@ -53,12 +53,18 @@ const refs = {
   contextGame: document.getElementById("skinEditorContextGame"),
   contextSchema: document.getElementById("skinEditorContextSchema"),
   contextSource: document.getElementById("skinEditorContextSource"),
-  colorList: document.getElementById("skinEditorColorList"),
-  sizingList: document.getElementById("skinEditorSizingList"),
-  entitiesList: document.getElementById("skinEditorEntitiesList"),
+  newShapeType: document.getElementById("skinEditorNewShapeType"),
+  newShapeName: document.getElementById("skinEditorNewShapeName"),
+  addShapeButton: document.getElementById("skinEditorAddShapeButton"),
+  renameObjectButton: document.getElementById("skinEditorRenameObjectButton"),
+  deleteObjectButton: document.getElementById("skinEditorDeleteObjectButton"),
+  flattenObjectsButton: document.getElementById("skinEditorFlattenObjectsButton"),
+  objectList: document.getElementById("skinEditorObjectList"),
+  paletteList: document.getElementById("skinEditorPaletteList"),
+  selectedObjectName: document.getElementById("skinEditorSelectedObjectName"),
+  selectedObjectColor: document.getElementById("skinEditorSelectedObjectColor"),
+  objectControls: document.getElementById("skinEditorObjectControls"),
   previewCanvas: document.getElementById("skinEditorPreviewCanvas"),
-  previewItemSelect: document.getElementById("skinEditorPreviewItemSelect"),
-  focusedControls: document.getElementById("skinEditorFocusedControls"),
   previewNote: document.getElementById("skinEditorPreviewNote")
 };
 
@@ -66,12 +72,12 @@ const state = {
   activeGameId: "",
   activeSkin: null,
   activeSource: "n/a",
-  previewItem: "paddle",
-  previewBrickIndex: 0,
   presetSkinPath: "",
-  presetSkin: null
+  presetSkin: null,
+  selectedObjectKey: "",
+  selectedObjectKeys: [],
+  selectedColorSwatch: ""
 };
-const BREAKOUT_BRICK_KEYS = Object.freeze(["brick1", "brick2", "brick3", "brick4", "brick5", "brick6"]);
 
 function normalizeText(value) {
   return typeof value === "string" ? value.trim() : "";
@@ -79,6 +85,14 @@ function normalizeText(value) {
 
 function toObject(value) {
   return value && typeof value === "object" ? value : {};
+}
+
+function deepClone(value) {
+  try {
+    return JSON.parse(JSON.stringify(value));
+  } catch {
+    return null;
+  }
 }
 
 function normalizeSamplePresetPath(pathValue) {
@@ -98,14 +112,6 @@ function normalizeSamplePresetPath(pathValue) {
   return "";
 }
 
-function deepClone(value) {
-  try {
-    return JSON.parse(JSON.stringify(value));
-  } catch {
-    return null;
-  }
-}
-
 function getGameOptionById(gameId) {
   const normalized = normalizeText(gameId).toLowerCase();
   return GAME_OPTIONS.find((option) => option.id.toLowerCase() === normalized) || null;
@@ -119,6 +125,11 @@ function resolveActiveGameOption(initialGameId = "") {
   const selected = getGameOptionById(initialGameId) || GAME_OPTIONS[0] || null;
   state.activeGameId = selected ? selected.id : "";
   return selected;
+}
+
+function getObjectKeys() {
+  const objects = toObject(state.activeSkin?.objects);
+  return Object.keys(objects);
 }
 
 function setStatus(message) {
@@ -213,7 +224,7 @@ function toObjectCentricSkinDocument(game, rawSkin) {
     schema: normalizeText(normalized?.schema) || game.fallbackSchema,
     gameId: normalizeText(normalized?.gameId) || game.id,
     name: normalizeText(normalized?.name) || `${game.label} Skin`,
-    objects: deepClone(normalized?.objects && typeof normalized.objects === "object" ? normalized.objects : {}) || {},
+    objects: deepClone(toObject(normalized?.objects)) || {},
     entities: {}
   };
 }
@@ -233,106 +244,23 @@ function resolveCurrentSkinDocument({ allowStateFallback = true } = {}) {
   return null;
 }
 
-function formatPath(path) {
-  return path.reduce((result, segment) => {
-    if (typeof segment === "number") {
-      return `${result}[${segment}]`;
-    }
-    return result ? `${result}.${segment}` : segment;
-  }, "");
-}
-
-function setValueAtPath(target, path, value) {
-  if (!target || typeof target !== "object" || !Array.isArray(path) || path.length === 0) {
-    return false;
+function ensureSelectedObjectKey() {
+  const keys = getObjectKeys();
+  if (!keys.length) {
+    state.selectedObjectKey = "";
+    state.selectedObjectKeys = [];
+    return;
   }
-  let current = target;
-  for (let index = 0; index < path.length - 1; index += 1) {
-    const segment = path[index];
-    const nextSegment = path[index + 1];
-    if (current[segment] == null || typeof current[segment] !== "object") {
-      current[segment] = typeof nextSegment === "number" ? [] : {};
-    }
-    current = current[segment];
+  if (!keys.includes(state.selectedObjectKey)) {
+    state.selectedObjectKey = keys[0];
   }
-  current[path[path.length - 1]] = value;
-  return true;
-}
-
-function getValueAtPath(target, path, fallbackValue = null) {
-  if (!target || typeof target !== "object" || !Array.isArray(path) || path.length === 0) {
-    return fallbackValue;
+  const normalizedSelection = Array.isArray(state.selectedObjectKeys)
+    ? state.selectedObjectKeys.filter((key) => keys.includes(key))
+    : [];
+  if (!normalizedSelection.includes(state.selectedObjectKey)) {
+    normalizedSelection.unshift(state.selectedObjectKey);
   }
-  let current = target;
-  for (let index = 0; index < path.length; index += 1) {
-    const segment = path[index];
-    if (current == null || typeof current !== "object" || !(segment in current)) {
-      return fallbackValue;
-    }
-    current = current[segment];
-  }
-  return current;
-}
-
-function readFirstValue(paths = [], fallbackValue = null) {
-  for (let index = 0; index < paths.length; index += 1) {
-    const value = getValueAtPath(state.activeSkin, paths[index], undefined);
-    if (value === undefined || value === null) {
-      continue;
-    }
-    if (typeof value === "string" && !value.trim()) {
-      continue;
-    }
-    return value;
-  }
-  return fallbackValue;
-}
-
-function readNumberValue(path, fallbackValue = 0) {
-  const value = getValueAtPath(state.activeSkin, path, fallbackValue);
-  const numeric = Number(value);
-  return Number.isFinite(numeric) ? numeric : fallbackValue;
-}
-
-function readColorValue(path, fallbackValue = "#ffffff") {
-  const value = normalizeText(getValueAtPath(state.activeSkin, path, fallbackValue));
-  return value || fallbackValue;
-}
-
-function readNumberFromPaths(paths, fallbackValue = 0) {
-  const value = readFirstValue(paths, fallbackValue);
-  const numeric = Number(value);
-  return Number.isFinite(numeric) ? numeric : fallbackValue;
-}
-
-function readColorFromPaths(paths, fallbackValue = "#ffffff") {
-  const value = normalizeText(readFirstValue(paths, fallbackValue));
-  return value || fallbackValue;
-}
-
-function getBreakoutBrickKeys() {
-  const objects = state.activeSkin && typeof state.activeSkin.objects === "object" ? state.activeSkin.objects : {};
-  const keys = BREAKOUT_BRICK_KEYS.filter((brickKey) => objects[brickKey] && typeof objects[brickKey] === "object");
-  return keys.length ? keys : BREAKOUT_BRICK_KEYS.slice();
-}
-
-function collectLeafEntries(value, path, matcher, entries = []) {
-  if (Array.isArray(value)) {
-    value.forEach((entry, index) => {
-      collectLeafEntries(entry, [...path, index], matcher, entries);
-    });
-    return entries;
-  }
-  if (value && typeof value === "object") {
-    Object.entries(value).forEach(([key, entry]) => {
-      collectLeafEntries(entry, [...path, key], matcher, entries);
-    });
-    return entries;
-  }
-  if (matcher(value)) {
-    entries.push({ path, value });
-  }
-  return entries;
+  state.selectedObjectKeys = Array.from(new Set(normalizedSelection));
 }
 
 function parseHexForPicker(value) {
@@ -366,6 +294,204 @@ function parseHexForPicker(value) {
   };
 }
 
+function createBasicField(className, value) {
+  const input = document.createElement("input");
+  input.className = className;
+  input.value = value;
+  return input;
+}
+
+function numberStep(value) {
+  return Number.isInteger(value) ? "1" : "0.1";
+}
+
+function isPositiveDimensionKey(propertyKey) {
+  return /(width|height|size|length|radius|thickness|diameter|gap)/i.test(normalizeText(propertyKey));
+}
+
+function clampNumericProperty(propertyKey, value) {
+  if (!Number.isFinite(value)) {
+    return value;
+  }
+  if (/sides?/i.test(normalizeText(propertyKey))) {
+    return Math.max(3, Math.round(value));
+  }
+  if (isPositiveDimensionKey(propertyKey)) {
+    return Math.max(1, value);
+  }
+  return value;
+}
+
+function normalizeObjectKey(value) {
+  return normalizeText(value)
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+}
+
+function normalizeObjectKeyPreserveCase(value) {
+  return normalizeText(value)
+    .replace(/[^a-zA-Z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+}
+
+function toCamelSegments(value) {
+  return normalizeText(value)
+    .replace(/([a-z0-9])([A-Z])/g, "$1 $2")
+    .toLowerCase()
+    .split(/[^a-z0-9]+/g)
+    .filter((entry) => Boolean(entry));
+}
+
+function toCamelCaseFromParts(parts) {
+  if (!parts.length) {
+    return "";
+  }
+  return parts
+    .map((part, index) => (index === 0
+      ? part
+      : `${part.charAt(0).toUpperCase()}${part.slice(1)}`))
+    .join("");
+}
+
+function normalizeHudColorName(value) {
+  const allParts = toCamelSegments(value);
+  const nonHudParts = allParts.filter((part, index) => !(index === 0 && part === "hud"));
+  const suffix = toCamelCaseFromParts(nonHudParts) || "color";
+  return `hud${suffix.charAt(0).toUpperCase()}${suffix.slice(1)}`;
+}
+
+function shouldEnforceHudName({ selectedType = "", currentKey = "", typedName = "" } = {}) {
+  const type = normalizeText(selectedType).toLowerCase();
+  const current = normalizeText(currentKey).toLowerCase();
+  const typed = normalizeText(typedName).toLowerCase();
+  return type === "hud-color" || current.startsWith("hud") || typed.startsWith("hud");
+}
+
+function hasObjectKey(objects, candidateKey, { caseInsensitive = false } = {}) {
+  if (!caseInsensitive) {
+    return Object.prototype.hasOwnProperty.call(objects, candidateKey);
+  }
+  const candidate = normalizeText(candidateKey).toLowerCase();
+  return Object.keys(objects).some((key) => normalizeText(key).toLowerCase() === candidate);
+}
+
+function ensureUniqueObjectKey(baseKey, { preserveCase = false } = {}) {
+  const objects = toObject(state.activeSkin?.objects);
+  const normalizedBase = preserveCase
+    ? (normalizeObjectKeyPreserveCase(baseKey) || "shape")
+    : (normalizeObjectKey(baseKey) || "shape");
+  const caseInsensitive = preserveCase;
+  if (!hasObjectKey(objects, normalizedBase, { caseInsensitive })) {
+    return normalizedBase;
+  }
+  let index = 2;
+  while (hasObjectKey(objects, `${normalizedBase}-${index}`, { caseInsensitive })) {
+    index += 1;
+  }
+  return `${normalizedBase}-${index}`;
+}
+
+function createShapePreset(shapeType) {
+  const type = normalizeText(shapeType).toLowerCase();
+  if (type === "hud-color") {
+    return { color: "#f8f8f2" };
+  }
+  if (type === "polygon") {
+    return {
+      shape: "polygon",
+      color: "#f8f8f2",
+      sides: 6,
+      radius: 56
+    };
+  }
+  if (type === "star") {
+    return {
+      shape: "star",
+      color: "#f8f8f2",
+      sides: 5,
+      outerRadius: 56,
+      innerRadius: 26
+    };
+  }
+  if (type === "wall-3-sides") {
+    return {
+      shape: "wall",
+      color: "#f8f8f2",
+      thickness: 16,
+      left: true,
+      right: true,
+      top: true,
+      bottom: false
+    };
+  }
+  if (type === "circle") {
+    return { color: "#f8f8f2", radius: 42 };
+  }
+  if (type === "oval") {
+    return { color: "#f8f8f2", width: 140, height: 90 };
+  }
+  if (type === "square") {
+    return { color: "#f8f8f2", width: 96, height: 96 };
+  }
+  if (type === "ring") {
+    return { color: "#f8f8f2", innerRadius: 26, outerRadius: 56 };
+  }
+  return { color: "#f8f8f2", width: 140, height: 90 };
+}
+
+function drawRegularPolygonPath(context, centerX, centerY, radius, sides, rotationRadians = -Math.PI / 2) {
+  const vertexCount = Math.max(3, Math.round(Number(sides) || 3));
+  const drawRadius = Math.max(2, Number(radius) || 2);
+  context.beginPath();
+  for (let index = 0; index < vertexCount; index += 1) {
+    const angle = rotationRadians + (index * Math.PI * 2) / vertexCount;
+    const x = centerX + Math.cos(angle) * drawRadius;
+    const y = centerY + Math.sin(angle) * drawRadius;
+    if (index === 0) {
+      context.moveTo(x, y);
+    } else {
+      context.lineTo(x, y);
+    }
+  }
+  context.closePath();
+}
+
+function drawStarPath(context, centerX, centerY, outerRadius, innerRadius, points, rotationRadians = -Math.PI / 2) {
+  const pointCount = Math.max(3, Math.round(Number(points) || 5));
+  const outer = Math.max(2, Number(outerRadius) || 2);
+  const inner = Math.max(1, Math.min(outer - 1, Number(innerRadius) || Math.max(1, outer / 2)));
+  const vertexCount = pointCount * 2;
+  context.beginPath();
+  for (let index = 0; index < vertexCount; index += 1) {
+    const angle = rotationRadians + (index * Math.PI) / pointCount;
+    const radius = index % 2 === 0 ? outer : inner;
+    const x = centerX + Math.cos(angle) * radius;
+    const y = centerY + Math.sin(angle) * radius;
+    if (index === 0) {
+      context.moveTo(x, y);
+    } else {
+      context.lineTo(x, y);
+    }
+  }
+  context.closePath();
+}
+
+function sanitizePositiveDimensionsInDocument(skinDocument) {
+  const skinDoc = skinDocument && typeof skinDocument === "object" ? skinDocument : {};
+  const objects = toObject(skinDoc.objects);
+  Object.values(objects).forEach((objectValue) => {
+    const object = toObject(objectValue);
+    Object.entries(object).forEach(([propertyKey, propertyValue]) => {
+      if (typeof propertyValue === "number" && Number.isFinite(propertyValue) && isPositiveDimensionKey(propertyKey)) {
+        object[propertyKey] = Math.max(1, propertyValue);
+      }
+    });
+  });
+  skinDoc.objects = objects;
+  return skinDoc;
+}
+
 function updateEditorFromState(source = "visual-editor") {
   const game = getSelectedGameOption();
   if (!game || !state.activeSkin) {
@@ -379,142 +505,402 @@ function updateEditorFromState(source = "visual-editor") {
   updateContextChips(game, source, state.activeSkin);
 }
 
-function setEmptyMessage(container, text) {
-  if (!(container instanceof HTMLElement)) {
-    return;
-  }
-  container.innerHTML = "";
-  const note = document.createElement("p");
-  note.className = "skin-editor-empty";
-  note.textContent = text;
-  container.appendChild(note);
-}
-
-function commitVisualValue(path, value) {
-  if (!state.activeSkin || typeof state.activeSkin !== "object") {
-    return;
-  }
-  setValueAtPath(state.activeSkin, path, value);
-  updateEditorFromState("visual-editor");
-  renderPreviewSuite();
-}
-
-function createBasicField(className, value) {
-  const input = document.createElement("input");
-  input.className = className;
-  input.value = value;
-  return input;
-}
-
 function setPreviewNote(message = "") {
   if (refs.previewNote instanceof HTMLElement) {
     refs.previewNote.textContent = message;
   }
 }
 
-function createFocusedNumberControl(labelText, path, options = {}) {
-  const row = document.createElement("div");
-  row.className = "skin-editor-row skin-editor-row--number";
-  const label = document.createElement("span");
-  label.className = "skin-editor-row-label";
-  label.textContent = labelText;
-  const currentValue = readNumberValue(path, options.fallback ?? 0);
+function setSelectedObjectNameLabel() {
+  if (!(refs.selectedObjectName instanceof HTMLElement)) {
+    return;
+  }
+  refs.selectedObjectName.textContent = state.selectedObjectKey || "none";
+}
 
-  const slider = createBasicField("skin-editor-slider", String(currentValue));
-  slider.type = "range";
-  slider.min = String(options.min ?? 0);
-  slider.max = String(options.max ?? Math.max(20, Math.ceil(Math.abs(currentValue) * 2) + 5));
-  slider.step = options.step ?? numberStep(currentValue);
+function getSelectedObjectColorValue() {
+  const selectedObject = toObject(state.activeSkin?.objects?.[state.selectedObjectKey]);
+  if (parseHexForPicker(selectedObject.color)) {
+    return normalizeText(selectedObject.color);
+  }
+  const firstColor = Object.values(selectedObject)
+    .find((value) => typeof value === "string" && parseHexForPicker(value));
+  return typeof firstColor === "string" ? normalizeText(firstColor) : "";
+}
 
-  const numberInput = createBasicField("skin-editor-field", String(currentValue));
-  numberInput.type = "number";
-  numberInput.step = String(options.step ?? numberStep(currentValue));
-  numberInput.addEventListener("change", () => {
-    const parsed = Number(numberInput.value);
-    if (!Number.isFinite(parsed)) {
+function setSelectedObjectColorLabel() {
+  if (!(refs.selectedObjectColor instanceof HTMLElement)) {
+    return;
+  }
+  const colorValue = getSelectedObjectColorValue();
+  refs.selectedObjectColor.textContent = colorValue ? `Color: ${colorValue}` : "Color: none";
+}
+
+function inferShapeTypeFromSelectedObject() {
+  const selectedObject = toObject(state.activeSkin?.objects?.[state.selectedObjectKey]);
+  const shape = normalizeText(selectedObject.shape).toLowerCase();
+  if (shape === "wall") {
+    return "wall-3-sides";
+  }
+  if (shape && ["circle", "oval", "rectangle", "square", "polygon", "star", "ring", "hud-color"].includes(shape)) {
+    return shape;
+  }
+  const hasSides = Number.isFinite(Number(selectedObject.sides));
+  const hasRadius = Number.isFinite(Number(selectedObject.radius));
+  const hasInner = Number.isFinite(Number(selectedObject.innerRadius));
+  const hasOuter = Number.isFinite(Number(selectedObject.outerRadius));
+  const hasWidth = Number.isFinite(Number(selectedObject.width));
+  const hasHeight = Number.isFinite(Number(selectedObject.height));
+  const hasThickness = Number.isFinite(Number(selectedObject.thickness));
+  const hasWallFlags = ["left", "right", "top", "bottom"].some((key) => typeof selectedObject[key] === "boolean");
+  const keyStartsHud = normalizeText(state.selectedObjectKey).toLowerCase().startsWith("hud");
+
+  if (hasThickness && hasWallFlags) {
+    return "wall-3-sides";
+  }
+  if (hasSides && hasOuter && hasInner) {
+    return "star";
+  }
+  if (hasSides) {
+    return "polygon";
+  }
+  if (hasOuter && hasInner) {
+    return "ring";
+  }
+  if (hasRadius && hasWidth && hasHeight) {
+    return "oval";
+  }
+  if (hasRadius) {
+    return "circle";
+  }
+  if (hasWidth || hasHeight) {
+    const width = Number(selectedObject.width) || Number(selectedObject.size) || 0;
+    const height = Number(selectedObject.height) || Number(selectedObject.size) || 0;
+    if (width > 0 && height > 0 && Math.abs(width - height) <= 0.001) {
+      return "square";
+    }
+    return "rectangle";
+  }
+  if (keyStartsHud || (getSelectedObjectColorPropertyKeys().length > 0 && Object.keys(selectedObject).length <= 2)) {
+    return "hud-color";
+  }
+  return "rectangle";
+}
+
+function syncShapeTypeControlFromSelection() {
+  if (!(refs.newShapeType instanceof HTMLSelectElement)) {
+    return;
+  }
+  const inferredShapeType = inferShapeTypeFromSelectedObject();
+  const optionExists = Array.from(refs.newShapeType.options).some((option) => option.value === inferredShapeType);
+  if (optionExists) {
+    refs.newShapeType.value = inferredShapeType;
+  }
+}
+
+function syncSelectedObjectUiFromSelection() {
+  if (refs.newShapeName instanceof HTMLInputElement) {
+    refs.newShapeName.value = state.selectedObjectKey || "";
+  }
+  state.selectedColorSwatch = getSelectedObjectColorValue();
+  setSelectedObjectNameLabel();
+  setSelectedObjectColorLabel();
+  syncShapeTypeControlFromSelection();
+}
+
+function selectObjectKey(objectKey) {
+  state.selectedObjectKey = objectKey;
+  if (!state.selectedObjectKeys.includes(objectKey)) {
+    state.selectedObjectKeys = [...state.selectedObjectKeys, objectKey];
+  }
+  syncSelectedObjectUiFromSelection();
+  renderObjectList();
+  renderPaletteList();
+  renderObjectControls();
+  drawSelectedObjectPreview();
+}
+
+function setObjectSelected(objectKey, selected) {
+  const currentSelection = Array.isArray(state.selectedObjectKeys) ? [...state.selectedObjectKeys] : [];
+  const nextSelection = selected
+    ? Array.from(new Set([...currentSelection, objectKey]))
+    : currentSelection.filter((key) => key !== objectKey);
+  state.selectedObjectKeys = nextSelection;
+  if (!state.selectedObjectKeys.includes(state.selectedObjectKey)) {
+    state.selectedObjectKey = state.selectedObjectKeys[0] || "";
+  }
+  syncSelectedObjectUiFromSelection();
+  renderObjectList();
+  renderPaletteList();
+  renderObjectControls();
+  drawSelectedObjectPreview();
+}
+
+function setObjectPropertyValue(objectKey, propertyKey, value) {
+  if (!state.activeSkin || typeof state.activeSkin !== "object") {
+    return;
+  }
+  if (!state.activeSkin.objects || typeof state.activeSkin.objects !== "object") {
+    state.activeSkin.objects = {};
+  }
+  if (!state.activeSkin.objects[objectKey] || typeof state.activeSkin.objects[objectKey] !== "object") {
+    state.activeSkin.objects[objectKey] = {};
+  }
+  const nextValue = typeof value === "number"
+    ? clampNumericProperty(propertyKey, value)
+    : value;
+  state.activeSkin.objects[objectKey][propertyKey] = nextValue;
+  updateEditorFromState("visual-editor");
+  syncSelectedObjectUiFromSelection();
+  renderPaletteList();
+  renderObjectControls();
+  drawSelectedObjectPreview();
+}
+
+function getSelectedObjectColorPropertyKeys() {
+  const selectedObject = toObject(state.activeSkin?.objects?.[state.selectedObjectKey]);
+  return Object.entries(selectedObject)
+    .filter(([, value]) => typeof value === "string" && parseHexForPicker(value))
+    .map(([key]) => key);
+}
+
+function applyPaletteColorToSelectedObject(colorValue) {
+  if (!state.activeSkin || typeof state.activeSkin !== "object") {
+    return;
+  }
+  const selectedKey = state.selectedObjectKey;
+  if (!selectedKey) {
+    setStatus("Select an object before applying a palette color.");
+    return;
+  }
+  const colorKeys = getSelectedObjectColorPropertyKeys();
+  const selectedObject = toObject(state.activeSkin.objects?.[selectedKey]);
+  if (colorKeys.length) {
+    colorKeys.forEach((colorKey) => {
+      selectedObject[colorKey] = colorValue;
+    });
+  } else {
+    selectedObject.color = colorValue;
+  }
+  state.activeSkin.objects[selectedKey] = selectedObject;
+  state.selectedColorSwatch = colorValue;
+  updateEditorFromState("palette");
+  syncSelectedObjectUiFromSelection();
+  renderPaletteList();
+  renderObjectControls();
+  drawSelectedObjectPreview();
+  setStatus(`Applied palette color to '${selectedKey}'.`);
+}
+
+function renderPaletteList() {
+  if (!(refs.paletteList instanceof HTMLElement)) {
+    return;
+  }
+  refs.paletteList.innerHTML = "";
+  const objects = toObject(state.activeSkin?.objects);
+  const colorMap = new Map();
+  Object.entries(objects).forEach(([objectKey, objectValue]) => {
+    const shapeObject = toObject(objectValue);
+    Object.entries(shapeObject).forEach(([propertyKey, propertyValue]) => {
+      const color = typeof propertyValue === "string" ? normalizeText(propertyValue) : "";
+      if (!parseHexForPicker(color)) {
+        return;
+      }
+      const token = color.toLowerCase();
+      if (!colorMap.has(token)) {
+        colorMap.set(token, {
+          id: `${objectKey}.${propertyKey}`,
+          label: `${objectKey}.${propertyKey}`,
+          color
+        });
+      }
+    });
+  });
+  const swatches = Array.from(colorMap.values());
+
+  if (!swatches.length) {
+    const empty = document.createElement("p");
+    empty.className = "skin-editor-empty";
+    empty.textContent = "No object colors found.";
+    refs.paletteList.appendChild(empty);
+    return;
+  }
+
+  const paletteLabel = document.createElement("p");
+  paletteLabel.className = "skin-editor-empty";
+  paletteLabel.textContent = `Palette rebuilt from object colors (${swatches.length}).`;
+  refs.paletteList.appendChild(paletteLabel);
+
+  const selectedObjectColor = normalizeText(state.selectedColorSwatch || getSelectedObjectColorValue()).toLowerCase();
+  let activeMarked = false;
+
+  swatches.forEach((swatch) => {
+    const row = document.createElement("button");
+    row.type = "button";
+    row.className = "skin-editor-palette-swatch";
+    if (!activeMarked && selectedObjectColor && selectedObjectColor === swatch.color.toLowerCase()) {
+      row.classList.add("is-active");
+      activeMarked = true;
+    }
+    const chip = document.createElement("span");
+    chip.className = "skin-editor-palette-swatch-chip";
+    chip.style.background = swatch.color;
+    const label = document.createElement("span");
+    label.className = "skin-editor-palette-swatch-label";
+    label.textContent = swatch.label;
+    row.appendChild(chip);
+    row.appendChild(label);
+    row.addEventListener("click", () => {
+      applyPaletteColorToSelectedObject(swatch.color);
+    });
+    refs.paletteList.appendChild(row);
+  });
+}
+
+function renderObjectList() {
+  if (!(refs.objectList instanceof HTMLElement)) {
+    return;
+  }
+  refs.objectList.innerHTML = "";
+  const keys = getObjectKeys();
+  if (!keys.length) {
+    const note = document.createElement("p");
+    note.className = "skin-editor-empty";
+    note.textContent = "No objects found in this skin.";
+    refs.objectList.appendChild(note);
+    return;
+  }
+
+  keys.forEach((objectKey) => {
+    const row = document.createElement("div");
+    row.className = "skin-editor-object-row";
+
+    const checkbox = document.createElement("input");
+    checkbox.type = "checkbox";
+    checkbox.className = "skin-editor-object-check";
+    checkbox.checked = state.selectedObjectKeys.includes(objectKey);
+    checkbox.addEventListener("change", () => {
+      setObjectSelected(objectKey, checkbox.checked);
+    });
+
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "skin-editor-object-button";
+    if (objectKey === state.selectedObjectKey) {
+      button.classList.add("is-active");
+    }
+    button.textContent = objectKey;
+    button.addEventListener("click", () => {
+      selectObjectKey(objectKey);
+    });
+    row.appendChild(checkbox);
+    row.appendChild(button);
+    refs.objectList.appendChild(row);
+  });
+}
+
+function renderObjectControls() {
+  if (!(refs.objectControls instanceof HTMLElement)) {
+    return;
+  }
+  refs.objectControls.innerHTML = "";
+
+  const selectedKey = state.selectedObjectKey;
+  const selectedObject = toObject(state.activeSkin?.objects?.[selectedKey]);
+  const entries = Object.entries(selectedObject);
+  if (!selectedKey || entries.length === 0) {
+    const note = document.createElement("p");
+    note.className = "skin-editor-empty";
+    note.textContent = "Select an object to edit its properties.";
+    refs.objectControls.appendChild(note);
+    return;
+  }
+
+  entries.forEach(([propertyKey, propertyValue]) => {
+    if (propertyKey === "shape") {
       return;
     }
-    slider.value = String(parsed);
-    commitVisualValue(path, parsed);
+    if (typeof propertyValue === "number" && Number.isFinite(propertyValue)) {
+      const minValue = /sides?/i.test(normalizeText(propertyKey))
+        ? 3
+        : (isPositiveDimensionKey(propertyKey) ? 1 : 0);
+      const safeValue = clampNumericProperty(propertyKey, propertyValue);
+      const row = document.createElement("div");
+      row.className = "skin-editor-row skin-editor-row--number";
+      const label = document.createElement("span");
+      label.className = "skin-editor-row-label";
+      label.textContent = propertyKey;
+
+      const numeric = createBasicField("skin-editor-field", String(safeValue));
+      numeric.type = "number";
+      numeric.step = numberStep(safeValue);
+      numeric.min = String(minValue);
+      numeric.addEventListener("input", () => {
+        const parsed = clampNumericProperty(propertyKey, Number(numeric.value));
+        if (!Number.isFinite(parsed)) {
+          return;
+        }
+        numeric.value = String(parsed);
+        setObjectPropertyValue(selectedKey, propertyKey, parsed);
+      });
+
+      row.appendChild(label);
+      row.appendChild(numeric);
+      refs.objectControls.appendChild(row);
+      return;
+    }
+
+    if (typeof propertyValue === "boolean") {
+      const row = document.createElement("div");
+      row.className = "skin-editor-row skin-editor-row--boolean";
+      const label = document.createElement("span");
+      label.className = "skin-editor-row-label";
+      label.textContent = propertyKey;
+
+      const checkbox = document.createElement("input");
+      checkbox.type = "checkbox";
+      checkbox.className = "skin-editor-checkbox";
+      checkbox.checked = propertyValue;
+      checkbox.addEventListener("change", () => {
+        setObjectPropertyValue(selectedKey, propertyKey, checkbox.checked);
+      });
+
+      row.appendChild(label);
+      row.appendChild(checkbox);
+      refs.objectControls.appendChild(row);
+      return;
+    }
+
+    if (typeof propertyValue === "string") {
+      const isColorString = Boolean(parseHexForPicker(propertyValue));
+      if (isColorString) {
+        return;
+      }
+      const row = document.createElement("div");
+      row.className = "skin-editor-row";
+      const label = document.createElement("span");
+      label.className = "skin-editor-row-label";
+      label.textContent = propertyKey;
+      const textField = createBasicField("skin-editor-field", propertyValue);
+      textField.type = "text";
+      textField.addEventListener("change", () => {
+        setObjectPropertyValue(selectedKey, propertyKey, textField.value);
+      });
+      row.appendChild(label);
+      row.appendChild(textField);
+      refs.objectControls.appendChild(row);
+    }
   });
-  slider.addEventListener("input", () => {
-    numberInput.value = slider.value;
-    commitVisualValue(path, Number(slider.value));
-  });
 
-  row.appendChild(label);
-  row.appendChild(slider);
-  row.appendChild(numberInput);
-  return row;
-}
-
-function createFocusedColorControl(labelText, path, fallbackColor = "#ffffff") {
-  const row = document.createElement("div");
-  row.className = "skin-editor-row";
-  const label = document.createElement("span");
-  label.className = "skin-editor-row-label";
-  label.textContent = labelText;
-  const currentColor = readColorValue(path, fallbackColor);
-  const colorMeta = parseHexForPicker(currentColor);
-
-  const picker = document.createElement("input");
-  picker.className = "skin-editor-color-input";
-  picker.type = "color";
-  picker.disabled = !colorMeta;
-  picker.value = colorMeta ? colorMeta.picker : "#ffffff";
-
-  const colorText = createBasicField("skin-editor-field", currentColor);
-  colorText.type = "text";
-  colorText.addEventListener("change", () => {
-    commitVisualValue(path, colorText.value);
-  });
-  picker.addEventListener("input", () => {
-    const previous = parseHexForPicker(colorText.value) || colorMeta;
-    const alphaSuffix = previous?.alpha || "";
-    const nextValue = `${picker.value}${alphaSuffix}`;
-    colorText.value = nextValue;
-    commitVisualValue(path, nextValue);
-  });
-
-  row.appendChild(label);
-  row.appendChild(picker);
-  row.appendChild(colorText);
-  return row;
-}
-
-function createFocusedBrickRowControl() {
-  const row = document.createElement("div");
-  row.className = "skin-editor-row skin-editor-row--brick-row";
-  const label = document.createElement("span");
-  label.className = "skin-editor-row-label";
-  label.textContent = "brick object";
-
-  const select = document.createElement("select");
-  select.className = "skin-editor-field";
-  const brickKeys = getBreakoutBrickKeys();
-  const safeIndex = Math.max(0, Math.min(state.previewBrickIndex, Math.max(0, brickKeys.length - 1)));
-  state.previewBrickIndex = safeIndex;
-  for (let index = 0; index < brickKeys.length; index += 1) {
-    const option = document.createElement("option");
-    option.value = String(index);
-    option.textContent = brickKeys[index];
-    select.appendChild(option);
+  if (!refs.objectControls.childElementCount) {
+    const note = document.createElement("p");
+    note.className = "skin-editor-empty";
+    note.textContent = "This object has no editable scalar properties.";
+    refs.objectControls.appendChild(note);
   }
-  select.value = String(safeIndex);
-  select.addEventListener("change", () => {
-    const parsed = Number(select.value);
-    state.previewBrickIndex = Number.isInteger(parsed) && parsed >= 0 ? parsed : 0;
-    renderPreviewSuite();
-  });
-
-  const spacer = document.createElement("div");
-  row.appendChild(label);
-  row.appendChild(select);
-  row.appendChild(spacer);
-  return row;
 }
 
-function drawBreakoutPreview() {
+function drawSelectedObjectPreview() {
   if (!(refs.previewCanvas instanceof HTMLCanvasElement)) {
     return;
   }
@@ -522,395 +908,168 @@ function drawBreakoutPreview() {
   if (!context) {
     return;
   }
-  const previewWidth = Math.max(420, refs.previewCanvas.clientWidth || refs.previewCanvas.width || 720);
-  const previewHeight = 260;
+
+  const previewWidth = Math.max(480, refs.previewCanvas.clientWidth || 960);
+  const previewHeight = Math.max(320, refs.previewCanvas.clientHeight || 560);
   const deviceScale = Math.max(1, Math.floor(window.devicePixelRatio || 1));
   refs.previewCanvas.width = previewWidth * deviceScale;
   refs.previewCanvas.height = previewHeight * deviceScale;
   context.setTransform(deviceScale, 0, 0, deviceScale, 0, 0);
+
+  const selectedKey = state.selectedObjectKey;
+  const selectedObject = toObject(state.activeSkin?.objects?.[selectedKey]);
+  const backgroundColor = normalizeText(state.activeSkin?.objects?.background?.color);
+  const sceneBackground = parseHexForPicker(backgroundColor) ? backgroundColor : "#120b24";
+
   context.clearRect(0, 0, previewWidth, previewHeight);
-
-  const game = getSelectedGameOption();
-  if (!game || game.id !== "Breakout" || !state.activeSkin) {
-    context.fillStyle = "#0a0817";
-    context.fillRect(0, 0, previewWidth, previewHeight);
-    setPreviewNote("Live canvas drawing is currently available for Breakout skins.");
-    return;
-  }
-  setPreviewNote("Breakout live preview updates as you edit.");
-
-  const canvasPadding = 14;
-  const playAreaX = canvasPadding;
-  const playAreaY = canvasPadding;
-  const playAreaWidth = previewWidth - canvasPadding * 2;
-  const playAreaHeight = previewHeight - canvasPadding * 2;
-  const wallThickness = 8;
-
-  const background = readColorFromPaths([["objects", "background", "color"], ["colors", "background"]], "#000000");
-  const wall = readColorFromPaths([["objects", "wall", "color"], ["colors", "wall"]], "#f8f8f2");
-  const paddleColor = readColorFromPaths([["objects", "paddle", "color"], ["colors", "paddle"]], "#f8f8f2");
-  const ballColor = readColorFromPaths([["objects", "ball", "color"], ["colors", "ball"]], "#f8f8f2");
-  const brickKeys = getBreakoutBrickKeys();
-  const brickObjects = brickKeys.map((brickKey) => toObject(getValueAtPath(state.activeSkin, ["objects", brickKey], {})));
-  const brickGap = Math.max(2, readNumberFromPaths([["objects", "brickLayout", "gap"], ["objects", "brick", "gap"], ["sizing", "brickGap"]], 6));
-  const paddleWidth = Math.max(20, readNumberFromPaths([["objects", "paddle", "width"], ["sizing", "paddleWidth"]], 118));
-  const paddleHeight = Math.max(6, readNumberFromPaths([["objects", "paddle", "height"], ["sizing", "paddleHeight"]], 18));
-  const ballSize = Math.max(6, readNumberFromPaths([["objects", "ball", "size"], ["sizing", "ballSize"]], 14));
-
-  context.fillStyle = "#100a20";
+  context.fillStyle = sceneBackground;
   context.fillRect(0, 0, previewWidth, previewHeight);
-  context.fillStyle = background;
-  context.fillRect(playAreaX, playAreaY, playAreaWidth, playAreaHeight);
-
-  context.strokeStyle = wall;
-  context.lineWidth = wallThickness;
-  context.strokeRect(
-    playAreaX + wallThickness / 2,
-    playAreaY + wallThickness / 2,
-    playAreaWidth - wallThickness,
-    playAreaHeight - wallThickness
-  );
-
-  const bricksStartX = playAreaX + 30;
-  const bricksStartY = playAreaY + 30;
-  let brickCursorX = bricksStartX;
-  brickObjects.forEach((brickObject) => {
-    const brickWidth = Math.max(12, Number(brickObject.width) || 78);
-    const brickHeight = Math.max(8, Number(brickObject.height) || 24);
-    const color = normalizeText(brickObject.color) || "#ff595e";
-    const brickX = brickCursorX;
-    const brickY = bricksStartY;
-    context.fillStyle = color;
-    context.fillRect(brickX, brickY, brickWidth, brickHeight);
-    brickCursorX += brickWidth + brickGap;
-  });
-
-  const paddleX = playAreaX + (playAreaWidth - paddleWidth) / 2;
-  const paddleY = playAreaY + playAreaHeight - paddleHeight - 22;
-  context.fillStyle = paddleColor;
-  context.fillRect(paddleX, paddleY, paddleWidth, paddleHeight);
-
-  const ballRadius = ballSize / 2;
-  const ballX = playAreaX + playAreaWidth / 2;
-  const ballY = paddleY - 24;
-  context.beginPath();
-  context.arc(ballX, ballY, ballRadius, 0, Math.PI * 2);
-  context.fillStyle = ballColor;
-  context.fill();
-
-  context.strokeStyle = "rgba(255,255,255,0.9)";
+  context.strokeStyle = "rgba(255,255,255,0.26)";
   context.lineWidth = 2;
-  if (state.previewItem === "paddle") {
-    context.strokeRect(paddleX - 3, paddleY - 3, paddleWidth + 6, paddleHeight + 6);
-  } else if (state.previewItem === "ball") {
-    context.beginPath();
-    context.arc(ballX, ballY, ballRadius + 4, 0, Math.PI * 2);
-    context.stroke();
-  } else if (state.previewItem === "brick") {
-    const selectedIndex = Math.max(0, Math.min(state.previewBrickIndex, Math.max(0, brickObjects.length - 1)));
-    let targetX = bricksStartX;
-    for (let index = 0; index < selectedIndex; index += 1) {
-      const priorWidth = Math.max(12, Number(brickObjects[index]?.width) || 78);
-      targetX += priorWidth + brickGap;
-    }
-    const selectedWidth = Math.max(12, Number(brickObjects[selectedIndex]?.width) || 78);
-    const selectedHeight = Math.max(8, Number(brickObjects[selectedIndex]?.height) || 24);
-    context.strokeRect(targetX - 3, bricksStartY - 3, selectedWidth + 6, selectedHeight + 6);
-  }
-}
+  context.strokeRect(12, 12, previewWidth - 24, previewHeight - 24);
 
-function renderFocusedControls() {
-  if (!(refs.focusedControls instanceof HTMLElement)) {
-    return;
-  }
-  refs.focusedControls.innerHTML = "";
-  const game = getSelectedGameOption();
-  if (!game || game.id !== "Breakout") {
-    setEmptyMessage(refs.focusedControls, "Focused controls are currently available for Breakout.");
-    if (refs.previewItemSelect instanceof HTMLSelectElement) {
-      refs.previewItemSelect.disabled = true;
-    }
-    return;
-  }
-  if (refs.previewItemSelect instanceof HTMLSelectElement) {
-    refs.previewItemSelect.disabled = false;
-  }
-
-  if (state.previewItem === "ball") {
-    refs.focusedControls.appendChild(createFocusedNumberControl("ballSize", ["objects", "ball", "size"], { min: 6, max: 80, step: "1" }));
-    refs.focusedControls.appendChild(createFocusedColorControl("ball color", ["objects", "ball", "color"], "#f8f8f2"));
+  if (!selectedKey) {
+    setPreviewNote("Select an object from the left list to preview and edit.");
     return;
   }
 
-  if (state.previewItem === "brick") {
-    const brickKeys = getBreakoutBrickKeys();
-    const selectedBrickKey = brickKeys[Math.max(0, Math.min(state.previewBrickIndex, brickKeys.length - 1))] || "brick1";
-    refs.focusedControls.appendChild(createFocusedBrickRowControl());
-    refs.focusedControls.appendChild(createFocusedNumberControl(`${selectedBrickKey}.width`, ["objects", selectedBrickKey, "width"], { min: 12, max: 180, step: "1" }));
-    refs.focusedControls.appendChild(createFocusedNumberControl(`${selectedBrickKey}.height`, ["objects", selectedBrickKey, "height"], { min: 8, max: 80, step: "1" }));
-    refs.focusedControls.appendChild(createFocusedNumberControl("brickLayout.gap", ["objects", "brickLayout", "gap"], { min: 0, max: 24, step: "1" }));
-    refs.focusedControls.appendChild(
-      createFocusedColorControl(
-        `${selectedBrickKey}.color`,
-        ["objects", selectedBrickKey, "color"],
-        "#ff595e"
-      )
-    );
-    return;
-  }
+  const drawColor = parseHexForPicker(selectedObject.color) ? selectedObject.color : "#f8f8f2";
+  const shapeType = normalizeText(selectedObject.shape).toLowerCase();
+  const centerX = Math.round(previewWidth / 2);
+  const centerY = Math.round(previewHeight / 2);
+  const width = Math.max(12, Number(selectedObject.width) || Number(selectedObject.size) || 120);
+  const height = Math.max(12, Number(selectedObject.height) || Number(selectedObject.size) || 80);
+  const radius = Math.max(6, Number(selectedObject.radius) || Number(selectedObject.size) || 40);
+  const innerRadius = Math.max(4, Number(selectedObject.innerRadius) || 24);
+  const outerRadius = Math.max(innerRadius + 4, Number(selectedObject.outerRadius) || 52);
+  const polygonSides = Math.max(3, Math.round(Number(selectedObject.sides) || 6));
+  const thickness = Math.max(1, Number(selectedObject.thickness) || 1);
+  const hasRectProps = Number.isFinite(Number(selectedObject.width))
+    || Number.isFinite(Number(selectedObject.height))
+    || Number.isFinite(Number(selectedObject.size));
+  const hasCircleProps = Number.isFinite(Number(selectedObject.radius))
+    || Number.isFinite(Number(selectedObject.outerRadius))
+    || Number.isFinite(Number(selectedObject.innerRadius));
 
-  refs.focusedControls.appendChild(createFocusedNumberControl("paddleWidth", ["objects", "paddle", "width"], { min: 20, max: 260, step: "1" }));
-  refs.focusedControls.appendChild(createFocusedNumberControl("paddleHeight", ["objects", "paddle", "height"], { min: 6, max: 80, step: "1" }));
-  refs.focusedControls.appendChild(createFocusedColorControl("paddle color", ["objects", "paddle", "color"], "#f8f8f2"));
-}
+  context.fillStyle = drawColor;
 
-function renderPreviewSuite() {
-  drawBreakoutPreview();
-  renderFocusedControls();
-}
-
-function renderColorControls() {
-  if (!(refs.colorList instanceof HTMLElement)) {
-    return;
-  }
-  refs.colorList.innerHTML = "";
-  const objects = state.activeSkin && typeof state.activeSkin.objects === "object" ? state.activeSkin.objects : {};
-  const entries = collectLeafEntries(objects, ["objects"], (value) => typeof value === "string");
-  if (entries.length === 0) {
-    setEmptyMessage(refs.colorList, "No color fields were found.");
-    return;
-  }
-
-  entries.forEach((entry) => {
-    const row = document.createElement("div");
-    row.className = "skin-editor-row";
-    const pathLabel = document.createElement("span");
-    pathLabel.className = "skin-editor-row-label";
-    pathLabel.textContent = formatPath(entry.path.slice(1));
-
-    const colorMeta = parseHexForPicker(entry.value);
-    const picker = document.createElement("input");
-    picker.className = "skin-editor-color-input";
-    picker.type = "color";
-    picker.disabled = !colorMeta;
-    picker.value = colorMeta ? colorMeta.picker : "#000000";
-
-    const textField = createBasicField("skin-editor-field", String(entry.value));
-    textField.type = "text";
-    textField.addEventListener("change", () => {
-      commitVisualValue(entry.path, textField.value);
-      const updatedMeta = parseHexForPicker(textField.value);
-      if (updatedMeta) {
-        picker.disabled = false;
-        picker.value = updatedMeta.picker;
-      } else {
-        picker.disabled = true;
-      }
-    });
-    picker.addEventListener("input", () => {
-      const previous = parseHexForPicker(textField.value) || colorMeta;
-      const alphaSuffix = previous?.alpha || "";
-      const nextValue = `${picker.value}${alphaSuffix}`;
-      textField.value = nextValue;
-      commitVisualValue(entry.path, nextValue);
-    });
-
-    row.appendChild(pathLabel);
-    row.appendChild(picker);
-    row.appendChild(textField);
-    refs.colorList.appendChild(row);
-  });
-}
-
-function numberStep(value) {
-  return Number.isInteger(value) ? "1" : "0.1";
-}
-
-function renderSizingControls() {
-  if (!(refs.sizingList instanceof HTMLElement)) {
-    return;
-  }
-  refs.sizingList.innerHTML = "";
-  const objects = state.activeSkin && typeof state.activeSkin.objects === "object" ? state.activeSkin.objects : {};
-  const entries = collectLeafEntries(objects, ["objects"], (value) => typeof value === "number" && Number.isFinite(value));
-  if (entries.length === 0) {
-    setEmptyMessage(refs.sizingList, "No numeric sizing fields were found.");
-    return;
-  }
-
-  entries.forEach((entry) => {
-    const row = document.createElement("div");
-    row.className = "skin-editor-row skin-editor-row--number";
-    const label = document.createElement("span");
-    label.className = "skin-editor-row-label";
-    label.textContent = formatPath(entry.path.slice(1));
-
-    const slider = createBasicField("skin-editor-slider", String(entry.value));
-    slider.type = "range";
-    slider.min = "0";
-    slider.max = String(Math.max(10, Math.ceil(Math.abs(entry.value) * 2) + 5));
-    slider.step = numberStep(entry.value);
-
-    const numeric = createBasicField("skin-editor-field", String(entry.value));
-    numeric.type = "number";
-    numeric.step = numberStep(entry.value);
-    numeric.addEventListener("change", () => {
-      const parsed = Number(numeric.value);
-      if (!Number.isFinite(parsed)) {
-        return;
-      }
-      slider.value = String(parsed);
-      commitVisualValue(entry.path, parsed);
-    });
-    slider.addEventListener("input", () => {
-      numeric.value = slider.value;
-      commitVisualValue(entry.path, Number(slider.value));
-    });
-
-    row.appendChild(label);
-    row.appendChild(slider);
-    row.appendChild(numeric);
-    refs.sizingList.appendChild(row);
-  });
-}
-
-function appendEntityField(groupContainer, path, value) {
-  const row = document.createElement("div");
-  const suffix = path.slice(2);
-  const label = document.createElement("span");
-  label.className = "skin-editor-row-label";
-  label.textContent = formatPath(suffix);
-
-  if (typeof value === "number" && Number.isFinite(value)) {
-    row.className = "skin-editor-row skin-editor-row--number";
-    const slider = createBasicField("skin-editor-slider", String(value));
-    slider.type = "range";
-    slider.min = "0";
-    slider.max = String(Math.max(10, Math.ceil(Math.abs(value) * 2) + 5));
-    slider.step = numberStep(value);
-    const numeric = createBasicField("skin-editor-field", String(value));
-    numeric.type = "number";
-    numeric.step = numberStep(value);
-    numeric.addEventListener("change", () => {
-      const parsed = Number(numeric.value);
-      if (!Number.isFinite(parsed)) {
-        return;
-      }
-      slider.value = String(parsed);
-      commitVisualValue(path, parsed);
-    });
-    slider.addEventListener("input", () => {
-      numeric.value = slider.value;
-      commitVisualValue(path, Number(slider.value));
-    });
-    row.appendChild(label);
-    row.appendChild(slider);
-    row.appendChild(numeric);
-    groupContainer.appendChild(row);
-    return;
-  }
-
-  if (typeof value === "boolean") {
-    row.className = "skin-editor-row";
-    const spacer = document.createElement("div");
-    const checkboxWrap = document.createElement("div");
-    checkboxWrap.className = "skin-editor-checkbox-wrap";
-    const checkbox = document.createElement("input");
-    checkbox.type = "checkbox";
-    checkbox.className = "skin-editor-checkbox";
-    checkbox.checked = value;
-    checkbox.addEventListener("change", () => {
-      commitVisualValue(path, checkbox.checked);
-    });
-    checkboxWrap.appendChild(checkbox);
-    row.appendChild(label);
-    row.appendChild(checkboxWrap);
-    row.appendChild(spacer);
-    groupContainer.appendChild(row);
-    return;
-  }
-
-  if (typeof value === "string") {
-    row.className = "skin-editor-row";
-    const colorMeta = parseHexForPicker(value);
-    const picker = document.createElement("input");
-    picker.className = "skin-editor-color-input";
-    picker.type = "color";
-    picker.disabled = !colorMeta;
-    picker.value = colorMeta ? colorMeta.picker : "#000000";
-    const textField = createBasicField("skin-editor-field", value);
-    textField.type = "text";
-    textField.addEventListener("change", () => {
-      commitVisualValue(path, textField.value);
-      const updatedMeta = parseHexForPicker(textField.value);
-      if (updatedMeta) {
-        picker.disabled = false;
-        picker.value = updatedMeta.picker;
-      } else {
-        picker.disabled = true;
-      }
-    });
-    picker.addEventListener("input", () => {
-      const previous = parseHexForPicker(textField.value) || colorMeta;
-      const alphaSuffix = previous?.alpha || "";
-      const nextValue = `${picker.value}${alphaSuffix}`;
-      textField.value = nextValue;
-      commitVisualValue(path, nextValue);
-    });
-    row.appendChild(label);
-    row.appendChild(picker);
-    row.appendChild(textField);
-    groupContainer.appendChild(row);
-    return;
-  }
-}
-
-function renderEntityControls() {
-  if (!(refs.entitiesList instanceof HTMLElement)) {
-    return;
-  }
-  refs.entitiesList.innerHTML = "";
-  const entities = state.activeSkin && typeof state.activeSkin.entities === "object" ? state.activeSkin.entities : {};
-  const groupEntries = Object.entries(entities);
-  if (groupEntries.length === 0) {
-    setEmptyMessage(refs.entitiesList, "No entity fields were found.");
-    return;
-  }
-
-  groupEntries.forEach(([groupName, groupValue], index) => {
-    const details = document.createElement("details");
-    details.className = "skin-editor-entity-group";
-    details.open = index === 0;
-    const summary = document.createElement("summary");
-    summary.textContent = groupName;
-    details.appendChild(summary);
-
-    const fieldsWrap = document.createElement("div");
-    fieldsWrap.className = "skin-editor-entity-fields";
-    const entries = collectLeafEntries(
-      groupValue,
-      ["entities", groupName],
-      (value) => ["string", "number", "boolean"].includes(typeof value)
-    );
-    if (entries.length === 0) {
-      const note = document.createElement("p");
-      note.className = "skin-editor-empty";
-      note.textContent = "No editable fields in this group.";
-      fieldsWrap.appendChild(note);
+  if (shapeType === "flattened" && Array.isArray(selectedObject.components)) {
+    const components = selectedObject.components
+      .map((entry) => toObject(entry))
+      .filter((entry) => Object.keys(entry).length > 0);
+    if (!components.length) {
+      context.fillRect(centerX - 60, centerY - 60, 120, 120);
     } else {
-      entries.forEach((entry) => {
-        appendEntityField(fieldsWrap, entry.path, entry.value);
+      components.forEach((component, index) => {
+        const offsetX = ((index % 3) - 1) * 14;
+        const offsetY = (Math.floor(index / 3) - 1) * 10;
+        const componentColor = parseHexForPicker(component.color) ? component.color : drawColor;
+        context.fillStyle = componentColor;
+        const componentShape = normalizeText(component.shape).toLowerCase();
+        const componentWidth = Math.max(10, Number(component.width) || Number(component.size) || 58);
+        const componentHeight = Math.max(10, Number(component.height) || Number(component.size) || 40);
+        const componentRadius = Math.max(6, Number(component.radius) || Number(component.size) || 20);
+        if (componentShape === "star") {
+          drawStarPath(context, centerX + offsetX, centerY + offsetY, Math.max(12, Number(component.outerRadius) || 24), Math.max(6, Number(component.innerRadius) || 12), Math.max(3, Number(component.sides) || 5));
+          context.fill();
+        } else if (componentShape === "polygon") {
+          drawRegularPolygonPath(context, centerX + offsetX, centerY + offsetY, componentRadius, Math.max(3, Number(component.sides) || 6));
+          context.fill();
+        } else if (Number.isFinite(Number(component.radius))) {
+          context.beginPath();
+          context.arc(centerX + offsetX, centerY + offsetY, componentRadius, 0, Math.PI * 2);
+          context.fill();
+        } else {
+          context.fillRect(
+            Math.round(centerX + offsetX - componentWidth / 2),
+            Math.round(centerY + offsetY - componentHeight / 2),
+            Math.round(componentWidth),
+            Math.round(componentHeight)
+          );
+        }
       });
+      context.fillStyle = "#ffffff";
+      context.font = "600 13px 'Segoe UI', sans-serif";
+      context.fillText(`${components.length} merged objects`, 20, 44);
     }
-    details.appendChild(fieldsWrap);
-    refs.entitiesList.appendChild(details);
-  });
+  } else if (shapeType === "star") {
+    drawStarPath(context, centerX, centerY, outerRadius, innerRadius, polygonSides);
+    context.fill();
+  } else if (shapeType === "polygon") {
+    drawRegularPolygonPath(context, centerX, centerY, radius, polygonSides);
+    context.fill();
+  } else if (shapeType === "ring" || (Number.isFinite(Number(selectedObject.outerRadius)) && Number.isFinite(Number(selectedObject.innerRadius)))) {
+    context.beginPath();
+    context.arc(centerX, centerY, outerRadius, 0, Math.PI * 2);
+    context.arc(centerX, centerY, innerRadius, 0, Math.PI * 2, true);
+    context.fill();
+  } else if (shapeType === "wall" || (Number.isFinite(Number(selectedObject.thickness)) && !hasRectProps && !hasCircleProps)) {
+    const margin = 36;
+    const usableWidth = Math.max(40, previewWidth - margin * 2);
+    const usableHeight = Math.max(40, previewHeight - margin * 2);
+    const drawTop = selectedObject.top !== false;
+    const drawLeft = selectedObject.left !== false;
+    const drawRight = selectedObject.right !== false;
+    const drawBottom = selectedObject.bottom === true;
+    if (drawTop) {
+      context.fillRect(margin, margin, usableWidth, thickness);
+    }
+    if (drawLeft) {
+      context.fillRect(margin, margin, thickness, usableHeight);
+    }
+    if (drawRight) {
+      context.fillRect(margin + usableWidth - thickness, margin, thickness, usableHeight);
+    }
+    if (drawBottom) {
+      context.fillRect(margin, margin + usableHeight - thickness, usableWidth, thickness);
+    }
+  } else if (Number.isFinite(Number(selectedObject.radius))) {
+    context.beginPath();
+    context.arc(centerX, centerY, radius, 0, Math.PI * 2);
+    context.fill();
+  } else if (hasRectProps) {
+    if (Number.isFinite(Number(selectedObject.thickness))) {
+      context.strokeStyle = drawColor;
+      context.lineWidth = thickness;
+      context.strokeRect(
+        Math.round(centerX - width / 2),
+        Math.round(centerY - height / 2),
+        Math.round(width),
+        Math.round(height)
+      );
+    } else {
+      context.fillRect(
+        Math.round(centerX - width / 2),
+        Math.round(centerY - height / 2),
+        Math.round(width),
+        Math.round(height)
+      );
+    }
+  } else {
+    context.fillRect(centerX - 60, centerY - 60, 120, 120);
+  }
+
+  context.fillStyle = "#ffffff";
+  context.font = "700 18px 'Segoe UI', sans-serif";
+  context.textAlign = "left";
+  context.textBaseline = "top";
+  context.fillText(selectedKey, 20, 20);
+
+  const descriptor = Object.entries(selectedObject)
+    .filter(([, value]) => ["string", "number", "boolean"].includes(typeof value))
+    .map(([key, value]) => `${key}: ${String(value)}`)
+    .slice(0, 5)
+    .join(" | ");
+  setPreviewNote(descriptor || "Editing selected object.");
 }
 
-function renderVisualEditor() {
-  renderColorControls();
-  renderSizingControls();
-  renderEntityControls();
+function renderWorkbench() {
+  ensureSelectedObjectKey();
+  syncSelectedObjectUiFromSelection();
+  renderObjectList();
+  renderPaletteList();
+  renderObjectControls();
+  drawSelectedObjectPreview();
 }
 
 function setCurrentSkinDocument(rawSkin, source = "loaded") {
@@ -918,11 +1077,11 @@ function setCurrentSkinDocument(rawSkin, source = "loaded") {
   if (!game) {
     return;
   }
-  const normalized = toObjectCentricSkinDocument(game, rawSkin);
+  const normalized = sanitizePositiveDimensionsInDocument(toObjectCentricSkinDocument(game, rawSkin));
   state.activeSkin = deepClone(normalized) || normalized;
+  state.selectedObjectKeys = [];
   updateEditorFromState(source);
-  renderVisualEditor();
-  renderPreviewSuite();
+  renderWorkbench();
 }
 
 async function loadActiveSkinForSelectedGame() {
@@ -1050,6 +1209,171 @@ function syncVisualFromJson() {
   setStatus("Visual controls synced from JSON.");
 }
 
+function addShapeFromControls() {
+  const game = getSelectedGameOption();
+  if (!game) {
+    setStatus("No supported game context was resolved.");
+    return;
+  }
+  if (!state.activeSkin || typeof state.activeSkin !== "object") {
+    setStatus("Load a skin before adding a shape.");
+    return;
+  }
+  const selectedType = refs.newShapeType instanceof HTMLSelectElement
+    ? normalizeText(refs.newShapeType.value).toLowerCase()
+    : "rectangle";
+  const typedName = refs.newShapeName instanceof HTMLInputElement
+    ? refs.newShapeName.value
+    : "";
+  const hudNameMode = shouldEnforceHudName({ selectedType, typedName });
+  const baseKey = hudNameMode
+    ? normalizeHudColorName(typedName)
+    : (normalizeObjectKey(typedName) || selectedType || "shape");
+  const nextKey = ensureUniqueObjectKey(baseKey, { preserveCase: hudNameMode });
+  const preset = createShapePreset(selectedType);
+
+  if (!state.activeSkin.objects || typeof state.activeSkin.objects !== "object") {
+    state.activeSkin.objects = {};
+  }
+  state.activeSkin.objects[nextKey] = preset;
+  state.selectedObjectKey = nextKey;
+  state.selectedObjectKeys = [nextKey];
+  if (refs.newShapeName instanceof HTMLInputElement) {
+    refs.newShapeName.value = nextKey;
+  }
+  updateEditorFromState("visual-editor");
+  renderWorkbench();
+  setStatus(`Added '${nextKey}'.`);
+}
+
+function renameObjectFromControls() {
+  if (!state.activeSkin || typeof state.activeSkin !== "object") {
+    setStatus("Load a skin before renaming an object.");
+    return;
+  }
+  const selectedKey = normalizeText(state.selectedObjectKey);
+  if (!selectedKey) {
+    setStatus("Select an object to rename.");
+    return;
+  }
+  const typedName = refs.newShapeName instanceof HTMLInputElement
+    ? refs.newShapeName.value
+    : "";
+  const nextKey = shouldEnforceHudName({ currentKey: selectedKey, typedName })
+    ? normalizeHudColorName(typedName)
+    : normalizeObjectKey(typedName);
+  if (!nextKey) {
+    setStatus("Enter a valid object name before renaming.");
+    return;
+  }
+  if (!state.activeSkin.objects || typeof state.activeSkin.objects !== "object") {
+    state.activeSkin.objects = {};
+  }
+  const objects = state.activeSkin.objects;
+  if (!Object.prototype.hasOwnProperty.call(objects, selectedKey)) {
+    setStatus("Selected object no longer exists.");
+    return;
+  }
+  if (nextKey === selectedKey) {
+    setStatus(`Already named '${selectedKey}'.`);
+    return;
+  }
+  if (Object.prototype.hasOwnProperty.call(objects, nextKey)) {
+    setStatus(`'${nextKey}' already exists. Choose a different name.`);
+    return;
+  }
+  objects[nextKey] = objects[selectedKey];
+  delete objects[selectedKey];
+  state.selectedObjectKey = nextKey;
+  state.selectedObjectKeys = state.selectedObjectKeys.map((key) => (key === selectedKey ? nextKey : key));
+  if (refs.newShapeName instanceof HTMLInputElement) {
+    refs.newShapeName.value = nextKey;
+  }
+  updateEditorFromState("visual-editor");
+  renderWorkbench();
+  setStatus(`Renamed '${selectedKey}' to '${nextKey}'.`);
+}
+
+function deleteObjectFromControls() {
+  if (!state.activeSkin || typeof state.activeSkin !== "object") {
+    setStatus("Load a skin before deleting.");
+    return;
+  }
+  const selectedKey = normalizeText(state.selectedObjectKey);
+  if (!selectedKey) {
+    setStatus("Select an item to delete.");
+    return;
+  }
+  if (!state.activeSkin.objects || typeof state.activeSkin.objects !== "object") {
+    state.activeSkin.objects = {};
+  }
+  const objects = state.activeSkin.objects;
+  if (!Object.prototype.hasOwnProperty.call(objects, selectedKey)) {
+    setStatus("Selected item no longer exists.");
+    return;
+  }
+  delete objects[selectedKey];
+  state.selectedObjectKeys = state.selectedObjectKeys.filter((key) => key !== selectedKey);
+  const nextKey = Object.keys(objects)[0] || "";
+  state.selectedObjectKey = nextKey;
+  if (nextKey && !state.selectedObjectKeys.includes(nextKey)) {
+    state.selectedObjectKeys = [...state.selectedObjectKeys, nextKey];
+  }
+  if (refs.newShapeName instanceof HTMLInputElement) {
+    refs.newShapeName.value = nextKey;
+  }
+  updateEditorFromState("visual-editor");
+  renderWorkbench();
+  setStatus(`Deleted '${selectedKey}'.`);
+}
+
+function flattenSelectedObjects() {
+  if (!state.activeSkin || typeof state.activeSkin !== "object") {
+    setStatus("Load a skin before flattening.");
+    return;
+  }
+  if (!state.activeSkin.objects || typeof state.activeSkin.objects !== "object") {
+    state.activeSkin.objects = {};
+  }
+  const objects = state.activeSkin.objects;
+  const selectedKeys = Array.from(
+    new Set(state.selectedObjectKeys.filter((key) => Object.prototype.hasOwnProperty.call(objects, key)))
+  );
+  if (selectedKeys.length < 2) {
+    setStatus("Select at least 2 objects to flatten.");
+    return;
+  }
+
+  const typedName = refs.newShapeName instanceof HTMLInputElement ? refs.newShapeName.value : "";
+  const baseKey = normalizeObjectKey(typedName) || "flattened";
+  const nextKey = ensureUniqueObjectKey(baseKey);
+  const firstColor = selectedKeys
+    .map((key) => toObject(objects[key]))
+    .map((entry) => (parseHexForPicker(entry.color) ? normalizeText(entry.color) : ""))
+    .find((entry) => Boolean(entry)) || "#f8f8f2";
+  const components = selectedKeys.map((key) => ({
+    name: key,
+    ...deepClone(toObject(objects[key]))
+  }));
+
+  selectedKeys.forEach((key) => {
+    delete objects[key];
+  });
+  objects[nextKey] = {
+    shape: "flattened",
+    color: firstColor,
+    components
+  };
+  state.selectedObjectKey = nextKey;
+  state.selectedObjectKeys = [nextKey];
+  if (refs.newShapeName instanceof HTMLInputElement) {
+    refs.newShapeName.value = nextKey;
+  }
+  updateEditorFromState("visual-editor");
+  renderWorkbench();
+  setStatus(`Flattened ${selectedKeys.length} objects into '${nextKey}'.`);
+}
+
 function extractPresetPayload(rawPreset) {
   if (!rawPreset || typeof rawPreset !== "object") {
     return {};
@@ -1110,6 +1434,10 @@ function bindEvents() {
     window.location.href = "./how_to_use.html";
   });
   refs.syncVisualButton?.addEventListener("click", syncVisualFromJson);
+  refs.addShapeButton?.addEventListener("click", addShapeFromControls);
+  refs.renameObjectButton?.addEventListener("click", renameObjectFromControls);
+  refs.deleteObjectButton?.addEventListener("click", deleteObjectFromControls);
+  refs.flattenObjectsButton?.addEventListener("click", flattenSelectedObjects);
   refs.importInput?.addEventListener("change", (event) => {
     const input = event.currentTarget;
     if (!(input instanceof HTMLInputElement)) {
@@ -1121,29 +1449,18 @@ function bindEvents() {
     }
     input.value = "";
   });
-  refs.previewItemSelect?.addEventListener("change", (event) => {
-    const target = event.currentTarget;
-    if (!(target instanceof HTMLSelectElement)) {
-      return;
-    }
-    state.previewItem = normalizeText(target.value) || "paddle";
-    renderPreviewSuite();
-  });
   window.addEventListener("resize", () => {
-    drawBreakoutPreview();
+    drawSelectedObjectPreview();
   });
 }
 
 async function bootSkinEditor() {
   const { gameId, presetLoaded } = await loadPresetFromQuery();
   resolveActiveGameOption(gameId);
-  if (refs.previewItemSelect instanceof HTMLSelectElement) {
-    refs.previewItemSelect.value = state.previewItem;
-  }
   bindEvents();
   await loadActiveSkinForSelectedGame();
   if (presetLoaded) {
-    setStatus("Loaded game preset. Visual controls are ready.");
+    setStatus("Loaded game preset. Object workbench is ready.");
   }
 }
 
