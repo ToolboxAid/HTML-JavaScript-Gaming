@@ -7,7 +7,7 @@
   ],
   "payload": {
     "gameId": "Pong",
-    "skinPath": "/games/Pong/assets/skins/default.json",
+    "skinPath": "/games/Pong/assets/skins/skin.main.json",
     "skin": {
       "documentKind": "game-skin",
       "version": 1,

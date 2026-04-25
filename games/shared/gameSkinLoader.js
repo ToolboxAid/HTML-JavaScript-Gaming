@@ -855,13 +855,8 @@ async function fetchSkinDocumentFromPath(path, expectedGameId, fallbackSchema) {
   }
 }
 
-function resolveSkinAssetPath(gameId, fallbackPath) {
-  const safeFallbackPath = normalizePath(fallbackPath);
-  const primary = resolveWorkspaceGameAssetPath(gameId, "skin.main", safeFallbackPath);
-  if (primary) {
-    return primary;
-  }
-  return resolveWorkspaceGameAssetPath(gameId, "skin", safeFallbackPath);
+function resolveSkinAssetPath(gameId) {
+  return resolveWorkspaceGameAssetPath(gameId, "skin.main", "");
 }
 
 export async function loadGameSkin(options = {}) {
@@ -882,9 +877,9 @@ export async function loadGameSkin(options = {}) {
 
   await preloadWorkspaceGameAssetCatalog(expectedGameId);
 
-  const skinPath = resolveSkinAssetPath(expectedGameId, options.defaultSkinPath);
+  const skinPath = resolveSkinAssetPath(expectedGameId);
   if (!skinPath) {
-    throw new Error(`No skin path resolved for ${expectedGameId}.`);
+    throw new Error(`No skin.main asset path resolved for ${expectedGameId}.`);
   }
   const loadedSkin = await fetchSkinDocumentFromPath(skinPath, expectedGameId, fallbackSchema);
   return {

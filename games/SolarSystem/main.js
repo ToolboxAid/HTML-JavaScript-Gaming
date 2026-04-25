@@ -11,7 +11,6 @@ import SolarSystemScene from './game/SolarSystemScene.js';
 import { loadGameSkin } from '/games/shared/gameSkinLoader.js';
 
 const theme = new Theme(ThemeTokens);
-const SOLAR_DEFAULT_SKIN_PATH = '/games/SolarSystem/assets/skins/default.json';
 
 export function bootSolarSystem({
   documentRef = globalThis.document ?? null,
@@ -43,7 +42,6 @@ export function bootSolarSystem({
 
   void loadGameSkin({
     gameId: 'SolarSystem',
-    defaultSkinPath: SOLAR_DEFAULT_SKIN_PATH,
     fallbackSchema: 'games.solar-system.skin/1'
   }).then(({ skin }) => {
     const scene = new SceneClass({ skin });

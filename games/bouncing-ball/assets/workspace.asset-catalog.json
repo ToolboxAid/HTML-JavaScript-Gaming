@@ -9,7 +9,7 @@
       "source": "workspace-manager"
     },
     "skin.main": {
-      "path": "/games/bouncing-ball/assets/skins/default.json",
+      "path": "/games/bouncing-ball/assets/skins/skin.main.json",
       "kind": "skin",
       "source": "workspace-manager"
     }

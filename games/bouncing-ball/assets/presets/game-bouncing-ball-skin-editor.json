@@ -7,7 +7,7 @@
   ],
   "payload": {
     "gameId": "Bouncing-ball",
-    "skinPath": "/games/Bouncing-ball/assets/skins/default.json",
+    "skinPath": "/games/Bouncing-ball/assets/skins/skin.main.json",
     "skin": {
       "documentKind": "game-skin",
       "version": 1,
@@ -19,10 +19,10 @@
           "color": "#05070a",
           "shape": "hud-color"
         },
-        "wall": {
+        "walls": {
           "color": "#f4f4ef",
           "thickness": 18,
-          "shape": "wall"
+          "shape": "walls"
         },
         "ball": {
           "color": "#f4f4ef",

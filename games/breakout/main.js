@@ -23,7 +23,6 @@ const theme = new Theme(ThemeTokens);
 const BUILD_DEBUG_MODE = 'prod';
 const BUILD_DEBUG_ENABLED = false;
 const DEBUG_STATE_STORAGE_KEY = 'toolbox.sample.breakout.debug.enabled';
-const BREAKOUT_DEFAULT_SKIN_PATH = '/games/Breakout/assets/skins/default.json';
 
 function sanitizeText(value) {
   return typeof value === 'string' ? value.trim() : '';
@@ -140,7 +139,6 @@ export function bootBreakout({
 
   void loadGameSkin({
     gameId: 'Breakout',
-    defaultSkinPath: BREAKOUT_DEFAULT_SKIN_PATH,
     fallbackSchema: 'games.breakout.skin/1'
   }).then(({ skin }) => {
     const scene = new SceneClass({

@@ -11,7 +11,6 @@ import BouncingBallScene from './game/BouncingBallScene.js';
 import { loadGameSkin } from '/games/shared/gameSkinLoader.js';
 
 const theme = new Theme(ThemeTokens);
-const BOUNCING_BALL_DEFAULT_SKIN_PATH = '/games/Bouncing-ball/assets/skins/default.json';
 
 export function bootBouncingBall({
   documentRef = globalThis.document ?? null,
@@ -43,7 +42,6 @@ export function bootBouncingBall({
 
   void loadGameSkin({
     gameId: 'Bouncing-ball',
-    defaultSkinPath: BOUNCING_BALL_DEFAULT_SKIN_PATH,
     fallbackSchema: 'games.bouncing-ball.skin/1'
   }).then(({ skin }) => {
     const scene = new SceneClass({ skin });

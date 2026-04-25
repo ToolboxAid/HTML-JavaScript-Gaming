@@ -11,7 +11,6 @@ import PongScene from './game/PongScene.js';
 import { loadGameSkin } from '/games/shared/gameSkinLoader.js';
 
 const theme = new Theme(ThemeTokens);
-const PONG_DEFAULT_SKIN_PATH = '/games/Pong/assets/skins/default.json';
 
 export function bootPong({
   documentRef = globalThis.document ?? null,
@@ -43,7 +42,6 @@ export function bootPong({
 
   void loadGameSkin({
     gameId: 'Pong',
-    defaultSkinPath: PONG_DEFAULT_SKIN_PATH,
     fallbackSchema: 'games.pong.skin/1'
   }).then(({ skin }) => {
     const scene = new SceneClass({ skin });

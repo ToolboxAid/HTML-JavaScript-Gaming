@@ -7,13 +7,13 @@ Skin Editor is a visual-plus-JSON skin workflow tool for:
 - Solar System
 - Bouncing Ball
 
-It supports loading active skin payloads, editing via visual controls (colors, sizing, entities), importing/exporting JSON, applying browser-local overrides for live game previews, and clearing overrides to return to default game skin files.
+It supports loading active skin payloads, editing via visual controls (colors, sizing, entities), importing/exporting JSON, applying browser-local overrides for live game previews, and clearing overrides to return to the catalog-defined skin file.
 
 ## Runtime Behavior
 
 - Games load skin from local override first (if present).
-- If no override exists, games load the default skin file under `games/<Game>/assets/skins/default.json`.
-- Workspace mode can resolve skin file paths via each game's `workspace.asset-catalog.json`.
+- If no override exists, games load `skin.main` from each game's `workspace.asset-catalog.json`.
+- Missing or invalid `skin.main` now fails load with an explicit error.
 
 ## Typical Flow
 

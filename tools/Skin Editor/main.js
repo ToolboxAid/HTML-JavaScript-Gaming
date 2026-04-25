@@ -13,28 +13,24 @@ const GAME_OPTIONS = Object.freeze([
     id: "Breakout",
     label: "Breakout",
     gameHref: "/games/Breakout/index.html",
-    defaultSkinPath: "/games/Breakout/assets/skins/default.json",
     fallbackSchema: "games.breakout.skin/1"
   },
   {
     id: "Pong",
     label: "Pong",
     gameHref: "/games/Pong/index.html",
-    defaultSkinPath: "/games/Pong/assets/skins/default.json",
     fallbackSchema: "games.pong.skin/1"
   },
   {
     id: "SolarSystem",
     label: "Solar System",
     gameHref: "/games/SolarSystem/index.html",
-    defaultSkinPath: "/games/SolarSystem/assets/skins/default.json",
     fallbackSchema: "games.solar-system.skin/1"
   },
   {
     id: "Bouncing-ball",
     label: "Bouncing Ball",
     gameHref: "/games/Bouncing-ball/index.html",
-    defaultSkinPath: "/games/Bouncing-ball/assets/skins/default.json",
     fallbackSchema: "games.bouncing-ball.skin/1"
   }
 ]);
@@ -75,7 +71,6 @@ const state = {
   activeGameId: "",
   activeSkin: null,
   activeSource: "n/a",
-  presetSkinPath: "",
   presetSkin: null,
   selectedObjectKey: "",
   selectedObjectKeys: [],
@@ -1429,22 +1424,22 @@ async function loadActiveSkinForSelectedGame() {
     setStatus("Missing game context. Launch Skin Editor from a game/workspace link that includes a valid gameId.");
     return;
   }
-  const fallbackSkin = {
-    documentKind: "game-skin",
-    version: 1,
-    schema: game.fallbackSchema,
-    gameId: game.id,
-    name: `${game.label} Skin`,
-    objects: {},
-    entities: {}
-  };
+  const shouldUsePreset = state.presetSkin
+    && normalizeText(state.presetSkin.gameId).toLowerCase() === game.id.toLowerCase();
+  if (shouldUsePreset) {
+    const loadedPresetSkin = buildNormalizedSkinDocument(game, state.presetSkin);
+    state.presetSkin = null;
+    if (!setCurrentSkinDocument(loadedPresetSkin, "preset")) {
+      return;
+    }
+    setStatus(`Loaded preset skin for ${game.label}.`);
+    return;
+  }
 
   let result;
   try {
     result = await loadGameSkin({
       gameId: game.id,
-      defaultSkinPath: state.presetSkinPath || game.defaultSkinPath,
-      fallbackSkin,
       fallbackSchema: game.fallbackSchema
     });
   } catch (error) {
@@ -1452,17 +1447,8 @@ async function loadActiveSkinForSelectedGame() {
     return;
   }
 
-  const shouldUsePreset = state.presetSkin
-    && normalizeText(state.presetSkin.gameId).toLowerCase() === game.id.toLowerCase();
-  const skinSource = shouldUsePreset ? "preset" : result.source;
-  const loadedSkin = shouldUsePreset
-    ? buildNormalizedSkinDocument(game, state.presetSkin)
-    : buildNormalizedSkinDocument(game, result.skin);
-  if (shouldUsePreset) {
-    state.presetSkin = null;
-  }
-
-  if (!setCurrentSkinDocument(loadedSkin, skinSource)) {
+  const loadedSkin = buildNormalizedSkinDocument(game, result.skin);
+  if (!setCurrentSkinDocument(loadedSkin, result.source)) {
     return;
   }
   setStatus(`Loaded active skin for ${game.label}.`);
@@ -1798,7 +1784,6 @@ async function loadPresetFromQuery() {
     }
     const rawPreset = await response.json();
     const payload = extractPresetPayload(rawPreset);
-    state.presetSkinPath = normalizeSamplePresetPath(payload.skinPath);
     state.presetSkin = payload.skin && typeof payload.skin === "object" ? payload.skin : null;
     const gameId = normalizeText(payload.gameId || searchParams.get("gameId"));
     return {

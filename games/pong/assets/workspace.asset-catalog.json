@@ -9,7 +9,7 @@
       "source": "workspace-manager"
     },
     "skin.main": {
-      "path": "/games/pong/assets/skins/default.json",
+      "path": "/games/pong/assets/skins/skin.main.json",
       "kind": "skin",
       "source": "workspace-manager"
     }

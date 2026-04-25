@@ -7,7 +7,7 @@
   ],
   "payload": {
     "gameId": "SolarSystem",
-    "skinPath": "/games/SolarSystem/assets/skins/default.json",
+    "skinPath": "/games/SolarSystem/assets/skins/skin.main.json",
     "skin": {
       "documentKind": "game-skin",
       "version": 1,

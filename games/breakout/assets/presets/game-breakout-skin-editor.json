@@ -7,7 +7,7 @@
   ],
   "payload": {
     "gameId": "Breakout",
-    "skinPath": "/games/Breakout/assets/skins/default.json",
+    "skinPath": "/games/Breakout/assets/skins/skin.main.json",
     "skin": {
       "documentKind": "game-skin",
       "version": 1,
