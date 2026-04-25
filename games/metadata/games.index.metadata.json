@@ -12,9 +12,7 @@
       ],
       "engineClassesUsed": [
         "engine/core/Engine",
-        "engine/input/index/InputService",
-        "engine/theme/index/Theme",
-        "engine/theme/index/ThemeTokens"
+        "engine/input/index/InputService"
       ],
       "tags": [
         "arcade",
@@ -31,20 +29,6 @@
         "physics-sandbox",
         "state-inspector",
         "replay-visualizer"
-      ],
-      "roundtripToolPresets": [
-        {
-          "toolId": "physics-sandbox",
-          "presetPath": "/samples/phase-03/0303/sample-0303-physics-sandbox.json"
-        },
-        {
-          "toolId": "state-inspector",
-          "presetPath": "/samples/phase-02/0205/sample-0205-state-inspector.json"
-        },
-        {
-          "toolId": "replay-visualizer",
-          "presetPath": "/samples/phase-07/0708/sample-0708-replay-visualizer.json"
-        }
       ]
     },
     {
@@ -72,25 +56,9 @@
         "tile-map-editor",
         "replay-visualizer"
       ],
-      "roundtripToolPresets": [
-        {
-          "toolId": "sprite-editor",
-          "presetPath": "/games/Breakout/assets/presets/game-breakout-sprite-editor.json"
-        },
-        {
-          "toolId": "tile-map-editor",
-          "presetPath": "/samples/phase-12/1208/sample-1208-tile-map-editor.json"
-        },
-        {
-          "toolId": "replay-visualizer",
-          "presetPath": "/samples/phase-07/0708/sample-0708-replay-visualizer.json"
-        }
-      ],
       "engineClassesUsed": [
         "engine/core/Engine",
-        "engine/input/index/InputService",
-        "engine/theme/index/Theme",
-        "engine/theme/index/ThemeTokens"
+        "engine/input/index/InputService"
       ]
     },
     {
@@ -118,25 +86,9 @@
         "performance-profiler",
         "state-inspector"
       ],
-      "roundtripToolPresets": [
-        {
-          "toolId": "physics-sandbox",
-          "presetPath": "/samples/phase-03/0303/sample-0303-physics-sandbox.json"
-        },
-        {
-          "toolId": "performance-profiler",
-          "presetPath": "/samples/phase-13/1319/sample-1319-performance-profiler.json"
-        },
-        {
-          "toolId": "state-inspector",
-          "presetPath": "/samples/phase-02/0205/sample-0205-state-inspector.json"
-        }
-      ],
       "engineClassesUsed": [
         "engine/core/Engine",
-        "engine/input/index/InputService",
-        "engine/theme/index/Theme",
-        "engine/theme/index/ThemeTokens"
+        "engine/input/index/InputService"
       ]
     },
     {
@@ -163,25 +115,9 @@
         "vector-map-editor",
         "physics-sandbox"
       ],
-      "roundtripToolPresets": [
-        {
-          "toolId": "vector-asset-studio",
-          "presetPath": "/samples/phase-09/0901/sample-0901-vector-asset-studio.json"
-        },
-        {
-          "toolId": "vector-map-editor",
-          "presetPath": "/samples/phase-09/0901/sample-0901-vector-map-editor.json"
-        },
-        {
-          "toolId": "physics-sandbox",
-          "presetPath": "/samples/phase-03/0303/sample-0303-physics-sandbox.json"
-        }
-      ],
       "engineClassesUsed": [
         "engine/core/Engine",
-        "engine/input/index/InputService",
-        "engine/theme/index/Theme",
-        "engine/theme/index/ThemeTokens"
+        "engine/input/index/InputService"
       ]
     },
     {
@@ -209,25 +145,9 @@
         "tile-map-editor",
         "replay-visualizer"
       ],
-      "roundtripToolPresets": [
-        {
-          "toolId": "sprite-editor",
-          "presetPath": "/samples/phase-14/1414/sample-1414-sprite-editor.json"
-        },
-        {
-          "toolId": "tile-map-editor",
-          "presetPath": "/samples/phase-12/1208/sample-1208-tile-map-editor.json"
-        },
-        {
-          "toolId": "replay-visualizer",
-          "presetPath": "/samples/phase-07/0708/sample-0708-replay-visualizer.json"
-        }
-      ],
       "engineClassesUsed": [
         "engine/core/Engine",
-        "engine/input/index/InputService",
-        "engine/theme/index/Theme",
-        "engine/theme/index/ThemeTokens"
+        "engine/input/index/InputService"
       ]
     },
     {
@@ -253,20 +173,6 @@
         "vector-asset-studio",
         "vector-map-editor",
         "asset-pipeline-tool"
-      ],
-      "roundtripToolPresets": [
-        {
-          "toolId": "vector-asset-studio",
-          "presetPath": "/samples/phase-09/0901/sample-0901-vector-asset-studio.json"
-        },
-        {
-          "toolId": "vector-map-editor",
-          "presetPath": "/samples/phase-09/0901/sample-0901-vector-map-editor.json"
-        },
-        {
-          "toolId": "asset-pipeline-tool",
-          "presetPath": "/samples/phase-14/1413/sample-1413-asset-pipeline-tool.json"
-        }
       ]
     },
     {
@@ -293,25 +199,9 @@
         "tile-map-editor",
         "asset-pipeline-tool"
       ],
-      "roundtripToolPresets": [
-        {
-          "toolId": "sprite-editor",
-          "presetPath": "/samples/phase-14/1414/sample-1414-sprite-editor.json"
-        },
-        {
-          "toolId": "tile-map-editor",
-          "presetPath": "/samples/phase-12/1208/sample-1208-tile-map-editor.json"
-        },
-        {
-          "toolId": "asset-pipeline-tool",
-          "presetPath": "/samples/phase-14/1413/sample-1413-asset-pipeline-tool.json"
-        }
-      ],
       "engineClassesUsed": [
         "engine/core/Engine",
-        "engine/input/index/InputService",
-        "engine/theme/index/Theme",
-        "engine/theme/index/ThemeTokens"
+        "engine/input/index/InputService"
       ]
     },
     {
@@ -338,26 +228,10 @@
         "replay-visualizer",
         "state-inspector"
       ],
-      "roundtripToolPresets": [
-        {
-          "toolId": "vector-asset-studio",
-          "presetPath": "/samples/phase-09/0901/sample-0901-vector-asset-studio.json"
-        },
-        {
-          "toolId": "replay-visualizer",
-          "presetPath": "/samples/phase-07/0708/sample-0708-replay-visualizer.json"
-        },
-        {
-          "toolId": "state-inspector",
-          "presetPath": "/samples/phase-02/0205/sample-0205-state-inspector.json"
-        }
-      ],
       "engineClassesUsed": [
         "engine/core/Engine",
         "engine/input/index/ActionInputMap",
-        "engine/input/index/ActionInputService",
-        "engine/theme/index/Theme",
-        "engine/theme/index/ThemeTokens"
+        "engine/input/index/ActionInputService"
       ]
     },
     {
@@ -384,25 +258,9 @@
         "replay-visualizer",
         "performance-profiler"
       ],
-      "roundtripToolPresets": [
-        {
-          "toolId": "state-inspector",
-          "presetPath": "/samples/phase-02/0205/sample-0205-state-inspector.json"
-        },
-        {
-          "toolId": "replay-visualizer",
-          "presetPath": "/samples/phase-07/0708/sample-0708-replay-visualizer.json"
-        },
-        {
-          "toolId": "performance-profiler",
-          "presetPath": "/samples/phase-13/1319/sample-1319-performance-profiler.json"
-        }
-      ],
       "engineClassesUsed": [
         "engine/core/Engine",
-        "engine/input/index/InputService",
-        "engine/theme/index/Theme",
-        "engine/theme/index/ThemeTokens"
+        "engine/input/index/InputService"
       ]
     },
     {
@@ -429,25 +287,9 @@
         "sprite-editor",
         "state-inspector"
       ],
-      "roundtripToolPresets": [
-        {
-          "toolId": "tile-map-editor",
-          "presetPath": "/samples/phase-12/1208/sample-1208-tile-map-editor.json"
-        },
-        {
-          "toolId": "sprite-editor",
-          "presetPath": "/samples/phase-14/1414/sample-1414-sprite-editor.json"
-        },
-        {
-          "toolId": "state-inspector",
-          "presetPath": "/samples/phase-02/0205/sample-0205-state-inspector.json"
-        }
-      ],
       "engineClassesUsed": [
         "engine/core/Engine",
-        "engine/input/index/InputService",
-        "engine/theme/index/Theme",
-        "engine/theme/index/ThemeTokens"
+        "engine/input/index/InputService"
       ]
     },
     {
@@ -473,20 +315,6 @@
         "vector-asset-studio",
         "vector-map-editor",
         "tile-map-editor"
-      ],
-      "roundtripToolPresets": [
-        {
-          "toolId": "vector-asset-studio",
-          "presetPath": "/samples/phase-09/0901/sample-0901-vector-asset-studio.json"
-        },
-        {
-          "toolId": "vector-map-editor",
-          "presetPath": "/samples/phase-09/0901/sample-0901-vector-map-editor.json"
-        },
-        {
-          "toolId": "tile-map-editor",
-          "presetPath": "/samples/phase-12/1208/sample-1208-tile-map-editor.json"
-        }
       ]
     },
     {

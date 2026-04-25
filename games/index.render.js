@@ -15,6 +15,24 @@ function normalizeTag(value) {
   return normalizeToken(value).replace(/[_\s]+/g, "-").replace(/-+/g, "-");
 }
 
+function isThemeEngineClass(value) {
+  const normalized = normalize(value).replace(/\\/g, "/");
+  if (!normalized) {
+    return false;
+  }
+  const leaf = normalized.split("/").pop() || "";
+  return /^theme/i.test(leaf);
+}
+
+function toEngineClassName(value) {
+  const normalized = normalize(value).replace(/\\/g, "/");
+  if (!normalized) {
+    return "";
+  }
+  const leaf = normalized.split("/").pop() || "";
+  return normalize(leaf);
+}
+
 function levelSortKey(level) {
   const value = normalize(level);
   const numericMatch = value.match(/Level\s+(\d+)/i);
@@ -60,54 +78,6 @@ function normalizeGameHref(value) {
   return href;
 }
 
-function normalizePresetPath(value) {
-  const normalized = normalize(value).replace(/\\/g, "/");
-  if (!normalized || normalized.includes("..")) {
-    return "";
-  }
-  if (normalized.startsWith("/samples/")) {
-    return normalized;
-  }
-  if (normalized.startsWith("/games/")) {
-    return normalized;
-  }
-  if (normalized.startsWith("samples/")) {
-    return `/${normalized}`;
-  }
-  if (normalized.startsWith("games/")) {
-    return `/${normalized}`;
-  }
-  if (normalized.startsWith("./samples/")) {
-    return `/${normalized.slice(2)}`;
-  }
-  if (normalized.startsWith("./games/")) {
-    return `/${normalized.slice(2)}`;
-  }
-  return "";
-}
-
-function getExplicitRoundtripPresetPath(game, toolId) {
-  const safeToolId = normalizeToken(toolId);
-  if (!safeToolId) {
-    return "";
-  }
-  const mappedEntries = asArray(game?.roundtripToolPresets);
-  for (const entry of mappedEntries) {
-    if (!entry || typeof entry !== "object") {
-      continue;
-    }
-    const mappedToolId = normalizeToken(entry.toolId);
-    if (mappedToolId !== safeToolId) {
-      continue;
-    }
-    const presetPath = normalizePresetPath(entry.presetPath);
-    if (presetPath) {
-      return presetPath;
-    }
-  }
-  return "";
-}
-
 function buildWorkspaceManagerHref(gameId) {
   const normalizedGameId = normalize(gameId);
   return normalizedGameId
@@ -124,47 +94,6 @@ function buildToolTokens(toolHints, toolLabelMap) {
       label: toolLabelMap.get(toolId) || toolId
     }))
     .sort((a, b) => a.label.localeCompare(b.label, undefined, { sensitivity: "base" }));
-}
-
-function buildRoundtripLinks(game, toolRegistryMap) {
-  const orderedToolHints = asArray(game?.toolHints)
-    .map((entry) => normalizeToken(entry))
-    .filter(Boolean)
-    .filter((toolId) => toolId !== "workspace-manager");
-  const dedupedToolHints = [...new Set(orderedToolHints)];
-  const links = [];
-
-  dedupedToolHints.forEach((toolId) => {
-    const tool = toolRegistryMap.get(toolId);
-    if (!tool) {
-      return;
-    }
-    const workspaceHref = "/tools/Workspace%20Manager/index.html";
-    const query = new URLSearchParams();
-    query.set("tool", tool.id);
-    query.set("game", game.id);
-    query.set("gameId", game.id);
-    if (game.title) {
-      query.set("gameTitle", game.title);
-    }
-    if (game.href) {
-      query.set("gameHref", game.href);
-    }
-    const presetPath = getExplicitRoundtripPresetPath(game, tool.id);
-    if (presetPath) {
-      query.set("samplePresetPath", presetPath);
-      const sampleIdMatch = /sample-(\d{4})-[^.]+\.json$/i.exec(presetPath);
-      if (sampleIdMatch?.[1]) {
-        query.set("sampleId", sampleIdMatch[1]);
-      }
-    }
-    query.set("workspaceHref", buildWorkspaceManagerHref(game.id));
-    const href = `${workspaceHref}?${query.toString()}`;
-    const label = `Open ${normalize(tool.displayName) || normalize(tool.name) || toolId}`;
-    links.push({ toolId, href, label });
-  });
-
-  return links;
 }
 
 function statusLabel(status) {
@@ -200,7 +129,7 @@ function writePinnedSet(pinnedSet) {
   window.localStorage.setItem(GAMES_PINNED_KEY, JSON.stringify([...pinnedSet].sort()));
 }
 
-function buildRows(metadata, pinnedSet, toolLabelMap, toolRegistryMap) {
+function buildRows(metadata, pinnedSet, toolLabelMap) {
   const rows = asArray(metadata?.games)
     .map((game) => {
       const id = normalize(game?.id);
@@ -211,19 +140,17 @@ function buildRows(metadata, pinnedSet, toolLabelMap, toolRegistryMap) {
       }
       const classValues = [...new Set(asArray(game?.classValues).map((value) => normalize(value)).filter(Boolean))]
         .sort((a, b) => a.localeCompare(b, undefined, { sensitivity: "base" }));
-      const engineClasses = [...new Set(asArray(game?.engineClassesUsed).map((value) => normalize(value)).filter(Boolean))]
+      const engineClasses = [...new Set(asArray(game?.engineClassesUsed)
+        .map((value) => normalize(value))
+        .filter(Boolean)
+        .filter((value) => !isThemeEngineClass(value)))]
+        .sort((a, b) => a.localeCompare(b, undefined, { sensitivity: "base" }));
+      const engineClassNames = [...new Set(engineClasses.map((value) => toEngineClassName(value)).filter(Boolean))]
         .sort((a, b) => a.localeCompare(b, undefined, { sensitivity: "base" }));
       const tags = [...new Set(asArray(game?.tags).map((value) => normalizeTag(value)).filter(Boolean))]
         .sort((a, b) => a.localeCompare(b, undefined, { sensitivity: "base" }));
       const href = normalizeGameHref(game?.href);
       const toolTokens = buildToolTokens(game?.toolHints, toolLabelMap);
-      const roundtripLinks = buildRoundtripLinks({
-        id,
-        title,
-        href,
-        toolHints: game?.toolHints,
-        roundtripToolPresets: game?.roundtripToolPresets
-      }, toolRegistryMap);
       return {
         id,
         title,
@@ -232,8 +159,8 @@ function buildRows(metadata, pinnedSet, toolLabelMap, toolRegistryMap) {
         status: normalize(game?.status) || "planned",
         classValues,
         engineClasses,
+        engineClassNames,
         toolTokens,
-        roundtripLinks,
         tags,
         preview: normalize(game?.preview),
         href,
@@ -248,7 +175,7 @@ function buildRows(metadata, pinnedSet, toolLabelMap, toolRegistryMap) {
     .filter(Boolean);
 
   const levels = [...new Set(rows.map((row) => row.level))].sort(sortLevels);
-  const classes = [...new Set(rows.flatMap((row) => row.classValues))].sort((a, b) => a.localeCompare(b, undefined, { sensitivity: "base" }));
+  const classes = [...new Set(rows.flatMap((row) => row.engineClassNames))].sort((a, b) => a.localeCompare(b, undefined, { sensitivity: "base" }));
   const tools = [...new Map(
     rows.flatMap((row) => row.toolTokens).map((token) => [token.value, token.label])
   ).entries()]
@@ -269,7 +196,7 @@ function filterRows(rows, state) {
     if (state.level && row.level !== state.level) {
       return false;
     }
-    if (state.classValue && !row.classValues.includes(state.classValue)) {
+    if (state.classValue && !row.engineClassNames.includes(state.classValue)) {
       return false;
     }
     if (state.toolId && !row.toolTokens.some((token) => token.value === state.toolId)) {
@@ -282,7 +209,7 @@ function filterRows(rows, state) {
       return true;
     }
     const toolText = row.toolTokens.map((token) => `${token.label} ${token.value}`).join(" ");
-    const haystack = `${row.level} ${row.title} ${row.description} ${row.classValues.join(" ")} ${toolText} ${row.tags.join(" ")}`.toLowerCase();
+    const haystack = `${row.level} ${row.title} ${row.description} ${row.engineClassNames.join(" ")} ${toolText} ${row.tags.join(" ")}`.toLowerCase();
     return haystack.includes(query);
   });
 }
@@ -327,6 +254,9 @@ function renderCard(row, instanceKey = "main") {
   ].filter(Boolean).join("");
 
   const classEntries = row.engineClasses;
+  const toolsUsedText = row.toolTokens.length > 0
+    ? row.toolTokens.map((token) => token.label).join(", ")
+    : "none";
   const tagText = row.tags.length > 0 ? row.tags.join(", ") : "none";
   const workspaceSection = row.workspaceHref
     ? `
@@ -343,6 +273,7 @@ function renderCard(row, instanceKey = "main") {
     <p>${escapeHtml(row.description)}</p>
     ${workspaceSection}
     <p>Tags: ${escapeHtml(tagText)}</p>
+    <p>Tools Used: ${escapeHtml(toolsUsedText)}</p>
     <section class="game-tool-roundtrip">
       <h4>Engine Classes Used</h4>
       ${classEntries.length > 0
@@ -436,16 +367,10 @@ export async function initGamesIndex() {
       .map((tool) => [normalizeToken(tool.id), normalize(tool.displayName) || normalize(tool.name) || normalize(tool.id)])
       .filter((entry) => entry[0] && entry[1])
   );
-  const toolRegistryMap = new Map(
-    toolRegistry
-      .filter((tool) => tool.id !== "workspace-manager")
-      .map((tool) => [normalizeToken(tool.id), tool])
-      .filter((entry) => entry[0] && entry[1])
-  );
   let pinnedSet = readPinnedSet();
-  let model = buildRows(metadata, pinnedSet, toolLabelMap, toolRegistryMap);
+  let model = buildRows(metadata, pinnedSet, toolLabelMap);
   setSelect(levelSelect, model.levels, (value) => value);
-  setSelect(classSelect, model.classes, (value) => value.split("/").at(-1) || value);
+  setSelect(classSelect, model.classes, (value) => value);
   setSelect(toolSelect, model.tools.map((entry) => entry.value), (value) => {
     const found = model.tools.find((entry) => entry.value === value);
     return found?.label || value;
@@ -457,7 +382,7 @@ export async function initGamesIndex() {
   }
 
   const apply = () => {
-    model = buildRows(metadata, pinnedSet, toolLabelMap, toolRegistryMap);
+    model = buildRows(metadata, pinnedSet, toolLabelMap);
     const state = {
       level: normalize(levelSelect.value),
       classValue: normalize(classSelect.value),
