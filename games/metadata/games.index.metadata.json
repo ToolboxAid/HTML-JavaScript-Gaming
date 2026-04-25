@@ -29,7 +29,8 @@
       "requiresService": false,
       "toolHints": [
         "palette-browser",
-        "skin-editor"
+        "skin-editor",
+        "asset-browser"
       ]
     },
     {
@@ -53,7 +54,8 @@
       "requiresService": false,
       "toolHints": [
         "palette-browser",
-        "skin-editor"
+        "skin-editor",
+        "asset-browser"
       ],
       "engineClassesUsed": [
         "engine/core/Engine",
@@ -84,7 +86,8 @@
       "requiresService": false,
       "toolHints": [
         "palette-browser",
-        "skin-editor"
+        "skin-editor",
+        "asset-browser"
       ],
       "engineClassesUsed": [
         "engine/core/Engine",
@@ -149,7 +152,8 @@
       "requiresService": false,
       "toolHints": [
         "palette-browser",
-        "skin-editor"
+        "skin-editor",
+        "asset-browser"
       ],
       "engineClassesUsed": [
         "engine/core/Engine",

@@ -201,6 +201,9 @@ function syncToolHints(metadata) {
     });
 
     const derivedFromToolsManifest = readToolHintsFromToolsManifest(gameDir);
+    if (hasCatalog) {
+      derivedFromKinds.push("asset-browser");
+    }
     const derived = normalizeToolHints([...derivedFromKinds, ...derivedFromToolsManifest]);
     const next = hasCatalog ? derived : existing;
     const invalid = next.filter((toolId) => !knownToolIds.has(toolId));
