@@ -229,6 +229,11 @@ function buildSampleRows(metadata, pinnedSet, toolLabelMap, toolRegistryMap) {
   ).entries()]
     .map(([value, label]) => ({ value, label }))
     .sort((a, b) => a.label.localeCompare(b.label, undefined, { sensitivity: "base" }));
+  const skinEditorLabel = toolLabelMap.get("skin-editor");
+  if (skinEditorLabel && !tools.some((entry) => entry.value === "skin-editor")) {
+    tools.push({ value: "skin-editor", label: skinEditorLabel });
+    tools.sort((a, b) => a.label.localeCompare(b.label, undefined, { sensitivity: "base" }));
+  }
   const tags = [...new Set(sampleRows.flatMap((sample) => sample.tags))].sort();
 
   return { sampleRows, phases, phaseOptions, classes, tools, tags, phaseInfoMap };

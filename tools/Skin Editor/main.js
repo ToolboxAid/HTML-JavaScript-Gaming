@@ -38,7 +38,6 @@ const GAME_OPTIONS = Object.freeze([
 ]);
 
 const refs = {
-  gameSelect: document.getElementById("skinEditorGameSelect"),
   loadButton: document.getElementById("skinEditorLoadButton"),
   saveOverrideButton: document.getElementById("skinEditorSaveOverrideButton"),
   clearOverrideButton: document.getElementById("skinEditorClearOverrideButton"),
@@ -52,6 +51,7 @@ const refs = {
 };
 
 const state = {
+  activeGameId: "",
   presetSkinPath: "",
   presetSkin: null
 };
@@ -83,10 +83,13 @@ function getGameOptionById(gameId) {
 }
 
 function getSelectedGameOption() {
-  if (!(refs.gameSelect instanceof HTMLSelectElement)) {
-    return null;
-  }
-  return getGameOptionById(refs.gameSelect.value);
+  return getGameOptionById(state.activeGameId) || GAME_OPTIONS[0] || null;
+}
+
+function resolveActiveGameOption(initialGameId = "") {
+  const selected = getGameOptionById(initialGameId) || GAME_OPTIONS[0] || null;
+  state.activeGameId = selected ? selected.id : "";
+  return selected;
 }
 
 function setStatus(message) {
@@ -188,6 +191,7 @@ async function loadActiveSkinForSelectedGame() {
 
   const shouldUsePreset = state.presetSkin
     && normalizeText(state.presetSkin.gameId).toLowerCase() === game.id.toLowerCase();
+  const skinSource = shouldUsePreset ? "preset" : result.source;
   const loadedSkin = shouldUsePreset
     ? buildNormalizedSkinDocument(game, state.presetSkin)
     : buildNormalizedSkinDocument(game, result.skin);
@@ -198,7 +202,7 @@ async function loadActiveSkinForSelectedGame() {
   if (refs.input instanceof HTMLTextAreaElement) {
     refs.input.value = toPrettyJson(loadedSkin);
   }
-  setSummary(formatSummary(game, state.presetSkin ? "preset" : result.source, loadedSkin));
+  setSummary(formatSummary(game, skinSource, loadedSkin));
   setStatus(`Loaded active skin for ${game.label}.`);
 }
 
@@ -281,18 +285,6 @@ async function importSkinJsonFromFile(file) {
   setStatus("Imported skin JSON. Review and click Apply Skin Override.");
 }
 
-function populateGameSelect(initialGameId = "") {
-  if (!(refs.gameSelect instanceof HTMLSelectElement)) {
-    return;
-  }
-  refs.gameSelect.innerHTML = GAME_OPTIONS
-    .map((game) => `<option value="${game.id}">${game.label}</option>`)
-    .join("");
-
-  const selected = getGameOptionById(initialGameId) || GAME_OPTIONS[0];
-  refs.gameSelect.value = selected.id;
-}
-
 function extractPresetPayload(rawPreset) {
   if (!rawPreset || typeof rawPreset !== "object") {
     return {};
@@ -363,16 +355,11 @@ function bindEvents() {
     }
     input.value = "";
   });
-  refs.gameSelect?.addEventListener("change", () => {
-    state.presetSkin = null;
-    state.presetSkinPath = "";
-    void loadActiveSkinForSelectedGame();
-  });
 }
 
 async function bootSkinEditor() {
   const { gameId, presetLoaded } = await loadPresetFromQuery();
-  populateGameSelect(gameId);
+  resolveActiveGameOption(gameId);
   bindEvents();
   await loadActiveSkinForSelectedGame();
   if (presetLoaded) {
