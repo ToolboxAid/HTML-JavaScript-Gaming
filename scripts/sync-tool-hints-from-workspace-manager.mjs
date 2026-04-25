@@ -7,7 +7,7 @@ sync-tool-hints-from-workspace-manager.mjs
 
 How to run:
 1) npm run sync:tool-hints
-   - Sync toolHints into games/metadata/games.index.metadata.json from Workspace Manager game JSON
+   - Sync toolHints into games/metadata/games.index.metadata.json from per-game manifests
 2) node ./scripts/sync-tool-hints-from-workspace-manager.mjs --dry-run
    - Validate and print what would change without writing
 */
@@ -18,9 +18,11 @@ import { getToolRegistry } from "../tools/toolRegistry.js";
 
 const ROOT = process.cwd();
 const METADATA_PATH = path.join(ROOT, "games", "metadata", "games.index.metadata.json");
+
 const GAME_ASSET_CATALOG_FILENAME = "workspace.asset-catalog.json";
 const GAME_ASSET_CATALOG_SCHEMA = "html-js-gaming.game-asset-catalog";
 const GAME_ASSET_CATALOG_VERSION = 1;
+
 const GAME_TOOLS_MANIFEST_FILENAME = "tools.manifest.json";
 const GAME_TOOLS_MANIFEST_SCHEMA = "html-js-gaming.game-asset-manifest";
 const GAME_TOOLS_MANIFEST_VERSION = 1;
@@ -59,23 +61,21 @@ function normalizeToolHints(value) {
   if (!Array.isArray(value)) {
     return [];
   }
-  const out = [];
+  const output = [];
   const seen = new Set();
-  for (const entry of value) {
+  value.forEach((entry) => {
     const token = normalizeToken(entry);
     if (!token || seen.has(token)) {
-      continue;
+      return;
     }
     seen.add(token);
-    out.push(token);
-  }
-  return out;
+    output.push(token);
+  });
+  return output;
 }
 
 function parseArgs(argv) {
-  const args = {
-    dryRun: false
-  };
+  const args = { dryRun: false };
   for (let i = 0; i < argv.length; i += 1) {
     const value = argv[i];
     if (value === "--dry-run") {
@@ -123,64 +123,122 @@ function getGameDirFromHref(gameHref) {
   return path.join(ROOT, relative);
 }
 
-function readWorkspaceAssetKinds(gameDir) {
+function readWorkspaceAssetCatalog(gameDir) {
   if (!gameDir) {
-    return [];
+    return { valid: false, reason: "missing-game-dir", kinds: [], assetCount: 0 };
   }
+
   const catalogPath = path.join(gameDir, "assets", GAME_ASSET_CATALOG_FILENAME);
   if (!fs.existsSync(catalogPath)) {
-    return [];
+    return { valid: false, reason: "missing-file", kinds: [], assetCount: 0 };
   }
-  const source = readJson(catalogPath);
-  const schema = normalizeText(source?.schema);
-  const version = Number(source?.version);
-  if (schema !== GAME_ASSET_CATALOG_SCHEMA || version !== GAME_ASSET_CATALOG_VERSION) {
-    return [];
-  }
-  const assets = source?.assets && typeof source.assets === "object" ? source.assets : {};
-  const kinds = [];
-  Object.values(assets).forEach((entry) => {
-    const kind = normalizeToken(entry?.kind);
-    if (kind) {
-      kinds.push(kind);
-    }
-  });
-  return [...new Set(kinds)];
-}
 
-function readToolHintsFromToolsManifest(gameDir) {
-  if (!gameDir) {
-    return [];
-  }
-  const toolsManifestPath = path.join(gameDir, "assets", GAME_TOOLS_MANIFEST_FILENAME);
-  if (!fs.existsSync(toolsManifestPath)) {
-    return [];
-  }
-  const source = readJson(toolsManifestPath);
-  const schema = normalizeText(source?.schema);
-  const version = Number(source?.version);
-  if (schema !== GAME_TOOLS_MANIFEST_SCHEMA || version !== GAME_TOOLS_MANIFEST_VERSION) {
-    return [];
-  }
-  const domains = source?.domains && typeof source.domains === "object" ? source.domains : {};
-  const hints = [];
-  let hasDomainRecords = false;
-  Object.values(domains).forEach((records) => {
-    if (!Array.isArray(records) || records.length === 0) {
-      return;
+  try {
+    const source = readJson(catalogPath);
+    const schema = normalizeText(source?.schema);
+    const version = Number(source?.version);
+    if (schema !== GAME_ASSET_CATALOG_SCHEMA || version !== GAME_ASSET_CATALOG_VERSION) {
+      return { valid: false, reason: "invalid-schema-or-version", kinds: [], assetCount: 0 };
     }
-    hasDomainRecords = true;
-    records.forEach((record) => {
-      const sourceToolId = normalizeToken(record?.sourceToolId);
-      if (sourceToolId) {
-        hints.push(sourceToolId);
+
+    const assets = source?.assets && typeof source.assets === "object" ? source.assets : {};
+    const kinds = [];
+    let assetCount = 0;
+
+    Object.values(assets).forEach((entry) => {
+      if (!entry || typeof entry !== "object") {
+        return;
+      }
+      const assetPath = normalizeText(entry.path);
+      if (!assetPath) {
+        return;
+      }
+      assetCount += 1;
+      const kind = normalizeToken(entry.kind);
+      if (kind) {
+        kinds.push(kind);
       }
     });
-  });
-  if (hasDomainRecords) {
-    hints.push("asset-pipeline-tool");
+
+    return {
+      valid: true,
+      reason: "ok",
+      kinds: [...new Set(kinds)],
+      assetCount
+    };
+  } catch {
+    return { valid: false, reason: "invalid-json", kinds: [], assetCount: 0 };
   }
-  return normalizeToolHints(hints);
+}
+
+function readGameToolsManifest(gameDir) {
+  if (!gameDir) {
+    return { valid: false, reason: "missing-game-dir", hints: [] };
+  }
+
+  const manifestPath = path.join(gameDir, "assets", GAME_TOOLS_MANIFEST_FILENAME);
+  if (!fs.existsSync(manifestPath)) {
+    return { valid: false, reason: "missing-file", hints: [] };
+  }
+
+  try {
+    const source = readJson(manifestPath);
+    const schema = normalizeText(source?.schema);
+    const version = Number(source?.version);
+    if (schema !== GAME_TOOLS_MANIFEST_SCHEMA || version !== GAME_TOOLS_MANIFEST_VERSION) {
+      return { valid: false, reason: "invalid-schema-or-version", hints: [] };
+    }
+
+    const domains = source?.domains && typeof source.domains === "object" ? source.domains : {};
+    const hints = [];
+    let hasDomainRecords = false;
+
+    Object.values(domains).forEach((records) => {
+      if (!Array.isArray(records) || records.length === 0) {
+        return;
+      }
+      hasDomainRecords = true;
+      records.forEach((record) => {
+        const sourceToolId = normalizeToken(record?.sourceToolId);
+        if (sourceToolId) {
+          hints.push(sourceToolId);
+        }
+      });
+    });
+
+    if (hasDomainRecords) {
+      hints.push("asset-pipeline-tool");
+    }
+
+    return {
+      valid: true,
+      reason: "ok",
+      hints: normalizeToolHints(hints)
+    };
+  } catch {
+    return { valid: false, reason: "invalid-json", hints: [] };
+  }
+}
+
+function deriveToolHintsFromManifests(catalogInfo, toolsManifestInfo) {
+  const derived = [];
+
+  if (catalogInfo.valid) {
+    catalogInfo.kinds.forEach((kind) => {
+      const mapped = KIND_TO_TOOL_HINTS[kind] || [];
+      mapped.forEach((toolId) => derived.push(toolId));
+    });
+
+    if (catalogInfo.assetCount > 0) {
+      derived.push("asset-browser");
+    }
+  }
+
+  if (toolsManifestInfo.valid) {
+    toolsManifestInfo.hints.forEach((toolId) => derived.push(toolId));
+  }
+
+  return normalizeToolHints(derived);
 }
 
 function syncToolHints(metadata) {
@@ -192,29 +250,25 @@ function syncToolHints(metadata) {
     const gameId = normalizeText(game?.id) || "<unknown>";
     const gameDir = getGameDirFromHref(game?.href);
     const existing = normalizeToolHints(game?.toolHints);
-    const derivedFromKinds = [];
-    const hasCatalog = !!gameDir && fs.existsSync(path.join(gameDir, "assets", GAME_ASSET_CATALOG_FILENAME));
-
-    readWorkspaceAssetKinds(gameDir).forEach((kind) => {
-      const mapped = KIND_TO_TOOL_HINTS[kind] || [];
-      mapped.forEach((toolId) => derivedFromKinds.push(toolId));
-    });
-
-    const derivedFromToolsManifest = readToolHintsFromToolsManifest(gameDir);
-    if (hasCatalog) {
-      derivedFromKinds.push("asset-browser");
-    }
-    const derived = normalizeToolHints([...derivedFromKinds, ...derivedFromToolsManifest]);
-    const next = hasCatalog ? derived : existing;
-    const invalid = next.filter((toolId) => !knownToolIds.has(toolId));
-    if (invalid.length > 0) {
-      throw new Error(`${gameId}: unknown tool id(s): ${invalid.join(", ")}`);
-    }
 
     if (!gameDir) {
       warnings.push(`${gameId}: skipped derivation (missing/invalid href)`);
-    } else if (!fs.existsSync(path.join(gameDir, "assets", GAME_ASSET_CATALOG_FILENAME))) {
-      warnings.push(`${gameId}: no ${GAME_ASSET_CATALOG_FILENAME}`);
+      continue;
+    }
+
+    const catalogInfo = readWorkspaceAssetCatalog(gameDir);
+    const toolsManifestInfo = readGameToolsManifest(gameDir);
+
+    const hasAnyValidManifest = catalogInfo.valid || toolsManifestInfo.valid;
+    if (!hasAnyValidManifest) {
+      warnings.push(`${gameId}: no valid manifest source (${GAME_ASSET_CATALOG_FILENAME} / ${GAME_TOOLS_MANIFEST_FILENAME})`);
+      continue;
+    }
+
+    const next = deriveToolHintsFromManifests(catalogInfo, toolsManifestInfo);
+    const invalid = next.filter((toolId) => !knownToolIds.has(toolId));
+    if (invalid.length > 0) {
+      throw new Error(`${gameId}: unknown tool id(s): ${invalid.join(", ")}`);
     }
 
     if (JSON.stringify(existing) !== JSON.stringify(next) || !Array.isArray(game.toolHints)) {
@@ -237,11 +291,9 @@ function main() {
 
   const warningText = result.warnings.length ? ` warnings=${result.warnings.length}` : "";
   console.log(`OK updated=${result.updated}${warningText} dryRun=${args.dryRun ? "true" : "false"}`);
-  if (result.warnings.length) {
-    result.warnings.forEach((warning) => {
-      console.log(`WARN ${warning}`);
-    });
-  }
+  result.warnings.forEach((warning) => {
+    console.log(`WARN ${warning}`);
+  });
 }
 
 try {
