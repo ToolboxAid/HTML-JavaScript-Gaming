@@ -16,24 +16,30 @@
       "name": "Bouncing Ball Classic Skin",
       "objects": {
         "background": {
-          "color": "#05070a"
+          "color": "#05070a",
+          "shape": "hud-color"
         },
         "wall": {
           "color": "#f4f4ef",
-          "thickness": 18
+          "thickness": 18,
+          "shape": "wall"
         },
         "ball": {
           "color": "#f4f4ef",
-          "size": 22
+          "size": 22,
+          "shape": "square"
         },
         "hudText": {
-          "color": "#f4f4ef"
+          "color": "#f4f4ef",
+          "shape": "hud-color"
         },
         "hudMuted": {
-          "color": "#9ba3b3"
+          "color": "#9ba3b3",
+          "shape": "hud-color"
         },
         "hudPanel": {
-          "color": "#05070a"
+          "color": "#05070a",
+          "shape": "hud-color"
         }
       },
       "entities": {}

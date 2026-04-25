@@ -37,6 +37,24 @@ const SOLAR_RING_KEY_BY_PLANET = Object.freeze({
   uranus: "ringUranus",
   neptune: "ringNeptune"
 });
+const SUPPORTED_OBJECT_SHAPES = Object.freeze([
+  "circle",
+  "oval",
+  "rectangle",
+  "square",
+  "triangle",
+  "line",
+  "arc",
+  "sector",
+  "capsule",
+  "polygon",
+  "star",
+  "ring",
+  "flattened",
+  "hud-color",
+  "wall",
+  "wall-multi-side"
+]);
 
 function normalizeText(value) {
   return typeof value === "string" ? value.trim() : "";
@@ -112,6 +130,17 @@ function isNonNegativeNumber(value) {
 
 function hasKeys(value) {
   return Object.keys(toObject(value)).length > 0;
+}
+
+function hasExpectedShape(value, expectedShapes = []) {
+  const shape = normalizeText(toObject(value).shape).toLowerCase();
+  if (!shape || !SUPPORTED_OBJECT_SHAPES.includes(shape)) {
+    return false;
+  }
+  if (!Array.isArray(expectedShapes) || expectedShapes.length === 0) {
+    return true;
+  }
+  return expectedShapes.includes(shape);
 }
 
 function normalizeFlatObjects(gameId, objects) {
@@ -269,47 +298,71 @@ function validateGameSkinObjects(gameId, objects) {
   }
 
   if (normalizedGameId === "breakout") {
-    return isHexColor(source?.background?.color)
+    return hasExpectedShape(source?.background, ["hud-color"])
+      && isHexColor(source?.background?.color)
+      && hasExpectedShape(source?.wall, ["flattened", "wall", "wall-multi-side"])
       && isHexColor(source?.wall?.color)
       && isPositiveNumber(source?.wall?.thickness)
+      && hasExpectedShape(source?.paddle, ["rectangle", "capsule", "square"])
       && isHexColor(source?.paddle?.color)
       && isPositiveNumber(source?.paddle?.width)
       && isPositiveNumber(source?.paddle?.height)
+      && hasExpectedShape(source?.ball, ["square", "circle"])
       && isHexColor(source?.ball?.color)
       && isPositiveNumber(source?.ball?.size)
+      && hasExpectedShape(source?.brickLayout, ["rectangle", "hud-color"])
       && isNonNegativeNumber(source?.brickLayout?.gap)
       && BREAKOUT_BRICK_KEYS.every((brickKey) => (
-        isHexColor(source?.[brickKey]?.color)
+        hasExpectedShape(source?.[brickKey], ["rectangle", "square"])
+        && isHexColor(source?.[brickKey]?.color)
         && isPositiveNumber(source?.[brickKey]?.width)
         && isPositiveNumber(source?.[brickKey]?.height)
       ))
+      && hasExpectedShape(source?.hudText, ["hud-color"])
       && isHexColor(source?.hudText?.color)
+      && hasExpectedShape(source?.hudMuted, ["hud-color"])
       && isHexColor(source?.hudMuted?.color)
+      && hasExpectedShape(source?.hudPanel, ["hud-color"])
       && isHexColor(source?.hudPanel?.color);
   }
 
   if (normalizedGameId === "pong") {
-    return isHexColor(source?.background?.color)
+    return hasExpectedShape(source?.background, ["hud-color"])
+      && isHexColor(source?.background?.color)
+      && hasExpectedShape(source?.paddle, ["rectangle", "capsule"])
       && isHexColor(source?.paddle?.color)
       && isPositiveNumber(source?.paddle?.width)
+      && hasExpectedShape(source?.ball, ["circle", "ring"])
       && isHexColor(source?.ball?.color)
       && isPositiveNumber(source?.ball?.radius)
+      && hasExpectedShape(source?.hudInk, ["hud-color"])
       && isHexColor(source?.hudInk?.color)
+      && hasExpectedShape(source?.hudMuted, ["hud-color"])
       && isHexColor(source?.hudMuted?.color)
+      && hasExpectedShape(source?.hudAccent, ["hud-color"])
       && isHexColor(source?.hudAccent?.color)
+      && hasExpectedShape(source?.hudGood, ["hud-color"])
       && isHexColor(source?.hudGood?.color)
+      && hasExpectedShape(source?.hudWarn, ["hud-color"])
       && isHexColor(source?.hudWarn?.color)
+      && hasExpectedShape(source?.hudDanger, ["hud-color"])
       && isHexColor(source?.hudDanger?.color);
   }
 
   if (normalizedGameId === "bouncing-ball") {
-    return isHexColor(source?.background?.color)
+    return hasExpectedShape(source?.background, ["hud-color"])
+      && isHexColor(source?.background?.color)
+      && hasExpectedShape(source?.wall, ["wall", "flattened", "wall-multi-side"])
       && isHexColor(source?.wall?.color)
       && isPositiveNumber(source?.wall?.thickness)
+      && hasExpectedShape(source?.ball, ["square", "circle"])
       && isHexColor(source?.ball?.color)
       && isPositiveNumber(source?.ball?.size)
+      && hasExpectedShape(source?.hudText, ["hud-color"])
       && isHexColor(source?.hudText?.color)
+      && hasExpectedShape(source?.hudMuted, ["hud-color"])
       && isHexColor(source?.hudMuted?.color)
+      && hasExpectedShape(source?.hudPanel, ["hud-color"])
       && isHexColor(source?.hudPanel?.color);
   }
 
@@ -317,20 +370,36 @@ function validateGameSkinObjects(gameId, objects) {
     const requiredPlanets = Object.keys(SOLAR_PLANET_DEFAULTS);
     const requiredMoons = Object.keys(SOLAR_MOON_DEFAULTS);
     const requiredRings = Object.keys(SOLAR_RING_DEFAULTS);
-    return isHexColor(source?.background?.color)
+    return hasExpectedShape(source?.background, ["hud-color"])
+      && isHexColor(source?.background?.color)
+      && hasExpectedShape(source?.frame, ["hud-color"])
       && isHexColor(source?.frame?.color)
+      && hasExpectedShape(source?.orbit, ["hud-color"])
       && isHexColor(source?.orbit?.color)
+      && hasExpectedShape(source?.hudText, ["hud-color"])
       && isHexColor(source?.hudText?.color)
+      && hasExpectedShape(source?.hudMuted, ["hud-color"])
       && isHexColor(source?.hudMuted?.color)
+      && hasExpectedShape(source?.hudPanel, ["hud-color"])
       && isHexColor(source?.hudPanel?.color)
+      && hasExpectedShape(source?.sun, ["circle"])
       && isHexColor(source?.sun?.color)
       && isPositiveNumber(source?.sun?.radius)
-      && requiredPlanets.every((id) => isHexColor(source?.[id]?.color) && isPositiveNumber(source?.[id]?.radius))
-      && requiredMoons.every((id) => isHexColor(source?.[id]?.color) && isPositiveNumber(source?.[id]?.radius))
+      && requiredPlanets.every((id) => (
+        hasExpectedShape(source?.[id], ["circle"])
+        && isHexColor(source?.[id]?.color)
+        && isPositiveNumber(source?.[id]?.radius)
+      ))
+      && requiredMoons.every((id) => (
+        hasExpectedShape(source?.[id], ["circle"])
+        && isHexColor(source?.[id]?.color)
+        && isPositiveNumber(source?.[id]?.radius)
+      ))
       && requiredRings.every((id) => {
         const ringObjectKey = SOLAR_RING_KEY_BY_PLANET[id];
         const ring = source?.[ringObjectKey];
-        return isHexColor(ring?.color)
+        return hasExpectedShape(ring, ["ring"])
+          && isHexColor(ring?.color)
           && isPositiveNumber(ring?.innerRadius)
           && isPositiveNumber(ring?.outerRadius)
           && Number(ring.outerRadius) > Number(ring.innerRadius);

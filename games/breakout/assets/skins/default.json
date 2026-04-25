@@ -6,7 +6,8 @@
   "name": "Breakout Classic Skin",
   "objects": {
     "background": {
-      "color": "#000000"
+      "color": "#000000",
+      "shape": "hud-color"
     },
     "wall": {
       "shape": "flattened",
@@ -16,53 +17,65 @@
     "paddle": {
       "color": "#f8f8f2",
       "width": 118,
-      "height": 18
+      "height": 18,
+      "shape": "rectangle"
     },
     "ball": {
+      "shape": "square",
       "color": "#f8f8f2",
       "size": 14
     },
     "brickLayout": {
-      "gap": 6
+      "gap": 6,
+      "shape": "rectangle"
     },
     "brick1": {
       "width": 78,
       "height": 24,
-      "color": "#ff595e"
+      "color": "#ff595e",
+      "shape": "rectangle"
     },
     "brick2": {
       "width": 78,
       "height": 24,
-      "color": "#ff924c"
+      "color": "#ff924c",
+      "shape": "rectangle"
     },
     "brick3": {
       "width": 78,
       "height": 24,
-      "color": "#ffca3a"
+      "color": "#ffca3a",
+      "shape": "rectangle"
     },
     "brick4": {
       "width": 78,
       "height": 24,
-      "color": "#8ac926"
+      "color": "#8ac926",
+      "shape": "rectangle"
     },
     "brick5": {
       "width": 78,
       "height": 24,
-      "color": "#1982c4"
+      "color": "#1982c4",
+      "shape": "rectangle"
     },
     "brick6": {
       "width": 78,
       "height": 24,
-      "color": "#6a4c93"
+      "color": "#6a4c93",
+      "shape": "rectangle"
     },
     "hudText": {
-      "color": "#04040a"
+      "color": "#04040a",
+      "shape": "hud-color"
     },
     "hudMuted": {
-      "color": "#a0a0a0"
+      "color": "#a0a0a0",
+      "shape": "hud-color"
     },
     "hudPanel": {
-      "color": "#000000"
+      "color": "#000000",
+      "shape": "hud-color"
     }
   },
   "entities": {}

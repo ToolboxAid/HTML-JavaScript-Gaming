@@ -83,6 +83,25 @@ const state = {
   skipAutoSelectOnce: false
 };
 
+const SUPPORTED_OBJECT_SHAPES = Object.freeze([
+  "circle",
+  "oval",
+  "rectangle",
+  "square",
+  "triangle",
+  "line",
+  "arc",
+  "sector",
+  "capsule",
+  "polygon",
+  "star",
+  "ring",
+  "flattened",
+  "hud-color",
+  "wall",
+  "wall-multi-side"
+]);
+
 function normalizeText(value) {
   return typeof value === "string" ? value.trim() : "";
 }
@@ -269,19 +288,14 @@ function buildNormalizedSkinDocument(game, parsedSkin) {
   return normalizeGameSkinDocument(parsedSkin, {
     expectedGameId: game.id,
     fallbackSchema: game.fallbackSchema
-  }) || {
-    documentKind: "game-skin",
-    version: 1,
-    schema: game.fallbackSchema,
-    gameId: game.id,
-    name: `${game.label} Skin`,
-    objects: {},
-    entities: {}
-  };
+  });
 }
 
 function toObjectCentricSkinDocument(game, rawSkin) {
   const normalized = buildNormalizedSkinDocument(game, rawSkin);
+  if (!normalized) {
+    return null;
+  }
   return {
     documentKind: normalizeText(normalized?.documentKind) || "game-skin",
     version: Number.isFinite(Number(normalized?.version)) ? Number(normalized.version) : 1,
@@ -306,6 +320,40 @@ function resolveCurrentSkinDocument({ allowStateFallback = true } = {}) {
     return toObjectCentricSkinDocument(game, state.activeSkin);
   }
   return null;
+}
+
+function getSkinShapeIssues(skinDocument) {
+  const skin = toObject(skinDocument);
+  const objects = toObject(skin.objects);
+  const issues = [];
+  Object.entries(objects).forEach(([objectKey, objectValue]) => {
+    const object = toObject(objectValue);
+    const shape = normalizeText(object.shape).toLowerCase();
+    if (!shape) {
+      issues.push(`objects.${objectKey}: missing required shape.`);
+      return;
+    }
+    if (!SUPPORTED_OBJECT_SHAPES.includes(shape)) {
+      issues.push(`objects.${objectKey}: unsupported shape '${shape}'.`);
+    }
+  });
+  return issues;
+}
+
+function extractRawSkinForValidation(rawSkin) {
+  const source = toObject(rawSkin);
+  if (source.payload && typeof source.payload === "object" && source.payload.skin && typeof source.payload.skin === "object") {
+    return source.payload.skin;
+  }
+  if (source.skin && typeof source.skin === "object") {
+    return source.skin;
+  }
+  return source;
+}
+
+function getRawSkinShapeIssues(rawSkin) {
+  const skin = extractRawSkinForValidation(rawSkin);
+  return getSkinShapeIssues(skin);
 }
 
 function ensureSelectedObjectKey() {
@@ -394,6 +442,20 @@ function clampNumericProperty(propertyKey, value) {
   return value;
 }
 
+function wrapAngleDegrees(value) {
+  if (!Number.isFinite(value)) {
+    return value;
+  }
+  let wrapped = value;
+  while (wrapped > 360) {
+    wrapped -= 360;
+  }
+  while (wrapped < 0) {
+    wrapped += 360;
+  }
+  return wrapped;
+}
+
 function normalizeObjectKey(value) {
   return normalizeText(value)
     .toLowerCase()
@@ -443,6 +505,53 @@ function createShapePreset(shapeType) {
     return {
       shape: "flattened",
       components: []
+    };
+  }
+  if (type === "triangle") {
+    return {
+      shape: "triangle",
+      color: "#f8f8f2",
+      width: 120,
+      height: 96
+    };
+  }
+  if (type === "line") {
+    return {
+      shape: "line",
+      color: "#f8f8f2",
+      x1: -60,
+      y1: 0,
+      x2: 60,
+      y2: 0,
+      thickness: 6,
+      roundedCorner: false
+    };
+  }
+  if (type === "arc") {
+    return {
+      shape: "arc",
+      color: "#f8f8f2",
+      radius: 64,
+      startAngle: 210,
+      endAngle: 330,
+      thickness: 6
+    };
+  }
+  if (type === "sector") {
+    return {
+      shape: "sector",
+      color: "#f8f8f2",
+      radius: 64,
+      startAngle: 220,
+      endAngle: 320
+    };
+  }
+  if (type === "capsule") {
+    return {
+      shape: "capsule",
+      color: "#f8f8f2",
+      width: 164,
+      height: 64
     };
   }
   if (type === "polygon") {
@@ -594,65 +703,15 @@ function inferShapeTypeFromSelectedObject() {
 }
 
 function inferShapeTypeFromObjectKey(objectKey) {
-  const game = getSelectedGameOption();
-  const normalizedGameId = normalizeText(game?.id).toLowerCase();
   const selectedObject = toObject(state.activeSkin?.objects?.[objectKey]);
   const shape = normalizeText(selectedObject.shape).toLowerCase();
   if (shape === "wall") {
     return "wall-multi-side";
   }
-  if (shape && ["circle", "oval", "rectangle", "square", "polygon", "star", "ring", "flattened", "hud-color"].includes(shape)) {
+  if (shape && SUPPORTED_OBJECT_SHAPES.includes(shape)) {
     return shape;
   }
-  const hasSides = Number.isFinite(Number(selectedObject.sides));
-  const hasRadius = Number.isFinite(Number(selectedObject.radius));
-  const hasInner = Number.isFinite(Number(selectedObject.innerRadius));
-  const hasOuter = Number.isFinite(Number(selectedObject.outerRadius));
-  const hasWidth = Number.isFinite(Number(selectedObject.width));
-  const hasHeight = Number.isFinite(Number(selectedObject.height));
-  const hasThickness = Number.isFinite(Number(selectedObject.thickness));
-  const hasComponents = Array.isArray(selectedObject.components);
-  const hasWallFlags = ["left", "right", "top", "bottom"].some((key) => typeof selectedObject[key] === "boolean");
-  const colorPropertyCount = Object.values(selectedObject)
-    .filter((value) => typeof value === "string" && parseHexForPicker(value))
-    .length;
-
-  if (hasThickness && hasWallFlags) {
-    return "wall-multi-side";
-  }
-  if (hasSides && hasOuter && hasInner) {
-    return "star";
-  }
-  if (hasSides) {
-    return "polygon";
-  }
-  if (hasOuter && hasInner) {
-    return "ring";
-  }
-  if (normalizedGameId === "breakout" && normalizeText(objectKey).toLowerCase() === "wall" && hasThickness) {
-    return "flattened";
-  }
-  if (hasComponents) {
-    return "flattened";
-  }
-  if (hasRadius && hasWidth && hasHeight) {
-    return "oval";
-  }
-  if (hasRadius) {
-    return "circle";
-  }
-  if (hasWidth || hasHeight) {
-    const width = Number(selectedObject.width) || Number(selectedObject.size) || 0;
-    const height = Number(selectedObject.height) || Number(selectedObject.size) || 0;
-    if (width > 0 && height > 0 && Math.abs(width - height) <= 0.001) {
-      return "square";
-    }
-    return "rectangle";
-  }
-  if (colorPropertyCount > 0 && Object.keys(selectedObject).length <= 2) {
-    return "hud-color";
-  }
-  return "rectangle";
+  return "";
 }
 
 function syncShapeTypeControlFromSelection() {
@@ -713,11 +772,18 @@ function setObjectPropertyValue(objectKey, propertyKey, value) {
   if (!state.activeSkin.objects[objectKey] || typeof state.activeSkin.objects[objectKey] !== "object") {
     state.activeSkin.objects[objectKey] = {};
   }
-  const nextValue = typeof value === "number"
+  let nextValue = typeof value === "number"
     ? clampNumericProperty(propertyKey, value)
     : value;
   const normalizedPropertyKey = normalizeText(propertyKey).toLowerCase();
-  const isSquareObject = inferShapeTypeFromObjectKey(objectKey) === "square";
+  const inferredShapeType = inferShapeTypeFromObjectKey(objectKey);
+  if (typeof nextValue === "number"
+    && Number.isFinite(nextValue)
+    && ["startangle", "endangle"].includes(normalizedPropertyKey)
+    && ["arc", "sector"].includes(inferredShapeType)) {
+    nextValue = wrapAngleDegrees(nextValue);
+  }
+  const isSquareObject = inferredShapeType === "square";
   if (isSquareObject
     && typeof nextValue === "number"
     && Number.isFinite(nextValue)
@@ -950,6 +1016,24 @@ function renderObjectControls() {
     refs.objectControls.appendChild(sizeRow);
   }
 
+  if (inferredShapeType === "line") {
+    const roundedRow = document.createElement("div");
+    roundedRow.className = "skin-editor-row skin-editor-row--boolean";
+    const roundedLabel = document.createElement("span");
+    roundedLabel.className = "skin-editor-row-label";
+    roundedLabel.textContent = "Rounded corner";
+    const roundedCheckbox = document.createElement("input");
+    roundedCheckbox.type = "checkbox";
+    roundedCheckbox.className = "skin-editor-checkbox";
+    roundedCheckbox.checked = selectedObject.roundedCorner === true;
+    roundedCheckbox.addEventListener("change", () => {
+      setObjectPropertyValue(selectedKey, "roundedCorner", roundedCheckbox.checked);
+    });
+    roundedRow.appendChild(roundedLabel);
+    roundedRow.appendChild(roundedCheckbox);
+    refs.objectControls.appendChild(roundedRow);
+  }
+
   entries.forEach(([propertyKey, propertyValue]) => {
     if (propertyKey === "shape") {
       return;
@@ -957,7 +1041,12 @@ function renderObjectControls() {
     if (inferredShapeType === "square" && ["width", "height", "size"].includes(normalizeText(propertyKey).toLowerCase())) {
       return;
     }
+    if (inferredShapeType === "line" && normalizeText(propertyKey).toLowerCase() === "roundedcorner") {
+      return;
+    }
     if (typeof propertyValue === "number" && Number.isFinite(propertyValue)) {
+      const normalizedPropertyKey = normalizeText(propertyKey).toLowerCase();
+      const isAngleProperty = ["startangle", "endangle"].includes(normalizedPropertyKey);
       const minValue = /sides?/i.test(normalizeText(propertyKey))
         ? 3
         : (isPositiveDimensionKey(propertyKey) ? 1 : 0);
@@ -971,7 +1060,11 @@ function renderObjectControls() {
       const numeric = createBasicField("skin-editor-field", String(safeValue));
       numeric.type = "number";
       numeric.step = numberStep(safeValue);
-      numeric.min = String(minValue);
+      if (isAngleProperty) {
+        numeric.removeAttribute("min");
+      } else {
+        numeric.min = String(minValue);
+      }
       numeric.addEventListener("input", () => {
         const parsed = clampNumericProperty(propertyKey, Number(numeric.value));
         if (!Number.isFinite(parsed)) {
@@ -1115,6 +1208,84 @@ function drawSelectedObjectPreview() {
       context.fill();
       return;
     }
+    if (shapeType === "triangle") {
+      context.beginPath();
+      context.moveTo(centerX, centerY - height / 2);
+      context.lineTo(centerX + width / 2, centerY + height / 2);
+      context.lineTo(centerX - width / 2, centerY + height / 2);
+      context.closePath();
+      context.fill();
+      return;
+    }
+    if (shapeType === "line") {
+      const x1 = centerX + (Number.isFinite(Number(object.x1)) ? Number(object.x1) : -width / 2);
+      const y1 = centerY + (Number.isFinite(Number(object.y1)) ? Number(object.y1) : 0);
+      const x2 = centerX + (Number.isFinite(Number(object.x2)) ? Number(object.x2) : width / 2);
+      const y2 = centerY + (Number.isFinite(Number(object.y2)) ? Number(object.y2) : 0);
+      const roundedCorner = object.roundedCorner === true;
+      context.strokeStyle = drawColor;
+      context.lineWidth = Math.max(1, Number(object.thickness) || 4);
+      context.lineCap = roundedCorner ? "round" : "square";
+      context.lineJoin = roundedCorner ? "round" : "miter";
+      context.beginPath();
+      context.moveTo(x1, y1);
+      context.lineTo(x2, y2);
+      context.stroke();
+      return;
+    }
+    if (shapeType === "arc") {
+      const startAngle = ((Number(object.startAngle) || 0) * Math.PI) / 180;
+      const endAngle = ((Number(object.endAngle) || 90) * Math.PI) / 180;
+      context.strokeStyle = drawColor;
+      context.lineWidth = Math.max(1, Number(object.thickness) || 4);
+      context.lineCap = "round";
+      context.beginPath();
+      context.arc(centerX, centerY, radius, startAngle, endAngle);
+      context.stroke();
+      return;
+    }
+    if (shapeType === "sector") {
+      const startAngle = ((Number(object.startAngle) || 0) * Math.PI) / 180;
+      const endAngle = ((Number(object.endAngle) || 90) * Math.PI) / 180;
+      context.beginPath();
+      context.moveTo(centerX, centerY);
+      context.arc(centerX, centerY, radius, startAngle, endAngle);
+      context.closePath();
+      context.fill();
+      return;
+    }
+    if (shapeType === "capsule") {
+      const capsuleWidth = Math.max(12, width);
+      const capsuleHeight = Math.max(12, height);
+      const halfW = capsuleWidth / 2;
+      const halfH = capsuleHeight / 2;
+      context.beginPath();
+      if (capsuleWidth >= capsuleHeight) {
+        const capRadius = halfH;
+        const left = centerX - halfW;
+        const right = centerX + halfW;
+        const top = centerY - halfH;
+        const bottom = centerY + halfH;
+        context.moveTo(left + capRadius, top);
+        context.lineTo(right - capRadius, top);
+        context.arc(right - capRadius, centerY, capRadius, -Math.PI / 2, Math.PI / 2);
+        context.lineTo(left + capRadius, bottom);
+        context.arc(left + capRadius, centerY, capRadius, Math.PI / 2, (3 * Math.PI) / 2);
+      } else {
+        const capRadius = halfW;
+        const left = centerX - halfW;
+        const right = centerX + halfW;
+        const top = centerY - halfH;
+        const bottom = centerY + halfH;
+        context.moveTo(left, top + capRadius);
+        context.arc(centerX, top + capRadius, capRadius, Math.PI, 0);
+        context.lineTo(right, bottom - capRadius);
+        context.arc(centerX, bottom - capRadius, capRadius, 0, Math.PI);
+      }
+      context.closePath();
+      context.fill();
+      return;
+    }
     if (shapeType === "oval") {
       context.beginPath();
       context.ellipse(
@@ -1226,14 +1397,30 @@ function renderWorkbench() {
 function setCurrentSkinDocument(rawSkin, source = "loaded") {
   const game = getSelectedGameOption();
   if (!game) {
-    return;
+    return false;
   }
-  const normalized = sanitizePositiveDimensionsInDocument(toObjectCentricSkinDocument(game, rawSkin));
+  const normalizedDocument = toObjectCentricSkinDocument(game, rawSkin);
+  if (!normalizedDocument) {
+    const rawShapeIssues = getRawSkinShapeIssues(rawSkin);
+    if (rawShapeIssues.length) {
+      setStatus(`Skin load failed: ${rawShapeIssues[0]} Add shape to every object entry.`);
+      return false;
+    }
+    setStatus("Skin load failed: skin JSON is invalid for this game/schema.");
+    return false;
+  }
+  const shapeIssues = getSkinShapeIssues(normalizedDocument);
+  if (shapeIssues.length) {
+    setStatus(`Skin load failed: ${shapeIssues[0]} Add shape to every object entry.`);
+    return false;
+  }
+  const normalized = sanitizePositiveDimensionsInDocument(normalizedDocument);
   state.activeSkin = deepClone(normalized) || normalized;
   state.selectedObjectKeys = [];
   state.skipAutoSelectOnce = false;
   updateEditorFromState(source);
   renderWorkbench();
+  return true;
 }
 
 async function loadActiveSkinForSelectedGame() {
@@ -1275,7 +1462,9 @@ async function loadActiveSkinForSelectedGame() {
     state.presetSkin = null;
   }
 
-  setCurrentSkinDocument(loadedSkin, skinSource);
+  if (!setCurrentSkinDocument(loadedSkin, skinSource)) {
+    return;
+  }
   setStatus(`Loaded active skin for ${game.label}.`);
 }
 
@@ -1298,7 +1487,9 @@ async function applySkinOverride() {
     return;
   }
 
-  setCurrentSkinDocument(normalized, "local-storage");
+  if (!setCurrentSkinDocument(normalized, "local-storage")) {
+    return;
+  }
   setStatus(`Saved override for ${game.label}. Open the game to verify live skin changes.`);
 }
 
@@ -1347,7 +1538,9 @@ async function importSkinJsonFromFile(file) {
     setStatus("Import failed: file is not valid JSON.");
     return;
   }
-  setCurrentSkinDocument(parsed, "import");
+  if (!setCurrentSkinDocument(parsed, "import")) {
+    return;
+  }
   setStatus("Imported skin JSON.");
 }
 
@@ -1357,7 +1550,9 @@ function syncVisualFromJson() {
     setStatus("Skin JSON is invalid. Fix JSON and try Sync Visual From JSON.");
     return;
   }
-  setCurrentSkinDocument(parsed, "json-input");
+  if (!setCurrentSkinDocument(parsed, "json-input")) {
+    return;
+  }
   setStatus("Visual controls synced from JSON.");
 }
 

@@ -6,33 +6,42 @@
   "name": "Pong Classic Skin",
   "objects": {
     "background": {
-      "color": "#05070a"
+      "color": "#05070a",
+      "shape": "hud-color"
     },
     "paddle": {
       "color": "#f4f7fb",
-      "width": 14
+      "width": 14,
+      "shape": "rectangle"
     },
     "ball": {
       "color": "#f4f7fb",
-      "radius": 8
+      "radius": 8,
+      "shape": "circle"
     },
     "hudInk": {
-      "color": "#f4f7fb"
+      "color": "#f4f7fb",
+      "shape": "hud-color"
     },
     "hudMuted": {
-      "color": "#a6b0bf"
+      "color": "#a6b0bf",
+      "shape": "hud-color"
     },
     "hudAccent": {
-      "color": "#7de2ff"
+      "color": "#7de2ff",
+      "shape": "hud-color"
     },
     "hudGood": {
-      "color": "#8bf0c8"
+      "color": "#8bf0c8",
+      "shape": "hud-color"
     },
     "hudWarn": {
-      "color": "#ffd37d"
+      "color": "#ffd37d",
+      "shape": "hud-color"
     },
     "hudDanger": {
-      "color": "#ff9a9a"
+      "color": "#ff9a9a",
+      "shape": "hud-color"
     }
   },
   "entities": {}

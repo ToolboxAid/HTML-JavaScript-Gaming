@@ -6,98 +6,122 @@
   "name": "Solar System Classic Skin",
   "objects": {
     "background": {
-      "color": "#030712"
+      "color": "#030712",
+      "shape": "hud-color"
     },
     "frame": {
-      "color": "#dbeafe"
+      "color": "#dbeafe",
+      "shape": "hud-color"
     },
     "orbit": {
-      "color": "#334155"
+      "color": "#334155",
+      "shape": "hud-color"
     },
     "sun": {
       "color": "#fbbf24",
-      "radius": 30
+      "radius": 30,
+      "shape": "circle"
     },
     "hudText": {
-      "color": "#dbeafe"
+      "color": "#dbeafe",
+      "shape": "hud-color"
     },
     "hudMuted": {
-      "color": "#94a3b8"
+      "color": "#94a3b8",
+      "shape": "hud-color"
     },
     "hudPanel": {
-      "color": "#07101d"
+      "color": "#07101d",
+      "shape": "hud-color"
     },
     "mercury": {
       "color": "#9ca3af",
-      "radius": 4
+      "radius": 4,
+      "shape": "circle"
     },
     "venus": {
       "color": "#fde68a",
-      "radius": 6
+      "radius": 6,
+      "shape": "circle"
     },
     "earth": {
       "color": "#38bdf8",
-      "radius": 6
+      "radius": 6,
+      "shape": "circle"
     },
     "mars": {
       "color": "#fb7185",
-      "radius": 5
+      "radius": 5,
+      "shape": "circle"
     },
     "jupiter": {
       "color": "#f59e0b",
-      "radius": 14
+      "radius": 14,
+      "shape": "circle"
     },
     "saturn": {
       "color": "#eab308",
-      "radius": 12
+      "radius": 12,
+      "shape": "circle"
     },
     "uranus": {
       "color": "#67e8f9",
-      "radius": 10
+      "radius": 10,
+      "shape": "circle"
     },
     "neptune": {
       "color": "#60a5fa",
-      "radius": 10
+      "radius": 10,
+      "shape": "circle"
     },
     "moon": {
       "color": "#e5e7eb",
-      "radius": 2
+      "radius": 2,
+      "shape": "circle"
     },
     "io": {
       "color": "#fde68a",
-      "radius": 2
+      "radius": 2,
+      "shape": "circle"
     },
     "europa": {
       "color": "#dbeafe",
-      "radius": 2
+      "radius": 2,
+      "shape": "circle"
     },
     "ganymede": {
       "color": "#cbd5e1",
-      "radius": 3
+      "radius": 3,
+      "shape": "circle"
     },
     "titan": {
       "color": "#fef3c7",
-      "radius": 3
+      "radius": 3,
+      "shape": "circle"
     },
     "ringJupiter": {
       "color": "#f59e0b",
       "innerRadius": 18,
-      "outerRadius": 22
+      "outerRadius": 22,
+      "shape": "ring"
     },
     "ringSaturn": {
       "color": "#fde68a",
       "innerRadius": 18,
-      "outerRadius": 30
+      "outerRadius": 30,
+      "shape": "ring"
     },
     "ringUranus": {
       "color": "#67e8f9",
       "innerRadius": 15,
-      "outerRadius": 20
+      "outerRadius": 20,
+      "shape": "ring"
     },
     "ringNeptune": {
       "color": "#60a5fa",
       "innerRadius": 15,
-      "outerRadius": 19
+      "outerRadius": 19,
+      "shape": "ring"
     }
   },
   "entities": {}
