@@ -115,13 +115,6 @@ function buildWorkspaceManagerHref(gameId) {
     : "/tools/Workspace%20Manager/index.html";
 }
 
-function buildReturnHref(toolId) {
-  const normalizedToolId = normalizeToken(toolId);
-  return normalizedToolId
-    ? `/games/index.html?tool=${encodeURIComponent(normalizedToolId)}`
-    : "/games/index.html";
-}
-
 function buildToolTokens(toolHints, toolLabelMap) {
   const deduped = [...new Set(asArray(toolHints).map((entry) => normalizeToken(entry)).filter(Boolean))];
   return deduped
@@ -166,7 +159,6 @@ function buildRoundtripLinks(game, toolRegistryMap) {
       }
     }
     query.set("workspaceHref", buildWorkspaceManagerHref(game.id));
-    query.set("returnTo", buildReturnHref(tool.id));
     const href = `${workspaceHref}?${query.toString()}`;
     const label = `Open ${normalize(tool.displayName) || normalize(tool.name) || toolId}`;
     links.push({ toolId, href, label });

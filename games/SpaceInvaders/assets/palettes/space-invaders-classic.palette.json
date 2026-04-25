@@ -1,0 +1,58 @@
+{
+  "schema": "html-js-gaming.palette",
+  "version": 1,
+  "name": "Space Invaders Classic Palette",
+  "source": "custom",
+  "entries": [
+    {
+      "symbol": "!",
+      "hex": "#000000",
+      "name": "Background"
+    },
+    {
+      "symbol": "#",
+      "hex": "#020702",
+      "name": "Playfield Backdrop"
+    },
+    {
+      "symbol": "$",
+      "hex": "#66FF66",
+      "name": "Alien Green"
+    },
+    {
+      "symbol": "%",
+      "hex": "#8DF58D",
+      "name": "HUD Green"
+    },
+    {
+      "symbol": "&",
+      "hex": "#FFFFFF",
+      "name": "White Ink"
+    },
+    {
+      "symbol": "(",
+      "hex": "#D0D0D0",
+      "name": "Score Label"
+    },
+    {
+      "symbol": ")",
+      "hex": "#FBBF24",
+      "name": "Score Accent"
+    },
+    {
+      "symbol": "*",
+      "hex": "#FF4D4D",
+      "name": "UFO Red"
+    },
+    {
+      "symbol": "+",
+      "hex": "#FF6666",
+      "name": "Bomb Red"
+    },
+    {
+      "symbol": ",",
+      "hex": "#FFD1D1",
+      "name": "Explosion Tint"
+    }
+  ]
+}

@@ -3,6 +3,11 @@
   "version": 1,
   "gameId": "spaceinvaders",
   "assets": {
+    "palette.space-invaders.classic": {
+      "path": "/games/SpaceInvaders/assets/palettes/space-invaders-classic.palette.json",
+      "kind": "palette",
+      "source": "workspace-manager"
+    },
     "audio.space-invaders.shoot": {
       "path": "/games/SpaceInvaders/assets/audio/effects/shoot.wav",
       "kind": "audio",

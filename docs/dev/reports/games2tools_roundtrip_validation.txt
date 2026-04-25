@@ -4,8 +4,8 @@ Generated: 2026-04-24T23:23:52.082Z
 [x] Games hub includes Tool filter control (games-filter-tool).
 [x] Games index rendering supports tool token filtering and query prepopulation (?tool=<toolId>).
 [x] Game cards render Tool Roundtrip Links from metadata toolHints.
-[x] Roundtrip links pass gameId, gameTitle, gameHref, workspaceHref, returnTo query params.
-[x] Tools shell renders Game Source return line when launched from game links.
+[x] Roundtrip links pass gameId, gameTitle, gameHref, workspaceHref query params.
+[x] Tools shell renders Game Source line when launched from game links.
 
 Total games in metadata: 29
 Games with toolHints: 29

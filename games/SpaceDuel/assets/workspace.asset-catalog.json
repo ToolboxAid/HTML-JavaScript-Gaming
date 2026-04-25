@@ -3,6 +3,11 @@
   "version": 1,
   "gameId": "spaceduel",
   "assets": {
+    "palette.space-duel.classic": {
+      "path": "/games/SpaceDuel/assets/palettes/space-duel-classic.palette.json",
+      "kind": "palette",
+      "source": "workspace-manager"
+    },
     "audio.space-duel.thrust": {
       "path": "/games/SpaceDuel/assets/audio/effects/thrust.wav",
       "kind": "audio",

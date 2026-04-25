@@ -1,0 +1,68 @@
+{
+  "schema": "html-js-gaming.palette",
+  "version": 1,
+  "name": "Space Duel Classic Palette",
+  "source": "custom",
+  "entries": [
+    {
+      "symbol": "!",
+      "hex": "#020617",
+      "name": "Background"
+    },
+    {
+      "symbol": "#",
+      "hex": "#E2E8F0",
+      "name": "Primary Ink"
+    },
+    {
+      "symbol": "$",
+      "hex": "#8AA0BB",
+      "name": "Border"
+    },
+    {
+      "symbol": "%",
+      "hex": "#334155",
+      "name": "Inner Border"
+    },
+    {
+      "symbol": "&",
+      "hex": "#93A5BC",
+      "name": "Muted Text"
+    },
+    {
+      "symbol": "(",
+      "hex": "#FFFFFF",
+      "name": "Player 1"
+    },
+    {
+      "symbol": ")",
+      "hex": "#9AE6B4",
+      "name": "Player 2"
+    },
+    {
+      "symbol": "*",
+      "hex": "#FCA5A5",
+      "name": "Hazard"
+    },
+    {
+      "symbol": "+",
+      "hex": "#FECACA",
+      "name": "Hazard Inner"
+    },
+    {
+      "symbol": ",",
+      "hex": "#F59E0B",
+      "name": "Bonus Ring"
+    },
+    {
+      "symbol": "-",
+      "hex": "#FDE68A",
+      "name": "Bonus Core"
+    },
+    {
+      "symbol": ".",
+      "hex": "#F8FAFC",
+      "name": "Projectile"
+    }
+  ]
+}

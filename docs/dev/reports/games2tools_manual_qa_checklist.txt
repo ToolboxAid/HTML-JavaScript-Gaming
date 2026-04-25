@@ -16,18 +16,18 @@ Global Pass Criteria
 - Games hub has Tool dropdown in Filter Games section.
 - Tool filter narrows cards by metadata toolHints.
 - Every tested card shows Tool Roundtrip Links.
-- Roundtrip tool URLs include: gameId, gameTitle, gameHref, workspaceHref, returnTo.
-- Tool header shows Game Source + Return to Games when launched from game roundtrip URL.
-- Return to Games reopens games/index.html with ?tool=<toolId> preselected.
+- Roundtrip tool URLs include: gameId, gameTitle, gameHref, workspaceHref.
+- Tool header shows Game Source when launched from game roundtrip URL.
+- Use the Games menu to return to games/index.html when needed.
 
 Launchable Game QA Matrix
 1. Bouncing Ball [Bouncing-ball]
 - Setup: Open http://127.0.0.1:5500/games/index.html?tool=physics-sandbox
 - Check A: Tool filter defaults to selected tool and card remains visible.
 - Check B: Card shows Tool Roundtrip Links (3 expected).
-- Check C: Click first tool link (or open): http://127.0.0.1:5500/tools/physics%20sandbox/index.html?gameId=Bouncing-ball&gameTitle=Bouncing%20Ball&gameHref=%2Fgames%2FBouncing-ball%2Findex.html&workspaceHref=%2Ftools%2FWorkspace%2520Manager%2Findex.html%3Fgame%3DBouncing-ball&returnTo=%2Fgames%2Findex.html%3Ftool%3Dphysics-sandbox
-- Check D: Tool header shows "Game Source:" line with Return to Games.
-- Check E: Click Return to Games and confirm Games page opens with tool filter prepopulated.
+- Check C: Click first tool link (or open): http://127.0.0.1:5500/tools/physics%20sandbox/index.html?gameId=Bouncing-ball&gameTitle=Bouncing%20Ball&gameHref=%2Fgames%2FBouncing-ball%2Findex.html&workspaceHref=%2Ftools%2FWorkspace%2520Manager%2Findex.html%3Fgame%3DBouncing-ball
+- Check D: Tool header shows "Game Source:" line.
+- Check E: Use the Games menu to navigate back to games/index.html when needed.
 - Check F: Card has Open In Workspace Manager action.
 - Check G: In tool header return line, Open Game link is present and navigates to game page.
 
@@ -35,9 +35,9 @@ Launchable Game QA Matrix
 - Setup: Open http://127.0.0.1:5500/games/index.html?tool=sprite-editor
 - Check A: Tool filter defaults to selected tool and card remains visible.
 - Check B: Card shows Tool Roundtrip Links (3 expected).
-- Check C: Click first tool link (or open): http://127.0.0.1:5500/tools/sprite%20editor/index.html?gameId=Breakout&gameTitle=Breakout&gameHref=%2Fgames%2FBreakout%2Findex.html&workspaceHref=%2Ftools%2FWorkspace%2520Manager%2Findex.html%3Fgame%3DBreakout&returnTo=%2Fgames%2Findex.html%3Ftool%3Dsprite-editor
-- Check D: Tool header shows "Game Source:" line with Return to Games.
-- Check E: Click Return to Games and confirm Games page opens with tool filter prepopulated.
+- Check C: Click first tool link (or open): http://127.0.0.1:5500/tools/sprite%20editor/index.html?gameId=Breakout&gameTitle=Breakout&gameHref=%2Fgames%2FBreakout%2Findex.html&workspaceHref=%2Ftools%2FWorkspace%2520Manager%2Findex.html%3Fgame%3DBreakout
+- Check D: Tool header shows "Game Source:" line.
+- Check E: Use the Games menu to navigate back to games/index.html when needed.
 - Check F: Card has Open In Workspace Manager action.
 - Check G: In tool header return line, Open Game link is present and navigates to game page.
 
@@ -45,9 +45,9 @@ Launchable Game QA Matrix
 - Setup: Open http://127.0.0.1:5500/games/index.html?tool=physics-sandbox
 - Check A: Tool filter defaults to selected tool and card remains visible.
 - Check B: Card shows Tool Roundtrip Links (3 expected).
-- Check C: Click first tool link (or open): http://127.0.0.1:5500/tools/physics%20sandbox/index.html?gameId=SolarSystem&gameTitle=Solar%20System&gameHref=%2Fgames%2FSolarSystem%2Findex.html&workspaceHref=%2Ftools%2FWorkspace%2520Manager%2Findex.html%3Fgame%3DSolarSystem&returnTo=%2Fgames%2Findex.html%3Ftool%3Dphysics-sandbox
-- Check D: Tool header shows "Game Source:" line with Return to Games.
-- Check E: Click Return to Games and confirm Games page opens with tool filter prepopulated.
+- Check C: Click first tool link (or open): http://127.0.0.1:5500/tools/physics%20sandbox/index.html?gameId=SolarSystem&gameTitle=Solar%20System&gameHref=%2Fgames%2FSolarSystem%2Findex.html&workspaceHref=%2Ftools%2FWorkspace%2520Manager%2Findex.html%3Fgame%3DSolarSystem
+- Check D: Tool header shows "Game Source:" line.
+- Check E: Use the Games menu to navigate back to games/index.html when needed.
 - Check F: Card has Open In Workspace Manager action.
 - Check G: In tool header return line, Open Game link is present and navigates to game page.
 
@@ -55,9 +55,9 @@ Launchable Game QA Matrix
 - Setup: Open http://127.0.0.1:5500/games/index.html?tool=vector-asset-studio
 - Check A: Tool filter defaults to selected tool and card remains visible.
 - Check B: Card shows Tool Roundtrip Links (3 expected).
-- Check C: Click first tool link (or open): http://127.0.0.1:5500/tools/vector%20asset%20studio/index.html?gameId=GravityWell&gameTitle=Gravity%20Well&gameHref=%2Fgames%2FGravityWell%2Findex.html&workspaceHref=%2Ftools%2FWorkspace%2520Manager%2Findex.html%3Fgame%3DGravityWell&returnTo=%2Fgames%2Findex.html%3Ftool%3Dvector-asset-studio
-- Check D: Tool header shows "Game Source:" line with Return to Games.
-- Check E: Click Return to Games and confirm Games page opens with tool filter prepopulated.
+- Check C: Click first tool link (or open): http://127.0.0.1:5500/tools/vector%20asset%20studio/index.html?gameId=GravityWell&gameTitle=Gravity%20Well&gameHref=%2Fgames%2FGravityWell%2Findex.html&workspaceHref=%2Ftools%2FWorkspace%2520Manager%2Findex.html%3Fgame%3DGravityWell
+- Check D: Tool header shows "Game Source:" line.
+- Check E: Use the Games menu to navigate back to games/index.html when needed.
 - Check F: Card has Open In Workspace Manager action.
 - Check G: In tool header return line, Open Game link is present and navigates to game page.
 
@@ -65,9 +65,9 @@ Launchable Game QA Matrix
 - Setup: Open http://127.0.0.1:5500/games/index.html?tool=sprite-editor
 - Check A: Tool filter defaults to selected tool and card remains visible.
 - Check B: Card shows Tool Roundtrip Links (3 expected).
-- Check C: Click first tool link (or open): http://127.0.0.1:5500/tools/sprite%20editor/index.html?gameId=Pong&gameTitle=Pong&gameHref=%2Fgames%2FPong%2Findex.html&workspaceHref=%2Ftools%2FWorkspace%2520Manager%2Findex.html%3Fgame%3DPong&returnTo=%2Fgames%2Findex.html%3Ftool%3Dsprite-editor
-- Check D: Tool header shows "Game Source:" line with Return to Games.
-- Check E: Click Return to Games and confirm Games page opens with tool filter prepopulated.
+- Check C: Click first tool link (or open): http://127.0.0.1:5500/tools/sprite%20editor/index.html?gameId=Pong&gameTitle=Pong&gameHref=%2Fgames%2FPong%2Findex.html&workspaceHref=%2Ftools%2FWorkspace%2520Manager%2Findex.html%3Fgame%3DPong
+- Check D: Tool header shows "Game Source:" line.
+- Check E: Use the Games menu to navigate back to games/index.html when needed.
 - Check F: Card has Open In Workspace Manager action.
 - Check G: In tool header return line, Open Game link is present and navigates to game page.
 
@@ -75,9 +75,9 @@ Launchable Game QA Matrix
 - Setup: Open http://127.0.0.1:5500/games/index.html?tool=vector-asset-studio
 - Check A: Tool filter defaults to selected tool and card remains visible.
 - Check B: Card shows Tool Roundtrip Links (3 expected).
-- Check C: Click first tool link (or open): http://127.0.0.1:5500/tools/vector%20asset%20studio/index.html?gameId=Asteroids&gameTitle=Asteroids&gameHref=%2Fgames%2FAsteroids%2Findex.html&workspaceHref=%2Ftools%2FWorkspace%2520Manager%2Findex.html%3Fgame%3DAsteroids&returnTo=%2Fgames%2Findex.html%3Ftool%3Dvector-asset-studio
-- Check D: Tool header shows "Game Source:" line with Return to Games.
-- Check E: Click Return to Games and confirm Games page opens with tool filter prepopulated.
+- Check C: Click first tool link (or open): http://127.0.0.1:5500/tools/vector%20asset%20studio/index.html?gameId=Asteroids&gameTitle=Asteroids&gameHref=%2Fgames%2FAsteroids%2Findex.html&workspaceHref=%2Ftools%2FWorkspace%2520Manager%2Findex.html%3Fgame%3DAsteroids
+- Check D: Tool header shows "Game Source:" line.
+- Check E: Use the Games menu to navigate back to games/index.html when needed.
 - Check F: Card has Open In Workspace Manager action.
 - Check G: In tool header return line, Open Game link is present and navigates to game page.
 
@@ -85,9 +85,9 @@ Launchable Game QA Matrix
 - Setup: Open http://127.0.0.1:5500/games/index.html?tool=sprite-editor
 - Check A: Tool filter defaults to selected tool and card remains visible.
 - Check B: Card shows Tool Roundtrip Links (3 expected).
-- Check C: Click first tool link (or open): http://127.0.0.1:5500/tools/sprite%20editor/index.html?gameId=SpaceInvaders&gameTitle=Space%20Invaders%20Next&gameHref=%2Fgames%2FSpaceInvaders%2Findex.html&workspaceHref=%2Ftools%2FWorkspace%2520Manager%2Findex.html%3Fgame%3DSpaceInvaders&returnTo=%2Fgames%2Findex.html%3Ftool%3Dsprite-editor
-- Check D: Tool header shows "Game Source:" line with Return to Games.
-- Check E: Click Return to Games and confirm Games page opens with tool filter prepopulated.
+- Check C: Click first tool link (or open): http://127.0.0.1:5500/tools/sprite%20editor/index.html?gameId=SpaceInvaders&gameTitle=Space%20Invaders%20Next&gameHref=%2Fgames%2FSpaceInvaders%2Findex.html&workspaceHref=%2Ftools%2FWorkspace%2520Manager%2Findex.html%3Fgame%3DSpaceInvaders
+- Check D: Tool header shows "Game Source:" line.
+- Check E: Use the Games menu to navigate back to games/index.html when needed.
 - Check F: Card has Open In Workspace Manager action.
 - Check G: In tool header return line, Open Game link is present and navigates to game page.
 
@@ -95,9 +95,9 @@ Launchable Game QA Matrix
 - Setup: Open http://127.0.0.1:5500/games/index.html?tool=vector-asset-studio
 - Check A: Tool filter defaults to selected tool and card remains visible.
 - Check B: Card shows Tool Roundtrip Links (3 expected).
-- Check C: Click first tool link (or open): http://127.0.0.1:5500/tools/vector%20asset%20studio/index.html?gameId=SpaceDuel&gameTitle=Space%20Duel&gameHref=%2Fgames%2FSpaceDuel%2Findex.html&workspaceHref=%2Ftools%2FWorkspace%2520Manager%2Findex.html%3Fgame%3DSpaceDuel&returnTo=%2Fgames%2Findex.html%3Ftool%3Dvector-asset-studio
-- Check D: Tool header shows "Game Source:" line with Return to Games.
-- Check E: Click Return to Games and confirm Games page opens with tool filter prepopulated.
+- Check C: Click first tool link (or open): http://127.0.0.1:5500/tools/vector%20asset%20studio/index.html?gameId=SpaceDuel&gameTitle=Space%20Duel&gameHref=%2Fgames%2FSpaceDuel%2Findex.html&workspaceHref=%2Ftools%2FWorkspace%2520Manager%2Findex.html%3Fgame%3DSpaceDuel
+- Check D: Tool header shows "Game Source:" line.
+- Check E: Use the Games menu to navigate back to games/index.html when needed.
 - Check F: Card has Open In Workspace Manager action.
 - Check G: In tool header return line, Open Game link is present and navigates to game page.
 
@@ -105,9 +105,9 @@ Launchable Game QA Matrix
 - Setup: Open http://127.0.0.1:5500/games/index.html?tool=state-inspector
 - Check A: Tool filter defaults to selected tool and card remains visible.
 - Check B: Card shows Tool Roundtrip Links (3 expected).
-- Check C: Click first tool link (or open): http://127.0.0.1:5500/tools/state%20inspector/index.html?gameId=AITargetDummy&gameTitle=AI%20Target%20Dummy&gameHref=%2Fgames%2FAITargetDummy%2Findex.html&workspaceHref=%2Ftools%2FWorkspace%2520Manager%2Findex.html%3Fgame%3DAITargetDummy&returnTo=%2Fgames%2Findex.html%3Ftool%3Dstate-inspector
-- Check D: Tool header shows "Game Source:" line with Return to Games.
-- Check E: Click Return to Games and confirm Games page opens with tool filter prepopulated.
+- Check C: Click first tool link (or open): http://127.0.0.1:5500/tools/state%20inspector/index.html?gameId=AITargetDummy&gameTitle=AI%20Target%20Dummy&gameHref=%2Fgames%2FAITargetDummy%2Findex.html&workspaceHref=%2Ftools%2FWorkspace%2520Manager%2Findex.html%3Fgame%3DAITargetDummy
+- Check D: Tool header shows "Game Source:" line.
+- Check E: Use the Games menu to navigate back to games/index.html when needed.
 - Check F: Card has Open In Workspace Manager action.
 - Check G: In tool header return line, Open Game link is present and navigates to game page.
 
@@ -115,9 +115,9 @@ Launchable Game QA Matrix
 - Setup: Open http://127.0.0.1:5500/games/index.html?tool=tile-map-editor
 - Check A: Tool filter defaults to selected tool and card remains visible.
 - Check B: Card shows Tool Roundtrip Links (3 expected).
-- Check C: Click first tool link (or open): http://127.0.0.1:5500/tools/tile%20map%20editor/index.html?gameId=Pacman&gameTitle=Pacman&gameHref=%2Fgames%2FPacman%2Findex.html&workspaceHref=%2Ftools%2FWorkspace%2520Manager%2Findex.html%3Fgame%3DPacman&returnTo=%2Fgames%2Findex.html%3Ftool%3Dtile-map-editor
-- Check D: Tool header shows "Game Source:" line with Return to Games.
-- Check E: Click Return to Games and confirm Games page opens with tool filter prepopulated.
+- Check C: Click first tool link (or open): http://127.0.0.1:5500/tools/tile%20map%20editor/index.html?gameId=Pacman&gameTitle=Pacman&gameHref=%2Fgames%2FPacman%2Findex.html&workspaceHref=%2Ftools%2FWorkspace%2520Manager%2Findex.html%3Fgame%3DPacman
+- Check D: Tool header shows "Game Source:" line.
+- Check E: Use the Games menu to navigate back to games/index.html when needed.
 - Check F: Card has Open In Workspace Manager action.
 - Check G: In tool header return line, Open Game link is present and navigates to game page.
 
@@ -125,9 +125,9 @@ Launchable Game QA Matrix
 - Setup: Open http://127.0.0.1:5500/games/index.html?tool=vector-asset-studio
 - Check A: Tool filter defaults to selected tool and card remains visible.
 - Check B: Card shows Tool Roundtrip Links (3 expected).
-- Check C: Click first tool link (or open): http://127.0.0.1:5500/tools/vector%20asset%20studio/index.html?gameId=vector-arcade-sample&gameTitle=Vector%20Arcade%20Sample&gameHref=%2Fgames%2Fvector-arcade-sample%2Findex.html&workspaceHref=%2Ftools%2FWorkspace%2520Manager%2Findex.html%3Fgame%3Dvector-arcade-sample&returnTo=%2Fgames%2Findex.html%3Ftool%3Dvector-asset-studio
-- Check D: Tool header shows "Game Source:" line with Return to Games.
-- Check E: Click Return to Games and confirm Games page opens with tool filter prepopulated.
+- Check C: Click first tool link (or open): http://127.0.0.1:5500/tools/vector%20asset%20studio/index.html?gameId=vector-arcade-sample&gameTitle=Vector%20Arcade%20Sample&gameHref=%2Fgames%2Fvector-arcade-sample%2Findex.html&workspaceHref=%2Ftools%2FWorkspace%2520Manager%2Findex.html%3Fgame%3Dvector-arcade-sample
+- Check D: Tool header shows "Game Source:" line.
+- Check E: Use the Games menu to navigate back to games/index.html when needed.
 - Check F: Card has Open In Workspace Manager action.
 - Check G: In tool header return line, Open Game link is present and navigates to game page.
 
@@ -136,162 +136,162 @@ Planned/Non-Launchable Game QA Matrix
 - Setup: Open http://127.0.0.1:5500/games/index.html?tool=tile-map-editor
 - Check A: Tool filter defaults to selected tool and card remains visible.
 - Check B: Card shows Tool Roundtrip Links (3 expected).
-- Check C: Click first tool link (or open): http://127.0.0.1:5500/tools/tile%20map%20editor/index.html?gameId=Frogger&gameTitle=Frogger&gameHref=&workspaceHref=%2Ftools%2FWorkspace%2520Manager%2Findex.html%3Fgame%3DFrogger&returnTo=%2Fgames%2Findex.html%3Ftool%3Dtile-map-editor
-- Check D: Tool header shows "Game Source:" line with Return to Games.
-- Check E: Click Return to Games and confirm Games page opens with tool filter prepopulated.
+- Check C: Click first tool link (or open): http://127.0.0.1:5500/tools/tile%20map%20editor/index.html?gameId=Frogger&gameTitle=Frogger&gameHref=&workspaceHref=%2Ftools%2FWorkspace%2520Manager%2Findex.html%3Fgame%3DFrogger
+- Check D: Tool header shows "Game Source:" line.
+- Check E: Use the Games menu to navigate back to games/index.html when needed.
 - Check F: Card does not require game launch link; roundtrip tools still open with game context.
 
 2. Dual Stick Arena [DualStickArena]
 - Setup: Open http://127.0.0.1:5500/games/index.html?tool=sprite-editor
 - Check A: Tool filter defaults to selected tool and card remains visible.
 - Check B: Card shows Tool Roundtrip Links (3 expected).
-- Check C: Click first tool link (or open): http://127.0.0.1:5500/tools/sprite%20editor/index.html?gameId=DualStickArena&gameTitle=Dual%20Stick%20Arena&gameHref=&workspaceHref=%2Ftools%2FWorkspace%2520Manager%2Findex.html%3Fgame%3DDualStickArena&returnTo=%2Fgames%2Findex.html%3Ftool%3Dsprite-editor
-- Check D: Tool header shows "Game Source:" line with Return to Games.
-- Check E: Click Return to Games and confirm Games page opens with tool filter prepopulated.
+- Check C: Click first tool link (or open): http://127.0.0.1:5500/tools/sprite%20editor/index.html?gameId=DualStickArena&gameTitle=Dual%20Stick%20Arena&gameHref=&workspaceHref=%2Ftools%2FWorkspace%2520Manager%2Findex.html%3Fgame%3DDualStickArena
+- Check D: Tool header shows "Game Source:" line.
+- Check E: Use the Games menu to navigate back to games/index.html when needed.
 - Check F: Card does not require game launch link; roundtrip tools still open with game context.
 
 3. Arena Shooter [ArenaShooter]
 - Setup: Open http://127.0.0.1:5500/games/index.html?tool=sprite-editor
 - Check A: Tool filter defaults to selected tool and card remains visible.
 - Check B: Card shows Tool Roundtrip Links (3 expected).
-- Check C: Click first tool link (or open): http://127.0.0.1:5500/tools/sprite%20editor/index.html?gameId=ArenaShooter&gameTitle=Arena%20Shooter&gameHref=&workspaceHref=%2Ftools%2FWorkspace%2520Manager%2Findex.html%3Fgame%3DArenaShooter&returnTo=%2Fgames%2Findex.html%3Ftool%3Dsprite-editor
-- Check D: Tool header shows "Game Source:" line with Return to Games.
-- Check E: Click Return to Games and confirm Games page opens with tool filter prepopulated.
+- Check C: Click first tool link (or open): http://127.0.0.1:5500/tools/sprite%20editor/index.html?gameId=ArenaShooter&gameTitle=Arena%20Shooter&gameHref=&workspaceHref=%2Ftools%2FWorkspace%2520Manager%2Findex.html%3Fgame%3DArenaShooter
+- Check D: Tool header shows "Game Source:" line.
+- Check E: Use the Games menu to navigate back to games/index.html when needed.
 - Check F: Card does not require game launch link; roundtrip tools still open with game context.
 
 4. Robotron 2084 [Robotron2084]
 - Setup: Open http://127.0.0.1:5500/games/index.html?tool=sprite-editor
 - Check A: Tool filter defaults to selected tool and card remains visible.
 - Check B: Card shows Tool Roundtrip Links (3 expected).
-- Check C: Click first tool link (or open): http://127.0.0.1:5500/tools/sprite%20editor/index.html?gameId=Robotron2084&gameTitle=Robotron%202084&gameHref=&workspaceHref=%2Ftools%2FWorkspace%2520Manager%2Findex.html%3Fgame%3DRobotron2084&returnTo=%2Fgames%2Findex.html%3Ftool%3Dsprite-editor
-- Check D: Tool header shows "Game Source:" line with Return to Games.
-- Check E: Click Return to Games and confirm Games page opens with tool filter prepopulated.
+- Check C: Click first tool link (or open): http://127.0.0.1:5500/tools/sprite%20editor/index.html?gameId=Robotron2084&gameTitle=Robotron%202084&gameHref=&workspaceHref=%2Ftools%2FWorkspace%2520Manager%2Findex.html%3Fgame%3DRobotron2084
+- Check D: Tool header shows "Game Source:" line.
+- Check E: Use the Games menu to navigate back to games/index.html when needed.
 - Check F: Card does not require game launch link; roundtrip tools still open with game context.
 
 5. Scrolling World Test [ScrollingWorldTest]
 - Setup: Open http://127.0.0.1:5500/games/index.html?tool=tile-map-editor
 - Check A: Tool filter defaults to selected tool and card remains visible.
 - Check B: Card shows Tool Roundtrip Links (3 expected).
-- Check C: Click first tool link (or open): http://127.0.0.1:5500/tools/tile%20map%20editor/index.html?gameId=ScrollingWorldTest&gameTitle=Scrolling%20World%20Test&gameHref=&workspaceHref=%2Ftools%2FWorkspace%2520Manager%2Findex.html%3Fgame%3DScrollingWorldTest&returnTo=%2Fgames%2Findex.html%3Ftool%3Dtile-map-editor
-- Check D: Tool header shows "Game Source:" line with Return to Games.
-- Check E: Click Return to Games and confirm Games page opens with tool filter prepopulated.
+- Check C: Click first tool link (or open): http://127.0.0.1:5500/tools/tile%20map%20editor/index.html?gameId=ScrollingWorldTest&gameTitle=Scrolling%20World%20Test&gameHref=&workspaceHref=%2Ftools%2FWorkspace%2520Manager%2Findex.html%3Fgame%3DScrollingWorldTest
+- Check D: Tool header shows "Game Source:" line.
+- Check E: Use the Games menu to navigate back to games/index.html when needed.
 - Check F: Card does not require game launch link; roundtrip tools still open with game context.
 
 6. Tile Collision Demo [TileCollisionDemo]
 - Setup: Open http://127.0.0.1:5500/games/index.html?tool=tile-map-editor
 - Check A: Tool filter defaults to selected tool and card remains visible.
 - Check B: Card shows Tool Roundtrip Links (3 expected).
-- Check C: Click first tool link (or open): http://127.0.0.1:5500/tools/tile%20map%20editor/index.html?gameId=TileCollisionDemo&gameTitle=Tile%20Collision%20Demo&gameHref=&workspaceHref=%2Ftools%2FWorkspace%2520Manager%2Findex.html%3Fgame%3DTileCollisionDemo&returnTo=%2Fgames%2Findex.html%3Ftool%3Dtile-map-editor
-- Check D: Tool header shows "Game Source:" line with Return to Games.
-- Check E: Click Return to Games and confirm Games page opens with tool filter prepopulated.
+- Check C: Click first tool link (or open): http://127.0.0.1:5500/tools/tile%20map%20editor/index.html?gameId=TileCollisionDemo&gameTitle=Tile%20Collision%20Demo&gameHref=&workspaceHref=%2Ftools%2FWorkspace%2520Manager%2Findex.html%3Fgame%3DTileCollisionDemo
+- Check D: Tool header shows "Game Source:" line.
+- Check E: Use the Games menu to navigate back to games/index.html when needed.
 - Check F: Card does not require game launch link; roundtrip tools still open with game context.
 
 7. Defender (Lite) [DefenderLite]
 - Setup: Open http://127.0.0.1:5500/games/index.html?tool=parallax-editor
 - Check A: Tool filter defaults to selected tool and card remains visible.
 - Check B: Card shows Tool Roundtrip Links (3 expected).
-- Check C: Click first tool link (or open): http://127.0.0.1:5500/tools/parallax%20editor/index.html?gameId=DefenderLite&gameTitle=Defender%20(Lite)&gameHref=&workspaceHref=%2Ftools%2FWorkspace%2520Manager%2Findex.html%3Fgame%3DDefenderLite&returnTo=%2Fgames%2Findex.html%3Ftool%3Dparallax-editor
-- Check D: Tool header shows "Game Source:" line with Return to Games.
-- Check E: Click Return to Games and confirm Games page opens with tool filter prepopulated.
+- Check C: Click first tool link (or open): http://127.0.0.1:5500/tools/parallax%20editor/index.html?gameId=DefenderLite&gameTitle=Defender%20(Lite)&gameHref=&workspaceHref=%2Ftools%2FWorkspace%2520Manager%2Findex.html%3Fgame%3DDefenderLite
+- Check D: Tool header shows "Game Source:" line.
+- Check E: Use the Games menu to navigate back to games/index.html when needed.
 - Check F: Card does not require game launch link; roundtrip tools still open with game context.
 
 8. Donkey Kong [DonkeyKong]
 - Setup: Open http://127.0.0.1:5500/games/index.html?tool=tile-map-editor
 - Check A: Tool filter defaults to selected tool and card remains visible.
 - Check B: Card shows Tool Roundtrip Links (3 expected).
-- Check C: Click first tool link (or open): http://127.0.0.1:5500/tools/tile%20map%20editor/index.html?gameId=DonkeyKong&gameTitle=Donkey%20Kong&gameHref=&workspaceHref=%2Ftools%2FWorkspace%2520Manager%2Findex.html%3Fgame%3DDonkeyKong&returnTo=%2Fgames%2Findex.html%3Ftool%3Dtile-map-editor
-- Check D: Tool header shows "Game Source:" line with Return to Games.
-- Check E: Click Return to Games and confirm Games page opens with tool filter prepopulated.
+- Check C: Click first tool link (or open): http://127.0.0.1:5500/tools/tile%20map%20editor/index.html?gameId=DonkeyKong&gameTitle=Donkey%20Kong&gameHref=&workspaceHref=%2Ftools%2FWorkspace%2520Manager%2Findex.html%3Fgame%3DDonkeyKong
+- Check D: Tool header shows "Game Source:" line.
+- Check E: Use the Games menu to navigate back to games/index.html when needed.
 - Check F: Card does not require game launch link; roundtrip tools still open with game context.
 
 9. Platformer Demo [PlatformerDemo]
 - Setup: Open http://127.0.0.1:5500/games/index.html?tool=tile-map-editor
 - Check A: Tool filter defaults to selected tool and card remains visible.
 - Check B: Card shows Tool Roundtrip Links (3 expected).
-- Check C: Click first tool link (or open): http://127.0.0.1:5500/tools/tile%20map%20editor/index.html?gameId=PlatformerDemo&gameTitle=Platformer%20Demo&gameHref=&workspaceHref=%2Ftools%2FWorkspace%2520Manager%2Findex.html%3Fgame%3DPlatformerDemo&returnTo=%2Fgames%2Findex.html%3Ftool%3Dtile-map-editor
-- Check D: Tool header shows "Game Source:" line with Return to Games.
-- Check E: Click Return to Games and confirm Games page opens with tool filter prepopulated.
+- Check C: Click first tool link (or open): http://127.0.0.1:5500/tools/tile%20map%20editor/index.html?gameId=PlatformerDemo&gameTitle=Platformer%20Demo&gameHref=&workspaceHref=%2Ftools%2FWorkspace%2520Manager%2Findex.html%3Fgame%3DPlatformerDemo
+- Check D: Tool header shows "Game Source:" line.
+- Check E: Use the Games menu to navigate back to games/index.html when needed.
 - Check F: Card does not require game launch link; roundtrip tools still open with game context.
 
 10. Galaga [Galaga]
 - Setup: Open http://127.0.0.1:5500/games/index.html?tool=sprite-editor
 - Check A: Tool filter defaults to selected tool and card remains visible.
 - Check B: Card shows Tool Roundtrip Links (3 expected).
-- Check C: Click first tool link (or open): http://127.0.0.1:5500/tools/sprite%20editor/index.html?gameId=Galaga&gameTitle=Galaga&gameHref=&workspaceHref=%2Ftools%2FWorkspace%2520Manager%2Findex.html%3Fgame%3DGalaga&returnTo=%2Fgames%2Findex.html%3Ftool%3Dsprite-editor
-- Check D: Tool header shows "Game Source:" line with Return to Games.
-- Check E: Click Return to Games and confirm Games page opens with tool filter prepopulated.
+- Check C: Click first tool link (or open): http://127.0.0.1:5500/tools/sprite%20editor/index.html?gameId=Galaga&gameTitle=Galaga&gameHref=&workspaceHref=%2Ftools%2FWorkspace%2520Manager%2Findex.html%3Fgame%3DGalaga
+- Check D: Tool header shows "Game Source:" line.
+- Check E: Use the Games menu to navigate back to games/index.html when needed.
 - Check F: Card does not require game launch link; roundtrip tools still open with game context.
 
 11. Rally-X [RallyX]
 - Setup: Open http://127.0.0.1:5500/games/index.html?tool=tile-map-editor
 - Check A: Tool filter defaults to selected tool and card remains visible.
 - Check B: Card shows Tool Roundtrip Links (3 expected).
-- Check C: Click first tool link (or open): http://127.0.0.1:5500/tools/tile%20map%20editor/index.html?gameId=RallyX&gameTitle=Rally-X&gameHref=&workspaceHref=%2Ftools%2FWorkspace%2520Manager%2Findex.html%3Fgame%3DRallyX&returnTo=%2Fgames%2Findex.html%3Ftool%3Dtile-map-editor
-- Check D: Tool header shows "Game Source:" line with Return to Games.
-- Check E: Click Return to Games and confirm Games page opens with tool filter prepopulated.
+- Check C: Click first tool link (or open): http://127.0.0.1:5500/tools/tile%20map%20editor/index.html?gameId=RallyX&gameTitle=Rally-X&gameHref=&workspaceHref=%2Ftools%2FWorkspace%2520Manager%2Findex.html%3Fgame%3DRallyX
+- Check D: Tool header shows "Game Source:" line.
+- Check E: Use the Games menu to navigate back to games/index.html when needed.
 - Check F: Card does not require game launch link; roundtrip tools still open with game context.
 
 12. Full Arena Shooter [FullArenaShooter]
 - Setup: Open http://127.0.0.1:5500/games/index.html?tool=asset-pipeline-tool
 - Check A: Tool filter defaults to selected tool and card remains visible.
 - Check B: Card shows Tool Roundtrip Links (3 expected).
-- Check C: Click first tool link (or open): http://127.0.0.1:5500/tools/asset%20pipeline%20tool/index.html?gameId=FullArenaShooter&gameTitle=Full%20Arena%20Shooter&gameHref=&workspaceHref=%2Ftools%2FWorkspace%2520Manager%2Findex.html%3Fgame%3DFullArenaShooter&returnTo=%2Fgames%2Findex.html%3Ftool%3Dasset-pipeline-tool
-- Check D: Tool header shows "Game Source:" line with Return to Games.
-- Check E: Click Return to Games and confirm Games page opens with tool filter prepopulated.
+- Check C: Click first tool link (or open): http://127.0.0.1:5500/tools/asset%20pipeline%20tool/index.html?gameId=FullArenaShooter&gameTitle=Full%20Arena%20Shooter&gameHref=&workspaceHref=%2Ftools%2FWorkspace%2520Manager%2Findex.html%3Fgame%3DFullArenaShooter
+- Check D: Tool header shows "Game Source:" line.
+- Check E: Use the Games menu to navigate back to games/index.html when needed.
 - Check F: Card does not require game launch link; roundtrip tools still open with game context.
 
 13. Replay System [ReplaySystem]
 - Setup: Open http://127.0.0.1:5500/games/index.html?tool=replay-visualizer
 - Check A: Tool filter defaults to selected tool and card remains visible.
 - Check B: Card shows Tool Roundtrip Links (3 expected).
-- Check C: Click first tool link (or open): http://127.0.0.1:5500/tools/replay%20visualizer/index.html?gameId=ReplaySystem&gameTitle=Replay%20System&gameHref=&workspaceHref=%2Ftools%2FWorkspace%2520Manager%2Findex.html%3Fgame%3DReplaySystem&returnTo=%2Fgames%2Findex.html%3Ftool%3Dreplay-visualizer
-- Check D: Tool header shows "Game Source:" line with Return to Games.
-- Check E: Click Return to Games and confirm Games page opens with tool filter prepopulated.
+- Check C: Click first tool link (or open): http://127.0.0.1:5500/tools/replay%20visualizer/index.html?gameId=ReplaySystem&gameTitle=Replay%20System&gameHref=&workspaceHref=%2Ftools%2FWorkspace%2520Manager%2Findex.html%3Fgame%3DReplaySystem
+- Check D: Tool header shows "Game Source:" line.
+- Check E: Use the Games menu to navigate back to games/index.html when needed.
 - Check F: Card does not require game launch link; roundtrip tools still open with game context.
 
 14. Multiplayer (Optional) [MultiplayerOptional]
 - Setup: Open http://127.0.0.1:5500/games/index.html?tool=state-inspector
 - Check A: Tool filter defaults to selected tool and card remains visible.
 - Check B: Card shows Tool Roundtrip Links (3 expected).
-- Check C: Click first tool link (or open): http://127.0.0.1:5500/tools/state%20inspector/index.html?gameId=MultiplayerOptional&gameTitle=Multiplayer%20(Optional)&gameHref=&workspaceHref=%2Ftools%2FWorkspace%2520Manager%2Findex.html%3Fgame%3DMultiplayerOptional&returnTo=%2Fgames%2Findex.html%3Ftool%3Dstate-inspector
-- Check D: Tool header shows "Game Source:" line with Return to Games.
-- Check E: Click Return to Games and confirm Games page opens with tool filter prepopulated.
+- Check C: Click first tool link (or open): http://127.0.0.1:5500/tools/state%20inspector/index.html?gameId=MultiplayerOptional&gameTitle=Multiplayer%20(Optional)&gameHref=&workspaceHref=%2Ftools%2FWorkspace%2520Manager%2Findex.html%3Fgame%3DMultiplayerOptional
+- Check D: Tool header shows "Game Source:" line.
+- Check E: Use the Games menu to navigate back to games/index.html when needed.
 - Check F: Card does not require game launch link; roundtrip tools still open with game context.
 
 15. King of the Iceberg [KingOfTheIceberg]
 - Setup: Open http://127.0.0.1:5500/games/index.html?tool=vector-map-editor
 - Check A: Tool filter defaults to selected tool and card remains visible.
 - Check B: Card shows Tool Roundtrip Links (3 expected).
-- Check C: Click first tool link (or open): http://127.0.0.1:5500/tools/vector%20map%20editor/index.html?gameId=KingOfTheIceberg&gameTitle=King%20of%20the%20Iceberg&gameHref=&workspaceHref=%2Ftools%2FWorkspace%2520Manager%2Findex.html%3Fgame%3DKingOfTheIceberg&returnTo=%2Fgames%2Findex.html%3Ftool%3Dvector-map-editor
-- Check D: Tool header shows "Game Source:" line with Return to Games.
-- Check E: Click Return to Games and confirm Games page opens with tool filter prepopulated.
+- Check C: Click first tool link (or open): http://127.0.0.1:5500/tools/vector%20map%20editor/index.html?gameId=KingOfTheIceberg&gameTitle=King%20of%20the%20Iceberg&gameHref=&workspaceHref=%2Ftools%2FWorkspace%2520Manager%2Findex.html%3Fgame%3DKingOfTheIceberg
+- Check D: Tool header shows "Game Source:" line.
+- Check E: Use the Games menu to navigate back to games/index.html when needed.
 - Check F: Card does not require game launch link; roundtrip tools still open with game context.
 
 16. Tic Tac Toe [TicTacToe]
 - Setup: Open http://127.0.0.1:5500/games/index.html?tool=state-inspector
 - Check A: Tool filter defaults to selected tool and card remains visible.
 - Check B: Card shows Tool Roundtrip Links (3 expected).
-- Check C: Click first tool link (or open): http://127.0.0.1:5500/tools/state%20inspector/index.html?gameId=TicTacToe&gameTitle=Tic%20Tac%20Toe&gameHref=&workspaceHref=%2Ftools%2FWorkspace%2520Manager%2Findex.html%3Fgame%3DTicTacToe&returnTo=%2Fgames%2Findex.html%3Ftool%3Dstate-inspector
-- Check D: Tool header shows "Game Source:" line with Return to Games.
-- Check E: Click Return to Games and confirm Games page opens with tool filter prepopulated.
+- Check C: Click first tool link (or open): http://127.0.0.1:5500/tools/state%20inspector/index.html?gameId=TicTacToe&gameTitle=Tic%20Tac%20Toe&gameHref=&workspaceHref=%2Ftools%2FWorkspace%2520Manager%2Findex.html%3Fgame%3DTicTacToe
+- Check D: Tool header shows "Game Source:" line.
+- Check E: Use the Games menu to navigate back to games/index.html when needed.
 - Check F: Card does not require game launch link; roundtrip tools still open with game context.
 
 17. Connect Four [ConnectFour]
 - Setup: Open http://127.0.0.1:5500/games/index.html?tool=state-inspector
 - Check A: Tool filter defaults to selected tool and card remains visible.
 - Check B: Card shows Tool Roundtrip Links (3 expected).
-- Check C: Click first tool link (or open): http://127.0.0.1:5500/tools/state%20inspector/index.html?gameId=ConnectFour&gameTitle=Connect%20Four&gameHref=&workspaceHref=%2Ftools%2FWorkspace%2520Manager%2Findex.html%3Fgame%3DConnectFour&returnTo=%2Fgames%2Findex.html%3Ftool%3Dstate-inspector
-- Check D: Tool header shows "Game Source:" line with Return to Games.
-- Check E: Click Return to Games and confirm Games page opens with tool filter prepopulated.
+- Check C: Click first tool link (or open): http://127.0.0.1:5500/tools/state%20inspector/index.html?gameId=ConnectFour&gameTitle=Connect%20Four&gameHref=&workspaceHref=%2Ftools%2FWorkspace%2520Manager%2Findex.html%3Fgame%3DConnectFour
+- Check D: Tool header shows "Game Source:" line.
+- Check E: Use the Games menu to navigate back to games/index.html when needed.
 - Check F: Card does not require game launch link; roundtrip tools still open with game context.
 
 18. Othello [Othello]
 - Setup: Open http://127.0.0.1:5500/games/index.html?tool=state-inspector
 - Check A: Tool filter defaults to selected tool and card remains visible.
 - Check B: Card shows Tool Roundtrip Links (3 expected).
-- Check C: Click first tool link (or open): http://127.0.0.1:5500/tools/state%20inspector/index.html?gameId=Othello&gameTitle=Othello&gameHref=&workspaceHref=%2Ftools%2FWorkspace%2520Manager%2Findex.html%3Fgame%3DOthello&returnTo=%2Fgames%2Findex.html%3Ftool%3Dstate-inspector
-- Check D: Tool header shows "Game Source:" line with Return to Games.
-- Check E: Click Return to Games and confirm Games page opens with tool filter prepopulated.
+- Check C: Click first tool link (or open): http://127.0.0.1:5500/tools/state%20inspector/index.html?gameId=Othello&gameTitle=Othello&gameHref=&workspaceHref=%2Ftools%2FWorkspace%2520Manager%2Findex.html%3Fgame%3DOthello
+- Check D: Tool header shows "Game Source:" line.
+- Check E: Use the Games menu to navigate back to games/index.html when needed.
 - Check F: Card does not require game launch link; roundtrip tools still open with game context.
 
 Failure Logging Template

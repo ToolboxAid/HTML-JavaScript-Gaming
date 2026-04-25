@@ -1,0 +1,63 @@
+{
+  "schema": "html-js-gaming.palette",
+  "version": 1,
+  "name": "Solar System Classic Palette",
+  "source": "custom",
+  "entries": [
+    {
+      "symbol": "!",
+      "hex": "#030712",
+      "name": "Space Background"
+    },
+    {
+      "symbol": "#",
+      "hex": "#DBEAFE",
+      "name": "Frame and Text"
+    },
+    {
+      "symbol": "$",
+      "hex": "#334155",
+      "name": "Orbits"
+    },
+    {
+      "symbol": "%",
+      "hex": "#FBBF24",
+      "name": "Sun"
+    },
+    {
+      "symbol": "&",
+      "hex": "#9CA3AF",
+      "name": "Mercury"
+    },
+    {
+      "symbol": "(",
+      "hex": "#38BDF8",
+      "name": "Earth"
+    },
+    {
+      "symbol": ")",
+      "hex": "#FB7185",
+      "name": "Mars"
+    },
+    {
+      "symbol": "*",
+      "hex": "#F59E0B",
+      "name": "Jupiter"
+    },
+    {
+      "symbol": "+",
+      "hex": "#EAB308",
+      "name": "Saturn"
+    },
+    {
+      "symbol": ",",
+      "hex": "#67E8F9",
+      "name": "Uranus"
+    },
+    {
+      "symbol": "-",
+      "hex": "#60A5FA",
+      "name": "Neptune"
+    }
+  ]
+}

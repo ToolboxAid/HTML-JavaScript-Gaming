@@ -3,8 +3,13 @@
   "version": 1,
   "gameId": "pong",
   "assets": {
+    "palette.pong.classic": {
+      "path": "/games/pong/assets/palettes/pong-classic.palette.json",
+      "kind": "palette",
+      "source": "workspace-manager"
+    },
     "skin.main": {
-      "path": "/games/Pong/assets/skins/default.json",
+      "path": "/games/pong/assets/skins/default.json",
       "kind": "skin",
       "source": "workspace-manager"
     }

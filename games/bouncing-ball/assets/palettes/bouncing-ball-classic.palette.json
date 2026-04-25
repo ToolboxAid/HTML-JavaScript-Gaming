@@ -1,0 +1,23 @@
+{
+  "schema": "html-js-gaming.palette",
+  "version": 1,
+  "name": "Bouncing Ball Classic Palette",
+  "source": "custom",
+  "entries": [
+    {
+      "symbol": "!",
+      "hex": "#05070A",
+      "name": "Background"
+    },
+    {
+      "symbol": "#",
+      "hex": "#F4F4EF",
+      "name": "Ball and Walls"
+    },
+    {
+      "symbol": "$",
+      "hex": "#9BA3B3",
+      "name": "HUD Muted"
+    }
+  ]
+}

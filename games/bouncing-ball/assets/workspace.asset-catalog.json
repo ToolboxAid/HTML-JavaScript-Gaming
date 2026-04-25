@@ -3,8 +3,13 @@
   "version": 1,
   "gameId": "bouncing-ball",
   "assets": {
+    "palette.bouncing-ball.classic": {
+      "path": "/games/bouncing-ball/assets/palettes/bouncing-ball-classic.palette.json",
+      "kind": "palette",
+      "source": "workspace-manager"
+    },
     "skin.main": {
-      "path": "/games/Bouncing-ball/assets/skins/default.json",
+      "path": "/games/bouncing-ball/assets/skins/default.json",
       "kind": "skin",
       "source": "workspace-manager"
     }

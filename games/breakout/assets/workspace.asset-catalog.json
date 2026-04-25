@@ -4,12 +4,12 @@
   "gameId": "breakout",
   "assets": {
     "palette.breakout.classic": {
-      "path": "/games/Breakout/assets/palettes/breakout-classic.palette.json",
+      "path": "/games/breakout/assets/palettes/breakout-classic.palette.json",
       "kind": "palette",
       "source": "workspace-manager"
     },
     "skin.main": {
-      "path": "/games/Breakout/assets/skins/default.json",
+      "path": "/games/breakout/assets/skins/default.json",
       "kind": "skin",
       "source": "workspace-manager"
     }

@@ -1,0 +1,48 @@
+{
+  "schema": "html-js-gaming.palette",
+  "version": 1,
+  "name": "Pong Classic Palette",
+  "source": "custom",
+  "entries": [
+    {
+      "symbol": "!",
+      "hex": "#05070A",
+      "name": "Background"
+    },
+    {
+      "symbol": "#",
+      "hex": "#F4F7FB",
+      "name": "Ink / Paddles"
+    },
+    {
+      "symbol": "$",
+      "hex": "#A6B0BF",
+      "name": "Muted HUD"
+    },
+    {
+      "symbol": "%",
+      "hex": "#7DE2FF",
+      "name": "Accent"
+    },
+    {
+      "symbol": "&",
+      "hex": "#8BF0C8",
+      "name": "Positive"
+    },
+    {
+      "symbol": "(",
+      "hex": "#FFD37D",
+      "name": "Warning"
+    },
+    {
+      "symbol": ")",
+      "hex": "#FF9A9A",
+      "name": "Danger"
+    },
+    {
+      "symbol": "*",
+      "hex": "#6A7482",
+      "name": "Center Divider"
+    }
+  ]
+}

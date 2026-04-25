@@ -3,6 +3,7 @@ import {
   getSharedShellActions,
   readSharedAssetHandoff,
   readSharedPaletteHandoff,
+  writeSharedAssetHandoff,
   writeSharedPaletteHandoff
 } from "./assetUsageIntegration.js";
 import { createWorkspaceSystemController } from "./projectSystem.js";
@@ -106,34 +107,44 @@ function readGameLaunchContext() {
   const gameId = normalizeTextValue(searchParams.get("gameId"));
   const gameTitle = normalizeTextValue(searchParams.get("gameTitle"));
   const gameHref = normalizeLocalHref(searchParams.get("gameHref"), ["/games/"]);
-  const returnTo = normalizeLocalHref(searchParams.get("returnTo"), ["/games/"]);
   const workspaceHrefParam = normalizeLocalHref(searchParams.get("workspaceHref"), ["/tools/Workspace%20Manager/", "/tools/Workspace Manager/"]);
   const workspaceHref = workspaceHrefParam || buildWorkspaceHrefFromGameId(gameId);
-  if (!gameId && !gameTitle && !gameHref && !returnTo && !workspaceHref) {
+  if (!gameId && !gameTitle && !gameHref && !workspaceHref) {
     return null;
   }
   return {
     gameId,
     gameTitle,
     gameHref,
-    returnTo,
     workspaceHref
   };
 }
 
-function deriveGameAssetCatalogPath(context) {
+function deriveGameAssetCatalogPaths(context) {
+  const candidates = new Set();
   const gameHref = normalizeTextValue(context?.gameHref);
   if (gameHref.endsWith("/index.html")) {
-    return `${gameHref.slice(0, -"/index.html".length)}/assets/workspace.asset-catalog.json`;
+    const base = gameHref.slice(0, -"/index.html".length);
+    candidates.add(`${base}/assets/workspace.asset-catalog.json`);
+    const lowerCasedBase = base.replace(/^\/games\/([^/]+)/i, (_, folderName) => `/games/${folderName.toLowerCase()}`);
+    candidates.add(`${lowerCasedBase}/assets/workspace.asset-catalog.json`);
+  } else if (gameHref.endsWith("/")) {
+    const base = gameHref.slice(0, -1);
+    candidates.add(`${base}/assets/workspace.asset-catalog.json`);
+    const lowerCasedBase = base.replace(/^\/games\/([^/]+)/i, (_, folderName) => `/games/${folderName.toLowerCase()}`);
+    candidates.add(`${lowerCasedBase}/assets/workspace.asset-catalog.json`);
   }
-  if (gameHref.endsWith("/")) {
-    return `${gameHref}assets/workspace.asset-catalog.json`;
-  }
+
   const gameId = normalizeTextValue(context?.gameId);
-  return gameId ? `/games/${encodeURIComponent(gameId)}/assets/workspace.asset-catalog.json` : "";
+  if (gameId) {
+    candidates.add(`/games/${encodeURIComponent(gameId)}/assets/workspace.asset-catalog.json`);
+    candidates.add(`/games/${encodeURIComponent(gameId.toLowerCase())}/assets/workspace.asset-catalog.json`);
+  }
+
+  return Array.from(candidates).filter(Boolean);
 }
 
-function normalizePaletteCatalogEntries(value) {
+function normalizeCatalogEntries(value) {
   const source = value && typeof value === "object" ? value : {};
   return Object.entries(source)
     .map(([assetId, rawEntry]) => {
@@ -143,7 +154,131 @@ function normalizePaletteCatalogEntries(value) {
       const path = normalizeTextValue(entry.path || entry.runtimePath || entry.href);
       return { assetId: safeAssetId, kind, path };
     })
-    .filter((entry) => Boolean(entry.assetId && entry.kind === "palette" && entry.path));
+    .filter((entry) => Boolean(entry.assetId && entry.kind && entry.path));
+}
+
+function getHandoffGameId(handoff) {
+  return normalizeTextValue(handoff?.metadata?.gameId).toLowerCase();
+}
+
+function isCurrentGameHandoff(handoff, launchContext) {
+  const launchGameId = normalizeTextValue(launchContext?.gameId).toLowerCase();
+  if (!launchGameId) {
+    return false;
+  }
+  return getHandoffGameId(handoff) === launchGameId;
+}
+
+function parseCatalogPayload(catalogPayload) {
+  if (!catalogPayload || typeof catalogPayload !== "object") {
+    return null;
+  }
+  const schema = normalizeTextValue(catalogPayload.schema);
+  const version = Number(catalogPayload.version);
+  if (schema !== GAME_ASSET_CATALOG_SCHEMA || version !== GAME_ASSET_CATALOG_VERSION) {
+    return null;
+  }
+  const entries = normalizeCatalogEntries(catalogPayload.assets || catalogPayload.entries);
+  return {
+    payload: catalogPayload,
+    entries
+  };
+}
+
+async function readCatalogContextFromLaunchContext(launchContext) {
+  if (!launchContext?.gameId && !launchContext?.gameHref) {
+    return null;
+  }
+
+  const catalogPaths = deriveGameAssetCatalogPaths(launchContext);
+  for (const catalogPath of catalogPaths) {
+    const catalogPayload = await readJsonDocument(catalogPath);
+    const parsed = parseCatalogPayload(catalogPayload);
+    if (!parsed) {
+      continue;
+    }
+    return {
+      launchContext,
+      catalogPath,
+      catalogPayload: parsed.payload,
+      entries: parsed.entries
+    };
+  }
+  return null;
+}
+
+function pickCatalogEntryByKind(entries, preferredKinds = []) {
+  const source = Array.isArray(entries) ? entries : [];
+  for (const kind of preferredKinds) {
+    const found = source.find((entry) => entry.kind === kind);
+    if (found) {
+      return found;
+    }
+  }
+  return source[0] || null;
+}
+
+function inferAssetDisplayName(entry, payload) {
+  const candidateName = normalizeTextValue(payload?.name);
+  if (candidateName) {
+    return candidateName;
+  }
+  return entry?.assetId || "shared-asset";
+}
+
+async function hydrateSharedAssetFromGameLaunchContext(catalogContext = null) {
+  const launchContext = catalogContext?.launchContext || readGameLaunchContext();
+  if (!launchContext?.gameId && !launchContext?.gameHref) {
+    return false;
+  }
+
+  const existingAsset = readSharedAssetHandoff();
+  if (existingAsset?.assetId && isCurrentGameHandoff(existingAsset, launchContext)) {
+    return false;
+  }
+
+  const context = catalogContext || await readCatalogContextFromLaunchContext(launchContext);
+  if (!context || !Array.isArray(context.entries) || context.entries.length === 0) {
+    return false;
+  }
+
+  const nonPaletteEntries = context.entries.filter((entry) => entry.kind !== "palette");
+  if (!nonPaletteEntries.length) {
+    return false;
+  }
+
+  const primaryAsset = pickCatalogEntryByKind(nonPaletteEntries, [
+    "skin",
+    "sprite",
+    "tilemap",
+    "parallax",
+    "vector",
+    "image",
+    "audio"
+  ]);
+  if (!primaryAsset) {
+    return false;
+  }
+
+  const maybeJsonPayload = primaryAsset.path.toLowerCase().endsWith(".json")
+    ? await readJsonDocument(primaryAsset.path)
+    : null;
+  const displayName = inferAssetDisplayName(primaryAsset, maybeJsonPayload);
+
+  return writeSharedAssetHandoff({
+    assetId: primaryAsset.assetId,
+    assetType: primaryAsset.kind || "other",
+    sourcePath: primaryAsset.path,
+    displayName,
+    tags: [primaryAsset.kind || "other"],
+    metadata: {
+      source: "workspace-game-catalog",
+      gameId: launchContext.gameId || "",
+      sourcePath: primaryAsset.path
+    },
+    sourceToolId: "workspace-manager",
+    selectedAt: new Date().toISOString()
+  });
 }
 
 async function readJsonDocument(pathValue) {
@@ -162,34 +297,23 @@ async function readJsonDocument(pathValue) {
   }
 }
 
-async function hydrateSharedPaletteFromGameLaunchContext() {
-  const existingPalette = readSharedPaletteHandoff();
-  if (existingPalette?.paletteId) {
-    return false;
-  }
-
-  const launchContext = readGameLaunchContext();
+async function hydrateSharedPaletteFromGameLaunchContext(catalogContext = null) {
+  const launchContext = catalogContext?.launchContext || readGameLaunchContext();
   if (!launchContext?.gameId && !launchContext?.gameHref) {
     return false;
   }
 
-  const catalogPath = deriveGameAssetCatalogPath(launchContext);
-  if (!catalogPath) {
+  const existingPalette = readSharedPaletteHandoff();
+  if (existingPalette?.paletteId && isCurrentGameHandoff(existingPalette, launchContext)) {
     return false;
   }
 
-  const catalogPayload = await readJsonDocument(catalogPath);
-  if (!catalogPayload || typeof catalogPayload !== "object") {
+  const context = catalogContext || await readCatalogContextFromLaunchContext(launchContext);
+  if (!context || !Array.isArray(context.entries)) {
     return false;
   }
 
-  const schema = normalizeTextValue(catalogPayload.schema);
-  const version = Number(catalogPayload.version);
-  if (schema !== GAME_ASSET_CATALOG_SCHEMA || version !== GAME_ASSET_CATALOG_VERSION) {
-    return false;
-  }
-
-  const paletteEntries = normalizePaletteCatalogEntries(catalogPayload.assets || catalogPayload.entries);
+  const paletteEntries = context.entries.filter((entry) => entry.kind === "palette");
   const primaryPalette = paletteEntries[0];
   if (!primaryPalette) {
     return false;
@@ -221,14 +345,12 @@ function renderGameReturnLine() {
     return "";
   }
   const gameLabel = context.gameTitle || context.gameId || "Game";
-  const returnHref = context.returnTo || "/games/index.html";
   const gamePageLink = context.gameHref
     ? `<a class="tools-platform-frame__action-link" href="${escapeHtml(context.gameHref)}">Open Game</a>`
     : "";
   return `
     <div class="tools-platform-frame__return-line" aria-label="Game launch context">
       <span class="tools-platform-frame__return-copy"><strong>Game Source:</strong> ${escapeHtml(gameLabel)}</span>
-      <a class="tools-platform-frame__action-link" href="${escapeHtml(returnHref)}">Return to Games</a>
       ${gamePageLink}
     </div>
   `;
@@ -285,6 +407,40 @@ function resolveProjectBindingLabel() {
   return manifest.dirty === true ? "Unsaved" : "Loaded";
 }
 
+function normalizeAssetKind(value) {
+  return normalizeTextValue(value).toLowerCase();
+}
+
+function resolveAcceptedAssetKindsForTool(toolId = "") {
+  const normalizedToolId = normalizeTextValue(toolId).toLowerCase();
+  const byTool = {
+    "skin-editor": ["skin"],
+    "sprite-editor": ["sprite"],
+    "tile-map-editor": ["tilemap", "tileset"],
+    "parallax-editor": ["parallax"],
+    "vector-asset-studio": ["vector"],
+    "vector-map-editor": ["vector", "vector-map"],
+    "3d-asset-viewer": ["3d", "model", "mesh"],
+    "3d-camera-path-editor": ["camera-path", "3d-camera-path"],
+    "asset-browser": ["*"],
+    "asset-pipeline-tool": ["*"],
+    "tile-model-converter": ["tilemap", "tileset", "vector", "model", "3d"]
+  };
+  return byTool[normalizedToolId] || [];
+}
+
+function isAssetCompatibleWithTool(toolId = "", asset = null) {
+  const acceptedKinds = resolveAcceptedAssetKindsForTool(toolId);
+  if (!asset || !acceptedKinds.length) {
+    return false;
+  }
+  if (acceptedKinds.includes("*")) {
+    return true;
+  }
+  const kind = normalizeAssetKind(asset.assetType);
+  return acceptedKinds.includes(kind);
+}
+
 function renderToolAssetBadge(toolId = "") {
   const normalizedToolId = normalizeTextValue(toolId).toLowerCase();
   if (normalizedToolId === "palette-browser") {
@@ -299,11 +455,13 @@ function renderToolAssetBadge(toolId = "") {
   }
 
   const asset = readSharedAssetHandoff();
-  const assetLabel = asset?.displayName || "none";
-  const assetTitle = `Updated: ${escapeHtml(asset?.selectedAt || "not-set")}`;
+  const compatibleAsset = isAssetCompatibleWithTool(toolId, asset) ? asset : null;
+  const assetLabel = compatibleAsset?.displayName || "none";
+  const assetTitle = `Updated: ${escapeHtml(compatibleAsset?.selectedAt || "not-set")}`;
+  const badgeClass = compatibleAsset ? " is-active" : "";
   return `
     <div class="tools-platform-frame__binding-badges" aria-label="Tool asset binding">
-      <span class="tools-platform-frame__binding-badge is-active" title="${assetTitle}">${escapeHtml(`Asset: ${assetLabel}`)}</span>
+      <span class="tools-platform-frame__binding-badge${badgeClass}" title="${assetTitle}">${escapeHtml(`Asset: ${assetLabel}`)}</span>
     </div>
   `;
 }
@@ -953,8 +1111,13 @@ async function initPlatformShell() {
     workspaceController.startWatching();
   }
 
-  const hydratedPalette = await hydrateSharedPaletteFromGameLaunchContext();
+  const catalogContext = await readCatalogContextFromLaunchContext(launchContext);
+  const hydratedAsset = await hydrateSharedAssetFromGameLaunchContext(catalogContext);
+  const hydratedPalette = await hydrateSharedPaletteFromGameLaunchContext(catalogContext);
   renderShell(currentTool);
+  if (hydratedAsset) {
+    TOOLS_PLATFORM_LOGGER.debug("shared asset hydrated from game asset catalog");
+  }
   if (hydratedPalette) {
     TOOLS_PLATFORM_LOGGER.debug("shared palette hydrated from game asset catalog");
   }
