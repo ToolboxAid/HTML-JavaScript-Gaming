@@ -225,6 +225,11 @@ function updateStandaloneHref(toolId) {
 
 function writeQueryToolId(toolId, replace = false) {
   const url = new URL(window.location.href);
+  const gameParam = normalizeTextParam(url.searchParams.get("game"));
+  const gameIdParam = normalizeTextParam(url.searchParams.get("gameId"));
+  if (!gameIdParam && gameParam) {
+    url.searchParams.set("gameId", gameParam);
+  }
   url.searchParams.delete("game");
   if (toolId) {
     url.searchParams.set("tool", toolId);

@@ -267,6 +267,20 @@ function toDownloadName(gameId) {
   return `${normalized || "game"}-skin.json`;
 }
 
+function deriveCatalogPathFromGameHref(gameHref) {
+  const href = normalizeText(gameHref).replace(/\\/g, "/");
+  if (!href || !href.startsWith("/games/")) {
+    return "";
+  }
+  if (href.endsWith("/index.html")) {
+    return `${href.slice(0, -"/index.html".length)}/assets/workspace.asset-catalog.json`;
+  }
+  if (href.endsWith("/")) {
+    return `${href}assets/workspace.asset-catalog.json`;
+  }
+  return "";
+}
+
 function downloadTextFile(filename, contents) {
   const blob = new Blob([contents], { type: "application/json" });
   const objectUrl = URL.createObjectURL(blob);
@@ -1440,7 +1454,8 @@ async function loadActiveSkinForSelectedGame() {
   try {
     result = await loadGameSkin({
       gameId: game.id,
-      fallbackSchema: game.fallbackSchema
+      fallbackSchema: game.fallbackSchema,
+      catalogPath: deriveCatalogPathFromGameHref(game.gameHref)
     });
   } catch (error) {
     setStatus(`Skin load failed: ${error instanceof Error ? error.message : "unknown error"}`);
@@ -1768,10 +1783,11 @@ function extractPresetPayload(rawPreset) {
 
 async function loadPresetFromQuery() {
   const searchParams = new URLSearchParams(window.location.search);
+  const requestedGameId = normalizeText(searchParams.get("gameId") || searchParams.get("game"));
   const samplePresetPath = normalizeSamplePresetPath(searchParams.get("samplePresetPath"));
   if (!samplePresetPath) {
     return {
-      gameId: normalizeText(searchParams.get("gameId")),
+      gameId: requestedGameId,
       presetLoaded: false
     };
   }
@@ -1785,7 +1801,7 @@ async function loadPresetFromQuery() {
     const rawPreset = await response.json();
     const payload = extractPresetPayload(rawPreset);
     state.presetSkin = payload.skin && typeof payload.skin === "object" ? payload.skin : null;
-    const gameId = normalizeText(payload.gameId || searchParams.get("gameId"));
+    const gameId = normalizeText(payload.gameId || requestedGameId);
     return {
       gameId,
       presetLoaded: true
@@ -1793,7 +1809,7 @@ async function loadPresetFromQuery() {
   } catch (error) {
     setStatus(`Preset load failed: ${error instanceof Error ? error.message : "unknown error"}`);
     return {
-      gameId: normalizeText(searchParams.get("gameId")),
+      gameId: requestedGameId,
       presetLoaded: false
     };
   }

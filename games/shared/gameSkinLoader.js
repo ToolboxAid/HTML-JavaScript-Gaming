@@ -859,6 +859,14 @@ function resolveSkinAssetPath(gameId) {
   return resolveWorkspaceGameAssetPath(gameId, "skin.main", "");
 }
 
+function deriveWorkspaceCatalogPath(gameId) {
+  const normalizedGameId = normalizeText(gameId);
+  if (!normalizedGameId) {
+    return "";
+  }
+  return normalizePath(`/games/${encodeURIComponent(normalizedGameId)}/assets/workspace.asset-catalog.json`);
+}
+
 export async function loadGameSkin(options = {}) {
   const expectedGameId = normalizeText(options.gameId);
   if (!expectedGameId) {
@@ -875,7 +883,9 @@ export async function loadGameSkin(options = {}) {
     };
   }
 
-  await preloadWorkspaceGameAssetCatalog(expectedGameId);
+  const explicitCatalogPath = normalizePath(options.catalogPath);
+  const catalogPath = explicitCatalogPath || deriveWorkspaceCatalogPath(expectedGameId);
+  await preloadWorkspaceGameAssetCatalog(expectedGameId, { catalogPath });
 
   const skinPath = resolveSkinAssetPath(expectedGameId);
   if (!skinPath) {
