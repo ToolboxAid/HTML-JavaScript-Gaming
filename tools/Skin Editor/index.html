@@ -42,9 +42,9 @@
           <span id="skinEditorContextSource" class="skin-editor-chip">Source: n/a</span>
         </div>
         <section class="skin-editor-section skin-editor-section--shape-add">
-          <h4>Object Shape/Type</h4>
+          <h4>Object</h4>
           <div class="skin-editor-shape-add-row">
-            <label for="skinEditorNewShapeType">Object Shape/Type</label>
+            <label for="skinEditorNewShapeType">Shape/Type</label>
             <select id="skinEditorNewShapeType" class="skin-editor-field">
               <option value="circle">Circle</option>
               <option value="oval">Oval</option>
@@ -76,6 +76,10 @@
         </section>
         <h3>Objects</h3>
         <div id="skinEditorObjectList" class="skin-editor-object-list" role="listbox" aria-label="Skin objects"></div>
+        <div class="debug-tool-actions skin-editor-object-order-actions">
+          <button type="button" id="skinEditorMoveObjectUpButton" class="debug-tool-control">Move Up</button>
+          <button type="button" id="skinEditorMoveObjectDownButton" class="debug-tool-control">Move Down</button>
+        </div>
       </aside>
 
       <section class="panel debug-tool-panel skin-editor-canvas-panel">

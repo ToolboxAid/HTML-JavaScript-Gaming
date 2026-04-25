@@ -60,6 +60,8 @@ const refs = {
   renameObjectButton: document.getElementById("skinEditorRenameObjectButton"),
   deleteObjectButton: document.getElementById("skinEditorDeleteObjectButton"),
   flattenObjectsButton: document.getElementById("skinEditorFlattenObjectsButton"),
+  moveObjectUpButton: document.getElementById("skinEditorMoveObjectUpButton"),
+  moveObjectDownButton: document.getElementById("skinEditorMoveObjectDownButton"),
   objectList: document.getElementById("skinEditorObjectList"),
   paletteList: document.getElementById("skinEditorPaletteList"),
   selectedObjectName: document.getElementById("skinEditorSelectedObjectName"),
@@ -134,12 +136,24 @@ function getObjectKeys() {
   return Object.keys(objects);
 }
 
+function isFlattenIneligibleObjectKey(objectKey) {
+  return inferShapeTypeFromObjectKey(objectKey) === "hud-color";
+}
+
 function getValidSelectedObjectKeys() {
   const keys = getObjectKeys();
   if (!keys.length || !Array.isArray(state.selectedObjectKeys)) {
     return [];
   }
-  return Array.from(new Set(state.selectedObjectKeys.filter((key) => keys.includes(key))));
+  return Array.from(new Set(
+    state.selectedObjectKeys.filter((key) => keys.includes(key) && !isFlattenIneligibleObjectKey(key))
+  ));
+}
+
+function getSelectedObjectKeysInObjectOrder() {
+  const keys = getObjectKeys();
+  const selectedKeySet = new Set(getValidSelectedObjectKeys());
+  return keys.filter((key) => selectedKeySet.has(key));
 }
 
 function updateFlattenButtonState() {
@@ -147,6 +161,20 @@ function updateFlattenButtonState() {
   state.selectedObjectKeys = validSelection;
   if (refs.flattenObjectsButton instanceof HTMLButtonElement) {
     refs.flattenObjectsButton.disabled = validSelection.length < 2;
+  }
+}
+
+function updateObjectOrderButtonState() {
+  const keys = getObjectKeys();
+  const selectedKey = normalizeText(state.selectedObjectKey);
+  const selectedIndex = keys.indexOf(selectedKey);
+  const hasSelection = selectedIndex >= 0;
+
+  if (refs.moveObjectUpButton instanceof HTMLButtonElement) {
+    refs.moveObjectUpButton.disabled = !hasSelection || selectedIndex <= 0;
+  }
+  if (refs.moveObjectDownButton instanceof HTMLButtonElement) {
+    refs.moveObjectDownButton.disabled = !hasSelection || selectedIndex >= keys.length - 1;
   }
 }
 
@@ -268,6 +296,7 @@ function ensureSelectedObjectKey() {
     state.selectedObjectKey = "";
     state.selectedObjectKeys = [];
     updateFlattenButtonState();
+    updateObjectOrderButtonState();
     return;
   }
 
@@ -276,17 +305,16 @@ function ensureSelectedObjectKey() {
     state.skipAutoSelectOnce = false;
     state.selectedObjectKeys = normalizedSelection;
     updateFlattenButtonState();
+    updateObjectOrderButtonState();
     return;
   }
 
   if (!keys.includes(state.selectedObjectKey)) {
     state.selectedObjectKey = keys[0];
   }
-  if (!normalizedSelection.includes(state.selectedObjectKey)) {
-    normalizedSelection.unshift(state.selectedObjectKey);
-  }
   state.selectedObjectKeys = Array.from(new Set(normalizedSelection));
   updateFlattenButtonState();
+  updateObjectOrderButtonState();
 }
 
 function parseHexForPicker(value) {
@@ -361,39 +389,6 @@ function normalizeObjectKeyPreserveCase(value) {
     .replace(/^-+|-+$/g, "");
 }
 
-function toCamelSegments(value) {
-  return normalizeText(value)
-    .replace(/([a-z0-9])([A-Z])/g, "$1 $2")
-    .toLowerCase()
-    .split(/[^a-z0-9]+/g)
-    .filter((entry) => Boolean(entry));
-}
-
-function toCamelCaseFromParts(parts) {
-  if (!parts.length) {
-    return "";
-  }
-  return parts
-    .map((part, index) => (index === 0
-      ? part
-      : `${part.charAt(0).toUpperCase()}${part.slice(1)}`))
-    .join("");
-}
-
-function normalizeHudColorName(value) {
-  const allParts = toCamelSegments(value);
-  const nonHudParts = allParts.filter((part, index) => !(index === 0 && part === "hud"));
-  const suffix = toCamelCaseFromParts(nonHudParts) || "color";
-  return `hud${suffix.charAt(0).toUpperCase()}${suffix.slice(1)}`;
-}
-
-function shouldEnforceHudName({ selectedType = "", currentKey = "", typedName = "" } = {}) {
-  const type = normalizeText(selectedType).toLowerCase();
-  const current = normalizeText(currentKey).toLowerCase();
-  const typed = normalizeText(typedName).toLowerCase();
-  return type === "hud-color" || current.startsWith("hud") || typed.startsWith("hud");
-}
-
 function hasObjectKey(objects, candidateKey, { caseInsensitive = false } = {}) {
   if (!caseInsensitive) {
     return Object.prototype.hasOwnProperty.call(objects, candidateKey);
@@ -421,7 +416,10 @@ function ensureUniqueObjectKey(baseKey, { preserveCase = false } = {}) {
 function createShapePreset(shapeType) {
   const type = normalizeText(shapeType).toLowerCase();
   if (type === "hud-color") {
-    return { color: "#f8f8f2" };
+    return {
+      shape: "hud-color",
+      color: "#f8f8f2"
+    };
   }
   if (type === "polygon") {
     return {
@@ -563,7 +561,11 @@ function setSelectedObjectColorLabel() {
 }
 
 function inferShapeTypeFromSelectedObject() {
-  const selectedObject = toObject(state.activeSkin?.objects?.[state.selectedObjectKey]);
+  return inferShapeTypeFromObjectKey(state.selectedObjectKey);
+}
+
+function inferShapeTypeFromObjectKey(objectKey) {
+  const selectedObject = toObject(state.activeSkin?.objects?.[objectKey]);
   const shape = normalizeText(selectedObject.shape).toLowerCase();
   if (shape === "wall") {
     return "wall-3-sides";
@@ -579,7 +581,9 @@ function inferShapeTypeFromSelectedObject() {
   const hasHeight = Number.isFinite(Number(selectedObject.height));
   const hasThickness = Number.isFinite(Number(selectedObject.thickness));
   const hasWallFlags = ["left", "right", "top", "bottom"].some((key) => typeof selectedObject[key] === "boolean");
-  const keyStartsHud = normalizeText(state.selectedObjectKey).toLowerCase().startsWith("hud");
+  const colorPropertyCount = Object.values(selectedObject)
+    .filter((value) => typeof value === "string" && parseHexForPicker(value))
+    .length;
 
   if (hasThickness && hasWallFlags) {
     return "wall-3-sides";
@@ -607,7 +611,7 @@ function inferShapeTypeFromSelectedObject() {
     }
     return "rectangle";
   }
-  if (keyStartsHud || (getSelectedObjectColorPropertyKeys().length > 0 && Object.keys(selectedObject).length <= 2)) {
+  if (colorPropertyCount > 0 && Object.keys(selectedObject).length <= 2) {
     return "hud-color";
   }
   return "rectangle";
@@ -638,6 +642,7 @@ function selectObjectKey(objectKey) {
   state.selectedObjectKey = objectKey;
   syncSelectedObjectUiFromSelection();
   updateFlattenButtonState();
+  updateObjectOrderButtonState();
   renderObjectList();
   renderPaletteList();
   renderObjectControls();
@@ -652,6 +657,7 @@ function setObjectSelected(objectKey, selected) {
   state.selectedObjectKeys = nextSelection;
   syncSelectedObjectUiFromSelection();
   updateFlattenButtonState();
+  updateObjectOrderButtonState();
   renderObjectList();
   renderPaletteList();
   renderObjectControls();
@@ -777,8 +783,12 @@ function renderPaletteList() {
     const label = document.createElement("span");
     label.className = "skin-editor-palette-swatch-label";
     label.textContent = swatch.label;
+    const hex = document.createElement("span");
+    hex.className = "skin-editor-palette-swatch-hex";
+    hex.textContent = swatch.color.toUpperCase();
     row.appendChild(chip);
     row.appendChild(label);
+    row.appendChild(hex);
     row.addEventListener("click", () => {
       applyPaletteColorToSelectedObject(swatch.color);
     });
@@ -795,6 +805,7 @@ function renderObjectList() {
   const selectedObjectKeys = getValidSelectedObjectKeys();
   state.selectedObjectKeys = selectedObjectKeys;
   updateFlattenButtonState();
+  updateObjectOrderButtonState();
   if (!keys.length) {
     const note = document.createElement("p");
     note.className = "skin-editor-empty";
@@ -806,11 +817,16 @@ function renderObjectList() {
   keys.forEach((objectKey) => {
     const row = document.createElement("div");
     row.className = "skin-editor-object-row";
+    const flattenIneligible = isFlattenIneligibleObjectKey(objectKey);
 
     const checkbox = document.createElement("input");
     checkbox.type = "checkbox";
     checkbox.className = "skin-editor-object-check";
-    checkbox.checked = selectedObjectKeys.includes(objectKey);
+    checkbox.checked = !flattenIneligible && selectedObjectKeys.includes(objectKey);
+    checkbox.disabled = flattenIneligible;
+    if (flattenIneligible) {
+      checkbox.title = "HUD Color objects cannot be included in flatten.";
+    }
     checkbox.addEventListener("click", (event) => {
       event.stopPropagation();
     });
@@ -953,6 +969,7 @@ function drawSelectedObjectPreview() {
 
   const selectedKey = state.selectedObjectKey;
   const selectedObject = toObject(state.activeSkin?.objects?.[selectedKey]);
+  const selectedKeys = getSelectedObjectKeysInObjectOrder();
   const backgroundColor = normalizeText(state.activeSkin?.objects?.background?.color);
   const sceneBackground = parseHexForPicker(backgroundColor) ? backgroundColor : "#120b24";
 
@@ -963,144 +980,142 @@ function drawSelectedObjectPreview() {
   context.lineWidth = 2;
   context.strokeRect(12, 12, previewWidth - 24, previewHeight - 24);
 
-  if (!selectedKey) {
-    setPreviewNote("Select an object from the left list to preview and edit.");
+  const drawObjectInPreview = (objectValue, fallbackColor = "") => {
+    const object = toObject(objectValue);
+    const objectColor = normalizeText(object.color);
+    const drawColor = parseHexForPicker(objectColor)
+      ? objectColor
+      : (parseHexForPicker(fallbackColor) ? fallbackColor : "#f8f8f2");
+    const shapeType = normalizeText(object.shape).toLowerCase();
+    const centerX = Math.round(previewWidth / 2);
+    const centerY = Math.round(previewHeight / 2);
+    const width = Math.max(12, Number(object.width) || Number(object.size) || 120);
+    const height = Math.max(12, Number(object.height) || Number(object.size) || 80);
+    const radius = Math.max(6, Number(object.radius) || Number(object.size) || 40);
+    const innerRadius = Math.max(4, Number(object.innerRadius) || 24);
+    const outerRadius = Math.max(innerRadius + 4, Number(object.outerRadius) || 52);
+    const polygonSides = Math.max(3, Math.round(Number(object.sides) || 6));
+    const thickness = Math.max(1, Number(object.thickness) || 1);
+    const hasRectProps = Number.isFinite(Number(object.width))
+      || Number.isFinite(Number(object.height))
+      || Number.isFinite(Number(object.size));
+    const hasCircleProps = Number.isFinite(Number(object.radius))
+      || Number.isFinite(Number(object.outerRadius))
+      || Number.isFinite(Number(object.innerRadius));
+
+    context.fillStyle = drawColor;
+
+    if (shapeType === "flattened" && Array.isArray(object.components)) {
+      const components = object.components
+        .map((entry) => toObject(entry))
+        .filter((entry) => Object.keys(entry).length > 0);
+      if (!components.length) {
+        context.fillRect(centerX - 60, centerY - 60, 120, 120);
+        return;
+      }
+      components.forEach((component) => {
+        drawObjectInPreview(component);
+      });
+      return;
+    }
+
+    if (shapeType === "star") {
+      drawStarPath(context, centerX, centerY, outerRadius, innerRadius, polygonSides);
+      context.fill();
+      return;
+    }
+    if (shapeType === "polygon") {
+      drawRegularPolygonPath(context, centerX, centerY, radius, polygonSides);
+      context.fill();
+      return;
+    }
+    if (shapeType === "ring" || (Number.isFinite(Number(object.outerRadius)) && Number.isFinite(Number(object.innerRadius)))) {
+      context.beginPath();
+      context.arc(centerX, centerY, outerRadius, 0, Math.PI * 2);
+      context.arc(centerX, centerY, innerRadius, 0, Math.PI * 2, true);
+      context.fill();
+      return;
+    }
+    if (shapeType === "wall" || (Number.isFinite(Number(object.thickness)) && !hasRectProps && !hasCircleProps)) {
+      const margin = 36;
+      const usableWidth = Math.max(40, previewWidth - margin * 2);
+      const usableHeight = Math.max(40, previewHeight - margin * 2);
+      const drawTop = object.top !== false;
+      const drawLeft = object.left !== false;
+      const drawRight = object.right !== false;
+      const drawBottom = object.bottom === true;
+      if (drawTop) {
+        context.fillRect(margin, margin, usableWidth, thickness);
+      }
+      if (drawLeft) {
+        context.fillRect(margin, margin, thickness, usableHeight);
+      }
+      if (drawRight) {
+        context.fillRect(margin + usableWidth - thickness, margin, thickness, usableHeight);
+      }
+      if (drawBottom) {
+        context.fillRect(margin, margin + usableHeight - thickness, usableWidth, thickness);
+      }
+      return;
+    }
+    if (Number.isFinite(Number(object.radius))) {
+      context.beginPath();
+      context.arc(centerX, centerY, radius, 0, Math.PI * 2);
+      context.fill();
+      return;
+    }
+    if (hasRectProps) {
+      if (Number.isFinite(Number(object.thickness))) {
+        context.strokeStyle = drawColor;
+        context.lineWidth = thickness;
+        context.strokeRect(
+          Math.round(centerX - width / 2),
+          Math.round(centerY - height / 2),
+          Math.round(width),
+          Math.round(height)
+        );
+      } else {
+        context.fillRect(
+          Math.round(centerX - width / 2),
+          Math.round(centerY - height / 2),
+          Math.round(width),
+          Math.round(height)
+        );
+      }
+      return;
+    }
+    context.fillRect(centerX - 60, centerY - 60, 120, 120);
+  };
+
+  if (!selectedKey && selectedKeys.length < 2) {
+    setPreviewNote("");
     return;
   }
 
-  const drawColor = parseHexForPicker(selectedObject.color) ? selectedObject.color : "#f8f8f2";
-  const shapeType = normalizeText(selectedObject.shape).toLowerCase();
-  const centerX = Math.round(previewWidth / 2);
-  const centerY = Math.round(previewHeight / 2);
-  const width = Math.max(12, Number(selectedObject.width) || Number(selectedObject.size) || 120);
-  const height = Math.max(12, Number(selectedObject.height) || Number(selectedObject.size) || 80);
-  const radius = Math.max(6, Number(selectedObject.radius) || Number(selectedObject.size) || 40);
-  const innerRadius = Math.max(4, Number(selectedObject.innerRadius) || 24);
-  const outerRadius = Math.max(innerRadius + 4, Number(selectedObject.outerRadius) || 52);
-  const polygonSides = Math.max(3, Math.round(Number(selectedObject.sides) || 6));
-  const thickness = Math.max(1, Number(selectedObject.thickness) || 1);
-  const hasRectProps = Number.isFinite(Number(selectedObject.width))
-    || Number.isFinite(Number(selectedObject.height))
-    || Number.isFinite(Number(selectedObject.size));
-  const hasCircleProps = Number.isFinite(Number(selectedObject.radius))
-    || Number.isFinite(Number(selectedObject.outerRadius))
-    || Number.isFinite(Number(selectedObject.innerRadius));
-
-  context.fillStyle = drawColor;
-
-  if (shapeType === "flattened" && Array.isArray(selectedObject.components)) {
-    const components = selectedObject.components
-      .map((entry) => toObject(entry))
-      .filter((entry) => Object.keys(entry).length > 0);
-    if (!components.length) {
-      context.fillRect(centerX - 60, centerY - 60, 120, 120);
-    } else {
-      components.forEach((component, index) => {
-        const offsetX = ((index % 3) - 1) * 14;
-        const offsetY = (Math.floor(index / 3) - 1) * 10;
-        const componentColor = parseHexForPicker(component.color) ? component.color : drawColor;
-        context.fillStyle = componentColor;
-        const componentShape = normalizeText(component.shape).toLowerCase();
-        const componentWidth = Math.max(10, Number(component.width) || Number(component.size) || 58);
-        const componentHeight = Math.max(10, Number(component.height) || Number(component.size) || 40);
-        const componentRadius = Math.max(6, Number(component.radius) || Number(component.size) || 20);
-        if (componentShape === "star") {
-          drawStarPath(context, centerX + offsetX, centerY + offsetY, Math.max(12, Number(component.outerRadius) || 24), Math.max(6, Number(component.innerRadius) || 12), Math.max(3, Number(component.sides) || 5));
-          context.fill();
-        } else if (componentShape === "polygon") {
-          drawRegularPolygonPath(context, centerX + offsetX, centerY + offsetY, componentRadius, Math.max(3, Number(component.sides) || 6));
-          context.fill();
-        } else if (Number.isFinite(Number(component.radius))) {
-          context.beginPath();
-          context.arc(centerX + offsetX, centerY + offsetY, componentRadius, 0, Math.PI * 2);
-          context.fill();
-        } else {
-          context.fillRect(
-            Math.round(centerX + offsetX - componentWidth / 2),
-            Math.round(centerY + offsetY - componentHeight / 2),
-            Math.round(componentWidth),
-            Math.round(componentHeight)
-          );
-        }
-      });
-      context.fillStyle = "#ffffff";
-      context.font = "600 13px 'Segoe UI', sans-serif";
-      context.fillText(`${components.length} merged objects`, 20, 44);
-    }
-  } else if (shapeType === "star") {
-    drawStarPath(context, centerX, centerY, outerRadius, innerRadius, polygonSides);
-    context.fill();
-  } else if (shapeType === "polygon") {
-    drawRegularPolygonPath(context, centerX, centerY, radius, polygonSides);
-    context.fill();
-  } else if (shapeType === "ring" || (Number.isFinite(Number(selectedObject.outerRadius)) && Number.isFinite(Number(selectedObject.innerRadius)))) {
-    context.beginPath();
-    context.arc(centerX, centerY, outerRadius, 0, Math.PI * 2);
-    context.arc(centerX, centerY, innerRadius, 0, Math.PI * 2, true);
-    context.fill();
-  } else if (shapeType === "wall" || (Number.isFinite(Number(selectedObject.thickness)) && !hasRectProps && !hasCircleProps)) {
-    const margin = 36;
-    const usableWidth = Math.max(40, previewWidth - margin * 2);
-    const usableHeight = Math.max(40, previewHeight - margin * 2);
-    const drawTop = selectedObject.top !== false;
-    const drawLeft = selectedObject.left !== false;
-    const drawRight = selectedObject.right !== false;
-    const drawBottom = selectedObject.bottom === true;
-    if (drawTop) {
-      context.fillRect(margin, margin, usableWidth, thickness);
-    }
-    if (drawLeft) {
-      context.fillRect(margin, margin, thickness, usableHeight);
-    }
-    if (drawRight) {
-      context.fillRect(margin + usableWidth - thickness, margin, thickness, usableHeight);
-    }
-    if (drawBottom) {
-      context.fillRect(margin, margin + usableHeight - thickness, usableWidth, thickness);
-    }
-  } else if (Number.isFinite(Number(selectedObject.radius))) {
-    context.beginPath();
-    context.arc(centerX, centerY, radius, 0, Math.PI * 2);
-    context.fill();
-  } else if (hasRectProps) {
-    if (Number.isFinite(Number(selectedObject.thickness))) {
-      context.strokeStyle = drawColor;
-      context.lineWidth = thickness;
-      context.strokeRect(
-        Math.round(centerX - width / 2),
-        Math.round(centerY - height / 2),
-        Math.round(width),
-        Math.round(height)
-      );
-    } else {
-      context.fillRect(
-        Math.round(centerX - width / 2),
-        Math.round(centerY - height / 2),
-        Math.round(width),
-        Math.round(height)
-      );
-    }
+  if (selectedKeys.length >= 2) {
+    selectedKeys.forEach((key) => {
+      drawObjectInPreview(state.activeSkin?.objects?.[key]);
+    });
   } else {
-    context.fillRect(centerX - 60, centerY - 60, 120, 120);
+    drawObjectInPreview(selectedObject);
   }
 
   context.fillStyle = "#ffffff";
   context.font = "700 18px 'Segoe UI', sans-serif";
   context.textAlign = "left";
   context.textBaseline = "top";
-  context.fillText(selectedKey, 20, 20);
-
-  const descriptor = Object.entries(selectedObject)
-    .filter(([, value]) => ["string", "number", "boolean"].includes(typeof value))
-    .map(([key, value]) => `${key}: ${String(value)}`)
-    .slice(0, 5)
-    .join(" | ");
-  setPreviewNote(descriptor || "Editing selected object.");
+  if (selectedKeys.length >= 2) {
+    context.fillText(`Flatten Preview (${selectedKeys.length})`, 20, 20);
+  } else {
+    context.fillText(selectedKey, 20, 20);
+  }
+  setPreviewNote("");
 }
 
 function renderWorkbench() {
   ensureSelectedObjectKey();
   updateFlattenButtonState();
+  updateObjectOrderButtonState();
   syncSelectedObjectUiFromSelection();
   renderObjectList();
   renderPaletteList();
@@ -1262,11 +1277,9 @@ function addShapeFromControls() {
   const typedName = refs.newShapeName instanceof HTMLInputElement
     ? refs.newShapeName.value
     : "";
-  const hudNameMode = shouldEnforceHudName({ selectedType, typedName });
-  const baseKey = hudNameMode
-    ? normalizeHudColorName(typedName)
-    : (normalizeObjectKey(typedName) || selectedType || "shape");
-  const nextKey = ensureUniqueObjectKey(baseKey, { preserveCase: hudNameMode });
+  const defaultKey = selectedType === "hud-color" ? "color" : selectedType;
+  const baseKey = normalizeObjectKey(typedName) || defaultKey || "shape";
+  const nextKey = ensureUniqueObjectKey(baseKey);
   const preset = createShapePreset(selectedType);
 
   if (!state.activeSkin.objects || typeof state.activeSkin.objects !== "object") {
@@ -1296,9 +1309,7 @@ function renameObjectFromControls() {
   const typedName = refs.newShapeName instanceof HTMLInputElement
     ? refs.newShapeName.value
     : "";
-  const nextKey = shouldEnforceHudName({ currentKey: selectedKey, typedName })
-    ? normalizeHudColorName(typedName)
-    : normalizeObjectKey(typedName);
+  const nextKey = normalizeObjectKey(typedName);
   if (!nextKey) {
     setStatus("Enter a valid object name before renaming.");
     return;
@@ -1364,6 +1375,54 @@ function deleteObjectFromControls() {
   setStatus(`Deleted '${selectedKey}'.`);
 }
 
+function moveSelectedObjectByOffset(offset) {
+  if (!state.activeSkin || typeof state.activeSkin !== "object") {
+    setStatus("Load a skin before reordering objects.");
+    return;
+  }
+  if (!state.activeSkin.objects || typeof state.activeSkin.objects !== "object") {
+    state.activeSkin.objects = {};
+  }
+
+  const objects = state.activeSkin.objects;
+  const keys = Object.keys(objects);
+  const selectedKey = normalizeText(state.selectedObjectKey);
+  if (!selectedKey) {
+    setStatus("Select an object before reordering.");
+    return;
+  }
+  const selectedIndex = keys.indexOf(selectedKey);
+  if (selectedIndex < 0) {
+    setStatus("Selected object no longer exists.");
+    return;
+  }
+
+  const targetIndex = selectedIndex + offset;
+  if (targetIndex < 0 || targetIndex >= keys.length) {
+    const boundaryLabel = offset < 0 ? "top" : "bottom";
+    setStatus(`'${selectedKey}' is already at the ${boundaryLabel} of the object order.`);
+    updateObjectOrderButtonState();
+    return;
+  }
+
+  const nextKeys = [...keys];
+  const [movedKey] = nextKeys.splice(selectedIndex, 1);
+  nextKeys.splice(targetIndex, 0, movedKey);
+
+  const nextObjects = {};
+  nextKeys.forEach((key) => {
+    nextObjects[key] = objects[key];
+  });
+  state.activeSkin.objects = nextObjects;
+
+  const selectedSet = new Set(getValidSelectedObjectKeys());
+  state.selectedObjectKeys = nextKeys.filter((key) => selectedSet.has(key));
+
+  updateEditorFromState("visual-editor");
+  renderWorkbench();
+  setStatus(`Moved '${selectedKey}' ${offset < 0 ? "up" : "down"} in object order.`);
+}
+
 function flattenSelectedObjects() {
   if (!state.activeSkin || typeof state.activeSkin !== "object") {
     setStatus("Load a skin before flattening.");
@@ -1373,7 +1432,7 @@ function flattenSelectedObjects() {
     state.activeSkin.objects = {};
   }
   const objects = state.activeSkin.objects;
-  const selectedKeys = getValidSelectedObjectKeys()
+  const selectedKeys = getSelectedObjectKeysInObjectOrder()
     .filter((key) => Object.prototype.hasOwnProperty.call(objects, key));
   state.selectedObjectKeys = selectedKeys;
   updateFlattenButtonState();
@@ -1459,6 +1518,7 @@ async function loadPresetFromQuery() {
 
 function bindEvents() {
   updateFlattenButtonState();
+  updateObjectOrderButtonState();
   refs.loadButton?.addEventListener("click", () => {
     void loadActiveSkinForSelectedGame();
   });
@@ -1477,6 +1537,12 @@ function bindEvents() {
   refs.addShapeButton?.addEventListener("click", addShapeFromControls);
   refs.renameObjectButton?.addEventListener("click", renameObjectFromControls);
   refs.deleteObjectButton?.addEventListener("click", deleteObjectFromControls);
+  refs.moveObjectUpButton?.addEventListener("click", () => {
+    moveSelectedObjectByOffset(-1);
+  });
+  refs.moveObjectDownButton?.addEventListener("click", () => {
+    moveSelectedObjectByOffset(1);
+  });
   refs.flattenObjectsButton?.addEventListener("click", flattenSelectedObjects);
   refs.importInput?.addEventListener("change", (event) => {
     const input = event.currentTarget;

@@ -75,6 +75,12 @@ body[data-tool-id="skin-editor"] .skin-editor-object-list {
   padding-right: 4px;
 }
 
+body[data-tool-id="skin-editor"] .skin-editor-object-order-actions {
+  margin-top: 8px;
+  margin-bottom: 14px;
+  justify-content: center;
+}
+
 body[data-tool-id="skin-editor"] .skin-editor-object-row {
   display: grid;
   grid-template-columns: 18px minmax(0, 1fr);
@@ -87,6 +93,11 @@ body[data-tool-id="skin-editor"] .skin-editor-object-check {
   height: 16px;
   margin: 0 0 0 6px;
   accent-color: #7c3aed;
+}
+
+body[data-tool-id="skin-editor"] .skin-editor-object-check:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 body[data-tool-id="skin-editor"] .skin-editor-object-button {
@@ -134,6 +145,10 @@ body[data-tool-id="skin-editor"] .skin-editor-preview-canvas {
   display: block;
 }
 
+body[data-tool-id="skin-editor"] #skinEditorPreviewNote {
+  display: none;
+}
+
 body[data-tool-id="skin-editor"] .skin-editor-list {
   display: grid;
   gap: 8px;
@@ -166,7 +181,7 @@ body[data-tool-id="skin-editor"] .skin-editor-palette-list::-webkit-scrollbar-th
 
 body[data-tool-id="skin-editor"] .skin-editor-palette-swatch {
   display: grid;
-  grid-template-columns: 20px minmax(0, 1fr);
+  grid-template-columns: 20px minmax(0, 1fr) auto;
   gap: 8px;
   align-items: center;
   width: 100%;
@@ -195,6 +210,14 @@ body[data-tool-id="skin-editor"] .skin-editor-palette-swatch-label {
   font-size: 0.82rem;
   line-height: 1.2;
   word-break: break-word;
+}
+
+body[data-tool-id="skin-editor"] .skin-editor-palette-swatch-hex {
+  color: #d6c8ff;
+  font-size: 0.78rem;
+  font-family: "Consolas", "Courier New", monospace;
+  white-space: nowrap;
+  justify-self: end;
 }
 
 body[data-tool-id="skin-editor"] .skin-editor-row {
