@@ -616,6 +616,7 @@ function isAssetCompatibleWithTool(toolId = "", asset = null) {
 
 function renderToolAssetBadge(toolId = "") {
   const normalizedToolId = normalizeTextValue(toolId).toLowerCase();
+  const acceptedKinds = resolveAcceptedAssetKindsForTool(normalizedToolId);
   if (normalizedToolId === "palette-browser") {
     const palette = readSharedPaletteHandoff();
     const paletteLabel = palette?.displayName || "none";
@@ -623,6 +624,13 @@ function renderToolAssetBadge(toolId = "") {
     return `
       <div class="tools-platform-frame__binding-badges" aria-label="Tool asset binding">
         <span class="tools-platform-frame__binding-badge is-active" title="${paletteTitle}">${escapeHtml(`Palette: ${paletteLabel}`)}</span>
+      </div>
+    `;
+  }
+  if (!acceptedKinds.length) {
+    return `
+      <div class="tools-platform-frame__binding-badges" aria-label="Tool asset binding">
+        <span class="tools-platform-frame__binding-badge">${escapeHtml("Asset: N/A")}</span>
       </div>
     `;
   }
