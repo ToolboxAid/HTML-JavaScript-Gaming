@@ -74,16 +74,6 @@ export function normalizeReplayEvents(input) {
   }));
 }
 
-export function createDefaultReplayEvents() {
-  return normalizeReplayEvents([
-    { timeMs: 0, type: "boot", label: "Boot Runtime", payload: { scene: "intro" } },
-    { timeMs: 120, type: "input", label: "Press Start", payload: { key: "Enter", down: true } },
-    { timeMs: 260, type: "state", label: "Enter Gameplay", payload: { gameState: "playing", wave: 1 } },
-    { timeMs: 560, type: "spawn", label: "Spawn Enemy Group", payload: { kind: "asteroid", count: 3 } },
-    { timeMs: 900, type: "score", label: "Score +100", payload: { delta: 100, total: 100 } }
-  ]);
-}
-
 export function getReplayEventAtTime(events, timeMs = 0) {
   const normalized = asArray(events);
   const safeTimeMs = Math.max(0, asNumber(timeMs, 0));

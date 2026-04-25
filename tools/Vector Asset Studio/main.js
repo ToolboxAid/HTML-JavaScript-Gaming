@@ -2923,11 +2923,19 @@ const vectorAssetStudioApi = {
     if (Date.now() <= Number(state.skipExternalProjectStateUntil || 0)) {
       return true;
     }
-    if (snapshot?.svgText) {
+    if (!snapshot || typeof snapshot !== "object") {
+      setStatus("Project state rejected: snapshot object is required.");
+      return false;
+    }
+    if (typeof snapshot.svgText !== "string") {
+      setStatus("Project state rejected: svgText is required.");
+      return false;
+    }
+    try {
       loadSvgFromText(snapshot.svgText, `${snapshot.documentName || "project"}.svg`);
-    } else {
-      createNewDocument();
-      setCanvasSize(snapshot?.canvasWidth || 1600, snapshot?.canvasHeight || 900);
+    } catch (error) {
+      setStatus(`Project state rejected: ${error instanceof Error ? error.message : "invalid SVG payload"}`);
+      return false;
     }
     state.documentName = snapshot?.documentName || state.documentName;
     state.zoom = Number.isFinite(Number(snapshot?.zoom)) ? Number(snapshot.zoom) : state.zoom;
@@ -2937,17 +2945,6 @@ const vectorAssetStudioApi = {
     updateViewTransform();
     setStatus(`Project state loaded for ${state.documentName}.`);
     return true;
-  },
-  createDefaultProjectState(projectName) {
-    return {
-      documentName: projectName || "untitled-background",
-      svgText: "",
-      canvasWidth: 1600,
-      canvasHeight: 900,
-      zoom: 1,
-      panX: 0,
-      panY: 0
-    };
   }
 };
 

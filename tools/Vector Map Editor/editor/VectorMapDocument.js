@@ -44,10 +44,10 @@ function normalizeDegrees(value) {
 
 export class VectorMapDocument {
   constructor(data = null) {
-    this.data = data ? this.normalizeDocument(data) : this.createDefault();
+    this.data = data ? this.normalizeDocument(data) : this.createEmptyDocument();
   }
 
-  createDefault() {
+  createEmptyDocument() {
     return clone(DEFAULT_DOCUMENT);
   }
 

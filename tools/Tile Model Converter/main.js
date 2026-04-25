@@ -137,28 +137,12 @@ async function tryLoadPresetFromQuery() {
   }
 }
 
-function createDefaultPayload() {
-  return {
-    candidate: {
-      id: "arena-main",
-      name: "arena-main",
-      section: "tilemaps",
-      type: "tilemap",
-      path: "assets/tilemaps/arena-main.tilemap.json"
-    },
-    conversion: {
-      targetSection: "vectors",
-      targetType: "vector"
-    }
-  };
-}
-
 function bootTileModelConverter() {
   if (refs.runButton instanceof HTMLButtonElement) {
     refs.runButton.addEventListener("click", runConversion);
   }
   if (refs.input instanceof HTMLTextAreaElement && !refs.input.value.trim()) {
-    refs.input.value = toPrettyJson(createDefaultPayload());
+    setStatus("Awaiting source converter JSON. No default payload is applied.");
   }
   void tryLoadPresetFromQuery();
   return { runConversion };

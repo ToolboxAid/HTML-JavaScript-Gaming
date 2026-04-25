@@ -185,34 +185,6 @@ function runPipeline() {
   setStatus(`Pipeline ${result.status || "unknown"}; records=${recordCount}.`);
 }
 
-function createDefaultPayload() {
-  return {
-    gameId: "asteroids",
-    domainInputs: {
-      sprites: [
-        {
-          assetId: "ship-main",
-          runtimeFileName: "ship-main.runtime.json",
-          toolDataFileName: "ship-main.tool.json",
-          sourceToolId: "sprite-editor"
-        }
-      ]
-    },
-    toolStates: {
-      "sprite-editor": {
-        schema: "html-js-gaming.tool-state",
-        version: 1,
-        toolId: "sprite-editor",
-        projectId: "asteroids",
-        savedAtIso: "2026-01-01T00:00:00.000Z",
-        state: {
-          activeLayerId: "base"
-        }
-      }
-    }
-  };
-}
-
 function extractPipelinePayloadFromPreset(rawPreset) {
   if (!rawPreset || typeof rawPreset !== "object") {
     return null;
@@ -270,14 +242,11 @@ async function tryLoadPresetFromQuery() {
 }
 
 function bootAssetPipelineTool() {
-  const launchContext = readLaunchContextFromQuery();
   if (refs.runButton instanceof HTMLButtonElement) {
     refs.runButton.addEventListener("click", runPipeline);
   }
   if (refs.input instanceof HTMLTextAreaElement && !refs.input.value.trim()) {
-    const defaultPayload = createDefaultPayload();
-    const adapted = applyLaunchContextToPayload(defaultPayload, launchContext);
-    refs.input.value = toPrettyJson(adapted.payload);
+    setStatus("Awaiting source pipeline JSON. No default payload is applied.");
   }
   void tryLoadPresetFromQuery();
   return { runPipeline };

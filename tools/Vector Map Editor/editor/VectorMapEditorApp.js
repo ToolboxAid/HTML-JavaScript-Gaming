@@ -1247,6 +1247,15 @@ export class VectorMapEditorApp {
   }
 
   applyHistorySnapshot(snapshot) {
+    if (!snapshot || typeof snapshot !== "object") {
+      this.setStatus("Project state rejected: snapshot object is required.");
+      return false;
+    }
+    const documentData = snapshot.documentData;
+    if (!documentData || typeof documentData !== "object" || !Array.isArray(documentData.objects)) {
+      this.setStatus("Project state rejected: documentData with objects array is required.");
+      return false;
+    }
     this.documentModel.setData(snapshot.documentData);
     const objectId = snapshot.selection?.objectId;
     const pointIndex = snapshot.selection?.pointIndex;
@@ -1264,6 +1273,7 @@ export class VectorMapEditorApp {
     this.interactionController.clearCollisionResult();
     this.syncUIFromDocument();
     this.render();
+    return true;
   }
 
   commitHistorySnapshot(label, beforeSnapshot) {

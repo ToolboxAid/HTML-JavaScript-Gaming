@@ -2139,6 +2139,30 @@ class ParallaxEditorApp {
 
 let parallaxSceneStudioApp = null;
 
+function isStrictWorkspaceParallaxSnapshot(snapshot) {
+  if (!snapshot || typeof snapshot !== "object") {
+    return false;
+  }
+  const documentModel = snapshot.documentModel;
+  const assetRegistry = snapshot.assetRegistry;
+  if (!documentModel || typeof documentModel !== "object") {
+    return false;
+  }
+  if (documentModel.schema !== "toolbox.parallax/1") {
+    return false;
+  }
+  if (!documentModel.map || typeof documentModel.map !== "object") {
+    return false;
+  }
+  if (!Array.isArray(documentModel.layers)) {
+    return false;
+  }
+  if (!assetRegistry || typeof assetRegistry !== "object") {
+    return false;
+  }
+  return true;
+}
+
 function bootParallaxSceneStudio() {
   if (parallaxSceneStudioApp) {
     window.parallaxSceneStudioApp = parallaxSceneStudioApp;
@@ -2151,13 +2175,15 @@ function bootParallaxSceneStudio() {
   app.applyProjectSystemState = function applyProjectSystemState(snapshot) {
     if (Date.now() <= Number(this.skipExternalProjectStateUntil || 0)) {
       this.skipExternalProjectStateUntil = 0;
-      return;
+      return true;
+    }
+    if (!isStrictWorkspaceParallaxSnapshot(snapshot)) {
+      this.updateStatus("Project state rejected: workspace snapshot is missing required parallax source data.");
+      return false;
     }
     const nextDocument = sanitizeParallaxDocument(snapshot?.documentModel);
     this.documentModel = nextDocument;
-    this.assetRegistry = snapshot?.assetRegistry && typeof snapshot.assetRegistry === "object"
-      ? sanitizeAssetRegistry(snapshot.assetRegistry)
-      : createAssetRegistry({ projectId: nextDocument?.map?.name || "parallax-project" });
+    this.assetRegistry = sanitizeAssetRegistry(snapshot.assetRegistry);
     this.selectedLayerId = typeof snapshot?.selectedLayerId === "string" && nextDocument.layers.some((layer) => layer.id === snapshot.selectedLayerId)
       ? snapshot.selectedLayerId
       : nextDocument.layers[0]?.id || "";
@@ -2169,6 +2195,7 @@ function bootParallaxSceneStudio() {
     this.syncInputsFromDocument();
     this.renderAll();
     this.updateStatus(`Project state loaded for ${this.documentModel.map.name}.`);
+    return true;
   };
   parallaxSceneStudioApp = app;
   window.parallaxSceneStudioApp = parallaxSceneStudioApp;

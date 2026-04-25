@@ -2953,6 +2953,36 @@ class TileMapEditorApp {
 
 let tileMapStudioApp = null;
 
+function isStrictWorkspaceTilemapSnapshot(snapshot) {
+  if (!snapshot || typeof snapshot !== "object") {
+    return false;
+  }
+  const documentModel = snapshot.documentModel;
+  const assetRegistry = snapshot.assetRegistry;
+  if (!documentModel || typeof documentModel !== "object") {
+    return false;
+  }
+  if (documentModel.schema !== "toolbox.tilemap/1") {
+    return false;
+  }
+  if (!documentModel.map || typeof documentModel.map !== "object") {
+    return false;
+  }
+  if (!Array.isArray(documentModel.layers)) {
+    return false;
+  }
+  if (!Array.isArray(documentModel.tileset)) {
+    return false;
+  }
+  if (!documentModel.tilesetAtlas || typeof documentModel.tilesetAtlas !== "object") {
+    return false;
+  }
+  if (!assetRegistry || typeof assetRegistry !== "object") {
+    return false;
+  }
+  return true;
+}
+
 function bootTileMapStudio() {
   if (tileMapStudioApp) {
     window.tileMapStudioApp = tileMapStudioApp;
@@ -2965,13 +2995,15 @@ function bootTileMapStudio() {
   app.applyProjectSystemState = function applyProjectSystemState(snapshot) {
     if (Date.now() <= Number(this.skipExternalProjectStateUntil || 0)) {
       this.skipExternalProjectStateUntil = 0;
-      return;
+      return true;
+    }
+    if (!isStrictWorkspaceTilemapSnapshot(snapshot)) {
+      this.updateStatus("Project state rejected: workspace snapshot is missing required tilemap source data.");
+      return false;
     }
     const nextDocument = sanitizeDocument(snapshot?.documentModel);
     this.documentModel = nextDocument;
-    this.assetRegistry = snapshot?.assetRegistry && typeof snapshot.assetRegistry === "object"
-      ? sanitizeAssetRegistry(snapshot.assetRegistry)
-      : createAssetRegistry({ projectId: nextDocument?.map?.name || "tilemap-project" });
+    this.assetRegistry = sanitizeAssetRegistry(snapshot.assetRegistry);
     this.selectedLayerId = typeof snapshot?.selectedLayerId === "string" && nextDocument.layers.some((layer) => layer.id === snapshot.selectedLayerId)
       ? snapshot.selectedLayerId
       : nextDocument.layers[0]?.id || "";
@@ -2983,6 +3015,7 @@ function bootTileMapStudio() {
     this.syncInputsFromDocument();
     this.renderAll();
     this.updateStatus(`Project state loaded for ${this.documentModel.map.name}.`);
+    return true;
   };
   tileMapStudioApp = app;
   window.tileMapStudioApp = tileMapStudioApp;

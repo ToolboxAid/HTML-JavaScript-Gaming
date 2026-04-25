@@ -68,8 +68,7 @@ function createVectorMapAdapter() {
       if (!state?.snapshot) {
         return false;
       }
-      api.applyHistorySnapshot(cloneValue(state.snapshot));
-      return true;
+      return api.applyHistorySnapshot(cloneValue(state.snapshot)) === true;
     }
   };
 }
@@ -101,8 +100,7 @@ function createTilemapAdapter() {
         return false;
       }
       if (typeof api.applyProjectSystemState === "function") {
-        api.applyProjectSystemState(cloneValue(state));
-        return true;
+        return api.applyProjectSystemState(cloneValue(state)) === true;
       }
       return false;
     }
@@ -136,8 +134,7 @@ function createParallaxAdapter() {
         return false;
       }
       if (typeof api.applyProjectSystemState === "function") {
-        api.applyProjectSystemState(cloneValue(state));
-        return true;
+        return api.applyProjectSystemState(cloneValue(state)) === true;
       }
       return false;
     }

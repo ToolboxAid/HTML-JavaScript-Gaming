@@ -1,5 +1,4 @@
 import {
-  createDefaultReplayEvents,
   getReplayEventAtTime,
   normalizeReplayEvents,
   safeParseJson,
@@ -25,7 +24,7 @@ const refs = {
 };
 
 const state = {
-  events: createDefaultReplayEvents(),
+  events: [],
   currentTimeMs: 0,
   durationMs: 0,
   playing: false,
@@ -252,11 +251,7 @@ function bindEvents() {
   }
   if (refs.loadSampleButton instanceof HTMLButtonElement) {
     refs.loadSampleButton.addEventListener("click", () => {
-      const sample = createDefaultReplayEvents();
-      if (refs.input instanceof HTMLTextAreaElement) {
-        refs.input.value = toPrettyJson({ events: sample });
-      }
-      applyEvents(sample, "sample");
+      setStatus("No built-in replay sample is available. Load replay JSON from source data.");
     });
   }
   if (refs.playButton instanceof HTMLButtonElement) {
@@ -345,10 +340,8 @@ function bootReplayVisualizer() {
         refs.input.value = toPrettyJson({ events: normalizeReplayEvents(hostReplay) });
       }
     } else {
-      applyEvents(state.events, "default replay");
-      if (refs.input instanceof HTMLTextAreaElement) {
-        refs.input.value = toPrettyJson({ events: state.events });
-      }
+      applyEvents([], "empty replay");
+      setStatus("Awaiting replay source JSON. No default replay is applied.");
     }
     void tryLoadPresetFromQuery();
     initialized = true;
