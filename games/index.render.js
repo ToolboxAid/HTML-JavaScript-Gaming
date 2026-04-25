@@ -68,10 +68,19 @@ function normalizePresetPath(value) {
   if (normalized.startsWith("/samples/")) {
     return normalized;
   }
+  if (normalized.startsWith("/games/")) {
+    return normalized;
+  }
   if (normalized.startsWith("samples/")) {
     return `/${normalized}`;
   }
+  if (normalized.startsWith("games/")) {
+    return `/${normalized}`;
+  }
   if (normalized.startsWith("./samples/")) {
+    return `/${normalized.slice(2)}`;
+  }
+  if (normalized.startsWith("./games/")) {
     return `/${normalized.slice(2)}`;
   }
   return "";

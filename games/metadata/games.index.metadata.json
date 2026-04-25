@@ -67,7 +67,7 @@
       "roundtripToolPresets": [
         {
           "toolId": "sprite-editor",
-          "presetPath": "/samples/phase-14/1414/sample-1414-sprite-editor.json"
+          "presetPath": "/games/Breakout/assets/presets/game-breakout-sprite-editor.json"
         },
         {
           "toolId": "tile-map-editor",

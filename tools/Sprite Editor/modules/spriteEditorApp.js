@@ -671,10 +671,19 @@ function normalizeSamplePresetPath(pathValue) {
   if (trimmed.startsWith("/samples/")) {
     return trimmed;
   }
+  if (trimmed.startsWith("/games/")) {
+    return trimmed;
+  }
   if (trimmed.startsWith("./samples/")) {
     return trimmed;
   }
+  if (trimmed.startsWith("./games/")) {
+    return trimmed;
+  }
   if (trimmed.startsWith("samples/")) {
+    return `./${trimmed}`;
+  }
+  if (trimmed.startsWith("games/")) {
     return `./${trimmed}`;
   }
   return "";

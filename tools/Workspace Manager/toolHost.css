@@ -19,7 +19,8 @@ body.tool-host-page {
   padding: 0;
 }
 
-.tool-host-workspace__mount > iframe[data-tool-host-frame] {
+.tool-host-workspace__mount > iframe[data-tool-host-frame],
+.tool-host-workspace__mount > iframe[data-game-host-frame] {
   display: block;
   width: 100%;
   height: 100%;

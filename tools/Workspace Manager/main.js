@@ -102,7 +102,7 @@ const hasAvailableTools = toolIds.length > 0;
 let currentGameFrame = null;
 let currentGameHostContextId = "";
 const TOOL_LAUNCH_PARAM_PREFIXES = Object.freeze({
-  samplePresetPath: ["/samples/"],
+  samplePresetPath: ["/samples/", "/games/"],
   gameHref: ["/games/"],
   workspaceHref: ["/tools/Workspace%20Manager/", "/tools/Workspace Manager/"],
   returnTo: ["/games/", "/samples/"]
