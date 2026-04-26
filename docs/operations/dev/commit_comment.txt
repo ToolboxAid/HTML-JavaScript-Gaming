@@ -1,9 +1,9 @@
-Fix Workspace Manager host size and tool resolution
+Repair Workspace Manager pager button events
 
 PR Details:
-- Expands Workspace Manager host and mount container to fill available browser page area.
-- Resolves explicit tool query values through the tool registry.
-- Shows resolved tool name in pager instead of No tool available.
-- Mounts/activates selected tool.
-- Keeps first-tool default only when no explicit tool is provided.
+- Fixes Prev/Next click handling for the mounted Workspace Manager pager.
+- Keeps resolved tool labels working.
+- Updates selected and mounted tool on pager navigation.
+- Ensures game launches work without requiring tool=.
+- Avoids stale DOM references and duplicate event listeners.
 - Does not restore legacy game query fallback.

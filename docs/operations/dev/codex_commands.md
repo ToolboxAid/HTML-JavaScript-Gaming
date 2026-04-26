@@ -1,4 +1,4 @@
-# Codex Commands — BUILD_PR_LEVEL_20_25_FIX_WORKSPACE_HOST_SIZE_AND_TOOL_RESOLUTION
+# Codex Commands — BUILD_PR_LEVEL_20_26_REPAIR_WORKSPACE_PAGER_BUTTON_EVENTS
 
 ## Model
 GPT-5.4 or GPT-5.3-codex
@@ -11,63 +11,58 @@ High
 ```text
 Read docs/dev/codex_rules.md first.
 
-Execute BUILD_PR_LEVEL_20_25_FIX_WORKSPACE_HOST_SIZE_AND_TOOL_RESOLUTION.
+Execute BUILD_PR_LEVEL_20_26_REPAIR_WORKSPACE_PAGER_BUTTON_EVENTS.
 
-Current UAT failure:
-- Page renders in the upper-left corner too small to use.
-- It should fill the browser page area top/bottom/left/right.
-- This is not browser fullscreen mode; it is full available page layout.
-- Pager shows: [PREV]No tool available[NEXT]
-- Example URL:
-  tools/Workspace Manager/index.html?gameId=Bouncing-ball&mount=game&tool=palette-browser
+Current UAT:
+- Pager now shows: [PREV]Palette Browser / Manager[NEXT]
+- This means tool label resolution works.
+- Buttons do not function.
 
 Goal:
-Fix Workspace Manager host/mount layout size and resolve selected tool query.
+Fix only the Workspace Manager pager button events.
 
-Required layout:
-- html/body/tool-host-page/tool-host-workspace/tool-host-workspace__mount must support full available browser size.
-- No tiny fixed upper-left viewport.
-- No clipped mini scrollbox.
-- Mounted Workspace Manager content should fill available width/height.
-
-Required tool behavior:
-- read explicit tool query.
-- resolve tool=palette-browser through existing registry/SSoT.
-- pager displays resolved display name, e.g. Palette Browser / Manager.
-- selected tool mounts/activates.
-- if no explicit tool query exists, select/mount first available tool.
-- if explicit tool is invalid, show visible diagnostic inside page/mount container.
+Required:
+- Bind Prev/Next handlers to the actual rendered pager buttons inside mounted content.
+- Ensure handlers are attached after pager render or through delegated handling from stable parent.
+- Do not bind to removed/stale top-shell pager nodes.
+- Avoid duplicate event listeners on repeated render.
+- NEXT updates selected tool, updates label, and remounts/activates selected tool.
+- PREV updates selected tool, updates label, and remounts/activates selected tool.
+- Game launch must work without tool query:
+  tools/Workspace Manager/index.html?gameId=Bouncing-ball&mount=game
+- tool= may initialize selection if present, but must not be required.
 
 Forbidden:
 - changing samples
-- changing labels
+- changing game launch labels
 - restoring gameId || game
-- legacy game query fallback
-- second SSoT
+- requiring tool=
+- duplicate pager
+- moving pager back to top host shell
 - new header/banner
 - broad Workspace Manager refactor
 - start_of_day changes
 
 Likely files:
 - tools/Workspace Manager/main.js
-- tools/Workspace Manager/toolHost.css
-- any existing Workspace Manager mounted-content CSS only if directly responsible for tiny viewport
+- maybe tools/shared/platformShell.js only if pager is rendered/bound there
 
 Validation:
-Create docs/dev/reports/workspace_host_size_and_tool_resolution_validation.md with:
+Create docs/dev/reports/workspace_pager_button_events_validation.md with:
 - changed files
-- proof host page fills browser viewport
-- proof mount container fills available browser area
-- proof no tiny upper-left constrained viewport remains
-- proof tool=palette-browser resolves to display name
-- proof pager no longer shows No tool available for valid game/tool
-- proof selected tool mounts/activates
-- proof missing tool selects first available tool
-- proof invalid tool renders visible diagnostic
+- root cause of non-functioning buttons
+- proof pager label still resolves
+- proof NEXT changes selected tool label
+- proof NEXT remounts/activates selected tool
+- proof PREV changes selected tool label
+- proof PREV remounts/activates selected tool
+- proof game launch works without tool=
+- proof tool= is not required
+- proof no duplicate event listeners on repeated render
 - proof gameId || game fallback not restored
 - proof samples remain untouched
 - anti-pattern self-check
 
 Return ZIP at:
-tmp/BUILD_PR_LEVEL_20_25_FIX_WORKSPACE_HOST_SIZE_AND_TOOL_RESOLUTION.zip
+tmp/BUILD_PR_LEVEL_20_26_REPAIR_WORKSPACE_PAGER_BUTTON_EVENTS.zip
 ```

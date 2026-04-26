@@ -108,6 +108,14 @@ const TOOL_LAUNCH_PARAM_PREFIXES = Object.freeze({
   returnTo: ["/games/", "/samples/"]
 });
 let selectedToolId = refs.toolSelect instanceof HTMLSelectElement ? refs.toolSelect.value : "";
+let pagerEventsBound = false;
+
+function refreshPagerRefs() {
+  refs.toolSelect = document.querySelector("[data-tool-host-select]");
+  refs.prevButton = document.querySelector("[data-tool-host-prev]");
+  refs.nextButton = document.querySelector("[data-tool-host-next]");
+  refs.currentLabel = document.querySelector("[data-tool-host-current-label]");
+}
 
 function normalizeTextParam(value) {
   return typeof value === "string" ? value.trim() : "";
@@ -185,6 +193,7 @@ function readForwardedToolLaunchParams() {
 }
 
 function readSelectedToolId() {
+  refreshPagerRefs();
   if (refs.toolSelect instanceof HTMLSelectElement) {
     return refs.toolSelect.value;
   }
@@ -192,6 +201,7 @@ function readSelectedToolId() {
 }
 
 function writeSelectedToolId(toolId) {
+  refreshPagerRefs();
   const normalizedToolId = typeof toolId === "string" ? toolId.trim() : "";
   selectedToolId = normalizedToolId;
   if (refs.toolSelect instanceof HTMLSelectElement) {
@@ -227,6 +237,7 @@ function renderMountDiagnostic(message, detail = "") {
 }
 
 function setCurrentLabel(text) {
+  refreshPagerRefs();
   if (refs.currentLabel instanceof HTMLElement) {
     refs.currentLabel.textContent = text;
   }
@@ -465,6 +476,7 @@ async function mountGameFrame(gameEntry) {
 }
 
 function syncControlState() {
+  refreshPagerRefs();
   const selectedToolId = readSelectedToolId();
   const hasSelection = !!selectedToolId && toolIds.includes(selectedToolId) && !!getToolHostEntryById(manifest, selectedToolId);
   const hasMount = !!runtime.getCurrentMount();
@@ -484,6 +496,7 @@ function syncControlState() {
 }
 
 function populateToolSelect(initialToolId) {
+  refreshPagerRefs();
   if (refs.toolSelect instanceof HTMLSelectElement) {
     refs.toolSelect.innerHTML = toolIds
       .map((toolId) => getToolHostEntryById(manifest, toolId))
@@ -510,6 +523,49 @@ function applyToolsUsedFilterForGame(gameEntry, preferredToolId = "") {
   populateToolSelect(initialToolId);
   updateStandaloneHref(initialToolId);
   syncControlState();
+}
+
+function bindPagerDelegatedEvents() {
+  if (pagerEventsBound || typeof document === "undefined") {
+    return;
+  }
+  pagerEventsBound = true;
+
+  document.addEventListener("click", (event) => {
+    const target = event.target instanceof Element ? event.target : null;
+    if (!target) {
+      return;
+    }
+
+    if (target.closest("[data-tool-host-prev]")) {
+      event.preventDefault();
+      if (!selectToolByOffset(-1)) {
+        return;
+      }
+      mountSelectedTool("prev");
+      return;
+    }
+
+    if (target.closest("[data-tool-host-next]")) {
+      event.preventDefault();
+      if (!selectToolByOffset(1)) {
+        return;
+      }
+      mountSelectedTool("next");
+    }
+  });
+
+  document.addEventListener("change", (event) => {
+    const target = event.target instanceof HTMLSelectElement ? event.target : null;
+    if (!target || !target.matches("[data-tool-host-select]")) {
+      return;
+    }
+    refs.toolSelect = target;
+    writeSelectedToolId(target.value);
+    updateSwitchMeta();
+    updateStandaloneHref(readSelectedToolId());
+    mountSelectedTool("select");
+  });
 }
 
 const runtime = createToolHostRuntime({
@@ -597,27 +653,11 @@ function mountSelectedTool(source = "manual") {
 }
 
 function bindEvents() {
+  bindPagerDelegatedEvents();
+
   if (refs.mountButton instanceof HTMLButtonElement) {
     refs.mountButton.addEventListener("click", () => {
       mountSelectedTool("button");
-    });
-  }
-
-  if (refs.prevButton instanceof HTMLButtonElement) {
-    refs.prevButton.addEventListener("click", () => {
-      if (!selectToolByOffset(-1)) {
-        return;
-      }
-      mountSelectedTool("prev");
-    });
-  }
-
-  if (refs.nextButton instanceof HTMLButtonElement) {
-    refs.nextButton.addEventListener("click", () => {
-      if (!selectToolByOffset(1)) {
-        return;
-      }
-      mountSelectedTool("next");
     });
   }
 
@@ -625,14 +665,6 @@ function bindEvents() {
     refs.unmountButton.addEventListener("click", () => {
       runtime.unmountCurrentTool("manual");
       syncControlState();
-    });
-  }
-
-  if (refs.toolSelect instanceof HTMLSelectElement) {
-    refs.toolSelect.addEventListener("change", () => {
-      updateSwitchMeta();
-      updateStandaloneHref(readSelectedToolId());
-      mountSelectedTool("select");
     });
   }
 

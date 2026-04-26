@@ -4,46 +4,35 @@ These rules OVERRIDE all other instructions.
 
 ## This PR
 
-Fix only:
-- Workspace Manager host/mount size
-- tool query resolution for pager/mount
+Fix only Workspace Manager pager button event behavior.
 
 Allowed:
-- targeted Workspace Manager CSS/layout changes
-- targeted Workspace Manager tool resolution changes
+- targeted pager event binding repair
+- targeted state update/remount repair
 - validation report
 
 Forbidden:
 - broad cleanup
 - unrelated refactoring
 - samples changes
-- game launch label changes
-- legacy query fallback
-- second SSoT
+- game route label changes
+- requiring `tool=` for game launch
+- restoring `gameId || game`
+- duplicate pager
+- top-shell pager restoration
 - new header/banner
 - start_of_day changes
 
-## Required Layout
+## Required Behavior
 
-Workspace Manager must fill the browser viewport/page area.
+Pager buttons must bind to rendered buttons inside mounted content.
 
-Do not leave:
-- tiny upper-left box
-- clipped mini pane
-- constrained host shell
-- blank mount container
+`?gameId=<id>&mount=game` must work without `tool=`.
 
-## Required Tool Resolution
-
-For valid:
-`tool=palette-browser`
-
-Pager must show resolved display name, not `No tool available`.
-
-## User-Approved Behavior
-
-If no explicit tool query exists:
-- first available tool may be selected/mounted on load.
+Prev/Next must:
+- update selected tool
+- update label
+- remount/activate selected tool
 
 ## Still Forbidden
 
@@ -55,13 +44,11 @@ Do not restore:
 
 ## Anti-Patterns Forbidden
 
+- stale DOM references
+- duplicate event listeners on repeated render
 - variable aliasing
 - pass-through variables
 - duplicate state
-- vague names
-- hidden query fallback
-- duplicated launch paths
-- silent redirects
 - silent caught errors
 - broad refactor
 - scope expansion
