@@ -1,5 +1,6 @@
-PR 8.2: Schema enforcement + sample compliance
+PR 8.3: Generate sample palettes from actual sample colors
 
-- Enforced $schema usage across samples
-- Aligned sample configs with tool schemas
-- Ensured palette schema compliance
+- Documented repo-realistic sample palette generation
+- Removed assumptions about nonexistent sample config/palette files
+- Added schema-compliant generated palette rules
+- Preserved schema-driven validation boundaries

@@ -1,7 +1,6 @@
 # Sample Compliance Checklist
 
-- [ ] All samples include config.json
-- [ ] config.json has $schema reference
-- [ ] palette.json has $schema reference
+- [ ] All sample wrapper JSON files include `$schema`
+- [ ] Generated `sample.palette.json` (when colors exist) includes `$schema`
 - [ ] No extra fields outside schema
 - [ ] No missing required fields

@@ -15,6 +15,6 @@ Enforce schema usage across all samples and ensure compliance with tool + shared
 - No fallback or normalization allowed
 
 ## Validation Targets
-- samples/**/config.json -> tool.schema.json
-- samples/**/palette.json -> palette.schema.json
-- workspace.manifest.json -> workspace.schema.json
+- samples/**/*.json -> sample.tool-payload.schema.json (for sample wrapper documents)
+- generated sample palette docs (for example `samples/phase-XX/XXXX/sample.palette.json`) -> palette.schema.json
+- workspace manifest documents embedded in sample payloads or workspace project files -> workspace.manifest.schema.json

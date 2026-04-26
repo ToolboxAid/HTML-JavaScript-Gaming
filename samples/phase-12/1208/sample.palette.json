@@ -1,0 +1,224 @@
+{
+  "$schema": "../../../tools/schemas/palette.schema.json",
+  "schema": "html-js-gaming.palette",
+  "version": 1,
+  "name": "Sample 1208 Palette",
+  "source": "generated-from-sample-colors",
+  "entries": [
+    {
+      "symbol": "s001",
+      "hex": "#232323",
+      "name": "color-001"
+    },
+    {
+      "symbol": "s002",
+      "hex": "#EDEDED",
+      "name": "color-002"
+    },
+    {
+      "symbol": "s003",
+      "hex": "#BC5D58",
+      "name": "color-003"
+    },
+    {
+      "symbol": "s004",
+      "hex": "#FF5349",
+      "name": "color-004"
+    },
+    {
+      "symbol": "s005",
+      "hex": "#FDBCB4",
+      "name": "color-005"
+    },
+    {
+      "symbol": "s006",
+      "hex": "#B4674D",
+      "name": "color-006"
+    },
+    {
+      "symbol": "s007",
+      "hex": "#FF7538",
+      "name": "color-007"
+    },
+    {
+      "symbol": "s008",
+      "hex": "#FAA76C",
+      "name": "color-008"
+    },
+    {
+      "symbol": "s009",
+      "hex": "#FFCFAB",
+      "name": "color-009"
+    },
+    {
+      "symbol": "s010",
+      "hex": "#FDD9B5",
+      "name": "color-010"
+    },
+    {
+      "symbol": "s011",
+      "hex": "#95918C",
+      "name": "color-011"
+    },
+    {
+      "symbol": "s012",
+      "hex": "#DBD7D2",
+      "name": "color-012"
+    },
+    {
+      "symbol": "s013",
+      "hex": "#FFB653",
+      "name": "color-013"
+    },
+    {
+      "symbol": "s014",
+      "hex": "#FDDB6D",
+      "name": "color-014"
+    },
+    {
+      "symbol": "s015",
+      "hex": "#FCE883",
+      "name": "color-015"
+    },
+    {
+      "symbol": "s016",
+      "hex": "#F0E891",
+      "name": "color-016"
+    },
+    {
+      "symbol": "s017",
+      "hex": "#C5E384",
+      "name": "color-017"
+    },
+    {
+      "symbol": "s018",
+      "hex": "#1CAC78",
+      "name": "color-018"
+    },
+    {
+      "symbol": "s019",
+      "hex": "#80DAEB",
+      "name": "color-019"
+    },
+    {
+      "symbol": "s020",
+      "hex": "#199EBD",
+      "name": "color-020"
+    },
+    {
+      "symbol": "s021",
+      "hex": "#1DACD6",
+      "name": "color-021"
+    },
+    {
+      "symbol": "s022",
+      "hex": "#1F75FE",
+      "name": "color-022"
+    },
+    {
+      "symbol": "s023",
+      "hex": "#B0B7C6",
+      "name": "color-023"
+    },
+    {
+      "symbol": "s024",
+      "hex": "#5D76CB",
+      "name": "color-024"
+    },
+    {
+      "symbol": "s025",
+      "hex": "#7366BD",
+      "name": "color-025"
+    },
+    {
+      "symbol": "s026",
+      "hex": "#926EAE",
+      "name": "color-026"
+    },
+    {
+      "symbol": "s027",
+      "hex": "#CDA4DE",
+      "name": "color-027"
+    },
+    {
+      "symbol": "s028",
+      "hex": "#C0448F",
+      "name": "color-028"
+    },
+    {
+      "symbol": "s029",
+      "hex": "#FFAACC",
+      "name": "color-029"
+    },
+    {
+      "symbol": "s030",
+      "hex": "#F75394",
+      "name": "color-030"
+    },
+    {
+      "symbol": "s031",
+      "hex": "#EE204D",
+      "name": "color-031"
+    },
+    {
+      "symbol": "s032",
+      "hex": "#FC2847",
+      "name": "color-032"
+    },
+    {
+      "symbol": "s033",
+      "hex": "#FFFFFF",
+      "name": "color-033"
+    },
+    {
+      "symbol": "s034",
+      "hex": "#B6DDFF",
+      "name": "color-034"
+    },
+    {
+      "symbol": "s035",
+      "hex": "#8EC5F4",
+      "name": "color-035"
+    },
+    {
+      "symbol": "s036",
+      "hex": "#6F9DCD",
+      "name": "color-036"
+    },
+    {
+      "symbol": "s037",
+      "hex": "#F9F0C1",
+      "name": "color-037"
+    },
+    {
+      "symbol": "s038",
+      "hex": "#6F87A8",
+      "name": "color-038"
+    },
+    {
+      "symbol": "s039",
+      "hex": "#95ABC3",
+      "name": "color-039"
+    },
+    {
+      "symbol": "s040",
+      "hex": "#5568D2",
+      "name": "color-040"
+    },
+    {
+      "symbol": "s041",
+      "hex": "#3748A8",
+      "name": "color-041"
+    },
+    {
+      "symbol": "s042",
+      "hex": "#218F86",
+      "name": "color-042"
+    },
+    {
+      "symbol": "s043",
+      "hex": "#62DCCC",
+      "name": "color-043"
+    }
+  ]
+}

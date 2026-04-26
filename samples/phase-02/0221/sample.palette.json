@@ -1,0 +1,19 @@
+{
+  "$schema": "../../../tools/schemas/palette.schema.json",
+  "schema": "html-js-gaming.palette",
+  "version": 1,
+  "name": "Sample 0221 Palette",
+  "source": "generated-from-sample-colors",
+  "entries": [
+    {
+      "symbol": "s001",
+      "hex": "#1F2937",
+      "name": "color-001"
+    },
+    {
+      "symbol": "s002",
+      "hex": "#6366F1",
+      "name": "color-002"
+    }
+  ]
+}
