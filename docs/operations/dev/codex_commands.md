@@ -1,37 +1,26 @@
-MODEL: GPT-5.3-codex
-REASONING: medium
+# Codex Commands - BUILD_PR_LEVEL_20_2_WORKSPACE_MANAGER_GAMES_TILE_UAT_RECOVERY
 
-COMMAND:
-Implement BUILD_PR_HEADER_INTRO_OVERLAY_COLLAPSED_HEADER_RESTYLE as one narrow style PR.
+## Model
 
-Requirements:
-- Move the shared Header and Intro visual block on top of the hero image
-- No background behind the overlaid Header and Intro block
-- Overlay foreground color: #ed9700
-- Collapsed header background color: #7a00df
-- Remove corner rounding from the header container
-- Exclude page-shell from this PR; do not modify page-shell selectors/rules
+GPT-5.4
 
-Constraints:
-- shared theme CSS only where possible under src/engine/theme/
-- no embedded <style>
-- no inline style=
-- no JS style string injection
-- no repo-wide cleanup
-- smallest scoped valid change
-- preserve existing collapse behavior
+## Reasoning
 
-Validation:
-- targeted shared entry pages show overlay correctly
-- collapsed state shows #7a00df background
-- header border radius removed
-- no page-shell changes
-- no regressions / no console errors
+High
 
-Roadmap:
-- update roadmap status only if there is an existing matching item for this work
-- do not rewrite roadmap text
-- status-only transition backed by the implemented/tested change
+## Command
 
-Package output to:
-<project folder>/tmp/BUILD_PR_HEADER_INTRO_OVERLAY_COLLAPSED_HEADER_RESTYLE.zip
+Run from the repo root after applying this bundle:
+
+```powershell
+$rules = Get-Content "docs/dev/codex_rules.md" -Raw
+$build = Get-Content "docs/pr/BUILD_PR_LEVEL_20_2_WORKSPACE_MANAGER_GAMES_TILE_UAT_RECOVERY.md" -Raw
+codex run "$rules`n`n$build"
+```
+
+## Required Codex Behavior
+
+- Read `PROJECT_INSTRUCTIONS.md` before editing.
+- Follow `docs/dev/codex_rules.md` exactly.
+- Keep the change limited to the Workspace Manager launch UAT path from `games/index.html`.
+- Produce `tmp/BUILD_PR_LEVEL_20_2_WORKSPACE_MANAGER_GAMES_TILE_UAT_RECOVERY.zip` after implementation.

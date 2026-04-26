@@ -1,2 +1,7 @@
-Restyle shared header/intro to overlay image with transparent background and requested colors.
-Exclude page-shell, remove header rounding, preserve collapse behavior.
+Recover Workspace Manager games tile UAT path
+
+PR Details:
+- Uses PROJECT_INSTRUCTIONS.md as the active workflow contract.
+- Adds mandatory Codex anti-pattern guard rules.
+- Directs a smallest-scoped BUILD for opening Workspace Manager from games/index.html.
+- Requires UAT report and repo-structured Codex ZIP output.

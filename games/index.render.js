@@ -235,6 +235,9 @@ function renderCard(row, instanceKey = "main") {
   const article = document.createElement("article");
   article.className = "card-link game-card";
   article.dataset.gameId = row.id;
+  if (row.workspaceHref) {
+    article.dataset.workspaceHref = row.workspaceHref;
+  }
 
   const launchHref = row.workspaceHref || "";
   const previewLaunchHref = row.href || "";
@@ -395,6 +398,28 @@ export async function initGamesIndex() {
     renderPinned(pinnedContainer, model.rows.filter((row) => row.pinned));
   };
 
+  const handleCardLaunch = (event) => {
+    if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) {
+      return;
+    }
+    const target = event.target;
+    if (!(target instanceof Element)) {
+      return;
+    }
+    if (target.closest("a, button, input, label, select, textarea, summary")) {
+      return;
+    }
+    const card = target.closest(".game-card[data-workspace-href]");
+    if (!(card instanceof HTMLElement)) {
+      return;
+    }
+    const workspaceHref = normalize(card.dataset.workspaceHref);
+    if (!workspaceHref) {
+      return;
+    }
+    window.location.assign(workspaceHref);
+  };
+
   const handlePin = (event) => {
     const target = event.target;
     if (!(target instanceof HTMLInputElement) || target.type !== "checkbox") {
@@ -418,6 +443,8 @@ export async function initGamesIndex() {
   toolSelect.addEventListener("change", apply);
   tagSelect.addEventListener("change", apply);
   searchInput.addEventListener("input", apply);
+  container.addEventListener("click", handleCardLaunch);
+  pinnedContainer.addEventListener("click", handleCardLaunch);
   container.addEventListener("change", handlePin);
   pinnedContainer.addEventListener("change", handlePin);
   apply();

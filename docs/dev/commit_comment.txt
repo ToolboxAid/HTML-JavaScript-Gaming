@@ -1,3 +1,1 @@
-Add Phase 20 numbered tool presets and sample-to-tool launch integration
-
-<BUILD_PR_LEVEL_20_1_PHASE20_TOOL_PRESET_INTEGRATION>
+Enforce extended anti-pattern rules in codex_rules.md
