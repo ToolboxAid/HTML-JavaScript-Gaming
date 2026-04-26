@@ -1,9 +1,9 @@
-Repair Workspace Manager pager button events
+Force delegated Workspace Manager pager events
 
 PR Details:
-- Fixes Prev/Next click handling for the mounted Workspace Manager pager.
-- Keeps resolved tool labels working.
-- Updates selected and mounted tool on pager navigation.
-- Ensures game launches work without requiring tool=.
-- Avoids stale DOM references and duplicate event listeners.
+- Replaces stale/direct pager button binding with delegated click handling from a stable parent.
+- Ensures PREV/NEXT handlers fire for rendered pager buttons.
+- Updates selected tool, label, and mounted content.
+- Adds diagnostics for pager click/state failures.
+- Avoids duplicate listeners on repeated render.
 - Does not restore legacy game query fallback.

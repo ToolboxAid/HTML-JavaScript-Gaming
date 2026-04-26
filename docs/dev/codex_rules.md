@@ -4,48 +4,51 @@ These rules OVERRIDE all other instructions.
 
 ## This PR
 
-Fix only Workspace Manager pager button event behavior.
+Fix only Workspace Manager pager button events using delegated click handling.
 
 Allowed:
-- targeted pager event binding repair
-- targeted state update/remount repair
+- targeted event handling changes
+- targeted diagnostics for pager clicks/state failures
 - validation report
 
 Forbidden:
-- broad cleanup
-- unrelated refactoring
-- samples changes
-- game route label changes
-- requiring `tool=` for game launch
-- restoring `gameId || game`
+- moving pager location
 - duplicate pager
-- top-shell pager restoration
 - new header/banner
+- dropdown + Select Tool + Mount flow
+- requiring `tool=`
+- restoring `gameId || game`
+- samples changes
+- broad refactor
 - start_of_day changes
 
-## Required Behavior
+## Required Event Pattern
 
-Pager buttons must bind to rendered buttons inside mounted content.
+Use delegated click handling from a stable parent.
 
-`?gameId=<id>&mount=game` must work without `tool=`.
+Do not rely only on direct button listeners on nodes that are recreated.
 
-Prev/Next must:
-- update selected tool
-- update label
-- remount/activate selected tool
+## Required Selectors
 
-## Still Forbidden
+Use:
+- `[data-tool-host-prev]`
+- `[data-tool-host-next]`
 
-Do not restore:
-- `gameId || game`
-- legacy `game` query fallback
-- hidden fallback routing
-- stale memory reuse
+Do not use button text as logic.
+
+## Required Diagnostics
+
+Silent no-op is forbidden.
+
+If click handler cannot proceed:
+- console diagnostic
+- visible diagnostic if state/tool list is missing
 
 ## Anti-Patterns Forbidden
 
 - stale DOM references
 - duplicate event listeners on repeated render
+- DOM text as state source
 - variable aliasing
 - pass-through variables
 - duplicate state

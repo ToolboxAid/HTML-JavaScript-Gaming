@@ -20,6 +20,7 @@ let workspaceController = null;
 let headerExpandedState = null;
 let runtimeMonitoringHooks = null;
 let bindingRefreshHandlersBound = false;
+let workspacePagerDelegatedBound = false;
 let lastWorkspaceUiStateKey = "";
 let lastLockedSurfaceElement = null;
 
@@ -873,12 +874,12 @@ function renderWorkspaceSummary(currentTool) {
         <button type="button" class="tools-platform-frame__project-button is-secondary" data-workspace-action="close"${workspaceActionDisabled}>Close Workspace</button>
         <input type="file" class="tools-platform-frame__project-input" data-workspace-open-input accept=".json,application/json" />
       </div>
-      <section class="tool-host-pager" aria-label="Workspace tool pager" data-tool-host-pager><button type="button" class="tool-host-pager__button" data-tool-host-prev>[PREV]</button><span class="tool-host-pager__name" data-tool-host-current-label>${escapeHtml(currentTool?.displayName || "Tool")}</span><button type="button" class="tool-host-pager__button" data-tool-host-next>[NEXT]</button><select id="tool-host-select" class="tool-host-pager__select" tabindex="-1" aria-hidden="true" data-tool-host-select></select></section>
       <div class="tools-platform-frame__project-copy">
         <span class="tools-platform-frame__project-label">Workspace</span>
         <strong class="tools-platform-frame__project-name">${escapeHtml(workspaceName)}${escapeHtml(dirtyMark)}</strong>
         <span class="tools-platform-frame__project-meta">${escapeHtml(readiness)}</span>
-      </div>      
+      </div>       
+      <section class="tool-host-pager" aria-label="Workspace tool pager" data-tool-host-pager><button type="button" class="tool-host-pager__button" data-tool-host-prev>[PREV]</button><span class="tool-host-pager__name" data-tool-host-current-label>${escapeHtml(currentTool?.displayName || "Tool")}</span><button type="button" class="tool-host-pager__button" data-tool-host-next>[NEXT]</button><select id="tool-host-select" class="tool-host-pager__select" tabindex="-1" aria-hidden="true" data-tool-host-select></select></section>
     </div>
   `;
 }
@@ -1174,6 +1175,48 @@ function applySidebarAccordionRules() {
   });
 }
 
+function bindWorkspacePagerDelegatedEvents() {
+  if (workspacePagerDelegatedBound) {
+    return;
+  }
+  const headerHost = queryFirst("[data-tools-platform-header]");
+  if (!(headerHost instanceof HTMLElement)) {
+    return;
+  }
+
+  workspacePagerDelegatedBound = true;
+  headerHost.addEventListener("click", (event) => {
+    const target = event.target instanceof Element ? event.target : null;
+    if (!target) {
+      return;
+    }
+
+    const prevButton = target.closest("[data-tool-host-prev]");
+    const nextButton = target.closest("[data-tool-host-next]");
+    if (!prevButton && !nextButton) {
+      return;
+    }
+
+    event.preventDefault();
+    const action = prevButton ? "prev" : "next";
+    console.info(`[WorkspacePager] ${action.toUpperCase()} handler fired.`);
+
+    if (typeof window === "undefined" || window.top === window) {
+      console.warn("[WorkspacePager] No parent host available for delegated pager action.");
+      return;
+    }
+
+    try {
+      window.top.postMessage({
+        type: "workspace-pager-action",
+        action
+      }, window.location.origin);
+    } catch (error) {
+      console.warn("[WorkspacePager] Failed to dispatch delegated pager action.", error);
+    }
+  });
+}
+
 function renderShell(currentTool) {
   const headerHost = queryFirst("[data-tools-platform-header]");
   const statusHost = queryFirst("[data-tools-platform-status]");
@@ -1189,6 +1232,7 @@ function renderShell(currentTool) {
   if (headerHost) {
     headerHost.innerHTML = renderHeaderMarkup(currentTool, isHeaderExpanded);
   }
+  bindWorkspacePagerDelegatedEvents();
 
   if (pageHeaderAccordion instanceof HTMLDetailsElement) {
     pageHeaderAccordion.open = isHeaderExpanded;

@@ -109,6 +109,7 @@ const TOOL_LAUNCH_PARAM_PREFIXES = Object.freeze({
 });
 let selectedToolId = refs.toolSelect instanceof HTMLSelectElement ? refs.toolSelect.value : "";
 let pagerEventsBound = false;
+let pagerMessageBridgeBound = false;
 
 function refreshPagerRefs() {
   refs.toolSelect = document.querySelector("[data-tool-host-select]");
@@ -568,6 +569,55 @@ function bindPagerDelegatedEvents() {
   });
 }
 
+function bindPagerMessageBridge() {
+  if (pagerMessageBridgeBound || typeof window === "undefined") {
+    return;
+  }
+  pagerMessageBridgeBound = true;
+
+  window.addEventListener("message", (event) => {
+    if (event.origin !== window.location.origin) {
+      return;
+    }
+    const payload = event.data && typeof event.data === "object" ? event.data : null;
+    if (!payload || payload.type !== "workspace-pager-action") {
+      return;
+    }
+
+    const action = payload.action === "prev" || payload.action === "next"
+      ? payload.action
+      : "";
+    if (!action) {
+      return;
+    }
+
+    console.info(`[WorkspaceManager] ${action.toUpperCase()} delegated handler fired.`);
+
+    if (toolIds.length === 0) {
+      writeStatus("No active tools are currently available for Workspace Manager.");
+      renderMountDiagnostic(
+        "No active tools are available for delegated pager action.",
+        "Load a valid game/tool context before switching tools."
+      );
+      syncControlState();
+      return;
+    }
+
+    const offset = action === "prev" ? -1 : 1;
+    if (!selectToolByOffset(offset)) {
+      writeStatus(`Unable to select ${action === "prev" ? "previous" : "next"} tool.`);
+      renderMountDiagnostic(
+        `Unable to select ${action === "prev" ? "previous" : "next"} tool.`,
+        "Tool list state is unavailable for pager navigation."
+      );
+      syncControlState();
+      return;
+    }
+
+    mountSelectedTool(action);
+  });
+}
+
 const runtime = createToolHostRuntime({
   manifest,
   mountContainer: refs.mountContainer,
@@ -654,6 +704,7 @@ function mountSelectedTool(source = "manual") {
 
 function bindEvents() {
   bindPagerDelegatedEvents();
+  bindPagerMessageBridge();
 
   if (refs.mountButton instanceof HTMLButtonElement) {
     refs.mountButton.addEventListener("click", () => {
