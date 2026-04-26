@@ -1,10 +1,14 @@
 MODEL: GPT-5.3-codex
 
 TASK:
-Audit all sample tool payloads:
-- ensure no palette
-- ensure no paletteRef
-- ensure no paletteId
+Audit all tool payloads:
+- samples/**/sample.*.*.json
+- workspace manifests if present
 
-Do not modify runtime
-Do not modify start_of_day
+VERIFY:
+- $schema path valid
+- tool matches schema
+- required fields present
+
+Do NOT modify runtime
+Do NOT modify start_of_day

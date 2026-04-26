@@ -1,1 +1,1 @@
-PR 8.21: Palette shared data audit
+PR 8.22: Full tool schema conformance audit

@@ -1,7 +1,7 @@
 # Expected Codex Output
 
-- sample_tool_files_with_palette = 0
-- sample_tool_files_with_paletteRef = 0
-- sample_tool_files_with_paletteId = 0
-- no runtime changes
-- no validators added
+- audited_tool_payloads = ALL
+- schema_mismatch = 0
+- missing_schema_refs = 0
+- tool_name_mismatch = 0
+- runtime_changes = 0
