@@ -1,20 +1,27 @@
 MODEL: GPT-5.3-codex
-REASONING: low
+REASONING: medium
 
 TASK:
-Document-only PR.
+Apply PR 8.16: document remaining work and canonical first-class tool inventory.
 
-- Do NOT rename files
-- Do NOT modify payloads
-- Do NOT modify runtime
-
-Verify:
-- sample.<id>.<tool>.json are tool payloads
-- sample.<id>.palette.json are palette data files
-
-Ensure:
-- no new invalid naming patterns introduced
+STEPS:
+1. Inspect the repo's tool folders and schemas.
+2. Create/update a canonical 17-tool inventory document.
+3. Fill all 17 rows with:
+   - tool id
+   - display name
+   - folder path
+   - schema path
+   - palette/data usage
+4. Verify each first-class tool has exactly one schema.
+5. Do not invent tools. Use the repo's actual first-class tool set.
+6. Keep this PR docs/inventory only.
+7. Do NOT modify runtime logic.
+8. Do NOT add validators.
+9. Do NOT modify start_of_day.
 
 ACCEPTANCE:
-- Naming rules clearly documented
-- No file changes required
+- 17 first-class tools are listed.
+- Tool schema paths are explicit.
+- Remaining work checklist is updated.
+- No runtime/start_of_day changes.

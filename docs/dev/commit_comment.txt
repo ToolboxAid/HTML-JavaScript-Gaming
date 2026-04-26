@@ -1,5 +1,6 @@
-PR 8.15: Naming convention standardization
+PR 8.16: First-class tool inventory and remaining work
 
-- Clarified difference between tool payload and palette data files
-- Locked naming conventions for future consistency
-- No file changes required
+- Confirmed all 17 first-class tools are in scope
+- Added remaining-work checklist
+- Added inventory template for canonical tool/schema coverage
+- Preserved docs-only workflow
