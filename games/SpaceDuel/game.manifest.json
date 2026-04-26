@@ -244,6 +244,59 @@
           }
         }
       ]
+    },
+    {
+      "toolId": "asset-browser",
+      "assets": [
+        {
+          "id": "audio.space-duel.thrust",
+          "path": "games/SpaceDuel/assets/audio/effects/thrust.wav",
+          "kind": "audio",
+          "source": "workspace-manager"
+        },
+        {
+          "id": "audio.space-duel.fire",
+          "path": "games/SpaceDuel/assets/audio/effects/fire.wav",
+          "kind": "audio",
+          "source": "workspace-manager"
+        },
+        {
+          "id": "audio.space-duel.explosion",
+          "path": "games/SpaceDuel/assets/audio/effects/explosion.wav",
+          "kind": "audio",
+          "source": "workspace-manager"
+        },
+        {
+          "id": "audio.space-duel.player-death",
+          "path": "games/SpaceDuel/assets/audio/effects/player_death.wav",
+          "kind": "audio",
+          "source": "workspace-manager"
+        },
+        {
+          "id": "audio.space-duel.enemy-split",
+          "path": "games/SpaceDuel/assets/audio/effects/enemy_split.wav",
+          "kind": "audio",
+          "source": "workspace-manager"
+        },
+        {
+          "id": "audio.space-duel.bonus",
+          "path": "games/SpaceDuel/assets/audio/effects/bonus.wav",
+          "kind": "audio",
+          "source": "workspace-manager"
+        },
+        {
+          "id": "audio.space-duel.start",
+          "path": "games/SpaceDuel/assets/audio/effects/start.wav",
+          "kind": "audio",
+          "source": "workspace-manager"
+        },
+        {
+          "id": "audio.space-duel.game-over",
+          "path": "games/SpaceDuel/assets/audio/effects/game_over.wav",
+          "kind": "audio",
+          "source": "workspace-manager"
+        }
+      ]
     }
   ]
 }

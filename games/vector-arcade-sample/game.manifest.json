@@ -213,8 +213,8 @@
   },
   "tools": [
     {
-      "toolId": "asset-browser",
-      "jsonAssets": [
+      "toolId": "primitive-skin-editor",
+      "palettes": [
         {
           "id": "palette.vector-arcade.primary",
           "sourcePath": "games/vector-arcade-sample/assets/data/palettes/vector-native-primary.palette.json",
@@ -247,16 +247,12 @@
               }
             ]
           }
-        },
-        {
-          "id": "parallax.vector-arcade.backdrop",
-          "sourcePath": "games/vector-arcade-sample/assets/data/parallax/template-backdrop.parallax.json",
-          "data": {
-            "name": "Sample Backdrop Layer",
-            "role": "backdrop",
-            "imageId": "image.template.backdrop"
-          }
-        },
+        }
+      ]
+    },
+    {
+      "toolId": "sprite-editor",
+      "sprites": [
         {
           "id": "sprite.vector-arcade.player",
           "sourcePath": "games/vector-arcade-sample/assets/data/sprites/template-player.sprite.json",
@@ -281,7 +277,12 @@
               "#f59e0b"
             ]
           }
-        },
+        }
+      ]
+    },
+    {
+      "toolId": "tile-map-editor",
+      "maps": [
         {
           "id": "tilemap.vector-arcade.arena",
           "sourcePath": "games/vector-arcade-sample/assets/data/tilemaps/template-arena.tilemap.json",
@@ -299,7 +300,9 @@
               "victory-conditions"
             ]
           }
-        },
+        }
+      ],
+      "tilesets": [
         {
           "id": "tilemap.vector-arcade.ui",
           "sourcePath": "games/vector-arcade-sample/assets/data/tilemaps/template-ui.tileset.json",
@@ -313,7 +316,26 @@
               "status-panel"
             ]
           }
-        },
+        }
+      ]
+    },
+    {
+      "toolId": "parallax-editor",
+      "parallaxLevels": [
+        {
+          "id": "parallax.vector-arcade.backdrop",
+          "sourcePath": "games/vector-arcade-sample/assets/data/parallax/template-backdrop.parallax.json",
+          "data": {
+            "name": "Sample Backdrop Layer",
+            "role": "backdrop",
+            "imageId": "image.template.backdrop"
+          }
+        }
+      ]
+    },
+    {
+      "toolId": "vector-asset-studio",
+      "vectors": [
         {
           "id": "vector.vector-arcade.hud",
           "sourcePath": "games/vector-arcade-sample/assets/data/vectors/template-hud.vector.json",
@@ -442,6 +464,17 @@
               "fill": false
             }
           }
+        }
+      ]
+    },
+    {
+      "toolId": "asset-browser",
+      "assets": [
+        {
+          "id": "image.vector-arcade.backdrop-svg",
+          "path": "games/vector-arcade-sample/assets/data/parallax/template-backdrop.svg",
+          "kind": "image",
+          "source": "workspace-manager"
         }
       ]
     },

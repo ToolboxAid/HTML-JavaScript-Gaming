@@ -67,5 +67,18 @@
       }
     ],
     "toolsManifestAssets": []
-  }
+  },
+  "tools": [
+    {
+      "toolId": "asset-browser",
+      "assets": [
+        {
+          "id": "image.gravitywell.preview",
+          "path": "games/GravityWell/assets/images/preview.svg",
+          "kind": "image",
+          "source": "workspace-manager"
+        }
+      ]
+    }
+  ]
 }

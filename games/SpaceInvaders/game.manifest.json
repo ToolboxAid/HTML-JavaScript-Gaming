@@ -246,6 +246,65 @@
           }
         }
       ]
+    },
+    {
+      "toolId": "asset-browser",
+      "assets": [
+        {
+          "id": "audio.space-invaders.shoot",
+          "path": "games/SpaceInvaders/assets/audio/effects/shoot.wav",
+          "kind": "audio",
+          "source": "workspace-manager"
+        },
+        {
+          "id": "audio.space-invaders.invaderkilled",
+          "path": "games/SpaceInvaders/assets/audio/effects/invaderkilled.wav",
+          "kind": "audio",
+          "source": "workspace-manager"
+        },
+        {
+          "id": "audio.space-invaders.explosion",
+          "path": "games/SpaceInvaders/assets/audio/effects/explosion.wav",
+          "kind": "audio",
+          "source": "workspace-manager"
+        },
+        {
+          "id": "audio.space-invaders.fastinvader1",
+          "path": "games/SpaceInvaders/assets/audio/effects/fastinvader1.wav",
+          "kind": "audio",
+          "source": "workspace-manager"
+        },
+        {
+          "id": "audio.space-invaders.fastinvader2",
+          "path": "games/SpaceInvaders/assets/audio/effects/fastinvader2.wav",
+          "kind": "audio",
+          "source": "workspace-manager"
+        },
+        {
+          "id": "audio.space-invaders.fastinvader3",
+          "path": "games/SpaceInvaders/assets/audio/effects/fastinvader3.wav",
+          "kind": "audio",
+          "source": "workspace-manager"
+        },
+        {
+          "id": "audio.space-invaders.fastinvader4",
+          "path": "games/SpaceInvaders/assets/audio/effects/fastinvader4.wav",
+          "kind": "audio",
+          "source": "workspace-manager"
+        },
+        {
+          "id": "audio.space-invaders.ufo-lowpitch",
+          "path": "games/SpaceInvaders/assets/audio/effects/ufo_lowpitch.wav",
+          "kind": "audio",
+          "source": "workspace-manager"
+        },
+        {
+          "id": "audio.space-invaders.ufo-highpitch",
+          "path": "games/SpaceInvaders/assets/audio/effects/ufo_highpitch.wav",
+          "kind": "audio",
+          "source": "workspace-manager"
+        }
+      ]
     }
   ]
 }

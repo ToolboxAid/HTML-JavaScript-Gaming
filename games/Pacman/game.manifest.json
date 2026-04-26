@@ -79,5 +79,24 @@
       }
     ],
     "toolsManifestAssets": []
-  }
+  },
+  "tools": [
+    {
+      "toolId": "asset-browser",
+      "assets": [
+        {
+          "id": "image.pacman.preview-svg",
+          "path": "games/Pacman/assets/images/preview.svg",
+          "kind": "image",
+          "source": "workspace-manager"
+        },
+        {
+          "id": "image.pacman.preview-png",
+          "path": "games/Pacman/assets/images/preview.png",
+          "kind": "image",
+          "source": "workspace-manager"
+        }
+      ]
+    }
+  ]
 }
