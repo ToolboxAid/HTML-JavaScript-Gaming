@@ -873,6 +873,7 @@ function renderWorkspaceSummary(currentTool) {
         <button type="button" class="tools-platform-frame__project-button is-secondary" data-workspace-action="close"${workspaceActionDisabled}>Close Workspace</button>
         <input type="file" class="tools-platform-frame__project-input" data-workspace-open-input accept=".json,application/json" />
       </div>
+      // pager should go here 
       <div class="tools-platform-frame__project-copy">
         <span class="tools-platform-frame__project-label">Workspace</span>
         <strong class="tools-platform-frame__project-name">${escapeHtml(workspaceName)}${escapeHtml(dirtyMark)}</strong>

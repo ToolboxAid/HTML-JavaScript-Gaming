@@ -83,17 +83,18 @@ async function readGameAssetCatalog(assetCatalogPath) {
 }
 
 const refs = {
-  toolSelect: document.querySelector("[data-tool-host-select]"),
-  stateInput: document.querySelector("[data-tool-host-state-input]"),
-  mountButton: document.querySelector("[data-tool-host-mount]"),
-  prevButton: document.querySelector("[data-tool-host-prev]"),
-  nextButton: document.querySelector("[data-tool-host-next]"),
-  unmountButton: document.querySelector("[data-tool-host-unmount]"),
-  standaloneLink: document.querySelector("[data-tool-host-standalone]"),
-  switchMetaText: document.querySelector("[data-tool-host-switch-meta]"),
-  statusText: document.querySelector("[data-tool-host-status]"),
-  currentLabel: document.querySelector("[data-tool-host-current-label]"),
-  mountContainer: document.querySelector("[data-tool-host-mount-container]")
+  toolSelect: null,
+  stateInput: null,
+  mountButton: null,
+  prevButton: null,
+  nextButton: null,
+  unmountButton: null,
+  standaloneLink: null,
+  switchMetaText: null,
+  statusText: null,
+  currentLabel: null,
+  mountContainer: document.querySelector("[data-tool-host-mount-container]"),
+  runtimeMountContainer: null
 };
 
 const manifest = createToolHostManifest();
@@ -107,6 +108,66 @@ const TOOL_LAUNCH_PARAM_PREFIXES = Object.freeze({
   workspaceHref: ["/tools/Workspace%20Manager/", "/tools/Workspace Manager/"],
   returnTo: ["/games/", "/samples/"]
 });
+
+function ensureWorkspaceMountContent() {
+  if (!(refs.mountContainer instanceof HTMLElement)) {
+    return false;
+  }
+  let mountedContent = refs.mountContainer.querySelector("[data-tool-host-mounted-content]");
+  let pager = refs.mountContainer.querySelector("[data-tool-host-pager]");
+  let runtimeMountContainer = refs.mountContainer.querySelector("[data-tool-host-runtime-mount]");
+  if (!(mountedContent instanceof HTMLElement) || !(pager instanceof HTMLElement) || !(runtimeMountContainer instanceof HTMLElement)) {
+    mountedContent = document.createElement("section");
+    mountedContent.className = "tool-host-mounted-content";
+    mountedContent.setAttribute("data-tool-host-mounted-content", "ready");
+
+    const pagerSection = document.createElement("section");
+    pagerSection.className = "tool-host-pager";
+    pagerSection.setAttribute("aria-label", "Workspace tool pager");
+    pagerSection.setAttribute("data-tool-host-pager", "ready");
+
+    const prevButton = document.createElement("button");
+    prevButton.type = "button";
+    prevButton.className = "tool-host-pager__button";
+    prevButton.setAttribute("data-tool-host-prev", "");
+    prevButton.textContent = "[PREV]";
+
+    const currentLabel = document.createElement("span");
+    currentLabel.className = "tool-host-pager__name";
+    currentLabel.setAttribute("data-tool-host-current-label", "");
+    currentLabel.textContent = "No tool available";
+
+    const nextButton = document.createElement("button");
+    nextButton.type = "button";
+    nextButton.className = "tool-host-pager__button";
+    nextButton.setAttribute("data-tool-host-next", "");
+    nextButton.textContent = "[NEXT]";
+
+    const toolSelect = document.createElement("select");
+    toolSelect.id = "tool-host-select";
+    toolSelect.className = "tool-host-pager__select";
+    toolSelect.setAttribute("tabindex", "-1");
+    toolSelect.setAttribute("aria-hidden", "true");
+    toolSelect.setAttribute("data-tool-host-select", "");
+
+    pagerSection.append(prevButton, currentLabel, nextButton, toolSelect);
+
+    runtimeMountContainer = document.createElement("div");
+    runtimeMountContainer.className = "tool-host-editors-surface";
+    runtimeMountContainer.setAttribute("data-tool-host-runtime-mount", "ready");
+
+    mountedContent.append(pagerSection, runtimeMountContainer);
+    refs.mountContainer.replaceChildren(mountedContent);
+    pager = pagerSection;
+  }
+
+  refs.toolSelect = pager.querySelector("[data-tool-host-select]");
+  refs.prevButton = pager.querySelector("[data-tool-host-prev]");
+  refs.nextButton = pager.querySelector("[data-tool-host-next]");
+  refs.currentLabel = pager.querySelector("[data-tool-host-current-label]");
+  refs.runtimeMountContainer = runtimeMountContainer instanceof HTMLElement ? runtimeMountContainer : null;
+  return refs.runtimeMountContainer instanceof HTMLElement;
+}
 
 function normalizeTextParam(value) {
   return typeof value === "string" ? value.trim() : "";
@@ -191,6 +252,30 @@ function writeStatus(text) {
   if (refs.statusText instanceof HTMLElement) {
     refs.statusText.textContent = text;
   }
+}
+
+function renderMountDiagnostic(message, detail = "") {
+  const diagnosticContainer = refs.runtimeMountContainer instanceof HTMLElement
+    ? refs.runtimeMountContainer
+    : refs.mountContainer;
+  if (!(diagnosticContainer instanceof HTMLElement)) {
+    return;
+  }
+  const titleNode = document.createElement("h2");
+  titleNode.className = "tool-host-mount-diagnostic__title";
+  titleNode.textContent = "Workspace Manager Diagnostic";
+  const messageNode = document.createElement("p");
+  messageNode.className = "tool-host-mount-diagnostic__message";
+  messageNode.textContent = normalizeTextParam(message) || "Unknown mount failure.";
+  const detailNode = document.createElement("pre");
+  detailNode.className = "tool-host-mount-diagnostic__detail";
+  detailNode.textContent = normalizeTextParam(detail);
+  detailNode.hidden = !detailNode.textContent;
+  const panelNode = document.createElement("section");
+  panelNode.className = "tool-host-mount-diagnostic";
+  panelNode.setAttribute("data-tool-host-mount-diagnostic", "visible");
+  panelNode.append(titleNode, messageNode, detailNode);
+  diagnosticContainer.replaceChildren(panelNode);
 }
 
 function setCurrentLabel(text) {
@@ -352,9 +437,9 @@ function unmountGameFrame() {
     }
     return;
   }
-  if (currentGameFrame.parentElement === refs.mountContainer) {
+  if (currentGameFrame.parentElement === refs.runtimeMountContainer) {
     currentGameFrame.removeAttribute("src");
-    refs.mountContainer.removeChild(currentGameFrame);
+    refs.runtimeMountContainer.removeChild(currentGameFrame);
   }
   currentGameFrame = null;
   if (currentGameHostContextId) {
@@ -364,7 +449,7 @@ function unmountGameFrame() {
 }
 
 async function mountGameFrame(gameEntry) {
-  if (!(refs.mountContainer instanceof HTMLElement)) {
+  if (!(refs.runtimeMountContainer instanceof HTMLElement)) {
     writeStatus("Workspace container is unavailable.");
     return false;
   }
@@ -418,7 +503,7 @@ async function mountGameFrame(gameEntry) {
   currentGameHostContextId = hostContext.contextId;
   gameUrl.searchParams.set("hostContextId", hostContext.contextId);
   frame.src = gameUrl.toString();
-  refs.mountContainer.replaceChildren(frame);
+  refs.runtimeMountContainer.replaceChildren(frame);
   currentGameFrame = frame;
   setCurrentLabel(`Mounted Game: ${gameEntry.title}`);
   writeStatus(`Mounted game ${gameEntry.title}.`);
@@ -475,9 +560,11 @@ function applyToolsUsedFilterForGame(gameEntry, preferredToolId = "") {
   syncControlState();
 }
 
+ensureWorkspaceMountContent();
+
 const runtime = createToolHostRuntime({
   manifest,
-  mountContainer: refs.mountContainer,
+  mountContainer: refs.runtimeMountContainer,
   onStatus(message) {
     writeStatus(message);
   },
@@ -496,7 +583,11 @@ function mountSelectedTool(source = "manual") {
   const toolId = readSelectedToolId();
   if (!toolId) {
     writeStatus("Select a tool to mount.");
-    return;
+    renderMountDiagnostic(
+      "No tool is selected for mount.",
+      "Use [PREV] and [NEXT] to choose a tool."
+    );
+    return false;
   }
   let optionalState = null;
   if (refs.stateInput instanceof HTMLTextAreaElement) {
@@ -506,7 +597,11 @@ function mountSelectedTool(source = "manual") {
         optionalState = JSON.parse(rawState);
       } catch {
         writeStatus("State JSON is invalid. Fix JSON or clear the state field.");
-        return;
+        renderMountDiagnostic(
+          "Tool mount blocked by invalid state JSON.",
+          "Clear optional state or provide valid JSON before mounting."
+        );
+        return false;
       }
     }
   }
@@ -515,7 +610,7 @@ function mountSelectedTool(source = "manual") {
   writeQueryToolId(toolId, source === "init");
   const previousMount = runtime.getCurrentMount();
   const launchParams = readForwardedToolLaunchParams();
-  runtime.mountTool(toolId, {
+  const mountResult = runtime.mountTool(toolId, {
     source,
     requestedAt: new Date().toISOString(),
     sharedContext: {
@@ -526,7 +621,29 @@ function mountSelectedTool(source = "manual") {
     state: optionalState,
     launchParams
   });
+  if (!mountResult || !(mountResult.frame instanceof HTMLIFrameElement)) {
+    const selectedEntry = getToolHostEntryById(manifest, toolId);
+    const displayName = selectedEntry ? selectedEntry.displayName : toolId;
+    writeStatus(`Failed to mount ${displayName}.`);
+    renderMountDiagnostic(
+      `Failed to mount ${displayName}.`,
+      "Workspace Manager could not load the selected tool in the mount container."
+    );
+    syncControlState();
+    return false;
+  }
+  mountResult.frame.addEventListener("error", () => {
+    const selectedEntry = getToolHostEntryById(manifest, toolId);
+    const displayName = selectedEntry ? selectedEntry.displayName : toolId;
+    writeStatus(`Failed to load ${displayName}.`);
+    renderMountDiagnostic(
+      `Failed to load ${displayName}.`,
+      "The selected tool frame failed to load. Verify the tool launch path and host context."
+    );
+    syncControlState();
+  }, { once: true });
   syncControlState();
+  return true;
 }
 
 function bindEvents() {
@@ -574,6 +691,10 @@ function bindEvents() {
     const gameId = readInitialGameId();
     if (gameLaunchRequested && !gameId) {
       writeStatus("Workspace Manager game launch requires a valid gameId query parameter.");
+      renderMountDiagnostic(
+        "Workspace Manager game launch requires a valid gameId.",
+        "Expected query: ?gameId=<id>&mount=game"
+      );
       applyToolsUsedFilterForGame(null);
       return;
     }
@@ -581,12 +702,16 @@ function bindEvents() {
       void readGameEntryById(gameId).then((gameEntry) => {
         if (!gameEntry) {
           writeStatus(`Game "${gameId}" is not available for Workspace Manager launch.`);
+          renderMountDiagnostic(
+            `Game "${gameId}" is not available for Workspace Manager launch.`,
+            "Use a valid gameId value from games metadata."
+          );
           applyToolsUsedFilterForGame(null);
           return;
         }
         applyToolsUsedFilterForGame(gameEntry, "");
         const requestedToolId = readRequestedToolIdFromQuery();
-        const toolId = requestedToolId || (gameLaunchRequested ? (toolIds[0] || "") : "");
+        const toolId = requestedToolId || (toolIds[0] || "");
         if (refs.toolSelect instanceof HTMLSelectElement) {
           refs.toolSelect.value = toolId;
         }
@@ -594,6 +719,10 @@ function bindEvents() {
         updateStandaloneHref(toolId);
         if (!toolId) {
           writeStatus("No active tools are currently available for Workspace Manager.");
+          renderMountDiagnostic(
+            "No active tools are available for this game context.",
+            `gameId=${gameEntry.id}`
+          );
           runtime.unmountCurrentTool("popstate");
           syncControlState();
           return;
@@ -604,7 +733,7 @@ function bindEvents() {
     }
     applyToolsUsedFilterForGame(null);
     const requestedToolId = readRequestedToolIdFromQuery();
-    const toolId = requestedToolId;
+    const toolId = requestedToolId || (toolIds[0] || "");
     if (refs.toolSelect instanceof HTMLSelectElement) {
       refs.toolSelect.value = toolId;
     }
@@ -614,6 +743,10 @@ function bindEvents() {
       mountSelectedTool("popstate");
     } else {
       writeStatus("Select a tool to mount.");
+      renderMountDiagnostic(
+        "No tool is selected for mount.",
+        "Use [PREV] and [NEXT] to choose a tool."
+      );
       syncControlState();
     }
     syncControlState();
@@ -625,12 +758,19 @@ function bindEvents() {
 }
 
 async function init() {
+  if (!ensureWorkspaceMountContent()) {
+    return;
+  }
   const gameLaunchRequested = shouldMountGameFrameFromQuery();
   const initialGameId = readInitialGameId();
   if (gameLaunchRequested && !initialGameId) {
     applyToolsUsedFilterForGame(null);
     bindEvents();
     writeStatus("Workspace Manager game launch requires a valid gameId query parameter.");
+    renderMountDiagnostic(
+      "Workspace Manager game launch requires a valid gameId.",
+      "Expected query: ?gameId=<id>&mount=game"
+    );
     return;
   }
   let initialGameEntry = null;
@@ -638,6 +778,10 @@ async function init() {
     initialGameEntry = await readGameEntryById(initialGameId);
     if (!initialGameEntry) {
       writeStatus(`Game "${initialGameId}" is not available for Workspace Manager launch.`);
+      renderMountDiagnostic(
+        `Game "${initialGameId}" is not available for Workspace Manager launch.`,
+        "Use a valid gameId value from games metadata."
+      );
       if (gameLaunchRequested) {
         applyToolsUsedFilterForGame(null);
         bindEvents();
@@ -654,7 +798,7 @@ async function init() {
   bindEvents();
 
   const requestedToolId = readRequestedToolIdFromQuery();
-  const initialToolId = requestedToolId || (initialGameEntry && gameLaunchRequested ? (toolIds[0] || "") : "");
+  const initialToolId = requestedToolId || (toolIds[0] || "");
   if (refs.toolSelect instanceof HTMLSelectElement) {
     refs.toolSelect.value = initialToolId;
   }
@@ -664,17 +808,31 @@ async function init() {
   if (!initialToolId) {
     if (initialGameEntry && gameLaunchRequested) {
       writeStatus("No active tools are currently available for Workspace Manager.");
+      renderMountDiagnostic(
+        "No active tools are available for this game context.",
+        `gameId=${initialGameEntry.id}`
+      );
       return;
     }
     if (toolIds.length === 0) {
       writeStatus("No active tools are currently available for Workspace Manager.");
+      renderMountDiagnostic(
+        "No active tools are available in Workspace Manager.",
+        "Check tool registry visibility and game tool mappings."
+      );
       return;
     }
     writeStatus("Select a tool to mount.");
+    renderMountDiagnostic(
+      "No tool is selected for mount.",
+      "Use [PREV] and [NEXT] to choose a tool."
+    );
     return;
   }
 
-  mountSelectedTool("init");
+  if (!mountSelectedTool("init")) {
+    return;
+  }
 }
 
 void init();

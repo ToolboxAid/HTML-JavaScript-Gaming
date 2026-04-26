@@ -4,48 +4,44 @@ These rules OVERRIDE all other instructions.
 
 ## This PR
 
-Rollback failed Workspace Manager header/banner attempts, then add only the requested pager.
+Move `section.tool-host-pager` inside `[data-tool-host-mount-container]`.
 
 Allowed:
-- targeted rollback of Workspace Manager files affected by 20_14 through 20_19
-- add centered [PREV] <toolname> [NEXT] above tools/editors
+- targeted Workspace Manager index/main/CSS changes required for pager relocation
 - validation report
 
 Forbidden:
 - broad cleanup
 - unrelated refactoring
-- changes to samples behavior
-- changes to required labels
-- new header
-- new banner
-- keeping failed top Workspace Manager control/header area
+- samples changes
+- game label changes
+- duplicate pager
+- top-level pager before mount container
+- pager appended to document.body
 - second SSoT
 - start_of_day changes
-- roadmap text rewrite outside status markers
 
-## Rollback Anchor
+## Structural Requirement
 
-Find the commit with comment:
+`tools/Workspace Manager/index.html` must not keep:
 
-Remove Workspace Manager default and query fallbacks
+```html
+<section class="tool-host-pager">
+```
 
-Use it as the Workspace Manager restore anchor before applying pager.
+as a sibling before:
 
-## Required UI
+```html
+<div data-tool-host-mount-container>
+```
 
-Restore normal Workspace Manager content first.
-
-Then add only:
-
-[PREV] <toolname> [NEXT]
-
-above the existing tools/editors section.
+The visible pager must be rendered as a descendant of `[data-tool-host-mount-container]`.
 
 ## User-Approved Behavior
 
 For this PR:
-- first available tool is selected on page load
-- selected tool is active/mounted on page load
+- first available tool is selected on load
+- selected tool is active/mounted on load
 
 ## Still Forbidden
 
@@ -54,7 +50,6 @@ Do not restore:
 - legacy `game` query fallback
 - hidden fallback routing
 - stale memory reuse
-- broken header/banner/control area
 
 ## Anti-Patterns Forbidden
 
@@ -67,10 +62,7 @@ Do not restore:
 - duplicated launch paths
 - silent redirects
 - silent caught errors
-- broad truthy/falsy behavior changes
-- magic strings outside existing registry/config pattern
 - duplicate event listeners
 - globals
-- new managers/factories/service layers
-- public API changes outside this PR
+- broad refactor
 - scope expansion

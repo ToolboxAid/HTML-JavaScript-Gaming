@@ -1,8 +1,9 @@
-Rollback Workspace Manager header attempts and add tool pager
+Move tool host pager inside mount container
 
 PR Details:
-- Restores Workspace Manager layout from the pre-header/banner anchor.
-- Removes failed top Workspace Manager header/banner/control experiments.
-- Adds centered [PREV] <toolname> [NEXT] above the existing tools/editors section.
-- Selects and mounts the first available tool on load.
-- Keeps explicit gameId behavior without restoring legacy query fallback.
+- Removes top-level tool-host-pager from Workspace Manager host shell.
+- Renders the pager inside data-tool-host-mount-container.
+- Places pager above Editors inside mounted Workspace Manager content.
+- Keeps first available tool selected/mounted on load.
+- Keeps Prev/Next tool switching.
+- Does not restore legacy game query fallback.
