@@ -6,7 +6,7 @@
     "documentKind",
     "schema",
     "version",
-    "samples"
+    "games"
   ],
   "additionalProperties": false,
   "properties": {
@@ -22,29 +22,18 @@
       "type": "integer",
       "minimum": 1
     },
-    "samples": {
+    "games": {
       "type": "array",
       "items": {
         "type": "object",
         "required": [
           "id",
-          "type",
+          "level",
           "tool"
         ],
         "additionalProperties": false,
         "properties": {
           "id": {
-            "type": "string",
-            "minLength": 1
-          },
-          "type": {
-            "type": "string",
-            "enum": [
-              "sample",
-              "game"
-            ]
-          },
-          "phase": {
             "type": "string",
             "minLength": 1
           },
@@ -68,53 +57,7 @@
             "type": "string",
             "minLength": 1
           }
-        },
-        "allOf": [
-          {
-            "if": {
-              "properties": {
-                "type": {
-                  "const": "sample"
-                }
-              },
-              "required": [
-                "type"
-              ]
-            },
-            "then": {
-              "required": [
-                "phase"
-              ],
-              "not": {
-                "required": [
-                  "level"
-                ]
-              }
-            }
-          },
-          {
-            "if": {
-              "properties": {
-                "type": {
-                  "const": "game"
-                }
-              },
-              "required": [
-                "type"
-              ]
-            },
-            "then": {
-              "required": [
-                "level"
-              ],
-              "not": {
-                "required": [
-                  "phase"
-                ]
-              }
-            }
-          }
-        ]
+        }
       }
     }
   }
