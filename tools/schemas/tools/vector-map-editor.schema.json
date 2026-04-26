@@ -1,0 +1,13 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "tools/schemas/tools/vector-map-editor.schema.json",
+  "title": "Vector Map Editor Payload",
+  "type": "object",
+  "required": ["tool", "version"],
+  "additionalProperties": true,
+  "properties": {
+    "tool": { "const": "vector-map-editor" },
+    "version": { "type": "string" },
+    "config": { "type": "object" }
+  }
+}

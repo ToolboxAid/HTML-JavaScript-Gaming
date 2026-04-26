@@ -1,0 +1,13 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "tools/schemas/tools/sprite-editor.schema.json",
+  "title": "Sprite Editor Payload",
+  "type": "object",
+  "required": ["tool", "version"],
+  "additionalProperties": true,
+  "properties": {
+    "tool": { "const": "sprite-editor" },
+    "version": { "type": "string" },
+    "config": { "type": "object" }
+  }
+}

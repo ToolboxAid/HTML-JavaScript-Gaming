@@ -1,10 +1,5 @@
 import { safeParseJson, toPrettyJson } from "../shared/debugInspectorData.js";
 import { registerToolBootContract } from "../shared/toolBootContract.js";
-import {
-  createDefaultMapPayload,
-  normalizeMapPayload,
-  validateMapPayload
-} from "../schemas/tools/mapPayload.schema.js";
 
 const refs = {
   normalizeButton: document.getElementById("normalize3dMapButton"),
@@ -13,6 +8,54 @@ const refs = {
   input: document.getElementById("map3dInput"),
   output: document.getElementById("map3dOutput")
 };
+
+const MAP_PAYLOAD_SCHEMA = "tools.3d-json-payload-normalizer.document/1";
+
+function sanitizeNumber(value, fallback = 0) {
+  const numeric = Number(value);
+  if (Number.isNaN(numeric) || numeric === Infinity || numeric === -Infinity) {
+    return fallback;
+  }
+  return numeric;
+}
+
+function normalizeMapPayload(rawPayload) {
+  if (!rawPayload || typeof rawPayload !== "object") {
+    return buildDefaultPayload();
+  }
+  const rawPoints = Array.isArray(rawPayload.points) ? rawPayload.points : [];
+  const points = rawPoints.map((rawPoint, index) => {
+    const point = rawPoint && typeof rawPoint === "object" ? rawPoint : {};
+    return {
+      id: typeof point.id === "string" && point.id.trim() ? point.id.trim() : `p${index + 1}`,
+      x: sanitizeNumber(point.x),
+      y: sanitizeNumber(point.y),
+      z: sanitizeNumber(point.z)
+    };
+  });
+  const knownIds = new Set(points.map((point) => point.id));
+  const rawSegments = Array.isArray(rawPayload.segments) ? rawPayload.segments : [];
+  const segments = rawSegments
+    .map((rawSegment) => {
+      const segment = rawSegment && typeof rawSegment === "object" ? rawSegment : {};
+      return {
+        from: typeof segment.from === "string" ? segment.from.trim() : "",
+        to: typeof segment.to === "string" ? segment.to.trim() : ""
+      };
+    })
+    .filter((segment) => segment.from && segment.to && knownIds.has(segment.from) && knownIds.has(segment.to));
+
+  return {
+    schema: typeof rawPayload.schema === "string" && rawPayload.schema.trim()
+      ? rawPayload.schema.trim()
+      : MAP_PAYLOAD_SCHEMA,
+    mapId: typeof rawPayload.mapId === "string" && rawPayload.mapId.trim()
+      ? rawPayload.mapId.trim()
+      : "map-3d-baseline",
+    points,
+    segments
+  };
+}
 
 function normalizeSamplePresetPath(pathValue) {
   if (typeof pathValue !== "string") {
@@ -50,8 +93,19 @@ function setStatus(message) {
 }
 
 function buildDefaultPayload() {
-  // Deprecated compatibility shim for older call-sites.
-  return createDefaultMapPayload();
+  return {
+    schema: MAP_PAYLOAD_SCHEMA,
+    mapId: "map-3d-baseline",
+    points: [
+      { id: "p1", x: -10, y: 0, z: 5 },
+      { id: "p2", x: 10, y: 0, z: 5 },
+      { id: "p3", x: 0, y: 0, z: -8 }
+    ],
+    segments: [
+      { from: "p1", to: "p2" },
+      { from: "p2", to: "p3" }
+    ]
+  };
 }
 
 function extractMapPayloadFromPreset(rawPreset) {
@@ -93,17 +147,13 @@ async function tryLoadPresetFromQuery() {
     if (!extractedPayload) {
       throw new Error("Preset payload did not include a map payload.");
     }
-    const validation = validateMapPayload(extractedPayload, {
-      requireSchema: true,
-      requirePoints: true
-    });
-    if (!validation.valid) {
-      throw new Error(validation.issues.join(" "));
+    if (!Array.isArray(extractedPayload.points) || extractedPayload.points.length === 0) {
+      throw new Error("Preset map payload must include at least one point.");
     }
     if (!(refs.input instanceof HTMLTextAreaElement)) {
       throw new Error("Map payload input is unavailable.");
     }
-    refs.input.value = toPrettyJson(validation.payload);
+    refs.input.value = toPrettyJson(normalizeMapPayload(extractedPayload));
     setStatus(buildPresetLoadedStatus(sampleId, samplePresetPath));
   } catch (error) {
     setStatus(`Preset load failed: ${error instanceof Error ? error.message : "unknown error"}`);
@@ -116,17 +166,11 @@ function normalizeMapPayloadAction() {
   }
 
   const parsed = safeParseJson(refs.input.value);
-  const validation = validateMapPayload(parsed, {
-    requireSchema: false,
-    requirePoints: true
-  });
-  if (!validation.valid) {
-    setStatus(`Input JSON is invalid. ${validation.issues.join(" ")}`);
+  if (!parsed || typeof parsed !== "object" || !Array.isArray(parsed.points) || parsed.points.length === 0) {
+    setStatus("Input JSON is invalid. Map payload requires at least one point.");
     return;
   }
-  const normalized = normalizeMapPayload(validation.payload, {
-    fallbackMapId: "map-3d-baseline"
-  });
+  const normalized = normalizeMapPayload(parsed);
 
   if (refs.output instanceof HTMLElement) {
     refs.output.textContent = toPrettyJson(normalized);

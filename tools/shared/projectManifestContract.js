@@ -6,18 +6,16 @@ import {
   PROJECT_TOOL_INTEGRATION_VERSION,
   normalizeToolStateForProjectManifest
 } from "./projectToolIntegration.js";
-import {
-  WORKSPACE_DOCUMENT_KIND,
-  WORKSPACE_EXPORT_ARTIFACT_SCHEMA,
-  WORKSPACE_MANIFEST_SCHEMA,
-  WORKSPACE_MANIFEST_VERSION,
-  validateWorkspaceManifestSchema
-} from "../schemas/workspaceManifest.schema.js";
-
-export const PROJECT_MANIFEST_SCHEMA = WORKSPACE_MANIFEST_SCHEMA;
-export const PROJECT_MANIFEST_VERSION = WORKSPACE_MANIFEST_VERSION;
+export const PROJECT_MANIFEST_SCHEMA = "html-js-gaming.project";
+export const PROJECT_MANIFEST_VERSION = 1;
 export const ACTIVE_PROJECT_STORAGE_KEY = "toolboxaid.projectSystem.activeManifest";
-export const PROJECT_DOCUMENT_KIND = WORKSPACE_DOCUMENT_KIND;
+export const PROJECT_DOCUMENT_KIND = "workspace-manifest";
+const WORKSPACE_EXPORT_ARTIFACT_SCHEMA = "html-js-gaming.workspace-export-artifacts/1";
+const RESERVED_EXTERNAL_ASSET_KEYS = new Set([
+  "externalAssets",
+  "viewerAssets",
+  "assetCatalogPath"
+]);
 
 const sanitizeString = safeString;
 
@@ -203,14 +201,45 @@ export function migrateProjectManifest(rawManifest) {
 export function validateProjectManifest(rawManifest) {
   const issues = [];
   const warnings = [];
-  let manifest = migrateProjectManifest(rawManifest);
+  const manifest = migrateProjectManifest(rawManifest);
 
-  const workspaceValidation = validateWorkspaceManifestSchema(manifest, {
-    requireSchema: true
-  });
-  manifest = workspaceValidation.manifest;
-  issues.push(...workspaceValidation.issues);
-  warnings.push(...workspaceValidation.warnings);
+  if (manifest.documentKind !== PROJECT_DOCUMENT_KIND) {
+    issues.push(`Workspace documentKind must be ${PROJECT_DOCUMENT_KIND}.`);
+  }
+  if (manifest.schema !== PROJECT_MANIFEST_SCHEMA) {
+    issues.push(`Workspace schema must be ${PROJECT_MANIFEST_SCHEMA}.`);
+  }
+  if (!Number.isInteger(manifest.version) || manifest.version < PROJECT_MANIFEST_VERSION) {
+    issues.push("Workspace version must be a positive integer.");
+  }
+  if (!manifest.id) {
+    issues.push("Workspace id is required.");
+  }
+  if (!manifest.name) {
+    issues.push("Workspace name is required.");
+  }
+  if (!manifest.tools || typeof manifest.tools !== "object") {
+    issues.push("Workspace tools block is required.");
+  }
+  if (rawManifest && typeof rawManifest === "object") {
+    RESERVED_EXTERNAL_ASSET_KEYS.forEach((key) => {
+      if (Object.prototype.hasOwnProperty.call(rawManifest, key)) {
+        issues.push(`Workspace-owned assets must remain in workspace.manifest (remove ${key}).`);
+      }
+    });
+  }
+  if (Array.isArray(manifest.exportArtifacts)) {
+    manifest.exportArtifacts.forEach((artifact, index) => {
+      const path = sanitizeString(artifact.path, "");
+      if (!path) {
+        issues.push(`exportArtifacts[${index}].path is required.`);
+        return;
+      }
+      if (!path.toLowerCase().endsWith(".png")) {
+        issues.push(`exportArtifacts[${index}] must point to a rendered artifact (.png).`);
+      }
+    });
+  }
 
   if (!manifest.toolIntegration || typeof manifest.toolIntegration !== "object") {
     issues.push("Project manifest toolIntegration block is required.");

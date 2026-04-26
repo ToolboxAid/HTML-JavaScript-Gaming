@@ -1,10 +1,5 @@
 import { safeParseJson, toPrettyJson } from "../shared/debugInspectorData.js";
 import { registerToolBootContract } from "../shared/toolBootContract.js";
-import {
-  ASSET_VIEWER_REPORT_SCHEMA,
-  createDefaultAssetPayload,
-  validateAssetPayload
-} from "../schemas/tools/assetPayload.schema.js";
 
 const refs = {
   inspectButton: document.getElementById("inspect3dAssetButton"),
@@ -12,6 +7,9 @@ const refs = {
   input: document.getElementById("asset3dInput"),
   output: document.getElementById("asset3dOutput")
 };
+
+const ASSET_VIEWER_PAYLOAD_SCHEMA = "tools.3d-asset-viewer.asset/1";
+const ASSET_VIEWER_REPORT_SCHEMA = "tools.3d-asset-viewer.report/1";
 
 function normalizeSamplePresetPath(pathValue) {
   if (typeof pathValue !== "string") {
@@ -50,7 +48,7 @@ function setStatus(message) {
 
 function sanitizeNumber(value) {
   const numeric = Number(value);
-  return Number.isFinite(numeric) ? numeric : 0;
+  return Number.isNaN(numeric) || numeric === Infinity || numeric === -Infinity ? 0 : numeric;
 }
 
 function computeBounds(vertices) {
@@ -84,8 +82,43 @@ function computeBounds(vertices) {
 }
 
 function buildDefaultPayload() {
-  // Deprecated compatibility shim for older call-sites.
-  return createDefaultAssetPayload();
+  return {
+    schema: ASSET_VIEWER_PAYLOAD_SCHEMA,
+    assetId: "ship-hull",
+    vertices: [
+      { x: -1, y: -0.5, z: -2 },
+      { x: 1, y: -0.5, z: -2 },
+      { x: 0, y: 0.75, z: 2 }
+    ],
+    metadata: {
+      sourceToolId: "vector-asset-studio"
+    }
+  };
+}
+
+function normalizeAssetPayload(rawPayload) {
+  if (!rawPayload || typeof rawPayload !== "object") {
+    return buildDefaultPayload();
+  }
+  const rawVertices = Array.isArray(rawPayload.vertices) ? rawPayload.vertices : [];
+  const vertices = rawVertices.map((rawVertex) => {
+    const vertex = rawVertex && typeof rawVertex === "object" ? rawVertex : {};
+    return {
+      x: sanitizeNumber(vertex.x),
+      y: sanitizeNumber(vertex.y),
+      z: sanitizeNumber(vertex.z)
+    };
+  });
+  return {
+    schema: typeof rawPayload.schema === "string" && rawPayload.schema.trim()
+      ? rawPayload.schema.trim()
+      : ASSET_VIEWER_PAYLOAD_SCHEMA,
+    assetId: typeof rawPayload.assetId === "string" && rawPayload.assetId.trim()
+      ? rawPayload.assetId.trim()
+      : "asset-3d",
+    vertices,
+    metadata: rawPayload.metadata && typeof rawPayload.metadata === "object" ? { ...rawPayload.metadata } : {}
+  };
 }
 
 function extractAssetPayloadFromPreset(rawPreset) {
@@ -127,17 +160,13 @@ async function tryLoadPresetFromQuery() {
     if (!extractedPayload) {
       throw new Error("Preset payload did not include a 3D asset payload.");
     }
-    const validation = validateAssetPayload(extractedPayload, {
-      requireSchema: true,
-      requireVertices: true
-    });
-    if (!validation.valid) {
-      throw new Error(validation.issues.join(" "));
+    if (!Array.isArray(extractedPayload.vertices) || extractedPayload.vertices.length === 0) {
+      throw new Error("Preset payload must include at least one vertex.");
     }
     if (!(refs.input instanceof HTMLTextAreaElement)) {
       throw new Error("Asset input is unavailable.");
     }
-    refs.input.value = toPrettyJson(validation.payload);
+    refs.input.value = toPrettyJson(normalizeAssetPayload(extractedPayload));
     setStatus(buildPresetLoadedStatus(sampleId, samplePresetPath));
   } catch (error) {
     setStatus(`Preset load failed: ${error instanceof Error ? error.message : "unknown error"}`);
@@ -149,16 +178,12 @@ function inspectAssetPayload() {
     return;
   }
   const parsed = safeParseJson(refs.input.value);
-  const validation = validateAssetPayload(parsed, {
-    requireSchema: false,
-    requireVertices: true
-  });
-  if (!validation.valid) {
-    setStatus(`Input JSON is invalid. ${validation.issues.join(" ")}`);
+  if (!parsed || typeof parsed !== "object" || !Array.isArray(parsed.vertices) || parsed.vertices.length === 0) {
+    setStatus("Input JSON is invalid. 3D asset payload requires at least one vertex.");
     return;
   }
 
-  const assetPayload = validation.payload;
+  const assetPayload = normalizeAssetPayload(parsed);
   const vertices = Array.isArray(assetPayload.vertices) ? assetPayload.vertices : [];
   const bounds = computeBounds(vertices);
   const report = {

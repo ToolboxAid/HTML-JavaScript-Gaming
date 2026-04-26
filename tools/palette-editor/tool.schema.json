@@ -1,0 +1,11 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "tool.schema.json",
+  "type": "object",
+  "required": ["tool", "version"],
+  "properties": {
+    "tool": { "type": "string" },
+    "version": { "type": "string" },
+    "config": { "type": "object" }
+  }
+}

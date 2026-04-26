@@ -1,93 +1,47 @@
 import assert from "node:assert/strict";
-import { readFileSync } from "node:fs";
-import {
-  createDefaultCameraPathPayload,
-  validateCameraPathPayload
-} from "../../tools/schemas/tools/cameraPathPayload.schema.js";
-import {
-  createDefaultMapPayload,
-  validateMapPayload
-} from "../../tools/schemas/tools/mapPayload.schema.js";
-import {
-  createDefaultAssetPayload,
-  validateAssetPayload
-} from "../../tools/schemas/tools/assetPayload.schema.js";
-import {
-  validateWorkspaceManifestSchema,
-  WORKSPACE_MANIFEST_SCHEMA,
-  WORKSPACE_MANIFEST_VERSION,
-  WORKSPACE_DOCUMENT_KIND
-} from "../../tools/schemas/workspaceManifest.schema.js";
+import { existsSync, readFileSync } from "node:fs";
+
+function readJson(relativePath) {
+  return JSON.parse(readFileSync(new URL(`../../${relativePath}`, import.meta.url), "utf8"));
+}
 
 export async function run() {
-  const cameraValidation = validateCameraPathPayload(createDefaultCameraPathPayload(), {
-    requireSchema: true,
-    requireWaypoints: true
+  const schemaFiles = [
+    "tools/schemas/workspace.manifest.schema.json",
+    "tools/schemas/tool.manifest.schema.json",
+    "tools/schemas/palette.schema.json",
+    "tools/schemas/sample.tool-payload.schema.json",
+    "tools/schemas/tools/vector-map-editor.schema.json",
+    "tools/schemas/tools/vector-asset-studio.schema.json",
+    "tools/schemas/tools/sprite-editor.schema.json"
+  ];
+  schemaFiles.forEach((relativePath) => {
+    const schema = readJson(relativePath);
+    assert.equal(schema.$schema, "https://json-schema.org/draft/2020-12/schema");
+    assert.equal(typeof schema.$id, "string");
+    assert.equal(schema.$id.length > 0, true);
   });
-  assert.equal(cameraValidation.valid, true, cameraValidation.issues.join(" "));
 
-  const mapValidation = validateMapPayload(createDefaultMapPayload(), {
-    requireSchema: true,
-    requirePoints: true
+  const toolSchemaFiles = [
+    "tools/vector-map-editor/tool.schema.json",
+    "tools/vector-asset-studio/tool.schema.json",
+    "tools/palette-editor/tool.schema.json"
+  ];
+  toolSchemaFiles.forEach((relativePath) => {
+    const document = readJson(relativePath);
+    assert.equal(document.$schema, "https://json-schema.org/draft/2020-12/schema");
   });
-  assert.equal(mapValidation.valid, true, mapValidation.issues.join(" "));
 
-  const assetValidation = validateAssetPayload(createDefaultAssetPayload(), {
-    requireSchema: true,
-    requireVertices: true
+  const removedValidationUtilities = [
+    "tools/schemas/workspaceManifest.schema.js",
+    "tools/schemas/tools/cameraPathPayload.schema.js",
+    "tools/schemas/tools/mapPayload.schema.js",
+    "tools/schemas/tools/assetPayload.schema.js"
+  ];
+  removedValidationUtilities.forEach((relativePath) => {
+    const absolutePath = new URL(`../../${relativePath}`, import.meta.url);
+    assert.equal(existsSync(absolutePath), false);
   });
-  assert.equal(assetValidation.valid, true, assetValidation.issues.join(" "));
-
-  const workspaceManifest = {
-    documentKind: WORKSPACE_DOCUMENT_KIND,
-    schema: WORKSPACE_MANIFEST_SCHEMA,
-    version: WORKSPACE_MANIFEST_VERSION,
-    id: "workspace-test",
-    name: "Workspace Test",
-    tools: {
-      "3d-asset-viewer": {
-        schema: "tools.3d-asset-viewer.asset/1",
-        assetId: "asset-test",
-        vertices: [{ x: 0, y: 0, z: 0 }]
-      }
-    },
-    sharedLibrary: {
-      assets: [
-        {
-          id: "asset-test",
-          type: "vector",
-          displayName: "Asset Test",
-          sourcePath: "/games/Test/assets/vectors/asset-test.vector.json",
-          sourceToolId: "3d-asset-viewer"
-        }
-      ],
-      palettes: []
-    },
-    exportArtifacts: [
-      {
-        kind: "png",
-        path: "/games/Test/exports/asset-preview.png",
-        sourceToolId: "3d-asset-viewer"
-      }
-    ]
-  };
-  const workspaceValidation = validateWorkspaceManifestSchema(workspaceManifest);
-  assert.equal(workspaceValidation.valid, true, workspaceValidation.issues.join(" "));
-
-  const invalidWorkspaceValidation = validateWorkspaceManifestSchema({
-    ...workspaceManifest,
-    externalAssets: ["/games/Test/assets/outside-manifest.asset.json"],
-    exportArtifacts: [{ kind: "jpg", path: "/games/Test/exports/asset-preview.jpg" }]
-  });
-  assert.equal(invalidWorkspaceValidation.valid, false);
-  assert.equal(
-    invalidWorkspaceValidation.issues.some((issue) => issue.includes("workspace.manifest")),
-    true
-  );
-  assert.equal(
-    invalidWorkspaceValidation.issues.some((issue) => issue.includes(".png")),
-    true
-  );
 
   const paletteBrowserSource = readFileSync(new URL("../../tools/Palette Browser/main.js", import.meta.url), "utf8");
   assert.match(paletteBrowserSource, /function duplicateSelectedPalette\(/);

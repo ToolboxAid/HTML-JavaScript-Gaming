@@ -1,10 +1,5 @@
 import { safeParseJson, toPrettyJson } from "../shared/debugInspectorData.js";
 import { registerToolBootContract } from "../shared/toolBootContract.js";
-import {
-  createDefaultCameraPathPayload,
-  normalizeCameraPathPayload,
-  validateCameraPathPayload
-} from "../schemas/tools/cameraPathPayload.schema.js";
 
 const refs = {
   addButton: document.getElementById("addCameraPointButton"),
@@ -13,6 +8,49 @@ const refs = {
   input: document.getElementById("cameraPathInput"),
   output: document.getElementById("cameraPathOutput")
 };
+
+const CAMERA_PATH_PAYLOAD_SCHEMA = "tools.3d-camera-path.path/1";
+
+function sanitizeNumber(value, fallback = 0) {
+  const numeric = Number(value);
+  if (Number.isNaN(numeric) || numeric === Infinity || numeric === -Infinity) {
+    return fallback;
+  }
+  return numeric;
+}
+
+function normalizeCameraPathPayload(rawPayload) {
+  if (!rawPayload || typeof rawPayload !== "object") {
+    return buildDefaultPayload();
+  }
+  const rawWaypoints = Array.isArray(rawPayload.waypoints) ? rawPayload.waypoints : [];
+  const waypoints = rawWaypoints.map((rawWaypoint, index) => {
+    const point = rawWaypoint && typeof rawWaypoint === "object" ? rawWaypoint : {};
+    return {
+      t: sanitizeNumber(point.t, index * 1000),
+      position: {
+        x: sanitizeNumber(point.position?.x),
+        y: sanitizeNumber(point.position?.y),
+        z: sanitizeNumber(point.position?.z)
+      },
+      lookAt: {
+        x: sanitizeNumber(point.lookAt?.x),
+        y: sanitizeNumber(point.lookAt?.y),
+        z: sanitizeNumber(point.lookAt?.z)
+      }
+    };
+  });
+  waypoints.sort((left, right) => left.t - right.t);
+  return {
+    schema: typeof rawPayload.schema === "string" && rawPayload.schema.trim()
+      ? rawPayload.schema.trim()
+      : CAMERA_PATH_PAYLOAD_SCHEMA,
+    pathId: typeof rawPayload.pathId === "string" && rawPayload.pathId.trim()
+      ? rawPayload.pathId.trim()
+      : "camera-path",
+    waypoints
+  };
+}
 
 function normalizeSamplePresetPath(pathValue) {
   if (typeof pathValue !== "string") {
@@ -57,19 +95,26 @@ function parseInputPayload() {
   if (!parsed || typeof parsed !== "object") {
     return null;
   }
-  const validation = validateCameraPathPayload(parsed, {
-    requireSchema: false,
-    requireWaypoints: false
-  });
-  if (!validation.valid) {
-    return null;
-  }
-  return validation.payload;
+  return normalizeCameraPathPayload(parsed);
 }
 
 function buildDefaultPayload() {
-  // Deprecated compatibility shim for older call-sites.
-  return createDefaultCameraPathPayload();
+  return {
+    schema: CAMERA_PATH_PAYLOAD_SCHEMA,
+    pathId: "camera-orbit-a",
+    waypoints: [
+      {
+        t: 0,
+        position: { x: 0, y: 8, z: -20 },
+        lookAt: { x: 0, y: 0, z: 0 }
+      },
+      {
+        t: 2000,
+        position: { x: 10, y: 10, z: -10 },
+        lookAt: { x: 0, y: 0, z: 0 }
+      }
+    ]
+  };
 }
 
 function extractCameraPathFromPreset(rawPreset) {
@@ -111,17 +156,13 @@ async function tryLoadPresetFromQuery() {
     if (!extractedCameraPath) {
       throw new Error("Preset payload did not include a camera path.");
     }
-    const validation = validateCameraPathPayload(extractedCameraPath, {
-      requireSchema: true,
-      requireWaypoints: true
-    });
-    if (!validation.valid) {
-      throw new Error(validation.issues.join(" "));
+    if (!Array.isArray(extractedCameraPath.waypoints) || extractedCameraPath.waypoints.length === 0) {
+      throw new Error("Preset camera path must include at least one waypoint.");
     }
     if (!(refs.input instanceof HTMLTextAreaElement)) {
       throw new Error("Camera path input is unavailable.");
     }
-    refs.input.value = toPrettyJson(validation.payload);
+    refs.input.value = toPrettyJson(normalizeCameraPathPayload(extractedCameraPath));
     setStatus(buildPresetLoadedStatus(sampleId, samplePresetPath));
   } catch (error) {
     setStatus(`Preset load failed: ${error instanceof Error ? error.message : "unknown error"}`);
@@ -133,17 +174,11 @@ function normalizeCameraPath() {
     return;
   }
   const parsed = safeParseJson(refs.input.value);
-  const validation = validateCameraPathPayload(parsed, {
-    requireSchema: false,
-    requireWaypoints: true
-  });
-  if (!validation.valid) {
-    setStatus(`Input JSON is invalid. ${validation.issues.join(" ")}`);
+  if (!parsed || typeof parsed !== "object" || !Array.isArray(parsed.waypoints) || parsed.waypoints.length === 0) {
+    setStatus("Input JSON is invalid. Camera path requires at least one waypoint.");
     return;
   }
-  const normalized = normalizeCameraPathPayload(validation.payload, {
-    fallbackPathId: "camera-path"
-  });
+  const normalized = normalizeCameraPathPayload(parsed);
   if (refs.output instanceof HTMLElement) {
     refs.output.textContent = toPrettyJson(normalized);
   }

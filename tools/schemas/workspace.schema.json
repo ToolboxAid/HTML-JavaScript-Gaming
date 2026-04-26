@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "workspace.schema.json",
+  "type": "object",
+  "required": ["version", "tools", "palettes"],
+  "properties": {
+    "version": { "type": "string" },
+    "tools": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "palettes": {
+      "type": "array",
+      "items": { "$ref": "palette.schema.json" }
+    }
+  }
+}

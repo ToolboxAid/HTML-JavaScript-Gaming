@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "palette.schema.json",
+  "type": "object",
+  "required": ["name", "swatches"],
+  "properties": {
+    "name": { "type": "string" },
+    "swatches": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "color"],
+        "properties": {
+          "id": { "type": "string" },
+          "color": { "type": "string" }
+        }
+      }
+    }
+  }
+}

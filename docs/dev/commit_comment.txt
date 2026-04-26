@@ -1,3 +1,4 @@
-Move JSON schema contracts under tools/schemas
-
-Keeps schema ownership with the tool/workspace system instead of adding root-level schema files. Establishes shared manifest schemas under tools/schemas and tool-specific payload schemas under tools/schemas/tools.
+PR 8.1: Schema-driven validation only
+- Added schemas
+- Removed validation utilities
+- Enforced no-fallback rule

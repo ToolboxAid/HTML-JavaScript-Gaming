@@ -1,0 +1,9 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "tools/schemas/sample.tool-payload.schema.json",
+  "title": "Sample Tool Payload",
+  "type": "object",
+  "additionalProperties": {
+    "type": "object"
+  }
+}
