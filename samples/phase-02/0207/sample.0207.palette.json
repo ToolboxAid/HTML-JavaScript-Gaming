@@ -2,8 +2,8 @@
   "$schema": "../../../tools/schemas/palette.schema.json",
   "schema": "html-js-gaming.palette",
   "version": 1,
-  "name": "Sample 0302 Palette",
-  "source": "generated-from-sample-colors",
+  "name": "Sample 0207 Palette",
+  "source": "engine/paletteList",
   "swatches": [
     {
       "symbol": "!",
@@ -50,5 +50,7 @@
       "hex": "#FF7538",
       "name": "color-009"
     }
-  ]
+  ],
+  "sourceId": "crayola008",
+  "locked": true
 }

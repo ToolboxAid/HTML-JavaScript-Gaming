@@ -5,37 +5,7 @@
   "config": {
     "vectorAssetDocument": {
       "sourceName": "sample-0901-ship.svg",
-      "editorOptions": {
-        "palette": {
-          "id": "sample0901-vector",
-          "name": "sample0901-vector",
-          "entries": [
-            {
-              "hex": "#22D3EE",
-              "name": "Route Cyan"
-            },
-            {
-              "hex": "#F97316",
-              "name": "Hazard Orange"
-            },
-            {
-              "hex": "#7C2D12",
-              "name": "Hazard Fill"
-            },
-            {
-              "hex": "#000000",
-              "name": "Background"
-            }
-          ],
-          "paint": "#22D3EE",
-          "stroke": "#F97316",
-          "strokeWidth": 2,
-          "gradientStart": "#22D3EE",
-          "gradientEnd": "#7C2D12",
-          "gradientAngle": 45,
-          "activeTarget": "paint"
-        }
-      },
+      "editorOptions": {},
       "svgText": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 640 360\">\n  <title>sample-0901-vector-ship</title>\n  <desc>Ship vector from Sample 0901 transform-rendering baseline.</desc>\n  <rect x=\"0\" y=\"0\" width=\"640\" height=\"360\" fill=\"#0f172a\" />\n  <rect x=\"90\" y=\"220\" width=\"480\" height=\"110\" fill=\"#111827\" />\n  <path d=\"M 260 150 L 294 236 L 260 217 L 226 236 Z\" fill=\"none\" stroke=\"#38bdf8\" stroke-width=\"8\" stroke-linejoin=\"round\" stroke-linecap=\"round\" />\n  <line x1=\"260\" y1=\"194\" x2=\"340\" y2=\"194\" stroke=\"#64748b\" stroke-width=\"3\" />\n  <circle cx=\"260\" cy=\"194\" r=\"5\" fill=\"#38bdf8\" />\n</svg>"
     }
   }

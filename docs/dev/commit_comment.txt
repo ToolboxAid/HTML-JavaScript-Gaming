@@ -1,5 +1,6 @@
-PR 8.12: Decouple tool payloads from palette references
+PR 8.13: Clean palette refs and rename palette files
 
-- Removed palette fields from sample tool payload files
-- Preserved separate sample.palette.json objects
-- Kept tool payload schema consistent with workspace tools[] entries
+- Renamed sample palettes to sample.<id>.palette.json
+- Removed embedded palette refs from sample tool payloads
+- Moved locked/source metadata into palette JSON
+- Allowed palette sourceId and locked metadata in schema

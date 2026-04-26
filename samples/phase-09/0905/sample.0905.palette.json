@@ -3,7 +3,7 @@
   "schema": "html-js-gaming.palette",
   "version": 1,
   "name": "Sample 0905 Palette",
-  "source": "generated-from-sample-colors",
+  "source": "engine/paletteList",
   "swatches": [
     {
       "symbol": "!",
@@ -30,5 +30,7 @@
       "hex": "#FF7538",
       "name": "color-005"
     }
-  ]
+  ],
+  "sourceId": "crayola008",
+  "locked": true
 }

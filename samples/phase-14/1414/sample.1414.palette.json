@@ -2,8 +2,8 @@
   "$schema": "../../../tools/schemas/palette.schema.json",
   "schema": "html-js-gaming.palette",
   "version": 1,
-  "name": "Sample 0214 Palette",
-  "source": "generated-from-sample-colors",
+  "name": "Sample 1414 Palette",
+  "source": "engine/paletteList",
   "swatches": [
     {
       "symbol": "!",
@@ -12,22 +12,22 @@
     },
     {
       "symbol": "#",
-      "hex": "#7DD3FC",
+      "hex": "#FB923C",
       "name": "color-002"
     },
     {
       "symbol": "$",
-      "hex": "#10B981",
+      "hex": "#FDBA74",
       "name": "color-003"
     },
     {
       "symbol": "%",
-      "hex": "#60A5FA",
+      "hex": "#F59E0B",
       "name": "color-004"
     },
     {
       "symbol": "&",
-      "hex": "#059669",
+      "hex": "#FFFBEB",
       "name": "color-005"
     },
     {
@@ -40,5 +40,7 @@
       "hex": "#FF7538",
       "name": "color-007"
     }
-  ]
+  ],
+  "sourceId": "crayola008",
+  "locked": true
 }

@@ -2,36 +2,5 @@
   "$schema": "../../../tools/schemas/tools/palette-browser.schema.json",
   "tool": "palette-browser",
   "version": "1",
-  "config": {
-    "palette": {
-      "name": "sample-0308-gravity-zones",
-      "entries": [
-        {
-          "symbol": "A",
-          "hex": "#1E1B4B",
-          "name": "Deep Void"
-        },
-        {
-          "symbol": "B",
-          "hex": "#4C1D95",
-          "name": "Gravity Well"
-        },
-        {
-          "symbol": "C",
-          "hex": "#22D3EE",
-          "name": "Field Edge"
-        },
-        {
-          "symbol": "D",
-          "hex": "#FCE883",
-          "name": "Probe Glow"
-        },
-        {
-          "symbol": "E",
-          "hex": "#FF7538",
-          "name": "Alert"
-        }
-      ]
-    }
-  }
+  "config": {}
 }

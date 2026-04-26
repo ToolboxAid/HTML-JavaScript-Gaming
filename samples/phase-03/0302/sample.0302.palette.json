@@ -2,73 +2,55 @@
   "$schema": "../../../tools/schemas/palette.schema.json",
   "schema": "html-js-gaming.palette",
   "version": 1,
-  "name": "Sample 0213 Palette",
-  "source": "generated-from-sample-colors",
+  "name": "Sample 0302 Palette",
+  "source": "engine/paletteList",
   "swatches": [
     {
       "symbol": "!",
-      "hex": "#1E1B4B",
+      "hex": "#1CAC78",
       "name": "color-001"
     },
     {
       "symbol": "#",
-      "hex": "#1CAC78",
+      "hex": "#60A5FA",
       "name": "color-002"
     },
     {
       "symbol": "$",
-      "hex": "#FF7538",
+      "hex": "#1E1B4B",
       "name": "color-003"
     },
     {
       "symbol": "%",
-      "hex": "#FCE883",
+      "hex": "#34D399",
       "name": "color-004"
     },
     {
       "symbol": "&",
-      "hex": "#1F75FE",
+      "hex": "#10B981",
       "name": "color-005"
     },
     {
       "symbol": "(",
-      "hex": "#1CAC78",
+      "hex": "#F59E0B",
       "name": "color-006"
     },
     {
       "symbol": ")",
-      "hex": "#60A5FA",
+      "hex": "#FFFFFFAA",
       "name": "color-007"
     },
     {
       "symbol": "*",
-      "hex": "#FFFFFF",
+      "hex": "#1F75FE",
       "name": "color-008"
     },
     {
       "symbol": "+",
-      "hex": "#1E1B4B",
-      "name": "color-009"
-    },
-    {
-      "symbol": ",",
-      "hex": "#F59E0B",
-      "name": "color-010"
-    },
-    {
-      "symbol": "-",
-      "hex": "#34D399",
-      "name": "color-011"
-    },
-    {
-      "symbol": ".",
-      "hex": "#1F75FE",
-      "name": "color-012"
-    },
-    {
-      "symbol": "/",
       "hex": "#FF7538",
-      "name": "color-013"
+      "name": "color-009"
     }
-  ]
+  ],
+  "sourceId": "crayola008",
+  "locked": true
 }

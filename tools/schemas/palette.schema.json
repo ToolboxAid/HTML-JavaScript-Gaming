@@ -5,17 +5,29 @@
   "required": ["schema", "version", "name", "swatches"],
   "additionalProperties": false,
   "properties": {
-    "$schema": { "type": "string" },
     "schema": {
       "type": "string",
       "const": "html-js-gaming.palette"
     },
     "version": {
       "type": "integer",
-      "const": 1
+      "minimum": 1
     },
-    "name": { "type": "string" },
-    "source": { "type": "string" },
+    "name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "source": {
+      "type": "string",
+      "minLength": 1
+    },
+    "sourceId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "locked": {
+      "type": "boolean"
+    },
     "swatches": {
       "type": "array",
       "uniqueItems": true,
@@ -33,7 +45,10 @@
             "type": "string",
             "pattern": "^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{8})$"
           },
-          "name": { "type": "string" }
+          "name": {
+            "type": "string",
+            "minLength": 1
+          }
         }
       }
     }

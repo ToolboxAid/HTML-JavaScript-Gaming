@@ -12,14 +12,7 @@
       "showGrid": true,
       "onionSkin": false,
       "activeColor": "#1CAC78FF",
-      "palette": [],
-      "paletteRef": {
-        "source": "engine/paletteList",
-        "id": "crayola008",
-        "locked": true
-      },
       "assetRefs": {
-        "paletteId": "",
         "spriteId": ""
       },
       "recentColors": [
