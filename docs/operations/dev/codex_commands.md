@@ -1,14 +1,13 @@
 MODEL: GPT-5.3-codex
 
 TASK:
-Perform legacy catalog parity and safe removal.
+Final validation pass
 
-STEPS:
-1. Compare game.manifest.json with legacy catalogs
-2. Identify removable files
-3. Delete ONLY if safe
-4. Document everything
+- Verify all games launch
+- Verify manifests complete
+- Verify no broken refs
+- Remove any last safe unused JSON
+- Produce final report
 
-DO NOT:
-- break runtime
-- modify start_of_day
+OUTPUT:
+tmp/BUILD_PR_LEVEL_8_34_FINAL_CLEAN_REPO_BASELINE_delta.zip

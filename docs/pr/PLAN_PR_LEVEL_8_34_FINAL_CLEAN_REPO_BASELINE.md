@@ -1,0 +1,1 @@
+Finalize Level 8 baseline after cleanup, ensure repo is stable, consistent, and minimal.
