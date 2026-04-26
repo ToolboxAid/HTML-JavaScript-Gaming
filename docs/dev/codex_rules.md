@@ -4,10 +4,10 @@ These rules OVERRIDE all other instructions.
 
 ## This PR
 
-Fix only Workspace Manager tool selector placement.
+Fix only the initial Workspace Manager tool-banner visibility.
 
 Allowed:
-- targeted Workspace Manager render/markup/CSS placement changes
+- targeted Workspace Manager render/visibility/CSS changes
 - validation report
 
 Forbidden:
@@ -21,15 +21,20 @@ Forbidden:
 - start_of_day changes
 - roadmap text rewrite outside status markers
 
-## Required UI Placement
+## Required Initial State
 
-The tool selector controls must render inside the Workspace Manager first-class tools surface.
+On game-launched Workspace Manager open:
+- show Workspace Manager shell/status
+- show Game Source and workspace status
+- do not show detached Tool banner
+- do not mount a tool
+- do not auto-select a tool
 
-They must not render as a detached top banner above the Workspace Manager shell/title.
+## Tool Controls Visibility Rule
 
-## Required Behavior
+Tool controls may appear only after explicit tool selection or explicit valid tool context.
 
-Explicit selection is required.
+## Forbidden Restorations
 
 Do not restore:
 - `gameId || game`
@@ -51,6 +56,7 @@ Do not restore:
 - hidden fallback behavior
 - duplicated launch paths
 - silent redirects
+- silent caught errors
 - broad truthy/falsy behavior changes
 - magic strings outside existing SSoT/config pattern
 - duplicate event listeners

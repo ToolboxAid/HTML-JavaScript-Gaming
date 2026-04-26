@@ -18,18 +18,28 @@
   </header>
   <main class="tool-host-workspace">
     <section class="tool-host-surface" aria-label="Workspace Manager tools surface">
-      <div class="tool-host-surface__controls">
-        <label class="tool-host-shell__field" for="tool-host-select">Tool</label>
-        <select id="tool-host-select" data-tool-host-select aria-label="Tool to mount"></select>
-        <button type="button" data-tool-host-prev>Prev</button>
-        <button type="button" data-tool-host-next>Next</button>
-        <button type="button" data-tool-host-mount>Mount</button>
-        <button type="button" data-tool-host-unmount>Unmount</button>
-        <a data-tool-host-standalone href="#" class="is-disabled" aria-disabled="true" tabindex="-1">Open Standalone</a>
+      <p class="tool-host-surface__copy">First-Class Tools Surface copy: tools become available after explicit selection.</p>
+      <div class="tool-host-surface__actions">
+        <label class="tool-host-shell__field" for="tool-host-action-select">Workspace actions</label>
+        <select id="tool-host-action-select" data-tool-host-action-select aria-label="Workspace action tool selector"></select>
+        <button type="button" data-tool-host-action-apply>Select Tool</button>
       </div>
-      <textarea data-tool-host-state-input class="tool-host-shell__state" rows="3" placeholder="Optional JSON state for mounted tool"></textarea>
-      <p data-tool-host-current-label class="tool-host-shell__meta">No tool mounted.</p>
-      <p data-tool-host-switch-meta class="tool-host-shell__meta"></p>
+      <p data-tool-host-workspace-loaded-status class="tool-host-shell__meta">Workspace loaded status: waiting for context.</p>
+      <p data-tool-host-shared-status class="tool-host-shell__meta">Shared palette/assets status: waiting for tool selection.</p>
+      <div class="tool-host-surface__controls" data-tool-host-controls-panel hidden>
+        <div class="tool-host-surface__controls-row">
+          <label class="tool-host-shell__field" for="tool-host-select">Tool</label>
+          <select id="tool-host-select" data-tool-host-select aria-label="Tool to mount"></select>
+          <button type="button" data-tool-host-prev>Prev</button>
+          <button type="button" data-tool-host-next>Next</button>
+          <button type="button" data-tool-host-mount>Mount</button>
+          <button type="button" data-tool-host-unmount>Unmount</button>
+          <a data-tool-host-standalone href="#" class="is-disabled" aria-disabled="true" tabindex="-1">Open Standalone</a>
+        </div>
+        <textarea data-tool-host-state-input class="tool-host-shell__state" rows="3" placeholder="Optional JSON state for mounted tool"></textarea>
+        <p data-tool-host-current-label class="tool-host-shell__meta">No tool mounted.</p>
+        <p data-tool-host-switch-meta class="tool-host-shell__meta"></p>
+      </div>
     </section>
     <div data-tool-host-mount-container class="tool-host-workspace__mount"></div>
   </main>

@@ -1,4 +1,4 @@
-# Codex Commands — BUILD_PR_LEVEL_20_16_EMBED_TOOL_SELECTOR_IN_WORKSPACE_SURFACE
+# Codex Commands — BUILD_PR_LEVEL_20_17_HIDE_TOOL_BANNER_UNTIL_TOOL_SELECTED
 
 ## Model
 GPT-5.4 or GPT-5.3-codex
@@ -10,58 +10,65 @@ High
 
 ```text
 Read docs/dev/codex_rules.md first.
-Read docs/dev/reports/workspace_manager_blank_game_launch_repair_validation.md if present.
+Read docs/dev/reports/workspace_manager_tool_selector_surface_validation.md if present.
 Read docs/dev/specs/TOOL_LAUNCH_SSOT.md if present.
 
-Execute BUILD_PR_LEVEL_20_16_EMBED_TOOL_SELECTOR_IN_WORKSPACE_SURFACE.
+Execute BUILD_PR_LEVEL_20_17_HIDE_TOOL_BANNER_UNTIL_TOOL_SELECTED.
 
 User UAT finding:
-- Workspace Manager now renders.
-- Tool selector controls appear at the top as a detached banner:
-  Tool / Prev / Next / Mount / Unmount / Open Standalone / Optional JSON state / No tool mounted / Switch target / Select a tool to mount.
-- This explicit selection behavior is OK.
-- But it must be part of the Workspace Manager first-class tools surface, not a top banner.
+- Detached Tool banner is still visible.
+- User wants the banner removed/hidden until a tool is selected.
+- Initial Workspace Manager page should show the Workspace Manager shell/status page with:
+  - Workspace Manager title
+  - First-Class Tools Surface copy
+  - Game Source
+  - workspace actions
+  - Workspace loaded status
+  - shared palette/assets status
 
 Goal:
-Move/contain the explicit tool selector controls inside the Workspace Manager first-class tools surface.
+Hide/remove the detached Tool banner until explicit tool selection.
 
-Required behavior:
-- Workspace Manager header/shell remains visible.
-- Game Source and workspace status remain visible.
-- Tool selector controls render inside the first-class tools surface.
-- User still must explicitly select/mount a tool.
-- No default/fallback behavior is restored.
-- Do not restore gameId || game.
-- Do not restore toolIds[0].
-- Do not auto-select first tool.
-- Do not alter samples.
-
-Likely files:
-- tools/Workspace Manager/main.js
-- tools/Workspace Manager/index.html
-- Workspace Manager CSS only if existing layout requires it
+Required initial behavior:
+- URL tools/Workspace Manager/index.html?gameId=SolarSystem&mount=game renders visible Workspace Manager shell/status page.
+- Do not show Tool / Prev / Next / Mount / Unmount / Open Standalone / Optional JSON state / No tool mounted banner on initial load.
+- Do not mount or auto-select a tool on initial load.
+- Tool controls may appear only after explicit tool selection or explicit valid tool context.
+- Keep game context loaded.
+- Keep external memory clear.
+- Keep visible diagnostics for invalid/missing context.
 
 Forbidden:
 - changing samples
 - changing labels
+- restoring gameId || game
+- restoring toolIds[0]
+- auto-selecting first tool
+- mounting a tool on initial game launch
 - broad Workspace Manager refactor
 - second SSoT
 - fallback/default behavior
 - start_of_day changes
 
+Likely files:
+- tools/Workspace Manager/main.js
+- tools/Workspace Manager/index.html
+- Workspace Manager CSS only if needed
+
 Validation:
-Create docs/dev/reports/workspace_manager_tool_selector_surface_validation.md with:
+Create docs/dev/reports/workspace_manager_hide_tool_banner_validation.md with:
 - changed files
-- proof tool selector no longer renders as top detached banner
-- proof tool selector appears inside first-class tools surface
-- proof explicit tool selection is still required
-- proof no first-tool selection is restored
-- proof toolIds[0] is not restored
-- proof gameId || game is not restored
-- proof game source/status still render
-- proof sample Open <tool> remains untouched
+- proof initial game-launched page shows Workspace Manager shell/status
+- proof detached tool banner is not visible before tool selection
+- proof tool controls appear only after explicit tool selection
+- proof no first-tool/default selection restored
+- proof toolIds[0] not restored
+- proof gameId || game not restored
+- proof valid gameId still loads game context
+- proof invalid/missing context renders visible diagnostic
+- proof samples Open <tool> remain untouched
 - anti-pattern self-check
 
 Return ZIP at:
-tmp/BUILD_PR_LEVEL_20_16_EMBED_TOOL_SELECTOR_IN_WORKSPACE_SURFACE.zip
+tmp/BUILD_PR_LEVEL_20_17_HIDE_TOOL_BANNER_UNTIL_TOOL_SELECTED.zip
 ```

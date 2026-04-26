@@ -81,7 +81,26 @@ body.tool-host-page {
   padding: 10px;
 }
 
+.tool-host-surface__copy {
+  margin: 0 0 8px;
+  font-size: 0.92rem;
+}
+
+.tool-host-surface__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
 .tool-host-surface__controls {
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid #2d3b5f;
+}
+
+.tool-host-surface__controls-row {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;

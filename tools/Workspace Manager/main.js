@@ -83,6 +83,9 @@ async function readGameAssetCatalog(assetCatalogPath) {
 }
 
 const refs = {
+  actionToolSelect: document.querySelector("[data-tool-host-action-select]"),
+  actionApplyButton: document.querySelector("[data-tool-host-action-apply]"),
+  controlsPanel: document.querySelector("[data-tool-host-controls-panel]"),
   toolSelect: document.querySelector("[data-tool-host-select]"),
   stateInput: document.querySelector("[data-tool-host-state-input]"),
   mountButton: document.querySelector("[data-tool-host-mount]"),
@@ -93,6 +96,8 @@ const refs = {
   switchMetaText: document.querySelector("[data-tool-host-switch-meta]"),
   statusText: document.querySelector("[data-tool-host-status]"),
   gameSourceText: document.querySelector("[data-tool-host-game-source]"),
+  workspaceLoadedStatusText: document.querySelector("[data-tool-host-workspace-loaded-status]"),
+  sharedStatusText: document.querySelector("[data-tool-host-shared-status]"),
   diagnosticPanel: document.querySelector("[data-tool-host-diagnostic]"),
   diagnosticText: document.querySelector("[data-tool-host-diagnostic-text]"),
   currentLabel: document.querySelector("[data-tool-host-current-label]"),
@@ -202,6 +207,24 @@ function writeGameSource(text) {
   }
 }
 
+function writeWorkspaceLoadedStatus(text) {
+  if (refs.workspaceLoadedStatusText instanceof HTMLElement) {
+    refs.workspaceLoadedStatusText.textContent = text;
+  }
+}
+
+function writeSharedStatus(text) {
+  if (refs.sharedStatusText instanceof HTMLElement) {
+    refs.sharedStatusText.textContent = text;
+  }
+}
+
+function setControlsPanelVisible(isVisible) {
+  if (refs.controlsPanel instanceof HTMLElement) {
+    refs.controlsPanel.hidden = !isVisible;
+  }
+}
+
 function setDiagnosticText(text) {
   const normalizedText = normalizeTextParam(text);
   if (refs.diagnosticPanel instanceof HTMLElement) {
@@ -275,6 +298,19 @@ function updateStandaloneHref(toolId) {
   refs.standaloneLink.setAttribute("aria-disabled", enabled ? "false" : "true");
   refs.standaloneLink.tabIndex = enabled ? 0 : -1;
   refs.standaloneLink.classList.toggle("is-disabled", !enabled);
+}
+
+function populateActionToolSelect(selectedToolId = "") {
+  if (!(refs.actionToolSelect instanceof HTMLSelectElement)) {
+    return;
+  }
+  const options = toolIds
+    .map((toolId) => getToolHostEntryById(manifest, toolId))
+    .filter(Boolean)
+    .map((tool) => `<option value="${tool.id}">${tool.displayName}</option>`)
+    .join("");
+  refs.actionToolSelect.innerHTML = `<option value="">Select tool...</option>${options}`;
+  refs.actionToolSelect.value = toolIds.includes(selectedToolId) ? selectedToolId : "";
 }
 
 function writeQueryToolId(toolId, replace = false) {
@@ -502,6 +538,7 @@ function applyToolsUsedFilterForGame(gameEntry, preferredToolId = "") {
   }
   const initialToolId = toolIds.includes(preferredToolId) ? preferredToolId : "";
   populateToolSelect(initialToolId);
+  populateActionToolSelect(initialToolId);
   updateStandaloneHref(initialToolId);
   syncControlState();
 }
@@ -514,19 +551,24 @@ const runtime = createToolHostRuntime({
   },
   onMounted(tool) {
     setCurrentLabel(`Mounted: ${tool.displayName}`);
+    writeWorkspaceLoadedStatus(`Workspace loaded status: mounted tool ${tool.displayName}.`);
+    writeSharedStatus("Shared palette/assets status: tool context active.");
     syncControlState();
   },
   onUnmounted() {
     setCurrentLabel("No tool mounted.");
+    writeSharedStatus("Shared palette/assets status: waiting for tool selection.");
     syncControlState();
   }
 });
 
 function mountSelectedTool(source = "manual") {
+  setControlsPanelVisible(true);
   unmountGameFrame();
   const toolId = readSelectedToolId();
   if (!toolId) {
     writeStatus("Select a tool to mount.");
+    writeWorkspaceLoadedStatus("Workspace loaded status: tool selected required before mount.");
     return;
   }
   let optionalState = null;
@@ -544,6 +586,7 @@ function mountSelectedTool(source = "manual") {
   updateSwitchMeta();
   updateStandaloneHref(toolId);
   clearDiagnostic();
+  writeWorkspaceLoadedStatus(`Workspace loaded status: mounting tool ${toolId}...`);
   writeQueryToolId(toolId, source === "init");
   const previousMount = runtime.getCurrentMount();
   const launchParams = readForwardedToolLaunchParams();
@@ -561,7 +604,35 @@ function mountSelectedTool(source = "manual") {
   syncControlState();
 }
 
+function applyActionToolSelection() {
+  if (!(refs.actionToolSelect instanceof HTMLSelectElement)) {
+    return;
+  }
+  const toolId = normalizeTextParam(refs.actionToolSelect.value);
+  if (!toolId || !toolIds.includes(toolId) || !getToolHostEntryById(manifest, toolId)) {
+    writeStatus("Select a valid tool from Workspace actions.");
+    writeWorkspaceLoadedStatus("Workspace loaded status: waiting for explicit tool selection.");
+    return;
+  }
+  if (refs.toolSelect instanceof HTMLSelectElement) {
+    refs.toolSelect.value = toolId;
+  }
+  setControlsPanelVisible(true);
+  updateSwitchMeta();
+  updateStandaloneHref(toolId);
+  syncControlState();
+  writeStatus(`Tool selected: ${toolId}. Click Mount to load.`);
+  writeWorkspaceLoadedStatus(`Workspace loaded status: tool ${toolId} selected.`);
+  writeSharedStatus("Shared palette/assets status: tool selected; mount pending.");
+}
+
 function bindEvents() {
+  if (refs.actionApplyButton instanceof HTMLButtonElement) {
+    refs.actionApplyButton.addEventListener("click", () => {
+      applyActionToolSelection();
+    });
+  }
+
   if (refs.mountButton instanceof HTMLButtonElement) {
     refs.mountButton.addEventListener("click", () => {
       mountSelectedTool("button");
@@ -606,7 +677,10 @@ function bindEvents() {
     const gameLaunchRequested = shouldMountGameFrameFromQuery();
     const gameId = readInitialGameId();
     if (gameLaunchRequested && !gameId) {
+      setControlsPanelVisible(false);
       writeGameSource("Game Source: missing gameId");
+      writeWorkspaceLoadedStatus("Workspace loaded status: game launch context missing gameId.");
+      writeSharedStatus("Shared palette/assets status: unavailable due to invalid context.");
       writeVisibleDiagnostic("Workspace Manager game launch requires a valid gameId query parameter.");
       applyToolsUsedFilterForGame(null);
       return;
@@ -614,29 +688,38 @@ function bindEvents() {
     if (gameId) {
       void readGameEntryById(gameId).then((gameEntry) => {
         if (!gameEntry) {
+          setControlsPanelVisible(false);
           writeGameSource(`Game Source: invalid (${gameId})`);
+          writeWorkspaceLoadedStatus(`Workspace loaded status: game context "${gameId}" is invalid.`);
+          writeSharedStatus("Shared palette/assets status: unavailable due to invalid context.");
           writeVisibleDiagnostic(`Game "${gameId}" is not available for Workspace Manager launch.`);
           applyToolsUsedFilterForGame(null);
           return;
         }
         writeGameSource(`Game Source: ${gameEntry.id}`);
+        writeWorkspaceLoadedStatus(`Workspace loaded status: game context loaded (${gameEntry.id}).`);
+        writeSharedStatus("Shared palette/assets status: waiting for explicit tool selection.");
         const requestedToolId = (() => {
           const url = new URL(window.location.href);
           return (url.searchParams.get("tool") || "").trim();
         })();
         applyToolsUsedFilterForGame(gameEntry, requestedToolId);
         if (!requestedToolId) {
+          setControlsPanelVisible(false);
           runtime.unmountCurrentTool("popstate");
           unmountGameFrame();
-          writeStatus("Select a tool to mount.");
+          writeStatus("Select a tool from Workspace actions.");
           syncControlState();
           return;
         }
+        setControlsPanelVisible(true);
         mountSelectedTool("popstate");
       });
       return;
     }
     writeGameSource("Game Source: none");
+    writeWorkspaceLoadedStatus("Workspace loaded status: no game context in query.");
+    writeSharedStatus("Shared palette/assets status: waiting for explicit tool selection.");
     applyToolsUsedFilterForGame(null);
     const requestedToolId = readRequestedToolIdFromQuery();
     const toolId = requestedToolId;
@@ -646,9 +729,11 @@ function bindEvents() {
     updateSwitchMeta();
     updateStandaloneHref(toolId);
     if (toolId) {
+      setControlsPanelVisible(true);
       mountSelectedTool("popstate");
     } else {
-      writeStatus("Select a tool to mount.");
+      setControlsPanelVisible(false);
+      writeStatus("Select a tool from Workspace actions.");
       syncControlState();
     }
     syncControlState();
@@ -661,8 +746,13 @@ function bindEvents() {
 
 async function init() {
   clearDiagnostic();
+  setControlsPanelVisible(false);
   writeGameSource("Game Source: none");
+  writeWorkspaceLoadedStatus("Workspace loaded status: loading workspace context.");
+  writeSharedStatus("Shared palette/assets status: waiting for explicit tool selection.");
   if (!(refs.mountContainer instanceof HTMLElement)) {
+    writeWorkspaceLoadedStatus("Workspace loaded status: mount surface unavailable.");
+    writeSharedStatus("Shared palette/assets status: unavailable.");
     writeVisibleDiagnostic("Workspace Manager mount surface is unavailable.");
     return;
   }
@@ -670,6 +760,8 @@ async function init() {
   const initialGameId = readInitialGameId();
   if (gameLaunchRequested && !initialGameId) {
     writeGameSource("Game Source: missing gameId");
+    writeWorkspaceLoadedStatus("Workspace loaded status: game launch context missing gameId.");
+    writeSharedStatus("Shared palette/assets status: unavailable due to invalid context.");
     applyToolsUsedFilterForGame(null);
     bindEvents();
     writeVisibleDiagnostic("Workspace Manager game launch requires a valid gameId query parameter.");
@@ -680,6 +772,8 @@ async function init() {
     initialGameEntry = await readGameEntryById(initialGameId);
     if (!initialGameEntry) {
       writeGameSource(`Game Source: invalid (${initialGameId})`);
+      writeWorkspaceLoadedStatus(`Workspace loaded status: game context "${initialGameId}" is invalid.`);
+      writeSharedStatus("Shared palette/assets status: unavailable due to invalid context.");
       writeVisibleDiagnostic(`Game "${initialGameId}" is not available for Workspace Manager launch.`);
       if (gameLaunchRequested) {
         applyToolsUsedFilterForGame(null);
@@ -688,7 +782,11 @@ async function init() {
       }
     } else {
       writeGameSource(`Game Source: ${initialGameEntry.id}`);
+      writeWorkspaceLoadedStatus(`Workspace loaded status: game context loaded (${initialGameEntry.id}).`);
+      writeSharedStatus("Shared palette/assets status: waiting for explicit tool selection.");
     }
+  } else {
+    writeWorkspaceLoadedStatus("Workspace loaded status: workspace shell ready.");
   }
 
   const rawRequestedToolId = (() => {
@@ -700,13 +798,17 @@ async function init() {
 
   const requestedToolId = readRequestedToolIdFromQuery();
   if (toolIds.length === 0) {
+    writeWorkspaceLoadedStatus("Workspace loaded status: no active tools available.");
+    writeSharedStatus("Shared palette/assets status: unavailable.");
     writeVisibleDiagnostic("No active tools are currently available for Workspace Manager.");
     return;
   }
   if (!requestedToolId) {
-    writeStatus("Select a tool to mount.");
+    setControlsPanelVisible(false);
+    writeStatus("Select a tool from Workspace actions.");
     return;
   }
+  setControlsPanelVisible(true);
   mountSelectedTool("init");
 }
 

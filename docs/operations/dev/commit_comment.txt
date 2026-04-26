@@ -1,9 +1,9 @@
-Embed Workspace Manager tool selector in tools surface
+Hide Workspace Manager tool banner until selection
 
 PR Details:
-- Moves explicit tool selector controls into the Workspace Manager first-class tools surface.
-- Preserves explicit selection requirement.
-- Keeps Game Source and workspace status visible.
-- Does not restore first-tool/default selection.
-- Does not restore legacy gameId fallback.
+- Hides detached Tool banner on initial game-launched Workspace Manager load.
+- Shows Workspace Manager shell/status surface first.
+- Shows tool controls only after explicit tool selection.
+- Preserves explicit gameId context and memory clear behavior.
+- Does not restore default/fallback tool selection.
 - Leaves sample Open <tool> behavior untouched.
