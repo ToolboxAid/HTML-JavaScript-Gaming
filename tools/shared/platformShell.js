@@ -873,7 +873,7 @@ function renderWorkspaceSummary(currentTool) {
         <button type="button" class="tools-platform-frame__project-button is-secondary" data-workspace-action="close"${workspaceActionDisabled}>Close Workspace</button>
         <input type="file" class="tools-platform-frame__project-input" data-workspace-open-input accept=".json,application/json" />
       </div>
-      // pager should go here 
+      <section class="tool-host-pager" aria-label="Workspace tool pager" data-tool-host-pager><button type="button" class="tool-host-pager__button" data-tool-host-prev>[PREV]</button><span class="tool-host-pager__name" data-tool-host-current-label>No tool available</span><button type="button" class="tool-host-pager__button" data-tool-host-next>[NEXT]</button><select id="tool-host-select" class="tool-host-pager__select" tabindex="-1" aria-hidden="true" data-tool-host-select></select></section>
       <div class="tools-platform-frame__project-copy">
         <span class="tools-platform-frame__project-label">Workspace</span>
         <strong class="tools-platform-frame__project-name">${escapeHtml(workspaceName)}${escapeHtml(dirtyMark)}</strong>

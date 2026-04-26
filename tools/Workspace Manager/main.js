@@ -83,18 +83,17 @@ async function readGameAssetCatalog(assetCatalogPath) {
 }
 
 const refs = {
-  toolSelect: null,
-  stateInput: null,
+  toolSelect: document.querySelector("[data-tool-host-select]"),
+  stateInput: document.querySelector("[data-tool-host-state-input]"),
   mountButton: null,
-  prevButton: null,
-  nextButton: null,
+  prevButton: document.querySelector("[data-tool-host-prev]"),
+  nextButton: document.querySelector("[data-tool-host-next]"),
   unmountButton: null,
   standaloneLink: null,
   switchMetaText: null,
   statusText: null,
-  currentLabel: null,
-  mountContainer: document.querySelector("[data-tool-host-mount-container]"),
-  runtimeMountContainer: null
+  currentLabel: document.querySelector("[data-tool-host-current-label]"),
+  mountContainer: document.querySelector("[data-tool-host-mount-container]")
 };
 
 const manifest = createToolHostManifest();
@@ -108,66 +107,7 @@ const TOOL_LAUNCH_PARAM_PREFIXES = Object.freeze({
   workspaceHref: ["/tools/Workspace%20Manager/", "/tools/Workspace Manager/"],
   returnTo: ["/games/", "/samples/"]
 });
-
-function ensureWorkspaceMountContent() {
-  if (!(refs.mountContainer instanceof HTMLElement)) {
-    return false;
-  }
-  let mountedContent = refs.mountContainer.querySelector("[data-tool-host-mounted-content]");
-  let pager = refs.mountContainer.querySelector("[data-tool-host-pager]");
-  let runtimeMountContainer = refs.mountContainer.querySelector("[data-tool-host-runtime-mount]");
-  if (!(mountedContent instanceof HTMLElement) || !(pager instanceof HTMLElement) || !(runtimeMountContainer instanceof HTMLElement)) {
-    mountedContent = document.createElement("section");
-    mountedContent.className = "tool-host-mounted-content";
-    mountedContent.setAttribute("data-tool-host-mounted-content", "ready");
-
-    const pagerSection = document.createElement("section");
-    pagerSection.className = "tool-host-pager";
-    pagerSection.setAttribute("aria-label", "Workspace tool pager");
-    pagerSection.setAttribute("data-tool-host-pager", "ready");
-
-    const prevButton = document.createElement("button");
-    prevButton.type = "button";
-    prevButton.className = "tool-host-pager__button";
-    prevButton.setAttribute("data-tool-host-prev", "");
-    prevButton.textContent = "[PREV]";
-
-    const currentLabel = document.createElement("span");
-    currentLabel.className = "tool-host-pager__name";
-    currentLabel.setAttribute("data-tool-host-current-label", "");
-    currentLabel.textContent = "No tool available";
-
-    const nextButton = document.createElement("button");
-    nextButton.type = "button";
-    nextButton.className = "tool-host-pager__button";
-    nextButton.setAttribute("data-tool-host-next", "");
-    nextButton.textContent = "[NEXT]";
-
-    const toolSelect = document.createElement("select");
-    toolSelect.id = "tool-host-select";
-    toolSelect.className = "tool-host-pager__select";
-    toolSelect.setAttribute("tabindex", "-1");
-    toolSelect.setAttribute("aria-hidden", "true");
-    toolSelect.setAttribute("data-tool-host-select", "");
-
-    pagerSection.append(prevButton, currentLabel, nextButton, toolSelect);
-
-    runtimeMountContainer = document.createElement("div");
-    runtimeMountContainer.className = "tool-host-editors-surface";
-    runtimeMountContainer.setAttribute("data-tool-host-runtime-mount", "ready");
-
-    mountedContent.append(pagerSection, runtimeMountContainer);
-    refs.mountContainer.replaceChildren(mountedContent);
-    pager = pagerSection;
-  }
-
-  refs.toolSelect = pager.querySelector("[data-tool-host-select]");
-  refs.prevButton = pager.querySelector("[data-tool-host-prev]");
-  refs.nextButton = pager.querySelector("[data-tool-host-next]");
-  refs.currentLabel = pager.querySelector("[data-tool-host-current-label]");
-  refs.runtimeMountContainer = runtimeMountContainer instanceof HTMLElement ? runtimeMountContainer : null;
-  return refs.runtimeMountContainer instanceof HTMLElement;
-}
+let selectedToolId = refs.toolSelect instanceof HTMLSelectElement ? refs.toolSelect.value : "";
 
 function normalizeTextParam(value) {
   return typeof value === "string" ? value.trim() : "";
@@ -245,7 +185,18 @@ function readForwardedToolLaunchParams() {
 }
 
 function readSelectedToolId() {
-  return refs.toolSelect instanceof HTMLSelectElement ? refs.toolSelect.value : "";
+  if (refs.toolSelect instanceof HTMLSelectElement) {
+    return refs.toolSelect.value;
+  }
+  return selectedToolId;
+}
+
+function writeSelectedToolId(toolId) {
+  const normalizedToolId = typeof toolId === "string" ? toolId.trim() : "";
+  selectedToolId = normalizedToolId;
+  if (refs.toolSelect instanceof HTMLSelectElement) {
+    refs.toolSelect.value = normalizedToolId;
+  }
 }
 
 function writeStatus(text) {
@@ -255,10 +206,7 @@ function writeStatus(text) {
 }
 
 function renderMountDiagnostic(message, detail = "") {
-  const diagnosticContainer = refs.runtimeMountContainer instanceof HTMLElement
-    ? refs.runtimeMountContainer
-    : refs.mountContainer;
-  if (!(diagnosticContainer instanceof HTMLElement)) {
+  if (!(refs.mountContainer instanceof HTMLElement)) {
     return;
   }
   const titleNode = document.createElement("h2");
@@ -275,7 +223,7 @@ function renderMountDiagnostic(message, detail = "") {
   panelNode.className = "tool-host-mount-diagnostic";
   panelNode.setAttribute("data-tool-host-mount-diagnostic", "visible");
   panelNode.append(titleNode, messageNode, detailNode);
-  diagnosticContainer.replaceChildren(panelNode);
+  refs.mountContainer.replaceChildren(panelNode);
 }
 
 function setCurrentLabel(text) {
@@ -306,13 +254,13 @@ function updateSwitchMeta() {
 }
 
 function selectToolByOffset(offset) {
-  if (!(refs.toolSelect instanceof HTMLSelectElement) || toolIds.length === 0) {
+  if (toolIds.length === 0) {
     return false;
   }
 
   const currentIndex = Math.max(0, getSelectedToolIndex());
   const nextIndex = (currentIndex + offset + toolIds.length) % toolIds.length;
-  refs.toolSelect.value = toolIds[nextIndex];
+  writeSelectedToolId(toolIds[nextIndex]);
   updateSwitchMeta();
   return true;
 }
@@ -437,9 +385,9 @@ function unmountGameFrame() {
     }
     return;
   }
-  if (currentGameFrame.parentElement === refs.runtimeMountContainer) {
+  if (currentGameFrame.parentElement === refs.mountContainer) {
     currentGameFrame.removeAttribute("src");
-    refs.runtimeMountContainer.removeChild(currentGameFrame);
+    refs.mountContainer.removeChild(currentGameFrame);
   }
   currentGameFrame = null;
   if (currentGameHostContextId) {
@@ -449,7 +397,7 @@ function unmountGameFrame() {
 }
 
 async function mountGameFrame(gameEntry) {
-  if (!(refs.runtimeMountContainer instanceof HTMLElement)) {
+  if (!(refs.mountContainer instanceof HTMLElement)) {
     writeStatus("Workspace container is unavailable.");
     return false;
   }
@@ -503,7 +451,7 @@ async function mountGameFrame(gameEntry) {
   currentGameHostContextId = hostContext.contextId;
   gameUrl.searchParams.set("hostContextId", hostContext.contextId);
   frame.src = gameUrl.toString();
-  refs.runtimeMountContainer.replaceChildren(frame);
+  refs.mountContainer.replaceChildren(frame);
   currentGameFrame = frame;
   setCurrentLabel(`Mounted Game: ${gameEntry.title}`);
   writeStatus(`Mounted game ${gameEntry.title}.`);
@@ -531,17 +479,16 @@ function syncControlState() {
 }
 
 function populateToolSelect(initialToolId) {
-  if (!(refs.toolSelect instanceof HTMLSelectElement)) {
-    return;
+  if (refs.toolSelect instanceof HTMLSelectElement) {
+    refs.toolSelect.innerHTML = toolIds
+      .map((toolId) => getToolHostEntryById(manifest, toolId))
+      .filter(Boolean)
+      .map((tool) => `<option value="${tool.id}">${tool.displayName}</option>`)
+      .join("");
   }
-
-  refs.toolSelect.innerHTML = toolIds
-    .map((toolId) => getToolHostEntryById(manifest, toolId))
-    .filter(Boolean)
-    .map((tool) => `<option value="${tool.id}">${tool.displayName}</option>`)
-    .join("");
-  refs.toolSelect.value = toolIds.includes(initialToolId) ? initialToolId : "";
-  const selectedEntry = getToolHostEntryById(manifest, refs.toolSelect.value);
+  const normalizedInitialToolId = toolIds.includes(initialToolId) ? initialToolId : "";
+  writeSelectedToolId(normalizedInitialToolId);
+  const selectedEntry = getToolHostEntryById(manifest, readSelectedToolId());
   setCurrentLabel(selectedEntry ? selectedEntry.displayName : "No tool available");
   updateSwitchMeta();
 }
@@ -560,11 +507,9 @@ function applyToolsUsedFilterForGame(gameEntry, preferredToolId = "") {
   syncControlState();
 }
 
-ensureWorkspaceMountContent();
-
 const runtime = createToolHostRuntime({
   manifest,
-  mountContainer: refs.runtimeMountContainer,
+  mountContainer: refs.mountContainer,
   onStatus(message) {
     writeStatus(message);
   },
@@ -712,9 +657,7 @@ function bindEvents() {
         applyToolsUsedFilterForGame(gameEntry, "");
         const requestedToolId = readRequestedToolIdFromQuery();
         const toolId = requestedToolId || (toolIds[0] || "");
-        if (refs.toolSelect instanceof HTMLSelectElement) {
-          refs.toolSelect.value = toolId;
-        }
+        writeSelectedToolId(toolId);
         updateSwitchMeta();
         updateStandaloneHref(toolId);
         if (!toolId) {
@@ -734,9 +677,7 @@ function bindEvents() {
     applyToolsUsedFilterForGame(null);
     const requestedToolId = readRequestedToolIdFromQuery();
     const toolId = requestedToolId || (toolIds[0] || "");
-    if (refs.toolSelect instanceof HTMLSelectElement) {
-      refs.toolSelect.value = toolId;
-    }
+    writeSelectedToolId(toolId);
     updateSwitchMeta();
     updateStandaloneHref(toolId);
     if (toolId) {
@@ -758,7 +699,7 @@ function bindEvents() {
 }
 
 async function init() {
-  if (!ensureWorkspaceMountContent()) {
+  if (!(refs.mountContainer instanceof HTMLElement)) {
     return;
   }
   const gameLaunchRequested = shouldMountGameFrameFromQuery();
@@ -799,9 +740,7 @@ async function init() {
 
   const requestedToolId = readRequestedToolIdFromQuery();
   const initialToolId = requestedToolId || (toolIds[0] || "");
-  if (refs.toolSelect instanceof HTMLSelectElement) {
-    refs.toolSelect.value = initialToolId;
-  }
+  writeSelectedToolId(initialToolId);
   updateSwitchMeta();
   updateStandaloneHref(initialToolId);
 
