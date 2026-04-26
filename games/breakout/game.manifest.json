@@ -15,7 +15,30 @@
     "legacyCatalogs": [
       "games/Breakout/assets/workspace.asset-catalog.json"
     ],
-    "status": "legacy-catalogs-retained-during-ssot-rollout"
+    "status": "legacy-catalogs-retained-during-ssot-rollout",
+    "legacyCatalogData": [
+      {
+        "id": "games.breakout.assets.workspace.asset.catalog",
+        "sourcePath": "games/Breakout/assets/workspace.asset-catalog.json",
+        "data": {
+          "schema": "html-js-gaming.game-asset-catalog",
+          "version": 1,
+          "gameId": "breakout",
+          "assets": {
+            "palette.breakout.classic": {
+              "path": "/games/Breakout/assets/palettes/breakout-classic.palette.json",
+              "kind": "palette",
+              "source": "workspace-manager"
+            },
+            "skin.main": {
+              "path": "/games/Breakout/assets/skins/skin.main.json",
+              "kind": "skin",
+              "source": "workspace-manager"
+            }
+          }
+        }
+      }
+    ]
   },
   "sources": {
     "workspaceAssetCatalogPath": "games/Breakout/assets/workspace.asset-catalog.json",
@@ -60,5 +83,163 @@
       }
     ],
     "toolsManifestAssets": []
-  }
+  },
+  "tools": [
+    {
+      "toolId": "primitive-skin-editor",
+      "palettes": [
+        {
+          "id": "palette.breakout.classic",
+          "sourcePath": "games/Breakout/assets/palettes/breakout-classic.palette.json",
+          "data": {
+            "$schema": "../../../../tools/schemas/palette.schema.json",
+            "schema": "html-js-gaming.palette",
+            "version": 1,
+            "name": "Breakout Classic Palette",
+            "source": "custom",
+            "swatches": [
+              {
+                "symbol": "!",
+                "hex": "#000000",
+                "name": "Background"
+              },
+              {
+                "symbol": "#",
+                "hex": "#F8F8F2",
+                "name": "Wall/Paddle/Ball"
+              },
+              {
+                "symbol": "$",
+                "hex": "#FF595E",
+                "name": "Brick Row 1"
+              },
+              {
+                "symbol": "%",
+                "hex": "#FF924C",
+                "name": "Brick Row 2"
+              },
+              {
+                "symbol": "&",
+                "hex": "#FFCA3A",
+                "name": "Brick Row 3"
+              },
+              {
+                "symbol": "(",
+                "hex": "#8AC926",
+                "name": "Brick Row 4"
+              },
+              {
+                "symbol": ")",
+                "hex": "#1982C4",
+                "name": "Brick Row 5"
+              },
+              {
+                "symbol": "*",
+                "hex": "#6A4C93",
+                "name": "Brick Row 6"
+              },
+              {
+                "symbol": "+",
+                "hex": "#04040A",
+                "name": "HUD Text"
+              },
+              {
+                "symbol": ",",
+                "hex": "#A0A0A0",
+                "name": "HUD Muted"
+              }
+            ]
+          }
+        }
+      ],
+      "skins": [
+        {
+          "id": "skin.main",
+          "sourcePath": "games/Breakout/assets/skins/skin.main.json",
+          "data": {
+            "documentKind": "game-skin",
+            "version": 1,
+            "schema": "games.breakout.skin/1",
+            "gameId": "Breakout",
+            "name": "Breakout Classic Skin",
+            "objects": {
+              "background": {
+                "color": "#000000",
+                "shape": "hud-color"
+              },
+              "wall": {
+                "shape": "flattened",
+                "color": "#f8f8f2",
+                "thickness": 16
+              },
+              "paddle": {
+                "color": "#f8f8f2",
+                "width": 118,
+                "height": 18,
+                "shape": "rectangle"
+              },
+              "ball": {
+                "shape": "square",
+                "color": "#f8f8f2",
+                "size": 14
+              },
+              "brickLayout": {
+                "gap": 6,
+                "shape": "rectangle"
+              },
+              "brick1": {
+                "width": 78,
+                "height": 24,
+                "color": "#ff595e",
+                "shape": "rectangle"
+              },
+              "brick2": {
+                "width": 78,
+                "height": 24,
+                "color": "#ff924c",
+                "shape": "rectangle"
+              },
+              "brick3": {
+                "width": 78,
+                "height": 24,
+                "color": "#ffca3a",
+                "shape": "rectangle"
+              },
+              "brick4": {
+                "width": 78,
+                "height": 24,
+                "color": "#8ac926",
+                "shape": "rectangle"
+              },
+              "brick5": {
+                "width": 78,
+                "height": 24,
+                "color": "#1982c4",
+                "shape": "rectangle"
+              },
+              "brick6": {
+                "width": 78,
+                "height": 24,
+                "color": "#6a4c93",
+                "shape": "rectangle"
+              },
+              "hudText": {
+                "color": "#04040a",
+                "shape": "hud-color"
+              },
+              "hudMuted": {
+                "color": "#a0a0a0",
+                "shape": "hud-color"
+              },
+              "hudPanel": {
+                "color": "#000000",
+                "shape": "hud-color"
+              }
+            },
+            "entities": {}
+          }
+        }
+      ]
+    }
+  ]
 }

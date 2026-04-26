@@ -14,19 +14,460 @@
     "legacyCatalogs": [
       "games/Asteroids/assets/workspace.asset-catalog.json",
       "games/Asteroids/assets/tools.manifest.json"
+    ],
+    "legacyCatalogData": [
+      {
+        "id": "games.asteroids.assets.tools.manifest",
+        "sourcePath": "games/Asteroids/assets/tools.manifest.json",
+        "data": {
+          "schema": "html-js-gaming.game-asset-manifest",
+          "version": 1,
+          "gameId": "asteroids",
+          "domains": {
+            "sprites": [
+              {
+                "assetId": "sprite.asteroids.demo",
+                "runtimePath": "games/Asteroids/assets/sprites/demo.json",
+                "toolDataPath": "games/Asteroids/assets/sprites/data/demo.data.json",
+                "sourceToolId": "sprite-editor",
+                "metadata": {
+                  "runtimeType": "sprite"
+                }
+              }
+            ],
+            "tilemaps": [
+              {
+                "assetId": "tilemap.asteroids.stage",
+                "runtimePath": "games/Asteroids/assets/tilemaps/stage.json",
+                "toolDataPath": "games/Asteroids/assets/tilemaps/data/stage.data.json",
+                "sourceToolId": "tile-map-editor",
+                "metadata": {
+                  "runtimeType": "tilemap"
+                }
+              }
+            ],
+            "parallax": [
+              {
+                "assetId": "parallax.asteroids.title",
+                "runtimePath": "games/Asteroids/assets/parallax/title.json",
+                "toolDataPath": "games/Asteroids/assets/parallax/data/title.data.json",
+                "sourceToolId": "parallax-editor",
+                "metadata": {
+                  "runtimeType": "parallax"
+                }
+              },
+              {
+                "assetId": "parallax.asteroids.overlay",
+                "runtimePath": "games/Asteroids/assets/parallax/overlay.json",
+                "toolDataPath": "games/Asteroids/assets/parallax/data/overlay.data.json",
+                "sourceToolId": "parallax-editor",
+                "metadata": {
+                  "runtimeType": "parallax"
+                }
+              }
+            ],
+            "vectors": [
+              {
+                "assetId": "vector.asteroids.ship",
+                "runtimePath": "games/Asteroids/assets/vectors/ship.json",
+                "toolDataPath": "games/Asteroids/assets/vectors/data/library.data.json",
+                "sourceToolId": "vector-asset-studio",
+                "metadata": {
+                  "runtimeType": "vector"
+                }
+              },
+              {
+                "assetId": "vector.asteroids.asteroid.large",
+                "runtimePath": "games/Asteroids/assets/vectors/asteroid-large.json",
+                "toolDataPath": "games/Asteroids/assets/vectors/data/library.data.json",
+                "sourceToolId": "vector-asset-studio",
+                "metadata": {
+                  "runtimeType": "vector"
+                }
+              },
+              {
+                "assetId": "vector.asteroids.asteroid.medium",
+                "runtimePath": "games/Asteroids/assets/vectors/asteroid-medium.json",
+                "toolDataPath": "games/Asteroids/assets/vectors/data/library.data.json",
+                "sourceToolId": "vector-asset-studio",
+                "metadata": {
+                  "runtimeType": "vector"
+                }
+              },
+              {
+                "assetId": "vector.asteroids.asteroid.small",
+                "runtimePath": "games/Asteroids/assets/vectors/asteroid-small.json",
+                "toolDataPath": "games/Asteroids/assets/vectors/data/library.data.json",
+                "sourceToolId": "vector-asset-studio",
+                "metadata": {
+                  "runtimeType": "vector"
+                }
+              },
+              {
+                "assetId": "vector.asteroids.ui.title",
+                "runtimePath": "games/Asteroids/assets/vectors/title.json",
+                "toolDataPath": "games/Asteroids/assets/vectors/data/library.data.json",
+                "sourceToolId": "vector-asset-studio",
+                "metadata": {
+                  "runtimeType": "vector"
+                }
+              }
+            ]
+          }
+        }
+      },
+      {
+        "id": "games.asteroids.assets.workspace.asset.catalog",
+        "sourcePath": "games/Asteroids/assets/workspace.asset-catalog.json",
+        "data": {
+          "schema": "html-js-gaming.game-asset-catalog",
+          "version": 1,
+          "gameId": "asteroids",
+          "assets": {
+            "palette.asteroids.classic": {
+              "path": "/games/Asteroids/assets/palettes/asteroids-classic.palette.json",
+              "kind": "palette",
+              "source": "workspace-manager"
+            },
+            "audio.asteroids.fire": {
+              "path": "/games/Asteroids/assets/audio/fire.wav",
+              "kind": "audio",
+              "source": "workspace-manager"
+            },
+            "audio.asteroids.bang-large": {
+              "path": "/games/Asteroids/assets/audio/bangLarge.wav",
+              "kind": "audio",
+              "source": "workspace-manager"
+            },
+            "audio.asteroids.bang-medium": {
+              "path": "/games/Asteroids/assets/audio/bangMedium.wav",
+              "kind": "audio",
+              "source": "workspace-manager"
+            },
+            "audio.asteroids.bang-small": {
+              "path": "/games/Asteroids/assets/audio/bangSmall.wav",
+              "kind": "audio",
+              "source": "workspace-manager"
+            },
+            "audio.asteroids.beat-1": {
+              "path": "/games/Asteroids/assets/audio/beat1.wav",
+              "kind": "audio",
+              "source": "workspace-manager"
+            },
+            "audio.asteroids.beat-2": {
+              "path": "/games/Asteroids/assets/audio/beat2.wav",
+              "kind": "audio",
+              "source": "workspace-manager"
+            },
+            "audio.asteroids.extra-ship": {
+              "path": "/games/Asteroids/assets/audio/extraShip.wav",
+              "kind": "audio",
+              "source": "workspace-manager"
+            },
+            "audio.asteroids.thrust": {
+              "path": "/games/Asteroids/assets/audio/thrust.wav",
+              "kind": "audio",
+              "source": "workspace-manager"
+            },
+            "audio.asteroids.saucer-large": {
+              "path": "/games/Asteroids/assets/audio/saucerBig.wav",
+              "kind": "audio",
+              "source": "workspace-manager"
+            },
+            "audio.asteroids.saucer-small": {
+              "path": "/games/Asteroids/assets/audio/saucerSmall.wav",
+              "kind": "audio",
+              "source": "workspace-manager"
+            },
+            "image.asteroids.bezel": {
+              "path": "/games/Asteroids/assets/images/bezel.png",
+              "kind": "image",
+              "source": "workspace-manager"
+            }
+          }
+        }
+      }
     ]
   },
   "tools": [
     {
+      "toolId": "primitive-skin-editor",
+      "palettes": [
+        {
+          "id": "palette.asteroids.classic",
+          "sourcePath": "games/Asteroids/assets/palettes/asteroids-classic.palette.json",
+          "data": {
+            "$schema": "../../../../tools/schemas/palette.schema.json",
+            "schema": "html-js-gaming.palette",
+            "version": 1,
+            "name": "Asteroids Classic Palette",
+            "source": "custom",
+            "swatches": [
+              {
+                "symbol": "!",
+                "hex": "#020617",
+                "name": "Space Black"
+              },
+              {
+                "symbol": "#",
+                "hex": "#FFFFFF",
+                "name": "Vector White"
+              },
+              {
+                "symbol": "$",
+                "hex": "#CBD5E1",
+                "name": "Asteroid Gray"
+              },
+              {
+                "symbol": "%",
+                "hex": "#DBEAFE",
+                "name": "Saucer Glow"
+              },
+              {
+                "symbol": "&",
+                "hex": "#94A3B8",
+                "name": "HUD Muted"
+              },
+              {
+                "symbol": "(",
+                "hex": "#FBBF24",
+                "name": "Accent Amber"
+              },
+              {
+                "symbol": ")",
+                "hex": "#F87171",
+                "name": "Warning Red"
+              },
+              {
+                "symbol": "*",
+                "hex": "#78B7FF",
+                "name": "HUD Blue"
+              },
+              {
+                "symbol": "+",
+                "hex": "#FFBE64",
+                "name": "HUD Gold"
+              }
+            ]
+          }
+        },
+        {
+          "id": "palette.asteroids.hud",
+          "sourcePath": "games/Asteroids/assets/palettes/asteroids-hud.palette.json",
+          "data": {
+            "$schema": "../../../../tools/schemas/palette.schema.json",
+            "schema": "html-js-gaming.palette",
+            "version": 1,
+            "name": "Asteroids HUD Palette",
+            "source": "converted-hud",
+            "sourceId": "hud.json",
+            "locked": true,
+            "swatches": [
+              {
+                "symbol": "0",
+                "hex": "#05070D",
+                "name": "HUD Color 1"
+              },
+              {
+                "symbol": "1",
+                "hex": "#DCE8FF",
+                "name": "HUD Color 2"
+              },
+              {
+                "symbol": "2",
+                "hex": "#78B7FF",
+                "name": "HUD Color 3"
+              },
+              {
+                "symbol": "3",
+                "hex": "#FFBE64",
+                "name": "HUD Color 4"
+              }
+            ]
+          }
+        },
+        {
+          "id": "games.asteroids.assets.palettes.hud",
+          "sourcePath": "games/Asteroids/assets/palettes/hud.json",
+          "data": {
+            "$schema": "../../../../tools/schemas/palette.schema.json",
+            "schema": "html-js-gaming.palette",
+            "version": 1,
+            "name": "Asteroids HUD Palette (Legacy Path)",
+            "source": "legacy-compatibility",
+            "sourceId": "asteroids-hud.palette.json",
+            "locked": true,
+            "swatches": [
+              {
+                "symbol": "0",
+                "hex": "#05070D",
+                "name": "HUD Color 1"
+              },
+              {
+                "symbol": "1",
+                "hex": "#DCE8FF",
+                "name": "HUD Color 2"
+              },
+              {
+                "symbol": "2",
+                "hex": "#78B7FF",
+                "name": "HUD Color 3"
+              },
+              {
+                "symbol": "3",
+                "hex": "#FFBE64",
+                "name": "HUD Color 4"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
       "toolId": "sprite-editor",
       "assetIds": [
         "sprite.asteroids.demo"
+      ],
+      "sprites": [
+        {
+          "id": "sprite.asteroids.demo",
+          "sourcePath": "games/Asteroids/assets/sprites/data/demo.data.json",
+          "data": {
+            "schema": "html-js-gaming.tool-data.sprite-project",
+            "version": 1,
+            "id": "tooldata.asteroids.sprites.demo",
+            "name": "Asteroids Demo Sprite Project",
+            "runtimeSource": "games/Asteroids/assets/sprites/demo.json",
+            "frames": [
+              {
+                "id": "player-ship",
+                "label": "Player Ship"
+              },
+              {
+                "id": "player-bullet",
+                "label": "Player Bullet"
+              },
+              {
+                "id": "asteroid-large",
+                "label": "Asteroid Large"
+              },
+              {
+                "id": "asteroid-medium",
+                "label": "Asteroid Medium"
+              },
+              {
+                "id": "asteroid-small",
+                "label": "Asteroid Small"
+              },
+              {
+                "id": "title-logo",
+                "label": "Title Logo"
+              },
+              {
+                "id": "lives-icon",
+                "label": "Lives Icon"
+              },
+              {
+                "id": "game-over-label",
+                "label": "Game Over Label"
+              }
+            ]
+          }
+        },
+        {
+          "id": "sprite.asteroids.demo",
+          "sourcePath": "games/Asteroids/assets/sprites/demo.json",
+          "data": {
+            "name": "Asteroids Demo Atlas",
+            "frames": [
+              "player-ship",
+              "player-bullet",
+              "asteroid-large",
+              "asteroid-medium",
+              "asteroid-small",
+              "title-logo",
+              "lives-icon",
+              "game-over-label"
+            ]
+          }
+        }
       ]
     },
     {
       "toolId": "tile-map-editor",
       "assetIds": [
         "tilemap.asteroids.stage"
+      ],
+      "maps": [
+        {
+          "id": "tilemap.asteroids.stage",
+          "sourcePath": "games/Asteroids/assets/tilemaps/data/stage.data.json",
+          "data": {
+            "schema": "html-js-gaming.tool-data.tilemap-project",
+            "version": 1,
+            "id": "tooldata.asteroids.tilemaps.stage",
+            "name": "Asteroids Demo Stage Tilemap Project",
+            "runtimeSource": "games/Asteroids/assets/tilemaps/stage.json",
+            "screens": [
+              {
+                "id": "title",
+                "order": 1
+              },
+              {
+                "id": "play",
+                "order": 2
+              },
+              {
+                "id": "game-over",
+                "order": 3
+              }
+            ],
+            "systems": [
+              "ship",
+              "bullets",
+              "asteroids",
+              "score",
+              "lives",
+              "waves"
+            ]
+          }
+        },
+        {
+          "id": "tilemap.asteroids.stage",
+          "sourcePath": "games/Asteroids/assets/tilemaps/stage.json",
+          "data": {
+            "name": "Asteroids Demo Stage",
+            "screens": [
+              "title",
+              "play",
+              "game-over"
+            ],
+            "systems": [
+              "ship",
+              "bullets",
+              "asteroids",
+              "score",
+              "lives",
+              "waves"
+            ]
+          }
+        }
+      ],
+      "tilesets": [
+        {
+          "id": "tileset.asteroids.ui",
+          "sourcePath": "games/Asteroids/assets/tilesets/ui.json",
+          "data": {
+            "name": "Asteroids UI Tileset",
+            "tileWidth": 8,
+            "tileHeight": 8,
+            "tiles": [
+              "score-panel",
+              "wave-panel",
+              "lives-panel"
+            ]
+          }
+        }
       ]
     },
     {
@@ -34,6 +475,54 @@
       "assetIds": [
         "parallax.asteroids.title",
         "parallax.asteroids.overlay"
+      ],
+      "parallaxLevels": [
+        {
+          "id": "parallax.asteroids.overlay",
+          "sourcePath": "games/Asteroids/assets/parallax/data/overlay.data.json",
+          "data": {
+            "schema": "html-js-gaming.tool-data.parallax-layer",
+            "version": 1,
+            "id": "tooldata.asteroids.parallax.overlay",
+            "name": "Asteroids Overlay Parallax Layer",
+            "runtimeSource": "games/Asteroids/assets/parallax/overlay.json",
+            "role": "gameplay-overlay",
+            "imageId": "image.asteroids-bezel",
+            "enabled": true
+          }
+        },
+        {
+          "id": "parallax.asteroids.title",
+          "sourcePath": "games/Asteroids/assets/parallax/data/title.data.json",
+          "data": {
+            "schema": "html-js-gaming.tool-data.parallax-layer",
+            "version": 1,
+            "id": "tooldata.asteroids.parallax.title",
+            "name": "Asteroids Title Parallax Layer",
+            "runtimeSource": "games/Asteroids/assets/parallax/title.json",
+            "role": "title-frame",
+            "imageId": "image.asteroids-preview",
+            "enabled": true
+          }
+        },
+        {
+          "id": "parallax.asteroids.overlay",
+          "sourcePath": "games/Asteroids/assets/parallax/overlay.json",
+          "data": {
+            "name": "Asteroids Overlay Layer",
+            "role": "gameplay-overlay",
+            "imageId": "image.asteroids-bezel"
+          }
+        },
+        {
+          "id": "parallax.asteroids.title",
+          "sourcePath": "games/Asteroids/assets/parallax/title.json",
+          "data": {
+            "name": "Asteroids Title Layer",
+            "role": "title-frame",
+            "imageId": "image.asteroids-preview"
+          }
+        }
       ]
     },
     {
@@ -44,6 +533,183 @@
         "vector.asteroids.asteroid.medium",
         "vector.asteroids.asteroid.small",
         "vector.asteroids.ui.title"
+      ],
+      "vectors": [
+        {
+          "id": "vector.asteroids.asteroid.large",
+          "sourcePath": "games/Asteroids/assets/vectors/asteroid-large.json",
+          "data": {
+            "id": "vector.asteroids.asteroid.large",
+            "type": "vector",
+            "source": {
+              "kind": "svg",
+              "path": "games/Asteroids/assets/vectors/asteroid-large.json"
+            },
+            "geometry": {
+              "viewBox": "-40 -40 80 80",
+              "paths": [
+                {
+                  "d": "M -28 -12 L -10 -30 L 20 -26 L 32 -8 L 26 18 L 6 32 L -22 24 L -34 2 Z"
+                }
+              ]
+            },
+            "style": {
+              "stroke": true,
+              "fill": false
+            }
+          }
+        },
+        {
+          "id": "vector.asteroids.asteroid.medium",
+          "sourcePath": "games/Asteroids/assets/vectors/asteroid-medium.json",
+          "data": {
+            "id": "vector.asteroids.asteroid.medium",
+            "type": "vector",
+            "source": {
+              "kind": "svg",
+              "path": "games/Asteroids/assets/vectors/asteroid-medium.json"
+            },
+            "geometry": {
+              "viewBox": "-28 -28 56 56",
+              "paths": [
+                {
+                  "d": "M -16 -10 L -2 -18 L 16 -14 L 20 2 L 8 18 L -10 16 L -20 4 Z"
+                }
+              ]
+            },
+            "style": {
+              "stroke": true,
+              "fill": false
+            }
+          }
+        },
+        {
+          "id": "vector.asteroids.asteroid.small",
+          "sourcePath": "games/Asteroids/assets/vectors/asteroid-small.json",
+          "data": {
+            "id": "vector.asteroids.asteroid.small",
+            "type": "vector",
+            "source": {
+              "kind": "svg",
+              "path": "games/Asteroids/assets/vectors/asteroid-small.json"
+            },
+            "geometry": {
+              "viewBox": "-18 -18 36 36",
+              "paths": [
+                {
+                  "d": "M -10 -6 L 0 -12 L 10 -6 L 8 8 L -6 10 L -12 0 Z"
+                }
+              ]
+            },
+            "style": {
+              "stroke": true,
+              "fill": false
+            }
+          }
+        },
+        {
+          "id": "vector.asteroids.ui.title",
+          "sourcePath": "games/Asteroids/assets/vectors/data/library.data.json",
+          "data": {
+            "schema": "html-js-gaming.tool-data.vector-library",
+            "version": 1,
+            "id": "tooldata.asteroids.vectors.library",
+            "name": "Asteroids Vector Library",
+            "vectors": [
+              {
+                "id": "vector.asteroids.ship",
+                "runtimeSource": "games/Asteroids/assets/vectors/ship.json",
+                "label": "Ship"
+              },
+              {
+                "id": "vector.asteroids.asteroid.large",
+                "runtimeSource": "games/Asteroids/assets/vectors/asteroid-large.json",
+                "label": "Asteroid Large"
+              },
+              {
+                "id": "vector.asteroids.asteroid.medium",
+                "runtimeSource": "games/Asteroids/assets/vectors/asteroid-medium.json",
+                "label": "Asteroid Medium"
+              },
+              {
+                "id": "vector.asteroids.asteroid.small",
+                "runtimeSource": "games/Asteroids/assets/vectors/asteroid-small.json",
+                "label": "Asteroid Small"
+              },
+              {
+                "id": "vector.asteroids.ui.title",
+                "runtimeSource": "games/Asteroids/assets/vectors/title.json",
+                "label": "Title"
+              }
+            ]
+          }
+        },
+        {
+          "id": "vector.asteroids.ship",
+          "sourcePath": "games/Asteroids/assets/vectors/ship.json",
+          "data": {
+            "id": "vector.asteroids.ship",
+            "type": "vector",
+            "source": {
+              "kind": "svg",
+              "path": "games/Asteroids/assets/vectors/ship.json"
+            },
+            "geometry": {
+              "viewBox": "-24 -24 48 48",
+              "paths": [
+                {
+                  "d": "M 0 -18 L 14 16 L 0 8 L -14 16 Z"
+                },
+                {
+                  "d": "M -6 14 L 0 6 L 6 14"
+                }
+              ]
+            },
+            "style": {
+              "stroke": true,
+              "fill": false
+            }
+          }
+        },
+        {
+          "id": "vector.asteroids.ui.title",
+          "sourcePath": "games/Asteroids/assets/vectors/title.json",
+          "data": {
+            "id": "vector.asteroids.ui.title",
+            "type": "vector",
+            "source": {
+              "kind": "svg",
+              "path": "games/Asteroids/assets/vectors/title.json"
+            },
+            "geometry": {
+              "viewBox": "0 0 220 48",
+              "paths": [
+                {
+                  "d": "M 6 40 L 24 6 L 42 40 Z"
+                },
+                {
+                  "d": "M 58 40 L 58 8 L 88 8 L 88 18 L 70 18 L 70 22 L 86 22 L 86 32 L 70 32 L 70 40 Z"
+                }
+              ]
+            },
+            "style": {
+              "stroke": true,
+              "fill": false
+            }
+          }
+        }
+      ]
+    },
+    {
+      "toolId": "asset-browser",
+      "overrides": [
+        {
+          "id": "override.asteroids.bezel.stretch",
+          "sourcePath": "games/Asteroids/assets/images/bezel.stretch.override.json",
+          "data": {
+            "uniformEdgeStretchPx": 10
+          }
+        }
       ]
     }
   ],
@@ -248,6 +914,40 @@
           "runtimeType": "tileset"
         }
       }
-    ]
+    ],
+    "allJsonAssets": [
+      "games/Asteroids/assets/images/bezel.stretch.override.json",
+      "games/Asteroids/assets/palettes/asteroids-classic.palette.json",
+      "games/Asteroids/assets/palettes/asteroids-hud.palette.json",
+      "games/Asteroids/assets/palettes/hud.json",
+      "games/Asteroids/assets/parallax/data/overlay.data.json",
+      "games/Asteroids/assets/parallax/data/title.data.json",
+      "games/Asteroids/assets/parallax/overlay.json",
+      "games/Asteroids/assets/parallax/title.json",
+      "games/Asteroids/assets/sprites/data/demo.data.json",
+      "games/Asteroids/assets/sprites/demo.json",
+      "games/Asteroids/assets/tilemaps/data/stage.data.json",
+      "games/Asteroids/assets/tilemaps/stage.json",
+      "games/Asteroids/assets/tilesets/ui.json",
+      "games/Asteroids/assets/tools.manifest.json",
+      "games/Asteroids/assets/vectors/asteroid-large.json",
+      "games/Asteroids/assets/vectors/asteroid-medium.json",
+      "games/Asteroids/assets/vectors/asteroid-small.json",
+      "games/Asteroids/assets/vectors/data/library.data.json",
+      "games/Asteroids/assets/vectors/ship.json",
+      "games/Asteroids/assets/vectors/title.json",
+      "games/Asteroids/assets/workspace.asset-catalog.json"
+    ],
+    "palettes": [
+      "games/Asteroids/assets/palettes/asteroids-classic.palette.json",
+      "games/Asteroids/assets/palettes/asteroids-hud.palette.json",
+      "games/Asteroids/assets/palettes/hud.json"
+    ],
+    "skins": [],
+    "tilesets": [
+      "games/Asteroids/assets/tilesets/ui.json"
+    ],
+    "runtime": [],
+    "config": []
   }
 }

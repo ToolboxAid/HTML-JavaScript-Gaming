@@ -15,7 +15,30 @@
     "legacyCatalogs": [
       "games/SolarSystem/assets/workspace.asset-catalog.json"
     ],
-    "status": "legacy-catalogs-retained-during-ssot-rollout"
+    "status": "legacy-catalogs-retained-during-ssot-rollout",
+    "legacyCatalogData": [
+      {
+        "id": "games.solarsystem.assets.workspace.asset.catalog",
+        "sourcePath": "games/SolarSystem/assets/workspace.asset-catalog.json",
+        "data": {
+          "schema": "html-js-gaming.game-asset-catalog",
+          "version": 1,
+          "gameId": "solarsystem",
+          "assets": {
+            "palette.solar-system.classic": {
+              "path": "/games/SolarSystem/assets/palettes/solar-system-classic.palette.json",
+              "kind": "palette",
+              "source": "workspace-manager"
+            },
+            "skin.main": {
+              "path": "/games/SolarSystem/assets/skins/skin.main.json",
+              "kind": "skin",
+              "source": "workspace-manager"
+            }
+          }
+        }
+      }
+    ]
   },
   "sources": {
     "workspaceAssetCatalogPath": "games/SolarSystem/assets/workspace.asset-catalog.json",
@@ -60,5 +83,214 @@
       }
     ],
     "toolsManifestAssets": []
-  }
+  },
+  "tools": [
+    {
+      "toolId": "primitive-skin-editor",
+      "palettes": [
+        {
+          "id": "palette.solar-system.classic",
+          "sourcePath": "games/SolarSystem/assets/palettes/solar-system-classic.palette.json",
+          "data": {
+            "$schema": "../../../../tools/schemas/palette.schema.json",
+            "schema": "html-js-gaming.palette",
+            "version": 1,
+            "name": "Solar System Classic Palette",
+            "source": "custom",
+            "swatches": [
+              {
+                "symbol": "!",
+                "hex": "#030712",
+                "name": "Space Background"
+              },
+              {
+                "symbol": "#",
+                "hex": "#DBEAFE",
+                "name": "Frame and Text"
+              },
+              {
+                "symbol": "$",
+                "hex": "#334155",
+                "name": "Orbits"
+              },
+              {
+                "symbol": "%",
+                "hex": "#FBBF24",
+                "name": "Sun"
+              },
+              {
+                "symbol": "&",
+                "hex": "#9CA3AF",
+                "name": "Mercury"
+              },
+              {
+                "symbol": "(",
+                "hex": "#38BDF8",
+                "name": "Earth"
+              },
+              {
+                "symbol": ")",
+                "hex": "#FB7185",
+                "name": "Mars"
+              },
+              {
+                "symbol": "*",
+                "hex": "#F59E0B",
+                "name": "Jupiter"
+              },
+              {
+                "symbol": "+",
+                "hex": "#EAB308",
+                "name": "Saturn"
+              },
+              {
+                "symbol": ",",
+                "hex": "#67E8F9",
+                "name": "Uranus"
+              },
+              {
+                "symbol": "-",
+                "hex": "#60A5FA",
+                "name": "Neptune"
+              }
+            ]
+          }
+        }
+      ],
+      "skins": [
+        {
+          "id": "skin.main",
+          "sourcePath": "games/SolarSystem/assets/skins/skin.main.json",
+          "data": {
+            "documentKind": "game-skin",
+            "version": 1,
+            "schema": "games.solar-system.skin/1",
+            "gameId": "SolarSystem",
+            "name": "Solar System Classic Skin",
+            "objects": {
+              "background": {
+                "color": "#030712",
+                "shape": "hud-color"
+              },
+              "frame": {
+                "color": "#dbeafe",
+                "shape": "hud-color"
+              },
+              "orbit": {
+                "color": "#334155",
+                "shape": "hud-color"
+              },
+              "sun": {
+                "color": "#fbbf24",
+                "radius": 30,
+                "shape": "circle"
+              },
+              "hudText": {
+                "color": "#dbeafe",
+                "shape": "hud-color"
+              },
+              "hudMuted": {
+                "color": "#94a3b8",
+                "shape": "hud-color"
+              },
+              "hudPanel": {
+                "color": "#07101d",
+                "shape": "hud-color"
+              },
+              "mercury": {
+                "color": "#9ca3af",
+                "radius": 4,
+                "shape": "circle"
+              },
+              "venus": {
+                "color": "#fde68a",
+                "radius": 6,
+                "shape": "circle"
+              },
+              "earth": {
+                "color": "#38bdf8",
+                "radius": 6,
+                "shape": "circle"
+              },
+              "mars": {
+                "color": "#fb7185",
+                "radius": 5,
+                "shape": "circle"
+              },
+              "jupiter": {
+                "color": "#f59e0b",
+                "radius": 14,
+                "shape": "circle"
+              },
+              "saturn": {
+                "color": "#eab308",
+                "radius": 12,
+                "shape": "circle"
+              },
+              "uranus": {
+                "color": "#67e8f9",
+                "radius": 10,
+                "shape": "circle"
+              },
+              "neptune": {
+                "color": "#60a5fa",
+                "radius": 10,
+                "shape": "circle"
+              },
+              "moon": {
+                "color": "#e5e7eb",
+                "radius": 2,
+                "shape": "circle"
+              },
+              "io": {
+                "color": "#fde68a",
+                "radius": 2,
+                "shape": "circle"
+              },
+              "europa": {
+                "color": "#dbeafe",
+                "radius": 2,
+                "shape": "circle"
+              },
+              "ganymede": {
+                "color": "#cbd5e1",
+                "radius": 3,
+                "shape": "circle"
+              },
+              "titan": {
+                "color": "#fef3c7",
+                "radius": 3,
+                "shape": "circle"
+              },
+              "ringJupiter": {
+                "color": "#f59e0b",
+                "innerRadius": 18,
+                "outerRadius": 22,
+                "shape": "ring"
+              },
+              "ringSaturn": {
+                "color": "#fde68a",
+                "innerRadius": 18,
+                "outerRadius": 30,
+                "shape": "ring"
+              },
+              "ringUranus": {
+                "color": "#67e8f9",
+                "innerRadius": 15,
+                "outerRadius": 20,
+                "shape": "ring"
+              },
+              "ringNeptune": {
+                "color": "#60a5fa",
+                "innerRadius": 15,
+                "outerRadius": 19,
+                "shape": "ring"
+              }
+            },
+            "entities": {}
+          }
+        }
+      ]
+    }
+  ]
 }

@@ -15,7 +15,70 @@
     "legacyCatalogs": [
       "games/SpaceInvaders/assets/workspace.asset-catalog.json"
     ],
-    "status": "legacy-catalogs-retained-during-ssot-rollout"
+    "status": "legacy-catalogs-retained-during-ssot-rollout",
+    "legacyCatalogData": [
+      {
+        "id": "games.spaceinvaders.assets.workspace.asset.catalog",
+        "sourcePath": "games/SpaceInvaders/assets/workspace.asset-catalog.json",
+        "data": {
+          "schema": "html-js-gaming.game-asset-catalog",
+          "version": 1,
+          "gameId": "spaceinvaders",
+          "assets": {
+            "palette.space-invaders.classic": {
+              "path": "/games/SpaceInvaders/assets/palettes/space-invaders-classic.palette.json",
+              "kind": "palette",
+              "source": "workspace-manager"
+            },
+            "audio.space-invaders.shoot": {
+              "path": "/games/SpaceInvaders/assets/audio/effects/shoot.wav",
+              "kind": "audio",
+              "source": "workspace-manager"
+            },
+            "audio.space-invaders.invaderkilled": {
+              "path": "/games/SpaceInvaders/assets/audio/effects/invaderkilled.wav",
+              "kind": "audio",
+              "source": "workspace-manager"
+            },
+            "audio.space-invaders.explosion": {
+              "path": "/games/SpaceInvaders/assets/audio/effects/explosion.wav",
+              "kind": "audio",
+              "source": "workspace-manager"
+            },
+            "audio.space-invaders.fastinvader1": {
+              "path": "/games/SpaceInvaders/assets/audio/effects/fastinvader1.wav",
+              "kind": "audio",
+              "source": "workspace-manager"
+            },
+            "audio.space-invaders.fastinvader2": {
+              "path": "/games/SpaceInvaders/assets/audio/effects/fastinvader2.wav",
+              "kind": "audio",
+              "source": "workspace-manager"
+            },
+            "audio.space-invaders.fastinvader3": {
+              "path": "/games/SpaceInvaders/assets/audio/effects/fastinvader3.wav",
+              "kind": "audio",
+              "source": "workspace-manager"
+            },
+            "audio.space-invaders.fastinvader4": {
+              "path": "/games/SpaceInvaders/assets/audio/effects/fastinvader4.wav",
+              "kind": "audio",
+              "source": "workspace-manager"
+            },
+            "audio.space-invaders.ufo-lowpitch": {
+              "path": "/games/SpaceInvaders/assets/audio/effects/ufo_lowpitch.wav",
+              "kind": "audio",
+              "source": "workspace-manager"
+            },
+            "audio.space-invaders.ufo-highpitch": {
+              "path": "/games/SpaceInvaders/assets/audio/effects/ufo_highpitch.wav",
+              "kind": "audio",
+              "source": "workspace-manager"
+            }
+          }
+        }
+      }
+    ]
   },
   "sources": {
     "workspaceAssetCatalogPath": "games/SpaceInvaders/assets/workspace.asset-catalog.json",
@@ -114,5 +177,75 @@
       }
     ],
     "toolsManifestAssets": []
-  }
+  },
+  "tools": [
+    {
+      "toolId": "primitive-skin-editor",
+      "palettes": [
+        {
+          "id": "palette.space-invaders.classic",
+          "sourcePath": "games/SpaceInvaders/assets/palettes/space-invaders-classic.palette.json",
+          "data": {
+            "$schema": "../../../../tools/schemas/palette.schema.json",
+            "schema": "html-js-gaming.palette",
+            "version": 1,
+            "name": "Space Invaders Classic Palette",
+            "source": "custom",
+            "swatches": [
+              {
+                "symbol": "!",
+                "hex": "#000000",
+                "name": "Background"
+              },
+              {
+                "symbol": "#",
+                "hex": "#020702",
+                "name": "Playfield Backdrop"
+              },
+              {
+                "symbol": "$",
+                "hex": "#66FF66",
+                "name": "Alien Green"
+              },
+              {
+                "symbol": "%",
+                "hex": "#8DF58D",
+                "name": "HUD Green"
+              },
+              {
+                "symbol": "&",
+                "hex": "#FFFFFF",
+                "name": "White Ink"
+              },
+              {
+                "symbol": "(",
+                "hex": "#D0D0D0",
+                "name": "Score Label"
+              },
+              {
+                "symbol": ")",
+                "hex": "#FBBF24",
+                "name": "Score Accent"
+              },
+              {
+                "symbol": "*",
+                "hex": "#FF4D4D",
+                "name": "UFO Red"
+              },
+              {
+                "symbol": "+",
+                "hex": "#FF6666",
+                "name": "Bomb Red"
+              },
+              {
+                "symbol": ",",
+                "hex": "#FFD1D1",
+                "name": "Explosion Tint"
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
 }

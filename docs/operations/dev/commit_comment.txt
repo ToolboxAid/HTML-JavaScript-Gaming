@@ -1,6 +1,1 @@
-BUILD_PR_LEVEL_9_1A_ASTEROIDS_MANIFEST_MODEL_REVIEW
-
-- Added corrected review model for Asteroids single-manifest consolidation
-- Clarified data belongs under owning tool sections
-- Prevented embedded data in workspace schema
-- Marked implementation as review-only
+PR 9.2: rollout single-manifest model to all games

@@ -15,7 +15,30 @@
     "legacyCatalogs": [
       "games/Pong/assets/workspace.asset-catalog.json"
     ],
-    "status": "legacy-catalogs-retained-during-ssot-rollout"
+    "status": "legacy-catalogs-retained-during-ssot-rollout",
+    "legacyCatalogData": [
+      {
+        "id": "games.pong.assets.workspace.asset.catalog",
+        "sourcePath": "games/Pong/assets/workspace.asset-catalog.json",
+        "data": {
+          "schema": "html-js-gaming.game-asset-catalog",
+          "version": 1,
+          "gameId": "pong",
+          "assets": {
+            "palette.pong.classic": {
+              "path": "/games/Pong/assets/palettes/pong-classic.palette.json",
+              "kind": "palette",
+              "source": "workspace-manager"
+            },
+            "skin.main": {
+              "path": "/games/Pong/assets/skins/skin.main.json",
+              "kind": "skin",
+              "source": "workspace-manager"
+            }
+          }
+        }
+      }
+    ]
   },
   "sources": {
     "workspaceAssetCatalogPath": "games/Pong/assets/workspace.asset-catalog.json",
@@ -48,17 +71,131 @@
     "workspaceCatalogAssets": [
       {
         "assetId": "palette.pong.classic",
-        "path": "games/pong/assets/palettes/pong-classic.palette.json",
+        "path": "games/Pong/assets/palettes/pong-classic.palette.json",
         "kind": "palette",
         "source": "workspace-manager"
       },
       {
         "assetId": "skin.main",
-        "path": "games/pong/assets/skins/skin.main.json",
+        "path": "games/Pong/assets/skins/skin.main.json",
         "kind": "skin",
         "source": "workspace-manager"
       }
     ],
     "toolsManifestAssets": []
-  }
+  },
+  "tools": [
+    {
+      "toolId": "primitive-skin-editor",
+      "palettes": [
+        {
+          "id": "palette.pong.classic",
+          "sourcePath": "games/Pong/assets/palettes/pong-classic.palette.json",
+          "data": {
+            "$schema": "../../../../tools/schemas/palette.schema.json",
+            "schema": "html-js-gaming.palette",
+            "version": 1,
+            "name": "Pong Classic Palette",
+            "source": "custom",
+            "swatches": [
+              {
+                "symbol": "!",
+                "hex": "#05070A",
+                "name": "Background"
+              },
+              {
+                "symbol": "#",
+                "hex": "#F4F7FB",
+                "name": "Ink / Paddles"
+              },
+              {
+                "symbol": "$",
+                "hex": "#A6B0BF",
+                "name": "Muted HUD"
+              },
+              {
+                "symbol": "%",
+                "hex": "#7DE2FF",
+                "name": "Accent"
+              },
+              {
+                "symbol": "&",
+                "hex": "#8BF0C8",
+                "name": "Positive"
+              },
+              {
+                "symbol": "(",
+                "hex": "#FFD37D",
+                "name": "Warning"
+              },
+              {
+                "symbol": ")",
+                "hex": "#FF9A9A",
+                "name": "Danger"
+              },
+              {
+                "symbol": "*",
+                "hex": "#6A7482",
+                "name": "Center Divider"
+              }
+            ]
+          }
+        }
+      ],
+      "skins": [
+        {
+          "id": "skin.main",
+          "sourcePath": "games/Pong/assets/skins/skin.main.json",
+          "data": {
+            "documentKind": "game-skin",
+            "version": 1,
+            "schema": "games.pong.skin/1",
+            "gameId": "Pong",
+            "name": "Pong Classic Skin",
+            "objects": {
+              "background": {
+                "color": "#05070a",
+                "shape": "hud-color"
+              },
+              "paddle": {
+                "color": "#f4f7fb",
+                "width": 14,
+                "shape": "rectangle"
+              },
+              "ball": {
+                "color": "#f4f7fb",
+                "radius": 8,
+                "shape": "circle"
+              },
+              "hudInk": {
+                "color": "#f4f7fb",
+                "shape": "hud-color"
+              },
+              "hudMuted": {
+                "color": "#a6b0bf",
+                "shape": "hud-color"
+              },
+              "hudAccent": {
+                "color": "#7de2ff",
+                "shape": "hud-color"
+              },
+              "hudGood": {
+                "color": "#8bf0c8",
+                "shape": "hud-color"
+              },
+              "hudWarn": {
+                "color": "#ffd37d",
+                "shape": "hud-color"
+              },
+              "hudDanger": {
+                "color": "#ff9a9a",
+                "shape": "hud-color"
+              }
+            },
+            "entities": {}
+          }
+        }
+      ]
+    }
+  ]
 }

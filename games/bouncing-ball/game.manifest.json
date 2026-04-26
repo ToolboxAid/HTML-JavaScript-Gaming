@@ -15,7 +15,30 @@
     "legacyCatalogs": [
       "games/Bouncing-ball/assets/workspace.asset-catalog.json"
     ],
-    "status": "legacy-catalogs-retained-during-ssot-rollout"
+    "status": "legacy-catalogs-retained-during-ssot-rollout",
+    "legacyCatalogData": [
+      {
+        "id": "games.bouncing.ball.assets.workspace.asset.catalog",
+        "sourcePath": "games/Bouncing-ball/assets/workspace.asset-catalog.json",
+        "data": {
+          "schema": "html-js-gaming.game-asset-catalog",
+          "version": 1,
+          "gameId": "bouncing-ball",
+          "assets": {
+            "palette.bouncing-ball.classic": {
+              "path": "/games/Bouncing-ball/assets/palettes/bouncing-ball-classic.palette.json",
+              "kind": "palette",
+              "source": "workspace-manager"
+            },
+            "skin.main": {
+              "path": "/games/Bouncing-ball/assets/skins/skin.main.json",
+              "kind": "skin",
+              "source": "workspace-manager"
+            }
+          }
+        }
+      }
+    ]
   },
   "sources": {
     "workspaceAssetCatalogPath": "games/Bouncing-ball/assets/workspace.asset-catalog.json",
@@ -48,17 +71,94 @@
     "workspaceCatalogAssets": [
       {
         "assetId": "palette.bouncing-ball.classic",
-        "path": "games/bouncing-ball/assets/palettes/bouncing-ball-classic.palette.json",
+        "path": "games/Bouncing-ball/assets/palettes/bouncing-ball-classic.palette.json",
         "kind": "palette",
         "source": "workspace-manager"
       },
       {
         "assetId": "skin.main",
-        "path": "games/bouncing-ball/assets/skins/skin.main.json",
+        "path": "games/Bouncing-ball/assets/skins/skin.main.json",
         "kind": "skin",
         "source": "workspace-manager"
       }
     ],
     "toolsManifestAssets": []
-  }
+  },
+  "tools": [
+    {
+      "toolId": "primitive-skin-editor",
+      "palettes": [
+        {
+          "id": "palette.bouncing-ball.classic",
+          "sourcePath": "games/Bouncing-ball/assets/palettes/bouncing-ball-classic.palette.json",
+          "data": {
+            "$schema": "../../../../tools/schemas/palette.schema.json",
+            "schema": "html-js-gaming.palette",
+            "version": 1,
+            "name": "Bouncing Ball Classic Palette",
+            "source": "custom",
+            "swatches": [
+              {
+                "symbol": "!",
+                "hex": "#05070A",
+                "name": "Background"
+              },
+              {
+                "symbol": "#",
+                "hex": "#F4F4EF",
+                "name": "Ball and Walls"
+              },
+              {
+                "symbol": "$",
+                "hex": "#9BA3B3",
+                "name": "HUD Muted"
+              }
+            ]
+          }
+        }
+      ],
+      "skins": [
+        {
+          "id": "skin.main",
+          "sourcePath": "games/Bouncing-ball/assets/skins/skin.main.json",
+          "data": {
+            "documentKind": "game-skin",
+            "version": 1,
+            "schema": "games.bouncing-ball.skin/1",
+            "gameId": "Bouncing-ball",
+            "name": "Bouncing Ball Classic Skin",
+            "objects": {
+              "background": {
+                "color": "#05070a",
+                "shape": "hud-color"
+              },
+              "wall": {
+                "color": "#f4f4ef",
+                "thickness": 18,
+                "shape": "wall"
+              },
+              "ball": {
+                "color": "#f4f4ef",
+                "size": 22,
+                "shape": "square"
+              },
+              "hudText": {
+                "color": "#f4f4ef",
+                "shape": "hud-color"
+              },
+              "hudMuted": {
+                "color": "#9ba3b3",
+                "shape": "hud-color"
+              },
+              "hudPanel": {
+                "color": "#05070a",
+                "shape": "hud-color"
+              }
+            },
+            "entities": {}
+          }
+        }
+      ]
+    }
+  ]
 }

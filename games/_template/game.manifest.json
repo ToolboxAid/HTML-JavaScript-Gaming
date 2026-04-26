@@ -15,7 +15,24 @@
     "legacyCatalogs": [
       "games/_template/assets/tools.manifest.json"
     ],
-    "status": "legacy-catalogs-retained-during-ssot-rollout"
+    "status": "legacy-catalogs-retained-during-ssot-rollout",
+    "legacyCatalogData": [
+      {
+        "id": "games.template.assets.tools.manifest",
+        "sourcePath": "games/_template/assets/tools.manifest.json",
+        "data": {
+          "schema": "html-js-gaming.game-asset-manifest",
+          "version": 1,
+          "gameId": "_template",
+          "domains": {
+            "sprites": [],
+            "tilemaps": [],
+            "parallax": [],
+            "vectors": []
+          }
+        }
+      }
+    ]
   },
   "sources": {
     "workspaceAssetCatalogPath": "",

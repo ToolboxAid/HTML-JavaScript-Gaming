@@ -15,7 +15,75 @@
     "legacyCatalogs": [
       "games/vector-arcade-sample/assets/workspace.asset-catalog.json"
     ],
-    "status": "legacy-catalogs-retained-during-ssot-rollout"
+    "status": "legacy-catalogs-retained-during-ssot-rollout",
+    "legacyCatalogData": [
+      {
+        "id": "games.vector.arcade.sample.assets.workspace.asset.catalog",
+        "sourcePath": "games/vector-arcade-sample/assets/workspace.asset-catalog.json",
+        "data": {
+          "schema": "html-js-gaming.game-asset-catalog",
+          "version": 1,
+          "gameId": "vector-arcade-sample",
+          "assets": {
+            "palette.vector-arcade.primary": {
+              "path": "/games/vector-arcade-sample/assets/data/palettes/vector-native-primary.palette.json",
+              "kind": "palette",
+              "source": "workspace-manager"
+            },
+            "parallax.vector-arcade.backdrop": {
+              "path": "/games/vector-arcade-sample/assets/data/parallax/template-backdrop.parallax.json",
+              "kind": "parallax",
+              "source": "workspace-manager"
+            },
+            "image.vector-arcade.backdrop-svg": {
+              "path": "/games/vector-arcade-sample/assets/data/parallax/template-backdrop.svg",
+              "kind": "image",
+              "source": "workspace-manager"
+            },
+            "sprite.vector-arcade.player": {
+              "path": "/games/vector-arcade-sample/assets/data/sprites/template-player.sprite.json",
+              "kind": "sprite",
+              "source": "workspace-manager"
+            },
+            "tilemap.vector-arcade.arena": {
+              "path": "/games/vector-arcade-sample/assets/data/tilemaps/template-arena.tilemap.json",
+              "kind": "tilemap",
+              "source": "workspace-manager"
+            },
+            "tilemap.vector-arcade.ui": {
+              "path": "/games/vector-arcade-sample/assets/data/tilemaps/template-ui.tileset.json",
+              "kind": "tilemap",
+              "source": "workspace-manager"
+            },
+            "vector.vector-arcade.player": {
+              "path": "/games/vector-arcade-sample/assets/data/vectors/template-player.vector.json",
+              "kind": "vector",
+              "source": "workspace-manager"
+            },
+            "vector.vector-arcade.title": {
+              "path": "/games/vector-arcade-sample/assets/data/vectors/template-title.vector.json",
+              "kind": "vector",
+              "source": "workspace-manager"
+            },
+            "vector.vector-arcade.hud": {
+              "path": "/games/vector-arcade-sample/assets/data/vectors/template-hud.vector.json",
+              "kind": "vector",
+              "source": "workspace-manager"
+            },
+            "vector.vector-arcade.obstacle-small": {
+              "path": "/games/vector-arcade-sample/assets/data/vectors/template-obstacle-small.vector.json",
+              "kind": "vector",
+              "source": "workspace-manager"
+            },
+            "vector.vector-arcade.obstacle-large": {
+              "path": "/games/vector-arcade-sample/assets/data/vectors/template-obstacle-large.vector.json",
+              "kind": "vector",
+              "source": "workspace-manager"
+            }
+          }
+        }
+      }
+    ]
   },
   "sources": {
     "workspaceAssetCatalogPath": "games/vector-arcade-sample/assets/workspace.asset-catalog.json",
@@ -60,7 +128,9 @@
       "games/vector-arcade-sample/assets/data/parallax/template-backdrop.parallax.json",
       "games/vector-arcade-sample/assets/data/parallax/template-backdrop.svg"
     ],
-    "tilesets": [],
+    "tilesets": [
+      "games/vector-arcade-sample/assets/data/tilemaps/template-ui.tileset.json"
+    ],
     "overrides": [],
     "runtime": [
       "games/vector-arcade-sample/runtime/bootstrap.runtime.json"
@@ -140,5 +210,273 @@
       }
     ],
     "toolsManifestAssets": []
-  }
+  },
+  "tools": [
+    {
+      "toolId": "asset-browser",
+      "jsonAssets": [
+        {
+          "id": "palette.vector-arcade.primary",
+          "sourcePath": "games/vector-arcade-sample/assets/data/palettes/vector-native-primary.palette.json",
+          "data": {
+            "$schema": "../../../../../tools/schemas/palette.schema.json",
+            "schema": "html-js-gaming.palette",
+            "version": 1,
+            "name": "Vector Native Primary Palette",
+            "source": "custom",
+            "swatches": [
+              {
+                "symbol": "!",
+                "hex": "#05070D",
+                "name": "Swatch 1"
+              },
+              {
+                "symbol": "#",
+                "hex": "#E8F0FF",
+                "name": "Swatch 2"
+              },
+              {
+                "symbol": "$",
+                "hex": "#6FD3FF",
+                "name": "Swatch 3"
+              },
+              {
+                "symbol": "%",
+                "hex": "#FFB347",
+                "name": "Swatch 4"
+              }
+            ]
+          }
+        },
+        {
+          "id": "parallax.vector-arcade.backdrop",
+          "sourcePath": "games/vector-arcade-sample/assets/data/parallax/template-backdrop.parallax.json",
+          "data": {
+            "name": "Sample Backdrop Layer",
+            "role": "backdrop",
+            "imageId": "image.template.backdrop"
+          }
+        },
+        {
+          "id": "sprite.vector-arcade.player",
+          "sourcePath": "games/vector-arcade-sample/assets/data/sprites/template-player.sprite.json",
+          "data": {
+            "schema": "toolbox.sprite-project/1",
+            "version": 1,
+            "projectId": "vector-arcade-template-sprite",
+            "name": "Vector Arcade Template Sprite",
+            "frames": [
+              {
+                "id": "idle-0",
+                "width": 16,
+                "height": 16,
+                "durationMs": 120,
+                "pixels": []
+              }
+            ],
+            "palette": [
+              "#000000",
+              "#ffffff",
+              "#60a5fa",
+              "#f59e0b"
+            ]
+          }
+        },
+        {
+          "id": "tilemap.vector-arcade.arena",
+          "sourcePath": "games/vector-arcade-sample/assets/data/tilemaps/template-arena.tilemap.json",
+          "data": {
+            "name": "Vector Arcade Sample Arena",
+            "states": [
+              "title",
+              "start",
+              "gameplay",
+              "restart"
+            ],
+            "extensionPoints": [
+              "spawn-patterns",
+              "score-rules",
+              "victory-conditions"
+            ]
+          }
+        },
+        {
+          "id": "tilemap.vector-arcade.ui",
+          "sourcePath": "games/vector-arcade-sample/assets/data/tilemaps/template-ui.tileset.json",
+          "data": {
+            "name": "Template UI Tileset",
+            "tileWidth": 8,
+            "tileHeight": 8,
+            "tiles": [
+              "score-panel",
+              "wave-panel",
+              "status-panel"
+            ]
+          }
+        },
+        {
+          "id": "vector.vector-arcade.hud",
+          "sourcePath": "games/vector-arcade-sample/assets/data/vectors/template-hud.vector.json",
+          "data": {
+            "id": "vector.template.ui.hud",
+            "type": "vector",
+            "source": {
+              "kind": "svg",
+              "path": "games/vector-arcade-sample/assets/data/vectors/template-hud.vector.json"
+            },
+            "geometry": {
+              "viewBox": "0 0 160 32",
+              "paths": [
+                {
+                  "d": "M 4 4 L 156 4 L 156 28 L 4 28 Z"
+                },
+                {
+                  "d": "M 18 10 L 28 10 L 28 22 L 18 22 Z"
+                }
+              ]
+            },
+            "style": {
+              "stroke": true,
+              "fill": false
+            }
+          }
+        },
+        {
+          "id": "vector.vector-arcade.obstacle-large",
+          "sourcePath": "games/vector-arcade-sample/assets/data/vectors/template-obstacle-large.vector.json",
+          "data": {
+            "id": "vector.template.obstacle.large",
+            "type": "vector",
+            "source": {
+              "kind": "svg",
+              "path": "games/vector-arcade-sample/assets/data/vectors/template-obstacle-large.vector.json"
+            },
+            "geometry": {
+              "viewBox": "-34 -34 68 68",
+              "paths": [
+                {
+                  "d": "M -20 -14 L 0 -24 L 22 -18 L 28 6 L 14 24 L -10 22 L -26 4 Z"
+                }
+              ]
+            },
+            "style": {
+              "stroke": true,
+              "fill": false
+            }
+          }
+        },
+        {
+          "id": "vector.vector-arcade.obstacle-small",
+          "sourcePath": "games/vector-arcade-sample/assets/data/vectors/template-obstacle-small.vector.json",
+          "data": {
+            "id": "vector.template.obstacle.small",
+            "type": "vector",
+            "source": {
+              "kind": "svg",
+              "path": "games/vector-arcade-sample/assets/data/vectors/template-obstacle-small.vector.json"
+            },
+            "geometry": {
+              "viewBox": "-18 -18 36 36",
+              "paths": [
+                {
+                  "d": "M -8 -8 L 2 -12 L 10 -2 L 6 10 L -6 12 L -12 0 Z"
+                }
+              ]
+            },
+            "style": {
+              "stroke": true,
+              "fill": false
+            }
+          }
+        },
+        {
+          "id": "vector.vector-arcade.player",
+          "sourcePath": "games/vector-arcade-sample/assets/data/vectors/template-player.vector.json",
+          "data": {
+            "id": "vector.template.player",
+            "type": "vector",
+            "source": {
+              "kind": "svg",
+              "path": "games/vector-arcade-sample/assets/data/vectors/template-player.vector.json"
+            },
+            "geometry": {
+              "viewBox": "-20 -20 40 40",
+              "paths": [
+                {
+                  "d": "M 0 -16 L 12 12 L 0 6 L -12 12 Z"
+                },
+                {
+                  "d": "M -4 10 L 0 4 L 4 10"
+                }
+              ]
+            },
+            "style": {
+              "stroke": true,
+              "fill": false
+            }
+          }
+        },
+        {
+          "id": "vector.vector-arcade.title",
+          "sourcePath": "games/vector-arcade-sample/assets/data/vectors/template-title.vector.json",
+          "data": {
+            "id": "vector.template.ui.title",
+            "type": "vector",
+            "source": {
+              "kind": "svg",
+              "path": "games/vector-arcade-sample/assets/data/vectors/template-title.vector.json"
+            },
+            "geometry": {
+              "viewBox": "0 0 220 48",
+              "paths": [
+                {
+                  "d": "M 8 40 L 24 8 L 40 40 Z"
+                },
+                {
+                  "d": "M 56 40 L 56 8 L 84 8 L 84 18 L 68 18 L 68 22 L 82 22 L 82 32 L 68 32 L 68 40 Z"
+                }
+              ]
+            },
+            "style": {
+              "stroke": true,
+              "fill": false
+            }
+          }
+        }
+      ]
+    },
+    {
+      "toolId": "preview-generator-tool",
+      "projectConfigs": [
+        {
+          "id": "games.vector.arcade.sample.config.sample.project",
+          "sourcePath": "games/vector-arcade-sample/config/sample.project.json",
+          "data": {
+            "sampleId": "vector-arcade-sample",
+            "schema": "toolbox.sample/1",
+            "visualContract": "vector-only",
+            "runtimeEntry": "games/vector-arcade-sample/main.js#bootVectorArcadeSample"
+          }
+        }
+      ],
+      "runtimeConfigs": [
+        {
+          "id": "games.vector.arcade.sample.runtime.bootstrap.runtime",
+          "sourcePath": "games/vector-arcade-sample/runtime/bootstrap.runtime.json",
+          "data": {
+            "modulePath": "games/vector-arcade-sample/main.js",
+            "exportName": "bootVectorArcadeSample",
+            "canvasId": "game",
+            "requiredVectorIds": [
+              "vector.template.player",
+              "vector.template.obstacle.large",
+              "vector.template.obstacle.small",
+              "vector.template.ui.title",
+              "vector.template.ui.hud"
+            ]
+          }
+        }
+      ]
+    }
+  ]
 }

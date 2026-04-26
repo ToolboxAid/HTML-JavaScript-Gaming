@@ -15,7 +15,25 @@
     "legacyCatalogs": [
       "games/GravityWell/assets/workspace.asset-catalog.json"
     ],
-    "status": "legacy-catalogs-retained-during-ssot-rollout"
+    "status": "legacy-catalogs-retained-during-ssot-rollout",
+    "legacyCatalogData": [
+      {
+        "id": "games.gravitywell.assets.workspace.asset.catalog",
+        "sourcePath": "games/GravityWell/assets/workspace.asset-catalog.json",
+        "data": {
+          "schema": "html-js-gaming.game-asset-catalog",
+          "version": 1,
+          "gameId": "gravitywell",
+          "assets": {
+            "image.gravitywell.preview": {
+              "path": "/games/GravityWell/assets/images/preview.svg",
+              "kind": "image",
+              "source": "workspace-manager"
+            }
+          }
+        }
+      }
+    ]
   },
   "sources": {
     "workspaceAssetCatalogPath": "games/GravityWell/assets/workspace.asset-catalog.json",

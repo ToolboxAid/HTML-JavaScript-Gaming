@@ -1,16 +1,14 @@
 MODEL: GPT-5.3-codex
-REASONING: medium
 
 TASK:
-Do not implement. This is review-only.
+Apply single-manifest model to all games.
 
-Add the cleaned Asteroids manifest model review docs only.
-
-Do not modify runtime.
-Do not add validators.
-Do not modify start_of_day.
-Do not create embedded workspace schema data.
-Do not create new manifest elements beyond this review doc.
+- replicate Asteroids pattern
+- inline JSON into manifest
+- fix references
+- delete only safe JSON
+- no runtime break
+- no start_of_day changes
 
 OUTPUT:
-tmp/BUILD_PR_LEVEL_9_1A_ASTEROIDS_MANIFEST_MODEL_REVIEW_delta.zip
+tmp/BUILD_PR_LEVEL_9_2_SINGLE_MANIFEST_CONSOLIDATION_ROLLOUT_ALL_GAMES_delta.zip

@@ -1,0 +1,1 @@
+Roll out validated single-manifest model across all games. No schema embedding mistakes. Data belongs under owning tool sections.

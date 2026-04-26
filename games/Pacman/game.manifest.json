@@ -15,7 +15,30 @@
     "legacyCatalogs": [
       "games/Pacman/assets/workspace.asset-catalog.json"
     ],
-    "status": "legacy-catalogs-retained-during-ssot-rollout"
+    "status": "legacy-catalogs-retained-during-ssot-rollout",
+    "legacyCatalogData": [
+      {
+        "id": "games.pacman.assets.workspace.asset.catalog",
+        "sourcePath": "games/Pacman/assets/workspace.asset-catalog.json",
+        "data": {
+          "schema": "html-js-gaming.game-asset-catalog",
+          "version": 1,
+          "gameId": "pacman",
+          "assets": {
+            "image.pacman.preview-svg": {
+              "path": "/games/Pacman/assets/images/preview.svg",
+              "kind": "image",
+              "source": "workspace-manager"
+            },
+            "image.pacman.preview-png": {
+              "path": "/games/Pacman/assets/images/preview.png",
+              "kind": "image",
+              "source": "workspace-manager"
+            }
+          }
+        }
+      }
+    ]
   },
   "sources": {
     "workspaceAssetCatalogPath": "games/Pacman/assets/workspace.asset-catalog.json",
