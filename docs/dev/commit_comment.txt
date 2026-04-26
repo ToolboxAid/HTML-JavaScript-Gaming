@@ -1,5 +1,4 @@
-PR 8.7: Workspace schema aligned to id/type structure
+PR 8.8: Entity progression dimension (phase vs level)
 
-- Removed sampleId from schema
-- Added id + type requirements
-- Enforced strict entity shape
+- Added phase and level fields
+- Enforced type-based conditional requirements

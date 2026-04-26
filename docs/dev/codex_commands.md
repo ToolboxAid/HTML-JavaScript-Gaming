@@ -3,10 +3,11 @@ REASONING: medium
 
 TASK:
 - Update workspace.schema.json:
-  - Replace sampleId usage with id
-  - Add type field requirement
-  - Ensure entity array structure matches manifest
-- Ensure no additionalProperties allowed
+  - Add phase and level fields
+  - Add conditional rules:
+    - sample → phase required, level forbidden
+    - game → level required, phase forbidden
+- Validate manifest against schema
 - Do NOT modify runtime
 - Do NOT add validators
 - Do NOT modify start_of_day

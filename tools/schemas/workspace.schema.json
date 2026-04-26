@@ -2,7 +2,12 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "tools/schemas/workspace.schema.json",
   "type": "object",
-  "required": ["documentKind", "schema", "version", "samples"],
+  "required": [
+    "documentKind",
+    "schema",
+    "version",
+    "samples"
+  ],
   "additionalProperties": false,
   "properties": {
     "documentKind": {
@@ -19,10 +24,13 @@
     },
     "samples": {
       "type": "array",
-      "uniqueItems": true,
       "items": {
         "type": "object",
-        "required": ["id", "type", "tool"],
+        "required": [
+          "id",
+          "type",
+          "tool"
+        ],
         "additionalProperties": false,
         "properties": {
           "id": {
@@ -31,9 +39,16 @@
           },
           "type": {
             "type": "string",
-            "minLength": 1
+            "enum": [
+              "sample",
+              "game"
+            ]
           },
           "phase": {
+            "type": "string",
+            "minLength": 1
+          },
+          "level": {
             "type": "string",
             "minLength": 1
           },
@@ -43,18 +58,63 @@
           },
           "tools": {
             "type": "array",
-            "uniqueItems": true,
             "items": {
               "type": "string",
               "minLength": 1
-            }
+            },
+            "uniqueItems": true
           },
           "palette": {
             "type": "string",
             "minLength": 1
           }
         },
-        "description": "id must be unique across samples."
+        "allOf": [
+          {
+            "if": {
+              "properties": {
+                "type": {
+                  "const": "sample"
+                }
+              },
+              "required": [
+                "type"
+              ]
+            },
+            "then": {
+              "required": [
+                "phase"
+              ],
+              "not": {
+                "required": [
+                  "level"
+                ]
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "type": {
+                  "const": "game"
+                }
+              },
+              "required": [
+                "type"
+              ]
+            },
+            "then": {
+              "required": [
+                "level"
+              ],
+              "not": {
+                "required": [
+                  "phase"
+                ]
+              }
+            }
+          }
+        ]
       }
     }
   }
