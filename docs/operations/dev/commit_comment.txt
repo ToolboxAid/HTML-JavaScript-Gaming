@@ -1,9 +1,8 @@
-Validate and lock Phase 20 recovery gate
+Remove Workspace Manager default and query fallbacks
 
 PR Details:
-- Validates sample-to-tool launch UAT.
-- Validates game-to-Workspace Manager launch UAT.
-- Validates external-launch memory clearing.
-- Validates no fallback/default launch behavior.
-- Rechecks Codex anti-pattern rules on the recovery lane.
-- Updates recovery roadmap status markers only if the gate passes.
+- Removes first-tool default selection from Workspace Manager launch flow.
+- Removes legacy gameId || game query fallback.
+- Requires explicit gameId for games/index.html Workspace Manager launch path.
+- Restores docs/dev/specs/TOOL_LAUNCH_SSOT.md if missing.
+- Adds validation report for the recovery gate blocker.

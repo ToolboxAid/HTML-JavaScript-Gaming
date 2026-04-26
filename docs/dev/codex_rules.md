@@ -2,19 +2,14 @@
 
 These rules OVERRIDE all other instructions.
 
-Codex must prefer the existing repo pattern over any new pattern, unless the PR explicitly says otherwise.
-
 ## This PR
 
-This PR is a validation and gate-lock PR.
-
 Allowed:
-- validation reports
-- recovery roadmap status markers only
-- blocked decision report if validation fails
+- targeted Workspace Manager fallback removal
+- restore missing docs/dev/specs/TOOL_LAUNCH_SSOT.md
+- validation report
 
 Forbidden:
-- implementation code changes
 - broad cleanup
 - unrelated refactoring
 - new route systems
@@ -22,30 +17,24 @@ Forbidden:
 - fallback/default behavior
 - start_of_day changes
 - roadmap text rewrite outside status markers
-- changing required UI labels
+- changing labels
 
-## Required UI Labels
+## Exact Removals Required
 
-Samples:
-- must use `Open <tool>`
+Remove Workspace Manager launch residues:
 
-Games:
-- must use `Open with Workspace Manager`
+- `toolIds[0]` first-item/default tool selection in the launch path
+- `gameId || game` legacy query fallback in the launch path
 
-## Required Launch Targets
+## Required Failure Behavior
 
-Samples:
-- must route tools to `tools/<tool>/index.html`
-
-Games:
-- must route Workspace Manager to `tools/Workspace Manager/index.html`
-
-## Required Memory Behavior
-
-External launches from samples or games:
-- must clear launch memory before loading target
-- must not reuse stale state
-- must not fallback to old context
+If `gameId` is missing or invalid:
+- fail visibly
+- report missing/invalid `gameId`
+- do not fallback to `game`
+- do not select first tool
+- do not reuse memory
+- do not silently redirect
 
 ## Anti-Patterns Forbidden
 
@@ -62,15 +51,5 @@ External launches from samples or games:
 - duplicate event listeners
 - globals
 - new managers/factories/service layers
-- public API changes
+- public API changes outside this PR
 - scope expansion
-
-## Required Failure Behavior
-
-If launch SSoT data is missing or invalid:
-- fail visibly
-- report the missing field
-- do not guess
-- do not select the first item
-- do not reuse memory
-- do not silently redirect

@@ -4,7 +4,7 @@ BLOCKED - recovery gate remains open
 
 ## Exact Blocker
 
-Workspace Manager launch flow still contains default/fallback residue in the validated path file.
+Workspace Manager launch flow still contains default/fallback behavior in the validated gate path.
 
 ## File Path
 
@@ -14,10 +14,15 @@ Workspace Manager launch flow still contains default/fallback residue in the val
 
 `games/index.html -> Open with Workspace Manager -> tools/Workspace Manager/index.html?gameId=<id>&mount=game`
 
-Blocking fallback/default residues found:
+## Blocking Evidence
 
-- default first-item selection: `toolIds[0]` at lines 270, 463, 475
-- legacy query fallback compatibility: `gameId || game` at lines 153 and 284
+- default first-item selection via `toolIds[0]`:
+  - `tools/Workspace Manager/main.js:270`
+  - `tools/Workspace Manager/main.js:463`
+  - `tools/Workspace Manager/main.js:475`
+- legacy query fallback compatibility (`game` fallback):
+  - `tools/Workspace Manager/main.js:153`
+  - `tools/Workspace Manager/main.js:284`
 
 ## Next Required BUILD_PR
 
