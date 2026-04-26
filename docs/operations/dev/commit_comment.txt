@@ -1,11 +1,4 @@
-BUILD_PR_LEVEL_8_32_DIRECT_GAME_LAUNCH_HOOK_REMOVAL_AND_ASTEROIDS_PARITY
+PR 8.33: Legacy catalog parity and removal
 
-- Removed bad preview-to-Workspace-Manager redirect hook
-- Restored direct game launch behavior
-- Preserved explicit Workspace Manager action
-- Continued Asteroids parity tracking
-
-PR Details:
-- Fixes Bouncing Ball and other games redirecting to Workspace Manager
-- No validators
-- No start_of_day changes
+- Removed safe legacy catalogs
+- Retained required ones
