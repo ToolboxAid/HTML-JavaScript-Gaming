@@ -1,1 +1,1 @@
-Remove tool selector; keep pager-only navigation
+Finalize recovery roadmap
