@@ -68,5 +68,6 @@
         "source": "samples2tools-parallax-roundtrip"
       }
     }
-  }
+  },
+  "palette": "./sample.palette.json"
 }

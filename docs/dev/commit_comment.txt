@@ -1,6 +1,6 @@
-PR 8.10: Sample multi-file tool payload alignment
+PR 8.11: Enforce explicit sample palette linkage
 
-- Converted samples to one-file-per-tool model
-- Removed tools arrays from sample files
-- Aligned sample payloads with workspace tool payload structure
-- Standardized naming convention
+- Required sample tool payloads to reference sample.palette.json when present
+- Preserved one-palette-per-sample-folder rule
+- Kept palettes separate from tool payload files
+- Avoided runtime and start_of_day changes

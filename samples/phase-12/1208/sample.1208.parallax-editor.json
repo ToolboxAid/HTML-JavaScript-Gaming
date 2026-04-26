@@ -70,5 +70,6 @@
         "source": "samples2tools-phase1"
       }
     }
-  }
+  },
+  "palette": "./sample.palette.json"
 }

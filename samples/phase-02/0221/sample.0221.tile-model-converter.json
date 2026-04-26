@@ -16,5 +16,6 @@
       "targetSection": "vectors",
       "targetType": "vector"
     }
-  }
+  },
+  "palette": "./sample.palette.json"
 }

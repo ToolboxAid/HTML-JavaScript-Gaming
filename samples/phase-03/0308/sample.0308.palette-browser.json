@@ -33,5 +33,6 @@
         }
       ]
     }
-  }
+  },
+  "palette": "./sample.palette.json"
 }

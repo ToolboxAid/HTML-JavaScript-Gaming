@@ -1071,5 +1071,6 @@
       ],
       "currentFrameIndex": 0
     }
-  }
+  },
+  "palette": "./sample.palette.json"
 }
