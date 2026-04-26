@@ -1,1 +1,1 @@
-PR 9.2: rollout single-manifest model to all games
+PR 9.3: multi-game launch validation and fix

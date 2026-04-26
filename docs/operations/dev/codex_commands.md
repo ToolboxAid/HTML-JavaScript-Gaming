@@ -1,14 +1,10 @@
 MODEL: GPT-5.3-codex
 
 TASK:
-Apply single-manifest model to all games.
-
-- replicate Asteroids pattern
-- inline JSON into manifest
-- fix references
-- delete only safe JSON
-- no runtime break
+- launch each game
+- fix failures
+- ensure manifest-driven load works
 - no start_of_day changes
 
 OUTPUT:
-tmp/BUILD_PR_LEVEL_9_2_SINGLE_MANIFEST_CONSOLIDATION_ROLLOUT_ALL_GAMES_delta.zip
+tmp/BUILD_PR_LEVEL_9_3_MULTI_GAME_LAUNCH_VALIDATION_AND_FIX_delta.zip
