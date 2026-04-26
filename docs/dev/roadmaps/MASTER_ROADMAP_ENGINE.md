@@ -879,3 +879,6 @@
 - [x] Verify sample tool payload files match workspace/game `tools[]` item shape.
 - [ ] Verify palette/shared data never embeds inside tool payload files.
 - [.] Verify workspace schema has no sample-only concepts.
+- [.] Manifest SSoT audit across game workspace catalogs/tool manifests is in progress.
+- [.] Unused JSON cleanup audit (tools + explicit deletion candidates) is in progress.
+- [.] Palette opaque alpha normalization (`#RRGGBBFF` -> `#RRGGBB`) is in progress.

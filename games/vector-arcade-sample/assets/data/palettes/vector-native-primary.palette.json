@@ -7,22 +7,22 @@
   "swatches": [
     {
       "symbol": "!",
-      "hex": "#05070DFF",
+      "hex": "#05070D",
       "name": "Swatch 1"
     },
     {
       "symbol": "#",
-      "hex": "#E8F0FFFF",
+      "hex": "#E8F0FF",
       "name": "Swatch 2"
     },
     {
       "symbol": "$",
-      "hex": "#6FD3FFFF",
+      "hex": "#6FD3FF",
       "name": "Swatch 3"
     },
     {
       "symbol": "%",
-      "hex": "#FFB347FF",
+      "hex": "#FFB347",
       "name": "Swatch 4"
     }
   ]

@@ -1,5 +1,12 @@
+BUILD_PR_LEVEL_8_26_MANIFEST_SSOT_AND_UNUSED_JSON_AUDIT
 
-PR 8.24: Full schema/json export
+- Added user blocker list for manifest SSoT, game asset wiring, palette normalization, and unused JSON cleanup
+- Added audit requirements for tools.manifest.json vs workspace.asset-catalog.json
+- Added deletion candidate audit scope
+- Added palette opaque alpha normalization rule
 
-- Generated review bundle of all schema + json files
-- No code or data modifications
+PR Details:
+- Focused audit/cleanup PR
+- No runtime rewrite intended
+- No validators
+- No start_of_day changes
