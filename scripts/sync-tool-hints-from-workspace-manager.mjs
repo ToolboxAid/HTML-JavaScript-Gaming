@@ -7,7 +7,7 @@ sync-tool-hints-from-workspace-manager.mjs
 
 How to run:
 1) npm run sync:tool-hints
-   - Sync toolHints into games/metadata/games.index.metadata.json from per-game manifests
+   - Sync toolsUsed into games/metadata/games.index.metadata.json from per-game manifests
 2) node ./scripts/sync-tool-hints-from-workspace-manager.mjs --dry-run
    - Validate and print what would change without writing
 */
@@ -27,12 +27,11 @@ const GAME_TOOLS_MANIFEST_FILENAME = "tools.manifest.json";
 const GAME_TOOLS_MANIFEST_SCHEMA = "html-js-gaming.game-asset-manifest";
 const GAME_TOOLS_MANIFEST_VERSION = 1;
 
-const KIND_TO_TOOL_HINTS = Object.freeze({
+const KIND_TO_TOOLS_USED = Object.freeze({
   palette: ["palette-browser"],
   skin: ["skin-editor"],
   sprite: ["sprite-editor"],
   tilemap: ["tile-map-editor"],
-  tileset: ["tile-map-editor"],
   parallax: ["parallax-editor"],
   vector: ["vector-asset-studio"],
   image: ["asset-browser"],
@@ -58,7 +57,7 @@ function normalizeToken(value) {
   return normalizeText(value).toLowerCase();
 }
 
-function normalizeToolHints(value) {
+function normalizeToolsUsed(value) {
   if (!Array.isArray(value)) {
     return [];
   }
@@ -73,6 +72,10 @@ function normalizeToolHints(value) {
     output.push(token);
   });
   return output;
+}
+
+function normalizeCatalogKind(value) {
+  return normalizeToken(value);
 }
 
 function parseArgs(argv) {
@@ -155,7 +158,7 @@ function readWorkspaceAssetCatalog(gameDir) {
         return;
       }
       assetCount += 1;
-      const kind = normalizeToken(entry.kind);
+      const kind = normalizeCatalogKind(entry.kind);
       if (kind) {
         kinds.push(kind);
       }
@@ -214,19 +217,19 @@ function readGameToolsManifest(gameDir) {
     return {
       valid: true,
       reason: "ok",
-      hints: normalizeToolHints(hints)
+      hints: normalizeToolsUsed(hints)
     };
   } catch {
     return { valid: false, reason: "invalid-json", hints: [] };
   }
 }
 
-function deriveToolHintsFromManifests(catalogInfo, toolsManifestInfo) {
+function deriveToolsUsedFromManifests(catalogInfo, toolsManifestInfo) {
   const derived = [];
 
   if (catalogInfo.valid) {
     catalogInfo.kinds.forEach((kind) => {
-      const mapped = KIND_TO_TOOL_HINTS[kind] || [];
+      const mapped = KIND_TO_TOOLS_USED[kind] || [];
       mapped.forEach((toolId) => derived.push(toolId));
     });
 
@@ -239,10 +242,10 @@ function deriveToolHintsFromManifests(catalogInfo, toolsManifestInfo) {
     toolsManifestInfo.hints.forEach((toolId) => derived.push(toolId));
   }
 
-  return normalizeToolHints(derived);
+  return normalizeToolsUsed(derived);
 }
 
-function syncToolHints(metadata) {
+function syncToolsUsed(metadata) {
   const knownToolIds = new Set(getToolRegistry().map((tool) => normalizeToken(tool?.id)).filter(Boolean));
   let updated = 0;
   const warnings = [];
@@ -250,9 +253,17 @@ function syncToolHints(metadata) {
   for (const game of metadata.games) {
     const gameId = normalizeText(game?.id) || "<unknown>";
     const gameDir = getGameDirFromHref(game?.href);
-    const existing = normalizeToolHints(game?.toolHints);
+    const existing = normalizeToolsUsed(Array.isArray(game?.toolsUsed) ? game.toolsUsed : game?.toolHints);
+    const needsKeyMigration = !Array.isArray(game?.toolsUsed) || Object.prototype.hasOwnProperty.call(game, "toolHints");
 
     if (!gameDir) {
+      if (needsKeyMigration) {
+        game.toolsUsed = existing;
+        if (Object.prototype.hasOwnProperty.call(game, "toolHints")) {
+          delete game.toolHints;
+        }
+        updated += 1;
+      }
       warnings.push(`${gameId}: skipped derivation (missing/invalid href)`);
       continue;
     }
@@ -262,18 +273,32 @@ function syncToolHints(metadata) {
 
     const hasAnyValidManifest = catalogInfo.valid || toolsManifestInfo.valid;
     if (!hasAnyValidManifest) {
+      if (needsKeyMigration) {
+        game.toolsUsed = existing;
+        if (Object.prototype.hasOwnProperty.call(game, "toolHints")) {
+          delete game.toolHints;
+        }
+        updated += 1;
+      }
       warnings.push(`${gameId}: no valid manifest source (${GAME_ASSET_CATALOG_FILENAME} / ${GAME_TOOLS_MANIFEST_FILENAME})`);
       continue;
     }
 
-    const next = deriveToolHintsFromManifests(catalogInfo, toolsManifestInfo);
+    const next = deriveToolsUsedFromManifests(catalogInfo, toolsManifestInfo);
     const invalid = next.filter((toolId) => !knownToolIds.has(toolId));
     if (invalid.length > 0) {
       throw new Error(`${gameId}: unknown tool id(s): ${invalid.join(", ")}`);
     }
 
-    if (JSON.stringify(existing) !== JSON.stringify(next) || !Array.isArray(game.toolHints)) {
-      game.toolHints = next;
+    if (
+      JSON.stringify(existing) !== JSON.stringify(next)
+      || !Array.isArray(game.toolsUsed)
+      || Object.prototype.hasOwnProperty.call(game, "toolHints")
+    ) {
+      game.toolsUsed = next;
+      if (Object.prototype.hasOwnProperty.call(game, "toolHints")) {
+        delete game.toolHints;
+      }
       updated += 1;
     }
   }
@@ -284,7 +309,7 @@ function syncToolHints(metadata) {
 function main() {
   const args = parseArgs(process.argv.slice(2));
   const metadata = loadMetadata();
-  const result = syncToolHints(metadata);
+  const result = syncToolsUsed(metadata);
 
   if (!args.dryRun) {
     writeJson(METADATA_PATH, metadata);

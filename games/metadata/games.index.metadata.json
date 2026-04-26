@@ -27,7 +27,7 @@
       "sampleTrack": false,
       "debugShowcase": false,
       "requiresService": false,
-      "toolHints": [
+      "toolsUsed": [
         "palette-browser",
         "skin-editor",
         "asset-browser"
@@ -52,17 +52,17 @@
       "sampleTrack": false,
       "debugShowcase": true,
       "requiresService": false,
-      "toolHints": [
-        "palette-browser",
-        "skin-editor",
-        "asset-browser"
-      ],
       "engineClassesUsed": [
         "engine/core/Engine",
         "engine/input/index/GamepadInputAdapter",
         "engine/input/index/InputService",
         "engine/scene/index/Scene",
         "engine/utils/math/clamp"
+      ],
+      "toolsUsed": [
+        "palette-browser",
+        "skin-editor",
+        "asset-browser"
       ]
     },
     {
@@ -84,15 +84,15 @@
       "sampleTrack": true,
       "debugShowcase": false,
       "requiresService": false,
-      "toolHints": [
-        "palette-browser",
-        "skin-editor",
-        "asset-browser"
-      ],
       "engineClassesUsed": [
         "engine/core/Engine",
         "engine/input/index/InputService",
         "engine/scene/index/Scene"
+      ],
+      "toolsUsed": [
+        "palette-browser",
+        "skin-editor",
+        "asset-browser"
       ]
     },
     {
@@ -114,9 +114,6 @@
       "sampleTrack": true,
       "debugShowcase": false,
       "requiresService": false,
-      "toolHints": [
-        "asset-browser"
-      ],
       "engineClassesUsed": [
         "engine/core/Engine",
         "engine/debug/index/drawPanel",
@@ -127,6 +124,9 @@
         "engine/scene/index/Scene",
         "engine/utils/index/clamp",
         "engine/utils/index/distance"
+      ],
+      "toolsUsed": [
+        "asset-browser"
       ]
     },
     {
@@ -148,17 +148,17 @@
       "sampleTrack": true,
       "debugShowcase": false,
       "requiresService": false,
-      "toolHints": [
-        "palette-browser",
-        "skin-editor",
-        "asset-browser"
-      ],
       "engineClassesUsed": [
         "engine/core/Engine",
         "engine/input/index/GamepadInputAdapter",
         "engine/input/index/InputService",
         "engine/scene/index/Scene",
         "engine/utils/math/clamp"
+      ],
+      "toolsUsed": [
+        "palette-browser",
+        "skin-editor",
+        "asset-browser"
       ]
     },
     {
@@ -180,15 +180,6 @@
       "sampleTrack": false,
       "debugShowcase": true,
       "requiresService": false,
-      "toolHints": [
-        "palette-browser",
-        "asset-browser",
-        "sprite-editor",
-        "tile-map-editor",
-        "parallax-editor",
-        "vector-asset-studio",
-        "asset-pipeline-tool"
-      ],
       "engineClassesUsed": [
         "engine/audio/index/GaplessLoopPlayer",
         "engine/audio/index/HtmlAudioMediaBackend",
@@ -207,6 +198,15 @@
         "engine/utils/index/randomRange",
         "engine/utils/index/wrap",
         "engine/utils/math/clamp"
+      ],
+      "toolsUsed": [
+        "palette-browser",
+        "asset-browser",
+        "sprite-editor",
+        "tile-map-editor",
+        "parallax-editor",
+        "vector-asset-studio",
+        "asset-pipeline-tool"
       ]
     },
     {
@@ -228,10 +228,6 @@
       "sampleTrack": false,
       "debugShowcase": false,
       "requiresService": false,
-      "toolHints": [
-        "palette-browser",
-        "asset-browser"
-      ],
       "engineClassesUsed": [
         "engine/core/Engine",
         "engine/input/index/GamepadInputAdapter",
@@ -240,6 +236,10 @@
         "engine/scene/index/AttractModeController",
         "engine/scene/index/Scene",
         "engine/utils/math/clamp"
+      ],
+      "toolsUsed": [
+        "palette-browser",
+        "asset-browser"
       ]
     },
     {
@@ -261,10 +261,6 @@
       "sampleTrack": false,
       "debugShowcase": false,
       "requiresService": false,
-      "toolHints": [
-        "palette-browser",
-        "asset-browser"
-      ],
       "engineClassesUsed": [
         "engine/core/Engine",
         "engine/input/index/ActionInputMap",
@@ -273,6 +269,10 @@
         "engine/scene/index/AttractModeController",
         "engine/scene/index/Scene",
         "engine/utils/math/clamp"
+      ],
+      "toolsUsed": [
+        "palette-browser",
+        "asset-browser"
       ]
     },
     {
@@ -294,15 +294,15 @@
       "sampleTrack": true,
       "debugShowcase": false,
       "requiresService": false,
-      "toolHints": [
-        "asset-browser"
-      ],
       "engineClassesUsed": [
         "engine/core/Engine",
         "engine/input/index/GamepadInputAdapter",
         "engine/input/index/InputService",
         "engine/scene/index/Scene",
         "engine/utils/math/clamp"
+      ],
+      "toolsUsed": [
+        "asset-browser"
       ]
     },
     {
@@ -324,14 +324,14 @@
       "sampleTrack": true,
       "debugShowcase": false,
       "requiresService": false,
-      "toolHints": [
-        "asset-browser"
-      ],
       "engineClassesUsed": [
         "engine/core/Engine",
         "engine/input/index/GamepadInputAdapter",
         "engine/input/index/InputService",
         "engine/scene/index/Scene"
+      ],
+      "toolsUsed": [
+        "asset-browser"
       ]
     },
     {
@@ -353,7 +353,7 @@
       "sampleTrack": true,
       "debugShowcase": false,
       "requiresService": false,
-      "toolHints": [
+      "toolsUsed": [
         "palette-browser",
         "parallax-editor",
         "asset-browser",
@@ -381,7 +381,7 @@
       "sampleTrack": false,
       "debugShowcase": false,
       "requiresService": false,
-      "toolHints": [
+      "toolsUsed": [
         "tile-map-editor",
         "sprite-editor",
         "state-inspector"
@@ -406,7 +406,7 @@
       "sampleTrack": false,
       "debugShowcase": false,
       "requiresService": false,
-      "toolHints": [
+      "toolsUsed": [
         "sprite-editor",
         "vector-map-editor",
         "performance-profiler"
@@ -431,7 +431,7 @@
       "sampleTrack": false,
       "debugShowcase": false,
       "requiresService": false,
-      "toolHints": [
+      "toolsUsed": [
         "sprite-editor",
         "asset-pipeline-tool",
         "replay-visualizer"
@@ -456,7 +456,7 @@
       "sampleTrack": false,
       "debugShowcase": false,
       "requiresService": false,
-      "toolHints": [
+      "toolsUsed": [
         "sprite-editor",
         "replay-visualizer",
         "performance-profiler"
@@ -481,7 +481,7 @@
       "sampleTrack": true,
       "debugShowcase": false,
       "requiresService": false,
-      "toolHints": [
+      "toolsUsed": [
         "tile-map-editor",
         "parallax-editor",
         "performance-profiler"
@@ -506,7 +506,7 @@
       "sampleTrack": true,
       "debugShowcase": false,
       "requiresService": false,
-      "toolHints": [
+      "toolsUsed": [
         "tile-map-editor",
         "physics-sandbox",
         "state-inspector"
@@ -531,7 +531,7 @@
       "sampleTrack": false,
       "debugShowcase": false,
       "requiresService": false,
-      "toolHints": [
+      "toolsUsed": [
         "parallax-editor",
         "tile-map-editor",
         "vector-asset-studio"
@@ -556,7 +556,7 @@
       "sampleTrack": false,
       "debugShowcase": false,
       "requiresService": false,
-      "toolHints": [
+      "toolsUsed": [
         "tile-map-editor",
         "sprite-editor",
         "physics-sandbox"
@@ -581,7 +581,7 @@
       "sampleTrack": true,
       "debugShowcase": false,
       "requiresService": false,
-      "toolHints": [
+      "toolsUsed": [
         "tile-map-editor",
         "sprite-editor",
         "state-inspector"
@@ -606,7 +606,7 @@
       "sampleTrack": false,
       "debugShowcase": false,
       "requiresService": false,
-      "toolHints": [
+      "toolsUsed": [
         "sprite-editor",
         "replay-visualizer",
         "performance-profiler"
@@ -631,7 +631,7 @@
       "sampleTrack": false,
       "debugShowcase": false,
       "requiresService": false,
-      "toolHints": [
+      "toolsUsed": [
         "tile-map-editor",
         "vector-map-editor",
         "state-inspector"
@@ -656,7 +656,7 @@
       "sampleTrack": false,
       "debugShowcase": false,
       "requiresService": false,
-      "toolHints": [
+      "toolsUsed": [
         "asset-pipeline-tool",
         "replay-visualizer",
         "performance-profiler"
@@ -681,7 +681,7 @@
       "sampleTrack": true,
       "debugShowcase": false,
       "requiresService": false,
-      "toolHints": [
+      "toolsUsed": [
         "replay-visualizer",
         "state-inspector",
         "performance-profiler"
@@ -706,7 +706,7 @@
       "sampleTrack": true,
       "debugShowcase": false,
       "requiresService": true,
-      "toolHints": [
+      "toolsUsed": [
         "state-inspector",
         "replay-visualizer",
         "performance-profiler"
@@ -731,7 +731,7 @@
       "sampleTrack": false,
       "debugShowcase": false,
       "requiresService": false,
-      "toolHints": [
+      "toolsUsed": [
         "vector-map-editor",
         "vector-asset-studio",
         "tile-map-editor"
@@ -756,7 +756,7 @@
       "sampleTrack": false,
       "debugShowcase": false,
       "requiresService": true,
-      "toolHints": [
+      "toolsUsed": [
         "state-inspector",
         "replay-visualizer",
         "performance-profiler"
@@ -781,7 +781,7 @@
       "sampleTrack": false,
       "debugShowcase": false,
       "requiresService": true,
-      "toolHints": [
+      "toolsUsed": [
         "state-inspector",
         "replay-visualizer",
         "performance-profiler"
@@ -806,7 +806,7 @@
       "sampleTrack": false,
       "debugShowcase": false,
       "requiresService": true,
-      "toolHints": [
+      "toolsUsed": [
         "state-inspector",
         "replay-visualizer",
         "performance-profiler"

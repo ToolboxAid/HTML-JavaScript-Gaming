@@ -116,7 +116,7 @@ function normalizeToken(value) {
   return normalizeTextParam(value).toLowerCase();
 }
 
-function normalizeToolHintList(value) {
+function normalizeToolsUsedList(value) {
   if (!Array.isArray(value)) {
     return [];
   }
@@ -328,7 +328,7 @@ async function readGameEntryById(gameId) {
     const tags = Array.isArray(entry.tags)
       ? entry.tags.map((value) => String(value || "").trim()).filter(Boolean)
       : [];
-    const toolHints = normalizeToolHintList(entry.toolHints);
+    const toolsUsed = normalizeToolsUsedList(entry.toolsUsed);
     return {
       id: String(entry.id || "").trim(),
       title: String(entry.title || entry.id || "Game").trim(),
@@ -339,7 +339,7 @@ async function readGameEntryById(gameId) {
       description: String(entry.description || "").trim(),
       classValues,
       tags,
-      toolHints,
+      toolsUsed,
       sampleTrack: entry.sampleTrack === true,
       debugShowcase: entry.debugShowcase === true,
       requiresService: entry.requiresService === true
@@ -464,11 +464,11 @@ function populateToolSelect(initialToolId) {
   updateSwitchMeta();
 }
 
-function applyToolHintsFilterForGame(gameEntry, preferredToolId = "") {
+function applyToolsUsedFilterForGame(gameEntry, preferredToolId = "") {
   if (!gameEntry) {
     toolIds = [...allToolIds];
   } else {
-    const allowed = normalizeToolHintList(gameEntry.toolHints)
+    const allowed = normalizeToolsUsedList(gameEntry.toolsUsed)
       .filter((toolId) => !!getToolHostEntryById(manifest, toolId));
     toolIds = [...allowed];
   }
@@ -578,14 +578,14 @@ function bindEvents() {
       void readGameEntryById(gameId).then((gameEntry) => {
         if (!gameEntry) {
           writeStatus(`Game "${gameId}" is not available for Workspace Manager launch.`);
-          applyToolHintsFilterForGame(null);
+          applyToolsUsedFilterForGame(null);
           return;
         }
         const requestedToolId = (() => {
           const url = new URL(window.location.href);
           return (url.searchParams.get("tool") || "").trim();
         })();
-        applyToolHintsFilterForGame(gameEntry, requestedToolId);
+        applyToolsUsedFilterForGame(gameEntry, requestedToolId);
         if (!requestedToolId && shouldMountGameFrameFromQuery()) {
           void mountGameFrame(gameEntry);
           return;
@@ -594,7 +594,7 @@ function bindEvents() {
       });
       return;
     }
-    applyToolHintsFilterForGame(null);
+    applyToolsUsedFilterForGame(null);
     const requestedToolId = readRequestedToolIdFromQuery();
     const toolId = requestedToolId || readInitialToolId();
     if (refs.toolSelect instanceof HTMLSelectElement) {
@@ -625,7 +625,7 @@ async function init() {
     const url = new URL(window.location.href);
     return (url.searchParams.get("tool") || "").trim();
   })();
-  applyToolHintsFilterForGame(initialGameEntry, rawRequestedToolId);
+  applyToolsUsedFilterForGame(initialGameEntry, rawRequestedToolId);
   bindEvents();
 
   const requestedToolId = readRequestedToolIdFromQuery();

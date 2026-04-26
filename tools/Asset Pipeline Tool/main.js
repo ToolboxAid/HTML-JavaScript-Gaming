@@ -315,7 +315,7 @@ function inferDomainFromCatalogKind(kind) {
   if (normalizedKind === "sprite") {
     return ASSET_PIPELINE_DOMAINS.sprites;
   }
-  if (normalizedKind === "tilemap" || normalizedKind === "tileset") {
+  if (normalizedKind === "tilemap") {
     return ASSET_PIPELINE_DOMAINS.tilemaps;
   }
   if (normalizedKind === "parallax" || normalizedKind === "background") {

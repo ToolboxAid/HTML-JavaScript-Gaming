@@ -85,8 +85,8 @@ function buildWorkspaceManagerHref(gameId) {
     : "/tools/Workspace%20Manager/index.html";
 }
 
-function buildToolTokens(toolHints, toolLabelMap) {
-  const deduped = [...new Set(asArray(toolHints).map((entry) => normalizeToken(entry)).filter(Boolean))];
+function buildToolTokens(toolsUsed, toolLabelMap) {
+  const deduped = [...new Set(asArray(toolsUsed).map((entry) => normalizeToken(entry)).filter(Boolean))];
   return deduped
     .filter((toolId) => toolId !== "workspace-manager")
     .map((toolId) => ({
@@ -150,7 +150,7 @@ function buildRows(metadata, pinnedSet, toolLabelMap) {
       const tags = [...new Set(asArray(game?.tags).map((value) => normalizeTag(value)).filter(Boolean))]
         .sort((a, b) => a.localeCompare(b, undefined, { sensitivity: "base" }));
       const href = normalizeGameHref(game?.href);
-      const toolTokens = buildToolTokens(game?.toolHints, toolLabelMap);
+      const toolTokens = buildToolTokens(game?.toolsUsed, toolLabelMap);
       return {
         id,
         title,

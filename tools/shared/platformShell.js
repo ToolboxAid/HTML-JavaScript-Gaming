@@ -589,7 +589,7 @@ function resolveAcceptedAssetKindsForTool(toolId = "") {
   const byTool = {
     "skin-editor": ["skin"],
     "sprite-editor": ["sprite"],
-    "tile-map-editor": ["tilemap", "tileset"],
+    "tile-map-editor": ["tilemap"],
     "parallax-editor": ["parallax"],
     "vector-asset-studio": ["vector"],
     "vector-map-editor": ["vector", "vector-map"],
@@ -637,7 +637,10 @@ function renderToolAssetBadge(toolId = "") {
 
   const asset = readSharedAssetHandoff();
   const compatibleAsset = isAssetCompatibleWithTool(toolId, asset) ? asset : null;
-  const assetLabel = compatibleAsset?.displayName || "none";
+  const missingAssetLabel = normalizedToolId === "skin-editor"
+    ? "select skin in Asset Browser"
+    : "none";
+  const assetLabel = compatibleAsset?.displayName || missingAssetLabel;
   const assetTitle = `Updated: ${escapeHtml(compatibleAsset?.selectedAt || "not-set")}`;
   const badgeClass = compatibleAsset ? " is-active" : "";
   return `

@@ -28,9 +28,9 @@
       "kind": "tilemap",
       "source": "workspace-manager"
     },
-    "tileset.vector-arcade.ui": {
+    "tilemap.vector-arcade.ui": {
       "path": "/games/vector-arcade-sample/assets/data/tilemaps/template-ui.tileset.json",
-      "kind": "tileset",
+      "kind": "tilemap",
       "source": "workspace-manager"
     },
     "vector.vector-arcade.player": {

@@ -133,8 +133,10 @@ async function loadSampleCountByToolId() {
       if (String(sample?.phase || "").trim() === "20") {
         continue;
       }
-      const toolHints = Array.isArray(sample?.toolHints) ? sample.toolHints : [];
-      for (const rawToolId of toolHints) {
+      const toolsUsed = Array.isArray(sample?.toolsUsed) && sample.toolsUsed.length > 0
+        ? sample.toolsUsed
+        : (Array.isArray(sample?.toolHints) ? sample.toolHints : []);
+      for (const rawToolId of toolsUsed) {
         const toolId = String(rawToolId || "").trim().toLowerCase();
         if (!toolId || toolId === "workspace-manager") {
           continue;

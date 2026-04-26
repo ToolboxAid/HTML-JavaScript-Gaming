@@ -193,7 +193,6 @@ function mapKindToCategory(kind) {
     case "sprite":
       return "Sprite Projects";
     case "tilemap":
-    case "tileset":
       return "Tilemaps";
     case "parallax":
     case "background":
@@ -403,7 +402,7 @@ function getAssetTypeFromCategory(category) {
     case "Sprite Projects":
       return "sprite";
     case "Tilemaps":
-      return "tileset";
+      return "tilemap";
     case "Parallax Scenes":
       return "background";
     case "Palettes":
