@@ -1,4 +1,4 @@
-import { getActiveToolRegistry, getToolById } from "../toolRegistry.js";
+import { getActiveToolRegistry } from "../toolRegistry.js";
 
 const ALLOWED_LAUNCH_SOURCES = Object.freeze(["samples", "games", "tools", "workspace", "internal"]);
 const ALLOWED_LAUNCH_TYPES = Object.freeze(["sample-to-tool", "game-to-workspace", "tool-internal", "workspace-internal"]);
@@ -49,7 +49,7 @@ function cloneLaunchDefinition(definition) {
 
 function createSampleToolLaunchDefinition(tool) {
   const safeToolId = normalizeText(tool?.id);
-  const displayName = normalizeText(tool?.displayName) || normalizeText(tool?.name) || safeToolId;
+  const displayName = normalizeText(tool?.displayName);
   const targetPath = buildTargetPathFromEntryPoint(tool?.entryPoint);
   return {
     launchId: safeToolId ? `tool.${safeToolId}` : "",
@@ -70,6 +70,15 @@ function createWorkspaceManagerGameLaunchDefinition() {
   };
 }
 
+function findActiveVisibleToolById(toolId) {
+  const normalizedToolId = normalizeToken(toolId);
+  if (!normalizedToolId) {
+    return null;
+  }
+  const activeVisibleTools = getActiveToolRegistry().filter((tool) => tool.visibleInToolsList === true);
+  return activeVisibleTools.find((tool) => normalizeToken(tool.id) === normalizedToolId) || null;
+}
+
 export function listToolLaunchIds() {
   const toolLaunchIds = getActiveToolRegistry()
     .filter((tool) => tool.visibleInToolsList === true)
@@ -85,9 +94,9 @@ export function getSampleToolLaunchDefinition(toolId) {
     return { launchDefinition: null, error: "toolId is required." };
   }
 
-  const tool = getToolById(normalizedToolId);
+  const tool = findActiveVisibleToolById(normalizedToolId);
   if (!tool) {
-    return { launchDefinition: null, error: `Tool "${normalizedToolId}" is not registered.` };
+    return { launchDefinition: null, error: `Tool "${normalizedToolId}" is not available in launch SSoT.` };
   }
 
   const launchDefinition = createSampleToolLaunchDefinition(tool);
@@ -145,4 +154,3 @@ export function validateLaunchDefinitionAccess(launchDefinition, launchSource, l
   }
   return "";
 }
-

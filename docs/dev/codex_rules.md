@@ -9,36 +9,41 @@ Codex must prefer the existing repo pattern over any new pattern, unless the PR 
 Read and obey:
 
 - docs/dev/specs/TOOL_LAUNCH_SSOT.md
-- docs/dev/reports/tool_launch_ssot_routing_validation.md if present
+- docs/dev/reports/tool_launch_ssot_routing_validation.md
+- docs/dev/reports/tool_launch_ssot_data_layer_validation.md
+
+If required reports are missing:
+- create blocked report
+- stop without implementation changes
 
 ## Required UI Labels
 
 Samples:
-- use `Open <tool>` for sample-to-tool launch actions
+- keep `Open <tool>`
 - do NOT use `Open with Workspace Manager`
 
 Games:
-- use `Open with Workspace Manager` for game-to-workspace launch actions
+- keep `Open with Workspace Manager`
 - do NOT use `Open <tool>`
 
 ## This PR
 
 Allowed:
-- create or normalize one launch SSoT data source
-- replace duplicated launch-path reads only where needed
+- remove legacy launch fallback residue only in touched launch flow
+- remove duplicated launch-path constants only when replaced by SSoT
 - validation report
 - roadmap status marker update only if execution-backed
 
 Forbidden:
 - broad cleanup
 - unrelated refactoring
-- new route systems beyond SSoT
+- second SSoT
+- new route systems beyond existing SSoT
 - fallback/default behavior
 - implementation outside touched launch path
 - start_of_day changes
 - roadmap text rewrite
 - changing required UI label semantics
-- second source of truth
 
 ## Anti-Patterns Forbidden
 
@@ -57,13 +62,3 @@ Forbidden:
 - new managers/factories/service layers unless already required by existing pattern
 - public API changes unless required by this PR
 - scope expansion
-
-## Required Failure Behavior
-
-If launch SSoT data is missing or invalid:
-- fail visibly
-- report the missing field
-- do not guess
-- do not select the first item
-- do not reuse memory
-- do not silently redirect
