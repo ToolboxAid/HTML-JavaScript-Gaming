@@ -1,10 +1,1 @@
-BUILD_PR_LEVEL_8_20_WORKSPACE_SCHEMA_AUDIT_AND_CLEANUP
-
-- Audited workspace schema boundary
-- Advanced Level 8 roadmap status
-- Confirmed sample concepts do not belong in workspace schema
-
-PR Details:
-- No runtime changes
-- No validators added
-- No start_of_day changes
+PR 8.21: Palette shared data audit
