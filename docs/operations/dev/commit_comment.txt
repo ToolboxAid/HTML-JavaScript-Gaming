@@ -1,12 +1,11 @@
-BUILD_PR_LEVEL_8_26_MANIFEST_SSOT_AND_UNUSED_JSON_AUDIT
+BUILD_PR_LEVEL_8_28_MANIFEST_SSOT_IMPLEMENTATION_ASTEROIDS_FIRST
 
-- Added user blocker list for manifest SSoT, game asset wiring, palette normalization, and unused JSON cleanup
-- Added audit requirements for tools.manifest.json vs workspace.asset-catalog.json
-- Added deletion candidate audit scope
-- Added palette opaque alpha normalization rule
+- Added Asteroids-first game manifest SSoT plan
+- Wired Asteroids palette/HUD/bezel requirements into manifest acceptance
+- Kept legacy catalogs intact for parity review
 
 PR Details:
-- Focused audit/cleanup PR
-- No runtime rewrite intended
+- First concrete SSoT implementation pattern
+- No broad all-games rollout
 - No validators
 - No start_of_day changes

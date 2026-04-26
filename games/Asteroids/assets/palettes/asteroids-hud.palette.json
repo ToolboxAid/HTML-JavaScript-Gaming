@@ -2,9 +2,9 @@
   "$schema": "../../../../tools/schemas/palette.schema.json",
   "schema": "html-js-gaming.palette",
   "version": 1,
-  "name": "Asteroids HUD Palette (Legacy Path)",
-  "source": "legacy-compatibility",
-  "sourceId": "asteroids-hud.palette.json",
+  "name": "Asteroids HUD Palette",
+  "source": "converted-hud",
+  "sourceId": "hud.json",
   "locked": true,
   "swatches": [
     {

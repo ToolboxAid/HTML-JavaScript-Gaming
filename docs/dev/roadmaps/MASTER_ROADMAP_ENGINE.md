@@ -880,5 +880,9 @@
 - [ ] Verify palette/shared data never embeds inside tool payload files.
 - [.] Verify workspace schema has no sample-only concepts.
 - [.] Manifest SSoT audit across game workspace catalogs/tool manifests is in progress.
+- [x] Asteroids-first `game.manifest.json` SSoT example implemented (palette + HUD typing + bezel override wiring).
 - [.] Unused JSON cleanup audit (tools + explicit deletion candidates) is in progress.
 - [.] Palette opaque alpha normalization (`#RRGGBBFF` -> `#RRGGBB`) is in progress.
+- [x] Code-defined asset extraction audit across games/samples is complete.
+- [.] Tool-owned JSON asset input wiring for extracted code-defined assets is in progress.
+- [.] Hardcoded color/shape removal plan is in progress.
