@@ -1,11 +1,4 @@
-BUILD_PR_LEVEL_8_28_MANIFEST_SSOT_IMPLEMENTATION_ASTEROIDS_FIRST
+PR 8.29B: Asteroids direct launch fix
 
-- Added Asteroids-first game manifest SSoT plan
-- Wired Asteroids palette/HUD/bezel requirements into manifest acceptance
-- Kept legacy catalogs intact for parity review
-
-PR Details:
-- First concrete SSoT implementation pattern
-- No broad all-games rollout
-- No validators
-- No start_of_day changes
+- Preview now launches game directly
+- Workspace Manager decoupled from preview
