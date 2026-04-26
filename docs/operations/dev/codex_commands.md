@@ -1,4 +1,4 @@
-# Codex Commands — BUILD_PR_LEVEL_20_17_HIDE_TOOL_BANNER_UNTIL_TOOL_SELECTED
+# Codex Commands — BUILD_PR_LEVEL_20_18_AUTO_MOUNT_TOOL_SELECTION_WORKSPACE_SURFACE
 
 ## Model
 GPT-5.4 or GPT-5.3-codex
@@ -10,30 +10,30 @@ High
 
 ```text
 Read docs/dev/codex_rules.md first.
-Read docs/dev/reports/workspace_manager_tool_selector_surface_validation.md if present.
+Read docs/dev/reports/workspace_manager_hide_tool_banner_validation.md if present.
 Read docs/dev/specs/TOOL_LAUNCH_SSOT.md if present.
 
-Execute BUILD_PR_LEVEL_20_17_HIDE_TOOL_BANNER_UNTIL_TOOL_SELECTED.
+Execute BUILD_PR_LEVEL_20_18_AUTO_MOUNT_TOOL_SELECTION_WORKSPACE_SURFACE.
 
 User UAT finding:
-- Detached Tool banner is still visible.
-- User wants the banner removed/hidden until a tool is selected.
-- Initial Workspace Manager page should show the Workspace Manager shell/status page with:
-  - Workspace Manager title
-  - First-Class Tools Surface copy
-  - Game Source
-  - workspace actions
-  - Workspace loaded status
-  - shared palette/assets status
+- Current flow forces the user to choose dropdown workspace action, click Select Tool, select the tool, then Mount.
+- User wants one dropdown above Editors.
+- Tools/cards below should be hidden/locked with an overlay until a tool is selected.
+- When a tool is selected, automatically do the next step: activate/mount that selected tool.
+- No separate Select Tool + Mount flow should be required for initial game-launched use.
 
 Goal:
-Hide/remove the detached Tool banner until explicit tool selection.
+Simplify Workspace Manager game-launched tool selection UX while preserving no-default/no-fallback rules.
 
-Required initial behavior:
-- URL tools/Workspace Manager/index.html?gameId=SolarSystem&mount=game renders visible Workspace Manager shell/status page.
-- Do not show Tool / Prev / Next / Mount / Unmount / Open Standalone / Optional JSON state / No tool mounted banner on initial load.
-- Do not mount or auto-select a tool on initial load.
-- Tool controls may appear only after explicit tool selection or explicit valid tool context.
+Required behavior:
+- URL tools/Workspace Manager/index.html?gameId=Bouncing-ball&mount=game renders visible Workspace Manager shell/status page.
+- Show one explicit tool dropdown above Editors.
+- Do not show detached top banner/tool controls.
+- Editors/tool cards below are locked/overlaid until tool selection.
+- Do not auto-select or mount a default tool on load.
+- When user selects a valid tool from dropdown, automatically activate/mount selected tool.
+- Remove/hide overlay after activation.
+- Do not require Select Tool button or Mount button for initial flow.
 - Keep game context loaded.
 - Keep external memory clear.
 - Keep visible diagnostics for invalid/missing context.
@@ -44,7 +44,7 @@ Forbidden:
 - restoring gameId || game
 - restoring toolIds[0]
 - auto-selecting first tool
-- mounting a tool on initial game launch
+- mounting a tool on initial game launch before user selection
 - broad Workspace Manager refactor
 - second SSoT
 - fallback/default behavior
@@ -56,12 +56,14 @@ Likely files:
 - Workspace Manager CSS only if needed
 
 Validation:
-Create docs/dev/reports/workspace_manager_hide_tool_banner_validation.md with:
+Create docs/dev/reports/workspace_manager_auto_mount_tool_selection_validation.md with:
 - changed files
-- proof initial game-launched page shows Workspace Manager shell/status
-- proof detached tool banner is not visible before tool selection
-- proof tool controls appear only after explicit tool selection
-- proof no first-tool/default selection restored
+- proof initial page shows one dropdown above Editors
+- proof detached top banner/tool controls are gone
+- proof Editors/tools are overlaid/disabled before tool selection
+- proof no default tool selected on load
+- proof selecting a tool from dropdown auto-mounts/activates it
+- proof separate Select Tool and Mount actions are not required for initial flow
 - proof toolIds[0] not restored
 - proof gameId || game not restored
 - proof valid gameId still loads game context
@@ -70,5 +72,5 @@ Create docs/dev/reports/workspace_manager_hide_tool_banner_validation.md with:
 - anti-pattern self-check
 
 Return ZIP at:
-tmp/BUILD_PR_LEVEL_20_17_HIDE_TOOL_BANNER_UNTIL_TOOL_SELECTED.zip
+tmp/BUILD_PR_LEVEL_20_18_AUTO_MOUNT_TOOL_SELECTION_WORKSPACE_SURFACE.zip
 ```

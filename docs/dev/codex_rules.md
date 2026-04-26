@@ -4,10 +4,10 @@ These rules OVERRIDE all other instructions.
 
 ## This PR
 
-Fix only the initial Workspace Manager tool-banner visibility.
+Fix only Workspace Manager game-launched tool selection UX.
 
 Allowed:
-- targeted Workspace Manager render/visibility/CSS changes
+- targeted Workspace Manager render/selection/CSS changes
 - validation report
 
 Forbidden:
@@ -26,13 +26,20 @@ Forbidden:
 On game-launched Workspace Manager open:
 - show Workspace Manager shell/status
 - show Game Source and workspace status
-- do not show detached Tool banner
+- show one tool dropdown above Editors
+- show Editors locked/overlaid until selection
 - do not mount a tool
 - do not auto-select a tool
 
-## Tool Controls Visibility Rule
+## Required Selection Behavior
 
-Tool controls may appear only after explicit tool selection or explicit valid tool context.
+When the user selects a valid tool from the dropdown:
+- validate against registry/SSoT
+- automatically activate/mount selected tool
+- clear/hide overlay
+- update status
+
+No separate Select Tool or Mount click may be required for the initial flow.
 
 ## Forbidden Restorations
 

@@ -83,9 +83,6 @@ async function readGameAssetCatalog(assetCatalogPath) {
 }
 
 const refs = {
-  actionToolSelect: document.querySelector("[data-tool-host-action-select]"),
-  actionApplyButton: document.querySelector("[data-tool-host-action-apply]"),
-  controlsPanel: document.querySelector("[data-tool-host-controls-panel]"),
   toolSelect: document.querySelector("[data-tool-host-select]"),
   stateInput: document.querySelector("[data-tool-host-state-input]"),
   mountButton: document.querySelector("[data-tool-host-mount]"),
@@ -101,6 +98,7 @@ const refs = {
   diagnosticPanel: document.querySelector("[data-tool-host-diagnostic]"),
   diagnosticText: document.querySelector("[data-tool-host-diagnostic-text]"),
   currentLabel: document.querySelector("[data-tool-host-current-label]"),
+  editorOverlay: document.querySelector("[data-tool-host-editor-overlay]"),
   mountContainer: document.querySelector("[data-tool-host-mount-container]")
 };
 
@@ -219,9 +217,13 @@ function writeSharedStatus(text) {
   }
 }
 
-function setControlsPanelVisible(isVisible) {
-  if (refs.controlsPanel instanceof HTMLElement) {
-    refs.controlsPanel.hidden = !isVisible;
+function setEditorOverlayLocked(isLocked, message = "") {
+  if (refs.editorOverlay instanceof HTMLElement) {
+    refs.editorOverlay.hidden = !isLocked;
+    const normalizedMessage = normalizeTextParam(message);
+    if (normalizedMessage) {
+      refs.editorOverlay.textContent = normalizedMessage;
+    }
   }
 }
 
@@ -298,19 +300,6 @@ function updateStandaloneHref(toolId) {
   refs.standaloneLink.setAttribute("aria-disabled", enabled ? "false" : "true");
   refs.standaloneLink.tabIndex = enabled ? 0 : -1;
   refs.standaloneLink.classList.toggle("is-disabled", !enabled);
-}
-
-function populateActionToolSelect(selectedToolId = "") {
-  if (!(refs.actionToolSelect instanceof HTMLSelectElement)) {
-    return;
-  }
-  const options = toolIds
-    .map((toolId) => getToolHostEntryById(manifest, toolId))
-    .filter(Boolean)
-    .map((tool) => `<option value="${tool.id}">${tool.displayName}</option>`)
-    .join("");
-  refs.actionToolSelect.innerHTML = `<option value="">Select tool...</option>${options}`;
-  refs.actionToolSelect.value = toolIds.includes(selectedToolId) ? selectedToolId : "";
 }
 
 function writeQueryToolId(toolId, replace = false) {
@@ -519,11 +508,12 @@ function populateToolSelect(initialToolId) {
     return;
   }
 
-  refs.toolSelect.innerHTML = toolIds
+  const options = toolIds
     .map((toolId) => getToolHostEntryById(manifest, toolId))
     .filter(Boolean)
     .map((tool) => `<option value="${tool.id}">${tool.displayName}</option>`)
     .join("");
+  refs.toolSelect.innerHTML = `<option value="">Select tool...</option>${options}`;
   refs.toolSelect.value = toolIds.includes(initialToolId) ? initialToolId : "";
   updateSwitchMeta();
 }
@@ -538,7 +528,6 @@ function applyToolsUsedFilterForGame(gameEntry, preferredToolId = "") {
   }
   const initialToolId = toolIds.includes(preferredToolId) ? preferredToolId : "";
   populateToolSelect(initialToolId);
-  populateActionToolSelect(initialToolId);
   updateStandaloneHref(initialToolId);
   syncControlState();
 }
@@ -550,12 +539,14 @@ const runtime = createToolHostRuntime({
     writeStatus(message);
   },
   onMounted(tool) {
+    setEditorOverlayLocked(false);
     setCurrentLabel(`Mounted: ${tool.displayName}`);
     writeWorkspaceLoadedStatus(`Workspace loaded status: mounted tool ${tool.displayName}.`);
     writeSharedStatus("Shared palette/assets status: tool context active.");
     syncControlState();
   },
   onUnmounted() {
+    setEditorOverlayLocked(true, "Editors are locked until a tool is selected from Workspace actions.");
     setCurrentLabel("No tool mounted.");
     writeSharedStatus("Shared palette/assets status: waiting for tool selection.");
     syncControlState();
@@ -563,11 +554,11 @@ const runtime = createToolHostRuntime({
 });
 
 function mountSelectedTool(source = "manual") {
-  setControlsPanelVisible(true);
   unmountGameFrame();
   const toolId = readSelectedToolId();
   if (!toolId) {
-    writeStatus("Select a tool to mount.");
+    setEditorOverlayLocked(true, "Editors are locked until a tool is selected from Workspace actions.");
+    writeStatus("Select a tool from Workspace actions.");
     writeWorkspaceLoadedStatus("Workspace loaded status: tool selected required before mount.");
     return;
   }
@@ -586,6 +577,7 @@ function mountSelectedTool(source = "manual") {
   updateSwitchMeta();
   updateStandaloneHref(toolId);
   clearDiagnostic();
+  setEditorOverlayLocked(true, `Activating ${toolId}...`);
   writeWorkspaceLoadedStatus(`Workspace loaded status: mounting tool ${toolId}...`);
   writeQueryToolId(toolId, source === "init");
   const previousMount = runtime.getCurrentMount();
@@ -604,35 +596,7 @@ function mountSelectedTool(source = "manual") {
   syncControlState();
 }
 
-function applyActionToolSelection() {
-  if (!(refs.actionToolSelect instanceof HTMLSelectElement)) {
-    return;
-  }
-  const toolId = normalizeTextParam(refs.actionToolSelect.value);
-  if (!toolId || !toolIds.includes(toolId) || !getToolHostEntryById(manifest, toolId)) {
-    writeStatus("Select a valid tool from Workspace actions.");
-    writeWorkspaceLoadedStatus("Workspace loaded status: waiting for explicit tool selection.");
-    return;
-  }
-  if (refs.toolSelect instanceof HTMLSelectElement) {
-    refs.toolSelect.value = toolId;
-  }
-  setControlsPanelVisible(true);
-  updateSwitchMeta();
-  updateStandaloneHref(toolId);
-  syncControlState();
-  writeStatus(`Tool selected: ${toolId}. Click Mount to load.`);
-  writeWorkspaceLoadedStatus(`Workspace loaded status: tool ${toolId} selected.`);
-  writeSharedStatus("Shared palette/assets status: tool selected; mount pending.");
-}
-
 function bindEvents() {
-  if (refs.actionApplyButton instanceof HTMLButtonElement) {
-    refs.actionApplyButton.addEventListener("click", () => {
-      applyActionToolSelection();
-    });
-  }
-
   if (refs.mountButton instanceof HTMLButtonElement) {
     refs.mountButton.addEventListener("click", () => {
       mountSelectedTool("button");
@@ -677,7 +641,7 @@ function bindEvents() {
     const gameLaunchRequested = shouldMountGameFrameFromQuery();
     const gameId = readInitialGameId();
     if (gameLaunchRequested && !gameId) {
-      setControlsPanelVisible(false);
+      setEditorOverlayLocked(true, "Editors are locked until a valid game context and tool selection are provided.");
       writeGameSource("Game Source: missing gameId");
       writeWorkspaceLoadedStatus("Workspace loaded status: game launch context missing gameId.");
       writeSharedStatus("Shared palette/assets status: unavailable due to invalid context.");
@@ -688,7 +652,7 @@ function bindEvents() {
     if (gameId) {
       void readGameEntryById(gameId).then((gameEntry) => {
         if (!gameEntry) {
-          setControlsPanelVisible(false);
+          setEditorOverlayLocked(true, "Editors are locked until a valid game context and tool selection are provided.");
           writeGameSource(`Game Source: invalid (${gameId})`);
           writeWorkspaceLoadedStatus(`Workspace loaded status: game context "${gameId}" is invalid.`);
           writeSharedStatus("Shared palette/assets status: unavailable due to invalid context.");
@@ -705,14 +669,14 @@ function bindEvents() {
         })();
         applyToolsUsedFilterForGame(gameEntry, requestedToolId);
         if (!requestedToolId) {
-          setControlsPanelVisible(false);
+          setEditorOverlayLocked(true, "Editors are locked until a tool is selected from Workspace actions.");
           runtime.unmountCurrentTool("popstate");
           unmountGameFrame();
           writeStatus("Select a tool from Workspace actions.");
           syncControlState();
           return;
         }
-        setControlsPanelVisible(true);
+        setEditorOverlayLocked(true, `Activating ${requestedToolId}...`);
         mountSelectedTool("popstate");
       });
       return;
@@ -729,10 +693,10 @@ function bindEvents() {
     updateSwitchMeta();
     updateStandaloneHref(toolId);
     if (toolId) {
-      setControlsPanelVisible(true);
+      setEditorOverlayLocked(true, `Activating ${toolId}...`);
       mountSelectedTool("popstate");
     } else {
-      setControlsPanelVisible(false);
+      setEditorOverlayLocked(true, "Editors are locked until a tool is selected from Workspace actions.");
       writeStatus("Select a tool from Workspace actions.");
       syncControlState();
     }
@@ -746,7 +710,7 @@ function bindEvents() {
 
 async function init() {
   clearDiagnostic();
-  setControlsPanelVisible(false);
+  setEditorOverlayLocked(true, "Editors are locked until a tool is selected from Workspace actions.");
   writeGameSource("Game Source: none");
   writeWorkspaceLoadedStatus("Workspace loaded status: loading workspace context.");
   writeSharedStatus("Shared palette/assets status: waiting for explicit tool selection.");
@@ -804,11 +768,11 @@ async function init() {
     return;
   }
   if (!requestedToolId) {
-    setControlsPanelVisible(false);
+    setEditorOverlayLocked(true, "Editors are locked until a tool is selected from Workspace actions.");
     writeStatus("Select a tool from Workspace actions.");
     return;
   }
-  setControlsPanelVisible(true);
+  setEditorOverlayLocked(true, `Activating ${requestedToolId}...`);
   mountSelectedTool("init");
 }
 

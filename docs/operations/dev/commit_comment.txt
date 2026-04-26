@@ -1,9 +1,9 @@
-Hide Workspace Manager tool banner until selection
+Auto-mount selected Workspace Manager tool
 
 PR Details:
-- Hides detached Tool banner on initial game-launched Workspace Manager load.
-- Shows Workspace Manager shell/status surface first.
-- Shows tool controls only after explicit tool selection.
-- Preserves explicit gameId context and memory clear behavior.
+- Places one tool dropdown above Editors.
+- Locks/overlays Editors until explicit tool selection.
+- Automatically mounts/activates the selected tool from the dropdown.
+- Removes the extra Select Tool + Mount requirement from initial game-launched flow.
 - Does not restore default/fallback tool selection.
 - Leaves sample Open <tool> behavior untouched.
