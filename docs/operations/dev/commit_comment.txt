@@ -1,7 +1,8 @@
-Normalize tool and workspace tile launch routing through SSoT
+Recovery audit from 20.1 baseline
 
-- Route sample tool tiles to tools/<tool>/index.html
-- Route game tiles through tools/Workspace Manager/index.html
-- Clear external launch memory before loading tool/workspace
-- Remove default/fallback tool launch behavior
-- Add validation report for UAT launch flow
+PR Details:
+- Uses 3f7e9df / BUILD_PR_LEVEL_20_1_PHASE20_TOOL_PRESET_INTEGRATION as the last known assistant-produced baseline.
+- Audits all later changes.
+- Documents anti-patterns and junk code.
+- Produces reset-vs-surgical-cleanup decision.
+- Forbids destructive reset in this PR.
