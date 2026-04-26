@@ -38,6 +38,5 @@
         }
       }
     }
-  },
-  "palette": "./sample.palette.json"
+  }
 }

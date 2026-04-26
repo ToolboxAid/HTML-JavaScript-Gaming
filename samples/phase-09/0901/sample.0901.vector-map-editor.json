@@ -133,6 +133,5 @@
         }
       ]
     }
-  },
-  "palette": "./sample.palette.json"
+  }
 }

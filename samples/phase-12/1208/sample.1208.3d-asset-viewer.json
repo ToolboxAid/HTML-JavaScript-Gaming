@@ -43,6 +43,5 @@
         "sourceToolId": "vector-asset-studio"
       }
     }
-  },
-  "palette": "./sample.palette.json"
+  }
 }

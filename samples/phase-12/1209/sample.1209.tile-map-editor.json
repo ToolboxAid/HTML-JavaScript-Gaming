@@ -4,6 +4,5 @@
   "version": "1",
   "config": {
     "tileMapDocumentPath": "/samples/phase-12/1209/sample-1209-tile-map-editor-document.json"
-  },
-  "palette": "./sample.palette.json"
+  }
 }

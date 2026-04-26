@@ -51,6 +51,5 @@
         }
       ]
     }
-  },
-  "palette": "./sample.palette.json"
+  }
 }

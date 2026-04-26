@@ -1,6 +1,5 @@
-PR 8.11: Enforce explicit sample palette linkage
+PR 8.12: Decouple tool payloads from palette references
 
-- Required sample tool payloads to reference sample.palette.json when present
-- Preserved one-palette-per-sample-folder rule
-- Kept palettes separate from tool payload files
-- Avoided runtime and start_of_day changes
+- Removed palette fields from sample tool payload files
+- Preserved separate sample.palette.json objects
+- Kept tool payload schema consistent with workspace tools[] entries
