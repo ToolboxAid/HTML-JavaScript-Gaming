@@ -4,37 +4,56 @@ These rules OVERRIDE all other instructions.
 
 ## This PR
 
+Fix only the Workspace Manager initial view for game-launched context.
+
 Allowed:
-- targeted Workspace Manager fallback removal
-- restore missing docs/dev/specs/TOOL_LAUNCH_SSOT.md
+- targeted Workspace Manager launch/view selection edits
 - validation report
 
 Forbidden:
 - broad cleanup
 - unrelated refactoring
+- changes to samples behavior
+- changes to required labels
 - new route systems
 - second SSoT
 - fallback/default behavior
 - start_of_day changes
 - roadmap text rewrite outside status markers
-- changing labels
 
-## Exact Removals Required
+## Required UI Labels
 
-Remove Workspace Manager launch residues:
+Samples:
+- must remain `Open <tool>`
 
-- `toolIds[0]` first-item/default tool selection in the launch path
-- `gameId || game` legacy query fallback in the launch path
+Games:
+- must remain `Open with Workspace Manager`
 
-## Required Failure Behavior
+## Required Game Launch Behavior
 
-If `gameId` is missing or invalid:
-- fail visibly
-- report missing/invalid `gameId`
-- do not fallback to `game`
-- do not select first tool
-- do not reuse memory
-- do not silently redirect
+For:
+
+```text
+tools/Workspace Manager/index.html?gameId=<id>&mount=game
+```
+
+`mount=game` means the source/context is a game.
+
+It must not force the initial primary view to be the hosted game surface.
+
+Workspace Manager must show the tools/workspace surface for the explicit game context.
+
+## Forbidden Restorations
+
+Do not restore:
+
+- `gameId || game`
+- `toolIds[0]`
+- first-item selection
+- default tool
+- default workspace
+- fallback route
+- stale memory reuse
 
 ## Anti-Patterns Forbidden
 
@@ -47,7 +66,7 @@ If `gameId` is missing or invalid:
 - duplicated launch paths
 - silent redirects
 - broad truthy/falsy behavior changes
-- magic strings outside SSoT/config pattern
+- magic strings outside existing SSoT/config pattern
 - duplicate event listeners
 - globals
 - new managers/factories/service layers

@@ -1,8 +1,9 @@
-Remove Workspace Manager default and query fallbacks
+Show tools surface on game-launched Workspace Manager open
 
 PR Details:
-- Removes first-tool default selection from Workspace Manager launch flow.
-- Removes legacy gameId || game query fallback.
-- Requires explicit gameId for games/index.html Workspace Manager launch path.
-- Restores docs/dev/specs/TOOL_LAUNCH_SSOT.md if missing.
-- Adds validation report for the recovery gate blocker.
+- Fixes Workspace Manager initial view for games/index.html Open with Workspace Manager.
+- Keeps explicit gameId context.
+- Keeps memory clear behavior.
+- Prevents mount=game from immediately showing the hosted game surface.
+- Does not restore fallback/default launch behavior.
+- Leaves sample Open <tool> behavior untouched.

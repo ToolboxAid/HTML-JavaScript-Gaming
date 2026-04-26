@@ -587,8 +587,11 @@ function bindEvents() {
           return (url.searchParams.get("tool") || "").trim();
         })();
         applyToolsUsedFilterForGame(gameEntry, requestedToolId);
-        if (!requestedToolId && gameLaunchRequested) {
-          void mountGameFrame(gameEntry);
+        if (!requestedToolId) {
+          runtime.unmountCurrentTool("popstate");
+          unmountGameFrame();
+          writeStatus("Select a tool to mount.");
+          syncControlState();
           return;
         }
         mountSelectedTool("popstate");
@@ -647,11 +650,6 @@ async function init() {
   bindEvents();
 
   const requestedToolId = readRequestedToolIdFromQuery();
-  if (initialGameEntry && !requestedToolId && gameLaunchRequested) {
-    await mountGameFrame(initialGameEntry);
-    return;
-  }
-
   if (toolIds.length === 0) {
     writeStatus("No active tools are currently available for Workspace Manager.");
     return;
