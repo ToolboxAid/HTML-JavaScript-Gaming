@@ -1,5 +1,5 @@
-PR 8.6: Manifest entity generalization
+PR 8.7: Workspace schema aligned to id/type structure
 
-- Replaced sampleId with id
-- Added type field
-- Enabled support for games and future entities
+- Removed sampleId from schema
+- Added id + type requirements
+- Enforced strict entity shape

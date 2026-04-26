@@ -2,10 +2,11 @@ MODEL: GPT-5.3-codex
 REASONING: medium
 
 TASK:
-- Replace sampleId → id in workspace.manifest.json
-- Add type field:
-  - existing entries → type: "sample"
-- Ensure uniqueness of id
+- Update workspace.schema.json:
+  - Replace sampleId usage with id
+  - Add type field requirement
+  - Ensure entity array structure matches manifest
+- Ensure no additionalProperties allowed
 - Do NOT modify runtime
 - Do NOT add validators
 - Do NOT modify start_of_day

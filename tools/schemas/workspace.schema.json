@@ -1,17 +1,61 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "workspace.schema.json",
+  "$id": "tools/schemas/workspace.schema.json",
   "type": "object",
-  "required": ["version", "tools", "palettes"],
+  "required": ["documentKind", "schema", "version", "samples"],
+  "additionalProperties": false,
   "properties": {
-    "version": { "type": "string" },
-    "tools": {
-      "type": "array",
-      "items": { "type": "string" }
+    "documentKind": {
+      "type": "string",
+      "const": "workspace-manifest"
     },
-    "palettes": {
+    "schema": {
+      "type": "string",
+      "minLength": 1
+    },
+    "version": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "samples": {
       "type": "array",
-      "items": { "$ref": "palette.schema.json" }
+      "uniqueItems": true,
+      "items": {
+        "type": "object",
+        "required": ["id", "type", "tool"],
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "type": {
+            "type": "string",
+            "minLength": 1
+          },
+          "phase": {
+            "type": "string",
+            "minLength": 1
+          },
+          "tool": {
+            "type": "string",
+            "minLength": 1
+          },
+          "tools": {
+            "type": "array",
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "palette": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "description": "id must be unique across samples."
+      }
     }
   }
 }
