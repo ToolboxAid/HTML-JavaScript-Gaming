@@ -233,20 +233,14 @@ function renderCard(row, instanceKey = "main") {
   const article = document.createElement("article");
   article.className = "card-link game-card";
   article.dataset.gameId = row.id;
-  if (row.workspaceHref) {
-    article.dataset.workspaceHref = row.workspaceHref;
-  }
 
-  const launchHref = row.workspaceHref || "";
   const previewLaunchHref = row.href || "";
   const previewHtml = row.preview
     ? `<a class="game-preview-link" href="${escapeHtml(previewLaunchHref || "#")}" ${previewLaunchHref ? "" : "aria-disabled=\"true\""}><img class="game-thumb" loading="lazy" decoding="async" alt="${escapeHtml(row.title)} thumbnail" src="${escapeHtml(row.preview)}"></a>`
     : `<span class="game-preview-link game-preview-missing">No Preview</span>`;
 
   const pinInputId = `game-pin-${escapeHtml(row.id)}-${escapeHtml(instanceKey)}`;
-  const titleLabel = launchHref
-    ? `<a class="game-title-link" data-workspace-launch-href="${escapeHtml(launchHref)}" href="${escapeHtml(launchHref)}">${escapeHtml(row.title)}</a>`
-    : `${escapeHtml(row.title)}`;
+  const titleLabel = `${escapeHtml(row.title)}`;
   const titleHtml = `<h3 class="game-title-row"><input id="${pinInputId}" type="checkbox" class="pin-toggle" data-game-pin="${escapeHtml(row.id)}" ${row.pinned ? "checked" : ""}><label for="${pinInputId}" class="pin-label" title="${row.pinned ? "Unpin" : "Pin"}" aria-label="${row.pinned ? "Unpin game" : "Pin game"}"><span class="pin-icon" aria-hidden="true"></span></label>${titleLabel}</h3>`;
 
   const badges = [
@@ -402,28 +396,6 @@ export async function initGamesIndex() {
     renderPinned(pinnedContainer, model.rows.filter((row) => row.pinned));
   };
 
-  const handleCardLaunch = (event) => {
-    if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) {
-      return;
-    }
-    const target = event.target;
-    if (!(target instanceof Element)) {
-      return;
-    }
-    if (target.closest("a, button, input, label, select, textarea, summary")) {
-      return;
-    }
-    const card = target.closest(".game-card[data-workspace-href]");
-    if (!(card instanceof HTMLElement)) {
-      return;
-    }
-    const workspaceHref = normalize(card.dataset.workspaceHref);
-    if (!workspaceHref) {
-      return;
-    }
-    launchWithExternalToolWorkspaceReset(workspaceHref);
-  };
-
   const handleWorkspaceLaunchClick = (event) => {
     if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) {
       return;
@@ -469,8 +441,6 @@ export async function initGamesIndex() {
   searchInput.addEventListener("input", apply);
   container.addEventListener("click", handleWorkspaceLaunchClick);
   pinnedContainer.addEventListener("click", handleWorkspaceLaunchClick);
-  container.addEventListener("click", handleCardLaunch);
-  pinnedContainer.addEventListener("click", handleCardLaunch);
   container.addEventListener("change", handlePin);
   pinnedContainer.addEventListener("change", handlePin);
   apply();

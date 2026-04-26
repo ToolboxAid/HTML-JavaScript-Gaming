@@ -10,6 +10,16 @@ Read and obey:
 
 - docs/dev/specs/TOOL_LAUNCH_SSOT.md
 
+## Required UI Labels
+
+Samples:
+- use `Open <tool>` for sample-to-tool launch actions
+- do NOT use `Open with Workspace Manager`
+
+Games:
+- use `Open with Workspace Manager` for game-to-workspace launch actions
+- do NOT use `Open <tool>`
+
 ## This PR
 
 Allowed:
@@ -25,6 +35,7 @@ Forbidden:
 - implementation outside touched launch path
 - start_of_day changes
 - roadmap text rewrite
+- changing required UI label semantics
 
 ## Anti-Patterns Forbidden
 

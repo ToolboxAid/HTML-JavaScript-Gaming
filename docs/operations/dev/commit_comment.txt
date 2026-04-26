@@ -1,8 +1,8 @@
-Implement tool launch SSoT routing
+Implement tool launch SSoT routing with exact launch labels
 
 PR Details:
-- Routes sample-launched tools through explicit tools/<tool>/index.html targets.
-- Routes game workspace flows through tools/Workspace Manager/index.html.
+- Routes sample-launched tools through explicit tools/<tool>/index.html targets using Open <tool>.
+- Routes game workspace flows through tools/Workspace Manager/index.html using Open with Workspace Manager.
 - Clears launch memory for external sample/game launches.
 - Removes default/fallback behavior from touched launch flow.
-- Adds validation report for SSoT routing.
+- Adds validation report for SSoT routing and launch labels.
