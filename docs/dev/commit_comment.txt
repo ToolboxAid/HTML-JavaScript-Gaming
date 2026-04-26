@@ -1,1 +1,6 @@
-Enforce extended anti-pattern rules in codex_rules.md
+Schema-backed tool/workspace manifest boundary cleanup
+
+- Adds explicit schema contracts for tool/sample/workspace payloads
+- Locks sample palette behavior to named palettes
+- Keeps workspace-owned assets inside workspace.manifest
+- Gates valid UI actions by loaded context

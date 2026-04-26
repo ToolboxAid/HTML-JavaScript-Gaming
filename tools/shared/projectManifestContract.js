@@ -6,11 +6,18 @@ import {
   PROJECT_TOOL_INTEGRATION_VERSION,
   normalizeToolStateForProjectManifest
 } from "./projectToolIntegration.js";
+import {
+  WORKSPACE_DOCUMENT_KIND,
+  WORKSPACE_EXPORT_ARTIFACT_SCHEMA,
+  WORKSPACE_MANIFEST_SCHEMA,
+  WORKSPACE_MANIFEST_VERSION,
+  validateWorkspaceManifestSchema
+} from "./workspaceManifest.schema.js";
 
-export const PROJECT_MANIFEST_SCHEMA = "html-js-gaming.project";
-export const PROJECT_MANIFEST_VERSION = 1;
+export const PROJECT_MANIFEST_SCHEMA = WORKSPACE_MANIFEST_SCHEMA;
+export const PROJECT_MANIFEST_VERSION = WORKSPACE_MANIFEST_VERSION;
 export const ACTIVE_PROJECT_STORAGE_KEY = "toolboxaid.projectSystem.activeManifest";
-export const PROJECT_DOCUMENT_KIND = "workspace-manifest";
+export const PROJECT_DOCUMENT_KIND = WORKSPACE_DOCUMENT_KIND;
 
 const sanitizeString = safeString;
 
@@ -77,6 +84,21 @@ function sanitizeSharedLibrary(rawSharedLibrary) {
   };
 }
 
+function sanitizeExportArtifacts(rawExportArtifacts) {
+  if (!Array.isArray(rawExportArtifacts)) {
+    return [];
+  }
+  return rawExportArtifacts
+    .filter((entry) => entry && typeof entry === "object")
+    .map((entry) => ({
+      schema: WORKSPACE_EXPORT_ARTIFACT_SCHEMA,
+      kind: sanitizeString(entry.kind, "png").toLowerCase(),
+      path: sanitizeString(entry.path, ""),
+      sourceToolId: sanitizeString(entry.sourceToolId, ""),
+      createdAt: sanitizeString(entry.createdAt, "")
+    }));
+}
+
 function createProjectId() {
   const timestamp = new Date().toISOString().replace(/[-:.TZ]/g, "").slice(0, 14);
   const randomSuffix = Math.random().toString(36).slice(2, 8);
@@ -122,6 +144,7 @@ export function createEmptyProjectManifest(options = {}) {
       lastOpenTool: toolId,
       notes: sanitizeString(options.workspace?.notes, "")
     },
+    exportArtifacts: sanitizeExportArtifacts(options.exportArtifacts),
     migration: {
       applied: [],
       sourceVersion: PROJECT_MANIFEST_VERSION
@@ -147,7 +170,8 @@ export function migrateProjectManifest(rawManifest) {
     sharedReferences: rawManifest.sharedReferences,
     sharedLibrary: rawManifest.sharedLibrary,
     tools: rawManifest.tools,
-    workspace: rawManifest.workspace
+    workspace: rawManifest.workspace,
+    exportArtifacts: rawManifest.exportArtifacts
   });
 
   migrated.migration = {
@@ -179,31 +203,14 @@ export function migrateProjectManifest(rawManifest) {
 export function validateProjectManifest(rawManifest) {
   const issues = [];
   const warnings = [];
-  const manifest = migrateProjectManifest(rawManifest);
+  let manifest = migrateProjectManifest(rawManifest);
 
-  if (manifest.schema !== PROJECT_MANIFEST_SCHEMA) {
-    issues.push(`Expected schema ${PROJECT_MANIFEST_SCHEMA} but received ${manifest.schema || "unknown"}.`);
-  }
-
-  if (sanitizeString(manifest.documentKind, "") !== PROJECT_DOCUMENT_KIND) {
-    warnings.push(`Project documentKind expected ${PROJECT_DOCUMENT_KIND} but received ${manifest.documentKind || "unknown"}.`);
-  }
-
-  if (!Number.isInteger(manifest.version) || manifest.version < 1) {
-    issues.push("Project manifest version must be a positive integer.");
-  }
-
-  if (!sanitizeString(manifest.id, "")) {
-    issues.push("Project manifest id is required.");
-  }
-
-  if (!sanitizeString(manifest.name, "")) {
-    issues.push("Project manifest name is required.");
-  }
-
-  if (!manifest.tools || typeof manifest.tools !== "object") {
-    issues.push("Project manifest tools block is required.");
-  }
+  const workspaceValidation = validateWorkspaceManifestSchema(manifest, {
+    requireSchema: true
+  });
+  manifest = workspaceValidation.manifest;
+  issues.push(...workspaceValidation.issues);
+  warnings.push(...workspaceValidation.warnings);
 
   if (!manifest.toolIntegration || typeof manifest.toolIntegration !== "object") {
     issues.push("Project manifest toolIntegration block is required.");

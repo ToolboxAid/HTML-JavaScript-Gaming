@@ -96,6 +96,7 @@ import { run as runAssetUsageIntegration } from './tools/AssetUsageIntegration.t
 import { run as runAssetRemediationSystem } from './tools/AssetRemediationSystem.test.mjs';
 import { run as runToolBoundaryEnforcement } from './tools/ToolBoundaryEnforcement.test.mjs';
 import { run as runProjectToolDataContracts } from './tools/ProjectToolDataContracts.test.mjs';
+import { run as runToolWorkspaceSchemaManifestBoundaries } from './tools/ToolWorkspaceSchemaManifestBoundaries.test.mjs';
 import { run as runAssetPipelineTooling } from './tools/AssetPipelineTooling.test.mjs';
 import { run as runAssetOwnershipStrategyCloseout } from './tools/AssetOwnershipStrategyCloseout.test.mjs';
 import { run as runAssetErrorHandlingStandard } from './tools/AssetErrorHandlingStandard.test.mjs';
@@ -234,6 +235,7 @@ const tests = [
     ['AssetRemediationSystem', runAssetRemediationSystem],
     ['ToolBoundaryEnforcement', runToolBoundaryEnforcement],
     ['ProjectToolDataContracts', runProjectToolDataContracts],
+    ['ToolWorkspaceSchemaManifestBoundaries', runToolWorkspaceSchemaManifestBoundaries],
     ['AssetPipelineTooling', runAssetPipelineTooling],
     ['AssetOwnershipStrategyCloseout', runAssetOwnershipStrategyCloseout],
     ['AssetErrorHandlingStandard', runAssetErrorHandlingStandard],

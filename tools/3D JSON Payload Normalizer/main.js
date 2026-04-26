@@ -1,5 +1,10 @@
 import { safeParseJson, toPrettyJson } from "../shared/debugInspectorData.js";
 import { registerToolBootContract } from "../shared/toolBootContract.js";
+import {
+  createDefaultMapPayload,
+  normalizeMapPayload,
+  validateMapPayload
+} from "./mapPayload.schema.js";
 
 const refs = {
   normalizeButton: document.getElementById("normalize3dMapButton"),
@@ -44,43 +49,9 @@ function setStatus(message) {
   }
 }
 
-function sanitizeNumber(value, fallback = 0) {
-  const numeric = Number(value);
-  return Number.isFinite(numeric) ? numeric : fallback;
-}
-
-function normalizePoint(rawPoint, index) {
-  const point = rawPoint && typeof rawPoint === "object" ? rawPoint : {};
-  return {
-    id: typeof point.id === "string" && point.id.trim() ? point.id.trim() : `p${index + 1}`,
-    x: sanitizeNumber(point.x),
-    y: sanitizeNumber(point.y),
-    z: sanitizeNumber(point.z)
-  };
-}
-
-function normalizeSegment(rawSegment, fallbackStart, fallbackEnd) {
-  const segment = rawSegment && typeof rawSegment === "object" ? rawSegment : {};
-  return {
-    from: typeof segment.from === "string" && segment.from.trim() ? segment.from.trim() : fallbackStart,
-    to: typeof segment.to === "string" && segment.to.trim() ? segment.to.trim() : fallbackEnd
-  };
-}
-
 function buildDefaultPayload() {
-  return {
-    schema: "tools.3d-json-payload-normalizer.document/1",
-    mapId: "map-3d-baseline",
-    points: [
-      { id: "p1", x: -10, y: 0, z: 5 },
-      { id: "p2", x: 10, y: 0, z: 5 },
-      { id: "p3", x: 0, y: 0, z: -8 }
-    ],
-    segments: [
-      { from: "p1", to: "p2" },
-      { from: "p2", to: "p3" }
-    ]
-  };
+  // Deprecated compatibility shim for older call-sites.
+  return createDefaultMapPayload();
 }
 
 function extractMapPayloadFromPreset(rawPreset) {
@@ -91,7 +62,7 @@ function extractMapPayloadFromPreset(rawPreset) {
     ? rawPreset.payload
     : rawPreset;
 
-  const candidateKeys = ["mapPayload", "mapDocument", "normalizerPayload", "document"];
+  const candidateKeys = ["3d-json-payload-normalizer", "mapPayload", "mapDocument", "normalizerPayload", "document"];
   for (const key of candidateKeys) {
     const value = payload[key];
     if (value && typeof value === "object" && Array.isArray(value.points)) {
@@ -118,60 +89,54 @@ async function tryLoadPresetFromQuery() {
       throw new Error(`Preset request failed (${response.status}).`);
     }
     const rawPreset = await response.json();
-    const mapPayload = extractMapPayloadFromPreset(rawPreset);
-    if (!mapPayload) {
+    const extractedPayload = extractMapPayloadFromPreset(rawPreset);
+    if (!extractedPayload) {
       throw new Error("Preset payload did not include a map payload.");
+    }
+    const validation = validateMapPayload(extractedPayload, {
+      requireSchema: true,
+      requirePoints: true
+    });
+    if (!validation.valid) {
+      throw new Error(validation.issues.join(" "));
     }
     if (!(refs.input instanceof HTMLTextAreaElement)) {
       throw new Error("Map payload input is unavailable.");
     }
-    refs.input.value = toPrettyJson(mapPayload);
+    refs.input.value = toPrettyJson(validation.payload);
     setStatus(buildPresetLoadedStatus(sampleId, samplePresetPath));
   } catch (error) {
     setStatus(`Preset load failed: ${error instanceof Error ? error.message : "unknown error"}`);
   }
 }
 
-function normalizeMapPayload() {
+function normalizeMapPayloadAction() {
   if (!(refs.input instanceof HTMLTextAreaElement)) {
     return;
   }
 
   const parsed = safeParseJson(refs.input.value);
-  if (!parsed || typeof parsed !== "object") {
-    setStatus("Input JSON is invalid. Provide a payload object.");
+  const validation = validateMapPayload(parsed, {
+    requireSchema: false,
+    requirePoints: true
+  });
+  if (!validation.valid) {
+    setStatus(`Input JSON is invalid. ${validation.issues.join(" ")}`);
     return;
   }
-
-  const points = Array.isArray(parsed.points)
-    ? parsed.points.map((point, index) => normalizePoint(point, index))
-    : [];
-
-  const pointIds = points.map((point) => point.id);
-  const segments = Array.isArray(parsed.segments)
-    ? parsed.segments.map((segment, index) => {
-      const fallbackStart = pointIds[index] || pointIds[0] || "p1";
-      const fallbackEnd = pointIds[index + 1] || pointIds[0] || fallbackStart;
-      return normalizeSegment(segment, fallbackStart, fallbackEnd);
-    })
-    : [];
-
-  const normalized = {
-    schema: "tools.3d-json-payload-normalizer.document/1",
-    mapId: typeof parsed.mapId === "string" && parsed.mapId.trim() ? parsed.mapId.trim() : "map-3d-baseline",
-    points,
-    segments
-  };
+  const normalized = normalizeMapPayload(validation.payload, {
+    fallbackMapId: "map-3d-baseline"
+  });
 
   if (refs.output instanceof HTMLElement) {
     refs.output.textContent = toPrettyJson(normalized);
   }
-  setStatus(`Payload normalized. points=${points.length}, segments=${segments.length}.`);
+  setStatus(`Payload normalized. points=${normalized.points.length}, segments=${normalized.segments.length}.`);
 }
 
 function boot3dMapEditor() {
   if (refs.normalizeButton instanceof HTMLButtonElement) {
-    refs.normalizeButton.addEventListener("click", normalizeMapPayload);
+    refs.normalizeButton.addEventListener("click", normalizeMapPayloadAction);
   }
   if (refs.howToUseButton instanceof HTMLButtonElement) {
     refs.howToUseButton.addEventListener("click", () => {
@@ -183,7 +148,7 @@ function boot3dMapEditor() {
   }
   void tryLoadPresetFromQuery();
   return {
-    normalize: normalizeMapPayload
+    normalize: normalizeMapPayloadAction
   };
 }
 
@@ -194,7 +159,7 @@ registerToolBootContract("3d-json-payload-normalizer", {
   },
   getApi() {
     return {
-      normalize: normalizeMapPayload
+      normalize: normalizeMapPayloadAction
     };
   }
 });

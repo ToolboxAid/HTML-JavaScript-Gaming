@@ -1,5 +1,10 @@
 import { safeParseJson, toPrettyJson } from "../shared/debugInspectorData.js";
 import { registerToolBootContract } from "../shared/toolBootContract.js";
+import {
+  ASSET_VIEWER_REPORT_SCHEMA,
+  createDefaultAssetPayload,
+  validateAssetPayload
+} from "./assetPayload.schema.js";
 
 const refs = {
   inspectButton: document.getElementById("inspect3dAssetButton"),
@@ -79,18 +84,8 @@ function computeBounds(vertices) {
 }
 
 function buildDefaultPayload() {
-  return {
-    schema: "tools.3d-asset-viewer.asset/1",
-    assetId: "ship-hull",
-    vertices: [
-      { x: -1, y: -0.5, z: -2 },
-      { x: 1, y: -0.5, z: -2 },
-      { x: 0, y: 0.75, z: 2 }
-    ],
-    metadata: {
-      sourceToolId: "vector-asset-studio"
-    }
-  };
+  // Deprecated compatibility shim for older call-sites.
+  return createDefaultAssetPayload();
 }
 
 function extractAssetPayloadFromPreset(rawPreset) {
@@ -101,7 +96,7 @@ function extractAssetPayloadFromPreset(rawPreset) {
     ? rawPreset.payload
     : rawPreset;
 
-  const candidateKeys = ["asset3d", "asset", "assetPayload", "viewerPayload"];
+  const candidateKeys = ["3d-asset-viewer", "asset3d", "asset", "assetPayload", "viewerPayload"];
   for (const key of candidateKeys) {
     const value = payload[key];
     if (value && typeof value === "object" && Array.isArray(value.vertices)) {
@@ -128,14 +123,21 @@ async function tryLoadPresetFromQuery() {
       throw new Error(`Preset request failed (${response.status}).`);
     }
     const rawPreset = await response.json();
-    const assetPayload = extractAssetPayloadFromPreset(rawPreset);
-    if (!assetPayload) {
+    const extractedPayload = extractAssetPayloadFromPreset(rawPreset);
+    if (!extractedPayload) {
       throw new Error("Preset payload did not include a 3D asset payload.");
+    }
+    const validation = validateAssetPayload(extractedPayload, {
+      requireSchema: true,
+      requireVertices: true
+    });
+    if (!validation.valid) {
+      throw new Error(validation.issues.join(" "));
     }
     if (!(refs.input instanceof HTMLTextAreaElement)) {
       throw new Error("Asset input is unavailable.");
     }
-    refs.input.value = toPrettyJson(assetPayload);
+    refs.input.value = toPrettyJson(validation.payload);
     setStatus(buildPresetLoadedStatus(sampleId, samplePresetPath));
   } catch (error) {
     setStatus(`Preset load failed: ${error instanceof Error ? error.message : "unknown error"}`);
@@ -147,19 +149,24 @@ function inspectAssetPayload() {
     return;
   }
   const parsed = safeParseJson(refs.input.value);
-  if (!parsed || typeof parsed !== "object") {
-    setStatus("Input JSON is invalid. Provide an asset object.");
+  const validation = validateAssetPayload(parsed, {
+    requireSchema: false,
+    requireVertices: true
+  });
+  if (!validation.valid) {
+    setStatus(`Input JSON is invalid. ${validation.issues.join(" ")}`);
     return;
   }
 
-  const vertices = Array.isArray(parsed.vertices) ? parsed.vertices : [];
+  const assetPayload = validation.payload;
+  const vertices = Array.isArray(assetPayload.vertices) ? assetPayload.vertices : [];
   const bounds = computeBounds(vertices);
   const report = {
-    schema: "tools.3d-asset-viewer.report/1",
-    assetId: typeof parsed.assetId === "string" && parsed.assetId.trim() ? parsed.assetId.trim() : "asset-3d",
+    schema: ASSET_VIEWER_REPORT_SCHEMA,
+    assetId: assetPayload.assetId,
     vertexCount: vertices.length,
     bounds,
-    metadata: parsed.metadata && typeof parsed.metadata === "object" ? { ...parsed.metadata } : {}
+    metadata: assetPayload.metadata && typeof assetPayload.metadata === "object" ? { ...assetPayload.metadata } : {}
   };
 
   if (refs.output instanceof HTMLElement) {
