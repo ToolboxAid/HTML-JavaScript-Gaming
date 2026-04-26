@@ -1,0 +1,202 @@
+{
+  "documentKind": "workspace-manifest",
+  "schema": "html-js-gaming.workspace-manifest.palette-links/1",
+  "version": 1,
+  "samples": [
+    {
+      "sampleId": "0207",
+      "phase": "phase-02",
+      "tool": "sprite-editor",
+      "tools": [
+        "sprite-editor"
+      ],
+      "palette": "samples/phase-02/0207/sample.palette.json"
+    },
+    {
+      "sampleId": "0213",
+      "phase": "phase-02",
+      "tool": "palette-browser",
+      "tools": [
+        "palette-browser",
+        "sprite-editor"
+      ],
+      "palette": "samples/phase-02/0213/sample.palette.json"
+    },
+    {
+      "sampleId": "0214",
+      "phase": "phase-02",
+      "tool": "sprite-editor",
+      "tools": [
+        "sprite-editor"
+      ],
+      "palette": "samples/phase-02/0214/sample.palette.json"
+    },
+    {
+      "sampleId": "0219",
+      "phase": "phase-02",
+      "tool": "sprite-editor",
+      "tools": [
+        "sprite-editor"
+      ],
+      "palette": "samples/phase-02/0219/sample.palette.json"
+    },
+    {
+      "sampleId": "0221",
+      "phase": "phase-02",
+      "tool": "3d-json-payload-normalizer",
+      "tools": [
+        "3d-json-payload-normalizer",
+        "tile-map-editor",
+        "tile-model-converter"
+      ],
+      "palette": "samples/phase-02/0221/sample.palette.json"
+    },
+    {
+      "sampleId": "0224",
+      "phase": "phase-02",
+      "tool": "sprite-editor",
+      "tools": [
+        "sprite-editor",
+        "tile-map-editor"
+      ],
+      "palette": "samples/phase-02/0224/sample.palette.json"
+    },
+    {
+      "sampleId": "0301",
+      "phase": "phase-03",
+      "tool": "sprite-editor",
+      "tools": [
+        "sprite-editor"
+      ],
+      "palette": "samples/phase-03/0301/sample.palette.json"
+    },
+    {
+      "sampleId": "0302",
+      "phase": "phase-03",
+      "tool": "sprite-editor",
+      "tools": [
+        "sprite-editor"
+      ],
+      "palette": "samples/phase-03/0302/sample.palette.json"
+    },
+    {
+      "sampleId": "0305",
+      "phase": "phase-03",
+      "tool": "3d-json-payload-normalizer",
+      "tools": [
+        "3d-json-payload-normalizer",
+        "tile-map-editor",
+        "tile-model-converter"
+      ],
+      "palette": "samples/phase-03/0305/sample.palette.json"
+    },
+    {
+      "sampleId": "0308",
+      "phase": "phase-03",
+      "tool": "palette-browser",
+      "tools": [
+        "palette-browser"
+      ],
+      "palette": "samples/phase-03/0308/sample.palette.json"
+    },
+    {
+      "sampleId": "0313",
+      "phase": "phase-03",
+      "tool": "palette-browser",
+      "tools": [
+        "palette-browser"
+      ],
+      "palette": "samples/phase-03/0313/sample.palette.json"
+    },
+    {
+      "sampleId": "0901",
+      "phase": "phase-09",
+      "tool": "vector-asset-studio",
+      "tools": [
+        "vector-asset-studio",
+        "vector-map-editor"
+      ],
+      "palette": "samples/phase-09/0901/sample.palette.json"
+    },
+    {
+      "sampleId": "0905",
+      "phase": "phase-09",
+      "tool": "sprite-editor",
+      "tools": [
+        "sprite-editor"
+      ],
+      "palette": "samples/phase-09/0905/sample.palette.json"
+    },
+    {
+      "sampleId": "1204",
+      "phase": "phase-12",
+      "tool": "parallax-editor",
+      "tools": [
+        "parallax-editor",
+        "vector-asset-studio",
+        "vector-map-editor"
+      ],
+      "palette": "samples/phase-12/1204/sample.palette.json"
+    },
+    {
+      "sampleId": "1205",
+      "phase": "phase-12",
+      "tool": "parallax-editor",
+      "tools": [
+        "parallax-editor",
+        "vector-map-editor"
+      ],
+      "palette": "samples/phase-12/1205/sample.palette.json"
+    },
+    {
+      "sampleId": "1208",
+      "phase": "phase-12",
+      "tool": "3d-asset-viewer",
+      "tools": [
+        "3d-asset-viewer",
+        "3d-json-payload-normalizer",
+        "parallax-editor",
+        "tile-map-editor",
+        "vector-asset-studio"
+      ],
+      "palette": "samples/phase-12/1208/sample.palette.json"
+    },
+    {
+      "sampleId": "1209",
+      "phase": "phase-12",
+      "tool": "tile-map-editor",
+      "tools": [
+        "tile-map-editor",
+        "tile-model-converter"
+      ],
+      "palette": "samples/phase-12/1209/sample.palette.json"
+    },
+    {
+      "sampleId": "1210",
+      "phase": "phase-12",
+      "tool": "tile-map-editor",
+      "tools": [
+        "tile-map-editor"
+      ],
+      "palette": "samples/phase-12/1210/sample.palette.json"
+    },
+    {
+      "sampleId": "1211",
+      "phase": "phase-12",
+      "tool": "tile-map-editor",
+      "tools": [
+        "tile-map-editor"
+      ],
+      "palette": "samples/phase-12/1211/sample.palette.json"
+    },
+    {
+      "sampleId": "1414",
+      "phase": "phase-14",
+      "tool": "sprite-editor",
+      "tools": [
+        "sprite-editor"
+      ],
+      "palette": "samples/phase-14/1414/sample.palette.json"
+    }
+  ]
+}

@@ -2,14 +2,12 @@ MODEL: GPT-5.3-codex
 REASONING: medium
 
 TASK:
-- Update palette.schema.json:
-  - entries → swatches
-  - enforce single-character symbol
-  - enforce hex format
-- Migrate existing/generated palettes:
-  - entries → swatches
-  - s001 → single char symbols
-- Ensure uniqueness of symbol per palette
-- Preserve ordering
-- Do NOT add validators
+- Update workspace.manifest.json:
+  - Add palette field to each sample that has a palette
+- Ensure:
+  - All palette files are referenced
+  - No duplicate references
+  - No orphan palette files
+- Do NOT add validation utilities
 - Do NOT modify runtime
+- Do NOT modify start_of_day

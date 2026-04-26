@@ -1,5 +1,4 @@
-PR 8.4: Palette schema swatches + symbol
+PR 8.5: Workspace manifest palette linking
 
-- Replaced entries with swatches
-- Added single-character symbol constraint
-- Normalized hex field
+- Added explicit palette linkage to workspace.manifest
+- Enforced single-source-of-truth rule
