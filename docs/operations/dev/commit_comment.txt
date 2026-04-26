@@ -1,8 +1,8 @@
-Recovery audit from 20.1 baseline
+Implement tool launch SSoT routing
 
 PR Details:
-- Uses 3f7e9df / BUILD_PR_LEVEL_20_1_PHASE20_TOOL_PRESET_INTEGRATION as the last known assistant-produced baseline.
-- Audits all later changes.
-- Documents anti-patterns and junk code.
-- Produces reset-vs-surgical-cleanup decision.
-- Forbids destructive reset in this PR.
+- Routes sample-launched tools through explicit tools/<tool>/index.html targets.
+- Routes game workspace flows through tools/Workspace Manager/index.html.
+- Clears launch memory for external sample/game launches.
+- Removes default/fallback behavior from touched launch flow.
+- Adds validation report for SSoT routing.

@@ -2,6 +2,7 @@ import { getToolById } from "../toolRegistry.js";
 
 const TOOLBOXAID_STORAGE_KEY_PREFIX = "toolboxaid.";
 const WORKSPACE_MANAGER_ENTRY_POINT = "Workspace Manager/index.html";
+const WORKSPACE_MANAGER_GAME_MOUNT_MODE = "game";
 
 function normalizeText(value) {
   return typeof value === "string" ? value.trim() : "";
@@ -87,9 +88,14 @@ export function resolveSampleToolLaunchHref(toolId, options = {}) {
     return { href: "", error: `Tool "${normalizedToolId}" is missing a valid entryPoint.` };
   }
 
+  const sampleId = normalizeText(options.sampleId);
+  if (!sampleId) {
+    return { href: "", error: `Tool "${normalizedToolId}" launch is missing sampleId.` };
+  }
+
   const samplePresetPath = normalizeSamplePresetPath(options.samplePresetPath);
   const href = appendQuery(baseHref, {
-    sampleId: options.sampleId,
+    sampleId,
     sampleTitle: options.sampleTitle,
     samplePresetPath
   });
@@ -107,7 +113,10 @@ export function resolveGameWorkspaceLaunchHref(gameId) {
     return { href: "", error: "Workspace Manager launch entryPoint is invalid." };
   }
 
-  const href = appendQuery(baseHref, { game: normalizedGameId });
+  const href = appendQuery(baseHref, {
+    gameId: normalizedGameId,
+    mount: WORKSPACE_MANAGER_GAME_MOUNT_MODE
+  });
   return { href, error: "" };
 }
 
@@ -137,4 +146,3 @@ export function launchWithExternalToolWorkspaceReset(href) {
   window.location.assign(normalizedHref);
   return true;
 }
-

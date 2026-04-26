@@ -144,7 +144,9 @@ function buildRows(metadata, pinnedSet, toolLabelMap) {
       const tags = [...new Set(asArray(game?.tags).map((value) => normalizeTag(value)).filter(Boolean))]
         .sort((a, b) => a.localeCompare(b, undefined, { sensitivity: "base" }));
       const href = normalizeGameHref(game?.href);
-      const workspaceLaunch = href ? resolveGameWorkspaceLaunchHref(id) : { href: "", error: "" };
+      const workspaceLaunch = href
+        ? resolveGameWorkspaceLaunchHref(id)
+        : { href: "", error: `Game "${id}" launch is missing a valid /games/... href in metadata.` };
       const toolTokens = buildToolTokens(game?.toolsUsed, toolLabelMap);
       return {
         id,

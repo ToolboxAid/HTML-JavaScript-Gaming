@@ -1,59 +1,55 @@
 # Codex Rules (MANDATORY — HARD CONSTRAINTS)
 
 These rules OVERRIDE all other instructions.
-If any rule is violated, the output is incorrect.
 
 Codex must prefer the existing repo pattern over any new pattern, unless the PR explicitly says otherwise.
 
-## Baseline
+## Required Spec
 
-The last known assistant-produced baseline is:
+Read and obey:
 
-- commit: `3f7e9df`
-- PR: `BUILD_PR_LEVEL_20_1_PHASE20_TOOL_PRESET_INTEGRATION`
+- docs/dev/specs/TOOL_LAUNCH_SSOT.md
 
-All recovery analysis must compare current repo state against this baseline.
+## This PR
 
-## Recovery Safety
+Allowed:
+- smallest implementation changes needed for launch routing SSoT
+- validation report
+- roadmap status marker update only if execution-backed
 
-- Do NOT run destructive git commands.
-- Do NOT run `git reset --hard`.
-- Do NOT delete files.
-- Do NOT modify implementation files in this PR.
-- Do NOT rewrite roadmap text.
-- Do NOT modify `start_of_day` folders.
-- Do NOT invent fallback/default behavior.
-- Do NOT preserve junk code silently.
+Forbidden:
+- broad cleanup
+- unrelated refactoring
+- new route systems
+- fallback/default behavior
+- implementation outside touched launch path
+- start_of_day changes
+- roadmap text rewrite
 
-## Anti-Patterns Strictly Forbidden
+## Anti-Patterns Forbidden
 
-- variable aliasing: one concept renamed into another variable
+- variable aliasing
 - pass-through variables
 - duplicate state
 - stored derived state
-- vague names such as data, temp, obj, item, thing, value
+- vague names
 - hidden fallback behavior
-- default behavior where explicit routing is required
-- broad truthy/falsy checks that alter behavior
-- magic strings or magic numbers
+- duplicated launch paths
+- silent redirects
+- broad truthy/falsy behavior changes
+- magic strings or magic numbers outside existing SSoT/config pattern
 - duplicate event listeners
 - globals
-- new managers/factories/service layers unless explicitly requested
-- route/URL/ID/label changes unless explicitly requested
-- public API changes unless explicitly requested
-- unrelated cleanup
-- unrelated refactoring
+- new managers/factories/service layers unless already required by existing pattern
+- public API changes unless required by this PR
 - scope expansion
-- duplicated launch paths
-- sample/game launch bypasses
-- workspace launch memory carryover from external entry
 
-## Validation
+## Required Failure Behavior
 
-Before completing, verify:
-
-- no implementation files changed
-- no destructive command used
-- all required reports exist
-- reset recommendation is explicit
-- all identified anti-patterns include file paths
+If launch context is missing or invalid:
+- fail visibly
+- report the missing field
+- do not guess
+- do not select the first item
+- do not reuse memory
+- do not silently redirect
