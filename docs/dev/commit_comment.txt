@@ -1,4 +1,5 @@
-PR 8.5: Workspace manifest palette linking
+PR 8.6: Manifest entity generalization
 
-- Added explicit palette linkage to workspace.manifest
-- Enforced single-source-of-truth rule
+- Replaced sampleId with id
+- Added type field
+- Enabled support for games and future entities

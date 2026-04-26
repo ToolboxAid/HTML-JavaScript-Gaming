@@ -2,12 +2,10 @@ MODEL: GPT-5.3-codex
 REASONING: medium
 
 TASK:
-- Update workspace.manifest.json:
-  - Add palette field to each sample that has a palette
-- Ensure:
-  - All palette files are referenced
-  - No duplicate references
-  - No orphan palette files
-- Do NOT add validation utilities
+- Replace sampleId → id in workspace.manifest.json
+- Add type field:
+  - existing entries → type: "sample"
+- Ensure uniqueness of id
 - Do NOT modify runtime
+- Do NOT add validators
 - Do NOT modify start_of_day
