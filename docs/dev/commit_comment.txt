@@ -1,6 +1,5 @@
-PR 8.13: Clean palette refs and rename palette files
+PR 8.15: Naming convention standardization
 
-- Renamed sample palettes to sample.<id>.palette.json
-- Removed embedded palette refs from sample tool payloads
-- Moved locked/source metadata into palette JSON
-- Allowed palette sourceId and locked metadata in schema
+- Clarified difference between tool payload and palette data files
+- Locked naming conventions for future consistency
+- No file changes required
