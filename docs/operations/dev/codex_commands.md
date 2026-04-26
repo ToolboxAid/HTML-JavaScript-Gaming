@@ -1,8 +1,6 @@
 
 Execute:
 
-- populate select from tool registry
-- remove tabindex -1
-- remove aria-hidden
-- bind change event
-- sync with pager
+- remove select element from DOM/template
+- remove all JS references to select
+- ensure pager still works

@@ -1,1 +1,1 @@
-Fix tool selector population and enable interaction
+Remove tool selector; keep pager-only navigation

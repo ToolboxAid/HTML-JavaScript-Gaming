@@ -83,7 +83,6 @@ async function readGameAssetCatalog(assetCatalogPath) {
 }
 
 const refs = {
-  toolSelect: document.querySelector("[data-tool-host-select]"),
   stateInput: document.querySelector("[data-tool-host-state-input]"),
   mountButton: null,
   prevButton: document.querySelector("[data-tool-host-prev]"),
@@ -107,12 +106,11 @@ const TOOL_LAUNCH_PARAM_PREFIXES = Object.freeze({
   workspaceHref: ["/tools/Workspace%20Manager/", "/tools/Workspace Manager/"],
   returnTo: ["/games/", "/samples/"]
 });
-let selectedToolId = refs.toolSelect instanceof HTMLSelectElement ? refs.toolSelect.value : "";
+let selectedToolId = "";
 let pagerEventsBound = false;
 let pagerMessageBridgeBound = false;
 
 function refreshPagerRefs() {
-  refs.toolSelect = document.querySelector("[data-tool-host-select]");
   refs.prevButton = document.querySelector("[data-tool-host-prev]");
   refs.nextButton = document.querySelector("[data-tool-host-next]");
   refs.currentLabel = document.querySelector("[data-tool-host-current-label]");
@@ -194,20 +192,12 @@ function readForwardedToolLaunchParams() {
 }
 
 function readSelectedToolId() {
-  refreshPagerRefs();
-  if (refs.toolSelect instanceof HTMLSelectElement) {
-    return refs.toolSelect.value;
-  }
   return selectedToolId;
 }
 
 function writeSelectedToolId(toolId) {
-  refreshPagerRefs();
   const normalizedToolId = typeof toolId === "string" ? toolId.trim() : "";
   selectedToolId = normalizedToolId;
-  if (refs.toolSelect instanceof HTMLSelectElement) {
-    refs.toolSelect.value = normalizedToolId;
-  }
 }
 
 function writeStatus(text) {
@@ -496,15 +486,7 @@ function syncControlState() {
   }
 }
 
-function populateToolSelect(initialToolId) {
-  refreshPagerRefs();
-  if (refs.toolSelect instanceof HTMLSelectElement) {
-    refs.toolSelect.innerHTML = toolIds
-      .map((toolId) => getToolHostEntryById(manifest, toolId))
-      .filter(Boolean)
-      .map((tool) => `<option value="${tool.id}">${tool.displayName}</option>`)
-      .join("");
-  }
+function syncSelectedToolState(initialToolId) {
   const normalizedInitialToolId = toolIds.includes(initialToolId) ? initialToolId : "";
   writeSelectedToolId(normalizedInitialToolId);
   const selectedEntry = getToolHostEntryById(manifest, readSelectedToolId());
@@ -521,7 +503,7 @@ function applyToolsUsedFilterForGame(gameEntry, preferredToolId = "") {
     toolIds = [...allowed];
   }
   const initialToolId = toolIds.includes(preferredToolId) ? preferredToolId : "";
-  populateToolSelect(initialToolId);
+  syncSelectedToolState(initialToolId);
   updateStandaloneHref(initialToolId);
   syncControlState();
 }
@@ -555,18 +537,6 @@ function bindPagerDelegatedEvents() {
       mountSelectedTool("next");
     }
   });
-
-  document.addEventListener("change", (event) => {
-    const target = event.target instanceof HTMLSelectElement ? event.target : null;
-    if (!target || !target.matches("[data-tool-host-select]")) {
-      return;
-    }
-    refs.toolSelect = target;
-    writeSelectedToolId(target.value);
-    updateSwitchMeta();
-    updateStandaloneHref(readSelectedToolId());
-    mountSelectedTool("select");
-  });
 }
 
 function bindPagerMessageBridge() {
@@ -584,7 +554,7 @@ function bindPagerMessageBridge() {
       return;
     }
 
-    const action = payload.action === "prev" || payload.action === "next" || payload.action === "select"
+    const action = payload.action === "prev" || payload.action === "next"
       ? payload.action
       : "";
     if (!action) {
@@ -600,26 +570,6 @@ function bindPagerMessageBridge() {
         "Load a valid game/tool context before switching tools."
       );
       syncControlState();
-      return;
-    }
-
-    if (action === "select") {
-      const selectedToolId = typeof payload.toolId === "string"
-        ? payload.toolId.trim()
-        : "";
-      if (!selectedToolId || !toolIds.includes(selectedToolId) || !getToolHostEntryById(manifest, selectedToolId)) {
-        writeStatus(`Tool "${selectedToolId || "(missing)"}" is not available for Workspace Manager launch.`);
-        renderMountDiagnostic(
-          `Tool "${selectedToolId || "(missing)"}" is not available for delegated pager selection.`,
-          "Select a valid tool id from the active registry."
-        );
-        syncControlState();
-        return;
-      }
-      writeSelectedToolId(selectedToolId);
-      updateSwitchMeta();
-      updateStandaloneHref(selectedToolId);
-      mountSelectedTool("select");
       return;
     }
 

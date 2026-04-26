@@ -1,1 +1,1 @@
-Enable and populate existing select. No duplication.
+Remove select completely. Pager only.
