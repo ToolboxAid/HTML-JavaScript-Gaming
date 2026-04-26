@@ -7,24 +7,23 @@
   <link rel="stylesheet" href="./toolHost.css" />
 </head>
 <body class="tool-host-page">
-  <header class="tool-host-shell">
-    <h1 class="tool-host-shell__title">Workspace Manager</h1>
-    <p data-tool-host-game-source class="tool-host-shell__meta">Game Source: none</p>
-    <p data-tool-host-status class="tool-host-shell__status">Workspace Manager ready.</p>
-    <section data-tool-host-diagnostic class="tool-host-shell__diagnostic" hidden>
-      <h2>Workspace Manager Diagnostic</h2>
-      <pre data-tool-host-diagnostic-text></pre>
-    </section>
-  </header>
   <main class="tool-host-workspace">
-    <section class="tool-host-surface" aria-label="Workspace Manager tools surface">
-      <p class="tool-host-surface__copy">First-Class Tools Surface copy: tools become available after explicit selection.</p>
-      <div class="tool-host-surface__actions">
-        <label class="tool-host-shell__field" for="tool-host-select">Workspace actions</label>
-        <select id="tool-host-select" data-tool-host-select data-tool-host-action-select aria-label="Workspace action tool selector"></select>
-      </div>
-      <p data-tool-host-workspace-loaded-status class="tool-host-shell__meta">Workspace loaded status: waiting for context.</p>
-      <p data-tool-host-shared-status class="tool-host-shell__meta">Shared palette/assets status: waiting for tool selection.</p>
+    <section class="tool-host-surface" aria-label="Workspace Manager shell">
+      <h1 class="tool-host-surface__title">Workspace Manager</h1>
+      <p data-tool-host-game-source class="tool-host-surface__meta">Game Source: none</p>
+      <p data-tool-host-status class="tool-host-surface__meta">Workspace Manager ready.</p>
+      <p data-tool-host-workspace-loaded-status class="tool-host-surface__meta">Workspace loaded status: waiting for context.</p>
+      <p data-tool-host-shared-status class="tool-host-surface__meta">Shared palette/assets status: waiting for tool selection.</p>
+      <section data-tool-host-diagnostic class="tool-host-surface__diagnostic" hidden>
+        <h2>Workspace Manager Diagnostic</h2>
+        <pre data-tool-host-diagnostic-text></pre>
+      </section>
+    </section>
+    <section class="tool-host-pager" aria-label="Workspace tool pager">
+      <button type="button" data-tool-host-prev class="tool-host-pager__button">[PREV]</button>
+      <span data-tool-host-current-label data-tool-host-pager-name class="tool-host-pager__name">No tool available</span>
+      <button type="button" data-tool-host-next class="tool-host-pager__button">[NEXT]</button>
+      <select id="tool-host-select" data-tool-host-select class="tool-host-pager__select" tabindex="-1" aria-hidden="true"></select>
     </section>
     <section class="tool-host-workspace__editor-region" aria-label="Editors">
       <div data-tool-host-mount-container class="tool-host-workspace__mount"></div>

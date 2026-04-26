@@ -1,9 +1,9 @@
-Auto-mount selected Workspace Manager tool
+Force Workspace Manager tool pager above Editors
 
 PR Details:
-- Places one tool dropdown above Editors.
-- Locks/overlays Editors until explicit tool selection.
-- Automatically mounts/activates the selected tool from the dropdown.
-- Removes the extra Select Tool + Mount requirement from initial game-launched flow.
-- Does not restore default/fallback tool selection.
-- Leaves sample Open <tool> behavior untouched.
+- Removes the newly created Workspace Manager top header/banner workflow.
+- Adds centered [PREV] <toolname> [NEXT] control above Editors.
+- Selects and mounts the first available tool on page load per user direction.
+- Prev/Next switches selected and mounted tool.
+- Removes dropdown + Select Tool + Mount initial workflow.
+- Keeps explicit gameId and does not restore legacy query fallback.

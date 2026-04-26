@@ -11,56 +11,6 @@ body.tool-host-page {
 body.tool-host-page {
   background: #101523;
   color: #e7ecf7;
-  display: flex;
-  flex-direction: column;
-}
-
-.tool-host-shell {
-  flex: 0 0 auto;
-  padding: 12px;
-  background: #1a243b;
-  border-bottom: 1px solid #2d3b5f;
-}
-
-.tool-host-shell__title {
-  margin: 0;
-  font-size: 1.1rem;
-}
-
-.tool-host-shell__field {
-  font-size: 0.9rem;
-}
-
-.tool-host-shell__state {
-  margin-top: 8px;
-  width: 100%;
-  min-height: 4.5rem;
-  resize: vertical;
-}
-
-.tool-host-shell__meta,
-.tool-host-shell__status {
-  margin: 6px 0 0;
-  font-size: 0.9rem;
-}
-
-.tool-host-shell__diagnostic {
-  margin-top: 8px;
-  padding: 8px;
-  border: 1px solid #a73a3a;
-  background: #2c1111;
-}
-
-.tool-host-shell__diagnostic h2 {
-  margin: 0 0 6px;
-  font-size: 1rem;
-}
-
-.tool-host-shell__diagnostic pre {
-  margin: 0;
-  white-space: pre-wrap;
-  word-break: break-word;
-  font-family: Consolas, "Courier New", monospace;
 }
 
 .tool-host-workspace {
@@ -81,17 +31,64 @@ body.tool-host-page {
   padding: 10px;
 }
 
-.tool-host-surface__copy {
-  margin: 0 0 8px;
-  font-size: 0.92rem;
+.tool-host-surface__title {
+  margin: 0;
+  font-size: 1.05rem;
 }
 
-.tool-host-surface__actions {
+.tool-host-surface__meta {
+  margin: 6px 0 0;
+  font-size: 0.9rem;
+}
+
+.tool-host-surface__diagnostic {
+  margin-top: 8px;
+  padding: 8px;
+  border: 1px solid #a73a3a;
+  background: #2c1111;
+}
+
+.tool-host-surface__diagnostic h2 {
+  margin: 0 0 6px;
+  font-size: 1rem;
+}
+
+.tool-host-surface__diagnostic pre {
+  margin: 0;
+  white-space: pre-wrap;
+  word-break: break-word;
+  font-family: Consolas, "Courier New", monospace;
+}
+
+.tool-host-pager {
   display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
   align-items: center;
-  margin-bottom: 8px;
+  justify-content: center;
+  gap: 16px;
+  padding: 10px;
+  border: 1px solid #2d3b5f;
+  background: #121b30;
+}
+
+.tool-host-pager__button {
+  min-width: 84px;
+}
+
+.tool-host-pager__name {
+  min-width: 220px;
+  text-align: center;
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+.tool-host-pager__select {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
 }
 
 .tool-host-workspace__editor-region {
