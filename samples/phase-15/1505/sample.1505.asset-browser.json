@@ -1,0 +1,15 @@
+{
+  "$schema": "../../../tools/schemas/tools/asset-browser.schema.json",
+  "tool": "asset-browser",
+  "version": "1",
+  "config": {
+    "assetBrowserPreset": {
+      "selectedCategory": "Vector Assets",
+      "selectedAssetId": "asset-vector-player",
+      "search": "vector",
+      "importCategory": "Vector Assets",
+      "importDestination": "games/<project>/assets/vectors/",
+      "importName": "sample-1505-import.vector.json"
+    }
+  }
+}

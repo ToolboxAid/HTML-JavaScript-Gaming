@@ -1,0 +1,20 @@
+{
+  "$schema": "../../../tools/schemas/tools/physics-sandbox.schema.json",
+  "tool": "physics-sandbox",
+  "version": "1",
+  "config": {
+    "physicsBody": {
+      "x": 32,
+      "y": 16,
+      "velocityX": 180,
+      "velocityY": -30,
+      "accelerationX": -14,
+      "accelerationY": 24,
+      "dragX": 8,
+      "dragY": 3,
+      "maxSpeedX": 260,
+      "maxSpeedY": 240,
+      "dt": 0.0166666667
+    }
+  }
+}

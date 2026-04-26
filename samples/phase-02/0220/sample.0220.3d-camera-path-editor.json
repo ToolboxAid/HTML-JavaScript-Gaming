@@ -1,0 +1,52 @@
+{
+  "$schema": "../../../tools/schemas/tools/3d-camera-path-editor.schema.json",
+  "tool": "3d-camera-path-editor",
+  "version": "1",
+  "config": {
+    "cameraPath": {
+      "schema": "tools.3d-camera-path.path/1",
+      "pathId": "sample-0220-camera-system-track",
+      "waypoints": [
+        {
+          "t": 0,
+          "position": {
+            "x": -12,
+            "y": 7,
+            "z": -20
+          },
+          "lookAt": {
+            "x": -2,
+            "y": 0,
+            "z": 2
+          }
+        },
+        {
+          "t": 1200,
+          "position": {
+            "x": 2,
+            "y": 10,
+            "z": -15
+          },
+          "lookAt": {
+            "x": 4,
+            "y": 1,
+            "z": 4
+          }
+        },
+        {
+          "t": 2600,
+          "position": {
+            "x": 14,
+            "y": 8,
+            "z": -12
+          },
+          "lookAt": {
+            "x": 8,
+            "y": 0,
+            "z": 6
+          }
+        }
+      ]
+    }
+  }
+}

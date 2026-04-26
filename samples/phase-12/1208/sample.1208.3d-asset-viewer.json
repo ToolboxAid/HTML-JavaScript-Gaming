@@ -1,0 +1,47 @@
+{
+  "$schema": "../../../tools/schemas/tools/3d-asset-viewer.schema.json",
+  "tool": "3d-asset-viewer",
+  "version": "1",
+  "config": {
+    "asset3d": {
+      "schema": "tools.3d-asset-viewer.asset/1",
+      "assetId": "sample-1208-near-forest-shape",
+      "vertices": [
+        {
+          "x": -16,
+          "y": 0,
+          "z": -24
+        },
+        {
+          "x": 16,
+          "y": 0,
+          "z": -24
+        },
+        {
+          "x": 24,
+          "y": 0,
+          "z": 0
+        },
+        {
+          "x": 8,
+          "y": 12,
+          "z": 18
+        },
+        {
+          "x": -8,
+          "y": 10,
+          "z": 20
+        },
+        {
+          "x": -22,
+          "y": 0,
+          "z": 4
+        }
+      ],
+      "metadata": {
+        "sourceSampleId": "1208",
+        "sourceToolId": "vector-asset-studio"
+      }
+    }
+  }
+}

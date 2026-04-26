@@ -1,0 +1,40 @@
+{
+  "$schema": "../../../tools/schemas/tools/asset-pipeline-tool.schema.json",
+  "tool": "asset-pipeline-tool",
+  "version": "1",
+  "config": {
+    "pipelinePayload": {
+      "gameId": "sample-1417",
+      "domainInputs": {
+        "sprites": [
+          {
+            "assetId": "hero-idle",
+            "runtimeFileName": "hero-idle.runtime.json",
+            "toolDataFileName": "hero-idle.tool.json",
+            "sourceToolId": "sprite-editor"
+          }
+        ],
+        "tilemaps": [
+          {
+            "assetId": "arena-main",
+            "runtimeFileName": "arena-main.runtime.json",
+            "toolDataFileName": "arena-main.tool.json",
+            "sourceToolId": "tile-map-editor"
+          }
+        ]
+      },
+      "toolStates": {
+        "asset-pipeline-tool": {
+          "schema": "html-js-gaming.tool-state",
+          "version": 1,
+          "toolId": "asset-pipeline-tool",
+          "projectId": "sample-1417",
+          "savedAtIso": "2026-04-24T00:00:00.000Z",
+          "state": {
+            "mode": "manifest-build"
+          }
+        }
+      }
+    }
+  }
+}

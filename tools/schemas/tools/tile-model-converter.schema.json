@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "tools/schemas/tools/tile-model-converter.schema.json",
+  "title": "tile-model-converter Payload",
+  "type": "object",
+  "required": [
+    "tool",
+    "version",
+    "config"
+  ],
+  "additionalProperties": true,
+  "properties": {
+    "tool": {
+      "const": "tile-model-converter"
+    },
+    "version": {
+      "type": "string"
+    },
+    "config": {
+      "type": "object"
+    }
+  }
+}

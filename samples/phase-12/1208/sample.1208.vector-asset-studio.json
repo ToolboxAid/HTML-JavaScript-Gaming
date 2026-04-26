@@ -1,0 +1,66 @@
+{
+  "$schema": "../../../tools/schemas/tools/vector-asset-studio.schema.json",
+  "tool": "vector-asset-studio",
+  "version": "1",
+  "config": {
+    "vectorAssetDocument": {
+      "sourceName": "sample-1208-near-forest.svg",
+      "svgPath": "/samples/phase-12/1208/assets/data/parallax/layer-near-forest.svg",
+      "editorOptions": {
+        "palette": {
+          "id": "sample1208-parallax",
+          "name": "sample1208-parallax",
+          "entries": [
+            {
+              "hex": "#B6DDFF",
+              "name": "Sky Light"
+            },
+            {
+              "hex": "#8EC5F4",
+              "name": "Sky Mid"
+            },
+            {
+              "hex": "#6F9DCD",
+              "name": "Sky Deep"
+            },
+            {
+              "hex": "#F9F0C1",
+              "name": "Sun Glow"
+            },
+            {
+              "hex": "#6F87A8",
+              "name": "Far Mountain"
+            },
+            {
+              "hex": "#95ABC3",
+              "name": "Near Mountain"
+            },
+            {
+              "hex": "#5568D2",
+              "name": "Cliff Mid"
+            },
+            {
+              "hex": "#3748A8",
+              "name": "Cliff Deep"
+            },
+            {
+              "hex": "#218F86",
+              "name": "Forest Base"
+            },
+            {
+              "hex": "#62DCCC",
+              "name": "Forest Highlight"
+            }
+          ],
+          "paint": "#218F86",
+          "stroke": "#62DCCC",
+          "strokeWidth": 2,
+          "gradientStart": "#5568D2",
+          "gradientEnd": "#62DCCC",
+          "gradientAngle": 45,
+          "activeTarget": "paint"
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,59 @@
+{
+  "$schema": "../../../tools/schemas/tools/replay-visualizer.schema.json",
+  "tool": "replay-visualizer",
+  "version": "1",
+  "config": {
+    "events": [
+      {
+        "id": "predict-1",
+        "timeMs": 0,
+        "type": "predict",
+        "label": "Predict Input #1",
+        "payload": {
+          "dx": 24,
+          "stateX": 164
+        }
+      },
+      {
+        "id": "predict-2",
+        "timeMs": 120,
+        "type": "predict",
+        "label": "Predict Input #2",
+        "payload": {
+          "dx": 24,
+          "stateX": 188
+        }
+      },
+      {
+        "id": "authority-correct",
+        "timeMs": 320,
+        "type": "rollback",
+        "label": "Authority Correction",
+        "payload": {
+          "authoritativeX": 152,
+          "frame": 1
+        }
+      },
+      {
+        "id": "replay-inputs",
+        "timeMs": 480,
+        "type": "replay",
+        "label": "Replay Predicted Inputs",
+        "payload": {
+          "replayedInputs": 1,
+          "resultX": 176
+        }
+      },
+      {
+        "id": "diag-summary",
+        "timeMs": 760,
+        "type": "diagnostic",
+        "label": "Rollback Summary",
+        "payload": {
+          "corrections": 1,
+          "events": 1
+        }
+      }
+    ]
+  }
+}

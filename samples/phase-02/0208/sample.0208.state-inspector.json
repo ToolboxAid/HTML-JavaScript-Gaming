@@ -1,0 +1,53 @@
+{
+  "$schema": "../../../tools/schemas/tools/state-inspector.schema.json",
+  "tool": "state-inspector",
+  "version": "1",
+  "config": {
+    "snapshot": {
+      "schema": "tools.debug-state-inspector.snapshot/1",
+      "capturedAt": "2026-04-24T00:00:00.000Z",
+      "hosted": false,
+      "toolId": "state-inspector",
+      "hostContext": null,
+      "projectManifest": {
+        "documentKind": "workspace-manifest",
+        "schema": "html-js-gaming.project",
+        "version": 1,
+        "id": "sample-0208-project",
+        "name": "Sample 0208 State Machine"
+      },
+      "storage": {
+        "localCount": 3,
+        "sessionCount": 1,
+        "localStorageEntries": [
+          {
+            "key": "toolboxaid.sample0208.state.current",
+            "value": "\"idle\""
+          },
+          {
+            "key": "toolboxaid.sample0208.state.previous",
+            "value": "\"boot\""
+          },
+          {
+            "key": "toolboxaid.sample0208.flags.paused",
+            "value": "false"
+          }
+        ],
+        "sessionStorageEntries": [
+          {
+            "key": "toolboxaid.sample0208.debugMode",
+            "value": "\"enabled\""
+          }
+        ]
+      },
+      "bootContracts": {
+        "count": 2,
+        "keys": [
+          "state-inspector",
+          "sample-0208"
+        ]
+      },
+      "notes": "Sample snapshot payload for State Inspector launch validation."
+    }
+  }
+}

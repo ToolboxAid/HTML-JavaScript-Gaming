@@ -1,0 +1,65 @@
+{
+  "$schema": "../../../tools/schemas/tools/3d-json-payload-normalizer.schema.json",
+  "tool": "3d-json-payload-normalizer",
+  "version": "1",
+  "config": {
+    "mapPayload": {
+      "schema": "tools.3d-json-payload-normalizer.document/1",
+      "mapId": "sample-0305-tile-metadata-loop",
+      "points": [
+        {
+          "id": "p1",
+          "x": -22,
+          "y": 0,
+          "z": -8
+        },
+        {
+          "id": "p2",
+          "x": 22,
+          "y": 0,
+          "z": -8
+        },
+        {
+          "id": "p3",
+          "x": 24,
+          "y": 0,
+          "z": 12
+        },
+        {
+          "id": "p4",
+          "x": -24,
+          "y": 0,
+          "z": 12
+        },
+        {
+          "id": "p5",
+          "x": 0,
+          "y": 0,
+          "z": 22
+        }
+      ],
+      "segments": [
+        {
+          "from": "p1",
+          "to": "p2"
+        },
+        {
+          "from": "p2",
+          "to": "p3"
+        },
+        {
+          "from": "p3",
+          "to": "p4"
+        },
+        {
+          "from": "p4",
+          "to": "p1"
+        },
+        {
+          "from": "p2",
+          "to": "p5"
+        }
+      ]
+    }
+  }
+}

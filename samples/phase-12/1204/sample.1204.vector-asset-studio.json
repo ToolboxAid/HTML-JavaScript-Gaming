@@ -1,0 +1,42 @@
+{
+  "$schema": "../../../tools/schemas/tools/vector-asset-studio.schema.json",
+  "tool": "vector-asset-studio",
+  "version": "1",
+  "config": {
+    "vectorAssetDocument": {
+      "sourceName": "sample-1204-near.svg",
+      "svgPath": "/samples/phase-12/1204/assets/data/parallax/sample-1204-near.svg",
+      "editorOptions": {
+        "palette": {
+          "id": "sample1204-parallax",
+          "name": "sample1204-parallax",
+          "entries": [
+            {
+              "hex": "#8EC5F4",
+              "name": "Sky Mid"
+            },
+            {
+              "hex": "#5568D2",
+              "name": "Cliff Mid"
+            },
+            {
+              "hex": "#218F86",
+              "name": "Forest Base"
+            },
+            {
+              "hex": "#62DCCC",
+              "name": "Forest Highlight"
+            }
+          ],
+          "paint": "#218F86",
+          "stroke": "#62DCCC",
+          "strokeWidth": 2,
+          "gradientStart": "#5568D2",
+          "gradientEnd": "#62DCCC",
+          "gradientAngle": 35,
+          "activeTarget": "paint"
+        }
+      }
+    }
+  }
+}

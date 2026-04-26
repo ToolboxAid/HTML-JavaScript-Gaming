@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "tools/schemas/tools/tile-map-editor.schema.json",
+  "title": "tile-map-editor Payload",
+  "type": "object",
+  "required": [
+    "tool",
+    "version",
+    "config"
+  ],
+  "additionalProperties": true,
+  "properties": {
+    "tool": {
+      "const": "tile-map-editor"
+    },
+    "version": {
+      "type": "string"
+    },
+    "config": {
+      "type": "object"
+    }
+  }
+}

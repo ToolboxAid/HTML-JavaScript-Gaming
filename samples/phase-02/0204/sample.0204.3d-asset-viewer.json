@@ -1,0 +1,42 @@
+{
+  "$schema": "../../../tools/schemas/tools/3d-asset-viewer.schema.json",
+  "tool": "3d-asset-viewer",
+  "version": "1",
+  "config": {
+    "asset3d": {
+      "schema": "tools.3d-asset-viewer.asset/1",
+      "assetId": "sample-0204-registry-node",
+      "vertices": [
+        {
+          "x": -10,
+          "y": -4,
+          "z": -10
+        },
+        {
+          "x": 10,
+          "y": -4,
+          "z": -10
+        },
+        {
+          "x": 12,
+          "y": -4,
+          "z": 8
+        },
+        {
+          "x": -12,
+          "y": -4,
+          "z": 8
+        },
+        {
+          "x": 0,
+          "y": 10,
+          "z": 0
+        }
+      ],
+      "metadata": {
+        "sourceSampleId": "0204",
+        "sourceToolId": "asset-browser"
+      }
+    }
+  }
+}

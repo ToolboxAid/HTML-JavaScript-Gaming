@@ -1,0 +1,15 @@
+{
+  "$schema": "../../../tools/schemas/tools/asset-browser.schema.json",
+  "tool": "asset-browser",
+  "version": "1",
+  "config": {
+    "assetBrowserPreset": {
+      "selectedCategory": "Sprite Projects",
+      "selectedAssetId": "asset-sprite-player-sheet",
+      "search": "sprite",
+      "importCategory": "Sprite Projects",
+      "importDestination": "games/<project>/assets/sprites/",
+      "importName": "sample-1413-import.sprite.json"
+    }
+  }
+}

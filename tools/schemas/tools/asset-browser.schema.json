@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "tools/schemas/tools/asset-browser.schema.json",
+  "title": "asset-browser Payload",
+  "type": "object",
+  "required": [
+    "tool",
+    "version",
+    "config"
+  ],
+  "additionalProperties": true,
+  "properties": {
+    "tool": {
+      "const": "asset-browser"
+    },
+    "version": {
+      "type": "string"
+    },
+    "config": {
+      "type": "object"
+    }
+  }
+}

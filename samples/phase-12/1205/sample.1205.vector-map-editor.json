@@ -1,0 +1,137 @@
+{
+  "$schema": "../../../tools/schemas/tools/vector-map-editor.schema.json",
+  "tool": "vector-map-editor",
+  "version": "1",
+  "config": {
+    "vectorMapDocument": {
+      "version": 3,
+      "name": "sample-1205-multisystem-layout",
+      "mode": "2d",
+      "width": 1280,
+      "height": 720,
+      "background": "#10142d",
+      "objects": [
+        {
+          "id": "obj-checkpoint-lane",
+          "name": "Checkpoint Lane",
+          "kind": "polyline",
+          "space": "2d",
+          "closed": false,
+          "center": {
+            "x": 380,
+            "y": 360,
+            "z": 0,
+            "color": "#62dccc"
+          },
+          "rotation": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+          },
+          "style": {
+            "stroke": "#62dccc",
+            "fill": null,
+            "lineWidth": 3,
+            "colorMode": "object"
+          },
+          "flags": {
+            "collidable": false,
+            "deadly": false,
+            "trigger": true,
+            "spawnBlocker": false,
+            "projectileBlocker": false,
+            "playerOnly": true,
+            "enemyOnly": false,
+            "tag": "checkpoint"
+          },
+          "points": [
+            {
+              "x": 150,
+              "y": 540,
+              "z": 0,
+              "color": "#62dccc"
+            },
+            {
+              "x": 320,
+              "y": 430,
+              "z": 0,
+              "color": "#62dccc"
+            },
+            {
+              "x": 520,
+              "y": 360,
+              "z": 0,
+              "color": "#62dccc"
+            },
+            {
+              "x": 760,
+              "y": 300,
+              "z": 0,
+              "color": "#62dccc"
+            }
+          ]
+        },
+        {
+          "id": "obj-no-spawn-zone",
+          "name": "No Spawn Zone",
+          "kind": "polygon",
+          "space": "2d",
+          "closed": true,
+          "center": {
+            "x": 900,
+            "y": 360,
+            "z": 0,
+            "color": "#ee204d"
+          },
+          "rotation": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+          },
+          "style": {
+            "stroke": "#ee204d",
+            "fill": "#611126",
+            "lineWidth": 2,
+            "colorMode": "object"
+          },
+          "flags": {
+            "collidable": true,
+            "deadly": false,
+            "trigger": true,
+            "spawnBlocker": true,
+            "projectileBlocker": false,
+            "playerOnly": false,
+            "enemyOnly": false,
+            "tag": "spawn-block"
+          },
+          "points": [
+            {
+              "x": 760,
+              "y": 260,
+              "z": 0,
+              "color": "#ee204d"
+            },
+            {
+              "x": 1040,
+              "y": 260,
+              "z": 0,
+              "color": "#ee204d"
+            },
+            {
+              "x": 1080,
+              "y": 470,
+              "z": 0,
+              "color": "#ee204d"
+            },
+            {
+              "x": 820,
+              "y": 520,
+              "z": 0,
+              "color": "#ee204d"
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

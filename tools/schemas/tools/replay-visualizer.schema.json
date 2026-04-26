@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "tools/schemas/tools/replay-visualizer.schema.json",
+  "title": "replay-visualizer Payload",
+  "type": "object",
+  "required": [
+    "tool",
+    "version",
+    "config"
+  ],
+  "additionalProperties": true,
+  "properties": {
+    "tool": {
+      "const": "replay-visualizer"
+    },
+    "version": {
+      "type": "string"
+    },
+    "config": {
+      "type": "object"
+    }
+  }
+}

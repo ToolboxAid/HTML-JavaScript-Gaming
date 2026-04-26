@@ -1,0 +1,12 @@
+{
+  "$schema": "../../../tools/schemas/tools/performance-profiler.schema.json",
+  "tool": "performance-profiler",
+  "version": "1",
+  "config": {
+    "profileSettings": {
+      "workloadIterations": 300,
+      "workSize": 3000,
+      "frameSamples": 120
+    }
+  }
+}

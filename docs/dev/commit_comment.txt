@@ -1,4 +1,6 @@
-PR 8.8: Entity progression dimension (phase vs level)
+PR 8.10: Sample multi-file tool payload alignment
 
-- Added phase and level fields
-- Enforced type-based conditional requirements
+- Converted samples to one-file-per-tool model
+- Removed tools arrays from sample files
+- Aligned sample payloads with workspace tool payload structure
+- Standardized naming convention

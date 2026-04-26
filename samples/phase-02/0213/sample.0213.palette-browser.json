@@ -1,0 +1,37 @@
+{
+  "$schema": "../../../tools/schemas/tools/palette-browser.schema.json",
+  "tool": "palette-browser",
+  "version": "1",
+  "config": {
+    "palette": {
+      "name": "sample-0213-sprite-layer",
+      "entries": [
+        {
+          "symbol": "A",
+          "hex": "#1E1B4B",
+          "name": "Backdrop Violet"
+        },
+        {
+          "symbol": "B",
+          "hex": "#1CAC78",
+          "name": "Sprite Accent Green"
+        },
+        {
+          "symbol": "C",
+          "hex": "#FF7538",
+          "name": "Sprite Warm Orange"
+        },
+        {
+          "symbol": "D",
+          "hex": "#FCE883",
+          "name": "Highlight Yellow"
+        },
+        {
+          "symbol": "E",
+          "hex": "#1F75FE",
+          "name": "UI Blue"
+        }
+      ]
+    }
+  }
+}

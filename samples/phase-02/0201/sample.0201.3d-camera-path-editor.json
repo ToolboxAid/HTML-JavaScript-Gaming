@@ -1,0 +1,52 @@
+{
+  "$schema": "../../../tools/schemas/tools/3d-camera-path-editor.schema.json",
+  "tool": "3d-camera-path-editor",
+  "version": "1",
+  "config": {
+    "cameraPath": {
+      "schema": "tools.3d-camera-path.path/1",
+      "pathId": "sample-0201-follow-orbit",
+      "waypoints": [
+        {
+          "t": 0,
+          "position": {
+            "x": -14,
+            "y": 8,
+            "z": -20
+          },
+          "lookAt": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+          }
+        },
+        {
+          "t": 1500,
+          "position": {
+            "x": 0,
+            "y": 10,
+            "z": -14
+          },
+          "lookAt": {
+            "x": 2,
+            "y": 0,
+            "z": 0
+          }
+        },
+        {
+          "t": 3000,
+          "position": {
+            "x": 16,
+            "y": 9,
+            "z": -16
+          },
+          "lookAt": {
+            "x": 4,
+            "y": 0,
+            "z": 2
+          }
+        }
+      ]
+    }
+  }
+}

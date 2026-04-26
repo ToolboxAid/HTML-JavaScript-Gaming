@@ -1,0 +1,8 @@
+{
+  "$schema": "../../../tools/schemas/tools/tile-map-editor.schema.json",
+  "tool": "tile-map-editor",
+  "version": "1",
+  "config": {
+    "tileMapDocumentPath": "/samples/phase-12/1209/sample-1209-tile-map-editor-document.json"
+  }
+}

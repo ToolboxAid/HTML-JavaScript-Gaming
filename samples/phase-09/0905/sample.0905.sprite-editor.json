@@ -1,0 +1,93 @@
+{
+  "$schema": "../../../tools/schemas/tools/sprite-editor.schema.json",
+  "tool": "sprite-editor",
+  "version": "1",
+  "config": {
+    "spriteProject": {
+      "format": "toolboxaid.sprite-editor.project",
+      "version": 1,
+      "width": 5,
+      "height": 5,
+      "pixelSize": 18,
+      "showGrid": true,
+      "onionSkin": false,
+      "activeColor": "#1CAC78FF",
+      "palette": [],
+      "paletteRef": {
+        "source": "engine/paletteList",
+        "id": "crayola008",
+        "locked": true
+      },
+      "assetRefs": {
+        "paletteId": "",
+        "spriteId": ""
+      },
+      "recentColors": [
+        "#1CAC78FF",
+        "#1F75FEFF",
+        "#FF7538FF"
+      ],
+      "frames": [
+        {
+          "pixels": [
+            null,
+            "#A78BFAFF",
+            "#A78BFAFF",
+            "#A78BFAFF",
+            null,
+            "#A78BFAFF",
+            null,
+            null,
+            null,
+            "#A78BFAFF",
+            "#A78BFAFF",
+            null,
+            null,
+            null,
+            "#A78BFAFF",
+            "#A78BFAFF",
+            null,
+            null,
+            null,
+            "#A78BFAFF",
+            null,
+            "#A78BFAFF",
+            "#A78BFAFF",
+            "#A78BFAFF",
+            null
+          ]
+        },
+        {
+          "pixels": [
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            "#22C55EFF",
+            "#22C55EFF",
+            "#22C55EFF",
+            null,
+            null,
+            "#22C55EFF",
+            "#22C55EFF",
+            "#22C55EFF",
+            null,
+            null,
+            "#22C55EFF",
+            "#22C55EFF",
+            "#22C55EFF",
+            null,
+            null,
+            null,
+            null,
+            null,
+            null
+          ]
+        }
+      ],
+      "currentFrameIndex": 0
+    }
+  }
+}

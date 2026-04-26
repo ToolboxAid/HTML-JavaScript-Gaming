@@ -1,0 +1,37 @@
+{
+  "$schema": "../../../tools/schemas/tools/palette-browser.schema.json",
+  "tool": "palette-browser",
+  "version": "1",
+  "config": {
+    "palette": {
+      "name": "sample-0313-trigger-zones",
+      "entries": [
+        {
+          "symbol": "A",
+          "hex": "#111827",
+          "name": "Background"
+        },
+        {
+          "symbol": "B",
+          "hex": "#1CAC78",
+          "name": "Safe Trigger"
+        },
+        {
+          "symbol": "C",
+          "hex": "#1F75FE",
+          "name": "Info Trigger"
+        },
+        {
+          "symbol": "D",
+          "hex": "#EE204D",
+          "name": "Hazard Trigger"
+        },
+        {
+          "symbol": "E",
+          "hex": "#FCE883",
+          "name": "Objective Trigger"
+        }
+      ]
+    }
+  }
+}

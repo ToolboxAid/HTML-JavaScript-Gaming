@@ -1,0 +1,53 @@
+{
+  "$schema": "../../../tools/schemas/tools/state-inspector.schema.json",
+  "tool": "state-inspector",
+  "version": "1",
+  "config": {
+    "snapshot": {
+      "schema": "tools.debug-state-inspector.snapshot/1",
+      "capturedAt": "2026-04-24T00:00:00.000Z",
+      "hosted": false,
+      "toolId": "state-inspector",
+      "hostContext": null,
+      "projectManifest": {
+        "documentKind": "workspace-manifest",
+        "schema": "html-js-gaming.project",
+        "version": 1,
+        "id": "sample-0217-project",
+        "name": "Sample 0217 Game Mode State"
+      },
+      "storage": {
+        "localCount": 2,
+        "sessionCount": 2,
+        "localStorageEntries": [
+          {
+            "key": "toolboxaid.sample0217.mode",
+            "value": "\"survival\""
+          },
+          {
+            "key": "toolboxaid.sample0217.wave",
+            "value": "12"
+          }
+        ],
+        "sessionStorageEntries": [
+          {
+            "key": "toolboxaid.sample0217.paused",
+            "value": "false"
+          },
+          {
+            "key": "toolboxaid.sample0217.overlay",
+            "value": "\"hud\""
+          }
+        ]
+      },
+      "bootContracts": {
+        "count": 2,
+        "keys": [
+          "state-inspector",
+          "sample-0217"
+        ]
+      },
+      "notes": "Sample snapshot payload for State Inspector launch validation."
+    }
+  }
+}

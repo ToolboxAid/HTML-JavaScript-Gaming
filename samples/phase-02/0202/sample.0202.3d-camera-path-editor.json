@@ -1,0 +1,52 @@
+{
+  "$schema": "../../../tools/schemas/tools/3d-camera-path-editor.schema.json",
+  "tool": "3d-camera-path-editor",
+  "version": "1",
+  "config": {
+    "cameraPath": {
+      "schema": "tools.3d-camera-path.path/1",
+      "pathId": "sample-0202-camera-bounds-tour",
+      "waypoints": [
+        {
+          "t": 0,
+          "position": {
+            "x": -16,
+            "y": 8,
+            "z": -18
+          },
+          "lookAt": {
+            "x": -4,
+            "y": 0,
+            "z": 0
+          }
+        },
+        {
+          "t": 1700,
+          "position": {
+            "x": 0,
+            "y": 11,
+            "z": -14
+          },
+          "lookAt": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+          }
+        },
+        {
+          "t": 3400,
+          "position": {
+            "x": 16,
+            "y": 9,
+            "z": -18
+          },
+          "lookAt": {
+            "x": 4,
+            "y": 0,
+            "z": 0
+          }
+        }
+      ]
+    }
+  }
+}

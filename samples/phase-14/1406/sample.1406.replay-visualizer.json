@@ -1,0 +1,55 @@
+{
+  "$schema": "../../../tools/schemas/tools/replay-visualizer.schema.json",
+  "tool": "replay-visualizer",
+  "version": "1",
+  "config": {
+    "events": [
+      {
+        "id": "scenario-load",
+        "timeMs": 0,
+        "type": "scenario",
+        "label": "Load Regression Scenario",
+        "payload": {
+          "name": "run-right",
+          "frames": 4
+        }
+      },
+      {
+        "id": "frame-1",
+        "timeMs": 160,
+        "type": "frame",
+        "label": "Playback Frame 1",
+        "payload": {
+          "x": 140
+        }
+      },
+      {
+        "id": "frame-2",
+        "timeMs": 320,
+        "type": "frame",
+        "label": "Playback Frame 2",
+        "payload": {
+          "x": 180
+        }
+      },
+      {
+        "id": "frame-3",
+        "timeMs": 480,
+        "type": "frame",
+        "label": "Playback Frame 3",
+        "payload": {
+          "x": 220
+        }
+      },
+      {
+        "id": "frame-4",
+        "timeMs": 640,
+        "type": "frame",
+        "label": "Playback Frame 4",
+        "payload": {
+          "x": 260
+        }
+      }
+    ]
+  }
+}

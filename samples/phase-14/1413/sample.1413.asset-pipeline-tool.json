@@ -1,0 +1,40 @@
+{
+  "$schema": "../../../tools/schemas/tools/asset-pipeline-tool.schema.json",
+  "tool": "asset-pipeline-tool",
+  "version": "1",
+  "config": {
+    "pipelinePayload": {
+      "gameId": "sample-1413",
+      "domainInputs": {
+        "sprites": [
+          {
+            "assetId": "sample-1413-imported-sheet",
+            "runtimeFileName": "sample-1413-imported-sheet.runtime.json",
+            "toolDataFileName": "sample-1413-imported-sheet.tool.json",
+            "sourceToolId": "sprite-editor"
+          }
+        ],
+        "vectors": [
+          {
+            "assetId": "sample-1413-vector-ui",
+            "runtimeFileName": "sample-1413-vector-ui.runtime.json",
+            "toolDataFileName": "sample-1413-vector-ui.tool.json",
+            "sourceToolId": "vector-asset-studio"
+          }
+        ]
+      },
+      "toolStates": {
+        "asset-pipeline-tool": {
+          "schema": "html-js-gaming.tool-state",
+          "version": 1,
+          "toolId": "asset-pipeline-tool",
+          "projectId": "sample-1413",
+          "savedAtIso": "2026-04-24T00:00:00.000Z",
+          "state": {
+            "mode": "manifest-build"
+          }
+        }
+      }
+    }
+  }
+}
