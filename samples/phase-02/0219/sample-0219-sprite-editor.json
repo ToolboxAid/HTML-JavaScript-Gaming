@@ -1,4 +1,5 @@
 {
+  "$schema": "../../../tools/schemas/sample.tool-payload.schema.json",
   "sampleId": "0219",
   "phase": "02",
   "title": "Sprite Atlas Image Rendering",

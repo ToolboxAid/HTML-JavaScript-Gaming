@@ -1,9 +1,44 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "tools/schemas/sample.tool-payload.schema.json",
-  "title": "Sample Tool Payload",
+  "title": "Sample JSON Document",
   "type": "object",
-  "additionalProperties": {
-    "type": "object"
-  }
+  "required": ["$schema"],
+  "properties": {
+    "$schema": { "type": "string" },
+    "sampleId": { "type": "string" },
+    "phase": { "type": "string" },
+    "title": { "type": "string" },
+    "description": { "type": "string" },
+    "toolHints": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "payload": { "type": "object" },
+    "runtime": { "type": "object" },
+    "toolState": { "type": "object" },
+    "provenance": { "type": "object" }
+  },
+  "allOf": [
+    {
+      "if": {
+        "required": ["sampleId"]
+      },
+      "then": {
+        "required": [
+          "sampleId",
+          "phase",
+          "title",
+          "description",
+          "toolHints",
+          "payload",
+          "runtime",
+          "toolState",
+          "provenance"
+        ],
+        "additionalProperties": false
+      }
+    }
+  ],
+  "additionalProperties": true
 }

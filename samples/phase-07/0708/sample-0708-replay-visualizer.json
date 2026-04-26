@@ -1,4 +1,5 @@
 {
+  "$schema": "../../../tools/schemas/sample.tool-payload.schema.json",
   "sampleId": "0708",
   "phase": "07",
   "title": "Replay System",
@@ -13,35 +14,47 @@
         "timeMs": 0,
         "type": "boot",
         "label": "Replay Runtime Boot",
-        "payload": { "scene": "replay-system" }
+        "payload": {
+          "scene": "replay-system"
+        }
       },
       {
         "id": "record-start",
         "timeMs": 120,
         "type": "record",
         "label": "Start Recording",
-        "payload": { "actor": "runner", "x": 120 }
+        "payload": {
+          "actor": "runner",
+          "x": 120
+        }
       },
       {
         "id": "record-stop",
         "timeMs": 620,
         "type": "record",
         "label": "Stop Recording",
-        "payload": { "frames": 30, "x": 760 }
+        "payload": {
+          "frames": 30,
+          "x": 760
+        }
       },
       {
         "id": "playback-start",
         "timeMs": 700,
         "type": "playback",
         "label": "Start Playback",
-        "payload": { "mode": "deterministic" }
+        "payload": {
+          "mode": "deterministic"
+        }
       },
       {
         "id": "playback-end",
         "timeMs": 1120,
         "type": "playback",
         "label": "Playback Complete",
-        "payload": { "result": "match" }
+        "payload": {
+          "result": "match"
+        }
       }
     ]
   },

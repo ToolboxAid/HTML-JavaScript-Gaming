@@ -1,4 +1,5 @@
 {
+  "$schema": "../../../tools/schemas/sample.tool-payload.schema.json",
   "sampleId": "0306",
   "phase": "03",
   "title": "NES-Style Zones + Parallax",

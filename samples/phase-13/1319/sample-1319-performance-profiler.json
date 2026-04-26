@@ -1,4 +1,5 @@
 {
+  "$schema": "../../../tools/schemas/sample.tool-payload.schema.json",
   "sampleId": "1319",
   "phase": "13",
   "title": "Sample 1319 - Real Network + Live Dashboard",

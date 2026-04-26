@@ -1,4 +1,5 @@
 {
+  "$schema": "../../../tools/schemas/sample.tool-payload.schema.json",
   "sampleId": "1208",
   "phase": "12",
   "title": "Tool Formatted Tiles Parallax",

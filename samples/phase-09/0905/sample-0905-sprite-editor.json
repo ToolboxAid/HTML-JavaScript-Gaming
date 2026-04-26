@@ -1,4 +1,5 @@
 {
+  "$schema": "../../../tools/schemas/sample.tool-payload.schema.json",
   "sampleId": "0905",
   "phase": "09",
   "title": "Pixel Perfect Collision",

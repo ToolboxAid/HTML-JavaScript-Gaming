@@ -2,7 +2,12 @@ MODEL: GPT-5.3-codex
 REASONING: medium
 
 TASK:
-- Add schema files exactly as defined
-- Insert $schema references into JSON files
-- Remove ALL validation utilities
-- Do NOT add fallback logic
+- Add $schema to all sample JSON files
+- Align sample config.json to tool.schema.json
+- Align palette.json to shared schema
+- Remove any non-schema-compliant fields
+- Do NOT add validation utilities
+- Do NOT modify runtime logic
+
+OUTPUT:
+- All samples schema-compliant

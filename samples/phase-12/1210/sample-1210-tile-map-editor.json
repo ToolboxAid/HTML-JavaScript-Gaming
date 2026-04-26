@@ -1,4 +1,5 @@
 {
+  "$schema": "../../../tools/schemas/sample.tool-payload.schema.json",
   "sampleId": "1210",
   "phase": "12",
   "title": "Tilemap Objective Layout Preset",

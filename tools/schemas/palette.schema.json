@@ -1,20 +1,37 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "palette.schema.json",
+  "$id": "tools/schemas/palette.schema.json",
+  "title": "Shared Palette Document",
   "type": "object",
-  "required": ["name", "swatches"],
+  "required": ["schema", "version", "name"],
   "properties": {
+    "schema": { "const": "html-js-gaming.palette" },
+    "version": { "type": "integer", "const": 1 },
     "name": { "type": "string" },
-    "swatches": {
+    "source": { "type": "string" },
+    "entries": {
       "type": "array",
       "items": {
         "type": "object",
-        "required": ["id", "color"],
+        "required": ["symbol", "hex", "name"],
         "properties": {
-          "id": { "type": "string" },
-          "color": { "type": "string" }
-        }
+          "symbol": { "type": "string" },
+          "hex": {
+            "type": "string",
+            "pattern": "^#([0-9A-Fa-f]{6}|[0-9A-Fa-f]{8})$"
+          },
+          "name": { "type": "string" }
+        },
+        "additionalProperties": false
+      }
+    },
+    "colors": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^#([0-9A-Fa-f]{6}|[0-9A-Fa-f]{8})$"
       }
     }
-  }
+  },
+  "additionalProperties": true
 }

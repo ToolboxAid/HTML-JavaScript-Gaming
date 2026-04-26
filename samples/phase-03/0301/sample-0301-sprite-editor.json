@@ -1,4 +1,5 @@
 {
+  "$schema": "../../../tools/schemas/sample.tool-payload.schema.json",
   "sampleId": "0301",
   "phase": "03",
   "title": "Real Sprite Rendering",

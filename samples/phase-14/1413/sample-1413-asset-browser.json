@@ -1,4 +1,5 @@
 {
+  "$schema": "../../../tools/schemas/sample.tool-payload.schema.json",
   "sampleId": "1413",
   "phase": "14",
   "title": "Asset Import Pipeline",

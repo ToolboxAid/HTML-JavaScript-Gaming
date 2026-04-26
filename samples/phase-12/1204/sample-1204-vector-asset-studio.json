@@ -1,4 +1,5 @@
 {
+  "$schema": "../../../tools/schemas/sample.tool-payload.schema.json",
   "sampleId": "1204",
   "phase": "12",
   "title": "Tilemap Parallax Hero",

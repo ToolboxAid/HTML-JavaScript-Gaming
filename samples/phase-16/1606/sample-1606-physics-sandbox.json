@@ -1,4 +1,5 @@
 {
+  "$schema": "../../../tools/schemas/sample.tool-payload.schema.json",
   "sampleId": "1606",
   "phase": "16",
   "title": "3D Physics Playground",

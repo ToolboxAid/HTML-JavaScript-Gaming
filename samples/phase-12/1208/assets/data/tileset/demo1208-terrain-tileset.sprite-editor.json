@@ -1,4 +1,5 @@
 {
+  "$schema": "../../../../../../tools/schemas/sample.tool-payload.schema.json",
   "version": 40,
   "kind": "sprite-editor-v4.0",
   "cols": 48,

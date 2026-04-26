@@ -1,4 +1,5 @@
 {
+  "$schema": "../../../tools/schemas/sample.tool-payload.schema.json",
   "sampleId": "1211",
   "phase": "12",
   "title": "Tilemap Mario Learning Layout Preset",

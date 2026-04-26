@@ -1,4 +1,5 @@
 {
+  "$schema": "../../../tools/schemas/sample.tool-payload.schema.json",
   "sampleId": "0221",
   "phase": "02",
   "title": "Tilemap System",
@@ -11,16 +12,48 @@
       "schema": "tools.3d-json-payload-normalizer.document/1",
       "mapId": "sample-0221-collision-loop",
       "points": [
-        { "id": "p1", "x": -18, "y": 0, "z": -10 },
-        { "id": "p2", "x": 18, "y": 0, "z": -10 },
-        { "id": "p3", "x": 20, "y": 0, "z": 10 },
-        { "id": "p4", "x": -20, "y": 0, "z": 10 }
+        {
+          "id": "p1",
+          "x": -18,
+          "y": 0,
+          "z": -10
+        },
+        {
+          "id": "p2",
+          "x": 18,
+          "y": 0,
+          "z": -10
+        },
+        {
+          "id": "p3",
+          "x": 20,
+          "y": 0,
+          "z": 10
+        },
+        {
+          "id": "p4",
+          "x": -20,
+          "y": 0,
+          "z": 10
+        }
       ],
       "segments": [
-        { "from": "p1", "to": "p2" },
-        { "from": "p2", "to": "p3" },
-        { "from": "p3", "to": "p4" },
-        { "from": "p4", "to": "p1" }
+        {
+          "from": "p1",
+          "to": "p2"
+        },
+        {
+          "from": "p2",
+          "to": "p3"
+        },
+        {
+          "from": "p3",
+          "to": "p4"
+        },
+        {
+          "from": "p4",
+          "to": "p1"
+        }
       ]
     }
   },

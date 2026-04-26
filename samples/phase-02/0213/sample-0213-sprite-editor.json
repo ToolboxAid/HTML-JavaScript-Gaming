@@ -1,4 +1,5 @@
 {
+  "$schema": "../../../tools/schemas/sample.tool-payload.schema.json",
   "sampleId": "0213",
   "phase": "02",
   "title": "Sprite Render Layer",

@@ -1,4 +1,5 @@
 {
+  "$schema": "../../../tools/schemas/sample.tool-payload.schema.json",
   "sampleId": "0901",
   "phase": "09",
   "title": "Vector Rendering System",
@@ -21,8 +22,17 @@
           "kind": "polyline",
           "space": "2d",
           "closed": false,
-          "center": { "x": 420, "y": 320, "z": 0, "color": "#22d3ee" },
-          "rotation": { "x": 0, "y": 0, "z": 0 },
+          "center": {
+            "x": 420,
+            "y": 320,
+            "z": 0,
+            "color": "#22d3ee"
+          },
+          "rotation": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+          },
           "style": {
             "stroke": "#22d3ee",
             "fill": null,
@@ -40,10 +50,30 @@
             "tag": "route"
           },
           "points": [
-            { "x": 140, "y": 560, "z": 0, "color": "#22d3ee" },
-            { "x": 280, "y": 440, "z": 0, "color": "#22d3ee" },
-            { "x": 420, "y": 360, "z": 0, "color": "#22d3ee" },
-            { "x": 620, "y": 320, "z": 0, "color": "#22d3ee" }
+            {
+              "x": 140,
+              "y": 560,
+              "z": 0,
+              "color": "#22d3ee"
+            },
+            {
+              "x": 280,
+              "y": 440,
+              "z": 0,
+              "color": "#22d3ee"
+            },
+            {
+              "x": 420,
+              "y": 360,
+              "z": 0,
+              "color": "#22d3ee"
+            },
+            {
+              "x": 620,
+              "y": 320,
+              "z": 0,
+              "color": "#22d3ee"
+            }
           ]
         },
         {
@@ -52,8 +82,17 @@
           "kind": "polygon",
           "space": "2d",
           "closed": true,
-          "center": { "x": 860, "y": 360, "z": 0, "color": "#f97316" },
-          "rotation": { "x": 0, "y": 0, "z": 0 },
+          "center": {
+            "x": 860,
+            "y": 360,
+            "z": 0,
+            "color": "#f97316"
+          },
+          "rotation": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+          },
           "style": {
             "stroke": "#f97316",
             "fill": "#7c2d12",
@@ -71,10 +110,30 @@
             "tag": "hazard"
           },
           "points": [
-            { "x": 760, "y": 240, "z": 0, "color": "#f97316" },
-            { "x": 980, "y": 240, "z": 0, "color": "#f97316" },
-            { "x": 1020, "y": 420, "z": 0, "color": "#f97316" },
-            { "x": 820, "y": 500, "z": 0, "color": "#f97316" }
+            {
+              "x": 760,
+              "y": 240,
+              "z": 0,
+              "color": "#f97316"
+            },
+            {
+              "x": 980,
+              "y": 240,
+              "z": 0,
+              "color": "#f97316"
+            },
+            {
+              "x": 1020,
+              "y": 420,
+              "z": 0,
+              "color": "#f97316"
+            },
+            {
+              "x": 820,
+              "y": 500,
+              "z": 0,
+              "color": "#f97316"
+            }
           ]
         }
       ]
