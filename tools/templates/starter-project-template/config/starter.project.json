@@ -58,7 +58,7 @@
         "id": "sprite.asteroids-demo",
         "type": "sprite",
         "displayName": "Asteroids Demo Sprite Project",
-        "sourcePath": "games/Asteroids/assets/sprites/demo.json",
+        "sourcePath": "games/Asteroids/game.manifest.json#tools.sprite-editor.sprites.sprite.asteroids.demo.runtime",
         "sourceToolId": "sprite-editor"
       }
     ],
@@ -462,7 +462,7 @@
           {
             "id": "sprite.asteroids-demo",
             "name": "Asteroids Demo Atlas",
-            "path": "games/Asteroids/assets/sprites/demo.json",
+            "path": "games/Asteroids/game.manifest.json#tools.sprite-editor.sprites.sprite.asteroids.demo.runtime",
             "paletteId": "palette.vector-native-primary",
             "sourceTool": "sprite-editor"
           }

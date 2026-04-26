@@ -14,7 +14,7 @@ const REGISTRY_PATH_CANDIDATES = [
   "docs/reference/architecture-standards/specs/shared_asset_promotion_registry.json",
   "docs/specs/shared_asset_promotion_registry.json"
 ];
-const ASTEROIDS_MANIFEST_PATH = "games/Asteroids/assets/tools.manifest.json";
+const ASTEROIDS_MANIFEST_PATH = "games/Asteroids/game.manifest.json";
 const TEMPLATE_MANIFEST_PATH = "games/_template/assets/tools.manifest.json";
 const SAMPLE_ASSET_BROWSER_SCENE_PATH = "samples/phase-15/1505/AssetBrowserScene.js";
 const TOOL_DEMO_PROJECT_ASSETS_PATH = "tools/shared/samples/project-asset-registry-demo/project.assets.json";
@@ -109,7 +109,10 @@ function collectProjectAssetEntries(projectAssets) {
 }
 
 function validateAsteroidsManifest(asteroidsManifest, issues) {
-  const domains = asteroidsManifest?.domains || {};
+  if (toRepoPath(asteroidsManifest?.schema || "") !== "html-js-gaming.game-manifest") {
+    issues.push("Asteroids manifest schema must be html-js-gaming.game-manifest.");
+  }
+  const domains = asteroidsManifest?.lineage?.toolDomains || {};
   for (const [domain, entries] of Object.entries(domains)) {
     if (!Array.isArray(entries)) {
       issues.push(`Asteroids manifest domain is not an array: ${domain}`);
@@ -118,10 +121,10 @@ function validateAsteroidsManifest(asteroidsManifest, issues) {
     for (const entry of entries) {
       const runtimePath = toRepoPath(entry?.runtimePath || "");
       const toolDataPath = toRepoPath(entry?.toolDataPath || "");
-      if (!runtimePath.startsWith("games/Asteroids/assets/")) {
+      if (!runtimePath.startsWith("games/Asteroids/game.manifest.json#")) {
         issues.push(`Asteroids runtime path is not game-local: ${runtimePath}`);
       }
-      if (!toolDataPath.startsWith("games/Asteroids/assets/")) {
+      if (!toolDataPath.startsWith("games/Asteroids/game.manifest.json#")) {
         issues.push(`Asteroids tool-data path is not game-local: ${toolDataPath}`);
       }
       if (runtimePath.includes("/data/")) {

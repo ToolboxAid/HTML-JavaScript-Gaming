@@ -80,6 +80,13 @@ export function resolveGameImageConventionPaths(options = {}) {
 export function resolveBezelStretchOverridePath(options = {}) {
   const fileName = safeText(options.fileName, "bezel.stretch.override.json");
   const explicitBezelPath = safeText(options.bezelPath, "");
+  const normalizedExplicitBezelPath = normalizePath(explicitBezelPath);
+  const explicitPathMatch = normalizedExplicitBezelPath.match(/games\/([^/]+)\//i);
+  const inferredGameIdFromBezelPath = explicitPathMatch ? safeText(explicitPathMatch[1], "") : "";
+  const gameId = safeText(options.gameId, "") || inferredGameIdFromBezelPath || discoverGameIdFromDocument(options.documentRef || null);
+  if (gameId.toLowerCase() === "asteroids") {
+    return "games/Asteroids/game.manifest.json#tools.asset-browser.assets.bezel.stretchOverride";
+  }
   const bezelPath = explicitBezelPath || resolveGameImageConventionPaths(options).bezelPath;
   return resolveSiblingPath(bezelPath, fileName);
 }

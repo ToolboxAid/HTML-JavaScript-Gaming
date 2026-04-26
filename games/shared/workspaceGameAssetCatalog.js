@@ -1,5 +1,6 @@
 const GAME_ASSET_CATALOG_SCHEMA = "html-js-gaming.game-asset-catalog";
 const GAME_ASSET_CATALOG_VERSION = 1;
+const GAME_MANIFEST_SCHEMA = "html-js-gaming.game-manifest";
 const DEFAULT_GAME_ASSET_CATALOG_FILENAME = "workspace.asset-catalog.json";
 
 const catalogCache = new Map();
@@ -158,6 +159,30 @@ function normalizeCatalogPayload(payload) {
   };
 }
 
+function normalizeManifestCatalogPayload(payload) {
+  const source = toObject(payload);
+  const schema = typeof source.schema === "string" ? source.schema.trim() : "";
+  const version = Number(source.version);
+  const assetCatalog = toObject(source.assetCatalog);
+  const entries = normalizeCatalogEntries(assetCatalog.assets || assetCatalog);
+  const isValidSchema = schema === GAME_MANIFEST_SCHEMA;
+  const isValidVersion = Number.isFinite(version) && version >= 1;
+  return {
+    schema,
+    version,
+    entries,
+    valid: isValidSchema && isValidVersion
+  };
+}
+
+function extractCatalogFromPayload(payload) {
+  const catalogPayload = normalizeCatalogPayload(payload);
+  if (catalogPayload.valid || Object.keys(catalogPayload.entries).length > 0) {
+    return catalogPayload;
+  }
+  return normalizeManifestCatalogPayload(payload);
+}
+
 export async function preloadWorkspaceGameAssetCatalog(gameIdInput, options = {}) {
   const gameId = normalizeGameId(gameIdInput);
   if (!gameId) {
@@ -190,7 +215,7 @@ export async function preloadWorkspaceGameAssetCatalog(gameIdInput, options = {}
         return current?.entries || {};
       }
       const payload = await response.json();
-      const normalized = normalizeCatalogPayload(payload);
+      const normalized = extractCatalogFromPayload(payload);
       setCachedCatalogRecord(gameId, {
         entries: normalized.entries,
         path: catalogPath,

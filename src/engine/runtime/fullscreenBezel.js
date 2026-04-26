@@ -197,6 +197,67 @@ function parseStretchConfigObject(candidate) {
   };
 }
 
+function isAsteroidsBezelStretchConfigPath(configPath) {
+  const normalizedPath = normalizePath(configPath).toLowerCase();
+  return normalizedPath.endsWith("/games/asteroids/assets/images/bezel.stretch.override.json")
+    || normalizedPath.endsWith("games/asteroids/assets/images/bezel.stretch.override.json");
+}
+
+function resolveStretchConfigRequestPath(configPath) {
+  const normalizedPath = normalizePath(configPath);
+  const hashIndex = normalizedPath.indexOf("#");
+  const pathWithoutHash = hashIndex >= 0
+    ? normalizedPath.slice(0, hashIndex)
+    : normalizedPath;
+
+  if (isAsteroidsBezelStretchConfigPath(configPath)) {
+    return "/games/Asteroids/game.manifest.json";
+  }
+  return pathWithoutHash.startsWith("/") ? pathWithoutHash : `/${pathWithoutHash}`;
+}
+
+function readPayloadFromConfigFragment(payload, configPath) {
+  const normalizedPath = normalizePath(configPath);
+  const hashIndex = normalizedPath.indexOf("#");
+  if (hashIndex < 0) {
+    return null;
+  }
+  const fragment = normalizedPath.slice(hashIndex + 1).trim();
+  if (!fragment) {
+    return null;
+  }
+  const segments = fragment.includes("/")
+    ? fragment.split("/").filter(Boolean)
+    : fragment.split(".").filter(Boolean);
+  let current = payload;
+  for (const segment of segments) {
+    if (!current || typeof current !== "object") {
+      return null;
+    }
+    current = current[segment];
+  }
+  return current;
+}
+
+function parseStretchConfigPayload(payload, configPath = "") {
+  const fragmentValue = readPayloadFromConfigFragment(payload, configPath);
+  if (fragmentValue && typeof fragmentValue === "object") {
+    return parseStretchConfigObject(fragmentValue);
+  }
+
+  const parsed = parseStretchConfigObject(payload);
+  if (parsed.uniformEdgeStretchPx > 0) {
+    return parsed;
+  }
+
+  const manifestOverride = payload?.tools?.["asset-browser"]?.assets?.bezel?.stretchOverride;
+  if (manifestOverride && typeof manifestOverride === "object") {
+    return parseStretchConfigObject(manifestOverride);
+  }
+
+  return parsed;
+}
+
 function isNodeRuntime() {
   return typeof process !== "undefined"
     && !!process?.versions?.node;
@@ -250,13 +311,13 @@ export async function loadBezelStretchConfig(configPath, options = {}) {
   }
 
   try {
-    const requestPath = normalizedPath.startsWith("/") ? normalizedPath : `/${normalizedPath}`;
+    const requestPath = resolveStretchConfigRequestPath(normalizedPath);
     const response = await fetchImpl(requestPath, { cache: "no-store" });
     if (!response || response.ok !== true) {
       return { ...DEFAULT_BEZEL_STRETCH_CONFIG };
     }
     const parsed = await response.json();
-    return parseStretchConfigObject(parsed);
+    return parseStretchConfigPayload(parsed, normalizedPath);
   } catch {
     return { ...DEFAULT_BEZEL_STRETCH_CONFIG };
   }

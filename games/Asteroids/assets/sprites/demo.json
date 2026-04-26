@@ -1,4 +1,0 @@
-{
-  "name": "Asteroids Demo Atlas",
-  "frames": ["player-ship", "player-bullet", "asteroid-large", "asteroid-medium", "asteroid-small", "title-logo", "lives-icon", "game-over-label"]
-}

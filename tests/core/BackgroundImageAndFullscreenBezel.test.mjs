@@ -244,7 +244,7 @@ function testGameImageConventionsAreGameAgnostic() {
   assert.equal(asteroidsPaths.bezelPath, "games/Asteroids/assets/images/bezel.png");
   assert.equal(
     resolveBezelStretchOverridePath({ documentRef: { location: { pathname: "/games/Asteroids/index.html" } } }),
-    "games/Asteroids/assets/images/bezel.stretch.override.json"
+    "games/Asteroids/game.manifest.json#tools.asset-browser.assets.bezel.stretchOverride"
   );
 
   const templatePaths = resolveGameImageConventionPaths({
@@ -459,7 +459,7 @@ function testTransparentWindowDetectionAndAspectFit() {
   assert.equal(bestFit.height <= 500.01, true);
   assert.equal(
     resolveBezelStretchConfigPath("games/Asteroids/assets/images/bezel.png"),
-    "games/Asteroids/assets/images/bezel.stretch.override.json"
+    "games/Asteroids/game.manifest.json#tools.asset-browser.assets.bezel.stretchOverride"
   );
 }
 
@@ -658,7 +658,7 @@ function testMalformedAndExtremeStretchConfigValuesAreSafe() {
 
 async function testBezelStretchConfigAutoCreate() {
   const tempRoot = await fs.mkdtemp(path.join(os.tmpdir(), "bezel-stretch-config-"));
-  const configPath = "games/Asteroids/assets/images/bezel.stretch.override.json";
+  const configPath = "games/TestGame/assets/images/bezel.stretch.override.json";
 
   try {
     const config = await ensureBezelStretchConfigFile(configPath, {
@@ -778,13 +778,13 @@ async function testBezelDetectionDoesNotOverwriteExistingStretchConfig() {
 
 async function testMalformedStretchConfigFileFallsBackWithoutOverwrite() {
   const tempRoot = await fs.mkdtemp(path.join(os.tmpdir(), "bezel-malformed-config-"));
-  const configPath = path.resolve(tempRoot, "games/Asteroids/assets/images/bezel.stretch.override.json");
+  const configPath = path.resolve(tempRoot, "games/TestGame/assets/images/bezel.stretch.override.json");
   try {
     await fs.mkdir(path.dirname(configPath), { recursive: true });
     const malformedContent = "{not-valid-json";
     await fs.writeFile(configPath, malformedContent, "utf8");
 
-    const loaded = await ensureBezelStretchConfigFile("games/Asteroids/assets/images/bezel.stretch.override.json", {
+    const loaded = await ensureBezelStretchConfigFile("games/TestGame/assets/images/bezel.stretch.override.json", {
       cwd: tempRoot,
       fsModule: fs,
       pathModule: path

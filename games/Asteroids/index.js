@@ -8,6 +8,7 @@ import { Theme, ThemeTokens } from "../../src/engine/theme/index.js";
 import { resolveDebugConfig } from "../../src/shared/utils/debugConfigUtils.js";
 import { createNoopDevConsoleIntegration } from "../../src/shared/utils/createNoopDevConsoleIntegration.js";
 import AsteroidsGameScene from "./game/AsteroidsGameScene.js";
+import { preloadWorkspaceGameAssetCatalog } from "../shared/workspaceGameAssetCatalog.js";
 
 export const asteroidFlow = Object.freeze({
   attract: attractFlow,
@@ -87,7 +88,7 @@ export function createAsteroidsTemplateBoot(initialFlow = "attract") {
   });
 }
 
-export function bootAsteroidsNew({
+export async function bootAsteroidsNew({
   documentRef = globalThis.document ?? null,
   EngineClass = Engine,
   InputServiceClass = InputService,
@@ -118,6 +119,12 @@ export function bootAsteroidsNew({
       traceBootFailure(stage, new Error('Missing #game canvas element'));
       return null;
     }
+
+    stage = "preload-asset-catalog";
+    traceBoot(stage);
+    await preloadWorkspaceGameAssetCatalog("Asteroids", {
+      catalogPath: "/games/Asteroids/game.manifest.json"
+    });
 
     stage = "create-input";
     traceBoot(stage);
@@ -188,11 +195,9 @@ export function bootAsteroidsNew({
 }
 
 function tryAutoBoot() {
-  try {
-    void bootAsteroidsNew();
-  } catch (error) {
+  void bootAsteroidsNew().catch((error) => {
     traceBootFailure("auto-boot", error);
-  }
+  });
 }
 
 if (typeof document !== "undefined") {

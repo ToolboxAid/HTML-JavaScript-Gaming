@@ -4,4 +4,4 @@ Get-ChildItem "$project\games\Asteroids" -Recurse -Filter *.json |
 Sort-Object FullName |
 ForEach-Object {
     $_.FullName.Replace("$project\", "")
-} | Set-Content "$project\asteroids-json-list.txt"
+} | Set-Content "$project\tmp\asteroids-json-list.txt"

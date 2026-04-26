@@ -1,1 +1,11 @@
-PR 9.5: final review and next phase prep
+BUILD_PR_LEVEL_9_6_ASTEROIDS_HARD_CUTOVER_SINGLE_MANIFEST
+
+- Consolidated Asteroids JSON into game.manifest.json
+- Removed all legacy Asteroids JSON files
+- Updated Asteroids references to manifest-owned data
+- Verified direct launch
+
+PR Details:
+- Hard cutover to true single-manifest Asteroids model
+- No validators
+- No start_of_day changes
