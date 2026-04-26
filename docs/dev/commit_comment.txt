@@ -1,6 +1,3 @@
-Schema-backed tool/workspace manifest boundary cleanup
+Move JSON schema contracts under tools/schemas
 
-- Adds explicit schema contracts for tool/sample/workspace payloads
-- Locks sample palette behavior to named palettes
-- Keeps workspace-owned assets inside workspace.manifest
-- Gates valid UI actions by loaded context
+Keeps schema ownership with the tool/workspace system instead of adding root-level schema files. Establishes shared manifest schemas under tools/schemas and tool-specific payload schemas under tools/schemas/tools.

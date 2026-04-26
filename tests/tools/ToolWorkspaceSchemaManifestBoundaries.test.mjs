@@ -3,21 +3,21 @@ import { readFileSync } from "node:fs";
 import {
   createDefaultCameraPathPayload,
   validateCameraPathPayload
-} from "../../tools/3D Camera Path Editor/cameraPathPayload.schema.js";
+} from "../../tools/schemas/tools/cameraPathPayload.schema.js";
 import {
   createDefaultMapPayload,
   validateMapPayload
-} from "../../tools/3D JSON Payload Normalizer/mapPayload.schema.js";
+} from "../../tools/schemas/tools/mapPayload.schema.js";
 import {
   createDefaultAssetPayload,
   validateAssetPayload
-} from "../../tools/3D Asset Viewer/assetPayload.schema.js";
+} from "../../tools/schemas/tools/assetPayload.schema.js";
 import {
   validateWorkspaceManifestSchema,
   WORKSPACE_MANIFEST_SCHEMA,
   WORKSPACE_MANIFEST_VERSION,
   WORKSPACE_DOCUMENT_KIND
-} from "../../tools/shared/workspaceManifest.schema.js";
+} from "../../tools/schemas/workspaceManifest.schema.js";
 
 export async function run() {
   const cameraValidation = validateCameraPathPayload(createDefaultCameraPathPayload(), {

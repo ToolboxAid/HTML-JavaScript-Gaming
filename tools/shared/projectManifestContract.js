@@ -12,7 +12,7 @@ import {
   WORKSPACE_MANIFEST_SCHEMA,
   WORKSPACE_MANIFEST_VERSION,
   validateWorkspaceManifestSchema
-} from "./workspaceManifest.schema.js";
+} from "../schemas/workspaceManifest.schema.js";
 
 export const PROJECT_MANIFEST_SCHEMA = WORKSPACE_MANIFEST_SCHEMA;
 export const PROJECT_MANIFEST_VERSION = WORKSPACE_MANIFEST_VERSION;

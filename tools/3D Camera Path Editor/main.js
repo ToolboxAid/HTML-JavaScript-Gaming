@@ -4,7 +4,7 @@ import {
   createDefaultCameraPathPayload,
   normalizeCameraPathPayload,
   validateCameraPathPayload
-} from "./cameraPathPayload.schema.js";
+} from "../schemas/tools/cameraPathPayload.schema.js";
 
 const refs = {
   addButton: document.getElementById("addCameraPointButton"),

@@ -1,4 +1,4 @@
-import { cloneValue, safeString } from "./projectSystemValueUtils.js";
+import { cloneValue, safeString } from "../shared/projectSystemValueUtils.js";
 
 export const WORKSPACE_MANIFEST_SCHEMA = "html-js-gaming.project";
 export const WORKSPACE_MANIFEST_VERSION = 1;

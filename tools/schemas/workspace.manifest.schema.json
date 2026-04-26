@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "tools/schemas/workspace.manifest.schema.json",
+  "title": "Workspace Manifest",
+  "type": "object",
+  "required": ["palettes", "tools"],
+  "additionalProperties": false,
+  "properties": {
+    "palettes": {
+      "type": "object",
+      "description": "Workspace-owned duplicated palettes. Used palettes cannot be replaced with a different palette identity."
+    },
+    "tools": {
+      "type": "object",
+      "description": "All workspace-owned tool asset data. Vector/tool assets should remain in the manifest unless explicitly exportable output such as PNG."
+    }
+  }
+}

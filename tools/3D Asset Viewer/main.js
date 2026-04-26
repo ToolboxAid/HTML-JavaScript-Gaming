@@ -4,7 +4,7 @@ import {
   ASSET_VIEWER_REPORT_SCHEMA,
   createDefaultAssetPayload,
   validateAssetPayload
-} from "./assetPayload.schema.js";
+} from "../schemas/tools/assetPayload.schema.js";
 
 const refs = {
   inspectButton: document.getElementById("inspect3dAssetButton"),

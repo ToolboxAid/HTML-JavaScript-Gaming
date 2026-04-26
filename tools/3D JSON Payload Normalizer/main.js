@@ -4,7 +4,7 @@ import {
   createDefaultMapPayload,
   normalizeMapPayload,
   validateMapPayload
-} from "./mapPayload.schema.js";
+} from "../schemas/tools/mapPayload.schema.js";
 
 const refs = {
   normalizeButton: document.getElementById("normalize3dMapButton"),

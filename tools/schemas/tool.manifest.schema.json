@@ -1,0 +1,13 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "tools/schemas/tool.manifest.schema.json",
+  "title": "Tool Manifest",
+  "type": "object",
+  "required": ["tool", "schema", "data"],
+  "additionalProperties": true,
+  "properties": {
+    "tool": { "type": "string" },
+    "schema": { "type": "string" },
+    "data": { "type": "object" }
+  }
+}
