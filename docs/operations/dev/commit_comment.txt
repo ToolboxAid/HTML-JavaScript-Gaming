@@ -1,1 +1,9 @@
-Place pager at explicit platformShell marker
+Fix Workspace Manager host size and tool resolution
+
+PR Details:
+- Expands Workspace Manager host and mount container to fill available browser page area.
+- Resolves explicit tool query values through the tool registry.
+- Shows resolved tool name in pager instead of No tool available.
+- Mounts/activates selected tool.
+- Keeps first-tool default only when no explicit tool is provided.
+- Does not restore legacy game query fallback.

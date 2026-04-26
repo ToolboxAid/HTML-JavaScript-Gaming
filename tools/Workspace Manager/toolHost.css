@@ -108,6 +108,8 @@ body.tool-host-page {
   overflow: hidden;
 }
 
+.tool-host-workspace__mount > iframe[data-tool-host-frame],
+.tool-host-workspace__mount > iframe[data-game-host-frame],
 .tool-host-editors-surface > iframe[data-tool-host-frame],
 .tool-host-editors-surface > iframe[data-game-host-frame] {
   display: block;

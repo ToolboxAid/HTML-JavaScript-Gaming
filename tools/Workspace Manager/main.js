@@ -307,6 +307,11 @@ function readRequestedToolIdFromQuery() {
   return requested;
 }
 
+function readRawToolIdFromQuery() {
+  const url = new URL(window.location.href);
+  return (url.searchParams.get("tool") || "").trim();
+}
+
 function readInitialGameId() {
   const url = new URL(window.location.href);
   const gameId = (url.searchParams.get("gameId") || "").trim();
@@ -654,8 +659,19 @@ function bindEvents() {
           applyToolsUsedFilterForGame(null);
           return;
         }
-        applyToolsUsedFilterForGame(gameEntry, "");
+        const rawRequestedToolId = readRawToolIdFromQuery();
+        applyToolsUsedFilterForGame(gameEntry, rawRequestedToolId);
         const requestedToolId = readRequestedToolIdFromQuery();
+        if (rawRequestedToolId && !requestedToolId) {
+          writeStatus(`Tool "${rawRequestedToolId}" is not available for Workspace Manager launch.`);
+          renderMountDiagnostic(
+            `Tool "${rawRequestedToolId}" is not available for Workspace Manager launch.`,
+            `gameId=${gameEntry.id}`
+          );
+          runtime.unmountCurrentTool("popstate-invalid-tool");
+          syncControlState();
+          return;
+        }
         const toolId = requestedToolId || (toolIds[0] || "");
         writeSelectedToolId(toolId);
         updateSwitchMeta();
@@ -675,7 +691,18 @@ function bindEvents() {
       return;
     }
     applyToolsUsedFilterForGame(null);
+    const rawRequestedToolId = readRawToolIdFromQuery();
     const requestedToolId = readRequestedToolIdFromQuery();
+    if (rawRequestedToolId && !requestedToolId) {
+      writeStatus(`Tool "${rawRequestedToolId}" is not available for Workspace Manager launch.`);
+      renderMountDiagnostic(
+        `Tool "${rawRequestedToolId}" is not available for Workspace Manager launch.`,
+        "Select a valid tool id from the active registry."
+      );
+      runtime.unmountCurrentTool("popstate-invalid-tool");
+      syncControlState();
+      return;
+    }
     const toolId = requestedToolId || (toolIds[0] || "");
     writeSelectedToolId(toolId);
     updateSwitchMeta();
@@ -731,14 +758,19 @@ async function init() {
     }
   }
 
-  const rawRequestedToolId = (() => {
-    const url = new URL(window.location.href);
-    return (url.searchParams.get("tool") || "").trim();
-  })();
+  const rawRequestedToolId = readRawToolIdFromQuery();
   applyToolsUsedFilterForGame(initialGameEntry, rawRequestedToolId);
   bindEvents();
 
   const requestedToolId = readRequestedToolIdFromQuery();
+  if (rawRequestedToolId && !requestedToolId) {
+    writeStatus(`Tool "${rawRequestedToolId}" is not available for Workspace Manager launch.`);
+    renderMountDiagnostic(
+      `Tool "${rawRequestedToolId}" is not available for Workspace Manager launch.`,
+      "Select a valid tool id from the active registry."
+    );
+    return;
+  }
   const initialToolId = requestedToolId || (toolIds[0] || "");
   writeSelectedToolId(initialToolId);
   updateSwitchMeta();
