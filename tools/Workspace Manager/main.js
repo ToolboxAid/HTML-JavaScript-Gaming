@@ -584,7 +584,7 @@ function bindPagerMessageBridge() {
       return;
     }
 
-    const action = payload.action === "prev" || payload.action === "next"
+    const action = payload.action === "prev" || payload.action === "next" || payload.action === "select"
       ? payload.action
       : "";
     if (!action) {
@@ -600,6 +600,26 @@ function bindPagerMessageBridge() {
         "Load a valid game/tool context before switching tools."
       );
       syncControlState();
+      return;
+    }
+
+    if (action === "select") {
+      const selectedToolId = typeof payload.toolId === "string"
+        ? payload.toolId.trim()
+        : "";
+      if (!selectedToolId || !toolIds.includes(selectedToolId) || !getToolHostEntryById(manifest, selectedToolId)) {
+        writeStatus(`Tool "${selectedToolId || "(missing)"}" is not available for Workspace Manager launch.`);
+        renderMountDiagnostic(
+          `Tool "${selectedToolId || "(missing)"}" is not available for delegated pager selection.`,
+          "Select a valid tool id from the active registry."
+        );
+        syncControlState();
+        return;
+      }
+      writeSelectedToolId(selectedToolId);
+      updateSwitchMeta();
+      updateStandaloneHref(selectedToolId);
+      mountSelectedTool("select");
       return;
     }
 

@@ -1,9 +1,1 @@
-Force delegated Workspace Manager pager events
-
-PR Details:
-- Replaces stale/direct pager button binding with delegated click handling from a stable parent.
-- Ensures PREV/NEXT handlers fire for rendered pager buttons.
-- Updates selected tool, label, and mounted content.
-- Adds diagnostics for pager click/state failures.
-- Avoids duplicate listeners on repeated render.
-- Does not restore legacy game query fallback.
+Fix tool selector population and enable interaction
