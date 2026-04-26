@@ -2,6 +2,7 @@
   "documentKind": "workspace-manifest",
   "schema": "html-js-gaming.workspace-manifest.palette-links/1",
   "version": 1,
+  "games": [],
   "samples": [
     {
       "id": "0207",
