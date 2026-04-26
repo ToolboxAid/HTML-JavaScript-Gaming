@@ -1,0 +1,64 @@
+{
+  "schema": "html-js-gaming.game-manifest",
+  "version": 1,
+  "game": {
+    "id": "SolarSystem",
+    "name": "Solar System",
+    "folder": "SolarSystem"
+  },
+  "launch": {
+    "directPath": "/games/SolarSystem/index.html",
+    "workspaceManagerPath": "/tools/Workspace%20Manager/index.html?gameId=SolarSystem&mount=game",
+    "workspaceManagerOptional": true
+  },
+  "lineage": {
+    "legacyCatalogs": [
+      "games/SolarSystem/assets/workspace.asset-catalog.json"
+    ],
+    "status": "legacy-catalogs-retained-during-ssot-rollout"
+  },
+  "sources": {
+    "workspaceAssetCatalogPath": "games/SolarSystem/assets/workspace.asset-catalog.json",
+    "toolsManifestPath": "",
+    "metadataPath": "games/metadata/games.index.metadata.json"
+  },
+  "assets": {
+    "allJsonAssets": [
+      "games/SolarSystem/assets/palettes/solar-system-classic.palette.json",
+      "games/SolarSystem/assets/skins/skin.main.json",
+      "games/SolarSystem/assets/workspace.asset-catalog.json"
+    ],
+    "palettes": [
+      "games/SolarSystem/assets/palettes/solar-system-classic.palette.json"
+    ],
+    "skins": [
+      "games/SolarSystem/assets/skins/skin.main.json"
+    ],
+    "sprites": [],
+    "vectors": [],
+    "tilemaps": [],
+    "parallax": [],
+    "tilesets": [],
+    "overrides": [],
+    "runtime": [],
+    "config": [],
+    "other": [
+      "games/SolarSystem/assets/workspace.asset-catalog.json"
+    ],
+    "workspaceCatalogAssets": [
+      {
+        "assetId": "palette.solar-system.classic",
+        "path": "games/SolarSystem/assets/palettes/solar-system-classic.palette.json",
+        "kind": "palette",
+        "source": "workspace-manager"
+      },
+      {
+        "assetId": "skin.main",
+        "path": "games/SolarSystem/assets/skins/skin.main.json",
+        "kind": "skin",
+        "source": "workspace-manager"
+      }
+    ],
+    "toolsManifestAssets": []
+  }
+}

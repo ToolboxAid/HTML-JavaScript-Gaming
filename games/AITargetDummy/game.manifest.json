@@ -1,0 +1,53 @@
+{
+  "schema": "html-js-gaming.game-manifest",
+  "version": 1,
+  "game": {
+    "id": "AITargetDummy",
+    "name": "AI Target Dummy",
+    "folder": "AITargetDummy"
+  },
+  "launch": {
+    "directPath": "/games/AITargetDummy/index.html",
+    "workspaceManagerPath": "/tools/Workspace%20Manager/index.html?gameId=AITargetDummy&mount=game",
+    "workspaceManagerOptional": true
+  },
+  "lineage": {
+    "legacyCatalogs": [
+      "games/AITargetDummy/assets/workspace.asset-catalog.json"
+    ],
+    "status": "legacy-catalogs-retained-during-ssot-rollout"
+  },
+  "sources": {
+    "workspaceAssetCatalogPath": "games/AITargetDummy/assets/workspace.asset-catalog.json",
+    "toolsManifestPath": "",
+    "metadataPath": "games/metadata/games.index.metadata.json"
+  },
+  "assets": {
+    "allJsonAssets": [
+      "games/AITargetDummy/assets/workspace.asset-catalog.json"
+    ],
+    "palettes": [],
+    "skins": [],
+    "sprites": [],
+    "vectors": [],
+    "tilemaps": [],
+    "parallax": [],
+    "tilesets": [],
+    "overrides": [],
+    "runtime": [],
+    "config": [],
+    "other": [
+      "games/AITargetDummy/assets/images/preview.svg",
+      "games/AITargetDummy/assets/workspace.asset-catalog.json"
+    ],
+    "workspaceCatalogAssets": [
+      {
+        "assetId": "image.ai-target-dummy.preview",
+        "path": "games/AITargetDummy/assets/images/preview.svg",
+        "kind": "image",
+        "source": "workspace-manager"
+      }
+    ],
+    "toolsManifestAssets": []
+  }
+}

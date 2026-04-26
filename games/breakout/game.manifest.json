@@ -1,0 +1,64 @@
+{
+  "schema": "html-js-gaming.game-manifest",
+  "version": 1,
+  "game": {
+    "id": "Breakout",
+    "name": "Breakout",
+    "folder": "Breakout"
+  },
+  "launch": {
+    "directPath": "/games/Breakout/index.html",
+    "workspaceManagerPath": "/tools/Workspace%20Manager/index.html?gameId=Breakout&mount=game",
+    "workspaceManagerOptional": true
+  },
+  "lineage": {
+    "legacyCatalogs": [
+      "games/Breakout/assets/workspace.asset-catalog.json"
+    ],
+    "status": "legacy-catalogs-retained-during-ssot-rollout"
+  },
+  "sources": {
+    "workspaceAssetCatalogPath": "games/Breakout/assets/workspace.asset-catalog.json",
+    "toolsManifestPath": "",
+    "metadataPath": "games/metadata/games.index.metadata.json"
+  },
+  "assets": {
+    "allJsonAssets": [
+      "games/Breakout/assets/palettes/breakout-classic.palette.json",
+      "games/Breakout/assets/skins/skin.main.json",
+      "games/Breakout/assets/workspace.asset-catalog.json"
+    ],
+    "palettes": [
+      "games/Breakout/assets/palettes/breakout-classic.palette.json"
+    ],
+    "skins": [
+      "games/Breakout/assets/skins/skin.main.json"
+    ],
+    "sprites": [],
+    "vectors": [],
+    "tilemaps": [],
+    "parallax": [],
+    "tilesets": [],
+    "overrides": [],
+    "runtime": [],
+    "config": [],
+    "other": [
+      "games/Breakout/assets/workspace.asset-catalog.json"
+    ],
+    "workspaceCatalogAssets": [
+      {
+        "assetId": "palette.breakout.classic",
+        "path": "games/Breakout/assets/palettes/breakout-classic.palette.json",
+        "kind": "palette",
+        "source": "workspace-manager"
+      },
+      {
+        "assetId": "skin.main",
+        "path": "games/Breakout/assets/skins/skin.main.json",
+        "kind": "skin",
+        "source": "workspace-manager"
+      }
+    ],
+    "toolsManifestAssets": []
+  }
+}

@@ -5,6 +5,11 @@
     "id": "asteroids",
     "name": "Asteroids"
   },
+  "launch": {
+    "directPath": "/games/Asteroids/index.html",
+    "workspaceManagerPath": "/tools/Workspace%20Manager/index.html?gameId=Asteroids&mount=game",
+    "workspaceManagerOptional": true
+  },
   "lineage": {
     "legacyCatalogs": [
       "games/Asteroids/assets/workspace.asset-catalog.json",

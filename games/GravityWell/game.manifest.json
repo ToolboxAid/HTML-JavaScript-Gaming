@@ -1,0 +1,53 @@
+{
+  "schema": "html-js-gaming.game-manifest",
+  "version": 1,
+  "game": {
+    "id": "GravityWell",
+    "name": "Gravity Well",
+    "folder": "GravityWell"
+  },
+  "launch": {
+    "directPath": "/games/GravityWell/index.html",
+    "workspaceManagerPath": "/tools/Workspace%20Manager/index.html?gameId=GravityWell&mount=game",
+    "workspaceManagerOptional": true
+  },
+  "lineage": {
+    "legacyCatalogs": [
+      "games/GravityWell/assets/workspace.asset-catalog.json"
+    ],
+    "status": "legacy-catalogs-retained-during-ssot-rollout"
+  },
+  "sources": {
+    "workspaceAssetCatalogPath": "games/GravityWell/assets/workspace.asset-catalog.json",
+    "toolsManifestPath": "",
+    "metadataPath": "games/metadata/games.index.metadata.json"
+  },
+  "assets": {
+    "allJsonAssets": [
+      "games/GravityWell/assets/workspace.asset-catalog.json"
+    ],
+    "palettes": [],
+    "skins": [],
+    "sprites": [],
+    "vectors": [],
+    "tilemaps": [],
+    "parallax": [],
+    "tilesets": [],
+    "overrides": [],
+    "runtime": [],
+    "config": [],
+    "other": [
+      "games/GravityWell/assets/images/preview.svg",
+      "games/GravityWell/assets/workspace.asset-catalog.json"
+    ],
+    "workspaceCatalogAssets": [
+      {
+        "assetId": "image.gravitywell.preview",
+        "path": "games/GravityWell/assets/images/preview.svg",
+        "kind": "image",
+        "source": "workspace-manager"
+      }
+    ],
+    "toolsManifestAssets": []
+  }
+}

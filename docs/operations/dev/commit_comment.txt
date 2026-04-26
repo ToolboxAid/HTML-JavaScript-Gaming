@@ -1,4 +1,11 @@
-PR 8.29B: Asteroids direct launch fix
+BUILD_PR_LEVEL_8_31_ASTEROIDS_JSON_CLEANUP_AND_MANIFEST_WIRING
 
-- Preview now launches game directly
-- Workspace Manager decoupled from preview
+- Cleaned Asteroids JSON layout around game.manifest.json SSoT
+- Audited duplicate HUD palette data and legacy catalogs
+- Wired or documented remaining Asteroids JSON files
+
+PR Details:
+- Asteroids-only cleanup
+- No all-games rollout
+- No validators
+- No start_of_day changes
