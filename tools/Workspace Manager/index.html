@@ -8,18 +8,8 @@
 </head>
 <body class="tool-host-page">
   <header class="tool-host-shell">
-    <div class="tool-host-shell__controls">
-      <label class="tool-host-shell__field" for="tool-host-select">Tool</label>
-      <select id="tool-host-select" data-tool-host-select aria-label="Tool to mount"></select>
-      <button type="button" data-tool-host-prev>Prev</button>
-      <button type="button" data-tool-host-next>Next</button>
-      <button type="button" data-tool-host-mount>Mount</button>
-      <button type="button" data-tool-host-unmount>Unmount</button>
-      <a data-tool-host-standalone href="#" class="is-disabled" aria-disabled="true" tabindex="-1">Open Standalone</a>
-    </div>
-    <textarea data-tool-host-state-input class="tool-host-shell__state" rows="3" placeholder="Optional JSON state for mounted tool"></textarea>
-    <p data-tool-host-current-label class="tool-host-shell__meta">No tool mounted.</p>
-    <p data-tool-host-switch-meta class="tool-host-shell__meta"></p>
+    <h1 class="tool-host-shell__title">Workspace Manager</h1>
+    <p data-tool-host-game-source class="tool-host-shell__meta">Game Source: none</p>
     <p data-tool-host-status class="tool-host-shell__status">Workspace Manager ready.</p>
     <section data-tool-host-diagnostic class="tool-host-shell__diagnostic" hidden>
       <h2>Workspace Manager Diagnostic</h2>
@@ -27,6 +17,20 @@
     </section>
   </header>
   <main class="tool-host-workspace">
+    <section class="tool-host-surface" aria-label="Workspace Manager tools surface">
+      <div class="tool-host-surface__controls">
+        <label class="tool-host-shell__field" for="tool-host-select">Tool</label>
+        <select id="tool-host-select" data-tool-host-select aria-label="Tool to mount"></select>
+        <button type="button" data-tool-host-prev>Prev</button>
+        <button type="button" data-tool-host-next>Next</button>
+        <button type="button" data-tool-host-mount>Mount</button>
+        <button type="button" data-tool-host-unmount>Unmount</button>
+        <a data-tool-host-standalone href="#" class="is-disabled" aria-disabled="true" tabindex="-1">Open Standalone</a>
+      </div>
+      <textarea data-tool-host-state-input class="tool-host-shell__state" rows="3" placeholder="Optional JSON state for mounted tool"></textarea>
+      <p data-tool-host-current-label class="tool-host-shell__meta">No tool mounted.</p>
+      <p data-tool-host-switch-meta class="tool-host-shell__meta"></p>
+    </section>
     <div data-tool-host-mount-container class="tool-host-workspace__mount"></div>
   </main>
   <script type="module">

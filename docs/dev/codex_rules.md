@@ -4,10 +4,10 @@ These rules OVERRIDE all other instructions.
 
 ## This PR
 
-Fix only the Workspace Manager blank-page blocker for game-launched context.
+Fix only Workspace Manager tool selector placement.
 
 Allowed:
-- targeted Workspace Manager boot/render/view diagnostics repair
+- targeted Workspace Manager render/markup/CSS placement changes
 - validation report
 
 Forbidden:
@@ -21,24 +21,17 @@ Forbidden:
 - start_of_day changes
 - roadmap text rewrite outside status markers
 
-## Required URL
+## Required UI Placement
 
-This URL must render visible Workspace Manager content:
+The tool selector controls must render inside the Workspace Manager first-class tools surface.
 
-```text
-tools/Workspace Manager/index.html?gameId=Breakout&mount=game
-```
+They must not render as a detached top banner above the Workspace Manager shell/title.
 
-## Diagnostic Requirement
+## Required Behavior
 
-Blank page is forbidden.
-
-Any boot/context/view failure must render visible diagnostic text on the page.
-
-## Forbidden Restorations
+Explicit selection is required.
 
 Do not restore:
-
 - `gameId || game`
 - `toolIds[0]`
 - first-item selection
@@ -58,7 +51,6 @@ Do not restore:
 - hidden fallback behavior
 - duplicated launch paths
 - silent redirects
-- silent caught errors
 - broad truthy/falsy behavior changes
 - magic strings outside existing SSoT/config pattern
 - duplicate event listeners

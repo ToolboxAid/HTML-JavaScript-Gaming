@@ -1,4 +1,4 @@
-# Codex Commands — BUILD_PR_LEVEL_20_15_REPAIR_WORKSPACE_MANAGER_BLANK_GAME_LAUNCH
+# Codex Commands — BUILD_PR_LEVEL_20_16_EMBED_TOOL_SELECTOR_IN_WORKSPACE_SURFACE
 
 ## Model
 GPT-5.4 or GPT-5.3-codex
@@ -10,37 +10,36 @@ High
 
 ```text
 Read docs/dev/codex_rules.md first.
-Read docs/dev/reports/workspace_manager_game_launch_tools_view_validation.md if present.
-Read docs/dev/reports/workspace_manager_default_query_fallback_removal_validation.md if present.
+Read docs/dev/reports/workspace_manager_blank_game_launch_repair_validation.md if present.
 Read docs/dev/specs/TOOL_LAUNCH_SSOT.md if present.
 
-Execute BUILD_PR_LEVEL_20_15_REPAIR_WORKSPACE_MANAGER_BLANK_GAME_LAUNCH.
+Execute BUILD_PR_LEVEL_20_16_EMBED_TOOL_SELECTOR_IN_WORKSPACE_SURFACE.
 
-User UAT failure:
-- URL renders blank page with no visible error:
-  tools/Workspace Manager/index.html?gameId=Breakout&mount=game
-- Blank occurs for multiple Open with Workspace Manager launches.
+User UAT finding:
+- Workspace Manager now renders.
+- Tool selector controls appear at the top as a detached banner:
+  Tool / Prev / Next / Mount / Unmount / Open Standalone / Optional JSON state / No tool mounted / Switch target / Select a tool to mount.
+- This explicit selection behavior is OK.
+- But it must be part of the Workspace Manager first-class tools surface, not a top banner.
 
 Goal:
-Repair Workspace Manager so valid game-launched URLs render visible Workspace Manager content and invalid context renders visible diagnostics.
+Move/contain the explicit tool selector controls inside the Workspace Manager first-class tools surface.
 
 Required behavior:
-- URL tools/Workspace Manager/index.html?gameId=Breakout&mount=game renders visible Workspace Manager page
-- explicit gameId context is loaded
-- external launch memory is cleared
-- tools/workspace surface is visible for selected game context
-- blank page is forbidden
-- if boot/context/view fails, render visible diagnostic panel on page
-- do not restore gameId || game
-- do not restore toolIds[0]
-- do not auto-select first tool
-- do not fallback to default route/view/tool/workspace
-- do not reuse stale memory
+- Workspace Manager header/shell remains visible.
+- Game Source and workspace status remain visible.
+- Tool selector controls render inside the first-class tools surface.
+- User still must explicitly select/mount a tool.
+- No default/fallback behavior is restored.
+- Do not restore gameId || game.
+- Do not restore toolIds[0].
+- Do not auto-select first tool.
+- Do not alter samples.
 
 Likely files:
-- tools/Workspace Manager/index.html
 - tools/Workspace Manager/main.js
-- directly imported Workspace Manager boot/view helper files only if needed
+- tools/Workspace Manager/index.html
+- Workspace Manager CSS only if existing layout requires it
 
 Forbidden:
 - changing samples
@@ -51,19 +50,18 @@ Forbidden:
 - start_of_day changes
 
 Validation:
-Create docs/dev/reports/workspace_manager_blank_game_launch_repair_validation.md with:
+Create docs/dev/reports/workspace_manager_tool_selector_surface_validation.md with:
 - changed files
-- root cause of blank page
-- proof Breakout URL renders visible content
-- proof multiple gameIds do not blank
-- proof invalid/missing gameId renders visible diagnostic
-- proof gameId || game fallback is not restored
-- proof toolIds[0] first-tool selection is not restored
-- proof no fallback/default route/view was added
-- proof external memory clear remains intact
-- proof sample Open <tool> behavior remains untouched
+- proof tool selector no longer renders as top detached banner
+- proof tool selector appears inside first-class tools surface
+- proof explicit tool selection is still required
+- proof no first-tool selection is restored
+- proof toolIds[0] is not restored
+- proof gameId || game is not restored
+- proof game source/status still render
+- proof sample Open <tool> remains untouched
 - anti-pattern self-check
 
 Return ZIP at:
-tmp/BUILD_PR_LEVEL_20_15_REPAIR_WORKSPACE_MANAGER_BLANK_GAME_LAUNCH.zip
+tmp/BUILD_PR_LEVEL_20_16_EMBED_TOOL_SELECTOR_IN_WORKSPACE_SURFACE.zip
 ```

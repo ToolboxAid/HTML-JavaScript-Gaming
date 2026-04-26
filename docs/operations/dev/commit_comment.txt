@@ -1,9 +1,9 @@
-Repair Workspace Manager blank game launch
+Embed Workspace Manager tool selector in tools surface
 
 PR Details:
-- Fixes blank Workspace Manager page for game-launched URLs.
-- Requires visible diagnostics for invalid boot/context/view state.
-- Preserves explicit gameId behavior.
-- Does not restore legacy gameId || game fallback.
+- Moves explicit tool selector controls into the Workspace Manager first-class tools surface.
+- Preserves explicit selection requirement.
+- Keeps Game Source and workspace status visible.
 - Does not restore first-tool/default selection.
+- Does not restore legacy gameId fallback.
 - Leaves sample Open <tool> behavior untouched.

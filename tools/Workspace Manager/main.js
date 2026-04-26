@@ -92,6 +92,7 @@ const refs = {
   standaloneLink: document.querySelector("[data-tool-host-standalone]"),
   switchMetaText: document.querySelector("[data-tool-host-switch-meta]"),
   statusText: document.querySelector("[data-tool-host-status]"),
+  gameSourceText: document.querySelector("[data-tool-host-game-source]"),
   diagnosticPanel: document.querySelector("[data-tool-host-diagnostic]"),
   diagnosticText: document.querySelector("[data-tool-host-diagnostic-text]"),
   currentLabel: document.querySelector("[data-tool-host-current-label]"),
@@ -192,6 +193,12 @@ function readSelectedToolId() {
 function writeStatus(text) {
   if (refs.statusText instanceof HTMLElement) {
     refs.statusText.textContent = text;
+  }
+}
+
+function writeGameSource(text) {
+  if (refs.gameSourceText instanceof HTMLElement) {
+    refs.gameSourceText.textContent = text;
   }
 }
 
@@ -599,6 +606,7 @@ function bindEvents() {
     const gameLaunchRequested = shouldMountGameFrameFromQuery();
     const gameId = readInitialGameId();
     if (gameLaunchRequested && !gameId) {
+      writeGameSource("Game Source: missing gameId");
       writeVisibleDiagnostic("Workspace Manager game launch requires a valid gameId query parameter.");
       applyToolsUsedFilterForGame(null);
       return;
@@ -606,10 +614,12 @@ function bindEvents() {
     if (gameId) {
       void readGameEntryById(gameId).then((gameEntry) => {
         if (!gameEntry) {
+          writeGameSource(`Game Source: invalid (${gameId})`);
           writeVisibleDiagnostic(`Game "${gameId}" is not available for Workspace Manager launch.`);
           applyToolsUsedFilterForGame(null);
           return;
         }
+        writeGameSource(`Game Source: ${gameEntry.id}`);
         const requestedToolId = (() => {
           const url = new URL(window.location.href);
           return (url.searchParams.get("tool") || "").trim();
@@ -626,6 +636,7 @@ function bindEvents() {
       });
       return;
     }
+    writeGameSource("Game Source: none");
     applyToolsUsedFilterForGame(null);
     const requestedToolId = readRequestedToolIdFromQuery();
     const toolId = requestedToolId;
@@ -650,6 +661,7 @@ function bindEvents() {
 
 async function init() {
   clearDiagnostic();
+  writeGameSource("Game Source: none");
   if (!(refs.mountContainer instanceof HTMLElement)) {
     writeVisibleDiagnostic("Workspace Manager mount surface is unavailable.");
     return;
@@ -657,6 +669,7 @@ async function init() {
   const gameLaunchRequested = shouldMountGameFrameFromQuery();
   const initialGameId = readInitialGameId();
   if (gameLaunchRequested && !initialGameId) {
+    writeGameSource("Game Source: missing gameId");
     applyToolsUsedFilterForGame(null);
     bindEvents();
     writeVisibleDiagnostic("Workspace Manager game launch requires a valid gameId query parameter.");
@@ -666,12 +679,15 @@ async function init() {
   if (initialGameId) {
     initialGameEntry = await readGameEntryById(initialGameId);
     if (!initialGameEntry) {
+      writeGameSource(`Game Source: invalid (${initialGameId})`);
       writeVisibleDiagnostic(`Game "${initialGameId}" is not available for Workspace Manager launch.`);
       if (gameLaunchRequested) {
         applyToolsUsedFilterForGame(null);
         bindEvents();
         return;
       }
+    } else {
+      writeGameSource(`Game Source: ${initialGameEntry.id}`);
     }
   }
 
