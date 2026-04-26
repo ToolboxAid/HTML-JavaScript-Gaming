@@ -2,29 +2,37 @@ MODEL: GPT-5.3-codex
 REASONING: high
 
 TASK:
-Apply BUILD_PR_LEVEL_9_6_ASTEROIDS_HARD_CUTOVER_SINGLE_MANIFEST.
-
-THIS IS A HARD CUTOVER.
-Final Asteroids state must have only:
-- games/Asteroids/game.manifest.json
+Apply BUILD_PR_LEVEL_9_7_REMOVE_INTERNAL_REFERENCES_AND_INLINE_DATA.
 
 STEPS:
-1. Read docs/pr/PLAN_PR_LEVEL_9_6_ASTEROIDS_HARD_CUTOVER_SINGLE_MANIFEST.md.
-2. Read docs/pr/BUILD_PR_LEVEL_9_6_ASTEROIDS_HARD_CUTOVER_SINGLE_MANIFEST.md.
-3. Inventory all `games/Asteroids/**/*.json`.
-4. For each JSON except `game.manifest.json`:
-   - load contents
-   - inline actual JSON data into `game.manifest.json`
-   - map data to the owning tool section
-5. Search Asteroids code/config for deleted JSON references.
-6. Update Asteroids-scoped loaders/references to read from `game.manifest.json`.
-7. Delete all old Asteroids JSON files except `game.manifest.json`.
+1. Read docs/pr/PLAN_PR_LEVEL_9_7_REMOVE_INTERNAL_REFERENCES_AND_INLINE_DATA.md.
+2. Read docs/pr/BUILD_PR_LEVEL_9_7_REMOVE_INTERNAL_REFERENCES_AND_INLINE_DATA.md.
+3. Open `games/Asteroids/game.manifest.json`.
+4. Remove internal pointer patterns:
+   - runtimeSource
+   - game.manifest.json#
+   - #tools/
+   - #tools.
+   - source.path pointing back to this manifest
+   - lineage.inlinedSourceFiles
+   - lineage.toolDomains
+5. Remove or restrict root assetCatalog:
+   - no JSON-data entries
+   - external binary/media paths only if retained
+6. Preserve actual data under owning tool sections:
+   - primitive-skin-editor
+   - sprite-editor
+   - tile-map-editor
+   - parallax-editor
+   - vector-asset-studio
+   - asset-browser for external media only
+7. Search for old deleted JSON filenames and remove stale references.
 8. Verify:
-   - JSON count under games/Asteroids is 1
-   - no old JSON path references remain
-   - Asteroids launches directly
-   - no 404s for deleted JSON
-9. Update docs/dev/reports/level_9_6_asteroids_hard_cutover_report.md.
+   - only one JSON remains under games/Asteroids
+   - no internal manifest fragment refs remain
+   - no runtimeSource remains
+   - Asteroids direct launch works
+9. Update docs/dev/reports/level_9_7_remove_internal_references_report.md.
 10. Update docs/dev/roadmaps/MASTER_ROADMAP_ENGINE.md status only if needed:
     - [ ] -> [.]
     - [.] -> [x]
@@ -32,10 +40,9 @@ STEPS:
 11. Do not add validators.
 12. Do not modify start_of_day.
 13. Create Codex delta ZIP:
-    tmp/BUILD_PR_LEVEL_9_6_ASTEROIDS_HARD_CUTOVER_SINGLE_MANIFEST_delta.zip
+    tmp/BUILD_PR_LEVEL_9_7_REMOVE_INTERNAL_REFERENCES_AND_INLINE_DATA_delta.zip
 
 ACCEPTANCE:
-- asteroids_json_after=1
-- only remaining JSON is games/Asteroids/game.manifest.json
-- Asteroids launches directly
+- manifest is data, not pointer map
+- Asteroids launches
 - delta ZIP exists

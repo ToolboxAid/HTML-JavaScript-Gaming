@@ -5,3 +5,5 @@ Sort-Object FullName |
 ForEach-Object {
     $_.FullName.Replace("$project\", "")
 } | Set-Content "$project\tmp\asteroids-json-list.txt"
+
+Get-Content "$project\tmp\asteroids-json-list.txt"

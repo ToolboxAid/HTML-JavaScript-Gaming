@@ -1,11 +1,10 @@
-BUILD_PR_LEVEL_9_6_ASTEROIDS_HARD_CUTOVER_SINGLE_MANIFEST
+BUILD_PR_LEVEL_9_7_REMOVE_INTERNAL_REFERENCES_AND_INLINE_DATA
 
-- Consolidated Asteroids JSON into game.manifest.json
-- Removed all legacy Asteroids JSON files
-- Updated Asteroids references to manifest-owned data
-- Verified direct launch
+- Removed internal manifest pointer references from Asteroids game.manifest.json
+- Kept actual data directly under owning tool sections
+- Preserved external media paths only where appropriate
 
 PR Details:
-- Hard cutover to true single-manifest Asteroids model
+- Completes Asteroids direct-data manifest model
 - No validators
 - No start_of_day changes
