@@ -4,46 +4,48 @@ These rules OVERRIDE all other instructions.
 
 Codex must prefer the existing repo pattern over any new pattern, unless the PR explicitly says otherwise.
 
-## Required Inputs
+## This PR
 
-Read and obey:
+This PR is a validation and gate-lock PR.
 
-- docs/dev/specs/TOOL_LAUNCH_SSOT.md
-- docs/dev/reports/tool_launch_ssot_routing_validation.md
-- docs/dev/reports/tool_launch_ssot_data_layer_validation.md
+Allowed:
+- validation reports
+- recovery roadmap status markers only
+- blocked decision report if validation fails
 
-If required reports are missing:
-- create blocked report
-- stop without implementation changes
+Forbidden:
+- implementation code changes
+- broad cleanup
+- unrelated refactoring
+- new route systems
+- second SSoT
+- fallback/default behavior
+- start_of_day changes
+- roadmap text rewrite outside status markers
+- changing required UI labels
 
 ## Required UI Labels
 
 Samples:
-- keep `Open <tool>`
-- do NOT use `Open with Workspace Manager`
+- must use `Open <tool>`
 
 Games:
-- keep `Open with Workspace Manager`
-- do NOT use `Open <tool>`
+- must use `Open with Workspace Manager`
 
-## This PR
+## Required Launch Targets
 
-Allowed:
-- remove legacy launch fallback residue only in touched launch flow
-- remove duplicated launch-path constants only when replaced by SSoT
-- validation report
-- roadmap status marker update only if execution-backed
+Samples:
+- must route tools to `tools/<tool>/index.html`
 
-Forbidden:
-- broad cleanup
-- unrelated refactoring
-- second SSoT
-- new route systems beyond existing SSoT
-- fallback/default behavior
-- implementation outside touched launch path
-- start_of_day changes
-- roadmap text rewrite
-- changing required UI label semantics
+Games:
+- must route Workspace Manager to `tools/Workspace Manager/index.html`
+
+## Required Memory Behavior
+
+External launches from samples or games:
+- must clear launch memory before loading target
+- must not reuse stale state
+- must not fallback to old context
 
 ## Anti-Patterns Forbidden
 
@@ -56,9 +58,19 @@ Forbidden:
 - duplicated launch paths
 - silent redirects
 - broad truthy/falsy behavior changes
-- magic strings or magic numbers outside SSoT/config pattern
+- magic strings outside SSoT/config pattern
 - duplicate event listeners
 - globals
-- new managers/factories/service layers unless already required by existing pattern
-- public API changes unless required by this PR
+- new managers/factories/service layers
+- public API changes
 - scope expansion
+
+## Required Failure Behavior
+
+If launch SSoT data is missing or invalid:
+- fail visibly
+- report the missing field
+- do not guess
+- do not select the first item
+- do not reuse memory
+- do not silently redirect

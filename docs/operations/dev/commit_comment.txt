@@ -1,6 +1,9 @@
-Update Phase 20 recovery status gate
+Validate and lock Phase 20 recovery gate
 
 PR Details:
-- Records reset-to-baseline plus constrained replay as the active recovery method.
-- Marks SSoT, memory reset, anti-pattern replay, and Codex rule enforcement as in progress.
-- Keeps Workspace Manager UAT validation as the remaining recovery gate.
+- Validates sample-to-tool launch UAT.
+- Validates game-to-Workspace Manager launch UAT.
+- Validates external-launch memory clearing.
+- Validates no fallback/default launch behavior.
+- Rechecks Codex anti-pattern rules on the recovery lane.
+- Updates recovery roadmap status markers only if the gate passes.
