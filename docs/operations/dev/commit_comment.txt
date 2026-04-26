@@ -1,1 +1,10 @@
-Finalize recovery roadmap
+BUILD_PR_LEVEL_8_17_ROADMAP_AND_SKIN_EDITOR_SCHEMA
+
+- Added roadmap tracking for Level 8 schema-driven first-class tool normalization
+- Added missing skin-editor tool schema
+- Advanced roadmap status without rewriting existing roadmap content
+
+PR Details:
+- Closes documented 16/17 schema coverage gap
+- Keeps all 17 first-class tools planned
+- Preserves docs-first workflow and start_of_day guard

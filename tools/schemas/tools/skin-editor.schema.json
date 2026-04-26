@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "tools/schemas/tools/skin-editor.schema.json",
+  "type": "object",
+  "required": ["tool", "version", "config"],
+  "additionalProperties": false,
+  "properties": {
+    "tool": {
+      "type": "string",
+      "const": "skin-editor"
+    },
+    "version": {
+      "oneOf": [
+        {
+          "type": "string",
+          "minLength": 1
+        },
+        {
+          "type": "integer",
+          "minimum": 1
+        }
+      ]
+    },
+    "config": {
+      "type": "object"
+    }
+  }
+}
