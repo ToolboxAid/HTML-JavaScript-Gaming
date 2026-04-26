@@ -1,4 +1,4 @@
-# Codex Commands — BUILD_PR_LEVEL_20_19_FORCE_WORKSPACE_TOOL_PAGER_ABOVE_EDITORS
+# Codex Commands — BUILD_PR_LEVEL_20_20_ROLLBACK_WORKSPACE_HEADER_AND_ADD_TOOL_PAGER
 
 ## Model
 GPT-5.4 or GPT-5.3-codex
@@ -10,70 +10,60 @@ High
 
 ```text
 Read docs/dev/codex_rules.md first.
-Read docs/dev/reports/workspace_manager_auto_mount_tool_selection_validation.md if present.
-Read docs/dev/specs/TOOL_LAUNCH_SSOT.md if present.
 
-Execute BUILD_PR_LEVEL_20_19_FORCE_WORKSPACE_TOOL_PAGER_ABOVE_EDITORS.
+Execute BUILD_PR_LEVEL_20_20_ROLLBACK_WORKSPACE_HEADER_AND_ADD_TOOL_PAGER.
 
-User UAT correction:
-- Do not use a new HEADER at all.
-- Delete/remove what was created as the top Workspace Manager header/banner/control area.
-- Force this UI centered above Editors:
-  [PREV] <toolname> [NEXT]
-- On page load, default <toolname> to the first tool in the available list.
-- No more attempts to keep the header.
-- No dropdown + Select Tool + Mount initial workflow.
+User UAT failure:
+- Current Workspace Manager page still has the unwanted header/banner/control area.
+- Only the site image is showing below it.
+- User wants this rolled back to the way Workspace Manager loaded before the failed header attempts.
+- Then add only [PREV] <toolname> [NEXT] above the tools/editors section.
 
-Goal:
-Replace the current top header/banner/dropdown workflow with a centered tool pager directly above Editors.
+Rollback anchor:
+Find the commit with commit comment:
+Remove Workspace Manager default and query fallbacks
 
-Required behavior:
-- URL tools/Workspace Manager/index.html?gameId=Bouncing-ball&mount=game renders existing Workspace Manager page shell.
-- Remove newly created top banner/header/control content.
-- Directly above Editors, centered, render:
-  [PREV] <selected tool name> [NEXT]
-- On page load, select the first available tool for the explicit gameId context.
-- Activate/mount selected tool on page load.
-- Prev/Next changes the selected tool and active/mounted tool.
-- Do not require dropdown.
-- Do not require Select Tool button.
-- Do not require Mount button.
-- Keep game context loaded from explicit gameId.
-- Keep samples untouched.
+This is the state after BUILD_PR_LEVEL_20_13_REMOVE_WORKSPACE_MANAGER_DEFAULT_AND_QUERY_FALLBACKS and before the failed 20_14 through 20_19 header/banner attempts.
 
-User-approved exception:
-- First available tool selected on page load is REQUIRED for this PR.
-- This is not considered fallback/default anti-pattern for this PR.
+Required steps:
+1. Inspect git history for Workspace Manager files.
+2. Restore only Workspace Manager files affected by 20_14 through 20_19 to the rollback anchor state.
+   Likely files:
+   - tools/Workspace Manager/main.js
+   - tools/Workspace Manager/index.html
+   - any Workspace Manager CSS touched by those PRs
+3. Do not rollback unrelated files.
+4. After restore, add exactly one centered pager directly above the existing tools/editors section:
+   [PREV] <toolname> [NEXT]
+5. On page load, select the first available tool for the explicit gameId context.
+6. Mount/activate that selected tool.
+7. Prev/Next changes selected and mounted tool.
+8. Do not use dropdown + Select Tool + Mount workflow.
+9. Do not create or keep any new header/banner.
 
 Still forbidden:
-- restoring gameId || game
+- restore gameId || game
 - legacy game query fallback
 - hidden fallback routing
 - stale memory reuse
-- new header/banner
+- changing samples
 - broad Workspace Manager refactor
-- second SSoT
 - start_of_day changes
 
-Likely files:
-- tools/Workspace Manager/main.js
-- tools/Workspace Manager/index.html
-- Workspace Manager CSS only if needed
-
 Validation:
-Create docs/dev/reports/workspace_manager_tool_pager_above_editors_validation.md with:
+Create docs/dev/reports/workspace_manager_rollback_header_and_tool_pager_validation.md with:
+- rollback anchor commit hash and comment
 - changed files
-- proof newly created header/banner/control area removed
-- proof centered [PREV] <toolname> [NEXT] appears above Editors
-- proof first available tool selected on page load
-- proof selected tool active/mounted on page load
+- proof failed header/banner/control area removed
+- proof normal Workspace Manager content loads below site chrome
+- proof only [PREV] <toolname> [NEXT] was added
+- proof pager appears above existing tools/editors section
+- proof first available tool selected/mounted on load
 - proof Prev/Next changes selected/mounted tool
-- proof dropdown + Select Tool + Mount initial workflow removed
 - proof gameId || game fallback not restored
-- proof game context still loads from explicit gameId
-- proof sample Open <tool> remains untouched
+- proof samples remain untouched
 - anti-pattern self-check
 
 Return ZIP at:
-tmp/BUILD_PR_LEVEL_20_19_FORCE_WORKSPACE_TOOL_PAGER_ABOVE_EDITORS.zip
+tmp/BUILD_PR_LEVEL_20_20_ROLLBACK_WORKSPACE_HEADER_AND_ADD_TOOL_PAGER.zip
 ```

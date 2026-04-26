@@ -5,79 +5,45 @@ body.tool-host-page {
   margin: 0;
   padding: 0;
   overflow: hidden;
-  font-family: "Segoe UI", Tahoma, sans-serif;
 }
 
 body.tool-host-page {
-  background: #101523;
-  color: #e7ecf7;
+  background: transparent;
 }
 
 .tool-host-workspace {
-  width: 100%;
-  flex: 1 1 auto;
-  min-height: 0;
-  margin: 0;
-  padding: 12px;
   display: flex;
   flex-direction: column;
-  gap: 12px;
 }
 
-.tool-host-surface {
-  flex: 0 0 auto;
-  border: 1px solid #2d3b5f;
-  background: #162039;
-  padding: 10px;
-}
-
-.tool-host-surface__title {
+.tool-host-workspace__mount {
+  width: 100%;
+  height: 100%;
   margin: 0;
-  font-size: 1.05rem;
+  padding: 0;
 }
 
-.tool-host-surface__meta {
-  margin: 6px 0 0;
-  font-size: 0.9rem;
-}
-
-.tool-host-surface__diagnostic {
-  margin-top: 8px;
-  padding: 8px;
-  border: 1px solid #a73a3a;
-  background: #2c1111;
-}
-
-.tool-host-surface__diagnostic h2 {
-  margin: 0 0 6px;
-  font-size: 1rem;
-}
-
-.tool-host-surface__diagnostic pre {
-  margin: 0;
-  white-space: pre-wrap;
-  word-break: break-word;
-  font-family: Consolas, "Courier New", monospace;
+.tool-host-workspace__mount {
+  flex: 1 1 auto;
+  min-height: 0;
 }
 
 .tool-host-pager {
+  flex: 0 0 auto;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 16px;
-  padding: 10px;
-  border: 1px solid #2d3b5f;
-  background: #121b30;
+  gap: 10px;
+  padding: 8px 12px;
 }
 
 .tool-host-pager__button {
-  min-width: 84px;
+  min-width: 72px;
 }
 
 .tool-host-pager__name {
   min-width: 220px;
   text-align: center;
-  font-size: 0.95rem;
   font-weight: 600;
 }
 
@@ -85,44 +51,12 @@ body.tool-host-page {
   position: absolute;
   width: 1px;
   height: 1px;
-  overflow: hidden;
-  clip: rect(0 0 0 0);
-  clip-path: inset(50%);
-  white-space: nowrap;
-}
-
-.tool-host-workspace__editor-region {
-  position: relative;
-  flex: 1 1 auto;
-  min-height: 0;
-}
-
-.tool-host-workspace__mount {
-  width: 100%;
-  height: 100%;
-  min-height: 0;
-  margin: 0;
+  margin: -1px;
+  border: 0;
   padding: 0;
-  border: 1px solid #2d3b5f;
-  background: #0f182f;
-}
-
-.tool-host-workspace__overlay {
-  position: absolute;
-  inset: 0;
-  z-index: 3;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  padding: 16px;
-  color: #e7ecf7;
-  background: rgba(10, 16, 30, 0.78);
-  border: 1px dashed #4e638f;
-}
-
-.tool-host-workspace__overlay[hidden] {
-  display: none;
+  white-space: nowrap;
+  clip-path: inset(50%);
+  overflow: hidden;
 }
 
 .tool-host-workspace__mount > iframe[data-tool-host-frame],

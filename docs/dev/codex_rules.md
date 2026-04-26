@@ -4,11 +4,11 @@ These rules OVERRIDE all other instructions.
 
 ## This PR
 
-Force the Workspace Manager tool pager UI above Editors.
+Rollback failed Workspace Manager header/banner attempts, then add only the requested pager.
 
 Allowed:
-- targeted Workspace Manager UI/render behavior changes
-- remove newly created top header/banner/control area
+- targeted rollback of Workspace Manager files affected by 20_14 through 20_19
+- add centered [PREV] <toolname> [NEXT] above tools/editors
 - validation report
 
 Forbidden:
@@ -16,19 +16,36 @@ Forbidden:
 - unrelated refactoring
 - changes to samples behavior
 - changes to required labels
-- new header/banner replacement
+- new header
+- new banner
+- keeping failed top Workspace Manager control/header area
 - second SSoT
 - start_of_day changes
 - roadmap text rewrite outside status markers
 
-## User-Approved Exception
+## Rollback Anchor
 
-For this PR only:
-- the first available tool in the game tool list MUST be selected on page load
-- the selected first tool MUST be displayed between PREV and NEXT
-- the selected first tool MAY be activated/mounted on page load
+Find the commit with comment:
 
-This approved behavior is not considered an anti-pattern in this PR.
+Remove Workspace Manager default and query fallbacks
+
+Use it as the Workspace Manager restore anchor before applying pager.
+
+## Required UI
+
+Restore normal Workspace Manager content first.
+
+Then add only:
+
+[PREV] <toolname> [NEXT]
+
+above the existing tools/editors section.
+
+## User-Approved Behavior
+
+For this PR:
+- first available tool is selected on page load
+- selected tool is active/mounted on page load
 
 ## Still Forbidden
 
@@ -37,21 +54,7 @@ Do not restore:
 - legacy `game` query fallback
 - hidden fallback routing
 - stale memory reuse
-- label-text route guessing
-- DOM-order route guessing
-
-## Required UI
-
-Create centered control directly above Editors:
-
-[PREV] <toolname> [NEXT]
-
-Do not use:
-- detached top banner
-- new header
-- dropdown workflow
-- Select Tool button
-- Mount button for initial flow
+- broken header/banner/control area
 
 ## Anti-Patterns Forbidden
 
