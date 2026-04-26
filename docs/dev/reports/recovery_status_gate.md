@@ -1,28 +1,19 @@
 # Recovery Status Gate
 
-## Status (April 25, 2026)
+## Status (April 26, 2026)
 
-Recovery replay implementation status is updated; UAT gate remains open.
+Recovery replay implementation and Phase 20 UAT gate are complete.
 
 ## Completed
 
 - Audit completed.
 - Recovery path applied (reset-to-baseline).
-- Anti-pattern drift removal through constrained replay PRs.
-- Tool launch SSoT enforcement across samples/games.
-- External-launch memory reset enforcement without fallback behavior.
-- Codex rule enforcement re-verification on the recovery lane.
-
-## Remaining Hard Gate
-
-- Validate Workspace Manager launch flow from `games/index.html`:
-  - `Open with Workspace Manager`
-  - `tools/Workspace Manager/index.html`
-  - launch memory cleared
-  - explicit context loaded
-  - no fallback/default behavior
+- Anti-pattern drift removed through constrained replay PRs.
+- Tool launch SSoT enforced across samples/games.
+- External-launch memory reset enforced without fallback behavior.
+- Workspace Manager launch flow validated from `games/index.html`.
+- Codex rule enforcement re-verified on the recovery lane.
 
 ## Gate Decision
 
-- Recovery gate is still blocked pending explicit Workspace Manager UAT pass.
-- Normal roadmap progression remains blocked until that UAT gate passes.
+- PASS - recovery gate complete; normal roadmap progression may resume.
