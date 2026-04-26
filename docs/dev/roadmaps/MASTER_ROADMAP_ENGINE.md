@@ -881,10 +881,12 @@
 - [.] Verify workspace schema has no sample-only concepts.
 - [x] Manifest SSoT audit across game workspace catalogs/tool manifests is complete.
 - [x] Asteroids-first `game.manifest.json` SSoT example implemented (palette + HUD typing + bezel override wiring).
-- [.] Asteroids JSON cleanup and manifest wiring audit is in progress.
+- [x] Asteroids JSON cleanup and manifest wiring audit is complete (manifest coverage + deferred legacy rationale documented).
 - [.] Asteroids legacy catalog parity verification is in progress.
 - [x] All-games `game.manifest.json` SSoT rollout completed with legacy catalogs retained.
 - [x] Asteroids preview direct launch separation from Workspace Manager remains valid.
+- [x] Direct game launch hook removal prevents normal preview redirects to Workspace Manager.
+- [x] Explicit Workspace Manager game-launch paths use `gameId` query naming.
 - [.] Unused JSON cleanup audit (tools + explicit deletion candidates) is in progress.
 - [.] Palette opaque alpha normalization (`#RRGGBBFF` -> `#RRGGBB`) is in progress.
 - [x] Code-defined asset extraction audit across games/samples is complete.

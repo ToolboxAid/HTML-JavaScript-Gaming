@@ -163,7 +163,7 @@ function normalizeLocalHref(value, allowedPrefixes) {
 function buildWorkspaceHrefFromGameId(gameId) {
   const normalizedGameId = normalizeTextValue(gameId);
   return normalizedGameId
-    ? `/tools/Workspace%20Manager/index.html?game=${encodeURIComponent(normalizedGameId)}`
+    ? `/tools/Workspace%20Manager/index.html?gameId=${encodeURIComponent(normalizedGameId)}&mount=game`
     : "";
 }
 
