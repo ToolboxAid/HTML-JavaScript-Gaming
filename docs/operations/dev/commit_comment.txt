@@ -1,11 +1,5 @@
-BUILD_PR_LEVEL_8_23_WORKSPACE_MANIFEST_GAMES_FIELD_ALIGNMENT
 
-- Aligned workspace manifests with workspace schema required root games field
-- Preserved workspace/sample schema boundary
-- Advanced Level 8 roadmap status only
+PR 8.24: Full schema/json export
 
-PR Details:
-- Fixes PR 8.22 audit blocker
-- No runtime changes
-- No validators added
-- No start_of_day changes
+- Generated review bundle of all schema + json files
+- No code or data modifications
