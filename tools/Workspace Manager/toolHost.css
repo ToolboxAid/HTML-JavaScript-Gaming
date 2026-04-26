@@ -5,10 +5,64 @@ body.tool-host-page {
   margin: 0;
   padding: 0;
   overflow: hidden;
+  font-family: "Segoe UI", Tahoma, sans-serif;
 }
 
 body.tool-host-page {
-  background: transparent;
+  background: #101523;
+  color: #e7ecf7;
+  display: flex;
+  flex-direction: column;
+}
+
+.tool-host-shell {
+  flex: 0 0 auto;
+  padding: 12px;
+  background: #1a243b;
+  border-bottom: 1px solid #2d3b5f;
+}
+
+.tool-host-shell__controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+.tool-host-shell__field {
+  font-size: 0.9rem;
+}
+
+.tool-host-shell__state {
+  margin-top: 8px;
+  width: 100%;
+  min-height: 4.5rem;
+  resize: vertical;
+}
+
+.tool-host-shell__meta,
+.tool-host-shell__status {
+  margin: 6px 0 0;
+  font-size: 0.9rem;
+}
+
+.tool-host-shell__diagnostic {
+  margin-top: 8px;
+  padding: 8px;
+  border: 1px solid #a73a3a;
+  background: #2c1111;
+}
+
+.tool-host-shell__diagnostic h2 {
+  margin: 0 0 6px;
+  font-size: 1rem;
+}
+
+.tool-host-shell__diagnostic pre {
+  margin: 0;
+  white-space: pre-wrap;
+  word-break: break-word;
+  font-family: Consolas, "Courier New", monospace;
 }
 
 .tool-host-workspace,
@@ -17,6 +71,11 @@ body.tool-host-page {
   height: 100%;
   margin: 0;
   padding: 0;
+}
+
+.tool-host-workspace {
+  flex: 1 1 auto;
+  min-height: 0;
 }
 
 .tool-host-workspace__mount > iframe[data-tool-host-frame],

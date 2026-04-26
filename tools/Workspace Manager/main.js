@@ -92,6 +92,8 @@ const refs = {
   standaloneLink: document.querySelector("[data-tool-host-standalone]"),
   switchMetaText: document.querySelector("[data-tool-host-switch-meta]"),
   statusText: document.querySelector("[data-tool-host-status]"),
+  diagnosticPanel: document.querySelector("[data-tool-host-diagnostic]"),
+  diagnosticText: document.querySelector("[data-tool-host-diagnostic-text]"),
   currentLabel: document.querySelector("[data-tool-host-current-label]"),
   mountContainer: document.querySelector("[data-tool-host-mount-container]")
 };
@@ -190,6 +192,30 @@ function readSelectedToolId() {
 function writeStatus(text) {
   if (refs.statusText instanceof HTMLElement) {
     refs.statusText.textContent = text;
+  }
+}
+
+function setDiagnosticText(text) {
+  const normalizedText = normalizeTextParam(text);
+  if (refs.diagnosticPanel instanceof HTMLElement) {
+    refs.diagnosticPanel.hidden = !normalizedText;
+  }
+  if (refs.diagnosticText instanceof HTMLElement) {
+    refs.diagnosticText.textContent = normalizedText;
+  }
+}
+
+function clearDiagnostic() {
+  setDiagnosticText("");
+}
+
+function writeVisibleDiagnostic(message, detail = "") {
+  const normalizedMessage = normalizeTextParam(message);
+  const normalizedDetail = normalizeTextParam(detail);
+  const diagnosticText = normalizedDetail ? `${normalizedMessage}\n${normalizedDetail}` : normalizedMessage;
+  setDiagnosticText(diagnosticText);
+  if (normalizedMessage) {
+    writeStatus(normalizedMessage);
   }
 }
 
@@ -365,7 +391,7 @@ function unmountGameFrame() {
 
 async function mountGameFrame(gameEntry) {
   if (!(refs.mountContainer instanceof HTMLElement)) {
-    writeStatus("Workspace container is unavailable.");
+    writeVisibleDiagnostic("Workspace container is unavailable.");
     return false;
   }
   runtime.unmountCurrentTool("switch-to-game");
@@ -402,7 +428,7 @@ async function mountGameFrame(gameEntry) {
     }
   });
   if (!hostContext?.contextId) {
-    writeStatus("Unable to mount game: workspace host context storage is unavailable in this browser session.");
+    writeVisibleDiagnostic("Unable to mount game: workspace host context storage is unavailable in this browser session.");
     setCurrentLabel("No game mounted.");
     return false;
   }
@@ -510,6 +536,7 @@ function mountSelectedTool(source = "manual") {
   }
   updateSwitchMeta();
   updateStandaloneHref(toolId);
+  clearDiagnostic();
   writeQueryToolId(toolId, source === "init");
   const previousMount = runtime.getCurrentMount();
   const launchParams = readForwardedToolLaunchParams();
@@ -568,17 +595,18 @@ function bindEvents() {
   }
 
   window.addEventListener("popstate", () => {
+    clearDiagnostic();
     const gameLaunchRequested = shouldMountGameFrameFromQuery();
     const gameId = readInitialGameId();
     if (gameLaunchRequested && !gameId) {
-      writeStatus("Workspace Manager game launch requires a valid gameId query parameter.");
+      writeVisibleDiagnostic("Workspace Manager game launch requires a valid gameId query parameter.");
       applyToolsUsedFilterForGame(null);
       return;
     }
     if (gameId) {
       void readGameEntryById(gameId).then((gameEntry) => {
         if (!gameEntry) {
-          writeStatus(`Game "${gameId}" is not available for Workspace Manager launch.`);
+          writeVisibleDiagnostic(`Game "${gameId}" is not available for Workspace Manager launch.`);
           applyToolsUsedFilterForGame(null);
           return;
         }
@@ -621,19 +649,24 @@ function bindEvents() {
 }
 
 async function init() {
+  clearDiagnostic();
+  if (!(refs.mountContainer instanceof HTMLElement)) {
+    writeVisibleDiagnostic("Workspace Manager mount surface is unavailable.");
+    return;
+  }
   const gameLaunchRequested = shouldMountGameFrameFromQuery();
   const initialGameId = readInitialGameId();
   if (gameLaunchRequested && !initialGameId) {
     applyToolsUsedFilterForGame(null);
     bindEvents();
-    writeStatus("Workspace Manager game launch requires a valid gameId query parameter.");
+    writeVisibleDiagnostic("Workspace Manager game launch requires a valid gameId query parameter.");
     return;
   }
   let initialGameEntry = null;
   if (initialGameId) {
     initialGameEntry = await readGameEntryById(initialGameId);
     if (!initialGameEntry) {
-      writeStatus(`Game "${initialGameId}" is not available for Workspace Manager launch.`);
+      writeVisibleDiagnostic(`Game "${initialGameId}" is not available for Workspace Manager launch.`);
       if (gameLaunchRequested) {
         applyToolsUsedFilterForGame(null);
         bindEvents();
@@ -651,7 +684,7 @@ async function init() {
 
   const requestedToolId = readRequestedToolIdFromQuery();
   if (toolIds.length === 0) {
-    writeStatus("No active tools are currently available for Workspace Manager.");
+    writeVisibleDiagnostic("No active tools are currently available for Workspace Manager.");
     return;
   }
   if (!requestedToolId) {
@@ -661,4 +694,24 @@ async function init() {
   mountSelectedTool("init");
 }
 
-void init();
+window.addEventListener("error", (event) => {
+  const detail = event.error instanceof Error
+    ? `${event.error.name}: ${event.error.message}`
+    : normalizeTextParam(event.message) || "Unknown error.";
+  writeVisibleDiagnostic("Workspace Manager runtime error.", detail);
+});
+
+window.addEventListener("unhandledrejection", (event) => {
+  const reason = event.reason;
+  const detail = reason instanceof Error
+    ? `${reason.name}: ${reason.message}`
+    : normalizeTextParam(String(reason || "")) || "Unknown promise rejection.";
+  writeVisibleDiagnostic("Workspace Manager unhandled rejection.", detail);
+});
+
+void init().catch((error) => {
+  const detail = error instanceof Error
+    ? `${error.name}: ${error.message}`
+    : normalizeTextParam(String(error || "")) || "Unknown init error.";
+  writeVisibleDiagnostic("Workspace Manager failed to initialize.", detail);
+});

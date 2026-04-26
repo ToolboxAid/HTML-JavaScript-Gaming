@@ -4,10 +4,10 @@ These rules OVERRIDE all other instructions.
 
 ## This PR
 
-Fix only the Workspace Manager initial view for game-launched context.
+Fix only the Workspace Manager blank-page blocker for game-launched context.
 
 Allowed:
-- targeted Workspace Manager launch/view selection edits
+- targeted Workspace Manager boot/render/view diagnostics repair
 - validation report
 
 Forbidden:
@@ -21,27 +21,19 @@ Forbidden:
 - start_of_day changes
 - roadmap text rewrite outside status markers
 
-## Required UI Labels
+## Required URL
 
-Samples:
-- must remain `Open <tool>`
-
-Games:
-- must remain `Open with Workspace Manager`
-
-## Required Game Launch Behavior
-
-For:
+This URL must render visible Workspace Manager content:
 
 ```text
-tools/Workspace Manager/index.html?gameId=<id>&mount=game
+tools/Workspace Manager/index.html?gameId=Breakout&mount=game
 ```
 
-`mount=game` means the source/context is a game.
+## Diagnostic Requirement
 
-It must not force the initial primary view to be the hosted game surface.
+Blank page is forbidden.
 
-Workspace Manager must show the tools/workspace surface for the explicit game context.
+Any boot/context/view failure must render visible diagnostic text on the page.
 
 ## Forbidden Restorations
 
@@ -53,6 +45,7 @@ Do not restore:
 - default tool
 - default workspace
 - fallback route
+- fallback view
 - stale memory reuse
 
 ## Anti-Patterns Forbidden
@@ -65,6 +58,7 @@ Do not restore:
 - hidden fallback behavior
 - duplicated launch paths
 - silent redirects
+- silent caught errors
 - broad truthy/falsy behavior changes
 - magic strings outside existing SSoT/config pattern
 - duplicate event listeners

@@ -1,9 +1,9 @@
-Show tools surface on game-launched Workspace Manager open
+Repair Workspace Manager blank game launch
 
 PR Details:
-- Fixes Workspace Manager initial view for games/index.html Open with Workspace Manager.
-- Keeps explicit gameId context.
-- Keeps memory clear behavior.
-- Prevents mount=game from immediately showing the hosted game surface.
-- Does not restore fallback/default launch behavior.
+- Fixes blank Workspace Manager page for game-launched URLs.
+- Requires visible diagnostics for invalid boot/context/view state.
+- Preserves explicit gameId behavior.
+- Does not restore legacy gameId || game fallback.
+- Does not restore first-tool/default selection.
 - Leaves sample Open <tool> behavior untouched.
