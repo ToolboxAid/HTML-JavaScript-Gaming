@@ -1,37 +1,41 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "tools/schemas/palette.schema.json",
-  "title": "Shared Palette Document",
   "type": "object",
-  "required": ["schema", "version", "name"],
+  "required": ["schema", "version", "name", "swatches"],
+  "additionalProperties": false,
   "properties": {
-    "schema": { "const": "html-js-gaming.palette" },
-    "version": { "type": "integer", "const": 1 },
+    "$schema": { "type": "string" },
+    "schema": {
+      "type": "string",
+      "const": "html-js-gaming.palette"
+    },
+    "version": {
+      "type": "integer",
+      "const": 1
+    },
     "name": { "type": "string" },
     "source": { "type": "string" },
-    "entries": {
+    "swatches": {
       "type": "array",
+      "uniqueItems": true,
       "items": {
         "type": "object",
         "required": ["symbol", "hex", "name"],
+        "additionalProperties": false,
         "properties": {
-          "symbol": { "type": "string" },
+          "symbol": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 1
+          },
           "hex": {
             "type": "string",
-            "pattern": "^#([0-9A-Fa-f]{6}|[0-9A-Fa-f]{8})$"
+            "pattern": "^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{8})$"
           },
           "name": { "type": "string" }
-        },
-        "additionalProperties": false
-      }
-    },
-    "colors": {
-      "type": "array",
-      "items": {
-        "type": "string",
-        "pattern": "^#([0-9A-Fa-f]{6}|[0-9A-Fa-f]{8})$"
+        }
       }
     }
-  },
-  "additionalProperties": true
+  }
 }

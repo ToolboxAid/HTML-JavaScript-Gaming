@@ -4,49 +4,49 @@
   "version": 1,
   "name": "Sample 0207 Palette",
   "source": "generated-from-sample-colors",
-  "entries": [
+  "swatches": [
     {
-      "symbol": "s001",
+      "symbol": "!",
       "hex": "#1CAC78",
       "name": "color-001"
     },
     {
-      "symbol": "s002",
+      "symbol": "#",
       "hex": "#60A5FA",
       "name": "color-002"
     },
     {
-      "symbol": "s003",
+      "symbol": "$",
       "hex": "#1E1B4B",
       "name": "color-003"
     },
     {
-      "symbol": "s004",
+      "symbol": "%",
       "hex": "#34D399",
       "name": "color-004"
     },
     {
-      "symbol": "s005",
+      "symbol": "&",
       "hex": "#10B981",
       "name": "color-005"
     },
     {
-      "symbol": "s006",
+      "symbol": "(",
       "hex": "#F59E0B",
       "name": "color-006"
     },
     {
-      "symbol": "s007",
+      "symbol": ")",
       "hex": "#FFFFFFAA",
       "name": "color-007"
     },
     {
-      "symbol": "s008",
+      "symbol": "*",
       "hex": "#1F75FE",
       "name": "color-008"
     },
     {
-      "symbol": "s009",
+      "symbol": "+",
       "hex": "#FF7538",
       "name": "color-009"
     }

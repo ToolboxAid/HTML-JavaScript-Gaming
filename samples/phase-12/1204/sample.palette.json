@@ -4,39 +4,39 @@
   "version": 1,
   "name": "Sample 1204 Palette",
   "source": "generated-from-sample-colors",
-  "entries": [
+  "swatches": [
     {
-      "symbol": "s001",
+      "symbol": "!",
       "hex": "#8EC5F4",
       "name": "color-001"
     },
     {
-      "symbol": "s002",
+      "symbol": "#",
       "hex": "#5568D2",
       "name": "color-002"
     },
     {
-      "symbol": "s003",
+      "symbol": "$",
       "hex": "#218F86",
       "name": "color-003"
     },
     {
-      "symbol": "s004",
+      "symbol": "%",
       "hex": "#62DCCC",
       "name": "color-004"
     },
     {
-      "symbol": "s005",
+      "symbol": "&",
       "hex": "#0D1026",
       "name": "color-005"
     },
     {
-      "symbol": "s006",
+      "symbol": "(",
       "hex": "#F97316",
       "name": "color-006"
     },
     {
-      "symbol": "s007",
+      "symbol": ")",
       "hex": "#7C2D12",
       "name": "color-007"
     }

@@ -4,24 +4,24 @@
   "version": 1,
   "name": "Sample 1205 Palette",
   "source": "generated-from-sample-colors",
-  "entries": [
+  "swatches": [
     {
-      "symbol": "s001",
+      "symbol": "!",
       "hex": "#10142D",
       "name": "color-001"
     },
     {
-      "symbol": "s002",
+      "symbol": "#",
       "hex": "#62DCCC",
       "name": "color-002"
     },
     {
-      "symbol": "s003",
+      "symbol": "$",
       "hex": "#EE204D",
       "name": "color-003"
     },
     {
-      "symbol": "s004",
+      "symbol": "%",
       "hex": "#611126",
       "name": "color-004"
     }

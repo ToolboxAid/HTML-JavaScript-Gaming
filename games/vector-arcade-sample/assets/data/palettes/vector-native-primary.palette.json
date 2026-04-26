@@ -1,4 +1,29 @@
 {
+  "$schema": "../../../../../tools/schemas/palette.schema.json",
+  "schema": "html-js-gaming.palette",
+  "version": 1,
   "name": "Vector Native Primary Palette",
-  "colors": ["#05070DFF", "#E8F0FFFF", "#6FD3FFFF", "#FFB347FF"]
+  "source": "custom",
+  "swatches": [
+    {
+      "symbol": "!",
+      "hex": "#05070DFF",
+      "name": "Swatch 1"
+    },
+    {
+      "symbol": "#",
+      "hex": "#E8F0FFFF",
+      "name": "Swatch 2"
+    },
+    {
+      "symbol": "$",
+      "hex": "#6FD3FFFF",
+      "name": "Swatch 3"
+    },
+    {
+      "symbol": "%",
+      "hex": "#FFB347FF",
+      "name": "Swatch 4"
+    }
+  ]
 }

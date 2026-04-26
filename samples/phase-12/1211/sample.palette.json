@@ -4,39 +4,39 @@
   "version": 1,
   "name": "Sample 1211 Palette",
   "source": "generated-from-sample-colors",
-  "entries": [
+  "swatches": [
     {
-      "symbol": "s001",
+      "symbol": "!",
       "hex": "#00000000",
       "name": "color-001"
     },
     {
-      "symbol": "s002",
+      "symbol": "#",
       "hex": "#5CA65C",
       "name": "color-002"
     },
     {
-      "symbol": "s003",
+      "symbol": "$",
       "hex": "#8B5A2B",
       "name": "color-003"
     },
     {
-      "symbol": "s004",
+      "symbol": "%",
       "hex": "#B45309",
       "name": "color-004"
     },
     {
-      "symbol": "s005",
+      "symbol": "&",
       "hex": "#22C55E",
       "name": "color-005"
     },
     {
-      "symbol": "s006",
+      "symbol": "(",
       "hex": "#F59E0B",
       "name": "color-006"
     },
     {
-      "symbol": "s007",
+      "symbol": ")",
       "hex": "#64748B",
       "name": "color-007"
     }

@@ -4,14 +4,14 @@
   "version": 1,
   "name": "Sample 0221 Palette",
   "source": "generated-from-sample-colors",
-  "entries": [
+  "swatches": [
     {
-      "symbol": "s001",
+      "symbol": "!",
       "hex": "#1F2937",
       "name": "color-001"
     },
     {
-      "symbol": "s002",
+      "symbol": "#",
       "hex": "#6366F1",
       "name": "color-002"
     }

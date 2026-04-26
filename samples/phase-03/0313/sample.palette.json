@@ -4,29 +4,29 @@
   "version": 1,
   "name": "Sample 0313 Palette",
   "source": "generated-from-sample-colors",
-  "entries": [
+  "swatches": [
     {
-      "symbol": "s001",
+      "symbol": "!",
       "hex": "#111827",
       "name": "color-001"
     },
     {
-      "symbol": "s002",
+      "symbol": "#",
       "hex": "#1CAC78",
       "name": "color-002"
     },
     {
-      "symbol": "s003",
+      "symbol": "$",
       "hex": "#1F75FE",
       "name": "color-003"
     },
     {
-      "symbol": "s004",
+      "symbol": "%",
       "hex": "#EE204D",
       "name": "color-004"
     },
     {
-      "symbol": "s005",
+      "symbol": "&",
       "hex": "#FCE883",
       "name": "color-005"
     }

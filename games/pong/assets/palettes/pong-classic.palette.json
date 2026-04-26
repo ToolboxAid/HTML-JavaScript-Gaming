@@ -1,9 +1,10 @@
 {
+  "$schema": "../../../../tools/schemas/palette.schema.json",
   "schema": "html-js-gaming.palette",
   "version": 1,
   "name": "Pong Classic Palette",
   "source": "custom",
-  "entries": [
+  "swatches": [
     {
       "symbol": "!",
       "hex": "#05070A",
