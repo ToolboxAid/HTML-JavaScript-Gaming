@@ -1,4 +1,4 @@
-# Codex Commands — BUILD_PR_LEVEL_20_8_IMPLEMENT_TOOL_LAUNCH_SSOT_ROUTING_V2
+# Codex Commands — BUILD_PR_LEVEL_20_9_TOOL_LAUNCH_SSOT_DATA_LAYER
 
 ## Model
 GPT-5.4 or GPT-5.3-codex
@@ -11,21 +11,28 @@ High
 ```text
 Read docs/dev/codex_rules.md first.
 Read docs/dev/specs/TOOL_LAUNCH_SSOT.md second.
+Read docs/dev/reports/tool_launch_ssot_routing_validation.md if present.
 
-Execute BUILD_PR_LEVEL_20_8_IMPLEMENT_TOOL_LAUNCH_SSOT_ROUTING_V2.
+Execute BUILD_PR_LEVEL_20_9_TOOL_LAUNCH_SSOT_DATA_LAYER.
 
 Goal:
-Implement the first runtime slice of TOOL_LAUNCH_SSOT with exact UI launch wording.
+Create or normalize one runtime launch SSoT data layer for tool/workspace launch targets.
 
 Required behavior:
-- samples launch tools through tools/<tool>/index.html
-- sample launch actions must be labeled: Open <tool>
-- games launch workspace flows through tools/Workspace Manager/index.html
-- game launch actions must be labeled: Open with Workspace Manager
-- external launches from samples/games clear launch memory before loading
-- launch data comes from the existing single source of truth
+- samples continue to use label: Open <tool>
+- samples launch tools through SSoT target paths: tools/<tool>/index.html
+- games continue to use label: Open with Workspace Manager
+- games launch Workspace Manager through SSoT target path: tools/Workspace Manager/index.html
+- external launches from samples/games still clear launch memory before loading
 - no default/fallback route/tool/workspace behavior in touched launch flow
-- invalid or missing launch context fails visibly
+- invalid or missing SSoT target fails visibly
+
+SSoT must define:
+- launch id
+- display name
+- target path
+- allowed launch sources
+- allowed launch types
 
 Hard constraints:
 - smallest valid change
@@ -34,20 +41,22 @@ Hard constraints:
 - no start_of_day changes
 - no roadmap text rewrite except status markers
 - no anti-patterns listed in docs/dev/codex_rules.md
-- do not alter the required label meanings
+- no second source of truth
+- do not alter required label meanings
 
 Validation:
-Create docs/dev/reports/tool_launch_ssot_routing_validation.md with:
+Create docs/dev/reports/tool_launch_ssot_data_layer_validation.md with:
+- exact SSoT file path
 - changed files
-- tested UAT paths
-- proof sample actions are labeled Open <tool>
-- proof samples route to tools/<tool>/index.html
-- proof game actions are labeled Open with Workspace Manager
-- proof games route to tools/Workspace Manager/index.html
-- proof external launch memory is cleared
-- proof missing context does not fallback
+- list of launch ids
+- proof sample actions still say Open <tool>
+- proof game actions still say Open with Workspace Manager
+- proof sample target paths come from SSoT
+- proof game Workspace Manager target path comes from SSoT
+- proof external launch memory clear remains intact
+- proof missing target does not fallback
 - anti-pattern self-check
 
 Return ZIP at:
-tmp/BUILD_PR_LEVEL_20_8_IMPLEMENT_TOOL_LAUNCH_SSOT_ROUTING_V2.zip
+tmp/BUILD_PR_LEVEL_20_9_TOOL_LAUNCH_SSOT_DATA_LAYER.zip
 ```

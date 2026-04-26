@@ -1,8 +1,9 @@
-Implement tool launch SSoT routing with exact launch labels
+Create tool launch SSoT data layer
 
 PR Details:
-- Routes sample-launched tools through explicit tools/<tool>/index.html targets using Open <tool>.
-- Routes game workspace flows through tools/Workspace Manager/index.html using Open with Workspace Manager.
-- Clears launch memory for external sample/game launches.
-- Removes default/fallback behavior from touched launch flow.
-- Adds validation report for SSoT routing and launch labels.
+- Adds/normalizes one authoritative launch metadata source.
+- Keeps sample actions labeled Open <tool>.
+- Keeps game actions labeled Open with Workspace Manager.
+- Routes sample and game launch targets through the SSoT.
+- Preserves external launch memory clear behavior.
+- Adds validation report for SSoT data-layer behavior.

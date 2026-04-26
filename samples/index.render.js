@@ -90,6 +90,8 @@ function buildRoundtripLinks(sample, toolRegistryMap) {
 
     const presetPath = getExplicitRoundtripPresetPath(sample, toolId);
     const launch = resolveSampleToolLaunchHref(toolId, {
+      launchSource: "samples",
+      launchType: "sample-to-tool",
       sampleId: sample.id,
       sampleTitle: sample.title || "",
       samplePresetPath: presetPath

@@ -1,19 +1,14 @@
-import { getToolById } from "../toolRegistry.js";
+import {
+  getSampleToolLaunchDefinition,
+  getWorkspaceManagerGameLaunchDefinition,
+  validateLaunchDefinitionAccess
+} from "./toolLaunchSSoTData.js";
 
 const TOOLBOXAID_STORAGE_KEY_PREFIX = "toolboxaid.";
-const WORKSPACE_MANAGER_ENTRY_POINT = "Workspace Manager/index.html";
 const WORKSPACE_MANAGER_GAME_MOUNT_MODE = "game";
 
 function normalizeText(value) {
   return typeof value === "string" ? value.trim() : "";
-}
-
-function normalizeEntryPoint(value) {
-  const normalized = normalizeText(value).replace(/\\/g, "/").replace(/^\/+/, "");
-  if (!normalized || normalized.includes("..")) {
-    return "";
-  }
-  return normalized;
 }
 
 function normalizeSamplePresetPath(value) {
@@ -25,14 +20,6 @@ function normalizeSamplePresetPath(value) {
     return normalized;
   }
   return "";
-}
-
-function buildToolHrefFromEntryPoint(entryPoint) {
-  const normalizedEntryPoint = normalizeEntryPoint(entryPoint);
-  if (!normalizedEntryPoint) {
-    return "";
-  }
-  return `/tools/${encodeURI(normalizedEntryPoint)}`;
 }
 
 function appendQuery(baseHref, queryValues) {
@@ -78,14 +65,17 @@ export function resolveSampleToolLaunchHref(toolId, options = {}) {
     return { href: "", error: "toolId is required." };
   }
 
-  const tool = getToolById(normalizedToolId);
-  if (!tool) {
-    return { href: "", error: `Tool "${normalizedToolId}" is not registered.` };
+  const launchDefinitionResult = getSampleToolLaunchDefinition(normalizedToolId);
+  if (!launchDefinitionResult.launchDefinition) {
+    return { href: "", error: launchDefinitionResult.error || `Tool "${normalizedToolId}" launch metadata is missing in SSoT.` };
   }
-
-  const baseHref = buildToolHrefFromEntryPoint(tool.entryPoint);
-  if (!baseHref) {
-    return { href: "", error: `Tool "${normalizedToolId}" is missing a valid entryPoint.` };
+  const accessError = validateLaunchDefinitionAccess(
+    launchDefinitionResult.launchDefinition,
+    options.launchSource,
+    options.launchType
+  );
+  if (accessError) {
+    return { href: "", error: accessError };
   }
 
   const sampleId = normalizeText(options.sampleId);
@@ -94,7 +84,7 @@ export function resolveSampleToolLaunchHref(toolId, options = {}) {
   }
 
   const samplePresetPath = normalizeSamplePresetPath(options.samplePresetPath);
-  const href = appendQuery(baseHref, {
+  const href = appendQuery(launchDefinitionResult.launchDefinition.targetPath, {
     sampleId,
     sampleTitle: options.sampleTitle,
     samplePresetPath
@@ -102,18 +92,26 @@ export function resolveSampleToolLaunchHref(toolId, options = {}) {
   return { href, error: "" };
 }
 
-export function resolveGameWorkspaceLaunchHref(gameId) {
+export function resolveGameWorkspaceLaunchHref(gameId, options = {}) {
   const normalizedGameId = normalizeText(gameId);
   if (!normalizedGameId) {
     return { href: "", error: "gameId is required." };
   }
 
-  const baseHref = buildToolHrefFromEntryPoint(WORKSPACE_MANAGER_ENTRY_POINT);
-  if (!baseHref) {
-    return { href: "", error: "Workspace Manager launch entryPoint is invalid." };
+  const launchDefinitionResult = getWorkspaceManagerGameLaunchDefinition();
+  if (!launchDefinitionResult.launchDefinition) {
+    return { href: "", error: launchDefinitionResult.error || "Workspace Manager launch metadata is missing in SSoT." };
+  }
+  const accessError = validateLaunchDefinitionAccess(
+    launchDefinitionResult.launchDefinition,
+    options.launchSource,
+    options.launchType
+  );
+  if (accessError) {
+    return { href: "", error: accessError };
   }
 
-  const href = appendQuery(baseHref, {
+  const href = appendQuery(launchDefinitionResult.launchDefinition.targetPath, {
     gameId: normalizedGameId,
     mount: WORKSPACE_MANAGER_GAME_MOUNT_MODE
   });

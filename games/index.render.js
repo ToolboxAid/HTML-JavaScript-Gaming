@@ -145,7 +145,10 @@ function buildRows(metadata, pinnedSet, toolLabelMap) {
         .sort((a, b) => a.localeCompare(b, undefined, { sensitivity: "base" }));
       const href = normalizeGameHref(game?.href);
       const workspaceLaunch = href
-        ? resolveGameWorkspaceLaunchHref(id)
+        ? resolveGameWorkspaceLaunchHref(id, {
+          launchSource: "games",
+          launchType: "game-to-workspace"
+        })
         : { href: "", error: `Game "${id}" launch is missing a valid /games/... href in metadata.` };
       const toolTokens = buildToolTokens(game?.toolsUsed, toolLabelMap);
       return {

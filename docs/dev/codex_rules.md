@@ -4,11 +4,12 @@ These rules OVERRIDE all other instructions.
 
 Codex must prefer the existing repo pattern over any new pattern, unless the PR explicitly says otherwise.
 
-## Required Spec
+## Required Inputs
 
 Read and obey:
 
 - docs/dev/specs/TOOL_LAUNCH_SSOT.md
+- docs/dev/reports/tool_launch_ssot_routing_validation.md if present
 
 ## Required UI Labels
 
@@ -23,19 +24,21 @@ Games:
 ## This PR
 
 Allowed:
-- smallest implementation changes needed for launch routing SSoT
+- create or normalize one launch SSoT data source
+- replace duplicated launch-path reads only where needed
 - validation report
 - roadmap status marker update only if execution-backed
 
 Forbidden:
 - broad cleanup
 - unrelated refactoring
-- new route systems
+- new route systems beyond SSoT
 - fallback/default behavior
 - implementation outside touched launch path
 - start_of_day changes
 - roadmap text rewrite
 - changing required UI label semantics
+- second source of truth
 
 ## Anti-Patterns Forbidden
 
@@ -48,7 +51,7 @@ Forbidden:
 - duplicated launch paths
 - silent redirects
 - broad truthy/falsy behavior changes
-- magic strings or magic numbers outside existing SSoT/config pattern
+- magic strings or magic numbers outside SSoT/config pattern
 - duplicate event listeners
 - globals
 - new managers/factories/service layers unless already required by existing pattern
@@ -57,7 +60,7 @@ Forbidden:
 
 ## Required Failure Behavior
 
-If launch context is missing or invalid:
+If launch SSoT data is missing or invalid:
 - fail visibly
 - report the missing field
 - do not guess
