@@ -1,9 +1,6 @@
-Remove legacy launch fallback residue
+Update Phase 20 recovery status gate
 
 PR Details:
-- Removes legacy duplicated launch paths and fallback/default routing from touched SSoT launch flow.
-- Preserves sample labels as Open <tool>.
-- Preserves game labels as Open with Workspace Manager.
-- Keeps sample/game launch targets resolved from the launch SSoT.
-- Preserves external launch memory clear behavior.
-- Adds validation report for legacy fallback residue removal.
+- Records reset-to-baseline plus constrained replay as the active recovery method.
+- Marks SSoT, memory reset, anti-pattern replay, and Codex rule enforcement as in progress.
+- Keeps Workspace Manager UAT validation as the remaining recovery gate.
