@@ -1,4 +1,5 @@
 import { getToolRegistry } from "../tools/toolRegistry.js";
+import { launchWithExternalToolWorkspaceReset, resolveSampleToolLaunchHref } from "../tools/shared/toolLaunchSSoT.js";
 
 const METADATA_PATH = "./metadata/samples.index.metadata.json";
 const PINNED_KEY = "samples-index-pinned";
@@ -30,11 +31,6 @@ function escapeHtml(value) {
     .replaceAll(">", "&gt;")
     .replaceAll('"', "&quot;")
     .replaceAll("'", "&#39;");
-}
-
-function toStandaloneToolHref(entryPoint) {
-  const normalized = String(entryPoint || "").replace(/^\.?\/*/, "");
-  return normalized ? `/tools/${encodeURI(normalized)}` : "";
 }
 
 function normalizePresetPath(value) {
@@ -83,28 +79,33 @@ function buildRoundtripLinks(sample, toolRegistryMap) {
     .filter((toolId) => toolId !== "workspace-manager");
   const dedupedToolHints = [...new Set(orderedToolHints)];
   const links = [];
+  const launchIssues = [];
 
   dedupedToolHints.forEach((toolId) => {
     const tool = toolRegistryMap.get(toolId);
     if (!tool) {
-      return;
-    }
-    const baseHref = toStandaloneToolHref(tool.entryPoint);
-    if (!baseHref) {
+      launchIssues.push(`Tool "${toolId}" is not registered in toolRegistry.`);
       return;
     }
 
-    let href = baseHref;
-    let label = `Open ${normalize(tool.displayName) || normalize(tool.name) || toolId}`;
     const presetPath = getExplicitRoundtripPresetPath(sample, toolId);
-    if (presetPath) {
-      href = `${baseHref}?sampleId=${encodeURIComponent(sample.id)}&sampleTitle=${encodeURIComponent(sample.title || "")}&samplePresetPath=${encodeURIComponent(presetPath)}`;
+    const launch = resolveSampleToolLaunchHref(toolId, {
+      sampleId: sample.id,
+      sampleTitle: sample.title || "",
+      samplePresetPath: presetPath
+    });
+    if (!launch.href) {
+      launchIssues.push(`Tool "${toolId}" launch failed: ${launch.error || "missing launch metadata."}`);
+      return;
     }
+
+    const label = `Open ${normalize(tool.displayName) || normalize(tool.name) || toolId}`;
+    const href = launch.href;
 
     links.push({ toolId, href, label });
   });
 
-  return links;
+  return { links, launchIssues };
 }
 
 function readPinnedSet() {
@@ -183,7 +184,7 @@ function buildSampleRows(metadata, pinnedSet, toolLabelMap, toolRegistryMap) {
       const tags = asArray(sample?.tags).map((tag) => normalizeTag(tag)).filter(Boolean);
       const classTokens = buildClassTokens(sample?.classValues, sample?.engineClassesUsed);
       const toolTokens = buildToolTokens(sample?.toolHints, toolLabelMap);
-      const roundtripLinks = buildRoundtripLinks({
+      const roundtrip = buildRoundtripLinks({
         id,
         phase,
         title: sample?.title,
@@ -202,7 +203,8 @@ function buildSampleRows(metadata, pinnedSet, toolLabelMap, toolRegistryMap) {
         tags,
         classTokens,
         toolTokens,
-        roundtripLinks,
+        roundtripLinks: roundtrip.links,
+        roundtripLaunchIssues: roundtrip.launchIssues,
         previewSrc,
         pinned: pinnedSet.has(id)
       };
@@ -340,10 +342,21 @@ function buildSampleCard(sample) {
       <h4>Tool Roundtrip Links</h4>
       <p>Use these to validate tool to sample and sample back to tool workflows.</p>
       <ul>
-        ${sample.roundtripLinks.map((entry) => `<li><a href="${escapeHtml(entry.href)}">${escapeHtml(entry.label)}</a></li>`).join("")}
+        ${sample.roundtripLinks.map((entry) => `<li><a data-tool-launch-href="${escapeHtml(entry.href)}" href="${escapeHtml(entry.href)}">${escapeHtml(entry.label)}</a></li>`).join("")}
       </ul>
     `;
     card.appendChild(roundtripSection);
+  }
+  if (Array.isArray(sample.roundtripLaunchIssues) && sample.roundtripLaunchIssues.length > 0) {
+    const launchIssueSection = document.createElement("section");
+    launchIssueSection.className = "sample-tool-roundtrip";
+    launchIssueSection.innerHTML = `
+      <h4>Launch Validation</h4>
+      <ul>
+        ${sample.roundtripLaunchIssues.map((issue) => `<li>${escapeHtml(issue)}</li>`).join("")}
+      </ul>
+    `;
+    card.appendChild(launchIssueSection);
   }
   return card;
 }
@@ -394,7 +407,12 @@ function renderPhaseSections(container, phaseGroups) {
 
 function updateStatus(node, filteredRows, totalRows, phaseGroups) {
   const totalPhases = new Set(totalRows.map((entry) => entry.phase)).size;
-  node.textContent = `Showing ${filteredRows.length} of ${totalRows.length} samples across ${phaseGroups.length} of ${totalPhases} phases.`;
+  const launchIssueCount = filteredRows.reduce(
+    (count, sample) => count + (Array.isArray(sample.roundtripLaunchIssues) ? sample.roundtripLaunchIssues.length : 0),
+    0
+  );
+  const launchIssueSuffix = launchIssueCount > 0 ? ` Launch routing errors: ${launchIssueCount}.` : "";
+  node.textContent = `Showing ${filteredRows.length} of ${totalRows.length} samples across ${phaseGroups.length} of ${totalPhases} phases.${launchIssueSuffix}`;
 }
 
 function setSelectOptions(selectNode, values, labelResolver) {
@@ -499,6 +517,28 @@ export async function initSamplesIndex() {
     render();
   };
 
+  const handleToolLaunchEvent = (event) => {
+    if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) {
+      return;
+    }
+    const target = event.target;
+    if (!(target instanceof Element)) {
+      return;
+    }
+    const launchLink = target.closest("a[data-tool-launch-href]");
+    if (!(launchLink instanceof HTMLAnchorElement)) {
+      return;
+    }
+    const launchHref = normalize(launchLink.dataset.toolLaunchHref);
+    if (!launchHref) {
+      return;
+    }
+    event.preventDefault();
+    launchWithExternalToolWorkspaceReset(launchHref);
+  };
+
+  listContainer.addEventListener("click", handleToolLaunchEvent);
+  pinnedContainer.addEventListener("click", handleToolLaunchEvent);
   listContainer.addEventListener("change", handlePinEvent);
   pinnedContainer.addEventListener("change", handlePinEvent);
 

@@ -1,158 +1,94 @@
-
 # Codex Rules (MANDATORY — HARD CONSTRAINTS)
 
-These rules OVERRIDE all other instructions.
+These rules OVERRIDE all other task instructions except correctness and explicit user safety constraints.
 If any rule is violated, the output is incorrect.
 
 Codex must prefer the existing repo pattern over any new pattern, unless the PR explicitly says otherwise.
 
----
-
-## CORE PRINCIPLES
-- Follow the requested task EXACTLY. Do not expand scope.
-- Produce the smallest valid change required.
-- Prefer clarity, simplicity, and determinism.
+## Core Principles
+- Follow the requested task exactly.
+- One PR purpose only.
+- Smallest scoped valid change.
+- No repo-wide rewrites unless explicitly required by the task.
 - Do not introduce behavior that was not explicitly requested.
+- Do not modify `start_of_day` folders.
 
----
+## Naming / Data Flow
+- One concept = one name.
+- Do not create alias variables or name remapping chains.
+- Do not copy variables into new variables unless data is transformed.
+- Do not rename the same concept across files.
+- Do not use vague names such as `data`, `temp`, `obj`, `item`, `thing`, `value`, or `result` unless the scope is tiny and obvious.
+- Do not introduce adapter names unless the PR explicitly requires adapters.
+- Do not create duplicate state for the same value.
+- Do not store derived state when it can be computed directly.
 
-## NAMING
-- One concept = one name
-- Do NOT create alias variables
-- Do NOT copy variables without transformation
-- Do NOT rename variables unless required and consistent
+## Variables
+- No temporary pass-through variables.
+- No `a -> b -> c` assignment chains.
+- Only introduce variables when they transform data, clarify a complex expression, or are required for control flow.
 
----
+## Scope Creep
+- Do not fix unrelated bugs.
+- Do not clean up unrelated files.
+- Do not modernize code unless requested.
+- Do not change public APIs unless the PR explicitly requires it.
+- Do not change folder structure unless the PR explicitly requires it.
 
-## VARIABLES
-- No temporary pass-through variables
-- No a → b → c chains
-- Only create variables for transformation, clarity, or control flow
+## Control Flow
+- Do not add hidden fallback behavior.
+- Do not swallow errors silently.
+- Do not replace explicit checks with broad truthy/falsy checks when behavior could change.
+- Do not add global flags to control local behavior.
+- Do not introduce magic strings or magic numbers.
+- Do not add defaults/fallbacks for tool launch data; missing required SSoT data must fail validation visibly.
 
----
+## Architecture
+- Do not add a new framework, library, dependency, build tool, or pattern.
+- Do not introduce service layers, registries, managers, factories, or abstractions unless explicitly requested.
+- Do not create future-proof extension points.
+- Do not split files only for style.
 
-## FUNCTION DESIGN
-- Keep functions small and single-purpose
-- Do NOT create helper functions unless reused or required
-- No unnecessary abstraction
+## UI / Navigation
+- Do not change existing tile behavior unless the PR is specifically about that tile.
+- Do not change route names, URLs, IDs, labels, or menu text unless requested.
+- Do not create duplicate launch paths for the same tool.
+- Do not bypass existing navigation conventions.
+- Samples must launch tools through `tools/<tool>/index.html`.
+- Games must launch Workspace Manager through `tools/Workspace Manager/index.html`.
+- External launches from samples or games must clear prior tool/workspace memory before loading the requested tool or workspace.
 
----
+## Testing / Validation
+- Do not mark work complete without a concrete test path.
+- Do not claim browser-tested behavior unless actually tested.
+- Do not remove existing tests or validation hooks.
+- Do not weaken tests to make changes pass.
 
-## REFACTORING
-- Do NOT refactor unrelated code
-- Do NOT restructure files unless instructed
-- Do NOT rename files/folders unless required
+## Repo Safety
+- Do not modify `start_of_day` folders.
+- Do not delete legacy folders unless explicitly instructed.
+- Do not touch roadmap text except status markers `[ ]`, `[.]`, `[x]`.
+- Do not rewrite documentation outside the PR scope.
 
----
+## JavaScript-Specific
+- Do not use `var`.
+- Do not create globals.
+- Do not mutate imported/shared config objects.
+- Do not rely on implicit type coercion.
+- Do not use loose equality `==` or `!=`.
+- Do not add async behavior unless needed.
+- Do not mix DOM querying and business logic if existing code separates them.
+- Do not duplicate event listeners.
+- Do not attach handlers repeatedly inside render/update loops.
 
-## CONSISTENCY
-- Use existing naming patterns
-- Do NOT introduce new conventions
-- Do NOT mix styles
+## Validation Required Before Finish
+Before completing, verify:
+- No alias variables exist.
+- No unnecessary variables were introduced.
+- No scope expansion occurred.
+- Code matches existing repo patterns.
+- Only requested changes were made.
+- Launch data comes from a single source of truth.
+- No default/fallback launch entries remain for tools.
 
----
-
-## SCOPE CONTROL
-- Do exactly what is requested — nothing more
-- No feature creep, optimizations, or extras
-
----
-
-## COMMENTS
-- Only add when necessary or requested
-
----
-
-## FILE CHANGES
-- Modify ONLY specified files
-- Do NOT create new files unless required
-
----
-
-## OUTPUT
-- Clean, usable code only
-- No explanations unless requested
-
----
-
-## ADDITIONAL ANTI-PATTERNS (STRICTLY FORBIDDEN)
-
-### Naming / Data Flow
-- No vague names (data, temp, obj, item, thing, value)
-- No renaming same concept across files
-- No adapter names unless required
-- No duplicate state
-- No stored derived state
-
-### Scope Creep
-- Do not fix unrelated bugs
-- Do not clean unrelated files
-- Do not modernize code unless asked
-- Do not change APIs
-- Do not change folder structure
-
-### Control Flow
-- No hidden fallbacks
-- No silent error swallowing
-- No broad truthy/falsy replacements
-- No global flags for local behavior
-- No magic strings/numbers
-
-### Architecture
-- No new frameworks/libraries
-- No service layers/managers/factories unless asked
-- No future-proofing abstractions
-- No splitting files for style only
-
-### UI / Navigation
-- Do not change tile behavior unless requested
-- Do not change routes/labels/IDs
-- No duplicate launch paths
-- Do not bypass navigation conventions
-
-### Testing / Validation
-- Must have concrete test path
-- No fake validation claims
-- Do not remove tests
-- Do not weaken tests
-
-### Repo Safety
-- Do not modify start_of_day
-- Do not delete legacy folders
-- Do not change roadmap except status markers
-
-### JavaScript
-- No var
-- No globals
-- No mutation of shared config
-- No implicit coercion
-- No == or !=
-- No unnecessary async
-- No mixing DOM/business logic if separated
-- No duplicate event listeners
-- No attaching handlers in loops
-
----
-
-## VALIDATION
-- No alias variables
-- No unnecessary variables
-- No scope expansion
-- Matches repo patterns
-- Only requested changes made
-
-Fix violations before output.
-
----
-
-## PRIORITY
-1. Correctness
-2. These rules
-3. Task instructions
-4. Style
-
----
-
-## FAILURE
-If task requires breaking rules:
-STOP and explain minimally
+If any violation exists, fix it before returning output.

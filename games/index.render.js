@@ -1,4 +1,5 @@
 import { getToolRegistry } from "../tools/toolRegistry.js";
+import { launchWithExternalToolWorkspaceReset, resolveGameWorkspaceLaunchHref } from "../tools/shared/toolLaunchSSoT.js";
 
 const METADATA_PATH = "./metadata/games.index.metadata.json";
 const GAMES_PINNED_KEY = "games-index-pinned";
@@ -78,13 +79,6 @@ function normalizeGameHref(value) {
   return href;
 }
 
-function buildWorkspaceManagerHref(gameId) {
-  const normalizedGameId = normalize(gameId);
-  return normalizedGameId
-    ? `/tools/Workspace%20Manager/index.html?game=${encodeURIComponent(normalizedGameId)}`
-    : "/tools/Workspace%20Manager/index.html";
-}
-
 function buildToolTokens(toolsUsed, toolLabelMap) {
   const deduped = [...new Set(asArray(toolsUsed).map((entry) => normalizeToken(entry)).filter(Boolean))];
   return deduped
@@ -150,6 +144,7 @@ function buildRows(metadata, pinnedSet, toolLabelMap) {
       const tags = [...new Set(asArray(game?.tags).map((value) => normalizeTag(value)).filter(Boolean))]
         .sort((a, b) => a.localeCompare(b, undefined, { sensitivity: "base" }));
       const href = normalizeGameHref(game?.href);
+      const workspaceLaunch = href ? resolveGameWorkspaceLaunchHref(id) : { href: "", error: "" };
       const toolTokens = buildToolTokens(game?.toolsUsed, toolLabelMap);
       return {
         id,
@@ -164,7 +159,8 @@ function buildRows(metadata, pinnedSet, toolLabelMap) {
         tags,
         preview: normalize(game?.preview),
         href,
-        workspaceHref: href ? buildWorkspaceManagerHref(id) : "",
+        workspaceHref: workspaceLaunch.href,
+        workspaceLaunchError: workspaceLaunch.error,
         sampleTrack: game?.sampleTrack === true,
         debugShowcase: game?.debugShowcase === true,
         requiresService: game?.requiresService === true
@@ -247,7 +243,7 @@ function renderCard(row, instanceKey = "main") {
 
   const pinInputId = `game-pin-${escapeHtml(row.id)}-${escapeHtml(instanceKey)}`;
   const titleLabel = launchHref
-    ? `<a class="game-title-link" href="${escapeHtml(launchHref)}">${escapeHtml(row.title)}</a>`
+    ? `<a class="game-title-link" data-workspace-launch-href="${escapeHtml(launchHref)}" href="${escapeHtml(launchHref)}">${escapeHtml(row.title)}</a>`
     : `${escapeHtml(row.title)}`;
   const titleHtml = `<h3 class="game-title-row"><input id="${pinInputId}" type="checkbox" class="pin-toggle" data-game-pin="${escapeHtml(row.id)}" ${row.pinned ? "checked" : ""}><label for="${pinInputId}" class="pin-label" title="${row.pinned ? "Unpin" : "Pin"}" aria-label="${row.pinned ? "Unpin game" : "Pin game"}"><span class="pin-icon" aria-hidden="true"></span></label>${titleLabel}</h3>`;
 
@@ -265,9 +261,12 @@ function renderCard(row, instanceKey = "main") {
   const workspaceSection = row.workspaceHref
     ? `
       <section class="game-tool-roundtrip">
-        <p><a href="${escapeHtml(row.workspaceHref)}">Open with Workspace Manager</a></p>
+        <p><a data-workspace-launch-href="${escapeHtml(row.workspaceHref)}" href="${escapeHtml(row.workspaceHref)}">Open with Workspace Manager</a></p>
       </section>
     `
+    : "";
+  const workspaceLaunchError = row.workspaceLaunchError
+    ? `<p class="game-service-note">Workspace launch error: ${escapeHtml(row.workspaceLaunchError)}</p>`
     : "";
 
   article.innerHTML = `
@@ -276,6 +275,7 @@ function renderCard(row, instanceKey = "main") {
     ${previewHtml}
     <p>${escapeHtml(row.description)}</p>
     ${workspaceSection}
+    ${workspaceLaunchError}
     <p>Tags: ${escapeHtml(tagText)}</p>
     <p>Tools Used: ${escapeHtml(toolsUsedText)}</p>
     <section class="game-tool-roundtrip">
@@ -331,7 +331,9 @@ function render(container, statusNode, rows, state) {
     container.appendChild(section);
   }
   const totalLevels = new Set(rows.map((row) => row.level)).size;
-  statusNode.textContent = `Showing ${filtered.length} of ${rows.length} games across ${groups.length} of ${totalLevels} levels.`;
+  const launchErrorCount = filtered.reduce((count, row) => count + (row.workspaceLaunchError ? 1 : 0), 0);
+  const launchErrorSuffix = launchErrorCount > 0 ? ` Workspace launch errors: ${launchErrorCount}.` : "";
+  statusNode.textContent = `Showing ${filtered.length} of ${rows.length} games across ${groups.length} of ${totalLevels} levels.${launchErrorSuffix}`;
 }
 
 function renderPinned(container, rows) {
@@ -417,7 +419,27 @@ export async function initGamesIndex() {
     if (!workspaceHref) {
       return;
     }
-    window.location.assign(workspaceHref);
+    launchWithExternalToolWorkspaceReset(workspaceHref);
+  };
+
+  const handleWorkspaceLaunchClick = (event) => {
+    if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) {
+      return;
+    }
+    const target = event.target;
+    if (!(target instanceof Element)) {
+      return;
+    }
+    const launchLink = target.closest("a[data-workspace-launch-href]");
+    if (!(launchLink instanceof HTMLAnchorElement)) {
+      return;
+    }
+    const workspaceHref = normalize(launchLink.dataset.workspaceLaunchHref);
+    if (!workspaceHref) {
+      return;
+    }
+    event.preventDefault();
+    launchWithExternalToolWorkspaceReset(workspaceHref);
   };
 
   const handlePin = (event) => {
@@ -443,6 +465,8 @@ export async function initGamesIndex() {
   toolSelect.addEventListener("change", apply);
   tagSelect.addEventListener("change", apply);
   searchInput.addEventListener("input", apply);
+  container.addEventListener("click", handleWorkspaceLaunchClick);
+  pinnedContainer.addEventListener("click", handleWorkspaceLaunchClick);
   container.addEventListener("click", handleCardLaunch);
   pinnedContainer.addEventListener("click", handleCardLaunch);
   container.addEventListener("change", handlePin);

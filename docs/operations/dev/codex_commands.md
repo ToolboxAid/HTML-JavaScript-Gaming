@@ -1,26 +1,12 @@
-# Codex Commands - BUILD_PR_LEVEL_20_2_WORKSPACE_MANAGER_GAMES_TILE_UAT_RECOVERY
+# Codex Command — BUILD_PR_LEVEL_20_4_TOOL_LAUNCH_SSOT_AND_EXTERNAL_MEMORY_RESET
 
-## Model
-
-GPT-5.4
-
-## Reasoning
-
-High
-
-## Command
-
-Run from the repo root after applying this bundle:
+Run Codex with injected rules and build doc. Do not run Codex free-form.
 
 ```powershell
 $rules = Get-Content "docs/dev/codex_rules.md" -Raw
-$build = Get-Content "docs/pr/BUILD_PR_LEVEL_20_2_WORKSPACE_MANAGER_GAMES_TILE_UAT_RECOVERY.md" -Raw
+$build = Get-Content "docs/pr/BUILD_PR_LEVEL_20_4_TOOL_LAUNCH_SSOT_AND_EXTERNAL_MEMORY_RESET.md" -Raw
 codex run "$rules`n`n$build"
 ```
 
-## Required Codex Behavior
-
-- Read `PROJECT_INSTRUCTIONS.md` before editing.
-- Follow `docs/dev/codex_rules.md` exactly.
-- Keep the change limited to the Workspace Manager launch UAT path from `games/index.html`.
-- Produce `tmp/BUILD_PR_LEVEL_20_2_WORKSPACE_MANAGER_GAMES_TILE_UAT_RECOVERY.zip` after implementation.
+Expected artifact:
+`tmp/BUILD_PR_LEVEL_20_4_TOOL_LAUNCH_SSOT_AND_EXTERNAL_MEMORY_RESET.zip`

@@ -1,7 +1,7 @@
-Recover Workspace Manager games tile UAT path
+Normalize tool and workspace tile launch routing through SSoT
 
-PR Details:
-- Uses PROJECT_INSTRUCTIONS.md as the active workflow contract.
-- Adds mandatory Codex anti-pattern guard rules.
-- Directs a smallest-scoped BUILD for opening Workspace Manager from games/index.html.
-- Requires UAT report and repo-structured Codex ZIP output.
+- Route sample tool tiles to tools/<tool>/index.html
+- Route game tiles through tools/Workspace Manager/index.html
+- Clear external launch memory before loading tool/workspace
+- Remove default/fallback tool launch behavior
+- Add validation report for UAT launch flow
