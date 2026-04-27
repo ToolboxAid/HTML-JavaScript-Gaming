@@ -24,7 +24,8 @@ import {
   logToolLoadRequest,
   logToolLoadFetch,
   logToolLoadLoaded,
-  logToolLoadWarning
+  logToolLoadWarning,
+  logToolUiControlReady
 } from "../../shared/toolLoadDiagnostics.js";
 
 function normalizeDegrees(value) {
@@ -79,21 +80,31 @@ function buildPresetLoadedStatus(sampleId, samplePresetPath) {
 
 function extractVectorMapDocumentFromSamplePreset(rawPreset) {
   if (!rawPreset || typeof rawPreset !== "object") {
-    return rawPreset;
+    return null;
   }
-  const payload = rawPreset.payload && typeof rawPreset.payload === "object"
-    ? rawPreset.payload
-    : rawPreset;
-  if (payload.vectorMapDocument && typeof payload.vectorMapDocument === "object") {
-    return payload.vectorMapDocument;
+  const containers = [
+    rawPreset.payload,
+    rawPreset.config,
+    rawPreset
+  ];
+  for (const container of containers) {
+    if (!container || typeof container !== "object") {
+      continue;
+    }
+    if (container.vectorMapDocument && typeof container.vectorMapDocument === "object") {
+      return container.vectorMapDocument;
+    }
+    if (container.vectorMap && typeof container.vectorMap === "object") {
+      return container.vectorMap;
+    }
+    if (container.document && typeof container.document === "object") {
+      return container.document;
+    }
+    if (Array.isArray(container.objects)) {
+      return container;
+    }
   }
-  if (payload.vectorMap && typeof payload.vectorMap === "object") {
-    return payload.vectorMap;
-  }
-  if (payload.document && typeof payload.document === "object") {
-    return payload.document;
-  }
-  return payload;
+  return null;
 }
 
 export class VectorMapEditorApp {
@@ -240,58 +251,99 @@ export class VectorMapEditorApp {
     void this.tryLoadPresetFromQuery();
   }
 
+  emitVectorMapControlReadiness(sampleId = "", options = {}) {
+    const forceMissing = options.forceMissing === true;
+    const data = this.documentModel?.getData?.() || {};
+    const objectCount = Array.isArray(data.objects) ? data.objects.length : 0;
+    const hasDocument = !forceMissing
+      && Number.isFinite(Number(data.width))
+      && Number.isFinite(Number(data.height))
+      && Number(data.width) > 0
+      && Number(data.height) > 0;
+    const hasCanvas = !forceMissing && this.elements?.canvas instanceof HTMLCanvasElement;
+    const hasDataList = !forceMissing && objectCount > 0;
+
+    logToolUiControlReady({
+      toolId: "vector-map-editor",
+      sampleId,
+      controlId: "document-canvas",
+      requiredData: "vector-map-document",
+      loaded: hasCanvas && hasDocument,
+      value: hasDocument ? `${data.width}x${data.height}` : "none",
+      classification: hasCanvas && hasDocument ? "success" : "missing"
+    });
+
+    logToolUiControlReady({
+      toolId: "vector-map-editor",
+      sampleId,
+      controlId: "data-list",
+      requiredData: "vector-map-objects",
+      loaded: hasDataList,
+      count: objectCount,
+      value: objectCount,
+      classification: hasDataList ? "success" : (hasDocument ? "empty" : "missing")
+    });
+  }
+
   async tryLoadPresetFromQuery() {
     const searchParams = new URLSearchParams(window.location.search);
     const samplePresetPath = normalizeSamplePresetPath(searchParams.get("samplePresetPath") || "");
-  const launchQuery = getToolLoadQuerySnapshot(searchParams);
-  logToolLoadRequest({
-    toolId: "vector-map-editor",
-    sampleId: String(searchParams.get("sampleId") || "").trim(),
-    samplePresetPath,
-    requestedDataPaths: getToolLoadRequestedDataPaths(launchQuery),
-    launchQuery
-  });
-    if (!samplePresetPath) {
-    logToolLoadWarning({
+    const launchQuery = getToolLoadQuerySnapshot(searchParams);
+    logToolLoadRequest({
       toolId: "vector-map-editor",
-      reason: "samplePresetPath missing",
+      sampleId: String(searchParams.get("sampleId") || "").trim(),
+      samplePresetPath,
+      requestedDataPaths: getToolLoadRequestedDataPaths(launchQuery),
       launchQuery
     });
+    if (!samplePresetPath) {
+      logToolLoadWarning({
+        toolId: "vector-map-editor",
+        reason: "samplePresetPath missing",
+        launchQuery,
+        classification: "missing"
+      });
       return false;
     }
     const sampleId = String(searchParams.get("sampleId") || "").trim();
+    let loadClassification = "";
     try {
       const presetUrl = new URL(samplePresetPath, window.location.href);
       const presetHref = presetUrl.toString();
-    logToolLoadFetch({
-      toolId: "vector-map-editor",
-      phase: "attempt",
-      fetchUrl: presetHref,
-      requestedPath: samplePresetPath,
-      pathSource: "tool-input:query.samplePresetPath"
-    });
-    const response = await fetch(presetHref, { cache: "no-store" });
-    logToolLoadFetch({
-      toolId: "vector-map-editor",
-      phase: "response",
-      fetchUrl: presetHref,
-      requestedPath: samplePresetPath,
-      pathSource: "tool-input:query.samplePresetPath",
-      status: response.status,
-      ok: response.ok
-    });
+      logToolLoadFetch({
+        toolId: "vector-map-editor",
+        phase: "attempt",
+        fetchUrl: presetHref,
+        requestedPath: samplePresetPath,
+        pathSource: "tool-input:query.samplePresetPath"
+      });
+      const response = await fetch(presetHref, { cache: "no-store" });
+      logToolLoadFetch({
+        toolId: "vector-map-editor",
+        phase: "response",
+        fetchUrl: presetHref,
+        requestedPath: samplePresetPath,
+        pathSource: "tool-input:query.samplePresetPath",
+        status: response.status,
+        ok: response.ok
+      });
       if (!response.ok) {
+        loadClassification = "wrong-path";
         throw new Error(`preset request failed: ${response.status}`);
       }
       const rawPreset = await response.json();
-    logToolLoadLoaded({
-      toolId: "vector-map-editor",
-      sampleId,
-      samplePresetPath,
-      fetchUrl: presetHref,
-      loaded: summarizeToolLoadData(rawPreset)
-    });
+      logToolLoadLoaded({
+        toolId: "vector-map-editor",
+        sampleId,
+        samplePresetPath,
+        fetchUrl: presetHref,
+        loaded: summarizeToolLoadData(rawPreset)
+      });
       const toolDocument = extractVectorMapDocumentFromSamplePreset(rawPreset);
+      if (!toolDocument || typeof toolDocument !== "object") {
+        loadClassification = "wrong-shape";
+        throw new Error("Preset payload did not include a vector map document.");
+      }
       this.cancelSpinAnimation();
       this.documentModel.setData(toolDocument);
       this.selectionModel.clear();
@@ -304,15 +356,28 @@ export class VectorMapEditorApp {
       this.interactionController.setToolMode(this.elements.toolModeSelect.value);
       this.syncUIFromDocument();
       this.render();
+      this.emitVectorMapControlReadiness(sampleId);
+      if ((Array.isArray(this.documentModel.getData().objects) ? this.documentModel.getData().objects.length : 0) === 0) {
+        logToolLoadWarning({
+          toolId: "vector-map-editor",
+          sampleId,
+          samplePresetPath,
+          reason: "Loaded vector map document contains zero objects.",
+          classification: "empty"
+        });
+      }
       this.setStatus(buildPresetLoadedStatus(sampleId, samplePresetPath));
       return true;
     } catch (error) {
-    logToolLoadWarning({
-      toolId: "vector-map-editor",
-      sampleId,
-      samplePresetPath,
-      error: error instanceof Error ? error.message : "unknown error"
-    });
+      const errorMessage = error instanceof Error ? error.message : "unknown error";
+      this.emitVectorMapControlReadiness(sampleId, { forceMissing: true });
+      logToolLoadWarning({
+        toolId: "vector-map-editor",
+        sampleId,
+        samplePresetPath,
+        error: errorMessage,
+        classification: loadClassification || "wrong-shape"
+      });
       this.setStatus(`Preset load failed: ${error instanceof Error ? error.message : "unknown error"}`);
       return false;
     }

@@ -1,1 +1,1 @@
-Add tool UI readiness definition of done and Codex gap review - PR 10.6M
+Stabilize tool UI readiness failures for accordion state, asset browser, tilemap, vector asset, and vector map loading - PR 10.6O

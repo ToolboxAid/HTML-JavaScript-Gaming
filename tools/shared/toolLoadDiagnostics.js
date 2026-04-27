@@ -7,10 +7,16 @@ const TOOL_LOAD_PREFIXES = Object.freeze({
   classification: "[tool-load:classification]"
 });
 
+const TOOL_UI_PREFIXES = Object.freeze({
+  controlReady: "[tool-ui:control-ready]"
+});
+
 const CLASSIFICATION_VALUES = Object.freeze({
   missing: "missing",
   wrongPath: "wrong-path",
   wrongShape: "wrong-shape",
+  empty: "empty",
+  defaulted: "defaulted",
   success: "success"
 });
 
@@ -41,6 +47,26 @@ const CLASSIFICATION_CACHE = new Map();
 
 function normalizeText(value) {
   return typeof value === "string" ? value.trim() : "";
+}
+
+function normalizeClassificationValue(value) {
+  const normalized = normalizeText(value).toLowerCase();
+  switch (normalized) {
+    case CLASSIFICATION_VALUES.missing:
+      return CLASSIFICATION_VALUES.missing;
+    case CLASSIFICATION_VALUES.wrongPath:
+      return CLASSIFICATION_VALUES.wrongPath;
+    case CLASSIFICATION_VALUES.wrongShape:
+      return CLASSIFICATION_VALUES.wrongShape;
+    case CLASSIFICATION_VALUES.empty:
+      return CLASSIFICATION_VALUES.empty;
+    case CLASSIFICATION_VALUES.defaulted:
+      return CLASSIFICATION_VALUES.defaulted;
+    case CLASSIFICATION_VALUES.success:
+      return CLASSIFICATION_VALUES.success;
+    default:
+      return "";
+  }
 }
 
 function sanitizePayload(payload) {
@@ -471,6 +497,23 @@ function getMissingRequiredFields(expected, actual) {
   return makeUniqueList([...missingFields, ...missingArrays]);
 }
 
+function getMissingScalarRequiredFields(expected, actual) {
+  return expected.requiredFields.filter((field) => actual.fieldPresence[field] !== true);
+}
+
+function getMissingArrayRequiredFields(expected, actual) {
+  return expected.requiredArrayFields.filter((field) => actual.fieldPresence[field] !== true);
+}
+
+function getEmptyRequiredArrays(expected, actual) {
+  return expected.requiredArrayFields.filter((field) => {
+    if (actual.fieldPresence[field] !== true) {
+      return false;
+    }
+    return Number(actual.arrayCounts[field] || 0) <= 0;
+  });
+}
+
 function buildCacheKey(toolId, sampleId, samplePresetPath, dependencyId) {
   return `${normalizeText(toolId)}|${normalizeText(sampleId)}|${normalizeText(samplePresetPath)}|${normalizeText(dependencyId)}`;
 }
@@ -527,6 +570,13 @@ function isSchemaMismatch(expected, actual) {
 
 function classifyLikelyCause(expected, actual, details, missingRequiredFields) {
   const errorText = normalizeText(details.error).toLowerCase();
+  const explicitClassification = normalizeClassificationValue(details.classification);
+  if (explicitClassification === CLASSIFICATION_VALUES.defaulted) {
+    return "defaulted state";
+  }
+  if (explicitClassification === CLASSIFICATION_VALUES.empty) {
+    return "empty data";
+  }
   if (missingRequiredFields.includes("spriteProject")) {
     return "wrong path or wrong wrapper";
   }
@@ -549,7 +599,14 @@ function classifyLikelyCause(expected, actual, details, missingRequiredFields) {
 }
 
 function deriveClassification(boundary, details, expected, actual) {
+  const explicitClassification = normalizeClassificationValue(details.classification);
+  if (explicitClassification) {
+    return explicitClassification;
+  }
   const missingRequiredFields = getMissingRequiredFields(expected, actual);
+  const missingScalarFields = getMissingScalarRequiredFields(expected, actual);
+  const missingArrayFields = getMissingArrayRequiredFields(expected, actual);
+  const emptyRequiredArrays = getEmptyRequiredArrays(expected, actual);
   const schemaMismatch = isSchemaMismatch(expected, actual);
   if (boundary === "request") {
     return null;
@@ -564,9 +621,13 @@ function deriveClassification(boundary, details, expected, actual) {
     return null;
   }
   if (boundary === "loaded") {
-    return (schemaMismatch || missingRequiredFields.length > 0)
-      ? CLASSIFICATION_VALUES.wrongShape
-      : CLASSIFICATION_VALUES.success;
+    if (schemaMismatch || missingScalarFields.length > 0 || missingArrayFields.length > 0) {
+      return CLASSIFICATION_VALUES.wrongShape;
+    }
+    if (emptyRequiredArrays.length > 0) {
+      return CLASSIFICATION_VALUES.empty;
+    }
+    return CLASSIFICATION_VALUES.success;
   }
   if (!actual.requestedPath && !actual.fetchUrl && actual.topLevelKeys.length === 0) {
     return CLASSIFICATION_VALUES.missing;
@@ -574,9 +635,16 @@ function deriveClassification(boundary, details, expected, actual) {
   if (isHttpFailure(details, actual)) {
     return CLASSIFICATION_VALUES.wrongPath;
   }
-  return (schemaMismatch || missingRequiredFields.length > 0)
-    ? CLASSIFICATION_VALUES.wrongShape
-    : CLASSIFICATION_VALUES.success;
+  if (schemaMismatch || missingScalarFields.length > 0 || missingArrayFields.length > 0) {
+    return CLASSIFICATION_VALUES.wrongShape;
+  }
+  if (emptyRequiredArrays.length > 0) {
+    return CLASSIFICATION_VALUES.empty;
+  }
+  if (missingRequiredFields.length > 0) {
+    return CLASSIFICATION_VALUES.wrongShape;
+  }
+  return CLASSIFICATION_VALUES.success;
 }
 
 function emitClassification(details, expected, actual, classification, note = "") {
@@ -830,4 +898,14 @@ export function logToolLoadWarning(details = {}) {
   if (normalizeText(details.error)) {
     emitBoundaryAndClassification("error", TOOL_LOAD_PREFIXES.error, details);
   }
+}
+
+export function logToolUiControlReady(details = {}) {
+  const payload = sanitizePayload(details);
+  const classification = normalizeClassificationValue(payload.classification)
+    || (payload.loaded === true ? CLASSIFICATION_VALUES.success : CLASSIFICATION_VALUES.missing);
+  emitToolLoadLog(TOOL_UI_PREFIXES.controlReady, {
+    ...payload,
+    classification
+  });
 }

@@ -13,7 +13,8 @@ import {
   logToolLoadRequest,
   logToolLoadFetch,
   logToolLoadLoaded,
-  logToolLoadWarning
+  logToolLoadWarning,
+  logToolUiControlReady
 } from "../shared/toolLoadDiagnostics.js";
 import { ACTIVE_PROJECT_STORAGE_KEY } from "../shared/projectManifestContract.js";
 
@@ -29,6 +30,7 @@ const APPROVED_DESTINATIONS = Object.freeze({
 
 const GAME_ASSET_CATALOG_SCHEMA = "html-js-gaming.game-asset-catalog";
 const GAME_ASSET_CATALOG_VERSION = 1;
+const GAME_MANIFEST_SCHEMA = "html-js-gaming.game-manifest";
 
 const refs = {
   categoryFilter: document.getElementById("assetCategoryFilter"),
@@ -84,7 +86,12 @@ const state = {
   selectedCategory: "All",
   search: "",
   selectedAssetId: "",
-  assetCatalog: []
+  assetCatalog: [],
+  catalogLoadInfo: {
+    candidateCount: 0,
+    declaredCount: 0,
+    source: "none"
+  }
 };
 
 function sanitizeText(value) {
@@ -208,6 +215,84 @@ function normalizeCatalogEntries(rawEntries) {
   return entries;
 }
 
+function inferAssetKindFromPath(assetPath) {
+  const normalizedPath = normalizeLocalPath(assetPath).toLowerCase();
+  if (normalizedPath.endsWith(".svg")) {
+    return "vector";
+  }
+  if (normalizedPath.endsWith(".sprite.json") || normalizedPath.endsWith(".png")) {
+    return "sprite";
+  }
+  if (normalizedPath.endsWith(".tilemap.json") || normalizedPath.endsWith(".tileset.json")) {
+    return "tilemap";
+  }
+  if (normalizedPath.endsWith(".parallax.json")) {
+    return "parallax";
+  }
+  if (normalizedPath.endsWith(".palette.json")) {
+    return "palette";
+  }
+  if (normalizedPath.endsWith(".skin.json")) {
+    return "skin";
+  }
+  return "other";
+}
+
+function normalizeManifestAssetEntries(rawAssets = {}) {
+  const source = rawAssets && typeof rawAssets === "object" ? rawAssets : {};
+  const entries = [];
+  const seen = new Set();
+
+  const pushEntry = (assetId, rawEntry) => {
+    const safeAssetId = sanitizeText(assetId);
+    const entry = rawEntry && typeof rawEntry === "object" ? rawEntry : null;
+    const path = normalizeLocalPath(entry?.path || entry?.runtimePath || entry?.href || "");
+    if (!safeAssetId || !path) {
+      return;
+    }
+    if (seen.has(safeAssetId)) {
+      return;
+    }
+    seen.add(safeAssetId);
+    const kind = sanitizeText(entry?.kind || inferAssetKindFromPath(path)).toLowerCase() || "other";
+    entries.push({
+      id: safeAssetId,
+      label: humanizeAssetId(safeAssetId),
+      category: mapKindToCategory(kind),
+      kind,
+      path
+    });
+  };
+
+  Object.entries(source).forEach(([key, value]) => {
+    if (!value || typeof value !== "object" || Array.isArray(value)) {
+      return;
+    }
+    if (typeof value.path === "string") {
+      pushEntry(key, value);
+    }
+    Object.entries(value).forEach(([nestedKey, nestedValue]) => {
+      if (!nestedValue || typeof nestedValue !== "object" || Array.isArray(nestedValue)) {
+        return;
+      }
+      if (typeof nestedValue.path === "string") {
+        pushEntry(nestedKey, nestedValue);
+      }
+    });
+  });
+
+  return entries;
+}
+
+function normalizeManifestToolAssetEntries(payload) {
+  const manifest = payload && typeof payload === "object" ? payload : {};
+  const tools = manifest.tools && typeof manifest.tools === "object" ? manifest.tools : {};
+  const assetBrowser = tools["asset-browser"] && typeof tools["asset-browser"] === "object"
+    ? tools["asset-browser"]
+    : {};
+  return normalizeManifestAssetEntries(assetBrowser.assets);
+}
+
 async function readCatalogEntriesFromPath(catalogPath) {
   const safeCatalogPath = normalizeLocalPath(catalogPath);
   if (!safeCatalogPath) {
@@ -222,7 +307,10 @@ async function readCatalogEntriesFromPath(catalogPath) {
     const schema = sanitizeText(payload?.schema);
     const version = Number(payload?.version);
     if (schema !== GAME_ASSET_CATALOG_SCHEMA || version !== GAME_ASSET_CATALOG_VERSION) {
-      return [];
+      if (schema === GAME_MANIFEST_SCHEMA) {
+        return normalizeManifestToolAssetEntries(payload);
+      }
+      return normalizeManifestToolAssetEntries(payload);
     }
     const entries = normalizeCatalogEntries(payload.assets || payload.entries);
     return entries;
@@ -257,13 +345,56 @@ async function hydrateCatalogLabels(entries) {
 
 async function loadCatalogEntriesFromContext() {
   const candidates = collectCatalogPathCandidates();
+  state.catalogLoadInfo = {
+    candidateCount: candidates.length,
+    declaredCount: 0,
+    source: "none"
+  };
   for (const candidate of candidates) {
     const entries = await readCatalogEntriesFromPath(candidate);
     if (entries.length > 0) {
+      state.catalogLoadInfo = {
+        candidateCount: candidates.length,
+        declaredCount: entries.length,
+        source: candidate
+      };
       return hydrateCatalogLabels(entries);
     }
   }
+  const manifest = readActiveProjectManifest();
+  const manifestEntries = normalizeManifestToolAssetEntries(manifest);
+  if (manifestEntries.length > 0) {
+    state.catalogLoadInfo = {
+      candidateCount: candidates.length,
+      declaredCount: manifestEntries.length,
+      source: "active-project-manifest.tools.asset-browser.assets"
+    };
+    return hydrateCatalogLabels(manifestEntries);
+  }
   return [];
+}
+
+function emitApprovedAssetControlReadiness() {
+  const searchParams = new URLSearchParams(window.location.search);
+  const sampleId = String(searchParams.get("sampleId") || "").trim();
+  const approvedCount = Array.isArray(state.assetCatalog) ? state.assetCatalog.length : 0;
+  const hasDeclaredSource = Number(state.catalogLoadInfo?.declaredCount || 0) > 0;
+  const hasCatalogCandidates = Number(state.catalogLoadInfo?.candidateCount || 0) > 0;
+  const classification = approvedCount > 0
+    ? "success"
+    : (hasDeclaredSource ? "empty" : (hasCatalogCandidates ? "missing" : "missing"));
+
+  logToolUiControlReady({
+    toolId: "asset-browser",
+    sampleId,
+    controlId: "approved-asset-list",
+    requiredData: "explicit-approved-asset-catalog-or-manifest-assets",
+    loaded: approvedCount > 0,
+    count: approvedCount,
+    value: approvedCount,
+    source: state.catalogLoadInfo?.source || "none",
+    classification
+  });
 }
 
 function getCategoryOrder() {
@@ -742,6 +873,7 @@ function bindEvents() {
 
 async function init() {
   await hydrateApprovedAssetCatalog();
+  emitApprovedAssetControlReadiness();
   populateCategoryControls();
   populateDestinationOptions(refs.importCategorySelect.value);
   applyLaunchContext();

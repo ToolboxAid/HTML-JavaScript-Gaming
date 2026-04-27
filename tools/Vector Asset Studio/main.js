@@ -12,7 +12,8 @@ import {
   logToolLoadRequest,
   logToolLoadFetch,
   logToolLoadLoaded,
-  logToolLoadWarning
+  logToolLoadWarning,
+  logToolUiControlReady
 } from "../shared/toolLoadDiagnostics.js";
 import { normalizeToolSamplePath } from "../shared/toolSampleCatalog.js";
 import {
@@ -2482,23 +2483,43 @@ function extractVectorAssetPresetFromSamplePreset(rawPreset) {
     return null;
   }
 
-  const payload = rawPreset.payload && typeof rawPreset.payload === "object"
-    ? rawPreset.payload
-    : rawPreset;
+  const containers = [
+    rawPreset.payload,
+    rawPreset.config,
+    rawPreset
+  ];
 
-  const vectorBlock = payload.vectorAssetDocument && typeof payload.vectorAssetDocument === "object"
-    ? payload.vectorAssetDocument
-    : (payload.vectorAsset && typeof payload.vectorAsset === "object" ? payload.vectorAsset : payload);
+  let vectorBlock = null;
+  containers.forEach((container) => {
+    if (vectorBlock || !container || typeof container !== "object") {
+      return;
+    }
+    if (container.vectorAssetDocument && typeof container.vectorAssetDocument === "object") {
+      vectorBlock = container.vectorAssetDocument;
+      return;
+    }
+    if (container.vectorAsset && typeof container.vectorAsset === "object") {
+      vectorBlock = container.vectorAsset;
+      return;
+    }
+    if (container.document && typeof container.document === "object") {
+      vectorBlock = container.document;
+    }
+  });
+
+  if (!vectorBlock) {
+    return null;
+  }
 
   const svgText = typeof vectorBlock.svgText === "string" && vectorBlock.svgText.trim()
     ? vectorBlock.svgText
-    : (typeof payload.vectorAssetSvgText === "string" && payload.vectorAssetSvgText.trim() ? payload.vectorAssetSvgText : "");
+    : (containers.find((container) => typeof container?.vectorAssetSvgText === "string" && container.vectorAssetSvgText.trim())?.vectorAssetSvgText || "");
 
   const rawPath = typeof vectorBlock.svgPath === "string" && vectorBlock.svgPath.trim()
     ? vectorBlock.svgPath
     : (typeof vectorBlock.path === "string" && vectorBlock.path.trim()
       ? vectorBlock.path
-      : (typeof payload.vectorAssetSvgPath === "string" ? payload.vectorAssetSvgPath : ""));
+      : (containers.find((container) => typeof container?.vectorAssetSvgPath === "string" && container.vectorAssetSvgPath.trim())?.vectorAssetSvgPath || ""));
 
   const sourceName = typeof vectorBlock.sourceName === "string" && vectorBlock.sourceName.trim()
     ? vectorBlock.sourceName.trim()
@@ -2506,9 +2527,7 @@ function extractVectorAssetPresetFromSamplePreset(rawPreset) {
 
   const editorOptions = vectorBlock.editorOptions && typeof vectorBlock.editorOptions === "object"
     ? vectorBlock.editorOptions
-    : (payload.vectorAssetEditorOptions && typeof payload.vectorAssetEditorOptions === "object"
-      ? payload.vectorAssetEditorOptions
-      : null);
+    : (containers.find((container) => container?.vectorAssetEditorOptions && typeof container.vectorAssetEditorOptions === "object")?.vectorAssetEditorOptions || null);
 
   return {
     svgText,
@@ -2564,6 +2583,122 @@ function registerPaletteFromPresetEditorOptions(editorOptions, sampleId = "") {
   return true;
 }
 
+function ensurePaletteSelectionFromDeclaredInputs(editorOptions = {}, sampleId = "") {
+  if (hasPaletteSelection()) {
+    return "success";
+  }
+
+  const paletteBlock = editorOptions?.palette && typeof editorOptions.palette === "object"
+    ? editorOptions.palette
+    : null;
+  const declaredEntries = paletteBlock
+    ? collectPaletteEntries(
+      typeof paletteBlock.name === "string" && paletteBlock.name.trim() ? paletteBlock.name.trim() : "Declared Palette",
+      paletteBlock.entries
+    )
+    : [];
+
+  const declaredColors = [];
+  const seen = new Set();
+  const pushColor = (hexValue, name = "") => {
+    const normalizedHex = normalizeColorValue(hexValue);
+    if (!normalizedHex || seen.has(normalizedHex)) {
+      return;
+    }
+    seen.add(normalizedHex);
+    declaredColors.push({
+      symbol: "",
+      hex: normalizedHex,
+      name: name || `Declared ${declaredColors.length + 1}`
+    });
+  };
+
+  declaredEntries.forEach((entry) => pushColor(entry?.hex, entry?.name));
+  pushColor(paletteBlock?.paint || editorOptions?.paint, "Paint");
+  pushColor(paletteBlock?.stroke || editorOptions?.stroke, "Stroke");
+  state.usedColors.forEach((hexValue) => pushColor(hexValue, "Used Color"));
+
+  if (declaredColors.length === 0) {
+    return "missing";
+  }
+
+  const paletteId = sampleId ? `sample-${sampleId}-declared-palette` : "sample-declared-palette";
+  const paletteLabel = sampleId ? `Sample ${sampleId} Declared Palette` : "Declared Palette";
+  state.paletteGroups[paletteId] = declaredColors;
+  upsertPaletteOption(paletteId, paletteLabel);
+  state.selectedPaletteId = paletteId;
+  if (refs.paletteSelect instanceof HTMLSelectElement) {
+    refs.paletteSelect.disabled = false;
+    refs.paletteSelect.value = paletteId;
+  }
+  if (!normalizeColorValue(state.fill) && declaredColors[0]?.hex) {
+    state.fill = declaredColors[0].hex;
+  }
+  if (!normalizeColorValue(state.stroke) && (declaredColors[1]?.hex || declaredColors[0]?.hex)) {
+    state.stroke = declaredColors[1]?.hex || declaredColors[0]?.hex;
+  }
+  renderPaletteSelect();
+  renderMainPaletteGrid();
+  renderUsedColorStrip();
+  applyEnablementState();
+  return "defaulted";
+}
+
+function emitVectorAssetControlReadiness(sampleId = "", options = {}) {
+  const forceMissing = options.forceMissing === true;
+  const drawableCount = forceMissing ? 0 : getDrawableElements().length;
+  const hasSvgCanvas = !forceMissing && refs.editorSvg instanceof SVGSVGElement && drawableCount > 0;
+  const selectedPaletteEntries = hasPaletteSelection() ? getVisiblePaletteEntries() : [];
+  const hasPaletteControls = !forceMissing && hasPaletteSelection() && selectedPaletteEntries.length > 0;
+  const hasPaint = !forceMissing && Boolean(normalizeColorValue(state.fill));
+  const hasStroke = !forceMissing && Boolean(normalizeColorValue(state.stroke));
+  const fallbackClassification = typeof options.paletteClassification === "string" && options.paletteClassification.trim()
+    ? options.paletteClassification.trim()
+    : "";
+
+  logToolUiControlReady({
+    toolId: "vector-asset-studio",
+    sampleId,
+    controlId: "svg-canvas",
+    requiredData: "vector-svg-document",
+    loaded: hasSvgCanvas,
+    count: drawableCount,
+    value: drawableCount,
+    classification: hasSvgCanvas ? "success" : "missing"
+  });
+
+  logToolUiControlReady({
+    toolId: "vector-asset-studio",
+    sampleId,
+    controlId: "palette-controls",
+    requiredData: "declared-palette-selection",
+    loaded: hasPaletteControls,
+    count: selectedPaletteEntries.length,
+    value: selectedPaletteEntries.length,
+    classification: hasPaletteControls ? "success" : (fallbackClassification || (hasSvgCanvas ? "missing" : "missing"))
+  });
+
+  logToolUiControlReady({
+    toolId: "vector-asset-studio",
+    sampleId,
+    controlId: "paint-fill-control",
+    requiredData: "declared-paint-color",
+    loaded: hasPaint,
+    value: normalizeColorValue(state.fill) || "none",
+    classification: hasPaint ? "success" : (hasPaletteControls ? "defaulted" : "missing")
+  });
+
+  logToolUiControlReady({
+    toolId: "vector-asset-studio",
+    sampleId,
+    controlId: "stroke-control",
+    requiredData: "declared-stroke-color",
+    loaded: hasStroke,
+    value: normalizeColorValue(state.stroke) || "none",
+    classification: hasStroke ? "success" : (hasPaletteControls ? "defaulted" : "missing")
+  });
+}
+
 async function tryLoadPresetFromQuery() {
   const searchParams = new URLSearchParams(window.location.search);
   const samplePresetPath = normalizeSamplePresetPath(searchParams.get("samplePresetPath") || "");
@@ -2579,12 +2714,14 @@ async function tryLoadPresetFromQuery() {
     logToolLoadWarning({
       toolId: "vector-asset-studio",
       reason: "samplePresetPath missing",
-      launchQuery
+      launchQuery,
+      classification: "missing"
     });
     return false;
   }
 
   const sampleId = String(searchParams.get("sampleId") || "").trim();
+  let loadClassification = "";
 
   try {
     const presetUrl = new URL(samplePresetPath, window.location.href);
@@ -2607,6 +2744,7 @@ async function tryLoadPresetFromQuery() {
       ok: presetResponse.ok
     });
     if (!presetResponse.ok) {
+      loadClassification = "wrong-path";
       throw new Error(`Preset request failed (${presetResponse.status}).`);
     }
 
@@ -2620,6 +2758,7 @@ async function tryLoadPresetFromQuery() {
     });
     const extractedPreset = extractVectorAssetPresetFromSamplePreset(rawPreset);
     if (!extractedPreset) {
+      loadClassification = "wrong-shape";
       throw new Error("Preset payload was not valid.");
     }
     registerPaletteFromPresetEditorOptions(extractedPreset.editorOptions, sampleId);
@@ -2630,6 +2769,7 @@ async function tryLoadPresetFromQuery() {
     if (!svgText) {
       const pathCandidate = normalizeSamplePresetPath(extractedPreset.svgPath) || normalizeToolSamplePath(extractedPreset.svgPath);
       if (!pathCandidate) {
+        loadClassification = "missing";
         throw new Error("Preset did not include a vector SVG payload.");
       }
       const assetUrl = new URL(pathCandidate, window.location.href);
@@ -2652,6 +2792,7 @@ async function tryLoadPresetFromQuery() {
         ok: assetResponse.ok
       });
       if (!assetResponse.ok) {
+        loadClassification = "wrong-path";
         throw new Error(`Vector SVG request failed (${assetResponse.status}).`);
       }
       svgText = await assetResponse.text();
@@ -2659,6 +2800,7 @@ async function tryLoadPresetFromQuery() {
     }
 
     if (!svgText || !svgText.trim()) {
+      loadClassification = "empty";
       throw new Error("Preset vector SVG payload was empty.");
     }
 
@@ -2667,14 +2809,36 @@ async function tryLoadPresetFromQuery() {
     if (extractedPreset.editorOptions) {
       applySampleEditorOptions(extractedPreset.editorOptions);
     }
+    const paletteClassification = ensurePaletteSelectionFromDeclaredInputs(extractedPreset.editorOptions || {}, sampleId);
+    emitVectorAssetControlReadiness(sampleId, { paletteClassification });
+    if (paletteClassification !== "success") {
+      logToolLoadWarning({
+        toolId: "vector-asset-studio",
+        sampleId,
+        samplePresetPath,
+        reason: "Declared palette controls were not fully bound from preset and required normalization from declared inputs.",
+        classification: paletteClassification === "defaulted" ? "defaulted" : "missing"
+      });
+    }
+    if (!normalizeColorValue(state.fill) || !normalizeColorValue(state.stroke)) {
+      logToolLoadWarning({
+        toolId: "vector-asset-studio",
+        sampleId,
+        samplePresetPath,
+        reason: "Paint/stroke controls remained incomplete after preset load.",
+        classification: hasPaletteSelection() ? "defaulted" : "missing"
+      });
+    }
     setStatus(buildPresetLoadedStatus(sampleId, samplePresetPath));
     return true;
   } catch (error) {
+    emitVectorAssetControlReadiness(sampleId, { forceMissing: true });
     logToolLoadWarning({
       toolId: "vector-asset-studio",
       sampleId,
       samplePresetPath,
-      error: error instanceof Error ? error.message : "unknown error"
+      error: error instanceof Error ? error.message : "unknown error",
+      classification: loadClassification || "wrong-shape"
     });
     setStatus(`Preset load failed: ${error instanceof Error ? error.message : "unknown error"}`);
     return false;

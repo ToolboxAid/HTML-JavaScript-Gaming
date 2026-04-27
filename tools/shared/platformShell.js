@@ -14,6 +14,7 @@ import { asHtmlInput, queryAll, queryFirst, readDataAttribute, setTextContent } 
 import { escapeHtml } from "../../src/shared/string/stringUtil.js";
 import { Logger } from "../../src/engine/logging/index.js";
 import { createRuntimeMonitoringHooks } from "../../src/engine/runtime/index.js";
+import { logToolUiControlReady } from "./toolLoadDiagnostics.js";
 
 let workspaceController = null;
 let headerExpandedState = null;
@@ -22,6 +23,7 @@ let bindingRefreshHandlersBound = false;
 let workspacePagerDelegatedBound = false;
 let lastWorkspaceUiStateKey = "";
 let lastLockedSurfaceElement = null;
+const sidebarAccordionState = new Map();
 
 const HEADER_EXPANDED_STORAGE_KEY = "toolboxaid.toolsPlatform.headerExpanded";
 const HEADER_EXPANDED_FALLBACK_TOOL = "tool-host";
@@ -1397,6 +1399,32 @@ function convertPanelToAccordion(panelElement) {
   return accordion;
 }
 
+function getAccordionStateKey(sidebar, accordion, index) {
+  const side = sidebar instanceof HTMLElement
+    ? normalizeTextValue(sidebar.getAttribute("data-panel-side"))
+    : "";
+  const summaryText = accordion?.querySelector?.("summary")?.textContent || "";
+  const normalizedSummary = normalizeTextValue(summaryText).toLowerCase();
+  return `${side || "unknown-side"}:${index}:${normalizedSummary || "panel"}`;
+}
+
+function emitAccordionReadinessLog(accordion, index, stateKey) {
+  const searchParams = typeof window !== "undefined"
+    ? new URLSearchParams(window.location.search)
+    : new URLSearchParams();
+  const toolId = normalizeTextValue(document.body?.dataset?.toolId) || "tools-platform";
+  const sampleId = normalizeTextValue(searchParams.get("sampleId"));
+  logToolUiControlReady({
+    toolId,
+    sampleId,
+    controlId: `accordion:${stateKey || index}`,
+    requiredData: "sidebar-accordion-open-state",
+    loaded: accordion.open === true,
+    value: accordion.open ? "open" : "closed",
+    classification: "success"
+  });
+}
+
 function applySidebarAccordionRules() {
   if (getPageMode() !== "tool") {
     return;
@@ -1416,7 +1444,30 @@ function applySidebarAccordionRules() {
 
     const accordions = Array.from(sidebar.querySelectorAll(":scope > details.panel-accordion"));
     accordions.forEach((accordion, index) => {
-      accordion.open = index === 0;
+      const stateKey = getAccordionStateKey(sidebar, accordion, index);
+      if (sidebarAccordionState.has(stateKey)) {
+        accordion.open = sidebarAccordionState.get(stateKey) === true;
+      } else if (accordion.dataset.accordionInitialized !== "1") {
+        accordion.open = index === 0;
+      }
+
+      sidebarAccordionState.set(stateKey, accordion.open === true);
+      if (accordion.dataset.accordionInitialized !== "1") {
+        accordion.dataset.accordionInitialized = "1";
+      }
+
+      if (accordion.dataset.accordionStateBound !== "1") {
+        accordion.dataset.accordionStateBound = "1";
+        bindEventHandlers(accordion, "toggle", () => {
+          sidebarAccordionState.set(stateKey, accordion.open === true);
+          emitAccordionReadinessLog(accordion, index, stateKey);
+        });
+      }
+
+      if (accordion.dataset.accordionReadinessLogged !== "1") {
+        accordion.dataset.accordionReadinessLogged = "1";
+        emitAccordionReadinessLog(accordion, index, stateKey);
+      }
     });
   });
 }

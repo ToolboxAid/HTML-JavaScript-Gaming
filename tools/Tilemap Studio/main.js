@@ -38,7 +38,8 @@ import {
   logToolLoadRequest,
   logToolLoadFetch,
   logToolLoadLoaded,
-  logToolLoadWarning
+  logToolLoadWarning,
+  logToolUiControlReady
 } from "../shared/toolLoadDiagnostics.js";
 import { createLivePreviewSyncBridge, validateStateBindingPayload } from "../shared/livePreviewSyncChannel.js";
 import { addToolModeMetadata, assertStandaloneToolDocument, offerImportMismatchOptions } from "../shared/documentModeGuards.js";
@@ -93,32 +94,46 @@ function buildPresetLoadedStatus(sampleId, samplePresetPath) {
 
 function extractTileMapDocumentFromSamplePreset(rawPreset) {
   if (!rawPreset || typeof rawPreset !== "object") {
-    return rawPreset;
+    return null;
   }
 
-  const payload = rawPreset.payload;
-  if (payload && typeof payload === "object") {
-    if (payload.tilemapDocument && typeof payload.tilemapDocument === "object") {
-      return payload.tilemapDocument;
+  const containers = [
+    rawPreset.payload,
+    rawPreset.config,
+    rawPreset
+  ];
+
+  for (const container of containers) {
+    if (!container || typeof container !== "object") {
+      continue;
     }
-    if (payload.tileMapDocument && typeof payload.tileMapDocument === "object") {
-      return payload.tileMapDocument;
+    if (container.tilemapDocument && typeof container.tilemapDocument === "object") {
+      return container.tilemapDocument;
     }
-    if (payload.tilemap && typeof payload.tilemap === "object") {
-      return payload.tilemap;
+    if (container.tileMapDocument && typeof container.tileMapDocument === "object") {
+      return container.tileMapDocument;
     }
-    if (payload.tileMap && typeof payload.tileMap === "object") {
-      return payload.tileMap;
+    if (container.tilemap && typeof container.tilemap === "object") {
+      return container.tilemap;
     }
-    if (typeof payload.tilemapDocumentPath === "string") {
-      return payload.tilemapDocumentPath;
+    if (container.tileMap && typeof container.tileMap === "object") {
+      return container.tileMap;
     }
-    if (typeof payload.tileMapDocumentPath === "string") {
-      return payload.tileMapDocumentPath;
+    if (typeof container.tilemapDocumentPath === "string") {
+      return container.tilemapDocumentPath;
+    }
+    if (typeof container.tileMapDocumentPath === "string") {
+      return container.tileMapDocumentPath;
+    }
+    if (typeof container.tilemapPath === "string") {
+      return container.tilemapPath;
+    }
+    if (typeof container.tileMapPath === "string") {
+      return container.tileMapPath;
     }
   }
 
-  return rawPreset;
+  return null;
 }
 
 function createDefaultTilesetAtlas(tileSize = 24) {
@@ -1985,67 +2000,130 @@ class TileMapEditorApp {
     this.refs.exitSimulationButton.disabled = !inSimulation;
   }
 
+  emitTilemapControlReadiness(sampleId = "", options = {}) {
+    const forceMissing = options.forceMissing === true;
+    const map = this.documentModel?.map && typeof this.documentModel.map === "object"
+      ? this.documentModel.map
+      : null;
+    const hasMapDocument = Boolean(
+      map
+      && Number.isFinite(Number(map.width))
+      && Number.isFinite(Number(map.height))
+      && Number(map.width) > 0
+      && Number(map.height) > 0
+      && Array.isArray(this.documentModel?.layers)
+    );
+    const tileEntries = Array.isArray(this.documentModel?.tileset)
+      ? this.documentModel.tileset.filter((tile) => Number.isFinite(Number(tile?.id)) && Number(tile.id) > 0)
+      : [];
+    const hasTilePalette = tileEntries.length > 0;
+    const selectedTileId = Number.parseInt(this.activeTileId, 10);
+    const hasSelectedTile = Number.isFinite(selectedTileId) && tileEntries.some((tile) => Number(tile.id) === selectedTileId);
+    const mapLoaded = forceMissing ? false : hasMapDocument;
+    const paletteLoaded = forceMissing ? false : hasTilePalette;
+    const selectedTileLoaded = forceMissing ? false : hasSelectedTile;
+
+    logToolUiControlReady({
+      toolId: "tile-map-editor",
+      sampleId,
+      controlId: "map-canvas",
+      requiredData: "tilemap-document",
+      loaded: mapLoaded,
+      value: mapLoaded ? `${map.width}x${map.height}` : "none",
+      classification: mapLoaded ? "success" : "missing"
+    });
+
+    logToolUiControlReady({
+      toolId: "tile-map-editor",
+      sampleId,
+      controlId: "tile-palette-grid",
+      requiredData: "tileset-entries",
+      loaded: paletteLoaded,
+      count: tileEntries.length,
+      value: tileEntries.length,
+      classification: paletteLoaded ? "success" : (mapLoaded ? "empty" : "missing")
+    });
+
+    logToolUiControlReady({
+      toolId: "tile-map-editor",
+      sampleId,
+      controlId: "selected-tile",
+      requiredData: "first-valid-tile-selection",
+      loaded: selectedTileLoaded,
+      value: Number.isFinite(selectedTileId) ? selectedTileId : "none",
+      classification: selectedTileLoaded ? "success" : (paletteLoaded ? "defaulted" : "missing")
+    });
+  }
+
   async tryLoadPresetFromQuery() {
     const searchParams = new URLSearchParams(window.location.search);
     const samplePresetPath = normalizeSamplePresetPath(searchParams.get("samplePresetPath") || "");
-  const launchQuery = getToolLoadQuerySnapshot(searchParams);
-  logToolLoadRequest({
-    toolId: "tile-map-editor",
-    sampleId: String(searchParams.get("sampleId") || "").trim(),
-    samplePresetPath,
-    requestedDataPaths: getToolLoadRequestedDataPaths(launchQuery),
-    launchQuery
-  });
-    if (!samplePresetPath) {
-    logToolLoadWarning({
+    const launchQuery = getToolLoadQuerySnapshot(searchParams);
+    logToolLoadRequest({
       toolId: "tile-map-editor",
-      reason: "samplePresetPath missing",
+      sampleId: String(searchParams.get("sampleId") || "").trim(),
+      samplePresetPath,
+      requestedDataPaths: getToolLoadRequestedDataPaths(launchQuery),
       launchQuery
     });
+    if (!samplePresetPath) {
+      logToolLoadWarning({
+        toolId: "tile-map-editor",
+        reason: "samplePresetPath missing",
+        launchQuery,
+        classification: "missing"
+      });
       return;
     }
 
     const sampleId = String(searchParams.get("sampleId") || "").trim();
     this.exitSimulationMode();
+    let loadClassification = "";
 
     try {
       const presetUrl = new URL(samplePresetPath, window.location.href);
       const presetHref = presetUrl.toString();
-    logToolLoadFetch({
-      toolId: "tile-map-editor",
-      phase: "attempt",
-      fetchUrl: presetHref,
-      requestedPath: samplePresetPath,
-      pathSource: "tool-input:query.samplePresetPath"
-    });
-    const presetResponse = await fetch(presetHref, { cache: "no-store" });
-    logToolLoadFetch({
-      toolId: "tile-map-editor",
-      phase: "response",
-      fetchUrl: presetHref,
-      requestedPath: samplePresetPath,
-      pathSource: "tool-input:query.samplePresetPath",
-      status: presetResponse.status,
-      ok: presetResponse.ok
-    });
+      logToolLoadFetch({
+        toolId: "tile-map-editor",
+        phase: "attempt",
+        fetchUrl: presetHref,
+        requestedPath: samplePresetPath,
+        pathSource: "tool-input:query.samplePresetPath"
+      });
+      const presetResponse = await fetch(presetHref, { cache: "no-store" });
+      logToolLoadFetch({
+        toolId: "tile-map-editor",
+        phase: "response",
+        fetchUrl: presetHref,
+        requestedPath: samplePresetPath,
+        pathSource: "tool-input:query.samplePresetPath",
+        status: presetResponse.status,
+        ok: presetResponse.ok
+      });
       if (!presetResponse.ok) {
+        loadClassification = "wrong-path";
         throw new Error(`Preset request failed (${presetResponse.status}).`);
       }
 
       const rawPreset = await presetResponse.json();
-    logToolLoadLoaded({
-      toolId: "tile-map-editor",
-      sampleId,
-      samplePresetPath,
-      fetchUrl: presetHref,
-      loaded: summarizeToolLoadData(rawPreset)
-    });
+      logToolLoadLoaded({
+        toolId: "tile-map-editor",
+        sampleId,
+        samplePresetPath,
+        fetchUrl: presetHref,
+        loaded: summarizeToolLoadData(rawPreset)
+      });
       const extracted = extractTileMapDocumentFromSamplePreset(rawPreset);
+      if (!extracted) {
+        loadClassification = "wrong-shape";
+        throw new Error("Preset payload did not include a tilemap document or tilemap document path.");
+      }
       let toolDocument = null;
 
       if (typeof extracted === "string" && extracted.trim()) {
         const documentPath = normalizeSamplePresetPath(extracted);
         if (!documentPath) {
+          loadClassification = "wrong-path";
           throw new Error("Preset did not resolve to a valid tilemap document path.");
         }
         const documentUrl = new URL(documentPath, window.location.href);
@@ -2095,6 +2173,7 @@ class TileMapEditorApp {
             ok: documentResponse.ok
           });
           if (!documentResponse.ok) {
+            loadClassification = "wrong-path";
             throw new Error(`Tilemap document request failed (${documentResponse.status}).`);
           }
           toolDocument = await documentResponse.json();
@@ -2104,6 +2183,7 @@ class TileMapEditorApp {
       }
 
       if (!toolDocument || typeof toolDocument !== "object") {
+        loadClassification = "wrong-shape";
         throw new Error("Preset payload did not include a tilemap document.");
       }
 
@@ -2119,14 +2199,27 @@ class TileMapEditorApp {
       this.renderAll();
       void this.reloadTilesetImageFromDocument({ quiet: true });
       void this.preloadIndividualTileImages({ quiet: true });
+      this.emitTilemapControlReadiness(sampleId);
+      if (!Array.isArray(this.documentModel?.tileset) || this.documentModel.tileset.filter((tile) => Number(tile?.id) > 0).length === 0) {
+        logToolLoadWarning({
+          toolId: "tile-map-editor",
+          sampleId,
+          samplePresetPath,
+          reason: "Loaded tilemap document has no non-empty tileset entries.",
+          classification: "empty"
+        });
+      }
       this.updateStatus(buildPresetLoadedStatus(sampleId, samplePresetPath));
     } catch (error) {
-    logToolLoadWarning({
-      toolId: "tile-map-editor",
-      sampleId,
-      samplePresetPath,
-      error: error instanceof Error ? error.message : "unknown error"
-    });
+      const errorMessage = error instanceof Error ? error.message : "unknown error";
+      this.emitTilemapControlReadiness(sampleId, { forceMissing: true });
+      logToolLoadWarning({
+        toolId: "tile-map-editor",
+        sampleId,
+        samplePresetPath,
+        error: errorMessage,
+        classification: loadClassification || "wrong-shape"
+      });
       this.updateStatus(`Preset load failed: ${error instanceof Error ? error.message : "unknown error"}`);
     }
   }
