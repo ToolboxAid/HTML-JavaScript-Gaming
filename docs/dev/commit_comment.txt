@@ -1,1 +1,1 @@
-Normalize all sample palettes to canonical SSoT and remove palette-browser duplicates - PR 10.6F
+Add tool request/fetch/load diagnostics for sample data-flow debugging - PR 10.6G

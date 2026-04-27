@@ -5,6 +5,15 @@ import {
 } from "../shared/assetPipelineConverters.js";
 import { safeParseJson, toPrettyJson } from "../shared/debugInspectorData.js";
 import { registerToolBootContract } from "../shared/toolBootContract.js";
+import {
+  getToolLoadQuerySnapshot,
+  getToolLoadRequestedDataPaths,
+  summarizeToolLoadData,
+  logToolLoadRequest,
+  logToolLoadFetch,
+  logToolLoadLoaded,
+  logToolLoadWarning
+} from "../shared/toolLoadDiagnostics.js";
 
 const refs = {
   runButton: document.getElementById("runConverterButton"),
@@ -120,18 +129,55 @@ function extractConverterPayloadFromPreset(rawPreset) {
 async function tryLoadPresetFromQuery() {
   const searchParams = new URLSearchParams(window.location.search);
   const samplePresetPath = normalizeSamplePresetPath(searchParams.get("samplePresetPath") || "");
+  const launchQuery = getToolLoadQuerySnapshot(searchParams);
+  logToolLoadRequest({
+    toolId: "tile-model-converter",
+    sampleId: String(searchParams.get("sampleId") || "").trim(),
+    samplePresetPath,
+    requestedDataPaths: getToolLoadRequestedDataPaths(launchQuery),
+    launchQuery
+  });
   if (!samplePresetPath) {
+    logToolLoadWarning({
+      toolId: "tile-model-converter",
+      reason: "samplePresetPath missing",
+      launchQuery
+    });
     return;
   }
 
   const sampleId = String(searchParams.get("sampleId") || "").trim();
   try {
     const presetUrl = new URL(samplePresetPath, window.location.href);
-    const response = await fetch(presetUrl.toString(), { cache: "no-store" });
+    const presetHref = presetUrl.toString();
+    logToolLoadFetch({
+      toolId: "tile-model-converter",
+      phase: "attempt",
+      fetchUrl: presetHref,
+      requestedPath: samplePresetPath,
+      pathSource: "tool-input:query.samplePresetPath"
+    });
+    const response = await fetch(presetHref, { cache: "no-store" });
+    logToolLoadFetch({
+      toolId: "tile-model-converter",
+      phase: "response",
+      fetchUrl: presetHref,
+      requestedPath: samplePresetPath,
+      pathSource: "tool-input:query.samplePresetPath",
+      status: response.status,
+      ok: response.ok
+    });
     if (!response.ok) {
       throw new Error(`Preset request failed (${response.status}).`);
     }
     const rawPreset = await response.json();
+    logToolLoadLoaded({
+      toolId: "tile-model-converter",
+      sampleId,
+      samplePresetPath,
+      fetchUrl: presetHref,
+      loaded: summarizeToolLoadData(rawPreset)
+    });
     const payload = extractConverterPayloadFromPreset(rawPreset);
     if (!payload) {
       throw new Error("Preset payload did not include candidate/conversion data.");
@@ -142,6 +188,12 @@ async function tryLoadPresetFromQuery() {
     refs.input.value = toPrettyJson(payload);
     setStatus(buildPresetLoadedStatus(sampleId, samplePresetPath));
   } catch (error) {
+    logToolLoadWarning({
+      toolId: "tile-model-converter",
+      sampleId,
+      samplePresetPath,
+      error: error instanceof Error ? error.message : "unknown error"
+    });
     setStatus(`Preset load failed: ${error instanceof Error ? error.message : "unknown error"}`);
   }
 }

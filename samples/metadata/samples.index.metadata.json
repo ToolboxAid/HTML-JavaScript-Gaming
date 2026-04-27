@@ -1556,7 +1556,7 @@
       "roundtripToolPresets": [
         {
           "toolId": "palette-browser",
-          "presetPath": "/samples/phase-02/0213/sample.0213.palette-browser.json"
+          "presetPath": "/samples/phase-02/0213/sample.0213.palette.json"
         }
       ]
     },
@@ -2618,7 +2618,7 @@
       "roundtripToolPresets": [
         {
           "toolId": "palette-browser",
-          "presetPath": "/samples/phase-03/0308/sample.0308.palette-browser.json"
+          "presetPath": "/samples/phase-03/0308/sample.0308.palette.json"
         }
       ]
     },

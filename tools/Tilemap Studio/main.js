@@ -31,6 +31,15 @@ import { buildProjectPackage, summarizeProjectPackaging } from "../shared/projec
 import { buildEditorExperienceLayer, summarizeEditorExperienceLayer } from "../shared/editorExperienceLayer.js";
 import { buildDebugVisualizationLayer, summarizeDebugVisualizationLayer } from "../shared/debugVisualizationLayer.js";
 import { registerToolBootContract } from "../shared/toolBootContract.js";
+import {
+  getToolLoadQuerySnapshot,
+  getToolLoadRequestedDataPaths,
+  summarizeToolLoadData,
+  logToolLoadRequest,
+  logToolLoadFetch,
+  logToolLoadLoaded,
+  logToolLoadWarning
+} from "../shared/toolLoadDiagnostics.js";
 import { createLivePreviewSyncBridge, validateStateBindingPayload } from "../shared/livePreviewSyncChannel.js";
 import { addToolModeMetadata, assertStandaloneToolDocument, offerImportMismatchOptions } from "../shared/documentModeGuards.js";
 
@@ -1979,7 +1988,20 @@ class TileMapEditorApp {
   async tryLoadPresetFromQuery() {
     const searchParams = new URLSearchParams(window.location.search);
     const samplePresetPath = normalizeSamplePresetPath(searchParams.get("samplePresetPath") || "");
+  const launchQuery = getToolLoadQuerySnapshot(searchParams);
+  logToolLoadRequest({
+    toolId: "tile-map-editor",
+    sampleId: String(searchParams.get("sampleId") || "").trim(),
+    samplePresetPath,
+    requestedDataPaths: getToolLoadRequestedDataPaths(launchQuery),
+    launchQuery
+  });
     if (!samplePresetPath) {
+    logToolLoadWarning({
+      toolId: "tile-map-editor",
+      reason: "samplePresetPath missing",
+      launchQuery
+    });
       return;
     }
 
@@ -1988,12 +2010,36 @@ class TileMapEditorApp {
 
     try {
       const presetUrl = new URL(samplePresetPath, window.location.href);
-      const presetResponse = await fetch(presetUrl.toString(), { cache: "no-store" });
+      const presetHref = presetUrl.toString();
+    logToolLoadFetch({
+      toolId: "tile-map-editor",
+      phase: "attempt",
+      fetchUrl: presetHref,
+      requestedPath: samplePresetPath,
+      pathSource: "tool-input:query.samplePresetPath"
+    });
+    const presetResponse = await fetch(presetHref, { cache: "no-store" });
+    logToolLoadFetch({
+      toolId: "tile-map-editor",
+      phase: "response",
+      fetchUrl: presetHref,
+      requestedPath: samplePresetPath,
+      pathSource: "tool-input:query.samplePresetPath",
+      status: presetResponse.status,
+      ok: presetResponse.ok
+    });
       if (!presetResponse.ok) {
         throw new Error(`Preset request failed (${presetResponse.status}).`);
       }
 
       const rawPreset = await presetResponse.json();
+    logToolLoadLoaded({
+      toolId: "tile-map-editor",
+      sampleId,
+      samplePresetPath,
+      fetchUrl: presetHref,
+      loaded: summarizeToolLoadData(rawPreset)
+    });
       const extracted = extractTileMapDocumentFromSamplePreset(rawPreset);
       let toolDocument = null;
 
@@ -2006,10 +2052,48 @@ class TileMapEditorApp {
         if (documentPath.toLowerCase().endsWith(".js")) {
           const moduleUrl = new URL(documentUrl.toString());
           moduleUrl.searchParams.set("presetLoadAt", String(Date.now()));
-          const importedModule = await import(moduleUrl.toString());
+          const moduleHref = moduleUrl.toString();
+          logToolLoadFetch({
+            toolId: "tile-map-editor",
+            phase: "attempt",
+            fetchUrl: moduleHref,
+            requestedPath: documentPath,
+            pathSource: "schema-normalized-input:tilemap-document-path",
+            transport: "module-import"
+          });
+          const importedModule = await import(moduleHref);
+          logToolLoadFetch({
+            toolId: "tile-map-editor",
+            phase: "response",
+            fetchUrl: moduleHref,
+            requestedPath: documentPath,
+            pathSource: "schema-normalized-input:tilemap-document-path",
+            transport: "module-import",
+            ok: true,
+            result: "module-imported"
+          });
           toolDocument = importedModule?.default ?? importedModule;
         } else {
-          const documentResponse = await fetch(documentUrl.toString(), { cache: "no-store" });
+          const documentHref = documentUrl.toString();
+          logToolLoadFetch({
+            toolId: "tile-map-editor",
+            phase: "attempt",
+            fetchUrl: documentHref,
+            requestedPath: documentPath,
+            pathSource: "schema-normalized-input:tilemap-document-path",
+            transport: "json-fetch"
+          });
+          const documentResponse = await fetch(documentHref, { cache: "no-store" });
+          logToolLoadFetch({
+            toolId: "tile-map-editor",
+            phase: "response",
+            fetchUrl: documentHref,
+            requestedPath: documentPath,
+            pathSource: "schema-normalized-input:tilemap-document-path",
+            transport: "json-fetch",
+            status: documentResponse.status,
+            ok: documentResponse.ok
+          });
           if (!documentResponse.ok) {
             throw new Error(`Tilemap document request failed (${documentResponse.status}).`);
           }
@@ -2037,6 +2121,12 @@ class TileMapEditorApp {
       void this.preloadIndividualTileImages({ quiet: true });
       this.updateStatus(buildPresetLoadedStatus(sampleId, samplePresetPath));
     } catch (error) {
+    logToolLoadWarning({
+      toolId: "tile-map-editor",
+      sampleId,
+      samplePresetPath,
+      error: error instanceof Error ? error.message : "unknown error"
+    });
       this.updateStatus(`Preset load failed: ${error instanceof Error ? error.message : "unknown error"}`);
     }
   }

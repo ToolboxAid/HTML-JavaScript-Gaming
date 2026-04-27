@@ -17,6 +17,15 @@ import { VectorMapCollisionTester } from "./VectorMapCollisionTester.js";
 import { VectorMapRuntimeExporter } from "./VectorMapRuntimeExporter.js";
 import { VectorMapHistoryManager } from "./VectorMapHistoryManager.js";
 import { assertStandaloneToolDocument, offerImportMismatchOptions } from "../../shared/documentModeGuards.js";
+import {
+  getToolLoadQuerySnapshot,
+  getToolLoadRequestedDataPaths,
+  summarizeToolLoadData,
+  logToolLoadRequest,
+  logToolLoadFetch,
+  logToolLoadLoaded,
+  logToolLoadWarning
+} from "../../shared/toolLoadDiagnostics.js";
 
 function normalizeDegrees(value) {
   const numeric = Number(value || 0);
@@ -234,17 +243,54 @@ export class VectorMapEditorApp {
   async tryLoadPresetFromQuery() {
     const searchParams = new URLSearchParams(window.location.search);
     const samplePresetPath = normalizeSamplePresetPath(searchParams.get("samplePresetPath") || "");
+  const launchQuery = getToolLoadQuerySnapshot(searchParams);
+  logToolLoadRequest({
+    toolId: "vector-map-editor",
+    sampleId: String(searchParams.get("sampleId") || "").trim(),
+    samplePresetPath,
+    requestedDataPaths: getToolLoadRequestedDataPaths(launchQuery),
+    launchQuery
+  });
     if (!samplePresetPath) {
+    logToolLoadWarning({
+      toolId: "vector-map-editor",
+      reason: "samplePresetPath missing",
+      launchQuery
+    });
       return false;
     }
     const sampleId = String(searchParams.get("sampleId") || "").trim();
     try {
       const presetUrl = new URL(samplePresetPath, window.location.href);
-      const response = await fetch(presetUrl.toString(), { cache: "no-store" });
+      const presetHref = presetUrl.toString();
+    logToolLoadFetch({
+      toolId: "vector-map-editor",
+      phase: "attempt",
+      fetchUrl: presetHref,
+      requestedPath: samplePresetPath,
+      pathSource: "tool-input:query.samplePresetPath"
+    });
+    const response = await fetch(presetHref, { cache: "no-store" });
+    logToolLoadFetch({
+      toolId: "vector-map-editor",
+      phase: "response",
+      fetchUrl: presetHref,
+      requestedPath: samplePresetPath,
+      pathSource: "tool-input:query.samplePresetPath",
+      status: response.status,
+      ok: response.ok
+    });
       if (!response.ok) {
         throw new Error(`preset request failed: ${response.status}`);
       }
       const rawPreset = await response.json();
+    logToolLoadLoaded({
+      toolId: "vector-map-editor",
+      sampleId,
+      samplePresetPath,
+      fetchUrl: presetHref,
+      loaded: summarizeToolLoadData(rawPreset)
+    });
       const toolDocument = extractVectorMapDocumentFromSamplePreset(rawPreset);
       this.cancelSpinAnimation();
       this.documentModel.setData(toolDocument);
@@ -261,6 +307,12 @@ export class VectorMapEditorApp {
       this.setStatus(buildPresetLoadedStatus(sampleId, samplePresetPath));
       return true;
     } catch (error) {
+    logToolLoadWarning({
+      toolId: "vector-map-editor",
+      sampleId,
+      samplePresetPath,
+      error: error instanceof Error ? error.message : "unknown error"
+    });
       this.setStatus(`Preset load failed: ${error instanceof Error ? error.message : "unknown error"}`);
       return false;
     }

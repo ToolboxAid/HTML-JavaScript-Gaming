@@ -53,6 +53,15 @@ import { buildProjectPackage, summarizeProjectPackaging } from "../../shared/pro
 import { buildEditorExperienceLayer, summarizeEditorExperienceLayer } from "../../shared/editorExperienceLayer.js";
 import { buildDebugVisualizationLayer, summarizeDebugVisualizationLayer } from "../../shared/debugVisualizationLayer.js";
 import { addToolModeMetadata, assertStandaloneToolDocument, offerImportMismatchOptions } from "../../shared/documentModeGuards.js";
+import {
+  getToolLoadQuerySnapshot,
+  getToolLoadRequestedDataPaths,
+  summarizeToolLoadData,
+  logToolLoadRequest,
+  logToolLoadFetch,
+  logToolLoadLoaded,
+  logToolLoadWarning
+} from "../../shared/toolLoadDiagnostics.js";
 
 function getRequiredElement(id) {
   const element = document.getElementById(id);
@@ -1549,7 +1558,20 @@ function applySamplePreset(state, rawPreset, sampleId, samplePresetPath, sampleT
 async function tryLoadPresetFromQuery(state) {
   const searchParams = new URLSearchParams(window.location.search);
   const samplePresetPath = normalizeSamplePresetPath(searchParams.get("samplePresetPath") || "");
+  const launchQuery = getToolLoadQuerySnapshot(searchParams);
+  logToolLoadRequest({
+    toolId: "sprite-editor",
+    sampleId: String(searchParams.get("sampleId") || "").trim(),
+    samplePresetPath,
+    requestedDataPaths: getToolLoadRequestedDataPaths(launchQuery),
+    launchQuery
+  });
   if (!samplePresetPath) {
+    logToolLoadWarning({
+      toolId: "sprite-editor",
+      reason: "samplePresetPath missing",
+      launchQuery
+    });
     return false;
   }
   const sampleId = String(searchParams.get("sampleId") || "").trim();
@@ -1563,14 +1585,44 @@ async function tryLoadPresetFromQuery(state) {
   renderHud(state);
   try {
     const presetUrl = new URL(samplePresetPath, window.location.href);
-    const response = await fetch(presetUrl.toString(), { cache: "no-store" });
+    const presetHref = presetUrl.toString();
+    logToolLoadFetch({
+      toolId: "sprite-editor",
+      phase: "attempt",
+      fetchUrl: presetHref,
+      requestedPath: samplePresetPath,
+      pathSource: "tool-input:query.samplePresetPath"
+    });
+    const response = await fetch(presetHref, { cache: "no-store" });
+    logToolLoadFetch({
+      toolId: "sprite-editor",
+      phase: "response",
+      fetchUrl: presetHref,
+      requestedPath: samplePresetPath,
+      pathSource: "tool-input:query.samplePresetPath",
+      status: response.status,
+      ok: response.ok
+    });
     if (!response.ok) {
       throw new Error(`Preset request failed (${response.status}).`);
     }
     const rawPreset = await response.json();
+    logToolLoadLoaded({
+      toolId: "sprite-editor",
+      sampleId,
+      samplePresetPath,
+      fetchUrl: presetHref,
+      loaded: summarizeToolLoadData(rawPreset)
+    });
     applySamplePreset(state, rawPreset, sampleId, samplePresetPath, sampleTitle);
     return true;
   } catch (error) {
+    logToolLoadWarning({
+      toolId: "sprite-editor",
+      sampleId,
+      samplePresetPath,
+      error: error instanceof Error ? error.message : "unknown error"
+    });
     setSampleSource(state, {
       mode: "sample",
       sampleId,

@@ -1,6 +1,15 @@
 import { runAssetPipelineTooling } from "../shared/pipeline/assetPipelineTooling.js";
 import { safeParseJson, toPrettyJson } from "../shared/debugInspectorData.js";
 import { registerToolBootContract } from "../shared/toolBootContract.js";
+import {
+  getToolLoadQuerySnapshot,
+  getToolLoadRequestedDataPaths,
+  summarizeToolLoadData,
+  logToolLoadRequest,
+  logToolLoadFetch,
+  logToolLoadLoaded,
+  logToolLoadWarning
+} from "../shared/toolLoadDiagnostics.js";
 import { ACTIVE_PROJECT_STORAGE_KEY } from "../shared/projectManifestContract.js";
 
 const GAME_ASSET_CATALOG_SCHEMA = "html-js-gaming.game-asset-catalog";
@@ -631,7 +640,20 @@ async function tryLoadPresetFromQuery(options = {}) {
   const reportMissing = options && options.reportMissing === true;
   const searchParams = new URLSearchParams(window.location.search);
   const samplePresetPath = normalizeSamplePresetPath(searchParams.get("samplePresetPath") || "");
+  const launchQuery = getToolLoadQuerySnapshot(searchParams);
+  logToolLoadRequest({
+    toolId: "asset-pipeline-tool",
+    sampleId: String(searchParams.get("sampleId") || "").trim(),
+    samplePresetPath,
+    requestedDataPaths: getToolLoadRequestedDataPaths(launchQuery),
+    launchQuery
+  });
   if (!samplePresetPath) {
+    logToolLoadWarning({
+      toolId: "asset-pipeline-tool",
+      reason: "samplePresetPath missing",
+      launchQuery
+    });
     if (reportMissing) {
       setStatus("Preset load failed: samplePresetPath is missing from the URL query.");
     }
@@ -641,11 +663,35 @@ async function tryLoadPresetFromQuery(options = {}) {
   const launchContext = readLaunchContextFromQuery();
   try {
     const presetUrl = new URL(samplePresetPath, window.location.href);
-    const response = await fetch(presetUrl.toString(), { cache: "no-store" });
+    const presetHref = presetUrl.toString();
+    logToolLoadFetch({
+      toolId: "asset-pipeline-tool",
+      phase: "attempt",
+      fetchUrl: presetHref,
+      requestedPath: samplePresetPath,
+      pathSource: "tool-input:query.samplePresetPath"
+    });
+    const response = await fetch(presetHref, { cache: "no-store" });
+    logToolLoadFetch({
+      toolId: "asset-pipeline-tool",
+      phase: "response",
+      fetchUrl: presetHref,
+      requestedPath: samplePresetPath,
+      pathSource: "tool-input:query.samplePresetPath",
+      status: response.status,
+      ok: response.ok
+    });
     if (!response.ok) {
       throw new Error(`Preset request failed (${response.status}).`);
     }
     const rawPreset = await response.json();
+    logToolLoadLoaded({
+      toolId: "asset-pipeline-tool",
+      sampleId,
+      samplePresetPath,
+      fetchUrl: presetHref,
+      loaded: summarizeToolLoadData(rawPreset)
+    });
     const pipelinePayload = extractPipelinePayloadFromPreset(rawPreset);
     if (!pipelinePayload) {
       throw new Error("Preset payload did not include pipeline options.");
@@ -661,6 +707,12 @@ async function tryLoadPresetFromQuery(options = {}) {
     }
     setStatus(loadedStatus);
   } catch (error) {
+    logToolLoadWarning({
+      toolId: "asset-pipeline-tool",
+      sampleId,
+      samplePresetPath,
+      error: error instanceof Error ? error.message : "unknown error"
+    });
     setStatus(`Preset load failed: ${error instanceof Error ? error.message : "unknown error"}`);
   }
 }

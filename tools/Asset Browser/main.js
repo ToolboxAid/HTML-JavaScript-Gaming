@@ -6,6 +6,15 @@ import {
   writeSharedAssetHandoff
 } from "../shared/assetUsageIntegration.js";
 import { registerToolBootContract } from "../shared/toolBootContract.js";
+import {
+  getToolLoadQuerySnapshot,
+  getToolLoadRequestedDataPaths,
+  summarizeToolLoadData,
+  logToolLoadRequest,
+  logToolLoadFetch,
+  logToolLoadLoaded,
+  logToolLoadWarning
+} from "../shared/toolLoadDiagnostics.js";
 import { ACTIVE_PROJECT_STORAGE_KEY } from "../shared/projectManifestContract.js";
 
 const APPROVED_DESTINATIONS = Object.freeze({
@@ -352,23 +361,66 @@ async function hydrateApprovedAssetCatalog() {
 async function tryLoadPresetFromQuery() {
   const searchParams = new URLSearchParams(window.location.search);
   const samplePresetPath = normalizeSamplePresetPath(searchParams.get("samplePresetPath") || "");
+  const launchQuery = getToolLoadQuerySnapshot(searchParams);
+  logToolLoadRequest({
+    toolId: "asset-browser",
+    sampleId: String(searchParams.get("sampleId") || "").trim(),
+    samplePresetPath,
+    requestedDataPaths: getToolLoadRequestedDataPaths(launchQuery),
+    launchQuery
+  });
   if (!samplePresetPath) {
+    logToolLoadWarning({
+      toolId: "asset-browser",
+      reason: "samplePresetPath missing",
+      launchQuery
+    });
     return;
   }
   const sampleId = String(searchParams.get("sampleId") || "").trim();
   try {
     const presetUrl = new URL(samplePresetPath, window.location.href);
-    const response = await fetch(presetUrl.toString(), { cache: "no-store" });
+    const presetHref = presetUrl.toString();
+    logToolLoadFetch({
+      toolId: "asset-browser",
+      phase: "attempt",
+      fetchUrl: presetHref,
+      requestedPath: samplePresetPath,
+      pathSource: "tool-input:query.samplePresetPath"
+    });
+    const response = await fetch(presetHref, { cache: "no-store" });
+    logToolLoadFetch({
+      toolId: "asset-browser",
+      phase: "response",
+      fetchUrl: presetHref,
+      requestedPath: samplePresetPath,
+      pathSource: "tool-input:query.samplePresetPath",
+      status: response.status,
+      ok: response.ok
+    });
     if (!response.ok) {
       throw new Error(`Preset request failed (${response.status}).`);
     }
     const rawPreset = await response.json();
+    logToolLoadLoaded({
+      toolId: "asset-browser",
+      sampleId,
+      samplePresetPath,
+      fetchUrl: presetHref,
+      loaded: summarizeToolLoadData(rawPreset)
+    });
     const preset = extractAssetBrowserPreset(rawPreset);
     if (!preset || !applyAssetBrowserPreset(preset)) {
       throw new Error("Preset payload did not include Asset Browser preset fields.");
     }
     refs.importStatusText.textContent = buildPresetLoadedStatus(sampleId, samplePresetPath);
   } catch (error) {
+    logToolLoadWarning({
+      toolId: "asset-browser",
+      sampleId,
+      samplePresetPath,
+      error: error instanceof Error ? error.message : "unknown error"
+    });
     refs.importStatusText.textContent = `Preset load failed: ${error instanceof Error ? error.message : "unknown error"}`;
   }
 }

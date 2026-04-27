@@ -6,6 +6,15 @@ import {
 } from "../shared/debugInspectorData.js";
 import { readToolHostSharedContextFromLocation } from "../shared/toolHostSharedContext.js";
 import { registerToolBootContract } from "../shared/toolBootContract.js";
+import {
+  getToolLoadQuerySnapshot,
+  getToolLoadRequestedDataPaths,
+  summarizeToolLoadData,
+  logToolLoadRequest,
+  logToolLoadFetch,
+  logToolLoadLoaded,
+  logToolLoadWarning
+} from "../shared/toolLoadDiagnostics.js";
 import { setupDebugToolInteractionFlow } from "../shared/debugToolInteractionFlow.js";
 
 const refs = {
@@ -194,17 +203,54 @@ function extractSnapshotFromSamplePreset(rawPreset) {
 async function tryLoadPresetFromQuery() {
   const searchParams = new URLSearchParams(window.location.search);
   const samplePresetPath = normalizeSamplePresetPath(searchParams.get("samplePresetPath") || "");
+  const launchQuery = getToolLoadQuerySnapshot(searchParams);
+  logToolLoadRequest({
+    toolId: "state-inspector",
+    sampleId: String(searchParams.get("sampleId") || "").trim(),
+    samplePresetPath,
+    requestedDataPaths: getToolLoadRequestedDataPaths(launchQuery),
+    launchQuery
+  });
   if (!samplePresetPath) {
+    logToolLoadWarning({
+      toolId: "state-inspector",
+      reason: "samplePresetPath missing",
+      launchQuery
+    });
     return false;
   }
   const sampleId = String(searchParams.get("sampleId") || "").trim();
   try {
     const presetUrl = new URL(samplePresetPath, window.location.href);
-    const response = await fetch(presetUrl.toString(), { cache: "no-store" });
+    const presetHref = presetUrl.toString();
+    logToolLoadFetch({
+      toolId: "state-inspector",
+      phase: "attempt",
+      fetchUrl: presetHref,
+      requestedPath: samplePresetPath,
+      pathSource: "tool-input:query.samplePresetPath"
+    });
+    const response = await fetch(presetHref, { cache: "no-store" });
+    logToolLoadFetch({
+      toolId: "state-inspector",
+      phase: "response",
+      fetchUrl: presetHref,
+      requestedPath: samplePresetPath,
+      pathSource: "tool-input:query.samplePresetPath",
+      status: response.status,
+      ok: response.ok
+    });
     if (!response.ok) {
       throw new Error(`Preset request failed (${response.status}).`);
     }
     const rawPreset = await response.json();
+    logToolLoadLoaded({
+      toolId: "state-inspector",
+      sampleId,
+      samplePresetPath,
+      fetchUrl: presetHref,
+      loaded: summarizeToolLoadData(rawPreset)
+    });
     const snapshot = extractSnapshotFromSamplePreset(rawPreset);
     if (!snapshot) {
       throw new Error("Preset payload did not include an inspector snapshot payload.");
@@ -216,6 +262,12 @@ async function tryLoadPresetFromQuery() {
     setStatus(buildPresetLoadedStatus(sampleId, samplePresetPath));
     return true;
   } catch (error) {
+    logToolLoadWarning({
+      toolId: "state-inspector",
+      sampleId,
+      samplePresetPath,
+      error: error instanceof Error ? error.message : "unknown error"
+    });
     setStatus(`Preset load failed: ${error instanceof Error ? error.message : "unknown error"}`);
     return false;
   }

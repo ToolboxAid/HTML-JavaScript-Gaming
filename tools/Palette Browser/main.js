@@ -7,6 +7,15 @@ import {
   writeSharedPaletteHandoff
 } from "../shared/assetUsageIntegration.js";
 import { registerToolBootContract } from "../shared/toolBootContract.js";
+import {
+  getToolLoadQuerySnapshot,
+  getToolLoadRequestedDataPaths,
+  summarizeToolLoadData,
+  logToolLoadRequest,
+  logToolLoadFetch,
+  logToolLoadLoaded,
+  logToolLoadWarning
+} from "../shared/toolLoadDiagnostics.js";
 import { detectWorkspaceDocument } from "../shared/documentModeGuards.js";
 import {
   normalizePaletteDocument,
@@ -573,17 +582,54 @@ function importPaletteFromPresetPayload(rawPalette) {
 async function tryLoadPresetFromQuery() {
   const searchParams = new URLSearchParams(window.location.search);
   const samplePresetPath = normalizeSamplePresetPath(searchParams.get("samplePresetPath") || "");
+  const launchQuery = getToolLoadQuerySnapshot(searchParams);
+  logToolLoadRequest({
+    toolId: "palette-browser",
+    sampleId: String(searchParams.get("sampleId") || "").trim(),
+    samplePresetPath,
+    requestedDataPaths: getToolLoadRequestedDataPaths(launchQuery),
+    launchQuery
+  });
   if (!samplePresetPath) {
+    logToolLoadWarning({
+      toolId: "palette-browser",
+      reason: "samplePresetPath missing",
+      launchQuery
+    });
     return;
   }
   const sampleId = String(searchParams.get("sampleId") || "").trim();
   try {
     const presetUrl = new URL(samplePresetPath, window.location.href);
-    const response = await fetch(presetUrl.toString(), { cache: "no-store" });
+    const presetHref = presetUrl.toString();
+    logToolLoadFetch({
+      toolId: "palette-browser",
+      phase: "attempt",
+      fetchUrl: presetHref,
+      requestedPath: samplePresetPath,
+      pathSource: "tool-input:query.samplePresetPath"
+    });
+    const response = await fetch(presetHref, { cache: "no-store" });
+    logToolLoadFetch({
+      toolId: "palette-browser",
+      phase: "response",
+      fetchUrl: presetHref,
+      requestedPath: samplePresetPath,
+      pathSource: "tool-input:query.samplePresetPath",
+      status: response.status,
+      ok: response.ok
+    });
     if (!response.ok) {
       throw new Error(`Preset request failed (${response.status}).`);
     }
     const rawPreset = await response.json();
+    logToolLoadLoaded({
+      toolId: "palette-browser",
+      sampleId,
+      samplePresetPath,
+      fetchUrl: presetHref,
+      loaded: summarizeToolLoadData(rawPreset)
+    });
     const palettePayload = extractPaletteFromSamplePreset(rawPreset);
     if (!palettePayload) {
       throw new Error("Preset payload did not include a palette.");
@@ -591,6 +637,12 @@ async function tryLoadPresetFromQuery() {
     importPaletteFromPresetPayload(palettePayload);
     setSelectionText(buildPresetLoadedStatus(sampleId, samplePresetPath));
   } catch (error) {
+    logToolLoadWarning({
+      toolId: "palette-browser",
+      sampleId,
+      samplePresetPath,
+      error: error instanceof Error ? error.message : "unknown error"
+    });
     setSelectionText(`Preset load failed: ${error instanceof Error ? error.message : "unknown error"}`);
   }
 }

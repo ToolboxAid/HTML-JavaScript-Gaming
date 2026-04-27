@@ -5,6 +5,15 @@ David Quesenberry
 main.js
 */
 import { registerToolBootContract } from "../shared/toolBootContract.js";
+import {
+  getToolLoadQuerySnapshot,
+  getToolLoadRequestedDataPaths,
+  summarizeToolLoadData,
+  logToolLoadRequest,
+  logToolLoadFetch,
+  logToolLoadLoaded,
+  logToolLoadWarning
+} from "../shared/toolLoadDiagnostics.js";
 import { normalizeToolSamplePath } from "../shared/toolSampleCatalog.js";
 import {
   readSharedAssetHandoff,
@@ -2558,7 +2567,20 @@ function registerPaletteFromPresetEditorOptions(editorOptions, sampleId = "") {
 async function tryLoadPresetFromQuery() {
   const searchParams = new URLSearchParams(window.location.search);
   const samplePresetPath = normalizeSamplePresetPath(searchParams.get("samplePresetPath") || "");
+  const launchQuery = getToolLoadQuerySnapshot(searchParams);
+  logToolLoadRequest({
+    toolId: "vector-asset-studio",
+    sampleId: String(searchParams.get("sampleId") || "").trim(),
+    samplePresetPath,
+    requestedDataPaths: getToolLoadRequestedDataPaths(launchQuery),
+    launchQuery
+  });
   if (!samplePresetPath) {
+    logToolLoadWarning({
+      toolId: "vector-asset-studio",
+      reason: "samplePresetPath missing",
+      launchQuery
+    });
     return false;
   }
 
@@ -2566,12 +2588,36 @@ async function tryLoadPresetFromQuery() {
 
   try {
     const presetUrl = new URL(samplePresetPath, window.location.href);
-    const presetResponse = await fetch(presetUrl.toString(), { cache: "no-store" });
+    const presetHref = presetUrl.toString();
+    logToolLoadFetch({
+      toolId: "vector-asset-studio",
+      phase: "attempt",
+      fetchUrl: presetHref,
+      requestedPath: samplePresetPath,
+      pathSource: "tool-input:query.samplePresetPath"
+    });
+    const presetResponse = await fetch(presetHref, { cache: "no-store" });
+    logToolLoadFetch({
+      toolId: "vector-asset-studio",
+      phase: "response",
+      fetchUrl: presetHref,
+      requestedPath: samplePresetPath,
+      pathSource: "tool-input:query.samplePresetPath",
+      status: presetResponse.status,
+      ok: presetResponse.ok
+    });
     if (!presetResponse.ok) {
       throw new Error(`Preset request failed (${presetResponse.status}).`);
     }
 
     const rawPreset = await presetResponse.json();
+    logToolLoadLoaded({
+      toolId: "vector-asset-studio",
+      sampleId,
+      samplePresetPath,
+      fetchUrl: presetHref,
+      loaded: summarizeToolLoadData(rawPreset)
+    });
     const extractedPreset = extractVectorAssetPresetFromSamplePreset(rawPreset);
     if (!extractedPreset) {
       throw new Error("Preset payload was not valid.");
@@ -2587,7 +2633,24 @@ async function tryLoadPresetFromQuery() {
         throw new Error("Preset did not include a vector SVG payload.");
       }
       const assetUrl = new URL(pathCandidate, window.location.href);
-      const assetResponse = await fetch(assetUrl.toString(), { cache: "no-store" });
+      const assetHref = assetUrl.toString();
+      logToolLoadFetch({
+        toolId: "vector-asset-studio",
+        phase: "attempt",
+        fetchUrl: assetHref,
+        requestedPath: pathCandidate,
+        pathSource: "schema-normalized-input:vector-svg-path"
+      });
+      const assetResponse = await fetch(assetHref, { cache: "no-store" });
+      logToolLoadFetch({
+        toolId: "vector-asset-studio",
+        phase: "response",
+        fetchUrl: assetHref,
+        requestedPath: pathCandidate,
+        pathSource: "schema-normalized-input:vector-svg-path",
+        status: assetResponse.status,
+        ok: assetResponse.ok
+      });
       if (!assetResponse.ok) {
         throw new Error(`Vector SVG request failed (${assetResponse.status}).`);
       }
@@ -2607,6 +2670,12 @@ async function tryLoadPresetFromQuery() {
     setStatus(buildPresetLoadedStatus(sampleId, samplePresetPath));
     return true;
   } catch (error) {
+    logToolLoadWarning({
+      toolId: "vector-asset-studio",
+      sampleId,
+      samplePresetPath,
+      error: error instanceof Error ? error.message : "unknown error"
+    });
     setStatus(`Preset load failed: ${error instanceof Error ? error.message : "unknown error"}`);
     return false;
   }

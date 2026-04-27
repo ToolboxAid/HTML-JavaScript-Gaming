@@ -1,0 +1,4 @@
+﻿# Files that must be absent after BUILD_PR_LEVEL_10_6F_ALL_SAMPLE_PALETTE_SSOT_NORMALIZATION
+samples/phase-02/0213/sample.0213.palette-browser.json
+samples/phase-03/0308/sample.0308.palette-browser.json
+samples/phase-03/0313/sample.0313.palette-browser.json
