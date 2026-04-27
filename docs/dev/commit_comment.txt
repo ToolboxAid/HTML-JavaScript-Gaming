@@ -1,1 +1,1 @@
-Require sprite-editor palette input and classify palette load failures - PR 10.6J
+Resolve sprite-editor palette input from manifest SSoT and require canonical palette fetch - PR 10.6K

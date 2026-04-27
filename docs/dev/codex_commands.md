@@ -1,8 +1,13 @@
-# Codex Command - BUILD_PR_LEVEL_10_6J_SPRITE_EDITOR_REQUIRED_PALETTE_INPUT
+# Codex Commands — BUILD_PR_LEVEL_10_6K_SPRITE_EDITOR_PALETTE_PATH_RESOLUTION_FROM_MANIFEST_V2
 
-Model: GPT-5.4
-Reasoning: high
+## Model
+GPT-5.3-codex
+
+## Reasoning
+high
+
+## Command
 
 ```powershell
-codex --model gpt-5.4 --reasoning high "Execute BUILD_PR_LEVEL_10_6J_SPRITE_EDITOR_REQUIRED_PALETTE_INPUT exactly as documented in docs/pr/BUILD_PR_LEVEL_10_6J_SPRITE_EDITOR_REQUIRED_PALETTE_INPUT.md. Make the smallest valid change. Do not add implementation outside sprite-editor launch/input loading and shared diagnostics needed for required palette input. Do not recreate palette-browser JSON wrappers. Do not use fallback palettes or hardcoded sample paths. Run npm run test:launch-smoke:games and npm run test:sample-standalone:data-flow. Place the result ZIP at tmp/BUILD_PR_LEVEL_10_6J_SPRITE_EDITOR_REQUIRED_PALETTE_INPUT.zip."
+codex --model GPT-5.3-codex --reasoning high "Execute BUILD_PR_LEVEL_10_6K_SPRITE_EDITOR_PALETTE_PATH_RESOLUTION_FROM_MANIFEST. Read docs/pr/BUILD_PR_LEVEL_10_6K_SPRITE_EDITOR_PALETTE_PATH_RESOLUTION_FROM_MANIFEST.md. Make the smallest scoped implementation change so sprite-editor resolves and requires the canonical palette input from the sample manifest, fetches the canonical sample palette JSON, does not use palette-browser wrapper JSON, preserves diagnostics, runs the listed tests, updates only roadmap status if execution-backed, writes a validation report under docs/dev/reports, writes the final artifact ZIP to tmp/BUILD_PR_LEVEL_10_6K_SPRITE_EDITOR_PALETTE_PATH_RESOLUTION_FROM_MANIFEST.zip, and do not modify start_of_day folders."
 ```
