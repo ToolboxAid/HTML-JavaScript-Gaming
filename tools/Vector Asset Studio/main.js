@@ -6,6 +6,12 @@ main.js
 */
 import { registerToolBootContract } from "../shared/toolBootContract.js";
 import { normalizeToolSamplePath } from "../shared/toolSampleCatalog.js";
+import {
+  readSharedAssetHandoff,
+  readSharedPaletteHandoff,
+  SHARED_ASSET_HANDOFF_EVENT,
+  SHARED_PALETTE_HANDOFF_EVENT
+} from "../shared/assetUsageIntegration.js";
 
 const SVG_NS = "http://www.w3.org/2000/svg";
 const SAMPLE_MANIFEST_PATH = "./samples/sample-manifest.json";
@@ -77,6 +83,7 @@ const state = {
   paletteGroups: {},
   paletteOptions: [],
   selectedPaletteId: "__none__",
+  activeSharedVectorStyle: null,
   selectedId: null,
   drag: null,
   pendingPolyline: null,
@@ -297,8 +304,20 @@ function pruneUnusedEditorGradients() {
   });
 }
 
+function isPaintSelectionRequired() {
+  return state.activeSharedVectorStyle?.fill !== false;
+}
+
+function isStrokeSelectionRequired() {
+  return state.activeSharedVectorStyle?.stroke !== false;
+}
+
 function hasRequiredStyleSelection() {
-  return Boolean(normalizeColorValue(state.fill) && normalizeColorValue(state.stroke));
+  const paintRequired = isPaintSelectionRequired();
+  const strokeRequired = isStrokeSelectionRequired();
+  const paintSelected = Boolean(normalizeColorValue(state.fill));
+  const strokeSelected = Boolean(normalizeColorValue(state.stroke));
+  return (paintSelected || !paintRequired) && (strokeSelected || !strokeRequired);
 }
 
 function hasFillSelection() {
@@ -307,10 +326,10 @@ function hasFillSelection() {
 
 function getEditingGateMessage() {
   const missing = [];
-  if (!normalizeColorValue(state.fill)) {
+  if (isPaintSelectionRequired() && !normalizeColorValue(state.fill)) {
     missing.push("Paint");
   }
-  if (!normalizeColorValue(state.stroke)) {
+  if (isStrokeSelectionRequired() && !normalizeColorValue(state.stroke)) {
     missing.push("Stroke");
   }
   if (missing.length === 0) {
@@ -331,8 +350,10 @@ function updateSelectionChecklistOverlay() {
   }
 
   const paletteSelected = hasPaletteSelection();
-  const paintSelected = Boolean(normalizeColorValue(state.fill));
-  const strokeSelected = Boolean(normalizeColorValue(state.stroke));
+  const paintRequired = isPaintSelectionRequired();
+  const strokeRequired = isStrokeSelectionRequired();
+  const paintSelected = paintRequired ? Boolean(normalizeColorValue(state.fill)) : true;
+  const strokeSelected = strokeRequired ? Boolean(normalizeColorValue(state.stroke)) : true;
   const allSelected = paletteSelected && paintSelected && strokeSelected;
 
   if (allSelected) {
@@ -344,8 +365,8 @@ function updateSelectionChecklistOverlay() {
   refs.selectionChecklistOverlay.classList.remove("hidden");
   refs.selectionChecklistOverlay.textContent = [
     `Palette Selected: ${paletteSelected}`,
-    `Paint selected: ${paintSelected}`,
-    `Stroke selected: ${strokeSelected}`
+    paintRequired ? `Paint selected: ${paintSelected}` : "Paint selected: n/a (fill disabled)",
+    strokeRequired ? `Stroke selected: ${strokeSelected}` : "Stroke selected: n/a (stroke disabled)"
   ].join("\n");
 }
 
@@ -370,11 +391,110 @@ function collectPaletteEntries(paletteName, paletteEntries) {
     }
     seen.add(normalizedHex);
     entries.push({
+      symbol: typeof entry?.symbol === "string" ? entry.symbol.trim() : "",
       hex: normalizedHex,
       name: typeof entry?.name === "string" && entry.name.trim() ? entry.name.trim() : `${paletteName} ${index + 1}`
     });
   });
   return entries;
+}
+
+function upsertPaletteOption(paletteId, paletteLabel) {
+  const existing = Array.isArray(state.paletteOptions)
+    ? state.paletteOptions.find((entry) => String(entry.id) === paletteId)
+    : null;
+  if (existing) {
+    existing.label = paletteLabel;
+    return;
+  }
+  if (!Array.isArray(state.paletteOptions)) {
+    state.paletteOptions = [];
+  }
+  state.paletteOptions.push({ id: paletteId, label: paletteLabel });
+}
+
+function normalizeSharedVectorStyle(styleValue) {
+  if (!styleValue || typeof styleValue !== "object") {
+    return null;
+  }
+  return {
+    stroke: styleValue.stroke === true,
+    fill: styleValue.fill === true,
+    strokeSymbol: typeof styleValue.strokeSymbol === "string" ? styleValue.strokeSymbol.trim() : "",
+    fillSymbol: typeof styleValue.fillSymbol === "string" ? styleValue.fillSymbol.trim() : ""
+  };
+}
+
+function getPaletteEntryBySymbol(paletteEntries, symbolValue) {
+  if (!Array.isArray(paletteEntries) || paletteEntries.length === 0) {
+    return null;
+  }
+  const symbol = typeof symbolValue === "string" ? symbolValue.trim() : "";
+  if (!symbol) {
+    return null;
+  }
+  return paletteEntries.find((entry) => entry.symbol === symbol) || null;
+}
+
+function applySharedPaletteAndVectorBinding() {
+  const sharedPalette = readSharedPaletteHandoff();
+  const sharedAsset = readSharedAssetHandoff();
+  const sharedVectorStyle = normalizeSharedVectorStyle(sharedAsset?.metadata?.vectorStyle);
+  state.activeSharedVectorStyle = sharedVectorStyle;
+
+  if (!sharedPalette || !Array.isArray(sharedPalette.colors) || sharedPalette.colors.length === 0) {
+    return;
+  }
+
+  const paletteId = typeof sharedPalette.paletteId === "string" && sharedPalette.paletteId.trim()
+    ? sharedPalette.paletteId.trim()
+    : "shared-palette";
+  const paletteLabel = typeof sharedPalette.displayName === "string" && sharedPalette.displayName.trim()
+    ? sharedPalette.displayName.trim()
+    : paletteId;
+  const sharedEntries = collectPaletteEntries(paletteLabel, sharedPalette.colors);
+  if (sharedEntries.length === 0) {
+    return;
+  }
+
+  state.paletteGroups[paletteId] = sharedEntries;
+  upsertPaletteOption(paletteId, paletteLabel);
+  state.selectedPaletteId = paletteId;
+
+  const strokeEntry = getPaletteEntryBySymbol(sharedEntries, sharedVectorStyle?.strokeSymbol)
+    || sharedEntries[1]
+    || sharedEntries[0]
+    || null;
+  const fillEntry = getPaletteEntryBySymbol(sharedEntries, sharedVectorStyle?.fillSymbol)
+    || sharedEntries[0]
+    || null;
+
+  if (strokeEntry?.hex) {
+    state.stroke = strokeEntry.hex;
+  }
+  if (sharedVectorStyle?.fill === true && fillEntry?.hex) {
+    state.fill = fillEntry.hex;
+  } else if (sharedVectorStyle?.fill === false) {
+    state.fill = null;
+  } else if (fillEntry?.hex) {
+    state.fill = fillEntry.hex;
+  }
+
+  if (refs.paletteSelect instanceof HTMLSelectElement) {
+    refs.paletteSelect.disabled = true;
+    refs.paletteSelect.value = paletteId;
+  }
+  if (sharedVectorStyle?.stroke === true) {
+    setPaletteTarget("stroke", { silent: true });
+  }
+}
+
+function syncSharedPaletteAndVectorBinding() {
+  applySharedPaletteAndVectorBinding();
+  renderPaletteSelect();
+  renderMainPaletteGrid();
+  renderUsedColorStrip();
+  applyEnablementState();
 }
 
 function loadPaletteCatalogFromExistingWorkflow() {
@@ -2883,11 +3003,12 @@ async function initialize() {
     refs.gradientAngleInput.value = String(state.gradientAngle);
   }
   renderPaletteSelect();
+  syncSharedPaletteAndVectorBinding();
+  window.addEventListener(SHARED_PALETTE_HANDOFF_EVENT, syncSharedPaletteAndVectorBinding);
+  window.addEventListener(SHARED_ASSET_HANDOFF_EVENT, syncSharedPaletteAndVectorBinding);
   bindEvents();
   setCanvasSize(state.canvasWidth, state.canvasHeight);
   resetView();
-  renderMainPaletteGrid();
-  renderUsedColorStrip();
   setPaletteTarget("paint", { silent: true });
   applyEnablementState();
   renderElementList();

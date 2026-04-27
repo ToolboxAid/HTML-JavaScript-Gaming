@@ -359,6 +359,9 @@ function readExpectedMetadataSets() {
       let hasManifestSkin = false;
       let expectedSkinName = "";
       let hasManifestToolAsset = false;
+      let hasManifestVectors = false;
+      let expectedVectorStrokeEnabled = false;
+      let expectedVectorFillEnabled = false;
       if (fs.existsSync(manifestPath)) {
         try {
           const manifest = JSON.parse(fs.readFileSync(manifestPath, "utf8"));
@@ -389,11 +392,27 @@ function readExpectedMetadataSets() {
             || countEntries(vectorEntries) > 0
             || countEntries(assetBrowserMediaEntries) > 0
           );
+          hasManifestVectors = countEntries(vectorEntries) > 0;
           const firstSkin = hasManifestSkin ? skins[0] : null;
           const candidateSkinName = typeof firstSkin?.data?.name === "string"
             ? firstSkin.data.name.trim()
             : (typeof firstSkin?.name === "string" ? firstSkin.name.trim() : "");
           expectedSkinName = candidateSkinName || "";
+          if (hasManifestVectors) {
+            const firstVector = Array.isArray(vectorEntries)
+              ? vectorEntries.find((entry) => Boolean(entry && typeof entry === "object"))
+              : (() => {
+                if (!vectorEntries || typeof vectorEntries !== "object") {
+                  return null;
+                }
+                const firstKey = Object.keys(vectorEntries)[0];
+                return firstKey ? vectorEntries[firstKey] : null;
+              })();
+            if (firstVector && typeof firstVector === "object" && firstVector.style && typeof firstVector.style === "object") {
+              expectedVectorStrokeEnabled = firstVector.style.stroke === true;
+              expectedVectorFillEnabled = firstVector.style.fill === true;
+            }
+          }
         } catch {
           // Leave expected values as false/empty when manifest parse fails.
         }
@@ -425,6 +444,9 @@ function readExpectedMetadataSets() {
         hasManifestPalette,
         hasManifestSkin,
         hasManifestToolAsset,
+        hasManifestVectors,
+        expectedVectorStrokeEnabled,
+        expectedVectorFillEnabled,
         expectedSkinName,
         hasCatalogPalette,
         hasCatalogNonPalette,
@@ -501,6 +523,33 @@ async function inspectMountedWorkspaceState(page) {
       hasBouncingBallClassicSkin: text.includes(${JSON.stringify(BOUNCING_BALL_EXPECTED_SKIN_TEXT)}),
       paletteLabel: paletteLabelMatch ? String(paletteLabelMatch[1]).trim() : "",
       sharedAssetLabel: sharedAssetLabelMatch ? String(sharedAssetLabelMatch[1]).trim() : ""
+    };
+  })()`);
+}
+
+async function inspectVectorAssetSelectionState(page) {
+  return await page.evaluate(`(() => {
+    const frame = document.querySelector('[data-tool-host-frame]');
+    if (!(frame instanceof HTMLIFrameElement)) {
+      return {
+        framePresent: false,
+        frameText: "",
+        paletteSelectedFalse: false,
+        paintSelectedFalse: false,
+        strokeSelectedFalse: false,
+        fillDisabledNotePresent: false,
+        editingEnabled: false
+      };
+    }
+    const text = String(frame.contentDocument?.body?.innerText || "");
+    return {
+      framePresent: true,
+      frameText: text,
+      paletteSelectedFalse: /Palette\\s+Selected:\\s*false/i.test(text),
+      paintSelectedFalse: /Paint\\s+selected:\\s*false/i.test(text),
+      strokeSelectedFalse: /Stroke\\s+selected:\\s*false/i.test(text),
+      fillDisabledNotePresent: /Paint\\s+selected:\\s*n\\/a\\s*\\(fill\\s+disabled\\)/i.test(text),
+      editingEnabled: /Editing enabled\\./i.test(text)
     };
   })()`);
 }
@@ -583,6 +632,7 @@ export async function run() {
     let actionsWithWorkspaceLoaded = 0;
     let actionsRequiringSharedAssets = 0;
     let actionsMeetingSharedAssetRequirement = 0;
+    let gravityWellVectorBindingCheck = null;
     const invalidActionDetails = [];
     const diagnosticFailures = [];
     const assetPresenceFailures = [];
@@ -751,6 +801,45 @@ export async function run() {
       });
     }
 
+    const gravityWellExpectation = metadataSets.expectedWorkspaceEntriesById.GravityWell
+      || metadataSets.expectedWorkspaceEntriesById.gravitywell
+      || null;
+    const gravityWellWorkspaceAction = actionEntries.find((entry) => String(entry.gameId || "").toLowerCase() === "gravitywell");
+    if (gravityWellWorkspaceAction && gravityWellExpectation?.hasManifestPalette && gravityWellExpectation?.hasManifestVectors) {
+      const gravityVectorUrl = new URL("/tools/Workspace%20Manager/index.html", baseUrl);
+      gravityVectorUrl.searchParams.set("gameId", "GravityWell");
+      gravityVectorUrl.searchParams.set("mount", "game");
+      gravityVectorUrl.searchParams.set("tool", "vector-asset-studio");
+
+      await page.navigate(gravityVectorUrl.toString());
+      await wait(1200);
+      const vectorFrameReady = await waitForMountedToolFrame(page);
+      if (!vectorFrameReady) {
+        assetPresenceFailures.push("GravityWell vector binding check failed: Vector Asset Studio frame did not mount.");
+      } else {
+        const vectorState = await inspectVectorAssetSelectionState(page);
+        gravityWellVectorBindingCheck = {
+          href: gravityVectorUrl.toString(),
+          ...vectorState,
+          expectedVectorStrokeEnabled: gravityWellExpectation.expectedVectorStrokeEnabled === true,
+          expectedVectorFillEnabled: gravityWellExpectation.expectedVectorFillEnabled === true
+        };
+
+        if (vectorState.paletteSelectedFalse) {
+          assetPresenceFailures.push("GravityWell vector binding check failed: Vector Asset Studio reported Palette Selected: false.");
+        }
+        if (gravityWellExpectation.expectedVectorStrokeEnabled === true && vectorState.strokeSelectedFalse) {
+          assetPresenceFailures.push("GravityWell vector binding check failed: stroke-enabled vector reported Stroke selected: false.");
+        }
+        if (gravityWellExpectation.expectedVectorFillEnabled === true && vectorState.paintSelectedFalse) {
+          assetPresenceFailures.push("GravityWell vector binding check failed: fill-enabled vector reported Paint selected: false.");
+        }
+        if (gravityWellExpectation.expectedVectorFillEnabled !== true && vectorState.paintSelectedFalse && !vectorState.fillDisabledNotePresent) {
+          assetPresenceFailures.push("GravityWell vector binding check failed: Paint selected was false without fill-disabled explanation.");
+        }
+      }
+    }
+
     validationFailures.push(...invalidActionDetails);
 
     const summary = {
@@ -772,6 +861,7 @@ export async function run() {
       validationFailures,
       diagnosticFailures,
       assetPresenceFailures,
+      gravityWellVectorBindingCheck,
       perGameObservations
     };
 

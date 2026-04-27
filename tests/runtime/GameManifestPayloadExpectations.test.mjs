@@ -207,6 +207,42 @@ export async function run() {
       }
     }
 
+    if (gameFolder.toLowerCase() === "gravitywell") {
+      const vectorSection = manifest?.tools?.["vector-asset-studio"];
+      if (!isObjectRecord(vectorSection)) {
+        failures.push("GravityWell: tools[\"vector-asset-studio\"] is required.");
+      } else {
+        const vectors = vectorSection.vectors;
+        const vectorEntries = Array.isArray(vectors)
+          ? vectors
+          : (isObjectRecord(vectors) ? Object.values(vectors) : []);
+        const vectorIds = Array.isArray(vectors)
+          ? vectorEntries.map((entry) => String(entry?.id || "").trim())
+          : Object.keys(vectors || {});
+        row.gravityWellVectorCount = vectorEntries.length;
+        row.gravityWellVectorIds = vectorIds;
+        if (vectorEntries.length === 0) {
+          failures.push("GravityWell: tools[\"vector-asset-studio\"].vectors must include at least one vector.");
+        }
+
+        const shipVector = vectorEntries.find((entry) => {
+          const id = String(entry?.id || "").toLowerCase();
+          return id.includes("ship") || id.includes("player");
+        });
+        if (!shipVector) {
+          failures.push("GravityWell: ship/player vector id is required in tools[\"vector-asset-studio\"].vectors.");
+        } else {
+          const paths = shipVector?.geometry?.paths;
+          if (!Array.isArray(paths) || paths.length === 0) {
+            failures.push("GravityWell: ship/player vector must include geometry.paths.");
+          }
+          if (!isObjectRecord(shipVector?.style)) {
+            failures.push("GravityWell: ship/player vector must include style.");
+          }
+        }
+      }
+    }
+
     rows.push(row);
   }
 

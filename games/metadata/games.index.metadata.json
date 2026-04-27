@@ -126,7 +126,8 @@
         "engine/utils/index/distance"
       ],
       "toolsUsed": [
-        "asset-browser"
+        "asset-browser",
+        "vector-asset-studio"
       ]
     },
     {

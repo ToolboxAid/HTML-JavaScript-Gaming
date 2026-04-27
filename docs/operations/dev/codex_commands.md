@@ -2,39 +2,21 @@ MODEL: GPT-5.3-codex
 REASONING: high
 
 TASK:
-Apply BUILD_PR_LEVEL_10_2C_MANIFEST_PAYLOAD_EXPECTATION_TESTS_AND_CLEANUP.
+Apply BUILD_PR_LEVEL_10_2F_VECTOR_ASSET_PALETTE_PAINT_BINDING_FIX.
 
 STEPS:
-1. Read docs/pr/PLAN_PR_LEVEL_10_2C_MANIFEST_PAYLOAD_EXPECTATION_TESTS_AND_CLEANUP.md.
-2. Read docs/pr/BUILD_PR_LEVEL_10_2C_MANIFEST_PAYLOAD_EXPECTATION_TESTS_AND_CLEANUP.md.
-3. Add a strict manifest payload expectation test.
-4. Clean all game manifests:
-   - remove root lineage
-   - remove root sources
-   - remove generic root assets
-   - remove sourcePath fields
-   - remove legacy JSON path references
-5. Ensure palette is exactly:
+1. Read docs/pr/PLAN_PR_LEVEL_10_2F_VECTOR_ASSET_PALETTE_PAINT_BINDING_FIX.md.
+2. Read docs/pr/BUILD_PR_LEVEL_10_2F_VECTOR_ASSET_PALETTE_PAINT_BINDING_FIX.md.
+3. Inspect Gravity Well game manifest:
    - tools["palette-browser"].palette
-6. Ensure every tool section has metadata:
-   - schema
-   - version
-   - name
-   - source
-7. Asteroids:
-   - keep vector-asset-studio with actual vectors
-   - remove sprite-editor if no actual sprite data
-   - remove tile-map-editor if no actual tilemap data
-   - remove parallax-editor if no actual parallax data
-   - remove libraries if it is only reference/index metadata
-8. Bouncing-ball:
-   - remove lineage/sources/assets
-   - keep palette-browser.palette
-   - keep primitive-skin-editor.skins
-9. Update Workspace Manager test if needed so it validates real payload sections, not shell load only.
-10. Write reports:
-   - docs/dev/reports/level_10_2c_manifest_payload_expectation_report.md
-   - docs/dev/reports/level_10_2c_manifest_cleanup_report.md
+   - tools["vector-asset-studio"].vectors
+4. Inspect Workspace Manager to Vector Asset Studio data passing.
+5. Inspect Vector Asset Studio palette/paint/stroke selection initialization.
+6. Fix binding so shared palette loads into Vector Asset Studio selection state.
+7. Ensure stroke-enabled vectors select a valid stroke swatch.
+8. Add/adjust defaults in Gravity Well manifest only if style data is missing.
+9. Add/update test coverage so palette loaded + vector asset present but palette/stroke selected false fails.
+10. Write docs/dev/reports/level_10_2f_vector_asset_palette_paint_binding_report.md.
 11. Update docs/dev/roadmaps/MASTER_ROADMAP_ENGINE.md status only if needed:
     - [ ] -> [.]
     - [.] -> [x]
@@ -42,11 +24,9 @@ STEPS:
 12. Do not add validators.
 13. Do not modify start_of_day.
 14. Create Codex delta ZIP:
-    tmp/BUILD_PR_LEVEL_10_2C_MANIFEST_PAYLOAD_EXPECTATION_TESTS_AND_CLEANUP_delta.zip
+    tmp/BUILD_PR_LEVEL_10_2F_VECTOR_ASSET_PALETTE_PAINT_BINDING_FIX_delta.zip
 
 ACCEPTANCE:
-- bad payload shape is test-covered
-- manifests cleaned
-- Asteroids vector tool has assets
-- invalid unused tool sections removed
+- Gravity Well vector palette/stroke binding works
+- test covers selection state
 - delta ZIP exists

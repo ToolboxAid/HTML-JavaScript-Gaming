@@ -454,30 +454,75 @@ async function hydrateSharedAssetFromGameLaunchContext(catalogContext = null) {
     return false;
   }
 
+  const manifestContext = await readManifestContextFromLaunchContext(launchContext);
+  const manifestVectors = manifestContext?.manifestPayload?.tools?.["vector-asset-studio"]?.vectors;
+  const manifestVectorEntry = (() => {
+    if (Array.isArray(manifestVectors)) {
+      return manifestVectors.find((entry) => Boolean(normalizeTextValue(entry?.id))) || null;
+    }
+    if (manifestVectors && typeof manifestVectors === "object") {
+      const firstKey = normalizeTextValue(Object.keys(manifestVectors)[0]);
+      if (!firstKey) {
+        return null;
+      }
+      const vectorRecord = manifestVectors[firstKey];
+      if (vectorRecord && typeof vectorRecord === "object") {
+        return {
+          id: normalizeTextValue(vectorRecord.id) || firstKey,
+          ...vectorRecord
+        };
+      }
+      return null;
+    }
+    return null;
+  })();
+  const manifestVectorId = normalizeTextValue(manifestVectorEntry?.id);
+  const manifestVectorStyle = manifestVectorEntry?.style && typeof manifestVectorEntry.style === "object"
+    ? {
+      stroke: manifestVectorEntry.style.stroke === true,
+      fill: manifestVectorEntry.style.fill === true,
+      strokeSymbol: normalizeTextValue(manifestVectorEntry.style.strokeSymbol),
+      fillSymbol: normalizeTextValue(manifestVectorEntry.style.fillSymbol)
+    }
+    : null;
+  const launchGameId = normalizeTextValue(launchContext?.gameId).toLowerCase();
+  const shouldPreferManifestVector = launchGameId === "gravitywell";
+  if (shouldPreferManifestVector && manifestVectorId) {
+    return writeSharedAssetHandoff({
+      assetId: manifestVectorId,
+      assetType: "vector",
+      sourcePath: manifestContext?.manifestPath || "",
+      displayName: manifestVectorId,
+      tags: ["vector"],
+      metadata: {
+        source: "workspace-game-manifest.vector-asset-studio",
+        gameId: launchContext.gameId || "",
+        sourcePath: manifestContext?.manifestPath || "",
+        vectorStyle: manifestVectorStyle
+      },
+      sourceToolId: "workspace-manager",
+      selectedAt: new Date().toISOString()
+    });
+  }
+
   const context = catalogContext || await readCatalogContextFromLaunchContext(launchContext);
   if (!context || !Array.isArray(context.entries) || context.entries.length === 0) {
-    const manifestContext = await readManifestContextFromLaunchContext(launchContext);
-    const vectors = manifestContext?.manifestPayload?.tools?.["vector-asset-studio"]?.vectors;
-    if (vectors && typeof vectors === "object") {
-      const vectorId = Array.isArray(vectors)
-        ? normalizeTextValue(vectors.find((entry) => Boolean(normalizeTextValue(entry?.id)))?.id)
-        : normalizeTextValue(Object.keys(vectors)[0]);
-      if (vectorId) {
-        return writeSharedAssetHandoff({
-          assetId: vectorId,
-          assetType: "vector",
+    if (manifestVectorId) {
+      return writeSharedAssetHandoff({
+        assetId: manifestVectorId,
+        assetType: "vector",
+        sourcePath: manifestContext?.manifestPath || "",
+        displayName: manifestVectorId,
+        tags: ["vector"],
+        metadata: {
+          source: "workspace-game-manifest.vector-asset-studio",
+          gameId: launchContext.gameId || "",
           sourcePath: manifestContext?.manifestPath || "",
-          displayName: vectorId,
-          tags: ["vector"],
-          metadata: {
-            source: "workspace-game-manifest.vector-asset-studio",
-            gameId: launchContext.gameId || "",
-            sourcePath: manifestContext?.manifestPath || ""
-          },
-          sourceToolId: "workspace-manager",
-          selectedAt: new Date().toISOString()
-        });
-      }
+          vectorStyle: manifestVectorStyle
+        },
+        sourceToolId: "workspace-manager",
+        selectedAt: new Date().toISOString()
+      });
     }
     return false;
   }

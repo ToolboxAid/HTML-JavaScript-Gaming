@@ -34,6 +34,34 @@
       "name": "Primitive Skin Editor",
       "source": "manifest"
     },
+    "vector-asset-studio": {
+      "schema": "html-js-gaming.tool.vector-asset-studio",
+      "version": 1,
+      "name": "Vector Asset Studio",
+      "source": "manifest",
+      "vectors": {
+        "vector.gravitywell.ship": {
+          "id": "vector.gravitywell.ship",
+          "type": "vector",
+          "source": {
+            "kind": "runtime-shape",
+            "origin": "games/GravityWell/game/GravityWellWorld.js::SHIP_SHAPE"
+          },
+          "geometry": {
+            "viewBox": "-16 -16 32 32",
+            "paths": [
+              {
+                "d": "M 0 -16 L 11 14 L 0 8 L -11 14 Z"
+              }
+            ]
+          },
+          "style": {
+            "stroke": true,
+            "fill": false
+          }
+        }
+      }
+    },
     "palette-browser": {
       "schema": "html-js-gaming.tool.palette-browser",
       "version": 1,

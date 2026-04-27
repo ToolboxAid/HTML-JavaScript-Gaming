@@ -1,11 +1,9 @@
-BUILD_PR_LEVEL_10_2C_MANIFEST_PAYLOAD_EXPECTATION_TESTS_AND_CLEANUP
+BUILD_PR_LEVEL_10_2F_VECTOR_ASSET_PALETTE_PAINT_BINDING_FIX
 
-- Added strict manifest payload expectation tests
-- Removed legacy root sections from game manifests
-- Removed invalid unused Asteroids tool sections
-- Ensured Asteroids vector data belongs to Vector Asset Studio
+- Fixed Vector Asset Studio palette/paint/stroke binding from game manifest palette
+- Added Gravity Well vector selection regression coverage
+- Ensured stroke-enabled vectors select a valid palette swatch
 
 PR Details:
-- Fixes page-load-only false positives
 - No validators
 - No start_of_day changes
