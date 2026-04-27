@@ -1,27 +1,18 @@
-MODEL: GPT-5.3-codex
-REASONING: medium
+# Codex Commands — LEVEL_10_6B_STANDALONE_SAMPLE_GENERIC_FAILURE_CLOSEOUT
 
-TASK:
-Apply PR 8.16: document remaining work and canonical first-class tool inventory.
+## Model
+GPT-5.4
 
-STEPS:
-1. Inspect the repo's tool folders and schemas.
-2. Create/update a canonical 17-tool inventory document.
-3. Fill all 17 rows with:
-   - tool id
-   - display name
-   - folder path
-   - schema path
-   - palette/data usage
-4. Verify each first-class tool has exactly one schema.
-5. Do not invent tools. Use the repo's actual first-class tool set.
-6. Keep this PR docs/inventory only.
-7. Do NOT modify runtime logic.
-8. Do NOT add validators.
-9. Do NOT modify start_of_day.
+## Reasoning
+high
 
-ACCEPTANCE:
-- 17 first-class tools are listed.
-- Tool schema paths are explicit.
-- Remaining work checklist is updated.
-- No runtime/start_of_day changes.
+## Command
+```powershell
+codex exec --model gpt-5.4 --reasoning high "Read docs/dev/PLAN_PR_LEVEL_10_6B_STANDALONE_SAMPLE_GENERIC_FAILURE_CLOSEOUT.md and docs/dev/BUILD_PR_LEVEL_10_6B_STANDALONE_SAMPLE_GENERIC_FAILURE_CLOSEOUT.md. Implement the smallest scoped PR to close standalone sample/tool data-flow generic failures for Phase 10.6B. Do not add silent fallback data, hardcoded asset paths, new features, or repo-wide cleanup. Preserve sample -> schema -> normalized input -> tool -> UI/state. Run npm run test:launch-smoke:games and npm run test:sample-standalone:data-flow. Update docs/dev/reports/level_10_6b_standalone_generic_failure_closeout_report.md and docs/dev/reports/level_10_6b_tool_contract_matrix.md with validation-backed results."
+```
+
+## Validation
+```powershell
+npm run test:launch-smoke:games
+npm run test:sample-standalone:data-flow
+```

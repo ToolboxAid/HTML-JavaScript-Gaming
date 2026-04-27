@@ -1,22 +1,24 @@
-# Level 10.6B Tool Contract Matrix
+# LEVEL 10.6B Tool Contract Matrix
 
-- Generated: 2026-04-27
-- Source test: `tests/runtime/SampleStandaloneToolDataFlow.test.mjs`
-- Source results: `tmp/sample-standalone-tool-data-flow-results.json`
+Validation source:
+- `npm run test:sample-standalone:data-flow`
+- `tmp/sample-standalone-tool-data-flow-results.json`
 
-| Tool | Samples | Required Contract | Verification Signal | Status |
-| --- | --- | --- | --- | --- |
-| `3d-camera-path-editor` | `0201`, `0202`, `0220` | `cameraPath` payload present, `waypoints.length > 0` and equals preset | `#cameraPathInput` parsed JSON waypoints count equals preset; no preset-failure status | PASS |
-| `3d-asset-viewer` | `0204`, `1208`, `1413` | 3D asset payload present, `vertices.length > 0` and equals preset | `#asset3dInput` parsed JSON vertex count equals preset; no preset-failure status | PASS |
-| `physics-sandbox` | `0210`, `0303`, `1606` | physics body payload present and valid | `#physicsBodyInput` parsed JSON deep-equals preset `config.physicsBody`; no preset-failure status | PASS |
-| `tile-model-converter` | `0221`, `0305`, `1209` | conversion payload present (`candidate`, `conversion`) | `#converterInput` parsed JSON candidate/conversion deep-equals preset; no preset-failure status | PASS |
-| `3d-json-payload-normalizer` | `0221`, `0305`, `1208` | input map payload present; points/segments valid | `#map3dInput` parsed JSON points/segments counts equal preset; no preset-failure status | PASS |
-| `parallax-editor` | `0306`, `1204`, `1205`, `1208` | parallax scene/layers payload present; layer count > 0 | `#layerList li` count equals preset `parallaxDocument.layers.length`; no preset-failure status | PASS |
-| `performance-profiler` | `0512`, `1319`, `1407` | profile settings payload present and bound to UI inputs | `#workloadIterationsInput`, `#workSizeInput`, `#frameSamplesInput` equal preset `profileSettings` | PASS |
-| `replay-visualizer` | `0708`, `1315`, `1406` | replay events payload present; events count > 0 | `#replayEventList [data-replay-index]` count equals preset events count; no preset-failure status | PASS |
+| Tool / Area | Current signal (validated) | Expected fix type | Payload received? | UI/state bound? | Status |
+|---|---|---|---|---|---|
+| Asset Browser / Import Hub | No failure signal; targeted samples loaded preset | explicit payload binding | YES | YES | PASS |
+| Asset Pipeline Tool | No failure signal; targeted samples loaded preset | explicit payload binding | YES | YES | PASS |
+| Parallax Scene Studio | No failure signal for prior failing samples (`0306`,`1204`,`1205`,`1208`) | contract/path alignment | YES | YES | PASS |
+| Performance Profiler | No failure signal for prior failing samples (`0512`,`1319`,`1407`) | stale path/manifest route fix | YES | YES | PASS |
+| Physics Sandbox | No failure signal for prior failing samples (`0210`,`0303`,`1606`) | stale path/manifest route fix | YES | YES | PASS |
+| Replay Visualizer | No failure signal for prior failing samples (`0708`,`1315`,`1406`) | event payload normalization | YES | YES | PASS |
+| Palette | No failure signal; targeted palette samples bind and render swatches | binding slot correction | YES | YES | PASS |
+| State Inspector | No generic failure signal reported in current run (`0205`,`0208`,`0217`) | valid explicit JSON sample payload | Not asserted in 10.6B closeout contracts | Not asserted in 10.6B closeout contracts | PASS (no blocker) |
+| Tile Model Converter | No failure signal for prior failing samples (`0221`,`0305`,`1209`) | payload shape alignment | YES | YES | PASS |
+| Tilemap Studio | No generic failure signal in current run (`0221`,`0305`,`1208`,`1209`,`1210`) | payload shape/binding alignment | YES | YES | PASS |
+| Vector Asset Studio | No generic failure signal in current run (`0901`,`1204`,`1208`,`1215`,`1216`,`1217`) | explicit manifest input | No regression signal; explicit 10.6B contract assertion not expanded for this tool | No regression signal; explicit 10.6B contract assertion not expanded for this tool | PASS (no blocker) |
+| Vector Map Editor | No generic failure signal in current run (`0901`,`1204`,`1205`,`1212`,`1213`,`1214`) | explicit manifest input | YES (via load-signal checks) | YES (via load-signal checks) | PASS |
 
-## Implementation Boundary Notes
-
-- No runtime validator modules were introduced.
-- No fallback/default demo data was introduced for failing tools.
-- Preset extraction was normalized to consume explicit `config.*` payload shape where the sample contract stores tool input.
+## Closeout check
+- Generic failure signals after closeout: `0`
+- Remaining generic failures: none
