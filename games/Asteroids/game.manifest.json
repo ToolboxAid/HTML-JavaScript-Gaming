@@ -13,124 +13,7 @@
   },
   "tools": {
     "primitive-skin-editor": {
-      "palettes": {
-        "palette.asteroids.classic": {
-          "$schema": "../../../../tools/schemas/palette.schema.json",
-          "schema": "html-js-gaming.palette",
-          "version": 1,
-          "name": "Asteroids Classic Palette",
-          "source": "custom",
-          "swatches": [
-            {
-              "symbol": "!",
-              "hex": "#020617",
-              "name": "Space Black"
-            },
-            {
-              "symbol": "#",
-              "hex": "#FFFFFF",
-              "name": "Vector White"
-            },
-            {
-              "symbol": "$",
-              "hex": "#CBD5E1",
-              "name": "Asteroid Gray"
-            },
-            {
-              "symbol": "%",
-              "hex": "#DBEAFE",
-              "name": "Saucer Glow"
-            },
-            {
-              "symbol": "&",
-              "hex": "#94A3B8",
-              "name": "HUD Muted"
-            },
-            {
-              "symbol": "(",
-              "hex": "#FBBF24",
-              "name": "Accent Amber"
-            },
-            {
-              "symbol": ")",
-              "hex": "#F87171",
-              "name": "Warning Red"
-            },
-            {
-              "symbol": "*",
-              "hex": "#78B7FF",
-              "name": "HUD Blue"
-            },
-            {
-              "symbol": "+",
-              "hex": "#FFBE64",
-              "name": "HUD Gold"
-            }
-          ]
-        },
-        "palette.asteroids.hud": {
-          "$schema": "../../../../tools/schemas/palette.schema.json",
-          "schema": "html-js-gaming.palette",
-          "version": 1,
-          "name": "Asteroids HUD Palette",
-          "source": "converted-hud",
-          "sourceId": "asteroids-hud-source",
-          "locked": true,
-          "swatches": [
-            {
-              "symbol": "0",
-              "hex": "#05070D",
-              "name": "HUD Color 1"
-            },
-            {
-              "symbol": "1",
-              "hex": "#DCE8FF",
-              "name": "HUD Color 2"
-            },
-            {
-              "symbol": "2",
-              "hex": "#78B7FF",
-              "name": "HUD Color 3"
-            },
-            {
-              "symbol": "3",
-              "hex": "#FFBE64",
-              "name": "HUD Color 4"
-            }
-          ]
-        },
-        "palette.asteroids.hud.legacy": {
-          "$schema": "../../../../tools/schemas/palette.schema.json",
-          "schema": "html-js-gaming.palette",
-          "version": 1,
-          "name": "Asteroids HUD Palette (Legacy Path)",
-          "source": "legacy-compatibility",
-          "sourceId": "asteroids-hud-legacy-source",
-          "locked": true,
-          "swatches": [
-            {
-              "symbol": "0",
-              "hex": "#05070D",
-              "name": "HUD Color 1"
-            },
-            {
-              "symbol": "1",
-              "hex": "#DCE8FF",
-              "name": "HUD Color 2"
-            },
-            {
-              "symbol": "2",
-              "hex": "#78B7FF",
-              "name": "HUD Color 3"
-            },
-            {
-              "symbol": "3",
-              "hex": "#FFBE64",
-              "name": "HUD Color 4"
-            }
-          ]
-        }
-      }
+      "skins": []
     },
     "sprite-editor": {
       "sprites": {
@@ -493,5 +376,68 @@
   },
   "lineage": {
     "build": "BUILD_PR_LEVEL_9_7_REMOVE_INTERNAL_REFERENCES_AND_INLINE_DATA"
+  },
+  "palette": {
+    "schema": "html-js-gaming.palette",
+    "version": 1,
+    "name": "Asteroids Palette",
+    "source": "singleton-merged-from-tool-palettes",
+    "swatches": [
+      {
+        "symbol": "!",
+        "hex": "#020617",
+        "name": "Space Black"
+      },
+      {
+        "symbol": "#",
+        "hex": "#FFFFFF",
+        "name": "Vector White"
+      },
+      {
+        "symbol": "$",
+        "hex": "#CBD5E1",
+        "name": "Asteroid Gray"
+      },
+      {
+        "symbol": "%",
+        "hex": "#DBEAFE",
+        "name": "Saucer Glow"
+      },
+      {
+        "symbol": "&",
+        "hex": "#94A3B8",
+        "name": "HUD Muted"
+      },
+      {
+        "symbol": "(",
+        "hex": "#FBBF24",
+        "name": "Accent Amber"
+      },
+      {
+        "symbol": ")",
+        "hex": "#F87171",
+        "name": "Warning Red"
+      },
+      {
+        "symbol": "*",
+        "hex": "#78B7FF",
+        "name": "HUD Blue"
+      },
+      {
+        "symbol": "+",
+        "hex": "#FFBE64",
+        "name": "HUD Gold"
+      },
+      {
+        "symbol": "0",
+        "hex": "#05070D",
+        "name": "HUD Color 1"
+      },
+      {
+        "symbol": "1",
+        "hex": "#DCE8FF",
+        "name": "HUD Color 2"
+      }
+    ]
   }
 }

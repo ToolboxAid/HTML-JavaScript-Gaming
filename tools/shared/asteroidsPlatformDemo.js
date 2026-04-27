@@ -77,7 +77,7 @@ function createRegistry() {
       {
         id: "palette.asteroids-hud",
         name: "Asteroids HUD Palette",
-        path: "games/Asteroids/game.manifest.json#tools.primitive-skin-editor.palettes.palette.asteroids.hud.legacy",
+        path: "games/Asteroids/game.manifest.json#palette",
         colors: ["#05070DFF", "#DCE8FFFF", "#78B7FFFF", "#FFBE64FF"],
         sourceTool: "pixel-asset-studio"
       }
@@ -241,7 +241,7 @@ function createRuntimeAssetSources(registry) {
   return {
     "palette.asteroids-hud": {
       kind: "palette",
-      file: "games/Asteroids/game.manifest.json#tools.primitive-skin-editor.palettes.palette.asteroids.hud.legacy",
+      file: "games/Asteroids/game.manifest.json#palette",
       colors: ["#05070DFF", "#DCE8FFFF", "#78B7FFFF", "#FFBE64FF"]
     },
     "vector.asteroids.ship": {

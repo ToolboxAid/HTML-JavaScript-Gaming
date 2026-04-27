@@ -1,11 +1,12 @@
-BUILD_PR_LEVEL_10_1_GAME_PALETTE_COMPLETENESS_AND_TOOL_INPUT_ALIGNMENT
+BUILD_PR_LEVEL_10_1A_PALETTE_STANDALONE_SINGLETON_CORRECTION
 
-- Added missing manifest-owned game palettes
-- Normalized palette swatches for tool alignment
-- Documented tools consuming manifest slices as inputs
+- Moved game palettes out of Primitive Skin Editor
+- Enforced one root palette per game/workspace
+- Removed tool-owned palette duplication
 
 PR Details:
-- Starts Phase 10 tool alignment
+- Palette is standalone shared data
+- Tools consume the shared root palette
 - No palette JSON files created
 - No validators
 - No start_of_day changes

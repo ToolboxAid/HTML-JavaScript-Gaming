@@ -61,26 +61,25 @@
   },
   "tools": {
     "primitive-skin-editor": {
-      "palettes": {
-        "palette.template.classic": {
-          "schema": "html-js-gaming.palette",
-          "version": 1,
-          "name": "_template Classic Palette",
-          "source": "manifest-and-runtime-color-scan",
-          "swatches": [
-            {
-              "symbol": "0",
-              "hex": "#F8FAFC",
-              "name": "Color 1"
-            },
-            {
-              "symbol": "1",
-              "hex": "#0F172A",
-              "name": "Color 2"
-            }
-          ]
-        }
-      }
+      "skins": []
     }
+  },
+  "palette": {
+    "schema": "html-js-gaming.palette",
+    "version": 1,
+    "name": "_template Palette",
+    "source": "manifest-and-runtime-color-scan",
+    "swatches": [
+      {
+        "symbol": "0",
+        "hex": "#F8FAFC",
+        "name": "Color 1"
+      },
+      {
+        "symbol": "1",
+        "hex": "#0F172A",
+        "name": "Color 2"
+      }
+    ]
   }
 }

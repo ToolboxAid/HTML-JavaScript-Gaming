@@ -180,66 +180,7 @@
   },
   "tools": {
     "primitive-skin-editor": {
-      "palettes": {
-        "palette.spaceinvaders.classic": {
-          "schema": "html-js-gaming.palette",
-          "version": 1,
-          "name": "Space Invaders Next Classic Palette",
-          "source": "manifest-and-runtime-color-scan",
-          "swatches": [
-            {
-              "symbol": "0",
-              "hex": "#000000",
-              "name": "Color 1"
-            },
-            {
-              "symbol": "1",
-              "hex": "#020702",
-              "name": "Color 2"
-            },
-            {
-              "symbol": "2",
-              "hex": "#66FF66",
-              "name": "Color 3"
-            },
-            {
-              "symbol": "3",
-              "hex": "#8DF58D",
-              "name": "Color 4"
-            },
-            {
-              "symbol": "4",
-              "hex": "#FFFFFF",
-              "name": "Color 5"
-            },
-            {
-              "symbol": "5",
-              "hex": "#D0D0D0",
-              "name": "Color 6"
-            },
-            {
-              "symbol": "6",
-              "hex": "#FBBF24",
-              "name": "Color 7"
-            },
-            {
-              "symbol": "7",
-              "hex": "#FF4D4D",
-              "name": "Color 8"
-            },
-            {
-              "symbol": "8",
-              "hex": "#FF6666",
-              "name": "Color 9"
-            },
-            {
-              "symbol": "9",
-              "hex": "#FFD1D1",
-              "name": "Color 10"
-            }
-          ]
-        }
-      }
+      "skins": []
     },
     "asset-browser": {
       "assets": {
@@ -292,5 +233,63 @@
         }
       }
     }
+  },
+  "palette": {
+    "schema": "html-js-gaming.palette",
+    "version": 1,
+    "name": "Space Invaders Next Palette",
+    "source": "manifest-and-runtime-color-scan",
+    "swatches": [
+      {
+        "symbol": "0",
+        "hex": "#000000",
+        "name": "Color 1"
+      },
+      {
+        "symbol": "1",
+        "hex": "#020702",
+        "name": "Color 2"
+      },
+      {
+        "symbol": "2",
+        "hex": "#66FF66",
+        "name": "Color 3"
+      },
+      {
+        "symbol": "3",
+        "hex": "#8DF58D",
+        "name": "Color 4"
+      },
+      {
+        "symbol": "4",
+        "hex": "#FFFFFF",
+        "name": "Color 5"
+      },
+      {
+        "symbol": "5",
+        "hex": "#D0D0D0",
+        "name": "Color 6"
+      },
+      {
+        "symbol": "6",
+        "hex": "#FBBF24",
+        "name": "Color 7"
+      },
+      {
+        "symbol": "7",
+        "hex": "#FF4D4D",
+        "name": "Color 8"
+      },
+      {
+        "symbol": "8",
+        "hex": "#FF6666",
+        "name": "Color 9"
+      },
+      {
+        "symbol": "9",
+        "hex": "#FFD1D1",
+        "name": "Color 10"
+      }
+    ]
   }
 }

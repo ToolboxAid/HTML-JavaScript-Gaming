@@ -86,31 +86,6 @@
   },
   "tools": {
     "primitive-skin-editor": {
-      "palettes": {
-        "palette.bouncing-ball.classic": {
-          "schema": "html-js-gaming.palette",
-          "version": 1,
-          "name": "Bouncing Ball Classic Palette",
-          "source": "manifest-and-runtime-color-scan",
-          "swatches": [
-            {
-              "symbol": "0",
-              "hex": "#05070A",
-              "name": "Color 1"
-            },
-            {
-              "symbol": "1",
-              "hex": "#F4F4EF",
-              "name": "Color 2"
-            },
-            {
-              "symbol": "2",
-              "hex": "#9BA3B3",
-              "name": "Color 3"
-            }
-          ]
-        }
-      },
       "skins": [
         {
           "id": "skin.main",
@@ -154,5 +129,28 @@
         }
       ]
     }
+  },
+  "palette": {
+    "schema": "html-js-gaming.palette",
+    "version": 1,
+    "name": "Bouncing Ball Palette",
+    "source": "manifest-and-runtime-color-scan",
+    "swatches": [
+      {
+        "symbol": "0",
+        "hex": "#05070A",
+        "name": "Color 1"
+      },
+      {
+        "symbol": "1",
+        "hex": "#F4F4EF",
+        "name": "Color 2"
+      },
+      {
+        "symbol": "2",
+        "hex": "#9BA3B3",
+        "name": "Color 3"
+      }
+    ]
   }
 }

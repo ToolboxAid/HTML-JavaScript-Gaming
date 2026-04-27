@@ -2,32 +2,27 @@ MODEL: GPT-5.3-codex
 REASONING: high
 
 TASK:
-Apply BUILD_PR_LEVEL_10_1_GAME_PALETTE_COMPLETENESS_AND_TOOL_INPUT_ALIGNMENT.
+Apply BUILD_PR_LEVEL_10_1A_PALETTE_STANDALONE_SINGLETON_CORRECTION.
 
 STEPS:
-1. Read docs/pr/PLAN_PR_LEVEL_10_1_GAME_PALETTE_COMPLETENESS_AND_TOOL_INPUT_ALIGNMENT.md.
-2. Read docs/pr/BUILD_PR_LEVEL_10_1_GAME_PALETTE_COMPLETENESS_AND_TOOL_INPUT_ALIGNMENT.md.
+1. Read docs/pr/PLAN_PR_LEVEL_10_1A_PALETTE_STANDALONE_SINGLETON_CORRECTION.md.
+2. Read docs/pr/BUILD_PR_LEVEL_10_1A_PALETTE_STANDALONE_SINGLETON_CORRECTION.md.
 3. Scan all `games/*/game.manifest.json`.
-4. For each game:
-   - determine whether manifest-owned palette data exists
-   - normalize existing palettes
-   - create missing palette data inside game.manifest.json when needed
-5. Extract palette colors from source when possible:
-   - code constants
-   - canvas styles
-   - CSS
-   - existing manifest colors
-   - HUD/skin sections
-6. Do not create separate palette JSON files.
-7. Place palette data under the owning tool section, preferably `primitive-skin-editor.palettes`.
-8. Normalize swatches:
-   - single-character `symbol`
-   - uppercase `#RRGGBB`
-   - remove opaque `FF` suffix
-9. Document tool input alignment:
-   - tools consume `gameManifest.tools[toolId]`
-   - no file-path JSON input for game-owned data
-10. Write docs/dev/reports/level_10_1_game_palette_completeness_report.md.
+4. For each manifest:
+   - find any `tools.*.palettes`
+   - move/merge palette data into root `palette`
+   - remove tool-owned `palettes`
+   - ensure only one root `palette` exists
+5. Normalize swatches:
+   - uppercase hex
+   - remove opaque `FF`
+   - single-character symbols
+   - dedupe by hex where safe
+6. Ensure Primitive Skin Editor owns skins only, not palette.
+7. Ensure Palette Browser does not own a duplicate palette object.
+8. Update any game/tool manifest readers only if required to read root `palette`.
+9. Do not create palette JSON files.
+10. Write docs/dev/reports/level_10_1a_palette_singleton_correction_report.md.
 11. Update docs/dev/roadmaps/MASTER_ROADMAP_ENGINE.md status only if needed:
     - [ ] -> [.]
     - [.] -> [x]
@@ -35,9 +30,9 @@ STEPS:
 12. Do not add validators.
 13. Do not modify start_of_day.
 14. Create Codex delta ZIP:
-    tmp/BUILD_PR_LEVEL_10_1_GAME_PALETTE_COMPLETENESS_AND_TOOL_INPUT_ALIGNMENT_delta.zip
+    tmp/BUILD_PR_LEVEL_10_1A_PALETTE_STANDALONE_SINGLETON_CORRECTION_delta.zip
 
 ACCEPTANCE:
-- all games with colors have manifest-owned palette data
-- no new palette JSON files
+- exactly one root `palette` per game manifest
+- no tool-owned palettes remain
 - delta ZIP exists

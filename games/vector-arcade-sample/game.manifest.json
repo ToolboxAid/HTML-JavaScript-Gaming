@@ -213,61 +213,7 @@
   },
   "tools": {
     "primitive-skin-editor": {
-      "palettes": {
-        "palette.vector-arcade-sample.classic": {
-          "schema": "html-js-gaming.palette",
-          "version": 1,
-          "name": "Vector Arcade Sample Classic Palette",
-          "source": "manifest-and-runtime-color-scan",
-          "swatches": [
-            {
-              "symbol": "0",
-              "hex": "#05070D",
-              "name": "Color 1"
-            },
-            {
-              "symbol": "1",
-              "hex": "#E8F0FF",
-              "name": "Color 2"
-            },
-            {
-              "symbol": "2",
-              "hex": "#6FD3FF",
-              "name": "Color 3"
-            },
-            {
-              "symbol": "3",
-              "hex": "#FFB347",
-              "name": "Color 4"
-            },
-            {
-              "symbol": "4",
-              "hex": "#000000",
-              "name": "Color 5"
-            },
-            {
-              "symbol": "5",
-              "hex": "#FFFFFF",
-              "name": "Color 6"
-            },
-            {
-              "symbol": "6",
-              "hex": "#60A5FA",
-              "name": "Color 7"
-            },
-            {
-              "symbol": "7",
-              "hex": "#F59E0B",
-              "name": "Color 8"
-            },
-            {
-              "symbol": "8",
-              "hex": "#112233",
-              "name": "Color 9"
-            }
-          ]
-        }
-      }
+      "skins": []
     },
     "sprite-editor": {
       "sprites": [
@@ -525,5 +471,58 @@
         }
       ]
     }
+  },
+  "palette": {
+    "schema": "html-js-gaming.palette",
+    "version": 1,
+    "name": "Vector Arcade Sample Palette",
+    "source": "manifest-and-runtime-color-scan",
+    "swatches": [
+      {
+        "symbol": "0",
+        "hex": "#05070D",
+        "name": "Color 1"
+      },
+      {
+        "symbol": "1",
+        "hex": "#E8F0FF",
+        "name": "Color 2"
+      },
+      {
+        "symbol": "2",
+        "hex": "#6FD3FF",
+        "name": "Color 3"
+      },
+      {
+        "symbol": "3",
+        "hex": "#FFB347",
+        "name": "Color 4"
+      },
+      {
+        "symbol": "4",
+        "hex": "#000000",
+        "name": "Color 5"
+      },
+      {
+        "symbol": "5",
+        "hex": "#FFFFFF",
+        "name": "Color 6"
+      },
+      {
+        "symbol": "6",
+        "hex": "#60A5FA",
+        "name": "Color 7"
+      },
+      {
+        "symbol": "7",
+        "hex": "#F59E0B",
+        "name": "Color 8"
+      },
+      {
+        "symbol": "8",
+        "hex": "#112233",
+        "name": "Color 9"
+      }
+    ]
   }
 }
