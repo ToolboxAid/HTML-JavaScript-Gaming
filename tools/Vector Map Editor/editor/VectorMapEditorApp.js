@@ -259,49 +259,57 @@ export class VectorMapEditorApp {
     const lifecycleStable = options.lifecycleStable !== false;
     const data = this.documentModel?.getData?.() || {};
     const objectCount = Array.isArray(data.objects) ? data.objects.length : 0;
+    const selectedObject = !forceMissing ? this.selectionModel.getSelection(this.documentModel).object : null;
     const hasDocument = !forceMissing
       && Number.isFinite(Number(data.width))
       && Number.isFinite(Number(data.height))
       && Number(data.width) > 0
       && Number(data.height) > 0;
     const hasCanvas = !forceMissing && this.elements?.canvas instanceof HTMLCanvasElement;
-    const hasDataList = !forceMissing && objectCount > 0;
-    const hasEntityControls = !forceMissing
+    const hasObjectList = !forceMissing
       && this.elements?.objectList instanceof HTMLElement
+      && objectCount > 0;
+    const hasSelectedObject = !forceMissing
+      && objectCount > 0
+      && Boolean(selectedObject && typeof selectedObject.id === "string");
+    const hasCanvasRender = !forceMissing
+      && hasCanvas
+      && hasDocument
+      && (objectCount === 0 || hasSelectedObject);
+    const hasEntityControls = !forceMissing
       && this.elements?.toolModeSelect instanceof HTMLSelectElement
       && this.elements?.selectedObjectNameInput instanceof HTMLInputElement
-      && objectCount > 0;
+      && (objectCount === 0 || hasSelectedObject);
 
     logToolUiControlReady({
       toolId: "vector-map-editor",
       sampleId,
-      controlId: "document-canvas",
+      controlId: "canvas-render",
       requiredData: "vector-map-document",
-      loaded: hasCanvas && hasDocument,
+      loaded: hasCanvasRender,
       value: hasDocument ? `${data.width}x${data.height}` : "none",
-      classification: hasCanvas && hasDocument ? "success" : "missing"
+      classification: hasCanvasRender ? "success" : (hasDocument ? "missing" : "missing")
     });
 
     logToolUiControlReady({
       toolId: "vector-map-editor",
       sampleId,
-      controlId: "data-list",
+      controlId: "object-list",
       requiredData: "vector-map-objects",
-      loaded: hasDataList,
+      loaded: hasObjectList,
       count: objectCount,
       value: objectCount,
-      classification: hasDataList ? "success" : (hasDocument ? "empty" : "missing")
+      classification: hasObjectList ? "success" : (hasDocument ? "empty" : "missing")
     });
 
     logToolUiControlReady({
       toolId: "vector-map-editor",
       sampleId,
-      controlId: "entity-layer-controls",
+      controlId: "selected-object",
       requiredData: "vector-map-objects",
-      loaded: hasEntityControls,
-      count: objectCount,
-      value: objectCount,
-      classification: hasEntityControls ? "success" : (hasDocument ? "empty" : "missing")
+      loaded: hasSelectedObject && hasEntityControls,
+      value: selectedObject?.name || "none",
+      classification: hasSelectedObject && hasEntityControls ? "success" : (hasDocument ? "empty" : "missing")
     });
 
     logToolUiLifecycle({
@@ -316,10 +324,10 @@ export class VectorMapEditorApp {
       toolId: "vector-map-editor",
       sampleId,
       requiredInputsReady: hasCanvas && hasDocument,
-      requiredControlsReady: hasDataList && hasEntityControls,
-      requiredOutputsReady: hasCanvas && hasDocument,
+      requiredControlsReady: (objectCount === 0) || (hasObjectList && hasSelectedObject && hasEntityControls),
+      requiredOutputsReady: hasCanvasRender,
       lifecycleStable,
-      classification: lifecycleStable && hasCanvas && hasDocument && hasDataList && hasEntityControls
+      classification: lifecycleStable && hasCanvas && hasDocument && hasCanvasRender && ((objectCount === 0) || (hasObjectList && hasSelectedObject && hasEntityControls))
         ? "success"
         : (lifecycleStable ? "missing" : "lifecycle-failure")
     });
@@ -387,6 +395,7 @@ export class VectorMapEditorApp {
       this.cancelSpinAnimation();
       this.documentModel.setData(toolDocument);
       this.selectionModel.clear();
+      this.selectFirstObjectWhenUnselected();
       this.lastCollisionResult = null;
       this.historyManager.reset();
       this.pendingHistoryEntry = null;
@@ -597,6 +606,7 @@ export class VectorMapEditorApp {
         this.cancelSpinAnimation();
         this.documentModel.setData(data);
         this.selectionModel.clear();
+        this.selectFirstObjectWhenUnselected();
         this.lastCollisionResult = null;
         this.historyManager.reset();
         this.pendingHistoryEntry = null;
@@ -833,6 +843,7 @@ export class VectorMapEditorApp {
           const nextData = this.jsonEditor.validate();
           this.documentModel.setData(nextData);
           this.selectionModel.clear();
+          this.selectFirstObjectWhenUnselected();
           this.lastCollisionResult = null;
           this.workspaceViewMode = this.documentModel.getData().mode;
           if (this.workspaceViewMode !== "2d" && this.workspaceViewMode !== "3d") {
@@ -1057,6 +1068,22 @@ export class VectorMapEditorApp {
     }
   }
 
+  selectFirstObjectWhenUnselected() {
+    const selection = this.selectionModel.getSelection(this.documentModel);
+    if (selection.object) {
+      return;
+    }
+    const objects = this.documentModel.getObjects();
+    if (!Array.isArray(objects) || objects.length === 0) {
+      return;
+    }
+    const firstObject = objects.find((entry) => entry && typeof entry.id === "string" && entry.id.length > 0) || null;
+    if (!firstObject) {
+      return;
+    }
+    this.selectionModel.selectObject(firstObject.id);
+  }
+
   syncUIFromDocument() {
     const data = this.documentModel.getData();
     this.elements.documentNameInput.value = data.name;
@@ -1117,6 +1144,13 @@ export class VectorMapEditorApp {
   syncObjectList() {
     const objects = this.documentModel.getObjects();
     this.elements.objectList.innerHTML = "";
+    if (!objects.length) {
+      const empty = document.createElement("li");
+      empty.className = "object-item muted";
+      empty.textContent = "No objects loaded.";
+      this.elements.objectList.appendChild(empty);
+      return;
+    }
     for (const object of objects) {
       const item = document.createElement("li");
       item.className = `object-item${this.selectionModel.isSelectedObject(object.id) ? " active" : ""}`;
@@ -1167,8 +1201,10 @@ export class VectorMapEditorApp {
   }
 
   syncStatus() {
+    const selection = this.selectionModel.getSelection(this.documentModel);
+    const selectedObjectLabel = selection.object?.name || "none";
     this.elements.statusLeft.textContent = this.statusMessage;
-    this.elements.statusCenter.textContent = `Mode: ${this.workspaceViewMode.toUpperCase()} | Tool: ${this.elements.toolModeSelect.value} | Zoom: ${Math.round(this.interactionController.getView().zoom * 100)}%`;
+    this.elements.statusCenter.textContent = `Mode: ${this.workspaceViewMode.toUpperCase()} | Tool: ${this.elements.toolModeSelect.value} | Selected: ${selectedObjectLabel} | Zoom: ${Math.round(this.interactionController.getView().zoom * 100)}%`;
     this.elements.zoomDisplay.textContent = `${Math.round(this.interactionController.getView().zoom * 100)}%`;
     this.syncHistoryControls();
   }

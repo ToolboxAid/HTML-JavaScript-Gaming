@@ -763,11 +763,20 @@ function updatePaletteReadout() {
 }
 
 function applyEnablementState() {
+  const hasPaletteControls = hasPaletteSelection() && getVisiblePaletteEntries().length > 0;
   const hasStyleSelection = hasRequiredStyleSelection();
   const hasFill = hasFillSelection();
   const hasGradient = Boolean((normalizeColorValue(state.gradientFillFrom) || normalizeColorValue(state.fill)) && normalizeColorValue(state.gradientFillTo));
   const hasObjectSelection = Boolean(getSelectedElement());
 
+  refs.setPaletteTargetPaintButton.disabled = !hasPaletteControls;
+  refs.setPaletteTargetStrokeButton.disabled = !hasPaletteControls;
+  if (refs.setPaletteTargetGradientStartButton instanceof HTMLButtonElement) {
+    refs.setPaletteTargetGradientStartButton.disabled = !hasPaletteControls;
+  }
+  if (refs.setPaletteTargetGradientEndButton instanceof HTMLButtonElement) {
+    refs.setPaletteTargetGradientEndButton.disabled = !hasPaletteControls;
+  }
   refs.applyCanvasSizeButton.disabled = !hasStyleSelection;
   refs.strokeWidthInput.disabled = !hasStyleSelection;
   if (refs.applyFillButton instanceof HTMLButtonElement) {
@@ -2291,6 +2300,7 @@ function loadSvgFromText(svgText, sourceName = "loaded-svg") {
   if (embeddedEditorOptions) {
     applySampleEditorOptions(embeddedEditorOptions);
   }
+  bindPaintAndStrokeFromLoadedData();
   applyEnablementState();
   setStatus(embeddedEditorOptions ? `Loaded SVG: ${sourceName} (embedded editor options applied).` : `Loaded SVG: ${sourceName}`);
 }
@@ -2622,6 +2632,52 @@ function ensurePaletteSelectionFromDeclaredInputs(editorOptions = {}, sampleId =
   return normalizeColorValue(state.fill) && normalizeColorValue(state.stroke) ? "success" : "missing";
 }
 
+function bindPaintAndStrokeFromLoadedData() {
+  if (!hasPaletteSelection()) {
+    return false;
+  }
+
+  const paletteEntries = getVisiblePaletteEntries();
+  if (paletteEntries.length === 0) {
+    return false;
+  }
+
+  const paletteColors = paletteEntries
+    .map((entry) => normalizeColorValue(entry?.hex))
+    .filter(Boolean);
+  const usedColors = (Array.isArray(state.usedColors) ? state.usedColors : [])
+    .map((value) => normalizeColorValue(value))
+    .filter(Boolean);
+  const selectedElement = getSelectedElement();
+  const selectedFill = selectedElement instanceof SVGElement
+    ? normalizeColorValue(selectedElement.getAttribute("fill") || selectedElement.style.fill || "")
+    : null;
+  const selectedStroke = selectedElement instanceof SVGElement
+    ? normalizeColorValue(selectedElement.getAttribute("stroke") || selectedElement.style.stroke || "")
+    : null;
+  const currentPaint = normalizeColorValue(state.fill);
+  const currentStroke = normalizeColorValue(state.stroke);
+
+  if (!currentPaint) {
+    state.fill = selectedFill
+      || usedColors[0]
+      || paletteColors[0]
+      || null;
+  }
+
+  if (!currentStroke) {
+    const preferredUsedStroke = usedColors.find((value) => value !== normalizeColorValue(state.fill)) || null;
+    const preferredPaletteStroke = paletteColors.find((value) => value !== normalizeColorValue(state.fill)) || null;
+    state.stroke = selectedStroke
+      || preferredUsedStroke
+      || preferredPaletteStroke
+      || paletteColors[0]
+      || null;
+  }
+
+  return Boolean(normalizeColorValue(state.fill) && normalizeColorValue(state.stroke));
+}
+
 function emitVectorAssetControlReadiness(sampleId = "", options = {}) {
   const forceMissing = options.forceMissing === true;
   const phase = typeof options.phase === "string" && options.phase.trim() ? options.phase.trim() : "load";
@@ -2630,6 +2686,7 @@ function emitVectorAssetControlReadiness(sampleId = "", options = {}) {
   const hasSvgCanvas = !forceMissing && refs.editorSvg instanceof SVGSVGElement && drawableCount > 0;
   const selectedPaletteEntries = hasPaletteSelection() ? getVisiblePaletteEntries() : [];
   const hasPaletteControls = !forceMissing && hasPaletteSelection() && selectedPaletteEntries.length > 0;
+  const hasUsedColors = !forceMissing && Array.isArray(state.usedColors) && state.usedColors.length > 0;
   const hasPaint = !forceMissing && Boolean(normalizeColorValue(state.fill));
   const hasStroke = !forceMissing && Boolean(normalizeColorValue(state.stroke));
   const paletteClassification = typeof options.paletteClassification === "string" && options.paletteClassification.trim()
@@ -2650,7 +2707,7 @@ function emitVectorAssetControlReadiness(sampleId = "", options = {}) {
   logToolUiControlReady({
     toolId: "vector-asset-studio",
     sampleId,
-    controlId: "palette-controls",
+    controlId: "palette-swatches",
     requiredData: "declared-palette-selection",
     loaded: hasPaletteControls,
     count: selectedPaletteEntries.length,
@@ -2661,11 +2718,22 @@ function emitVectorAssetControlReadiness(sampleId = "", options = {}) {
   logToolUiControlReady({
     toolId: "vector-asset-studio",
     sampleId,
-    controlId: "paint-fill-control",
+    controlId: "used-colors",
+    requiredData: "vector-asset-used-colors",
+    loaded: hasUsedColors,
+    count: hasUsedColors ? state.usedColors.length : 0,
+    value: hasUsedColors ? state.usedColors.length : 0,
+    classification: hasUsedColors ? "success" : (hasSvgCanvas ? "empty" : "missing")
+  });
+
+  logToolUiControlReady({
+    toolId: "vector-asset-studio",
+    sampleId,
+    controlId: "paint-control",
     requiredData: "declared-paint-color",
-    loaded: hasPaint,
+    loaded: hasPaletteControls && hasPaint,
     value: normalizeColorValue(state.fill) || "none",
-    classification: hasPaint ? "success" : "missing"
+    classification: hasPaletteControls && hasPaint ? "success" : (hasPaletteControls ? "missing" : "empty")
   });
 
   logToolUiControlReady({
@@ -2673,9 +2741,9 @@ function emitVectorAssetControlReadiness(sampleId = "", options = {}) {
     sampleId,
     controlId: "stroke-control",
     requiredData: "declared-stroke-color",
-    loaded: hasStroke,
+    loaded: hasPaletteControls && hasStroke,
     value: normalizeColorValue(state.stroke) || "none",
-    classification: hasStroke ? "success" : "missing"
+    classification: hasPaletteControls && hasStroke ? "success" : (hasPaletteControls ? "missing" : "empty")
   });
 
   logToolUiLifecycle({
@@ -2810,6 +2878,8 @@ async function tryLoadPresetFromQuery() {
       applySampleEditorOptions(extractedPreset.editorOptions);
     }
     const paletteClassification = ensurePaletteSelectionFromDeclaredInputs(extractedPreset.editorOptions || {}, sampleId);
+    bindPaintAndStrokeFromLoadedData();
+    applyEnablementState();
     emitVectorAssetControlReadiness(sampleId, { paletteClassification, phase: "loaded", lifecycleStable: true });
     if (paletteClassification !== "success") {
       logToolLoadWarning({

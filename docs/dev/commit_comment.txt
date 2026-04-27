@@ -1,1 +1,1 @@
-Close tool UI readiness gaps from control inventory and stabilize required input-to-control bindings - PR 10.6S
+Finalize vector tool UI readiness for palette controls and default object selection - PR 10.6T
