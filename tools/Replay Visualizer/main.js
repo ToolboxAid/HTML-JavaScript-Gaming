@@ -11,7 +11,6 @@ import { setupDebugToolInteractionFlow } from "../shared/debugToolInteractionFlo
 
 const refs = {
   loadButton: document.getElementById("loadReplayButton"),
-  loadSampleButton: document.getElementById("loadSampleReplayButton"),
   playButton: document.getElementById("playReplayButton"),
   pauseButton: document.getElementById("pauseReplayButton"),
   resetButton: document.getElementById("resetReplayButton"),
@@ -248,11 +247,6 @@ function playReplay() {
 function bindEvents() {
   if (refs.loadButton instanceof HTMLButtonElement) {
     refs.loadButton.addEventListener("click", loadReplayFromInput);
-  }
-  if (refs.loadSampleButton instanceof HTMLButtonElement) {
-    refs.loadSampleButton.addEventListener("click", () => {
-      setStatus("No built-in replay sample is available. Load replay JSON from source data.");
-    });
   }
   if (refs.playButton instanceof HTMLButtonElement) {
     refs.playButton.addEventListener("click", playReplay);

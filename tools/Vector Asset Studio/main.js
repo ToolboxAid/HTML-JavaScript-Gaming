@@ -14,7 +14,6 @@ import {
 } from "../shared/assetUsageIntegration.js";
 
 const SVG_NS = "http://www.w3.org/2000/svg";
-const SAMPLE_MANIFEST_PATH = "./samples/sample-manifest.json";
 const DRAWABLE_SELECTOR = "rect,ellipse,circle,line,polyline,path";
 const ALLOWED_IMPORT_TAGS = new Set([
   "svg",
@@ -88,7 +87,6 @@ const state = {
   drag: null,
   pendingPolyline: null,
   pendingFreehand: null,
-  sampleEntries: [],
   elementIdCounter: 1,
   skipExternalProjectStateUntil: 0
 };
@@ -98,9 +96,6 @@ const refs = {
   loadSvgButton: document.getElementById("loadSvgButton"),
   loadSvgInput: document.getElementById("loadSvgInput"),
   saveSvgButton: document.getElementById("saveSvgButton"),
-  sampleSelect: document.getElementById("sampleSelect"),
-  refreshSamplesButton: document.getElementById("refreshSamplesButton"),
-  loadSampleButton: document.getElementById("loadSampleButton"),
   canvasWidthInput: document.getElementById("canvasWidthInput"),
   canvasHeightInput: document.getElementById("canvasHeightInput"),
   applyCanvasSizeButton: document.getElementById("applyCanvasSizeButton"),
@@ -2473,90 +2468,6 @@ function readEmbeddedEditorOptionsFromSvgRoot(svgRoot, width, height) {
   return hasEmbeddedOptions ? options : null;
 }
 
-async function refreshSampleOptions(preserveSelection = true) {
-  if (!(refs.sampleSelect instanceof HTMLSelectElement) || !(refs.loadSampleButton instanceof HTMLButtonElement)) {
-    state.sampleEntries = [];
-    return;
-  }
-  const previousValue = refs.sampleSelect.value;
-  refs.sampleSelect.innerHTML = "";
-  state.sampleEntries = [];
-
-  try {
-    const manifestUrl = new URL(SAMPLE_MANIFEST_PATH, window.location.href);
-    const response = await fetch(manifestUrl.toString(), { cache: "no-store" });
-    if (!response.ok) {
-      throw new Error(`Manifest request failed: ${response.status}`);
-    }
-    const manifest = await response.json();
-    const rawSamples = Array.isArray(manifest?.samples) ? manifest.samples : [];
-    const seen = new Set();
-
-    rawSamples.forEach((entry, index) => {
-      const path = normalizeToolSamplePath(entry?.path);
-      if (!path || seen.has(path)) {
-        return;
-      }
-      seen.add(path);
-      const label = typeof entry?.label === "string" && entry.label.trim()
-        ? entry.label.trim()
-        : `Sample ${index + 1}`;
-      const id = typeof entry?.id === "string" && entry.id.trim()
-        ? entry.id.trim()
-        : `sample-${index + 1}`;
-      state.sampleEntries.push({ id, label, path });
-    });
-  } catch (error) {
-    setStatus(`Sample manifest unavailable (${error.message}).`);
-  }
-
-  if (state.sampleEntries.length === 0) {
-    const emptyOption = document.createElement("option");
-    emptyOption.value = "";
-    emptyOption.textContent = "No samples loaded";
-    refs.sampleSelect.appendChild(emptyOption);
-    refs.loadSampleButton.disabled = true;
-    return;
-  }
-
-  state.sampleEntries.forEach((entry) => {
-    const option = document.createElement("option");
-    option.value = entry.path;
-    option.textContent = entry.label;
-    refs.sampleSelect.appendChild(option);
-  });
-
-  if (preserveSelection && state.sampleEntries.some((entry) => entry.path === previousValue)) {
-    refs.sampleSelect.value = previousValue;
-  } else {
-    refs.sampleSelect.value = state.sampleEntries[0].path;
-  }
-
-  refs.loadSampleButton.disabled = false;
-}
-
-async function loadSelectedSample() {
-  if (!(refs.sampleSelect instanceof HTMLSelectElement)) {
-    setStatus("Preset loading is available from sample launch context.");
-    return;
-  }
-  await refreshSampleOptions(true);
-  const selectedPath = refs.sampleSelect.value;
-  if (!selectedPath) {
-    setStatus("No sample selected.");
-    return;
-  }
-
-  const sampleUrl = new URL(selectedPath, window.location.href);
-  const response = await fetch(sampleUrl.toString(), { cache: "no-store" });
-  if (!response.ok) {
-    throw new Error(`Sample fetch failed: ${response.status}`);
-  }
-  const svgText = await response.text();
-  const sampleName = selectedPath.split("/").pop() || "sample.svg";
-  loadSvgFromText(svgText, sampleName);
-}
-
 function extractVectorAssetPresetFromSamplePreset(rawPreset) {
   if (!rawPreset || typeof rawPreset !== "object") {
     return null;
@@ -2729,23 +2640,6 @@ function bindEvents() {
     downloadTextFile(fileName, content, "image/svg+xml");
     setStatus(`Saved ${fileName}.`);
   });
-
-  if (refs.refreshSamplesButton instanceof HTMLButtonElement) {
-    refs.refreshSamplesButton.addEventListener("click", async () => {
-      await refreshSampleOptions(true);
-      setStatus("Sample list refreshed from local manifest.");
-    });
-  }
-
-  if (refs.loadSampleButton instanceof HTMLButtonElement) {
-    refs.loadSampleButton.addEventListener("click", async () => {
-      try {
-        await loadSelectedSample();
-      } catch (error) {
-        setStatus(`Failed to load sample (${error.message}).`);
-      }
-    });
-  }
 
   refs.applyCanvasSizeButton.addEventListener("click", () => {
     if (!hasRequiredStyleSelection()) {
@@ -3024,9 +2918,6 @@ async function initialize() {
   setPaletteTarget("paint", { silent: true });
   applyEnablementState();
   renderElementList();
-  if (refs.sampleSelect instanceof HTMLSelectElement) {
-    await refreshSampleOptions(false);
-  }
   const presetLoaded = await tryLoadPresetFromQuery();
   if (!presetLoaded) {
     setStatus("Vector Asset Studio ready.");

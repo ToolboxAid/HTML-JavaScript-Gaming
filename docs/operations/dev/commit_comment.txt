@@ -1,11 +1,1 @@
-BUILD_PR_LEVEL_10_3_MIGRATE_TOOL_LOCAL_SAMPLES_TO_SAMPLES
-
-- Migrated tool-local samples into /samples
-- Updated samples index
-- Removed local sample dropdown/select entries from processed tools
-- Preserved tool explicit-input behavior
-
-PR Details:
-- Processes Vector Map Editor, Vector Asset Studio, Parallax Scene Studio, and Tilemap Studio
-- No validators
-- No start_of_day changes
+PR 10.4: remove remaining tool sample dropdowns

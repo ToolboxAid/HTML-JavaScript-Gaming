@@ -32,11 +32,7 @@ import { buildEditorExperienceLayer, summarizeEditorExperienceLayer } from "../s
 import { buildDebugVisualizationLayer, summarizeDebugVisualizationLayer } from "../shared/debugVisualizationLayer.js";
 import { registerToolBootContract } from "../shared/toolBootContract.js";
 import { createLivePreviewSyncBridge, validateStateBindingPayload } from "../shared/livePreviewSyncChannel.js";
-import { normalizeToolSamplePath, toToolSampleLabel } from "../shared/toolSampleCatalog.js";
 import { addToolModeMetadata, assertStandaloneToolDocument, offerImportMismatchOptions } from "../shared/documentModeGuards.js";
-
-const SAMPLE_DIRECTORY_PATH = "./samples/";
-const SAMPLE_MANIFEST_PATH = "./samples/sample-manifest.json";
 
 function normalizeSamplePresetPath(pathValue) {
   if (typeof pathValue !== "string") {
@@ -384,7 +380,6 @@ class ParallaxEditorApp {
     this.refs = {};
     this.imageCache = new Map();
     this.imageCacheVersion = 0;
-    this.sampleEntries = [];
     this.isSimulationMode = false;
     this.simulation = {
       rafId: 0,
@@ -460,10 +455,6 @@ class ParallaxEditorApp {
     this.renderAll();
     this.bindRuntimeStateSync();
     this.queueLivePreviewSync("init");
-    const hasSamplePresetQuery = new URLSearchParams(window.location.search).has("samplePresetPath");
-    if (this.refs.sampleSelect instanceof HTMLSelectElement && this.refs.loadSampleButton instanceof HTMLButtonElement) {
-      this.loadSampleManifest({ quiet: hasSamplePresetQuery });
-    }
     void this.tryLoadPresetFromQuery();
   }
 
@@ -498,8 +489,6 @@ class ParallaxEditorApp {
     this.refs.mapHeightInput = rootDocument.getElementById("mapHeightInput");
     this.refs.tileSizeInput = rootDocument.getElementById("tileSizeInput");
     this.refs.applyMapMetaButton = rootDocument.getElementById("applyMapMetaButton");
-    this.refs.sampleSelect = rootDocument.getElementById("sampleSelect");
-    this.refs.loadSampleButton = rootDocument.getElementById("loadSampleButton");
 
     this.refs.layerList = rootDocument.getElementById("layerList");
     this.refs.newLayerNameInput = rootDocument.getElementById("newLayerNameInput");
@@ -588,13 +577,6 @@ class ParallaxEditorApp {
 
     this.refs.applyMapMetaButton.addEventListener("click", () => this.applyMapMetaFromInputs());
     this.refs.projectNameInput.addEventListener("change", () => this.applyMapMetaFromInputs());
-    if (this.refs.loadSampleButton instanceof HTMLButtonElement && this.refs.sampleSelect instanceof HTMLSelectElement) {
-      this.refs.loadSampleButton.addEventListener("click", () => this.handleLoadSelectedSample());
-      this.refs.sampleSelect.addEventListener("change", () => this.handleSampleSelectionChanged());
-      this.refs.sampleSelect.addEventListener("focus", () => {
-        void this.loadSampleManifest({ quiet: true });
-      });
-    }
 
     this.refs.addLayerButton.addEventListener("click", () => this.addLayer());
     this.refs.removeLayerButton.addEventListener("click", () => this.removeSelectedLayer());
@@ -986,192 +968,6 @@ class ParallaxEditorApp {
       this.simulation.playing = false;
       this.refreshSimulationActionState();
       this.updateStatus("Simulation reached the end of the full-map traverse.");
-    }
-  }
-
-  createSampleEntry(pathValue, labelHint = "", idHint = "") {
-    const path = normalizeToolSamplePath(pathValue);
-    if (!path) {
-      return null;
-    }
-    const normalizedLabel = typeof labelHint === "string" ? labelHint.trim() : "";
-    const fallbackLabel = toToolSampleLabel(path);
-    return {
-      id: typeof idHint === "string" && idHint.trim() ? idHint.trim() : path,
-      label: normalizedLabel && !/[\\/]/.test(normalizedLabel) ? normalizedLabel : fallbackLabel,
-      path
-    };
-  }
-
-  async discoverSampleEntriesFromDirectory() {
-    const directoryUrl = new URL(SAMPLE_DIRECTORY_PATH, window.location.href);
-    const response = await fetch(directoryUrl.toString(), { cache: "no-store" });
-    if (!response.ok) {
-      throw new Error(`Directory request failed (${response.status}).`);
-    }
-
-    const html = await response.text();
-    const parser = new DOMParser();
-    const documentModel = parser.parseFromString(html, "text/html");
-    const anchors = Array.from(documentModel.querySelectorAll("a[href]"));
-    const discovered = [];
-    const seenPaths = new Set();
-
-    anchors.forEach((anchor) => {
-      const href = anchor.getAttribute("href");
-      if (!href) {
-        return;
-      }
-      const resolved = new URL(href, directoryUrl);
-      const fileName = decodeURIComponent((resolved.pathname.split("/").pop() || "").trim());
-      if (!fileName || !fileName.toLowerCase().endsWith(".json")) {
-        return;
-      }
-      if (fileName.toLowerCase() === "sample-manifest.json") {
-        return;
-      }
-
-      const entry = this.createSampleEntry(fileName, anchor.textContent || "", fileName);
-      if (!entry || seenPaths.has(entry.path)) {
-        return;
-      }
-      seenPaths.add(entry.path);
-      discovered.push(entry);
-    });
-
-    discovered.sort((left, right) => left.label.localeCompare(right.label));
-    return discovered;
-  }
-
-  collectSampleEntriesFromManifest(manifest) {
-    const rawSamples = Array.isArray(manifest?.samples) ? manifest.samples : [];
-    return rawSamples
-      .map((entry) => this.createSampleEntry(entry?.path, entry?.label, entry?.id))
-      .filter((entry) => entry !== null);
-  }
-
-  async loadSampleManifest(options = {}) {
-    if (!(this.refs.sampleSelect instanceof HTMLSelectElement) || !(this.refs.loadSampleButton instanceof HTMLButtonElement)) {
-      this.sampleEntries = [];
-      return;
-    }
-    const quiet = options.quiet === true;
-    const previousSelection = normalizeToolSamplePath(this.refs.sampleSelect.value);
-    if (!quiet) {
-      this.refs.sampleSelect.innerHTML = "<option value=\"\">Loading samples...</option>";
-      this.refs.loadSampleButton.disabled = true;
-    }
-
-    try {
-      const sampleEntries = await this.discoverSampleEntriesFromDirectory();
-      if (sampleEntries.length === 0) {
-        throw new Error("No sample JSON files were discovered in ./samples/.");
-      }
-      this.sampleEntries = sampleEntries;
-      this.renderSampleOptions(previousSelection);
-      if (!quiet) {
-        this.updateStatus(`Loaded ${sampleEntries.length} samples from ${SAMPLE_DIRECTORY_PATH}.`);
-      }
-      return;
-    } catch (directoryError) {
-      try {
-        const manifestUrl = new URL(SAMPLE_MANIFEST_PATH, window.location.href);
-        const response = await fetch(manifestUrl.toString(), { cache: "no-store" });
-        if (!response.ok) {
-          throw new Error(`Manifest request failed (${response.status}).`);
-        }
-
-        const manifest = await response.json();
-        const sampleEntries = this.collectSampleEntriesFromManifest(manifest);
-        if (sampleEntries.length === 0) {
-          throw new Error("Sample manifest had no valid entries.");
-        }
-
-        this.sampleEntries = sampleEntries;
-        this.renderSampleOptions(previousSelection);
-        if (!quiet) {
-          this.updateStatus(`Loaded ${sampleEntries.length} samples from ${SAMPLE_MANIFEST_PATH}.`);
-        }
-      } catch (error) {
-        this.sampleEntries = [];
-        this.renderSampleOptions(previousSelection);
-        if (!quiet) {
-          this.updateStatus(`Sample discovery unavailable: ${error instanceof Error ? error.message : "unknown error"}`);
-        }
-      }
-    }
-  }
-
-  renderSampleOptions(preferredPath = "") {
-    if (!(this.refs.sampleSelect instanceof HTMLSelectElement) || !(this.refs.loadSampleButton instanceof HTMLButtonElement)) {
-      return;
-    }
-    const select = this.refs.sampleSelect;
-    select.innerHTML = "";
-
-    if (this.sampleEntries.length === 0) {
-      const option = document.createElement("option");
-      option.value = "";
-      option.textContent = "No samples available";
-      select.appendChild(option);
-      this.refs.loadSampleButton.disabled = true;
-      return;
-    }
-
-    const promptOption = document.createElement("option");
-    promptOption.value = "";
-    promptOption.textContent = "Select a sample...";
-    select.appendChild(promptOption);
-
-    this.sampleEntries.forEach((entry) => {
-      const option = document.createElement("option");
-      option.value = entry.path;
-      option.textContent = entry.label;
-      select.appendChild(option);
-    });
-
-    if (preferredPath && this.sampleEntries.some((entry) => entry.path === preferredPath)) {
-      select.value = preferredPath;
-    }
-    this.refs.loadSampleButton.disabled = false;
-  }
-
-  handleSampleSelectionChanged() {
-    if (!(this.refs.sampleSelect instanceof HTMLSelectElement)) {
-      return;
-    }
-    const selectedPath = normalizeToolSamplePath(this.refs.sampleSelect.value);
-    if (!selectedPath) {
-      return;
-    }
-    this.updateStatus(`Sample selected: ${selectedPath}`);
-  }
-
-  async handleLoadSelectedSample() {
-    if (!(this.refs.sampleSelect instanceof HTMLSelectElement)) {
-      this.updateStatus("Preset loading is available from sample launch context.");
-      return;
-    }
-    const selectedPath = normalizeToolSamplePath(this.refs.sampleSelect.value);
-    if (!selectedPath) {
-      this.updateStatus("Select a sample before loading.");
-      return;
-    }
-
-    this.exitSimulationMode();
-    try {
-      const sampleUrl = new URL(selectedPath, window.location.href);
-      const response = await fetch(sampleUrl.toString(), { cache: "no-store" });
-      if (!response.ok) {
-        throw new Error(`Sample request failed (${response.status}).`);
-      }
-
-      const raw = await response.json();
-      this.applyParallaxDocument(extractParallaxDocument(raw));
-      this.queueLivePreviewSync("load-sample");
-      this.updateStatus(`Loaded sample ${selectedPath}.`);
-    } catch (error) {
-      this.updateStatus(`Sample load failed: ${error instanceof Error ? error.message : "unknown error"}`);
     }
   }
 

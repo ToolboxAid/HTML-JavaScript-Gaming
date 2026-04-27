@@ -48,6 +48,49 @@ function assertToolSampleControlsRemoved() {
   assert.equal(parallaxHtml.includes('id="loadSampleButton"'), false, "Parallax Scene Studio sample load button should be removed.");
 }
 
+function listToolIndexFiles(rootPath) {
+  const toolRoot = path.join(rootPath, "tools");
+  const indexFiles = [];
+  const stack = [toolRoot];
+  while (stack.length > 0) {
+    const current = stack.pop();
+    const entries = fs.readdirSync(current, { withFileTypes: true });
+    entries.forEach((entry) => {
+      const fullPath = path.join(current, entry.name);
+      if (entry.isDirectory()) {
+        stack.push(fullPath);
+        return;
+      }
+      if (entry.isFile() && entry.name.toLowerCase() === "index.html") {
+        indexFiles.push(fullPath);
+      }
+    });
+  }
+  return indexFiles;
+}
+
+function assertNoSampleDropdownSelectInToolIndexes() {
+  const indexFiles = listToolIndexFiles(REPO_ROOT);
+  const violations = [];
+
+  indexFiles.forEach((filePath) => {
+    const html = readText(filePath);
+    const hasSampleSelectId = /id\s*=\s*["']sampleSelect["']/i.test(html);
+    const hasSampleSelectTag = /<select\b[^>]*(id|name|class)\s*=\s*["'][^"']*sample[^"']*["'][^>]*>/i.test(html);
+    const hasSamplesLabelSelect = /<label[^>]*>\s*Samples?\b[\s\S]{0,220}<select\b/i.test(html);
+    const hasLegacyNoSamplesCopy = /No samples loaded/i.test(html);
+    if (hasSampleSelectId || hasSampleSelectTag || hasSamplesLabelSelect || hasLegacyNoSamplesCopy) {
+      violations.push(path.relative(REPO_ROOT, filePath).replace(/\\/g, "/"));
+    }
+  });
+
+  assert.equal(
+    violations.length,
+    0,
+    `Tool sample dropdown/select UI residues found in: ${violations.join(", ")}`
+  );
+}
+
 function assertExplicitPresetInputSupportRetained() {
   const vectorMapJs = readText(path.join(REPO_ROOT, "tools", "Vector Map Editor", "editor", "VectorMapEditorApp.js"));
   const vectorAssetJs = readText(path.join(REPO_ROOT, "tools", "Vector Asset Studio", "main.js"));
@@ -103,5 +146,6 @@ function assertMigratedSamplesIndexedAndLaunchable() {
 export function run() {
   assertMigratedSamplesIndexedAndLaunchable();
   assertToolSampleControlsRemoved();
+  assertNoSampleDropdownSelectInToolIndexes();
   assertExplicitPresetInputSupportRetained();
 }
