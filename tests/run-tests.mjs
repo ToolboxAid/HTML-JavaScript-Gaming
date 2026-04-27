@@ -105,6 +105,7 @@ import { run as runRuntimeAssetBinding } from './tools/RuntimeAssetBinding.test.
 import { run as runRuntimeAssetLookupConsolidation } from './tools/RuntimeAssetLookupConsolidation.test.mjs';
 import { run as runRuntimeAssetValidation } from './tools/RuntimeAssetValidation.test.mjs';
 import { run as runToolEntryLaunchContract } from './tools/ToolEntryLaunchContract.test.mjs';
+import { run as runToolLocalSampleMigration } from './tools/ToolLocalSampleMigration.test.mjs';
 import { run as runToolsIndexRegistrySmoke } from './tools/ToolsIndexRegistrySmoke.test.mjs';
 import { run as runToolHostDispatchContract } from './tools/ToolHostDispatchContract.test.mjs';
 import { run as runPlatformShellHeaderAlignment } from './tools/PlatformShellHeaderAlignment.test.mjs';
@@ -244,6 +245,7 @@ const tests = [
     ['RuntimeAssetLookupConsolidation', runRuntimeAssetLookupConsolidation],
     ['RuntimeAssetValidation', runRuntimeAssetValidation],
     ['ToolEntryLaunchContract', runToolEntryLaunchContract],
+    ['ToolLocalSampleMigration', runToolLocalSampleMigration],
     ['ToolsIndexRegistrySmoke', runToolsIndexRegistrySmoke],
     ['ToolHostDispatchContract', runToolHostDispatchContract],
     ['PlatformShellHeaderAlignment', runPlatformShellHeaderAlignment],

@@ -1,0 +1,11 @@
+{
+  "$schema": "../../../tools/schemas/tools/vector-asset-studio.schema.json",
+  "tool": "vector-asset-studio",
+  "version": "1",
+  "payload": {
+    "vectorAssetDocument": {
+      "sourceName": "mario_style_learning_backdrop.svg",
+      "svgPath": "/samples/phase-12/1217/assets/data/vector/mario_style_learning_backdrop.svg"
+    }
+  }
+}

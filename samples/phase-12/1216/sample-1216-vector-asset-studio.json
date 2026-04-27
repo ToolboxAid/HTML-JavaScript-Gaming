@@ -1,0 +1,11 @@
+{
+  "$schema": "../../../tools/schemas/tools/vector-asset-studio.schema.json",
+  "tool": "vector-asset-studio",
+  "version": "1",
+  "payload": {
+    "vectorAssetDocument": {
+      "sourceName": "mountain_range_scene.svg",
+      "svgPath": "/samples/phase-12/1216/assets/data/vector/mountain_range_scene.svg"
+    }
+  }
+}

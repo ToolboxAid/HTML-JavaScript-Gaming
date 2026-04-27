@@ -1,0 +1,188 @@
+{
+  "$schema": "../../../tools/schemas/tools/vector-map-editor.schema.json",
+  "tool": "vector-map-editor",
+  "version": "1",
+  "payload": {
+    "vectorMapDocument": {
+      "version": 3,
+      "name": "overworld-route-map",
+      "mode": "2d",
+      "width": 1600,
+      "height": 900,
+      "background": "#0a1022",
+      "objects": [
+        {
+          "id": "obj-region-north",
+          "name": "North Region",
+          "kind": "polygon",
+          "space": "2d",
+          "closed": true,
+          "center": {
+            "x": 320,
+            "y": 280,
+            "z": 0
+          },
+          "rotation": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+          },
+          "style": {
+            "stroke": "#77b5ff",
+            "fill": "#1c2f63",
+            "lineWidth": 3,
+            "colorMode": "object"
+          },
+          "flags": {
+            "collidable": false,
+            "deadly": false,
+            "trigger": false,
+            "spawnBlocker": false,
+            "projectileBlocker": false,
+            "playerOnly": false,
+            "enemyOnly": false,
+            "tag": "region"
+          },
+          "points": [
+            {
+              "x": 120,
+              "y": 120,
+              "z": 0,
+              "color": "#77b5ff"
+            },
+            {
+              "x": 540,
+              "y": 160,
+              "z": 0,
+              "color": "#77b5ff"
+            },
+            {
+              "x": 580,
+              "y": 390,
+              "z": 0,
+              "color": "#77b5ff"
+            },
+            {
+              "x": 260,
+              "y": 460,
+              "z": 0,
+              "color": "#77b5ff"
+            },
+            {
+              "x": 110,
+              "y": 300,
+              "z": 0,
+              "color": "#77b5ff"
+            }
+          ]
+        },
+        {
+          "id": "obj-main-route",
+          "name": "Main Route",
+          "kind": "polyline",
+          "space": "2d",
+          "closed": false,
+          "center": {
+            "x": 700,
+            "y": 450,
+            "z": 0
+          },
+          "rotation": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+          },
+          "style": {
+            "stroke": "#f6d365",
+            "fill": null,
+            "lineWidth": 5,
+            "colorMode": "object"
+          },
+          "flags": {
+            "collidable": false,
+            "deadly": false,
+            "trigger": true,
+            "spawnBlocker": false,
+            "projectileBlocker": false,
+            "playerOnly": false,
+            "enemyOnly": false,
+            "tag": "route"
+          },
+          "points": [
+            {
+              "x": 210,
+              "y": 500,
+              "z": 0,
+              "color": "#f6d365"
+            },
+            {
+              "x": 470,
+              "y": 560,
+              "z": 0,
+              "color": "#f6d365"
+            },
+            {
+              "x": 760,
+              "y": 520,
+              "z": 0,
+              "color": "#f6d365"
+            },
+            {
+              "x": 1040,
+              "y": 610,
+              "z": 0,
+              "color": "#f6d365"
+            },
+            {
+              "x": 1320,
+              "y": 460,
+              "z": 0,
+              "color": "#f6d365"
+            }
+          ]
+        },
+        {
+          "id": "obj-landmark-capital",
+          "name": "Capital",
+          "kind": "point",
+          "space": "2d",
+          "closed": false,
+          "center": {
+            "x": 760,
+            "y": 520,
+            "z": 0
+          },
+          "rotation": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+          },
+          "style": {
+            "stroke": "#ff7f7f",
+            "fill": "#ff7f7f",
+            "lineWidth": 3,
+            "colorMode": "object"
+          },
+          "flags": {
+            "collidable": false,
+            "deadly": false,
+            "trigger": true,
+            "spawnBlocker": false,
+            "projectileBlocker": false,
+            "playerOnly": false,
+            "enemyOnly": false,
+            "tag": "landmark"
+          },
+          "points": [
+            {
+              "x": 760,
+              "y": 520,
+              "z": 0,
+              "color": "#ff7f7f"
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

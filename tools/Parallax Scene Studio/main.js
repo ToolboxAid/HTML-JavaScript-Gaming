@@ -461,7 +461,9 @@ class ParallaxEditorApp {
     this.bindRuntimeStateSync();
     this.queueLivePreviewSync("init");
     const hasSamplePresetQuery = new URLSearchParams(window.location.search).has("samplePresetPath");
-    this.loadSampleManifest({ quiet: hasSamplePresetQuery });
+    if (this.refs.sampleSelect instanceof HTMLSelectElement && this.refs.loadSampleButton instanceof HTMLButtonElement) {
+      this.loadSampleManifest({ quiet: hasSamplePresetQuery });
+    }
     void this.tryLoadPresetFromQuery();
   }
 
@@ -586,11 +588,13 @@ class ParallaxEditorApp {
 
     this.refs.applyMapMetaButton.addEventListener("click", () => this.applyMapMetaFromInputs());
     this.refs.projectNameInput.addEventListener("change", () => this.applyMapMetaFromInputs());
-    this.refs.loadSampleButton.addEventListener("click", () => this.handleLoadSelectedSample());
-    this.refs.sampleSelect.addEventListener("change", () => this.handleSampleSelectionChanged());
-    this.refs.sampleSelect.addEventListener("focus", () => {
-      void this.loadSampleManifest({ quiet: true });
-    });
+    if (this.refs.loadSampleButton instanceof HTMLButtonElement && this.refs.sampleSelect instanceof HTMLSelectElement) {
+      this.refs.loadSampleButton.addEventListener("click", () => this.handleLoadSelectedSample());
+      this.refs.sampleSelect.addEventListener("change", () => this.handleSampleSelectionChanged());
+      this.refs.sampleSelect.addEventListener("focus", () => {
+        void this.loadSampleManifest({ quiet: true });
+      });
+    }
 
     this.refs.addLayerButton.addEventListener("click", () => this.addLayer());
     this.refs.removeLayerButton.addEventListener("click", () => this.removeSelectedLayer());
@@ -1047,6 +1051,10 @@ class ParallaxEditorApp {
   }
 
   async loadSampleManifest(options = {}) {
+    if (!(this.refs.sampleSelect instanceof HTMLSelectElement) || !(this.refs.loadSampleButton instanceof HTMLButtonElement)) {
+      this.sampleEntries = [];
+      return;
+    }
     const quiet = options.quiet === true;
     const previousSelection = normalizeToolSamplePath(this.refs.sampleSelect.value);
     if (!quiet) {
@@ -1095,6 +1103,9 @@ class ParallaxEditorApp {
   }
 
   renderSampleOptions(preferredPath = "") {
+    if (!(this.refs.sampleSelect instanceof HTMLSelectElement) || !(this.refs.loadSampleButton instanceof HTMLButtonElement)) {
+      return;
+    }
     const select = this.refs.sampleSelect;
     select.innerHTML = "";
 
@@ -1126,6 +1137,9 @@ class ParallaxEditorApp {
   }
 
   handleSampleSelectionChanged() {
+    if (!(this.refs.sampleSelect instanceof HTMLSelectElement)) {
+      return;
+    }
     const selectedPath = normalizeToolSamplePath(this.refs.sampleSelect.value);
     if (!selectedPath) {
       return;
@@ -1134,6 +1148,10 @@ class ParallaxEditorApp {
   }
 
   async handleLoadSelectedSample() {
+    if (!(this.refs.sampleSelect instanceof HTMLSelectElement)) {
+      this.updateStatus("Preset loading is available from sample launch context.");
+      return;
+    }
     const selectedPath = normalizeToolSamplePath(this.refs.sampleSelect.value);
     if (!selectedPath) {
       this.updateStatus("Select a sample before loading.");

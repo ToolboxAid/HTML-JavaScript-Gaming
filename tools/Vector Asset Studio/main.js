@@ -2474,6 +2474,10 @@ function readEmbeddedEditorOptionsFromSvgRoot(svgRoot, width, height) {
 }
 
 async function refreshSampleOptions(preserveSelection = true) {
+  if (!(refs.sampleSelect instanceof HTMLSelectElement) || !(refs.loadSampleButton instanceof HTMLButtonElement)) {
+    state.sampleEntries = [];
+    return;
+  }
   const previousValue = refs.sampleSelect.value;
   refs.sampleSelect.innerHTML = "";
   state.sampleEntries = [];
@@ -2532,6 +2536,10 @@ async function refreshSampleOptions(preserveSelection = true) {
 }
 
 async function loadSelectedSample() {
+  if (!(refs.sampleSelect instanceof HTMLSelectElement)) {
+    setStatus("Preset loading is available from sample launch context.");
+    return;
+  }
   await refreshSampleOptions(true);
   const selectedPath = refs.sampleSelect.value;
   if (!selectedPath) {
@@ -2722,18 +2730,22 @@ function bindEvents() {
     setStatus(`Saved ${fileName}.`);
   });
 
-  refs.refreshSamplesButton.addEventListener("click", async () => {
-    await refreshSampleOptions(true);
-    setStatus("Sample list refreshed from local manifest.");
-  });
+  if (refs.refreshSamplesButton instanceof HTMLButtonElement) {
+    refs.refreshSamplesButton.addEventListener("click", async () => {
+      await refreshSampleOptions(true);
+      setStatus("Sample list refreshed from local manifest.");
+    });
+  }
 
-  refs.loadSampleButton.addEventListener("click", async () => {
-    try {
-      await loadSelectedSample();
-    } catch (error) {
-      setStatus(`Failed to load sample (${error.message}).`);
-    }
-  });
+  if (refs.loadSampleButton instanceof HTMLButtonElement) {
+    refs.loadSampleButton.addEventListener("click", async () => {
+      try {
+        await loadSelectedSample();
+      } catch (error) {
+        setStatus(`Failed to load sample (${error.message}).`);
+      }
+    });
+  }
 
   refs.applyCanvasSizeButton.addEventListener("click", () => {
     if (!hasRequiredStyleSelection()) {
@@ -3012,7 +3024,9 @@ async function initialize() {
   setPaletteTarget("paint", { silent: true });
   applyEnablementState();
   renderElementList();
-  await refreshSampleOptions(false);
+  if (refs.sampleSelect instanceof HTMLSelectElement) {
+    await refreshSampleOptions(false);
+  }
   const presetLoaded = await tryLoadPresetFromQuery();
   if (!presetLoaded) {
     setStatus("Vector Asset Studio ready.");

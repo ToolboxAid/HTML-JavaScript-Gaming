@@ -6783,6 +6783,294 @@
       "roundtripToolPresets": []
     },
     {
+      "id": "1212",
+      "phase": "12",
+      "title": "Vector Map Overworld Route Preset",
+      "description": "Launches Vector Map Editor with the migrated Overworld Route preset.",
+      "href": "./phase-12/1212/index.html",
+      "tags": [
+        "vector",
+        "map",
+        "preset",
+        "editor",
+        "route",
+        "tool"
+      ],
+      "engineClassesUsed": [
+        "tools/vector-map-editor"
+      ],
+      "classValues": [
+        "tools/vector-map-editor"
+      ],
+      "toolHints": [
+        "vector-map-editor"
+      ],
+      "thumbnail": "/samples/phase-12/1212/assets/images/preview.svg",
+      "preview": "/samples/phase-12/1212/assets/images/preview.svg",
+      "roundtripToolPresets": [
+        {
+          "toolId": "vector-map-editor",
+          "presetPath": "/samples/phase-12/1212/sample-1212-vector-map-editor.json"
+        }
+      ]
+    },
+    {
+      "id": "1213",
+      "phase": "12",
+      "title": "Vector Map Dungeon Layout Preset",
+      "description": "Launches Vector Map Editor with the migrated Dungeon Layout preset.",
+      "href": "./phase-12/1213/index.html",
+      "tags": [
+        "vector",
+        "map",
+        "preset",
+        "editor",
+        "dungeon",
+        "tool"
+      ],
+      "engineClassesUsed": [
+        "tools/vector-map-editor"
+      ],
+      "classValues": [
+        "tools/vector-map-editor"
+      ],
+      "toolHints": [
+        "vector-map-editor"
+      ],
+      "thumbnail": "/samples/phase-12/1213/assets/images/preview.svg",
+      "preview": "/samples/phase-12/1213/assets/images/preview.svg",
+      "roundtripToolPresets": [
+        {
+          "toolId": "vector-map-editor",
+          "presetPath": "/samples/phase-12/1213/sample-1213-vector-map-editor.json"
+        }
+      ]
+    },
+    {
+      "id": "1214",
+      "phase": "12",
+      "title": "Vector Map Arena Zone Preset",
+      "description": "Launches Vector Map Editor with the migrated Arena Zone preset.",
+      "href": "./phase-12/1214/index.html",
+      "tags": [
+        "vector",
+        "map",
+        "preset",
+        "editor",
+        "arena",
+        "tool"
+      ],
+      "engineClassesUsed": [
+        "tools/vector-map-editor"
+      ],
+      "classValues": [
+        "tools/vector-map-editor"
+      ],
+      "toolHints": [
+        "vector-map-editor"
+      ],
+      "thumbnail": "/samples/phase-12/1214/assets/images/preview.svg",
+      "preview": "/samples/phase-12/1214/assets/images/preview.svg",
+      "roundtripToolPresets": [
+        {
+          "toolId": "vector-map-editor",
+          "presetPath": "/samples/phase-12/1214/sample-1214-vector-map-editor.json"
+        }
+      ]
+    },
+    {
+      "id": "1215",
+      "phase": "12",
+      "title": "Vector Asset Sky Gradient Preset",
+      "description": "Launches Vector Asset Studio with the migrated Sky Gradient Scene preset.",
+      "href": "./phase-12/1215/index.html",
+      "tags": [
+        "vector",
+        "asset",
+        "preset",
+        "editor",
+        "sky",
+        "tool"
+      ],
+      "engineClassesUsed": [
+        "tools/vector-asset-studio"
+      ],
+      "classValues": [
+        "tools/vector-asset-studio"
+      ],
+      "toolHints": [
+        "vector-asset-studio"
+      ],
+      "thumbnail": "/samples/phase-12/1215/assets/images/preview.svg",
+      "preview": "/samples/phase-12/1215/assets/images/preview.svg",
+      "roundtripToolPresets": [
+        {
+          "toolId": "vector-asset-studio",
+          "presetPath": "/samples/phase-12/1215/sample-1215-vector-asset-studio.json"
+        }
+      ]
+    },
+    {
+      "id": "1216",
+      "phase": "12",
+      "title": "Vector Asset Mountain Range Preset",
+      "description": "Launches Vector Asset Studio with the migrated Mountain Range Scene preset.",
+      "href": "./phase-12/1216/index.html",
+      "tags": [
+        "vector",
+        "asset",
+        "preset",
+        "editor",
+        "mountain",
+        "tool"
+      ],
+      "engineClassesUsed": [
+        "tools/vector-asset-studio"
+      ],
+      "classValues": [
+        "tools/vector-asset-studio"
+      ],
+      "toolHints": [
+        "vector-asset-studio"
+      ],
+      "thumbnail": "/samples/phase-12/1216/assets/images/preview.svg",
+      "preview": "/samples/phase-12/1216/assets/images/preview.svg",
+      "roundtripToolPresets": [
+        {
+          "toolId": "vector-asset-studio",
+          "presetPath": "/samples/phase-12/1216/sample-1216-vector-asset-studio.json"
+        }
+      ]
+    },
+    {
+      "id": "1217",
+      "phase": "12",
+      "title": "Vector Asset Mario Backdrop Preset",
+      "description": "Launches Vector Asset Studio with the migrated Mario Style Learning Backdrop preset.",
+      "href": "./phase-12/1217/index.html",
+      "tags": [
+        "vector",
+        "asset",
+        "preset",
+        "editor",
+        "mario",
+        "tool"
+      ],
+      "engineClassesUsed": [
+        "tools/vector-asset-studio"
+      ],
+      "classValues": [
+        "tools/vector-asset-studio"
+      ],
+      "toolHints": [
+        "vector-asset-studio"
+      ],
+      "thumbnail": "/samples/phase-12/1217/assets/images/preview.svg",
+      "preview": "/samples/phase-12/1217/assets/images/preview.svg",
+      "roundtripToolPresets": [
+        {
+          "toolId": "vector-asset-studio",
+          "presetPath": "/samples/phase-12/1217/sample-1217-vector-asset-studio.json"
+        }
+      ]
+    },
+    {
+      "id": "1218",
+      "phase": "12",
+      "title": "Parallax Layered World Preset",
+      "description": "Launches Parallax Scene Studio with the migrated layered parallax sample preset.",
+      "href": "./phase-12/1218/index.html",
+      "tags": [
+        "parallax",
+        "preset",
+        "editor",
+        "layers",
+        "scroll",
+        "tool"
+      ],
+      "engineClassesUsed": [
+        "tools/parallax-editor"
+      ],
+      "classValues": [
+        "tools/parallax-editor"
+      ],
+      "toolHints": [
+        "parallax-editor"
+      ],
+      "thumbnail": "/samples/phase-12/1218/assets/images/preview.svg",
+      "preview": "/samples/phase-12/1218/assets/images/preview.svg",
+      "roundtripToolPresets": [
+        {
+          "toolId": "parallax-editor",
+          "presetPath": "/samples/phase-12/1218/sample-1218-parallax-editor.json"
+        }
+      ]
+    },
+    {
+      "id": "1219",
+      "phase": "12",
+      "title": "Parallax Tilemap Embedded Preset",
+      "description": "Launches Parallax Scene Studio with the migrated tilemap-embedded parallax preset.",
+      "href": "./phase-12/1219/index.html",
+      "tags": [
+        "parallax",
+        "tilemap",
+        "preset",
+        "editor",
+        "embedded",
+        "tool"
+      ],
+      "engineClassesUsed": [
+        "tools/parallax-editor"
+      ],
+      "classValues": [
+        "tools/parallax-editor"
+      ],
+      "toolHints": [
+        "parallax-editor"
+      ],
+      "thumbnail": "/samples/phase-12/1219/assets/images/preview.svg",
+      "preview": "/samples/phase-12/1219/assets/images/preview.svg",
+      "roundtripToolPresets": [
+        {
+          "toolId": "parallax-editor",
+          "presetPath": "/samples/phase-12/1219/sample-1219-parallax-editor.json"
+        }
+      ]
+    },
+    {
+      "id": "1220",
+      "phase": "12",
+      "title": "Parallax Mario Learning Preset",
+      "description": "Launches Parallax Scene Studio with the migrated Mario-style learning parallax preset.",
+      "href": "./phase-12/1220/index.html",
+      "tags": [
+        "parallax",
+        "preset",
+        "editor",
+        "mario",
+        "learning",
+        "tool"
+      ],
+      "engineClassesUsed": [
+        "tools/parallax-editor"
+      ],
+      "classValues": [
+        "tools/parallax-editor"
+      ],
+      "toolHints": [
+        "parallax-editor"
+      ],
+      "thumbnail": "/samples/phase-12/1220/assets/images/preview.svg",
+      "preview": "/samples/phase-12/1220/assets/images/preview.svg",
+      "roundtripToolPresets": [
+        {
+          "toolId": "parallax-editor",
+          "presetPath": "/samples/phase-12/1220/sample-1220-parallax-editor.json"
+        }
+      ]
+    },
+    {
       "id": "1301",
       "phase": "13",
       "title": "Networking Layer",

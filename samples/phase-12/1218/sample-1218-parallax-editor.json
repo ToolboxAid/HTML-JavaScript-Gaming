@@ -1,0 +1,115 @@
+{
+  "$schema": "../../../tools/schemas/tools/parallax-editor.schema.json",
+  "tool": "parallax-editor",
+  "version": "1",
+  "payload": {
+    "parallaxDocument": {
+      "schema": "toolbox.parallax/1",
+      "version": 1,
+      "companionEditor": "ParallaxEditor",
+      "map": {
+        "name": "sample-parallax-only",
+        "width": 64,
+        "height": 24,
+        "tileSize": 24
+      },
+      "layers": [
+        {
+          "id": "sample-sky",
+          "name": "Sample Sky",
+          "drawOrder": 0,
+          "imageSource": "/samples/phase-12/1218/assets/data/parallax/sky-gradient.svg",
+          "scrollFactorX": 0.08,
+          "scrollFactorY": 0.03,
+          "offsetX": 0,
+          "offsetY": 0,
+          "repeatX": true,
+          "repeatY": false,
+          "wrapMode": "wrap",
+          "opacity": 1,
+          "visible": true
+        },
+        {
+          "id": "sample-clouds",
+          "name": "Sample Clouds",
+          "drawOrder": 1,
+          "imageSource": "/samples/phase-12/1218/assets/data/parallax/cloud-bands.svg",
+          "scrollFactorX": 0.2,
+          "scrollFactorY": 0.08,
+          "offsetX": 0,
+          "offsetY": 48,
+          "repeatX": true,
+          "repeatY": false,
+          "wrapMode": "wrap",
+          "opacity": 0.92,
+          "visible": true
+        },
+        {
+          "id": "sample-mountains-tall",
+          "name": "Sample Mountains Tall",
+          "drawOrder": 2,
+          "imageSource": "/samples/phase-12/1218/assets/data/parallax/mountain-ridge-tall.svg",
+          "scrollFactorX": 0.38,
+          "scrollFactorY": 0.2,
+          "offsetX": 0,
+          "offsetY": 208,
+          "repeatX": true,
+          "repeatY": false,
+          "wrapMode": "wrap",
+          "opacity": 0.95,
+          "visible": true
+        },
+        {
+          "id": "sample-mountains-short",
+          "name": "Sample Mountains Short",
+          "drawOrder": 3,
+          "imageSource": "/samples/phase-12/1218/assets/data/parallax/mountain-ridge-short.svg",
+          "scrollFactorX": 0.64,
+          "scrollFactorY": 0.24,
+          "offsetX": 0,
+          "offsetY": 242,
+          "repeatX": true,
+          "repeatY": false,
+          "wrapMode": "wrap",
+          "opacity": 0.95,
+          "visible": true
+        },
+        {
+          "id": "sample-hero",
+          "name": "Sample Hero Proxy",
+          "drawOrder": 4,
+          "imageSource": "/samples/phase-12/1218/assets/data/parallax/hero-proxy.svg",
+          "scrollFactorX": 1,
+          "scrollFactorY": 1,
+          "offsetX": 780,
+          "offsetY": 350,
+          "repeatX": false,
+          "repeatY": false,
+          "wrapMode": "clamp",
+          "opacity": 1,
+          "visible": true
+        },
+        {
+          "id": "sample-foreground-trees",
+          "name": "Sample Foreground Trees",
+          "drawOrder": 5,
+          "imageSource": "/samples/phase-12/1218/assets/data/parallax/foreground-occluder.svg",
+          "scrollFactorX": 1.08,
+          "scrollFactorY": 0.4,
+          "offsetX": 84,
+          "offsetY": 188,
+          "repeatX": true,
+          "repeatY": false,
+          "wrapMode": "wrap",
+          "opacity": 0.96,
+          "visible": true
+        }
+      ],
+      "metadata": {
+        "createdAt": "2026-03-30T00:00:00.000Z",
+        "updatedAt": "2026-03-30T00:00:00.000Z",
+        "source": "parallax-editor-samples"
+      }
+    }
+  }
+}

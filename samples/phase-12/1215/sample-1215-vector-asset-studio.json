@@ -1,0 +1,11 @@
+{
+  "$schema": "../../../tools/schemas/tools/vector-asset-studio.schema.json",
+  "tool": "vector-asset-studio",
+  "version": "1",
+  "payload": {
+    "vectorAssetDocument": {
+      "sourceName": "sky_gradient_scene.svg",
+      "svgPath": "/samples/phase-12/1215/assets/data/vector/sky_gradient_scene.svg"
+    }
+  }
+}

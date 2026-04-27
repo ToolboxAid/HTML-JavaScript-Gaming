@@ -1,0 +1,82 @@
+{
+  "$schema": "../../../tools/schemas/tools/parallax-editor.schema.json",
+  "tool": "parallax-editor",
+  "version": "1",
+  "payload": {
+    "parallaxDocument": {
+      "schema": "toolbox.tilemap/1",
+      "version": 1,
+      "map": {
+        "name": "sample-tilemap-with-parallax",
+        "width": 80,
+        "height": 30,
+        "tileSize": 24
+      },
+      "tileset": [
+        {
+          "id": 0,
+          "name": "Empty",
+          "color": "transparent"
+        }
+      ],
+      "layers": [],
+      "markers": [],
+      "parallax": {
+        "schema": "toolbox.parallax/1",
+        "companionEditor": "ParallaxEditor",
+        "layers": [
+          {
+            "id": "tm-sky",
+            "name": "Tilemap Sky",
+            "drawOrder": 0,
+            "imageSource": "/samples/phase-12/1219/assets/data/parallax/sky-gradient.svg",
+            "scrollFactorX": 0.1,
+            "scrollFactorY": 0.05,
+            "offsetX": 0,
+            "offsetY": 0,
+            "repeatX": true,
+            "repeatY": false,
+            "wrapMode": "wrap",
+            "opacity": 1,
+            "visible": true
+          },
+          {
+            "id": "tm-ridge-tall",
+            "name": "Tilemap Ridge Tall",
+            "drawOrder": 1,
+            "imageSource": "/samples/phase-12/1219/assets/data/parallax/mountain-ridge-tall.svg",
+            "scrollFactorX": 0.36,
+            "scrollFactorY": 0.18,
+            "offsetX": 0,
+            "offsetY": 250,
+            "repeatX": true,
+            "repeatY": false,
+            "wrapMode": "wrap",
+            "opacity": 0.96,
+            "visible": true
+          },
+          {
+            "id": "tm-ridge-short",
+            "name": "Tilemap Ridge Short",
+            "drawOrder": 2,
+            "imageSource": "/samples/phase-12/1219/assets/data/parallax/mountain-ridge-short.svg",
+            "scrollFactorX": 0.88,
+            "scrollFactorY": 0.24,
+            "offsetX": 0,
+            "offsetY": 268,
+            "repeatX": true,
+            "repeatY": false,
+            "wrapMode": "wrap",
+            "opacity": 0.96,
+            "visible": true
+          }
+        ]
+      },
+      "metadata": {
+        "createdAt": "2026-03-30T00:00:00.000Z",
+        "updatedAt": "2026-03-30T00:00:00.000Z",
+        "notes": "Sample for Parallax Scene Studio direct loading."
+      }
+    }
+  }
+}

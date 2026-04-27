@@ -1,9 +1,11 @@
-BUILD_PR_LEVEL_10_2F_VECTOR_ASSET_PALETTE_PAINT_BINDING_FIX
+BUILD_PR_LEVEL_10_3_MIGRATE_TOOL_LOCAL_SAMPLES_TO_SAMPLES
 
-- Fixed Vector Asset Studio palette/paint/stroke binding from game manifest palette
-- Added Gravity Well vector selection regression coverage
-- Ensured stroke-enabled vectors select a valid palette swatch
+- Migrated tool-local samples into /samples
+- Updated samples index
+- Removed local sample dropdown/select entries from processed tools
+- Preserved tool explicit-input behavior
 
 PR Details:
+- Processes Vector Map Editor, Vector Asset Studio, Parallax Scene Studio, and Tilemap Studio
 - No validators
 - No start_of_day changes

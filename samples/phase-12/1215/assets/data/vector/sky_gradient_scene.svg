@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900" data-editor-palette-id="crayola032" data-editor-paint="#80DAEB" data-editor-stroke="#1DACD6" data-editor-stroke-width="2" data-editor-active-target="paint">
+  <defs>
+    <linearGradient id="skyGradient" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#8fd4ff" />
+      <stop offset="55%" stop-color="#b7e4ff" />
+      <stop offset="100%" stop-color="#f8f3d4" />
+    </linearGradient>
+  </defs>
+  <rect x="0" y="0" width="1600" height="900" fill="url(#skyGradient)" />
+  <ellipse cx="1320" cy="160" rx="88" ry="88" fill="#ffd568" stroke="#e7aa45" stroke-width="4" />
+  <ellipse cx="320" cy="200" rx="140" ry="42" fill="#ffffff" opacity="0.86" />
+  <ellipse cx="430" cy="185" rx="110" ry="34" fill="#ffffff" opacity="0.86" />
+  <ellipse cx="1020" cy="230" rx="160" ry="48" fill="#ffffff" opacity="0.78" />
+  <ellipse cx="1145" cy="214" rx="116" ry="34" fill="#ffffff" opacity="0.78" />
+</svg>
