@@ -1,8 +1,12 @@
-# Codex Commands - BUILD_PR_LEVEL_10_6H_TOOL_LOAD_EXPECTED_DIAGNOSTICS
+# Codex Commands — BUILD_PR_LEVEL_10_6I_TOOL_LOAD_EXPECTED_VS_ACTUAL_CLASSIFICATION_V3
 
-Model: GPT-5.4
-Reasoning: high
+## Model
+GPT-5.3-codex
 
-```powershell
-codex --model gpt-5.4 --reasoning high "Run BUILD_PR_LEVEL_10_6H_TOOL_LOAD_EXPECTED_DIAGNOSTICS. Read docs/pr/BUILD_PR_LEVEL_10_6H_TOOL_LOAD_EXPECTED_DIAGNOSTICS.md. Extend the existing tool-load diagnostics to include explicit expected contract details at request, fetch, loaded, warning, and error boundaries. Keep the change diagnostic-only, no fallback data, no hardcoded paths, no schema rewrites. Run npm run test:launch-smoke:games and npm run test:sample-standalone:data-flow. Write docs/dev/reports/level_10_6H_tool_load_expected_diagnostics_report.md. Package the changed repo-relative files into tmp/BUILD_PR_LEVEL_10_6H_TOOL_LOAD_EXPECTED_DIAGNOSTICS.zip."
+## Reasoning
+high
+
+## Command
+```text
+Implement BUILD_PR_LEVEL_10_6I_TOOL_LOAD_EXPECTED_VS_ACTUAL_CLASSIFICATION_V3 from docs/pr/BUILD_PR_LEVEL_10_6I_TOOL_LOAD_EXPECTED_VS_ACTUAL_CLASSIFICATION_V3.md. Keep the change diagnostics-only. Add expected-vs-actual dependency classification to existing tool-load diagnostics. Do not normalize palette files in this PR. Do not add fallback data or hardcoded paths. Run npm run test:launch-smoke:games and npm run test:sample-standalone:data-flow. Put results in docs/dev/reports/level_10_6i_tool_load_expected_vs_actual_classification_report.md. Return a ZIP artifact at tmp/BUILD_PR_LEVEL_10_6I_TOOL_LOAD_EXPECTED_VS_ACTUAL_CLASSIFICATION_V3.zip.
 ```

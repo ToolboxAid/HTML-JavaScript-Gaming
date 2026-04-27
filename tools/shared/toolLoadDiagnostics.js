@@ -3,14 +3,24 @@ const TOOL_LOAD_PREFIXES = Object.freeze({
   fetch: "[tool-load:fetch]",
   loaded: "[tool-load:loaded]",
   warning: "[tool-load:warning]",
-  error: "[tool-load:error]"
+  error: "[tool-load:error]",
+  classification: "[tool-load:classification]"
+});
+
+const CLASSIFICATION_VALUES = Object.freeze({
+  missing: "missing",
+  wrongPath: "wrong-path",
+  wrongShape: "wrong-shape",
+  success: "success"
 });
 
 const MAX_SUMMARY_KEYS = 16;
 const MAX_SUMMARY_DEPTH = 5;
 const MAX_SUMMARY_NODES = 3000;
+
+const CANONICAL_PALETTE_SCHEMA = "html-js-gaming.palette";
 const CANONICAL_PALETTE_REQUIRED_FIELDS = Object.freeze(["schema", "version", "name", "swatches"]);
-const CANONICAL_PALETTE_WRAPPER_FIELDS = Object.freeze(["tool", "config.palette"]);
+const CANONICAL_PALETTE_REQUIRED_ARRAY_FIELDS = Object.freeze(["swatches"]);
 
 const TOOL_EXPECTED_CONTRACTS = Object.freeze({
   "sprite-editor": Object.freeze({
@@ -27,6 +37,7 @@ const TOOL_EXPECTED_CONTRACTS = Object.freeze({
 });
 
 const LAST_LOADED_CACHE = new Map();
+const CLASSIFICATION_CACHE = new Map();
 
 function normalizeText(value) {
   return typeof value === "string" ? value.trim() : "";
@@ -45,6 +56,24 @@ function emitToolLoadLog(prefix, payload) {
   }
   const writer = typeof console.debug === "function" ? console.debug : console.log;
   writer.call(console, prefix, sanitizePayload(payload));
+}
+
+function normalizeShapeList(value) {
+  if (Array.isArray(value)) {
+    return value
+      .map((entry) => normalizeText(entry))
+      .filter(Boolean);
+  }
+  if (value && typeof value === "object") {
+    return Object.values(value)
+      .map((entry) => normalizeText(entry))
+      .filter(Boolean);
+  }
+  return [];
+}
+
+function makeUniqueList(values = []) {
+  return [...new Set(values)];
 }
 
 function summarizeValueType(value) {
@@ -178,6 +207,29 @@ function summarizeReplayData(root) {
   };
 }
 
+function extractLoadedSchema(root) {
+  if (!root || typeof root !== "object") {
+    return "";
+  }
+  const directSchema = normalizeText(root.schema) || normalizeText(root.$schema);
+  if (directSchema) {
+    return directSchema;
+  }
+  const payloadSchema = normalizeText(root?.payload?.schema) || normalizeText(root?.payload?.$schema);
+  if (payloadSchema) {
+    return payloadSchema;
+  }
+  const configSchema = normalizeText(root?.config?.schema) || normalizeText(root?.config?.$schema);
+  if (configSchema) {
+    return configSchema;
+  }
+  const paletteSchema = normalizeText(root?.palette?.schema) || normalizeText(root?.palette?.$schema);
+  if (paletteSchema) {
+    return paletteSchema;
+  }
+  return "";
+}
+
 function normalizeQueryValue(value) {
   if (Array.isArray(value)) {
     return value.map((entry) => normalizeText(entry)).filter(Boolean);
@@ -196,24 +248,6 @@ function appendQueryValue(snapshot, key, value) {
     return;
   }
   snapshot[key] = [existing, value];
-}
-
-function normalizeShapeList(value) {
-  if (Array.isArray(value)) {
-    return value
-      .map((entry) => normalizeText(entry))
-      .filter(Boolean);
-  }
-  if (value && typeof value === "object") {
-    return Object.values(value)
-      .map((entry) => normalizeText(entry))
-      .filter(Boolean);
-  }
-  return [];
-}
-
-function makeUniqueList(values = []) {
-  return [...new Set(values)];
 }
 
 function getToolContract(toolId) {
@@ -250,276 +284,452 @@ function collectRequiredPaths(requestedDataPaths) {
   return makeUniqueList(paths);
 }
 
-function inferInputSource(details, requiredPaths) {
-  if (normalizeText(details.samplePresetPath)) {
-    return "query.samplePresetPath";
+function inferPrimaryDependencyId(contract, details) {
+  const explicit = normalizeText(details.dependencyId);
+  if (explicit) {
+    return explicit;
   }
-  const launchQuery = details.launchQuery && typeof details.launchQuery === "object" ? details.launchQuery : {};
-  if (normalizeText(launchQuery.dataPath)) {
-    return "query.dataPath";
-  }
-  if (requiredPaths.some((entry) => /manifest/i.test(entry))) {
-    return "manifest tool input";
-  }
-  if (requiredPaths.length > 0) {
-    return "query.dataPath";
-  }
-  return "none";
-}
-
-function inferPathKind(details) {
-  const source = normalizeText(details.requestedPath) || normalizeText(details.fetchUrl);
-  if (!source) {
-    return "unknown";
-  }
-  if (/\.palette\.json(?:[?#]|$)/i.test(source)) {
+  const candidatePath = normalizeText(details.requestedPath) || normalizeText(details.samplePresetPath);
+  if (contract.canonicalPaletteExpected || /\.palette\.json(?:[?#]|$)/i.test(candidatePath)) {
     return "palette";
   }
-  if (/manifest/i.test(source)) {
-    return "manifest";
+  if (contract.requiredPayloadShape.includes("spriteProject")) {
+    return "sprite-project";
   }
-  if (/\/samples\//i.test(source) || /sample\.\d{4}\./i.test(source)) {
-    return "sample preset";
-  }
-  if (/\/assets\//i.test(source) || /\.(png|jpg|jpeg|gif|webp|svg|json|txt|js)(?:[?#]|$)/i.test(source)) {
-    return "asset";
-  }
-  return "unknown";
+  return "preset";
 }
 
-function inferContentType(details) {
-  const source = normalizeText(details.fetchUrl) || normalizeText(details.requestedPath);
-  if (/\.json(?:[?#]|$)/i.test(source)) {
-    return "json";
+function inferExpectedPathKey(details) {
+  const explicit = normalizeText(details.expectedPathKey);
+  if (explicit) {
+    return explicit;
   }
-  if (/\.(png|jpg|jpeg|gif|webp|bmp|ico)(?:[?#]|$)/i.test(source)) {
-    return "image";
+  const pathSource = normalizeText(details.pathSource);
+  const queryMatch = pathSource.match(/query\.([a-zA-Z0-9._-]+)/);
+  if (queryMatch?.[1]) {
+    return queryMatch[1];
   }
-  if (/\.(svg|txt|css|js|mjs|html)(?:[?#]|$)/i.test(source)) {
-    return "text";
+  if (normalizeText(details.samplePresetPath)) {
+    return "samplePresetPath";
   }
-  return "unknown";
+  const requestedDataPaths = details.requestedDataPaths && typeof details.requestedDataPaths === "object"
+    ? details.requestedDataPaths
+    : {};
+  const firstPathKey = Object.keys(requestedDataPaths)[0];
+  if (firstPathKey) {
+    return firstPathKey;
+  }
+  return "unknownPathKey";
 }
 
-function inferPaletteFileKind(details) {
-  const source = normalizeText(details.requestedPath) || normalizeText(details.fetchUrl);
-  if (/\.palette\.json(?:[?#]|$)/i.test(source)) {
-    return "canonical palette file";
+function inferExpectedPath(details, expectedPathKey) {
+  const explicit = normalizeText(details.expectedPath);
+  if (explicit) {
+    return explicit;
   }
-  if (/\.palette-browser\.json(?:[?#]|$)/i.test(source)) {
-    return "tool wrapper file";
+  const requestedDataPaths = details.requestedDataPaths && typeof details.requestedDataPaths === "object"
+    ? details.requestedDataPaths
+    : {};
+  const fromRequestedData = requestedDataPaths[expectedPathKey];
+  if (Array.isArray(fromRequestedData)) {
+    const first = normalizeText(fromRequestedData[0]);
+    if (first) {
+      return first;
+    }
+  } else {
+    const normalized = normalizeText(fromRequestedData);
+    if (normalized) {
+      return normalized;
+    }
   }
-  return "unknown";
+  const samplePresetPath = normalizeText(details.samplePresetPath);
+  if (samplePresetPath) {
+    return samplePresetPath;
+  }
+  return normalizeText(details.requestedPath);
 }
 
-function normalizeMissingFields(requiredPayloadShape, detectedPayloadShape) {
-  return requiredPayloadShape.filter((field) => !detectedPayloadShape.includes(field));
+function inferExpectedSchema(dependencyId, contract, details) {
+  if (dependencyId === "palette" || contract.canonicalPaletteExpected) {
+    return CANONICAL_PALETTE_SCHEMA;
+  }
+  return normalizeText(details.expectedSchema);
 }
 
-function classifyPalettePayloadShape(detectedPayloadShape) {
-  const hasCanonicalFields = CANONICAL_PALETTE_REQUIRED_FIELDS.every((field) => detectedPayloadShape.includes(field));
-  if (hasCanonicalFields) {
-    return "canonical-palette";
+function inferRequiredArrayFields(dependencyId, contract, details) {
+  const explicit = normalizeShapeList(details.requiredArrayFields);
+  if (explicit.length > 0) {
+    return explicit;
   }
-  if (detectedPayloadShape.includes("tool") && detectedPayloadShape.includes("config")) {
-    return "tool-wrapper";
+  if (dependencyId === "palette" || contract.canonicalPaletteExpected) {
+    return [...CANONICAL_PALETTE_REQUIRED_ARRAY_FIELDS];
   }
-  if (detectedPayloadShape.includes("payload")) {
-    return "wrapper-payload";
-  }
-  return "unknown";
+  return [];
 }
 
-function buildCacheKey(toolId, samplePresetPath) {
-  const safeToolId = normalizeText(toolId);
-  const safeSamplePresetPath = normalizeText(samplePresetPath);
-  return `${safeToolId}|${safeSamplePresetPath}`;
+function inferRequiredFields(contract, requiredArrayFields, details) {
+  const explicit = normalizeShapeList(details.requiredFields);
+  if (explicit.length > 0) {
+    return explicit;
+  }
+  return contract.requiredPayloadShape.filter((field) => !requiredArrayFields.includes(field));
 }
 
-function writeLoadedCache(details, expected) {
-  const toolId = normalizeText(details.toolId);
-  if (!toolId) {
+function buildExpectedBlock(details, contract) {
+  const dependencyId = inferPrimaryDependencyId(contract, details);
+  const expectedPathKey = inferExpectedPathKey(details);
+  const expectedPath = inferExpectedPath(details, expectedPathKey);
+  const expectedSchema = inferExpectedSchema(dependencyId, contract, details);
+  const requiredArrayFields = inferRequiredArrayFields(dependencyId, contract, details);
+  const requiredFields = inferRequiredFields(contract, requiredArrayFields, details);
+  const expectedTopLevelShape = makeUniqueList([
+    ...requiredFields,
+    ...requiredArrayFields,
+    ...contract.optionalPayloadShape
+  ]);
+
+  return {
+    dependencyId,
+    expectedPathKey,
+    expectedPath,
+    expectedSchema,
+    expectedTopLevelShape,
+    requiredFields,
+    requiredArrayFields
+  };
+}
+
+function readHttpStatus(details) {
+  const directStatus = Number(details.httpStatus);
+  if (Number.isFinite(directStatus) && directStatus > 0) {
+    return directStatus;
+  }
+  const status = Number(details.status);
+  if (Number.isFinite(status) && status > 0) {
+    return status;
+  }
+  return null;
+}
+
+function buildFieldPresence(expected, topLevelKeys) {
+  const presence = {};
+  expected.requiredFields.forEach((field) => {
+    presence[field] = topLevelKeys.includes(field);
+  });
+  expected.requiredArrayFields.forEach((field) => {
+    presence[field] = topLevelKeys.includes(field);
+  });
+  return presence;
+}
+
+function buildArrayCounts(expected, details) {
+  const arrayCounts = {};
+  const explicitCounts = details.arrayCounts && typeof details.arrayCounts === "object" ? details.arrayCounts : {};
+  expected.requiredArrayFields.forEach((field) => {
+    const explicitValue = Number(explicitCounts[field]);
+    if (Number.isFinite(explicitValue) && explicitValue >= 0) {
+      arrayCounts[field] = explicitValue;
+      return;
+    }
+    if (field === "swatches") {
+      const swatchCount = Number(details?.loaded?.palette?.swatchCount);
+      arrayCounts[field] = Number.isFinite(swatchCount) && swatchCount >= 0 ? swatchCount : 0;
+      return;
+    }
+    arrayCounts[field] = 0;
+  });
+  return arrayCounts;
+}
+
+function buildActualBlock(details, expected) {
+  const topLevelKeys = normalizeShapeList(
+    details.receivedTopLevelKeys
+      || details.topLevelKeys
+      || details?.loaded?.topLevelKeys
+  );
+  const actual = {
+    requestedPath: normalizeText(details.requestedPath) || normalizeText(details.samplePresetPath),
+    fetchUrl: normalizeText(details.fetchUrl),
+    httpStatus: readHttpStatus(details),
+    loadedSchema: normalizeText(details.loadedSchema) || normalizeText(details?.loaded?.loadedSchema),
+    topLevelKeys,
+    fieldPresence: buildFieldPresence(expected, topLevelKeys),
+    arrayCounts: buildArrayCounts(expected, details)
+  };
+  return actual;
+}
+
+function getMissingRequiredFields(expected, actual) {
+  const missingFields = expected.requiredFields.filter((field) => actual.fieldPresence[field] !== true);
+  const missingArrays = expected.requiredArrayFields.filter((field) => Number(actual.arrayCounts[field] || 0) <= 0);
+  return makeUniqueList([...missingFields, ...missingArrays]);
+}
+
+function buildCacheKey(toolId, sampleId, samplePresetPath, dependencyId) {
+  return `${normalizeText(toolId)}|${normalizeText(sampleId)}|${normalizeText(samplePresetPath)}|${normalizeText(dependencyId)}`;
+}
+
+function clearClassificationCacheForScope(details) {
+  const scopePrefix = `${normalizeText(details.toolId)}|${normalizeText(details.sampleId)}|${normalizeText(details.samplePresetPath)}|`;
+  [...CLASSIFICATION_CACHE.keys()].forEach((key) => {
+    if (key.startsWith(scopePrefix)) {
+      CLASSIFICATION_CACHE.delete(key);
+    }
+  });
+}
+
+function cacheLoaded(details, expected, actual) {
+  const dependencyId = normalizeText(expected.dependencyId);
+  if (!dependencyId) {
     return;
   }
-  const entry = {
-    detectedPayloadShape: normalizeShapeList(expected.detectedPayloadShape),
-    missingRequiredFields: normalizeShapeList(expected.missingRequiredFields),
-    requiredPayloadShape: normalizeShapeList(expected.requiredPayloadShape)
-  };
-  LAST_LOADED_CACHE.set(toolId, entry);
-  const scopedKey = buildCacheKey(toolId, details.samplePresetPath);
-  LAST_LOADED_CACHE.set(scopedKey, entry);
+  const key = buildCacheKey(details.toolId, details.sampleId, details.samplePresetPath, dependencyId);
+  LAST_LOADED_CACHE.set(key, {
+    expected,
+    actual
+  });
 }
 
-function readLoadedCache(details) {
-  const toolId = normalizeText(details.toolId);
-  if (!toolId) {
+function getCachedLoaded(details, expected) {
+  const dependencyId = normalizeText(expected.dependencyId);
+  if (!dependencyId) {
     return null;
   }
-  const scopedKey = buildCacheKey(toolId, details.samplePresetPath);
-  return LAST_LOADED_CACHE.get(scopedKey) || LAST_LOADED_CACHE.get(toolId) || null;
+  const key = buildCacheKey(details.toolId, details.sampleId, details.samplePresetPath, dependencyId);
+  return LAST_LOADED_CACHE.get(key) || null;
 }
 
-function inferLikelyCause(details, requiredPayloadShape, receivedTopLevelKeys, missingRequiredFields) {
-  const errorText = normalizeText(details.error).toLowerCase();
+function isHttpFailure(details, actual) {
+  if (details.ok === false) {
+    return true;
+  }
+  const httpStatus = Number(actual.httpStatus);
+  if (!Number.isFinite(httpStatus)) {
+    return false;
+  }
+  return httpStatus < 200 || httpStatus >= 400;
+}
 
+function classifyLikelyCause(expected, actual, details, missingRequiredFields) {
+  const errorText = normalizeText(details.error).toLowerCase();
   if (missingRequiredFields.includes("spriteProject")) {
     return "wrong path or wrong wrapper";
   }
-
-  if (errorText && /unexpected token|invalid json|json/i.test(errorText)) {
-    return "invalid json";
+  if (isHttpFailure(details, actual)) {
+    return "wrong path";
   }
-
   if (missingRequiredFields.length > 0) {
-    if (receivedTopLevelKeys.includes("tool") || receivedTopLevelKeys.includes("config") || receivedTopLevelKeys.includes("payload")) {
+    if (actual.topLevelKeys.includes("tool") || actual.topLevelKeys.includes("config")) {
       return "wrong wrapper";
     }
     return "missing field";
   }
-
-  if (errorText && (/failed \(\d+\)/i.test(errorText) || /fetch|request failed|network|404|not found/.test(errorText))) {
-    return "wrong path";
+  if (/invalid json|unexpected token|json/.test(errorText)) {
+    return "invalid json";
   }
-
-  if (errorText && /wrapper/.test(errorText)) {
-    return "wrong wrapper";
-  }
-
-  if (requiredPayloadShape.length > 0 && receivedTopLevelKeys.length === 0) {
-    return "missing field";
-  }
-
   return "unknown";
 }
 
-function mergeExpected(computedExpected, providedExpected) {
-  if (!providedExpected || typeof providedExpected !== "object" || Array.isArray(providedExpected)) {
-    return computedExpected;
-  }
-  return {
-    ...computedExpected,
-    ...providedExpected
-  };
-}
-
-function buildRequestExpected(details, contract) {
-  const requiredPaths = collectRequiredPaths(details.requestedDataPaths);
-  return {
-    inputSource: inferInputSource(details, requiredPaths),
-    requiredPaths,
-    requiredPayloadShape: contract.requiredPayloadShape,
-    optionalPayloadShape: contract.optionalPayloadShape
-  };
-}
-
-function buildFetchExpected(details, contract) {
-  const pathKind = inferPathKind(details);
-  const payloadContract = contract.canonicalPaletteExpected
-    ? CANONICAL_PALETTE_REQUIRED_FIELDS
-    : contract.requiredPayloadShape;
-  const expected = {
-    pathKind,
-    mustExist: true,
-    contentType: inferContentType(details),
-    payloadContract
-  };
-
-  if (contract.canonicalPaletteExpected || contract.paletteCapable) {
-    const fetchedFileKind = inferPaletteFileKind(details);
-    expected.canonicalPalette = {
-      schema: "html-js-gaming.palette",
-      requiredFields: CANONICAL_PALETTE_REQUIRED_FIELDS,
-      wrapperNotCanonicalFields: CANONICAL_PALETTE_WRAPPER_FIELDS
-    };
-    expected.fetchedFileKind = fetchedFileKind;
-    expected.canonicalFileExpected = contract.canonicalPaletteExpected;
-  }
-
-  return expected;
-}
-
-function buildLoadedExpected(details, contract) {
-  const detectedPayloadShape = normalizeShapeList(details?.loaded?.topLevelKeys || details.detectedPayloadShape);
-  const requiredPayloadShape = contract.requiredPayloadShape;
-  const missingRequiredFields = normalizeMissingFields(requiredPayloadShape, detectedPayloadShape);
-  const expected = {
-    requiredPayloadShape,
-    detectedPayloadShape,
-    missingRequiredFields,
-    contractMatch: requiredPayloadShape.length === 0 || missingRequiredFields.length === 0
-  };
-
-  if (contract.canonicalPaletteExpected || contract.paletteCapable) {
-    expected.canonicalPalette = {
-      schema: "html-js-gaming.palette",
-      requiredFields: CANONICAL_PALETTE_REQUIRED_FIELDS,
-      wrapperNotCanonicalFields: CANONICAL_PALETTE_WRAPPER_FIELDS
-    };
-    expected.palettePayloadKind = classifyPalettePayloadShape(detectedPayloadShape);
-  }
-
-  writeLoadedCache(details, expected);
-  return expected;
-}
-
-function buildWarningOrErrorExpected(details, contract) {
-  const cached = readLoadedCache(details);
-  const requiredPayloadShape = contract.requiredPayloadShape.length > 0
-    ? contract.requiredPayloadShape
-    : normalizeShapeList(cached?.requiredPayloadShape);
-  const receivedTopLevelKeys = normalizeShapeList(
-    details.receivedTopLevelKeys
-      || details?.loaded?.topLevelKeys
-      || cached?.detectedPayloadShape
-  );
-  const missingRequiredFields = requiredPayloadShape.length > 0
-    ? normalizeMissingFields(requiredPayloadShape, receivedTopLevelKeys)
-    : normalizeShapeList(cached?.missingRequiredFields);
-  const expected = {
-    requiredPayloadShape,
-    receivedTopLevelKeys,
-    likelyCause: inferLikelyCause(details, requiredPayloadShape, receivedTopLevelKeys, missingRequiredFields)
-  };
-
-  if (missingRequiredFields.length > 0) {
-    expected.missingRequiredFields = missingRequiredFields;
-  }
-
-  if (contract.canonicalPaletteExpected || contract.paletteCapable) {
-    expected.canonicalPalette = {
-      schema: "html-js-gaming.palette",
-      requiredFields: CANONICAL_PALETTE_REQUIRED_FIELDS,
-      wrapperNotCanonicalFields: CANONICAL_PALETTE_WRAPPER_FIELDS
-    };
-    expected.palettePayloadKind = classifyPalettePayloadShape(receivedTopLevelKeys);
-  }
-
-  return expected;
-}
-
-function buildExpected(boundary, details) {
-  const contract = getToolContract(details.toolId);
+function deriveClassification(boundary, details, expected, actual) {
+  const missingRequiredFields = getMissingRequiredFields(expected, actual);
   if (boundary === "request") {
-    return buildRequestExpected(details, contract);
+    return null;
   }
   if (boundary === "fetch") {
-    return buildFetchExpected(details, contract);
+    if (normalizeText(details.phase) !== "response") {
+      return null;
+    }
+    if (isHttpFailure(details, actual)) {
+      return CLASSIFICATION_VALUES.wrongPath;
+    }
+    return null;
   }
   if (boundary === "loaded") {
-    return buildLoadedExpected(details, contract);
+    return missingRequiredFields.length > 0
+      ? CLASSIFICATION_VALUES.wrongShape
+      : CLASSIFICATION_VALUES.success;
   }
-  return buildWarningOrErrorExpected(details, contract);
+  if (!actual.requestedPath && !actual.fetchUrl && actual.topLevelKeys.length === 0) {
+    return CLASSIFICATION_VALUES.missing;
+  }
+  if (isHttpFailure(details, actual)) {
+    return CLASSIFICATION_VALUES.wrongPath;
+  }
+  return missingRequiredFields.length > 0
+    ? CLASSIFICATION_VALUES.wrongShape
+    : CLASSIFICATION_VALUES.success;
 }
 
-function withExpected(boundary, details) {
-  const safeDetails = sanitizePayload(details);
-  const computedExpected = buildExpected(boundary, safeDetails);
-  const expected = mergeExpected(computedExpected, safeDetails.expected);
-  return {
-    ...safeDetails,
-    expected
+function emitClassification(details, expected, actual, classification, note = "") {
+  if (!classification) {
+    return;
+  }
+  const cacheKey = buildCacheKey(details.toolId, details.sampleId, details.samplePresetPath, expected.dependencyId);
+  if (CLASSIFICATION_CACHE.has(cacheKey)) {
+    return;
+  }
+  CLASSIFICATION_CACHE.set(cacheKey, classification);
+  emitToolLoadLog(TOOL_LOAD_PREFIXES.classification, {
+    toolId: normalizeText(details.toolId),
+    sampleId: normalizeText(details.sampleId),
+    samplePresetPath: normalizeText(details.samplePresetPath),
+    classification,
+    expected,
+    actual,
+    note: normalizeText(note)
+  });
+}
+
+function findPalettePathCandidate(details) {
+  const requestedDataPaths = details.requestedDataPaths && typeof details.requestedDataPaths === "object"
+    ? details.requestedDataPaths
+    : {};
+  const launchQuery = details.launchQuery && typeof details.launchQuery === "object"
+    ? details.launchQuery
+    : {};
+
+  const candidateFromRequested = Object.entries(requestedDataPaths).find(([key, value]) => {
+    if (!/palette/i.test(key)) {
+      return false;
+    }
+    const normalizedValue = Array.isArray(value)
+      ? normalizeText(value[0])
+      : normalizeText(value);
+    return Boolean(normalizedValue);
+  });
+  if (candidateFromRequested) {
+    const normalizedValue = Array.isArray(candidateFromRequested[1])
+      ? normalizeText(candidateFromRequested[1][0])
+      : normalizeText(candidateFromRequested[1]);
+    return {
+      expectedPathKey: candidateFromRequested[0],
+      expectedPath: normalizedValue
+    };
+  }
+
+  const candidateFromQuery = Object.entries(launchQuery).find(([key, value]) => {
+    if (!/palette/i.test(key) || !/(path|href|url)$/i.test(key)) {
+      return false;
+    }
+    const normalizedValue = Array.isArray(value)
+      ? normalizeText(value[0])
+      : normalizeText(value);
+    return Boolean(normalizedValue);
+  });
+  if (candidateFromQuery) {
+    const normalizedValue = Array.isArray(candidateFromQuery[1])
+      ? normalizeText(candidateFromQuery[1][0])
+      : normalizeText(candidateFromQuery[1]);
+    return {
+      expectedPathKey: candidateFromQuery[0],
+      expectedPath: normalizedValue
+    };
+  }
+
+  return null;
+}
+
+function emitMissingPaletteClassification(details, contract) {
+  if (!contract.paletteCapable) {
+    return;
+  }
+  const palettePath = findPalettePathCandidate(details);
+  if (palettePath?.expectedPath) {
+    return;
+  }
+
+  const expected = {
+    dependencyId: "palette",
+    expectedPathKey: palettePath?.expectedPathKey || "palettePath",
+    expectedPath: "",
+    expectedSchema: CANONICAL_PALETTE_SCHEMA,
+    expectedTopLevelShape: [...CANONICAL_PALETTE_REQUIRED_FIELDS],
+    requiredFields: CANONICAL_PALETTE_REQUIRED_FIELDS.filter((field) => field !== "swatches"),
+    requiredArrayFields: [...CANONICAL_PALETTE_REQUIRED_ARRAY_FIELDS]
   };
+  const actual = {
+    requestedPath: "",
+    fetchUrl: "",
+    httpStatus: null,
+    loadedSchema: "",
+    topLevelKeys: [],
+    fieldPresence: {
+      schema: false,
+      version: false,
+      name: false,
+      swatches: false
+    },
+    arrayCounts: {
+      swatches: 0
+    },
+    requested: false,
+    fetched: false,
+    loaded: false
+  };
+  emitClassification(
+    details,
+    expected,
+    actual,
+    CLASSIFICATION_VALUES.missing,
+    "Expected palette dependency was not requested, not fetched, and not loaded."
+  );
+}
+
+function buildEventPayload(boundary, details) {
+  const safeDetails = sanitizePayload(details);
+  const contract = getToolContract(safeDetails.toolId);
+  const expected = buildExpectedBlock(safeDetails, contract);
+  const actual = buildActualBlock(safeDetails, expected);
+  const payload = {
+    ...safeDetails,
+    expected,
+    actual
+  };
+
+  if (boundary === "loaded") {
+    const missingRequiredFields = getMissingRequiredFields(expected, actual);
+    expected.missingRequiredFields = missingRequiredFields;
+    expected.contractMatch = missingRequiredFields.length === 0;
+    cacheLoaded(safeDetails, expected, actual);
+  } else if (boundary === "warning" || boundary === "error") {
+    const cached = getCachedLoaded(safeDetails, expected);
+    if (cached?.actual?.topLevelKeys?.length > 0 && actual.topLevelKeys.length === 0) {
+      actual.topLevelKeys = cached.actual.topLevelKeys;
+      actual.fieldPresence = buildFieldPresence(expected, actual.topLevelKeys);
+      actual.arrayCounts = {
+        ...actual.arrayCounts,
+        ...cached.actual.arrayCounts
+      };
+    }
+    if (!actual.loadedSchema && normalizeText(cached?.actual?.loadedSchema)) {
+      actual.loadedSchema = normalizeText(cached.actual.loadedSchema);
+    }
+    const missingRequiredFields = getMissingRequiredFields(expected, actual);
+    expected.missingRequiredFields = missingRequiredFields;
+    expected.likelyCause = classifyLikelyCause(expected, actual, safeDetails, missingRequiredFields);
+    expected.contractMatch = missingRequiredFields.length === 0;
+  }
+
+  return {
+    payload,
+    contract
+  };
+}
+
+function emitBoundaryAndClassification(boundary, prefix, details) {
+  if (boundary === "request") {
+    clearClassificationCacheForScope(details);
+  }
+  const { payload, contract } = buildEventPayload(boundary, details);
+  emitToolLoadLog(prefix, payload);
+
+  if (boundary === "request") {
+    emitMissingPaletteClassification(payload, contract);
+    return;
+  }
+
+  const classification = deriveClassification(boundary, payload, payload.expected, payload.actual);
+  emitClassification(payload, payload.expected, payload.actual, classification);
 }
 
 export function getToolLoadQuerySnapshot(searchParams) {
@@ -572,6 +782,7 @@ export function summarizeToolLoadData(value) {
   return {
     type: summarizeValueType(value),
     shape: summarizeValueShape(value),
+    loadedSchema: extractLoadedSchema(value),
     topLevelKeys: summarizeTopLevelKeys(value),
     palette: summarizePaletteData(value),
     sprite: summarizeSpriteData(value),
@@ -580,25 +791,24 @@ export function summarizeToolLoadData(value) {
 }
 
 export function logToolLoadRequest(details = {}) {
-  emitToolLoadLog(TOOL_LOAD_PREFIXES.request, withExpected("request", details));
+  emitBoundaryAndClassification("request", TOOL_LOAD_PREFIXES.request, details);
 }
 
 export function logToolLoadFetch(details = {}) {
-  emitToolLoadLog(TOOL_LOAD_PREFIXES.fetch, withExpected("fetch", details));
+  emitBoundaryAndClassification("fetch", TOOL_LOAD_PREFIXES.fetch, details);
 }
 
 export function logToolLoadLoaded(details = {}) {
-  emitToolLoadLog(TOOL_LOAD_PREFIXES.loaded, withExpected("loaded", details));
+  emitBoundaryAndClassification("loaded", TOOL_LOAD_PREFIXES.loaded, details);
 }
 
 export function logToolLoadError(details = {}) {
-  emitToolLoadLog(TOOL_LOAD_PREFIXES.error, withExpected("error", details));
+  emitBoundaryAndClassification("error", TOOL_LOAD_PREFIXES.error, details);
 }
 
 export function logToolLoadWarning(details = {}) {
-  const warningPayload = withExpected("warning", details);
-  emitToolLoadLog(TOOL_LOAD_PREFIXES.warning, warningPayload);
-  if (normalizeText(warningPayload.error)) {
-    emitToolLoadLog(TOOL_LOAD_PREFIXES.error, withExpected("error", warningPayload));
+  emitBoundaryAndClassification("warning", TOOL_LOAD_PREFIXES.warning, details);
+  if (normalizeText(details.error)) {
+    emitBoundaryAndClassification("error", TOOL_LOAD_PREFIXES.error, details);
   }
 }

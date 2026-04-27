@@ -1,1 +1,1 @@
-Add expected contract fields to tool-load diagnostics - PR 10.6H
+Add expected-vs-actual tool-load diagnostics classification - PR 10.6I
