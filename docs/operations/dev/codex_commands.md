@@ -2,37 +2,32 @@ MODEL: GPT-5.3-codex
 REASONING: high
 
 TASK:
-Apply BUILD_PR_LEVEL_10_2A_WORKSPACE_MANAGER_ASSET_PRESENCE_VALIDATION.
+Apply BUILD_PR_LEVEL_10_2B_WORKSPACE_MANAGER_PALETTE_BINDING_FIX.
 
 STEPS:
-1. Read docs/pr/PLAN_PR_LEVEL_10_2A_WORKSPACE_MANAGER_ASSET_PRESENCE_VALIDATION.md.
-2. Read docs/pr/BUILD_PR_LEVEL_10_2A_WORKSPACE_MANAGER_ASSET_PRESENCE_VALIDATION.md.
-3. Open the Level 10.2 Workspace Manager open test.
-4. Extend it so it validates game data presence after opening each game through Workspace Manager.
-5. Keep existing checks:
-   - gameId query
-   - mount=game
-   - no ?game=
-   - no diagnostic
-6. Add asset presence checks:
-   - shared palette present
-   - expected shared assets/tool sections present
-   - skin data present when expected
-7. Specifically fail Bouncing-ball if the UI shows:
-   - `Shared Palette: No shared palette selected`
-8. Ensure this test does not run samples/tools.
-9. Write docs/dev/reports/level_10_2a_workspace_manager_asset_presence_validation_report.md.
-10. Update docs/dev/roadmaps/MASTER_ROADMAP_ENGINE.md status only if needed:
+1. Read docs/pr/PLAN_PR_LEVEL_10_2B_WORKSPACE_MANAGER_PALETTE_BINDING_FIX.md.
+2. Read docs/pr/BUILD_PR_LEVEL_10_2B_WORKSPACE_MANAGER_PALETTE_BINDING_FIX.md.
+3. Inspect Workspace Manager game manifest loading/binding code.
+4. Find where shared palette is selected/displayed.
+5. Bind shared palette from:
+   - gameManifest.tools["palette-browser"].palette
+6. Allow temporary fallback from root `palette` only for compatibility if present.
+7. Do not create root palette objects.
+8. Verify Bouncing-ball no longer shows:
+   - Shared Palette: No shared palette selected
+9. Run/update Level 10.2A Workspace Manager asset presence test.
+10. Ensure direct game launch remains unchanged.
+11. Write docs/dev/reports/level_10_2b_workspace_manager_palette_binding_report.md.
+12. Update docs/dev/roadmaps/MASTER_ROADMAP_ENGINE.md status only if needed:
     - [ ] -> [.]
     - [.] -> [x]
     - no prose rewrite/delete
-11. Do not add validators.
-12. Do not modify start_of_day.
-13. Create Codex delta ZIP:
-    tmp/BUILD_PR_LEVEL_10_2A_WORKSPACE_MANAGER_ASSET_PRESENCE_VALIDATION_delta.zip
+13. Do not add validators.
+14. Do not modify start_of_day.
+15. Create Codex delta ZIP:
+    tmp/BUILD_PR_LEVEL_10_2B_WORKSPACE_MANAGER_PALETTE_BINDING_FIX_delta.zip
 
 ACCEPTANCE:
-- page-load-only false positives are prevented
-- missing palette is caught
-- Bouncing-ball missing palette issue is detected/fixed or reported
+- shared palette binds from palette-browser singleton palette
+- Bouncing-ball palette appears
 - delta ZIP exists

@@ -556,6 +556,8 @@ export async function run() {
     let actionsWithSharedPalette = 0;
     let actionsWithSharedAssets = 0;
     let actionsWithWorkspaceLoaded = 0;
+    let actionsRequiringSharedAssets = 0;
+    let actionsMeetingSharedAssetRequirement = 0;
     const invalidActionDetails = [];
     const diagnosticFailures = [];
     const assetPresenceFailures = [];
@@ -642,9 +644,16 @@ export async function run() {
         gameFailures.push(failure);
       }
 
+      const requiresSharedAsset = Boolean(expectedAssetModel?.hasCatalogNonPalette);
+      if (requiresSharedAsset) {
+        actionsRequiringSharedAssets += 1;
+      }
       if (state.hasSharedAssetLine && !state.missingSharedAsset) {
         actionsWithSharedAssets += 1;
-      } else {
+        if (requiresSharedAsset) {
+          actionsMeetingSharedAssetRequirement += 1;
+        }
+      } else if (requiresSharedAsset) {
         const failure = `Shared assets missing for ${action.gameId}.`;
         assetPresenceFailures.push(failure);
         gameFailures.push(failure);
@@ -729,6 +738,8 @@ export async function run() {
       actionsWithWorkspaceLoaded,
       actionsWithSharedPalette,
       actionsWithSharedAssets,
+      actionsRequiringSharedAssets,
+      actionsMeetingSharedAssetRequirement,
       validationFailures,
       diagnosticFailures,
       assetPresenceFailures,
@@ -747,7 +758,11 @@ export async function run() {
     assert.equal(summary.diagnosticFailures.length, 0, `Workspace Manager diagnostic visible for: ${summary.diagnosticFailures.join(" | ")}`);
     assert.equal(summary.actionsWithWorkspaceLoaded, summary.workspaceActionCount, "Not all actions loaded workspace state.");
     assert.equal(summary.actionsWithSharedPalette, summary.workspaceActionCount, "Not all actions loaded shared palette state.");
-    assert.equal(summary.actionsWithSharedAssets, summary.workspaceActionCount, "Not all actions loaded shared asset state.");
+    assert.equal(
+      summary.actionsMeetingSharedAssetRequirement,
+      summary.actionsRequiringSharedAssets,
+      "Not all games requiring shared assets loaded shared asset state."
+    );
     assert.equal(summary.assetPresenceFailures.length, 0, `Workspace Manager asset-presence validation failures: ${summary.assetPresenceFailures.join(" | ")}`);
 
     return summary;

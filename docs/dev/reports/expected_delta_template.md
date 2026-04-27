@@ -1,22 +1,21 @@
 # Expected Codex Return / Delta Template
 
 ## Expected Changed Files
-- `tests/runtime/GamesIndexWorkspaceManagerOpen.test.mjs` or equivalent
-- `docs/dev/reports/level_10_2a_workspace_manager_asset_presence_validation_report.md`
+- Workspace Manager loader/binding file(s)
+- `tests/runtime/GamesIndexWorkspaceManagerOpen.test.mjs` only if needed
+- `docs/dev/reports/level_10_2b_workspace_manager_palette_binding_report.md`
 - `docs/dev/roadmaps/MASTER_ROADMAP_ENGINE.md` if status update needed
 
 ## Expected Validation Summary
-- `games_checked=<count>`
-- `workspace_manager_open_actions_valid=<count>`
-- `diagnostic_failures=0`
-- `games_with_shared_palette=<count>`
-- `games_missing_shared_palette=<count>`
+- `workspace_manager_reads_palette_browser_palette=true`
 - `bouncing_ball_shared_palette_present=true`
-- `games_with_expected_assets=<count>`
-- `asset_presence_test_added=true`
+- `games_with_manifest_palette_bound=<count>`
+- `games_still_missing_palette=<count>`
+- `direct_launch_regression=false`
+- `validators_added=0`
 - `start_of_day_changes=0`
 
 ## Expected Delta ZIP
 Codex must create:
 
-`tmp/BUILD_PR_LEVEL_10_2A_WORKSPACE_MANAGER_ASSET_PRESENCE_VALIDATION_delta.zip`
+`tmp/BUILD_PR_LEVEL_10_2B_WORKSPACE_MANAGER_PALETTE_BINDING_FIX_delta.zip`

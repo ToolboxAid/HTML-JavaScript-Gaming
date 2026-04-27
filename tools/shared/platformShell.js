@@ -14,7 +14,6 @@ import { asHtmlInput, queryAll, queryFirst, readDataAttribute, setTextContent } 
 import { escapeHtml } from "../../src/shared/string/stringUtil.js";
 import { Logger } from "../../src/engine/logging/index.js";
 import { createRuntimeMonitoringHooks } from "../../src/engine/runtime/index.js";
-import { validatePaletteDocument } from "./paletteDocumentContract.js";
 
 let workspaceController = null;
 let headerExpandedState = null;
@@ -318,6 +317,30 @@ function deriveGameAssetCatalogPaths(context) {
   return Array.from(candidates).filter(Boolean);
 }
 
+function deriveGameManifestPaths(context) {
+  const candidates = new Set();
+  const gameHref = normalizeTextValue(context?.gameHref);
+  if (gameHref.endsWith("/index.html")) {
+    const base = gameHref.slice(0, -"/index.html".length);
+    candidates.add(`${base}/game.manifest.json`);
+    const lowerCasedBase = base.replace(/^\/games\/([^/]+)/i, (_, folderName) => `/games/${folderName.toLowerCase()}`);
+    candidates.add(`${lowerCasedBase}/game.manifest.json`);
+  } else if (gameHref.endsWith("/")) {
+    const base = gameHref.slice(0, -1);
+    candidates.add(`${base}/game.manifest.json`);
+    const lowerCasedBase = base.replace(/^\/games\/([^/]+)/i, (_, folderName) => `/games/${folderName.toLowerCase()}`);
+    candidates.add(`${lowerCasedBase}/game.manifest.json`);
+  }
+
+  const gameId = normalizeTextValue(context?.gameId);
+  if (gameId) {
+    candidates.add(`/games/${encodeURIComponent(gameId)}/game.manifest.json`);
+    candidates.add(`/games/${encodeURIComponent(gameId.toLowerCase())}/game.manifest.json`);
+  }
+
+  return Array.from(candidates).filter(Boolean);
+}
+
 function normalizeCatalogEntries(value) {
   const source = value && typeof value === "object" ? value : {};
   return Object.entries(source)
@@ -376,6 +399,26 @@ async function readCatalogContextFromLaunchContext(launchContext) {
       catalogPath,
       catalogPayload: parsed.payload,
       entries: parsed.entries
+    };
+  }
+  return null;
+}
+
+async function readManifestContextFromLaunchContext(launchContext) {
+  if (!launchContext?.gameId && !launchContext?.gameHref) {
+    return null;
+  }
+
+  const manifestPaths = deriveGameManifestPaths(launchContext);
+  for (const manifestPath of manifestPaths) {
+    const manifestPayload = await readJsonDocument(manifestPath);
+    if (!manifestPayload || typeof manifestPayload !== "object" || Array.isArray(manifestPayload)) {
+      continue;
+    }
+    return {
+      launchContext,
+      manifestPath,
+      manifestPayload
     };
   }
   return null;
@@ -471,6 +514,121 @@ async function readJsonDocument(pathValue) {
   }
 }
 
+function normalizeHexColor(value) {
+  const normalized = normalizeTextValue(value);
+  const match = normalized.match(/^#([0-9a-f]{6}|[0-9a-f]{8})$/i);
+  if (!match) {
+    return "";
+  }
+  return `#${match[1].toUpperCase()}`;
+}
+
+function normalizePaletteColorsFromArray(rawEntries) {
+  if (!Array.isArray(rawEntries)) {
+    return [];
+  }
+  return rawEntries
+    .filter((entry) => entry && typeof entry === "object")
+    .map((entry, index) => {
+      const hex = normalizeHexColor(entry.hex);
+      if (!hex) {
+        return null;
+      }
+      return {
+        symbol: normalizeTextValue(entry.symbol),
+        hex,
+        name: normalizeTextValue(entry.name) || `Swatch ${index + 1}`
+      };
+    })
+    .filter(Boolean);
+}
+
+function normalizePaletteColorsFromHexArray(rawColors) {
+  if (!Array.isArray(rawColors)) {
+    return [];
+  }
+  return rawColors
+    .map((entry, index) => {
+      const hex = normalizeHexColor(entry);
+      if (!hex) {
+        return null;
+      }
+      return {
+        symbol: "",
+        hex,
+        name: `Swatch ${index + 1}`
+      };
+    })
+    .filter(Boolean);
+}
+
+function buildPaletteHandoffShape(rawPalette, options = {}) {
+  if (!rawPalette || typeof rawPalette !== "object" || Array.isArray(rawPalette)) {
+    return null;
+  }
+  const colorsFromSwatches = normalizePaletteColorsFromArray(rawPalette.swatches);
+  const colorsFromEntries = normalizePaletteColorsFromArray(rawPalette.entries);
+  const colorsFromHex = normalizePaletteColorsFromHexArray(rawPalette.colors);
+  const colors = colorsFromSwatches.length > 0
+    ? colorsFromSwatches
+    : (colorsFromEntries.length > 0 ? colorsFromEntries : colorsFromHex);
+  if (colors.length === 0) {
+    return null;
+  }
+
+  const fallbackPaletteId = normalizeTextValue(options.fallbackPaletteId);
+  const fallbackDisplayName = normalizeTextValue(options.fallbackDisplayName);
+  const paletteId = normalizeTextValue(rawPalette.sourceId || rawPalette.paletteId || rawPalette.id || rawPalette.name || fallbackPaletteId);
+  const displayName = normalizeTextValue(rawPalette.name || fallbackDisplayName || paletteId);
+  return {
+    paletteId: paletteId || "shared-palette",
+    displayName: displayName || "Shared Palette",
+    colors
+  };
+}
+
+function readPaletteFromManifestPayload(manifestPayload, launchContext = null) {
+  const source = manifestPayload && typeof manifestPayload === "object" && !Array.isArray(manifestPayload)
+    ? manifestPayload
+    : null;
+  if (!source) {
+    return null;
+  }
+
+  const tools = source.tools && typeof source.tools === "object" && !Array.isArray(source.tools)
+    ? source.tools
+    : {};
+  const paletteBrowserSection = tools["palette-browser"] && typeof tools["palette-browser"] === "object" && !Array.isArray(tools["palette-browser"])
+    ? tools["palette-browser"]
+    : null;
+  const preferredPalette = paletteBrowserSection?.palette && typeof paletteBrowserSection.palette === "object" && !Array.isArray(paletteBrowserSection.palette)
+    ? paletteBrowserSection.palette
+    : null;
+  const compatibilityRootPalette = source.palette && typeof source.palette === "object" && !Array.isArray(source.palette)
+    ? source.palette
+    : null;
+  const selectedPalette = preferredPalette || compatibilityRootPalette;
+  if (!selectedPalette) {
+    return null;
+  }
+
+  const fallbackPaletteId = normalizeTextValue(launchContext?.gameId)
+    ? `palette.${normalizeTextValue(launchContext.gameId).toLowerCase()}`
+    : "palette.game";
+  const fallbackDisplayName = normalizeTextValue(paletteBrowserSection?.name) || "Game Palette";
+  const normalized = buildPaletteHandoffShape(selectedPalette, {
+    fallbackPaletteId,
+    fallbackDisplayName
+  });
+  if (!normalized) {
+    return null;
+  }
+  return {
+    ...normalized,
+    source: preferredPalette ? "workspace-game-manifest.palette-browser" : "workspace-game-manifest.root-palette-compat"
+  };
+}
+
 async function hydrateSharedPaletteFromGameLaunchContext(catalogContext = null) {
   const launchContext = catalogContext?.launchContext || readGameLaunchContext();
   if (!launchContext?.gameId && !launchContext?.gameHref) {
@@ -480,6 +638,23 @@ async function hydrateSharedPaletteFromGameLaunchContext(catalogContext = null) 
   const existingPalette = readSharedPaletteHandoff();
   if (existingPalette?.paletteId && isCurrentGameHandoff(existingPalette, launchContext)) {
     return false;
+  }
+
+  const manifestContext = await readManifestContextFromLaunchContext(launchContext);
+  const manifestPalette = readPaletteFromManifestPayload(manifestContext?.manifestPayload, launchContext);
+  if (manifestPalette) {
+    return writeSharedPaletteHandoff({
+      paletteId: manifestPalette.paletteId,
+      displayName: manifestPalette.displayName,
+      colors: manifestPalette.colors,
+      metadata: {
+        source: manifestPalette.source,
+        gameId: launchContext.gameId || "",
+        sourcePath: manifestContext?.manifestPath || ""
+      },
+      sourceToolId: "workspace-manager",
+      selectedAt: new Date().toISOString()
+    });
   }
 
   const context = catalogContext || await readCatalogContextFromLaunchContext(launchContext);
@@ -494,15 +669,18 @@ async function hydrateSharedPaletteFromGameLaunchContext(catalogContext = null) 
   }
 
   const palettePayload = await readJsonDocument(primaryPalette.path);
-  const validation = validatePaletteDocument(palettePayload, { requireSchema: false });
-  if (!validation.valid) {
+  const catalogPalette = buildPaletteHandoffShape(palettePayload, {
+    fallbackPaletteId: primaryPalette.assetId,
+    fallbackDisplayName: primaryPalette.assetId
+  });
+  if (!catalogPalette) {
     return false;
   }
 
   return writeSharedPaletteHandoff({
-    paletteId: primaryPalette.assetId,
-    displayName: validation.palette.name || primaryPalette.assetId,
-    colors: validation.palette.entries,
+    paletteId: catalogPalette.paletteId || primaryPalette.assetId,
+    displayName: catalogPalette.displayName || primaryPalette.assetId,
+    colors: catalogPalette.colors,
     metadata: {
       source: "workspace-game-catalog",
       gameId: launchContext.gameId || "",
