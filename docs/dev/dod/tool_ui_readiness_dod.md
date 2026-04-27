@@ -22,6 +22,7 @@ all required files fetched
 all required file shapes validated
 all required UI controls populated from loaded data
 all required controls emit readiness diagnostics
+safe empty/error state exists for missing required data
 no required control uses fallback/demo/default data
 no required control silently self-populates
 ```
@@ -41,6 +42,7 @@ accordion/section auto-closes without user action
 tool says success before controls are ready
 tool loads from hardcoded sample path
 tool loads duplicate wrapper data instead of canonical data
+safe empty/error state is missing for required data failures
 ```
 
 ## Mandatory diagnostic events
@@ -56,6 +58,7 @@ Every tool with required data must emit these diagnostics during launch:
 [tool-load:classification]
 [tool-ui:control-ready]
 [tool-ui:lifecycle]
+[tool-ui:final-ready]
 ```
 
 ### Required diagnostic fields
@@ -75,6 +78,7 @@ actual.controlValues
 actual.outputValues
 actual.expectedCount
 actual.actualCount
+actual.finalReady
 classification
 ```
 
@@ -91,6 +95,7 @@ empty
 defaulted
 stale
 reset
+lifecycle-failure
 ```
 
 ## Required output fields (all tools)
@@ -125,6 +130,19 @@ tool diagnostics report lifecycle initialization once unless a user action cause
 toolId
 phase: init | bind | render | user-action | reload | reset
 cause
+classification
+```
+
+### Required final-ready diagnostics
+
+```text
+[tool-ui:final-ready]
+toolId
+sampleId or gameId when available
+requiredInputsReady: true|false
+requiredControlsReady: true|false
+requiredOutputsReady: true|false
+lifecycleStable: true|false
 classification
 ```
 
@@ -401,6 +419,7 @@ palette control populated from canonical palette when visible
 paint/fill control binds loaded paint/fill data
 stroke control binds loaded stroke data
 transform controls bind selected loaded shape/path
+for samples 1215/1216/1217, final-ready must fail when palette/paint/stroke bindings are missing
 ```
 
 ### Failure
@@ -456,6 +475,7 @@ entity list populated from vector map entities
 selected entity panel binds selected loaded entity
 palette/color controls bind canonical palette when required
 zoom/pan controls operate on loaded map
+samples 1212/1213/1214 may be used as known-good acceptance references for loaded layer/entity bindings
 ```
 
 ### Failure
@@ -505,7 +525,7 @@ event list populated from events array
 timeline/scrubber range matches loaded events
 playback uses loaded events
 current event display updates from loaded event data
-speed control affects loaded replay
+time readout tracks loaded replay timeline
 ```
 
 ### Failure
@@ -537,6 +557,15 @@ fetch results table
 expected vs actual table
 classification/status panel
 control readiness table
+```
+
+### Required output fields
+
+```text
+status text that reports Loaded preset or load failure
+required input count output (expected vs actual)
+required control count output (expected vs actual)
+final readiness output/classification
 ```
 
 ### Success
@@ -1150,7 +1179,7 @@ lifecycle/timer reset checks
 Codex must write findings to:
 
 ```text
-docs/dev/reports/level_10_6p_tool_ui_readiness_dod_gap_report.md
+docs/dev/reports/level_10_6Q_tool_ui_readiness_dod_completion_report.md
 ```
 
 If Codex finds a missing field/control/check, it must update this DoD document in the same PR before implementing any stabilization logic.
@@ -1175,6 +1204,6 @@ Codex is done only when:
 ```text
 all required input classifications are success
 all required control classifications are success
-no required control classification is missing, wrong-shape, empty, defaulted, stale, or reset
+no required control classification is missing, wrong-path, wrong-shape, empty, defaulted, stale, reset, or lifecycle-failure
 Generic failure signals detected: 0
 ```

@@ -1,1 +1,1 @@
-Complete tool UI readiness DoD and require per-tool gap report - PR 10.6P
+Complete Tool UI Readiness DoD with per-tool control and lifecycle acceptance targets - PR 10.6Q
