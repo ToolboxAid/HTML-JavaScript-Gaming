@@ -1,1 +1,1 @@
-Stabilize tool UI readiness failures for accordion state, asset browser, tilemap, vector asset, and vector map loading - PR 10.6O
+Complete tool UI readiness DoD and require per-tool gap report - PR 10.6P

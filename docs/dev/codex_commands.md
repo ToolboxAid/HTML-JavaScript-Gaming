@@ -1,12 +1,13 @@
-# Codex Commands — BUILD_PR_LEVEL_10_6O_TOOL_UAT_FAILURE_STABILIZATION
+# Codex Commands — BUILD_PR_LEVEL_10_6P_COMPLETE_TOOL_UI_READINESS_DOD
 
 ## Model
-GPT-5.3-codex
+GPT-5.4
 
 ## Reasoning
 high
 
 ## Command
+
 ```powershell
-codex --model gpt-5.3-codex --reasoning high "Execute BUILD_PR_LEVEL_10_6O_TOOL_UAT_FAILURE_STABILIZATION exactly as described in docs/pr/BUILD_PR_LEVEL_10_6O_TOOL_UAT_FAILURE_STABILIZATION.md. Fix only the listed UAT failures. Before coding, inspect the owning files for accordion state, asset-browser/import-hub approved assets, tilemap studio load/control binding, vector asset studio palette/paint/stroke binding for samples 1215/1216/1217, and vector map editor failing samples while preserving 1212/1213/1214. Add diagnostics proving expected vs actual input and UI-control readiness. Do not introduce fallback/demo data or hardcoded paths. Run npm run test:launch-smoke:games and npm run test:sample-standalone:data-flow. Write docs/dev/reports/level_10_6o_tool_uat_failure_stabilization_report.md. Package changed files into tmp/BUILD_PR_LEVEL_10_6O_TOOL_UAT_FAILURE_STABILIZATION.zip." 
+codex --model gpt-5.4 --reasoning high "Execute BUILD_PR_LEVEL_10_6P_COMPLETE_TOOL_UI_READINESS_DOD. Read docs/dev/dod/tool_ui_readiness_dod.md. Inspect the current repo tools opened from games/index.html, samples/index.html, Workspace Manager, and sample/game manifests. Do not make broad implementation fixes. First validate whether the DoD misses any required input fields, output fields, UI controls, control-to-data bindings, ready states, error/empty states, or lifecycle/timer reset checks. If anything is missing, update docs/dev/dod/tool_ui_readiness_dod.md in place. Create docs/dev/reports/level_10_6p_tool_ui_readiness_dod_gap_report.md with per-tool findings and explicit yes/no answers. Run npm run test:launch-smoke:games and npm run test:sample-standalone:data-flow if available. Place final ZIP at tmp/BUILD_PR_LEVEL_10_6P_COMPLETE_TOOL_UI_READINESS_DOD.zip."
 ```
