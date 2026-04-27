@@ -459,11 +459,11 @@ function setSelectedPalette(paletteId) {
   renderSelectedPalette();
 }
 
-function createCustomPalette(name, swatches) {
+function createCustomPalette(name, swatches, source = "custom") {
   return {
     id: `custom:${Date.now().toString(36)}`,
     name,
-    source: "custom",
+    source: typeof source === "string" && source.trim() ? source.trim() : "custom",
     swatches: swatches.map((entry) => ({
       symbol: entry.symbol || "",
       hex: entry.hex || "#ffffff",
@@ -563,7 +563,7 @@ function importPaletteFromPresetPayload(rawPalette) {
     nextName = "imported-palette";
   }
   nextName = makeUniquePaletteName(nextName);
-  const importedPalette = createCustomPalette(nextName, imported.swatches);
+  const importedPalette = createCustomPalette(nextName, imported.swatches, imported.source || "manifest");
   state.customPalettes.unshift(importedPalette);
   saveCustomPalettes();
   setSelectedPalette(importedPalette.id);
@@ -627,7 +627,7 @@ async function importPaletteJsonFromFile(file) {
     }
   }
   nextName = makeUniquePaletteName(nextName);
-  const importedPalette = createCustomPalette(nextName, imported.swatches);
+  const importedPalette = createCustomPalette(nextName, imported.swatches, imported.source || "custom");
   state.customPalettes.unshift(importedPalette);
   saveCustomPalettes();
   setSelectedPalette(importedPalette.id);

@@ -1,5 +1,22 @@
 # Level 10.6 Standalone Tool Data Flow Report
 
+## 10.6B Status Update (2026-04-27)
+
+- BUILD: `LEVEL_10_6B_PALETTE_CONTRACT_ALIGNMENT`
+- Palette contract alignment applied to canonical runtime shape:
+  - `schema`
+  - `version`
+  - `name`
+  - `source`
+  - `swatches`
+- Palette Browser sample preset ingestion now reads `payload.palette` canonical shape and binds swatches to UI/state.
+- Palette Browser standalone sample payloads (`0213`, `0308`, `0313`) now use `config.palette.swatches` and manifest-derived `source`.
+
+Validation rerun:
+
+- `npm run test:launch-smoke:games` -> `PASS=12 FAIL=0 TOTAL=12`
+- `npm run test:sample-standalone:data-flow` -> `genericFailures=[]`, `schemaFailures=[]`, `contractFailures=[]`
+
 - Generated: 2026-04-26
 - BUILD: `BUILD_PR_LEVEL_10_6_SAMPLE_SCHEMA_AND_STANDALONE_TOOL_DATA_FLOW_VALIDATION`
 - Test command: `npm run test:sample-standalone:data-flow`

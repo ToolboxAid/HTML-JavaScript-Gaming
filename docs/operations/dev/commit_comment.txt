@@ -1,11 +1,1 @@
-BUILD_PR_LEVEL_10_6B_STANDALONE_SAMPLE_GENERIC_FAILURE_CLOSEOUT
-
-- Expanded standalone sample contract harness to cover all generic failures
-- Added tool-specific contracts for remaining failing tools
-- Fixed remaining standalone sample payload/binding issues
-
-PR Details:
-- Closes Level 10.6 generic failure set
-- No silent fallback data
-- No hardcoded asset paths
-- No start_of_day changes
+Update project instructions for PR response and commit formatting - PR 10.6B

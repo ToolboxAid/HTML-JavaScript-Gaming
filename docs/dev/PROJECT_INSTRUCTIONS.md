@@ -22,6 +22,23 @@ Output rules:
 - Place ZIPs under <project folder>/tmp/
 - Preserve exact repo structure inside ZIP
 
+## 🔥 RESPONSE RULES (MANDATORY)
+
+- Print a little detail about the PR (1–3 lines, clear purpose)
+- Do NOT present options (assume correct path and proceed)
+- Always provide a ZIP that is:
+  - testable
+  - pushes the roadmap forward
+- ZIP must be placed in the response BEFORE the Next step section
+- Keep chat response minimal (ZIP + short summary + next step)
+
+## 🧾 COMMIT COMMENT FORMAT (MANDATORY)
+
+<description> - <PR info>
+
+Example:
+Normalize palette contract to manifest SSoT and remove tool-level schema drift - PR 10.6B
+
 Do not:
 - Write implementation code unless explicitly asked
 - Expand scope beyond the PR
@@ -71,8 +88,8 @@ When producing BUILD, PLAN, or APPLY results:
 
 All detailed content must be placed inside the ZIP, including:
 - docs/pr/*
-- docs/operations/dev/codex_commands.md
-- docs/operations/dev/commit_comment.txt
+- docs/dev/codex_commands.md
+- docs/dev/commit_comment.txt
 - docs/dev/reports/*
 
 If a ZIP cannot be produced:
@@ -89,8 +106,8 @@ ZIP STANDARD (ENFORCED)
 - No extra files outside defined structure
 
 Commit Comment:
-<change details>
-<PR Details>
+<description> - <PR info>
+
 ## 🔒 EXECUTION DEFAULTS (MANDATORY)
 
 ### ALWAYS CONTINUE
@@ -126,7 +143,6 @@ Commit Comment:
 - Do not delete roadmap content during cleanup work.
 - Do not modify roadmap content during cleanup work.
 - Only update status [ ] [.] [x] in roadmap content during cleanup work.
-
 
 ## EXECUTION EFFICIENCY
 
