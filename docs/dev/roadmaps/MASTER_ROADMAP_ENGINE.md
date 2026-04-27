@@ -898,3 +898,4 @@
 - [x] Game palette completeness is normalized with manifest-owned palette data under `game.manifest.json` tool sections.
 - [x] Tool input alignment contract is documented as `toolInput = gameManifest.tools[toolId]` (no game-owned file-path JSON input).
 - [x] Palette standalone singleton correction is complete (`game.manifest.json` root `palette`, no tool-owned `palettes`).
+- [x] Palette tool singleton + tool section metadata correction is complete (`tools["palette-browser"].palette` + metadata on all tool sections).

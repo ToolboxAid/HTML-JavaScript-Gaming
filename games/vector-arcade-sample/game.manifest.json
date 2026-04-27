@@ -213,7 +213,11 @@
   },
   "tools": {
     "primitive-skin-editor": {
-      "skins": []
+      "skins": [],
+      "schema": "html-js-gaming.tool.primitive-skin-editor",
+      "version": 1,
+      "name": "Primitive Skin Editor",
+      "source": "manifest"
     },
     "sprite-editor": {
       "sprites": [
@@ -242,7 +246,11 @@
             ]
           }
         }
-      ]
+      ],
+      "schema": "html-js-gaming.tool.sprite-editor",
+      "version": 1,
+      "name": "Sprite Editor",
+      "source": "manifest"
     },
     "tile-map-editor": {
       "maps": [
@@ -280,7 +288,11 @@
             ]
           }
         }
-      ]
+      ],
+      "schema": "html-js-gaming.tool.tile-map-editor",
+      "version": 1,
+      "name": "Tile Map Editor",
+      "source": "manifest"
     },
     "parallax-editor": {
       "parallaxLevels": [
@@ -293,7 +305,11 @@
             "imageId": "image.template.backdrop"
           }
         }
-      ]
+      ],
+      "schema": "html-js-gaming.tool.parallax-editor",
+      "version": 1,
+      "name": "Parallax Editor",
+      "source": "manifest"
     },
     "vector-asset-studio": {
       "vectors": [
@@ -426,7 +442,11 @@
             }
           }
         }
-      ]
+      ],
+      "schema": "html-js-gaming.tool.vector-asset-studio",
+      "version": 1,
+      "name": "Vector Asset Studio",
+      "source": "manifest"
     },
     "asset-browser": {
       "assets": {
@@ -437,7 +457,11 @@
             "source": "workspace-manager"
           }
         }
-      }
+      },
+      "schema": "html-js-gaming.tool.asset-browser",
+      "version": 1,
+      "name": "Asset Browser",
+      "source": "manifest"
     },
     "preview-generator-tool": {
       "projectConfigs": [
@@ -469,60 +493,70 @@
             ]
           }
         }
-      ]
-    }
-  },
-  "palette": {
-    "schema": "html-js-gaming.palette",
-    "version": 1,
-    "name": "Vector Arcade Sample Palette",
-    "source": "manifest-and-runtime-color-scan",
-    "swatches": [
-      {
-        "symbol": "0",
-        "hex": "#05070D",
-        "name": "Color 1"
-      },
-      {
-        "symbol": "1",
-        "hex": "#E8F0FF",
-        "name": "Color 2"
-      },
-      {
-        "symbol": "2",
-        "hex": "#6FD3FF",
-        "name": "Color 3"
-      },
-      {
-        "symbol": "3",
-        "hex": "#FFB347",
-        "name": "Color 4"
-      },
-      {
-        "symbol": "4",
-        "hex": "#000000",
-        "name": "Color 5"
-      },
-      {
-        "symbol": "5",
-        "hex": "#FFFFFF",
-        "name": "Color 6"
-      },
-      {
-        "symbol": "6",
-        "hex": "#60A5FA",
-        "name": "Color 7"
-      },
-      {
-        "symbol": "7",
-        "hex": "#F59E0B",
-        "name": "Color 8"
-      },
-      {
-        "symbol": "8",
-        "hex": "#112233",
-        "name": "Color 9"
+      ],
+      "schema": "html-js-gaming.tool.preview-generator-tool",
+      "version": 1,
+      "name": "Preview Generator Tool",
+      "source": "manifest"
+    },
+    "palette-browser": {
+      "schema": "html-js-gaming.tool.palette-browser",
+      "version": 1,
+      "name": "Palette Browser",
+      "source": "manifest",
+      "palette": {
+        "schema": "html-js-gaming.palette",
+        "version": 1,
+        "name": "Vector Arcade Sample Palette",
+        "source": "manifest-and-runtime-color-scan",
+        "swatches": [
+          {
+            "symbol": "0",
+            "hex": "#05070D",
+            "name": "Color 1"
+          },
+          {
+            "symbol": "1",
+            "hex": "#E8F0FF",
+            "name": "Color 2"
+          },
+          {
+            "symbol": "2",
+            "hex": "#6FD3FF",
+            "name": "Color 3"
+          },
+          {
+            "symbol": "3",
+            "hex": "#FFB347",
+            "name": "Color 4"
+          },
+          {
+            "symbol": "4",
+            "hex": "#000000",
+            "name": "Color 5"
+          },
+          {
+            "symbol": "5",
+            "hex": "#FFFFFF",
+            "name": "Color 6"
+          },
+          {
+            "symbol": "6",
+            "hex": "#60A5FA",
+            "name": "Color 7"
+          },
+          {
+            "symbol": "7",
+            "hex": "#F59E0B",
+            "name": "Color 8"
+          },
+          {
+            "symbol": "8",
+            "hex": "#112233",
+            "name": "Color 9"
+          }
+        ]
       }
-    ]
+    }
   }
 }

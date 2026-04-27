@@ -127,30 +127,40 @@
             "entities": {}
           }
         }
-      ]
-    }
-  },
-  "palette": {
-    "schema": "html-js-gaming.palette",
-    "version": 1,
-    "name": "Bouncing Ball Palette",
-    "source": "manifest-and-runtime-color-scan",
-    "swatches": [
-      {
-        "symbol": "0",
-        "hex": "#05070A",
-        "name": "Color 1"
-      },
-      {
-        "symbol": "1",
-        "hex": "#F4F4EF",
-        "name": "Color 2"
-      },
-      {
-        "symbol": "2",
-        "hex": "#9BA3B3",
-        "name": "Color 3"
+      ],
+      "schema": "html-js-gaming.tool.primitive-skin-editor",
+      "version": 1,
+      "name": "Primitive Skin Editor",
+      "source": "manifest"
+    },
+    "palette-browser": {
+      "schema": "html-js-gaming.tool.palette-browser",
+      "version": 1,
+      "name": "Palette Browser",
+      "source": "manifest",
+      "palette": {
+        "schema": "html-js-gaming.palette",
+        "version": 1,
+        "name": "Bouncing Ball Palette",
+        "source": "manifest-and-runtime-color-scan",
+        "swatches": [
+          {
+            "symbol": "0",
+            "hex": "#05070A",
+            "name": "Color 1"
+          },
+          {
+            "symbol": "1",
+            "hex": "#F4F4EF",
+            "name": "Color 2"
+          },
+          {
+            "symbol": "2",
+            "hex": "#9BA3B3",
+            "name": "Color 3"
+          }
+        ]
       }
-    ]
+    }
   }
 }

@@ -168,7 +168,11 @@
   },
   "tools": {
     "primitive-skin-editor": {
-      "skins": []
+      "skins": [],
+      "schema": "html-js-gaming.tool.primitive-skin-editor",
+      "version": 1,
+      "name": "Primitive Skin Editor",
+      "source": "manifest"
     },
     "asset-browser": {
       "assets": {
@@ -214,65 +218,75 @@
             "source": "workspace-manager"
           }
         }
+      },
+      "schema": "html-js-gaming.tool.asset-browser",
+      "version": 1,
+      "name": "Asset Browser",
+      "source": "manifest"
+    },
+    "palette-browser": {
+      "schema": "html-js-gaming.tool.palette-browser",
+      "version": 1,
+      "name": "Palette Browser",
+      "source": "manifest",
+      "palette": {
+        "schema": "html-js-gaming.palette",
+        "version": 1,
+        "name": "Space Duel Palette",
+        "source": "manifest-and-runtime-color-scan",
+        "swatches": [
+          {
+            "symbol": "0",
+            "hex": "#020617",
+            "name": "Color 1"
+          },
+          {
+            "symbol": "1",
+            "hex": "#E2E8F0",
+            "name": "Color 2"
+          },
+          {
+            "symbol": "2",
+            "hex": "#8AA0BB",
+            "name": "Color 3"
+          },
+          {
+            "symbol": "3",
+            "hex": "#334155",
+            "name": "Color 4"
+          },
+          {
+            "symbol": "4",
+            "hex": "#93A5BC",
+            "name": "Color 5"
+          },
+          {
+            "symbol": "5",
+            "hex": "#FFFFFF",
+            "name": "Color 6"
+          },
+          {
+            "symbol": "6",
+            "hex": "#9AE6B4",
+            "name": "Color 7"
+          },
+          {
+            "symbol": "7",
+            "hex": "#FCA5A5",
+            "name": "Color 8"
+          },
+          {
+            "symbol": "8",
+            "hex": "#FECACA",
+            "name": "Color 9"
+          },
+          {
+            "symbol": "9",
+            "hex": "#F59E0B",
+            "name": "Color 10"
+          }
+        ]
       }
     }
-  },
-  "palette": {
-    "schema": "html-js-gaming.palette",
-    "version": 1,
-    "name": "Space Duel Palette",
-    "source": "manifest-and-runtime-color-scan",
-    "swatches": [
-      {
-        "symbol": "0",
-        "hex": "#020617",
-        "name": "Color 1"
-      },
-      {
-        "symbol": "1",
-        "hex": "#E2E8F0",
-        "name": "Color 2"
-      },
-      {
-        "symbol": "2",
-        "hex": "#8AA0BB",
-        "name": "Color 3"
-      },
-      {
-        "symbol": "3",
-        "hex": "#334155",
-        "name": "Color 4"
-      },
-      {
-        "symbol": "4",
-        "hex": "#93A5BC",
-        "name": "Color 5"
-      },
-      {
-        "symbol": "5",
-        "hex": "#FFFFFF",
-        "name": "Color 6"
-      },
-      {
-        "symbol": "6",
-        "hex": "#9AE6B4",
-        "name": "Color 7"
-      },
-      {
-        "symbol": "7",
-        "hex": "#FCA5A5",
-        "name": "Color 8"
-      },
-      {
-        "symbol": "8",
-        "hex": "#FECACA",
-        "name": "Color 9"
-      },
-      {
-        "symbol": "9",
-        "hex": "#F59E0B",
-        "name": "Color 10"
-      }
-    ]
   }
 }

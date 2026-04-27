@@ -95,68 +95,82 @@
             "source": "workspace-manager"
           }
         }
-      }
+      },
+      "schema": "html-js-gaming.tool.asset-browser",
+      "version": 1,
+      "name": "Asset Browser",
+      "source": "manifest"
     },
     "primitive-skin-editor": {
-      "skins": []
-    }
-  },
-  "palette": {
-    "schema": "html-js-gaming.palette",
-    "version": 1,
-    "name": "Pacman Palette",
-    "source": "manifest-and-runtime-color-scan",
-    "swatches": [
-      {
-        "symbol": "0",
-        "hex": "#020617",
-        "name": "Color 1"
-      },
-      {
-        "symbol": "1",
-        "hex": "#0B1329",
-        "name": "Color 2"
-      },
-      {
-        "symbol": "2",
-        "hex": "#020B1E",
-        "name": "Color 3"
-      },
-      {
-        "symbol": "3",
-        "hex": "#1E3A8A",
-        "name": "Color 4"
-      },
-      {
-        "symbol": "4",
-        "hex": "#1D4ED8",
-        "name": "Color 5"
-      },
-      {
-        "symbol": "5",
-        "hex": "#38BDF8",
-        "name": "Color 6"
-      },
-      {
-        "symbol": "6",
-        "hex": "#FACC15",
-        "name": "Color 7"
-      },
-      {
-        "symbol": "7",
-        "hex": "#EF4444",
-        "name": "Color 8"
-      },
-      {
-        "symbol": "8",
-        "hex": "#F472B6",
-        "name": "Color 9"
-      },
-      {
-        "symbol": "9",
-        "hex": "#22D3EE",
-        "name": "Color 10"
+      "skins": [],
+      "schema": "html-js-gaming.tool.primitive-skin-editor",
+      "version": 1,
+      "name": "Primitive Skin Editor",
+      "source": "manifest"
+    },
+    "palette-browser": {
+      "schema": "html-js-gaming.tool.palette-browser",
+      "version": 1,
+      "name": "Palette Browser",
+      "source": "manifest",
+      "palette": {
+        "schema": "html-js-gaming.palette",
+        "version": 1,
+        "name": "Pacman Palette",
+        "source": "manifest-and-runtime-color-scan",
+        "swatches": [
+          {
+            "symbol": "0",
+            "hex": "#020617",
+            "name": "Color 1"
+          },
+          {
+            "symbol": "1",
+            "hex": "#0B1329",
+            "name": "Color 2"
+          },
+          {
+            "symbol": "2",
+            "hex": "#020B1E",
+            "name": "Color 3"
+          },
+          {
+            "symbol": "3",
+            "hex": "#1E3A8A",
+            "name": "Color 4"
+          },
+          {
+            "symbol": "4",
+            "hex": "#1D4ED8",
+            "name": "Color 5"
+          },
+          {
+            "symbol": "5",
+            "hex": "#38BDF8",
+            "name": "Color 6"
+          },
+          {
+            "symbol": "6",
+            "hex": "#FACC15",
+            "name": "Color 7"
+          },
+          {
+            "symbol": "7",
+            "hex": "#EF4444",
+            "name": "Color 8"
+          },
+          {
+            "symbol": "8",
+            "hex": "#F472B6",
+            "name": "Color 9"
+          },
+          {
+            "symbol": "9",
+            "hex": "#22D3EE",
+            "name": "Color 10"
+          }
+        ]
       }
-    ]
+    }
   }
 }
