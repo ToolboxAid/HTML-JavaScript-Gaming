@@ -63,6 +63,10 @@ import {
   logToolLoadWarning
 } from "../../shared/toolLoadDiagnostics.js";
 
+const CANONICAL_PALETTE_SCHEMA = "html-js-gaming.palette";
+const CANONICAL_PALETTE_REQUIRED_FIELDS = Object.freeze(["schema", "version", "name", "swatches"]);
+const CANONICAL_PALETTE_REQUIRED_ARRAY_FIELDS = Object.freeze(["swatches"]);
+
 function getRequiredElement(id) {
   const element = document.getElementById(id);
   if (!element) {
@@ -696,6 +700,149 @@ function normalizeSamplePresetPath(pathValue) {
     return `./${trimmed}`;
   }
   return "";
+}
+
+function readFirstPathValue(value) {
+  if (Array.isArray(value)) {
+    return normalizeSamplePresetPath(value[0] || "");
+  }
+  return normalizeSamplePresetPath(value || "");
+}
+
+function deriveCanonicalPalettePathFromPresetPath(samplePresetPath) {
+  const normalizedPresetPath = normalizeSamplePresetPath(samplePresetPath);
+  if (!normalizedPresetPath) {
+    return "";
+  }
+  const dotted = normalizedPresetPath.replace(/\.sprite-editor\.json(?=$|[?#])/i, ".palette.json");
+  if (dotted !== normalizedPresetPath) {
+    return dotted;
+  }
+  const dashed = normalizedPresetPath.replace(/-sprite-editor\.json(?=$|[?#])/i, ".palette.json");
+  if (dashed !== normalizedPresetPath) {
+    return dashed;
+  }
+  return "";
+}
+
+function resolveRequiredPaletteInput(searchParams, requestedDataPaths, samplePresetPath) {
+  const fromPalettePathParam = normalizeSamplePresetPath(searchParams.get("palettePath") || "");
+  if (fromPalettePathParam) {
+    return {
+      path: fromPalettePathParam,
+      pathSource: "tool-input:query.palettePath"
+    };
+  }
+
+  const requestedEntries = Object.entries(requestedDataPaths || {});
+  for (const [key, value] of requestedEntries) {
+    if (!/palette/i.test(key)) {
+      continue;
+    }
+    const normalized = readFirstPathValue(value);
+    if (normalized) {
+      return {
+        path: normalized,
+        pathSource: `tool-input:query.${key}`
+      };
+    }
+  }
+
+  const fromSamplePreset = deriveCanonicalPalettePathFromPresetPath(samplePresetPath);
+  if (fromSamplePreset) {
+    return {
+      path: fromSamplePreset,
+      pathSource: "tool-input:derived.samplePresetPath"
+    };
+  }
+
+  return {
+    path: "",
+    pathSource: "tool-input:missing.palettePath"
+  };
+}
+
+function extractCanonicalPalettePayload(rawPalette) {
+  if (!rawPalette || typeof rawPalette !== "object" || Array.isArray(rawPalette)) {
+    return null;
+  }
+  if (Array.isArray(rawPalette.swatches)) {
+    return rawPalette;
+  }
+  if (rawPalette.palette && typeof rawPalette.palette === "object" && !Array.isArray(rawPalette.palette)) {
+    return rawPalette.palette;
+  }
+  if (rawPalette.payload && typeof rawPalette.payload === "object" && !Array.isArray(rawPalette.payload)) {
+    if (Array.isArray(rawPalette.payload.swatches)) {
+      return rawPalette.payload;
+    }
+    if (rawPalette.payload.palette && typeof rawPalette.payload.palette === "object" && !Array.isArray(rawPalette.payload.palette)) {
+      return rawPalette.payload.palette;
+    }
+  }
+  return null;
+}
+
+function parseCanonicalPalettePayload(rawPalette) {
+  const palette = extractCanonicalPalettePayload(rawPalette);
+  if (!palette) {
+    throw new Error("Palette payload did not include a canonical palette object.");
+  }
+
+  const schema = typeof palette.schema === "string" ? palette.schema.trim() : "";
+  if (schema !== CANONICAL_PALETTE_SCHEMA) {
+    throw new Error(`Palette schema mismatch. Expected ${CANONICAL_PALETTE_SCHEMA}.`);
+  }
+  if (!Number.isInteger(palette.version) || palette.version < 1) {
+    throw new Error("Palette version must be an integer >= 1.");
+  }
+  if (typeof palette.name !== "string" || !palette.name.trim()) {
+    throw new Error("Palette name is required.");
+  }
+  if (!Array.isArray(palette.swatches) || palette.swatches.length === 0) {
+    throw new Error("Palette swatches are required.");
+  }
+
+  const colors = extractPaletteColors(palette.swatches);
+  if (colors.length === 0) {
+    throw new Error("Palette swatches did not contain valid colors.");
+  }
+
+  const paletteId = (
+    (typeof palette.sourceId === "string" && palette.sourceId.trim())
+    || (typeof palette.name === "string" && palette.name.trim())
+    || "sample-palette"
+  );
+  const topLevelKeys = Object.keys(palette);
+
+  return {
+    paletteId,
+    colors,
+    swatchCount: colors.length,
+    loadedSchema: schema,
+    topLevelKeys
+  };
+}
+
+function applyCanonicalPaletteToProject(state, canonicalPalette) {
+  const colors = dedupeColors(canonicalPalette.colors).slice(0, 256);
+  if (colors.length === 0) {
+    throw new Error("Canonical palette did not contain usable colors.");
+  }
+
+  const previousActive = typeof state.project.activeColor === "string"
+    ? normalizeColor(state.project.activeColor)
+    : "";
+  state.project.palette = colors;
+  state.project.paletteRef = {
+    source: PALETTE_SOURCE_ID,
+    id: canonicalPalette.paletteId,
+    locked: true
+  };
+  state.project.activeColor = previousActive && colors.includes(previousActive)
+    ? previousActive
+    : colors[0];
+  state.project.recentColors = dedupeColors([state.project.activeColor, ...(state.project.recentColors || [])]).slice(0, MAX_RECENT_COLORS);
 }
 
 function buildPresetLoadedStatus(sampleId, samplePresetPath) {
@@ -1558,24 +1705,33 @@ function applySamplePreset(state, rawPreset, sampleId, samplePresetPath, sampleT
 async function tryLoadPresetFromQuery(state) {
   const searchParams = new URLSearchParams(window.location.search);
   const samplePresetPath = normalizeSamplePresetPath(searchParams.get("samplePresetPath") || "");
+  const sampleId = String(searchParams.get("sampleId") || "").trim();
+  const sampleTitle = normalizeSampleLabel(searchParams.get("sampleTitle") || "");
   const launchQuery = getToolLoadQuerySnapshot(searchParams);
+  const requestedDataPaths = getToolLoadRequestedDataPaths(launchQuery);
+  const paletteInput = resolveRequiredPaletteInput(searchParams, requestedDataPaths, samplePresetPath);
+  if (paletteInput.path) {
+    requestedDataPaths.palettePath = paletteInput.path;
+  }
+
   logToolLoadRequest({
     toolId: "sprite-editor",
-    sampleId: String(searchParams.get("sampleId") || "").trim(),
+    sampleId,
     samplePresetPath,
-    requestedDataPaths: getToolLoadRequestedDataPaths(launchQuery),
+    requestedDataPaths,
     launchQuery
   });
+
   if (!samplePresetPath) {
     logToolLoadWarning({
       toolId: "sprite-editor",
+      sampleId,
       reason: "samplePresetPath missing",
       launchQuery
     });
     return false;
   }
-  const sampleId = String(searchParams.get("sampleId") || "").trim();
-  const sampleTitle = normalizeSampleLabel(searchParams.get("sampleTitle") || "");
+
   setSampleSource(state, {
     mode: "sample",
     sampleId,
@@ -1583,10 +1739,34 @@ async function tryLoadPresetFromQuery(state) {
     samplePresetPath
   });
   renderHud(state);
+
+  const paletteRequiredFields = CANONICAL_PALETTE_REQUIRED_FIELDS.filter((field) => field !== "swatches");
+  if (!paletteInput.path) {
+    logToolLoadWarning({
+      toolId: "sprite-editor",
+      sampleId,
+      samplePresetPath,
+      dependencyId: "palette",
+      expectedPathKey: "palettePath",
+      expectedPath: "",
+      expectedSchema: CANONICAL_PALETTE_SCHEMA,
+      expectedTopLevelShape: [...CANONICAL_PALETTE_REQUIRED_FIELDS],
+      requiredFields: paletteRequiredFields,
+      requiredArrayFields: [...CANONICAL_PALETTE_REQUIRED_ARRAY_FIELDS],
+      requestedDataPaths,
+      launchQuery,
+      error: "Required palettePath input is missing from launch query and normalized tool input."
+    });
+    setStatus(state, "Preset load failed: required palettePath input is missing.");
+    return false;
+  }
+
+  let rawPreset = null;
+  let presetHref = "";
   let receivedTopLevelKeys = [];
   try {
     const presetUrl = new URL(samplePresetPath, window.location.href);
-    const presetHref = presetUrl.toString();
+    presetHref = presetUrl.toString();
     logToolLoadFetch({
       toolId: "sprite-editor",
       phase: "attempt",
@@ -1607,7 +1787,7 @@ async function tryLoadPresetFromQuery(state) {
     if (!response.ok) {
       throw new Error(`Preset request failed (${response.status}).`);
     }
-    const rawPreset = await response.json();
+    rawPreset = await response.json();
     receivedTopLevelKeys = rawPreset && typeof rawPreset === "object" && !Array.isArray(rawPreset)
       ? Object.keys(rawPreset)
       : [];
@@ -1618,13 +1798,143 @@ async function tryLoadPresetFromQuery(state) {
       fetchUrl: presetHref,
       loaded: summarizeToolLoadData(rawPreset)
     });
+  } catch (error) {
+    logToolLoadWarning({
+      toolId: "sprite-editor",
+      sampleId,
+      samplePresetPath,
+      error: error instanceof Error ? error.message : "unknown error",
+      receivedTopLevelKeys
+    });
+    setSampleSource(state, {
+      mode: "sample",
+      sampleId,
+      sampleTitle,
+      samplePresetPath
+    });
+    renderHud(state);
+    setStatus(state, `Preset load failed: ${error instanceof Error ? error.message : "unknown error"}`);
+    return false;
+  }
+
+  let paletteFetchUrl = "";
+  let paletteHttpStatus = null;
+  let paletteReceivedTopLevelKeys = [];
+  let paletteLoadedSchema = "";
+  let canonicalPalette = null;
+  try {
+    const paletteUrl = new URL(paletteInput.path, window.location.href);
+    paletteFetchUrl = paletteUrl.toString();
+    logToolLoadFetch({
+      toolId: "sprite-editor",
+      sampleId,
+      samplePresetPath,
+      dependencyId: "palette",
+      phase: "attempt",
+      fetchUrl: paletteFetchUrl,
+      requestedPath: paletteInput.path,
+      pathSource: paletteInput.pathSource,
+      expectedPathKey: "palettePath",
+      expectedPath: paletteInput.path,
+      expectedSchema: CANONICAL_PALETTE_SCHEMA,
+      expectedTopLevelShape: [...CANONICAL_PALETTE_REQUIRED_FIELDS],
+      requiredFields: paletteRequiredFields,
+      requiredArrayFields: [...CANONICAL_PALETTE_REQUIRED_ARRAY_FIELDS],
+      requestedDataPaths,
+      launchQuery
+    });
+    const paletteResponse = await fetch(paletteFetchUrl, { cache: "no-store" });
+    paletteHttpStatus = paletteResponse.status;
+    logToolLoadFetch({
+      toolId: "sprite-editor",
+      sampleId,
+      samplePresetPath,
+      dependencyId: "palette",
+      phase: "response",
+      fetchUrl: paletteFetchUrl,
+      requestedPath: paletteInput.path,
+      pathSource: paletteInput.pathSource,
+      expectedPathKey: "palettePath",
+      expectedPath: paletteInput.path,
+      expectedSchema: CANONICAL_PALETTE_SCHEMA,
+      expectedTopLevelShape: [...CANONICAL_PALETTE_REQUIRED_FIELDS],
+      requiredFields: paletteRequiredFields,
+      requiredArrayFields: [...CANONICAL_PALETTE_REQUIRED_ARRAY_FIELDS],
+      requestedDataPaths,
+      launchQuery,
+      status: paletteResponse.status,
+      ok: paletteResponse.ok
+    });
+    if (!paletteResponse.ok) {
+      throw new Error(`Palette request failed (${paletteResponse.status}).`);
+    }
+
+    const rawPalette = await paletteResponse.json();
+    canonicalPalette = parseCanonicalPalettePayload(rawPalette);
+    paletteReceivedTopLevelKeys = canonicalPalette.topLevelKeys.slice();
+    paletteLoadedSchema = canonicalPalette.loadedSchema;
+    logToolLoadLoaded({
+      toolId: "sprite-editor",
+      sampleId,
+      samplePresetPath,
+      dependencyId: "palette",
+      fetchUrl: paletteFetchUrl,
+      requestedPath: paletteInput.path,
+      pathSource: paletteInput.pathSource,
+      expectedPathKey: "palettePath",
+      expectedPath: paletteInput.path,
+      expectedSchema: CANONICAL_PALETTE_SCHEMA,
+      expectedTopLevelShape: [...CANONICAL_PALETTE_REQUIRED_FIELDS],
+      requiredFields: paletteRequiredFields,
+      requiredArrayFields: [...CANONICAL_PALETTE_REQUIRED_ARRAY_FIELDS],
+      requestedDataPaths,
+      launchQuery,
+      loaded: summarizeToolLoadData(rawPalette),
+      loadedSchema: canonicalPalette.loadedSchema,
+      arrayCounts: {
+        swatches: canonicalPalette.swatchCount
+      }
+    });
+  } catch (error) {
+    logToolLoadWarning({
+      toolId: "sprite-editor",
+      sampleId,
+      samplePresetPath,
+      dependencyId: "palette",
+      fetchUrl: paletteFetchUrl,
+      requestedPath: paletteInput.path,
+      pathSource: paletteInput.pathSource,
+      expectedPathKey: "palettePath",
+      expectedPath: paletteInput.path,
+      expectedSchema: CANONICAL_PALETTE_SCHEMA,
+      expectedTopLevelShape: [...CANONICAL_PALETTE_REQUIRED_FIELDS],
+      requiredFields: paletteRequiredFields,
+      requiredArrayFields: [...CANONICAL_PALETTE_REQUIRED_ARRAY_FIELDS],
+      requestedDataPaths,
+      launchQuery,
+      receivedTopLevelKeys: paletteReceivedTopLevelKeys,
+      loadedSchema: paletteLoadedSchema,
+      status: paletteHttpStatus,
+      error: error instanceof Error ? error.message : "unknown error"
+    });
+    setStatus(state, `Preset load failed: ${error instanceof Error ? error.message : "unknown error"}`);
+    return false;
+  }
+
+  try {
     applySamplePreset(state, rawPreset, sampleId, samplePresetPath, sampleTitle);
+    applyCanonicalPaletteToProject(state, canonicalPalette);
+    validateSpriteProjectAssets(state);
+    syncControlsFromProject(state);
+    renderAll(state);
+    setStatus(state, buildPresetLoadedStatus(sampleId, samplePresetPath));
     return true;
   } catch (error) {
     logToolLoadWarning({
       toolId: "sprite-editor",
       sampleId,
       samplePresetPath,
+      fetchUrl: presetHref,
       error: error instanceof Error ? error.message : "unknown error",
       receivedTopLevelKeys
     });

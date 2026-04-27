@@ -1,1 +1,1 @@
-Add expected-vs-actual tool-load diagnostics classification - PR 10.6I
+Require sprite-editor palette input and classify palette load failures - PR 10.6J

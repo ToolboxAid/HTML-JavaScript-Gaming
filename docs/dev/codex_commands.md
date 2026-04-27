@@ -1,12 +1,8 @@
-# Codex Commands — BUILD_PR_LEVEL_10_6I_TOOL_LOAD_EXPECTED_VS_ACTUAL_CLASSIFICATION_V3
+# Codex Command - BUILD_PR_LEVEL_10_6J_SPRITE_EDITOR_REQUIRED_PALETTE_INPUT
 
-## Model
-GPT-5.3-codex
+Model: GPT-5.4
+Reasoning: high
 
-## Reasoning
-high
-
-## Command
-```text
-Implement BUILD_PR_LEVEL_10_6I_TOOL_LOAD_EXPECTED_VS_ACTUAL_CLASSIFICATION_V3 from docs/pr/BUILD_PR_LEVEL_10_6I_TOOL_LOAD_EXPECTED_VS_ACTUAL_CLASSIFICATION_V3.md. Keep the change diagnostics-only. Add expected-vs-actual dependency classification to existing tool-load diagnostics. Do not normalize palette files in this PR. Do not add fallback data or hardcoded paths. Run npm run test:launch-smoke:games and npm run test:sample-standalone:data-flow. Put results in docs/dev/reports/level_10_6i_tool_load_expected_vs_actual_classification_report.md. Return a ZIP artifact at tmp/BUILD_PR_LEVEL_10_6I_TOOL_LOAD_EXPECTED_VS_ACTUAL_CLASSIFICATION_V3.zip.
+```powershell
+codex --model gpt-5.4 --reasoning high "Execute BUILD_PR_LEVEL_10_6J_SPRITE_EDITOR_REQUIRED_PALETTE_INPUT exactly as documented in docs/pr/BUILD_PR_LEVEL_10_6J_SPRITE_EDITOR_REQUIRED_PALETTE_INPUT.md. Make the smallest valid change. Do not add implementation outside sprite-editor launch/input loading and shared diagnostics needed for required palette input. Do not recreate palette-browser JSON wrappers. Do not use fallback palettes or hardcoded sample paths. Run npm run test:launch-smoke:games and npm run test:sample-standalone:data-flow. Place the result ZIP at tmp/BUILD_PR_LEVEL_10_6J_SPRITE_EDITOR_REQUIRED_PALETTE_INPUT.zip."
 ```

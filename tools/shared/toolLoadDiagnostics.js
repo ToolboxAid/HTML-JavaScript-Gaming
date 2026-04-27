@@ -372,6 +372,9 @@ function inferRequiredFields(contract, requiredArrayFields, details) {
   if (explicit.length > 0) {
     return explicit;
   }
+  if (normalizeText(details.dependencyId) === "palette" || contract.canonicalPaletteExpected) {
+    return CANONICAL_PALETTE_REQUIRED_FIELDS.filter((field) => !requiredArrayFields.includes(field));
+  }
   return contract.requiredPayloadShape.filter((field) => !requiredArrayFields.includes(field));
 }
 
@@ -382,11 +385,14 @@ function buildExpectedBlock(details, contract) {
   const expectedSchema = inferExpectedSchema(dependencyId, contract, details);
   const requiredArrayFields = inferRequiredArrayFields(dependencyId, contract, details);
   const requiredFields = inferRequiredFields(contract, requiredArrayFields, details);
-  const expectedTopLevelShape = makeUniqueList([
-    ...requiredFields,
-    ...requiredArrayFields,
-    ...contract.optionalPayloadShape
-  ]);
+  const explicitTopLevelShape = normalizeShapeList(details.expectedTopLevelShape);
+  const expectedTopLevelShape = explicitTopLevelShape.length > 0
+    ? explicitTopLevelShape
+    : makeUniqueList([
+      ...requiredFields,
+      ...requiredArrayFields,
+      ...contract.optionalPayloadShape
+    ]);
 
   return {
     dependencyId,
@@ -510,6 +516,15 @@ function isHttpFailure(details, actual) {
   return httpStatus < 200 || httpStatus >= 400;
 }
 
+function isSchemaMismatch(expected, actual) {
+  const expectedSchema = normalizeText(expected?.expectedSchema);
+  const actualSchema = normalizeText(actual?.loadedSchema);
+  if (!expectedSchema || !actualSchema) {
+    return false;
+  }
+  return expectedSchema !== actualSchema;
+}
+
 function classifyLikelyCause(expected, actual, details, missingRequiredFields) {
   const errorText = normalizeText(details.error).toLowerCase();
   if (missingRequiredFields.includes("spriteProject")) {
@@ -517,6 +532,9 @@ function classifyLikelyCause(expected, actual, details, missingRequiredFields) {
   }
   if (isHttpFailure(details, actual)) {
     return "wrong path";
+  }
+  if (isSchemaMismatch(expected, actual)) {
+    return "schema mismatch";
   }
   if (missingRequiredFields.length > 0) {
     if (actual.topLevelKeys.includes("tool") || actual.topLevelKeys.includes("config")) {
@@ -532,6 +550,7 @@ function classifyLikelyCause(expected, actual, details, missingRequiredFields) {
 
 function deriveClassification(boundary, details, expected, actual) {
   const missingRequiredFields = getMissingRequiredFields(expected, actual);
+  const schemaMismatch = isSchemaMismatch(expected, actual);
   if (boundary === "request") {
     return null;
   }
@@ -545,7 +564,7 @@ function deriveClassification(boundary, details, expected, actual) {
     return null;
   }
   if (boundary === "loaded") {
-    return missingRequiredFields.length > 0
+    return (schemaMismatch || missingRequiredFields.length > 0)
       ? CLASSIFICATION_VALUES.wrongShape
       : CLASSIFICATION_VALUES.success;
   }
@@ -555,7 +574,7 @@ function deriveClassification(boundary, details, expected, actual) {
   if (isHttpFailure(details, actual)) {
     return CLASSIFICATION_VALUES.wrongPath;
   }
-  return missingRequiredFields.length > 0
+  return (schemaMismatch || missingRequiredFields.length > 0)
     ? CLASSIFICATION_VALUES.wrongShape
     : CLASSIFICATION_VALUES.success;
 }
