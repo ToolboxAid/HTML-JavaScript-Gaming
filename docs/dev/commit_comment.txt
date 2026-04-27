@@ -1,1 +1,1 @@
-Complete Tool UI Readiness DoD with per-tool control and lifecycle acceptance targets - PR 10.6Q
+Complete tool UI control inventory with control-to-data-to-binding-to-lifecycle mapping and identify all gaps - PR 10.6R

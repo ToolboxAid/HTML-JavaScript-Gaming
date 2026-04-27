@@ -1,8 +1,12 @@
-# Codex command
+# Codex Commands - PR 10.6R
 
-Model: GPT-5.4
-Reasoning: high
+## Model
+GPT-5.4 or GPT-5.3-codex
 
-```powershell
-codex --model gpt-5.4 --reasoning high "Run BUILD_PR_LEVEL_10_6Q_TOOL_UI_READINESS_DOD_COMPLETION. Complete the Tool UI Readiness DoD across all current tools. Do not implement runtime fixes. Inspect actual tool files only as needed. Add or update docs/pr/BUILD_PR_LEVEL_10_6Q_TOOL_UI_READINESS_DOD_COMPLETION.md and write docs/dev/reports/level_10_6Q_tool_ui_readiness_dod_completion_report.md. Explicitly report any missed fields, controls, bindings, inputs, lifecycle/timer checks, and tool-specific acceptance checks. Keep one PR purpose only. Do not modify start_of_day folders. Do not rewrite roadmap content; status-only if execution-backed. Return ZIP at tmp/BUILD_PR_LEVEL_10_6Q_TOOL_UI_READINESS_DOD_COMPLETION.zip." 
+## Reasoning
+High
+
+## Command
+```text
+Read docs/pr/BUILD_PR_LEVEL_10_6R_TOOL_UI_CONTROL_INVENTORY_COMPLETION.md and execute it exactly. Produce the required reports only. Do not change implementation code. Do not modify start_of_day folders. Do not rewrite roadmap content. Search only the tool/sample/game files needed to inventory controls and bindings. Create docs/dev/reports/PR_10_6R_tool_ui_control_inventory.md and docs/dev/reports/PR_10_6R_tool_ui_control_gaps.md. Package the result as tmp/PR_10_6R.zip.
 ```
