@@ -10,7 +10,8 @@
     "check:phase24-closeout-guard": "node tools/dev/checkPhase24CloseoutExecutionGuard.mjs",
     "check:style-system-guard": "node tools/dev/checkStyleSystemGuard.mjs",
     "check:games-template-contract": "node ./scripts/validate-games-template-contract.mjs",
-    "test:launch-smoke": "node ./tests/runtime/LaunchSmokeAllEntries.test.mjs"
+    "test:launch-smoke": "node ./tests/runtime/LaunchSmokeAllEntries.test.mjs",
+    "test:launch-smoke:games": "node ./tests/runtime/LaunchSmokeAllEntries.test.mjs --games"
   },
   "dependencies": {
     "ws": "^8.20.0"

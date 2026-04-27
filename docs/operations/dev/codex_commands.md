@@ -1,48 +1,33 @@
 MODEL: GPT-5.3-codex
-REASONING: high
+REASONING: medium
 
 TASK:
-Apply BUILD_PR_LEVEL_9_7_REMOVE_INTERNAL_REFERENCES_AND_INLINE_DATA.
+Apply BUILD_PR_LEVEL_9_9_LAUNCH_SMOKE_GAMES_ONLY_FAST_PATH.
 
 STEPS:
-1. Read docs/pr/PLAN_PR_LEVEL_9_7_REMOVE_INTERNAL_REFERENCES_AND_INLINE_DATA.md.
-2. Read docs/pr/BUILD_PR_LEVEL_9_7_REMOVE_INTERNAL_REFERENCES_AND_INLINE_DATA.md.
-3. Open `games/Asteroids/game.manifest.json`.
-4. Remove internal pointer patterns:
-   - runtimeSource
-   - game.manifest.json#
-   - #tools/
-   - #tools.
-   - source.path pointing back to this manifest
-   - lineage.inlinedSourceFiles
-   - lineage.toolDomains
-5. Remove or restrict root assetCatalog:
-   - no JSON-data entries
-   - external binary/media paths only if retained
-6. Preserve actual data under owning tool sections:
-   - primitive-skin-editor
-   - sprite-editor
-   - tile-map-editor
-   - parallax-editor
-   - vector-asset-studio
-   - asset-browser for external media only
-7. Search for old deleted JSON filenames and remove stale references.
-8. Verify:
-   - only one JSON remains under games/Asteroids
-   - no internal manifest fragment refs remain
-   - no runtimeSource remains
-   - Asteroids direct launch works
-9. Update docs/dev/reports/level_9_7_remove_internal_references_report.md.
-10. Update docs/dev/roadmaps/MASTER_ROADMAP_ENGINE.md status only if needed:
-    - [ ] -> [.]
-    - [.] -> [x]
-    - no prose rewrite/delete
-11. Do not add validators.
-12. Do not modify start_of_day.
-13. Create Codex delta ZIP:
-    tmp/BUILD_PR_LEVEL_9_7_REMOVE_INTERNAL_REFERENCES_AND_INLINE_DATA_delta.zip
+1. Read docs/pr/PLAN_PR_LEVEL_9_9_LAUNCH_SMOKE_GAMES_ONLY_FAST_PATH.md.
+2. Read docs/pr/BUILD_PR_LEVEL_9_9_LAUNCH_SMOKE_GAMES_ONLY_FAST_PATH.md.
+3. Inspect:
+   - package.json
+   - tests/runtime/LaunchSmokeAllEntries.test.mjs
+   - scripts that invoke launch smoke tests
+4. Add or update a dedicated games-only command:
+   - preferred: npm run test:launch-smoke:games
+   - must pass: --games
+5. Ensure games-only command invokes LaunchSmokeAllEntries exactly once.
+6. Do not remove full all-entry launch smoke behavior.
+7. Ensure games-only excludes samples and tools.
+8. Write docs/dev/reports/level_9_9_launch_smoke_games_only_fast_path_report.md with final command and validation.
+9. Update docs/dev/roadmaps/MASTER_ROADMAP_ENGINE.md status only if needed:
+   - [ ] -> [.]
+   - [.] -> [x]
+   - no prose rewrite/delete
+10. Do not modify start_of_day.
+11. Create Codex delta ZIP:
+    tmp/BUILD_PR_LEVEL_9_9_LAUNCH_SMOKE_GAMES_ONLY_FAST_PATH_delta.zip
 
 ACCEPTANCE:
-- manifest is data, not pointer map
-- Asteroids launches
+- games-only launch smoke command exists
+- samples/tools excluded
+- duplicate game execution false
 - delta ZIP exists

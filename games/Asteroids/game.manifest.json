@@ -11,63 +11,6 @@
     "workspaceManagerPath": "/tools/Workspace%20Manager/index.html?gameId=Asteroids&mount=game",
     "workspaceManagerOptional": true
   },
-  "assetCatalog": {
-    "audio.asteroids.fire": {
-      "path": "/games/Asteroids/assets/audio/fire.wav",
-      "kind": "audio",
-      "source": "workspace-manager"
-    },
-    "audio.asteroids.bang-large": {
-      "path": "/games/Asteroids/assets/audio/bangLarge.wav",
-      "kind": "audio",
-      "source": "workspace-manager"
-    },
-    "audio.asteroids.bang-medium": {
-      "path": "/games/Asteroids/assets/audio/bangMedium.wav",
-      "kind": "audio",
-      "source": "workspace-manager"
-    },
-    "audio.asteroids.bang-small": {
-      "path": "/games/Asteroids/assets/audio/bangSmall.wav",
-      "kind": "audio",
-      "source": "workspace-manager"
-    },
-    "audio.asteroids.beat-1": {
-      "path": "/games/Asteroids/assets/audio/beat1.wav",
-      "kind": "audio",
-      "source": "workspace-manager"
-    },
-    "audio.asteroids.beat-2": {
-      "path": "/games/Asteroids/assets/audio/beat2.wav",
-      "kind": "audio",
-      "source": "workspace-manager"
-    },
-    "audio.asteroids.extra-ship": {
-      "path": "/games/Asteroids/assets/audio/extraShip.wav",
-      "kind": "audio",
-      "source": "workspace-manager"
-    },
-    "audio.asteroids.thrust": {
-      "path": "/games/Asteroids/assets/audio/thrust.wav",
-      "kind": "audio",
-      "source": "workspace-manager"
-    },
-    "audio.asteroids.saucer-large": {
-      "path": "/games/Asteroids/assets/audio/saucerBig.wav",
-      "kind": "audio",
-      "source": "workspace-manager"
-    },
-    "audio.asteroids.saucer-small": {
-      "path": "/games/Asteroids/assets/audio/saucerSmall.wav",
-      "kind": "audio",
-      "source": "workspace-manager"
-    },
-    "image.asteroids.bezel": {
-      "path": "/games/Asteroids/assets/images/bezel.png",
-      "kind": "image",
-      "source": "workspace-manager"
-    }
-  },
   "tools": {
     "primitive-skin-editor": {
       "palettes": {
@@ -486,6 +429,63 @@
         "bezel": {
           "stretchOverride": {
             "uniformEdgeStretchPx": 10
+          }
+        },
+        "media": {
+          "audio.asteroids.fire": {
+            "path": "/games/Asteroids/assets/audio/fire.wav",
+            "kind": "audio",
+            "source": "workspace-manager"
+          },
+          "audio.asteroids.bang-large": {
+            "path": "/games/Asteroids/assets/audio/bangLarge.wav",
+            "kind": "audio",
+            "source": "workspace-manager"
+          },
+          "audio.asteroids.bang-medium": {
+            "path": "/games/Asteroids/assets/audio/bangMedium.wav",
+            "kind": "audio",
+            "source": "workspace-manager"
+          },
+          "audio.asteroids.bang-small": {
+            "path": "/games/Asteroids/assets/audio/bangSmall.wav",
+            "kind": "audio",
+            "source": "workspace-manager"
+          },
+          "audio.asteroids.beat-1": {
+            "path": "/games/Asteroids/assets/audio/beat1.wav",
+            "kind": "audio",
+            "source": "workspace-manager"
+          },
+          "audio.asteroids.beat-2": {
+            "path": "/games/Asteroids/assets/audio/beat2.wav",
+            "kind": "audio",
+            "source": "workspace-manager"
+          },
+          "audio.asteroids.extra-ship": {
+            "path": "/games/Asteroids/assets/audio/extraShip.wav",
+            "kind": "audio",
+            "source": "workspace-manager"
+          },
+          "audio.asteroids.thrust": {
+            "path": "/games/Asteroids/assets/audio/thrust.wav",
+            "kind": "audio",
+            "source": "workspace-manager"
+          },
+          "audio.asteroids.saucer-large": {
+            "path": "/games/Asteroids/assets/audio/saucerBig.wav",
+            "kind": "audio",
+            "source": "workspace-manager"
+          },
+          "audio.asteroids.saucer-small": {
+            "path": "/games/Asteroids/assets/audio/saucerSmall.wav",
+            "kind": "audio",
+            "source": "workspace-manager"
+          },
+          "image.asteroids.bezel": {
+            "path": "/games/Asteroids/assets/images/bezel.png",
+            "kind": "image",
+            "source": "workspace-manager"
           }
         }
       }

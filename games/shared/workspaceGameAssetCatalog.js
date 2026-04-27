@@ -164,7 +164,14 @@ function normalizeManifestCatalogPayload(payload) {
   const schema = typeof source.schema === "string" ? source.schema.trim() : "";
   const version = Number(source.version);
   const assetCatalog = toObject(source.assetCatalog);
-  const entries = normalizeCatalogEntries(assetCatalog.assets || assetCatalog);
+  const catalogEntries = normalizeCatalogEntries(assetCatalog.assets || assetCatalog);
+  const toolMediaEntries = normalizeCatalogEntries(
+    source?.tools?.["asset-browser"]?.assets?.media
+  );
+  const entries = {
+    ...catalogEntries,
+    ...toolMediaEntries
+  };
   const isValidSchema = schema === GAME_MANIFEST_SCHEMA;
   const isValidVersion = Number.isFinite(version) && version >= 1;
   return {

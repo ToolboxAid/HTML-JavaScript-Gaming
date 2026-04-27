@@ -1,10 +1,9 @@
-BUILD_PR_LEVEL_9_7_REMOVE_INTERNAL_REFERENCES_AND_INLINE_DATA
+BUILD_PR_LEVEL_9_9_LAUNCH_SMOKE_GAMES_ONLY_FAST_PATH
 
-- Removed internal manifest pointer references from Asteroids game.manifest.json
-- Kept actual data directly under owning tool sections
-- Preserved external media paths only where appropriate
+- Added games-only launch smoke fast path
+- Ensured browser smoke validation can run games only once
+- Preserved full all-entry launch smoke coverage
 
 PR Details:
-- Completes Asteroids direct-data manifest model
-- No validators
+- Fixes accidental games + samples + tools browser smoke runs
 - No start_of_day changes

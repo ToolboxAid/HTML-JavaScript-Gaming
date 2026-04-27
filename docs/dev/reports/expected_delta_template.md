@@ -1,25 +1,21 @@
 # Expected Codex Return / Delta Template
 
 ## Expected Changed Files
-- `games/Asteroids/game.manifest.json`
-- Asteroids loader/runtime files only if required to remove internal pointer resolution
-- `docs/dev/reports/level_9_7_remove_internal_references_report.md`
+- `package.json` if npm script is added/updated
+- `tests/runtime/LaunchSmokeAllEntries.test.mjs` only if needed for clearer mode naming/reporting
+- `docs/dev/reports/level_9_9_launch_smoke_games_only_fast_path_report.md`
 - `docs/dev/roadmaps/MASTER_ROADMAP_ENGINE.md` if status update needed
 
 ## Expected Validation Summary
-- `asteroids_json_count=1`
-- `runtimeSource_remaining=0`
-- `internal_fragment_refs_remaining=0`
-- `root_assetCatalog_json_refs_remaining=0`
-- `inlinedSourceFiles_remaining=0`
-- `toolDomains_remaining=0`
-- `old_deleted_json_filename_refs_remaining=0`
-- `external_media_paths_allowed=true`
-- `asteroids_direct_launch=true`
-- `validators_added=0`
+- `games_only_script_exists=true`
+- `games_only_passes_games_flag=true`
+- `samples_in_games_only_run=false`
+- `tools_in_games_only_run=false`
+- `duplicate_game_execution=false`
+- `full_launch_smoke_preserved=true`
 - `start_of_day_changes=0`
 
 ## Expected Delta ZIP
 Codex must create:
 
-`tmp/BUILD_PR_LEVEL_9_7_REMOVE_INTERNAL_REFERENCES_AND_INLINE_DATA_delta.zip`
+`tmp/BUILD_PR_LEVEL_9_9_LAUNCH_SMOKE_GAMES_ONLY_FAST_PATH_delta.zip`
