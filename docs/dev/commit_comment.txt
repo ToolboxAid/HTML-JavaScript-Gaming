@@ -1,1 +1,1 @@
-Resolve sprite-editor palette input from manifest SSoT and require canonical palette fetch - PR 10.6K
+Add tool UI readiness definition of done and Codex gap review - PR 10.6M
