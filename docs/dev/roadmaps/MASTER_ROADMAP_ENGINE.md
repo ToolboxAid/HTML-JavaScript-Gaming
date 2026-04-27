@@ -901,4 +901,5 @@
 - [x] Palette tool singleton + tool section metadata correction is complete (`tools["palette-browser"].palette` + metadata on all tool sections).
 - [x] Games index Workspace Manager open-action browser test is complete (`gameId` + `mount=game`, legacy `?game=` rejected, diagnostic check included).
 - [x] `tools/shared/asteroidsPlatformDemo.js` shared-boundary audit is complete with move recommendation captured for follow-up.
+- [x] Manifest payload expectation test + cleanup completed (no root legacy manifest blocks, no `sourcePath`, palette singleton enforced, Asteroids tool payloads pruned to active data domains).
 - [x] Workspace Manager shared palette binding now hydrates from `game.manifest.json` `tools["palette-browser"].palette` (with root `palette` compatibility fallback only).

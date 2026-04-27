@@ -11,206 +11,6 @@
     "workspaceManagerPath": "/tools/Workspace%20Manager/index.html?gameId=vector-arcade-sample&mount=game",
     "workspaceManagerOptional": true
   },
-  "lineage": {
-    "legacyCatalogs": [
-      "games/vector-arcade-sample/assets/workspace.asset-catalog.json"
-    ],
-    "status": "legacy-catalogs-retained-during-ssot-rollout",
-    "legacyCatalogData": [
-      {
-        "id": "games.vector.arcade.sample.assets.workspace.asset.catalog",
-        "sourcePath": "games/vector-arcade-sample/assets/workspace.asset-catalog.json",
-        "data": {
-          "schema": "html-js-gaming.game-asset-catalog",
-          "version": 1,
-          "gameId": "vector-arcade-sample",
-          "assets": {
-            "palette.vector-arcade.primary": {
-              "path": "/games/vector-arcade-sample/assets/data/palettes/vector-native-primary.palette.json",
-              "kind": "palette",
-              "source": "workspace-manager"
-            },
-            "parallax.vector-arcade.backdrop": {
-              "path": "/games/vector-arcade-sample/assets/data/parallax/template-backdrop.parallax.json",
-              "kind": "parallax",
-              "source": "workspace-manager"
-            },
-            "image.vector-arcade.backdrop-svg": {
-              "path": "/games/vector-arcade-sample/assets/data/parallax/template-backdrop.svg",
-              "kind": "image",
-              "source": "workspace-manager"
-            },
-            "sprite.vector-arcade.player": {
-              "path": "/games/vector-arcade-sample/assets/data/sprites/template-player.sprite.json",
-              "kind": "sprite",
-              "source": "workspace-manager"
-            },
-            "tilemap.vector-arcade.arena": {
-              "path": "/games/vector-arcade-sample/assets/data/tilemaps/template-arena.tilemap.json",
-              "kind": "tilemap",
-              "source": "workspace-manager"
-            },
-            "tilemap.vector-arcade.ui": {
-              "path": "/games/vector-arcade-sample/assets/data/tilemaps/template-ui.tileset.json",
-              "kind": "tilemap",
-              "source": "workspace-manager"
-            },
-            "vector.vector-arcade.player": {
-              "path": "/games/vector-arcade-sample/assets/data/vectors/template-player.vector.json",
-              "kind": "vector",
-              "source": "workspace-manager"
-            },
-            "vector.vector-arcade.title": {
-              "path": "/games/vector-arcade-sample/assets/data/vectors/template-title.vector.json",
-              "kind": "vector",
-              "source": "workspace-manager"
-            },
-            "vector.vector-arcade.hud": {
-              "path": "/games/vector-arcade-sample/assets/data/vectors/template-hud.vector.json",
-              "kind": "vector",
-              "source": "workspace-manager"
-            },
-            "vector.vector-arcade.obstacle-small": {
-              "path": "/games/vector-arcade-sample/assets/data/vectors/template-obstacle-small.vector.json",
-              "kind": "vector",
-              "source": "workspace-manager"
-            },
-            "vector.vector-arcade.obstacle-large": {
-              "path": "/games/vector-arcade-sample/assets/data/vectors/template-obstacle-large.vector.json",
-              "kind": "vector",
-              "source": "workspace-manager"
-            }
-          }
-        }
-      }
-    ]
-  },
-  "sources": {
-    "workspaceAssetCatalogPath": "games/vector-arcade-sample/assets/workspace.asset-catalog.json",
-    "toolsManifestPath": "",
-    "metadataPath": "games/metadata/games.index.metadata.json"
-  },
-  "assets": {
-    "allJsonAssets": [
-      "games/vector-arcade-sample/assets/data/palettes/vector-native-primary.palette.json",
-      "games/vector-arcade-sample/assets/data/parallax/template-backdrop.parallax.json",
-      "games/vector-arcade-sample/assets/data/sprites/template-player.sprite.json",
-      "games/vector-arcade-sample/assets/data/tilemaps/template-arena.tilemap.json",
-      "games/vector-arcade-sample/assets/data/tilemaps/template-ui.tileset.json",
-      "games/vector-arcade-sample/assets/data/vectors/template-hud.vector.json",
-      "games/vector-arcade-sample/assets/data/vectors/template-obstacle-large.vector.json",
-      "games/vector-arcade-sample/assets/data/vectors/template-obstacle-small.vector.json",
-      "games/vector-arcade-sample/assets/data/vectors/template-player.vector.json",
-      "games/vector-arcade-sample/assets/data/vectors/template-title.vector.json",
-      "games/vector-arcade-sample/assets/workspace.asset-catalog.json",
-      "games/vector-arcade-sample/config/sample.project.json",
-      "games/vector-arcade-sample/runtime/bootstrap.runtime.json"
-    ],
-    "palettes": [
-      "games/vector-arcade-sample/assets/data/palettes/vector-native-primary.palette.json"
-    ],
-    "skins": [],
-    "sprites": [
-      "games/vector-arcade-sample/assets/data/sprites/template-player.sprite.json"
-    ],
-    "vectors": [
-      "games/vector-arcade-sample/assets/data/vectors/template-hud.vector.json",
-      "games/vector-arcade-sample/assets/data/vectors/template-obstacle-large.vector.json",
-      "games/vector-arcade-sample/assets/data/vectors/template-obstacle-small.vector.json",
-      "games/vector-arcade-sample/assets/data/vectors/template-player.vector.json",
-      "games/vector-arcade-sample/assets/data/vectors/template-title.vector.json"
-    ],
-    "tilemaps": [
-      "games/vector-arcade-sample/assets/data/tilemaps/template-arena.tilemap.json",
-      "games/vector-arcade-sample/assets/data/tilemaps/template-ui.tileset.json"
-    ],
-    "parallax": [
-      "games/vector-arcade-sample/assets/data/parallax/template-backdrop.parallax.json",
-      "games/vector-arcade-sample/assets/data/parallax/template-backdrop.svg"
-    ],
-    "tilesets": [
-      "games/vector-arcade-sample/assets/data/tilemaps/template-ui.tileset.json"
-    ],
-    "overrides": [],
-    "runtime": [
-      "games/vector-arcade-sample/runtime/bootstrap.runtime.json"
-    ],
-    "config": [
-      "games/vector-arcade-sample/config/sample.project.json"
-    ],
-    "other": [
-      "games/vector-arcade-sample/assets/workspace.asset-catalog.json"
-    ],
-    "workspaceCatalogAssets": [
-      {
-        "assetId": "palette.vector-arcade.primary",
-        "path": "games/vector-arcade-sample/assets/data/palettes/vector-native-primary.palette.json",
-        "kind": "palette",
-        "source": "workspace-manager"
-      },
-      {
-        "assetId": "parallax.vector-arcade.backdrop",
-        "path": "games/vector-arcade-sample/assets/data/parallax/template-backdrop.parallax.json",
-        "kind": "parallax",
-        "source": "workspace-manager"
-      },
-      {
-        "assetId": "image.vector-arcade.backdrop-svg",
-        "path": "games/vector-arcade-sample/assets/data/parallax/template-backdrop.svg",
-        "kind": "image",
-        "source": "workspace-manager"
-      },
-      {
-        "assetId": "sprite.vector-arcade.player",
-        "path": "games/vector-arcade-sample/assets/data/sprites/template-player.sprite.json",
-        "kind": "sprite",
-        "source": "workspace-manager"
-      },
-      {
-        "assetId": "tilemap.vector-arcade.arena",
-        "path": "games/vector-arcade-sample/assets/data/tilemaps/template-arena.tilemap.json",
-        "kind": "tilemap",
-        "source": "workspace-manager"
-      },
-      {
-        "assetId": "tilemap.vector-arcade.ui",
-        "path": "games/vector-arcade-sample/assets/data/tilemaps/template-ui.tileset.json",
-        "kind": "tilemap",
-        "source": "workspace-manager"
-      },
-      {
-        "assetId": "vector.vector-arcade.player",
-        "path": "games/vector-arcade-sample/assets/data/vectors/template-player.vector.json",
-        "kind": "vector",
-        "source": "workspace-manager"
-      },
-      {
-        "assetId": "vector.vector-arcade.title",
-        "path": "games/vector-arcade-sample/assets/data/vectors/template-title.vector.json",
-        "kind": "vector",
-        "source": "workspace-manager"
-      },
-      {
-        "assetId": "vector.vector-arcade.hud",
-        "path": "games/vector-arcade-sample/assets/data/vectors/template-hud.vector.json",
-        "kind": "vector",
-        "source": "workspace-manager"
-      },
-      {
-        "assetId": "vector.vector-arcade.obstacle-small",
-        "path": "games/vector-arcade-sample/assets/data/vectors/template-obstacle-small.vector.json",
-        "kind": "vector",
-        "source": "workspace-manager"
-      },
-      {
-        "assetId": "vector.vector-arcade.obstacle-large",
-        "path": "games/vector-arcade-sample/assets/data/vectors/template-obstacle-large.vector.json",
-        "kind": "vector",
-        "source": "workspace-manager"
-      }
-    ],
-    "toolsManifestAssets": []
-  },
   "tools": {
     "primitive-skin-editor": {
       "skins": [],
@@ -223,7 +23,6 @@
       "sprites": [
         {
           "id": "sprite.vector-arcade.player",
-          "sourcePath": "games/vector-arcade-sample/assets/data/sprites/template-player.sprite.json",
           "data": {
             "schema": "toolbox.sprite-project/1",
             "version": 1,
@@ -256,7 +55,6 @@
       "maps": [
         {
           "id": "tilemap.vector-arcade.arena",
-          "sourcePath": "games/vector-arcade-sample/assets/data/tilemaps/template-arena.tilemap.json",
           "data": {
             "name": "Vector Arcade Sample Arena",
             "states": [
@@ -276,7 +74,6 @@
       "tilesets": [
         {
           "id": "tilemap.vector-arcade.ui",
-          "sourcePath": "games/vector-arcade-sample/assets/data/tilemaps/template-ui.tileset.json",
           "data": {
             "name": "Template UI Tileset",
             "tileWidth": 8,
@@ -298,7 +95,6 @@
       "parallaxLevels": [
         {
           "id": "parallax.vector-arcade.backdrop",
-          "sourcePath": "games/vector-arcade-sample/assets/data/parallax/template-backdrop.parallax.json",
           "data": {
             "name": "Sample Backdrop Layer",
             "role": "backdrop",
@@ -315,7 +111,6 @@
       "vectors": [
         {
           "id": "vector.vector-arcade.hud",
-          "sourcePath": "games/vector-arcade-sample/assets/data/vectors/template-hud.vector.json",
           "data": {
             "id": "vector.template.ui.hud",
             "type": "vector",
@@ -342,7 +137,6 @@
         },
         {
           "id": "vector.vector-arcade.obstacle-large",
-          "sourcePath": "games/vector-arcade-sample/assets/data/vectors/template-obstacle-large.vector.json",
           "data": {
             "id": "vector.template.obstacle.large",
             "type": "vector",
@@ -366,7 +160,6 @@
         },
         {
           "id": "vector.vector-arcade.obstacle-small",
-          "sourcePath": "games/vector-arcade-sample/assets/data/vectors/template-obstacle-small.vector.json",
           "data": {
             "id": "vector.template.obstacle.small",
             "type": "vector",
@@ -390,7 +183,6 @@
         },
         {
           "id": "vector.vector-arcade.player",
-          "sourcePath": "games/vector-arcade-sample/assets/data/vectors/template-player.vector.json",
           "data": {
             "id": "vector.template.player",
             "type": "vector",
@@ -417,7 +209,6 @@
         },
         {
           "id": "vector.vector-arcade.title",
-          "sourcePath": "games/vector-arcade-sample/assets/data/vectors/template-title.vector.json",
           "data": {
             "id": "vector.template.ui.title",
             "type": "vector",
@@ -467,7 +258,6 @@
       "projectConfigs": [
         {
           "id": "games.vector.arcade.sample.config.sample.project",
-          "sourcePath": "games/vector-arcade-sample/config/sample.project.json",
           "data": {
             "sampleId": "vector-arcade-sample",
             "schema": "toolbox.sample/1",
@@ -479,7 +269,6 @@
       "runtimeConfigs": [
         {
           "id": "games.vector.arcade.sample.runtime.bootstrap.runtime",
-          "sourcePath": "games/vector-arcade-sample/runtime/bootstrap.runtime.json",
           "data": {
             "modulePath": "games/vector-arcade-sample/main.js",
             "exportName": "bootVectorArcadeSample",

@@ -11,85 +11,11 @@
     "workspaceManagerPath": "/tools/Workspace%20Manager/index.html?gameId=Bouncing-ball&mount=game",
     "workspaceManagerOptional": true
   },
-  "lineage": {
-    "legacyCatalogs": [
-      "games/Bouncing-ball/assets/workspace.asset-catalog.json"
-    ],
-    "status": "legacy-catalogs-retained-during-ssot-rollout",
-    "legacyCatalogData": [
-      {
-        "id": "games.bouncing.ball.assets.workspace.asset.catalog",
-        "sourcePath": "games/Bouncing-ball/assets/workspace.asset-catalog.json",
-        "data": {
-          "schema": "html-js-gaming.game-asset-catalog",
-          "version": 1,
-          "gameId": "bouncing-ball",
-          "assets": {
-            "palette.bouncing-ball.classic": {
-              "path": "/games/Bouncing-ball/assets/palettes/bouncing-ball-classic.palette.json",
-              "kind": "palette",
-              "source": "workspace-manager"
-            },
-            "skin.main": {
-              "path": "/games/Bouncing-ball/assets/skins/skin.main.json",
-              "kind": "skin",
-              "source": "workspace-manager"
-            }
-          }
-        }
-      }
-    ]
-  },
-  "sources": {
-    "workspaceAssetCatalogPath": "games/Bouncing-ball/assets/workspace.asset-catalog.json",
-    "toolsManifestPath": "",
-    "metadataPath": "games/metadata/games.index.metadata.json"
-  },
-  "assets": {
-    "allJsonAssets": [
-      "games/Bouncing-ball/assets/palettes/bouncing-ball-classic.palette.json",
-      "games/Bouncing-ball/assets/skins/skin.main.json",
-      "games/Bouncing-ball/assets/workspace.asset-catalog.json"
-    ],
-    "palettes": [
-      "games/Bouncing-ball/assets/palettes/bouncing-ball-classic.palette.json"
-    ],
-    "skins": [
-      "games/Bouncing-ball/assets/skins/skin.main.json"
-    ],
-    "sprites": [],
-    "vectors": [],
-    "tilemaps": [],
-    "parallax": [],
-    "tilesets": [],
-    "overrides": [],
-    "runtime": [],
-    "config": [],
-    "other": [
-      "games/Bouncing-ball/assets/workspace.asset-catalog.json"
-    ],
-    "workspaceCatalogAssets": [
-      {
-        "assetId": "palette.bouncing-ball.classic",
-        "path": "games/Bouncing-ball/assets/palettes/bouncing-ball-classic.palette.json",
-        "kind": "palette",
-        "source": "workspace-manager"
-      },
-      {
-        "assetId": "skin.main",
-        "path": "games/Bouncing-ball/assets/skins/skin.main.json",
-        "kind": "skin",
-        "source": "workspace-manager"
-      }
-    ],
-    "toolsManifestAssets": []
-  },
   "tools": {
     "primitive-skin-editor": {
       "skins": [
         {
           "id": "skin.main",
-          "sourcePath": "games/Bouncing-ball/assets/skins/skin.main.json",
           "data": {
             "documentKind": "game-skin",
             "version": 1,

@@ -11,54 +11,6 @@
     "workspaceManagerPath": "/tools/Workspace%20Manager/index.html?gameId=_template&mount=game",
     "workspaceManagerOptional": true
   },
-  "lineage": {
-    "legacyCatalogs": [
-      "games/_template/assets/tools.manifest.json"
-    ],
-    "status": "legacy-catalogs-retained-during-ssot-rollout",
-    "legacyCatalogData": [
-      {
-        "id": "games.template.assets.tools.manifest",
-        "sourcePath": "games/_template/assets/tools.manifest.json",
-        "data": {
-          "schema": "html-js-gaming.game-asset-manifest",
-          "version": 1,
-          "gameId": "_template",
-          "domains": {
-            "sprites": [],
-            "tilemaps": [],
-            "parallax": [],
-            "vectors": []
-          }
-        }
-      }
-    ]
-  },
-  "sources": {
-    "workspaceAssetCatalogPath": "",
-    "toolsManifestPath": "games/_template/assets/tools.manifest.json",
-    "metadataPath": "games/metadata/games.index.metadata.json"
-  },
-  "assets": {
-    "allJsonAssets": [
-      "games/_template/assets/tools.manifest.json"
-    ],
-    "palettes": [],
-    "skins": [],
-    "sprites": [],
-    "vectors": [],
-    "tilemaps": [],
-    "parallax": [],
-    "tilesets": [],
-    "overrides": [],
-    "runtime": [],
-    "config": [],
-    "other": [
-      "games/_template/assets/tools.manifest.json"
-    ],
-    "workspaceCatalogAssets": [],
-    "toolsManifestAssets": []
-  },
   "tools": {
     "primitive-skin-editor": {
       "skins": [],

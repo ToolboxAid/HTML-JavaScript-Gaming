@@ -456,6 +456,29 @@ async function hydrateSharedAssetFromGameLaunchContext(catalogContext = null) {
 
   const context = catalogContext || await readCatalogContextFromLaunchContext(launchContext);
   if (!context || !Array.isArray(context.entries) || context.entries.length === 0) {
+    const manifestContext = await readManifestContextFromLaunchContext(launchContext);
+    const vectors = manifestContext?.manifestPayload?.tools?.["vector-asset-studio"]?.vectors;
+    if (vectors && typeof vectors === "object") {
+      const vectorId = Array.isArray(vectors)
+        ? normalizeTextValue(vectors.find((entry) => Boolean(normalizeTextValue(entry?.id)))?.id)
+        : normalizeTextValue(Object.keys(vectors)[0]);
+      if (vectorId) {
+        return writeSharedAssetHandoff({
+          assetId: vectorId,
+          assetType: "vector",
+          sourcePath: manifestContext?.manifestPath || "",
+          displayName: vectorId,
+          tags: ["vector"],
+          metadata: {
+            source: "workspace-game-manifest.vector-asset-studio",
+            gameId: launchContext.gameId || "",
+            sourcePath: manifestContext?.manifestPath || ""
+          },
+          sourceToolId: "workspace-manager",
+          selectedAt: new Date().toISOString()
+        });
+      }
+    }
     return false;
   }
 

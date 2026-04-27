@@ -358,6 +358,7 @@ function readExpectedMetadataSets() {
       let hasManifestPalette = false;
       let hasManifestSkin = false;
       let expectedSkinName = "";
+      let hasManifestToolAsset = false;
       if (fs.existsSync(manifestPath)) {
         try {
           const manifest = JSON.parse(fs.readFileSync(manifestPath, "utf8"));
@@ -365,6 +366,29 @@ function readExpectedMetadataSets() {
           hasManifestPalette = Array.isArray(palette?.swatches) && palette.swatches.length > 0;
           const skins = manifest?.tools?.["primitive-skin-editor"]?.skins;
           hasManifestSkin = Array.isArray(skins) && skins.length > 0;
+          const spriteEntries = manifest?.tools?.["sprite-editor"]?.sprites;
+          const tileMapEntries = manifest?.tools?.["tile-map-editor"]?.maps;
+          const parallaxEntries = manifest?.tools?.["parallax-editor"]?.parallaxLevels;
+          const vectorEntries = manifest?.tools?.["vector-asset-studio"]?.vectors;
+          const assetBrowserMediaEntries = manifest?.tools?.["asset-browser"]?.assets?.media;
+
+          const countEntries = (value) => {
+            if (Array.isArray(value)) {
+              return value.length;
+            }
+            if (value && typeof value === "object") {
+              return Object.keys(value).length;
+            }
+            return 0;
+          };
+          hasManifestToolAsset = (
+            countEntries(skins) > 0
+            || countEntries(spriteEntries) > 0
+            || countEntries(tileMapEntries) > 0
+            || countEntries(parallaxEntries) > 0
+            || countEntries(vectorEntries) > 0
+            || countEntries(assetBrowserMediaEntries) > 0
+          );
           const firstSkin = hasManifestSkin ? skins[0] : null;
           const candidateSkinName = typeof firstSkin?.data?.name === "string"
             ? firstSkin.data.name.trim()
@@ -400,6 +424,7 @@ function readExpectedMetadataSets() {
         href: entry.href,
         hasManifestPalette,
         hasManifestSkin,
+        hasManifestToolAsset,
         expectedSkinName,
         hasCatalogPalette,
         hasCatalogNonPalette,
@@ -644,7 +669,10 @@ export async function run() {
         gameFailures.push(failure);
       }
 
-      const requiresSharedAsset = Boolean(expectedAssetModel?.hasCatalogNonPalette);
+      const requiresSharedAsset = Boolean(
+        expectedAssetModel?.hasCatalogNonPalette
+        || expectedAssetModel?.hasManifestToolAsset
+      );
       if (requiresSharedAsset) {
         actionsRequiringSharedAssets += 1;
       }
@@ -715,6 +743,7 @@ export async function run() {
         sharedAssetLabel: state.sharedAssetLabel,
         expectedManifestPalette: Boolean(expectedAssetModel?.hasManifestPalette),
         expectedManifestSkin: Boolean(expectedAssetModel?.hasManifestSkin),
+        expectedManifestToolAsset: Boolean(expectedAssetModel?.hasManifestToolAsset),
         expectedSkinName: expectedAssetModel?.expectedSkinName || "",
         expectedCatalogKinds: expectedAssetModel?.catalogKinds || [],
         hasBouncingBallClassicSkin: state.hasBouncingBallClassicSkin,

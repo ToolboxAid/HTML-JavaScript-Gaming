@@ -11,85 +11,11 @@
     "workspaceManagerPath": "/tools/Workspace%20Manager/index.html?gameId=Pong&mount=game",
     "workspaceManagerOptional": true
   },
-  "lineage": {
-    "legacyCatalogs": [
-      "games/Pong/assets/workspace.asset-catalog.json"
-    ],
-    "status": "legacy-catalogs-retained-during-ssot-rollout",
-    "legacyCatalogData": [
-      {
-        "id": "games.pong.assets.workspace.asset.catalog",
-        "sourcePath": "games/Pong/assets/workspace.asset-catalog.json",
-        "data": {
-          "schema": "html-js-gaming.game-asset-catalog",
-          "version": 1,
-          "gameId": "pong",
-          "assets": {
-            "palette.pong.classic": {
-              "path": "/games/Pong/assets/palettes/pong-classic.palette.json",
-              "kind": "palette",
-              "source": "workspace-manager"
-            },
-            "skin.main": {
-              "path": "/games/Pong/assets/skins/skin.main.json",
-              "kind": "skin",
-              "source": "workspace-manager"
-            }
-          }
-        }
-      }
-    ]
-  },
-  "sources": {
-    "workspaceAssetCatalogPath": "games/Pong/assets/workspace.asset-catalog.json",
-    "toolsManifestPath": "",
-    "metadataPath": "games/metadata/games.index.metadata.json"
-  },
-  "assets": {
-    "allJsonAssets": [
-      "games/Pong/assets/palettes/pong-classic.palette.json",
-      "games/Pong/assets/skins/skin.main.json",
-      "games/Pong/assets/workspace.asset-catalog.json"
-    ],
-    "palettes": [
-      "games/Pong/assets/palettes/pong-classic.palette.json"
-    ],
-    "skins": [
-      "games/Pong/assets/skins/skin.main.json"
-    ],
-    "sprites": [],
-    "vectors": [],
-    "tilemaps": [],
-    "parallax": [],
-    "tilesets": [],
-    "overrides": [],
-    "runtime": [],
-    "config": [],
-    "other": [
-      "games/Pong/assets/workspace.asset-catalog.json"
-    ],
-    "workspaceCatalogAssets": [
-      {
-        "assetId": "palette.pong.classic",
-        "path": "games/Pong/assets/palettes/pong-classic.palette.json",
-        "kind": "palette",
-        "source": "workspace-manager"
-      },
-      {
-        "assetId": "skin.main",
-        "path": "games/Pong/assets/skins/skin.main.json",
-        "kind": "skin",
-        "source": "workspace-manager"
-      }
-    ],
-    "toolsManifestAssets": []
-  },
   "tools": {
     "primitive-skin-editor": {
       "skins": [
         {
           "id": "skin.main",
-          "sourcePath": "games/Pong/assets/skins/skin.main.json",
           "data": {
             "documentKind": "game-skin",
             "version": 1,
