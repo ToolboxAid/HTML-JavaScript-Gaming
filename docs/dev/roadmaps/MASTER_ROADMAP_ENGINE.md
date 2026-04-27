@@ -892,3 +892,8 @@
 - [x] Code-defined asset extraction audit across games/samples is complete.
 - [.] Tool-owned JSON asset input wiring for extracted code-defined assets is in progress.
 - [.] Hardcoded color/shape removal plan is in progress.
+
+## Level 10 — Game Palette Completeness And Tool Input Alignment
+
+- [x] Game palette completeness is normalized with manifest-owned palette data under `game.manifest.json` tool sections.
+- [x] Tool input alignment contract is documented as `toolInput = gameManifest.tools[toolId]` (no game-owned file-path JSON input).

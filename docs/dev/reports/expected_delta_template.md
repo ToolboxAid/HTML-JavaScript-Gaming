@@ -1,21 +1,22 @@
 # Expected Codex Return / Delta Template
 
 ## Expected Changed Files
-- `package.json` if npm script is added/updated
-- `tests/runtime/LaunchSmokeAllEntries.test.mjs` only if needed for clearer mode naming/reporting
-- `docs/dev/reports/level_9_9_launch_smoke_games_only_fast_path_report.md`
+- `games/*/game.manifest.json`
+- `docs/dev/reports/level_10_1_game_palette_completeness_report.md`
 - `docs/dev/roadmaps/MASTER_ROADMAP_ENGINE.md` if status update needed
 
 ## Expected Validation Summary
-- `games_only_script_exists=true`
-- `games_only_passes_games_flag=true`
-- `samples_in_games_only_run=false`
-- `tools_in_games_only_run=false`
-- `duplicate_game_execution=false`
-- `full_launch_smoke_preserved=true`
+- `games_scanned=<count>`
+- `games_with_palette_before=<count>`
+- `games_with_palette_after=<count>`
+- `palettes_created=<count>`
+- `palettes_normalized=<count>`
+- `new_palette_json_files=0`
+- `swatch_symbol_issues=0`
+- `opaque_alpha_ff_remaining=0`
 - `start_of_day_changes=0`
 
 ## Expected Delta ZIP
 Codex must create:
 
-`tmp/BUILD_PR_LEVEL_9_9_LAUNCH_SMOKE_GAMES_ONLY_FAST_PATH_delta.zip`
+`tmp/BUILD_PR_LEVEL_10_1_GAME_PALETTE_COMPLETENESS_AND_TOOL_INPUT_ALIGNMENT_delta.zip`

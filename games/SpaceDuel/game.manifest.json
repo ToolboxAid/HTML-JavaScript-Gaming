@@ -166,137 +166,114 @@
     ],
     "toolsManifestAssets": []
   },
-  "tools": [
-    {
-      "toolId": "primitive-skin-editor",
-      "palettes": [
-        {
-          "id": "palette.space-duel.classic",
-          "sourcePath": "games/SpaceDuel/assets/palettes/space-duel-classic.palette.json",
-          "data": {
-            "$schema": "../../../../tools/schemas/palette.schema.json",
-            "schema": "html-js-gaming.palette",
-            "version": 1,
-            "name": "Space Duel Classic Palette",
-            "source": "custom",
-            "swatches": [
-              {
-                "symbol": "!",
-                "hex": "#020617",
-                "name": "Background"
-              },
-              {
-                "symbol": "#",
-                "hex": "#E2E8F0",
-                "name": "Primary Ink"
-              },
-              {
-                "symbol": "$",
-                "hex": "#8AA0BB",
-                "name": "Border"
-              },
-              {
-                "symbol": "%",
-                "hex": "#334155",
-                "name": "Inner Border"
-              },
-              {
-                "symbol": "&",
-                "hex": "#93A5BC",
-                "name": "Muted Text"
-              },
-              {
-                "symbol": "(",
-                "hex": "#FFFFFF",
-                "name": "Player 1"
-              },
-              {
-                "symbol": ")",
-                "hex": "#9AE6B4",
-                "name": "Player 2"
-              },
-              {
-                "symbol": "*",
-                "hex": "#FCA5A5",
-                "name": "Hazard"
-              },
-              {
-                "symbol": "+",
-                "hex": "#FECACA",
-                "name": "Hazard Inner"
-              },
-              {
-                "symbol": ",",
-                "hex": "#F59E0B",
-                "name": "Bonus Ring"
-              },
-              {
-                "symbol": "-",
-                "hex": "#FDE68A",
-                "name": "Bonus Core"
-              },
-              {
-                "symbol": ".",
-                "hex": "#F8FAFC",
-                "name": "Projectile"
-              }
-            ]
+  "tools": {
+    "primitive-skin-editor": {
+      "palettes": {
+        "palette.spaceduel.classic": {
+          "schema": "html-js-gaming.palette",
+          "version": 1,
+          "name": "Space Duel Classic Palette",
+          "source": "manifest-and-runtime-color-scan",
+          "swatches": [
+            {
+              "symbol": "0",
+              "hex": "#020617",
+              "name": "Color 1"
+            },
+            {
+              "symbol": "1",
+              "hex": "#E2E8F0",
+              "name": "Color 2"
+            },
+            {
+              "symbol": "2",
+              "hex": "#8AA0BB",
+              "name": "Color 3"
+            },
+            {
+              "symbol": "3",
+              "hex": "#334155",
+              "name": "Color 4"
+            },
+            {
+              "symbol": "4",
+              "hex": "#93A5BC",
+              "name": "Color 5"
+            },
+            {
+              "symbol": "5",
+              "hex": "#FFFFFF",
+              "name": "Color 6"
+            },
+            {
+              "symbol": "6",
+              "hex": "#9AE6B4",
+              "name": "Color 7"
+            },
+            {
+              "symbol": "7",
+              "hex": "#FCA5A5",
+              "name": "Color 8"
+            },
+            {
+              "symbol": "8",
+              "hex": "#FECACA",
+              "name": "Color 9"
+            },
+            {
+              "symbol": "9",
+              "hex": "#F59E0B",
+              "name": "Color 10"
+            }
+          ]
+        }
+      }
+    },
+    "asset-browser": {
+      "assets": {
+        "media": {
+          "audio.space-duel.thrust": {
+            "path": "games/SpaceDuel/assets/audio/effects/thrust.wav",
+            "kind": "audio",
+            "source": "workspace-manager"
+          },
+          "audio.space-duel.fire": {
+            "path": "games/SpaceDuel/assets/audio/effects/fire.wav",
+            "kind": "audio",
+            "source": "workspace-manager"
+          },
+          "audio.space-duel.explosion": {
+            "path": "games/SpaceDuel/assets/audio/effects/explosion.wav",
+            "kind": "audio",
+            "source": "workspace-manager"
+          },
+          "audio.space-duel.player-death": {
+            "path": "games/SpaceDuel/assets/audio/effects/player_death.wav",
+            "kind": "audio",
+            "source": "workspace-manager"
+          },
+          "audio.space-duel.enemy-split": {
+            "path": "games/SpaceDuel/assets/audio/effects/enemy_split.wav",
+            "kind": "audio",
+            "source": "workspace-manager"
+          },
+          "audio.space-duel.bonus": {
+            "path": "games/SpaceDuel/assets/audio/effects/bonus.wav",
+            "kind": "audio",
+            "source": "workspace-manager"
+          },
+          "audio.space-duel.start": {
+            "path": "games/SpaceDuel/assets/audio/effects/start.wav",
+            "kind": "audio",
+            "source": "workspace-manager"
+          },
+          "audio.space-duel.game-over": {
+            "path": "games/SpaceDuel/assets/audio/effects/game_over.wav",
+            "kind": "audio",
+            "source": "workspace-manager"
           }
         }
-      ]
-    },
-    {
-      "toolId": "asset-browser",
-      "assets": [
-        {
-          "id": "audio.space-duel.thrust",
-          "path": "games/SpaceDuel/assets/audio/effects/thrust.wav",
-          "kind": "audio",
-          "source": "workspace-manager"
-        },
-        {
-          "id": "audio.space-duel.fire",
-          "path": "games/SpaceDuel/assets/audio/effects/fire.wav",
-          "kind": "audio",
-          "source": "workspace-manager"
-        },
-        {
-          "id": "audio.space-duel.explosion",
-          "path": "games/SpaceDuel/assets/audio/effects/explosion.wav",
-          "kind": "audio",
-          "source": "workspace-manager"
-        },
-        {
-          "id": "audio.space-duel.player-death",
-          "path": "games/SpaceDuel/assets/audio/effects/player_death.wav",
-          "kind": "audio",
-          "source": "workspace-manager"
-        },
-        {
-          "id": "audio.space-duel.enemy-split",
-          "path": "games/SpaceDuel/assets/audio/effects/enemy_split.wav",
-          "kind": "audio",
-          "source": "workspace-manager"
-        },
-        {
-          "id": "audio.space-duel.bonus",
-          "path": "games/SpaceDuel/assets/audio/effects/bonus.wav",
-          "kind": "audio",
-          "source": "workspace-manager"
-        },
-        {
-          "id": "audio.space-duel.start",
-          "path": "games/SpaceDuel/assets/audio/effects/start.wav",
-          "kind": "audio",
-          "source": "workspace-manager"
-        },
-        {
-          "id": "audio.space-duel.game-over",
-          "path": "games/SpaceDuel/assets/audio/effects/game_over.wav",
-          "kind": "audio",
-          "source": "workspace-manager"
-        }
-      ]
+      }
     }
-  ]
+  }
 }

@@ -211,47 +211,65 @@
     ],
     "toolsManifestAssets": []
   },
-  "tools": [
-    {
-      "toolId": "primitive-skin-editor",
-      "palettes": [
-        {
-          "id": "palette.vector-arcade.primary",
-          "sourcePath": "games/vector-arcade-sample/assets/data/palettes/vector-native-primary.palette.json",
-          "data": {
-            "$schema": "../../../../../tools/schemas/palette.schema.json",
-            "schema": "html-js-gaming.palette",
-            "version": 1,
-            "name": "Vector Native Primary Palette",
-            "source": "custom",
-            "swatches": [
-              {
-                "symbol": "!",
-                "hex": "#05070D",
-                "name": "Swatch 1"
-              },
-              {
-                "symbol": "#",
-                "hex": "#E8F0FF",
-                "name": "Swatch 2"
-              },
-              {
-                "symbol": "$",
-                "hex": "#6FD3FF",
-                "name": "Swatch 3"
-              },
-              {
-                "symbol": "%",
-                "hex": "#FFB347",
-                "name": "Swatch 4"
-              }
-            ]
-          }
+  "tools": {
+    "primitive-skin-editor": {
+      "palettes": {
+        "palette.vector-arcade-sample.classic": {
+          "schema": "html-js-gaming.palette",
+          "version": 1,
+          "name": "Vector Arcade Sample Classic Palette",
+          "source": "manifest-and-runtime-color-scan",
+          "swatches": [
+            {
+              "symbol": "0",
+              "hex": "#05070D",
+              "name": "Color 1"
+            },
+            {
+              "symbol": "1",
+              "hex": "#E8F0FF",
+              "name": "Color 2"
+            },
+            {
+              "symbol": "2",
+              "hex": "#6FD3FF",
+              "name": "Color 3"
+            },
+            {
+              "symbol": "3",
+              "hex": "#FFB347",
+              "name": "Color 4"
+            },
+            {
+              "symbol": "4",
+              "hex": "#000000",
+              "name": "Color 5"
+            },
+            {
+              "symbol": "5",
+              "hex": "#FFFFFF",
+              "name": "Color 6"
+            },
+            {
+              "symbol": "6",
+              "hex": "#60A5FA",
+              "name": "Color 7"
+            },
+            {
+              "symbol": "7",
+              "hex": "#F59E0B",
+              "name": "Color 8"
+            },
+            {
+              "symbol": "8",
+              "hex": "#112233",
+              "name": "Color 9"
+            }
+          ]
         }
-      ]
+      }
     },
-    {
-      "toolId": "sprite-editor",
+    "sprite-editor": {
       "sprites": [
         {
           "id": "sprite.vector-arcade.player",
@@ -280,8 +298,7 @@
         }
       ]
     },
-    {
-      "toolId": "tile-map-editor",
+    "tile-map-editor": {
       "maps": [
         {
           "id": "tilemap.vector-arcade.arena",
@@ -319,8 +336,7 @@
         }
       ]
     },
-    {
-      "toolId": "parallax-editor",
+    "parallax-editor": {
       "parallaxLevels": [
         {
           "id": "parallax.vector-arcade.backdrop",
@@ -333,8 +349,7 @@
         }
       ]
     },
-    {
-      "toolId": "vector-asset-studio",
+    "vector-asset-studio": {
       "vectors": [
         {
           "id": "vector.vector-arcade.hud",
@@ -467,19 +482,18 @@
         }
       ]
     },
-    {
-      "toolId": "asset-browser",
-      "assets": [
-        {
-          "id": "image.vector-arcade.backdrop-svg",
-          "path": "games/vector-arcade-sample/assets/data/parallax/template-backdrop.svg",
-          "kind": "image",
-          "source": "workspace-manager"
+    "asset-browser": {
+      "assets": {
+        "media": {
+          "image.vector-arcade.backdrop-svg": {
+            "path": "games/vector-arcade-sample/assets/data/parallax/template-backdrop.svg",
+            "kind": "image",
+            "source": "workspace-manager"
+          }
         }
-      ]
+      }
     },
-    {
-      "toolId": "preview-generator-tool",
+    "preview-generator-tool": {
       "projectConfigs": [
         {
           "id": "games.vector.arcade.sample.config.sample.project",
@@ -511,5 +525,5 @@
         }
       ]
     }
-  ]
+  }
 }

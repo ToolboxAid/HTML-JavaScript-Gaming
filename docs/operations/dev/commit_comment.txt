@@ -1,1 +1,11 @@
-PR 9.10: runtime stabilization for single-manifest games
+BUILD_PR_LEVEL_10_1_GAME_PALETTE_COMPLETENESS_AND_TOOL_INPUT_ALIGNMENT
+
+- Added missing manifest-owned game palettes
+- Normalized palette swatches for tool alignment
+- Documented tools consuming manifest slices as inputs
+
+PR Details:
+- Starts Phase 10 tool alignment
+- No palette JSON files created
+- No validators
+- No start_of_day changes

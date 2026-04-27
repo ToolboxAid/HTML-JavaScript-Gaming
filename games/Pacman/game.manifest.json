@@ -80,23 +80,84 @@
     ],
     "toolsManifestAssets": []
   },
-  "tools": [
-    {
-      "toolId": "asset-browser",
-      "assets": [
-        {
-          "id": "image.pacman.preview-svg",
-          "path": "games/Pacman/assets/images/preview.svg",
-          "kind": "image",
-          "source": "workspace-manager"
-        },
-        {
-          "id": "image.pacman.preview-png",
-          "path": "games/Pacman/assets/images/preview.png",
-          "kind": "image",
-          "source": "workspace-manager"
+  "tools": {
+    "asset-browser": {
+      "assets": {
+        "media": {
+          "image.pacman.preview-svg": {
+            "path": "games/Pacman/assets/images/preview.svg",
+            "kind": "image",
+            "source": "workspace-manager"
+          },
+          "image.pacman.preview-png": {
+            "path": "games/Pacman/assets/images/preview.png",
+            "kind": "image",
+            "source": "workspace-manager"
+          }
         }
-      ]
+      }
+    },
+    "primitive-skin-editor": {
+      "palettes": {
+        "palette.pacman.classic": {
+          "schema": "html-js-gaming.palette",
+          "version": 1,
+          "name": "Pacman Classic Palette",
+          "source": "manifest-and-runtime-color-scan",
+          "swatches": [
+            {
+              "symbol": "0",
+              "hex": "#020617",
+              "name": "Color 1"
+            },
+            {
+              "symbol": "1",
+              "hex": "#0B1329",
+              "name": "Color 2"
+            },
+            {
+              "symbol": "2",
+              "hex": "#020B1E",
+              "name": "Color 3"
+            },
+            {
+              "symbol": "3",
+              "hex": "#1E3A8A",
+              "name": "Color 4"
+            },
+            {
+              "symbol": "4",
+              "hex": "#1D4ED8",
+              "name": "Color 5"
+            },
+            {
+              "symbol": "5",
+              "hex": "#38BDF8",
+              "name": "Color 6"
+            },
+            {
+              "symbol": "6",
+              "hex": "#FACC15",
+              "name": "Color 7"
+            },
+            {
+              "symbol": "7",
+              "hex": "#EF4444",
+              "name": "Color 8"
+            },
+            {
+              "symbol": "8",
+              "hex": "#F472B6",
+              "name": "Color 9"
+            },
+            {
+              "symbol": "9",
+              "hex": "#22D3EE",
+              "name": "Color 10"
+            }
+          ]
+        }
+      }
     }
-  ]
+  }
 }

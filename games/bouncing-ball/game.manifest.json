@@ -84,39 +84,33 @@
     ],
     "toolsManifestAssets": []
   },
-  "tools": [
-    {
-      "toolId": "primitive-skin-editor",
-      "palettes": [
-        {
-          "id": "palette.bouncing-ball.classic",
-          "sourcePath": "games/Bouncing-ball/assets/palettes/bouncing-ball-classic.palette.json",
-          "data": {
-            "$schema": "../../../../tools/schemas/palette.schema.json",
-            "schema": "html-js-gaming.palette",
-            "version": 1,
-            "name": "Bouncing Ball Classic Palette",
-            "source": "custom",
-            "swatches": [
-              {
-                "symbol": "!",
-                "hex": "#05070A",
-                "name": "Background"
-              },
-              {
-                "symbol": "#",
-                "hex": "#F4F4EF",
-                "name": "Ball and Walls"
-              },
-              {
-                "symbol": "$",
-                "hex": "#9BA3B3",
-                "name": "HUD Muted"
-              }
-            ]
-          }
+  "tools": {
+    "primitive-skin-editor": {
+      "palettes": {
+        "palette.bouncing-ball.classic": {
+          "schema": "html-js-gaming.palette",
+          "version": 1,
+          "name": "Bouncing Ball Classic Palette",
+          "source": "manifest-and-runtime-color-scan",
+          "swatches": [
+            {
+              "symbol": "0",
+              "hex": "#05070A",
+              "name": "Color 1"
+            },
+            {
+              "symbol": "1",
+              "hex": "#F4F4EF",
+              "name": "Color 2"
+            },
+            {
+              "symbol": "2",
+              "hex": "#9BA3B3",
+              "name": "Color 3"
+            }
+          ]
         }
-      ],
+      },
       "skins": [
         {
           "id": "skin.main",
@@ -160,5 +154,5 @@
         }
       ]
     }
-  ]
+  }
 }

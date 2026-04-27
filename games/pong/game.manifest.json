@@ -84,64 +84,68 @@
     ],
     "toolsManifestAssets": []
   },
-  "tools": [
-    {
-      "toolId": "primitive-skin-editor",
-      "palettes": [
-        {
-          "id": "palette.pong.classic",
-          "sourcePath": "games/Pong/assets/palettes/pong-classic.palette.json",
-          "data": {
-            "$schema": "../../../../tools/schemas/palette.schema.json",
-            "schema": "html-js-gaming.palette",
-            "version": 1,
-            "name": "Pong Classic Palette",
-            "source": "custom",
-            "swatches": [
-              {
-                "symbol": "!",
-                "hex": "#05070A",
-                "name": "Background"
-              },
-              {
-                "symbol": "#",
-                "hex": "#F4F7FB",
-                "name": "Ink / Paddles"
-              },
-              {
-                "symbol": "$",
-                "hex": "#A6B0BF",
-                "name": "Muted HUD"
-              },
-              {
-                "symbol": "%",
-                "hex": "#7DE2FF",
-                "name": "Accent"
-              },
-              {
-                "symbol": "&",
-                "hex": "#8BF0C8",
-                "name": "Positive"
-              },
-              {
-                "symbol": "(",
-                "hex": "#FFD37D",
-                "name": "Warning"
-              },
-              {
-                "symbol": ")",
-                "hex": "#FF9A9A",
-                "name": "Danger"
-              },
-              {
-                "symbol": "*",
-                "hex": "#6A7482",
-                "name": "Center Divider"
-              }
-            ]
-          }
+  "tools": {
+    "primitive-skin-editor": {
+      "palettes": {
+        "palette.pong.classic": {
+          "schema": "html-js-gaming.palette",
+          "version": 1,
+          "name": "Pong Classic Palette",
+          "source": "manifest-and-runtime-color-scan",
+          "swatches": [
+            {
+              "symbol": "0",
+              "hex": "#05070A",
+              "name": "Color 1"
+            },
+            {
+              "symbol": "1",
+              "hex": "#F4F7FB",
+              "name": "Color 2"
+            },
+            {
+              "symbol": "2",
+              "hex": "#A6B0BF",
+              "name": "Color 3"
+            },
+            {
+              "symbol": "3",
+              "hex": "#7DE2FF",
+              "name": "Color 4"
+            },
+            {
+              "symbol": "4",
+              "hex": "#8BF0C8",
+              "name": "Color 5"
+            },
+            {
+              "symbol": "5",
+              "hex": "#FFD37D",
+              "name": "Color 6"
+            },
+            {
+              "symbol": "6",
+              "hex": "#FF9A9A",
+              "name": "Color 7"
+            },
+            {
+              "symbol": "7",
+              "hex": "#6A7482",
+              "name": "Color 8"
+            },
+            {
+              "symbol": "8",
+              "hex": "#04070D",
+              "name": "Color 9"
+            },
+            {
+              "symbol": "9",
+              "hex": "#0E1626",
+              "name": "Color 10"
+            }
+          ]
         }
-      ],
+      },
       "skins": [
         {
           "id": "skin.main",
@@ -197,5 +201,5 @@
         }
       ]
     }
-  ]
+  }
 }

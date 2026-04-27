@@ -84,79 +84,68 @@
     ],
     "toolsManifestAssets": []
   },
-  "tools": [
-    {
-      "toolId": "primitive-skin-editor",
-      "palettes": [
-        {
-          "id": "palette.solar-system.classic",
-          "sourcePath": "games/SolarSystem/assets/palettes/solar-system-classic.palette.json",
-          "data": {
-            "$schema": "../../../../tools/schemas/palette.schema.json",
-            "schema": "html-js-gaming.palette",
-            "version": 1,
-            "name": "Solar System Classic Palette",
-            "source": "custom",
-            "swatches": [
-              {
-                "symbol": "!",
-                "hex": "#030712",
-                "name": "Space Background"
-              },
-              {
-                "symbol": "#",
-                "hex": "#DBEAFE",
-                "name": "Frame and Text"
-              },
-              {
-                "symbol": "$",
-                "hex": "#334155",
-                "name": "Orbits"
-              },
-              {
-                "symbol": "%",
-                "hex": "#FBBF24",
-                "name": "Sun"
-              },
-              {
-                "symbol": "&",
-                "hex": "#9CA3AF",
-                "name": "Mercury"
-              },
-              {
-                "symbol": "(",
-                "hex": "#38BDF8",
-                "name": "Earth"
-              },
-              {
-                "symbol": ")",
-                "hex": "#FB7185",
-                "name": "Mars"
-              },
-              {
-                "symbol": "*",
-                "hex": "#F59E0B",
-                "name": "Jupiter"
-              },
-              {
-                "symbol": "+",
-                "hex": "#EAB308",
-                "name": "Saturn"
-              },
-              {
-                "symbol": ",",
-                "hex": "#67E8F9",
-                "name": "Uranus"
-              },
-              {
-                "symbol": "-",
-                "hex": "#60A5FA",
-                "name": "Neptune"
-              }
-            ]
-          }
+  "tools": {
+    "primitive-skin-editor": {
+      "palettes": {
+        "palette.solarsystem.classic": {
+          "schema": "html-js-gaming.palette",
+          "version": 1,
+          "name": "Solar System Classic Palette",
+          "source": "manifest-and-runtime-color-scan",
+          "swatches": [
+            {
+              "symbol": "0",
+              "hex": "#030712",
+              "name": "Color 1"
+            },
+            {
+              "symbol": "1",
+              "hex": "#DBEAFE",
+              "name": "Color 2"
+            },
+            {
+              "symbol": "2",
+              "hex": "#334155",
+              "name": "Color 3"
+            },
+            {
+              "symbol": "3",
+              "hex": "#FBBF24",
+              "name": "Color 4"
+            },
+            {
+              "symbol": "4",
+              "hex": "#9CA3AF",
+              "name": "Color 5"
+            },
+            {
+              "symbol": "5",
+              "hex": "#38BDF8",
+              "name": "Color 6"
+            },
+            {
+              "symbol": "6",
+              "hex": "#FB7185",
+              "name": "Color 7"
+            },
+            {
+              "symbol": "7",
+              "hex": "#F59E0B",
+              "name": "Color 8"
+            },
+            {
+              "symbol": "8",
+              "hex": "#EAB308",
+              "name": "Color 9"
+            },
+            {
+              "symbol": "9",
+              "hex": "#67E8F9",
+              "name": "Color 10"
+            }
+          ]
         }
-      ],
+      },
       "skins": [
         {
           "id": "skin.main",
@@ -292,5 +281,5 @@
         }
       ]
     }
-  ]
+  }
 }
