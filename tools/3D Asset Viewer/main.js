@@ -128,6 +128,9 @@ function extractAssetPayloadFromPreset(rawPreset) {
   const payload = rawPreset.payload && typeof rawPreset.payload === "object"
     ? rawPreset.payload
     : rawPreset;
+  const config = payload.config && typeof payload.config === "object"
+    ? payload.config
+    : null;
 
   const candidateKeys = ["3d-asset-viewer", "asset3d", "asset", "assetPayload", "viewerPayload"];
   for (const key of candidateKeys) {
@@ -136,8 +139,17 @@ function extractAssetPayloadFromPreset(rawPreset) {
       return value;
     }
   }
+  for (const key of candidateKeys) {
+    const value = config?.[key];
+    if (value && typeof value === "object" && Array.isArray(value.vertices)) {
+      return value;
+    }
+  }
   if (Array.isArray(payload.vertices)) {
     return payload;
+  }
+  if (Array.isArray(config?.vertices)) {
+    return config;
   }
   return null;
 }

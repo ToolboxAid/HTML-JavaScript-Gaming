@@ -63,9 +63,19 @@ function extractPhysicsBodyFromPreset(rawPreset) {
   if (!rawPreset || typeof rawPreset !== "object") {
     return null;
   }
-  const payloadBody = rawPreset?.payload?.physicsBody;
+  const payload = rawPreset.payload && typeof rawPreset.payload === "object"
+    ? rawPreset.payload
+    : rawPreset;
+  const config = payload.config && typeof payload.config === "object"
+    ? payload.config
+    : null;
+  const payloadBody = payload?.physicsBody;
   if (payloadBody && typeof payloadBody === "object" && !Array.isArray(payloadBody)) {
     return { ...payloadBody };
+  }
+  const configBody = config?.physicsBody;
+  if (configBody && typeof configBody === "object" && !Array.isArray(configBody)) {
+    return { ...configBody };
   }
   const directBody = rawPreset?.physicsBody;
   if (directBody && typeof directBody === "object" && !Array.isArray(directBody)) {

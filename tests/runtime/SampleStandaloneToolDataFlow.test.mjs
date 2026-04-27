@@ -703,6 +703,300 @@ function buildTargetedCases(roundtripRows, toolMap) {
   });
 }
 
+function buildGenericFailureCloseoutCases(roundtripRows, toolMap) {
+  const specs = [
+    { sampleId: "0201", toolId: "3d-camera-path-editor" },
+    { sampleId: "0202", toolId: "3d-camera-path-editor" },
+    { sampleId: "0220", toolId: "3d-camera-path-editor" },
+    { sampleId: "0204", toolId: "3d-asset-viewer" },
+    { sampleId: "1208", toolId: "3d-asset-viewer" },
+    { sampleId: "1413", toolId: "3d-asset-viewer" },
+    { sampleId: "0210", toolId: "physics-sandbox" },
+    { sampleId: "0303", toolId: "physics-sandbox" },
+    { sampleId: "1606", toolId: "physics-sandbox" },
+    { sampleId: "0221", toolId: "tile-model-converter" },
+    { sampleId: "0305", toolId: "tile-model-converter" },
+    { sampleId: "1209", toolId: "tile-model-converter" },
+    { sampleId: "0221", toolId: "3d-json-payload-normalizer" },
+    { sampleId: "0305", toolId: "3d-json-payload-normalizer" },
+    { sampleId: "1208", toolId: "3d-json-payload-normalizer" },
+    { sampleId: "0306", toolId: "parallax-editor" },
+    { sampleId: "1204", toolId: "parallax-editor" },
+    { sampleId: "1205", toolId: "parallax-editor" },
+    { sampleId: "1208", toolId: "parallax-editor" },
+    { sampleId: "0512", toolId: "performance-profiler" },
+    { sampleId: "1319", toolId: "performance-profiler" },
+    { sampleId: "1407", toolId: "performance-profiler" },
+    { sampleId: "0708", toolId: "replay-visualizer" },
+    { sampleId: "1315", toolId: "replay-visualizer" },
+    { sampleId: "1406", toolId: "replay-visualizer" }
+  ];
+
+  return specs.map((spec) => {
+    const row = findSampleRow(roundtripRows, spec.sampleId, spec.toolId);
+    if (!row) {
+      throw new Error(`Missing metadata roundtrip mapping for sample ${spec.sampleId} tool ${spec.toolId}.`);
+    }
+    const tool = toolMap.get(spec.toolId);
+    if (!tool || !tool.entryPoint) {
+      throw new Error(`Tool registry entry missing for tool ${spec.toolId}.`);
+    }
+    const presetFilePath = findPresetFilePathForSample(spec.sampleId, spec.toolId);
+    if (!presetFilePath) {
+      throw new Error(`Preset payload file missing for sample ${spec.sampleId} tool ${spec.toolId}.`);
+    }
+    const presetPayload = readJson(presetFilePath);
+
+    return {
+      ...spec,
+      row,
+      tool,
+      presetPayload,
+      presetFilePath
+    };
+  });
+}
+
+async function runCameraPathContractAssertion(page, url, expectedWaypointCount) {
+  await page.navigate(url);
+  let status = null;
+  const started = Date.now();
+  while ((Date.now() - started) < 9000) {
+    status = await page.evaluate(`(() => {
+      const statusText = String(document.getElementById("cameraPathStatus")?.textContent || "").trim();
+      const inputText = String(document.getElementById("cameraPathInput")?.value || "").trim();
+      let parsed = null;
+      try {
+        parsed = inputText ? JSON.parse(inputText) : null;
+      } catch {
+        parsed = null;
+      }
+      const waypointCount = Array.isArray(parsed?.waypoints) ? parsed.waypoints.length : 0;
+      return { statusText, waypointCount };
+    })()`);
+    if (/Preset load failed/i.test(status.statusText) || status.waypointCount === expectedWaypointCount) {
+      break;
+    }
+    await wait(150);
+  }
+  assert.doesNotMatch(status.statusText, /Preset load failed/i, "3D Camera Path Editor reported preset load failure.");
+  assert.ok(status.waypointCount > 0, "3D Camera Path Editor did not load waypoint data.");
+  assert.equal(status.waypointCount, expectedWaypointCount, "3D Camera Path Editor waypoint count mismatch.");
+  return status;
+}
+
+async function runAssetViewerContractAssertion(page, url, expectedVertexCount) {
+  await page.navigate(url);
+  let status = null;
+  const started = Date.now();
+  while ((Date.now() - started) < 9000) {
+    status = await page.evaluate(`(() => {
+      const statusText = String(document.getElementById("asset3dStatus")?.textContent || "").trim();
+      const inputText = String(document.getElementById("asset3dInput")?.value || "").trim();
+      let parsed = null;
+      try {
+        parsed = inputText ? JSON.parse(inputText) : null;
+      } catch {
+        parsed = null;
+      }
+      const vertexCount = Array.isArray(parsed?.vertices) ? parsed.vertices.length : 0;
+      return { statusText, vertexCount };
+    })()`);
+    if (/Preset load failed/i.test(status.statusText) || status.vertexCount === expectedVertexCount) {
+      break;
+    }
+    await wait(150);
+  }
+  assert.doesNotMatch(status.statusText, /Preset load failed/i, "3D Asset Viewer reported preset load failure.");
+  assert.ok(status.vertexCount > 0, "3D Asset Viewer did not load vertex data.");
+  assert.equal(status.vertexCount, expectedVertexCount, "3D Asset Viewer vertex count mismatch.");
+  return status;
+}
+
+async function runPhysicsSandboxContractAssertion(page, url, expectedBody) {
+  await page.navigate(url);
+  let status = null;
+  const started = Date.now();
+  while ((Date.now() - started) < 9000) {
+    status = await page.evaluate(`(() => {
+      const statusText = String(document.getElementById("physicsSandboxStatus")?.textContent || "").trim();
+      const inputText = String(document.getElementById("physicsBodyInput")?.value || "").trim();
+      let parsed = null;
+      try {
+        parsed = inputText ? JSON.parse(inputText) : null;
+      } catch {
+        parsed = null;
+      }
+      const keys = parsed && typeof parsed === "object" && !Array.isArray(parsed) ? Object.keys(parsed) : [];
+      return { statusText, parsedBody: parsed, keyCount: keys.length };
+    })()`);
+    if (/Preset load failed/i.test(status.statusText) || status.keyCount > 0) {
+      break;
+    }
+    await wait(150);
+  }
+  assert.doesNotMatch(status.statusText, /Preset load failed/i, "Physics Sandbox reported preset load failure.");
+  assert.ok(status.keyCount > 0, "Physics Sandbox did not load physics body input.");
+  assert.equal(
+    JSON.stringify(status.parsedBody),
+    JSON.stringify(expectedBody),
+    "Physics Sandbox input body does not match sample preset payload."
+  );
+  return status;
+}
+
+async function runTileModelConverterContractAssertion(page, url, expectedCandidate, expectedConversion) {
+  await page.navigate(url);
+  let status = null;
+  const started = Date.now();
+  while ((Date.now() - started) < 9000) {
+    status = await page.evaluate(`(() => {
+      const statusText = String(document.getElementById("converterStatus")?.textContent || "").trim();
+      const inputText = String(document.getElementById("converterInput")?.value || "").trim();
+      let parsed = null;
+      try {
+        parsed = inputText ? JSON.parse(inputText) : null;
+      } catch {
+        parsed = null;
+      }
+      const candidateKeys = parsed?.candidate && typeof parsed.candidate === "object" ? Object.keys(parsed.candidate) : [];
+      const conversionKeys = parsed?.conversion && typeof parsed.conversion === "object" ? Object.keys(parsed.conversion) : [];
+      return {
+        statusText,
+        parsedCandidate: parsed?.candidate || null,
+        parsedConversion: parsed?.conversion || null,
+        candidateCount: candidateKeys.length,
+        conversionCount: conversionKeys.length
+      };
+    })()`);
+    if (
+      /Preset load failed/i.test(status.statusText)
+      || (status.candidateCount > 0 && status.conversionCount > 0)
+    ) {
+      break;
+    }
+    await wait(150);
+  }
+  assert.doesNotMatch(status.statusText, /Preset load failed/i, "Tile Model Converter reported preset load failure.");
+  assert.ok(status.candidateCount > 0, "Tile Model Converter candidate payload is empty.");
+  assert.ok(status.conversionCount > 0, "Tile Model Converter conversion payload is empty.");
+  assert.equal(
+    JSON.stringify(status.parsedCandidate),
+    JSON.stringify(expectedCandidate),
+    "Tile Model Converter candidate payload mismatch."
+  );
+  assert.equal(
+    JSON.stringify(status.parsedConversion),
+    JSON.stringify(expectedConversion),
+    "Tile Model Converter conversion payload mismatch."
+  );
+  return status;
+}
+
+async function runJsonNormalizerContractAssertion(page, url, expectedPointCount, expectedSegmentCount) {
+  await page.navigate(url);
+  let status = null;
+  const started = Date.now();
+  while ((Date.now() - started) < 9000) {
+    status = await page.evaluate(`(() => {
+      const statusText = String(document.getElementById("map3dStatus")?.textContent || "").trim();
+      const inputText = String(document.getElementById("map3dInput")?.value || "").trim();
+      let parsed = null;
+      try {
+        parsed = inputText ? JSON.parse(inputText) : null;
+      } catch {
+        parsed = null;
+      }
+      const pointCount = Array.isArray(parsed?.points) ? parsed.points.length : 0;
+      const segmentCount = Array.isArray(parsed?.segments) ? parsed.segments.length : 0;
+      return { statusText, pointCount, segmentCount };
+    })()`);
+    if (
+      /Preset load failed/i.test(status.statusText)
+      || (status.pointCount === expectedPointCount && status.segmentCount === expectedSegmentCount)
+    ) {
+      break;
+    }
+    await wait(150);
+  }
+  assert.doesNotMatch(status.statusText, /Preset load failed/i, "3D JSON Payload Normalizer reported preset load failure.");
+  assert.ok(status.pointCount > 0, "3D JSON Payload Normalizer did not load point data.");
+  assert.equal(status.pointCount, expectedPointCount, "3D JSON Payload Normalizer point count mismatch.");
+  assert.equal(status.segmentCount, expectedSegmentCount, "3D JSON Payload Normalizer segment count mismatch.");
+  return status;
+}
+
+async function runParallaxEditorContractAssertion(page, url, expectedLayerCount) {
+  await page.navigate(url);
+  let status = null;
+  const started = Date.now();
+  while ((Date.now() - started) < 11000) {
+    status = await page.evaluate(`(() => {
+      const statusText = String(document.getElementById("statusText")?.textContent || "").trim();
+      const layerCount = document.querySelectorAll("#layerList li").length;
+      return { statusText, layerCount };
+    })()`);
+    if (/Preset load failed/i.test(status.statusText) || status.layerCount === expectedLayerCount) {
+      break;
+    }
+    await wait(150);
+  }
+  assert.doesNotMatch(status.statusText, /Preset load failed/i, "Parallax Scene Studio reported preset load failure.");
+  assert.ok(status.layerCount > 0, "Parallax Scene Studio did not load parallax layers.");
+  assert.equal(status.layerCount, expectedLayerCount, "Parallax Scene Studio layer count mismatch.");
+  return status;
+}
+
+async function runPerformanceProfilerContractAssertion(page, url, expectedSettings) {
+  await page.navigate(url);
+  let status = null;
+  const started = Date.now();
+  while ((Date.now() - started) < 9000) {
+    status = await page.evaluate(`(() => {
+      const statusText = String(document.getElementById("profilerStatusText")?.textContent || "").trim();
+      const workloadIterations = Number(document.getElementById("workloadIterationsInput")?.value || 0);
+      const workSize = Number(document.getElementById("workSizeInput")?.value || 0);
+      const frameSamples = Number(document.getElementById("frameSamplesInput")?.value || 0);
+      return { statusText, workloadIterations, workSize, frameSamples };
+    })()`);
+    if (
+      /Preset load failed/i.test(status.statusText)
+      || (status.workloadIterations === expectedSettings.workloadIterations
+        && status.workSize === expectedSettings.workSize
+        && status.frameSamples === expectedSettings.frameSamples)
+    ) {
+      break;
+    }
+    await wait(150);
+  }
+  assert.doesNotMatch(status.statusText, /Preset load failed/i, "Performance Profiler reported preset load failure.");
+  assert.equal(status.workloadIterations, expectedSettings.workloadIterations, "Performance Profiler workloadIterations mismatch.");
+  assert.equal(status.workSize, expectedSettings.workSize, "Performance Profiler workSize mismatch.");
+  assert.equal(status.frameSamples, expectedSettings.frameSamples, "Performance Profiler frameSamples mismatch.");
+  return status;
+}
+
+async function runReplayVisualizerContractAssertion(page, url, expectedEventCount) {
+  await page.navigate(url);
+  let status = null;
+  const started = Date.now();
+  while ((Date.now() - started) < 9000) {
+    status = await page.evaluate(`(() => {
+      const statusText = String(document.getElementById("replayStatusText")?.textContent || "").trim();
+      const eventCount = document.querySelectorAll("#replayEventList [data-replay-index]").length;
+      return { statusText, eventCount };
+    })()`);
+    if (/Preset load failed/i.test(status.statusText) || status.eventCount === expectedEventCount) {
+      break;
+    }
+    await wait(150);
+  }
+  assert.doesNotMatch(status.statusText, /Preset load failed/i, "Replay Visualizer reported preset load failure.");
+  assert.ok(status.eventCount > 0, "Replay Visualizer did not load replay events.");
+  assert.equal(status.eventCount, expectedEventCount, "Replay Visualizer event count mismatch.");
+  return status;
+}
+
 export async function run() {
   ensureDir(tmpRoot);
   await ensureIsolatedWsDependency();
@@ -762,6 +1056,90 @@ export async function run() {
       }
     }
 
+    assert.equal(genericFailures.length, 0, `Standalone generic failure signals detected: ${genericFailures.join(" | ")}`);
+
+    const genericContractCases = buildGenericFailureCloseoutCases(roundtripRows, toolMap);
+    const genericContractResults = [];
+
+    for (const testCase of genericContractCases) {
+      const url = buildStandaloneToolUrl(baseUrl, testCase.tool.entryPoint, testCase.row);
+      if (testCase.toolId === "3d-camera-path-editor") {
+        const expectedWaypointCount = Array.isArray(testCase.presetPayload?.config?.cameraPath?.waypoints)
+          ? testCase.presetPayload.config.cameraPath.waypoints.length
+          : 0;
+        assert.ok(expectedWaypointCount > 0, `Missing expected camera waypoints in ${toPosixPath(path.relative(repoRoot, testCase.presetFilePath))}.`);
+        const result = await runCameraPathContractAssertion(page, url, expectedWaypointCount);
+        genericContractResults.push({ sampleId: testCase.sampleId, toolId: testCase.toolId, ...result });
+        continue;
+      }
+      if (testCase.toolId === "3d-asset-viewer") {
+        const expectedVertexCount = Array.isArray(testCase.presetPayload?.config?.asset3d?.vertices)
+          ? testCase.presetPayload.config.asset3d.vertices.length
+          : 0;
+        assert.ok(expectedVertexCount > 0, `Missing expected asset vertices in ${toPosixPath(path.relative(repoRoot, testCase.presetFilePath))}.`);
+        const result = await runAssetViewerContractAssertion(page, url, expectedVertexCount);
+        genericContractResults.push({ sampleId: testCase.sampleId, toolId: testCase.toolId, ...result });
+        continue;
+      }
+      if (testCase.toolId === "physics-sandbox") {
+        const expectedBody = testCase.presetPayload?.config?.physicsBody;
+        assert.ok(expectedBody && typeof expectedBody === "object" && !Array.isArray(expectedBody), `Missing expected physicsBody in ${toPosixPath(path.relative(repoRoot, testCase.presetFilePath))}.`);
+        const result = await runPhysicsSandboxContractAssertion(page, url, expectedBody);
+        genericContractResults.push({ sampleId: testCase.sampleId, toolId: testCase.toolId, ...result });
+        continue;
+      }
+      if (testCase.toolId === "tile-model-converter") {
+        const expectedCandidate = testCase.presetPayload?.config?.candidate;
+        const expectedConversion = testCase.presetPayload?.config?.conversion;
+        assert.ok(expectedCandidate && typeof expectedCandidate === "object", `Missing expected converter candidate in ${toPosixPath(path.relative(repoRoot, testCase.presetFilePath))}.`);
+        assert.ok(expectedConversion && typeof expectedConversion === "object", `Missing expected converter conversion in ${toPosixPath(path.relative(repoRoot, testCase.presetFilePath))}.`);
+        const result = await runTileModelConverterContractAssertion(page, url, expectedCandidate, expectedConversion);
+        genericContractResults.push({ sampleId: testCase.sampleId, toolId: testCase.toolId, ...result });
+        continue;
+      }
+      if (testCase.toolId === "3d-json-payload-normalizer") {
+        const expectedPointCount = Array.isArray(testCase.presetPayload?.config?.mapPayload?.points)
+          ? testCase.presetPayload.config.mapPayload.points.length
+          : 0;
+        const expectedSegmentCount = Array.isArray(testCase.presetPayload?.config?.mapPayload?.segments)
+          ? testCase.presetPayload.config.mapPayload.segments.length
+          : 0;
+        assert.ok(expectedPointCount > 0, `Missing expected map points in ${toPosixPath(path.relative(repoRoot, testCase.presetFilePath))}.`);
+        const result = await runJsonNormalizerContractAssertion(page, url, expectedPointCount, expectedSegmentCount);
+        genericContractResults.push({ sampleId: testCase.sampleId, toolId: testCase.toolId, ...result });
+        continue;
+      }
+      if (testCase.toolId === "parallax-editor") {
+        const expectedLayerCount = Array.isArray(testCase.presetPayload?.config?.parallaxDocument?.layers)
+          ? testCase.presetPayload.config.parallaxDocument.layers.length
+          : 0;
+        assert.ok(expectedLayerCount > 0, `Missing expected parallax layers in ${toPosixPath(path.relative(repoRoot, testCase.presetFilePath))}.`);
+        const result = await runParallaxEditorContractAssertion(page, url, expectedLayerCount);
+        genericContractResults.push({ sampleId: testCase.sampleId, toolId: testCase.toolId, ...result });
+        continue;
+      }
+      if (testCase.toolId === "performance-profiler") {
+        const settings = testCase.presetPayload?.config?.profileSettings;
+        assert.ok(settings && typeof settings === "object", `Missing expected profileSettings in ${toPosixPath(path.relative(repoRoot, testCase.presetFilePath))}.`);
+        const expectedSettings = {
+          workloadIterations: Number(settings.workloadIterations),
+          workSize: Number(settings.workSize),
+          frameSamples: Number(settings.frameSamples)
+        };
+        const result = await runPerformanceProfilerContractAssertion(page, url, expectedSettings);
+        genericContractResults.push({ sampleId: testCase.sampleId, toolId: testCase.toolId, ...result });
+        continue;
+      }
+      if (testCase.toolId === "replay-visualizer") {
+        const expectedEventCount = Array.isArray(testCase.presetPayload?.config?.events)
+          ? testCase.presetPayload.config.events.length
+          : 0;
+        assert.ok(expectedEventCount > 0, `Missing expected replay events in ${toPosixPath(path.relative(repoRoot, testCase.presetFilePath))}.`);
+        const result = await runReplayVisualizerContractAssertion(page, url, expectedEventCount);
+        genericContractResults.push({ sampleId: testCase.sampleId, toolId: testCase.toolId, ...result });
+      }
+    }
+
     const targetedCases = buildTargetedCases(roundtripRows, toolMap);
     const targetedResults = [];
 
@@ -802,6 +1180,7 @@ export async function run() {
       roundtripPathFailures,
       genericFailures,
       genericChecks,
+      genericContractResults,
       targetedResults
     };
 

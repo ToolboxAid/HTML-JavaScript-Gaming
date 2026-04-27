@@ -207,13 +207,23 @@ function extractProfileSettingsFromPreset(rawPreset) {
   if (!rawPreset || typeof rawPreset !== "object") {
     return null;
   }
-  const payload = rawPreset.payload;
+  const payload = rawPreset.payload && typeof rawPreset.payload === "object"
+    ? rawPreset.payload
+    : rawPreset;
+  const config = payload.config && typeof payload.config === "object"
+    ? payload.config
+    : null;
   const fromPayload = payload && typeof payload === "object"
     ? payload.profileSettings
     : null;
+  const fromConfig = config && typeof config === "object"
+    ? config.profileSettings
+    : null;
   const candidate = fromPayload && typeof fromPayload === "object"
     ? fromPayload
-    : (rawPreset.profileSettings && typeof rawPreset.profileSettings === "object" ? rawPreset.profileSettings : null);
+    : (fromConfig && typeof fromConfig === "object"
+      ? fromConfig
+      : (rawPreset.profileSettings && typeof rawPreset.profileSettings === "object" ? rawPreset.profileSettings : null));
   if (!candidate) {
     return null;
   }

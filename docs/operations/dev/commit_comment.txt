@@ -1,11 +1,11 @@
-BUILD_PR_LEVEL_10_6_SAMPLE_SCHEMA_AND_STANDALONE_TOOL_DATA_FLOW_VALIDATION
+BUILD_PR_LEVEL_10_6B_STANDALONE_SAMPLE_GENERIC_FAILURE_CLOSEOUT
 
-- Added standalone sample schema and tool data-flow validation
-- Fixed targeted Asset Browser, Asset Pipeline, and Palette sample loading/display failures
-- Prevented fallback/demo data from masking invalid payloads
+- Expanded standalone sample contract harness to cover all generic failures
+- Added tool-specific contracts for remaining failing tools
+- Fixed remaining standalone sample payload/binding issues
 
 PR Details:
-- Validates standalone tool mode receives/displays sample data
+- Closes Level 10.6 generic failure set
+- No silent fallback data
 - No hardcoded asset paths
-- No runtime validators
 - No start_of_day changes

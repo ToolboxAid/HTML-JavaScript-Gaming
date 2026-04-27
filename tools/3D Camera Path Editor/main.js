@@ -124,6 +124,9 @@ function extractCameraPathFromPreset(rawPreset) {
   const payload = rawPreset.payload && typeof rawPreset.payload === "object"
     ? rawPreset.payload
     : rawPreset;
+  const config = payload.config && typeof payload.config === "object"
+    ? payload.config
+    : null;
 
   const candidateKeys = ["3d-camera-path-editor", "cameraPath", "path", "cameraPathPayload"];
   for (const key of candidateKeys) {
@@ -132,8 +135,17 @@ function extractCameraPathFromPreset(rawPreset) {
       return value;
     }
   }
+  for (const key of candidateKeys) {
+    const value = config?.[key];
+    if (value && typeof value === "object" && Array.isArray(value.waypoints)) {
+      return value;
+    }
+  }
   if (Array.isArray(payload.waypoints)) {
     return payload;
+  }
+  if (Array.isArray(config?.waypoints)) {
+    return config;
   }
   return null;
 }

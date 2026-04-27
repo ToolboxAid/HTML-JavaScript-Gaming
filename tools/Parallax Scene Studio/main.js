@@ -312,6 +312,24 @@ function extractParallaxDocumentFromSamplePreset(rawPreset) {
     if (payload.parallax && typeof payload.parallax === "object") {
       return payload.parallax;
     }
+    const config = payload.config && typeof payload.config === "object"
+      ? payload.config
+      : null;
+    if (config?.parallaxDocument && typeof config.parallaxDocument === "object") {
+      return config.parallaxDocument;
+    }
+    if (config?.parallax && typeof config.parallax === "object") {
+      return config.parallax;
+    }
+  }
+  const rootConfig = rawPreset.config && typeof rawPreset.config === "object"
+    ? rawPreset.config
+    : null;
+  if (rootConfig?.parallaxDocument && typeof rootConfig.parallaxDocument === "object") {
+    return rootConfig.parallaxDocument;
+  }
+  if (rootConfig?.parallax && typeof rootConfig.parallax === "object") {
+    return rootConfig.parallax;
   }
 
   return rawPreset;

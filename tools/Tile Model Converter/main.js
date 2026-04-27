@@ -90,6 +90,9 @@ function extractConverterPayloadFromPreset(rawPreset) {
   const payload = rawPreset.payload && typeof rawPreset.payload === "object"
     ? rawPreset.payload
     : rawPreset;
+  const config = payload.config && typeof payload.config === "object"
+    ? payload.config
+    : null;
 
   const candidate = payload.candidate && typeof payload.candidate === "object"
     ? payload.candidate
@@ -97,14 +100,20 @@ function extractConverterPayloadFromPreset(rawPreset) {
   const conversion = payload.conversion && typeof payload.conversion === "object"
     ? payload.conversion
     : null;
+  const configCandidate = config?.candidate && typeof config.candidate === "object"
+    ? config.candidate
+    : null;
+  const configConversion = config?.conversion && typeof config.conversion === "object"
+    ? config.conversion
+    : null;
 
-  if (!candidate && !conversion) {
+  if (!candidate && !conversion && !configCandidate && !configConversion) {
     return null;
   }
 
   return {
-    candidate: candidate || {},
-    conversion: conversion || {}
+    candidate: candidate || configCandidate || {},
+    conversion: conversion || configConversion || {}
   };
 }
 

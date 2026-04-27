@@ -145,12 +145,21 @@ function extractReplayEventsFromSamplePreset(rawPreset) {
   const payload = rawPreset.payload && typeof rawPreset.payload === "object"
     ? rawPreset.payload
     : rawPreset;
+  const config = payload.config && typeof payload.config === "object"
+    ? payload.config
+    : null;
 
   if (Array.isArray(payload.events)) {
     return payload.events;
   }
   if (Array.isArray(payload.replayEvents)) {
     return payload.replayEvents;
+  }
+  if (Array.isArray(config?.events)) {
+    return config.events;
+  }
+  if (Array.isArray(config?.replayEvents)) {
+    return config.replayEvents;
   }
   if (payload.replay && typeof payload.replay === "object") {
     if (Array.isArray(payload.replay.events)) {
