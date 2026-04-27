@@ -1,23 +1,35 @@
 # Expected Codex Return / Delta Template
 
 ## Expected Changed Files
-- tool files only where hidden fallback/hardcoded paths are removed
-- tests for no hidden coupling
-- `docs/dev/reports/level_10_5_no_hidden_tool_coupling_report.md`
-- `docs/dev/reports/level_10_5_hardcoded_asset_path_audit.md`
+- affected `samples/phase-*/####/**`
+- affected standalone tool data-loading/binding files
+- `tests/runtime/SampleStandaloneToolDataFlow.test.mjs` or equivalent
+- `docs/dev/reports/level_10_6_sample_schema_validation_report.md`
+- `docs/dev/reports/level_10_6_standalone_tool_data_flow_report.md`
 - `docs/dev/roadmaps/MASTER_ROADMAP_ENGINE.md` if status update needed
 
+## Required Targeted Regression Results
+- `sample_0204_asset_browser_pipeline_input_loaded=true`
+- `sample_1413_asset_browser_or_pipeline_input_loaded=true`
+- `sample_1505_asset_browser_pipeline_input_loaded=true`
+- `sample_0510_asset_pipeline_input_loaded=true`
+- `sample_1417_asset_pipeline_input_loaded=true`
+- `sample_0213_palette_displayed=true`
+- `sample_0308_palette_displayed=true`
+- `sample_0313_palette_displayed=true`
+
 ## Expected Validation Summary
-- `tools_scanned=<count>`
-- `silent_fallbacks_removed=<count>`
-- `hardcoded_asset_paths_removed=<count>`
-- `remaining_silent_fallbacks=0`
-- `remaining_hardcoded_json_asset_paths=0`
-- `tools_empty_state_without_input=true`
-- `tools_render_manifest_input=true`
+- `sample_payload_files_scanned=<count>`
+- `schema_resolution_failures=0`
+- `tool_payload_contract_failures=0`
+- `standalone_data_flow_failures=0`
+- `palette_display_failures=0`
+- `pipeline_input_failures=0`
+- `silent_fallbacks_used=0`
+- `hardcoded_asset_paths_added=0`
 - `start_of_day_changes=0`
 
 ## Expected Delta ZIP
 Codex must create:
 
-`tmp/BUILD_PR_LEVEL_10_5_NO_HIDDEN_TOOL_COUPLING_VALIDATION_delta.zip`
+`tmp/BUILD_PR_LEVEL_10_6_SAMPLE_SCHEMA_AND_STANDALONE_TOOL_DATA_FLOW_VALIDATION_delta.zip`

@@ -535,11 +535,20 @@ function extractPaletteFromSamplePreset(rawPreset) {
   const payload = rawPreset.payload && typeof rawPreset.payload === "object"
     ? rawPreset.payload
     : rawPreset;
+  const config = payload.config && typeof payload.config === "object"
+    ? payload.config
+    : null;
   if (payload.palette && typeof payload.palette === "object") {
     return payload.palette;
   }
+  if (config?.palette && typeof config.palette === "object") {
+    return config.palette;
+  }
   if (Array.isArray(payload.entries)) {
     return payload;
+  }
+  if (Array.isArray(config?.entries)) {
+    return config;
   }
   return null;
 }

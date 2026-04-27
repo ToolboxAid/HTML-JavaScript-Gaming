@@ -534,10 +534,19 @@ function extractPipelinePayloadFromPreset(rawPreset) {
   const payload = rawPreset.payload && typeof rawPreset.payload === "object"
     ? rawPreset.payload
     : rawPreset;
+  const config = payload.config && typeof payload.config === "object"
+    ? payload.config
+    : null;
 
   const candidateKeys = ["pipelinePayload", "pipelineOptions", "assetPipelinePayload"];
   for (const key of candidateKeys) {
     const value = payload[key];
+    if (value && typeof value === "object" && !Array.isArray(value)) {
+      return value;
+    }
+  }
+  for (const key of candidateKeys) {
+    const value = config?.[key];
     if (value && typeof value === "object" && !Array.isArray(value)) {
       return value;
     }

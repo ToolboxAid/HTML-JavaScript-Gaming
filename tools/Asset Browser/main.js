@@ -274,10 +274,17 @@ function extractAssetBrowserPreset(rawPreset) {
   const payload = rawPreset.payload && typeof rawPreset.payload === "object"
     ? rawPreset.payload
     : rawPreset;
+  const config = payload.config && typeof payload.config === "object"
+    ? payload.config
+    : null;
 
   const direct = payload.assetBrowserPreset;
   if (direct && typeof direct === "object") {
     return direct;
+  }
+  const configured = config?.assetBrowserPreset;
+  if (configured && typeof configured === "object") {
+    return configured;
   }
   if (
     typeof payload.selectedAssetId === "string"

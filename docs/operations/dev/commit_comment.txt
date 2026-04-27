@@ -1,11 +1,11 @@
-BUILD_PR_LEVEL_10_5_NO_HIDDEN_TOOL_COUPLING_VALIDATION
+BUILD_PR_LEVEL_10_6_SAMPLE_SCHEMA_AND_STANDALONE_TOOL_DATA_FLOW_VALIDATION
 
-- Removed hidden fallback/sample/demo data paths from tools
-- Removed hardcoded JSON asset paths
-- Enforced manifest-input-only tool behavior
-- Added regression coverage for safe empty state and manifest input rendering
+- Added standalone sample schema and tool data-flow validation
+- Fixed targeted Asset Browser, Asset Pipeline, and Palette sample loading/display failures
+- Prevented fallback/demo data from masking invalid payloads
 
 PR Details:
-- Final Phase 10 tool purity gate
-- No validators
+- Validates standalone tool mode receives/displays sample data
+- No hardcoded asset paths
+- No runtime validators
 - No start_of_day changes
