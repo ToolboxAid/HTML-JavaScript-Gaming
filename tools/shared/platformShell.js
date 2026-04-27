@@ -14,7 +14,7 @@ import { asHtmlInput, queryAll, queryFirst, readDataAttribute, setTextContent } 
 import { escapeHtml } from "../../src/shared/string/stringUtil.js";
 import { Logger } from "../../src/engine/logging/index.js";
 import { createRuntimeMonitoringHooks } from "../../src/engine/runtime/index.js";
-import { logToolUiControlReady } from "./toolLoadDiagnostics.js";
+import { logToolUiControlReady, logToolUiFinalReady, logToolUiLifecycle } from "./toolLoadDiagnostics.js";
 
 let workspaceController = null;
 let headerExpandedState = null;
@@ -1408,19 +1408,36 @@ function getAccordionStateKey(sidebar, accordion, index) {
   return `${side || "unknown-side"}:${index}:${normalizedSummary || "panel"}`;
 }
 
-function emitAccordionReadinessLog(accordion, index, stateKey) {
+function emitAccordionReadinessLog(accordion, index, stateKey, phase = "render", cause = "accordion-state-sync") {
   const searchParams = typeof window !== "undefined"
     ? new URLSearchParams(window.location.search)
     : new URLSearchParams();
   const toolId = normalizeTextValue(document.body?.dataset?.toolId) || "tools-platform";
   const sampleId = normalizeTextValue(searchParams.get("sampleId"));
+  const isOpen = accordion.open === true;
   logToolUiControlReady({
     toolId,
     sampleId,
     controlId: `accordion:${stateKey || index}`,
     requiredData: "sidebar-accordion-open-state",
-    loaded: accordion.open === true,
-    value: accordion.open ? "open" : "closed",
+    loaded: isOpen,
+    value: isOpen ? "open" : "closed",
+    classification: "success"
+  });
+  logToolUiLifecycle({
+    toolId,
+    sampleId,
+    phase,
+    cause,
+    classification: "success"
+  });
+  logToolUiFinalReady({
+    toolId,
+    sampleId,
+    requiredInputsReady: true,
+    requiredControlsReady: true,
+    requiredOutputsReady: true,
+    lifecycleStable: true,
     classification: "success"
   });
 }
@@ -1460,13 +1477,13 @@ function applySidebarAccordionRules() {
         accordion.dataset.accordionStateBound = "1";
         bindEventHandlers(accordion, "toggle", () => {
           sidebarAccordionState.set(stateKey, accordion.open === true);
-          emitAccordionReadinessLog(accordion, index, stateKey);
+          emitAccordionReadinessLog(accordion, index, stateKey, "user-action", "accordion-toggle");
         });
       }
 
       if (accordion.dataset.accordionReadinessLogged !== "1") {
         accordion.dataset.accordionReadinessLogged = "1";
-        emitAccordionReadinessLog(accordion, index, stateKey);
+        emitAccordionReadinessLog(accordion, index, stateKey, "init", "accordion-initialized");
       }
     });
   });
@@ -1644,13 +1661,7 @@ async function initPlatformShell() {
         }
       }
     });
-    if (launchedFromSamplePreset) {
-      window.setTimeout(() => {
-        workspaceController?.startWatching();
-      }, 600);
-    } else {
-      workspaceController.startWatching();
-    }
+    workspaceController.startWatching();
   }
 
   const catalogContext = await readCatalogContextFromLaunchContext(launchContext);

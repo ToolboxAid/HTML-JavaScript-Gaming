@@ -78,6 +78,18 @@ index.html
               <input id="colorPicker" type="color" value="#000000" disabled />
             </label>
             <div id="activeColorSwatch" class="active-color-swatch" aria-label="Active color swatch"></div>
+            <div class="color-slot-row" aria-label="Primary and secondary palette colors">
+              <button id="color1SelectorButton" type="button" class="color-slot-button">
+                <span class="color-slot-label">Color 1</span>
+                <span id="color1SelectorSwatch" class="color-slot-swatch" aria-hidden="true"></span>
+                <span id="color1SelectorValue" class="color-slot-value">none</span>
+              </button>
+              <button id="color2SelectorButton" type="button" class="color-slot-button">
+                <span class="color-slot-label">Color 2</span>
+                <span id="color2SelectorSwatch" class="color-slot-swatch" aria-hidden="true"></span>
+                <span id="color2SelectorValue" class="color-slot-value">none</span>
+              </button>
+            </div>
             <h3>Palette</h3>
             <div id="paletteButtons" class="swatch-grid" aria-label="Palette"></div>
             <h3>Recent</h3>

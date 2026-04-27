@@ -1,4 +1,4 @@
-# 🧊 King of the Iceberg — Game Design Document (GDD v9)
+# 🧊 King of the Iceberg — Game Design Document (GDD v9 — Merged Draft)
 
 ---
 
@@ -10,13 +10,13 @@ Players:
 - Push / knock others off
 - Fight for control of the top
 - Use abilities + power-ups
-- Manipulate physics (jump/landing impacts)
+- Manipulate physics via movement, jumping, and landing impacts
 
 ---
 
 ## 2. Core Game Loop
 
-Win by staying on TOP for X total seconds
+Win by staying on TOP for X total seconds.
 
 - Timer increases only on top
 - Timer pauses when off
@@ -36,21 +36,22 @@ Win by staying on TOP for X total seconds
 ## 4. Player System (Pingwins)
 
 ### 4.1 Character Select
+
 - Each hero is unique
 - Once selected → locked (no duplicates)
 
 ---
 
-### 4.2 Named Heroes & Abilities (RESTORED)
+### 4.2 Named Heroes & Abilities
 
 - Splash — Pucker Blaster (water push stream)
-- Frostbite — Freeze Blast (temporary freeze zone)
-- Glacier — Mega Weight (heavy mass, strong tilt)
+- Frostbite — Freeze Blast (freeze zone)
+- Glacier — Mega Weight (high tilt influence)
 - Dash — Slipstream Dash (burst movement)
-- Sniper — Crystal Shot (long-range precision)
-- Bombard — Belly Bomb (explosive slide impact)
-- Cyclone — Spin Attack (radial knockback)
-- Anchor — Grip Mode (high traction, anti-slide)
+- Sniper — Crystal Shot (precision projectile)
+- Bombard — Belly Bomb (explosive impact)
+- Cyclone — Spin Attack (radial push)
+- Anchor — Grip Mode (high traction)
 
 ---
 
@@ -70,9 +71,9 @@ If no input:
 
 ---
 
-### 4.5 Wrap System (NEW)
+### 4.5 Wrap System
 
-If a player exits screen (jump/swim):
+If a player exits screen:
 - Wraps to opposite side
 - Preserves velocity and direction
 
@@ -88,32 +89,34 @@ If a player exits screen (jump/swim):
 
 ### 4.7 Jump & Impact System
 
-Landing creates tilt force on iceberg
+Landing creates tilt force on iceberg.
 
 #### Stomp Landing
+
 Press DOWN during landing:
 - Increased tilt force
 
 #### Group Impact
+
 Multiple players landing together:
 - Amplified tilt
 - Can slide others off top
 
 ---
 
-### 4.8 Combat System
+### 4.8 Combat
 
-Push / knock players off iceberg
+Push / knock players off iceberg.
 
-- Collision-based force
+- Collision force
 - Ability-enhanced knockback
-- Landing impacts also affect combat
+- Landing impacts contribute
 
 ---
 
-### 4.9 Knockdown State
+### 4.9 Knockdown
 
-- Triggered by strong impact
+- Strong impacts cause slip state
 - Temporary loss of control
 
 ---
@@ -123,7 +126,7 @@ Push / knock players off iceberg
 - HP reduced by collisions, abilities, power-ups
 
 Death:
-- Explosion with ice particles
+- Explosion effect (ice + particles)
 
 ---
 
@@ -136,7 +139,7 @@ Death:
 
 ## 5. Iceberg System
 
-### 5.1 Tilemap Generated
+### 5.1 Tilemap
 
 - Left side authored
 - Right side mirrored at runtime
@@ -154,15 +157,15 @@ Death:
 ### 5.3 Tilt Forces
 
 - Player weight
-- Position
+- Player position
 - Landing impacts
 
 ---
 
 ### 5.4 Balance Rule
 
-- Edge = higher push power
-- Top = more stable, less push
+- Edge = stronger push
+- Top = more stable
 
 ---
 
@@ -182,8 +185,8 @@ Death:
 ## 7. Iceberg Break Event
 
 - Trigger at 65% progress
-- Top breaks away
-- Larger combat surface
+- Top breaks
+- Larger combat area
 
 ---
 
@@ -196,7 +199,7 @@ Death:
 
 ---
 
-### 8.2 Ability Effects (RESTORED DETAIL)
+### 8.2 Ability Effects
 
 - Pucker Blaster → continuous push force
 - Freeze Blast → slows and freezes area
@@ -209,7 +212,7 @@ Death:
 
 ---
 
-## 9. Power-Up System (RESTORED DETAIL)
+## 9. Power-Up System
 
 ### 9.1 Spawn
 
@@ -221,14 +224,14 @@ Death:
 
 ### 9.2 Power-Ups & Effects
 
-- Grip Boots → high traction
-- Freeze Orb → freezes nearby players
-- Wave Slam → shockwave push
-- Mega Core → doubles weight influence
-- Ice Sniper → long-range projectile boost
-- Spin Core → enhanced spin attack
-- Dash Surge → faster dash + cooldown reduction
-- Wind Gust → directional push field
+- Grip Boots → traction
+- Freeze Orb → freeze
+- Wave Slam → shockwave
+- Mega Core → weight boost
+- Ice Sniper → ranged boost
+- Spin Core → spin boost
+- Dash Surge → speed boost + cooldown reduction
+- Wind Gust → push field
 
 ---
 
@@ -242,8 +245,7 @@ Death:
 
 ### 10.2 Recovery
 
-- Swim
-- Jump back onto iceberg
+- Swim + jump back
 
 ---
 
@@ -299,7 +301,7 @@ Tracks:
 
 ---
 
-## 15. Camera System
+## 15. Camera
 
 - Shared camera
 - Dynamic zoom
@@ -329,7 +331,7 @@ Tracks:
 - Time meter
 - King indicator
 - Ability cooldown
-- Power-up indicator
+- Power-up display
 
 ---
 
@@ -375,4 +377,3 @@ King of the Hill
 + Push combat
 + Dynamic terrain
 + Multiplayer chaos
-

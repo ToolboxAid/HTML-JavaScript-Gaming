@@ -14,7 +14,9 @@ import {
   logToolLoadFetch,
   logToolLoadLoaded,
   logToolLoadWarning,
-  logToolUiControlReady
+  logToolUiControlReady,
+  logToolUiFinalReady,
+  logToolUiLifecycle
 } from "../shared/toolLoadDiagnostics.js";
 import { ACTIVE_PROJECT_STORAGE_KEY } from "../shared/projectManifestContract.js";
 
@@ -374,15 +376,19 @@ async function loadCatalogEntriesFromContext() {
   return [];
 }
 
-function emitApprovedAssetControlReadiness() {
+function emitAssetBrowserControlReadiness() {
   const searchParams = new URLSearchParams(window.location.search);
   const sampleId = String(searchParams.get("sampleId") || "").trim();
   const approvedCount = Array.isArray(state.assetCatalog) ? state.assetCatalog.length : 0;
   const hasDeclaredSource = Number(state.catalogLoadInfo?.declaredCount || 0) > 0;
-  const hasCatalogCandidates = Number(state.catalogLoadInfo?.candidateCount || 0) > 0;
-  const classification = approvedCount > 0
+  const selectedAsset = getSelectedAsset();
+  const hasSelection = Boolean(selectedAsset);
+  const hasImportDestination = Boolean(String(refs.importDestinationSelect.value || "").trim());
+  const hasImportName = Boolean(normalizeImportName(refs.importNameInput.value || ""));
+  const importActionReady = hasSelection && hasImportDestination && hasImportName;
+  const approvedClassification = approvedCount > 0
     ? "success"
-    : (hasDeclaredSource ? "empty" : (hasCatalogCandidates ? "missing" : "missing"));
+    : (hasDeclaredSource ? "empty" : "missing");
 
   logToolUiControlReady({
     toolId: "asset-browser",
@@ -393,7 +399,41 @@ function emitApprovedAssetControlReadiness() {
     count: approvedCount,
     value: approvedCount,
     source: state.catalogLoadInfo?.source || "none",
-    classification
+    classification: approvedClassification
+  });
+  logToolUiControlReady({
+    toolId: "asset-browser",
+    sampleId,
+    controlId: "selected-asset-preview",
+    requiredData: "selected-approved-asset",
+    loaded: hasSelection,
+    value: selectedAsset ? selectedAsset.id : "none",
+    classification: hasSelection ? "success" : (approvedCount > 0 ? "missing" : "empty")
+  });
+  logToolUiControlReady({
+    toolId: "asset-browser",
+    sampleId,
+    controlId: "import-action-readiness",
+    requiredData: "selected-approved-asset-and-import-destination",
+    loaded: importActionReady,
+    value: importActionReady ? "ready" : "blocked",
+    classification: importActionReady ? "success" : (approvedCount > 0 ? "missing" : "empty")
+  });
+  logToolUiLifecycle({
+    toolId: "asset-browser",
+    sampleId,
+    phase: "render",
+    cause: "asset-browser-control-sync",
+    classification: "success"
+  });
+  logToolUiFinalReady({
+    toolId: "asset-browser",
+    sampleId,
+    requiredInputsReady: hasDeclaredSource && approvedCount > 0,
+    requiredControlsReady: approvedCount > 0 && hasSelection,
+    requiredOutputsReady: Boolean(String(refs.importStatusText.textContent || "").trim()),
+    lifecycleStable: true,
+    classification: approvedCount > 0 && hasSelection ? "success" : approvedClassification
   });
 }
 
@@ -834,20 +874,23 @@ function syncImportFormFromFile() {
   refs.importCategorySelect.value = inferredCategory;
   populateDestinationOptions(inferredCategory);
   refs.importNameInput.value = normalizeImportName(file.name);
-  renderImportPlan();
-}
+    renderImportPlan();
+    emitAssetBrowserControlReadiness();
+  }
 
 function bindEvents() {
   refs.categoryFilter.addEventListener("change", () => {
     state.selectedCategory = refs.categoryFilter.value;
     renderAssetList();
     renderPreview();
+    emitAssetBrowserControlReadiness();
   });
 
   refs.searchInput.addEventListener("input", () => {
     state.search = refs.searchInput.value;
     renderAssetList();
     renderPreview();
+    emitAssetBrowserControlReadiness();
   });
 
   refs.assetList.addEventListener("click", (event) => {
@@ -858,22 +901,29 @@ function bindEvents() {
     state.selectedAssetId = button.dataset.assetId || "";
     renderAssetList();
     renderPreview();
+    emitAssetBrowserControlReadiness();
   });
 
   refs.importFileInput.addEventListener("change", syncImportFormFromFile);
   refs.importCategorySelect.addEventListener("change", () => {
     populateDestinationOptions(refs.importCategorySelect.value);
     renderImportPlan();
+    emitAssetBrowserControlReadiness();
   });
-  refs.importNameInput.addEventListener("input", renderImportPlan);
-  refs.validateImportButton.addEventListener("click", renderImportPlan);
+  refs.importNameInput.addEventListener("input", () => {
+    renderImportPlan();
+    emitAssetBrowserControlReadiness();
+  });
+  refs.validateImportButton.addEventListener("click", () => {
+    renderImportPlan();
+    emitAssetBrowserControlReadiness();
+  });
   refs.downloadImportPlanButton.addEventListener("click", downloadImportPlan);
   refs.useAssetInToolButton.addEventListener("click", useSelectedAssetInActiveTool);
 }
 
 async function init() {
   await hydrateApprovedAssetCatalog();
-  emitApprovedAssetControlReadiness();
   populateCategoryControls();
   populateDestinationOptions(refs.importCategorySelect.value);
   applyLaunchContext();
@@ -883,6 +933,7 @@ async function init() {
   renderAssetList();
   await renderPreview();
   renderImportPlan();
+  emitAssetBrowserControlReadiness();
   bindEvents();
 }
 
@@ -912,6 +963,7 @@ const assetBrowserApi = {
     renderAssetList();
     renderPreview();
     renderImportPlan();
+    emitAssetBrowserControlReadiness();
     return true;
   }
 };

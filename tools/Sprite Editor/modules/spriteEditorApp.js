@@ -60,7 +60,10 @@ import {
   logToolLoadRequest,
   logToolLoadFetch,
   logToolLoadLoaded,
-  logToolLoadWarning
+  logToolLoadWarning,
+  logToolUiControlReady,
+  logToolUiFinalReady,
+  logToolUiLifecycle
 } from "../../shared/toolLoadDiagnostics.js";
 
 const CANONICAL_PALETTE_SCHEMA = "html-js-gaming.palette";
@@ -88,6 +91,13 @@ function clamp(value, min, max, fallback) {
 }
 
 function normalizePaletteEntryColor(value) {
+  if (typeof value !== "string" || !value.trim()) {
+    return null;
+  }
+  return normalizeColor(value);
+}
+
+function normalizeProjectColor(value) {
   if (typeof value !== "string" || !value.trim()) {
     return null;
   }
@@ -1088,6 +1098,7 @@ function hydratePaletteFromRefIfPossible(state) {
 
 function updateEditGateDisabledState(state) {
   const editable = isEditingEnabled(state);
+  const paletteLocked = isPaletteLocked(state.project);
   const toolButtons = state.elements.toolButtons.querySelectorAll("[data-tool]");
 
   toolButtons.forEach((button) => {
@@ -1110,6 +1121,8 @@ function updateEditGateDisabledState(state) {
   state.elements.onionSkinToggle.disabled = !editable;
   state.elements.undoButton.disabled = !editable || state.history.undoStack.length === 0;
   state.elements.redoButton.disabled = !editable || state.history.redoStack.length === 0;
+  state.elements.color1SelectorButton.disabled = !paletteLocked || !normalizeProjectColor(state.elements.color1SelectorButton.dataset.color);
+  state.elements.color2SelectorButton.disabled = !paletteLocked || !normalizeProjectColor(state.elements.color2SelectorButton.dataset.color);
   state.elements.colorPicker.disabled = true;
 }
 
@@ -1216,6 +1229,50 @@ function updateToolStateText(state) {
   updateStatusBar(state);
 }
 
+function getColorSlotValues(project) {
+  const palette = Array.isArray(project?.palette) ? project.palette : [];
+  return {
+    color1: normalizeProjectColor(palette[0]),
+    color2: normalizeProjectColor(palette[1])
+  };
+}
+
+function applyColorSlotSwatch(element, color) {
+  if (!(element instanceof HTMLElement)) {
+    return;
+  }
+  if (!color) {
+    element.style.background = "linear-gradient(45deg, #2c445d 25%, #4d6a87 25%, #4d6a87 50%, #2c445d 50%, #2c445d 75%, #4d6a87 75%, #4d6a87 100%)";
+    element.style.backgroundSize = "10px 10px";
+    return;
+  }
+  if (isTransparent(color)) {
+    element.style.background = "linear-gradient(45deg, #2c445d 25%, #4d6a87 25%, #4d6a87 50%, #2c445d 50%, #2c445d 75%, #4d6a87 75%, #4d6a87 100%)";
+    element.style.backgroundSize = "10px 10px";
+    return;
+  }
+  element.style.background = color;
+  element.style.backgroundSize = "auto";
+}
+
+function renderColorSelectors(state) {
+  const { color1, color2 } = getColorSlotValues(state.project);
+  const paletteLocked = isPaletteLocked(state.project);
+  const activeColor = normalizeProjectColor(state.project.activeColor);
+
+  state.elements.color1SelectorValue.textContent = color1 || "none";
+  state.elements.color2SelectorValue.textContent = color2 || "none";
+  applyColorSlotSwatch(state.elements.color1SelectorSwatch, color1);
+  applyColorSlotSwatch(state.elements.color2SelectorSwatch, color2);
+
+  state.elements.color1SelectorButton.dataset.color = color1 || "";
+  state.elements.color2SelectorButton.dataset.color = color2 || "";
+  state.elements.color1SelectorButton.disabled = !paletteLocked || !color1;
+  state.elements.color2SelectorButton.disabled = !paletteLocked || !color2;
+  state.elements.color1SelectorButton.classList.toggle("active", Boolean(color1 && activeColor === color1));
+  state.elements.color2SelectorButton.classList.toggle("active", Boolean(color2 && activeColor === color2));
+}
+
 function renderPalette(state) {
   const paletteRoot = state.elements.paletteButtons;
   paletteRoot.textContent = "";
@@ -1298,6 +1355,7 @@ function renderHud(state) {
     : "#000000";
 
   renderToolButtons(state);
+  renderColorSelectors(state);
   renderPalette(state);
   renderRecentColors(state);
   updateToolStateText(state);
@@ -1372,11 +1430,169 @@ function renderPreview(state) {
   );
 }
 
+function emitSpriteEditorControlReadiness(state, options = {}) {
+  const forceMissing = options.forceMissing === true;
+  const lifecycleStable = options.lifecycleStable !== false;
+  const phase = typeof options.phase === "string" && options.phase.trim() ? options.phase.trim() : "render";
+  const sampleId = typeof options.sampleId === "string" && options.sampleId.trim()
+    ? options.sampleId.trim()
+    : (typeof state.sampleSource?.sampleId === "string" ? state.sampleSource.sampleId.trim() : "");
+
+  const palette = forceMissing ? [] : (Array.isArray(state.project.palette) ? state.project.palette : []);
+  const paletteCount = palette.length;
+  const renderedSwatches = forceMissing
+    ? 0
+    : state.elements.paletteButtons.querySelectorAll(".swatch-button").length;
+  const { color1, color2 } = forceMissing ? { color1: null, color2: null } : getColorSlotValues(state.project);
+  const activeColor = forceMissing ? null : normalizeProjectColor(state.project.activeColor);
+  const activeColorReady = Boolean(
+    activeColor
+    && palette.some((entry) => normalizeProjectColor(entry) === activeColor)
+  );
+  const frameCount = forceMissing ? 0 : (Array.isArray(state.project.frames) ? state.project.frames.length : 0);
+  const sourceText = forceMissing ? "" : (state.elements.sampleSourceText.textContent || "");
+  const sourceDetailText = forceMissing ? "" : (state.elements.sampleSourceDetailText.textContent || "");
+  const statusText = forceMissing ? "" : (state.elements.statusText.textContent || "");
+  const sourceStatusReady = Boolean(sourceText.trim() && sourceDetailText.trim() && statusText.trim());
+  const frameControlsPresent = state.elements.frameCounter instanceof HTMLElement
+    && state.elements.playPreviewButton instanceof HTMLButtonElement
+    && state.elements.fpsInput instanceof HTMLInputElement;
+  const ioControlsPresent = state.elements.saveProjectButton instanceof HTMLButtonElement
+    && state.elements.exportPngButton instanceof HTMLButtonElement
+    && state.elements.exportSheetButton instanceof HTMLButtonElement;
+  const canvasReady = !forceMissing
+    && state.elements.editorCanvas instanceof HTMLCanvasElement
+    && frameCount > 0
+    && activeColorReady
+    && paletteCount > 0;
+  const frameControlsReady = !forceMissing && frameControlsPresent && frameCount > 0;
+  const ioControlsReady = !forceMissing && ioControlsPresent && frameCount > 0 && paletteCount > 0;
+
+  const signature = JSON.stringify({
+    sampleId,
+    paletteCount,
+    renderedSwatches,
+    color1: color1 || "",
+    color2: color2 || "",
+    activeColor: activeColor || "",
+    frameCount,
+    sourceStatusReady,
+    lifecycleStable
+  });
+  if (!options.forceEmit && state.lastUiReadinessSignature === signature) {
+    return;
+  }
+  state.lastUiReadinessSignature = signature;
+
+  logToolUiControlReady({
+    toolId: "sprite-editor",
+    sampleId,
+    controlId: "palette-swatch-grid",
+    requiredData: "canonical-palette-swatches",
+    loaded: renderedSwatches > 0 && paletteCount > 0,
+    count: renderedSwatches,
+    value: renderedSwatches,
+    classification: renderedSwatches > 0 && paletteCount > 0 ? "success" : (paletteCount > 0 ? "empty" : "missing")
+  });
+
+  logToolUiControlReady({
+    toolId: "sprite-editor",
+    sampleId,
+    controlId: "color-1-selector",
+    requiredData: "first-loaded-palette-swatch",
+    loaded: Boolean(color1 && state.elements.color1SelectorButton instanceof HTMLButtonElement),
+    value: color1 || "none",
+    classification: color1 ? "success" : (paletteCount > 0 ? "empty" : "missing")
+  });
+
+  logToolUiControlReady({
+    toolId: "sprite-editor",
+    sampleId,
+    controlId: "color-2-selector",
+    requiredData: "second-loaded-palette-swatch",
+    loaded: Boolean(color2 && state.elements.color2SelectorButton instanceof HTMLButtonElement),
+    value: color2 || "none",
+    classification: color2 ? "success" : (paletteCount > 0 ? "empty" : "missing")
+  });
+
+  logToolUiControlReady({
+    toolId: "sprite-editor",
+    sampleId,
+    controlId: "active-drawing-color",
+    requiredData: "loaded-palette-selection",
+    loaded: activeColorReady,
+    value: activeColor || "none",
+    classification: activeColorReady ? "success" : "missing"
+  });
+
+  logToolUiControlReady({
+    toolId: "sprite-editor",
+    sampleId,
+    controlId: "sprite-canvas",
+    requiredData: "sprite-project-frames-and-active-color",
+    loaded: canvasReady,
+    value: frameCount,
+    classification: canvasReady ? "success" : (frameCount > 0 ? "missing" : "empty")
+  });
+
+  logToolUiControlReady({
+    toolId: "sprite-editor",
+    sampleId,
+    controlId: "frame-controls",
+    requiredData: "sprite-project-frames",
+    loaded: frameControlsReady,
+    count: frameCount,
+    value: frameCount,
+    classification: frameControlsReady ? "success" : (frameCount > 0 ? "missing" : "empty")
+  });
+
+  logToolUiControlReady({
+    toolId: "sprite-editor",
+    sampleId,
+    controlId: "load-save-export-controls",
+    requiredData: "sprite-project-and-palette-context",
+    loaded: ioControlsReady,
+    value: ioControlsReady ? "ready" : "not-ready",
+    classification: ioControlsReady ? "success" : "missing"
+  });
+
+  logToolUiControlReady({
+    toolId: "sprite-editor",
+    sampleId,
+    controlId: "source-status-readout",
+    requiredData: "sample-source-and-load-status",
+    loaded: sourceStatusReady,
+    value: sourceStatusReady ? "ready" : "not-ready",
+    classification: sourceStatusReady ? "success" : "missing"
+  });
+
+  logToolUiLifecycle({
+    toolId: "sprite-editor",
+    sampleId,
+    phase,
+    cause: forceMissing ? "preset-load-failure" : "control-state-sync",
+    classification: lifecycleStable ? "success" : "lifecycle-failure"
+  });
+
+  logToolUiFinalReady({
+    toolId: "sprite-editor",
+    sampleId,
+    requiredInputsReady: paletteCount > 0 && frameCount > 0,
+    requiredControlsReady: Boolean(color1 && color2 && activeColorReady && frameControlsReady && ioControlsReady),
+    requiredOutputsReady: canvasReady && sourceStatusReady,
+    lifecycleStable,
+    classification: lifecycleStable && paletteCount > 0 && frameCount > 0 && color1 && color2 && activeColorReady && frameControlsReady && ioControlsReady && canvasReady && sourceStatusReady
+      ? "success"
+      : (lifecycleStable ? "missing" : "lifecycle-failure")
+  });
+}
+
 function renderAll(state) {
   renderHud(state);
   renderEditor(state);
   renderPreview(state);
   updateRemediationUI(state);
+  emitSpriteEditorControlReadiness(state);
 }
 
 function resetProject(state) {
@@ -1814,6 +2030,13 @@ async function tryLoadPresetFromQuery(state) {
       reason: "samplePresetPath missing",
       launchQuery
     });
+    emitSpriteEditorControlReadiness(state, {
+      sampleId,
+      phase: "error",
+      lifecycleStable: false,
+      forceMissing: true,
+      forceEmit: true
+    });
     return false;
   }
 
@@ -1844,6 +2067,13 @@ async function tryLoadPresetFromQuery(state) {
       error: paletteInput.error || "Required palettePath input is missing from sample manifest."
     });
     setStatus(state, `Preset load failed: ${paletteInput.error || "required palettePath input is missing from sample manifest."}`);
+    emitSpriteEditorControlReadiness(state, {
+      sampleId,
+      phase: "error",
+      lifecycleStable: false,
+      forceMissing: true,
+      forceEmit: true
+    });
     return false;
   }
 
@@ -1899,6 +2129,13 @@ async function tryLoadPresetFromQuery(state) {
     });
     renderHud(state);
     setStatus(state, `Preset load failed: ${error instanceof Error ? error.message : "unknown error"}`);
+    emitSpriteEditorControlReadiness(state, {
+      sampleId,
+      phase: "error",
+      lifecycleStable: false,
+      forceMissing: true,
+      forceEmit: true
+    });
     return false;
   }
 
@@ -2003,6 +2240,13 @@ async function tryLoadPresetFromQuery(state) {
       error: error instanceof Error ? error.message : "unknown error"
     });
     setStatus(state, `Preset load failed: ${error instanceof Error ? error.message : "unknown error"}`);
+    emitSpriteEditorControlReadiness(state, {
+      sampleId,
+      phase: "error",
+      lifecycleStable: false,
+      forceMissing: true,
+      forceEmit: true
+    });
     return false;
   }
 
@@ -2013,6 +2257,12 @@ async function tryLoadPresetFromQuery(state) {
     syncControlsFromProject(state);
     renderAll(state);
     setStatus(state, buildPresetLoadedStatus(sampleId, samplePresetPath));
+    emitSpriteEditorControlReadiness(state, {
+      sampleId,
+      phase: "loaded",
+      lifecycleStable: true,
+      forceEmit: true
+    });
     return true;
   } catch (error) {
     logToolLoadWarning({
@@ -2031,6 +2281,13 @@ async function tryLoadPresetFromQuery(state) {
     });
     renderHud(state);
     setStatus(state, `Preset load failed: ${error instanceof Error ? error.message : "unknown error"}`);
+    emitSpriteEditorControlReadiness(state, {
+      sampleId,
+      phase: "error",
+      lifecycleStable: false,
+      forceMissing: true,
+      forceEmit: true
+    });
     return false;
   }
 }
@@ -2261,6 +2518,8 @@ function bindControls(state) {
     addFrameButton,
     canvasHeightInput,
     canvasWidthInput,
+    color1SelectorButton,
+    color2SelectorButton,
     colorPicker,
     deleteFrameButton,
     duplicateFrameButton,
@@ -2325,6 +2584,38 @@ function bindControls(state) {
 
     syncControlsFromProject(state);
     setStatus(state, `Palette ${requestedId} selected and locked for this project session.`);
+    renderAll(state);
+  });
+
+  color1SelectorButton.addEventListener("click", () => {
+    if (!isPaletteLocked(state.project)) {
+      setStatus(state, "Select and lock a palette before choosing Color 1.");
+      return;
+    }
+    const nextColor = normalizeProjectColor(color1SelectorButton.dataset.color);
+    if (!nextColor) {
+      setStatus(state, "Color 1 is unavailable. Load a canonical palette with at least one swatch.");
+      return;
+    }
+    selectColor(state.project, nextColor);
+    state.elements.colorPicker.value = colorToPickerValue(state.project.activeColor);
+    setStatus(state, `Color 1 selected: ${state.project.activeColor}.`);
+    renderAll(state);
+  });
+
+  color2SelectorButton.addEventListener("click", () => {
+    if (!isPaletteLocked(state.project)) {
+      setStatus(state, "Select and lock a palette before choosing Color 2.");
+      return;
+    }
+    const nextColor = normalizeProjectColor(color2SelectorButton.dataset.color);
+    if (!nextColor) {
+      setStatus(state, "Color 2 is unavailable. Load a canonical palette with at least two swatches.");
+      return;
+    }
+    selectColor(state.project, nextColor);
+    state.elements.colorPicker.value = colorToPickerValue(state.project.activeColor);
+    setStatus(state, `Color 2 selected: ${state.project.activeColor}.`);
     renderAll(state);
   });
 
@@ -2620,6 +2911,7 @@ export function initializeSpriteEditorApp() {
       samplePresetPath: "",
       fileName: ""
     },
+    lastUiReadinessSignature: "",
     skipExternalProjectStateUntil: 0,
     cursor: {
       x: null,
@@ -2631,6 +2923,12 @@ export function initializeSpriteEditorApp() {
       addFrameButton: getRequiredElement("addFrameButton"),
       canvasHeightInput: getRequiredElement("canvasHeightInput"),
       canvasWidthInput: getRequiredElement("canvasWidthInput"),
+      color1SelectorButton: getRequiredElement("color1SelectorButton"),
+      color1SelectorSwatch: getRequiredElement("color1SelectorSwatch"),
+      color1SelectorValue: getRequiredElement("color1SelectorValue"),
+      color2SelectorButton: getRequiredElement("color2SelectorButton"),
+      color2SelectorSwatch: getRequiredElement("color2SelectorSwatch"),
+      color2SelectorValue: getRequiredElement("color2SelectorValue"),
       colorPicker: getRequiredElement("colorPicker"),
       deleteFrameButton: getRequiredElement("deleteFrameButton"),
       duplicateFrameButton: getRequiredElement("duplicateFrameButton"),

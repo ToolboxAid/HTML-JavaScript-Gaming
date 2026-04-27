@@ -13,7 +13,9 @@ import {
   logToolLoadFetch,
   logToolLoadLoaded,
   logToolLoadWarning,
-  logToolUiControlReady
+  logToolUiControlReady,
+  logToolUiFinalReady,
+  logToolUiLifecycle
 } from "../shared/toolLoadDiagnostics.js";
 import { normalizeToolSamplePath } from "../shared/toolSampleCatalog.js";
 import {
@@ -173,16 +175,6 @@ function setStatus(text) {
 
 const DRAW_TOOL_SET = new Set(["rect", "ellipse", "line", "polyline", "path"]);
 const NO_PALETTE_ID = "__none__";
-const FALLBACK_PALETTE = [
-  { hex: "#232323", name: "Black" },
-  { hex: "#EDEDED", name: "White" },
-  { hex: "#FF5349", name: "Red Orange" },
-  { hex: "#FF7538", name: "Orange" },
-  { hex: "#FCE883", name: "Yellow" },
-  { hex: "#1CAC78", name: "Green" },
-  { hex: "#1F75FE", name: "Blue" },
-  { hex: "#926EAE", name: "Violet" }
-];
 
 function normalizeHexColor(value) {
   if (typeof value !== "string") {
@@ -534,10 +526,6 @@ function loadPaletteCatalogFromExistingWorkflow() {
       consumed.add(name);
       consumePalette(name, library[name]);
     });
-  }
-
-  if (Object.keys(paletteGroups).length === 0) {
-    consumePalette("fallback", FALLBACK_PALETTE);
   }
 
   return {
@@ -2334,16 +2322,16 @@ function getPaletteEntryColors(paletteId) {
   return Array.isArray(state.paletteGroups[paletteId]) ? state.paletteGroups[paletteId].map((entry) => entry.hex) : [];
 }
 
-function normalizeColorFromPalette(paletteId, colorValue, fallbackColor = null) {
+function normalizeColorFromPalette(paletteId, colorValue) {
   const normalizedColor = normalizeColorValue(colorValue);
   if (!normalizedColor) {
-    return fallbackColor;
+    return null;
   }
   const paletteColors = getPaletteEntryColors(paletteId);
   if (paletteColors.length === 0 || paletteColors.includes(normalizedColor)) {
     return normalizedColor;
   }
-  return fallbackColor;
+  return null;
 }
 
 function applySampleEditorOptions(options = {}) {
@@ -2369,20 +2357,13 @@ function applySampleEditorOptions(options = {}) {
     }
   }
 
-  const paletteColors = getPaletteEntryColors(state.selectedPaletteId);
-  const fallbackPaint = paletteColors[0] || null;
-  const fallbackStroke = paletteColors[1] || fallbackPaint;
   const paintValue = paletteBlock ? paletteBlock.paint : options.paint;
   const strokeValue = paletteBlock ? paletteBlock.stroke : options.stroke;
-  const nextPaint = normalizeColorFromPalette(state.selectedPaletteId, paintValue, fallbackPaint);
-  const nextStroke = normalizeColorFromPalette(state.selectedPaletteId, strokeValue, fallbackStroke);
+  const nextPaint = normalizeColorFromPalette(state.selectedPaletteId, paintValue);
+  const nextStroke = normalizeColorFromPalette(state.selectedPaletteId, strokeValue);
 
-  if (nextPaint) {
-    state.fill = nextPaint;
-  }
-  if (nextStroke) {
-    state.stroke = nextStroke;
-  }
+  state.fill = nextPaint;
+  state.stroke = nextStroke;
 
   const configuredStrokeWidth = paletteBlock ? paletteBlock.strokeWidth : options.strokeWidth;
   if (Number.isFinite(Number(configuredStrokeWidth))) {
@@ -2392,8 +2373,8 @@ function applySampleEditorOptions(options = {}) {
 
   const gradientStartValue = paletteBlock ? paletteBlock.gradientStart : options.gradientFillFrom;
   const gradientEndValue = paletteBlock ? paletteBlock.gradientEnd : options.gradientFillTo;
-  const gradientStart = normalizeColorFromPalette(state.selectedPaletteId, gradientStartValue, state.fill || null);
-  const gradientEnd = normalizeColorFromPalette(state.selectedPaletteId, gradientEndValue, state.gradientFillTo || null);
+  const gradientStart = normalizeColorFromPalette(state.selectedPaletteId, gradientStartValue);
+  const gradientEnd = normalizeColorFromPalette(state.selectedPaletteId, gradientEndValue);
   if (gradientStart) {
     state.gradientFillFrom = gradientStart;
   }
@@ -2584,7 +2565,7 @@ function registerPaletteFromPresetEditorOptions(editorOptions, sampleId = "") {
 }
 
 function ensurePaletteSelectionFromDeclaredInputs(editorOptions = {}, sampleId = "") {
-  if (hasPaletteSelection()) {
+  if (hasPaletteSelection() && normalizeColorValue(state.fill) && normalizeColorValue(state.stroke)) {
     return "success";
   }
 
@@ -2616,8 +2597,6 @@ function ensurePaletteSelectionFromDeclaredInputs(editorOptions = {}, sampleId =
   declaredEntries.forEach((entry) => pushColor(entry?.hex, entry?.name));
   pushColor(paletteBlock?.paint || editorOptions?.paint, "Paint");
   pushColor(paletteBlock?.stroke || editorOptions?.stroke, "Stroke");
-  state.usedColors.forEach((hexValue) => pushColor(hexValue, "Used Color"));
-
   if (declaredColors.length === 0) {
     return "missing";
   }
@@ -2631,28 +2610,29 @@ function ensurePaletteSelectionFromDeclaredInputs(editorOptions = {}, sampleId =
     refs.paletteSelect.disabled = false;
     refs.paletteSelect.value = paletteId;
   }
-  if (!normalizeColorValue(state.fill) && declaredColors[0]?.hex) {
-    state.fill = declaredColors[0].hex;
-  }
-  if (!normalizeColorValue(state.stroke) && (declaredColors[1]?.hex || declaredColors[0]?.hex)) {
-    state.stroke = declaredColors[1]?.hex || declaredColors[0]?.hex;
-  }
+  const allowedColors = new Set(declaredColors.map((entry) => normalizeColorValue(entry.hex)).filter(Boolean));
+  const declaredPaint = normalizeColorValue(paletteBlock?.paint || editorOptions?.paint);
+  const declaredStroke = normalizeColorValue(paletteBlock?.stroke || editorOptions?.stroke);
+  state.fill = declaredPaint && allowedColors.has(declaredPaint) ? declaredPaint : null;
+  state.stroke = declaredStroke && allowedColors.has(declaredStroke) ? declaredStroke : null;
   renderPaletteSelect();
   renderMainPaletteGrid();
   renderUsedColorStrip();
   applyEnablementState();
-  return "defaulted";
+  return normalizeColorValue(state.fill) && normalizeColorValue(state.stroke) ? "success" : "missing";
 }
 
 function emitVectorAssetControlReadiness(sampleId = "", options = {}) {
   const forceMissing = options.forceMissing === true;
+  const phase = typeof options.phase === "string" && options.phase.trim() ? options.phase.trim() : "load";
+  const lifecycleStable = options.lifecycleStable !== false;
   const drawableCount = forceMissing ? 0 : getDrawableElements().length;
   const hasSvgCanvas = !forceMissing && refs.editorSvg instanceof SVGSVGElement && drawableCount > 0;
   const selectedPaletteEntries = hasPaletteSelection() ? getVisiblePaletteEntries() : [];
   const hasPaletteControls = !forceMissing && hasPaletteSelection() && selectedPaletteEntries.length > 0;
   const hasPaint = !forceMissing && Boolean(normalizeColorValue(state.fill));
   const hasStroke = !forceMissing && Boolean(normalizeColorValue(state.stroke));
-  const fallbackClassification = typeof options.paletteClassification === "string" && options.paletteClassification.trim()
+  const paletteClassification = typeof options.paletteClassification === "string" && options.paletteClassification.trim()
     ? options.paletteClassification.trim()
     : "";
 
@@ -2675,7 +2655,7 @@ function emitVectorAssetControlReadiness(sampleId = "", options = {}) {
     loaded: hasPaletteControls,
     count: selectedPaletteEntries.length,
     value: selectedPaletteEntries.length,
-    classification: hasPaletteControls ? "success" : (fallbackClassification || (hasSvgCanvas ? "missing" : "missing"))
+    classification: hasPaletteControls ? "success" : (paletteClassification || "missing")
   });
 
   logToolUiControlReady({
@@ -2685,7 +2665,7 @@ function emitVectorAssetControlReadiness(sampleId = "", options = {}) {
     requiredData: "declared-paint-color",
     loaded: hasPaint,
     value: normalizeColorValue(state.fill) || "none",
-    classification: hasPaint ? "success" : (hasPaletteControls ? "defaulted" : "missing")
+    classification: hasPaint ? "success" : "missing"
   });
 
   logToolUiControlReady({
@@ -2695,7 +2675,27 @@ function emitVectorAssetControlReadiness(sampleId = "", options = {}) {
     requiredData: "declared-stroke-color",
     loaded: hasStroke,
     value: normalizeColorValue(state.stroke) || "none",
-    classification: hasStroke ? "success" : (hasPaletteControls ? "defaulted" : "missing")
+    classification: hasStroke ? "success" : "missing"
+  });
+
+  logToolUiLifecycle({
+    toolId: "vector-asset-studio",
+    sampleId,
+    phase,
+    cause: forceMissing ? "preset-load-failure" : "preset-load",
+    classification: lifecycleStable ? "success" : "lifecycle-failure"
+  });
+
+  logToolUiFinalReady({
+    toolId: "vector-asset-studio",
+    sampleId,
+    requiredInputsReady: hasSvgCanvas && hasPaletteControls,
+    requiredControlsReady: hasPaletteControls && hasPaint && hasStroke,
+    requiredOutputsReady: hasSvgCanvas,
+    lifecycleStable,
+    classification: lifecycleStable && hasSvgCanvas && hasPaletteControls && hasPaint && hasStroke
+      ? "success"
+      : (lifecycleStable ? "missing" : "lifecycle-failure")
   });
 }
 
@@ -2810,14 +2810,14 @@ async function tryLoadPresetFromQuery() {
       applySampleEditorOptions(extractedPreset.editorOptions);
     }
     const paletteClassification = ensurePaletteSelectionFromDeclaredInputs(extractedPreset.editorOptions || {}, sampleId);
-    emitVectorAssetControlReadiness(sampleId, { paletteClassification });
+    emitVectorAssetControlReadiness(sampleId, { paletteClassification, phase: "loaded", lifecycleStable: true });
     if (paletteClassification !== "success") {
       logToolLoadWarning({
         toolId: "vector-asset-studio",
         sampleId,
         samplePresetPath,
         reason: "Declared palette controls were not fully bound from preset and required normalization from declared inputs.",
-        classification: paletteClassification === "defaulted" ? "defaulted" : "missing"
+        classification: "missing"
       });
     }
     if (!normalizeColorValue(state.fill) || !normalizeColorValue(state.stroke)) {
@@ -2826,13 +2826,13 @@ async function tryLoadPresetFromQuery() {
         sampleId,
         samplePresetPath,
         reason: "Paint/stroke controls remained incomplete after preset load.",
-        classification: hasPaletteSelection() ? "defaulted" : "missing"
+        classification: "missing"
       });
     }
     setStatus(buildPresetLoadedStatus(sampleId, samplePresetPath));
     return true;
   } catch (error) {
-    emitVectorAssetControlReadiness(sampleId, { forceMissing: true });
+    emitVectorAssetControlReadiness(sampleId, { forceMissing: true, phase: "error", lifecycleStable: false });
     logToolLoadWarning({
       toolId: "vector-asset-studio",
       sampleId,

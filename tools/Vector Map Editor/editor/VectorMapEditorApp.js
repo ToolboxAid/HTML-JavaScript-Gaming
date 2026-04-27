@@ -25,7 +25,9 @@ import {
   logToolLoadFetch,
   logToolLoadLoaded,
   logToolLoadWarning,
-  logToolUiControlReady
+  logToolUiControlReady,
+  logToolUiFinalReady,
+  logToolUiLifecycle
 } from "../../shared/toolLoadDiagnostics.js";
 
 function normalizeDegrees(value) {
@@ -253,6 +255,8 @@ export class VectorMapEditorApp {
 
   emitVectorMapControlReadiness(sampleId = "", options = {}) {
     const forceMissing = options.forceMissing === true;
+    const phase = typeof options.phase === "string" && options.phase.trim() ? options.phase.trim() : "load";
+    const lifecycleStable = options.lifecycleStable !== false;
     const data = this.documentModel?.getData?.() || {};
     const objectCount = Array.isArray(data.objects) ? data.objects.length : 0;
     const hasDocument = !forceMissing
@@ -262,6 +266,11 @@ export class VectorMapEditorApp {
       && Number(data.height) > 0;
     const hasCanvas = !forceMissing && this.elements?.canvas instanceof HTMLCanvasElement;
     const hasDataList = !forceMissing && objectCount > 0;
+    const hasEntityControls = !forceMissing
+      && this.elements?.objectList instanceof HTMLElement
+      && this.elements?.toolModeSelect instanceof HTMLSelectElement
+      && this.elements?.selectedObjectNameInput instanceof HTMLInputElement
+      && objectCount > 0;
 
     logToolUiControlReady({
       toolId: "vector-map-editor",
@@ -282,6 +291,37 @@ export class VectorMapEditorApp {
       count: objectCount,
       value: objectCount,
       classification: hasDataList ? "success" : (hasDocument ? "empty" : "missing")
+    });
+
+    logToolUiControlReady({
+      toolId: "vector-map-editor",
+      sampleId,
+      controlId: "entity-layer-controls",
+      requiredData: "vector-map-objects",
+      loaded: hasEntityControls,
+      count: objectCount,
+      value: objectCount,
+      classification: hasEntityControls ? "success" : (hasDocument ? "empty" : "missing")
+    });
+
+    logToolUiLifecycle({
+      toolId: "vector-map-editor",
+      sampleId,
+      phase,
+      cause: forceMissing ? "preset-load-failure" : "preset-load",
+      classification: lifecycleStable ? "success" : "lifecycle-failure"
+    });
+
+    logToolUiFinalReady({
+      toolId: "vector-map-editor",
+      sampleId,
+      requiredInputsReady: hasCanvas && hasDocument,
+      requiredControlsReady: hasDataList && hasEntityControls,
+      requiredOutputsReady: hasCanvas && hasDocument,
+      lifecycleStable,
+      classification: lifecycleStable && hasCanvas && hasDocument && hasDataList && hasEntityControls
+        ? "success"
+        : (lifecycleStable ? "missing" : "lifecycle-failure")
     });
   }
 
@@ -356,7 +396,7 @@ export class VectorMapEditorApp {
       this.interactionController.setToolMode(this.elements.toolModeSelect.value);
       this.syncUIFromDocument();
       this.render();
-      this.emitVectorMapControlReadiness(sampleId);
+      this.emitVectorMapControlReadiness(sampleId, { phase: "loaded", lifecycleStable: true });
       if ((Array.isArray(this.documentModel.getData().objects) ? this.documentModel.getData().objects.length : 0) === 0) {
         logToolLoadWarning({
           toolId: "vector-map-editor",
@@ -370,7 +410,7 @@ export class VectorMapEditorApp {
       return true;
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : "unknown error";
-      this.emitVectorMapControlReadiness(sampleId, { forceMissing: true });
+      this.emitVectorMapControlReadiness(sampleId, { forceMissing: true, phase: "error", lifecycleStable: false });
       logToolLoadWarning({
         toolId: "vector-map-editor",
         sampleId,

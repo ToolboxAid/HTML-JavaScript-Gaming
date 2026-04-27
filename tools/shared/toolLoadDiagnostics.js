@@ -8,7 +8,9 @@ const TOOL_LOAD_PREFIXES = Object.freeze({
 });
 
 const TOOL_UI_PREFIXES = Object.freeze({
-  controlReady: "[tool-ui:control-ready]"
+  controlReady: "[tool-ui:control-ready]",
+  lifecycle: "[tool-ui:lifecycle]",
+  finalReady: "[tool-ui:final-ready]"
 });
 
 const CLASSIFICATION_VALUES = Object.freeze({
@@ -17,6 +19,9 @@ const CLASSIFICATION_VALUES = Object.freeze({
   wrongShape: "wrong-shape",
   empty: "empty",
   defaulted: "defaulted",
+  stale: "stale",
+  reset: "reset",
+  lifecycleFailure: "lifecycle-failure",
   success: "success"
 });
 
@@ -62,6 +67,12 @@ function normalizeClassificationValue(value) {
       return CLASSIFICATION_VALUES.empty;
     case CLASSIFICATION_VALUES.defaulted:
       return CLASSIFICATION_VALUES.defaulted;
+    case CLASSIFICATION_VALUES.stale:
+      return CLASSIFICATION_VALUES.stale;
+    case CLASSIFICATION_VALUES.reset:
+      return CLASSIFICATION_VALUES.reset;
+    case CLASSIFICATION_VALUES.lifecycleFailure:
+      return CLASSIFICATION_VALUES.lifecycleFailure;
     case CLASSIFICATION_VALUES.success:
       return CLASSIFICATION_VALUES.success;
     default:
@@ -906,6 +917,39 @@ export function logToolUiControlReady(details = {}) {
     || (payload.loaded === true ? CLASSIFICATION_VALUES.success : CLASSIFICATION_VALUES.missing);
   emitToolLoadLog(TOOL_UI_PREFIXES.controlReady, {
     ...payload,
+    classification
+  });
+}
+
+export function logToolUiLifecycle(details = {}) {
+  const payload = sanitizePayload(details);
+  const classification = normalizeClassificationValue(payload.classification)
+    || CLASSIFICATION_VALUES.success;
+  emitToolLoadLog(TOOL_UI_PREFIXES.lifecycle, {
+    ...payload,
+    classification
+  });
+}
+
+export function logToolUiFinalReady(details = {}) {
+  const payload = sanitizePayload(details);
+  const requiredInputsReady = payload.requiredInputsReady === true;
+  const requiredControlsReady = payload.requiredControlsReady === true;
+  const requiredOutputsReady = payload.requiredOutputsReady === true;
+  const lifecycleStable = payload.lifecycleStable === true;
+  const finalReady = requiredInputsReady && requiredControlsReady && requiredOutputsReady && lifecycleStable;
+  const classification = normalizeClassificationValue(payload.classification)
+    || (finalReady
+      ? CLASSIFICATION_VALUES.success
+      : (lifecycleStable ? CLASSIFICATION_VALUES.missing : CLASSIFICATION_VALUES.lifecycleFailure));
+
+  emitToolLoadLog(TOOL_UI_PREFIXES.finalReady, {
+    ...payload,
+    requiredInputsReady,
+    requiredControlsReady,
+    requiredOutputsReady,
+    lifecycleStable,
+    finalReady,
     classification
   });
 }

@@ -1,1 +1,1 @@
-Complete tool UI control inventory with control-to-data-to-binding-to-lifecycle mapping and identify all gaps - PR 10.6R
+Close tool UI readiness gaps from control inventory and stabilize required input-to-control bindings - PR 10.6S

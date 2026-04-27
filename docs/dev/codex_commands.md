@@ -1,12 +1,10 @@
-# Codex Commands - PR 10.6R
+# Codex Command - PR 10.6S
 
-## Model
-GPT-5.4 or GPT-5.3-codex
+Model: GPT-5.4
+Reasoning: high
 
-## Reasoning
-High
+Run this from the repo root:
 
-## Command
-```text
-Read docs/pr/BUILD_PR_LEVEL_10_6R_TOOL_UI_CONTROL_INVENTORY_COMPLETION.md and execute it exactly. Produce the required reports only. Do not change implementation code. Do not modify start_of_day folders. Do not rewrite roadmap content. Search only the tool/sample/game files needed to inventory controls and bindings. Create docs/dev/reports/PR_10_6R_tool_ui_control_inventory.md and docs/dev/reports/PR_10_6R_tool_ui_control_gaps.md. Package the result as tmp/PR_10_6R.zip.
+```powershell
+codex exec --model gpt-5.4 --reasoning high "Execute BUILD PR 10.6S from docs/pr/BUILD_PR_LEVEL_10_6S_TOOL_UI_GAP_CLOSURE.md. Follow PROJECT_INSTRUCTIONS.md exactly. Fix only the PR 10.6R tool UI readiness gaps. Produce required reports under docs/dev/reports. Do not add fallback data, do not hardcode paths, and do not rewrite roadmap text except status markers if execution-backed."
 ```

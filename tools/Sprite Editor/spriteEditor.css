@@ -306,6 +306,42 @@ spriteEditor.css
   margin-top: 0.4rem;
 }
 
+.color-slot-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.4rem;
+  margin-top: 0.45rem;
+}
+
+.color-slot-button {
+  display: grid;
+  grid-template-columns: auto 1.1rem;
+  gap: 0.3rem;
+  align-items: center;
+  justify-items: start;
+  padding: 0.35rem 0.4rem;
+  text-align: left;
+}
+
+.color-slot-label {
+  font-size: 0.74rem;
+  color: var(--se-muted);
+}
+
+.color-slot-swatch {
+  width: 1.1rem;
+  height: 1.1rem;
+  border-radius: 4px;
+  border: 1px solid var(--se-panel-border);
+  grid-row: span 2;
+  justify-self: end;
+}
+
+.color-slot-value {
+  font-size: 0.74rem;
+  color: var(--se-text);
+}
+
 .inline-toggle {
   display: inline-flex;
   gap: 0.35rem;

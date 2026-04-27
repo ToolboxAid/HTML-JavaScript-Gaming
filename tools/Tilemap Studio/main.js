@@ -39,7 +39,9 @@ import {
   logToolLoadFetch,
   logToolLoadLoaded,
   logToolLoadWarning,
-  logToolUiControlReady
+  logToolUiControlReady,
+  logToolUiFinalReady,
+  logToolUiLifecycle
 } from "../shared/toolLoadDiagnostics.js";
 import { createLivePreviewSyncBridge, validateStateBindingPayload } from "../shared/livePreviewSyncChannel.js";
 import { addToolModeMetadata, assertStandaloneToolDocument, offerImportMismatchOptions } from "../shared/documentModeGuards.js";
@@ -2002,6 +2004,8 @@ class TileMapEditorApp {
 
   emitTilemapControlReadiness(sampleId = "", options = {}) {
     const forceMissing = options.forceMissing === true;
+    const phase = typeof options.phase === "string" && options.phase.trim() ? options.phase.trim() : "load";
+    const lifecycleStable = options.lifecycleStable !== false;
     const map = this.documentModel?.map && typeof this.documentModel.map === "object"
       ? this.documentModel.map
       : null;
@@ -2019,9 +2023,12 @@ class TileMapEditorApp {
     const hasTilePalette = tileEntries.length > 0;
     const selectedTileId = Number.parseInt(this.activeTileId, 10);
     const hasSelectedTile = Number.isFinite(selectedTileId) && tileEntries.some((tile) => Number(tile.id) === selectedTileId);
+    const layerCount = Array.isArray(this.documentModel?.layers) ? this.documentModel.layers.length : 0;
+    const hasLayerList = layerCount > 0;
     const mapLoaded = forceMissing ? false : hasMapDocument;
     const paletteLoaded = forceMissing ? false : hasTilePalette;
     const selectedTileLoaded = forceMissing ? false : hasSelectedTile;
+    const layerListLoaded = forceMissing ? false : hasLayerList;
 
     logToolUiControlReady({
       toolId: "tile-map-editor",
@@ -2051,7 +2058,38 @@ class TileMapEditorApp {
       requiredData: "first-valid-tile-selection",
       loaded: selectedTileLoaded,
       value: Number.isFinite(selectedTileId) ? selectedTileId : "none",
-      classification: selectedTileLoaded ? "success" : (paletteLoaded ? "defaulted" : "missing")
+      classification: selectedTileLoaded ? "success" : (paletteLoaded ? "missing" : "empty")
+    });
+
+    logToolUiControlReady({
+      toolId: "tile-map-editor",
+      sampleId,
+      controlId: "layer-list",
+      requiredData: "tilemap-layers",
+      loaded: layerListLoaded,
+      count: layerCount,
+      value: layerCount,
+      classification: layerListLoaded ? "success" : (mapLoaded ? "empty" : "missing")
+    });
+
+    logToolUiLifecycle({
+      toolId: "tile-map-editor",
+      sampleId,
+      phase,
+      cause: forceMissing ? "preset-load-failure" : "preset-load",
+      classification: lifecycleStable ? "success" : "lifecycle-failure"
+    });
+
+    logToolUiFinalReady({
+      toolId: "tile-map-editor",
+      sampleId,
+      requiredInputsReady: mapLoaded && paletteLoaded,
+      requiredControlsReady: mapLoaded && paletteLoaded && layerListLoaded && selectedTileLoaded,
+      requiredOutputsReady: mapLoaded,
+      lifecycleStable,
+      classification: lifecycleStable && mapLoaded && paletteLoaded && layerListLoaded && selectedTileLoaded
+        ? "success"
+        : (lifecycleStable ? "missing" : "lifecycle-failure")
     });
   }
 
@@ -2199,7 +2237,7 @@ class TileMapEditorApp {
       this.renderAll();
       void this.reloadTilesetImageFromDocument({ quiet: true });
       void this.preloadIndividualTileImages({ quiet: true });
-      this.emitTilemapControlReadiness(sampleId);
+      this.emitTilemapControlReadiness(sampleId, { phase: "loaded", lifecycleStable: true });
       if (!Array.isArray(this.documentModel?.tileset) || this.documentModel.tileset.filter((tile) => Number(tile?.id) > 0).length === 0) {
         logToolLoadWarning({
           toolId: "tile-map-editor",
@@ -2212,7 +2250,7 @@ class TileMapEditorApp {
       this.updateStatus(buildPresetLoadedStatus(sampleId, samplePresetPath));
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : "unknown error";
-      this.emitTilemapControlReadiness(sampleId, { forceMissing: true });
+      this.emitTilemapControlReadiness(sampleId, { forceMissing: true, phase: "error", lifecycleStable: false });
       logToolLoadWarning({
         toolId: "tile-map-editor",
         sampleId,
