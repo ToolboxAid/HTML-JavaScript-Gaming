@@ -7,8 +7,8 @@
       "schema": "html-js-gaming.palette",
       "version": 1,
       "name": "Sample 0213 Palette",
-      "source": "engine/paletteList",
-      "entries": [
+      "source": "manifest",
+      "swatches": [
         {
           "symbol": "!",
           "hex": "#1E1B4B",

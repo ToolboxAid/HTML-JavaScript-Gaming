@@ -1,7 +1,1 @@
-fix: close standalone sample tool data-flow generic failures
-
-Phase 10.6B tightens standalone sample/tool contracts by ensuring explicit sample payloads flow through schema/normalization into tool UI state without silent fallback data or hardcoded asset paths.
-
-Validation:
-- npm run test:launch-smoke:games
-- npm run test:sample-standalone:data-flow
+Normalize palette contract to manifest SSoT and remove tool-level schema drift - PR 10.6B

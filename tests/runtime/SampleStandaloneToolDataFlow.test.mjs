@@ -1162,7 +1162,7 @@ export async function run() {
       if (testCase.toolId === "palette-browser") {
         const palette = testCase.presetPayload?.config?.palette;
         const expectedPaletteName = String(palette?.name || "").trim();
-        const expectedSwatchCount = Array.isArray(palette?.entries) ? palette.entries.length : 0;
+        const expectedSwatchCount = Array.isArray(palette?.swatches) ? palette.swatches.length : 0;
         assert.ok(expectedPaletteName, `Missing expected palette name in ${toPosixPath(path.relative(repoRoot, testCase.presetFilePath))}.`);
         assert.ok(expectedSwatchCount > 0, `Missing expected palette entries in ${toPosixPath(path.relative(repoRoot, testCase.presetFilePath))}.`);
         const result = await runTargetedPaletteBrowserAssertion(page, url, expectedPaletteName, expectedSwatchCount);

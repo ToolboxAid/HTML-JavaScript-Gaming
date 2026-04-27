@@ -1,18 +1,28 @@
-# Codex Commands — LEVEL_10_6B_STANDALONE_SAMPLE_GENERIC_FAILURE_CLOSEOUT
+# CODEX COMMANDS — LEVEL 10.6B Palette Contract Alignment
 
-## Model
-GPT-5.4
+Model: GPT-5.4
+Reasoning: high
 
-## Reasoning
-high
+## PR Purpose
+Normalize palette payload contracts so palette data in manifest inputs and tool JSON inputs use the same canonical shape.
 
-## Command
+## Codex Command
 ```powershell
-codex exec --model gpt-5.4 --reasoning high "Read docs/dev/PLAN_PR_LEVEL_10_6B_STANDALONE_SAMPLE_GENERIC_FAILURE_CLOSEOUT.md and docs/dev/BUILD_PR_LEVEL_10_6B_STANDALONE_SAMPLE_GENERIC_FAILURE_CLOSEOUT.md. Implement the smallest scoped PR to close standalone sample/tool data-flow generic failures for Phase 10.6B. Do not add silent fallback data, hardcoded asset paths, new features, or repo-wide cleanup. Preserve sample -> schema -> normalized input -> tool -> UI/state. Run npm run test:launch-smoke:games and npm run test:sample-standalone:data-flow. Update docs/dev/reports/level_10_6b_standalone_generic_failure_closeout_report.md and docs/dev/reports/level_10_6b_tool_contract_matrix.md with validation-backed results."
+codex --model gpt-5.4 --reasoning high "Implement LEVEL_10_6B_PALETTE_CONTRACT_ALIGNMENT. One PR purpose only. Do not add new features, schemas, tools, fallback data, hardcoded asset paths, or silent default loading. Fix palette contract drift only. Ensure palette-bearing standalone samples pass explicit data flow: sample -> manifest -> normalized input -> tool -> UI/state. Manifest palette payloads and tool palette JSON files must share the same canonical palette object shape: schema, version, name, source, swatches. Remove legacy leading metadata such as $schema from runtime palette payloads where it causes mismatch. Replace source values such as engine/paletteList with manifest or another explicit manifest-derived source where appropriate. Palette Browser and palette-dependent tools must consume payload.palette directly, then bind state.palette to UI. Do not reshape, merge, inject defaults, or auto-load hidden palettes inside tools. Update the standalone data-flow report/status only as needed after running tests. Run npm run test:launch-smoke:games and npm run test:sample-standalone:data-flow."
 ```
 
-## Validation
+## Required Validation
 ```powershell
 npm run test:launch-smoke:games
 npm run test:sample-standalone:data-flow
+```
+
+## Report to Inspect
+```powershell
+docs/dev/reports/level_10_6_standalone_tool_data_flow_report.md
+```
+
+## Commit Comment
+```text
+Normalize palette contract to manifest SSoT and remove tool-level schema drift - PR 10.6B
 ```

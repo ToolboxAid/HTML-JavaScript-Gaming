@@ -189,7 +189,7 @@ function getBuiltInPalettes() {
       id: `builtin:${name}`,
       name,
       source: "engine",
-      entries: entries.map((entry) => ({
+      swatches: entries.map((entry) => ({
         symbol: typeof entry?.symbol === "string" ? entry.symbol : "",
         hex: typeof entry?.hex === "string" ? entry.hex : "",
         name: typeof entry?.name === "string" ? entry.name : ""
@@ -259,8 +259,8 @@ function findPaletteBySharedHandoff(handoff) {
 
 function createSharedPaletteMirror(handoff) {
   const displayName = String(handoff?.displayName || "").trim();
-  const entries = normalizeHandoffEntries(handoff?.colors);
-  if (!displayName || entries.length === 0) {
+  const swatches = normalizeHandoffEntries(handoff?.colors);
+  if (!displayName || swatches.length === 0) {
     return null;
   }
   const handoffPaletteId = String(handoff?.paletteId || "").trim();
@@ -270,7 +270,7 @@ function createSharedPaletteMirror(handoff) {
     id: customId,
     name: displayName,
     source: "workspace",
-    entries
+    swatches
   };
   if (existingIndex >= 0) {
     state.customPalettes[existingIndex] = mirrorPalette;
@@ -350,7 +350,7 @@ function validatePalette(palette) {
   } else if (duplicateNameCount > 1) {
     issues.push(`Duplicate palette name detected: ${palette.name}.`);
   }
-  palette.entries.forEach((entry, index) => {
+  palette.swatches.forEach((entry, index) => {
     if (!/^#([0-9a-f]{6}|[0-9a-f]{8})$/i.test(entry.hex || "")) {
       issues.push(`Swatch ${index + 1} has an invalid hex value.`);
     }
@@ -380,7 +380,7 @@ function renderPaletteList() {
     return `
       <button type="button" data-palette-id="${palette.id}" class="${currentClass.trim()}">
         <strong>${palette.name}</strong>
-        <span>(${palette.entries.length}) swatches | ${palette.source}</span>
+        <span>(${palette.swatches.length}) swatches | ${palette.source}</span>
       </button>
     `;
   }).join("");
@@ -414,7 +414,7 @@ function renderSelectedPalette() {
   }
 
   refs.paletteTitle.textContent = palette.name;
-  refs.paletteSummaryText.textContent = `${palette.entries.length} swatches | source: ${palette.source}`;
+  refs.paletteSummaryText.textContent = `${palette.swatches.length} swatches | source: ${palette.source}`;
   refs.paletteNameInput.value = palette.name;
   const readOnly = isReadOnlyPalette(palette);
   const canOverrideDeleteGuard = hasDeleteOverrideParam();
@@ -428,7 +428,7 @@ function renderSelectedPalette() {
   refs.deleteSwatchButton.disabled = readOnly;
   refs.usePaletteButton.disabled = !canUseInActiveTools;
 
-  refs.paletteSwatches.innerHTML = palette.entries.map((entry, index) => {
+  refs.paletteSwatches.innerHTML = palette.swatches.map((entry, index) => {
     const currentClass = index === state.selectedSwatchIndex ? " is-current" : "";
     return `
       <button type="button" data-swatch-index="${index}" class="${currentClass.trim()}">
@@ -439,8 +439,8 @@ function renderSelectedPalette() {
     `;
   }).join("");
 
-  state.selectedSwatchIndex = Math.min(state.selectedSwatchIndex, Math.max(0, palette.entries.length - 1));
-  const activeEntry = palette.entries[state.selectedSwatchIndex] ?? palette.entries[0] ?? null;
+  state.selectedSwatchIndex = Math.min(state.selectedSwatchIndex, Math.max(0, palette.swatches.length - 1));
+  const activeEntry = palette.swatches[state.selectedSwatchIndex] ?? palette.swatches[0] ?? null;
   refs.swatchColorInput.value = activeEntry && /^#([0-9a-f]{6}|[0-9a-f]{8})$/i.test(activeEntry.hex || "") ? activeEntry.hex.slice(0, 7) : "";
   refs.swatchNameInput.value = activeEntry?.name || "";
   refs.swatchSymbolInput.value = activeEntry?.symbol || "";
@@ -459,12 +459,12 @@ function setSelectedPalette(paletteId) {
   renderSelectedPalette();
 }
 
-function createCustomPalette(name, entries) {
+function createCustomPalette(name, swatches) {
   return {
     id: `custom:${Date.now().toString(36)}`,
     name,
     source: "custom",
-    entries: entries.map((entry) => ({
+    swatches: swatches.map((entry) => ({
       symbol: entry.symbol || "",
       hex: entry.hex || "#ffffff",
       name: entry.name || "Unnamed"
@@ -499,7 +499,7 @@ function buildPaletteDocumentPayload(palette) {
     version: 1,
     name: palette?.name || "Unnamed Palette",
     source: palette?.source || "custom",
-    entries: Array.isArray(palette?.entries) ? palette.entries : []
+    swatches: Array.isArray(palette?.swatches) ? palette.swatches : []
   });
 }
 
@@ -524,7 +524,7 @@ function normalizeImportedPalette(rawPayload, options = {}) {
   return {
     name: normalizedName,
     source: String(normalized.source || "custom").trim() || "custom",
-    entries: Array.isArray(normalized.entries) ? normalized.entries : []
+    swatches: Array.isArray(normalized.swatches) ? normalized.swatches : []
   };
 }
 
@@ -544,10 +544,10 @@ function extractPaletteFromSamplePreset(rawPreset) {
   if (config?.palette && typeof config.palette === "object") {
     return config.palette;
   }
-  if (Array.isArray(payload.entries)) {
+  if (Array.isArray(payload.swatches)) {
     return payload;
   }
-  if (Array.isArray(config?.entries)) {
+  if (Array.isArray(config?.swatches)) {
     return config;
   }
   return null;
@@ -563,7 +563,7 @@ function importPaletteFromPresetPayload(rawPalette) {
     nextName = "imported-palette";
   }
   nextName = makeUniquePaletteName(nextName);
-  const importedPalette = createCustomPalette(nextName, imported.entries);
+  const importedPalette = createCustomPalette(nextName, imported.swatches);
   state.customPalettes.unshift(importedPalette);
   saveCustomPalettes();
   setSelectedPalette(importedPalette.id);
@@ -627,7 +627,7 @@ async function importPaletteJsonFromFile(file) {
     }
   }
   nextName = makeUniquePaletteName(nextName);
-  const importedPalette = createCustomPalette(nextName, imported.entries);
+  const importedPalette = createCustomPalette(nextName, imported.swatches);
   state.customPalettes.unshift(importedPalette);
   saveCustomPalettes();
   setSelectedPalette(importedPalette.id);
@@ -670,7 +670,7 @@ function duplicateSelectedPalette() {
     }
     refs.validationText.textContent = "Palette name cannot include reserved terms: crayola, w3c, javascript.";
   }
-  const duplicate = createCustomPalette(nextName, palette.entries);
+  const duplicate = createCustomPalette(nextName, palette.swatches);
   state.customPalettes.unshift(duplicate);
   saveCustomPalettes();
   setSelectedPalette(duplicate.id);
@@ -701,12 +701,12 @@ function addSwatchToSelectedPalette() {
     refs.validationText.textContent = "Duplicate a built-in palette before editing swatches.";
     return;
   }
-  palette.entries.push({
-    symbol: refs.swatchSymbolInput.value.trim().slice(0, 2),
+  palette.swatches.push({
+    symbol: refs.swatchSymbolInput.value.trim().slice(0, 1),
     hex: refs.swatchColorInput.value,
     name: refs.swatchNameInput.value.trim() || "New Swatch"
   });
-  state.selectedSwatchIndex = palette.entries.length - 1;
+  state.selectedSwatchIndex = palette.swatches.length - 1;
   saveCustomPalettes();
   renderSelectedPalette();
 }
@@ -716,17 +716,17 @@ function updateSelectedSwatchFromInputs() {
   if (isReadOnlyPalette(palette)) {
     return;
   }
-  if (!palette || !Array.isArray(palette.entries) || palette.entries.length === 0) {
+  if (!palette || !Array.isArray(palette.swatches) || palette.swatches.length === 0) {
     return;
   }
-  const index = Math.min(state.selectedSwatchIndex, palette.entries.length - 1);
-  const entry = palette.entries[index];
+  const index = Math.min(state.selectedSwatchIndex, palette.swatches.length - 1);
+  const entry = palette.swatches[index];
   if (!entry) {
     return;
   }
   entry.hex = refs.swatchColorInput.value;
   entry.name = refs.swatchNameInput.value.trim() || "Unnamed";
-  entry.symbol = refs.swatchSymbolInput.value.trim().slice(0, 2);
+  entry.symbol = refs.swatchSymbolInput.value.trim().slice(0, 1);
   saveCustomPalettes();
   renderSelectedPalette();
 }
@@ -737,10 +737,10 @@ function deleteSelectedSwatch() {
     refs.validationText.textContent = "Duplicate a built-in palette before editing swatches.";
     return;
   }
-  if (palette.entries.length === 0) {
+  if (palette.swatches.length === 0) {
     return;
   }
-  palette.entries.splice(state.selectedSwatchIndex, 1);
+  palette.swatches.splice(state.selectedSwatchIndex, 1);
   state.selectedSwatchIndex = Math.max(0, state.selectedSwatchIndex - 1);
   saveCustomPalettes();
   renderSelectedPalette();
@@ -815,7 +815,7 @@ function usePaletteInActiveTools() {
   const handoff = createPaletteHandoff({
     paletteId: palette.id,
     displayName: palette.name,
-    colors: palette.entries,
+    colors: palette.swatches,
     metadata: {
       source: palette.source
     },

@@ -25,11 +25,20 @@ function toHexColor(value) {
   return match ? `#${match[1].toUpperCase()}` : "";
 }
 
+function getFallbackSymbol(index) {
+  const symbols = "!#$%&()*+,-./:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[]^_`abcdefghijklmnopqrstuvwxyz{|}~0123456789";
+  if (!Number.isInteger(index) || index < 0) {
+    return "!";
+  }
+  return symbols[index % symbols.length];
+}
+
 function normalizeEntry(rawEntry, index) {
   const source = toObject(rawEntry);
   const hex = toHexColor(source.hex);
+  const symbol = sanitizeText(source.symbol).slice(0, 1) || getFallbackSymbol(index);
   return {
-    symbol: sanitizeText(source.symbol).slice(0, 2),
+    symbol,
     hex,
     name: sanitizeText(source.name) || `Swatch ${index + 1}`
   };
@@ -43,7 +52,7 @@ function normalizeLegacyColorEntries(colors) {
     .map((entry) => toHexColor(entry))
     .filter((entry) => Boolean(entry))
     .map((hex, index) => ({
-      symbol: "",
+      symbol: getFallbackSymbol(index),
       hex: hex.slice(0, 7),
       name: `Swatch ${index + 1}`
     }));
@@ -51,8 +60,10 @@ function normalizeLegacyColorEntries(colors) {
 
 export function normalizePaletteDocument(rawDocument) {
   const source = toObject(rawDocument);
-  const entries = Array.isArray(source.entries)
-    ? source.entries.map((entry, index) => normalizeEntry(entry, index)).filter((entry) => Boolean(entry.hex))
+  const swatches = Array.isArray(source.swatches)
+    ? source.swatches.map((entry, index) => normalizeEntry(entry, index)).filter((entry) => Boolean(entry.hex))
+    : Array.isArray(source.entries)
+      ? source.entries.map((entry, index) => normalizeEntry(entry, index)).filter((entry) => Boolean(entry.hex))
     : normalizeLegacyColorEntries(source.colors);
 
   const schema = sanitizeText(source.schema);
@@ -62,7 +73,7 @@ export function normalizePaletteDocument(rawDocument) {
     version: Number.isFinite(normalizedVersion) ? normalizedVersion : PALETTE_DOCUMENT_VERSION,
     name: sanitizeText(source.name) || "Unnamed Palette",
     source: sanitizeText(source.source) || "custom",
-    entries
+    swatches
   };
 }
 
@@ -92,21 +103,27 @@ export function validatePaletteDocument(rawDocument, options = {}) {
     issues.push("Palette name is required.");
   }
 
-  if (!Array.isArray(normalized.entries) || normalized.entries.length === 0) {
-    issues.push("Palette entries must include at least one swatch.");
+  if (!Array.isArray(normalized.swatches) || normalized.swatches.length === 0) {
+    issues.push("Palette swatches must include at least one swatch.");
   }
 
-  normalized.entries.forEach((entry, index) => {
+  normalized.swatches.forEach((entry, index) => {
+    if (sanitizeText(entry.symbol).length !== 1) {
+      issues.push(`swatches[${index}].symbol must be a single character.`);
+    }
     if (!toHexColor(entry.hex)) {
-      issues.push(`entries[${index}].hex must be #RRGGBB or #RRGGBBAA.`);
+      issues.push(`swatches[${index}].hex must be #RRGGBB or #RRGGBBAA.`);
     }
     if (!sanitizeText(entry.name)) {
-      issues.push(`entries[${index}].name is required.`);
+      issues.push(`swatches[${index}].name is required.`);
     }
   });
 
-  if (!Array.isArray(source.entries) && Array.isArray(source.colors)) {
-    warnings.push("Legacy palette colors[] input detected; converted to entries[] for compatibility.");
+  if (!Array.isArray(source.swatches) && Array.isArray(source.entries)) {
+    warnings.push("Legacy palette entries[] input detected; converted to swatches[] for compatibility.");
+  }
+  if (!Array.isArray(source.swatches) && !Array.isArray(source.entries) && Array.isArray(source.colors)) {
+    warnings.push("Legacy palette colors[] input detected; converted to swatches[] for compatibility.");
   }
 
   return {
