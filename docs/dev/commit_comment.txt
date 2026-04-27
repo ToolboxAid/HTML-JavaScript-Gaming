@@ -1,1 +1,1 @@
-Capture palette contract evidence for explicit normalization follow-up - PR 10.6D
+Normalize all sample palettes to canonical SSoT and remove palette-browser duplicates - PR 10.6F

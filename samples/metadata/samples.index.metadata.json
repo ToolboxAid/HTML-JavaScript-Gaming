@@ -2832,7 +2832,7 @@
       "roundtripToolPresets": [
         {
           "toolId": "palette-browser",
-          "presetPath": "/samples/phase-03/0313/sample.0313.palette-browser.json"
+          "presetPath": "/samples/phase-03/0313/sample.0313.palette.json"
         }
       ]
     },

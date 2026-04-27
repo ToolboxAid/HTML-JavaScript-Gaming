@@ -387,15 +387,57 @@ function readJson(filePath) {
   return JSON.parse(fs.readFileSync(filePath, "utf8"));
 }
 
+function appendPaletteContractFailures(parsed, rel, contractFailures) {
+  if (parsed.schema !== "html-js-gaming.palette") {
+    contractFailures.push(`${rel}: schema must equal html-js-gaming.palette.`);
+  }
+  if (!Number.isInteger(parsed.version) || parsed.version < 1) {
+    contractFailures.push(`${rel}: version must be an integer >= 1.`);
+  }
+  if (typeof parsed.name !== "string" || !parsed.name.trim()) {
+    contractFailures.push(`${rel}: name must be a non-empty string.`);
+  }
+  if (!Array.isArray(parsed.swatches) || parsed.swatches.length === 0) {
+    contractFailures.push(`${rel}: swatches must contain at least one entry.`);
+    return;
+  }
+  parsed.swatches.forEach((swatch, index) => {
+    const symbol = typeof swatch?.symbol === "string" ? swatch.symbol : "";
+    const hex = typeof swatch?.hex === "string" ? swatch.hex : "";
+    const name = typeof swatch?.name === "string" ? swatch.name : "";
+    if (symbol.length !== 1) {
+      contractFailures.push(`${rel}: swatches[${index}].symbol must be a single character.`);
+    }
+    if (!/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{8})$/.test(hex)) {
+      contractFailures.push(`${rel}: swatches[${index}].hex must be #RRGGBB or #RRGGBBAA.`);
+    }
+    if (!name.trim()) {
+      contractFailures.push(`${rel}: swatches[${index}].name must be non-empty.`);
+    }
+  });
+}
+
 function buildSchemaAudit(roundtripRows) {
   const sampleRoot = path.join(repoRoot, "samples");
   const jsonFiles = walkJsonFiles(sampleRoot);
-  const toolPayloadFiles = [...new Set(
-    (Array.isArray(roundtripRows) ? roundtripRows : [])
-      .map((row) => path.join(repoRoot, String(row.presetPath || "").replace(/^\//, "")))
-      .filter((filePath) => filePath.toLowerCase().endsWith(".json"))
-      .filter((filePath) => fs.existsSync(filePath))
-  )];
+  const presetRows = (Array.isArray(roundtripRows) ? roundtripRows : [])
+    .map((row) => {
+      const presetPath = String(row.presetPath || "").replace(/^\//, "");
+      const filePath = path.join(repoRoot, presetPath);
+      return {
+        toolId: String(row.toolId || ""),
+        filePath
+      };
+    })
+    .filter((row) => row.filePath.toLowerCase().endsWith(".json"))
+    .filter((row) => fs.existsSync(row.filePath));
+  const toolPayloadFiles = [...new Set(presetRows.map((row) => row.filePath))];
+  const canonicalPalettePresetFiles = new Set(
+    presetRows
+      .filter((row) => row.toolId === "palette-browser")
+      .map((row) => row.filePath)
+      .filter((filePath) => /^sample\.\d{4}\.palette\.json$/i.test(path.basename(filePath)))
+  );
   const paletteFiles = jsonFiles.filter((filePath) => /^sample\.\d{4}\.palette\.json$/i.test(path.basename(filePath)));
 
   const schemaFailures = [];
@@ -410,6 +452,11 @@ function buildSchemaAudit(roundtripRows) {
       schemaFailures.push(`${rel}: missing $schema.`);
     } else if (!/^https?:\/\//i.test(schemaPath) && !fs.existsSync(schemaPath)) {
       schemaFailures.push(`${rel}: unresolved $schema -> ${schemaRef}.`);
+    }
+
+    if (canonicalPalettePresetFiles.has(filePath)) {
+      appendPaletteContractFailures(parsed, rel, contractFailures);
+      continue;
     }
 
     const fileInfo = extractToolIdFromSampleFileName(filePath);
@@ -448,33 +495,7 @@ function buildSchemaAudit(roundtripRows) {
       schemaFailures.push(`${rel}: unresolved $schema -> ${schemaRef}.`);
     }
 
-    if (parsed.schema !== "html-js-gaming.palette") {
-      contractFailures.push(`${rel}: schema must equal html-js-gaming.palette.`);
-    }
-    if (!Number.isInteger(parsed.version) || parsed.version < 1) {
-      contractFailures.push(`${rel}: version must be an integer >= 1.`);
-    }
-    if (typeof parsed.name !== "string" || !parsed.name.trim()) {
-      contractFailures.push(`${rel}: name must be a non-empty string.`);
-    }
-    if (!Array.isArray(parsed.swatches) || parsed.swatches.length === 0) {
-      contractFailures.push(`${rel}: swatches must contain at least one entry.`);
-      continue;
-    }
-    parsed.swatches.forEach((swatch, index) => {
-      const symbol = typeof swatch?.symbol === "string" ? swatch.symbol : "";
-      const hex = typeof swatch?.hex === "string" ? swatch.hex : "";
-      const name = typeof swatch?.name === "string" ? swatch.name : "";
-      if (symbol.length !== 1) {
-        contractFailures.push(`${rel}: swatches[${index}].symbol must be a single character.`);
-      }
-      if (!/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{8})$/.test(hex)) {
-        contractFailures.push(`${rel}: swatches[${index}].hex must be #RRGGBB or #RRGGBBAA.`);
-      }
-      if (!name.trim()) {
-        contractFailures.push(`${rel}: swatches[${index}].name must be non-empty.`);
-      }
-    });
+    appendPaletteContractFailures(parsed, rel, contractFailures);
   }
 
   return {
@@ -665,6 +686,31 @@ async function runTargetedPaletteBrowserAssertion(page, url, expectedPaletteName
   return status;
 }
 
+function extractPaletteFromPresetPayload(rawPreset) {
+  if (!rawPreset || typeof rawPreset !== "object") {
+    return null;
+  }
+  const payload = rawPreset.payload && typeof rawPreset.payload === "object" && !Array.isArray(rawPreset.payload)
+    ? rawPreset.payload
+    : rawPreset;
+  const config = payload.config && typeof payload.config === "object" && !Array.isArray(payload.config)
+    ? payload.config
+    : null;
+  if (payload.palette && typeof payload.palette === "object" && !Array.isArray(payload.palette)) {
+    return payload.palette;
+  }
+  if (config?.palette && typeof config.palette === "object" && !Array.isArray(config.palette)) {
+    return config.palette;
+  }
+  if (Array.isArray(payload.swatches)) {
+    return payload;
+  }
+  if (Array.isArray(config?.swatches)) {
+    return config;
+  }
+  return null;
+}
+
 function buildTargetedCases(roundtripRows, toolMap) {
   const specs = [
     { sampleId: "0204", toolId: "asset-browser" },
@@ -687,8 +733,9 @@ function buildTargetedCases(roundtripRows, toolMap) {
     if (!tool || !tool.entryPoint) {
       throw new Error(`Tool registry entry missing for tool ${spec.toolId}.`);
     }
-    const presetFilePath = findPresetFilePathForSample(spec.sampleId, spec.toolId);
-    if (!presetFilePath) {
+    const presetPath = String(row.presetPath || "");
+    const presetFilePath = path.join(repoRoot, presetPath.replace(/^\//, ""));
+    if (!presetPath.startsWith("/samples/") || !fs.existsSync(presetFilePath)) {
       throw new Error(`Preset payload file missing for sample ${spec.sampleId} tool ${spec.toolId}.`);
     }
     const presetPayload = readJson(presetFilePath);
@@ -1160,7 +1207,7 @@ export async function run() {
         continue;
       }
       if (testCase.toolId === "palette-browser") {
-        const palette = testCase.presetPayload?.config?.palette;
+        const palette = extractPaletteFromPresetPayload(testCase.presetPayload);
         const expectedPaletteName = String(palette?.name || "").trim();
         const expectedSwatchCount = Array.isArray(palette?.swatches) ? palette.swatches.length : 0;
         assert.ok(expectedPaletteName, `Missing expected palette name in ${toPosixPath(path.relative(repoRoot, testCase.presetFilePath))}.`);
