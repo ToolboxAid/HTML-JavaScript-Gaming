@@ -1,9 +1,1 @@
-BUILD_PR_LEVEL_9_9_LAUNCH_SMOKE_GAMES_ONLY_FAST_PATH
-
-- Added games-only launch smoke fast path
-- Ensured browser smoke validation can run games only once
-- Preserved full all-entry launch smoke coverage
-
-PR Details:
-- Fixes accidental games + samples + tools browser smoke runs
-- No start_of_day changes
+PR 9.10: runtime stabilization for single-manifest games
