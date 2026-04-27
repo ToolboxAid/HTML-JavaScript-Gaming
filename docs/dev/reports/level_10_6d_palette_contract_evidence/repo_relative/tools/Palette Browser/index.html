@@ -1,0 +1,90 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Palette Browser / Manager</title>
+  <link rel="stylesheet" href="../../src/engine/ui/hubCommon.css" />
+  <link rel="stylesheet" href="../shared/platformShell.css" />
+  <link rel="stylesheet" href="./paletteBrowser.css" />
+  <script src="../../src/engine/paletteList.js"></script>
+  <link rel="stylesheet" href="../../src/engine/theme/main.css" />
+</head>
+<body class="tools-platform-tool-page hub-page-tools" data-tool-id="palette-browser" data-tools-platform-page="tool">
+  <details class="is-collapsible" open>
+    <summary class="is-collapsible__summary">Header and Intro</summary>
+    <div class="is-collapsible__content">
+      <div id="shared-theme-header"></div>
+      <div data-tools-platform-header></div>
+    </div>
+  </details>
+  <div class="palette-browser app-shell">
+    <div class="palette-browser__layout tools-platform-layout-grid">
+      <aside class="panel palette-browser__panel tools-platform-resize-panel" data-panel-side="left">
+        <h3>Palette List</h3>
+        <div id="launchContextText" class="palette-browser__hint">Shared palette flow ready.</div>
+        <label class="field">
+          Search
+          <input id="paletteSearchInput" type="search" placeholder="Find a palette" />
+        </label>
+        <div id="paletteCountText" class="palette-browser__hint">0 palettes</div>
+        <div id="paletteList" class="palette-browser__list" aria-label="Palette list"></div>
+      </aside>
+
+      <main class="panel palette-browser__panel">
+        <h3 id="paletteTitle">Palette Preview</h3>
+        <div id="paletteSummaryText" class="palette-browser__hint">Select a palette to inspect its swatches.</div>
+        <div id="paletteSwatches" class="palette-browser__swatches"></div>
+        <div class="palette-browser__editor">
+          <label class="field">
+            Palette name
+            <input id="paletteNameInput" type="text" />
+          </label>
+          <div class="palette-browser__editor-grid">
+            <label class="field">
+              Swatch color
+              <input id="swatchColorInput" type="color" value="#ffffff" />
+            </label>
+            <label class="field">
+              Swatch name
+              <input id="swatchNameInput" type="text" placeholder="Color name" />
+            </label>
+            <label class="field">
+              Symbol
+              <input id="swatchSymbolInput" type="text" maxlength="2" placeholder="A" />
+            </label>
+          </div>
+          <div class="palette-browser__actions palette-browser__actions--palette tools-platform-control-row">
+            <button id="newPaletteButton" type="button">New Palette</button>
+            <button id="duplicatePaletteButton" type="button">Duplicate Selected</button>
+            <button id="renamePaletteButton" type="button">Rename Palette</button>
+            <button id="deletePaletteButton" type="button">Delete Palette</button>
+          </div>
+          <div class="palette-browser__actions palette-browser__actions--swatch tools-platform-control-row">
+            <button id="addSwatchButton" type="button">Add Swatch</button>
+            <button id="deleteSwatchButton" type="button">Delete Swatch</button>
+          </div>
+        </div>
+      </main>
+
+      <aside class="panel palette-browser__panel tools-platform-resize-panel" data-panel-side="right">
+        <h3>Actions &amp; Validation</h3>
+        <pre id="paletteJsonPreview" class="palette-browser__json-preview">Palette JSON preview will appear here.</pre>
+        <div id="paletteValidationText" class="palette-browser__hint">Validation summary will appear here.</div>
+        <div class="palette-browser__actions tools-platform-control-row">
+          <button id="importPaletteJsonButton" type="button">Import Palette JSON</button>
+          <input id="importPaletteJsonInput" type="file" accept=".json,application/json" hidden />
+          <button id="exportPaletteJsonButton" type="button">Export Palette JSON</button>
+          <button id="copyPaletteJsonButton" type="button">Copy Palette JSON</button>
+          <button id="usePaletteButton" type="button">Use in Workspace Manager</button>
+        </div>
+        <div id="paletteSelectionText" class="palette-browser__hint">No handoff recorded yet.</div>
+      </aside>
+    </div>
+  </div>
+  <div data-tools-platform-status></div>
+  <script type="module" src="../shared/platformShell.js"></script>
+  <script type="module" src="./main.js"></script>
+  <script type="module" src="../../src/engine/theme/mount-shared-header.js"></script>
+</body>
+</html>

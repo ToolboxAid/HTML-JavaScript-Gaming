@@ -1,0 +1,697 @@
+{
+  "generatedAt": "2026-04-27T17:02:16.473Z",
+  "totalSampleToolPayloadFiles": 62,
+  "totalSamplePaletteFiles": 20,
+  "totalRoundtripRows": 62,
+  "schemaFailures": [],
+  "contractFailures": [],
+  "roundtripPathFailures": [],
+  "genericFailures": [],
+  "genericChecks": [
+    {
+      "sampleId": "0201",
+      "toolId": "3d-camera-path-editor",
+      "hasLoadSignal": true,
+      "hasFailureSignal": false
+    },
+    {
+      "sampleId": "0202",
+      "toolId": "3d-camera-path-editor",
+      "hasLoadSignal": true,
+      "hasFailureSignal": false
+    },
+    {
+      "sampleId": "0204",
+      "toolId": "3d-asset-viewer",
+      "hasLoadSignal": true,
+      "hasFailureSignal": false
+    },
+    {
+      "sampleId": "0204",
+      "toolId": "asset-browser",
+      "hasLoadSignal": true,
+      "hasFailureSignal": false
+    },
+    {
+      "sampleId": "0205",
+      "toolId": "state-inspector",
+      "hasLoadSignal": false,
+      "hasFailureSignal": false
+    },
+    {
+      "sampleId": "0208",
+      "toolId": "state-inspector",
+      "hasLoadSignal": false,
+      "hasFailureSignal": false
+    },
+    {
+      "sampleId": "0210",
+      "toolId": "physics-sandbox",
+      "hasLoadSignal": true,
+      "hasFailureSignal": false
+    },
+    {
+      "sampleId": "0213",
+      "toolId": "palette-browser",
+      "hasLoadSignal": true,
+      "hasFailureSignal": false
+    },
+    {
+      "sampleId": "0217",
+      "toolId": "state-inspector",
+      "hasLoadSignal": false,
+      "hasFailureSignal": false
+    },
+    {
+      "sampleId": "0219",
+      "toolId": "sprite-editor",
+      "hasLoadSignal": false,
+      "hasFailureSignal": false
+    },
+    {
+      "sampleId": "0220",
+      "toolId": "3d-camera-path-editor",
+      "hasLoadSignal": true,
+      "hasFailureSignal": false
+    },
+    {
+      "sampleId": "0221",
+      "toolId": "tile-map-editor",
+      "hasLoadSignal": true,
+      "hasFailureSignal": false
+    },
+    {
+      "sampleId": "0221",
+      "toolId": "tile-model-converter",
+      "hasLoadSignal": true,
+      "hasFailureSignal": false
+    },
+    {
+      "sampleId": "0221",
+      "toolId": "3d-json-payload-normalizer",
+      "hasLoadSignal": true,
+      "hasFailureSignal": false
+    },
+    {
+      "sampleId": "0301",
+      "toolId": "sprite-editor",
+      "hasLoadSignal": false,
+      "hasFailureSignal": false
+    },
+    {
+      "sampleId": "0302",
+      "toolId": "sprite-editor",
+      "hasLoadSignal": false,
+      "hasFailureSignal": false
+    },
+    {
+      "sampleId": "0303",
+      "toolId": "physics-sandbox",
+      "hasLoadSignal": true,
+      "hasFailureSignal": false
+    },
+    {
+      "sampleId": "0305",
+      "toolId": "3d-json-payload-normalizer",
+      "hasLoadSignal": true,
+      "hasFailureSignal": false
+    },
+    {
+      "sampleId": "0305",
+      "toolId": "tile-map-editor",
+      "hasLoadSignal": true,
+      "hasFailureSignal": false
+    },
+    {
+      "sampleId": "0305",
+      "toolId": "tile-model-converter",
+      "hasLoadSignal": true,
+      "hasFailureSignal": false
+    },
+    {
+      "sampleId": "0306",
+      "toolId": "parallax-editor",
+      "hasLoadSignal": true,
+      "hasFailureSignal": false
+    },
+    {
+      "sampleId": "0308",
+      "toolId": "palette-browser",
+      "hasLoadSignal": true,
+      "hasFailureSignal": false
+    },
+    {
+      "sampleId": "0313",
+      "toolId": "palette-browser",
+      "hasLoadSignal": true,
+      "hasFailureSignal": false
+    },
+    {
+      "sampleId": "0510",
+      "toolId": "asset-pipeline-tool",
+      "hasLoadSignal": true,
+      "hasFailureSignal": false
+    },
+    {
+      "sampleId": "0512",
+      "toolId": "performance-profiler",
+      "hasLoadSignal": true,
+      "hasFailureSignal": false
+    },
+    {
+      "sampleId": "0708",
+      "toolId": "replay-visualizer",
+      "hasLoadSignal": true,
+      "hasFailureSignal": false
+    },
+    {
+      "sampleId": "0901",
+      "toolId": "vector-asset-studio",
+      "hasLoadSignal": false,
+      "hasFailureSignal": false
+    },
+    {
+      "sampleId": "0901",
+      "toolId": "vector-map-editor",
+      "hasLoadSignal": true,
+      "hasFailureSignal": false
+    },
+    {
+      "sampleId": "0905",
+      "toolId": "sprite-editor",
+      "hasLoadSignal": false,
+      "hasFailureSignal": false
+    },
+    {
+      "sampleId": "1204",
+      "toolId": "parallax-editor",
+      "hasLoadSignal": true,
+      "hasFailureSignal": false
+    },
+    {
+      "sampleId": "1204",
+      "toolId": "vector-asset-studio",
+      "hasLoadSignal": false,
+      "hasFailureSignal": false
+    },
+    {
+      "sampleId": "1204",
+      "toolId": "vector-map-editor",
+      "hasLoadSignal": true,
+      "hasFailureSignal": false
+    },
+    {
+      "sampleId": "1205",
+      "toolId": "parallax-editor",
+      "hasLoadSignal": true,
+      "hasFailureSignal": false
+    },
+    {
+      "sampleId": "1205",
+      "toolId": "vector-map-editor",
+      "hasLoadSignal": true,
+      "hasFailureSignal": false
+    },
+    {
+      "sampleId": "1208",
+      "toolId": "3d-asset-viewer",
+      "hasLoadSignal": true,
+      "hasFailureSignal": false
+    },
+    {
+      "sampleId": "1208",
+      "toolId": "3d-json-payload-normalizer",
+      "hasLoadSignal": true,
+      "hasFailureSignal": false
+    },
+    {
+      "sampleId": "1208",
+      "toolId": "parallax-editor",
+      "hasLoadSignal": true,
+      "hasFailureSignal": false
+    },
+    {
+      "sampleId": "1208",
+      "toolId": "tile-map-editor",
+      "hasLoadSignal": true,
+      "hasFailureSignal": false
+    },
+    {
+      "sampleId": "1208",
+      "toolId": "vector-asset-studio",
+      "hasLoadSignal": false,
+      "hasFailureSignal": false
+    },
+    {
+      "sampleId": "1209",
+      "toolId": "tile-map-editor",
+      "hasLoadSignal": true,
+      "hasFailureSignal": false
+    },
+    {
+      "sampleId": "1209",
+      "toolId": "tile-model-converter",
+      "hasLoadSignal": true,
+      "hasFailureSignal": false
+    },
+    {
+      "sampleId": "1210",
+      "toolId": "tile-map-editor",
+      "hasLoadSignal": true,
+      "hasFailureSignal": false
+    },
+    {
+      "sampleId": "1212",
+      "toolId": "vector-map-editor",
+      "hasLoadSignal": true,
+      "hasFailureSignal": false
+    },
+    {
+      "sampleId": "1213",
+      "toolId": "vector-map-editor",
+      "hasLoadSignal": true,
+      "hasFailureSignal": false
+    },
+    {
+      "sampleId": "1214",
+      "toolId": "vector-map-editor",
+      "hasLoadSignal": true,
+      "hasFailureSignal": false
+    },
+    {
+      "sampleId": "1215",
+      "toolId": "vector-asset-studio",
+      "hasLoadSignal": true,
+      "hasFailureSignal": false
+    },
+    {
+      "sampleId": "1216",
+      "toolId": "vector-asset-studio",
+      "hasLoadSignal": true,
+      "hasFailureSignal": false
+    },
+    {
+      "sampleId": "1217",
+      "toolId": "vector-asset-studio",
+      "hasLoadSignal": true,
+      "hasFailureSignal": false
+    },
+    {
+      "sampleId": "1218",
+      "toolId": "parallax-editor",
+      "hasLoadSignal": true,
+      "hasFailureSignal": false
+    },
+    {
+      "sampleId": "1219",
+      "toolId": "parallax-editor",
+      "hasLoadSignal": true,
+      "hasFailureSignal": false
+    },
+    {
+      "sampleId": "1220",
+      "toolId": "parallax-editor",
+      "hasLoadSignal": true,
+      "hasFailureSignal": false
+    },
+    {
+      "sampleId": "1315",
+      "toolId": "replay-visualizer",
+      "hasLoadSignal": true,
+      "hasFailureSignal": false
+    },
+    {
+      "sampleId": "1319",
+      "toolId": "performance-profiler",
+      "hasLoadSignal": true,
+      "hasFailureSignal": false
+    },
+    {
+      "sampleId": "1406",
+      "toolId": "replay-visualizer",
+      "hasLoadSignal": true,
+      "hasFailureSignal": false
+    },
+    {
+      "sampleId": "1407",
+      "toolId": "performance-profiler",
+      "hasLoadSignal": true,
+      "hasFailureSignal": false
+    },
+    {
+      "sampleId": "1413",
+      "toolId": "3d-asset-viewer",
+      "hasLoadSignal": true,
+      "hasFailureSignal": false
+    },
+    {
+      "sampleId": "1413",
+      "toolId": "asset-browser",
+      "hasLoadSignal": true,
+      "hasFailureSignal": false
+    },
+    {
+      "sampleId": "1413",
+      "toolId": "asset-pipeline-tool",
+      "hasLoadSignal": true,
+      "hasFailureSignal": false
+    },
+    {
+      "sampleId": "1414",
+      "toolId": "sprite-editor",
+      "hasLoadSignal": false,
+      "hasFailureSignal": false
+    },
+    {
+      "sampleId": "1417",
+      "toolId": "asset-pipeline-tool",
+      "hasLoadSignal": true,
+      "hasFailureSignal": false
+    },
+    {
+      "sampleId": "1505",
+      "toolId": "asset-browser",
+      "hasLoadSignal": true,
+      "hasFailureSignal": false
+    },
+    {
+      "sampleId": "1606",
+      "toolId": "physics-sandbox",
+      "hasLoadSignal": true,
+      "hasFailureSignal": false
+    }
+  ],
+  "genericContractResults": [
+    {
+      "sampleId": "0201",
+      "toolId": "3d-camera-path-editor",
+      "statusText": "Loaded preset from sample 0201.",
+      "waypointCount": 3
+    },
+    {
+      "sampleId": "0202",
+      "toolId": "3d-camera-path-editor",
+      "statusText": "Loaded preset from sample 0202.",
+      "waypointCount": 3
+    },
+    {
+      "sampleId": "0220",
+      "toolId": "3d-camera-path-editor",
+      "statusText": "Loaded preset from sample 0220.",
+      "waypointCount": 3
+    },
+    {
+      "sampleId": "0204",
+      "toolId": "3d-asset-viewer",
+      "statusText": "Loaded preset from sample 0204.",
+      "vertexCount": 5
+    },
+    {
+      "sampleId": "1208",
+      "toolId": "3d-asset-viewer",
+      "statusText": "Loaded preset from sample 1208.",
+      "vertexCount": 6
+    },
+    {
+      "sampleId": "1413",
+      "toolId": "3d-asset-viewer",
+      "statusText": "Loaded preset from sample 1413.",
+      "vertexCount": 5
+    },
+    {
+      "sampleId": "0210",
+      "toolId": "physics-sandbox",
+      "statusText": "Loaded preset from sample 0210.",
+      "parsedBody": {
+        "x": 32,
+        "y": 16,
+        "velocityX": 180,
+        "velocityY": -30,
+        "accelerationX": -14,
+        "accelerationY": 24,
+        "dragX": 8,
+        "dragY": 3,
+        "maxSpeedX": 260,
+        "maxSpeedY": 240,
+        "dt": 0.0166666667
+      },
+      "keyCount": 11
+    },
+    {
+      "sampleId": "0303",
+      "toolId": "physics-sandbox",
+      "statusText": "Loaded preset from sample 0303.",
+      "parsedBody": {
+        "x": 0,
+        "y": 0,
+        "velocityX": 120,
+        "velocityY": -20,
+        "accelerationX": -8,
+        "accelerationY": 18,
+        "dragX": 10,
+        "dragY": 4,
+        "maxSpeedX": 160,
+        "maxSpeedY": 160,
+        "dt": 0.0166666667
+      },
+      "keyCount": 11
+    },
+    {
+      "sampleId": "1606",
+      "toolId": "physics-sandbox",
+      "statusText": "Loaded preset from sample 1606.",
+      "parsedBody": {
+        "x": 12,
+        "y": 48,
+        "velocityX": 0,
+        "velocityY": -140,
+        "accelerationX": 0,
+        "accelerationY": 38,
+        "dragX": 2,
+        "dragY": 1,
+        "maxSpeedX": 240,
+        "maxSpeedY": 260,
+        "dt": 0.0166666667
+      },
+      "keyCount": 11
+    },
+    {
+      "sampleId": "0221",
+      "toolId": "tile-model-converter",
+      "statusText": "Loaded preset from sample 0221.",
+      "parsedCandidate": {
+        "id": "sample-0221-tilemap",
+        "name": "sample-0221-tilemap",
+        "section": "tilemaps",
+        "type": "tilemap",
+        "path": "samples/phase-02/0221/sample-0221-tile-map-editor-document.json",
+        "sourceSampleId": "0221",
+        "sourceToolId": "tile-map-editor"
+      },
+      "parsedConversion": {
+        "targetSection": "vectors",
+        "targetType": "vector"
+      },
+      "candidateCount": 7,
+      "conversionCount": 2
+    },
+    {
+      "sampleId": "0305",
+      "toolId": "tile-model-converter",
+      "statusText": "Loaded preset from sample 0305.",
+      "parsedCandidate": {
+        "id": "sample-0305-tile-metadata",
+        "name": "sample-0305-tile-metadata",
+        "section": "tilemaps",
+        "type": "tilemap",
+        "path": "samples/phase-03/0305/sample-0305-tile-map-editor-document.json",
+        "sourceSampleId": "0305",
+        "sourceToolId": "tile-map-editor"
+      },
+      "parsedConversion": {
+        "targetSection": "vectors",
+        "targetType": "vector"
+      },
+      "candidateCount": 7,
+      "conversionCount": 2
+    },
+    {
+      "sampleId": "1209",
+      "toolId": "tile-model-converter",
+      "statusText": "Loaded preset from sample 1209.",
+      "parsedCandidate": {
+        "id": "sample-1209-tilemap-basic",
+        "name": "sample-1209-tilemap-basic",
+        "section": "tilemaps",
+        "type": "tilemap",
+        "path": "samples/phase-12/1209/sample-1209-tile-map-editor-document.json",
+        "sourceSampleId": "1209",
+        "sourceToolId": "tile-map-editor"
+      },
+      "parsedConversion": {
+        "targetSection": "vectors",
+        "targetType": "vector"
+      },
+      "candidateCount": 7,
+      "conversionCount": 2
+    },
+    {
+      "sampleId": "0221",
+      "toolId": "3d-json-payload-normalizer",
+      "statusText": "Loaded preset from sample 0221.",
+      "pointCount": 4,
+      "segmentCount": 4
+    },
+    {
+      "sampleId": "0305",
+      "toolId": "3d-json-payload-normalizer",
+      "statusText": "Loaded preset from sample 0305.",
+      "pointCount": 5,
+      "segmentCount": 5
+    },
+    {
+      "sampleId": "1208",
+      "toolId": "3d-json-payload-normalizer",
+      "statusText": "Loaded preset from sample 1208.",
+      "pointCount": 5,
+      "segmentCount": 5
+    },
+    {
+      "sampleId": "0306",
+      "toolId": "parallax-editor",
+      "statusText": "Loaded preset from sample 0306.",
+      "layerCount": 2
+    },
+    {
+      "sampleId": "1204",
+      "toolId": "parallax-editor",
+      "statusText": "Loaded preset from sample 1204.",
+      "layerCount": 3
+    },
+    {
+      "sampleId": "1205",
+      "toolId": "parallax-editor",
+      "statusText": "Loaded preset from sample 1205.",
+      "layerCount": 3
+    },
+    {
+      "sampleId": "1208",
+      "toolId": "parallax-editor",
+      "statusText": "Loaded preset from sample 1208.",
+      "layerCount": 3
+    },
+    {
+      "sampleId": "0512",
+      "toolId": "performance-profiler",
+      "statusText": "Profiler ready.",
+      "workloadIterations": 300,
+      "workSize": 3000,
+      "frameSamples": 120
+    },
+    {
+      "sampleId": "1319",
+      "toolId": "performance-profiler",
+      "statusText": "Loaded preset from sample 1319.",
+      "workloadIterations": 420,
+      "workSize": 18000,
+      "frameSamples": 240
+    },
+    {
+      "sampleId": "1407",
+      "toolId": "performance-profiler",
+      "statusText": "Loaded preset from sample 1407.",
+      "workloadIterations": 240,
+      "workSize": 10000,
+      "frameSamples": 180
+    },
+    {
+      "sampleId": "0708",
+      "toolId": "replay-visualizer",
+      "statusText": "Loaded preset from sample 0708.",
+      "eventCount": 5
+    },
+    {
+      "sampleId": "1315",
+      "toolId": "replay-visualizer",
+      "statusText": "Loaded preset from sample 1315.",
+      "eventCount": 5
+    },
+    {
+      "sampleId": "1406",
+      "toolId": "replay-visualizer",
+      "statusText": "Loaded preset from sample 1406.",
+      "eventCount": 5
+    }
+  ],
+  "targetedResults": [
+    {
+      "sampleId": "0204",
+      "toolId": "asset-browser",
+      "statusText": "Loaded preset from sample 0204.",
+      "importName": "sample-0204-import.vector.json",
+      "selectedCategory": "Vector Assets",
+      "selectedDestination": "games/<project>/assets/vectors/"
+    },
+    {
+      "sampleId": "1413",
+      "toolId": "asset-browser",
+      "statusText": "Loaded preset from sample 1413.",
+      "importName": "sample-1413-import.sprite.json",
+      "selectedCategory": "Sprite Projects",
+      "selectedDestination": "games/<project>/assets/sprites/"
+    },
+    {
+      "sampleId": "1505",
+      "toolId": "asset-browser",
+      "statusText": "Loaded preset from sample 1505.",
+      "importName": "sample-1505-import.vector.json",
+      "selectedCategory": "Vector Assets",
+      "selectedDestination": "games/<project>/assets/vectors/"
+    },
+    {
+      "sampleId": "0510",
+      "toolId": "asset-pipeline-tool",
+      "statusText": "Loaded preset from sample 0510.",
+      "parsedGameId": "sample-0510",
+      "domainRecordCount": 2
+    },
+    {
+      "sampleId": "1413",
+      "toolId": "asset-pipeline-tool",
+      "statusText": "Loaded preset from sample 1413.",
+      "parsedGameId": "sample-1413",
+      "domainRecordCount": 2
+    },
+    {
+      "sampleId": "1417",
+      "toolId": "asset-pipeline-tool",
+      "statusText": "Loaded preset from sample 1417.",
+      "parsedGameId": "sample-1417",
+      "domainRecordCount": 2
+    },
+    {
+      "sampleId": "0213",
+      "toolId": "palette-browser",
+      "selectionText": "Loaded preset from sample 0213.",
+      "title": "Sample 0213 Palette",
+      "summary": "13 swatches | source: manifest",
+      "swatchCount": 13
+    },
+    {
+      "sampleId": "0308",
+      "toolId": "palette-browser",
+      "selectionText": "Loaded preset from sample 0308.",
+      "title": "Sample 0308 Palette",
+      "summary": "5 swatches | source: manifest",
+      "swatchCount": 5
+    },
+    {
+      "sampleId": "0313",
+      "toolId": "palette-browser",
+      "selectionText": "Loaded preset from sample 0313.",
+      "title": "Sample 0313 Palette",
+      "summary": "5 swatches | source: manifest",
+      "swatchCount": 5
+    }
+  ]
+}

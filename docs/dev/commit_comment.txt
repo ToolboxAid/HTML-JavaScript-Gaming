@@ -1,1 +1,1 @@
-Normalize palette contract to manifest SSoT and remove tool-level schema drift - PR 10.6B
+Capture palette contract evidence for explicit normalization follow-up - PR 10.6D

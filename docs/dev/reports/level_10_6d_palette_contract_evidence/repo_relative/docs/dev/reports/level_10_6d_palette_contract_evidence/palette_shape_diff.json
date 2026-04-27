@@ -1,0 +1,105 @@
+{
+  "generatedAt": "2026-04-27T17:02:54.163Z",
+  "comparisons": [
+    {
+      "sampleId": "0213",
+      "manifestPath": "samples/phase-02/0213/sample.0213.palette-browser.json",
+      "palettePath": "samples/phase-02/0213/sample.0213.palette.json",
+      "manifestKeys": [
+        "name",
+        "schema",
+        "source",
+        "swatches",
+        "version"
+      ],
+      "paletteKeys": [
+        "$schema",
+        "locked",
+        "name",
+        "schema",
+        "source",
+        "sourceId",
+        "swatches",
+        "version"
+      ],
+      "keysOnlyInManifest": [],
+      "keysOnlyInPaletteFile": [
+        "$schema",
+        "locked",
+        "sourceId"
+      ],
+      "valueMismatches": [
+        {
+          "key": "source",
+          "manifest": "manifest",
+          "paletteFile": "engine/paletteList"
+        }
+      ],
+      "swatchesMatch": true
+    },
+    {
+      "sampleId": "0308",
+      "manifestPath": "samples/phase-03/0308/sample.0308.palette-browser.json",
+      "palettePath": "samples/phase-03/0308/sample.0308.palette.json",
+      "manifestKeys": [
+        "name",
+        "schema",
+        "source",
+        "swatches",
+        "version"
+      ],
+      "paletteKeys": [
+        "$schema",
+        "name",
+        "schema",
+        "source",
+        "swatches",
+        "version"
+      ],
+      "keysOnlyInManifest": [],
+      "keysOnlyInPaletteFile": [
+        "$schema"
+      ],
+      "valueMismatches": [
+        {
+          "key": "source",
+          "manifest": "manifest",
+          "paletteFile": "generated-from-sample-colors"
+        }
+      ],
+      "swatchesMatch": true
+    },
+    {
+      "sampleId": "0313",
+      "manifestPath": "samples/phase-03/0313/sample.0313.palette-browser.json",
+      "palettePath": "samples/phase-03/0313/sample.0313.palette.json",
+      "manifestKeys": [
+        "name",
+        "schema",
+        "source",
+        "swatches",
+        "version"
+      ],
+      "paletteKeys": [
+        "$schema",
+        "name",
+        "schema",
+        "source",
+        "swatches",
+        "version"
+      ],
+      "keysOnlyInManifest": [],
+      "keysOnlyInPaletteFile": [
+        "$schema"
+      ],
+      "valueMismatches": [
+        {
+          "key": "source",
+          "manifest": "manifest",
+          "paletteFile": "generated-from-sample-colors"
+        }
+      ],
+      "swatchesMatch": true
+    }
+  ]
+}
