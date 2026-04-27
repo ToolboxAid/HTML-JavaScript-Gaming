@@ -1,10 +1,10 @@
-BUILD_PR_LEVEL_10_2_WORKSPACE_MANAGER_OPEN_TEST_AND_SHARED_BOUNDARY_AUDIT
+BUILD_PR_LEVEL_10_2A_WORKSPACE_MANAGER_ASSET_PRESENCE_VALIDATION
 
-- Added games/index Workspace Manager open-action validation
-- Verified gameId + mount=game query contract
-- Audited tools/shared/asteroidsPlatformDemo.js boundary ownership
+- Strengthened Workspace Manager game-open test to validate asset presence
+- Added shared palette and expected asset assertions
+- Added Bouncing-ball missing palette regression coverage
 
 PR Details:
-- Supports manifest/tool alignment work
-- No start_of_day changes
+- Prevents page-load-only false positives
 - No validators
+- No start_of_day changes

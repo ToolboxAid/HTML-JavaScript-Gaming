@@ -2,39 +2,37 @@ MODEL: GPT-5.3-codex
 REASONING: high
 
 TASK:
-Apply BUILD_PR_LEVEL_10_2_WORKSPACE_MANAGER_OPEN_TEST_AND_SHARED_BOUNDARY_AUDIT.
+Apply BUILD_PR_LEVEL_10_2A_WORKSPACE_MANAGER_ASSET_PRESENCE_VALIDATION.
 
 STEPS:
-1. Read docs/pr/PLAN_PR_LEVEL_10_2_WORKSPACE_MANAGER_OPEN_TEST_AND_SHARED_BOUNDARY_AUDIT.md.
-2. Read docs/pr/BUILD_PR_LEVEL_10_2_WORKSPACE_MANAGER_OPEN_TEST_AND_SHARED_BOUNDARY_AUDIT.md.
-3. Add a focused runtime/browser test for `games/index.html`:
-   - discover all games/cards/actions
-   - validate "Open with Workspace Manager" uses `gameId=<id>&mount=game`
-   - reject legacy `?game=`
-   - ensure Workspace Manager diagnostic does not appear when clicked/opened
-4. Ensure the new test does not run samples or tools.
-5. Add a focused npm script only if useful, such as:
-   - `test:workspace-manager:games`
-6. Audit `tools/shared/asteroidsPlatformDemo.js`:
-   - imports
-   - consumers
-   - domain ownership
-   - move recommendation
-7. Move `tools/shared/asteroidsPlatformDemo.js` only if safe and obvious; otherwise report follow-up.
-8. Write reports:
-   - docs/dev/reports/level_10_2_workspace_manager_open_test_report.md
-   - docs/dev/reports/level_10_2_asteroids_platform_demo_boundary_audit.md
-9. Update docs/dev/roadmaps/MASTER_ROADMAP_ENGINE.md status only if needed:
-   - [ ] -> [.]
-   - [.] -> [x]
-   - no prose rewrite/delete
-10. Do not modify start_of_day.
+1. Read docs/pr/PLAN_PR_LEVEL_10_2A_WORKSPACE_MANAGER_ASSET_PRESENCE_VALIDATION.md.
+2. Read docs/pr/BUILD_PR_LEVEL_10_2A_WORKSPACE_MANAGER_ASSET_PRESENCE_VALIDATION.md.
+3. Open the Level 10.2 Workspace Manager open test.
+4. Extend it so it validates game data presence after opening each game through Workspace Manager.
+5. Keep existing checks:
+   - gameId query
+   - mount=game
+   - no ?game=
+   - no diagnostic
+6. Add asset presence checks:
+   - shared palette present
+   - expected shared assets/tool sections present
+   - skin data present when expected
+7. Specifically fail Bouncing-ball if the UI shows:
+   - `Shared Palette: No shared palette selected`
+8. Ensure this test does not run samples/tools.
+9. Write docs/dev/reports/level_10_2a_workspace_manager_asset_presence_validation_report.md.
+10. Update docs/dev/roadmaps/MASTER_ROADMAP_ENGINE.md status only if needed:
+    - [ ] -> [.]
+    - [.] -> [x]
+    - no prose rewrite/delete
 11. Do not add validators.
-12. Create Codex delta ZIP:
-    tmp/BUILD_PR_LEVEL_10_2_WORKSPACE_MANAGER_OPEN_TEST_AND_SHARED_BOUNDARY_AUDIT_delta.zip
+12. Do not modify start_of_day.
+13. Create Codex delta ZIP:
+    tmp/BUILD_PR_LEVEL_10_2A_WORKSPACE_MANAGER_ASSET_PRESENCE_VALIDATION_delta.zip
 
 ACCEPTANCE:
-- games index Workspace Manager action test exists
-- all game actions use gameId + mount=game
-- boundary audit exists
+- page-load-only false positives are prevented
+- missing palette is caught
+- Bouncing-ball missing palette issue is detected/fixed or reported
 - delta ZIP exists
