@@ -127,6 +127,7 @@ export class VectorMapEditorApp {
     this.lastCollisionResult = null;
     this.pendingHistoryEntry = null;
     this.spinAnimationFrame = null;
+    this.defaultSelectionApplied = false;
 
     this.elements = this.cacheElements(rootDocument);
     this.jsonEditor = new VectorMapJsonEditor(this.elements.jsonEditor);
@@ -257,6 +258,7 @@ export class VectorMapEditorApp {
     const forceMissing = options.forceMissing === true;
     const phase = typeof options.phase === "string" && options.phase.trim() ? options.phase.trim() : "load";
     const lifecycleStable = options.lifecycleStable !== false;
+    const defaultSelectionApplied = options.defaultSelectionApplied === true || this.defaultSelectionApplied === true;
     const data = this.documentModel?.getData?.() || {};
     const objectCount = Array.isArray(data.objects) ? data.objects.length : 0;
     const selectedObject = !forceMissing ? this.selectionModel.getSelection(this.documentModel).object : null;
@@ -309,6 +311,7 @@ export class VectorMapEditorApp {
       requiredData: "vector-map-objects",
       loaded: hasSelectedObject && hasEntityControls,
       value: selectedObject?.name || "none",
+      "default-selection-applied": defaultSelectionApplied,
       classification: hasSelectedObject && hasEntityControls ? "success" : (hasDocument ? "empty" : "missing")
     });
 
@@ -317,6 +320,7 @@ export class VectorMapEditorApp {
       sampleId,
       phase,
       cause: forceMissing ? "preset-load-failure" : "preset-load",
+      "default-selection-applied": defaultSelectionApplied,
       classification: lifecycleStable ? "success" : "lifecycle-failure"
     });
 
@@ -395,7 +399,7 @@ export class VectorMapEditorApp {
       this.cancelSpinAnimation();
       this.documentModel.setData(toolDocument);
       this.selectionModel.clear();
-      this.selectFirstObjectWhenUnselected();
+      const defaultSelectionApplied = this.selectFirstObjectWhenUnselected();
       this.lastCollisionResult = null;
       this.historyManager.reset();
       this.pendingHistoryEntry = null;
@@ -405,7 +409,7 @@ export class VectorMapEditorApp {
       this.interactionController.setToolMode(this.elements.toolModeSelect.value);
       this.syncUIFromDocument();
       this.render();
-      this.emitVectorMapControlReadiness(sampleId, { phase: "loaded", lifecycleStable: true });
+      this.emitVectorMapControlReadiness(sampleId, { phase: "loaded", lifecycleStable: true, defaultSelectionApplied });
       if ((Array.isArray(this.documentModel.getData().objects) ? this.documentModel.getData().objects.length : 0) === 0) {
         logToolLoadWarning({
           toolId: "vector-map-editor",
@@ -1069,19 +1073,22 @@ export class VectorMapEditorApp {
   }
 
   selectFirstObjectWhenUnselected() {
+    this.defaultSelectionApplied = false;
     const selection = this.selectionModel.getSelection(this.documentModel);
     if (selection.object) {
-      return;
+      return false;
     }
     const objects = this.documentModel.getObjects();
     if (!Array.isArray(objects) || objects.length === 0) {
-      return;
+      return false;
     }
     const firstObject = objects.find((entry) => entry && typeof entry.id === "string" && entry.id.length > 0) || null;
     if (!firstObject) {
-      return;
+      return false;
     }
     this.selectionModel.selectObject(firstObject.id);
+    this.defaultSelectionApplied = true;
+    return true;
   }
 
   syncUIFromDocument() {

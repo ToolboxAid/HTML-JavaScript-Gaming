@@ -962,10 +962,15 @@ function setSampleSource(state, source = {}) {
 
 function buildSampleSourceDetailLabel(source = {}) {
   const summary = buildSampleSourceLabel(source);
+  const sampleId = typeof source.sampleId === "string" ? source.sampleId.trim() : "";
   const samplePresetPath = typeof source.samplePresetPath === "string" ? source.samplePresetPath.trim() : "";
   const fileName = typeof source.fileName === "string" ? source.fileName.trim() : "";
   const detail = samplePresetPath || fileName;
-  return detail ? `${summary} (${detail})` : summary;
+  const expectation = sampleId === "0219"
+    ? "Expectation: static sprite-atlas showcase; animation playback is not required."
+    : "";
+  const detailText = detail ? `${summary} (${detail})` : summary;
+  return expectation ? `${detailText} | ${expectation}` : detailText;
 }
 
 function isPaletteSelected(project) {

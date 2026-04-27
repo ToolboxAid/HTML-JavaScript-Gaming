@@ -81,6 +81,7 @@ export default class SpriteAtlasImageRenderingScene extends Scene {
     drawFrame(renderer, theme, [
       'Engine Sample 0219',
       'Demonstrates sprite atlas frame lookup and image-loader-ready output',
+      'Static sample: animation playback is not required for this scenario',
       'Current rendering uses shared sprite preset frame pixels when available',
       'This sample and Sprite Editor load the same sample-0219-sprite-editor.json source',
       'Each entity references atlas/frame instead of raw color only',

@@ -66,6 +66,35 @@ function setStatus(message) {
   }
 }
 
+function emitManualJsonDiagnostic(classification, details = {}) {
+  if (typeof console === "undefined") {
+    return;
+  }
+  const writer = typeof console.debug === "function" ? console.debug : console.log;
+  writer.call(console, "[state-inspector:manual-json]", {
+    classification,
+    ...details
+  });
+}
+
+function isManualJsonInputEmpty() {
+  if (!(refs.input instanceof HTMLTextAreaElement)) {
+    return true;
+  }
+  return refs.input.value.trim().length === 0;
+}
+
+function updateInspectJsonActionState() {
+  if (!(refs.loadJsonButton instanceof HTMLButtonElement)) {
+    return;
+  }
+  const manualJsonEmpty = isManualJsonInputEmpty();
+  refs.loadJsonButton.disabled = manualJsonEmpty;
+  refs.loadJsonButton.title = manualJsonEmpty
+    ? "Paste JSON into JSON Input to inspect manual payloads."
+    : "";
+}
+
 function clearRoutedPayloadQueryParam() {
   if (typeof window === "undefined") {
     return;
@@ -282,6 +311,7 @@ function renderSnapshot(snapshot) {
   const localCount = snapshot?.storage?.localCount ?? 0;
   const sessionCount = snapshot?.storage?.sessionCount ?? 0;
   const bootCount = snapshot?.bootContracts?.count ?? 0;
+  updateInspectJsonActionState();
   setStatus(`Snapshot ready. local=${localCount}, session=${sessionCount}, bootContracts=${bootCount}.`);
 }
 
@@ -293,12 +323,30 @@ function inspectInputJson() {
   if (!(refs.input instanceof HTMLTextAreaElement)) {
     return;
   }
-  const parsed = safeParseJson(refs.input.value);
+  const inputText = refs.input.value;
+  if (inputText.trim().length === 0) {
+    emitManualJsonDiagnostic("manual-json-empty", {
+      hasSnapshot: Boolean(state.snapshot)
+    });
+    setStatus(state.snapshot
+      ? "Manual JSON input is empty. Inspection Snapshot is still valid; paste JSON to inspect manual payloads."
+      : "Manual JSON input is empty. Paste valid JSON to inspect manual payloads.");
+    return;
+  }
+  const parsed = safeParseJson(inputText);
   if (!parsed || typeof parsed !== "object") {
-    setStatus("Input JSON is invalid. Paste valid JSON to inspect.");
+    emitManualJsonDiagnostic("invalid-json", {
+      hasSnapshot: Boolean(state.snapshot)
+    });
+    setStatus(state.snapshot
+      ? "Manual JSON input is invalid. Inspection Snapshot remains unchanged."
+      : "Manual JSON input is invalid. Paste valid JSON to inspect.");
     return;
   }
   renderSnapshot(parsed);
+  emitManualJsonDiagnostic("manual-json-success", {
+    hasSnapshot: Boolean(state.snapshot)
+  });
   setStatus("Custom JSON payload loaded into inspector view.");
 }
 
@@ -308,6 +356,9 @@ function bindEvents() {
   }
   if (refs.loadJsonButton instanceof HTMLButtonElement) {
     refs.loadJsonButton.addEventListener("click", inspectInputJson);
+  }
+  if (refs.input instanceof HTMLTextAreaElement) {
+    refs.input.addEventListener("input", updateInspectJsonActionState);
   }
 }
 
@@ -336,6 +387,7 @@ const stateInspectorApi = {
 function bootStateInspector() {
   if (!initialized) {
     bindEvents();
+    updateInspectJsonActionState();
     disposeInteractionFlow = setupDebugToolInteractionFlow({
       primaryButton: refs.refreshButton,
       escapeAction: refreshSnapshot,

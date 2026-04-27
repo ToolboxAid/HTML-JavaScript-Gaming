@@ -1792,7 +1792,7 @@
       "id": "0219",
       "phase": "02",
       "title": "Sprite Atlas Image Rendering",
-      "description": "Demonstrates sprite-atlas-style frame lookup and image-loader-ready rendering proxies.",
+      "description": "Demonstrates static sprite-atlas frame lookup and image-loader-ready rendering proxies (not an animation playback sample).",
       "tags": [
         "sprite",
         "atlas",
@@ -2129,6 +2129,90 @@
         "engine/systems/index/updateProjectiles",
         "engine/theme/index/Theme",
         "engine/theme/index/ThemeTokens"
+      ]
+    },
+    {
+      "id": "0226",
+      "phase": "02",
+      "title": "Primitive Skin Editor Breakout Readiness",
+      "description": "Launch/data/control readiness sample for Primitive Skin Editor with explicit Breakout skin input.",
+      "href": "./phase-02/0226/index.html",
+      "tags": [
+        "skin",
+        "primitive",
+        "editor",
+        "breakout",
+        "readiness",
+        "tooling"
+      ],
+      "thumbnail": "/samples/phase-02/0226/assets/images/preview.svg",
+      "preview": "/samples/phase-02/0226/assets/images/preview.svg",
+      "classValues": [
+        "engine/core/Engine",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawPanel",
+        "engine/scene/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
+      ],
+      "engineClassesUsed": [
+        "engine/core/Engine",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawPanel",
+        "engine/scene/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
+      ],
+      "toolHints": [
+        "skin-editor"
+      ],
+      "roundtripToolPresets": [
+        {
+          "toolId": "skin-editor",
+          "presetPath": "/samples/phase-02/0226/sample.0226.skin-editor.json"
+        }
+      ]
+    },
+    {
+      "id": "0227",
+      "phase": "02",
+      "title": "Primitive Skin Editor Pong Readiness",
+      "description": "Launch/data/control readiness sample for Primitive Skin Editor with explicit Pong skin input.",
+      "href": "./phase-02/0227/index.html",
+      "tags": [
+        "skin",
+        "primitive",
+        "editor",
+        "pong",
+        "readiness",
+        "tooling"
+      ],
+      "thumbnail": "/samples/phase-02/0227/assets/images/preview.svg",
+      "preview": "/samples/phase-02/0227/assets/images/preview.svg",
+      "classValues": [
+        "engine/core/Engine",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawPanel",
+        "engine/scene/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
+      ],
+      "engineClassesUsed": [
+        "engine/core/Engine",
+        "engine/debug/index/drawFrame",
+        "engine/debug/index/drawPanel",
+        "engine/scene/index/Scene",
+        "engine/theme/index/Theme",
+        "engine/theme/index/ThemeTokens"
+      ],
+      "toolHints": [
+        "skin-editor"
+      ],
+      "roundtripToolPresets": [
+        {
+          "toolId": "skin-editor",
+          "presetPath": "/samples/phase-02/0227/sample.0227.skin-editor.json"
+        }
       ]
     },
     {

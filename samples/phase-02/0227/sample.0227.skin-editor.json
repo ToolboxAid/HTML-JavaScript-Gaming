@@ -1,0 +1,59 @@
+{
+  "$schema": "../../../tools/schemas/tools/skin-editor.schema.json",
+  "tool": "skin-editor",
+  "version": "1",
+  "config": {
+    "scenario": "sample-0227-primitive-skin-editor-pong-readiness"
+  },
+  "payload": {
+    "gameId": "Pong",
+    "skin": {
+      "documentKind": "game-skin",
+      "version": 1,
+      "schema": "games.pong.skin/1",
+      "gameId": "Pong",
+      "name": "Sample 0227 Pong Skin",
+      "objects": {
+        "background": {
+          "color": "#05070a",
+          "shape": "hud-color"
+        },
+        "paddle": {
+          "color": "#f4f7fb",
+          "width": 14,
+          "shape": "rectangle"
+        },
+        "ball": {
+          "color": "#f4f7fb",
+          "radius": 8,
+          "shape": "circle"
+        },
+        "hudInk": {
+          "color": "#f4f7fb",
+          "shape": "hud-color"
+        },
+        "hudMuted": {
+          "color": "#a6b0bf",
+          "shape": "hud-color"
+        },
+        "hudAccent": {
+          "color": "#7de2ff",
+          "shape": "hud-color"
+        },
+        "hudGood": {
+          "color": "#8bf0c8",
+          "shape": "hud-color"
+        },
+        "hudWarn": {
+          "color": "#ffd37d",
+          "shape": "hud-color"
+        },
+        "hudDanger": {
+          "color": "#ff9a9a",
+          "shape": "hud-color"
+        }
+      },
+      "entities": {}
+    }
+  }
+}

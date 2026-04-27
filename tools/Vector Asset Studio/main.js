@@ -2608,6 +2608,24 @@ function ensurePaletteSelectionFromDeclaredInputs(editorOptions = {}, sampleId =
   pushColor(paletteBlock?.paint || editorOptions?.paint, "Paint");
   pushColor(paletteBlock?.stroke || editorOptions?.stroke, "Stroke");
   if (declaredColors.length === 0) {
+    if (!hasPaletteSelection()) {
+      const firstPaletteOption = (Array.isArray(state.paletteOptions) ? state.paletteOptions : [])
+        .find((entry) => {
+          const paletteId = String(entry?.id || "");
+          return paletteId && paletteId !== NO_PALETTE_ID && Array.isArray(state.paletteGroups?.[paletteId]) && state.paletteGroups[paletteId].length > 0;
+        });
+      if (firstPaletteOption) {
+        state.selectedPaletteId = String(firstPaletteOption.id);
+        if (refs.paletteSelect instanceof HTMLSelectElement) {
+          refs.paletteSelect.disabled = false;
+          refs.paletteSelect.value = state.selectedPaletteId;
+        }
+        renderPaletteSelect();
+        renderMainPaletteGrid();
+        renderUsedColorStrip();
+        applyEnablementState();
+      }
+    }
     return "missing";
   }
 

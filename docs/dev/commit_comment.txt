@@ -1,1 +1,1 @@
-Finalize vector tool UI readiness for palette controls and default object selection - PR 10.6T
+Enforce final tool UI DoD selection, enablement, lifecycle, and empty-state gates - PR 10.6V
