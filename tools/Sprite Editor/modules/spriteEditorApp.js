@@ -1583,6 +1583,7 @@ async function tryLoadPresetFromQuery(state) {
     samplePresetPath
   });
   renderHud(state);
+  let receivedTopLevelKeys = [];
   try {
     const presetUrl = new URL(samplePresetPath, window.location.href);
     const presetHref = presetUrl.toString();
@@ -1607,6 +1608,9 @@ async function tryLoadPresetFromQuery(state) {
       throw new Error(`Preset request failed (${response.status}).`);
     }
     const rawPreset = await response.json();
+    receivedTopLevelKeys = rawPreset && typeof rawPreset === "object" && !Array.isArray(rawPreset)
+      ? Object.keys(rawPreset)
+      : [];
     logToolLoadLoaded({
       toolId: "sprite-editor",
       sampleId,
@@ -1621,7 +1625,8 @@ async function tryLoadPresetFromQuery(state) {
       toolId: "sprite-editor",
       sampleId,
       samplePresetPath,
-      error: error instanceof Error ? error.message : "unknown error"
+      error: error instanceof Error ? error.message : "unknown error",
+      receivedTopLevelKeys
     });
     setSampleSource(state, {
       mode: "sample",

@@ -1,1 +1,1 @@
-Add tool request/fetch/load diagnostics for sample data-flow debugging - PR 10.6G
+Add expected contract fields to tool-load diagnostics - PR 10.6H
