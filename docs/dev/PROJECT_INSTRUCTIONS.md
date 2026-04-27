@@ -108,6 +108,53 @@ ZIP STANDARD (ENFORCED)
 Commit Comment:
 <description> - <PR info>
 
+---
+
+## 🔧 ZIP DELIVERY VALIDATION (MANDATORY)
+
+Before returning any ZIP, ChatGPT MUST:
+
+1. Physically create the ZIP file  
+2. Verify the file exists on disk  
+3. Verify file size > 0  
+4. List contents to confirm correct repo structure  
+5. Use a NEW filename for every attempt (no reuse)  
+6. Place ZIP at root path: /mnt/data/  
+7. Never reuse a previous file handle or path  
+
+---
+
+## 📦 ZIP NAMING PATTERN (ENFORCED)
+
+All ZIP files MUST follow:
+
+PR_<major>_<minor>_<timestamp>.zip
+
+Example:
+PR_10_6X_20260427_01.zip
+
+---
+
+## 🚫 DELIVERY CONSTRAINTS
+
+- Use shortest possible valid filename  
+- Avoid nested paths  
+- Avoid large payloads when possible  
+- Exactly one ZIP per response  
+
+---
+
+## 🛑 FAILURE HANDLING (MANDATORY)
+
+If ZIP delivery fails more than once:
+
+- Do NOT retry with same name  
+- Generate a new filename with timestamp  
+- Rebuild ZIP from scratch  
+- If still failing, STOP and provide inline content for manual application  
+
+---
+
 ## 🔒 EXECUTION DEFAULTS (MANDATORY)
 
 ### ALWAYS CONTINUE
@@ -131,9 +178,13 @@ Commit Comment:
 - Continue automatically
 - Do not stop unless blocked
 
+---
+
 ## Productization Rules
 - Do not create standalone showcase tracks in future roadmaps
 - Fold showcase importance into the main feature or sample title when needed
+
+---
 
 ## Roadmap Instruction Move Guards
 - If roadmap content is moved to `PROJECT_INSTRUCTIONS.md`, move it and do not delete it without relocation.
@@ -144,9 +195,12 @@ Commit Comment:
 - Do not modify roadmap content during cleanup work.
 - Only update status [ ] [.] [x] in roadmap content during cleanup work.
 
+---
+
 ## EXECUTION EFFICIENCY
 
 - Bundle PRs whenever it is safe and testable to reduce overall timeline and churn.
+- Prefer fewer, higher-quality PR bundles over many small retries
 - Codex must always return a ZIP artifact at:
   <project folder>/tmp/<PR_NAME>.zip
 - Never ask whether to create the next ZIP for Codex; always assume it is required.
@@ -157,6 +211,8 @@ Commit Comment:
   - Don't ask if I want the next bundled PR, assume I want it.
 - Update Roadmap stutus every PR.
 - Every PRs must improve roadmap and be testable.
+
+---
 
 # BUILD_PR_LEVEL_19_20_TOOLCHAIN_ROADMAP_GUARD_ENFORCEMENT
 
@@ -192,6 +248,8 @@ Enforce the master roadmap guard for future Codex executions during the Phase 19
 - any roadmap update is status-only unless explicit additive content is required by the PR
 - bundle remains docs-only
 
+---
+
 ## Codex Anti-Pattern Guard
 
 These rules are mandatory for every Codex BUILD execution:
@@ -205,6 +263,8 @@ These rules are mandatory for every Codex BUILD execution:
 - Do not add abstraction layers, helper functions, or broad refactors unless the BUILD explicitly requires them.
 - Do not change unrelated files.
 - Before finishing, review the diff and remove unused, redundant, pass-through, or alias variables.
+
+---
 
 ## Current Recovery Lane
 

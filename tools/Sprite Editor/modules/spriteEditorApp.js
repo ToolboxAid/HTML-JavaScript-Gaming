@@ -1465,13 +1465,24 @@ function emitSpriteEditorControlReadiness(state, options = {}) {
   const ioControlsPresent = state.elements.saveProjectButton instanceof HTMLButtonElement
     && state.elements.exportPngButton instanceof HTMLButtonElement
     && state.elements.exportSheetButton instanceof HTMLButtonElement;
+  const color1ButtonEnabled = state.elements.color1SelectorButton instanceof HTMLButtonElement
+    && state.elements.color1SelectorButton.disabled !== true;
+  const color2ButtonEnabled = state.elements.color2SelectorButton instanceof HTMLButtonElement
+    && state.elements.color2SelectorButton.disabled !== true;
+  const frameControlsEnabled = frameControlsPresent
+    && state.elements.playPreviewButton.disabled !== true
+    && state.elements.fpsInput.disabled !== true;
+  const ioControlsEnabled = ioControlsPresent
+    && state.elements.saveProjectButton.disabled !== true
+    && state.elements.exportPngButton.disabled !== true
+    && state.elements.exportSheetButton.disabled !== true;
   const canvasReady = !forceMissing
     && state.elements.editorCanvas instanceof HTMLCanvasElement
     && frameCount > 0
     && activeColorReady
     && paletteCount > 0;
-  const frameControlsReady = !forceMissing && frameControlsPresent && frameCount > 0;
-  const ioControlsReady = !forceMissing && ioControlsPresent && frameCount > 0 && paletteCount > 0;
+  const frameControlsReady = !forceMissing && frameControlsEnabled && frameCount > 0;
+  const ioControlsReady = !forceMissing && ioControlsEnabled && frameCount > 0 && paletteCount > 0;
 
   const signature = JSON.stringify({
     sampleId,
@@ -1505,9 +1516,13 @@ function emitSpriteEditorControlReadiness(state, options = {}) {
     sampleId,
     controlId: "color-1-selector",
     requiredData: "first-loaded-palette-swatch",
-    loaded: Boolean(color1 && state.elements.color1SelectorButton instanceof HTMLButtonElement),
+    loaded: Boolean(color1 && color1ButtonEnabled),
     value: color1 || "none",
-    classification: color1 ? "success" : (paletteCount > 0 ? "empty" : "missing")
+    classification: color1 && color1ButtonEnabled
+      ? "success"
+      : (paletteCount > 0
+        ? (color1 ? "disabled" : "unselected")
+        : "missing")
   });
 
   logToolUiControlReady({
@@ -1515,9 +1530,13 @@ function emitSpriteEditorControlReadiness(state, options = {}) {
     sampleId,
     controlId: "color-2-selector",
     requiredData: "second-loaded-palette-swatch",
-    loaded: Boolean(color2 && state.elements.color2SelectorButton instanceof HTMLButtonElement),
+    loaded: Boolean(color2 && color2ButtonEnabled),
     value: color2 || "none",
-    classification: color2 ? "success" : (paletteCount > 0 ? "empty" : "missing")
+    classification: color2 && color2ButtonEnabled
+      ? "success"
+      : (paletteCount > 0
+        ? (color2 ? "disabled" : "unselected")
+        : "missing")
   });
 
   logToolUiControlReady({
@@ -1527,7 +1546,7 @@ function emitSpriteEditorControlReadiness(state, options = {}) {
     requiredData: "loaded-palette-selection",
     loaded: activeColorReady,
     value: activeColor || "none",
-    classification: activeColorReady ? "success" : "missing"
+    classification: activeColorReady ? "success" : (paletteCount > 0 ? "unselected" : "missing")
   });
 
   logToolUiControlReady({
@@ -1548,7 +1567,9 @@ function emitSpriteEditorControlReadiness(state, options = {}) {
     loaded: frameControlsReady,
     count: frameCount,
     value: frameCount,
-    classification: frameControlsReady ? "success" : (frameCount > 0 ? "missing" : "empty")
+    classification: frameControlsReady
+      ? "success"
+      : (frameCount > 0 ? (frameControlsPresent ? "disabled" : "missing") : "empty")
   });
 
   logToolUiControlReady({
@@ -1558,7 +1579,9 @@ function emitSpriteEditorControlReadiness(state, options = {}) {
     requiredData: "sprite-project-and-palette-context",
     loaded: ioControlsReady,
     value: ioControlsReady ? "ready" : "not-ready",
-    classification: ioControlsReady ? "success" : "missing"
+    classification: ioControlsReady
+      ? "success"
+      : ((frameCount > 0 && paletteCount > 0) ? (ioControlsPresent ? "disabled" : "missing") : "missing")
   });
 
   logToolUiControlReady({
@@ -1576,7 +1599,7 @@ function emitSpriteEditorControlReadiness(state, options = {}) {
     sampleId,
     phase,
     cause: forceMissing ? "preset-load-failure" : "control-state-sync",
-    classification: lifecycleStable ? "success" : "lifecycle-failure"
+    classification: lifecycleStable ? "success" : "lifecycle-reset"
   });
 
   logToolUiFinalReady({
@@ -1588,7 +1611,7 @@ function emitSpriteEditorControlReadiness(state, options = {}) {
     lifecycleStable,
     classification: lifecycleStable && paletteCount > 0 && frameCount > 0 && color1 && color2 && activeColorReady && frameControlsReady && ioControlsReady && canvasReady && sourceStatusReady
       ? "success"
-      : (lifecycleStable ? "missing" : "lifecycle-failure")
+      : (lifecycleStable ? "missing" : "lifecycle-reset")
   });
 }
 

@@ -1,0 +1,215 @@
+Good stopping point — you’re in a clean state. Here’s a **tight restart plan** so you pick up exactly where you left off.
+
+---
+
+# 🚀 RESTART GUIDE (NEXT SESSION)
+
+## 1. Open workspace
+
+```powershell
+cd C:\Users\davidq\Documents\GitHub\HTML-JavaScript-Gaming
+code .
+```
+
+---
+
+## 2. Sync repo
+
+```powershell
+git status
+git pull
+```
+
+---
+
+## 3. Confirm last PR applied
+
+You should have just run:
+
+```text
+PR_10_6_20260427_05
+```
+
+This means:
+
+```text
+✅ samples → standalone tools
+✅ games → workspace launch
+✅ edit-history requirement defined
+```
+
+---
+
+## 4. Quick sanity check (2 min)
+
+Open:
+
+```text
+samples/index.html
+```
+
+Verify:
+
+```text
+samples open tools directly (no workspace)
+```
+
+Then:
+
+```text
+games/index.html
+```
+
+Verify:
+
+```text
+"Open in workspace" works
+```
+
+---
+
+## 5. Your current phase
+
+```text
+DoD: system-level complete ✅
+Next: tool-level UAT (alphabetical)
+```
+
+---
+
+# 🎯 WHAT YOU WILL DO NEXT
+
+We now move **tool-by-tool**, not random debugging.
+
+## Order (alphabetical)
+
+```text
+1. Asset Browser
+2. Sprite Editor
+3. Tilemap Studio
+4. Vector Asset Studio
+5. Vector Map Editor
+```
+
+---
+
+## 🧪 For EACH tool, check:
+
+### A. Data
+
+```text
+loads correctly
+```
+
+### B. Controls
+
+```text
+enabled (not gray)
+```
+
+### C. Selection
+
+```text
+first item auto-selected
+visible selection
+```
+
+### D. UI behavior
+
+```text
+no reset
+no flicker
+no auto-close
+```
+
+### E. Output
+
+```text
+matches sample preview
+```
+
+---
+
+# 🔴 KNOWN STARTING ISSUES (don’t rediscover)
+
+You already identified:
+
+```text
+Sprite → mismatch with sample
+Vector Asset → palette/paint/stroke disabled
+Vector Map → no default selection
+Asset Browser → empty (needs UX clarity)
+```
+
+👉 Start with these — no need to hunt.
+
+---
+
+# 🧠 KEY RULE (IMPORTANT)
+
+Do NOT:
+
+```text
+fix data
+```
+
+Only fix:
+
+```text
+tool behavior
+tool state
+tool UI
+```
+
+---
+
+# 🔧 NEXT COMMAND (WHEN YOU RETURN)
+
+Just say:
+
+```text
+continue UAT
+```
+
+I will:
+
+```text
+→ drive Asset Browser first
+→ then move tool-by-tool
+→ no skips, no guessing
+```
+
+---
+
+# 🟢 YOUR STATE
+
+You’re here:
+
+```text
+Architecture ✅
+DoD ✅
+System alignment ✅
+→ Now: clean execution
+```
+
+---
+
+# 👍 Final note
+
+Stopping here was the right call.
+
+Tomorrow you’re not “debugging” — you’re:
+
+```text
+finishing
+```
+
+---
+
+When you’re back:
+
+```text
+continue UAT
+```
+
+We’ll close this clean.

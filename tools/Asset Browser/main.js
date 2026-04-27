@@ -522,7 +522,7 @@ function emitAssetBrowserControlReadiness() {
     requiredData: "selected-approved-asset",
     loaded: hasSelection,
     value: selectedAsset ? selectedAsset.id : "none",
-    classification: hasSelection ? "success" : (approvedCount > 0 ? "missing" : "empty")
+    classification: hasSelection ? "success" : (approvedCount > 0 ? "unselected" : "empty")
   });
   logToolUiControlReady({
     toolId: "asset-browser",
@@ -531,7 +531,11 @@ function emitAssetBrowserControlReadiness() {
     requiredData: "selected-approved-asset-and-import-destination",
     loaded: importActionReady,
     value: importActionReady ? "ready" : "blocked",
-    classification: importActionReady ? "success" : (approvedCount > 0 ? "missing" : "empty")
+    classification: importActionReady
+      ? "success"
+      : (approvedCount > 0
+        ? (hasSelection ? "missing" : "unselected")
+        : "empty")
   });
   logToolUiLifecycle({
     toolId: "asset-browser",
@@ -548,7 +552,9 @@ function emitAssetBrowserControlReadiness() {
     requiredControlsReady: approvedCount > 0 && hasSelection,
     requiredOutputsReady: Boolean(String(refs.importStatusText.textContent || "").trim()),
     lifecycleStable: true,
-    classification: approvedCount > 0 && hasSelection ? "success" : approvedClassification
+    classification: approvedCount > 0
+      ? (hasSelection ? "success" : "unselected")
+      : approvedClassification
   });
 }
 
@@ -664,6 +670,10 @@ function resolveInitialSelectedAssetId() {
   const sharedId = sanitizeText(shared?.assetId);
   if (sharedId && state.assetCatalog.some((entry) => entry.id === sharedId)) {
     return sharedId;
+  }
+  const firstAssetId = sanitizeText(state.assetCatalog[0]?.id);
+  if (firstAssetId) {
+    return firstAssetId;
   }
   return "";
 }

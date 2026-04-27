@@ -19,6 +19,9 @@ const CLASSIFICATION_VALUES = Object.freeze({
   wrongShape: "wrong-shape",
   empty: "empty",
   defaulted: "defaulted",
+  disabled: "disabled",
+  unselected: "unselected",
+  lifecycleReset: "lifecycle-reset",
   stale: "stale",
   reset: "reset",
   lifecycleFailure: "lifecycle-failure",
@@ -67,12 +70,18 @@ function normalizeClassificationValue(value) {
       return CLASSIFICATION_VALUES.empty;
     case CLASSIFICATION_VALUES.defaulted:
       return CLASSIFICATION_VALUES.defaulted;
+    case CLASSIFICATION_VALUES.disabled:
+      return CLASSIFICATION_VALUES.disabled;
+    case CLASSIFICATION_VALUES.unselected:
+      return CLASSIFICATION_VALUES.unselected;
+    case CLASSIFICATION_VALUES.lifecycleReset:
+      return CLASSIFICATION_VALUES.lifecycleReset;
     case CLASSIFICATION_VALUES.stale:
       return CLASSIFICATION_VALUES.stale;
     case CLASSIFICATION_VALUES.reset:
-      return CLASSIFICATION_VALUES.reset;
+      return CLASSIFICATION_VALUES.lifecycleReset;
     case CLASSIFICATION_VALUES.lifecycleFailure:
-      return CLASSIFICATION_VALUES.lifecycleFailure;
+      return CLASSIFICATION_VALUES.lifecycleReset;
     case CLASSIFICATION_VALUES.success:
       return CLASSIFICATION_VALUES.success;
     default:
@@ -941,7 +950,7 @@ export function logToolUiFinalReady(details = {}) {
   const classification = normalizeClassificationValue(payload.classification)
     || (finalReady
       ? CLASSIFICATION_VALUES.success
-      : (lifecycleStable ? CLASSIFICATION_VALUES.missing : CLASSIFICATION_VALUES.lifecycleFailure));
+      : (lifecycleStable ? CLASSIFICATION_VALUES.missing : CLASSIFICATION_VALUES.lifecycleReset));
 
   emitToolLoadLog(TOOL_UI_PREFIXES.finalReady, {
     ...payload,

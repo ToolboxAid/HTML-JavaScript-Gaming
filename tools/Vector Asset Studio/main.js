@@ -2751,7 +2751,7 @@ function emitVectorAssetControlReadiness(sampleId = "", options = {}) {
     requiredData: "declared-paint-color",
     loaded: hasPaletteControls && hasPaint,
     value: normalizeColorValue(state.fill) || "none",
-    classification: hasPaletteControls && hasPaint ? "success" : (hasPaletteControls ? "missing" : "empty")
+    classification: hasPaletteControls && hasPaint ? "success" : (hasPaletteControls ? "unselected" : "empty")
   });
 
   logToolUiControlReady({
@@ -2761,7 +2761,7 @@ function emitVectorAssetControlReadiness(sampleId = "", options = {}) {
     requiredData: "declared-stroke-color",
     loaded: hasPaletteControls && hasStroke,
     value: normalizeColorValue(state.stroke) || "none",
-    classification: hasPaletteControls && hasStroke ? "success" : (hasPaletteControls ? "missing" : "empty")
+    classification: hasPaletteControls && hasStroke ? "success" : (hasPaletteControls ? "unselected" : "empty")
   });
 
   logToolUiLifecycle({
@@ -2769,7 +2769,7 @@ function emitVectorAssetControlReadiness(sampleId = "", options = {}) {
     sampleId,
     phase,
     cause: forceMissing ? "preset-load-failure" : "preset-load",
-    classification: lifecycleStable ? "success" : "lifecycle-failure"
+    classification: lifecycleStable ? "success" : "lifecycle-reset"
   });
 
   logToolUiFinalReady({
@@ -2781,7 +2781,7 @@ function emitVectorAssetControlReadiness(sampleId = "", options = {}) {
     lifecycleStable,
     classification: lifecycleStable && hasSvgCanvas && hasPaletteControls && hasPaint && hasStroke
       ? "success"
-      : (lifecycleStable ? "missing" : "lifecycle-failure")
+      : (lifecycleStable ? "missing" : "lifecycle-reset")
   });
 }
 

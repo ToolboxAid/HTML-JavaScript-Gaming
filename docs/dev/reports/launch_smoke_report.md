@@ -1,17 +1,20 @@
 # Launch Smoke Report
 
-Generated: 2026-04-27T22:24:41.934Z
+Generated: 2026-04-27T22:54:28.975Z
 
-Filters: games=false, samples=true, tools=false, sampleRange=0219-0227
+Filters: games=true, samples=false, tools=false, sampleRange=all
 
 | Status | Type | Label | Path | Notes | Steps |
 | --- | --- | --- | --- | --- | --- |
-| PASS | sample | 0219 | samples\phase-02\0219\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
-| PASS | sample | 0220 | samples\phase-02\0220\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
-| PASS | sample | 0221 | samples\phase-02\0221\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
-| PASS | sample | 0222 | samples\phase-02\0222\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
-| PASS | sample | 0223 | samples\phase-02\0223\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
-| PASS | sample | 0224 | samples\phase-02\0224\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
-| PASS | sample | 0225 | samples\phase-02\0225\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
-| PASS | sample | 0226 | samples\phase-02\0226\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
-| PASS | sample | 0227 | samples\phase-02\0227\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | game | _template | games\_template\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | game | AITargetDummy | games\AITargetDummy\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | game | Asteroids | games\Asteroids\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | game | Bouncing-ball | games\Bouncing-ball\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | game | Breakout | games\Breakout\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | game | GravityWell | games\GravityWell\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | game | Pacman | games\Pacman\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | game | Pong | games\Pong\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | game | SolarSystem | games\SolarSystem\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | game | SpaceDuel | games\SpaceDuel\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | game | SpaceInvaders | games\SpaceInvaders\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | game | vector-arcade-sample | games\vector-arcade-sample\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |

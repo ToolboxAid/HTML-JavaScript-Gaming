@@ -312,7 +312,13 @@ export class VectorMapEditorApp {
       loaded: hasSelectedObject && hasEntityControls,
       value: selectedObject?.name || "none",
       "default-selection-applied": defaultSelectionApplied,
-      classification: hasSelectedObject && hasEntityControls ? "success" : (hasDocument ? "empty" : "missing")
+      classification: hasSelectedObject && hasEntityControls
+        ? "success"
+        : (!hasDocument
+          ? "missing"
+          : (objectCount === 0
+            ? "empty"
+            : (hasSelectedObject ? "disabled" : "unselected")))
     });
 
     logToolUiLifecycle({
@@ -321,7 +327,7 @@ export class VectorMapEditorApp {
       phase,
       cause: forceMissing ? "preset-load-failure" : "preset-load",
       "default-selection-applied": defaultSelectionApplied,
-      classification: lifecycleStable ? "success" : "lifecycle-failure"
+      classification: lifecycleStable ? "success" : "lifecycle-reset"
     });
 
     logToolUiFinalReady({
@@ -333,7 +339,7 @@ export class VectorMapEditorApp {
       lifecycleStable,
       classification: lifecycleStable && hasCanvas && hasDocument && hasCanvasRender && ((objectCount === 0) || (hasObjectList && hasSelectedObject && hasEntityControls))
         ? "success"
-        : (lifecycleStable ? "missing" : "lifecycle-failure")
+        : (lifecycleStable ? "missing" : "lifecycle-reset")
     });
   }
 
