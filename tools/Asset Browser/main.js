@@ -20,7 +20,6 @@ const APPROVED_DESTINATIONS = Object.freeze({
 
 const GAME_ASSET_CATALOG_SCHEMA = "html-js-gaming.game-asset-catalog";
 const GAME_ASSET_CATALOG_VERSION = 1;
-const DEFAULT_GAME_ASSET_CATALOG_FILENAME = "workspace.asset-catalog.json";
 
 const refs = {
   categoryFilter: document.getElementById("assetCategoryFilter"),
@@ -106,43 +105,12 @@ function humanizeAssetId(assetId) {
   return normalized ? toTitleCase(normalized) : "Shared Asset";
 }
 
-function deriveCatalogPathFromGameHref(gameHref) {
-  const href = normalizeLocalPath(gameHref);
-  if (!href || !href.startsWith("/games/")) {
+function normalizeExplicitCatalogPath(pathValue) {
+  const normalized = normalizeLocalPath(pathValue);
+  if (!normalized || !normalized.toLowerCase().endsWith(".json")) {
     return "";
   }
-  if (href.endsWith("/index.html")) {
-    return `${href.slice(0, -"/index.html".length)}/assets/${DEFAULT_GAME_ASSET_CATALOG_FILENAME}`;
-  }
-  if (href.endsWith("/")) {
-    return `${href}assets/${DEFAULT_GAME_ASSET_CATALOG_FILENAME}`;
-  }
-  return "";
-}
-
-function deriveCatalogPathFromAssetPath(assetPath) {
-  const normalized = normalizeLocalPath(assetPath);
-  if (!normalized) {
-    return "";
-  }
-  const marker = "/assets/";
-  const markerIndex = normalized.toLowerCase().indexOf(marker);
-  if (markerIndex <= 0) {
-    return "";
-  }
-  const gameRoot = normalized.slice(0, markerIndex);
-  if (!gameRoot.toLowerCase().startsWith("/games/")) {
-    return "";
-  }
-  return `${gameRoot}/assets/${DEFAULT_GAME_ASSET_CATALOG_FILENAME}`;
-}
-
-function deriveCatalogPathFromGameId(gameId) {
-  const safeGameId = sanitizeText(gameId);
-  if (!safeGameId) {
-    return "";
-  }
-  return `/games/${safeGameId}/assets/${DEFAULT_GAME_ASSET_CATALOG_FILENAME}`;
+  return normalized;
 }
 
 function readActiveProjectManifest() {
@@ -161,21 +129,24 @@ function readActiveProjectManifest() {
 function collectCatalogPathCandidates() {
   const candidates = new Set();
   const params = new URLSearchParams(window.location.search);
-  const gameHref = params.get("gameHref") || "";
-  const gameId = params.get("gameId") || params.get("game") || "";
   const directCatalog = params.get("assetCatalogPath") || "";
   const sharedAsset = readSharedAssetHandoff();
   const manifest = readActiveProjectManifest();
   const manifestAsset = manifest?.sharedReferences?.asset || null;
   const manifestPalette = manifest?.sharedReferences?.palette || null;
+  const manifestToolState = manifest?.tools && typeof manifest.tools === "object"
+    ? manifest.tools["asset-browser"]
+    : null;
 
   [
-    normalizeLocalPath(directCatalog),
-    deriveCatalogPathFromGameHref(gameHref),
-    deriveCatalogPathFromGameId(gameId),
-    deriveCatalogPathFromAssetPath(sharedAsset?.metadata?.sourcePath || sharedAsset?.sourcePath || ""),
-    deriveCatalogPathFromAssetPath(manifestAsset?.metadata?.sourcePath || manifestAsset?.sourcePath || ""),
-    deriveCatalogPathFromAssetPath(manifestPalette?.metadata?.sourcePath || manifestPalette?.sourcePath || "")
+    normalizeExplicitCatalogPath(directCatalog),
+    normalizeExplicitCatalogPath(sharedAsset?.metadata?.assetCatalogPath || sharedAsset?.assetCatalogPath || ""),
+    normalizeExplicitCatalogPath(manifestAsset?.metadata?.assetCatalogPath || manifestAsset?.assetCatalogPath || ""),
+    normalizeExplicitCatalogPath(manifestPalette?.metadata?.assetCatalogPath || manifestPalette?.assetCatalogPath || ""),
+    normalizeExplicitCatalogPath(manifestToolState?.assetCatalogPath || ""),
+    normalizeExplicitCatalogPath(manifestToolState?.catalogPath || ""),
+    normalizeExplicitCatalogPath(manifestAsset?.metadata?.sourcePath || manifestAsset?.sourcePath || ""),
+    normalizeExplicitCatalogPath(manifestPalette?.metadata?.sourcePath || manifestPalette?.sourcePath || "")
   ].forEach((candidate) => {
     if (candidate) {
       candidates.add(candidate);
@@ -774,4 +745,3 @@ registerToolBootContract("asset-browser", {
 });
 
 bootAssetBrowser();
-

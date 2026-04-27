@@ -265,20 +265,6 @@ function toDownloadName(gameId) {
   return `${normalized || "game"}-skin.json`;
 }
 
-function deriveCatalogPathFromGameHref(gameHref) {
-  const href = normalizeText(gameHref).replace(/\\/g, "/");
-  if (!href || !href.startsWith("/games/")) {
-    return "";
-  }
-  if (href.endsWith("/index.html")) {
-    return `${href.slice(0, -"/index.html".length)}/assets/workspace.asset-catalog.json`;
-  }
-  if (href.endsWith("/")) {
-    return `${href}assets/workspace.asset-catalog.json`;
-  }
-  return "";
-}
-
 function downloadTextFile(filename, contents) {
   const blob = new Blob([contents], { type: "application/json" });
   const objectUrl = URL.createObjectURL(blob);
@@ -1447,8 +1433,7 @@ async function loadActiveSkinForSelectedGame() {
   try {
     result = await loadGameSkin({
       gameId: game.id,
-      expectedSchema: game.expectedSchema,
-      catalogPath: deriveCatalogPathFromGameHref(game.gameHref)
+      expectedSchema: game.expectedSchema
     });
   } catch (error) {
     setStatus(`Skin load failed: ${error instanceof Error ? error.message : "unknown error"}`);
@@ -1755,7 +1740,7 @@ function extractPresetPayload(rawPreset) {
 
 async function loadPresetFromQuery() {
   const searchParams = new URLSearchParams(window.location.search);
-  const requestedGameId = normalizeText(searchParams.get("gameId") || searchParams.get("game"));
+  const requestedGameId = normalizeText(searchParams.get("gameId"));
   const samplePresetPath = normalizeSamplePresetPath(searchParams.get("samplePresetPath"));
   if (!samplePresetPath) {
     return {

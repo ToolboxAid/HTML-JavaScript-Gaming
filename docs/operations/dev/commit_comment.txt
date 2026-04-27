@@ -1,1 +1,11 @@
-PR 10.4: remove remaining tool sample dropdowns
+BUILD_PR_LEVEL_10_5_NO_HIDDEN_TOOL_COUPLING_VALIDATION
+
+- Removed hidden fallback/sample/demo data paths from tools
+- Removed hardcoded JSON asset paths
+- Enforced manifest-input-only tool behavior
+- Added regression coverage for safe empty state and manifest input rendering
+
+PR Details:
+- Final Phase 10 tool purity gate
+- No validators
+- No start_of_day changes

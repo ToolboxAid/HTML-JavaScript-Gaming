@@ -56,7 +56,8 @@ function readLaunchContextFromQuery() {
   return {
     gameId: normalizeText(searchParams.get("gameId")),
     gameTitle: normalizeText(searchParams.get("gameTitle")),
-    gameHref: normalizeText(searchParams.get("gameHref"))
+    gameHref: normalizeText(searchParams.get("gameHref")),
+    assetCatalogPath: normalizeCatalogPath(searchParams.get("assetCatalogPath"))
   };
 }
 
@@ -282,30 +283,36 @@ function normalizeCatalogPath(pathValue) {
   return value;
 }
 
-function buildCatalogPathCandidates(gameId, manifest) {
+function normalizeExplicitCatalogPath(pathValue) {
+  const normalizedPath = normalizeCatalogPath(pathValue);
+  if (!normalizedPath || !normalizedPath.toLowerCase().endsWith(".json")) {
+    return "";
+  }
+  return normalizedPath;
+}
+
+function buildCatalogPathCandidates(manifest) {
   const candidates = new Set();
   const launchContext = readLaunchContextFromQuery();
-  const launchGameHref = normalizeCatalogPath(launchContext.gameHref);
-  if (launchGameHref && launchGameHref.startsWith("/games/")) {
-    if (launchGameHref.endsWith("/index.html")) {
-      candidates.add(`${launchGameHref.slice(0, -"/index.html".length)}/assets/workspace.asset-catalog.json`);
-    } else if (launchGameHref.endsWith("/")) {
-      candidates.add(`${launchGameHref}assets/workspace.asset-catalog.json`);
-    }
-  }
+  const manifestAsset = manifest?.sharedReferences?.asset || null;
+  const manifestPalette = manifest?.sharedReferences?.palette || null;
+  const manifestToolState = manifest?.tools && typeof manifest.tools === "object"
+    ? manifest.tools["asset-pipeline-tool"]
+    : null;
 
-  const assetSourcePath = normalizeCatalogPath(manifest?.sharedReferences?.asset?.sourcePath || manifest?.sharedReferences?.asset?.metadata?.sourcePath);
-  if (assetSourcePath.startsWith("/games/")) {
-    const marker = "/assets/";
-    const markerIndex = assetSourcePath.toLowerCase().indexOf(marker);
-    if (markerIndex > 0) {
-      candidates.add(`${assetSourcePath.slice(0, markerIndex)}/assets/workspace.asset-catalog.json`);
+  [
+    normalizeExplicitCatalogPath(launchContext.assetCatalogPath),
+    normalizeExplicitCatalogPath(manifestAsset?.metadata?.assetCatalogPath || manifestAsset?.assetCatalogPath || ""),
+    normalizeExplicitCatalogPath(manifestPalette?.metadata?.assetCatalogPath || manifestPalette?.assetCatalogPath || ""),
+    normalizeExplicitCatalogPath(manifestToolState?.assetCatalogPath || ""),
+    normalizeExplicitCatalogPath(manifestToolState?.catalogPath || ""),
+    normalizeExplicitCatalogPath(manifestAsset?.metadata?.sourcePath || manifestAsset?.sourcePath || ""),
+    normalizeExplicitCatalogPath(manifestPalette?.metadata?.sourcePath || manifestPalette?.sourcePath || "")
+  ].forEach((candidatePath) => {
+    if (candidatePath) {
+      candidates.add(candidatePath);
     }
-  }
-
-  const normalizedGameId = normalizeAssetId(gameId, "game");
-  candidates.add(`/games/${normalizedGameId}/assets/workspace.asset-catalog.json`);
-  candidates.add(`/games/${gameId}/assets/workspace.asset-catalog.json`);
+  });
 
   return Array.from(candidates).filter(Boolean);
 }
@@ -373,7 +380,7 @@ function appendDomainRecordsFromCatalogEntries(domainInputs, catalogAssets) {
 }
 
 async function readWorkspaceAssetCatalog(gameId, manifest) {
-  const candidates = buildCatalogPathCandidates(gameId, manifest);
+  const candidates = buildCatalogPathCandidates(manifest);
   for (const pathValue of candidates) {
     try {
       const response = await fetch(pathValue, { cache: "no-store" });
