@@ -1,7 +1,7 @@
-Define King of the Iceberg layout contract
+Close tools UAT validation loop
 
-- Add minimal first-playable layout contract
-- Base contract on validated tool workflow export
-- Define platform, top-control, water, and visual roles
-- Add validation rules and example layout JSON
-- Keep scope docs-only with no gameplay implementation
+- Summarize PASS/FAIL status for four target tools
+- Review latest UAT evidence and failed-case rerun results
+- Confirm no King of the Iceberg work advanced
+- Confirm no runtime, sample, or start_of_day changes
+- Document remaining tool issues, if any
