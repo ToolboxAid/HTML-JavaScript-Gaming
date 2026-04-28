@@ -1405,7 +1405,7 @@ function renderWorkspaceSummary(currentTool) {
         <strong class="tools-platform-frame__project-name">${escapeHtml(workspaceName)}${escapeHtml(dirtyMark)}</strong>
         <span class="tools-platform-frame__project-meta">${escapeHtml(readiness)}</span>
       </div>       
-      <section class="tool-host-pager" aria-label="Workspace tool pager" data-tool-host-pager><button type="button" class="tool-host-pager__button" data-tool-host-prev>[PREV]</button><span class="tool-host-pager__name" data-tool-host-current-label>${escapeHtml(currentTool?.displayName || "Tool")}</span><button type="button" class="tool-host-pager__button" data-tool-host-next>[NEXT]</button></section>
+      <section class="tool-host-pager" aria-label="Workspace tool pager" data-tool-host-pager><button type="button" class="tool-host-pager__button" data-tool-host-prev>PREV</button><span class="tool-host-pager__name" data-tool-host-current-label>${escapeHtml(currentTool?.displayName || "Tool")}</span><button type="button" class="tool-host-pager__button" data-tool-host-next>NEXT</button></section>
     </div>
   `;
 }

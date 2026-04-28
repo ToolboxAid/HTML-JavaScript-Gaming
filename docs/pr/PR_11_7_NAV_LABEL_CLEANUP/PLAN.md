@@ -1,0 +1,1 @@
+Remove brackets from PREV/NEXT labels for cleaner UI.

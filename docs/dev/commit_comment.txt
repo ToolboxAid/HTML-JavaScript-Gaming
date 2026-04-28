@@ -1,1 +1,1 @@
-Increase PREV/NEXT size and padding - PR 11.6
+Remove brackets from PREV/NEXT labels - PR 11.7

@@ -1,0 +1,1 @@
+Update labels PREV/NEXT (no brackets). CSS/markup only.

@@ -1,0 +1,1 @@
+Cleaner navigation labels applied.
