@@ -1,17 +1,54 @@
-# CODEX COMMANDS
+MODEL: GPT-5.3-codex
+REASONING: low
 
-model: gpt-5.3-codex
-reasoning: medium
+PR purpose:
+Remove future/advisory import hint fields that are not required for current tool operation.
 
-Apply PR_10_24_SAMPLE_JSON_DESTINATION_NORMALIZATION.
+User decision:
+If it is not required now, remove it. Do not keep future intent fields like importDestination/importName that point to non-existing files/folders.
 
-Required:
-- Check all JSON files under samples/ for misleading destination hints.
-- Replace any sample-owned `games/<project>/...` destination with sample-local paths.
-- Remove/replace sample destination hints that point to nonexistent `config/` folders.
-- Specifically fix sample 1413 Asset Browser / Import Hub suggested destination from `games/<project>/config/` to a valid sample-local path.
-- Preserve asset catalogs, source paths, IDs, schemas, and tool identities.
-- Do not modify game-owned JSON under games/.
-- Do not modify start_of_day folders.
-- Add validation report at docs/dev/reports/PR_10_24_SAMPLE_JSON_DESTINATION_NORMALIZATION_report.md.
-- Return ZIP artifact at tmp/PR_10_24_SAMPLE_JSON_DESTINATION_NORMALIZATION_delta.zip.
+Target fields:
+- importDestination
+- importName
+- destinationFolder
+- future-only import plan defaults
+- fields only used to prefill advisory/manual import plans
+
+Scope:
+- Asset Browser metadata
+- Import Hub metadata
+- tool launch presets
+- sample tool manifests
+- active-project manifest tool sections
+- docs explaining these fields as expected behavior
+
+Do not modify:
+- KOTI gameplay
+- runtime game engine files
+- start_of_day folders
+
+Rules:
+- Remove fields if not required for current load/display/edit/validate/export.
+- Do not replace with another future hint.
+- Do not introduce fallback data.
+- If a destination/name is required for an actual import action, require it at action time with validation.
+- Asset Browser 0204 and 1505 must still show clear empty/missing/invalid state.
+
+Validation:
+- rg "importDestination|importName|destinationFolder" tools samples docs
+- Explain remaining hits.
+- node --check changed JS files only.
+- Target browser validation for Asset Browser 0204 and 1505.
+- Do not run full sample suite.
+
+Create report:
+docs/dev/reports/PR_tool_remove_future_import_hints_report.md
+
+Report must include:
+- PASS/FAIL
+- changed files
+- fields removed
+- remaining search hits and why they remain
+- validation commands/results
+- confirmation no start_of_day changes
+- confirmation no runtime engine changes

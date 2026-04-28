@@ -599,17 +599,17 @@ function findPresetFilePathForSample(sampleId, toolId) {
   return "";
 }
 
-async function runTargetedAssetBrowserAssertion(page, url, expectedImportName) {
+async function runTargetedAssetBrowserAssertion(page, url) {
   await page.navigate(url);
   let status = null;
   const started = Date.now();
   while ((Date.now() - started) < 9000) {
     status = await page.evaluate(`(() => {
       const statusText = String(document.getElementById("importStatusText")?.textContent || "").trim();
-      const importName = String(document.getElementById("importNameInput")?.value || "").trim();
       const selectedCategory = String(document.getElementById("importCategorySelect")?.value || "").trim();
       const selectedDestination = String(document.getElementById("importDestinationSelect")?.value || "").trim();
-      return { statusText, importName, selectedCategory, selectedDestination };
+      const destinationOptionCount = Number(document.getElementById("importDestinationSelect")?.options?.length || 0);
+      return { statusText, selectedCategory, selectedDestination, destinationOptionCount };
     })()`);
     if (/Loaded preset/i.test(status.statusText) || /Preset load failed/i.test(status.statusText)) {
       break;
@@ -619,9 +619,9 @@ async function runTargetedAssetBrowserAssertion(page, url, expectedImportName) {
 
   assert.match(status.statusText, /Loaded preset/i, "Asset Browser did not report preset load.");
   assert.doesNotMatch(status.statusText, /Preset load failed/i, "Asset Browser reported preset load failure.");
-  assert.equal(status.importName, expectedImportName, "Asset Browser importName did not bind from preset payload.");
   assert.ok(status.selectedCategory, "Asset Browser selected category is empty.");
-  assert.ok(status.selectedDestination, "Asset Browser selected destination is empty.");
+  assert.equal(status.selectedDestination, "", "Asset Browser destination should require explicit action-time selection.");
+  assert.ok(status.destinationOptionCount > 1, "Asset Browser destination options were not populated.");
   return status;
 }
 
@@ -1193,9 +1193,7 @@ export async function run() {
     for (const testCase of targetedCases) {
       const url = buildStandaloneToolUrl(baseUrl, testCase.tool.entryPoint, testCase.row);
       if (testCase.toolId === "asset-browser") {
-        const expectedImportName = String(testCase.presetPayload?.config?.assetBrowserPreset?.importName || "").trim();
-        assert.ok(expectedImportName, `Missing expected importName in ${toPosixPath(path.relative(repoRoot, testCase.presetFilePath))}.`);
-        const result = await runTargetedAssetBrowserAssertion(page, url, expectedImportName);
+        const result = await runTargetedAssetBrowserAssertion(page, url);
         targetedResults.push({ sampleId: testCase.sampleId, toolId: testCase.toolId, ...result });
         continue;
       }

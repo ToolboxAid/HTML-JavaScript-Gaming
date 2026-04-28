@@ -485,8 +485,7 @@
       "selectedCategory": "All",
       "search": "template",
       "selectedAssetId": "asset-vector-player",
-      "importCategory": "Vector Assets",
-      "importName": "starter-import.vector.json"
+      "importCategory": "Vector Assets"
     },
     "palette-browser": {
       "search": "vector",

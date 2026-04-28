@@ -25,13 +25,34 @@ import {
 } from "../shared/unifiedToolUxContract.js";
 
 const APPROVED_DESTINATIONS = Object.freeze({
-  "Vector Assets": "games/<project>/assets/vectors/",
-  "Sprite Projects": "games/<project>/assets/sprites/",
-  "Tilemaps": "games/<project>/assets/tilemaps/",
-  "Parallax Scenes": "games/<project>/assets/parallax/",
-  "Palettes": "games/<project>/assets/palettes/",
-  "Skins": "games/<project>/assets/skins/",
-  "Workflow JSON": "games/<project>/config/"
+  "Vector Assets": Object.freeze({
+    id: "vector-assets",
+    label: "Vector Assets catalog (explicit tool action)"
+  }),
+  "Sprite Projects": Object.freeze({
+    id: "sprite-projects",
+    label: "Sprite Projects catalog (explicit tool action)"
+  }),
+  "Tilemaps": Object.freeze({
+    id: "tilemaps",
+    label: "Tilemaps catalog (explicit tool action)"
+  }),
+  "Parallax Scenes": Object.freeze({
+    id: "parallax-scenes",
+    label: "Parallax Scenes catalog (explicit tool action)"
+  }),
+  "Palettes": Object.freeze({
+    id: "palettes",
+    label: "Palettes catalog (explicit tool action)"
+  }),
+  "Skins": Object.freeze({
+    id: "skins",
+    label: "Skins catalog (explicit tool action)"
+  }),
+  "Workflow JSON": Object.freeze({
+    id: "workflow-json",
+    label: "Workflow JSON catalog (explicit tool action)"
+  })
 });
 
 const GAME_ASSET_CATALOG_SCHEMA = "html-js-gaming.game-asset-catalog";
@@ -1100,12 +1121,6 @@ function applyAssetBrowserPreset(preset) {
     refs.importCategorySelect.value = preset.importCategory;
     populateDestinationOptions(preset.importCategory);
   }
-  if (typeof preset.importDestination === "string") {
-    refs.importDestinationSelect.value = preset.importDestination;
-  }
-  if (typeof preset.importName === "string") {
-    refs.importNameInput.value = preset.importName;
-  }
   if (state.assetCatalog.length > 0 && getVisibleAssets().length <= 0) {
     state.selectedCategory = "All";
     state.search = "";
@@ -1243,7 +1258,7 @@ function applyLaunchContext() {
     : "Shared Tools Surface";
 
   refs.launchContextText.textContent = context.view === "import"
-    ? `Import Assets launched from ${sourceLabel}. Generated plans stay non-destructive and point to shared destination folders.`
+    ? `Import Assets launched from ${sourceLabel}. Generated plans stay non-destructive and require explicit destination selection.`
     : `Browse Assets launched from ${sourceLabel}. Choose a shared asset reference and publish it back to the active tool.`;
 
   if (context.view === "import") {
@@ -1290,9 +1305,14 @@ function populateDestinationOptions(category) {
   const categories = category && APPROVED_DESTINATIONS[category]
     ? [category]
     : Object.keys(APPROVED_DESTINATIONS);
-  refs.importDestinationSelect.innerHTML = categories
-    .map((name) => `<option value="${APPROVED_DESTINATIONS[name]}">${APPROVED_DESTINATIONS[name]}</option>`)
+  const destinationOptions = categories
+    .map((name) => {
+      const option = APPROVED_DESTINATIONS[name];
+      return `<option value="${option.id}">${option.label}</option>`;
+    })
     .join("");
+  refs.importDestinationSelect.innerHTML = `<option value="">Select destination for this import action</option>${destinationOptions}`;
+  refs.importDestinationSelect.value = "";
 }
 
 function renderAssetList() {
@@ -1326,7 +1346,7 @@ async function renderPreview() {
   }
 
   refs.previewTitle.textContent = selectedAsset.label;
-  const suggestedDestination = APPROVED_DESTINATIONS[selectedAsset.category] || "games/<project>/assets/";
+  const suggestedDestination = APPROVED_DESTINATIONS[selectedAsset.category]?.label || "Destination selected during import action";
   refs.previewMeta.textContent = `${selectedAsset.category} | ${selectedAsset.path} | Suggested destination: ${suggestedDestination}`;
 
   const extension = getPathExtension(selectedAsset.path);
@@ -1400,14 +1420,17 @@ function buildImportPlan() {
   }
 
   const importCategory = refs.importCategorySelect.value || inferCategoryFromFileName(file.name);
-  const destinationFolder = refs.importDestinationSelect.value || APPROVED_DESTINATIONS[importCategory];
-  const normalizedName = normalizeImportName(refs.importNameInput.value || file.name);
+  const selectedDestination = String(refs.importDestinationSelect.value || "").trim();
+  const normalizedName = normalizeImportName(refs.importNameInput.value || "");
   const validName = /^[a-z0-9][a-z0-9._-]*$/.test(normalizedName);
   const conflicts = state.assetCatalog.filter((entry) => entry.category === importCategory)
     .map((entry) => entry.path.split("/").pop()?.toLowerCase() || "")
     .filter((name) => name === normalizedName);
 
   const warnings = [];
+  if (!selectedDestination) {
+    warnings.push("Import destination is required at action time.");
+  }
   if (!validName) {
     warnings.push("Import name must be lowercase and use only a-z, 0-9, dot, underscore, or dash.");
   }
@@ -1421,8 +1444,8 @@ function buildImportPlan() {
     sourceFileSize: file.size,
     sourceMimeType: file.type || "application/octet-stream",
     importCategory,
-    destinationFolder,
-    proposedFileName: normalizedName,
+    destinationId: selectedDestination || null,
+    proposedFileName: normalizedName || null,
     conflictDetected: conflicts.length > 0,
     nonDestructive: true,
     status: warnings.length === 0 ? "ready" : "needs-attention"
@@ -1606,9 +1629,7 @@ const assetBrowserApi = {
       selectedCategory: state.selectedCategory,
       search: state.search,
       selectedAssetId: state.selectedAssetId,
-      importCategory: refs.importCategorySelect.value,
-      importDestination: refs.importDestinationSelect.value,
-      importName: refs.importNameInput.value
+      importCategory: refs.importCategorySelect.value
     };
   },
   applyProjectState(snapshot) {
@@ -1619,8 +1640,6 @@ const assetBrowserApi = {
     refs.searchInput.value = state.search;
     refs.importCategorySelect.value = snapshot?.importCategory || refs.importCategorySelect.value;
     populateDestinationOptions(refs.importCategorySelect.value);
-    refs.importDestinationSelect.value = snapshot?.importDestination || refs.importDestinationSelect.value;
-    refs.importNameInput.value = typeof snapshot?.importName === "string" ? snapshot.importName : "";
     renderAssetList();
     renderPreview();
     renderImportPlan();

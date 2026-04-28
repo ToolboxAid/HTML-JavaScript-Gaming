@@ -38,9 +38,7 @@
       "selectedCategory": "Vector Assets",
       "selectedAssetId": "sample-0204-registry-node",
       "search": "0204",
-      "importCategory": "Workflow JSON",
-      "importDestination": "/samples/phase-02/0204/assets/",
-      "importName": "sample-0204-import.workflow.json"
+      "importCategory": "Workflow JSON"
     }
   }
 }

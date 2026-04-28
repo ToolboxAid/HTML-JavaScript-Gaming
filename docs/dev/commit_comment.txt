@@ -1,1 +1,6 @@
-Normalize sample JSON destination hints to sample-local paths - PR 10.24
+Remove future-only import hint fields
+
+- Remove non-required importDestination/importName-style defaults
+- Stop presenting future paths or filenames as expected tool data
+- Keep Asset Browser states explicit without silent fallback
+- Require import destinations only at actual import action time
