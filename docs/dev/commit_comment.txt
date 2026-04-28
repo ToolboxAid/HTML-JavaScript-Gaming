@@ -1,7 +1,7 @@
-Run interactive UAT on stabilized tools
+Validate baseline tool layout workflow
 
-- Validate Vector Map Editor behavior
-- Validate paint/stroke interactions
-- Validate State Inspector JSON handling
-- Confirm header UX consistency
-- Capture issues without modifying behavior
+- Verify Vector Map Editor can represent fragmented platform layout
+- Confirm explicit selection and no-selection behavior
+- Confirm layout save/export path can be inspected
+- Sanity-check asset, sprite, and state tools after stabilization
+- Document workflow findings for first King of the Iceberg layout

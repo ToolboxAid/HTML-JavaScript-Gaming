@@ -48,6 +48,9 @@ const ALLOWED_IMPORT_TAGS = new Set([
   "title",
   "desc"
 ]);
+const SAMPLE_METADATA_MANIFEST_PATH = "/samples/metadata/samples.index.metadata.json";
+const VECTOR_ASSET_TOOL_ID = "vector-asset-studio";
+let sampleMetadataManifestPromise = null;
 
 function normalizeSamplePresetPath(pathValue) {
   if (typeof pathValue !== "string") {
@@ -76,6 +79,110 @@ function buildPresetLoadedStatus(sampleId, samplePresetPath) {
   }
   const normalizedPath = typeof samplePresetPath === "string" ? samplePresetPath.trim() : "";
   return normalizedPath ? `Loaded preset from ${normalizedPath}.` : "Loaded preset.";
+}
+
+function normalizeSampleId(value) {
+  return typeof value === "string" ? value.trim() : "";
+}
+
+function normalizeToolId(value) {
+  return typeof value === "string" ? value.trim().toLowerCase() : "";
+}
+
+async function loadSampleMetadataManifest() {
+  if (!sampleMetadataManifestPromise) {
+    sampleMetadataManifestPromise = (async () => {
+      const response = await fetch(SAMPLE_METADATA_MANIFEST_PATH, { cache: "no-store" });
+      if (!response.ok) {
+        throw new Error(`Sample metadata request failed (${response.status}).`);
+      }
+      const parsed = await response.json();
+      if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) {
+        throw new Error("Sample metadata payload is not an object.");
+      }
+      const samples = Array.isArray(parsed.samples) ? parsed.samples : [];
+      if (samples.length === 0) {
+        throw new Error("Sample metadata payload did not include any samples.");
+      }
+      return samples;
+    })().catch((error) => {
+      sampleMetadataManifestPromise = null;
+      throw error;
+    });
+  }
+  return sampleMetadataManifestPromise;
+}
+
+function findVectorAssetPresetMapping(samples, sampleId, samplePresetPath) {
+  const normalizedSampleId = normalizeSampleId(sampleId);
+  const normalizedPresetPath = normalizeSamplePresetPath(samplePresetPath);
+  const sampleCandidates = normalizedSampleId
+    ? samples.filter((entry) => normalizeSampleId(entry?.id) === normalizedSampleId)
+    : samples;
+
+  for (const sampleEntry of sampleCandidates) {
+    const mappings = Array.isArray(sampleEntry?.roundtripToolPresets)
+      ? sampleEntry.roundtripToolPresets
+      : [];
+    const vectorMappings = mappings.filter((entry) => normalizeToolId(entry?.toolId) === VECTOR_ASSET_TOOL_ID);
+    if (vectorMappings.length === 0) {
+      continue;
+    }
+    if (normalizedPresetPath) {
+      const exact = vectorMappings.find((entry) => normalizeSamplePresetPath(entry?.presetPath) === normalizedPresetPath);
+      if (exact) {
+        return exact;
+      }
+      continue;
+    }
+    return vectorMappings[0];
+  }
+  return null;
+}
+
+async function resolveVectorAssetPresetInput(sampleId, samplePresetPath) {
+  const normalizedQueryPath = normalizeSamplePresetPath(samplePresetPath);
+  if (normalizedQueryPath) {
+    return {
+      path: normalizedQueryPath,
+      pathSource: "tool-input:query.samplePresetPath",
+      error: ""
+    };
+  }
+
+  if (!normalizeSampleId(sampleId)) {
+    return {
+      path: "",
+      pathSource: "tool-input:missing.samplePresetPath",
+      error: "Required samplePresetPath input is missing."
+    };
+  }
+
+  let samples = [];
+  try {
+    samples = await loadSampleMetadataManifest();
+  } catch (error) {
+    return {
+      path: "",
+      pathSource: "tool-input:missing.samplePresetPath",
+      error: error instanceof Error ? `Sample manifest lookup failed: ${error.message}` : "Sample manifest lookup failed."
+    };
+  }
+
+  const mapping = findVectorAssetPresetMapping(samples, sampleId, samplePresetPath);
+  const presetPath = normalizeSamplePresetPath(mapping?.presetPath);
+  if (!presetPath) {
+    return {
+      path: "",
+      pathSource: "tool-input:missing.samplePresetPath",
+      error: "Sample manifest did not define vector-asset-studio presetPath for this sample."
+    };
+  }
+  return {
+    path: presetPath,
+    pathSource: "tool-input:manifest.roundtripToolPresets.presetPath",
+    error: ""
+  };
 }
 
 const state = {
@@ -180,6 +287,18 @@ function round2(value) {
 
 function setStatus(text) {
   refs.statusText.textContent = text;
+  if (refs.statusText instanceof HTMLElement) {
+    const normalized = typeof text === "string" ? text.trim().toLowerCase() : "";
+    const isErrorLike = normalized.includes("failed")
+      || normalized.includes("error")
+      || normalized.includes("missing")
+      || normalized.includes("invalid");
+    refs.statusText.dataset.statusKind = isErrorLike ? "error" : "info";
+  }
+}
+
+function hasErrorStatus() {
+  return refs.statusText instanceof HTMLElement && refs.statusText.dataset.statusKind === "error";
 }
 
 const DRAW_TOOL_SET = new Set(["rect", "ellipse", "line", "polyline", "path"]);
@@ -2652,6 +2771,55 @@ function registerPaletteFromPresetEditorOptions(editorOptions, sampleId = "") {
   return true;
 }
 
+function collectDrawablePaletteEntriesFromLoadedSvg() {
+  const seen = new Set();
+  const entries = [];
+  const pushColor = (value) => {
+    const normalized = normalizeColorValue(value);
+    if (!normalized || seen.has(normalized)) {
+      return;
+    }
+    seen.add(normalized);
+    entries.push({
+      symbol: `d${String(entries.length + 1).padStart(2, "0")}`,
+      hex: normalized,
+      name: `Derived ${entries.length + 1}`
+    });
+  };
+
+  getDrawableElements().forEach((element) => {
+    pushColor(element.getAttribute("fill") || element.style.fill || "");
+    pushColor(element.getAttribute("stroke") || element.style.stroke || "");
+  });
+  return entries;
+}
+
+function ensureDerivedPaletteSelectionFromLoadedSvg(sampleId = "") {
+  if (hasPaletteSelection()) {
+    return false;
+  }
+  const derivedEntries = collectDrawablePaletteEntriesFromLoadedSvg();
+  if (derivedEntries.length === 0) {
+    return false;
+  }
+
+  const paletteId = sampleId ? `sample-${sampleId}-derived-palette` : "sample-derived-palette";
+  const paletteLabel = sampleId ? `Sample ${sampleId} Derived Palette` : "Derived Palette";
+  state.paletteGroups[paletteId] = derivedEntries;
+  upsertPaletteOption(paletteId, paletteLabel);
+  state.selectedPaletteId = paletteId;
+  renderPaletteSelect();
+  if (refs.paletteSelect instanceof HTMLSelectElement) {
+    refs.paletteSelect.value = paletteId;
+  }
+
+  const first = derivedEntries[0]?.hex || null;
+  const second = derivedEntries[1]?.hex || first;
+  state.fill = normalizeColorValue(first);
+  state.stroke = normalizeColorValue(second);
+  return true;
+}
+
 function ensurePaletteSelectionFromDeclaredInputs(editorOptions = {}) {
   if (hasPaletteSelection() && normalizeColorValue(state.fill) && normalizeColorValue(state.stroke)) {
     return "success";
@@ -2661,7 +2829,8 @@ function ensurePaletteSelectionFromDeclaredInputs(editorOptions = {}) {
     ? editorOptions.palette
     : null;
   if (!hasPaletteSelection()) {
-    return "missing";
+    const derived = ensureDerivedPaletteSelectionFromLoadedSvg();
+    return derived ? "defaulted" : "missing";
   }
   const declaredPaint = normalizeColorFromPalette(state.selectedPaletteId, paletteBlock?.paint || editorOptions?.paint);
   const declaredStroke = normalizeColorFromPalette(state.selectedPaletteId, paletteBlock?.stroke || editorOptions?.stroke);
@@ -2802,27 +2971,41 @@ function emitVectorAssetControlReadiness(sampleId = "", options = {}) {
 async function tryLoadPresetFromQuery() {
   setVectorAssetLifecycle(TOOL_UX_LIFECYCLE.LOADING);
   const searchParams = new URLSearchParams(window.location.search);
-  const samplePresetPath = normalizeSamplePresetPath(searchParams.get("samplePresetPath") || "");
+  const sampleId = String(searchParams.get("sampleId") || "").trim();
+  const rawSamplePresetPath = String(searchParams.get("samplePresetPath") || "");
+  const presetInput = await resolveVectorAssetPresetInput(sampleId, rawSamplePresetPath);
+  const samplePresetPath = presetInput.path;
+  const pathSource = presetInput.pathSource;
   const launchQuery = getToolLoadQuerySnapshot(searchParams);
+  const requestedDataPaths = getToolLoadRequestedDataPaths(launchQuery);
+  if (samplePresetPath) {
+    requestedDataPaths.samplePresetPath = samplePresetPath;
+  }
   logToolLoadRequest({
     toolId: "vector-asset-studio",
-    sampleId: String(searchParams.get("sampleId") || "").trim(),
+    sampleId,
     samplePresetPath,
-    requestedDataPaths: getToolLoadRequestedDataPaths(launchQuery),
+    requestedDataPaths,
     launchQuery
   });
   if (!samplePresetPath) {
     logToolLoadWarning({
       toolId: "vector-asset-studio",
-      reason: "samplePresetPath missing",
+      sampleId,
+      reason: presetInput.error || "samplePresetPath missing",
+      pathSource,
       launchQuery,
       classification: "missing"
     });
+    const hasSampleLaunchIntent = Boolean(sampleId || rawSamplePresetPath.trim());
+    if (hasSampleLaunchIntent) {
+      emitVectorAssetControlReadiness(sampleId, { forceMissing: true, phase: "error", lifecycleStable: false });
+      setStatus(`Preset load failed: ${presetInput.error || "required samplePresetPath input is missing."}`);
+    }
     syncVectorAssetUxContract();
     return false;
   }
 
-  const sampleId = String(searchParams.get("sampleId") || "").trim();
   let loadClassification = "";
 
   try {
@@ -2833,7 +3016,7 @@ async function tryLoadPresetFromQuery() {
       phase: "attempt",
       fetchUrl: presetHref,
       requestedPath: samplePresetPath,
-      pathSource: "tool-input:query.samplePresetPath"
+      pathSource
     });
     const presetResponse = await fetch(presetHref, { cache: "no-store" });
     logToolLoadFetch({
@@ -2841,7 +3024,7 @@ async function tryLoadPresetFromQuery() {
       phase: "response",
       fetchUrl: presetHref,
       requestedPath: samplePresetPath,
-      pathSource: "tool-input:query.samplePresetPath",
+      pathSource,
       status: presetResponse.status,
       ok: presetResponse.ok
     });
@@ -2916,16 +3099,26 @@ async function tryLoadPresetFromQuery() {
     applyEnablementState();
     emitVectorAssetControlReadiness(sampleId, { paletteClassification, phase: "loaded", lifecycleStable: true });
     if (paletteClassification !== "success") {
-      logToolLoadWarning({
-        toolId: "vector-asset-studio",
-        sampleId,
-        samplePresetPath,
-        reason: "Declared palette controls were not fully bound from preset configuration.",
-        classification: "missing"
-      });
-      setStatus("Configuration error: missing palette binding. Provide editorOptions.palette with selectable entries.");
-      syncVectorAssetUxContract();
-      return true;
+      if (paletteClassification === "defaulted") {
+        logToolLoadWarning({
+          toolId: "vector-asset-studio",
+          sampleId,
+          samplePresetPath,
+          reason: "Declared palette controls were missing; palette and paint/stroke were derived from loaded SVG colors.",
+          classification: "defaulted"
+        });
+      } else {
+        logToolLoadWarning({
+          toolId: "vector-asset-studio",
+          sampleId,
+          samplePresetPath,
+          reason: "Declared palette controls were not fully bound from preset configuration.",
+          classification: "missing"
+        });
+        setStatus("Configuration error: missing palette binding. Provide editorOptions.palette with selectable entries.");
+        syncVectorAssetUxContract();
+        return true;
+      }
     }
     if (!normalizeColorValue(state.fill) || !normalizeColorValue(state.stroke)) {
       logToolLoadWarning({
@@ -2939,7 +3132,12 @@ async function tryLoadPresetFromQuery() {
       syncVectorAssetUxContract();
       return true;
     }
-    setStatus(buildPresetLoadedStatus(sampleId, samplePresetPath));
+    const loadedStatus = buildPresetLoadedStatus(sampleId, samplePresetPath);
+    if (paletteClassification === "defaulted") {
+      setStatus(`${loadedStatus} Palette/paint/stroke were derived from loaded SVG colors because editorOptions.palette was not declared.`);
+    } else {
+      setStatus(loadedStatus);
+    }
     syncVectorAssetUxContract();
     return true;
   } catch (error) {
@@ -3264,7 +3462,7 @@ async function initialize() {
   applyEnablementState();
   renderElementList();
   const presetLoaded = await tryLoadPresetFromQuery();
-  if (!presetLoaded) {
+  if (!presetLoaded && !hasErrorStatus()) {
     setStatus("Vector Asset Studio ready.");
   }
   syncVectorAssetUxContract();

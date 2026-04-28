@@ -303,11 +303,11 @@ export class VectorMapEditorApp {
     const hasCanvasRender = !forceMissing
       && hasCanvas
       && hasDocument
-      && (objectCount === 0 || hasSelectedObject);
+      && (objectCount === 0 || hasObjectList);
     const hasEntityControls = !forceMissing
       && this.elements?.toolModeSelect instanceof HTMLSelectElement
       && this.elements?.selectedObjectNameInput instanceof HTMLInputElement
-      && (objectCount === 0 || hasSelectedObject);
+      && (objectCount === 0 || hasObjectList);
 
     logToolUiControlReady({
       toolId: "vector-map-editor",
@@ -358,10 +358,10 @@ export class VectorMapEditorApp {
       toolId: "vector-map-editor",
       sampleId,
       requiredInputsReady: hasCanvas && hasDocument,
-      requiredControlsReady: (objectCount === 0) || (hasObjectList && hasSelectedObject && hasEntityControls),
+      requiredControlsReady: (objectCount === 0) || (hasObjectList && hasEntityControls),
       requiredOutputsReady: hasCanvasRender,
       lifecycleStable,
-      classification: lifecycleStable && hasCanvas && hasDocument && hasCanvasRender && ((objectCount === 0) || (hasObjectList && hasSelectedObject && hasEntityControls))
+      classification: lifecycleStable && hasCanvas && hasDocument && hasCanvasRender && ((objectCount === 0) || (hasObjectList && hasEntityControls))
         ? "success"
         : (lifecycleStable ? "missing" : "lifecycle-reset")
     });
@@ -1271,7 +1271,9 @@ export class VectorMapEditorApp {
 
   syncStatus() {
     const selection = this.selectionModel.getSelection(this.documentModel);
-    const selectedObjectLabel = selection.object?.name || "none";
+    const objectCount = Array.isArray(this.documentModel.getData()?.objects) ? this.documentModel.getData().objects.length : 0;
+    const selectedObjectLabel = selection.object?.name
+      || (objectCount > 0 ? "none (explicit - choose from Objects list)" : "none (no objects loaded)");
     this.elements.statusLeft.textContent = this.statusMessage;
     this.elements.statusCenter.textContent = `Mode: ${this.workspaceViewMode.toUpperCase()} | Tool: ${this.elements.toolModeSelect.value} | Selected: ${selectedObjectLabel} | Zoom: ${Math.round(this.interactionController.getView().zoom * 100)}%`;
     this.elements.zoomDisplay.textContent = `${Math.round(this.interactionController.getView().zoom * 100)}%`;

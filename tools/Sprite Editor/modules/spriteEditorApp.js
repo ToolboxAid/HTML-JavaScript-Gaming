@@ -689,6 +689,14 @@ function isEditableTarget(target) {
 
 function setStatus(state, message) {
   state.elements.statusText.textContent = message;
+  if (state.elements.statusText instanceof HTMLElement) {
+    const normalized = typeof message === "string" ? message.trim().toLowerCase() : "";
+    const isErrorLike = normalized.includes("failed")
+      || normalized.includes("error")
+      || normalized.includes("missing")
+      || normalized.includes("invalid");
+    state.elements.statusText.dataset.statusKind = isErrorLike ? "error" : "info";
+  }
 }
 
 function setSpriteEditorLifecycle(stateName, details = {}) {
@@ -2147,6 +2155,10 @@ async function tryLoadPresetFromQuery(state) {
       reason: "samplePresetPath missing",
       launchQuery
     });
+    const hasSampleLaunchIntent = Boolean(sampleId || sampleTitle);
+    if (hasSampleLaunchIntent) {
+      setStatus(state, "Preset load failed: required samplePresetPath input is missing from launch query.");
+    }
     emitSpriteEditorControlReadiness(state, {
       sampleId,
       phase: "error",
