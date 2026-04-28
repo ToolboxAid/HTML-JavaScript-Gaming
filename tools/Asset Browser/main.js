@@ -21,7 +21,6 @@ import {
 import { ACTIVE_PROJECT_STORAGE_KEY } from "../shared/projectManifestContract.js";
 import {
   TOOL_UX_LIFECYCLE,
-  getUnifiedEmptyStateMessage,
   setToolUxLifecycleState
 } from "../shared/unifiedToolUxContract.js";
 
@@ -38,6 +37,8 @@ const APPROVED_DESTINATIONS = Object.freeze({
 const GAME_ASSET_CATALOG_SCHEMA = "html-js-gaming.game-asset-catalog";
 const GAME_ASSET_CATALOG_VERSION = 1;
 const GAME_MANIFEST_SCHEMA = "html-js-gaming.game-manifest";
+const ASSET_BROWSER_EMPTY_TITLE = "No assets loaded";
+const ASSET_BROWSER_EMPTY_HINT = "Import or create asset";
 const APPROVED_ASSET_STATUS = Object.freeze({
   success: "approved-assets-success",
   loadedEmpty: "approved-assets-loaded-empty",
@@ -116,10 +117,12 @@ function setAssetBrowserLifecycle(stateName, details = {}) {
 function ensureFirstVisibleAssetSelection(entries) {
   const source = Array.isArray(entries) ? entries : [];
   if (source.length <= 0) {
-    state.selectedAssetId = "";
+    if (state.assetCatalog.length <= 0) {
+      state.selectedAssetId = "";
+    }
     return false;
   }
-  const hasCurrent = source.some((entry) => entry.id === state.selectedAssetId);
+  const hasCurrent = state.assetCatalog.some((entry) => entry.id === state.selectedAssetId);
   if (hasCurrent) {
     return false;
   }
@@ -894,16 +897,16 @@ function renderAssetList() {
       </button>
     `;
     }).join("")
-    : `<p class="asset-browser__empty">${getUnifiedEmptyStateMessage()} ${buildApprovedAssetEmptyStateText(state.catalogLoadInfo)}</p>`;
+    : `<p class="asset-browser__empty"><strong>${ASSET_BROWSER_EMPTY_TITLE}</strong><span>${ASSET_BROWSER_EMPTY_HINT}</span></p>`;
 }
 
 async function renderPreview() {
   const selectedAsset = getSelectedAsset();
   if (!selectedAsset) {
     refs.previewTitle.textContent = "Preview";
-    refs.previewMeta.textContent = getUnifiedEmptyStateMessage();
-    refs.previewCanvas.innerHTML = `<p class="asset-browser__empty">${getUnifiedEmptyStateMessage()}</p>`;
-    refs.previewText.textContent = "Load or create asset.";
+    refs.previewMeta.textContent = ASSET_BROWSER_EMPTY_TITLE;
+    refs.previewCanvas.innerHTML = `<p class="asset-browser__empty"><strong>${ASSET_BROWSER_EMPTY_TITLE}</strong><span>${ASSET_BROWSER_EMPTY_HINT}</span></p>`;
+    refs.previewText.textContent = ASSET_BROWSER_EMPTY_HINT;
     return;
   }
 

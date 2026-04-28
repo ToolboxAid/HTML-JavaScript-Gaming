@@ -47,6 +47,11 @@
   font-size: 0.95rem;
 }
 
+.asset-browser__empty strong,
+.asset-browser__empty span {
+  display: block;
+}
+
 .asset-browser__list {
   display: grid;
   gap: 0.5rem;

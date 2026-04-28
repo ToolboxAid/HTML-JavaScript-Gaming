@@ -1,15 +1,13 @@
-# CODEX COMMANDS
-
 model: gpt-5.3-codex
 reasoning: medium
 
-Apply PR_10_7_UNIFIED_TOOL_UX_CONTRACT
+Apply PR_10_8_ASSET_BROWSER_UAT
 
-- Implement shared layout zones across all tools
-- Enforce lifecycle states
-- Add first-item auto-selection
+- Enforce empty state messaging
+- Implement first-item auto-selection
+- Add selection highlight
 - Enforce control enable/disable rules
-- Add explicit empty-state UI (no fallback data)
-- Ensure tools behave correctly inside workspace (no reset, no auto-close)
+- Ensure no flicker/reset
+- Ensure workspace stability
 - Do not modify data layer
-- Do not refactor unrelated code
+- Do not refactor unrelated files
