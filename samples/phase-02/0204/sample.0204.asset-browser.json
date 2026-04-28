@@ -35,11 +35,11 @@
       ]
     },
     "assetBrowserPreset": {
-      "selectedCategory": "All",
+      "selectedCategory": "Vector Assets",
       "selectedAssetId": "sample-0204-registry-node",
-      "search": "",
+      "search": "0204",
       "importCategory": "Workflow JSON",
-      "importDestination": "games/<project>/config/",
+      "importDestination": "/samples/phase-02/0204/config/",
       "importName": "sample-0204-import.workflow.json"
     }
   }

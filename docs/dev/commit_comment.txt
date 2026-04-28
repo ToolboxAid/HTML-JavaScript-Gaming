@@ -1,1 +1,1 @@
-Relocate validation artifacts out of samples metadata to test/validation path - PR 10.22
+Use sample-local import destinations in sample Asset Browser and Import Hub presets - PR 10.23

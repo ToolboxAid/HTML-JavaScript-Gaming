@@ -39,7 +39,7 @@
       "selectedAssetId": "sample-1413-imported-sheet",
       "search": "",
       "importCategory": "Sprite Projects",
-      "importDestination": "games/<project>/assets/sprites/",
+      "importDestination": "/samples/phase-14/1413/assets/sprites/",
       "importName": "sample-1413-import.sprite.json"
     }
   }
