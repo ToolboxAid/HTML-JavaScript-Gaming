@@ -1,1 +1,1 @@
-Stabilize Vector Asset Studio controls and selection under unified UX contract - PR 10.11
+Stabilize Vector Map Editor with default selection and consistent control behavior under unified UX contract - PR 10.12

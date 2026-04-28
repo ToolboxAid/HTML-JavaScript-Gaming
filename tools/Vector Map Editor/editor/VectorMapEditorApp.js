@@ -1138,6 +1138,7 @@ export class VectorMapEditorApp {
     this.elements.documentHeightInput.value = String(data.height);
     this.elements.documentBackgroundInput.value = data.background;
     this.elements.workspaceModeSelect.value = this.workspaceViewMode;
+    this.selectFirstObjectWhenUnselected();
     this.syncSelectionFields();
     this.syncObjectList();
     this.syncCollisionSummary();
@@ -1440,6 +1441,7 @@ export class VectorMapEditorApp {
       }
     } else {
       this.selectionModel.clear();
+      this.selectFirstObjectWhenUnselected();
     }
     this.workspaceViewMode = snapshot.workspaceViewMode || this.documentModel.getData().mode;
     this.lastCollisionResult = null;

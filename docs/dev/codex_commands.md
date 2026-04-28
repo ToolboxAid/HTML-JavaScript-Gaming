@@ -1,11 +1,11 @@
 model: gpt-5.3-codex
 reasoning: medium
 
-Apply PR_10_11_VECTOR_ASSET_STUDIO_UAT
+Apply PR_10_12_VECTOR_MAP_EDITOR_UAT
 
 - Add first-element auto-selection
-- Fix palette/paint/stroke enablement
+- Add selection highlight
 - Enforce control enable/disable rules
-- Ensure selection highlight
+- Ensure no flicker/reset
 - Ensure workspace stability
 - Do not modify data layer
