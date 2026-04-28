@@ -13,6 +13,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const REPO_ROOT = path.resolve(__dirname, "../..");
 const SAMPLES_ROOT = path.join(REPO_ROOT, "samples");
 const METADATA_ROOT = path.join(SAMPLES_ROOT, "metadata");
+const VALIDATION_ARTIFACTS_ROOT = path.join(REPO_ROOT, "tests", "validation");
 
 function readJson(filePath) {
   return JSON.parse(fs.readFileSync(filePath, "utf8"));
@@ -123,13 +124,13 @@ function assertSamplesSharedBoundary() {
 }
 
 function assertSampleEngineDependencyBoundary() {
-  const report = readJson(path.join(METADATA_ROOT, "samples.shared.boundaries.report.json"));
+  const report = readJson(path.join(VALIDATION_ARTIFACTS_ROOT, "samples.shared.boundaries.report.json"));
   assert.equal(report?.summary?.engineBoundaryViolations, 0);
   assert.match(String(report?.engineBoundary?.rule || ""), /\/src\/engine\/\*\/index\.js/);
 }
 
 function assertCurriculumProgression() {
-  const curriculum = readJson(path.join(METADATA_ROOT, "samples.curriculum.validation.json"));
+  const curriculum = readJson(path.join(VALIDATION_ARTIFACTS_ROOT, "samples.curriculum.validation.json"));
   const indexMetadata = readJson(path.join(METADATA_ROOT, "samples.index.metadata.json"));
   const expectedPhases = getExpectedPhases();
   const curriculumPhaseOrder = curriculum?.progression?.phaseOrder || [];

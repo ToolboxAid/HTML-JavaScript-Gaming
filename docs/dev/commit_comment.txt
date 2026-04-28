@@ -1,1 +1,1 @@
-Make Asset Browser and Import Hub own JSON catalog loading for samples 0204, 1413, and 1505 - PR 10.20
+Relocate validation artifacts out of samples metadata to test/validation path - PR 10.22

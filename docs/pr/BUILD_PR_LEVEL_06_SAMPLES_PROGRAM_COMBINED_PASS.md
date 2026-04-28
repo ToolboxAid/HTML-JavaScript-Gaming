@@ -13,8 +13,8 @@ Complete the remaining Section-6 Samples Program lane in one coherent pass by fi
 ## Boundary Decisions Applied
 - canonical shared sample surface: `samples/shared`
 - compatibility-only surface: `samples/_shared` (shims forwarding to `samples/shared`)
-- sample-to-engine rule source: `samples/metadata/samples.shared.boundaries.report.json` (`engineBoundaryViolations: 0`)
-- curriculum validation source: `samples/metadata/samples.curriculum.validation.json` + `samples/metadata/samples.index.metadata.json`
+- sample-to-engine rule source: `tests/validation/samples.shared.boundaries.report.json` (`engineBoundaryViolations: 0`)
+- curriculum validation source: `tests/validation/samples.curriculum.validation.json` + `samples/metadata/samples.index.metadata.json`
 
 ## Section-6 Status Outcome
 Closed in this PR:
