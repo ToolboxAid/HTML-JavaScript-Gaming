@@ -425,7 +425,7 @@ body.tools-platform-workspace-context .tools-platform-frame__shared-status stron
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 10px;
+  gap: var(--tools-space-2, 10px);
   flex-wrap: wrap;
   text-align: center;
   width: 100%;
@@ -446,10 +446,10 @@ body.tools-platform-workspace-context .tools-platform-frame__shared-status stron
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-height: 30px;
-  padding: 0 12px;
+  min-height: 34px;
+  padding: 6px 12px;
   border: 1px solid var(--line, rgba(221, 214, 254, 0.26));
-  border-radius: 999px;
+  border-radius: 10px;
   background: linear-gradient(180deg, rgba(167, 139, 250, 0.34) 0%, rgba(91, 33, 182, 0.78) 100%);
   color: #ffffff;
   font-weight: bold;
@@ -477,10 +477,10 @@ body.tools-platform-workspace-context .tools-platform-frame__shared-status stron
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-height: 30px;
-  padding: 0 12px;
+  min-height: 34px;
+  padding: 6px 12px;
   border: 1px solid var(--line, rgba(221, 214, 254, 0.26));
-  border-radius: 999px;
+  border-radius: 10px;
   background: linear-gradient(180deg, var(--panel, rgba(76, 29, 149, 0.88)) 0%, var(--panel2, rgba(49, 17, 102, 0.94)) 100%);
   color: var(--text, #f7f4ff);
   font-weight: bold;
@@ -499,8 +499,8 @@ body.tools-platform-workspace-context .tools-platform-frame__shared-status stron
 }
 
 .tools-platform-frame__nav-link {
-  min-height: 28px;
-  padding: 0 10px;
+  min-height: 32px;
+  padding: 6px 10px;
   color: var(--muted, #e9ddff);
   font-size: 0.88rem;
 }
@@ -517,14 +517,19 @@ body.tools-platform-workspace-context .tools-platform-frame__shared-status stron
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-height: 30px;
-  padding: 0 12px;
+  min-height: 34px;
+  padding: 6px 12px;
   border: 1px solid var(--line, rgba(221, 214, 254, 0.26));
-  border-radius: 999px;
+  border-radius: 10px;
   background: linear-gradient(180deg, rgba(167, 139, 250, 0.34) 0%, rgba(91, 33, 182, 0.78) 100%);
   color: #ffffff;
   font-weight: bold;
   text-decoration: none;
+}
+
+html:fullscreen body.tools-platform-surface .tools-platform-frame__project,
+html:fullscreen body.tools-platform-surface .tools-platform-frame__project-actions {
+  gap: var(--tools-space-2, 10px);
 }
 
 .tools-platform-frame__action-link.is-current {
@@ -552,6 +557,38 @@ body.tools-platform-workspace-context .tools-platform-frame__shared-status stron
 .tools-platform-frame__meta {
   color: var(--muted, #e9ddff);
   font-size: 0.85rem;
+}
+
+.tool-host-pager {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--tools-space-2, 10px);
+  flex-wrap: nowrap;
+}
+
+.tool-host-pager__button {
+  min-height: 34px;
+  padding: 6px 12px;
+  border: 1px solid var(--line, rgba(221, 214, 254, 0.26));
+  border-radius: 10px;
+  background: linear-gradient(180deg, var(--panel, rgba(76, 29, 149, 0.88)) 0%, var(--panel2, rgba(49, 17, 102, 0.94)) 100%);
+  color: var(--text, #f7f4ff);
+  font: inherit;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.tool-host-pager__name {
+  display: inline-flex;
+  align-items: center;
+  min-height: 34px;
+  padding: 6px 10px;
+  border: 1px solid var(--line, rgba(221, 214, 254, 0.26));
+  border-radius: 10px;
+  color: var(--muted, #e9ddff);
+  font-size: 0.9rem;
+  white-space: nowrap;
 }
 
 .tools-platform-statusbar {

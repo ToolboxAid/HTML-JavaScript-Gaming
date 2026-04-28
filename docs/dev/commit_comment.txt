@@ -1,1 +1,1 @@
-Final UI polish and consistency pass across all tools - PR 11.4
+Increase PREV/NEXT size and padding - PR 11.6

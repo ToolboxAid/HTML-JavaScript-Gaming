@@ -1,0 +1,1 @@
+Nav buttons visually aligned with toolbar.
