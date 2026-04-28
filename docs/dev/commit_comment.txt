@@ -1,1 +1,6 @@
-Fix fullscreen header summary line layout without changing normal-screen tool headers - PR 10.14
+Fix Parallax Scene Studio header metadata and toggle labels
+
+- Add required Parallax Scene Studio header/intro metadata
+- Remove configuration error for complete tool metadata
+- Replace generic header/details toggle labels with tool-specific text
+- Preserve actionable errors for genuinely missing metadata

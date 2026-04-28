@@ -161,6 +161,11 @@ function normalizeSingleLineText(value) {
   return normalizeTextValue(value).replace(/\s+/g, " ");
 }
 
+function buildToolDetailsToggleText(prefix, summaryData) {
+  const toolName = normalizeSingleLineText(summaryData?.toolName) || normalizeSingleLineText(summaryData?.toolId) || "Tool";
+  return `${prefix} ${toolName} Details`;
+}
+
 function buildToolHeaderIntroData(currentTool) {
   const toolId = normalizeTextValue(currentTool?.id);
   if (!toolId) {
@@ -190,6 +195,7 @@ function buildToolHeaderIntroData(currentTool) {
     : headerText;
   return {
     toolId,
+    toolName,
     headerText,
     headerDisplayText,
     introText,
@@ -215,19 +221,39 @@ function renderHeaderIntroSummary(currentTool) {
     summaryElement.removeAttribute('data-tools-platform-summary-active');
     summaryElement.removeAttribute('data-tools-platform-summary-error');
     summaryElement.removeAttribute('data-tools-platform-summary-diagnostic');
+    summaryElement.removeAttribute('data-tools-platform-summary-state');
+    summaryElement.removeAttribute('data-tools-platform-summary-mode');
     summaryElement.removeAttribute('title');
     return;
   }
 
-  const headerLine = document.createElement('span');
-  headerLine.className = 'tools-platform-summary__line';
-  headerLine.textContent = summaryData.headerDisplayText;
-  if (summaryData.hasHeaderError) {
-    headerLine.classList.add('tools-platform-summary__line--error');
+  const isFullscreenActive = Boolean(document.fullscreenElement);
+  const isExpanded = pageHeaderAccordion instanceof HTMLDetailsElement
+    ? pageHeaderAccordion.open === true
+    : false;
+  const showDetailsText = buildToolDetailsToggleText("Show", summaryData);
+  const hideDetailsText = buildToolDetailsToggleText("Hide", summaryData);
+  const summaryText = isExpanded
+    ? hideDetailsText
+    : (isFullscreenActive ? summaryData.headerDisplayText : showDetailsText);
+
+  // Keep the summary as a single inline text node to preserve one-line caret + text behavior.
+  summaryElement.textContent = summaryText;
+  if (isFullscreenActive) {
+    summaryElement.style.maxWidth = "calc(100vw - 24px)";
+    summaryElement.style.whiteSpace = "nowrap";
+    summaryElement.style.overflow = "hidden";
+    summaryElement.style.textOverflow = "ellipsis";
+  } else {
+    summaryElement.style.removeProperty("max-width");
+    summaryElement.style.removeProperty("white-space");
+    summaryElement.style.removeProperty("overflow");
+    summaryElement.style.removeProperty("text-overflow");
   }
-  summaryElement.replaceChildren(headerLine);
   summaryElement.setAttribute('data-tools-platform-summary-active', '1');
   summaryElement.setAttribute('data-tools-platform-summary-error', summaryData.hasConfigError ? '1' : '0');
+  summaryElement.setAttribute('data-tools-platform-summary-state', isExpanded ? 'expanded' : 'collapsed');
+  summaryElement.setAttribute('data-tools-platform-summary-mode', isFullscreenActive ? 'fullscreen' : 'normal');
   summaryElement.setAttribute('data-tool-id', summaryData.toolId);
   summaryElement.setAttribute('data-tools-platform-summary-diagnostic', summaryData.diagnosticText || "");
   summaryElement.setAttribute(
@@ -244,14 +270,7 @@ async function syncFullscreenStateFromHeaderAccordion(accordion) {
   }
 
   if (accordion.open) {
-    if (!document.fullscreenElement) {
-      return;
-    }
-    try {
-      await document.exitFullscreen();
-    } catch {
-      // Ignore fullscreen exit failures because accordion mode remains usable.
-    }
+    // Keep fullscreen active while header/details are expanded.
     return;
   }
 
@@ -265,7 +284,7 @@ async function syncFullscreenStateFromHeaderAccordion(accordion) {
   }
 }
 
-function bindHeaderIntroFullscreenEvents() {
+function bindHeaderIntroFullscreenEvents(currentTool) {
   if (headerIntroFullscreenBindingBound) {
     return;
   }
@@ -277,6 +296,10 @@ function bindHeaderIntroFullscreenEvents() {
   headerIntroFullscreenBindingBound = true;
   pageHeaderAccordion.addEventListener('toggle', () => {
     void syncFullscreenStateFromHeaderAccordion(pageHeaderAccordion);
+    renderHeaderIntroSummary(currentTool);
+  });
+  document.addEventListener('fullscreenchange', () => {
+    renderHeaderIntroSummary(currentTool);
   });
 }
 
@@ -1698,7 +1721,7 @@ function renderShell(currentTool) {
   }
   renderHeaderIntroSummary(currentTool);
   bindWorkspacePagerDelegatedEvents();
-  bindHeaderIntroFullscreenEvents();
+  bindHeaderIntroFullscreenEvents(currentTool);
 
   if (pageHeaderAccordion instanceof HTMLDetailsElement) {
     pageHeaderAccordion.open = isHeaderExpanded;
@@ -1707,6 +1730,7 @@ function renderShell(currentTool) {
       bindEventHandlers(pageHeaderAccordion, "toggle", () => {
         headerExpandedState = pageHeaderAccordion.open;
         writeStoredHeaderExpandedState(pageHeaderAccordion.open);
+        renderHeaderIntroSummary(currentTool);
       });
     }
   }
