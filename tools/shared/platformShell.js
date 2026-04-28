@@ -21,7 +21,7 @@ let headerExpandedState = null;
 let runtimeMonitoringHooks = null;
 let bindingRefreshHandlersBound = false;
 let workspacePagerDelegatedBound = false;
-let fullscreenSummaryBindingBound = false;
+let headerIntroFullscreenBindingBound = false;
 let lastWorkspaceUiStateKey = "";
 let lastLockedSurfaceElement = null;
 const sidebarAccordionState = new Map();
@@ -39,13 +39,6 @@ const STANDARDIZED_TOOL_HEADER_IDS = new Set([
   "vector-asset-studio",
   "sprite-editor",
   "state-inspector"
-]);
-const FULLSCREEN_METADATA_TOOL_IDS = new Set([
-  "vector-map-editor",
-  "vector-asset-studio",
-  "sprite-editor",
-  "state-inspector",
-  "asset-browser"
 ]);
 const PRESERVED_TOOL_STATE_KEYS = new Set([
   HEADER_EXPANDED_STORAGE_KEY,
@@ -168,62 +161,122 @@ function normalizeSingleLineText(value) {
   return normalizeTextValue(value).replace(/\s+/g, " ");
 }
 
-function buildFullscreenHeaderSummaryData(currentTool) {
+function buildToolHeaderIntroData(currentTool) {
   const toolId = normalizeTextValue(currentTool?.id);
-  if (!toolId || !FULLSCREEN_METADATA_TOOL_IDS.has(toolId)) {
+  if (!toolId) {
     return null;
   }
+
   const toolName = normalizeSingleLineText(currentTool?.name);
   const toolShortDescription = normalizeSingleLineText(currentTool?.shortDescription);
   const toolDescription = normalizeSingleLineText(currentTool?.description);
   const headerText = toolName && toolShortDescription
-    ? `${toolName} — ${toolShortDescription}`
+    ? `${toolName} \u2014 ${toolShortDescription}`
     : `Configuration error: ${toolId} header requires tool.name and tool.shortDescription in tools/toolRegistry.js.`;
   const introText = toolName && toolDescription
     ? `${toolName}: ${toolDescription}`
     : `Configuration error: ${toolId} intro requires tool.name and tool.description in tools/toolRegistry.js.`;
-  const hasConfigError = !(toolName && toolShortDescription && toolDescription);
+  const hasHeaderError = !(toolName && toolShortDescription);
+  const hasIntroError = !(toolName && toolDescription);
+  const diagnosticParts = [];
+  if (hasHeaderError) {
+    diagnosticParts.push(`Configuration error: ${toolId} header requires tool.name and tool.shortDescription in tools/toolRegistry.js.`);
+  }
+  if (hasIntroError) {
+    diagnosticParts.push(`Configuration error: ${toolId} intro requires tool.name and tool.description in tools/toolRegistry.js.`);
+  }
+  const headerDisplayText = hasHeaderError
+    ? `${toolName || toolId} \u2014 Configuration error (open title for details)`
+    : headerText;
   return {
     toolId,
     headerText,
+    headerDisplayText,
     introText,
-    hasConfigError
+    hasHeaderError,
+    hasIntroError,
+    diagnosticText: diagnosticParts.join(" | "),
+    hasConfigError: hasHeaderError || hasIntroError
   };
 }
 
-function syncFullscreenHeaderSummary(currentTool) {
-  const pageHeaderAccordion = queryFirst(".is-collapsible");
+function renderHeaderIntroSummary(currentTool) {
+  const pageHeaderAccordion = queryFirst('.is-collapsible');
   const summaryElement = pageHeaderAccordion instanceof HTMLElement
-    ? pageHeaderAccordion.querySelector(".is-collapsible__summary")
+    ? pageHeaderAccordion.querySelector('[data-tools-platform-summary], .is-collapsible__summary')
     : null;
   if (!(summaryElement instanceof HTMLElement)) {
     return;
   }
 
-  const summaryData = buildFullscreenHeaderSummaryData(currentTool);
+  const summaryData = buildToolHeaderIntroData(currentTool);
   if (!summaryData) {
-    summaryElement.removeAttribute("data-fullscreen-header");
-    summaryElement.removeAttribute("data-fullscreen-intro");
-    summaryElement.removeAttribute("data-fullscreen-summary-active");
-    summaryElement.removeAttribute("data-fullscreen-summary-error");
-    summaryElement.removeAttribute("title");
+    summaryElement.textContent = '';
+    summaryElement.removeAttribute('data-tools-platform-summary-active');
+    summaryElement.removeAttribute('data-tools-platform-summary-error');
+    summaryElement.removeAttribute('data-tools-platform-summary-diagnostic');
+    summaryElement.removeAttribute('title');
     return;
   }
 
-  summaryElement.setAttribute("data-fullscreen-header", summaryData.headerText);
-  summaryElement.setAttribute("data-fullscreen-intro", summaryData.introText);
-  summaryElement.setAttribute("data-fullscreen-summary-active", "1");
-  summaryElement.setAttribute("data-fullscreen-summary-error", summaryData.hasConfigError ? "1" : "0");
-  summaryElement.setAttribute("title", `${summaryData.headerText}\n${summaryData.introText}`);
+  const headerLine = document.createElement('span');
+  headerLine.className = 'tools-platform-summary__line';
+  headerLine.textContent = summaryData.headerDisplayText;
+  if (summaryData.hasHeaderError) {
+    headerLine.classList.add('tools-platform-summary__line--error');
+  }
+  summaryElement.replaceChildren(headerLine);
+  summaryElement.setAttribute('data-tools-platform-summary-active', '1');
+  summaryElement.setAttribute('data-tools-platform-summary-error', summaryData.hasConfigError ? '1' : '0');
+  summaryElement.setAttribute('data-tool-id', summaryData.toolId);
+  summaryElement.setAttribute('data-tools-platform-summary-diagnostic', summaryData.diagnosticText || "");
+  summaryElement.setAttribute(
+    'title',
+    summaryData.hasConfigError
+      ? `${summaryData.headerText}\n${summaryData.introText}\n${summaryData.diagnosticText}`
+      : `${summaryData.headerText}\n${summaryData.introText}`
+  );
 }
 
-function bindFullscreenSummaryEvents(currentTool) {
-  if (fullscreenSummaryBindingBound) {
+async function syncFullscreenStateFromHeaderAccordion(accordion) {
+  if (!(accordion instanceof HTMLDetailsElement) || !document.fullscreenEnabled) {
     return;
   }
-  fullscreenSummaryBindingBound = true;
-  document.addEventListener("fullscreenchange", () => {
-    syncFullscreenHeaderSummary(currentTool);
+
+  if (accordion.open) {
+    if (!document.fullscreenElement) {
+      return;
+    }
+    try {
+      await document.exitFullscreen();
+    } catch {
+      // Ignore fullscreen exit failures because accordion mode remains usable.
+    }
+    return;
+  }
+
+  if (document.fullscreenElement || typeof document.documentElement?.requestFullscreen !== 'function') {
+    return;
+  }
+  try {
+    await document.documentElement.requestFullscreen();
+  } catch {
+    // Ignore fullscreen request failures because collapsed summary remains usable.
+  }
+}
+
+function bindHeaderIntroFullscreenEvents() {
+  if (headerIntroFullscreenBindingBound) {
+    return;
+  }
+  const pageHeaderAccordion = queryFirst('.is-collapsible');
+  if (!(pageHeaderAccordion instanceof HTMLDetailsElement)) {
+    return;
+  }
+
+  headerIntroFullscreenBindingBound = true;
+  pageHeaderAccordion.addEventListener('toggle', () => {
+    void syncFullscreenStateFromHeaderAccordion(pageHeaderAccordion);
   });
 }
 
@@ -1643,16 +1696,19 @@ function renderShell(currentTool) {
   if (headerHost) {
     headerHost.innerHTML = renderHeaderMarkup(currentTool, isHeaderExpanded);
   }
-  syncFullscreenHeaderSummary(currentTool);
+  renderHeaderIntroSummary(currentTool);
   bindWorkspacePagerDelegatedEvents();
+  bindHeaderIntroFullscreenEvents();
 
   if (pageHeaderAccordion instanceof HTMLDetailsElement) {
     pageHeaderAccordion.open = isHeaderExpanded;
-    bindEventHandlers(pageHeaderAccordion, "toggle", () => {
-      headerExpandedState = pageHeaderAccordion.open;
-      writeStoredHeaderExpandedState(pageHeaderAccordion.open);
-      syncFullscreenHeaderSummary(currentTool);
-    });
+    if (pageHeaderAccordion.dataset.toolsPlatformHeaderToggleBound !== "1") {
+      pageHeaderAccordion.dataset.toolsPlatformHeaderToggleBound = "1";
+      bindEventHandlers(pageHeaderAccordion, "toggle", () => {
+        headerExpandedState = pageHeaderAccordion.open;
+        writeStoredHeaderExpandedState(pageHeaderAccordion.open);
+      });
+    }
   }
 
   if (statusHost) {
@@ -1661,7 +1717,6 @@ function renderShell(currentTool) {
 
   applySidebarAccordionRules();
   bindWorkspaceShellEvents(currentTool);
-  bindFullscreenSummaryEvents(currentTool);
 }
 
 function bindLiveBindingRefresh(currentTool) {

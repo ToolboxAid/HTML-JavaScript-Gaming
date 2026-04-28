@@ -1,7 +1,1 @@
-Fix fullscreen header and intro wiring
-
-- Bind actual fullscreen DOM path to active tool metadata
-- Show tool name in fullscreen header and intro
-- Add/validate compact single-line fullscreen text
-- Preserve actionable metadata errors with no silent fallback
-- Add browser evidence for visible fullscreen text
+Fix fullscreen header summary line layout without changing normal-screen tool headers - PR 10.14

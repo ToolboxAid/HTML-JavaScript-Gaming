@@ -814,45 +814,32 @@ html:fullscreen body.tools-platform-surface > [data-tools-platform-status] {
   flex: 0 0 auto;
 }
 
-html:fullscreen body.tools-platform-surface > .is-collapsible > .is-collapsible__summary[data-fullscreen-summary-active="1"] {
-  display: grid;
-  grid-template-rows: auto auto;
-  gap: 2px;
-  align-items: start;
+html:fullscreen body.tools-platform-surface > .is-collapsible > .is-collapsible__summary[data-tools-platform-summary-active="1"] {
   padding: 8px 12px;
-  color: transparent;
-  font-size: 0;
-  line-height: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-html:fullscreen body.tools-platform-surface > .is-collapsible > .is-collapsible__summary[data-fullscreen-summary-active="1"]::before,
-html:fullscreen body.tools-platform-surface > .is-collapsible > .is-collapsible__summary[data-fullscreen-summary-active="1"]::after {
-  display: block;
+html:fullscreen body.tools-platform-surface > .is-collapsible > .is-collapsible__summary[data-tools-platform-summary-active="1"] .tools-platform-summary__line {
+  display: inline-block;
   margin: 0;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  width: min(100%, 140ch);
+  max-width: calc(100% - 2rem);
+  vertical-align: top;
 }
 
-html:fullscreen body.tools-platform-surface > .is-collapsible > .is-collapsible__summary[data-fullscreen-summary-active="1"]::before {
-  content: attr(data-fullscreen-header);
+html:fullscreen body.tools-platform-surface > .is-collapsible > .is-collapsible__summary[data-tools-platform-summary-active="1"] .tools-platform-summary__line {
   color: #ffffff;
   font-size: 0.98rem;
   line-height: 1.2;
   font-weight: 700;
 }
 
-html:fullscreen body.tools-platform-surface > .is-collapsible > .is-collapsible__summary[data-fullscreen-summary-active="1"]::after {
-  content: attr(data-fullscreen-intro);
-  color: #f5eaff;
-  font-size: 0.82rem;
-  line-height: 1.2;
-  font-weight: 500;
-}
-
-html:fullscreen body.tools-platform-surface > .is-collapsible > .is-collapsible__summary[data-fullscreen-summary-active="1"][data-fullscreen-summary-error="1"]::before,
-html:fullscreen body.tools-platform-surface > .is-collapsible > .is-collapsible__summary[data-fullscreen-summary-active="1"][data-fullscreen-summary-error="1"]::after {
+html:fullscreen body.tools-platform-surface > .is-collapsible > .is-collapsible__summary[data-tools-platform-summary-active="1"] .tools-platform-summary__line--error,
+html:fullscreen body.tools-platform-surface > .is-collapsible > .is-collapsible__summary[data-tools-platform-summary-active="1"][data-tools-platform-summary-error="1"] .tools-platform-summary__line {
   color: #ffd4d4;
 }
 
