@@ -1,1 +1,1 @@
-Align Tilemap Studio to unified contract with stable selection, canvas rendering, and workspace behavior - PR 10.10
+Stabilize Vector Asset Studio controls and selection under unified UX contract - PR 10.11

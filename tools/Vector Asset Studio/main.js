@@ -487,6 +487,7 @@ function applySharedPaletteAndVectorBinding() {
   }
 
   if (refs.paletteSelect instanceof HTMLSelectElement) {
+    refs.paletteSelect.dataset.locked = "1";
     refs.paletteSelect.disabled = true;
     refs.paletteSelect.value = paletteId;
   }
@@ -777,14 +778,20 @@ function applyEnablementState() {
   const hasFill = hasFillSelection();
   const hasGradient = Boolean((normalizeColorValue(state.gradientFillFrom) || normalizeColorValue(state.fill)) && normalizeColorValue(state.gradientFillTo));
   const hasObjectSelection = Boolean(getSelectedElement());
+  const paletteActionsEnabled = hasPaletteControls && hasObjectSelection;
 
-  refs.setPaletteTargetPaintButton.disabled = !hasPaletteControls;
-  refs.setPaletteTargetStrokeButton.disabled = !hasPaletteControls;
+  if (refs.paletteSelect instanceof HTMLSelectElement) {
+    const paletteLocked = refs.paletteSelect.dataset.locked === "1";
+    refs.paletteSelect.disabled = paletteLocked || !hasObjectSelection;
+  }
+
+  refs.setPaletteTargetPaintButton.disabled = !paletteActionsEnabled;
+  refs.setPaletteTargetStrokeButton.disabled = !paletteActionsEnabled;
   if (refs.setPaletteTargetGradientStartButton instanceof HTMLButtonElement) {
-    refs.setPaletteTargetGradientStartButton.disabled = !hasPaletteControls;
+    refs.setPaletteTargetGradientStartButton.disabled = !paletteActionsEnabled;
   }
   if (refs.setPaletteTargetGradientEndButton instanceof HTMLButtonElement) {
-    refs.setPaletteTargetGradientEndButton.disabled = !hasPaletteControls;
+    refs.setPaletteTargetGradientEndButton.disabled = !paletteActionsEnabled;
   }
   refs.applyCanvasSizeButton.disabled = !hasStyleSelection;
   refs.strokeWidthInput.disabled = !hasStyleSelection;
@@ -814,6 +821,19 @@ function applyEnablementState() {
     const isDisabled = isDrawTool && !hasStyleSelection;
     button.disabled = isDisabled;
     button.classList.toggle("locked", isDisabled);
+  });
+
+  refs.mainPaletteGrid.querySelectorAll(".palette-swatch").forEach((button) => {
+    if (button instanceof HTMLButtonElement) {
+      button.disabled = !paletteActionsEnabled;
+      button.classList.toggle("locked", !paletteActionsEnabled);
+    }
+  });
+  refs.usedColorStrip.querySelectorAll(".palette-swatch").forEach((button) => {
+    if (button instanceof HTMLButtonElement) {
+      button.disabled = !paletteActionsEnabled;
+      button.classList.toggle("locked", !paletteActionsEnabled);
+    }
   });
 
   if (!hasStyleSelection && DRAW_TOOL_SET.has(state.activeTool)) {
@@ -848,6 +868,7 @@ function setPaletteTarget(target, options = {}) {
 function resetPaletteSelectionState() {
   state.selectedPaletteId = NO_PALETTE_ID;
   if (refs.paletteSelect instanceof HTMLSelectElement) {
+    refs.paletteSelect.dataset.locked = "0";
     refs.paletteSelect.disabled = false;
     refs.paletteSelect.value = NO_PALETTE_ID;
   }
@@ -2006,6 +2027,10 @@ function deleteSelectedElement() {
   refreshUsedColors();
   clearSelection();
   renderElementList();
+  const firstElement = getDrawableElements()[0] || null;
+  if (firstElement && !getSelectedElement()) {
+    selectElement(firstElement);
+  }
   setStatus("Deleted selected element.");
 }
 
@@ -2405,6 +2430,7 @@ function applySampleEditorOptions(options = {}) {
     state.selectedPaletteId = paletteId;
     if (refs.paletteSelect instanceof HTMLSelectElement) {
       refs.paletteSelect.value = paletteId;
+      refs.paletteSelect.dataset.locked = "1";
       refs.paletteSelect.disabled = true;
     }
   }
@@ -2659,6 +2685,7 @@ function ensurePaletteSelectionFromDeclaredInputs(editorOptions = {}, sampleId =
       if (firstPaletteOption) {
         state.selectedPaletteId = String(firstPaletteOption.id);
         if (refs.paletteSelect instanceof HTMLSelectElement) {
+          refs.paletteSelect.dataset.locked = "0";
           refs.paletteSelect.disabled = false;
           refs.paletteSelect.value = state.selectedPaletteId;
         }
@@ -2677,6 +2704,7 @@ function ensurePaletteSelectionFromDeclaredInputs(editorOptions = {}, sampleId =
   upsertPaletteOption(paletteId, paletteLabel);
   state.selectedPaletteId = paletteId;
   if (refs.paletteSelect instanceof HTMLSelectElement) {
+    refs.paletteSelect.dataset.locked = "0";
     refs.paletteSelect.disabled = false;
     refs.paletteSelect.value = paletteId;
   }
@@ -3094,7 +3122,6 @@ function bindEvents() {
       if (state.selectedPaletteId === NO_PALETTE_ID) {
         setStatus("Palette selection cleared. Choose a palette set to show colors.");
       } else if (state.selectedPaletteId !== previousPaletteId) {
-        refs.paletteSelect.disabled = true;
         setStatus(`Palette set changed to ${selectedLabel}.`);
       }
     });
@@ -3336,8 +3363,47 @@ const vectorAssetStudioApi = {
     state.zoom = Number.isFinite(Number(snapshot?.zoom)) ? Number(snapshot.zoom) : state.zoom;
     state.panX = Number.isFinite(Number(snapshot?.panX)) ? Number(snapshot.panX) : state.panX;
     state.panY = Number.isFinite(Number(snapshot?.panY)) ? Number(snapshot.panY) : state.panY;
+    if (typeof snapshot?.selectedPaletteId === "string" && snapshot.selectedPaletteId.trim()) {
+      const candidatePaletteId = snapshot.selectedPaletteId.trim();
+      const hasCandidatePalette = candidatePaletteId === NO_PALETTE_ID
+        || Object.prototype.hasOwnProperty.call(state.paletteGroups, candidatePaletteId);
+      if (hasCandidatePalette) {
+        state.selectedPaletteId = candidatePaletteId;
+      }
+    }
+    if (typeof snapshot?.activePaletteTarget === "string") {
+      setPaletteTarget(snapshot.activePaletteTarget, { silent: true });
+    }
+    if (Number.isFinite(Number(snapshot?.strokeWidth))) {
+      state.strokeWidth = clamp(snapshot.strokeWidth, 0, 128, state.strokeWidth);
+      refs.strokeWidthInput.value = String(state.strokeWidth);
+    }
+    if (Number.isFinite(Number(snapshot?.gradientAngle))) {
+      state.gradientAngle = clamp(snapshot.gradientAngle, -360, 360, state.gradientAngle);
+      if (refs.gradientAngleInput instanceof HTMLInputElement) {
+        refs.gradientAngleInput.value = String(Math.round(state.gradientAngle));
+      }
+    }
+    renderPaletteSelect();
+    renderMainPaletteGrid();
+    renderUsedColorStrip();
+    const snapshotSelectionId = typeof snapshot?.selectedId === "string" ? snapshot.selectedId.trim() : "";
+    const snapshotSelectedElement = snapshotSelectionId
+      ? refs.sceneRoot.querySelector(`[data-editor-id="${snapshotSelectionId}"]`)
+      : null;
+    if (snapshotSelectedElement instanceof SVGElement) {
+      selectElement(snapshotSelectedElement);
+    } else {
+      const firstElement = getDrawableElements()[0] || null;
+      if (firstElement) {
+        selectElement(firstElement);
+      } else {
+        clearSelection();
+      }
+    }
     refs.zoomPercentInput.value = String(Math.round(state.zoom * 100));
     updateViewTransform();
+    applyEnablementState();
     setStatus(`Project state loaded for ${state.documentName}.`);
     return true;
   }
