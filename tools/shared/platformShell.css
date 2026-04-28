@@ -814,6 +814,48 @@ html:fullscreen body.tools-platform-surface > [data-tools-platform-status] {
   flex: 0 0 auto;
 }
 
+html:fullscreen body.tools-platform-surface > .is-collapsible > .is-collapsible__summary[data-fullscreen-summary-active="1"] {
+  display: grid;
+  grid-template-rows: auto auto;
+  gap: 2px;
+  align-items: start;
+  padding: 8px 12px;
+  color: transparent;
+  font-size: 0;
+  line-height: 0;
+}
+
+html:fullscreen body.tools-platform-surface > .is-collapsible > .is-collapsible__summary[data-fullscreen-summary-active="1"]::before,
+html:fullscreen body.tools-platform-surface > .is-collapsible > .is-collapsible__summary[data-fullscreen-summary-active="1"]::after {
+  display: block;
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: min(100%, 140ch);
+}
+
+html:fullscreen body.tools-platform-surface > .is-collapsible > .is-collapsible__summary[data-fullscreen-summary-active="1"]::before {
+  content: attr(data-fullscreen-header);
+  color: #ffffff;
+  font-size: 0.98rem;
+  line-height: 1.2;
+  font-weight: 700;
+}
+
+html:fullscreen body.tools-platform-surface > .is-collapsible > .is-collapsible__summary[data-fullscreen-summary-active="1"]::after {
+  content: attr(data-fullscreen-intro);
+  color: #f5eaff;
+  font-size: 0.82rem;
+  line-height: 1.2;
+  font-weight: 500;
+}
+
+html:fullscreen body.tools-platform-surface > .is-collapsible > .is-collapsible__summary[data-fullscreen-summary-active="1"][data-fullscreen-summary-error="1"]::before,
+html:fullscreen body.tools-platform-surface > .is-collapsible > .is-collapsible__summary[data-fullscreen-summary-active="1"][data-fullscreen-summary-error="1"]::after {
+  color: #ffd4d4;
+}
+
 html:fullscreen body.tools-platform-surface > .wrap,
 html:fullscreen body.tools-platform-surface > .app-shell,
 html:fullscreen body.tools-platform-surface > .app {

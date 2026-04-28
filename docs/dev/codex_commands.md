@@ -2,49 +2,64 @@ MODEL: GPT-5.3-codex
 REASONING: low
 
 PR purpose:
-Fix two Tools UAT blockers only:
-1. Fullscreen Header and Intro must include active tool name.
-2. Asset Browser sample 0204 must show clear actionable empty/missing/invalid source state.
+Fix the remaining fullscreen-only Header and Intro blocker.
 
-Do not advance King of the Iceberg work.
-Do not modify sample games, runtime engine files, or start_of_day folders.
-Do not add new features.
+Problem:
+Prior changes had no visible effect in fullscreen mode. Find and fix the actual fullscreen render path.
 
-Header/Intro requirements:
-- In fullscreen mode, header includes:
-  <Tool Name> — <Short Description>
-- In fullscreen mode, intro includes:
-  <Tool Name>: <one-line usage/help text>
-- Keep both compact and single-line where possible.
-- Use ellipsis and tooltip/title for overflow.
-- If required metadata is missing, show actionable configuration error.
-- Do not use silent fallback generic text.
+Scope:
+- fullscreen header rendering
+- fullscreen intro rendering
+- shared platform shell fullscreen path
+- tool metadata binding for fullscreen
 
-Asset Browser 0204 requirements:
-- Inspect launch path/state for sample 0204.
-- Current observed text says 0 approved assets from:
-  active-project-manifest.tools.asset-browser.assets
-- Make UI clearly distinguish:
-  - source exists but empty
-  - source missing
-  - source invalid
-  - source load failure
-- If source exists but empty, show:
-  source checked, result count, and next action.
-- Do not auto-load fallback/default/sample assets.
+Do not modify:
+- King of the Iceberg files
+- sample games
+- runtime engine files
+- start_of_day folders
+
+Required visible fullscreen behavior:
+Header:
+<Tool Name> — <Short Description>
+
+Intro:
+<Tool Name>: <one-line usage/help text>
+
+Both must include the active tool name.
+
+Implementation requirements:
+- Identify actual fullscreen DOM elements.
+- Bind fullscreen DOM to active tool metadata.
+- Update on launch, entering fullscreen, and tool switch.
+- Do not use stale normal-mode content.
+- Do not silently fallback to generic intro text.
+- If metadata missing, show actionable configuration error.
+- Add explicit intro metadata to registry if needed.
+
+Validate tools:
+- Vector Map Editor
+- Vector Asset Studio
+- Sprite Editor
+- State Inspector
+- Asset Browser if it uses shared fullscreen shell
 
 Targeted validation only:
-- node --check changed JS files.
-- Validate fullscreen header/intro on affected tools.
-- Validate Asset Browser sample 0204.
-- Do not run long sample suite unless required.
+- node --check changed JS files only.
+- Do not run long samples suite.
+
+Create evidence:
+tmp/pr_tool_uat_fix_fullscreen_header_wiring_validation.json
 
 Create report:
-docs/dev/reports/PR_tool_uat_fix_header_asset_browser_report.md
+docs/dev/reports/PR_tool_uat_fix_fullscreen_header_wiring_report.md
 
 Report:
 - PASS/FAIL
 - changed files
-- validation performed
-- Asset Browser 0204 observed final state
+- root cause
+- fullscreen DOM path fixed
+- visible fullscreen header text per tool
+- visible fullscreen intro text per tool
+- validation commands/results
 - remaining issues

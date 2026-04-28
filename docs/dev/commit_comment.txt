@@ -1,7 +1,7 @@
-Fix fullscreen tool naming and Asset Browser empty-state clarity
+Fix fullscreen header and intro wiring
 
-- Ensure fullscreen header includes active tool name
-- Ensure fullscreen intro includes active tool name
-- Keep header/intro compact with truncation support
-- Clarify Asset Browser 0204 empty/missing/invalid source states
-- Preserve no-silent-fallback behavior
+- Bind actual fullscreen DOM path to active tool metadata
+- Show tool name in fullscreen header and intro
+- Add/validate compact single-line fullscreen text
+- Preserve actionable metadata errors with no silent fallback
+- Add browser evidence for visible fullscreen text

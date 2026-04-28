@@ -172,6 +172,7 @@ export const TOOL_REGISTRY = Object.freeze([
     id: "asset-browser",
     name: "Asset Browser / Import Hub",
     displayName: "Asset Browser / Import Hub",
+    shortDescription: "Approved asset browse and import planning",
     shortLabel: "Import",
     path: "Asset Browser",
     folderName: "Asset Browser",

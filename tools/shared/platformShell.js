@@ -21,6 +21,7 @@ let headerExpandedState = null;
 let runtimeMonitoringHooks = null;
 let bindingRefreshHandlersBound = false;
 let workspacePagerDelegatedBound = false;
+let fullscreenSummaryBindingBound = false;
 let lastWorkspaceUiStateKey = "";
 let lastLockedSurfaceElement = null;
 const sidebarAccordionState = new Map();
@@ -38,6 +39,13 @@ const STANDARDIZED_TOOL_HEADER_IDS = new Set([
   "vector-asset-studio",
   "sprite-editor",
   "state-inspector"
+]);
+const FULLSCREEN_METADATA_TOOL_IDS = new Set([
+  "vector-map-editor",
+  "vector-asset-studio",
+  "sprite-editor",
+  "state-inspector",
+  "asset-browser"
 ]);
 const PRESERVED_TOOL_STATE_KEYS = new Set([
   HEADER_EXPANDED_STORAGE_KEY,
@@ -154,6 +162,69 @@ function buildHostedRegistryEntryHref(toolEntry) {
 
 function normalizeTextValue(value) {
   return typeof value === "string" ? value.trim() : "";
+}
+
+function normalizeSingleLineText(value) {
+  return normalizeTextValue(value).replace(/\s+/g, " ");
+}
+
+function buildFullscreenHeaderSummaryData(currentTool) {
+  const toolId = normalizeTextValue(currentTool?.id);
+  if (!toolId || !FULLSCREEN_METADATA_TOOL_IDS.has(toolId)) {
+    return null;
+  }
+  const toolName = normalizeSingleLineText(currentTool?.name);
+  const toolShortDescription = normalizeSingleLineText(currentTool?.shortDescription);
+  const toolDescription = normalizeSingleLineText(currentTool?.description);
+  const headerText = toolName && toolShortDescription
+    ? `${toolName} — ${toolShortDescription}`
+    : `Configuration error: ${toolId} header requires tool.name and tool.shortDescription in tools/toolRegistry.js.`;
+  const introText = toolName && toolDescription
+    ? `${toolName}: ${toolDescription}`
+    : `Configuration error: ${toolId} intro requires tool.name and tool.description in tools/toolRegistry.js.`;
+  const hasConfigError = !(toolName && toolShortDescription && toolDescription);
+  return {
+    toolId,
+    headerText,
+    introText,
+    hasConfigError
+  };
+}
+
+function syncFullscreenHeaderSummary(currentTool) {
+  const pageHeaderAccordion = queryFirst(".is-collapsible");
+  const summaryElement = pageHeaderAccordion instanceof HTMLElement
+    ? pageHeaderAccordion.querySelector(".is-collapsible__summary")
+    : null;
+  if (!(summaryElement instanceof HTMLElement)) {
+    return;
+  }
+
+  const summaryData = buildFullscreenHeaderSummaryData(currentTool);
+  if (!summaryData) {
+    summaryElement.removeAttribute("data-fullscreen-header");
+    summaryElement.removeAttribute("data-fullscreen-intro");
+    summaryElement.removeAttribute("data-fullscreen-summary-active");
+    summaryElement.removeAttribute("data-fullscreen-summary-error");
+    summaryElement.removeAttribute("title");
+    return;
+  }
+
+  summaryElement.setAttribute("data-fullscreen-header", summaryData.headerText);
+  summaryElement.setAttribute("data-fullscreen-intro", summaryData.introText);
+  summaryElement.setAttribute("data-fullscreen-summary-active", "1");
+  summaryElement.setAttribute("data-fullscreen-summary-error", summaryData.hasConfigError ? "1" : "0");
+  summaryElement.setAttribute("title", `${summaryData.headerText}\n${summaryData.introText}`);
+}
+
+function bindFullscreenSummaryEvents(currentTool) {
+  if (fullscreenSummaryBindingBound) {
+    return;
+  }
+  fullscreenSummaryBindingBound = true;
+  document.addEventListener("fullscreenchange", () => {
+    syncFullscreenHeaderSummary(currentTool);
+  });
 }
 
 function normalizeLocalHref(value, allowedPrefixes) {
@@ -1572,6 +1643,7 @@ function renderShell(currentTool) {
   if (headerHost) {
     headerHost.innerHTML = renderHeaderMarkup(currentTool, isHeaderExpanded);
   }
+  syncFullscreenHeaderSummary(currentTool);
   bindWorkspacePagerDelegatedEvents();
 
   if (pageHeaderAccordion instanceof HTMLDetailsElement) {
@@ -1579,6 +1651,7 @@ function renderShell(currentTool) {
     bindEventHandlers(pageHeaderAccordion, "toggle", () => {
       headerExpandedState = pageHeaderAccordion.open;
       writeStoredHeaderExpandedState(pageHeaderAccordion.open);
+      syncFullscreenHeaderSummary(currentTool);
     });
   }
 
@@ -1588,6 +1661,7 @@ function renderShell(currentTool) {
 
   applySidebarAccordionRules();
   bindWorkspaceShellEvents(currentTool);
+  bindFullscreenSummaryEvents(currentTool);
 }
 
 function bindLiveBindingRefresh(currentTool) {
