@@ -1,1 +1,1 @@
-Stabilize Vector Map Editor with default selection and consistent control behavior under unified UX contract - PR 10.12
+Finalize workspace lifecycle control and persistent tool state across all tools - PR 10.13

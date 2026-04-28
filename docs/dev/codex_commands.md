@@ -1,11 +1,10 @@
 model: gpt-5.3-codex
 reasoning: medium
 
-Apply PR_10_12_VECTOR_MAP_EDITOR_UAT
+Apply PR_10_13_WORKSPACE_INTEGRATION_POLISH
 
-- Add first-element auto-selection
-- Add selection highlight
-- Enforce control enable/disable rules
-- Ensure no flicker/reset
-- Ensure workspace stability
+- Move lifecycle control to workspace
+- Prevent tool self-reset logic
+- Preserve tool state during navigation
+- Ensure stable tool switching
 - Do not modify data layer
