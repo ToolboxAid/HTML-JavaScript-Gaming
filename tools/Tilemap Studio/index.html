@@ -24,7 +24,7 @@ index.html
     </div>
   </details>
   <div class="app-shell" id="appShell">
-    <header class="toolbar">
+    <header class="toolbar" data-tool-ux-zone="top-bar">
       <div class="toolbar-group tools-platform-control-cluster tools-platform-control-cluster--primary">
         <button id="loadAssetRegistryButton" type="button">Load Assets Registry</button>
         <input id="loadAssetRegistryInput" class="hidden-file-input" type="file" accept=".json,application/json" />
@@ -76,7 +76,7 @@ index.html
     </header>
 
     <div class="workspace tools-platform-layout-grid">
-      <aside class="sidebar left-sidebar tools-platform-resize-panel" data-panel-side="left" id="leftSidebar">
+      <aside class="sidebar left-sidebar tools-platform-resize-panel" data-panel-side="left" id="leftSidebar" data-tool-ux-zone="left-panel">
         <details class="panel-accordion" id="leftPanelTileset" open>
           <summary class="panel-accordion__summary"><h3>Tileset</h3></summary>
           <div class="panel-accordion__body">
@@ -130,7 +130,7 @@ index.html
         </details>
       </aside>
 
-      <main class="canvas-panel">
+      <main class="canvas-panel" data-tool-ux-zone="center-canvas">
         <div class="canvas-toolbar">
           <strong>Map Canvas</strong>
           <label class="canvas-zoom-control" for="canvasZoomInput">
@@ -171,7 +171,7 @@ index.html
         <div id="statusText" class="status-text">Ready.</div>
       </main>
 
-      <aside class="sidebar right-sidebar tools-platform-resize-panel" data-panel-side="right" id="rightSidebar">
+      <aside class="sidebar right-sidebar tools-platform-resize-panel" data-panel-side="right" id="rightSidebar" data-tool-ux-zone="right-panel">
         <details class="panel-accordion" id="rightPanelLayers" open>
           <summary class="panel-accordion__summary"><h3>Layers</h3></summary>
           <div class="panel-accordion__body">

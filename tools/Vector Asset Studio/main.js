@@ -17,6 +17,11 @@ import {
   logToolUiFinalReady,
   logToolUiLifecycle
 } from "../shared/toolLoadDiagnostics.js";
+import {
+  TOOL_UX_LIFECYCLE,
+  getUnifiedEmptyStateMessage,
+  setToolUxLifecycleState
+} from "../shared/unifiedToolUxContract.js";
 import { normalizeToolSamplePath } from "../shared/toolSampleCatalog.js";
 import {
   readSharedAssetHandoff,
@@ -156,6 +161,10 @@ const refs = {
   toggleElementVisibilityButton: document.getElementById("toggleElementVisibilityButton"),
   toggleAllVisibilityButton: document.getElementById("toggleAllVisibilityButton")
 };
+
+function setVectorAssetLifecycle(stateName, details = {}) {
+  setToolUxLifecycleState("vector-asset-studio", stateName, details);
+}
 
 function clamp(value, min, max, fallback) {
   const numeric = Number(value);
@@ -897,6 +906,27 @@ function getSelectedElement() {
   return refs.sceneRoot.querySelector(`[data-editor-id="${state.selectedId}"]`);
 }
 
+function syncVectorAssetUxContract(options = {}) {
+  const interactive = options.interacting === true;
+  const drawableCount = getDrawableElements().length;
+  const hasSelection = Boolean(getSelectedElement());
+  if (interactive) {
+    setVectorAssetLifecycle(TOOL_UX_LIFECYCLE.INTERACTING, {
+      drawableCount,
+      hasSelection
+    });
+    return;
+  }
+  if (drawableCount <= 0) {
+    setVectorAssetLifecycle(TOOL_UX_LIFECYCLE.READY_EMPTY, { drawableCount });
+    return;
+  }
+  setVectorAssetLifecycle(
+    hasSelection ? TOOL_UX_LIFECYCLE.READY_SELECTED : TOOL_UX_LIFECYCLE.READY_EMPTY,
+    { drawableCount, hasSelection }
+  );
+}
+
 function isElementHidden(element) {
   if (!(element instanceof SVGElement)) {
     return false;
@@ -1019,14 +1049,17 @@ function getSelectionViewportRect(element) {
 }
 
 function clearSelection() {
+  syncVectorAssetUxContract({ interacting: true });
   state.selectedId = null;
   refs.selectionReadout.textContent = "No element selected.";
   refs.selectionOverlay.classList.add("hidden");
   renderElementList();
   applyEnablementState();
+  syncVectorAssetUxContract();
 }
 
 function selectElement(element) {
+  syncVectorAssetUxContract({ interacting: true });
   if (!(element instanceof SVGElement)) {
     clearSelection();
     return;
@@ -1041,6 +1074,7 @@ function selectElement(element) {
   renderElementList();
   updateSelectionOverlay();
   applyEnablementState();
+  syncVectorAssetUxContract();
 }
 
 function updateSelectionOverlay() {
@@ -1089,10 +1123,11 @@ function renderElementList() {
   if (elements.length === 0) {
     const item = document.createElement("li");
     item.className = "muted";
-    item.textContent = "No drawable elements.";
+    item.textContent = getUnifiedEmptyStateMessage();
     refs.elementList.appendChild(item);
     updateCanvasMeta();
     applyEnablementState();
+    syncVectorAssetUxContract();
     return;
   }
 
@@ -1125,6 +1160,7 @@ function renderElementList() {
 
   updateCanvasMeta();
   applyEnablementState();
+  syncVectorAssetUxContract();
 }
 
 function setCanvasSize(width, height) {
@@ -1158,6 +1194,7 @@ function createNewDocument() {
   refreshUsedColors();
   applyEnablementState();
   setStatus("Created new SVG background document.");
+  syncVectorAssetUxContract();
 }
 
 function setZoom(nextZoom, anchorClientPoint = null) {
@@ -2296,6 +2333,10 @@ function loadSvgFromText(svgText, sourceName = "loaded-svg") {
   state.documentName = sourceName.replace(/\.svg$/i, "") || "loaded-background";
   clearSelection();
   renderElementList();
+  const firstElement = getDrawableElements()[0] || null;
+  if (firstElement && !getSelectedElement()) {
+    selectElement(firstElement);
+  }
   refreshUsedColors();
   if (embeddedEditorOptions) {
     applySampleEditorOptions(embeddedEditorOptions);
@@ -2303,6 +2344,7 @@ function loadSvgFromText(svgText, sourceName = "loaded-svg") {
   bindPaintAndStrokeFromLoadedData();
   applyEnablementState();
   setStatus(embeddedEditorOptions ? `Loaded SVG: ${sourceName} (embedded editor options applied).` : `Loaded SVG: ${sourceName}`);
+  syncVectorAssetUxContract();
 }
 
 function resolvePaletteIdFromConfig(value) {
@@ -2786,6 +2828,7 @@ function emitVectorAssetControlReadiness(sampleId = "", options = {}) {
 }
 
 async function tryLoadPresetFromQuery() {
+  setVectorAssetLifecycle(TOOL_UX_LIFECYCLE.LOADING);
   const searchParams = new URLSearchParams(window.location.search);
   const samplePresetPath = normalizeSamplePresetPath(searchParams.get("samplePresetPath") || "");
   const launchQuery = getToolLoadQuerySnapshot(searchParams);
@@ -2803,6 +2846,7 @@ async function tryLoadPresetFromQuery() {
       launchQuery,
       classification: "missing"
     });
+    syncVectorAssetUxContract();
     return false;
   }
 
@@ -2918,6 +2962,7 @@ async function tryLoadPresetFromQuery() {
       });
     }
     setStatus(buildPresetLoadedStatus(sampleId, samplePresetPath));
+    syncVectorAssetUxContract();
     return true;
   } catch (error) {
     emitVectorAssetControlReadiness(sampleId, { forceMissing: true, phase: "error", lifecycleStable: false });
@@ -2929,6 +2974,7 @@ async function tryLoadPresetFromQuery() {
       classification: loadClassification || "wrong-shape"
     });
     setStatus(`Preset load failed: ${error instanceof Error ? error.message : "unknown error"}`);
+    syncVectorAssetUxContract();
     return false;
   }
 }
@@ -3220,6 +3266,7 @@ function bindEvents() {
 }
 
 async function initialize() {
+  setVectorAssetLifecycle(TOOL_UX_LIFECYCLE.INIT);
   ensurePaletteSelectControl();
   const paletteCatalog = loadPaletteCatalogFromExistingWorkflow();
   state.paletteGroups = paletteCatalog.paletteGroups;
@@ -3243,6 +3290,7 @@ async function initialize() {
   if (!presetLoaded) {
     setStatus("Vector Asset Studio ready.");
   }
+  syncVectorAssetUxContract();
 }
 
 const vectorAssetStudioApi = {

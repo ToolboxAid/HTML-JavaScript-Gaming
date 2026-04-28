@@ -29,6 +29,11 @@ import {
   logToolUiFinalReady,
   logToolUiLifecycle
 } from "../../shared/toolLoadDiagnostics.js";
+import {
+  TOOL_UX_LIFECYCLE,
+  getUnifiedEmptyStateMessage,
+  setToolUxLifecycleState
+} from "../../shared/unifiedToolUxContract.js";
 
 function normalizeDegrees(value) {
   const numeric = Number(value || 0);
@@ -135,6 +140,28 @@ export class VectorMapEditorApp {
     this.createInteractionController();
   }
 
+  setUxLifecycleState(state, details = {}) {
+    setToolUxLifecycleState("vector-map-editor", state, details);
+  }
+
+  markInteracting(details = {}) {
+    this.setUxLifecycleState(TOOL_UX_LIFECYCLE.INTERACTING, details);
+  }
+
+  syncUxContractState() {
+    const data = this.documentModel?.getData?.() || {};
+    const objectCount = Array.isArray(data.objects) ? data.objects.length : 0;
+    const hasSelection = Boolean(this.selectionModel.getSelection(this.documentModel).object);
+    if (objectCount <= 0) {
+      this.setUxLifecycleState(TOOL_UX_LIFECYCLE.READY_EMPTY, { objectCount });
+      return;
+    }
+    this.setUxLifecycleState(
+      hasSelection ? TOOL_UX_LIFECYCLE.READY_SELECTED : TOOL_UX_LIFECYCLE.READY_EMPTY,
+      { objectCount, hasSelection }
+    );
+  }
+
   createInteractionController() {
     this.interactionController = new VectorMapInteractionController({
       documentModel: this.documentModel,
@@ -238,6 +265,7 @@ export class VectorMapEditorApp {
   }
 
   start() {
+    this.setUxLifecycleState(TOOL_UX_LIFECYCLE.INIT);
     this.ctx = this.elements.canvas.getContext("2d");
     this.historyManager.reset();
     this.syncFullscreenLayoutHeight();
@@ -251,6 +279,7 @@ export class VectorMapEditorApp {
       this.resizeCanvas();
     });
     this.setStatus("Vector Map Editor ready.");
+    this.syncUxContractState();
     void this.tryLoadPresetFromQuery();
   }
 
@@ -344,6 +373,7 @@ export class VectorMapEditorApp {
   }
 
   async tryLoadPresetFromQuery() {
+    this.setUxLifecycleState(TOOL_UX_LIFECYCLE.LOADING);
     const searchParams = new URLSearchParams(window.location.search);
     const samplePresetPath = normalizeSamplePresetPath(searchParams.get("samplePresetPath") || "");
     const launchQuery = getToolLoadQuerySnapshot(searchParams);
@@ -361,6 +391,7 @@ export class VectorMapEditorApp {
         launchQuery,
         classification: "missing"
       });
+      this.syncUxContractState();
       return false;
     }
     const sampleId = String(searchParams.get("sampleId") || "").trim();
@@ -426,6 +457,7 @@ export class VectorMapEditorApp {
         });
       }
       this.setStatus(buildPresetLoadedStatus(sampleId, samplePresetPath));
+      this.syncUxContractState();
       return true;
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : "unknown error";
@@ -438,6 +470,7 @@ export class VectorMapEditorApp {
         classification: loadClassification || "wrong-shape"
       });
       this.setStatus(`Preset load failed: ${error instanceof Error ? error.message : "unknown error"}`);
+      this.syncUxContractState();
       return false;
     }
   }
@@ -449,6 +482,7 @@ export class VectorMapEditorApp {
       if (this.workspaceViewMode === "json") {
         return;
       }
+      this.markInteracting({ cause: "canvas-pointerdown" });
       this.beginPointerHistoryEntry(event);
       canvas.setPointerCapture(event.pointerId);
       this.interactionController.pointerDown(this.getCanvasPosition(event), this.getInteractionMeta(event));
@@ -1109,6 +1143,7 @@ export class VectorMapEditorApp {
     this.syncCollisionSummary();
     this.syncJsonEditor();
     this.syncStatus();
+    this.syncUxContractState();
   }
 
   syncSelectionFields() {
@@ -1145,6 +1180,53 @@ export class VectorMapEditorApp {
     this.elements.flagPlayerOnlyInput.checked = Boolean(flags.playerOnly);
     this.elements.flagEnemyOnlyInput.checked = Boolean(flags.enemyOnly);
     this.elements.flagTagInput.value = flags.tag || "";
+    const hasObjectSelection = Boolean(object);
+    [
+      this.elements.selectedObjectNameInput,
+      this.elements.duplicateObjectButton,
+      this.elements.deleteObjectButton,
+      this.elements.centerXInput,
+      this.elements.centerYInput,
+      this.elements.centerZInput,
+      this.elements.applyCenterButton,
+      this.elements.setCenterFromSelectionButton,
+      this.elements.autoCenterBoundsButton,
+      this.elements.autoCenterCentroidButton,
+      this.elements.autoCenterOriginButton,
+      this.elements.autoCenterSelectionButton,
+      this.elements.rotationXInput,
+      this.elements.rotationYInput,
+      this.elements.rotationZInput,
+      this.elements.rotationXDownButton,
+      this.elements.rotationXUpButton,
+      this.elements.rotationYDownButton,
+      this.elements.rotationYUpButton,
+      this.elements.rotationZDownButton,
+      this.elements.rotationZUpButton,
+      this.elements.applyRotationButton,
+      this.elements.resetRotationButton,
+      this.elements.rotatePointsDegreesInput,
+      this.elements.rotatePointsDegreesButton,
+      this.elements.spinAllPointsButton,
+      this.elements.objectStrokeInput,
+      this.elements.objectFillInput,
+      this.elements.objectLineWidthInput,
+      this.elements.objectColorModeSelect,
+      this.elements.selectedPointColorInput,
+      this.elements.applyPointColorButton,
+      this.elements.flagCollidableInput,
+      this.elements.flagDeadlyInput,
+      this.elements.flagTriggerInput,
+      this.elements.flagSpawnBlockerInput,
+      this.elements.flagProjectileBlockerInput,
+      this.elements.flagPlayerOnlyInput,
+      this.elements.flagEnemyOnlyInput,
+      this.elements.flagTagInput
+    ].forEach((control) => {
+      if (control && "disabled" in control) {
+        control.disabled = !hasObjectSelection;
+      }
+    });
 
     if (!object) {
       this.elements.pointsSummary.textContent = "No selection.";
@@ -1160,7 +1242,7 @@ export class VectorMapEditorApp {
     if (!objects.length) {
       const empty = document.createElement("li");
       empty.className = "object-item muted";
-      empty.textContent = "No objects loaded.";
+      empty.textContent = getUnifiedEmptyStateMessage();
       this.elements.objectList.appendChild(empty);
       return;
     }
@@ -1169,6 +1251,7 @@ export class VectorMapEditorApp {
       item.className = `object-item${this.selectionModel.isSelectedObject(object.id) ? " active" : ""}`;
       item.innerHTML = `<span>${object.name}</span><span class="muted">${object.space.toUpperCase()} | ${object.points.length}</span>`;
       item.addEventListener("click", () => {
+        this.markInteracting({ cause: "object-list-select" });
         this.selectionModel.selectObject(object.id);
         this.syncUIFromDocument();
         this.render();
@@ -1373,6 +1456,7 @@ export class VectorMapEditorApp {
   }
 
   performHistoryAction(label, action, shouldRefresh = true) {
+    this.markInteracting({ cause: "history-action", label });
     const beforeSnapshot = this.createHistorySnapshot();
     action?.();
     this.commitHistorySnapshot(label, beforeSnapshot);

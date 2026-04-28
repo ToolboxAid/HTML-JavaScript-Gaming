@@ -25,7 +25,7 @@ index.html
     </div>
   </details>
   <div class="app-shell" id="appShell">
-    <section class="toolbar-row">
+    <section class="toolbar-row" data-tool-ux-zone="top-bar">
       <div class="toolbar-group tools-platform-control-cluster tools-platform-control-cluster--primary">
         <label>Width
           <input id="canvasWidthInput" type="number" min="1" max="256" value="32" />
@@ -64,7 +64,7 @@ index.html
     </section>
 
     <section class="workspace tools-platform-layout-grid">
-      <div id="leftSidebar" class="left-panel tools-platform-resize-panel" data-panel-side="left">
+      <div id="leftSidebar" class="left-panel tools-platform-resize-panel" data-panel-side="left" data-tool-ux-zone="left-panel">
         <details class="panel-accordion" id="leftPanelColors" open>
           <summary class="panel-accordion__summary"><h2>Colors</h2></summary>
           <div class="panel-accordion__body">
@@ -143,7 +143,7 @@ index.html
         </details>
       </div>
 
-      <div class="center-panel">
+      <div class="center-panel" data-tool-ux-zone="center-canvas">
         <div class="fullscreen-overlay-toggle-group fullscreen-overlay-toggle-group--left">
           <button type="button" class="fullscreen-overlay-button" data-overlay-toggle data-overlay-side="left" data-overlay-target="leftPanelColors" aria-expanded="false">
             <span class="overlay-toggle-symbol" aria-hidden="true">+</span>
@@ -173,7 +173,7 @@ index.html
         </div>
       </div>
 
-      <div id="rightSidebar" class="right-panel tools-platform-resize-panel" data-panel-side="right">
+      <div id="rightSidebar" class="right-panel tools-platform-resize-panel" data-panel-side="right" data-tool-ux-zone="right-panel">
         <details class="panel-accordion" id="rightPanelPreview" open>
           <summary class="panel-accordion__summary"><h2>Preview</h2></summary>
           <div class="panel-accordion__body">

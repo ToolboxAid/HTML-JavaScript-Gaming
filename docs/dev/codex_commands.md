@@ -1,8 +1,15 @@
-# Codex Commands — PR 10.6V
+# CODEX COMMANDS
 
-Model: GPT-5.4
-Reasoning: high
+model: gpt-5.3-codex
+reasoning: medium
 
-```powershell
-codex "Execute PR 10.6V from docs/pr/PR_10_6V_FINAL_DOD.md. Make the smallest scoped implementation changes required to satisfy the DoD. Do not broaden scope. Do not add fallback/demo data. Do not hardcode sample paths. Preserve manifest-driven input contracts. Create required reports under docs/dev/reports. Run npm run test:launch-smoke:games and npm run test:sample-standalone:data-flow. Package the result as <project>/tmp/PR_10_6V.zip."
-```
+Apply PR_10_7_UNIFIED_TOOL_UX_CONTRACT
+
+- Implement shared layout zones across all tools
+- Enforce lifecycle states
+- Add first-item auto-selection
+- Enforce control enable/disable rules
+- Add explicit empty-state UI (no fallback data)
+- Ensure tools behave correctly inside workspace (no reset, no auto-close)
+- Do not modify data layer
+- Do not refactor unrelated code

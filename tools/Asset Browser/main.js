@@ -19,6 +19,11 @@ import {
   logToolUiLifecycle
 } from "../shared/toolLoadDiagnostics.js";
 import { ACTIVE_PROJECT_STORAGE_KEY } from "../shared/projectManifestContract.js";
+import {
+  TOOL_UX_LIFECYCLE,
+  getUnifiedEmptyStateMessage,
+  setToolUxLifecycleState
+} from "../shared/unifiedToolUxContract.js";
 
 const APPROVED_DESTINATIONS = Object.freeze({
   "Vector Assets": "games/<project>/assets/vectors/",
@@ -103,6 +108,48 @@ const state = {
     checkedSources: []
   }
 };
+
+function setAssetBrowserLifecycle(stateName, details = {}) {
+  setToolUxLifecycleState("asset-browser", stateName, details);
+}
+
+function ensureFirstVisibleAssetSelection(entries) {
+  const source = Array.isArray(entries) ? entries : [];
+  if (source.length <= 0) {
+    state.selectedAssetId = "";
+    return false;
+  }
+  const hasCurrent = source.some((entry) => entry.id === state.selectedAssetId);
+  if (hasCurrent) {
+    return false;
+  }
+  state.selectedAssetId = source[0].id;
+  return true;
+}
+
+function syncAssetBrowserUxContract(options = {}) {
+  const interactive = options.interacting === true;
+  const approvedCount = Array.isArray(state.assetCatalog) ? state.assetCatalog.length : 0;
+  const hasSelection = Boolean(getSelectedAsset());
+  if (refs.useAssetInToolButton instanceof HTMLButtonElement) {
+    refs.useAssetInToolButton.disabled = !hasSelection;
+  }
+  if (interactive) {
+    setAssetBrowserLifecycle(TOOL_UX_LIFECYCLE.INTERACTING, {
+      approvedCount,
+      hasSelection
+    });
+    return;
+  }
+  if (approvedCount <= 0) {
+    setAssetBrowserLifecycle(TOOL_UX_LIFECYCLE.READY_EMPTY, { approvedCount });
+    return;
+  }
+  setAssetBrowserLifecycle(
+    hasSelection ? TOOL_UX_LIFECYCLE.READY_SELECTED : TOOL_UX_LIFECYCLE.READY_EMPTY,
+    { approvedCount, hasSelection }
+  );
+}
 
 function sanitizeText(value) {
   return typeof value === "string" ? value.trim() : "";
@@ -834,6 +881,7 @@ function populateDestinationOptions(category) {
 
 function renderAssetList() {
   const entries = getVisibleAssets();
+  ensureFirstVisibleAssetSelection(entries);
   refs.countText.textContent = buildApprovedAssetStatusText(entries.length, state.catalogLoadInfo);
   refs.assetList.innerHTML = entries.length > 0
     ? entries.map((entry) => {
@@ -846,20 +894,16 @@ function renderAssetList() {
       </button>
     `;
     }).join("")
-    : `<p class="asset-browser__empty">${buildApprovedAssetEmptyStateText(state.catalogLoadInfo)}</p>`;
-
-  if (!entries.some((entry) => entry.id === state.selectedAssetId)) {
-    state.selectedAssetId = "";
-  }
+    : `<p class="asset-browser__empty">${getUnifiedEmptyStateMessage()} ${buildApprovedAssetEmptyStateText(state.catalogLoadInfo)}</p>`;
 }
 
 async function renderPreview() {
   const selectedAsset = getSelectedAsset();
   if (!selectedAsset) {
     refs.previewTitle.textContent = "Preview";
-    refs.previewMeta.textContent = "Select an approved asset from the catalog.";
-    refs.previewCanvas.innerHTML = '<p class="asset-browser__empty">No asset selected.</p>';
-    refs.previewText.textContent = "Choose a file to inspect metadata and content.";
+    refs.previewMeta.textContent = getUnifiedEmptyStateMessage();
+    refs.previewCanvas.innerHTML = `<p class="asset-browser__empty">${getUnifiedEmptyStateMessage()}</p>`;
+    refs.previewText.textContent = "Load or create asset.";
     return;
   }
 
@@ -1038,17 +1082,21 @@ function syncImportFormFromFile() {
 
 function bindEvents() {
   refs.categoryFilter.addEventListener("change", () => {
+    syncAssetBrowserUxContract({ interacting: true });
     state.selectedCategory = refs.categoryFilter.value;
     renderAssetList();
     renderPreview();
     emitAssetBrowserControlReadiness();
+    syncAssetBrowserUxContract();
   });
 
   refs.searchInput.addEventListener("input", () => {
+    syncAssetBrowserUxContract({ interacting: true });
     state.search = refs.searchInput.value;
     renderAssetList();
     renderPreview();
     emitAssetBrowserControlReadiness();
+    syncAssetBrowserUxContract();
   });
 
   refs.assetList.addEventListener("click", (event) => {
@@ -1056,31 +1104,44 @@ function bindEvents() {
     if (!(button instanceof HTMLElement)) {
       return;
     }
+    syncAssetBrowserUxContract({ interacting: true });
     state.selectedAssetId = button.dataset.assetId || "";
     renderAssetList();
     renderPreview();
     emitAssetBrowserControlReadiness();
+    syncAssetBrowserUxContract();
   });
 
-  refs.importFileInput.addEventListener("change", syncImportFormFromFile);
+  refs.importFileInput.addEventListener("change", () => {
+    syncAssetBrowserUxContract({ interacting: true });
+    syncImportFormFromFile();
+    syncAssetBrowserUxContract();
+  });
   refs.importCategorySelect.addEventListener("change", () => {
+    syncAssetBrowserUxContract({ interacting: true });
     populateDestinationOptions(refs.importCategorySelect.value);
     renderImportPlan();
     emitAssetBrowserControlReadiness();
+    syncAssetBrowserUxContract();
   });
   refs.importNameInput.addEventListener("input", () => {
+    syncAssetBrowserUxContract({ interacting: true });
     renderImportPlan();
     emitAssetBrowserControlReadiness();
+    syncAssetBrowserUxContract();
   });
   refs.validateImportButton.addEventListener("click", () => {
+    syncAssetBrowserUxContract({ interacting: true });
     renderImportPlan();
     emitAssetBrowserControlReadiness();
+    syncAssetBrowserUxContract();
   });
   refs.downloadImportPlanButton.addEventListener("click", downloadImportPlan);
   refs.useAssetInToolButton.addEventListener("click", useSelectedAssetInActiveTool);
 }
 
 async function init() {
+  setAssetBrowserLifecycle(TOOL_UX_LIFECYCLE.LOADING);
   await hydrateApprovedAssetCatalog();
   const approvedAssetsState = String(state.catalogLoadInfo?.status || APPROVED_ASSET_STATUS.sourceMissing);
   const approvedClassification = approvedAssetsState === APPROVED_ASSET_STATUS.loadedEmpty
@@ -1114,6 +1175,7 @@ async function init() {
   await renderPreview();
   renderImportPlan();
   emitAssetBrowserControlReadiness();
+  syncAssetBrowserUxContract();
   bindEvents();
 }
 
@@ -1150,6 +1212,7 @@ const assetBrowserApi = {
 
 function bootAssetBrowser() {
   if (!initialized) {
+    setAssetBrowserLifecycle(TOOL_UX_LIFECYCLE.INIT);
     void init().then(() => tryLoadPresetFromQuery());
     initialized = true;
   }

@@ -1,1 +1,1 @@
-Enforce final tool UI DoD selection, enablement, lifecycle, and empty-state gates - PR 10.6V
+Unify tool UI/UX contract and enforce consistent lifecycle, selection, and workspace behavior - PR 10.7

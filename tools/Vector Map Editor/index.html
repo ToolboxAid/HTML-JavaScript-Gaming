@@ -54,7 +54,7 @@ index.html
     </div>
   </details>
   <div class="app" id="appRoot">
-    <div class="toolbar">
+    <div class="toolbar" data-tool-ux-zone="top-bar">
       <div class="toolbar-group tools-platform-control-cluster tools-platform-control-cluster--primary">
         <button id="newDocumentButton">New</button>
         <button id="undoButton" type="button" disabled>Undo</button>
@@ -106,7 +106,7 @@ index.html
       </div>
     </div>
 
-    <aside class="sidebar tools-platform-resize-panel" data-panel-side="left" id="leftSidebar">
+    <aside class="sidebar tools-platform-resize-panel" data-panel-side="left" id="leftSidebar" data-tool-ux-zone="left-panel">
       <details class="panel-accordion" id="leftPanelObjects" open>
         <summary class="panel-accordion__summary"><h3>Objects</h3></summary>
         <div class="panel-accordion__body">
@@ -166,7 +166,7 @@ index.html
       </details>
     </aside>
 
-    <main class="canvas-shell" id="canvasShell">
+    <main class="canvas-shell" id="canvasShell" data-tool-ux-zone="center-canvas">
       <div class="fullscreen-overlay-toggle-group fullscreen-overlay-toggle-group--left">
         <button type="button" class="fullscreen-overlay-button" data-overlay-toggle data-overlay-side="left" data-overlay-target="leftPanelObjects" aria-expanded="false">
           <span class="overlay-toggle-symbol" aria-hidden="true">+</span>
@@ -227,7 +227,7 @@ index.html
       </div>
     </main>
 
-    <aside class="rightbar tools-platform-resize-panel" data-panel-side="right" id="rightSidebar">
+    <aside class="rightbar tools-platform-resize-panel" data-panel-side="right" id="rightSidebar" data-tool-ux-zone="right-panel">
       <details class="panel-accordion" id="rightPanelSelectedObject" open>
         <summary class="panel-accordion__summary"><h3>Selected Object</h3></summary>
         <div class="panel-accordion__body">

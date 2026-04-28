@@ -25,7 +25,7 @@ index.html
     </div>
   </details>
   <div class="app-shell">
-    <header class="toolbar">
+    <header class="toolbar" data-tool-ux-zone="top-bar">
       <div class="toolbar-group tools-platform-control-cluster tools-platform-control-cluster--primary">
         <button id="newSvgButton" type="button">New SVG</button>
         <button id="loadSvgButton" type="button">Load SVG</button>
@@ -57,7 +57,7 @@ index.html
     </header>
 
     <div class="workspace tools-platform-layout-grid">
-      <aside class="sidebar left-sidebar tools-platform-resize-panel" data-panel-side="left">
+      <aside class="sidebar left-sidebar tools-platform-resize-panel" data-panel-side="left" data-tool-ux-zone="left-panel">
         <section class="panel">
           <h3>Shape Tools</h3>
           <div class="tool-grid" id="toolGrid">
@@ -140,7 +140,7 @@ index.html
         </section>
       </aside>
 
-      <main class="canvas-panel tools-platform-dock-panel">
+      <main class="canvas-panel tools-platform-dock-panel" data-tool-ux-zone="center-canvas">
         <div class="canvas-toolbar">
           <strong>SVG Background Canvas</strong>
           <span id="canvasMeta" class="muted"></span>
@@ -161,7 +161,7 @@ index.html
         <div id="statusText" class="status-text">Ready.</div>
       </main>
 
-      <aside class="sidebar right-sidebar tools-platform-resize-panel" data-panel-side="right">
+      <aside class="sidebar right-sidebar tools-platform-resize-panel" data-panel-side="right" data-tool-ux-zone="right-panel">
         <section class="panel">
           <h3>Element List</h3>
           <ul id="elementList" class="element-list"></ul>

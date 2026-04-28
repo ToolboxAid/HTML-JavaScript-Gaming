@@ -65,6 +65,10 @@ import {
   logToolUiFinalReady,
   logToolUiLifecycle
 } from "../../shared/toolLoadDiagnostics.js";
+import {
+  TOOL_UX_LIFECYCLE,
+  setToolUxLifecycleState
+} from "../../shared/unifiedToolUxContract.js";
 
 const CANONICAL_PALETTE_SCHEMA = "html-js-gaming.palette";
 const CANONICAL_PALETTE_REQUIRED_FIELDS = Object.freeze(["schema", "version", "name", "source", "swatches"]);
@@ -687,6 +691,35 @@ function setStatus(state, message) {
   state.elements.statusText.textContent = message;
 }
 
+function setSpriteEditorLifecycle(stateName, details = {}) {
+  setToolUxLifecycleState("sprite-editor", stateName, details);
+}
+
+function syncSpriteEditorUxContract(state, options = {}) {
+  const interactive = options.interacting === true;
+  const paletteCount = Array.isArray(state.project?.palette) ? state.project.palette.length : 0;
+  const hasSelection = Boolean(
+    typeof state.project?.activeColor === "string"
+    && state.project.activeColor
+    && state.project.palette.includes(state.project.activeColor)
+  );
+  if (interactive) {
+    setSpriteEditorLifecycle(TOOL_UX_LIFECYCLE.INTERACTING, {
+      paletteCount,
+      hasSelection
+    });
+    return;
+  }
+  if (paletteCount <= 0) {
+    setSpriteEditorLifecycle(TOOL_UX_LIFECYCLE.READY_EMPTY, { paletteCount });
+    return;
+  }
+  setSpriteEditorLifecycle(
+    hasSelection ? TOOL_UX_LIFECYCLE.READY_SELECTED : TOOL_UX_LIFECYCLE.READY_EMPTY,
+    { paletteCount, hasSelection }
+  );
+}
+
 function normalizeSamplePresetPath(pathValue) {
   if (typeof pathValue !== "string") {
     return "";
@@ -1027,7 +1060,7 @@ function updatePaletteLockText(state) {
   }
 
   if (!isPaletteLocked(state.project)) {
-    state.elements.paletteLockText.textContent = "Palette not selected. Editing is disabled until you select one from the engine list.";
+    state.elements.paletteLockText.textContent = "No data loaded. Load or create asset.";
     return;
   }
 
@@ -1168,6 +1201,7 @@ function updateHistoryButtons(state) {
 }
 
 function pushHistory(state) {
+  syncSpriteEditorUxContract(state, { interacting: true });
   state.history.undoStack.push(createHistorySnapshot(state));
   if (state.history.undoStack.length > state.history.limit) {
     state.history.undoStack.shift();
@@ -1621,6 +1655,7 @@ function renderAll(state) {
   renderPreview(state);
   updateRemediationUI(state);
   emitSpriteEditorControlReadiness(state);
+  syncSpriteEditorUxContract(state);
 }
 
 function resetProject(state) {
@@ -2031,6 +2066,7 @@ function applySamplePreset(state, rawPreset, sampleId, samplePresetPath, sampleT
 }
 
 async function tryLoadPresetFromQuery(state) {
+  setSpriteEditorLifecycle(TOOL_UX_LIFECYCLE.LOADING);
   const searchParams = new URLSearchParams(window.location.search);
   const samplePresetPath = normalizeSamplePresetPath(searchParams.get("samplePresetPath") || "");
   const sampleId = String(searchParams.get("sampleId") || "").trim();
@@ -2065,6 +2101,7 @@ async function tryLoadPresetFromQuery(state) {
       forceMissing: true,
       forceEmit: true
     });
+    syncSpriteEditorUxContract(state);
     return false;
   }
 
@@ -2102,6 +2139,7 @@ async function tryLoadPresetFromQuery(state) {
       forceMissing: true,
       forceEmit: true
     });
+    syncSpriteEditorUxContract(state);
     return false;
   }
 
@@ -2164,6 +2202,7 @@ async function tryLoadPresetFromQuery(state) {
       forceMissing: true,
       forceEmit: true
     });
+    syncSpriteEditorUxContract(state);
     return false;
   }
 
@@ -2275,6 +2314,7 @@ async function tryLoadPresetFromQuery(state) {
       forceMissing: true,
       forceEmit: true
     });
+    syncSpriteEditorUxContract(state);
     return false;
   }
 
@@ -2291,6 +2331,7 @@ async function tryLoadPresetFromQuery(state) {
       lifecycleStable: true,
       forceEmit: true
     });
+    syncSpriteEditorUxContract(state);
     return true;
   } catch (error) {
     logToolLoadWarning({
@@ -2316,6 +2357,7 @@ async function tryLoadPresetFromQuery(state) {
       forceMissing: true,
       forceEmit: true
     });
+    syncSpriteEditorUxContract(state);
     return false;
   }
 }
@@ -3013,6 +3055,7 @@ export function initializeSpriteEditorApp() {
     }
   };
 
+  setSpriteEditorLifecycle(TOOL_UX_LIFECYCLE.INIT);
   syncControlsFromProject(state);
   validateSpriteProjectAssets(state);
   updateEditorExperienceUI(state);
@@ -3030,6 +3073,7 @@ export function initializeSpriteEditorApp() {
   } else {
     setStatus(state, "Select a palette from engine paletteList to enable editing.");
   }
+  syncSpriteEditorUxContract(state);
 
   state.applyProjectSystemState = (snapshot) => {
     if (Date.now() <= Number(state.skipExternalProjectStateUntil || 0)) {
@@ -3054,6 +3098,7 @@ export function initializeSpriteEditorApp() {
     syncControlsFromProject(state);
     renderAll(state);
     setStatus(state, `Project state loaded (${state.project.width}x${state.project.height}, ${state.project.frames.length} frames).`);
+    syncSpriteEditorUxContract(state);
   };
 
   void tryLoadPresetFromQuery(state);

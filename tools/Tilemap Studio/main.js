@@ -43,6 +43,11 @@ import {
   logToolUiFinalReady,
   logToolUiLifecycle
 } from "../shared/toolLoadDiagnostics.js";
+import {
+  TOOL_UX_LIFECYCLE,
+  getUnifiedEmptyStateMessage,
+  setToolUxLifecycleState
+} from "../shared/unifiedToolUxContract.js";
 import { createLivePreviewSyncBridge, validateStateBindingPayload } from "../shared/livePreviewSyncChannel.js";
 import { addToolModeMetadata, assertStandaloneToolDocument, offerImportMismatchOptions } from "../shared/documentModeGuards.js";
 
@@ -689,6 +694,32 @@ class TileMapEditorApp {
     this.transientImageSourceByName = new Map();
   }
 
+  setUxLifecycleState(state, details = {}) {
+    setToolUxLifecycleState("tile-map-editor", state, details);
+  }
+
+  markInteracting(details = {}) {
+    this.setUxLifecycleState(TOOL_UX_LIFECYCLE.INTERACTING, details);
+  }
+
+  syncUxContractState() {
+    const layerCount = Array.isArray(this.documentModel?.layers) ? this.documentModel.layers.length : 0;
+    const tileEntries = Array.isArray(this.documentModel?.tileset)
+      ? this.documentModel.tileset.filter((tile) => Number.isFinite(Number(tile?.id)) && Number(tile.id) > 0)
+      : [];
+    const hasSelection = Number.isFinite(Number(this.activeTileId))
+      && tileEntries.some((tile) => Number(tile.id) === Number(this.activeTileId));
+    const hasData = layerCount > 0 && tileEntries.length > 0;
+    if (!hasData) {
+      this.setUxLifecycleState(TOOL_UX_LIFECYCLE.READY_EMPTY, { layerCount, tileCount: tileEntries.length });
+      return;
+    }
+    this.setUxLifecycleState(
+      hasSelection ? TOOL_UX_LIFECYCLE.READY_SELECTED : TOOL_UX_LIFECYCLE.READY_EMPTY,
+      { layerCount, tileCount: tileEntries.length, hasSelection }
+    );
+  }
+
   clearTransientImageSources() {
     this.transientImageSourceByName.forEach((objectUrl) => {
       if (typeof objectUrl === "string" && objectUrl.startsWith("blob:")) {
@@ -726,6 +757,7 @@ class TileMapEditorApp {
   }
 
   init(rootDocument) {
+    this.setUxLifecycleState(TOOL_UX_LIFECYCLE.INIT);
     this.captureRefs(rootDocument);
     this.attachEvents();
     this.syncFullscreenState();
@@ -733,6 +765,7 @@ class TileMapEditorApp {
     this.renderAll();
     this.bindRuntimeStateSync();
     this.queueLivePreviewSync("init");
+    this.syncUxContractState();
     void this.reloadTilesetImageFromDocument({ quiet: true });
     void this.preloadIndividualTileImages({ quiet: true });
     void this.tryLoadPresetFromQuery();
@@ -1922,6 +1955,7 @@ class TileMapEditorApp {
   }
 
   touchDocument() {
+    this.markInteracting({ cause: "document-update" });
     this.documentModel.metadata.updatedAt = new Date().toISOString();
     this.queueLivePreviewSync("document-update");
   }
@@ -2058,7 +2092,7 @@ class TileMapEditorApp {
       requiredData: "first-valid-tile-selection",
       loaded: selectedTileLoaded,
       value: Number.isFinite(selectedTileId) ? selectedTileId : "none",
-      classification: selectedTileLoaded ? "success" : (paletteLoaded ? "missing" : "empty")
+      classification: selectedTileLoaded ? "success" : (paletteLoaded ? "unselected" : "empty")
     });
 
     logToolUiControlReady({
@@ -2077,7 +2111,7 @@ class TileMapEditorApp {
       sampleId,
       phase,
       cause: forceMissing ? "preset-load-failure" : "preset-load",
-      classification: lifecycleStable ? "success" : "lifecycle-failure"
+      classification: lifecycleStable ? "success" : "lifecycle-reset"
     });
 
     logToolUiFinalReady({
@@ -2089,11 +2123,12 @@ class TileMapEditorApp {
       lifecycleStable,
       classification: lifecycleStable && mapLoaded && paletteLoaded && layerListLoaded && selectedTileLoaded
         ? "success"
-        : (lifecycleStable ? "missing" : "lifecycle-failure")
+        : (lifecycleStable ? "missing" : "lifecycle-reset")
     });
   }
 
   async tryLoadPresetFromQuery() {
+    this.setUxLifecycleState(TOOL_UX_LIFECYCLE.LOADING);
     const searchParams = new URLSearchParams(window.location.search);
     const samplePresetPath = normalizeSamplePresetPath(searchParams.get("samplePresetPath") || "");
     const launchQuery = getToolLoadQuerySnapshot(searchParams);
@@ -2111,6 +2146,7 @@ class TileMapEditorApp {
         launchQuery,
         classification: "missing"
       });
+      this.syncUxContractState();
       return;
     }
 
@@ -2248,6 +2284,7 @@ class TileMapEditorApp {
         });
       }
       this.updateStatus(buildPresetLoadedStatus(sampleId, samplePresetPath));
+      this.syncUxContractState();
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : "unknown error";
       this.emitTilemapControlReadiness(sampleId, { forceMissing: true, phase: "error", lifecycleStable: false });
@@ -2259,6 +2296,7 @@ class TileMapEditorApp {
         classification: loadClassification || "wrong-shape"
       });
       this.updateStatus(`Preset load failed: ${error instanceof Error ? error.message : "unknown error"}`);
+      this.syncUxContractState();
     }
   }
 
@@ -2557,6 +2595,7 @@ class TileMapEditorApp {
     this.updateRemediationUI();
     this.updateEditorExperienceUI();
     this.updateDebugVisualizationUI();
+    this.syncUxContractState();
   }
 
   renderLayerMeta() {
@@ -2754,7 +2793,7 @@ class TileMapEditorApp {
     if (this.documentModel.markers.length === 0) {
       const emptyItem = document.createElement("li");
       emptyItem.className = "marker-item";
-      emptyItem.textContent = "No markers yet.";
+      emptyItem.textContent = getUnifiedEmptyStateMessage();
       list.appendChild(emptyItem);
       return;
     }
