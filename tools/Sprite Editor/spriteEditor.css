@@ -273,6 +273,13 @@ spriteEditor.css
   color: var(--se-muted);
 }
 
+.frame-counter.is-frame-selected {
+  border: 1px solid var(--se-accent);
+  border-radius: 8px;
+  padding: 0.25rem 0.45rem;
+  background: color-mix(in srgb, var(--se-panel) 75%, var(--se-accent));
+}
+
 .hint-text {
   margin: 0.45rem 0 0;
   color: var(--se-muted);

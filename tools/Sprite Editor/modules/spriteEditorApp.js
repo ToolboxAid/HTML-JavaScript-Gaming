@@ -1032,6 +1032,44 @@ function ensureEditingEnabled(state, blockedMessage = "Select and lock a palette
   return false;
 }
 
+function getSelectedFrame(state) {
+  const frames = Array.isArray(state.project?.frames) ? state.project.frames : [];
+  if (frames.length <= 0) {
+    return null;
+  }
+  const index = clamp(state.project?.currentFrameIndex, 0, frames.length - 1, 0);
+  return frames[index] ?? null;
+}
+
+function ensureFrameSelection(state, options = {}) {
+  const preferFirstFrame = options.preferFirstFrame === true;
+  const syncPreview = options.syncPreview !== false;
+  const frames = Array.isArray(state.project?.frames) ? state.project.frames : [];
+  if (frames.length <= 0) {
+    state.project.currentFrameIndex = 0;
+    state.preview.frameIndex = 0;
+    return false;
+  }
+  let changed = false;
+  const nextCurrentIndex = preferFirstFrame
+    ? 0
+    : clamp(state.project.currentFrameIndex, 0, frames.length - 1, 0);
+  if (nextCurrentIndex !== state.project.currentFrameIndex) {
+    state.project.currentFrameIndex = nextCurrentIndex;
+    changed = true;
+  }
+  if (syncPreview) {
+    const nextPreviewIndex = state.preview.playing
+      ? clamp(state.preview.frameIndex, 0, frames.length - 1, nextCurrentIndex)
+      : nextCurrentIndex;
+    if (nextPreviewIndex !== state.preview.frameIndex) {
+      state.preview.frameIndex = nextPreviewIndex;
+      changed = true;
+    }
+  }
+  return changed;
+}
+
 function renderPaletteSelect(state) {
   const select = state.elements.paletteSelect;
   select.innerHTML = "";
@@ -1137,6 +1175,8 @@ function hydratePaletteFromRefIfPossible(state) {
 function updateEditGateDisabledState(state) {
   const editable = isEditingEnabled(state);
   const paletteLocked = isPaletteLocked(state.project);
+  const hasFrameSelection = Boolean(getSelectedFrame(state));
+  const frameActionEnabled = editable && hasFrameSelection;
   const toolButtons = state.elements.toolButtons.querySelectorAll("[data-tool]");
 
   toolButtons.forEach((button) => {
@@ -1147,18 +1187,22 @@ function updateEditGateDisabledState(state) {
 
   state.elements.canvasWidthInput.disabled = !editable;
   state.elements.canvasHeightInput.disabled = !editable;
-  state.elements.addFrameButton.disabled = !editable;
-  state.elements.duplicateFrameButton.disabled = !editable;
-  state.elements.deleteFrameButton.disabled = !editable;
-  state.elements.prevFrameButton.disabled = !editable;
-  state.elements.nextFrameButton.disabled = !editable;
-  state.elements.importPngButton.disabled = !editable;
-  state.elements.exportPngButton.disabled = !editable;
-  state.elements.exportSheetButton.disabled = !editable;
+  state.elements.addFrameButton.disabled = !frameActionEnabled;
+  state.elements.duplicateFrameButton.disabled = !frameActionEnabled;
+  state.elements.deleteFrameButton.disabled = !frameActionEnabled;
+  state.elements.prevFrameButton.disabled = !frameActionEnabled;
+  state.elements.nextFrameButton.disabled = !frameActionEnabled;
+  state.elements.importPngButton.disabled = !frameActionEnabled;
+  state.elements.exportPngButton.disabled = !frameActionEnabled;
+  state.elements.exportSheetButton.disabled = !frameActionEnabled;
   state.elements.gridToggle.disabled = !editable;
   state.elements.onionSkinToggle.disabled = !editable;
   state.elements.undoButton.disabled = !editable || state.history.undoStack.length === 0;
   state.elements.redoButton.disabled = !editable || state.history.redoStack.length === 0;
+  state.elements.playPreviewButton.disabled = !hasFrameSelection;
+  state.elements.pausePreviewButton.disabled = !hasFrameSelection;
+  state.elements.resetPreviewButton.disabled = !hasFrameSelection;
+  state.elements.fpsInput.disabled = !hasFrameSelection;
   state.elements.color1SelectorButton.disabled = !paletteLocked || !normalizeProjectColor(state.elements.color1SelectorButton.dataset.color);
   state.elements.color2SelectorButton.disabled = !paletteLocked || !normalizeProjectColor(state.elements.color2SelectorButton.dataset.color);
   state.elements.colorPicker.disabled = true;
@@ -1387,6 +1431,7 @@ function renderHud(state) {
   state.elements.activeColorSwatch.style.backgroundSize = "12px 12px";
 
   state.elements.frameCounter.textContent = `Frame ${state.project.currentFrameIndex + 1} / ${state.project.frames.length}`;
+  state.elements.frameCounter.classList.toggle("is-frame-selected", Boolean(getSelectedFrame(state)));
   state.elements.pixelSizeValue.textContent = String(state.project.pixelSize);
   state.elements.fpsValue.textContent = String(state.preview.fps);
   state.elements.colorPicker.value = typeof state.project.activeColor === "string"
@@ -1442,31 +1487,37 @@ function renderEditor(state) {
 function renderPreview(state) {
   const { previewCanvas } = state.elements;
   const project = state.project;
+  const selectedFrame = getSelectedFrame(state);
 
   const maxTarget = 220;
   const previewScale = Math.max(1, Math.floor(maxTarget / Math.max(project.width, project.height)));
-  previewCanvas.width = project.width * previewScale;
-  previewCanvas.height = project.height * previewScale;
+  const targetWidth = project.width * previewScale;
+  const targetHeight = project.height * previewScale;
+  if (previewCanvas.width !== targetWidth) {
+    previewCanvas.width = targetWidth;
+  }
+  if (previewCanvas.height !== targetHeight) {
+    previewCanvas.height = targetHeight;
+  }
 
   const context = previewCanvas.getContext("2d");
   if (!context) {
     return;
   }
 
+  context.clearRect(0, 0, previewCanvas.width, previewCanvas.height);
   createCheckerboard(context, previewCanvas.width, previewCanvas.height, Math.max(6, Math.floor(previewScale * 1.5)));
+  if (!selectedFrame) {
+    return;
+  }
 
   const frameIndexToRender = state.preview.playing
-    ? state.preview.frameIndex
+    ? clamp(state.preview.frameIndex, 0, project.frames.length - 1, project.currentFrameIndex)
     : project.currentFrameIndex;
-
-  drawFramePixels(
-    context,
-    project.frames[frameIndexToRender],
-    project.width,
-    project.height,
-    previewScale,
-    1
-  );
+  const frameToRender = project.frames[frameIndexToRender] ?? selectedFrame;
+  const frameCanvas = createImageFromFrame(frameToRender, project.width, project.height);
+  context.imageSmoothingEnabled = false;
+  context.drawImage(frameCanvas, 0, 0, project.width, project.height, 0, 0, previewCanvas.width, previewCanvas.height);
 }
 
 function emitSpriteEditorControlReadiness(state, options = {}) {
@@ -1650,6 +1701,7 @@ function emitSpriteEditorControlReadiness(state, options = {}) {
 }
 
 function renderAll(state) {
+  ensureFrameSelection(state);
   renderHud(state);
   renderEditor(state);
   renderPreview(state);
@@ -1952,8 +2004,8 @@ async function loadProjectJson(state, file) {
 
   const validation = validateSpriteProjectAssets(state);
   setSampleSource(state, { mode: "tool", fileName: file?.name || "" });
+  ensureFrameSelection(state, { preferFirstFrame: true });
   syncControlsFromProject(state);
-  state.preview.frameIndex = state.project.currentFrameIndex;
   setStatus(state, `Loaded ${file.name} (${state.project.width}x${state.project.height}, ${state.project.frames.length} frames, ${lockMessage}, validation: ${summarizeAssetValidation(validation)}).`);
   renderAll(state);
 }
@@ -2030,6 +2082,7 @@ function applySamplePreset(state, rawPreset, sampleId, samplePresetPath, sampleT
   }
 
   state.project = ensureProjectShape(presetProject);
+  ensureFrameSelection(state, { preferFirstFrame: true });
 
   const presetAssetRegistry = extractSpriteAssetRegistryFromSamplePreset(rawPreset);
   const presetTitle = typeof sampleTitleHint === "string" && sampleTitleHint.trim()
@@ -3093,6 +3146,7 @@ export function initializeSpriteEditorApp() {
     state.preview.fps = Number.isFinite(Number(snapshot?.preview?.fps)) ? Number(snapshot.preview.fps) : DEFAULT_FPS;
     state.preview.frameIndex = Number.isFinite(Number(snapshot?.preview?.frameIndex)) ? Number(snapshot.preview.frameIndex) : state.project.currentFrameIndex;
     state.preview.playing = snapshot?.preview?.playing === true;
+    ensureFrameSelection(state);
     setSampleSource(state, { mode: "workspace" });
     validateSpriteProjectAssets(state);
     syncControlsFromProject(state);

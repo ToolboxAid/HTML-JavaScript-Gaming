@@ -1,1 +1,1 @@
-Stabilize Asset Browser under unified UX contract with proper empty state, selection, and control behavior - PR 10.8
+Align Sprite Editor to unified contract and fix preview rendering mismatch - PR 10.9
