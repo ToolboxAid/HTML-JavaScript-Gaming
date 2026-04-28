@@ -1,7 +1,7 @@
-Stabilize tool UX and remove silent fallback behavior
+Run interactive UAT on stabilized tools
 
-- Fix Vector Map Editor startup/selection behavior
-- Restore reliable paint/fill and stroke control behavior
-- Improve State Inspector JSON empty/error handling
-- Replace silent fallback data with actionable messages
-- Tighten fullscreen header sizing and add data-tool-id for diagnostics
+- Validate Vector Map Editor behavior
+- Validate paint/stroke interactions
+- Validate State Inspector JSON handling
+- Confirm header UX consistency
+- Capture issues without modifying behavior
