@@ -3,13 +3,44 @@
   "tool": "asset-browser",
   "version": "1",
   "config": {
+    "assetCatalog": {
+      "entries": [
+        {
+          "id": "sample-0204-registry-node",
+          "label": "0204 Registry Node",
+          "type": "data",
+          "category": "Workflow JSON",
+          "kind": "other",
+          "path": "/samples/phase-02/0204/sample.0204.3d-asset-viewer.json",
+          "status": "registered"
+        },
+        {
+          "id": "sample-0204-asset-browser-preset",
+          "label": "0204 Asset Browser Preset",
+          "type": "data",
+          "category": "Workflow JSON",
+          "kind": "other",
+          "path": "/samples/phase-02/0204/sample.0204.asset-browser.json",
+          "status": "registered"
+        },
+        {
+          "id": "sample-0204-catalog",
+          "label": "0204 Shared Catalog",
+          "type": "data",
+          "category": "Workflow JSON",
+          "kind": "other",
+          "path": "/samples/metadata/samples.index.metadata.json",
+          "status": "registered"
+        }
+      ]
+    },
     "assetBrowserPreset": {
-      "selectedCategory": "Vector Assets",
-      "selectedAssetId": "asset-vector-player",
-      "search": "vector",
-      "importCategory": "Vector Assets",
-      "importDestination": "games/<project>/assets/vectors/",
-      "importName": "sample-0204-import.vector.json"
+      "selectedCategory": "All",
+      "selectedAssetId": "sample-0204-registry-node",
+      "search": "",
+      "importCategory": "Workflow JSON",
+      "importDestination": "games/<project>/config/",
+      "importName": "sample-0204-import.workflow.json"
     }
   }
 }

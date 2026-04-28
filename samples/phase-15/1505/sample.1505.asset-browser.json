@@ -3,13 +3,35 @@
   "tool": "asset-browser",
   "version": "1",
   "config": {
+    "assetCatalog": {
+      "entries": [
+        {
+          "id": "sample-1505-asset-browser-preset",
+          "label": "1505 Asset Browser Preset",
+          "type": "data",
+          "category": "Workflow JSON",
+          "kind": "other",
+          "path": "/samples/phase-15/1505/sample.1505.asset-browser.json",
+          "status": "registered"
+        },
+        {
+          "id": "sample-1505-samples-index",
+          "label": "Samples Metadata Index",
+          "type": "data",
+          "category": "Workflow JSON",
+          "kind": "other",
+          "path": "/samples/metadata/samples.index.metadata.json",
+          "status": "registered"
+        }
+      ]
+    },
     "assetBrowserPreset": {
-      "selectedCategory": "Vector Assets",
-      "selectedAssetId": "asset-vector-player",
-      "search": "vector",
-      "importCategory": "Vector Assets",
-      "importDestination": "games/<project>/assets/vectors/",
-      "importName": "sample-1505-import.vector.json"
+      "selectedCategory": "All",
+      "selectedAssetId": "sample-1505-asset-browser-preset",
+      "search": "",
+      "importCategory": "Workflow JSON",
+      "importDestination": "games/<project>/config/",
+      "importName": "sample-1505-import.workflow.json"
     }
   }
 }

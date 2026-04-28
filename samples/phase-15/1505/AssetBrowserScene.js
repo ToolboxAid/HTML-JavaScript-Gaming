@@ -12,16 +12,20 @@ import { AssetBrowser } from '/tools/shared/tooling/index.js';
 const theme = new Theme(ThemeTokens);
 
 export default class AssetBrowserScene extends Scene {
-  constructor() {
+  constructor(options = {}) {
     super();
-    this.browser = new AssetBrowser([
-      { id: 'hero-texture', category: 'texture', path: 'samples/phase-15/1505/assets/images/hero.png' },
-      { id: 'menu-theme', category: 'audio', path: 'samples/phase-15/1505/assets/audio/menu.mp3' },
-    ]);
-    this.status = 'Select an asset category entry.';
+    const canonicalAssets = Array.isArray(options.assets) ? options.assets : [];
+    this.browser = new AssetBrowser(canonicalAssets);
+    this.status = typeof options.sourceStatus === 'string' && options.sourceStatus
+      ? options.sourceStatus
+      : 'Select an asset category entry.';
   }
 
   select(id) {
+    if (!id) {
+      this.status = 'No explicit JSON asset is mapped to this control.';
+      return;
+    }
     this.browser.select(id);
     this.status = `Selected ${id}.`;
   }

@@ -3,13 +3,16 @@
 model: gpt-5.3-codex
 reasoning: medium
 
-Apply PR_10_16_FULLSCREEN_EXIT_STATE_RESTORE_FIX.
+Apply PR_10_20_TOOL_OWNED_JSON_ASSET_CATALOG_FIX.
 
 Required:
-- Fix Exit Fullscreen so the shell returns to normal browser-window layout.
-- Ensure button exit and Escape/browser fullscreenchange exit share the same cleanup path.
-- Clear all fullscreen classes, data attributes, cached flags, and compact summary state.
-- Restore normal header/details behavior after exit.
-- Do not modify tool data, manifests, registry entries, or start_of_day folders.
-- Add validation report at docs/dev/reports/PR_10_16_FULLSCREEN_EXIT_STATE_RESTORE_FIX_report.md.
-- Return ZIP artifact at tmp/PR_10_16_FULLSCREEN_EXIT_STATE_RESTORE_FIX_delta.zip.
+- Fix samples 0204, 1413, and 1505 so Asset Browser / Import Hub reads and writes the JSON catalog directly.
+- Fix flash-then-blank behavior where entries briefly show then clear/truncate.
+- For 0204, stop using sample-local assetRegistry.js / AssetRegistryScene.js as a bridge or source for tool data.
+- Normalize each sample JSON so the full asset list is in the schema-compatible location the tool expects.
+- Preserve preset fields only as UI state, not asset source.
+- Do not add fallback/default/hidden sample data.
+- Do not scrape JS source.
+- Do not modify start_of_day folders.
+- Add validation report at docs/dev/reports/PR_10_20_TOOL_OWNED_JSON_ASSET_CATALOG_FIX_report.md.
+- Return ZIP artifact at tmp/PR_10_20_TOOL_OWNED_JSON_ASSET_CATALOG_FIX_delta.zip.

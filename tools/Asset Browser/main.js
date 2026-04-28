@@ -37,8 +37,11 @@ const APPROVED_DESTINATIONS = Object.freeze({
 const GAME_ASSET_CATALOG_SCHEMA = "html-js-gaming.game-asset-catalog";
 const GAME_ASSET_CATALOG_VERSION = 1;
 const GAME_MANIFEST_SCHEMA = "html-js-gaming.game-manifest";
+const SAMPLE_METADATA_MANIFEST_PATH = "/samples/metadata/samples.index.metadata.json";
 const ASSET_BROWSER_EMPTY_TITLE = "No assets loaded";
 const ASSET_BROWSER_EMPTY_HINT = "Import or create asset";
+const ASSET_BROWSER_TOOL_ID = "asset-browser";
+const ASSET_BROWSER_COMPANION_TOOL_ID = "3d-asset-viewer";
 const APPROVED_ASSET_STATUS = Object.freeze({
   success: "approved-assets-success",
   loadedEmpty: "approved-assets-loaded-empty",
@@ -47,6 +50,7 @@ const APPROVED_ASSET_STATUS = Object.freeze({
   sourceInvalid: "approved-assets-source-invalid",
   sourceLoadFailure: "approved-assets-source-load-failure"
 });
+let sampleMetadataManifestPromise = null;
 
 const refs = {
   categoryFilter: document.getElementById("assetCategoryFilter"),
@@ -161,6 +165,14 @@ function sanitizeText(value) {
   return typeof value === "string" ? value.trim() : "";
 }
 
+function normalizeSampleId(value) {
+  return sanitizeText(value);
+}
+
+function normalizeToolId(value) {
+  return sanitizeText(value).toLowerCase();
+}
+
 function normalizeLocalPath(pathValue) {
   const text = sanitizeText(pathValue).replace(/\\/g, "/");
   if (!text || text.includes("..")) {
@@ -190,6 +202,160 @@ function normalizeExplicitCatalogPath(pathValue) {
     return "";
   }
   return normalized;
+}
+
+async function loadSampleMetadataManifest() {
+  if (!sampleMetadataManifestPromise) {
+    sampleMetadataManifestPromise = (async () => {
+      const response = await fetch(SAMPLE_METADATA_MANIFEST_PATH, { cache: "no-store" });
+      if (!response.ok) {
+        throw new Error(`Sample metadata request failed (${response.status}).`);
+      }
+      const parsed = await response.json();
+      if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) {
+        throw new Error("Sample metadata payload is not an object.");
+      }
+      const samples = Array.isArray(parsed.samples) ? parsed.samples : [];
+      if (samples.length === 0) {
+        throw new Error("Sample metadata payload did not include any samples.");
+      }
+      return samples;
+    })().catch((error) => {
+      sampleMetadataManifestPromise = null;
+      throw error;
+    });
+  }
+  return sampleMetadataManifestPromise;
+}
+
+function findCompanionPresetPath(samples, sampleId, samplePresetPath) {
+  const normalizedSampleId = normalizeSampleId(sampleId);
+  const normalizedPresetPath = normalizeSamplePresetPath(samplePresetPath);
+  if (!normalizedSampleId) {
+    return "";
+  }
+  const sampleEntry = samples.find((entry) => normalizeSampleId(entry?.id) === normalizedSampleId);
+  if (!sampleEntry) {
+    return "";
+  }
+  const mappings = Array.isArray(sampleEntry.roundtripToolPresets)
+    ? sampleEntry.roundtripToolPresets
+    : [];
+  const companionMappings = mappings.filter((entry) => normalizeToolId(entry?.toolId) === ASSET_BROWSER_COMPANION_TOOL_ID);
+  if (companionMappings.length <= 0) {
+    return "";
+  }
+  const currentToolMapping = mappings.find((entry) => normalizeToolId(entry?.toolId) === ASSET_BROWSER_TOOL_ID);
+  const currentPresetPath = normalizeSamplePresetPath(currentToolMapping?.presetPath);
+  if (
+    normalizedPresetPath
+    && currentPresetPath
+    && normalizedPresetPath !== currentPresetPath
+  ) {
+    return "";
+  }
+  return normalizeSamplePresetPath(companionMappings[0]?.presetPath);
+}
+
+function extractCompanionAssetPayload(rawPreset) {
+  if (!rawPreset || typeof rawPreset !== "object") {
+    return null;
+  }
+  const payload = rawPreset.payload && typeof rawPreset.payload === "object"
+    ? rawPreset.payload
+    : rawPreset;
+  const config = payload.config && typeof payload.config === "object"
+    ? payload.config
+    : null;
+  const candidateKeys = ["3d-asset-viewer", "asset3d", "asset", "assetPayload", "viewerPayload"];
+  for (const key of candidateKeys) {
+    const direct = payload[key];
+    if (direct && typeof direct === "object") {
+      return direct;
+    }
+  }
+  for (const key of candidateKeys) {
+    const configured = config?.[key];
+    if (configured && typeof configured === "object") {
+      return configured;
+    }
+  }
+  return null;
+}
+
+function mapCompanionPresetToEntries(companionPresetPath, payload) {
+  const safePath = normalizeLocalPath(companionPresetPath);
+  const sourcePayload = payload && typeof payload === "object" ? payload : {};
+  const assetId = sanitizeText(sourcePayload.assetId) || "sample-companion-asset";
+  if (!safePath) {
+    return [];
+  }
+  return [{
+    id: assetId,
+    label: humanizeAssetId(assetId),
+    category: "Workflow JSON",
+    kind: "other",
+    path: safePath
+  }];
+}
+
+async function loadCompanionSampleEntries(sampleId, samplePresetPath) {
+  const normalizedSampleId = normalizeSampleId(sampleId);
+  if (!normalizedSampleId) {
+    return null;
+  }
+  let samples = [];
+  try {
+    samples = await loadSampleMetadataManifest();
+  } catch (error) {
+    return {
+      status: APPROVED_ASSET_STATUS.sourceInvalid,
+      source: SAMPLE_METADATA_MANIFEST_PATH,
+      entries: [],
+      reason: error instanceof Error ? `Sample manifest lookup failed: ${error.message}` : "Sample manifest lookup failed."
+    };
+  }
+  const companionPresetPath = findCompanionPresetPath(samples, normalizedSampleId, samplePresetPath);
+  if (!companionPresetPath) {
+    return null;
+  }
+  try {
+    const response = await fetch(companionPresetPath, { cache: "no-store" });
+    if (!response.ok) {
+      return {
+        status: APPROVED_ASSET_STATUS.sourceLoadFailure,
+        source: companionPresetPath,
+        entries: [],
+        reason: `Companion preset request failed (${response.status}).`
+      };
+    }
+    const rawPreset = await response.json();
+    const payload = extractCompanionAssetPayload(rawPreset);
+    if (!payload) {
+      return {
+        status: APPROVED_ASSET_STATUS.sourceWrongShape,
+        source: companionPresetPath,
+        entries: [],
+        reason: "Companion preset did not include a supported 3D asset payload."
+      };
+    }
+    const entries = mapCompanionPresetToEntries(companionPresetPath, payload);
+    return {
+      status: entries.length > 0 ? APPROVED_ASSET_STATUS.success : APPROVED_ASSET_STATUS.loadedEmpty,
+      source: companionPresetPath,
+      entries,
+      reason: entries.length > 0
+        ? "Approved assets resolved from sample companion preset payload."
+        : "Companion preset payload loaded but produced no mapped entries."
+    };
+  } catch (error) {
+    return {
+      status: APPROVED_ASSET_STATUS.sourceInvalid,
+      source: companionPresetPath,
+      entries: [],
+      reason: `Companion preset parse failed: ${error instanceof Error ? error.message : "unknown error"}.`
+    };
+  }
 }
 
 function readActiveProjectManifest() {
@@ -276,6 +442,80 @@ function normalizeCatalogEntries(rawEntries) {
     });
   });
   return entries;
+}
+
+function normalizePresetAssetEntries(rawEntries) {
+  if (!Array.isArray(rawEntries)) {
+    return [];
+  }
+  const seen = new Set();
+  const entries = [];
+  rawEntries.forEach((rawEntry) => {
+    const entry = rawEntry && typeof rawEntry === "object" ? rawEntry : null;
+    const id = sanitizeText(entry?.id);
+    const path = normalizeLocalPath(entry?.path || entry?.runtimePath || entry?.href || "");
+    if (!id || !path || seen.has(id)) {
+      return;
+    }
+    seen.add(id);
+    const kind = sanitizeText(entry?.kind || inferAssetKindFromPath(path)).toLowerCase() || "other";
+    entries.push({
+      id,
+      label: sanitizeText(entry?.label || entry?.name) || humanizeAssetId(id),
+      category: sanitizeText(entry?.category) || mapKindToCategory(kind),
+      kind,
+      path
+    });
+  });
+  return entries;
+}
+
+function extractAssetBrowserCatalogFromPreset(rawPreset) {
+  if (!rawPreset || typeof rawPreset !== "object") {
+    return [];
+  }
+  const payload = rawPreset.payload && typeof rawPreset.payload === "object"
+    ? rawPreset.payload
+    : rawPreset;
+  const config = payload.config && typeof payload.config === "object"
+    ? payload.config
+    : null;
+  return normalizePresetAssetEntries(config?.assetCatalog?.entries);
+}
+
+async function loadSamplePresetCatalogEntries(samplePresetPath) {
+  const safePresetPath = normalizeSamplePresetPath(samplePresetPath);
+  if (!safePresetPath) {
+    return null;
+  }
+  try {
+    const response = await fetch(safePresetPath, { cache: "no-store" });
+    if (!response.ok) {
+      return {
+        status: APPROVED_ASSET_STATUS.sourceLoadFailure,
+        source: safePresetPath,
+        entries: [],
+        reason: `Sample preset request failed (${response.status}).`
+      };
+    }
+    const rawPreset = await response.json();
+    const entries = extractAssetBrowserCatalogFromPreset(rawPreset);
+    return {
+      status: entries.length > 0 ? APPROVED_ASSET_STATUS.success : APPROVED_ASSET_STATUS.loadedEmpty,
+      source: safePresetPath,
+      entries,
+      reason: entries.length > 0
+        ? "Approved assets loaded from sample preset assetCatalog.entries."
+        : "Sample preset loaded but assetCatalog.entries is missing or empty."
+    };
+  } catch (error) {
+    return {
+      status: APPROVED_ASSET_STATUS.sourceInvalid,
+      source: safePresetPath,
+      entries: [],
+      reason: `Sample preset parse failed: ${error instanceof Error ? error.message : "unknown error"}.`
+    };
+  }
 }
 
 function inferAssetKindFromPath(assetPath) {
@@ -531,6 +771,8 @@ async function hydrateCatalogLabels(entries) {
 
 async function loadCatalogEntriesFromContext() {
   const candidates = collectCatalogPathCandidates();
+  const searchParams = new URLSearchParams(window.location.search);
+  const samplePresetPath = normalizeSamplePresetPath(searchParams.get("samplePresetPath") || "");
   const checkedSources = [];
   let firstEmpty = null;
   let firstInvalid = null;
@@ -572,6 +814,33 @@ async function loadCatalogEntriesFromContext() {
     }
     if (!firstMissing && result.status === APPROVED_ASSET_STATUS.sourceMissing) {
       firstMissing = result;
+    }
+  }
+  const samplePresetResult = await loadSamplePresetCatalogEntries(samplePresetPath);
+  if (samplePresetResult) {
+    checkedSources.push(samplePresetResult.source || "sample-preset");
+    if (samplePresetResult.status === APPROVED_ASSET_STATUS.success) {
+      state.catalogLoadInfo = {
+        status: APPROVED_ASSET_STATUS.success,
+        candidateCount: candidates.length,
+        declaredCount: samplePresetResult.entries.length,
+        source: samplePresetResult.source || "sample-preset",
+        checkedSources,
+        reason: samplePresetResult.reason || ""
+      };
+      return hydrateCatalogLabels(samplePresetResult.entries);
+    }
+    if (!firstEmpty && samplePresetResult.status === APPROVED_ASSET_STATUS.loadedEmpty) {
+      firstEmpty = samplePresetResult;
+    }
+    if (
+      !firstInvalid
+      && (samplePresetResult.status === APPROVED_ASSET_STATUS.sourceInvalid || samplePresetResult.status === APPROVED_ASSET_STATUS.sourceWrongShape)
+    ) {
+      firstInvalid = samplePresetResult;
+    }
+    if (!firstLoadFailure && samplePresetResult.status === APPROVED_ASSET_STATUS.sourceLoadFailure) {
+      firstLoadFailure = samplePresetResult;
     }
   }
   const manifest = readActiveProjectManifest();
@@ -718,7 +987,8 @@ function buildApprovedAssetStatusText(approvedCount, info) {
   if (status === APPROVED_ASSET_STATUS.loadedEmpty) {
     return "0 approved assets | source exists and is empty."
       + ` Source checked: ${source}. Result count: 0.`
-      + ` Next action: add approved entries under tools.asset-browser.assets or provide a valid assetCatalogPath.`
+      + " Next action: add approved entries in sample preset config.assetCatalog.entries,"
+      + " tools.asset-browser.assets, or provide a valid assetCatalogPath."
       + ` Checked: ${checkedText}.`;
   }
   if (status === APPROVED_ASSET_STATUS.sourceLoadFailure) {
@@ -737,7 +1007,8 @@ function buildApprovedAssetStatusText(approvedCount, info) {
   }
   return "0 approved assets | source missing."
     + ` Source checked: ${source}.`
-    + ` Next action: add tools.asset-browser.assets in active project manifest or provide assetCatalogPath.`
+    + " Next action: add sample preset config.assetCatalog.entries,"
+    + " tools.asset-browser.assets in active project manifest, or provide assetCatalogPath."
     + `${reason ? ` Details: ${reason}` : ""}`
     + ` Checked: ${checkedText}.`;
 }
@@ -748,7 +1019,8 @@ function buildApprovedAssetEmptyStateText(info) {
   const status = String(info?.status || APPROVED_ASSET_STATUS.sourceMissing);
   if (status === APPROVED_ASSET_STATUS.loadedEmpty) {
     return `No approved assets found. Source exists and is empty: ${source}.`
-      + " Next action: add approved entries under tools.asset-browser.assets or provide a valid assetCatalogPath.";
+      + " Next action: add sample preset config.assetCatalog.entries,"
+      + " tools.asset-browser.assets, or provide a valid assetCatalogPath.";
   }
   if (status === APPROVED_ASSET_STATUS.sourceLoadFailure) {
     return `Approved asset source load failed: ${source}.`
@@ -760,7 +1032,12 @@ function buildApprovedAssetEmptyStateText(info) {
   }
   return "No approved asset source was loaded."
     + ` Checked source: ${source}.`
-    + ` Next action: declare tools.asset-browser.assets or launch with assetCatalogPath.${reason ? ` Details: ${reason}` : ""}`;
+    + " Next action: declare sample preset config.assetCatalog.entries,"
+    + ` tools.asset-browser.assets, or launch with assetCatalogPath.${reason ? ` Details: ${reason}` : ""}`;
+}
+
+function getActiveAssetEmptyStateMessage() {
+  return buildApprovedAssetEmptyStateText(state.catalogLoadInfo);
 }
 
 function getCategoryOrder() {
@@ -806,6 +1083,8 @@ function applyAssetBrowserPreset(preset) {
   if (!preset || typeof preset !== "object") {
     return false;
   }
+  const attemptedCategory = typeof preset.selectedCategory === "string" ? preset.selectedCategory : "";
+  const attemptedSearch = typeof preset.search === "string" ? preset.search : "";
   if (typeof preset.selectedCategory === "string" && getCategoryOrder().includes(preset.selectedCategory)) {
     state.selectedCategory = preset.selectedCategory;
     refs.categoryFilter.value = preset.selectedCategory;
@@ -826,6 +1105,18 @@ function applyAssetBrowserPreset(preset) {
   }
   if (typeof preset.importName === "string") {
     refs.importNameInput.value = preset.importName;
+  }
+  if (state.assetCatalog.length > 0 && getVisibleAssets().length <= 0) {
+    state.selectedCategory = "All";
+    state.search = "";
+    refs.categoryFilter.value = "All";
+    refs.searchInput.value = "";
+    logToolLoadWarning({
+      toolId: "asset-browser",
+      reason: "Preset filter produced empty catalog after JSON load; reverting to unfiltered view.",
+      presetCategory: attemptedCategory,
+      presetSearch: attemptedSearch
+    });
   }
   renderAssetList();
   renderPreview();
@@ -1007,6 +1298,7 @@ function populateDestinationOptions(category) {
 function renderAssetList() {
   const entries = getVisibleAssets();
   ensureFirstVisibleAssetSelection(entries);
+  const emptyStateMessage = getActiveAssetEmptyStateMessage();
   refs.countText.textContent = buildApprovedAssetStatusText(entries.length, state.catalogLoadInfo);
   refs.assetList.innerHTML = entries.length > 0
     ? entries.map((entry) => {
@@ -1019,16 +1311,17 @@ function renderAssetList() {
       </button>
     `;
     }).join("")
-    : `<p class="asset-browser__empty"><strong>${ASSET_BROWSER_EMPTY_TITLE}</strong><span>${ASSET_BROWSER_EMPTY_HINT}</span></p>`;
+    : `<p class="asset-browser__empty"><strong>${ASSET_BROWSER_EMPTY_TITLE}</strong><span>${emptyStateMessage}</span></p>`;
 }
 
 async function renderPreview() {
   const selectedAsset = getSelectedAsset();
   if (!selectedAsset) {
+    const emptyStateMessage = getActiveAssetEmptyStateMessage();
     refs.previewTitle.textContent = "Preview";
-    refs.previewMeta.textContent = ASSET_BROWSER_EMPTY_TITLE;
-    refs.previewCanvas.innerHTML = `<p class="asset-browser__empty"><strong>${ASSET_BROWSER_EMPTY_TITLE}</strong><span>${ASSET_BROWSER_EMPTY_HINT}</span></p>`;
-    refs.previewText.textContent = ASSET_BROWSER_EMPTY_HINT;
+    refs.previewMeta.textContent = emptyStateMessage;
+    refs.previewCanvas.innerHTML = `<p class="asset-browser__empty"><strong>${ASSET_BROWSER_EMPTY_TITLE}</strong><span>${emptyStateMessage}</span></p>`;
+    refs.previewText.textContent = emptyStateMessage;
     return;
   }
 
@@ -1097,9 +1390,12 @@ function normalizeImportName(fileName) {
 function buildImportPlan() {
   const file = refs.importFileInput.files?.[0] ?? null;
   if (!file) {
+    const noSourceLoaded = state.assetCatalog.length <= 0;
     return {
       valid: false,
-      message: "Choose a local file to generate an import plan."
+      message: noSourceLoaded
+        ? getActiveAssetEmptyStateMessage()
+        : "Choose a local file to generate an import plan."
     };
   }
 

@@ -11,18 +11,16 @@ import { AssetRegistry } from '/src/engine/assets/index.js';
 
 const theme = new Theme(ThemeTokens);
 
-const sampleAssets = [
-  { id: 'playerSprite', type: 'image', path: '/assets/player.png', status: 'registered' },
-  { id: 'pickupSprite', type: 'image', path: '/assets/pickup.png', status: 'registered' },
-  { id: 'menuMusic', type: 'audio', path: '/assets/menu-theme.mp3', status: 'registered' },
-  { id: 'levelOneData', type: 'data', path: '/assets/level-one.json', status: 'registered' },
-];
-
 export default class AssetRegistryScene extends Scene {
-  constructor() {
+  constructor(options = {}) {
     super();
+    const canonicalAssets = Array.isArray(options.assets) ? options.assets : [];
+    const sourceStatus = typeof options.sourceStatus === 'string' ? options.sourceStatus : '';
     this.registry = new AssetRegistry();
-    this.registry.registerMany(sampleAssets);
+    this.registry.registerMany(canonicalAssets);
+    this.sourceStatus = sourceStatus || (canonicalAssets.length > 0
+      ? 'Asset registry loaded from sample JSON.'
+      : 'No explicit JSON asset registry entries were loaded.');
   }
 
   update() {}
@@ -34,6 +32,7 @@ export default class AssetRegistryScene extends Scene {
       'The registry stores identifiers, asset types, paths, and status values',
       'This helps separate content references from scene logic and engine flow',
       'A future loader can resolve these registered definitions into live resources',
+      this.sourceStatus,
     ]);
 
     const entries = this.registry.entries();

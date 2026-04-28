@@ -3,6 +3,10 @@
   "tool": "asset-pipeline-tool",
   "version": "1",
   "config": {
+    "sampleImportInput": {
+      "id": "sample-1413-imported-sheet",
+      "source": "sprite-editor"
+    },
     "pipelinePayload": {
       "gameId": "sample-1413",
       "domainInputs": {
