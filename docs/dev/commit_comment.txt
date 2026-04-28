@@ -1,1 +1,1 @@
-Fix fullscreen header summary state text and single-line collapsed layout - PR 10.15
+Restore normal shell state after fullscreen exit - PR 10.16

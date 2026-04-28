@@ -22,6 +22,7 @@ let runtimeMonitoringHooks = null;
 let bindingRefreshHandlersBound = false;
 let workspacePagerDelegatedBound = false;
 let headerIntroFullscreenBindingBound = false;
+let suppressAutoFullscreenEnter = false;
 let lastWorkspaceUiStateKey = "";
 let lastLockedSurfaceElement = null;
 const sidebarAccordionState = new Map();
@@ -166,6 +167,107 @@ function buildToolDetailsToggleText(prefix, summaryData) {
   return `${prefix} ${toolName} Details`;
 }
 
+function applyFullscreenShellState(isActive) {
+  const bodyElement = document?.body instanceof HTMLElement ? document.body : null;
+  const rootElement = document?.documentElement instanceof HTMLElement ? document.documentElement : null;
+  if (bodyElement) {
+    bodyElement.classList.toggle("tools-platform-fullscreen-active", isActive);
+    if (isActive) {
+      bodyElement.setAttribute("data-tools-platform-fullscreen", "1");
+    } else {
+      bodyElement.removeAttribute("data-tools-platform-fullscreen");
+    }
+  }
+  if (rootElement) {
+    rootElement.classList.toggle("tools-platform-fullscreen-active", isActive);
+    if (isActive) {
+      rootElement.setAttribute("data-tools-platform-fullscreen", "1");
+    } else {
+      rootElement.removeAttribute("data-tools-platform-fullscreen");
+    }
+  }
+}
+
+function clearFullscreenSummaryMarkers(pageHeaderAccordion) {
+  const summaryElement = pageHeaderAccordion instanceof HTMLElement
+    ? pageHeaderAccordion.querySelector('[data-tools-platform-summary], .is-collapsible__summary')
+    : null;
+  if (!(summaryElement instanceof HTMLElement)) {
+    return;
+  }
+  summaryElement.style.removeProperty("max-width");
+  summaryElement.style.removeProperty("white-space");
+  summaryElement.style.removeProperty("overflow");
+  summaryElement.style.removeProperty("text-overflow");
+  if (summaryElement.getAttribute("data-tools-platform-summary-mode") === "fullscreen") {
+    summaryElement.removeAttribute("data-tools-platform-summary-mode");
+  }
+  if (summaryElement.getAttribute("data-tools-platform-summary-state") === "collapsed") {
+    summaryElement.removeAttribute("data-tools-platform-summary-state");
+  }
+}
+
+function clearFullscreenLayoutMarkers() {
+  const bodyElement = document?.body instanceof HTMLElement ? document.body : null;
+  if (bodyElement) {
+    bodyElement.classList.remove("fullscreen-mode");
+  }
+  queryAll(".visible-overlay").forEach((element) => {
+    if (element instanceof HTMLElement) {
+      element.classList.remove("visible-overlay");
+    }
+  });
+  queryAll(".is-hidden-while-overlay-open").forEach((element) => {
+    if (element instanceof HTMLElement) {
+      element.classList.remove("is-hidden-while-overlay-open");
+    }
+  });
+}
+
+function restoreShellFromFullscreenExit(pageHeaderAccordion, currentTool, options = {}) {
+  const keepHeaderExpanded = options?.keepHeaderExpanded !== false;
+  applyFullscreenShellState(false);
+  clearFullscreenLayoutMarkers();
+  clearFullscreenSummaryMarkers(pageHeaderAccordion);
+  if (!(pageHeaderAccordion instanceof HTMLDetailsElement)) {
+    renderHeaderIntroSummary(currentTool);
+    return;
+  }
+
+  const wasExpanded = pageHeaderAccordion.open === true;
+  if (wasExpanded && !keepHeaderExpanded) {
+    suppressAutoFullscreenEnter = true;
+    pageHeaderAccordion.dataset.toolsPlatformSuppressFullscreenEnter = "1";
+  }
+  pageHeaderAccordion.open = keepHeaderExpanded;
+  headerExpandedState = keepHeaderExpanded;
+  writeStoredHeaderExpandedState(keepHeaderExpanded);
+  if (!wasExpanded || keepHeaderExpanded) {
+    suppressAutoFullscreenEnter = false;
+    if (pageHeaderAccordion.dataset.toolsPlatformSuppressFullscreenEnter === "1") {
+      delete pageHeaderAccordion.dataset.toolsPlatformSuppressFullscreenEnter;
+    }
+  }
+
+  renderHeaderIntroSummary(currentTool);
+}
+
+async function exitFullscreenAndRestoreShell(pageHeaderAccordion, currentTool, options = {}) {
+  if (!document.fullscreenElement || typeof document.exitFullscreen !== "function") {
+    restoreShellFromFullscreenExit(pageHeaderAccordion, currentTool, options);
+    return;
+  }
+  try {
+    await document.exitFullscreen();
+  } catch {
+    // If exit fails, the fullscreenchange listener will keep state in sync when possible.
+  } finally {
+    if (!document.fullscreenElement) {
+      restoreShellFromFullscreenExit(pageHeaderAccordion, currentTool, options);
+    }
+  }
+}
+
 function buildToolHeaderIntroData(currentTool) {
   const toolId = normalizeTextValue(currentTool?.id);
   if (!toolId) {
@@ -232,7 +334,7 @@ function renderHeaderIntroSummary(currentTool) {
     ? pageHeaderAccordion.open === true
     : false;
   const showDetailsText = buildToolDetailsToggleText("Show", summaryData);
-  const hideDetailsText = buildToolDetailsToggleText("Hide", summaryData);
+  const hideDetailsText = "Hide Header and Details";
   const summaryText = isExpanded
     ? hideDetailsText
     : (isFullscreenActive ? summaryData.headerDisplayText : showDetailsText);
@@ -264,13 +366,22 @@ function renderHeaderIntroSummary(currentTool) {
   );
 }
 
-async function syncFullscreenStateFromHeaderAccordion(accordion) {
+async function syncFullscreenStateFromHeaderAccordion(accordion, currentTool) {
   if (!(accordion instanceof HTMLDetailsElement) || !document.fullscreenEnabled) {
+    return;
+  }
+  if (suppressAutoFullscreenEnter || accordion.dataset.toolsPlatformSuppressFullscreenEnter === "1") {
+    suppressAutoFullscreenEnter = false;
+    if (accordion.dataset.toolsPlatformSuppressFullscreenEnter === "1") {
+      delete accordion.dataset.toolsPlatformSuppressFullscreenEnter;
+    }
     return;
   }
 
   if (accordion.open) {
-    // Keep fullscreen active while header/details are expanded.
+    if (document.fullscreenElement) {
+      await exitFullscreenAndRestoreShell(accordion, currentTool, { keepHeaderExpanded: true });
+    }
     return;
   }
 
@@ -295,11 +406,25 @@ function bindHeaderIntroFullscreenEvents(currentTool) {
 
   headerIntroFullscreenBindingBound = true;
   pageHeaderAccordion.addEventListener('toggle', () => {
-    void syncFullscreenStateFromHeaderAccordion(pageHeaderAccordion);
+    void syncFullscreenStateFromHeaderAccordion(pageHeaderAccordion, currentTool);
     renderHeaderIntroSummary(currentTool);
   });
+  document.addEventListener('click', (event) => {
+    const target = event.target instanceof Element ? event.target : null;
+    if (!target?.closest('[data-tools-platform-exit-fullscreen]')) {
+      return;
+    }
+    event.preventDefault();
+    void exitFullscreenAndRestoreShell(pageHeaderAccordion, currentTool, { keepHeaderExpanded: true });
+  });
   document.addEventListener('fullscreenchange', () => {
-    renderHeaderIntroSummary(currentTool);
+    const isFullscreenActive = Boolean(document.fullscreenElement);
+    if (isFullscreenActive) {
+      applyFullscreenShellState(true);
+      renderHeaderIntroSummary(currentTool);
+      return;
+    }
+    restoreShellFromFullscreenExit(pageHeaderAccordion, currentTool, { keepHeaderExpanded: true });
   });
 }
 
@@ -1708,6 +1833,8 @@ function renderShell(currentTool) {
   const headerHost = queryFirst("[data-tools-platform-header]");
   const statusHost = queryFirst("[data-tools-platform-status]");
   const pageHeaderAccordion = queryFirst(".is-collapsible");
+
+  applyFullscreenShellState(Boolean(document.fullscreenElement));
 
   const isHeaderExpanded = pageHeaderAccordion instanceof HTMLDetailsElement
     ? pageHeaderAccordion.open
