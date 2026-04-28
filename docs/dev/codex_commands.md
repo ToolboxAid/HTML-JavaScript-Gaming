@@ -1,54 +1,15 @@
-MODEL: GPT-5.3-codex
-REASONING: low
+# CODEX COMMANDS
 
-PR purpose:
-Remove future/advisory import hint fields that are not required for current tool operation.
+model: gpt-5.3-codex
+reasoning: low
 
-User decision:
-If it is not required now, remove it. Do not keep future intent fields like importDestination/importName that point to non-existing files/folders.
+Apply PR_10_25_SAMPLE_METADATA_SSOT_DUPLICATE_EVIDENCE_FIX.
 
-Target fields:
-- importDestination
-- importName
-- destinationFolder
-- future-only import plan defaults
-- fields only used to prefill advisory/manual import plans
-
-Scope:
-- Asset Browser metadata
-- Import Hub metadata
-- tool launch presets
-- sample tool manifests
-- active-project manifest tool sections
-- docs explaining these fields as expected behavior
-
-Do not modify:
-- KOTI gameplay
-- runtime game engine files
-- start_of_day folders
-
-Rules:
-- Remove fields if not required for current load/display/edit/validate/export.
-- Do not replace with another future hint.
-- Do not introduce fallback data.
-- If a destination/name is required for an actual import action, require it at action time with validation.
-- Asset Browser 0204 and 1505 must still show clear empty/missing/invalid state.
-
-Validation:
-- rg "importDestination|importName|destinationFolder" tools samples docs
-- Explain remaining hits.
-- node --check changed JS files only.
-- Target browser validation for Asset Browser 0204 and 1505.
-- Do not run full sample suite.
-
-Create report:
-docs/dev/reports/PR_tool_remove_future_import_hints_report.md
-
-Report must include:
-- PASS/FAIL
-- changed files
-- fields removed
-- remaining search hits and why they remain
-- validation commands/results
-- confirmation no start_of_day changes
-- confirmation no runtime engine changes
+- Preserve samples/metadata/samples.index.metadata.json as the only live SSoT.
+- Remove, move, or clearly demote the duplicate report evidence copy.
+- Do not keep a repo-relative duplicate that looks like runtime source.
+- Confirm runtime/tool code references only the live SSoT.
+- Do not rewrite sample metadata content.
+- Do not modify start_of_day folders.
+- Add validation report.
+- Return ZIP artifact at tmp/PR_10_25_SAMPLE_METADATA_SSOT_DUPLICATE_EVIDENCE_FIX_delta.zip.
