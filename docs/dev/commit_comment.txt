@@ -1,1 +1,1 @@
-Refine visual hierarchy and spacing across tools - PR 11.3
+Final UI polish and consistency pass across all tools - PR 11.4

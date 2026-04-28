@@ -1083,3 +1083,63 @@ body.tools-howto-page .tools-howto-workflow-column h3 {
     grid-template-columns: 1fr;
   }
 }
+
+/*
+ * PR_11_4_FINAL_UI_POLISH_AND_CONSISTENCY_PASS
+ * Final visual consistency layer across all tool pages.
+ * Visual-only normalization: borders, spacing, and shadows.
+ */
+body.tools-platform-surface {
+  --tools-final-border-color: var(--line, rgba(221, 214, 254, 0.26));
+  --tools-final-radius-sm: 10px;
+  --tools-final-radius-md: 12px;
+  --tools-final-radius-lg: 14px;
+  --tools-final-gap: 12px;
+  --tools-final-shadow: var(--tools-shell-shadow);
+}
+
+body.tools-platform-surface :is(.app, .app-shell, .wrap) {
+  gap: var(--tools-final-gap);
+}
+
+body.tools-platform-surface :is(.toolbar, .toolbar-row, .preview-toolbar, .canvas-toolbar, .statusbar) {
+  border: 1px solid var(--tools-final-border-color) !important;
+  border-radius: var(--tools-final-radius-lg) !important;
+  box-shadow: var(--tools-final-shadow) !important;
+  gap: var(--tools-space-2) !important;
+}
+
+body.tools-platform-surface :is(.sidebar, .rightbar, .left-sidebar, .right-sidebar, .panel, .dock, .card) {
+  border: 1px solid var(--tools-final-border-color) !important;
+  border-radius: var(--tools-final-radius-md) !important;
+  box-shadow: var(--tools-final-shadow) !important;
+}
+
+body.tools-platform-surface :is(.panel-accordion, .panel-accordion__summary, .panel-accordion__body) {
+  border-color: var(--tools-final-border-color) !important;
+}
+
+body.tools-platform-surface .panel-accordion {
+  border-radius: var(--tools-final-radius-sm) !important;
+  box-shadow: var(--tools-final-shadow) !important;
+  margin-bottom: var(--tools-space-3) !important;
+}
+
+body.tools-platform-surface .panel-accordion__summary {
+  padding: var(--tools-space-2) var(--tools-space-3) !important;
+}
+
+body.tools-platform-surface .panel-accordion__body {
+  padding: var(--tools-space-3) !important;
+  display: grid;
+  gap: var(--tools-space-2);
+}
+
+body.tools-platform-surface :is(button, .button, .toolbar-link, .file-input-label, input, select, textarea) {
+  border-color: var(--tools-final-border-color) !important;
+  border-radius: var(--tools-final-radius-sm) !important;
+}
+
+body.tools-platform-surface :is(.tool-grid, .button-row, .frame-controls, .io-controls, .preview-controls, .toolbar-group, .tools-platform-control-cluster, .tools-platform-control-row) {
+  gap: var(--tools-space-2) !important;
+}
