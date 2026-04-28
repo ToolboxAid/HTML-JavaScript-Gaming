@@ -1,6 +1,1 @@
-Fix Parallax Scene Studio header metadata and toggle labels
-
-- Add required Parallax Scene Studio header/intro metadata
-- Remove configuration error for complete tool metadata
-- Replace generic header/details toggle labels with tool-specific text
-- Preserve actionable errors for genuinely missing metadata
+Fix fullscreen header summary state text and single-line collapsed layout - PR 10.15
