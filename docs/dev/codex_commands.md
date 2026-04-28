@@ -1,15 +1,16 @@
 # CODEX COMMANDS
 
 model: gpt-5.3-codex
-reasoning: low
+reasoning: medium
 
-Apply PR_10_25_SAMPLE_METADATA_SSOT_DUPLICATE_EVIDENCE_FIX.
+Apply PR_10_27_DUPLICATE_CLASSIFICATION_AND_SAFE_CLEANUP.
 
-- Preserve samples/metadata/samples.index.metadata.json as the only live SSoT.
-- Remove, move, or clearly demote the duplicate report evidence copy.
-- Do not keep a repo-relative duplicate that looks like runtime source.
-- Confirm runtime/tool code references only the live SSoT.
-- Do not rewrite sample metadata content.
+Required:
+- Read docs/dev/reports/repo_duplicate_file_content_audit.json from PR 10.26.
+- Classify duplicate groups before cleanup.
+- Remove/demote only confirmed duplicate SSoT or accidental-copy files.
+- Do not delete templates, sample variants, generated reports, validation outputs, or ambiguous groups.
+- Leave ambiguous groups documented with no action.
+- Add report at docs/dev/reports/PR_10_27_DUPLICATE_CLASSIFICATION_AND_SAFE_CLEANUP_report.md.
 - Do not modify start_of_day folders.
-- Add validation report.
-- Return ZIP artifact at tmp/PR_10_25_SAMPLE_METADATA_SSOT_DUPLICATE_EVIDENCE_FIX_delta.zip.
+- Return ZIP artifact at tmp/PR_10_27_DUPLICATE_CLASSIFICATION_AND_SAFE_CLEANUP_delta.zip.
