@@ -1,10 +1,25 @@
-model: gpt-5.3-codex
-reasoning: medium
+MODEL: GPT-5.3-codex
+REASONING: low
 
-Apply PR_10_13_WORKSPACE_INTEGRATION_POLISH
+Apply tool header standardization:
 
-- Move lifecycle control to workspace
-- Prevent tool self-reset logic
-- Preserve tool state during navigation
-- Ensure stable tool switching
-- Do not modify data layer
+- Replace all fullscreen tool headers with:
+  <Tool Name> — <Short Description>
+
+- Remove:
+  - intro paragraphs
+  - multi-line headers
+
+- Ensure:
+  - truncation with ellipsis if needed
+  - tooltip shows full text
+
+- Bind UI to:
+  tool.name
+  tool.shortDescription
+
+Target tools:
+- Vector Map Editor
+- Vector Asset Studio
+- Sprite Editor
+- State Inspector

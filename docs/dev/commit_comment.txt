@@ -1,1 +1,5 @@
-Finalize workspace lifecycle control and persistent tool state across all tools - PR 10.13
+Standardize fullscreen tool headers to single-line format
+
+- Enforces: <Tool Name> — <Short Description>
+- Removes multi-line headers and intro blocks
+- Improves workspace density and UX consistency

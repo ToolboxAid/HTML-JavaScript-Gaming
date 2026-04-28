@@ -132,6 +132,14 @@ body.tools-platform-surface {
   color: var(--text, #f7f4ff);
 }
 
+.tools-platform-frame__title--single-line {
+  display: block;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .tools-platform-frame__description {
   margin: 0;
   max-width: 72ch;

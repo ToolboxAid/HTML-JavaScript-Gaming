@@ -33,6 +33,12 @@ const GAME_ASSET_CATALOG_SCHEMA = "html-js-gaming.game-asset-catalog";
 const GAME_ASSET_CATALOG_VERSION = 1;
 const WORKSPACE_LAUNCH_SIGNATURE_STORAGE_KEY = "toolboxaid.toolsPlatform.launchSignature";
 const TOOL_STATE_STORAGE_KEY_PREFIX = "toolboxaid.";
+const STANDARDIZED_TOOL_HEADER_IDS = new Set([
+  "vector-map-editor",
+  "vector-asset-studio",
+  "sprite-editor",
+  "state-inspector"
+]);
 const PRESERVED_TOOL_STATE_KEYS = new Set([
   HEADER_EXPANDED_STORAGE_KEY,
   WORKSPACE_LAUNCH_SIGNATURE_STORAGE_KEY
@@ -1168,6 +1174,14 @@ function renderHeaderMarkup(currentTool, isHeaderExpanded) {
   const description = currentTool
     ? currentTool.description
     : "Registry-driven, engine-themed entry surface for vector maps, vector assets, tilemaps, parallax scenes, and sprite workspaces.";
+  const useStandardizedToolHeader = !isLanding
+    && Boolean(currentTool?.id)
+    && STANDARDIZED_TOOL_HEADER_IDS.has(currentTool.id);
+  const standardizedToolName = normalizeTextValue(currentTool?.name) || title;
+  const standardizedToolShortDescription = normalizeTextValue(currentTool?.shortDescription);
+  const standardizedHeaderText = standardizedToolShortDescription
+    ? `${standardizedToolName} — ${standardizedToolShortDescription}`
+    : standardizedToolName;
   const meta = isLanding
     ? `${getToolRegistry().filter((entry) => entry.active === true && entry.visibleInToolsList === true).length} active tools | hubCommon.css theme`
     : "Shared shell, engine theme, and workspace context applied from the active tool registry";
@@ -1177,16 +1191,18 @@ function renderHeaderMarkup(currentTool, isHeaderExpanded) {
       <div class="tools-platform-frame__accordion-content">
         <div class="tools-platform-frame__accordion-summary">
           <div class="tools-platform-frame__summary-copy">
-            <h1 class="tools-platform-frame__title">${escapeHtml(title)}</h1>
-            <h2 class="tools-platform-frame__eyebrow">First-Class Tools Surface</h2>
+            <h1 class="tools-platform-frame__title${useStandardizedToolHeader ? " tools-platform-frame__title--single-line" : ""}"${useStandardizedToolHeader ? ` title="${escapeHtml(standardizedHeaderText)}"` : ""}>${escapeHtml(useStandardizedToolHeader ? standardizedHeaderText : title)}</h1>
+            ${useStandardizedToolHeader ? "" : '<h2 class="tools-platform-frame__eyebrow">First-Class Tools Surface</h2>'}
           </div>
           <div class="tools-platform-frame__summary-meta">
             <div class="tools-platform-frame__meta">${escapeHtml(meta)}</div>
           </div>
         </div>
+        ${useStandardizedToolHeader ? "" : `
         <div class="tools-platform-frame__topline">
           <p class="tools-platform-frame__description">${escapeHtml(description)}</p>
         </div>
+        `}
         ${showNavThroughTiles ? `
           <div class="tools-platform-frame__bottomline">
             ${!isLanding ? `<hr class="tools-platform-frame__divider" />` : ""}
