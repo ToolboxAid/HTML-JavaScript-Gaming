@@ -1,1 +1,1 @@
-Classify duplicate file content and safely clean only confirmed duplicate SSoT copies - PR 10.27
+Improve interaction feedback and visual clarity across tools - PR 11.2
