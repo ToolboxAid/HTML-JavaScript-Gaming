@@ -30,7 +30,7 @@
       "selectedAssetId": "sample-1505-asset-browser-preset",
       "search": "",
       "importCategory": "Workflow JSON",
-      "importDestination": "/samples/phase-15/1505/config/",
+      "importDestination": "/samples/phase-15/1505/assets/",
       "importName": "sample-1505-import.workflow.json"
     }
   }

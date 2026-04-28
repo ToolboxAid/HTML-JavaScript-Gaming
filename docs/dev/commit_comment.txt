@@ -1,1 +1,1 @@
-Use sample-local import destinations in sample Asset Browser and Import Hub presets - PR 10.23
+Normalize sample JSON destination hints to sample-local paths - PR 10.24
