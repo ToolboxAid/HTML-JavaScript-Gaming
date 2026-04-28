@@ -31,7 +31,6 @@ import {
 } from "../../shared/toolLoadDiagnostics.js";
 import {
   TOOL_UX_LIFECYCLE,
-  getUnifiedEmptyStateMessage,
   setToolUxLifecycleState
 } from "../../shared/unifiedToolUxContract.js";
 
@@ -132,7 +131,6 @@ export class VectorMapEditorApp {
     this.lastCollisionResult = null;
     this.pendingHistoryEntry = null;
     this.spinAnimationFrame = null;
-    this.defaultSelectionApplied = false;
 
     this.elements = this.cacheElements(rootDocument);
     this.jsonEditor = new VectorMapJsonEditor(this.elements.jsonEditor);
@@ -278,7 +276,7 @@ export class VectorMapEditorApp {
       this.syncFullscreenLayoutHeight();
       this.resizeCanvas();
     });
-    this.setStatus("Vector Map Editor ready.");
+    this.setStatus("No map loaded. Load a map preset or import a map JSON document to begin.");
     this.syncUxContractState();
     void this.tryLoadPresetFromQuery();
   }
@@ -287,7 +285,6 @@ export class VectorMapEditorApp {
     const forceMissing = options.forceMissing === true;
     const phase = typeof options.phase === "string" && options.phase.trim() ? options.phase.trim() : "load";
     const lifecycleStable = options.lifecycleStable !== false;
-    const defaultSelectionApplied = options.defaultSelectionApplied === true || this.defaultSelectionApplied === true;
     const data = this.documentModel?.getData?.() || {};
     const objectCount = Array.isArray(data.objects) ? data.objects.length : 0;
     const selectedObject = !forceMissing ? this.selectionModel.getSelection(this.documentModel).object : null;
@@ -340,7 +337,6 @@ export class VectorMapEditorApp {
       requiredData: "vector-map-objects",
       loaded: hasSelectedObject && hasEntityControls,
       value: selectedObject?.name || "none",
-      "default-selection-applied": defaultSelectionApplied,
       classification: hasSelectedObject && hasEntityControls
         ? "success"
         : (!hasDocument
@@ -355,7 +351,6 @@ export class VectorMapEditorApp {
       sampleId,
       phase,
       cause: forceMissing ? "preset-load-failure" : "preset-load",
-      "default-selection-applied": defaultSelectionApplied,
       classification: lifecycleStable ? "success" : "lifecycle-reset"
     });
 
@@ -436,7 +431,6 @@ export class VectorMapEditorApp {
       this.cancelSpinAnimation();
       this.documentModel.setData(toolDocument);
       this.selectionModel.clear();
-      const defaultSelectionApplied = this.selectFirstObjectWhenUnselected();
       this.lastCollisionResult = null;
       this.historyManager.reset();
       this.pendingHistoryEntry = null;
@@ -446,7 +440,7 @@ export class VectorMapEditorApp {
       this.interactionController.setToolMode(this.elements.toolModeSelect.value);
       this.syncUIFromDocument();
       this.render();
-      this.emitVectorMapControlReadiness(sampleId, { phase: "loaded", lifecycleStable: true, defaultSelectionApplied });
+      this.emitVectorMapControlReadiness(sampleId, { phase: "loaded", lifecycleStable: true });
       if ((Array.isArray(this.documentModel.getData().objects) ? this.documentModel.getData().objects.length : 0) === 0) {
         logToolLoadWarning({
           toolId: "vector-map-editor",
@@ -650,7 +644,6 @@ export class VectorMapEditorApp {
         this.cancelSpinAnimation();
         this.documentModel.setData(data);
         this.selectionModel.clear();
-        this.selectFirstObjectWhenUnselected();
         this.lastCollisionResult = null;
         this.historyManager.reset();
         this.pendingHistoryEntry = null;
@@ -887,7 +880,6 @@ export class VectorMapEditorApp {
           const nextData = this.jsonEditor.validate();
           this.documentModel.setData(nextData);
           this.selectionModel.clear();
-          this.selectFirstObjectWhenUnselected();
           this.lastCollisionResult = null;
           this.workspaceViewMode = this.documentModel.getData().mode;
           if (this.workspaceViewMode !== "2d" && this.workspaceViewMode !== "3d") {
@@ -1112,25 +1104,6 @@ export class VectorMapEditorApp {
     }
   }
 
-  selectFirstObjectWhenUnselected() {
-    this.defaultSelectionApplied = false;
-    const selection = this.selectionModel.getSelection(this.documentModel);
-    if (selection.object) {
-      return false;
-    }
-    const objects = this.documentModel.getObjects();
-    if (!Array.isArray(objects) || objects.length === 0) {
-      return false;
-    }
-    const firstObject = objects.find((entry) => entry && typeof entry.id === "string" && entry.id.length > 0) || null;
-    if (!firstObject) {
-      return false;
-    }
-    this.selectionModel.selectObject(firstObject.id);
-    this.defaultSelectionApplied = true;
-    return true;
-  }
-
   syncUIFromDocument() {
     const data = this.documentModel.getData();
     this.elements.documentNameInput.value = data.name;
@@ -1138,7 +1111,6 @@ export class VectorMapEditorApp {
     this.elements.documentHeightInput.value = String(data.height);
     this.elements.documentBackgroundInput.value = data.background;
     this.elements.workspaceModeSelect.value = this.workspaceViewMode;
-    this.selectFirstObjectWhenUnselected();
     this.syncSelectionFields();
     this.syncObjectList();
     this.syncCollisionSummary();
@@ -1230,7 +1202,7 @@ export class VectorMapEditorApp {
     });
 
     if (!object) {
-      this.elements.pointsSummary.textContent = "No selection.";
+      this.elements.pointsSummary.textContent = "No selection. Choose an object from the Objects list.";
       return;
     }
     const pointRows = object.points.map((point, index) => `#${index + 1}: (${point.x}, ${point.y}, ${point.z}) ${point.color || ""}`);
@@ -1243,7 +1215,7 @@ export class VectorMapEditorApp {
     if (!objects.length) {
       const empty = document.createElement("li");
       empty.className = "object-item muted";
-      empty.textContent = getUnifiedEmptyStateMessage();
+      empty.textContent = "No map objects loaded. Import a map JSON file or launch with a sample preset path.";
       this.elements.objectList.appendChild(empty);
       return;
     }
@@ -1441,7 +1413,6 @@ export class VectorMapEditorApp {
       }
     } else {
       this.selectionModel.clear();
-      this.selectFirstObjectWhenUnselected();
     }
     this.workspaceViewMode = snapshot.workspaceViewMode || this.documentModel.getData().mode;
     this.lastCollisionResult = null;

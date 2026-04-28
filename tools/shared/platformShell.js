@@ -1177,11 +1177,12 @@ function renderHeaderMarkup(currentTool, isHeaderExpanded) {
   const useStandardizedToolHeader = !isLanding
     && Boolean(currentTool?.id)
     && STANDARDIZED_TOOL_HEADER_IDS.has(currentTool.id);
-  const standardizedToolName = normalizeTextValue(currentTool?.name) || title;
+  const standardizedToolName = normalizeTextValue(currentTool?.name);
   const standardizedToolShortDescription = normalizeTextValue(currentTool?.shortDescription);
-  const standardizedHeaderText = standardizedToolShortDescription
+  const hasStandardizedHeaderConfig = Boolean(standardizedToolName && standardizedToolShortDescription);
+  const standardizedHeaderText = hasStandardizedHeaderConfig
     ? `${standardizedToolName} — ${standardizedToolShortDescription}`
-    : standardizedToolName;
+    : `Configuration error: ${currentTool?.id || "tool"} header requires tool.name and tool.shortDescription in tools/toolRegistry.js.`;
   const meta = isLanding
     ? `${getToolRegistry().filter((entry) => entry.active === true && entry.visibleInToolsList === true).length} active tools | hubCommon.css theme`
     : "Shared shell, engine theme, and workspace context applied from the active tool registry";
@@ -1191,7 +1192,7 @@ function renderHeaderMarkup(currentTool, isHeaderExpanded) {
       <div class="tools-platform-frame__accordion-content">
         <div class="tools-platform-frame__accordion-summary">
           <div class="tools-platform-frame__summary-copy">
-            <h1 class="tools-platform-frame__title${useStandardizedToolHeader ? " tools-platform-frame__title--single-line" : ""}"${useStandardizedToolHeader ? ` title="${escapeHtml(standardizedHeaderText)}"` : ""}>${escapeHtml(useStandardizedToolHeader ? standardizedHeaderText : title)}</h1>
+            <h1 class="tools-platform-frame__title${useStandardizedToolHeader ? " tools-platform-frame__title--single-line" : ""}${useStandardizedToolHeader && !hasStandardizedHeaderConfig ? " tools-platform-frame__title--config-error" : ""}" data-tool-id="${escapeHtml(currentTool?.id || "")}"${useStandardizedToolHeader ? ` title="${escapeHtml(standardizedHeaderText)}"` : ""}>${escapeHtml(useStandardizedToolHeader ? standardizedHeaderText : title)}</h1>
             ${useStandardizedToolHeader ? "" : '<h2 class="tools-platform-frame__eyebrow">First-Class Tools Surface</h2>'}
           </div>
           <div class="tools-platform-frame__summary-meta">

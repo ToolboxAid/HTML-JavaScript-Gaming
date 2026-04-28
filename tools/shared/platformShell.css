@@ -134,10 +134,16 @@ body.tools-platform-surface {
 
 .tools-platform-frame__title--single-line {
   display: block;
-  max-width: 100%;
+  max-width: min(100%, 88ch);
+  font-size: 1.05rem !important;
+  line-height: 1.2 !important;
+  white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  white-space: nowrap;
+}
+
+.tools-platform-frame__title--config-error {
+  color: #ffd4d4;
 }
 
 .tools-platform-frame__description {

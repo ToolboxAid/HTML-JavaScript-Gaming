@@ -773,34 +773,42 @@ function updatePaletteReadout() {
 }
 
 function applyEnablementState() {
-  const hasPaletteControls = hasPaletteSelection() && getVisiblePaletteEntries().length > 0;
   const hasStyleSelection = hasRequiredStyleSelection();
   const hasFill = hasFillSelection();
   const hasGradient = Boolean((normalizeColorValue(state.gradientFillFrom) || normalizeColorValue(state.fill)) && normalizeColorValue(state.gradientFillTo));
   const hasObjectSelection = Boolean(getSelectedElement());
-  const paletteActionsEnabled = hasPaletteControls && hasObjectSelection;
+  const noSelectionReason = "Select an editable SVG element to enable Paint/Fill/Stroke controls.";
 
   if (refs.paletteSelect instanceof HTMLSelectElement) {
     const paletteLocked = refs.paletteSelect.dataset.locked === "1";
     refs.paletteSelect.disabled = paletteLocked || !hasObjectSelection;
+    refs.paletteSelect.title = hasObjectSelection ? "" : noSelectionReason;
   }
 
-  refs.setPaletteTargetPaintButton.disabled = !paletteActionsEnabled;
-  refs.setPaletteTargetStrokeButton.disabled = !paletteActionsEnabled;
+  refs.setPaletteTargetPaintButton.disabled = !hasObjectSelection;
+  refs.setPaletteTargetPaintButton.title = hasObjectSelection ? refs.setPaletteTargetPaintButton.title : noSelectionReason;
+  refs.setPaletteTargetStrokeButton.disabled = !hasObjectSelection;
+  refs.setPaletteTargetStrokeButton.title = hasObjectSelection ? refs.setPaletteTargetStrokeButton.title : noSelectionReason;
   if (refs.setPaletteTargetGradientStartButton instanceof HTMLButtonElement) {
-    refs.setPaletteTargetGradientStartButton.disabled = !paletteActionsEnabled;
+    refs.setPaletteTargetGradientStartButton.disabled = !hasObjectSelection;
+    refs.setPaletteTargetGradientStartButton.title = hasObjectSelection ? refs.setPaletteTargetGradientStartButton.title : noSelectionReason;
   }
   if (refs.setPaletteTargetGradientEndButton instanceof HTMLButtonElement) {
-    refs.setPaletteTargetGradientEndButton.disabled = !paletteActionsEnabled;
+    refs.setPaletteTargetGradientEndButton.disabled = !hasObjectSelection;
+    refs.setPaletteTargetGradientEndButton.title = hasObjectSelection ? refs.setPaletteTargetGradientEndButton.title : noSelectionReason;
   }
   refs.applyCanvasSizeButton.disabled = !hasStyleSelection;
-  refs.strokeWidthInput.disabled = !hasStyleSelection;
+  refs.strokeWidthInput.disabled = !hasObjectSelection;
+  refs.strokeWidthInput.title = hasObjectSelection ? "" : noSelectionReason;
   if (refs.applyFillButton instanceof HTMLButtonElement) {
-    refs.applyFillButton.disabled = !(hasFill && hasObjectSelection);
+    refs.applyFillButton.disabled = !hasObjectSelection;
+    refs.applyFillButton.title = hasObjectSelection ? "" : noSelectionReason;
   }
-  refs.applyStyleButton.disabled = !(hasStyleSelection && hasObjectSelection);
+  refs.applyStyleButton.disabled = !hasObjectSelection;
+  refs.applyStyleButton.title = hasObjectSelection ? "" : noSelectionReason;
   if (refs.applyGradientToSelectedButton instanceof HTMLButtonElement) {
-    refs.applyGradientToSelectedButton.disabled = !(hasGradient && hasObjectSelection);
+    refs.applyGradientToSelectedButton.disabled = !hasObjectSelection;
+    refs.applyGradientToSelectedButton.title = hasObjectSelection ? "" : noSelectionReason;
   }
   refs.deleteSelectedButton.disabled = !hasObjectSelection;
   refs.sendBackwardButton.disabled = !(hasStyleSelection && hasObjectSelection);
@@ -825,14 +833,16 @@ function applyEnablementState() {
 
   refs.mainPaletteGrid.querySelectorAll(".palette-swatch").forEach((button) => {
     if (button instanceof HTMLButtonElement) {
-      button.disabled = !paletteActionsEnabled;
-      button.classList.toggle("locked", !paletteActionsEnabled);
+      button.disabled = !hasObjectSelection;
+      button.classList.toggle("locked", !hasObjectSelection);
+      button.title = hasObjectSelection ? button.title : noSelectionReason;
     }
   });
   refs.usedColorStrip.querySelectorAll(".palette-swatch").forEach((button) => {
     if (button instanceof HTMLButtonElement) {
-      button.disabled = !paletteActionsEnabled;
-      button.classList.toggle("locked", !paletteActionsEnabled);
+      button.disabled = !hasObjectSelection;
+      button.classList.toggle("locked", !hasObjectSelection);
+      button.title = hasObjectSelection ? button.title : noSelectionReason;
     }
   });
 
@@ -2642,7 +2652,7 @@ function registerPaletteFromPresetEditorOptions(editorOptions, sampleId = "") {
   return true;
 }
 
-function ensurePaletteSelectionFromDeclaredInputs(editorOptions = {}, sampleId = "") {
+function ensurePaletteSelectionFromDeclaredInputs(editorOptions = {}) {
   if (hasPaletteSelection() && normalizeColorValue(state.fill) && normalizeColorValue(state.stroke)) {
     return "success";
   }
@@ -2650,73 +2660,17 @@ function ensurePaletteSelectionFromDeclaredInputs(editorOptions = {}, sampleId =
   const paletteBlock = editorOptions?.palette && typeof editorOptions.palette === "object"
     ? editorOptions.palette
     : null;
-  const declaredEntries = paletteBlock
-    ? collectPaletteEntries(
-      typeof paletteBlock.name === "string" && paletteBlock.name.trim() ? paletteBlock.name.trim() : "Declared Palette",
-      paletteBlock.entries
-    )
-    : [];
-
-  const declaredColors = [];
-  const seen = new Set();
-  const pushColor = (hexValue, name = "") => {
-    const normalizedHex = normalizeColorValue(hexValue);
-    if (!normalizedHex || seen.has(normalizedHex)) {
-      return;
-    }
-    seen.add(normalizedHex);
-    declaredColors.push({
-      symbol: "",
-      hex: normalizedHex,
-      name: name || `Declared ${declaredColors.length + 1}`
-    });
-  };
-
-  declaredEntries.forEach((entry) => pushColor(entry?.hex, entry?.name));
-  pushColor(paletteBlock?.paint || editorOptions?.paint, "Paint");
-  pushColor(paletteBlock?.stroke || editorOptions?.stroke, "Stroke");
-  if (declaredColors.length === 0) {
-    if (!hasPaletteSelection()) {
-      const firstPaletteOption = (Array.isArray(state.paletteOptions) ? state.paletteOptions : [])
-        .find((entry) => {
-          const paletteId = String(entry?.id || "");
-          return paletteId && paletteId !== NO_PALETTE_ID && Array.isArray(state.paletteGroups?.[paletteId]) && state.paletteGroups[paletteId].length > 0;
-        });
-      if (firstPaletteOption) {
-        state.selectedPaletteId = String(firstPaletteOption.id);
-        if (refs.paletteSelect instanceof HTMLSelectElement) {
-          refs.paletteSelect.dataset.locked = "0";
-          refs.paletteSelect.disabled = false;
-          refs.paletteSelect.value = state.selectedPaletteId;
-        }
-        renderPaletteSelect();
-        renderMainPaletteGrid();
-        renderUsedColorStrip();
-        applyEnablementState();
-      }
-    }
+  if (!hasPaletteSelection()) {
     return "missing";
   }
-
-  const paletteId = sampleId ? `sample-${sampleId}-declared-palette` : "sample-declared-palette";
-  const paletteLabel = sampleId ? `Sample ${sampleId} Declared Palette` : "Declared Palette";
-  state.paletteGroups[paletteId] = declaredColors;
-  upsertPaletteOption(paletteId, paletteLabel);
-  state.selectedPaletteId = paletteId;
-  if (refs.paletteSelect instanceof HTMLSelectElement) {
-    refs.paletteSelect.dataset.locked = "0";
-    refs.paletteSelect.disabled = false;
-    refs.paletteSelect.value = paletteId;
+  const declaredPaint = normalizeColorFromPalette(state.selectedPaletteId, paletteBlock?.paint || editorOptions?.paint);
+  const declaredStroke = normalizeColorFromPalette(state.selectedPaletteId, paletteBlock?.stroke || editorOptions?.stroke);
+  if (!normalizeColorValue(state.fill) && declaredPaint) {
+    state.fill = declaredPaint;
   }
-  const allowedColors = new Set(declaredColors.map((entry) => normalizeColorValue(entry.hex)).filter(Boolean));
-  const declaredPaint = normalizeColorValue(paletteBlock?.paint || editorOptions?.paint);
-  const declaredStroke = normalizeColorValue(paletteBlock?.stroke || editorOptions?.stroke);
-  state.fill = declaredPaint && allowedColors.has(declaredPaint) ? declaredPaint : null;
-  state.stroke = declaredStroke && allowedColors.has(declaredStroke) ? declaredStroke : null;
-  renderPaletteSelect();
-  renderMainPaletteGrid();
-  renderUsedColorStrip();
-  applyEnablementState();
+  if (!normalizeColorValue(state.stroke) && declaredStroke) {
+    state.stroke = declaredStroke;
+  }
   return normalizeColorValue(state.fill) && normalizeColorValue(state.stroke) ? "success" : "missing";
 }
 
@@ -2730,12 +2684,11 @@ function bindPaintAndStrokeFromLoadedData() {
     return false;
   }
 
-  const paletteColors = paletteEntries
-    .map((entry) => normalizeColorValue(entry?.hex))
-    .filter(Boolean);
-  const usedColors = (Array.isArray(state.usedColors) ? state.usedColors : [])
-    .map((value) => normalizeColorValue(value))
-    .filter(Boolean);
+  const paletteColors = new Set(
+    paletteEntries
+      .map((entry) => normalizeColorValue(entry?.hex))
+      .filter(Boolean)
+  );
   const selectedElement = getSelectedElement();
   const selectedFill = selectedElement instanceof SVGElement
     ? normalizeColorValue(selectedElement.getAttribute("fill") || selectedElement.style.fill || "")
@@ -2743,24 +2696,15 @@ function bindPaintAndStrokeFromLoadedData() {
   const selectedStroke = selectedElement instanceof SVGElement
     ? normalizeColorValue(selectedElement.getAttribute("stroke") || selectedElement.style.stroke || "")
     : null;
-  const currentPaint = normalizeColorValue(state.fill);
-  const currentStroke = normalizeColorValue(state.stroke);
-
-  if (!currentPaint) {
-    state.fill = selectedFill
-      || usedColors[0]
-      || paletteColors[0]
-      || null;
+  if (selectedFill && paletteColors.has(selectedFill)) {
+    state.fill = selectedFill;
+  } else if (!paletteColors.has(normalizeColorValue(state.fill))) {
+    state.fill = null;
   }
-
-  if (!currentStroke) {
-    const preferredUsedStroke = usedColors.find((value) => value !== normalizeColorValue(state.fill)) || null;
-    const preferredPaletteStroke = paletteColors.find((value) => value !== normalizeColorValue(state.fill)) || null;
-    state.stroke = selectedStroke
-      || preferredUsedStroke
-      || preferredPaletteStroke
-      || paletteColors[0]
-      || null;
+  if (selectedStroke && paletteColors.has(selectedStroke)) {
+    state.stroke = selectedStroke;
+  } else if (!paletteColors.has(normalizeColorValue(state.stroke))) {
+    state.stroke = null;
   }
 
   return Boolean(normalizeColorValue(state.fill) && normalizeColorValue(state.stroke));
@@ -2967,7 +2911,7 @@ async function tryLoadPresetFromQuery() {
     if (extractedPreset.editorOptions) {
       applySampleEditorOptions(extractedPreset.editorOptions);
     }
-    const paletteClassification = ensurePaletteSelectionFromDeclaredInputs(extractedPreset.editorOptions || {}, sampleId);
+    const paletteClassification = ensurePaletteSelectionFromDeclaredInputs(extractedPreset.editorOptions || {});
     bindPaintAndStrokeFromLoadedData();
     applyEnablementState();
     emitVectorAssetControlReadiness(sampleId, { paletteClassification, phase: "loaded", lifecycleStable: true });
@@ -2976,9 +2920,12 @@ async function tryLoadPresetFromQuery() {
         toolId: "vector-asset-studio",
         sampleId,
         samplePresetPath,
-        reason: "Declared palette controls were not fully bound from preset and required normalization from declared inputs.",
+        reason: "Declared palette controls were not fully bound from preset configuration.",
         classification: "missing"
       });
+      setStatus("Configuration error: missing palette binding. Provide editorOptions.palette with selectable entries.");
+      syncVectorAssetUxContract();
+      return true;
     }
     if (!normalizeColorValue(state.fill) || !normalizeColorValue(state.stroke)) {
       logToolLoadWarning({
@@ -2988,6 +2935,9 @@ async function tryLoadPresetFromQuery() {
         reason: "Paint/stroke controls remained incomplete after preset load.",
         classification: "missing"
       });
+      setStatus("Configuration error: palette Paint and Stroke are required. Select a palette and assign Paint/Stroke before editing.");
+      syncVectorAssetUxContract();
+      return true;
     }
     setStatus(buildPresetLoadedStatus(sampleId, samplePresetPath));
     syncVectorAssetUxContract();

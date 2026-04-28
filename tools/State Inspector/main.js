@@ -66,6 +66,13 @@ function setStatus(message) {
   }
 }
 
+function isEmptySnapshotPayload(snapshot) {
+  if (!snapshot || typeof snapshot !== "object" || Array.isArray(snapshot)) {
+    return true;
+  }
+  return Object.keys(snapshot).length === 0;
+}
+
 function emitManualJsonDiagnostic(classification, details = {}) {
   if (typeof console === "undefined") {
     return;
@@ -305,13 +312,19 @@ async function tryLoadPresetFromQuery() {
 function renderSnapshot(snapshot) {
   state.snapshot = snapshot;
   if (refs.output instanceof HTMLElement) {
-    refs.output.textContent = toPrettyJson(snapshot);
+    refs.output.textContent = isEmptySnapshotPayload(snapshot)
+      ? "No state available. Click Refresh Snapshot or paste JSON to inspect."
+      : toPrettyJson(snapshot);
   }
 
   const localCount = snapshot?.storage?.localCount ?? 0;
   const sessionCount = snapshot?.storage?.sessionCount ?? 0;
   const bootCount = snapshot?.bootContracts?.count ?? 0;
   updateInspectJsonActionState();
+  if (isEmptySnapshotPayload(snapshot)) {
+    setStatus("No state available. Refresh snapshot or paste valid JSON.");
+    return;
+  }
   setStatus(`Snapshot ready. local=${localCount}, session=${sessionCount}, bootContracts=${bootCount}.`);
 }
 
@@ -333,16 +346,26 @@ function inspectInputJson() {
       : "Manual JSON input is empty. Paste valid JSON to inspect manual payloads.");
     return;
   }
-  const parsed = safeParseJson(inputText);
-  if (!parsed || typeof parsed !== "object") {
+  let parsed = null;
+  try {
+    parsed = JSON.parse(inputText);
+  } catch (error) {
+    const errorText = error instanceof Error ? error.message : "Invalid JSON syntax.";
     emitManualJsonDiagnostic("invalid-json", {
-      hasSnapshot: Boolean(state.snapshot)
+      hasSnapshot: Boolean(state.snapshot),
+      error: errorText
     });
-    setStatus(state.snapshot
-      ? "Manual JSON input is invalid. Inspection Snapshot remains unchanged."
-      : "Manual JSON input is invalid. Paste valid JSON to inspect.");
+    setStatus(`Manual JSON parse error: ${errorText}`);
     return;
   }
+  if (!parsed || typeof parsed !== "object") {
+    emitManualJsonDiagnostic("invalid-json-type", {
+      hasSnapshot: Boolean(state.snapshot)
+    });
+    setStatus("Manual JSON must be an object or structured payload.");
+    return;
+  }
+  refs.input.value = toPrettyJson(parsed);
   renderSnapshot(parsed);
   emitManualJsonDiagnostic("manual-json-success", {
     hasSnapshot: Boolean(state.snapshot)
