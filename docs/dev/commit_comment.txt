@@ -1,7 +1,7 @@
-Validate baseline tool layout workflow
+Define King of the Iceberg layout contract
 
-- Verify Vector Map Editor can represent fragmented platform layout
-- Confirm explicit selection and no-selection behavior
-- Confirm layout save/export path can be inspected
-- Sanity-check asset, sprite, and state tools after stabilization
-- Document workflow findings for first King of the Iceberg layout
+- Add minimal first-playable layout contract
+- Base contract on validated tool workflow export
+- Define platform, top-control, water, and visual roles
+- Add validation rules and example layout JSON
+- Keep scope docs-only with no gameplay implementation

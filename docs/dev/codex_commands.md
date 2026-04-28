@@ -2,44 +2,59 @@ MODEL: GPT-5.3-codex
 REASONING: low
 
 PR purpose:
-Validate the tool workflow for creating a basic King of the Iceberg layout.
+Create the King of the Iceberg layout contract document from the validated tool workflow output.
 
 Do not implement gameplay.
-Do not add new features unless a tiny test-only artifact is required to validate existing workflow.
+Do not modify runtime engine code.
+Do not modify sample games.
 Do not modify start_of_day folders.
-Do not modify sample games or runtime engine files.
+Do not run long samples tests unless directly required.
 
-Main workflow:
-1. Launch Vector Map Editor.
-2. Confirm no hidden/default map loads.
-3. Create or load an explicit baseline layout.
-4. Represent 3 to 5 fragmented horizontal ice platforms.
-5. Confirm each platform is independently selectable.
-6. Confirm clearing selection shows explicit no-selection state.
-7. Save/export the layout state.
-8. Inspect exported state in State Inspector.
-9. Sanity-check Vector Asset Studio paint/stroke controls.
-10. Sanity-check Sprite Editor launch/header/no-fallback behavior.
+Use these inputs:
+- tmp/uat_exports/king_of_the_iceberg_layout_snapshot.json
+- tmp/uat_tool_layout_workflow_results.json
+- docs/dev/reports/PR_tool_layout_workflow_baseline_report.md
 
-Required report:
-Create docs/dev/reports/PR_tool_layout_workflow_baseline_report.md
+Create:
+- docs/dev/koti_layout_contract.md
 
-Report must include:
+The contract must include:
+1. Purpose
+2. Source artifacts used
+3. Minimal layout object shape
+4. Platform object requirements
+5. Required roles
+6. Optional fields
+7. Validation rules
+8. Example minimal layout JSON
+9. Out-of-scope items
+
+Required roles:
+- platform
+- top-control-platform
+- water-zone
+- visual-background
+- visual-midground
+
+Validation rules:
+- layout/map id is required
+- at least one top-control-platform is required
+- one water-zone is required
+- MVP layout has 3 to 5 platform objects
+- roles must be explicit
+- hidden fallback objects are not allowed
+- missing required fields produce actionable errors
+
+Testing:
+- Docs-only targeted validation.
+- Do not run full samples suite.
+- If no JavaScript changed, node --check is not required.
+- Report what was validated.
+
+Report:
+Create or update docs/dev/reports/PR_koti_layout_contract_report.md with:
 - PASS/FAIL
-- Changed files, if any
-- Validation steps performed
-- Export/save path
-- Any blockers
-- Remaining issues without masking them
-
-Hard rules:
-- No silent fallback data.
-- No hidden sample auto-load.
-- Missing/invalid input must produce actionable messages.
-- Do not add King of the Iceberg runtime code.
-- Do not build tileset breakout yet.
-
-Validation:
-- Run node --check on any changed JavaScript files.
-- Run npm run test:launch-smoke -- --tools.
-- If an exported JSON/layout file is produced, verify it with State Inspector.
+- changed files
+- source artifacts reviewed
+- validation performed
+- remaining issues
