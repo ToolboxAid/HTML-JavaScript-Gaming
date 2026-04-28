@@ -69,6 +69,8 @@ const RESERVED_PARALLAX_BLOCK = Object.freeze({
 });
 
 const DEFAULT_TILESET_SWATCH_COLOR = "#64748b";
+const TILE_PALETTE_EMPTY_TITLE = "No tiles loaded";
+const TILE_PALETTE_EMPTY_HINT = "Import or create tileset";
 
 function normalizeSamplePresetPath(pathValue) {
   if (typeof pathValue !== "string") {
@@ -650,7 +652,7 @@ class TileMapEditorApp {
   constructor(documentModel) {
     this.documentModel = documentModel;
     this.selectedLayerId = documentModel.layers[0]?.id || "";
-    this.activeTileId = 1;
+    this.activeTileId = this.findFirstNonEmptyTileId();
     this.activeTool = "paint";
     this.canvasZoom = 1;
     this.hoverCell = null;
@@ -1094,7 +1096,7 @@ class TileMapEditorApp {
     this.documentModel = createInitialDocument({ width, height, tileSize, mapName });
     this.selectedLayerId = this.documentModel.layers[0]?.id || "";
     this.selectedMarkerId = "";
-    this.activeTileId = 1;
+    this.activeTileId = this.findFirstNonEmptyTileId();
     this.tilesetImage = null;
     this.tilesetImageCache = new Map();
     this.clearTransientImageSources();
@@ -1366,6 +1368,52 @@ class TileMapEditorApp {
       }
     }
     return tiles[0]?.id ?? 0;
+  }
+
+  getSelectableTiles() {
+    const tileset = Array.isArray(this.documentModel?.tileset) ? this.documentModel.tileset : [];
+    return tileset.filter((tile) => Number.isFinite(Number(tile?.id)) && Number(tile.id) > 0);
+  }
+
+  hasTileSelection() {
+    const selectedTileId = Number.parseInt(this.activeTileId, 10);
+    if (!Number.isFinite(selectedTileId)) {
+      return false;
+    }
+    return this.getSelectableTiles().some((tile) => Number(tile.id) === selectedTileId);
+  }
+
+  ensureFirstTileSelection() {
+    const selectableTiles = this.getSelectableTiles();
+    if (selectableTiles.length <= 0) {
+      this.activeTileId = 0;
+      return false;
+    }
+    if (this.hasTileSelection()) {
+      return false;
+    }
+    this.activeTileId = selectableTiles[0].id;
+    return true;
+  }
+
+  syncTileSelectionControlState() {
+    const hasSelection = this.hasTileSelection();
+    this.refs.activeToolSelect.disabled = !hasSelection;
+    this.refs.addLayerButton.disabled = !hasSelection;
+    this.refs.removeLayerButton.disabled = !hasSelection;
+    this.refs.layerVisibilityToggle.disabled = !hasSelection;
+    this.refs.markerTypeSelect.disabled = !hasSelection;
+    this.refs.markerNameInput.disabled = !hasSelection;
+    this.refs.clearMarkersButton.disabled = !hasSelection;
+    this.refs.mapCanvas.classList.toggle("is-selection-disabled", !hasSelection);
+    this.refs.mapCanvas.setAttribute("aria-disabled", hasSelection ? "false" : "true");
+    if (!hasSelection) {
+      this.refs.simulateButton.disabled = true;
+      this.refs.playSimulationButton.disabled = true;
+      this.refs.pauseSimulationButton.disabled = true;
+      this.refs.restartSimulationButton.disabled = true;
+      this.refs.exitSimulationButton.disabled = true;
+    }
   }
 
   readTilesetAtlasSettingsFromInputs() {
@@ -1807,6 +1855,11 @@ class TileMapEditorApp {
       return;
     }
 
+    if (!this.hasTileSelection()) {
+      this.updateStatus(`${TILE_PALETTE_EMPTY_TITLE}. ${TILE_PALETTE_EMPTY_HINT}.`);
+      return;
+    }
+
     if (this.activeTool === "marker") {
       if (event.button === 2) {
         this.removeMarkerAtCell(cell.col, cell.row);
@@ -1826,13 +1879,17 @@ class TileMapEditorApp {
 
   handleCanvasPointerMove(event) {
     const cell = this.getCellFromMouseEvent(event);
+    const hoverChanged = (cell?.col ?? -1) !== (this.hoverCell?.col ?? -1)
+      || (cell?.row ?? -1) !== (this.hoverCell?.row ?? -1);
     this.hoverCell = cell;
 
     if (cell && this.isPointerPainting && (this.activeTool === "paint" || this.activeTool === "erase")) {
       this.applyCellEdit(cell.col, cell.row, this.activeTool);
     }
 
-    this.renderCanvas();
+    if (hoverChanged || this.isPointerPainting) {
+      this.renderCanvas();
+    }
     if (cell) {
       this.refs.canvasMeta.textContent = `Cell ${cell.col}, ${cell.row}`;
     } else {
@@ -1841,9 +1898,12 @@ class TileMapEditorApp {
   }
 
   handleCanvasPointerLeave() {
+    const hadHover = Boolean(this.hoverCell);
     this.hoverCell = null;
     this.isPointerPainting = false;
-    this.renderCanvas();
+    if (hadHover) {
+      this.renderCanvas();
+    }
     this.refs.canvasMeta.textContent = `${this.documentModel.map.width}x${this.documentModel.map.height}`;
   }
 
@@ -1878,9 +1938,14 @@ class TileMapEditorApp {
 
     if (mode === "picker") {
       const sampled = normalizeCellValue(layer.data[row][col]);
-      this.activeTileId = sampled;
-      this.renderTileset();
-      this.updateStatus(`Sampled tile ${sampled} at ${col}, ${row}.`);
+      if (sampled > 0) {
+        this.activeTileId = sampled;
+        this.renderTileset();
+        this.syncTileSelectionControlState();
+        this.updateStatus(`Sampled tile ${sampled} at ${col}, ${row}.`);
+      } else {
+        this.updateStatus("No tile sampled at this cell.");
+      }
       return;
     }
 
@@ -2583,6 +2648,7 @@ class TileMapEditorApp {
   }
 
   renderAll() {
+    this.ensureFirstTileSelection();
     this.renderLayerList();
     this.renderTileset();
     this.renderTilesetMeta();
@@ -2595,6 +2661,7 @@ class TileMapEditorApp {
     this.updateRemediationUI();
     this.updateEditorExperienceUI();
     this.updateDebugVisualizationUI();
+    this.syncTileSelectionControlState();
     this.syncUxContractState();
   }
 
@@ -2655,12 +2722,17 @@ class TileMapEditorApp {
   renderTileset() {
     const container = this.refs.tilePalette;
     container.innerHTML = "";
+    const selectableTiles = this.getSelectableTiles();
+    if (selectableTiles.length <= 0) {
+      container.innerHTML = `<p class="tile-palette-empty"><strong>${TILE_PALETTE_EMPTY_TITLE}</strong><span>${TILE_PALETTE_EMPTY_HINT}</span></p>`;
+      return;
+    }
 
     const fragment = document.createDocumentFragment();
-    this.documentModel.tileset.forEach((tile) => {
+    selectableTiles.forEach((tile) => {
       const button = document.createElement("button");
       button.type = "button";
-      button.className = `tile-swatch${tile.id === this.activeTileId ? " active" : ""}`;
+      button.className = `tile-swatch${Number(tile.id) === Number(this.activeTileId) ? " active" : ""}`;
       button.dataset.tileId = String(tile.id);
       button.title = `${tile.name} (${tile.id})`;
 
@@ -2708,6 +2780,7 @@ class TileMapEditorApp {
       button.addEventListener("click", () => {
         this.activeTileId = tile.id;
         this.renderTileset();
+        this.syncTileSelectionControlState();
         this.updateStatus(`Selected tile ${tile.name} (${tile.id}).`);
       });
 
@@ -2849,9 +2922,16 @@ class TileMapEditorApp {
     const context = this.refs.canvasContext;
     const { width, height, tileSize } = this.documentModel.map;
 
-    canvas.width = width * tileSize;
-    canvas.height = height * tileSize;
+    const nextWidth = width * tileSize;
+    const nextHeight = height * tileSize;
+    if (canvas.width !== nextWidth) {
+      canvas.width = nextWidth;
+    }
+    if (canvas.height !== nextHeight) {
+      canvas.height = nextHeight;
+    }
 
+    context.clearRect(0, 0, canvas.width, canvas.height);
     context.fillStyle = "#0f172a";
     context.fillRect(0, 0, canvas.width, canvas.height);
 
@@ -3268,7 +3348,7 @@ function bootTileMapStudio() {
       ? snapshot.selectedLayerId
       : nextDocument.layers[0]?.id || "";
     this.selectedMarkerId = typeof snapshot?.selectedMarkerId === "string" ? snapshot.selectedMarkerId : "";
-    this.activeTileId = Number.isInteger(snapshot?.activeTileId) ? snapshot.activeTileId : 1;
+    this.activeTileId = Number.isInteger(snapshot?.activeTileId) ? snapshot.activeTileId : this.findFirstNonEmptyTileId();
     this.tilesetImageCache = new Map();
     this.clearTransientImageSources();
     this.resolveAssetRefsFromRegistry();

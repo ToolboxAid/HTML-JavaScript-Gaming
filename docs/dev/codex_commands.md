@@ -1,11 +1,12 @@
 model: gpt-5.3-codex
 reasoning: medium
 
-Apply PR_10_9_SPRITE_EDITOR_UAT
+Apply PR_10_10_TILEMAP_STUDIO_UAT
 
-- Add first-frame auto-selection
-- Fix preview rendering mismatch
-- Enforce control enable/disable rules
-- Ensure no flicker/reset
+- Enforce empty state messaging
+- Add first-tile auto-selection
+- Add selection highlight
+- Enforce control enable/disable
+- Stabilize canvas rendering
 - Ensure workspace stability
-- Do not modify sprite data
+- Do not modify data layer

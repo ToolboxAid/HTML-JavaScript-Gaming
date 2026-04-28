@@ -1,1 +1,1 @@
-Align Sprite Editor to unified contract and fix preview rendering mismatch - PR 10.9
+Align Tilemap Studio to unified contract with stable selection, canvas rendering, and workspace behavior - PR 10.10
