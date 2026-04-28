@@ -1179,10 +1179,15 @@ function renderHeaderMarkup(currentTool, isHeaderExpanded) {
     && STANDARDIZED_TOOL_HEADER_IDS.has(currentTool.id);
   const standardizedToolName = normalizeTextValue(currentTool?.name);
   const standardizedToolShortDescription = normalizeTextValue(currentTool?.shortDescription);
+  const standardizedToolHelpText = normalizeTextValue(currentTool?.description);
   const hasStandardizedHeaderConfig = Boolean(standardizedToolName && standardizedToolShortDescription);
+  const hasStandardizedIntroConfig = Boolean(standardizedToolName && standardizedToolHelpText);
   const standardizedHeaderText = hasStandardizedHeaderConfig
-    ? `${standardizedToolName} — ${standardizedToolShortDescription}`
+    ? `${standardizedToolName} \u2014 ${standardizedToolShortDescription}`
     : `Configuration error: ${currentTool?.id || "tool"} header requires tool.name and tool.shortDescription in tools/toolRegistry.js.`;
+  const standardizedIntroText = hasStandardizedIntroConfig
+    ? `${standardizedToolName}: ${standardizedToolHelpText}`
+    : `Configuration error: ${currentTool?.id || "tool"} intro requires tool.name and tool.description in tools/toolRegistry.js.`;
   const meta = isLanding
     ? `${getToolRegistry().filter((entry) => entry.active === true && entry.visibleInToolsList === true).length} active tools | hubCommon.css theme`
     : "Shared shell, engine theme, and workspace context applied from the active tool registry";
@@ -1199,7 +1204,11 @@ function renderHeaderMarkup(currentTool, isHeaderExpanded) {
             <div class="tools-platform-frame__meta">${escapeHtml(meta)}</div>
           </div>
         </div>
-        ${useStandardizedToolHeader ? "" : `
+        ${useStandardizedToolHeader ? `
+        <div class="tools-platform-frame__topline">
+          <p class="tools-platform-frame__description tools-platform-frame__description--single-line${!hasStandardizedIntroConfig ? " tools-platform-frame__description--config-error" : ""}" title="${escapeHtml(standardizedIntroText)}">${escapeHtml(standardizedIntroText)}</p>
+        </div>
+        ` : `
         <div class="tools-platform-frame__topline">
           <p class="tools-platform-frame__description">${escapeHtml(description)}</p>
         </div>

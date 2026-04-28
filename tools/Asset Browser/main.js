@@ -43,7 +43,9 @@ const APPROVED_ASSET_STATUS = Object.freeze({
   success: "approved-assets-success",
   loadedEmpty: "approved-assets-loaded-empty",
   sourceMissing: "approved-assets-source-missing",
-  sourceWrongShape: "approved-assets-source-wrong-shape"
+  sourceWrongShape: "approved-assets-source-wrong-shape",
+  sourceInvalid: "approved-assets-source-invalid",
+  sourceLoadFailure: "approved-assets-source-load-failure"
 });
 
 const refs = {
@@ -106,7 +108,8 @@ const state = {
     candidateCount: 0,
     declaredCount: 0,
     source: "none",
-    checkedSources: []
+    checkedSources: [],
+    reason: ""
   }
 };
 
@@ -353,6 +356,89 @@ function normalizeManifestToolAssetEntries(payload) {
   return normalizeManifestAssetEntries(assetBrowser.assets);
 }
 
+function inspectManifestAssetBrowserSource(payload) {
+  const manifestSource = "active-project-manifest.tools.asset-browser.assets";
+  if (!payload || typeof payload !== "object" || Array.isArray(payload)) {
+    return {
+      hasManifest: false,
+      status: APPROVED_ASSET_STATUS.sourceMissing,
+      source: manifestSource,
+      entries: [],
+      reason: "No active project manifest is available."
+    };
+  }
+
+  const tools = payload.tools;
+  if (!tools || typeof tools !== "object" || Array.isArray(tools)) {
+    return {
+      hasManifest: true,
+      status: APPROVED_ASSET_STATUS.sourceMissing,
+      source: manifestSource,
+      entries: [],
+      reason: "Active project manifest is loaded but tools object is missing."
+    };
+  }
+
+  const assetBrowserTool = tools["asset-browser"];
+  if (!assetBrowserTool || typeof assetBrowserTool !== "object" || Array.isArray(assetBrowserTool)) {
+    return {
+      hasManifest: true,
+      status: APPROVED_ASSET_STATUS.sourceMissing,
+      source: manifestSource,
+      entries: [],
+      reason: "Active project manifest is loaded but tools.asset-browser is missing."
+    };
+  }
+
+  if (!Object.prototype.hasOwnProperty.call(assetBrowserTool, "assets")) {
+    return {
+      hasManifest: true,
+      status: APPROVED_ASSET_STATUS.sourceMissing,
+      source: manifestSource,
+      entries: [],
+      reason: "Active project manifest is loaded but tools.asset-browser.assets is missing."
+    };
+  }
+
+  const rawAssets = assetBrowserTool.assets;
+  if (!rawAssets || typeof rawAssets !== "object" || Array.isArray(rawAssets)) {
+    return {
+      hasManifest: true,
+      status: APPROVED_ASSET_STATUS.sourceInvalid,
+      source: manifestSource,
+      entries: [],
+      reason: "Active project manifest tools.asset-browser.assets is invalid; expected an object."
+    };
+  }
+
+  const entries = normalizeManifestAssetEntries(rawAssets);
+  return {
+    hasManifest: true,
+    status: entries.length > 0 ? APPROVED_ASSET_STATUS.success : APPROVED_ASSET_STATUS.loadedEmpty,
+    source: manifestSource,
+    entries,
+    reason: entries.length > 0
+      ? "Approved assets loaded from active project manifest tools.asset-browser.assets."
+      : "Active project manifest tools.asset-browser.assets exists and is empty."
+  };
+}
+
+function classifyApprovedAssetState(status, approvedCount) {
+  if (approvedCount > 0) {
+    return "success";
+  }
+  if (status === APPROVED_ASSET_STATUS.loadedEmpty) {
+    return "empty";
+  }
+  if (status === APPROVED_ASSET_STATUS.sourceLoadFailure) {
+    return "load-failure";
+  }
+  if (status === APPROVED_ASSET_STATUS.sourceInvalid || status === APPROVED_ASSET_STATUS.sourceWrongShape) {
+    return "invalid";
+  }
+  return "missing";
+}
+
 async function readCatalogEntriesFromPath(catalogPath) {
   const safeCatalogPath = normalizeLocalPath(catalogPath);
   if (!safeCatalogPath) {
@@ -367,7 +453,7 @@ async function readCatalogEntriesFromPath(catalogPath) {
     const response = await fetch(safeCatalogPath, { cache: "no-store" });
     if (!response.ok) {
       return {
-        status: APPROVED_ASSET_STATUS.sourceMissing,
+        status: APPROVED_ASSET_STATUS.sourceLoadFailure,
         source: safeCatalogPath,
         entries: [],
         reason: `Catalog request failed (${response.status}).`
@@ -376,7 +462,7 @@ async function readCatalogEntriesFromPath(catalogPath) {
     const payload = await response.json();
     if (!payload || typeof payload !== "object" || Array.isArray(payload)) {
       return {
-        status: APPROVED_ASSET_STATUS.sourceWrongShape,
+        status: APPROVED_ASSET_STATUS.sourceInvalid,
         source: safeCatalogPath,
         entries: [],
         reason: "Catalog payload was not an object."
@@ -411,7 +497,7 @@ async function readCatalogEntriesFromPath(catalogPath) {
     };
   } catch (error) {
     return {
-      status: APPROVED_ASSET_STATUS.sourceWrongShape,
+      status: APPROVED_ASSET_STATUS.sourceInvalid,
       source: safeCatalogPath,
       entries: [],
       reason: `Catalog parse failed: ${error instanceof Error ? error.message : "unknown error"}.`
@@ -447,14 +533,16 @@ async function loadCatalogEntriesFromContext() {
   const candidates = collectCatalogPathCandidates();
   const checkedSources = [];
   let firstEmpty = null;
-  let firstWrongShape = null;
+  let firstInvalid = null;
+  let firstLoadFailure = null;
   let firstMissing = null;
   state.catalogLoadInfo = {
     status: APPROVED_ASSET_STATUS.sourceMissing,
     candidateCount: candidates.length,
     declaredCount: 0,
     source: "none",
-    checkedSources
+    checkedSources,
+    reason: ""
   };
   for (const candidate of candidates) {
     const result = await readCatalogEntriesFromPath(candidate);
@@ -465,42 +553,42 @@ async function loadCatalogEntriesFromContext() {
         candidateCount: candidates.length,
         declaredCount: result.entries.length,
         source: result.source || candidate,
-        checkedSources
+        checkedSources,
+        reason: result.reason || ""
       };
       return hydrateCatalogLabels(result.entries);
     }
     if (!firstEmpty && result.status === APPROVED_ASSET_STATUS.loadedEmpty) {
       firstEmpty = result;
     }
-    if (!firstWrongShape && result.status === APPROVED_ASSET_STATUS.sourceWrongShape) {
-      firstWrongShape = result;
+    if (
+      !firstInvalid
+      && (result.status === APPROVED_ASSET_STATUS.sourceInvalid || result.status === APPROVED_ASSET_STATUS.sourceWrongShape)
+    ) {
+      firstInvalid = result;
+    }
+    if (!firstLoadFailure && result.status === APPROVED_ASSET_STATUS.sourceLoadFailure) {
+      firstLoadFailure = result;
     }
     if (!firstMissing && result.status === APPROVED_ASSET_STATUS.sourceMissing) {
       firstMissing = result;
     }
   }
   const manifest = readActiveProjectManifest();
-  const manifestEntries = normalizeManifestToolAssetEntries(manifest);
-  const manifestSource = "active-project-manifest.tools.asset-browser.assets";
-  checkedSources.push(manifestSource);
-  if (manifestEntries.length > 0) {
+  const manifestResult = inspectManifestAssetBrowserSource(manifest);
+  checkedSources.push(manifestResult.source);
+  if (manifestResult.hasManifest) {
     state.catalogLoadInfo = {
-      status: APPROVED_ASSET_STATUS.success,
+      status: manifestResult.status,
       candidateCount: candidates.length,
-      declaredCount: manifestEntries.length,
-      source: manifestSource,
-      checkedSources
+      declaredCount: manifestResult.entries.length,
+      source: manifestResult.source,
+      checkedSources,
+      reason: manifestResult.reason || ""
     };
-    return hydrateCatalogLabels(manifestEntries);
-  }
-  if (manifest && typeof manifest === "object") {
-    state.catalogLoadInfo = {
-      status: APPROVED_ASSET_STATUS.loadedEmpty,
-      candidateCount: candidates.length,
-      declaredCount: 0,
-      source: manifestSource,
-      checkedSources
-    };
+    if (manifestResult.status === APPROVED_ASSET_STATUS.success) {
+      return hydrateCatalogLabels(manifestResult.entries);
+    }
     return [];
   }
   if (firstEmpty) {
@@ -509,17 +597,30 @@ async function loadCatalogEntriesFromContext() {
       candidateCount: candidates.length,
       declaredCount: 0,
       source: firstEmpty.source || "none",
-      checkedSources
+      checkedSources,
+      reason: firstEmpty.reason || ""
     };
     return [];
   }
-  if (firstWrongShape) {
+  if (firstInvalid) {
     state.catalogLoadInfo = {
-      status: APPROVED_ASSET_STATUS.sourceWrongShape,
+      status: APPROVED_ASSET_STATUS.sourceInvalid,
       candidateCount: candidates.length,
       declaredCount: 0,
-      source: firstWrongShape.source || "none",
-      checkedSources
+      source: firstInvalid.source || "none",
+      checkedSources,
+      reason: firstInvalid.reason || ""
+    };
+    return [];
+  }
+  if (firstLoadFailure) {
+    state.catalogLoadInfo = {
+      status: APPROVED_ASSET_STATUS.sourceLoadFailure,
+      candidateCount: candidates.length,
+      declaredCount: 0,
+      source: firstLoadFailure.source || "none",
+      checkedSources,
+      reason: firstLoadFailure.reason || ""
     };
     return [];
   }
@@ -529,7 +630,8 @@ async function loadCatalogEntriesFromContext() {
       candidateCount: candidates.length,
       declaredCount: 0,
       source: firstMissing.source || "none",
-      checkedSources
+      checkedSources,
+      reason: firstMissing.reason || ""
     };
     return [];
   }
@@ -547,11 +649,7 @@ function emitAssetBrowserControlReadiness() {
   const hasImportName = Boolean(normalizeImportName(refs.importNameInput.value || ""));
   const importActionReady = hasSelection && hasImportDestination && hasImportName;
   const approvedAssetsState = String(state.catalogLoadInfo?.status || APPROVED_ASSET_STATUS.sourceMissing);
-  const approvedClassification = approvedCount > 0
-    ? "success"
-    : (approvedAssetsState === APPROVED_ASSET_STATUS.loadedEmpty
-      ? "empty"
-      : (approvedAssetsState === APPROVED_ASSET_STATUS.sourceWrongShape ? "wrong-shape" : "missing"));
+  const approvedClassification = classifyApprovedAssetState(approvedAssetsState, approvedCount);
 
   logToolUiControlReady({
     toolId: "asset-browser",
@@ -613,32 +711,56 @@ function buildApprovedAssetStatusText(approvedCount, info) {
   const checkedSources = Array.isArray(info?.checkedSources) ? info.checkedSources.filter(Boolean) : [];
   const checkedText = checkedSources.length > 0 ? checkedSources.join(", ") : "none";
   const status = String(info?.status || APPROVED_ASSET_STATUS.sourceMissing);
+  const reason = String(info?.reason || "").trim();
   if (status === APPROVED_ASSET_STATUS.success) {
     return `${approvedCount} approved asset${approvedCount === 1 ? "" : "s"} | source: ${source}`;
   }
   if (status === APPROVED_ASSET_STATUS.loadedEmpty) {
-    return "0 approved assets | source checked and empty."
-      + ` Source: ${source}. Checked: ${checkedText}.`;
+    return "0 approved assets | source exists and is empty."
+      + ` Source checked: ${source}. Result count: 0.`
+      + ` Next action: add approved entries under tools.asset-browser.assets or provide a valid assetCatalogPath.`
+      + ` Checked: ${checkedText}.`;
   }
-  if (status === APPROVED_ASSET_STATUS.sourceWrongShape) {
-    return "0 approved assets | source loaded with wrong shape."
-      + ` Source: ${source}. Checked: ${checkedText}.`;
+  if (status === APPROVED_ASSET_STATUS.sourceLoadFailure) {
+    return "0 approved assets | source load failed."
+      + ` Source checked: ${source}.`
+      + ` Next action: verify the source path exists and is fetchable.`
+      + `${reason ? ` Details: ${reason}` : ""}`
+      + ` Checked: ${checkedText}.`;
+  }
+  if (status === APPROVED_ASSET_STATUS.sourceInvalid || status === APPROVED_ASSET_STATUS.sourceWrongShape) {
+    return "0 approved assets | source is invalid."
+      + ` Source checked: ${source}.`
+      + ` Next action: fix source schema/shape for approved asset declarations.`
+      + `${reason ? ` Details: ${reason}` : ""}`
+      + ` Checked: ${checkedText}.`;
   }
   return "0 approved assets | source missing."
-    + ` Last source: ${source}. Checked: ${checkedText}.`;
+    + ` Source checked: ${source}.`
+    + ` Next action: add tools.asset-browser.assets in active project manifest or provide assetCatalogPath.`
+    + `${reason ? ` Details: ${reason}` : ""}`
+    + ` Checked: ${checkedText}.`;
 }
 
 function buildApprovedAssetEmptyStateText(info) {
   const source = String(info?.source || "none");
+  const reason = String(info?.reason || "").trim();
   const status = String(info?.status || APPROVED_ASSET_STATUS.sourceMissing);
   if (status === APPROVED_ASSET_STATUS.loadedEmpty) {
-    return `No approved assets found. Source loaded and empty: ${source}.`;
+    return `No approved assets found. Source exists and is empty: ${source}.`
+      + " Next action: add approved entries under tools.asset-browser.assets or provide a valid assetCatalogPath.";
   }
-  if (status === APPROVED_ASSET_STATUS.sourceWrongShape) {
-    return `Approved asset source had unexpected shape: ${source}.`;
+  if (status === APPROVED_ASSET_STATUS.sourceLoadFailure) {
+    return `Approved asset source load failed: ${source}.`
+      + ` Next action: verify source path and file availability.${reason ? ` Details: ${reason}` : ""}`;
+  }
+  if (status === APPROVED_ASSET_STATUS.sourceInvalid || status === APPROVED_ASSET_STATUS.sourceWrongShape) {
+    return `Approved asset source is invalid: ${source}.`
+      + ` Next action: correct source schema/shape.${reason ? ` Details: ${reason}` : ""}`;
   }
   return "No approved asset source was loaded."
-    + ` Checked source: ${source}.`;
+    + ` Checked source: ${source}.`
+    + ` Next action: declare tools.asset-browser.assets or launch with assetCatalogPath.${reason ? ` Details: ${reason}` : ""}`;
 }
 
 function getCategoryOrder() {
@@ -1147,9 +1269,7 @@ async function init() {
   setAssetBrowserLifecycle(TOOL_UX_LIFECYCLE.LOADING);
   await hydrateApprovedAssetCatalog();
   const approvedAssetsState = String(state.catalogLoadInfo?.status || APPROVED_ASSET_STATUS.sourceMissing);
-  const approvedClassification = approvedAssetsState === APPROVED_ASSET_STATUS.loadedEmpty
-    ? "empty"
-    : (approvedAssetsState === APPROVED_ASSET_STATUS.sourceWrongShape ? "wrong-shape" : "missing");
+  const approvedClassification = classifyApprovedAssetState(approvedAssetsState, state.assetCatalog.length);
   if (approvedAssetsState === APPROVED_ASSET_STATUS.success) {
     logToolLoadLoaded({
       toolId: "asset-browser",

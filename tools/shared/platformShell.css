@@ -153,6 +153,20 @@ body.tools-platform-surface {
   line-height: 1.45;
 }
 
+.tools-platform-frame__description--single-line {
+  display: block;
+  max-width: min(100%, 88ch);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.2;
+}
+
+.tools-platform-frame__description--config-error {
+  color: #ffd4d4;
+  font-weight: 600;
+}
+
 body.tools-platform-workspace-context .tools-platform-frame__description {
   color: #3600af;
 }

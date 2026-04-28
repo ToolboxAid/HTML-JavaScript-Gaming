@@ -1,7 +1,7 @@
-Close tools UAT validation loop
+Fix fullscreen tool naming and Asset Browser empty-state clarity
 
-- Summarize PASS/FAIL status for four target tools
-- Review latest UAT evidence and failed-case rerun results
-- Confirm no King of the Iceberg work advanced
-- Confirm no runtime, sample, or start_of_day changes
-- Document remaining tool issues, if any
+- Ensure fullscreen header includes active tool name
+- Ensure fullscreen intro includes active tool name
+- Keep header/intro compact with truncation support
+- Clarify Asset Browser 0204 empty/missing/invalid source states
+- Preserve no-silent-fallback behavior

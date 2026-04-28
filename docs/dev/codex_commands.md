@@ -2,43 +2,49 @@ MODEL: GPT-5.3-codex
 REASONING: low
 
 PR purpose:
-Close Tools UAT only.
+Fix two Tools UAT blockers only:
+1. Fullscreen Header and Intro must include active tool name.
+2. Asset Browser sample 0204 must show clear actionable empty/missing/invalid source state.
 
 Do not advance King of the Iceberg work.
-Do not create or modify KOTI layout/gameplay artifacts.
 Do not modify sample games, runtime engine files, or start_of_day folders.
+Do not add new features.
 
-Use existing evidence:
-- tmp/uat_failed_cases_rerun.json
-- tmp/interactive_uat_report_4tools.json
-- docs/dev/reports/PR_tool_uat_failure_fix_report.md
-- any existing tool smoke/UAT reports
+Header/Intro requirements:
+- In fullscreen mode, header includes:
+  <Tool Name> — <Short Description>
+- In fullscreen mode, intro includes:
+  <Tool Name>: <one-line usage/help text>
+- Keep both compact and single-line where possible.
+- Use ellipsis and tooltip/title for overflow.
+- If required metadata is missing, show actionable configuration error.
+- Do not use silent fallback generic text.
 
-Create:
-- docs/dev/reports/PR_tool_uat_closeout_report.md
-
-Report must include:
-1. Overall PASS/FAIL
-2. PASS/FAIL per tool:
-   - Vector Map Editor
-   - Vector Asset Studio
-   - Sprite Editor
-   - State Inspector
-3. Evidence files reviewed
-4. Remaining issues, if any
-5. Confirmation no KOTI work was advanced
-6. Confirmation no start_of_day folders changed
-7. Confirmation no sample game/runtime engine changes were made
+Asset Browser 0204 requirements:
+- Inspect launch path/state for sample 0204.
+- Current observed text says 0 approved assets from:
+  active-project-manifest.tools.asset-browser.assets
+- Make UI clearly distinguish:
+  - source exists but empty
+  - source missing
+  - source invalid
+  - source load failure
+- If source exists but empty, show:
+  source checked, result count, and next action.
+- Do not auto-load fallback/default/sample assets.
 
 Targeted validation only:
-- Do not run long sample suites unless required.
-- If uncertainty exists, rerun only the specific failed-case UAT checks.
-- If no JavaScript files changed, node --check is not required.
+- node --check changed JS files.
+- Validate fullscreen header/intro on affected tools.
+- Validate Asset Browser sample 0204.
+- Do not run long sample suite unless required.
 
-Tool criteria:
-- Vector Map Editor: no silent auto-load, no auto-selection, explicit no-selection state, sample 1212 remains passing.
-- Vector Asset Studio: samples 0901/1204/1208 remain passing, paint/stroke selection gating works, invalid/incomplete state actionable.
-- Sprite Editor: invalid-state actionable message visible, no silent fallback sprite/sample.
-- State Inspector: remains passing for valid/invalid/empty JSON.
+Create report:
+docs/dev/reports/PR_tool_uat_fix_header_asset_browser_report.md
 
-Report all remaining issues without masking them.
+Report:
+- PASS/FAIL
+- changed files
+- validation performed
+- Asset Browser 0204 observed final state
+- remaining issues
