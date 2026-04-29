@@ -2,32 +2,33 @@ MODEL: GPT-5.3-codex
 REASONING: high
 
 TASK:
-Apply PR 11.27.
+Apply PR 11.28.
 
-Reset the working recovery baseline to:
+Starting from the current `4dc2b0f`-based recovery state, fix the remaining launch dependency issue:
+- Workspace Manager shows full sample 1902 workspace.
+- Vector Map can be clicked.
+- Vector Map opens but says palette is missing.
+- Most other palette-dependent tools are still grayed out.
 
-4dc2b0f: Show Workspace Manager asset status from embedded tool payloads - PR 11.22
+Do NOT restart the failed PR 11.23/11.25 approach.
+Do NOT collapse the workspace to palette-only.
+Do NOT add hardcoded or hidden fallback data.
+Do NOT require selectedAssetId, assetRegistry, or external file references when embedded payload exists.
 
-Use that as the source of truth because it loaded the JSON and displayed the correct full Workspace Manager workspace.
-
-Then fix ONLY the remaining issue:
-- many Workspace Manager tool buttons are grayed out/disabled even though embedded payload data exists.
-
-Do NOT carry forward today's failed changes unless independently required and verified:
-- do not reapply PR 11.23 binding/cache behavior that caused palette-only
-- do not reapply PR 11.25 forward-fix behavior that still failed
-- do not remove payload fan-out
-- do not collapse visible tools to palette-only
-
-Do NOT restore or change PR 11.24 page cleanup unless it already exists after resetting. The priority is Workspace Manager correctness from 4dc2b0f.
+Required behavior:
+- Workspace Manager child launches must include or resolve shared workspace palette payload from the same sample-owned JSON already loaded for sample 1902.
+- `manifest.tools.palette` should satisfy the shared palette dependency for child tools.
+- `manifest.tools[toolId]` should satisfy the tool's own embedded payload dependency.
+- Palette-dependent tools should be enabled when both their own payload and the shared palette payload exist.
+- True utilities can remain N/A or disabled only with documented reason.
 
 Implementation guidance:
-1. Inspect Workspace Manager/tool launch button disabled logic.
-2. Compare status-display rules from 4dc2b0f with button-enable rules.
-3. Make enablement consider embedded payload presence as valid launch data.
-4. Keep utility tools handled separately as N/A where appropriate.
-5. Avoid selectedAssetId/assetRegistry/external-file requirements for embedded-payload tools.
-6. Keep the fix surgical and localized.
+1. Find the child tool launch/context handoff code in tools/shared/platformShell.js or directly related Workspace Manager code.
+2. Find where Vector Map reports palette missing.
+3. Connect that missing dependency to the workspace manifest palette payload, not to a default or external asset.
+4. Adjust disabled-state logic so palette-dependent payload tools are not blocked when `manifest.tools.palette` exists.
+5. Keep palette fallback local to dependency satisfaction, not workspace tool-list selection.
+6. Add no broad refactor.
 
 Validation:
 node --check tools/shared/platformShell.js
@@ -36,17 +37,17 @@ node ./tests/runtime/LaunchSmokeAllEntries.test.mjs --samples --sample-range=190
 Manual validation:
 Open sample 1902.
 Open Workspace Manager.
+Click Vector Map Editor.
 Confirm:
-- full workspace is visible
-- not palette-only
-- payload-backed editor buttons are enabled/openable
-- asset/status labels are still visible
+- no missing palette message
+- vector map opens with palette context
+Return to Workspace Manager.
+Confirm palette-dependent tools with embedded payload are enabled/openable.
 
 REPORT:
-Write docs/dev/reports/PR_11_27_validation.txt with:
-- baseline commit used
-- files changed
-- root cause of grayed-out buttons
-- why payload presence now enables launch
-- validation commands/results
-- manual validation notes
+Write docs/dev/reports/PR_11_28_validation.txt with:
+- changed files
+- root cause of missing palette message
+- how shared palette handoff now works
+- which buttons remain disabled and why, if any
+- validation command results

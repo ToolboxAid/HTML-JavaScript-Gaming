@@ -1238,16 +1238,25 @@ function readPaletteFromManifestPayload(manifestPayload, launchContext = null) {
   const tools = source.tools && typeof source.tools === "object" && !Array.isArray(source.tools)
     ? source.tools
     : {};
+  const paletteToolSection = tools.palette && typeof tools.palette === "object" && !Array.isArray(tools.palette)
+    ? tools.palette
+    : null;
   const paletteBrowserSection = tools["palette-browser"] && typeof tools["palette-browser"] === "object" && !Array.isArray(tools["palette-browser"])
     ? tools["palette-browser"]
     : null;
-  const preferredPalette = paletteBrowserSection?.palette && typeof paletteBrowserSection.palette === "object" && !Array.isArray(paletteBrowserSection.palette)
+  const paletteToolPayload = paletteToolSection?.payload && typeof paletteToolSection.payload === "object" && !Array.isArray(paletteToolSection.payload)
+    ? paletteToolSection.payload
+    : null;
+  const paletteBrowserPayload = paletteBrowserSection?.payload && typeof paletteBrowserSection.payload === "object" && !Array.isArray(paletteBrowserSection.payload)
+    ? paletteBrowserSection.payload
+    : null;
+  const paletteBrowserLegacyPalette = paletteBrowserSection?.palette && typeof paletteBrowserSection.palette === "object" && !Array.isArray(paletteBrowserSection.palette)
     ? paletteBrowserSection.palette
     : null;
   const compatibilityRootPalette = source.palette && typeof source.palette === "object" && !Array.isArray(source.palette)
     ? source.palette
     : null;
-  const selectedPalette = preferredPalette || compatibilityRootPalette;
+  const selectedPalette = paletteToolPayload || paletteBrowserPayload || paletteBrowserLegacyPalette || compatibilityRootPalette;
   if (!selectedPalette) {
     return null;
   }
@@ -1263,10 +1272,53 @@ function readPaletteFromManifestPayload(manifestPayload, launchContext = null) {
   if (!normalized) {
     return null;
   }
+  let sourceKey = "workspace-game-manifest.root-palette-compat";
+  if (paletteToolPayload) {
+    sourceKey = "workspace-game-manifest.tools.palette.payload";
+  } else if (paletteBrowserPayload) {
+    sourceKey = "workspace-game-manifest.palette-browser.payload";
+  } else if (paletteBrowserLegacyPalette) {
+    sourceKey = "workspace-game-manifest.palette-browser";
+  }
   return {
     ...normalized,
-    source: preferredPalette ? "workspace-game-manifest.palette-browser" : "workspace-game-manifest.root-palette-compat"
+    source: sourceKey
   };
+}
+
+async function hydrateSharedPaletteFromSamplePresetPath(samplePresetPath = "") {
+  const normalizedSamplePresetPath = normalizeSamplePresetPath(samplePresetPath);
+  if (!normalizedSamplePresetPath || typeof window === "undefined" || typeof window.fetch !== "function") {
+    return false;
+  }
+  const fetchImpl = window.fetch.__workspaceScopedSamplePresetOriginalFetch || window.fetch.bind(window);
+  try {
+    const response = await fetchImpl(normalizedSamplePresetPath, { cache: "no-store" });
+    if (!response.ok) {
+      return false;
+    }
+    const samplePreset = await response.json();
+    if (!isWorkspaceManifestPreset(samplePreset)) {
+      return false;
+    }
+    const manifestPalette = readPaletteFromManifestPayload(samplePreset, null);
+    if (!manifestPalette) {
+      return false;
+    }
+    return writeSharedPaletteHandoff({
+      paletteId: manifestPalette.paletteId,
+      displayName: manifestPalette.displayName,
+      colors: manifestPalette.colors,
+      metadata: {
+        source: manifestPalette.source,
+        sourcePath: normalizedSamplePresetPath
+      },
+      sourceToolId: "workspace-manager",
+      selectedAt: new Date().toISOString()
+    });
+  } catch {
+    return false;
+  }
 }
 
 async function hydrateSharedPaletteFromGameLaunchContext(catalogContext = null) {
@@ -1512,7 +1564,11 @@ function resolveWorkspaceToolLockState() {
   const manifest = getManifest();
   const palette = readSharedPaletteHandoff();
   const workspaceReady = Boolean(manifest && manifest.workspace?.notes !== "closed");
-  const paletteReady = Boolean(palette && typeof palette.displayName === "string" && palette.displayName.trim());
+  const manifestPalette = readPaletteFromManifestPayload(manifest, null);
+  const paletteReady = Boolean(
+    (palette && typeof palette.displayName === "string" && palette.displayName.trim())
+    || manifestPalette
+  );
   const hasToolState = (toolId) => {
     const normalizedToolId = normalizeTextValue(toolId);
     if (!normalizedToolId || !manifest || typeof manifest !== "object") {
@@ -2248,6 +2304,7 @@ async function initPlatformShell() {
   const clearedForLaunch = clearSharedBindingsForNewLaunch(launchSignature);
   const launchContext = readGameLaunchContext();
   const launchedFromSamplePreset = Boolean(samplePresetPath);
+  const hydratedSamplePresetPalette = await hydrateSharedPaletteFromSamplePresetPath(samplePresetPath);
 
   if (currentToolId) {
     workspaceController = createWorkspaceSystemController({
@@ -2298,6 +2355,9 @@ async function initPlatformShell() {
   }
   if (hydratedPalette) {
     TOOLS_PLATFORM_LOGGER.debug("shared palette hydrated from game asset catalog");
+  }
+  if (hydratedSamplePresetPalette) {
+    TOOLS_PLATFORM_LOGGER.debug("shared palette hydrated from sample workspace manifest");
   }
   bindLiveBindingRefresh(currentTool);
 }
