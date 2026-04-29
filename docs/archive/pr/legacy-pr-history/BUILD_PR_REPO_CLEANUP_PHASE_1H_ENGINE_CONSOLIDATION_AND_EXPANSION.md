@@ -22,7 +22,7 @@ Repo Cleanup Phase 1H - Engine Consolidation and Controlled Expansion
 - unrelated files outside this BUILD scope
 
 ## Full Repo-Relative Paths (Touched for This BUILD)
-- `src/engine/utils/normalizeCommandText.js`
+- `src/shared/utils/normalizeCommandText.js`
 - `tools/SpriteEditor_old_keep/modules/appCommands.js`
 - `tools/SpriteEditor_old_keep/shared/scoreCommandItem.js`
 - `tools/SpriteEditor_old_keep/shared/normalizeCommandText.js` (removed)
@@ -36,11 +36,11 @@ Repo Cleanup Phase 1H - Engine Consolidation and Controlled Expansion
 ## Promoted Helpers (This Phase)
 | helper | before owner | after owner | engine domain | behavior change |
 |---|---|---|---|---|
-| `normalizeCommandText(input)` | `tools/SpriteEditor_old_keep/shared/normalizeCommandText.js` | `src/engine/utils/normalizeCommandText.js` | `src/engine/utils` (generic text normalization) | none |
+| `normalizeCommandText(input)` | `tools/SpriteEditor_old_keep/shared/normalizeCommandText.js` | `src/shared/utils/normalizeCommandText.js` | `src/engine/utils` (generic text normalization) | none |
 
 ## Consolidation Notes
 - Existing Phase 1G promotion remains in place:
-  - `src/engine/utils/fuzzyMatchScore.js`
+  - `src/shared/utils/fuzzyMatchScore.js`
 - Command ranking shared helper now depends on engine-owned generic helpers.
 - Sprite Editor module import updated to consume engine utility directly where used.
 
@@ -50,18 +50,18 @@ Repo Cleanup Phase 1H - Engine Consolidation and Controlled Expansion
 ## Updated Helper Inventory Snapshot
 | helper | owner after Phase 1H |
 |---|---|
-| `fuzzyMatchScore` | `src/engine/utils/fuzzyMatchScore.js` |
-| `normalizeCommandText` | `src/engine/utils/normalizeCommandText.js` |
+| `fuzzyMatchScore` | `src/shared/utils/fuzzyMatchScore.js` |
+| `normalizeCommandText` | `src/shared/utils/normalizeCommandText.js` |
 | `scoreCommandItem` | `tools/SpriteEditor_old_keep/shared/scoreCommandItem.js` |
 
 ## Import Updates
 - `tools/SpriteEditor_old_keep/shared/scoreCommandItem.js`
-  - `normalizeCommandText` import -> `../../../src/src/engine/utils/normalizeCommandText.js`
+  - `normalizeCommandText` import -> `../../../src/src/shared/utils/normalizeCommandText.js`
 - `tools/SpriteEditor_old_keep/modules/appCommands.js`
-  - `normalizeCommandText` import -> `../../../src/src/engine/utils/normalizeCommandText.js`
+  - `normalizeCommandText` import -> `../../../src/src/shared/utils/normalizeCommandText.js`
 
 ## Validation
-- `node -c src/engine/utils/normalizeCommandText.js`
+- `node -c src/shared/utils/normalizeCommandText.js`
 - `node -c tools/SpriteEditor_old_keep/shared/scoreCommandItem.js`
 - `node -c tools/SpriteEditor_old_keep/modules/appCommands.js`
 

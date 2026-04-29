@@ -1,4 +1,4 @@
-﻿import { getCenteredRect } from "/src/engine/utils/index.js";
+﻿import { getCenteredRect } from "/src/shared/utils/index.js";
 import {
   createCanvasPopupState,
   dismissCanvasPopup,

@@ -4,7 +4,7 @@ David Quesenberry
 03/21/2026
 SceneManager.js
 */
-import { invariant } from "../utils/invariant.js";
+import { invariant } from "../../shared/utils/invariantUtils.js";
 import Scene from "./Scene.js";
 
 export default class SceneManager {

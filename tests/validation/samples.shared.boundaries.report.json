@@ -507,7 +507,7 @@
         "boundaryStatus": "allowed-public"
       },
       {
-        "specifier": "/src/engine/utils/index.js",
+        "specifier": "/src/shared/utils/index.js",
         "importCount": 28,
         "importerExamples": [
           "phase-02/0201/CameraFollowScene.js",

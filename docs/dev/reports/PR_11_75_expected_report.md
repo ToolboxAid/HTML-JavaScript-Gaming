@@ -2,7 +2,7 @@
 
 Codex must create or update a report with:
 
-- Files scanned in `src/engine/utils/*`
+- Files scanned in `src/shared/utils/*`
 - Files scanned in `src/shared/utils/*`
 - Exported methods/classes/constants found
 - Duplicate or near-duplicate matches

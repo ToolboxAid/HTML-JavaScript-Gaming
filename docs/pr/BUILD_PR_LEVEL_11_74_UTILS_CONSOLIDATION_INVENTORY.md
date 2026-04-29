@@ -3,7 +3,7 @@
 ## Codex Task
 Create an analysis-only inventory for the two utility trees:
 
-- `src/engine/utils/*`
+- `src/shared/utils/*`
 - `src/shared/utils/*`
 
 ## Steps

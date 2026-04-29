@@ -1,10 +1,10 @@
 # PR 11.76 — Engine Utils to Shared Utils Consolidation
 
 ## Purpose
-Move the complete utility layer currently under `src/engine/utils/*` into `src/shared/utils/*` because these files are utilities, not engine runtime code.
+Move the complete utility layer currently under `src/shared/utils/*` into `src/shared/utils/*` because these files are utilities, not engine runtime code.
 
 ## Scope
-- Inventory every file under `src/engine/utils/*`.
+- Inventory every file under `src/shared/utils/*`.
 - Move all utility files to `src/shared/utils/*`.
 - Preserve folder structure where it helps clarity.
 - Merge only when the target shared file is the same utility contract.
@@ -14,7 +14,7 @@ Move the complete utility layer currently under `src/engine/utils/*` into `src/s
 ## Important Correction
 Do not cherry-pick only exact duplicates. The default action is move to shared.
 
-Only keep a file under `src/engine/utils/*` if it is proven to be engine runtime code, meaning it directly depends on engine runtime systems such as:
+Only keep a file under `src/shared/utils/*` if it is proven to be engine runtime code, meaning it directly depends on engine runtime systems such as:
 - render loop ownership
 - engine state lifecycle
 - engine-specific service registry
@@ -33,8 +33,8 @@ Canvas helpers, math helpers, path helpers, DOM helpers, JSON helpers, color hel
 - If a file must remain in engine, document the exact engine runtime dependency in the report.
 
 ## Acceptance
-- `src/engine/utils/*` is empty or contains only documented engine-runtime exceptions.
+- `src/shared/utils/*` is empty or contains only documented engine-runtime exceptions.
 - All moved utilities live under `src/shared/utils/*`.
 - All imports resolve to the new shared paths.
-- No old `src/engine/utils/*` imports remain except documented exceptions.
+- No old `src/shared/utils/*` imports remain except documented exceptions.
 - Workspace Manager and affected tools load without import errors.

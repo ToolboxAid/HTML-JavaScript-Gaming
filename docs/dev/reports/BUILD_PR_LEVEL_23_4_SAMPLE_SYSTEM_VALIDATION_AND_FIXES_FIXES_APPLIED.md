@@ -1,4 +1,4 @@
-# BUILD_PR_LEVEL_23_4_SAMPLE_SYSTEM_VALIDATION_AND_FIXES — Fixes Applied
+# BUILD_PR_LEVEL_23_4_SAMPLE_SYSTEM_VALIDATION_AND_FIXES ï¿½ Fixes Applied
 
 ## Fix Summary
 Resolved the validated sample contract issue in `samples/phase-03/0325` by replacing Node-incompatible browser-root imports (`/src/...`) with correct repo-relative imports.
@@ -18,11 +18,11 @@ Resolved the validated sample contract issue in `samples/phase-03/0325` by repla
 3. `samples/phase-03/0325/game/GravityInputController.js`
 - Updated:
   - `/src/engine/input/index.js` -> `../../../../src/engine/input/index.js`
-  - `/src/engine/utils/math.js` -> `../../../../src/engine/utils/math.js`
+  - `/src/shared/utils/math.js` -> `../../../../src/shared/utils/math.js`
 
 4. `samples/phase-03/0325/game/GravityWorld.js`
 - Updated:
-  - `/src/engine/utils/math.js` -> `../../../../src/engine/utils/math.js`
+  - `/src/shared/utils/math.js` -> `../../../../src/shared/utils/math.js`
 
 ## Scope Guard Confirmation
 - No feature additions

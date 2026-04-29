@@ -14,7 +14,7 @@
 ## Consolidation Decisions
 - Moved shared-safe utility implementation:
   - `clamp`, `distance`, `wrap`, `randomRange`
-  - From deleted file: `src/engine/utils/math.js`
+  - From deleted file: `src/shared/utils/math.js`
   - To canonical file: `src/shared/utils/mathUtils.js`
 - Kept engine-bound utilities in `src/engine/utils`:
   - `fuzzyMatchScore.js`
@@ -22,7 +22,7 @@
   - `invariant.js`
   - `normalizeCommandText.js`
 - Updated barrel export: `src/shared/utils/index.js` now exports shared math utils.
-- Updated engine barrel: removed math exports from `src/engine/utils/index.js`.
+- Updated engine barrel: removed math exports from `src/shared/utils/index.js`.
 
 ## Import Update Coverage
 - JS/MJS files updated in this PR: 62
@@ -33,7 +33,7 @@
 1. Syntax checks: `node --check` run for all changed JS/MJS files (excluding deleted files)
    - Result: PASS (`node_check_passed=61`)
 2. Legacy path check for removed engine math utility path
-   - Check: repository scan for `src/engine/utils/math.js` in JS/MJS imports
+   - Check: repository scan for `src/shared/utils/math.js` in JS/MJS imports
    - Result: PASS (`legacy_engine_math_path_refs=0`)
 3. Targeted import-resolution scan on changed JS/MJS files
    - Result: PASS for consolidation changes; one pre-existing unrelated unresolved import remains:
@@ -45,6 +45,6 @@
 ## Changed Files (Core)
 - `src/shared/utils/mathUtils.js` (new)
 - `src/shared/utils/index.js`
-- `src/engine/utils/index.js`
-- `src/engine/utils/math.js` (deleted)
+- `src/shared/utils/index.js`
+- `src/shared/utils/math.js` (deleted)
 - Multiple import-only path updates across `src/`, `games/`, `samples/`, and `tests/`.

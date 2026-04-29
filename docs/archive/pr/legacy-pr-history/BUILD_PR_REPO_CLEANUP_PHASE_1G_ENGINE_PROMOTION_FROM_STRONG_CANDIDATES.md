@@ -22,7 +22,7 @@ Repo Cleanup Phase 1G - Engine Promotion From Strong Candidates
 - unrelated files outside this BUILD scope
 
 ## Full Repo-Relative Paths (Touched for This BUILD)
-- `src/engine/utils/fuzzyMatchScore.js`
+- `src/shared/utils/fuzzyMatchScore.js`
 - `tools/SpriteEditor_old_keep/shared/scoreCommandItem.js`
 - `tools/SpriteEditor_old_keep/shared/fuzzyMatchScore.js` (removed)
 - `docs/pr/PLAN_PR_REPO_CLEANUP_PHASE_1G_ENGINE_PROMOTION_FROM_STRONG_CANDIDATES.md`
@@ -35,19 +35,19 @@ Repo Cleanup Phase 1G - Engine Promotion From Strong Candidates
 ## Helper Ownership Before/After
 | helper | before owner | after owner | placement justification | behavior change |
 |---|---|---|---|---|
-| `fuzzyMatchScore(text, query)` | `tools/SpriteEditor_old_keep/shared/fuzzyMatchScore.js` | `src/engine/utils/fuzzyMatchScore.js` | Pure text scoring utility with zero UI/state coupling; best fit in engine utilities | none |
+| `fuzzyMatchScore(text, query)` | `tools/SpriteEditor_old_keep/shared/fuzzyMatchScore.js` | `src/shared/utils/fuzzyMatchScore.js` | Pure text scoring utility with zero UI/state coupling; best fit in engine utilities | none |
 
 ## Engine Placement Justification
 - The helper is deterministic and stateless.
 - It has no Sprite Editor data dependency and no UI coupling.
-- `src/engine/utils/` is the appropriate reusable utility domain.
+- `src/shared/utils/` is the appropriate reusable utility domain.
 
 ## Import Update
 - Updated `tools/SpriteEditor_old_keep/shared/scoreCommandItem.js` to import from:
-  - `../../../src/src/engine/utils/fuzzyMatchScore.js`
+  - `../../../src/src/shared/utils/fuzzyMatchScore.js`
 
 ## Validation
-- `node -c src/engine/utils/fuzzyMatchScore.js`
+- `node -c src/shared/utils/fuzzyMatchScore.js`
 - `node -c tools/SpriteEditor_old_keep/shared/scoreCommandItem.js`
 - `node -c tools/SpriteEditor_old_keep/shared/normalizeCommandText.js`
 - `node -c tools/SpriteEditor_old_keep/modules/appCommands.js`

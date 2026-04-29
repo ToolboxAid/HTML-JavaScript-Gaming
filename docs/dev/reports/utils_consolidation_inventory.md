@@ -1,7 +1,7 @@
 # Utils Consolidation Inventory (Plan PR 11.74)
 
 ## Scope
-- Compared `src/engine/utils/*` and `src/shared/utils/*` at folder, file, export, and method level.
+- Compared `src/shared/utils/*` and `src/shared/utils/*` at folder, file, export, and method level.
 - Analysis-only: no file moves, no import rewrites, no shims.
 
 ## Folder Summary
@@ -19,24 +19,24 @@
 - needs-review: 10
 
 ## File-Level Notes
-- `src/engine/utils/index.js` and `src/shared/utils/index.js` are barrel files; they should be consolidated after direct utility ownership is finalized.
+- `src/shared/utils/index.js` and `src/shared/utils/index.js` are barrel files; they should be consolidated after direct utility ownership is finalized.
 - Engine math helpers (`clamp`, `distance`) are generic but currently duplicated by local helpers in other engine modules.
 - `runtimeRegistryUtils` and `networkDebugUtils` are currently in shared utils but depend on runtime/debug contracts, so they are flagged as `engine-only` for destination planning.
 
 ## Export Inventory
 | Folder | File | Export | Kind | Methods In File | Classification | Notes |
 |---|---|---|---|---|---|---|
-| engine/utils | src/engine/utils/fuzzyMatchScore.js | fuzzyMatchScore | named-export | fuzzyMatchScore | shared-safe | - |
-| engine/utils | src/engine/utils/geometry.js | pointInRect | function | - | shared-safe | - |
-| engine/utils | src/engine/utils/geometry.js | xyInRect | function | - | shared-safe | - |
-| engine/utils | src/engine/utils/geometry.js | getCenteredRect | function | - | shared-safe | - |
-| engine/utils | src/engine/utils/index.js | (barrel-reexports) | barrel | - | needs-review | Barrel file; consolidation sequencing should happen after direct utility moves. |
-| engine/utils | src/engine/utils/invariant.js | invariant | function | - | shared-safe | - |
-| engine/utils | src/engine/utils/math.js | clamp | function | - | duplicate-move-to-shared | Generic clamp; duplicate local clamp exists in engine debug layout. |
-| engine/utils | src/engine/utils/math.js | distance | function | - | duplicate-move-to-shared | Distance helper duplicated by local implementations in network/AI modules. |
-| engine/utils | src/engine/utils/math.js | wrap | function | - | shared-safe | - |
-| engine/utils | src/engine/utils/math.js | randomRange | function | - | shared-safe | - |
-| engine/utils | src/engine/utils/normalizeCommandText.js | normalizeCommandText | named-export | normalizeCommandText | needs-review | Hardcoded filler-token list may be command-domain specific. |
+| engine/utils | src/shared/utils/fuzzyMatchScore.js | fuzzyMatchScore | named-export | fuzzyMatchScore | shared-safe | - |
+| engine/utils | src/shared/utils/geometry.js | pointInRect | function | - | shared-safe | - |
+| engine/utils | src/shared/utils/geometry.js | xyInRect | function | - | shared-safe | - |
+| engine/utils | src/shared/utils/geometry.js | getCenteredRect | function | - | shared-safe | - |
+| engine/utils | src/shared/utils/index.js | (barrel-reexports) | barrel | - | needs-review | Barrel file; consolidation sequencing should happen after direct utility moves. |
+| engine/utils | src/shared/utils/invariant.js | invariant | function | - | shared-safe | - |
+| engine/utils | src/shared/utils/math.js | clamp | function | - | duplicate-move-to-shared | Generic clamp; duplicate local clamp exists in engine debug layout. |
+| engine/utils | src/shared/utils/math.js | distance | function | - | duplicate-move-to-shared | Distance helper duplicated by local implementations in network/AI modules. |
+| engine/utils | src/shared/utils/math.js | wrap | function | - | shared-safe | - |
+| engine/utils | src/shared/utils/math.js | randomRange | function | - | shared-safe | - |
+| engine/utils | src/shared/utils/normalizeCommandText.js | normalizeCommandText | named-export | normalizeCommandText | needs-review | Hardcoded filler-token list may be command-domain specific. |
 | shared/utils | src/shared/utils/arrayUtils.js | ensureArray | function | - | shared-safe | - |
 | shared/utils | src/shared/utils/arrayUtils.js | asArray | function | - | duplicate-keep-engine | Name overlap with object/3D debug utility asArray variants. |
 | shared/utils | src/shared/utils/arrayUtils.js | asStringArray | function | - | shared-safe | - |
@@ -78,7 +78,7 @@
 3. Consolidate `asObject` / `asArray` / `isPlainObject` usage onto shared/object utils in debug + network modules.
 4. Re-scope `runtimeRegistryUtils` and `networkDebugUtils` into engine/debug namespace (or split generic portions into shared and keep runtime-bound functions engine-only).
 5. Review `normalizeCommandText` domain coupling; either move to shared/string command helpers or keep engine-local with explicit ownership note.
-6. After direct-function moves, reduce barrel complexity in `src/shared/utils/index.js` and `src/engine/utils/index.js`.
+6. After direct-function moves, reduce barrel complexity in `src/shared/utils/index.js` and `src/shared/utils/index.js`.
 
 ## Guardrail Confirmation
 - No runtime behavior changes.

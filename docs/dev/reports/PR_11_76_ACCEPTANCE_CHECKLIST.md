@@ -1,8 +1,8 @@
 # PR 11.76 Acceptance Checklist
 
-- [ ] All files under `src/engine/utils/*` inventoried.
+- [ ] All files under `src/shared/utils/*` inventoried.
 - [ ] All utility files moved to `src/shared/utils/*`.
-- [ ] Any remaining `src/engine/utils/*` file has a documented engine-runtime dependency.
+- [ ] Any remaining `src/shared/utils/*` file has a documented engine-runtime dependency.
 - [ ] No wrapper or alias files created.
 - [ ] No duplicate utility implementations remain.
 - [ ] All repo imports updated to new shared utility paths.

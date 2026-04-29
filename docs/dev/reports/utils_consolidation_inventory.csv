@@ -1,15 +1,15 @@
 folder,file,export,export_kind,methods_in_file,imports,classification,notes
-engine/utils,src/engine/utils/fuzzyMatchScore.js,fuzzyMatchScore,named-export,fuzzyMatchScore,,shared-safe,
-engine/utils,src/engine/utils/geometry.js,pointInRect,function,,,shared-safe,
-engine/utils,src/engine/utils/geometry.js,xyInRect,function,,,shared-safe,
-engine/utils,src/engine/utils/geometry.js,getCenteredRect,function,,,shared-safe,
-engine/utils,src/engine/utils/index.js,(barrel-reexports),barrel,,,needs-review,Barrel file; consolidation sequencing should happen after direct utility moves.
-engine/utils,src/engine/utils/invariant.js,invariant,function,,,shared-safe,
-engine/utils,src/engine/utils/math.js,clamp,function,,,duplicate-move-to-shared,Generic clamp; duplicate local clamp exists in engine debug layout.
-engine/utils,src/engine/utils/math.js,distance,function,,,duplicate-move-to-shared,Distance helper duplicated by local implementations in network/AI modules.
-engine/utils,src/engine/utils/math.js,wrap,function,,,shared-safe,
-engine/utils,src/engine/utils/math.js,randomRange,function,,,shared-safe,
-engine/utils,src/engine/utils/normalizeCommandText.js,normalizeCommandText,named-export,normalizeCommandText,,needs-review,Hardcoded filler-token list may be command-domain specific.
+engine/utils,src/shared/utils/fuzzyMatchScore.js,fuzzyMatchScore,named-export,fuzzyMatchScore,,shared-safe,
+engine/utils,src/shared/utils/geometry.js,pointInRect,function,,,shared-safe,
+engine/utils,src/shared/utils/geometry.js,xyInRect,function,,,shared-safe,
+engine/utils,src/shared/utils/geometry.js,getCenteredRect,function,,,shared-safe,
+engine/utils,src/shared/utils/index.js,(barrel-reexports),barrel,,,needs-review,Barrel file; consolidation sequencing should happen after direct utility moves.
+engine/utils,src/shared/utils/invariant.js,invariant,function,,,shared-safe,
+engine/utils,src/shared/utils/math.js,clamp,function,,,duplicate-move-to-shared,Generic clamp; duplicate local clamp exists in engine debug layout.
+engine/utils,src/shared/utils/math.js,distance,function,,,duplicate-move-to-shared,Distance helper duplicated by local implementations in network/AI modules.
+engine/utils,src/shared/utils/math.js,wrap,function,,,shared-safe,
+engine/utils,src/shared/utils/math.js,randomRange,function,,,shared-safe,
+engine/utils,src/shared/utils/normalizeCommandText.js,normalizeCommandText,named-export,normalizeCommandText,,needs-review,Hardcoded filler-token list may be command-domain specific.
 shared/utils,src/shared/utils/arrayUtils.js,ensureArray,function,,./stringUtils.js,shared-safe,
 shared/utils,src/shared/utils/arrayUtils.js,asArray,function,,./stringUtils.js,duplicate-keep-engine,Name overlap with object/3D debug utility asArray variants.
 shared/utils,src/shared/utils/arrayUtils.js,asStringArray,function,,./stringUtils.js,shared-safe,

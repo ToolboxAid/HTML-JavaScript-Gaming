@@ -1,12 +1,12 @@
 # PR 11.75 — Utils Consolidation
 
 ## Purpose
-Consolidate duplicated utility code between `src/engine/utils/*` and `src/shared/utils/*` without introducing wrappers, aliases, pass-through shims, or broad refactors.
+Consolidate duplicated utility code between `src/shared/utils/*` and `src/shared/utils/*` without introducing wrappers, aliases, pass-through shims, or broad refactors.
 
 ## Scope
 - Inventory both utility trees before moving code.
 - Move only shared-safe/pure utilities into `src/shared/utils/*`.
-- Keep engine-bound utilities in `src/engine/utils/*`.
+- Keep engine-bound utilities in `src/shared/utils/*`.
 - Remove true duplicate engine utilities after imports are updated.
 - Update imports to the final canonical path.
 - Do not create bridge files, alias exports, or temporary compatibility layers.
@@ -20,7 +20,7 @@ Consolidate duplicated utility code between `src/engine/utils/*` and `src/shared
 - no sample-specific dependency
 - no hidden fallback/default data
 
-`src/engine/utils/*` keeps utilities that depend on:
+`src/shared/utils/*` keeps utilities that depend on:
 - engine runtime
 - canvas/rendering
 - input systems
@@ -32,7 +32,7 @@ Consolidate duplicated utility code between `src/engine/utils/*` and `src/shared
 2. Identify exact duplicate or near-duplicate functions/classes/constants.
 3. For each duplicate, decide canonical location using the shared-vs-engine rule.
 4. Move shared-safe utilities to `src/shared/utils/*`.
-5. Remove duplicate source from `src/engine/utils/*` only after imports are updated.
+5. Remove duplicate source from `src/shared/utils/*` only after imports are updated.
 6. Update import paths across affected files.
 7. Run targeted syntax/import validation.
 8. Produce reports under `docs/dev/reports`.
@@ -46,7 +46,7 @@ Consolidate duplicated utility code between `src/engine/utils/*` and `src/shared
 
 ## Acceptance
 - Pure utilities live in `src/shared/utils/*`.
-- Engine-only utilities remain in `src/engine/utils/*`.
+- Engine-only utilities remain in `src/shared/utils/*`.
 - No duplicate utility implementation remains across both trees unless behavior differs and is documented.
 - No alias/pass-through files are introduced.
 - Targeted validation passes.
