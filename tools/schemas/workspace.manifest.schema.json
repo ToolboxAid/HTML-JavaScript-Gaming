@@ -3,12 +3,45 @@
   "$id": "tools/schemas/workspace.manifest.schema.json",
   "title": "Workspace Manifest",
   "type": "object",
-  "required": ["tools"],
+  "required": [
+    "documentKind",
+    "schema",
+    "version",
+    "id",
+    "name",
+    "tools"
+  ],
   "additionalProperties": false,
   "properties": {
+    "$schema": {
+      "type": "string",
+      "minLength": 1
+    },
+    "documentKind": {
+      "type": "string",
+      "const": "workspace-manifest"
+    },
+    "schema": {
+      "type": "string",
+      "minLength": 1
+    },
+    "version": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1
+    },
     "tools": {
       "type": "object",
-      "required": ["palette"],
+      "required": [
+        "palette"
+      ],
       "additionalProperties": false,
       "description": "Workspace-owned tool asset data keyed by canonical registry ids plus required singular palette payload.",
       "properties": {

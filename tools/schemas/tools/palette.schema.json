@@ -8,7 +8,7 @@
     "name",
     "swatches"
   ],
-  "additionalProperties": true,
+  "additionalProperties": false,
   "properties": {
     "id": {
       "type": "string",
@@ -25,10 +25,12 @@
         "required": [
           "hex"
         ],
-        "additionalProperties": true,
+        "additionalProperties": false,
         "properties": {
           "symbol": {
-            "type": "string"
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 1
           },
           "hex": {
             "type": "string",

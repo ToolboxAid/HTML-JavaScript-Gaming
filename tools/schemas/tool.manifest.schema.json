@@ -3,11 +3,68 @@
   "$id": "tools/schemas/tool.manifest.schema.json",
   "title": "Tool Manifest",
   "type": "object",
-  "required": ["tool", "schema", "data"],
-  "additionalProperties": true,
+  "required": [
+    "tool",
+    "schema",
+    "data"
+  ],
+  "additionalProperties": false,
   "properties": {
-    "tool": { "type": "string" },
-    "schema": { "type": "string" },
-    "data": { "type": "object" }
+    "tool": {
+      "type": "string",
+      "minLength": 1
+    },
+    "schema": {
+      "type": "string",
+      "minLength": 1
+    },
+    "data": {
+      "$ref": "#/$defs/jsonObject"
+    }
+  },
+  "$defs": {
+    "jsonValue": {
+      "oneOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "number"
+        },
+        {
+          "type": "integer"
+        },
+        {
+          "type": "boolean"
+        },
+        {
+          "type": "null"
+        },
+        {
+          "$ref": "#/$defs/jsonArray"
+        },
+        {
+          "$ref": "#/$defs/jsonObject"
+        }
+      ]
+    },
+    "jsonArray": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/jsonValue"
+      }
+    },
+    "jsonObject": {
+      "type": "object",
+      "additionalProperties": false,
+      "patternProperties": {
+        "^.*$": {
+          "$ref": "#/$defs/jsonValue"
+        }
+      },
+      "propertyNames": {
+        "type": "string"
+      }
+    }
   }
 }

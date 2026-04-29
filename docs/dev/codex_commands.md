@@ -1,20 +1,24 @@
 # CODEX COMMANDS
 
 model: gpt-5.3-codex
-reasoning: medium
+reasoning: high
 
-Apply PR_11_14_WORKSPACE_SCHEMA_PALETTE_TOOL_AND_1902_REBUILD.
+Apply PR_11_18_FULL_STRICT_SCHEMA_MODE.
 
 Required:
-- Update `tools/schemas/workspace.manifest.schema.json` so Palette is a singular tool payload under `tools.palette`.
-- Remove top-level required `palettes` collection from the manifest schema unless migration compatibility is required and documented.
-- Rebuild only `samples/phase-19/1902/`.
-- Delete/remove `sample.1902.palette.json`.
-- Rebuild sample 1902 workspace payload so all tool data is under `tools`, including `tools.palette`.
-- Allow only one palette in the workspace manifest.
-- Ensure Workspace shows all valid tools, not only Palette.
-- Do not modify other samples.
+- Enforce `additionalProperties: false` on every object schema under `tools/schemas/**/*.json`.
+- No schema object may use `additionalProperties: true`.
+- No schema object may omit `additionalProperties`.
+- Explicitly define every allowed field instead of allowing loose payloads.
+- Complete missing/weak tool schemas rather than bypassing validation.
+- Workspace manifest must reference tool schemas via `$ref`.
+- Workspace `tools.palette` remains singular and required.
+- Workspace `tools.additionalProperties` must be false.
+- Validate all `$ref` targets resolve.
+- Add tests/checks that unknown fields fail validation.
+- Validate/rebuild only sample 1902 as needed.
+- Ensure sample 1902 Workspace shows all valid tools, not only Palette.
 - Do not add fallback/default/hidden data.
 - Do not modify start_of_day folders.
-- Add validation report at docs/dev/reports/PR_11_14_WORKSPACE_SCHEMA_PALETTE_TOOL_AND_1902_REBUILD_report.md.
-- Return ZIP artifact at tmp/PR_11_14_WORKSPACE_SCHEMA_PALETTE_TOOL_AND_1902_REBUILD_delta.zip.
+- Add validation report at docs/dev/reports/PR_11_18_FULL_STRICT_SCHEMA_MODE_report.md.
+- Return ZIP artifact at tmp/PR_11_18_FULL_STRICT_SCHEMA_MODE_delta.zip.

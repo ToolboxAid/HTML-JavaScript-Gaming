@@ -3,11 +3,84 @@
   "$id": "tools/schemas/tools/vector-asset-studio.schema.json",
   "title": "Vector Asset Studio Payload",
   "type": "object",
-  "required": ["tool", "version"],
-  "additionalProperties": true,
+  "required": [
+    "tool",
+    "version",
+    "config"
+  ],
+  "additionalProperties": false,
   "properties": {
-    "tool": { "const": "vector-asset-studio" },
-    "version": { "type": "string" },
-    "config": { "type": "object" }
+    "tool": {
+      "const": "vector-asset-studio"
+    },
+    "version": {
+      "oneOf": [
+        {
+          "type": "string",
+          "minLength": 1
+        },
+        {
+          "type": "integer",
+          "minimum": 1
+        }
+      ]
+    },
+    "config": {
+      "type": "object",
+      "required": [
+        "vectorAssetDocument"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "vectorAssetDocument": {
+          "$ref": "#/$defs/jsonValue"
+        }
+      }
+    }
+  },
+  "$defs": {
+    "jsonValue": {
+      "oneOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "number"
+        },
+        {
+          "type": "integer"
+        },
+        {
+          "type": "boolean"
+        },
+        {
+          "type": "null"
+        },
+        {
+          "$ref": "#/$defs/jsonArray"
+        },
+        {
+          "$ref": "#/$defs/jsonObject"
+        }
+      ]
+    },
+    "jsonArray": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/jsonValue"
+      }
+    },
+    "jsonObject": {
+      "type": "object",
+      "additionalProperties": false,
+      "patternProperties": {
+        "^.*$": {
+          "$ref": "#/$defs/jsonValue"
+        }
+      },
+      "propertyNames": {
+        "type": "string"
+      }
+    }
   }
 }

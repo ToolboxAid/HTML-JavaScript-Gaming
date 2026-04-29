@@ -1,12 +1,16 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "tools/schemas/tools/skin-editor.schema.json",
+  "title": "skin-editor Payload",
   "type": "object",
-  "required": ["tool", "version", "config"],
+  "required": [
+    "tool",
+    "version",
+    "config"
+  ],
   "additionalProperties": false,
   "properties": {
     "tool": {
-      "type": "string",
       "const": "skin-editor"
     },
     "version": {
@@ -22,7 +26,61 @@
       ]
     },
     "config": {
-      "type": "object"
+      "type": "object",
+      "required": [],
+      "additionalProperties": false,
+      "properties": {}
+    },
+    "gameId": {
+      "$ref": "#/$defs/jsonValue"
+    },
+    "skin": {
+      "$ref": "#/$defs/jsonValue"
+    }
+  },
+  "$defs": {
+    "jsonValue": {
+      "oneOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "number"
+        },
+        {
+          "type": "integer"
+        },
+        {
+          "type": "boolean"
+        },
+        {
+          "type": "null"
+        },
+        {
+          "$ref": "#/$defs/jsonArray"
+        },
+        {
+          "$ref": "#/$defs/jsonObject"
+        }
+      ]
+    },
+    "jsonArray": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/jsonValue"
+      }
+    },
+    "jsonObject": {
+      "type": "object",
+      "additionalProperties": false,
+      "patternProperties": {
+        "^.*$": {
+          "$ref": "#/$defs/jsonValue"
+        }
+      },
+      "propertyNames": {
+        "type": "string"
+      }
     }
   }
 }

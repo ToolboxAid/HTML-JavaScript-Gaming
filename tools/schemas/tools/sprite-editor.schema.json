@@ -3,11 +3,87 @@
   "$id": "tools/schemas/tools/sprite-editor.schema.json",
   "title": "Sprite Editor Payload",
   "type": "object",
-  "required": ["tool", "version"],
-  "additionalProperties": true,
+  "required": [
+    "tool",
+    "version",
+    "config"
+  ],
+  "additionalProperties": false,
   "properties": {
-    "tool": { "const": "sprite-editor" },
-    "version": { "type": "string" },
-    "config": { "type": "object" }
+    "tool": {
+      "const": "sprite-editor"
+    },
+    "version": {
+      "oneOf": [
+        {
+          "type": "string",
+          "minLength": 1
+        },
+        {
+          "type": "integer",
+          "minimum": 1
+        }
+      ]
+    },
+    "config": {
+      "type": "object",
+      "required": [
+        "spriteProject"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "spriteProject": {
+          "$ref": "#/$defs/jsonValue"
+        }
+      }
+    },
+    "assetRegistry": {
+      "$ref": "#/$defs/jsonValue"
+    }
+  },
+  "$defs": {
+    "jsonValue": {
+      "oneOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "number"
+        },
+        {
+          "type": "integer"
+        },
+        {
+          "type": "boolean"
+        },
+        {
+          "type": "null"
+        },
+        {
+          "$ref": "#/$defs/jsonArray"
+        },
+        {
+          "$ref": "#/$defs/jsonObject"
+        }
+      ]
+    },
+    "jsonArray": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/jsonValue"
+      }
+    },
+    "jsonObject": {
+      "type": "object",
+      "additionalProperties": false,
+      "patternProperties": {
+        "^.*$": {
+          "$ref": "#/$defs/jsonValue"
+        }
+      },
+      "propertyNames": {
+        "type": "string"
+      }
+    }
   }
 }

@@ -3,26 +3,57 @@
   "$id": "tools/schemas/sample.tool-payload.schema.json",
   "title": "Sample JSON Document",
   "type": "object",
-  "required": ["$schema"],
+  "required": [
+    "$schema"
+  ],
+  "additionalProperties": false,
   "properties": {
-    "$schema": { "type": "string" },
-    "sampleId": { "type": "string" },
-    "phase": { "type": "string" },
-    "title": { "type": "string" },
-    "description": { "type": "string" },
+    "$schema": {
+      "type": "string",
+      "minLength": 1
+    },
+    "sampleId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "phase": {
+      "type": "string",
+      "minLength": 1
+    },
+    "title": {
+      "type": "string",
+      "minLength": 1
+    },
+    "description": {
+      "type": "string",
+      "minLength": 1
+    },
     "toolHints": {
       "type": "array",
-      "items": { "type": "string" }
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
     },
-    "payload": { "type": "object" },
-    "runtime": { "type": "object" },
-    "toolState": { "type": "object" },
-    "provenance": { "type": "object" }
+    "payload": {
+      "$ref": "#/$defs/jsonObject"
+    },
+    "runtime": {
+      "$ref": "#/$defs/jsonObject"
+    },
+    "toolState": {
+      "$ref": "#/$defs/jsonObject"
+    },
+    "provenance": {
+      "$ref": "#/$defs/jsonObject"
+    }
   },
   "allOf": [
     {
       "if": {
-        "required": ["sampleId"]
+        "required": [
+          "sampleId"
+        ]
       },
       "then": {
         "required": [
@@ -35,10 +66,53 @@
           "runtime",
           "toolState",
           "provenance"
-        ],
-        "additionalProperties": false
+        ]
       }
     }
   ],
-  "additionalProperties": true
+  "$defs": {
+    "jsonValue": {
+      "oneOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "number"
+        },
+        {
+          "type": "integer"
+        },
+        {
+          "type": "boolean"
+        },
+        {
+          "type": "null"
+        },
+        {
+          "$ref": "#/$defs/jsonArray"
+        },
+        {
+          "$ref": "#/$defs/jsonObject"
+        }
+      ]
+    },
+    "jsonArray": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/jsonValue"
+      }
+    },
+    "jsonObject": {
+      "type": "object",
+      "additionalProperties": false,
+      "patternProperties": {
+        "^.*$": {
+          "$ref": "#/$defs/jsonValue"
+        }
+      },
+      "propertyNames": {
+        "type": "string"
+      }
+    }
+  }
 }

@@ -1,4 +1,5 @@
 {
+  "$schema": "../../../tools/schemas/workspace.manifest.schema.json",
   "documentKind": "workspace-manifest",
   "schema": "html-js-gaming.project",
   "version": 1,
