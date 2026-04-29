@@ -1,0 +1,46 @@
+folder,file,export,export_kind,methods_in_file,imports,classification,notes
+engine/utils,src/engine/utils/fuzzyMatchScore.js,fuzzyMatchScore,named-export,fuzzyMatchScore,,shared-safe,
+engine/utils,src/engine/utils/geometry.js,pointInRect,function,,,shared-safe,
+engine/utils,src/engine/utils/geometry.js,xyInRect,function,,,shared-safe,
+engine/utils,src/engine/utils/geometry.js,getCenteredRect,function,,,shared-safe,
+engine/utils,src/engine/utils/index.js,(barrel-reexports),barrel,,,needs-review,Barrel file; consolidation sequencing should happen after direct utility moves.
+engine/utils,src/engine/utils/invariant.js,invariant,function,,,shared-safe,
+engine/utils,src/engine/utils/math.js,clamp,function,,,duplicate-move-to-shared,Generic clamp; duplicate local clamp exists in engine debug layout.
+engine/utils,src/engine/utils/math.js,distance,function,,,duplicate-move-to-shared,Distance helper duplicated by local implementations in network/AI modules.
+engine/utils,src/engine/utils/math.js,wrap,function,,,shared-safe,
+engine/utils,src/engine/utils/math.js,randomRange,function,,,shared-safe,
+engine/utils,src/engine/utils/normalizeCommandText.js,normalizeCommandText,named-export,normalizeCommandText,,needs-review,Hardcoded filler-token list may be command-domain specific.
+shared/utils,src/shared/utils/arrayUtils.js,ensureArray,function,,./stringUtils.js,shared-safe,
+shared/utils,src/shared/utils/arrayUtils.js,asArray,function,,./stringUtils.js,duplicate-keep-engine,Name overlap with object/3D debug utility asArray variants.
+shared/utils,src/shared/utils/arrayUtils.js,asStringArray,function,,./stringUtils.js,shared-safe,
+shared/utils,src/shared/utils/createNoopDevConsoleIntegration.js,createNoopDevConsoleIntegration,function,,,engine-only,
+shared/utils,src/shared/utils/debugConfigUtils.js,parseBooleanFlag,function,,./stringUtils.js,shared-safe,
+shared/utils,src/shared/utils/debugConfigUtils.js,normalizeDebugMode,function,,./stringUtils.js,shared-safe,
+shared/utils,src/shared/utils/debugConfigUtils.js,readStoredBoolean,function,,./stringUtils.js,needs-review,Touches localStorage/location query flags (browser environment concerns).
+shared/utils,src/shared/utils/debugConfigUtils.js,writeStoredBoolean,function,,./stringUtils.js,needs-review,Touches localStorage/location query flags (browser environment concerns).
+shared/utils,src/shared/utils/debugConfigUtils.js,isLocalDebugEnvironment,function,,./stringUtils.js,shared-safe,
+shared/utils,src/shared/utils/debugConfigUtils.js,resolveDebugConfig,function,,./stringUtils.js,needs-review,Touches localStorage/location query flags (browser environment concerns).
+shared/utils,src/shared/utils/directionUtils.js,oppositeCardinalDirection,function,,,shared-safe,
+shared/utils,src/shared/utils/highScoreUtils.js,sanitizeScore,function,,,shared-safe,
+shared/utils,src/shared/utils/highScoreUtils.js,sanitizeInitials,function,,,shared-safe,
+shared/utils,src/shared/utils/highScoreUtils.js,sanitizeRow,function,,,shared-safe,
+shared/utils,src/shared/utils/highScoreUtils.js,sortRows,function,,,shared-safe,
+shared/utils,src/shared/utils/idUtils.js,* from ../id/idUtils.js,re-export-star,,,needs-review,
+shared/utils,src/shared/utils/index.js,(barrel-reexports),barrel,,,needs-review,Barrel file; consolidation sequencing should happen after direct utility moves.
+shared/utils,src/shared/utils/initialsEntryUtils.js,codeToLetter,function,,,shared-safe,
+shared/utils,src/shared/utils/jsonUtils.js,cloneJson,function,,,duplicate-move-to-shared,Duplicate cloneJson exists in engine debug inspectors shared utils.
+shared/utils,src/shared/utils/networkDebugUtils.js,toNetworkSnapshot,function,toSafeKey,../math/numberNormalization.js|./objectUtils.js|./stringUtils.js,engine-only,Network-trace and command snapshot semantics are debug-runtime specific.
+shared/utils,src/shared/utils/networkDebugUtils.js,getCommandSnapshot,function,toSafeKey,../math/numberNormalization.js|./objectUtils.js|./stringUtils.js,engine-only,Network-trace and command snapshot semantics are debug-runtime specific.
+shared/utils,src/shared/utils/networkDebugUtils.js,commandLinesForTrace,function,toSafeKey,../math/numberNormalization.js|./objectUtils.js|./stringUtils.js,engine-only,Network-trace and command snapshot semantics are debug-runtime specific.
+shared/utils,src/shared/utils/networkDebugUtils.js,sanitizeText,const,toSafeKey,../math/numberNormalization.js|./objectUtils.js|./stringUtils.js,duplicate-keep-engine,Network-trace and command snapshot semantics are debug-runtime specific.
+shared/utils,src/shared/utils/networkDebugUtils.js,asNumber,re-export(../math/numberNormalization.js),toSafeKey,../math/numberNormalization.js|./objectUtils.js|./stringUtils.js,engine-only,Network-trace and command snapshot semantics are debug-runtime specific.
+shared/utils,src/shared/utils/numberUtils.js,* from ../number/numberUtils.js,re-export-star,,,needs-review,
+shared/utils,src/shared/utils/objectUtils.js,isObject,named-export,isObject|isPlainObject|asObject|asArray,./arrayUtils.js,shared-safe,
+shared/utils,src/shared/utils/objectUtils.js,isPlainObject,named-export,isObject|isPlainObject|asObject|asArray,./arrayUtils.js,duplicate-keep-engine,Similar helper names appear in engine debug/network modules.
+shared/utils,src/shared/utils/objectUtils.js,asObject,named-export,isObject|isPlainObject|asObject|asArray,./arrayUtils.js,duplicate-keep-engine,Similar helper names appear in engine debug/network modules.
+shared/utils,src/shared/utils/objectUtils.js,asArray,named-export,isObject|isPlainObject|asObject|asArray,./arrayUtils.js,duplicate-keep-engine,Similar helper names appear in engine debug/network modules.
+shared/utils,src/shared/utils/runtimeRegistryUtils.js,getRuntimeAndRegistry,function,,,engine-only,Depends on console runtime/panel registry contract.
+shared/utils,src/shared/utils/snapshotCloneUtils.js,cloneSnapshot,function,,,needs-review,
+shared/utils,src/shared/utils/stringUtils.js,* from ../string/stringHelpers.js,re-export-star,,,needs-review,
+shared/utils,src/shared/utils/stringifyValueUtils.js,stringifyValue,function,,,shared-safe,
+shared/utils,src/shared/utils/textWrapUtils.js,wrapTextByCharacterCount,function,,,shared-safe,
