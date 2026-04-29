@@ -1,1 +1,1 @@
-Expand utils audit to report dead usage, duplicates, and folder placement mismatches - PR 11.81
+Enforce utility consolidation rules with CI-safe audit script - PR 11.82

@@ -1,26 +1,24 @@
-# Codex Commands — PR 11.81
+# Codex Commands - PR 11.82
 
-Model: GPT-5.4
-Reasoning: high
+## Purpose
+Add CI-safe utils rule enforcement after the `src/engine/utils` to `src/shared/utils` consolidation lane.
 
-Run Codex with this task:
+## Command
+Run this from the repository root:
 
-```text
-You are applying PR 11.81. Expand the utilities audit only. Do not delete, move, or rewrite implementation files.
-
-Inspect src/shared/utils/** and any remaining src/engine/utils/**.
-
-Create these reports:
-- docs/dev/reports/utils_dead_usage_audit.md
-- docs/dev/reports/utils_duplicate_exports_audit.md
-- docs/dev/reports/utils_folder_category_audit.md
-- docs/dev/reports/utils_audit_summary.csv
-
-Report:
-1. unused utility files and unused named exports
-2. duplicate or near-duplicate exports across utility files
-3. folder-category mismatches, especially generic utilities still under src/engine/utils
-4. every remaining literal reference to src/engine/utils/ and /src/engine/utils/
-
-Do not change implementation code. Do not create wrappers, aliases, or pass-through files. This PR is report-only.
+```powershell
+powershell -ExecutionPolicy Bypass -File .\scripts\PS\enforce-utils-rules.ps1 -Details
 ```
+
+For CI/regression mode:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\scripts\PS\enforce-utils-rules.ps1 -Ci
+```
+
+## Acceptance
+- Script runs without parser errors.
+- CSV report is written to `docs/dev/reports/utils_rules_audit.csv`.
+- `-Details` shows findings only when requested.
+- `-Ci` exits nonzero when findings exist.
+- No files are deleted or moved by this PR.
