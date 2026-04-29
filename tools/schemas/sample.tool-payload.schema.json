@@ -1,10 +1,13 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "tools/schemas/sample.tool-payload.schema.json",
-  "title": "Sample JSON Document",
+  "title": "Sample Data Wrapper (Non-Tool Payload)",
+  "description": "Strict sample data wrapper schema for sample metadata/doc artifacts. Tool runtime payloads must validate against tool-specific schemas under tools/schemas/tools/*.schema.json.",
   "type": "object",
   "required": [
-    "$schema"
+    "$schema",
+    "schema",
+    "version"
   ],
   "additionalProperties": false,
   "properties": {
@@ -12,64 +15,28 @@
       "type": "string",
       "minLength": 1
     },
-    "sampleId": {
+    "schema": {
       "type": "string",
       "minLength": 1
     },
-    "phase": {
-      "type": "string",
-      "minLength": 1
-    },
-    "title": {
-      "type": "string",
-      "minLength": 1
-    },
-    "description": {
-      "type": "string",
-      "minLength": 1
-    },
-    "toolHints": {
-      "type": "array",
-      "items": {
-        "type": "string",
-        "minLength": 1
-      }
-    },
-    "payload": {
-      "$ref": "#/$defs/jsonObject"
-    },
-    "runtime": {
-      "$ref": "#/$defs/jsonObject"
-    },
-    "toolState": {
-      "$ref": "#/$defs/jsonObject"
-    },
-    "provenance": {
-      "$ref": "#/$defs/jsonObject"
+    "version": {
+      "oneOf": [
+        {
+          "type": "string",
+          "minLength": 1
+        },
+        {
+          "type": "integer",
+          "minimum": 1
+        }
+      ]
     }
   },
-  "allOf": [
-    {
-      "if": {
-        "required": [
-          "sampleId"
-        ]
-      },
-      "then": {
-        "required": [
-          "sampleId",
-          "phase",
-          "title",
-          "description",
-          "toolHints",
-          "payload",
-          "runtime",
-          "toolState",
-          "provenance"
-        ]
-      }
+  "patternProperties": {
+    "^(?!\\$schema$|schema$|version$).+": {
+      "$ref": "#/$defs/jsonValue"
     }
-  ],
+  },
   "$defs": {
     "jsonValue": {
       "oneOf": [
@@ -114,5 +81,11 @@
         "type": "string"
       }
     }
+  },
+  "not": {
+    "required": [
+      "tool",
+      "payload"
+    ]
   }
 }

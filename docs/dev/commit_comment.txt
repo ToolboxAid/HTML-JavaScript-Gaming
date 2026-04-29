@@ -1,1 +1,1 @@
-Enforce full strict schema mode across tool and workspace schemas - PR 11.18
+Canonicalize palette schema and enforce direct strict tool payload schemas - PR 11.19

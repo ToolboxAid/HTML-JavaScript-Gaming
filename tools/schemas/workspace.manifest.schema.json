@@ -46,7 +46,7 @@
       "description": "Workspace-owned tool asset data keyed by canonical registry ids plus required singular palette payload.",
       "properties": {
         "palette": {
-          "$ref": "./tools/palette.schema.json"
+          "$ref": "./tools/palette-browser.schema.json"
         },
         "vector-map-editor": {
           "$ref": "./tools/vector-map-editor.schema.json"

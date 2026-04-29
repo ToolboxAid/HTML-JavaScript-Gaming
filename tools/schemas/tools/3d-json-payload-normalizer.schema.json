@@ -6,7 +6,7 @@
   "required": [
     "tool",
     "version",
-    "config"
+    "payload"
   ],
   "additionalProperties": false,
   "properties": {
@@ -25,7 +25,7 @@
         }
       ]
     },
-    "config": {
+    "payload": {
       "type": "object",
       "required": [
         "mapPayload"

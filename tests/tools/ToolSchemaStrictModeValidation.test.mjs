@@ -94,44 +94,6 @@ function assertRefsResolve(relativePath, document, schemaIndex, issues, pathLabe
   }
 }
 
-function validatePalettePayload(payload, errors, pointer) {
-  if (!payload || typeof payload !== "object" || Array.isArray(payload)) {
-    errors.push(`${pointer} must be an object`);
-    return;
-  }
-  const allowedRoot = new Set(["id", "name", "swatches"]);
-  Object.keys(payload).forEach((key) => {
-    if (!allowedRoot.has(key)) {
-      errors.push(`${pointer}.${key} is not allowed`);
-    }
-  });
-  ["id", "name", "swatches"].forEach((key) => {
-    if (!(key in payload)) {
-      errors.push(`${pointer}.${key} is required`);
-    }
-  });
-  if (!Array.isArray(payload.swatches)) {
-    errors.push(`${pointer}.swatches must be an array`);
-    return;
-  }
-  payload.swatches.forEach((swatch, index) => {
-    const swatchPtr = `${pointer}.swatches[${index}]`;
-    if (!swatch || typeof swatch !== "object" || Array.isArray(swatch)) {
-      errors.push(`${swatchPtr} must be an object`);
-      return;
-    }
-    const allowed = new Set(["symbol", "hex", "name"]);
-    Object.keys(swatch).forEach((key) => {
-      if (!allowed.has(key)) {
-        errors.push(`${swatchPtr}.${key} is not allowed`);
-      }
-    });
-    if (!("hex" in swatch)) {
-      errors.push(`${swatchPtr}.hex is required`);
-    }
-  });
-}
-
 function validateToolPayload(toolId, payload, schema, errors, pointer) {
   if (!payload || typeof payload !== "object" || Array.isArray(payload)) {
     errors.push(`${pointer} must be an object`);
@@ -149,25 +111,30 @@ function validateToolPayload(toolId, payload, schema, errors, pointer) {
       errors.push(`${pointer}.${key} is required`);
     }
   });
-  if (payload.tool !== toolId) {
+  const expectedToolConst = schema?.properties?.tool?.const;
+  if (typeof expectedToolConst === "string") {
+    if (payload.tool !== expectedToolConst) {
+      errors.push(`${pointer}.tool must equal ${expectedToolConst}`);
+    }
+  } else if (payload.tool !== toolId) {
     errors.push(`${pointer}.tool must equal ${toolId}`);
   }
-  const configValue = payload.config;
-  if (!configValue || typeof configValue !== "object" || Array.isArray(configValue)) {
-    errors.push(`${pointer}.config must be an object`);
+  const payloadValue = payload.payload;
+  if (!payloadValue || typeof payloadValue !== "object" || Array.isArray(payloadValue)) {
+    errors.push(`${pointer}.payload must be an object`);
     return;
   }
-  const configSchema = rootProps.config;
-  const configProps = (configSchema && configSchema.properties) || {};
-  const requiredConfig = new Set((configSchema && configSchema.required) || []);
-  Object.keys(configValue).forEach((key) => {
-    if (!(key in configProps)) {
-      errors.push(`${pointer}.config.${key} is not allowed by schema`);
+  const payloadSchema = rootProps.payload;
+  const payloadProps = (payloadSchema && payloadSchema.properties) || {};
+  const requiredPayload = new Set((payloadSchema && payloadSchema.required) || []);
+  Object.keys(payloadValue).forEach((key) => {
+    if (!(key in payloadProps)) {
+      errors.push(`${pointer}.payload.${key} is not allowed by schema`);
     }
   });
-  requiredConfig.forEach((key) => {
-    if (!(key in configValue)) {
-      errors.push(`${pointer}.config.${key} is required`);
+  requiredPayload.forEach((key) => {
+    if (!(key in payloadValue)) {
+      errors.push(`${pointer}.payload.${key} is required`);
     }
   });
 }
@@ -208,11 +175,9 @@ function validateWorkspace1902(sampleDocument, schemaIndex) {
       errors.push(`root.tools.${toolId} is not allowed by workspace.manifest schema`);
       return;
     }
-    if (toolId === "palette") {
-      validatePalettePayload(tools[toolId], errors, `root.tools.${toolId}`);
-      return;
-    }
-    const toolSchemaPath = `tools/schemas/tools/${toolId}.schema.json`;
+    const toolSchemaPath = toolId === "palette"
+      ? "tools/schemas/tools/palette-browser.schema.json"
+      : `tools/schemas/tools/${toolId}.schema.json`;
     const toolSchema = schemaIndex.get(toolSchemaPath);
     if (!toolSchema) {
       errors.push(`missing schema for tool ${toolId}: ${toolSchemaPath}`);
@@ -274,12 +239,12 @@ export async function run() {
   );
 
   const injected = clone(sample1902);
-  injected.tools["asset-browser"].config.__unknown = true;
+  injected.tools["asset-browser"].payload.__unknown = true;
   const unknownFieldErrors = validateWorkspace1902(injected, schemaIndex);
   assert.equal(
-    unknownFieldErrors.some((message) => message.includes("asset-browser.config.__unknown")),
+    unknownFieldErrors.some((message) => message.includes("asset-browser.payload.__unknown")),
     true,
-    "Unknown config field injection must fail validation."
+    "Unknown payload field injection must fail validation."
   );
 
   const requiredToolIds = [

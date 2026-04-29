@@ -6,7 +6,7 @@
   "required": [
     "tool",
     "version",
-    "config"
+    "payload"
   ],
   "additionalProperties": false,
   "properties": {
@@ -25,14 +25,15 @@
         }
       ]
     },
-    "config": {
+    "payload": {
       "type": "object",
       "required": [],
       "additionalProperties": false,
       "properties": {}
     },
-    "gameId": {
-      "$ref": "#/$defs/jsonValue"
+    "projectId": {
+      "type": "string",
+      "minLength": 1
     },
     "skin": {
       "$ref": "#/$defs/jsonValue"

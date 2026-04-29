@@ -1,12 +1,12 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "tools/schemas/tools/palette-browser.schema.json",
-  "title": "palette-browser Payload",
+  "title": "Palette Browser Payload",
   "type": "object",
   "required": [
     "tool",
     "version",
-    "config"
+    "payload"
   ],
   "additionalProperties": false,
   "properties": {
@@ -25,62 +25,71 @@
         }
       ]
     },
-    "config": {
+    "payload": {
       "type": "object",
-      "required": [],
+      "required": [
+        "schema",
+        "version",
+        "name",
+        "swatches"
+      ],
       "additionalProperties": false,
       "properties": {
-        "paletteDocument": {
-          "$ref": "#/$defs/jsonValue"
+        "schema": {
+          "type": "string",
+          "const": "html-js-gaming.palette"
         },
-        "paletteSet": {
-          "$ref": "#/$defs/jsonValue"
-        }
-      }
-    }
-  },
-  "$defs": {
-    "jsonValue": {
-      "oneOf": [
-        {
-          "type": "string"
+        "version": {
+          "type": "integer",
+          "minimum": 1
         },
-        {
-          "type": "number"
+        "id": {
+          "type": "string",
+          "minLength": 1
         },
-        {
-          "type": "integer"
+        "name": {
+          "type": "string",
+          "minLength": 1
         },
-        {
+        "source": {
+          "type": "string",
+          "minLength": 1
+        },
+        "sourceId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "locked": {
           "type": "boolean"
         },
-        {
-          "type": "null"
-        },
-        {
-          "$ref": "#/$defs/jsonArray"
-        },
-        {
-          "$ref": "#/$defs/jsonObject"
+        "swatches": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "object",
+            "required": [
+              "symbol",
+              "hex",
+              "name"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "symbol": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 1
+              },
+              "hex": {
+                "type": "string",
+                "pattern": "^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{8})$"
+              },
+              "name": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          }
         }
-      ]
-    },
-    "jsonArray": {
-      "type": "array",
-      "items": {
-        "$ref": "#/$defs/jsonValue"
-      }
-    },
-    "jsonObject": {
-      "type": "object",
-      "additionalProperties": false,
-      "patternProperties": {
-        "^.*$": {
-          "$ref": "#/$defs/jsonValue"
-        }
-      },
-      "propertyNames": {
-        "type": "string"
       }
     }
   }

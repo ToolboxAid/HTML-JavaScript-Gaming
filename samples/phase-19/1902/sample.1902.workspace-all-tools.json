@@ -9,7 +9,7 @@
     "vector-map-editor": {
       "tool": "vector-map-editor",
       "version": "1",
-      "config": {
+      "payload": {
         "vectorMapDocument": {
           "version": 3,
           "name": "sample-0901-vector-map",
@@ -145,7 +145,7 @@
     "vector-asset-studio": {
       "tool": "vector-asset-studio",
       "version": "1",
-      "config": {
+      "payload": {
         "vectorAssetDocument": {
           "sourceName": "sample-0901-ship.svg",
           "editorOptions": {
@@ -171,9 +171,8 @@
     "tile-map-editor": {
       "tool": "tile-map-editor",
       "version": "1",
-      "config": {
+      "payload": {
         "tileMapDocument": {
-          "$schema": "../../../tools/schemas/sample.tool-payload.schema.json",
           "schema": "toolbox.tilemap/1",
           "version": 1,
           "map": {
@@ -824,7 +823,7 @@
     "parallax-editor": {
       "tool": "parallax-editor",
       "version": "1",
-      "config": {
+      "payload": {
         "parallaxDocument": {
           "schema": "toolbox.parallax/1",
           "version": 1,
@@ -880,7 +879,29 @@
     "sprite-editor": {
       "tool": "sprite-editor",
       "version": "1",
-      "config": {
+      "assetRegistry": {
+        "entries": [
+          {
+            "id": "sample-1902-workspace-preset",
+            "label": "1902 Workspace Integration Preset",
+            "type": "data",
+            "category": "Workflow JSON",
+            "kind": "other",
+            "path": "/samples/phase-19/1902/sample.1902.workspace-all-tools.json",
+            "status": "registered"
+          },
+          {
+            "id": "sample-1902-preview",
+            "label": "1902 Preview Art",
+            "type": "image",
+            "category": "Preview Art",
+            "kind": "other",
+            "path": "/samples/phase-19/1902/assets/images/preview.svg",
+            "status": "registered"
+          }
+        ]
+      },
+      "payload": {
         "spriteProject": {
           "format": "toolboxaid.sprite-editor.project",
           "version": 1,
@@ -960,35 +981,11 @@
           ],
           "currentFrameIndex": 0
         }
-      },
-      "assetRegistry": {
-        "entries": [
-          {
-            "id": "sample-1902-workspace-preset",
-            "label": "1902 Workspace Integration Preset",
-            "type": "data",
-            "category": "Workflow JSON",
-            "kind": "other",
-            "path": "/samples/phase-19/1902/sample.1902.workspace-all-tools.json",
-            "status": "registered"
-          },
-          {
-            "id": "sample-1902-preview",
-            "label": "1902 Preview Art",
-            "type": "image",
-            "category": "Preview Art",
-            "kind": "other",
-            "path": "/samples/phase-19/1902/assets/images/preview.svg",
-            "status": "registered"
-          }
-        ]
       }
     },
     "skin-editor": {
       "tool": "skin-editor",
       "version": "1",
-      "config": {},
-      "gameId": "Pong",
       "skin": {
         "documentKind": "game-skin",
         "version": 1,
@@ -1036,12 +1033,14 @@
           }
         },
         "entities": {}
-      }
+      },
+      "payload": {},
+      "projectId": "Pong"
     },
     "asset-browser": {
       "tool": "asset-browser",
       "version": "1",
-      "config": {
+      "payload": {
         "assetCatalog": {
           "entries": [
             {
@@ -1075,12 +1074,59 @@
     "palette-browser": {
       "tool": "palette-browser",
       "version": "1",
-      "config": {}
+      "payload": {
+        "schema": "html-js-gaming.palette",
+        "version": 1,
+        "id": "sample-1902-workspace-palette",
+        "name": "Sample 1902 Workspace Palette",
+        "swatches": [
+          {
+            "symbol": "A",
+            "hex": "#0F172AFF",
+            "name": "Night"
+          },
+          {
+            "symbol": "B",
+            "hex": "#111827FF",
+            "name": "Slate"
+          },
+          {
+            "symbol": "C",
+            "hex": "#38BDF8FF",
+            "name": "Sky"
+          },
+          {
+            "symbol": "D",
+            "hex": "#64748BFF",
+            "name": "Steel"
+          },
+          {
+            "symbol": "E",
+            "hex": "#F8FAFCFF",
+            "name": "Cloud"
+          },
+          {
+            "symbol": "F",
+            "hex": "#A78BFAFF",
+            "name": "Violet"
+          },
+          {
+            "symbol": "G",
+            "hex": "#22C55EFF",
+            "name": "Green"
+          },
+          {
+            "symbol": "H",
+            "hex": "#FB923CFF",
+            "name": "Amber"
+          }
+        ]
+      }
     },
     "state-inspector": {
       "tool": "state-inspector",
       "version": "1",
-      "config": {
+      "payload": {
         "snapshot": {
           "schema": "tools.debug-state-inspector.snapshot/1",
           "capturedAt": "2026-04-24T00:00:00.000Z",
@@ -1128,7 +1174,7 @@
     "replay-visualizer": {
       "tool": "replay-visualizer",
       "version": "1",
-      "config": {
+      "payload": {
         "events": [
           {
             "id": "predict-1",
@@ -1186,7 +1232,7 @@
     "performance-profiler": {
       "tool": "performance-profiler",
       "version": "1",
-      "config": {
+      "payload": {
         "profileSettings": {
           "workloadIterations": 240,
           "workSize": 10000,
@@ -1197,7 +1243,7 @@
     "physics-sandbox": {
       "tool": "physics-sandbox",
       "version": "1",
-      "config": {
+      "payload": {
         "physicsBody": {
           "x": 12,
           "y": 48,
@@ -1216,9 +1262,8 @@
     "asset-pipeline-tool": {
       "tool": "asset-pipeline-tool",
       "version": "1",
-      "config": {
+      "payload": {
         "pipelinePayload": {
-          "gameId": "sample-1902",
           "domainInputs": {
             "sprites": [
               {
@@ -1248,14 +1293,15 @@
                 "mode": "manifest-build"
               }
             }
-          }
+          },
+          "projectId": "sample-1902"
         }
       }
     },
     "tile-model-converter": {
       "tool": "tile-model-converter",
       "version": "1",
-      "config": {
+      "payload": {
         "candidate": {
           "id": "sample-1209-tilemap-basic",
           "name": "sample-1209-tilemap-basic",
@@ -1275,7 +1321,7 @@
     "3d-json-payload-normalizer": {
       "tool": "3d-json-payload-normalizer",
       "version": "1",
-      "config": {
+      "payload": {
         "mapPayload": {
           "schema": "tools.3d-json-payload-normalizer.document/1",
           "mapId": "sample-1208-terrain-flow",
@@ -1339,7 +1385,7 @@
     "3d-asset-viewer": {
       "tool": "3d-asset-viewer",
       "version": "1",
-      "config": {
+      "payload": {
         "asset3d": {
           "schema": "tools.3d-asset-viewer.asset/1",
           "assetId": "sample-1413-import-batch",
@@ -1380,7 +1426,7 @@
     "3d-camera-path-editor": {
       "tool": "3d-camera-path-editor",
       "version": "1",
-      "config": {
+      "payload": {
         "cameraPath": {
           "schema": "tools.3d-camera-path.path/1",
           "pathId": "sample-0220-camera-system-track",
@@ -1429,50 +1475,56 @@
       }
     },
     "palette": {
-      "id": "sample-1902-workspace-palette",
-      "name": "Sample 1902 Workspace Palette",
-      "swatches": [
-        {
-          "symbol": "A",
-          "hex": "#0F172AFF",
-          "name": "Night"
-        },
-        {
-          "symbol": "B",
-          "hex": "#111827FF",
-          "name": "Slate"
-        },
-        {
-          "symbol": "C",
-          "hex": "#38BDF8FF",
-          "name": "Sky"
-        },
-        {
-          "symbol": "D",
-          "hex": "#64748BFF",
-          "name": "Steel"
-        },
-        {
-          "symbol": "E",
-          "hex": "#F8FAFCFF",
-          "name": "Cloud"
-        },
-        {
-          "symbol": "F",
-          "hex": "#A78BFAFF",
-          "name": "Violet"
-        },
-        {
-          "symbol": "G",
-          "hex": "#22C55EFF",
-          "name": "Green"
-        },
-        {
-          "symbol": "H",
-          "hex": "#FB923CFF",
-          "name": "Amber"
-        }
-      ]
+      "tool": "palette-browser",
+      "version": "1",
+      "payload": {
+        "schema": "html-js-gaming.palette",
+        "version": 1,
+        "id": "sample-1902-workspace-palette",
+        "name": "Sample 1902 Workspace Palette",
+        "swatches": [
+          {
+            "symbol": "A",
+            "hex": "#0F172AFF",
+            "name": "Night"
+          },
+          {
+            "symbol": "B",
+            "hex": "#111827FF",
+            "name": "Slate"
+          },
+          {
+            "symbol": "C",
+            "hex": "#38BDF8FF",
+            "name": "Sky"
+          },
+          {
+            "symbol": "D",
+            "hex": "#64748BFF",
+            "name": "Steel"
+          },
+          {
+            "symbol": "E",
+            "hex": "#F8FAFCFF",
+            "name": "Cloud"
+          },
+          {
+            "symbol": "F",
+            "hex": "#A78BFAFF",
+            "name": "Violet"
+          },
+          {
+            "symbol": "G",
+            "hex": "#22C55EFF",
+            "name": "Green"
+          },
+          {
+            "symbol": "H",
+            "hex": "#FB923CFF",
+            "name": "Amber"
+          }
+        ]
+      }
     }
   }
 }
