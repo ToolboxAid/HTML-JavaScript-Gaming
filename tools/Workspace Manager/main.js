@@ -11,10 +11,12 @@ const GAME_ASSET_CATALOG_SCHEMA = "html-js-gaming.game-asset-catalog";
 const GAME_ASSET_CATALOG_VERSION = 1;
 const WORKSPACE_MANIFEST_SCHEMA = "html-js-gaming.project";
 const WORKSPACE_DOCUMENT_KIND = "workspace-manifest";
+const WORKSPACE_MANIFEST_SCHEMA_PATH = "/tools/schemas/workspace.manifest.schema.json";
 const WORKSPACE_SPECIAL_TOOL_KEY_MAP = Object.freeze({
   palette: "palette-browser"
 });
 const gameAssetCatalogCache = new Map();
+let workspaceSchemaContractPromise = null;
 
 function deriveGameAssetCatalogPath(gameHref) {
   const href = normalizeGameHref(gameHref);
@@ -155,6 +157,243 @@ function normalizeLocalHrefParam(value, allowedPrefixes = []) {
   return allowedPrefixes.some((prefix) => normalized.startsWith(prefix)) ? normalized : "";
 }
 
+function isPlainObject(value) {
+  return !!value && typeof value === "object" && !Array.isArray(value);
+}
+
+function resolveJsonPointer(root, pointer) {
+  if (!pointer.startsWith("#/")) {
+    return null;
+  }
+  const segments = pointer
+    .slice(2)
+    .split("/")
+    .map((segment) => segment.replace(/~1/g, "/").replace(/~0/g, "~"));
+  let current = root;
+  for (const segment of segments) {
+    if (!isPlainObject(current) && !Array.isArray(current)) {
+      return null;
+    }
+    current = current[segment];
+  }
+  return current;
+}
+
+function validateJsonValueAgainstSchema(value, schema, schemaRoot) {
+  const errors = [];
+  const seenPointers = new Set();
+
+  function validateNode(nodeValue, nodeSchema, pointer, schemaContext) {
+    if (!isPlainObject(nodeSchema)) {
+      return;
+    }
+
+    if (typeof nodeSchema.$ref === "string") {
+      const ref = nodeSchema.$ref.trim();
+      if (ref.startsWith("#/")) {
+        const refPointer = `${ref}@${pointer}`;
+        if (seenPointers.has(refPointer)) {
+          return;
+        }
+        seenPointers.add(refPointer);
+        const resolved = resolveJsonPointer(schemaContext, ref);
+        if (!resolved) {
+          errors.push(`${pointer}: unresolved schema ref ${ref}`);
+          return;
+        }
+        validateNode(nodeValue, resolved, pointer, schemaContext);
+        return;
+      }
+      return;
+    }
+
+    if (Array.isArray(nodeSchema.oneOf) && nodeSchema.oneOf.length > 0) {
+      let branchPass = false;
+      for (const branch of nodeSchema.oneOf) {
+        const beforeBranchErrors = errors.length;
+        validateNode(nodeValue, branch, pointer, schemaContext);
+        const branchErrorCount = errors.length - beforeBranchErrors;
+        if (branchErrorCount === 0) {
+          branchPass = true;
+          break;
+        }
+        errors.splice(beforeBranchErrors, branchErrorCount);
+      }
+      if (!branchPass) {
+        errors.push(`${pointer}: value does not satisfy any oneOf branch`);
+      }
+      return;
+    }
+
+    if (Object.prototype.hasOwnProperty.call(nodeSchema, "const")) {
+      if (nodeValue !== nodeSchema.const) {
+        errors.push(`${pointer}: expected const ${JSON.stringify(nodeSchema.const)}`);
+        return;
+      }
+    }
+
+    if (Array.isArray(nodeSchema.enum) && nodeSchema.enum.length > 0) {
+      if (!nodeSchema.enum.includes(nodeValue)) {
+        errors.push(`${pointer}: value is not in enum`);
+        return;
+      }
+    }
+
+    const schemaType = typeof nodeSchema.type === "string" ? nodeSchema.type : "";
+    if (schemaType) {
+      if (schemaType === "object") {
+        if (!isPlainObject(nodeValue)) {
+          errors.push(`${pointer}: expected object`);
+          return;
+        }
+        const required = Array.isArray(nodeSchema.required) ? nodeSchema.required : [];
+        required.forEach((requiredKey) => {
+          if (!Object.prototype.hasOwnProperty.call(nodeValue, requiredKey)) {
+            errors.push(`${pointer}: missing required key "${requiredKey}"`);
+          }
+        });
+        const properties = isPlainObject(nodeSchema.properties) ? nodeSchema.properties : {};
+        const patternProperties = isPlainObject(nodeSchema.patternProperties) ? nodeSchema.patternProperties : {};
+        const propertyKeys = Object.keys(nodeValue);
+
+        propertyKeys.forEach((propertyKey) => {
+          const propertyPointer = `${pointer}.${propertyKey}`;
+          if (Object.prototype.hasOwnProperty.call(properties, propertyKey)) {
+            validateNode(nodeValue[propertyKey], properties[propertyKey], propertyPointer, schemaContext);
+            return;
+          }
+
+          const matchingPattern = Object.keys(patternProperties).find((pattern) => {
+            try {
+              return new RegExp(pattern).test(propertyKey);
+            } catch {
+              return false;
+            }
+          });
+          if (matchingPattern) {
+            validateNode(nodeValue[propertyKey], patternProperties[matchingPattern], propertyPointer, schemaContext);
+            return;
+          }
+
+          if (nodeSchema.additionalProperties === false) {
+            errors.push(`${pointer}: unknown key "${propertyKey}"`);
+          }
+        });
+      } else if (schemaType === "array") {
+        if (!Array.isArray(nodeValue)) {
+          errors.push(`${pointer}: expected array`);
+          return;
+        }
+        if (isPlainObject(nodeSchema.items)) {
+          nodeValue.forEach((item, index) => {
+            validateNode(item, nodeSchema.items, `${pointer}[${index}]`, schemaContext);
+          });
+        }
+      } else if (schemaType === "string") {
+        if (typeof nodeValue !== "string") {
+          errors.push(`${pointer}: expected string`);
+          return;
+        }
+        if (Number.isInteger(nodeSchema.minLength) && nodeValue.length < nodeSchema.minLength) {
+          errors.push(`${pointer}: string shorter than minLength=${nodeSchema.minLength}`);
+        }
+      } else if (schemaType === "integer") {
+        if (!Number.isInteger(nodeValue)) {
+          errors.push(`${pointer}: expected integer`);
+          return;
+        }
+        if (typeof nodeSchema.minimum === "number" && nodeValue < nodeSchema.minimum) {
+          errors.push(`${pointer}: value below minimum=${nodeSchema.minimum}`);
+        }
+      } else if (schemaType === "number") {
+        if (typeof nodeValue !== "number" || Number.isNaN(nodeValue)) {
+          errors.push(`${pointer}: expected number`);
+          return;
+        }
+        if (typeof nodeSchema.minimum === "number" && nodeValue < nodeSchema.minimum) {
+          errors.push(`${pointer}: value below minimum=${nodeSchema.minimum}`);
+        }
+      } else if (schemaType === "boolean") {
+        if (typeof nodeValue !== "boolean") {
+          errors.push(`${pointer}: expected boolean`);
+        }
+      } else if (schemaType === "null") {
+        if (nodeValue !== null) {
+          errors.push(`${pointer}: expected null`);
+        }
+      }
+    }
+  }
+
+  validateNode(value, schema, "$", schemaRoot);
+  return errors;
+}
+
+async function readWorkspaceSchemaContract() {
+  if (workspaceSchemaContractPromise) {
+    return workspaceSchemaContractPromise;
+  }
+
+  workspaceSchemaContractPromise = (async () => {
+    const response = await fetch(WORKSPACE_MANIFEST_SCHEMA_PATH, { cache: "no-store" });
+    if (!response.ok) {
+      throw new Error(`workspace schema fetch failed status=${response.status}`);
+    }
+    const workspaceSchema = await response.json();
+    const toolsNode = isPlainObject(workspaceSchema?.properties?.tools)
+      ? workspaceSchema.properties.tools
+      : null;
+    const toolProps = isPlainObject(toolsNode?.properties) ? toolsNode.properties : {};
+    const requiredWorkspaceToolKeys = Array.isArray(toolsNode?.required)
+      ? toolsNode.required
+          .map((entry) => normalizeToken(entry))
+          .filter(Boolean)
+      : [];
+    const toolSchemaByWorkspaceKey = new Map();
+    const allowedWorkspaceToolKeys = [];
+
+    const workspaceSchemaUrl = new URL(WORKSPACE_MANIFEST_SCHEMA_PATH, window.location.origin);
+    const propertyEntries = Object.entries(toolProps);
+    for (const [rawKey, rawNode] of propertyEntries) {
+      const normalizedWorkspaceKey = normalizeToken(rawKey);
+      if (!normalizedWorkspaceKey) {
+        continue;
+      }
+      allowedWorkspaceToolKeys.push(normalizedWorkspaceKey);
+      if (!isPlainObject(rawNode) || typeof rawNode.$ref !== "string") {
+        continue;
+      }
+      const ref = rawNode.$ref.trim();
+      if (!ref) {
+        continue;
+      }
+      let toolSchema = null;
+      if (ref.startsWith("#/")) {
+        toolSchema = resolveJsonPointer(workspaceSchema, ref);
+      } else {
+        const toolSchemaUrl = new URL(ref, workspaceSchemaUrl);
+        const toolSchemaResponse = await fetch(toolSchemaUrl.toString(), { cache: "no-store" });
+        if (!toolSchemaResponse.ok) {
+          throw new Error(`tool schema fetch failed key=${normalizedWorkspaceKey} status=${toolSchemaResponse.status}`);
+        }
+        toolSchema = await toolSchemaResponse.json();
+      }
+      if (isPlainObject(toolSchema)) {
+        toolSchemaByWorkspaceKey.set(normalizedWorkspaceKey, toolSchema);
+      }
+    }
+
+    return {
+      workspaceSchemaPath: WORKSPACE_MANIFEST_SCHEMA_PATH,
+      allowedWorkspaceToolKeys,
+      requiredWorkspaceToolKeys,
+      toolSchemaByWorkspaceKey
+    };
+  })();
+
+  return workspaceSchemaContractPromise;
+}
+
 function readSamplePresetPathFromQuery() {
   const searchParams = new URL(window.location.href).searchParams;
   return normalizeLocalHrefParam(
@@ -172,11 +411,14 @@ function isWorkspaceManifestSource(rawSource) {
   return documentKind === WORKSPACE_DOCUMENT_KIND || schema === WORKSPACE_MANIFEST_SCHEMA;
 }
 
-function classifyWorkspaceManifestTools(rawSource) {
+function classifyWorkspaceManifestTools(rawSource, schemaContract = null) {
   if (!isWorkspaceManifestSource(rawSource)) {
     return {
       recognized: false,
       discoveredKeys: [],
+      normalizedKeys: [],
+      registryMatchedKeys: [],
+      schemaValidatedKeys: [],
       acceptedToolIds: [],
       rejected: [
         {
@@ -194,6 +436,9 @@ function classifyWorkspaceManifestTools(rawSource) {
     return {
       recognized: true,
       discoveredKeys: [],
+      normalizedKeys: [],
+      registryMatchedKeys: [],
+      schemaValidatedKeys: [],
       acceptedToolIds: [],
       rejected: [
         {
@@ -205,9 +450,51 @@ function classifyWorkspaceManifestTools(rawSource) {
   }
 
   const discoveredKeys = Object.keys(toolsBlock);
+  const normalizedKeys = [];
+  const registryMatchedKeys = [];
+  const schemaValidatedKeys = [];
   const acceptedToolIds = [];
   const acceptedSeen = new Set();
   const rejected = [];
+  const allowedWorkspaceToolKeys = new Set(
+    Array.isArray(schemaContract?.allowedWorkspaceToolKeys)
+      ? schemaContract.allowedWorkspaceToolKeys
+      : []
+  );
+  const requiredWorkspaceToolKeys = new Set(
+    Array.isArray(schemaContract?.requiredWorkspaceToolKeys)
+      ? schemaContract.requiredWorkspaceToolKeys
+      : []
+  );
+  const toolSchemaByWorkspaceKey = schemaContract?.toolSchemaByWorkspaceKey instanceof Map
+    ? schemaContract.toolSchemaByWorkspaceKey
+    : new Map();
+  const hasSchemaContract = allowedWorkspaceToolKeys.size > 0 && toolSchemaByWorkspaceKey.size > 0;
+  if (!hasSchemaContract) {
+    discoveredKeys.forEach((key) => {
+      const normalizedKey = normalizeToken(key);
+      const mappedToolId = WORKSPACE_SPECIAL_TOOL_KEY_MAP[normalizedKey] || normalizedKey;
+      normalizedKeys.push({
+        rawKey: key,
+        normalizedKey,
+        mappedToolId
+      });
+      rejected.push({
+        key,
+        reason: "workspace-tool-schema-contract-unavailable"
+      });
+    });
+    return {
+      recognized: true,
+      discoveredKeys,
+      normalizedKeys,
+      registryMatchedKeys,
+      schemaValidatedKeys,
+      acceptedToolIds,
+      rejected,
+      schemaValidationSource: "unavailable"
+    };
+  }
 
   discoveredKeys.forEach((rawKey) => {
     const key = normalizeTextParam(rawKey);
@@ -218,11 +505,17 @@ function classifyWorkspaceManifestTools(rawSource) {
 
     const normalizedKey = key.toLowerCase();
     const mappedToolId = WORKSPACE_SPECIAL_TOOL_KEY_MAP[normalizedKey] || normalizedKey;
+    normalizedKeys.push({
+      rawKey: key,
+      normalizedKey,
+      mappedToolId
+    });
     const toolEntry = getToolHostEntryById(manifest, mappedToolId);
     if (!toolEntry) {
       rejected.push({ key, reason: "unsupported-tool-key" });
       return;
     }
+    registryMatchedKeys.push(key);
 
     const rawToolEntry = toolsBlock[rawKey];
     if (!rawToolEntry || typeof rawToolEntry !== "object" || Array.isArray(rawToolEntry)) {
@@ -245,17 +538,62 @@ function classifyWorkspaceManifestTools(rawSource) {
       return;
     }
 
+    if (hasSchemaContract) {
+      if (!allowedWorkspaceToolKeys.has(normalizedKey)) {
+        rejected.push({
+          key,
+          reason: `tool-key-not-allowed-by-workspace-schema(${normalizedKey})`
+        });
+        return;
+      }
+      const toolSchema = toolSchemaByWorkspaceKey.get(normalizedKey);
+      if (!toolSchema) {
+        rejected.push({
+          key,
+          reason: `tool-schema-missing-for-key(${normalizedKey})`
+        });
+        return;
+      }
+      const schemaErrors = validateJsonValueAgainstSchema(rawToolEntry, toolSchema, toolSchema);
+      if (schemaErrors.length > 0) {
+        rejected.push({
+          key,
+          reason: `tool-entry-schema-invalid(${schemaErrors.slice(0, 3).join("; ")})`
+        });
+        return;
+      }
+      schemaValidatedKeys.push(key);
+    }
+
     if (!acceptedSeen.has(expectedToolId)) {
       acceptedSeen.add(expectedToolId);
       acceptedToolIds.push(expectedToolId);
     }
   });
 
+  const discoveredNormalizedKeys = new Set(
+    normalizedKeys
+      .map((entry) => entry.normalizedKey)
+      .filter(Boolean)
+  );
+  requiredWorkspaceToolKeys.forEach((requiredKey) => {
+    if (!discoveredNormalizedKeys.has(requiredKey)) {
+      rejected.push({
+        key: requiredKey,
+        reason: `required-workspace-tool-key-missing(${requiredKey})`
+      });
+    }
+  });
+
   return {
     recognized: true,
     discoveredKeys,
+    normalizedKeys,
+    registryMatchedKeys,
+    schemaValidatedKeys,
     acceptedToolIds,
-    rejected
+    rejected,
+    schemaValidationSource: hasSchemaContract ? WORKSPACE_MANIFEST_SCHEMA_PATH : "unavailable"
   };
 }
 
@@ -265,32 +603,47 @@ async function readWorkspaceManifestToolDiagnosticsFromSamplePreset(samplePreset
     return null;
   }
   try {
+    const schemaContract = await readWorkspaceSchemaContract().catch((error) => ({
+      schemaContractError: error instanceof Error ? error.message : "unknown-schema-contract-error"
+    }));
     const response = await fetch(normalizedPath, { cache: "no-store" });
     if (!response.ok) {
       return {
         sourcePath: normalizedPath,
         recognized: false,
         discoveredKeys: [],
+        normalizedKeys: [],
+        registryMatchedKeys: [],
+        schemaValidatedKeys: [],
         acceptedToolIds: [],
+        visibleToolIds: [],
         rejected: [
           {
             key: "",
             reason: `fetch-failed(status=${response.status})`
           }
-        ]
+        ],
+        schemaContractError: schemaContract?.schemaContractError || ""
       };
     }
     const rawSource = await response.json();
+    const classifications = classifyWorkspaceManifestTools(rawSource, schemaContract);
     return {
       sourcePath: normalizedPath,
-      ...classifyWorkspaceManifestTools(rawSource)
+      ...classifications,
+      visibleToolIds: [],
+      schemaContractError: schemaContract?.schemaContractError || ""
     };
   } catch (error) {
     return {
       sourcePath: normalizedPath,
       recognized: false,
       discoveredKeys: [],
+      normalizedKeys: [],
+      registryMatchedKeys: [],
+      schemaValidatedKeys: [],
       acceptedToolIds: [],
+      visibleToolIds: [],
       rejected: [
         {
           key: "",
@@ -307,12 +660,15 @@ function logWorkspaceManifestToolDiagnostics(diagnostics) {
   }
   const source = diagnostics.sourcePath || "(unknown source)";
   console.info(
-    `[WorkspaceManager] workspace manifest tools source=${source} discovered=${diagnostics.discoveredKeys.join(", ") || "(none)"} accepted=${diagnostics.acceptedToolIds.join(", ") || "(none)"}`
+    `[WorkspaceManager] workspace manifest tools source=${source} discovered=${diagnostics.discoveredKeys.join(", ") || "(none)"} normalized=${Array.isArray(diagnostics.normalizedKeys) ? diagnostics.normalizedKeys.map((entry) => `${entry.rawKey}->${entry.mappedToolId}`).join(", ") : "(none)"} registryMatched=${diagnostics.registryMatchedKeys.join(", ") || "(none)"} schemaValidated=${diagnostics.schemaValidatedKeys.join(", ") || "(none)"} accepted=${diagnostics.acceptedToolIds.join(", ") || "(none)"} visible=${diagnostics.visibleToolIds.join(", ") || "(none)"}`
   );
   if (diagnostics.rejected.length > 0) {
     console.warn(
       `[WorkspaceManager] workspace manifest rejected tool keys: ${diagnostics.rejected.map((entry) => `${entry.key || "(none)"}:${entry.reason}`).join(" | ")}`
     );
+  }
+  if (diagnostics.schemaContractError) {
+    console.warn(`[WorkspaceManager] workspace schema contract unavailable: ${diagnostics.schemaContractError}`);
   }
 }
 
@@ -662,20 +1018,24 @@ function syncSelectedToolState(initialToolId) {
 }
 
 function applyToolsUsedFilterForGame(gameEntry, preferredToolId = "", workspaceToolFilterIds = null) {
-  const baseToolIds = !gameEntry
-    ? [...allToolIds]
-    : normalizeToolsUsedList(gameEntry.toolsUsed)
-      .filter((toolId) => !!getToolHostEntryById(manifest, toolId));
-
   if (Array.isArray(workspaceToolFilterIds)) {
+    const workspaceScopedToolIds = [...allToolIds];
     if (workspaceToolFilterIds.length === 0) {
       toolIds = [];
     } else {
       const allowedFromWorkspace = new Set(workspaceToolFilterIds);
-      toolIds = baseToolIds.filter((toolId) => allowedFromWorkspace.has(toolId));
+      toolIds = workspaceScopedToolIds.filter((toolId) => allowedFromWorkspace.has(toolId));
     }
   } else {
+    const baseToolIds = !gameEntry
+      ? [...allToolIds]
+      : normalizeToolsUsedList(gameEntry.toolsUsed)
+        .filter((toolId) => !!getToolHostEntryById(manifest, toolId));
     toolIds = baseToolIds;
+  }
+
+  if (workspaceManifestToolDiagnostics) {
+    workspaceManifestToolDiagnostics.visibleToolIds = [...toolIds];
   }
 
   const initialToolId = toolIds.includes(preferredToolId) ? preferredToolId : "";

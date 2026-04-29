@@ -1,1 +1,1 @@
-Update Workspace loader to consume strict tools manifest payloads - PR 11.20
+Detect present Workspace tools from strict manifest.tools payloads - PR 11.21
