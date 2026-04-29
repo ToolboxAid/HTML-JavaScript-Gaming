@@ -2,7 +2,8 @@ param(
   [string]$SamplesRoot = "$PSScriptRoot\..\..\samples",
   [string]$OutputPath = "docs/dev/reports/sample_json_js_reference_audit.csv",
   [switch]$FailOnMissing,
-  [switch]$Details
+  [switch]$Details,
+  [switch]$Ci
 )
 
 Set-StrictMode -Version Latest
@@ -172,8 +173,11 @@ Write-Host "Missing reference: $($missing.Count)"
 Write-Host "Report: $OutputPath"
 
 if (-not $Details) {
-  if ($FailOnMissing -and $missing.Count -gt 0) {
+  if (($FailOnMissing -or $Ci) -and $missing.Count -gt 0) {
     exit 1
+  }
+  if ($Ci) {
+    exit 0
   }
   return
 }
@@ -186,6 +190,10 @@ if ($missing.Count -gt 0) {
   }
 }
 
-if ($FailOnMissing -and $missing.Count -gt 0) {
+if (($FailOnMissing -or $Ci) -and $missing.Count -gt 0) {
   exit 1
+}
+
+if ($Ci) {
+  exit 0
 }

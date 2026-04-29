@@ -1,1 +1,1 @@
-Close remaining sample JSON audit gaps with palette/reference stabilization - PR 11.67
+Lock sample JSON audit output and CI regression guard - PR 11.68

@@ -1,8 +1,8 @@
-# Codex Commands — PR 11.67
+# Codex Command — PR 11.68
 
 Model: GPT-5.4
 Reasoning: high
 
 ```powershell
-codex --model gpt-5.4 --reasoning high "Run BUILD_PR_LEVEL_11_67_FINAL_SAMPLE_JSON_AUDIT_CLOSURE. Use docs/dev/reports/sample_json_js_reference_audit.csv as source of truth. Close remaining missing sample JSON references by generating palette JSON from existing sample JS color data, wiring existing/generated JSON through the existing loader pattern, removing stale metadata-only references, and documenting exact unresolved blockers. Keep changes surgical. Do not run full samples suite. Produce a ZIP at tmp/PR_11_67_FINAL_SAMPLE_JSON_AUDIT_CLOSURE.zip."
+codex exec --model gpt-5.4 --reasoning high "Apply docs/pr/PR_11_68_SAMPLE_JSON_AUDIT_LOCKDOWN.md exactly. Update only the audit script and required report files. Make default output counts-only, keep -Details for full listing, add -Ci failure mode for missing references, preserve CSV generation, run the listed validation commands, and write docs/dev/reports/PR_11_68_sample_json_audit_lockdown_report.md. Do not run the full samples suite."
 ```
