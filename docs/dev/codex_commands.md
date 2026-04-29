@@ -2,31 +2,23 @@ MODEL: GPT-5.3-codex
 REASONING: high
 
 TASK:
-Apply PR 11.47.
+Apply PR 11.48.
 
-Classify complex JSON files from the audit (especially palette.json and tile-map docs).
+Use script output:
+scripts/PS/audit-sample-json-js-references.ps1
 
-Do NOT change code or JSON in this PR.
+Select 1–3 JSON files marked NO.
 
-For each selected JSON:
-- determine if it is loaded indirectly (manifest/workspace/tool loader)
-- confirm visible effect in UI
-- classify as:
-  INDIRECTLY USED
-  UNUSED
-  UNCERTAIN
-
-Focus areas:
-- samples/**/sample.*.palette.json
-- samples/**/sample-*-tile-map-editor-document.json
+For each:
+- manually verify usage
+- apply ONLY if obvious
 
 Do NOT:
-- delete or move files
-- modify tools
-- run full samples test
+- touch palette files
+- touch tile-map docs
+- touch sample 1902
+- run full sample suite
 
 Validation:
-No runtime changes expected.
-
-Output:
-docs/dev/reports/PR_11_47_complex_json_classification.md
+- node --check changed files
+- targeted checks only

@@ -1,0 +1,50 @@
+PR 11.48 Validation
+
+Scope
+- Used script output from scripts/PS/audit-sample-json-js-references.ps1
+- Selected 3 JSON files marked NO (non-palette, non-tile-map-doc, non-1902)
+
+Selected NO files and manual verification
+1) samples/phase-05/0510/sample.0510.asset-pipeline-tool.json
+   - Manual verification: INDIRECTLY USED
+   - Evidence:
+     - samples/metadata/samples.index.metadata.json maps sample 0510 roundtrip preset to this path
+     - samples/shared/sampleDetailPageEnhancement.js forwards roundtrip preset path as samplePresetPath
+     - tools/Asset Pipeline Tool/main.js loads samplePresetPath via fetch and shows loaded preset status
+   - Action: no change (already correctly wired)
+
+2) samples/phase-05/0512/sample.0512.performance-profiler.json
+   - Manual verification: INDIRECTLY USED
+   - Evidence:
+     - metadata roundtrip preset mapping exists for sample 0512 -> performance-profiler JSON
+     - sample detail launcher forwards samplePresetPath
+     - tools/Performance Profiler/main.js loads samplePresetPath via fetch and sets loaded preset status
+   - Action: no change (already correctly wired)
+
+3) samples/phase-07/0708/sample.0708.replay-visualizer.json
+   - Manual verification: INDIRECTLY USED
+   - Evidence:
+     - metadata roundtrip preset mapping exists for sample 0708 -> replay-visualizer JSON
+     - sample detail launcher forwards samplePresetPath
+     - tools/Replay Visualizer/main.js loads samplePresetPath via fetch and sets loaded preset status
+   - Action: no change (already correctly wired)
+
+Why no file edits were applied
+- PR rule: apply ONLY if obvious.
+- For all three selected NO entries, indirect ownership/wiring is already valid; the audit script’s NO result reflects missing direct same-sample JS string references, not missing runtime usage.
+
+Validation
+- node --check changed files
+  - No JavaScript files changed in this PR.
+  - Result: N/A
+
+- Targeted checks only
+  1) node ./tests/runtime/LaunchSmokeAllEntries.test.mjs --samples --sample-range=0510-0510
+     Result: PASS
+  2) node ./tests/runtime/LaunchSmokeAllEntries.test.mjs --samples --sample-range=0512-0512
+     Result: PASS
+  3) node ./tests/runtime/LaunchSmokeAllEntries.test.mjs --samples --sample-range=0708-0708
+     Result: PASS
+
+Full suite
+- Not run (per PR instruction: no full sample suite by default)
