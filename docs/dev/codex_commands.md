@@ -1,15 +1,8 @@
-# Codex Commands — PR 11.62
+# Codex Commands — PR 11.64
 
 Model: GPT-5.4
 Reasoning: high
 
 ```powershell
-codex "Run BUILD_PR_LEVEL_11_62_MISSING_REFERENCE_REPAIR. Read docs/dev/reports/sample_json_js_reference_audit.csv. Fix the current stalled audit state by repairing stale missing references, especially metadata/index-only and manifest-only references. Do not perform blind bulk deletes. Reduce Missing reference count from 27 if possible. Write docs/dev/reports/pr_11_62_missing_reference_repair_report.md with before/after counts, rows fixed, files changed, blocked rows, and targeted validation. Do not run the full samples suite. Return a ZIP artifact at tmp/PR_11_62_MISSING_REFERENCE_REPAIR.zip." 
-```
-
-## Validation Commands
-
-```powershell
-.\scripts\PS\audit-sample-json-js-references.ps1
-Import-Csv .\docs\dev\reports\sample_json_js_reference_audit.csv | Group-Object Status | Select-Object Name,Count
+codex exec --model gpt-5.4 --reasoning high "Run BUILD_PR_LEVEL_11_64_MISSING_REFERENCE_REPAIR_AND_AUDIT_COUNTS_ONLY. Use docs/dev/reports/sample_json_js_reference_audit.csv as source of truth. Repair the 24 remaining missing sample JSON references where safe, remove stale metadata/index-only references, update scripts/PS/audit-sample-json-js-references.ps1 so default output stops after counts/report path, preserve optional detailed output behind -Details, run targeted audit validation only, and write before/after evidence under docs/dev/reports. Do not run the full sample suite. Do not rewrite roadmap text. Package the result as <project folder>/tmp/PR_11_64_MISSING_REFERENCE_REPAIR_AND_AUDIT_COUNTS_ONLY.zip."
 ```

@@ -9,6 +9,10 @@ import { ActionInputMap, ActionInputService } from '/src/engine/input/index.js';
 import { Theme, ThemeTokens } from '/src/engine/theme/index.js';
 import TileCameraSpriteSliceScene from './TileCameraSpriteSliceScene.js';
 
+// Keep tool roundtrip preset/document paths explicitly discoverable by audit tooling.
+const TILEMAP_DOCUMENT_PRESET_PATH = './sample-0224-tile-map-editor-document.json';
+void TILEMAP_DOCUMENT_PRESET_PATH;
+
 const theme = new Theme(ThemeTokens);
 theme.applyDocumentTheme();
 

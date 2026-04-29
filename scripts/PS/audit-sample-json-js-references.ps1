@@ -1,7 +1,8 @@
 param(
   [string]$SamplesRoot = "$PSScriptRoot\..\..\samples",
   [string]$OutputPath = "docs/dev/reports/sample_json_js_reference_audit.csv",
-  [switch]$FailOnMissing
+  [switch]$FailOnMissing,
+  [switch]$Details
 )
 
 Set-StrictMode -Version Latest
@@ -37,6 +38,12 @@ function Get-SampleRootForFile {
   if ($parts.Count -lt 2) {
     return $null
   }
+
+  # Handle JSON files directly under a first-level folder (for example samples/metadata/*.json).
+  if ($parts.Count -eq 2 -and [System.IO.Path]::GetExtension($parts[1]) -eq '.json') {
+    return Join-Path $SamplesRootFull $parts[0]
+  }
+
   return Join-Path $SamplesRootFull (Join-Path $parts[0] $parts[1])
 }
 
@@ -104,7 +111,9 @@ foreach ($json in $jsonFiles) {
   $jsonRelFromCwd = Get-RelativePath -BasePath (Get-Location).Path -TargetPath $json.FullName
 
   if (-not $sampleRoot -or -not (Test-Path -LiteralPath $sampleRoot)) {
-    Write-Host "NO  - $jsonRelFromCwd"
+    if ($Details) {
+      Write-Host "NO  - $jsonRelFromCwd"
+    }
     $rows.Add([pscustomobject]@{
       SampleRoot = ""
       JsonPath = $jsonRelFromCwd
@@ -124,7 +133,9 @@ foreach ($json in $jsonFiles) {
 
   if ($matches.Count -gt 0) {
     $first = $matches[0]
-    Write-Host ("YES - {0} -> {1}" -f $jsonRelFromCwd, $first.ReferencedBy)
+    if ($Details) {
+      Write-Host ("YES - {0} -> {1}" -f $jsonRelFromCwd, $first.ReferencedBy)
+    }
     $rows.Add([pscustomobject]@{
       SampleRoot = Get-RelativePath -BasePath (Get-Location).Path -TargetPath $sampleRoot
       JsonPath = $jsonRelFromCwd
@@ -134,7 +145,9 @@ foreach ($json in $jsonFiles) {
       Note = if ($matches.Count -gt 1) { "Multiple JS references found" } else { "" }
     })
   } else {
-    Write-Host "NO  - $jsonRelFromCwd"
+    if ($Details) {
+      Write-Host "NO  - $jsonRelFromCwd"
+    }
     $rows.Add([pscustomobject]@{
       SampleRoot = Get-RelativePath -BasePath (Get-Location).Path -TargetPath $sampleRoot
       JsonPath = $jsonRelFromCwd
@@ -157,6 +170,13 @@ Write-Host "JSON files scanned: $($rows.Count)"
 Write-Host "Referenced: $($rows.Count - $missing.Count)"
 Write-Host "Missing reference: $($missing.Count)"
 Write-Host "Report: $OutputPath"
+
+if (-not $Details) {
+  if ($FailOnMissing -and $missing.Count -gt 0) {
+    exit 1
+  }
+  return
+}
 
 if ($missing.Count -gt 0) {
   Write-Host ""
