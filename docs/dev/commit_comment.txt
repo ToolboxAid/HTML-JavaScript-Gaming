@@ -1,1 +1,1 @@
-Bind fullscreen chrome to active tool name and description - PR 11.29
+Componentize Workspace Manager status block and clean shared asset display - PR 11.30

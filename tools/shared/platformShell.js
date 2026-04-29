@@ -1725,26 +1725,7 @@ function renderSharedActionLinks(currentToolId) {
     .join("");
 }
 
-function renderSharedSelectionSummary() {
-  if (getPageMode() === "landing") {
-    return "";
-  }
-  const workspaceLabel = resolveProjectBindingLabel();
-  const asset = readSharedAssetHandoff();
-  const palette = readSharedPaletteHandoff();
-  const assetLabel = asset?.displayName || "No shared asset selected";
-  const paletteLabel = palette?.displayName || "No shared palette selected";
-
-  return `
-    <div class="tools-platform-frame__shared-status" aria-label="Shared asset and palette status">
-      <span><strong>Workspace:</strong> ${escapeHtml(workspaceLabel)}</span>
-      <span><strong>Shared Palette:</strong> ${escapeHtml(paletteLabel)}</span>
-      <span><strong>Shared Assets:</strong> ${escapeHtml(assetLabel)}</span>
-    </div>
-  `;
-}
-
-function renderWorkspaceSummary(currentTool) {
+function renderWorkspaceStatusHeaderBlock(currentTool) {
   if (!currentTool || !workspaceController) {
     return "";
   }
@@ -1759,23 +1740,43 @@ function renderWorkspaceSummary(currentTool) {
   const readiness = manifest?.tools?.[currentTool.id]
     ? "shared workspace state synced"
     : "shared workspace shell ready";
+  const workspaceLabel = resolveProjectBindingLabel();
+  const asset = readSharedAssetHandoff();
+  const palette = readSharedPaletteHandoff();
+  const paletteLabel = palette?.displayName || "No shared palette selected";
+  const hasMeaningfulSharedAsset = Boolean(asset && (
+    normalizeTextValue(asset.displayName)
+    || normalizeTextValue(asset.assetId)
+    || normalizeTextValue(asset.sourcePath)
+  ));
+  const sharedAssetLine = hasMeaningfulSharedAsset
+    ? `<span><strong>Shared Assets:</strong> ${escapeHtml(asset.displayName || asset.assetId || "Selected shared asset")}</span>`
+    : "";
 
   return `
-    <div class="tools-platform-frame__project" aria-label="Workspace system controls">
-      <div class="tools-platform-frame__project-actions">
-        <button type="button" class="tools-platform-frame__project-button" data-workspace-action="new">New Workspace</button>
-        <button type="button" class="tools-platform-frame__project-button" data-workspace-action="open">Open Workspace</button>
-        <button type="button" class="tools-platform-frame__project-button" data-workspace-action="save"${workspaceActionDisabled}>Save Workspace</button>
-        <button type="button" class="tools-platform-frame__project-button" data-workspace-action="save-as"${workspaceActionDisabled}>Save Workspace As</button>
-        <button type="button" class="tools-platform-frame__project-button is-secondary" data-workspace-action="close"${workspaceActionDisabled}>Close Workspace</button>
-        <input type="file" class="tools-platform-frame__project-input" data-workspace-open-input accept=".json,application/json" />
+    <div class="tools-platform-frame__workspace-status-block" aria-label="Workspace status and tool switch controls">
+      <div class="tools-platform-frame__project" aria-label="Workspace system controls">
+        <div class="tools-platform-frame__project-actions">
+          <button type="button" class="tools-platform-frame__project-button" data-workspace-action="new">New Workspace</button>
+          <button type="button" class="tools-platform-frame__project-button" data-workspace-action="open">Open Workspace</button>
+          <button type="button" class="tools-platform-frame__project-button" data-workspace-action="save"${workspaceActionDisabled}>Save Workspace</button>
+          <button type="button" class="tools-platform-frame__project-button" data-workspace-action="save-as"${workspaceActionDisabled}>Save Workspace As</button>
+          <button type="button" class="tools-platform-frame__project-button is-secondary" data-workspace-action="close"${workspaceActionDisabled}>Close Workspace</button>
+          <input type="file" class="tools-platform-frame__project-input" data-workspace-open-input accept=".json,application/json" />
+        </div>
+      <div class="tools-platform-frame__shared-status" aria-label="Shared asset and palette status">
+        <span><strong>Workspace:</strong> ${escapeHtml(workspaceLabel)}</span>
+        <span><strong>Shared Palette:</strong> ${escapeHtml(paletteLabel)}</span>
+        ${sharedAssetLine}
+      </div>           
+        <div class="tools-platform-frame__project-copy">
+          <span class="tools-platform-frame__project-label">Workspace</span>
+          <strong class="tools-platform-frame__project-name">${escapeHtml(workspaceName)}${escapeHtml(dirtyMark)}</strong>
+          <span class="tools-platform-frame__project-meta">${escapeHtml(readiness)}</span>
+        </div>       
+        <section class="tool-host-pager" aria-label="Workspace tool pager" data-tool-host-pager><button type="button" class="tool-host-pager__button" data-tool-host-prev>PREV</button><span class="tool-host-pager__name" data-tool-host-current-label>${escapeHtml(currentTool?.displayName || "Tool")}</span><button type="button" class="tool-host-pager__button" data-tool-host-next>NEXT</button></section>
       </div>
-      <div class="tools-platform-frame__project-copy">
-        <span class="tools-platform-frame__project-label">Workspace</span>
-        <strong class="tools-platform-frame__project-name">${escapeHtml(workspaceName)}${escapeHtml(dirtyMark)}</strong>
-        <span class="tools-platform-frame__project-meta">${escapeHtml(readiness)}</span>
-      </div>       
-      <section class="tool-host-pager" aria-label="Workspace tool pager" data-tool-host-pager><button type="button" class="tool-host-pager__button" data-tool-host-prev>PREV</button><span class="tool-host-pager__name" data-tool-host-current-label>${escapeHtml(currentTool?.displayName || "Tool")}</span><button type="button" class="tool-host-pager__button" data-tool-host-next>NEXT</button></section>
+    
     </div>
   `;
 }
@@ -1867,8 +1868,7 @@ function renderHeaderMarkup(currentTool, isHeaderExpanded) {
                   ${sharedActionLinks}
                 </div>
               ` : ""}
-              ${renderWorkspaceSummary(currentTool)}
-              ${renderSharedSelectionSummary()}
+              ${renderWorkspaceStatusHeaderBlock(currentTool)}
             </div>
             ` : ""}
             ${!isLanding ? `<hr class="tools-platform-frame__divider" />` : ""}

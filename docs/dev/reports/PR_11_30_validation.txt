@@ -1,0 +1,27 @@
+PR 11.30 Validation Report
+
+Changed files:
+- tools/shared/platformShell.js
+- docs/dev/reports/PR_11_30_validation.txt
+
+Render block/function name:
+- renderWorkspaceStatusHeaderBlock(currentTool)
+
+Shared Assets display rule:
+- Shared Assets line is rendered only when meaningful shared asset handoff data exists.
+- Meaningful data check: shared asset handoff object contains a non-empty displayName, assetId, or sourcePath.
+- If no shared asset handoff exists (sample 1902 expected case), Shared Assets line is hidden.
+- No fake/default shared assets are created, and absence is not treated as an error.
+
+Validation results:
+- node --check tools/shared/platformShell.js -> PASS
+- node ./tests/runtime/LaunchSmokeAllEntries.test.mjs --samples --sample-range=1902-1902 --tools -> PASS
+  - Summary: PASS=19 FAIL=0 TOTAL=19
+
+Manual validation notes:
+- Manual browser check is still required in UI session for visual confirmation.
+- Expected for sample 1902 in Workspace Manager:
+  - Workspace status/header content remains visible from one shared render path.
+  - Shared Palette shows "Sample 1902 Workspace Palette" when available.
+  - Shared Assets line is not shown as permanent "No shared asset selected" noise when there is no shared selected asset concept.
+  - Tools remain visible/openable.

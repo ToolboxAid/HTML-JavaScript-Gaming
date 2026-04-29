@@ -1,0 +1,23 @@
+# PR 11.30 Validation
+
+Changed files:
+-
+
+Render block/function:
+-
+
+Shared Assets display rule:
+-
+
+Before:
+- Workspace status/header content was scattered and Shared Assets always showed No shared asset selected.
+
+After:
+- Workspace status/header content is owned by one render block/path and Shared Assets is only shown when meaningful.
+
+Validation:
+- node --check tools/shared/platformShell.js
+- node ./tests/runtime/LaunchSmokeAllEntries.test.mjs --samples --sample-range=1902-1902 --tools
+
+Manual:
+- sample 1902 -> Workspace Manager

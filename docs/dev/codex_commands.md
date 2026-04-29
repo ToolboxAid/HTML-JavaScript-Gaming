@@ -2,52 +2,58 @@ MODEL: GPT-5.3-codex
 REASONING: medium
 
 TASK:
-Apply PR 11.29.
+Apply PR 11.30.
 
-Fix fullscreen chrome/title binding so entering fullscreen shows:
+Move the Workspace Manager status/header fields into one shared render block/component so we can rearrange it later without hunting through scattered code.
 
-<tool name> - <description>
+Target visible content currently similar to:
+Workspace
+sample-0901-vector-map
+shared workspace state synced
+PREV
+Parallax Scene Studio
+NEXT
+Workspace: Loaded
+Shared Palette: Sample 1902 Workspace Palette
+Shared Assets: No shared asset selected
 
-instead of:
+Required behavior:
+- Consolidate this into one render path/component/function.
+- Preserve current working Workspace Manager behavior.
+- Preserve full tool display.
+- Preserve child tool launch/palette handoff behavior.
+- Do not change payload schema.
 
-Configuration error (open title for details)
-
-Use the active tool's real manifest metadata. Do not hardcode individual tool names/descriptions.
+Shared Assets rule:
+- "Shared Assets: No shared asset selected" should not be shown as a permanent noisy status for sample 1902 if there is no shared selected asset concept.
+- Show Shared Assets only when the workspace actually provides meaningful shared asset selection/data.
+- Do not create fake shared assets.
+- Do not use hidden defaults.
+- Do not treat absent shared assets as an error.
 
 Do NOT:
-- change fullscreen enter/exit mechanics
-- change Workspace Manager payload fan-out
+- change fullscreen title/description logic unless required by shared status rendering
+- change workspace fan-out
 - change button enablement
-- change sample 1902 data/schema
-- add hidden defaults or fallback sample data
+- change tool payload handoff
 - touch start_of_day folders
-
-Implementation guidance:
-1. Find the fullscreen title/header/chrome rendering path.
-2. Find where the configuration-error fallback is selected.
-3. Trace the active tool ID used when fullscreen is entered.
-4. Resolve tool display name and description from the same manifest/tool metadata source used by normal shell rendering.
-5. Only use configuration-error fallback when metadata is genuinely invalid/missing.
-6. Keep the change surgical.
+- add broad refactors
 
 Validation:
 node --check tools/shared/platformShell.js
 node ./tests/runtime/LaunchSmokeAllEntries.test.mjs --samples --sample-range=1902-1902 --tools
 
 Manual validation:
-Open sample 1902.
-Open Workspace Manager.
-Open a tool.
-Enter fullscreen.
-Confirm title area shows:
-<tool name> - <description>
-and not:
-Configuration error (open title for details)
+Open sample 1902 -> Workspace Manager.
+Confirm:
+- workspace status/header content still appears
+- Shared Palette shows Sample 1902 Workspace Palette
+- Shared Assets does not show misleading permanent "No shared asset selected" unless the UI intentionally shows neutral optional status
+- all expected tools still visible/openable
 
 REPORT:
-Write docs/dev/reports/PR_11_29_validation.txt with:
+Write docs/dev/reports/PR_11_30_validation.txt with:
 - changed files
-- root cause
-- metadata source used
-- validation commands/results
-- manual validation notes
+- render block/function name
+- Shared Assets display rule
+- validation results
