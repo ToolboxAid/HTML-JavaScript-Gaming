@@ -1,0 +1,16 @@
+# PR 11.45 Validation
+
+## Changed Files
+- scripts/audit-sample-json-js-references.ps1
+
+## Targeted Tests Run
+- powershell -ExecutionPolicy Bypass -File scripts/audit-sample-json-js-references.ps1
+
+## Full Samples Smoke
+Skipped.
+
+Reason:
+- Utility script only; no runtime/sample behavior changed.
+
+## Result
+-
