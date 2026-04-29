@@ -372,7 +372,7 @@ function readExpectedMetadataSets() {
           const spriteEntries = manifest?.tools?.["sprite-editor"]?.sprites;
           const tileMapEntries = manifest?.tools?.["tile-map-editor"]?.maps;
           const parallaxEntries = manifest?.tools?.["parallax-editor"]?.parallaxLevels;
-          const vectorEntries = manifest?.tools?.["vector-asset-studio"]?.vectors;
+          const vectorEntries = manifest?.tools?.["svg-asset-studio"]?.vectors;
           const assetBrowserMediaEntries = manifest?.tools?.["asset-browser"]?.assets?.media;
 
           const countEntries = (value) => {
@@ -809,13 +809,13 @@ export async function run() {
       const gravityVectorUrl = new URL("/tools/Workspace%20Manager/index.html", baseUrl);
       gravityVectorUrl.searchParams.set("gameId", "GravityWell");
       gravityVectorUrl.searchParams.set("mount", "game");
-      gravityVectorUrl.searchParams.set("tool", "vector-asset-studio");
+      gravityVectorUrl.searchParams.set("tool", "svg-asset-studio");
 
       await page.navigate(gravityVectorUrl.toString());
       await wait(1200);
       const vectorFrameReady = await waitForMountedToolFrame(page);
       if (!vectorFrameReady) {
-        assetPresenceFailures.push("GravityWell vector binding check failed: Vector Asset Studio frame did not mount.");
+        assetPresenceFailures.push("GravityWell vector binding check failed: SVG Asset Studio frame did not mount.");
       } else {
         const vectorState = await inspectVectorAssetSelectionState(page);
         gravityWellVectorBindingCheck = {
@@ -826,7 +826,7 @@ export async function run() {
         };
 
         if (vectorState.paletteSelectedFalse) {
-          assetPresenceFailures.push("GravityWell vector binding check failed: Vector Asset Studio reported Palette Selected: false.");
+          assetPresenceFailures.push("GravityWell vector binding check failed: SVG Asset Studio reported Palette Selected: false.");
         }
         if (gravityWellExpectation.expectedVectorStrokeEnabled === true && vectorState.strokeSelectedFalse) {
           assetPresenceFailures.push("GravityWell vector binding check failed: stroke-enabled vector reported Stroke selected: false.");

@@ -9,7 +9,7 @@ const repoRoot = path.resolve(__dirname, "..");
 
 const REQUIRED_ACTIVE_TOOL_NAMES = [
   "Vector Map Editor",
-  "Vector Asset Studio",
+  "SVG Asset Studio",
   "Tilemap Studio",
   "Parallax Scene Studio",
   "Sprite Editor",
@@ -46,8 +46,8 @@ const TOOL_BOOTSTRAP_CHECKS = [
     pattern: "window.spriteEditorApp ="
   },
   {
-    file: "tools/Vector Asset Studio/main.js",
-    pattern: "window.vectorAssetStudioApp ="
+    file: "tools/SVG Asset Studio/main.js",
+    pattern: "window.svgAssetStudioApp ="
   },
   {
     file: "tools/Asset Browser/main.js",

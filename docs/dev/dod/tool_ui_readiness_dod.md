@@ -373,7 +373,7 @@ selected tile hardcoded/defaulted
 tile IDs reference missing tiles
 ```
 
-## 5. Vector Asset Studio
+## 5. SVG Asset Studio
 
 ### Required inputs
 

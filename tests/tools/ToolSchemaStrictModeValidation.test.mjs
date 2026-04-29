@@ -249,7 +249,7 @@ export async function run() {
 
   const requiredToolIds = [
     "vector-map-editor",
-    "vector-asset-studio",
+    "svg-asset-studio",
     "tile-map-editor",
     "parallax-editor",
     "sprite-editor",

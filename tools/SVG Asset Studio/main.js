@@ -49,7 +49,7 @@ const ALLOWED_IMPORT_TAGS = new Set([
   "desc"
 ]);
 const SAMPLE_METADATA_MANIFEST_PATH = "/samples/metadata/samples.index.metadata.json";
-const VECTOR_ASSET_TOOL_ID = "vector-asset-studio";
+const VECTOR_ASSET_TOOL_ID = "svg-asset-studio";
 let sampleMetadataManifestPromise = null;
 
 function normalizeSamplePresetPath(pathValue) {
@@ -175,7 +175,7 @@ async function resolveVectorAssetPresetInput(sampleId, samplePresetPath) {
     return {
       path: "",
       pathSource: "tool-input:missing.samplePresetPath",
-      error: "Sample manifest did not define vector-asset-studio presetPath for this sample."
+      error: "Sample manifest did not define svg-asset-studio presetPath for this sample."
     };
   }
   return {
@@ -270,7 +270,7 @@ const refs = {
 };
 
 function setVectorAssetLifecycle(stateName, details = {}) {
-  setToolUxLifecycleState("vector-asset-studio", stateName, details);
+  setToolUxLifecycleState("svg-asset-studio", stateName, details);
 }
 
 function clamp(value, min, max, fallback) {
@@ -2895,7 +2895,7 @@ function emitVectorAssetControlReadiness(sampleId = "", options = {}) {
     : "";
 
   logToolUiControlReady({
-    toolId: "vector-asset-studio",
+    toolId: "svg-asset-studio",
     sampleId,
     controlId: "svg-canvas",
     requiredData: "vector-svg-document",
@@ -2906,7 +2906,7 @@ function emitVectorAssetControlReadiness(sampleId = "", options = {}) {
   });
 
   logToolUiControlReady({
-    toolId: "vector-asset-studio",
+    toolId: "svg-asset-studio",
     sampleId,
     controlId: "palette-swatches",
     requiredData: "declared-palette-selection",
@@ -2917,7 +2917,7 @@ function emitVectorAssetControlReadiness(sampleId = "", options = {}) {
   });
 
   logToolUiControlReady({
-    toolId: "vector-asset-studio",
+    toolId: "svg-asset-studio",
     sampleId,
     controlId: "used-colors",
     requiredData: "vector-asset-used-colors",
@@ -2928,7 +2928,7 @@ function emitVectorAssetControlReadiness(sampleId = "", options = {}) {
   });
 
   logToolUiControlReady({
-    toolId: "vector-asset-studio",
+    toolId: "svg-asset-studio",
     sampleId,
     controlId: "paint-control",
     requiredData: "declared-paint-color",
@@ -2938,7 +2938,7 @@ function emitVectorAssetControlReadiness(sampleId = "", options = {}) {
   });
 
   logToolUiControlReady({
-    toolId: "vector-asset-studio",
+    toolId: "svg-asset-studio",
     sampleId,
     controlId: "stroke-control",
     requiredData: "declared-stroke-color",
@@ -2948,7 +2948,7 @@ function emitVectorAssetControlReadiness(sampleId = "", options = {}) {
   });
 
   logToolUiLifecycle({
-    toolId: "vector-asset-studio",
+    toolId: "svg-asset-studio",
     sampleId,
     phase,
     cause: forceMissing ? "preset-load-failure" : "preset-load",
@@ -2956,7 +2956,7 @@ function emitVectorAssetControlReadiness(sampleId = "", options = {}) {
   });
 
   logToolUiFinalReady({
-    toolId: "vector-asset-studio",
+    toolId: "svg-asset-studio",
     sampleId,
     requiredInputsReady: hasSvgCanvas && hasPaletteControls,
     requiredControlsReady: hasPaletteControls && hasPaint && hasStroke,
@@ -2982,7 +2982,7 @@ async function tryLoadPresetFromQuery() {
     requestedDataPaths.samplePresetPath = samplePresetPath;
   }
   logToolLoadRequest({
-    toolId: "vector-asset-studio",
+    toolId: "svg-asset-studio",
     sampleId,
     samplePresetPath,
     requestedDataPaths,
@@ -2990,7 +2990,7 @@ async function tryLoadPresetFromQuery() {
   });
   if (!samplePresetPath) {
     logToolLoadWarning({
-      toolId: "vector-asset-studio",
+      toolId: "svg-asset-studio",
       sampleId,
       reason: presetInput.error || "samplePresetPath missing",
       pathSource,
@@ -3012,7 +3012,7 @@ async function tryLoadPresetFromQuery() {
     const presetUrl = new URL(samplePresetPath, window.location.href);
     const presetHref = presetUrl.toString();
     logToolLoadFetch({
-      toolId: "vector-asset-studio",
+      toolId: "svg-asset-studio",
       phase: "attempt",
       fetchUrl: presetHref,
       requestedPath: samplePresetPath,
@@ -3020,7 +3020,7 @@ async function tryLoadPresetFromQuery() {
     });
     const presetResponse = await fetch(presetHref, { cache: "no-store" });
     logToolLoadFetch({
-      toolId: "vector-asset-studio",
+      toolId: "svg-asset-studio",
       phase: "response",
       fetchUrl: presetHref,
       requestedPath: samplePresetPath,
@@ -3035,7 +3035,7 @@ async function tryLoadPresetFromQuery() {
 
     const rawPreset = await presetResponse.json();
     logToolLoadLoaded({
-      toolId: "vector-asset-studio",
+      toolId: "svg-asset-studio",
       sampleId,
       samplePresetPath,
       fetchUrl: presetHref,
@@ -3060,7 +3060,7 @@ async function tryLoadPresetFromQuery() {
       const assetUrl = new URL(pathCandidate, window.location.href);
       const assetHref = assetUrl.toString();
       logToolLoadFetch({
-        toolId: "vector-asset-studio",
+        toolId: "svg-asset-studio",
         phase: "attempt",
         fetchUrl: assetHref,
         requestedPath: pathCandidate,
@@ -3068,7 +3068,7 @@ async function tryLoadPresetFromQuery() {
       });
       const assetResponse = await fetch(assetHref, { cache: "no-store" });
       logToolLoadFetch({
-        toolId: "vector-asset-studio",
+        toolId: "svg-asset-studio",
         phase: "response",
         fetchUrl: assetHref,
         requestedPath: pathCandidate,
@@ -3101,7 +3101,7 @@ async function tryLoadPresetFromQuery() {
     if (paletteClassification !== "success") {
       if (paletteClassification === "defaulted") {
         logToolLoadWarning({
-          toolId: "vector-asset-studio",
+          toolId: "svg-asset-studio",
           sampleId,
           samplePresetPath,
           reason: "Declared palette controls were missing; palette and paint/stroke were derived from loaded SVG colors.",
@@ -3109,7 +3109,7 @@ async function tryLoadPresetFromQuery() {
         });
       } else {
         logToolLoadWarning({
-          toolId: "vector-asset-studio",
+          toolId: "svg-asset-studio",
           sampleId,
           samplePresetPath,
           reason: "Declared palette controls were not fully bound from preset configuration.",
@@ -3122,7 +3122,7 @@ async function tryLoadPresetFromQuery() {
     }
     if (!normalizeColorValue(state.fill) || !normalizeColorValue(state.stroke)) {
       logToolLoadWarning({
-        toolId: "vector-asset-studio",
+        toolId: "svg-asset-studio",
         sampleId,
         samplePresetPath,
         reason: "Paint/stroke controls remained incomplete after preset load.",
@@ -3143,7 +3143,7 @@ async function tryLoadPresetFromQuery() {
   } catch (error) {
     emitVectorAssetControlReadiness(sampleId, { forceMissing: true, phase: "error", lifecycleStable: false });
     logToolLoadWarning({
-      toolId: "vector-asset-studio",
+      toolId: "svg-asset-studio",
       sampleId,
       samplePresetPath,
       error: error instanceof Error ? error.message : "unknown error",
@@ -3463,12 +3463,12 @@ async function initialize() {
   renderElementList();
   const presetLoaded = await tryLoadPresetFromQuery();
   if (!presetLoaded && !hasErrorStatus()) {
-    setStatus("Vector Asset Studio ready.");
+    setStatus("SVG Asset Studio ready.");
   }
   syncVectorAssetUxContract();
 }
 
-const vectorAssetStudioApi = {
+const svgAssetStudioApi = {
   getProjectName() {
     return state.documentName || "untitled-background";
   },
@@ -3557,24 +3557,24 @@ const vectorAssetStudioApi = {
   }
 };
 
-let vectorAssetStudioBooted = false;
+let svgAssetStudioBooted = false;
 
 function bootVectorAssetStudio() {
-  if (!vectorAssetStudioBooted) {
-    vectorAssetStudioBooted = true;
+  if (!svgAssetStudioBooted) {
+    svgAssetStudioBooted = true;
     void initialize();
   }
-  window.vectorAssetStudioApp = vectorAssetStudioApi;
-  return vectorAssetStudioApi;
+  window.svgAssetStudioApp = svgAssetStudioApi;
+  return svgAssetStudioApi;
 }
 
-registerToolBootContract("vector-asset-studio", {
+registerToolBootContract("svg-asset-studio", {
   init: bootVectorAssetStudio,
   destroy() {
     return true;
   },
   getApi() {
-    return window.vectorAssetStudioApp || null;
+    return window.svgAssetStudioApp || null;
   }
 });
 

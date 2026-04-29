@@ -65,7 +65,7 @@ export async function run() {
     /right-sidebar tools-platform-resize-panel/
   ]);
 
-  assertIncludesAll("tools/Vector Asset Studio/index.html", [
+  assertIncludesAll("tools/SVG Asset Studio/index.html", [
     /tools-platform-control-cluster--primary/,
     /tools-platform-control-cluster--workflow/,
     /tools-platform-control-cluster--preview/,

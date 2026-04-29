@@ -142,8 +142,8 @@
         }
       }
     },
-    "vector-asset-studio": {
-      "tool": "vector-asset-studio",
+    "svg-asset-studio": {
+      "tool": "svg-asset-studio",
       "version": "1",
       "payload": {
         "vectorAssetDocument": {

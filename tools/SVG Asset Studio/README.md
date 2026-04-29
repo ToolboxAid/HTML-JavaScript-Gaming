@@ -3,9 +3,9 @@ David Quesenberry
 04/21/2026
 README.md
 
-# Vector Asset Studio
+# SVG Asset Studio
 
-High-level overview for 'Vector Asset Studio' under 'tools/Vector Asset Studio/'.
+High-level overview for 'SVG Asset Studio' under 'tools/SVG Asset Studio/'.
 
 ## Purpose
 - Provide a focused workspace for this tool's primary authoring/debug workflow.
@@ -18,5 +18,5 @@ High-level overview for 'Vector Asset Studio' under 'tools/Vector Asset Studio/'
 - Safe workflows for loading, editing, previewing, and exporting relevant data.
 
 ## Entry Points
-- Tool UI: 'tools/Vector Asset Studio/index.html'
-- How-to guide: 'tools/Vector Asset Studio/how_to_use.html'
+- Tool UI: 'tools/SVG Asset Studio/index.html'
+- How-to guide: 'tools/SVG Asset Studio/how_to_use.html'

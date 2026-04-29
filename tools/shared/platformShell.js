@@ -38,7 +38,7 @@ const WORKSPACE_LAUNCH_SIGNATURE_STORAGE_KEY = "toolboxaid.toolsPlatform.launchS
 const TOOL_STATE_STORAGE_KEY_PREFIX = "toolboxaid.";
 const STANDARDIZED_TOOL_HEADER_IDS = new Set([
   "vector-map-editor",
-  "vector-asset-studio",
+  "svg-asset-studio",
   "sprite-editor",
   "state-inspector"
 ]);
@@ -1028,7 +1028,7 @@ async function hydrateSharedAssetFromGameLaunchContext(catalogContext = null) {
   }
 
   const manifestContext = await readManifestContextFromLaunchContext(launchContext);
-  const manifestVectors = manifestContext?.manifestPayload?.tools?.["vector-asset-studio"]?.vectors;
+  const manifestVectors = manifestContext?.manifestPayload?.tools?.["svg-asset-studio"]?.vectors;
   const manifestVectorEntry = (() => {
     if (Array.isArray(manifestVectors)) {
       return manifestVectors.find((entry) => Boolean(normalizeTextValue(entry?.id))) || null;
@@ -1068,7 +1068,7 @@ async function hydrateSharedAssetFromGameLaunchContext(catalogContext = null) {
       displayName: manifestVectorId,
       tags: ["vector"],
       metadata: {
-        source: "workspace-game-manifest.vector-asset-studio",
+        source: "workspace-game-manifest.svg-asset-studio",
         gameId: launchContext.gameId || "",
         sourcePath: manifestContext?.manifestPath || "",
         vectorStyle: manifestVectorStyle
@@ -1088,7 +1088,7 @@ async function hydrateSharedAssetFromGameLaunchContext(catalogContext = null) {
         displayName: manifestVectorId,
         tags: ["vector"],
         metadata: {
-          source: "workspace-game-manifest.vector-asset-studio",
+          source: "workspace-game-manifest.svg-asset-studio",
           gameId: launchContext.gameId || "",
           sourcePath: manifestContext?.manifestPath || "",
           vectorStyle: manifestVectorStyle
@@ -1463,7 +1463,7 @@ function resolveAcceptedAssetKindsForTool(toolId = "") {
     "sprite-editor": ["sprite"],
     "tile-map-editor": ["tilemap"],
     "parallax-editor": ["parallax"],
-    "vector-asset-studio": ["vector"],
+    "svg-asset-studio": ["vector"],
     "vector-map-editor": ["vector", "vector-map"],
     "3d-asset-viewer": ["3d", "model", "mesh"],
     "3d-camera-path-editor": ["camera-path", "3d-camera-path"],

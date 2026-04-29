@@ -27,7 +27,7 @@ function createContractAsset() {
     type: "vector",
     path: "games/vector-arcade-sample/assets/vectors/contract-sample.vector.json",
     paletteId: "palette.vector-native.primary",
-    sourceTool: "vector-asset-studio",
+    sourceTool: "svg-asset-studio",
     source: {
       kind: "svg",
       path: "games/vector-arcade-sample/assets/vectors/contract-sample.vector.json"
@@ -204,7 +204,7 @@ export async function run() {
             id: "vector.contract.sample",
             type: "vector",
             path: "games/vector-arcade-sample/assets/vectors/contract-sample.vector.json",
-            sourceTool: "vector-asset-studio"
+            sourceTool: "svg-asset-studio"
           }
         ],
         dependencies: [],

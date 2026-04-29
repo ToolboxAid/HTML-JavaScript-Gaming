@@ -62,7 +62,7 @@ async function main() {
 
   const requiredTools = [
     "vector-map-editor",
-    "vector-asset-studio",
+    "svg-asset-studio",
     "tile-map-editor",
     "parallax-editor",
     "sprite-editor",
@@ -75,7 +75,7 @@ async function main() {
   notes.push("starter project includes payloads for all active first-class tools");
 
   assert(Boolean(manifest.tools?.["vector-map-editor"]?.snapshot?.documentData), "Vector Map Editor payload is missing snapshot.documentData.", issues);
-  assert(typeof manifest.tools?.["vector-asset-studio"]?.svgText === "string", "Vector Asset Studio payload is missing svgText.", issues);
+  assert(typeof manifest.tools?.["svg-asset-studio"]?.svgText === "string", "SVG Asset Studio payload is missing svgText.", issues);
   assert(Boolean(manifest.tools?.["tile-map-editor"]?.documentModel?.assetRefs?.tilemapId), "Tilemap Studio payload is missing tilemap asset reference.", issues);
   assert(Array.isArray(manifest.tools?.["parallax-editor"]?.documentModel?.assetRefs?.parallaxSourceIds), "Parallax Scene Studio payload is missing parallax source ids.", issues);
   assert(Boolean(manifest.tools?.["sprite-editor"]?.project?.assetRefs?.spriteId), "Sprite Editor payload is missing sprite asset reference.", issues);

@@ -109,7 +109,7 @@ function createFixtureDocuments() {
       "scenes/parallax.asset.json": createAssetDocument("parallax-editor", "doc.parallax", "parallax", "assets/parallax/sky.png", 0),
       "scenes/tilemap.asset.json": createAssetDocument("tile-map-editor", "doc.tilemap", "tilemap", "assets/tilemap/level.png", 1),
       "scenes/sprite.asset.json": createAssetDocument("sprite-editor", "doc.sprite", "sprite", "assets/sprites/hero.png", 2, [2, 0, 1]),
-      "scenes/vector.asset.json": createAssetDocument("vector-asset-studio", "doc.vector", "vector", "assets/vector/overlay.svg", 3)
+      "scenes/vector.asset.json": createAssetDocument("svg-asset-studio", "doc.vector", "vector", "assets/vector/overlay.svg", 3)
     }
   };
 }

@@ -7,7 +7,7 @@ This contract keeps tools on shared references by default instead of creating hi
 
 ## In-Scope Tools
 - `Vector Map Editor`
-- `Vector Asset Studio`
+- `SVG Asset Studio`
 - `Tilemap Studio`
 - `Parallax Scene Studio`
 - `Sprite Editor`

@@ -100,7 +100,7 @@ function buildDefaultPayload() {
       { x: 0, y: 0.75, z: 2 }
     ],
     metadata: {
-      sourceToolId: "vector-asset-studio"
+      sourceToolId: "svg-asset-studio"
     }
   };
 }

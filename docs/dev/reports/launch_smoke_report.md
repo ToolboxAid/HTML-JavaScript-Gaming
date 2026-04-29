@@ -1,6 +1,6 @@
 # Launch Smoke Report
 
-Generated: 2026-04-29T16:40:55.062Z
+Generated: 2026-04-29T18:07:21.078Z
 
 Filters: games=false, samples=true, tools=true, sampleRange=1902-1902
 
@@ -20,8 +20,8 @@ Filters: games=false, samples=true, tools=true, sampleRange=1902-1902
 | PASS | tool | Skin Editor | tools\Skin Editor\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
 | PASS | tool | Sprite Editor | tools\Sprite Editor\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
 | PASS | tool | State Inspector | tools\State Inspector\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
+| PASS | tool | SVG Asset Studio | tools\SVG Asset Studio\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
 | PASS | tool | Tile Model Converter | tools\Tile Model Converter\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
 | PASS | tool | Tilemap Studio | tools\Tilemap Studio\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
-| PASS | tool | Vector Asset Studio | tools\Vector Asset Studio\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
 | PASS | tool | Vector Map Editor | tools\Vector Map Editor\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |
 | PASS | tool | Workspace Manager | tools\Workspace Manager\index.html |  | npm install --prefix ./tmp ws â†’ npm run test:launch-smoke |

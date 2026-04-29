@@ -124,9 +124,9 @@
       "id": "0901",
       "type": "sample",
       "phase": "phase-09",
-      "tool": "vector-asset-studio",
+      "tool": "svg-asset-studio",
       "tools": [
-        "vector-asset-studio",
+        "svg-asset-studio",
         "vector-map-editor"
       ],
       "palette": "samples/phase-09/0901/sample.0901.palette.json"
@@ -148,7 +148,7 @@
       "tool": "parallax-editor",
       "tools": [
         "parallax-editor",
-        "vector-asset-studio",
+        "svg-asset-studio",
         "vector-map-editor"
       ],
       "palette": "samples/phase-12/1204/sample.1204.palette.json"
@@ -174,7 +174,7 @@
         "3d-json-payload-normalizer",
         "parallax-editor",
         "tile-map-editor",
-        "vector-asset-studio"
+        "svg-asset-studio"
       ],
       "palette": "samples/phase-12/1208/sample.1208.palette.json"
     },

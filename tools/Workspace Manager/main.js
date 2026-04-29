@@ -1,5 +1,6 @@
 import { createToolHostManifest, getToolHostEntryById } from "../../tools/shared/toolHostManifest.js";
 import { createToolHostRuntime } from "../../tools/shared/toolHostRuntime.js";
+import { resolveToolIdAlias } from "../../tools/toolRegistry.js";
 import {
   removeToolHostSharedContextById,
   writeToolHostSharedContext
@@ -129,7 +130,8 @@ function normalizeTextParam(value) {
 }
 
 function normalizeToken(value) {
-  return normalizeTextParam(value).toLowerCase();
+  const token = normalizeTextParam(value).toLowerCase();
+  return resolveToolIdAlias(token);
 }
 
 function normalizeToolsUsedList(value) {
@@ -816,7 +818,7 @@ function writeQueryToolId(toolId, replace = false) {
 
 function readInitialToolId() {
   const url = new URL(window.location.href);
-  const fromQuery = url.searchParams.get("tool");
+  const fromQuery = resolveToolIdAlias(url.searchParams.get("tool"));
   if (fromQuery && getToolHostEntryById(manifest, fromQuery) && toolIds.includes(fromQuery)) {
     return fromQuery;
   }
@@ -825,7 +827,7 @@ function readInitialToolId() {
 
 function readRequestedToolIdFromQuery() {
   const url = new URL(window.location.href);
-  const requested = (url.searchParams.get("tool") || "").trim();
+  const requested = resolveToolIdAlias((url.searchParams.get("tool") || "").trim());
   if (!requested || !getToolHostEntryById(manifest, requested) || !toolIds.includes(requested)) {
     return "";
   }
@@ -834,7 +836,7 @@ function readRequestedToolIdFromQuery() {
 
 function readRawToolIdFromQuery() {
   const url = new URL(window.location.href);
-  return (url.searchParams.get("tool") || "").trim();
+  return resolveToolIdAlias((url.searchParams.get("tool") || "").trim());
 }
 
 function readInitialGameId() {

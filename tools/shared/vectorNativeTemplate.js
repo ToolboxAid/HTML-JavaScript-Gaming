@@ -48,7 +48,7 @@ function createRegistry() {
         name: "Template Player",
         path: "tools/templates/vector-native-arcade/assets/data/vectors/template-player.vector.json",
         paletteId: "palette.vector-native.primary",
-        sourceTool: "vector-asset-studio",
+        sourceTool: "svg-asset-studio",
         svgText: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="-20 -20 40 40"><path d="M 0 -16 L 12 12 L 0 6 L -12 12 Z" /><path d="M -4 10 L 0 4 L 4 10" /></svg>'
       }),
       normalizeSvgToVectorAsset({
@@ -56,7 +56,7 @@ function createRegistry() {
         name: "Template Obstacle Large",
         path: "tools/templates/vector-native-arcade/assets/data/vectors/template-obstacle-large.vector.json",
         paletteId: "palette.vector-native.primary",
-        sourceTool: "vector-asset-studio",
+        sourceTool: "svg-asset-studio",
         svgText: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="-34 -34 68 68"><path d="M -20 -14 L 0 -24 L 22 -18 L 28 6 L 14 24 L -10 22 L -26 4 Z" /></svg>'
       }),
       normalizeSvgToVectorAsset({
@@ -64,7 +64,7 @@ function createRegistry() {
         name: "Template Obstacle Small",
         path: "tools/templates/vector-native-arcade/assets/data/vectors/template-obstacle-small.vector.json",
         paletteId: "palette.vector-native.primary",
-        sourceTool: "vector-asset-studio",
+        sourceTool: "svg-asset-studio",
         svgText: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="-18 -18 36 36"><path d="M -8 -8 L 2 -12 L 10 -2 L 6 10 L -6 12 L -12 0 Z" /></svg>'
       }),
       normalizeSvgToVectorAsset({
@@ -72,7 +72,7 @@ function createRegistry() {
         name: "Template Title",
         path: "tools/templates/vector-native-arcade/assets/data/vectors/template-title.vector.json",
         paletteId: "palette.vector-native.primary",
-        sourceTool: "vector-asset-studio",
+        sourceTool: "svg-asset-studio",
         svgText: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 48"><path d="M 8 40 L 24 8 L 40 40 Z" /><path d="M 56 40 L 56 8 L 84 8 L 84 18 L 68 18 L 68 22 L 82 22 L 82 32 L 68 32 L 68 40 Z" /><path d="M 96 40 L 96 8 L 108 8 L 124 24 L 124 8 L 136 8 L 136 40 L 124 40 L 108 24 L 108 40 Z" /></svg>'
       }),
       normalizeSvgToVectorAsset({
@@ -80,7 +80,7 @@ function createRegistry() {
         name: "Template HUD",
         path: "tools/templates/vector-native-arcade/assets/data/vectors/template-hud.vector.json",
         paletteId: "palette.vector-native.primary",
-        sourceTool: "vector-asset-studio",
+        sourceTool: "svg-asset-studio",
         svgText: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 32"><path d="M 4 4 L 156 4 L 156 28 L 4 28 Z" /><path d="M 18 10 L 28 10 L 28 22 L 18 22 Z" /><path d="M 40 10 L 70 10" /><path d="M 90 10 L 120 10" /></svg>'
       })
     ],

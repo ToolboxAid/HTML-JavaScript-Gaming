@@ -1,1 +1,1 @@
-Clarify Vector Asset Studio and Vector Map Editor roles via descriptions - PR 11.35
+Deep rename Vector Asset Studio to SVG Asset Studio - PR 11.37

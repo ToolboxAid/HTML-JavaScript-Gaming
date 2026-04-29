@@ -5805,13 +5805,13 @@
         "engine/theme/index/ThemeTokens"
       ],
       "toolHints": [
-        "vector-asset-studio",
+        "svg-asset-studio",
         "vector-map-editor"
       ],
       "roundtripToolPresets": [
         {
-          "toolId": "vector-asset-studio",
-          "presetPath": "/samples/phase-09/0901/sample.0901.vector-asset-studio.json"
+          "toolId": "svg-asset-studio",
+          "presetPath": "/samples/phase-09/0901/sample.0901.svg-asset-studio.json"
         },
         {
           "toolId": "vector-map-editor",
@@ -6530,7 +6530,7 @@
       ],
       "toolHints": [
         "parallax-editor",
-        "vector-asset-studio",
+        "svg-asset-studio",
         "vector-map-editor"
       ],
       "roundtripToolPresets": [
@@ -6539,8 +6539,8 @@
           "presetPath": "/samples/phase-12/1204/sample.1204.parallax-editor.json"
         },
         {
-          "toolId": "vector-asset-studio",
-          "presetPath": "/samples/phase-12/1204/sample.1204.vector-asset-studio.json"
+          "toolId": "svg-asset-studio",
+          "presetPath": "/samples/phase-12/1204/sample.1204.svg-asset-studio.json"
         },
         {
           "toolId": "vector-map-editor",
@@ -6748,7 +6748,7 @@
         "3d-json-payload-normalizer",
         "parallax-editor",
         "tile-map-editor",
-        "vector-asset-studio"
+        "svg-asset-studio"
       ],
       "roundtripToolPresets": [
         {
@@ -6768,8 +6768,8 @@
           "presetPath": "/samples/phase-12/1208/sample.1208.tile-map-editor.json"
         },
         {
-          "toolId": "vector-asset-studio",
-          "presetPath": "/samples/phase-12/1208/sample.1208.vector-asset-studio.json"
+          "toolId": "svg-asset-studio",
+          "presetPath": "/samples/phase-12/1208/sample.1208.svg-asset-studio.json"
         }
       ]
     },
@@ -6970,7 +6970,7 @@
       "id": "1215",
       "phase": "12",
       "title": "Vector Asset Sky Gradient Preset",
-      "description": "Launches Vector Asset Studio with the migrated Sky Gradient Scene preset.",
+      "description": "Launches SVG Asset Studio with the migrated Sky Gradient Scene preset.",
       "href": "./phase-12/1215/index.html",
       "tags": [
         "vector",
@@ -6981,20 +6981,20 @@
         "tool"
       ],
       "engineClassesUsed": [
-        "tools/vector-asset-studio"
+        "tools/svg-asset-studio"
       ],
       "classValues": [
-        "tools/vector-asset-studio"
+        "tools/svg-asset-studio"
       ],
       "toolHints": [
-        "vector-asset-studio"
+        "svg-asset-studio"
       ],
       "thumbnail": "/samples/phase-12/1215/assets/images/preview.svg",
       "preview": "/samples/phase-12/1215/assets/images/preview.svg",
       "roundtripToolPresets": [
         {
-          "toolId": "vector-asset-studio",
-          "presetPath": "/samples/phase-12/1215/sample-1215-vector-asset-studio.json"
+          "toolId": "svg-asset-studio",
+          "presetPath": "/samples/phase-12/1215/sample-1215-svg-asset-studio.json"
         }
       ]
     },
@@ -7002,7 +7002,7 @@
       "id": "1216",
       "phase": "12",
       "title": "Vector Asset Mountain Range Preset",
-      "description": "Launches Vector Asset Studio with the migrated Mountain Range Scene preset.",
+      "description": "Launches SVG Asset Studio with the migrated Mountain Range Scene preset.",
       "href": "./phase-12/1216/index.html",
       "tags": [
         "vector",
@@ -7013,20 +7013,20 @@
         "tool"
       ],
       "engineClassesUsed": [
-        "tools/vector-asset-studio"
+        "tools/svg-asset-studio"
       ],
       "classValues": [
-        "tools/vector-asset-studio"
+        "tools/svg-asset-studio"
       ],
       "toolHints": [
-        "vector-asset-studio"
+        "svg-asset-studio"
       ],
       "thumbnail": "/samples/phase-12/1216/assets/images/preview.svg",
       "preview": "/samples/phase-12/1216/assets/images/preview.svg",
       "roundtripToolPresets": [
         {
-          "toolId": "vector-asset-studio",
-          "presetPath": "/samples/phase-12/1216/sample-1216-vector-asset-studio.json"
+          "toolId": "svg-asset-studio",
+          "presetPath": "/samples/phase-12/1216/sample-1216-svg-asset-studio.json"
         }
       ]
     },
@@ -7034,7 +7034,7 @@
       "id": "1217",
       "phase": "12",
       "title": "Vector Asset Mario Backdrop Preset",
-      "description": "Launches Vector Asset Studio with the migrated Mario Style Learning Backdrop preset.",
+      "description": "Launches SVG Asset Studio with the migrated Mario Style Learning Backdrop preset.",
       "href": "./phase-12/1217/index.html",
       "tags": [
         "vector",
@@ -7045,20 +7045,20 @@
         "tool"
       ],
       "engineClassesUsed": [
-        "tools/vector-asset-studio"
+        "tools/svg-asset-studio"
       ],
       "classValues": [
-        "tools/vector-asset-studio"
+        "tools/svg-asset-studio"
       ],
       "toolHints": [
-        "vector-asset-studio"
+        "svg-asset-studio"
       ],
       "thumbnail": "/samples/phase-12/1217/assets/images/preview.svg",
       "preview": "/samples/phase-12/1217/assets/images/preview.svg",
       "roundtripToolPresets": [
         {
-          "toolId": "vector-asset-studio",
-          "presetPath": "/samples/phase-12/1217/sample-1217-vector-asset-studio.json"
+          "toolId": "svg-asset-studio",
+          "presetPath": "/samples/phase-12/1217/sample-1217-svg-asset-studio.json"
         }
       ]
     },
@@ -9958,7 +9958,7 @@
       ],
       "toolHints": [
         "vector-map-editor",
-        "vector-asset-studio",
+        "svg-asset-studio",
         "tile-map-editor",
         "parallax-editor",
         "sprite-editor",
@@ -9981,7 +9981,7 @@
           "presetPath": "/samples/phase-19/1902/sample.1902.workspace-all-tools.json"
         },
         {
-          "toolId": "vector-asset-studio",
+          "toolId": "svg-asset-studio",
           "presetPath": "/samples/phase-19/1902/sample.1902.workspace-all-tools.json"
         },
         {

@@ -12,7 +12,7 @@ export async function run() {
     "tools/schemas/tools/palette-browser.schema.json",
     "tools/schemas/sample.tool-payload.schema.json",
     "tools/schemas/tools/vector-map-editor.schema.json",
-    "tools/schemas/tools/vector-asset-studio.schema.json",
+    "tools/schemas/tools/svg-asset-studio.schema.json",
     "tools/schemas/tools/sprite-editor.schema.json"
   ];
   schemaFiles.forEach((relativePath) => {
@@ -24,7 +24,7 @@ export async function run() {
 
   const toolSchemaFiles = [
     "tools/vector-map-editor/tool.schema.json",
-    "tools/vector-asset-studio/tool.schema.json",
+    "tools/svg-asset-studio/tool.schema.json",
     "tools/palette-editor/tool.schema.json"
   ];
   toolSchemaFiles.forEach((relativePath) => {

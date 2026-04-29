@@ -83,7 +83,7 @@ export async function run() {
             }
           ],
           style: { stroke: false, fill: false },
-          sourceTool: "vector-asset-studio"
+          sourceTool: "svg-asset-studio"
         }
       ]
     },

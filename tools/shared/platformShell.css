@@ -790,7 +790,7 @@ body.tools-platform-surface .canvas-toolbar {
 body.tools-platform-surface[data-tool-id="asset-browser"] .asset-browser__topbar,
 body.tools-platform-surface[data-tool-id="sprite-editor"] .toolbar-row,
 body.tools-platform-surface[data-tool-id="tile-map-editor"] .toolbar,
-body.tools-platform-surface[data-tool-id="vector-asset-studio"] .toolbar,
+body.tools-platform-surface[data-tool-id="svg-asset-studio"] .toolbar,
 body.tools-platform-surface[data-tool-id="vector-map-editor"] .toolbar {
   border: 1px solid var(--line, rgba(221, 214, 254, 0.26));
   border-radius: 14px;
@@ -812,7 +812,7 @@ body.tools-platform-surface[data-tool-id="asset-browser"] .asset-browser__topbar
 body.tools-platform-surface[data-tool-id="asset-browser"] .asset-browser__topbar > strong,
 body.tools-platform-surface[data-tool-id="sprite-editor"] .toolbar-row > strong,
 body.tools-platform-surface[data-tool-id="tile-map-editor"] .toolbar > strong,
-body.tools-platform-surface[data-tool-id="vector-asset-studio"] .toolbar > strong,
+body.tools-platform-surface[data-tool-id="svg-asset-studio"] .toolbar > strong,
 body.tools-platform-surface[data-tool-id="vector-map-editor"] .toolbar > strong {
   letter-spacing: 0.01em;
   font-weight: 700;
@@ -820,7 +820,7 @@ body.tools-platform-surface[data-tool-id="vector-map-editor"] .toolbar > strong 
 
 body.tools-platform-surface[data-tool-id="sprite-editor"] .state-row,
 body.tools-platform-surface[data-tool-id="tile-map-editor"] .canvas-toolbar,
-body.tools-platform-surface[data-tool-id="vector-asset-studio"] .canvas-toolbar,
+body.tools-platform-surface[data-tool-id="svg-asset-studio"] .canvas-toolbar,
 body.tools-platform-surface[data-tool-id="vector-map-editor"] .statusbar {
   border: 1px solid var(--line, rgba(221, 214, 254, 0.26));
   border-radius: 12px;
@@ -830,11 +830,11 @@ body.tools-platform-surface[data-tool-id="vector-map-editor"] .statusbar {
 
 body.tools-platform-surface[data-tool-id="sprite-editor"] .toolbar-group,
 body.tools-platform-surface[data-tool-id="tile-map-editor"] .toolbar-group,
-body.tools-platform-surface[data-tool-id="vector-asset-studio"] .toolbar-group,
+body.tools-platform-surface[data-tool-id="svg-asset-studio"] .toolbar-group,
 body.tools-platform-surface[data-tool-id="vector-map-editor"] .toolbar-group,
 body.tools-platform-surface[data-tool-id="sprite-editor"] .tools-platform-control-cluster,
 body.tools-platform-surface[data-tool-id="tile-map-editor"] .tools-platform-control-cluster,
-body.tools-platform-surface[data-tool-id="vector-asset-studio"] .tools-platform-control-cluster,
+body.tools-platform-surface[data-tool-id="svg-asset-studio"] .tools-platform-control-cluster,
 body.tools-platform-surface[data-tool-id="vector-map-editor"] .tools-platform-control-cluster {
   border: 1px solid var(--surface-border, rgba(221, 214, 254, 0.22));
   border-radius: 10px;

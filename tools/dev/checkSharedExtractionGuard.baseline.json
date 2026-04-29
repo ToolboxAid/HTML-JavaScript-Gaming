@@ -2877,137 +2877,137 @@
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "tools/Vector Asset Studio/main.js",
+      "file": "tools/SVG Asset Studio/main.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-1"
     },
     {
-      "file": "tools/Vector Asset Studio/main.js",
+      "file": "tools/SVG Asset Studio/main.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-1"
     },
     {
-      "file": "tools/Vector Asset Studio/main.js",
+      "file": "tools/SVG Asset Studio/main.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "tools/Vector Asset Studio/main.js",
+      "file": "tools/SVG Asset Studio/main.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "tools/Vector Asset Studio/main.js",
+      "file": "tools/SVG Asset Studio/main.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "tools/Vector Asset Studio/main.js",
+      "file": "tools/SVG Asset Studio/main.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "tools/Vector Asset Studio/main.js",
+      "file": "tools/SVG Asset Studio/main.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "tools/Vector Asset Studio/main.js",
+      "file": "tools/SVG Asset Studio/main.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "tools/Vector Asset Studio/main.js",
+      "file": "tools/SVG Asset Studio/main.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "tools/Vector Asset Studio/main.js",
+      "file": "tools/SVG Asset Studio/main.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "tools/Vector Asset Studio/main.js",
+      "file": "tools/SVG Asset Studio/main.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "tools/Vector Asset Studio/main.js",
+      "file": "tools/SVG Asset Studio/main.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "tools/Vector Asset Studio/main.js",
+      "file": "tools/SVG Asset Studio/main.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "tools/Vector Asset Studio/main.js",
+      "file": "tools/SVG Asset Studio/main.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "tools/Vector Asset Studio/main.js",
+      "file": "tools/SVG Asset Studio/main.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "tools/Vector Asset Studio/main.js",
+      "file": "tools/SVG Asset Studio/main.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "tools/Vector Asset Studio/main.js",
+      "file": "tools/SVG Asset Studio/main.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "tools/Vector Asset Studio/main.js",
+      "file": "tools/SVG Asset Studio/main.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "tools/Vector Asset Studio/main.js",
+      "file": "tools/SVG Asset Studio/main.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "tools/Vector Asset Studio/main.js",
+      "file": "tools/SVG Asset Studio/main.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "tools/Vector Asset Studio/main.js",
+      "file": "tools/SVG Asset Studio/main.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "tools/Vector Asset Studio/main.js",
+      "file": "tools/SVG Asset Studio/main.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "tools/Vector Asset Studio/main.js",
+      "file": "tools/SVG Asset Studio/main.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "tools/Vector Asset Studio/main.js",
+      "file": "tools/SVG Asset Studio/main.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "tools/Vector Asset Studio/main.js",
+      "file": "tools/SVG Asset Studio/main.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "tools/Vector Asset Studio/main.js",
+      "file": "tools/SVG Asset Studio/main.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "tools/Vector Asset Studio/main.js",
+      "file": "tools/SVG Asset Studio/main.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },

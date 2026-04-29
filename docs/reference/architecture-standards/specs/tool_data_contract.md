@@ -35,8 +35,8 @@ This contract is enforced by:
 - contractId: `tool-state.vector-map-editor/1`
 - normalized as tool-local object state.
 
-### Vector Asset Studio
-- contractId: `tool-state.vector-asset-studio/1`
+### SVG Asset Studio
+- contractId: `tool-state.svg-asset-studio/1`
 - normalized field:
   - `selectedPaletteId` (string id normalization when present)
 

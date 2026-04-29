@@ -1,4 +1,8 @@
 const TOOL_NAME_SUFFIX_PATTERN = /(?:^|[\s_-])(v2|v3|new|final|copy)(?:$|[\s_-])/i;
+// Temporary centralized tool id compatibility aliases (PR 11.37).
+const TOOL_ID_ALIASES = Object.freeze({
+  "vector-asset-studio": "svg-asset-studio"
+});
 
 export const TOOL_REGISTRY = Object.freeze([
   {
@@ -29,14 +33,14 @@ export const TOOL_REGISTRY = Object.freeze([
     visibleInToolsList: true
   },
   {
-    id: "vector-asset-studio",
-    name: "Vector Asset Studio",
-    displayName: "Vector Asset Studio",
+    id: "svg-asset-studio",
+    name: "SVG Asset Studio",
+    displayName: "SVG Asset Studio",
     shortDescription: "Create and edit reusable vector (SVG) assets. Build shapes, icons, and asset components.",
     shortLabel: "Asset",
-    path: "Vector Asset Studio",
-    folderName: "Vector Asset Studio",
-    entryPoint: "Vector Asset Studio/index.html",
+    path: "SVG Asset Studio",
+    folderName: "SVG Asset Studio",
+    entryPoint: "SVG Asset Studio/index.html",
     description: "Create and edit reusable vector (SVG) assets. Build shapes, icons, and asset components.",
     showcaseTag: "Vector Assets",
     showcaseStatus: "SVG Contract Ready",
@@ -46,7 +50,7 @@ export const TOOL_REGISTRY = Object.freeze([
     sampleEntryPoints: [
       {
         label: "Sample Manifest",
-        path: "Vector Asset Studio/samples/sample-manifest.json"
+        path: "SVG Asset Studio/samples/sample-manifest.json"
       },
       {
         label: "Sample 1208 - Tool Formatted Tiles Parallax",
@@ -387,6 +391,14 @@ export const TOOL_REGISTRY = Object.freeze([
 
 export { TOOL_NAME_SUFFIX_PATTERN };
 
+export function resolveToolIdAlias(toolId) {
+  const normalized = typeof toolId === "string" ? toolId.trim() : "";
+  if (!normalized) {
+    return "";
+  }
+  return TOOL_ID_ALIASES[normalized] || normalized;
+}
+
 export function getToolRegistry() {
   return TOOL_REGISTRY.map((tool) => ({
     ...tool,
@@ -395,7 +407,8 @@ export function getToolRegistry() {
 }
 
 export function getToolById(toolId) {
-  return getToolRegistry().find((tool) => tool.id === toolId) ?? null;
+  const resolvedToolId = resolveToolIdAlias(toolId);
+  return getToolRegistry().find((tool) => tool.id === resolvedToolId) ?? null;
 }
 
 export function getActiveToolRegistry() {

@@ -25,7 +25,7 @@
   },
   "tools": {
     "vector-map-editor": {},
-    "vector-asset-studio": {},
+    "svg-asset-studio": {},
     "tile-map-editor": {},
     "parallax-editor": {},
     "sprite-editor": {},
@@ -74,7 +74,7 @@
 
 ## Active tool coverage
 - Vector Map Editor
-- Vector Asset Studio
+- SVG Asset Studio
 - Tilemap Studio
 - Parallax Scene Studio
 - Sprite Editor

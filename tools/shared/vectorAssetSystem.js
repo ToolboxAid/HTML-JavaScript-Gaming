@@ -27,21 +27,21 @@ export function createVectorAssetSystemFixture() {
   const shipVector = normalizeSvgToVectorAsset({
     id: "vector.asteroids.ship",
     name: "Asteroids Ship",
-    path: "games/Asteroids/game.manifest.json#tools.vector-asset-studio.vectors.vector.asteroids.ship",
+    path: "games/Asteroids/game.manifest.json#tools.svg-asset-studio.vectors.vector.asteroids.ship",
     paletteId: "palette.asteroids-hud",
     svgText: ASTEROIDS_SHIP_SVG
   });
   const asteroidLargeVector = normalizeSvgToVectorAsset({
     id: "vector.asteroids.asteroid.large",
     name: "Asteroids Large Rock",
-    path: "games/Asteroids/game.manifest.json#tools.vector-asset-studio.vectors.vector.asteroids.asteroid.large",
+    path: "games/Asteroids/game.manifest.json#tools.svg-asset-studio.vectors.vector.asteroids.asteroid.large",
     paletteId: "palette.asteroids-hud",
     svgText: ASTEROIDS_LARGE_SVG
   });
   const titleVector = normalizeSvgToVectorAsset({
     id: "vector.asteroids.ui.title",
     name: "Asteroids Title Vector",
-    path: "games/Asteroids/game.manifest.json#tools.vector-asset-studio.vectors.vector.asteroids.ui.title",
+    path: "games/Asteroids/game.manifest.json#tools.svg-asset-studio.vectors.vector.asteroids.ui.title",
     paletteId: "palette.asteroids-hud",
     svgText: ASTEROIDS_TITLE_SVG
   });
@@ -126,7 +126,7 @@ export async function buildVectorAssetSystem(options = {}) {
 
   const reports = [
     createReport("info", "VECTOR_ASSET_SYSTEM_READY", "Vector assets integrate with validation, packaging, and runtime without engine core API changes."),
-    createReport("info", "VECTOR_AUTHORING_BRIDGE", "Vector Asset Studio uses the SVG-focused tool flow as the authoring bridge for normalized vector output.")
+    createReport("info", "VECTOR_AUTHORING_BRIDGE", "SVG Asset Studio uses the SVG-focused tool flow as the authoring bridge for normalized vector output.")
   ];
 
   return {

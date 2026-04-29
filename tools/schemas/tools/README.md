@@ -6,7 +6,7 @@ Examples:
 
 ```text
 vector-map-editor.schema.json
-vector-asset-studio.schema.json
+svg-asset-studio.schema.json
 sprite-editor.schema.json
 ```
 

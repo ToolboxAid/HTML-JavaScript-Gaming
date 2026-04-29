@@ -174,13 +174,13 @@ function createSpriteAdapter() {
 }
 
 function createVectorAssetAdapter() {
-  const api = readToolApi("vector-asset-studio", "vectorAssetStudioApp");
+  const api = readToolApi("svg-asset-studio", "svgAssetStudioApp");
   if (!api || typeof api.captureProjectState !== "function" || typeof api.applyProjectState !== "function") {
-    return buildUnavailableAdapter("vector-asset-studio");
+    return buildUnavailableAdapter("svg-asset-studio");
   }
 
   return {
-    toolId: "vector-asset-studio",
+    toolId: "svg-asset-studio",
     ready: true,
     getProjectName() {
       return safeString(api.getProjectName?.(), "Untitled Vector Asset");
@@ -261,7 +261,7 @@ export function getProjectAdapter(toolId) {
   switch (toolId) {
     case "vector-map-editor":
       return createVectorMapAdapter();
-    case "vector-asset-studio":
+    case "svg-asset-studio":
       return createVectorAssetAdapter();
     case "tile-map-editor":
       return createTilemapAdapter();

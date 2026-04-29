@@ -264,7 +264,7 @@ $projectTools = [ordered]@{
         }
     }
     "vector-map-editor" = @{}
-    "vector-asset-studio" = [ordered]@{
+    "svg-asset-studio" = [ordered]@{
         selectedPaletteId = ""
     }
 }
@@ -274,7 +274,7 @@ $toolIntegrationTools = [ordered]@{
     "tile-map-editor" = (New-ToolIntegrationEntry -ToolId "tile-map-editor" -ContractId "tool-state.tile-map-editor/1")
     "parallax-editor" = (New-ToolIntegrationEntry -ToolId "parallax-editor" -ContractId "tool-state.parallax-editor/1")
     "vector-map-editor" = (New-ToolIntegrationEntry -ToolId "vector-map-editor" -ContractId "tool-state.vector-map-editor/1")
-    "vector-asset-studio" = (New-ToolIntegrationEntry -ToolId "vector-asset-studio" -ContractId "tool-state.vector-asset-studio/1")
+    "svg-asset-studio" = (New-ToolIntegrationEntry -ToolId "svg-asset-studio" -ContractId "tool-state.svg-asset-studio/1")
 }
 
 $timestamp = [DateTime]::UtcNow.ToString("o")

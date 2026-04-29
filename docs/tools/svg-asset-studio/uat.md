@@ -1,11 +1,11 @@
-# Vector Asset Studio - UAT
+# SVG Asset Studio - UAT
 
 ## Purpose
-Validate user acceptance readiness for Vector Asset Studio across launch, core workflow, and handoff behavior.
+Validate user acceptance readiness for SVG Asset Studio across launch, core workflow, and handoff behavior.
 
 ## Scope
-- Tool: `vector-asset-studio`
-- Entry point: `tools/Vector Asset Studio/index.html`
+- Tool: `svg-asset-studio`
+- Entry point: `tools/SVG Asset Studio/index.html`
 
 ## Validation Scenarios
 

@@ -127,7 +127,7 @@
       ],
       "toolsUsed": [
         "asset-browser",
-        "vector-asset-studio"
+        "svg-asset-studio"
       ]
     },
     {
@@ -206,7 +206,7 @@
         "sprite-editor",
         "tile-map-editor",
         "parallax-editor",
-        "vector-asset-studio",
+        "svg-asset-studio",
         "asset-pipeline-tool"
       ]
     },
@@ -360,7 +360,7 @@
         "asset-browser",
         "sprite-editor",
         "tile-map-editor",
-        "vector-asset-studio"
+        "svg-asset-studio"
       ]
     },
     {
@@ -535,7 +535,7 @@
       "toolsUsed": [
         "parallax-editor",
         "tile-map-editor",
-        "vector-asset-studio"
+        "svg-asset-studio"
       ]
     },
     {
@@ -734,7 +734,7 @@
       "requiresService": false,
       "toolsUsed": [
         "vector-map-editor",
-        "vector-asset-studio",
+        "svg-asset-studio",
         "tile-map-editor"
       ]
     },

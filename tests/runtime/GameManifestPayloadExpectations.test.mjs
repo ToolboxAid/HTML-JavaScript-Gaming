@@ -169,13 +169,13 @@ export async function run() {
     }
 
     if (gameFolder.toLowerCase() === "asteroids") {
-      const vectors = manifest?.tools?.["vector-asset-studio"]?.vectors;
+      const vectors = manifest?.tools?.["svg-asset-studio"]?.vectors;
       const vectorCount = Array.isArray(vectors)
         ? vectors.length
         : (isObjectRecord(vectors) ? Object.keys(vectors).length : 0);
       row.asteroidsVectorCount = vectorCount;
       if (vectorCount <= 0) {
-        failures.push("Asteroids: tools[\"vector-asset-studio\"].vectors must contain actual vector assets.");
+        failures.push("Asteroids: tools[\"svg-asset-studio\"].vectors must contain actual vector assets.");
       }
       if (Object.prototype.hasOwnProperty.call(manifest.tools || {}, "sprite-editor")) {
         failures.push("Asteroids: tools[\"sprite-editor\"] must be removed when no sprite payload exists.");
@@ -186,8 +186,8 @@ export async function run() {
       if (Object.prototype.hasOwnProperty.call(manifest.tools || {}, "parallax-editor")) {
         failures.push("Asteroids: tools[\"parallax-editor\"] must be removed when no parallax payload exists.");
       }
-      if (Object.prototype.hasOwnProperty.call(manifest?.tools?.["vector-asset-studio"] || {}, "libraries")) {
-        failures.push("Asteroids: tools[\"vector-asset-studio\"].libraries must be removed when only reference/index metadata exists.");
+      if (Object.prototype.hasOwnProperty.call(manifest?.tools?.["svg-asset-studio"] || {}, "libraries")) {
+        failures.push("Asteroids: tools[\"svg-asset-studio\"].libraries must be removed when only reference/index metadata exists.");
       }
     }
 
@@ -208,9 +208,9 @@ export async function run() {
     }
 
     if (gameFolder.toLowerCase() === "gravitywell") {
-      const vectorSection = manifest?.tools?.["vector-asset-studio"];
+      const vectorSection = manifest?.tools?.["svg-asset-studio"];
       if (!isObjectRecord(vectorSection)) {
-        failures.push("GravityWell: tools[\"vector-asset-studio\"] is required.");
+        failures.push("GravityWell: tools[\"svg-asset-studio\"] is required.");
       } else {
         const vectors = vectorSection.vectors;
         const vectorEntries = Array.isArray(vectors)
@@ -222,7 +222,7 @@ export async function run() {
         row.gravityWellVectorCount = vectorEntries.length;
         row.gravityWellVectorIds = vectorIds;
         if (vectorEntries.length === 0) {
-          failures.push("GravityWell: tools[\"vector-asset-studio\"].vectors must include at least one vector.");
+          failures.push("GravityWell: tools[\"svg-asset-studio\"].vectors must include at least one vector.");
         }
 
         const shipVector = vectorEntries.find((entry) => {
@@ -230,7 +230,7 @@ export async function run() {
           return id.includes("ship") || id.includes("player");
         });
         if (!shipVector) {
-          failures.push("GravityWell: ship/player vector id is required in tools[\"vector-asset-studio\"].vectors.");
+          failures.push("GravityWell: ship/player vector id is required in tools[\"svg-asset-studio\"].vectors.");
         } else {
           const paths = shipVector?.geometry?.paths;
           if (!Array.isArray(paths) || paths.length === 0) {

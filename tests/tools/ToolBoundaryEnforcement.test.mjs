@@ -8,7 +8,7 @@ const ACTIVE_TOOL_FOLDERS = Object.freeze([
   "Tilemap Studio",
   "Parallax Scene Studio",
   "Vector Map Editor",
-  "Vector Asset Studio",
+  "SVG Asset Studio",
   "Sprite Editor",
   "State Inspector",
   "Replay Visualizer",
@@ -86,7 +86,7 @@ export async function run() {
 
   const tilemapMain = readFileSync(path.join(toolsRoot, "Tilemap Studio", "main.js"), "utf8");
   const parallaxMain = readFileSync(path.join(toolsRoot, "Parallax Scene Studio", "main.js"), "utf8");
-  const vectorAssetMain = readFileSync(path.join(toolsRoot, "Vector Asset Studio", "main.js"), "utf8");
+  const vectorAssetMain = readFileSync(path.join(toolsRoot, "SVG Asset Studio", "main.js"), "utf8");
   const sharedHelper = readFileSync(path.join(toolsRoot, "shared", "toolSampleCatalog.js"), "utf8");
 
   assert.match(tilemapMain, /from "\.\.\/shared\/toolSampleCatalog\.js"/);

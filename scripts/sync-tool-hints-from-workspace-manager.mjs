@@ -33,7 +33,7 @@ const KIND_TO_TOOLS_USED = Object.freeze({
   sprite: ["sprite-editor"],
   tilemap: ["tile-map-editor"],
   parallax: ["parallax-editor"],
-  vector: ["vector-asset-studio"],
+  vector: ["svg-asset-studio"],
   image: ["asset-browser"],
   audio: ["asset-browser"],
   video: ["asset-browser"],

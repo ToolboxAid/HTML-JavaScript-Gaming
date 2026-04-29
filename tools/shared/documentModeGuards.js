@@ -56,7 +56,7 @@ const TOOL_REGISTRY_BY_ID = new Map([
   ["tile-map-editor", { displayName: "Tilemap Studio", entryPoint: "Tilemap Studio/index.html" }],
   ["parallax-editor", { displayName: "Parallax Scene Studio", entryPoint: "Parallax Scene Studio/index.html" }],
   ["vector-map-editor", { displayName: "Vector Map Editor", entryPoint: "Vector Map Editor/index.html" }],
-  ["vector-asset-studio", { displayName: "Vector Asset Studio", entryPoint: "Vector Asset Studio/index.html" }]
+  ["svg-asset-studio", { displayName: "SVG Asset Studio", entryPoint: "SVG Asset Studio/index.html" }]
 ]);
 
 function inferToolIdFromDocument(rawDocument) {

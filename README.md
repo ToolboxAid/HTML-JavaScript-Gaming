@@ -45,7 +45,7 @@ This repository includes an active and growing integrated toolchain for authorin
 - Tilemap Studio
 - Parallax Scene Studio
 - Sprite Editor
-- Vector Asset Studio
+- SVG Asset Studio
 - Vector Map Editor
 
 ### Browsing, preview, and support tools

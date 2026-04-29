@@ -7,7 +7,7 @@ This folder is standardized on UAT documentation.
 
 ## Primary Tool UAT Docs
 - [Vector Map Editor](./vector-map-editor/uat.md)
-- [Vector Asset Studio](./vector-asset-studio/uat.md)
+- [SVG Asset Studio](./svg-asset-studio/uat.md)
 - [Tilemap Studio](./tilemap-studio/uat.md)
 - [Parallax Scene Studio](./parallax-scene-studio/uat.md)
 - [Sprite Editor](./sprite-editor/uat.md)

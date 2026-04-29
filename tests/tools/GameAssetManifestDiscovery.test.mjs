@@ -59,7 +59,7 @@ export async function run() {
       vectors: [
         {
           ...asteroidsManifest.domains.vectors[0],
-          runtimePath: "games/Asteroids/game.manifest.json#tools/vector-asset-studio/libraries/tooldata.asteroids.vectors.library/data"
+          runtimePath: "games/Asteroids/game.manifest.json#tools/svg-asset-studio/libraries/tooldata.asteroids.vectors.library/data"
         }
       ]
     }

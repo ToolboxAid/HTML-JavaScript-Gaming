@@ -23,7 +23,7 @@
             "assetId": "sample-1413-vector-ui",
             "runtimeFileName": "sample-1413-vector-ui.runtime.json",
             "toolDataFileName": "sample-1413-vector-ui.tool.json",
-            "sourceToolId": "vector-asset-studio"
+            "sourceToolId": "svg-asset-studio"
           }
         ]
       },

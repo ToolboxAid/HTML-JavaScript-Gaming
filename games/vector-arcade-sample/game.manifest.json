@@ -107,7 +107,7 @@
       "name": "Parallax Editor",
       "source": "manifest"
     },
-    "vector-asset-studio": {
+    "svg-asset-studio": {
       "vectors": [
         {
           "id": "vector.vector-arcade.hud",
@@ -234,9 +234,9 @@
           }
         }
       ],
-      "schema": "html-js-gaming.tool.vector-asset-studio",
+      "schema": "html-js-gaming.tool.svg-asset-studio",
       "version": 1,
-      "name": "Vector Asset Studio",
+      "name": "SVG Asset Studio",
       "source": "manifest"
     },
     "asset-browser": {

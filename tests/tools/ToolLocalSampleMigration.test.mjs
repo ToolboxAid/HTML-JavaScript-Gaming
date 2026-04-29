@@ -11,9 +11,9 @@ const MIGRATED_SAMPLES = Object.freeze([
   { id: "1212", toolId: "vector-map-editor", toolPath: "/tools/Vector%20Map%20Editor/index.html" },
   { id: "1213", toolId: "vector-map-editor", toolPath: "/tools/Vector%20Map%20Editor/index.html" },
   { id: "1214", toolId: "vector-map-editor", toolPath: "/tools/Vector%20Map%20Editor/index.html" },
-  { id: "1215", toolId: "vector-asset-studio", toolPath: "/tools/Vector%20Asset%20Studio/index.html" },
-  { id: "1216", toolId: "vector-asset-studio", toolPath: "/tools/Vector%20Asset%20Studio/index.html" },
-  { id: "1217", toolId: "vector-asset-studio", toolPath: "/tools/Vector%20Asset%20Studio/index.html" },
+  { id: "1215", toolId: "svg-asset-studio", toolPath: "/tools/SVG%20Asset%20Studio/index.html" },
+  { id: "1216", toolId: "svg-asset-studio", toolPath: "/tools/SVG%20Asset%20Studio/index.html" },
+  { id: "1217", toolId: "svg-asset-studio", toolPath: "/tools/SVG%20Asset%20Studio/index.html" },
   { id: "1218", toolId: "parallax-editor", toolPath: "/tools/Parallax%20Scene%20Studio/index.html" },
   { id: "1219", toolId: "parallax-editor", toolPath: "/tools/Parallax%20Scene%20Studio/index.html" },
   { id: "1220", toolId: "parallax-editor", toolPath: "/tools/Parallax%20Scene%20Studio/index.html" }
@@ -38,10 +38,10 @@ function assertToolSampleControlsRemoved() {
   assert.equal(vectorMapHtml.includes('id="sampleSelect"'), false, "Vector Map Editor sample select should be removed.");
   assert.equal(vectorMapHtml.includes('id="loadSampleButton"'), false, "Vector Map Editor sample load button should be removed.");
 
-  const vectorAssetHtml = readText(path.join(REPO_ROOT, "tools", "Vector Asset Studio", "index.html"));
-  assert.equal(vectorAssetHtml.includes('id="sampleSelect"'), false, "Vector Asset Studio sample select should be removed.");
-  assert.equal(vectorAssetHtml.includes('id="loadSampleButton"'), false, "Vector Asset Studio sample load button should be removed.");
-  assert.equal(vectorAssetHtml.includes('id="refreshSamplesButton"'), false, "Vector Asset Studio sample refresh button should be removed.");
+  const vectorAssetHtml = readText(path.join(REPO_ROOT, "tools", "SVG Asset Studio", "index.html"));
+  assert.equal(vectorAssetHtml.includes('id="sampleSelect"'), false, "SVG Asset Studio sample select should be removed.");
+  assert.equal(vectorAssetHtml.includes('id="loadSampleButton"'), false, "SVG Asset Studio sample load button should be removed.");
+  assert.equal(vectorAssetHtml.includes('id="refreshSamplesButton"'), false, "SVG Asset Studio sample refresh button should be removed.");
 
   const parallaxHtml = readText(path.join(REPO_ROOT, "tools", "Parallax Scene Studio", "index.html"));
   assert.equal(parallaxHtml.includes('id="sampleSelect"'), false, "Parallax Scene Studio sample select should be removed.");
@@ -93,14 +93,14 @@ function assertNoSampleDropdownSelectInToolIndexes() {
 
 function assertExplicitPresetInputSupportRetained() {
   const vectorMapJs = readText(path.join(REPO_ROOT, "tools", "Vector Map Editor", "editor", "VectorMapEditorApp.js"));
-  const vectorAssetJs = readText(path.join(REPO_ROOT, "tools", "Vector Asset Studio", "main.js"));
+  const vectorAssetJs = readText(path.join(REPO_ROOT, "tools", "SVG Asset Studio", "main.js"));
   const parallaxJs = readText(path.join(REPO_ROOT, "tools", "Parallax Scene Studio", "main.js"));
 
   assert.match(vectorMapJs, /samplePresetPath/, "Vector Map Editor must retain samplePresetPath support.");
   assert.match(vectorMapJs, /tryLoadPresetFromQuery\(/, "Vector Map Editor must retain query preset loader.");
 
-  assert.match(vectorAssetJs, /samplePresetPath/, "Vector Asset Studio must retain samplePresetPath support.");
-  assert.match(vectorAssetJs, /tryLoadPresetFromQuery\(/, "Vector Asset Studio must retain query preset loader.");
+  assert.match(vectorAssetJs, /samplePresetPath/, "SVG Asset Studio must retain samplePresetPath support.");
+  assert.match(vectorAssetJs, /tryLoadPresetFromQuery\(/, "SVG Asset Studio must retain query preset loader.");
 
   assert.match(parallaxJs, /samplePresetPath/, "Parallax Scene Studio must retain samplePresetPath support.");
   assert.match(parallaxJs, /tryLoadPresetFromQuery\(/, "Parallax Scene Studio must retain query preset loader.");

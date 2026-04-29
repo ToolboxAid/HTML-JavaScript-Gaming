@@ -51,8 +51,8 @@
         "vector-map-editor": {
           "$ref": "./tools/vector-map-editor.schema.json"
         },
-        "vector-asset-studio": {
-          "$ref": "./tools/vector-asset-studio.schema.json"
+        "svg-asset-studio": {
+          "$ref": "./tools/svg-asset-studio.schema.json"
         },
         "tile-map-editor": {
           "$ref": "./tools/tile-map-editor.schema.json"

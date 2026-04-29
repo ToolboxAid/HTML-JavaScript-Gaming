@@ -13,7 +13,7 @@
       "type": "vector",
       "displayName": "Template Player Vector",
       "sourcePath": "templates/vector-native-arcade/assets/vectors/template-player.vector.json",
-      "sourceToolId": "vector-asset-studio",
+      "sourceToolId": "svg-asset-studio",
       "updatedAt": "2026-04-05T00:00:00.000Z",
       "metadata": {
         "validationRole": "vector"
@@ -38,7 +38,7 @@
         "type": "vector",
         "displayName": "Template Player Vector",
         "sourcePath": "templates/vector-native-arcade/assets/vectors/template-player.vector.json",
-        "sourceToolId": "vector-asset-studio"
+        "sourceToolId": "svg-asset-studio"
       },
       {
         "id": "tilemap.template.arena",
@@ -98,7 +98,7 @@
         "sprite.asteroids-demo"
       ]
     },
-    "vector-asset-studio": {
+    "svg-asset-studio": {
       "documentName": "starter-backdrop",
       "svgText": "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"1600\" height=\"900\" viewBox=\"0 0 1600 900\" data-editor-palette-id=\"vector-native-primary\" data-editor-paint=\"#6FD3FF\" data-editor-stroke=\"#E8F0FF\" data-editor-stroke-width=\"2\"><rect id=\"starter-bg\" x=\"0\" y=\"0\" width=\"1600\" height=\"900\" fill=\"#05070D\" stroke=\"#05070D\"/><circle id=\"starter-orbit\" cx=\"800\" cy=\"450\" r=\"180\" fill=\"none\" stroke=\"#6FD3FF\" stroke-width=\"4\"/><polygon id=\"starter-ship\" points=\"800,320 860,520 800,470 740,520\" fill=\"#E8F0FF\" stroke=\"#6FD3FF\" stroke-width=\"3\"/></svg>",
       "canvasWidth": 1600,

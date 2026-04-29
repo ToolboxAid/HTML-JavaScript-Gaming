@@ -250,7 +250,7 @@ export function normalizeVectorAssetContract(asset, options = {}) {
     type: "vector",
     path: sanitizeVectorText(source.path),
     paletteId: sanitizeVectorText(source.paletteId),
-    sourceTool: sanitizeVectorText(source.sourceTool) || "vector-asset-studio",
+    sourceTool: sanitizeVectorText(source.sourceTool) || "svg-asset-studio",
     source: {
       kind: sanitizeVectorText(source?.source?.kind),
       path: sanitizeVectorText(source?.source?.path) || sanitizeVectorText(source.path)

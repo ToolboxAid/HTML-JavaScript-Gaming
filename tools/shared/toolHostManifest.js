@@ -1,4 +1,4 @@
-import { getActiveToolRegistry } from "../toolRegistry.js";
+import { getActiveToolRegistry, resolveToolIdAlias } from "../toolRegistry.js";
 
 const TOOL_HOST_MANIFEST_SCHEMA = "tools.tool-host-manifest/1";
 
@@ -32,7 +32,7 @@ export function getToolHostEntryById(manifest, toolId) {
   if (!manifest || !Array.isArray(manifest.tools)) {
     return null;
   }
-  const id = typeof toolId === "string" ? toolId.trim() : "";
+  const id = resolveToolIdAlias(toolId);
   if (!id) {
     return null;
   }
