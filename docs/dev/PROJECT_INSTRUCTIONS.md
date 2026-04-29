@@ -212,6 +212,23 @@ If ZIP delivery fails more than once:
 - Update Roadmap stutus every PR.
 - Every PRs must improve roadmap and be testable.
 
+
+- Full samples smoke test takes ~20 minutes.
+- DO NOT run full samples test by default.
+
+- Run full samples test ONLY when:
+  - shared sample loader/framework is modified
+  - change impacts multiple samples broadly
+  - correctness cannot be verified with targeted tests
+
+- Prefer targeted validation:
+  - syntax checks for changed files
+  - run only affected samples
+  - run tool-specific tests when available
+
+- Every PR must document:
+  - whether full samples test was skipped or run
+  - reason for decision
 ---
 
 # BUILD_PR_LEVEL_19_20_TOOLCHAIN_ROADMAP_GUARD_ENFORCEMENT

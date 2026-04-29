@@ -1,50 +1,67 @@
 MODEL: GPT-5.3-codex
-REASONING: medium
+REASONING: high
 
 TASK:
-Apply PR 11.42.
+Apply PR 11.43.
 
-Remove `buildDefaultPayload` from:
-- 3D Asset Viewer
-- 3D Camera Path Editor
-- 3D JSON Payload Normalizer
+Use PR 11.41 audit output as the source of truth:
+docs/dev/reports/PR_11_41_sample_json_ownership_audit.md
 
-This cleanup supports the explicit sample JSON/input contract from PR 11.41.
+Goal:
+Perform the first targeted cleanup batch for deferred sample JSON ownership findings.
 
-Rules:
-- Do not fabricate payloads.
-- Do not auto-load hidden defaults.
-- Do not create fallback sample geometry/camera/path data.
-- When no payload/input exists, show a safe empty state explaining explicit JSON/input is required.
-- Preserve behavior when explicit payload/input is provided.
-- Keep changes limited to the listed tools and direct shared helpers only if required.
+Important:
+Do NOT run the full samples smoke test by default.
+It takes about 20 minutes.
 
-Search terms:
-- buildDefaultPayload
-- 3d asset viewer
-- 3d camera path editor
-- 3d json payload normalizer
-- payload normalizer
+Testing policy:
+- Prefer targeted sample-specific tests only.
+- Run syntax checks for changed JS files.
+- Run targeted smoke only for samples changed by this PR.
+- Run full samples smoke only if this PR changes shared sample launch infrastructure or a broad shared loader.
+
+Cleanup policy:
+For deferred PR 11.41 items:
+- KEEP + WIRE if JSON belongs to current executable sample and can be visibly used.
+- MOVE / REHOME if JSON clearly belongs to a different sample/tool.
+- DELETE only if stale/obsolete and coverage remains elsewhere.
+- CREATE / UPDATE CORRECT SAMPLE if coverage would otherwise be lost.
+- DEFER if ownership is uncertain.
+
+Sample 1902:
+- remains exempt
+- do not apply single-tool ownership cleanup to 1902
+
+Batch selection:
+- Choose the smallest safe batch from the deferred 11.41 list.
+- Prefer items with clear ownership and low blast radius.
+- Do not attempt to fix all deferred items at once.
 
 Do NOT:
-- change unrelated tools
-- change sample 1902 workspace payload except as needed for correct explicit-input messaging
+- run full samples test unless justified
+- add hidden fallback/default data
+- create decorative JSON
+- change unrelated tool logic
 - undo SVG Asset Studio rename
 - touch start_of_day folders
 
 Validation:
-Run targeted syntax checks for changed JS files.
 Run:
-node ./tests/runtime/LaunchSmokeAllEntries.test.mjs --samples --tools
+- node --check for changed JS files
+- targeted sample/tool smoke for changed samples only
 
-If full smoke is too broad, run relevant targeted smoke and document why.
+If a full test is required, explain why in the report before running it.
 
 Reports:
 Write:
-docs/dev/reports/PR_11_42_validation.txt
+docs/dev/reports/PR_11_43_cleanup_batch_1.md
+docs/dev/reports/PR_11_43_validation.txt
 
 Report must include:
-- files changed
-- each removed buildDefaultPayload location
-- new no-input behavior for each tool
-- validation command results
+- source PR 11.41 findings used
+- resolved JSON items
+- action taken for each
+- coverage preserved statement
+- deferred items remaining
+- exact targeted tests run
+- whether full suite was skipped and why

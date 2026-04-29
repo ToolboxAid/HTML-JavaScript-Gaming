@@ -1829,13 +1829,18 @@
         "engine/theme/index/ThemeTokens"
       ],
       "toolHints": [
-        "sprite-editor"
+        "sprite-editor",
+        "palette-browser"
       ],
       "roundtripToolPresets": [
         {
           "toolId": "sprite-editor",
           "presetPath": "/samples/phase-02/0219/sample.0219.sprite-editor.json",
           "palettePath": "/samples/phase-02/0219/sample.0219.palette.json"
+        },
+        {
+          "toolId": "palette-browser",
+          "presetPath": "/samples/phase-02/0219/sample.0219.palette.json"
         }
       ]
     },
@@ -2270,13 +2275,18 @@
         "engine/tilemap/index/Tilemap"
       ],
       "toolHints": [
-        "sprite-editor"
+        "sprite-editor",
+        "palette-browser"
       ],
       "roundtripToolPresets": [
         {
           "toolId": "sprite-editor",
           "presetPath": "/samples/phase-03/0301/sample.0301.sprite-editor.json",
           "palettePath": "/samples/phase-03/0301/sample.0301.palette.json"
+        },
+        {
+          "toolId": "palette-browser",
+          "presetPath": "/samples/phase-03/0301/sample.0301.palette.json"
         }
       ]
     },
@@ -2337,13 +2347,18 @@
         "engine/tilemap/index/Tilemap"
       ],
       "toolHints": [
-        "sprite-editor"
+        "sprite-editor",
+        "palette-browser"
       ],
       "roundtripToolPresets": [
         {
           "toolId": "sprite-editor",
           "presetPath": "/samples/phase-03/0302/sample.0302.sprite-editor.json",
           "palettePath": "/samples/phase-03/0302/sample.0302.palette.json"
+        },
+        {
+          "toolId": "palette-browser",
+          "presetPath": "/samples/phase-03/0302/sample.0302.palette.json"
         }
       ]
     },
@@ -5975,13 +5990,18 @@
         "engine/theme/index/ThemeTokens"
       ],
       "toolHints": [
-        "sprite-editor"
+        "sprite-editor",
+        "palette-browser"
       ],
       "roundtripToolPresets": [
         {
           "toolId": "sprite-editor",
           "presetPath": "/samples/phase-09/0905/sample.0905.sprite-editor.json",
           "palettePath": "/samples/phase-09/0905/sample.0905.palette.json"
+        },
+        {
+          "toolId": "palette-browser",
+          "presetPath": "/samples/phase-09/0905/sample.0905.palette.json"
         }
       ]
     },
@@ -8262,13 +8282,18 @@
         "engine/scene/index/Scene"
       ],
       "toolHints": [
-        "sprite-editor"
+        "sprite-editor",
+        "palette-browser"
       ],
       "roundtripToolPresets": [
         {
           "toolId": "sprite-editor",
           "presetPath": "/samples/phase-14/1414/sample.1414.sprite-editor.json",
           "palettePath": "/samples/phase-14/1414/sample.1414.palette.json"
+        },
+        {
+          "toolId": "palette-browser",
+          "presetPath": "/samples/phase-14/1414/sample.1414.palette.json"
         }
       ]
     },
