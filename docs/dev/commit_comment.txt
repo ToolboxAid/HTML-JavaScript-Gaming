@@ -1,1 +1,1 @@
-Fix actual Workspace Manager tile overflow source - PR 11.33
+Clarify Vector Asset Studio and Vector Map Editor roles via descriptions - PR 11.35

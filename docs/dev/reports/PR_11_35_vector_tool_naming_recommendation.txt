@@ -1,0 +1,39 @@
+PR 11.35 - Vector Tool Naming Recommendation
+
+Scope completed:
+- Updated tool manifest metadata descriptions for:
+  - Vector Asset Studio
+  - Vector Map Editor
+- These updated descriptions now flow into:
+  - Workspace Manager/tool host metadata consumers
+  - Shared tool header description
+  - Fullscreen summary/description binding
+
+Applied description text:
+- Vector Asset Studio:
+  "Create and edit reusable vector (SVG) assets. Build shapes, icons, and asset components."
+- Vector Map Editor:
+  "Place and arrange vector assets in space. Build layouts, scenes, and maps."
+
+Suggested improved names (recommendation only; not applied in this PR):
+1. Vector Asset Studio -> SVG Asset Studio
+   Reasoning:
+   - Makes SVG ownership explicit in the name.
+   - Reduces ambiguity with map/layout editing.
+
+2. Vector Map Editor -> Vector Layout Editor
+   Reasoning:
+   - Emphasizes spatial composition/layout intent.
+   - Better contrasts with asset authoring semantics.
+
+3. Alternative pair (if stronger role split is desired):
+   - Asset Authoring Studio (SVG)
+   - Scene/Map Layout Editor
+   Reasoning:
+   - Uses role-first naming to avoid overlapping "vector" semantics.
+   - Helps users choose the right tool quickly in Workspace Manager.
+
+Why this recommendation:
+- Current overlap in the word "Vector" can blur first-time tool choice.
+- Description differentiation now improves this significantly without renaming risk.
+- If confusion persists in UAT, a follow-up rename PR can be done safely with migration notes.
