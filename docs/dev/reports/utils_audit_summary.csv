@@ -1,0 +1,7 @@
+Category,Metric,Count,Notes
+DeadUsage,UtilityFilesScanned,22,"src/shared/utils and src/engine/utils"
+DeadUsage,PotentialUnusedUtilityFiles,0,"No import/path references found in source scan roots"
+DeadUsage,PotentialUnusedNamedExports,40,"No named/default import evidence found"
+Duplicates,DuplicateExportNames,21,"Same export name appears in multiple utility files"
+Category,EngineUtilsFilesRemaining,0,"Files still under src/engine/utils"
+References,RemainingLiteralEngineUtilsReferences,11,"Occurrences of src/engine/utils/ or /src/engine/utils/"
