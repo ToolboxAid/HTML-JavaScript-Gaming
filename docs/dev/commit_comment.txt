@@ -1,1 +1,1 @@
-Lock sample JSON audit output and CI regression guard - PR 11.68
+Add CI-safe sample JSON lockdown audit with palette-only visibility - PR 11.71
