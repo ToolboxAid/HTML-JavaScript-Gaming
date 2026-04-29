@@ -1,0 +1,20 @@
+# PR 11.41 Validation
+
+## Changed Files
+-
+
+## Sample 1902 Exemption Confirmed
+-
+
+## Coverage Preserved
+-
+
+## Validation Commands
+- node --check tools/shared/platformShell.js
+- node ./tests/runtime/LaunchSmokeAllEntries.test.mjs --samples --tools
+
+## Manual Validation
+-
+
+## Notes
+-

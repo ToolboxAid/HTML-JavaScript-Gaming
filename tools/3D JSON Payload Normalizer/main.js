@@ -19,6 +19,7 @@ const refs = {
 };
 
 const MAP_PAYLOAD_SCHEMA = "tools.3d-json-payload-normalizer.document/1";
+const MAP_NORMALIZER_EMPTY_STATE_MESSAGE = "No map payload loaded. Provide explicit JSON input or launch with samplePresetPath.";
 
 function sanitizeNumber(value, fallback = 0) {
   const numeric = Number(value);
@@ -30,7 +31,12 @@ function sanitizeNumber(value, fallback = 0) {
 
 function normalizeMapPayload(rawPayload) {
   if (!rawPayload || typeof rawPayload !== "object") {
-    return buildDefaultPayload();
+    return {
+      schema: MAP_PAYLOAD_SCHEMA,
+      mapId: "map-3d",
+      points: [],
+      segments: []
+    };
   }
   const rawPoints = Array.isArray(rawPayload.points) ? rawPayload.points : [];
   const points = rawPoints.map((rawPoint, index) => {
@@ -101,22 +107,6 @@ function setStatus(message) {
   }
 }
 
-function buildDefaultPayload() {
-  return {
-    schema: MAP_PAYLOAD_SCHEMA,
-    mapId: "map-3d-baseline",
-    points: [
-      { id: "p1", x: -10, y: 0, z: 5 },
-      { id: "p2", x: 10, y: 0, z: 5 },
-      { id: "p3", x: 0, y: 0, z: -8 }
-    ],
-    segments: [
-      { from: "p1", to: "p2" },
-      { from: "p2", to: "p3" }
-    ]
-  };
-}
-
 function extractMapPayloadFromPreset(rawPreset) {
   if (!rawPreset || typeof rawPreset !== "object") {
     return null;
@@ -167,6 +157,7 @@ async function tryLoadPresetFromQuery() {
       reason: "samplePresetPath missing",
       launchQuery
     });
+    setStatus(MAP_NORMALIZER_EMPTY_STATE_MESSAGE);
     return;
   }
   const sampleId = String(searchParams.get("sampleId") || "").trim();
@@ -252,7 +243,7 @@ function boot3dMapEditor() {
     });
   }
   if (refs.input instanceof HTMLTextAreaElement && !refs.input.value.trim()) {
-    refs.input.value = toPrettyJson(buildDefaultPayload());
+    setStatus(MAP_NORMALIZER_EMPTY_STATE_MESSAGE);
   }
   void tryLoadPresetFromQuery();
   return {

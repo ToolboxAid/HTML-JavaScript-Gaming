@@ -1,84 +1,50 @@
 MODEL: GPT-5.3-codex
-REASONING: high
+REASONING: medium
 
 TASK:
-Apply PR 11.37.
+Apply PR 11.42.
 
-Perform a deep rename:
-Vector Asset Studio -> SVG Asset Studio
+Remove `buildDefaultPayload` from:
+- 3D Asset Viewer
+- 3D Camera Path Editor
+- 3D JSON Payload Normalizer
 
-This is not display-only. Rename directories, files, ids, usage, schema references, JSON payloads, docs, tests, imports, launch URLs, registry entries, and Workspace Manager references as needed.
+This cleanup supports the explicit sample JSON/input contract from PR 11.41.
 
-Canonical new identity:
-- display name: SVG Asset Studio
-- internal/tool id: svg-asset-studio
-- purpose: SVG-focused asset authoring studio
+Rules:
+- Do not fabricate payloads.
+- Do not auto-load hidden defaults.
+- Do not create fallback sample geometry/camera/path data.
+- When no payload/input exists, show a safe empty state explaining explicit JSON/input is required.
+- Preserve behavior when explicit payload/input is provided.
+- Keep changes limited to the listed tools and direct shared helpers only if required.
 
-Old identity:
-- display name: Vector Asset Studio
-- old id likely: vector-asset-studio
-
-Compatibility:
-- Provide one centralized temporary alias:
-  vector-asset-studio -> svg-asset-studio
-- The alias must be documented.
-- Do not scatter remapping logic across files.
-- Do not create duplicate tool entries.
-- Do not keep both tools visible.
-- Do not create pass-through variable chains.
-- Do not add hidden/default fallback data.
-
-Required work:
-1. Inspect actual current repo for all references:
-   - "Vector Asset Studio"
-   - "vector-asset-studio"
-   - "vectorAssetStudio"
-   - "vector asset studio"
-   - related path names
-2. Rename active tool directory/file names where feasible.
-3. Update imports and references.
-4. Update tool manifest/registry/schema entries.
-5. Update sample 1902 workspace JSON/payload references.
-6. Update docs/help text that users see.
-7. Update tests/smoke expectations.
-8. Keep old references only in:
-   - one compatibility alias location
-   - migration/report docs
-9. Validate no duplicate SVG/Vector Asset Studio tiles appear.
+Search terms:
+- buildDefaultPayload
+- 3d asset viewer
+- 3d camera path editor
+- 3d json payload normalizer
+- payload normalizer
 
 Do NOT:
-- change unrelated tool behavior
-- modify Vector Map Editor except where it references the renamed tool
-- modify payload behavior except ID/name migration
-- touch start_of_day folders unless required by active runtime validation
-- leave mixed canonical naming
+- change unrelated tools
+- change sample 1902 workspace payload except as needed for correct explicit-input messaging
+- undo SVG Asset Studio rename
+- touch start_of_day folders
 
 Validation:
+Run targeted syntax checks for changed JS files.
 Run:
-node --check tools/shared/platformShell.js
-node ./tests/runtime/LaunchSmokeAllEntries.test.mjs --samples --sample-range=1902-1902 --tools
+node ./tests/runtime/LaunchSmokeAllEntries.test.mjs --samples --tools
 
-Also run repo search checks and include results in report:
-- search for "Vector Asset Studio"
-- search for "vector-asset-studio"
-- search for "SVG Asset Studio"
-- search for "svg-asset-studio"
+If full smoke is too broad, run relevant targeted smoke and document why.
 
-Manual validation:
-Open sample 1902 -> Workspace Manager.
-Confirm:
-- one tile only: SVG Asset Studio
-- no Vector Asset Studio tile
-- SVG Asset Studio opens
-- Vector Map Editor still opens
-- workspace payload still loads correctly
+Reports:
+Write:
+docs/dev/reports/PR_11_42_validation.txt
 
-REPORT:
-Write docs/dev/reports/PR_11_37_deep_rename_validation.txt with:
-- files renamed
-- files edited
-- canonical new IDs/names
-- compatibility alias location
-- remaining old-name references and why each is allowed
+Report must include:
+- files changed
+- each removed buildDefaultPayload location
+- new no-input behavior for each tool
 - validation command results
-- manual validation notes

@@ -49,6 +49,8 @@ function buildPresetLoadedStatus(sampleId, samplePresetPath) {
   return normalizedPath ? `Loaded preset from ${normalizedPath}.` : "Loaded preset.";
 }
 
+const ASSET_VIEWER_EMPTY_STATE_MESSAGE = "No 3D asset payload loaded. Provide explicit JSON input or launch with samplePresetPath.";
+
 function setStatus(message) {
   if (refs.statusText instanceof HTMLElement) {
     refs.statusText.textContent = message;
@@ -90,24 +92,14 @@ function computeBounds(vertices) {
   };
 }
 
-function buildDefaultPayload() {
-  return {
-    schema: ASSET_VIEWER_PAYLOAD_SCHEMA,
-    assetId: "ship-hull",
-    vertices: [
-      { x: -1, y: -0.5, z: -2 },
-      { x: 1, y: -0.5, z: -2 },
-      { x: 0, y: 0.75, z: 2 }
-    ],
-    metadata: {
-      sourceToolId: "svg-asset-studio"
-    }
-  };
-}
-
 function normalizeAssetPayload(rawPayload) {
   if (!rawPayload || typeof rawPayload !== "object") {
-    return buildDefaultPayload();
+    return {
+      schema: ASSET_VIEWER_PAYLOAD_SCHEMA,
+      assetId: "asset-3d",
+      vertices: [],
+      metadata: {}
+    };
   }
   const rawVertices = Array.isArray(rawPayload.vertices) ? rawPayload.vertices : [];
   const vertices = rawVertices.map((rawVertex) => {
@@ -180,6 +172,7 @@ async function tryLoadPresetFromQuery() {
       reason: "samplePresetPath missing",
       launchQuery
     });
+    setStatus(ASSET_VIEWER_EMPTY_STATE_MESSAGE);
     return;
   }
   const sampleId = String(searchParams.get("sampleId") || "").trim();
@@ -269,7 +262,7 @@ function boot3dAssetViewer() {
     refs.inspectButton.addEventListener("click", inspectAssetPayload);
   }
   if (refs.input instanceof HTMLTextAreaElement && !refs.input.value.trim()) {
-    refs.input.value = toPrettyJson(buildDefaultPayload());
+    setStatus(ASSET_VIEWER_EMPTY_STATE_MESSAGE);
   }
   void tryLoadPresetFromQuery();
   return {

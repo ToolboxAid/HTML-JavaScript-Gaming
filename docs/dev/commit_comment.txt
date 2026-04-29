@@ -1,1 +1,1 @@
-Deep rename Vector Asset Studio to SVG Asset Studio - PR 11.37
+Remove default payload builders from 3D tools - PR 11.42

@@ -1,0 +1,18 @@
+# PR 11.42 Validation
+
+## Changed Files
+-
+
+## Removed buildDefaultPayload Locations
+-
+
+## New No-Input Behavior
+
+### 3D Asset Viewer
+
+### 3D Camera Path Editor
+
+### 3D JSON Payload Normalizer
+
+## Validation
+-

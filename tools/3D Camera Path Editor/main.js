@@ -19,6 +19,7 @@ const refs = {
 };
 
 const CAMERA_PATH_PAYLOAD_SCHEMA = "tools.3d-camera-path.path/1";
+const CAMERA_PATH_EMPTY_STATE_MESSAGE = "No camera path payload loaded. Provide explicit JSON input or launch with samplePresetPath.";
 
 function sanitizeNumber(value, fallback = 0) {
   const numeric = Number(value);
@@ -30,7 +31,11 @@ function sanitizeNumber(value, fallback = 0) {
 
 function normalizeCameraPathPayload(rawPayload) {
   if (!rawPayload || typeof rawPayload !== "object") {
-    return buildDefaultPayload();
+    return {
+      schema: CAMERA_PATH_PAYLOAD_SCHEMA,
+      pathId: "camera-path",
+      waypoints: []
+    };
   }
   const rawWaypoints = Array.isArray(rawPayload.waypoints) ? rawPayload.waypoints : [];
   const waypoints = rawWaypoints.map((rawWaypoint, index) => {
@@ -107,25 +112,6 @@ function parseInputPayload() {
   return normalizeCameraPathPayload(parsed);
 }
 
-function buildDefaultPayload() {
-  return {
-    schema: CAMERA_PATH_PAYLOAD_SCHEMA,
-    pathId: "camera-orbit-a",
-    waypoints: [
-      {
-        t: 0,
-        position: { x: 0, y: 8, z: -20 },
-        lookAt: { x: 0, y: 0, z: 0 }
-      },
-      {
-        t: 2000,
-        position: { x: 10, y: 10, z: -10 },
-        lookAt: { x: 0, y: 0, z: 0 }
-      }
-    ]
-  };
-}
-
 function extractCameraPathFromPreset(rawPreset) {
   if (!rawPreset || typeof rawPreset !== "object") {
     return null;
@@ -176,6 +162,7 @@ async function tryLoadPresetFromQuery() {
       reason: "samplePresetPath missing",
       launchQuery
     });
+    setStatus(CAMERA_PATH_EMPTY_STATE_MESSAGE);
     return;
   }
   const sampleId = String(searchParams.get("sampleId") || "").trim();
@@ -250,7 +237,11 @@ function normalizeCameraPath() {
 }
 
 function addWaypoint() {
-  const parsed = parseInputPayload() || buildDefaultPayload();
+  const parsed = parseInputPayload();
+  if (!parsed || !Array.isArray(parsed.waypoints)) {
+    setStatus("Cannot add waypoint: explicit camera path JSON input is required.");
+    return;
+  }
   const waypoints = Array.isArray(parsed.waypoints) ? parsed.waypoints.slice() : [];
   const lastTime = waypoints.length > 0 ? Number(waypoints[waypoints.length - 1]?.t) || 0 : 0;
   waypoints.push({
@@ -273,7 +264,7 @@ function boot3dCameraPathEditor() {
     refs.normalizeButton.addEventListener("click", normalizeCameraPath);
   }
   if (refs.input instanceof HTMLTextAreaElement && !refs.input.value.trim()) {
-    refs.input.value = toPrettyJson(buildDefaultPayload());
+    setStatus(CAMERA_PATH_EMPTY_STATE_MESSAGE);
   }
   void tryLoadPresetFromQuery();
   return {
