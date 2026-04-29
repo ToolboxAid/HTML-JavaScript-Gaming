@@ -4,57 +4,6 @@
   "version": 1,
   "id": "sample-1902-workspace-all-tools",
   "name": "Sample 1902 Workspace All Tools",
-  "palettes": {
-    "sample-1902-workspace-palette": {
-      "schema": "html-js-gaming.palette",
-      "version": 1,
-      "name": "Sample 1902 Workspace Palette",
-      "source": "sample",
-      "sourceId": "sample-1902-workspace-palette",
-      "swatches": [
-        {
-          "symbol": "A",
-          "hex": "#0F172AFF",
-          "name": "Night"
-        },
-        {
-          "symbol": "B",
-          "hex": "#111827FF",
-          "name": "Slate"
-        },
-        {
-          "symbol": "C",
-          "hex": "#38BDF8FF",
-          "name": "Sky"
-        },
-        {
-          "symbol": "D",
-          "hex": "#64748BFF",
-          "name": "Steel"
-        },
-        {
-          "symbol": "E",
-          "hex": "#F8FAFCFF",
-          "name": "Cloud"
-        },
-        {
-          "symbol": "F",
-          "hex": "#A78BFAFF",
-          "name": "Violet"
-        },
-        {
-          "symbol": "G",
-          "hex": "#22C55EFF",
-          "name": "Green"
-        },
-        {
-          "symbol": "H",
-          "hex": "#FB923CFF",
-          "name": "Amber"
-        }
-      ]
-    }
-  },
   "tools": {
     "vector-map-editor": {
       "tool": "vector-map-editor",
@@ -202,52 +151,10 @@
             "palette": {
               "id": "sample-1902-workspace-palette",
               "name": "Sample 1902 Workspace Palette",
-              "entries": [
-                {
-                  "symbol": "A",
-                  "hex": "#0F172AFF",
-                  "name": "Night"
-                },
-                {
-                  "symbol": "B",
-                  "hex": "#111827FF",
-                  "name": "Slate"
-                },
-                {
-                  "symbol": "C",
-                  "hex": "#38BDF8FF",
-                  "name": "Sky"
-                },
-                {
-                  "symbol": "D",
-                  "hex": "#64748BFF",
-                  "name": "Steel"
-                },
-                {
-                  "symbol": "E",
-                  "hex": "#F8FAFCFF",
-                  "name": "Cloud"
-                },
-                {
-                  "symbol": "F",
-                  "hex": "#A78BFAFF",
-                  "name": "Violet"
-                },
-                {
-                  "symbol": "G",
-                  "hex": "#22C55EFF",
-                  "name": "Green"
-                },
-                {
-                  "symbol": "H",
-                  "hex": "#FB923CFF",
-                  "name": "Amber"
-                }
-              ],
-              "paint": "#38BDF8FF",
               "stroke": "#F8FAFCFF",
               "strokeWidth": 2,
-              "activeTarget": "paint"
+              "activeTarget": "paint",
+              "paint": "#38BDF8FF"
             },
             "paint": "#38BDF8FF",
             "stroke": "#F8FAFCFF",
@@ -1051,55 +958,6 @@
             }
           ],
           "currentFrameIndex": 0
-        },
-        "palette": {
-          "schema": "html-js-gaming.palette",
-          "version": 1,
-          "name": "Sample 1902 Workspace Palette",
-          "source": "sample",
-          "sourceId": "sample-1902-workspace-palette",
-          "swatches": [
-            {
-              "symbol": "A",
-              "hex": "#0F172AFF",
-              "name": "Night"
-            },
-            {
-              "symbol": "B",
-              "hex": "#111827FF",
-              "name": "Slate"
-            },
-            {
-              "symbol": "C",
-              "hex": "#38BDF8FF",
-              "name": "Sky"
-            },
-            {
-              "symbol": "D",
-              "hex": "#64748BFF",
-              "name": "Steel"
-            },
-            {
-              "symbol": "E",
-              "hex": "#F8FAFCFF",
-              "name": "Cloud"
-            },
-            {
-              "symbol": "F",
-              "hex": "#A78BFAFF",
-              "name": "Violet"
-            },
-            {
-              "symbol": "G",
-              "hex": "#22C55EFF",
-              "name": "Green"
-            },
-            {
-              "symbol": "H",
-              "hex": "#FB923CFF",
-              "name": "Amber"
-            }
-          ]
         }
       },
       "assetRegistry": {
@@ -1216,57 +1074,7 @@
     "palette-browser": {
       "tool": "palette-browser",
       "version": "1",
-      "config": {
-        "palette": {
-          "schema": "html-js-gaming.palette",
-          "version": 1,
-          "name": "Sample 1902 Workspace Palette",
-          "source": "sample",
-          "sourceId": "sample-1902-workspace-palette",
-          "swatches": [
-            {
-              "symbol": "A",
-              "hex": "#0F172AFF",
-              "name": "Night"
-            },
-            {
-              "symbol": "B",
-              "hex": "#111827FF",
-              "name": "Slate"
-            },
-            {
-              "symbol": "C",
-              "hex": "#38BDF8FF",
-              "name": "Sky"
-            },
-            {
-              "symbol": "D",
-              "hex": "#64748BFF",
-              "name": "Steel"
-            },
-            {
-              "symbol": "E",
-              "hex": "#F8FAFCFF",
-              "name": "Cloud"
-            },
-            {
-              "symbol": "F",
-              "hex": "#A78BFAFF",
-              "name": "Violet"
-            },
-            {
-              "symbol": "G",
-              "hex": "#22C55EFF",
-              "name": "Green"
-            },
-            {
-              "symbol": "H",
-              "hex": "#FB923CFF",
-              "name": "Amber"
-            }
-          ]
-        }
-      }
+      "config": {}
     },
     "state-inspector": {
       "tool": "state-inspector",
@@ -1618,6 +1426,52 @@
           ]
         }
       }
+    },
+    "palette": {
+      "id": "sample-1902-workspace-palette",
+      "name": "Sample 1902 Workspace Palette",
+      "swatches": [
+        {
+          "symbol": "A",
+          "hex": "#0F172AFF",
+          "name": "Night"
+        },
+        {
+          "symbol": "B",
+          "hex": "#111827FF",
+          "name": "Slate"
+        },
+        {
+          "symbol": "C",
+          "hex": "#38BDF8FF",
+          "name": "Sky"
+        },
+        {
+          "symbol": "D",
+          "hex": "#64748BFF",
+          "name": "Steel"
+        },
+        {
+          "symbol": "E",
+          "hex": "#F8FAFCFF",
+          "name": "Cloud"
+        },
+        {
+          "symbol": "F",
+          "hex": "#A78BFAFF",
+          "name": "Violet"
+        },
+        {
+          "symbol": "G",
+          "hex": "#22C55EFF",
+          "name": "Green"
+        },
+        {
+          "symbol": "H",
+          "hex": "#FB923CFF",
+          "name": "Amber"
+        }
+      ]
     }
   }
 }

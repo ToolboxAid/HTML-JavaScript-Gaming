@@ -3,15 +3,18 @@
 model: gpt-5.3-codex
 reasoning: medium
 
-Apply PR_11_13_WORKSPACE_1902_SCHEMA_CONFORMANCE_FIX.
+Apply PR_11_14_WORKSPACE_SCHEMA_PALETTE_TOOL_AND_1902_REBUILD.
 
 Required:
-- Validate sample 1902 against the actual Workspace schemas, not the sample tool-payload schema.
-- Rewrite `samples/phase-19/1902/sample.1902.workspace-all-tools.json` to conform to the actual Workspace schema/manifest shape.
-- Remove unsupported/misplaced fields such as `tool: workspace-all-tools-integration`, `activeWorkspaceTools`, duplicate `config`, duplicate `payload`, copied unrelated sample/game data, and palette sidecar references unless the actual schema requires them.
-- Ensure Workspace resolves all active workspace-supported tools from the schema-valid manifest, not just Palette.
+- Update `tools/schemas/workspace.manifest.schema.json` so Palette is a singular tool payload under `tools.palette`.
+- Remove top-level required `palettes` collection from the manifest schema unless migration compatibility is required and documented.
+- Rebuild only `samples/phase-19/1902/`.
+- Delete/remove `sample.1902.palette.json`.
+- Rebuild sample 1902 workspace payload so all tool data is under `tools`, including `tools.palette`.
+- Allow only one palette in the workspace manifest.
+- Ensure Workspace shows all valid tools, not only Palette.
+- Do not modify other samples.
 - Do not add fallback/default/hidden data.
-- Do not modify standalone tool samples.
 - Do not modify start_of_day folders.
-- Add validation report at docs/dev/reports/PR_11_13_WORKSPACE_1902_SCHEMA_CONFORMANCE_FIX_report.md.
-- Return ZIP artifact at tmp/PR_11_13_WORKSPACE_1902_SCHEMA_CONFORMANCE_FIX_delta.zip.
+- Add validation report at docs/dev/reports/PR_11_14_WORKSPACE_SCHEMA_PALETTE_TOOL_AND_1902_REBUILD_report.md.
+- Return ZIP artifact at tmp/PR_11_14_WORKSPACE_SCHEMA_PALETTE_TOOL_AND_1902_REBUILD_delta.zip.

@@ -3,16 +3,51 @@
   "$id": "tools/schemas/workspace.manifest.schema.json",
   "title": "Workspace Manifest",
   "type": "object",
-  "required": ["palettes", "tools"],
+  "required": ["tools"],
   "additionalProperties": false,
   "properties": {
-    "palettes": {
-      "type": "object",
-      "description": "Workspace-owned duplicated palettes. Used palettes cannot be replaced with a different palette identity."
-    },
     "tools": {
       "type": "object",
-      "description": "All workspace-owned tool asset data. Vector/tool assets should remain in the manifest unless explicitly exportable output such as PNG."
+      "required": ["palette"],
+      "additionalProperties": true,
+      "description": "Workspace-owned tool asset data. Palette is singular and canonical at tools.palette.",
+      "properties": {
+        "palette": {
+          "type": "object",
+          "required": ["id", "name", "swatches"],
+          "additionalProperties": true,
+          "properties": {
+            "id": {
+              "type": "string",
+              "minLength": 1
+            },
+            "name": {
+              "type": "string",
+              "minLength": 1
+            },
+            "swatches": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": ["hex"],
+                "additionalProperties": true,
+                "properties": {
+                  "symbol": {
+                    "type": "string"
+                  },
+                  "hex": {
+                    "type": "string",
+                    "minLength": 4
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
     }
   }
 }

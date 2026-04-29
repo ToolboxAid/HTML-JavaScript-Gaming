@@ -1,1 +1,1 @@
-Fix sample 1902 Workspace JSON to conform to actual workspace schema - PR 11.13
+Make Workspace palette a singular tool payload and rebuild sample 1902 - PR 11.14
