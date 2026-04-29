@@ -1,1 +1,1 @@
-Detect present Workspace tools from strict manifest.tools payloads - PR 11.21
+Show Workspace Manager asset status from embedded tool payloads - PR 11.22

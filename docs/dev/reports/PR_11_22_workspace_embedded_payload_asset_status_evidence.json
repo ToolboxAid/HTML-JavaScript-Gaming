@@ -1,0 +1,342 @@
+{
+  "sourcePath": "samples/phase-19/1902/sample.1902.workspace-all-tools.json",
+  "requiredPayloadDocumentMappingKeys": [
+    "vectorMapDocument",
+    "vectorAssetDocument",
+    "tileMapDocument",
+    "parallaxDocument",
+    "spriteProject",
+    "skin",
+    "assetCatalog",
+    "palette",
+    "snapshot",
+    "events",
+    "profileSettings",
+    "physicsBody",
+    "pipelinePayload",
+    "candidate",
+    "mapPayload",
+    "asset3d",
+    "cameraPath"
+  ],
+  "byRawManifestToolKey": [
+    {
+      "rawKey": "vector-map-editor",
+      "normalizedKey": "vector-map-editor",
+      "mappedToolId": "vector-map-editor",
+      "payloadTool": "vector-map-editor",
+      "embeddedPayloadDetected": true,
+      "payloadDocumentKey": "vectorMapDocument",
+      "derivedStatusLabel": "embedded vector map sample-0901-vector-map (2 objects)"
+    },
+    {
+      "rawKey": "vector-asset-studio",
+      "normalizedKey": "vector-asset-studio",
+      "mappedToolId": "vector-asset-studio",
+      "payloadTool": "vector-asset-studio",
+      "embeddedPayloadDetected": true,
+      "payloadDocumentKey": "vectorAssetDocument",
+      "derivedStatusLabel": "embedded vector asset sample-0901-ship.svg"
+    },
+    {
+      "rawKey": "tile-map-editor",
+      "normalizedKey": "tile-map-editor",
+      "mappedToolId": "tile-map-editor",
+      "payloadTool": "tile-map-editor",
+      "embeddedPayloadDetected": true,
+      "payloadDocumentKey": "tileMapDocument",
+      "derivedStatusLabel": "embedded tile map tile-editor-sample-basic (3 layers)"
+    },
+    {
+      "rawKey": "parallax-editor",
+      "normalizedKey": "parallax-editor",
+      "mappedToolId": "parallax-editor",
+      "payloadTool": "parallax-editor",
+      "embeddedPayloadDetected": true,
+      "payloadDocumentKey": "parallaxDocument",
+      "derivedStatusLabel": "embedded parallax sample-0306-nes-zones-parallax (2 layers)"
+    },
+    {
+      "rawKey": "sprite-editor",
+      "normalizedKey": "sprite-editor",
+      "mappedToolId": "sprite-editor",
+      "payloadTool": "sprite-editor",
+      "embeddedPayloadDetected": true,
+      "payloadDocumentKey": "spriteProject",
+      "derivedStatusLabel": "embedded sprite project (2 frames)"
+    },
+    {
+      "rawKey": "skin-editor",
+      "normalizedKey": "skin-editor",
+      "mappedToolId": "skin-editor",
+      "payloadTool": "skin-editor",
+      "embeddedPayloadDetected": true,
+      "payloadDocumentKey": "skin",
+      "derivedStatusLabel": "embedded skin Sample 0227 Pong Skin"
+    },
+    {
+      "rawKey": "asset-browser",
+      "normalizedKey": "asset-browser",
+      "mappedToolId": "asset-browser",
+      "payloadTool": "asset-browser",
+      "embeddedPayloadDetected": true,
+      "payloadDocumentKey": "assetCatalog",
+      "derivedStatusLabel": "embedded asset catalog (2 entries)"
+    },
+    {
+      "rawKey": "palette-browser",
+      "normalizedKey": "palette-browser",
+      "mappedToolId": "palette-browser",
+      "payloadTool": "palette-browser",
+      "embeddedPayloadDetected": true,
+      "payloadDocumentKey": "palette",
+      "derivedStatusLabel": "embedded palette Sample 1902 Workspace Palette (8 swatches)"
+    },
+    {
+      "rawKey": "state-inspector",
+      "normalizedKey": "state-inspector",
+      "mappedToolId": "state-inspector",
+      "payloadTool": "state-inspector",
+      "embeddedPayloadDetected": true,
+      "payloadDocumentKey": "snapshot",
+      "derivedStatusLabel": "embedded snapshot state-inspector"
+    },
+    {
+      "rawKey": "replay-visualizer",
+      "normalizedKey": "replay-visualizer",
+      "mappedToolId": "replay-visualizer",
+      "payloadTool": "replay-visualizer",
+      "embeddedPayloadDetected": true,
+      "payloadDocumentKey": "events",
+      "derivedStatusLabel": "embedded events (5)"
+    },
+    {
+      "rawKey": "performance-profiler",
+      "normalizedKey": "performance-profiler",
+      "mappedToolId": "performance-profiler",
+      "payloadTool": "performance-profiler",
+      "embeddedPayloadDetected": true,
+      "payloadDocumentKey": "profileSettings",
+      "derivedStatusLabel": "embedded profile settings"
+    },
+    {
+      "rawKey": "physics-sandbox",
+      "normalizedKey": "physics-sandbox",
+      "mappedToolId": "physics-sandbox",
+      "payloadTool": "physics-sandbox",
+      "embeddedPayloadDetected": true,
+      "payloadDocumentKey": "physicsBody",
+      "derivedStatusLabel": "embedded physics body"
+    },
+    {
+      "rawKey": "asset-pipeline-tool",
+      "normalizedKey": "asset-pipeline-tool",
+      "mappedToolId": "asset-pipeline-tool",
+      "payloadTool": "asset-pipeline-tool",
+      "embeddedPayloadDetected": true,
+      "payloadDocumentKey": "pipelinePayload",
+      "derivedStatusLabel": "embedded pipeline payload sample-1902"
+    },
+    {
+      "rawKey": "tile-model-converter",
+      "normalizedKey": "tile-model-converter",
+      "mappedToolId": "tile-model-converter",
+      "payloadTool": "tile-model-converter",
+      "embeddedPayloadDetected": true,
+      "payloadDocumentKey": "candidate",
+      "derivedStatusLabel": "embedded candidate sample-1209-tilemap-basic"
+    },
+    {
+      "rawKey": "3d-json-payload-normalizer",
+      "normalizedKey": "3d-json-payload-normalizer",
+      "mappedToolId": "3d-json-payload-normalizer",
+      "payloadTool": "3d-json-payload-normalizer",
+      "embeddedPayloadDetected": true,
+      "payloadDocumentKey": "mapPayload",
+      "derivedStatusLabel": "embedded map payload sample-1208-terrain-flow"
+    },
+    {
+      "rawKey": "3d-asset-viewer",
+      "normalizedKey": "3d-asset-viewer",
+      "mappedToolId": "3d-asset-viewer",
+      "payloadTool": "3d-asset-viewer",
+      "embeddedPayloadDetected": true,
+      "payloadDocumentKey": "asset3d",
+      "derivedStatusLabel": "embedded 3D asset sample-1413-import-batch"
+    },
+    {
+      "rawKey": "3d-camera-path-editor",
+      "normalizedKey": "3d-camera-path-editor",
+      "mappedToolId": "3d-camera-path-editor",
+      "payloadTool": "3d-camera-path-editor",
+      "embeddedPayloadDetected": true,
+      "payloadDocumentKey": "cameraPath",
+      "derivedStatusLabel": "embedded camera path sample-0220-camera-system-track"
+    },
+    {
+      "rawKey": "palette",
+      "normalizedKey": "palette",
+      "mappedToolId": "palette-browser",
+      "payloadTool": "palette-browser",
+      "embeddedPayloadDetected": true,
+      "payloadDocumentKey": "palette",
+      "derivedStatusLabel": "embedded palette Sample 1902 Workspace Palette (8 swatches)"
+    }
+  ],
+  "byVisibleMappedToolId": [
+    {
+      "rawKey": "vector-map-editor",
+      "normalizedKey": "vector-map-editor",
+      "mappedToolId": "vector-map-editor",
+      "payloadTool": "vector-map-editor",
+      "embeddedPayloadDetected": true,
+      "payloadDocumentKey": "vectorMapDocument",
+      "derivedStatusLabel": "embedded vector map sample-0901-vector-map (2 objects)"
+    },
+    {
+      "rawKey": "vector-asset-studio",
+      "normalizedKey": "vector-asset-studio",
+      "mappedToolId": "vector-asset-studio",
+      "payloadTool": "vector-asset-studio",
+      "embeddedPayloadDetected": true,
+      "payloadDocumentKey": "vectorAssetDocument",
+      "derivedStatusLabel": "embedded vector asset sample-0901-ship.svg"
+    },
+    {
+      "rawKey": "tile-map-editor",
+      "normalizedKey": "tile-map-editor",
+      "mappedToolId": "tile-map-editor",
+      "payloadTool": "tile-map-editor",
+      "embeddedPayloadDetected": true,
+      "payloadDocumentKey": "tileMapDocument",
+      "derivedStatusLabel": "embedded tile map tile-editor-sample-basic (3 layers)"
+    },
+    {
+      "rawKey": "parallax-editor",
+      "normalizedKey": "parallax-editor",
+      "mappedToolId": "parallax-editor",
+      "payloadTool": "parallax-editor",
+      "embeddedPayloadDetected": true,
+      "payloadDocumentKey": "parallaxDocument",
+      "derivedStatusLabel": "embedded parallax sample-0306-nes-zones-parallax (2 layers)"
+    },
+    {
+      "rawKey": "sprite-editor",
+      "normalizedKey": "sprite-editor",
+      "mappedToolId": "sprite-editor",
+      "payloadTool": "sprite-editor",
+      "embeddedPayloadDetected": true,
+      "payloadDocumentKey": "spriteProject",
+      "derivedStatusLabel": "embedded sprite project (2 frames)"
+    },
+    {
+      "rawKey": "skin-editor",
+      "normalizedKey": "skin-editor",
+      "mappedToolId": "skin-editor",
+      "payloadTool": "skin-editor",
+      "embeddedPayloadDetected": true,
+      "payloadDocumentKey": "skin",
+      "derivedStatusLabel": "embedded skin Sample 0227 Pong Skin"
+    },
+    {
+      "rawKey": "asset-browser",
+      "normalizedKey": "asset-browser",
+      "mappedToolId": "asset-browser",
+      "payloadTool": "asset-browser",
+      "embeddedPayloadDetected": true,
+      "payloadDocumentKey": "assetCatalog",
+      "derivedStatusLabel": "embedded asset catalog (2 entries)"
+    },
+    {
+      "rawKey": "palette-browser",
+      "normalizedKey": "palette-browser",
+      "mappedToolId": "palette-browser",
+      "payloadTool": "palette-browser",
+      "embeddedPayloadDetected": true,
+      "payloadDocumentKey": "palette",
+      "derivedStatusLabel": "embedded palette Sample 1902 Workspace Palette (8 swatches)"
+    },
+    {
+      "rawKey": "state-inspector",
+      "normalizedKey": "state-inspector",
+      "mappedToolId": "state-inspector",
+      "payloadTool": "state-inspector",
+      "embeddedPayloadDetected": true,
+      "payloadDocumentKey": "snapshot",
+      "derivedStatusLabel": "embedded snapshot state-inspector"
+    },
+    {
+      "rawKey": "replay-visualizer",
+      "normalizedKey": "replay-visualizer",
+      "mappedToolId": "replay-visualizer",
+      "payloadTool": "replay-visualizer",
+      "embeddedPayloadDetected": true,
+      "payloadDocumentKey": "events",
+      "derivedStatusLabel": "embedded events (5)"
+    },
+    {
+      "rawKey": "performance-profiler",
+      "normalizedKey": "performance-profiler",
+      "mappedToolId": "performance-profiler",
+      "payloadTool": "performance-profiler",
+      "embeddedPayloadDetected": true,
+      "payloadDocumentKey": "profileSettings",
+      "derivedStatusLabel": "embedded profile settings"
+    },
+    {
+      "rawKey": "physics-sandbox",
+      "normalizedKey": "physics-sandbox",
+      "mappedToolId": "physics-sandbox",
+      "payloadTool": "physics-sandbox",
+      "embeddedPayloadDetected": true,
+      "payloadDocumentKey": "physicsBody",
+      "derivedStatusLabel": "embedded physics body"
+    },
+    {
+      "rawKey": "asset-pipeline-tool",
+      "normalizedKey": "asset-pipeline-tool",
+      "mappedToolId": "asset-pipeline-tool",
+      "payloadTool": "asset-pipeline-tool",
+      "embeddedPayloadDetected": true,
+      "payloadDocumentKey": "pipelinePayload",
+      "derivedStatusLabel": "embedded pipeline payload sample-1902"
+    },
+    {
+      "rawKey": "tile-model-converter",
+      "normalizedKey": "tile-model-converter",
+      "mappedToolId": "tile-model-converter",
+      "payloadTool": "tile-model-converter",
+      "embeddedPayloadDetected": true,
+      "payloadDocumentKey": "candidate",
+      "derivedStatusLabel": "embedded candidate sample-1209-tilemap-basic"
+    },
+    {
+      "rawKey": "3d-json-payload-normalizer",
+      "normalizedKey": "3d-json-payload-normalizer",
+      "mappedToolId": "3d-json-payload-normalizer",
+      "payloadTool": "3d-json-payload-normalizer",
+      "embeddedPayloadDetected": true,
+      "payloadDocumentKey": "mapPayload",
+      "derivedStatusLabel": "embedded map payload sample-1208-terrain-flow"
+    },
+    {
+      "rawKey": "3d-asset-viewer",
+      "normalizedKey": "3d-asset-viewer",
+      "mappedToolId": "3d-asset-viewer",
+      "payloadTool": "3d-asset-viewer",
+      "embeddedPayloadDetected": true,
+      "payloadDocumentKey": "asset3d",
+      "derivedStatusLabel": "embedded 3D asset sample-1413-import-batch"
+    },
+    {
+      "rawKey": "3d-camera-path-editor",
+      "normalizedKey": "3d-camera-path-editor",
+      "mappedToolId": "3d-camera-path-editor",
+      "payloadTool": "3d-camera-path-editor",
+      "embeddedPayloadDetected": true,
+      "payloadDocumentKey": "cameraPath",
+      "derivedStatusLabel": "embedded camera path sample-0220-camera-system-track"
+    }
+  ],
+  "payloadBackedMissing": []
+}

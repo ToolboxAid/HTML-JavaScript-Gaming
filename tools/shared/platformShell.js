@@ -25,6 +25,7 @@ let headerIntroFullscreenBindingBound = false;
 let suppressAutoFullscreenEnter = false;
 let lastWorkspaceUiStateKey = "";
 let lastLockedSurfaceElement = null;
+let workspaceScopedToolPresetForStatus = null;
 const sidebarAccordionState = new Map();
 
 const HEADER_EXPANDED_STORAGE_KEY = "toolboxaid.toolsPlatform.headerExpanded";
@@ -540,6 +541,144 @@ function selectWorkspaceScopedToolPreset(rawPreset, toolId) {
   return resolveWorkspaceManifestScopedToolPreset(rawPreset, toolId);
 }
 
+function readWorkspaceScopedToolDocument(payload = {}, documentKey = "", rootToolState = {}) {
+  const sourcePayload = payload && typeof payload === "object" && !Array.isArray(payload)
+    ? payload
+    : {};
+  const sourceRoot = rootToolState && typeof rootToolState === "object" && !Array.isArray(rootToolState)
+    ? rootToolState
+    : {};
+  const payloadValue = sourcePayload[documentKey];
+  if (payloadValue && typeof payloadValue === "object" && !Array.isArray(payloadValue)) {
+    return payloadValue;
+  }
+  const rootValue = sourceRoot[documentKey];
+  if (rootValue && typeof rootValue === "object" && !Array.isArray(rootValue)) {
+    return rootValue;
+  }
+  return null;
+}
+
+function summarizeEmbeddedToolPayloadDocument(toolId = "", scopedToolState = null) {
+  const normalizedToolId = normalizeTextValue(toolId).toLowerCase();
+  if (!normalizedToolId || !scopedToolState || typeof scopedToolState !== "object" || Array.isArray(scopedToolState)) {
+    return null;
+  }
+  const payload = scopedToolState.payload && typeof scopedToolState.payload === "object" && !Array.isArray(scopedToolState.payload)
+    ? scopedToolState.payload
+    : {};
+  const fallbackId = normalizeTextValue(scopedToolState.tool || normalizedToolId);
+
+  const vectorMapDocument = readWorkspaceScopedToolDocument(payload, "vectorMapDocument", scopedToolState);
+  if (vectorMapDocument) {
+    const name = normalizeTextValue(vectorMapDocument.name || vectorMapDocument.id || fallbackId);
+    const objectCount = Array.isArray(vectorMapDocument.objects) ? vectorMapDocument.objects.length : 0;
+    return `embedded vector map ${name || fallbackId}${objectCount > 0 ? ` (${objectCount} objects)` : ""}`;
+  }
+
+  const vectorAssetDocument = readWorkspaceScopedToolDocument(payload, "vectorAssetDocument", scopedToolState);
+  if (vectorAssetDocument) {
+    const sourceName = normalizeTextValue(vectorAssetDocument.sourceName || vectorAssetDocument.name || fallbackId);
+    return `embedded vector asset ${sourceName || fallbackId}`;
+  }
+
+  const tileMapDocument = readWorkspaceScopedToolDocument(payload, "tileMapDocument", scopedToolState);
+  if (tileMapDocument) {
+    const mapName = normalizeTextValue(tileMapDocument?.map?.name || tileMapDocument.name || tileMapDocument.id || fallbackId);
+    const layerCount = Array.isArray(tileMapDocument.layers) ? tileMapDocument.layers.length : 0;
+    return `embedded tile map ${mapName || fallbackId}${layerCount > 0 ? ` (${layerCount} layers)` : ""}`;
+  }
+
+  const parallaxDocument = readWorkspaceScopedToolDocument(payload, "parallaxDocument", scopedToolState);
+  if (parallaxDocument) {
+    const mapName = normalizeTextValue(parallaxDocument?.map?.name || parallaxDocument.name || fallbackId);
+    const layerCount = Array.isArray(parallaxDocument.layers) ? parallaxDocument.layers.length : 0;
+    return `embedded parallax ${mapName || fallbackId}${layerCount > 0 ? ` (${layerCount} layers)` : ""}`;
+  }
+
+  const spriteProject = readWorkspaceScopedToolDocument(payload, "spriteProject", scopedToolState);
+  if (spriteProject) {
+    const frameCount = Array.isArray(spriteProject.frames) ? spriteProject.frames.length : 0;
+    return `embedded sprite project${frameCount > 0 ? ` (${frameCount} frames)` : ""}`;
+  }
+
+  const skin = readWorkspaceScopedToolDocument(payload, "skin", scopedToolState) || (
+    scopedToolState.skin && typeof scopedToolState.skin === "object" && !Array.isArray(scopedToolState.skin)
+      ? scopedToolState.skin
+      : null
+  );
+  if (skin) {
+    const name = normalizeTextValue(skin.name || skin.gameId || skin.projectId || fallbackId);
+    return `embedded skin ${name || fallbackId}`;
+  }
+
+  const assetCatalog = readWorkspaceScopedToolDocument(payload, "assetCatalog", scopedToolState);
+  if (assetCatalog) {
+    const entryCount = Array.isArray(assetCatalog.entries) ? assetCatalog.entries.length : 0;
+    return `embedded asset catalog${entryCount >= 0 ? ` (${entryCount} entries)` : ""}`;
+  }
+
+  const palette = readWorkspaceScopedToolDocument(payload, "palette", scopedToolState)
+    || (Array.isArray(payload.swatches) ? payload : null);
+  if (palette) {
+    const name = normalizeTextValue(palette.name || palette.id || fallbackId);
+    const swatchCount = Array.isArray(palette.swatches) ? palette.swatches.length : 0;
+    return `embedded palette ${name || fallbackId}${swatchCount > 0 ? ` (${swatchCount} swatches)` : ""}`;
+  }
+
+  const snapshot = readWorkspaceScopedToolDocument(payload, "snapshot", scopedToolState);
+  if (snapshot) {
+    const snapshotId = normalizeTextValue(snapshot.toolId || snapshot.schema || fallbackId);
+    return `embedded snapshot ${snapshotId || fallbackId}`;
+  }
+
+  if (Array.isArray(payload.events)) {
+    return `embedded events (${payload.events.length})`;
+  }
+
+  const profileSettings = readWorkspaceScopedToolDocument(payload, "profileSettings", scopedToolState);
+  if (profileSettings) {
+    return "embedded profile settings";
+  }
+
+  const physicsBody = readWorkspaceScopedToolDocument(payload, "physicsBody", scopedToolState);
+  if (physicsBody) {
+    return "embedded physics body";
+  }
+
+  const pipelinePayload = readWorkspaceScopedToolDocument(payload, "pipelinePayload", scopedToolState);
+  if (pipelinePayload) {
+    const projectId = normalizeTextValue(pipelinePayload.projectId || fallbackId);
+    return `embedded pipeline payload ${projectId || fallbackId}`;
+  }
+
+  const candidate = readWorkspaceScopedToolDocument(payload, "candidate", scopedToolState);
+  if (candidate) {
+    const name = normalizeTextValue(candidate.id || candidate.name || fallbackId);
+    return `embedded candidate ${name || fallbackId}`;
+  }
+
+  const mapPayload = readWorkspaceScopedToolDocument(payload, "mapPayload", scopedToolState);
+  if (mapPayload) {
+    const name = normalizeTextValue(mapPayload.mapId || mapPayload.id || fallbackId);
+    return `embedded map payload ${name || fallbackId}`;
+  }
+
+  const asset3d = readWorkspaceScopedToolDocument(payload, "asset3d", scopedToolState);
+  if (asset3d) {
+    const name = normalizeTextValue(asset3d.assetId || asset3d.id || fallbackId);
+    return `embedded 3D asset ${name || fallbackId}`;
+  }
+
+  const cameraPath = readWorkspaceScopedToolDocument(payload, "cameraPath", scopedToolState);
+  if (cameraPath) {
+    const name = normalizeTextValue(cameraPath.pathId || cameraPath.id || fallbackId);
+    return `embedded camera path ${name || fallbackId}`;
+  }
+
+  return null;
+}
+
 function installWorkspaceScopedSamplePresetFetchShim(currentToolId, samplePresetPath) {
   if (typeof window === "undefined" || typeof window.fetch !== "function") {
     return;
@@ -564,6 +703,7 @@ function installWorkspaceScopedSamplePresetFetchShim(currentToolId, samplePreset
     if (!scopedPreset) {
       return response;
     }
+    workspaceScopedToolPresetForStatus = scopedPreset;
     const headers = new Headers(response.headers || {});
     if (!headers.get("content-type")) {
       headers.set("content-type", "application/json; charset=utf-8");
@@ -577,6 +717,29 @@ function installWorkspaceScopedSamplePresetFetchShim(currentToolId, samplePreset
   patchedFetch.__workspaceScopedSamplePresetShim = true;
   patchedFetch.__workspaceScopedSamplePresetOriginalFetch = originalFetch;
   window.fetch = patchedFetch;
+}
+
+async function primeWorkspaceScopedToolPresetForStatus(toolId, samplePresetPath) {
+  const normalizedToolId = normalizeTextValue(toolId).toLowerCase();
+  const normalizedSamplePresetPath = normalizeSamplePresetPath(samplePresetPath);
+  if (!normalizedToolId || !normalizedSamplePresetPath || typeof window === "undefined" || typeof window.fetch !== "function") {
+    return null;
+  }
+  try {
+    const response = await window.fetch(normalizedSamplePresetPath, { cache: "no-store" });
+    if (!response.ok) {
+      return null;
+    }
+    const rawPreset = await response.json();
+    const scopedPreset = selectWorkspaceScopedToolPreset(rawPreset, normalizedToolId);
+    if (!scopedPreset) {
+      return null;
+    }
+    workspaceScopedToolPresetForStatus = scopedPreset;
+    return scopedPreset;
+  } catch {
+    return null;
+  }
 }
 
 function readLaunchPayloadSignature(searchParams) {
@@ -1272,21 +1435,33 @@ function isAssetCompatibleWithTool(toolId = "", asset = null) {
 
 function renderToolAssetBadge(toolId = "") {
   const normalizedToolId = normalizeTextValue(toolId).toLowerCase();
+  const embeddedPayloadSummary = summarizeEmbeddedToolPayloadDocument(
+    normalizedToolId,
+    workspaceScopedToolPresetForStatus
+  );
   const acceptedKinds = resolveAcceptedAssetKindsForTool(normalizedToolId);
   if (normalizedToolId === "palette-browser") {
     const palette = readSharedPaletteHandoff();
-    const paletteLabel = palette?.displayName || "none";
-    const paletteTitle = `Updated: ${escapeHtml(palette?.selectedAt || "not-set")}`;
+    const paletteLabel = palette?.displayName || embeddedPayloadSummary || "none";
+    const paletteTitle = palette?.displayName
+      ? `Updated: ${escapeHtml(palette?.selectedAt || "not-set")}`
+      : escapeHtml("Resolved from embedded workspace payload");
+    const badgeClass = palette?.displayName || embeddedPayloadSummary ? " is-active" : "";
     return `
       <div class="tools-platform-frame__binding-badges" aria-label="Tool asset binding">
-        <span class="tools-platform-frame__binding-badge is-active" title="${paletteTitle}">${escapeHtml(`Palette: ${paletteLabel}`)}</span>
+        <span class="tools-platform-frame__binding-badge${badgeClass}" title="${paletteTitle}">${escapeHtml(`Palette: ${paletteLabel}`)}</span>
       </div>
     `;
   }
   if (!acceptedKinds.length) {
+    const nonAssetLabel = embeddedPayloadSummary || "N/A";
+    const badgeClass = embeddedPayloadSummary ? " is-active" : "";
+    const badgeTitle = embeddedPayloadSummary
+      ? escapeHtml("Resolved from embedded workspace payload")
+      : escapeHtml("No shared asset dependency for this tool");
     return `
       <div class="tools-platform-frame__binding-badges" aria-label="Tool asset binding">
-        <span class="tools-platform-frame__binding-badge">${escapeHtml("Asset: N/A")}</span>
+        <span class="tools-platform-frame__binding-badge${badgeClass}" title="${badgeTitle}">${escapeHtml(`Asset: ${nonAssetLabel}`)}</span>
       </div>
     `;
   }
@@ -1296,9 +1471,12 @@ function renderToolAssetBadge(toolId = "") {
   const missingAssetLabel = normalizedToolId === "skin-editor"
     ? "select skin in Asset Browser"
     : "none";
-  const assetLabel = compatibleAsset?.displayName || missingAssetLabel;
-  const assetTitle = `Updated: ${escapeHtml(compatibleAsset?.selectedAt || "not-set")}`;
-  const badgeClass = compatibleAsset ? " is-active" : "";
+  const fallbackAssetLabel = embeddedPayloadSummary || missingAssetLabel;
+  const assetLabel = compatibleAsset?.displayName || fallbackAssetLabel;
+  const assetTitle = compatibleAsset
+    ? `Updated: ${escapeHtml(compatibleAsset?.selectedAt || "not-set")}`
+    : escapeHtml(embeddedPayloadSummary ? "Resolved from embedded workspace payload" : "Updated: not-set");
+  const badgeClass = compatibleAsset || embeddedPayloadSummary ? " is-active" : "";
   return `
     <div class="tools-platform-frame__binding-badges" aria-label="Tool asset binding">
       <span class="tools-platform-frame__binding-badge${badgeClass}" title="${assetTitle}">${escapeHtml(`Asset: ${assetLabel}`)}</span>
@@ -2059,6 +2237,7 @@ async function initPlatformShell() {
     : new URLSearchParams();
   const samplePresetPath = normalizeSamplePresetPath(searchParams.get("samplePresetPath"));
   installWorkspaceScopedSamplePresetFetchShim(currentToolId, samplePresetPath);
+  await primeWorkspaceScopedToolPresetForStatus(currentToolId, samplePresetPath);
   const launchSignature = readLaunchPayloadSignature(searchParams);
   const clearedForLaunch = clearSharedBindingsForNewLaunch(launchSignature);
   const launchContext = readGameLaunchContext();
