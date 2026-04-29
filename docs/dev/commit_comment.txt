@@ -1,1 +1,1 @@
-Show Workspace Manager asset status from embedded tool payloads - PR 11.22
+Bind Workspace Manager UI to embedded payload for asset display - PR 11.23

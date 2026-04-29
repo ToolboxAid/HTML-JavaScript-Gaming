@@ -1,0 +1,1 @@
+Expected: Asset names appear instead of 'none' when payload exists.
