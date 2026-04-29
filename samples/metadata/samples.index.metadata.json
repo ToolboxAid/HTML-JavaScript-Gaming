@@ -1023,12 +1023,7 @@
       "toolHints": [
         "3d-camera-path-editor"
       ],
-      "roundtripToolPresets": [
-        {
-          "toolId": "3d-camera-path-editor",
-          "presetPath": "/samples/phase-02/0201/sample.0201.3d-camera-path-editor.json"
-        }
-      ]
+      "roundtripToolPresets": []
     },
     {
       "id": "0202",
@@ -1069,12 +1064,7 @@
       "toolHints": [
         "3d-camera-path-editor"
       ],
-      "roundtripToolPresets": [
-        {
-          "toolId": "3d-camera-path-editor",
-          "presetPath": "/samples/phase-02/0202/sample.0202.3d-camera-path-editor.json"
-        }
-      ]
+      "roundtripToolPresets": []
     },
     {
       "id": "0203",
@@ -1423,12 +1413,7 @@
       "toolHints": [
         "physics-sandbox"
       ],
-      "roundtripToolPresets": [
-        {
-          "toolId": "physics-sandbox",
-          "presetPath": "/samples/phase-02/0210/sample.0210.physics-sandbox.json"
-        }
-      ]
+      "roundtripToolPresets": []
     },
     {
       "id": "0211",
@@ -1889,12 +1874,7 @@
       "toolHints": [
         "3d-camera-path-editor"
       ],
-      "roundtripToolPresets": [
-        {
-          "toolId": "3d-camera-path-editor",
-          "presetPath": "/samples/phase-02/0220/sample.0220.3d-camera-path-editor.json"
-        }
-      ]
+      "roundtripToolPresets": []
     },
     {
       "id": "0221",
@@ -1951,10 +1931,6 @@
         {
           "toolId": "tile-model-converter",
           "presetPath": "/samples/phase-02/0221/sample.0221.tile-model-converter.json"
-        },
-        {
-          "toolId": "3d-json-payload-normalizer",
-          "presetPath": "/samples/phase-02/0221/sample.0221.3d-json-payload-normalizer.json"
         }
       ]
     },
@@ -2421,12 +2397,7 @@
       "toolHints": [
         "physics-sandbox"
       ],
-      "roundtripToolPresets": [
-        {
-          "toolId": "physics-sandbox",
-          "presetPath": "/samples/phase-03/0303/sample.0303.physics-sandbox.json"
-        }
-      ]
+      "roundtripToolPresets": []
     },
     {
       "id": "0304",
@@ -4353,12 +4324,7 @@
       "toolHints": [
         "asset-pipeline-tool"
       ],
-      "roundtripToolPresets": [
-        {
-          "toolId": "asset-pipeline-tool",
-          "presetPath": "/samples/phase-05/0510/sample.0510.asset-pipeline-tool.json"
-        }
-      ]
+      "roundtripToolPresets": []
     },
     {
       "id": "0511",
@@ -4434,12 +4400,7 @@
       "toolHints": [
         "performance-profiler"
       ],
-      "roundtripToolPresets": [
-        {
-          "toolId": "performance-profiler",
-          "presetPath": "/samples/phase-05/0512/sample.0512.performance-profiler.json"
-        }
-      ]
+      "roundtripToolPresets": []
     },
     {
       "id": "0601",

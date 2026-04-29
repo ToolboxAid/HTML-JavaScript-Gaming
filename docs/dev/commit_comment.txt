@@ -1,1 +1,1 @@
-Remove 8 additional unused tool-specific JSON files verified by audit script - PR 11.52
+Remove unused JSON files and stale metadata references verified by audit count reduction - PR 11.56

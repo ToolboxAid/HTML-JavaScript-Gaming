@@ -1,0 +1,56 @@
+{
+  "deletedFiles": [
+    "samples/phase-02/0201/sample.0201.3d-camera-path-editor.json",
+    "samples/phase-02/0202/sample.0202.3d-camera-path-editor.json",
+    "samples/phase-02/0210/sample.0210.physics-sandbox.json",
+    "samples/phase-02/0220/sample.0220.3d-camera-path-editor.json",
+    "samples/phase-02/0221/sample.0221.3d-json-payload-normalizer.json",
+    "samples/phase-03/0303/sample.0303.physics-sandbox.json",
+    "samples/phase-05/0510/sample.0510.asset-pipeline-tool.json",
+    "samples/phase-05/0512/sample.0512.performance-profiler.json"
+  ],
+  "removedMetadataReferences": [
+    {
+      "sampleId": "0201",
+      "toolId": "3d-camera-path-editor",
+      "presetPath": "/samples/phase-02/0201/sample.0201.3d-camera-path-editor.json"
+    },
+    {
+      "sampleId": "0202",
+      "toolId": "3d-camera-path-editor",
+      "presetPath": "/samples/phase-02/0202/sample.0202.3d-camera-path-editor.json"
+    },
+    {
+      "sampleId": "0210",
+      "toolId": "physics-sandbox",
+      "presetPath": "/samples/phase-02/0210/sample.0210.physics-sandbox.json"
+    },
+    {
+      "sampleId": "0220",
+      "toolId": "3d-camera-path-editor",
+      "presetPath": "/samples/phase-02/0220/sample.0220.3d-camera-path-editor.json"
+    },
+    {
+      "sampleId": "0221",
+      "toolId": "3d-json-payload-normalizer",
+      "presetPath": "/samples/phase-02/0221/sample.0221.3d-json-payload-normalizer.json"
+    },
+    {
+      "sampleId": "0303",
+      "toolId": "physics-sandbox",
+      "presetPath": "/samples/phase-03/0303/sample.0303.physics-sandbox.json"
+    },
+    {
+      "sampleId": "0510",
+      "toolId": "asset-pipeline-tool",
+      "presetPath": "/samples/phase-05/0510/sample.0510.asset-pipeline-tool.json"
+    },
+    {
+      "sampleId": "0512",
+      "toolId": "performance-profiler",
+      "presetPath": "/samples/phase-05/0512/sample.0512.performance-profiler.json"
+    }
+  ],
+  "deletedCount": 8,
+  "removedReferenceCount": 8
+}
