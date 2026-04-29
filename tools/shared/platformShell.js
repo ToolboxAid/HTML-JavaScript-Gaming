@@ -450,6 +450,99 @@ function normalizeSamplePresetPath(value) {
   return normalizeLocalHref(value, ["/samples/", "/games/"]);
 }
 
+function normalizeFetchRequestPath(input) {
+  if (typeof window === "undefined") {
+    return "";
+  }
+  try {
+    if (typeof input === "string") {
+      return normalizeSamplePresetPath(new URL(input, window.location.href).pathname);
+    }
+    if (input instanceof URL) {
+      return normalizeSamplePresetPath(input.pathname);
+    }
+    if (typeof Request !== "undefined" && input instanceof Request) {
+      return normalizeSamplePresetPath(new URL(input.url, window.location.href).pathname);
+    }
+  } catch {
+    return "";
+  }
+  return "";
+}
+
+function isWorkspaceManifestPreset(rawPreset) {
+  if (!rawPreset || typeof rawPreset !== "object" || Array.isArray(rawPreset)) {
+    return false;
+  }
+  const documentKind = normalizeTextValue(rawPreset.documentKind);
+  const schema = normalizeTextValue(rawPreset.schema).toLowerCase();
+  return documentKind === "workspace-manifest" || schema === "html-js-gaming.project";
+}
+
+function selectWorkspaceScopedToolPreset(rawPreset, toolId) {
+  if (!isWorkspaceManifestPreset(rawPreset)) {
+    return null;
+  }
+  const normalizedToolId = normalizeTextValue(toolId).toLowerCase();
+  if (!normalizedToolId) {
+    return null;
+  }
+  const tools = rawPreset.tools && typeof rawPreset.tools === "object" && !Array.isArray(rawPreset.tools)
+    ? rawPreset.tools
+    : null;
+  if (!tools) {
+    return null;
+  }
+  const matchingKey = Object.keys(tools).find((key) => normalizeTextValue(key).toLowerCase() === normalizedToolId);
+  if (!matchingKey) {
+    return null;
+  }
+  const scopedPreset = tools[matchingKey];
+  if (!scopedPreset || typeof scopedPreset !== "object" || Array.isArray(scopedPreset)) {
+    return null;
+  }
+  return scopedPreset;
+}
+
+function installWorkspaceScopedSamplePresetFetchShim(currentToolId, samplePresetPath) {
+  if (typeof window === "undefined" || typeof window.fetch !== "function") {
+    return;
+  }
+  const normalizedToolId = normalizeTextValue(currentToolId).toLowerCase();
+  const normalizedSamplePresetPath = normalizeSamplePresetPath(samplePresetPath);
+  if (!normalizedToolId || !normalizedSamplePresetPath) {
+    return;
+  }
+  if (window.fetch.__workspaceScopedSamplePresetShim === true) {
+    return;
+  }
+  const originalFetch = window.fetch.bind(window);
+  const patchedFetch = async (...args) => {
+    const requestPath = normalizeFetchRequestPath(args[0]);
+    const response = await originalFetch(...args);
+    if (!response?.ok || requestPath !== normalizedSamplePresetPath) {
+      return response;
+    }
+    const rawPreset = await response.clone().json().catch(() => null);
+    const scopedPreset = selectWorkspaceScopedToolPreset(rawPreset, normalizedToolId);
+    if (!scopedPreset) {
+      return response;
+    }
+    const headers = new Headers(response.headers || {});
+    if (!headers.get("content-type")) {
+      headers.set("content-type", "application/json; charset=utf-8");
+    }
+    return new Response(JSON.stringify(scopedPreset), {
+      status: response.status,
+      statusText: response.statusText,
+      headers
+    });
+  };
+  patchedFetch.__workspaceScopedSamplePresetShim = true;
+  patchedFetch.__workspaceScopedSamplePresetOriginalFetch = originalFetch;
+  window.fetch = patchedFetch;
+}
+
 function readLaunchPayloadSignature(searchParams) {
   if (!(searchParams instanceof URLSearchParams)) {
     return "";
@@ -1928,10 +2021,12 @@ async function initPlatformShell() {
   const searchParams = typeof window !== "undefined"
     ? new URLSearchParams(window.location.search)
     : new URLSearchParams();
+  const samplePresetPath = normalizeSamplePresetPath(searchParams.get("samplePresetPath"));
+  installWorkspaceScopedSamplePresetFetchShim(currentToolId, samplePresetPath);
   const launchSignature = readLaunchPayloadSignature(searchParams);
   const clearedForLaunch = clearSharedBindingsForNewLaunch(launchSignature);
   const launchContext = readGameLaunchContext();
-  const launchedFromSamplePreset = searchParams.has("samplePresetPath");
+  const launchedFromSamplePreset = Boolean(samplePresetPath);
 
   if (currentToolId) {
     workspaceController = createWorkspaceSystemController({

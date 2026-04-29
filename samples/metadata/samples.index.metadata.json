@@ -9994,8 +9994,7 @@
         },
         {
           "toolId": "sprite-editor",
-          "presetPath": "/samples/phase-19/1902/sample.1902.workspace-all-tools.json",
-          "palettePath": "/samples/phase-19/1902/sample.1902.palette.json"
+          "presetPath": "/samples/phase-19/1902/sample.1902.workspace-all-tools.json"
         },
         {
           "toolId": "skin-editor",

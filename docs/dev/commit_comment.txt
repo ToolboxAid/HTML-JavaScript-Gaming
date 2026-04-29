@@ -1,1 +1,1 @@
-Rebuild sample 1902 as clean Workspace all-tools integration without palette sidecar - PR 11.12
+Fix sample 1902 Workspace JSON to conform to actual workspace schema - PR 11.13

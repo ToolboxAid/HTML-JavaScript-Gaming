@@ -832,10 +832,18 @@ function findManifestRoundtripEntry(samples, sampleId, samplePresetPath) {
 }
 
 async function resolveRequiredPaletteInput(sampleId, samplePresetPath) {
+  const normalizedSamplePresetPath = normalizeManifestPath(samplePresetPath);
   let samples = [];
   try {
     samples = await loadSampleMetadataManifest();
   } catch (error) {
+    if (normalizedSamplePresetPath) {
+      return {
+        path: normalizedSamplePresetPath,
+        pathSource: "tool-input:fallback.query.samplePresetPath",
+        error: ""
+      };
+    }
     return {
       path: "",
       pathSource: "tool-input:missing.palettePath",
@@ -845,6 +853,13 @@ async function resolveRequiredPaletteInput(sampleId, samplePresetPath) {
 
   const mapping = findManifestRoundtripEntry(samples, sampleId, samplePresetPath);
   if (!mapping) {
+    if (normalizedSamplePresetPath) {
+      return {
+        path: normalizedSamplePresetPath,
+        pathSource: "tool-input:fallback.query.samplePresetPath",
+        error: ""
+      };
+    }
     return {
       path: "",
       pathSource: "tool-input:missing.palettePath",
@@ -854,17 +869,24 @@ async function resolveRequiredPaletteInput(sampleId, samplePresetPath) {
 
   const palettePath = normalizeManifestPath(mapping.palettePath);
   if (!palettePath) {
+    if (normalizedSamplePresetPath) {
+      return {
+        path: normalizedSamplePresetPath,
+        pathSource: "tool-input:manifest.roundtripToolPresets.presetPath.inlinePalette",
+        error: ""
+      };
+    }
     return {
       path: "",
       pathSource: "tool-input:missing.palettePath",
       error: "Sample manifest roundtrip mapping for sprite-editor is missing palettePath."
     };
   }
-  if (!/\.palette\.json(?:[?#]|$)/i.test(palettePath)) {
+  if (!/\.palette\.json(?:[?#]|$)/i.test(palettePath) && palettePath !== normalizedSamplePresetPath) {
     return {
       path: "",
       pathSource: "tool-input:missing.palettePath",
-      error: "Sample manifest palettePath must target canonical *.palette.json."
+      error: "Sample manifest palettePath must target canonical *.palette.json or match samplePresetPath for inline palette payloads."
     };
   }
 
@@ -879,8 +901,17 @@ function extractCanonicalPalettePayload(rawPalette) {
   if (!rawPalette || typeof rawPalette !== "object" || Array.isArray(rawPalette)) {
     return null;
   }
-  if (Array.isArray(rawPalette.swatches)) {
-    return rawPalette;
+  const candidates = [
+    rawPalette,
+    rawPalette.palette,
+    rawPalette.config?.palette,
+    rawPalette.payload?.palette,
+    rawPalette.payload?.config?.palette
+  ];
+  for (const candidate of candidates) {
+    if (candidate && typeof candidate === "object" && !Array.isArray(candidate) && Array.isArray(candidate.swatches)) {
+      return candidate;
+    }
   }
   return null;
 }
