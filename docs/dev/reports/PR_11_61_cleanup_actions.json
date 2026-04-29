@@ -1,0 +1,9 @@
+{
+  "deletedCount": 0,
+  "deletedFiles": [],
+  "removedMetadataReferenceCount": 0,
+  "removedMetadataReferences": [],
+  "skipReasons": [
+    "Only two non-protected NO candidates remain and each is coupled to a protected tile-map-editor-document.json entry; deleting would convert protected YES entries into NO and violate count-proof objective."
+  ]
+}
