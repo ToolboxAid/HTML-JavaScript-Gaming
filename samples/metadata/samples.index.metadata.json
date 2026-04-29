@@ -5821,7 +5821,8 @@
       ],
       "toolHints": [
         "svg-asset-studio",
-        "vector-map-editor"
+        "vector-map-editor",
+        "palette-browser"
       ],
       "roundtripToolPresets": [
         {
@@ -5831,6 +5832,10 @@
         {
           "toolId": "vector-map-editor",
           "presetPath": "/samples/phase-09/0901/sample.0901.vector-map-editor.json"
+        },
+        {
+          "toolId": "palette-browser",
+          "presetPath": "/samples/phase-09/0901/sample.0901.palette.json"
         }
       ]
     },
@@ -6551,7 +6556,8 @@
       "toolHints": [
         "parallax-editor",
         "svg-asset-studio",
-        "vector-map-editor"
+        "vector-map-editor",
+        "palette-browser"
       ],
       "roundtripToolPresets": [
         {
@@ -6565,6 +6571,10 @@
         {
           "toolId": "vector-map-editor",
           "presetPath": "/samples/phase-12/1204/sample.1204.vector-map-editor.json"
+        },
+        {
+          "toolId": "palette-browser",
+          "presetPath": "/samples/phase-12/1204/sample.1204.palette.json"
         }
       ]
     },
@@ -6768,7 +6778,8 @@
         "3d-json-payload-normalizer",
         "parallax-editor",
         "tile-map-editor",
-        "svg-asset-studio"
+        "svg-asset-studio",
+        "palette-browser"
       ],
       "roundtripToolPresets": [
         {
@@ -6790,6 +6801,10 @@
         {
           "toolId": "svg-asset-studio",
           "presetPath": "/samples/phase-12/1208/sample.1208.svg-asset-studio.json"
+        },
+        {
+          "toolId": "palette-browser",
+          "presetPath": "/samples/phase-12/1208/sample.1208.palette.json"
         }
       ]
     },
