@@ -1,1 +1,1 @@
-Ensure standalone sample tools load direct JSON SSoT including color and style data - PR 11.9
+Enforce JSON SSoT for all sample standalone tool data including colors and styles - PR 11.10
