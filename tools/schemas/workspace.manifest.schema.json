@@ -9,43 +9,62 @@
     "tools": {
       "type": "object",
       "required": ["palette"],
-      "additionalProperties": true,
-      "description": "Workspace-owned tool asset data. Palette is singular and canonical at tools.palette.",
+      "additionalProperties": false,
+      "description": "Workspace-owned tool asset data keyed by canonical registry ids plus required singular palette payload.",
       "properties": {
         "palette": {
-          "type": "object",
-          "required": ["id", "name", "swatches"],
-          "additionalProperties": true,
-          "properties": {
-            "id": {
-              "type": "string",
-              "minLength": 1
-            },
-            "name": {
-              "type": "string",
-              "minLength": 1
-            },
-            "swatches": {
-              "type": "array",
-              "items": {
-                "type": "object",
-                "required": ["hex"],
-                "additionalProperties": true,
-                "properties": {
-                  "symbol": {
-                    "type": "string"
-                  },
-                  "hex": {
-                    "type": "string",
-                    "minLength": 4
-                  },
-                  "name": {
-                    "type": "string"
-                  }
-                }
-              }
-            }
-          }
+          "$ref": "./tools/palette.schema.json"
+        },
+        "vector-map-editor": {
+          "$ref": "./tools/vector-map-editor.schema.json"
+        },
+        "vector-asset-studio": {
+          "$ref": "./tools/vector-asset-studio.schema.json"
+        },
+        "tile-map-editor": {
+          "$ref": "./tools/tile-map-editor.schema.json"
+        },
+        "parallax-editor": {
+          "$ref": "./tools/parallax-editor.schema.json"
+        },
+        "sprite-editor": {
+          "$ref": "./tools/sprite-editor.schema.json"
+        },
+        "skin-editor": {
+          "$ref": "./tools/skin-editor.schema.json"
+        },
+        "asset-browser": {
+          "$ref": "./tools/asset-browser.schema.json"
+        },
+        "palette-browser": {
+          "$ref": "./tools/palette-browser.schema.json"
+        },
+        "state-inspector": {
+          "$ref": "./tools/state-inspector.schema.json"
+        },
+        "replay-visualizer": {
+          "$ref": "./tools/replay-visualizer.schema.json"
+        },
+        "performance-profiler": {
+          "$ref": "./tools/performance-profiler.schema.json"
+        },
+        "physics-sandbox": {
+          "$ref": "./tools/physics-sandbox.schema.json"
+        },
+        "asset-pipeline-tool": {
+          "$ref": "./tools/asset-pipeline-tool.schema.json"
+        },
+        "tile-model-converter": {
+          "$ref": "./tools/tile-model-converter.schema.json"
+        },
+        "3d-json-payload-normalizer": {
+          "$ref": "./tools/3d-json-payload-normalizer.schema.json"
+        },
+        "3d-asset-viewer": {
+          "$ref": "./tools/3d-asset-viewer.schema.json"
+        },
+        "3d-camera-path-editor": {
+          "$ref": "./tools/3d-camera-path-editor.schema.json"
         }
       }
     }

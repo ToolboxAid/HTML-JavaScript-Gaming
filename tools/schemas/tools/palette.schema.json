@@ -1,0 +1,44 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "tools/schemas/tools/palette.schema.json",
+  "title": "Workspace Palette Payload",
+  "type": "object",
+  "required": [
+    "id",
+    "name",
+    "swatches"
+  ],
+  "additionalProperties": true,
+  "properties": {
+    "id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "swatches": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "hex"
+        ],
+        "additionalProperties": true,
+        "properties": {
+          "symbol": {
+            "type": "string"
+          },
+          "hex": {
+            "type": "string",
+            "minLength": 4
+          },
+          "name": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}
