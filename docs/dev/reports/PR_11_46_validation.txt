@@ -1,0 +1,49 @@
+PR 11.46 Validation
+
+PASS/FAIL: PASS
+
+Targeted validation run
+1) PowerShell audit script
+   Command:
+   - powershell -ExecutionPolicy Bypass -File scripts/PS/audit-sample-json-js-references.ps1
+   Result:
+   - FAIL due to write lock/permission denied on default output path:
+     docs/dev/reports/sample_json_js_reference_audit.csv
+
+2) PowerShell audit script (explicit output path override)
+   Command:
+   - powershell -ExecutionPolicy Bypass -File scripts/PS/audit-sample-json-js-references.ps1 -OutputPath docs/dev/reports/sample_json_js_reference_audit.pr11_46.csv
+   Result:
+   - PASS
+   - JSON files scanned: 98
+   - Referenced: 39
+   - Missing reference: 59
+   - Output written: docs/dev/reports/sample_json_js_reference_audit.pr11_46.csv
+
+3) Targeted sample smoke checks (selected sample set only)
+   Command:
+   - node ./tests/runtime/LaunchSmokeAllEntries.test.mjs --samples --sample-range=0221-0221
+   Result: PASS (PASS=1 FAIL=0 TOTAL=1)
+
+   Command:
+   - node ./tests/runtime/LaunchSmokeAllEntries.test.mjs --samples --sample-range=0510-0510
+   Result: PASS (PASS=1 FAIL=0 TOTAL=1)
+
+   Command:
+   - node ./tests/runtime/LaunchSmokeAllEntries.test.mjs --samples --sample-range=0512-0512
+   Result: PASS (PASS=1 FAIL=0 TOTAL=1)
+
+   Command:
+   - node ./tests/runtime/LaunchSmokeAllEntries.test.mjs --samples --sample-range=0708-0708
+   Result: PASS (PASS=1 FAIL=0 TOTAL=1)
+
+Syntax checks
+- Changed JavaScript files: none
+- node --check on changed JS files: N/A
+
+Full samples smoke
+- Skipped
+- Reason: PR 11.46 did not change shared sample launch infrastructure/framework; this batch is targeted classification/verification and reporting for selected sample-local JSON ownership.
+
+Result
+- PASS. Selected batch completed with targeted validation and no broad-impact runtime changes.
