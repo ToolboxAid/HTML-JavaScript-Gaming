@@ -3,7 +3,6 @@
   "tool": "parallax-editor",
   "version": "1",
   "config": {
-    "tilemapDocumentPath": "/samples/phase-12/1208/data/toolFormattedTileMap.js",
     "vectorAssetSvgPath": "/samples/phase-12/1208/assets/data/parallax/layer-near-forest.svg",
     "parallaxDocument": {
       "schema": "toolbox.parallax/1",

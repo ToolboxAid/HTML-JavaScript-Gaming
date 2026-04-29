@@ -12,7 +12,7 @@ import { SpriteAtlas, ImageAssetLoader } from '/src/engine/assets/index.js';
 import { drawSpriteProjectFrame, loadSpriteProjectPreset } from '/samples/shared/spritePresetRuntime.js';
 
 const theme = new Theme(ThemeTokens);
-const SPRITE_PRESET_PATH = '/samples/phase-02/0219/sample-0219-sprite-editor.json';
+const SPRITE_PRESET_PATH = '/samples/phase-02/0219/sample.0219.sprite-editor.json';
 
 export default class SpriteAtlasImageRenderingScene extends Scene {
   constructor() {
@@ -73,7 +73,7 @@ export default class SpriteAtlasImageRenderingScene extends Scene {
 
   render(renderer) {
     const presetStatus = this.spriteStatus === 'loaded'
-      ? 'Sprite preset loaded from sample-0219-sprite-editor.json'
+      ? 'Sprite preset loaded from sample.0219.sprite-editor.json'
       : this.spriteStatus === 'loading'
         ? 'Loading shared sprite preset...'
         : `Sprite preset unavailable (${this.spriteError || 'using fallback'})`;
@@ -83,7 +83,7 @@ export default class SpriteAtlasImageRenderingScene extends Scene {
       'Demonstrates sprite atlas frame lookup and image-loader-ready output',
       'Static sample: animation playback is not required for this scenario',
       'Current rendering uses shared sprite preset frame pixels when available',
-      'This sample and Sprite Editor load the same sample-0219-sprite-editor.json source',
+      'This sample and Sprite Editor load the same sample.0219.sprite-editor.json source',
       'Each entity references atlas/frame instead of raw color only',
       presetStatus
     ]);
@@ -114,7 +114,7 @@ export default class SpriteAtlasImageRenderingScene extends Scene {
       `Image: ${this.atlas.imagePath}`,
       `Frames: ${this.atlas.getFrameNames().length}`,
       this.spriteProject ? 'Rendering preset frame pixels' : `Loader status: ${this.loader.get('playerSheet')?.status || 'none'}`,
-      'Source: sample-0219-sprite-editor.json',
+      'Source: sample.0219.sprite-editor.json',
     ]);
   }
 }

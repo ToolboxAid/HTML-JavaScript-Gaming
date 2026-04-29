@@ -15,8 +15,8 @@ import { serializeWorldState, deserializeWorldState } from '/src/engine/persiste
 import { drawSpriteProjectFrame, loadSpriteProjectPreset } from '/samples/shared/spritePresetRuntime.js';
 
 const theme = new Theme(ThemeTokens);
-const SPRITE_PRESET_PATH = '/samples/phase-02/0224/sample-0224-sprite-editor.json';
-const TILEMAP_PRESET_PATH = '/samples/phase-02/0224/sample-0224-tile-map-editor.json';
+const SPRITE_PRESET_PATH = '/samples/phase-02/0224/sample.0224.sprite-editor.json';
+const TILEMAP_PRESET_PATH = '/samples/phase-02/0224/sample.0224.tile-map-editor.json';
 const FALLBACK_TILEMAP_ROWS = [
   [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
   [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
@@ -310,12 +310,12 @@ export default class TileCameraSpriteSliceScene extends Scene {
 
   render(renderer) {
     const spritePresetStatus = this.spriteStatus === 'loaded'
-      ? 'Sprite preset loaded from sample-0224-sprite-editor.json'
+      ? 'Sprite preset loaded from sample.0224.sprite-editor.json'
       : this.spriteStatus === 'loading'
         ? 'Loading shared sprite preset...'
         : `Sprite preset unavailable (${this.spriteError || 'using fallback'})`;
     const tileMapPresetStatus = this.tilemapStatus === 'loaded'
-      ? 'Tilemap preset loaded from sample-0224-tile-map-editor.json'
+      ? 'Tilemap preset loaded from sample.0224.tile-map-editor.json'
       : this.tilemapStatus === 'loading'
         ? 'Loading shared tilemap preset...'
         : `Tilemap preset unavailable (${this.tilemapError || 'using fallback'})`;
@@ -325,8 +325,8 @@ export default class TileCameraSpriteSliceScene extends Scene {
       'Combines tilemap, camera, action input, sprite-style frames, and snapshots',
       'Use Arrow keys or WASD to move, KeyK to save, KeyL to load',
       this.message,
-      'This sample and Tilemap Studio load the same sample-0224-tile-map-editor.json source',
-      'This sample and Sprite Editor load the same sample-0224-sprite-editor.json source',
+      'This sample and Tilemap Studio load the same sample.0224.tile-map-editor.json source',
+      'This sample and Sprite Editor load the same sample.0224.sprite-editor.json source',
       tileMapPresetStatus,
       spritePresetStatus
     ]);

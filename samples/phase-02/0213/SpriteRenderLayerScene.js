@@ -11,7 +11,7 @@ import { renderSpriteReadyEntities } from '/src/engine/rendering/index.js';
 import { drawSpriteProjectFrame, loadSpriteProjectPreset } from '/samples/shared/spritePresetRuntime.js';
 
 const theme = new Theme(ThemeTokens);
-const SPRITE_PRESET_PATH = '/samples/phase-02/0213/sample-0213-sprite-editor.json';
+const SPRITE_PRESET_PATH = '/samples/phase-02/0213/sample.0213.sprite-editor.json';
 
 export default class SpriteRenderLayerScene extends Scene {
   constructor() {
@@ -43,7 +43,7 @@ export default class SpriteRenderLayerScene extends Scene {
 
   render(renderer) {
     const presetStatus = this.spriteStatus === 'loaded'
-      ? 'Sprite preset loaded from sample-0213-sprite-editor.json'
+      ? 'Sprite preset loaded from sample.0213.sprite-editor.json'
       : this.spriteStatus === 'loading'
         ? 'Loading shared sprite preset...'
         : `Sprite preset unavailable (${this.spriteError || 'using fallback'})`;
@@ -52,7 +52,7 @@ export default class SpriteRenderLayerScene extends Scene {
       'Engine Sample 213',
       'Demonstrates a sprite-ready render path using shared sprite preset data',
       'Entities can provide a sprite-ready color proxy or a plain fallback color',
-      'This sample and Sprite Editor load the same sample-0213-sprite-editor.json source',
+      'This sample and Sprite Editor load the same sample.0213.sprite-editor.json source',
       'Labels identify the current render source style',
       presetStatus
     ]);
@@ -84,7 +84,7 @@ export default class SpriteRenderLayerScene extends Scene {
     drawPanel(renderer, 620, 184, 300, 126, 'Sprite Render Layer', [
       'Fallback: color',
       'Sprite-ready: shared sprite preset frame data',
-      'Source: sample-0213-sprite-editor.json',
+      'Source: sample.0213.sprite-editor.json',
       this.spriteProject ? 'Rendering preset frames' : 'Rendering fallback proxies',
     ]);
   }

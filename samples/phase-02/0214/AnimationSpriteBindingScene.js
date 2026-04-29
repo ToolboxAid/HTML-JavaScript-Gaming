@@ -13,7 +13,7 @@ import { renderSpriteReadyEntities } from '/src/engine/rendering/index.js';
 import { drawSpriteProjectFrame, loadSpriteProjectPreset } from '/samples/shared/spritePresetRuntime.js';
 
 const theme = new Theme(ThemeTokens);
-const SPRITE_PRESET_PATH = '/samples/phase-02/0214/sample-0214-sprite-editor.json';
+const SPRITE_PRESET_PATH = '/samples/phase-02/0214/sample.0214.sprite-editor.json';
 
 export default class AnimationSpriteBindingScene extends Scene {
   constructor() {
@@ -73,7 +73,7 @@ export default class AnimationSpriteBindingScene extends Scene {
   render(renderer) {
     const frame = this.animation.getFrame() || { id: 'fallback', color: theme.getColor('actorFill') };
     const presetStatus = this.spriteStatus === 'loaded'
-      ? 'Sprite preset loaded from sample-0214-sprite-editor.json'
+      ? 'Sprite preset loaded from sample.0214.sprite-editor.json'
       : this.spriteStatus === 'loading'
         ? 'Loading shared sprite preset...'
         : `Sprite preset unavailable (${this.spriteError || 'using fallback'})`;
@@ -83,7 +83,7 @@ export default class AnimationSpriteBindingScene extends Scene {
       'Demonstrates binding animation state to sprite-frame-like output',
       'Use Arrow keys to move and switch between animation frame sets',
       `Frame id: ${frame.id}`,
-      'This sample and Sprite Editor load the same sample-0214-sprite-editor.json source',
+      'This sample and Sprite Editor load the same sample.0214.sprite-editor.json source',
       presetStatus
     ]);
 
@@ -113,7 +113,7 @@ export default class AnimationSpriteBindingScene extends Scene {
       `State: ${this.animation.getStateName()}`,
       `Frame: ${frame.id}`,
       this.spriteProject ? 'Rendering preset frame pixels' : `Color fallback: ${frame.color}`,
-      'Source: sample-0214-sprite-editor.json',
+      'Source: sample.0214.sprite-editor.json',
     ]);
   }
 }

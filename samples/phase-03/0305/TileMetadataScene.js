@@ -16,81 +16,24 @@ import { stepArcadeBody, moveRectWithTilemapCollision } from '/src/engine/system
 import { createDemoSpriteSheet } from '../0301/demoSpriteFactory.js';
 
 const theme = new Theme(ThemeTokens);
-const TILEMAP_PRESET_PATH = '/samples/phase-03/0305/sample-0305-tile-map-editor.json';
-
-const FALLBACK_TILE_ROWS = [
-  [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-  [1, 0, 0, 0, 0, 0, 0, 4, 0, 0, 0, 0, 0, 1],
-  [1, 0, 0, 2, 2, 0, 0, 0, 0, 3, 3, 0, 0, 1],
-  [1, 0, 0, 2, 2, 0, 0, 0, 0, 3, 3, 0, 0, 1],
-  [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-  [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 0, 0, 1],
-  [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
-];
-
-const FALLBACK_TILE_METADATA_DEFINITIONS = Object.freeze({
-  0: { label: 'floor', color: '#1f2937', solid: false },
-  1: { label: 'wall', color: '#4338ca', solid: true },
-  2: { label: 'hazard', color: '#dc2626', solid: false, hazard: true, respawnMessage: 'Hazard tile touched. Reset.' },
-  3: { label: 'trigger', color: '#059669', solid: false, trigger: 'goal-flag', message: 'Trigger tile activated.' },
-  4: { label: 'slope', color: '#a855f7', solid: false, slope: 'placeholder-up-right', message: 'Slope metadata placeholder.' }
-});
+const TILEMAP_PRESET_PATH = '/samples/phase-03/0305/sample.0305.tile-map-editor.json';
 
 function cloneRows(rows = []) {
   return rows.map((row) => Array.isArray(row) ? row.map((value) => Number.parseInt(value, 10) || 0) : []);
 }
 
-function buildCollisionRows(rows = [], definitions = {}) {
-  return rows.map((row) => row.map((tileId) => (definitions[tileId]?.solid ? 1 : 0)));
-}
-
-function createFallbackTilemapDocument() {
-  const rows = cloneRows(FALLBACK_TILE_ROWS);
-  const definitions = JSON.parse(JSON.stringify(FALLBACK_TILE_METADATA_DEFINITIONS));
+function createEmptyTilemapDocument() {
   return {
     schema: 'toolbox.tilemap/1',
     version: 1,
-    map: {
-      name: 'sample-0305-tile-metadata',
-      width: rows[0]?.length || 14,
-      height: rows.length || 7,
-      tileSize: 48
-    },
-    tileset: Object.entries(definitions).map(([id, entry]) => ({
-      id: Number(id),
-      name: entry.label || `tile-${id}`,
-      color: entry.color || '#64748b'
-    })),
+    map: { name: 'empty', width: 1, height: 1, tileSize: 48 },
+    tileset: [{ id: 0, name: 'empty', color: '#1f2937' }],
     layers: [
-      {
-        id: 'ground',
-        name: 'Ground',
-        kind: 'tile',
-        visible: true,
-        locked: false,
-        data: rows
-      },
-      {
-        id: 'collision',
-        name: 'Collision',
-        kind: 'collision',
-        visible: true,
-        locked: false,
-        data: buildCollisionRows(rows, definitions)
-      },
-      {
-        id: 'data',
-        name: 'Data',
-        kind: 'data',
-        visible: true,
-        locked: false,
-        data: rows.map((row) => row.map(() => 0))
-      }
+      { id: 'ground', name: 'Ground', kind: 'tile', visible: true, locked: false, data: [[0]] },
+      { id: 'collision', name: 'Collision', kind: 'collision', visible: true, locked: false, data: [[0]] },
     ],
-    markers: [
-      { id: 'spawn-1', type: 'spawn', name: 'player-start', col: 12, row: 5, properties: {} }
-    ],
-    tileMetadataDefinitions: definitions
+    markers: [],
+    tileMetadataDefinitions: {},
   };
 }
 
@@ -134,7 +77,7 @@ export default class TileMetadataScene extends Scene {
     });
     this.metadataNote = 'Walk onto colored metadata tiles.';
     this.flags = { goalTriggered: false };
-    this.applyTilemapDocument(createFallbackTilemapDocument());
+    this.applyTilemapDocument(createEmptyTilemapDocument());
     void this.loadTilemapPreset();
   }
 
@@ -175,10 +118,10 @@ export default class TileMetadataScene extends Scene {
       throw new Error('Tilemap document did not include tile rows.');
     }
 
-    const rawDefinitions = documentModel?.tileMetadataDefinitions
-      && typeof documentModel.tileMetadataDefinitions === 'object'
-      ? documentModel.tileMetadataDefinitions
-      : FALLBACK_TILE_METADATA_DEFINITIONS;
+    const rawDefinitions = documentModel?.tileMetadataDefinitions;
+    if (!rawDefinitions || typeof rawDefinitions !== 'object') {
+      throw new Error('Tilemap document did not include tileMetadataDefinitions.');
+    }
 
     const definitions = {};
     const palette = {};
@@ -258,10 +201,10 @@ export default class TileMetadataScene extends Scene {
       }
 
       this.applyTilemapDocument(documentModel);
-      this.sampleStatus = 'Loaded tilemap preset from sample-0305-tile-map-editor.json';
+      this.sampleStatus = 'Loaded tilemap preset from sample.0305.tile-map-editor.json';
       this.sampleError = '';
     } catch (error) {
-      this.sampleStatus = 'Using fallback in-scene tilemap.';
+      this.sampleStatus = 'Tilemap preset unavailable.';
       this.sampleError = error instanceof Error ? error.message : String(error);
     }
   }
@@ -346,7 +289,7 @@ export default class TileMetadataScene extends Scene {
     drawFrame(renderer, theme, [
       'Engine sample 0305',
       'Extends the tilemap from solid/not-solid into hazard, trigger, and slope-style metadata',
-      'This sample and Tilemap Studio load the same sample-0305-tile-map-editor.json source',
+      'This sample and Tilemap Studio load the same sample.0305.tile-map-editor.json source',
       'Red tiles reset the actor (to spawn point)',
       'Green tiles trigger a flag,',
       'Purple tiles prove schema room for slopes',

@@ -11,7 +11,7 @@ import { drawFrame, drawPanel } from '/src/engine/debug/index.js';
 import { Tilemap, renderTilemap, resolveRectVsTilemap } from '/src/engine/tilemap/index.js';
 
 const theme = new Theme(ThemeTokens);
-const TILEMAP_PRESET_PATH = '/samples/phase-02/0221/sample-0221-tile-map-editor.json';
+const TILEMAP_PRESET_PATH = '/samples/phase-02/0221/sample.0221.tile-map-editor.json';
 
 export default class TilemapSystemScene extends Scene {
   constructor() {
@@ -21,18 +21,11 @@ export default class TilemapSystemScene extends Scene {
     this.sampleError = '';
     this.tilemap = new Tilemap({
       tileSize: 48,
-      tiles: [
-        [1,1,1,1,1,1,1,1,1,1,1,1],
-        [1,0,0,0,0,0,0,0,0,0,0,1],
-        [1,0,1,1,0,0,1,1,0,0,0,1],
-        [1,0,0,0,0,0,0,0,0,1,0,1],
-        [1,0,0,1,1,0,0,1,0,0,0,1],
-        [1,1,1,1,1,1,1,1,1,1,1,1],
-      ],
+      tiles: [[0]],
       palette: {
         0: '#1f2937',
-        1: '#6366f1',
       },
+      definitions: {},
     });
     this.player = {
       x: this.offset.x + 60,
@@ -163,10 +156,10 @@ export default class TilemapSystemScene extends Scene {
       }
 
       this.applyTilemapDocument(documentModel);
-      this.sampleStatus = 'Loaded tilemap preset from sample-0221-tile-map-editor.json';
+      this.sampleStatus = 'Loaded tilemap preset from sample.0221.tile-map-editor.json';
       this.sampleError = '';
     } catch (error) {
-      this.sampleStatus = 'Using fallback in-scene tilemap.';
+      this.sampleStatus = 'Tilemap preset unavailable.';
       this.sampleError = error instanceof Error ? error.message : String(error);
     }
   }
@@ -197,7 +190,7 @@ export default class TilemapSystemScene extends Scene {
     drawFrame(renderer, theme, [
       'Engine Sample 0221',
       'Demonstrates tilemap rendering and tile-based collision',
-      'This sample and Tilemap Studio load the same sample-0221-tile-map-editor.json source',
+      'This sample and Tilemap Studio load the same sample.0221.tile-map-editor.json source',
       'Use Arrow keys to move through the open tiles',
       `Collision: ${this.lastCollision}`,
       this.sampleError ? `${this.sampleStatus} (${this.sampleError})` : this.sampleStatus,

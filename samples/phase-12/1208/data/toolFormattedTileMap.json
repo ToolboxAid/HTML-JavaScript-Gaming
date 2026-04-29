@@ -1,4 +1,4 @@
-export default {
+{
   "schema": "toolbox.tilemap/1",
   "version": 1,
   "map": {
@@ -4112,5 +4112,4 @@ export default {
     "updatedAt": "2026-03-31T23:10:10.099Z",
     "notes": "Tile Map Editor toolbox.tilemap/1 format for Sample 1208 runtime import."
   }
-};
-
+}

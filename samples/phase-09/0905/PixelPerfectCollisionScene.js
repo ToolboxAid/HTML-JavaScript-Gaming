@@ -11,7 +11,7 @@ import { createRasterMask, areMasksColliding, isColliding, getMaskBounds } from 
 import { loadSpriteProjectPreset } from '/samples/shared/spritePresetRuntime.js';
 
 const theme = new Theme(ThemeTokens);
-const SPRITE_PRESET_PATH = '/samples/phase-09/0905/sample-0905-sprite-editor.json';
+const SPRITE_PRESET_PATH = '/samples/phase-09/0905/sample.0905.sprite-editor.json';
 const MASK_CELL_SIZE = 18;
 
 const DEFAULT_RING_ROWS = [
@@ -120,7 +120,7 @@ export default class PixelPerfectCollisionScene extends Scene {
     const boundsHit = isColliding(getMaskBounds(this.ringMask, ax, ay), getMaskBounds(this.fillMask, bx, by));
     const pixelHit = areMasksColliding(this.ringMask, ax, ay, this.fillMask, bx, by);
     const presetStatus = this.spriteStatus === 'loaded'
-      ? 'Sprite masks loaded from sample-0905-sprite-editor.json'
+      ? 'Sprite masks loaded from sample.0905.sprite-editor.json'
       : this.spriteStatus === 'loading'
         ? 'Loading shared sprite preset...'
         : `Sprite preset unavailable (${this.spriteError || 'using fallback masks'})`;
@@ -128,7 +128,7 @@ export default class PixelPerfectCollisionScene extends Scene {
     drawFrame(renderer, theme, [
       'Engine sample 0905',
       'Pixel-perfect overlap resolves at occupied-cell precision.',
-      'This sample and Sprite Editor load the same sample-0905-sprite-editor.json source',
+      'This sample and Sprite Editor load the same sample.0905.sprite-editor.json source',
       pixelHit ? 'Pixel overlap: true' : 'Pixel overlap: false',
       presetStatus
     ]);

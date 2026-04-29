@@ -12,7 +12,7 @@ import { AnimationController } from '/src/engine/animation/index.js';
 import { drawSpriteProjectFrame, loadSpriteProjectPreset } from '/samples/shared/spritePresetRuntime.js';
 
 const theme = new Theme(ThemeTokens);
-const SPRITE_PRESET_PATH = '/samples/phase-02/0207/sample-0207-sprite-editor.json';
+const SPRITE_PRESET_PATH = '/samples/phase-02/0207/sample.0207.sprite-editor.json';
 
 export default class AnimationSystemScene extends Scene {
   constructor() {
@@ -90,14 +90,14 @@ export default class AnimationSystemScene extends Scene {
 
   render(renderer) {
     const presetStatus = this.spriteStatus === 'loaded'
-      ? 'Sprite preset loaded from sample-0207-sprite-editor.json'
+      ? 'Sprite preset loaded from sample.0207.sprite-editor.json'
       : this.spriteStatus === 'loading'
         ? 'Loading shared sprite preset...'
         : `Sprite preset unavailable (${this.spriteError || 'using fallback'})`;
     drawFrame(renderer, theme, [
       'Engine Sample 0207',
       'Demonstrates animation playback with idle and move states',
-      'This sample and Sprite Editor load the same sample-0207-sprite-editor.json source',
+      'This sample and Sprite Editor load the same sample.0207.sprite-editor.json source',
       'Use Arrow keys to move the actor and switch animation state',
       `Current animation: ${this.animation.getStateName()}`,
       presetStatus
@@ -127,7 +127,7 @@ export default class AnimationSystemScene extends Scene {
     drawPanel(renderer, 640, 184, 280, 126, 'Animation State', [
       `State: ${this.animation.getStateName()}`,
       `Frame color: ${frame.color}`,
-      this.spriteProject ? 'Source: sample-0207-sprite-editor.json' : 'Idle = slower loop',
+      this.spriteProject ? 'Source: sample.0207.sprite-editor.json' : 'Idle = slower loop',
       this.spriteProject ? 'Move sample frame set is active' : 'Move = faster loop',
     ]);
   }

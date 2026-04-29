@@ -5,7 +5,7 @@ import { TexturePreprocessPipeline } from "/tools/shared/pipeline/index.js";
 import { drawSpriteProjectFrame, loadSpriteProjectPreset } from "/samples/shared/spritePresetRuntime.js";
 
 const theme = new Theme(ThemeTokens);
-const SPRITE_PRESET_PATH = "/samples/phase-14/1414/sample-1414-sprite-editor.json";
+const SPRITE_PRESET_PATH = "/samples/phase-14/1414/sample.1414.sprite-editor.json";
 
 export default class TextureSpritePreprocessPipelineScene extends Scene {
   constructor() {
@@ -38,7 +38,7 @@ export default class TextureSpritePreprocessPipelineScene extends Scene {
 
   render(renderer) {
     const presetStatus = this.spriteStatus === "loaded"
-      ? "Sprite preset loaded from sample-1414-sprite-editor.json"
+      ? "Sprite preset loaded from sample.1414.sprite-editor.json"
       : this.spriteStatus === "loading"
         ? "Loading shared sprite preset..."
         : `Sprite preset unavailable (${this.spriteError || "using pipeline-only view"})`;
@@ -46,7 +46,7 @@ export default class TextureSpritePreprocessPipelineScene extends Scene {
     drawFrame(renderer, theme, [
       "Engine Sample 1414",
       "Texture preprocessing normalizes visual content in one centralized step.",
-      "This sample and Sprite Editor load the same sample-1414-sprite-editor.json source.",
+      "This sample and Sprite Editor load the same sample.1414.sprite-editor.json source.",
       this.status,
       presetStatus
     ]);
@@ -65,7 +65,7 @@ export default class TextureSpritePreprocessPipelineScene extends Scene {
 
     const previewPanel = { x: 660, y: 220, width: 240, height: 220 };
     drawPanel(renderer, previewPanel.x, previewPanel.y, previewPanel.width, previewPanel.height, "Sprite Preset Preview", [
-      "Frame source: sample-1414-sprite-editor.json",
+      "Frame source: sample.1414.sprite-editor.json",
       `Size: ${this.spriteProject.width}x${this.spriteProject.height}`,
       "Edit in Sprite Editor, then relaunch sample."
     ]);

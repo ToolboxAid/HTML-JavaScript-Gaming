@@ -10,18 +10,6 @@ import { Theme, ThemeTokens } from '/src/engine/theme/index.js';
 import ToolFormattedTilesParallaxScene from './ToolFormattedTilesParallaxScene.js';
 import { createLivePreviewSyncBridge } from '/tools/shared/livePreviewSyncChannel.js';
 
-async function loadSamplePreset() {
-  try {
-    const response = await fetch('./sample-1208-parallax-editor.json', { cache: 'no-store' });
-    if (!response.ok) {
-      return null;
-    }
-    return await response.json();
-  } catch {
-    return null;
-  }
-}
-
 const theme = new Theme(ThemeTokens);
 theme.applyDocumentTheme();
 
@@ -36,8 +24,7 @@ const engine = new Engine({
   input,
 });
 
-const samplePreset = await loadSamplePreset();
-const scene = new ToolFormattedTilesParallaxScene({ samplePreset });
+const scene = new ToolFormattedTilesParallaxScene();
 const livePreviewSync = createLivePreviewSyncBridge({ sourceId: 'sample-1208-live-preview' });
 livePreviewSync.subscribe((payload) => {
   scene.applyLivePreviewUpdate(payload);

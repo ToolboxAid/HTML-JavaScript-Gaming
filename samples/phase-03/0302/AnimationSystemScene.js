@@ -16,7 +16,7 @@ import { moveRectWithTilemapCollision } from '/src/engine/systems/index.js';
 import { createDemoSpriteSheet } from '../0301/demoSpriteFactory.js';
 import { drawSpriteProjectFrame, loadSpriteProjectPreset } from '/samples/shared/spritePresetRuntime.js';
 const theme = new Theme(ThemeTokens);
-const SPRITE_PRESET_PATH = '/samples/phase-03/0302/sample-0302-sprite-editor.json';
+const SPRITE_PRESET_PATH = '/samples/phase-03/0302/sample.0302.sprite-editor.json';
 
 export default class AnimationSystemScene extends Scene {
   constructor() {
@@ -128,7 +128,7 @@ export default class AnimationSystemScene extends Scene {
 
   render(renderer) {
     const presetStatus = this.spriteStatus === 'loaded'
-      ? 'Sprite preset loaded from sample-0302-sprite-editor.json'
+      ? 'Sprite preset loaded from sample.0302.sprite-editor.json'
       : this.spriteStatus === 'loading'
         ? 'Loading shared sprite preset...'
         : `Sprite preset unavailable (${this.spriteError || 'using fallback'})`;
@@ -179,7 +179,7 @@ export default class AnimationSystemScene extends Scene {
       `State: ${this.animation.getStateName()}`,
       `Frame: ${this.animation.getFrame()}`,
       `Finished: ${this.animation.isFinished()}`,
-      this.spriteProject ? 'Source: sample-0302-sprite-editor.json' : 'Action animation is one-shot; move and idle loop',
+      this.spriteProject ? 'Source: sample.0302.sprite-editor.json' : 'Action animation is one-shot; move and idle loop',
     ]);
   }
 }

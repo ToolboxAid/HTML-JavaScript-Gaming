@@ -16,7 +16,7 @@ import { createDemoSpriteSheet } from './demoSpriteFactory.js';
 import { drawSpriteProjectFrame, loadSpriteProjectPreset } from '/samples/shared/spritePresetRuntime.js';
 
 const theme = new Theme(ThemeTokens);
-const SPRITE_PRESET_PATH = '/samples/phase-03/0301/sample-0301-sprite-editor.json';
+const SPRITE_PRESET_PATH = '/samples/phase-03/0301/sample.0301.sprite-editor.json';
 
 export default class RealSpriteRenderingScene extends Scene {
   constructor() {
@@ -122,7 +122,7 @@ export default class RealSpriteRenderingScene extends Scene {
 
   render(renderer) {
     const presetStatus = this.spriteStatus === 'loaded'
-      ? 'Sprite preset loaded from sample-0301-sprite-editor.json'
+      ? 'Sprite preset loaded from sample.0301.sprite-editor.json'
       : this.spriteStatus === 'loading'
         ? 'Loading shared sprite preset...'
         : `Sprite preset unavailable (${this.spriteError || 'using fallback'})`;
@@ -130,7 +130,7 @@ export default class RealSpriteRenderingScene extends Scene {
     drawFrame(renderer, theme, [
       'Engine sample 0301',
       'Promotes real image-backed sprite rendering to the standard actor path',
-      'Uses shared sample-0301-sprite-editor.json frames as the sprite source',
+      'Uses shared sample.0301.sprite-editor.json frames as the sprite source',
       'Camera + tilemap remain in place so later samples can inherit the path',
       this.message,
       presetStatus
@@ -175,7 +175,7 @@ export default class RealSpriteRenderingScene extends Scene {
       `Asset status: ${this.spriteProject ? 'preset-loaded' : this.asset?.status || 'loading'}`,
       `Atlas frames: ${this.spriteProject ? this.spriteProject.frames.length : this.atlas.getFrameNames().length}`,
       `Player frame: ${this.player.frame}`,
-      'Source: sample-0301-sprite-editor.json',
+      'Source: sample.0301.sprite-editor.json',
     ]);
   }
 }

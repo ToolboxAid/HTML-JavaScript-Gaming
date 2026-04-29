@@ -10,13 +10,13 @@ import { clamp } from '/src/engine/utils/index.js';
 import { Camera2D, worldRectToScreen } from '/src/engine/camera/index.js';
 import { Tilemap, resolveRectVsTilemap } from '/src/engine/tilemap/index.js';
 import { isFiniteNumber } from '../../shared/numberUtils.js';
-import tileMapToolExport from './data/toolFormattedTileMap.js';
-import fallbackParallaxToolExport from './data/toolFormattedParallax.js';
 
 const theme = new Theme(ThemeTokens);
+const TILEMAP_PRESET_PATH = './sample.1208.tile-map-editor.json';
+const PARALLAX_PRESET_PATH = './sample.1208.parallax-editor.json';
 
 export default class ToolFormattedTilesParallaxScene extends Scene {
-  constructor(options = {}) {
+  constructor() {
     super();
     this.screen = { x: 40, y: 180 };
     this.moveSpeed = 280;
@@ -48,9 +48,8 @@ export default class ToolFormattedTilesParallaxScene extends Scene {
     this.tilesetImage = null;
     this.tileFrameById = {};
     this.parallaxLayers = [];
-    this.samplePreset = options && typeof options.samplePreset === 'object' ? options.samplePreset : null;
 
-    this.applyTileExportData(getFallbackTileExport());
+    this.applyTileExportData(createEmptyTileExport());
   }
 
   enter() {
@@ -59,10 +58,12 @@ export default class ToolFormattedTilesParallaxScene extends Scene {
 
   async loadToolFormattedContent() {
     try {
-      this.applyTileExportData(tileMapToolExport);
-      const tileAssetCount = await this.loadTileAssets(extractTileEntries(tileMapToolExport));
-      const presetParallaxDocument = extractParallaxDocumentFromSamplePreset(this.samplePreset);
-      const parallaxDocument = presetParallaxDocument || await loadParallaxDocument(fallbackParallaxToolExport);
+      const tileMapPreset = await loadToolPreset(TILEMAP_PRESET_PATH);
+      const tileDocument = await extractTileDocumentFromToolPreset(tileMapPreset);
+      const parallaxPreset = await loadToolPreset(PARALLAX_PRESET_PATH);
+      const parallaxDocument = extractParallaxDocumentFromToolPreset(parallaxPreset);
+      this.applyTileExportData(tileDocument);
+      const tileAssetCount = await this.loadTileAssets(extractTileEntries(tileDocument));
       this.parallaxLayers = await this.loadParallaxAssets(extractParallaxLayers(parallaxDocument));
 
       this.contentLoaded = tileAssetCount > 0 && this.parallaxLayers.length === 3;
@@ -504,20 +505,54 @@ export default class ToolFormattedTilesParallaxScene extends Scene {
   }
 }
 
-function extractParallaxDocumentFromSamplePreset(samplePreset) {
-  if (!samplePreset || typeof samplePreset !== 'object') {
-    return null;
+async function loadToolPreset(relativePath) {
+  const response = await fetch(new URL(relativePath, import.meta.url), { cache: 'no-store' });
+  if (!response.ok) {
+    throw new Error(`Tool preset request failed (${response.status}) for ${relativePath}.`);
   }
-  const payload = samplePreset.payload;
-  if (!payload || typeof payload !== 'object') {
-    return null;
+  return response.json();
+}
+
+async function extractTileDocumentFromToolPreset(preset) {
+  const config = preset && typeof preset === 'object' && preset.config && typeof preset.config === 'object'
+    ? preset.config
+    : null;
+  if (!config) {
+    throw new Error('Tile-map tool preset is missing config.');
   }
-  const document = payload.parallaxDocument;
-  if (!document || typeof document !== 'object') {
-    return null;
+
+  if (config.tilemapDocument && typeof config.tilemapDocument === 'object') {
+    return config.tilemapDocument;
   }
-  if (document.schema !== 'toolbox.parallax/1') {
-    return null;
+  if (config.tileMapDocument && typeof config.tileMapDocument === 'object') {
+    return config.tileMapDocument;
+  }
+
+  const documentPath = typeof config.tilemapDocumentPath === 'string' && config.tilemapDocumentPath.trim()
+    ? config.tilemapDocumentPath.trim()
+    : (typeof config.tileMapDocumentPath === 'string' && config.tileMapDocumentPath.trim()
+      ? config.tileMapDocumentPath.trim()
+      : '');
+  if (!documentPath) {
+    throw new Error('Tile-map tool preset did not provide tilemapDocument data.');
+  }
+
+  const response = await fetch(new URL(documentPath, import.meta.url), { cache: 'no-store' });
+  if (!response.ok) {
+    throw new Error(`Tile-map document request failed (${response.status}) from ${documentPath}.`);
+  }
+  return response.json();
+}
+
+function extractParallaxDocumentFromToolPreset(preset) {
+  const config = preset && typeof preset === 'object' && preset.config && typeof preset.config === 'object'
+    ? preset.config
+    : null;
+  const document = config && config.parallaxDocument && typeof config.parallaxDocument === 'object'
+    ? config.parallaxDocument
+    : null;
+  if (!document || document.schema !== 'toolbox.parallax/1') {
+    throw new Error('Parallax preset did not include a valid toolbox.parallax/1 document.');
   }
   return document;
 }
@@ -531,74 +566,13 @@ function loadImageFromRelativePath(relativePath, baseUrl) {
   });
 }
 
-function getFallbackTileExport() {
-  const width = 72;
-  const height = 18;
-  const cells = Array.from({ length: height }, () => Array.from({ length: width }, () => 0));
-
-  for (let x = 0; x < width; x += 1) {
-    cells[height - 1][x] = 1;
-  }
-  for (let y = 0; y < height; y += 1) {
-    cells[y][0] = 1;
-    cells[y][width - 1] = 1;
-  }
-
-  placePlatform(cells, height - 4, 5, 13, 2);
-  placePlatform(cells, height - 5, 18, 26, 2);
-  placePlatform(cells, height - 6, 31, 39, 2);
-  placePlatform(cells, height - 4, 43, 51, 2);
-  placePlatform(cells, height - 7, 54, 61, 2);
-  placePlatform(cells, height - 8, 64, 69, 2);
-  placePlatform(cells, height - 9, 24, 30, 3);
-  placePlatform(cells, height - 10, 46, 50, 3);
-
+function createEmptyTileExport() {
   return {
-    tool: 'Tile Map Editor',
-    formatVersion: 2,
-    exportProfile: 'demo1208-fallback-tilemap',
-    tileset: {
-      id: 'terrain-main',
-      image: './assets/tileset/demo1208-terrain-tileset.png',
-      tileWidth: 48,
-      tileHeight: 48,
-      columns: 3,
-      rows: 1,
-      entries: [
-        {
-          tileId: 1,
-          name: 'ground_grass',
-          solid: true,
-          fallbackColor: '#4b5563',
-          source: { x: 0, y: 0, w: 48, h: 48 },
-        },
-        {
-          tileId: 2,
-          name: 'platform_blue',
-          solid: true,
-          fallbackColor: '#1d4ed8',
-          source: { x: 48, y: 0, w: 48, h: 48 },
-        },
-        {
-          tileId: 3,
-          name: 'stone_teal',
-          solid: true,
-          fallbackColor: '#115e59',
-          source: { x: 96, y: 0, w: 48, h: 48 },
-        },
-      ],
-    },
-    layers: [
-      {
-        id: 'terrain_layer_01',
-        kind: 'tile-layer',
-        width,
-        height,
-        cells,
-      },
-    ],
-    spawnPoints: { hero: { x: 120, y: (height - 2) * 48 } },
-    camera: { viewportWidth: 860, viewportHeight: 300 },
+    schema: 'toolbox.tilemap/1',
+    version: 1,
+    map: { width: 1, height: 1, tileSize: 48, viewportWidth: 860, viewportHeight: 300 },
+    tileset: [{ id: 0, name: 'empty', color: '#1f2937', source: { x: 0, y: 0, width: 48, height: 48 } }],
+    layers: [{ id: 'ground', kind: 'tile', data: [[0]] }],
   };
 }
 
@@ -645,26 +619,6 @@ function extractParallaxLayers(parallaxExport) {
   }
 
   return parallaxExport.layers;
-}
-
-function placePlatform(cells, row, startCol, endCol, tileId) {
-  for (let col = startCol; col <= endCol; col += 1) {
-    cells[row][col] = tileId;
-  }
-}
-
-async function loadParallaxDocument(fallbackDocument) {
-  try {
-    const response = await fetch(new URL('./data/toolFormattedParallax.json', import.meta.url), {
-      cache: 'no-store',
-    });
-    if (!response.ok) {
-      throw new Error(`HTTP ${response.status}`);
-    }
-    return await response.json();
-  } catch (_error) {
-    return fallbackDocument;
-  }
 }
 
 function getPrimaryTileLayer(tileExport) {
