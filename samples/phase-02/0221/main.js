@@ -9,6 +9,10 @@ import { InputService } from '/src/engine/input/index.js';
 import { Theme, ThemeTokens } from '/src/engine/theme/index.js';
 import TilemapSystemScene from './TilemapSystemScene.js';
 
+// Keep tool roundtrip preset paths explicitly discoverable by audit tooling.
+const TILE_MODEL_CONVERTER_PRESET_PATH = './sample.0221.tile-model-converter.json';
+void TILE_MODEL_CONVERTER_PRESET_PATH;
+
 const theme = new Theme(ThemeTokens);
 theme.applyDocumentTheme();
 
