@@ -1,1 +1,1 @@
-Componentize Workspace Manager status block and clean shared asset display - PR 11.30
+Increase PREV/NEXT label font size and apply color #3600af - PR 11.31

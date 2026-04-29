@@ -586,8 +586,9 @@ html:fullscreen body.tools-platform-surface .tools-platform-frame__project-actio
   padding: 6px 10px;
   border: 1px solid var(--line, rgba(221, 214, 254, 0.26));
   border-radius: 10px;
-  color: var(--muted, #e9ddff);
-  font-size: 0.9rem;
+  color: #3600af;
+  font-size: 1.2rem;
+  font-weight: 900;
   white-space: nowrap;
 }
 
