@@ -1,9 +1,9 @@
-# Codex Commands - PR 11.49
+# Codex Commands — PR 11.50
 
 Model: GPT-5.4
 Reasoning: high
 
 ```powershell
-codex --model gpt-5.4 --reasoning high "Run BUILD_PR_LEVEL_11_49_CONTROLLED_JSON_CLEANUP exactly as written. Use docs/pr/PR_11_49_CONTROLLED_JSON_CLEANUP/BUILD_PR.md as the source of truth. Run the audit script, select exactly two safe tool-specific NO JSON items, validate manually, apply only confirmed cleanup, run targeted checks, rerun audit, write reports under docs/dev/reports, update only status markers in the roadmap if execution-backed, and create the final repo-structured ZIP at C:\Users\davidq\Documents\GitHub\HTML-JavaScript-Gaming\tmp\PR_11_49_CONTROLLED_JSON_CLEANUP.zip. Do not run the full samples suite unless shared loader/framework files are changed."
+cd C:\Users\davidq\Documents\GitHub\HTML-JavaScript-Gaming
+codex --model gpt-5.4 --reasoning high "Run PR 11.50 from docs/pr/PR_11_50_CONTROLLED_JSON_CLEANUP.md. Execute the audit script, choose exactly two safe tool-specific NO JSON files, verify manually, remove only confirmed dead JSON files, capture before/after audit reports under docs/dev/reports, run targeted validation only, and create the final repo ZIP at tmp/PR_11_50_CONTROLLED_JSON_CLEANUP.zip. Do not touch palette.json, tile-map-editor-document.json, sample 1902, roadmap text, shared loaders, or framework code."
 ```
-

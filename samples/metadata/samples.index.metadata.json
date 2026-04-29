@@ -6775,7 +6775,6 @@
       ],
       "toolHints": [
         "3d-asset-viewer",
-        "3d-json-payload-normalizer",
         "parallax-editor",
         "tile-map-editor",
         "svg-asset-studio",
@@ -6785,10 +6784,6 @@
         {
           "toolId": "3d-asset-viewer",
           "presetPath": "/samples/phase-12/1208/sample.1208.3d-asset-viewer.json"
-        },
-        {
-          "toolId": "3d-json-payload-normalizer",
-          "presetPath": "/samples/phase-12/1208/sample.1208.3d-json-payload-normalizer.json"
         },
         {
           "toolId": "parallax-editor",
