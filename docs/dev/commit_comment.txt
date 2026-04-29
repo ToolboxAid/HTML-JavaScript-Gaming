@@ -1,1 +1,1 @@
-Resolve targeted non-palette sample JSON ownership cleanup batch - PR 11.46
+Classify complex JSON usage (palette + indirect loaders) - PR 11.47
