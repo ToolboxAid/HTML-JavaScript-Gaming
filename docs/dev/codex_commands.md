@@ -2,29 +2,40 @@ MODEL: GPT-5.3-codex
 REASONING: medium
 
 TASK:
-Apply PR 11.32.
+Apply PR 11.33.
 
-Fix the Workspace Manager tool tile grid so tiles do not overflow the container when the browser width shrinks.
+PR 11.32 had no effect. The uploaded platformShell.css already shows responsive grid rules exist for:
+- .tools-platform-frame__nav
+- .tools-platform-frame__nav-grid
 
-Use responsive wrapping:
-- allow cards to wrap to fewer columns
-- down to one column on narrow widths
-- keep cards within container width
-- avoid fixed-width layouts that exceed the panel
-- use minmax/min-width: 0/box-sizing as needed
-- ensure long labels/status text does not force horizontal overflow
+Therefore do not just repeat the same grid rule.
 
-Do NOT:
-- change tool data or payload logic
-- change palette handoff
-- change fullscreen behavior
-- change navigation behavior
-- touch start_of_day folders
-- add broad refactors
+Find and fix the actual overflow source.
 
-Likely targets:
-- tools/shared/platformShell.js if styles are inline/generated there
-- related shared shell CSS/style block if tile grid styles live elsewhere
+Inspect rendered DOM/classes and CSS around Workspace Manager tiles. Check:
+1. Is the tile wrapper actually `.tools-platform-frame__nav-grid`?
+2. Are tile cards/grid items forcing min-content width?
+3. Are badges/links using `white-space: nowrap` and forcing card width?
+4. Are parent containers using fixed/calc widths that exceed viewport?
+5. Is the visible purple panel inside a wider `.tools-platform-frame`, `.wrap`, `.app`, or header constraint?
+6. Are sections/cards missing `min-width: 0` or `max-width: 100%`?
+7. Is horizontal overflow hidden on the wrong element only, leaving visual runoff?
+
+Required CSS behavior:
+- all Workspace Manager tile grid parents and children must have `min-width: 0`
+- tile cards must have `max-width: 100%` and `box-sizing: border-box`
+- long labels/status badges may wrap or ellipsize without increasing card width
+- grid must use a true responsive definition such as:
+  `grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr));`
+  or equivalent
+- add a narrow-screen media rule if needed:
+  `grid-template-columns: 1fr;`
+- do not rely only on `overflow-x: hidden` as the fix; prevent the overflow source.
+
+Likely file:
+- tools/shared/platformShell.css
+
+Only touch platformShell.js if the generated markup is using the wrong class/wrapper.
 
 Validation:
 node --check tools/shared/platformShell.js
@@ -32,8 +43,17 @@ node ./tests/runtime/LaunchSmokeAllEntries.test.mjs --samples --sample-range=190
 
 Manual validation:
 Open sample 1902 -> Workspace Manager.
-Shrink browser width.
+Shrink browser width to match the screenshot.
 Confirm:
-- tile cards wrap inside the purple container
-- no horizontal runoff
-- grid can collapse to one column
+- no tile runoff beyond the right edge
+- cards wrap to fewer columns
+- cards can collapse to one column
+- labels/badges do not force overflow
+
+REPORT:
+Write docs/dev/reports/PR_11_33_validation.txt with:
+- changed files
+- actual overflow source found
+- why PR 11.32 had no effect
+- before/after manual validation
+- validation command results

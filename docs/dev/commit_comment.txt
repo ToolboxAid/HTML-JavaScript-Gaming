@@ -1,1 +1,1 @@
-Make Workspace Manager tile grid wrap responsively - PR 11.32
+Fix actual Workspace Manager tile overflow source - PR 11.33
