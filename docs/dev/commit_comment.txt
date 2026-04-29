@@ -1,1 +1,1 @@
-Add CI-safe sample JSON lockdown audit with palette-only visibility - PR 11.71
+Derive Workspace Manager tool tile sample counts from matching sample JSON files - PR 11.72
