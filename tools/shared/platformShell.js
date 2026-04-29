@@ -275,23 +275,24 @@ function buildToolHeaderIntroData(currentTool) {
     return null;
   }
 
-  const toolName = normalizeSingleLineText(currentTool?.name);
+  const toolName = normalizeSingleLineText(currentTool?.displayName) || normalizeSingleLineText(currentTool?.name);
   const toolShortDescription = normalizeSingleLineText(currentTool?.shortDescription);
   const toolDescription = normalizeSingleLineText(currentTool?.description);
-  const headerText = toolName && toolShortDescription
-    ? `${toolName} \u2014 ${toolShortDescription}`
-    : `Configuration error: ${toolId} header requires tool.name and tool.shortDescription in tools/toolRegistry.js.`;
+  const headerDescriptor = toolDescription || toolShortDescription;
+  const headerText = toolName && headerDescriptor
+    ? `${toolName} - ${headerDescriptor}`
+    : `Configuration error: ${toolId} header requires tool.displayName/tool.name and tool.description/tool.shortDescription in tools/toolRegistry.js.`;
   const introText = toolName && toolDescription
     ? `${toolName}: ${toolDescription}`
-    : `Configuration error: ${toolId} intro requires tool.name and tool.description in tools/toolRegistry.js.`;
-  const hasHeaderError = !(toolName && toolShortDescription);
+    : `Configuration error: ${toolId} intro requires tool.displayName/tool.name and tool.description in tools/toolRegistry.js.`;
+  const hasHeaderError = !(toolName && headerDescriptor);
   const hasIntroError = !(toolName && toolDescription);
   const diagnosticParts = [];
   if (hasHeaderError) {
-    diagnosticParts.push(`Configuration error: ${toolId} header requires tool.name and tool.shortDescription in tools/toolRegistry.js.`);
+    diagnosticParts.push(`Configuration error: ${toolId} header requires tool.displayName/tool.name and tool.description/tool.shortDescription in tools/toolRegistry.js.`);
   }
   if (hasIntroError) {
-    diagnosticParts.push(`Configuration error: ${toolId} intro requires tool.name and tool.description in tools/toolRegistry.js.`);
+    diagnosticParts.push(`Configuration error: ${toolId} intro requires tool.displayName/tool.name and tool.description in tools/toolRegistry.js.`);
   }
   const headerDisplayText = hasHeaderError
     ? `${toolName || toolId} \u2014 Configuration error (open title for details)`
@@ -1818,14 +1819,15 @@ function renderHeaderMarkup(currentTool, isHeaderExpanded) {
   const useStandardizedToolHeader = !isLanding
     && Boolean(currentTool?.id)
     && STANDARDIZED_TOOL_HEADER_IDS.has(currentTool.id);
-  const standardizedToolName = normalizeTextValue(currentTool?.name);
+  const standardizedToolName = normalizeTextValue(currentTool?.displayName) || normalizeTextValue(currentTool?.name);
   const standardizedToolShortDescription = normalizeTextValue(currentTool?.shortDescription);
   const standardizedToolHelpText = normalizeTextValue(currentTool?.description);
-  const hasStandardizedHeaderConfig = Boolean(standardizedToolName && standardizedToolShortDescription);
+  const standardizedHeaderDescriptor = standardizedToolHelpText || standardizedToolShortDescription;
+  const hasStandardizedHeaderConfig = Boolean(standardizedToolName && standardizedHeaderDescriptor);
   const hasStandardizedIntroConfig = Boolean(standardizedToolName && standardizedToolHelpText);
   const standardizedHeaderText = hasStandardizedHeaderConfig
-    ? `${standardizedToolName} \u2014 ${standardizedToolShortDescription}`
-    : `Configuration error: ${currentTool?.id || "tool"} header requires tool.name and tool.shortDescription in tools/toolRegistry.js.`;
+    ? `${standardizedToolName} - ${standardizedHeaderDescriptor}`
+    : `Configuration error: ${currentTool?.id || "tool"} header requires tool.displayName/tool.name and tool.description/tool.shortDescription in tools/toolRegistry.js.`;
   const standardizedIntroText = hasStandardizedIntroConfig
     ? `${standardizedToolName}: ${standardizedToolHelpText}`
     : `Configuration error: ${currentTool?.id || "tool"} intro requires tool.name and tool.description in tools/toolRegistry.js.`;

@@ -1,0 +1,32 @@
+PR 11.29 Validation Report
+
+Changed files:
+- tools/shared/platformShell.js
+- docs/dev/reports/PR_11_29_validation.txt
+
+Root cause:
+- Fullscreen summary text was built from `tool.name + tool.shortDescription` only.
+- Several valid registry entries expose reliable display metadata as `displayName + description` while `shortDescription` may be absent.
+- That strict `shortDescription` requirement triggered the fallback string `Configuration error (open title for details)` even when valid manifest metadata existed.
+
+Metadata source used:
+- Active tool metadata from the existing tool registry resolution path already used by the shell (`currentTool` from `getToolById(document.body.dataset.toolId)`).
+- Header binding now resolves title fields from:
+  - `displayName` (fallback `name`)
+  - `description` (fallback `shortDescription`)
+- No hardcoded per-tool name/description values were added.
+
+Validation commands/results:
+- node --check tools/shared/platformShell.js -> PASS
+- node ./tests/runtime/LaunchSmokeAllEntries.test.mjs --samples --sample-range=1902-1902 --tools -> PASS
+  - Summary: PASS=19 FAIL=0 TOTAL=19
+
+Manual validation notes:
+- Manual browser interaction cannot be fully executed in this CLI-only run.
+- Expected manual check path:
+  1) Open sample 1902
+  2) Open Workspace Manager
+  3) Open any tool
+  4) Enter fullscreen
+  5) Confirm summary/title shows `<tool name> - <description>` and not `Configuration error (open title for details)`
+- Code path updated specifically for fullscreen summary/title binding and leaves fullscreen mechanics/payload fan-out/button enablement unchanged.

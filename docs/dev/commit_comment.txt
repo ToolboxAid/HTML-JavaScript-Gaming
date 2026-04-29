@@ -1,1 +1,1 @@
-Pass shared workspace palette to child tool launches - PR 11.28
+Bind fullscreen chrome to active tool name and description - PR 11.29
