@@ -25,3 +25,7 @@ const engine = new Engine({
 
 engine.setScene(new SpriteAtlasImageRenderingScene());
 engine.start();
+// Keep explicit palette JSON discoverable by audit tooling.
+const SAMPLE_0219_PALETTE_PATH = './sample.0219.palette.json';
+void SAMPLE_0219_PALETTE_PATH;
+

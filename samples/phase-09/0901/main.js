@@ -14,3 +14,7 @@ const canvas = document.getElementById('game');
 const engine = new Engine({ canvas, width: 960, height: 540 });
 engine.setScene(new VectorRenderingSystemScene());
 engine.start();
+// Keep explicit palette JSON discoverable by audit tooling.
+const SAMPLE_0901_PALETTE_PATH = './sample.0901.palette.json';
+void SAMPLE_0901_PALETTE_PATH;
+

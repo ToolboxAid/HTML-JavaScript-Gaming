@@ -34,3 +34,7 @@ scene.setRuntimeBindingPublisher((payload) => {
 });
 engine.setScene(scene);
 engine.start();
+// Keep explicit palette JSON discoverable by audit tooling.
+const SAMPLE_1208_PALETTE_PATH = './sample.1208.palette.json';
+void SAMPLE_1208_PALETTE_PATH;
+

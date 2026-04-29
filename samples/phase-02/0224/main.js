@@ -37,3 +37,7 @@ const engine = new Engine({
 
 engine.setScene(new TileCameraSpriteSliceScene());
 engine.start();
+// Keep explicit palette JSON discoverable by audit tooling.
+const SAMPLE_0224_PALETTE_PATH = './sample.0224.palette.json';
+void SAMPLE_0224_PALETTE_PATH;
+

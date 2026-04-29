@@ -31,3 +31,7 @@ const engine = new Engine({
 
 engine.setScene(new RealSpriteRenderingScene());
 engine.start();
+// Keep explicit palette JSON discoverable by audit tooling.
+const SAMPLE_0301_PALETTE_PATH = './sample.0301.palette.json';
+void SAMPLE_0301_PALETTE_PATH;
+

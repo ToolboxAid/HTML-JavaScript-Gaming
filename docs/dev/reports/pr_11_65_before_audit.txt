@@ -1,0 +1,5 @@
+Sample JSON reference audit complete.
+JSON files scanned: 66
+Referenced: 46
+Missing reference: 20
+Report: docs/dev/reports/sample_json_js_reference_audit.csv

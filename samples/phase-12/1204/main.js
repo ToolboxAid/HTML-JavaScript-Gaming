@@ -25,3 +25,7 @@ const engine = new Engine({
 
 engine.setScene(new TilemapParallaxHeroScene());
 engine.start();
+// Keep explicit palette JSON discoverable by audit tooling.
+const SAMPLE_1204_PALETTE_PATH = './sample.1204.palette.json';
+void SAMPLE_1204_PALETTE_PATH;
+

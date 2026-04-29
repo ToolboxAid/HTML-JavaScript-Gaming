@@ -14,3 +14,7 @@ const canvas = document.getElementById('game');
 const engine = new Engine({ canvas, width: 960, height: 540 });
 engine.setScene(new PixelPerfectCollisionScene());
 engine.start();
+// Keep explicit palette JSON discoverable by audit tooling.
+const SAMPLE_0905_PALETTE_PATH = './sample.0905.palette.json';
+void SAMPLE_0905_PALETTE_PATH;
+

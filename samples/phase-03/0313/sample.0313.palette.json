@@ -1,34 +1,41 @@
 {
-  "$schema": "../../../tools/schemas/palette.schema.json",
+  "$schema": "../../../tools/schemas/tools/palette-browser.schema.json",
   "schema": "html-js-gaming.palette",
   "version": 1,
   "name": "Sample 0313 Palette",
-  "source": "generated-from-sample-colors",
+  "source": "sample-js",
+  "sourceId": "sample-0313",
+  "locked": true,
   "swatches": [
     {
       "symbol": "!",
-      "hex": "#111827",
+      "hex": "#0891B2",
       "name": "color-001"
     },
     {
       "symbol": "#",
-      "hex": "#1CAC78",
+      "hex": "#16A34A",
       "name": "color-002"
     },
     {
       "symbol": "$",
-      "hex": "#1F75FE",
+      "hex": "#F97316",
       "name": "color-003"
     },
     {
       "symbol": "%",
-      "hex": "#EE204D",
+      "hex": "#D8D5FF",
       "name": "color-004"
     },
     {
       "symbol": "&",
-      "hex": "#FCE883",
+      "hex": "#4338CA",
       "name": "color-005"
+    },
+    {
+      "symbol": "(",
+      "hex": "#34D399",
+      "name": "color-006"
     }
   ]
 }

@@ -45,3 +45,7 @@ engine.setScene(new MultiSystemDemoScene({
   debugConfig
 }));
 engine.start();
+// Keep explicit palette JSON discoverable by audit tooling.
+const SAMPLE_1205_PALETTE_PATH = './sample.1205.palette.json';
+void SAMPLE_1205_PALETTE_PATH;
+

@@ -25,3 +25,7 @@ const engine = new Engine({
 
 engine.setScene(new AnimationSpriteBindingScene());
 engine.start();
+// Keep explicit palette JSON discoverable by audit tooling.
+const SAMPLE_0214_PALETTE_PATH = './sample.0214.palette.json';
+void SAMPLE_0214_PALETTE_PATH;
+

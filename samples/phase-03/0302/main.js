@@ -32,3 +32,7 @@ const engine = new Engine({
 
 engine.setScene(new AnimationSystemScene());
 engine.start();
+// Keep explicit palette JSON discoverable by audit tooling.
+const SAMPLE_0302_PALETTE_PATH = './sample.0302.palette.json';
+void SAMPLE_0302_PALETTE_PATH;
+

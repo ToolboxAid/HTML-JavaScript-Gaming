@@ -1,9 +1,11 @@
 {
-  "$schema": "../../../tools/schemas/palette.schema.json",
+  "$schema": "../../../tools/schemas/tools/palette-browser.schema.json",
   "schema": "html-js-gaming.palette",
   "version": 1,
   "name": "Sample 0221 Palette",
-  "source": "generated-from-sample-colors",
+  "source": "sample-js",
+  "sourceId": "sample-0221",
+  "locked": true,
   "swatches": [
     {
       "symbol": "!",
@@ -14,6 +16,11 @@
       "symbol": "#",
       "hex": "#6366F1",
       "name": "color-002"
+    },
+    {
+      "symbol": "$",
+      "hex": "#FFFFFF",
+      "name": "color-003"
     }
   ]
 }

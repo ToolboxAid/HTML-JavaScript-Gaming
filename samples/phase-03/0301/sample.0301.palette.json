@@ -1,66 +1,106 @@
 {
-  "$schema": "../../../tools/schemas/palette.schema.json",
+  "$schema": "../../../tools/schemas/tools/palette-browser.schema.json",
   "schema": "html-js-gaming.palette",
   "version": 1,
   "name": "Sample 0301 Palette",
-  "source": "engine/paletteList",
+  "source": "sample-js",
+  "sourceId": "sample-0301",
+  "locked": true,
   "swatches": [
     {
       "symbol": "!",
-      "hex": "#1CAC78",
+      "hex": "#38BDF8",
       "name": "color-001"
     },
     {
       "symbol": "#",
-      "hex": "#7DD3FC",
+      "hex": "#E0F2FE",
       "name": "color-002"
     },
     {
       "symbol": "$",
-      "hex": "#FFFFFF",
+      "hex": "#0F172A",
       "name": "color-003"
     },
     {
       "symbol": "%",
-      "hex": "#1E1B4B",
+      "hex": "#1E293B",
       "name": "color-004"
     },
     {
       "symbol": "&",
-      "hex": "#34D399",
+      "hex": "#22C55E",
       "name": "color-005"
     },
     {
       "symbol": "(",
-      "hex": "#A78BFA",
+      "hex": "#DCFCE7",
       "name": "color-006"
     },
     {
       "symbol": ")",
-      "hex": "#312E81",
+      "hex": "#064E3B",
       "name": "color-007"
     },
     {
       "symbol": "*",
-      "hex": "#FBBF24",
+      "hex": "#14532D",
       "name": "color-008"
     },
     {
       "symbol": "+",
-      "hex": "#78350F",
+      "hex": "#F59E0B",
       "name": "color-009"
     },
     {
       "symbol": ",",
-      "hex": "#1F75FE",
+      "hex": "#FEF3C7",
       "name": "color-010"
     },
     {
       "symbol": "-",
-      "hex": "#FF7538",
+      "hex": "#78350F",
       "name": "color-011"
+    },
+    {
+      "symbol": ".",
+      "hex": "#92400E",
+      "name": "color-012"
+    },
+    {
+      "symbol": "/",
+      "hex": "#EF4444",
+      "name": "color-013"
+    },
+    {
+      "symbol": ":",
+      "hex": "#FEE2E2",
+      "name": "color-014"
+    },
+    {
+      "symbol": ";",
+      "hex": "#7F1D1D",
+      "name": "color-015"
+    },
+    {
+      "symbol": "<",
+      "hex": "#991B1B",
+      "name": "color-016"
+    },
+    {
+      "symbol": "=",
+      "hex": "#1F2937",
+      "name": "color-017"
+    },
+    {
+      "symbol": ">",
+      "hex": "#4338CA",
+      "name": "color-018"
+    },
+    {
+      "symbol": "?",
+      "hex": "#D8D5FF",
+      "name": "color-019"
     }
-  ],
-  "sourceId": "crayola008",
-  "locked": true
+  ]
 }

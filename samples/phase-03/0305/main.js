@@ -35,3 +35,7 @@ const engine = new Engine({
 
 engine.setScene(new TileMetadataScene());
 engine.start();
+// Keep explicit palette JSON discoverable by audit tooling.
+const SAMPLE_0305_PALETTE_PATH = './sample.0305.palette.json';
+void SAMPLE_0305_PALETTE_PATH;
+

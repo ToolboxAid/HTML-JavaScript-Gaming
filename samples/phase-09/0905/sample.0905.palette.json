@@ -1,13 +1,15 @@
 {
-  "$schema": "../../../tools/schemas/palette.schema.json",
+  "$schema": "../../../tools/schemas/tools/palette-browser.schema.json",
   "schema": "html-js-gaming.palette",
   "version": 1,
   "name": "Sample 0905 Palette",
-  "source": "engine/paletteList",
+  "source": "sample-js",
+  "sourceId": "sample-0905",
+  "locked": true,
   "swatches": [
     {
       "symbol": "!",
-      "hex": "#1CAC78",
+      "hex": "#0F172A",
       "name": "color-001"
     },
     {
@@ -17,20 +19,13 @@
     },
     {
       "symbol": "$",
-      "hex": "#22C55E",
+      "hex": "#EF4444",
       "name": "color-003"
     },
     {
       "symbol": "%",
-      "hex": "#1F75FE",
+      "hex": "#22C55E",
       "name": "color-004"
-    },
-    {
-      "symbol": "&",
-      "hex": "#FF7538",
-      "name": "color-005"
     }
-  ],
-  "sourceId": "crayola008",
-  "locked": true
+  ]
 }
