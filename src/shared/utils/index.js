@@ -28,3 +28,7 @@ export { stringifyValue } from "./stringifyValueUtils.js";
 export { oppositeCardinalDirection } from "./directionUtils.js";
 export { wrapTextByCharacterCount } from "./textWrapUtils.js";
 export { clamp, distance, wrap, randomRange } from "./mathUtils.js";
+export { pointInRect, xyInRect, getCenteredRect } from "./geometryUtils.js";
+export { invariant } from "./invariantUtils.js";
+export { normalizeCommandText } from "./normalizeCommandTextUtils.js";
+export { fuzzyMatchScore } from "./fuzzyMatchScore.js";
