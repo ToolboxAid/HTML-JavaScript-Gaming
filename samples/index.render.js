@@ -3,6 +3,8 @@ import { launchWithExternalToolWorkspaceReset, resolveSampleToolLaunchHref } fro
 
 const METADATA_PATH = "./metadata/samples.index.metadata.json";
 const PINNED_KEY = "samples-index-pinned";
+const WORKSPACE_MANAGER_PATH = "/tools/Workspace%20Manager/index.html";
+const SAMPLE_1902_WORKSPACE_PRESET_PATH = "/samples/phase-19/1902/sample.1902.workspace-all-tools.json";
 
 function normalize(value) {
   return typeof value === "string" ? value.trim() : "";
@@ -48,6 +50,20 @@ function normalizePresetPath(value) {
     return `/${normalized.slice(2)}`;
   }
   return "";
+}
+
+function buildWorkspaceManagerSampleLaunchHref(sample) {
+  const sampleId = normalize(sample?.id);
+  if (sampleId !== "1902") {
+    return "";
+  }
+  const params = new URLSearchParams({
+    tool: "vector-map-editor",
+    sampleId,
+    sampleTitle: normalize(sample?.title) || "",
+    samplePresetPath: SAMPLE_1902_WORKSPACE_PRESET_PATH
+  });
+  return `${WORKSPACE_MANAGER_PATH}?${params.toString()}`;
 }
 
 function getExplicitRoundtripPresetPath(sample, toolId) {
@@ -337,7 +353,19 @@ function buildSampleCard(sample) {
   card.appendChild(title);
   card.appendChild(previewWrap);
   card.appendChild(description);
-  if (Array.isArray(sample.roundtripLinks) && sample.roundtripLinks.length > 0) {
+  if (sample.id === "1902") {
+    const workspaceLaunchHref = buildWorkspaceManagerSampleLaunchHref(sample);
+    if (workspaceLaunchHref) {
+      const workspaceLaunchSection = document.createElement("section");
+      workspaceLaunchSection.className = "sample-tool-roundtrip";
+      workspaceLaunchSection.innerHTML = `
+        <ul>
+          <li><a data-tool-launch-href="${escapeHtml(workspaceLaunchHref)}" href="${escapeHtml(workspaceLaunchHref)}">Open with Workspace Manager</a></li>
+        </ul>
+      `;
+      card.appendChild(workspaceLaunchSection);
+    }
+  } else if (Array.isArray(sample.roundtripLinks) && sample.roundtripLinks.length > 0) {
     const roundtripSection = document.createElement("section");
     roundtripSection.className = "sample-tool-roundtrip";
     roundtripSection.innerHTML = `

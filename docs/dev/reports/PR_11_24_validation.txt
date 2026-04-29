@@ -1,0 +1,17 @@
+changed files
+- samples/index.render.js
+- docs/dev/reports/PR_11_24_validation.txt
+
+before behavior
+- Sample 1902 rendered the "Tool Roundtrip Links" section with direct "Open <tool>" links.
+
+after behavior
+- Sample 1902 renders only one launch action:
+  - Open with Workspace Manager
+- The generic "Tool Roundtrip Links" section is not rendered for sample 1902.
+
+validation commands/results
+- node --check "samples/index.render.js"
+  - PASS
+- node ./tests/runtime/LaunchSmokeAllEntries.test.mjs --samples --sample-range=1902-1902 --tools
+  - PASS (PASS=19 FAIL=0 TOTAL=19)

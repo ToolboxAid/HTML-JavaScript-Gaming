@@ -1,0 +1,14 @@
+# PR 11.24 Validation
+
+Changed files:
+-
+
+Before:
+- Sample 1902 showed Tool Roundtrip Links and direct Open <tool> links.
+
+After:
+- Sample 1902 shows only Open with Workspace Manager.
+
+Validation:
+- node --check ...
+- node ./tests/runtime/LaunchSmokeAllEntries.test.mjs --samples --sample-range=1902-1902 --tools

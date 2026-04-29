@@ -1,1 +1,1 @@
-Bind Workspace Manager UI to embedded payload for asset display - PR 11.23
+Make sample 1902 launch only through Workspace Manager - PR 11.24
