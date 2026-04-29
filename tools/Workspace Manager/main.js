@@ -9,6 +9,11 @@ const GAMES_METADATA_PATH = "/games/metadata/games.index.metadata.json";
 const DEFAULT_GAME_ASSET_CATALOG_FILENAME = "workspace.asset-catalog.json";
 const GAME_ASSET_CATALOG_SCHEMA = "html-js-gaming.game-asset-catalog";
 const GAME_ASSET_CATALOG_VERSION = 1;
+const WORKSPACE_MANIFEST_SCHEMA = "html-js-gaming.project";
+const WORKSPACE_DOCUMENT_KIND = "workspace-manifest";
+const WORKSPACE_SPECIAL_TOOL_KEY_MAP = Object.freeze({
+  palette: "palette-browser"
+});
 const gameAssetCatalogCache = new Map();
 
 function deriveGameAssetCatalogPath(gameHref) {
@@ -109,6 +114,7 @@ const TOOL_LAUNCH_PARAM_PREFIXES = Object.freeze({
 let selectedToolId = "";
 let pagerEventsBound = false;
 let pagerMessageBridgeBound = false;
+let workspaceManifestToolDiagnostics = null;
 
 function refreshPagerRefs() {
   refs.prevButton = document.querySelector("[data-tool-host-prev]");
@@ -147,6 +153,167 @@ function normalizeLocalHrefParam(value, allowedPrefixes = []) {
     return "";
   }
   return allowedPrefixes.some((prefix) => normalized.startsWith(prefix)) ? normalized : "";
+}
+
+function readSamplePresetPathFromQuery() {
+  const searchParams = new URL(window.location.href).searchParams;
+  return normalizeLocalHrefParam(
+    searchParams.get("samplePresetPath"),
+    TOOL_LAUNCH_PARAM_PREFIXES.samplePresetPath
+  );
+}
+
+function isWorkspaceManifestSource(rawSource) {
+  if (!rawSource || typeof rawSource !== "object" || Array.isArray(rawSource)) {
+    return false;
+  }
+  const documentKind = normalizeTextParam(rawSource.documentKind);
+  const schema = normalizeTextParam(rawSource.schema).toLowerCase();
+  return documentKind === WORKSPACE_DOCUMENT_KIND || schema === WORKSPACE_MANIFEST_SCHEMA;
+}
+
+function classifyWorkspaceManifestTools(rawSource) {
+  if (!isWorkspaceManifestSource(rawSource)) {
+    return {
+      recognized: false,
+      discoveredKeys: [],
+      acceptedToolIds: [],
+      rejected: [
+        {
+          key: "",
+          reason: "not-workspace-manifest"
+        }
+      ]
+    };
+  }
+
+  const toolsBlock = rawSource.tools && typeof rawSource.tools === "object" && !Array.isArray(rawSource.tools)
+    ? rawSource.tools
+    : null;
+  if (!toolsBlock) {
+    return {
+      recognized: true,
+      discoveredKeys: [],
+      acceptedToolIds: [],
+      rejected: [
+        {
+          key: "",
+          reason: "tools-block-missing"
+        }
+      ]
+    };
+  }
+
+  const discoveredKeys = Object.keys(toolsBlock);
+  const acceptedToolIds = [];
+  const acceptedSeen = new Set();
+  const rejected = [];
+
+  discoveredKeys.forEach((rawKey) => {
+    const key = normalizeTextParam(rawKey);
+    if (!key) {
+      rejected.push({ key: rawKey, reason: "empty-tool-key" });
+      return;
+    }
+
+    const normalizedKey = key.toLowerCase();
+    const mappedToolId = WORKSPACE_SPECIAL_TOOL_KEY_MAP[normalizedKey] || normalizedKey;
+    const toolEntry = getToolHostEntryById(manifest, mappedToolId);
+    if (!toolEntry) {
+      rejected.push({ key, reason: "unsupported-tool-key" });
+      return;
+    }
+
+    const rawToolEntry = toolsBlock[rawKey];
+    if (!rawToolEntry || typeof rawToolEntry !== "object" || Array.isArray(rawToolEntry)) {
+      rejected.push({ key, reason: "tool-entry-not-object" });
+      return;
+    }
+
+    const payloadToolId = normalizeTextParam(rawToolEntry.tool).toLowerCase();
+    if (!payloadToolId) {
+      rejected.push({ key, reason: "tool-entry-missing-tool-id" });
+      return;
+    }
+
+    const expectedToolId = mappedToolId;
+    if (payloadToolId !== expectedToolId) {
+      rejected.push({
+        key,
+        reason: `tool-entry-id-mismatch(expected=${expectedToolId},actual=${payloadToolId})`
+      });
+      return;
+    }
+
+    if (!acceptedSeen.has(expectedToolId)) {
+      acceptedSeen.add(expectedToolId);
+      acceptedToolIds.push(expectedToolId);
+    }
+  });
+
+  return {
+    recognized: true,
+    discoveredKeys,
+    acceptedToolIds,
+    rejected
+  };
+}
+
+async function readWorkspaceManifestToolDiagnosticsFromSamplePreset(samplePresetPath) {
+  const normalizedPath = normalizeLocalHrefParam(samplePresetPath, TOOL_LAUNCH_PARAM_PREFIXES.samplePresetPath);
+  if (!normalizedPath) {
+    return null;
+  }
+  try {
+    const response = await fetch(normalizedPath, { cache: "no-store" });
+    if (!response.ok) {
+      return {
+        sourcePath: normalizedPath,
+        recognized: false,
+        discoveredKeys: [],
+        acceptedToolIds: [],
+        rejected: [
+          {
+            key: "",
+            reason: `fetch-failed(status=${response.status})`
+          }
+        ]
+      };
+    }
+    const rawSource = await response.json();
+    return {
+      sourcePath: normalizedPath,
+      ...classifyWorkspaceManifestTools(rawSource)
+    };
+  } catch (error) {
+    return {
+      sourcePath: normalizedPath,
+      recognized: false,
+      discoveredKeys: [],
+      acceptedToolIds: [],
+      rejected: [
+        {
+          key: "",
+          reason: `fetch-error(${error instanceof Error ? error.message : "unknown"})`
+        }
+      ]
+    };
+  }
+}
+
+function logWorkspaceManifestToolDiagnostics(diagnostics) {
+  if (!diagnostics) {
+    return;
+  }
+  const source = diagnostics.sourcePath || "(unknown source)";
+  console.info(
+    `[WorkspaceManager] workspace manifest tools source=${source} discovered=${diagnostics.discoveredKeys.join(", ") || "(none)"} accepted=${diagnostics.acceptedToolIds.join(", ") || "(none)"}`
+  );
+  if (diagnostics.rejected.length > 0) {
+    console.warn(
+      `[WorkspaceManager] workspace manifest rejected tool keys: ${diagnostics.rejected.map((entry) => `${entry.key || "(none)"}:${entry.reason}`).join(" | ")}`
+    );
+  }
 }
 
 function readForwardedToolLaunchParams() {
@@ -494,14 +661,23 @@ function syncSelectedToolState(initialToolId) {
   updateSwitchMeta();
 }
 
-function applyToolsUsedFilterForGame(gameEntry, preferredToolId = "") {
-  if (!gameEntry) {
-    toolIds = [...allToolIds];
-  } else {
-    const allowed = normalizeToolsUsedList(gameEntry.toolsUsed)
+function applyToolsUsedFilterForGame(gameEntry, preferredToolId = "", workspaceToolFilterIds = null) {
+  const baseToolIds = !gameEntry
+    ? [...allToolIds]
+    : normalizeToolsUsedList(gameEntry.toolsUsed)
       .filter((toolId) => !!getToolHostEntryById(manifest, toolId));
-    toolIds = [...allowed];
+
+  if (Array.isArray(workspaceToolFilterIds)) {
+    if (workspaceToolFilterIds.length === 0) {
+      toolIds = [];
+    } else {
+      const allowedFromWorkspace = new Set(workspaceToolFilterIds);
+      toolIds = baseToolIds.filter((toolId) => allowedFromWorkspace.has(toolId));
+    }
+  } else {
+    toolIds = baseToolIds;
   }
+
   const initialToolId = toolIds.includes(preferredToolId) ? preferredToolId : "";
   syncSelectedToolState(initialToolId);
   updateStandaloneHref(initialToolId);
@@ -690,6 +866,7 @@ function bindEvents() {
   }
 
   window.addEventListener("popstate", () => {
+    const samplePresetPath = readSamplePresetPathFromQuery();
     const gameLaunchRequested = shouldMountGameFrameFromQuery();
     const gameId = readInitialGameId();
     if (gameLaunchRequested && !gameId) {
@@ -698,22 +875,31 @@ function bindEvents() {
         "Workspace Manager game launch requires a valid gameId.",
         "Expected query: ?gameId=<id>&mount=game"
       );
+      workspaceManifestToolDiagnostics = null;
       applyToolsUsedFilterForGame(null);
       return;
     }
     if (gameId) {
-      void readGameEntryById(gameId).then((gameEntry) => {
+      void readGameEntryById(gameId).then(async (gameEntry) => {
         if (!gameEntry) {
           writeStatus(`Game "${gameId}" is not available for Workspace Manager launch.`);
           renderMountDiagnostic(
             `Game "${gameId}" is not available for Workspace Manager launch.`,
             "Use a valid gameId value from games metadata."
           );
+          workspaceManifestToolDiagnostics = null;
           applyToolsUsedFilterForGame(null);
           return;
         }
+
+        workspaceManifestToolDiagnostics = await readWorkspaceManifestToolDiagnosticsFromSamplePreset(samplePresetPath);
+        logWorkspaceManifestToolDiagnostics(workspaceManifestToolDiagnostics);
+
         const rawRequestedToolId = readRawToolIdFromQuery();
-        applyToolsUsedFilterForGame(gameEntry, rawRequestedToolId);
+        const workspaceToolFilterIds = workspaceManifestToolDiagnostics
+          ? workspaceManifestToolDiagnostics.acceptedToolIds
+          : null;
+        applyToolsUsedFilterForGame(gameEntry, rawRequestedToolId, workspaceToolFilterIds);
         const requestedToolId = readRequestedToolIdFromQuery();
         if (rawRequestedToolId && !requestedToolId) {
           writeStatus(`Tool "${rawRequestedToolId}" is not available for Workspace Manager launch.`);
@@ -743,34 +929,41 @@ function bindEvents() {
       });
       return;
     }
-    applyToolsUsedFilterForGame(null);
-    const rawRequestedToolId = readRawToolIdFromQuery();
-    const requestedToolId = readRequestedToolIdFromQuery();
-    if (rawRequestedToolId && !requestedToolId) {
-      writeStatus(`Tool "${rawRequestedToolId}" is not available for Workspace Manager launch.`);
-      renderMountDiagnostic(
-        `Tool "${rawRequestedToolId}" is not available for Workspace Manager launch.`,
-        "Select a valid tool id from the active registry."
-      );
-      runtime.unmountCurrentTool("popstate-invalid-tool");
+    void (async () => {
+      workspaceManifestToolDiagnostics = await readWorkspaceManifestToolDiagnosticsFromSamplePreset(samplePresetPath);
+      logWorkspaceManifestToolDiagnostics(workspaceManifestToolDiagnostics);
+      const workspaceToolFilterIds = workspaceManifestToolDiagnostics
+        ? workspaceManifestToolDiagnostics.acceptedToolIds
+        : null;
+      applyToolsUsedFilterForGame(null, "", workspaceToolFilterIds);
+      const rawRequestedToolId = readRawToolIdFromQuery();
+      const requestedToolId = readRequestedToolIdFromQuery();
+      if (rawRequestedToolId && !requestedToolId) {
+        writeStatus(`Tool "${rawRequestedToolId}" is not available for Workspace Manager launch.`);
+        renderMountDiagnostic(
+          `Tool "${rawRequestedToolId}" is not available for Workspace Manager launch.`,
+          "Select a valid tool id from the active registry."
+        );
+        runtime.unmountCurrentTool("popstate-invalid-tool");
+        syncControlState();
+        return;
+      }
+      const toolId = requestedToolId || (toolIds[0] || "");
+      writeSelectedToolId(toolId);
+      updateSwitchMeta();
+      updateStandaloneHref(toolId);
+      if (toolId) {
+        mountSelectedTool("popstate");
+      } else {
+        writeStatus("Select a tool to mount.");
+        renderMountDiagnostic(
+          "No tool is selected for mount.",
+          "Use [PREV] and [NEXT] to choose a tool."
+        );
+        syncControlState();
+      }
       syncControlState();
-      return;
-    }
-    const toolId = requestedToolId || (toolIds[0] || "");
-    writeSelectedToolId(toolId);
-    updateSwitchMeta();
-    updateStandaloneHref(toolId);
-    if (toolId) {
-      mountSelectedTool("popstate");
-    } else {
-      writeStatus("Select a tool to mount.");
-      renderMountDiagnostic(
-        "No tool is selected for mount.",
-        "Use [PREV] and [NEXT] to choose a tool."
-      );
-      syncControlState();
-    }
-    syncControlState();
+    })();
   });
 
   window.addEventListener("beforeunload", () => {
@@ -782,10 +975,16 @@ async function init() {
   if (!(refs.mountContainer instanceof HTMLElement)) {
     return;
   }
+  const samplePresetPath = readSamplePresetPathFromQuery();
   const gameLaunchRequested = shouldMountGameFrameFromQuery();
   const initialGameId = readInitialGameId();
   if (gameLaunchRequested && !initialGameId) {
-    applyToolsUsedFilterForGame(null);
+    workspaceManifestToolDiagnostics = await readWorkspaceManifestToolDiagnosticsFromSamplePreset(samplePresetPath);
+    logWorkspaceManifestToolDiagnostics(workspaceManifestToolDiagnostics);
+    const workspaceToolFilterIds = workspaceManifestToolDiagnostics
+      ? workspaceManifestToolDiagnostics.acceptedToolIds
+      : null;
+    applyToolsUsedFilterForGame(null, "", workspaceToolFilterIds);
     bindEvents();
     writeStatus("Workspace Manager game launch requires a valid gameId query parameter.");
     renderMountDiagnostic(
@@ -804,7 +1003,12 @@ async function init() {
         "Use a valid gameId value from games metadata."
       );
       if (gameLaunchRequested) {
-        applyToolsUsedFilterForGame(null);
+        workspaceManifestToolDiagnostics = await readWorkspaceManifestToolDiagnosticsFromSamplePreset(samplePresetPath);
+        logWorkspaceManifestToolDiagnostics(workspaceManifestToolDiagnostics);
+        const workspaceToolFilterIds = workspaceManifestToolDiagnostics
+          ? workspaceManifestToolDiagnostics.acceptedToolIds
+          : null;
+        applyToolsUsedFilterForGame(null, "", workspaceToolFilterIds);
         bindEvents();
         return;
       }
@@ -812,7 +1016,12 @@ async function init() {
   }
 
   const rawRequestedToolId = readRawToolIdFromQuery();
-  applyToolsUsedFilterForGame(initialGameEntry, rawRequestedToolId);
+  workspaceManifestToolDiagnostics = await readWorkspaceManifestToolDiagnosticsFromSamplePreset(samplePresetPath);
+  logWorkspaceManifestToolDiagnostics(workspaceManifestToolDiagnostics);
+  const workspaceToolFilterIds = workspaceManifestToolDiagnostics
+    ? workspaceManifestToolDiagnostics.acceptedToolIds
+    : null;
+  applyToolsUsedFilterForGame(initialGameEntry, rawRequestedToolId, workspaceToolFilterIds);
   bindEvents();
 
   const requestedToolId = readRequestedToolIdFromQuery();

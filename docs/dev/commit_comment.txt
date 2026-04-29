@@ -1,1 +1,1 @@
-Canonicalize palette schema and enforce direct strict tool payload schemas - PR 11.19
+Update Workspace loader to consume strict tools manifest payloads - PR 11.20

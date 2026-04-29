@@ -479,10 +479,19 @@ function isWorkspaceManifestPreset(rawPreset) {
   return documentKind === "workspace-manifest" || schema === "html-js-gaming.project";
 }
 
-function selectWorkspaceScopedToolPreset(rawPreset, toolId) {
-  if (!isWorkspaceManifestPreset(rawPreset)) {
-    return null;
+const WORKSPACE_SPECIAL_TOOL_KEY_MAP = Object.freeze({
+  palette: "palette-browser"
+});
+
+function normalizeWorkspaceManifestToolKey(rawKey) {
+  const normalizedKey = normalizeTextValue(rawKey).toLowerCase();
+  if (!normalizedKey) {
+    return "";
   }
+  return WORKSPACE_SPECIAL_TOOL_KEY_MAP[normalizedKey] || normalizedKey;
+}
+
+function resolveWorkspaceManifestScopedToolPreset(rawPreset, toolId) {
   const normalizedToolId = normalizeTextValue(toolId).toLowerCase();
   if (!normalizedToolId) {
     return null;
@@ -493,15 +502,42 @@ function selectWorkspaceScopedToolPreset(rawPreset, toolId) {
   if (!tools) {
     return null;
   }
-  const matchingKey = Object.keys(tools).find((key) => normalizeTextValue(key).toLowerCase() === normalizedToolId);
-  if (!matchingKey) {
+
+  const candidateKeys = Object.keys(tools).filter((key) => normalizeWorkspaceManifestToolKey(key) === normalizedToolId);
+  if (candidateKeys.length === 0) {
     return null;
   }
-  const scopedPreset = tools[matchingKey];
-  if (!scopedPreset || typeof scopedPreset !== "object" || Array.isArray(scopedPreset)) {
+
+  const exactKeyIndex = candidateKeys.findIndex((key) => normalizeTextValue(key).toLowerCase() === normalizedToolId);
+  const orderedKeys = exactKeyIndex >= 0
+    ? [candidateKeys[exactKeyIndex], ...candidateKeys.filter((_, index) => index !== exactKeyIndex)]
+    : candidateKeys;
+  for (const key of orderedKeys) {
+    const scopedPreset = tools[key];
+    if (!scopedPreset || typeof scopedPreset !== "object" || Array.isArray(scopedPreset)) {
+      continue;
+    }
+    const payloadToolId = normalizeTextValue(scopedPreset.tool).toLowerCase();
+    if (!payloadToolId) {
+      console.warn(`[tools.platform] workspace scoped preset rejected: key="${key}" is missing required "tool" field.`);
+      continue;
+    }
+    if (payloadToolId !== normalizedToolId) {
+      console.warn(
+        `[tools.platform] workspace scoped preset rejected: key="${key}" expected tool="${normalizedToolId}" but found tool="${payloadToolId}".`
+      );
+      continue;
+    }
+    return scopedPreset;
+  }
+  return null;
+}
+
+function selectWorkspaceScopedToolPreset(rawPreset, toolId) {
+  if (!isWorkspaceManifestPreset(rawPreset)) {
     return null;
   }
-  return scopedPreset;
+  return resolveWorkspaceManifestScopedToolPreset(rawPreset, toolId);
 }
 
 function installWorkspaceScopedSamplePresetFetchShim(currentToolId, samplePresetPath) {
