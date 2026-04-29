@@ -3,18 +3,17 @@
 model: gpt-5.3-codex
 reasoning: medium
 
-Apply PR_11_10_ALL_SAMPLES_STANDALONE_TOOL_JSON_SSOT_ENFORCEMENT.
+Apply PR_11_12_REBUILD_SAMPLE_1902_WORKSPACE_ALL_TOOLS.
 
 Required:
-- Scan every sample under samples/ for standalone tool ties.
-- Enforce JSON as the only canonical source for all tool-visible data.
-- Include color, palette, fill, stroke, style, and preview/render config in the SSoT check.
-- Remove or demote JS mirror data modules that duplicate JSON payloads.
-- Ensure standalone tools load sample JSON directly.
-- Use standalone sample/tool validation as primary proof, not workspace-only validation.
-- Preserve empty state when no explicit JSON exists.
-- Do not add fallback/default/hidden sample data.
-- Do not scrape JS source.
+- Rebuild sample 1902 as a clean Workspace all-tools integration sample.
+- Delete `samples/phase-19/1902/sample.1902.palette.json`; there should be no palette sidecar.
+- Normalize `sample.1902.workspace-all-tools.json` into a single clear workspace manifest/payload with one source of truth.
+- Remove duplicated palette/config/payload sections and unrelated garbage payloads.
+- Ensure Workspace recognizes every active workspace-supported tool, not only Palette.
+- Sample 1902 page primary action must open Workspace with the all-tools manifest, not just standalone tool links.
+- Standalone tool samples remain separate and unchanged.
+- Do not add fallback/default/hidden data.
 - Do not modify start_of_day folders.
-- Add validation report at docs/dev/reports/PR_11_10_ALL_SAMPLES_STANDALONE_TOOL_JSON_SSOT_ENFORCEMENT_report.md.
-- Return ZIP artifact at tmp/PR_11_10_ALL_SAMPLES_STANDALONE_TOOL_JSON_SSOT_ENFORCEMENT_delta.zip.
+- Add validation report at docs/dev/reports/PR_11_12_REBUILD_SAMPLE_1902_WORKSPACE_ALL_TOOLS_report.md.
+- Return ZIP artifact at tmp/PR_11_12_REBUILD_SAMPLE_1902_WORKSPACE_ALL_TOOLS_delta.zip.

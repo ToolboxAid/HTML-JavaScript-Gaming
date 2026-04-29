@@ -1,0 +1,49 @@
+{
+  "schema": "html-js-gaming.palette",
+  "version": 1,
+  "name": "Sample 1902 Workspace Palette",
+  "source": "sample",
+  "sourceId": "sample-1902-workspace-palette",
+  "swatches": [
+    {
+      "symbol": "A",
+      "hex": "#0F172AFF",
+      "name": "Night"
+    },
+    {
+      "symbol": "B",
+      "hex": "#111827FF",
+      "name": "Slate"
+    },
+    {
+      "symbol": "C",
+      "hex": "#38BDF8FF",
+      "name": "Sky"
+    },
+    {
+      "symbol": "D",
+      "hex": "#64748BFF",
+      "name": "Steel"
+    },
+    {
+      "symbol": "E",
+      "hex": "#F8FAFCFF",
+      "name": "Cloud"
+    },
+    {
+      "symbol": "F",
+      "hex": "#A78BFAFF",
+      "name": "Violet"
+    },
+    {
+      "symbol": "G",
+      "hex": "#22C55EFF",
+      "name": "Green"
+    },
+    {
+      "symbol": "H",
+      "hex": "#FB923CFF",
+      "name": "Amber"
+    }
+  ]
+}

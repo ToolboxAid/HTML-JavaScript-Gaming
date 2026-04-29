@@ -1,0 +1,58 @@
+<!--
+Toolbox Aid
+David Quesenberry
+04/28/2026
+index.html
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Sample 1902 - Workspace All Tools Integration</title>
+  <link rel="stylesheet" href="../../../src/engine/ui/baseLayout.css" />
+  <link rel="stylesheet" href="../../../src/engine/theme/main.css" />
+</head>
+<body class="hub-page-samples">
+  <div id="shared-theme-header"></div>
+  <main>
+    <h1>Sample 1902 - Workspace All Tools Integration</h1>
+    <p>Workspace orchestration sample that launches Workspace Manager and mounts every active workspace-supported tool using one explicit sample-owned JSON source-of-truth payload.</p>
+
+    <section class="sample-tool-roundtrip">
+      <h3>Workspace Launch</h3>
+      <p>If auto-launch is blocked, open the workspace manually:</p>
+      <ul>
+        <li><a id="workspaceLaunchLink" href="#">Open Workspace Manager (all active tools)</a></li>
+      </ul>
+      <p>Tip: add <code>?stay=1</code> to this URL to stay on the sample page without auto-launch.</p>
+    </section>
+
+    <section>
+      <h3>Included Tool Coverage</h3>
+      <ul>
+        <li>Vector Map Editor</li>
+        <li>Vector Asset Studio</li>
+        <li>Tilemap Studio</li>
+        <li>Parallax Scene Studio</li>
+        <li>Sprite Editor</li>
+        <li>Primitive Skin Editor</li>
+        <li>Asset Browser / Import Hub</li>
+        <li>Palette Browser / Manager</li>
+        <li>State Inspector</li>
+        <li>Replay Visualizer</li>
+        <li>Performance Profiler</li>
+        <li>Physics Sandbox</li>
+        <li>Asset Pipeline Tool</li>
+        <li>Tile Model Converter</li>
+        <li>3D JSON Payload Normalizer</li>
+        <li>3D Asset Viewer</li>
+        <li>3D Camera Path Editor</li>
+      </ul>
+    </section>
+  </main>
+
+  <script type="module" src="/samples/shared/sampleDetailPageEnhancement.js"></script>
+  <script type="module" src="./main.js"></script>
+  <script type="module" src="../../../src/engine/theme/mount-shared-header.js"></script>
+</body>
+</html>

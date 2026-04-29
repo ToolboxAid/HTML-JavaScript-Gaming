@@ -9931,6 +9931,121 @@
         "engine/theme/index/Theme",
         "engine/theme/index/ThemeTokens"
       ]
+    },
+    {
+      "id": "1902",
+      "phase": "19",
+      "title": "Workspace All Tools Integration",
+      "description": "Workspace integration sample that mounts every active workspace-supported tool from one explicit sample-owned JSON payload.",
+      "href": "./phase-19/1902/index.html",
+      "tags": [
+        "workspace",
+        "integration",
+        "tools",
+        "json-ssot"
+      ],
+      "thumbnail": "/samples/phase-19/1902/assets/images/preview.svg",
+      "preview": "/samples/phase-19/1902/assets/images/preview.svg",
+      "classValues": [
+        "tools/shared/toolHostManifest",
+        "tools/shared/toolHostRuntime",
+        "tools/shared/toolLoadDiagnostics"
+      ],
+      "engineClassesUsed": [
+        "tools/shared/toolHostManifest",
+        "tools/shared/toolHostRuntime",
+        "tools/shared/toolLoadDiagnostics"
+      ],
+      "toolHints": [
+        "vector-map-editor",
+        "vector-asset-studio",
+        "tile-map-editor",
+        "parallax-editor",
+        "sprite-editor",
+        "skin-editor",
+        "asset-browser",
+        "palette-browser",
+        "state-inspector",
+        "replay-visualizer",
+        "performance-profiler",
+        "physics-sandbox",
+        "asset-pipeline-tool",
+        "tile-model-converter",
+        "3d-json-payload-normalizer",
+        "3d-asset-viewer",
+        "3d-camera-path-editor"
+      ],
+      "roundtripToolPresets": [
+        {
+          "toolId": "vector-map-editor",
+          "presetPath": "/samples/phase-19/1902/sample.1902.workspace-all-tools.json"
+        },
+        {
+          "toolId": "vector-asset-studio",
+          "presetPath": "/samples/phase-19/1902/sample.1902.workspace-all-tools.json"
+        },
+        {
+          "toolId": "tile-map-editor",
+          "presetPath": "/samples/phase-19/1902/sample.1902.workspace-all-tools.json"
+        },
+        {
+          "toolId": "parallax-editor",
+          "presetPath": "/samples/phase-19/1902/sample.1902.workspace-all-tools.json"
+        },
+        {
+          "toolId": "sprite-editor",
+          "presetPath": "/samples/phase-19/1902/sample.1902.workspace-all-tools.json",
+          "palettePath": "/samples/phase-19/1902/sample.1902.palette.json"
+        },
+        {
+          "toolId": "skin-editor",
+          "presetPath": "/samples/phase-19/1902/sample.1902.workspace-all-tools.json"
+        },
+        {
+          "toolId": "asset-browser",
+          "presetPath": "/samples/phase-19/1902/sample.1902.workspace-all-tools.json"
+        },
+        {
+          "toolId": "palette-browser",
+          "presetPath": "/samples/phase-19/1902/sample.1902.workspace-all-tools.json"
+        },
+        {
+          "toolId": "state-inspector",
+          "presetPath": "/samples/phase-19/1902/sample.1902.workspace-all-tools.json"
+        },
+        {
+          "toolId": "replay-visualizer",
+          "presetPath": "/samples/phase-19/1902/sample.1902.workspace-all-tools.json"
+        },
+        {
+          "toolId": "performance-profiler",
+          "presetPath": "/samples/phase-19/1902/sample.1902.workspace-all-tools.json"
+        },
+        {
+          "toolId": "physics-sandbox",
+          "presetPath": "/samples/phase-19/1902/sample.1902.workspace-all-tools.json"
+        },
+        {
+          "toolId": "asset-pipeline-tool",
+          "presetPath": "/samples/phase-19/1902/sample.1902.workspace-all-tools.json"
+        },
+        {
+          "toolId": "tile-model-converter",
+          "presetPath": "/samples/phase-19/1902/sample.1902.workspace-all-tools.json"
+        },
+        {
+          "toolId": "3d-json-payload-normalizer",
+          "presetPath": "/samples/phase-19/1902/sample.1902.workspace-all-tools.json"
+        },
+        {
+          "toolId": "3d-asset-viewer",
+          "presetPath": "/samples/phase-19/1902/sample.1902.workspace-all-tools.json"
+        },
+        {
+          "toolId": "3d-camera-path-editor",
+          "presetPath": "/samples/phase-19/1902/sample.1902.workspace-all-tools.json"
+        }
+      ]
     }
   ]
 }
