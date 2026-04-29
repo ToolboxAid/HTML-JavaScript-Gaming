@@ -679,34 +679,6 @@ function summarizeEmbeddedToolPayloadDocument(toolId = "", scopedToolState = nul
   return null;
 }
 
-function resolveWorkspaceManifestToolStateForStatus(toolId = "") {
-  const normalizedToolId = normalizeTextValue(toolId).toLowerCase();
-  if (!normalizedToolId) {
-    return null;
-  }
-  const manifest = getManifest();
-  const tools = manifest && typeof manifest === "object" && manifest.tools && typeof manifest.tools === "object" && !Array.isArray(manifest.tools)
-    ? manifest.tools
-    : null;
-  if (!tools) {
-    return null;
-  }
-
-  const exactMatch = tools[normalizedToolId];
-  if (exactMatch && typeof exactMatch === "object" && !Array.isArray(exactMatch)) {
-    return exactMatch;
-  }
-
-  if (normalizedToolId === "palette-browser") {
-    const singularPalette = tools.palette;
-    if (singularPalette && typeof singularPalette === "object" && !Array.isArray(singularPalette)) {
-      return singularPalette;
-    }
-  }
-
-  return null;
-}
-
 function installWorkspaceScopedSamplePresetFetchShim(currentToolId, samplePresetPath) {
   if (typeof window === "undefined" || typeof window.fetch !== "function") {
     return;
@@ -729,7 +701,6 @@ function installWorkspaceScopedSamplePresetFetchShim(currentToolId, samplePreset
     const rawPreset = await response.clone().json().catch(() => null);
     const scopedPreset = selectWorkspaceScopedToolPreset(rawPreset, normalizedToolId);
     if (!scopedPreset) {
-      workspaceScopedToolPresetForStatus = null;
       return response;
     }
     workspaceScopedToolPresetForStatus = scopedPreset;
@@ -757,19 +728,16 @@ async function primeWorkspaceScopedToolPresetForStatus(toolId, samplePresetPath)
   try {
     const response = await window.fetch(normalizedSamplePresetPath, { cache: "no-store" });
     if (!response.ok) {
-      workspaceScopedToolPresetForStatus = null;
       return null;
     }
     const rawPreset = await response.json();
     const scopedPreset = selectWorkspaceScopedToolPreset(rawPreset, normalizedToolId);
     if (!scopedPreset) {
-      workspaceScopedToolPresetForStatus = null;
       return null;
     }
     workspaceScopedToolPresetForStatus = scopedPreset;
     return scopedPreset;
   } catch {
-    workspaceScopedToolPresetForStatus = null;
     return null;
   }
 }
@@ -1467,11 +1435,9 @@ function isAssetCompatibleWithTool(toolId = "", asset = null) {
 
 function renderToolAssetBadge(toolId = "") {
   const normalizedToolId = normalizeTextValue(toolId).toLowerCase();
-  const workspaceBoundToolState = resolveWorkspaceManifestToolStateForStatus(normalizedToolId);
-  const statusSourceToolState = workspaceBoundToolState || workspaceScopedToolPresetForStatus;
   const embeddedPayloadSummary = summarizeEmbeddedToolPayloadDocument(
     normalizedToolId,
-    statusSourceToolState
+    workspaceScopedToolPresetForStatus
   );
   const acceptedKinds = resolveAcceptedAssetKindsForTool(normalizedToolId);
   if (normalizedToolId === "palette-browser") {
@@ -1572,7 +1538,13 @@ function renderToolLinks(currentToolId) {
     if (!lockState.workspaceReady) {
       return true;
     }
-    if (!lockState.paletteReady && toolId !== "palette-browser") {
+    if (toolId === "palette-browser") {
+      return false;
+    }
+    if (lockState.hasToolState(toolId)) {
+      return false;
+    }
+    if (!lockState.paletteReady) {
       return true;
     }
     return false;
@@ -2262,7 +2234,6 @@ function ensureRuntimeMonitoring() {
 }
 
 async function initPlatformShell() {
-  workspaceScopedToolPresetForStatus = null;
   ensureRuntimeMonitoring();
 
   const currentToolId = document.body.dataset.toolId || "";

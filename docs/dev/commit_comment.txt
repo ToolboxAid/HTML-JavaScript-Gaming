@@ -1,1 +1,1 @@
-Make sample 1902 launch only through Workspace Manager - PR 11.24
+Enable Workspace Manager tool buttons from embedded payload baseline - PR 11.27

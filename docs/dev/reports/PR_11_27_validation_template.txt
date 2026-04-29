@@ -1,0 +1,25 @@
+# PR 11.27 Validation
+
+Baseline:
+- 4dc2b0f: Show Workspace Manager asset status from embedded tool payloads - PR 11.22
+
+Files changed:
+-
+
+Root cause:
+-
+
+Before:
+- Full workspace displayed, but many payload-backed tool buttons were grayed out.
+
+After:
+- Full workspace displayed and payload-backed tool buttons are enabled/openable.
+
+Validation:
+- node --check tools/shared/platformShell.js
+- node ./tests/runtime/LaunchSmokeAllEntries.test.mjs --samples --sample-range=1902-1902 --tools
+
+Manual:
+- sample 1902 -> Workspace Manager
+- full workspace visible
+- payload-backed buttons enabled
