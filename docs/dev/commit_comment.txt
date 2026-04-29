@@ -1,1 +1,1 @@
-Enforce utility consolidation rules with CI-safe audit script - PR 11.82
+Lock game asset loading to manifest-declared assets only - PR 11.83

@@ -1,4 +1,8 @@
-import { resolveGameImageConventionPaths, resolveRuntimeAssetUrl } from "./gameImageConvention.js";
+import {
+  resolveGameImageConventionPaths,
+  resolveManifestChromeAssetPaths,
+  resolveRuntimeAssetUrl
+} from "./gameImageConvention.js";
 
 const NON_GAMEPLAY_MODE_TOKENS = Object.freeze([
   "menu",
@@ -82,18 +86,52 @@ export default class backgroundImage {
       documentRef: this.documentRef
     });
     this.gameId = resolved.gameId;
+    this.manifestPath = resolved.manifestPath;
     this.layer = createLayerState(resolved.backgroundPath);
     this.imageFactory = typeof options.imageFactory === "function"
       ? options.imageFactory
       : (typeof Image === "function" ? () => new Image() : null);
+    this.manifestResolved = false;
+    this.manifestResolvePromise = null;
   }
 
   getState() {
     return {
       gameId: this.gameId,
       path: this.layer.path,
-      status: this.layer.status
+      status: this.layer.status,
+      manifestPath: this.manifestPath,
+      manifestResolved: this.manifestResolved
     };
+  }
+
+  ensureManifestResolved() {
+    if (this.manifestResolved) {
+      return;
+    }
+    if (this.manifestResolvePromise) {
+      return;
+    }
+
+    this.manifestResolvePromise = resolveManifestChromeAssetPaths({
+      gameId: this.gameId,
+      manifestPath: this.manifestPath,
+      documentRef: this.documentRef
+    })
+      .then((resolved) => {
+        this.gameId = resolved.gameId || this.gameId;
+        this.manifestPath = resolved.manifestPath || this.manifestPath;
+        this.layer.path = typeof resolved.backgroundPath === "string" ? resolved.backgroundPath.trim() : "";
+        this.layer.status = this.layer.path ? "idle" : "unavailable";
+      })
+      .catch(() => {
+        this.layer.path = "";
+        this.layer.status = "unavailable";
+      })
+      .finally(() => {
+        this.manifestResolved = true;
+        this.manifestResolvePromise = null;
+      });
   }
 
   isGameplayState(scene) {
@@ -129,8 +167,12 @@ export default class backgroundImage {
   }
 
   ensureLoaded() {
+    this.ensureManifestResolved();
+
     if (!this.layer.path) {
-      this.layer.status = "unavailable";
+      if (this.manifestResolved) {
+        this.layer.status = "unavailable";
+      }
       return;
     }
     if (this.layer.status === "ready" || this.layer.status === "missing" || this.layer.status === "loading") {

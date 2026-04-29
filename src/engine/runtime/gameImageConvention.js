@@ -2,6 +2,10 @@ function safeText(value, fallback = "") {
   return typeof value === "string" && value.trim() ? value.trim() : fallback;
 }
 
+function toObject(value) {
+  return value && typeof value === "object" ? value : {};
+}
+
 function normalizePath(value) {
   return safeText(value, "").replace(/\\/g, "/");
 }
@@ -19,27 +23,147 @@ function discoverGameIdFromDocument(documentRef) {
   return match ? safeText(match[1], "") : "";
 }
 
-function toImagePath(gameId, fileName) {
-  const id = safeText(gameId, "");
-  if (!id) {
+function normalizeManifestPath(value) {
+  const normalized = normalizePath(value);
+  if (!normalized) {
     return "";
   }
-  return `games/${id}/assets/images/${fileName}`;
+  if (hasUrlProtocol(normalized) || normalized.startsWith("//")) {
+    return normalized;
+  }
+  return normalized.startsWith("/") ? normalized : `/${normalized.replace(/^\/+/, "")}`;
 }
 
-function resolveSiblingPath(pathValue, fileName) {
-  const normalizedPath = normalizePath(pathValue);
-  const normalizedName = safeText(fileName, "");
-  if (!normalizedPath || !normalizedName) {
+function deriveManifestPathFromGameId(gameId) {
+  const safeGameId = safeText(gameId, "");
+  if (!safeGameId) {
+    return "";
+  }
+  return `/games/${safeGameId}/game.manifest.json`;
+}
+
+function deriveManifestPath(options = {}) {
+  const explicit = normalizeManifestPath(options.manifestPath);
+  if (explicit) {
+    return explicit;
+  }
+
+  const gameId = safeText(options.gameId, "") || discoverGameIdFromDocument(options.documentRef || null);
+  return deriveManifestPathFromGameId(gameId);
+}
+
+function normalizeAssetEntry(rawEntry, fallbackId = "") {
+  const entry = toObject(rawEntry);
+  const path = normalizePath(entry.path || entry.runtimePath || entry.href);
+  if (!path) {
+    return null;
+  }
+  return {
+    id: safeText(entry.id, "") || safeText(fallbackId, ""),
+    kind: safeText(entry.kind, "").toLowerCase(),
+    path
+  };
+}
+
+function collectImageEntriesFromManifest(manifestPayload) {
+  const payload = toObject(manifestPayload);
+  const entries = [];
+
+  const pushEntry = (entry) => {
+    if (!entry || !entry.path) {
+      return;
+    }
+    if (entry.kind && entry.kind !== "image") {
+      return;
+    }
+    entries.push(entry);
+  };
+
+  const assetCatalog = toObject(payload.assetCatalog);
+  const catalogEntries = toObject(assetCatalog.assets || assetCatalog.entries || assetCatalog);
+  Object.entries(catalogEntries).forEach(([assetId, rawEntry]) => {
+    pushEntry(normalizeAssetEntry(rawEntry, assetId));
+  });
+
+  const assetBrowserAssets = toObject(payload?.tools?.["asset-browser"]?.assets);
+  const mediaEntries = toObject(assetBrowserAssets.media);
+  Object.entries(mediaEntries).forEach(([assetId, rawEntry]) => {
+    pushEntry(normalizeAssetEntry(rawEntry, assetId));
+  });
+
+  const directBezel = normalizeAssetEntry(assetBrowserAssets?.bezel, "bezel");
+  if (directBezel) {
+    pushEntry(directBezel);
+  }
+
+  const directBackground = normalizeAssetEntry(assetBrowserAssets?.background, "background");
+  if (directBackground) {
+    pushEntry(directBackground);
+  }
+
+  return entries;
+}
+
+function chooseSemanticImagePath(entries, semanticToken) {
+  const token = safeText(semanticToken, "").toLowerCase();
+  if (!token) {
     return "";
   }
 
-  const slashIndex = normalizedPath.lastIndexOf("/");
-  if (slashIndex < 0) {
-    return normalizedName;
+  const normalizedEntries = Array.isArray(entries) ? entries : [];
+
+  const byId = normalizedEntries.find((entry) => {
+    const id = safeText(entry?.id, "").toLowerCase();
+    return id.includes(token);
+  });
+  if (byId?.path) {
+    return byId.path;
   }
 
-  return `${normalizedPath.slice(0, slashIndex + 1)}${normalizedName}`;
+  const byFileName = normalizedEntries.find((entry) => {
+    const candidatePath = safeText(entry?.path, "").toLowerCase();
+    return candidatePath.includes(`/${token}.`) || candidatePath.includes(`/${token}-`) || candidatePath.includes(`_${token}.`);
+  });
+  if (byFileName?.path) {
+    return byFileName.path;
+  }
+
+  return "";
+}
+
+const manifestCache = new Map();
+
+async function readManifestPayload(manifestPath, documentRef = null) {
+  const normalizedPath = normalizeManifestPath(manifestPath);
+  if (!normalizedPath) {
+    return null;
+  }
+
+  if (manifestCache.has(normalizedPath)) {
+    return manifestCache.get(normalizedPath);
+  }
+
+  if (typeof fetch !== "function") {
+    manifestCache.set(normalizedPath, null);
+    return null;
+  }
+
+  try {
+    const response = await fetch(resolveRuntimeAssetUrl(normalizedPath, documentRef), { cache: "no-store" });
+    if (!response.ok) {
+      manifestCache.set(normalizedPath, null);
+      return null;
+    }
+    const payload = await response.json();
+    const normalizedPayload = payload && typeof payload === "object" && !Array.isArray(payload)
+      ? payload
+      : null;
+    manifestCache.set(normalizedPath, normalizedPayload);
+    return normalizedPayload;
+  } catch {
+    manifestCache.set(normalizedPath, null);
+    return null;
+  }
 }
 
 export function resolveRuntimeAssetUrl(pathValue, documentRef = null) {
@@ -70,23 +194,69 @@ export function resolveRuntimeAssetUrl(pathValue, documentRef = null) {
 
 export function resolveGameImageConventionPaths(options = {}) {
   const gameId = safeText(options.gameId, "") || discoverGameIdFromDocument(options.documentRef || null);
+  const manifestPath = deriveManifestPath({
+    gameId,
+    documentRef: options.documentRef || null,
+    manifestPath: options.manifestPath
+  });
   return {
     gameId,
-    backgroundPath: toImagePath(gameId, "background.png"),
-    bezelPath: toImagePath(gameId, "bezel.png")
+    manifestPath,
+    backgroundPath: "",
+    bezelPath: ""
   };
+}
+
+export async function resolveManifestChromeAssetPaths(options = {}) {
+  const base = resolveGameImageConventionPaths(options);
+  const manifestPayload = options.manifestPayload && typeof options.manifestPayload === "object" && !Array.isArray(options.manifestPayload)
+    ? options.manifestPayload
+    : await readManifestPayload(base.manifestPath, options.documentRef || null);
+
+  if (!manifestPayload) {
+    return {
+      ...base,
+      backgroundPath: "",
+      bezelPath: "",
+      manifestPayload: null
+    };
+  }
+
+  const imageEntries = collectImageEntriesFromManifest(manifestPayload);
+  return {
+    ...base,
+    manifestPayload,
+    backgroundPath: chooseSemanticImagePath(imageEntries, "background"),
+    bezelPath: chooseSemanticImagePath(imageEntries, "bezel")
+  };
+}
+
+function resolveSiblingPath(pathValue, fileName) {
+  const normalizedPath = normalizePath(pathValue);
+  const normalizedName = safeText(fileName, "");
+  if (!normalizedPath || !normalizedName) {
+    return "";
+  }
+
+  const slashIndex = normalizedPath.lastIndexOf("/");
+  if (slashIndex < 0) {
+    return normalizedName;
+  }
+
+  return `${normalizedPath.slice(0, slashIndex + 1)}${normalizedName}`;
 }
 
 export function resolveBezelStretchOverridePath(options = {}) {
   const fileName = safeText(options.fileName, "bezel.stretch.override.json");
-  const explicitBezelPath = safeText(options.bezelPath, "");
-  const normalizedExplicitBezelPath = normalizePath(explicitBezelPath);
-  const explicitPathMatch = normalizedExplicitBezelPath.match(/games\/([^/]+)\//i);
-  const inferredGameIdFromBezelPath = explicitPathMatch ? safeText(explicitPathMatch[1], "") : "";
-  const gameId = safeText(options.gameId, "") || inferredGameIdFromBezelPath || discoverGameIdFromDocument(options.documentRef || null);
-  if (gameId.toLowerCase() === "asteroids") {
-    return "games/Asteroids/game.manifest.json#tools.asset-browser.assets.bezel.stretchOverride";
+  const manifestPath = deriveManifestPath(options);
+  if (manifestPath) {
+    return `${normalizeManifestPath(manifestPath)}#tools.asset-browser.assets.bezel.stretchOverride`;
   }
-  const bezelPath = explicitBezelPath || resolveGameImageConventionPaths(options).bezelPath;
-  return resolveSiblingPath(bezelPath, fileName);
+
+  const explicitBezelPath = safeText(options.bezelPath, "");
+  if (explicitBezelPath) {
+    return resolveSiblingPath(explicitBezelPath, fileName);
+  }
+
+  return "";
 }

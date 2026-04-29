@@ -1,6 +1,7 @@
 import {
   resolveBezelStretchOverridePath,
   resolveGameImageConventionPaths,
+  resolveManifestChromeAssetPaths,
   resolveRuntimeAssetUrl
 } from "./gameImageConvention.js";
 
@@ -183,10 +184,11 @@ export function sanitizeUniformEdgeStretchPx(value) {
   return Math.max(0, safeNumber(value, 0));
 }
 
-export function resolveBezelStretchConfigPath(bezelPath, fileName = DEFAULT_BEZEL_STRETCH_OVERRIDE_FILENAME) {
+export function resolveBezelStretchConfigPath(bezelPath, fileName = DEFAULT_BEZEL_STRETCH_OVERRIDE_FILENAME, manifestPath = "") {
   return resolveBezelStretchOverridePath({
     bezelPath,
-    fileName
+    fileName,
+    manifestPath
   });
 }
 
@@ -670,8 +672,9 @@ export default class fullscreenBezel {
     this.canvas = options.canvas || null;
     this.defaultHost = options.host || null;
     this.gameId = resolved.gameId;
+    this.manifestPath = resolved.manifestPath;
     this.path = resolved.bezelPath;
-    this.stretchConfigPath = resolveBezelStretchConfigPath(this.path);
+    this.stretchConfigPath = resolveBezelStretchConfigPath(this.path, DEFAULT_BEZEL_STRETCH_OVERRIDE_FILENAME, this.manifestPath);
     this.host = null;
     this.element = null;
     this.ready = false;
@@ -686,6 +689,8 @@ export default class fullscreenBezel {
     this.transparentWindowRect = null;
     this.imageSize = null;
     this.canvasLayoutMode = "fallback";
+    this.manifestResolved = false;
+    this.manifestResolvePromise = null;
   }
 
   getState() {
@@ -699,8 +704,45 @@ export default class fullscreenBezel {
       transparentWindowRect: this.transparentWindowRect,
       stretchConfigPath: this.stretchConfigPath,
       stretchConfigInitialized: this.stretchConfigInitialized,
-      uniformEdgeStretchPx: this.uniformEdgeStretchPx
+      uniformEdgeStretchPx: this.uniformEdgeStretchPx,
+      manifestPath: this.manifestPath,
+      manifestResolved: this.manifestResolved
     };
+  }
+
+  ensureManifestResolved() {
+    if (this.manifestResolved) {
+      return;
+    }
+    if (this.manifestResolvePromise) {
+      return;
+    }
+
+    this.manifestResolvePromise = resolveManifestChromeAssetPaths({
+      gameId: this.gameId,
+      manifestPath: this.manifestPath,
+      documentRef: this.documentRef
+    })
+      .then((resolved) => {
+        this.gameId = resolved.gameId || this.gameId;
+        this.manifestPath = resolved.manifestPath || this.manifestPath;
+        this.path = typeof resolved.bezelPath === "string" ? resolved.bezelPath.trim() : "";
+        this.missing = !this.path;
+        this.stretchConfigPath = resolveBezelStretchConfigPath(
+          this.path,
+          DEFAULT_BEZEL_STRETCH_OVERRIDE_FILENAME,
+          this.manifestPath
+        );
+      })
+      .catch(() => {
+        this.path = "";
+        this.missing = true;
+        this.stretchConfigPath = "";
+      })
+      .finally(() => {
+        this.manifestResolved = true;
+        this.manifestResolvePromise = null;
+      });
   }
 
   resolveHost() {
@@ -787,6 +829,8 @@ export default class fullscreenBezel {
   }
 
   attach() {
+    this.ensureManifestResolved();
+
     if (!this.documentRef || !this.path || this.element) {
       return;
     }
@@ -983,11 +1027,13 @@ export default class fullscreenBezel {
   }
 
   sync(options = {}) {
+    this.ensureManifestResolved();
+
     if (!this.path) {
       this.applyCanvasFallbackLayout();
       return {
         visible: false,
-        reason: "unavailable",
+        reason: this.manifestResolved ? "unavailable" : "manifest-pending",
         path: this.path
       };
     }
