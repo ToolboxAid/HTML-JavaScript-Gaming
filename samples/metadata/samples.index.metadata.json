@@ -1195,12 +1195,7 @@
       "toolHints": [
         "state-inspector"
       ],
-      "roundtripToolPresets": [
-        {
-          "toolId": "state-inspector",
-          "presetPath": "/samples/phase-02/0205/sample.0205.state-inspector.json"
-        }
-      ]
+      "roundtripToolPresets": []
     },
     {
       "id": "0206",
@@ -1323,12 +1318,7 @@
       "toolHints": [
         "state-inspector"
       ],
-      "roundtripToolPresets": [
-        {
-          "toolId": "state-inspector",
-          "presetPath": "/samples/phase-02/0208/sample.0208.state-inspector.json"
-        }
-      ]
+      "roundtripToolPresets": []
     },
     {
       "id": "0209",
@@ -1709,12 +1699,7 @@
       "toolHints": [
         "state-inspector"
       ],
-      "roundtripToolPresets": [
-        {
-          "toolId": "state-inspector",
-          "presetPath": "/samples/phase-02/0217/sample.0217.state-inspector.json"
-        }
-      ]
+      "roundtripToolPresets": []
     },
     {
       "id": "0218",
@@ -5217,12 +5202,7 @@
       "toolHints": [
         "replay-visualizer"
       ],
-      "roundtripToolPresets": [
-        {
-          "toolId": "replay-visualizer",
-          "presetPath": "/samples/phase-07/0708/sample.0708.replay-visualizer.json"
-        }
-      ]
+      "roundtripToolPresets": []
     },
     {
       "id": "0709",
@@ -7678,12 +7658,7 @@
       "toolHints": [
         "replay-visualizer"
       ],
-      "roundtripToolPresets": [
-        {
-          "toolId": "replay-visualizer",
-          "presetPath": "/samples/phase-13/1315/sample.1315.replay-visualizer.json"
-        }
-      ]
+      "roundtripToolPresets": []
     },
     {
       "id": "1316",
@@ -7844,12 +7819,7 @@
       "toolHints": [
         "performance-profiler"
       ],
-      "roundtripToolPresets": [
-        {
-          "toolId": "performance-profiler",
-          "presetPath": "/samples/phase-13/1319/sample.1319.performance-profiler.json"
-        }
-      ]
+      "roundtripToolPresets": []
     },
     {
       "id": "1320",
@@ -8034,12 +8004,7 @@
       "toolHints": [
         "replay-visualizer"
       ],
-      "roundtripToolPresets": [
-        {
-          "toolId": "replay-visualizer",
-          "presetPath": "/samples/phase-14/1406/sample.1406.replay-visualizer.json"
-        }
-      ]
+      "roundtripToolPresets": []
     },
     {
       "id": "1407",
@@ -8066,12 +8031,7 @@
       "toolHints": [
         "performance-profiler"
       ],
-      "roundtripToolPresets": [
-        {
-          "toolId": "performance-profiler",
-          "presetPath": "/samples/phase-14/1407/sample.1407.performance-profiler.json"
-        }
-      ]
+      "roundtripToolPresets": []
     },
     {
       "id": "1408",

@@ -1,0 +1,56 @@
+{
+  "deletedFiles": [
+    "samples/phase-02/0205/sample.0205.state-inspector.json",
+    "samples/phase-02/0208/sample.0208.state-inspector.json",
+    "samples/phase-02/0217/sample.0217.state-inspector.json",
+    "samples/phase-07/0708/sample.0708.replay-visualizer.json",
+    "samples/phase-13/1315/sample.1315.replay-visualizer.json",
+    "samples/phase-13/1319/sample.1319.performance-profiler.json",
+    "samples/phase-14/1406/sample.1406.replay-visualizer.json",
+    "samples/phase-14/1407/sample.1407.performance-profiler.json"
+  ],
+  "deletedCount": 8,
+  "removedMetadataReferences": [
+    {
+      "sampleId": "0205",
+      "toolId": "state-inspector",
+      "presetPath": "/samples/phase-02/0205/sample.0205.state-inspector.json"
+    },
+    {
+      "sampleId": "0208",
+      "toolId": "state-inspector",
+      "presetPath": "/samples/phase-02/0208/sample.0208.state-inspector.json"
+    },
+    {
+      "sampleId": "0217",
+      "toolId": "state-inspector",
+      "presetPath": "/samples/phase-02/0217/sample.0217.state-inspector.json"
+    },
+    {
+      "sampleId": "0708",
+      "toolId": "replay-visualizer",
+      "presetPath": "/samples/phase-07/0708/sample.0708.replay-visualizer.json"
+    },
+    {
+      "sampleId": "1315",
+      "toolId": "replay-visualizer",
+      "presetPath": "/samples/phase-13/1315/sample.1315.replay-visualizer.json"
+    },
+    {
+      "sampleId": "1319",
+      "toolId": "performance-profiler",
+      "presetPath": "/samples/phase-13/1319/sample.1319.performance-profiler.json"
+    },
+    {
+      "sampleId": "1406",
+      "toolId": "replay-visualizer",
+      "presetPath": "/samples/phase-14/1406/sample.1406.replay-visualizer.json"
+    },
+    {
+      "sampleId": "1407",
+      "toolId": "performance-profiler",
+      "presetPath": "/samples/phase-14/1407/sample.1407.performance-profiler.json"
+    }
+  ],
+  "removedMetadataReferenceCount": 8
+}

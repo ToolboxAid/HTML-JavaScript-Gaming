@@ -1,8 +1,8 @@
-# Codex Command — PR 11.56
+# Codex Commands — PR 11.57
 
 Model: GPT-5.4
 Reasoning: high
 
 ```powershell
-codex exec --model gpt-5.4 --reasoning high "Run PR 11.56 exactly as documented in docs/pr/PR_11_56_METADATA_REFERENCE_CLEANUP.md. This is controlled cleanup mode. Remove up to exactly 8 audit NO JSON files only when there are no runtime references. If the only remaining reference is metadata/index JSON such as samples/metadata/samples.index.metadata.json, delete the unused JSON file and remove the stale metadata/index reference. Save before/after audit reports under docs/dev/reports. Prove the audit NO/missing-reference count decreases or fail the PR. Do not run the full samples suite unless shared loader/framework files are changed. Do not touch sample 1902, palette.json, or tile-map-editor-document.json. Do not rewrite roadmap content. Return a repo-structured ZIP at tmp/PR_11_56_METADATA_REFERENCE_CLEANUP.zip."
+codex --model gpt-5.4 --reasoning high "Execute PR 11.57 metadata-aware controlled JSON cleanup. Run .\scripts\PS\audit-sample-json-js-references.ps1 and save before output to docs/dev/reports/PR_11_57_audit_before.txt. Select exactly 8 audit NO JSON files that are tool-specific and safe. Exclude palette.json, tile-map-editor-document.json, sample 1902, shared assets, and ambiguous files. For each candidate, validate JS/runtime references. If the only broad repo reference is samples/metadata/samples.index.metadata.json, remove the stale metadata/index reference and delete the JSON. Save validation notes to docs/dev/reports/PR_11_57_validation.md. Re-run the audit and save after output to docs/dev/reports/PR_11_57_audit_after.txt. Confirm NO count decreases by 8 or document fewer safe remaining candidates. Use targeted validation only; do not run the full samples suite. Keep scope surgical and do not refactor." 
 ```
