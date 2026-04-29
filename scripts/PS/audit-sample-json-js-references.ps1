@@ -8,110 +8,161 @@ Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
 
 function Get-RelativePath {
-  param($BasePath, $TargetPath)
+  param(
+    [Parameter(Mandatory = $true)][string]$BasePath,
+    [Parameter(Mandatory = $true)][string]$TargetPath
+  )
 
   $base = [System.IO.Path]::GetFullPath($BasePath)
   $target = [System.IO.Path]::GetFullPath($TargetPath)
-
   if (-not $base.EndsWith([System.IO.Path]::DirectorySeparatorChar)) {
     $base += [System.IO.Path]::DirectorySeparatorChar
   }
 
   $baseUri = [System.Uri]::new($base)
   $targetUri = [System.Uri]::new($target)
-
   return [System.Uri]::UnescapeDataString(
-    $baseUri.MakeRelativeUri($targetUri).ToString().Replace("/", "\")
+    $baseUri.MakeRelativeUri($targetUri).ToString().Replace("/", [System.IO.Path]::DirectorySeparatorChar)
   )
 }
 
 function Get-SampleRootForFile {
-  param($SamplesRootFull, $FileFullName)
+  param(
+    [Parameter(Mandatory = $true)][string]$SamplesRootFull,
+    [Parameter(Mandatory = $true)][string]$FileFullName
+  )
 
-  $relative = Get-RelativePath $SamplesRootFull $FileFullName
-  $parts = $relative -split '[\\/]+' 
-
-  if ($parts.Count -lt 2) { return $null }
-
+  $relative = Get-RelativePath -BasePath $SamplesRootFull -TargetPath $FileFullName
+  $parts = $relative -split '[\\/]+'
+  if ($parts.Count -lt 2) {
+    return $null
+  }
   return Join-Path $SamplesRootFull (Join-Path $parts[0] $parts[1])
 }
 
-function Test-JsonReferenceInJs {
-  param($JsonFile, $JsFiles, $SampleRoot)
+function Find-JsonReferencesInJs {
+  param(
+    [Parameter(Mandatory = $true)][System.IO.FileInfo]$JsonFile,
+    [Parameter(Mandatory = $true)][System.IO.FileInfo[]]$JsFiles,
+    [Parameter(Mandatory = $true)][string]$SampleRoot
+  )
 
-  $jsonRelative = Get-RelativePath $SampleRoot $JsonFile.FullName
-  $jsonForward = $jsonRelative.Replace("\","/")
+  $jsonRelativeToSample = Get-RelativePath -BasePath $SampleRoot -TargetPath $JsonFile.FullName
+  $jsonRelativeForward = $jsonRelativeToSample.Replace("\\", "/")
   $jsonName = $JsonFile.Name
-  $jsonBase = [System.IO.Path]::GetFileNameWithoutExtension($JsonFile.Name)
+  $jsonBaseName = [System.IO.Path]::GetFileNameWithoutExtension($jsonName)
 
   $tokens = @(
-    [regex]::Escape($jsonRelative),
-    [regex]::Escape($jsonForward),
+    [regex]::Escape($jsonRelativeToSample),
+    [regex]::Escape($jsonRelativeForward),
+    [regex]::Escape("./$jsonRelativeForward"),
     [regex]::Escape($jsonName),
-    [regex]::Escape($jsonBase)
+    [regex]::Escape($jsonBaseName)
   ) | Select-Object -Unique
+
+  $referenceList = New-Object System.Collections.Generic.List[object]
 
   foreach ($js in $JsFiles) {
     $content = Get-Content -Raw -LiteralPath $js.FullName
-
     foreach ($token in $tokens) {
       if ($content -match $token) {
-        return $true
+        $referenceList.Add([pscustomobject]@{
+          ReferencedBy = Get-RelativePath -BasePath $SampleRoot -TargetPath $js.FullName
+          Match = $token
+        })
+        break
       }
     }
   }
 
-  return $false
+  $deduped = $referenceList |
+    Group-Object -Property ReferencedBy |
+    ForEach-Object { $_.Group[0] }
+
+  return @($deduped)
 }
 
-# Resolve paths
+if (-not (Test-Path -LiteralPath $SamplesRoot)) {
+  throw "Samples root not found: $SamplesRoot"
+}
+
 $samplesRootFull = [System.IO.Path]::GetFullPath($SamplesRoot)
-
-if (-not (Test-Path $samplesRootFull)) {
-  throw "Samples root not found: $samplesRootFull"
+$outputFull = [System.IO.Path]::GetFullPath($OutputPath)
+$outputDir = Split-Path -Parent $outputFull
+if ($outputDir -and -not (Test-Path -LiteralPath $outputDir)) {
+  New-Item -ItemType Directory -Force -Path $outputDir | Out-Null
 }
 
-# Get JSON files
-$jsonFiles = Get-ChildItem $samplesRootFull -Recurse -File -Filter "*.json"
+$jsonFiles = Get-ChildItem -LiteralPath $samplesRootFull -Recurse -File -Filter "*.json" |
+  Where-Object { $_.FullName -notmatch '[\\/](node_modules|dist|build|coverage)[\\/]' }
 
-$results = @()
+$rows = New-Object System.Collections.Generic.List[object]
+$missing = New-Object System.Collections.Generic.List[object]
 
 foreach ($json in $jsonFiles) {
-  $sampleRoot = Get-SampleRootForFile $samplesRootFull $json.FullName
+  $sampleRoot = Get-SampleRootForFile -SamplesRootFull $samplesRootFull -FileFullName $json.FullName
+  $jsonRelFromCwd = Get-RelativePath -BasePath (Get-Location).Path -TargetPath $json.FullName
 
-  if (-not $sampleRoot) {
-    $results += [pscustomobject]@{
-      JsonPath = $json.FullName
+  if (-not $sampleRoot -or -not (Test-Path -LiteralPath $sampleRoot)) {
+    Write-Host "NO  - $jsonRelFromCwd"
+    $rows.Add([pscustomobject]@{
+      SampleRoot = ""
+      JsonPath = $jsonRelFromCwd
       Referenced = $false
-    }
+      ReferencedBy = ""
+      Match = ""
+      Note = "Unable to resolve sample root"
+    })
+    $missing.Add($jsonRelFromCwd)
     continue
   }
 
-  $jsFiles = Get-ChildItem $sampleRoot -Recurse -File -Include "*.js","*.mjs","*.cjs"
+  $jsFiles = @(Get-ChildItem -LiteralPath $sampleRoot -Recurse -File -Include "*.js", "*.mjs", "*.cjs" |
+      Where-Object { $_.FullName -notmatch '[\\/](node_modules|dist|build|coverage)[\\/]' })
 
-  $isUsed = Test-JsonReferenceInJs $json $jsFiles $sampleRoot
+  $matches = @(Find-JsonReferencesInJs -JsonFile $json -JsFiles $jsFiles -SampleRoot $sampleRoot)
 
-  $results += [pscustomobject]@{
-    JsonPath = Get-RelativePath (Get-Location) $json.FullName
-    Referenced = $isUsed
+  if ($matches.Count -gt 0) {
+    $first = $matches[0]
+    Write-Host ("YES - {0} -> {1}" -f $jsonRelFromCwd, $first.ReferencedBy)
+    $rows.Add([pscustomobject]@{
+      SampleRoot = Get-RelativePath -BasePath (Get-Location).Path -TargetPath $sampleRoot
+      JsonPath = $jsonRelFromCwd
+      Referenced = $true
+      ReferencedBy = $first.ReferencedBy
+      Match = $first.Match
+      Note = if ($matches.Count -gt 1) { "Multiple JS references found" } else { "" }
+    })
+  } else {
+    Write-Host "NO  - $jsonRelFromCwd"
+    $rows.Add([pscustomobject]@{
+      SampleRoot = Get-RelativePath -BasePath (Get-Location).Path -TargetPath $sampleRoot
+      JsonPath = $jsonRelFromCwd
+      Referenced = $false
+      ReferencedBy = ""
+      Match = ""
+      Note = if ($jsFiles.Count -eq 0) { "No JS files found under sample root" } else { "" }
+    })
+    $missing.Add($jsonRelFromCwd)
   }
 }
 
-# Output
-$used = $results | Where-Object { $_.Referenced }
-$missing = $results | Where-Object { -not $_.Referenced }
+$rows |
+  Sort-Object SampleRoot, JsonPath |
+  Export-Csv -NoTypeInformation -Encoding UTF8 -Path $outputFull
 
-Write-Host "Sample JSON reference audit complete."
-Write-Host "JSON files scanned: $($results.Count)"
-Write-Host "Referenced: $($used.Count)"
-Write-Host "Missing reference: $($missing.Count)"
 Write-Host ""
+Write-Host "Sample JSON reference audit complete."
+Write-Host "JSON files scanned: $($rows.Count)"
+Write-Host "Referenced: $($rows.Count - $missing.Count)"
+Write-Host "Missing reference: $($missing.Count)"
+Write-Host "Report: $OutputPath"
 
-$results | Sort-Object JsonPath | ForEach-Object {
-  if ($_.Referenced) {
-    Write-Host "Yes - $($_.JsonPath)"
-  } else {
-    Write-Host "NO - $($_.JsonPath)"
+if ($missing.Count -gt 0) {
+  Write-Host ""
+  Write-Host "Missing references:"
+  foreach ($path in $missing) {
+    Write-Host "- $path"
   }
 }
 
