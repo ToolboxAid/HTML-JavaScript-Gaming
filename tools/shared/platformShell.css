@@ -199,11 +199,13 @@ body.tools-platform-workspace-context .tools-platform-frame__description {
   border-radius: 12px;
   background: linear-gradient(180deg, var(--panel, rgba(76, 29, 149, 0.88)) 0%, var(--panel2, rgba(49, 17, 102, 0.94)) 100%);
   box-shadow: var(--tools-shell-shadow);
-  min-width: 220px;
+  min-width: 0;
   min-height: 120px;
   height: auto;
   align-self: stretch;
   justify-content: flex-start;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 .tools-platform-frame__nav-bucket-title {
@@ -221,6 +223,7 @@ body.tools-platform-workspace-context .tools-platform-frame__description {
   gap: 6px;
   flex-wrap: nowrap;
   flex-direction: column;
+  min-width: 0;
 }
 
 .tools-platform-frame__nav-tool-row {
@@ -231,6 +234,7 @@ body.tools-platform-workspace-context .tools-platform-frame__description {
   padding-bottom: 4px;
   margin-bottom: 4px;
   border-bottom: 0;
+  min-width: 0;
 }
 
 .tools-platform-frame__nav-tool-row:last-child {
@@ -249,6 +253,8 @@ body.tools-platform-workspace-context .tools-platform-frame__description {
   gap: 6px;
   margin: 0;
   pointer-events: none;
+  min-width: 0;
+  max-width: 100%;
 }
 
 .tools-platform-frame__binding-badge {
@@ -262,6 +268,10 @@ body.tools-platform-workspace-context .tools-platform-frame__description {
   color: var(--muted, #e9ddff);
   background: rgba(43, 16, 91, 0.75);
   pointer-events: none;
+  max-width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .tools-platform-frame__binding-badge.is-active {
@@ -280,13 +290,16 @@ body.tools-platform-workspace-context .tools-platform-frame__description {
 
 .tools-platform-frame__nav {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr));
   grid-auto-rows: auto;
   gap: 12px;
   align-items: start;
   align-content: start;
   justify-items: stretch;
   width: 100%;
+  min-width: 0;
+  overflow-x: hidden;
+  box-sizing: border-box;
 }
 
 .tools-platform-frame__nav.is-workspace-locked {
@@ -340,6 +353,7 @@ body.tools-platform-workspace-context .tools-platform-frame__description {
 .tools-platform-frame__nav-section {
   display: grid;
   gap: 10px;
+  min-width: 0;
 }
 
 .tools-platform-frame__nav > .tools-platform-frame__nav-section,
@@ -357,13 +371,16 @@ body.tools-platform-workspace-context .tools-platform-frame__description {
 
 .tools-platform-frame__nav-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr));
   grid-auto-rows: auto;
   gap: 12px;
   align-items: start;
   align-content: start;
   justify-items: stretch;
   width: 100%;
+  min-width: 0;
+  overflow-x: hidden;
+  box-sizing: border-box;
 }
 
 .tools-platform-frame__divider--nav-split {
@@ -503,6 +520,11 @@ body.tools-platform-workspace-context .tools-platform-frame__shared-status stron
   padding: 6px 10px;
   color: var(--muted, #e9ddff);
   font-size: 0.88rem;
+  min-width: 0;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .tools-platform-frame__nav-link.is-disabled {
