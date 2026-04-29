@@ -2508,10 +2508,6 @@
       ],
       "roundtripToolPresets": [
         {
-          "toolId": "3d-json-payload-normalizer",
-          "presetPath": "/samples/phase-03/0305/sample.0305.3d-json-payload-normalizer.json"
-        },
-        {
           "toolId": "tile-map-editor",
           "presetPath": "/samples/phase-03/0305/sample.0305.tile-map-editor.json"
         },
@@ -2582,12 +2578,7 @@
       "toolHints": [
         "parallax-editor"
       ],
-      "roundtripToolPresets": [
-        {
-          "toolId": "parallax-editor",
-          "presetPath": "/samples/phase-03/0306/sample.0306.parallax-editor.json"
-        }
-      ]
+      "roundtripToolPresets": []
     },
     {
       "id": "0307",
@@ -5767,14 +5758,6 @@
       ],
       "roundtripToolPresets": [
         {
-          "toolId": "svg-asset-studio",
-          "presetPath": "/samples/phase-09/0901/sample.0901.svg-asset-studio.json"
-        },
-        {
-          "toolId": "vector-map-editor",
-          "presetPath": "/samples/phase-09/0901/sample.0901.vector-map-editor.json"
-        },
-        {
           "toolId": "palette-browser",
           "presetPath": "/samples/phase-09/0901/sample.0901.palette.json"
         }
@@ -6502,18 +6485,6 @@
       ],
       "roundtripToolPresets": [
         {
-          "toolId": "parallax-editor",
-          "presetPath": "/samples/phase-12/1204/sample.1204.parallax-editor.json"
-        },
-        {
-          "toolId": "svg-asset-studio",
-          "presetPath": "/samples/phase-12/1204/sample.1204.svg-asset-studio.json"
-        },
-        {
-          "toolId": "vector-map-editor",
-          "presetPath": "/samples/phase-12/1204/sample.1204.vector-map-editor.json"
-        },
-        {
           "toolId": "palette-browser",
           "presetPath": "/samples/phase-12/1204/sample.1204.palette.json"
         }
@@ -6569,16 +6540,7 @@
         "parallax-editor",
         "vector-map-editor"
       ],
-      "roundtripToolPresets": [
-        {
-          "toolId": "parallax-editor",
-          "presetPath": "/samples/phase-12/1205/sample.1205.parallax-editor.json"
-        },
-        {
-          "toolId": "vector-map-editor",
-          "presetPath": "/samples/phase-12/1205/sample.1205.vector-map-editor.json"
-        }
-      ]
+      "roundtripToolPresets": []
     },
     {
       "id": "1206",
@@ -6722,10 +6684,6 @@
         "palette-browser"
       ],
       "roundtripToolPresets": [
-        {
-          "toolId": "3d-asset-viewer",
-          "presetPath": "/samples/phase-12/1208/sample.1208.3d-asset-viewer.json"
-        },
         {
           "toolId": "parallax-editor",
           "presetPath": "/samples/phase-12/1208/sample.1208.parallax-editor.json"
@@ -8299,12 +8257,7 @@
       "toolHints": [
         "asset-pipeline-tool"
       ],
-      "roundtripToolPresets": [
-        {
-          "toolId": "asset-pipeline-tool",
-          "presetPath": "/samples/phase-14/1417/sample.1417.asset-pipeline-tool.json"
-        }
-      ]
+      "roundtripToolPresets": []
     },
     {
       "id": "1418",
@@ -8770,12 +8723,7 @@
       "toolHints": [
         "physics-sandbox"
       ],
-      "roundtripToolPresets": [
-        {
-          "toolId": "physics-sandbox",
-          "presetPath": "/samples/phase-16/1606/sample.1606.physics-sandbox.json"
-        }
-      ]
+      "roundtripToolPresets": []
     },
     {
       "id": "1607",
