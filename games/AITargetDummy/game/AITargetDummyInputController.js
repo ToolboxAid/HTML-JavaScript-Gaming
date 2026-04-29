@@ -5,7 +5,7 @@ David Quesenberry
 AITargetDummyInputController.js
 */
 import { GamepadInputAdapter } from '/src/engine/input/index.js';
-import { clamp } from '/src/engine/utils/math.js';
+import { clamp } from '/src/shared/utils/mathUtils.js';
 
 export default class AITargetDummyInputController {
   constructor(input) {

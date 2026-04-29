@@ -4,7 +4,7 @@ David Quesenberry
 04/14/2026
 arcadeBody.js
 */
-import { clamp } from '../utils/math.js';
+import { clamp } from '../../shared/utils/mathUtils.js';
 import { applyDrag } from './drag.js';
 
 export function stepArcadeBody(body, dt) {

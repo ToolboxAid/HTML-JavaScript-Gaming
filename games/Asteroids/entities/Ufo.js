@@ -5,7 +5,7 @@ David Quesenberry
 Ufo.js
 */
 import Bullet from './Bullet.js';
-import { distance } from '../../../src/engine/utils/index.js';
+import { distance } from '../../../src/shared/utils/mathUtils.js';
 import { transformPoints } from '../../../src/engine/rendering/index.js';
 import { randomRange } from '../utils/math.js';
 

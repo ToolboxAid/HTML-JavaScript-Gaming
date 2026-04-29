@@ -4,7 +4,7 @@ David Quesenberry
 03/23/2026
 GravityWellWorld.js
 */
-import { clamp, distance } from '/src/engine/utils/index.js';
+import { clamp, distance } from '/src/shared/utils/mathUtils.js';
 import { transformPoints } from '/src/engine/rendering/VectorDrawing.js';
 import { vectorFromAngle } from '/src/shared/math/vectorMath.js';
 

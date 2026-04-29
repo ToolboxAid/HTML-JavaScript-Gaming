@@ -5,7 +5,7 @@ David Quesenberry
 FakeLoopbackNetworkModel.js
 */
 
-import { clamp } from "../../../../src/engine/utils/index.js";
+import { clamp } from "../../../../src/shared/utils/mathUtils.js";
 import { asPositiveNumber } from '../../../shared/numberUtils.js';
 import { createLatencyModel } from "../../shared/latencyModel.js";
 

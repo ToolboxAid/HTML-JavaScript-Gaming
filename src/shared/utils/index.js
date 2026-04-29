@@ -27,3 +27,4 @@ export { cloneJson } from "./jsonUtils.js";
 export { stringifyValue } from "./stringifyValueUtils.js";
 export { oppositeCardinalDirection } from "./directionUtils.js";
 export { wrapTextByCharacterCount } from "./textWrapUtils.js";
+export { clamp, distance, wrap, randomRange } from "./mathUtils.js";

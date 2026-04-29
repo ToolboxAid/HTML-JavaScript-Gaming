@@ -1,4 +1,4 @@
-import { clamp } from "../../../src/engine/utils/index.js";
+import { clamp } from "../../../src/shared/utils/mathUtils.js";
 
 export function createLatencyModel(options = {}) {
   const baseRttMs = clamp(Number(options.baseRttMs) || 30, 16, 250);

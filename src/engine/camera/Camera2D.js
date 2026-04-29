@@ -4,7 +4,7 @@ David Quesenberry
 03/21/2026
 Camera2D.js
 */
-import { clamp } from '../utils/math.js';
+import { clamp } from '../../shared/utils/mathUtils.js';
 
 export default class Camera2D {
   constructor({

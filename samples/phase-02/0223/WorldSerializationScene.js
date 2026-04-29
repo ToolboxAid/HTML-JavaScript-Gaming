@@ -6,7 +6,7 @@ WorldSerializationScene.js
 */
 import { Scene } from '/src/engine/scene/index.js';
 import { Theme, ThemeTokens } from '/src/engine/theme/index.js';
-import { clamp } from '/src/engine/utils/index.js';
+import { clamp } from '/src/shared/utils/mathUtils.js';
 import { drawFrame, drawPanel } from '/src/engine/debug/index.js';
 import { serializeWorldState, deserializeWorldState } from '/src/engine/persistence/index.js';
 
