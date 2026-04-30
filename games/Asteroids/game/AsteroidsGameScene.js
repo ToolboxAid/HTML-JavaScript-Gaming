@@ -14,7 +14,8 @@ import AsteroidsAttractAdapter from './AsteroidsAttractAdapter.js';
 import AsteroidsHighScoreService from '../systems/AsteroidsHighScoreService.js';
 import AsteroidsInitialsEntry from '../systems/AsteroidsInitialsEntry.js';
 import {
-  ASTEROIDS_GAME_OVER_AUTO_EXIT_SECONDS, ASTEROIDS_GAME_OVER_RETURN_MODE } from "../rules/flowRules.js";
+  ASTEROIDS_GAME_OVER_AUTO_EXIT_SECONDS, ASTEROIDS_GAME_OVER_RETURN_MODE
+} from "../rules/flowRules.js";
 import { ASTEROIDS_GAME_OVER_RETURN_STATUS } from "../rules/flowContent.js";
 
 const HUD_FONT = '"Vector Battle", monospace';

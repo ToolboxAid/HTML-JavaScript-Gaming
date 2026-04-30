@@ -1,1 +1,1 @@
-Keep bezel stretch override on image bezel manifest entries only - PR 11.86
+Draw manifest-declared game backgrounds across all render states without opaque suppression - PR 11.87
