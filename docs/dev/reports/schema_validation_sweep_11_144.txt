@@ -1,0 +1,36 @@
+Schema Validation Sweep Report: 11_144
+Date: 2026-04-30
+Repo: C:/Users/davidq/Documents/GitHub/HTML-JavaScript-Gaming
+Mode: STRICT SCOPE
+
+Scope
+- Target schemas: tools/schemas/**/*.json
+- Runtime/routing/samples: not modified
+
+Validation Performed
+1) Per-schema contract test (all schema JSON files under tools/schemas)
+- Test A: valid payload (synthesized from each schema) -> must pass
+- Test B: wrapper JSON -> must fail
+- Test C: parent/workspace JSON -> must fail
+
+Result Matrix
+- All schemas: valid=PASS
+- All schemas: wrapper=FAIL (expected)
+- All schemas: parent=FAIL (expected)
+- Summary: SUMMARY_FAILURES=0
+
+2) Strict object lock audit
+- Verified every `type: object` schema node declares `additionalProperties`.
+- Result: TOTAL_OBJECT_SCHEMA_MISSING_ADDITIONAL_PROPERTIES=0
+
+Schema Fixes
+- None required. No violations found, so no schema edits were applied.
+
+Compliance With Constraints
+- No schema expansion performed.
+- No compatibility paths added.
+- No runtime/routing/sample files changed.
+
+Final Outcome
+- PASS
+- All schemas are strict under required sweep conditions.

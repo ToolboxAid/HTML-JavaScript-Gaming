@@ -11,21 +11,21 @@ ALLOWED FILES:
 TASK:
 
 1. For each schema:
-   - ensure additionalProperties: false
-   - remove any wrapper acceptance
-   - ensure strict payload validation
+   - test valid payload → must pass
+   - test wrapper JSON → must fail
+   - test parent JSON → must fail
 
-2. Validate:
-   - valid JSON passes
-   - wrapper fails
-   - parent fails
+2. If violation:
+   - fix schema ONLY
 
 3. DO NOT:
-   - modify runtime
-   - modify routing
-   - modify samples
+   - expand schema
+   - add compatibility
+
+4. VERIFY:
+   - all schemas strict
 
 REPORT:
-docs/dev/reports/schema_lock_enforcement_11_143.txt
+docs/dev/reports/schema_validation_sweep_11_144.txt
 
-FAIL if any schema remains loose
+FAIL if any schema loose

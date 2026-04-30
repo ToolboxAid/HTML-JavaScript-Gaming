@@ -1,1 +1,1 @@
-Lock schemas as single source of truth with strict validation - PR 11.143
+Run full schema validation sweep and fix violations - PR 11.144
