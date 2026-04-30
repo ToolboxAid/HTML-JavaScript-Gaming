@@ -12,6 +12,69 @@ function isPlainObject(value) {
   return !!value && typeof value === "object" && !Array.isArray(value);
 }
 
+function isParentJsonLike(value) {
+  if (!isPlainObject(value)) {
+    return false;
+  }
+  const documentKind = typeof value.documentKind === "string" ? value.documentKind.trim().toLowerCase() : "";
+  const schema = typeof value.schema === "string" ? value.schema.trim().toLowerCase() : "";
+  if (documentKind === "workspace-manifest" || schema === "html-js-gaming.project" || schema === "html-js-gaming.workspace") {
+    return true;
+  }
+  return isPlainObject(value.tools);
+}
+
+function hasImplicitGlobalKey(value) {
+  if (!isPlainObject(value)) {
+    return false;
+  }
+  const blockedKeys = new Set([
+    "launchparams",
+    "sharedcontext",
+    "hostcontextid",
+    "hosttoolid",
+    "hosted",
+    "sampleid",
+    "sampletitle",
+    "samplepresetpath",
+    "gameid",
+    "gametitle",
+    "gamehref",
+    "workspacehref",
+    "returnto",
+    "state"
+  ]);
+  return Object.keys(value).some((key) => blockedKeys.has(String(key).trim().toLowerCase()));
+}
+
+function assertExplicitLaunchInputs({ toolId = "", payloadJson = null, paletteJson = null, argumentCount = 0 }) {
+  const normalizedToolId = normalizeToolId(toolId);
+  if (!normalizedToolId) {
+    throw new Error("launch contract violation: toolId is required.");
+  }
+  if (argumentCount < 2 || argumentCount > 3) {
+    throw new Error(`launch contract violation: launch(toolId, payloadJson, paletteJson?) expected 2-3 args, received ${argumentCount}.`);
+  }
+  if (!isPlainObject(payloadJson)) {
+    throw new Error(`launch contract violation: payloadJson must be an object for ${normalizedToolId}.`);
+  }
+  if (paletteJson !== null && !isPlainObject(paletteJson)) {
+    throw new Error(`launch contract violation: paletteJson must be an object or null for ${normalizedToolId}.`);
+  }
+  if (isParentJsonLike(payloadJson)) {
+    throw new Error(`launch contract violation: parent JSON usage detected in payloadJson for ${normalizedToolId}.`);
+  }
+  if (paletteJson !== null && isParentJsonLike(paletteJson)) {
+    throw new Error(`launch contract violation: parent JSON usage detected in paletteJson for ${normalizedToolId}.`);
+  }
+  if (hasImplicitGlobalKey(payloadJson)) {
+    throw new Error(`launch contract violation: implicit/global input keys detected in payloadJson for ${normalizedToolId}.`);
+  }
+  if (paletteJson !== null && hasImplicitGlobalKey(paletteJson)) {
+    throw new Error(`launch contract violation: implicit/global input keys detected in paletteJson for ${normalizedToolId}.`);
+  }
+}
+
 function buildHostLaunchUrl(toolEntry, hostContextId = "") {
   const url = new URL(toolEntry.launchPath, window.location.href);
   url.searchParams.set("hosted", "1");
@@ -150,15 +213,13 @@ export function createToolHostRuntime(options = {}) {
       return null;
     }
 
+    assertExplicitLaunchInputs({
+      toolId,
+      payloadJson,
+      paletteJson,
+      argumentCount: arguments.length
+    });
     const normalizedToolId = normalizeToolId(toolId);
-    if (!isPlainObject(payloadJson)) {
-      onStatus(`Tool launch blocked: explicit payloadJson is required for ${normalizedToolId || "(empty)"}.`);
-      return null;
-    }
-    if (paletteJson !== null && !isPlainObject(paletteJson)) {
-      onStatus(`Tool launch blocked: paletteJson must be an object when provided for ${normalizedToolId || "(empty)"}.`);
-      return null;
-    }
     const toolEntry = getToolHostEntryById(manifest, normalizedToolId);
     if (!toolEntry) {
       onStatus(`Tool id not found: ${normalizedToolId || "(empty)"}.`);

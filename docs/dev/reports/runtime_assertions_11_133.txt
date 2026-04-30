@@ -1,0 +1,70 @@
+﻿Runtime Assertions Report: 11_133
+Date: 2026-04-30
+Repo: C:/Users/davidq/Documents/GitHub/HTML-JavaScript-Gaming
+Mode: STRICT SCOPE
+
+Scope
+- Routing files only
+
+Files changed
+- tools/shared/toolHostRuntime.js
+- tools/Workspace Manager/main.js
+
+Task Results
+1) Added assertions before tool execution
+- Added `assertExplicitLaunchInputs(...)` in host runtime launch path.
+- Assertion is executed at start of `launch(toolId, payloadJson, paletteJson?)` before iframe/tool execution.
+
+2) Detection coverage
+A. Global reads / implicit inputs
+- Rejects payloadJson/paletteJson containing implicit/global keys:
+  - launchParams, sharedContext, hostContextId, hostToolId, hosted
+  - sampleId, sampleTitle, samplePresetPath
+  - gameId, gameTitle, gameHref
+  - workspaceHref, returnTo, state
+- Throws error when any are present.
+
+B. Parent JSON usage
+- Detects and rejects parent-style documents in payload/palette:
+  - documentKind=workspace-manifest
+  - schema=html-js-gaming.project / html-js-gaming.workspace
+  - presence of top-level tools object
+- Throws error when detected.
+
+C. Signature enforcement
+- Enforces exact launch call shape:
+  - requires toolId
+  - requires payloadJson object
+  - paletteJson must be object or null
+  - rejects argument count outside 2..3
+- Throws on violation.
+
+3) Workspace Manager launch hardening
+- Launch now throws when explicit payloadJson is missing.
+- Launch now throws when implicit state JSON input is present.
+- Launch call remains explicit-only:
+  - runtime.launch(toolId, payloadJson, paletteJson)
+
+Verification
+- Syntax checks:
+  - node --check tools/shared/toolHostRuntime.js -> PASS
+  - node --check tools/Workspace Manager/main.js -> PASS
+
+- Contract evidence present in code:
+  - `assertExplicitLaunchInputs` exists and is invoked before launch execution.
+  - `launch contract violation` throw paths exist for:
+    - missing toolId
+    - invalid arg count
+    - invalid payloadJson
+    - invalid paletteJson
+    - parent JSON payload
+    - parent JSON palette
+    - implicit/global keys in payload/palette
+  - Workspace Manager throws on:
+    - missing explicit payloadJson
+    - implicit state JSON
+
+Result
+- PASS
+- Runtime assertions added.
+- Detection + throw behavior enforced for implicit/global inputs and parent JSON usage.

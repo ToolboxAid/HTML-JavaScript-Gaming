@@ -1238,16 +1238,10 @@ function mountSelectedTool(source = "manual") {
     : null;
   const payloadJson = explicitToolPayloadById ? (explicitToolPayloadById.get(toolId) || null) : null;
   if (!payloadJson || typeof payloadJson !== "object" || Array.isArray(payloadJson)) {
-    writeStatus(`Launch blocked for ${toolId}: explicit payloadJson is required.`);
-    renderMountDiagnostic(
-      `Launch blocked for ${toolId}.`,
-      "Workspace Manager now enforces explicit launch(toolId, payloadJson, paletteJson?) inputs."
-    );
-    syncControlState();
-    return false;
+    throw new Error(`launch contract violation: explicit payloadJson is required for ${toolId}.`);
   }
   if (hasStateInput) {
-    writeStatus("State JSON is ignored for explicit launch signature enforcement.");
+    throw new Error("launch contract violation: implicit input detected (state JSON).");
   }
   const paletteJson = workspaceManifestToolDiagnostics?.explicitPalettePayload || null;
   const mountResult = runtime.launch(toolId, payloadJson, paletteJson);

@@ -1,7 +1,7 @@
 # CODEX COMMANDS
 
 Model: GPT-5.3-codex
-Reasoning: high
+Reasoning: medium
 
 STRICT SCOPE MODE
 
@@ -10,18 +10,16 @@ ALLOWED FILES:
 
 TASK:
 
-1. Find tool launch calls
-2. Enforce signature:
-   launch(toolId, payloadJson, paletteJson?)
+1. Add assertions before tool execution:
+   - ensure only payloadJson + paletteJson used
 
-3. Remove:
-   - implicit/global input
-   - hidden dependencies
+2. Detect:
+   - global reads
+   - implicit inputs
+   - parent JSON usage
 
-VERIFY:
-- inputs are explicit only
+3. If detected:
+   - throw error
 
 REPORT:
-docs/dev/reports/final_tool_input_contract_11_132.txt
-
-FAIL if ambiguity remains
+docs/dev/reports/runtime_assertions_11_133.txt
