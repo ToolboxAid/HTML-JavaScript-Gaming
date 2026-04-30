@@ -754,7 +754,7 @@ function extractWorkspaceManifestExplicitLaunchInputs(rawSource) {
   }
 
   Object.entries(toolsBlock).forEach(([rawToolKey, rawToolPayload]) => {
-    const toolId = normalizeTextParam(rawToolKey).toLowerCase();
+    const toolId = typeof rawToolKey === "string" ? rawToolKey.trim().toLowerCase() : "";
     if (!toolId || !rawToolPayload || typeof rawToolPayload !== "object" || Array.isArray(rawToolPayload)) {
       return;
     }

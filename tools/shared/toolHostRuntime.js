@@ -4,10 +4,6 @@ import {
   writeToolHostSharedContext
 } from "./toolHostSharedContext.js";
 
-function normalizeToolId(toolId) {
-  return typeof toolId === "string" ? toolId.trim() : "";
-}
-
 function isPlainObject(value) {
   return !!value && typeof value === "object" && !Array.isArray(value);
 }
@@ -48,30 +44,30 @@ function hasImplicitGlobalKey(value) {
 }
 
 function assertExplicitLaunchInputs({ toolId = "", payloadJson = null, paletteJson = null, argumentCount = 0 }) {
-  const normalizedToolId = normalizeToolId(toolId);
-  if (!normalizedToolId) {
+  const toolIdText = typeof toolId === "string" ? toolId.trim() : "";
+  if (!toolIdText) {
     throw new Error("launch contract violation: toolId is required.");
   }
   if (argumentCount < 2 || argumentCount > 3) {
     throw new Error(`launch contract violation: launch(toolId, payloadJson, paletteJson?) expected 2-3 args, received ${argumentCount}.`);
   }
   if (!isPlainObject(payloadJson)) {
-    throw new Error(`launch contract violation: payloadJson must be an object for ${normalizedToolId}.`);
+    throw new Error(`launch contract violation: payloadJson must be an object for ${toolIdText}.`);
   }
   if (paletteJson !== null && !isPlainObject(paletteJson)) {
-    throw new Error(`launch contract violation: paletteJson must be an object or null for ${normalizedToolId}.`);
+    throw new Error(`launch contract violation: paletteJson must be an object or null for ${toolIdText}.`);
   }
   if (isParentJsonLike(payloadJson)) {
-    throw new Error(`launch contract violation: parent JSON usage detected in payloadJson for ${normalizedToolId}.`);
+    throw new Error(`launch contract violation: parent JSON usage detected in payloadJson for ${toolIdText}.`);
   }
   if (paletteJson !== null && isParentJsonLike(paletteJson)) {
-    throw new Error(`launch contract violation: parent JSON usage detected in paletteJson for ${normalizedToolId}.`);
+    throw new Error(`launch contract violation: parent JSON usage detected in paletteJson for ${toolIdText}.`);
   }
   if (hasImplicitGlobalKey(payloadJson)) {
-    throw new Error(`launch contract violation: implicit/global input keys detected in payloadJson for ${normalizedToolId}.`);
+    throw new Error(`launch contract violation: implicit/global input keys detected in payloadJson for ${toolIdText}.`);
   }
   if (paletteJson !== null && hasImplicitGlobalKey(paletteJson)) {
-    throw new Error(`launch contract violation: implicit/global input keys detected in paletteJson for ${normalizedToolId}.`);
+    throw new Error(`launch contract violation: implicit/global input keys detected in paletteJson for ${toolIdText}.`);
   }
 }
 
@@ -219,10 +215,10 @@ export function createToolHostRuntime(options = {}) {
       paletteJson,
       argumentCount: arguments.length
     });
-    const normalizedToolId = normalizeToolId(toolId);
-    const toolEntry = getToolHostEntryById(manifest, normalizedToolId);
+    const toolIdText = typeof toolId === "string" ? toolId.trim() : "";
+    const toolEntry = getToolHostEntryById(manifest, toolIdText);
     if (!toolEntry) {
-      onStatus(`Tool id not found: ${normalizedToolId || "(empty)"}.`);
+      onStatus(`Tool id not found: ${toolIdText || "(empty)"}.`);
       return null;
     }
 

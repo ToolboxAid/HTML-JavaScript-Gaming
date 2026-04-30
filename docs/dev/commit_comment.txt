@@ -1,1 +1,1 @@
-Remove preset/default/fallback input paths - PR 11.135
+Final verification: no fallback, no global, zero-transform routing - PR 11.136

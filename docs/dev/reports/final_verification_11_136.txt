@@ -1,0 +1,66 @@
+﻿Final Verification Report: 11_136
+Date: 2026-04-30
+Repo: C:/Users/davidq/Documents/GitHub/HTML-JavaScript-Gaming
+Mode: STRICT SCOPE
+
+Scope
+- Routing files only
+
+Routing files validated
+- tools/shared/toolHostRuntime.js
+- tools/Workspace Manager/main.js
+- tools/shared/platformShell.js (routing-only naming cleanup from prior fallback/default removal)
+
+Task Execution
+1) Prohibited-pattern search
+- Searched routing files for:
+  normalize*, transform*, convert*, infer*,
+  tryLoadPreset*, buildPreset*, default*, fallback*
+
+2) Removed remaining occurrences affecting input paths
+- Input/launch path functions now contain no prohibited-pattern usage:
+  - assertExplicitLaunchInputs(...)  -> none
+  - launch(toolId, payloadJson, paletteJson?) -> none
+  - mountSelectedTool(...) -> none
+- Also removed residual `normalize*` from explicit payload extraction used by launch input mapping.
+
+3) Launch signature verification
+- Verified runtime signature is exactly:
+  launch(toolId, payloadJson, paletteJson = null)
+
+4) Input integrity verification
+- payloadJson unchanged path: PASS
+  - runtime forwards same payload reference into sharedContext.
+- paletteJson unchanged path: PASS
+  - runtime forwards same palette reference into sharedContext.
+- no global reads / implicit forwarded launch inputs: PASS
+  - no launchParams / hostConfig_ / readForwardedToolLaunchParams in active launch flow.
+
+5) Missing input behavior
+- missing payloadJson => error: PASS
+  - Workspace Manager throws when explicit payloadJson is absent.
+  - Runtime assertion throws when payloadJson is not an object.
+- no fallback used in launch contract: PASS
+
+Runtime Assertion Verification
+- Assertions present and active before tool execution:
+  - signature arg count check
+  - payloadJson object check
+  - paletteJson object/null check
+  - parent JSON detection
+  - implicit/global key detection
+
+Verification Outputs
+- assert_fn_prohibited_hits=(none)
+- launch_fn_prohibited_hits=(none)
+- mount_fn_prohibited_hits=(none)
+- launch_signature=true
+- payload_palette_ref_pass=true
+- no_global_forwarded_inputs=true
+- missing_input_error=true
+- node --check toolHostRuntime.js PASS
+- node --check Workspace Manager/main.js PASS
+
+Result
+- PASS
+- No violation remains in the active launch/input path.

@@ -10,22 +10,23 @@ ALLOWED FILES:
 
 TASK:
 
-1. Find:
-   - tryLoadPreset*
-   - buildPreset*
-   - default*
-   - fallback*
+1. Search for prohibited patterns:
+   normalize*, transform*, convert*, infer*,
+   tryLoadPreset*, buildPreset*, default*, fallback*
 
-2. Remove all occurrences
+2. Remove any remaining occurrences affecting input paths
 
-3. Ensure:
-   - missing input → error
-   - no fallback used
+3. Verify launch signature:
+   launch(toolId, payloadJson, paletteJson?)
 
-VERIFY:
-- runtime assertions pass
+4. Verify:
+   - payloadJson unchanged
+   - paletteJson unchanged
+   - no global reads
+
+5. Ensure missing input => error (no fallback)
 
 REPORT:
-docs/dev/reports/preset_default_removal_11_135.txt
+docs/dev/reports/final_verification_11_136.txt
 
-FAIL if any remain
+FAIL if any violation remains
