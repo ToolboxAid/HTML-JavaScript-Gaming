@@ -1,1 +1,1 @@
-Validate SSoT sample tool relationships load direct JSON - PR 11.121
+Force actual schema file changes instead of no-op runs - PR 11.124

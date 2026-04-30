@@ -508,10 +508,18 @@ function validateToolPayloadShallow(toolId, payload, schema, pointer) {
       errors.push(`${pointer}.${key} is required`);
     }
   });
+  Object.entries(rootProps).forEach(([key, propertySchema]) => {
+    if (isPlainObject(propertySchema) && Object.prototype.hasOwnProperty.call(propertySchema, "const") && key in payload && payload[key] !== propertySchema.const) {
+      errors.push(`${pointer}.${key} must equal ${propertySchema.const}`);
+    }
+  });
 
   const expectedToolConst = schema?.properties?.tool?.const;
   if (typeof expectedToolConst === "string" && payload.tool !== expectedToolConst) {
     errors.push(`${pointer}.tool must equal ${expectedToolConst}`);
+  }
+  if (!Object.prototype.hasOwnProperty.call(rootProps, "payload")) {
+    return errors;
   }
 
   if (!isPlainObject(payload.payload)) {

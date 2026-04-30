@@ -1,0 +1,39 @@
+PR 11.123 - Tool Schema Payload Review
+
+PASS
+
+Scope reviewed
+- tools/schemas/tools/*.schema.json
+
+Review criteria
+- Root schema is an object.
+- Root schema has additionalProperties: false.
+- Schema does not include parent workspace-manifest, game.manifest, samples.index.metadata, or sample metadata terms.
+- Palette Browser schema owns palette details directly and rejects wrappers.
+
+Per-schema result
+- 3d-asset-viewer.schema.json: PASS
+- 3d-camera-path-editor.schema.json: PASS
+- 3d-json-payload.schema.json: PASS
+- asset-browser.schema.json: PASS
+- asset-pipeline.schema.json: PASS
+- palette-browser.schema.json: PASS
+- parallax-editor.schema.json: PASS
+- performance-profiler.schema.json: PASS
+- physics-sandbox.schema.json: PASS
+- replay-visualizer.schema.json: PASS
+- skin-editor.schema.json: PASS
+- sprite-editor.schema.json: PASS
+- state-inspector.schema.json: PASS
+- svg-asset-studio.schema.json: PASS
+- tile-map-editor.schema.json: PASS
+- tile-model-converter.schema.json: PASS
+- vector-map-editor.schema.json: PASS
+
+Notes
+- Many non-palette tool schemas currently use tool/version/payload as their direct tool JSON input shape. That is not a parent game/workspace/sample schema and was not changed in this PR.
+- No schema was found inlining another tool's payload details.
+- Workspace manifest keeps tool details behind $ref entries.
+
+Blockers
+- None.

@@ -593,14 +593,18 @@ function classifyWorkspaceManifestTools(rawSource, schemaContract = null) {
       return;
     }
 
+    const expectedToolId = mappedToolId;
+    const isDirectPalettePayload = expectedToolId === "palette-browser"
+      && normalizeTextParam(rawToolEntry.schema).toLowerCase() === "html-js-gaming.palette"
+      && Array.isArray(rawToolEntry.swatches);
+
     const payloadToolId = normalizeTextParam(rawToolEntry.tool).toLowerCase();
-    if (!payloadToolId) {
+    if (!isDirectPalettePayload && !payloadToolId) {
       rejected.push({ key, reason: "tool-entry-missing-tool-id" });
       return;
     }
 
-    const expectedToolId = mappedToolId;
-    if (payloadToolId !== expectedToolId) {
+    if (!isDirectPalettePayload && payloadToolId !== expectedToolId) {
       rejected.push({
         key,
         reason: `tool-entry-id-mismatch(expected=${expectedToolId},actual=${payloadToolId})`

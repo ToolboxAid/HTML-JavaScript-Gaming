@@ -515,6 +515,16 @@ function resolveWorkspaceManifestScopedToolPreset(rawPreset, toolId) {
     if (!scopedPreset || typeof scopedPreset !== "object" || Array.isArray(scopedPreset)) {
       continue;
     }
+    if (normalizedToolId === "palette-browser") {
+      const isDirectPaletteDocument = normalizeTextValue(scopedPreset.schema).toLowerCase() === "html-js-gaming.palette"
+        && Array.isArray(scopedPreset.swatches);
+      if (!isDirectPaletteDocument) {
+        console.warn(`[tools.platform] workspace scoped preset rejected: key="${key}" must be direct palette JSON for palette-browser.`);
+        continue;
+      }
+      return scopedPreset;
+    }
+
     const payloadToolId = normalizeTextValue(scopedPreset.tool).toLowerCase();
     if (!payloadToolId) {
       console.warn(`[tools.platform] workspace scoped preset rejected: key="${key}" is missing required "tool" field.`);
@@ -558,6 +568,14 @@ function summarizeEmbeddedToolPayloadDocument(toolId = "", scopedToolState = nul
     ? scopedToolState.payload
     : {};
   const fallbackId = normalizeTextValue(scopedToolState.tool || normalizedToolId);
+  const directPalette = normalizedToolId === "palette-browser" && Array.isArray(scopedToolState.swatches)
+    ? scopedToolState
+    : null;
+  if (directPalette) {
+    const name = normalizeTextValue(directPalette.name || directPalette.id || fallbackId);
+    const swatchCount = directPalette.swatches.length;
+    return `embedded palette ${name || fallbackId}${swatchCount > 0 ? ` (${swatchCount} swatches)` : ""}`;
+  }
 
   const vectorMapDocument = readWorkspaceScopedToolDocument(payload, "vectorMapDocument", scopedToolState);
   if (vectorMapDocument) {
@@ -1236,9 +1254,13 @@ function readPaletteFromManifestPayload(manifestPayload, launchContext = null) {
   const paletteBrowserSection = tools["palette-browser"] && typeof tools["palette-browser"] === "object" && !Array.isArray(tools["palette-browser"])
     ? tools["palette-browser"]
     : null;
-  const paletteBrowserPayload = paletteBrowserSection?.payload && typeof paletteBrowserSection.payload === "object" && !Array.isArray(paletteBrowserSection.payload)
+  const directPalettePayload = normalizeTextValue(paletteBrowserSection?.schema).toLowerCase() === "html-js-gaming.palette"
+    ? paletteBrowserSection
+    : null;
+  const wrappedPalettePayload = paletteBrowserSection?.payload && typeof paletteBrowserSection.payload === "object" && !Array.isArray(paletteBrowserSection.payload)
     ? paletteBrowserSection.payload
     : null;
+  const paletteBrowserPayload = directPalettePayload || wrappedPalettePayload;
   if (!paletteBrowserPayload) {
     return null;
   }
@@ -1256,7 +1278,9 @@ function readPaletteFromManifestPayload(manifestPayload, launchContext = null) {
   }
   return {
     ...normalized,
-    source: "workspace-game-manifest.palette-browser.payload"
+    source: directPalettePayload
+      ? "workspace-game-manifest.palette-browser"
+      : "workspace-game-manifest.palette-browser.payload"
   };
 }
 

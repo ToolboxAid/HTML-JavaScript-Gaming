@@ -34,7 +34,7 @@
       "type": "object",
       "required": ["palette-browser"],
       "additionalProperties": false,
-      "description": "Workspace-owned tool asset data keyed by canonical registry ids plus required singular palette payload.",
+      "description": "Workspace-owned tool entries keyed by canonical registry ids; tool payload details are owned by referenced tool schemas.",
       "properties": {
         "palette-browser": {
           "$ref": "./tools/palette-browser.schema.json"

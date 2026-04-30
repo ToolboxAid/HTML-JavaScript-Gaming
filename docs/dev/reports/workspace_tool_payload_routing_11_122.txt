@@ -1,0 +1,33 @@
+PR 11.122 - Workspace Tool Payload Routing
+
+PASS
+
+Routing paths reviewed
+- sample -> tool: tools/Palette Browser/main.js fetches samplePresetPath directly and passes the loaded JSON through schema diagnostics before import.
+- workspace -> child tool: tools/shared/platformShell.js selectWorkspaceScopedToolPreset and fetch shim now return direct palette JSON for palette-browser from workspace manifests.
+- game/workspace palette handoff: tools/shared/platformShell.js readPaletteFromManifestPayload can read direct tools.palette-browser palette JSON and can also extract a palette payload from existing game manifest palette sections for shared palette handoff without changing the child schema.
+- Workspace Manager diagnostics/classification: tools/Workspace Manager/main.js now recognizes direct palette JSON under manifest.tools.palette-browser instead of requiring a tool field for that one direct-payload schema.
+
+Workspace sample update
+- samples/phase-19/1902/sample.1902.workspace-all-tools.json changed tools.palette-browser from:
+  { tool, version, payload }
+  to direct palette JSON:
+  { schema, version, id, name, swatches }
+
+Boundary behavior
+- Workspace Manager may validate the workspace manifest and route the child payload.
+- Child Palette Browser validation receives only the palette JSON document.
+- Parent game/workspace/sample documents are not accepted by palette-browser.schema.json.
+- If a workspace-scoped palette-browser entry is not direct palette JSON, platformShell rejects it instead of passing a parent/wrapper document to the child tool.
+
+Validation evidence
+- ToolSchemaStrictModeValidation PASS after updating the validation helper for direct-payload tool schemas.
+- ToolWorkspaceSchemaManifestBoundaries PASS.
+- Targeted launch smoke for sample 1902 and tools PASS=19 FAIL=0 TOTAL=19.
+- samples.metadata roundtripToolPresets count remains 31 with 0 missing explicit fields.
+
+Notes
+- Existing game manifests still have game-owned palette sections with schema html-js-gaming.tool.palette-browser. That remains a game manifest routing concern, not Palette Browser child-schema input. Routing extracts palette data for shared palette handoff where needed; the Palette Browser schema does not validate those parent sections.
+
+Blockers
+- None.

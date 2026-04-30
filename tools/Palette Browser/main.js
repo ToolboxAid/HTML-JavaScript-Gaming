@@ -608,8 +608,7 @@ async function tryLoadPresetFromQuery() {
       loadedDocument: rawPreset,
       loaded: summarizeToolLoadData(rawPreset)
     });
-    const palettePayload = rawPreset?.payload;
-    importPaletteFromPresetPayload(palettePayload);
+    importPaletteFromPresetPayload(rawPreset);
     setSelectionText(buildPresetLoadedStatus(sampleId, samplePresetPath));
   } catch (error) {
     logToolLoadWarning({

@@ -1,0 +1,27 @@
+PR 11.123 - Workspace Payload Routing Review
+
+PASS
+
+Routing paths reviewed
+- sample -> tool: tools/Palette Browser/main.js loads samplePresetPath, logs loaded data through schema-only diagnostics, and imports the direct palette document.
+- workspace -> child tool: tools/shared/platformShell.js resolves tools.palette-browser only when it is direct palette JSON and returns that same object to the child fetch shim.
+- game/workspace -> shared palette handoff: tools/shared/platformShell.js readPaletteFromManifestPayload can read direct tools.palette-browser and can extract existing game manifest palette payload sections for shared-palette handoff without changing the Palette Browser child schema.
+- Workspace Manager diagnostics: tools/Workspace Manager/main.js accepts direct palette JSON for tools.palette-browser while continuing to require tool id fields for the other direct tool document contracts.
+
+No conversion/normalization/fallback review
+- No fake data was created.
+- No fallback/default palette was introduced.
+- No child schema was made to accept game/workspace/sample parent documents.
+- Direct palette payload is passed as-is from sample 1902 to Palette Browser routing.
+- Existing game manifest palette extraction remains a parent-routing concern, not a child schema validation allowance.
+
+Visible error behavior
+- If workspace-scoped palette-browser data is not direct palette JSON, platformShell rejects it and does not pass the parent/wrapper document to the child tool.
+- Schema-only diagnostics still produce visible schema validation error text through enforceToolPresetSchemaOnlyContract when wrong JSON reaches a child tool load boundary.
+
+Targeted runtime evidence
+- node ./tests/runtime/LaunchSmokeAllEntries.test.mjs --samples --sample-range=1902-1902 --tools
+  Result: PASS=19 FAIL=0 TOTAL=19
+
+Blockers
+- None.
