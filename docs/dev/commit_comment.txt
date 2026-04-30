@@ -1,1 +1,1 @@
-Fix SVG payload detection (not label) in Workspace Manager - PR 11.154
+Trace and fix actual SVG Asset none render branch - PR 11.155

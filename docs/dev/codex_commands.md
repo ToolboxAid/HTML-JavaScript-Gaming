@@ -7,24 +7,60 @@ STRICT SCOPE MODE
 
 ALLOWED FILES:
 - tools/workspace-manager/main.js
+- docs/dev/reports/svg_asset_none_trace_11_155.txt
 
 TASK:
 
-1. Find detection logic for svg-asset-studio
+1. Open:
+   tools/workspace-manager/main.js
 
-2. Replace detection with:
+2. Trace the exact code path that renders:
+   Asset: none
 
-if (tools["svg-asset-studio"]?.vectorAssetDocument?.svgText)
+3. Search for:
+   - "Asset: none"
+   - "none"
+   - assetLabel
+   - assetSummary
+   - svg-asset-studio
+   - vectorAssetDocument
+   - card render
+   - row render
+   - status render
 
-3. Use sourceName for label
+4. Identify the active branch used by the Workspace Manager card.
 
-4. DO NOT change other tools
+5. Patch only that branch for `svg-asset-studio` so it reads:
+   workspaceManifest.tools["svg-asset-studio"].vectorAssetDocument.sourceName
 
-5. VERIFY:
-- detection works
-- no "none"
+   If sourceName is missing but svgText exists, show:
+   Inline SVG
 
-REPORT:
-docs/dev/reports/svg_payload_detection_fix_11_154.txt
+6. Do NOT:
+   - modify schemas
+   - modify samples
+   - modify SVG Asset Studio
+   - modify runtime
+   - add fallback/default/demo data
+   - transform/wrap/normalize payload
+   - change unrelated tools
 
-FAIL if still not detected
+7. Validate:
+   - JS syntax for tools/workspace-manager/main.js
+   - active render path uses vectorAssetDocument
+   - expected visible label is not "Asset: none"
+   - git diff --name-only contains only ALLOWED FILES
+
+8. Write:
+   docs/dev/reports/svg_asset_none_trace_11_155.txt
+
+Report must include:
+- exact old function/branch
+- exact new function/branch
+- why previous PRs missed it
+- expected rendered text
+- validation result
+- strict scope confirmation
+
+9. Package Codex output ZIP at:
+   tmp/PR_11_155_TRACE_SVG_ASSET_NONE_SOURCE.zip

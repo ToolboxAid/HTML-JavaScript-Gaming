@@ -335,10 +335,7 @@ function primeSvgAssetStatusLabelFromWorkspaceDiagnostics(diagnostics = null) {
   if (!tools["svg-asset-studio"]?.vectorAssetDocument?.svgText) {
     return false;
   }
-  const sourceName = normalizeTextParam(tools["svg-asset-studio"]?.vectorAssetDocument?.sourceName);
-  if (!sourceName) {
-    return false;
-  }
+  const sourceName = normalizeTextParam(tools["svg-asset-studio"]?.vectorAssetDocument?.sourceName) || "Inline SVG";
   const assetHandoff = createAssetHandoff({
     assetId: sourceName,
     assetType: "vector",

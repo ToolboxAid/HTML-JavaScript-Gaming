@@ -1,0 +1,47 @@
+﻿Task: svg_asset_none_trace_11_155
+Date: 2026-04-30
+
+Files changed:
+- tools/Workspace Manager/main.js
+- docs/dev/reports/svg_asset_none_trace_11_155.txt
+
+Exact old function/branch:
+- Function: `primeSvgAssetStatusLabelFromWorkspaceDiagnostics(diagnostics)`
+- Active branch used by Workspace Manager card/status path:
+  1) `applyToolsUsedFilterForGame(...)` calls `primeSvgAssetStatusLabelFromWorkspaceDiagnostics(workspaceManifestToolDiagnostics)`
+  2) That writes shared asset handoff consumed by Workspace card/status rendering.
+- Old behavior in this branch:
+  - Required `tools["svg-asset-studio"]?.vectorAssetDocument?.svgText` (detected)
+  - Then required `sourceName`; if missing it returned false.
+  - Returning false left no shared SVG asset label, leading card path to show `Asset: none`.
+
+Exact new function/branch:
+- Same function and active branch (no routing change).
+- Updated branch logic now uses:
+  - detection: `if (tools["svg-asset-studio"]?.vectorAssetDocument?.svgText)`
+  - label: `tools["svg-asset-studio"]?.vectorAssetDocument?.sourceName`
+  - fallback when `sourceName` missing but `svgText` exists: `Inline SVG`
+- Result: shared asset handoff is still written for valid inline SVG payloads, preventing `Asset: none`.
+
+Why previous PRs missed it:
+- Prior fixes focused on detection and sourceName path, but still returned early when `sourceName` was empty.
+- The card/status renderer depends on this shared asset handoff branch; when it returned false, downstream card status still fell back to `none`.
+
+Expected rendered text:
+- With Sample 1902 payload: `Asset: sample-0901-ship.svg`
+- With valid inline SVG payload but no `sourceName`: `Asset: Inline SVG`
+
+Validation result:
+- node --check "tools/Workspace Manager/main.js" -> PASS
+- Active render-path trace check in file -> PASS
+  - `applyToolsUsedFilterForGame -> primeSvgAssetStatusLabelFromWorkspaceDiagnostics -> writeSharedAssetHandoff`
+  - detection path: `tools["svg-asset-studio"]?.vectorAssetDocument?.svgText`
+  - label path: `tools["svg-asset-studio"]?.vectorAssetDocument?.sourceName || "Inline SVG"`
+- Sample 1902 payload check -> PASS
+  - hasSvgText=true
+  - sourceName=sample-0901-ship.svg
+  - computed label not none
+
+Strict scope confirmation:
+- Only `tools/Workspace Manager/main.js` and this report were modified.
+- No schema/sample/SVG tool/runtime/other tool changes.
