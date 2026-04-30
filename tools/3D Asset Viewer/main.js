@@ -122,39 +122,6 @@ function normalizeAssetPayload(rawPayload) {
   };
 }
 
-function extractAssetPayloadFromPreset(rawPreset) {
-  if (!rawPreset || typeof rawPreset !== "object") {
-    return null;
-  }
-  const payload = rawPreset.payload && typeof rawPreset.payload === "object"
-    ? rawPreset.payload
-    : rawPreset;
-  const config = payload.config && typeof payload.config === "object"
-    ? payload.config
-    : null;
-
-  const candidateKeys = ["3d-asset-viewer", "asset3d", "asset", "assetPayload", "viewerPayload"];
-  for (const key of candidateKeys) {
-    const value = payload[key];
-    if (value && typeof value === "object" && Array.isArray(value.vertices)) {
-      return value;
-    }
-  }
-  for (const key of candidateKeys) {
-    const value = config?.[key];
-    if (value && typeof value === "object" && Array.isArray(value.vertices)) {
-      return value;
-    }
-  }
-  if (Array.isArray(payload.vertices)) {
-    return payload;
-  }
-  if (Array.isArray(config?.vertices)) {
-    return config;
-  }
-  return null;
-}
-
 async function tryLoadPresetFromQuery() {
   const searchParams = new URLSearchParams(window.location.search);
   const samplePresetPath = normalizeSamplePresetPath(searchParams.get("samplePresetPath") || "");

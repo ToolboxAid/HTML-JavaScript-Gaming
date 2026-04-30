@@ -214,28 +214,6 @@ function buildLiveSnapshot() {
   });
 }
 
-function extractSnapshotFromSamplePreset(rawPreset) {
-  if (!rawPreset || typeof rawPreset !== "object") {
-    return null;
-  }
-  const payload = rawPreset.payload && typeof rawPreset.payload === "object"
-    ? rawPreset.payload
-    : rawPreset;
-  if (payload.snapshot && typeof payload.snapshot === "object") {
-    return payload.snapshot;
-  }
-  if (payload.inspectJson && typeof payload.inspectJson === "object") {
-    return payload.inspectJson;
-  }
-  if (payload.stateSnapshot && typeof payload.stateSnapshot === "object") {
-    return payload.stateSnapshot;
-  }
-  if (payload.schema && typeof payload.schema === "string" && payload.schema.includes("snapshot")) {
-    return payload;
-  }
-  return null;
-}
-
 async function tryLoadPresetFromQuery() {
   const searchParams = new URLSearchParams(window.location.search);
   const samplePresetPath = normalizeSamplePresetPath(searchParams.get("samplePresetPath") || "");

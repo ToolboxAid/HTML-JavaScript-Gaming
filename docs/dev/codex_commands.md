@@ -4,61 +4,73 @@ Model: GPT-5.3-codex
 Reasoning: medium
 
 ## PR
-BUILD_PR_LEVEL_11_110_SCHEMA_ONLY_VALIDATION_SCREEN_ERRORS
+BUILD_PR_LEVEL_11_111_TEST_SCHEMA_RELOCATION_AND_INFER_PATH_REMOVAL
 
 ## Execute
 
-1. Extend the PR 11.109 direct JSON contract:
-   - JSON is loaded directly.
-   - The only validation is schema validation.
-   - Invalid data must show a visible screen error.
+1. Move test-only schema files out of runtime tool folders:
+   - tools/palette-editor/tool.schema.json -> tests/fixtures/tool-schemas/palette-editor/tool.schema.json
+   - tools/vector-asset-studio/tool.schema.json -> tests/fixtures/tool-schemas/vector-asset-studio/tool.schema.json
+   - tools/vector-map-editor/tool.schema.json -> tests/fixtures/tool-schemas/vector-map-editor/tool.schema.json
 
-2. Inspect tool input/loading paths only.
+2. Update any tests or scripts that referenced the old paths.
 
-3. Remove or bypass custom validation outside schema validation, except:
+3. Do not leave duplicate runtime copies at:
+   - tools/palette-editor/tool.schema.json
+   - tools/vector-asset-studio/tool.schema.json
+   - tools/vector-map-editor/tool.schema.json
+
+4. Search focused tool input/loading/shared code for inference and compatibility helpers:
+   - infer*
+   - normalize*
+   - transform*
+   - convert*
+   - coerce*
+   - resolve*Legacy*
+   - fallback*
+   - default* when used as hidden input/data injection
+   - alias/remap helpers
+
+5. Remove the smallest safe set of shared inference/compatibility code that affects tool input/source/payload loading.
+
+6. Keep only allowed pre-schema checks:
    - file exists
    - JSON parse
 
-4. Ensure every schema validation failure renders a clear UI error.
+7. Ensure all other input validation is schema-only.
 
-5. Error must include when available:
-   - tool id/name
-   - JSON source path
-   - schema path/name
-   - failed field/path
-   - validation summary
+8. Ensure failures render visible screen errors:
+   - missing file
+   - malformed JSON
+   - schema mismatch
 
-6. Do not:
-   - normalize
-   - transform
-   - convert
-   - repair
-   - infer
-   - inject defaults
-   - fallback to sample/demo data
-   - accept aliases
-   - add custom validation rules outside schema
+9. Preserve direct flow:
+   explicit JSON file -> schema validation -> render as-is
 
-7. If a validation rule is needed, put it in schema, not runtime code.
+10. Preserve canonical names:
+   - palette-browser
+   - 3d-json-payload
+   - asset-pipeline
 
-8. Preserve compact primitive-array formatting.
+11. Preserve compact primitive-array formatting.
 
-9. Validate targeted cases:
-   - valid JSON input renders
-   - invalid schema JSON shows screen error
-   - missing file shows screen error
-   - malformed JSON shows screen error
-   - invalid JSON does not fallback to defaults
+12. Validate targeted paths:
+   - moved fixture files exist
+   - old runtime tool.schema.json files are gone
+   - changed test/script references work
+   - changed JSON parses
+   - changed manifests validate
+   - no removed helper references remain
 
-10. Write reports:
-   - docs/dev/reports/schema_only_validation_11_110.txt
-   - docs/dev/reports/screen_error_contract_11_110.txt
-   - docs/dev/reports/non_schema_validation_paths_11_110.txt
+13. Write reports:
+   - docs/dev/reports/tool_schema_fixture_relocation_11_111.txt
+   - docs/dev/reports/inference_path_removal_11_111.txt
+   - docs/dev/reports/schema_only_runtime_check_11_111.txt
 
-11. Roadmap:
-   - status-only update if execution-backed
+14. Roadmap:
+   - update status markers only if execution-backed
    - do not rewrite roadmap text
    - do not delete roadmap text
 
-12. Package Codex output ZIP at:
-   tmp/PR_11_110_SCHEMA_ONLY_VALIDATION_SCREEN_ERRORS.zip
+15. Package Codex output ZIP at:
+   tmp/PR_11_111_TEST_SCHEMA_RELOCATION_AND_INFER_PATH_REMOVAL.zip

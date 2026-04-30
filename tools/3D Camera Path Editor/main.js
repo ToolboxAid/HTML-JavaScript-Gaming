@@ -112,39 +112,6 @@ function parseInputPayload() {
   return normalizeCameraPathPayload(parsed);
 }
 
-function extractCameraPathFromPreset(rawPreset) {
-  if (!rawPreset || typeof rawPreset !== "object") {
-    return null;
-  }
-  const payload = rawPreset.payload && typeof rawPreset.payload === "object"
-    ? rawPreset.payload
-    : rawPreset;
-  const config = payload.config && typeof payload.config === "object"
-    ? payload.config
-    : null;
-
-  const candidateKeys = ["3d-camera-path-editor", "cameraPath", "path", "cameraPathPayload"];
-  for (const key of candidateKeys) {
-    const value = payload[key];
-    if (value && typeof value === "object" && Array.isArray(value.waypoints)) {
-      return value;
-    }
-  }
-  for (const key of candidateKeys) {
-    const value = config?.[key];
-    if (value && typeof value === "object" && Array.isArray(value.waypoints)) {
-      return value;
-    }
-  }
-  if (Array.isArray(payload.waypoints)) {
-    return payload;
-  }
-  if (Array.isArray(config?.waypoints)) {
-    return config;
-  }
-  return null;
-}
-
 async function tryLoadPresetFromQuery() {
   const searchParams = new URLSearchParams(window.location.search);
   const samplePresetPath = normalizeSamplePresetPath(searchParams.get("samplePresetPath") || "");

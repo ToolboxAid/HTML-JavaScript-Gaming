@@ -23,8 +23,9 @@ export async function run() {
   });
 
   const toolSchemaFiles = [
-    "tools/vector-map-editor/tool.schema.json",
-    "tools/svg-asset-studio/tool.schema.json"
+    "tests/fixtures/tool-schemas/palette-editor/tool.schema.json",
+    "tests/fixtures/tool-schemas/vector-asset-studio/tool.schema.json",
+    "tests/fixtures/tool-schemas/vector-map-editor/tool.schema.json"
   ];
   toolSchemaFiles.forEach((relativePath) => {
     const document = readJson(relativePath);
@@ -44,7 +45,7 @@ export async function run() {
 
   const paletteBrowserSource = readFileSync(new URL("../../tools/Palette Browser/main.js", import.meta.url), "utf8");
   assert.match(paletteBrowserSource, /function duplicateSelectedPalette\(/);
-  assert.match(paletteBrowserSource, /createCustomPalette\(nextName, palette\.entries\)/);
+  assert.match(paletteBrowserSource, /createCustomPalette\(nextName, palette\.swatches\)/);
   assert.match(paletteBrowserSource, /Duplicate a built-in palette before editing swatches\./);
   assert.match(paletteBrowserSource, /Shared palette is locked to .*Edit swatches instead\./);
   assert.match(paletteBrowserSource, /if \(isReadOnlyPalette\(palette\)\) \{\s*return;\s*\}/s);

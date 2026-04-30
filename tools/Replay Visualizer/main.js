@@ -143,44 +143,6 @@ function applyEvents(events, sourceLabel = "payload") {
   setStatus(`Loaded ${state.events.length} events from ${sourceLabel}.`);
 }
 
-function extractReplayEventsFromSamplePreset(rawPreset) {
-  if (Array.isArray(rawPreset)) {
-    return rawPreset;
-  }
-  if (!rawPreset || typeof rawPreset !== "object") {
-    return null;
-  }
-
-  const payload = rawPreset.payload && typeof rawPreset.payload === "object"
-    ? rawPreset.payload
-    : rawPreset;
-  const config = payload.config && typeof payload.config === "object"
-    ? payload.config
-    : null;
-
-  if (Array.isArray(payload.events)) {
-    return payload.events;
-  }
-  if (Array.isArray(payload.replayEvents)) {
-    return payload.replayEvents;
-  }
-  if (Array.isArray(config?.events)) {
-    return config.events;
-  }
-  if (Array.isArray(config?.replayEvents)) {
-    return config.replayEvents;
-  }
-  if (payload.replay && typeof payload.replay === "object") {
-    if (Array.isArray(payload.replay.events)) {
-      return payload.replay.events;
-    }
-    if (Array.isArray(payload.replay.replayEvents)) {
-      return payload.replay.replayEvents;
-    }
-  }
-  return null;
-}
-
 async function tryLoadPresetFromQuery() {
   const searchParams = new URLSearchParams(window.location.search);
   const samplePresetPath = normalizeSamplePresetPath(searchParams.get("samplePresetPath") || "");

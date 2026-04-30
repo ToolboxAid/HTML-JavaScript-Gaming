@@ -1,0 +1,43 @@
+﻿PR 11.111 - Tool Schema Fixture Relocation
+Date: 2026-04-30
+
+Summary
+- Relocated test-only tool schema fixtures out of runtime tool folders into tests/fixtures.
+- Updated targeted test path references.
+- Removed duplicate runtime copies.
+
+Files moved
+- tools/palette-editor/tool.schema.json -> tests/fixtures/tool-schemas/palette-editor/tool.schema.json
+- tools/vector-asset-studio/tool.schema.json -> tests/fixtures/tool-schemas/vector-asset-studio/tool.schema.json
+- tools/vector-map-editor/tool.schema.json -> tests/fixtures/tool-schemas/vector-map-editor/tool.schema.json
+
+References updated
+- tests/tools/ToolWorkspaceSchemaManifestBoundaries.test.mjs
+  - toolSchemaFiles now points to:
+    - tests/fixtures/tool-schemas/palette-editor/tool.schema.json
+    - tests/fixtures/tool-schemas/vector-asset-studio/tool.schema.json
+    - tests/fixtures/tool-schemas/vector-map-editor/tool.schema.json
+
+Targeted validation
+1) Fixture files exist and parse
+- JSON_OK tests/fixtures/tool-schemas/palette-editor/tool.schema.json
+- JSON_OK tests/fixtures/tool-schemas/vector-asset-studio/tool.schema.json
+- JSON_OK tests/fixtures/tool-schemas/vector-map-editor/tool.schema.json
+
+2) Old runtime copies removed
+- MISSING_OK tools/palette-editor/tool.schema.json
+- MISSING_OK tools/vector-asset-studio/tool.schema.json
+- MISSING_OK tools/vector-map-editor/tool.schema.json
+
+3) Tests/scripts no longer reference old runtime paths
+- Command: rg -n "tools/(palette-editor|vector-asset-studio|vector-map-editor)/tool\.schema\.json" tests scripts
+- Result: no matches
+
+4) Updated targeted boundary test passes
+- Command:
+  node --input-type=module -e "import { run } from './tests/tools/ToolWorkspaceSchemaManifestBoundaries.test.mjs'; await run(); console.log('PASS ToolWorkspaceSchemaManifestBoundaries');"
+- Result: PASS ToolWorkspaceSchemaManifestBoundaries
+
+Notes
+- One stale assertion in the same test was updated from palette.entries to palette.swatches to match current Palette Browser implementation.
+- Full samples smoke test skipped (targeted fixture/path relocation only; no broad loader/framework change).

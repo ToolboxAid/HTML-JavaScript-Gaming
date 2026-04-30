@@ -1,0 +1,70 @@
+﻿PR 11.111 - Inference Path Removal
+Date: 2026-04-30
+
+Summary
+- Removed a focused set of tool-input compatibility/inference helpers.
+- Kept direct input flow: explicit JSON file -> schema validation -> render.
+- Did not add fallback/default/demo data.
+
+Removed inference/compatibility helpers
+- tools/3D Asset Viewer/main.js
+  - removed extractAssetPayloadFromPreset
+- tools/3D Camera Path Editor/main.js
+  - removed extractCameraPathFromPreset
+- tools/3D JSON Payload/main.js
+  - removed extractMapPayloadFromPreset
+- tools/Asset Pipeline/main.js
+  - removed extractPipelinePayloadFromPreset
+- tools/Palette Browser/main.js
+  - removed extractPaletteFromSamplePreset
+- tools/Performance Profiler/main.js
+  - removed extractProfileSettingsFromPreset
+- tools/Physics Sandbox/main.js
+  - removed extractPhysicsBodyFromPreset
+- tools/Replay Visualizer/main.js
+  - removed extractReplayEventsFromSamplePreset
+- tools/State Inspector/main.js
+  - removed extractSnapshotFromSamplePreset
+- tools/Tile Model Converter/main.js
+  - removed extractConverterPayloadFromPreset
+- tools/Vector Map Editor/editor/VectorMapEditorApp.js
+  - removed extractVectorMapDocumentFromSamplePreset
+
+Shared compatibility cleanup
+- tools/shared/platformShell.js
+  - readWorkspaceScopedToolDocument no longer falls back to root tool state for documentKey lookups.
+  - readPaletteFromManifestPayload now accepts only canonical tools["palette-browser"].payload (legacy palette-browser.palette and root source.palette compatibility removed).
+- tools/shared/schemaOnlyToolPresetValidation.js
+  - renamed inferFailedField -> readFailedField (no behavior widening).
+
+Validation
+1) Removed helper names are not referenced
+- Command scanned tools/tests/src/samples/games for:
+  extractAssetPayloadFromPreset
+  extractCameraPathFromPreset
+  extractMapPayloadFromPreset
+  extractPipelinePayloadFromPreset
+  extractPaletteFromSamplePreset
+  extractProfileSettingsFromPreset
+  extractPhysicsBodyFromPreset
+  extractReplayEventsFromSamplePreset
+  extractSnapshotFromSamplePreset
+  extractConverterPayloadFromPreset
+  extractVectorMapDocumentFromSamplePreset
+- Result: all REMOVED_OK (no matches).
+
+2) Syntax checks for changed JS/MJS files
+- Command: node --check on each changed .js/.mjs file
+- Result: PASS for all changed JS/MJS files.
+
+Remaining normalize/infer helpers and why they remain
+- normalize* helpers remain where they are input sanitation/formatting (e.g., text/path cleanup) or tool-internal operations (e.g., map/camera normalization actions initiated by user), not hidden compatibility payload inference.
+- inferAssetDisplayName and related display helpers in platformShell remain for UI labeling/status presentation only; they do not inject runtime payload data.
+- No removed helper references remain.
+
+Canonical naming
+- No reintroduction of non-canonical tool ids for this change set.
+- Canonical ids in scope remain: palette-browser, 3d-json-payload, asset-pipeline.
+
+Full suite note
+- Full samples smoke test skipped (targeted compatibility helper removal; no broad shared loader/framework rewrite).

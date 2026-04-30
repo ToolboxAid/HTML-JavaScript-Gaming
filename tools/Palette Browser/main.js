@@ -537,31 +537,6 @@ function normalizeImportedPalette(rawPayload, options = {}) {
   };
 }
 
-function extractPaletteFromSamplePreset(rawPreset) {
-  if (!rawPreset || typeof rawPreset !== "object") {
-    return null;
-  }
-  const payload = rawPreset.payload && typeof rawPreset.payload === "object"
-    ? rawPreset.payload
-    : rawPreset;
-  const config = payload.config && typeof payload.config === "object"
-    ? payload.config
-    : null;
-  if (payload.palette && typeof payload.palette === "object") {
-    return payload.palette;
-  }
-  if (config?.palette && typeof config.palette === "object") {
-    return config.palette;
-  }
-  if (Array.isArray(payload.swatches)) {
-    return payload;
-  }
-  if (Array.isArray(config?.swatches)) {
-    return config;
-  }
-  return null;
-}
-
 function importPaletteFromPresetPayload(rawPalette) {
   const imported = normalizeImportedPalette(rawPalette, { requireSchema: false });
   let nextName = imported.name;

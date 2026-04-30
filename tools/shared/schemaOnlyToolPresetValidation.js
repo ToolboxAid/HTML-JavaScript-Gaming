@@ -292,7 +292,7 @@ async function readSchemaForTool(toolId) {
   };
 }
 
-function inferFailedField(errors = []) {
+function readFailedField(errors = []) {
   const first = normalizeText(errors[0] || "");
   if (!first) {
     return "";
@@ -338,7 +338,7 @@ export async function enforceToolPresetSchemaOnlyContract(options = {}) {
     };
   }
 
-  const failedField = inferFailedField(errors);
+  const failedField = readFailedField(errors);
   const summary = errors.slice(0, 3).join(" | ");
   throw new Error(buildSchemaValidationScreenErrorMessage({
     toolId,
@@ -349,4 +349,3 @@ export async function enforceToolPresetSchemaOnlyContract(options = {}) {
     summary
   }));
 }
-

@@ -1,0 +1,51 @@
+﻿PR 11.111 - Schema-Only Runtime Check
+Date: 2026-04-30
+
+Scope
+- Verify this PR preserves schema-only tool input validation behavior while removing inference/compatibility paths.
+- Confirm allowed pre-schema checks remain limited to file existence + JSON parse in the current loading flow.
+
+Direct-flow checks
+1) Schema contract enforcement remains centralized
+- tools/shared/toolLoadDiagnostics.js calls enforceToolPresetSchemaOnlyContract at load boundary.
+- tools/shared/schemaOnlyToolPresetValidation.js still emits explicit schema validation errors with:
+  - tool id/name
+  - source path
+  - schema path
+  - failed field/path
+  - summary
+
+Evidence (search)
+- tools/shared/toolLoadDiagnostics.js: import enforceToolPresetSchemaOnlyContract
+- tools/shared/toolLoadDiagnostics.js: logToolLoadLoaded -> await enforceToolPresetSchemaOnlyContract(...)
+- tools/shared/schemaOnlyToolPresetValidation.js: error format string begins with:
+  Input validation failed. tool=...; source=...; schema=...; failed=...; summary=...
+
+2) Compatibility fallback paths reduced
+- tools/shared/platformShell.js
+  - readWorkspaceScopedToolDocument no longer reads root fallback document keys.
+  - readPaletteFromManifestPayload now reads only tools["palette-browser"].payload for palette handoff.
+
+3) Visible error behavior preserved
+- Changed tool loaders still report load failures to visible status text ("Preset load failed: ...") and do not restore default/demo payload injection paths removed in this PR.
+
+Targeted validation performed
+- node --check on changed JS/MJS files: PASS
+- tool schema fixture relocation boundary test:
+  PASS ToolWorkspaceSchemaManifestBoundaries
+- JSON parse check for moved fixture schemas: PASS
+- old runtime tool.schema.json paths removed: PASS
+- removed helper references absent: PASS
+
+Changed test/script references
+- tests/tools/ToolWorkspaceSchemaManifestBoundaries.test.mjs updated to new fixture paths under tests/fixtures/tool-schemas.
+- Stale assertion updated to current Palette Browser implementation detail (palette.swatches).
+
+Full samples smoke
+- Skipped intentionally.
+- Reason: targeted schema/input cleanup only; no broad sample loader/framework rewrite in this PR.
+
+Conclusion
+- PR 11.111 maintains direct JSON -> schema validation -> render behavior.
+- Removed compatibility/inference helpers are no longer referenced.
+- Targeted runtime/schema checks pass.

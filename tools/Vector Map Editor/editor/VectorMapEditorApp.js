@@ -84,35 +84,6 @@ function buildPresetLoadedStatus(sampleId, samplePresetPath) {
   return normalizedPath ? `Loaded preset from ${normalizedPath}.` : "Loaded preset.";
 }
 
-function extractVectorMapDocumentFromSamplePreset(rawPreset) {
-  if (!rawPreset || typeof rawPreset !== "object") {
-    return null;
-  }
-  const containers = [
-    rawPreset.payload,
-    rawPreset.config,
-    rawPreset
-  ];
-  for (const container of containers) {
-    if (!container || typeof container !== "object") {
-      continue;
-    }
-    if (container.vectorMapDocument && typeof container.vectorMapDocument === "object") {
-      return container.vectorMapDocument;
-    }
-    if (container.vectorMap && typeof container.vectorMap === "object") {
-      return container.vectorMap;
-    }
-    if (container.document && typeof container.document === "object") {
-      return container.document;
-    }
-    if (Array.isArray(container.objects)) {
-      return container;
-    }
-  }
-  return null;
-}
-
 export class VectorMapEditorApp {
   constructor(rootDocument) {
     this.rootDocument = rootDocument;

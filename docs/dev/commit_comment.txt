@@ -1,1 +1,1 @@
-Enforce schema-only validation and visible tool input errors - PR 11.110
+Move test tool schemas to fixtures and remove inference input paths - PR 11.111

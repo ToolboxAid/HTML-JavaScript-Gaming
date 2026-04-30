@@ -91,41 +91,6 @@ function runConversion() {
   setStatus(`Conversion ${result.applied ? "applied" : "not-applied"} (${result.converterId || "no-converter"}).`);
 }
 
-function extractConverterPayloadFromPreset(rawPreset) {
-  if (!rawPreset || typeof rawPreset !== "object") {
-    return null;
-  }
-
-  const payload = rawPreset.payload && typeof rawPreset.payload === "object"
-    ? rawPreset.payload
-    : rawPreset;
-  const config = payload.config && typeof payload.config === "object"
-    ? payload.config
-    : null;
-
-  const candidate = payload.candidate && typeof payload.candidate === "object"
-    ? payload.candidate
-    : null;
-  const conversion = payload.conversion && typeof payload.conversion === "object"
-    ? payload.conversion
-    : null;
-  const configCandidate = config?.candidate && typeof config.candidate === "object"
-    ? config.candidate
-    : null;
-  const configConversion = config?.conversion && typeof config.conversion === "object"
-    ? config.conversion
-    : null;
-
-  if (!candidate && !conversion && !configCandidate && !configConversion) {
-    return null;
-  }
-
-  return {
-    candidate: candidate || configCandidate || {},
-    conversion: conversion || configConversion || {}
-  };
-}
-
 async function tryLoadPresetFromQuery() {
   const searchParams = new URLSearchParams(window.location.search);
   const samplePresetPath = normalizeSamplePresetPath(searchParams.get("samplePresetPath") || "");

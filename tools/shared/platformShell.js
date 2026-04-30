@@ -542,16 +542,9 @@ function readWorkspaceScopedToolDocument(payload = {}, documentKey = "", rootToo
   const sourcePayload = payload && typeof payload === "object" && !Array.isArray(payload)
     ? payload
     : {};
-  const sourceRoot = rootToolState && typeof rootToolState === "object" && !Array.isArray(rootToolState)
-    ? rootToolState
-    : {};
   const payloadValue = sourcePayload[documentKey];
   if (payloadValue && typeof payloadValue === "object" && !Array.isArray(payloadValue)) {
     return payloadValue;
-  }
-  const rootValue = sourceRoot[documentKey];
-  if (rootValue && typeof rootValue === "object" && !Array.isArray(rootValue)) {
-    return rootValue;
   }
   return null;
 }
@@ -1246,14 +1239,7 @@ function readPaletteFromManifestPayload(manifestPayload, launchContext = null) {
   const paletteBrowserPayload = paletteBrowserSection?.payload && typeof paletteBrowserSection.payload === "object" && !Array.isArray(paletteBrowserSection.payload)
     ? paletteBrowserSection.payload
     : null;
-  const paletteBrowserLegacyPalette = paletteBrowserSection?.palette && typeof paletteBrowserSection.palette === "object" && !Array.isArray(paletteBrowserSection.palette)
-    ? paletteBrowserSection.palette
-    : null;
-  const compatibilityRootPalette = source.palette && typeof source.palette === "object" && !Array.isArray(source.palette)
-    ? source.palette
-    : null;
-  const selectedPalette = paletteBrowserPayload || paletteBrowserLegacyPalette || compatibilityRootPalette;
-  if (!selectedPalette) {
+  if (!paletteBrowserPayload) {
     return null;
   }
 
@@ -1261,22 +1247,16 @@ function readPaletteFromManifestPayload(manifestPayload, launchContext = null) {
     ? `palette.${normalizeTextValue(launchContext.gameId).toLowerCase()}`
     : "palette.game";
   const fallbackDisplayName = normalizeTextValue(paletteBrowserSection?.name) || "Game Palette";
-  const normalized = buildPaletteHandoffShape(selectedPalette, {
+  const normalized = buildPaletteHandoffShape(paletteBrowserPayload, {
     fallbackPaletteId,
     fallbackDisplayName
   });
   if (!normalized) {
     return null;
   }
-  let sourceKey = "workspace-game-manifest.root-palette-compat";
-  if (paletteBrowserPayload) {
-    sourceKey = "workspace-game-manifest.palette-browser.payload";
-  } else if (paletteBrowserLegacyPalette) {
-    sourceKey = "workspace-game-manifest.palette-browser";
-  }
   return {
     ...normalized,
-    source: sourceKey
+    source: "workspace-game-manifest.palette-browser.payload"
   };
 }
 

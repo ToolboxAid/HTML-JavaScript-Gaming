@@ -107,39 +107,6 @@ function setStatus(message) {
   }
 }
 
-function extractMapPayloadFromPreset(rawPreset) {
-  if (!rawPreset || typeof rawPreset !== "object") {
-    return null;
-  }
-  const payload = rawPreset.payload && typeof rawPreset.payload === "object"
-    ? rawPreset.payload
-    : rawPreset;
-  const config = payload.config && typeof payload.config === "object"
-    ? payload.config
-    : null;
-
-  const candidateKeys = ["3d-json-payload", "mapPayload", "mapDocument", "normalizerPayload", "document"];
-  for (const key of candidateKeys) {
-    const value = payload[key];
-    if (value && typeof value === "object" && Array.isArray(value.points)) {
-      return value;
-    }
-  }
-  for (const key of candidateKeys) {
-    const value = config?.[key];
-    if (value && typeof value === "object" && Array.isArray(value.points)) {
-      return value;
-    }
-  }
-  if (Array.isArray(payload.points)) {
-    return payload;
-  }
-  if (Array.isArray(config?.points)) {
-    return config;
-  }
-  return null;
-}
-
 async function tryLoadPresetFromQuery() {
   const searchParams = new URLSearchParams(window.location.search);
   const samplePresetPath = normalizeSamplePresetPath(searchParams.get("samplePresetPath") || "");
