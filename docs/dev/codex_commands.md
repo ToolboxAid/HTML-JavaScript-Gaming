@@ -1,25 +1,21 @@
-# Codex Commands — PR 11.88
+# Codex command
 
-Model: GPT-5.4
-Reasoning: high
+Run from repo root:
 
 ```powershell
-codex --model gpt-5.4 --reasoning high "Apply PR 11.88 from docs/pr/PR_11_88_ENGINE_OWNED_GAME_CHROME_AND_LAYERING.md. Fix all listed engine-owned chrome/layering issues in one pass. Keep scope targeted. Do not add wrappers, aliases, fallback assets, or guessed chrome paths. Update Asteroids manifest assets, enforce manifest-only bezel/background loading, ensure manifest backgrounds draw in all states, remove opaque game-level fills that hide engine backgrounds, preserve gameplay rendering, and write validation notes to docs/dev/reports/pr_11_88_validation.md."
+codex exec --model gpt-5.4-codex --reasoning high --sandbox workspace-write --ask-for-approval never @docs/pr/BUILD_PR_LEVEL_11_89_ASTEROIDS_ENGINE_RENDER_OWNERSHIP_STABILIZATION.md
 ```
 
-## Required report
-Codex must create:
+## Required output from Codex
+Codex must create a ZIP artifact at:
 
 ```text
-docs/dev/reports/pr_11_88_validation.md
+C:\Users\davidq\Documents\GitHub\HTML-JavaScript-Gaming\tmp\PR_11_89_ASTEROIDS_ENGINE_RENDER_OWNERSHIP_STABILIZATION.zip
 ```
 
-Report must include:
-
-- files changed
-- manifest chrome asset declarations verified
-- guessed chrome path search results
-- background visible states checked
-- console 404 check result
-- `src/engine/utils/` search result
-- whether full sample suite was skipped and why
+The ZIP must include changed repo files and:
+- docs/pr/PLAN_PR_LEVEL_11_89_ASTEROIDS_ENGINE_RENDER_OWNERSHIP_STABILIZATION.md
+- docs/pr/BUILD_PR_LEVEL_11_89_ASTEROIDS_ENGINE_RENDER_OWNERSHIP_STABILIZATION.md
+- docs/dev/reports/pr_11_89_asteroids_engine_render_ownership_report.md
+- docs/dev/codex_commands.md
+- docs/dev/commit_comment.txt
