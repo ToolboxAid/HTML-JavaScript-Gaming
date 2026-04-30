@@ -46,21 +46,7 @@ export default class FullscreenBezelOverlay {
   }
 
   ensureImageLoaded() {
-    if (!this.enabled || this.image || this.imageLoadStarted || typeof Image !== "function") {
-      return;
-    }
-
-    this.imageLoadStarted = true;
-    const image = new Image();
-    image.onload = () => {
-      this.image = image;
-      this.imageStatus = "loaded";
-    };
-    image.onerror = () => {
-      this.imageStatus = "error";
-    };
-    image.src = this.assetPath;
-    this.imageStatus = "loading";
+    this.imageStatus = "deprecated-engine-owned";
   }
 
   evaluateRenderGate(options = {}) {
@@ -86,49 +72,11 @@ export default class FullscreenBezelOverlay {
   }
 
   render(renderer, options = {}) {
-    const gate = this.evaluateRenderGate(options);
-    if (!gate.allowed) {
-      return {
-        drawn: false,
-        ...gate,
-        assetPath: this.assetPath
-      };
-    }
-
-    this.ensureImageLoaded();
-    const image = options.image || this.image;
-    if (!image || typeof renderer?.drawImageFrame !== "function") {
-      return {
-        drawn: false,
-        reason: "image-unavailable",
-        drawMode: this.drawMode,
-        assetPath: this.assetPath
-      };
-    }
-
-    const canvasSize = renderer?.getCanvasSize?.() || options.canvasSize || { width: 0, height: 0 };
-    const width = Number(canvasSize.width) > 0 ? Number(canvasSize.width) : 0;
-    const height = Number(canvasSize.height) > 0 ? Number(canvasSize.height) : 0;
-    if (width <= 0 || height <= 0) {
-      return {
-        drawn: false,
-        reason: "invalid-canvas-size",
-        drawMode: this.drawMode,
-        assetPath: this.assetPath
-      };
-    }
-
-    const sourceWidth = Number(image.width) > 0 ? Number(image.width) : width;
-    const sourceHeight = Number(image.height) > 0 ? Number(image.height) : height;
-    renderer.drawImageFrame(image, 0, 0, sourceWidth, sourceHeight, 0, 0, width, height);
     return {
-      drawn: true,
-      drawMode: this.drawMode,
-      fullscreenOnly: true,
-      coordinateSpace: "screen-space",
+      drawn: false,
+      reason: "deprecated-engine-owned",
       assetPath: this.assetPath,
-      width,
-      height
+      drawMode: this.drawMode
     };
   }
 }

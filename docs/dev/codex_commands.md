@@ -1,21 +1,14 @@
-# Codex command
+# Codex Commands — PR 11.90
 
-Run from repo root:
+Model: GPT-5.4
+Reasoning: high
 
-```powershell
-codex exec --model gpt-5.4-codex --reasoning high --sandbox workspace-write --ask-for-approval never @docs/pr/BUILD_PR_LEVEL_11_89_ASTEROIDS_ENGINE_RENDER_OWNERSHIP_STABILIZATION.md
-```
-
-## Required output from Codex
-Codex must create a ZIP artifact at:
+Run Codex with this task:
 
 ```text
-C:\Users\davidq\Documents\GitHub\HTML-JavaScript-Gaming\tmp\PR_11_89_ASTEROIDS_ENGINE_RENDER_OWNERSHIP_STABILIZATION.zip
-```
+Apply PR 11.90 from docs/pr/PR_11_90_ASTEROIDS_ENGINE_OWNERSHIP_AND_FONT_MANIFEST.md.
 
-The ZIP must include changed repo files and:
-- docs/pr/PLAN_PR_LEVEL_11_89_ASTEROIDS_ENGINE_RENDER_OWNERSHIP_STABILIZATION.md
-- docs/pr/BUILD_PR_LEVEL_11_89_ASTEROIDS_ENGINE_RENDER_OWNERSHIP_STABILIZATION.md
-- docs/dev/reports/pr_11_89_asteroids_engine_render_ownership_report.md
-- docs/dev/codex_commands.md
-- docs/dev/commit_comment.txt
+Use the uploaded Asteroids.zip inspection findings as evidence. Finish Asteroids engine ownership correctness: remove remaining game-level background/clear/bezel ownership, keep gameplay-only rendering in Asteroids, make game.manifest.json the only source for bezel/background/font assets, add font.asteroids.vector-battle under asset-browser.assets, set image.asteroids.bezel to bezel1.png with stretchOverride.uniformEdgeStretchPx=10, set image.asteroids.background to deluxe.png, and verify no guessed chrome asset paths remain.
+
+Return a repo-structured ZIP at <project folder>/tmp/PR_11_90_ASTEROIDS_ENGINE_OWNERSHIP_AND_FONT_MANIFEST.zip with changed files and a short validation report.
+```

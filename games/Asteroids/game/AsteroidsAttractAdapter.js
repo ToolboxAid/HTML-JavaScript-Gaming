@@ -238,20 +238,12 @@ export default class AsteroidsAttractAdapter {
     });
   }
 
-  render(renderer, options = {}) {
+  render(renderer) {
     if (!this.active) {
       return;
     }
 
     const alpha = this.getPhaseAlpha();
-    const manifestBackgroundPresent = options?.manifestBackgroundPresent === true;
-    renderer.drawRect(
-      0,
-      0,
-      960,
-      720,
-      manifestBackgroundPresent ? 'rgba(2, 6, 23, 0.36)' : 'rgba(2, 6, 23, 0.86)'
-    );
 
     if (this.phase === 'title') {
       this.renderTitle(renderer, alpha);

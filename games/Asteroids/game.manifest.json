@@ -181,8 +181,13 @@
             "kind": "audio",
             "source": "workspace-manager"
           },
+          "font.asteroids.vector-battle": {
+            "path": "/games/Asteroids/assets/fonts/vector_battle.ttf",
+            "kind": "font",
+            "source": "workspace-manager"
+          },
           "image.asteroids.bezel": {
-            "path": "/games/Asteroids/assets/images/bezel.png",
+            "path": "/games/Asteroids/assets/images/bezel1.png",
             "kind": "image",
             "source": "workspace-manager",
             "stretchOverride": {

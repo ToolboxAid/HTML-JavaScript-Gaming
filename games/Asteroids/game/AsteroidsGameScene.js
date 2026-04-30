@@ -95,17 +95,6 @@ function drawLives(renderer, centerX, y, lives) {
   });
 }
 
-function hasManifestBackgroundLayer(engine) {
-  const state = engine?.backgroundImageLayer?.getState?.();
-  if (!state || typeof state !== 'object') {
-    return false;
-  }
-  return typeof state.path === 'string'
-    && state.path.trim().length > 0
-    && state.status !== 'missing'
-    && state.status !== 'unavailable';
-}
-
 export default class AsteroidsGameScene extends Scene {
   constructor(options = {}) {
     super();
@@ -702,14 +691,6 @@ export default class AsteroidsGameScene extends Scene {
   render(renderer, engine) {
     const leaderboardTopScore = this.highScoreService.getTopScore(this.highScoreRows);
     const liveHudHighScore = Math.max(this.session.highScore, leaderboardTopScore);
-    const manifestBackgroundPresent = hasManifestBackgroundLayer(engine);
-    renderer.drawRect(
-      0,
-      0,
-      this.world.bounds.width,
-      this.world.bounds.height,
-      manifestBackgroundPresent ? 'rgba(2, 6, 23, 0.22)' : '#020617'
-    );
     this.world.starfield.forEach((star) => {
       renderer.drawRect(star.x, star.y, star.size, star.size, '#94a3b8');
     });
@@ -780,9 +761,7 @@ export default class AsteroidsGameScene extends Scene {
 
     if (this.session.mode === 'menu') {
       if (this.attractController.active) {
-        this.attractAdapter.render(renderer, {
-          manifestBackgroundPresent
-        });
+        this.attractAdapter.render(renderer);
       } else {
         renderer.drawText('ASTEROIDS', 480, 220, {
           color: '#ffffff',
