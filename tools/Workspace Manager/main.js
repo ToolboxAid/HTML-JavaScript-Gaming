@@ -250,7 +250,14 @@ function summarizeDirectToolPayloadLabel(toolId = "", payload = null) {
 
   const vectorAssetDocument = readDirectPayloadDocument(payload, "vectorAssetDocument");
   if (vectorAssetDocument) {
-    return normalizeTextParam(vectorAssetDocument.sourceName || vectorAssetDocument.name || "vector asset");
+    const sourceName = normalizeTextParam(vectorAssetDocument.sourceName);
+    if (sourceName) {
+      return sourceName;
+    }
+    if (typeof vectorAssetDocument.svgText === "string" && vectorAssetDocument.svgText.trim()) {
+      return "Inline SVG";
+    }
+    return "";
   }
 
   const tileMapDocument = readDirectPayloadDocument(payload, "tileMapDocument");

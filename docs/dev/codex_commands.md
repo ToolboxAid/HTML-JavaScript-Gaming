@@ -7,63 +7,58 @@ STRICT SCOPE MODE
 
 ALLOWED FILES:
 - tools/workspace-manager/main.js
-- docs/dev/reports/svg_card_render_source_11_156.txt
+- docs/dev/reports/workspace_tile_summary_display_model_11_157.txt
+
+ALLOWED CHANGES:
+- fix Workspace Manager tile/card summary display model for svg-asset-studio only
+- create/update report only
 
 TASK:
 
 1. Open:
    tools/workspace-manager/main.js
 
-2. Find the final DOM/render path that creates visible card text:
-   Vector Assets
-   SVG Asset Studio
+2. Find the final tile/card display model that renders the visible line:
    Asset: none
 
-3. Add a temporary console diagnostic for ONLY:
+3. Do NOT change loading. The data is already loaded.
+
+4. Patch the display model for:
    toolId === "svg-asset-studio"
 
-   Log:
-   - tool id
-   - active tool data object
-   - workspaceManifest.tools["svg-asset-studio"]
-   - workspaceManifest.tools["svg-asset-studio"].vectorAssetDocument
-   - computed/rendered asset label
+   It must use:
+   workspaceManifest.tools["svg-asset-studio"].vectorAssetDocument.sourceName
 
-4. Use the diagnostic/static trace to patch the exact active render branch so:
-   if directEntry.vectorAssetDocument.sourceName exists:
-      Asset: <sourceName>
-   else if directEntry.vectorAssetDocument.svgText exists:
-      Asset: Inline SVG
+   If sourceName is missing but svgText exists:
+   Inline SVG
 
-5. Remove diagnostic before final output ONLY if the fix is statically confirmed.
+5. Ensure visible expected output:
+   Asset: sample-0901-ship.svg
 
-6. If the active render branch cannot be proven:
-   - keep diagnostic in place for one run
-   - report exactly what console output the user must send back
-
-7. Do NOT:
+6. Do NOT:
    - modify schemas
-   - modify samples
+   - modify Sample 1902 JSON
    - modify SVG Asset Studio
-   - modify runtime
+   - modify tool host runtime
+   - modify launch/routing behavior
    - add fallback/default/demo data
    - transform/wrap/normalize payload
-   - change unrelated tools
 
-8. Validate:
+7. Validate:
    - node --check tools/workspace-manager/main.js
+   - static trace shows display model maps vectorAssetDocument.sourceName to Asset line
    - git diff --name-only contains only ALLOWED FILES
-   - report is populated
 
-9. Write:
-   docs/dev/reports/svg_card_render_source_11_156.txt
+8. Write:
+   docs/dev/reports/workspace_tile_summary_display_model_11_157.txt
 
 Report must include:
 - exact function/branch changed
-- diagnostic removed or intentionally left
+- old source for Asset: none
+- new source for SVG label
 - expected rendered text
 - validation result
 - strict scope confirmation
 
-10. Package Codex output ZIP at:
-   tmp/PR_11_156_INSTRUMENT_SVG_CARD_RENDER_SOURCE.zip
+9. Package Codex output ZIP at:
+   tmp/PR_11_157_FIX_WORKSPACE_TILE_SUMMARY_DISPLAY_MODEL.zip
