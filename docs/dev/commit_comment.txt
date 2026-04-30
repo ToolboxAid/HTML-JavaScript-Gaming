@@ -1,1 +1,1 @@
-Close current direct JSON runtime route without repo-wide fallback cleanup - PR 11.141
+Prepare for schema lock phase - PR 11.142
