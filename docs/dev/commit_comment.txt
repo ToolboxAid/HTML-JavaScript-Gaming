@@ -1,1 +1,1 @@
-Flatten asset manifest schema and align sample 1902 workspace loaders - PR 11.96
+Fix Asset Browser schema for flat manifest assets and sample 1902 preview id - PR 11.97

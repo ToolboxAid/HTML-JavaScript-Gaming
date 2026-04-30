@@ -381,7 +381,7 @@
             "status": "registered"
           },
           {
-            "id": "sample-1902-preview",
+            "id": "image.sample1902.preview",
             "label": "1902 Preview Art",
             "type": "image",
             "category": "Preview Art",
@@ -533,18 +533,18 @@
       "payload": {
         "assetBrowserPreset": {
           "selectedCategory": "All",
-          "selectedAssetId": "sample-1902-workspace-preset",
+          "selectedAssetId": "other.sample1902.workspace-preset",
           "search": "",
           "importCategory": "Workflow JSON"
         }
       },
       "assets": {
-        "sample-1902-workspace-preset": {
+        "other.sample1902.workspace-preset": {
           "path": "/samples/phase-19/1902/sample.1902.workspace-all-tools.json",
           "kind": "other",
           "source": "workspace-manager"
         },
-        "sample-1902-preview": {
+        "image.sample1902.preview": {
           "path": "/samples/phase-19/1902/assets/images/preview.svg",
           "kind": "image",
           "source": "workspace-manager"

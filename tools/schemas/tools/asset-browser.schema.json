@@ -30,13 +30,33 @@
       "type": "object",
       "additionalProperties": false,
       "patternProperties": {
-        "^.+$": {
+        "^image\\.[a-z0-9][a-z0-9-]*\\.bezel$": {
           "$ref": "#/$defs/assetEntry"
+        },
+        "^(?!image\\.[a-z0-9][a-z0-9-]*\\.bezel$)[a-z][a-z0-9-]*\\.[a-z0-9][a-z0-9-]*\\.[a-z0-9][a-z0-9-]*$": {
+          "allOf": [
+            {
+              "$ref": "#/$defs/assetEntry"
+            },
+            {
+              "not": {
+                "required": [
+                  "stretchOverride"
+                ]
+              }
+            }
+          ]
         }
       },
       "propertyNames": {
-        "type": "string",
-        "minLength": 1
+        "anyOf": [
+          {
+            "pattern": "^image\\.[a-z0-9][a-z0-9-]*\\.bezel$"
+          },
+          {
+            "pattern": "^(?!image\\.[a-z0-9][a-z0-9-]*\\.bezel$)[a-z][a-z0-9-]*\\.[a-z0-9][a-z0-9-]*\\.[a-z0-9][a-z0-9-]*$"
+          }
+        ]
       }
     },
     "payload": {
@@ -61,7 +81,8 @@
       "type": "object",
       "required": [
         "path",
-        "kind"
+        "kind",
+        "source"
       ],
       "additionalProperties": false,
       "properties": {
