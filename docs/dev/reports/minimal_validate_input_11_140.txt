@@ -1,0 +1,36 @@
+Minimal ValidateInput Report: 11_140
+Date: 2026-04-30
+Repo: C:/Users/davidq/Documents/GitHub/HTML-JavaScript-Gaming
+Mode: STRICT SCOPE
+
+Scope
+- toolHostRuntime.js
+
+File Updated
+- tools/shared/toolHostRuntime.js
+
+Changes Applied
+1) Located `validateInput` and reduced it to minimal checks only:
+- `if (!isPlainObject(payloadJson)) throw`
+- `if (paletteJson && !isPlainObject(paletteJson)) throw`
+
+2) Removed all other validation logic from `toolHostRuntime.js`:
+- removed helper detection functions:
+  - `isParentJsonLike`
+  - `hasImplicitGlobalKey`
+  - `isWrapperJsonLike`
+  - `hasFallbackAttempt`
+  - `computeInputFingerprint`
+- removed wrapper/parent/global/fallback/mutation checks from `validateInput`
+
+Verification
+- No helper detection functions remain: PASS
+  - search for removed helper function declarations returned no matches.
+- `validateInput` is minimal: PASS
+  - only the two required object checks remain.
+- Syntax check: PASS
+  - `node --check tools/shared/toolHostRuntime.js`
+
+Result
+- PASS
+- No extra validation logic remains in `validateInput`.

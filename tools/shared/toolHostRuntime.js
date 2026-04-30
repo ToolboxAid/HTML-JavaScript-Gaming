@@ -8,118 +8,12 @@ function isPlainObject(value) {
   return !!value && typeof value === "object" && !Array.isArray(value);
 }
 
-function isParentJsonLike(value) {
-  if (!isPlainObject(value)) {
-    return false;
-  }
-  const documentKind = typeof value.documentKind === "string" ? value.documentKind.trim().toLowerCase() : "";
-  const schema = typeof value.schema === "string" ? value.schema.trim().toLowerCase() : "";
-  if (documentKind === "workspace-manifest" || schema === "html-js-gaming.project" || schema === "html-js-gaming.workspace") {
-    return true;
-  }
-  return isPlainObject(value.tools);
-}
-
-function hasImplicitGlobalKey(value) {
-  if (!isPlainObject(value)) {
-    return false;
-  }
-  const blockedKeys = new Set([
-    "launchparams",
-    "sharedcontext",
-    "hostcontextid",
-    "hosttoolid",
-    "hosted",
-    "sampleid",
-    "sampletitle",
-    "samplepresetpath",
-    "gameid",
-    "gametitle",
-    "gamehref",
-    "workspacehref",
-    "returnto",
-    "state"
-  ]);
-  return Object.keys(value).some((key) => blockedKeys.has(String(key).trim().toLowerCase()));
-}
-
-function isWrapperJsonLike(value) {
-  if (!isPlainObject(value)) {
-    return false;
-  }
-  const keys = Object.keys(value).map((key) => String(key).trim().toLowerCase());
-  if (keys.includes("payloadjson") || keys.includes("palettejson")) {
-    return true;
-  }
-  if (keys.includes("wrapper") || keys.includes("wrapped")) {
-    return true;
-  }
-  if (keys.includes("payload") && isPlainObject(value.payload)) {
-    return true;
-  }
-  if (keys.includes("palette") && isPlainObject(value.palette)) {
-    return true;
-  }
-  return false;
-}
-
-function hasFallbackAttempt(value) {
-  const blockedPrefixes = ["default", "fallback", "tryloadpreset", "buildpreset"];
-  const stack = [value];
-  while (stack.length > 0) {
-    const node = stack.pop();
-    if (!isPlainObject(node) && !Array.isArray(node)) {
-      continue;
-    }
-    if (Array.isArray(node)) {
-      node.forEach((entry) => stack.push(entry));
-      continue;
-    }
-    Object.entries(node).forEach(([key, nestedValue]) => {
-      const normalized = String(key).trim().toLowerCase();
-      if (blockedPrefixes.some((prefix) => normalized.startsWith(prefix))) {
-        throw new Error("launch contract violation: fallback attempt detected in input JSON.");
-      }
-      stack.push(nestedValue);
-    });
-  }
-  return false;
-}
-
-function computeInputFingerprint(value, label) {
-  try {
-    return JSON.stringify(value);
-  } catch {
-    throw new Error(`launch contract violation: ${label} must be JSON-serializable.`);
-  }
-}
-
 export function validateInput(payloadJson, paletteJson = null) {
-  const payloadBefore = computeInputFingerprint(payloadJson, "payloadJson");
-  const paletteBefore = paletteJson === null ? null : computeInputFingerprint(paletteJson, "paletteJson");
   if (!isPlainObject(payloadJson)) {
     throw new Error("launch contract violation: missing payloadJson object.");
   }
-  if (paletteJson !== null && !isPlainObject(paletteJson)) {
-    throw new Error("launch contract violation: paletteJson must be an object or null.");
-  }
-  if (isWrapperJsonLike(payloadJson) || (paletteJson !== null && isWrapperJsonLike(paletteJson))) {
-    throw new Error("launch contract violation: wrapper JSON detected.");
-  }
-  if (isParentJsonLike(payloadJson) || (paletteJson !== null && isParentJsonLike(paletteJson))) {
-    throw new Error("launch contract violation: parent JSON detected.");
-  }
-  if (hasImplicitGlobalKey(payloadJson) || (paletteJson !== null && hasImplicitGlobalKey(paletteJson))) {
-    throw new Error("launch contract violation: implicit/global input keys detected.");
-  }
-  hasFallbackAttempt(payloadJson);
-  if (paletteJson !== null) {
-    hasFallbackAttempt(paletteJson);
-  }
-  const payloadAfter = computeInputFingerprint(payloadJson, "payloadJson");
-  const paletteAfter = paletteJson === null ? null : computeInputFingerprint(paletteJson, "paletteJson");
-  if (payloadBefore !== payloadAfter || paletteBefore !== paletteAfter) {
-    throw new Error("launch contract violation: mutation detected during input validation.");
+  if (paletteJson && !isPlainObject(paletteJson)) {
+    throw new Error("launch contract violation: paletteJson must be an object when provided.");
   }
 }
 

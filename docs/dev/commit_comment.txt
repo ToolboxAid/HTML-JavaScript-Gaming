@@ -1,1 +1,1 @@
-Lock runtime contract with hard fail guards - PR 11.137
+Finalize runtime simplification: minimal validateInput, schema-only validation - PR 11.140

@@ -6,26 +6,25 @@ Reasoning: high
 STRICT SCOPE MODE
 
 ALLOWED FILES:
-- routing files only
+- toolHostRuntime.js
 
 TASK:
 
-1. Add validateInput(payloadJson, paletteJson)
+1. Locate validateInput
+2. Reduce to:
 
-2. Add checks:
-   - missing payload → error
-   - wrapper detected → error
-   - parent JSON detected → error
-   - mutation detected → error
-   - fallback attempt → error
+   if (!isPlainObject(payloadJson)) throw
+   if (paletteJson && !isPlainObject(paletteJson)) throw
 
-3. Inject before tool launch
+3. Remove ALL other validation logic
 
-4. TEST:
-   invalid inputs → must fail
-   valid input → pass
+4. Save file
+
+5. VERIFY:
+   - no helper detection functions remain
+   - validateInput is minimal
 
 REPORT:
-docs/dev/reports/runtime_contract_lock_11_137.txt
+docs/dev/reports/minimal_validate_input_11_140.txt
 
-FAIL if invalid inputs succeed
+FAIL if extra logic exists
