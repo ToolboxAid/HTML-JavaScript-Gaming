@@ -2267,11 +2267,14 @@ async function tryLoadPresetFromQuery(state) {
     }
     rawPreset = await response.json();
     receivedTopLevelKeys = deriveSpritePresetDiagnosticTopLevelKeys(rawPreset);
-    logToolLoadLoaded({
+    await logToolLoadLoaded({
       toolId: "sprite-editor",
+      toolName: "Sprite Editor",
       sampleId,
       samplePresetPath,
+      requestedPath: samplePresetPath,
       fetchUrl: presetHref,
+      loadedDocument: rawPreset,
       receivedTopLevelKeys,
       loaded: summarizeToolLoadData(rawPreset)
     });

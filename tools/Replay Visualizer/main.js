@@ -225,17 +225,17 @@ async function tryLoadPresetFromQuery() {
       throw new Error(`Preset request failed (${response.status}).`);
     }
     const rawPreset = await response.json();
-    logToolLoadLoaded({
+    await logToolLoadLoaded({
       toolId: "replay-visualizer",
+      toolName: "Replay Visualizer",
       sampleId,
       samplePresetPath,
+      requestedPath: samplePresetPath,
       fetchUrl: presetHref,
+      loadedDocument: rawPreset,
       loaded: summarizeToolLoadData(rawPreset)
     });
-    const events = extractReplayEventsFromSamplePreset(rawPreset);
-    if (!Array.isArray(events)) {
-      throw new Error("Preset payload did not include replay events.");
-    }
+    const events = rawPreset?.payload?.events;
     stopPlayback();
     applyEvents(events, "sample preset");
     if (refs.input instanceof HTMLTextAreaElement) {

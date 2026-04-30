@@ -1,0 +1,85 @@
+PR 11.110 - Schema-only validation boundary enforcement
+
+Purpose implemented:
+- Tool sample preset JSON is validated against the tool schema at load-time.
+- Schema failures now surface as visible on-screen load errors through existing status-text paths.
+
+Validation path changes:
+1) Added shared schema-only validator
+- tools/shared/schemaOnlyToolPresetValidation.js
+  - Loads canonical schema by tool id: /tools/schemas/tools/<toolId>.schema.json
+  - Validates loaded JSON value against schema (strict object/array/type/required/additionalProperties checks)
+  - Throws a formatted contract error with:
+    - tool id/name
+    - JSON source path
+    - schema path
+    - failed field/path
+    - validation summary
+
+2) Wired schema gate into shared loaded boundary
+- tools/shared/toolLoadDiagnostics.js
+  - logToolLoadLoaded is now async.
+  - When loadedDocument is provided, schema validation runs before boundary emission.
+  - Invalid schema now throws before tool-specific extraction/normalization path continues.
+
+3) Updated active sample-preset load callers to await loaded-boundary schema validation and pass loadedDocument
+- tools/3D Asset Viewer/main.js
+- tools/3D Camera Path Editor/main.js
+- tools/3D JSON Payload/main.js
+- tools/Asset Browser/main.js
+- tools/Asset Pipeline/main.js
+- tools/Palette Browser/main.js
+- tools/Parallax Scene Studio/main.js
+- tools/Performance Profiler/main.js
+- tools/Physics Sandbox/main.js
+- tools/Replay Visualizer/main.js
+- tools/SVG Asset Studio/main.js
+- tools/Sprite Editor/modules/spriteEditorApp.js
+- tools/State Inspector/main.js
+- tools/Tile Model Converter/main.js
+- tools/Tilemap Studio/main.js
+- tools/Vector Map Editor/editor/VectorMapEditorApp.js
+
+Schema-only load-path simplifications applied in this PR:
+- Removed several post-load custom required-field throws and switched to canonical payload access in:
+  - 3D Asset Viewer
+  - 3D Camera Path Editor
+  - 3D JSON Payload
+  - Asset Browser
+  - Asset Pipeline
+  - Palette Browser
+  - Performance Profiler
+  - Physics Sandbox
+  - Replay Visualizer
+  - State Inspector
+  - Tile Model Converter
+  - Vector Map Editor
+
+Targeted validation executed:
+1) Syntax checks
+- node --check on changed JS files
+- Result: PASS for all changed JS files, including tools/shared/schemaOnlyToolPresetValidation.js
+
+2) Schema gate behavior sanity (targeted runtime helper check)
+- Ran a targeted Node ESM script invoking enforceToolPresetSchemaOnlyContract with mocked fetch.
+- Evidence:
+  - PASS valid payload accepted
+  - PASS invalid payload rejected with contract details
+  - PASS cached schema path remains operational for repeated validation
+
+3) Screen-error path wiring checks
+- Verified changed load paths contain:
+  - awaited schema gate at loaded boundary
+  - visible load-failed status text path
+- Result: PASS for updated loader files.
+
+4) Launch smoke regression check
+- npm run test:launch-smoke -- --tools
+- Result: PASS=287 FAIL=0 TOTAL=287
+- Report regenerated at docs/dev/reports/launch_smoke_report.md
+
+Acceptance summary:
+- Schema validation is now a first-class load boundary for updated tool preset loaders.
+- Invalid schema data is rejected before downstream tool loading logic.
+- Rejections surface as visible on-screen load errors through existing tool status text outputs.
+- Missing file and malformed JSON still surface as visible load failures via existing catch/status paths.

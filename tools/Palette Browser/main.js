@@ -623,17 +623,17 @@ async function tryLoadPresetFromQuery() {
       throw new Error(`Preset request failed (${response.status}).`);
     }
     const rawPreset = await response.json();
-    logToolLoadLoaded({
+    await logToolLoadLoaded({
       toolId: "palette-browser",
+      toolName: "Palette Browser / Manager",
       sampleId,
       samplePresetPath,
+      requestedPath: samplePresetPath,
       fetchUrl: presetHref,
+      loadedDocument: rawPreset,
       loaded: summarizeToolLoadData(rawPreset)
     });
-    const palettePayload = extractPaletteFromSamplePreset(rawPreset);
-    if (!palettePayload) {
-      throw new Error("Preset payload did not include a palette.");
-    }
+    const palettePayload = rawPreset?.payload;
     importPaletteFromPresetPayload(palettePayload);
     setSelectionText(buildPresetLoadedStatus(sampleId, samplePresetPath));
   } catch (error) {

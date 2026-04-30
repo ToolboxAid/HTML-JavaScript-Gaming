@@ -1,1 +1,1 @@
-Enforce runtime input contracts so all remaining tools are real and working - PR 11.108
+Enforce schema-only validation and visible tool input errors - PR 11.110

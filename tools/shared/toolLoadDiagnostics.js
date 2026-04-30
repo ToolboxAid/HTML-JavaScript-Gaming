@@ -1,3 +1,5 @@
+import { enforceToolPresetSchemaOnlyContract } from "./schemaOnlyToolPresetValidation.js";
+
 const TOOL_LOAD_PREFIXES = Object.freeze({
   request: "[tool-load:request]",
   fetch: "[tool-load:fetch]",
@@ -905,7 +907,16 @@ export function logToolLoadFetch(details = {}) {
   emitBoundaryAndClassification("fetch", TOOL_LOAD_PREFIXES.fetch, details);
 }
 
-export function logToolLoadLoaded(details = {}) {
+export async function logToolLoadLoaded(details = {}) {
+  const safeDetails = sanitizePayload(details);
+  if (safeDetails.loadedDocument && typeof safeDetails.loadedDocument === "object") {
+    await enforceToolPresetSchemaOnlyContract({
+      toolId: normalizeText(safeDetails.toolId),
+      toolName: normalizeText(safeDetails.toolName),
+      sourcePath: normalizeText(safeDetails.requestedPath) || normalizeText(safeDetails.samplePresetPath),
+      value: safeDetails.loadedDocument
+    });
+  }
   emitBoundaryAndClassification("loaded", TOOL_LOAD_PREFIXES.loaded, details);
 }
 

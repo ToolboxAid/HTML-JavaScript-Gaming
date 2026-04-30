@@ -138,17 +138,17 @@ async function tryLoadPresetFromQuery() {
       throw new Error(`Preset request failed (${response.status}).`);
     }
     const rawPreset = await response.json();
-    logToolLoadLoaded({
+    await logToolLoadLoaded({
       toolId: "physics-sandbox",
+      toolName: "Physics Sandbox",
       sampleId,
       samplePresetPath,
+      requestedPath: samplePresetPath,
       fetchUrl: presetHref,
+      loadedDocument: rawPreset,
       loaded: summarizeToolLoadData(rawPreset)
     });
-    const body = extractPhysicsBodyFromPreset(rawPreset);
-    if (!body) {
-      throw new Error("Preset payload did not include physicsBody.");
-    }
+    const body = rawPreset?.payload?.physicsBody;
     if (!(refs.input instanceof HTMLTextAreaElement)) {
       throw new Error("Physics body input is unavailable.");
     }

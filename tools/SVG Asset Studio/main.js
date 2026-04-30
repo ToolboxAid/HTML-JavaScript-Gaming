@@ -3034,11 +3034,14 @@ async function tryLoadPresetFromQuery() {
     }
 
     const rawPreset = await presetResponse.json();
-    logToolLoadLoaded({
+    await logToolLoadLoaded({
       toolId: "svg-asset-studio",
+      toolName: "SVG Asset Studio",
       sampleId,
       samplePresetPath,
+      requestedPath: samplePresetPath,
       fetchUrl: presetHref,
+      loadedDocument: rawPreset,
       loaded: summarizeToolLoadData(rawPreset)
     });
     const extractedPreset = extractVectorAssetPresetFromSamplePreset(rawPreset);

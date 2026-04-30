@@ -200,24 +200,21 @@ async function tryLoadPresetFromQuery() {
       throw new Error(`Preset request failed (${response.status}).`);
     }
     const rawPreset = await response.json();
-    logToolLoadLoaded({
+    await logToolLoadLoaded({
       toolId: "3d-asset-viewer",
+      toolName: "3D Asset Viewer",
       sampleId,
       samplePresetPath,
+      requestedPath: samplePresetPath,
       fetchUrl: presetHref,
+      loadedDocument: rawPreset,
       loaded: summarizeToolLoadData(rawPreset)
     });
-    const extractedPayload = extractAssetPayloadFromPreset(rawPreset);
-    if (!extractedPayload) {
-      throw new Error("Preset payload did not include a 3D asset payload.");
-    }
-    if (!Array.isArray(extractedPayload.vertices) || extractedPayload.vertices.length === 0) {
-      throw new Error("Preset payload must include at least one vertex.");
-    }
+    const extractedPayload = rawPreset?.payload?.asset3d;
     if (!(refs.input instanceof HTMLTextAreaElement)) {
       throw new Error("Asset input is unavailable.");
     }
-    refs.input.value = toPrettyJson(normalizeAssetPayload(extractedPayload));
+    refs.input.value = toPrettyJson(extractedPayload);
     setStatus(buildPresetLoadedStatus(sampleId, samplePresetPath));
   } catch (error) {
     logToolLoadWarning({

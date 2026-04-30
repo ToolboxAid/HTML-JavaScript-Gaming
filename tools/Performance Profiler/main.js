@@ -287,17 +287,17 @@ async function tryLoadPresetFromQuery() {
       throw new Error(`Preset request failed (${response.status}).`);
     }
     const rawPreset = await response.json();
-    logToolLoadLoaded({
+    await logToolLoadLoaded({
       toolId: "performance-profiler",
+      toolName: "Performance Profiler",
       sampleId,
       samplePresetPath,
+      requestedPath: samplePresetPath,
       fetchUrl: presetHref,
+      loadedDocument: rawPreset,
       loaded: summarizeToolLoadData(rawPreset)
     });
-    const presetSettings = extractProfileSettingsFromPreset(rawPreset);
-    if (!presetSettings) {
-      throw new Error("Preset payload did not include profileSettings.");
-    }
+    const presetSettings = rawPreset?.payload?.profileSettings;
     performanceProfilerApi.applyProjectState(presetSettings);
     setStatus(buildPresetLoadedStatus(sampleId, samplePresetPath));
   } catch (error) {

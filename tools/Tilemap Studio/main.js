@@ -2245,11 +2245,14 @@ class TileMapEditorApp {
       }
 
       const rawPreset = await presetResponse.json();
-      logToolLoadLoaded({
+      await logToolLoadLoaded({
         toolId: "tile-map-editor",
+        toolName: "Tilemap Studio",
         sampleId,
         samplePresetPath,
+        requestedPath: samplePresetPath,
         fetchUrl: presetHref,
+        loadedDocument: rawPreset,
         loaded: summarizeToolLoadData(rawPreset)
       });
       const extracted = extractTileMapDocumentFromSamplePreset(rawPreset);

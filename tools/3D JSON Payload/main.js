@@ -185,24 +185,21 @@ async function tryLoadPresetFromQuery() {
       throw new Error(`Preset request failed (${response.status}).`);
     }
     const rawPreset = await response.json();
-    logToolLoadLoaded({
+    await logToolLoadLoaded({
       toolId: "3d-json-payload",
+      toolName: "3D JSON Payload",
       sampleId,
       samplePresetPath,
+      requestedPath: samplePresetPath,
       fetchUrl: presetHref,
+      loadedDocument: rawPreset,
       loaded: summarizeToolLoadData(rawPreset)
     });
-    const extractedPayload = extractMapPayloadFromPreset(rawPreset);
-    if (!extractedPayload) {
-      throw new Error("Preset payload did not include a map payload.");
-    }
-    if (!Array.isArray(extractedPayload.points) || extractedPayload.points.length === 0) {
-      throw new Error("Preset map payload must include at least one point.");
-    }
+    const extractedPayload = rawPreset?.payload?.mapPayload;
     if (!(refs.input instanceof HTMLTextAreaElement)) {
       throw new Error("Map payload input is unavailable.");
     }
-    refs.input.value = toPrettyJson(normalizeMapPayload(extractedPayload));
+    refs.input.value = toPrettyJson(extractedPayload);
     setStatus(buildPresetLoadedStatus(sampleId, samplePresetPath));
   } catch (error) {
     logToolLoadWarning({

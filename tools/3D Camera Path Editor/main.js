@@ -190,24 +190,21 @@ async function tryLoadPresetFromQuery() {
       throw new Error(`Preset request failed (${response.status}).`);
     }
     const rawPreset = await response.json();
-    logToolLoadLoaded({
+    await logToolLoadLoaded({
       toolId: "3d-camera-path-editor",
+      toolName: "3D Camera Path Editor",
       sampleId,
       samplePresetPath,
+      requestedPath: samplePresetPath,
       fetchUrl: presetHref,
+      loadedDocument: rawPreset,
       loaded: summarizeToolLoadData(rawPreset)
     });
-    const extractedCameraPath = extractCameraPathFromPreset(rawPreset);
-    if (!extractedCameraPath) {
-      throw new Error("Preset payload did not include a camera path.");
-    }
-    if (!Array.isArray(extractedCameraPath.waypoints) || extractedCameraPath.waypoints.length === 0) {
-      throw new Error("Preset camera path must include at least one waypoint.");
-    }
+    const extractedCameraPath = rawPreset?.payload?.cameraPath;
     if (!(refs.input instanceof HTMLTextAreaElement)) {
       throw new Error("Camera path input is unavailable.");
     }
-    refs.input.value = toPrettyJson(normalizeCameraPathPayload(extractedCameraPath));
+    refs.input.value = toPrettyJson(extractedCameraPath);
     setStatus(buildPresetLoadedStatus(sampleId, samplePresetPath));
   } catch (error) {
     logToolLoadWarning({

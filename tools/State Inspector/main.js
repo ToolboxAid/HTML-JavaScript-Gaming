@@ -280,17 +280,17 @@ async function tryLoadPresetFromQuery() {
       throw new Error(`Preset request failed (${response.status}).`);
     }
     const rawPreset = await response.json();
-    logToolLoadLoaded({
+    await logToolLoadLoaded({
       toolId: "state-inspector",
+      toolName: "State Inspector",
       sampleId,
       samplePresetPath,
+      requestedPath: samplePresetPath,
       fetchUrl: presetHref,
+      loadedDocument: rawPreset,
       loaded: summarizeToolLoadData(rawPreset)
     });
-    const snapshot = extractSnapshotFromSamplePreset(rawPreset);
-    if (!snapshot) {
-      throw new Error("Preset payload did not include an inspector snapshot payload.");
-    }
+    const snapshot = rawPreset?.payload?.snapshot;
     if (refs.input instanceof HTMLTextAreaElement) {
       refs.input.value = toPrettyJson(snapshot);
     }

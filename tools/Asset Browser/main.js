@@ -1214,17 +1214,18 @@ async function tryLoadPresetFromQuery() {
       throw new Error(`Preset request failed (${response.status}).`);
     }
     const rawPreset = await response.json();
-    logToolLoadLoaded({
+    await logToolLoadLoaded({
       toolId: "asset-browser",
+      toolName: "Asset Browser / Import Hub",
       sampleId,
       samplePresetPath,
+      requestedPath: samplePresetPath,
       fetchUrl: presetHref,
+      loadedDocument: rawPreset,
       loaded: summarizeToolLoadData(rawPreset)
     });
-    const preset = extractAssetBrowserPreset(rawPreset);
-    if (!preset || !applyAssetBrowserPreset(preset)) {
-      throw new Error("Preset payload did not include Asset Browser preset fields.");
-    }
+    const preset = rawPreset;
+    applyAssetBrowserPreset(preset);
     refs.importStatusText.textContent = buildPresetLoadedStatus(sampleId, samplePresetPath);
   } catch (error) {
     logToolLoadWarning({

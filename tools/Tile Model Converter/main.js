@@ -171,17 +171,17 @@ async function tryLoadPresetFromQuery() {
       throw new Error(`Preset request failed (${response.status}).`);
     }
     const rawPreset = await response.json();
-    logToolLoadLoaded({
+    await logToolLoadLoaded({
       toolId: "tile-model-converter",
+      toolName: "Tile Model Converter",
       sampleId,
       samplePresetPath,
+      requestedPath: samplePresetPath,
       fetchUrl: presetHref,
+      loadedDocument: rawPreset,
       loaded: summarizeToolLoadData(rawPreset)
     });
-    const payload = extractConverterPayloadFromPreset(rawPreset);
-    if (!payload) {
-      throw new Error("Preset payload did not include candidate/conversion data.");
-    }
+    const payload = rawPreset?.payload;
     if (!(refs.input instanceof HTMLTextAreaElement)) {
       throw new Error("Converter input is unavailable.");
     }

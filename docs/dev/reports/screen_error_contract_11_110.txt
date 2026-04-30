@@ -1,0 +1,39 @@
+PR 11.110 - Screen error contract
+
+Error contract implemented for schema validation failures:
+- Source formatter: tools/shared/schemaOnlyToolPresetValidation.js
+- Message format (single visible status line):
+  Input validation failed. tool=<toolId> (<toolName>); source=<jsonPath>; schema=<schemaPath>; failed=<failedField>; summary=<validationSummary>
+
+Contract fields included when available:
+- tool id/name: always provided from loader call context
+- JSON source path: requestedPath/samplePresetPath from loader context
+- schema path/name: /tools/schemas/tools/<toolId>.schema.json
+- failed field/path: derived from first validator error pointer
+- validation summary: first validation errors joined in message
+
+Visible UI error locations (status elements updated by existing tool setStatus paths):
+- 3D Asset Viewer: #asset3dStatus
+- 3D Camera Path Editor: #cameraPathStatus
+- 3D JSON Payload: #jsonPayloadStatus
+- Asset Browser: #importStatusText
+- Asset Pipeline: #assetPipelineStatus
+- Palette Browser: #paletteSelectionText
+- Parallax Scene Studio: #statusText
+- Performance Profiler: #performanceStatusText
+- Physics Sandbox: #physicsSandboxStatus
+- Replay Visualizer: #replayStatusText
+- SVG Asset Studio: #statusText
+- Sprite Editor: sprite editor status line via setStatus(state, ...)
+- State Inspector: #stateStatusText
+- Tile Model Converter: #tileModelStatus
+- Tilemap Studio: tilemap status line via updateStatus(...)
+- Vector Map Editor: vector map status line via setStatus(...)
+
+Missing file / malformed JSON visibility:
+- Missing file path (HTTP !ok) remains surfaced as Preset load failed: Preset request failed (<status>).
+- Malformed JSON parse failures remain surfaced through catch blocks as Preset load failed: <parse error>.
+- These are preserved as allowed pre-schema failures (file exists + JSON parse boundary).
+
+No fallback/default behavior introduced for invalid schema payloads in updated load boundaries:
+- Schema failure throws before downstream payload extraction path in updated loaders.

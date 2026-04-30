@@ -3,25 +3,62 @@
 Model: GPT-5.3-codex
 Reasoning: medium
 
-1. Scan all tool references after PR 11.105 cleanup
+## PR
+BUILD_PR_LEVEL_11_110_SCHEMA_ONLY_VALIDATION_SCREEN_ERRORS
 
-2. For each tool:
-   - verify input JSON exists
-   - verify schema matches
-   - verify tool loads actual data (not defaults)
+## Execute
 
-3. Remove tool reference if:
-   - input missing
-   - loads defaults
-   - invalid structure
-   - no visible usable output
+1. Extend the PR 11.109 direct JSON contract:
+   - JSON is loaded directly.
+   - The only validation is schema validation.
+   - Invalid data must show a visible screen error.
 
-4. Do NOT:
-   - create placeholder data
-   - use fallback/default values
-   - loosen schema
+2. Inspect tool input/loading paths only.
 
-5. Validate updated manifests
+3. Remove or bypass custom validation outside schema validation, except:
+   - file exists
+   - JSON parse
 
-6. Output:
-docs/dev/reports/runtime_contract_enforcement_11_108.txt
+4. Ensure every schema validation failure renders a clear UI error.
+
+5. Error must include when available:
+   - tool id/name
+   - JSON source path
+   - schema path/name
+   - failed field/path
+   - validation summary
+
+6. Do not:
+   - normalize
+   - transform
+   - convert
+   - repair
+   - infer
+   - inject defaults
+   - fallback to sample/demo data
+   - accept aliases
+   - add custom validation rules outside schema
+
+7. If a validation rule is needed, put it in schema, not runtime code.
+
+8. Preserve compact primitive-array formatting.
+
+9. Validate targeted cases:
+   - valid JSON input renders
+   - invalid schema JSON shows screen error
+   - missing file shows screen error
+   - malformed JSON shows screen error
+   - invalid JSON does not fallback to defaults
+
+10. Write reports:
+   - docs/dev/reports/schema_only_validation_11_110.txt
+   - docs/dev/reports/screen_error_contract_11_110.txt
+   - docs/dev/reports/non_schema_validation_paths_11_110.txt
+
+11. Roadmap:
+   - status-only update if execution-backed
+   - do not rewrite roadmap text
+   - do not delete roadmap text
+
+12. Package Codex output ZIP at:
+   tmp/PR_11_110_SCHEMA_ONLY_VALIDATION_SCREEN_ERRORS.zip

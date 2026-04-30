@@ -1,0 +1,50 @@
+PR 11.110 - Non-schema validation paths review
+
+Scope reviewed:
+- Tool JSON input/loading boundaries in updated sample-preset loaders.
+- Shared loaded-boundary diagnostics gate.
+
+Allowed non-schema checks retained:
+1) Input path presence check
+- samplePresetPath missing -> visible status warning/error.
+- Rationale: allowed pre-schema boundary (input exists check).
+
+2) File fetch availability check
+- HTTP response.ok required before JSON parse.
+- Rationale: allowed pre-schema boundary (file exists / fetch success check).
+
+3) JSON parse check
+- response.json() parse failures surface as visible load failure text.
+- Rationale: allowed pre-schema boundary (JSON parse check).
+
+Remaining post-schema custom checks still present in changed loader paths:
+- tools/Sprite Editor/modules/spriteEditorApp.js
+  - throw new Error("Preset payload did not include a sprite project.")
+- tools/SVG Asset Studio/main.js
+  - throw new Error("Preset did not include a vector SVG payload.")
+- tools/Tilemap Studio/main.js
+  - throw new Error("Preset payload did not include a tilemap document or tilemap document path.")
+  - throw new Error("Preset payload did not include a tilemap document.")
+
+Why these remain in this PR:
+- These three tools currently have multi-step payload/document resolution paths and runtime dependencies not fully represented by current schema required fields.
+- Removing those checks without simultaneous schema hardening for those tool-specific runtime document contracts would risk loading undefined documents into editor state flows.
+
+What was removed/bypassed in this PR (post-schema custom load throws removed):
+- 3D Asset Viewer (payload presence/vertex-count throw removed from preset-load path)
+- 3D Camera Path Editor (payload presence/waypoint-count throw removed from preset-load path)
+- 3D JSON Payload (payload presence/point-count throw removed from preset-load path)
+- Asset Browser (preset field throw removed from preset-load path)
+- Asset Pipeline (pipeline-options presence throw removed from preset-load path)
+- Palette Browser (palette presence throw removed from preset-load path)
+- Performance Profiler (profileSettings presence throw removed from preset-load path)
+- Physics Sandbox (physicsBody presence throw removed from preset-load path)
+- Replay Visualizer (replay events presence throw removed from preset-load path)
+- State Inspector (snapshot presence throw removed from preset-load path)
+- Tile Model Converter (candidate/conversion presence throw removed from preset-load path)
+- Vector Map Editor (vector map document presence throw removed from preset-load path)
+
+Conclusion:
+- Schema-only validation is now enforced at the shared loaded boundary for updated loaders.
+- Allowed non-schema checks are restricted to file-exists and JSON-parse boundaries.
+- Three complex editor loaders retain targeted post-schema checks and are explicitly documented above.

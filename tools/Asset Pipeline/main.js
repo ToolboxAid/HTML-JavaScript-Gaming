@@ -685,17 +685,17 @@ async function tryLoadPresetFromQuery(options = {}) {
       throw new Error(`Preset request failed (${response.status}).`);
     }
     const rawPreset = await response.json();
-    logToolLoadLoaded({
+    await logToolLoadLoaded({
       toolId: "asset-pipeline",
+      toolName: "Asset Pipeline",
       sampleId,
       samplePresetPath,
+      requestedPath: samplePresetPath,
       fetchUrl: presetHref,
+      loadedDocument: rawPreset,
       loaded: summarizeToolLoadData(rawPreset)
     });
-    const pipelinePayload = extractPipelinePayloadFromPreset(rawPreset);
-    if (!pipelinePayload) {
-      throw new Error("Preset payload did not include pipeline options.");
-    }
+    const pipelinePayload = rawPreset?.payload?.pipelinePayload;
     const adapted = applyLaunchContextToPayload(pipelinePayload, launchContext);
     if (!setInputValue(adapted.payload)) {
       throw new Error("Pipeline input is unavailable.");

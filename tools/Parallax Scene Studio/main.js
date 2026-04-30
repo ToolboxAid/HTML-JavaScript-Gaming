@@ -1044,11 +1044,14 @@ class ParallaxEditorApp {
         throw new Error(`Preset request failed (${response.status}).`);
       }
       const rawPreset = await response.json();
-    logToolLoadLoaded({
+    await logToolLoadLoaded({
       toolId: "parallax-editor",
+      toolName: "Parallax Scene Studio",
       sampleId,
       samplePresetPath,
+      requestedPath: samplePresetPath,
       fetchUrl: presetHref,
+      loadedDocument: rawPreset,
       loaded: summarizeToolLoadData(rawPreset)
     });
       const toolDocument = extractParallaxDocumentFromSamplePreset(rawPreset);

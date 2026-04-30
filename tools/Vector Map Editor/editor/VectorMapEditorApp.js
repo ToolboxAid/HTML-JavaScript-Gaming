@@ -416,18 +416,17 @@ export class VectorMapEditorApp {
         throw new Error(`preset request failed: ${response.status}`);
       }
       const rawPreset = await response.json();
-      logToolLoadLoaded({
+      await logToolLoadLoaded({
         toolId: "vector-map-editor",
+        toolName: "Vector Map Editor",
         sampleId,
         samplePresetPath,
+        requestedPath: samplePresetPath,
         fetchUrl: presetHref,
+        loadedDocument: rawPreset,
         loaded: summarizeToolLoadData(rawPreset)
       });
-      const toolDocument = extractVectorMapDocumentFromSamplePreset(rawPreset);
-      if (!toolDocument || typeof toolDocument !== "object") {
-        loadClassification = "wrong-shape";
-        throw new Error("Preset payload did not include a vector map document.");
-      }
+      const toolDocument = rawPreset?.payload?.vectorMapDocument;
       this.cancelSpinAnimation();
       this.documentModel.setData(toolDocument);
       this.selectionModel.clear();
