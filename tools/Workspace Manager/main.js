@@ -335,11 +335,7 @@ function primeSvgAssetStatusLabelFromWorkspaceDiagnostics(diagnostics = null) {
   if (!explicitToolPayloadById) {
     return false;
   }
-  const tools = {};
-  explicitToolPayloadById.forEach((payload, toolId) => {
-    tools[toolId] = payload;
-  });
-  const directEntry = tools["svg-asset-studio"];
+  const directEntry = explicitToolPayloadById.get("svg-asset-studio");
   const vectorAssetDocument = directEntry?.vectorAssetDocument;
   if (!vectorAssetDocument?.svgText) {
     return false;
