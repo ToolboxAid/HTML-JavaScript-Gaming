@@ -1,1 +1,1 @@
-Require repair-or-report execution for direct JSON cleanup lane - PR 11.113
+Enforce auto-fix of deterministic JSON/schema issues - PR 11.114
