@@ -1,0 +1,26 @@
+﻿BUILD_PR_LEVEL_11_104_SCHEMA_FILENAME_CANONICALIZATION_AND_ARRAY_RULE_RESTORE
+Date: 2026-04-30
+
+Schema filename canonicalization
+- Renamed:
+  - tools/schemas/tools/3d-json-payload-normalizer.schema.json -> tools/schemas/tools/3d-json-payload.schema.json
+  - tools/schemas/tools/asset-pipeline-tool.schema.json -> tools/schemas/tools/asset-pipeline.schema.json
+
+Reference rewiring
+- Updated workspace schema refs:
+  - tools/schemas/workspace.manifest.schema.json
+- Updated schema $id values:
+  - tools/schemas/tools/3d-json-payload.schema.json
+  - tools/schemas/tools/asset-pipeline.schema.json
+- Updated repo references in docs/validation artifacts/scripts where old filenames appeared.
+
+Verification
+- Search: old schema filenames
+  - command: rg -n "3d-json-payload-normalizer\.schema\.json|asset-pipeline-tool\.schema\.json" src tools samples tests scripts docs
+  - result: no matches
+- Search: new canonical filenames
+  - command: rg -n "3d-json-payload\.schema\.json|asset-pipeline\.schema\.json" src tools samples tests scripts docs
+  - result: canonical refs present in schema + docs
+
+Notes
+- Historical docs were also normalized so canonical filenames are consistent everywhere in-repo.

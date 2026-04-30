@@ -26,7 +26,7 @@ Likely cause:
 ## Acceptance
 - Workspace Manager marks a tool present when `manifest.tools[toolId]` exists and validates.
 - Workspace Manager handles the singular palette mapping correctly:
-  - `manifest.tools.palette` maps to Palette Browser UI/presence if that is the schema contract.
+  - `manifest.tools.palette-browser` maps to Palette Browser UI/presence if that is the schema contract.
 - Sample 1902 shows all present valid tools, not only Palette.
 - Tool absence is reported only when the tool key is missing or invalid.
 - Report lists loaded keys, present keys, missing keys, and invalid keys.

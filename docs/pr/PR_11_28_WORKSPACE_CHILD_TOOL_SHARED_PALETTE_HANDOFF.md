@@ -27,7 +27,7 @@ Make Workspace Manager child tool launches carry or resolve the shared palette p
 A workspace tool launch must receive the payload it depends on from the explicit sample-owned workspace JSON.
 
 For palette-dependent tools:
-- shared palette data may come from `manifest.tools.palette`
+- shared palette data may come from `manifest.tools.palette-browser`
 - tool-specific payload may come from `manifest.tools[toolId]`
 - launch should provide both when the tool requires palette context
 

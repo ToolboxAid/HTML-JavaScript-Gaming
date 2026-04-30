@@ -23,7 +23,7 @@ Sample 1902 now contains a schema-shaped `tools` object with many tool payloads,
   - top-level workspace metadata
   - `tools` object
   - one entry per supported tool id
-  - `tools.palette` / `tools.palette-browser` handled correctly per schema decision
+  - `tools.palette-browser` / `tools.palette-browser` handled correctly per schema decision
 - Workspace tool list is built from `Object.keys(manifest.tools)` filtered through registry-supported ids.
 - Workspace no longer shows only Palette when valid tool payloads exist.
 - Unknown tool ids fail or are reported clearly.

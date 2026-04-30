@@ -9,7 +9,7 @@ User supplied `schemas.zip` as the candidate complete schema set.
 ## Problem
 The current schema set has drift:
 - `workspace.manifest.schema.json` still requires top-level `palettes`
-- palette should be singular and tool-owned at `tools.palette`
+- palette should be singular and tool-owned at `tools.palette-browser`
 - Workspace manifest does not `$ref` tool schemas
 - `tools.additionalProperties` is too loose
 - Workspace accepts invalid/unknown tool payloads
@@ -26,7 +26,7 @@ The current schema set has drift:
 ## Acceptance
 - Full schema set is syntactically valid JSON Schema draft 2020-12
 - Workspace manifest uses `tools` as the only top-level data bucket
-- `tools.palette` is required, singular, and schema-valid
+- `tools.palette-browser` is required, singular, and schema-valid
 - Every supported tool key is explicitly listed under `tools.properties`
 - Every supported tool payload uses `$ref` to its tool schema where available
 - `tools.additionalProperties` is false

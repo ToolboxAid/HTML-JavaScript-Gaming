@@ -73,13 +73,13 @@
           "$ref": "./tools/physics-sandbox.schema.json"
         },
         "asset-pipeline-tool": {
-          "$ref": "./tools/asset-pipeline-tool.schema.json"
+          "$ref": "./tools/asset-pipeline.schema.json"
         },
         "tile-model-converter": {
           "$ref": "./tools/tile-model-converter.schema.json"
         },
         "3d-json-payload-normalizer": {
-          "$ref": "./tools/3d-json-payload-normalizer.schema.json"
+          "$ref": "./tools/3d-json-payload.schema.json"
         },
         "3d-asset-viewer": {
           "$ref": "./tools/3d-asset-viewer.schema.json"

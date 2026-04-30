@@ -25,7 +25,7 @@ Normalize palette tool naming to canonical `palette-browser` across schema and w
 
 ### 3. Disallowed
 - `palette`
-- `palette-editor`
+- `palette-browser`
 - duplicate palette tool definitions
 
 ## Validation
@@ -33,7 +33,7 @@ Normalize palette tool naming to canonical `palette-browser` across schema and w
   - tools.palette-browser
 
 - no schema validation allowed for:
-  - tools.palette
+  - tools.palette-browser
 
 ## Notes
 - This is a breaking contract correction

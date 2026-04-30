@@ -2,9 +2,9 @@
 Date: 2026-04-30
 
 Scope
-- Workspace manifest schema key migration from tools.palette -> tools.palette-browser
+- Workspace manifest schema key migration from tools.palette-browser -> tools.palette-browser
 - Runtime/tooling key usage normalization to palette-browser
-- Removal of invalid runtime/test reference to palette-editor
+- Removal of invalid runtime/test reference to palette-browser
 - Targeted validation only
 
 Files Changed
@@ -26,8 +26,8 @@ Schema Contract Changes
 - Workspace manifest tool key normalization now uses canonical key names directly.
 
 3) Invalid references removed
-- Removed stale test schema entry referencing tools/palette-editor/tool.schema.json
-- Runtime/source search now shows palette-editor only in docs/history text (no active runtime/test dependency)
+- Removed stale test schema entry referencing tools/palette-browser/tool.schema.json
+- Runtime/source search now shows palette-browser only in docs/history text (no active runtime/test dependency)
 
 Validation Evidence
 Command: powershell -ExecutionPolicy Bypass -File .\scripts\PS\validate-tool-schemas.ps1
@@ -53,7 +53,7 @@ Result:
 Workspace Manifest Key Validation
 Scanned workspace-manifest documents:
 - samples/phase-19/1902/sample.1902.workspace-all-tools.json
-  - tools.palette present: NO
+  - tools.palette-browser present: NO
   - tools.palette-browser present: YES
 - workspace.manifest.json
   - documentKind workspace-manifest, legacy palette-links shape; no tools object
@@ -62,10 +62,10 @@ Scanned workspace-manifest documents:
 Repo Key/Reference Checks
 Command: rg -n 'tools\["palette"\]|tools\.palette\b|toolId\s*===\s*"palette"|id\s*===\s*"palette"' src tools samples tests scripts --glob '*.js' --glob '*.mjs' --glob '*.json'
 Result:
-- No active tools.palette key usage remains.
+- No active tools.palette-browser key usage remains.
 - Remaining hits are expected message/path text containing tools.palette-browser.
 
-Command: rg -n 'palette-editor' .
+Command: rg -n 'palette-browser' .
 Result:
 - Hits only in docs/report history files.
 - No active runtime/test/schema dependency remains.
@@ -73,5 +73,5 @@ Result:
 Outcome
 - Workspace tools contract is normalized to tools.palette-browser.
 - Active runtime/test/schema usage aligns with palette-browser.
-- Invalid palette-editor runtime/test reference removed.
+- Invalid palette-browser runtime/test reference removed.
 - Targeted validation checks passed.

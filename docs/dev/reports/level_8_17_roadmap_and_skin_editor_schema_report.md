@@ -26,9 +26,9 @@
 - replay-visualizer: schema_count=1 (tools/schemas/tools/replay-visualizer.schema.json)
 - performance-profiler: schema_count=1 (tools/schemas/tools/performance-profiler.schema.json)
 - physics-sandbox: schema_count=1 (tools/schemas/tools/physics-sandbox.schema.json)
-- asset-pipeline-tool: schema_count=1 (tools/schemas/tools/asset-pipeline-tool.schema.json)
+- asset-pipeline-tool: schema_count=1 (tools/schemas/tools/asset-pipeline.schema.json)
 - tile-model-converter: schema_count=1 (tools/schemas/tools/tile-model-converter.schema.json)
-- 3d-json-payload-normalizer: schema_count=1 (tools/schemas/tools/3d-json-payload-normalizer.schema.json)
+- 3d-json-payload-normalizer: schema_count=1 (tools/schemas/tools/3d-json-payload.schema.json)
 - 3d-asset-viewer: schema_count=1 (tools/schemas/tools/3d-asset-viewer.schema.json)
 - 3d-camera-path-editor: schema_count=1 (tools/schemas/tools/3d-camera-path-editor.schema.json)
 

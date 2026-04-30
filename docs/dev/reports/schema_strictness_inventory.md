@@ -24,20 +24,20 @@ Total findings: 79
 | tools/schemas/tools/3d-camera-path-editor.schema.json | #/$defs/jsonObject/patternProperties/^.*$ | pattern:^.*$ | open-ended dictionary with jsonValue | narrow key pattern and value schema |
 | tools/schemas/tools/3d-camera-path-editor.schema.json | #/$defs/jsonObject/patternProperties/^.*$ | n/a | broad jsonValue escape hatch | replace with typed payload schema where repo-owned |
 | tools/schemas/tools/3d-camera-path-editor.schema.json | #/properties/payload/properties/cameraPath | n/a | broad jsonValue escape hatch | replace with typed payload schema where repo-owned |
-| tools/schemas/tools/3d-json-payload-normalizer.schema.json | #/$defs/jsonArray/items | n/a | broad jsonValue escape hatch | replace with typed payload schema where repo-owned |
-| tools/schemas/tools/3d-json-payload-normalizer.schema.json | #/$defs/jsonObject/patternProperties/^.*$ | pattern:^.*$ | open-ended dictionary with jsonValue | narrow key pattern and value schema |
-| tools/schemas/tools/3d-json-payload-normalizer.schema.json | #/$defs/jsonObject/patternProperties/^.*$ | n/a | broad jsonValue escape hatch | replace with typed payload schema where repo-owned |
-| tools/schemas/tools/3d-json-payload-normalizer.schema.json | #/properties/payload/properties/mapPayload | n/a | broad jsonValue escape hatch | replace with typed payload schema where repo-owned |
+| tools/schemas/tools/3d-json-payload.schema.json | #/$defs/jsonArray/items | n/a | broad jsonValue escape hatch | replace with typed payload schema where repo-owned |
+| tools/schemas/tools/3d-json-payload.schema.json | #/$defs/jsonObject/patternProperties/^.*$ | pattern:^.*$ | open-ended dictionary with jsonValue | narrow key pattern and value schema |
+| tools/schemas/tools/3d-json-payload.schema.json | #/$defs/jsonObject/patternProperties/^.*$ | n/a | broad jsonValue escape hatch | replace with typed payload schema where repo-owned |
+| tools/schemas/tools/3d-json-payload.schema.json | #/properties/payload/properties/mapPayload | n/a | broad jsonValue escape hatch | replace with typed payload schema where repo-owned |
 | tools/schemas/tools/asset-browser.schema.json | #/$defs/jsonArray/items | n/a | broad jsonValue escape hatch | replace with typed payload schema where repo-owned |
 | tools/schemas/tools/asset-browser.schema.json | #/$defs/jsonObject/patternProperties/^.*$ | pattern:^.*$ | open-ended dictionary with jsonValue | narrow key pattern and value schema |
 | tools/schemas/tools/asset-browser.schema.json | #/$defs/jsonObject/patternProperties/^.*$ | n/a | broad jsonValue escape hatch | replace with typed payload schema where repo-owned |
 | tools/schemas/tools/asset-browser.schema.json | #/properties/payload/properties/approvedAssets | n/a | broad jsonValue escape hatch | replace with typed payload schema where repo-owned |
 | tools/schemas/tools/asset-browser.schema.json | #/properties/payload/properties/assetBrowserPreset | n/a | broad jsonValue escape hatch | replace with typed payload schema where repo-owned |
 | tools/schemas/tools/asset-browser.schema.json | #/properties/payload/properties/importHubPreset | n/a | broad jsonValue escape hatch | replace with typed payload schema where repo-owned |
-| tools/schemas/tools/asset-pipeline-tool.schema.json | #/$defs/jsonArray/items | n/a | broad jsonValue escape hatch | replace with typed payload schema where repo-owned |
-| tools/schemas/tools/asset-pipeline-tool.schema.json | #/$defs/jsonObject/patternProperties/^.*$ | pattern:^.*$ | open-ended dictionary with jsonValue | narrow key pattern and value schema |
-| tools/schemas/tools/asset-pipeline-tool.schema.json | #/$defs/jsonObject/patternProperties/^.*$ | n/a | broad jsonValue escape hatch | replace with typed payload schema where repo-owned |
-| tools/schemas/tools/asset-pipeline-tool.schema.json | #/properties/payload/properties/pipelinePayload | n/a | broad jsonValue escape hatch | replace with typed payload schema where repo-owned |
+| tools/schemas/tools/asset-pipeline.schema.json | #/$defs/jsonArray/items | n/a | broad jsonValue escape hatch | replace with typed payload schema where repo-owned |
+| tools/schemas/tools/asset-pipeline.schema.json | #/$defs/jsonObject/patternProperties/^.*$ | pattern:^.*$ | open-ended dictionary with jsonValue | narrow key pattern and value schema |
+| tools/schemas/tools/asset-pipeline.schema.json | #/$defs/jsonObject/patternProperties/^.*$ | n/a | broad jsonValue escape hatch | replace with typed payload schema where repo-owned |
+| tools/schemas/tools/asset-pipeline.schema.json | #/properties/payload/properties/pipelinePayload | n/a | broad jsonValue escape hatch | replace with typed payload schema where repo-owned |
 | tools/schemas/tools/parallax-editor.schema.json | #/$defs/jsonArray/items | n/a | broad jsonValue escape hatch | replace with typed payload schema where repo-owned |
 | tools/schemas/tools/parallax-editor.schema.json | #/$defs/jsonObject/patternProperties/^.*$ | pattern:^.*$ | open-ended dictionary with jsonValue | narrow key pattern and value schema |
 | tools/schemas/tools/parallax-editor.schema.json | #/$defs/jsonObject/patternProperties/^.*$ | n/a | broad jsonValue escape hatch | replace with typed payload schema where repo-owned |

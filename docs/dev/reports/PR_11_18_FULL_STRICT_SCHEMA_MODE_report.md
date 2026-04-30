@@ -9,9 +9,9 @@
 - `tools/schemas/tool.manifest.schema.json`
 - `tools/schemas/tools/3d-asset-viewer.schema.json`
 - `tools/schemas/tools/3d-camera-path-editor.schema.json`
-- `tools/schemas/tools/3d-json-payload-normalizer.schema.json`
+- `tools/schemas/tools/3d-json-payload.schema.json`
 - `tools/schemas/tools/asset-browser.schema.json`
-- `tools/schemas/tools/asset-pipeline-tool.schema.json`
+- `tools/schemas/tools/asset-pipeline.schema.json`
 - `tools/schemas/tools/palette-browser.schema.json`
 - `tools/schemas/tools/palette.schema.json`
 - `tools/schemas/tools/parallax-editor.schema.json`

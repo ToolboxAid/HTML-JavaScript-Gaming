@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "tools/schemas/tools/asset-pipeline-tool.schema.json",
+  "$id": "tools/schemas/tools/asset-pipeline.schema.json",
   "title": "asset-pipeline-tool Payload",
   "type": "object",
   "required": ["tool", "version", "payload"],

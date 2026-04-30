@@ -34,7 +34,7 @@ sample.<id>.<tool>.json
 
 Examples:
 - sample.0305.vector-map-editor.json
-- sample.0305.palette-editor.json
+- sample.0305.palette-browser.json
 - sample.0101.sprite-editor.json
 
 ## Payload Rule

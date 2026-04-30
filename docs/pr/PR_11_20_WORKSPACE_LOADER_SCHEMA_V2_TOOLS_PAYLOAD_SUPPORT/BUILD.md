@@ -43,7 +43,7 @@ Then:
 
 ### 4. Palette mapping rule
 Resolve the naming ambiguity explicitly:
-- If schema uses `tools.palette` as the singular palette payload, map it to the Palette Browser tool UI.
+- If schema uses `tools.palette-browser` as the singular palette payload, map it to the Palette Browser tool UI.
 - Do not treat Palette as the only workspace tool.
 - Do not require a top-level `palettes` collection.
 - Do not require a separate `sample.1902.palette.json`.

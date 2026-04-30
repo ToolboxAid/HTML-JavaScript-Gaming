@@ -16,7 +16,7 @@ File:
 Verified:
 - Top-level `palettes` is removed.
 - Top-level `tools` is required.
-- `tools.palette` is singular and required.
+- `tools.palette-browser` is singular and required.
 - `tools.properties` explicitly lists all active workspace-supported registry ids.
 - `tools.additionalProperties` is `false`.
 - `$ref` entries are used for each declared tool/palette schema target.
@@ -36,9 +36,9 @@ Verified resolvable and valid JSON:
 - `./tools/replay-visualizer.schema.json`
 - `./tools/performance-profiler.schema.json`
 - `./tools/physics-sandbox.schema.json`
-- `./tools/asset-pipeline-tool.schema.json`
+- `./tools/asset-pipeline.schema.json`
 - `./tools/tile-model-converter.schema.json`
-- `./tools/3d-json-payload-normalizer.schema.json`
+- `./tools/3d-json-payload.schema.json`
 - `./tools/3d-asset-viewer.schema.json`
 - `./tools/3d-camera-path-editor.schema.json`
 
@@ -48,7 +48,7 @@ File:
 
 Verified:
 - No top-level `palettes`.
-- Contains `tools.palette` singleton payload.
+- Contains `tools.palette-browser` singleton payload.
 - Uses canonical registry-id tool keys plus `palette`.
 - No `sample.1902.palette.json` file present.
 - No `sample.1902.palette.json` references in sample 1902 payload.

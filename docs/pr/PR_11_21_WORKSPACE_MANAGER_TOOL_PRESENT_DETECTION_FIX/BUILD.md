@@ -30,7 +30,7 @@ Algorithm:
 
 ### 3. Palette special case
 If the schema has:
-`tools.palette`
+`tools.palette-browser`
 
 Then:
 - treat key `palette` as present

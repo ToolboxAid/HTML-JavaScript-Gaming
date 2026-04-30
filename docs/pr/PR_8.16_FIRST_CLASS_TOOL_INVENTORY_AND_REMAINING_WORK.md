@@ -25,9 +25,9 @@ Provide one canonical, docs-only inventory for the repo's first-class tool set a
 | 10 | `replay-visualizer` | Replay Visualizer | `tools/Replay Visualizer` | `tools/schemas/tools/replay-visualizer.schema.json` | No | `events` timeline | 1 |
 | 11 | `performance-profiler` | Performance Profiler | `tools/Performance Profiler` | `tools/schemas/tools/performance-profiler.schema.json` | No | `profileSettings` | 1 |
 | 12 | `physics-sandbox` | Physics Sandbox | `tools/Physics Sandbox` | `tools/schemas/tools/physics-sandbox.schema.json` | No | `physicsBody` | 1 |
-| 13 | `asset-pipeline-tool` | Asset Pipeline Tool | `tools/Asset Pipeline Tool` | `tools/schemas/tools/asset-pipeline-tool.schema.json` | No direct palette payload | `pipelinePayload` | 1 |
+| 13 | `asset-pipeline-tool` | Asset Pipeline Tool | `tools/Asset Pipeline Tool` | `tools/schemas/tools/asset-pipeline.schema.json` | No direct palette payload | `pipelinePayload` | 1 |
 | 14 | `tile-model-converter` | Tile Model Converter | `tools/Tile Model Converter` | `tools/schemas/tools/tile-model-converter.schema.json` | No direct palette payload | `candidate`, `conversion` | 1 |
-| 15 | `3d-json-payload-normalizer` | 3D JSON Payload Normalizer | `tools/3D JSON Payload Normalizer` | `tools/schemas/tools/3d-json-payload-normalizer.schema.json` | No | `mapPayload` | 1 |
+| 15 | `3d-json-payload-normalizer` | 3D JSON Payload Normalizer | `tools/3D JSON Payload Normalizer` | `tools/schemas/tools/3d-json-payload.schema.json` | No | `mapPayload` | 1 |
 | 16 | `3d-asset-viewer` | 3D Asset Viewer | `tools/3D Asset Viewer` | `tools/schemas/tools/3d-asset-viewer.schema.json` | No | `asset3d` | 1 |
 | 17 | `3d-camera-path-editor` | 3D Camera Path Editor | `tools/3D Camera Path Editor` | `tools/schemas/tools/3d-camera-path-editor.schema.json` | No | `cameraPath` | 1 |
 

@@ -12,8 +12,8 @@
 - Removed top-level required `palettes`.
 - Removed top-level `palettes` property from the workspace manifest schema.
 - Kept top-level `tools` required.
-- Added required singular `tools.palette`.
-- Added shape checks for `tools.palette` (`id`, `name`, `swatches`).
+- Added required singular `tools.palette-browser`.
+- Added shape checks for `tools.palette-browser` (`id`, `name`, `swatches`).
 
 ## Final 1902 JSON Structure
 - Top-level keys:
@@ -24,12 +24,12 @@
   - `name`
   - `tools`
 - Canonical palette location:
-  - `tools.palette`
+  - `tools.palette-browser`
 - Tool payloads remain under `tools.<toolId>` for all active tools.
 
 ## Palette Contract Confirmation
-- `tools.palette` exists and is the canonical workspace palette payload.
-- Only one canonical palette object exists in the manifest (`tools.palette`).
+- `tools.palette-browser` exists and is the canonical workspace palette payload.
+- Only one canonical palette object exists in the manifest (`tools.palette-browser`).
 - Top-level `palettes` collection is removed.
 - `sample.1902.palette.json` sidecar is not present.
 - No `sample.1902.palette.json` references remain in the 1902 workspace manifest.

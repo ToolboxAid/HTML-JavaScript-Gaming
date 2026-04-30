@@ -10,11 +10,11 @@ PASS
 
 ## Old Loader Assumptions Found
 - Workspace Manager previously derived available tools from registry/game filters, not strictly from `Object.keys(manifest.tools)` when a sample workspace manifest was provided.
-- Shared shell sample preset scoping previously matched `manifest.tools` keys by exact tool id only, so a singular `tools.palette` key would not resolve for `palette-browser` launches.
+- Shared shell sample preset scoping previously matched `manifest.tools` keys by exact tool id only, so a singular `tools.palette-browser` key would not resolve for `palette-browser` launches.
 
 ## New Loader Path
 - Workspace Manager now reads `samplePresetPath` workspace manifest, classifies `manifest.tools` keys, validates each key against tool host registry IDs (with explicit singular palette mapping), validates payload `tool` id equality, and uses accepted tool IDs as the active tool list filter.
-- Shared shell scoped preset resolution now supports singular `tools.palette` mapped to `palette-browser` and rejects mismatched/malformed tool payload entries.
+- Shared shell scoped preset resolution now supports singular `tools.palette-browser` mapped to `palette-browser` and rejects mismatched/malformed tool payload entries.
 
 ## Sample 1902 Manifest Tool Key Evidence
 Source:

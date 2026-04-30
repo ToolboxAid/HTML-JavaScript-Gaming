@@ -416,7 +416,7 @@
       "classification": "runtime-json-duplicate",
       "cleanupRisk": "high",
       "rationale": "Runtime/sample/tool JSON duplicates can represent mirrored contracts that need owner-by-owner review.",
-      "files": ["tools/palette-editor/tool.schema.json", "tools/vector-asset-studio/tool.schema.json", "tools/vector-map-editor/tool.schema.json"]
+      "files": ["tools/palette-browser/tool.schema.json", "tools/vector-asset-studio/tool.schema.json", "tools/vector-map-editor/tool.schema.json"]
     },
     {
       "hash": "9454a8b0c6e37bac29c1087707da7d5efa0347e44346a88cf407b6a253020820",

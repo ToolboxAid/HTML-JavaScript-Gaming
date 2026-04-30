@@ -292,7 +292,9 @@ Treat this as a recovery/stabilization PR only. Do not expand into a broader gam
 
 ## ARRAY FORMATTING RULE
 
-- Primitive-only arrays in JSON must use compact single-line formatting.
+- Primitive-only arrays in JSON must use compact grouped formatting.
 - Primitive values are: string, number, boolean, and null.
-- Complex arrays (arrays containing objects or nested arrays) must not be compacted.
+- Valid compact form example:
+  `[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]`
+- Do not compact arrays of objects, nested arrays, or complex structures.
 - Do not change JSON contracts or semantics while applying array formatting.

@@ -1,0 +1,36 @@
+﻿BUILD_PR_LEVEL_11_104_SCHEMA_FILENAME_CANONICALIZATION_AND_ARRAY_RULE_RESTORE
+Date: 2026-04-30
+
+Targeted validation run
+1) Strict schema validation
+- command: powershell -ExecutionPolicy Bypass -File .\scripts\PS\validate-all-json-contracts.ps1 -Details
+- result:
+  - tool_payload_schema_validation: total=17 invalid=0
+  - game_manifest_schema_validation: total=12 invalid=0
+  - sample_json_schema_validation: total=66 invalid=29
+
+2) Tool schema validation
+- command: powershell -ExecutionPolicy Bypass -File .\scripts\PS\validate-tool-schemas.ps1
+- result: tool_payload_schema_validation total=17 invalid=0
+
+3) JSON parse check (repo JSON)
+- command: python JSON parse sweep over *.json excluding .git/node_modules/tmp/dist/build/coverage/.cache/.next
+- result: 213 parseable JSON files; one non-JSONC exception at .vscode/settings.json
+
+Schema/reference alignment updates applied
+- stale schema filename references fixed to canonical names.
+- stale tool key reference forms normalized:
+  - tools.palette -> tools.palette-browser (tool-key usage)
+  - palette-editor references removed/normalized where found.
+
+Post-fix alias checks
+- command: rg -n "tools\.palette(?!-browser)" src tools samples tests scripts docs --pcre2
+- result: no matches
+- command: rg -n "\bpalette-editor\b" src tools samples tests scripts docs
+- result: no matches
+
+Remaining strict failures
+- 29 sample JSON strict failures remain from pre-existing oneOf contract mismatches
+  (spriteProject/tileMapDocument/vectorMapDocument/parallaxDocument/skin payload branches)
+- No schema loosening was applied in this PR.
+- Failures were preserved and reported exactly as required.

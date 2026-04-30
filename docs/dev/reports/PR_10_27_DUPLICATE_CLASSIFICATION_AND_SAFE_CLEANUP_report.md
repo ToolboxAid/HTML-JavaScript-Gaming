@@ -39,7 +39,7 @@ PASS
 | Hash (short) | Representative File | Reason |
 |---|---|---|
 | 971437553d34 | `docs/design/gdd/Capcom/Final Fight/gdd.txt` | Potential intentional/doc-specific duplication or unclear ownership |
-| df859606f030 | `tools/palette-editor/tool.schema.json` | Potential intentional/doc-specific duplication or unclear ownership |
+| df859606f030 | `tools/palette-browser/tool.schema.json` | Potential intentional/doc-specific duplication or unclear ownership |
 | f01a374e9c81 | `games/Pacman/assets/.gitkeep` | Potential intentional/doc-specific duplication or unclear ownership |
 | e3b0c44298fc | `docs/design/gdd/Nameco/Galaga/gdd.txt` | Potential intentional/doc-specific duplication or unclear ownership |
 
@@ -78,7 +78,7 @@ PASS
 | 2fb3e00d7762 | 3 | sample-variant-intentional | kept-no-action | high | `samples/phase-12/1218/assets/data/parallax/mountain-ridge-tall.svg` |
 | 6435cd00ef69 | 9 | sample-variant-intentional | kept-no-action | high | `games/AITargetDummy/rules/gameFlowRules.js` |
 | 9a97352ae4b6 | 9 | sample-variant-intentional | kept-no-action | high | `games/Pacman/rules/gameFlowRules.js` |
-| df859606f030 | 3 | ambiguous-no-action | kept-no-action | high | `tools/palette-editor/tool.schema.json` |
+| df859606f030 | 3 | ambiguous-no-action | kept-no-action | high | `tools/palette-browser/tool.schema.json` |
 | 9454a8b0c6e3 | 2 | sample-variant-intentional | kept-no-action | high | `samples/phase-12/1220/assets/data/parallax/mario_style_sky.svg` |
 | 7fac6c68998c | 2 | report-evidence | demoted-moved | high | `docs/dev/reports/level_10_6d_palette_contract_evidence/repo_relative/tools/schemas/tools/palette-browser.schema.json` |
 | 3a6e82fbca11 | 2 | template-intentional | kept-no-action | medium | `docs/operations/dev/templates/CODEX_AUTO_COMMAND.md` |

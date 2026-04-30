@@ -10,6 +10,6 @@ sample.<id>.<tool>.json
 - no spaces
 
 ## Examples
-sample.0101.palette-editor.json
+sample.0101.palette-browser.json
 sample.0305.vector-map-editor.json
 sample.0305.vector-asset-studio.json

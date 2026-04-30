@@ -21,7 +21,7 @@ PASS
 - Classification now records and validates, per key:
   - raw key
   - normalized key
-  - palette alias mapping (`tools.palette` -> `palette-browser`)
+  - palette alias mapping (`tools.palette-browser` -> `palette-browser`)
   - registry match
   - workspace-schema allowed key
   - tool-schema validity

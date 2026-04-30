@@ -6,12 +6,12 @@ Changed files:
 
 Root cause of missing palette message:
 - Shared palette dependency was not being resolved from the workspace sample manifest tool payload contract.
-- `readPaletteFromManifestPayload(...)` did not accept strict workspace tool payload shapes (`tools.palette.payload` and `tools["palette-browser"].payload`).
+- `readPaletteFromManifestPayload(...)` did not accept strict workspace tool payload shapes (`tools.palette-browser.payload` and `tools["palette-browser"].payload`).
 - As a result, shared palette handoff stayed empty for child launches even when sample 1902 contained explicit palette payload data.
 
 How shared palette handoff now works:
 - Added strict manifest palette extraction support in `tools/shared/platformShell.js`:
-  - `tools.palette.payload` (preferred/canonical)
+  - `tools.palette-browser.payload` (preferred/canonical)
   - `tools["palette-browser"].payload` (compatible)
   - legacy `tools["palette-browser"].palette` and root `palette` as compatibility fallbacks
 - Added `hydrateSharedPaletteFromSamplePresetPath(samplePresetPath)`:

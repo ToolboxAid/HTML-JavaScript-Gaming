@@ -57,9 +57,9 @@
 - `tools/schemas/sample.tool-payload.schema.json`
 - `tools/schemas/tools/3d-asset-viewer.schema.json`
 - `tools/schemas/tools/3d-camera-path-editor.schema.json`
-- `tools/schemas/tools/3d-json-payload-normalizer.schema.json`
+- `tools/schemas/tools/3d-json-payload.schema.json`
 - `tools/schemas/tools/asset-browser.schema.json`
-- `tools/schemas/tools/asset-pipeline-tool.schema.json`
+- `tools/schemas/tools/asset-pipeline.schema.json`
 - `tools/schemas/tools/palette-browser.schema.json`
 - `tools/schemas/tools/parallax-editor.schema.json`
 - `tools/schemas/tools/performance-profiler.schema.json`
@@ -78,7 +78,7 @@
   - `samples/phase-19/1902/sample.1902.workspace-all-tools.json`
 - Changes include:
   - tool entry `config` -> `payload`
-  - `tools.palette` migrated to canonical palette-browser payload shape
+  - `tools.palette-browser` migrated to canonical palette-browser payload shape
   - `tools.palette-browser` given explicit strict payload
   - generic `projectId` replacements
   - removed nested tile payload `$schema` reference to `sample.tool-payload.schema.json`

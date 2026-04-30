@@ -22,7 +22,7 @@ If existing payloads need fields:
 Workspace must be strict:
 - no top-level extra properties
 - `tools.additionalProperties: false`
-- `tools.palette` required and singular
+- `tools.palette-browser` required and singular
 - tool payloads referenced via `$ref`
 - all supported tool keys explicitly listed
 

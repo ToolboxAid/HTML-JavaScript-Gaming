@@ -9,8 +9,8 @@ Update:
 Required model:
 - top-level `tools` remains required
 - top-level `palettes` must be removed unless retained only for migration with clear deprecation
-- Palette belongs under `tools.palette`
-- only one `tools.palette` entry is allowed
+- Palette belongs under `tools.palette-browser`
+- only one `tools.palette-browser` entry is allowed
 - no multiple palette collection
 
 Preferred manifest shape:
@@ -37,7 +37,7 @@ Rules:
 - delete/remove any `sample.1902.palette.json`
 - remove top-level `palettes`
 - remove duplicated palette/config/payload blocks
-- put palette data at `tools.palette`
+- put palette data at `tools.palette-browser`
 - put each tool payload under its matching `tools.<toolId>` key
 - no copied unrelated sample/game dump data
 - no fallback/default/hidden data
@@ -54,7 +54,7 @@ docs/dev/reports/PR_11_14_WORKSPACE_SCHEMA_PALETTE_TOOL_AND_1902_REBUILD_report.
 Report must include:
 - schema changes
 - final 1902 JSON structure
-- confirmation palette is under `tools.palette`
+- confirmation palette is under `tools.palette-browser`
 - confirmation only one palette exists
 - confirmation no palette sidecar remains
 - Workspace validation showing more than Palette is available

@@ -41,7 +41,7 @@ Required model:
 
 Rules:
 - remove top-level `palettes`
-- palette is singular at `tools.palette`
+- palette is singular at `tools.palette-browser`
 - list all supported Workspace tool keys
 - use `$ref` to each tool schema
 - no duplicate hand-written schema bodies when a tool schema exists
@@ -49,7 +49,7 @@ Rules:
 
 ### 3. Palette schema handling
 If Palette has a canonical schema:
-- `$ref` that schema at `tools.palette`
+- `$ref` that schema at `tools.palette-browser`
 
 If only `palette-browser.schema.json` exists:
 - distinguish the palette tool payload from the palette browser tool payload
@@ -76,7 +76,7 @@ Update:
 Rules:
 - conform to corrected schemas
 - all tool payloads under `tools`
-- palette only at `tools.palette`
+- palette only at `tools.palette-browser`
 - no `sample.1902.palette.json`
 - no copied unrelated game/sample payloads
 - no duplicate `config` / `payload` branches
