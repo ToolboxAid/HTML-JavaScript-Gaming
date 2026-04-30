@@ -1,53 +1,30 @@
 # CODEX COMMANDS
 
 Model: GPT-5.3-codex
-Reasoning: medium
+Reasoning: high
 
 STRICT SCOPE MODE
 
 ALLOWED FILES:
 - tools/workspace-manager/main.js
-- docs/dev/reports/workspace_svg_asset_status_label_11_153.txt
-
-ALLOWED CHANGES:
-- fix only SVG Asset Studio Workspace Manager card/status label
-- create/update report
 
 TASK:
 
-1. Open:
-   tools/workspace-manager/main.js
+1. Find detection logic for svg-asset-studio
 
-2. Find card/status label logic for:
-   svg-asset-studio
+2. Replace detection with:
 
-3. Update it to read direct payload:
-   workspaceManifest.tools["svg-asset-studio"].vectorAssetDocument.sourceName
+if (tools["svg-asset-studio"]?.vectorAssetDocument?.svgText)
 
-4. Display a useful label:
-   Asset: sample-0901-ship.svg
+3. Use sourceName for label
 
-5. Do NOT:
-   - modify schemas
-   - modify samples
-   - modify SVG Asset Studio
-   - modify runtime
-   - transform/wrap/normalize payload
-   - broaden unrelated tool logic
+4. DO NOT change other tools
 
-6. Validate:
-   - JS syntax for tools/workspace-manager/main.js
-   - Sample 1902 Workspace Manager card for SVG Asset Studio does not show Asset: none
-   - git diff --name-only contains only ALLOWED FILES
+5. VERIFY:
+- detection works
+- no "none"
 
-7. Write:
-   docs/dev/reports/workspace_svg_asset_status_label_11_153.txt
+REPORT:
+docs/dev/reports/svg_payload_detection_fix_11_154.txt
 
-Report must include:
-- changed file
-- old/new label behavior
-- validation result
-- strict scope confirmation
-
-8. Package Codex output ZIP at:
-   tmp/PR_11_153_FIX_WORKSPACE_SVG_ASSET_STATUS_LABEL.zip
+FAIL if still not detected

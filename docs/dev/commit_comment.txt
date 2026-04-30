@@ -1,1 +1,1 @@
-Show SVG Asset Studio loaded asset label in Workspace Manager - PR 11.153
+Fix SVG payload detection (not label) in Workspace Manager - PR 11.154

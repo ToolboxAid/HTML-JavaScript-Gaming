@@ -328,12 +328,14 @@ function primeSvgAssetStatusLabelFromWorkspaceDiagnostics(diagnostics = null) {
   if (!explicitToolPayloadById) {
     return false;
   }
-  const svgPayload = explicitToolPayloadById.get("svg-asset-studio");
-  if (!isPlainObject(svgPayload)) {
+  const tools = {};
+  explicitToolPayloadById.forEach((payload, toolId) => {
+    tools[toolId] = payload;
+  });
+  if (!tools["svg-asset-studio"]?.vectorAssetDocument?.svgText) {
     return false;
   }
-  const vectorAssetDocument = readDirectPayloadDocument(svgPayload, "vectorAssetDocument");
-  const sourceName = normalizeTextParam(vectorAssetDocument?.sourceName);
+  const sourceName = normalizeTextParam(tools["svg-asset-studio"]?.vectorAssetDocument?.sourceName);
   if (!sourceName) {
     return false;
   }
