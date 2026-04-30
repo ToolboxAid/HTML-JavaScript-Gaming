@@ -14,17 +14,15 @@
   "tools": {
     "asset-browser": {
       "assets": {
-        "media": {
-          "image.pacman.preview-svg": {
-            "path": "games/Pacman/assets/images/preview.svg",
-            "kind": "image",
-            "source": "workspace-manager"
-          },
-          "image.pacman.preview-png": {
-            "path": "games/Pacman/assets/images/preview.png",
-            "kind": "image",
-            "source": "workspace-manager"
-          }
+        "image.pacman.preview-svg": {
+          "path": "games/Pacman/assets/images/preview.svg",
+          "kind": "image",
+          "source": "workspace-manager"
+        },
+        "image.pacman.preview-png": {
+          "path": "games/Pacman/assets/images/preview.png",
+          "kind": "image",
+          "source": "workspace-manager"
         }
       },
       "schema": "html-js-gaming.tool.asset-browser",

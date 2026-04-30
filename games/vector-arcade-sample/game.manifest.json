@@ -241,12 +241,10 @@
     },
     "asset-browser": {
       "assets": {
-        "media": {
-          "image.vector-arcade.backdrop-svg": {
-            "path": "games/vector-arcade-sample/assets/data/parallax/template-backdrop.svg",
-            "kind": "image",
-            "source": "workspace-manager"
-          }
+        "image.vector-arcade.backdrop-svg": {
+          "path": "games/vector-arcade-sample/assets/data/parallax/template-backdrop.svg",
+          "kind": "image",
+          "source": "workspace-manager"
         }
       },
       "schema": "html-js-gaming.tool.asset-browser",

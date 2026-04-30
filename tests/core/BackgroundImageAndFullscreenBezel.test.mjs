@@ -244,7 +244,7 @@ function testGameImageConventionsAreGameAgnostic() {
   assert.equal(asteroidsPaths.bezelPath, "games/Asteroids/assets/images/bezel.png");
   assert.equal(
     resolveBezelStretchOverridePath({ documentRef: { location: { pathname: "/games/Asteroids/index.html" } } }),
-    "games/Asteroids/game.manifest.json#tools.asset-browser.assets.bezel.stretchOverride"
+    "games/Asteroids/game.manifest.json#tools.asset-browser.assets.image.asteroids.bezel.stretchOverride"
   );
 
   const templatePaths = resolveGameImageConventionPaths({
@@ -459,7 +459,7 @@ function testTransparentWindowDetectionAndAspectFit() {
   assert.equal(bestFit.height <= 500.01, true);
   assert.equal(
     resolveBezelStretchConfigPath("games/Asteroids/assets/images/bezel.png"),
-    "games/Asteroids/game.manifest.json#tools.asset-browser.assets.bezel.stretchOverride"
+    "games/Asteroids/game.manifest.json#tools.asset-browser.assets.image.asteroids.bezel.stretchOverride"
   );
 }
 

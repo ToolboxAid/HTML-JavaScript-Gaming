@@ -252,9 +252,9 @@ function parseStretchConfigPayload(payload, configPath = "") {
     return parsed;
   }
 
-  const mediaEntries = payload?.tools?.["asset-browser"]?.assets?.media;
-  if (mediaEntries && typeof mediaEntries === "object") {
-    const bezelMediaEntry = Object.entries(mediaEntries).find(([assetId, entry]) => {
+  const flatAssetEntries = payload?.tools?.["asset-browser"]?.assets;
+  if (flatAssetEntries && typeof flatAssetEntries === "object") {
+    const bezelAssetEntry = Object.entries(flatAssetEntries).find(([assetId, entry]) => {
       const normalizedAssetId = typeof assetId === "string" ? assetId.trim().toLowerCase() : "";
       const normalizedKind = typeof entry?.kind === "string" ? entry.kind.trim().toLowerCase() : "";
       const hasStretch = entry?.stretchOverride && typeof entry.stretchOverride === "object";
@@ -262,17 +262,12 @@ function parseStretchConfigPayload(payload, configPath = "") {
         && normalizedKind === "image"
         && (normalizedAssetId.includes(".bezel") || normalizedAssetId.endsWith("bezel"));
     });
-    if (bezelMediaEntry && typeof bezelMediaEntry[1] === "object") {
-      const mediaStretchConfig = parseStretchConfigObject(bezelMediaEntry[1].stretchOverride);
-      if (mediaStretchConfig.uniformEdgeStretchPx > 0) {
-        return mediaStretchConfig;
+    if (bezelAssetEntry && typeof bezelAssetEntry[1] === "object") {
+      const stretchConfig = parseStretchConfigObject(bezelAssetEntry[1].stretchOverride);
+      if (stretchConfig.uniformEdgeStretchPx > 0) {
+        return stretchConfig;
       }
     }
-  }
-
-  const manifestOverride = payload?.tools?.["asset-browser"]?.assets?.bezel?.stretchOverride;
-  if (manifestOverride && typeof manifestOverride === "object") {
-    return parseStretchConfigObject(manifestOverride);
   }
 
   return parsed;

@@ -1,1 +1,1 @@
-Align Asteroids manifest asset-browser assets to flat schema and add font asset - PR 11.93
+Flatten manifest asset contract and fix runtime/tool loaders - PR 11.95

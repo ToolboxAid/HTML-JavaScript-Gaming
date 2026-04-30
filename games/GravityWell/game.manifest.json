@@ -14,12 +14,10 @@
   "tools": {
     "asset-browser": {
       "assets": {
-        "media": {
-          "image.gravitywell.preview": {
-            "path": "games/GravityWell/assets/images/preview.svg",
-            "kind": "image",
-            "source": "workspace-manager"
-          }
+        "image.gravitywell.preview": {
+          "path": "games/GravityWell/assets/images/preview.svg",
+          "kind": "image",
+          "source": "workspace-manager"
         }
       },
       "schema": "html-js-gaming.tool.asset-browser",

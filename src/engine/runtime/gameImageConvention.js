@@ -86,20 +86,9 @@ function collectImageEntriesFromManifest(manifestPayload) {
   });
 
   const assetBrowserAssets = toObject(payload?.tools?.["asset-browser"]?.assets);
-  const mediaEntries = toObject(assetBrowserAssets.media);
-  Object.entries(mediaEntries).forEach(([assetId, rawEntry]) => {
+  Object.entries(assetBrowserAssets).forEach(([assetId, rawEntry]) => {
     pushEntry(normalizeAssetEntry(rawEntry, assetId));
   });
-
-  const directBezel = normalizeAssetEntry(assetBrowserAssets?.bezel, "bezel");
-  if (directBezel) {
-    pushEntry(directBezel);
-  }
-
-  const directBackground = normalizeAssetEntry(assetBrowserAssets?.background, "background");
-  if (directBackground) {
-    pushEntry(directBackground);
-  }
 
   return entries;
 }
