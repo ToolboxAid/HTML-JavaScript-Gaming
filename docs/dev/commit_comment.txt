@@ -1,1 +1,1 @@
-Enforce single canonical asset kind per concept and remove alias mappings - PR 11.106
+Clarify and enforce separation of tool IDs and asset kinds - PR 11.107

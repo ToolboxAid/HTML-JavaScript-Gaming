@@ -3,22 +3,16 @@
 Model: GPT-5.3-codex
 Reasoning: low
 
-1. Update resolveAcceptedAssetKindsForTool:
-   - remove aliases
-   - use canonical mapping only
+1. Scan repo:
+   - ensure no asset kind equals a tool id
+   - ensure no tool id used as asset kind
 
-2. Replace all asset kinds in repo:
-   - normalize to canonical names
+2. Validate mapping:
+   resolveAcceptedAssetKindsForTool is:
+   toolId -> asset kinds ONLY
 
-3. Remove:
-   - "*"
-   - duplicate kinds per tool
-   - alias values
+3. Fix violations:
+   - replace incorrect asset kinds with canonical types
 
-4. Validate:
-   - tools match schema
-   - samples use canonical kinds
-   - no unknown kinds exist
-
-5. Report:
-   docs/dev/reports/asset_kind_canonicalization_11_106.txt
+4. Report:
+   docs/dev/reports/tool_vs_asset_kind_11_107.txt
