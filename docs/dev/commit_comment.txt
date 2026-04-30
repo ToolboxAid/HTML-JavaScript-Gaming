@@ -1,1 +1,1 @@
-Standardize Asteroids bezel to canonical bezel.png manifest asset - PR 11.91
+Align Asteroids manifest asset-browser assets to flat schema and add font asset - PR 11.93

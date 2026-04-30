@@ -1,8 +1,8 @@
-# Codex Commands — PR 11.91
+# Codex Command — PR 11.93
 
 Model: GPT-5.4
 Reasoning: high
 
 ```text
-Apply PR 11.91. Standardize Asteroids bezel asset naming so bezel.png is the only valid bezel file. Update games/Asteroids/game.manifest.json image.asteroids.bezel.path to /games/Asteroids/assets/images/bezel.png, preserve stretchOverride.uniformEdgeStretchPx = 10 on image.asteroids.bezel only, remove any bezel1.png references, do not add fallback guessed paths, and do not place bezel stretch configuration under asset-browser.assets.bezel. Run targeted validation and write findings to docs/dev/reports/PR_11_91_validation.md.
+Apply PR 11.93. Inspect games/Asteroids/game.manifest.json and align the asset-browser manifest shape with the expected flat asset map. Move every entry currently under tools.asset-browser.assets.media into tools.asset-browser.assets keyed directly by asset id, then remove the media wrapper. Preserve all audio entries, ensure image.asteroids.bezel uses /games/Asteroids/assets/images/bezel.png with stretchOverride.uniformEdgeStretchPx = 10, ensure image.asteroids.background uses /games/Asteroids/assets/images/deluxe.png, and add font.asteroids.vector-battle using /games/Asteroids/assets/fonts/vector_battle.ttf if missing. Do not create asset-browser.assets.bezel, do not use bezel1.png, and do not add fallback asset-loading paths. Run targeted manifest validation and write findings to docs/dev/reports/PR_11_93_validation.md.
 ```
