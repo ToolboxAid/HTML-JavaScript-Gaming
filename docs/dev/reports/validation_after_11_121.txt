@@ -1,0 +1,38 @@
+PR 11.121 - Validation After Direct JSON Relationship Check
+
+Commands and results
+- node -e "JSON.parse(require('fs').readFileSync('tools/schemas/tools/palette-browser.schema.json','utf8')); console.log('palette schema JSON parse PASS')"
+  Result: PASS.
+- node tests/tools/ToolSchemaStrictModeValidation.test.mjs
+  Result: PASS.
+- node scripts/validate-json-contracts.mjs --mode samples --reportDir docs/dev/reports --details
+  Result: PASS; sample_json_schema_validation total=63 invalid=0.
+- Targeted SSoT relationship validation harness
+  Result: PASS; total=31, WORKING=31, invalid=0.
+- node --check tools/shared/schemaOnlyToolPresetValidation.js
+  Result: PASS.
+- git diff --check
+  Result: PASS with line-ending warning only for tools/schemas/tools/palette-browser.schema.json; no whitespace errors.
+- Metadata JSON parse
+  Result: PASS for `samples/metadata/samples.index.metadata.json`.
+- Hub count harness
+  Result: PASS; sample hub SSoT relationships=31, tools hub sample counts=31.
+- Known-bad metadata validation
+  Result: PASS; known-bad links from PR 11.120 remain absent.
+- Second active source scan
+  Result: PASS; active hub relationship source remains `samples/metadata/samples.index.metadata.json` only. Remaining `roundtripToolPresets` references are tool loaders/detail pages consuming the SSoT.
+
+Changed files validated
+- tools/schemas/tools/palette-browser.schema.json: JSON parse PASS; strict schema test PASS.
+
+Final count
+- SSoT relationships checked: 31.
+- Working relationships: 31.
+- Removed relationships: 0.
+- Fixed relationships: 11.
+
+Full samples smoke test
+- Skipped. This PR is targeted relationship/input/schema validation and the full samples suite takes approximately 20 minutes.
+
+Blockers
+- None.

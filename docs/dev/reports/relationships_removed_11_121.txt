@@ -1,0 +1,15 @@
+PR 11.121 - Relationships Removed
+
+Removed relationships
+- None.
+
+Reason
+- All 31 SSoT relationships now have explicit JSON input files.
+- All 31 JSON inputs parse.
+- All 31 relationships validate against the identified schema path after the deterministic Palette Browser schema alignment.
+- No relationship required fake data, fallback/default data, or ambiguous ownership cleanup.
+
+Final count
+- Relationships before PR 11.121 validation: 31.
+- Relationships removed: 0.
+- Relationships after PR 11.121 validation: 31.

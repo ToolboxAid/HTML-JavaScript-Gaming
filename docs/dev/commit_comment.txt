@@ -1,1 +1,1 @@
-Reconcile sample tool link counts through a single metadata SSoT - PR 11.120
+Validate SSoT sample tool relationships load direct JSON - PR 11.121

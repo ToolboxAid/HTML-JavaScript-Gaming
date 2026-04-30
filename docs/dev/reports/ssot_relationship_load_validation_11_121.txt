@@ -1,0 +1,85 @@
+PR 11.121 - SSoT Relationship Direct JSON Load Validation
+
+Chosen relationship SSoT
+- samples/metadata/samples.index.metadata.json
+
+Files searched
+- docs/pr/BUILD_PR_LEVEL_11_121_VALIDATE_SSOT_TOOL_RELATIONSHIPS_LOAD_DIRECT_JSON.md
+- samples/metadata/samples.index.metadata.json
+- tools/schemas/tools/*.schema.json
+- tools/schemas/workspace.manifest.schema.json
+- tools/Palette Browser/main.js
+- tools/Vector Map Editor/editor/VectorMapEditorApp.js
+- tools/SVG Asset Studio/main.js
+- tools/Tilemap Studio/main.js
+- tools/Parallax Scene Studio/main.js
+- tools/Sprite Editor/modules/spriteEditorApp.js
+- tools/Asset Pipeline/main.js
+- tools/Tile Model Converter/main.js
+- tools/Workspace Manager/main.js
+- tools/shared/toolLoadDiagnostics.js
+- tools/shared/schemaOnlyToolPresetValidation.js
+
+Validation method
+- Enumerated metadata rows where `toolHints` contains `roundtripToolPresets[].toolId` and `presetPath` is explicit.
+- For normal tools, schema path is `tools/schemas/tools/<toolId>.schema.json`.
+- For `workspace-manager`, schema path is `tools/schemas/workspace.manifest.schema.json`.
+- Verified each JSON path exists and parses.
+- Validated each direct tool JSON against its schema.
+- Validated sample 1902 workspace manifest with the existing workspace manifest/tool schema boundary.
+
+Relationship results
+| sample | tool | JSON input path | schema path | result |
+| --- | --- | --- | --- | --- |
+| 0213 | palette-browser | `samples/phase-02/0213/sample.0213.palette.json` | `tools/schemas/tools/palette-browser.schema.json` | exists PASS; parse PASS; schema PASS; direct-load evidence PASS |
+| 0219 | palette-browser | `samples/phase-02/0219/sample.0219.palette.json` | `tools/schemas/tools/palette-browser.schema.json` | exists PASS; parse PASS; schema PASS; direct-load evidence PASS |
+| 0221 | tile-model-converter | `samples/phase-02/0221/sample.0221.tile-model-converter.json` | `tools/schemas/tools/tile-model-converter.schema.json` | exists PASS; parse PASS; schema PASS; direct-load evidence PASS |
+| 0301 | palette-browser | `samples/phase-03/0301/sample.0301.palette.json` | `tools/schemas/tools/palette-browser.schema.json` | exists PASS; parse PASS; schema PASS; direct-load evidence PASS |
+| 0302 | palette-browser | `samples/phase-03/0302/sample.0302.palette.json` | `tools/schemas/tools/palette-browser.schema.json` | exists PASS; parse PASS; schema PASS; direct-load evidence PASS |
+| 0305 | tile-model-converter | `samples/phase-03/0305/sample.0305.tile-model-converter.json` | `tools/schemas/tools/tile-model-converter.schema.json` | exists PASS; parse PASS; schema PASS; direct-load evidence PASS |
+| 0308 | palette-browser | `samples/phase-03/0308/sample.0308.palette.json` | `tools/schemas/tools/palette-browser.schema.json` | exists PASS; parse PASS; schema PASS; direct-load evidence PASS |
+| 0313 | palette-browser | `samples/phase-03/0313/sample.0313.palette.json` | `tools/schemas/tools/palette-browser.schema.json` | exists PASS; parse PASS; schema PASS; direct-load evidence PASS |
+| 0901 | palette-browser | `samples/phase-09/0901/sample.0901.palette.json` | `tools/schemas/tools/palette-browser.schema.json` | exists PASS; parse PASS; schema PASS; direct-load evidence PASS |
+| 0905 | palette-browser | `samples/phase-09/0905/sample.0905.palette.json` | `tools/schemas/tools/palette-browser.schema.json` | exists PASS; parse PASS; schema PASS; direct-load evidence PASS |
+| 1204 | palette-browser | `samples/phase-12/1204/sample.1204.palette.json` | `tools/schemas/tools/palette-browser.schema.json` | exists PASS; parse PASS; schema PASS; direct-load evidence PASS |
+| 1208 | palette-browser | `samples/phase-12/1208/sample.1208.palette.json` | `tools/schemas/tools/palette-browser.schema.json` | exists PASS; parse PASS; schema PASS; direct-load evidence PASS |
+| 1208 | parallax-editor | `samples/phase-12/1208/sample.1208.parallax-editor.json` | `tools/schemas/tools/parallax-editor.schema.json` | exists PASS; parse PASS; schema PASS; direct-load evidence PASS |
+| 1208 | tile-map-editor | `samples/phase-12/1208/sample.1208.tile-map-editor.json` | `tools/schemas/tools/tile-map-editor.schema.json` | exists PASS; parse PASS; schema PASS; direct-load evidence PASS |
+| 1209 | tile-map-editor | `samples/phase-12/1209/sample.1209.tile-map-editor.json` | `tools/schemas/tools/tile-map-editor.schema.json` | exists PASS; parse PASS; schema PASS; direct-load evidence PASS |
+| 1209 | tile-model-converter | `samples/phase-12/1209/sample.1209.tile-model-converter.json` | `tools/schemas/tools/tile-model-converter.schema.json` | exists PASS; parse PASS; schema PASS; direct-load evidence PASS |
+| 1210 | tile-map-editor | `samples/phase-12/1210/sample.1210.tile-map-editor.json` | `tools/schemas/tools/tile-map-editor.schema.json` | exists PASS; parse PASS; schema PASS; direct-load evidence PASS |
+| 1211 | tile-map-editor | `samples/phase-12/1211/sample.1211.tile-map-editor.json` | `tools/schemas/tools/tile-map-editor.schema.json` | exists PASS; parse PASS; schema PASS; direct-load evidence PASS |
+| 1212 | vector-map-editor | `samples/phase-12/1212/sample-1212-vector-map-editor.json` | `tools/schemas/tools/vector-map-editor.schema.json` | exists PASS; parse PASS; schema PASS; direct-load evidence PASS |
+| 1213 | vector-map-editor | `samples/phase-12/1213/sample-1213-vector-map-editor.json` | `tools/schemas/tools/vector-map-editor.schema.json` | exists PASS; parse PASS; schema PASS; direct-load evidence PASS |
+| 1214 | vector-map-editor | `samples/phase-12/1214/sample-1214-vector-map-editor.json` | `tools/schemas/tools/vector-map-editor.schema.json` | exists PASS; parse PASS; schema PASS; direct-load evidence PASS |
+| 1215 | svg-asset-studio | `samples/phase-12/1215/sample-1215-svg-asset-studio.json` | `tools/schemas/tools/svg-asset-studio.schema.json` | exists PASS; parse PASS; schema PASS; direct-load evidence PASS |
+| 1216 | svg-asset-studio | `samples/phase-12/1216/sample-1216-svg-asset-studio.json` | `tools/schemas/tools/svg-asset-studio.schema.json` | exists PASS; parse PASS; schema PASS; direct-load evidence PASS |
+| 1217 | svg-asset-studio | `samples/phase-12/1217/sample-1217-svg-asset-studio.json` | `tools/schemas/tools/svg-asset-studio.schema.json` | exists PASS; parse PASS; schema PASS; direct-load evidence PASS |
+| 1218 | parallax-editor | `samples/phase-12/1218/sample-1218-parallax-editor.json` | `tools/schemas/tools/parallax-editor.schema.json` | exists PASS; parse PASS; schema PASS; direct-load evidence PASS |
+| 1219 | parallax-editor | `samples/phase-12/1219/sample-1219-parallax-editor.json` | `tools/schemas/tools/parallax-editor.schema.json` | exists PASS; parse PASS; schema PASS; direct-load evidence PASS |
+| 1220 | parallax-editor | `samples/phase-12/1220/sample-1220-parallax-editor.json` | `tools/schemas/tools/parallax-editor.schema.json` | exists PASS; parse PASS; schema PASS; direct-load evidence PASS |
+| 1413 | asset-pipeline | `samples/phase-14/1413/sample.1413.asset-pipeline.json` | `tools/schemas/tools/asset-pipeline.schema.json` | exists PASS; parse PASS; schema PASS; direct-load evidence PASS |
+| 1414 | palette-browser | `samples/phase-14/1414/sample.1414.palette.json` | `tools/schemas/tools/palette-browser.schema.json` | exists PASS; parse PASS; schema PASS; direct-load evidence PASS |
+| 1414 | sprite-editor | `samples/phase-14/1414/sample.1414.sprite-editor.json` | `tools/schemas/tools/sprite-editor.schema.json` | exists PASS; parse PASS; schema PASS; direct-load evidence PASS |
+| 1902 | workspace-manager | `samples/phase-19/1902/sample.1902.workspace-all-tools.json` | `tools/schemas/workspace.manifest.schema.json` | exists PASS; parse PASS; schema PASS; direct-load evidence PASS |
+
+Direct load path evidence
+- Palette Browser: `tools/Palette Browser/main.js` reads `samplePresetPath`, fetches that URL with `cache: "no-store"`, calls `logToolLoadLoaded`, and applies the loaded palette document.
+- Vector Map Editor: `tools/Vector Map Editor/editor/VectorMapEditorApp.js` reads `samplePresetPath`, fetches that URL, calls `logToolLoadLoaded`, then imports the loaded map document.
+- SVG Asset Studio: `tools/SVG Asset Studio/main.js` resolves the exact metadata `roundtripToolPresets.presetPath`, fetches it, and calls `logToolLoadLoaded` before applying the SVG asset document.
+- Tilemap Studio: `tools/Tilemap Studio/main.js` reads `samplePresetPath`, fetches it, calls `logToolLoadLoaded`, then imports the loaded tile map document.
+- Parallax Scene Studio: `tools/Parallax Scene Studio/main.js` reads `samplePresetPath`, fetches it, calls `logToolLoadLoaded`, then imports the loaded parallax document.
+- Sprite Editor: `tools/Sprite Editor/modules/spriteEditorApp.js` reads `samplePresetPath`, uses explicit metadata `palettePath` for the required palette, fetches both explicit JSON inputs, and logs schema validation boundaries.
+- Asset Pipeline: `tools/Asset Pipeline/main.js` reads `samplePresetPath`, fetches it, calls `logToolLoadLoaded`, then renders the loaded pipeline payload.
+- Tile Model Converter: `tools/Tile Model Converter/main.js` reads `samplePresetPath`, fetches it, calls `logToolLoadLoaded`, then renders the loaded converter payload.
+- Workspace Manager: `tools/Workspace Manager/main.js` reads `samplePresetPath`, fetches the workspace manifest directly, validates tool diagnostics, and fans out embedded tool payloads from the same JSON.
+- Shared schema gate: `tools/shared/toolLoadDiagnostics.js` calls `enforceToolPresetSchemaOnlyContract` from `tools/shared/schemaOnlyToolPresetValidation.js` for loaded documents.
+
+Final count
+- Total SSoT relationships checked: 31.
+- Working relationships: 31.
+- Removed relationships: 0.
+- Fixed deterministic schema relationships: 11 palette-browser relationships fixed by schema alignment.
+
+Blockers
+- None.
