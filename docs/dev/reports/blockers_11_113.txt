@@ -1,0 +1,88 @@
+﻿PR 11.113 Blockers
+Date: 2026-04-30
+
+Blocker 1: Broad removal of tryLoadPreset/buildPreset helpers would break current standalone sample launch contract
+- Evidence
+  - `tryLoadPresetFromQuery` exists in standalone tools:
+    - tools/3D Asset Viewer/main.js
+    - tools/3D Camera Path Editor/main.js
+    - tools/3D JSON Payload/main.js
+    - tools/Asset Pipeline/main.js
+    - tools/Palette Browser/main.js
+    - tools/Performance Profiler/main.js
+    - tools/Physics Sandbox/main.js
+    - tools/Replay Visualizer/main.js
+    - tools/State Inspector/main.js
+    - tools/Tile Model Converter/main.js
+    - tools/Vector Map Editor/editor/VectorMapEditorApp.js
+  - These paths also emit visible errors on failure (`Preset load failed...`) and explicit no-default states (`Awaiting source ... No default ...`).
+- Why blocked
+  - Removing these helpers without replacing sample launch/query contract would break executable sample/tool flows.
+- Next required action
+  - New dedicated PR to replace query-driven sample preset loading with a new direct-input contract and update all sample entrypoints/tests together.
+
+Blocker 2: Extensive normalize*/infer* helpers include valid runtime behavior, not only legacy compatibility
+- Evidence
+  - `tools/shared/toolLoadDiagnostics.js` contains infer/normalize helpers used for diagnostics boundary classification.
+  - `tools/shared/platformShell.js` contains normalize utilities for URL/path/tool key sanitation and display summarization.
+  - `tools/Asset Pipeline/main.js` contains inferDomainFromCatalogKind/inferSourceToolIdForDomain used by pipeline mapping behavior.
+- Why blocked
+  - Blanket removal is high-risk and exceeds surgical cleanup scope.
+- Next required action
+  - Follow-up PR with explicit allowlist/denylist for helper families and behavioral parity tests before removal/rename.
+
+Blocker 3: `asset-pipeline-tooling` identifier contains stale substring but represents an internal schema token, not a tool id
+- Evidence
+  - tools/Asset Pipeline/main.js: `schema: "html-js-gaming.asset-pipeline-tooling"`
+  - tools/shared/pipeline/assetPipelineTooling.js: `ASSET_PIPELINE_TOOLING_SCHEMA = "html-js-gaming.asset-pipeline-tooling"`
+- Why blocked
+  - Renaming this token without a coordinated schema/version migration can break downstream tooling outputs.
+- Next required action
+  - Dedicated nomenclature migration PR for pipeline output schema ids, with versioning/migration notes and validation updates.
+
+Blocker 4: Required fixture destination preserves `palette-editor` token in path
+- Evidence
+  - tests/tools/ToolWorkspaceSchemaManifestBoundaries.test.mjs references:
+    - tests/fixtures/tool-schemas/palette-editor/tool.schema.json
+- Why blocked
+  - BUILD requires this exact destination path for relocated fixture files.
+- Next required action
+  - If canonical naming must eliminate `palette-editor` token entirely, update BUILD contract/tests/fixture destination in a dedicated PR.
+
+Files searched
+- tools/shared/platformShell.js
+- tools/shared/toolLoadDiagnostics.js
+- tools/shared/schemaOnlyToolPresetValidation.js
+- tools/3D Asset Viewer/main.js
+- tools/3D Camera Path Editor/main.js
+- tools/3D JSON Payload/main.js
+- tools/Asset Pipeline/main.js
+- tools/Palette Browser/main.js
+- tools/Performance Profiler/main.js
+- tools/Physics Sandbox/main.js
+- tools/Replay Visualizer/main.js
+- tools/State Inspector/main.js
+- tools/Tile Model Converter/main.js
+- tools/Vector Map Editor/editor/VectorMapEditorApp.js
+- tests/tools/ToolWorkspaceSchemaManifestBoundaries.test.mjs
+
+Matches found
+- Multiple `tryLoadPresetFromQuery` and `buildPresetLoadedStatus` matches in tool entrypoints.
+- Multiple `normalize*`/`infer*` matches in shared and tool files as noted above.
+
+Files changed (for blocker handling)
+- None directly for blocker-only items.
+
+Skipped items
+- Broad helper removal and nomenclature token migration.
+- Exact reason: requires cross-file contract migration and test updates beyond surgical scope.
+
+Validation command used
+- rg scans for helper/name patterns
+- targeted runtime/schema checks in other reports
+
+Validation result
+- Blockers documented with file/path evidence and explicit next action.
+
+Remaining blockers
+- Blockers 1 through 4 remain open.

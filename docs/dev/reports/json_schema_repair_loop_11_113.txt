@@ -1,0 +1,95 @@
+﻿PR 11.113 JSON/Schema Repair Loop Evidence
+Date: 2026-04-30
+
+Files searched
+- tests/tools/ToolWorkspaceSchemaManifestBoundaries.test.mjs
+- tools/shared/toolLoadDiagnostics.js
+- tools/shared/schemaOnlyToolPresetValidation.js
+- samples/metadata/samples.index.metadata.json
+- samples/phase-02/0204/*
+- samples/phase-14/1413/*
+- src tools samples games tests scripts (pattern scans)
+
+Issue A: Test-only tool schema relocation
+Search scope + pattern
+- Scope: tools/* and tests/*
+- Pattern: tools/(palette-editor|vector-asset-studio|vector-map-editor)/tool.schema.json + tests/fixtures path
+Matches found
+- Runtime paths: absent
+- Fixture paths: present in `tests/tools/ToolWorkspaceSchemaManifestBoundaries.test.mjs`
+Fix applied
+- None in this PR (already fixed in previous pass).
+Validation
+- Runtime files missing:
+  - tools/palette-editor/tool.schema.json
+  - tools/vector-asset-studio/tool.schema.json
+  - tools/vector-map-editor/tool.schema.json
+- Fixture files exist:
+  - tests/fixtures/tool-schemas/palette-editor/tool.schema.json
+  - tests/fixtures/tool-schemas/vector-asset-studio/tool.schema.json
+  - tests/fixtures/tool-schemas/vector-map-editor/tool.schema.json
+- Test run: PASS ToolWorkspaceSchemaManifestBoundaries
+
+Issue B: Schema-only runtime validation still enforced
+Search scope + pattern
+- Scope: tools/shared/toolLoadDiagnostics.js, tools/shared/schemaOnlyToolPresetValidation.js
+- Pattern: enforceToolPresetSchemaOnlyContract|Input validation failed
+Matches found
+- `toolLoadDiagnostics.js` imports and calls `enforceToolPresetSchemaOnlyContract` (loaded boundary)
+- `schemaOnlyToolPresetValidation.js` emits detailed visible error text beginning with `Input validation failed...`
+Fix applied
+- None required in this PR.
+Validation result
+- Existing schema-only enforcement path is present.
+
+Issue C: Canonical naming/stale naming check (runtime/source scope)
+Search scope + pattern
+- Scope: src tools samples games tests scripts (excluding docs/reports)
+- Pattern: asset-pipeline-tool|3d-json-payload-normalizer|Asset Pipeline Tool|palette-editor
+Matches found
+- No runtime/source hits for `asset-pipeline-tool`, `3d-json-payload-normalizer`, `Asset Pipeline Tool`
+- One hit for `palette-editor` at required fixture path in test file
+Fix applied
+- None required for runtime ids.
+Skipped items
+- `palette-editor` fixture path retained because BUILD explicitly requires destination `tests/fixtures/tool-schemas/palette-editor/tool.schema.json`.
+
+Issue D: Sample/tool truthfulness (audit-confirmed missing references)
+Search scope + pattern
+- Scope: samples/** and samples metadata
+- Command: audit-sample-json-js-references.ps1 -Details
+Matches found (before)
+- Missing reference files:
+  - samples/phase-02/0204/sample.0204.3d-asset-viewer.json
+  - samples/phase-14/1413/sample.1413.3d-asset-viewer.json
+  - samples/phase-14/1413/sample.1413.asset-browser.json
+Fix applied
+- Deleted all three dead JSON files.
+- Updated sample 1413 metadata block to remove stale 3d-asset-viewer tool hint/preset path.
+Validation (after)
+- Audit result: scanned=63 referenced=63 missing=0
+- Deleted file references no longer found by targeted `rg` checks.
+- Changed JSON parses: `samples/metadata/samples.index.metadata.json` -> JSON_OK
+
+Files changed
+- samples/metadata/samples.index.metadata.json
+- samples/phase-02/0204/sample.0204.3d-asset-viewer.json (deleted)
+- samples/phase-14/1413/sample.1413.3d-asset-viewer.json (deleted)
+- samples/phase-14/1413/sample.1413.asset-browser.json (deleted)
+- docs/dev/reports/sample_json_js_reference_audit.csv (regenerated)
+
+Skipped items + exact reason
+- No broad schema file rewrites were made because this PR did not expose schema parse/validation failures in changed files.
+- No broad tool-id migration was made because runtime/source stale-id scans were already clean in scoped paths.
+
+Validation commands used
+- powershell -ExecutionPolicy Bypass -File .\scripts\PS\audit-sample-json-js-references.ps1 -Details
+- node --input-type=module -e "import { run } from './tests/tools/ToolWorkspaceSchemaManifestBoundaries.test.mjs'; await run(); console.log('PASS ToolWorkspaceSchemaManifestBoundaries');"
+- node JSON parse check for samples/metadata/samples.index.metadata.json
+- rg fixed-string checks for deleted JSON paths
+
+Validation result
+- PASS (targeted).
+
+Remaining blockers
+- See blockers_11_113.txt (shared helper naming/flow items needing dedicated follow-up).

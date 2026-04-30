@@ -1,1 +1,1 @@
-Move test tool schemas to fixtures and remove inference input paths - PR 11.111
+Require repair-or-report execution for direct JSON cleanup lane - PR 11.113

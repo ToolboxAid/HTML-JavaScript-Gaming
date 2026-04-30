@@ -1,0 +1,87 @@
+﻿PR 11.113 Shared Code Cleanup (Infer/Normalize/Preset/Replace)
+Date: 2026-04-30
+
+Scope searched
+- tools/shared/platformShell.js
+- tools/shared/toolLoadDiagnostics.js
+- tools/shared/schemaOnlyToolPresetValidation.js
+- tools/3D Asset Viewer/main.js
+- tools/3D Camera Path Editor/main.js
+- tools/3D JSON Payload/main.js
+- tools/Asset Pipeline/main.js
+- tools/Palette Browser/main.js
+- tools/Performance Profiler/main.js
+- tools/Physics Sandbox/main.js
+- tools/Replay Visualizer/main.js
+- tools/State Inspector/main.js
+- tools/Tile Model Converter/main.js
+- tools/Vector Map Editor/editor/VectorMapEditorApp.js
+
+Search patterns and results
+1) Pattern: infer\w*
+- Matches found in:
+  - tools/shared/toolLoadDiagnostics.js (expected diagnostics classification helpers)
+  - tools/shared/platformShell.js (asset display label helper)
+  - tools/Asset Pipeline/main.js (domain/source-tool derivation from known kind)
+- Change in this PR: none.
+- Reason skipped: these are active behavioral helpers (diagnostics/display/domain mapping), not stale preset payload extractors removed in 11.111.
+
+2) Pattern: normalize\w*
+- Matches found broadly across scoped files.
+- Change in this PR: none.
+- Reason skipped: these include path sanitization, status text normalization, query normalization, and user-triggered tool payload normalization actions. Removing them wholesale would alter runtime behavior beyond this PR scope.
+
+3) Pattern: tryLoadPreset\w*
+- Matches found in each standalone tool entrypoint.
+- Change in this PR: none.
+- Reason skipped: these functions perform explicit JSON loading via `samplePresetPath` query and surface visible errors (`Preset load failed...`). Removal requires a replacement launch contract PR.
+
+4) Pattern: buildPreset\w*
+- Matches found as status-message helpers (`buildPresetLoadedStatus*`).
+- Change in this PR: none.
+- Reason skipped: informational status helper only; no hidden data injection.
+
+5) Pattern: replace\w*
+- Matches found mainly in string/path sanitation and DOM replacement APIs.
+- Change in this PR: none.
+- Reason skipped: no evidence of input-mutation alias remap behavior from these matches in scoped files.
+
+6) Pattern: alias|remap|legacy
+- Scope: same files listed above.
+- Result: zero direct matches with this specific pattern set in scoped files.
+- Statement: zero matches found for explicit alias/remap/legacy keywords under the focused input/loading scope.
+
+Previously removed helper references (verification)
+- Searched for removed functions:
+  - extractAssetPayloadFromPreset
+  - extractCameraPathFromPreset
+  - extractMapPayloadFromPreset
+  - extractPipelinePayloadFromPreset
+  - extractPaletteFromSamplePreset
+  - extractProfileSettingsFromPreset
+  - extractPhysicsBodyFromPreset
+  - extractReplayEventsFromSamplePreset
+  - extractSnapshotFromSamplePreset
+  - extractConverterPayloadFromPreset
+  - extractVectorMapDocumentFromSamplePreset
+- Result: all REMOVED_OK (no references remain).
+
+Files changed
+- No shared/tool input code files changed in this PR.
+- This PR's repair changes were in sample JSON truthfulness cleanup (see tool_binding_truthfulness report).
+
+Skipped items
+- Broad helper removal across normalization/preset loaders.
+- Exact reason: high blast radius and would break current explicit sample JSON launch without replacement contract; must be handled in dedicated loader-contract PR.
+
+Validation command(s) used
+- rg pattern scans listed above
+- helper removal verification scan across tools/src/samples/games/tests/scripts
+
+Validation result
+- PASS for evidence gathering and previously removed helper absence checks.
+
+Remaining blockers
+- `tryLoadPresetFromQuery` and `buildPresetLoadedStatus` functions remain across standalone tools.
+- `infer*` and `normalize*` naming remains in diagnostics/platform utilities.
+- Next action: dedicated PR to redefine/replace sample launch loading contract and rename/remove helper families without regressions.

@@ -4,73 +4,124 @@ Model: GPT-5.3-codex
 Reasoning: medium
 
 ## PR
-BUILD_PR_LEVEL_11_111_TEST_SCHEMA_RELOCATION_AND_INFER_PATH_REMOVAL
+BUILD_PR_LEVEL_11_113_CODEX_REPAIR_OR_REPORT_ENFORCEMENT
 
 ## Execute
 
-1. Move test-only schema files out of runtime tool folders:
-   - tools/palette-editor/tool.schema.json -> tests/fixtures/tool-schemas/palette-editor/tool.schema.json
-   - tools/vector-asset-studio/tool.schema.json -> tests/fixtures/tool-schemas/vector-asset-studio/tool.schema.json
-   - tools/vector-map-editor/tool.schema.json -> tests/fixtures/tool-schemas/vector-map-editor/tool.schema.json
+This PR exists because the previous run applied no changes and left reports empty.
 
-2. Update any tests or scripts that referenced the old paths.
+### Mandatory Rule
 
-3. Do not leave duplicate runtime copies at:
+Do not finish with empty reports.
+
+For every requested item, do one:
+1. Fix it.
+2. Prove no fix is needed with file/path evidence.
+3. Report a precise blocker with file/path/line evidence and the next required action.
+
+### Repair Loop
+
+For each issue:
+1. Search.
+2. Record search scope and pattern.
+3. If found, fix if in scope.
+4. Re-run targeted validation.
+5. If not fixed, report exact blocker.
+6. Repeat until fixed or explicitly blocked.
+
+### Revisit all active cleanup requests
+
+1. Direct JSON only:
+   - no presets
+   - no normalizers
+   - no transformers
+   - no converters
+   - no default/demo/fallback data
+
+2. Schema-only validation:
+   - allowed pre-schema checks: file exists, JSON parse
+   - all other validation belongs in schema
+   - invalid input renders visible screen error
+
+3. Move test-only schema files:
    - tools/palette-editor/tool.schema.json
    - tools/vector-asset-studio/tool.schema.json
    - tools/vector-map-editor/tool.schema.json
+   into:
+   - tests/fixtures/tool-schemas/<tool-id>/tool.schema.json
+   Remove runtime duplicates.
 
-4. Search focused tool input/loading/shared code for inference and compatibility helpers:
+4. Remove/report shared/tool input code:
    - infer*
    - normalize*
-   - transform*
-   - convert*
-   - coerce*
-   - resolve*Legacy*
-   - fallback*
-   - default* when used as hidden input/data injection
-   - alias/remap helpers
+   - tryLoadPreset*
+   - buildPreset*
+   - input-mutation replace*
+   - legacy remappers
+   - alias acceptance
+   - fallback/default data injection
 
-5. Remove the smallest safe set of shared inference/compatibility code that affects tool input/source/payload loading.
-
-6. Keep only allowed pre-schema checks:
-   - file exists
-   - JSON parse
-
-7. Ensure all other input validation is schema-only.
-
-8. Ensure failures render visible screen errors:
-   - missing file
-   - malformed JSON
-   - schema mismatch
-
-9. Preserve direct flow:
-   explicit JSON file -> schema validation -> render as-is
-
-10. Preserve canonical names:
+5. Enforce canonical names:
    - palette-browser
    - 3d-json-payload
    - asset-pipeline
 
-11. Preserve compact primitive-array formatting.
+6. Remove stale names:
+   - palette as a tool key/name
+   - palette-editor
+   - 3d-json-payload-normalizer
+   - Asset Pipeline Tool
+   - asset-pipeline-tool
 
-12. Validate targeted paths:
-   - moved fixture files exist
-   - old runtime tool.schema.json files are gone
-   - changed test/script references work
-   - changed JSON parses
-   - changed manifests validate
-   - no removed helper references remain
+7. Enforce sample/tool truthfulness:
+   - if sample cannot load in aligned tool, remove the tool reference
+   - do not add fake data
 
-13. Write reports:
-   - docs/dev/reports/tool_schema_fixture_relocation_11_111.txt
-   - docs/dev/reports/inference_path_removal_11_111.txt
-   - docs/dev/reports/schema_only_runtime_check_11_111.txt
+8. Restore compact primitive arrays:
+   - primitive arrays must be compact grouped
+   - do not expand simple arrays one value per line
 
-14. Roadmap:
-   - update status markers only if execution-backed
-   - do not rewrite roadmap text
-   - do not delete roadmap text
+### Validation
 
-15. Package Codex output ZIP at:
-   tmp/PR_11_111_TEST_SCHEMA_RELOCATION_AND_INFER_PATH_REMOVAL.zip
+Run targeted validation and include command/result in reports:
+- changed JSON parses
+- changed manifests validate
+- helper references removed or justified
+- moved files exist
+- old files removed
+- invalid input shows visible screen error if affected path changed
+
+### Reports
+
+Write populated reports:
+- docs/dev/reports/repair_or_report_summary_11_113.txt
+- docs/dev/reports/json_schema_repair_loop_11_113.txt
+- docs/dev/reports/shared_code_cleanup_11_113.txt
+- docs/dev/reports/tool_binding_truthfulness_11_113.txt
+- docs/dev/reports/blockers_11_113.txt
+
+Each report must include:
+- files searched
+- matches found
+- files changed
+- skipped items
+- exact reason skipped
+- validation command used
+- validation result
+- remaining blockers
+
+If zero matches:
+- report the exact search pattern
+- report the scope searched
+- state that zero matches were found
+
+### Roadmap
+
+- status-only update if execution-backed
+- do not rewrite roadmap text
+- do not delete roadmap text
+
+### Output
+
+Package Codex output ZIP at:
+tmp/PR_11_113_CODEX_REPAIR_OR_REPORT_ENFORCEMENT.zip
