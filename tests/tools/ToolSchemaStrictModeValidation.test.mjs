@@ -167,15 +167,15 @@ function validateWorkspace1902(sampleDocument, schemaIndex) {
   }
   const toolsSchema = topLevelProps.tools;
   const allowedToolIds = new Set(Object.keys((toolsSchema && toolsSchema.properties) || {}));
-  if (!allowedToolIds.has("palette")) {
-    errors.push("workspace tools schema must include required palette tool");
+  if (!allowedToolIds.has("palette-browser")) {
+    errors.push("workspace tools schema must include required palette-browser tool");
   }
   Object.keys(tools).forEach((toolId) => {
     if (!allowedToolIds.has(toolId)) {
       errors.push(`root.tools.${toolId} is not allowed by workspace.manifest schema`);
       return;
     }
-    const toolSchemaPath = toolId === "palette"
+    const toolSchemaPath = toolId === "palette-browser"
       ? "tools/schemas/tools/palette-browser.schema.json"
       : `tools/schemas/tools/${toolId}.schema.json`;
     const toolSchema = schemaIndex.get(toolSchemaPath);
@@ -264,7 +264,7 @@ export async function run() {
     "3d-json-payload-normalizer",
     "3d-asset-viewer",
     "3d-camera-path-editor",
-    "palette"
+    "palette-browser"
   ];
   requiredToolIds.forEach((toolId) => {
     assert.equal(toolId in sample1902.tools, true, `Sample 1902 must include ${toolId}.`);

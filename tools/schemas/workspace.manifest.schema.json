@@ -32,11 +32,11 @@
     },
     "tools": {
       "type": "object",
-      "required": ["palette"],
+      "required": ["palette-browser"],
       "additionalProperties": false,
       "description": "Workspace-owned tool asset data keyed by canonical registry ids plus required singular palette payload.",
       "properties": {
-        "palette": {
+        "palette-browser": {
           "$ref": "./tools/palette-browser.schema.json"
         },
         "vector-map-editor": {

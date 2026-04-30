@@ -13,9 +13,7 @@ const GAME_ASSET_CATALOG_VERSION = 1;
 const WORKSPACE_MANIFEST_SCHEMA = "html-js-gaming.project";
 const WORKSPACE_DOCUMENT_KIND = "workspace-manifest";
 const WORKSPACE_MANIFEST_SCHEMA_PATH = "/tools/schemas/workspace.manifest.schema.json";
-const WORKSPACE_SPECIAL_TOOL_KEY_MAP = Object.freeze({
-  palette: "palette-browser"
-});
+const WORKSPACE_SPECIAL_TOOL_KEY_MAP = Object.freeze({});
 const gameAssetCatalogCache = new Map();
 let workspaceSchemaContractPromise = null;
 
@@ -545,7 +543,7 @@ function classifyWorkspaceManifestTools(rawSource, schemaContract = null) {
   if (!hasSchemaContract) {
     discoveredKeys.forEach((key) => {
       const normalizedKey = normalizeToken(key);
-      const mappedToolId = WORKSPACE_SPECIAL_TOOL_KEY_MAP[normalizedKey] || normalizedKey;
+      const mappedToolId = normalizedKey;
       normalizedKeys.push({
         rawKey: key,
         normalizedKey,
@@ -576,7 +574,7 @@ function classifyWorkspaceManifestTools(rawSource, schemaContract = null) {
     }
 
     const normalizedKey = key.toLowerCase();
-    const mappedToolId = WORKSPACE_SPECIAL_TOOL_KEY_MAP[normalizedKey] || normalizedKey;
+    const mappedToolId = normalizedKey;
     normalizedKeys.push({
       rawKey: key,
       normalizedKey,

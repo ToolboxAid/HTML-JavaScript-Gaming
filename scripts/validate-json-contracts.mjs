@@ -486,9 +486,6 @@ function schemaPathForToolId(toolId) {
   if (!normalized) {
     return "";
   }
-  if (normalized === "palette") {
-    return "tools/schemas/tools/palette-browser.schema.json";
-  }
   return `tools/schemas/tools/${normalized}.schema.json`;
 }
 

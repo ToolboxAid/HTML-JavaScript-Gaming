@@ -24,8 +24,7 @@ export async function run() {
 
   const toolSchemaFiles = [
     "tools/vector-map-editor/tool.schema.json",
-    "tools/svg-asset-studio/tool.schema.json",
-    "tools/palette-editor/tool.schema.json"
+    "tools/svg-asset-studio/tool.schema.json"
   ];
   toolSchemaFiles.forEach((relativePath) => {
     const document = readJson(relativePath);

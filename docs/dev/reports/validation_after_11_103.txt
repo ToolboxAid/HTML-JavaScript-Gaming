@@ -1,0 +1,77 @@
+﻿PR 11.103 Validation Report
+Date: 2026-04-30
+
+Scope
+- Workspace manifest schema key migration from tools.palette -> tools.palette-browser
+- Runtime/tooling key usage normalization to palette-browser
+- Removal of invalid runtime/test reference to palette-editor
+- Targeted validation only
+
+Files Changed
+- tools/schemas/workspace.manifest.schema.json
+- tools/shared/platformShell.js
+- tools/Workspace Manager/main.js
+- scripts/validate-json-contracts.mjs
+- tests/tools/ToolSchemaStrictModeValidation.test.mjs
+- tests/tools/ToolWorkspaceSchemaManifestBoundaries.test.mjs
+- samples/phase-19/1902/sample.1902.workspace-all-tools.json
+
+Schema Contract Changes
+1) tools/schemas/workspace.manifest.schema.json
+- tools.required updated: ["palette"] -> ["palette-browser"]
+- tools.properties key renamed: "palette" -> "palette-browser"
+
+2) Runtime normalization
+- Removed workspace special-key aliasing in shared shell for "palette".
+- Workspace manifest tool key normalization now uses canonical key names directly.
+
+3) Invalid references removed
+- Removed stale test schema entry referencing tools/palette-editor/tool.schema.json
+- Runtime/source search now shows palette-editor only in docs/history text (no active runtime/test dependency)
+
+Validation Evidence
+Command: powershell -ExecutionPolicy Bypass -File .\scripts\PS\validate-tool-schemas.ps1
+Result:
+- tool_payload_schema_validation: total=17 invalid=0
+
+Command: node tests/tools/ToolSchemaStrictModeValidation.test.mjs
+Result:
+- PASS (exit 0)
+
+Command: node --check "tools/Workspace Manager/main.js"
+Result:
+- PASS (exit 0)
+
+Command: node --check tools/shared/platformShell.js
+Result:
+- PASS (exit 0)
+
+Command: node --check scripts/validate-json-contracts.mjs
+Result:
+- PASS (exit 0)
+
+Workspace Manifest Key Validation
+Scanned workspace-manifest documents:
+- samples/phase-19/1902/sample.1902.workspace-all-tools.json
+  - tools.palette present: NO
+  - tools.palette-browser present: YES
+- workspace.manifest.json
+  - documentKind workspace-manifest, legacy palette-links shape; no tools object
+  - not a tools-key regression for this migration
+
+Repo Key/Reference Checks
+Command: rg -n 'tools\["palette"\]|tools\.palette\b|toolId\s*===\s*"palette"|id\s*===\s*"palette"' src tools samples tests scripts --glob '*.js' --glob '*.mjs' --glob '*.json'
+Result:
+- No active tools.palette key usage remains.
+- Remaining hits are expected message/path text containing tools.palette-browser.
+
+Command: rg -n 'palette-editor' .
+Result:
+- Hits only in docs/report history files.
+- No active runtime/test/schema dependency remains.
+
+Outcome
+- Workspace tools contract is normalized to tools.palette-browser.
+- Active runtime/test/schema usage aligns with palette-browser.
+- Invalid palette-editor runtime/test reference removed.
+- Targeted validation checks passed.

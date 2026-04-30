@@ -1,1 +1,1 @@
-Enforce compact primitive array formatting across repo - PR 11.100
+Normalize palette tool to palette-browser and enforce single canonical naming - PR 11.103

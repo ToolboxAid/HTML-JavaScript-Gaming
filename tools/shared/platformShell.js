@@ -481,16 +481,12 @@ function isWorkspaceManifestPreset(rawPreset) {
   return documentKind === "workspace-manifest" || schema === "html-js-gaming.project";
 }
 
-const WORKSPACE_SPECIAL_TOOL_KEY_MAP = Object.freeze({
-  palette: "palette-browser"
-});
-
 function normalizeWorkspaceManifestToolKey(rawKey) {
   const normalizedKey = normalizeTextValue(rawKey).toLowerCase();
   if (!normalizedKey) {
     return "";
   }
-  return WORKSPACE_SPECIAL_TOOL_KEY_MAP[normalizedKey] || normalizedKey;
+  return normalizedKey;
 }
 
 function resolveWorkspaceManifestScopedToolPreset(rawPreset, toolId) {
@@ -1243,14 +1239,8 @@ function readPaletteFromManifestPayload(manifestPayload, launchContext = null) {
   const tools = source.tools && typeof source.tools === "object" && !Array.isArray(source.tools)
     ? source.tools
     : {};
-  const paletteToolSection = tools.palette && typeof tools.palette === "object" && !Array.isArray(tools.palette)
-    ? tools.palette
-    : null;
   const paletteBrowserSection = tools["palette-browser"] && typeof tools["palette-browser"] === "object" && !Array.isArray(tools["palette-browser"])
     ? tools["palette-browser"]
-    : null;
-  const paletteToolPayload = paletteToolSection?.payload && typeof paletteToolSection.payload === "object" && !Array.isArray(paletteToolSection.payload)
-    ? paletteToolSection.payload
     : null;
   const paletteBrowserPayload = paletteBrowserSection?.payload && typeof paletteBrowserSection.payload === "object" && !Array.isArray(paletteBrowserSection.payload)
     ? paletteBrowserSection.payload
@@ -1261,7 +1251,7 @@ function readPaletteFromManifestPayload(manifestPayload, launchContext = null) {
   const compatibilityRootPalette = source.palette && typeof source.palette === "object" && !Array.isArray(source.palette)
     ? source.palette
     : null;
-  const selectedPalette = paletteToolPayload || paletteBrowserPayload || paletteBrowserLegacyPalette || compatibilityRootPalette;
+  const selectedPalette = paletteBrowserPayload || paletteBrowserLegacyPalette || compatibilityRootPalette;
   if (!selectedPalette) {
     return null;
   }
@@ -1278,9 +1268,7 @@ function readPaletteFromManifestPayload(manifestPayload, launchContext = null) {
     return null;
   }
   let sourceKey = "workspace-game-manifest.root-palette-compat";
-  if (paletteToolPayload) {
-    sourceKey = "workspace-game-manifest.tools.palette.payload";
-  } else if (paletteBrowserPayload) {
+  if (paletteBrowserPayload) {
     sourceKey = "workspace-game-manifest.palette-browser.payload";
   } else if (paletteBrowserLegacyPalette) {
     sourceKey = "workspace-game-manifest.palette-browser";
