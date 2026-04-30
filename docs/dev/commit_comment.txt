@@ -1,1 +1,1 @@
-Use workspace manifest tool keys as tool ids for direct payload entries - PR 11.148
+Populate Workspace Manager cards from direct tool payloads - PR 11.149

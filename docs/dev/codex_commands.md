@@ -7,11 +7,10 @@ STRICT SCOPE MODE
 
 ALLOWED FILES:
 - tools/workspace-manager/main.js
-- docs/dev/reports/workspace_tool_key_id_fix_11_148.txt
+- docs/dev/reports/workspace_direct_payload_card_status_11_149.txt
 
 ALLOWED CHANGES:
-- use workspace manifest `tools` object key as tool id
-- remove requirement that direct payload entries contain `tool`
+- update Workspace Manager card/status/presence detection for direct payload entries
 - create/update report
 
 TASK:
@@ -19,40 +18,49 @@ TASK:
 1. Open:
    tools/workspace-manager/main.js
 
-2. Find the logic that emits:
-   tool-entry-missing-tool-id
+2. Find card/status/presence logic that displays:
+   - Asset: none
+   - Asset: N/A
+   - Palette: none
+   for loaded workspace tools.
 
-3. Change Workspace Manager manifest parsing so:
-   - the object key under `tools` is treated as the tool id
-   - direct payload entries do NOT need `entry.tool`
-   - direct payload entries do NOT need `entry.payload`
+3. Update it so direct payload entries in:
+   workspaceManifest.tools[toolId]
+   populate the corresponding tool cards.
 
-4. Keep:
-   - registry lookup by tool id key
-   - schema validation of the entry object against that tool schema
-   - visible diagnostics for unavailable registry tools
+4. Use direct payload root fields only for labels.
+   Do not mutate payloads.
+   Do not wrap payloads.
+   Do not infer missing data.
 
-5. Do NOT:
-   - modify schemas
-   - modify sample JSON
-   - re-add wrappers
-   - add compatibility fallback
-   - transform payloads
+5. Ensure:
+   - tools with valid direct payloads are active/available
+   - missing/invalid payloads still show empty/error state
+   - palette-browser displays direct palette `name`
+   - launch still passes the same direct payload object
 
-6. Validate:
+6. Do NOT modify:
+   - schemas
+   - samples
+   - runtime host
+   - routing outside Workspace Manager
+
+7. Validate:
    - JS syntax for tools/workspace-manager/main.js
-   - Sample 1902 direct manifest no longer causes `tool-entry-missing-tool-id`
+   - Sample 1902 Workspace Manager cards show populated labels for valid direct payload entries
+   - no `tool/version/payload` wrapper restored
    - git diff --name-only contains only ALLOWED FILES
 
-7. Write:
-   docs/dev/reports/workspace_tool_key_id_fix_11_148.txt
+8. Write:
+   docs/dev/reports/workspace_direct_payload_card_status_11_149.txt
 
 Report must include:
-- changed file
-- exact behavior changed
-- validation command/result
+- file changed
+- card labels populated
+- Sample 1902 verification
+- validation result
 - strict scope confirmation
-- remaining blocker if any
+- remaining blockers if any
 
-8. Package Codex output ZIP at:
-   tmp/PR_11_148_WORKSPACE_MANAGER_USE_TOOL_KEY_AS_ID.zip
+9. Package Codex output ZIP at:
+   tmp/PR_11_149_WORKSPACE_MANAGER_DIRECT_PAYLOAD_CARD_STATUS.zip

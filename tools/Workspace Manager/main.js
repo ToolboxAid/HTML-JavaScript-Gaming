@@ -2,6 +2,12 @@ import { createToolHostManifest, getToolHostEntryById } from "../../tools/shared
 import { createToolHostRuntime } from "../../tools/shared/toolHostRuntime.js";
 import { resolveToolIdAlias } from "../../tools/toolRegistry.js";
 import {
+  createAssetHandoff,
+  createPaletteHandoff,
+  writeSharedAssetHandoff,
+  writeSharedPaletteHandoff
+} from "../../tools/shared/assetUsageIntegration.js";
+import {
   removeToolHostSharedContextById,
   writeToolHostSharedContext
 } from "../../tools/shared/toolHostSharedContext.js";
@@ -158,6 +164,212 @@ function normalizeLocalHrefParam(value, allowedPrefixes = []) {
 
 function isPlainObject(value) {
   return !!value && typeof value === "object" && !Array.isArray(value);
+}
+
+function readDirectPayloadDocument(payload, documentKey = "") {
+  if (!isPlainObject(payload)) {
+    return null;
+  }
+  const node = payload[documentKey];
+  return isPlainObject(node) ? node : null;
+}
+
+function inferAssetTypeFromDirectPayload(toolId = "", payload = null) {
+  if (readDirectPayloadDocument(payload, "vectorMapDocument")) {
+    return "vector-map";
+  }
+  if (readDirectPayloadDocument(payload, "vectorAssetDocument")) {
+    return "vector";
+  }
+  if (readDirectPayloadDocument(payload, "tileMapDocument")) {
+    return "tilemap";
+  }
+  if (readDirectPayloadDocument(payload, "parallaxDocument")) {
+    return "parallax";
+  }
+  if (readDirectPayloadDocument(payload, "spriteProject")) {
+    return "sprite";
+  }
+  if (readDirectPayloadDocument(payload, "skin")) {
+    return "skin";
+  }
+  if (readDirectPayloadDocument(payload, "asset3d")) {
+    return "model";
+  }
+  if (readDirectPayloadDocument(payload, "cameraPath")) {
+    return "camera-path";
+  }
+  if (isPlainObject(payload?.assets)) {
+    return "asset";
+  }
+  const normalizedToolId = normalizeToken(toolId);
+  if (normalizedToolId === "vector-map-editor") {
+    return "vector-map";
+  }
+  if (normalizedToolId === "svg-asset-studio") {
+    return "vector";
+  }
+  if (normalizedToolId === "tile-map-editor") {
+    return "tilemap";
+  }
+  if (normalizedToolId === "parallax-editor") {
+    return "parallax";
+  }
+  if (normalizedToolId === "sprite-editor") {
+    return "sprite";
+  }
+  if (normalizedToolId === "skin-editor") {
+    return "skin";
+  }
+  if (normalizedToolId === "3d-asset-viewer") {
+    return "model";
+  }
+  if (normalizedToolId === "3d-camera-path-editor") {
+    return "camera-path";
+  }
+  return "asset";
+}
+
+function summarizeDirectToolPayloadLabel(toolId = "", payload = null) {
+  if (!isPlainObject(payload)) {
+    return "";
+  }
+  const normalizedToolId = normalizeToken(toolId) || normalizeTextParam(toolId).toLowerCase();
+
+  if (normalizedToolId === "palette-browser"
+    && payload.schema === "html-js-gaming.palette"
+    && Array.isArray(payload.swatches)) {
+    const paletteName = normalizeTextParam(payload.name || payload.id || "palette");
+    return paletteName || "palette";
+  }
+
+  const vectorMapDocument = readDirectPayloadDocument(payload, "vectorMapDocument");
+  if (vectorMapDocument) {
+    return normalizeTextParam(vectorMapDocument.name || vectorMapDocument.id || "vector map");
+  }
+
+  const vectorAssetDocument = readDirectPayloadDocument(payload, "vectorAssetDocument");
+  if (vectorAssetDocument) {
+    return normalizeTextParam(vectorAssetDocument.sourceName || vectorAssetDocument.name || "vector asset");
+  }
+
+  const tileMapDocument = readDirectPayloadDocument(payload, "tileMapDocument");
+  if (tileMapDocument) {
+    return normalizeTextParam(tileMapDocument?.map?.name || tileMapDocument.name || tileMapDocument.id || "tile map");
+  }
+
+  const parallaxDocument = readDirectPayloadDocument(payload, "parallaxDocument");
+  if (parallaxDocument) {
+    return normalizeTextParam(parallaxDocument?.map?.name || parallaxDocument.name || "parallax");
+  }
+
+  const spriteProject = readDirectPayloadDocument(payload, "spriteProject");
+  if (spriteProject) {
+    const frameCount = Array.isArray(spriteProject.frames) ? spriteProject.frames.length : 0;
+    return frameCount > 0 ? `sprite project (${frameCount} frames)` : "sprite project";
+  }
+
+  const skin = readDirectPayloadDocument(payload, "skin");
+  if (skin) {
+    return normalizeTextParam(skin.name || skin.gameId || skin.projectId || "skin");
+  }
+
+  const assets = isPlainObject(payload.assets) ? payload.assets : null;
+  if (assets) {
+    const entryCount = Object.values(assets)
+      .filter((entry) => isPlainObject(entry) && normalizeTextParam(entry.path || entry.runtimePath || entry.href))
+      .length;
+    return `asset map (${entryCount})`;
+  }
+
+  const pipelinePayload = readDirectPayloadDocument(payload, "pipelinePayload");
+  if (pipelinePayload) {
+    return normalizeTextParam(pipelinePayload.projectId || "pipeline payload");
+  }
+
+  const candidate = readDirectPayloadDocument(payload, "candidate");
+  if (candidate) {
+    return normalizeTextParam(candidate.id || candidate.name || "candidate");
+  }
+
+  const mapPayload = readDirectPayloadDocument(payload, "mapPayload");
+  if (mapPayload) {
+    return normalizeTextParam(mapPayload.mapId || mapPayload.id || "map payload");
+  }
+
+  const asset3d = readDirectPayloadDocument(payload, "asset3d");
+  if (asset3d) {
+    return normalizeTextParam(asset3d.assetId || asset3d.id || "3D asset");
+  }
+
+  const cameraPath = readDirectPayloadDocument(payload, "cameraPath");
+  if (cameraPath) {
+    return normalizeTextParam(cameraPath.pathId || cameraPath.id || "camera path");
+  }
+
+  const fallbackName = normalizeTextParam(payload.name || payload.id || "");
+  return fallbackName;
+}
+
+function readWorkspaceDirectCardLabel(toolId = "") {
+  const labelsByToolId = workspaceManifestToolDiagnostics?.directPayloadLabelByToolId instanceof Map
+    ? workspaceManifestToolDiagnostics.directPayloadLabelByToolId
+    : null;
+  if (!labelsByToolId) {
+    return "";
+  }
+  return normalizeTextParam(labelsByToolId.get(toolId) || "");
+}
+
+function writeSharedBindingsFromDirectPayload(toolId = "", payloadJson = null, paletteJson = null) {
+  if (isPlainObject(paletteJson)
+    && paletteJson.schema === "html-js-gaming.palette"
+    && Array.isArray(paletteJson.swatches)) {
+    const paletteName = normalizeTextParam(paletteJson.name || paletteJson.id || "palette");
+    const colors = paletteJson.swatches
+      .filter((swatch) => isPlainObject(swatch))
+      .map((swatch) => ({
+        symbol: normalizeTextParam(swatch.symbol),
+        hex: normalizeTextParam(swatch.hex || swatch.color),
+        name: normalizeTextParam(swatch.name)
+      }));
+    const paletteHandoff = createPaletteHandoff({
+      paletteId: paletteName || "palette",
+      displayName: paletteName || "palette",
+      colors,
+      metadata: {
+        source: "workspace-manifest.direct-payload",
+        toolId: normalizeTextParam(toolId)
+      },
+      sourceToolId: "workspace-manager"
+    });
+    if (paletteHandoff) {
+      writeSharedPaletteHandoff(paletteHandoff);
+    }
+  }
+
+  if (!isPlainObject(payloadJson)) {
+    return;
+  }
+  const label = summarizeDirectToolPayloadLabel(toolId, payloadJson);
+  if (!label) {
+    return;
+  }
+  const assetType = inferAssetTypeFromDirectPayload(toolId, payloadJson);
+  const assetHandoff = createAssetHandoff({
+    assetId: label,
+    assetType,
+    sourcePath: `workspace-manifest:${normalizeTextParam(toolId)}`,
+    displayName: label,
+    metadata: {
+      source: "workspace-manifest.direct-payload",
+      toolId: normalizeTextParam(toolId)
+    },
+    sourceToolId: "workspace-manager"
+  });
+  if (assetHandoff) {
+    writeSharedAssetHandoff(assetHandoff);
+  }
 }
 
 function resolveJsonPointer(root, pointer) {
@@ -681,6 +893,7 @@ async function readWorkspaceManifestToolDiagnosticsFromSamplePreset(samplePreset
         ],
         schemaContractError: schemaContract?.schemaContractError || "",
         explicitToolPayloadById: new Map(),
+        directPayloadLabelByToolId: new Map(),
         explicitPalettePayload: null
       };
     }
@@ -693,6 +906,7 @@ async function readWorkspaceManifestToolDiagnosticsFromSamplePreset(samplePreset
       visibleToolIds: [],
       schemaContractError: schemaContract?.schemaContractError || "",
       explicitToolPayloadById: explicitInputs.explicitToolPayloadById,
+      directPayloadLabelByToolId: explicitInputs.directPayloadLabelByToolId,
       explicitPalettePayload: explicitInputs.explicitPalettePayload
     };
   } catch (error) {
@@ -712,6 +926,7 @@ async function readWorkspaceManifestToolDiagnosticsFromSamplePreset(samplePreset
         }
       ],
       explicitToolPayloadById: new Map(),
+      directPayloadLabelByToolId: new Map(),
       explicitPalettePayload: null
     };
   }
@@ -719,10 +934,12 @@ async function readWorkspaceManifestToolDiagnosticsFromSamplePreset(samplePreset
 
 function extractWorkspaceManifestExplicitLaunchInputs(rawSource) {
   const explicitToolPayloadById = new Map();
+  const directPayloadLabelByToolId = new Map();
   let explicitPalettePayload = null;
   if (!isWorkspaceManifestSource(rawSource)) {
     return {
       explicitToolPayloadById,
+      directPayloadLabelByToolId,
       explicitPalettePayload
     };
   }
@@ -732,6 +949,7 @@ function extractWorkspaceManifestExplicitLaunchInputs(rawSource) {
   if (!toolsBlock) {
     return {
       explicitToolPayloadById,
+      directPayloadLabelByToolId,
       explicitPalettePayload
     };
   }
@@ -742,6 +960,10 @@ function extractWorkspaceManifestExplicitLaunchInputs(rawSource) {
       return;
     }
     explicitToolPayloadById.set(toolId, rawToolPayload);
+    const directLabel = summarizeDirectToolPayloadLabel(toolId, rawToolPayload);
+    if (directLabel) {
+      directPayloadLabelByToolId.set(toolId, directLabel);
+    }
     if (toolId === "palette-browser"
       && rawToolPayload.schema === "html-js-gaming.palette"
       && Array.isArray(rawToolPayload.swatches)) {
@@ -751,6 +973,7 @@ function extractWorkspaceManifestExplicitLaunchInputs(rawSource) {
 
   return {
     explicitToolPayloadById,
+    directPayloadLabelByToolId,
     explicitPalettePayload
   };
 }
@@ -1190,7 +1413,8 @@ const runtime = createToolHostRuntime({
     writeStatus(message);
   },
   onMounted(tool) {
-    setCurrentLabel(tool.displayName);
+    const directLabel = readWorkspaceDirectCardLabel(tool.id);
+    setCurrentLabel(directLabel ? `${tool.displayName} - ${directLabel}` : tool.displayName);
     syncControlState();
   },
   onUnmounted() {
@@ -1221,6 +1445,7 @@ function mountSelectedTool(source = "manual") {
     throw new Error(`launch contract violation: explicit payloadJson is required for ${toolId}.`);
   }
   const paletteJson = workspaceManifestToolDiagnostics?.explicitPalettePayload || null;
+  writeSharedBindingsFromDirectPayload(toolId, payloadJson, paletteJson);
   const mountResult = runtime.launch(toolId, payloadJson, paletteJson);
   if (!mountResult || !(mountResult.frame instanceof HTMLIFrameElement)) {
     const selectedEntry = getToolHostEntryById(manifest, toolId);
