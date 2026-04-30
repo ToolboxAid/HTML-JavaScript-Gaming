@@ -212,14 +212,6 @@ export default class backgroundImage {
   }
 
   render(renderer, options = {}) {
-    if (!this.isGameplayState(options.scene)) {
-      return {
-        drawn: false,
-        reason: "non-gameplay-state",
-        path: this.layer.path
-      };
-    }
-
     this.ensureLoaded();
     if (this.layer.status !== "ready" || !this.layer.image) {
       return {
