@@ -1,0 +1,48 @@
+﻿Task: vector_map_hosted_payload_boot_11_151
+Date: 2026-04-30
+
+Files changed:
+- tools/Vector Map Editor/main.js
+- docs/dev/reports/vector_map_hosted_payload_boot_11_151.txt
+
+Old boot path found:
+- Vector Map Editor startup path in app start shows default status:
+  "No map loaded. Load a map preset or import a map JSON document to begin."
+- Object-list empty-state text in editor app shows:
+  "No map objects loaded. Import a map JSON file or launch with a sample preset path."
+- Preset boot path is query/preset based in app code (`tryLoadPresetFromQuery`).
+
+New direct hosted payload path:
+- Hosted shared context path read in main boot logic:
+  hostContext.sharedContext.payloadJson.vectorMapDocument
+- Render/state source enforced from:
+  hostContext.sharedContext.payloadJson.vectorMapDocument.objects
+
+Hosted direct payload boot behavior now:
+- If valid hosted payload exists (direct `payloadJson.vectorMapDocument` with `objects` array):
+  1) Boot preloads document model from hosted payload.
+  2) Boot bypasses preset-query requirement (`tryLoadPresetFromQuery` disabled for this hosted flow).
+  3) Legacy no-map startup status message is suppressed.
+  4) Editor state is synchronized and rendered from hosted document objects.
+- No samplePresetPath/import path is required for this hosted direct flow.
+
+Objects verified:
+- Sample 1902 direct vector map payload contains and passes checks for:
+  - obj-player-path
+  - obj-hazard-zone
+
+Validation commands/results:
+- node --check "tools/Vector Map Editor/main.js" -> PASS
+- rg path checks in main.js for hosted direct payload + objects path + no-map suppression -> PASS
+- node JSON check of Sample 1902 object ids -> PASS
+- git diff --name-only -- "tools/Vector Map Editor/main.js" "docs/dev/reports/vector_map_hosted_payload_boot_11_151.txt" -> PASS
+
+Strict scope confirmation:
+- Modified code only in Vector Map Editor main boot file plus this report.
+- No schema/sample/workspace-manager/runtime files modified.
+- No fallback/demo/default object injection added.
+- No wrapper/transform/normalize logic added for hosted payload shape.
+
+Remaining blockers:
+- None in Vector Map Editor hosted boot scope.
+- Repository includes unrelated pre-existing dirty files outside this task scope.
