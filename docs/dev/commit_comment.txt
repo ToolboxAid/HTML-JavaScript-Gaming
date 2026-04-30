@@ -1,1 +1,1 @@
-Trace and fix actual SVG Asset none render branch - PR 11.155
+Instrument and fix active SVG Asset Studio card render source - PR 11.156

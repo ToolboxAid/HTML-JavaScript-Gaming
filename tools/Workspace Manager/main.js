@@ -332,15 +332,18 @@ function primeSvgAssetStatusLabelFromWorkspaceDiagnostics(diagnostics = null) {
   explicitToolPayloadById.forEach((payload, toolId) => {
     tools[toolId] = payload;
   });
-  if (!tools["svg-asset-studio"]?.vectorAssetDocument?.svgText) {
+  const directEntry = tools["svg-asset-studio"];
+  const vectorAssetDocument = directEntry?.vectorAssetDocument;
+  if (!vectorAssetDocument?.svgText) {
     return false;
   }
-  const sourceName = normalizeTextParam(tools["svg-asset-studio"]?.vectorAssetDocument?.sourceName) || "Inline SVG";
+  const sourceName = normalizeTextParam(vectorAssetDocument?.sourceName);
+  const labelText = sourceName || "Inline SVG";
   const assetHandoff = createAssetHandoff({
-    assetId: sourceName,
+    assetId: labelText,
     assetType: "vector",
     sourcePath: "workspace-manifest:svg-asset-studio",
-    displayName: sourceName,
+    displayName: labelText,
     metadata: {
       source: "workspace-manifest.direct-payload",
       toolId: "svg-asset-studio"

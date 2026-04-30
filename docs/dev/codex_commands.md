@@ -7,36 +7,41 @@ STRICT SCOPE MODE
 
 ALLOWED FILES:
 - tools/workspace-manager/main.js
-- docs/dev/reports/svg_asset_none_trace_11_155.txt
+- docs/dev/reports/svg_card_render_source_11_156.txt
 
 TASK:
 
 1. Open:
    tools/workspace-manager/main.js
 
-2. Trace the exact code path that renders:
+2. Find the final DOM/render path that creates visible card text:
+   Vector Assets
+   SVG Asset Studio
    Asset: none
 
-3. Search for:
-   - "Asset: none"
-   - "none"
-   - assetLabel
-   - assetSummary
-   - svg-asset-studio
-   - vectorAssetDocument
-   - card render
-   - row render
-   - status render
+3. Add a temporary console diagnostic for ONLY:
+   toolId === "svg-asset-studio"
 
-4. Identify the active branch used by the Workspace Manager card.
+   Log:
+   - tool id
+   - active tool data object
+   - workspaceManifest.tools["svg-asset-studio"]
+   - workspaceManifest.tools["svg-asset-studio"].vectorAssetDocument
+   - computed/rendered asset label
 
-5. Patch only that branch for `svg-asset-studio` so it reads:
-   workspaceManifest.tools["svg-asset-studio"].vectorAssetDocument.sourceName
+4. Use the diagnostic/static trace to patch the exact active render branch so:
+   if directEntry.vectorAssetDocument.sourceName exists:
+      Asset: <sourceName>
+   else if directEntry.vectorAssetDocument.svgText exists:
+      Asset: Inline SVG
 
-   If sourceName is missing but svgText exists, show:
-   Inline SVG
+5. Remove diagnostic before final output ONLY if the fix is statically confirmed.
 
-6. Do NOT:
+6. If the active render branch cannot be proven:
+   - keep diagnostic in place for one run
+   - report exactly what console output the user must send back
+
+7. Do NOT:
    - modify schemas
    - modify samples
    - modify SVG Asset Studio
@@ -45,22 +50,20 @@ TASK:
    - transform/wrap/normalize payload
    - change unrelated tools
 
-7. Validate:
-   - JS syntax for tools/workspace-manager/main.js
-   - active render path uses vectorAssetDocument
-   - expected visible label is not "Asset: none"
+8. Validate:
+   - node --check tools/workspace-manager/main.js
    - git diff --name-only contains only ALLOWED FILES
+   - report is populated
 
-8. Write:
-   docs/dev/reports/svg_asset_none_trace_11_155.txt
+9. Write:
+   docs/dev/reports/svg_card_render_source_11_156.txt
 
 Report must include:
-- exact old function/branch
-- exact new function/branch
-- why previous PRs missed it
+- exact function/branch changed
+- diagnostic removed or intentionally left
 - expected rendered text
 - validation result
 - strict scope confirmation
 
-9. Package Codex output ZIP at:
-   tmp/PR_11_155_TRACE_SVG_ASSET_NONE_SOURCE.zip
+10. Package Codex output ZIP at:
+   tmp/PR_11_156_INSTRUMENT_SVG_CARD_RENDER_SOURCE.zip
