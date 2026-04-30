@@ -1,1 +1,1 @@
-Finalize runtime simplification: minimal validateInput, schema-only validation - PR 11.140
+Close current direct JSON runtime route without repo-wide fallback cleanup - PR 11.141
