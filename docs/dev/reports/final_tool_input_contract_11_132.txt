@@ -1,0 +1,55 @@
+﻿Final Tool Input Contract Report: 11_132
+Date: 2026-04-30
+Repo: C:/Users/davidq/Documents/GitHub/HTML-JavaScript-Gaming
+Mode: STRICT SCOPE
+
+Objective
+- Enforce explicit launch signature at routing boundary:
+  launch(toolId, payloadJson, paletteJson?)
+- Remove implicit/global launch inputs and hidden dependencies.
+
+Routing files changed
+- tools/shared/toolHostRuntime.js
+- tools/Workspace Manager/main.js
+
+Changes
+1) Tool launch API contract
+- Replaced host runtime launch entrypoint with explicit signature:
+  function launch(toolId, payloadJson, paletteJson = null)
+- Removed mount-style config launch API and implicit config forwarding.
+
+2) Explicit-only input enforcement
+- Runtime now blocks launch when payloadJson is missing/non-object.
+- Runtime now blocks launch when paletteJson is provided but not an object.
+
+3) Hidden/implicit input removal
+- Removed launch URL query forwarding from runtime launch path.
+- Removed Workspace Manager forwarded-input reader used for implicit launch params.
+- Workspace Manager now resolves payloadJson explicitly from workspace manifest tool entries.
+- Workspace Manager passes paletteJson explicitly from workspace manifest palette entry when present.
+- Workspace Manager blocks launch when explicit payloadJson is unavailable.
+
+Verification
+A) Syntax/parse
+- node --check tools/shared/toolHostRuntime.js: PASS
+- node --check tools/Workspace Manager/main.js: PASS
+
+B) Signature and call path checks
+- toolHostRuntime has launch signature:
+  function launch(toolId, payloadJson, paletteJson = null): PASS
+- toolHostRuntime no mountTool API remains: PASS
+- Workspace Manager calls runtime.launch(toolId, payloadJson, paletteJson): PASS
+
+C) Explicit-only guards
+- Runtime payloadJson object guard present: PASS
+- Runtime optional paletteJson object guard present: PASS
+- Workspace explicit payload block when absent present: PASS
+- readForwardedToolLaunchParams function removed: PASS
+
+D) Ambiguity check
+- Implicit launch params forwarding removed from active launch path: PASS
+- Launch inputs are explicit-only at routing boundary: PASS
+
+Result
+- PASS
+- No remaining launch-input ambiguity in the updated routing path.

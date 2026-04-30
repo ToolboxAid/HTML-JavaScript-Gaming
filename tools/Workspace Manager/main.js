@@ -697,16 +697,21 @@ async function readWorkspaceManifestToolDiagnosticsFromSamplePreset(samplePreset
             reason: `fetch-failed(status=${response.status})`
           }
         ],
-        schemaContractError: schemaContract?.schemaContractError || ""
+        schemaContractError: schemaContract?.schemaContractError || "",
+        explicitToolPayloadById: new Map(),
+        explicitPalettePayload: null
       };
     }
     const rawSource = await response.json();
     const classifications = classifyWorkspaceManifestTools(rawSource, schemaContract);
+    const explicitInputs = extractWorkspaceManifestExplicitLaunchInputs(rawSource);
     return {
       sourcePath: normalizedPath,
       ...classifications,
       visibleToolIds: [],
-      schemaContractError: schemaContract?.schemaContractError || ""
+      schemaContractError: schemaContract?.schemaContractError || "",
+      explicitToolPayloadById: explicitInputs.explicitToolPayloadById,
+      explicitPalettePayload: explicitInputs.explicitPalettePayload
     };
   } catch (error) {
     return {
@@ -723,9 +728,49 @@ async function readWorkspaceManifestToolDiagnosticsFromSamplePreset(samplePreset
           key: "",
           reason: `fetch-error(${error instanceof Error ? error.message : "unknown"})`
         }
-      ]
+      ],
+      explicitToolPayloadById: new Map(),
+      explicitPalettePayload: null
     };
   }
+}
+
+function extractWorkspaceManifestExplicitLaunchInputs(rawSource) {
+  const explicitToolPayloadById = new Map();
+  let explicitPalettePayload = null;
+  if (!isWorkspaceManifestSource(rawSource)) {
+    return {
+      explicitToolPayloadById,
+      explicitPalettePayload
+    };
+  }
+  const toolsBlock = rawSource.tools && typeof rawSource.tools === "object" && !Array.isArray(rawSource.tools)
+    ? rawSource.tools
+    : null;
+  if (!toolsBlock) {
+    return {
+      explicitToolPayloadById,
+      explicitPalettePayload
+    };
+  }
+
+  Object.entries(toolsBlock).forEach(([rawToolKey, rawToolPayload]) => {
+    const toolId = normalizeTextParam(rawToolKey).toLowerCase();
+    if (!toolId || !rawToolPayload || typeof rawToolPayload !== "object" || Array.isArray(rawToolPayload)) {
+      return;
+    }
+    explicitToolPayloadById.set(toolId, rawToolPayload);
+    if (toolId === "palette-browser"
+      && rawToolPayload.schema === "html-js-gaming.palette"
+      && Array.isArray(rawToolPayload.swatches)) {
+      explicitPalettePayload = rawToolPayload;
+    }
+  });
+
+  return {
+    explicitToolPayloadById,
+    explicitPalettePayload
+  };
 }
 
 function logWorkspaceManifestToolDiagnostics(diagnostics) {
@@ -744,48 +789,6 @@ function logWorkspaceManifestToolDiagnostics(diagnostics) {
   if (diagnostics.schemaContractError) {
     console.warn(`[WorkspaceManager] workspace schema contract unavailable: ${diagnostics.schemaContractError}`);
   }
-}
-
-function readForwardedToolLaunchParams() {
-  const searchParams = new URL(window.location.href).searchParams;
-  const forwarded = {};
-  const sampleId = normalizeTextParam(searchParams.get("sampleId"));
-  const sampleTitle = normalizeTextParam(searchParams.get("sampleTitle"));
-  const samplePresetPath = normalizeLocalHrefParam(
-    searchParams.get("samplePresetPath"),
-    TOOL_LAUNCH_PARAM_PREFIXES.samplePresetPath
-  );
-  const gameId = normalizeTextParam(searchParams.get("gameId"));
-  const gameTitle = normalizeTextParam(searchParams.get("gameTitle"));
-  const gameHref = normalizeLocalHrefParam(searchParams.get("gameHref"), TOOL_LAUNCH_PARAM_PREFIXES.gameHref);
-  const workspaceHref = normalizeLocalHrefParam(searchParams.get("workspaceHref"), TOOL_LAUNCH_PARAM_PREFIXES.workspaceHref);
-  const returnTo = normalizeLocalHrefParam(searchParams.get("returnTo"), TOOL_LAUNCH_PARAM_PREFIXES.returnTo);
-
-  if (sampleId) {
-    forwarded.sampleId = sampleId;
-  }
-  if (sampleTitle) {
-    forwarded.sampleTitle = sampleTitle;
-  }
-  if (samplePresetPath) {
-    forwarded.samplePresetPath = samplePresetPath;
-  }
-  if (gameId) {
-    forwarded.gameId = gameId;
-  }
-  if (gameTitle) {
-    forwarded.gameTitle = gameTitle;
-  }
-  if (gameHref) {
-    forwarded.gameHref = gameHref;
-  }
-  if (workspaceHref) {
-    forwarded.workspaceHref = workspaceHref;
-  }
-  if (returnTo) {
-    forwarded.returnTo = returnTo;
-  }
-  return forwarded;
 }
 
 function readSelectedToolId() {
@@ -1225,38 +1228,29 @@ function mountSelectedTool(source = "manual") {
     );
     return false;
   }
-  let optionalState = null;
-  if (refs.stateInput instanceof HTMLTextAreaElement) {
-    const rawState = refs.stateInput.value.trim();
-    if (rawState) {
-      try {
-        optionalState = JSON.parse(rawState);
-      } catch {
-        writeStatus("State JSON is invalid. Fix JSON or clear the state field.");
-        renderMountDiagnostic(
-          "Tool mount blocked by invalid state JSON.",
-          "Clear optional state or provide valid JSON before mounting."
-        );
-        return false;
-      }
-    }
-  }
+  const hasStateInput = refs.stateInput instanceof HTMLTextAreaElement
+    && Boolean(refs.stateInput.value.trim());
   updateSwitchMeta();
   updateStandaloneHref(toolId);
   writeQueryToolId(toolId, source === "init");
-  const previousMount = runtime.getCurrentMount();
-  const launchParams = readForwardedToolLaunchParams();
-  const mountResult = runtime.mountTool(toolId, {
-    source,
-    requestedAt: new Date().toISOString(),
-    sharedContext: {
-      requestedToolId: toolId,
-      previousToolId: previousMount?.tool?.id || "",
-      switchPosition: `${Math.max(1, getSelectedToolIndex() + 1)}/${Math.max(1, toolIds.length)}`
-    },
-    state: optionalState,
-    launchParams
-  });
+  const explicitToolPayloadById = workspaceManifestToolDiagnostics?.explicitToolPayloadById instanceof Map
+    ? workspaceManifestToolDiagnostics.explicitToolPayloadById
+    : null;
+  const payloadJson = explicitToolPayloadById ? (explicitToolPayloadById.get(toolId) || null) : null;
+  if (!payloadJson || typeof payloadJson !== "object" || Array.isArray(payloadJson)) {
+    writeStatus(`Launch blocked for ${toolId}: explicit payloadJson is required.`);
+    renderMountDiagnostic(
+      `Launch blocked for ${toolId}.`,
+      "Workspace Manager now enforces explicit launch(toolId, payloadJson, paletteJson?) inputs."
+    );
+    syncControlState();
+    return false;
+  }
+  if (hasStateInput) {
+    writeStatus("State JSON is ignored for explicit launch signature enforcement.");
+  }
+  const paletteJson = workspaceManifestToolDiagnostics?.explicitPalettePayload || null;
+  const mountResult = runtime.launch(toolId, payloadJson, paletteJson);
   if (!mountResult || !(mountResult.frame instanceof HTMLIFrameElement)) {
     const selectedEntry = getToolHostEntryById(manifest, toolId);
     const displayName = selectedEntry ? selectedEntry.displayName : toolId;

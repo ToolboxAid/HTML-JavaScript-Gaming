@@ -8,39 +8,17 @@ function normalizeToolId(toolId) {
   return typeof toolId === "string" ? toolId.trim() : "";
 }
 
-function buildHostLaunchUrl(toolEntry, config = {}, hostContextId = "") {
+function isPlainObject(value) {
+  return !!value && typeof value === "object" && !Array.isArray(value);
+}
+
+function buildHostLaunchUrl(toolEntry, hostContextId = "") {
   const url = new URL(toolEntry.launchPath, window.location.href);
   url.searchParams.set("hosted", "1");
   url.searchParams.set("hostToolId", toolEntry.id);
   if (hostContextId) {
     url.searchParams.set("hostContextId", hostContextId);
   }
-
-  if (config.launchParams && typeof config.launchParams === "object") {
-    Object.entries(config.launchParams).forEach(([key, value]) => {
-      const normalizedKey = typeof key === "string" ? key.trim() : "";
-      if (!normalizedKey || normalizedKey === "hosted" || normalizedKey === "hostToolId" || normalizedKey === "hostContextId") {
-        return;
-      }
-      if (value === undefined || value === null || typeof value === "object") {
-        return;
-      }
-      url.searchParams.set(normalizedKey, String(value));
-    });
-  }
-
-  if (config && typeof config === "object") {
-    Object.entries(config).forEach(([key, value]) => {
-      if (key === "state" || key === "sharedContext" || key === "launchParams") {
-        return;
-      }
-      if (value === undefined || value === null || typeof value === "object") {
-        return;
-      }
-      url.searchParams.set(`hostConfig_${key}`, String(value));
-    });
-  }
-
   return url.toString();
 }
 
@@ -166,13 +144,21 @@ export function createToolHostRuntime(options = {}) {
     return unmountedAny;
   }
 
-  function mountTool(toolId, config = {}) {
+  function launch(toolId, payloadJson, paletteJson = null) {
     if (!mountContainer) {
       onStatus("Tool host container is unavailable.");
       return null;
     }
 
     const normalizedToolId = normalizeToolId(toolId);
+    if (!isPlainObject(payloadJson)) {
+      onStatus(`Tool launch blocked: explicit payloadJson is required for ${normalizedToolId || "(empty)"}.`);
+      return null;
+    }
+    if (paletteJson !== null && !isPlainObject(paletteJson)) {
+      onStatus(`Tool launch blocked: paletteJson must be an object when provided for ${normalizedToolId || "(empty)"}.`);
+      return null;
+    }
     const toolEntry = getToolHostEntryById(manifest, normalizedToolId);
     if (!toolEntry) {
       onStatus(`Tool id not found: ${normalizedToolId || "(empty)"}.`);
@@ -189,16 +175,18 @@ export function createToolHostRuntime(options = {}) {
 
     mountSequence += 1;
     const sequenceId = mountSequence;
-    const sharedContext = config.sharedContext && typeof config.sharedContext === "object" ? config.sharedContext : {};
     const hostContext = writeToolHostSharedContext({
       toolId: toolEntry.id,
-      source: typeof config.source === "string" ? config.source : "",
-      requestedAt: typeof config.requestedAt === "string" ? config.requestedAt : new Date().toISOString(),
-      sharedContext,
-      state: Object.prototype.hasOwnProperty.call(config, "state") ? config.state : null
+      source: "workspace-manager",
+      requestedAt: new Date().toISOString(),
+      sharedContext: {
+        payloadJson,
+        paletteJson
+      },
+      state: null
     });
     const hostContextId = hostContext?.contextId || "";
-    const sourceUrl = buildHostLaunchUrl(toolEntry, config, hostContextId);
+    const sourceUrl = buildHostLaunchUrl(toolEntry, hostContextId);
     const frame = createHostFrame(toolEntry, sourceUrl);
     frame.addEventListener("load", () => {
       if (!currentMount || currentMount.mountSequence !== sequenceId) {
@@ -241,7 +229,7 @@ export function createToolHostRuntime(options = {}) {
   });
 
   return {
-    mountTool,
+    launch,
     unmountCurrentTool,
     clearMountedTools,
     getCurrentMount

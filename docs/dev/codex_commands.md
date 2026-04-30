@@ -10,18 +10,18 @@ ALLOWED FILES:
 
 TASK:
 
-1. Find palette usage
-2. Remove:
-   - palette injection
-   - palette merging
-   - defaults
-3. Ensure separate pass-through
+1. Find tool launch calls
+2. Enforce signature:
+   launch(toolId, payloadJson, paletteJson?)
+
+3. Remove:
+   - implicit/global input
+   - hidden dependencies
 
 VERIFY:
-payload unchanged
-palette unchanged
+- inputs are explicit only
 
 REPORT:
-docs/dev/reports/palette_pass_through_11_131.txt
+docs/dev/reports/final_tool_input_contract_11_132.txt
 
-FAIL if mutation exists
+FAIL if ambiguity remains

@@ -1,1 +1,1 @@
-Enforce palette pass-through routing without mutation - PR 11.131
+Enforce explicit tool input contract (payload + optional palette only) - PR 11.132
