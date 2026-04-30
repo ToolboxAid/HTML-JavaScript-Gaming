@@ -501,6 +501,19 @@ function extractAssetBrowserCatalogFromPreset(rawPreset) {
   const config = payload.config && typeof payload.config === "object"
     ? payload.config
     : null;
+  if (payload.assets && typeof payload.assets === "object" && !Array.isArray(payload.assets)) {
+    return normalizeManifestAssetEntries(payload.assets);
+  }
+  if (config?.assets && typeof config.assets === "object" && !Array.isArray(config.assets)) {
+    return normalizeManifestAssetEntries(config.assets);
+  }
+  if (
+    payload?.tools?.["asset-browser"]?.assets
+    && typeof payload.tools["asset-browser"].assets === "object"
+    && !Array.isArray(payload.tools["asset-browser"].assets)
+  ) {
+    return normalizeManifestAssetEntries(payload.tools["asset-browser"].assets);
+  }
   return normalizePresetAssetEntries(config?.assetCatalog?.entries);
 }
 
@@ -526,8 +539,8 @@ async function loadSamplePresetCatalogEntries(samplePresetPath) {
       source: safePresetPath,
       entries,
       reason: entries.length > 0
-        ? "Approved assets loaded from sample preset assetCatalog.entries."
-        : "Sample preset loaded but assetCatalog.entries is missing or empty."
+        ? "Approved assets loaded from sample preset tools.asset-browser.assets."
+        : "Sample preset loaded but tools.asset-browser.assets is missing or empty."
     };
   } catch (error) {
     return {
@@ -595,14 +608,6 @@ function normalizeManifestAssetEntries(rawAssets = {}) {
     if (typeof value.path === "string") {
       pushEntry(key, value);
     }
-    Object.entries(value).forEach(([nestedKey, nestedValue]) => {
-      if (!nestedValue || typeof nestedValue !== "object" || Array.isArray(nestedValue)) {
-        return;
-      }
-      if (typeof nestedValue.path === "string") {
-        pushEntry(nestedKey, nestedValue);
-      }
-    });
   });
 
   return entries;
@@ -1008,7 +1013,7 @@ function buildApprovedAssetStatusText(approvedCount, info) {
   if (status === APPROVED_ASSET_STATUS.loadedEmpty) {
     return "0 approved assets | source exists and is empty."
       + ` Source checked: ${source}. Result count: 0.`
-      + " Next action: add approved entries in sample preset config.assetCatalog.entries,"
+      + " Next action: add approved entries in sample preset tools.asset-browser.assets,"
       + " tools.asset-browser.assets, or provide a valid assetCatalogPath."
       + ` Checked: ${checkedText}.`;
   }
@@ -1028,7 +1033,7 @@ function buildApprovedAssetStatusText(approvedCount, info) {
   }
   return "0 approved assets | source missing."
     + ` Source checked: ${source}.`
-    + " Next action: add sample preset config.assetCatalog.entries,"
+    + " Next action: add sample preset tools.asset-browser.assets,"
     + " tools.asset-browser.assets in active project manifest, or provide assetCatalogPath."
     + `${reason ? ` Details: ${reason}` : ""}`
     + ` Checked: ${checkedText}.`;
@@ -1040,7 +1045,7 @@ function buildApprovedAssetEmptyStateText(info) {
   const status = String(info?.status || APPROVED_ASSET_STATUS.sourceMissing);
   if (status === APPROVED_ASSET_STATUS.loadedEmpty) {
     return `No approved assets found. Source exists and is empty: ${source}.`
-      + " Next action: add sample preset config.assetCatalog.entries,"
+      + " Next action: add sample preset tools.asset-browser.assets,"
       + " tools.asset-browser.assets, or provide a valid assetCatalogPath.";
   }
   if (status === APPROVED_ASSET_STATUS.sourceLoadFailure) {
@@ -1053,7 +1058,7 @@ function buildApprovedAssetEmptyStateText(info) {
   }
   return "No approved asset source was loaded."
     + ` Checked source: ${source}.`
-    + " Next action: declare sample preset config.assetCatalog.entries,"
+    + " Next action: declare sample preset tools.asset-browser.assets,"
     + ` tools.asset-browser.assets, or launch with assetCatalogPath.${reason ? ` Details: ${reason}` : ""}`;
 }
 

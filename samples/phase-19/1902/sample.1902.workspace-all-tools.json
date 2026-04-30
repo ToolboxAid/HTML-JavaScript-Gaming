@@ -531,33 +531,23 @@
       "tool": "asset-browser",
       "version": "1",
       "payload": {
-        "assetCatalog": {
-          "entries": [
-            {
-              "id": "sample-1902-workspace-preset",
-              "label": "1902 Workspace Integration Preset",
-              "type": "data",
-              "category": "Workflow JSON",
-              "kind": "other",
-              "path": "/samples/phase-19/1902/sample.1902.workspace-all-tools.json",
-              "status": "registered"
-            },
-            {
-              "id": "sample-1902-preview",
-              "label": "1902 Preview Art",
-              "type": "image",
-              "category": "Preview Art",
-              "kind": "other",
-              "path": "/samples/phase-19/1902/assets/images/preview.svg",
-              "status": "registered"
-            }
-          ]
-        },
         "assetBrowserPreset": {
           "selectedCategory": "All",
           "selectedAssetId": "sample-1902-workspace-preset",
           "search": "",
           "importCategory": "Workflow JSON"
+        }
+      },
+      "assets": {
+        "sample-1902-workspace-preset": {
+          "path": "/samples/phase-19/1902/sample.1902.workspace-all-tools.json",
+          "kind": "other",
+          "source": "workspace-manager"
+        },
+        "sample-1902-preview": {
+          "path": "/samples/phase-19/1902/assets/images/preview.svg",
+          "kind": "image",
+          "source": "workspace-manager"
         }
       }
     },

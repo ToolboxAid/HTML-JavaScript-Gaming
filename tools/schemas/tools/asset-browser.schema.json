@@ -6,6 +6,7 @@
   "required": [
     "tool",
     "version",
+    "assets",
     "payload"
   ],
   "additionalProperties": false,
@@ -25,14 +26,24 @@
         }
       ]
     },
+    "assets": {
+      "type": "object",
+      "additionalProperties": false,
+      "patternProperties": {
+        "^.+$": {
+          "$ref": "#/$defs/assetEntry"
+        }
+      },
+      "propertyNames": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
     "payload": {
       "type": "object",
       "required": [],
       "additionalProperties": false,
       "properties": {
-        "assetCatalog": {
-          "$ref": "#/$defs/jsonValue"
-        },
         "assetBrowserPreset": {
           "$ref": "#/$defs/jsonValue"
         },
@@ -46,6 +57,41 @@
     }
   },
   "$defs": {
+    "assetEntry": {
+      "type": "object",
+      "required": [
+        "path",
+        "kind"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "path": {
+          "type": "string",
+          "minLength": 1
+        },
+        "kind": {
+          "type": "string",
+          "minLength": 1
+        },
+        "source": {
+          "type": "string",
+          "minLength": 1
+        },
+        "stretchOverride": {
+          "type": "object",
+          "required": [
+            "uniformEdgeStretchPx"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "uniformEdgeStretchPx": {
+              "type": "number",
+              "minimum": 0
+            }
+          }
+        }
+      }
+    },
     "jsonValue": {
       "oneOf": [
         {

@@ -613,10 +613,14 @@ function summarizeEmbeddedToolPayloadDocument(toolId = "", scopedToolState = nul
     return `embedded skin ${name || fallbackId}`;
   }
 
-  const assetCatalog = readWorkspaceScopedToolDocument(payload, "assetCatalog", scopedToolState);
-  if (assetCatalog) {
-    const entryCount = Array.isArray(assetCatalog.entries) ? assetCatalog.entries.length : 0;
-    return `embedded asset catalog${entryCount >= 0 ? ` (${entryCount} entries)` : ""}`;
+  const flatAssets = scopedToolState.assets && typeof scopedToolState.assets === "object" && !Array.isArray(scopedToolState.assets)
+    ? scopedToolState.assets
+    : null;
+  if (flatAssets) {
+    const entryCount = Object.values(flatAssets)
+      .filter((entry) => entry && typeof entry === "object" && !Array.isArray(entry) && normalizeTextValue(entry.path))
+      .length;
+    return `embedded asset map (${entryCount} entries)`;
   }
 
   const palette = readWorkspaceScopedToolDocument(payload, "palette", scopedToolState)

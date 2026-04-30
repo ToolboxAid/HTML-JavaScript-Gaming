@@ -1,1 +1,1 @@
-Flatten manifest asset contract and fix runtime/tool loaders - PR 11.95
+Flatten asset manifest schema and align sample 1902 workspace loaders - PR 11.96

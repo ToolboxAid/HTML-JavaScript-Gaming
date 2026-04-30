@@ -163,13 +163,10 @@ function normalizeManifestCatalogPayload(payload) {
   const source = toObject(payload);
   const schema = typeof source.schema === "string" ? source.schema.trim() : "";
   const version = Number(source.version);
-  const assetCatalog = toObject(source.assetCatalog);
-  const catalogEntries = normalizeCatalogEntries(assetCatalog.assets || assetCatalog);
   const toolAssetEntries = normalizeCatalogEntries(
     source?.tools?.["asset-browser"]?.assets
   );
   const entries = {
-    ...catalogEntries,
     ...toolAssetEntries
   };
   const isValidSchema = schema === GAME_MANIFEST_SCHEMA;

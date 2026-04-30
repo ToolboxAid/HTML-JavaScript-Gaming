@@ -79,12 +79,6 @@ function collectImageEntriesFromManifest(manifestPayload) {
     entries.push(entry);
   };
 
-  const assetCatalog = toObject(payload.assetCatalog);
-  const catalogEntries = toObject(assetCatalog.assets || assetCatalog.entries || assetCatalog);
-  Object.entries(catalogEntries).forEach(([assetId, rawEntry]) => {
-    pushEntry(normalizeAssetEntry(rawEntry, assetId));
-  });
-
   const assetBrowserAssets = toObject(payload?.tools?.["asset-browser"]?.assets);
   Object.entries(assetBrowserAssets).forEach(([assetId, rawEntry]) => {
     pushEntry(normalizeAssetEntry(rawEntry, assetId));
