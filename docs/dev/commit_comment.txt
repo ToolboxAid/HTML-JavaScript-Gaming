@@ -1,1 +1,1 @@
-Add palette dependency rules to tool input contract - PR 11.130
+Enforce palette pass-through routing without mutation - PR 11.131

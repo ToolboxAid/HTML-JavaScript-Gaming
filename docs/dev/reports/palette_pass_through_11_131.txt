@@ -1,0 +1,59 @@
+﻿Palette Pass-Through Report: 11_131
+Date: 2026-04-30
+Repo: C:/Users/davidq/Documents/GitHub/HTML-JavaScript-Gaming
+Mode: STRICT SCOPE
+
+Task
+1. Find palette usage.
+2. Remove palette injection, palette merging, defaults.
+3. Ensure separate pass-through.
+
+Routing file changed
+- tools/shared/platformShell.js
+
+Palette usage found
+- Workspace scoped preset routing for child tools and palette-browser.
+- Palette extraction for workspace/game manifests.
+- Shared palette hydration/injection path.
+
+Changes applied
+1) Removed palette injection
+- Removed shared palette write/injection path from routing flow.
+- `writeSharedPaletteHandoff(...)` calls removed from platform shell routing.
+- Hydration variables in init routing are set to `false` (no palette injection side effects).
+
+2) Removed palette merging and defaults
+- Removed palette normalization/merge builder function path.
+- Removed fallback palette id/display defaults.
+- Removed wrapped palette extraction (`tools["palette-browser"].payload`) from manifest palette read path.
+
+3) Enforced pass-through only
+- `readPaletteFromManifestPayload(...)` now returns the direct `tools["palette-browser"]` object only when:
+  - `schema === "html-js-gaming.palette"`
+  - `swatches` is an array.
+- Otherwise returns `null`.
+- Workspace scoped resolver already returns direct object references for tool payload and palette payload.
+
+Verification
+A) Payload unchanged
+- `selectWorkspaceScopedToolPreset(manifest, "vector-map-editor") === manifest.tools["vector-map-editor"]` -> true
+- JSON equality of payload -> true
+
+B) Palette unchanged
+- `readPaletteFromManifestPayload(manifest) === manifest.tools["palette-browser"]` -> true
+- JSON equality of palette -> true
+- `selectWorkspaceScopedToolPreset(manifest, "palette-browser") === manifest.tools["palette-browser"]` -> true
+
+C) Wrapper rejected
+- Wrapped palette input (`tools["palette-browser"].payload`) returns null for both read and select paths.
+
+D) Mutation path audit
+- `writeSharedPaletteHandoff(` call exists: false
+- `buildPaletteHandoffShape` exists: false
+
+Result
+- PASS
+- No palette injection.
+- No palette merging.
+- No palette defaults.
+- Separate pass-through preserved for payload and palette.

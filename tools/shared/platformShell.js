@@ -5,8 +5,7 @@ import {
   getSharedShellActions,
   readSharedAssetHandoff,
   readSharedPaletteHandoff,
-  writeSharedAssetHandoff,
-  writeSharedPaletteHandoff
+  writeSharedAssetHandoff
 } from "./assetUsageIntegration.js";
 import { createWorkspaceSystemController } from "./projectSystem.js";
 import { bindEventHandlers, createCommandDispatcher } from "./eventCommandUtils.js";
@@ -1148,79 +1147,6 @@ async function readJsonDocument(pathValue) {
   }
 }
 
-function normalizeHexColor(value) {
-  const normalized = normalizeTextValue(value);
-  const match = normalized.match(/^#([0-9a-f]{6}|[0-9a-f]{8})$/i);
-  if (!match) {
-    return "";
-  }
-  return `#${match[1].toUpperCase()}`;
-}
-
-function normalizePaletteColorsFromArray(rawEntries) {
-  if (!Array.isArray(rawEntries)) {
-    return [];
-  }
-  return rawEntries
-    .filter((entry) => entry && typeof entry === "object")
-    .map((entry, index) => {
-      const hex = normalizeHexColor(entry.hex);
-      if (!hex) {
-        return null;
-      }
-      return {
-        symbol: normalizeTextValue(entry.symbol),
-        hex,
-        name: normalizeTextValue(entry.name) || `Swatch ${index + 1}`
-      };
-    })
-    .filter(Boolean);
-}
-
-function normalizePaletteColorsFromHexArray(rawColors) {
-  if (!Array.isArray(rawColors)) {
-    return [];
-  }
-  return rawColors
-    .map((entry, index) => {
-      const hex = normalizeHexColor(entry);
-      if (!hex) {
-        return null;
-      }
-      return {
-        symbol: "",
-        hex,
-        name: `Swatch ${index + 1}`
-      };
-    })
-    .filter(Boolean);
-}
-
-function buildPaletteHandoffShape(rawPalette, options = {}) {
-  if (!rawPalette || typeof rawPalette !== "object" || Array.isArray(rawPalette)) {
-    return null;
-  }
-  const colorsFromSwatches = normalizePaletteColorsFromArray(rawPalette.swatches);
-  const colorsFromEntries = normalizePaletteColorsFromArray(rawPalette.entries);
-  const colorsFromHex = normalizePaletteColorsFromHexArray(rawPalette.colors);
-  const colors = colorsFromSwatches.length > 0
-    ? colorsFromSwatches
-    : (colorsFromEntries.length > 0 ? colorsFromEntries : colorsFromHex);
-  if (colors.length === 0) {
-    return null;
-  }
-
-  const fallbackPaletteId = normalizeTextValue(options.fallbackPaletteId);
-  const fallbackDisplayName = normalizeTextValue(options.fallbackDisplayName);
-  const paletteId = normalizeTextValue(rawPalette.sourceId || rawPalette.paletteId || rawPalette.id || rawPalette.name || fallbackPaletteId);
-  const displayName = normalizeTextValue(rawPalette.name || fallbackDisplayName || paletteId);
-  return {
-    paletteId: paletteId || "shared-palette",
-    displayName: displayName || "Shared Palette",
-    colors
-  };
-}
-
 function readPaletteFromManifestPayload(manifestPayload, launchContext = null) {
   const source = manifestPayload && typeof manifestPayload === "object" && !Array.isArray(manifestPayload)
     ? manifestPayload
@@ -1235,131 +1161,20 @@ function readPaletteFromManifestPayload(manifestPayload, launchContext = null) {
   const paletteBrowserSection = tools["palette-browser"] && typeof tools["palette-browser"] === "object" && !Array.isArray(tools["palette-browser"])
     ? tools["palette-browser"]
     : null;
-  const directPalettePayload = normalizeTextValue(paletteBrowserSection?.schema).toLowerCase() === "html-js-gaming.palette"
-    ? paletteBrowserSection
-    : null;
-  const wrappedPalettePayload = paletteBrowserSection?.payload && typeof paletteBrowserSection.payload === "object" && !Array.isArray(paletteBrowserSection.payload)
-    ? paletteBrowserSection.payload
-    : null;
-  const paletteBrowserPayload = directPalettePayload || wrappedPalettePayload;
-  if (!paletteBrowserPayload) {
+  const isDirectPalettePayload = paletteBrowserSection?.schema === "html-js-gaming.palette"
+    && Array.isArray(paletteBrowserSection.swatches);
+  if (!isDirectPalettePayload) {
     return null;
   }
-
-  const fallbackPaletteId = normalizeTextValue(launchContext?.gameId)
-    ? `palette.${normalizeTextValue(launchContext.gameId).toLowerCase()}`
-    : "palette.game";
-  const fallbackDisplayName = normalizeTextValue(paletteBrowserSection?.name) || "Game Palette";
-  const normalized = buildPaletteHandoffShape(paletteBrowserPayload, {
-    fallbackPaletteId,
-    fallbackDisplayName
-  });
-  if (!normalized) {
-    return null;
-  }
-  return {
-    ...normalized,
-    source: directPalettePayload
-      ? "workspace-game-manifest.palette-browser"
-      : "workspace-game-manifest.palette-browser.payload"
-  };
+  return paletteBrowserSection;
 }
 
 async function hydrateSharedPaletteFromSamplePresetPath(samplePresetPath = "") {
-  const normalizedSamplePresetPath = normalizeSamplePresetPath(samplePresetPath);
-  if (!normalizedSamplePresetPath || typeof window === "undefined" || typeof window.fetch !== "function") {
-    return false;
-  }
-  const fetchImpl = window.fetch.__workspaceScopedSamplePresetOriginalFetch || window.fetch.bind(window);
-  try {
-    const response = await fetchImpl(normalizedSamplePresetPath, { cache: "no-store" });
-    if (!response.ok) {
-      return false;
-    }
-    const samplePreset = await response.json();
-    if (!isWorkspaceManifestPreset(samplePreset)) {
-      return false;
-    }
-    const manifestPalette = readPaletteFromManifestPayload(samplePreset, null);
-    if (!manifestPalette) {
-      return false;
-    }
-    return writeSharedPaletteHandoff({
-      paletteId: manifestPalette.paletteId,
-      displayName: manifestPalette.displayName,
-      colors: manifestPalette.colors,
-      metadata: {
-        source: manifestPalette.source,
-        sourcePath: normalizedSamplePresetPath
-      },
-      sourceToolId: "workspace-manager",
-      selectedAt: new Date().toISOString()
-    });
-  } catch {
-    return false;
-  }
+  return false;
 }
 
 async function hydrateSharedPaletteFromGameLaunchContext(catalogContext = null) {
-  const launchContext = catalogContext?.launchContext || readGameLaunchContext();
-  if (!launchContext?.gameId && !launchContext?.gameHref) {
-    return false;
-  }
-
-  const existingPalette = readSharedPaletteHandoff();
-  if (existingPalette?.paletteId && isCurrentGameHandoff(existingPalette, launchContext)) {
-    return false;
-  }
-
-  const manifestContext = await readManifestContextFromLaunchContext(launchContext);
-  const manifestPalette = readPaletteFromManifestPayload(manifestContext?.manifestPayload, launchContext);
-  if (manifestPalette) {
-    return writeSharedPaletteHandoff({
-      paletteId: manifestPalette.paletteId,
-      displayName: manifestPalette.displayName,
-      colors: manifestPalette.colors,
-      metadata: {
-        source: manifestPalette.source,
-        gameId: launchContext.gameId || "",
-        sourcePath: manifestContext?.manifestPath || ""
-      },
-      sourceToolId: "workspace-manager",
-      selectedAt: new Date().toISOString()
-    });
-  }
-
-  const context = catalogContext || await readCatalogContextFromLaunchContext(launchContext);
-  if (!context || !Array.isArray(context.entries)) {
-    return false;
-  }
-
-  const paletteEntries = context.entries.filter((entry) => entry.kind === "palette");
-  const primaryPalette = paletteEntries[0];
-  if (!primaryPalette) {
-    return false;
-  }
-
-  const palettePayload = await readJsonDocument(primaryPalette.path);
-  const catalogPalette = buildPaletteHandoffShape(palettePayload, {
-    fallbackPaletteId: primaryPalette.assetId,
-    fallbackDisplayName: primaryPalette.assetId
-  });
-  if (!catalogPalette) {
-    return false;
-  }
-
-  return writeSharedPaletteHandoff({
-    paletteId: catalogPalette.paletteId || primaryPalette.assetId,
-    displayName: catalogPalette.displayName || primaryPalette.assetId,
-    colors: catalogPalette.colors,
-    metadata: {
-      source: "workspace-game-catalog",
-      gameId: launchContext.gameId || "",
-      sourcePath: primaryPalette.path
-    },
-    sourceToolId: "workspace-manager",
-    selectedAt: new Date().toISOString()
-  });
+  return false;
 }
 
 function renderGameReturnLine() {
@@ -2288,7 +2103,7 @@ async function initPlatformShell() {
   const clearedForLaunch = clearSharedBindingsForNewLaunch(launchSignature);
   const launchContext = readGameLaunchContext();
   const launchedFromSamplePreset = Boolean(samplePresetPath);
-  const hydratedSamplePresetPalette = await hydrateSharedPaletteFromSamplePresetPath(samplePresetPath);
+  const hydratedSamplePresetPalette = false;
 
   if (currentToolId) {
     workspaceController = createWorkspaceSystemController({
@@ -2329,7 +2144,7 @@ async function initPlatformShell() {
 
   const catalogContext = await readCatalogContextFromLaunchContext(launchContext);
   const hydratedAsset = await hydrateSharedAssetFromGameLaunchContext(catalogContext);
-  const hydratedPalette = await hydrateSharedPaletteFromGameLaunchContext(catalogContext);
+  const hydratedPalette = false;
   renderShell(currentTool);
   if (clearedForLaunch) {
     TOOLS_PLATFORM_LOGGER.debug("cleared shared workspace bindings for new launch payload");
