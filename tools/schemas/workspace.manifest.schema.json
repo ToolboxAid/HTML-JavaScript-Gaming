@@ -34,7 +34,7 @@
       "type": "object",
       "required": ["palette-browser"],
       "additionalProperties": false,
-      "description": "Workspace-owned tool entries keyed by canonical registry ids; payload structure stays in referenced child tool schemas only.",
+      "description": "Workspace-owned tool entry map keyed by canonical registry ids; payload schemas are referenced, never inlined here.",
       "properties": {
         "palette-browser": {
           "$ref": "./tools/palette-browser.schema.json"

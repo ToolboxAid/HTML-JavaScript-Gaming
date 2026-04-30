@@ -67,5 +67,5 @@
       }
     }
   },
-  "description": "Direct Palette Browser payload schema; accepts palette JSON only and does not accept tool, workspace, game, or sample wrappers."
+  "description": "Payload-only Palette Browser schema for direct palette JSON; rejects tool, workspace, game, and sample wrappers."
 }
