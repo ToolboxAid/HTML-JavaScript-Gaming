@@ -259,9 +259,9 @@ export async function run() {
     "replay-visualizer",
     "performance-profiler",
     "physics-sandbox",
-    "asset-pipeline-tool",
+    "asset-pipeline",
     "tile-model-converter",
-    "3d-json-payload-normalizer",
+    "3d-json-payload",
     "3d-asset-viewer",
     "3d-camera-path-editor",
     "palette-browser"

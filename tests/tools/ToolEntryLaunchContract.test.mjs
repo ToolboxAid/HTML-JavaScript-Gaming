@@ -17,9 +17,9 @@ const FIRST_CLASS_TOOL_INDEXES = Object.freeze([
   { toolId: "replay-visualizer", indexPath: "../../tools/Replay Visualizer/index.html" },
   { toolId: "performance-profiler", indexPath: "../../tools/Performance Profiler/index.html" },
   { toolId: "physics-sandbox", indexPath: "../../tools/Physics Sandbox/index.html" },
-  { toolId: "asset-pipeline-tool", indexPath: "../../tools/Asset Pipeline Tool/index.html" },
+  { toolId: "asset-pipeline", indexPath: "../../tools/Asset Pipeline/index.html" },
   { toolId: "tile-model-converter", indexPath: "../../tools/Tile Model Converter/index.html" },
-  { toolId: "3d-json-payload-normalizer", indexPath: "../../tools/3D JSON Payload Normalizer/index.html" },
+  { toolId: "3d-json-payload", indexPath: "../../tools/3D JSON Payload/index.html" },
   { toolId: "3d-asset-viewer", indexPath: "../../tools/3D Asset Viewer/index.html" },
   { toolId: "3d-camera-path-editor", indexPath: "../../tools/3D Camera Path Editor/index.html" }
 ]);

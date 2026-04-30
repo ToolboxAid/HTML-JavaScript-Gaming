@@ -1927,17 +1927,17 @@
       "match": "rule:number-is-finite-usage"
     },
     {
-      "file": "tools/3D JSON Payload Normalizer/main.js",
+      "file": "tools/3D JSON Payload/main.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-1"
     },
     {
-      "file": "tools/3D JSON Payload Normalizer/main.js",
+      "file": "tools/3D JSON Payload/main.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-1"
     },
     {
-      "file": "tools/3D JSON Payload Normalizer/main.js",
+      "file": "tools/3D JSON Payload/main.js",
       "type": "inline-helper-clone",
       "match": "rule:number-is-finite-usage"
     },
@@ -1952,17 +1952,17 @@
       "match": "rule:relative-shared-depth-1"
     },
     {
-      "file": "tools/Asset Pipeline Tool/main.js",
+      "file": "tools/Asset Pipeline/main.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-1"
     },
     {
-      "file": "tools/Asset Pipeline Tool/main.js",
+      "file": "tools/Asset Pipeline/main.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-1"
     },
     {
-      "file": "tools/Asset Pipeline Tool/main.js",
+      "file": "tools/Asset Pipeline/main.js",
       "type": "direct-shared-relative-import",
       "match": "rule:relative-shared-depth-1"
     },

@@ -11,5 +11,5 @@
 - Sample JSON rows: 66
 - Game manifest rows: 12
 - Invalid tool rows: 0
-- Invalid sample rows: 29
+- Invalid sample rows: 28
 - Invalid game rows: 0

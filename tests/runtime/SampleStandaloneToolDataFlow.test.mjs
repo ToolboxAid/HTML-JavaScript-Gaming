@@ -653,10 +653,10 @@ async function runTargetedAssetPipelineAssertion(page, url, expectedGameId) {
     await wait(150);
   }
 
-  assert.match(status.statusText, /Loaded preset/i, "Asset Pipeline Tool did not report preset load.");
-  assert.doesNotMatch(status.statusText, /Preset load failed/i, "Asset Pipeline Tool reported preset load failure.");
-  assert.equal(status.parsedGameId, expectedGameId, "Asset Pipeline Tool gameId did not bind from preset payload.");
-  assert.ok(status.domainRecordCount > 0, "Asset Pipeline Tool pipeline input is empty after preset load.");
+  assert.match(status.statusText, /Loaded preset/i, "Asset Pipeline did not report preset load.");
+  assert.doesNotMatch(status.statusText, /Preset load failed/i, "Asset Pipeline reported preset load failure.");
+  assert.equal(status.parsedGameId, expectedGameId, "Asset Pipeline gameId did not bind from preset payload.");
+  assert.ok(status.domainRecordCount > 0, "Asset Pipeline pipeline input is empty after preset load.");
   return status;
 }
 
@@ -716,9 +716,9 @@ function buildTargetedCases(roundtripRows, toolMap) {
     { sampleId: "0204", toolId: "asset-browser" },
     { sampleId: "1413", toolId: "asset-browser" },
     { sampleId: "1505", toolId: "asset-browser" },
-    { sampleId: "0510", toolId: "asset-pipeline-tool" },
-    { sampleId: "1413", toolId: "asset-pipeline-tool" },
-    { sampleId: "1417", toolId: "asset-pipeline-tool" },
+    { sampleId: "0510", toolId: "asset-pipeline" },
+    { sampleId: "1413", toolId: "asset-pipeline" },
+    { sampleId: "1417", toolId: "asset-pipeline" },
     { sampleId: "0213", toolId: "palette-browser" },
     { sampleId: "0308", toolId: "palette-browser" },
     { sampleId: "0313", toolId: "palette-browser" }
@@ -764,9 +764,9 @@ function buildGenericFailureCloseoutCases(roundtripRows, toolMap) {
     { sampleId: "0221", toolId: "tile-model-converter" },
     { sampleId: "0305", toolId: "tile-model-converter" },
     { sampleId: "1209", toolId: "tile-model-converter" },
-    { sampleId: "0221", toolId: "3d-json-payload-normalizer" },
-    { sampleId: "0305", toolId: "3d-json-payload-normalizer" },
-    { sampleId: "1208", toolId: "3d-json-payload-normalizer" },
+    { sampleId: "0221", toolId: "3d-json-payload" },
+    { sampleId: "0305", toolId: "3d-json-payload" },
+    { sampleId: "1208", toolId: "3d-json-payload" },
     { sampleId: "0306", toolId: "parallax-editor" },
     { sampleId: "1204", toolId: "parallax-editor" },
     { sampleId: "1205", toolId: "parallax-editor" },
@@ -966,10 +966,10 @@ async function runJsonNormalizerContractAssertion(page, url, expectedPointCount,
     }
     await wait(150);
   }
-  assert.doesNotMatch(status.statusText, /Preset load failed/i, "3D JSON Payload Normalizer reported preset load failure.");
-  assert.ok(status.pointCount > 0, "3D JSON Payload Normalizer did not load point data.");
-  assert.equal(status.pointCount, expectedPointCount, "3D JSON Payload Normalizer point count mismatch.");
-  assert.equal(status.segmentCount, expectedSegmentCount, "3D JSON Payload Normalizer segment count mismatch.");
+  assert.doesNotMatch(status.statusText, /Preset load failed/i, "3D JSON Payload reported preset load failure.");
+  assert.ok(status.pointCount > 0, "3D JSON Payload did not load point data.");
+  assert.equal(status.pointCount, expectedPointCount, "3D JSON Payload point count mismatch.");
+  assert.equal(status.segmentCount, expectedSegmentCount, "3D JSON Payload segment count mismatch.");
   return status;
 }
 
@@ -1144,7 +1144,7 @@ export async function run() {
         genericContractResults.push({ sampleId: testCase.sampleId, toolId: testCase.toolId, ...result });
         continue;
       }
-      if (testCase.toolId === "3d-json-payload-normalizer") {
+      if (testCase.toolId === "3d-json-payload") {
         const expectedPointCount = Array.isArray(testCase.presetPayload?.config?.mapPayload?.points)
           ? testCase.presetPayload.config.mapPayload.points.length
           : 0;
@@ -1197,7 +1197,7 @@ export async function run() {
         targetedResults.push({ sampleId: testCase.sampleId, toolId: testCase.toolId, ...result });
         continue;
       }
-      if (testCase.toolId === "asset-pipeline-tool") {
+      if (testCase.toolId === "asset-pipeline") {
         const expectedGameId = String(testCase.presetPayload?.config?.pipelinePayload?.gameId || "").trim();
         assert.ok(expectedGameId, `Missing expected pipeline gameId in ${toPosixPath(path.relative(repoRoot, testCase.presetFilePath))}.`);
         const result = await runTargetedAssetPipelineAssertion(page, url, expectedGameId);

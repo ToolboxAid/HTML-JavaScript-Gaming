@@ -11,9 +11,9 @@ const REQUIRED_TOOLS = Object.freeze([
   { id: "state-inspector", folder: "State Inspector" },
   { id: "replay-visualizer", folder: "Replay Visualizer" },
   { id: "performance-profiler", folder: "Performance Profiler" },
-  { id: "asset-pipeline-tool", folder: "Asset Pipeline Tool" },
+  { id: "asset-pipeline", folder: "Asset Pipeline" },
   { id: "tile-model-converter", folder: "Tile Model Converter" },
-  { id: "3d-json-payload-normalizer", folder: "3D JSON Payload Normalizer" },
+  { id: "3d-json-payload", folder: "3D JSON Payload" },
   { id: "3d-asset-viewer", folder: "3D Asset Viewer" },
   { id: "3d-camera-path-editor", folder: "3D Camera Path Editor" }
 ]);

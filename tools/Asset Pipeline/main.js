@@ -306,7 +306,7 @@ function buildCatalogPathCandidates(manifest) {
   const manifestAsset = manifest?.sharedReferences?.asset || null;
   const manifestPalette = manifest?.sharedReferences?.palette || null;
   const manifestToolState = manifest?.tools && typeof manifest.tools === "object"
-    ? manifest.tools["asset-pipeline-tool"]
+    ? manifest.tools["asset-pipeline"]
     : null;
 
   [
@@ -580,7 +580,7 @@ async function loadPipelineFromWorkspaceState() {
     return;
   }
   const toolState = manifest.tools && typeof manifest.tools === "object"
-    ? manifest.tools["asset-pipeline-tool"]
+    ? manifest.tools["asset-pipeline"]
     : null;
   const payload = toolState && typeof toolState === "object"
     ? extractPipelinePayloadFromSource(toolState)
@@ -642,7 +642,7 @@ async function tryLoadPresetFromQuery(options = {}) {
   const samplePresetPath = normalizeSamplePresetPath(searchParams.get("samplePresetPath") || "");
   const launchQuery = getToolLoadQuerySnapshot(searchParams);
   logToolLoadRequest({
-    toolId: "asset-pipeline-tool",
+    toolId: "asset-pipeline",
     sampleId: String(searchParams.get("sampleId") || "").trim(),
     samplePresetPath,
     requestedDataPaths: getToolLoadRequestedDataPaths(launchQuery),
@@ -650,7 +650,7 @@ async function tryLoadPresetFromQuery(options = {}) {
   });
   if (!samplePresetPath) {
     logToolLoadWarning({
-      toolId: "asset-pipeline-tool",
+      toolId: "asset-pipeline",
       reason: "samplePresetPath missing",
       launchQuery
     });
@@ -665,7 +665,7 @@ async function tryLoadPresetFromQuery(options = {}) {
     const presetUrl = new URL(samplePresetPath, window.location.href);
     const presetHref = presetUrl.toString();
     logToolLoadFetch({
-      toolId: "asset-pipeline-tool",
+      toolId: "asset-pipeline",
       phase: "attempt",
       fetchUrl: presetHref,
       requestedPath: samplePresetPath,
@@ -673,7 +673,7 @@ async function tryLoadPresetFromQuery(options = {}) {
     });
     const response = await fetch(presetHref, { cache: "no-store" });
     logToolLoadFetch({
-      toolId: "asset-pipeline-tool",
+      toolId: "asset-pipeline",
       phase: "response",
       fetchUrl: presetHref,
       requestedPath: samplePresetPath,
@@ -686,7 +686,7 @@ async function tryLoadPresetFromQuery(options = {}) {
     }
     const rawPreset = await response.json();
     logToolLoadLoaded({
-      toolId: "asset-pipeline-tool",
+      toolId: "asset-pipeline",
       sampleId,
       samplePresetPath,
       fetchUrl: presetHref,
@@ -708,7 +708,7 @@ async function tryLoadPresetFromQuery(options = {}) {
     setStatus(loadedStatus);
   } catch (error) {
     logToolLoadWarning({
-      toolId: "asset-pipeline-tool",
+      toolId: "asset-pipeline",
       sampleId,
       samplePresetPath,
       error: error instanceof Error ? error.message : "unknown error"
@@ -774,7 +774,7 @@ const assetPipelineToolApi = {
   runPipeline
 };
 
-registerToolBootContract("asset-pipeline-tool", {
+registerToolBootContract("asset-pipeline", {
   init: bootAssetPipelineTool,
   destroy() {
     return true;

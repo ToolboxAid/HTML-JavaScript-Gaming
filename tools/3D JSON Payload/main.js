@@ -18,7 +18,7 @@ const refs = {
   output: document.getElementById("map3dOutput")
 };
 
-const MAP_PAYLOAD_SCHEMA = "tools.3d-json-payload-normalizer.document/1";
+const MAP_PAYLOAD_SCHEMA = "tools.3d-json-payload.document/1";
 const MAP_NORMALIZER_EMPTY_STATE_MESSAGE = "No map payload loaded. Provide explicit JSON input or launch with samplePresetPath.";
 
 function sanitizeNumber(value, fallback = 0) {
@@ -118,7 +118,7 @@ function extractMapPayloadFromPreset(rawPreset) {
     ? payload.config
     : null;
 
-  const candidateKeys = ["3d-json-payload-normalizer", "mapPayload", "mapDocument", "normalizerPayload", "document"];
+  const candidateKeys = ["3d-json-payload", "mapPayload", "mapDocument", "normalizerPayload", "document"];
   for (const key of candidateKeys) {
     const value = payload[key];
     if (value && typeof value === "object" && Array.isArray(value.points)) {
@@ -145,7 +145,7 @@ async function tryLoadPresetFromQuery() {
   const samplePresetPath = normalizeSamplePresetPath(searchParams.get("samplePresetPath") || "");
   const launchQuery = getToolLoadQuerySnapshot(searchParams);
   logToolLoadRequest({
-    toolId: "3d-json-payload-normalizer",
+    toolId: "3d-json-payload",
     sampleId: String(searchParams.get("sampleId") || "").trim(),
     samplePresetPath,
     requestedDataPaths: getToolLoadRequestedDataPaths(launchQuery),
@@ -153,7 +153,7 @@ async function tryLoadPresetFromQuery() {
   });
   if (!samplePresetPath) {
     logToolLoadWarning({
-      toolId: "3d-json-payload-normalizer",
+      toolId: "3d-json-payload",
       reason: "samplePresetPath missing",
       launchQuery
     });
@@ -165,7 +165,7 @@ async function tryLoadPresetFromQuery() {
     const presetUrl = new URL(samplePresetPath, window.location.href);
     const presetHref = presetUrl.toString();
     logToolLoadFetch({
-      toolId: "3d-json-payload-normalizer",
+      toolId: "3d-json-payload",
       phase: "attempt",
       fetchUrl: presetHref,
       requestedPath: samplePresetPath,
@@ -173,7 +173,7 @@ async function tryLoadPresetFromQuery() {
     });
     const response = await fetch(presetHref, { cache: "no-store" });
     logToolLoadFetch({
-      toolId: "3d-json-payload-normalizer",
+      toolId: "3d-json-payload",
       phase: "response",
       fetchUrl: presetHref,
       requestedPath: samplePresetPath,
@@ -186,7 +186,7 @@ async function tryLoadPresetFromQuery() {
     }
     const rawPreset = await response.json();
     logToolLoadLoaded({
-      toolId: "3d-json-payload-normalizer",
+      toolId: "3d-json-payload",
       sampleId,
       samplePresetPath,
       fetchUrl: presetHref,
@@ -206,7 +206,7 @@ async function tryLoadPresetFromQuery() {
     setStatus(buildPresetLoadedStatus(sampleId, samplePresetPath));
   } catch (error) {
     logToolLoadWarning({
-      toolId: "3d-json-payload-normalizer",
+      toolId: "3d-json-payload",
       sampleId,
       samplePresetPath,
       error: error instanceof Error ? error.message : "unknown error"
@@ -251,7 +251,7 @@ function boot3dMapEditor() {
   };
 }
 
-registerToolBootContract("3d-json-payload-normalizer", {
+registerToolBootContract("3d-json-payload", {
   init: boot3dMapEditor,
   destroy() {
     return true;

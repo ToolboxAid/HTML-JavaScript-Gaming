@@ -1,5 +1,5 @@
 {
-  "tool": "asset-pipeline-tool",
+  "tool": "asset-pipeline",
   "version": "1",
   "payload": {
     "pipelinePayload": {
@@ -23,10 +23,10 @@
         ]
       },
       "toolStates": {
-        "asset-pipeline-tool": {
+        "asset-pipeline": {
           "schema": "html-js-gaming.tool-state",
           "version": 1,
-          "toolId": "asset-pipeline-tool",
+          "toolId": "asset-pipeline",
           "projectId": "sample-1413",
           "savedAtIso": "2026-04-24T00:00:00.000Z",
           "state": {

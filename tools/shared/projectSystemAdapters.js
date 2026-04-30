@@ -237,13 +237,13 @@ function createPaletteBrowserAdapter() {
 }
 
 function createAssetPipelineAdapter() {
-  const api = readToolApi("asset-pipeline-tool", "assetPipelineToolApp");
+  const api = readToolApi("asset-pipeline", "assetPipelineToolApp");
   if (!api || typeof api.captureProjectState !== "function" || typeof api.applyProjectState !== "function") {
-    return buildUnavailableAdapter("asset-pipeline-tool");
+    return buildUnavailableAdapter("asset-pipeline");
   }
 
   return {
-    toolId: "asset-pipeline-tool",
+    toolId: "asset-pipeline",
     ready: true,
     getProjectName() {
       return "Asset Pipeline Workflow";
@@ -273,7 +273,7 @@ export function getProjectAdapter(toolId) {
       return createAssetBrowserAdapter();
     case "palette-browser":
       return createPaletteBrowserAdapter();
-    case "asset-pipeline-tool":
+    case "asset-pipeline":
       return createAssetPipelineAdapter();
     default:
       return buildUnavailableAdapter(toolId);

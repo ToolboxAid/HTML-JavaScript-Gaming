@@ -628,8 +628,8 @@
         }
       }
     },
-    "asset-pipeline-tool": {
-      "tool": "asset-pipeline-tool",
+    "asset-pipeline": {
+      "tool": "asset-pipeline",
       "version": "1",
       "payload": {
         "pipelinePayload": {
@@ -652,10 +652,10 @@
             ]
           },
           "toolStates": {
-            "asset-pipeline-tool": {
+            "asset-pipeline": {
               "schema": "html-js-gaming.tool-state",
               "version": 1,
-              "toolId": "asset-pipeline-tool",
+              "toolId": "asset-pipeline",
               "projectId": "sample-1413",
               "savedAtIso": "2026-04-24T00:00:00.000Z",
               "state": {
@@ -687,12 +687,12 @@
         }
       }
     },
-    "3d-json-payload-normalizer": {
-      "tool": "3d-json-payload-normalizer",
+    "3d-json-payload": {
+      "tool": "3d-json-payload",
       "version": "1",
       "payload": {
         "mapPayload": {
-          "schema": "tools.3d-json-payload-normalizer.document/1",
+          "schema": "tools.3d-json-payload.document/1",
           "mapId": "sample-1208-terrain-flow",
           "points": [
             {
@@ -787,7 +787,7 @@
           ],
           "metadata": {
             "sourceSampleId": "1413",
-            "sourceToolId": "asset-pipeline-tool"
+            "sourceToolId": "asset-pipeline"
           }
         }
       }

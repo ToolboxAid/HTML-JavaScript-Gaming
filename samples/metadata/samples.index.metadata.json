@@ -398,7 +398,7 @@
       "preview": "/samples/phase-02/0201/assets/images/preview.svg",
       "href": "./phase-02/0201/index.html",
       "classValues": ["engine/camera/index/Camera2D", "engine/core/Engine", "engine/debug/index/drawFrame", "engine/input/index/InputService", "engine/scene/index/Scene", "engine/theme/index/Theme", "engine/theme/index/ThemeTokens", "engine/utils/index/clamp"],
-      "toolHints": ["3d-camera-path-editor"],
+      "toolHints": [],
       "roundtripToolPresets": []
     },
     {
@@ -412,7 +412,7 @@
       "preview": "/samples/phase-02/0202/assets/images/preview.svg",
       "href": "./phase-02/0202/index.html",
       "classValues": ["engine/camera/index/Camera2D", "engine/core/Engine", "engine/debug/index/drawFrame", "engine/input/index/InputService", "engine/scene/index/Scene", "engine/theme/index/Theme", "engine/theme/index/ThemeTokens", "engine/utils/index/clamp"],
-      "toolHints": ["3d-camera-path-editor"],
+      "toolHints": [],
       "roundtripToolPresets": []
     },
     {
@@ -438,15 +438,11 @@
       "preview": "/samples/phase-02/0204/assets/images/preview.svg",
       "href": "./phase-02/0204/index.html",
       "classValues": ["engine/assets/index", "engine/assets/index/AssetRegistry", "engine/core/Engine", "engine/debug/index/drawFrame", "engine/debug/index/drawPanel", "engine/input/index/InputService", "engine/scene/index/Scene"],
-      "toolHints": ["3d-asset-viewer", "asset-browser"],
+      "toolHints": ["3d-asset-viewer"],
       "roundtripToolPresets": [
         {
           "toolId": "3d-asset-viewer",
           "presetPath": "/samples/phase-02/0204/sample.0204.3d-asset-viewer.json"
-        },
-        {
-          "toolId": "asset-browser",
-          "presetPath": "/samples/phase-02/0204/sample.0204.asset-browser.json"
         }
       ]
     },
@@ -461,7 +457,7 @@
       "preview": "/samples/phase-02/0205/assets/images/preview.svg",
       "href": "./phase-02/0205/index.html",
       "classValues": ["engine/core/Engine", "engine/debug/index/drawFrame", "engine/debug/index/drawPanel", "engine/input/index/InputService", "engine/persistence/index/StorageService", "engine/scene/index/Scene", "engine/theme/index/Theme", "engine/theme/index/ThemeTokens", "engine/utils/index/clamp"],
-      "toolHints": ["state-inspector"],
+      "toolHints": [],
       "roundtripToolPresets": []
     },
     {
@@ -501,7 +497,7 @@
       "preview": "/samples/phase-02/0208/assets/images/preview.svg",
       "href": "./phase-02/0208/index.html",
       "classValues": ["engine/core/Engine", "engine/debug/index/drawFrame", "engine/debug/index/drawPanel", "engine/input/index/InputService", "engine/scene/index/Scene", "engine/state/index/StateMachine", "engine/theme/index/Theme", "engine/theme/index/ThemeTokens", "engine/utils/index/clamp"],
-      "toolHints": ["state-inspector"],
+      "toolHints": [],
       "roundtripToolPresets": []
     },
     {
@@ -527,7 +523,7 @@
       "preview": "/samples/phase-02/0210/assets/images/preview.svg",
       "href": "./phase-02/0210/index.html",
       "classValues": ["engine/core/Engine", "engine/debug/index/drawFrame", "engine/debug/index/drawPanel", "engine/input/index/InputService", "engine/scene/index/Scene", "engine/systems/index/spawnProjectile", "engine/systems/index/updateProjectiles", "engine/theme/index/Theme", "engine/theme/index/ThemeTokens", "engine/utils/index/clamp"],
-      "toolHints": ["physics-sandbox"],
+      "toolHints": [],
       "roundtripToolPresets": []
     },
     {
@@ -622,7 +618,7 @@
       "preview": "/samples/phase-02/0217/assets/images/preview.svg",
       "href": "./phase-02/0217/index.html",
       "classValues": ["engine/core/Engine", "engine/debug/index/drawFrame", "engine/debug/index/drawPanel", "engine/game/index/GameModeState", "engine/input/index/InputService", "engine/scene/index/Scene", "engine/theme/index/Theme", "engine/theme/index/ThemeTokens"],
-      "toolHints": ["state-inspector"],
+      "toolHints": [],
       "roundtripToolPresets": []
     },
     {
@@ -672,7 +668,7 @@
       "preview": "/samples/phase-02/0220/assets/images/preview.svg",
       "href": "./phase-02/0220/index.html",
       "classValues": ["engine/camera/index/Camera2D", "engine/camera/index/followCameraTarget", "engine/camera/index/worldRectToScreen", "engine/core/Engine", "engine/debug/index/drawFrame", "engine/debug/index/drawPanel", "engine/input/index/InputService", "engine/scene/index/Scene", "engine/theme/index/Theme", "engine/theme/index/ThemeTokens", "engine/utils/index/clamp"],
-      "toolHints": ["3d-camera-path-editor"],
+      "toolHints": [],
       "roundtripToolPresets": []
     },
     {
@@ -686,7 +682,7 @@
       "preview": "/samples/phase-02/0221/assets/images/preview.svg",
       "href": "./phase-02/0221/index.html",
       "classValues": ["engine/core/Engine", "engine/debug/index/drawFrame", "engine/debug/index/drawPanel", "engine/input/index/InputService", "engine/scene/index/Scene", "engine/theme/index/Theme", "engine/theme/index/ThemeTokens", "engine/tilemap/index/renderTilemap", "engine/tilemap/index/resolveRectVsTilemap", "engine/tilemap/index/Tilemap", "engine/utils/index/clamp"],
-      "toolHints": ["tile-map-editor", "tile-model-converter", "3d-json-payload-normalizer"],
+      "toolHints": ["tile-map-editor", "tile-model-converter"],
       "roundtripToolPresets": [
         {
           "toolId": "tile-map-editor",
@@ -845,7 +841,7 @@
       "preview": "/samples/phase-03/0303/assets/images/preview.svg",
       "href": "./phase-03/0303/index.html",
       "classValues": ["engine/animation/index/AnimationController", "engine/assets/index/ImageAssetLoader", "engine/assets/index/SpriteAtlas", "engine/camera/index/Camera2D", "engine/camera/index/followCameraTarget", "engine/camera/index/worldRectToScreen", "engine/core/Engine", "engine/debug/index/drawFrame", "engine/debug/index/drawPanel", "engine/input/index/ActionInputMap", "engine/input/index/ActionInputService", "engine/rendering/index/renderSpriteReadyEntities", "engine/scene/index/Scene", "engine/systems/index/stepArcadeBody", "engine/theme/index/Theme", "engine/theme/index/ThemeTokens", "engine/tilemap/index/renderTilemap", "engine/tilemap/index/Tilemap"],
-      "toolHints": ["physics-sandbox"],
+      "toolHints": [],
       "roundtripToolPresets": []
     },
     {
@@ -871,7 +867,7 @@
       "preview": "/samples/phase-03/0305/assets/images/preview.svg",
       "href": "./phase-03/0305/index.html",
       "classValues": ["engine/animation/index/AnimationController", "engine/assets/index/ImageAssetLoader", "engine/assets/index/SpriteAtlas", "engine/camera/index/Camera2D", "engine/camera/index/followCameraTarget", "engine/camera/index/worldRectToScreen", "engine/core/Engine", "engine/debug/index/drawFrame", "engine/debug/index/drawPanel", "engine/input/index/ActionInputMap", "engine/input/index/ActionInputService", "engine/rendering/index/renderSpriteReadyEntities", "engine/scene/index/Scene", "engine/systems/index/moveRectWithTilemapCollision", "engine/systems/index/stepArcadeBody", "engine/theme/index/Theme", "engine/theme/index/ThemeTokens", "engine/tilemap/index/renderTilemap", "engine/tilemap/index/Tilemap"],
-      "toolHints": ["3d-json-payload-normalizer", "tile-map-editor", "tile-model-converter"],
+      "toolHints": ["tile-map-editor", "tile-model-converter"],
       "roundtripToolPresets": [
         {
           "toolId": "tile-map-editor",
@@ -894,7 +890,7 @@
       "preview": "/samples/phase-03/0306/assets/images/preview.svg",
       "href": "./phase-03/0306/index.html",
       "classValues": ["engine/animation/index/AnimationController", "engine/assets/index/ImageAssetLoader", "engine/assets/index/SpriteAtlas", "engine/camera/index/Camera2D", "engine/camera/index/followCameraTarget", "engine/camera/index/worldRectToScreen", "engine/core/Engine", "engine/debug/index/drawFrame", "engine/debug/index/drawPanel", "engine/input/index/ActionInputMap", "engine/input/index/ActionInputService", "engine/rendering/index/renderSpriteReadyEntities", "engine/scene/index/Scene", "engine/systems/index/moveRectWithTilemapCollision", "engine/systems/index/stepArcadeBody", "engine/theme/index/Theme", "engine/theme/index/ThemeTokens", "engine/tilemap/index/renderTilemap", "engine/tilemap/index/Tilemap"],
-      "toolHints": ["parallax-editor"],
+      "toolHints": [],
       "roundtripToolPresets": []
     },
     {
@@ -1438,7 +1434,7 @@
       "preview": "/samples/phase-05/0510/assets/images/preview.svg",
       "href": "./phase-05/0510/index.html",
       "classValues": ["engine/assets/index/AssetLoaderSystem", "engine/assets/index/AssetRegistry", "engine/assets/index/ImageAssetLoader", "engine/core/Engine", "engine/debug/index/drawFrame", "engine/debug/index/drawPanel", "engine/scene/index/Scene", "engine/theme/index/Theme", "engine/theme/index/ThemeTokens"],
-      "toolHints": ["asset-pipeline-tool"],
+      "toolHints": [],
       "roundtripToolPresets": []
     },
     {
@@ -1464,7 +1460,7 @@
       "preview": "/samples/phase-05/0512/assets/images/preview.svg",
       "href": "./phase-05/0512/index.html",
       "classValues": ["engine/core/Engine", "engine/debug/index/drawFrame", "engine/debug/index/drawPerformanceMetricsPanel", "engine/scene/index/Scene", "engine/theme/index/Theme", "engine/theme/index/ThemeTokens"],
-      "toolHints": ["performance-profiler"],
+      "toolHints": [],
       "roundtripToolPresets": []
     },
     {
@@ -1730,7 +1726,7 @@
       "preview": "/samples/phase-07/0708/assets/images/preview.svg",
       "href": "./phase-07/0708/index.html",
       "classValues": ["engine/core/Engine", "engine/debug/index/drawFrame", "engine/debug/index/drawPanel", "engine/input/index/ActionInputMap", "engine/input/index/ActionInputService", "engine/replay/index/ReplaySystem", "engine/scene/index/Scene", "engine/theme/index/Theme", "engine/theme/index/ThemeTokens"],
-      "toolHints": ["replay-visualizer"],
+      "toolHints": [],
       "roundtripToolPresets": []
     },
     {
@@ -1924,7 +1920,7 @@
       "preview": "/samples/phase-09/0901/assets/images/preview.svg",
       "href": "./phase-09/0901/index.html",
       "classValues": ["engine/core/Engine", "engine/debug/index/drawFrame", "engine/debug/index/drawPanel", "engine/rendering/index/drawVectorShape", "engine/rendering/index/transformPoints", "engine/scene/index/Scene", "engine/theme/index/Theme", "engine/theme/index/ThemeTokens"],
-      "toolHints": ["svg-asset-studio", "vector-map-editor", "palette-browser"],
+      "toolHints": ["palette-browser"],
       "roundtripToolPresets": [
         {
           "toolId": "palette-browser",
@@ -2159,7 +2155,7 @@
       "preview": "/samples/phase-12/1204/assets/images/preview.svg",
       "href": "./phase-12/1204/index.html",
       "classValues": ["engine/camera/index/Camera2D", "engine/camera/index/worldRectToScreen", "engine/core/Engine", "engine/debug/index/drawFrame", "engine/debug/index/drawPanel", "engine/input/index/InputService", "engine/scene/index/Scene", "engine/theme/index/Theme", "engine/theme/index/ThemeTokens", "engine/tilemap/index/renderTilemap", "engine/tilemap/index/resolveRectVsTilemap", "engine/tilemap/index/Tilemap", "engine/utils/index/clamp"],
-      "toolHints": ["parallax-editor", "svg-asset-studio", "vector-map-editor", "palette-browser"],
+      "toolHints": ["palette-browser"],
       "roundtripToolPresets": [
         {
           "toolId": "palette-browser",
@@ -2178,7 +2174,7 @@
       "preview": "/samples/phase-12/1205/assets/images/preview.svg",
       "href": "./phase-12/1205/index.html",
       "classValues": ["engine/camera/index/Camera2D", "engine/camera/index/worldRectToScreen", "engine/core/Engine", "engine/debug/index/drawFrame", "engine/debug/index/drawPanel", "engine/input/index/InputService", "engine/scene/index/Scene", "engine/theme/index/Theme", "engine/theme/index/ThemeTokens", "engine/tilemap/index/renderTilemap", "engine/tilemap/index/resolveRectVsTilemap", "engine/tilemap/index/Tilemap", "engine/utils/index/clamp"],
-      "toolHints": ["parallax-editor", "vector-map-editor"],
+      "toolHints": [],
       "roundtripToolPresets": []
     },
     {
@@ -2216,7 +2212,7 @@
       "preview": "/samples/phase-12/1208/assets/images/preview.svg",
       "href": "./phase-12/1208/index.html",
       "classValues": ["engine/camera/index/Camera2D", "engine/camera/index/worldRectToScreen", "engine/core/Engine", "engine/input/index/InputService", "engine/scene/index/Scene", "engine/theme/index/Theme", "engine/theme/index/ThemeTokens", "engine/tilemap/index/resolveRectVsTilemap", "engine/tilemap/index/Tilemap", "engine/utils/index/clamp"],
-      "toolHints": ["3d-asset-viewer", "parallax-editor", "tile-map-editor", "svg-asset-studio", "palette-browser"],
+      "toolHints": ["3d-asset-viewer", "parallax-editor", "tile-map-editor", "palette-browser"],
       "roundtripToolPresets": [
         {
           "toolId": "parallax-editor",
@@ -2225,10 +2221,6 @@
         {
           "toolId": "tile-map-editor",
           "presetPath": "/samples/phase-12/1208/sample.1208.tile-map-editor.json"
-        },
-        {
-          "toolId": "svg-asset-studio",
-          "presetPath": "/samples/phase-12/1208/sample.1208.svg-asset-studio.json"
         },
         {
           "toolId": "palette-browser",
@@ -2396,15 +2388,10 @@
       "tags": ["vector", "asset", "preset", "editor", "mario", "tool"],
       "engineClassesUsed": ["tools/svg-asset-studio"],
       "classValues": ["tools/svg-asset-studio"],
-      "toolHints": ["svg-asset-studio"],
+      "toolHints": [],
       "thumbnail": "/samples/phase-12/1217/assets/images/preview.svg",
       "preview": "/samples/phase-12/1217/assets/images/preview.svg",
-      "roundtripToolPresets": [
-        {
-          "toolId": "svg-asset-studio",
-          "presetPath": "/samples/phase-12/1217/sample-1217-svg-asset-studio.json"
-        }
-      ]
+      "roundtripToolPresets": []
     },
     {
       "id": "1218",
@@ -2642,7 +2629,7 @@
       "preview": "/samples/phase-13/1315/assets/images/preview.svg",
       "href": "./phase-13/1315/index.html",
       "classValues": ["engine/core/Engine", "engine/debug/index/drawFrame", "engine/debug/index/drawPanel", "engine/network/index/PredictionReconciler", "engine/network/index/RollbackDiagnostics", "engine/scene/index/Scene", "engine/theme/index/Theme", "engine/theme/index/ThemeTokens"],
-      "toolHints": ["replay-visualizer"],
+      "toolHints": [],
       "roundtripToolPresets": []
     },
     {
@@ -2693,7 +2680,7 @@
       "tags": ["real", "network", "live", "dashboard", "minimal", "authoritative"],
       "classValues": ["engine/core/Engine", "engine/debug/index/drawFrame", "engine/debug/index/drawPanel", "engine/input/index/InputService", "engine/network/index/AuthoritativeServerRuntime", "engine/scene/index/Scene", "engine/theme/index/Theme", "engine/theme/index/ThemeTokens", "engine/utils/index/clamp"],
       "engineClassesUsed": ["engine/core/Engine", "engine/debug/index/drawFrame", "engine/debug/index/drawPanel", "engine/input/index/InputService", "engine/network/index/AuthoritativeServerRuntime", "engine/scene/index/Scene", "engine/theme/index/Theme", "engine/theme/index/ThemeTokens", "engine/utils/index/clamp"],
-      "toolHints": ["performance-profiler"],
+      "toolHints": [],
       "roundtripToolPresets": []
     },
     {
@@ -2779,7 +2766,7 @@
       "preview": "/samples/phase-14/1406/assets/images/preview.svg",
       "href": "./phase-14/1406/index.html",
       "classValues": ["engine/scene/index/Scene"],
-      "toolHints": ["replay-visualizer"],
+      "toolHints": [],
       "roundtripToolPresets": []
     },
     {
@@ -2793,7 +2780,7 @@
       "preview": "/samples/phase-14/1407/assets/images/preview.svg",
       "href": "./phase-14/1407/index.html",
       "classValues": ["engine/scene/index/Scene"],
-      "toolHints": ["performance-profiler"],
+      "toolHints": [],
       "roundtripToolPresets": []
     },
     {
@@ -2867,19 +2854,15 @@
       "preview": "/samples/phase-14/1413/assets/images/preview.svg",
       "href": "./phase-14/1413/index.html",
       "classValues": ["engine/scene/index/Scene"],
-      "toolHints": ["3d-asset-viewer", "asset-browser", "asset-pipeline-tool"],
+      "toolHints": ["3d-asset-viewer", "asset-pipeline"],
       "roundtripToolPresets": [
         {
           "toolId": "3d-asset-viewer",
           "presetPath": "/samples/phase-14/1413/sample.1413.3d-asset-viewer.json"
         },
         {
-          "toolId": "asset-browser",
-          "presetPath": "/samples/phase-14/1413/sample.1413.asset-browser.json"
-        },
-        {
-          "toolId": "asset-pipeline-tool",
-          "presetPath": "/samples/phase-14/1413/sample.1413.asset-pipeline-tool.json"
+          "toolId": "asset-pipeline",
+          "presetPath": "/samples/phase-14/1413/sample.1413.asset-pipeline.json"
         }
       ]
     },
@@ -2942,7 +2925,7 @@
       "preview": "/samples/phase-14/1417/assets/images/preview.svg",
       "href": "./phase-14/1417/index.html",
       "classValues": ["engine/scene/index/Scene"],
-      "toolHints": ["asset-pipeline-tool"],
+      "toolHints": [],
       "roundtripToolPresets": []
     },
     {
@@ -3016,13 +2999,8 @@
       "preview": "/samples/phase-15/1505/assets/images/preview.svg",
       "href": "./phase-15/1505/index.html",
       "classValues": ["engine/debug/index/drawFrame", "engine/debug/index/drawPanel", "engine/scene/index/Scene", "engine/theme/index/Theme", "engine/theme/index/ThemeTokens", "engine/tooling/index/AssetBrowser"],
-      "toolHints": ["asset-browser"],
-      "roundtripToolPresets": [
-        {
-          "toolId": "asset-browser",
-          "presetPath": "/samples/phase-15/1505/sample.1505.asset-browser.json"
-        }
-      ]
+      "toolHints": [],
+      "roundtripToolPresets": []
     },
     {
       "id": "1506",
@@ -3107,7 +3085,7 @@
       "preview": "/samples/phase-16/1606/assets/images/preview.svg",
       "classValues": ["engine/core/Engine", "engine/debug/index/drawFrame", "engine/debug/index/drawPanel", "engine/input/index/InputService", "engine/scene/index/Scene", "engine/theme/index/Theme", "engine/theme/index/ThemeTokens"],
       "engineClassesUsed": ["engine/core/Engine", "engine/debug/index/drawFrame", "engine/debug/index/drawPanel", "engine/input/index/InputService", "engine/scene/index/Scene", "engine/theme/index/Theme", "engine/theme/index/ThemeTokens"],
-      "toolHints": ["physics-sandbox"],
+      "toolHints": [],
       "roundtripToolPresets": []
     },
     {
@@ -3493,7 +3471,7 @@
       "preview": "/samples/phase-19/1902/assets/images/preview.svg",
       "classValues": ["tools/shared/toolHostManifest", "tools/shared/toolHostRuntime", "tools/shared/toolLoadDiagnostics"],
       "engineClassesUsed": ["tools/shared/toolHostManifest", "tools/shared/toolHostRuntime", "tools/shared/toolLoadDiagnostics"],
-      "toolHints": ["vector-map-editor", "svg-asset-studio", "tile-map-editor", "parallax-editor", "sprite-editor", "skin-editor", "asset-browser", "palette-browser", "state-inspector", "replay-visualizer", "performance-profiler", "physics-sandbox", "asset-pipeline-tool", "tile-model-converter", "3d-json-payload-normalizer", "3d-asset-viewer", "3d-camera-path-editor"],
+      "toolHints": ["vector-map-editor", "svg-asset-studio", "tile-map-editor", "parallax-editor", "sprite-editor", "skin-editor", "asset-browser", "palette-browser", "state-inspector", "replay-visualizer", "performance-profiler", "physics-sandbox", "asset-pipeline", "tile-model-converter", "3d-json-payload", "3d-asset-viewer", "3d-camera-path-editor"],
       "roundtripToolPresets": [
         {
           "toolId": "vector-map-editor",
@@ -3544,7 +3522,7 @@
           "presetPath": "/samples/phase-19/1902/sample.1902.workspace-all-tools.json"
         },
         {
-          "toolId": "asset-pipeline-tool",
+          "toolId": "asset-pipeline",
           "presetPath": "/samples/phase-19/1902/sample.1902.workspace-all-tools.json"
         },
         {
@@ -3552,7 +3530,7 @@
           "presetPath": "/samples/phase-19/1902/sample.1902.workspace-all-tools.json"
         },
         {
-          "toolId": "3d-json-payload-normalizer",
+          "toolId": "3d-json-payload",
           "presetPath": "/samples/phase-19/1902/sample.1902.workspace-all-tools.json"
         },
         {

@@ -80,10 +80,10 @@ function classifyToolGroup(toolId) {
   ]);
   const utilityToolIds = new Set([
     "asset-browser",
-    "asset-pipeline-tool",
+    "asset-pipeline",
     "tile-model-converter",
     "physics-sandbox",
-    "3d-json-payload-normalizer"
+    "3d-json-payload"
   ]);
   if (viewerToolIds.has(toolId)) {
     return "viewers";

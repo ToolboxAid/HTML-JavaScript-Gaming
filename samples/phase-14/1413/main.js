@@ -11,7 +11,7 @@ function resolveSamplePresetPath() {
   if (queryPath && !queryPath.includes('..')) {
     return queryPath;
   }
-  return './sample.1413.asset-pipeline-tool.json';
+  return './sample.1413.asset-pipeline.json';
 }
 
 function deriveImportInputFromPipelinePayload(pipelinePayload) {

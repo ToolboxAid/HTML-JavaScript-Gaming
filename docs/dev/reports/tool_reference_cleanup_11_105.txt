@@ -1,0 +1,22 @@
+BUILD_PR_LEVEL_11_105_REMOVE_BROKEN_SAMPLE_TOOL_BINDINGS
+Date: 2026-04-30
+
+Cleanup summary:
+- Removed sample metadata toolHints/roundtripToolPresets for tools lacking aligned explicit input files.
+- Removed Asset Browser references from samples with empty assets maps (0204, 1413, 1505).
+- Removed default-only references for state-inspector, replay-visualizer, performance-profiler, and physics-sandbox sample entries listed in BUILD.
+- Removed SVG Asset Studio from 0901/1204/1208 and removed from 1217 to keep only validated set (1215/1216) per BUILD instruction.
+- Removed Vector Map Editor from 0901/1204/1205 and kept vector-map-editor where explicit map presets exist (1212-1214).
+
+Kept references and reasons:
+- skin-editor kept in 0226 and 0227 because sample-local skin JSON exists with documentKind/schema/game metadata.
+- parallax-editor kept where explicit parallaxDocument presets exist (1208, 1218, 1219, 1220).
+- asset-pipeline kept in 1413 because explicit sample.1413.asset-pipeline.json exists with pipelinePayload.
+- workspace sample 1902 kept as embedded multi-tool integration payload sample.
+
+Post-cleanup guard checks:
+- removed_binding_violations=0 for required removal matrix.
+- 1215_has_svg_asset_studio=true, 1216_has_svg_asset_studio=true, 1217_has_svg_asset_studio=false.
+
+No fallback/default data was added.
+No schema loosening was applied.

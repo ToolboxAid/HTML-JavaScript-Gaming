@@ -40,8 +40,8 @@
       "id": "0221",
       "type": "sample",
       "phase": "phase-02",
-      "tool": "3d-json-payload-normalizer",
-      "tools": ["3d-json-payload-normalizer", "tile-map-editor", "tile-model-converter"],
+      "tool": "3d-json-payload",
+      "tools": ["3d-json-payload", "tile-map-editor", "tile-model-converter"],
       "palette": "samples/phase-02/0221/sample.0221.palette.json"
     },
     {
@@ -72,8 +72,8 @@
       "id": "0305",
       "type": "sample",
       "phase": "phase-03",
-      "tool": "3d-json-payload-normalizer",
-      "tools": ["3d-json-payload-normalizer", "tile-map-editor", "tile-model-converter"],
+      "tool": "3d-json-payload",
+      "tools": ["3d-json-payload", "tile-map-editor", "tile-model-converter"],
       "palette": "samples/phase-03/0305/sample.0305.palette.json"
     },
     {
@@ -129,7 +129,7 @@
       "type": "sample",
       "phase": "phase-12",
       "tool": "3d-asset-viewer",
-      "tools": ["3d-asset-viewer", "3d-json-payload-normalizer", "parallax-editor", "tile-map-editor", "svg-asset-studio"],
+      "tools": ["3d-asset-viewer", "3d-json-payload", "parallax-editor", "tile-map-editor", "svg-asset-studio"],
       "palette": "samples/phase-12/1208/sample.1208.palette.json"
     },
     {

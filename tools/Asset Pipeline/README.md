@@ -3,9 +3,9 @@ David Quesenberry
 04/21/2026
 README.md
 
-# Asset Pipeline Tool
+# Asset Pipeline
 
-High-level overview for 'Asset Pipeline Tool' under 'tools/Asset Pipeline Tool/'.
+High-level overview for 'Asset Pipeline' under 'tools/Asset Pipeline/'.
 
 ## Purpose
 - Provide a focused workspace for this tool's primary authoring/debug workflow.
@@ -18,5 +18,5 @@ High-level overview for 'Asset Pipeline Tool' under 'tools/Asset Pipeline Tool/'
 - Safe workflows for loading, editing, previewing, and exporting relevant data.
 
 ## Entry Points
-- Tool UI: 'tools/Asset Pipeline Tool/index.html'
-- How-to guide: 'tools/Asset Pipeline Tool/how_to_use.html'
+- Tool UI: 'tools/Asset Pipeline/index.html'
+- How-to guide: 'tools/Asset Pipeline/how_to_use.html'

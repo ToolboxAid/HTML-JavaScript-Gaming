@@ -60,8 +60,8 @@ samples/phase-12/1219/sample-1219-parallax-editor.json,tools/schemas/tools/paral
 samples/phase-12/1220/sample-1220-parallax-editor.json,tools/schemas/tools/parallax-editor.schema.json,invalid,1,$.payload.parallaxDocument: value must satisfy exactly one oneOf branch,
 samples/phase-14/1413/sample.1413.3d-asset-viewer.json,tools/schemas/tools/3d-asset-viewer.schema.json,invalid,1,$.payload.asset3d: value must satisfy exactly one oneOf branch,
 samples/phase-14/1413/sample.1413.asset-browser.json,tools/schemas/tools/asset-browser.schema.json,valid,0,,
-samples/phase-14/1413/sample.1413.asset-pipeline-tool.json,tools/schemas/tools/asset-pipeline-tool.schema.json,schema-missing,1,schema not found,
+samples/phase-14/1413/sample.1413.asset-pipeline.json,tools/schemas/tools/asset-pipeline.schema.json,invalid,1,$.payload.pipelinePayload: value must satisfy exactly one oneOf branch,
 samples/phase-14/1414/sample.1414.palette.json,,skipped,0,,no matching schema contract
 samples/phase-14/1414/sample.1414.sprite-editor.json,tools/schemas/tools/sprite-editor.schema.json,invalid,1,$.payload.spriteProject: value must satisfy exactly one oneOf branch,
 samples/phase-15/1505/sample.1505.asset-browser.json,tools/schemas/tools/asset-browser.schema.json,valid,0,,
-samples/phase-19/1902/sample.1902.workspace-all-tools.json,tools/schemas/workspace.manifest.schema.json,invalid,2,missing schema for tool asset-pipeline-tool: tools/schemas/tools/asset-pipeline-tool.schema.json | missing schema for tool 3d-json-payload-normalizer: tools/schemas/tools/3d-json-payload-normalizer.schema.json,
+samples/phase-19/1902/sample.1902.workspace-all-tools.json,tools/schemas/workspace.manifest.schema.json,valid,0,,

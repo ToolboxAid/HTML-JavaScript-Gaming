@@ -1,0 +1,71 @@
+BUILD_PR_LEVEL_11_105_REMOVE_BROKEN_SAMPLE_TOOL_BINDINGS
+Date: 2026-04-30
+
+Files changed:
+- samples/metadata/samples.index.metadata.json
+- sample/tool manifest and registry files updated for canonical ids.
+
+References removed (broken/no-input/default-only):
+- sample 0201: 3d-camera-path-editor removed=True
+- sample 0202: 3d-camera-path-editor removed=True
+- sample 0220: 3d-camera-path-editor removed=True
+- sample 0221: 3d-json-payload removed=True
+- sample 0305: 3d-json-payload removed=True
+- sample 0204: asset-browser removed=True
+- sample 1413: asset-browser removed=True
+- sample 1505: asset-browser removed=True
+- sample 0510: asset-pipeline removed=True
+- sample 1417: asset-pipeline removed=True
+- sample 0306: parallax-editor removed=True
+- sample 1204: parallax-editor removed=True
+- sample 1204: svg-asset-studio removed=True
+- sample 1204: vector-map-editor removed=True
+- sample 1205: parallax-editor removed=True
+- sample 1205: vector-map-editor removed=True
+- sample 0512: performance-profiler removed=True
+- sample 1319: performance-profiler removed=True
+- sample 1407: performance-profiler removed=True
+- sample 0210: physics-sandbox removed=True
+- sample 0303: physics-sandbox removed=True
+- sample 1606: physics-sandbox removed=True
+- sample 0708: replay-visualizer removed=True
+- sample 1315: replay-visualizer removed=True
+- sample 1406: replay-visualizer removed=True
+- sample 0205: state-inspector removed=True
+- sample 0208: state-inspector removed=True
+- sample 0217: state-inspector removed=True
+- sample 0901: svg-asset-studio removed=True
+- sample 0901: vector-map-editor removed=True
+- sample 1208: svg-asset-studio removed=True
+- sample 1217: svg-asset-studio removed=True
+
+References kept (validated input present):
+- sample 0226: skin-editor kept=True reason=valid sample-local skin JSON exists with schema/game metadata.
+- sample 0227: skin-editor kept=True reason=valid sample-local skin JSON exists with schema/game metadata.
+- sample 1215: svg-asset-studio kept=True reason=explicit svg-asset-studio preset JSON exists.
+- sample 1216: svg-asset-studio kept=True reason=explicit svg-asset-studio preset JSON exists.
+- sample 1212: vector-map-editor kept=True reason=explicit vector-map-editor preset JSON exists.
+- sample 1213: vector-map-editor kept=True reason=explicit vector-map-editor preset JSON exists.
+- sample 1214: vector-map-editor kept=True reason=explicit vector-map-editor preset JSON exists.
+- sample 1208: parallax-editor kept=True reason=explicit parallax-editor preset JSON exists.
+- sample 1218: parallax-editor kept=True reason=explicit parallax-editor preset JSON exists.
+- sample 1219: parallax-editor kept=True reason=explicit parallax-editor preset JSON exists.
+- sample 1220: parallax-editor kept=True reason=explicit parallax-editor preset JSON exists.
+- sample 1413: asset-pipeline kept=True reason=explicit asset pipeline preset JSON exists and resolves pipelinePayload.
+- sample 1902: asset-browser kept=True reason=workspace integration sample with embedded payloads per tool.
+- sample 1902: asset-pipeline kept=True reason=workspace integration sample with embedded payloads per tool.
+- sample 1902: 3d-json-payload kept=True reason=workspace integration sample with embedded payloads per tool.
+- sample 1902: 3d-camera-path-editor kept=True reason=workspace integration sample with embedded payloads per tool.
+- sample 1902: state-inspector kept=True reason=workspace integration sample with embedded payloads per tool.
+- sample 1902: replay-visualizer kept=True reason=workspace integration sample with embedded payloads per tool.
+- sample 1902: performance-profiler kept=True reason=workspace integration sample with embedded payloads per tool.
+- sample 1902: physics-sandbox kept=True reason=workspace integration sample with embedded payloads per tool.
+- sample 1902: parallax-editor kept=True reason=workspace integration sample with embedded payloads per tool.
+- sample 1902: vector-map-editor kept=True reason=workspace integration sample with embedded payloads per tool.
+- sample 1902: svg-asset-studio kept=True reason=workspace integration sample with embedded payloads per tool.
+- sample 1902: skin-editor kept=True reason=workspace integration sample with embedded payloads per tool.
+
+Validation:
+- JSON parse: changed_json_parse_ok=9 changed_json_parse_bad=0
+- Strict schemas: tool payload invalid=0, game manifest invalid=0, sample_json invalid=28 (pre-existing oneOf contract failures remain; no schema loosening applied).
+- Old names search exit=1 (expect 1 for no matches).

@@ -1,0 +1,25 @@
+BUILD_PR_LEVEL_11_105_REMOVE_BROKEN_SAMPLE_TOOL_BINDINGS
+Date: 2026-04-30
+
+Canonical naming applied:
+- 3D JSON Payload Normalizer -> 3D JSON Payload
+- 3d-json-payload-normalizer -> 3d-json-payload
+- Asset Pipeline Tool -> Asset Pipeline
+- asset-pipeline-tool -> asset-pipeline
+
+Renamed paths:
+- tools/3D JSON Payload Normalizer -> tools/3D JSON Payload
+- tools/Asset Pipeline Tool -> tools/Asset Pipeline
+- samples/phase-14/1413/sample.1413.asset-pipeline-tool.json -> samples/phase-14/1413/sample.1413.asset-pipeline.json
+
+Schema alignment updates:
+- tools/schemas/workspace.manifest.schema.json keys now use asset-pipeline and 3d-json-payload.
+- tools/schemas/tools/asset-pipeline.schema.json const/tool id updated.
+- tools/schemas/tools/3d-json-payload.schema.json const/tool id updated.
+
+Validation checks:
+- rg old-name search exit code: 1 (1 means no matches found).
+- validate-tool-schemas exit code: 0
+- validate-json-contracts exit code: 0
+
+No aliases or duplicate canonical tool names were introduced for these two tools.

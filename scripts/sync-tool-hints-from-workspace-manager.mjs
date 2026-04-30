@@ -211,7 +211,7 @@ function readGameToolsManifest(gameDir) {
     });
 
     if (hasDomainRecords) {
-      hints.push("asset-pipeline-tool");
+      hints.push("asset-pipeline");
     }
 
     return {

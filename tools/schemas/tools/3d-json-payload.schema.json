@@ -1,13 +1,13 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "tools/schemas/tools/3d-json-payload.schema.json",
-  "title": "3d-json-payload-normalizer Payload",
+  "title": "3d-json-payload Payload",
   "type": "object",
   "required": ["tool", "version", "payload"],
   "additionalProperties": false,
   "properties": {
     "tool": {
-      "const": "3d-json-payload-normalizer"
+      "const": "3d-json-payload"
     },
     "version": {
       "oneOf": [

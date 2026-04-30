@@ -293,32 +293,32 @@ body[data-tool-id="3d-camera-path-editor"] #cameraPathOutput {
   flex: 1 1 auto;
 }
 
-body[data-tool-id="3d-json-payload-normalizer"] .debug-tool-shell {
+body[data-tool-id="3d-json-payload"] .debug-tool-shell {
   min-height: calc(46dvh - 240px);
 }
 
-body[data-tool-id="3d-json-payload-normalizer"] .debug-tool-shell > .debug-tool-panel,
-body[data-tool-id="3d-json-payload-normalizer"] .debug-tool-grid > .debug-tool-panel {
+body[data-tool-id="3d-json-payload"] .debug-tool-shell > .debug-tool-panel,
+body[data-tool-id="3d-json-payload"] .debug-tool-grid > .debug-tool-panel {
   padding: 10px;
   gap: 6px;
 }
 
-body[data-tool-id="3d-json-payload-normalizer"] .debug-tool-shell > .debug-tool-panel {
+body[data-tool-id="3d-json-payload"] .debug-tool-shell > .debug-tool-panel {
   padding: 6px 10px;
 }
 
-body[data-tool-id="3d-json-payload-normalizer"] #map3dStatus {
+body[data-tool-id="3d-json-payload"] #map3dStatus {
   margin: 0;
   min-height: 0;
 }
 
-body[data-tool-id="3d-json-payload-normalizer"] .debug-tool-grid {
+body[data-tool-id="3d-json-payload"] .debug-tool-grid {
   align-items: stretch;
   min-height: 0;
   flex: 1 1 auto;
 }
 
-body[data-tool-id="3d-json-payload-normalizer"] .debug-tool-grid .debug-tool-panel {
+body[data-tool-id="3d-json-payload"] .debug-tool-grid .debug-tool-panel {
   display: flex;
   flex-direction: column;
   min-height: 0;
@@ -326,27 +326,27 @@ body[data-tool-id="3d-json-payload-normalizer"] .debug-tool-grid .debug-tool-pan
   align-content: start;
 }
 
-body[data-tool-id="3d-json-payload-normalizer"] .debug-tool-grid .debug-tool-panel h3 {
+body[data-tool-id="3d-json-payload"] .debug-tool-grid .debug-tool-panel h3 {
   margin: 0;
   min-height: 1.2em;
   line-height: 1.1;
 }
 
-body[data-tool-id="3d-json-payload-normalizer"] #map3dInput,
-body[data-tool-id="3d-json-payload-normalizer"] #map3dOutput {
+body[data-tool-id="3d-json-payload"] #map3dInput,
+body[data-tool-id="3d-json-payload"] #map3dOutput {
   margin: 0;
   min-height: 520px;
   height: auto;
   flex: 1 1 auto;
 }
 
-body[data-tool-id="3d-json-payload-normalizer"] .debug-tool-actions {
+body[data-tool-id="3d-json-payload"] .debug-tool-actions {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
 }
 
-body[data-tool-id="3d-json-payload-normalizer"] .debug-tool-actions > button {
+body[data-tool-id="3d-json-payload"] .debug-tool-actions > button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -354,18 +354,18 @@ body[data-tool-id="3d-json-payload-normalizer"] .debug-tool-actions > button {
   visibility: visible;
 }
 
-body[data-tool-id="3d-json-payload-normalizer"] {
+body[data-tool-id="3d-json-payload"] {
   min-height: 100dvh;
   display: flex;
   flex-direction: column;
 }
 
-body[data-tool-id="3d-json-payload-normalizer"] > .is-collapsible,
-body[data-tool-id="3d-json-payload-normalizer"] > [data-tools-platform-status] {
+body[data-tool-id="3d-json-payload"] > .is-collapsible,
+body[data-tool-id="3d-json-payload"] > [data-tools-platform-status] {
   flex: 0 0 auto;
 }
 
-body[data-tool-id="3d-json-payload-normalizer"] .debug-tool-shell {
+body[data-tool-id="3d-json-payload"] .debug-tool-shell {
   flex: 1 1 auto;
   min-height: 0;
   height: calc(100dvh - 120px);
@@ -374,47 +374,47 @@ body[data-tool-id="3d-json-payload-normalizer"] .debug-tool-shell {
   align-content: flex-start;
 }
 
-body[data-tool-id="3d-json-payload-normalizer"] .debug-tool-shell > .debug-tool-panel {
+body[data-tool-id="3d-json-payload"] .debug-tool-shell > .debug-tool-panel {
   flex: 0 0 auto;
 }
 
-body[data-tool-id="3d-json-payload-normalizer"] .debug-tool-grid {
+body[data-tool-id="3d-json-payload"] .debug-tool-grid {
   flex: 1 1 auto;
   min-height: 0;
 }
 
-body[data-tool-id="3d-json-payload-normalizer"] #map3dOutput {
+body[data-tool-id="3d-json-payload"] #map3dOutput {
   min-height: 0;
   height: 100%;
   max-height: none;
 }
 
-body[data-tool-id="asset-pipeline-tool"] .debug-tool-shell {
+body[data-tool-id="asset-pipeline"] .debug-tool-shell {
   min-height: 0;
   display: flex;
   flex-direction: column;
   gap: 10px;
 }
 
-body[data-tool-id="asset-pipeline-tool"] .debug-tool-shell > .debug-tool-panel,
-body[data-tool-id="asset-pipeline-tool"] .debug-tool-grid > .debug-tool-panel {
+body[data-tool-id="asset-pipeline"] .debug-tool-shell > .debug-tool-panel,
+body[data-tool-id="asset-pipeline"] .debug-tool-grid > .debug-tool-panel {
   padding: 10px;
   gap: 6px;
 }
 
-body[data-tool-id="asset-pipeline-tool"] .debug-tool-shell > .debug-tool-panel {
+body[data-tool-id="asset-pipeline"] .debug-tool-shell > .debug-tool-panel {
   padding: 6px 10px;
   flex: 0 0 auto;
 }
 
-body[data-tool-id="asset-pipeline-tool"] .asset-pipeline-actions {
+body[data-tool-id="asset-pipeline"] .asset-pipeline-actions {
   width: 100%;
   align-items: flex-start;
   justify-content: flex-start;
   gap: 10px;
 }
 
-body[data-tool-id="asset-pipeline-tool"] .asset-pipeline-quick-guide {
+body[data-tool-id="asset-pipeline"] .asset-pipeline-quick-guide {
   margin: 0 0 0 auto;
   font-size: 0.86rem;
   line-height: 1.35;
@@ -423,18 +423,18 @@ body[data-tool-id="asset-pipeline-tool"] .asset-pipeline-quick-guide {
   text-align: right;
 }
 
-body[data-tool-id="asset-pipeline-tool"] #assetPipelineStatus {
+body[data-tool-id="asset-pipeline"] #assetPipelineStatus {
   margin: 0;
   min-height: 0;
 }
 
-body[data-tool-id="asset-pipeline-tool"] .debug-tool-grid {
+body[data-tool-id="asset-pipeline"] .debug-tool-grid {
   align-items: stretch;
   min-height: 0;
   flex: 1 1 auto;
 }
 
-body[data-tool-id="asset-pipeline-tool"] .debug-tool-grid .debug-tool-panel {
+body[data-tool-id="asset-pipeline"] .debug-tool-grid .debug-tool-panel {
   display: flex;
   flex-direction: column;
   min-height: 0;
@@ -442,14 +442,14 @@ body[data-tool-id="asset-pipeline-tool"] .debug-tool-grid .debug-tool-panel {
   align-content: start;
 }
 
-body[data-tool-id="asset-pipeline-tool"] .debug-tool-grid .debug-tool-panel h3 {
+body[data-tool-id="asset-pipeline"] .debug-tool-grid .debug-tool-panel h3 {
   margin: 0;
   min-height: 1.2em;
   line-height: 1.1;
 }
 
-body[data-tool-id="asset-pipeline-tool"] #assetPipelineInput,
-body[data-tool-id="asset-pipeline-tool"] #assetPipelineOutput {
+body[data-tool-id="asset-pipeline"] #assetPipelineInput,
+body[data-tool-id="asset-pipeline"] #assetPipelineOutput {
   margin: 0;
   min-height: 0;
   height: 100%;
@@ -457,17 +457,17 @@ body[data-tool-id="asset-pipeline-tool"] #assetPipelineOutput {
   flex: 1 1 auto;
 }
 
-html:fullscreen body[data-tool-id="asset-pipeline-tool"] .debug-tool-shell {
+html:fullscreen body[data-tool-id="asset-pipeline"] .debug-tool-shell {
   height: calc(100dvh - 96px);
   min-height: 0;
 }
 
-html:fullscreen body[data-tool-id="asset-pipeline-tool"] .debug-tool-grid {
+html:fullscreen body[data-tool-id="asset-pipeline"] .debug-tool-grid {
   min-height: 0;
 }
 
 @media (max-width: 980px) {
-  body[data-tool-id="asset-pipeline-tool"] .asset-pipeline-quick-guide {
+  body[data-tool-id="asset-pipeline"] .asset-pipeline-quick-guide {
     max-width: none;
     margin-left: 0;
     text-align: left;

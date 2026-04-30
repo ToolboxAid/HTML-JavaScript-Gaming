@@ -95,7 +95,7 @@
       "debugShowcase": true,
       "requiresService": false,
       "engineClassesUsed": ["engine/audio/index/GaplessLoopPlayer", "engine/audio/index/HtmlAudioMediaBackend", "engine/audio/index/MediaTrackService", "engine/collision/index/arePolygonsColliding", "engine/core/Engine", "engine/debug/inspectors/shared/inspectorUtils/asArray", "engine/debug/inspectors/shared/inspectorUtils/asObject", "engine/fx/index/ParticleSystem", "engine/input/index/InputService", "engine/persistence/index/StorageService", "engine/rendering/index/transformPoints", "engine/scene/index/AttractModeController", "engine/scene/index/Scene", "engine/utils/index/distance", "engine/utils/index/randomRange", "engine/utils/index/wrap", "engine/utils/math/clamp"],
-      "toolsUsed": ["palette-browser", "asset-browser", "sprite-editor", "tile-map-editor", "parallax-editor", "svg-asset-studio", "asset-pipeline-tool"]
+      "toolsUsed": ["palette-browser", "asset-browser", "sprite-editor", "tile-map-editor", "parallax-editor", "svg-asset-studio", "asset-pipeline"]
     },
     {
       "id": "SpaceInvaders",
@@ -219,7 +219,7 @@
       "sampleTrack": false,
       "debugShowcase": false,
       "requiresService": false,
-      "toolsUsed": ["sprite-editor", "asset-pipeline-tool", "replay-visualizer"]
+      "toolsUsed": ["sprite-editor", "asset-pipeline", "replay-visualizer"]
     },
     {
       "id": "Robotron2084",
@@ -354,7 +354,7 @@
       "sampleTrack": false,
       "debugShowcase": false,
       "requiresService": false,
-      "toolsUsed": ["asset-pipeline-tool", "replay-visualizer", "performance-profiler"]
+      "toolsUsed": ["asset-pipeline", "replay-visualizer", "performance-profiler"]
     },
     {
       "id": "ReplaySystem",
