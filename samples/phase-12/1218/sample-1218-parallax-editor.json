@@ -1,5 +1,4 @@
 {
-  "$schema": "../../../tools/schemas/tools/parallax-editor.schema.json",
   "tool": "parallax-editor",
   "version": "1",
   "payload": {

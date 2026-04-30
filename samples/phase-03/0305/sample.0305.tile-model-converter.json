@@ -1,8 +1,7 @@
 {
-  "$schema": "../../../tools/schemas/tools/tile-model-converter.schema.json",
   "tool": "tile-model-converter",
   "version": "1",
-  "config": {
+  "payload": {
     "candidate": {
       "id": "sample-0305-tile-metadata",
       "name": "sample-0305-tile-metadata",

@@ -1,8 +1,7 @@
 {
-  "$schema": "../../../tools/schemas/tools/sprite-editor.schema.json",
   "tool": "sprite-editor",
   "version": "1",
-  "config": {
+  "payload": {
     "spriteProject": {
       "format": "toolboxaid.sprite-editor.project",
       "version": 1,

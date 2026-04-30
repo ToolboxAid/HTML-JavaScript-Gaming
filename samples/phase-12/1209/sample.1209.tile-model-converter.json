@@ -1,8 +1,7 @@
 {
-  "$schema": "../../../tools/schemas/tools/tile-model-converter.schema.json",
   "tool": "tile-model-converter",
   "version": "1",
-  "config": {
+  "payload": {
     "candidate": {
       "id": "sample-1209-tilemap-basic",
       "name": "sample-1209-tilemap-basic",

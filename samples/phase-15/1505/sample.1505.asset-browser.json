@@ -1,35 +1,13 @@
 {
-  "$schema": "../../../tools/schemas/tools/asset-browser.schema.json",
   "tool": "asset-browser",
   "version": "1",
-  "config": {
-    "assetCatalog": {
-      "entries": [
-        {
-          "id": "sample-1505-asset-browser-preset",
-          "label": "1505 Asset Browser Preset",
-          "type": "data",
-          "category": "Workflow JSON",
-          "kind": "other",
-          "path": "/samples/phase-15/1505/sample.1505.asset-browser.json",
-          "status": "registered"
-        },
-        {
-          "id": "sample-1505-samples-index",
-          "label": "Samples Metadata Index",
-          "type": "data",
-          "category": "Workflow JSON",
-          "kind": "other",
-          "path": "/samples/metadata/samples.index.metadata.json",
-          "status": "registered"
-        }
-      ]
-    },
+  "payload": {
     "assetBrowserPreset": {
       "selectedCategory": "All",
       "selectedAssetId": "sample-1505-asset-browser-preset",
       "search": "",
       "importCategory": "Workflow JSON"
     }
-  }
+  },
+  "assets": {}
 }

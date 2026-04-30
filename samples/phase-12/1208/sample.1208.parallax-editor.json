@@ -1,9 +1,7 @@
 {
-  "$schema": "../../../tools/schemas/tools/parallax-editor.schema.json",
   "tool": "parallax-editor",
   "version": "1",
-  "config": {
-    "vectorAssetSvgPath": "/samples/phase-12/1208/assets/data/parallax/layer-near-forest.svg",
+  "payload": {
     "parallaxDocument": {
       "schema": "toolbox.parallax/1",
       "version": 1,
@@ -68,6 +66,7 @@
         "updatedAt": "2026-04-23T00:00:00.000Z",
         "source": "samples2tools-phase1"
       }
-    }
+    },
+    "vectorAssetSvgPath": "/samples/phase-12/1208/assets/data/parallax/layer-near-forest.svg"
   }
 }

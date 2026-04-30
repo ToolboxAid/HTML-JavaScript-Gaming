@@ -1,5 +1,4 @@
 {
-  "$schema": "../../../tools/schemas/tools/svg-asset-studio.schema.json",
   "tool": "svg-asset-studio",
   "version": "1",
   "payload": {

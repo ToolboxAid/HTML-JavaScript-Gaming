@@ -1,8 +1,7 @@
 {
-  "$schema": "../../../tools/schemas/tools/3d-asset-viewer.schema.json",
   "tool": "3d-asset-viewer",
   "version": "1",
-  "config": {
+  "payload": {
     "asset3d": {
       "schema": "tools.3d-asset-viewer.asset/1",
       "assetId": "sample-0204-registry-node",

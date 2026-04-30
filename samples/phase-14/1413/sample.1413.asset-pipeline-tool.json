@@ -1,12 +1,7 @@
 {
-  "$schema": "../../../tools/schemas/tools/asset-pipeline-tool.schema.json",
   "tool": "asset-pipeline-tool",
   "version": "1",
-  "config": {
-    "sampleImportInput": {
-      "id": "sample-1413-imported-sheet",
-      "source": "sprite-editor"
-    },
+  "payload": {
     "pipelinePayload": {
       "gameId": "sample-1413",
       "domainInputs": {

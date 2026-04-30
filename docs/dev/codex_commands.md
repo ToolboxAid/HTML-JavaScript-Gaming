@@ -1,10 +1,8 @@
-# Codex Command - PR 11.98
+# Codex Commands - PR 11.99
 
 Model: GPT-5.4
 Reasoning: high
 
-Run this from the repo root:
-
 ```powershell
-codex --model gpt-5.4 --reasoning high "Execute BUILD_PR_LEVEL_11_98_STRICT_SCHEMA_VALIDATION_AND_USAGE_REVIEW exactly. Tighten schemas so unknown fields are rejected, validate tools/workspaces/samples/games, update code that expects loose or legacy schema shapes, and write reports under docs/dev/reports. Do not add fallback/default payloads. Do not run the full samples suite unless required by shared loader changes."
+codex exec --model gpt-5.4 --reasoning high "Apply docs/pr/PR_11_99_SCHEMA_FAILURE_CLEANUP_AND_SAMPLE_CONTRACT_ALIGNMENT/BUILD.md exactly. Keep scope to strict schema failure cleanup. Do not loosen schemas. Do not create fallback assets or media buckets. Produce required reports and final repo-structured ZIP at tmp/PR_11_99_SCHEMA_FAILURE_CLEANUP_AND_SAMPLE_CONTRACT_ALIGNMENT.zip."
 ```

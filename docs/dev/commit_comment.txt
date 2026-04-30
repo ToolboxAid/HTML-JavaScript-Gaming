@@ -1,1 +1,1 @@
-Tighten schemas and validate samples/games against strict tool contracts - PR 11.98
+Normalize strict sample contracts without weakening schemas - PR 11.99

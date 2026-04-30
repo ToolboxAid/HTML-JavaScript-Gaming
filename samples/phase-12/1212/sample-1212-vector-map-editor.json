@@ -1,5 +1,4 @@
 {
-  "$schema": "../../../tools/schemas/tools/vector-map-editor.schema.json",
   "tool": "vector-map-editor",
   "version": "1",
   "payload": {

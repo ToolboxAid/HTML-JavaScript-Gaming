@@ -1,8 +1,7 @@
 {
-  "$schema": "../../../tools/schemas/tools/tile-map-editor.schema.json",
   "tool": "tile-map-editor",
   "version": "1",
-  "config": {
+  "payload": {
     "tileMapDocument": {
       "$schema": "../../../tools/schemas/sample.tool-payload.schema.json",
       "schema": "toolbox.tilemap/1",
