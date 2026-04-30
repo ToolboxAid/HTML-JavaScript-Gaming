@@ -1,1 +1,1 @@
-Lock game asset loading to manifest-declared assets only - PR 11.83
+Update Asteroids manifest chrome assets to bezel1 and deluxe images - PR 11.84
