@@ -1,33 +1,31 @@
 # CODEX COMMANDS
 
 Model: GPT-5.3-codex
-Reasoning: high
+Reasoning: medium
+
+## PR
+BUILD_PR_LEVEL_11_130_TOOL_INPUT_CONTRACT_WITH_PALETTE_DEPENDENCY
 
 STRICT SCOPE MODE
 
 ALLOWED FILES:
-- tools/schemas/tools/*.json
-- routing files ONLY if needed
+- docs only
 
-EXECUTION:
+TASK:
 
-FOR EACH TOOL:
+1. Document palette dependency rules
+2. Validate tools that require palette:
+   - payload JSON direct
+   - palette JSON direct
+3. Ensure:
+   - no wrapper accepted
+   - no parent JSON accepted
+   - no fallback palette
+   - no transform
 
-1. Load schema
-2. Test 3 inputs:
-   A valid tool JSON → must pass
-   B wrapper JSON → must fail
-   C parent JSON → must fail
+REPORT:
+docs/dev/reports/tool_palette_dependency_11_130.txt
 
-3. If B or C passes:
-   - fix schema (tighten)
-   - OR fix routing
-
-4. DO NOT:
-   - add compatibility
-   - expand schema
-
-5. REPORT:
-docs/dev/reports/tool_input_contract_11_129.txt
-
-FAIL if any tool violates rule
+FAIL if any tool:
+- injects palette
+- transforms palette

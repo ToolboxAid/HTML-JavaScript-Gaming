@@ -1,0 +1,101 @@
+﻿BUILD_PR_LEVEL_11_130_TOOL_INPUT_CONTRACT_WITH_PALETTE_DEPENDENCY
+Report: tool_palette_dependency_11_130
+Date: 2026-04-30
+Mode: STRICT SCOPE (docs-only edits)
+
+Scope
+- Document palette dependency rules.
+- Validate palette-dependent tools for:
+  - direct tool payload JSON
+  - direct palette JSON
+- Enforce:
+  - no wrapper accepted
+  - no parent JSON accepted
+  - no fallback palette
+  - no transform
+
+Palette Dependency Rules (Observed)
+1) Workspace context palette gate applies to all non-palette tools.
+2) Palette Browser is the only tool exempt from the palette lock gate.
+3) Non-palette tools are blocked when shared palette is not ready.
+
+Palette-dependent tool set (active, visible, non-palette):
+- vector-map-editor
+- svg-asset-studio
+- tile-map-editor
+- parallax-editor
+- sprite-editor
+- skin-editor
+- asset-browser
+- state-inspector
+- replay-visualizer
+- performance-profiler
+- physics-sandbox
+- asset-pipeline
+- tile-model-converter
+- 3d-json-payload
+- 3d-asset-viewer
+- 3d-camera-path-editor
+
+Validation Results
+A) Direct tool payload JSON contract (per tool schema)
+- Result: PASS for all palette-dependent tools.
+- A valid direct tool JSON passes.
+- Wrapper JSON fails.
+- Parent/workspace JSON fails.
+
+B) Direct palette JSON contract
+- Child tool routing path (workspace scoped preset for palette-browser):
+  - PASS for direct-only requirement in child route.
+  - Non-direct palette payload is rejected.
+
+C) Prohibited behaviors
+1. No wrapper accepted
+- FAIL
+- Wrapper palette payload is still accepted in palette handoff extraction path via `wrappedPalettePayload`.
+
+2. No parent JSON accepted
+- PASS (tool schema boundary)
+- Parent/workspace JSON rejected by tool payload schemas.
+
+3. No fallback palette
+- FAIL
+- Fallback palette id/display name paths still exist.
+
+4. No transform
+- FAIL
+- Palette transformation/normalization functions still used in handoff path:
+  - hex normalization
+  - swatch/entries/colors remap
+  - synthetic display/name fallbacks
+
+5. No palette injection
+- FAIL
+- Shared palette is injected into shared handoff storage from manifest/catalog hydration paths.
+
+Evidence (code locations)
+- Direct-only child palette route enforcement:
+  - tools/shared/platformShell.js:501-508
+- Palette wrapper acceptance in handoff extraction:
+  - tools/shared/platformShell.js:1241-1244
+- Fallback palette id/display:
+  - tools/shared/platformShell.js:1249-1253
+  - tools/shared/platformShell.js:1218-1219
+- Palette transform functions and remap:
+  - tools/shared/platformShell.js:1180-1209
+  - tools/shared/platformShell.js:1213-1221
+- Palette injection into shared handoff:
+  - tools/shared/platformShell.js:1287-1297
+  - tools/shared/platformShell.js:1317-1328
+  - tools/shared/platformShell.js:1351-1362
+- Palette dependency lock for non-palette tools:
+  - tools/shared/platformShell.js:1551-1554
+  - tools/shared/platformShell.js:1580-1587
+  - tools/shared/platformShell.js:1891-1899
+
+Final Status
+- FAIL
+Reason:
+- Palette wrapper acceptance remains in handoff extraction path.
+- Palette fallback generation remains.
+- Palette transformation and palette injection paths remain.

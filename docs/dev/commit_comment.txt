@@ -1,1 +1,1 @@
-Verify all tools enforce direct JSON-only input contract - PR 11.129
+Add palette dependency rules to tool input contract - PR 11.130
