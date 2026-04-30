@@ -404,69 +404,13 @@
           "assetRefs": {
             "spriteId": ""
           },
-          "recentColors": [
-            "#1CAC78FF",
-            "#1F75FEFF",
-            "#FF7538FF"
-          ],
+          "recentColors": ["#1CAC78FF", "#1F75FEFF", "#FF7538FF"],
           "frames": [
             {
-              "pixels": [
-                null,
-                "#A78BFAFF",
-                "#A78BFAFF",
-                "#A78BFAFF",
-                null,
-                "#A78BFAFF",
-                null,
-                null,
-                null,
-                "#A78BFAFF",
-                "#A78BFAFF",
-                null,
-                null,
-                null,
-                "#A78BFAFF",
-                "#A78BFAFF",
-                null,
-                null,
-                null,
-                "#A78BFAFF",
-                null,
-                "#A78BFAFF",
-                "#A78BFAFF",
-                "#A78BFAFF",
-                null
-              ]
+              "pixels": [null, "#A78BFAFF", "#A78BFAFF", "#A78BFAFF", null, "#A78BFAFF", null, null, null, "#A78BFAFF", "#A78BFAFF", null, null, null, "#A78BFAFF", "#A78BFAFF", null, null, null, "#A78BFAFF", null, "#A78BFAFF", "#A78BFAFF", "#A78BFAFF", null]
             },
             {
-              "pixels": [
-                null,
-                null,
-                null,
-                null,
-                null,
-                null,
-                "#22C55EFF",
-                "#22C55EFF",
-                "#22C55EFF",
-                null,
-                null,
-                "#22C55EFF",
-                "#22C55EFF",
-                "#22C55EFF",
-                null,
-                null,
-                "#22C55EFF",
-                "#22C55EFF",
-                "#22C55EFF",
-                null,
-                null,
-                null,
-                null,
-                null,
-                null
-              ]
+              "pixels": [null, null, null, null, null, null, "#22C55EFF", "#22C55EFF", "#22C55EFF", null, null, "#22C55EFF", "#22C55EFF", "#22C55EFF", null, null, "#22C55EFF", "#22C55EFF", "#22C55EFF", null, null, null, null, null, null]
             }
           ],
           "currentFrameIndex": 0
@@ -590,10 +534,7 @@
           },
           "bootContracts": {
             "count": 2,
-            "keys": [
-              "state-inspector",
-              "sample-0205"
-            ]
+            "keys": ["state-inspector", "sample-0205"]
           },
           "notes": "Sample snapshot payload for State Inspector launch validation."
         }

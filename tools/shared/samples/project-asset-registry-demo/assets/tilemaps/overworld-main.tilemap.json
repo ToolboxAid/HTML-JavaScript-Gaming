@@ -51,16 +51,8 @@
       "visible": true,
       "locked": false,
       "data": [
-        [
-          1,
-          1,
-          1
-        ],
-        [
-          1,
-          0,
-          1
-        ]
+        [1, 1, 1],
+        [1, 0, 1]
       ]
     },
     {
@@ -70,16 +62,8 @@
       "visible": true,
       "locked": false,
       "data": [
-        [
-          0,
-          0,
-          0
-        ],
-        [
-          0,
-          0,
-          0
-        ]
+        [0, 0, 0],
+        [0, 0, 0]
       ]
     },
     {
@@ -89,25 +73,15 @@
       "visible": true,
       "locked": false,
       "data": [
-        [
-          0,
-          0,
-          0
-        ],
-        [
-          0,
-          0,
-          0
-        ]
+        [0, 0, 0],
+        [0, 0, 0]
       ]
     }
   ],
   "markers": [],
   "assetRefs": {
     "tilesetId": "tileset.overworld-main",
-    "parallaxSourceIds": [
-      "parallax.sky-clouds"
-    ]
+    "parallaxSourceIds": ["parallax.sky-clouds"]
   },
   "parallax": {
     "schema": "toolbox.parallax/1",

@@ -3,12 +3,7 @@
   "$id": "tools/schemas/tools/asset-browser.schema.json",
   "title": "asset-browser Payload",
   "type": "object",
-  "required": [
-    "tool",
-    "version",
-    "assets",
-    "payload"
-  ],
+  "required": ["tool", "version", "assets", "payload"],
   "additionalProperties": false,
   "properties": {
     "tool": {
@@ -40,9 +35,7 @@
             },
             {
               "not": {
-                "required": [
-                  "stretchOverride"
-                ]
+                "required": ["stretchOverride"]
               }
             }
           ]
@@ -79,11 +72,7 @@
   "$defs": {
     "assetEntry": {
       "type": "object",
-      "required": [
-        "path",
-        "kind",
-        "source"
-      ],
+      "required": ["path", "kind", "source"],
       "additionalProperties": false,
       "properties": {
         "path": {
@@ -92,28 +81,15 @@
         },
         "kind": {
           "type": "string",
-          "enum": [
-            "image",
-            "audio",
-            "font",
-            "svg",
-            "data",
-            "other"
-          ]
+          "enum": ["image", "audio", "font", "svg", "data", "other"]
         },
         "source": {
           "type": "string",
-          "enum": [
-            "workspace-manager",
-            "asset-browser",
-            "manifest"
-          ]
+          "enum": ["workspace-manager", "asset-browser", "manifest"]
         },
         "stretchOverride": {
           "type": "object",
-          "required": [
-            "uniformEdgeStretchPx"
-          ],
+          "required": ["uniformEdgeStretchPx"],
           "additionalProperties": false,
           "properties": {
             "uniformEdgeStretchPx": {

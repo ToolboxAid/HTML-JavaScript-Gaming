@@ -3,11 +3,7 @@
   "$id": "tools/schemas/tools/tile-model-converter.schema.json",
   "title": "tile-model-converter Payload",
   "type": "object",
-  "required": [
-    "tool",
-    "version",
-    "payload"
-  ],
+  "required": ["tool", "version", "payload"],
   "additionalProperties": false,
   "properties": {
     "tool": {
@@ -27,10 +23,7 @@
     },
     "payload": {
       "type": "object",
-      "required": [
-        "candidate",
-        "conversion"
-      ],
+      "required": ["candidate", "conversion"],
       "additionalProperties": false,
       "properties": {
         "candidate": {

@@ -1,8 +1,12 @@
-# Codex Commands - PR 11.99
+# CODEX COMMANDS
 
-Model: GPT-5.4
-Reasoning: high
+Model: GPT-5.3-codex
+Reasoning: low
 
-```powershell
-codex exec --model gpt-5.4 --reasoning high "Apply docs/pr/PR_11_99_SCHEMA_FAILURE_CLEANUP_AND_SAMPLE_CONTRACT_ALIGNMENT/BUILD.md exactly. Keep scope to strict schema failure cleanup. Do not loosen schemas. Do not create fallback assets or media buckets. Produce required reports and final repo-structured ZIP at tmp/PR_11_99_SCHEMA_FAILURE_CLEANUP_AND_SAMPLE_CONTRACT_ALIGNMENT.zip."
-```
+Apply formatting rule:
+
+1. Update PROJECT_INSTRUCTIONS.md with ARRAY FORMATTING RULE
+2. Scan repo JSON files
+3. Convert primitive arrays to compact format
+4. Do NOT modify complex arrays
+5. Validate JSON syntax

@@ -3,11 +3,7 @@
   "$id": "tools/schemas/tool.manifest.schema.json",
   "title": "Tool Manifest",
   "type": "object",
-  "required": [
-    "tool",
-    "schema",
-    "data"
-  ],
+  "required": ["tool", "schema", "data"],
   "additionalProperties": false,
   "properties": {
     "tool": {

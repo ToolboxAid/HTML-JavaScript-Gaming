@@ -3,11 +3,7 @@
   "$id": "tools/schemas/tools/palette-browser.schema.json",
   "title": "palette-browser Payload",
   "type": "object",
-  "required": [
-    "tool",
-    "version",
-    "config"
-  ],
+  "required": ["tool", "version", "config"],
   "additionalProperties": true,
   "properties": {
     "tool": {

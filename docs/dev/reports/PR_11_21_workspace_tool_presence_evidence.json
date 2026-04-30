@@ -1,26 +1,7 @@
 {
   "sourcePath": "samples/phase-19/1902/sample.1902.workspace-all-tools.json",
   "schemaPath": "tools/schemas/workspace.manifest.schema.json",
-  "rawLoadedToolKeys": [
-    "vector-map-editor",
-    "vector-asset-studio",
-    "tile-map-editor",
-    "parallax-editor",
-    "sprite-editor",
-    "skin-editor",
-    "asset-browser",
-    "palette-browser",
-    "state-inspector",
-    "replay-visualizer",
-    "performance-profiler",
-    "physics-sandbox",
-    "asset-pipeline-tool",
-    "tile-model-converter",
-    "3d-json-payload-normalizer",
-    "3d-asset-viewer",
-    "3d-camera-path-editor",
-    "palette"
-  ],
+  "rawLoadedToolKeys": ["vector-map-editor", "vector-asset-studio", "tile-map-editor", "parallax-editor", "sprite-editor", "skin-editor", "asset-browser", "palette-browser", "state-inspector", "replay-visualizer", "performance-profiler", "physics-sandbox", "asset-pipeline-tool", "tile-model-converter", "3d-json-payload-normalizer", "3d-asset-viewer", "3d-camera-path-editor", "palette"],
   "normalizedKeys": [
     {
       "rawKey": "vector-map-editor",
@@ -203,43 +184,7 @@
       "reasons": []
     }
   ],
-  "validPresentKeys": [
-    "vector-map-editor",
-    "vector-asset-studio",
-    "tile-map-editor",
-    "parallax-editor",
-    "sprite-editor",
-    "skin-editor",
-    "asset-browser",
-    "palette-browser",
-    "state-inspector",
-    "replay-visualizer",
-    "performance-profiler",
-    "physics-sandbox",
-    "asset-pipeline-tool",
-    "tile-model-converter",
-    "3d-json-payload-normalizer",
-    "3d-asset-viewer",
-    "3d-camera-path-editor"
-  ],
+  "validPresentKeys": ["vector-map-editor", "vector-asset-studio", "tile-map-editor", "parallax-editor", "sprite-editor", "skin-editor", "asset-browser", "palette-browser", "state-inspector", "replay-visualizer", "performance-profiler", "physics-sandbox", "asset-pipeline-tool", "tile-model-converter", "3d-json-payload-normalizer", "3d-asset-viewer", "3d-camera-path-editor"],
   "invalidKeys": [],
-  "visibleWorkspaceManagerTools": [
-    "vector-map-editor",
-    "vector-asset-studio",
-    "tile-map-editor",
-    "parallax-editor",
-    "sprite-editor",
-    "skin-editor",
-    "asset-browser",
-    "palette-browser",
-    "state-inspector",
-    "replay-visualizer",
-    "performance-profiler",
-    "physics-sandbox",
-    "asset-pipeline-tool",
-    "tile-model-converter",
-    "3d-json-payload-normalizer",
-    "3d-asset-viewer",
-    "3d-camera-path-editor"
-  ]
+  "visibleWorkspaceManagerTools": ["vector-map-editor", "vector-asset-studio", "tile-map-editor", "parallax-editor", "sprite-editor", "skin-editor", "asset-browser", "palette-browser", "state-inspector", "replay-visualizer", "performance-profiler", "physics-sandbox", "asset-pipeline-tool", "tile-model-converter", "3d-json-payload-normalizer", "3d-asset-viewer", "3d-camera-path-editor"]
 }

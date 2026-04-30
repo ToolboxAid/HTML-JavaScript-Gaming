@@ -4,8 +4,14 @@
   "type": "object",
   "required": ["tool", "version"],
   "properties": {
-    "tool": { "type": "string" },
-    "version": { "type": "string" },
-    "config": { "type": "object" }
+    "tool": {
+      "type": "string"
+    },
+    "version": {
+      "type": "string"
+    },
+    "config": {
+      "type": "object"
+    }
   }
 }

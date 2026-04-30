@@ -1,1 +1,1 @@
-Normalize strict sample contracts without weakening schemas - PR 11.99
+Enforce compact primitive array formatting across repo - PR 11.100

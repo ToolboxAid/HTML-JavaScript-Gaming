@@ -287,3 +287,12 @@ These rules are mandatory for every Codex BUILD execution:
 
 The active UAT lane is opening Workspace Manager from a `games/index.html` game tile.
 Treat this as a recovery/stabilization PR only. Do not expand into a broader games hub, tool registry, template, or roadmap rewrite.
+
+---
+
+## ARRAY FORMATTING RULE
+
+- Primitive-only arrays in JSON must use compact single-line formatting.
+- Primitive values are: string, number, boolean, and null.
+- Complex arrays (arrays containing objects or nested arrays) must not be compacted.
+- Do not change JSON contracts or semantics while applying array formatting.

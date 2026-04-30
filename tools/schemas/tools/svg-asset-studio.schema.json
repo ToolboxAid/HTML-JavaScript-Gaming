@@ -3,11 +3,7 @@
   "$id": "tools/schemas/tools/svg-asset-studio.schema.json",
   "title": "SVG Asset Studio Payload",
   "type": "object",
-  "required": [
-    "tool",
-    "version",
-    "payload"
-  ],
+  "required": ["tool", "version", "payload"],
   "additionalProperties": false,
   "properties": {
     "tool": {
@@ -27,9 +23,7 @@
     },
     "payload": {
       "type": "object",
-      "required": [
-        "vectorAssetDocument"
-      ],
+      "required": ["vectorAssetDocument"],
       "additionalProperties": false,
       "properties": {
         "vectorAssetDocument": {

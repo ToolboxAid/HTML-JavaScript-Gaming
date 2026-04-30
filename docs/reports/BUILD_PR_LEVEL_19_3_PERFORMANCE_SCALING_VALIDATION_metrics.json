@@ -696,10 +696,7 @@
     "slowestAverageFrameMs": 1.8852608333333372,
     "highestHeapSlopeScenario": "asteroids_1000_entities_balanced",
     "highestHeapSlopeBytesPerSecond": 102144.11034482758,
-    "likelyRootCauses": [
-      "Asteroids stress loads spend most frame time in nested bullet-asteroid and ship-asteroid polygon collision loops.",
-      "GravityWell beacon-heavy loads scale linearly with beacon distance checks during collection evaluation."
-    ]
+    "likelyRootCauses": ["Asteroids stress loads spend most frame time in nested bullet-asteroid and ship-asteroid polygon collision loops.", "GravityWell beacon-heavy loads scale linearly with beacon distance checks during collection evaluation."]
   },
   "validation": {
     "passedAll": true,

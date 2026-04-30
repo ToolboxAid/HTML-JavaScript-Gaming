@@ -3,11 +3,7 @@
   "$id": "tools/schemas/tools/state-inspector.schema.json",
   "title": "state-inspector Payload",
   "type": "object",
-  "required": [
-    "tool",
-    "version",
-    "payload"
-  ],
+  "required": ["tool", "version", "payload"],
   "additionalProperties": false,
   "properties": {
     "tool": {
@@ -27,9 +23,7 @@
     },
     "payload": {
       "type": "object",
-      "required": [
-        "snapshot"
-      ],
+      "required": ["snapshot"],
       "additionalProperties": false,
       "properties": {
         "snapshot": {

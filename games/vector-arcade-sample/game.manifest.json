@@ -37,12 +37,7 @@
                 "pixels": []
               }
             ],
-            "palette": [
-              "#000000",
-              "#ffffff",
-              "#60a5fa",
-              "#f59e0b"
-            ]
+            "palette": ["#000000", "#ffffff", "#60a5fa", "#f59e0b"]
           }
         }
       ],
@@ -57,17 +52,8 @@
           "id": "tilemap.vector-arcade.arena",
           "data": {
             "name": "Vector Arcade Sample Arena",
-            "states": [
-              "title",
-              "start",
-              "gameplay",
-              "restart"
-            ],
-            "extensionPoints": [
-              "spawn-patterns",
-              "score-rules",
-              "victory-conditions"
-            ]
+            "states": ["title", "start", "gameplay", "restart"],
+            "extensionPoints": ["spawn-patterns", "score-rules", "victory-conditions"]
           }
         }
       ],
@@ -78,11 +64,7 @@
             "name": "Template UI Tileset",
             "tileWidth": 8,
             "tileHeight": 8,
-            "tiles": [
-              "score-panel",
-              "wave-panel",
-              "status-panel"
-            ]
+            "tiles": ["score-panel", "wave-panel", "status-panel"]
           }
         }
       ],
@@ -271,13 +253,7 @@
             "modulePath": "games/vector-arcade-sample/main.js",
             "exportName": "bootVectorArcadeSample",
             "canvasId": "game",
-            "requiredVectorIds": [
-              "vector.template.player",
-              "vector.template.obstacle.large",
-              "vector.template.obstacle.small",
-              "vector.template.ui.title",
-              "vector.template.ui.hud"
-            ]
+            "requiredVectorIds": ["vector.template.player", "vector.template.obstacle.large", "vector.template.obstacle.small", "vector.template.ui.title", "vector.template.ui.hud"]
           }
         }
       ],

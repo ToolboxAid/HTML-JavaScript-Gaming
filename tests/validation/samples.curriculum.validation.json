@@ -2,27 +2,7 @@
   "$schema": "../../tools/schemas/sample.tool-payload.schema.json",
   "version": 1,
   "progression": {
-    "phaseOrder": [
-      "01",
-      "02",
-      "03",
-      "04",
-      "05",
-      "06",
-      "07",
-      "08",
-      "09",
-      "10",
-      "11",
-      "12",
-      "13",
-      "14",
-      "15",
-      "16",
-      "17",
-      "18",
-      "19"
-    ],
+    "phaseOrder": ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19"],
     "totalSamples": 256,
     "orderingRule": "phase asc, id asc",
     "hasDuplicateSampleIds": false
@@ -170,34 +150,22 @@
     "duplicateTitles": [
       {
         "title": "camera bounds",
-        "ids": [
-          "0202",
-          "0404"
-        ],
+        "ids": ["0202", "0404"],
         "resolution": "flagged"
       },
       {
         "title": "animation system",
-        "ids": [
-          "0207",
-          "0302"
-        ],
+        "ids": ["0207", "0302"],
         "resolution": "flagged"
       },
       {
         "title": "projectile system",
-        "ids": [
-          "0210",
-          "0320"
-        ],
+        "ids": ["0210", "0320"],
         "resolution": "flagged"
       },
       {
         "title": "hitboxes hurtboxes",
-        "ids": [
-          "0319",
-          "0501"
-        ],
+        "ids": ["0319", "0501"],
         "resolution": "flagged"
       }
     ],
@@ -302,9 +270,7 @@
       "title": "Collision Response",
       "primaryConcept": "collision-response",
       "topicKey": "collision",
-      "flags": [
-        "adjacent-topic-overlap-with-0109"
-      ]
+      "flags": ["adjacent-topic-overlap-with-0109"]
     },
     {
       "id": "0111",
@@ -364,9 +330,7 @@
       "title": "ECS Movement System",
       "primaryConcept": "ecs-movement",
       "topicKey": "ecs",
-      "flags": [
-        "adjacent-topic-overlap-with-0115"
-      ]
+      "flags": ["adjacent-topic-overlap-with-0115"]
     },
     {
       "id": "0117",
@@ -376,9 +340,7 @@
       "title": "ECS Input System",
       "primaryConcept": "ecs-input",
       "topicKey": "ecs",
-      "flags": [
-        "adjacent-topic-overlap-with-0116"
-      ]
+      "flags": ["adjacent-topic-overlap-with-0116"]
     },
     {
       "id": "0118",
@@ -388,9 +350,7 @@
       "title": "ECS Collision System",
       "primaryConcept": "ecs-collision",
       "topicKey": "ecs",
-      "flags": [
-        "adjacent-topic-overlap-with-0117"
-      ]
+      "flags": ["adjacent-topic-overlap-with-0117"]
     },
     {
       "id": "0119",
@@ -400,9 +360,7 @@
       "title": "ECS Render System",
       "primaryConcept": "ecs-render",
       "topicKey": "ecs",
-      "flags": [
-        "adjacent-topic-overlap-with-0118"
-      ]
+      "flags": ["adjacent-topic-overlap-with-0118"]
     },
     {
       "id": "0120",
@@ -412,9 +370,7 @@
       "title": "ECS Scene World",
       "primaryConcept": "ecs-scene",
       "topicKey": "ecs",
-      "flags": [
-        "adjacent-topic-overlap-with-0119"
-      ]
+      "flags": ["adjacent-topic-overlap-with-0119"]
     },
     {
       "id": "0121",
@@ -474,9 +430,7 @@
       "title": "Camera Bounds",
       "primaryConcept": "camera-bounds",
       "topicKey": "camera",
-      "flags": [
-        "adjacent-topic-overlap-with-0201"
-      ]
+      "flags": ["adjacent-topic-overlap-with-0201"]
     },
     {
       "id": "0203",
@@ -956,9 +910,7 @@
       "title": "Camera Look Ahead",
       "primaryConcept": "camera-look",
       "topicKey": "camera",
-      "flags": [
-        "adjacent-topic-overlap-with-0401"
-      ]
+      "flags": ["adjacent-topic-overlap-with-0401"]
     },
     {
       "id": "0403",
@@ -968,9 +920,7 @@
       "title": "Camera Smoothing",
       "primaryConcept": "camera-smoothing",
       "topicKey": "camera",
-      "flags": [
-        "adjacent-topic-overlap-with-0402"
-      ]
+      "flags": ["adjacent-topic-overlap-with-0402"]
     },
     {
       "id": "0404",
@@ -980,9 +930,7 @@
       "title": "Camera Bounds",
       "primaryConcept": "camera-bounds",
       "topicKey": "camera",
-      "flags": [
-        "adjacent-topic-overlap-with-0403"
-      ]
+      "flags": ["adjacent-topic-overlap-with-0403"]
     },
     {
       "id": "0405",
@@ -992,9 +940,7 @@
       "title": "Camera Shake",
       "primaryConcept": "camera-shake",
       "topicKey": "camera",
-      "flags": [
-        "adjacent-topic-overlap-with-0404"
-      ]
+      "flags": ["adjacent-topic-overlap-with-0404"]
     },
     {
       "id": "0406",
@@ -1004,9 +950,7 @@
       "title": "Camera Zoom",
       "primaryConcept": "camera-zoom",
       "topicKey": "camera",
-      "flags": [
-        "adjacent-topic-overlap-with-0405"
-      ]
+      "flags": ["adjacent-topic-overlap-with-0405"]
     },
     {
       "id": "0407",
@@ -1026,9 +970,7 @@
       "title": "Input Queue Priority",
       "primaryConcept": "input-queue",
       "topicKey": "input",
-      "flags": [
-        "adjacent-topic-overlap-with-0407"
-      ]
+      "flags": ["adjacent-topic-overlap-with-0407"]
     },
     {
       "id": "0409",
@@ -1038,9 +980,7 @@
       "title": "Input Timing Windows",
       "primaryConcept": "input-timing",
       "topicKey": "input",
-      "flags": [
-        "adjacent-topic-overlap-with-0408"
-      ]
+      "flags": ["adjacent-topic-overlap-with-0408"]
     },
     {
       "id": "0410",
@@ -1070,9 +1010,7 @@
       "title": "Input State Debug Overlay",
       "primaryConcept": "input-state",
       "topicKey": "input",
-      "flags": [
-        "adjacent-topic-overlap-with-0411"
-      ]
+      "flags": ["adjacent-topic-overlap-with-0411"]
     },
     {
       "id": "0501",
@@ -1312,9 +1250,7 @@
       "title": "Weather System",
       "primaryConcept": "weather-system",
       "topicKey": "weather",
-      "flags": [
-        "adjacent-topic-overlap-with-0611"
-      ]
+      "flags": ["adjacent-topic-overlap-with-0611"]
     },
     {
       "id": "0613",
@@ -1724,9 +1660,7 @@
       "title": "Tilemap Hero Movement",
       "primaryConcept": "tilemap-hero",
       "topicKey": "tilemap",
-      "flags": [
-        "adjacent-topic-overlap-with-1201"
-      ]
+      "flags": ["adjacent-topic-overlap-with-1201"]
     },
     {
       "id": "1203",
@@ -1736,9 +1670,7 @@
       "title": "Tilemap Hero Jump Collision",
       "primaryConcept": "tilemap-hero",
       "topicKey": "tilemap",
-      "flags": [
-        "adjacent-topic-overlap-with-1202"
-      ]
+      "flags": ["adjacent-topic-overlap-with-1202"]
     },
     {
       "id": "1204",
@@ -1748,9 +1680,7 @@
       "title": "Tilemap Parallax Hero",
       "primaryConcept": "tilemap-parallax",
       "topicKey": "tilemap",
-      "flags": [
-        "adjacent-topic-overlap-with-1203"
-      ]
+      "flags": ["adjacent-topic-overlap-with-1203"]
     },
     {
       "id": "1205",

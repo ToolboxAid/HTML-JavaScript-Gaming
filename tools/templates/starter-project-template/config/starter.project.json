@@ -91,12 +91,7 @@
         },
         "workspaceViewMode": "2d"
       },
-      "linkedAssetIds": [
-        "vector.template.player",
-        "tilemap.template.arena",
-        "parallax.template.backdrop",
-        "sprite.asteroids-demo"
-      ]
+      "linkedAssetIds": ["vector.template.player", "tilemap.template.arena", "parallax.template.backdrop", "sprite.asteroids-demo"]
     },
     "svg-asset-studio": {
       "documentName": "starter-backdrop",
@@ -111,14 +106,8 @@
       "strokeWidth": 2,
       "gradientAngle": 45,
       "selectedId": null,
-      "usedColors": [
-        "#05070D",
-        "#6FD3FF",
-        "#E8F0FF"
-      ],
-      "linkedAssetIds": [
-        "vector.template.player"
-      ]
+      "usedColors": ["#05070D", "#6FD3FF", "#E8F0FF"],
+      "linkedAssetIds": ["vector.template.player"]
     },
     "tile-map-editor": {
       "documentModel": {
@@ -162,30 +151,10 @@
             "visible": true,
             "locked": false,
             "data": [
-              [
-                1,
-                1,
-                1,
-                1
-              ],
-              [
-                1,
-                0,
-                0,
-                1
-              ],
-              [
-                1,
-                0,
-                0,
-                1
-              ],
-              [
-                1,
-                1,
-                1,
-                1
-              ]
+              [1, 1, 1, 1],
+              [1, 0, 0, 1],
+              [1, 0, 0, 1],
+              [1, 1, 1, 1]
             ]
           },
           {
@@ -195,30 +164,10 @@
             "visible": true,
             "locked": false,
             "data": [
-              [
-                0,
-                0,
-                0,
-                0
-              ],
-              [
-                0,
-                1,
-                1,
-                0
-              ],
-              [
-                0,
-                1,
-                1,
-                0
-              ],
-              [
-                0,
-                0,
-                0,
-                0
-              ]
+              [0, 0, 0, 0],
+              [0, 1, 1, 0],
+              [0, 1, 1, 0],
+              [0, 0, 0, 0]
             ]
           },
           {
@@ -228,30 +177,10 @@
             "visible": true,
             "locked": false,
             "data": [
-              [
-                0,
-                0,
-                0,
-                0
-              ],
-              [
-                0,
-                2,
-                0,
-                0
-              ],
-              [
-                0,
-                0,
-                3,
-                0
-              ],
-              [
-                0,
-                0,
-                0,
-                0
-              ]
+              [0, 0, 0, 0],
+              [0, 2, 0, 0],
+              [0, 0, 3, 0],
+              [0, 0, 0, 0]
             ]
           }
         ],
@@ -344,9 +273,7 @@
           }
         ],
         "assetRefs": {
-          "parallaxSourceIds": [
-            "parallax.template.backdrop"
-          ]
+          "parallaxSourceIds": ["parallax.template.backdrop"]
         },
         "metadata": {
           "createdAt": "2026-04-05T00:00:00.000Z",
@@ -405,40 +332,14 @@
           "paletteId": "palette.vector-native-primary",
           "spriteId": "sprite.asteroids-demo"
         },
-        "recentColors": [
-          "#6FD3FFFF",
-          "#E8F0FFFF",
-          "#05070DFF"
-        ],
+        "recentColors": ["#6FD3FFFF", "#E8F0FFFF", "#05070DFF"],
         "currentFrameIndex": 0,
         "frames": [
           {
-            "pixels": [
-              null,
-              "#E8F0FFFF",
-              "#E8F0FFFF",
-              null,
-              "#6FD3FFFF",
-              "#E8F0FFFF",
-              "#E8F0FFFF",
-              "#6FD3FFFF",
-              "#05070DFF",
-              "#6FD3FFFF",
-              "#6FD3FFFF",
-              "#05070DFF",
-              null,
-              "#05070DFF",
-              "#05070DFF",
-              null
-            ]
+            "pixels": [null, "#E8F0FFFF", "#E8F0FFFF", null, "#6FD3FFFF", "#E8F0FFFF", "#E8F0FFFF", "#6FD3FFFF", "#05070DFF", "#6FD3FFFF", "#6FD3FFFF", "#05070DFF", null, "#05070DFF", "#05070DFF", null]
           }
         ],
-        "palette": [
-          "#05070DFF",
-          "#E8F0FFFF",
-          "#6FD3FFFF",
-          "#FFB347FF"
-        ]
+        "palette": ["#05070DFF", "#E8F0FFFF", "#6FD3FFFF", "#FFB347FF"]
       },
       "assetRegistry": {
         "version": 1,
@@ -449,12 +350,7 @@
             "id": "palette.vector-native-primary",
             "name": "Vector Native Primary Palette",
             "enginePaletteId": "vector-native-primary",
-            "colors": [
-              "#05070DFF",
-              "#E8F0FFFF",
-              "#6FD3FFFF",
-              "#FFB347FF"
-            ],
+            "colors": ["#05070DFF", "#E8F0FFFF", "#6FD3FFFF", "#FFB347FF"],
             "sourceTool": "sprite-editor"
           }
         ],

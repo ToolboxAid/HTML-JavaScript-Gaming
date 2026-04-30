@@ -1,24 +1,6 @@
 {
   "sourcePath": "samples/phase-19/1902/sample.1902.workspace-all-tools.json",
-  "requiredPayloadDocumentMappingKeys": [
-    "vectorMapDocument",
-    "vectorAssetDocument",
-    "tileMapDocument",
-    "parallaxDocument",
-    "spriteProject",
-    "skin",
-    "assetCatalog",
-    "palette",
-    "snapshot",
-    "events",
-    "profileSettings",
-    "physicsBody",
-    "pipelinePayload",
-    "candidate",
-    "mapPayload",
-    "asset3d",
-    "cameraPath"
-  ],
+  "requiredPayloadDocumentMappingKeys": ["vectorMapDocument", "vectorAssetDocument", "tileMapDocument", "parallaxDocument", "spriteProject", "skin", "assetCatalog", "palette", "snapshot", "events", "profileSettings", "physicsBody", "pipelinePayload", "candidate", "mapPayload", "asset3d", "cameraPath"],
   "byRawManifestToolKey": [
     {
       "rawKey": "vector-map-editor",

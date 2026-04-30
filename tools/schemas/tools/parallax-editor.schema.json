@@ -3,11 +3,7 @@
   "$id": "tools/schemas/tools/parallax-editor.schema.json",
   "title": "parallax-editor Payload",
   "type": "object",
-  "required": [
-    "tool",
-    "version",
-    "payload"
-  ],
+  "required": ["tool", "version", "payload"],
   "additionalProperties": false,
   "properties": {
     "tool": {

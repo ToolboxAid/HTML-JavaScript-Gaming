@@ -2,12 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "tools/schemas/workspace.schema.json",
   "type": "object",
-  "required": [
-    "documentKind",
-    "schema",
-    "version",
-    "games"
-  ],
+  "required": ["documentKind", "schema", "version", "games"],
   "additionalProperties": false,
   "properties": {
     "documentKind": {
@@ -26,11 +21,7 @@
       "type": "array",
       "items": {
         "type": "object",
-        "required": [
-          "id",
-          "level",
-          "tool"
-        ],
+        "required": ["id", "level", "tool"],
         "additionalProperties": false,
         "properties": {
           "id": {
