@@ -1,63 +1,53 @@
 # CODEX COMMANDS
 
 Model: GPT-5.3-codex
-Reasoning: high
+Reasoning: medium
 
 STRICT SCOPE MODE
 
 ALLOWED FILES:
-- tools/svg-asset-studio/main.js
-- docs/dev/reports/svg_asset_studio_hosted_payload_boot_11_152.txt
+- tools/workspace-manager/main.js
+- docs/dev/reports/workspace_svg_asset_status_label_11_153.txt
 
 ALLOWED CHANGES:
-- fix SVG Asset Studio hosted direct payload boot
-- create/update report only
+- fix only SVG Asset Studio Workspace Manager card/status label
+- create/update report
 
 TASK:
 
 1. Open:
-   tools/svg-asset-studio/main.js
+   tools/workspace-manager/main.js
 
-2. Find hosted launch/shared context input path.
+2. Find card/status label logic for:
+   svg-asset-studio
 
-3. Ensure hosted Workspace Manager payload is read as:
-   payloadJson.vectorAssetDocument
+3. Update it to read direct payload:
+   workspaceManifest.tools["svg-asset-studio"].vectorAssetDocument.sourceName
 
-4. Ensure editor load/render source uses:
-   - payloadJson.vectorAssetDocument.svgText
-   - payloadJson.vectorAssetDocument.sourceName
-   - payloadJson.vectorAssetDocument.editorOptions
+4. Display a useful label:
+   Asset: sample-0901-ship.svg
 
-5. For hosted direct payload flow:
-   - do not require samplePresetPath
-   - do not require import path
-   - do not fallback to demo SVG
-   - do not show old preset/import message when valid payload exists
-
-6. Do NOT:
+5. Do NOT:
    - modify schemas
-   - modify Sample 1902 JSON
-   - modify Workspace Manager
-   - modify tool host runtime
-   - add fallback/demo/default SVG
+   - modify samples
+   - modify SVG Asset Studio
+   - modify runtime
    - transform/wrap/normalize payload
+   - broaden unrelated tool logic
 
-7. Validate:
-   - JS syntax for tools/svg-asset-studio/main.js
-   - direct hosted payload containing vectorAssetDocument.svgText loads into editor state
-   - sourceName sample-0901-ship.svg is recognized
+6. Validate:
+   - JS syntax for tools/workspace-manager/main.js
+   - Sample 1902 Workspace Manager card for SVG Asset Studio does not show Asset: none
    - git diff --name-only contains only ALLOWED FILES
 
-8. Write:
-   docs/dev/reports/svg_asset_studio_hosted_payload_boot_11_152.txt
+7. Write:
+   docs/dev/reports/workspace_svg_asset_status_label_11_153.txt
 
 Report must include:
-- old boot path found
-- new direct hosted payload path
-- sourceName/svgText verified
+- changed file
+- old/new label behavior
 - validation result
 - strict scope confirmation
-- remaining blockers if any
 
-9. Package Codex output ZIP at:
-   tmp/PR_11_152_FIX_SVG_ASSET_STUDIO_HOSTED_PAYLOAD_BOOT.zip
+8. Package Codex output ZIP at:
+   tmp/PR_11_153_FIX_WORKSPACE_SVG_ASSET_STATUS_LABEL.zip

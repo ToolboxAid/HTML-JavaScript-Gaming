@@ -321,6 +321,39 @@ function readWorkspaceDirectCardLabel(toolId = "") {
   return normalizeTextParam(labelsByToolId.get(toolId) || "");
 }
 
+function primeSvgAssetStatusLabelFromWorkspaceDiagnostics(diagnostics = null) {
+  const explicitToolPayloadById = diagnostics?.explicitToolPayloadById instanceof Map
+    ? diagnostics.explicitToolPayloadById
+    : null;
+  if (!explicitToolPayloadById) {
+    return false;
+  }
+  const svgPayload = explicitToolPayloadById.get("svg-asset-studio");
+  if (!isPlainObject(svgPayload)) {
+    return false;
+  }
+  const vectorAssetDocument = readDirectPayloadDocument(svgPayload, "vectorAssetDocument");
+  const sourceName = normalizeTextParam(vectorAssetDocument?.sourceName);
+  if (!sourceName) {
+    return false;
+  }
+  const assetHandoff = createAssetHandoff({
+    assetId: sourceName,
+    assetType: "vector",
+    sourcePath: "workspace-manifest:svg-asset-studio",
+    displayName: sourceName,
+    metadata: {
+      source: "workspace-manifest.direct-payload",
+      toolId: "svg-asset-studio"
+    },
+    sourceToolId: "workspace-manager"
+  });
+  if (!assetHandoff) {
+    return false;
+  }
+  return writeSharedAssetHandoff(assetHandoff);
+}
+
 function writeSharedBindingsFromDirectPayload(toolId = "", payloadJson = null, paletteJson = null) {
   if (isPlainObject(paletteJson)
     && paletteJson.schema === "html-js-gaming.palette"
@@ -1318,6 +1351,7 @@ function applyToolsUsedFilterForGame(gameEntry, preferredToolId = "", workspaceT
 
   if (workspaceManifestToolDiagnostics) {
     workspaceManifestToolDiagnostics.visibleToolIds = [...toolIds];
+    primeSvgAssetStatusLabelFromWorkspaceDiagnostics(workspaceManifestToolDiagnostics);
   }
 
   const initialToolId = toolIds.includes(preferredToolId) ? preferredToolId : "";

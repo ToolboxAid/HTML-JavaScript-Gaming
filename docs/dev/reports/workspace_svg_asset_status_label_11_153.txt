@@ -1,0 +1,37 @@
+﻿Task: workspace_svg_asset_status_label_11_153
+Date: 2026-04-30
+
+Files changed:
+- tools/Workspace Manager/main.js
+- docs/dev/reports/workspace_svg_asset_status_label_11_153.txt
+
+Changed file:
+- tools/Workspace Manager/main.js
+
+Old label behavior:
+- SVG Asset Studio card/status could resolve to `Asset: none` when shared asset status was not primed from direct workspace payload at card/status evaluation time.
+
+New label behavior:
+- Workspace Manager now primes SVG asset status directly from:
+  workspaceManifest.tools["svg-asset-studio"].vectorAssetDocument.sourceName
+- Primed value is written as shared vector asset label, so SVG Asset Studio card/status resolves to:
+  `Asset: sample-0901-ship.svg` (for Sample 1902 payload)
+
+Validation result:
+- node --check "tools/Workspace Manager/main.js" -> PASS
+- Direct payload source path checks in file -> PASS
+  - explicitToolPayloadById.get("svg-asset-studio")
+  - vectorAssetDocument?.sourceName
+  - sourcePath: "workspace-manifest:svg-asset-studio"
+- Sample 1902 manifest check -> PASS
+  - sourceName = sample-0901-ship.svg
+  - expected label basis = Asset: sample-0901-ship.svg
+- git diff --name-only -- "tools/Workspace Manager/main.js" "docs/dev/reports/workspace_svg_asset_status_label_11_153.txt" -> PASS
+
+Strict scope confirmation:
+- Only Workspace Manager main file and this report were changed.
+- No schema/sample/SVG-Asset-Studio/runtime/Workspace-Manager routing outside this file were modified.
+
+Remaining blockers:
+- None in this scoped fix.
+- Repository has unrelated pre-existing dirty files outside this task scope.
