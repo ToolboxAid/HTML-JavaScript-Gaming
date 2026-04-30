@@ -3,39 +3,26 @@
 Model: GPT-5.3-codex
 Reasoning: high
 
-## HARD MODE: WRITE OR FAIL
+STRICT SCOPE MODE
 
-FILES:
+ALLOWED FILES:
+- routing files only
 
-1. tools/schemas/workspace.manifest.schema.json
-2. tools/schemas/tools/palette-browser.schema.json
+TASK:
 
-## STEPS
+1. Find payload passing code
+2. Remove:
+   - normalize*
+   - transform*
+   - convert*
+   - map*
+   - enrich*
+3. Ensure payload passed directly
 
-FOR EACH FILE:
+VERIFY:
+- payload before == payload after
 
-1. READ file
-2. STORE BEFORE content
-3. APPLY REQUIRED MODIFICATIONS
-4. WRITE file
-5. READ AGAIN
-6. STORE AFTER content
-7. COMPARE
+REPORT:
+docs/dev/reports/no_transform_routing_11_128.txt
 
-IF BEFORE == AFTER:
-  FAIL
-
-## OUTPUT REPORT
-
-docs/dev/reports/enforced_write_11_125.txt:
-
-- file name
-- BEFORE snippet
-- AFTER snippet
-- diff summary
-- status: SUCCESS / FAIL
-
-## END CONDITION
-
-If ANY file not changed:
-  FAIL ENTIRE PR
+FAIL if any mutation remains

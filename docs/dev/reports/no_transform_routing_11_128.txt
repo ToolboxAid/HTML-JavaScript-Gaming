@@ -1,0 +1,38 @@
+﻿No-Transform Routing Report: 11_128
+Date: 2026-04-30
+Repo: C:/Users/davidq/Documents/GitHub/HTML-JavaScript-Gaming
+Mode: STRICT SCOPE
+
+Task
+- Find payload passing code.
+- Remove normalize*/transform*/convert*/map*/enrich* from payload pass path.
+- Ensure payload is passed directly.
+
+Routing file changed
+- tools/shared/platformShell.js
+
+Targeted payload passing path
+- resolveWorkspaceManifestScopedToolPreset(rawPreset, toolId)
+- Used by selectWorkspaceScopedToolPreset(...) and workspace-scoped fetch shim pass-through.
+
+Change summary
+- Removed normalized/mapped candidate-key resolution from payload routing.
+- Removed normalized tool-id/schema checks in this payload resolver path.
+- Switched to direct key lookup: tools[toolId].
+- Preserved boundary validation while returning the original payload object directly.
+
+Verification
+1) Mutation keyword scan inside resolver function:
+- Pattern: /\b(?:normalize\w*|transform\w*|convert\w*|map\w*|enrich\w*)\b/
+- Result: none
+
+2) Direct pass-through checks:
+- palette route: resolved === original payload -> true
+- palette route: JSON.stringify(resolved) === JSON.stringify(original) -> true
+- wrapped route: resolved === original payload -> true
+- wrapped route: JSON.stringify(resolved) === JSON.stringify(original) -> true
+
+Result
+- PASS: payload before == payload after in routing resolver.
+- PASS: no mutation helpers remain in targeted payload pass function.
+- FAIL condition not triggered.

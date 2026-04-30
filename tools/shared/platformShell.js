@@ -481,17 +481,9 @@ function isWorkspaceManifestPreset(rawPreset) {
   return documentKind === "workspace-manifest" || schema === "html-js-gaming.project";
 }
 
-function normalizeWorkspaceManifestToolKey(rawKey) {
-  const normalizedKey = normalizeTextValue(rawKey).toLowerCase();
-  if (!normalizedKey) {
-    return "";
-  }
-  return normalizedKey;
-}
-
 function resolveWorkspaceManifestScopedToolPreset(rawPreset, toolId) {
-  const normalizedToolId = normalizeTextValue(toolId).toLowerCase();
-  if (!normalizedToolId) {
+  const directToolId = typeof toolId === "string" ? toolId : "";
+  if (!directToolId) {
     return null;
   }
   const tools = rawPreset.tools && typeof rawPreset.tools === "object" && !Array.isArray(rawPreset.tools)
@@ -501,44 +493,33 @@ function resolveWorkspaceManifestScopedToolPreset(rawPreset, toolId) {
     return null;
   }
 
-  const candidateKeys = Object.keys(tools).filter((key) => normalizeWorkspaceManifestToolKey(key) === normalizedToolId);
-  if (candidateKeys.length === 0) {
+  const scopedPreset = tools[directToolId];
+  if (!scopedPreset || typeof scopedPreset !== "object" || Array.isArray(scopedPreset)) {
     return null;
   }
 
-  const exactKeyIndex = candidateKeys.findIndex((key) => normalizeTextValue(key).toLowerCase() === normalizedToolId);
-  const orderedKeys = exactKeyIndex >= 0
-    ? [candidateKeys[exactKeyIndex], ...candidateKeys.filter((_, index) => index !== exactKeyIndex)]
-    : candidateKeys;
-  for (const key of orderedKeys) {
-    const scopedPreset = tools[key];
-    if (!scopedPreset || typeof scopedPreset !== "object" || Array.isArray(scopedPreset)) {
-      continue;
-    }
-    if (normalizedToolId === "palette-browser") {
-      const isDirectPaletteDocument = normalizeTextValue(scopedPreset.schema).toLowerCase() === "html-js-gaming.palette"
-        && Array.isArray(scopedPreset.swatches);
-      if (!isDirectPaletteDocument) {
-        console.warn(`[tools.platform] workspace scoped preset rejected: key="${key}" must be direct palette JSON for palette-browser.`);
-        continue;
-      }
-      return scopedPreset;
-    }
-
-    const payloadToolId = normalizeTextValue(scopedPreset.tool).toLowerCase();
-    if (!payloadToolId) {
-      console.warn(`[tools.platform] workspace scoped preset rejected: key="${key}" is missing required "tool" field.`);
-      continue;
-    }
-    if (payloadToolId !== normalizedToolId) {
-      console.warn(
-        `[tools.platform] workspace scoped preset rejected: key="${key}" expected tool="${normalizedToolId}" but found tool="${payloadToolId}".`
-      );
-      continue;
+  if (directToolId === "palette-browser") {
+    const isDirectPaletteDocument = scopedPreset.schema === "html-js-gaming.palette"
+      && Array.isArray(scopedPreset.swatches);
+    if (!isDirectPaletteDocument) {
+      console.warn(`[tools.platform] workspace scoped preset rejected: key="${directToolId}" must be direct palette JSON for palette-browser.`);
+      return null;
     }
     return scopedPreset;
   }
-  return null;
+
+  const payloadToolId = typeof scopedPreset.tool === "string" ? scopedPreset.tool : "";
+  if (!payloadToolId) {
+    console.warn(`[tools.platform] workspace scoped preset rejected: key="${directToolId}" is missing required "tool" field.`);
+    return null;
+  }
+  if (payloadToolId !== directToolId) {
+    console.warn(
+      `[tools.platform] workspace scoped preset rejected: key="${directToolId}" expected tool="${directToolId}" but found tool="${payloadToolId}".`
+    );
+    return null;
+  }
+  return scopedPreset;
 }
 
 function selectWorkspaceScopedToolPreset(rawPreset, toolId) {

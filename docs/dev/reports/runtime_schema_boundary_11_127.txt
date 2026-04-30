@@ -1,0 +1,62 @@
+﻿Runtime Schema Boundary Report: 11_127
+Date: 2026-04-30
+Repo: C:/Users/davidq/Documents/GitHub/HTML-JavaScript-Gaming
+Scope Mode: STRICT
+
+Allowed files:
+- tools/schemas/workspace.manifest.schema.json
+- tools/schemas/tools/palette-browser.schema.json
+
+Loaded schema:
+- tools/schemas/tools/palette-browser.schema.json
+
+Test target:
+- Validate boundary for palette direct payload schema
+
+Input A (valid palette JSON):
+{
+  "schema": "html-js-gaming.palette",
+  "version": 1,
+  "name": "Test Palette",
+  "swatches": [
+    { "symbol": "A", "hex": "#112233", "name": "Ink" },
+    { "symbol": "B", "hex": "#445566", "name": "Fog" }
+  ]
+}
+Result A: PASS
+
+Input B (wrapper JSON):
+{
+  "tool": "palette-browser",
+  "payload": { ...A... }
+}
+Result B: FAIL
+Observed boundary errors (excerpt):
+- missing required key 'schema'
+- missing required key 'version'
+- missing required key 'name'
+- missing required key 'swatches'
+
+Input C (workspace JSON):
+{
+  "documentKind": "workspace-manifest",
+  "schema": "html-js-gaming.workspace",
+  "version": 1,
+  "id": "ws-1",
+  "name": "Workspace",
+  "tools": { "palette-browser": { ...A... } }
+}
+Result C: FAIL
+Observed boundary errors (excerpt):
+- missing required key 'swatches'
+- additional property 'documentKind' not allowed
+- additional property 'tools' not allowed
+- schema must equal 'html-js-gaming.palette'
+
+Verification summary:
+- A = pass
+- B = fail
+- C = fail
+
+Boundary enforcement status: ENFORCED
+No schema or routing changes required.
