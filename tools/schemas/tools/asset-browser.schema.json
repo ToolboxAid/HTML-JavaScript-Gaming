@@ -30,10 +30,10 @@
       "type": "object",
       "additionalProperties": false,
       "patternProperties": {
-        "^image\\.[a-z0-9][a-z0-9-]*\\.bezel$": {
+        "^image\\.[a-z0-9-]+\\.[a-z0-9-]+(?:\\.[a-z0-9-]+)*\\.bezel$": {
           "$ref": "#/$defs/assetEntry"
         },
-        "^(?!image\\.[a-z0-9][a-z0-9-]*\\.bezel$)[a-z][a-z0-9-]*\\.[a-z0-9][a-z0-9-]*\\.[a-z0-9][a-z0-9-]*$": {
+        "^(?!image\\.[a-z0-9-]+\\.[a-z0-9-]+(?:\\.[a-z0-9-]+)*\\.bezel$)(image|audio|font|svg|data|other)\\.[a-z0-9-]+\\.[a-z0-9-]+(?:\\.[a-z0-9-]+)*$": {
           "allOf": [
             {
               "$ref": "#/$defs/assetEntry"
@@ -51,10 +51,10 @@
       "propertyNames": {
         "anyOf": [
           {
-            "pattern": "^image\\.[a-z0-9][a-z0-9-]*\\.bezel$"
+            "pattern": "^image\\.[a-z0-9-]+\\.[a-z0-9-]+(?:\\.[a-z0-9-]+)*\\.bezel$"
           },
           {
-            "pattern": "^(?!image\\.[a-z0-9][a-z0-9-]*\\.bezel$)[a-z][a-z0-9-]*\\.[a-z0-9][a-z0-9-]*\\.[a-z0-9][a-z0-9-]*$"
+            "pattern": "^(?!image\\.[a-z0-9-]+\\.[a-z0-9-]+(?:\\.[a-z0-9-]+)*\\.bezel$)(image|audio|font|svg|data|other)\\.[a-z0-9-]+\\.[a-z0-9-]+(?:\\.[a-z0-9-]+)*$"
           }
         ]
       }
@@ -92,11 +92,22 @@
         },
         "kind": {
           "type": "string",
-          "minLength": 1
+          "enum": [
+            "image",
+            "audio",
+            "font",
+            "svg",
+            "data",
+            "other"
+          ]
         },
         "source": {
           "type": "string",
-          "minLength": 1
+          "enum": [
+            "workspace-manager",
+            "asset-browser",
+            "manifest"
+          ]
         },
         "stretchOverride": {
           "type": "object",

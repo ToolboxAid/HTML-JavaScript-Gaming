@@ -1,1 +1,1 @@
-Fix Asset Browser schema for flat manifest assets and sample 1902 preview id - PR 11.97
+Tighten schemas and validate samples/games against strict tool contracts - PR 11.98

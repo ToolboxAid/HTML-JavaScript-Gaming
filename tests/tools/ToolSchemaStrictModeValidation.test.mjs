@@ -255,7 +255,6 @@ export async function run() {
     "sprite-editor",
     "skin-editor",
     "asset-browser",
-    "palette-browser",
     "state-inspector",
     "replay-visualizer",
     "performance-profiler",

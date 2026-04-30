@@ -1,0 +1,13 @@
+filePath,status,errorCount,firstErrors
+games/_template/game.manifest.json,valid,0,
+games/AITargetDummy/game.manifest.json,valid,0,
+games/Asteroids/game.manifest.json,valid,0,
+games/Bouncing-ball/game.manifest.json,valid,0,
+games/Breakout/game.manifest.json,valid,0,
+games/GravityWell/game.manifest.json,valid,0,
+games/Pacman/game.manifest.json,valid,0,
+games/Pong/game.manifest.json,valid,0,
+games/SolarSystem/game.manifest.json,valid,0,
+games/SpaceDuel/game.manifest.json,valid,0,
+games/SpaceInvaders/game.manifest.json,valid,0,
+games/vector-arcade-sample/game.manifest.json,valid,0,

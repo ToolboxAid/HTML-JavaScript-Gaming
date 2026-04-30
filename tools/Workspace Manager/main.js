@@ -184,6 +184,39 @@ function resolveJsonPointer(root, pointer) {
 function validateJsonValueAgainstSchema(value, schema, schemaRoot) {
   const errors = [];
   const seenPointers = new Set();
+  const validateBranchSchema = (candidateValue, candidateSchema, candidatePointer, schemaContext) => {
+    const beforeCount = errors.length;
+    validateNode(candidateValue, candidateSchema, candidatePointer, schemaContext);
+    const branchErrors = errors.slice(beforeCount);
+    errors.splice(beforeCount, branchErrors.length);
+    return branchErrors;
+  };
+
+  const keyMatchesPropertyNameSchema = (key, schemaNode) => {
+    if (!isPlainObject(schemaNode)) {
+      return true;
+    }
+    if (typeof schemaNode.pattern === "string") {
+      try {
+        return new RegExp(schemaNode.pattern).test(key);
+      } catch {
+        return false;
+      }
+    }
+    if (Array.isArray(schemaNode.anyOf) && schemaNode.anyOf.length > 0) {
+      return schemaNode.anyOf.some((branch) => keyMatchesPropertyNameSchema(key, branch));
+    }
+    if (Array.isArray(schemaNode.oneOf) && schemaNode.oneOf.length > 0) {
+      return schemaNode.oneOf.some((branch) => keyMatchesPropertyNameSchema(key, branch));
+    }
+    if (typeof schemaNode.const === "string") {
+      return key === schemaNode.const;
+    }
+    if (Array.isArray(schemaNode.enum) && schemaNode.enum.length > 0) {
+      return schemaNode.enum.includes(key);
+    }
+    return true;
+  };
 
   function validateNode(nodeValue, nodeSchema, pointer, schemaContext) {
     if (!isPlainObject(nodeSchema)) {
@@ -212,17 +245,44 @@ function validateJsonValueAgainstSchema(value, schema, schemaRoot) {
     if (Array.isArray(nodeSchema.oneOf) && nodeSchema.oneOf.length > 0) {
       let branchPass = false;
       for (const branch of nodeSchema.oneOf) {
-        const beforeBranchErrors = errors.length;
-        validateNode(nodeValue, branch, pointer, schemaContext);
-        const branchErrorCount = errors.length - beforeBranchErrors;
-        if (branchErrorCount === 0) {
+        const branchErrors = validateBranchSchema(nodeValue, branch, pointer, schemaContext);
+        if (branchErrors.length === 0) {
           branchPass = true;
           break;
         }
-        errors.splice(beforeBranchErrors, branchErrorCount);
       }
       if (!branchPass) {
         errors.push(`${pointer}: value does not satisfy any oneOf branch`);
+      }
+      return;
+    }
+
+    if (Array.isArray(nodeSchema.anyOf) && nodeSchema.anyOf.length > 0) {
+      let branchPass = false;
+      for (const branch of nodeSchema.anyOf) {
+        const branchErrors = validateBranchSchema(nodeValue, branch, pointer, schemaContext);
+        if (branchErrors.length === 0) {
+          branchPass = true;
+          break;
+        }
+      }
+      if (!branchPass) {
+        errors.push(`${pointer}: value does not satisfy any anyOf branch`);
+      }
+      return;
+    }
+
+    if (Array.isArray(nodeSchema.allOf) && nodeSchema.allOf.length > 0) {
+      nodeSchema.allOf.forEach((branch) => {
+        validateNode(nodeValue, branch, pointer, schemaContext);
+      });
+      return;
+    }
+
+    if (isPlainObject(nodeSchema.not)) {
+      const branchErrors = validateBranchSchema(nodeValue, nodeSchema.not, pointer, schemaContext);
+      if (branchErrors.length === 0) {
+        errors.push(`${pointer}: value must not satisfy disallowed schema`);
       }
       return;
     }
@@ -256,10 +316,15 @@ function validateJsonValueAgainstSchema(value, schema, schemaRoot) {
         });
         const properties = isPlainObject(nodeSchema.properties) ? nodeSchema.properties : {};
         const patternProperties = isPlainObject(nodeSchema.patternProperties) ? nodeSchema.patternProperties : {};
+        const propertyNamesSchema = isPlainObject(nodeSchema.propertyNames) ? nodeSchema.propertyNames : null;
         const propertyKeys = Object.keys(nodeValue);
 
         propertyKeys.forEach((propertyKey) => {
           const propertyPointer = `${pointer}.${propertyKey}`;
+          if (propertyNamesSchema && !keyMatchesPropertyNameSchema(propertyKey, propertyNamesSchema)) {
+            errors.push(`${pointer}: property name "${propertyKey}" is not allowed by propertyNames`);
+            return;
+          }
           if (Object.prototype.hasOwnProperty.call(properties, propertyKey)) {
             validateNode(nodeValue[propertyKey], properties[propertyKey], propertyPointer, schemaContext);
             return;
@@ -279,6 +344,11 @@ function validateJsonValueAgainstSchema(value, schema, schemaRoot) {
 
           if (nodeSchema.additionalProperties === false) {
             errors.push(`${pointer}: unknown key "${propertyKey}"`);
+            return;
+          }
+
+          if (isPlainObject(nodeSchema.additionalProperties)) {
+            validateNode(nodeValue[propertyKey], nodeSchema.additionalProperties, propertyPointer, schemaContext);
           }
         });
       } else if (schemaType === "array") {

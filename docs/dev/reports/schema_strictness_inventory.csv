@@ -1,0 +1,80 @@
+schemaPath,jsonPointer,currentAdditionalProperties,looseReason,action
+tools/schemas/sample.tool-payload.schema.json,#/$defs/jsonArray/items,n/a,broad jsonValue escape hatch,replace with typed payload schema where repo-owned
+tools/schemas/sample.tool-payload.schema.json,#/$defs/jsonObject/patternProperties/^.*$,pattern:^.*$,open-ended dictionary with jsonValue,narrow key pattern and value schema
+tools/schemas/sample.tool-payload.schema.json,#/$defs/jsonObject/patternProperties/^.*$,n/a,broad jsonValue escape hatch,replace with typed payload schema where repo-owned
+tools/schemas/sample.tool-payload.schema.json,#/patternProperties/^(?!\$schema$|schema$|version$).+,n/a,broad jsonValue escape hatch,replace with typed payload schema where repo-owned
+tools/schemas/tool.manifest.schema.json,#/$defs/jsonArray/items,n/a,broad jsonValue escape hatch,replace with typed payload schema where repo-owned
+tools/schemas/tool.manifest.schema.json,#/$defs/jsonObject/patternProperties/^.*$,pattern:^.*$,open-ended dictionary with jsonValue,narrow key pattern and value schema
+tools/schemas/tool.manifest.schema.json,#/$defs/jsonObject/patternProperties/^.*$,n/a,broad jsonValue escape hatch,replace with typed payload schema where repo-owned
+tools/schemas/tools/3d-asset-viewer.schema.json,#/$defs/jsonArray/items,n/a,broad jsonValue escape hatch,replace with typed payload schema where repo-owned
+tools/schemas/tools/3d-asset-viewer.schema.json,#/$defs/jsonObject/patternProperties/^.*$,pattern:^.*$,open-ended dictionary with jsonValue,narrow key pattern and value schema
+tools/schemas/tools/3d-asset-viewer.schema.json,#/$defs/jsonObject/patternProperties/^.*$,n/a,broad jsonValue escape hatch,replace with typed payload schema where repo-owned
+tools/schemas/tools/3d-asset-viewer.schema.json,#/properties/payload/properties/asset3d,n/a,broad jsonValue escape hatch,replace with typed payload schema where repo-owned
+tools/schemas/tools/3d-camera-path-editor.schema.json,#/$defs/jsonArray/items,n/a,broad jsonValue escape hatch,replace with typed payload schema where repo-owned
+tools/schemas/tools/3d-camera-path-editor.schema.json,#/$defs/jsonObject/patternProperties/^.*$,pattern:^.*$,open-ended dictionary with jsonValue,narrow key pattern and value schema
+tools/schemas/tools/3d-camera-path-editor.schema.json,#/$defs/jsonObject/patternProperties/^.*$,n/a,broad jsonValue escape hatch,replace with typed payload schema where repo-owned
+tools/schemas/tools/3d-camera-path-editor.schema.json,#/properties/payload/properties/cameraPath,n/a,broad jsonValue escape hatch,replace with typed payload schema where repo-owned
+tools/schemas/tools/3d-json-payload-normalizer.schema.json,#/$defs/jsonArray/items,n/a,broad jsonValue escape hatch,replace with typed payload schema where repo-owned
+tools/schemas/tools/3d-json-payload-normalizer.schema.json,#/$defs/jsonObject/patternProperties/^.*$,pattern:^.*$,open-ended dictionary with jsonValue,narrow key pattern and value schema
+tools/schemas/tools/3d-json-payload-normalizer.schema.json,#/$defs/jsonObject/patternProperties/^.*$,n/a,broad jsonValue escape hatch,replace with typed payload schema where repo-owned
+tools/schemas/tools/3d-json-payload-normalizer.schema.json,#/properties/payload/properties/mapPayload,n/a,broad jsonValue escape hatch,replace with typed payload schema where repo-owned
+tools/schemas/tools/asset-browser.schema.json,#/$defs/jsonArray/items,n/a,broad jsonValue escape hatch,replace with typed payload schema where repo-owned
+tools/schemas/tools/asset-browser.schema.json,#/$defs/jsonObject/patternProperties/^.*$,pattern:^.*$,open-ended dictionary with jsonValue,narrow key pattern and value schema
+tools/schemas/tools/asset-browser.schema.json,#/$defs/jsonObject/patternProperties/^.*$,n/a,broad jsonValue escape hatch,replace with typed payload schema where repo-owned
+tools/schemas/tools/asset-browser.schema.json,#/properties/payload/properties/approvedAssets,n/a,broad jsonValue escape hatch,replace with typed payload schema where repo-owned
+tools/schemas/tools/asset-browser.schema.json,#/properties/payload/properties/assetBrowserPreset,n/a,broad jsonValue escape hatch,replace with typed payload schema where repo-owned
+tools/schemas/tools/asset-browser.schema.json,#/properties/payload/properties/importHubPreset,n/a,broad jsonValue escape hatch,replace with typed payload schema where repo-owned
+tools/schemas/tools/asset-pipeline-tool.schema.json,#/$defs/jsonArray/items,n/a,broad jsonValue escape hatch,replace with typed payload schema where repo-owned
+tools/schemas/tools/asset-pipeline-tool.schema.json,#/$defs/jsonObject/patternProperties/^.*$,pattern:^.*$,open-ended dictionary with jsonValue,narrow key pattern and value schema
+tools/schemas/tools/asset-pipeline-tool.schema.json,#/$defs/jsonObject/patternProperties/^.*$,n/a,broad jsonValue escape hatch,replace with typed payload schema where repo-owned
+tools/schemas/tools/asset-pipeline-tool.schema.json,#/properties/payload/properties/pipelinePayload,n/a,broad jsonValue escape hatch,replace with typed payload schema where repo-owned
+tools/schemas/tools/parallax-editor.schema.json,#/$defs/jsonArray/items,n/a,broad jsonValue escape hatch,replace with typed payload schema where repo-owned
+tools/schemas/tools/parallax-editor.schema.json,#/$defs/jsonObject/patternProperties/^.*$,pattern:^.*$,open-ended dictionary with jsonValue,narrow key pattern and value schema
+tools/schemas/tools/parallax-editor.schema.json,#/$defs/jsonObject/patternProperties/^.*$,n/a,broad jsonValue escape hatch,replace with typed payload schema where repo-owned
+tools/schemas/tools/parallax-editor.schema.json,#/properties/payload/properties/parallaxDocument,n/a,broad jsonValue escape hatch,replace with typed payload schema where repo-owned
+tools/schemas/tools/parallax-editor.schema.json,#/properties/payload/properties/tilemapDocumentPath,n/a,broad jsonValue escape hatch,replace with typed payload schema where repo-owned
+tools/schemas/tools/parallax-editor.schema.json,#/properties/payload/properties/vectorAssetSvgPath,n/a,broad jsonValue escape hatch,replace with typed payload schema where repo-owned
+tools/schemas/tools/performance-profiler.schema.json,#/$defs/jsonArray/items,n/a,broad jsonValue escape hatch,replace with typed payload schema where repo-owned
+tools/schemas/tools/performance-profiler.schema.json,#/$defs/jsonObject/patternProperties/^.*$,pattern:^.*$,open-ended dictionary with jsonValue,narrow key pattern and value schema
+tools/schemas/tools/performance-profiler.schema.json,#/$defs/jsonObject/patternProperties/^.*$,n/a,broad jsonValue escape hatch,replace with typed payload schema where repo-owned
+tools/schemas/tools/performance-profiler.schema.json,#/properties/payload/properties/profileSettings,n/a,broad jsonValue escape hatch,replace with typed payload schema where repo-owned
+tools/schemas/tools/physics-sandbox.schema.json,#/$defs/jsonArray/items,n/a,broad jsonValue escape hatch,replace with typed payload schema where repo-owned
+tools/schemas/tools/physics-sandbox.schema.json,#/$defs/jsonObject/patternProperties/^.*$,pattern:^.*$,open-ended dictionary with jsonValue,narrow key pattern and value schema
+tools/schemas/tools/physics-sandbox.schema.json,#/$defs/jsonObject/patternProperties/^.*$,n/a,broad jsonValue escape hatch,replace with typed payload schema where repo-owned
+tools/schemas/tools/physics-sandbox.schema.json,#/properties/payload/properties/physicsBody,n/a,broad jsonValue escape hatch,replace with typed payload schema where repo-owned
+tools/schemas/tools/replay-visualizer.schema.json,#/$defs/jsonArray/items,n/a,broad jsonValue escape hatch,replace with typed payload schema where repo-owned
+tools/schemas/tools/replay-visualizer.schema.json,#/$defs/jsonObject/patternProperties/^.*$,pattern:^.*$,open-ended dictionary with jsonValue,narrow key pattern and value schema
+tools/schemas/tools/replay-visualizer.schema.json,#/$defs/jsonObject/patternProperties/^.*$,n/a,broad jsonValue escape hatch,replace with typed payload schema where repo-owned
+tools/schemas/tools/replay-visualizer.schema.json,#/properties/payload/properties/events,n/a,broad jsonValue escape hatch,replace with typed payload schema where repo-owned
+tools/schemas/tools/skin-editor.schema.json,#/$defs/jsonArray/items,n/a,broad jsonValue escape hatch,replace with typed payload schema where repo-owned
+tools/schemas/tools/skin-editor.schema.json,#/$defs/jsonObject/patternProperties/^.*$,pattern:^.*$,open-ended dictionary with jsonValue,narrow key pattern and value schema
+tools/schemas/tools/skin-editor.schema.json,#/$defs/jsonObject/patternProperties/^.*$,n/a,broad jsonValue escape hatch,replace with typed payload schema where repo-owned
+tools/schemas/tools/skin-editor.schema.json,#/properties/skin,n/a,broad jsonValue escape hatch,replace with typed payload schema where repo-owned
+tools/schemas/tools/sprite-editor.schema.json,#/$defs/jsonArray/items,n/a,broad jsonValue escape hatch,replace with typed payload schema where repo-owned
+tools/schemas/tools/sprite-editor.schema.json,#/$defs/jsonObject/patternProperties/^.*$,pattern:^.*$,open-ended dictionary with jsonValue,narrow key pattern and value schema
+tools/schemas/tools/sprite-editor.schema.json,#/$defs/jsonObject/patternProperties/^.*$,n/a,broad jsonValue escape hatch,replace with typed payload schema where repo-owned
+tools/schemas/tools/sprite-editor.schema.json,#/properties/assetRegistry,n/a,broad jsonValue escape hatch,replace with typed payload schema where repo-owned
+tools/schemas/tools/sprite-editor.schema.json,#/properties/payload/properties/spriteProject,n/a,broad jsonValue escape hatch,replace with typed payload schema where repo-owned
+tools/schemas/tools/state-inspector.schema.json,#/$defs/jsonArray/items,n/a,broad jsonValue escape hatch,replace with typed payload schema where repo-owned
+tools/schemas/tools/state-inspector.schema.json,#/$defs/jsonObject/patternProperties/^.*$,pattern:^.*$,open-ended dictionary with jsonValue,narrow key pattern and value schema
+tools/schemas/tools/state-inspector.schema.json,#/$defs/jsonObject/patternProperties/^.*$,n/a,broad jsonValue escape hatch,replace with typed payload schema where repo-owned
+tools/schemas/tools/state-inspector.schema.json,#/properties/payload/properties/snapshot,n/a,broad jsonValue escape hatch,replace with typed payload schema where repo-owned
+tools/schemas/tools/svg-asset-studio.schema.json,#/$defs/jsonArray/items,n/a,broad jsonValue escape hatch,replace with typed payload schema where repo-owned
+tools/schemas/tools/svg-asset-studio.schema.json,#/$defs/jsonObject/patternProperties/^.*$,pattern:^.*$,open-ended dictionary with jsonValue,narrow key pattern and value schema
+tools/schemas/tools/svg-asset-studio.schema.json,#/$defs/jsonObject/patternProperties/^.*$,n/a,broad jsonValue escape hatch,replace with typed payload schema where repo-owned
+tools/schemas/tools/svg-asset-studio.schema.json,#/properties/payload/properties/vectorAssetDocument,n/a,broad jsonValue escape hatch,replace with typed payload schema where repo-owned
+tools/schemas/tools/tile-map-editor.schema.json,#/$defs/jsonArray/items,n/a,broad jsonValue escape hatch,replace with typed payload schema where repo-owned
+tools/schemas/tools/tile-map-editor.schema.json,#/$defs/jsonObject/patternProperties/^.*$,pattern:^.*$,open-ended dictionary with jsonValue,narrow key pattern and value schema
+tools/schemas/tools/tile-map-editor.schema.json,#/$defs/jsonObject/patternProperties/^.*$,n/a,broad jsonValue escape hatch,replace with typed payload schema where repo-owned
+tools/schemas/tools/tile-map-editor.schema.json,#/properties/payload/properties/parallaxDocument,n/a,broad jsonValue escape hatch,replace with typed payload schema where repo-owned
+tools/schemas/tools/tile-map-editor.schema.json,#/properties/payload/properties/tileMapDocument,n/a,broad jsonValue escape hatch,replace with typed payload schema where repo-owned
+tools/schemas/tools/tile-map-editor.schema.json,#/properties/payload/properties/tilemapDocumentPath,n/a,broad jsonValue escape hatch,replace with typed payload schema where repo-owned
+tools/schemas/tools/tile-model-converter.schema.json,#/$defs/jsonArray/items,n/a,broad jsonValue escape hatch,replace with typed payload schema where repo-owned
+tools/schemas/tools/tile-model-converter.schema.json,#/$defs/jsonObject/patternProperties/^.*$,pattern:^.*$,open-ended dictionary with jsonValue,narrow key pattern and value schema
+tools/schemas/tools/tile-model-converter.schema.json,#/$defs/jsonObject/patternProperties/^.*$,n/a,broad jsonValue escape hatch,replace with typed payload schema where repo-owned
+tools/schemas/tools/tile-model-converter.schema.json,#/properties/payload/properties/candidate,n/a,broad jsonValue escape hatch,replace with typed payload schema where repo-owned
+tools/schemas/tools/tile-model-converter.schema.json,#/properties/payload/properties/conversion,n/a,broad jsonValue escape hatch,replace with typed payload schema where repo-owned
+tools/schemas/tools/vector-map-editor.schema.json,#/$defs/jsonArray/items,n/a,broad jsonValue escape hatch,replace with typed payload schema where repo-owned
+tools/schemas/tools/vector-map-editor.schema.json,#/$defs/jsonObject/patternProperties/^.*$,pattern:^.*$,open-ended dictionary with jsonValue,narrow key pattern and value schema
+tools/schemas/tools/vector-map-editor.schema.json,#/$defs/jsonObject/patternProperties/^.*$,n/a,broad jsonValue escape hatch,replace with typed payload schema where repo-owned
+tools/schemas/tools/vector-map-editor.schema.json,#/properties/payload/properties/vectorMapDocument,n/a,broad jsonValue escape hatch,replace with typed payload schema where repo-owned
