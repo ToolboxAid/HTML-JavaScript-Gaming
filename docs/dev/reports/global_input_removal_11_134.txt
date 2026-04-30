@@ -1,0 +1,52 @@
+﻿Global Input Removal Report: 11_134
+Date: 2026-04-30
+Repo: C:/Users/davidq/Documents/GitHub/HTML-JavaScript-Gaming
+Mode: STRICT SCOPE
+
+Scope
+- Routing files only
+
+Files changed
+- tools/shared/toolHostRuntime.js
+- tools/Workspace Manager/main.js
+
+Task Outcome
+1) Found global/implicit input usage
+- Workspace Manager launch path still read implicit UI state input (`stateInput`) before launch.
+- Legacy implicit launch surfaces were previously present in runtime/manager flow (mountTool + forwarded params); these are now removed from active launch path.
+
+2) Removed global/implicit launch input usage
+- Removed `stateInput` from Workspace Manager refs and launch flow.
+- Removed any use of implicit launch params in active launch flow.
+- Removed config-based mount launch API from runtime (already replaced previously with explicit launch API).
+
+3) Enforced explicit-only launch inputs
+- Runtime launch signature remains:
+  `launch(toolId, payloadJson, paletteJson?)`
+- Runtime shared context for hosted tool contains only:
+  `{ payloadJson, paletteJson }`
+- Workspace Manager launch call remains explicit:
+  `runtime.launch(toolId, payloadJson, paletteJson)`
+
+Runtime Assertion Status
+- Assertions present and active in runtime launch pre-check:
+  - missing/invalid signature
+  - parent JSON usage
+  - implicit/global key usage
+- Assertions throw before tool execution.
+
+Verification
+- `node --check tools/shared/toolHostRuntime.js` -> PASS
+- `node --check tools/Workspace Manager/main.js` -> PASS
+- Structural checks:
+  - launch signature exists -> PASS
+  - runtime uses payload/palette-only sharedContext -> PASS
+  - runtime has no mountTool API -> PASS
+  - Workspace Manager explicit launch call exists -> PASS
+  - Workspace Manager no stateInput usage remains -> PASS
+  - runtime assertion/detector functions present -> PASS
+
+Result
+- PASS
+- No global/implicit launch input remains in the tool execution path.
+- Tool execution inputs are explicit-only: payloadJson + paletteJson.

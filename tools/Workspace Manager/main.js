@@ -89,7 +89,6 @@ async function readGameAssetCatalog(assetCatalogPath) {
 }
 
 const refs = {
-  stateInput: document.querySelector("[data-tool-host-state-input]"),
   mountButton: null,
   prevButton: document.querySelector("[data-tool-host-prev]"),
   nextButton: document.querySelector("[data-tool-host-next]"),
@@ -1228,8 +1227,6 @@ function mountSelectedTool(source = "manual") {
     );
     return false;
   }
-  const hasStateInput = refs.stateInput instanceof HTMLTextAreaElement
-    && Boolean(refs.stateInput.value.trim());
   updateSwitchMeta();
   updateStandaloneHref(toolId);
   writeQueryToolId(toolId, source === "init");
@@ -1239,9 +1236,6 @@ function mountSelectedTool(source = "manual") {
   const payloadJson = explicitToolPayloadById ? (explicitToolPayloadById.get(toolId) || null) : null;
   if (!payloadJson || typeof payloadJson !== "object" || Array.isArray(payloadJson)) {
     throw new Error(`launch contract violation: explicit payloadJson is required for ${toolId}.`);
-  }
-  if (hasStateInput) {
-    throw new Error("launch contract violation: implicit input detected (state JSON).");
   }
   const paletteJson = workspaceManifestToolDiagnostics?.explicitPalettePayload || null;
   const mountResult = runtime.launch(toolId, payloadJson, paletteJson);
