@@ -1,0 +1,62 @@
+E2E Sample Tool Validation Report: 11_145
+Date: 2026-04-30
+Repo: C:/Users/davidq/Documents/GitHub/HTML-JavaScript-Gaming
+Mode: STRICT SCOPE
+
+Scope
+- Allowed: samples/**
+- Routing files: not required
+- Schemas: not modified
+- Runtime: not modified
+
+Method
+1) Collected sample tool links from:
+- `samples/metadata/samples.index.metadata.json` (`roundtripToolPresets`)
+- Static sample URLs containing `samplePresetPath` in `samples/**/*.html|js`
+
+2) Executed path checks per link:
+- tool route path exists (`/tools/.../index.html`)
+- preset JSON file exists and parses
+- schema validation:
+  - if preset has root `$schema`: validate preset object against declared schema
+  - else if preset uses wrapper (`tool` + `payload`): validate `payload` against tool schema `tools/schemas/tools/<toolId>.schema.json`
+
+3) Render confirmation rule
+- Link considered render-ready when route exists + preset parses + schema validation passes.
+
+Initial Sweep
+- Total links checked: 45
+- Failures: 2
+
+Failure 1 (obvious JSON fix)
+- Link source: metadata sample 1414 palette-browser preset
+- Preset: `/samples/phase-14/1414/sample.1414.palette.json`
+- Issue: `$schema` pointed to missing file `tools/schemas/palette.schema.json`
+- Fix applied: changed to `../../../tools/schemas/tools/palette-browser.schema.json`
+
+Failure 2 (not obvious JSON fix)
+- Link source: metadata sample 1902 workspace-manager preset relationship
+- Preset: `/samples/phase-19/1902/sample.1902.workspace-all-tools.json`
+- Issue: payload shape is not strict workspace-manifest contract for current schema lock (tool wrappers under `tools.*`)
+- Action applied (relationship removal):
+  - removed sample 1902 metadata roundtrip relationship (`toolHints` + `roundtripToolPresets` set to empty)
+  - removed manual/auto workspace launch relationship from sample page:
+    - `samples/phase-19/1902/index.html` launch link section changed to migration note
+    - removed `./main.js` script include
+    - `samples/phase-19/1902/main.js` replaced with migration note comment
+
+Final Sweep
+- Total links checked: 44
+- Failures: 0
+- Result: all sample tool links pass path execution, JSON+schema validation, and render-readiness checks.
+
+Files Changed
+- `samples/phase-14/1414/sample.1414.palette.json`
+- `samples/metadata/samples.index.metadata.json`
+- `samples/phase-19/1902/index.html`
+- `samples/phase-19/1902/main.js`
+
+Constraints Confirmation
+- No schema files modified
+- No fallback added
+- No runtime/routing code modified

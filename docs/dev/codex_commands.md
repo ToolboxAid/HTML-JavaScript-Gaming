@@ -1,31 +1,58 @@
 # CODEX COMMANDS
 
 Model: GPT-5.3-codex
-Reasoning: high
+Reasoning: medium
 
 STRICT SCOPE MODE
 
 ALLOWED FILES:
-- tools/schemas/**/*.json
+- tools/workspace-manager/main.js
+- docs/dev/reports/workspace_tool_key_id_fix_11_148.txt
+
+ALLOWED CHANGES:
+- use workspace manifest `tools` object key as tool id
+- remove requirement that direct payload entries contain `tool`
+- create/update report
 
 TASK:
 
-1. For each schema:
-   - test valid payload → must pass
-   - test wrapper JSON → must fail
-   - test parent JSON → must fail
+1. Open:
+   tools/workspace-manager/main.js
 
-2. If violation:
-   - fix schema ONLY
+2. Find the logic that emits:
+   tool-entry-missing-tool-id
 
-3. DO NOT:
-   - expand schema
-   - add compatibility
+3. Change Workspace Manager manifest parsing so:
+   - the object key under `tools` is treated as the tool id
+   - direct payload entries do NOT need `entry.tool`
+   - direct payload entries do NOT need `entry.payload`
 
-4. VERIFY:
-   - all schemas strict
+4. Keep:
+   - registry lookup by tool id key
+   - schema validation of the entry object against that tool schema
+   - visible diagnostics for unavailable registry tools
 
-REPORT:
-docs/dev/reports/schema_validation_sweep_11_144.txt
+5. Do NOT:
+   - modify schemas
+   - modify sample JSON
+   - re-add wrappers
+   - add compatibility fallback
+   - transform payloads
 
-FAIL if any schema loose
+6. Validate:
+   - JS syntax for tools/workspace-manager/main.js
+   - Sample 1902 direct manifest no longer causes `tool-entry-missing-tool-id`
+   - git diff --name-only contains only ALLOWED FILES
+
+7. Write:
+   docs/dev/reports/workspace_tool_key_id_fix_11_148.txt
+
+Report must include:
+- changed file
+- exact behavior changed
+- validation command/result
+- strict scope confirmation
+- remaining blocker if any
+
+8. Package Codex output ZIP at:
+   tmp/PR_11_148_WORKSPACE_MANAGER_USE_TOOL_KEY_AS_ID.zip

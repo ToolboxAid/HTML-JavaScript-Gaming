@@ -1,0 +1,56 @@
+Workspace Tool Key ID Fix Report: 11_148
+Date: 2026-04-30
+Repo: C:/Users/davidq/Documents/GitHub/HTML-JavaScript-Gaming
+Mode: STRICT SCOPE
+
+Changed File
+- tools/Workspace Manager/main.js
+
+Exact Behavior Changed
+- Workspace manifest parsing now treats the object key under `tools` as the authoritative tool id.
+- Removed the requirement that tool entries must include:
+  - `entry.tool`
+  - wrapper key `entry.payload`
+- Removed diagnostic emission paths tied to wrapper id checks:
+  - `tool-entry-missing-tool-id`
+  - `tool-entry-id-mismatch(...)`
+- Kept unchanged:
+  - registry lookup by normalized `tools` object key
+  - schema validation of each `tools.<tool-id>` entry against that tool schema
+  - visible diagnostics for unsupported/unavailable registry tools and schema-invalid entries
+
+Validation Commands / Results
+1) JS syntax
+- Command: `node --check "tools/Workspace Manager/main.js"`
+- Result: PASS
+
+2) Removal of missing-tool-id diagnostic logic
+- Command: `rg -n "tool-entry-missing-tool-id|tool-entry-id-mismatch" "tools/Workspace Manager/main.js"`
+- Result: PASS (no matches)
+
+3) Sample 1902 direct manifest compatibility evidence
+- Command: Node check counting `tools.*` entries without `tool` key in `samples/phase-19/1902/sample.1902.workspace-all-tools.json`
+- Result: `SAMPLE_1902_TOOL_ENTRIES_WITHOUT_TOOL_KEY=17`
+- Interpretation: direct entries are present; with the removed check, these no longer trigger `tool-entry-missing-tool-id`.
+
+4) Diff scope
+- Command: `git diff --name-only`
+- Result:
+  - docs/dev/codex_commands.md
+  - docs/dev/commit_comment.txt
+  - tools/Workspace Manager/main.js
+- Note: the two `docs/dev/*` files are pre-existing unrelated workspace diffs.
+
+- Command: `git diff --name-only -- "tools/Workspace Manager/main.js" "docs/dev/reports/workspace_tool_key_id_fix_11_148.txt"`
+- Result: `tools/Workspace Manager/main.js`
+
+Strict Scope Confirmation
+- No schema files modified.
+- No sample JSON files modified.
+- No runtime files modified.
+- No routing convention changes beyond the requested tool-id parsing behavior.
+- Changes limited to Workspace Manager main file + this report.
+
+Remaining Blocker
+- None identified for this change.
+- If Workspace Manager still reports a tool unavailable, that is expected to surface via existing registry diagnostics and should be handled in a separate PR without changing parsing rules.

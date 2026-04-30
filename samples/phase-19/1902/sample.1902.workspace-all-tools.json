@@ -7,840 +7,694 @@
   "name": "Sample 1902 Workspace All Tools",
   "tools": {
     "vector-map-editor": {
-      "tool": "vector-map-editor",
-      "version": "1",
-      "payload": {
-        "vectorMapDocument": {
-          "version": 3,
-          "name": "sample-0901-vector-map",
-          "mode": "2d",
-          "width": 1280,
-          "height": 720,
-          "background": "#000000",
-          "objects": [
-            {
-              "id": "obj-player-path",
-              "name": "Player Route",
-              "kind": "polyline",
-              "space": "2d",
-              "closed": false,
-              "center": {
-                "x": 420,
-                "y": 320,
+      "vectorMapDocument": {
+        "version": 3,
+        "name": "sample-0901-vector-map",
+        "mode": "2d",
+        "width": 1280,
+        "height": 720,
+        "background": "#000000",
+        "objects": [
+          {
+            "id": "obj-player-path",
+            "name": "Player Route",
+            "kind": "polyline",
+            "space": "2d",
+            "closed": false,
+            "center": {
+              "x": 420,
+              "y": 320,
+              "z": 0,
+              "color": "#22d3ee"
+            },
+            "rotation": {
+              "x": 0,
+              "y": 0,
+              "z": 0
+            },
+            "style": {
+              "stroke": "#22d3ee",
+              "fill": null,
+              "lineWidth": 3,
+              "colorMode": "object"
+            },
+            "flags": {
+              "collidable": false,
+              "deadly": false,
+              "trigger": true,
+              "spawnBlocker": false,
+              "projectileBlocker": false,
+              "playerOnly": true,
+              "enemyOnly": false,
+              "tag": "route"
+            },
+            "points": [
+              {
+                "x": 140,
+                "y": 560,
                 "z": 0,
                 "color": "#22d3ee"
               },
-              "rotation": {
-                "x": 0,
-                "y": 0,
-                "z": 0
+              {
+                "x": 280,
+                "y": 440,
+                "z": 0,
+                "color": "#22d3ee"
               },
-              "style": {
-                "stroke": "#22d3ee",
-                "fill": null,
-                "lineWidth": 3,
-                "colorMode": "object"
-              },
-              "flags": {
-                "collidable": false,
-                "deadly": false,
-                "trigger": true,
-                "spawnBlocker": false,
-                "projectileBlocker": false,
-                "playerOnly": true,
-                "enemyOnly": false,
-                "tag": "route"
-              },
-              "points": [
-                {
-                  "x": 140,
-                  "y": 560,
-                  "z": 0,
-                  "color": "#22d3ee"
-                },
-                {
-                  "x": 280,
-                  "y": 440,
-                  "z": 0,
-                  "color": "#22d3ee"
-                },
-                {
-                  "x": 420,
-                  "y": 360,
-                  "z": 0,
-                  "color": "#22d3ee"
-                },
-                {
-                  "x": 620,
-                  "y": 320,
-                  "z": 0,
-                  "color": "#22d3ee"
-                }
-              ]
-            },
-            {
-              "id": "obj-hazard-zone",
-              "name": "Hazard Zone",
-              "kind": "polygon",
-              "space": "2d",
-              "closed": true,
-              "center": {
-                "x": 860,
+              {
+                "x": 420,
                 "y": 360,
+                "z": 0,
+                "color": "#22d3ee"
+              },
+              {
+                "x": 620,
+                "y": 320,
+                "z": 0,
+                "color": "#22d3ee"
+              }
+            ]
+          },
+          {
+            "id": "obj-hazard-zone",
+            "name": "Hazard Zone",
+            "kind": "polygon",
+            "space": "2d",
+            "closed": true,
+            "center": {
+              "x": 860,
+              "y": 360,
+              "z": 0,
+              "color": "#f97316"
+            },
+            "rotation": {
+              "x": 0,
+              "y": 0,
+              "z": 0
+            },
+            "style": {
+              "stroke": "#f97316",
+              "fill": "#7c2d12",
+              "lineWidth": 2,
+              "colorMode": "object"
+            },
+            "flags": {
+              "collidable": true,
+              "deadly": true,
+              "trigger": false,
+              "spawnBlocker": true,
+              "projectileBlocker": true,
+              "playerOnly": false,
+              "enemyOnly": false,
+              "tag": "hazard"
+            },
+            "points": [
+              {
+                "x": 760,
+                "y": 240,
                 "z": 0,
                 "color": "#f97316"
               },
-              "rotation": {
-                "x": 0,
-                "y": 0,
-                "z": 0
+              {
+                "x": 980,
+                "y": 240,
+                "z": 0,
+                "color": "#f97316"
               },
-              "style": {
-                "stroke": "#f97316",
-                "fill": "#7c2d12",
-                "lineWidth": 2,
-                "colorMode": "object"
+              {
+                "x": 1020,
+                "y": 420,
+                "z": 0,
+                "color": "#f97316"
               },
-              "flags": {
-                "collidable": true,
-                "deadly": true,
-                "trigger": false,
-                "spawnBlocker": true,
-                "projectileBlocker": true,
-                "playerOnly": false,
-                "enemyOnly": false,
-                "tag": "hazard"
-              },
-              "points": [
-                {
-                  "x": 760,
-                  "y": 240,
-                  "z": 0,
-                  "color": "#f97316"
-                },
-                {
-                  "x": 980,
-                  "y": 240,
-                  "z": 0,
-                  "color": "#f97316"
-                },
-                {
-                  "x": 1020,
-                  "y": 420,
-                  "z": 0,
-                  "color": "#f97316"
-                },
-                {
-                  "x": 820,
-                  "y": 500,
-                  "z": 0,
-                  "color": "#f97316"
-                }
-              ]
-            }
-          ]
-        }
+              {
+                "x": 820,
+                "y": 500,
+                "z": 0,
+                "color": "#f97316"
+              }
+            ]
+          }
+        ]
       }
     },
     "svg-asset-studio": {
-      "tool": "svg-asset-studio",
-      "version": "1",
-      "payload": {
-        "vectorAssetDocument": {
-          "sourceName": "sample-0901-ship.svg",
-          "editorOptions": {
-            "palette": {
-              "id": "sample-1902-workspace-palette",
-              "name": "Sample 1902 Workspace Palette",
-              "stroke": "#F8FAFCFF",
-              "strokeWidth": 2,
-              "activeTarget": "paint",
-              "paint": "#38BDF8FF"
-            },
-            "paint": "#38BDF8FF",
+      "vectorAssetDocument": {
+        "sourceName": "sample-0901-ship.svg",
+        "editorOptions": {
+          "palette": {
+            "id": "sample-1902-workspace-palette",
+            "name": "Sample 1902 Workspace Palette",
             "stroke": "#F8FAFCFF",
             "strokeWidth": 2,
-            "gradientFillFrom": "#38BDF8FF",
-            "gradientFillTo": "#64748BFF",
-            "gradientAngle": 0
+            "activeTarget": "paint",
+            "paint": "#38BDF8FF"
           },
-          "svgText": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 640 360\">\n  <title>sample-0901-vector-ship</title>\n  <desc>Ship vector from Sample 0901 transform-rendering baseline.</desc>\n  <rect x=\"0\" y=\"0\" width=\"640\" height=\"360\" fill=\"#0f172a\" />\n  <rect x=\"90\" y=\"220\" width=\"480\" height=\"110\" fill=\"#111827\" />\n  <path d=\"M 260 150 L 294 236 L 260 217 L 226 236 Z\" fill=\"none\" stroke=\"#38bdf8\" stroke-width=\"8\" stroke-linejoin=\"round\" stroke-linecap=\"round\" />\n  <line x1=\"260\" y1=\"194\" x2=\"340\" y2=\"194\" stroke=\"#64748b\" stroke-width=\"3\" />\n  <circle cx=\"260\" cy=\"194\" r=\"5\" fill=\"#38bdf8\" />\n</svg>"
-        }
+          "paint": "#38BDF8FF",
+          "stroke": "#F8FAFCFF",
+          "strokeWidth": 2,
+          "gradientFillFrom": "#38BDF8FF",
+          "gradientFillTo": "#64748BFF",
+          "gradientAngle": 0
+        },
+        "svgText": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 640 360\">\n  <title>sample-0901-vector-ship</title>\n  <desc>Ship vector from Sample 0901 transform-rendering baseline.</desc>\n  <rect x=\"0\" y=\"0\" width=\"640\" height=\"360\" fill=\"#0f172a\" />\n  <rect x=\"90\" y=\"220\" width=\"480\" height=\"110\" fill=\"#111827\" />\n  <path d=\"M 260 150 L 294 236 L 260 217 L 226 236 Z\" fill=\"none\" stroke=\"#38bdf8\" stroke-width=\"8\" stroke-linejoin=\"round\" stroke-linecap=\"round\" />\n  <line x1=\"260\" y1=\"194\" x2=\"340\" y2=\"194\" stroke=\"#64748b\" stroke-width=\"3\" />\n  <circle cx=\"260\" cy=\"194\" r=\"5\" fill=\"#38bdf8\" />\n</svg>"
       }
     },
     "tile-map-editor": {
-      "tool": "tile-map-editor",
-      "version": "1",
-      "payload": {
-        "tileMapDocument": {
-          "schema": "toolbox.tilemap/1",
-          "version": 1,
-          "map": {
-            "name": "tile-editor-sample-basic",
-            "width": 16,
-            "height": 10,
-            "tileSize": 24
+      "tileMapDocument": {
+        "schema": "toolbox.tilemap/1",
+        "version": 1,
+        "map": {
+          "name": "tile-editor-sample-basic",
+          "width": 16,
+          "height": 10,
+          "tileSize": 24
+        },
+        "tileset": [
+          {
+            "id": 0,
+            "name": "Empty",
+            "color": "transparent"
           },
-          "tileset": [
-            {
-              "id": 0,
-              "name": "Empty",
-              "color": "transparent"
-            },
-            {
-              "id": 1,
-              "name": "Grass",
-              "color": "#4a8f39"
-            },
-            {
-              "id": 2,
-              "name": "Dirt",
-              "color": "#7a5230"
-            },
-            {
-              "id": 3,
-              "name": "Stone",
-              "color": "#6b7280"
-            },
-            {
-              "id": 4,
-              "name": "Water",
-              "color": "#2563eb"
-            }
-          ],
-          "layers": [
-            {
-              "id": "ground",
-              "name": "Ground",
-              "kind": "tile",
-              "visible": true,
-              "locked": false,
-              "data": [
-                [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-                [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-                [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-                [1, 1, 1, 1, 3, 3, 3, 1, 1, 1, 3, 3, 3, 1, 1, 1],
-                [1, 1, 1, 1, 3, 4, 3, 1, 1, 1, 3, 4, 3, 1, 1, 1],
-                [1, 1, 1, 1, 3, 4, 3, 1, 1, 1, 3, 4, 3, 1, 1, 1],
-                [1, 1, 1, 1, 3, 3, 3, 1, 1, 1, 3, 3, 3, 1, 1, 1],
-                [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
-                [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
-                [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2]
-              ]
-            },
-            {
-              "id": "collision",
-              "name": "Collision",
-              "kind": "collision",
-              "visible": true,
-              "locked": false,
-              "data": [
-                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                [0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 1, 1, 1, 0, 0, 0],
-                [0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 0],
-                [0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 0],
-                [0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 1, 1, 1, 0, 0, 0],
-                [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-                [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-                [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
-              ]
-            },
-            {
-              "id": "data",
-              "name": "Data",
-              "kind": "data",
-              "visible": true,
-              "locked": false,
-              "data": [
-                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                [0, 0, 0, 2, 2, 2, 0, 0, 0, 3, 3, 3, 0, 0, 0, 0],
-                [0, 0, 0, 2, 2, 2, 0, 0, 0, 3, 3, 3, 0, 0, 0, 0]
-              ]
-            }
-          ],
-          "markers": [
-            {
-              "id": "spawn-1",
-              "type": "spawn",
-              "name": "player-start",
-              "col": 1,
-              "row": 6,
-              "properties": {}
-            },
-            {
-              "id": "object-1",
-              "type": "object",
-              "name": "crate",
-              "col": 8,
-              "row": 6,
-              "properties": {
-                "loot": "coins"
-              }
-            },
-            {
-              "id": "object-2",
-              "type": "object",
-              "name": "portal",
-              "col": 14,
-              "row": 6,
-              "properties": {
-                "target": "zone-b"
-              }
-            }
-          ],
-          "parallax": {
-            "schema": "toolbox.parallax/1",
-            "companionEditor": "ParallaxEditor",
-            "layers": []
+          {
+            "id": 1,
+            "name": "Grass",
+            "color": "#4a8f39"
           },
-          "metadata": {
-            "createdAt": "2026-03-30T00:00:00.000Z",
-            "updatedAt": "2026-03-30T00:00:00.000Z",
-            "notes": "Tile Editor local sample"
+          {
+            "id": 2,
+            "name": "Dirt",
+            "color": "#7a5230"
+          },
+          {
+            "id": 3,
+            "name": "Stone",
+            "color": "#6b7280"
+          },
+          {
+            "id": 4,
+            "name": "Water",
+            "color": "#2563eb"
           }
+        ],
+        "layers": [
+          {
+            "id": "ground",
+            "name": "Ground",
+            "kind": "tile",
+            "visible": true,
+            "locked": false,
+            "data": [
+              [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+              [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+              [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+              [1, 1, 1, 1, 3, 3, 3, 1, 1, 1, 3, 3, 3, 1, 1, 1],
+              [1, 1, 1, 1, 3, 4, 3, 1, 1, 1, 3, 4, 3, 1, 1, 1],
+              [1, 1, 1, 1, 3, 4, 3, 1, 1, 1, 3, 4, 3, 1, 1, 1],
+              [1, 1, 1, 1, 3, 3, 3, 1, 1, 1, 3, 3, 3, 1, 1, 1],
+              [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
+              [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
+              [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2]
+            ]
+          },
+          {
+            "id": "collision",
+            "name": "Collision",
+            "kind": "collision",
+            "visible": true,
+            "locked": false,
+            "data": [
+              [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+              [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+              [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+              [0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 1, 1, 1, 0, 0, 0],
+              [0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 0],
+              [0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 0],
+              [0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 1, 1, 1, 0, 0, 0],
+              [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+              [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+              [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+            ]
+          },
+          {
+            "id": "data",
+            "name": "Data",
+            "kind": "data",
+            "visible": true,
+            "locked": false,
+            "data": [
+              [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+              [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+              [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+              [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+              [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+              [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+              [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+              [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+              [0, 0, 0, 2, 2, 2, 0, 0, 0, 3, 3, 3, 0, 0, 0, 0],
+              [0, 0, 0, 2, 2, 2, 0, 0, 0, 3, 3, 3, 0, 0, 0, 0]
+            ]
+          }
+        ],
+        "markers": [
+          {
+            "id": "spawn-1",
+            "type": "spawn",
+            "name": "player-start",
+            "col": 1,
+            "row": 6,
+            "properties": {}
+          },
+          {
+            "id": "object-1",
+            "type": "object",
+            "name": "crate",
+            "col": 8,
+            "row": 6,
+            "properties": {
+              "loot": "coins"
+            }
+          },
+          {
+            "id": "object-2",
+            "type": "object",
+            "name": "portal",
+            "col": 14,
+            "row": 6,
+            "properties": {
+              "target": "zone-b"
+            }
+          }
+        ],
+        "parallax": {
+          "schema": "toolbox.parallax/1",
+          "companionEditor": "ParallaxEditor",
+          "layers": []
+        },
+        "metadata": {
+          "createdAt": "2026-03-30T00:00:00.000Z",
+          "updatedAt": "2026-03-30T00:00:00.000Z",
+          "notes": "Tile Editor local sample"
         }
       }
     },
     "parallax-editor": {
-      "tool": "parallax-editor",
-      "version": "1",
-      "payload": {
-        "parallaxDocument": {
-          "schema": "toolbox.parallax/1",
-          "version": 1,
-          "companionEditor": "ParallaxEditor",
-          "map": {
-            "name": "sample-0306-nes-zones-parallax",
-            "width": 24,
-            "height": 7,
-            "tileSize": 48,
-            "pixelWidth": 1152,
-            "pixelHeight": 336
+      "parallaxDocument": {
+        "schema": "toolbox.parallax/1",
+        "version": 1,
+        "companionEditor": "ParallaxEditor",
+        "map": {
+          "name": "sample-0306-nes-zones-parallax",
+          "width": 24,
+          "height": 7,
+          "tileSize": 48,
+          "pixelWidth": 1152,
+          "pixelHeight": 336
+        },
+        "layers": [
+          {
+            "id": "zone-band-far",
+            "name": "Zone Band Far",
+            "drawOrder": 0,
+            "imageSource": "/samples/phase-19/1902/assets/data/parallax/sample-0306-far.svg",
+            "scrollFactorX": 0.2,
+            "scrollFactorY": 0,
+            "offsetX": 0,
+            "offsetY": 110,
+            "repeatX": true,
+            "repeatY": false,
+            "wrapMode": "wrap",
+            "opacity": 1,
+            "visible": true
           },
-          "layers": [
-            {
-              "id": "zone-band-far",
-              "name": "Zone Band Far",
-              "drawOrder": 0,
-              "imageSource": "/samples/phase-19/1902/assets/data/parallax/sample-0306-far.svg",
-              "scrollFactorX": 0.2,
-              "scrollFactorY": 0,
-              "offsetX": 0,
-              "offsetY": 110,
-              "repeatX": true,
-              "repeatY": false,
-              "wrapMode": "wrap",
-              "opacity": 1,
-              "visible": true
-            },
-            {
-              "id": "zone-band-near",
-              "name": "Zone Band Near",
-              "drawOrder": 1,
-              "imageSource": "/samples/phase-19/1902/assets/data/parallax/sample-0306-near.svg",
-              "scrollFactorX": 0.45,
-              "scrollFactorY": 0,
-              "offsetX": 0,
-              "offsetY": 140,
-              "repeatX": true,
-              "repeatY": false,
-              "wrapMode": "wrap",
-              "opacity": 1,
-              "visible": true
-            }
-          ],
-          "metadata": {
-            "createdAt": "2026-04-23T00:00:00.000Z",
-            "updatedAt": "2026-04-23T00:00:00.000Z",
-            "source": "samples2tools-parallax-roundtrip"
+          {
+            "id": "zone-band-near",
+            "name": "Zone Band Near",
+            "drawOrder": 1,
+            "imageSource": "/samples/phase-19/1902/assets/data/parallax/sample-0306-near.svg",
+            "scrollFactorX": 0.45,
+            "scrollFactorY": 0,
+            "offsetX": 0,
+            "offsetY": 140,
+            "repeatX": true,
+            "repeatY": false,
+            "wrapMode": "wrap",
+            "opacity": 1,
+            "visible": true
           }
+        ],
+        "metadata": {
+          "createdAt": "2026-04-23T00:00:00.000Z",
+          "updatedAt": "2026-04-23T00:00:00.000Z",
+          "source": "samples2tools-parallax-roundtrip"
         }
       }
     },
     "sprite-editor": {
-      "tool": "sprite-editor",
-      "version": "1",
-      "assetRegistry": {
-        "entries": [
+      "spriteProject": {
+        "format": "toolboxaid.sprite-editor.project",
+        "version": 1,
+        "width": 5,
+        "height": 5,
+        "pixelSize": 18,
+        "showGrid": true,
+        "onionSkin": false,
+        "activeColor": "#1CAC78FF",
+        "assetRefs": {
+          "spriteId": ""
+        },
+        "recentColors": ["#1CAC78FF", "#1F75FEFF", "#FF7538FF"],
+        "frames": [
           {
-            "id": "sample-1902-workspace-preset",
-            "label": "1902 Workspace Integration Preset",
-            "type": "data",
-            "category": "Workflow JSON",
-            "kind": "other",
-            "path": "/samples/phase-19/1902/sample.1902.workspace-all-tools.json",
-            "status": "registered"
+            "pixels": [null, "#A78BFAFF", "#A78BFAFF", "#A78BFAFF", null, "#A78BFAFF", null, null, null, "#A78BFAFF", "#A78BFAFF", null, null, null, "#A78BFAFF", "#A78BFAFF", null, null, null, "#A78BFAFF", null, "#A78BFAFF", "#A78BFAFF", "#A78BFAFF", null]
           },
           {
-            "id": "image.sample1902.preview",
-            "label": "1902 Preview Art",
-            "type": "image",
-            "category": "Preview Art",
-            "kind": "other",
-            "path": "/samples/phase-19/1902/assets/images/preview.svg",
-            "status": "registered"
+            "pixels": [null, null, null, null, null, null, "#22C55EFF", "#22C55EFF", "#22C55EFF", null, null, "#22C55EFF", "#22C55EFF", "#22C55EFF", null, null, "#22C55EFF", "#22C55EFF", "#22C55EFF", null, null, null, null, null, null]
           }
-        ]
-      },
-      "payload": {
-        "spriteProject": {
-          "format": "toolboxaid.sprite-editor.project",
-          "version": 1,
-          "width": 5,
-          "height": 5,
-          "pixelSize": 18,
-          "showGrid": true,
-          "onionSkin": false,
-          "activeColor": "#1CAC78FF",
-          "assetRefs": {
-            "spriteId": ""
-          },
-          "recentColors": ["#1CAC78FF", "#1F75FEFF", "#FF7538FF"],
-          "frames": [
-            {
-              "pixels": [null, "#A78BFAFF", "#A78BFAFF", "#A78BFAFF", null, "#A78BFAFF", null, null, null, "#A78BFAFF", "#A78BFAFF", null, null, null, "#A78BFAFF", "#A78BFAFF", null, null, null, "#A78BFAFF", null, "#A78BFAFF", "#A78BFAFF", "#A78BFAFF", null]
-            },
-            {
-              "pixels": [null, null, null, null, null, null, "#22C55EFF", "#22C55EFF", "#22C55EFF", null, null, "#22C55EFF", "#22C55EFF", "#22C55EFF", null, null, "#22C55EFF", "#22C55EFF", "#22C55EFF", null, null, null, null, null, null]
-            }
-          ],
-          "currentFrameIndex": 0
-        }
+        ],
+        "currentFrameIndex": 0
       }
     },
-    "skin-editor": {
-      "tool": "skin-editor",
-      "version": "1",
-      "skin": {
-        "documentKind": "game-skin",
-        "version": 1,
-        "schema": "games.pong.skin/1",
-        "gameId": "Pong",
-        "name": "Sample 0227 Pong Skin",
-        "objects": {
-          "background": {
-            "color": "#05070a",
-            "shape": "hud-color"
-          },
-          "paddle": {
-            "color": "#f4f7fb",
-            "width": 14,
-            "shape": "rectangle"
-          },
-          "ball": {
-            "color": "#f4f7fb",
-            "radius": 8,
-            "shape": "circle"
-          },
-          "hudInk": {
-            "color": "#f4f7fb",
-            "shape": "hud-color"
-          },
-          "hudMuted": {
-            "color": "#a6b0bf",
-            "shape": "hud-color"
-          },
-          "hudAccent": {
-            "color": "#7de2ff",
-            "shape": "hud-color"
-          },
-          "hudGood": {
-            "color": "#8bf0c8",
-            "shape": "hud-color"
-          },
-          "hudWarn": {
-            "color": "#ffd37d",
-            "shape": "hud-color"
-          },
-          "hudDanger": {
-            "color": "#ff9a9a",
-            "shape": "hud-color"
-          }
-        },
-        "entities": {}
-      },
-      "payload": {},
-      "projectId": "Pong"
-    },
+    "skin-editor": {},
     "asset-browser": {
-      "tool": "asset-browser",
-      "version": "1",
-      "payload": {
-        "assetBrowserPreset": {
-          "selectedCategory": "All",
-          "selectedAssetId": "other.sample1902.workspace-preset",
-          "search": "",
-          "importCategory": "Workflow JSON"
-        }
-      },
-      "assets": {
-        "other.sample1902.workspace-preset": {
-          "path": "/samples/phase-19/1902/sample.1902.workspace-all-tools.json",
-          "kind": "other",
-          "source": "workspace-manager"
-        },
-        "image.sample1902.preview": {
-          "path": "/samples/phase-19/1902/assets/images/preview.svg",
-          "kind": "image",
-          "source": "workspace-manager"
-        }
+      "assets": {},
+      "assetBrowserPreset": {
+        "selectedCategory": "All",
+        "selectedAssetId": "other.sample1902.workspace-preset",
+        "search": "",
+        "importCategory": "Workflow JSON"
       }
     },
     "state-inspector": {
-      "tool": "state-inspector",
-      "version": "1",
-      "payload": {
-        "snapshot": {
-          "schema": "tools.debug-state-inspector.snapshot/1",
-          "capturedAt": "2026-04-24T00:00:00.000Z",
-          "hosted": false,
-          "toolId": "state-inspector",
-          "hostContext": null,
-          "projectManifest": {
-            "documentKind": "workspace-manifest",
-            "schema": "html-js-gaming.project",
-            "version": 1,
-            "id": "sample-0205-project",
-            "name": "Sample 0205 Save Load State"
-          },
-          "storage": {
-            "localCount": 2,
-            "sessionCount": 1,
-            "localStorageEntries": [
-              {
-                "key": "toolboxaid.sample0205.slotA",
-                "value": "{\"checkpoint\":\"A\"}"
-              },
-              {
-                "key": "toolboxaid.sample0205.slotB",
-                "value": "{\"checkpoint\":\"B\"}"
-              }
-            ],
-            "sessionStorageEntries": [
-              {
-                "key": "toolboxaid.sample0205.activeSlot",
-                "value": "slotA"
-              }
-            ]
-          },
-          "bootContracts": {
-            "count": 2,
-            "keys": ["state-inspector", "sample-0205"]
-          },
-          "notes": "Sample snapshot payload for State Inspector launch validation."
-        }
+      "snapshot": {
+        "schema": "tools.debug-state-inspector.snapshot/1",
+        "capturedAt": "2026-04-24T00:00:00.000Z",
+        "hosted": false,
+        "toolId": "state-inspector",
+        "hostContext": null,
+        "projectManifest": {
+          "documentKind": "workspace-manifest",
+          "schema": "html-js-gaming.project",
+          "version": 1,
+          "id": "sample-0205-project",
+          "name": "Sample 0205 Save Load State"
+        },
+        "storage": {
+          "localCount": 2,
+          "sessionCount": 1,
+          "localStorageEntries": [
+            {
+              "key": "toolboxaid.sample0205.slotA",
+              "value": "{\"checkpoint\":\"A\"}"
+            },
+            {
+              "key": "toolboxaid.sample0205.slotB",
+              "value": "{\"checkpoint\":\"B\"}"
+            }
+          ],
+          "sessionStorageEntries": [
+            {
+              "key": "toolboxaid.sample0205.activeSlot",
+              "value": "slotA"
+            }
+          ]
+        },
+        "bootContracts": {
+          "count": 2,
+          "keys": ["state-inspector", "sample-0205"]
+        },
+        "notes": "Sample snapshot payload for State Inspector launch validation."
       }
     },
     "replay-visualizer": {
-      "tool": "replay-visualizer",
-      "version": "1",
-      "payload": {
-        "events": [
-          {
-            "id": "predict-1",
-            "timeMs": 0,
-            "type": "predict",
-            "label": "Predict Input #1",
-            "payload": {
-              "dx": 24,
-              "stateX": 164
+      "events": [
+        {
+          "id": "predict-1",
+          "timeMs": 0,
+          "type": "predict",
+          "label": "Predict Input #1",
+          "payload": {
+            "dx": 24,
+            "stateX": 164
+          }
+        },
+        {
+          "id": "predict-2",
+          "timeMs": 120,
+          "type": "predict",
+          "label": "Predict Input #2",
+          "payload": {
+            "dx": 24,
+            "stateX": 188
+          }
+        },
+        {
+          "id": "authority-correct",
+          "timeMs": 320,
+          "type": "rollback",
+          "label": "Authority Correction",
+          "payload": {
+            "authoritativeX": 152,
+            "frame": 1
+          }
+        },
+        {
+          "id": "replay-inputs",
+          "timeMs": 480,
+          "type": "replay",
+          "label": "Replay Predicted Inputs",
+          "payload": {
+            "replayedInputs": 1,
+            "resultX": 176
+          }
+        },
+        {
+          "id": "diag-summary",
+          "timeMs": 760,
+          "type": "diagnostic",
+          "label": "Rollback Summary",
+          "payload": {
+            "corrections": 1,
+            "events": 1
+          }
+        }
+      ]
+    },
+    "performance-profiler": {
+      "profileSettings": {
+        "workloadIterations": 240,
+        "workSize": 10000,
+        "frameSamples": 180
+      }
+    },
+    "physics-sandbox": {
+      "physicsBody": {
+        "x": 12,
+        "y": 48,
+        "velocityX": 0,
+        "velocityY": -140,
+        "accelerationX": 0,
+        "accelerationY": 38,
+        "dragX": 2,
+        "dragY": 1,
+        "maxSpeedX": 240,
+        "maxSpeedY": 260,
+        "dt": 0.0166666667
+      }
+    },
+    "asset-pipeline": {
+      "pipelinePayload": {
+        "domainInputs": {
+          "sprites": [
+            {
+              "assetId": "sample-1902-workspace-preset",
+              "runtimeFileName": "sample-1902-workspace.runtime.json",
+              "toolDataFileName": "sample-1902-workspace.tool.json",
+              "sourceToolId": "asset-browser"
             }
+          ],
+          "vectors": [
+            {
+              "assetId": "sample-1902-canonical-palette",
+              "runtimeFileName": "sample-1902-palette.runtime.json",
+              "toolDataFileName": "sample-1902-palette.tool.json",
+              "sourceToolId": "palette-browser"
+            }
+          ]
+        },
+        "toolStates": {
+          "asset-pipeline": {
+            "schema": "html-js-gaming.tool-state",
+            "version": 1,
+            "toolId": "asset-pipeline",
+            "projectId": "sample-1413",
+            "savedAtIso": "2026-04-24T00:00:00.000Z",
+            "state": {
+              "mode": "manifest-build"
+            }
+          }
+        },
+        "projectId": "sample-1902"
+      }
+    },
+    "tile-model-converter": {
+      "candidate": {
+        "id": "sample-1209-tilemap-basic",
+        "name": "sample-1209-tilemap-basic",
+        "section": "tilemaps",
+        "type": "tilemap",
+        "path": "samples/phase-12/1209/sample-1209-tile-map-editor-document.json",
+        "sourceSampleId": "1209",
+        "sourceToolId": "tile-map-editor",
+        "sourcePath": "/samples/phase-19/1902/sample.1902.workspace-all-tools.json"
+      },
+      "conversion": {
+        "targetSection": "vectors",
+        "targetType": "vector"
+      }
+    },
+    "3d-json-payload": {
+      "mapPayload": {
+        "schema": "tools.3d-json-payload.document/1",
+        "mapId": "sample-1208-terrain-flow",
+        "points": [
+          {
+            "id": "p1",
+            "x": -30,
+            "y": 0,
+            "z": -14
           },
           {
-            "id": "predict-2",
-            "timeMs": 120,
-            "type": "predict",
-            "label": "Predict Input #2",
-            "payload": {
-              "dx": 24,
-              "stateX": 188
-            }
+            "id": "p2",
+            "x": -4,
+            "y": 0,
+            "z": -12
           },
           {
-            "id": "authority-correct",
-            "timeMs": 320,
-            "type": "rollback",
-            "label": "Authority Correction",
-            "payload": {
-              "authoritativeX": 152,
-              "frame": 1
-            }
+            "id": "p3",
+            "x": 18,
+            "y": 0,
+            "z": -4
           },
           {
-            "id": "replay-inputs",
-            "timeMs": 480,
-            "type": "replay",
-            "label": "Replay Predicted Inputs",
-            "payload": {
-              "replayedInputs": 1,
-              "resultX": 176
-            }
+            "id": "p4",
+            "x": 28,
+            "y": 0,
+            "z": 12
           },
           {
-            "id": "diag-summary",
-            "timeMs": 760,
-            "type": "diagnostic",
-            "label": "Rollback Summary",
-            "payload": {
-              "corrections": 1,
-              "events": 1
-            }
+            "id": "p5",
+            "x": -10,
+            "y": 0,
+            "z": 18
+          }
+        ],
+        "segments": [
+          {
+            "from": "p1",
+            "to": "p2"
+          },
+          {
+            "from": "p2",
+            "to": "p3"
+          },
+          {
+            "from": "p3",
+            "to": "p4"
+          },
+          {
+            "from": "p4",
+            "to": "p5"
+          },
+          {
+            "from": "p5",
+            "to": "p1"
           }
         ]
       }
     },
-    "performance-profiler": {
-      "tool": "performance-profiler",
-      "version": "1",
-      "payload": {
-        "profileSettings": {
-          "workloadIterations": 240,
-          "workSize": 10000,
-          "frameSamples": 180
-        }
-      }
-    },
-    "physics-sandbox": {
-      "tool": "physics-sandbox",
-      "version": "1",
-      "payload": {
-        "physicsBody": {
-          "x": 12,
-          "y": 48,
-          "velocityX": 0,
-          "velocityY": -140,
-          "accelerationX": 0,
-          "accelerationY": 38,
-          "dragX": 2,
-          "dragY": 1,
-          "maxSpeedX": 240,
-          "maxSpeedY": 260,
-          "dt": 0.0166666667
-        }
-      }
-    },
-    "asset-pipeline": {
-      "tool": "asset-pipeline",
-      "version": "1",
-      "payload": {
-        "pipelinePayload": {
-          "domainInputs": {
-            "sprites": [
-              {
-                "assetId": "sample-1902-workspace-preset",
-                "runtimeFileName": "sample-1902-workspace.runtime.json",
-                "toolDataFileName": "sample-1902-workspace.tool.json",
-                "sourceToolId": "asset-browser"
-              }
-            ],
-            "vectors": [
-              {
-                "assetId": "sample-1902-canonical-palette",
-                "runtimeFileName": "sample-1902-palette.runtime.json",
-                "toolDataFileName": "sample-1902-palette.tool.json",
-                "sourceToolId": "palette-browser"
-              }
-            ]
-          },
-          "toolStates": {
-            "asset-pipeline": {
-              "schema": "html-js-gaming.tool-state",
-              "version": 1,
-              "toolId": "asset-pipeline",
-              "projectId": "sample-1413",
-              "savedAtIso": "2026-04-24T00:00:00.000Z",
-              "state": {
-                "mode": "manifest-build"
-              }
-            }
-          },
-          "projectId": "sample-1902"
-        }
-      }
-    },
-    "tile-model-converter": {
-      "tool": "tile-model-converter",
-      "version": "1",
-      "payload": {
-        "candidate": {
-          "id": "sample-1209-tilemap-basic",
-          "name": "sample-1209-tilemap-basic",
-          "section": "tilemaps",
-          "type": "tilemap",
-          "path": "samples/phase-12/1209/sample-1209-tile-map-editor-document.json",
-          "sourceSampleId": "1209",
-          "sourceToolId": "tile-map-editor",
-          "sourcePath": "/samples/phase-19/1902/sample.1902.workspace-all-tools.json"
-        },
-        "conversion": {
-          "targetSection": "vectors",
-          "targetType": "vector"
-        }
-      }
-    },
-    "3d-json-payload": {
-      "tool": "3d-json-payload",
-      "version": "1",
-      "payload": {
-        "mapPayload": {
-          "schema": "tools.3d-json-payload.document/1",
-          "mapId": "sample-1208-terrain-flow",
-          "points": [
-            {
-              "id": "p1",
-              "x": -30,
-              "y": 0,
-              "z": -14
-            },
-            {
-              "id": "p2",
-              "x": -4,
-              "y": 0,
-              "z": -12
-            },
-            {
-              "id": "p3",
-              "x": 18,
-              "y": 0,
-              "z": -4
-            },
-            {
-              "id": "p4",
-              "x": 28,
-              "y": 0,
-              "z": 12
-            },
-            {
-              "id": "p5",
-              "x": -10,
-              "y": 0,
-              "z": 18
-            }
-          ],
-          "segments": [
-            {
-              "from": "p1",
-              "to": "p2"
-            },
-            {
-              "from": "p2",
-              "to": "p3"
-            },
-            {
-              "from": "p3",
-              "to": "p4"
-            },
-            {
-              "from": "p4",
-              "to": "p5"
-            },
-            {
-              "from": "p5",
-              "to": "p1"
-            }
-          ]
-        }
-      }
-    },
     "3d-asset-viewer": {
-      "tool": "3d-asset-viewer",
-      "version": "1",
-      "payload": {
-        "asset3d": {
-          "schema": "tools.3d-asset-viewer.asset/1",
-          "assetId": "sample-1413-import-batch",
-          "vertices": [
-            {
-              "x": -14,
-              "y": -2,
-              "z": -12
-            },
-            {
-              "x": 14,
-              "y": -2,
-              "z": -12
-            },
-            {
-              "x": 16,
-              "y": -2,
-              "z": 8
-            },
-            {
-              "x": 0,
-              "y": 12,
-              "z": 14
-            },
-            {
-              "x": -16,
-              "y": -2,
-              "z": 8
-            }
-          ],
-          "metadata": {
-            "sourceSampleId": "1413",
-            "sourceToolId": "asset-pipeline"
+      "asset3d": {
+        "schema": "tools.3d-asset-viewer.asset/1",
+        "assetId": "sample-1413-import-batch",
+        "vertices": [
+          {
+            "x": -14,
+            "y": -2,
+            "z": -12
+          },
+          {
+            "x": 14,
+            "y": -2,
+            "z": -12
+          },
+          {
+            "x": 16,
+            "y": -2,
+            "z": 8
+          },
+          {
+            "x": 0,
+            "y": 12,
+            "z": 14
+          },
+          {
+            "x": -16,
+            "y": -2,
+            "z": 8
           }
+        ],
+        "metadata": {
+          "sourceSampleId": "1413",
+          "sourceToolId": "asset-pipeline"
         }
       }
     },
     "3d-camera-path-editor": {
-      "tool": "3d-camera-path-editor",
-      "version": "1",
-      "payload": {
-        "cameraPath": {
-          "schema": "tools.3d-camera-path.path/1",
-          "pathId": "sample-0220-camera-system-track",
-          "waypoints": [
-            {
-              "t": 0,
-              "position": {
-                "x": -12,
-                "y": 7,
-                "z": -20
-              },
-              "lookAt": {
-                "x": -2,
-                "y": 0,
-                "z": 2
-              }
+      "cameraPath": {
+        "schema": "tools.3d-camera-path.path/1",
+        "pathId": "sample-0220-camera-system-track",
+        "waypoints": [
+          {
+            "t": 0,
+            "position": {
+              "x": -12,
+              "y": 7,
+              "z": -20
             },
-            {
-              "t": 1200,
-              "position": {
-                "x": 2,
-                "y": 10,
-                "z": -15
-              },
-              "lookAt": {
-                "x": 4,
-                "y": 1,
-                "z": 4
-              }
-            },
-            {
-              "t": 2600,
-              "position": {
-                "x": 14,
-                "y": 8,
-                "z": -12
-              },
-              "lookAt": {
-                "x": 8,
-                "y": 0,
-                "z": 6
-              }
+            "lookAt": {
+              "x": -2,
+              "y": 0,
+              "z": 2
             }
-          ]
-        }
+          },
+          {
+            "t": 1200,
+            "position": {
+              "x": 2,
+              "y": 10,
+              "z": -15
+            },
+            "lookAt": {
+              "x": 4,
+              "y": 1,
+              "z": 4
+            }
+          },
+          {
+            "t": 2600,
+            "position": {
+              "x": 14,
+              "y": 8,
+              "z": -12
+            },
+            "lookAt": {
+              "x": 8,
+              "y": 0,
+              "z": 6
+            }
+          }
+        ]
       }
     },
     "palette-browser": {
