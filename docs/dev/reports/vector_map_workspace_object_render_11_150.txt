@@ -1,0 +1,35 @@
+﻿Task: vector_map_workspace_object_render_11_150
+Date: 2026-04-30
+
+Files changed:
+- tools/Vector Map Editor/main.js
+- docs/dev/reports/vector_map_workspace_object_render_11_150.txt
+
+Exact input path used:
+- hostContext.sharedContext.payloadJson.vectorMapDocument
+- render source path: hostContext.sharedContext.payloadJson.vectorMapDocument.objects
+
+Behavior change implemented:
+- Added hosted Workspace Manager ingestion in Vector Map Editor main boot path.
+- On boot, the tool now reads host context and applies direct payload document from payloadJson.vectorMapDocument (only when objects is an array).
+- Rendering then uses the app's normal document model/render path with that direct document data.
+
+Objects verified (Sample 1902 manifest content):
+- obj-player-path
+- obj-hazard-zone
+
+Validation commands/results:
+- node --check "tools/Vector Map Editor/main.js" -> PASS
+- rg -n "payloadJson\?\.vectorMapDocument|vectorMapDocument\.objects|readToolHostSharedContextFromLocation|applyHostedWorkspacePayload" "tools/Vector Map Editor/main.js" -> PASS
+- node JSON check for sample ids in samples/phase-19/1902/sample.1902.workspace-all-tools.json -> PASS (both object ids present)
+- git diff --name-only -- "tools/Vector Map Editor/main.js" "docs/dev/reports/vector_map_workspace_object_render_11_150.txt" -> PASS
+
+Strict scope confirmation:
+- Modified code only in Vector Map Editor main file and this report.
+- No schema/sample/workspace-manager/runtime changes.
+- No fallback/demo objects added.
+- No wrapper transform/normalization added for payload shape.
+
+Remaining blockers:
+- None in Vector Map Editor scope.
+- Repository has pre-existing unrelated dirty files outside this task scope.

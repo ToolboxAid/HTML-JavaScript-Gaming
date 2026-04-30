@@ -1,1 +1,1 @@
-Populate Workspace Manager cards from direct tool payloads - PR 11.149
+Render Vector Map Editor objects from Workspace Manager direct payload - PR 11.150

@@ -6,61 +6,51 @@ Reasoning: medium
 STRICT SCOPE MODE
 
 ALLOWED FILES:
-- tools/workspace-manager/main.js
-- docs/dev/reports/workspace_direct_payload_card_status_11_149.txt
+- tools/vector-map-editor/main.js
+- docs/dev/reports/vector_map_workspace_object_render_11_150.txt
 
 ALLOWED CHANGES:
-- update Workspace Manager card/status/presence detection for direct payload entries
-- create/update report
+- fix Vector Map Editor to render direct `payloadJson.vectorMapDocument.objects`
+- create/update report only
 
 TASK:
 
 1. Open:
-   tools/workspace-manager/main.js
+   tools/vector-map-editor/main.js
 
-2. Find card/status/presence logic that displays:
-   - Asset: none
-   - Asset: N/A
-   - Palette: none
-   for loaded workspace tools.
+2. Find the input ingestion/render source for hosted Workspace Manager launches.
 
-3. Update it so direct payload entries in:
-   workspaceManifest.tools[toolId]
-   populate the corresponding tool cards.
+3. Ensure Vector Map Editor uses direct payload shape:
+   payloadJson.vectorMapDocument
 
-4. Use direct payload root fields only for labels.
-   Do not mutate payloads.
-   Do not wrap payloads.
-   Do not infer missing data.
+4. Ensure render source is:
+   payloadJson.vectorMapDocument.objects
 
-5. Ensure:
-   - tools with valid direct payloads are active/available
-   - missing/invalid payloads still show empty/error state
-   - palette-browser displays direct palette `name`
-   - launch still passes the same direct payload object
+5. Do NOT:
+   - modify schemas
+   - modify Sample 1902 JSON
+   - modify Workspace Manager
+   - modify runtime
+   - add fallback/demo objects
+   - transform/wrap/normalize payload
 
-6. Do NOT modify:
-   - schemas
-   - samples
-   - runtime host
-   - routing outside Workspace Manager
-
-7. Validate:
-   - JS syntax for tools/workspace-manager/main.js
-   - Sample 1902 Workspace Manager cards show populated labels for valid direct payload entries
-   - no `tool/version/payload` wrapper restored
+6. Validate:
+   - JS syntax for tools/vector-map-editor/main.js
+   - Sample 1902 Workspace Manager → Vector Map Editor renders:
+     obj-player-path
+     obj-hazard-zone
    - git diff --name-only contains only ALLOWED FILES
 
-8. Write:
-   docs/dev/reports/workspace_direct_payload_card_status_11_149.txt
+7. Write:
+   docs/dev/reports/vector_map_workspace_object_render_11_150.txt
 
 Report must include:
 - file changed
-- card labels populated
-- Sample 1902 verification
+- exact input path used
+- objects verified
 - validation result
 - strict scope confirmation
 - remaining blockers if any
 
-9. Package Codex output ZIP at:
-   tmp/PR_11_149_WORKSPACE_MANAGER_DIRECT_PAYLOAD_CARD_STATUS.zip
+8. Package Codex output ZIP at:
+   tmp/PR_11_150_FIX_WORKSPACE_VECTOR_MAP_DIRECT_OBJECT_RENDER.zip
