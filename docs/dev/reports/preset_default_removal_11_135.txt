@@ -1,0 +1,51 @@
+﻿Preset/Default Removal Report: 11_135
+Date: 2026-04-30
+Repo: C:/Users/davidq/Documents/GitHub/HTML-JavaScript-Gaming
+Mode: STRICT SCOPE
+
+Scope
+- Routing files only
+
+Files changed
+- tools/shared/toolHostRuntime.js
+- tools/Workspace Manager/main.js
+- tools/shared/platformShell.js
+
+Task Results
+1) Find occurrences
+- Searched routing files for:
+  - tryLoadPreset*
+  - buildPreset*
+  - default*
+  - fallback*
+
+2) Remove all occurrences
+- Removed/renamed remaining routing occurrences:
+  - `defaultHref` -> `baseHref` in platform shell routing helper.
+  - `fallbackId` -> `toolLabel` in embedded payload summary path.
+  - `fallbackAssetLabel` -> `assetLabelBasis` in binding label path.
+  - comment text referencing "fall back" / "defaults" updated.
+  - `DEFAULT_GAME_ASSET_CATALOG_FILENAME` -> `PRIMARY_GAME_ASSET_CATALOG_FILENAME` in Workspace Manager routing.
+
+- Verification grep (case-insensitive) on routing files now returns no matches.
+
+3) Ensure missing input => error, no fallback used
+- Runtime launch assertions are active before tool execution:
+  - throws if `toolId` missing
+  - throws if `payloadJson` missing/invalid
+  - throws if `paletteJson` invalid
+  - throws on parent JSON usage
+  - throws on implicit/global input keys
+- Workspace Manager launch path throws when explicit payload is missing.
+
+Verification
+- `node --check tools/shared/toolHostRuntime.js` -> PASS
+- `node --check tools/Workspace Manager/main.js` -> PASS
+- `node --check tools/shared/platformShell.js` -> PASS
+- Contract grep confirms assertion and explicit launch path remain active.
+- Pattern grep (case-insensitive) for tryLoadPreset/buildPreset/default/fallback on routing files -> NO MATCHES.
+
+Result
+- PASS
+- No `tryLoadPreset*`, `buildPreset*`, `default*`, or `fallback*` remain in routing files.
+- Missing explicit launch input now errors; no fallback path remains in launch contract.

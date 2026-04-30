@@ -10,14 +10,22 @@ ALLOWED FILES:
 
 TASK:
 
-1. Find global/implicit input usage
-2. Remove it
-3. Ensure only payloadJson + paletteJson used
+1. Find:
+   - tryLoadPreset*
+   - buildPreset*
+   - default*
+   - fallback*
+
+2. Remove all occurrences
+
+3. Ensure:
+   - missing input → error
+   - no fallback used
 
 VERIFY:
 - runtime assertions pass
 
 REPORT:
-docs/dev/reports/global_input_removal_11_134.txt
+docs/dev/reports/preset_default_removal_11_135.txt
 
-FAIL if any global remains
+FAIL if any remain

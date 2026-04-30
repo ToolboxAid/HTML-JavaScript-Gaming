@@ -66,7 +66,7 @@ function readStoredHeaderExpandedState() {
       return false;
     }
   } catch {
-    // Ignore storage read failures and fall back to defaults.
+    // Ignore storage read failures and use the baseline state.
   }
   return getDefaultHeaderExpandedState();
 }
@@ -115,16 +115,16 @@ function normalizeForwardedLaunchParam(key, value) {
 }
 
 function buildHostedRegistryEntryHref(toolEntry) {
-  const defaultHref = getRegistryEntryHref(toolEntry.entryPoint);
+  const baseHref = getRegistryEntryHref(toolEntry.entryPoint);
   if (typeof window === "undefined") {
-    return defaultHref;
+    return baseHref;
   }
   const currentParams = new URLSearchParams(window.location.search);
   if (currentParams.get("hosted") !== "1") {
-    return defaultHref;
+    return baseHref;
   }
 
-  const nextUrl = new URL(defaultHref, window.location.href);
+  const nextUrl = new URL(baseHref, window.location.href);
   nextUrl.searchParams.set("hosted", "1");
   nextUrl.searchParams.set("hostToolId", normalizeTextValue(toolEntry.id));
 
@@ -547,41 +547,41 @@ function summarizeEmbeddedToolPayloadDocument(toolId = "", scopedToolState = nul
   const payload = scopedToolState.payload && typeof scopedToolState.payload === "object" && !Array.isArray(scopedToolState.payload)
     ? scopedToolState.payload
     : {};
-  const fallbackId = normalizeTextValue(scopedToolState.tool || normalizedToolId);
+  const toolLabel = normalizeTextValue(scopedToolState.tool || normalizedToolId);
   const directPalette = normalizedToolId === "palette-browser" && Array.isArray(scopedToolState.swatches)
     ? scopedToolState
     : null;
   if (directPalette) {
-    const name = normalizeTextValue(directPalette.name || directPalette.id || fallbackId);
+    const name = normalizeTextValue(directPalette.name || directPalette.id || toolLabel);
     const swatchCount = directPalette.swatches.length;
-    return `embedded palette ${name || fallbackId}${swatchCount > 0 ? ` (${swatchCount} swatches)` : ""}`;
+    return `embedded palette ${name || toolLabel}${swatchCount > 0 ? ` (${swatchCount} swatches)` : ""}`;
   }
 
   const vectorMapDocument = readWorkspaceScopedToolDocument(payload, "vectorMapDocument", scopedToolState);
   if (vectorMapDocument) {
-    const name = normalizeTextValue(vectorMapDocument.name || vectorMapDocument.id || fallbackId);
+    const name = normalizeTextValue(vectorMapDocument.name || vectorMapDocument.id || toolLabel);
     const objectCount = Array.isArray(vectorMapDocument.objects) ? vectorMapDocument.objects.length : 0;
-    return `embedded vector map ${name || fallbackId}${objectCount > 0 ? ` (${objectCount} objects)` : ""}`;
+    return `embedded vector map ${name || toolLabel}${objectCount > 0 ? ` (${objectCount} objects)` : ""}`;
   }
 
   const vectorAssetDocument = readWorkspaceScopedToolDocument(payload, "vectorAssetDocument", scopedToolState);
   if (vectorAssetDocument) {
-    const sourceName = normalizeTextValue(vectorAssetDocument.sourceName || vectorAssetDocument.name || fallbackId);
-    return `embedded vector asset ${sourceName || fallbackId}`;
+    const sourceName = normalizeTextValue(vectorAssetDocument.sourceName || vectorAssetDocument.name || toolLabel);
+    return `embedded vector asset ${sourceName || toolLabel}`;
   }
 
   const tileMapDocument = readWorkspaceScopedToolDocument(payload, "tileMapDocument", scopedToolState);
   if (tileMapDocument) {
-    const mapName = normalizeTextValue(tileMapDocument?.map?.name || tileMapDocument.name || tileMapDocument.id || fallbackId);
+    const mapName = normalizeTextValue(tileMapDocument?.map?.name || tileMapDocument.name || tileMapDocument.id || toolLabel);
     const layerCount = Array.isArray(tileMapDocument.layers) ? tileMapDocument.layers.length : 0;
-    return `embedded tile map ${mapName || fallbackId}${layerCount > 0 ? ` (${layerCount} layers)` : ""}`;
+    return `embedded tile map ${mapName || toolLabel}${layerCount > 0 ? ` (${layerCount} layers)` : ""}`;
   }
 
   const parallaxDocument = readWorkspaceScopedToolDocument(payload, "parallaxDocument", scopedToolState);
   if (parallaxDocument) {
-    const mapName = normalizeTextValue(parallaxDocument?.map?.name || parallaxDocument.name || fallbackId);
+    const mapName = normalizeTextValue(parallaxDocument?.map?.name || parallaxDocument.name || toolLabel);
     const layerCount = Array.isArray(parallaxDocument.layers) ? parallaxDocument.layers.length : 0;
-    return `embedded parallax ${mapName || fallbackId}${layerCount > 0 ? ` (${layerCount} layers)` : ""}`;
+    return `embedded parallax ${mapName || toolLabel}${layerCount > 0 ? ` (${layerCount} layers)` : ""}`;
   }
 
   const spriteProject = readWorkspaceScopedToolDocument(payload, "spriteProject", scopedToolState);
@@ -596,8 +596,8 @@ function summarizeEmbeddedToolPayloadDocument(toolId = "", scopedToolState = nul
       : null
   );
   if (skin) {
-    const name = normalizeTextValue(skin.name || skin.gameId || skin.projectId || fallbackId);
-    return `embedded skin ${name || fallbackId}`;
+    const name = normalizeTextValue(skin.name || skin.gameId || skin.projectId || toolLabel);
+    return `embedded skin ${name || toolLabel}`;
   }
 
   const flatAssets = scopedToolState.assets && typeof scopedToolState.assets === "object" && !Array.isArray(scopedToolState.assets)
@@ -613,15 +613,15 @@ function summarizeEmbeddedToolPayloadDocument(toolId = "", scopedToolState = nul
   const palette = readWorkspaceScopedToolDocument(payload, "palette", scopedToolState)
     || (Array.isArray(payload.swatches) ? payload : null);
   if (palette) {
-    const name = normalizeTextValue(palette.name || palette.id || fallbackId);
+    const name = normalizeTextValue(palette.name || palette.id || toolLabel);
     const swatchCount = Array.isArray(palette.swatches) ? palette.swatches.length : 0;
-    return `embedded palette ${name || fallbackId}${swatchCount > 0 ? ` (${swatchCount} swatches)` : ""}`;
+    return `embedded palette ${name || toolLabel}${swatchCount > 0 ? ` (${swatchCount} swatches)` : ""}`;
   }
 
   const snapshot = readWorkspaceScopedToolDocument(payload, "snapshot", scopedToolState);
   if (snapshot) {
-    const snapshotId = normalizeTextValue(snapshot.toolId || snapshot.schema || fallbackId);
-    return `embedded snapshot ${snapshotId || fallbackId}`;
+    const snapshotId = normalizeTextValue(snapshot.toolId || snapshot.schema || toolLabel);
+    return `embedded snapshot ${snapshotId || toolLabel}`;
   }
 
   if (Array.isArray(payload.events)) {
@@ -640,32 +640,32 @@ function summarizeEmbeddedToolPayloadDocument(toolId = "", scopedToolState = nul
 
   const pipelinePayload = readWorkspaceScopedToolDocument(payload, "pipelinePayload", scopedToolState);
   if (pipelinePayload) {
-    const projectId = normalizeTextValue(pipelinePayload.projectId || fallbackId);
-    return `embedded pipeline payload ${projectId || fallbackId}`;
+    const projectId = normalizeTextValue(pipelinePayload.projectId || toolLabel);
+    return `embedded pipeline payload ${projectId || toolLabel}`;
   }
 
   const candidate = readWorkspaceScopedToolDocument(payload, "candidate", scopedToolState);
   if (candidate) {
-    const name = normalizeTextValue(candidate.id || candidate.name || fallbackId);
-    return `embedded candidate ${name || fallbackId}`;
+    const name = normalizeTextValue(candidate.id || candidate.name || toolLabel);
+    return `embedded candidate ${name || toolLabel}`;
   }
 
   const mapPayload = readWorkspaceScopedToolDocument(payload, "mapPayload", scopedToolState);
   if (mapPayload) {
-    const name = normalizeTextValue(mapPayload.mapId || mapPayload.id || fallbackId);
-    return `embedded map payload ${name || fallbackId}`;
+    const name = normalizeTextValue(mapPayload.mapId || mapPayload.id || toolLabel);
+    return `embedded map payload ${name || toolLabel}`;
   }
 
   const asset3d = readWorkspaceScopedToolDocument(payload, "asset3d", scopedToolState);
   if (asset3d) {
-    const name = normalizeTextValue(asset3d.assetId || asset3d.id || fallbackId);
-    return `embedded 3D asset ${name || fallbackId}`;
+    const name = normalizeTextValue(asset3d.assetId || asset3d.id || toolLabel);
+    return `embedded 3D asset ${name || toolLabel}`;
   }
 
   const cameraPath = readWorkspaceScopedToolDocument(payload, "cameraPath", scopedToolState);
   if (cameraPath) {
-    const name = normalizeTextValue(cameraPath.pathId || cameraPath.id || fallbackId);
-    return `embedded camera path ${name || fallbackId}`;
+    const name = normalizeTextValue(cameraPath.pathId || cameraPath.id || toolLabel);
+    return `embedded camera path ${name || toolLabel}`;
   }
 
   return null;
@@ -1321,8 +1321,8 @@ function renderToolAssetBadge(toolId = "") {
   const missingAssetLabel = normalizedToolId === "skin-editor"
     ? "select skin in Asset Browser"
     : "none";
-  const fallbackAssetLabel = embeddedPayloadSummary || missingAssetLabel;
-  const assetLabel = compatibleAsset?.displayName || fallbackAssetLabel;
+  const assetLabelBasis = embeddedPayloadSummary || missingAssetLabel;
+  const assetLabel = compatibleAsset?.displayName || assetLabelBasis;
   const assetTitle = compatibleAsset
     ? `Updated: ${escapeHtml(compatibleAsset?.selectedAt || "not-set")}`
     : escapeHtml(embeddedPayloadSummary ? "Resolved from embedded workspace payload" : "Updated: not-set");

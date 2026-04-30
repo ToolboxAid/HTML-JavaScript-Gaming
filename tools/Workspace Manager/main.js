@@ -7,7 +7,7 @@ import {
 } from "../../tools/shared/toolHostSharedContext.js";
 
 const GAMES_METADATA_PATH = "/games/metadata/games.index.metadata.json";
-const DEFAULT_GAME_ASSET_CATALOG_FILENAME = "workspace.asset-catalog.json";
+const PRIMARY_GAME_ASSET_CATALOG_FILENAME = "workspace.asset-catalog.json";
 const GAME_ASSET_CATALOG_SCHEMA = "html-js-gaming.game-asset-catalog";
 const GAME_ASSET_CATALOG_VERSION = 1;
 const WORKSPACE_MANIFEST_SCHEMA = "html-js-gaming.project";
@@ -23,10 +23,10 @@ function deriveGameAssetCatalogPath(gameHref) {
     return "";
   }
   if (href.endsWith("/index.html")) {
-    return `${href.slice(0, -"/index.html".length)}/assets/${DEFAULT_GAME_ASSET_CATALOG_FILENAME}`;
+    return `${href.slice(0, -"/index.html".length)}/assets/${PRIMARY_GAME_ASSET_CATALOG_FILENAME}`;
   }
   if (href.endsWith("/")) {
-    return `${href}assets/${DEFAULT_GAME_ASSET_CATALOG_FILENAME}`;
+    return `${href}assets/${PRIMARY_GAME_ASSET_CATALOG_FILENAME}`;
   }
   return "";
 }
