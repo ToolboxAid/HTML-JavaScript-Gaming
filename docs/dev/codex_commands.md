@@ -3,25 +3,39 @@
 Model: GPT-5.3-codex
 Reasoning: high
 
-## EXECUTION MODE: FORCE WRITE
+## HARD MODE: WRITE OR FAIL
 
-1. Open:
-   workspace.manifest.schema.json
-   palette-browser.schema.json
+FILES:
 
-2. MODIFY FILES DIRECTLY:
-   - remove palette payload from workspace schema
-   - simplify palette schema to payload-only
+1. tools/schemas/workspace.manifest.schema.json
+2. tools/schemas/tools/palette-browser.schema.json
 
-3. SAVE FILES
+## STEPS
 
-4. VERIFY:
-   - re-open files
-   - confirm changes exist
+FOR EACH FILE:
 
-5. OUTPUT:
-   - list of files changed
-   - before/after diff
+1. READ file
+2. STORE BEFORE content
+3. APPLY REQUIRED MODIFICATIONS
+4. WRITE file
+5. READ AGAIN
+6. STORE AFTER content
+7. COMPARE
 
-6. IF NO FILES CHANGED:
-   FAIL EXECUTION
+IF BEFORE == AFTER:
+  FAIL
+
+## OUTPUT REPORT
+
+docs/dev/reports/enforced_write_11_125.txt:
+
+- file name
+- BEFORE snippet
+- AFTER snippet
+- diff summary
+- status: SUCCESS / FAIL
+
+## END CONDITION
+
+If ANY file not changed:
+  FAIL ENTIRE PR

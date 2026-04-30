@@ -1,0 +1,63 @@
+PR 11.125 - Enforced Write Report
+
+File: tools/schemas/workspace.manifest.schema.json
+Status: SUCCESS
+
+BEFORE snippet:
+      "type": "object",
+      "required": ["palette-browser"],
+      "additionalProperties": false,
+      "description": "Workspace-owned tool entries keyed by canonical registry ids; tool payload details are owned by referenced tool schemas.",
+      "properties": {
+        "palette-browser": {
+          "$ref": "./tools/palette-browser.schema.json"
+        },
+
+AFTER snippet:
+      "type": "object",
+      "required": ["palette-browser"],
+      "additionalProperties": false,
+      "description": "Workspace-owned tool entries keyed by canonical registry ids; payload structure stays in referenced child tool schemas only.",
+      "properties": {
+        "palette-browser": {
+          "$ref": "./tools/palette-browser.schema.json"
+        },
+
+Diff summary:
+- Changed tools.properties.tools.description wording to explicitly state payload structure is owned by referenced child tool schemas only.
+- Confirmed tools.palette-browser remains a $ref to ./tools/palette-browser.schema.json.
+- Confirmed no palette swatch/payload structure was inlined into workspace.manifest.schema.json.
+- Preserved compact primitive arrays.
+
+------------------------------------------------------------------------
+
+File: tools/schemas/tools/palette-browser.schema.json
+Status: SUCCESS
+
+BEFORE snippet:
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "tools/schemas/tools/palette-browser.schema.json",
+  "title": "Palette Browser Direct Palette Payload",
+  "type": "object",
+  "required": ["schema", "version", "name", "swatches"],
+  "additionalProperties": false,
+
+AFTER snippet:
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "tools/schemas/tools/palette-browser.schema.json",
+  "title": "Palette Browser Direct Palette Payload",
+  "type": "object",
+  "required": ["schema", "version", "name", "swatches"],
+  "additionalProperties": false,
+...
+  "description": "Direct Palette Browser payload schema; accepts palette JSON only and does not accept tool, workspace, game, or sample wrappers."
+
+Diff summary:
+- Added schema-level description stating Palette Browser accepts direct palette JSON only and rejects tool/workspace/game/sample wrappers.
+- Preserved direct payload-only required fields: schema, version, name, swatches.
+- Confirmed no wrapper keys exist: no oneOf, no tool, no payload.
+- Preserved compact primitive arrays.
+
+------------------------------------------------------------------------
+
+Overall status: SUCCESS

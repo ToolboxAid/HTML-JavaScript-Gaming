@@ -1,1 +1,1 @@
-Force actual schema file changes instead of no-op runs - PR 11.124
+Enforce mandatory schema file modifications with diff verification - PR 11.125
