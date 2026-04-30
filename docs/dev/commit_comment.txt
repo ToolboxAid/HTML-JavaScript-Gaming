@@ -1,1 +1,1 @@
-Draw manifest-declared game backgrounds across all render states without opaque suppression - PR 11.87
+Enforce engine-owned game chrome and manifest-only background/bezel loading - PR 11.88
