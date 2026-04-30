@@ -247,16 +247,15 @@ function resolveSiblingPath(pathValue, fileName) {
 }
 
 export function resolveBezelStretchOverridePath(options = {}) {
-  const fileName = safeText(options.fileName, "bezel.stretch.override.json");
   const manifestPath = deriveManifestPath(options);
   if (manifestPath) {
-    return `${normalizeManifestPath(manifestPath)}#tools.asset-browser.assets.bezel.stretchOverride`;
+    return normalizeManifestPath(manifestPath);
   }
 
+  const fileName = safeText(options.fileName, "bezel.stretch.override.json");
   const explicitBezelPath = safeText(options.bezelPath, "");
   if (explicitBezelPath) {
     return resolveSiblingPath(explicitBezelPath, fileName);
   }
-
   return "";
 }

@@ -130,11 +130,6 @@
     },
     "asset-browser": {
       "assets": {
-        "bezel": {
-          "stretchOverride": {
-            "uniformEdgeStretchPx": 10
-          }
-        },
         "media": {
           "audio.asteroids.fire": {
             "path": "/games/Asteroids/assets/audio/fire.wav",
@@ -187,9 +182,12 @@
             "source": "workspace-manager"
           },
           "image.asteroids.bezel": {
-            "path": "/games/Asteroids/assets/images/bezel1.png",
+            "path": "/games/Asteroids/assets/images/bezel.png",
             "kind": "image",
-            "source": "workspace-manager"
+            "source": "workspace-manager",
+            "stretchOverride": {
+              "uniformEdgeStretchPx": 10
+            }
           },
           "image.asteroids.background": {
             "path": "/games/Asteroids/assets/images/deluxe.png",

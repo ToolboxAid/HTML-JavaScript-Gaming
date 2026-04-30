@@ -252,6 +252,24 @@ function parseStretchConfigPayload(payload, configPath = "") {
     return parsed;
   }
 
+  const mediaEntries = payload?.tools?.["asset-browser"]?.assets?.media;
+  if (mediaEntries && typeof mediaEntries === "object") {
+    const bezelMediaEntry = Object.entries(mediaEntries).find(([assetId, entry]) => {
+      const normalizedAssetId = typeof assetId === "string" ? assetId.trim().toLowerCase() : "";
+      const normalizedKind = typeof entry?.kind === "string" ? entry.kind.trim().toLowerCase() : "";
+      const hasStretch = entry?.stretchOverride && typeof entry.stretchOverride === "object";
+      return hasStretch
+        && normalizedKind === "image"
+        && (normalizedAssetId.includes(".bezel") || normalizedAssetId.endsWith("bezel"));
+    });
+    if (bezelMediaEntry && typeof bezelMediaEntry[1] === "object") {
+      const mediaStretchConfig = parseStretchConfigObject(bezelMediaEntry[1].stretchOverride);
+      if (mediaStretchConfig.uniformEdgeStretchPx > 0) {
+        return mediaStretchConfig;
+      }
+    }
+  }
+
   const manifestOverride = payload?.tools?.["asset-browser"]?.assets?.bezel?.stretchOverride;
   if (manifestOverride && typeof manifestOverride === "object") {
     return parseStretchConfigObject(manifestOverride);
@@ -297,6 +315,34 @@ export async function ensureBezelStretchConfigFile(configPath, options = {}) {
   }
 }
 
+async function loadManifestStretchConfigFromFilesystem(configPath, options = {}) {
+  const normalizedPath = normalizePath(configPath).trim();
+  if (!normalizedPath) {
+    return { ...DEFAULT_BEZEL_STRETCH_CONFIG };
+  }
+
+  const hashIndex = normalizedPath.indexOf("#");
+  const manifestPath = hashIndex >= 0 ? normalizedPath.slice(0, hashIndex) : normalizedPath;
+  const cwd = typeof options.cwd === "string" && options.cwd.trim()
+    ? options.cwd
+    : process.cwd();
+  const fsModule = options.fsModule || await import("node:fs/promises");
+  const pathModule = options.pathModule || await import("node:path");
+  const sanitizedPath = manifestPath.replace(/^\/+/, "");
+  const absolutePath = pathModule.resolve(cwd, sanitizedPath);
+
+  try {
+    const content = await fsModule.readFile(absolutePath, "utf8");
+    const payload = JSON.parse(content);
+    const parsed = parseStretchConfigPayload(payload, normalizedPath);
+    return parsed.uniformEdgeStretchPx > 0
+      ? parsed
+      : { ...DEFAULT_BEZEL_STRETCH_CONFIG };
+  } catch {
+    return { ...DEFAULT_BEZEL_STRETCH_CONFIG };
+  }
+}
+
 export async function loadBezelStretchConfig(configPath, options = {}) {
   const normalizedPath = normalizePath(configPath).trim();
   if (!normalizedPath) {
@@ -304,6 +350,9 @@ export async function loadBezelStretchConfig(configPath, options = {}) {
   }
 
   if (isNodeRuntime()) {
+    if (normalizedPath.toLowerCase().includes("game.manifest.json")) {
+      return loadManifestStretchConfigFromFilesystem(normalizedPath, options);
+    }
     return ensureBezelStretchConfigFile(normalizedPath, options);
   }
 

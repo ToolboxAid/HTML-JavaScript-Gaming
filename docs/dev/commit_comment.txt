@@ -1,1 +1,1 @@
-Update Asteroids manifest chrome assets to bezel1 and deluxe images - PR 11.84
+Keep bezel stretch override on image bezel manifest entries only - PR 11.86
