@@ -1,0 +1,59 @@
+PR 11.120 - Tools Index Relationship Count
+
+Files searched
+- tools/index.html
+- tools/renderToolsIndex.js
+- samples/metadata/samples.index.metadata.json
+
+Before
+- tools/renderToolsIndex.js counted sample?.toolsUsed when present, otherwise sample?.toolHints.
+- It also excluded the Workspace Manager card from Samples (x), which produced the user-observed 30 while samples/index.html showed 31.
+- BUILD-reported tools/index relationship count: 34.
+
+After
+- tools/renderToolsIndex.js reads samples/metadata/samples.index.metadata.json.
+- It counts only relationships where:
+  - sample.phase is not 20
+  - roundtripToolPresets has toolId
+  - roundtripToolPresets has presetPath
+  - toolHints contains the same toolId
+  - tool id is deduplicated per sample
+- Workspace Manager is counted when the metadata SSoT explicitly contains a workspace-manager preset.
+- Sample 1902 now contributes exactly one count to workspace-manager.
+
+After count by tool
+- asset-pipeline: 1
+- palette-browser: 11
+- parallax-editor: 4
+- sprite-editor: 1
+- svg-asset-studio: 3
+- tile-map-editor: 4
+- tile-model-converter: 3
+- vector-map-editor: 3
+- workspace-manager: 1
+
+After total relationships
+- 31
+
+Blocked from old count
+- 1902:vector-map-editor - not a direct tools hub sample count; covered by workspace-manager:1
+- 1902:svg-asset-studio - not a direct tools hub sample count; covered by workspace-manager:1
+- 1902:tile-map-editor - not a direct tools hub sample count; covered by workspace-manager:1
+- 1902:parallax-editor - not a direct tools hub sample count; covered by workspace-manager:1
+- 1902:sprite-editor - not a direct tools hub sample count; covered by workspace-manager:1
+- 1902:skin-editor - not a direct tools hub sample count; covered by workspace-manager:1
+- 1902:asset-browser - not a direct tools hub sample count; covered by workspace-manager:1
+- 1902:palette-browser - not a direct tools hub sample count; covered by workspace-manager:1
+- 1902:state-inspector - not a direct tools hub sample count; covered by workspace-manager:1
+- 1902:replay-visualizer - not a direct tools hub sample count; covered by workspace-manager:1
+- 1902:performance-profiler - not a direct tools hub sample count; covered by workspace-manager:1
+- 1902:physics-sandbox - not a direct tools hub sample count; covered by workspace-manager:1
+- 1902:asset-pipeline - not a direct tools hub sample count; covered by workspace-manager:1
+- 1902:tile-model-converter - not a direct tools hub sample count; covered by workspace-manager:1
+- 1902:3d-json-payload - not a direct tools hub sample count; covered by workspace-manager:1
+- 1902:3d-asset-viewer - not a direct tools hub sample count; covered by workspace-manager:1
+- 1902:3d-camera-path-editor - not a direct tools hub sample count; covered by workspace-manager:1
+
+Validation
+- node --check tools/renderToolsIndex.js: PASS.
+- Count harness result: tools hub Samples counts sum = 31.

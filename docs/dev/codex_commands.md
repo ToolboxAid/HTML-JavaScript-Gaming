@@ -4,93 +4,86 @@ Model: GPT-5.3-codex
 Reasoning: medium
 
 ## PR
-BUILD_PR_LEVEL_11_119_SAMPLE_METADATA_SSOT_AND_RENDERER_GUARD_REMOVAL
+BUILD_PR_LEVEL_11_120_SAMPLE_TOOL_LINK_COUNT_RECONCILIATION
 
 ## Execute
 
-1. Treat this as the correction to PR 11.118.
+1. Compare relationship sources:
+   - tools/index.html expected sample/tool relationships
+   - samples/index.html rendered Open Tool links
+   - samples/metadata/samples.index.metadata.json
+   - any generated/derived sample/tool metadata files
 
-2. Confirm the active sample tile renderer path:
-   - inspect `samples/index.render.js`
-   - inspect any imports/loaders used by that renderer
+2. Confirm current counts:
+   - tools/index.html relationships: expected 34
+   - samples/index.html Open Tool links: observed 22
 
-3. Make this the only SSoT for sample tile tool roundtrip links:
-   - `samples/metadata/samples.index.metadata.json`
+3. Make `samples/metadata/samples.index.metadata.json` the only SSoT for all sample/tool relationships.
 
-4. Remove renderer/toolhint logic that can create roundtrip links from anything except:
-   - `toolHints`
-   - `roundtripToolPresets`
-   in the metadata SSoT file.
+4. Update sample hub renderer and tools hub renderer/loading so both read from:
+   - samples/metadata/samples.index.metadata.json
+   or from a generated artifact derived only from it.
 
-5. Remove logic that:
-   - infers tool hints from sample ids
-   - infers tool hints from sample titles
-   - infers tool hints from sample paths
-   - infers tool hints from JSON files in sample folders
-   - uses fallback/default tool hint arrays
-   - uses samples2tools as active sample tile source
-   - restores stale/generated tool links
+5. Remove or disable duplicate active sources:
+   - samples2tools
+   - stale generated link files
+   - fallback arrays
+   - inferred renderer links
+   - embedded sample/tool maps
 
-6. Ensure empty arrays mean no rendered section:
-   - `toolHints: []`
-   - `roundtripToolPresets: []`
-   must render no `sample-tool-roundtrip` section.
+6. Reconcile relationships:
+   - add valid missing relationships to SSoT
+   - remove stale/invalid relationships from SSoT
+   - do not reintroduce known-bad links
+   - do not create fake data to justify links
 
-7. Delete or disable stale duplicate source files that can feed sample tile tool links outside the SSoT.
-   - If unsafe to delete, remove runtime loading and report why file remains.
+7. Known-bad links must remain absent:
+   - 0201 3D Camera Path Editor/unrelated links
+   - 0202 unrelated links
+   - 0204 unrelated links
+   - 0210 unrelated links
+   - 0220 unrelated links
+   - 0221 3D JSON Payload Normalizer / 3D JSON Payload / 3d-json-payload
+   - 0226 unrelated links
+   - 0227 unrelated links
+   - 0303 unrelated links
+   - 0305 3D JSON Payload Normalizer / 3D JSON Payload / 3d-json-payload
+   - 0901 Vector Map Editor
+   - 1204 SVG Asset Studio
+   - 1205 Vector Map Editor
+   - 1208 3D Asset Viewer and SVG Asset Studio
+   - 1319 unrelated links
 
-8. Validate these known-bad links cannot render:
-   - 0201: 3D Camera Path Editor or unrelated Open Tool links
-   - 0202: unrelated Open Tool links
-   - 0204: unrelated Open Tool links
-   - 0210: unrelated Open Tool links
-   - 0220: unrelated Open Tool links
-   - 0221: 3D JSON Payload Normalizer / 3D JSON Payload / 3d-json-payload
-   - 0226: unrelated Open Tool links
-   - 0227: unrelated Open Tool links
-   - 0303: unrelated Open Tool links
-   - 0305: 3D JSON Payload Normalizer / 3D JSON Payload / 3d-json-payload
-   - 0901: Vector Map Editor
-   - 1204: SVG Asset Studio
-   - 1205: Vector Map Editor
-   - 1208: 3D Asset Viewer and SVG Asset Studio
-   - 1319: unrelated Open Tool links
+8. If the final count is not 34:
+   - report exactly which relationships were removed/blocked and why.
 
-9. Do not add a runtime hardcoded denylist as the final fix.
-   - A temporary validation assertion is allowed only in tests/reports.
-
-10. Do not:
-   - add fake data
-   - add fallback/default/preset inputs
-   - reintroduce normalization
-   - reintroduce inference
-   - delete samples
-
-11. Validate:
-   - changed JSON parses
-   - changed JS syntax is valid
-   - 0201 metadata empty arrays render no roundtrip section
-   - known-bad links absent from active runtime-loaded source
+9. Validate:
+   - JSON parses
+   - JS/HTML syntax valid where practical
+   - sample hub rendered links match SSoT
+   - tools hub relationships match SSoT
    - no second active source remains
 
-12. Write populated reports:
-   - docs/dev/reports/sample_metadata_ssot_11_119.txt
-   - docs/dev/reports/renderer_toolhint_cleanup_11_119.txt
-   - docs/dev/reports/stale_roundtrip_sources_11_119.txt
-   - docs/dev/reports/known_bad_links_validation_11_119.txt
+10. Write populated reports:
+   - docs/dev/reports/sample_tool_relationship_reconciliation_11_120.txt
+   - docs/dev/reports/tools_index_expected_relationships_11_120.txt
+   - docs/dev/reports/samples_index_rendered_links_11_120.txt
+   - docs/dev/reports/sample_tool_ssot_after_11_120.txt
+   - docs/dev/reports/validation_after_11_120.txt
 
-13. Reports must include:
+11. Reports must include:
    - files searched
-   - files changed
-   - exact removed logic
+   - counts before/after
+   - entries added
+   - entries removed
+   - blocked entries
    - chosen SSoT
-   - validation evidence for 0201
-   - blockers if any
+   - validation commands/results
 
-14. Roadmap:
+12. Roadmap:
    - status-only update if execution-backed
    - do not rewrite roadmap text
    - do not delete roadmap text
 
-15. Package Codex output ZIP at:
-   tmp/PR_11_119_SAMPLE_METADATA_SSOT_AND_RENDERER_GUARD_REMOVAL.zip
+13. Package Codex output ZIP at:
+   tmp/PR_11_120_SAMPLE_TOOL_LINK_COUNT_RECONCILIATION.zip

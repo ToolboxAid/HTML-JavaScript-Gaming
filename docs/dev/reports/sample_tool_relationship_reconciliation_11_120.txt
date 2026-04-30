@@ -1,0 +1,109 @@
+PR 11.120 - Sample/Tool Relationship Reconciliation
+
+Chosen SSoT
+- samples/metadata/samples.index.metadata.json
+
+Files searched
+- docs/pr/BUILD_PR_LEVEL_11_120_SAMPLE_TOOL_LINK_COUNT_RECONCILIATION.md
+- tools/index.html
+- tools/renderToolsIndex.js
+- samples/index.html
+- samples/index.render.js
+- samples/shared/sampleDetailPageEnhancement.js
+- samples/metadata/samples.index.metadata.json
+- samples/phase-12/*/index.html
+- docs/dev/reports/samples2tools_link_map_*.json
+
+Files changed
+- samples/metadata/samples.index.metadata.json
+- samples/index.render.js
+- tools/renderToolsIndex.js
+- docs/dev/reports/sample_tool_relationship_reconciliation_11_120.txt
+- docs/dev/reports/tools_index_expected_relationships_11_120.txt
+- docs/dev/reports/samples_index_rendered_links_11_120.txt
+- docs/dev/reports/sample_tool_ssot_after_11_120.txt
+- docs/dev/reports/validation_after_11_120.txt
+
+Baseline counts
+- BUILD-reported tools/index expected relationship count: 34.
+- BUILD-reported samples/index rendered Open Tool link count: 22.
+- User-observed current samples/index link count after prior cleanup: 31.
+- User-observed current tools/index Samples count after prior cleanup: 30.
+
+Reconciled counts
+- Final metadata SSoT relationships: 31.
+- Final samples hub visible relationships: 31 total = 30 Open <tool> links + 1 Open with Workspace Manager link.
+- Final tools hub Samples counts: 31.
+- samples/index.html and tools/index.html now agree at 31.
+
+Entries added or restored to SSoT
+- 1208:tile-map-editor -> /samples/phase-12/1208/sample.1208.tile-map-editor.json
+- 1208:parallax-editor -> /samples/phase-12/1208/sample.1208.parallax-editor.json
+- 1209:tile-map-editor -> /samples/phase-12/1209/sample.1209.tile-map-editor.json
+- 1210:tile-map-editor -> /samples/phase-12/1210/sample.1210.tile-map-editor.json
+- 1211:tile-map-editor -> /samples/phase-12/1211/sample.1211.tile-map-editor.json
+- 1212:vector-map-editor -> /samples/phase-12/1212/sample-1212-vector-map-editor.json
+- 1213:vector-map-editor -> /samples/phase-12/1213/sample-1213-vector-map-editor.json
+- 1214:vector-map-editor -> /samples/phase-12/1214/sample-1214-vector-map-editor.json
+- 1217:svg-asset-studio -> /samples/phase-12/1217/sample-1217-svg-asset-studio.json
+- 1218:parallax-editor -> /samples/phase-12/1218/sample-1218-parallax-editor.json
+- 1219:parallax-editor -> /samples/phase-12/1219/sample-1219-parallax-editor.json
+- 1220:parallax-editor -> /samples/phase-12/1220/sample-1220-parallax-editor.json
+- 1902:workspace-manager -> /samples/phase-19/1902/sample.1902.workspace-all-tools.json
+
+Entries removed from SSoT
+- 1902:vector-map-editor -> replaced by the single 1902:workspace-manager relationship
+- 1902:svg-asset-studio -> replaced by the single 1902:workspace-manager relationship
+- 1902:tile-map-editor -> replaced by the single 1902:workspace-manager relationship
+- 1902:parallax-editor -> replaced by the single 1902:workspace-manager relationship
+- 1902:sprite-editor -> replaced by the single 1902:workspace-manager relationship
+- 1902:skin-editor -> replaced by the single 1902:workspace-manager relationship
+- 1902:asset-browser -> replaced by the single 1902:workspace-manager relationship
+- 1902:palette-browser -> replaced by the single 1902:workspace-manager relationship
+- 1902:state-inspector -> replaced by the single 1902:workspace-manager relationship
+- 1902:replay-visualizer -> replaced by the single 1902:workspace-manager relationship
+- 1902:performance-profiler -> replaced by the single 1902:workspace-manager relationship
+- 1902:physics-sandbox -> replaced by the single 1902:workspace-manager relationship
+- 1902:asset-pipeline -> replaced by the single 1902:workspace-manager relationship
+- 1902:tile-model-converter -> replaced by the single 1902:workspace-manager relationship
+- 1902:3d-json-payload -> replaced by the single 1902:workspace-manager relationship
+- 1902:3d-asset-viewer -> replaced by the single 1902:workspace-manager relationship
+- 1902:3d-camera-path-editor -> replaced by the single 1902:workspace-manager relationship
+
+Renderer reconciliation
+- samples/index.render.js now reads only metadata-backed preset paths for tile roundtrip relationships.
+- samples/index.render.js now builds the 1902 Workspace Manager launch href from roundtripToolPresets instead of a hardcoded sample.1902 path constant.
+- samples/index.render.js derives tool filter tokens from renderable relationships, including workspace-manager for the 1902 workspace link.
+- samples/index.render.js no longer injects a skin-editor filter option when no renderable SSoT relationship exists.
+- tools/renderToolsIndex.js now counts explicit roundtripToolPresets with matching toolHints and presetPath.
+- tools/renderToolsIndex.js now counts workspace-manager and renders Samples (1) on the Workspace Manager card.
+- tools/renderToolsIndex.js no longer uses toolsUsed or raw toolHints as the relationship count source.
+
+Why final count is not 34
+- The old 34 count included direct visible-tool fan-out for sample 1902.
+- Sample 1902 is a workspace aggregation sample and must expose only Open with Workspace Manager from the sample hub.
+- The 17 prior 1902 direct tool rows were removed from sample metadata as direct relationships.
+- The single valid 1902 relationship is now workspace-manager.
+- The reconciled visible hub count is therefore 31, not 34.
+
+Blocked direct relationships
+- 1902:vector-map-editor - blocked because 1902 is workspace-only and launches through Workspace Manager
+- 1902:svg-asset-studio - blocked because 1902 is workspace-only and launches through Workspace Manager
+- 1902:tile-map-editor - blocked because 1902 is workspace-only and launches through Workspace Manager
+- 1902:parallax-editor - blocked because 1902 is workspace-only and launches through Workspace Manager
+- 1902:sprite-editor - blocked because 1902 is workspace-only and launches through Workspace Manager
+- 1902:skin-editor - blocked because 1902 is workspace-only and launches through Workspace Manager
+- 1902:asset-browser - blocked because 1902 is workspace-only and launches through Workspace Manager
+- 1902:palette-browser - blocked because 1902 is workspace-only and launches through Workspace Manager
+- 1902:state-inspector - blocked because 1902 is workspace-only and launches through Workspace Manager
+- 1902:replay-visualizer - blocked because 1902 is workspace-only and launches through Workspace Manager
+- 1902:performance-profiler - blocked because 1902 is workspace-only and launches through Workspace Manager
+- 1902:physics-sandbox - blocked because 1902 is workspace-only and launches through Workspace Manager
+- 1902:asset-pipeline - blocked because 1902 is workspace-only and launches through Workspace Manager
+- 1902:tile-model-converter - blocked because 1902 is workspace-only and launches through Workspace Manager
+- 1902:3d-json-payload - blocked because 1902 is workspace-only and launches through Workspace Manager
+- 1902:3d-asset-viewer - blocked because 1902 is workspace-only and launches through Workspace Manager
+- 1902:3d-camera-path-editor - blocked because 1902 is workspace-only and launches through Workspace Manager
+
+Blockers
+- None.

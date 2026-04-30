@@ -94,7 +94,11 @@ function classifyToolGroup(toolId) {
   return "editors";
 }
 
-function renderWorkspaceManagerCard() {
+function renderWorkspaceManagerCard(sampleCountByToolId) {
+  const sampleCount = Number(sampleCountByToolId.get("workspace-manager") || 0);
+  const samplesLink = sampleCount > 0
+    ? `<a class="tools-platform-card__action tools-platform-card__action--secondary" href="${SAMPLES_INDEX_PATH}?tool=workspace-manager">Samples (${sampleCount})</a>`
+    : "";
   return `
     <div class="card tools-platform-card">
       <div class="meta">
@@ -107,17 +111,18 @@ function renderWorkspaceManagerCard() {
         <a class="tools-platform-card__action" href="/tools/Workspace%20Manager/index.html">Open Workspace Manager</a>
         <a class="tools-platform-card__action tools-platform-card__action--secondary" href="Workspace Manager/how_to_use.html">How To Use</a>
         <a class="tools-platform-card__action tools-platform-card__action--secondary" href="Workspace Manager/README.md">README</a>
+        ${samplesLink}
       </div>
     </div>
   `;
 }
 
-function renderWorkspaceManagerSection() {
+function renderWorkspaceManagerSection(sampleCountByToolId) {
   const grid = document.querySelector("[data-workspace-manager-grid]");
   if (!grid) {
     return;
   }
-  grid.innerHTML = renderWorkspaceManagerCard();
+  grid.innerHTML = renderWorkspaceManagerCard(sampleCountByToolId);
 }
 
 async function loadSampleCountByToolId() {
@@ -133,14 +138,23 @@ async function loadSampleCountByToolId() {
       if (String(sample?.phase || "").trim() === "20") {
         continue;
       }
-      const toolsUsed = Array.isArray(sample?.toolsUsed) && sample.toolsUsed.length > 0
-        ? sample.toolsUsed
-        : (Array.isArray(sample?.toolHints) ? sample.toolHints : []);
-      for (const rawToolId of toolsUsed) {
-        const toolId = String(rawToolId || "").trim().toLowerCase();
-        if (!toolId || toolId === "workspace-manager") {
+      const hintedToolIds = new Set(
+        (Array.isArray(sample?.toolHints) ? sample.toolHints : [])
+          .map((toolId) => String(toolId || "").trim().toLowerCase())
+          .filter(Boolean)
+      );
+      const presets = Array.isArray(sample?.roundtripToolPresets) ? sample.roundtripToolPresets : [];
+      const countedToolIds = new Set();
+      for (const preset of presets) {
+        const toolId = String(preset?.toolId || "").trim().toLowerCase();
+        const presetPath = String(preset?.presetPath || "").trim();
+        if (!toolId) {
           continue;
         }
+        if (!presetPath || !hintedToolIds.has(toolId) || countedToolIds.has(toolId)) {
+          continue;
+        }
+        countedToolIds.add(toolId);
         counts.set(toolId, Number(counts.get(toolId) || 0) + 1);
       }
     }
@@ -189,7 +203,7 @@ function sortPlannedCardsAlphabetically() {
 
 async function initToolsIndex() {
   const sampleCountByToolId = await loadSampleCountByToolId();
-  renderWorkspaceManagerSection();
+  renderWorkspaceManagerSection(sampleCountByToolId);
   renderActiveToolsList(sampleCountByToolId);
   sortPlannedCardsAlphabetically();
 }

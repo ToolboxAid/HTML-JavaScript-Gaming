@@ -1,0 +1,40 @@
+PR 11.120 - Validation
+
+Commands and results
+- node --check samples/index.render.js
+  Result: PASS.
+- node --check samples/shared/sampleDetailPageEnhancement.js
+  Result: PASS.
+- node --check tools/renderToolsIndex.js
+  Result: PASS.
+- node -e "const fs=require('fs'); JSON.parse(fs.readFileSync('samples/metadata/samples.index.metadata.json','utf8')); console.log('metadata JSON parse PASS');"
+  Result: PASS metadata JSON parse.
+- Targeted metadata relationship count harness
+  Result: total relationships = 31; direct Open <tool> = 30; Open with Workspace Manager = 1; tools hub sample count sum = 31.
+- Targeted known-bad metadata link validation
+  Result: PASS known-bad metadata links absent.
+- rg -n 'SAMPLE_1902_WORKSPACE_PRESET_PATH|toolsUsed|sample\.1902\.workspace-all-tools\.json|workspace-manager|skin-editor' samples/index.render.js tools/renderToolsIndex.js samples/metadata/samples.index.metadata.json
+  Result: PASS expected workspace-manager references only; no SAMPLE_1902_WORKSPACE_PRESET_PATH; no toolsUsed fallback; no skin-editor fallback injection.
+- rg -n 'samples2tools|toolHints|roundtripToolPresets|Open 3D Camera Path Editor|Open 3D JSON Payload|Open SVG Asset Studio|Open Vector Map Editor|Open 3D Asset Viewer' samples tools -g exclusions for active SSoT/renderers
+  Result: PASS no second active sample hub relationship source found. Remaining hits are tool loaders that consume metadata, sample detail pages with intentional standalone launch links, or non-link source labels in JSON.
+- git diff --check
+  Result: PASS with line-ending warnings only; no whitespace errors.
+
+Changed JSON parses
+- samples/metadata/samples.index.metadata.json: PASS.
+
+Changed JS syntax
+- samples/index.render.js: PASS.
+- samples/shared/sampleDetailPageEnhancement.js: PASS.
+- tools/renderToolsIndex.js: PASS.
+
+Hub count reconciliation
+- samples hub visible relationships: 31.
+- tools hub Samples (x) relationship counts: 31.
+- sample hub and tools hub now match the user-observed count of 31.
+
+Full samples smoke test
+- Skipped. This is targeted hub metadata/relationship reconciliation, and the full samples suite is approximately 20 minutes.
+
+Blockers
+- None.

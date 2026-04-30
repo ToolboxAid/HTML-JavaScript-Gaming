@@ -4,7 +4,6 @@ import { launchWithExternalToolWorkspaceReset, resolveSampleToolLaunchHref } fro
 const METADATA_PATH = "./metadata/samples.index.metadata.json";
 const PINNED_KEY = "samples-index-pinned";
 const WORKSPACE_MANAGER_PATH = "/tools/Workspace%20Manager/index.html";
-const SAMPLE_1902_WORKSPACE_PRESET_PATH = "/samples/phase-19/1902/sample.1902.workspace-all-tools.json";
 
 function normalize(value) {
   return typeof value === "string" ? value.trim() : "";
@@ -54,14 +53,15 @@ function normalizePresetPath(value) {
 
 function buildWorkspaceManagerSampleLaunchHref(sample) {
   const sampleId = normalize(sample?.id);
-  if (sampleId !== "1902") {
+  const presetPath = getExplicitRoundtripPresetPath(sample, "workspace-manager");
+  if (!sampleId || !presetPath) {
     return "";
   }
   const params = new URLSearchParams({
     tool: "vector-map-editor",
     sampleId,
     sampleTitle: normalize(sample?.title) || "",
-    samplePresetPath: SAMPLE_1902_WORKSPACE_PRESET_PATH
+    samplePresetPath: presetPath
   });
   return `${WORKSPACE_MANAGER_PATH}?${params.toString()}`;
 }
@@ -204,14 +204,20 @@ function buildSampleRows(metadata, pinnedSet, toolLabelMap, toolRegistryMap) {
       const href = normalize(sample?.href) || `./phase-${phase}/${id}/index.html`;
       const tags = asArray(sample?.tags).map((tag) => normalizeTag(tag)).filter(Boolean);
       const classTokens = buildClassTokens(sample?.classValues, sample?.engineClassesUsed);
-      const toolTokens = buildToolTokens(sample?.toolHints, toolLabelMap);
-      const roundtrip = buildRoundtripLinks({
+      const workspaceLaunchHref = buildWorkspaceManagerSampleLaunchHref({
+        id,
+        title: sample?.title,
+        roundtripToolPresets: sample?.roundtripToolPresets
+      });
+      const roundtrip = workspaceLaunchHref ? { links: [], launchIssues: [] } : buildRoundtripLinks({
         id,
         phase,
         title: sample?.title,
         toolHints: sample?.toolHints,
         roundtripToolPresets: sample?.roundtripToolPresets
       }, toolRegistryMap);
+      const visibleToolIds = workspaceLaunchHref ? ["workspace-manager"] : roundtrip.links.map((entry) => entry.toolId);
+      const toolTokens = buildToolTokens(visibleToolIds, toolLabelMap);
       const previewSrc = normalize(sample?.thumbnail) || normalize(sample?.preview) || "";
       return {
         id,
@@ -226,6 +232,7 @@ function buildSampleRows(metadata, pinnedSet, toolLabelMap, toolRegistryMap) {
         toolTokens,
         roundtripLinks: roundtrip.links,
         roundtripLaunchIssues: roundtrip.launchIssues,
+        workspaceLaunchHref,
         previewSrc,
         pinned: pinnedSet.has(id)
       };
@@ -252,11 +259,6 @@ function buildSampleRows(metadata, pinnedSet, toolLabelMap, toolRegistryMap) {
   ).entries()]
     .map(([value, label]) => ({ value, label }))
     .sort((a, b) => a.label.localeCompare(b.label, undefined, { sensitivity: "base" }));
-  const skinEditorLabel = toolLabelMap.get("skin-editor");
-  if (skinEditorLabel && !tools.some((entry) => entry.value === "skin-editor")) {
-    tools.push({ value: "skin-editor", label: skinEditorLabel });
-    tools.sort((a, b) => a.label.localeCompare(b.label, undefined, { sensitivity: "base" }));
-  }
   const tags = [...new Set(sampleRows.flatMap((sample) => sample.tags))].sort();
 
   return { sampleRows, phases, phaseOptions, classes, tools, tags, phaseInfoMap };
@@ -356,18 +358,15 @@ function buildSampleCard(sample) {
   card.appendChild(title);
   card.appendChild(previewWrap);
   card.appendChild(description);
-  if (sample.id === "1902") {
-    const workspaceLaunchHref = buildWorkspaceManagerSampleLaunchHref(sample);
-    if (workspaceLaunchHref) {
-      const workspaceLaunchSection = document.createElement("section");
-      workspaceLaunchSection.className = "sample-tool-roundtrip";
-      workspaceLaunchSection.innerHTML = `
+  if (sample.workspaceLaunchHref) {
+    const workspaceLaunchSection = document.createElement("section");
+    workspaceLaunchSection.className = "sample-tool-roundtrip";
+    workspaceLaunchSection.innerHTML = `
         <ul>
-          <li><a data-tool-launch-href="${escapeHtml(workspaceLaunchHref)}" href="${escapeHtml(workspaceLaunchHref)}">Open with Workspace Manager</a></li>
+          <li><a data-tool-launch-href="${escapeHtml(sample.workspaceLaunchHref)}" href="${escapeHtml(sample.workspaceLaunchHref)}">Open with Workspace Manager</a></li>
         </ul>
       `;
-      card.appendChild(workspaceLaunchSection);
-    }
+    card.appendChild(workspaceLaunchSection);
   } else if (Array.isArray(sample.roundtripLinks) && sample.roundtripLinks.length > 0) {
     const roundtripSection = document.createElement("section");
     roundtripSection.className = "sample-tool-roundtrip";
@@ -489,6 +488,7 @@ export async function initSamplesIndex() {
       .map((tool) => [normalizeToken(tool.id), normalize(tool.displayName) || normalize(tool.name) || normalize(tool.id)])
       .filter((entry) => entry[0] && entry[1])
   );
+  toolLabelMap.set("workspace-manager", "Workspace Manager");
   const toolRegistryMap = new Map(
     toolRegistry
       .filter((tool) => tool.id !== "workspace-manager")

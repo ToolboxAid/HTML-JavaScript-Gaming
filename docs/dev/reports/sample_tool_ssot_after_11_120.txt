@@ -1,0 +1,77 @@
+PR 11.120 - SSoT After Reconciliation
+
+Active SSoT
+- samples/metadata/samples.index.metadata.json
+
+Runtime readers
+- samples/index.render.js reads samples/metadata/samples.index.metadata.json for sample tile links.
+- tools/renderToolsIndex.js reads samples/metadata/samples.index.metadata.json for Samples (x) counts.
+- samples/shared/sampleDetailPageEnhancement.js reads samples/metadata/samples.index.metadata.json for sample detail metadata.
+
+No second active hub source
+- No samples2tools runtime file is imported by samples/index.render.js.
+- No generated link-map report is imported by samples/index.render.js or tools/renderToolsIndex.js.
+- tools/renderToolsIndex.js no longer falls back to toolsUsed/raw toolHints counts.
+- samples/index.render.js no longer uses a hardcoded sample.1902 workspace preset constant.
+- samples/index.render.js no longer injects a fallback skin-editor filter option.
+
+Explicit metadata relationships after PR 11.120
+- Total SSoT relationships with matching toolHints and presetPath: 31.
+- Direct Open <tool> relationships: 30.
+- Workspace Manager relationships: 1.
+
+Entries added or restored
+- 1208:tile-map-editor -> /samples/phase-12/1208/sample.1208.tile-map-editor.json
+- 1208:parallax-editor -> /samples/phase-12/1208/sample.1208.parallax-editor.json
+- 1209:tile-map-editor -> /samples/phase-12/1209/sample.1209.tile-map-editor.json
+- 1210:tile-map-editor -> /samples/phase-12/1210/sample.1210.tile-map-editor.json
+- 1211:tile-map-editor -> /samples/phase-12/1211/sample.1211.tile-map-editor.json
+- 1212:vector-map-editor -> /samples/phase-12/1212/sample-1212-vector-map-editor.json
+- 1213:vector-map-editor -> /samples/phase-12/1213/sample-1213-vector-map-editor.json
+- 1214:vector-map-editor -> /samples/phase-12/1214/sample-1214-vector-map-editor.json
+- 1217:svg-asset-studio -> /samples/phase-12/1217/sample-1217-svg-asset-studio.json
+- 1218:parallax-editor -> /samples/phase-12/1218/sample-1218-parallax-editor.json
+- 1219:parallax-editor -> /samples/phase-12/1219/sample-1219-parallax-editor.json
+- 1220:parallax-editor -> /samples/phase-12/1220/sample-1220-parallax-editor.json
+- 1902:workspace-manager -> /samples/phase-19/1902/sample.1902.workspace-all-tools.json
+
+Entries removed
+- 1902:vector-map-editor
+- 1902:svg-asset-studio
+- 1902:tile-map-editor
+- 1902:parallax-editor
+- 1902:sprite-editor
+- 1902:skin-editor
+- 1902:asset-browser
+- 1902:palette-browser
+- 1902:state-inspector
+- 1902:replay-visualizer
+- 1902:performance-profiler
+- 1902:physics-sandbox
+- 1902:asset-pipeline
+- 1902:tile-model-converter
+- 1902:3d-json-payload
+- 1902:3d-asset-viewer
+- 1902:3d-camera-path-editor
+
+Known-bad links remain absent
+- 0201: no 3D Camera Path Editor or unrelated links
+- 0202: no unrelated links
+- 0204: no unrelated links
+- 0210: no unrelated links
+- 0220: no unrelated links
+- 0221: no 3D JSON Payload / 3d-json-payload link
+- 0226: no unrelated links
+- 0227: no unrelated links
+- 0303: no unrelated links
+- 0305: no 3D JSON Payload / 3d-json-payload link
+- 0901: no Vector Map Editor link
+- 1204: no SVG Asset Studio link
+- 1205: no Vector Map Editor link
+- 1208: no 3D Asset Viewer or SVG Asset Studio link
+- 1319: no unrelated links
+
+Notes
+- sample 1902 remains a workspace aggregation sample.
+- sample 1902 workspace-supported tool payload coverage remains inside samples/phase-19/1902/sample.1902.workspace-all-tools.json.
+- Metadata now records the sample hub relationship truthfully as 1902:workspace-manager only.

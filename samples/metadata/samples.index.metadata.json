@@ -2169,11 +2169,19 @@
       "preview": "/samples/phase-12/1208/assets/images/preview.svg",
       "href": "./phase-12/1208/index.html",
       "classValues": ["engine/camera/index/Camera2D", "engine/camera/index/worldRectToScreen", "engine/core/Engine", "engine/input/index/InputService", "engine/scene/index/Scene", "engine/theme/index/Theme", "engine/theme/index/ThemeTokens", "engine/tilemap/index/resolveRectVsTilemap", "engine/tilemap/index/Tilemap", "engine/utils/index/clamp"],
-      "toolHints": ["palette-browser"],
+      "toolHints": ["palette-browser", "tile-map-editor", "parallax-editor"],
       "roundtripToolPresets": [
         {
           "toolId": "palette-browser",
           "presetPath": "/samples/phase-12/1208/sample.1208.palette.json"
+        },
+        {
+          "toolId": "tile-map-editor",
+          "presetPath": "/samples/phase-12/1208/sample.1208.tile-map-editor.json"
+        },
+        {
+          "toolId": "parallax-editor",
+          "presetPath": "/samples/phase-12/1208/sample.1208.parallax-editor.json"
         }
       ]
     },
@@ -2186,13 +2194,17 @@
       "tags": ["tilemap", "preset", "layout", "editor", "basic", "tool"],
       "engineClassesUsed": ["engine/tilemap/index/Tilemap"],
       "classValues": ["engine/tilemap/index/Tilemap", "tools/tile-map-editor"],
-      "toolHints": ["tile-model-converter"],
+      "toolHints": ["tile-model-converter", "tile-map-editor"],
       "thumbnail": "/samples/phase-12/1209/assets/images/preview.svg",
       "preview": "/samples/phase-12/1209/assets/images/preview.svg",
       "roundtripToolPresets": [
         {
           "toolId": "tile-model-converter",
           "presetPath": "/samples/phase-12/1209/sample.1209.tile-model-converter.json"
+        },
+        {
+          "toolId": "tile-map-editor",
+          "presetPath": "/samples/phase-12/1209/sample.1209.tile-map-editor.json"
         }
       ]
     },
@@ -2205,10 +2217,15 @@
       "tags": ["tilemap", "preset", "layout", "editor", "objective", "tool"],
       "engineClassesUsed": ["engine/tilemap/index/Tilemap"],
       "classValues": ["engine/tilemap/index/Tilemap", "tools/tile-map-editor"],
-      "toolHints": [],
+      "toolHints": ["tile-map-editor"],
       "thumbnail": "/samples/phase-12/1210/assets/images/preview.svg",
       "preview": "/samples/phase-12/1210/assets/images/preview.svg",
-      "roundtripToolPresets": []
+      "roundtripToolPresets": [
+        {
+          "toolId": "tile-map-editor",
+          "presetPath": "/samples/phase-12/1210/sample.1210.tile-map-editor.json"
+        }
+      ]
     },
     {
       "id": "1211",
@@ -2219,10 +2236,15 @@
       "tags": ["tilemap", "preset", "layout", "editor", "mario", "tool"],
       "engineClassesUsed": ["engine/tilemap/index/Tilemap"],
       "classValues": ["engine/tilemap/index/Tilemap", "tools/tile-map-editor"],
-      "toolHints": [],
+      "toolHints": ["tile-map-editor"],
       "thumbnail": "/samples/phase-12/1211/assets/images/preview.svg",
       "preview": "/samples/phase-12/1211/assets/images/preview.svg",
-      "roundtripToolPresets": []
+      "roundtripToolPresets": [
+        {
+          "toolId": "tile-map-editor",
+          "presetPath": "/samples/phase-12/1211/sample.1211.tile-map-editor.json"
+        }
+      ]
     },
     {
       "id": "1212",
@@ -2233,10 +2255,15 @@
       "tags": ["vector", "map", "preset", "editor", "route", "tool"],
       "engineClassesUsed": ["tools/vector-map-editor"],
       "classValues": ["tools/vector-map-editor"],
-      "toolHints": [],
+      "toolHints": ["vector-map-editor"],
       "thumbnail": "/samples/phase-12/1212/assets/images/preview.svg",
       "preview": "/samples/phase-12/1212/assets/images/preview.svg",
-      "roundtripToolPresets": []
+      "roundtripToolPresets": [
+        {
+          "toolId": "vector-map-editor",
+          "presetPath": "/samples/phase-12/1212/sample-1212-vector-map-editor.json"
+        }
+      ]
     },
     {
       "id": "1213",
@@ -2247,10 +2274,15 @@
       "tags": ["vector", "map", "preset", "editor", "dungeon", "tool"],
       "engineClassesUsed": ["tools/vector-map-editor"],
       "classValues": ["tools/vector-map-editor"],
-      "toolHints": [],
+      "toolHints": ["vector-map-editor"],
       "thumbnail": "/samples/phase-12/1213/assets/images/preview.svg",
       "preview": "/samples/phase-12/1213/assets/images/preview.svg",
-      "roundtripToolPresets": []
+      "roundtripToolPresets": [
+        {
+          "toolId": "vector-map-editor",
+          "presetPath": "/samples/phase-12/1213/sample-1213-vector-map-editor.json"
+        }
+      ]
     },
     {
       "id": "1214",
@@ -2261,10 +2293,15 @@
       "tags": ["vector", "map", "preset", "editor", "arena", "tool"],
       "engineClassesUsed": ["tools/vector-map-editor"],
       "classValues": ["tools/vector-map-editor"],
-      "toolHints": [],
+      "toolHints": ["vector-map-editor"],
       "thumbnail": "/samples/phase-12/1214/assets/images/preview.svg",
       "preview": "/samples/phase-12/1214/assets/images/preview.svg",
-      "roundtripToolPresets": []
+      "roundtripToolPresets": [
+        {
+          "toolId": "vector-map-editor",
+          "presetPath": "/samples/phase-12/1214/sample-1214-vector-map-editor.json"
+        }
+      ]
     },
     {
       "id": "1215",
@@ -2313,10 +2350,15 @@
       "tags": ["vector", "asset", "preset", "editor", "mario", "tool"],
       "engineClassesUsed": ["tools/svg-asset-studio"],
       "classValues": ["tools/svg-asset-studio"],
-      "toolHints": [],
+      "toolHints": ["svg-asset-studio"],
       "thumbnail": "/samples/phase-12/1217/assets/images/preview.svg",
       "preview": "/samples/phase-12/1217/assets/images/preview.svg",
-      "roundtripToolPresets": []
+      "roundtripToolPresets": [
+        {
+          "toolId": "svg-asset-studio",
+          "presetPath": "/samples/phase-12/1217/sample-1217-svg-asset-studio.json"
+        }
+      ]
     },
     {
       "id": "1218",
@@ -2327,10 +2369,15 @@
       "tags": ["parallax", "preset", "editor", "layers", "scroll", "tool"],
       "engineClassesUsed": ["tools/parallax-editor"],
       "classValues": ["tools/parallax-editor"],
-      "toolHints": [],
+      "toolHints": ["parallax-editor"],
       "thumbnail": "/samples/phase-12/1218/assets/images/preview.svg",
       "preview": "/samples/phase-12/1218/assets/images/preview.svg",
-      "roundtripToolPresets": []
+      "roundtripToolPresets": [
+        {
+          "toolId": "parallax-editor",
+          "presetPath": "/samples/phase-12/1218/sample-1218-parallax-editor.json"
+        }
+      ]
     },
     {
       "id": "1219",
@@ -2341,10 +2388,15 @@
       "tags": ["parallax", "tilemap", "preset", "editor", "embedded", "tool"],
       "engineClassesUsed": ["tools/parallax-editor"],
       "classValues": ["tools/parallax-editor"],
-      "toolHints": [],
+      "toolHints": ["parallax-editor"],
       "thumbnail": "/samples/phase-12/1219/assets/images/preview.svg",
       "preview": "/samples/phase-12/1219/assets/images/preview.svg",
-      "roundtripToolPresets": []
+      "roundtripToolPresets": [
+        {
+          "toolId": "parallax-editor",
+          "presetPath": "/samples/phase-12/1219/sample-1219-parallax-editor.json"
+        }
+      ]
     },
     {
       "id": "1220",
@@ -2355,10 +2407,15 @@
       "tags": ["parallax", "preset", "editor", "mario", "learning", "tool"],
       "engineClassesUsed": ["tools/parallax-editor"],
       "classValues": ["tools/parallax-editor"],
-      "toolHints": [],
+      "toolHints": ["parallax-editor"],
       "thumbnail": "/samples/phase-12/1220/assets/images/preview.svg",
       "preview": "/samples/phase-12/1220/assets/images/preview.svg",
-      "roundtripToolPresets": []
+      "roundtripToolPresets": [
+        {
+          "toolId": "parallax-editor",
+          "presetPath": "/samples/phase-12/1220/sample-1220-parallax-editor.json"
+        }
+      ]
     },
     {
       "id": "1301",
@@ -3377,74 +3434,10 @@
       "preview": "/samples/phase-19/1902/assets/images/preview.svg",
       "classValues": ["tools/shared/toolHostManifest", "tools/shared/toolHostRuntime", "tools/shared/toolLoadDiagnostics"],
       "engineClassesUsed": ["tools/shared/toolHostManifest", "tools/shared/toolHostRuntime", "tools/shared/toolLoadDiagnostics"],
-      "toolHints": ["vector-map-editor", "svg-asset-studio", "tile-map-editor", "parallax-editor", "sprite-editor", "skin-editor", "asset-browser", "palette-browser", "state-inspector", "replay-visualizer", "performance-profiler", "physics-sandbox", "asset-pipeline", "tile-model-converter", "3d-json-payload", "3d-asset-viewer", "3d-camera-path-editor"],
+      "toolHints": ["workspace-manager"],
       "roundtripToolPresets": [
         {
-          "toolId": "vector-map-editor",
-          "presetPath": "/samples/phase-19/1902/sample.1902.workspace-all-tools.json"
-        },
-        {
-          "toolId": "svg-asset-studio",
-          "presetPath": "/samples/phase-19/1902/sample.1902.workspace-all-tools.json"
-        },
-        {
-          "toolId": "tile-map-editor",
-          "presetPath": "/samples/phase-19/1902/sample.1902.workspace-all-tools.json"
-        },
-        {
-          "toolId": "parallax-editor",
-          "presetPath": "/samples/phase-19/1902/sample.1902.workspace-all-tools.json"
-        },
-        {
-          "toolId": "sprite-editor",
-          "presetPath": "/samples/phase-19/1902/sample.1902.workspace-all-tools.json"
-        },
-        {
-          "toolId": "skin-editor",
-          "presetPath": "/samples/phase-19/1902/sample.1902.workspace-all-tools.json"
-        },
-        {
-          "toolId": "asset-browser",
-          "presetPath": "/samples/phase-19/1902/sample.1902.workspace-all-tools.json"
-        },
-        {
-          "toolId": "palette-browser",
-          "presetPath": "/samples/phase-19/1902/sample.1902.workspace-all-tools.json"
-        },
-        {
-          "toolId": "state-inspector",
-          "presetPath": "/samples/phase-19/1902/sample.1902.workspace-all-tools.json"
-        },
-        {
-          "toolId": "replay-visualizer",
-          "presetPath": "/samples/phase-19/1902/sample.1902.workspace-all-tools.json"
-        },
-        {
-          "toolId": "performance-profiler",
-          "presetPath": "/samples/phase-19/1902/sample.1902.workspace-all-tools.json"
-        },
-        {
-          "toolId": "physics-sandbox",
-          "presetPath": "/samples/phase-19/1902/sample.1902.workspace-all-tools.json"
-        },
-        {
-          "toolId": "asset-pipeline",
-          "presetPath": "/samples/phase-19/1902/sample.1902.workspace-all-tools.json"
-        },
-        {
-          "toolId": "tile-model-converter",
-          "presetPath": "/samples/phase-19/1902/sample.1902.workspace-all-tools.json"
-        },
-        {
-          "toolId": "3d-json-payload",
-          "presetPath": "/samples/phase-19/1902/sample.1902.workspace-all-tools.json"
-        },
-        {
-          "toolId": "3d-asset-viewer",
-          "presetPath": "/samples/phase-19/1902/sample.1902.workspace-all-tools.json"
-        },
-        {
-          "toolId": "3d-camera-path-editor",
+          "toolId": "workspace-manager",
           "presetPath": "/samples/phase-19/1902/sample.1902.workspace-all-tools.json"
         }
       ]

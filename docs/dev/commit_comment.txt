@@ -1,1 +1,1 @@
-Enforce sample metadata SSoT and remove renderer tool-link inference - PR 11.119
+Reconcile sample tool link counts through a single metadata SSoT - PR 11.120

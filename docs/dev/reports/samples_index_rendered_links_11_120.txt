@@ -1,0 +1,60 @@
+PR 11.120 - Samples Index Rendered Links
+
+Files searched
+- samples/index.html
+- samples/index.render.js
+- samples/metadata/samples.index.metadata.json
+
+Before
+- BUILD-reported samples/index rendered Open Tool links: 22.
+- User-observed samples/index current count: 31 when Open with Workspace Manager is included.
+
+After renderer behavior
+- samples/index.render.js fetches only ./metadata/samples.index.metadata.json.
+- buildRoundtripLinks creates an Open <tool> link only when the metadata row has a matching toolHints entry and a roundtripToolPresets presetPath.
+- buildWorkspaceManagerSampleLaunchHref creates Open with Workspace Manager only from an explicit workspace-manager roundtripToolPresets presetPath.
+- buildSampleRows derives tool filter tokens from renderable relationships, not raw toolHints.
+- sample 1902 renders Open with Workspace Manager and no direct Open <tool> fan-out.
+
+After rendered relationships
+- 0213:palette-browser -> /samples/phase-02/0213/sample.0213.palette.json
+- 0219:palette-browser -> /samples/phase-02/0219/sample.0219.palette.json
+- 0221:tile-model-converter -> /samples/phase-02/0221/sample.0221.tile-model-converter.json
+- 0301:palette-browser -> /samples/phase-03/0301/sample.0301.palette.json
+- 0302:palette-browser -> /samples/phase-03/0302/sample.0302.palette.json
+- 0305:tile-model-converter -> /samples/phase-03/0305/sample.0305.tile-model-converter.json
+- 0308:palette-browser -> /samples/phase-03/0308/sample.0308.palette.json
+- 0313:palette-browser -> /samples/phase-03/0313/sample.0313.palette.json
+- 0901:palette-browser -> /samples/phase-09/0901/sample.0901.palette.json
+- 0905:palette-browser -> /samples/phase-09/0905/sample.0905.palette.json
+- 1204:palette-browser -> /samples/phase-12/1204/sample.1204.palette.json
+- 1208:palette-browser -> /samples/phase-12/1208/sample.1208.palette.json
+- 1208:tile-map-editor -> /samples/phase-12/1208/sample.1208.tile-map-editor.json
+- 1208:parallax-editor -> /samples/phase-12/1208/sample.1208.parallax-editor.json
+- 1209:tile-model-converter -> /samples/phase-12/1209/sample.1209.tile-model-converter.json
+- 1209:tile-map-editor -> /samples/phase-12/1209/sample.1209.tile-map-editor.json
+- 1210:tile-map-editor -> /samples/phase-12/1210/sample.1210.tile-map-editor.json
+- 1211:tile-map-editor -> /samples/phase-12/1211/sample.1211.tile-map-editor.json
+- 1212:vector-map-editor -> /samples/phase-12/1212/sample-1212-vector-map-editor.json
+- 1213:vector-map-editor -> /samples/phase-12/1213/sample-1213-vector-map-editor.json
+- 1214:vector-map-editor -> /samples/phase-12/1214/sample-1214-vector-map-editor.json
+- 1215:svg-asset-studio -> /samples/phase-12/1215/sample-1215-svg-asset-studio.json
+- 1216:svg-asset-studio -> /samples/phase-12/1216/sample-1216-svg-asset-studio.json
+- 1217:svg-asset-studio -> /samples/phase-12/1217/sample-1217-svg-asset-studio.json
+- 1218:parallax-editor -> /samples/phase-12/1218/sample-1218-parallax-editor.json
+- 1219:parallax-editor -> /samples/phase-12/1219/sample-1219-parallax-editor.json
+- 1220:parallax-editor -> /samples/phase-12/1220/sample-1220-parallax-editor.json
+- 1413:asset-pipeline -> /samples/phase-14/1413/sample.1413.asset-pipeline.json
+- 1414:sprite-editor -> /samples/phase-14/1414/sample.1414.sprite-editor.json
+- 1414:palette-browser -> /samples/phase-14/1414/sample.1414.palette.json
+- 1902:workspace-manager -> /samples/phase-19/1902/sample.1902.workspace-all-tools.json
+
+After count
+- 31 total visible sample hub relationships.
+- 30 direct Open <tool> links.
+- 1 Open with Workspace Manager link.
+
+Validation
+- Targeted relationship harness result: sample hub visible relationships = 31.
+- 0201 empty metadata still renders zero roundtrip links.
+- Known-bad metadata link validation: PASS.
