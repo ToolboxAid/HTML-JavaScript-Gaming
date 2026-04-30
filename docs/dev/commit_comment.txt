@@ -1,1 +1,1 @@
-Remove broken sample tool bindings and normalize canonical tool names - PR 11.105
+Enforce single canonical asset kind per concept and remove alias mappings - PR 11.106

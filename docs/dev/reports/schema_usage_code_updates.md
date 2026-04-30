@@ -8,8 +8,8 @@
 
 ## Validation Summary
 - Tool schema rows: 17
-- Sample JSON rows: 66
-- Game manifest rows: 12
+- Sample JSON rows: 0
+- Game manifest rows: 0
 - Invalid tool rows: 0
-- Invalid sample rows: 28
+- Invalid sample rows: 0
 - Invalid game rows: 0

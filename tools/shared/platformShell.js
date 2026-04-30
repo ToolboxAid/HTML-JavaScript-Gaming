@@ -1122,13 +1122,14 @@ async function hydrateSharedAssetFromGameLaunchContext(catalogContext = null) {
     ? await readJsonDocument(primaryAsset.path)
     : null;
   const displayName = inferAssetDisplayName(primaryAsset, maybeJsonPayload);
+  const normalizedPrimaryKind = normalizeAssetKind(primaryAsset.kind || "asset");
 
   return writeSharedAssetHandoff({
     assetId: primaryAsset.assetId,
-    assetType: primaryAsset.kind || "other",
+    assetType: normalizedPrimaryKind || "asset",
     sourcePath: primaryAsset.path,
     displayName,
-    tags: [primaryAsset.kind || "other"],
+    tags: [normalizedPrimaryKind || "asset"],
     metadata: {
       source: "workspace-game-catalog",
       gameId: launchContext.gameId || "",
@@ -1445,7 +1446,14 @@ function resolveProjectBindingLabel() {
 }
 
 function normalizeAssetKind(value) {
-  return normalizeTextValue(value).toLowerCase();
+  const normalized = normalizeTextValue(value).toLowerCase();
+  if (!normalized) {
+    return "";
+  }
+  if (normalized === "image" || normalized === "audio" || normalized === "font" || normalized === "svg" || normalized === "data" || normalized === "other") {
+    return "asset";
+  }
+  return normalized;
 }
 
 function resolveAcceptedAssetKindsForTool(toolId = "") {
@@ -1456,12 +1464,12 @@ function resolveAcceptedAssetKindsForTool(toolId = "") {
     "tile-map-editor": ["tilemap"],
     "parallax-editor": ["parallax"],
     "svg-asset-studio": ["vector"],
-    "vector-map-editor": ["vector", "vector-map"],
-    "3d-asset-viewer": ["3d", "model", "mesh"],
-    "3d-camera-path-editor": ["camera-path", "3d-camera-path"],
-    "asset-browser": ["*"],
+    "vector-map-editor": ["vector-map"],
+    "3d-asset-viewer": ["model"],
+    "3d-camera-path-editor": ["camera-path"],
+    "asset-browser": ["asset"],
     "asset-pipeline": [],
-    "tile-model-converter": ["tilemap", "tileset", "vector", "model", "3d"]
+    "tile-model-converter": ["tilemap", "vector", "model"]
   };
   return byTool[normalizedToolId] || [];
 }
@@ -1470,9 +1478,6 @@ function isAssetCompatibleWithTool(toolId = "", asset = null) {
   const acceptedKinds = resolveAcceptedAssetKindsForTool(toolId);
   if (!asset || !acceptedKinds.length) {
     return false;
-  }
-  if (acceptedKinds.includes("*")) {
-    return true;
   }
   const kind = normalizeAssetKind(asset.assetType);
   return acceptedKinds.includes(kind);
