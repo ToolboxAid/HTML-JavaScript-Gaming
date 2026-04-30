@@ -1,0 +1,34 @@
+PR 11.118 - Sample Tile Known-Bad Link Removal Evidence
+Generated: 2026-04-30T15:52:18.072Z
+
+File edited for launcher data in this PR:
+- No launcher data edits were required.
+
+Requested removals and status:
+- 0201: PASS - unrelated Open <tool> links already absent (toolHints=[], roundtripToolPresets=[]).
+- 0202: PASS - unrelated Open <tool> links already absent (toolHints=[], roundtripToolPresets=[]).
+- 0204: PASS - unrelated Open <tool> links already absent (toolHints=[], roundtripToolPresets=[]).
+- 0210: PASS - unrelated Open <tool> links already absent (toolHints=[], roundtripToolPresets=[]).
+- 0220: PASS - unrelated Open <tool> links already absent (toolHints=[], roundtripToolPresets=[]).
+- 0226: PASS - unrelated Open <tool> links already absent (toolHints=[], roundtripToolPresets=[]).
+- 0227: PASS - unrelated Open <tool> links already absent (toolHints=[], roundtripToolPresets=[]).
+- 0303: PASS - unrelated Open <tool> links already absent (toolHints=[], roundtripToolPresets=[]).
+- 1319: PASS - unrelated Open <tool> links already absent (toolHints=[], roundtripToolPresets=[]).
+- 1204: PASS - banned entries not present (already removed).
+  current toolHints=["palette-browser"]
+  current preset toolIds=["palette-browser"]
+- 1205: PASS - banned entries not present (already removed).
+  current toolHints=[]
+  current preset toolIds=[]
+- 1208: PASS - banned entries not present (already removed).
+  current toolHints=["palette-browser"]
+  current preset toolIds=["palette-browser"]
+- 0221: PASS - banned entries not present (already removed).
+  current toolHints=["tile-model-converter"]
+  current preset toolIds=["tile-model-converter"]
+- 0305: PASS - banned entries not present (already removed).
+  current toolHints=["tile-model-converter"]
+  current preset toolIds=["tile-model-converter"]
+- 0901: PASS - banned entries not present (already removed).
+  current toolHints=["palette-browser"]
+  current preset toolIds=["palette-browser"]

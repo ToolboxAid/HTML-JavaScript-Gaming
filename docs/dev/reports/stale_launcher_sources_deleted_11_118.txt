@@ -1,0 +1,13 @@
+PR 11.118 - Stale Launcher Source Deletion/Disable Report
+Generated: 2026-04-30T15:52:18.072Z
+
+Stale duplicate launcher sources deleted:
+- None.
+
+Stale duplicate launcher sources disabled from runtime:
+- None.
+
+Rationale:
+- Search of samples runtime path found one data source for tile links: samples/metadata/samples.index.metadata.json.
+- Other matches are readers/consumers of the same metadata, not competing tile-link source files.
+- Deleting consumer files would break valid features outside tile-link ownership and is out of scope.

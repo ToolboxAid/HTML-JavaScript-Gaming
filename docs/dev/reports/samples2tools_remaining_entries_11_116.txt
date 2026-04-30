@@ -1,0 +1,36 @@
+PR 11.116 - samples2tools Remaining Entries After Targeted Cleanup
+Generated: 2026-04-30T15:42:47.292Z
+
+Source of truth: samples/metadata/samples.index.metadata.json
+
+Entries intentionally kept for targeted samples:
+- 0201: no remaining launcher entries.
+- 0202: no remaining launcher entries.
+- 0204: no remaining launcher entries.
+- 0210: no remaining launcher entries.
+- 0220: no remaining launcher entries.
+- 0226: no remaining launcher entries.
+- 0227: no remaining launcher entries.
+- 0303: no remaining launcher entries.
+- 1319: no remaining launcher entries.
+- 1204:
+  toolHints=["palette-browser"]
+  roundtripToolPresets:
+    - toolId=palette-browser presetPath=/samples/phase-12/1204/sample.1204.palette.json
+- 1205: no remaining launcher entries.
+- 1208:
+  toolHints=["palette-browser"]
+  roundtripToolPresets:
+    - toolId=palette-browser presetPath=/samples/phase-12/1208/sample.1208.palette.json
+- 0221:
+  toolHints=["tile-model-converter"]
+  roundtripToolPresets:
+    - toolId=tile-model-converter presetPath=/samples/phase-02/0221/sample.0221.tile-model-converter.json
+- 0305:
+  toolHints=["tile-model-converter"]
+  roundtripToolPresets:
+    - toolId=tile-model-converter presetPath=/samples/phase-03/0305/sample.0305.tile-model-converter.json
+- 0901:
+  toolHints=["palette-browser"]
+  roundtripToolPresets:
+    - toolId=palette-browser presetPath=/samples/phase-09/0901/sample.0901.palette.json

@@ -1,0 +1,25 @@
+PR 11.118 - Targeted Validation
+Generated: 2026-04-30T15:52:18.072Z
+
+Validation commands and results:
+- node -e "const fs=require('fs');JSON.parse(fs.readFileSync('samples/metadata/samples.index.metadata.json','utf8'));console.log('PASS json parse samples.index.metadata.json');"
+  Result: PASS (metadata JSON parses).
+- node --check samples/index.render.js
+  Result: PASS.
+- node --check samples/shared/sampleDetailPageEnhancement.js
+  Result: PASS.
+- rg -l "roundtripToolPresets|toolHints" samples
+  Result: samples/index.render.js, samples/metadata/samples.index.metadata.json, samples/shared/sampleDetailPageEnhancement.js.
+- targeted Node audit for required sample IDs and banned entries
+  Result: PASS (all listed bad links absent from active SSoT).
+- git diff --name-status -- samples
+  Result: no sample files changed/deleted in this pass.
+
+No second active source remains:
+- PASS for sample tiles (single runtime data source file).
+
+Full samples smoke test:
+- Skipped by design (targeted SSoT tracing/cleanup only; full suite ~20 minutes).
+
+Blockers:
+- None for requested bad-link removals; targets were already removed before this PR run.

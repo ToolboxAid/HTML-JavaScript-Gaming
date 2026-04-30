@@ -1,0 +1,16 @@
+PR 11.116 - Validation After Known-Bad samples2tools Removal Pass
+Generated: 2026-04-30T15:42:47.292Z
+
+Commands and results:
+- node -e "const fs=require('fs');JSON.parse(fs.readFileSync('samples/metadata/samples.index.metadata.json','utf8'));console.log('PASS');"
+  Result: PASS (samples.index.metadata.json parses).
+- Node metadata target check for required sample-wide/specific removals.
+  Result: PASS (all listed bad launcher entries are absent).
+- git diff --name-status -- samples
+  Result: no changed/deleted sample files in this targeted pass.
+
+Changed sample/tool manifest files validate:
+- N/A (no sample/tool manifest files were edited for this pass).
+
+Full samples smoke test:
+- Skipped by design (targeted launcher-entry cleanup only; full suite is ~20 minutes).

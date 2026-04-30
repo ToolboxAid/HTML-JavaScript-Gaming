@@ -1,0 +1,29 @@
+PR 11.116 - Known Bad samples2tools Entry Removals
+Generated: 2026-04-30T15:42:47.292Z
+
+Launcher source files inspected:
+- samples/metadata/samples.index.metadata.json
+- samples/index.render.js
+- samples/shared/sampleDetailPageEnhancement.js
+
+Launcher metadata edits applied:
+- No data edits were required; all requested bad entries were already absent in the live metadata source.
+
+Sample-wide removal targets (remove unrelated Open <tool> entries):
+- 0201: already clean (toolHints=[], roundtripToolPresets=[]).
+- 0202: already clean (toolHints=[], roundtripToolPresets=[]).
+- 0204: already clean (toolHints=[], roundtripToolPresets=[]).
+- 0210: already clean (toolHints=[], roundtripToolPresets=[]).
+- 0220: already clean (toolHints=[], roundtripToolPresets=[]).
+- 0226: already clean (toolHints=[], roundtripToolPresets=[]).
+- 0227: already clean (toolHints=[], roundtripToolPresets=[]).
+- 0303: already clean (toolHints=[], roundtripToolPresets=[]).
+- 1319: already clean (toolHints=[], roundtripToolPresets=[]).
+
+Specific bad entry targets:
+- 1204: requested bad tool entries not found (already removed): svg-asset-studio.
+- 1205: requested bad tool entries not found (already removed): vector-map-editor.
+- 1208: requested bad tool entries not found (already removed): 3d-asset-viewer, svg-asset-studio.
+- 0221: requested bad tool entries not found (already removed): 3d-json-payload-normalizer, 3d-json-payload.
+- 0305: requested bad tool entries not found (already removed): 3d-json-payload-normalizer, 3d-json-payload.
+- 0901: requested bad tool entries not found (already removed): vector-map-editor.

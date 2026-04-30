@@ -1,0 +1,29 @@
+PR 11.118 - Sample Tile Link SSoT Enforcement
+Generated: 2026-04-30T15:52:18.072Z
+
+Candidate files searched:
+- samples/index.html
+- samples/index.render.js
+- samples/metadata/samples.index.metadata.json
+- samples/metadata/metadataReference.js
+- samples/shared/sampleDetailPageEnhancement.js
+- tools/renderToolsIndex.js
+- tools/Asset Browser/main.js
+- tools/SVG Asset Studio/main.js
+- tools/Sprite Editor/modules/spriteEditorApp.js
+
+Active sample-tile SSoT file:
+- samples/metadata/samples.index.metadata.json
+
+Why this is the SSoT:
+- samples/index.html loads only samples/index.render.js for tile rendering.
+- samples/index.render.js fetches only ./metadata/samples.index.metadata.json (METADATA_PATH).
+- visible tile Open <tool> links are built from sample.toolHints + sample.roundtripToolPresets in that metadata file.
+- no second runtime data file in samples/ defines toolHints/roundtripToolPresets.
+
+Non-SSoT readers that do not replace tile SSoT:
+- samples/shared/sampleDetailPageEnhancement.js (sample detail page only).
+- tools/renderToolsIndex.js and tool modules (tool-side metadata lookup only).
+
+SSoT enforcement action taken:
+- Confirmed single active tile-link source already enforced; no loader code change required.
