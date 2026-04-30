@@ -1,1 +1,1 @@
-Finish Asteroids engine-owned chrome and add font manifest asset - PR 11.90
+Standardize Asteroids bezel to canonical bezel.png manifest asset - PR 11.91

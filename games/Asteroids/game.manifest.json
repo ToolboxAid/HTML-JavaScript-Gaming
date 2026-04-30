@@ -187,7 +187,7 @@
             "source": "workspace-manager"
           },
           "image.asteroids.bezel": {
-            "path": "/games/Asteroids/assets/images/bezel1.png",
+            "path": "/games/Asteroids/assets/images/bezel.png",
             "kind": "image",
             "source": "workspace-manager",
             "stretchOverride": {

@@ -1,14 +1,8 @@
-# Codex Commands — PR 11.90
+# Codex Commands — PR 11.91
 
 Model: GPT-5.4
 Reasoning: high
 
-Run Codex with this task:
-
 ```text
-Apply PR 11.90 from docs/pr/PR_11_90_ASTEROIDS_ENGINE_OWNERSHIP_AND_FONT_MANIFEST.md.
-
-Use the uploaded Asteroids.zip inspection findings as evidence. Finish Asteroids engine ownership correctness: remove remaining game-level background/clear/bezel ownership, keep gameplay-only rendering in Asteroids, make game.manifest.json the only source for bezel/background/font assets, add font.asteroids.vector-battle under asset-browser.assets, set image.asteroids.bezel to bezel1.png with stretchOverride.uniformEdgeStretchPx=10, set image.asteroids.background to deluxe.png, and verify no guessed chrome asset paths remain.
-
-Return a repo-structured ZIP at <project folder>/tmp/PR_11_90_ASTEROIDS_ENGINE_OWNERSHIP_AND_FONT_MANIFEST.zip with changed files and a short validation report.
+Apply PR 11.91. Standardize Asteroids bezel asset naming so bezel.png is the only valid bezel file. Update games/Asteroids/game.manifest.json image.asteroids.bezel.path to /games/Asteroids/assets/images/bezel.png, preserve stretchOverride.uniformEdgeStretchPx = 10 on image.asteroids.bezel only, remove any bezel1.png references, do not add fallback guessed paths, and do not place bezel stretch configuration under asset-browser.assets.bezel. Run targeted validation and write findings to docs/dev/reports/PR_11_91_validation.md.
 ```
