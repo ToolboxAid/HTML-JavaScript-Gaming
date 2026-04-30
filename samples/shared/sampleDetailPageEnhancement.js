@@ -381,10 +381,10 @@ function buildRoundtripLinks(currentSample, toolRegistryMap) {
       .find((entry) => normalizeToken(entry && entry.toolId) === toolId);
 
     const presetPath = normalizePresetPath(mapping && mapping.presetPath);
-    let href = baseHref;
-    if (presetPath) {
-      href = `${baseHref}?sampleId=${encodeURIComponent(currentSample.id)}&sampleTitle=${encodeURIComponent(currentSample.title || '')}&samplePresetPath=${encodeURIComponent(presetPath)}`;
+    if (!presetPath) {
+      continue;
     }
+    const href = `${baseHref}?sampleId=${encodeURIComponent(currentSample.id)}&sampleTitle=${encodeURIComponent(currentSample.title || '')}&samplePresetPath=${encodeURIComponent(presetPath)}`;
 
     links.push({
       toolId,

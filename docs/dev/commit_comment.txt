@@ -1,1 +1,1 @@
-Enforce sample tile tool-link SSoT and delete stale bad launcher sources - PR 11.118
+Enforce sample metadata SSoT and remove renderer tool-link inference - PR 11.119

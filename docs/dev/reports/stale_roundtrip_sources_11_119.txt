@@ -1,0 +1,36 @@
+PR 11.119 - Stale Roundtrip Sources
+
+Files searched
+- samples/index.html
+- samples/index.render.js
+- samples/shared/sampleDetailPageEnhancement.js
+- samples/metadata/samples.index.metadata.json
+- samples/phase-12/1208/index.html
+- samples/**/*.html via targeted known-bad validation script
+
+Files changed
+- samples/phase-12/1208/index.html
+
+Stale source removed
+- Removed stale hardcoded Open SVG Asset Studio link from samples/phase-12/1208/index.html.
+- The valid 1208 hardcoded links for Tilemap Studio and Parallax Scene Studio remain.
+
+Duplicate source assessment
+- samples/index.render.js remains the sample tile renderer.
+- samples/metadata/samples.index.metadata.json remains the sample tile data SSoT.
+- samples/shared/sampleDetailPageEnhancement.js is not a tile source, but it is a runtime consumer of the same metadata, so it was aligned to require explicit presetPath.
+- phase-12 static sample HTML pages are sample detail pages, not tile data sources. Only the known-bad 1208 SVG Asset Studio link was removed in this PR.
+
+Deleted files
+- None.
+
+Disabled runtime loading
+- None.
+
+Why no file deletion
+- No separate generated/static sample tile link data file was found.
+- Existing sample detail HTML files are executable sample pages, not duplicate tile metadata files.
+- Deleting sample pages would violate the PR rule not to delete samples.
+
+Blockers
+- None.

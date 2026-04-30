@@ -1,0 +1,43 @@
+PR 11.119 - Known-Bad Links Validation
+
+Validation commands and results
+- node --check samples/index.render.js
+  Result: PASS.
+- node --check samples/shared/sampleDetailPageEnhancement.js
+  Result: PASS.
+- node -e "const fs=require('fs');JSON.parse(fs.readFileSync('samples/metadata/samples.index.metadata.json','utf8'));console.log('PASS metadata json parse');"
+  Result: PASS metadata json parse.
+- Targeted renderer VM harness for samples/index.render.js
+  Result: PASS 0201 actual empty metadata and synthetic hint-only metadata render zero roundtrip links.
+- Targeted known-bad metadata and sample HTML scan
+  Result: PASS known bad links absent from metadata and sample HTML runtime sources.
+- rg -l "roundtripToolPresets|toolHints" samples
+  Result: samples/index.render.js, samples/metadata/samples.index.metadata.json, samples/shared/sampleDetailPageEnhancement.js.
+
+Known-bad validation coverage
+- 0201: no 3D Camera Path Editor or unrelated Open Tool links.
+- 0202: no unrelated Open Tool links.
+- 0204: no unrelated Open Tool links.
+- 0210: no unrelated Open Tool links.
+- 0220: no unrelated Open Tool links.
+- 0221: no 3D JSON Payload Normalizer / 3D JSON Payload / 3d-json-payload link.
+- 0226: no unrelated Open Tool links.
+- 0227: no unrelated Open Tool links.
+- 0303: no unrelated Open Tool links.
+- 0305: no 3D JSON Payload Normalizer / 3D JSON Payload / 3d-json-payload link.
+- 0901: no Vector Map Editor link.
+- 1204: no SVG Asset Studio link.
+- 1205: no Vector Map Editor link.
+- 1208: no 3D Asset Viewer or SVG Asset Studio link.
+- 1319: no unrelated Open Tool links.
+
+0201 proof
+- samples/metadata/samples.index.metadata.json currently has sample 0201 toolHints=[] and roundtripToolPresets=[].
+- Renderer harness built the 0201 sample row and found roundtripLinks.length = 0.
+- Renderer harness also tested a synthetic stale hint-only 0201 row and found links.length = 0.
+
+Full samples smoke test
+- Skipped. This PR changes targeted sample hub/detail rendering and one stale sample HTML link; the full samples suite is approximately 20 minutes.
+
+Blockers
+- None.

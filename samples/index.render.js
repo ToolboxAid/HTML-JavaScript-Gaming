@@ -105,6 +105,9 @@ function buildRoundtripLinks(sample, toolRegistryMap) {
     }
 
     const presetPath = getExplicitRoundtripPresetPath(sample, toolId);
+    if (!presetPath) {
+      return;
+    }
     const launch = resolveSampleToolLaunchHref(toolId, {
       launchSource: "samples",
       launchType: "sample-to-tool",

@@ -1,0 +1,38 @@
+PR 11.119 - Renderer Toolhint Cleanup
+
+Files searched
+- samples/index.render.js
+- samples/shared/sampleDetailPageEnhancement.js
+- tools/shared/toolLaunchSSoT.js
+- samples/metadata/samples.index.metadata.json
+
+Files changed
+- samples/index.render.js
+- samples/shared/sampleDetailPageEnhancement.js
+
+Problem path removed
+- Before: samples/index.render.js could call resolveSampleToolLaunchHref with samplePresetPath="" when a runtime sample row had toolHints but no matching roundtripToolPresets entry.
+- Effect: a stale hint-only row could render a link like /tools/3D%20Camera%20Path%20Editor/index.html?sampleId=0201&sampleTitle=Camera+Follow.
+- After: buildRoundtripLinks returns without creating a link when getExplicitRoundtripPresetPath(sample, toolId) returns empty.
+
+Related detail-page cleanup
+- samples/shared/sampleDetailPageEnhancement.js had the same hint-only behavior for sample detail pages.
+- It now skips tool links that lack an explicit presetPath.
+- This keeps sample detail pages aligned with the direct JSON contract and prevents stale hint-only links there too.
+
+Exact removed behavior
+- Removed renderer behavior that treated toolHints alone as enough to generate an Open <tool> link.
+- Removed detail-page behavior that generated a base tool URL without samplePresetPath.
+
+What remains intentionally
+- normalizeToken/normalizePresetPath helpers remain for safe string/path handling.
+- toolHints remains available for sample filter chips and tool filter indexing.
+- roundtripToolPresets remains the explicit source of launch JSON paths.
+
+Validation
+- node --check samples/index.render.js: PASS
+- node --check samples/shared/sampleDetailPageEnhancement.js: PASS
+- Targeted renderer harness: PASS 0201 actual empty metadata and synthetic hint-only metadata render zero roundtrip links.
+
+Blockers
+- None.
