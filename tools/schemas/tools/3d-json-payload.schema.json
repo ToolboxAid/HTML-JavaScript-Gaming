@@ -3,33 +3,13 @@
   "$id": "tools/schemas/tools/3d-json-payload.schema.json",
   "title": "3d-json-payload Payload",
   "type": "object",
-  "required": ["tool", "version", "payload"],
+  "required": [
+    "mapPayload"
+  ],
   "additionalProperties": false,
   "properties": {
-    "tool": {
-      "const": "3d-json-payload"
-    },
-    "version": {
-      "oneOf": [
-        {
-          "type": "string",
-          "minLength": 1
-        },
-        {
-          "type": "integer",
-          "minimum": 1
-        }
-      ]
-    },
-    "payload": {
-      "type": "object",
-      "required": ["mapPayload"],
-      "additionalProperties": false,
-      "properties": {
-        "mapPayload": {
-          "$ref": "#/$defs/jsonValue"
-        }
-      }
+    "mapPayload": {
+      "$ref": "#/$defs/jsonValue"
     }
   },
   "$defs": {

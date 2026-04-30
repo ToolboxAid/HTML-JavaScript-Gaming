@@ -3,39 +3,17 @@
   "$id": "tools/schemas/tools/parallax-editor.schema.json",
   "title": "parallax-editor Payload",
   "type": "object",
-  "required": ["tool", "version", "payload"],
+  "required": [],
   "additionalProperties": false,
   "properties": {
-    "tool": {
-      "const": "parallax-editor"
+    "parallaxDocument": {
+      "$ref": "#/$defs/jsonValue"
     },
-    "version": {
-      "oneOf": [
-        {
-          "type": "string",
-          "minLength": 1
-        },
-        {
-          "type": "integer",
-          "minimum": 1
-        }
-      ]
+    "tilemapDocumentPath": {
+      "$ref": "#/$defs/jsonValue"
     },
-    "payload": {
-      "type": "object",
-      "required": [],
-      "additionalProperties": false,
-      "properties": {
-        "parallaxDocument": {
-          "$ref": "#/$defs/jsonValue"
-        },
-        "tilemapDocumentPath": {
-          "$ref": "#/$defs/jsonValue"
-        },
-        "vectorAssetSvgPath": {
-          "$ref": "#/$defs/jsonValue"
-        }
-      }
+    "vectorAssetSvgPath": {
+      "$ref": "#/$defs/jsonValue"
     }
   },
   "$defs": {

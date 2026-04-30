@@ -6,23 +6,28 @@ Reasoning: high
 STRICT SCOPE MODE
 
 ALLOWED FILES:
-- routing files only
+- tools/schemas/tools/*.json
+- routing files ONLY if needed
 
-TASK:
+EXECUTION:
 
-1. Find payload passing code
-2. Remove:
-   - normalize*
-   - transform*
-   - convert*
-   - map*
-   - enrich*
-3. Ensure payload passed directly
+FOR EACH TOOL:
 
-VERIFY:
-- payload before == payload after
+1. Load schema
+2. Test 3 inputs:
+   A valid tool JSON → must pass
+   B wrapper JSON → must fail
+   C parent JSON → must fail
 
-REPORT:
-docs/dev/reports/no_transform_routing_11_128.txt
+3. If B or C passes:
+   - fix schema (tighten)
+   - OR fix routing
 
-FAIL if any mutation remains
+4. DO NOT:
+   - add compatibility
+   - expand schema
+
+5. REPORT:
+docs/dev/reports/tool_input_contract_11_129.txt
+
+FAIL if any tool violates rule

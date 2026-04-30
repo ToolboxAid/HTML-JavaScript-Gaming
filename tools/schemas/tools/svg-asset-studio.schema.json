@@ -3,33 +3,13 @@
   "$id": "tools/schemas/tools/svg-asset-studio.schema.json",
   "title": "SVG Asset Studio Payload",
   "type": "object",
-  "required": ["tool", "version", "payload"],
+  "required": [
+    "vectorAssetDocument"
+  ],
   "additionalProperties": false,
   "properties": {
-    "tool": {
-      "const": "svg-asset-studio"
-    },
-    "version": {
-      "oneOf": [
-        {
-          "type": "string",
-          "minLength": 1
-        },
-        {
-          "type": "integer",
-          "minimum": 1
-        }
-      ]
-    },
-    "payload": {
-      "type": "object",
-      "required": ["vectorAssetDocument"],
-      "additionalProperties": false,
-      "properties": {
-        "vectorAssetDocument": {
-          "$ref": "#/$defs/jsonValue"
-        }
-      }
+    "vectorAssetDocument": {
+      "$ref": "#/$defs/jsonValue"
     }
   },
   "$defs": {

@@ -3,30 +3,9 @@
   "$id": "tools/schemas/tools/skin-editor.schema.json",
   "title": "skin-editor Payload",
   "type": "object",
-  "required": ["tool", "version", "payload"],
+  "required": [],
   "additionalProperties": false,
   "properties": {
-    "tool": {
-      "const": "skin-editor"
-    },
-    "version": {
-      "oneOf": [
-        {
-          "type": "string",
-          "minLength": 1
-        },
-        {
-          "type": "integer",
-          "minimum": 1
-        }
-      ]
-    },
-    "payload": {
-      "type": "object",
-      "required": [],
-      "additionalProperties": false,
-      "properties": {}
-    },
     "projectId": {
       "type": "string",
       "minLength": 1

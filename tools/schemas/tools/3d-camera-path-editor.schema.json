@@ -3,33 +3,13 @@
   "$id": "tools/schemas/tools/3d-camera-path-editor.schema.json",
   "title": "3d-camera-path-editor Payload",
   "type": "object",
-  "required": ["tool", "version", "payload"],
+  "required": [
+    "cameraPath"
+  ],
   "additionalProperties": false,
   "properties": {
-    "tool": {
-      "const": "3d-camera-path-editor"
-    },
-    "version": {
-      "oneOf": [
-        {
-          "type": "string",
-          "minLength": 1
-        },
-        {
-          "type": "integer",
-          "minimum": 1
-        }
-      ]
-    },
-    "payload": {
-      "type": "object",
-      "required": ["cameraPath"],
-      "additionalProperties": false,
-      "properties": {
-        "cameraPath": {
-          "$ref": "#/$defs/jsonValue"
-        }
-      }
+    "cameraPath": {
+      "$ref": "#/$defs/jsonValue"
     }
   },
   "$defs": {

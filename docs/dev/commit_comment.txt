@@ -1,1 +1,1 @@
-Enforce zero-transform payload routing across workspace/tool launch - PR 11.128
+Verify all tools enforce direct JSON-only input contract - PR 11.129

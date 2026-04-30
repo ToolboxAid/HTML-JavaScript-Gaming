@@ -1,0 +1,48 @@
+﻿Tool Input Contract Report: 11_129
+Date: 2026-04-30
+Repo: C:/Users/davidq/Documents/GitHub/HTML-JavaScript-Gaming
+Mode: STRICT SCOPE
+
+Scope
+- Allowed schema files: tools/schemas/tools/*.json
+- Routing files: not modified (not needed)
+
+Execution
+For each tool schema under tools/schemas/tools/*.json:
+1. Loaded schema.
+2. Tested:
+   A: valid direct tool JSON generated from required root contract.
+   B: wrapper JSON { tool, version, payload: A }.
+   C: parent/workspace JSON containing tool payload under tools[toolId].
+3. Verified contract:
+   A must pass, B must fail, C must fail.
+
+Schema tightening applied
+- Wrapper-shape roots were tightened to payload-only roots.
+- Removed root wrapper fields from schema contracts: tool/version/payload.
+- Lifted former payload child properties to root.
+- No compatibility branches added.
+- No schema expansion performed.
+
+Per-tool verification matrix
+- 3d-asset-viewer: A=pass, B=fail, C=fail
+- 3d-camera-path-editor: A=pass, B=fail, C=fail
+- 3d-json-payload: A=pass, B=fail, C=fail
+- asset-browser: A=pass, B=fail, C=fail
+- asset-pipeline: A=pass, B=fail, C=fail
+- palette-browser: A=pass, B=fail, C=fail
+- parallax-editor: A=pass, B=fail, C=fail
+- performance-profiler: A=pass, B=fail, C=fail
+- physics-sandbox: A=pass, B=fail, C=fail
+- replay-visualizer: A=pass, B=fail, C=fail
+- skin-editor: A=pass, B=fail, C=fail
+- sprite-editor: A=pass, B=fail, C=fail
+- state-inspector: A=pass, B=fail, C=fail
+- svg-asset-studio: A=pass, B=fail, C=fail
+- tile-map-editor: A=pass, B=fail, C=fail
+- tile-model-converter: A=pass, B=fail, C=fail
+- vector-map-editor: A=pass, B=fail, C=fail
+
+Result
+- PASS: No tool violates the input contract rule.
+- FAIL condition not triggered.

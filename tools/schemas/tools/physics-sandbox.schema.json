@@ -3,33 +3,13 @@
   "$id": "tools/schemas/tools/physics-sandbox.schema.json",
   "title": "physics-sandbox Payload",
   "type": "object",
-  "required": ["tool", "version", "payload"],
+  "required": [
+    "physicsBody"
+  ],
   "additionalProperties": false,
   "properties": {
-    "tool": {
-      "const": "physics-sandbox"
-    },
-    "version": {
-      "oneOf": [
-        {
-          "type": "string",
-          "minLength": 1
-        },
-        {
-          "type": "integer",
-          "minimum": 1
-        }
-      ]
-    },
-    "payload": {
-      "type": "object",
-      "required": ["physicsBody"],
-      "additionalProperties": false,
-      "properties": {
-        "physicsBody": {
-          "$ref": "#/$defs/jsonValue"
-        }
-      }
+    "physicsBody": {
+      "$ref": "#/$defs/jsonValue"
     }
   },
   "$defs": {

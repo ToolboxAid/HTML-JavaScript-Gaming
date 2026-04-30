@@ -3,33 +3,13 @@
   "$id": "tools/schemas/tools/asset-pipeline.schema.json",
   "title": "asset-pipeline Payload",
   "type": "object",
-  "required": ["tool", "version", "payload"],
+  "required": [
+    "pipelinePayload"
+  ],
   "additionalProperties": false,
   "properties": {
-    "tool": {
-      "const": "asset-pipeline"
-    },
-    "version": {
-      "oneOf": [
-        {
-          "type": "string",
-          "minLength": 1
-        },
-        {
-          "type": "integer",
-          "minimum": 1
-        }
-      ]
-    },
-    "payload": {
-      "type": "object",
-      "required": ["pipelinePayload"],
-      "additionalProperties": false,
-      "properties": {
-        "pipelinePayload": {
-          "$ref": "#/$defs/jsonValue"
-        }
-      }
+    "pipelinePayload": {
+      "$ref": "#/$defs/jsonValue"
     }
   },
   "$defs": {

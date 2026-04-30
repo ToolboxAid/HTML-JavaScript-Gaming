@@ -3,33 +3,13 @@
   "$id": "tools/schemas/tools/vector-map-editor.schema.json",
   "title": "Vector Map Editor Payload",
   "type": "object",
-  "required": ["tool", "version", "payload"],
+  "required": [
+    "vectorMapDocument"
+  ],
   "additionalProperties": false,
   "properties": {
-    "tool": {
-      "const": "vector-map-editor"
-    },
-    "version": {
-      "oneOf": [
-        {
-          "type": "string",
-          "minLength": 1
-        },
-        {
-          "type": "integer",
-          "minimum": 1
-        }
-      ]
-    },
-    "payload": {
-      "type": "object",
-      "required": ["vectorMapDocument"],
-      "additionalProperties": false,
-      "properties": {
-        "vectorMapDocument": {
-          "$ref": "#/$defs/jsonValue"
-        }
-      }
+    "vectorMapDocument": {
+      "$ref": "#/$defs/jsonValue"
     }
   },
   "$defs": {

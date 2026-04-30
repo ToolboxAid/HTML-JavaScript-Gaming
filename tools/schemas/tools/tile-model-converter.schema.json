@@ -3,36 +3,17 @@
   "$id": "tools/schemas/tools/tile-model-converter.schema.json",
   "title": "tile-model-converter Payload",
   "type": "object",
-  "required": ["tool", "version", "payload"],
+  "required": [
+    "candidate",
+    "conversion"
+  ],
   "additionalProperties": false,
   "properties": {
-    "tool": {
-      "const": "tile-model-converter"
+    "candidate": {
+      "$ref": "#/$defs/jsonValue"
     },
-    "version": {
-      "oneOf": [
-        {
-          "type": "string",
-          "minLength": 1
-        },
-        {
-          "type": "integer",
-          "minimum": 1
-        }
-      ]
-    },
-    "payload": {
-      "type": "object",
-      "required": ["candidate", "conversion"],
-      "additionalProperties": false,
-      "properties": {
-        "candidate": {
-          "$ref": "#/$defs/jsonValue"
-        },
-        "conversion": {
-          "$ref": "#/$defs/jsonValue"
-        }
-      }
+    "conversion": {
+      "$ref": "#/$defs/jsonValue"
     }
   },
   "$defs": {

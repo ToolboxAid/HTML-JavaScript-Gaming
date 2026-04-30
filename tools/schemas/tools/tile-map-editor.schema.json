@@ -3,39 +3,17 @@
   "$id": "tools/schemas/tools/tile-map-editor.schema.json",
   "title": "tile-map-editor Payload",
   "type": "object",
-  "required": ["tool", "version", "payload"],
+  "required": [],
   "additionalProperties": false,
   "properties": {
-    "tool": {
-      "const": "tile-map-editor"
+    "tileMapDocument": {
+      "$ref": "#/$defs/jsonValue"
     },
-    "version": {
-      "oneOf": [
-        {
-          "type": "string",
-          "minLength": 1
-        },
-        {
-          "type": "integer",
-          "minimum": 1
-        }
-      ]
+    "tilemapDocumentPath": {
+      "$ref": "#/$defs/jsonValue"
     },
-    "payload": {
-      "type": "object",
-      "required": [],
-      "additionalProperties": false,
-      "properties": {
-        "tileMapDocument": {
-          "$ref": "#/$defs/jsonValue"
-        },
-        "tilemapDocumentPath": {
-          "$ref": "#/$defs/jsonValue"
-        },
-        "parallaxDocument": {
-          "$ref": "#/$defs/jsonValue"
-        }
-      }
+    "parallaxDocument": {
+      "$ref": "#/$defs/jsonValue"
     }
   },
   "$defs": {

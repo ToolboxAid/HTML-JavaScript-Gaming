@@ -3,24 +3,11 @@
   "$id": "tools/schemas/tools/asset-browser.schema.json",
   "title": "asset-browser Payload",
   "type": "object",
-  "required": ["tool", "version", "assets", "payload"],
+  "required": [
+    "assets"
+  ],
   "additionalProperties": false,
   "properties": {
-    "tool": {
-      "const": "asset-browser"
-    },
-    "version": {
-      "oneOf": [
-        {
-          "type": "string",
-          "minLength": 1
-        },
-        {
-          "type": "integer",
-          "minimum": 1
-        }
-      ]
-    },
     "assets": {
       "type": "object",
       "additionalProperties": false,
@@ -35,7 +22,9 @@
             },
             {
               "not": {
-                "required": ["stretchOverride"]
+                "required": [
+                  "stretchOverride"
+                ]
               }
             }
           ]
@@ -52,27 +41,24 @@
         ]
       }
     },
-    "payload": {
-      "type": "object",
-      "required": [],
-      "additionalProperties": false,
-      "properties": {
-        "assetBrowserPreset": {
-          "$ref": "#/$defs/jsonValue"
-        },
-        "approvedAssets": {
-          "$ref": "#/$defs/jsonValue"
-        },
-        "importHubPreset": {
-          "$ref": "#/$defs/jsonValue"
-        }
-      }
+    "assetBrowserPreset": {
+      "$ref": "#/$defs/jsonValue"
+    },
+    "approvedAssets": {
+      "$ref": "#/$defs/jsonValue"
+    },
+    "importHubPreset": {
+      "$ref": "#/$defs/jsonValue"
     }
   },
   "$defs": {
     "assetEntry": {
       "type": "object",
-      "required": ["path", "kind", "source"],
+      "required": [
+        "path",
+        "kind",
+        "source"
+      ],
       "additionalProperties": false,
       "properties": {
         "path": {
@@ -81,15 +67,28 @@
         },
         "kind": {
           "type": "string",
-          "enum": ["image", "audio", "font", "svg", "data", "other"]
+          "enum": [
+            "image",
+            "audio",
+            "font",
+            "svg",
+            "data",
+            "other"
+          ]
         },
         "source": {
           "type": "string",
-          "enum": ["workspace-manager", "asset-browser", "manifest"]
+          "enum": [
+            "workspace-manager",
+            "asset-browser",
+            "manifest"
+          ]
         },
         "stretchOverride": {
           "type": "object",
-          "required": ["uniformEdgeStretchPx"],
+          "required": [
+            "uniformEdgeStretchPx"
+          ],
           "additionalProperties": false,
           "properties": {
             "uniformEdgeStretchPx": {

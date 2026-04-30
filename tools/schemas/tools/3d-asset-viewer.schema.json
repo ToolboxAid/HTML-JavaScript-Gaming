@@ -3,33 +3,13 @@
   "$id": "tools/schemas/tools/3d-asset-viewer.schema.json",
   "title": "3d-asset-viewer Payload",
   "type": "object",
-  "required": ["tool", "version", "payload"],
+  "required": [
+    "asset3d"
+  ],
   "additionalProperties": false,
   "properties": {
-    "tool": {
-      "const": "3d-asset-viewer"
-    },
-    "version": {
-      "oneOf": [
-        {
-          "type": "string",
-          "minLength": 1
-        },
-        {
-          "type": "integer",
-          "minimum": 1
-        }
-      ]
-    },
-    "payload": {
-      "type": "object",
-      "required": ["asset3d"],
-      "additionalProperties": false,
-      "properties": {
-        "asset3d": {
-          "$ref": "#/$defs/jsonValue"
-        }
-      }
+    "asset3d": {
+      "$ref": "#/$defs/jsonValue"
     }
   },
   "$defs": {

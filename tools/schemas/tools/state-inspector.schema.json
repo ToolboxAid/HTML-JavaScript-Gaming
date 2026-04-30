@@ -3,33 +3,13 @@
   "$id": "tools/schemas/tools/state-inspector.schema.json",
   "title": "state-inspector Payload",
   "type": "object",
-  "required": ["tool", "version", "payload"],
+  "required": [
+    "snapshot"
+  ],
   "additionalProperties": false,
   "properties": {
-    "tool": {
-      "const": "state-inspector"
-    },
-    "version": {
-      "oneOf": [
-        {
-          "type": "string",
-          "minLength": 1
-        },
-        {
-          "type": "integer",
-          "minimum": 1
-        }
-      ]
-    },
-    "payload": {
-      "type": "object",
-      "required": ["snapshot"],
-      "additionalProperties": false,
-      "properties": {
-        "snapshot": {
-          "$ref": "#/$defs/jsonValue"
-        }
-      }
+    "snapshot": {
+      "$ref": "#/$defs/jsonValue"
     }
   },
   "$defs": {
