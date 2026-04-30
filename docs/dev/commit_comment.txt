@@ -1,1 +1,1 @@
-Final verification: no fallback, no global, zero-transform routing - PR 11.136
+Lock runtime contract with hard fail guards - PR 11.137

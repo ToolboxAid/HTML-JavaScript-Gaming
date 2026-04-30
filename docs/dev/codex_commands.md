@@ -10,23 +10,22 @@ ALLOWED FILES:
 
 TASK:
 
-1. Search for prohibited patterns:
-   normalize*, transform*, convert*, infer*,
-   tryLoadPreset*, buildPreset*, default*, fallback*
+1. Add validateInput(payloadJson, paletteJson)
 
-2. Remove any remaining occurrences affecting input paths
+2. Add checks:
+   - missing payload → error
+   - wrapper detected → error
+   - parent JSON detected → error
+   - mutation detected → error
+   - fallback attempt → error
 
-3. Verify launch signature:
-   launch(toolId, payloadJson, paletteJson?)
+3. Inject before tool launch
 
-4. Verify:
-   - payloadJson unchanged
-   - paletteJson unchanged
-   - no global reads
-
-5. Ensure missing input => error (no fallback)
+4. TEST:
+   invalid inputs → must fail
+   valid input → pass
 
 REPORT:
-docs/dev/reports/final_verification_11_136.txt
+docs/dev/reports/runtime_contract_lock_11_137.txt
 
-FAIL if any violation remains
+FAIL if invalid inputs succeed
