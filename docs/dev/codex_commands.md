@@ -1,18 +1,27 @@
 # CODEX COMMANDS
 
 Model: GPT-5.3-codex
-Reasoning: low
+Reasoning: medium
 
-1. Scan repo:
-   - ensure no asset kind equals a tool id
-   - ensure no tool id used as asset kind
+1. Scan all tool references after PR 11.105 cleanup
 
-2. Validate mapping:
-   resolveAcceptedAssetKindsForTool is:
-   toolId -> asset kinds ONLY
+2. For each tool:
+   - verify input JSON exists
+   - verify schema matches
+   - verify tool loads actual data (not defaults)
 
-3. Fix violations:
-   - replace incorrect asset kinds with canonical types
+3. Remove tool reference if:
+   - input missing
+   - loads defaults
+   - invalid structure
+   - no visible usable output
 
-4. Report:
-   docs/dev/reports/tool_vs_asset_kind_11_107.txt
+4. Do NOT:
+   - create placeholder data
+   - use fallback/default values
+   - loosen schema
+
+5. Validate updated manifests
+
+6. Output:
+docs/dev/reports/runtime_contract_enforcement_11_108.txt

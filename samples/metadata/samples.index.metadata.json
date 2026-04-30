@@ -438,13 +438,8 @@
       "preview": "/samples/phase-02/0204/assets/images/preview.svg",
       "href": "./phase-02/0204/index.html",
       "classValues": ["engine/assets/index", "engine/assets/index/AssetRegistry", "engine/core/Engine", "engine/debug/index/drawFrame", "engine/debug/index/drawPanel", "engine/input/index/InputService", "engine/scene/index/Scene"],
-      "toolHints": ["3d-asset-viewer"],
-      "roundtripToolPresets": [
-        {
-          "toolId": "3d-asset-viewer",
-          "presetPath": "/samples/phase-02/0204/sample.0204.3d-asset-viewer.json"
-        }
-      ]
+      "toolHints": [],
+      "roundtripToolPresets": []
     },
     {
       "id": "0205",
@@ -644,13 +639,8 @@
       "preview": "/samples/phase-02/0219/assets/images/preview.svg",
       "href": "./phase-02/0219/index.html",
       "classValues": ["engine/assets/index/ImageAssetLoader", "engine/assets/index/SpriteAtlas", "engine/core/Engine", "engine/debug/index/drawFrame", "engine/debug/index/drawPanel", "engine/input/index/InputService", "engine/rendering/index/renderSpriteReadyEntities", "engine/scene/index/Scene", "engine/theme/index/Theme", "engine/theme/index/ThemeTokens"],
-      "toolHints": ["sprite-editor", "palette-browser"],
+      "toolHints": ["palette-browser"],
       "roundtripToolPresets": [
-        {
-          "toolId": "sprite-editor",
-          "presetPath": "/samples/phase-02/0219/sample.0219.sprite-editor.json",
-          "palettePath": "/samples/phase-02/0219/sample.0219.palette.json"
-        },
         {
           "toolId": "palette-browser",
           "presetPath": "/samples/phase-02/0219/sample.0219.palette.json"
@@ -682,12 +672,8 @@
       "preview": "/samples/phase-02/0221/assets/images/preview.svg",
       "href": "./phase-02/0221/index.html",
       "classValues": ["engine/core/Engine", "engine/debug/index/drawFrame", "engine/debug/index/drawPanel", "engine/input/index/InputService", "engine/scene/index/Scene", "engine/theme/index/Theme", "engine/theme/index/ThemeTokens", "engine/tilemap/index/renderTilemap", "engine/tilemap/index/resolveRectVsTilemap", "engine/tilemap/index/Tilemap", "engine/utils/index/clamp"],
-      "toolHints": ["tile-map-editor", "tile-model-converter"],
+      "toolHints": ["tile-model-converter"],
       "roundtripToolPresets": [
-        {
-          "toolId": "tile-map-editor",
-          "presetPath": "/samples/phase-02/0221/sample.0221.tile-map-editor.json"
-        },
         {
           "toolId": "tile-model-converter",
           "presetPath": "/samples/phase-02/0221/sample.0221.tile-model-converter.json"
@@ -755,13 +741,8 @@
       "preview": "/samples/phase-02/0226/assets/images/preview.svg",
       "classValues": ["engine/core/Engine", "engine/debug/index/drawFrame", "engine/debug/index/drawPanel", "engine/scene/index/Scene", "engine/theme/index/Theme", "engine/theme/index/ThemeTokens"],
       "engineClassesUsed": ["engine/core/Engine", "engine/debug/index/drawFrame", "engine/debug/index/drawPanel", "engine/scene/index/Scene", "engine/theme/index/Theme", "engine/theme/index/ThemeTokens"],
-      "toolHints": ["skin-editor"],
-      "roundtripToolPresets": [
-        {
-          "toolId": "skin-editor",
-          "presetPath": "/samples/phase-02/0226/sample.0226.skin-editor.json"
-        }
-      ]
+      "toolHints": [],
+      "roundtripToolPresets": []
     },
     {
       "id": "0227",
@@ -774,13 +755,8 @@
       "preview": "/samples/phase-02/0227/assets/images/preview.svg",
       "classValues": ["engine/core/Engine", "engine/debug/index/drawFrame", "engine/debug/index/drawPanel", "engine/scene/index/Scene", "engine/theme/index/Theme", "engine/theme/index/ThemeTokens"],
       "engineClassesUsed": ["engine/core/Engine", "engine/debug/index/drawFrame", "engine/debug/index/drawPanel", "engine/scene/index/Scene", "engine/theme/index/Theme", "engine/theme/index/ThemeTokens"],
-      "toolHints": ["skin-editor"],
-      "roundtripToolPresets": [
-        {
-          "toolId": "skin-editor",
-          "presetPath": "/samples/phase-02/0227/sample.0227.skin-editor.json"
-        }
-      ]
+      "toolHints": [],
+      "roundtripToolPresets": []
     },
     {
       "id": "0301",
@@ -793,13 +769,8 @@
       "preview": "/samples/phase-03/0301/assets/images/preview.svg",
       "href": "./phase-03/0301/index.html",
       "classValues": ["engine/assets/index/ImageAssetLoader", "engine/assets/index/SpriteAtlas", "engine/camera/index/Camera2D", "engine/camera/index/followCameraTarget", "engine/camera/index/worldRectToScreen", "engine/core/Engine", "engine/debug/index/drawFrame", "engine/debug/index/drawPanel", "engine/input/index/ActionInputMap", "engine/input/index/ActionInputService", "engine/rendering/index/renderSpriteReadyEntities", "engine/scene/index/Scene", "engine/systems/index/moveRectWithTilemapCollision", "engine/theme/index/Theme", "engine/theme/index/ThemeTokens", "engine/tilemap/index/renderTilemap", "engine/tilemap/index/Tilemap"],
-      "toolHints": ["sprite-editor", "palette-browser"],
+      "toolHints": ["palette-browser"],
       "roundtripToolPresets": [
-        {
-          "toolId": "sprite-editor",
-          "presetPath": "/samples/phase-03/0301/sample.0301.sprite-editor.json",
-          "palettePath": "/samples/phase-03/0301/sample.0301.palette.json"
-        },
         {
           "toolId": "palette-browser",
           "presetPath": "/samples/phase-03/0301/sample.0301.palette.json"
@@ -817,13 +788,8 @@
       "preview": "/samples/phase-03/0302/assets/images/preview.svg",
       "href": "./phase-03/0302/index.html",
       "classValues": ["engine/animation/index/AnimationController", "engine/assets/index/ImageAssetLoader", "engine/assets/index/SpriteAtlas", "engine/camera/index/Camera2D", "engine/camera/index/followCameraTarget", "engine/camera/index/worldRectToScreen", "engine/core/Engine", "engine/debug/index/drawFrame", "engine/debug/index/drawPanel", "engine/input/index/ActionInputMap", "engine/input/index/ActionInputService", "engine/rendering/index/renderSpriteReadyEntities", "engine/scene/index/Scene", "engine/systems/index/moveRectWithTilemapCollision", "engine/theme/index/Theme", "engine/theme/index/ThemeTokens", "engine/tilemap/index/renderTilemap", "engine/tilemap/index/Tilemap"],
-      "toolHints": ["sprite-editor", "palette-browser"],
+      "toolHints": ["palette-browser"],
       "roundtripToolPresets": [
-        {
-          "toolId": "sprite-editor",
-          "presetPath": "/samples/phase-03/0302/sample.0302.sprite-editor.json",
-          "palettePath": "/samples/phase-03/0302/sample.0302.palette.json"
-        },
         {
           "toolId": "palette-browser",
           "presetPath": "/samples/phase-03/0302/sample.0302.palette.json"
@@ -867,12 +833,8 @@
       "preview": "/samples/phase-03/0305/assets/images/preview.svg",
       "href": "./phase-03/0305/index.html",
       "classValues": ["engine/animation/index/AnimationController", "engine/assets/index/ImageAssetLoader", "engine/assets/index/SpriteAtlas", "engine/camera/index/Camera2D", "engine/camera/index/followCameraTarget", "engine/camera/index/worldRectToScreen", "engine/core/Engine", "engine/debug/index/drawFrame", "engine/debug/index/drawPanel", "engine/input/index/ActionInputMap", "engine/input/index/ActionInputService", "engine/rendering/index/renderSpriteReadyEntities", "engine/scene/index/Scene", "engine/systems/index/moveRectWithTilemapCollision", "engine/systems/index/stepArcadeBody", "engine/theme/index/Theme", "engine/theme/index/ThemeTokens", "engine/tilemap/index/renderTilemap", "engine/tilemap/index/Tilemap"],
-      "toolHints": ["tile-map-editor", "tile-model-converter"],
+      "toolHints": ["tile-model-converter"],
       "roundtripToolPresets": [
-        {
-          "toolId": "tile-map-editor",
-          "presetPath": "/samples/phase-03/0305/sample.0305.tile-map-editor.json"
-        },
         {
           "toolId": "tile-model-converter",
           "presetPath": "/samples/phase-03/0305/sample.0305.tile-model-converter.json"
@@ -1975,13 +1937,8 @@
       "preview": "/samples/phase-09/0905/assets/images/preview.svg",
       "href": "./phase-09/0905/index.html",
       "classValues": ["engine/collision/index/areMasksColliding", "engine/collision/index/createRasterMask", "engine/collision/index/getMaskBounds", "engine/collision/index/isColliding", "engine/core/Engine", "engine/debug/index/drawFrame", "engine/debug/index/drawPanel", "engine/scene/index/Scene", "engine/theme/index/Theme", "engine/theme/index/ThemeTokens"],
-      "toolHints": ["sprite-editor", "palette-browser"],
+      "toolHints": ["palette-browser"],
       "roundtripToolPresets": [
-        {
-          "toolId": "sprite-editor",
-          "presetPath": "/samples/phase-09/0905/sample.0905.sprite-editor.json",
-          "palettePath": "/samples/phase-09/0905/sample.0905.palette.json"
-        },
         {
           "toolId": "palette-browser",
           "presetPath": "/samples/phase-09/0905/sample.0905.palette.json"
@@ -2212,16 +2169,8 @@
       "preview": "/samples/phase-12/1208/assets/images/preview.svg",
       "href": "./phase-12/1208/index.html",
       "classValues": ["engine/camera/index/Camera2D", "engine/camera/index/worldRectToScreen", "engine/core/Engine", "engine/input/index/InputService", "engine/scene/index/Scene", "engine/theme/index/Theme", "engine/theme/index/ThemeTokens", "engine/tilemap/index/resolveRectVsTilemap", "engine/tilemap/index/Tilemap", "engine/utils/index/clamp"],
-      "toolHints": ["3d-asset-viewer", "parallax-editor", "tile-map-editor", "palette-browser"],
+      "toolHints": ["palette-browser"],
       "roundtripToolPresets": [
-        {
-          "toolId": "parallax-editor",
-          "presetPath": "/samples/phase-12/1208/sample.1208.parallax-editor.json"
-        },
-        {
-          "toolId": "tile-map-editor",
-          "presetPath": "/samples/phase-12/1208/sample.1208.tile-map-editor.json"
-        },
         {
           "toolId": "palette-browser",
           "presetPath": "/samples/phase-12/1208/sample.1208.palette.json"
@@ -2237,14 +2186,10 @@
       "tags": ["tilemap", "preset", "layout", "editor", "basic", "tool"],
       "engineClassesUsed": ["engine/tilemap/index/Tilemap"],
       "classValues": ["engine/tilemap/index/Tilemap", "tools/tile-map-editor"],
-      "toolHints": ["tile-map-editor", "tile-model-converter"],
+      "toolHints": ["tile-model-converter"],
       "thumbnail": "/samples/phase-12/1209/assets/images/preview.svg",
       "preview": "/samples/phase-12/1209/assets/images/preview.svg",
       "roundtripToolPresets": [
-        {
-          "toolId": "tile-map-editor",
-          "presetPath": "/samples/phase-12/1209/sample.1209.tile-map-editor.json"
-        },
         {
           "toolId": "tile-model-converter",
           "presetPath": "/samples/phase-12/1209/sample.1209.tile-model-converter.json"
@@ -2260,15 +2205,10 @@
       "tags": ["tilemap", "preset", "layout", "editor", "objective", "tool"],
       "engineClassesUsed": ["engine/tilemap/index/Tilemap"],
       "classValues": ["engine/tilemap/index/Tilemap", "tools/tile-map-editor"],
-      "toolHints": ["tile-map-editor"],
+      "toolHints": [],
       "thumbnail": "/samples/phase-12/1210/assets/images/preview.svg",
       "preview": "/samples/phase-12/1210/assets/images/preview.svg",
-      "roundtripToolPresets": [
-        {
-          "toolId": "tile-map-editor",
-          "presetPath": "/samples/phase-12/1210/sample.1210.tile-map-editor.json"
-        }
-      ]
+      "roundtripToolPresets": []
     },
     {
       "id": "1211",
@@ -2293,15 +2233,10 @@
       "tags": ["vector", "map", "preset", "editor", "route", "tool"],
       "engineClassesUsed": ["tools/vector-map-editor"],
       "classValues": ["tools/vector-map-editor"],
-      "toolHints": ["vector-map-editor"],
+      "toolHints": [],
       "thumbnail": "/samples/phase-12/1212/assets/images/preview.svg",
       "preview": "/samples/phase-12/1212/assets/images/preview.svg",
-      "roundtripToolPresets": [
-        {
-          "toolId": "vector-map-editor",
-          "presetPath": "/samples/phase-12/1212/sample-1212-vector-map-editor.json"
-        }
-      ]
+      "roundtripToolPresets": []
     },
     {
       "id": "1213",
@@ -2312,15 +2247,10 @@
       "tags": ["vector", "map", "preset", "editor", "dungeon", "tool"],
       "engineClassesUsed": ["tools/vector-map-editor"],
       "classValues": ["tools/vector-map-editor"],
-      "toolHints": ["vector-map-editor"],
+      "toolHints": [],
       "thumbnail": "/samples/phase-12/1213/assets/images/preview.svg",
       "preview": "/samples/phase-12/1213/assets/images/preview.svg",
-      "roundtripToolPresets": [
-        {
-          "toolId": "vector-map-editor",
-          "presetPath": "/samples/phase-12/1213/sample-1213-vector-map-editor.json"
-        }
-      ]
+      "roundtripToolPresets": []
     },
     {
       "id": "1214",
@@ -2331,15 +2261,10 @@
       "tags": ["vector", "map", "preset", "editor", "arena", "tool"],
       "engineClassesUsed": ["tools/vector-map-editor"],
       "classValues": ["tools/vector-map-editor"],
-      "toolHints": ["vector-map-editor"],
+      "toolHints": [],
       "thumbnail": "/samples/phase-12/1214/assets/images/preview.svg",
       "preview": "/samples/phase-12/1214/assets/images/preview.svg",
-      "roundtripToolPresets": [
-        {
-          "toolId": "vector-map-editor",
-          "presetPath": "/samples/phase-12/1214/sample-1214-vector-map-editor.json"
-        }
-      ]
+      "roundtripToolPresets": []
     },
     {
       "id": "1215",
@@ -2402,15 +2327,10 @@
       "tags": ["parallax", "preset", "editor", "layers", "scroll", "tool"],
       "engineClassesUsed": ["tools/parallax-editor"],
       "classValues": ["tools/parallax-editor"],
-      "toolHints": ["parallax-editor"],
+      "toolHints": [],
       "thumbnail": "/samples/phase-12/1218/assets/images/preview.svg",
       "preview": "/samples/phase-12/1218/assets/images/preview.svg",
-      "roundtripToolPresets": [
-        {
-          "toolId": "parallax-editor",
-          "presetPath": "/samples/phase-12/1218/sample-1218-parallax-editor.json"
-        }
-      ]
+      "roundtripToolPresets": []
     },
     {
       "id": "1219",
@@ -2421,15 +2341,10 @@
       "tags": ["parallax", "tilemap", "preset", "editor", "embedded", "tool"],
       "engineClassesUsed": ["tools/parallax-editor"],
       "classValues": ["tools/parallax-editor"],
-      "toolHints": ["parallax-editor"],
+      "toolHints": [],
       "thumbnail": "/samples/phase-12/1219/assets/images/preview.svg",
       "preview": "/samples/phase-12/1219/assets/images/preview.svg",
-      "roundtripToolPresets": [
-        {
-          "toolId": "parallax-editor",
-          "presetPath": "/samples/phase-12/1219/sample-1219-parallax-editor.json"
-        }
-      ]
+      "roundtripToolPresets": []
     },
     {
       "id": "1220",
@@ -2440,15 +2355,10 @@
       "tags": ["parallax", "preset", "editor", "mario", "learning", "tool"],
       "engineClassesUsed": ["tools/parallax-editor"],
       "classValues": ["tools/parallax-editor"],
-      "toolHints": ["parallax-editor"],
+      "toolHints": [],
       "thumbnail": "/samples/phase-12/1220/assets/images/preview.svg",
       "preview": "/samples/phase-12/1220/assets/images/preview.svg",
-      "roundtripToolPresets": [
-        {
-          "toolId": "parallax-editor",
-          "presetPath": "/samples/phase-12/1220/sample-1220-parallax-editor.json"
-        }
-      ]
+      "roundtripToolPresets": []
     },
     {
       "id": "1301",
