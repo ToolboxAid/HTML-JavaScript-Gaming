@@ -6,59 +6,58 @@ Reasoning: high
 STRICT SCOPE MODE
 
 ALLOWED FILES:
-- tools/vector-map-editor/main.js
-- docs/dev/reports/vector_map_hosted_payload_boot_11_151.txt
+- tools/svg-asset-studio/main.js
+- docs/dev/reports/svg_asset_studio_hosted_payload_boot_11_152.txt
 
 ALLOWED CHANGES:
-- fix Vector Map Editor hosted direct payload boot
+- fix SVG Asset Studio hosted direct payload boot
 - create/update report only
 
 TASK:
 
 1. Open:
-   tools/vector-map-editor/main.js
+   tools/svg-asset-studio/main.js
 
-2. Find boot/init logic that shows:
-   `No map objects loaded. Import a map JSON file or launch with a sample preset path.`
+2. Find hosted launch/shared context input path.
 
-3. Find hosted launch/shared context input path.
+3. Ensure hosted Workspace Manager payload is read as:
+   payloadJson.vectorAssetDocument
 
-4. Ensure hosted Workspace Manager payload is read as:
-   payloadJson.vectorMapDocument
+4. Ensure editor load/render source uses:
+   - payloadJson.vectorAssetDocument.svgText
+   - payloadJson.vectorAssetDocument.sourceName
+   - payloadJson.vectorAssetDocument.editorOptions
 
-5. Ensure editor state/render source uses:
-   payloadJson.vectorMapDocument.objects
-
-6. For hosted direct payload flow:
+5. For hosted direct payload flow:
    - do not require samplePresetPath
    - do not require import path
-   - do not fallback to empty map
-   - do not show old preset-path message when valid payload exists
+   - do not fallback to demo SVG
+   - do not show old preset/import message when valid payload exists
 
-7. Do NOT:
+6. Do NOT:
    - modify schemas
    - modify Sample 1902 JSON
    - modify Workspace Manager
    - modify tool host runtime
-   - add fallback/demo/default objects
+   - add fallback/demo/default SVG
    - transform/wrap/normalize payload
 
-8. Validate:
-   - JS syntax for tools/vector-map-editor/main.js
-   - direct hosted payload containing obj-player-path and obj-hazard-zone loads into editor state
-   - old no-map message is not shown for valid hosted payload
+7. Validate:
+   - JS syntax for tools/svg-asset-studio/main.js
+   - direct hosted payload containing vectorAssetDocument.svgText loads into editor state
+   - sourceName sample-0901-ship.svg is recognized
    - git diff --name-only contains only ALLOWED FILES
 
-9. Write:
-   docs/dev/reports/vector_map_hosted_payload_boot_11_151.txt
+8. Write:
+   docs/dev/reports/svg_asset_studio_hosted_payload_boot_11_152.txt
 
 Report must include:
 - old boot path found
 - new direct hosted payload path
-- objects verified
+- sourceName/svgText verified
 - validation result
 - strict scope confirmation
 - remaining blockers if any
 
-10. Package Codex output ZIP at:
-   tmp/PR_11_151_FIX_VECTOR_MAP_HOSTED_PAYLOAD_BOOT.zip
+9. Package Codex output ZIP at:
+   tmp/PR_11_152_FIX_SVG_ASSET_STUDIO_HOSTED_PAYLOAD_BOOT.zip

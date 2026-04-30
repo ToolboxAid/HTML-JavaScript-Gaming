@@ -1,1 +1,1 @@
-Fix Vector Map Editor hosted direct payload boot path - PR 11.151
+Fix SVG Asset Studio hosted direct payload boot path - PR 11.152

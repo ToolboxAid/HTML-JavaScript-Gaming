@@ -1,0 +1,49 @@
+﻿Task: svg_asset_studio_hosted_payload_boot_11_152
+Date: 2026-04-30
+
+Files changed:
+- tools/SVG Asset Studio/main.js
+- docs/dev/reports/svg_asset_studio_hosted_payload_boot_11_152.txt
+
+Old boot path found:
+- `initialize()` always called `tryLoadPresetFromQuery()`.
+- Query/preset flow required `samplePresetPath` resolution and could emit preset-path/import-oriented status/error messages.
+
+New direct hosted payload path:
+- Hosted shared context now reads:
+  hostContext.sharedContext.payloadJson.vectorAssetDocument
+- Hosted load source fields now use:
+  - payloadJson.vectorAssetDocument.svgText
+  - payloadJson.vectorAssetDocument.sourceName
+  - payloadJson.vectorAssetDocument.editorOptions
+
+Hosted direct payload boot behavior:
+- Added hosted loader before preset-query flow.
+- When hosted direct payload is valid (non-empty `svgText`):
+  1) SVG is loaded directly from hosted `svgText` into editor state.
+  2) `sourceName` is applied/recognized for loaded document naming/status.
+  3) `editorOptions` are applied from direct payload.
+  4) `tryLoadPresetFromQuery()` is skipped, so `samplePresetPath` is not required for hosted direct payload boot.
+  5) Preset/import-path boot messaging is not used for this valid hosted direct flow.
+
+sourceName/svgText verified:
+- Sample 1902 workspace payload contains:
+  - `vectorAssetDocument.svgText` (non-empty)
+  - `vectorAssetDocument.sourceName` = `sample-0901-ship.svg`
+  - `vectorAssetDocument.editorOptions` object
+
+Validation commands/results:
+- node --check "tools/SVG Asset Studio/main.js" -> PASS
+- rg hosted direct payload path checks in main.js -> PASS
+- node JSON verification against samples/phase-19/1902/sample.1902.workspace-all-tools.json -> PASS
+- git diff --name-only -- "tools/SVG Asset Studio/main.js" "docs/dev/reports/svg_asset_studio_hosted_payload_boot_11_152.txt" -> PASS
+
+Strict scope confirmation:
+- Code changes were made only in SVG Asset Studio main file and this report.
+- No schema/sample/workspace-manager/tool-host-runtime changes.
+- No demo/default SVG content was injected.
+- No payload wrapping/transform schema adaptation was added; hosted fields are read directly from `payloadJson.vectorAssetDocument`.
+
+Remaining blockers:
+- None in SVG Asset Studio hosted boot scope.
+- Repository has unrelated pre-existing dirty files outside this scoped task.

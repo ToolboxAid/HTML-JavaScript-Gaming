@@ -29,6 +29,7 @@ import {
   SHARED_ASSET_HANDOFF_EVENT,
   SHARED_PALETTE_HANDOFF_EVENT
 } from "../shared/assetUsageIntegration.js";
+import { readToolHostSharedContextFromLocation } from "../shared/toolHostSharedContext.js";
 
 const SVG_NS = "http://www.w3.org/2000/svg";
 const DRAWABLE_SELECTOR = "rect,ellipse,circle,line,polyline,path";
@@ -3158,6 +3159,59 @@ async function tryLoadPresetFromQuery() {
   }
 }
 
+function readHostedVectorAssetDocumentFromContext() {
+  const hostContext = readToolHostSharedContextFromLocation(window.location);
+  const payloadJson = hostContext?.sharedContext?.payloadJson;
+  const vectorAssetDocument = payloadJson?.vectorAssetDocument;
+  if (!vectorAssetDocument || typeof vectorAssetDocument !== "object" || Array.isArray(vectorAssetDocument)) {
+    return null;
+  }
+
+  const svgText = typeof vectorAssetDocument.svgText === "string"
+    ? vectorAssetDocument.svgText
+    : "";
+  if (!svgText.trim()) {
+    return null;
+  }
+
+  const sourceName = typeof vectorAssetDocument.sourceName === "string"
+    ? vectorAssetDocument.sourceName.trim()
+    : "";
+  const editorOptions = vectorAssetDocument.editorOptions && typeof vectorAssetDocument.editorOptions === "object" && !Array.isArray(vectorAssetDocument.editorOptions)
+    ? vectorAssetDocument.editorOptions
+    : null;
+
+  return {
+    svgText,
+    sourceName,
+    editorOptions
+  };
+}
+
+function tryLoadHostedVectorAssetFromContext() {
+  const hostedVectorAssetDocument = readHostedVectorAssetDocumentFromContext();
+  if (!hostedVectorAssetDocument) {
+    return false;
+  }
+
+  registerPaletteFromPresetEditorOptions(hostedVectorAssetDocument.editorOptions, "");
+  state.skipExternalProjectStateUntil = Date.now() + 3000;
+  loadSvgFromText(
+    hostedVectorAssetDocument.svgText,
+    hostedVectorAssetDocument.sourceName || "hosted-vector-asset.svg"
+  );
+  if (hostedVectorAssetDocument.editorOptions) {
+    applySampleEditorOptions(hostedVectorAssetDocument.editorOptions);
+  }
+  const paletteClassification = ensurePaletteSelectionFromDeclaredInputs(hostedVectorAssetDocument.editorOptions || {});
+  bindPaintAndStrokeFromLoadedData();
+  applyEnablementState();
+  emitVectorAssetControlReadiness("", { paletteClassification, phase: "loaded", lifecycleStable: true });
+  setStatus(`Loaded hosted SVG: ${hostedVectorAssetDocument.sourceName || "hosted-vector-asset.svg"}.`);
+  syncVectorAssetUxContract();
+  return true;
+}
+
 function bindEvents() {
   refs.newSvgButton.addEventListener("click", () => {
     finalizePendingPolyline(false);
@@ -3464,8 +3518,9 @@ async function initialize() {
   setPaletteTarget("paint", { silent: true });
   applyEnablementState();
   renderElementList();
-  const presetLoaded = await tryLoadPresetFromQuery();
-  if (!presetLoaded && !hasErrorStatus()) {
+  const hostedLoaded = tryLoadHostedVectorAssetFromContext();
+  const presetLoaded = hostedLoaded ? false : await tryLoadPresetFromQuery();
+  if (!hostedLoaded && !presetLoaded && !hasErrorStatus()) {
     setStatus("SVG Asset Studio ready.");
   }
   syncVectorAssetUxContract();
