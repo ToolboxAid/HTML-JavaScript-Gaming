@@ -34,6 +34,7 @@ class WorkspaceV2SessionProducer {
     this.diffRightSelect = document.getElementById("workspaceV2DiffRightSelect");
     this.diffLeftSelectedLabelNode = document.getElementById("workspaceV2DiffLeftSelectedLabel");
     this.diffRightSelectedLabelNode = document.getElementById("workspaceV2DiffRightSelectedLabel");
+    this.diffSelectionStateNode = document.getElementById("workspaceV2DiffSelectionState");
     this.computeDiffButton = document.getElementById("workspaceV2ComputeDiffButton");
     this.diffEmptyState = document.getElementById("workspaceV2DiffEmptyState");
     this.diffOutputNode = document.getElementById("workspaceV2DiffOutput");
@@ -41,6 +42,7 @@ class WorkspaceV2SessionProducer {
     this.mergeRightSelect = document.getElementById("workspaceV2MergeRightSelect");
     this.mergeLeftSelectedLabelNode = document.getElementById("workspaceV2MergeLeftSelectedLabel");
     this.mergeRightSelectedLabelNode = document.getElementById("workspaceV2MergeRightSelectedLabel");
+    this.mergeSelectionStateNode = document.getElementById("workspaceV2MergeSelectionState");
     this.computeMergeButton = document.getElementById("workspaceV2ComputeMergeButton");
     this.confirmMergeButton = document.getElementById("workspaceV2ConfirmMergeButton");
     this.applyMergeButton = document.getElementById("workspaceV2ApplyMergeButton");
@@ -551,12 +553,32 @@ class WorkspaceV2SessionProducer {
     return shortContext ? `${toolId} | ${shortContext}` : toolId;
   }
 
+  hasFreshMergePreviewContext(preview) {
+    if (!preview || typeof preview !== "object") {
+      return false;
+    }
+    const source = this.findSessionEntryById(this.mergeCandidates, preview.source && preview.source.id ? preview.source.id : "");
+    const target = this.findSessionEntryById(this.mergeCandidates, preview.target && preview.target.id ? preview.target.id : "");
+    if (!source || !target) {
+      return false;
+    }
+    return JSON.stringify(source.payload) === preview.source.hash && JSON.stringify(target.payload) === preview.target.hash;
+  }
+
   updateDiffSelectionFeedbackAndState() {
     const left = this.findSessionEntryById(this.diffCandidates, this.diffLeftSelect.value);
     const right = this.findSessionEntryById(this.diffCandidates, this.diffRightSelect.value);
     this.diffLeftSelectedLabelNode.textContent = this.formatSelectionLabel(left);
     this.diffRightSelectedLabelNode.textContent = this.formatSelectionLabel(right);
-    this.computeDiffButton.disabled = !(left && right && left.id !== right.id);
+    const canRunDiff = Boolean(left && right && left.id !== right.id);
+    this.computeDiffButton.disabled = !canRunDiff;
+    if (left && right && left.id === right.id) {
+      this.diffSelectionStateNode.textContent = "Choose two different sessions.";
+      return;
+    }
+    this.diffSelectionStateNode.textContent = canRunDiff
+      ? "Selections are valid."
+      : "Select two different sessions to compute diff.";
   }
 
   updateMergeSelectionFeedbackAndState() {
@@ -564,7 +586,22 @@ class WorkspaceV2SessionProducer {
     const right = this.findSessionEntryById(this.mergeCandidates, this.mergeRightSelect.value);
     this.mergeLeftSelectedLabelNode.textContent = this.formatSelectionLabel(left);
     this.mergeRightSelectedLabelNode.textContent = this.formatSelectionLabel(right);
-    this.computeMergeButton.disabled = !(left && right && left.id !== right.id);
+    const canPreviewMerge = Boolean(left && right && left.id !== right.id);
+    this.computeMergeButton.disabled = !canPreviewMerge;
+    if (left && right && left.id === right.id) {
+      this.mergeSelectionStateNode.textContent = "Choose two different sessions.";
+    } else if (canPreviewMerge) {
+      this.mergeSelectionStateNode.textContent = "Selections are valid.";
+    } else {
+      this.mergeSelectionStateNode.textContent = "Select two different sessions to preview merge.";
+    }
+
+    const previewIsFresh = this.hasFreshMergePreviewContext(this.pendingMergePreview);
+    const previewHasConflicts = this.pendingMergePreview && Object.keys(this.pendingMergePreview.conflicts).length > 0;
+    const previewReadyForConfirm = Boolean(this.pendingMergePreview && !this.pendingMergePreview.confirmed && previewIsFresh && !previewHasConflicts);
+    const previewReadyForApply = Boolean(this.pendingMergePreview && this.pendingMergePreview.confirmed && previewIsFresh && !previewHasConflicts);
+    this.confirmMergeButton.disabled = !previewReadyForConfirm;
+    this.applyMergeButton.disabled = !previewReadyForApply;
   }
 
   renderSessionDiffInputs() {
@@ -799,8 +836,7 @@ class WorkspaceV2SessionProducer {
       changes: previewChanges,
       confirmed: false
     };
-    this.confirmMergeButton.disabled = false;
-    this.applyMergeButton.disabled = true;
+    this.updateMergeSelectionFeedbackAndState();
 
     this.mergeOutputNode.textContent = JSON.stringify({
       source: this.pendingMergePreview.source,
@@ -856,7 +892,7 @@ class WorkspaceV2SessionProducer {
       return;
     }
     this.pendingMergePreview.confirmed = true;
-    this.applyMergeButton.disabled = false;
+    this.updateMergeSelectionFeedbackAndState();
     this.mergeOutputNode.textContent = JSON.stringify({
       source: this.pendingMergePreview.source,
       target: this.pendingMergePreview.target,
@@ -946,9 +982,8 @@ class WorkspaceV2SessionProducer {
     this.importJsonNode.value = JSON.stringify(this.pendingMergePreview.mergedPayload, null, 2);
     this.recordMergeAuditEntry(this.pendingMergePreview);
     this.renderDiagnosticsPanel();
-    this.confirmMergeButton.disabled = true;
-    this.applyMergeButton.disabled = true;
     this.pendingMergePreview = null;
+    this.updateMergeSelectionFeedbackAndState();
     this.mergeOutputNode.textContent = JSON.stringify({
       source: liveSource.id,
       target: liveTarget.id,
