@@ -115,6 +115,10 @@ class VectorMapEditorV2 {
       this.renderError("Session context is invalid. Expected an object containing payloadJson.vectorMapDocument.");
       return;
     }
+    if (sessionContext.version !== "v2") {
+      this.renderError("Unsupported session version");
+      return;
+    }
     if (!sessionContext.payloadJson || typeof sessionContext.payloadJson !== "object" || Array.isArray(sessionContext.payloadJson)) {
       this.renderError("Vector Map Editor V2 session data is invalid. Expected payloadJson only.");
       return;

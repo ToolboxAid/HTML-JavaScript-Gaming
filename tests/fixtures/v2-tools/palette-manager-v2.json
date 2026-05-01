@@ -1,6 +1,7 @@
 {
   "hostContextId": "palette-manager-v2-fixture",
   "sessionContext": {
+    "version": "v2",
     "toolId": "palette-manager-v2",
     "paletteJson": {
       "name": "Fixture Palette",

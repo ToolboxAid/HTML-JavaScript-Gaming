@@ -1,6 +1,7 @@
 {
   "hostContextId": "tilemap-studio-v2-fixture",
   "sessionContext": {
+    "version": "v2",
     "toolId": "tilemap-studio-v2",
     "payloadJson": {
       "tileMapDocument": {

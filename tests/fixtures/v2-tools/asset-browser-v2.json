@@ -1,6 +1,7 @@
 {
   "hostContextId": "asset-browser-v2-fixture",
   "sessionContext": {
+    "version": "v2",
     "toolId": "asset-browser-v2",
     "payloadJson": {
       "assetCatalog": {

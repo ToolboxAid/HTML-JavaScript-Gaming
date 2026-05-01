@@ -157,6 +157,13 @@ class WorkspaceV2SessionProducer {
     return { ok: true, message: "", metrics };
   }
 
+  withSessionVersion(sessionPayload) {
+    return {
+      ...sessionPayload,
+      version: "v2"
+    };
+  }
+
   applySessionPayload(sessionPayload, sourceLabel) {
     if (!this.isValidSessionPayload(sessionPayload)) {
       this.statusNode.textContent = "Session payload is invalid. Expected a JSON object payload.";
@@ -167,7 +174,8 @@ class WorkspaceV2SessionProducer {
       this.statusNode.textContent = "Select a V2 tool before applying session payload.";
       return false;
     }
-    const sizeValidation = this.validateSessionPayloadSize(sessionPayload);
+    const versionedPayload = this.withSessionVersion(sessionPayload);
+    const sizeValidation = this.validateSessionPayloadSize(versionedPayload);
     if (!sizeValidation.ok) {
       this.statusNode.textContent = sizeValidation.message;
       return false;
@@ -175,8 +183,8 @@ class WorkspaceV2SessionProducer {
     const hostContextId = this.createHostContextId(toolId);
     sessionStorage.setItem(hostContextId, sizeValidation.metrics.serializedPayload);
     this.currentHostContextId = hostContextId;
-    this.setCurrentSessionPayload(sessionPayload, sourceLabel);
-    this.importJsonNode.value = JSON.stringify(sessionPayload, null, 2);
+    this.setCurrentSessionPayload(versionedPayload, sourceLabel);
+    this.importJsonNode.value = JSON.stringify(versionedPayload, null, 2);
     this.renderDiagnosticsPanel();
     return true;
   }
@@ -771,7 +779,8 @@ class WorkspaceV2SessionProducer {
       this.statusNode.textContent = "No session payload is available. Load a fixture, import JSON, apply share link, or load library session first.";
       return;
     }
-    const sizeValidation = this.validateSessionPayloadSize(this.currentSessionPayload);
+    const versionedPayload = this.withSessionVersion(this.currentSessionPayload);
+    const sizeValidation = this.validateSessionPayloadSize(versionedPayload);
     if (!sizeValidation.ok) {
       this.statusNode.textContent = sizeValidation.message;
       return;
@@ -779,6 +788,7 @@ class WorkspaceV2SessionProducer {
     const hostContextId = this.createHostContextId(toolId);
     sessionStorage.setItem(hostContextId, sizeValidation.metrics.serializedPayload);
     this.currentHostContextId = hostContextId;
+    this.setCurrentSessionPayload(versionedPayload, this.currentSessionSource || "workspace-v2");
     this.renderDiagnosticsPanel();
     const launchUrl = this.buildToolLaunchUrl(toolId, hostContextId);
     this.statusNode.textContent = `Session created.\nTool: ${toolId}\nHostContextId: ${hostContextId}\nURL: tools/${toolId}/index.html?hostContextId=${hostContextId}`;

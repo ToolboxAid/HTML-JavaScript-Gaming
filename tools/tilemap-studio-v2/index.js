@@ -127,6 +127,10 @@ class TilemapStudioV2 {
       this.renderError("Session context is invalid. Expected an object containing payloadJson.tileMapDocument.");
       return;
     }
+    if (sessionContext.version !== "v2") {
+      this.renderError("Unsupported session version");
+      return;
+    }
     if (!sessionContext.payloadJson || typeof sessionContext.payloadJson !== "object" || Array.isArray(sessionContext.payloadJson)) {
       this.renderError("Tilemap session data is invalid. Expected payloadJson only.");
       return;

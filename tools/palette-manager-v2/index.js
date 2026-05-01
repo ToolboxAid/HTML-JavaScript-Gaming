@@ -127,6 +127,10 @@ class PaletteManagerV2 {
       this.renderError("Session context is invalid. Expected an object containing paletteJson.");
       return;
     }
+    if (sessionContext.version !== "v2") {
+      this.renderError("Unsupported session version");
+      return;
+    }
     if (!sessionContext.paletteJson || typeof sessionContext.paletteJson !== "object" || Array.isArray(sessionContext.paletteJson)) {
       this.renderError("Palette Manager V2 session data is invalid. Expected paletteJson only.");
       return;
