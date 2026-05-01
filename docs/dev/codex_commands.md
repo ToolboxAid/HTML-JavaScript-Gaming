@@ -1,33 +1,31 @@
-# Codex Commands — PR 11.184
+# Codex Commands - PR 11.187
 
 Model: GPT-5 high
 Reasoning: high
 
-Remove cross-tool aliasing.
+Commit/restart documentation only.
 
-Primary file:
-- `tools/toolRegistry.js`
+Do not modify:
+- schemas
+- samples
+- games
+- runtime tool code
 
-Steps:
-1. Remove `TOOL_ID_ALIASES`.
-2. Update `resolveToolIdAlias(toolId)` so it only trims and returns exact input.
-3. Ensure `getToolById("vector-asset-studio")` does not resolve to SVG.
-4. Do not add fallback aliases.
-5. Create report:
-   - `docs/dev/reports/pr_11_184_validation.md`
+Create/keep docs that define the restart lane:
+
+- Tool v2 migration
+- Palette first
+- session-backed shared data
+- reverse engineer tools, do not copy old code
+- move old tools to `<tool>-v1`
+- support data load paths:
+  1. workspace from URL -> session -> tool
+  2. tool from URL -> session -> tool
+  3. tool from workspace session
 
 Validation:
-- `node --check tools/toolRegistry.js`
-- `node --check "tools/Workspace Manager/main.js"`
-
-Manual:
-- Open Workspace Manager sample 1902.
-- Confirm SVG tile still renders as `svg-asset-studio`.
-- Confirm no tool id aliases are used to launch SVG.
-
-Full samples smoke:
-- Skip.
-- Reason: targeted registry alias cleanup.
+- docs only; no runtime validation required
+- full samples smoke skipped because this is commit/restart documentation
 
 Return ZIP artifact at:
-`<project folder>/tmp/PR_11_184_20260430_01.zip`
+`<project folder>/tmp/PR_11_187_20260430_01.zip`

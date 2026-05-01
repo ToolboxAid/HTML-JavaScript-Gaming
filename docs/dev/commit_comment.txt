@@ -1,1 +1,1 @@
-Remove cross-tool registry alias and require exact tool ids - PR 11.184
+Document restart for Palette-first Tool v2 migration with session-backed data - PR 11.187
