@@ -1,6 +1,7 @@
 class TilemapStudioV2 {
   constructor() {
     console.log("[TilemapStudioV2]");
+    this.sessionPayloadBytesLimit = 1024 * 1024;
     document.title = "Tilemap Studio V2";
     document.body.dataset.toolId = "tilemap-studio-v2";
     this.urlState = this.readUrlState();
@@ -97,20 +98,21 @@ class TilemapStudioV2 {
         this.renderMissing("No hostContextId was provided. Re-open Tilemap Studio V2 from a valid Tool V2 session link.");
         return;
       }
+      const serializedSession = window.sessionStorage.getItem(
+        this.urlState.hostContextId
+      );
       if (
-        !window.sessionStorage.getItem(
-          this.urlState.hostContextId
-        )
+        !serializedSession
       ) {
         this.renderMissing("No session data was found for the provided hostContextId. Re-open Tilemap Studio V2 from the tools index or a host flow that creates the session context first.");
         return;
       }
+      if (serializedSession.length > this.sessionPayloadBytesLimit) {
+        this.renderError(`Session size exceeds allowed limit. Payload is ${serializedSession.length} bytes and limit is ${this.sessionPayloadBytesLimit} bytes.`);
+        return;
+      }
       this.loadContract(
-        JSON.parse(
-          window.sessionStorage.getItem(
-            this.urlState.hostContextId
-          )
-        )
+        JSON.parse(serializedSession)
       );
     } catch (error) {
       const runtimeMessage = `Unable to read Tilemap Studio V2 session context: ${error instanceof Error ? error.message : "unknown error"}`;

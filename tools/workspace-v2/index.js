@@ -4,6 +4,8 @@ class WorkspaceV2SessionProducer {
     document.body.dataset.toolId = "workspace-v2";
     this.libraryStorageKey = "v2-session-library";
     this.errorLogsStorageKey = "v2-error-logs";
+    this.urlLengthLimit = 2000;
+    this.sessionPayloadBytesLimit = 1024 * 1024;
     this.toolSelect = document.getElementById("workspaceV2ToolSelect");
     this.backButton = document.getElementById("workspaceV2BackButton");
     this.loadFixtureButton = document.getElementById("workspaceV2LoadFixtureButton");
@@ -135,6 +137,26 @@ class WorkspaceV2SessionProducer {
     return Boolean(sessionPayload && typeof sessionPayload === "object" && !Array.isArray(sessionPayload));
   }
 
+  sessionPayloadMetrics(sessionPayload) {
+    const serializedPayload = JSON.stringify(sessionPayload);
+    return {
+      serializedPayload,
+      bytes: new TextEncoder().encode(serializedPayload).length
+    };
+  }
+
+  validateSessionPayloadSize(sessionPayload) {
+    const metrics = this.sessionPayloadMetrics(sessionPayload);
+    if (metrics.bytes > this.sessionPayloadBytesLimit) {
+      return {
+        ok: false,
+        message: `Session size exceeds allowed limit. Payload is ${metrics.bytes} bytes and limit is ${this.sessionPayloadBytesLimit} bytes.`,
+        metrics
+      };
+    }
+    return { ok: true, message: "", metrics };
+  }
+
   applySessionPayload(sessionPayload, sourceLabel) {
     if (!this.isValidSessionPayload(sessionPayload)) {
       this.statusNode.textContent = "Session payload is invalid. Expected a JSON object payload.";
@@ -145,8 +167,13 @@ class WorkspaceV2SessionProducer {
       this.statusNode.textContent = "Select a V2 tool before applying session payload.";
       return false;
     }
+    const sizeValidation = this.validateSessionPayloadSize(sessionPayload);
+    if (!sizeValidation.ok) {
+      this.statusNode.textContent = sizeValidation.message;
+      return false;
+    }
     const hostContextId = this.createHostContextId(toolId);
-    sessionStorage.setItem(hostContextId, JSON.stringify(sessionPayload));
+    sessionStorage.setItem(hostContextId, sizeValidation.metrics.serializedPayload);
     this.currentHostContextId = hostContextId;
     this.setCurrentSessionPayload(sessionPayload, sourceLabel);
     this.importJsonNode.value = JSON.stringify(sessionPayload, null, 2);
@@ -167,6 +194,9 @@ class WorkspaceV2SessionProducer {
   decodeSessionPayload(encodedPayload) {
     if (typeof encodedPayload !== "string" || !encodedPayload.trim()) {
       throw new Error("Missing encoded session payload.");
+    }
+    if (encodedPayload.trim().length > this.urlLengthLimit) {
+      throw new Error(`Session size exceeds allowed limit for URL payload. Encoded payload length is ${encodedPayload.trim().length} and limit is ${this.urlLengthLimit}.`);
     }
     const normalized = encodedPayload.trim().replace(/-/g, "+").replace(/_/g, "/");
     const padding = normalized.length % 4 === 0 ? "" : "=".repeat(4 - (normalized.length % 4));
@@ -624,6 +654,10 @@ class WorkspaceV2SessionProducer {
       const encoded = this.encodeSessionPayload(this.currentSessionPayload);
       const shareUrl = new URL(window.location.href);
       shareUrl.searchParams.set("session", encoded);
+      if (shareUrl.toString().length > this.urlLengthLimit) {
+        this.statusNode.textContent = `Session size exceeds allowed limit for URL payload. URL length is ${shareUrl.toString().length} and limit is ${this.urlLengthLimit}.`;
+        return;
+      }
       this.shareUrlNode.value = shareUrl.toString();
       this.statusNode.textContent = "Share link created from current session payload.";
     } catch (error) {
@@ -737,8 +771,13 @@ class WorkspaceV2SessionProducer {
       this.statusNode.textContent = "No session payload is available. Load a fixture, import JSON, apply share link, or load library session first.";
       return;
     }
+    const sizeValidation = this.validateSessionPayloadSize(this.currentSessionPayload);
+    if (!sizeValidation.ok) {
+      this.statusNode.textContent = sizeValidation.message;
+      return;
+    }
     const hostContextId = this.createHostContextId(toolId);
-    sessionStorage.setItem(hostContextId, JSON.stringify(this.currentSessionPayload));
+    sessionStorage.setItem(hostContextId, sizeValidation.metrics.serializedPayload);
     this.currentHostContextId = hostContextId;
     this.renderDiagnosticsPanel();
     const launchUrl = this.buildToolLaunchUrl(toolId, hostContextId);
