@@ -445,6 +445,7 @@ class WorkspaceV2SessionProducer {
       const reopenButton = document.createElement("button");
       const copyIdButton = document.createElement("button");
       const useInLibraryButton = document.createElement("button");
+      const deleteRecentButton = document.createElement("button");
       title.textContent = `${entry.tool} (${entry.hostContextId})`;
       idLabel.textContent = "Session ID: ";
       idCode.textContent = entry.hostContextId;
@@ -466,7 +467,12 @@ class WorkspaceV2SessionProducer {
       useInLibraryButton.addEventListener("click", () => {
         this.useSessionIdInLibraryInput(entry.hostContextId);
       });
-      item.append(title, idLine, meta, reopenButton, copyIdButton, useInLibraryButton);
+      deleteRecentButton.type = "button";
+      deleteRecentButton.textContent = "Delete";
+      deleteRecentButton.addEventListener("click", () => {
+        this.deleteRecentSessionEntry(entry.hostContextId);
+      });
+      item.append(title, idLine, meta, reopenButton, copyIdButton, useInLibraryButton, deleteRecentButton);
       this.sessionHistoryListNode.appendChild(item);
     });
     this.renderSessionDiffInputs();
@@ -497,6 +503,29 @@ class WorkspaceV2SessionProducer {
     }
     this.sessionNameNode.value = hostContextId.trim();
     this.statusNode.textContent = `Session ID ready for Library actions: ${hostContextId.trim()}`;
+  }
+
+  deleteRecentSessionEntry(hostContextId) {
+    if (typeof hostContextId !== "string" || !hostContextId.trim()) {
+      this.statusNode.textContent = "Delete Recent failed: session ID is missing.";
+      return;
+    }
+    const sessionId = hostContextId.trim();
+    const history = this.readSessionHistory();
+    const exists = history.some((entry) => entry.hostContextId === sessionId);
+    if (!exists) {
+      this.statusNode.textContent = `Recent session '${sessionId}' was not found.`;
+      return;
+    }
+    const nextHistory = history.filter((entry) => entry.hostContextId !== sessionId);
+    this.writeSessionHistory(nextHistory);
+    sessionStorage.removeItem(sessionId);
+    if (this.currentHostContextId === sessionId) {
+      this.currentHostContextId = "";
+      this.setCurrentSessionPayload(null, "");
+    }
+    this.renderSessionHistory();
+    this.statusNode.textContent = `Recent session '${sessionId}' deleted.`;
   }
 
   resolveSessionPayloadFromContextId(contextId, fallbackPayload) {
@@ -1713,7 +1742,11 @@ class WorkspaceV2SessionProducer {
       return;
     }
     if (!Object.prototype.hasOwnProperty.call(library, sessionName)) {
-      this.statusNode.textContent = `Session '${sessionName}' was not found in library.`;
+      const history = this.readSessionHistory();
+      const recentMatch = history.some((entry) => entry.hostContextId === sessionName);
+      this.statusNode.textContent = recentMatch
+        ? "Session ID is not saved in Session Library. Use Delete on Recent Sessions to remove temporary sessions."
+        : `Session '${sessionName}' was not found in library.`;
       return;
     }
     delete library[sessionName];
