@@ -433,8 +433,8 @@ class WorkspaceV2SessionProducer {
     this.renderSessionMergeInputs();
   }
 
-  buildSessionDiffCandidates() {
-    const candidates = [];
+  resolveWorkspaceSessionInventory() {
+    const inventory = [];
     const library = this.readSessionLibrary();
     if (library && typeof library === "object" && !Array.isArray(library)) {
       Object.keys(library)
@@ -443,10 +443,12 @@ class WorkspaceV2SessionProducer {
           if (!this.isValidSessionPayload(library[sessionName])) {
             return;
           }
-          candidates.push({
+          inventory.push({
             id: `library:${sessionName}`,
             label: `Library | ${sessionName}`,
-            payload: library[sessionName]
+            payload: library[sessionName],
+            contextId: sessionName,
+            version: typeof library[sessionName].version === "string" ? library[sessionName].version : ""
           });
         });
     }
@@ -455,21 +457,32 @@ class WorkspaceV2SessionProducer {
       if (!this.isValidSessionHistoryEntry(entry)) {
         return;
       }
-      candidates.push({
+      inventory.push({
         id: `history:${entry.hostContextId}`,
         label: `History | ${entry.tool} | ${entry.hostContextId} | ${entry.timestamp}`,
-        payload: entry.payload
+        payload: entry.payload,
+        contextId: entry.hostContextId,
+        version: typeof entry.payload.version === "string" ? entry.payload.version : ""
       });
     });
-    return candidates;
+    return inventory;
   }
 
   renderSessionDiffInputs() {
-    this.diffCandidates = this.buildSessionDiffCandidates();
+    this.diffCandidates = this.resolveWorkspaceSessionInventory();
     const currentLeft = this.diffLeftSelect.value;
     const currentRight = this.diffRightSelect.value;
     this.diffLeftSelect.replaceChildren();
     this.diffRightSelect.replaceChildren();
+
+    const leftPlaceholder = document.createElement("option");
+    leftPlaceholder.value = "";
+    leftPlaceholder.textContent = "Select Session A";
+    this.diffLeftSelect.appendChild(leftPlaceholder);
+    const rightPlaceholder = document.createElement("option");
+    rightPlaceholder.value = "";
+    rightPlaceholder.textContent = "Select Session B";
+    this.diffRightSelect.appendChild(rightPlaceholder);
 
     this.diffCandidates.forEach((candidate) => {
       const leftOption = document.createElement("option");
@@ -482,35 +495,18 @@ class WorkspaceV2SessionProducer {
       this.diffRightSelect.appendChild(rightOption);
     });
 
-    if (this.diffCandidates.length > 0) {
-      this.diffLeftSelect.value = this.diffCandidates.some((entry) => entry.id === currentLeft) ? currentLeft : this.diffCandidates[0].id;
-      if (this.diffCandidates.some((entry) => entry.id === currentRight)) {
-        this.diffRightSelect.value = currentRight;
-      } else if (this.diffCandidates.length > 1) {
-        this.diffRightSelect.value = this.diffCandidates[1].id;
-      } else {
-        this.diffRightSelect.value = this.diffCandidates[0].id;
-      }
-    }
+    this.diffLeftSelect.value = this.diffCandidates.some((entry) => entry.id === currentLeft) ? currentLeft : "";
+    this.diffRightSelect.value = this.diffCandidates.some((entry) => entry.id === currentRight) ? currentRight : "";
 
     this.diffEmptyState.hidden = this.diffCandidates.length >= 2;
-    this.diffEmptyState.textContent = "Need at least two valid sessions to compare.";
+    this.diffEmptyState.textContent = "Create or reopen at least two Workspace V2 sessions before comparing.";
+    if (this.diffCandidates.length < 2) {
+      this.diffOutputNode.textContent = "Create or reopen at least two Workspace V2 sessions before comparing.";
+    }
   }
 
   buildSessionMergeCandidates() {
-    const candidates = [];
-    const history = this.readSessionHistory();
-    history.forEach((entry) => {
-      if (!this.isValidSessionHistoryEntry(entry)) {
-        return;
-      }
-      candidates.push({
-        id: `history:${entry.hostContextId}`,
-        label: `History | ${entry.tool} | ${entry.hostContextId} | ${entry.timestamp}`,
-        payload: entry.payload
-      });
-    });
-    return candidates;
+    return this.resolveWorkspaceSessionInventory();
   }
 
   renderSessionMergeInputs() {
@@ -906,13 +902,37 @@ class WorkspaceV2SessionProducer {
 
   computeSelectedSessionDiff() {
     if (!Array.isArray(this.diffCandidates) || this.diffCandidates.length < 2) {
-      this.diffOutputNode.textContent = "Need at least two valid sessions to compare.";
+      this.diffOutputNode.textContent = "Create or reopen at least two Workspace V2 sessions before comparing.";
+      this.statusNode.textContent = "Create or reopen at least two Workspace V2 sessions before comparing.";
+      return;
+    }
+    if (!this.diffLeftSelect.value && !this.diffRightSelect.value) {
+      this.diffOutputNode.textContent = "Diff blocked. Session A and Session B selections are missing.";
+      this.statusNode.textContent = "Diff blocked. Select Session A and Session B, then compute diff.";
+      return;
+    }
+    if (!this.diffLeftSelect.value) {
+      this.diffOutputNode.textContent = "Diff blocked. Session A selection is missing.";
+      this.statusNode.textContent = "Diff blocked. Select Session A, then compute diff.";
+      return;
+    }
+    if (!this.diffRightSelect.value) {
+      this.diffOutputNode.textContent = "Diff blocked. Session B selection is missing.";
+      this.statusNode.textContent = "Diff blocked. Select Session B, then compute diff.";
+      return;
+    }
+    if (this.diffLeftSelect.value === this.diffRightSelect.value) {
+      this.diffOutputNode.textContent = "Diff blocked. Session A and Session B must be different sessions.";
+      this.statusNode.textContent = "Diff blocked. Choose two different sessions, then compute diff.";
       return;
     }
     const left = this.diffCandidates.find((entry) => entry.id === this.diffLeftSelect.value);
     const right = this.diffCandidates.find((entry) => entry.id === this.diffRightSelect.value);
     if (!left || !right) {
-      this.diffOutputNode.textContent = "Selected diff entries are not available.";
+      this.diffOutputNode.textContent = !left
+        ? "Diff blocked. Session A selection is no longer available."
+        : "Diff blocked. Session B selection is no longer available.";
+      this.statusNode.textContent = "Diff blocked. Refresh or re-select sessions, then compute diff.";
       return;
     }
     if (!this.isValidSessionPayload(left.payload) || !this.isValidSessionPayload(right.payload)) {
