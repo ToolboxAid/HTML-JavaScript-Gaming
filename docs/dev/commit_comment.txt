@@ -1,1 +1,1 @@
-Validate and clean up V2 runtime shell separation after HTML-first re-engineer batch - PR 11.196
+Complete Asset Browser V2 and harden V2 validation with targeted evidence - PR 11.197B

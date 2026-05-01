@@ -1,40 +1,84 @@
-# Codex Commands — PR_11_196
+# Codex Commands — PR_11_197B
 
 Model: GPT-5.4-codex
 Reasoning: high
 
-## Command
+## Execute
 
-```text
-You are implementing PR_11_196 — V2 Runtime Validation + Cleanup Pass.
+Use this PR as a Codex implementation task. Do not ask questions. Make the smallest scoped valid change.
 
-Follow docs/pr/PR_11_196_V2_RUNTIME_VALIDATION_CLEANUP.md exactly.
+### Required Task
+Complete Asset Browser V2 as the testable implementation target and bundle it with V2 validation hardening.
 
-Important:
-- ChatGPT did not write implementation code in this bundle.
-- You write the implementation fixes.
-- Keep the PR testable.
-- Do not modify schemas, samples, games, Workspace Manager v1, platformShell, or tools/shared/*.
-- Do not copy/paste legacy tool code.
-- Re-engineer only the V2 runtime structure.
+### Scope Lock
+Only edit files required for:
+- `tools/asset-browser-v2/index.html`
+- `tools/asset-browser-v2/index.js`
+- narrowly scoped V2 validation/test files if needed
+- docs/dev/reports evidence
+- docs/dev/roadmaps/MASTER_ROADMAP_ENGINE.md status-only marker change if execution-backed
 
-Target tools:
-- Palette Manager V2
-- SVG Asset Studio V2
-- Vector Map Editor V2
-- Tilemap Studio V2
-- Asset Browser V2
+Do not edit schemas, samples, games, Workspace Manager v1, platformShell, or `tools/shared/*`.
 
-Required implementation behavior:
-- HTML owns static layout, CSS links, shared header mount, and module script tags.
-- JS owns session read, validation, DOM population, rendering, and empty/error states only.
-- No fallback data.
-- No default sample data.
-- No v1 coupling.
+### Implementation Rules
+- Re-engineer the tool. Do not copy/paste legacy Asset Browser code.
+- `index.html` owns static shell, CSS links, header mount, layout, and DOM nodes.
+- `index.js` owns behavior only.
+- Use `data-tool-id="asset-browser-v2"`.
+- Header mount must be `<div id="shared-theme-header"></div>`.
+- Use existing `src/engine/theme` and existing accordion styling where applicable.
+- Use two menu areas only if needed: `menuTool` and `menuWorkspace`.
+- Read session data only, using the established V2 hostContextId/session pattern.
+- Do not fetch, guess, synthesize, default, or fallback data.
+- Empty state and invalid state must be explicit and actionable.
+- No helper classes. Single class only.
+- No alias/pass-through variables.
+- No abstraction layers.
 
-After implementation:
-1. Run targeted syntax checks for changed JS files.
-2. Run text checks that verify target HTML and JS compliance.
-3. Write report to docs/dev/reports/pr_11_196_v2_runtime_validation_cleanup_report.md.
-4. Create final ZIP at tmp/PR_11_196.zip with repo-relative structure.
-```
+### Banned Patterns
+Reject your own diff if it includes:
+- `document.body.innerHTML` for page construction
+- `document.head.insertAdjacentHTML` for CSS/style injection
+- dynamic header script injection from JS
+- `platformShell`
+- `assetUsageIntegration`
+- `tools/shared/`
+- Workspace Manager v1 wiring
+- fallback/default/sample data
+- copied legacy code blocks
+
+### Validation Commands
+Run targeted validation only:
+
+1. Syntax checks for changed JS files.
+2. Static checks for V2 shell compliance:
+   - Asset Browser V2 `index.html` includes `shared-theme-header`.
+   - Asset Browser V2 `index.js` does not include `document.body.innerHTML`.
+   - Asset Browser V2 `index.js` does not include `document.head.insertAdjacentHTML`.
+   - Asset Browser V2 references `asset-browser-v2`.
+3. Manual/UAT or lightweight browser validation evidence for:
+   - direct open empty state
+   - invalid session state
+   - valid session state render
+   - shared header visible
+
+Do not run full samples smoke unless a broad shared sample loader/framework file is changed. If skipped, document why.
+
+### Evidence
+Write results to:
+
+`docs/dev/reports/PR_11_197B_v2_asset_browser_validation.md`
+
+Include:
+- files changed
+- validation commands run
+- pass/fail results
+- full samples smoke skipped/running decision and reason
+- screenshots/log snippets if available
+
+### Final Artifact
+Create final ZIP at:
+
+`tmp/PR_11_197B.zip`
+
+The ZIP must preserve repo-relative structure and include implementation changes and evidence.
