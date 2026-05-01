@@ -1,33 +1,40 @@
-# Codex Commands — PR_11_195
+# Codex Commands — PR_11_196
 
 Model: GPT-5.4-codex
 Reasoning: high
 
 ## Command
-Run one Codex pass for PR_11_195.
 
-## Codex Prompt
-You are implementing PR_11_195 in the HTML-JavaScript-Gaming repo.
+```text
+You are implementing PR_11_196 — V2 Runtime Validation + Cleanup Pass.
 
-Follow `docs/pr/PR_11_195_REMAINING_V2_HTML_SESSION_BATCH.md` exactly.
+Follow docs/pr/PR_11_196_V2_RUNTIME_VALIDATION_CLEANUP.md exactly.
 
 Important:
-- This is a re-engineer, not a copy/paste migration.
-- ChatGPT did not write implementation code. You must write the implementation.
-- Convert the next remaining V2 tools that still violate HTML-first/session-only architecture.
-- Use a larger safe batch than the prior one-tool PRs, but do not expand outside V2 tool entries.
-- Do not change schemas, samples, games, Workspace Manager v1, or shared tool systems.
-- Do not use `platformShell`, `assetUsageIntegration`, `tools/shared/*`, aliases, fallback/default data, helper classes, or abstraction layers.
-- Keep `index.html` static and testable.
-- Keep `index.js` behavior-only.
-- Ensure every touched V2 tool uses `<div id="shared-theme-header"></div>` and user-facing names ending in `V2`.
-- Produce targeted validation evidence in `docs/dev/reports/PR_11_195_validation.md`.
-- Create final repo-structured ZIP at `tmp/PR_11_195.zip`.
+- ChatGPT did not write implementation code in this bundle.
+- You write the implementation fixes.
+- Keep the PR testable.
+- Do not modify schemas, samples, games, Workspace Manager v1, platformShell, or tools/shared/*.
+- Do not copy/paste legacy tool code.
+- Re-engineer only the V2 runtime structure.
 
-## Required Targeted Checks
-Run:
-- `node --check` for each changed `.js` file.
-- grep/report checks for banned JS shell injection and banned legacy coupling terms.
-- HTML checks for `shared-theme-header`, `mount-shared-header.js`, and `./index.js` in changed V2 `index.html` files.
+Target tools:
+- Palette Manager V2
+- SVG Asset Studio V2
+- Vector Map Editor V2
+- Tilemap Studio V2
+- Asset Browser V2
 
-Do not run the full samples smoke test unless shared sample loader/framework code is modified. If skipped, document why.
+Required implementation behavior:
+- HTML owns static layout, CSS links, shared header mount, and module script tags.
+- JS owns session read, validation, DOM population, rendering, and empty/error states only.
+- No fallback data.
+- No default sample data.
+- No v1 coupling.
+
+After implementation:
+1. Run targeted syntax checks for changed JS files.
+2. Run text checks that verify target HTML and JS compliance.
+3. Write report to docs/dev/reports/pr_11_196_v2_runtime_validation_cleanup_report.md.
+4. Create final ZIP at tmp/PR_11_196.zip with repo-relative structure.
+```

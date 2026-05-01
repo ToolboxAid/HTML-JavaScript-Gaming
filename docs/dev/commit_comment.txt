@@ -1,1 +1,1 @@
-Convert remaining V2 tools to HTML-first session-only architecture - PR 11.195
+Validate and clean up V2 runtime shell separation after HTML-first re-engineer batch - PR 11.196
