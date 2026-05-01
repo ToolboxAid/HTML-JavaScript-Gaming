@@ -44,7 +44,7 @@ class VectorMapEditorV2 {
       }
       if (
         !window.sessionStorage.getItem(
-          `toolboxaid.toolHost.context.${this.urlState.hostContextId}`
+          this.urlState.hostContextId
         )
       ) {
         this.renderMissing("No session data was found for the provided hostContextId. Re-open Vector Map Editor V2 from the tools index or a host flow that creates the session context first.");
@@ -53,7 +53,7 @@ class VectorMapEditorV2 {
       this.loadContract(
         JSON.parse(
           window.sessionStorage.getItem(
-            `toolboxaid.toolHost.context.${this.urlState.hostContextId}`
+            this.urlState.hostContextId
           )
         )
       );
