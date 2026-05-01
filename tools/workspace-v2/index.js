@@ -1734,25 +1734,32 @@ class WorkspaceV2SessionProducer {
   deleteNamedSession() {
     const sessionName = this.selectedSessionName();
     if (!sessionName) {
-      this.statusNode.textContent = "Session name is required to delete.";
+      this.statusNode.textContent = "Enter a saved session ID before deleting.";
       return;
     }
     const library = this.readSessionLibrary();
     if (library === null) {
       return;
     }
-    if (!Object.prototype.hasOwnProperty.call(library, sessionName)) {
-      const history = this.readSessionHistory();
-      const recentMatch = history.some((entry) => entry.hostContextId === sessionName);
+    const history = this.readSessionHistory();
+    const recentMatch = history.some((entry) => entry.hostContextId === sessionName);
+    const librarySessionNames = Object.keys(library);
+    if (librarySessionNames.length === 0) {
       this.statusNode.textContent = recentMatch
         ? "Session ID is not saved in Session Library. Use Delete on Recent Sessions to remove temporary sessions."
-        : `Session '${sessionName}' was not found in library.`;
+        : "No saved sessions exist. Use Delete on Recent Sessions to remove temporary sessions.";
+      return;
+    }
+    if (!Object.prototype.hasOwnProperty.call(library, sessionName)) {
+      this.statusNode.textContent = recentMatch
+        ? "Session ID is not saved in Session Library. Use Delete on Recent Sessions to remove temporary sessions."
+        : "Saved session not found.";
       return;
     }
     delete library[sessionName];
     this.writeSessionLibrary(library);
     this.renderSessionLibrary();
-    this.statusNode.textContent = `Session '${sessionName}' deleted from library.`;
+    this.statusNode.textContent = "Saved session deleted.";
   }
 
   createSessionAndLaunch() {
