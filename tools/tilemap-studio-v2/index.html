@@ -24,8 +24,12 @@
             <section class="tilemap-v2-panel" aria-live="polite">
               <h3 id="tilemapV2Name">No tilemap loaded</h3>
               <span id="tilemapV2Count" class="badge">0 layers</span>
-              <div id="tilemapV2State">No tilemap session data found. Open Tilemap Studio V2 with a valid hostContextId session.</div>
-              <div id="tilemapV2Preview" aria-label="Tilemap Studio V2 preview"></div>
+              <div id="tilemapV2EmptyState">No tilemap session data found. Open Tilemap Studio V2 with a valid hostContextId session.</div>
+              <div id="tilemapV2InvalidState" hidden>Tilemap session data is invalid. Re-open Tilemap Studio V2 from a valid workspace session.</div>
+              <div id="tilemapV2ValidState" hidden>
+                <div id="tilemapV2State">Tilemap Studio V2 loaded the session tilemap.</div>
+                <div id="tilemapV2Preview" aria-label="Tilemap Studio V2 preview"></div>
+              </div>
             </section>
             <aside class="tilemap-v2-panel" data-menu-workspace>
               <h3>menuWorkspace</h3>

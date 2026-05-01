@@ -1,11 +1,13 @@
 class TilemapStudioV2 {
   constructor() {
+    console.log("[TilemapStudioV2]");
     document.title = "Tilemap Studio V2";
     document.body.dataset.toolId = "tilemap-studio-v2";
     this.readSession();
   }
 
   readSession() {
+    console.log("[SESSION_CONTEXT_READ]");
     try {
       if (!new URL(window.location.href).searchParams.get("hostContextId")) {
         this.renderMissing("No hostContextId was provided. Re-open Tilemap Studio V2 from a valid Tool V2 session link.");
@@ -32,6 +34,7 @@ class TilemapStudioV2 {
   }
 
   loadContract(sessionContext) {
+    console.log("[TILEMAP_V2_CONTRACT_LOADED]");
     if (!sessionContext || typeof sessionContext !== "object" || Array.isArray(sessionContext)) {
       this.renderError("Session context is invalid. Expected an object containing payloadJson.tileMapDocument.");
       return;
@@ -64,10 +67,6 @@ class TilemapStudioV2 {
       this.renderError("Tilemap session data is invalid. Expected tileMapDocument.layers[].");
       return;
     }
-    if (tileMapDocument.layers.length === 0) {
-      this.renderMissing("Tilemap Studio V2 loaded a valid tilemap document with zero layers.");
-      return;
-    }
     if (tileMapDocument.layers.some((entry) => !entry || typeof entry !== "object" || Array.isArray(entry) || typeof entry.name !== "string" || !entry.name.trim() || typeof entry.kind !== "string" || !entry.kind.trim() || !Array.isArray(entry.data))) {
       this.renderError("Tilemap session data is invalid. Every layer requires name, kind, and data[].");
       return;
@@ -78,6 +77,9 @@ class TilemapStudioV2 {
     document.getElementById("tilemapV2Name").textContent = tileMapDocument.map.name.trim();
     document.getElementById("tilemapV2Count").textContent = `${tileMapDocument.layers.length} layer${tileMapDocument.layers.length === 1 ? "" : "s"}`;
     document.getElementById("tilemapV2State").textContent = "Tilemap Studio V2 loaded the session tilemap.";
+    document.getElementById("tilemapV2EmptyState").hidden = true;
+    document.getElementById("tilemapV2InvalidState").hidden = true;
+    document.getElementById("tilemapV2ValidState").hidden = false;
     document.getElementById("tilemapV2LayerList").replaceChildren();
     tileMapDocument.layers.forEach((entry) => {
       const layerItem = document.createElement("li");
@@ -111,7 +113,10 @@ class TilemapStudioV2 {
     document.getElementById("tilemapV2WorkspaceReadout").textContent = "Workspace session context is not available.";
     document.getElementById("tilemapV2Name").textContent = "No tilemap loaded";
     document.getElementById("tilemapV2Count").textContent = "0 layers";
-    document.getElementById("tilemapV2State").textContent = message;
+    document.getElementById("tilemapV2EmptyState").textContent = message;
+    document.getElementById("tilemapV2EmptyState").hidden = false;
+    document.getElementById("tilemapV2InvalidState").hidden = true;
+    document.getElementById("tilemapV2ValidState").hidden = true;
     document.getElementById("tilemapV2LayerList").replaceChildren();
     document.getElementById("tilemapV2Preview").replaceChildren();
   }
@@ -122,7 +127,10 @@ class TilemapStudioV2 {
     document.getElementById("tilemapV2WorkspaceReadout").textContent = "Workspace writes are disabled for invalid Tilemap Studio V2 session data.";
     document.getElementById("tilemapV2Name").textContent = "Tilemap Studio V2 error";
     document.getElementById("tilemapV2Count").textContent = "0 layers";
-    document.getElementById("tilemapV2State").textContent = message;
+    document.getElementById("tilemapV2InvalidState").textContent = `${message} Re-open Tilemap Studio V2 from a host session that provides payloadJson.tileMapDocument.`;
+    document.getElementById("tilemapV2EmptyState").hidden = true;
+    document.getElementById("tilemapV2InvalidState").hidden = false;
+    document.getElementById("tilemapV2ValidState").hidden = true;
     document.getElementById("tilemapV2LayerList").replaceChildren();
     document.getElementById("tilemapV2Preview").replaceChildren();
   }
