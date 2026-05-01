@@ -4,10 +4,22 @@ class TilemapStudioV2 {
     document.title = "Tilemap Studio V2";
     document.body.dataset.toolId = "tilemap-studio-v2";
     this.urlState = this.readUrlState();
+    this.openAssetBrowserV2 = this.openAssetBrowserV2.bind(this);
     this.handleNavigationState = this.handleNavigationState.bind(this);
     window.addEventListener("popstate", this.handleNavigationState);
     window.addEventListener("pageshow", this.handleNavigationState);
+    document.getElementById("tilemapV2OpenAssetBrowserV2Button").addEventListener("click", this.openAssetBrowserV2);
     this.readSession();
+  }
+
+  openAssetBrowserV2() {
+    if (!this.urlState.hostContextId) {
+      this.renderMissing("No hostContextId is available for launch. Re-open Tilemap Studio V2 from a valid Tool V2 session link.");
+      return;
+    }
+    const targetUrl = new URL("../asset-browser-v2/index.html", window.location.href);
+    targetUrl.searchParams.set("hostContextId", this.urlState.hostContextId);
+    window.location.href = targetUrl.toString();
   }
 
   handleNavigationState() {

@@ -4,10 +4,22 @@ class AssetBrowserV2 {
     document.title = "Asset Browser V2";
     document.body.dataset.toolId = "asset-browser-v2";
     this.urlState = this.readUrlState();
+    this.openSvgAssetStudioV2 = this.openSvgAssetStudioV2.bind(this);
     this.handleNavigationState = this.handleNavigationState.bind(this);
     window.addEventListener("popstate", this.handleNavigationState);
     window.addEventListener("pageshow", this.handleNavigationState);
+    document.getElementById("assetBrowserV2OpenSvgAssetStudioV2Button").addEventListener("click", this.openSvgAssetStudioV2);
     this.readSession();
+  }
+
+  openSvgAssetStudioV2() {
+    if (!this.urlState.hostContextId) {
+      this.renderMissing("No hostContextId is available for launch. Re-open Asset Browser V2 from a valid Tool V2 session link.");
+      return;
+    }
+    const targetUrl = new URL("../svg-asset-studio-v2/index.html", window.location.href);
+    targetUrl.searchParams.set("hostContextId", this.urlState.hostContextId);
+    window.location.href = targetUrl.toString();
   }
 
   handleNavigationState() {

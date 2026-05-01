@@ -4,10 +4,22 @@ class PaletteManagerV2 {
     document.title = "Palette Manager V2";
     document.body.dataset.toolId = "palette-manager-v2";
     this.urlState = this.readUrlState();
+    this.openVectorMapEditorV2 = this.openVectorMapEditorV2.bind(this);
     this.handleNavigationState = this.handleNavigationState.bind(this);
     window.addEventListener("popstate", this.handleNavigationState);
     window.addEventListener("pageshow", this.handleNavigationState);
+    document.getElementById("paletteManagerOpenVectorMapEditorV2Button").addEventListener("click", this.openVectorMapEditorV2);
     this.readSession();
+  }
+
+  openVectorMapEditorV2() {
+    if (!this.urlState.hostContextId) {
+      this.renderMissing("No hostContextId is available for launch. Re-open Palette Manager V2 from a valid Tool V2 session link.");
+      return;
+    }
+    const targetUrl = new URL("../vector-map-editor-v2/index.html", window.location.href);
+    targetUrl.searchParams.set("hostContextId", this.urlState.hostContextId);
+    window.location.href = targetUrl.toString();
   }
 
   handleNavigationState() {
