@@ -82,6 +82,15 @@ class AssetBrowserV2 {
     return urlStateParts.join(", ");
   }
 
+  handleSessionVersion(payload) {
+    if (payload && payload.version === "v2") return { ok: true, payload };
+    return {
+      ok: false,
+      error: "Unsupported session version",
+      code: "UNSUPPORTED_VERSION"
+    };
+  }
+
   logStructuredError(type, message, details) {
     console.error({
       tool: "asset-browser-v2",
@@ -127,19 +136,20 @@ class AssetBrowserV2 {
       this.renderError("Session context is invalid. Expected an object containing payloadJson.assetCatalog.");
       return;
     }
-    if (sessionContext.version !== "v2") {
-      this.renderError("Unsupported session version");
+    const versionCheck = this.handleSessionVersion(sessionContext);
+    if (!versionCheck.ok) {
+      this.renderError(versionCheck.error);
       return;
     }
-    if (!sessionContext.payloadJson || typeof sessionContext.payloadJson !== "object" || Array.isArray(sessionContext.payloadJson)) {
+    if (!versionCheck.payload.payloadJson || typeof versionCheck.payload.payloadJson !== "object" || Array.isArray(versionCheck.payload.payloadJson)) {
       this.renderError("Asset Browser V2 session data is invalid. Expected payloadJson only.");
       return;
     }
-    if (!sessionContext.payloadJson.assetCatalog || typeof sessionContext.payloadJson.assetCatalog !== "object" || Array.isArray(sessionContext.payloadJson.assetCatalog)) {
+    if (!versionCheck.payload.payloadJson.assetCatalog || typeof versionCheck.payload.payloadJson.assetCatalog !== "object" || Array.isArray(versionCheck.payload.payloadJson.assetCatalog)) {
       this.renderError("Asset Browser V2 session data is invalid. Expected payloadJson.assetCatalog.");
       return;
     }
-    this.renderCatalog(sessionContext.payloadJson.assetCatalog, sessionContext);
+    this.renderCatalog(versionCheck.payload.payloadJson.assetCatalog, versionCheck.payload);
   }
 
   renderCatalog(assetCatalog, sessionContext) {

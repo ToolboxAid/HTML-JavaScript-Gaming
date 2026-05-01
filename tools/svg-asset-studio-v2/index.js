@@ -71,6 +71,15 @@ class SvgAssetStudioV2 {
     return urlStateParts.join(", ");
   }
 
+  handleSessionVersion(payload) {
+    if (payload && payload.version === "v2") return { ok: true, payload };
+    return {
+      ok: false,
+      error: "Unsupported session version",
+      code: "UNSUPPORTED_VERSION"
+    };
+  }
+
   logStructuredError(type, message, details) {
     console.error({
       tool: "svg-asset-studio-v2",
@@ -116,19 +125,20 @@ class SvgAssetStudioV2 {
       this.renderError("Session context is invalid. Expected an object containing payloadJson.vectorAssetDocument.");
       return;
     }
-    if (sessionContext.version !== "v2") {
-      this.renderError("Unsupported session version");
+    const versionCheck = this.handleSessionVersion(sessionContext);
+    if (!versionCheck.ok) {
+      this.renderError(versionCheck.error);
       return;
     }
-    if (!sessionContext.payloadJson || typeof sessionContext.payloadJson !== "object" || Array.isArray(sessionContext.payloadJson)) {
+    if (!versionCheck.payload.payloadJson || typeof versionCheck.payload.payloadJson !== "object" || Array.isArray(versionCheck.payload.payloadJson)) {
       this.renderError("SVG Asset Studio V2 session data is invalid. Expected payloadJson only.");
       return;
     }
-    if (!sessionContext.payloadJson.vectorAssetDocument || typeof sessionContext.payloadJson.vectorAssetDocument !== "object" || Array.isArray(sessionContext.payloadJson.vectorAssetDocument)) {
+    if (!versionCheck.payload.payloadJson.vectorAssetDocument || typeof versionCheck.payload.payloadJson.vectorAssetDocument !== "object" || Array.isArray(versionCheck.payload.payloadJson.vectorAssetDocument)) {
       this.renderError("SVG Asset Studio V2 session data is invalid. Expected payloadJson.vectorAssetDocument.");
       return;
     }
-    this.renderSvg(sessionContext.payloadJson.vectorAssetDocument, sessionContext);
+    this.renderSvg(versionCheck.payload.payloadJson.vectorAssetDocument, versionCheck.payload);
   }
 
   renderSvg(vectorAssetDocument, sessionContext) {

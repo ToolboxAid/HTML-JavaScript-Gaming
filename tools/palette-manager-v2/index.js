@@ -82,6 +82,15 @@ class PaletteManagerV2 {
     return urlStateParts.join(", ");
   }
 
+  handleSessionVersion(payload) {
+    if (payload && payload.version === "v2") return { ok: true, payload };
+    return {
+      ok: false,
+      error: "Unsupported session version",
+      code: "UNSUPPORTED_VERSION"
+    };
+  }
+
   logStructuredError(type, message, details) {
     console.error({
       tool: "palette-manager-v2",
@@ -127,15 +136,16 @@ class PaletteManagerV2 {
       this.renderError("Session context is invalid. Expected an object containing paletteJson.");
       return;
     }
-    if (sessionContext.version !== "v2") {
-      this.renderError("Unsupported session version");
+    const versionCheck = this.handleSessionVersion(sessionContext);
+    if (!versionCheck.ok) {
+      this.renderError(versionCheck.error);
       return;
     }
-    if (!sessionContext.paletteJson || typeof sessionContext.paletteJson !== "object" || Array.isArray(sessionContext.paletteJson)) {
+    if (!versionCheck.payload.paletteJson || typeof versionCheck.payload.paletteJson !== "object" || Array.isArray(versionCheck.payload.paletteJson)) {
       this.renderError("Palette Manager V2 session data is invalid. Expected paletteJson only.");
       return;
     }
-    this.renderPalette(sessionContext.paletteJson, sessionContext);
+    this.renderPalette(versionCheck.payload.paletteJson, versionCheck.payload);
   }
 
   renderPalette(paletteJson, sessionContext) {

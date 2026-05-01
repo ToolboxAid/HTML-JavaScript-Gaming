@@ -70,6 +70,15 @@ class VectorMapEditorV2 {
     return urlStateParts.join(", ");
   }
 
+  handleSessionVersion(payload) {
+    if (payload && payload.version === "v2") return { ok: true, payload };
+    return {
+      ok: false,
+      error: "Unsupported session version",
+      code: "UNSUPPORTED_VERSION"
+    };
+  }
+
   logStructuredError(type, message, details) {
     console.error({
       tool: "vector-map-editor-v2",
@@ -115,19 +124,20 @@ class VectorMapEditorV2 {
       this.renderError("Session context is invalid. Expected an object containing payloadJson.vectorMapDocument.");
       return;
     }
-    if (sessionContext.version !== "v2") {
-      this.renderError("Unsupported session version");
+    const versionCheck = this.handleSessionVersion(sessionContext);
+    if (!versionCheck.ok) {
+      this.renderError(versionCheck.error);
       return;
     }
-    if (!sessionContext.payloadJson || typeof sessionContext.payloadJson !== "object" || Array.isArray(sessionContext.payloadJson)) {
+    if (!versionCheck.payload.payloadJson || typeof versionCheck.payload.payloadJson !== "object" || Array.isArray(versionCheck.payload.payloadJson)) {
       this.renderError("Vector Map Editor V2 session data is invalid. Expected payloadJson only.");
       return;
     }
-    if (!sessionContext.payloadJson.vectorMapDocument || typeof sessionContext.payloadJson.vectorMapDocument !== "object" || Array.isArray(sessionContext.payloadJson.vectorMapDocument)) {
+    if (!versionCheck.payload.payloadJson.vectorMapDocument || typeof versionCheck.payload.payloadJson.vectorMapDocument !== "object" || Array.isArray(versionCheck.payload.payloadJson.vectorMapDocument)) {
       this.renderError("Vector Map Editor V2 session data is invalid. Expected payloadJson.vectorMapDocument.");
       return;
     }
-    this.renderVectorMap(sessionContext.payloadJson.vectorMapDocument, sessionContext);
+    this.renderVectorMap(versionCheck.payload.payloadJson.vectorMapDocument, versionCheck.payload);
   }
 
   renderVectorMap(vectorMapDocument, sessionContext) {

@@ -82,6 +82,15 @@ class TilemapStudioV2 {
     return urlStateParts.join(", ");
   }
 
+  handleSessionVersion(payload) {
+    if (payload && payload.version === "v2") return { ok: true, payload };
+    return {
+      ok: false,
+      error: "Unsupported session version",
+      code: "UNSUPPORTED_VERSION"
+    };
+  }
+
   logStructuredError(type, message, details) {
     console.error({
       tool: "tilemap-studio-v2",
@@ -127,19 +136,20 @@ class TilemapStudioV2 {
       this.renderError("Session context is invalid. Expected an object containing payloadJson.tileMapDocument.");
       return;
     }
-    if (sessionContext.version !== "v2") {
-      this.renderError("Unsupported session version");
+    const versionCheck = this.handleSessionVersion(sessionContext);
+    if (!versionCheck.ok) {
+      this.renderError(versionCheck.error);
       return;
     }
-    if (!sessionContext.payloadJson || typeof sessionContext.payloadJson !== "object" || Array.isArray(sessionContext.payloadJson)) {
+    if (!versionCheck.payload.payloadJson || typeof versionCheck.payload.payloadJson !== "object" || Array.isArray(versionCheck.payload.payloadJson)) {
       this.renderError("Tilemap session data is invalid. Expected payloadJson only.");
       return;
     }
-    if (!sessionContext.payloadJson.tileMapDocument || typeof sessionContext.payloadJson.tileMapDocument !== "object" || Array.isArray(sessionContext.payloadJson.tileMapDocument)) {
+    if (!versionCheck.payload.payloadJson.tileMapDocument || typeof versionCheck.payload.payloadJson.tileMapDocument !== "object" || Array.isArray(versionCheck.payload.payloadJson.tileMapDocument)) {
       this.renderError("Tilemap session data is invalid. Expected payloadJson.tileMapDocument.");
       return;
     }
-    this.renderTilemap(sessionContext.payloadJson.tileMapDocument, sessionContext);
+    this.renderTilemap(versionCheck.payload.payloadJson.tileMapDocument, versionCheck.payload);
   }
 
   renderTilemap(tileMapDocument, sessionContext) {
