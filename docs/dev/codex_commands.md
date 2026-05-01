@@ -1,19 +1,50 @@
-# Codex Commands — PR 11.188 Palette Manager Tool v2
+MODEL: gpt-5.5
+REASONING: high
 
-## Model
+COMMAND:
 
-```text
-GPT-5.4
-```
+Rebuild "Palette Manager" as a Tool v2:
 
-## Reasoning
+LOCATION:
+tools/Palette Manager/
 
-```text
-high
-```
+RULES:
+- Single file: main.js
+- Single class only
+- No helper classes
+- No abstraction layers
+- No alias variables
+- No pass-through variables
 
-## Command
+REQUIREMENTS:
 
-```powershell
-codex --model gpt-5.4 --reasoning high "Execute BUILD_PR_LEVEL_11_188_PALETTE_MANAGER_REVERSE_ENGINEER_AND_REBUILD exactly as written in docs/pr/BUILD_PR_LEVEL_11_188_PALETTE_MANAGER_REVERSE_ENGINEER_AND_REBUILD.md. Keep one PR purpose only. Preserve legacy Palette Browser as tools/Palette Browser-v1/. Rebuild the clean Tool v2 screen in tools/Palette Browser/ with visible name Palette Manager everywhere displayed. Do not modify schemas, samples, games, start_of_day, Workspace Manager v1, or tools/shared. Do not wire Tool v2 into Workspace Manager v1. Use tools/common only for new shared Tool v2 foundation. Inspect /index.html and use its header pattern with an accordion to hide/show header/details. Do not use fallback/default data, platformShell, shared handoff, aliases, or ?tool= auto-open behavior. Implement focused classes/modules instead of a stream of functions. Run targeted node --check validation only and document full samples smoke skip reason. Update roadmap status markers only if an exact existing item matches; otherwise leave roadmap untouched. Return a repo-structured ZIP at C:\Users\davidq\Documents\GitHub\HTML-JavaScript-Gaming\tmp\PR_11_188_PALETTE_MANAGER_REVERSE_ENGINEER_AND_REBUILD.zip."
-```
+1. ENTRY
+- console.log("[PALETTE_V2_ENTRY]")
+
+2. SESSION READ
+- read session using hostContextId
+- console.log("[SESSION_CONTEXT_READ]")
+
+3. CONTRACT
+- load paletteJson only
+- console.log("[PALETTE_V2_CONTRACT_LOADED]")
+
+4. RENDER
+- show palette name
+- render swatches
+- show count
+
+5. STATES
+- empty state
+- error state
+
+6. UI
+- reuse src/engine/theme styles
+- reuse existing accordion CSS
+- header must match /index.html
+- include accordion hide/show
+
+7. HARD BLOCKS
+- no platformShell
+- no workspace v1
+- no fallback data

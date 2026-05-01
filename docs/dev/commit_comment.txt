@@ -1,1 +1,1 @@
-Rebuild Palette Manager in clean Tool v2 lane with Workspace v1 separation - PR 11.188
+Rebuild Palette Manager as Tool v2 with session-only contract, single-class architecture, and no legacy coupling - PR 11.188
