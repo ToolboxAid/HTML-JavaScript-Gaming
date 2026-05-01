@@ -65,6 +65,7 @@ class WorkspaceV2SessionProducer {
     this.currentSessionSource = "";
     this.currentHostContextId = "";
     this.pendingMergePreview = null;
+    this.recentSessionInventory = [];
     this.loadFixtureButton.addEventListener("click", () => {
       this.loadSelectedFixture();
     });
@@ -411,6 +412,7 @@ class WorkspaceV2SessionProducer {
 
   renderSessionHistory() {
     const history = this.readSessionHistory();
+    this.recentSessionInventory = this.buildRecentSessionInventory(history);
     this.sessionHistoryListNode.replaceChildren();
     this.sessionHistoryEmptyState.hidden = history.length > 0;
     this.sessionHistoryEmptyState.textContent = "No recent sessions.";
@@ -433,8 +435,61 @@ class WorkspaceV2SessionProducer {
     this.renderSessionMergeInputs();
   }
 
+  resolveSessionPayloadFromContextId(contextId, fallbackPayload) {
+    if (typeof contextId === "string" && contextId.trim()) {
+      const raw = sessionStorage.getItem(contextId.trim());
+      if (typeof raw === "string") {
+        const parsed = this.safeParseJson(raw);
+        if (parsed.ok && this.isValidSessionPayload(parsed.value)) {
+          return parsed.value;
+        }
+      }
+    }
+    if (this.isValidSessionPayload(fallbackPayload)) {
+      return fallbackPayload;
+    }
+    return null;
+  }
+
+  buildRecentSessionInventory(history) {
+    const inventory = [];
+    if (!Array.isArray(history)) {
+      return inventory;
+    }
+    history.forEach((entry) => {
+      if (!this.isValidSessionHistoryEntry(entry)) {
+        return;
+      }
+      const resolvedPayload = this.resolveSessionPayloadFromContextId(entry.hostContextId, entry.payload);
+      if (!this.isValidSessionPayload(resolvedPayload)) {
+        return;
+      }
+      inventory.push({
+        id: `history:${entry.hostContextId}`,
+        label: `History | ${entry.tool} | ${entry.hostContextId} | ${entry.timestamp}`,
+        contextId: entry.hostContextId,
+        toolId: entry.tool,
+        payload: resolvedPayload,
+        version: typeof resolvedPayload.version === "string" ? resolvedPayload.version : "",
+        payloadSource: "history"
+      });
+    });
+    return inventory;
+  }
+
   resolveWorkspaceSessionInventory() {
     const inventory = [];
+    if (Array.isArray(this.recentSessionInventory)) {
+      this.recentSessionInventory.forEach((entry) => {
+        if (!entry || typeof entry !== "object") {
+          return;
+        }
+        if (!this.isValidSessionPayload(entry.payload)) {
+          return;
+        }
+        inventory.push(entry);
+      });
+    }
     const library = this.readSessionLibrary();
     if (library && typeof library === "object" && !Array.isArray(library)) {
       Object.keys(library)
@@ -448,23 +503,12 @@ class WorkspaceV2SessionProducer {
             label: `Library | ${sessionName}`,
             payload: library[sessionName],
             contextId: sessionName,
-            version: typeof library[sessionName].version === "string" ? library[sessionName].version : ""
+            toolId: typeof library[sessionName].toolId === "string" ? library[sessionName].toolId : "",
+            version: typeof library[sessionName].version === "string" ? library[sessionName].version : "",
+            payloadSource: "library"
           });
         });
     }
-    const history = this.readSessionHistory();
-    history.forEach((entry) => {
-      if (!this.isValidSessionHistoryEntry(entry)) {
-        return;
-      }
-      inventory.push({
-        id: `history:${entry.hostContextId}`,
-        label: `History | ${entry.tool} | ${entry.hostContextId} | ${entry.timestamp}`,
-        payload: entry.payload,
-        contextId: entry.hostContextId,
-        version: typeof entry.payload.version === "string" ? entry.payload.version : ""
-      });
-    });
     return inventory;
   }
 
