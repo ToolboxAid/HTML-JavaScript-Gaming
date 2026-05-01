@@ -70,6 +70,15 @@ class SvgAssetStudioV2 {
     return urlStateParts.join(", ");
   }
 
+  logStructuredError(type, message, details) {
+    console.error({
+      tool: "svg-asset-studio-v2",
+      type,
+      message,
+      details: details && typeof details === "object" ? details : {}
+    });
+  }
+
   readSession() {
     console.log("[SESSION_CONTEXT_READ]");
     try {
@@ -93,7 +102,9 @@ class SvgAssetStudioV2 {
         )
       );
     } catch (error) {
-      this.renderError(`Unable to read SVG Asset Studio V2 session context: ${error instanceof Error ? error.message : "unknown error"}`);
+      const runtimeMessage = `Unable to read SVG Asset Studio V2 session context: ${error instanceof Error ? error.message : "unknown error"}`;
+      this.logStructuredError("RUNTIME", runtimeMessage, { hostContextId: this.urlState.hostContextId || "" });
+      this.renderError(runtimeMessage);
     }
   }
 
@@ -151,6 +162,7 @@ class SvgAssetStudioV2 {
   }
 
   renderMissing(message) {
+    this.logStructuredError("EMPTY", message, { hostContextId: this.urlState.hostContextId || "" });
     if (this.previewObjectUrl) {
       URL.revokeObjectURL(this.previewObjectUrl);
       this.previewObjectUrl = "";
@@ -168,6 +180,7 @@ class SvgAssetStudioV2 {
   }
 
   renderError(message) {
+    this.logStructuredError("INVALID", message, { hostContextId: this.urlState.hostContextId || "" });
     if (this.previewObjectUrl) {
       URL.revokeObjectURL(this.previewObjectUrl);
       this.previewObjectUrl = "";

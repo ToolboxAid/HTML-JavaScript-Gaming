@@ -69,6 +69,15 @@ class VectorMapEditorV2 {
     return urlStateParts.join(", ");
   }
 
+  logStructuredError(type, message, details) {
+    console.error({
+      tool: "vector-map-editor-v2",
+      type,
+      message,
+      details: details && typeof details === "object" ? details : {}
+    });
+  }
+
   readSession() {
     console.log("[SESSION_CONTEXT_READ]");
     try {
@@ -92,7 +101,9 @@ class VectorMapEditorV2 {
         )
       );
     } catch (error) {
-      this.renderError(`Unable to read Vector Map Editor V2 session context: ${error instanceof Error ? error.message : "unknown error"}`);
+      const runtimeMessage = `Unable to read Vector Map Editor V2 session context: ${error instanceof Error ? error.message : "unknown error"}`;
+      this.logStructuredError("RUNTIME", runtimeMessage, { hostContextId: this.urlState.hostContextId || "" });
+      this.renderError(runtimeMessage);
     }
   }
 
@@ -255,6 +266,7 @@ class VectorMapEditorV2 {
   }
 
   renderMissing(message) {
+    this.logStructuredError("EMPTY", message, { hostContextId: this.urlState.hostContextId || "" });
     document.getElementById("vectorMapV2SessionReadout").textContent = "Session: missing";
     document.getElementById("vectorMapV2ContractReadout").textContent = "payloadJson.vectorMapDocument not loaded";
     document.getElementById("vectorMapV2WorkspaceReadout").textContent = "Workspace session context is not available.";
@@ -269,6 +281,7 @@ class VectorMapEditorV2 {
   }
 
   renderError(message) {
+    this.logStructuredError("INVALID", message, { hostContextId: this.urlState.hostContextId || "" });
     document.getElementById("vectorMapV2SessionReadout").textContent = "Session: read attempted";
     document.getElementById("vectorMapV2ContractReadout").textContent = "payloadJson.vectorMapDocument invalid";
     document.getElementById("vectorMapV2WorkspaceReadout").textContent = "Workspace writes are disabled for invalid Vector Map Editor V2 session data.";

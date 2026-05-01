@@ -81,6 +81,15 @@ class AssetBrowserV2 {
     return urlStateParts.join(", ");
   }
 
+  logStructuredError(type, message, details) {
+    console.error({
+      tool: "asset-browser-v2",
+      type,
+      message,
+      details: details && typeof details === "object" ? details : {}
+    });
+  }
+
   readSession() {
     console.log("[SESSION_CONTEXT_READ]");
     try {
@@ -104,7 +113,9 @@ class AssetBrowserV2 {
         )
       );
     } catch (error) {
-      this.renderError(`Unable to read Asset Browser V2 session context: ${error instanceof Error ? error.message : "unknown error"}`);
+      const runtimeMessage = `Unable to read Asset Browser V2 session context: ${error instanceof Error ? error.message : "unknown error"}`;
+      this.logStructuredError("RUNTIME", runtimeMessage, { hostContextId: this.urlState.hostContextId || "" });
+      this.renderError(runtimeMessage);
     }
   }
 
@@ -196,6 +207,7 @@ class AssetBrowserV2 {
   }
 
   renderMissing(message) {
+    this.logStructuredError("EMPTY", message, { hostContextId: this.urlState.hostContextId || "" });
     document.getElementById("assetBrowserV2SessionReadout").textContent = "Session: missing";
     document.getElementById("assetBrowserV2ContractReadout").textContent = "payloadJson.assetCatalog not loaded";
     document.getElementById("assetBrowserV2WorkspaceReadout").textContent = "Workspace session context is not available.";
@@ -210,6 +222,7 @@ class AssetBrowserV2 {
   }
 
   renderError(message) {
+    this.logStructuredError("INVALID", message, { hostContextId: this.urlState.hostContextId || "" });
     document.getElementById("assetBrowserV2SessionReadout").textContent = "Session: read attempted";
     document.getElementById("assetBrowserV2ContractReadout").textContent = "payloadJson.assetCatalog invalid";
     document.getElementById("assetBrowserV2WorkspaceReadout").textContent = "Workspace writes are disabled for invalid Asset Browser V2 session data.";
