@@ -330,38 +330,10 @@ function readWorkspaceDirectCardLabel(toolId = "") {
   return normalizeTextParam(labelsByToolId.get(toolId) || "");
 }
 
-function primeSvgAssetStatusLabelFromWorkspaceDiagnostics(diagnostics = null) {
-  const explicitToolPayloadById = diagnostics?.explicitToolPayloadById instanceof Map
-    ? diagnostics.explicitToolPayloadById
-    : null;
-  if (!explicitToolPayloadById) {
-    return false;
-  }
-  const directEntry = explicitToolPayloadById.get("svg-asset-studio");
-  const vectorAssetDocument = directEntry?.vectorAssetDocument;
-  if (!vectorAssetDocument?.svgText) {
-    return false;
-  }
-  const sourceName = normalizeTextParam(vectorAssetDocument?.sourceName);
-  const labelText = sourceName || "Inline SVG";
-  const assetHandoff = createAssetHandoff({
-    assetId: labelText,
-    assetType: "vector",
-    sourcePath: "workspace-manifest:svg-asset-studio",
-    displayName: labelText,
-    metadata: {
-      source: "workspace-manifest.direct-payload",
-      toolId: "svg-asset-studio"
-    },
-    sourceToolId: "workspace-manager"
-  });
-  if (!assetHandoff) {
-    return false;
-  }
-  return writeSharedAssetHandoff(assetHandoff);
-}
-
 function writeSharedBindingsFromDirectPayload(toolId = "", payloadJson = null, paletteJson = null) {
+  if (normalizeTextParam(toolId) === "svg-asset-studio") {
+    return;
+  }
   console.log("[LEGACY_BADGE_WRITE]", {
     source: "writeSharedBindingsFromDirectPayload",
     action: "requested",
@@ -1431,7 +1403,6 @@ function applyToolsUsedFilterForGame(gameEntry, preferredToolId = "", workspaceT
 
   if (workspaceManifestToolDiagnostics) {
     workspaceManifestToolDiagnostics.visibleToolIds = [...toolIds];
-    primeSvgAssetStatusLabelFromWorkspaceDiagnostics(workspaceManifestToolDiagnostics);
   }
 
   const initialToolId = toolIds.includes(preferredToolId) ? preferredToolId : "";
@@ -1533,7 +1504,7 @@ function normalizeWorkspaceShellMessageState(value) {
     toolId,
     hostContextId,
     loaded: value.loaded === true,
-    assetLabel: normalizeTextParam(value.assetLabel) || "none",
+    assetLabel: normalizeTextParam(value.assetLabel),
     paletteLabel: normalizeTextParam(value.paletteLabel) || "none",
     statusLabel: normalizeTextParam(value.statusLabel),
     contractType: normalizeTextParam(value.contractType),
@@ -1582,10 +1553,10 @@ function applyWorkspaceShellStateToMountedTool(state) {
     return false;
   }
   const toolName = currentMount.tool?.displayName || "SVG Asset Studio";
-  const label = state.loaded && state.assetLabel !== "none"
+  const label = state.loaded && state.assetLabel
     ? `${toolName} - ${state.assetLabel}`
-    : `${toolName} - none`;
-  if (state.loaded && state.assetLabel !== "none") {
+    : `${toolName} - ${state.statusLabel || "not loaded"}`;
+  if (state.loaded && state.assetLabel) {
     loadedSvgWorkspaceTileState = { ...state };
   } else if (loadedSvgWorkspaceTileState?.hostContextId === state.hostContextId) {
     loadedSvgWorkspaceTileState = null;

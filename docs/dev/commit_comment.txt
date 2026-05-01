@@ -1,1 +1,1 @@
-Disable assetUsageIntegration in hosted mode to remove global overwrite path - PR 11.178
+Write hosted SVG tile state from workspace shell contract only - PR 11.179

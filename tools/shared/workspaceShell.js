@@ -1,5 +1,8 @@
 import { readToolHostSharedContextFromLocation } from "./toolHostSharedContext.js";
 
+let workspaceShellInitialized = false;
+let initializedWorkspaceShellState = null;
+
 function normalizeText(value) {
   return typeof value === "string" ? value.trim() : "";
 }
@@ -60,7 +63,7 @@ function createBaseWorkspaceShellState(locationLike = null) {
     payloadJson,
     paletteJson,
     loaded: false,
-    assetLabel: "none",
+    assetLabel: "",
     paletteLabel: "none",
     statusLabel: hosted ? "Hosted context pending" : "Standalone shell",
     contractType: hosted ? "hosted.unhandled" : "standalone",
@@ -76,7 +79,8 @@ function applySvgAssetStudioContract(state) {
     ? nextState.payloadJson.vectorAssetDocument
     : null;
   if (!vectorAssetDocument) {
-    nextState.statusLabel = "SVG vector asset payload missing";
+    nextState.assetLabel = "";
+    nextState.statusLabel = "SVG vector asset payload missing: payloadJson.vectorAssetDocument is required";
     nextState.errors.push("vectorAssetDocument missing");
     return nextState;
   }
@@ -84,14 +88,15 @@ function applySvgAssetStudioContract(state) {
   const svgText = normalizeText(vectorAssetDocument.svgText);
   nextState.loaded = Boolean(svgText);
   if (!nextState.loaded) {
-    nextState.statusLabel = "SVG vector asset payload not loaded";
+    nextState.assetLabel = "";
+    nextState.statusLabel = "SVG vector asset payload not loaded: vectorAssetDocument.svgText is required";
     nextState.errors.push("vectorAssetDocument.svgText missing");
     return nextState;
   }
 
   const sourceName = normalizeText(vectorAssetDocument.sourceName);
   nextState.assetLabel = sourceName || "Inline SVG";
-  nextState.statusLabel = `Hosted SVG asset loaded: ${nextState.assetLabel}`;
+  nextState.statusLabel = "Loaded";
   return nextState;
 }
 
@@ -108,18 +113,19 @@ function applyPaletteContract(state) {
 
 export function readWorkspaceShellStateFromLocation(locationLike = null) {
   const baseState = createBaseWorkspaceShellState(locationLike);
-  const stateWithPalette = applyPaletteContract(baseState);
 
-  if (!stateWithPalette.hosted) {
+  if (!baseState.hosted) {
+    const stateWithPalette = applyPaletteContract(baseState);
     console.log("[WORKSPACE_SHELL_STATE]", stateWithPalette);
     return stateWithPalette;
   }
-  if (stateWithPalette.toolId === "svg-asset-studio") {
-    const svgState = applySvgAssetStudioContract(stateWithPalette);
+  if (baseState.toolId === "svg-asset-studio") {
+    const svgState = applySvgAssetStudioContract(baseState);
     console.log("[WORKSPACE_SHELL_STATE]", svgState);
     return svgState;
   }
 
+  const stateWithPalette = applyPaletteContract(baseState);
   console.log("[WORKSPACE_SHELL_STATE]", stateWithPalette);
   return stateWithPalette;
 }
@@ -227,6 +233,18 @@ export function renderWorkspaceShellFromLocation(locationLike = null, documentLi
   return state;
 }
 
-if (typeof window !== "undefined" && typeof document !== "undefined") {
-  renderWorkspaceShellFromLocation(window.location, document);
+export function initWorkspaceShell(locationLike = null, documentLike = null) {
+  if (workspaceShellInitialized) {
+    return initializedWorkspaceShellState;
+  }
+  workspaceShellInitialized = true;
+  const nextLocation = locationLike || (typeof window !== "undefined" ? window.location : null);
+  const nextDocument = documentLike || (typeof document !== "undefined" ? document : null);
+  if (!nextDocument) {
+    initializedWorkspaceShellState = readWorkspaceShellStateFromLocation(nextLocation);
+    publishWorkspaceShellState(initializedWorkspaceShellState);
+    return initializedWorkspaceShellState;
+  }
+  initializedWorkspaceShellState = renderWorkspaceShellFromLocation(nextLocation, nextDocument);
+  return initializedWorkspaceShellState;
 }

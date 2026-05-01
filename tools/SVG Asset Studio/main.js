@@ -72,7 +72,12 @@ async function initializeHostedWorkspaceShellEntry() {
     hostContextId: params.get("hostContextId") || ""
   });
   document.body?.setAttribute("data-workspace-shell-active", VECTOR_ASSET_TOOL_ID);
-  hostedWorkspaceShellEntryPromise = import("../shared/workspaceShell.js");
+  hostedWorkspaceShellEntryPromise = import("../shared/workspaceShell.js").then((workspaceShell) => {
+    if (typeof workspaceShell.initWorkspaceShell === "function") {
+      return workspaceShell.initWorkspaceShell(window.location, document);
+    }
+    return null;
+  });
   return hostedWorkspaceShellEntryPromise;
 }
 
