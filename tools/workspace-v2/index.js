@@ -3,6 +3,7 @@ class WorkspaceV2SessionProducer {
     document.title = "Workspace V2";
     document.body.dataset.toolId = "workspace-v2";
     this.libraryStorageKey = "v2-session-library";
+    this.errorLogsStorageKey = "v2-error-logs";
     this.toolSelect = document.getElementById("workspaceV2ToolSelect");
     this.backButton = document.getElementById("workspaceV2BackButton");
     this.loadFixtureButton = document.getElementById("workspaceV2LoadFixtureButton");
@@ -21,6 +22,10 @@ class WorkspaceV2SessionProducer {
     this.deleteSessionButton = document.getElementById("workspaceV2DeleteSessionButton");
     this.libraryEmptyState = document.getElementById("workspaceV2LibraryEmptyState");
     this.sessionListNode = document.getElementById("workspaceV2SessionList");
+    this.refreshErrorLogsButton = document.getElementById("workspaceV2RefreshErrorLogsButton");
+    this.clearErrorLogsButton = document.getElementById("workspaceV2ClearErrorLogsButton");
+    this.errorLogsEmptyState = document.getElementById("workspaceV2ErrorLogsEmptyState");
+    this.errorLogsListNode = document.getElementById("workspaceV2ErrorLogsList");
     this.statusNode = document.getElementById("workspaceV2Status");
     this.currentSessionPayload = null;
     this.currentSessionSource = "";
@@ -58,11 +63,23 @@ class WorkspaceV2SessionProducer {
     this.deleteSessionButton.addEventListener("click", () => {
       this.deleteNamedSession();
     });
+    this.refreshErrorLogsButton.addEventListener("click", () => {
+      this.renderErrorLogsViewer();
+    });
+    this.clearErrorLogsButton.addEventListener("click", () => {
+      this.clearErrorLogs();
+    });
     this.backButton.addEventListener("click", () => {
       window.location.href = "../index.html";
     });
+    window.addEventListener("storage", (event) => {
+      if (event.key === this.errorLogsStorageKey) {
+        this.renderErrorLogsViewer();
+      }
+    });
     this.decodeSessionParamFromUrl();
     this.renderSessionLibrary();
+    this.renderErrorLogsViewer();
   }
 
   selectedToolId() {
@@ -201,6 +218,107 @@ class WorkspaceV2SessionProducer {
       item.appendChild(button);
       this.sessionListNode.appendChild(item);
     });
+  }
+
+  isValidErrorLogEntry(errorLogEntry) {
+    if (!errorLogEntry || typeof errorLogEntry !== "object" || Array.isArray(errorLogEntry)) {
+      return false;
+    }
+    if (typeof errorLogEntry.tool !== "string" || !errorLogEntry.tool.trim()) {
+      return false;
+    }
+    if (!["EMPTY", "INVALID", "RUNTIME"].includes(errorLogEntry.type)) {
+      return false;
+    }
+    if (typeof errorLogEntry.message !== "string" || !errorLogEntry.message.trim()) {
+      return false;
+    }
+    if (!errorLogEntry.details || typeof errorLogEntry.details !== "object" || Array.isArray(errorLogEntry.details)) {
+      return false;
+    }
+    if (typeof errorLogEntry.timestamp !== "string" || !errorLogEntry.timestamp.trim()) {
+      return false;
+    }
+    return true;
+  }
+
+  readErrorLogs() {
+    const rawErrorLogs = localStorage.getItem(this.errorLogsStorageKey);
+    if (!rawErrorLogs) {
+      return [];
+    }
+    let parsedErrorLogs = null;
+    try {
+      parsedErrorLogs = JSON.parse(rawErrorLogs);
+    } catch (error) {
+      console.warn(`[WorkspaceV2ErrorViewer] Ignoring invalid v2-error-logs JSON: ${error instanceof Error ? error.message : "unknown error"}`);
+      return [];
+    }
+    if (!Array.isArray(parsedErrorLogs)) {
+      console.warn("[WorkspaceV2ErrorViewer] Ignoring invalid v2-error-logs value: expected array.");
+      return [];
+    }
+    const validErrorLogs = [];
+    let invalidCount = 0;
+    parsedErrorLogs.forEach((errorLogEntry) => {
+      if (this.isValidErrorLogEntry(errorLogEntry)) {
+        validErrorLogs.push(errorLogEntry);
+        return;
+      }
+      invalidCount += 1;
+    });
+    if (invalidCount > 0) {
+      console.warn(`[WorkspaceV2ErrorViewer] Ignored ${invalidCount} invalid error log entr${invalidCount === 1 ? "y" : "ies"}.`);
+    }
+    return validErrorLogs;
+  }
+
+  groupErrorLogsByTool(errorLogs) {
+    const grouped = {};
+    errorLogs.forEach((errorLogEntry) => {
+      if (!Object.prototype.hasOwnProperty.call(grouped, errorLogEntry.tool)) {
+        grouped[errorLogEntry.tool] = [];
+      }
+      grouped[errorLogEntry.tool].push(errorLogEntry);
+    });
+    return grouped;
+  }
+
+  renderErrorLogsViewer() {
+    const errorLogs = this.readErrorLogs();
+    this.errorLogsListNode.replaceChildren();
+    this.errorLogsEmptyState.hidden = errorLogs.length > 0;
+    this.errorLogsEmptyState.textContent = "No error logs found.";
+    if (errorLogs.length === 0) {
+      return;
+    }
+    const groupedErrorLogs = this.groupErrorLogsByTool(errorLogs);
+    const toolIds = Object.keys(groupedErrorLogs).sort((left, right) => left.localeCompare(right));
+    toolIds.forEach((toolId) => {
+      const groupSection = document.createElement("section");
+      const heading = document.createElement("h3");
+      const list = document.createElement("ul");
+      heading.textContent = `${toolId} (${groupedErrorLogs[toolId].length})`;
+      groupedErrorLogs[toolId].forEach((errorLogEntry) => {
+        const listItem = document.createElement("li");
+        const meta = document.createElement("strong");
+        const message = document.createElement("div");
+        const details = document.createElement("pre");
+        meta.textContent = `${errorLogEntry.type} | ${errorLogEntry.timestamp}`;
+        message.textContent = errorLogEntry.message;
+        details.textContent = JSON.stringify(errorLogEntry.details, null, 2);
+        listItem.append(meta, message, details);
+        list.appendChild(listItem);
+      });
+      groupSection.append(heading, list);
+      this.errorLogsListNode.appendChild(groupSection);
+    });
+  }
+
+  clearErrorLogs() {
+    localStorage.setItem(this.errorLogsStorageKey, "[]");
+    this.renderErrorLogsViewer();
+    this.statusNode.textContent = "Error logs cleared from localStorage key v2-error-logs.";
   }
 
   async loadSelectedFixture() {

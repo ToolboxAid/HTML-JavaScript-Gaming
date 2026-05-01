@@ -70,6 +70,17 @@
       </section>
 
       <section class="hub-panel">
+        <h2>Error Viewer</h2>
+        <p>Reads structured V2 tool logs from localStorage key <code>v2-error-logs</code>.</p>
+        <div>
+          <button id="workspaceV2RefreshErrorLogsButton" type="button">Refresh Error Logs</button>
+          <button id="workspaceV2ClearErrorLogsButton" type="button">Clear Error Logs</button>
+        </div>
+        <p id="workspaceV2ErrorLogsEmptyState">No error logs found.</p>
+        <div id="workspaceV2ErrorLogsList" aria-label="Workspace V2 error logs"></div>
+      </section>
+
+      <section class="hub-panel">
         <h2>Session Output</h2>
         <pre id="workspaceV2Status">No fixture loaded.</pre>
       </section>
