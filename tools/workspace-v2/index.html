@@ -34,6 +34,18 @@
       </section>
 
       <section class="hub-panel">
+        <h2>Import / Export Session JSON</h2>
+        <label for="workspaceV2ImportJson">Session JSON</label>
+        <textarea id="workspaceV2ImportJson" rows="12" spellcheck="false" placeholder='{"toolId":"asset-browser-v2","payloadJson":{}}'></textarea>
+        <label for="workspaceV2ImportFile">Import File</label>
+        <input id="workspaceV2ImportFile" type="file" accept="application/json,.json" />
+        <div>
+          <button id="workspaceV2ImportButton" type="button">Import Session JSON</button>
+          <button id="workspaceV2ExportButton" type="button">Export Current Session JSON</button>
+        </div>
+      </section>
+
+      <section class="hub-panel">
         <h2>Session Output</h2>
         <pre id="workspaceV2Status">No fixture loaded.</pre>
       </section>
