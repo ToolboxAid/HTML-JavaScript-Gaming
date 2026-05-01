@@ -3,7 +3,9 @@ class WorkspaceV2SessionProducer {
     document.title = "Workspace V2";
     document.body.dataset.toolId = "workspace-v2";
     this.libraryStorageKey = "v2-session-library";
+    this.historyStorageKey = "v2-session-history";
     this.errorLogsStorageKey = "v2-error-logs";
+    this.historyMaxEntries = 10;
     this.urlLengthLimit = 2000;
     this.sessionPayloadBytesLimit = 1024 * 1024;
     this.toolSelect = document.getElementById("workspaceV2ToolSelect");
@@ -24,6 +26,9 @@ class WorkspaceV2SessionProducer {
     this.deleteSessionButton = document.getElementById("workspaceV2DeleteSessionButton");
     this.libraryEmptyState = document.getElementById("workspaceV2LibraryEmptyState");
     this.sessionListNode = document.getElementById("workspaceV2SessionList");
+    this.refreshSessionHistoryButton = document.getElementById("workspaceV2RefreshSessionHistoryButton");
+    this.sessionHistoryEmptyState = document.getElementById("workspaceV2SessionHistoryEmptyState");
+    this.sessionHistoryListNode = document.getElementById("workspaceV2SessionHistoryList");
     this.refreshErrorLogsButton = document.getElementById("workspaceV2RefreshErrorLogsButton");
     this.clearErrorLogsButton = document.getElementById("workspaceV2ClearErrorLogsButton");
     this.errorLogsEmptyState = document.getElementById("workspaceV2ErrorLogsEmptyState");
@@ -79,6 +84,9 @@ class WorkspaceV2SessionProducer {
     this.deleteSessionButton.addEventListener("click", () => {
       this.deleteNamedSession();
     });
+    this.refreshSessionHistoryButton.addEventListener("click", () => {
+      this.renderSessionHistory();
+    });
     this.refreshErrorLogsButton.addEventListener("click", () => {
       this.renderErrorLogsViewer();
     });
@@ -113,10 +121,14 @@ class WorkspaceV2SessionProducer {
       if (event.key === this.errorLogsStorageKey || event.key === this.libraryStorageKey) {
         this.renderDiagnosticsPanel();
       }
+      if (event.key === this.historyStorageKey) {
+        this.renderSessionHistory();
+      }
     });
     this.decodeSessionParamFromUrl();
     this.registerSnapshotHook();
     this.renderSessionLibrary();
+    this.renderSessionHistory();
     this.renderErrorLogsViewer();
     this.renderDiagnosticsPanel();
   }
@@ -296,6 +308,113 @@ class WorkspaceV2SessionProducer {
       item.appendChild(button);
       this.sessionListNode.appendChild(item);
     });
+  }
+
+  isValidSessionHistoryEntry(entry) {
+    if (!entry || typeof entry !== "object" || Array.isArray(entry)) return false;
+    if (typeof entry.hostContextId !== "string" || !entry.hostContextId.trim()) return false;
+    if (typeof entry.tool !== "string" || !entry.tool.trim()) return false;
+    if (typeof entry.timestamp !== "string" || !entry.timestamp.trim()) return false;
+    if (!this.isValidSessionPayload(entry.payload)) return false;
+    return true;
+  }
+
+  readSessionHistory() {
+    const rawHistory = localStorage.getItem(this.historyStorageKey);
+    if (!rawHistory) {
+      return [];
+    }
+    let parsedHistory = null;
+    try {
+      parsedHistory = JSON.parse(rawHistory);
+    } catch (error) {
+      console.warn(`[WorkspaceV2SessionHistory] Ignoring invalid v2-session-history JSON: ${error instanceof Error ? error.message : "unknown error"}`);
+      return [];
+    }
+    if (!Array.isArray(parsedHistory)) {
+      console.warn("[WorkspaceV2SessionHistory] Ignoring invalid v2-session-history value: expected array.");
+      return [];
+    }
+    const validEntries = [];
+    let invalidCount = 0;
+    parsedHistory.forEach((entry) => {
+      if (this.isValidSessionHistoryEntry(entry)) {
+        validEntries.push(entry);
+        return;
+      }
+      invalidCount += 1;
+    });
+    if (invalidCount > 0) {
+      console.warn(`[WorkspaceV2SessionHistory] Ignored ${invalidCount} invalid history entr${invalidCount === 1 ? "y" : "ies"}.`);
+    }
+    return validEntries;
+  }
+
+  writeSessionHistory(entries) {
+    localStorage.setItem(this.historyStorageKey, JSON.stringify(entries));
+    this.renderDiagnosticsPanel();
+  }
+
+  addRecentSessionEntry(hostContextId, toolId, payload) {
+    if (typeof hostContextId !== "string" || !hostContextId.trim()) return;
+    if (typeof toolId !== "string" || !toolId.trim()) return;
+    if (!this.isValidSessionPayload(payload)) return;
+
+    const history = this.readSessionHistory();
+    const deduped = history.filter((entry) => entry.hostContextId !== hostContextId.trim());
+    deduped.unshift({
+      hostContextId: hostContextId.trim(),
+      tool: toolId.trim(),
+      timestamp: new Date().toISOString(),
+      payload
+    });
+    if (deduped.length > this.historyMaxEntries) {
+      deduped.length = this.historyMaxEntries;
+    }
+    this.writeSessionHistory(deduped);
+    this.renderSessionHistory();
+  }
+
+  renderSessionHistory() {
+    const history = this.readSessionHistory();
+    this.sessionHistoryListNode.replaceChildren();
+    this.sessionHistoryEmptyState.hidden = history.length > 0;
+    this.sessionHistoryEmptyState.textContent = "No recent sessions.";
+    history.forEach((entry) => {
+      const item = document.createElement("li");
+      const title = document.createElement("strong");
+      const meta = document.createElement("div");
+      const reopenButton = document.createElement("button");
+      title.textContent = `${entry.tool} (${entry.hostContextId})`;
+      meta.textContent = entry.timestamp;
+      reopenButton.type = "button";
+      reopenButton.textContent = "Reopen";
+      reopenButton.addEventListener("click", () => {
+        this.reopenSessionHistoryEntry(entry.hostContextId);
+      });
+      item.append(title, meta, reopenButton);
+      this.sessionHistoryListNode.appendChild(item);
+    });
+  }
+
+  reopenSessionHistoryEntry(hostContextId) {
+    const history = this.readSessionHistory();
+    const entry = history.find((row) => row.hostContextId === hostContextId);
+    if (!entry) {
+      this.statusNode.textContent = "Selected history entry was not found.";
+      return;
+    }
+    if (!this.isValidSessionHistoryEntry(entry)) {
+      this.statusNode.textContent = "Selected history entry is invalid.";
+      return;
+    }
+    sessionStorage.setItem(entry.hostContextId, JSON.stringify(entry.payload));
+    this.currentHostContextId = entry.hostContextId;
+    this.setCurrentSessionPayload(entry.payload, `history:${entry.hostContextId}`);
+    this.importJsonNode.value = JSON.stringify(entry.payload, null, 2);
+    const launchUrl = this.buildToolLaunchUrl(entry.tool, entry.hostContextId);
+    this.statusNode.textContent = `Reopening session.\nTool: ${entry.tool}\nHostContextId: ${entry.hostContextId}`;
+    window.location.href = launchUrl;
   }
 
   isValidErrorLogEntry(errorLogEntry) {
@@ -823,6 +942,7 @@ class WorkspaceV2SessionProducer {
     sessionStorage.setItem(hostContextId, sizeValidation.metrics.serializedPayload);
     this.currentHostContextId = hostContextId;
     this.setCurrentSessionPayload(versionedPayload, this.currentSessionSource || "workspace-v2");
+    this.addRecentSessionEntry(hostContextId, toolId, versionedPayload);
     this.renderDiagnosticsPanel();
     const launchUrl = this.buildToolLaunchUrl(toolId, hostContextId);
     this.statusNode.textContent = `Session created.\nTool: ${toolId}\nHostContextId: ${hostContextId}\nURL: tools/${toolId}/index.html?hostContextId=${hostContextId}`;
