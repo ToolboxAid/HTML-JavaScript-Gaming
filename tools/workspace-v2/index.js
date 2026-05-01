@@ -34,6 +34,11 @@ class WorkspaceV2SessionProducer {
     this.computeDiffButton = document.getElementById("workspaceV2ComputeDiffButton");
     this.diffEmptyState = document.getElementById("workspaceV2DiffEmptyState");
     this.diffOutputNode = document.getElementById("workspaceV2DiffOutput");
+    this.mergeLeftSelect = document.getElementById("workspaceV2MergeLeftSelect");
+    this.mergeRightSelect = document.getElementById("workspaceV2MergeRightSelect");
+    this.computeMergeButton = document.getElementById("workspaceV2ComputeMergeButton");
+    this.mergeEmptyState = document.getElementById("workspaceV2MergeEmptyState");
+    this.mergeOutputNode = document.getElementById("workspaceV2MergeOutput");
     this.refreshErrorLogsButton = document.getElementById("workspaceV2RefreshErrorLogsButton");
     this.clearErrorLogsButton = document.getElementById("workspaceV2ClearErrorLogsButton");
     this.errorLogsEmptyState = document.getElementById("workspaceV2ErrorLogsEmptyState");
@@ -95,6 +100,9 @@ class WorkspaceV2SessionProducer {
     this.computeDiffButton.addEventListener("click", () => {
       this.computeSelectedSessionDiff();
     });
+    this.computeMergeButton.addEventListener("click", () => {
+      this.computeSelectedSessionMerge();
+    });
     this.refreshErrorLogsButton.addEventListener("click", () => {
       this.renderErrorLogsViewer();
     });
@@ -138,6 +146,7 @@ class WorkspaceV2SessionProducer {
     this.renderSessionLibrary();
     this.renderSessionHistory();
     this.renderSessionDiffInputs();
+    this.renderSessionMergeInputs();
     this.renderErrorLogsViewer();
     this.renderDiagnosticsPanel();
   }
@@ -292,6 +301,7 @@ class WorkspaceV2SessionProducer {
   writeSessionLibrary(library) {
     localStorage.setItem(this.libraryStorageKey, JSON.stringify(library));
     this.renderSessionDiffInputs();
+    this.renderSessionMergeInputs();
     this.renderDiagnosticsPanel();
   }
 
@@ -319,6 +329,7 @@ class WorkspaceV2SessionProducer {
       this.sessionListNode.appendChild(item);
     });
     this.renderSessionDiffInputs();
+    this.renderSessionMergeInputs();
   }
 
   isValidSessionHistoryEntry(entry) {
@@ -364,6 +375,7 @@ class WorkspaceV2SessionProducer {
   writeSessionHistory(entries) {
     localStorage.setItem(this.historyStorageKey, JSON.stringify(entries));
     this.renderSessionDiffInputs();
+    this.renderSessionMergeInputs();
     this.renderDiagnosticsPanel();
   }
 
@@ -408,6 +420,7 @@ class WorkspaceV2SessionProducer {
       this.sessionHistoryListNode.appendChild(item);
     });
     this.renderSessionDiffInputs();
+    this.renderSessionMergeInputs();
   }
 
   buildSessionDiffCandidates() {
@@ -472,6 +485,141 @@ class WorkspaceV2SessionProducer {
 
     this.diffEmptyState.hidden = this.diffCandidates.length >= 2;
     this.diffEmptyState.textContent = "Need at least two valid sessions to compare.";
+  }
+
+  buildSessionMergeCandidates() {
+    return this.buildSessionDiffCandidates();
+  }
+
+  renderSessionMergeInputs() {
+    this.mergeCandidates = this.buildSessionMergeCandidates();
+    const currentLeft = this.mergeLeftSelect.value;
+    const currentRight = this.mergeRightSelect.value;
+    this.mergeLeftSelect.replaceChildren();
+    this.mergeRightSelect.replaceChildren();
+
+    this.mergeCandidates.forEach((candidate) => {
+      const leftOption = document.createElement("option");
+      leftOption.value = candidate.id;
+      leftOption.textContent = candidate.label;
+      this.mergeLeftSelect.appendChild(leftOption);
+      const rightOption = document.createElement("option");
+      rightOption.value = candidate.id;
+      rightOption.textContent = candidate.label;
+      this.mergeRightSelect.appendChild(rightOption);
+    });
+
+    if (this.mergeCandidates.length > 0) {
+      this.mergeLeftSelect.value = this.mergeCandidates.some((entry) => entry.id === currentLeft) ? currentLeft : this.mergeCandidates[0].id;
+      if (this.mergeCandidates.some((entry) => entry.id === currentRight)) {
+        this.mergeRightSelect.value = currentRight;
+      } else if (this.mergeCandidates.length > 1) {
+        this.mergeRightSelect.value = this.mergeCandidates[1].id;
+      } else {
+        this.mergeRightSelect.value = this.mergeCandidates[0].id;
+      }
+    }
+
+    this.mergeEmptyState.hidden = this.mergeCandidates.length >= 2;
+    this.mergeEmptyState.textContent = "Need at least two valid sessions to merge.";
+  }
+
+  cloneSessionValue(value) {
+    if (value === undefined) {
+      return undefined;
+    }
+    return JSON.parse(JSON.stringify(value));
+  }
+
+  mergeSessionPayloads(leftPayload, rightPayload) {
+    const conflicts = {};
+    const mergeValues = (leftValue, rightValue, path) => {
+      if (leftValue === undefined && rightValue !== undefined) {
+        return this.cloneSessionValue(rightValue);
+      }
+      if (leftValue !== undefined && rightValue === undefined) {
+        return this.cloneSessionValue(leftValue);
+      }
+      const leftIsObject = leftValue && typeof leftValue === "object";
+      const rightIsObject = rightValue && typeof rightValue === "object";
+      if (leftIsObject && rightIsObject && !Array.isArray(leftValue) && !Array.isArray(rightValue)) {
+        const mergedObject = {};
+        const keys = new Set([...Object.keys(leftValue), ...Object.keys(rightValue)]);
+        Array.from(keys).sort((a, b) => a.localeCompare(b)).forEach((key) => {
+          const childPath = path ? `${path}.${key}` : key;
+          const mergedValue = mergeValues(leftValue[key], rightValue[key], childPath);
+          if (mergedValue !== undefined) {
+            mergedObject[key] = mergedValue;
+          }
+        });
+        return mergedObject;
+      }
+      if (Array.isArray(leftValue) && Array.isArray(rightValue)) {
+        if (JSON.stringify(leftValue) === JSON.stringify(rightValue)) {
+          return this.cloneSessionValue(leftValue);
+        }
+        conflicts[path || "$"] = { a: this.cloneSessionValue(leftValue), b: this.cloneSessionValue(rightValue) };
+        return undefined;
+      }
+      if (JSON.stringify(leftValue) === JSON.stringify(rightValue)) {
+        return this.cloneSessionValue(leftValue);
+      }
+      conflicts[path || "$"] = { a: this.cloneSessionValue(leftValue), b: this.cloneSessionValue(rightValue) };
+      return undefined;
+    };
+
+    const mergedPayload = mergeValues(leftPayload, rightPayload, "");
+    return {
+      mergedPayload: mergedPayload && typeof mergedPayload === "object" && !Array.isArray(mergedPayload) ? mergedPayload : {},
+      conflicts
+    };
+  }
+
+  computeSelectedSessionMerge() {
+    if (!Array.isArray(this.mergeCandidates) || this.mergeCandidates.length < 2) {
+      this.mergeOutputNode.textContent = "Need at least two valid sessions to merge.";
+      return;
+    }
+    const left = this.mergeCandidates.find((entry) => entry.id === this.mergeLeftSelect.value);
+    const right = this.mergeCandidates.find((entry) => entry.id === this.mergeRightSelect.value);
+    if (!left || !right) {
+      this.mergeOutputNode.textContent = "Selected merge entries are not available.";
+      return;
+    }
+    if (!this.isValidSessionPayload(left.payload) || !this.isValidSessionPayload(right.payload)) {
+      this.mergeOutputNode.textContent = "Selected merge payload is invalid.";
+      return;
+    }
+
+    const result = this.mergeSessionPayloads(left.payload, right.payload);
+    const conflictKeys = Object.keys(result.conflicts);
+    const selectedToolId = this.selectedToolId();
+    if (!selectedToolId) {
+      this.mergeOutputNode.textContent = "Select a V2 tool before computing merge.";
+      return;
+    }
+    const versionedPayload = this.withSessionVersion(result.mergedPayload);
+    const sizeValidation = this.validateSessionPayloadSize(versionedPayload);
+    if (!sizeValidation.ok) {
+      this.mergeOutputNode.textContent = sizeValidation.message;
+      return;
+    }
+
+    const hostContextId = this.createHostContextId(selectedToolId);
+    sessionStorage.setItem(hostContextId, sizeValidation.metrics.serializedPayload);
+    this.currentHostContextId = hostContextId;
+    this.setCurrentSessionPayload(versionedPayload, "merge");
+    this.importJsonNode.value = JSON.stringify(versionedPayload, null, 2);
+    this.renderDiagnosticsPanel();
+
+    this.mergeOutputNode.textContent = JSON.stringify({
+      hostContextId,
+      mergedPayload: versionedPayload,
+      conflicts: result.conflicts
+    }, null, 2);
+    this.statusNode.textContent = conflictKeys.length > 0
+      ? `Session merge completed with ${conflictKeys.length} conflict${conflictKeys.length === 1 ? "" : "s"}. New hostContextId: ${hostContextId}`
+      : `Session merge completed with no conflicts. New hostContextId: ${hostContextId}`;
   }
 
   isComparableObject(value) {

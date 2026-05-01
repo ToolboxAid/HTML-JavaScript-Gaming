@@ -90,6 +90,18 @@
       </section>
 
       <section class="hub-panel">
+        <h2>Session Merge</h2>
+        <p>Merge two sessions into a new payload with explicit conflict reporting.</p>
+        <label for="workspaceV2MergeLeftSelect">Session A</label>
+        <select id="workspaceV2MergeLeftSelect"></select>
+        <label for="workspaceV2MergeRightSelect">Session B</label>
+        <select id="workspaceV2MergeRightSelect"></select>
+        <button id="workspaceV2ComputeMergeButton" type="button">Compute Merge</button>
+        <p id="workspaceV2MergeEmptyState">Need at least two valid sessions to merge.</p>
+        <pre id="workspaceV2MergeOutput">No merge computed.</pre>
+      </section>
+
+      <section class="hub-panel">
         <h2>Error Viewer</h2>
         <p>Reads structured V2 tool logs from localStorage key <code>v2-error-logs</code>.</p>
         <div>
