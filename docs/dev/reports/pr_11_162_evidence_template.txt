@@ -1,0 +1,15 @@
+# PR 11.162 Evidence Template
+
+Codex must replace this template with execution evidence.
+
+Required results:
+- node --check tools/shared/platformShell.js: PASS/FAIL
+- sample 1902 Workspace Manager launch: PASS/FAIL
+- SVG Asset Studio badge text: expected `Asset: sample-0901-ship.svg`
+- schema files changed: expected NO
+- sample JSON changed: expected NO
+- dead/unused badge wiring tracked: expected YES
+
+Full samples smoke test:
+- skipped unless shared loader behavior changed beyond asset badge derivation
+- reason required

@@ -120,7 +120,9 @@ const TOOL_LAUNCH_PARAM_PREFIXES = Object.freeze({
 let selectedToolId = "";
 let pagerEventsBound = false;
 let pagerMessageBridgeBound = false;
+let workspaceShellStateBridgeBound = false;
 let workspaceManifestToolDiagnostics = null;
+let loadedSvgWorkspaceTileState = null;
 
 function refreshPagerRefs() {
   refs.prevButton = document.querySelector("[data-tool-host-prev]");
@@ -360,6 +362,13 @@ function primeSvgAssetStatusLabelFromWorkspaceDiagnostics(diagnostics = null) {
 }
 
 function writeSharedBindingsFromDirectPayload(toolId = "", payloadJson = null, paletteJson = null) {
+  console.log("[LEGACY_BADGE_WRITE]", {
+    source: "writeSharedBindingsFromDirectPayload",
+    action: "requested",
+    toolId: normalizeTextParam(toolId),
+    hasPayloadJson: isPlainObject(payloadJson),
+    hasPaletteJson: isPlainObject(paletteJson)
+  });
   if (isPlainObject(paletteJson)
     && paletteJson.schema === "html-js-gaming.palette"
     && Array.isArray(paletteJson.swatches)) {
@@ -382,6 +391,13 @@ function writeSharedBindingsFromDirectPayload(toolId = "", payloadJson = null, p
       sourceToolId: "workspace-manager"
     });
     if (paletteHandoff) {
+      console.log("[LEGACY_BADGE_WRITE]", {
+        source: "writeSharedBindingsFromDirectPayload",
+        action: "write-palette-handoff",
+        toolId: normalizeTextParam(toolId),
+        paletteId: paletteHandoff.paletteId,
+        displayName: paletteHandoff.displayName
+      });
       writeSharedPaletteHandoff(paletteHandoff);
     }
   }
@@ -406,6 +422,15 @@ function writeSharedBindingsFromDirectPayload(toolId = "", payloadJson = null, p
     sourceToolId: "workspace-manager"
   });
   if (assetHandoff) {
+    console.log("[LEGACY_BADGE_WRITE]", {
+      source: "writeSharedBindingsFromDirectPayload",
+      action: "write-asset-handoff",
+      toolId: normalizeTextParam(toolId),
+      assetId: assetHandoff.assetId,
+      assetType: assetHandoff.assetType,
+      displayName: assetHandoff.displayName,
+      sourcePath: assetHandoff.sourcePath
+    });
     writeSharedAssetHandoff(assetHandoff);
   }
 }
@@ -1043,7 +1068,47 @@ function writeSelectedToolId(toolId) {
   selectedToolId = normalizedToolId;
 }
 
+function traceSvgTileWrite(source, details = {}) {
+  console.log("[SVG_TILE_WRITE]", {
+    source,
+    toolId: normalizeTextParam(details.toolId) || readSelectedToolId(),
+    hostContextId: normalizeTextParam(details.hostContextId),
+    assetLabel: normalizeTextParam(details.assetLabel),
+    statusLabel: normalizeTextParam(details.statusLabel),
+    title: normalizeTextParam(details.title),
+    timestamp: Date.now()
+  });
+}
+
+function shouldBlockLoadedSvgWorkspaceTileOverwrite(source, details = {}) {
+  if (!loadedSvgWorkspaceTileState?.loaded || readSelectedToolId() !== "svg-asset-studio") {
+    return false;
+  }
+  const nextTitle = normalizeTextParam(details.title || details.assetLabel);
+  const loadedLabel = normalizeTextParam(loadedSvgWorkspaceTileState.assetLabel);
+  if (!nextTitle || !loadedLabel) {
+    return false;
+  }
+  const preservesLoadedLabel = nextTitle.includes(loadedLabel) && !/\bnone\b/i.test(nextTitle);
+  if (preservesLoadedLabel) {
+    return false;
+  }
+  console.log("[SVG_TILE_WRITE_BLOCKED_LEGACY]", {
+    source,
+    toolId: "svg-asset-studio",
+    hostContextId: loadedSvgWorkspaceTileState.hostContextId,
+    attemptedTitle: nextTitle,
+    protectedAssetLabel: loadedLabel,
+    protectedStatusLabel: loadedSvgWorkspaceTileState.statusLabel,
+    timestamp: Date.now()
+  });
+  return true;
+}
+
 function writeStatus(text) {
+  traceSvgTileWrite("writeStatus", {
+    statusLabel: text
+  });
   if (refs.statusText instanceof HTMLElement) {
     refs.statusText.textContent = text;
   }
@@ -1072,6 +1137,16 @@ function renderMountDiagnostic(message, detail = "") {
 
 function setCurrentLabel(text) {
   refreshPagerRefs();
+  if (shouldBlockLoadedSvgWorkspaceTileOverwrite("setCurrentLabel", {
+    assetLabel: text,
+    title: text
+  })) {
+    return;
+  }
+  traceSvgTileWrite("setCurrentLabel", {
+    assetLabel: text,
+    title: text
+  });
   if (refs.currentLabel instanceof HTMLElement) {
     refs.currentLabel.textContent = text;
   }
@@ -1445,6 +1520,142 @@ function bindPagerMessageBridge() {
   });
 }
 
+function normalizeWorkspaceShellMessageState(value) {
+  if (!value || typeof value !== "object" || Array.isArray(value)) {
+    return null;
+  }
+  const toolId = normalizeTextParam(value.toolId);
+  const hostContextId = normalizeTextParam(value.hostContextId);
+  if (!toolId || !hostContextId) {
+    return null;
+  }
+  return {
+    toolId,
+    hostContextId,
+    loaded: value.loaded === true,
+    assetLabel: normalizeTextParam(value.assetLabel) || "none",
+    paletteLabel: normalizeTextParam(value.paletteLabel) || "none",
+    statusLabel: normalizeTextParam(value.statusLabel),
+    contractType: normalizeTextParam(value.contractType),
+    errors: Array.isArray(value.errors)
+      ? value.errors.map((entry) => normalizeTextParam(entry)).filter(Boolean)
+      : []
+  };
+}
+
+function applyWorkspaceShellStateToMountedTool(state) {
+  const currentMount = runtime.getCurrentMount();
+  console.log("[SVG_TILE_WRITE]", {
+    source: "applyWorkspaceShellStateToMountedTool:attempt",
+    incomingToolId: state.toolId,
+    incomingHostContextId: state.hostContextId,
+    toolId: state.toolId,
+    hostContextId: state.hostContextId,
+    mountedToolId: currentMount?.tool?.id || "",
+    mountedHostContextId: currentMount?.hostContextId || "",
+    loaded: state.loaded,
+    assetLabel: state.assetLabel,
+    statusLabel: state.statusLabel,
+    contractType: state.contractType,
+    timestamp: Date.now()
+  });
+  if (!currentMount || currentMount.tool?.id !== state.toolId || currentMount.hostContextId !== state.hostContextId) {
+    console.log("[SVG_TILE_WRITE]", {
+      source: "applyWorkspaceShellStateToMountedTool:ignored-mount-mismatch",
+      toolId: state.toolId,
+      hostContextId: state.hostContextId,
+      assetLabel: state.assetLabel,
+      statusLabel: state.statusLabel,
+      timestamp: Date.now()
+    });
+    return false;
+  }
+  if (state.toolId !== "svg-asset-studio") {
+    console.log("[SVG_TILE_WRITE]", {
+      source: "applyWorkspaceShellStateToMountedTool:ignored-unsupported-tool",
+      toolId: state.toolId,
+      hostContextId: state.hostContextId,
+      assetLabel: state.assetLabel,
+      statusLabel: state.statusLabel,
+      timestamp: Date.now()
+    });
+    return false;
+  }
+  const toolName = currentMount.tool?.displayName || "SVG Asset Studio";
+  const label = state.loaded && state.assetLabel !== "none"
+    ? `${toolName} - ${state.assetLabel}`
+    : `${toolName} - none`;
+  if (state.loaded && state.assetLabel !== "none") {
+    loadedSvgWorkspaceTileState = { ...state };
+  } else if (loadedSvgWorkspaceTileState?.hostContextId === state.hostContextId) {
+    loadedSvgWorkspaceTileState = null;
+  }
+  setCurrentLabel(label);
+  if (state.statusLabel) {
+    writeStatus(state.statusLabel);
+  }
+  if (currentMount.frame instanceof HTMLIFrameElement) {
+    currentMount.frame.dataset.workspaceShellLoaded = state.loaded ? "1" : "0";
+    currentMount.frame.dataset.workspaceShellAssetLabel = state.assetLabel;
+    currentMount.frame.dataset.workspaceShellContract = state.contractType;
+  }
+  console.log("[SVG_TILE_WRITE]", {
+    source: "applyWorkspaceShellStateToMountedTool:applied",
+    toolId: state.toolId,
+    hostContextId: state.hostContextId,
+    loaded: state.loaded,
+    assetLabel: state.assetLabel,
+    statusLabel: state.statusLabel,
+    contractType: state.contractType,
+    title: label,
+    timestamp: Date.now()
+  });
+  syncControlState();
+  return true;
+}
+
+function bindWorkspaceShellStateBridge() {
+  if (workspaceShellStateBridgeBound || typeof window === "undefined") {
+    return;
+  }
+  workspaceShellStateBridgeBound = true;
+
+  window.addEventListener("message", (event) => {
+    if (event.origin !== window.location.origin) {
+      return;
+    }
+    const message = event.data && typeof event.data === "object" ? event.data : null;
+    if (!message || message.type !== "tools:workspace-shell-state") {
+      return;
+    }
+    console.log("[SVG_POSTMESSAGE_RECEIVE]", {
+      type: message.type,
+      origin: event.origin,
+      payload: message.payload
+    });
+    const state = normalizeWorkspaceShellMessageState(message.payload);
+    if (!state) {
+      console.log("[SVG_POSTMESSAGE_RECEIVE]", {
+        ignored: true,
+        reason: "invalid-workspace-shell-state",
+        payload: message.payload
+      });
+      return;
+    }
+    const currentMount = runtime.getCurrentMount();
+    if (currentMount?.frame?.contentWindow && event.source !== currentMount.frame.contentWindow) {
+      console.log("[SVG_POSTMESSAGE_RECEIVE]", {
+        ignored: true,
+        reason: "source-mismatch",
+        toolId: state.toolId,
+        hostContextId: state.hostContextId
+      });
+      return;
+    }
+    applyWorkspaceShellStateToMountedTool(state);
+  });
+}
+
 const runtime = createToolHostRuntime({
   manifest,
   mountContainer: refs.mountContainer,
@@ -1457,6 +1668,7 @@ const runtime = createToolHostRuntime({
     syncControlState();
   },
   onUnmounted() {
+    loadedSvgWorkspaceTileState = null;
     setCurrentLabel("No tool mounted.");
     syncControlState();
   }
@@ -1514,6 +1726,7 @@ function mountSelectedTool(source = "manual") {
 function bindEvents() {
   bindPagerDelegatedEvents();
   bindPagerMessageBridge();
+  bindWorkspaceShellStateBridge();
 
   if (refs.mountButton instanceof HTMLButtonElement) {
     refs.mountButton.addEventListener("click", () => {

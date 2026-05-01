@@ -7,6 +7,7 @@ import {
   readSharedPaletteHandoff,
   writeSharedAssetHandoff
 } from "./assetUsageIntegration.js";
+import { readToolHostSharedContextFromLocation } from "./toolHostSharedContext.js";
 import { createWorkspaceSystemController } from "./projectSystem.js";
 import { bindEventHandlers, createCommandDispatcher } from "./eventCommandUtils.js";
 import { asHtmlInput, queryAll, queryFirst, readDataAttribute, setTextContent } from "./uiSafeUtils.js";
@@ -25,6 +26,8 @@ let suppressAutoFullscreenEnter = false;
 let lastWorkspaceUiStateKey = "";
 let lastLockedSurfaceElement = null;
 let workspaceScopedToolPresetForStatus = null;
+let workspaceScopedSvgAssetLabelForStatus = "";
+let hostedBadgeRowRemovedLogged = false;
 const sidebarAccordionState = new Map();
 
 const HEADER_EXPANDED_STORAGE_KEY = "toolboxaid.toolsPlatform.headerExpanded";
@@ -691,6 +694,9 @@ function installWorkspaceScopedSamplePresetFetchShim(currentToolId, samplePreset
       return response;
     }
     const rawPreset = await response.clone().json().catch(() => null);
+    if (normalizedToolId === "svg-asset-studio") {
+      workspaceScopedSvgAssetLabelForStatus = readSvgAssetLabelFromWorkspaceManifestPreset(rawPreset);
+    }
     const scopedPreset = selectWorkspaceScopedToolPreset(rawPreset, normalizedToolId);
     if (!scopedPreset) {
       return response;
@@ -714,6 +720,9 @@ function installWorkspaceScopedSamplePresetFetchShim(currentToolId, samplePreset
 async function primeWorkspaceScopedToolPresetForStatus(toolId, samplePresetPath) {
   const normalizedToolId = normalizeTextValue(toolId).toLowerCase();
   const normalizedSamplePresetPath = normalizeSamplePresetPath(samplePresetPath);
+  if (normalizedToolId === "svg-asset-studio") {
+    workspaceScopedSvgAssetLabelForStatus = "";
+  }
   if (!normalizedToolId || !normalizedSamplePresetPath || typeof window === "undefined" || typeof window.fetch !== "function") {
     return null;
   }
@@ -723,6 +732,9 @@ async function primeWorkspaceScopedToolPresetForStatus(toolId, samplePresetPath)
       return null;
     }
     const rawPreset = await response.json();
+    if (normalizedToolId === "svg-asset-studio") {
+      workspaceScopedSvgAssetLabelForStatus = readSvgAssetLabelFromWorkspaceManifestPreset(rawPreset);
+    }
     const scopedPreset = selectWorkspaceScopedToolPreset(rawPreset, normalizedToolId);
     if (!scopedPreset) {
       return null;
@@ -752,6 +764,35 @@ function readLaunchPayloadSignature(searchParams) {
     parts.push(`samplePresetPath=${samplePresetPath}`);
   }
   return parts.join("|");
+}
+
+function isHostedToolLaunch(searchParams) {
+  if (!(searchParams instanceof URLSearchParams)) {
+    return false;
+  }
+  return searchParams.get("hosted") === "1"
+    || searchParams.has("hostToolId")
+    || searchParams.has("hostContextId");
+}
+
+function isHostedWorkspaceBadgeRowRemovalLaunch() {
+  if (typeof window === "undefined") {
+    return false;
+  }
+  const searchParams = new URLSearchParams(window.location.search);
+  return searchParams.get("hosted") === "1"
+    && Boolean(normalizeTextValue(searchParams.get("hostToolId")))
+    && Boolean(normalizeTextValue(searchParams.get("hostContextId")));
+}
+
+function isDeprecatedHostedSvgPlatformBadgeLaunch() {
+  if (typeof window === "undefined") {
+    return false;
+  }
+  const searchParams = new URLSearchParams(window.location.search);
+  return searchParams.get("hosted") === "1"
+    && searchParams.get("hostToolId") === "svg-asset-studio"
+    && Boolean(normalizeTextValue(searchParams.get("hostContextId")));
 }
 
 function readStoredLaunchSignature() {
@@ -1169,6 +1210,80 @@ function readPaletteFromManifestPayload(manifestPayload, launchContext = null) {
   return paletteBrowserSection;
 }
 
+function readSvgAssetLabelFromHostedSharedContext() {
+  const hostContext = readToolHostSharedContextFromLocation(
+    typeof window !== "undefined" ? window.location : null
+  );
+  const payloadJson = hostContext?.sharedContext?.payloadJson;
+  if (!payloadJson || typeof payloadJson !== "object" || Array.isArray(payloadJson)) {
+    return "";
+  }
+  const vectorAssetDocument = payloadJson.vectorAssetDocument
+    && typeof payloadJson.vectorAssetDocument === "object"
+    && !Array.isArray(payloadJson.vectorAssetDocument)
+    ? payloadJson.vectorAssetDocument
+    : null;
+  if (!vectorAssetDocument) {
+    return "";
+  }
+  const sourceName = normalizeTextValue(vectorAssetDocument.sourceName);
+  if (sourceName) {
+    return sourceName;
+  }
+  const svgText = normalizeTextValue(vectorAssetDocument.svgText);
+  return svgText ? "Inline SVG" : "";
+}
+
+function readSvgAssetLabelFromWorkspaceScopedPreset(scopedToolState = null) {
+  if (!scopedToolState || typeof scopedToolState !== "object" || Array.isArray(scopedToolState)) {
+    return "";
+  }
+  const payload = scopedToolState.payload && typeof scopedToolState.payload === "object" && !Array.isArray(scopedToolState.payload)
+    ? scopedToolState.payload
+    : scopedToolState;
+  const vectorAssetDocument = readWorkspaceScopedToolDocument(payload, "vectorAssetDocument", scopedToolState);
+  if (!vectorAssetDocument) {
+    return "";
+  }
+  const sourceName = normalizeTextValue(vectorAssetDocument.sourceName);
+  if (sourceName) {
+    return sourceName;
+  }
+  const svgText = normalizeTextValue(vectorAssetDocument.svgText);
+  return svgText ? "Inline SVG" : "";
+}
+
+function readSvgAssetLabelFromWorkspaceManifestPreset(rawPreset = null) {
+  const source = rawPreset && typeof rawPreset === "object" && !Array.isArray(rawPreset)
+    ? rawPreset
+    : null;
+  if (!source) {
+    return "";
+  }
+  const tools = source.tools && typeof source.tools === "object" && !Array.isArray(source.tools)
+    ? source.tools
+    : null;
+  if (!tools) {
+    return "";
+  }
+  const svgToolPreset = tools["svg-asset-studio"] && typeof tools["svg-asset-studio"] === "object" && !Array.isArray(tools["svg-asset-studio"])
+    ? tools["svg-asset-studio"]
+    : null;
+  if (!svgToolPreset) {
+    return "";
+  }
+  const vectorAssetDocument = readWorkspaceScopedToolDocument(svgToolPreset, "vectorAssetDocument", svgToolPreset);
+  if (!vectorAssetDocument) {
+    return "";
+  }
+  const sourceName = normalizeTextValue(vectorAssetDocument.sourceName);
+  if (sourceName) {
+    return sourceName;
+  }
+  const svgText = normalizeTextValue(vectorAssetDocument.svgText);
+  return svgText ? "Inline SVG" : "";
+}
+
 async function hydrateSharedPaletteFromSamplePresetPath(samplePresetPath = "") {
   return false;
 }
@@ -1263,7 +1378,7 @@ function resolveAcceptedAssetKindsForTool(toolId = "") {
     "sprite-editor": ["sprite"],
     "tile-map-editor": ["tilemap"],
     "parallax-editor": ["parallax"],
-    "svg-asset-studio": ["vector"],
+    "svg-asset-studio": ["vector", "svg", "asset"],
     "vector-map-editor": ["vector-map"],
     "3d-asset-viewer": ["model"],
     "3d-camera-path-editor": ["camera-path"],
@@ -1274,21 +1389,90 @@ function resolveAcceptedAssetKindsForTool(toolId = "") {
   return byTool[normalizedToolId] || [];
 }
 
+function getAssetPathBasename(value) {
+  const raw = normalizeTextValue(value);
+  if (!raw) {
+    return "";
+  }
+  const normalized = raw.replace(/\\/g, "/");
+  const segments = normalized.split("/").filter(Boolean);
+  return segments.length ? segments[segments.length - 1] : "";
+}
+
+function resolveSharedAssetLabel(asset = null) {
+  if (!asset || typeof asset !== "object" || Array.isArray(asset)) {
+    return "";
+  }
+  const fromDisplayName = normalizeTextValue(asset.displayName);
+  if (fromDisplayName) {
+    return fromDisplayName;
+  }
+  const fromSourceName = normalizeTextValue(asset.sourceName);
+  if (fromSourceName) {
+    return fromSourceName;
+  }
+  const fromName = normalizeTextValue(asset.name);
+  if (fromName) {
+    return fromName;
+  }
+  const fromLabel = normalizeTextValue(asset.label);
+  if (fromLabel) {
+    return fromLabel;
+  }
+  const fromPath = getAssetPathBasename(asset.path) || getAssetPathBasename(asset.sourcePath);
+  if (fromPath) {
+    return fromPath;
+  }
+  return "";
+}
+
 function isAssetCompatibleWithTool(toolId = "", asset = null) {
   const acceptedKinds = resolveAcceptedAssetKindsForTool(toolId);
   if (!asset || !acceptedKinds.length) {
     return false;
   }
-  const kind = normalizeAssetKind(asset.assetType);
-  return acceptedKinds.includes(kind);
+  const candidateKinds = [
+    normalizeAssetKind(asset.assetType),
+    normalizeAssetKind(asset.kind),
+    normalizeAssetKind(asset.type)
+  ].filter(Boolean);
+  return candidateKinds.some((kind) => acceptedKinds.includes(kind));
 }
 
 function renderToolAssetBadge(toolId = "") {
   const normalizedToolId = normalizeTextValue(toolId).toLowerCase();
+  if (isHostedWorkspaceBadgeRowRemovalLaunch()) {
+    if (!hostedBadgeRowRemovedLogged) {
+      hostedBadgeRowRemovedLogged = true;
+      console.log("[PLATFORM_SHELL_HOSTED_BADGE_ROW_REMOVED]", {
+        source: "renderToolAssetBadge",
+        hostToolId: new URLSearchParams(window.location.search).get("hostToolId") || "",
+        hostContextId: new URLSearchParams(window.location.search).get("hostContextId") || ""
+      });
+    }
+    return "";
+  }
+  if (normalizedToolId === "svg-asset-studio" && isDeprecatedHostedSvgPlatformBadgeLaunch()) {
+    console.log("[PLATFORM_SHELL_DEPRECATED_HOSTED_BLOCK]", {
+      source: "renderToolAssetBadge",
+      toolId: normalizedToolId,
+      label: "none"
+    });
+    return "";
+  }
   const embeddedPayloadSummary = summarizeEmbeddedToolPayloadDocument(
     normalizedToolId,
     workspaceScopedToolPresetForStatus
   );
+  const svgPayloadLabel = normalizedToolId === "svg-asset-studio"
+    ? readSvgAssetLabelFromHostedSharedContext()
+    : "";
+  const svgScopedPresetLabel = normalizedToolId === "svg-asset-studio"
+    ? readSvgAssetLabelFromWorkspaceScopedPreset(workspaceScopedToolPresetForStatus)
+    : "";
+  const svgWorkspacePresetLabel = normalizedToolId === "svg-asset-studio"
+    ? normalizeTextValue(workspaceScopedSvgAssetLabelForStatus)
+    : "";
   const acceptedKinds = resolveAcceptedAssetKindsForTool(normalizedToolId);
   if (normalizedToolId === "palette-browser") {
     const palette = readSharedPaletteHandoff();
@@ -1297,6 +1481,15 @@ function renderToolAssetBadge(toolId = "") {
       ? `Updated: ${escapeHtml(palette?.selectedAt || "not-set")}`
       : escapeHtml("Resolved from embedded workspace payload");
     const badgeClass = palette?.displayName || embeddedPayloadSummary ? " is-active" : "";
+    console.log("[LEGACY_BADGE_WRITE]", {
+      source: "renderToolAssetBadge",
+      toolId: normalizedToolId,
+      badgeKind: "palette",
+      label: paletteLabel,
+      badgeClass,
+      hasSharedPalette: Boolean(palette?.displayName),
+      embeddedPayloadSummary
+    });
     return `
       <div class="tools-platform-frame__binding-badges" aria-label="Tool asset binding">
         <span class="tools-platform-frame__binding-badge${badgeClass}" title="${paletteTitle}">${escapeHtml(`Palette: ${paletteLabel}`)}</span>
@@ -1309,6 +1502,14 @@ function renderToolAssetBadge(toolId = "") {
     const badgeTitle = embeddedPayloadSummary
       ? escapeHtml("Resolved from embedded workspace payload")
       : escapeHtml("No shared asset dependency for this tool");
+    console.log("[LEGACY_BADGE_WRITE]", {
+      source: "renderToolAssetBadge",
+      toolId: normalizedToolId,
+      badgeKind: "non-asset",
+      label: nonAssetLabel,
+      badgeClass,
+      embeddedPayloadSummary
+    });
     return `
       <div class="tools-platform-frame__binding-badges" aria-label="Tool asset binding">
         <span class="tools-platform-frame__binding-badge${badgeClass}" title="${badgeTitle}">${escapeHtml(`Asset: ${nonAssetLabel}`)}</span>
@@ -1321,12 +1522,40 @@ function renderToolAssetBadge(toolId = "") {
   const missingAssetLabel = normalizedToolId === "skin-editor"
     ? "select skin in Asset Browser"
     : "none";
-  const assetLabelBasis = embeddedPayloadSummary || missingAssetLabel;
-  const assetLabel = compatibleAsset?.displayName || assetLabelBasis;
+  const compatibleAssetLabel = resolveSharedAssetLabel(compatibleAsset);
+  const assetLabel = compatibleAssetLabel || (
+    normalizedToolId === "svg-asset-studio"
+      ? (svgPayloadLabel || svgScopedPresetLabel || svgWorkspacePresetLabel || missingAssetLabel)
+      : (embeddedPayloadSummary || missingAssetLabel)
+  );
   const assetTitle = compatibleAsset
     ? `Updated: ${escapeHtml(compatibleAsset?.selectedAt || "not-set")}`
-    : escapeHtml(embeddedPayloadSummary ? "Resolved from embedded workspace payload" : "Updated: not-set");
-  const badgeClass = compatibleAsset || embeddedPayloadSummary ? " is-active" : "";
+    : escapeHtml(
+      normalizedToolId === "svg-asset-studio"
+        ? (svgPayloadLabel
+          ? "Resolved from hosted tool payload"
+          : (svgScopedPresetLabel
+            ? "Resolved from workspace scoped preset payload"
+            : (svgWorkspacePresetLabel ? "Resolved from workspace manifest preset payload" : "Updated: not-set")))
+        : (embeddedPayloadSummary ? "Resolved from embedded workspace payload" : "Updated: not-set")
+    );
+  const badgeClass = compatibleAsset || (normalizedToolId === "svg-asset-studio"
+    ? (svgPayloadLabel || svgScopedPresetLabel || svgWorkspacePresetLabel)
+    : embeddedPayloadSummary)
+    ? " is-active"
+    : "";
+  console.log("[LEGACY_BADGE_WRITE]", {
+    source: "renderToolAssetBadge",
+    toolId: normalizedToolId,
+    badgeKind: "asset",
+    label: assetLabel,
+    badgeClass,
+    hasCompatibleAsset: Boolean(compatibleAsset),
+    svgPayloadLabel,
+    svgScopedPresetLabel,
+    svgWorkspacePresetLabel,
+    embeddedPayloadSummary
+  });
   return `
     <div class="tools-platform-frame__binding-badges" aria-label="Tool asset binding">
       <span class="tools-platform-frame__binding-badge${badgeClass}" title="${assetTitle}">${escapeHtml(`Asset: ${assetLabel}`)}</span>
@@ -2100,7 +2329,9 @@ async function initPlatformShell() {
   installWorkspaceScopedSamplePresetFetchShim(currentToolId, samplePresetPath);
   await primeWorkspaceScopedToolPresetForStatus(currentToolId, samplePresetPath);
   const launchSignature = readLaunchPayloadSignature(searchParams);
-  const clearedForLaunch = clearSharedBindingsForNewLaunch(launchSignature);
+  const clearedForLaunch = isHostedToolLaunch(searchParams)
+    ? false
+    : clearSharedBindingsForNewLaunch(launchSignature);
   const launchContext = readGameLaunchContext();
   const launchedFromSamplePreset = Boolean(samplePresetPath);
   const hydratedSamplePresetPalette = false;

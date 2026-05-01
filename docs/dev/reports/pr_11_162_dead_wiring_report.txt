@@ -1,0 +1,46 @@
+PR 11.162 Dead Wiring Report
+
+Scope
+- File inspected/updated: tools/shared/platformShell.js
+- Path focus: shared shell asset badge derivation for svg-asset-studio (`renderToolAssetBadge`)
+
+Dead/Unused Branches Found In Touched Path
+1) Branch: SVG badge label from workspace manifest payload (`readSvgAssetLabelFromManifestPayload` + `manifestSvgLabel` usage)
+- Status: Removed
+- Reason: Badge derivation is constrained to launch-time SVG payload fields, not legacy manifest-fallback wiring.
+
+2) Branch: SVG badge fallback to generic embedded summary text (`embeddedPayloadSummary` for svg-asset-studio)
+- Status: Removed for svg-asset-studio path, retained for non-SVG tools
+- Reason: Produced summary-form labels instead of direct SVG payload-derived labels.
+
+3) Branch: SVG badge title source "Resolved from workspace manifest payload" (legacy branch)
+- Status: Removed
+- Reason: Depended on removed legacy manifest label wiring.
+
+Retained Branches In Touched Path
+1) Branch: Hosted shared-context SVG derivation
+- Status: Left in place
+- Reason: Uses real launch payload fields (`sharedContext.payloadJson.vectorAssetDocument.sourceName` / `svgText`).
+
+2) Branch: Workspace-scoped preset SVG derivation
+- Status: Left in place
+- Reason: Covers scoped preset payload flow when `workspaceScopedToolPresetForStatus` is available.
+
+3) Branch: Direct workspace manifest preset SVG derivation (`tools["svg-asset-studio"].vectorAssetDocument`)
+- Status: Left in place
+- Reason: Required for Sample 1902 shape where the tool entry does not carry a `tool` wrapper field and would otherwise be rejected by scoped-preset selection.
+
+4) Branch: Missing asset label fallback (`none`)
+- Status: Left in place
+- Reason: Required missing-data behavior for generic badge rendering.
+
+Implementation Summary
+- SVG badge derivation now resolves in this order:
+  1) compatible shared asset handoff label (existing behavior)
+  2) hosted shared-context SVG payload label
+  3) workspace-scoped preset SVG payload label
+  4) direct workspace manifest preset SVG payload label
+  5) `none`
+- Source field used for expected result: `vectorAssetDocument.sourceName`.
+- If `sourceName` is absent but `svgText` exists, label resolves to `Inline SVG`.
+- No schema/sample/payload-contract changes were made.

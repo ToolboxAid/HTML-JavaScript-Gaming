@@ -74,6 +74,16 @@ function dispatchHandoffChanged(eventName, detail = {}) {
   window.dispatchEvent(new CustomEvent(eventName, { detail }));
 }
 
+function isHostedWorkspaceMode() {
+  if (typeof window === "undefined") {
+    return false;
+  }
+  const params = new URLSearchParams(window.location.search);
+  return params.get("hosted") === "1"
+    && Boolean(sanitizeText(params.get("hostToolId")))
+    && Boolean(sanitizeText(params.get("hostContextId")));
+}
+
 export function normalizeSharedAssetHandoff(raw) {
   if (!isRecord(raw)) {
     return null;
@@ -225,24 +235,60 @@ export function readSharedAssetHandoff() {
   if (typeof window === "undefined") {
     return null;
   }
-  return normalizeSharedAssetHandoff(safeParseJson(window.localStorage.getItem(SHARED_ASSET_HANDOFF_KEY)));
+  if (isHostedWorkspaceMode()) {
+    return null;
+  }
+  const normalized = normalizeSharedAssetHandoff(safeParseJson(window.localStorage.getItem(SHARED_ASSET_HANDOFF_KEY)));
+  console.log("[LEGACY_BADGE_WRITE]", {
+    source: "readSharedAssetHandoff",
+    action: "read-asset-handoff",
+    assetId: normalized?.assetId || "",
+    assetType: normalized?.assetType || "",
+    displayName: normalized?.displayName || "",
+    sourcePath: normalized?.sourcePath || "",
+    sourceToolId: normalized?.sourceToolId || ""
+  });
+  return normalized;
 }
 
 export function readSharedPaletteHandoff() {
   if (typeof window === "undefined") {
     return null;
   }
-  return normalizeSharedPaletteHandoff(safeParseJson(window.localStorage.getItem(SHARED_PALETTE_HANDOFF_KEY)));
+  if (isHostedWorkspaceMode()) {
+    return null;
+  }
+  const normalized = normalizeSharedPaletteHandoff(safeParseJson(window.localStorage.getItem(SHARED_PALETTE_HANDOFF_KEY)));
+  console.log("[LEGACY_BADGE_WRITE]", {
+    source: "readSharedPaletteHandoff",
+    action: "read-palette-handoff",
+    paletteId: normalized?.paletteId || "",
+    displayName: normalized?.displayName || "",
+    sourceToolId: normalized?.sourceToolId || ""
+  });
+  return normalized;
 }
 
 export function writeSharedAssetHandoff(handoff) {
   if (typeof window === "undefined") {
     return false;
   }
+  if (isHostedWorkspaceMode()) {
+    return false;
+  }
   const normalized = normalizeSharedAssetHandoff(handoff);
   if (!normalized) {
     return false;
   }
+  console.log("[LEGACY_BADGE_WRITE]", {
+    source: "writeSharedAssetHandoff",
+    action: "write-asset-handoff",
+    assetId: normalized.assetId,
+    assetType: normalized.assetType,
+    displayName: normalized.displayName,
+    sourcePath: normalized.sourcePath,
+    sourceToolId: normalized.sourceToolId
+  });
   window.localStorage.setItem(SHARED_ASSET_HANDOFF_KEY, JSON.stringify(normalized));
   dispatchHandoffChanged(SHARED_ASSET_HANDOFF_EVENT, {
     key: SHARED_ASSET_HANDOFF_KEY,
@@ -256,10 +302,20 @@ export function writeSharedPaletteHandoff(handoff) {
   if (typeof window === "undefined") {
     return false;
   }
+  if (isHostedWorkspaceMode()) {
+    return false;
+  }
   const normalized = normalizeSharedPaletteHandoff(handoff);
   if (!normalized) {
     return false;
   }
+  console.log("[LEGACY_BADGE_WRITE]", {
+    source: "writeSharedPaletteHandoff",
+    action: "write-palette-handoff",
+    paletteId: normalized.paletteId,
+    displayName: normalized.displayName,
+    sourceToolId: normalized.sourceToolId
+  });
   window.localStorage.setItem(SHARED_PALETTE_HANDOFF_KEY, JSON.stringify(normalized));
   dispatchHandoffChanged(SHARED_PALETTE_HANDOFF_EVENT, {
     key: SHARED_PALETTE_HANDOFF_KEY,
@@ -273,6 +329,9 @@ export function clearSharedAssetHandoff() {
   if (typeof window === "undefined") {
     return false;
   }
+  if (isHostedWorkspaceMode()) {
+    return false;
+  }
   window.localStorage.removeItem(SHARED_ASSET_HANDOFF_KEY);
   dispatchHandoffChanged(SHARED_ASSET_HANDOFF_EVENT, {
     key: SHARED_ASSET_HANDOFF_KEY,
@@ -283,6 +342,9 @@ export function clearSharedAssetHandoff() {
 
 export function clearSharedPaletteHandoff() {
   if (typeof window === "undefined") {
+    return false;
+  }
+  if (isHostedWorkspaceMode()) {
     return false;
   }
   window.localStorage.removeItem(SHARED_PALETTE_HANDOFF_KEY);

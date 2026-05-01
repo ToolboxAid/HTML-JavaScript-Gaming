@@ -1,0 +1,61 @@
+﻿Task: active_asset_tile_renderer_11_159
+Date: 2026-04-30
+
+Files searched (inspect-only set):
+- tools/Workspace Manager/main.js (searched)
+- tools/workspace-manager/main.js (no match)
+- tools/shared/platformShell.js (searched)
+- tools/shared/toolRegistry.js (no match)
+- tools/shared/toolLaunchState.js (no match)
+- tools/shared/toolCard*.js (no match)
+- tools/shared/*card*.js (no match)
+- tools/shared/*tile*.js (no match)
+- tools/index*.js (no match)
+- tools/index.html (inspected target context)
+
+Active renderer file/function:
+- File: tools/shared/platformShell.js
+- Function: renderToolAssetBadge(toolId)
+- Render line source:
+  `<span ...>${escapeHtml(`Asset: ${assetLabel}`)}</span>`
+
+Exact old value source (causing visible `Asset: none`):
+- In renderToolAssetBadge:
+  - `const missingAssetLabel = normalizedToolId === "skin-editor" ? "select skin in Asset Browser" : "none";`
+  - `const assetLabelBasis = embeddedPayloadSummary || missingAssetLabel;`
+  - `const assetLabel = compatibleAsset?.displayName || assetLabelBasis;`
+- For svg-asset-studio, when shared handoff and embedded summary were both unavailable, branch fell through to `missingAssetLabel` => `none`.
+
+Exact new value source (patched):
+- Added helper in same renderer file:
+  - `readSvgAssetLabelFromManifestPayload(manifestPayload)`
+  - Reads direct data path:
+    `manifestPayload.tools["svg-asset-studio"].vectorAssetDocument.sourceName`
+  - If sourceName missing but svgText exists:
+    `Inline SVG`
+- Updated renderToolAssetBadge (svg-only):
+  - `const manifestSvgLabel = normalizedToolId === "svg-asset-studio" ? readSvgAssetLabelFromManifestPayload(getManifest()) : "";`
+  - `const assetLabelBasis = embeddedPayloadSummary || manifestSvgLabel || missingAssetLabel;`
+
+Why PR 11.158 missed it:
+- PR 11.158 patched Workspace Manager-side status plumbing.
+- The literal visible text `Asset: ...` is actually rendered in shared renderer `tools/shared/platformShell.js`.
+- Without patching this renderer fallback chain, it could still select `missingAssetLabel` (`none`) even when direct SVG manifest data existed.
+
+Expected visible text:
+- `Asset: sample-0901-ship.svg` when sourceName exists.
+- `Asset: Inline SVG` when svgText exists but sourceName is missing.
+
+Diagnostic status:
+- Temporary diagnostic not added.
+- Active renderer branch was proven statically and patched directly.
+
+Validation result:
+- node --check tools/shared/platformShell.js -> PASS
+- Static trace confirms active renderer maps direct manifest SVG fields into asset label -> PASS
+- Sample 1902 static payload projection -> PASS
+  - has svgText: true
+  - sourceName: sample-0901-ship.svg
+  - projected visible line: Asset: sample-0901-ship.svg
+- git diff --name-only -- tools/shared/platformShell.js docs/dev/reports/active_asset_tile_renderer_11_159.txt -> PASS
+- Note: repo has unrelated pre-existing dirty files outside this task scope.

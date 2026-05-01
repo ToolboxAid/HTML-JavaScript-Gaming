@@ -1,1 +1,1 @@
-Force-fix literal Asset none renderer path for SVG Asset Studio - PR 11.158
+Disable assetUsageIntegration in hosted mode to remove global overwrite path - PR 11.178

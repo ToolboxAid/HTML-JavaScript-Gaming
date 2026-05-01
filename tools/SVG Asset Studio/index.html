@@ -188,7 +188,17 @@ index.html
   </div>
 
   <div data-tools-platform-status></div>
-  <script type="module" src="../shared/platformShell.js"></script>
+  <script type="module">
+    const shellParams = new URLSearchParams(window.location.search);
+    const hostedSvgWorkspaceShell = shellParams.get("hosted") === "1"
+      && shellParams.get("hostToolId") === "svg-asset-studio"
+      && Boolean(shellParams.get("hostContextId"));
+    if (hostedSvgWorkspaceShell) {
+      document.body?.setAttribute("data-workspace-shell-active", "svg-asset-studio");
+    } else {
+      await import("../shared/platformShell.js");
+    }
+  </script>
   <script type="module" src="./main.js"></script>
   <script type="module" src="../../src/engine/theme/mount-shared-header.js"></script>
 </body>

@@ -23,12 +23,6 @@ import {
   setToolUxLifecycleState
 } from "../shared/unifiedToolUxContract.js";
 import { normalizeToolSamplePath } from "../shared/toolSampleCatalog.js";
-import {
-  readSharedAssetHandoff,
-  readSharedPaletteHandoff,
-  SHARED_ASSET_HANDOFF_EVENT,
-  SHARED_PALETTE_HANDOFF_EVENT
-} from "../shared/assetUsageIntegration.js";
 import { readToolHostSharedContextFromLocation } from "../shared/toolHostSharedContext.js";
 
 const SVG_NS = "http://www.w3.org/2000/svg";
@@ -52,6 +46,35 @@ const ALLOWED_IMPORT_TAGS = new Set([
 const SAMPLE_METADATA_MANIFEST_PATH = "/samples/metadata/samples.index.metadata.json";
 const VECTOR_ASSET_TOOL_ID = "svg-asset-studio";
 let sampleMetadataManifestPromise = null;
+let hostedWorkspaceShellEntryPromise = null;
+
+function isHostedSvgWorkspaceMode() {
+  if (typeof window === "undefined") {
+    return false;
+  }
+  const params = new URLSearchParams(window.location.search);
+  return params.get("hosted") === "1"
+    && params.get("hostToolId") === VECTOR_ASSET_TOOL_ID
+    && Boolean(params.get("hostContextId"));
+}
+
+async function initializeHostedWorkspaceShellEntry() {
+  if (!isHostedSvgWorkspaceMode()) {
+    return null;
+  }
+  if (hostedWorkspaceShellEntryPromise) {
+    return hostedWorkspaceShellEntryPromise;
+  }
+  const params = new URLSearchParams(window.location.search);
+  console.log("[SVG_HOSTED_WORKSPACE_ENTRY]", {
+    hosted: params.get("hosted") === "1",
+    hostToolId: params.get("hostToolId") || "",
+    hostContextId: params.get("hostContextId") || ""
+  });
+  document.body?.setAttribute("data-workspace-shell-active", VECTOR_ASSET_TOOL_ID);
+  hostedWorkspaceShellEntryPromise = import("../shared/workspaceShell.js");
+  return hostedWorkspaceShellEntryPromise;
+}
 
 function normalizeSamplePresetPath(pathValue) {
   if (typeof pathValue !== "string") {
@@ -207,7 +230,6 @@ const state = {
   paletteGroups: {},
   paletteOptions: [],
   selectedPaletteId: "__none__",
-  activeSharedVectorStyle: null,
   selectedId: null,
   drag: null,
   pendingPolyline: null,
@@ -431,11 +453,11 @@ function pruneUnusedEditorGradients() {
 }
 
 function isPaintSelectionRequired() {
-  return state.activeSharedVectorStyle?.fill !== false;
+  return true;
 }
 
 function isStrokeSelectionRequired() {
-  return state.activeSharedVectorStyle?.stroke !== false;
+  return true;
 }
 
 function hasRequiredStyleSelection() {
@@ -537,91 +559,6 @@ function upsertPaletteOption(paletteId, paletteLabel) {
     state.paletteOptions = [];
   }
   state.paletteOptions.push({ id: paletteId, label: paletteLabel });
-}
-
-function normalizeSharedVectorStyle(styleValue) {
-  if (!styleValue || typeof styleValue !== "object") {
-    return null;
-  }
-  return {
-    stroke: styleValue.stroke === true,
-    fill: styleValue.fill === true,
-    strokeSymbol: typeof styleValue.strokeSymbol === "string" ? styleValue.strokeSymbol.trim() : "",
-    fillSymbol: typeof styleValue.fillSymbol === "string" ? styleValue.fillSymbol.trim() : ""
-  };
-}
-
-function getPaletteEntryBySymbol(paletteEntries, symbolValue) {
-  if (!Array.isArray(paletteEntries) || paletteEntries.length === 0) {
-    return null;
-  }
-  const symbol = typeof symbolValue === "string" ? symbolValue.trim() : "";
-  if (!symbol) {
-    return null;
-  }
-  return paletteEntries.find((entry) => entry.symbol === symbol) || null;
-}
-
-function applySharedPaletteAndVectorBinding() {
-  const sharedPalette = readSharedPaletteHandoff();
-  const sharedAsset = readSharedAssetHandoff();
-  const sharedVectorStyle = normalizeSharedVectorStyle(sharedAsset?.metadata?.vectorStyle);
-  state.activeSharedVectorStyle = sharedVectorStyle;
-
-  if (!sharedPalette || !Array.isArray(sharedPalette.colors) || sharedPalette.colors.length === 0) {
-    return;
-  }
-
-  const paletteId = typeof sharedPalette.paletteId === "string" && sharedPalette.paletteId.trim()
-    ? sharedPalette.paletteId.trim()
-    : "shared-palette";
-  const paletteLabel = typeof sharedPalette.displayName === "string" && sharedPalette.displayName.trim()
-    ? sharedPalette.displayName.trim()
-    : paletteId;
-  const sharedEntries = collectPaletteEntries(paletteLabel, sharedPalette.colors);
-  if (sharedEntries.length === 0) {
-    return;
-  }
-
-  state.paletteGroups[paletteId] = sharedEntries;
-  upsertPaletteOption(paletteId, paletteLabel);
-  state.selectedPaletteId = paletteId;
-
-  const strokeEntry = getPaletteEntryBySymbol(sharedEntries, sharedVectorStyle?.strokeSymbol)
-    || sharedEntries[1]
-    || sharedEntries[0]
-    || null;
-  const fillEntry = getPaletteEntryBySymbol(sharedEntries, sharedVectorStyle?.fillSymbol)
-    || sharedEntries[0]
-    || null;
-
-  if (strokeEntry?.hex) {
-    state.stroke = strokeEntry.hex;
-  }
-  if (sharedVectorStyle?.fill === true && fillEntry?.hex) {
-    state.fill = fillEntry.hex;
-  } else if (sharedVectorStyle?.fill === false) {
-    state.fill = null;
-  } else if (fillEntry?.hex) {
-    state.fill = fillEntry.hex;
-  }
-
-  if (refs.paletteSelect instanceof HTMLSelectElement) {
-    refs.paletteSelect.dataset.locked = "1";
-    refs.paletteSelect.disabled = true;
-    refs.paletteSelect.value = paletteId;
-  }
-  if (sharedVectorStyle?.stroke === true) {
-    setPaletteTarget("stroke", { silent: true });
-  }
-}
-
-function syncSharedPaletteAndVectorBinding() {
-  applySharedPaletteAndVectorBinding();
-  renderPaletteSelect();
-  renderMainPaletteGrid();
-  renderUsedColorStrip();
-  applyEnablementState();
 }
 
 function loadPaletteCatalogFromExistingWorkflow() {
@@ -3509,9 +3446,6 @@ async function initialize() {
     refs.gradientAngleInput.value = String(state.gradientAngle);
   }
   renderPaletteSelect();
-  syncSharedPaletteAndVectorBinding();
-  window.addEventListener(SHARED_PALETTE_HANDOFF_EVENT, syncSharedPaletteAndVectorBinding);
-  window.addEventListener(SHARED_ASSET_HANDOFF_EVENT, syncSharedPaletteAndVectorBinding);
   bindEvents();
   setCanvasSize(state.canvasWidth, state.canvasHeight);
   resetView();
@@ -3626,14 +3560,18 @@ function bootVectorAssetStudio() {
   return svgAssetStudioApi;
 }
 
-registerToolBootContract("svg-asset-studio", {
-  init: bootVectorAssetStudio,
-  destroy() {
-    return true;
-  },
-  getApi() {
-    return window.svgAssetStudioApp || null;
-  }
-});
+if (isHostedSvgWorkspaceMode()) {
+  await initializeHostedWorkspaceShellEntry();
+} else {
+  registerToolBootContract("svg-asset-studio", {
+    init: bootVectorAssetStudio,
+    destroy() {
+      return true;
+    },
+    getApi() {
+      return window.svgAssetStudioApp || null;
+    }
+  });
 
-bootVectorAssetStudio();
+  bootVectorAssetStudio();
+}
