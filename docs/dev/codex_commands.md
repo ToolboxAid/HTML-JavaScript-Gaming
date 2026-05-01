@@ -1,84 +1,94 @@
-# Codex Commands — PR_11_197B
+MODEL: gpt-5.3-codex
+REASONING: medium
 
-Model: GPT-5.4-codex
-Reasoning: high
+# PR_11_198 — Tilemap Studio V2 Completion + Validation
 
 ## Execute
+Implement the smallest valid testable change for Tilemap Studio V2.
 
-Use this PR as a Codex implementation task. Do not ask questions. Make the smallest scoped valid change.
+## Hard Boundaries
+- Codex writes implementation code.
+- Do not change schemas.
+- Do not change samples.
+- Do not change games.
+- Do not touch Workspace Manager v1.
+- Do not patch legacy tools.
+- Do not use platformShell.
+- Do not use tools/shared except the explicitly required theme/header mount path already used by the repo theme system.
+- Do not copy old tool code. Re-engineer the V2 tool.
 
-### Required Task
-Complete Asset Browser V2 as the testable implementation target and bundle it with V2 validation hardening.
+## Required Files To Inspect/Edit
+- tools/tilemap-studio-v2/index.html
+- tools/tilemap-studio-v2/index.js
 
-### Scope Lock
-Only edit files required for:
-- `tools/asset-browser-v2/index.html`
-- `tools/asset-browser-v2/index.js`
-- narrowly scoped V2 validation/test files if needed
-- docs/dev/reports evidence
-- docs/dev/roadmaps/MASTER_ROADMAP_ENGINE.md status-only marker change if execution-backed
+If either file does not exist, create only the missing file required for this tool.
 
-Do not edit schemas, samples, games, Workspace Manager v1, platformShell, or `tools/shared/*`.
+## Implementation Rules
+1. `tools/tilemap-studio-v2/index.html` must own the static shell:
+   - include theme CSS
+   - include `<div id="shared-theme-header"></div>`
+   - include static page shell/root container
+   - include static menuTool section
+   - include static menuWorkspace section
+   - include `../../src/engine/theme/mount-shared-header.js`
+   - include `./index.js`
 
-### Implementation Rules
-- Re-engineer the tool. Do not copy/paste legacy Asset Browser code.
-- `index.html` owns static shell, CSS links, header mount, layout, and DOM nodes.
-- `index.js` owns behavior only.
-- Use `data-tool-id="asset-browser-v2"`.
-- Header mount must be `<div id="shared-theme-header"></div>`.
-- Use existing `src/engine/theme` and existing accordion styling where applicable.
-- Use two menu areas only if needed: `menuTool` and `menuWorkspace`.
-- Read session data only, using the established V2 hostContextId/session pattern.
-- Do not fetch, guess, synthesize, default, or fallback data.
-- Empty state and invalid state must be explicit and actionable.
-- No helper classes. Single class only.
-- No alias/pass-through variables.
-- No abstraction layers.
+2. `tools/tilemap-studio-v2/index.js` must be behavior-only:
+   - single class
+   - no helper classes
+   - no alias/pass-through variables
+   - no full-page `innerHTML` construction
+   - no CSS injection
+   - no dynamic header injection
+   - read session only
+   - update existing DOM nodes only
+   - handle missing, invalid, and valid session states
 
-### Banned Patterns
-Reject your own diff if it includes:
-- `document.body.innerHTML` for page construction
-- `document.head.insertAdjacentHTML` for CSS/style injection
-- dynamic header script injection from JS
-- `platformShell`
-- `assetUsageIntegration`
-- `tools/shared/`
-- Workspace Manager v1 wiring
-- fallback/default/sample data
-- copied legacy code blocks
+3. Enforce naming:
+   - visible name: `Tilemap Studio V2`
+   - `document.title`: `Tilemap Studio V2`
+   - `data-tool-id`: `tilemap-studio-v2`
 
-### Validation Commands
+4. Session rules:
+   - no fallback data
+   - no defaults
+   - no fetch
+   - no guessed payloads
+   - no hidden samples
+
+## Validation Commands
 Run targeted validation only:
 
-1. Syntax checks for changed JS files.
-2. Static checks for V2 shell compliance:
-   - Asset Browser V2 `index.html` includes `shared-theme-header`.
-   - Asset Browser V2 `index.js` does not include `document.body.innerHTML`.
-   - Asset Browser V2 `index.js` does not include `document.head.insertAdjacentHTML`.
-   - Asset Browser V2 references `asset-browser-v2`.
-3. Manual/UAT or lightweight browser validation evidence for:
-   - direct open empty state
-   - invalid session state
-   - valid session state render
-   - shared header visible
+```powershell
+node --check tools/tilemap-studio-v2/index.js
+```
 
-Do not run full samples smoke unless a broad shared sample loader/framework file is changed. If skipped, document why.
+Manual validation:
+- Open `tools/tilemap-studio-v2/index.html`.
+- Confirm shared header renders in `#shared-theme-header`.
+- Confirm missing session shows clear actionable state.
+- Confirm valid session renders tilemap content.
+- Confirm browser console has no errors.
 
-### Evidence
-Write results to:
+## Evidence Report
+Create or update:
 
-`docs/dev/reports/PR_11_197B_v2_asset_browser_validation.md`
+```text
+docs/dev/reports/PR_11_198_report.md
+```
 
-Include:
+Report must include:
 - files changed
 - validation commands run
 - pass/fail results
-- full samples smoke skipped/running decision and reason
-- screenshots/log snippets if available
+- manual test notes
+- statement that full samples smoke was skipped and why
 
-### Final Artifact
-Create final ZIP at:
+## Local ZIP Output
+After validation, Codex must create:
 
-`tmp/PR_11_197B.zip`
+```text
+<project folder>/tmp/PR_11_198.zip
+```
 
-The ZIP must preserve repo-relative structure and include implementation changes and evidence.
+The ZIP must preserve repo-relative structure and include the final changed files plus docs/dev evidence.

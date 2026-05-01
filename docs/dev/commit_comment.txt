@@ -1,1 +1,1 @@
-Complete Asset Browser V2 and harden V2 validation with targeted evidence - PR 11.197B
+Complete Tilemap Studio V2 with HTML-first shell and session-only behavior - PR 11.198
