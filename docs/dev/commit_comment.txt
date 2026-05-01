@@ -1,1 +1,1 @@
-Document restart for Palette-first Tool v2 migration with session-backed data - PR 11.187
+Rebuild Palette Browser as first session-backed Tool v2 lane - PR 11.188

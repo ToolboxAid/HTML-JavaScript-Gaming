@@ -1,6 +1,6 @@
-# NEXT RESTART - TOOL V2 MIGRATION
+# SOD 2026-05-01.s1 - PR 11.188 Restart
 
-## Open repo
+## Open Repo
 
 ```powershell
 cd C:\Users\davidq\Documents\GitHub\HTML-JavaScript-Gaming
@@ -14,46 +14,54 @@ git status
 git pull
 ```
 
-## Current Decision
-
-Stop patching legacy Workspace Manager/tool shell code.
-
-Start clean Tool v2 lane:
+## Direction Lock
 
 ```text
-Palette first
-Session-backed shared data
-One tool at a time
-Reverse engineer, do not copy
-Move old tools to <tool>-v1
-No schema/sample/game changes
+NO schema changes
+NO sample changes
+NO game changes
+NO old Workspace Manager fixes
+NO legacy tool patches
+NO copying old code
+NEW Tool v2 lane only
 ```
 
-## Supported load paths
+## Start PR
 
 ```text
-1. Workspace from URL -> load data -> session -> tool
-2. Tool from URL -> load data -> session -> tool
-3. Tool from session loaded by Workspace
+PR_11_188_PALETTE_REVERSE_ENGINEER_AND_REBUILD
 ```
 
-## Next PR
+## Added Rules
 
 ```text
-PR_11_188_PALETTE_V2_REVERSE_ENGINEER_AND_REBUILD
+tools/shared/ is deprecated for new Tool v2 work
+Use tools/common/ for new shared Tool v2 foundation
+No code that is just one stream file
+Controls should have focused classes/modules
+Two menus: menuTool and menuWorkspace
+Only controls for the current launch are visible
+Workspace menu updates workspace/session only
+Plan sidebar accordion control types before expanding UI
 ```
 
-## Next PR must do
+## Do Not Use
 
 ```text
-Reverse engineer Palette Browser
-Move tools/Palette Browser -> tools/Palette Browser-v1
-Create clean tools/Palette Browser
-Add/use shared CSS
-Use session context only
-No platformShell
-No assetUsageIntegration
-No shared handoff
-No fallback data
-No schema/sample/game changes
+platformShell
+assetUsageIntegration
+shared handoff
+tool aliases
+fallback data
+default anything
+Workspace ?tool= auto-open
+```
+
+## Launch Behavior
+
+```text
+Workspace opens clean
+User selects Palette Browser / Manager
+Workspace writes session
+Palette Browser reads session via hostContextId
 ```

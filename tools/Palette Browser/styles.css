@@ -1,0 +1,96 @@
+.palette-browser__hero::after {
+  content: "";
+  position: absolute;
+  width: 260px;
+  height: 260px;
+  right: -70px;
+  top: -80px;
+  border-radius: 50%;
+  background: conic-gradient(from 20deg, #c73b27, #efb447, #4f8f68, #276b85, #7f4f9e, #c73b27);
+  opacity: 0.28;
+  filter: blur(1px);
+}
+
+.palette-browser__preview {
+  display: grid;
+  gap: 18px;
+}
+
+.palette-browser__header-row {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.palette-browser__label {
+  margin: 0 0 6px;
+  color: var(--tool-accent);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.palette-browser__header-row h2 {
+  margin: 0;
+  font-size: clamp(1.8rem, 4vw, 3.4rem);
+  line-height: 0.96;
+  letter-spacing: -0.045em;
+}
+
+.palette-browser__count {
+  border-radius: 999px;
+  background: var(--tool-accent);
+  color: var(--tool-accent-ink);
+  padding: 8px 12px;
+  white-space: nowrap;
+}
+
+.palette-browser__swatches {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(132px, 1fr));
+  gap: 14px;
+}
+
+.palette-browser__swatch {
+  min-height: 150px;
+  border: 1px solid var(--tool-line);
+  border-radius: 22px;
+  overflow: hidden;
+  background: #fffaf0;
+  box-shadow: 0 12px 30px rgba(62, 43, 22, 0.12);
+}
+
+.palette-browser__swatch-chip {
+  min-height: 86px;
+  border-bottom: 1px solid var(--tool-line);
+}
+
+.palette-browser__swatch-body {
+  display: grid;
+  gap: 4px;
+  padding: 12px;
+}
+
+.palette-browser__swatch-name {
+  font-weight: 700;
+  line-height: 1.2;
+  overflow-wrap: anywhere;
+}
+
+.palette-browser__swatch-hex,
+.palette-browser__swatch-symbol {
+  color: var(--tool-muted);
+  font-size: 0.9rem;
+  overflow-wrap: anywhere;
+}
+
+.palette-browser__issues {
+  margin: 8px 0 0;
+  padding-left: 20px;
+}
+
+.palette-browser__issues li + li {
+  margin-top: 4px;
+}

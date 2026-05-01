@@ -4,87 +4,43 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Palette Browser / Manager</title>
-  <link rel="stylesheet" href="../../src/engine/ui/hubCommon.css" />
-  <link rel="stylesheet" href="../shared/platformShell.css" />
-  <link rel="stylesheet" href="./paletteBrowser.css" />
-  <script src="../../src/engine/paletteList.js"></script>
-  <link rel="stylesheet" href="../../src/engine/theme/main.css" />
+  <link rel="stylesheet" href="../common/toolLayout.css" />
+  <link rel="stylesheet" href="./styles.css" />
 </head>
-<body class="tools-platform-tool-page hub-page-tools" data-tool-id="palette-browser" data-tools-platform-page="tool">
-  <details class="is-collapsible" open>
-    <summary class="is-collapsible__summary" data-tools-platform-summary></summary>
-    <div class="is-collapsible__content">
-      <div id="shared-theme-header"></div>
-      <div data-tools-platform-header></div>
-    </div>
-  </details>
-  <div class="palette-browser app-shell">
-    <div class="palette-browser__layout tools-platform-layout-grid">
-      <aside class="panel palette-browser__panel tools-platform-resize-panel" data-panel-side="left">
-        <h3>Palette List</h3>
-        <div id="launchContextText" class="palette-browser__hint">Shared palette flow ready.</div>
-        <label class="field">
-          Search
-          <input id="paletteSearchInput" type="search" placeholder="Find a palette" />
-        </label>
-        <div id="paletteCountText" class="palette-browser__hint">0 palettes</div>
-        <div id="paletteList" class="palette-browser__list" aria-label="Palette list"></div>
+<body class="tool-page" data-tool-id="palette-browser">
+  <main class="tool-layout palette-browser" aria-labelledby="paletteToolTitle">
+    <section class="tool-layout__hero palette-browser__hero">
+      <p class="tool-layout__eyebrow">Session-backed palette tool</p>
+      <h1 id="paletteToolTitle" class="tool-layout__title">Palette Browser / Manager</h1>
+      <p class="tool-layout__subtitle">Read the active palette session, verify its contract, and inspect the swatches using the active session only.</p>
+    </section>
+
+    <section class="tool-layout__grid" aria-label="Palette Browser workspace">
+      <aside class="tool-panel tool-menu-zone" data-menu-tool aria-label="Tool menu">
+        <h2>Tool</h2>
+        <div id="contextReadout" class="tool-readout">Waiting for session context.</div>
+        <div id="contractReadout" class="tool-readout">Contract not loaded.</div>
       </aside>
 
-      <main class="panel palette-browser__panel">
-        <h3 id="paletteTitle">Palette Preview</h3>
-        <div id="paletteSummaryText" class="palette-browser__hint">Select a palette to inspect its swatches.</div>
-        <div id="paletteSwatches" class="palette-browser__swatches"></div>
-        <div class="palette-browser__editor">
-          <label class="field">
-            Palette name
-            <input id="paletteNameInput" type="text" />
-          </label>
-          <div class="palette-browser__editor-grid">
-            <label class="field">
-              Swatch color
-              <input id="swatchColorInput" type="color" value="#ffffff" />
-            </label>
-            <label class="field">
-              Swatch name
-              <input id="swatchNameInput" type="text" placeholder="Color name" />
-            </label>
-            <label class="field">
-              Symbol
-              <input id="swatchSymbolInput" type="text" maxlength="2" placeholder="A" />
-            </label>
+      <section class="tool-panel palette-browser__preview" aria-live="polite">
+        <div class="palette-browser__header-row">
+          <div>
+            <p class="palette-browser__label">Palette</p>
+            <h2 id="paletteName">No palette loaded</h2>
           </div>
-          <div class="palette-browser__actions palette-browser__actions--palette tools-platform-control-row">
-            <button id="newPaletteButton" type="button">New Palette</button>
-            <button id="duplicatePaletteButton" type="button">Duplicate Selected</button>
-            <button id="renamePaletteButton" type="button">Rename Palette</button>
-            <button id="deletePaletteButton" type="button">Delete Palette</button>
-          </div>
-          <div class="palette-browser__actions palette-browser__actions--swatch tools-platform-control-row">
-            <button id="addSwatchButton" type="button">Add Swatch</button>
-            <button id="deleteSwatchButton" type="button">Delete Swatch</button>
-          </div>
+          <strong id="swatchCount" class="palette-browser__count">0 colors</strong>
         </div>
-      </main>
+        <div id="paletteMessage" class="tool-state-empty">No palette session data exists for this launch.</div>
+        <div id="swatchGrid" class="palette-browser__swatches" aria-label="Palette swatches"></div>
+      </section>
 
-      <aside class="panel palette-browser__panel tools-platform-resize-panel" data-panel-side="right">
-        <h3>Actions &amp; Validation</h3>
-        <pre id="paletteJsonPreview" class="palette-browser__json-preview">Palette JSON preview will appear here.</pre>
-        <div id="paletteValidationText" class="palette-browser__hint">Validation summary will appear here.</div>
-        <div class="palette-browser__actions tools-platform-control-row">
-          <button id="importPaletteJsonButton" type="button">Import Palette JSON</button>
-          <input id="importPaletteJsonInput" type="file" accept=".json,application/json" hidden />
-          <button id="exportPaletteJsonButton" type="button">Export Palette JSON</button>
-          <button id="copyPaletteJsonButton" type="button">Copy Palette JSON</button>
-          <button id="usePaletteButton" type="button">Use in Workspace Manager</button>
-        </div>
-        <div id="paletteSelectionText" class="palette-browser__hint">No handoff recorded yet.</div>
+      <aside class="tool-panel tool-menu-zone" data-menu-workspace aria-label="Workspace menu">
+        <h2>Workspace</h2>
+        <div id="workspaceReadout" class="tool-readout">This PR exposes a read-only session view. Workspace write controls are deferred.</div>
+        <div id="validationReadout" class="tool-readout">Validation has not run yet.</div>
       </aside>
-    </div>
-  </div>
-  <div data-tools-platform-status></div>
-  <script type="module" src="../shared/platformShell.js"></script>
+    </section>
+  </main>
   <script type="module" src="./main.js"></script>
-  <script type="module" src="../../src/engine/theme/mount-shared-header.js"></script>
 </body>
 </html>
