@@ -11,6 +11,9 @@ class WorkspaceV2SessionProducer {
     this.importFileNode = document.getElementById("workspaceV2ImportFile");
     this.importButton = document.getElementById("workspaceV2ImportButton");
     this.exportButton = document.getElementById("workspaceV2ExportButton");
+    this.shareUrlNode = document.getElementById("workspaceV2ShareUrl");
+    this.createShareLinkButton = document.getElementById("workspaceV2CreateShareLinkButton");
+    this.applyShareLinkButton = document.getElementById("workspaceV2ApplyShareLinkButton");
     this.sessionNameNode = document.getElementById("workspaceV2SessionName");
     this.saveSessionButton = document.getElementById("workspaceV2SaveSessionButton");
     this.overwriteSessionButton = document.getElementById("workspaceV2OverwriteSessionButton");
@@ -34,6 +37,12 @@ class WorkspaceV2SessionProducer {
     this.exportButton.addEventListener("click", () => {
       this.exportCurrentSessionJson();
     });
+    this.createShareLinkButton.addEventListener("click", () => {
+      this.createShareLink();
+    });
+    this.applyShareLinkButton.addEventListener("click", () => {
+      this.applyShareLink();
+    });
     this.importFileNode.addEventListener("change", () => {
       this.readImportFile();
     });
@@ -52,6 +61,7 @@ class WorkspaceV2SessionProducer {
     this.backButton.addEventListener("click", () => {
       window.location.href = "../index.html";
     });
+    this.decodeSessionParamFromUrl();
     this.renderSessionLibrary();
   }
 
@@ -74,6 +84,70 @@ class WorkspaceV2SessionProducer {
 
   isValidSessionPayload(sessionPayload) {
     return Boolean(sessionPayload && typeof sessionPayload === "object" && !Array.isArray(sessionPayload));
+  }
+
+  applySessionPayload(sessionPayload, sourceLabel) {
+    if (!this.isValidSessionPayload(sessionPayload)) {
+      this.statusNode.textContent = "Session payload is invalid. Expected a JSON object payload.";
+      return false;
+    }
+    const toolId = this.selectedToolId();
+    if (!toolId) {
+      this.statusNode.textContent = "Select a V2 tool before applying session payload.";
+      return false;
+    }
+    const hostContextId = this.createHostContextId(toolId);
+    sessionStorage.setItem(hostContextId, JSON.stringify(sessionPayload));
+    this.currentHostContextId = hostContextId;
+    this.setCurrentSessionPayload(sessionPayload, sourceLabel);
+    this.importJsonNode.value = JSON.stringify(sessionPayload, null, 2);
+    return true;
+  }
+
+  encodeSessionPayload(sessionPayload) {
+    const json = JSON.stringify(sessionPayload);
+    const bytes = new TextEncoder().encode(json);
+    let binary = "";
+    for (let index = 0; index < bytes.length; index += 1) {
+      binary += String.fromCharCode(bytes[index]);
+    }
+    return btoa(binary).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/g, "");
+  }
+
+  decodeSessionPayload(encodedPayload) {
+    if (typeof encodedPayload !== "string" || !encodedPayload.trim()) {
+      throw new Error("Missing encoded session payload.");
+    }
+    const normalized = encodedPayload.trim().replace(/-/g, "+").replace(/_/g, "/");
+    const padding = normalized.length % 4 === 0 ? "" : "=".repeat(4 - (normalized.length % 4));
+    const binary = atob(`${normalized}${padding}`);
+    const bytes = new Uint8Array(binary.length);
+    for (let index = 0; index < binary.length; index += 1) {
+      bytes[index] = binary.charCodeAt(index);
+    }
+    const json = new TextDecoder().decode(bytes);
+    const parsed = JSON.parse(json);
+    if (!this.isValidSessionPayload(parsed)) {
+      throw new Error("Decoded session payload is invalid. Expected an object payload.");
+    }
+    return parsed;
+  }
+
+  decodeSessionParamFromUrl() {
+    const params = new URL(window.location.href).searchParams;
+    if (!params.has("session")) {
+      return;
+    }
+    try {
+      const decoded = this.decodeSessionPayload(params.get("session"));
+      if (!this.applySessionPayload(decoded, "share-link")) {
+        return;
+      }
+      this.statusNode.textContent = `Share session link decoded.\nTool: ${this.selectedToolId()}\nHostContextId: ${this.currentHostContextId}\nReady to launch.`;
+      this.shareUrlNode.value = window.location.href;
+    } catch (error) {
+      this.statusNode.textContent = `Share session decode failed: ${error instanceof Error ? error.message : "unknown error"}`;
+    }
   }
 
   readSessionLibrary() {
@@ -156,7 +230,7 @@ class WorkspaceV2SessionProducer {
       this.setCurrentSessionPayload(fixture.sessionContext, `fixture:${toolId}`);
       this.currentHostContextId = "";
       this.importJsonNode.value = JSON.stringify(fixture.sessionContext, null, 2);
-      this.statusNode.textContent = `Fixture loaded for ${toolId}.\nSession payload is ready for launch, export, or library save.`;
+      this.statusNode.textContent = `Fixture loaded for ${toolId}.\nSession payload is ready for launch, export, share, or library save.`;
     } catch (error) {
       this.setCurrentSessionPayload(null, "");
       this.currentHostContextId = "";
@@ -205,16 +279,10 @@ class WorkspaceV2SessionProducer {
     }
     try {
       const parsed = JSON.parse(rawJson);
-      if (!this.isValidSessionPayload(parsed)) {
-        this.statusNode.textContent = "Imported JSON is invalid. Expected an object session payload.";
+      if (!this.applySessionPayload(parsed, "import")) {
         return;
       }
-      const hostContextId = this.createHostContextId(toolId);
-      sessionStorage.setItem(hostContextId, JSON.stringify(parsed));
-      this.currentHostContextId = hostContextId;
-      this.setCurrentSessionPayload(parsed, "import");
-      this.importJsonNode.value = JSON.stringify(parsed, null, 2);
-      this.statusNode.textContent = `Session imported.\nTool: ${toolId}\nHostContextId: ${hostContextId}\nReady to launch.`;
+      this.statusNode.textContent = `Session imported.\nTool: ${toolId}\nHostContextId: ${this.currentHostContextId}\nReady to launch.`;
     } catch (error) {
       this.statusNode.textContent = `Imported JSON is invalid: ${error instanceof Error ? error.message : "unknown error"}`;
     }
@@ -228,6 +296,44 @@ class WorkspaceV2SessionProducer {
     const serialized = JSON.stringify(this.currentSessionPayload, null, 2);
     this.importJsonNode.value = serialized;
     this.statusNode.textContent = `Session JSON exported from ${this.currentSessionSource || "session"} payload.`;
+  }
+
+  createShareLink() {
+    if (!this.isValidSessionPayload(this.currentSessionPayload)) {
+      this.statusNode.textContent = "No current session payload to share. Load fixture, import JSON, or load library session first.";
+      return;
+    }
+    try {
+      const encoded = this.encodeSessionPayload(this.currentSessionPayload);
+      const shareUrl = new URL(window.location.href);
+      shareUrl.searchParams.set("session", encoded);
+      this.shareUrlNode.value = shareUrl.toString();
+      this.statusNode.textContent = "Share link created from current session payload.";
+    } catch (error) {
+      this.statusNode.textContent = `Share link creation failed: ${error instanceof Error ? error.message : "unknown error"}`;
+    }
+  }
+
+  applyShareLink() {
+    const rawShareValue = typeof this.shareUrlNode.value === "string" ? this.shareUrlNode.value.trim() : "";
+    if (!rawShareValue) {
+      this.statusNode.textContent = "Share URL is required to apply.";
+      return;
+    }
+    try {
+      const parsedUrl = new URL(rawShareValue, window.location.href);
+      if (!parsedUrl.searchParams.has("session")) {
+        this.statusNode.textContent = "Share URL is invalid. Missing session query parameter.";
+        return;
+      }
+      const decoded = this.decodeSessionPayload(parsedUrl.searchParams.get("session"));
+      if (!this.applySessionPayload(decoded, "share-link")) {
+        return;
+      }
+      this.statusNode.textContent = `Share session link applied.\nTool: ${this.selectedToolId()}\nHostContextId: ${this.currentHostContextId}\nReady to launch.`;
+    } catch (error) {
+      this.statusNode.textContent = `Share session decode failed: ${error instanceof Error ? error.message : "unknown error"}`;
+    }
   }
 
   saveNamedSession(overwriteExisting) {
@@ -277,16 +383,11 @@ class WorkspaceV2SessionProducer {
       return;
     }
     const payload = library[sessionName];
-    if (!this.isValidSessionPayload(payload)) {
+    if (!this.applySessionPayload(payload, `library:${sessionName}`)) {
       this.statusNode.textContent = `Session '${sessionName}' payload is invalid.`;
       return;
     }
-    const hostContextId = this.createHostContextId(toolId);
-    sessionStorage.setItem(hostContextId, JSON.stringify(payload));
-    this.currentHostContextId = hostContextId;
-    this.setCurrentSessionPayload(payload, `library:${sessionName}`);
-    this.importJsonNode.value = JSON.stringify(payload, null, 2);
-    this.statusNode.textContent = `Session '${sessionName}' loaded.\nTool: ${toolId}\nHostContextId: ${hostContextId}\nReady to launch.`;
+    this.statusNode.textContent = `Session '${sessionName}' loaded.\nTool: ${toolId}\nHostContextId: ${this.currentHostContextId}\nReady to launch.`;
   }
 
   deleteNamedSession() {
@@ -316,7 +417,7 @@ class WorkspaceV2SessionProducer {
       return;
     }
     if (!this.isValidSessionPayload(this.currentSessionPayload)) {
-      this.statusNode.textContent = "No session payload is available. Load a fixture or import session JSON first.";
+      this.statusNode.textContent = "No session payload is available. Load a fixture, import JSON, apply share link, or load library session first.";
       return;
     }
     const hostContextId = this.createHostContextId(toolId);
