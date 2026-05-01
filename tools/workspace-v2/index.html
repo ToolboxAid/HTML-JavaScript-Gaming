@@ -96,7 +96,10 @@
         <select id="workspaceV2MergeLeftSelect"></select>
         <label for="workspaceV2MergeRightSelect">Session B</label>
         <select id="workspaceV2MergeRightSelect"></select>
-        <button id="workspaceV2ComputeMergeButton" type="button">Compute Merge</button>
+        <div>
+          <button id="workspaceV2ComputeMergeButton" type="button">Preview Merge (Dry Run)</button>
+          <button id="workspaceV2ApplyMergeButton" type="button">Apply Merge</button>
+        </div>
         <p id="workspaceV2MergeEmptyState">Need at least two valid sessions to merge.</p>
         <pre id="workspaceV2MergeOutput">No merge computed.</pre>
       </section>
