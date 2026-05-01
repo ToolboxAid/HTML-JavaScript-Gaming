@@ -512,6 +512,15 @@ class WorkspaceV2SessionProducer {
     this.mergeLeftSelect.replaceChildren();
     this.mergeRightSelect.replaceChildren();
 
+    const leftPlaceholder = document.createElement("option");
+    leftPlaceholder.value = "";
+    leftPlaceholder.textContent = "Select Session A";
+    this.mergeLeftSelect.appendChild(leftPlaceholder);
+    const rightPlaceholder = document.createElement("option");
+    rightPlaceholder.value = "";
+    rightPlaceholder.textContent = "Select Session B";
+    this.mergeRightSelect.appendChild(rightPlaceholder);
+
     this.mergeCandidates.forEach((candidate) => {
       const leftOption = document.createElement("option");
       leftOption.value = candidate.id;
@@ -523,19 +532,11 @@ class WorkspaceV2SessionProducer {
       this.mergeRightSelect.appendChild(rightOption);
     });
 
-    if (this.mergeCandidates.length > 0) {
-      this.mergeLeftSelect.value = this.mergeCandidates.some((entry) => entry.id === currentLeft) ? currentLeft : this.mergeCandidates[0].id;
-      if (this.mergeCandidates.some((entry) => entry.id === currentRight)) {
-        this.mergeRightSelect.value = currentRight;
-      } else if (this.mergeCandidates.length > 1) {
-        this.mergeRightSelect.value = this.mergeCandidates[1].id;
-      } else {
-        this.mergeRightSelect.value = this.mergeCandidates[0].id;
-      }
-    }
+    this.mergeLeftSelect.value = this.mergeCandidates.some((entry) => entry.id === currentLeft) ? currentLeft : "";
+    this.mergeRightSelect.value = this.mergeCandidates.some((entry) => entry.id === currentRight) ? currentRight : "";
 
     this.mergeEmptyState.hidden = this.mergeCandidates.length >= 2;
-    this.mergeEmptyState.textContent = "Need at least two valid sessions to merge.";
+    this.mergeEmptyState.textContent = "At least two valid sessions are required before merge preview.";
     if (previousPreview) {
       const refreshedSource = this.mergeCandidates.find((entry) => entry.id === previousPreview.source.id);
       const refreshedTarget = this.mergeCandidates.find((entry) => entry.id === previousPreview.target.id);
@@ -613,14 +614,37 @@ class WorkspaceV2SessionProducer {
 
   computeSelectedSessionMerge() {
     if (!Array.isArray(this.mergeCandidates) || this.mergeCandidates.length < 2) {
-      this.mergeOutputNode.textContent = "Merge preview blocked. Need at least two valid sessions to merge.";
+      this.mergeOutputNode.textContent = "Merge preview blocked. At least two valid sessions are required.";
       this.statusNode.textContent = "Merge preview blocked. Add at least two valid sessions, then run Preview Merge (Dry Run).";
+      return;
+    }
+    if (!this.mergeLeftSelect.value && !this.mergeRightSelect.value) {
+      this.mergeOutputNode.textContent = "Merge preview blocked. Session A and Session B selections are missing.";
+      this.statusNode.textContent = "Merge preview blocked. Select Session A and Session B, then run Preview Merge (Dry Run).";
+      return;
+    }
+    if (!this.mergeLeftSelect.value) {
+      this.mergeOutputNode.textContent = "Merge preview blocked. Session A selection is missing.";
+      this.statusNode.textContent = "Merge preview blocked. Select Session A, then run Preview Merge (Dry Run).";
+      return;
+    }
+    if (!this.mergeRightSelect.value) {
+      this.mergeOutputNode.textContent = "Merge preview blocked. Session B selection is missing.";
+      this.statusNode.textContent = "Merge preview blocked. Select Session B, then run Preview Merge (Dry Run).";
+      return;
+    }
+    if (this.mergeLeftSelect.value === this.mergeRightSelect.value) {
+      this.mergeOutputNode.textContent = "Merge preview blocked. Session A and Session B must be different sessions.";
+      this.statusNode.textContent = "Merge preview blocked. Choose two different sessions, then run Preview Merge (Dry Run).";
       return;
     }
     const left = this.mergeCandidates.find((entry) => entry.id === this.mergeLeftSelect.value);
     const right = this.mergeCandidates.find((entry) => entry.id === this.mergeRightSelect.value);
     if (!left || !right) {
-      this.mergeOutputNode.textContent = "Selected merge entries are not available.";
+      this.mergeOutputNode.textContent = !left
+        ? "Merge preview blocked. Session A selection is no longer available."
+        : "Merge preview blocked. Session B selection is no longer available.";
+      this.statusNode.textContent = "Merge preview blocked. Refresh or re-select sessions, then run Preview Merge (Dry Run).";
       return;
     }
     if (!this.isValidSessionPayload(left.payload) || !this.isValidSessionPayload(right.payload)) {
