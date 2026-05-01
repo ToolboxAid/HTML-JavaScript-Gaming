@@ -81,6 +81,24 @@
       </section>
 
       <section class="hub-panel">
+        <h2>Diagnostics</h2>
+        <p>Read-only diagnostics for URL/session/local storage state.</p>
+        <button id="workspaceV2RefreshDiagnosticsButton" type="button">Refresh Diagnostics</button>
+        <p><strong>Active State:</strong> <span id="workspaceV2DiagnosticsActiveState">EMPTY</span></p>
+        <p><strong>Active hostContextId:</strong> <span id="workspaceV2DiagnosticsHostContextId">none</span></p>
+        <h3>URL Params</h3>
+        <pre id="workspaceV2DiagnosticsUrlParams">{}</pre>
+        <h3>Session Storage (hostContextId match)</h3>
+        <pre id="workspaceV2DiagnosticsSessionStorage">[]</pre>
+        <h3>Local Storage: v2-session-library</h3>
+        <pre id="workspaceV2DiagnosticsSessionLibrary">null</pre>
+        <h3>Local Storage: v2-error-logs</h3>
+        <pre id="workspaceV2DiagnosticsErrorLogs">null</pre>
+        <h3>Current Payload Preview</h3>
+        <pre id="workspaceV2DiagnosticsPayload">No payload loaded.</pre>
+      </section>
+
+      <section class="hub-panel">
         <h2>Session Output</h2>
         <pre id="workspaceV2Status">No fixture loaded.</pre>
       </section>

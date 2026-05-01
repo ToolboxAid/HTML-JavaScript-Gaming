@@ -26,6 +26,14 @@ class WorkspaceV2SessionProducer {
     this.clearErrorLogsButton = document.getElementById("workspaceV2ClearErrorLogsButton");
     this.errorLogsEmptyState = document.getElementById("workspaceV2ErrorLogsEmptyState");
     this.errorLogsListNode = document.getElementById("workspaceV2ErrorLogsList");
+    this.refreshDiagnosticsButton = document.getElementById("workspaceV2RefreshDiagnosticsButton");
+    this.diagnosticsActiveStateNode = document.getElementById("workspaceV2DiagnosticsActiveState");
+    this.diagnosticsHostContextIdNode = document.getElementById("workspaceV2DiagnosticsHostContextId");
+    this.diagnosticsUrlParamsNode = document.getElementById("workspaceV2DiagnosticsUrlParams");
+    this.diagnosticsSessionStorageNode = document.getElementById("workspaceV2DiagnosticsSessionStorage");
+    this.diagnosticsSessionLibraryNode = document.getElementById("workspaceV2DiagnosticsSessionLibrary");
+    this.diagnosticsErrorLogsNode = document.getElementById("workspaceV2DiagnosticsErrorLogs");
+    this.diagnosticsPayloadNode = document.getElementById("workspaceV2DiagnosticsPayload");
     this.statusNode = document.getElementById("workspaceV2Status");
     this.currentSessionPayload = null;
     this.currentSessionSource = "";
@@ -69,6 +77,9 @@ class WorkspaceV2SessionProducer {
     this.clearErrorLogsButton.addEventListener("click", () => {
       this.clearErrorLogs();
     });
+    this.refreshDiagnosticsButton.addEventListener("click", () => {
+      this.renderDiagnosticsPanel();
+    });
     this.backButton.addEventListener("click", () => {
       window.location.href = "../index.html";
     });
@@ -76,10 +87,14 @@ class WorkspaceV2SessionProducer {
       if (event.key === this.errorLogsStorageKey) {
         this.renderErrorLogsViewer();
       }
+      if (event.key === this.errorLogsStorageKey || event.key === this.libraryStorageKey) {
+        this.renderDiagnosticsPanel();
+      }
     });
     this.decodeSessionParamFromUrl();
     this.renderSessionLibrary();
     this.renderErrorLogsViewer();
+    this.renderDiagnosticsPanel();
   }
 
   selectedToolId() {
@@ -97,6 +112,7 @@ class WorkspaceV2SessionProducer {
   setCurrentSessionPayload(sessionPayload, sourceLabel) {
     this.currentSessionPayload = sessionPayload;
     this.currentSessionSource = sourceLabel;
+    this.renderDiagnosticsPanel();
   }
 
   isValidSessionPayload(sessionPayload) {
@@ -118,6 +134,7 @@ class WorkspaceV2SessionProducer {
     this.currentHostContextId = hostContextId;
     this.setCurrentSessionPayload(sessionPayload, sourceLabel);
     this.importJsonNode.value = JSON.stringify(sessionPayload, null, 2);
+    this.renderDiagnosticsPanel();
     return true;
   }
 
@@ -193,6 +210,7 @@ class WorkspaceV2SessionProducer {
 
   writeSessionLibrary(library) {
     localStorage.setItem(this.libraryStorageKey, JSON.stringify(library));
+    this.renderDiagnosticsPanel();
   }
 
   renderSessionLibrary() {
@@ -318,7 +336,121 @@ class WorkspaceV2SessionProducer {
   clearErrorLogs() {
     localStorage.setItem(this.errorLogsStorageKey, "[]");
     this.renderErrorLogsViewer();
+    this.renderDiagnosticsPanel();
     this.statusNode.textContent = "Error logs cleared from localStorage key v2-error-logs.";
+  }
+
+  safeParseJson(rawValue) {
+    if (typeof rawValue !== "string") {
+      return { ok: false, value: null, error: "value is not a string" };
+    }
+    try {
+      return { ok: true, value: JSON.parse(rawValue), error: "" };
+    } catch (error) {
+      return { ok: false, value: null, error: error instanceof Error ? error.message : "unknown error" };
+    }
+  }
+
+  truncatePreview(value, maxLength) {
+    const text = typeof value === "string" ? value : String(value);
+    if (text.length <= maxLength) {
+      return text;
+    }
+    return `${text.slice(0, maxLength)} ...truncated (${text.length - maxLength} more chars)`;
+  }
+
+  diagnosticsActiveHostContextId() {
+    const params = new URL(window.location.href).searchParams;
+    const urlHostContextId = typeof params.get("hostContextId") === "string" ? params.get("hostContextId").trim() : "";
+    if (urlHostContextId) {
+      return urlHostContextId;
+    }
+    if (typeof this.currentHostContextId === "string" && this.currentHostContextId.trim()) {
+      return this.currentHostContextId.trim();
+    }
+    return "";
+  }
+
+  diagnosticsActiveState(activeHostContextId) {
+    if (activeHostContextId) {
+      const stored = sessionStorage.getItem(activeHostContextId);
+      if (!stored) {
+        return "EMPTY";
+      }
+      const parsed = this.safeParseJson(stored);
+      if (!parsed.ok || !this.isValidSessionPayload(parsed.value)) {
+        return "INVALID";
+      }
+      return "VALID";
+    }
+    if (this.isValidSessionPayload(this.currentSessionPayload)) {
+      return "VALID";
+    }
+    return "EMPTY";
+  }
+
+  readDiagnosticsSnapshot() {
+    const params = new URL(window.location.href).searchParams;
+    const urlParams = {};
+    params.forEach((value, key) => {
+      urlParams[key] = value;
+    });
+
+    const activeHostContextId = this.diagnosticsActiveHostContextId();
+    const sessionMatches = [];
+    if (activeHostContextId) {
+      const rawSessionValue = sessionStorage.getItem(activeHostContextId);
+      if (typeof rawSessionValue === "string") {
+        const parsedSession = this.safeParseJson(rawSessionValue);
+        sessionMatches.push({
+          key: activeHostContextId,
+          parseOk: parsedSession.ok,
+          error: parsedSession.ok ? "" : parsedSession.error,
+          preview: this.truncatePreview(rawSessionValue, 500)
+        });
+      }
+    }
+
+    const sessionLibraryRaw = localStorage.getItem(this.libraryStorageKey);
+    const sessionLibraryParsed = this.safeParseJson(typeof sessionLibraryRaw === "string" ? sessionLibraryRaw : "");
+    const errorLogsRaw = localStorage.getItem(this.errorLogsStorageKey);
+    const errorLogsParsed = this.safeParseJson(typeof errorLogsRaw === "string" ? errorLogsRaw : "");
+    const payloadPreview = this.isValidSessionPayload(this.currentSessionPayload)
+      ? this.truncatePreview(JSON.stringify(this.currentSessionPayload, null, 2), 800)
+      : "No payload loaded.";
+
+    return {
+      urlParams,
+      activeHostContextId,
+      activeState: this.diagnosticsActiveState(activeHostContextId),
+      sessionMatches,
+      localStorage: {
+        sessionLibrary: {
+          exists: typeof sessionLibraryRaw === "string",
+          parseOk: typeof sessionLibraryRaw === "string" ? sessionLibraryParsed.ok : false,
+          error: typeof sessionLibraryRaw === "string" && !sessionLibraryParsed.ok ? sessionLibraryParsed.error : "",
+          preview: typeof sessionLibraryRaw === "string" ? this.truncatePreview(sessionLibraryRaw, 800) : "missing"
+        },
+        errorLogs: {
+          exists: typeof errorLogsRaw === "string",
+          parseOk: typeof errorLogsRaw === "string" ? errorLogsParsed.ok : false,
+          error: typeof errorLogsRaw === "string" && !errorLogsParsed.ok ? errorLogsParsed.error : "",
+          preview: typeof errorLogsRaw === "string" ? this.truncatePreview(errorLogsRaw, 800) : "missing"
+        }
+      },
+      payloadPreview
+    };
+  }
+
+  renderDiagnosticsPanel() {
+    const snapshot = this.readDiagnosticsSnapshot();
+    this.diagnosticsActiveStateNode.textContent = snapshot.activeState;
+    this.diagnosticsHostContextIdNode.textContent = snapshot.activeHostContextId || "none";
+    this.diagnosticsUrlParamsNode.textContent = JSON.stringify(snapshot.urlParams, null, 2);
+    this.diagnosticsSessionStorageNode.textContent = JSON.stringify(snapshot.sessionMatches, null, 2);
+    this.diagnosticsSessionLibraryNode.textContent = JSON.stringify(snapshot.localStorage.sessionLibrary, null, 2);
+    this.diagnosticsErrorLogsNode.textContent = JSON.stringify(snapshot.localStorage.errorLogs, null, 2);
+    this.diagnosticsPayloadNode.textContent = snapshot.payloadPreview;
   }
 
   async loadSelectedFixture() {
@@ -347,11 +479,13 @@ class WorkspaceV2SessionProducer {
       }
       this.setCurrentSessionPayload(fixture.sessionContext, `fixture:${toolId}`);
       this.currentHostContextId = "";
+      this.renderDiagnosticsPanel();
       this.importJsonNode.value = JSON.stringify(fixture.sessionContext, null, 2);
       this.statusNode.textContent = `Fixture loaded for ${toolId}.\nSession payload is ready for launch, export, share, or library save.`;
     } catch (error) {
       this.setCurrentSessionPayload(null, "");
       this.currentHostContextId = "";
+      this.renderDiagnosticsPanel();
       this.statusNode.textContent = `Fixture read failed: ${error instanceof Error ? error.message : "unknown error"}`;
     }
   }
@@ -541,6 +675,7 @@ class WorkspaceV2SessionProducer {
     const hostContextId = this.createHostContextId(toolId);
     sessionStorage.setItem(hostContextId, JSON.stringify(this.currentSessionPayload));
     this.currentHostContextId = hostContextId;
+    this.renderDiagnosticsPanel();
     const launchUrl = this.buildToolLaunchUrl(toolId, hostContextId);
     this.statusNode.textContent = `Session created.\nTool: ${toolId}\nHostContextId: ${hostContextId}\nURL: tools/${toolId}/index.html?hostContextId=${hostContextId}`;
     window.location.href = launchUrl;
