@@ -46,6 +46,20 @@
       </section>
 
       <section class="hub-panel">
+        <h2>Session Library</h2>
+        <label for="workspaceV2SessionName">Session Name</label>
+        <input id="workspaceV2SessionName" type="text" placeholder="My Session Name" />
+        <div>
+          <button id="workspaceV2SaveSessionButton" type="button">Save Session</button>
+          <button id="workspaceV2OverwriteSessionButton" type="button">Overwrite Session</button>
+          <button id="workspaceV2LoadSessionButton" type="button">Load Session</button>
+          <button id="workspaceV2DeleteSessionButton" type="button">Delete Session</button>
+        </div>
+        <p id="workspaceV2LibraryEmptyState">No saved sessions in library.</p>
+        <ul id="workspaceV2SessionList" aria-label="Workspace V2 saved sessions"></ul>
+      </section>
+
+      <section class="hub-panel">
         <h2>Session Output</h2>
         <pre id="workspaceV2Status">No fixture loaded.</pre>
       </section>
