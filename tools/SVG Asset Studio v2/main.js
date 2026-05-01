@@ -13,7 +13,8 @@
       <link rel="stylesheet" href="../../src/engine/ui/hubCommon.css" />
       <style>
         body[data-tool-id="svg-asset-studio-v2"] .page-shell { padding-bottom: 48px; }
-        body[data-tool-id="svg-asset-studio-v2"] .is-collapsible { max-width: var(--wrap-max, 1180px); margin: 32px auto 0; }
+        body[data-tool-id="svg-asset-studio-v2"] #shared-theme-header + .page-shell { padding-top: 32px; }
+        body[data-tool-id="svg-asset-studio-v2"] .is-collapsible { margin-top: 18px; }
         body[data-tool-id="svg-asset-studio-v2"] .is-collapsible__summary { font-weight: 800; }
         body[data-tool-id="svg-asset-studio-v2"] .svg-v2-grid { display: grid; grid-template-columns: minmax(230px, 0.72fr) minmax(0, 1.7fr); gap: 18px; }
         body[data-tool-id="svg-asset-studio-v2"] .svg-v2-panel { border: 1px solid var(--line); border-radius: 18px; background: linear-gradient(180deg, var(--panel) 0%, var(--panel2) 100%); padding: 18px; box-shadow: 0 18px 36px rgba(0, 0, 0, 0.18); }
@@ -27,40 +28,38 @@
       </style>
     `);
     document.body.innerHTML = `
-      <details class="is-collapsible" open>
-        <summary class="is-collapsible__summary">SVG Asset Studio v2</summary>
-        <div class="is-collapsible__content">
-          <main class="page-shell">
-            <section class="page-intro">
-              <h1>SVG Asset Studio v2</h1>
-              <p>Inspect an SVG asset from explicit Tool v2 session context only.</p>
-            </section>
-          </main>
-        </div>
-      </details>
+      <div id="shared-theme-header"></div>
       <main class="page-shell">
         <section class="content-section">
-          <h2>Session SVG Asset</h2>
-          <p id="svgV2SessionReadout" class="svg-v2-readout">Waiting for session context.</p>
-          <div class="svg-v2-grid">
-            <aside class="svg-v2-panel" data-menu-tool>
-              <h3>menuTool</h3>
-              <p id="svgV2ToolReadout" class="svg-v2-readout">SVG contract not loaded.</p>
-            </aside>
-            <section class="svg-v2-panel" aria-live="polite">
-              <h3 id="svgV2AssetName">No SVG loaded</h3>
-              <span id="svgV2StatusBadge" class="badge svg-v2-badge">0 bytes</span>
-              <div id="svgV2State" class="svg-v2-state">No SVG session context found. Open SVG Asset Studio v2 with a valid hostContextId session.</div>
-              <div id="svgV2Frame" class="svg-v2-frame" aria-label="SVG Asset Studio v2 preview"></div>
-            </section>
-            <aside class="svg-v2-panel" data-menu-workspace>
-              <h3>menuWorkspace</h3>
-              <p id="svgV2WorkspaceReadout" class="svg-v2-readout">Workspace actions are read-only in this isolated v2 entry.</p>
-            </aside>
-          </div>
+          <details class="is-collapsible" open>
+            <summary class="is-collapsible__summary">Session SVG Asset</summary>
+            <div class="is-collapsible__content">
+              <p id="svgV2SessionReadout" class="svg-v2-readout">Waiting for session context.</p>
+              <div class="svg-v2-grid">
+                <aside class="svg-v2-panel" data-menu-tool>
+                  <h3>menuTool</h3>
+                  <p id="svgV2ToolReadout" class="svg-v2-readout">SVG contract not loaded.</p>
+                </aside>
+                <section class="svg-v2-panel" aria-live="polite">
+                  <h3 id="svgV2AssetName">No SVG loaded</h3>
+                  <span id="svgV2StatusBadge" class="badge svg-v2-badge">0 bytes</span>
+                  <div id="svgV2State" class="svg-v2-state">No SVG session context found. Open SVG Asset Studio v2 with a valid hostContextId session.</div>
+                  <div id="svgV2Frame" class="svg-v2-frame" aria-label="SVG Asset Studio v2 preview"></div>
+                </section>
+                <aside class="svg-v2-panel" data-menu-workspace>
+                  <h3>menuWorkspace</h3>
+                  <p id="svgV2WorkspaceReadout" class="svg-v2-readout">Workspace actions are read-only in this isolated v2 entry.</p>
+                </aside>
+              </div>
+            </div>
+          </details>
         </section>
       </main>
     `;
+    document.body.appendChild(Object.assign(document.createElement("script"), {
+      type: "module",
+      src: "../../src/engine/theme/mount-shared-header.js"
+    }));
     this.readSession();
   }
 

@@ -13,7 +13,8 @@
       <link rel="stylesheet" href="../../src/engine/ui/hubCommon.css" />
       <style>
         body[data-tool-id="palette-manager"] .page-shell { padding-bottom: 48px; }
-        body[data-tool-id="palette-manager"] .is-collapsible { max-width: var(--wrap-max, 1180px); margin: 32px auto 0; }
+        body[data-tool-id="palette-manager"] #shared-theme-header + .page-shell { padding-top: 32px; }
+        body[data-tool-id="palette-manager"] .is-collapsible { margin-top: 18px; }
         body[data-tool-id="palette-manager"] .is-collapsible__summary { font-weight: 800; }
         body[data-tool-id="palette-manager"] .palette-manager-grid { display: grid; grid-template-columns: minmax(220px, 0.7fr) minmax(0, 1.6fr); gap: 18px; }
         body[data-tool-id="palette-manager"] .palette-manager-panel { border: 1px solid var(--line); border-radius: 18px; background: linear-gradient(180deg, var(--panel) 0%, var(--panel2) 100%); padding: 18px; box-shadow: 0 18px 36px rgba(0, 0, 0, 0.18); }
@@ -31,36 +32,38 @@
       </style>
     `);
     document.body.innerHTML = `
-      <details class="is-collapsible" open>
-        <summary class="is-collapsible__summary">Palette Manager</summary>
-        <div class="is-collapsible__content">
-          <main class="page-shell">
-            <section class="page-intro">
-              <h1>Palette Manager</h1>
-              <p>Inspect the active session palette using explicit Tool v2 session data only.</p>
-            </section>
-          </main>
-        </div>
-      </details>
+      <div id="shared-theme-header"></div>
       <main class="page-shell">
         <section class="content-section">
-          <h2>Session Palette</h2>
-          <p id="paletteManagerSessionReadout" class="palette-manager-readout">Waiting for session context.</p>
-          <div class="palette-manager-grid">
-            <aside class="palette-manager-panel">
-              <h3>Contract</h3>
-              <p id="paletteManagerContractReadout" class="palette-manager-readout">paletteJson not loaded.</p>
-            </aside>
-            <section class="palette-manager-panel" aria-live="polite">
-              <h3 id="paletteManagerName">No palette loaded</h3>
-              <span id="paletteManagerCount" class="badge palette-manager-count">0 colors</span>
-              <div id="paletteManagerState" class="palette-manager-state">No palette session data found. Open Palette Manager with a valid hostContextId session.</div>
-              <div id="paletteManagerSwatches" class="palette-manager-swatches" aria-label="Palette Manager swatches"></div>
-            </section>
-          </div>
+          <details class="is-collapsible" open>
+            <summary class="is-collapsible__summary">Palette Manager Session</summary>
+            <div class="is-collapsible__content">
+              <p id="paletteManagerSessionReadout" class="palette-manager-readout">Waiting for session context.</p>
+              <div class="palette-manager-grid">
+                <aside class="palette-manager-panel" data-menu-tool>
+                  <h3>menuTool</h3>
+                  <p id="paletteManagerContractReadout" class="palette-manager-readout">paletteJson not loaded.</p>
+                </aside>
+                <section class="palette-manager-panel" aria-live="polite">
+                  <h3 id="paletteManagerName">No palette loaded</h3>
+                  <span id="paletteManagerCount" class="badge palette-manager-count">0 colors</span>
+                  <div id="paletteManagerState" class="palette-manager-state">No palette session data found. Open Palette Manager with a valid hostContextId session.</div>
+                  <div id="paletteManagerSwatches" class="palette-manager-swatches" aria-label="Palette Manager swatches"></div>
+                </section>
+                <aside class="palette-manager-panel" data-menu-workspace>
+                  <h3>menuWorkspace</h3>
+                  <p id="paletteManagerWorkspaceReadout" class="palette-manager-readout">Workspace actions are read-only in this isolated v2 entry.</p>
+                </aside>
+              </div>
+            </div>
+          </details>
         </section>
       </main>
     `;
+    document.body.appendChild(Object.assign(document.createElement("script"), {
+      type: "module",
+      src: "../../src/engine/theme/mount-shared-header.js"
+    }));
     this.readSession();
   }
 
@@ -113,6 +116,7 @@
     }
     document.getElementById("paletteManagerSessionReadout").textContent = `Session: loaded\nContext: ${new URL(window.location.href).searchParams.get("hostContextId")}\nTool: ${typeof sessionContext.toolId === "string" && sessionContext.toolId.trim() ? sessionContext.toolId.trim() : "not provided"}`;
     document.getElementById("paletteManagerContractReadout").textContent = "paletteJson loaded\npaletteJson.name valid\npaletteJson.colors[] valid";
+    document.getElementById("paletteManagerWorkspaceReadout").textContent = "Workspace session context was read. Workspace writes are deferred for this isolated v2 entry.";
     document.getElementById("paletteManagerName").textContent = paletteJson.name.trim();
     document.getElementById("paletteManagerCount").textContent = `${paletteJson.colors.length} color${paletteJson.colors.length === 1 ? "" : "s"}`;
     document.getElementById("paletteManagerState").className = "palette-manager-state";
@@ -131,6 +135,7 @@
   renderEmpty(message) {
     document.getElementById("paletteManagerSessionReadout").textContent = "Session: missing";
     document.getElementById("paletteManagerContractReadout").textContent = "paletteJson not loaded";
+    document.getElementById("paletteManagerWorkspaceReadout").textContent = "Workspace session context is not available.";
     document.getElementById("paletteManagerName").textContent = "No palette loaded";
     document.getElementById("paletteManagerCount").textContent = "0 colors";
     document.getElementById("paletteManagerState").className = "palette-manager-state";
@@ -141,6 +146,7 @@
   renderError(message) {
     document.getElementById("paletteManagerSessionReadout").textContent = "Session: read attempted";
     document.getElementById("paletteManagerContractReadout").textContent = "paletteJson invalid";
+    document.getElementById("paletteManagerWorkspaceReadout").textContent = "Workspace writes are disabled for invalid Palette Manager session data.";
     document.getElementById("paletteManagerName").textContent = "Palette Manager error";
     document.getElementById("paletteManagerCount").textContent = "0 colors";
     document.getElementById("paletteManagerState").className = "palette-manager-state palette-manager-state--error";
