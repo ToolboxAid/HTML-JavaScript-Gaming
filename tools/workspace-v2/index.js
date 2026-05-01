@@ -29,6 +29,7 @@ class WorkspaceV2SessionProducer {
     this.errorLogsEmptyState = document.getElementById("workspaceV2ErrorLogsEmptyState");
     this.errorLogsListNode = document.getElementById("workspaceV2ErrorLogsList");
     this.refreshDiagnosticsButton = document.getElementById("workspaceV2RefreshDiagnosticsButton");
+    this.exportSnapshotButton = document.getElementById("workspaceV2ExportSnapshotButton");
     this.diagnosticsActiveStateNode = document.getElementById("workspaceV2DiagnosticsActiveState");
     this.diagnosticsHostContextIdNode = document.getElementById("workspaceV2DiagnosticsHostContextId");
     this.diagnosticsUrlParamsNode = document.getElementById("workspaceV2DiagnosticsUrlParams");
@@ -36,6 +37,7 @@ class WorkspaceV2SessionProducer {
     this.diagnosticsSessionLibraryNode = document.getElementById("workspaceV2DiagnosticsSessionLibrary");
     this.diagnosticsErrorLogsNode = document.getElementById("workspaceV2DiagnosticsErrorLogs");
     this.diagnosticsPayloadNode = document.getElementById("workspaceV2DiagnosticsPayload");
+    this.snapshotOutputNode = document.getElementById("workspaceV2SnapshotOutput");
     this.clearSessionStorageButton = document.getElementById("workspaceV2ClearSessionStorageButton");
     this.clearSavedSessionsButton = document.getElementById("workspaceV2ClearSavedSessionsButton");
     this.resetClearErrorLogsButton = document.getElementById("workspaceV2ResetClearErrorLogsButton");
@@ -86,6 +88,9 @@ class WorkspaceV2SessionProducer {
     this.refreshDiagnosticsButton.addEventListener("click", () => {
       this.renderDiagnosticsPanel();
     });
+    this.exportSnapshotButton.addEventListener("click", () => {
+      this.exportRuntimeSnapshot();
+    });
     this.clearSessionStorageButton.addEventListener("click", () => {
       this.clearSessionStorage();
     });
@@ -110,6 +115,7 @@ class WorkspaceV2SessionProducer {
       }
     });
     this.decodeSessionParamFromUrl();
+    this.registerSnapshotHook();
     this.renderSessionLibrary();
     this.renderErrorLogsViewer();
     this.renderDiagnosticsPanel();
@@ -543,6 +549,34 @@ class WorkspaceV2SessionProducer {
       },
       payloadPreview
     };
+  }
+
+  buildRuntimeSnapshot() {
+    const snapshot = this.readDiagnosticsSnapshot();
+    let sessionPayload = null;
+    if (snapshot.sessionMatches.length > 0 && snapshot.sessionMatches[0].parseOk) {
+      try {
+        sessionPayload = JSON.parse(sessionStorage.getItem(snapshot.activeHostContextId));
+      } catch {
+        sessionPayload = null;
+      }
+    }
+    return {
+      tool: "workspace-v2",
+      url: window.location.href,
+      hostContextId: snapshot.activeHostContextId,
+      session: sessionPayload
+    };
+  }
+
+  registerSnapshotHook() {
+    window.__v2RuntimeSnapshot = () => this.buildRuntimeSnapshot();
+  }
+
+  exportRuntimeSnapshot() {
+    const snapshot = this.buildRuntimeSnapshot();
+    this.snapshotOutputNode.textContent = JSON.stringify(snapshot, null, 2);
+    this.statusNode.textContent = "Runtime snapshot exported to Workspace V2 diagnostics.";
   }
 
   renderDiagnosticsPanel() {

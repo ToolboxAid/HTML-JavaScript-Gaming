@@ -83,7 +83,10 @@
       <section class="hub-panel">
         <h2>Diagnostics</h2>
         <p>Read-only diagnostics for URL/session/local storage state.</p>
-        <button id="workspaceV2RefreshDiagnosticsButton" type="button">Refresh Diagnostics</button>
+        <div>
+          <button id="workspaceV2RefreshDiagnosticsButton" type="button">Refresh Diagnostics</button>
+          <button id="workspaceV2ExportSnapshotButton" type="button">Export Runtime Snapshot</button>
+        </div>
         <p><strong>Active State:</strong> <span id="workspaceV2DiagnosticsActiveState">EMPTY</span></p>
         <p><strong>Active hostContextId:</strong> <span id="workspaceV2DiagnosticsHostContextId">none</span></p>
         <h3>URL Params</h3>
@@ -96,6 +99,8 @@
         <pre id="workspaceV2DiagnosticsErrorLogs">null</pre>
         <h3>Current Payload Preview</h3>
         <pre id="workspaceV2DiagnosticsPayload">No payload loaded.</pre>
+        <h3>Snapshot Export</h3>
+        <pre id="workspaceV2SnapshotOutput">No snapshot exported.</pre>
       </section>
 
       <section class="hub-panel">

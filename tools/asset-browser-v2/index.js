@@ -13,6 +13,7 @@ class AssetBrowserV2 {
     document.getElementById("assetBrowserV2BackButton").addEventListener("click", this.goBack);
     document.getElementById("assetBrowserV2OpenSvgAssetStudioV2Button").addEventListener("click", this.openSvgAssetStudioV2);
     this.renderNavigation();
+    this.registerSnapshotHook();
     this.readSession();
   }
 
@@ -89,6 +90,30 @@ class AssetBrowserV2 {
       error: "Unsupported session version",
       code: "UNSUPPORTED_VERSION"
     };
+  }
+
+  buildRuntimeSnapshot() {
+    const serializedSession = this.urlState.hostContextId ? window.sessionStorage.getItem(this.urlState.hostContextId) : null;
+    let parsedSession = null;
+    let sessionError = "";
+    if (typeof serializedSession === "string") {
+      try {
+        parsedSession = JSON.parse(serializedSession);
+      } catch (error) {
+        sessionError = error instanceof Error ? error.message : "unknown error";
+      }
+    }
+    return {
+      tool: "asset-browser-v2",
+      url: window.location.href,
+      hostContextId: this.urlState.hostContextId,
+      session: parsedSession,
+      sessionError
+    };
+  }
+
+  registerSnapshotHook() {
+    window.__v2RuntimeSnapshot = () => this.buildRuntimeSnapshot();
   }
 
   logStructuredError(type, message, details) {
