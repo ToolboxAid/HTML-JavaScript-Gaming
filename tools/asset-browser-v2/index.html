@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Asset Browser V2</title>
+  <link rel="stylesheet" href="../../src/engine/theme/main.css" />
+  <link rel="stylesheet" href="../../src/engine/ui/hubCommon.css" />
+</head>
+<body class="hub-page-home hub-page-home--viewport" data-tool-id="asset-browser-v2">
+  <div id="shared-theme-header"></div>
+  <main class="page-shell">
+    <section class="content-section">
+      <details class="is-collapsible" open>
+        <summary class="is-collapsible__summary">Asset Browser V2 Session</summary>
+        <div class="is-collapsible__content">
+          <p id="assetBrowserV2SessionReadout">Waiting for session context.</p>
+          <div class="asset-browser-v2-grid">
+            <aside class="asset-browser-v2-panel" data-menu-tool>
+              <h3>menuTool</h3>
+              <p id="assetBrowserV2ContractReadout">payloadJson.assetCatalog not loaded.</p>
+              <div id="assetBrowserV2List" aria-label="Asset Browser V2 asset list"></div>
+            </aside>
+            <section class="asset-browser-v2-panel" aria-live="polite">
+              <h3 id="assetBrowserV2Title">No assets loaded</h3>
+              <span id="assetBrowserV2Count" class="badge">0 assets</span>
+              <div id="assetBrowserV2State">No asset catalog session data found. Open Asset Browser V2 with a valid hostContextId session.</div>
+              <pre id="assetBrowserV2Preview" aria-label="Asset Browser V2 preview"></pre>
+            </section>
+            <aside class="asset-browser-v2-panel" data-menu-workspace>
+              <h3>menuWorkspace</h3>
+              <p id="assetBrowserV2WorkspaceReadout">Workspace actions are read-only in this isolated V2 entry.</p>
+            </aside>
+          </div>
+        </div>
+      </details>
+    </section>
+  </main>
+  <script type="module" src="../../src/engine/theme/mount-shared-header.js"></script>
+  <script type="module" src="./index.js"></script>
+</body>
+</html>

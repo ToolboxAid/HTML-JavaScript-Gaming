@@ -1,1 +1,1 @@
-Move V2 static shell into index.html and keep tool JavaScript behavior-only - PR 11.192
+Re-engineer V2 tools to HTML-first shells with behavior-only JS and shared header mount - PR 11.193C

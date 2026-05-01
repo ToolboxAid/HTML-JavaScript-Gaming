@@ -1,7 +1,7 @@
 # PR_11_192 Validation
 
 ## Purpose
-Correct V2 tools so `index.html` owns the static shell and `index.js` remains behavior-only.
+Correct V2 tools so `index.html` owns the static shell and `index.js` remains behavior-only. This `_04` pass revalidated the corrected V2 lane and packages the requested artifact.
 
 ## Changed Files
 - `tools/palette-manager-v2/index.html`
@@ -12,15 +12,36 @@ Correct V2 tools so `index.html` owns the static shell and `index.js` remains be
 - `tools/vector-map-editor-v2/index.js`
 - `docs/dev/reports/PR_11_192_validation.md`
 
-## Removed Superseded V2 Paths
-- `tools/Palette Manager v2/main.js`
-- `tools/SVG Asset Studio v2/main.js`
+## HTML Shell Evidence
+Each corrected V2 `index.html` owns:
+- static CSS links
+- `<div id="shared-theme-header"></div>`
+- static page shell
+- accordion layout
+- `menuTool` container
+- `menuWorkspace` container
+- shared header module script
+- tool module script: `./index.js`
 
-## HTML Shell Correction
-- Each V2 tool now has a static `index.html`.
-- Each `index.html` owns CSS links, `<div id="shared-theme-header"></div>`, page shell, accordion, `menuTool`, `menuWorkspace`, stable DOM nodes, shared header module script, and tool module script.
-- Each `index.js` is behavior-only: title/tool id setup, session read, validation, DOM population, rendering, and empty/error states.
-- JS no longer injects CSS, appends the shared header script, or replaces `document.body.innerHTML`.
+Confirmed for:
+- `tools/palette-manager-v2/index.html`
+- `tools/svg-asset-studio-v2/index.html`
+- `tools/vector-map-editor-v2/index.html`
+
+## Behavior-Only JS Evidence
+Each corrected V2 `index.js` contains one class and keeps behavior in JS only:
+- title/tool id setup
+- session read
+- validation
+- DOM population
+- rendering
+- empty/error states
+
+Confirmed no `index.js` contains:
+- `document.body.innerHTML`
+- `insertAdjacentHTML`
+- dynamic shared header script creation/append
+- injected `<style>` shell CSS
 
 ## Targeted Validation
 All requested validation commands were run. No validation command was skipped.
@@ -51,7 +72,7 @@ A targeted file-content guard scan checked the corrected V2 tool folders for for
 - `fallback`
 - `default data`
 - `demo data`
-- static imports/exports
+- `../shared`
 
 Result: passed. No matches.
 
@@ -78,5 +99,5 @@ Reason: PR 11.192 is limited to V2 static shell separation and targeted direct t
 ## ZIP Artifact
 
 ```text
-tmp/PR_11_192_20260501_01.zip
+tmp/PR_11_192_20260501_04.zip
 ```

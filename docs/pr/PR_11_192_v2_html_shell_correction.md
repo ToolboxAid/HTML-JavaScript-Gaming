@@ -1,4 +1,4 @@
-# PR_11_192_20260501_01 — V2 Tool HTML Shell Correction
+# PR_11_192_20260501_04 — V2 Tool HTML Shell Correction
 
 ## Purpose
 Correct the V2 tool implementation direction so static page structure lives in `tools/<tool>-v2/index.html` and JavaScript stays behavior-only.
@@ -32,12 +32,13 @@ tools/<tool>-v2/index.js
 - Do not inject CSS from JavaScript.
 - Do not append the shared header script dynamically from JavaScript.
 - Do not overwrite `document.body.innerHTML`.
-- Do not use `palette-manager` for V2 body dataset/tool id.
+- Do not use non-V2 body dataset/tool ids for V2 entries.
+- Do not copy/paste legacy tool implementation into V2.
 - Do not touch schemas, samples, games, Workspace Manager v1, `platformShell`, or `tools/shared/*`.
 
 ## Acceptance
 - `index.html` owns static shell and header mount.
 - `index.js` owns behavior only.
-- V2 tool id/name uses explicit `V2` naming and `*-v2` identifiers.
-- Header mount is present as `<div id="shared-theme-header"></div>`.
-- Empty/error/valid states remain testable through stable DOM ids.
+- Header uses `<div id="shared-theme-header"></div>`.
+- V2 names include `V2` visibly.
+- Empty/error/valid states remain explicit and testable.
