@@ -1,40 +1,22 @@
-# Codex Commands — PR_11_190
+# Codex Commands — PR_11_191 Vector Map Editor V2
 
 ## Model
+GPT-5.4-codex
 
-Use GPT-5.4 or GPT-5.3-codex.
+## Reasoning
+High
 
-Reasoning: high.
-
-## Execute
-
+## Command
 ```powershell
-cd C:\Users\davidq\Documents\GitHub\HTML-JavaScript-Gaming
+codex --model gpt-5.4-codex --reasoning high "Apply PR_11_191 exactly as documented in docs/pr/PR_11_191_VECTOR_MAP_EDITOR_V2_REENGINEER_PLAN.md. Re-engineer Vector Map Editor V2 only. Do not copy/paste legacy tool code. Do not modify schemas, samples, games, Workspace Manager v1, platformShell, assetUsageIntegration, or tools/shared. Use session-backed data only. Visible tool name must end with V2. Header must use the /index.html shared theme header mount: <div id="shared-theme-header"></div>. Keep implementation to a single tool file and single class unless the existing repo entry file requires only wiring to that one class. No helper classes, no alias variables, no abstraction layers, no fallback/default data. Add targeted validation and write findings to docs/dev/reports/PR_11_191_VECTOR_MAP_EDITOR_V2_VALIDATION.md. Do not run full samples smoke test."
 ```
 
+## Targeted Validation
 ```powershell
-codex --model gpt-5.4 --reasoning high "Apply docs/pr/PR_11_190_V2_REENGINEER_NAMING_HEADER_GUARD.md exactly. This is a re-engineer guard, not copy/paste. Update only the V2 tool lane needed for Palette Manager V2 and SVG Asset Studio V2 naming/header compliance. Do not change schemas, samples, games, Workspace Manager v1, platformShell, tools/shared, or legacy tools. Ensure every visible V2 tool name ends with V2. Ensure the V2 tools use the /index.html shared theme header mount <div id='shared-theme-header'></div>. Do not add fallback/default data. Do not introduce helper classes, abstraction layers, alias variables, or pass-through variables. Run targeted syntax checks only. Write validation notes to docs/dev/reports/PR_11_190_validation.md. Place the finished repo-structured ZIP at tmp/PR_11_190_20260501_01.zip."
+node --check tools/vector-map-editor-v2/index.js
 ```
 
-## Required Output From Codex
+If the exact file name differs after Codex creates the V2 lane structure, run `node --check` on the created Vector Map Editor V2 entry file only.
 
-Codex must create:
-
-```text
-tmp/PR_11_190_20260501_01.zip
-docs/dev/reports/PR_11_190_validation.md
-```
-
-## Expected Evidence
-
-The validation report must include:
-
-```text
-[REENGINEER_NOT_COPY_PASTE]
-[V2_NAME_SUFFIX_ENFORCED]
-[SHARED_THEME_HEADER_MOUNT]
-[NO_PLATFORM_SHELL]
-[NO_TOOLS_SHARED]
-[NO_FALLBACK_DATA]
-[TARGETED_VALIDATION_ONLY]
-```
+## Full Samples Smoke Test
+Skipped by default. Reason: this PR is limited to one V2 tool and does not modify shared sample loader/framework.
