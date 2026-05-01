@@ -172,44 +172,16 @@ function readToolIdFromWorkspaceClickTarget(target = null) {
   if (!(target instanceof Element)) {
     return "";
   }
-  const closestWithToolId = target.closest("[data-tool-id], [data-tool-host-tool-id], [data-tool]");
-  const datasetToolId = normalizeTextParam(
-    closestWithToolId?.getAttribute("data-tool-id")
-      || closestWithToolId?.getAttribute("data-tool-host-tool-id")
-      || closestWithToolId?.getAttribute("data-tool")
-      || ""
-  );
-  if (datasetToolId) {
-    return normalizeToken(datasetToolId);
-  }
-  const link = target.closest("a[href]") || target.querySelector?.("a[href]");
-  const href = link instanceof HTMLAnchorElement ? link.getAttribute("href") || link.href : "";
-  if (!href) {
-    return "";
-  }
-  try {
-    const url = new URL(href, window.location.href);
-    const pathname = decodeURIComponent(url.pathname).replace(/\\/g, "/");
-    const match = manifest.tools.find((entry) => {
-      const launchPath = normalizeTextParam(entry.launchPath).replace(/\\/g, "/");
-      const entryPoint = normalizeTextParam(entry.entryPoint).replace(/\\/g, "/");
-      return (launchPath && pathname.endsWith(launchPath.replace(/^\.\.\//, "/tools/")))
-        || (entryPoint && pathname.endsWith(`/tools/${entryPoint}`));
-    });
-    return match?.id || "";
-  } catch {
-    return "";
-  }
+  const closestWithToolId = target.closest("[data-tool-id]");
+  const datasetToolId = normalizeTextParam(closestWithToolId?.dataset?.toolId);
+  return datasetToolId ? normalizeToken(datasetToolId) : "";
 }
 
 function traceWorkspaceToolClick({ target = null, datasetToolId = "", resolvedToolId = "", source = "" } = {}) {
   const clickedText = target instanceof Element ? normalizeTextParam(target.textContent || "") : "";
   const eventTarget = target instanceof Element ? target.tagName.toLowerCase() : "";
   const closestToolId = target instanceof Element
-    ? normalizeTextParam(target.closest("[data-tool-id], [data-tool-host-tool-id], [data-tool]")?.getAttribute("data-tool-id")
-      || target.closest("[data-tool-id], [data-tool-host-tool-id], [data-tool]")?.getAttribute("data-tool-host-tool-id")
-      || target.closest("[data-tool-id], [data-tool-host-tool-id], [data-tool]")?.getAttribute("data-tool")
-      || "")
+    ? normalizeTextParam(target.closest("[data-tool-id]")?.dataset?.toolId)
     : "";
   console.log("[WORKSPACE_TOOL_CLICK]", {
     source,
@@ -1566,15 +1538,10 @@ function bindPagerDelegatedEvents() {
     const toolNavTarget = target.closest(".tools-platform-frame__nav-link, .tools-platform-frame__nav-tool-row");
     if (toolNavTarget instanceof Element) {
       const resolvedToolId = readToolIdFromWorkspaceClickTarget(toolNavTarget);
-      const datasetToolId = normalizeTextParam(
-        toolNavTarget.getAttribute("data-tool-id")
-          || toolNavTarget.getAttribute("data-tool-host-tool-id")
-          || toolNavTarget.getAttribute("data-tool")
-          || ""
-      );
+      const datasetToolId = normalizeTextParam(toolNavTarget.closest("[data-tool-id]")?.dataset?.toolId);
       traceWorkspaceToolClick({
         target: toolNavTarget,
-        datasetToolId: datasetToolId || resolvedToolId,
+        datasetToolId,
         resolvedToolId,
         source: "tool-nav"
       });
