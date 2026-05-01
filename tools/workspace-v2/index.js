@@ -3,6 +3,7 @@ class WorkspaceV2SessionProducer {
     document.title = "Workspace V2";
     document.body.dataset.toolId = "workspace-v2";
     this.toolSelect = document.getElementById("workspaceV2ToolSelect");
+    this.backButton = document.getElementById("workspaceV2BackButton");
     this.loadFixtureButton = document.getElementById("workspaceV2LoadFixtureButton");
     this.launchButton = document.getElementById("workspaceV2LaunchButton");
     this.statusNode = document.getElementById("workspaceV2Status");
@@ -13,6 +14,9 @@ class WorkspaceV2SessionProducer {
     });
     this.launchButton.addEventListener("click", () => {
       this.createSessionAndLaunch();
+    });
+    this.backButton.addEventListener("click", () => {
+      window.location.href = "../index.html";
     });
   }
 
@@ -69,6 +73,7 @@ class WorkspaceV2SessionProducer {
   buildToolLaunchUrl(toolId, hostContextId) {
     const toolUrl = new URL(`../${toolId}/index.html`, window.location.href);
     toolUrl.searchParams.set("hostContextId", hostContextId);
+    toolUrl.searchParams.set("fromTool", "workspace-v2");
     return toolUrl.toString();
   }
 

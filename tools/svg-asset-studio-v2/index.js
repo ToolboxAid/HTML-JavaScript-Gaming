@@ -5,14 +5,23 @@ class SvgAssetStudioV2 {
     document.title = "SVG Asset Studio V2";
     document.body.dataset.toolId = "svg-asset-studio-v2";
     this.urlState = this.readUrlState();
+    this.goBack = this.goBack.bind(this);
     this.handleNavigationState = this.handleNavigationState.bind(this);
     window.addEventListener("popstate", this.handleNavigationState);
     window.addEventListener("pageshow", this.handleNavigationState);
+    document.getElementById("svgV2BackButton").addEventListener("click", this.goBack);
+    this.renderNavigation();
     this.readSession();
+  }
+
+  goBack() {
+    const targetToolId = this.toolLabel(this.urlState.fromTool) ? this.urlState.fromTool : "workspace-v2";
+    window.location.href = this.buildToolUrl(targetToolId).toString();
   }
 
   handleNavigationState() {
     this.urlState = this.readUrlState();
+    this.renderNavigation();
     this.readSession();
   }
 
@@ -20,11 +29,36 @@ class SvgAssetStudioV2 {
     const urlStateParams = new URL(window.location.href).searchParams;
     return {
       hostContextId: typeof urlStateParams.get("hostContextId") === "string" ? urlStateParams.get("hostContextId").trim() : "",
+      fromTool: typeof urlStateParams.get("fromTool") === "string" ? urlStateParams.get("fromTool").trim() : "",
       view: typeof urlStateParams.get("view") === "string" ? urlStateParams.get("view").trim() : "",
       selection: typeof urlStateParams.get("selection") === "string" ? urlStateParams.get("selection").trim() : "",
       zoom: typeof urlStateParams.get("zoom") === "string" ? urlStateParams.get("zoom").trim() : "",
       panel: typeof urlStateParams.get("panel") === "string" ? urlStateParams.get("panel").trim() : ""
     };
+  }
+
+  toolLabel(toolId) {
+    if (toolId === "asset-browser-v2") return "Asset Browser V2";
+    if (toolId === "palette-manager-v2") return "Palette Manager V2";
+    if (toolId === "svg-asset-studio-v2") return "SVG Asset Studio V2";
+    if (toolId === "tilemap-studio-v2") return "Tilemap Studio V2";
+    if (toolId === "vector-map-editor-v2") return "Vector Map Editor V2";
+    if (toolId === "workspace-v2") return "Workspace V2";
+    return "";
+  }
+
+  renderNavigation() {
+    const sourceLabel = this.toolLabel(this.urlState.fromTool) || "Workspace V2";
+    document.getElementById("svgV2Breadcrumb").textContent = `Workspace V2 -> ${sourceLabel} -> SVG Asset Studio V2`;
+    document.getElementById("svgV2BackButton").textContent = `Back to ${sourceLabel}`;
+  }
+
+  buildToolUrl(toolId) {
+    const targetUrl = new URL(`../${toolId}/index.html`, window.location.href);
+    if (this.urlState.hostContextId) {
+      targetUrl.searchParams.set("hostContextId", this.urlState.hostContextId);
+    }
+    return targetUrl;
   }
 
   optionalUrlStateSummary() {
