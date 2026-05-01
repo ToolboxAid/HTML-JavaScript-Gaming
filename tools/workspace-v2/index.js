@@ -498,7 +498,19 @@ class WorkspaceV2SessionProducer {
   }
 
   buildSessionMergeCandidates() {
-    return this.buildSessionDiffCandidates();
+    const candidates = [];
+    const history = this.readSessionHistory();
+    history.forEach((entry) => {
+      if (!this.isValidSessionHistoryEntry(entry)) {
+        return;
+      }
+      candidates.push({
+        id: `history:${entry.hostContextId}`,
+        label: `History | ${entry.tool} | ${entry.hostContextId} | ${entry.timestamp}`,
+        payload: entry.payload
+      });
+    });
+    return candidates;
   }
 
   renderSessionMergeInputs() {
@@ -536,7 +548,7 @@ class WorkspaceV2SessionProducer {
     this.mergeRightSelect.value = this.mergeCandidates.some((entry) => entry.id === currentRight) ? currentRight : "";
 
     this.mergeEmptyState.hidden = this.mergeCandidates.length >= 2;
-    this.mergeEmptyState.textContent = "At least two valid sessions are required before merge preview.";
+    this.mergeEmptyState.textContent = "Create or reopen at least two Workspace V2 sessions before previewing a merge.";
     if (previousPreview) {
       const refreshedSource = this.mergeCandidates.find((entry) => entry.id === previousPreview.source.id);
       const refreshedTarget = this.mergeCandidates.find((entry) => entry.id === previousPreview.target.id);
@@ -557,7 +569,7 @@ class WorkspaceV2SessionProducer {
       return;
     }
     if (this.mergeCandidates.length < 2) {
-      this.mergeOutputNode.textContent = "No merge preview available.";
+      this.mergeOutputNode.textContent = "Create or reopen at least two Workspace V2 sessions before previewing a merge.";
     }
   }
 
@@ -614,8 +626,8 @@ class WorkspaceV2SessionProducer {
 
   computeSelectedSessionMerge() {
     if (!Array.isArray(this.mergeCandidates) || this.mergeCandidates.length < 2) {
-      this.mergeOutputNode.textContent = "Merge preview blocked. At least two valid sessions are required.";
-      this.statusNode.textContent = "Merge preview blocked. Add at least two valid sessions, then run Preview Merge (Dry Run).";
+      this.mergeOutputNode.textContent = "Create or reopen at least two Workspace V2 sessions before previewing a merge.";
+      this.statusNode.textContent = "Create or reopen at least two Workspace V2 sessions before previewing a merge.";
       return;
     }
     if (!this.mergeLeftSelect.value && !this.mergeRightSelect.value) {
