@@ -60,7 +60,7 @@ class PaletteManagerToolV2 {
     document.getElementById("paletteManagerCount").textContent = `${paletteJson.colors.length} color${paletteJson.colors.length === 1 ? "" : "s"}`;
     document.getElementById("paletteManagerState").className = "palette-manager-v2-state";
     document.getElementById("paletteManagerState").textContent = "Palette Manager V2 loaded the session palette.";
-    document.getElementById("paletteManagerSwatches").innerHTML = paletteJson.colors.map((entry, index) => `<article class="palette-manager-v2-swatch"><div class="palette-manager-v2-chip" style="background:${this.escapeHtml(this.colorFrom(entry))}"></div><div class="palette-manager-v2-swatch-body"><div>${this.escapeHtml(this.nameFrom(entry, index))}</div><div>${this.escapeHtml(this.colorFrom(entry))}</div></div></article>`).join("");
+    document.getElementById("paletteManagerSwatches").innerHTML = paletteJson.colors.map((entry) => `<article class="palette-manager-v2-swatch"><div class="palette-manager-v2-chip" style="background:${this.escapeHtml(this.colorFrom(entry))}"></div><div class="palette-manager-v2-swatch-body"><div>${this.escapeHtml(this.labelFrom(entry))}</div><div>${this.escapeHtml(this.colorFrom(entry))}</div></div></article>`).join("");
   }
 
   renderEmpty(message) {
@@ -98,11 +98,11 @@ class PaletteManagerToolV2 {
     return "";
   }
 
-  nameFrom(entry, index) {
+  labelFrom(entry) {
     if (entry && typeof entry === "object" && !Array.isArray(entry) && typeof entry.name === "string" && entry.name.trim()) {
       return entry.name.trim();
     }
-    return `Color ${index + 1}`;
+    return this.colorFrom(entry);
   }
 
   escapeHtml(value) {

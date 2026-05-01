@@ -67,10 +67,14 @@ class SvgAssetStudioV2 {
       this.renderError("SVG session data is invalid. svgText must start with an <svg> document.");
       return;
     }
+    if (typeof payloadJson.vectorAssetDocument.sourceName !== "string" || !payloadJson.vectorAssetDocument.sourceName.trim()) {
+      this.renderError("SVG session data is invalid. Expected payloadJson.vectorAssetDocument.sourceName.");
+      return;
+    }
     document.getElementById("svgV2SessionReadout").textContent = `Session: loaded\nContext: ${new URL(window.location.href).searchParams.get("hostContextId")}\nTool: ${typeof sessionContext.toolId === "string" && sessionContext.toolId.trim() ? sessionContext.toolId.trim() : "not provided"}`;
     document.getElementById("svgV2ToolReadout").textContent = "payloadJson loaded\npayloadJson.vectorAssetDocument valid\nsvgText valid";
     document.getElementById("svgV2WorkspaceReadout").textContent = "Workspace session context was read. Workspace writes are deferred for this isolated V2 entry.";
-    document.getElementById("svgV2AssetName").textContent = typeof payloadJson.vectorAssetDocument.sourceName === "string" && payloadJson.vectorAssetDocument.sourceName.trim() ? payloadJson.vectorAssetDocument.sourceName.trim() : "Inline SVG";
+    document.getElementById("svgV2AssetName").textContent = payloadJson.vectorAssetDocument.sourceName.trim();
     document.getElementById("svgV2StatusBadge").textContent = `${payloadJson.vectorAssetDocument.svgText.length} bytes`;
     document.getElementById("svgV2State").className = "svg-v2-state";
     document.getElementById("svgV2State").textContent = "SVG Asset Studio V2 loaded the session SVG asset.";

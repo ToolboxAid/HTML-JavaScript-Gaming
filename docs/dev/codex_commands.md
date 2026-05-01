@@ -1,68 +1,33 @@
-# Codex Commands — PR_11_193C
+# Codex Commands — PR_11_195
 
-## Model
-Use GPT-5.3-codex or available Codex implementation model.
-Reasoning: high.
+Model: GPT-5.4-codex
+Reasoning: high
 
 ## Command
-From repo root:
+Run one Codex pass for PR_11_195.
 
-```powershell
-cd C:\Users\davidq\Documents\GitHub\HTML-JavaScript-Gaming
-```
+## Codex Prompt
+You are implementing PR_11_195 in the HTML-JavaScript-Gaming repo.
 
-Run Codex with this exact task:
+Follow `docs/pr/PR_11_195_REMAINING_V2_HTML_SESSION_BATCH.md` exactly.
 
-```text
-Implement PR_11_193C exactly as described in docs/pr/PR_11_193C_V2_HTML_FIRST_BATCH.md.
+Important:
+- This is a re-engineer, not a copy/paste migration.
+- ChatGPT did not write implementation code. You must write the implementation.
+- Convert the next remaining V2 tools that still violate HTML-first/session-only architecture.
+- Use a larger safe batch than the prior one-tool PRs, but do not expand outside V2 tool entries.
+- Do not change schemas, samples, games, Workspace Manager v1, or shared tool systems.
+- Do not use `platformShell`, `assetUsageIntegration`, `tools/shared/*`, aliases, fallback/default data, helper classes, or abstraction layers.
+- Keep `index.html` static and testable.
+- Keep `index.js` behavior-only.
+- Ensure every touched V2 tool uses `<div id="shared-theme-header"></div>` and user-facing names ending in `V2`.
+- Produce targeted validation evidence in `docs/dev/reports/PR_11_195_validation.md`.
+- Create final repo-structured ZIP at `tmp/PR_11_195.zip`.
 
-This is a V2 re-engineer batch, not legacy copy/paste.
+## Required Targeted Checks
+Run:
+- `node --check` for each changed `.js` file.
+- grep/report checks for banned JS shell injection and banned legacy coupling terms.
+- HTML checks for `shared-theme-header`, `mount-shared-header.js`, and `./index.js` in changed V2 `index.html` files.
 
-You must write the implementation code. ChatGPT did not provide implementation files.
-
-Scope only:
-- Palette Manager V2
-- SVG Asset Studio V2
-- Vector Map Editor V2
-- Tilemap Studio V2
-- Asset Browser V2
-
-Do not change schemas, samples, games, Workspace Manager v1, platformShell, assetUsageIntegration, tools/shared/*, or start_of_day folders.
-
-Make each V2 tool HTML-first:
-- tools/<tool>-v2/index.html owns CSS links, shared header mount, static layout, static state containers, menus, and module script tags.
-- index.html must include <div id="shared-theme-header"></div>.
-- index.js must be behavior-only: document title/dataset, session read, validation, event binding, dynamic render into existing DOM nodes.
-- Remove JS-driven page construction such as document.body.innerHTML, document.head.insertAdjacentHTML style blocks, dynamic header script injection, and static layout template strings.
-- Keep one class per tool file.
-- No helper classes, no alias variables, no pass-through variables, no abstraction layers.
-- No fallback/default data.
-- Session-backed data only.
-- Tool names must end with V2.
-
-Validation required:
-- Run syntax checks for each changed JS file.
-- Run targeted tool launch/HTML validation available in the repo for these tools.
-- Do not run full samples smoke unless you changed shared sample loader/framework code.
-- Write validation evidence to docs/dev/reports/PR_11_193C_validation.md.
-
-Before finishing:
-- Review diff for unrelated changes and remove them.
-- Confirm no implementation touched banned paths.
-- Confirm no schema/sample/game changes.
-- Create final Codex ZIP at tmp/PR_11_193C_20260501_Codex.zip preserving repo structure.
-```
-
-## Expected Evidence File
-Codex must create:
-
-```text
-docs/dev/reports/PR_11_193C_validation.md
-```
-
-It must include:
-- files changed
-- tests run
-- full smoke skipped/run decision and reason
-- banned path check result
-- V2 header compliance result
+Do not run the full samples smoke test unless shared sample loader/framework code is modified. If skipped, document why.

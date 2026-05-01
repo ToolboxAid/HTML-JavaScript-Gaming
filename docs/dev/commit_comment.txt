@@ -1,1 +1,1 @@
-Re-engineer V2 tools to HTML-first shells with behavior-only JS and shared header mount - PR 11.193C
+Convert remaining V2 tools to HTML-first session-only architecture - PR 11.195
