@@ -1,1 +1,1 @@
-Re-engineer Vector Map Editor V2 with session-only data and shared header compliance - PR 11.191
+Move V2 static shell into index.html and keep tool JavaScript behavior-only - PR 11.192

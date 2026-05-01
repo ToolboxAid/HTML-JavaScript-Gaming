@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SVG Asset Studio V2</title>
+  <link rel="stylesheet" href="../../src/engine/theme/main.css" />
+  <link rel="stylesheet" href="../../src/engine/ui/hubCommon.css" />
+</head>
+<body class="hub-page-home hub-page-home--viewport" data-tool-id="svg-asset-studio-v2">
+  <div id="shared-theme-header"></div>
+  <main class="page-shell">
+    <section class="content-section">
+      <details class="is-collapsible" open>
+        <summary class="is-collapsible__summary">SVG Asset Studio V2 Session</summary>
+        <div class="is-collapsible__content">
+          <p id="svgV2SessionReadout" class="svg-v2-readout">Waiting for session context.</p>
+          <div class="svg-v2-grid">
+            <aside class="svg-v2-panel" data-menu-tool>
+              <h3>menuTool</h3>
+              <p id="svgV2ToolReadout" class="svg-v2-readout">payloadJson.vectorAssetDocument not loaded.</p>
+            </aside>
+            <section class="svg-v2-panel" aria-live="polite">
+              <h3 id="svgV2AssetName">No SVG loaded</h3>
+              <span id="svgV2StatusBadge" class="badge svg-v2-badge">0 bytes</span>
+              <div id="svgV2State" class="svg-v2-state">No SVG session context found. Open SVG Asset Studio V2 with a valid hostContextId session.</div>
+              <div id="svgV2Frame" class="svg-v2-frame" aria-label="SVG Asset Studio V2 preview"></div>
+            </section>
+            <aside class="svg-v2-panel" data-menu-workspace>
+              <h3>menuWorkspace</h3>
+              <p id="svgV2WorkspaceReadout" class="svg-v2-readout">Workspace actions are read-only in this isolated V2 entry.</p>
+            </aside>
+          </div>
+        </div>
+      </details>
+    </section>
+  </main>
+  <script type="module" src="../../src/engine/theme/mount-shared-header.js"></script>
+  <script type="module" src="./index.js"></script>
+</body>
+</html>

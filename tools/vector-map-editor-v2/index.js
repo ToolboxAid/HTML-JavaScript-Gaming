@@ -6,63 +6,7 @@ class VectorMapEditorV2 {
 
   start() {
     document.title = "Vector Map Editor V2";
-    document.body.className = "hub-page-home hub-page-home--viewport";
     document.body.dataset.toolId = "vector-map-editor-v2";
-    document.head.insertAdjacentHTML("beforeend", `
-      <link rel="stylesheet" href="../../src/engine/theme/main.css" />
-      <link rel="stylesheet" href="../../src/engine/ui/hubCommon.css" />
-      <style>
-        body[data-tool-id="vector-map-editor-v2"] .page-shell { padding-bottom: 48px; }
-        body[data-tool-id="vector-map-editor-v2"] #shared-theme-header + .page-shell { padding-top: 32px; }
-        body[data-tool-id="vector-map-editor-v2"] .is-collapsible { margin-top: 18px; }
-        body[data-tool-id="vector-map-editor-v2"] .is-collapsible__summary { font-weight: 800; }
-        body[data-tool-id="vector-map-editor-v2"] .vector-map-v2-grid { display: grid; grid-template-columns: minmax(230px, 0.75fr) minmax(0, 1.7fr); gap: 18px; }
-        body[data-tool-id="vector-map-editor-v2"] .vector-map-v2-panel { border: 1px solid var(--line); border-radius: 18px; background: linear-gradient(180deg, var(--panel) 0%, var(--panel2) 100%); padding: 18px; box-shadow: 0 18px 36px rgba(0, 0, 0, 0.18); }
-        body[data-tool-id="vector-map-editor-v2"] .vector-map-v2-readout { white-space: pre-line; color: var(--muted); }
-        body[data-tool-id="vector-map-editor-v2"] .vector-map-v2-stage { min-height: 430px; border: 1px solid var(--line); border-radius: 18px; background: var(--surface-inline, rgba(43, 16, 91, 0.9)); overflow: auto; padding: 18px; }
-        body[data-tool-id="vector-map-editor-v2"] .vector-map-v2-stage svg { display: block; width: 100%; min-width: 640px; height: auto; border-radius: 14px; background: rgba(2, 6, 23, 0.65); }
-        body[data-tool-id="vector-map-editor-v2"] .vector-map-v2-state { border: 1px dashed var(--line); border-radius: 16px; color: var(--muted); padding: 14px; }
-        body[data-tool-id="vector-map-editor-v2"] .vector-map-v2-state--error { border-style: solid; border-color: #fca5a5; color: #fecaca; }
-        body[data-tool-id="vector-map-editor-v2"] .vector-map-v2-badge { display: inline-block; margin-top: 10px; }
-        body[data-tool-id="vector-map-editor-v2"] .vector-map-v2-object-list { display: grid; gap: 10px; margin: 12px 0 0; padding: 0; list-style: none; }
-        body[data-tool-id="vector-map-editor-v2"] .vector-map-v2-object-list li { border: 1px solid var(--line); border-radius: 12px; color: var(--muted); padding: 10px; }
-        @media (max-width: 820px) { body[data-tool-id="vector-map-editor-v2"] .vector-map-v2-grid { grid-template-columns: 1fr; } }
-      </style>
-    `);
-    document.body.innerHTML = `
-      <div id="shared-theme-header"></div>
-      <main class="page-shell">
-        <section class="content-section">
-          <details class="is-collapsible" open>
-            <summary class="is-collapsible__summary">Vector Map Editor V2 Session</summary>
-            <div class="is-collapsible__content">
-              <p id="vectorMapV2SessionReadout" class="vector-map-v2-readout">Waiting for session context.</p>
-              <div class="vector-map-v2-grid">
-                <aside class="vector-map-v2-panel" data-menu-tool>
-                  <h3>menuTool</h3>
-                  <p id="vectorMapV2ContractReadout" class="vector-map-v2-readout">payloadJson.vectorMapDocument not loaded.</p>
-                  <ul id="vectorMapV2ObjectList" class="vector-map-v2-object-list" aria-label="Vector Map Editor V2 objects"></ul>
-                </aside>
-                <section class="vector-map-v2-panel" aria-live="polite">
-                  <h3 id="vectorMapV2Name">No vector map loaded</h3>
-                  <span id="vectorMapV2Count" class="badge vector-map-v2-badge">0 objects</span>
-                  <div id="vectorMapV2State" class="vector-map-v2-state">No vector map session data found. Open Vector Map Editor V2 with a valid hostContextId session.</div>
-                  <div id="vectorMapV2Stage" class="vector-map-v2-stage" aria-label="Vector Map Editor V2 preview"></div>
-                </section>
-                <aside class="vector-map-v2-panel" data-menu-workspace>
-                  <h3>menuWorkspace</h3>
-                  <p id="vectorMapV2WorkspaceReadout" class="vector-map-v2-readout">Workspace actions are read-only in this isolated V2 entry.</p>
-                </aside>
-              </div>
-            </div>
-          </details>
-        </section>
-      </main>
-    `;
-    document.body.appendChild(Object.assign(document.createElement("script"), {
-      type: "module",
-      src: "../../src/engine/theme/mount-shared-header.js"
-    }));
     this.readSession();
   }
 
@@ -162,7 +106,7 @@ class VectorMapEditorV2 {
     document.getElementById("vectorMapV2Count").textContent = `${vectorMapDocument.objects.length} object${vectorMapDocument.objects.length === 1 ? "" : "s"}`;
     document.getElementById("vectorMapV2State").className = "vector-map-v2-state";
     document.getElementById("vectorMapV2State").textContent = "Vector Map Editor V2 loaded the session vector map.";
-    document.getElementById("vectorMapV2ObjectList").innerHTML = vectorMapDocument.objects.map((entry, index) => `<li><strong>${this.escapeHtml(typeof entry.name === "string" && entry.name.trim() ? entry.name.trim() : `Object ${index + 1}`)}</strong><br>${this.escapeHtml(typeof entry.kind === "string" && entry.kind.trim() ? entry.kind.trim() : "shape")} · ${entry.points.length} point${entry.points.length === 1 ? "" : "s"}</li>`).join("");
+    document.getElementById("vectorMapV2ObjectList").innerHTML = vectorMapDocument.objects.map((entry) => `<li><strong>${this.escapeHtml(entry.name.trim())}</strong><br>${this.escapeHtml(entry.kind.trim())} - ${entry.points.length} point${entry.points.length === 1 ? "" : "s"}</li>`).join("");
     document.getElementById("vectorMapV2Stage").innerHTML = this.renderSvgMarkup(vectorMapDocument);
   }
 

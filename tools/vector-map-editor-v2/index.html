@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Vector Map Editor V2</title>
+  <link rel="stylesheet" href="../../src/engine/theme/main.css" />
+  <link rel="stylesheet" href="../../src/engine/ui/hubCommon.css" />
+</head>
+<body class="hub-page-home hub-page-home--viewport" data-tool-id="vector-map-editor-v2">
+  <div id="shared-theme-header"></div>
+  <main class="page-shell">
+    <section class="content-section">
+      <details class="is-collapsible" open>
+        <summary class="is-collapsible__summary">Vector Map Editor V2 Session</summary>
+        <div class="is-collapsible__content">
+          <p id="vectorMapV2SessionReadout" class="vector-map-v2-readout">Waiting for session context.</p>
+          <div class="vector-map-v2-grid">
+            <aside class="vector-map-v2-panel" data-menu-tool>
+              <h3>menuTool</h3>
+              <p id="vectorMapV2ContractReadout" class="vector-map-v2-readout">payloadJson.vectorMapDocument not loaded.</p><ul id="vectorMapV2ObjectList" class="vector-map-v2-object-list" aria-label="Vector Map Editor V2 objects"></ul>
+            </aside>
+            <section class="vector-map-v2-panel" aria-live="polite">
+              <h3 id="vectorMapV2Name">No vector map loaded</h3>
+              <span id="vectorMapV2Count" class="badge vector-map-v2-badge">0 objects</span>
+              <div id="vectorMapV2State" class="vector-map-v2-state">No vector map session data found. Open Vector Map Editor V2 with a valid hostContextId session.</div>
+              <div id="vectorMapV2Stage" class="vector-map-v2-stage" aria-label="Vector Map Editor V2 preview"></div>
+            </section>
+            <aside class="vector-map-v2-panel" data-menu-workspace>
+              <h3>menuWorkspace</h3>
+              <p id="vectorMapV2WorkspaceReadout" class="vector-map-v2-readout">Workspace actions are read-only in this isolated V2 entry.</p>
+            </aside>
+          </div>
+        </div>
+      </details>
+    </section>
+  </main>
+  <script type="module" src="../../src/engine/theme/mount-shared-header.js"></script>
+  <script type="module" src="./index.js"></script>
+</body>
+</html>
