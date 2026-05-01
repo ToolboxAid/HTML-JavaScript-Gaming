@@ -18,7 +18,7 @@ class PaletteManagerV2 {
           `toolboxaid.toolHost.context.${new URL(window.location.href).searchParams.get("hostContextId")}`
         )
       ) {
-        this.renderMissing("No session context was found for the provided hostContextId.");
+        this.renderError("No session context was found for the provided hostContextId. Re-open Palette Manager V2 from a host session that provides a valid hostContextId.");
         return;
       }
       this.loadContract(
