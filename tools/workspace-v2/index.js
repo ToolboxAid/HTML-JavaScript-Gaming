@@ -32,11 +32,15 @@ class WorkspaceV2SessionProducer {
     this.sessionHistoryListNode = document.getElementById("workspaceV2SessionHistoryList");
     this.diffLeftSelect = document.getElementById("workspaceV2DiffLeftSelect");
     this.diffRightSelect = document.getElementById("workspaceV2DiffRightSelect");
+    this.diffLeftSelectedLabelNode = document.getElementById("workspaceV2DiffLeftSelectedLabel");
+    this.diffRightSelectedLabelNode = document.getElementById("workspaceV2DiffRightSelectedLabel");
     this.computeDiffButton = document.getElementById("workspaceV2ComputeDiffButton");
     this.diffEmptyState = document.getElementById("workspaceV2DiffEmptyState");
     this.diffOutputNode = document.getElementById("workspaceV2DiffOutput");
     this.mergeLeftSelect = document.getElementById("workspaceV2MergeLeftSelect");
     this.mergeRightSelect = document.getElementById("workspaceV2MergeRightSelect");
+    this.mergeLeftSelectedLabelNode = document.getElementById("workspaceV2MergeLeftSelectedLabel");
+    this.mergeRightSelectedLabelNode = document.getElementById("workspaceV2MergeRightSelectedLabel");
     this.computeMergeButton = document.getElementById("workspaceV2ComputeMergeButton");
     this.confirmMergeButton = document.getElementById("workspaceV2ConfirmMergeButton");
     this.applyMergeButton = document.getElementById("workspaceV2ApplyMergeButton");
@@ -105,8 +109,20 @@ class WorkspaceV2SessionProducer {
     this.computeDiffButton.addEventListener("click", () => {
       this.computeSelectedSessionDiff();
     });
+    this.diffLeftSelect.addEventListener("change", () => {
+      this.updateDiffSelectionFeedbackAndState();
+    });
+    this.diffRightSelect.addEventListener("change", () => {
+      this.updateDiffSelectionFeedbackAndState();
+    });
     this.computeMergeButton.addEventListener("click", () => {
       this.computeSelectedSessionMerge();
+    });
+    this.mergeLeftSelect.addEventListener("change", () => {
+      this.updateMergeSelectionFeedbackAndState();
+    });
+    this.mergeRightSelect.addEventListener("change", () => {
+      this.updateMergeSelectionFeedbackAndState();
     });
     this.confirmMergeButton.addEventListener("click", () => {
       this.confirmSelectedSessionMergePreview();
@@ -512,6 +528,45 @@ class WorkspaceV2SessionProducer {
     return inventory;
   }
 
+  findSessionEntryById(entries, selectedId) {
+    if (!Array.isArray(entries) || typeof selectedId !== "string" || !selectedId.trim()) {
+      return null;
+    }
+    return entries.find((entry) => entry.id === selectedId) || null;
+  }
+
+  formatSelectionLabel(entry) {
+    if (!entry || typeof entry !== "object") {
+      return "No session selected";
+    }
+    const toolId = typeof entry.toolId === "string" && entry.toolId.trim()
+      ? entry.toolId.trim()
+      : (entry.payload && typeof entry.payload.toolId === "string" ? entry.payload.toolId : "session");
+    const contextId = typeof entry.contextId === "string" && entry.contextId.trim()
+      ? entry.contextId.trim()
+      : (typeof entry.id === "string" ? entry.id : "");
+    const shortContext = contextId.length > 16
+      ? `${contextId.slice(0, 8)}...${contextId.slice(-4)}`
+      : contextId;
+    return shortContext ? `${toolId} | ${shortContext}` : toolId;
+  }
+
+  updateDiffSelectionFeedbackAndState() {
+    const left = this.findSessionEntryById(this.diffCandidates, this.diffLeftSelect.value);
+    const right = this.findSessionEntryById(this.diffCandidates, this.diffRightSelect.value);
+    this.diffLeftSelectedLabelNode.textContent = this.formatSelectionLabel(left);
+    this.diffRightSelectedLabelNode.textContent = this.formatSelectionLabel(right);
+    this.computeDiffButton.disabled = !(left && right && left.id !== right.id);
+  }
+
+  updateMergeSelectionFeedbackAndState() {
+    const left = this.findSessionEntryById(this.mergeCandidates, this.mergeLeftSelect.value);
+    const right = this.findSessionEntryById(this.mergeCandidates, this.mergeRightSelect.value);
+    this.mergeLeftSelectedLabelNode.textContent = this.formatSelectionLabel(left);
+    this.mergeRightSelectedLabelNode.textContent = this.formatSelectionLabel(right);
+    this.computeMergeButton.disabled = !(left && right && left.id !== right.id);
+  }
+
   renderSessionDiffInputs() {
     this.diffCandidates = this.resolveWorkspaceSessionInventory();
     const currentLeft = this.diffLeftSelect.value;
@@ -549,6 +604,7 @@ class WorkspaceV2SessionProducer {
     if (this.diffCandidates.length < 2) {
       this.diffOutputNode.textContent = "Create or reopen at least two Workspace V2 sessions before comparing.";
     }
+    this.updateDiffSelectionFeedbackAndState();
   }
 
   buildSessionMergeCandidates() {
@@ -605,6 +661,7 @@ class WorkspaceV2SessionProducer {
           this.mergeRightSelect.value = previousPreview.target.id;
           this.confirmMergeButton.disabled = false;
           this.applyMergeButton.disabled = !previousPreview.confirmed;
+          this.updateMergeSelectionFeedbackAndState();
           return;
         }
       }
@@ -615,6 +672,7 @@ class WorkspaceV2SessionProducer {
     if (this.mergeCandidates.length < 2) {
       this.mergeOutputNode.textContent = "Create or reopen at least two Workspace V2 sessions before previewing a merge.";
     }
+    this.updateMergeSelectionFeedbackAndState();
   }
 
   cloneSessionValue(value) {

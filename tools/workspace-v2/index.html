@@ -82,8 +82,10 @@
         <p>Compare two sessions from library/history with a deep structural diff.</p>
         <label for="workspaceV2DiffLeftSelect">Session A</label>
         <select id="workspaceV2DiffLeftSelect"></select>
+        <p><strong>Selected A:</strong> <code id="workspaceV2DiffLeftSelectedLabel">No session selected</code></p>
         <label for="workspaceV2DiffRightSelect">Session B</label>
         <select id="workspaceV2DiffRightSelect"></select>
+        <p><strong>Selected B:</strong> <code id="workspaceV2DiffRightSelectedLabel">No session selected</code></p>
         <button id="workspaceV2ComputeDiffButton" type="button">Compute Diff</button>
         <p id="workspaceV2DiffEmptyState">Need at least two valid sessions to compare.</p>
         <pre id="workspaceV2DiffOutput">No diff computed.</pre>
@@ -94,8 +96,10 @@
         <p>Merge two sessions into a new payload with explicit conflict reporting.</p>
         <label for="workspaceV2MergeLeftSelect">Session A</label>
         <select id="workspaceV2MergeLeftSelect"></select>
+        <p><strong>Selected A:</strong> <code id="workspaceV2MergeLeftSelectedLabel">No session selected</code></p>
         <label for="workspaceV2MergeRightSelect">Session B</label>
         <select id="workspaceV2MergeRightSelect"></select>
+        <p><strong>Selected B:</strong> <code id="workspaceV2MergeRightSelectedLabel">No session selected</code></p>
         <div>
           <button id="workspaceV2ComputeMergeButton" type="button">Preview Merge (Dry Run)</button>
           <button id="workspaceV2ConfirmMergeButton" type="button">Confirm Preview</button>
