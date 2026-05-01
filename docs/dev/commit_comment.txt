@@ -1,1 +1,1 @@
-Fix SVG launch entry path so hosted workspace shell executes - PR 11.180
+Fix Workspace Manager SVG tool mapping from registry through click handler - PR 11.181

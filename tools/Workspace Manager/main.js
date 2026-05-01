@@ -139,6 +139,88 @@ function normalizeToken(value) {
   return resolveToolIdAlias(token);
 }
 
+function readRegistryEntryUrl(entry = null) {
+  return normalizeTextParam(entry?.launchPath || entry?.entryPoint || "");
+}
+
+function traceWorkspaceRegistryResolve(requestedToolId = "") {
+  const normalizedToolId = normalizeToken(requestedToolId);
+  const entry = getToolHostEntryById(manifest, normalizedToolId);
+  console.log("[WORKSPACE_REGISTRY_RESOLVE]", {
+    requestedToolId: normalizeTextParam(requestedToolId),
+    normalizedToolId,
+    registryToolId: entry?.id || "",
+    displayName: entry?.displayName || "",
+    entryUrl: readRegistryEntryUrl(entry),
+    isSvg: normalizedToolId === "svg-asset-studio" || entry?.id === "svg-asset-studio"
+  });
+  return entry;
+}
+
+function traceWorkspaceToolTileRender(toolId = "") {
+  const entry = traceWorkspaceRegistryResolve(toolId);
+  console.log("[WORKSPACE_TOOL_TILE_RENDER]", {
+    toolId: normalizeTextParam(toolId),
+    displayName: entry?.displayName || "",
+    entryUrl: readRegistryEntryUrl(entry),
+    dataToolId: entry?.id || normalizeTextParam(toolId)
+  });
+  return entry;
+}
+
+function readToolIdFromWorkspaceClickTarget(target = null) {
+  if (!(target instanceof Element)) {
+    return "";
+  }
+  const closestWithToolId = target.closest("[data-tool-id], [data-tool-host-tool-id], [data-tool]");
+  const datasetToolId = normalizeTextParam(
+    closestWithToolId?.getAttribute("data-tool-id")
+      || closestWithToolId?.getAttribute("data-tool-host-tool-id")
+      || closestWithToolId?.getAttribute("data-tool")
+      || ""
+  );
+  if (datasetToolId) {
+    return normalizeToken(datasetToolId);
+  }
+  const link = target.closest("a[href]") || target.querySelector?.("a[href]");
+  const href = link instanceof HTMLAnchorElement ? link.getAttribute("href") || link.href : "";
+  if (!href) {
+    return "";
+  }
+  try {
+    const url = new URL(href, window.location.href);
+    const pathname = decodeURIComponent(url.pathname).replace(/\\/g, "/");
+    const match = manifest.tools.find((entry) => {
+      const launchPath = normalizeTextParam(entry.launchPath).replace(/\\/g, "/");
+      const entryPoint = normalizeTextParam(entry.entryPoint).replace(/\\/g, "/");
+      return (launchPath && pathname.endsWith(launchPath.replace(/^\.\.\//, "/tools/")))
+        || (entryPoint && pathname.endsWith(`/tools/${entryPoint}`));
+    });
+    return match?.id || "";
+  } catch {
+    return "";
+  }
+}
+
+function traceWorkspaceToolClick({ target = null, datasetToolId = "", resolvedToolId = "", source = "" } = {}) {
+  const clickedText = target instanceof Element ? normalizeTextParam(target.textContent || "") : "";
+  const eventTarget = target instanceof Element ? target.tagName.toLowerCase() : "";
+  const closestToolId = target instanceof Element
+    ? normalizeTextParam(target.closest("[data-tool-id], [data-tool-host-tool-id], [data-tool]")?.getAttribute("data-tool-id")
+      || target.closest("[data-tool-id], [data-tool-host-tool-id], [data-tool]")?.getAttribute("data-tool-host-tool-id")
+      || target.closest("[data-tool-id], [data-tool-host-tool-id], [data-tool]")?.getAttribute("data-tool")
+      || "")
+    : "";
+  console.log("[WORKSPACE_TOOL_CLICK]", {
+    source,
+    clickedText,
+    datasetToolId: normalizeTextParam(datasetToolId),
+    resolvedToolId: normalizeTextParam(resolvedToolId),
+    eventTarget,
+    closestToolId
+  });
+}
+
 function normalizeToolsUsedList(value) {
   if (!Array.isArray(value)) {
     return [];
@@ -1459,6 +1541,10 @@ function applyToolsUsedFilterForGame(gameEntry, preferredToolId = "", workspaceT
     workspaceManifestToolDiagnostics.visibleToolIds = [...toolIds];
   }
 
+  toolIds.forEach((toolId) => {
+    traceWorkspaceToolTileRender(toolId);
+  });
+
   const initialToolId = toolIds.includes(preferredToolId) ? preferredToolId : "";
   syncSelectedToolState(initialToolId);
   updateStandaloneHref(initialToolId);
@@ -1477,11 +1563,41 @@ function bindPagerDelegatedEvents() {
       return;
     }
 
+    const toolNavTarget = target.closest(".tools-platform-frame__nav-link, .tools-platform-frame__nav-tool-row");
+    if (toolNavTarget instanceof Element) {
+      const resolvedToolId = readToolIdFromWorkspaceClickTarget(toolNavTarget);
+      const datasetToolId = normalizeTextParam(
+        toolNavTarget.getAttribute("data-tool-id")
+          || toolNavTarget.getAttribute("data-tool-host-tool-id")
+          || toolNavTarget.getAttribute("data-tool")
+          || ""
+      );
+      traceWorkspaceToolClick({
+        target: toolNavTarget,
+        datasetToolId: datasetToolId || resolvedToolId,
+        resolvedToolId,
+        source: "tool-nav"
+      });
+      if (resolvedToolId && toolIds.includes(resolvedToolId)) {
+        event.preventDefault();
+        writeSelectedToolId(resolvedToolId);
+        updateSwitchMeta();
+        mountSelectedTool("tool-click");
+        return;
+      }
+    }
+
     if (target.closest("[data-tool-host-prev]")) {
       event.preventDefault();
       if (!selectToolByOffset(-1)) {
         return;
       }
+      traceWorkspaceToolClick({
+        target,
+        datasetToolId: readSelectedToolId(),
+        resolvedToolId: readSelectedToolId(),
+        source: "prev"
+      });
       mountSelectedTool("prev");
       return;
     }
@@ -1491,6 +1607,12 @@ function bindPagerDelegatedEvents() {
       if (!selectToolByOffset(1)) {
         return;
       }
+      traceWorkspaceToolClick({
+        target,
+        datasetToolId: readSelectedToolId(),
+        resolvedToolId: readSelectedToolId(),
+        source: "next"
+      });
       mountSelectedTool("next");
     }
   });
@@ -1541,6 +1663,12 @@ function bindPagerMessageBridge() {
       return;
     }
 
+    traceWorkspaceToolClick({
+      target: null,
+      datasetToolId: readSelectedToolId(),
+      resolvedToolId: readSelectedToolId(),
+      source: `pager-message:${action}`
+    });
     mountSelectedTool(action);
   });
 }
@@ -1710,6 +1838,7 @@ function mountSelectedTool(source = "manual") {
     );
     return false;
   }
+  traceWorkspaceRegistryResolve(toolId);
   updateSwitchMeta();
   updateStandaloneHref(toolId);
   writeQueryToolId(toolId, source === "init");
@@ -1761,6 +1890,12 @@ function bindEvents() {
 
   if (refs.mountButton instanceof HTMLButtonElement) {
     refs.mountButton.addEventListener("click", () => {
+      traceWorkspaceToolClick({
+        target: refs.mountButton,
+        datasetToolId: readSelectedToolId(),
+        resolvedToolId: readSelectedToolId(),
+        source: "mount-button"
+      });
       mountSelectedTool("button");
     });
   }
