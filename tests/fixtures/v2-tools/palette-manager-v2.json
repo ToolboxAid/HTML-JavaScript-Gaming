@@ -1,0 +1,16 @@
+{
+  "hostContextId": "palette-manager-v2-fixture",
+  "sessionContext": {
+    "toolId": "palette-manager-v2",
+    "paletteJson": {
+      "name": "Fixture Palette",
+      "colors": [
+        "#112233",
+        {
+          "name": "Accent",
+          "hex": "#FF6600"
+        }
+      ]
+    }
+  }
+}

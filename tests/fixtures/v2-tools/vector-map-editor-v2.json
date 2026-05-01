@@ -1,0 +1,29 @@
+{
+  "hostContextId": "vector-map-editor-v2-fixture",
+  "sessionContext": {
+    "toolId": "vector-map-editor-v2",
+    "payloadJson": {
+      "vectorMapDocument": {
+        "name": "Fixture Vector Map",
+        "width": 320,
+        "height": 180,
+        "background": "#101820",
+        "objects": [
+          {
+            "name": "Path A",
+            "kind": "polyline",
+            "style": {
+              "stroke": "#33CC66",
+              "lineWidth": 2
+            },
+            "points": [
+              { "x": 20, "y": 40 },
+              { "x": 140, "y": 90 },
+              { "x": 260, "y": 60 }
+            ]
+          }
+        ]
+      }
+    }
+  }
+}

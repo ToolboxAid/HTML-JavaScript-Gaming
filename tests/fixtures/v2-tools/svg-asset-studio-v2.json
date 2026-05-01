@@ -1,0 +1,12 @@
+{
+  "hostContextId": "svg-asset-studio-v2-fixture",
+  "sessionContext": {
+    "toolId": "svg-asset-studio-v2",
+    "payloadJson": {
+      "vectorAssetDocument": {
+        "sourceName": "fixture-icon.svg",
+        "svgText": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 16 16\"><circle cx=\"8\" cy=\"8\" r=\"6\" fill=\"#00AAFF\"/></svg>"
+      }
+    }
+  }
+}

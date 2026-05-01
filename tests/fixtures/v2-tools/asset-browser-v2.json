@@ -1,0 +1,19 @@
+{
+  "hostContextId": "asset-browser-v2-fixture",
+  "sessionContext": {
+    "toolId": "asset-browser-v2",
+    "payloadJson": {
+      "assetCatalog": {
+        "name": "Fixture Asset Catalog",
+        "entries": [
+          {
+            "id": "asset-001",
+            "label": "Player Ship",
+            "kind": "svg",
+            "path": "assets/vectors/player-ship.svg"
+          }
+        ]
+      }
+    }
+  }
+}
