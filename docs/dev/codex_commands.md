@@ -1,50 +1,21 @@
-MODEL: gpt-5.5
-REASONING: high
+# Codex Commands — PR_11_189 SVG Asset Studio v2
 
-COMMAND:
+## Model
+GPT-5.5 high
 
-Rebuild "Palette Manager" as a Tool v2:
+## Command
+Run Codex on this BUILD file:
 
-LOCATION:
-tools/Palette Manager/
+`docs/pr/BUILD_PR_11_189_SVG_ASSET_STUDIO_V2.md`
 
-RULES:
-- Single file: main.js
-- Single class only
-- No helper classes
-- No abstraction layers
-- No alias variables
-- No pass-through variables
+## Execution Notes
+- Implement exactly one PR purpose: SVG Asset Studio v2.
+- Do not modify schemas, samples, games, Workspace Manager v1, legacy tools, or shared v1 systems.
+- Do not import `platformShell`, `assetUsageIntegration`, or `tools/shared/*`.
+- Do not add fallback/default/demo data.
+- Produce the repo ZIP at `tmp/PR_11_189.zip`.
 
-REQUIREMENTS:
+## Required Evidence
+Write validation evidence to:
 
-1. ENTRY
-- console.log("[PALETTE_V2_ENTRY]")
-
-2. SESSION READ
-- read session using hostContextId
-- console.log("[SESSION_CONTEXT_READ]")
-
-3. CONTRACT
-- load paletteJson only
-- console.log("[PALETTE_V2_CONTRACT_LOADED]")
-
-4. RENDER
-- show palette name
-- render swatches
-- show count
-
-5. STATES
-- empty state
-- error state
-
-6. UI
-- reuse src/engine/theme styles
-- reuse existing accordion CSS
-- header must match /index.html
-- include accordion hide/show
-
-7. HARD BLOCKS
-- no platformShell
-- no workspace v1
-- no fallback data
+`docs/dev/reports/PR_11_189_validation_report.md`
