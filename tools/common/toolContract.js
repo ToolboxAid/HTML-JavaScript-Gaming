@@ -60,6 +60,9 @@ export function validatePaletteContract(paletteJson) {
   }
 
   const rawColors = Array.isArray(paletteJson.colors) ? paletteJson.colors : [];
+  if (Array.isArray(paletteJson.colors) && rawColors.length === 0) {
+    issues.push("paletteJson.colors[] must include at least one explicit color value.");
+  }
   const colors = rawColors.map((entry, index) => normalizeColorEntry(entry, index));
   colors.forEach((entry, index) => {
     if (!entry) {

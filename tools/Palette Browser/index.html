@@ -1,44 +1,52 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Palette Browser / Manager</title>
+  <title>Palette Manager</title>
   <link rel="stylesheet" href="../common/toolLayout.css" />
   <link rel="stylesheet" href="./styles.css" />
 </head>
 <body class="tool-page" data-tool-id="palette-browser">
-  <main class="tool-layout palette-browser" aria-labelledby="paletteToolTitle">
-    <section class="tool-layout__hero palette-browser__hero">
-      <p class="tool-layout__eyebrow">Session-backed palette tool</p>
-      <h1 id="paletteToolTitle" class="tool-layout__title">Palette Browser / Manager</h1>
-      <p class="tool-layout__subtitle">Read the active palette session, verify its contract, and inspect the swatches using the active session only.</p>
-    </section>
-
-    <section class="tool-layout__grid" aria-label="Palette Browser workspace">
-      <aside class="tool-panel tool-menu-zone" data-menu-tool aria-label="Tool menu">
-        <h2>Tool</h2>
-        <div id="contextReadout" class="tool-readout">Waiting for session context.</div>
-        <div id="contractReadout" class="tool-readout">Contract not loaded.</div>
-      </aside>
-
-      <section class="tool-panel palette-browser__preview" aria-live="polite">
-        <div class="palette-browser__header-row">
-          <div>
-            <p class="palette-browser__label">Palette</p>
-            <h2 id="paletteName">No palette loaded</h2>
-          </div>
-          <strong id="swatchCount" class="palette-browser__count">0 colors</strong>
-        </div>
-        <div id="paletteMessage" class="tool-state-empty">No palette session data exists for this launch.</div>
-        <div id="swatchGrid" class="palette-browser__swatches" aria-label="Palette swatches"></div>
+  <main class="tool-page-shell palette-manager" aria-labelledby="paletteToolTitle">
+    <details class="tool-header-accordion" open data-header-accordion>
+      <summary class="tool-header-accordion__summary" aria-label="Toggle Palette Manager header details">
+        <span class="tool-header-accordion__summary-text">Palette Manager details</span>
+        <span class="tool-header-accordion__summary-icon" aria-hidden="true"></span>
+      </summary>
+      <section class="tool-page-intro palette-manager__intro">
+        <p class="tool-page-intro__eyebrow">Session-backed palette tool</p>
+        <h1 id="paletteToolTitle" class="tool-page-intro__title">Palette Manager</h1>
+        <p class="tool-page-intro__copy">Inspect the active palette session, verify its contract, and review swatches using explicit session data only.</p>
       </section>
+    </details>
 
-      <aside class="tool-panel tool-menu-zone" data-menu-workspace aria-label="Workspace menu">
-        <h2>Workspace</h2>
-        <div id="workspaceReadout" class="tool-readout">This PR exposes a read-only session view. Workspace write controls are deferred.</div>
-        <div id="validationReadout" class="tool-readout">Validation has not run yet.</div>
-      </aside>
+    <section class="tool-content-section" aria-label="Palette Manager workspace">
+      <div class="tool-card-grid palette-manager__workspace">
+        <aside class="tool-panel tool-menu-zone" data-menu-tool aria-label="Palette Manager tool menu">
+          <h2>Tool</h2>
+          <div id="contextReadout" class="tool-readout">Waiting for Palette Manager session context.</div>
+          <div id="contractReadout" class="tool-readout">Palette Manager contract not loaded.</div>
+        </aside>
+
+        <section class="tool-panel palette-manager__preview" aria-live="polite" aria-label="Palette Manager preview">
+          <div class="palette-manager__header-row">
+            <div>
+              <p class="palette-manager__label">Palette</p>
+              <h2 id="paletteName">No palette loaded</h2>
+            </div>
+            <strong id="swatchCount" class="palette-manager__count">0 colors</strong>
+          </div>
+          <div id="paletteMessage" class="tool-state-empty">No Palette Manager session data exists for this launch.</div>
+          <div id="swatchGrid" class="palette-manager__swatches" aria-label="Palette Manager swatches"></div>
+        </section>
+
+        <aside class="tool-panel tool-menu-zone" data-menu-workspace aria-label="Palette Manager workspace menu">
+          <h2>Workspace</h2>
+          <div id="workspaceReadout" class="tool-readout">Palette Manager exposes a read-only session view. Workspace write controls are deferred.</div>
+          <div id="validationReadout" class="tool-readout">Palette Manager validation has not run yet.</div>
+        </aside>
+      </div>
     </section>
   </main>
   <script type="module" src="./main.js"></script>

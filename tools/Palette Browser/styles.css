@@ -1,4 +1,4 @@
-.palette-browser__hero::after {
+.palette-manager__intro::after {
   content: "";
   position: absolute;
   width: 260px;
@@ -11,19 +11,19 @@
   filter: blur(1px);
 }
 
-.palette-browser__preview {
+.palette-manager__preview {
   display: grid;
   gap: 18px;
 }
 
-.palette-browser__header-row {
+.palette-manager__header-row {
   display: flex;
   align-items: start;
   justify-content: space-between;
   gap: 16px;
 }
 
-.palette-browser__label {
+.palette-manager__label {
   margin: 0 0 6px;
   color: var(--tool-accent);
   font-size: 0.78rem;
@@ -32,14 +32,14 @@
   text-transform: uppercase;
 }
 
-.palette-browser__header-row h2 {
+.palette-manager__header-row h2 {
   margin: 0;
   font-size: clamp(1.8rem, 4vw, 3.4rem);
   line-height: 0.96;
   letter-spacing: -0.045em;
 }
 
-.palette-browser__count {
+.palette-manager__count {
   border-radius: 999px;
   background: var(--tool-accent);
   color: var(--tool-accent-ink);
@@ -47,13 +47,13 @@
   white-space: nowrap;
 }
 
-.palette-browser__swatches {
+.palette-manager__swatches {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(132px, 1fr));
   gap: 14px;
 }
 
-.palette-browser__swatch {
+.palette-manager__swatch {
   min-height: 150px;
   border: 1px solid var(--tool-line);
   border-radius: 22px;
@@ -62,35 +62,35 @@
   box-shadow: 0 12px 30px rgba(62, 43, 22, 0.12);
 }
 
-.palette-browser__swatch-chip {
+.palette-manager__swatch-chip {
   min-height: 86px;
   border-bottom: 1px solid var(--tool-line);
 }
 
-.palette-browser__swatch-body {
+.palette-manager__swatch-body {
   display: grid;
   gap: 4px;
   padding: 12px;
 }
 
-.palette-browser__swatch-name {
+.palette-manager__swatch-name {
   font-weight: 700;
   line-height: 1.2;
   overflow-wrap: anywhere;
 }
 
-.palette-browser__swatch-hex,
-.palette-browser__swatch-symbol {
+.palette-manager__swatch-hex,
+.palette-manager__swatch-symbol {
   color: var(--tool-muted);
   font-size: 0.9rem;
   overflow-wrap: anywhere;
 }
 
-.palette-browser__issues {
+.palette-manager__issues {
   margin: 8px 0 0;
   padding-left: 20px;
 }
 
-.palette-browser__issues li + li {
+.palette-manager__issues li + li {
   margin-top: 4px;
 }

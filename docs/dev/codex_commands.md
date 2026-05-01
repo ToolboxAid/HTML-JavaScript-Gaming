@@ -1,49 +1,19 @@
-# Codex Commands - PR 11.188
+# Codex Commands — PR 11.188 Palette Manager Tool v2
 
-Model: GPT-5.4
-Reasoning: high
-
-Run one BUILD only:
+## Model
 
 ```text
-BUILD_PR_LEVEL_11_188_PALETTE_REVERSE_ENGINEER_AND_REBUILD
+GPT-5.4
 ```
 
-Use the repo instructions and this bundle as the source of truth.
+## Reasoning
 
-Hard requirements:
+```text
+high
+```
 
-- one PR purpose only
-- no schemas
-- no samples
-- no games
-- no old Workspace Manager fixes
-- no legacy tool patches
-- no `tools/shared/**` changes
-- move `tools/Palette Browser/` to `tools/Palette Browser-v1/`
-- create clean `tools/Palette Browser/`
-- create `tools/common/toolLayout.css`
-- create `tools/common/sessionContext.js`
-- create `tools/common/toolContract.js`
-- reverse engineer first and document findings
-- no fallback/default data
-- no `platformShell`
-- no shared handoff
-- no copied legacy implementation code
-- visible tool name must not include `v2`
-
-Validation required:
+## Command
 
 ```powershell
-node --check "tools/common/sessionContext.js"
-node --check "tools/common/toolContract.js"
-node --check "tools/Palette Browser/main.js"
-```
-
-Do not run full samples smoke unless required by a broad shared sample loader change. Record the skip/run decision and reason.
-
-Return ZIP artifact at:
-
-```text
-<project folder>/tmp/PR_11_188_20260501_01.zip
+codex --model gpt-5.4 --reasoning high "Execute BUILD_PR_LEVEL_11_188_PALETTE_MANAGER_REVERSE_ENGINEER_AND_REBUILD exactly as written in docs/pr/BUILD_PR_LEVEL_11_188_PALETTE_MANAGER_REVERSE_ENGINEER_AND_REBUILD.md. Keep one PR purpose only. Preserve legacy Palette Browser as tools/Palette Browser-v1/. Rebuild the clean Tool v2 screen in tools/Palette Browser/ with visible name Palette Manager everywhere displayed. Do not modify schemas, samples, games, start_of_day, Workspace Manager v1, or tools/shared. Do not wire Tool v2 into Workspace Manager v1. Use tools/common only for new shared Tool v2 foundation. Inspect /index.html and use its header pattern with an accordion to hide/show header/details. Do not use fallback/default data, platformShell, shared handoff, aliases, or ?tool= auto-open behavior. Implement focused classes/modules instead of a stream of functions. Run targeted node --check validation only and document full samples smoke skip reason. Update roadmap status markers only if an exact existing item matches; otherwise leave roadmap untouched. Return a repo-structured ZIP at C:\Users\davidq\Documents\GitHub\HTML-JavaScript-Gaming\tmp\PR_11_188_PALETTE_MANAGER_REVERSE_ENGINEER_AND_REBUILD.zip."
 ```

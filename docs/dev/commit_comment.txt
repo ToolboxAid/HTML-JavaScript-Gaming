@@ -1,1 +1,1 @@
-Rebuild Palette Browser as first session-backed Tool v2 lane - PR 11.188
+Rebuild Palette Manager in clean Tool v2 lane with Workspace v1 separation - PR 11.188

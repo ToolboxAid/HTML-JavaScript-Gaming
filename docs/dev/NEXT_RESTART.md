@@ -1,6 +1,6 @@
-# SOD 2026-05-01.s1 - PR 11.188 Restart
+# RESTART — PR 11.188 Palette Manager Tool v2
 
-## Open Repo
+## Open repo
 
 ```powershell
 cd C:\Users\davidq\Documents\GitHub\HTML-JavaScript-Gaming
@@ -14,54 +14,54 @@ git status
 git pull
 ```
 
-## Direction Lock
+## Active PR
 
 ```text
-NO schema changes
-NO sample changes
-NO game changes
-NO old Workspace Manager fixes
-NO legacy tool patches
-NO copying old code
-NEW Tool v2 lane only
+BUILD_PR_LEVEL_11_188_PALETTE_MANAGER_REVERSE_ENGINEER_AND_REBUILD
 ```
 
-## Start PR
+## Locked Direction
 
 ```text
-PR_11_188_PALETTE_REVERSE_ENGINEER_AND_REBUILD
+Tool v2 lane only
+Palette Manager first
+No schema changes
+No sample changes
+No game changes
+No Workspace Manager v1 wiring
+No legacy tool patching
+No tools/shared usage for new v2 code
+No fallback/default data
 ```
 
-## Added Rules
+## Visible Name
 
 ```text
-tools/shared/ is deprecated for new Tool v2 work
-Use tools/common/ for new shared Tool v2 foundation
-No code that is just one stream file
-Controls should have focused classes/modules
-Two menus: menuTool and menuWorkspace
-Only controls for the current launch are visible
-Workspace menu updates workspace/session only
-Plan sidebar accordion control types before expanding UI
+Palette Manager
 ```
 
-## Do Not Use
+Do not show:
 
 ```text
-platformShell
-assetUsageIntegration
-shared handoff
-tool aliases
-fallback data
-default anything
-Workspace ?tool= auto-open
+Palette Browser / Manager
+Palette Manager v2
+Palette Browser v2
 ```
 
-## Launch Behavior
+## Required Header Rule
+
+Use the header pattern from:
 
 ```text
-Workspace opens clean
-User selects Palette Browser / Manager
-Workspace writes session
-Palette Browser reads session via hostContextId
+/index.html
+```
+
+Include an accordion to hide/show the header/details section.
+
+## Next Execution
+
+Run the Codex command in:
+
+```text
+docs/dev/codex_commands.md
 ```
