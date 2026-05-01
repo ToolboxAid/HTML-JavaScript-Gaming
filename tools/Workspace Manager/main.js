@@ -407,6 +407,60 @@ function writeSharedBindingsFromDirectPayload(toolId = "", payloadJson = null, p
   }
 }
 
+function readLaunchUrlProof(sourceUrl = "") {
+  try {
+    const url = new URL(sourceUrl, window.location.href);
+    return {
+      iframeSrc: url.toString(),
+      hosted: url.searchParams.get("hosted") || "",
+      hostToolId: url.searchParams.get("hostToolId") || "",
+      hostContextId: url.searchParams.get("hostContextId") || ""
+    };
+  } catch {
+    return {
+      iframeSrc: normalizeTextParam(sourceUrl),
+      hosted: "",
+      hostToolId: "",
+      hostContextId: ""
+    };
+  }
+}
+
+function logWorkspaceToolLaunch({ requestedToolId = "", normalizedToolId = "", payloadJson = null, mountResult = null }) {
+  const launchProof = readLaunchUrlProof(mountResult?.sourceUrl || mountResult?.frame?.src || "");
+  const payloadKeys = payloadJson && typeof payloadJson === "object" && !Array.isArray(payloadJson)
+    ? Object.keys(payloadJson)
+    : [];
+  console.log("[WORKSPACE_TOOL_LAUNCH]", {
+    requestedToolId,
+    normalizedToolId,
+    entryUrl: launchProof.iframeSrc,
+    iframeSrc: launchProof.iframeSrc,
+    hosted: launchProof.hosted,
+    hostToolId: launchProof.hostToolId,
+    hostContextId: launchProof.hostContextId,
+    hasPayloadJson: Boolean(payloadJson && typeof payloadJson === "object" && !Array.isArray(payloadJson)),
+    payloadKeys
+  });
+  if (normalizedToolId === "svg-asset-studio") {
+    const vectorAssetDocument = payloadJson?.vectorAssetDocument;
+    const svgText = typeof vectorAssetDocument?.svgText === "string"
+      ? vectorAssetDocument.svgText
+      : "";
+    console.log("[SVG_LAUNCH_REQUEST]", {
+      toolId: normalizedToolId,
+      registryEntryUrl: launchProof.iframeSrc,
+      iframeSrc: launchProof.iframeSrc,
+      hosted: launchProof.hosted,
+      hostToolId: launchProof.hostToolId,
+      hostContextId: launchProof.hostContextId,
+      hasVectorAssetDocument: Boolean(vectorAssetDocument && typeof vectorAssetDocument === "object" && !Array.isArray(vectorAssetDocument)),
+      sourceName: normalizeTextParam(vectorAssetDocument?.sourceName),
+      svgTextLength: svgText.length
+    });
+  }
+}
+
 function resolveJsonPointer(root, pointer) {
   if (!pointer.startsWith("#/")) {
     return null;
@@ -1669,6 +1723,12 @@ function mountSelectedTool(source = "manual") {
   const paletteJson = workspaceManifestToolDiagnostics?.explicitPalettePayload || null;
   writeSharedBindingsFromDirectPayload(toolId, payloadJson, paletteJson);
   const mountResult = runtime.launch(toolId, payloadJson, paletteJson);
+  logWorkspaceToolLaunch({
+    requestedToolId: toolId,
+    normalizedToolId: mountResult?.tool?.id || toolId,
+    payloadJson,
+    mountResult
+  });
   if (!mountResult || !(mountResult.frame instanceof HTMLIFrameElement)) {
     const selectedEntry = getToolHostEntryById(manifest, toolId);
     const displayName = selectedEntry ? selectedEntry.displayName : toolId;

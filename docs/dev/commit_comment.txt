@@ -1,1 +1,1 @@
-Write hosted SVG tile state from workspace shell contract only - PR 11.179
+Fix SVG launch entry path so hosted workspace shell executes - PR 11.180

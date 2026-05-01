@@ -25,6 +25,16 @@ import {
 import { normalizeToolSamplePath } from "../shared/toolSampleCatalog.js";
 import { readToolHostSharedContextFromLocation } from "../shared/toolHostSharedContext.js";
 
+if (typeof window !== "undefined") {
+  const svgEntryParams = new URLSearchParams(window.location.search);
+  console.log("[SVG_ENTRY_TOP]", {
+    href: window.location.href,
+    hosted: svgEntryParams.get("hosted") || "",
+    hostToolId: svgEntryParams.get("hostToolId") || "",
+    hostContextId: svgEntryParams.get("hostContextId") || ""
+  });
+}
+
 const SVG_NS = "http://www.w3.org/2000/svg";
 const DRAWABLE_SELECTOR = "rect,ellipse,circle,line,polyline,path";
 const ALLOWED_IMPORT_TAGS = new Set([
