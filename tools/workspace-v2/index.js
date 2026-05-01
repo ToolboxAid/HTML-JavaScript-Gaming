@@ -26,6 +26,7 @@ class WorkspaceV2SessionProducer {
     this.overwriteSessionButton = document.getElementById("workspaceV2OverwriteSessionButton");
     this.loadSessionButton = document.getElementById("workspaceV2LoadSessionButton");
     this.deleteSessionButton = document.getElementById("workspaceV2DeleteSessionButton");
+    this.libraryStatusNode = document.getElementById("workspaceV2LibraryStatus");
     this.libraryEmptyState = document.getElementById("workspaceV2LibraryEmptyState");
     this.sessionListNode = document.getElementById("workspaceV2SessionList");
     this.refreshSessionHistoryButton = document.getElementById("workspaceV2RefreshSessionHistoryButton");
@@ -187,6 +188,26 @@ class WorkspaceV2SessionProducer {
 
   selectedSessionName() {
     return typeof this.sessionNameNode.value === "string" ? this.sessionNameNode.value.trim() : "";
+  }
+
+  setLibraryStatus(message) {
+    this.libraryStatusNode.textContent = message;
+    this.statusNode.textContent = message;
+  }
+
+  readActiveSessionPayloadForLibraryActions() {
+    if (!this.currentHostContextId || typeof this.currentHostContextId !== "string" || !this.currentHostContextId.trim()) {
+      return null;
+    }
+    const raw = sessionStorage.getItem(this.currentHostContextId.trim());
+    if (typeof raw !== "string") {
+      return null;
+    }
+    const parsed = this.safeParseJson(raw);
+    if (!parsed.ok || !this.isValidSessionPayload(parsed.value)) {
+      return null;
+    }
+    return parsed.value;
   }
 
   fixturePathForTool(toolId) {
@@ -1680,11 +1701,14 @@ class WorkspaceV2SessionProducer {
   saveNamedSession(overwriteExisting) {
     const sessionName = this.selectedSessionName();
     if (!sessionName) {
-      this.statusNode.textContent = "Session name is required to save.";
+      this.setLibraryStatus(overwriteExisting ? "Enter a session ID before overwriting." : "Enter a session ID before saving.");
       return;
     }
-    if (!this.isValidSessionPayload(this.currentSessionPayload)) {
-      this.statusNode.textContent = "No valid current session payload to save.";
+    const activePayload = this.readActiveSessionPayloadForLibraryActions();
+    if (!this.isValidSessionPayload(activePayload)) {
+      this.setLibraryStatus(overwriteExisting
+        ? "No active Workspace V2 session is available to overwrite from."
+        : "No active Workspace V2 session is available to save.");
       return;
     }
     const library = this.readSessionLibrary();
@@ -1692,27 +1716,24 @@ class WorkspaceV2SessionProducer {
       return;
     }
     const exists = Object.prototype.hasOwnProperty.call(library, sessionName);
-    if (exists && !overwriteExisting) {
-      this.statusNode.textContent = `Session '${sessionName}' already exists. Use Overwrite Session to replace it.`;
+    if (!overwriteExisting && exists) {
+      this.setLibraryStatus("Saved session already exists. Use Overwrite Session.");
       return;
     }
-    library[sessionName] = this.currentSessionPayload;
+    if (overwriteExisting && !exists) {
+      this.setLibraryStatus("Saved session not found. Use Save Session to create it first.");
+      return;
+    }
+    library[sessionName] = activePayload;
     this.writeSessionLibrary(library);
     this.renderSessionLibrary();
-    this.statusNode.textContent = exists
-      ? `Session '${sessionName}' was overwritten in library.`
-      : `Session '${sessionName}' was saved to library.`;
+    this.setLibraryStatus(overwriteExisting ? "Saved session overwritten." : "Saved session created.");
   }
 
   loadNamedSession() {
     const sessionName = this.selectedSessionName();
-    const toolId = this.selectedToolId();
     if (!sessionName) {
-      this.statusNode.textContent = "Session name is required to load.";
-      return;
-    }
-    if (!toolId) {
-      this.statusNode.textContent = "Select a V2 tool before loading a named session.";
+      this.setLibraryStatus("Enter a saved session ID before loading.");
       return;
     }
     const library = this.readSessionLibrary();
@@ -1720,21 +1741,21 @@ class WorkspaceV2SessionProducer {
       return;
     }
     if (!Object.prototype.hasOwnProperty.call(library, sessionName)) {
-      this.statusNode.textContent = `Session '${sessionName}' was not found in library.`;
+      this.setLibraryStatus("Saved session not found.");
       return;
     }
     const payload = library[sessionName];
     if (!this.applySessionPayload(payload, `library:${sessionName}`)) {
-      this.statusNode.textContent = `Session '${sessionName}' payload is invalid.`;
+      this.setLibraryStatus("Saved session not found.");
       return;
     }
-    this.statusNode.textContent = `Session '${sessionName}' loaded.\nTool: ${toolId}\nHostContextId: ${this.currentHostContextId}\nReady to launch.`;
+    this.setLibraryStatus("Saved session loaded.");
   }
 
   deleteNamedSession() {
     const sessionName = this.selectedSessionName();
     if (!sessionName) {
-      this.statusNode.textContent = "Enter a saved session ID before deleting.";
+      this.setLibraryStatus("Enter a saved session ID before deleting.");
       return;
     }
     const library = this.readSessionLibrary();
@@ -1745,21 +1766,21 @@ class WorkspaceV2SessionProducer {
     const recentMatch = history.some((entry) => entry.hostContextId === sessionName);
     const librarySessionNames = Object.keys(library);
     if (librarySessionNames.length === 0) {
-      this.statusNode.textContent = recentMatch
+      this.setLibraryStatus(recentMatch
         ? "Session ID is not saved in Session Library. Use Delete on Recent Sessions to remove temporary sessions."
-        : "No saved sessions exist. Use Delete on Recent Sessions to remove temporary sessions.";
+        : "No saved sessions exist. Use Delete on Recent Sessions to remove temporary sessions.");
       return;
     }
     if (!Object.prototype.hasOwnProperty.call(library, sessionName)) {
-      this.statusNode.textContent = recentMatch
+      this.setLibraryStatus(recentMatch
         ? "Session ID is not saved in Session Library. Use Delete on Recent Sessions to remove temporary sessions."
-        : "Saved session not found.";
+        : "Saved session not found.");
       return;
     }
     delete library[sessionName];
     this.writeSessionLibrary(library);
     this.renderSessionLibrary();
-    this.statusNode.textContent = "Saved session deleted.";
+    this.setLibraryStatus("Saved session deleted.");
   }
 
   createSessionAndLaunch() {
