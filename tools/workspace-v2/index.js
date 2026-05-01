@@ -34,6 +34,10 @@ class WorkspaceV2SessionProducer {
     this.diagnosticsSessionLibraryNode = document.getElementById("workspaceV2DiagnosticsSessionLibrary");
     this.diagnosticsErrorLogsNode = document.getElementById("workspaceV2DiagnosticsErrorLogs");
     this.diagnosticsPayloadNode = document.getElementById("workspaceV2DiagnosticsPayload");
+    this.clearSessionStorageButton = document.getElementById("workspaceV2ClearSessionStorageButton");
+    this.clearSavedSessionsButton = document.getElementById("workspaceV2ClearSavedSessionsButton");
+    this.resetClearErrorLogsButton = document.getElementById("workspaceV2ResetClearErrorLogsButton");
+    this.fullResetButton = document.getElementById("workspaceV2FullResetButton");
     this.statusNode = document.getElementById("workspaceV2Status");
     this.currentSessionPayload = null;
     this.currentSessionSource = "";
@@ -79,6 +83,18 @@ class WorkspaceV2SessionProducer {
     });
     this.refreshDiagnosticsButton.addEventListener("click", () => {
       this.renderDiagnosticsPanel();
+    });
+    this.clearSessionStorageButton.addEventListener("click", () => {
+      this.clearSessionStorage();
+    });
+    this.clearSavedSessionsButton.addEventListener("click", () => {
+      this.clearSavedSessions();
+    });
+    this.resetClearErrorLogsButton.addEventListener("click", () => {
+      this.clearErrorLogs();
+    });
+    this.fullResetButton.addEventListener("click", () => {
+      this.fullReset();
     });
     this.backButton.addEventListener("click", () => {
       window.location.href = "../index.html";
@@ -333,11 +349,60 @@ class WorkspaceV2SessionProducer {
     });
   }
 
-  clearErrorLogs() {
-    localStorage.setItem(this.errorLogsStorageKey, "[]");
+  clearSessionStorage(emitStatus = true) {
+    sessionStorage.clear();
+    this.currentHostContextId = "";
+    this.renderDiagnosticsPanel();
+    if (emitStatus) {
+      this.statusNode.textContent = "Session storage cleared.";
+    }
+  }
+
+  clearSavedSessions(emitStatus = true) {
+    localStorage.removeItem(this.libraryStorageKey);
+    this.renderSessionLibrary();
+    this.renderDiagnosticsPanel();
+    if (emitStatus) {
+      this.statusNode.textContent = "Saved sessions cleared from localStorage key v2-session-library.";
+    }
+  }
+
+  clearErrorLogs(emitStatus = true) {
+    localStorage.removeItem(this.errorLogsStorageKey);
     this.renderErrorLogsViewer();
     this.renderDiagnosticsPanel();
-    this.statusNode.textContent = "Error logs cleared from localStorage key v2-error-logs.";
+    if (emitStatus) {
+      this.statusNode.textContent = "Error logs cleared from localStorage key v2-error-logs.";
+    }
+  }
+
+  resetUrlState(emitStatus = true) {
+    const currentUrl = new URL(window.location.href);
+    const nextPath = `${currentUrl.pathname}${currentUrl.hash || ""}`;
+    if (window.history && typeof window.history.replaceState === "function") {
+      window.history.replaceState({}, "", nextPath);
+    }
+    this.currentHostContextId = "";
+    this.renderDiagnosticsPanel();
+    if (emitStatus) {
+      this.statusNode.textContent = "URL state reset to baseline path.";
+    }
+  }
+
+  fullReset() {
+    this.clearSessionStorage(false);
+    this.clearSavedSessions(false);
+    this.clearErrorLogs(false);
+    this.resetUrlState(false);
+    this.currentHostContextId = "";
+    this.setCurrentSessionPayload(null, "");
+    this.importJsonNode.value = "";
+    this.shareUrlNode.value = "";
+    this.sessionNameNode.value = "";
+    this.renderSessionLibrary();
+    this.renderErrorLogsViewer();
+    this.renderDiagnosticsPanel();
+    this.statusNode.textContent = "Workspace V2 full reset complete. EMPTY baseline restored.";
   }
 
   safeParseJson(rawValue) {
