@@ -5,6 +5,7 @@ class WorkspaceV2SessionProducer {
     this.libraryStorageKey = "v2-session-library";
     this.historyStorageKey = "v2-session-history";
     this.errorLogsStorageKey = "v2-error-logs";
+    this.mergeAuditStorageKey = "v2-merge-audit-log";
     this.historyMaxEntries = 10;
     this.urlLengthLimit = 2000;
     this.sessionPayloadBytesLimit = 1024 * 1024;
@@ -37,6 +38,7 @@ class WorkspaceV2SessionProducer {
     this.mergeLeftSelect = document.getElementById("workspaceV2MergeLeftSelect");
     this.mergeRightSelect = document.getElementById("workspaceV2MergeRightSelect");
     this.computeMergeButton = document.getElementById("workspaceV2ComputeMergeButton");
+    this.confirmMergeButton = document.getElementById("workspaceV2ConfirmMergeButton");
     this.applyMergeButton = document.getElementById("workspaceV2ApplyMergeButton");
     this.mergeEmptyState = document.getElementById("workspaceV2MergeEmptyState");
     this.mergeOutputNode = document.getElementById("workspaceV2MergeOutput");
@@ -104,6 +106,9 @@ class WorkspaceV2SessionProducer {
     });
     this.computeMergeButton.addEventListener("click", () => {
       this.computeSelectedSessionMerge();
+    });
+    this.confirmMergeButton.addEventListener("click", () => {
+      this.confirmSelectedSessionMergePreview();
     });
     this.applyMergeButton.addEventListener("click", () => {
       this.applySelectedSessionMerge();
@@ -499,6 +504,8 @@ class WorkspaceV2SessionProducer {
   renderSessionMergeInputs() {
     this.mergeCandidates = this.buildSessionMergeCandidates();
     this.pendingMergePreview = null;
+    this.confirmMergeButton.disabled = true;
+    this.applyMergeButton.disabled = true;
     const currentLeft = this.mergeLeftSelect.value;
     const currentRight = this.mergeRightSelect.value;
     this.mergeLeftSelect.replaceChildren();
@@ -618,29 +625,35 @@ class WorkspaceV2SessionProducer {
       source: {
         id: left.id,
         label: left.label,
-        payload: this.cloneSessionValue(left.payload)
+        payload: this.cloneSessionValue(left.payload),
+        hash: JSON.stringify(left.payload)
       },
       target: {
         id: right.id,
         label: right.label,
-        payload: this.cloneSessionValue(right.payload)
+        payload: this.cloneSessionValue(right.payload),
+        hash: JSON.stringify(right.payload)
       },
       selectedToolId,
       mergedPayload: versionedPayload,
       conflicts: result.conflicts,
-      changes: previewChanges
+      changes: previewChanges,
+      confirmed: false
     };
+    this.confirmMergeButton.disabled = false;
+    this.applyMergeButton.disabled = true;
 
     this.mergeOutputNode.textContent = JSON.stringify({
       source: this.pendingMergePreview.source,
       target: this.pendingMergePreview.target,
       changes: this.pendingMergePreview.changes,
       conflicts: this.pendingMergePreview.conflicts,
+      confirmed: this.pendingMergePreview.confirmed,
       canApply: Object.keys(this.pendingMergePreview.conflicts).length === 0
     }, null, 2);
     this.statusNode.textContent = Object.keys(this.pendingMergePreview.conflicts).length > 0
       ? "Merge preview computed. Conflicts detected; apply is blocked."
-      : "Merge preview computed. No conflicts; apply is available.";
+      : "Merge preview computed. Confirm preview to enable apply.";
   }
 
   computeMergePreviewChanges(sourcePayload, targetPayload, mergedPayload) {
@@ -678,9 +691,71 @@ class WorkspaceV2SessionProducer {
     return { added, updated, unchanged };
   }
 
+  confirmSelectedSessionMergePreview() {
+    if (!this.pendingMergePreview) {
+      this.statusNode.textContent = "No merge preview available. Run Preview Merge (Dry Run) first.";
+      return;
+    }
+    this.pendingMergePreview.confirmed = true;
+    this.applyMergeButton.disabled = false;
+    this.mergeOutputNode.textContent = JSON.stringify({
+      source: this.pendingMergePreview.source,
+      target: this.pendingMergePreview.target,
+      changes: this.pendingMergePreview.changes,
+      conflicts: this.pendingMergePreview.conflicts,
+      confirmed: true,
+      canApply: Object.keys(this.pendingMergePreview.conflicts).length === 0
+    }, null, 2);
+    this.statusNode.textContent = "Merge preview confirmed. Apply remains blocked if conflicts exist or preview becomes stale.";
+  }
+
+  recordMergeAuditEntry(preview) {
+    const rawAudit = localStorage.getItem(this.mergeAuditStorageKey);
+    let auditEntries = [];
+    if (rawAudit) {
+      try {
+        const parsed = JSON.parse(rawAudit);
+        if (Array.isArray(parsed)) {
+          auditEntries = parsed;
+        }
+      } catch {
+        auditEntries = [];
+      }
+    }
+    auditEntries.push({
+      sourceSessionContextId: preview.source.id,
+      targetSessionContextId: preview.target.id,
+      timestamp: new Date().toISOString(),
+      addedCount: Object.keys(preview.changes.added).length,
+      updatedCount: Object.keys(preview.changes.updated).length,
+      unchangedCount: Object.keys(preview.changes.unchanged).length,
+      conflictCount: Object.keys(preview.conflicts).length
+    });
+    localStorage.setItem(this.mergeAuditStorageKey, JSON.stringify(auditEntries));
+  }
+
   applySelectedSessionMerge() {
     if (!this.pendingMergePreview) {
       this.statusNode.textContent = "No merge preview available. Run Preview Merge (Dry Run) first.";
+      return;
+    }
+    if (!this.pendingMergePreview.confirmed) {
+      this.statusNode.textContent = "Merge apply blocked. Confirm preview before apply.";
+      return;
+    }
+    const currentMergeCandidates = this.buildSessionMergeCandidates();
+    const liveSource = currentMergeCandidates.find((entry) => entry.id === this.pendingMergePreview.source.id);
+    const liveTarget = currentMergeCandidates.find((entry) => entry.id === this.pendingMergePreview.target.id);
+    if (!liveSource || !liveTarget) {
+      this.statusNode.textContent = "Merge apply blocked. Preview is stale because source or target session is no longer available.";
+      return;
+    }
+    if (this.mergeLeftSelect.value !== this.pendingMergePreview.source.id || this.mergeRightSelect.value !== this.pendingMergePreview.target.id) {
+      this.statusNode.textContent = "Merge apply blocked. Preview is stale because selection changed.";
+      return;
+    }
+    if (JSON.stringify(liveSource.payload) !== this.pendingMergePreview.source.hash || JSON.stringify(liveTarget.payload) !== this.pendingMergePreview.target.hash) {
+      this.statusNode.textContent = "Merge apply blocked. Preview is stale because source or target session changed.";
       return;
     }
     const conflictKeys = Object.keys(this.pendingMergePreview.conflicts);
@@ -695,19 +770,39 @@ class WorkspaceV2SessionProducer {
     }
     const hostContextId = this.createHostContextId(this.pendingMergePreview.selectedToolId);
     sessionStorage.setItem(hostContextId, sizeValidation.metrics.serializedPayload);
+    let appliedPayload = null;
+    try {
+      appliedPayload = JSON.parse(sessionStorage.getItem(hostContextId));
+    } catch {
+      appliedPayload = null;
+    }
+    const appliedChanges = this.computeMergePreviewChanges(this.pendingMergePreview.source.payload, this.pendingMergePreview.target.payload, appliedPayload);
+    if (
+      !appliedPayload ||
+      JSON.stringify(appliedPayload) !== JSON.stringify(this.pendingMergePreview.mergedPayload) ||
+      JSON.stringify(appliedChanges) !== JSON.stringify(this.pendingMergePreview.changes)
+    ) {
+      sessionStorage.removeItem(hostContextId);
+      this.statusNode.textContent = "Merge apply blocked. Applied result verification failed against preview.";
+      return;
+    }
     this.currentHostContextId = hostContextId;
     this.setCurrentSessionPayload(this.pendingMergePreview.mergedPayload, "merge-apply");
     this.importJsonNode.value = JSON.stringify(this.pendingMergePreview.mergedPayload, null, 2);
+    this.recordMergeAuditEntry(this.pendingMergePreview);
     this.renderDiagnosticsPanel();
+    this.confirmMergeButton.disabled = true;
+    this.applyMergeButton.disabled = true;
+    this.pendingMergePreview = null;
     this.mergeOutputNode.textContent = JSON.stringify({
-      source: this.pendingMergePreview.source,
-      target: this.pendingMergePreview.target,
-      changes: this.pendingMergePreview.changes,
-      conflicts: this.pendingMergePreview.conflicts,
+      source: liveSource.id,
+      target: liveTarget.id,
+      changes: appliedChanges,
+      conflicts: {},
       applied: {
         hostContextId,
-        selectedToolId: this.pendingMergePreview.selectedToolId,
-        mergedPayload: this.pendingMergePreview.mergedPayload
+        selectedToolId: this.selectedToolId(),
+        mergedPayload: appliedPayload
       }
     }, null, 2);
     this.statusNode.textContent = `Session merge applied with no conflicts. New hostContextId: ${hostContextId}`;
