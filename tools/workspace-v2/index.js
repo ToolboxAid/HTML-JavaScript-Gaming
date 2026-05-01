@@ -521,11 +521,13 @@ class WorkspaceV2SessionProducer {
 
     const leftPlaceholder = document.createElement("option");
     leftPlaceholder.value = "";
-    leftPlaceholder.textContent = "Select Session A";
+    leftPlaceholder.textContent = "No session selected";
+    leftPlaceholder.disabled = true;
     this.diffLeftSelect.appendChild(leftPlaceholder);
     const rightPlaceholder = document.createElement("option");
     rightPlaceholder.value = "";
-    rightPlaceholder.textContent = "Select Session B";
+    rightPlaceholder.textContent = "No session selected";
+    rightPlaceholder.disabled = true;
     this.diffRightSelect.appendChild(rightPlaceholder);
 
     this.diffCandidates.forEach((candidate) => {
@@ -566,11 +568,13 @@ class WorkspaceV2SessionProducer {
 
     const leftPlaceholder = document.createElement("option");
     leftPlaceholder.value = "";
-    leftPlaceholder.textContent = "Select Session A";
+    leftPlaceholder.textContent = "No session selected";
+    leftPlaceholder.disabled = true;
     this.mergeLeftSelect.appendChild(leftPlaceholder);
     const rightPlaceholder = document.createElement("option");
     rightPlaceholder.value = "";
-    rightPlaceholder.textContent = "Select Session B";
+    rightPlaceholder.textContent = "No session selected";
+    rightPlaceholder.disabled = true;
     this.mergeRightSelect.appendChild(rightPlaceholder);
 
     this.mergeCandidates.forEach((candidate) => {
