@@ -24,8 +24,12 @@
             <section class="asset-browser-v2-panel" aria-live="polite">
               <h3 id="assetBrowserV2Title">No assets loaded</h3>
               <span id="assetBrowserV2Count" class="badge">0 assets</span>
-              <div id="assetBrowserV2State">No asset catalog session data found. Open Asset Browser V2 with a valid hostContextId session.</div>
-              <pre id="assetBrowserV2Preview" aria-label="Asset Browser V2 preview"></pre>
+              <div id="assetBrowserV2EmptyState">No asset catalog session data found. Open Asset Browser V2 with a valid hostContextId session.</div>
+              <div id="assetBrowserV2InvalidState" hidden>Asset Browser V2 session data is invalid. Re-open the tool from a valid host session.</div>
+              <div id="assetBrowserV2ValidState" hidden>
+                <div id="assetBrowserV2State">Asset Browser V2 loaded the session asset catalog.</div>
+                <pre id="assetBrowserV2Preview" aria-label="Asset Browser V2 preview"></pre>
+              </div>
             </section>
             <aside class="asset-browser-v2-panel" data-menu-workspace>
               <h3>menuWorkspace</h3>

@@ -23,8 +23,12 @@
             <section class="palette-manager-v2-panel" aria-live="polite">
               <h3 id="paletteManagerName">No palette loaded</h3>
               <span id="paletteManagerCount" class="badge palette-manager-v2-count">0 colors</span>
-              <div id="paletteManagerState" class="palette-manager-v2-state">No palette session data found. Open Palette Manager V2 with a valid hostContextId session.</div>
-              <div id="paletteManagerSwatches" class="palette-manager-v2-swatches" aria-label="Palette Manager V2 swatches"></div>
+              <div id="paletteManagerEmptyState" class="palette-manager-v2-state">No palette session data found. Open Palette Manager V2 with a valid hostContextId session.</div>
+              <div id="paletteManagerInvalidState" class="palette-manager-v2-state palette-manager-v2-state--error" hidden>Palette Manager V2 session data is invalid. Re-open the tool from a valid host session.</div>
+              <div id="paletteManagerValidState" hidden>
+                <div id="paletteManagerState" class="palette-manager-v2-state">Palette Manager V2 loaded the session palette.</div>
+                <div id="paletteManagerSwatches" class="palette-manager-v2-swatches" aria-label="Palette Manager V2 swatches"></div>
+              </div>
             </section>
             <aside class="palette-manager-v2-panel" data-menu-workspace>
               <h3>menuWorkspace</h3>

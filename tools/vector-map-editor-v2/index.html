@@ -23,8 +23,12 @@
             <section class="vector-map-v2-panel" aria-live="polite">
               <h3 id="vectorMapV2Name">No vector map loaded</h3>
               <span id="vectorMapV2Count" class="badge vector-map-v2-badge">0 objects</span>
-              <div id="vectorMapV2State" class="vector-map-v2-state">No vector map session data found. Open Vector Map Editor V2 with a valid hostContextId session.</div>
-              <div id="vectorMapV2Stage" class="vector-map-v2-stage" aria-label="Vector Map Editor V2 preview"></div>
+              <div id="vectorMapV2EmptyState" class="vector-map-v2-state">No vector map session data found. Open Vector Map Editor V2 with a valid hostContextId session.</div>
+              <div id="vectorMapV2InvalidState" class="vector-map-v2-state vector-map-v2-state--error" hidden>Vector Map Editor V2 session data is invalid. Re-open the tool from a valid host session.</div>
+              <div id="vectorMapV2ValidState" hidden>
+                <div id="vectorMapV2State" class="vector-map-v2-state">Vector Map Editor V2 loaded the session vector map.</div>
+                <div id="vectorMapV2Stage" class="vector-map-v2-stage" aria-label="Vector Map Editor V2 preview"></div>
+              </div>
             </section>
             <aside class="vector-map-v2-panel" data-menu-workspace>
               <h3>menuWorkspace</h3>

@@ -23,8 +23,12 @@
             <section class="svg-v2-panel" aria-live="polite">
               <h3 id="svgV2AssetName">No SVG loaded</h3>
               <span id="svgV2StatusBadge" class="badge svg-v2-badge">0 bytes</span>
-              <div id="svgV2State" class="svg-v2-state">No SVG session context found. Open SVG Asset Studio V2 with a valid hostContextId session.</div>
-              <div id="svgV2Frame" class="svg-v2-frame" aria-label="SVG Asset Studio V2 preview"></div>
+              <div id="svgV2EmptyState" class="svg-v2-state">No SVG session context found. Open SVG Asset Studio V2 with a valid hostContextId session.</div>
+              <div id="svgV2InvalidState" class="svg-v2-state svg-v2-state--error" hidden>SVG Asset Studio V2 session data is invalid. Re-open the tool from a valid host session.</div>
+              <div id="svgV2ValidState" hidden>
+                <div id="svgV2State" class="svg-v2-state">SVG Asset Studio V2 loaded the session SVG asset.</div>
+                <div id="svgV2Frame" class="svg-v2-frame" aria-label="SVG Asset Studio V2 preview"></div>
+              </div>
             </section>
             <aside class="svg-v2-panel" data-menu-workspace>
               <h3>menuWorkspace</h3>
