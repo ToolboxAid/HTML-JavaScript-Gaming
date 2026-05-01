@@ -18,7 +18,7 @@ class AssetBrowserV2 {
           `toolboxaid.toolHost.context.${new URL(window.location.href).searchParams.get("hostContextId")}`
         )
       ) {
-        this.renderError("No session context was found for the provided hostContextId. Re-open Asset Browser V2 from a host session that provides a valid hostContextId.");
+        this.renderMissing("No session data was found for the provided hostContextId. Re-open Asset Browser V2 from the tools index or a host flow that creates the session context first.");
         return;
       }
       this.loadContract(
