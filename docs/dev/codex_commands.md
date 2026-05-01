@@ -1,37 +1,40 @@
-# Codex Commands — PR_11_188B Palette Manager v2 Header Alignment
+# Codex Commands — PR_11_190
 
 ## Model
-GPT-5.4-codex
 
-## Reasoning
-high
+Use GPT-5.4 or GPT-5.3-codex.
 
-## Command
+Reasoning: high.
+
+## Execute
+
+```powershell
+cd C:\Users\davidq\Documents\GitHub\HTML-JavaScript-Gaming
+```
+
+```powershell
+codex --model gpt-5.4 --reasoning high "Apply docs/pr/PR_11_190_V2_REENGINEER_NAMING_HEADER_GUARD.md exactly. This is a re-engineer guard, not copy/paste. Update only the V2 tool lane needed for Palette Manager V2 and SVG Asset Studio V2 naming/header compliance. Do not change schemas, samples, games, Workspace Manager v1, platformShell, tools/shared, or legacy tools. Ensure every visible V2 tool name ends with V2. Ensure the V2 tools use the /index.html shared theme header mount <div id='shared-theme-header'></div>. Do not add fallback/default data. Do not introduce helper classes, abstraction layers, alias variables, or pass-through variables. Run targeted syntax checks only. Write validation notes to docs/dev/reports/PR_11_190_validation.md. Place the finished repo-structured ZIP at tmp/PR_11_190_20260501_01.zip."
+```
+
+## Required Output From Codex
+
+Codex must create:
+
 ```text
-Apply PR_11_188B Palette Manager v2 header alignment.
+tmp/PR_11_190_20260501_01.zip
+docs/dev/reports/PR_11_190_validation.md
+```
 
-Read docs/pr/PR_11_188B_PALETTE_MANAGER_V2_HEADER_ALIGNMENT.md.
+## Expected Evidence
 
-Implement only the smallest valid Palette Manager v2 change so the tool page uses the same shared theme header mount as /index.html:
-- include/reuse <div id="shared-theme-header"></div>
-- reuse src/engine/theme behavior already used by /index.html
-- preserve existing accordion behavior
-- keep menuTool and menuWorkspace separated
-- keep session-backed data only
-- no fallback/default data
-- no platformShell
-- no tools/shared/*
-- no Workspace Manager v1
-- no schema, sample, or game changes
-- no helper classes, abstraction layers, alias variables, or pass-through remaps
+The validation report must include:
 
-Validation:
-1. Run syntax checks on changed Palette Manager v2 files only.
-2. Run targeted Palette Manager v2 launch/check only.
-3. Do not run full samples smoke test.
-
-Write results to docs/dev/reports/PR_11_188B_palette_manager_v2_header_alignment_report.md.
-Update docs/dev/commit_comment.txt with the required commit comment.
-Create a final repo-structured ZIP at:
-tmp/PR_11_188B_20260501_01.zip
+```text
+[REENGINEER_NOT_COPY_PASTE]
+[V2_NAME_SUFFIX_ENFORCED]
+[SHARED_THEME_HEADER_MOUNT]
+[NO_PLATFORM_SHELL]
+[NO_TOOLS_SHARED]
+[NO_FALLBACK_DATA]
+[TARGETED_VALIDATION_ONLY]
 ```

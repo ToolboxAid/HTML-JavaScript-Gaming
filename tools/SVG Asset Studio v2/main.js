@@ -5,7 +5,7 @@
   }
 
   start() {
-    document.title = "SVG Asset Studio v2";
+    document.title = "SVG Asset Studio V2";
     document.body.className = "hub-page-home hub-page-home--viewport";
     document.body.dataset.toolId = "svg-asset-studio-v2";
     document.head.insertAdjacentHTML("beforeend", `
@@ -43,8 +43,8 @@
                 <section class="svg-v2-panel" aria-live="polite">
                   <h3 id="svgV2AssetName">No SVG loaded</h3>
                   <span id="svgV2StatusBadge" class="badge svg-v2-badge">0 bytes</span>
-                  <div id="svgV2State" class="svg-v2-state">No SVG session context found. Open SVG Asset Studio v2 with a valid hostContextId session.</div>
-                  <div id="svgV2Frame" class="svg-v2-frame" aria-label="SVG Asset Studio v2 preview"></div>
+                  <div id="svgV2State" class="svg-v2-state">No SVG session context found. Open SVG Asset Studio V2 with a valid hostContextId session.</div>
+                  <div id="svgV2Frame" class="svg-v2-frame" aria-label="SVG Asset Studio V2 preview"></div>
                 </section>
                 <aside class="svg-v2-panel" data-menu-workspace>
                   <h3>menuWorkspace</h3>
@@ -77,7 +77,7 @@
         window.history.replaceState(null, "", `${window.location.pathname}?hostContextId=${this.sessionContextId}`);
       }
       if (!new URL(window.location.href).searchParams.get("hostContextId")) {
-        this.renderEmpty("No hostContextId was provided. Open SVG Asset Studio v2 with a valid Tool v2 session URL.");
+        this.renderEmpty("No hostContextId was provided. Open SVG Asset Studio V2 with a valid Tool V2 session URL.");
         return;
       }
       if (!window.sessionStorage.getItem(`toolboxaid.toolHost.context.${new URL(window.location.href).searchParams.get("hostContextId")}`)) {
@@ -86,7 +86,7 @@
       }
       this.loadContract(JSON.parse(window.sessionStorage.getItem(`toolboxaid.toolHost.context.${new URL(window.location.href).searchParams.get("hostContextId")}`)));
     } catch (error) {
-      this.renderError(`Unable to read SVG Asset Studio v2 session context: ${error instanceof Error ? error.message : "unknown error"}`);
+      this.renderError(`Unable to read SVG Asset Studio V2 session context: ${error instanceof Error ? error.message : "unknown error"}`);
     }
   }
 
@@ -126,7 +126,7 @@
     document.getElementById("svgV2AssetName").textContent = typeof payloadJson.vectorAssetDocument.sourceName === "string" && payloadJson.vectorAssetDocument.sourceName.trim() ? payloadJson.vectorAssetDocument.sourceName.trim() : "Inline SVG";
     document.getElementById("svgV2StatusBadge").textContent = `${payloadJson.vectorAssetDocument.svgText.length} bytes`;
     document.getElementById("svgV2State").className = "svg-v2-state";
-    document.getElementById("svgV2State").textContent = "SVG Asset Studio v2 loaded the session SVG asset.";
+    document.getElementById("svgV2State").textContent = "SVG Asset Studio V2 loaded the session SVG asset.";
     document.getElementById("svgV2Frame").innerHTML = `<img alt="${this.escapeHtml(document.getElementById("svgV2AssetName").textContent)}" src="${URL.createObjectURL(new Blob([payloadJson.vectorAssetDocument.svgText], { type: "image/svg+xml" }))}" />`;
   }
 
@@ -145,7 +145,7 @@
     document.getElementById("svgV2SessionReadout").textContent = "Session: read attempted";
     document.getElementById("svgV2ToolReadout").textContent = "payloadJson invalid";
     document.getElementById("svgV2WorkspaceReadout").textContent = "Workspace writes are disabled for invalid SVG session data.";
-    document.getElementById("svgV2AssetName").textContent = "SVG Asset Studio v2 error";
+    document.getElementById("svgV2AssetName").textContent = "SVG Asset Studio V2 error";
     document.getElementById("svgV2StatusBadge").textContent = "0 bytes";
     document.getElementById("svgV2State").className = "svg-v2-state svg-v2-state--error";
     document.getElementById("svgV2State").textContent = message;

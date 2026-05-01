@@ -5,7 +5,7 @@
   }
 
   start() {
-    document.title = "Palette Manager";
+    document.title = "Palette Manager V2";
     document.body.className = "hub-page-home hub-page-home--viewport";
     document.body.dataset.toolId = "palette-manager";
     document.head.insertAdjacentHTML("beforeend", `
@@ -36,7 +36,7 @@
       <main class="page-shell">
         <section class="content-section">
           <details class="is-collapsible" open>
-            <summary class="is-collapsible__summary">Palette Manager Session</summary>
+            <summary class="is-collapsible__summary">Palette Manager V2 Session</summary>
             <div class="is-collapsible__content">
               <p id="paletteManagerSessionReadout" class="palette-manager-readout">Waiting for session context.</p>
               <div class="palette-manager-grid">
@@ -47,8 +47,8 @@
                 <section class="palette-manager-panel" aria-live="polite">
                   <h3 id="paletteManagerName">No palette loaded</h3>
                   <span id="paletteManagerCount" class="badge palette-manager-count">0 colors</span>
-                  <div id="paletteManagerState" class="palette-manager-state">No palette session data found. Open Palette Manager with a valid hostContextId session.</div>
-                  <div id="paletteManagerSwatches" class="palette-manager-swatches" aria-label="Palette Manager swatches"></div>
+                  <div id="paletteManagerState" class="palette-manager-state">No palette session data found. Open Palette Manager V2 with a valid hostContextId session.</div>
+                  <div id="paletteManagerSwatches" class="palette-manager-swatches" aria-label="Palette Manager V2 swatches"></div>
                 </section>
                 <aside class="palette-manager-panel" data-menu-workspace>
                   <h3>menuWorkspace</h3>
@@ -71,7 +71,7 @@
     console.log("[SESSION_CONTEXT_READ]");
     try {
       if (!new URL(window.location.href).searchParams.get("hostContextId")) {
-        this.renderEmpty("No hostContextId was provided. Open Palette Manager with a valid Tool v2 session URL.");
+        this.renderEmpty("No hostContextId was provided. Open Palette Manager V2 with a valid Tool V2 session URL.");
         return;
       }
       if (!window.sessionStorage.getItem(`toolboxaid.toolHost.context.${new URL(window.location.href).searchParams.get("hostContextId")}`)) {
@@ -80,7 +80,7 @@
       }
       this.loadContract(JSON.parse(window.sessionStorage.getItem(`toolboxaid.toolHost.context.${new URL(window.location.href).searchParams.get("hostContextId")}`)));
     } catch (error) {
-      this.renderError(`Unable to read Palette Manager session context: ${error instanceof Error ? error.message : "unknown error"}`);
+      this.renderError(`Unable to read Palette Manager V2 session context: ${error instanceof Error ? error.message : "unknown error"}`);
     }
   }
 
@@ -120,7 +120,7 @@
     document.getElementById("paletteManagerName").textContent = paletteJson.name.trim();
     document.getElementById("paletteManagerCount").textContent = `${paletteJson.colors.length} color${paletteJson.colors.length === 1 ? "" : "s"}`;
     document.getElementById("paletteManagerState").className = "palette-manager-state";
-    document.getElementById("paletteManagerState").textContent = "Palette Manager loaded the session palette.";
+    document.getElementById("paletteManagerState").textContent = "Palette Manager V2 loaded the session palette.";
     document.getElementById("paletteManagerSwatches").innerHTML = paletteJson.colors.map((entry, index) => `
       <article class="palette-manager-swatch">
         <div class="palette-manager-chip" style="background:${this.escapeHtml(this.colorFrom(entry))}"></div>
@@ -146,8 +146,8 @@
   renderError(message) {
     document.getElementById("paletteManagerSessionReadout").textContent = "Session: read attempted";
     document.getElementById("paletteManagerContractReadout").textContent = "paletteJson invalid";
-    document.getElementById("paletteManagerWorkspaceReadout").textContent = "Workspace writes are disabled for invalid Palette Manager session data.";
-    document.getElementById("paletteManagerName").textContent = "Palette Manager error";
+    document.getElementById("paletteManagerWorkspaceReadout").textContent = "Workspace writes are disabled for invalid Palette Manager V2 session data.";
+    document.getElementById("paletteManagerName").textContent = "Palette Manager V2 error";
     document.getElementById("paletteManagerCount").textContent = "0 colors";
     document.getElementById("paletteManagerState").className = "palette-manager-state palette-manager-state--error";
     document.getElementById("paletteManagerState").textContent = message;

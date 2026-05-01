@@ -1,1 +1,1 @@
-﻿Align Palette Manager v2 with shared theme header mount - PR 11.188B
+Enforce V2 re-engineer naming and shared header guard for Palette/SVG tools - PR 11.190
