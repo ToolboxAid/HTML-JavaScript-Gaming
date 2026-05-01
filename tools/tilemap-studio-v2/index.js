@@ -3,19 +3,40 @@ class TilemapStudioV2 {
     console.log("[TilemapStudioV2]");
     document.title = "Tilemap Studio V2";
     document.body.dataset.toolId = "tilemap-studio-v2";
+    this.urlState = this.readUrlState();
     this.readSession();
+  }
+
+  readUrlState() {
+    const urlStateParams = new URL(window.location.href).searchParams;
+    return {
+      hostContextId: typeof urlStateParams.get("hostContextId") === "string" ? urlStateParams.get("hostContextId").trim() : "",
+      view: typeof urlStateParams.get("view") === "string" ? urlStateParams.get("view").trim() : "",
+      selection: typeof urlStateParams.get("selection") === "string" ? urlStateParams.get("selection").trim() : "",
+      zoom: typeof urlStateParams.get("zoom") === "string" ? urlStateParams.get("zoom").trim() : "",
+      panel: typeof urlStateParams.get("panel") === "string" ? urlStateParams.get("panel").trim() : ""
+    };
+  }
+
+  optionalUrlStateSummary() {
+    const urlStateParts = [];
+    if (this.urlState.view) urlStateParts.push(`view=${this.urlState.view}`);
+    if (this.urlState.selection) urlStateParts.push(`selection=${this.urlState.selection}`);
+    if (this.urlState.zoom) urlStateParts.push(`zoom=${this.urlState.zoom}`);
+    if (this.urlState.panel) urlStateParts.push(`panel=${this.urlState.panel}`);
+    return urlStateParts.join(", ");
   }
 
   readSession() {
     console.log("[SESSION_CONTEXT_READ]");
     try {
-      if (!new URL(window.location.href).searchParams.get("hostContextId")) {
+      if (!this.urlState.hostContextId) {
         this.renderMissing("No hostContextId was provided. Re-open Tilemap Studio V2 from a valid Tool V2 session link.");
         return;
       }
       if (
         !window.sessionStorage.getItem(
-          `toolboxaid.toolHost.context.${new URL(window.location.href).searchParams.get("hostContextId")}`
+          `toolboxaid.toolHost.context.${this.urlState.hostContextId}`
         )
       ) {
         this.renderMissing("No session data was found for the provided hostContextId. Re-open Tilemap Studio V2 from the tools index or a host flow that creates the session context first.");
@@ -24,7 +45,7 @@ class TilemapStudioV2 {
       this.loadContract(
         JSON.parse(
           window.sessionStorage.getItem(
-            `toolboxaid.toolHost.context.${new URL(window.location.href).searchParams.get("hostContextId")}`
+            `toolboxaid.toolHost.context.${this.urlState.hostContextId}`
           )
         )
       );
@@ -71,7 +92,7 @@ class TilemapStudioV2 {
       this.renderError("Tilemap session data is invalid. Every layer requires name, kind, and data[].");
       return;
     }
-    document.getElementById("tilemapV2SessionReadout").textContent = `Session: loaded\nContext: ${new URL(window.location.href).searchParams.get("hostContextId")}\nTool: ${typeof sessionContext.toolId === "string" && sessionContext.toolId.trim() ? sessionContext.toolId.trim() : "not provided"}`;
+    document.getElementById("tilemapV2SessionReadout").textContent = `Session: loaded\nContext: ${this.urlState.hostContextId}\nTool: ${typeof sessionContext.toolId === "string" && sessionContext.toolId.trim() ? sessionContext.toolId.trim() : "not provided"}${this.optionalUrlStateSummary() ? `\nURL State: ${this.optionalUrlStateSummary()}` : ""}`;
     document.getElementById("tilemapV2ContractReadout").textContent = "payloadJson loaded\npayloadJson.tileMapDocument valid\nlayers[] valid";
     document.getElementById("tilemapV2WorkspaceReadout").textContent = "Workspace session context was read. Workspace writes are deferred for this isolated V2 entry.";
     document.getElementById("tilemapV2Name").textContent = tileMapDocument.map.name.trim();

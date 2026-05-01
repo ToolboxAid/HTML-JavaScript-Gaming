@@ -4,19 +4,40 @@ class SvgAssetStudioV2 {
     this.previewObjectUrl = "";
     document.title = "SVG Asset Studio V2";
     document.body.dataset.toolId = "svg-asset-studio-v2";
+    this.urlState = this.readUrlState();
     this.readSession();
+  }
+
+  readUrlState() {
+    const urlStateParams = new URL(window.location.href).searchParams;
+    return {
+      hostContextId: typeof urlStateParams.get("hostContextId") === "string" ? urlStateParams.get("hostContextId").trim() : "",
+      view: typeof urlStateParams.get("view") === "string" ? urlStateParams.get("view").trim() : "",
+      selection: typeof urlStateParams.get("selection") === "string" ? urlStateParams.get("selection").trim() : "",
+      zoom: typeof urlStateParams.get("zoom") === "string" ? urlStateParams.get("zoom").trim() : "",
+      panel: typeof urlStateParams.get("panel") === "string" ? urlStateParams.get("panel").trim() : ""
+    };
+  }
+
+  optionalUrlStateSummary() {
+    const urlStateParts = [];
+    if (this.urlState.view) urlStateParts.push(`view=${this.urlState.view}`);
+    if (this.urlState.selection) urlStateParts.push(`selection=${this.urlState.selection}`);
+    if (this.urlState.zoom) urlStateParts.push(`zoom=${this.urlState.zoom}`);
+    if (this.urlState.panel) urlStateParts.push(`panel=${this.urlState.panel}`);
+    return urlStateParts.join(", ");
   }
 
   readSession() {
     console.log("[SESSION_CONTEXT_READ]");
     try {
-      if (!new URL(window.location.href).searchParams.get("hostContextId")) {
+      if (!this.urlState.hostContextId) {
         this.renderMissing("No hostContextId was provided. Re-open SVG Asset Studio V2 from a valid Tool V2 session link.");
         return;
       }
       if (
         !window.sessionStorage.getItem(
-          `toolboxaid.toolHost.context.${new URL(window.location.href).searchParams.get("hostContextId")}`
+          `toolboxaid.toolHost.context.${this.urlState.hostContextId}`
         )
       ) {
         this.renderMissing("No session data was found for the provided hostContextId. Re-open SVG Asset Studio V2 from the tools index or a host flow that creates the session context first.");
@@ -25,7 +46,7 @@ class SvgAssetStudioV2 {
       this.loadContract(
         JSON.parse(
           window.sessionStorage.getItem(
-            `toolboxaid.toolHost.context.${new URL(window.location.href).searchParams.get("hostContextId")}`
+            `toolboxaid.toolHost.context.${this.urlState.hostContextId}`
           )
         )
       );
@@ -65,7 +86,7 @@ class SvgAssetStudioV2 {
       return;
     }
 
-    document.getElementById("svgV2SessionReadout").textContent = `Session: loaded\nContext: ${new URL(window.location.href).searchParams.get("hostContextId")}\nTool: ${typeof sessionContext.toolId === "string" && sessionContext.toolId.trim() ? sessionContext.toolId.trim() : "not provided"}`;
+    document.getElementById("svgV2SessionReadout").textContent = `Session: loaded\nContext: ${this.urlState.hostContextId}\nTool: ${typeof sessionContext.toolId === "string" && sessionContext.toolId.trim() ? sessionContext.toolId.trim() : "not provided"}${this.optionalUrlStateSummary() ? `\nURL State: ${this.optionalUrlStateSummary()}` : ""}`;
     document.getElementById("svgV2ToolReadout").textContent = "payloadJson loaded\npayloadJson.vectorAssetDocument valid\nsvgText valid";
     document.getElementById("svgV2WorkspaceReadout").textContent = "Workspace session context was read. Workspace writes are deferred for this isolated V2 entry.";
     document.getElementById("svgV2AssetName").textContent = vectorAssetDocument.sourceName.trim();
