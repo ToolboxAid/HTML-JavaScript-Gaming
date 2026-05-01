@@ -210,6 +210,30 @@ class WorkspaceV2SessionProducer {
     return parsed.value;
   }
 
+  readSessionPayloadFromRecentSessionId(sessionId) {
+    if (typeof sessionId !== "string" || !sessionId.trim()) {
+      return null;
+    }
+    const history = this.readSessionHistory();
+    const recentEntry = history.find((entry) => entry.hostContextId === sessionId.trim());
+    if (!recentEntry) {
+      return null;
+    }
+    return this.resolveSessionPayloadFromContextId(sessionId.trim(), recentEntry.payload);
+  }
+
+  readSessionPayloadForLibraryWrite(sessionId) {
+    const recentPayload = this.readSessionPayloadFromRecentSessionId(sessionId);
+    if (this.isValidSessionPayload(recentPayload)) {
+      return recentPayload;
+    }
+    const activePayload = this.readActiveSessionPayloadForLibraryActions();
+    if (this.isValidSessionPayload(activePayload)) {
+      return activePayload;
+    }
+    return null;
+  }
+
   fixturePathForTool(toolId) {
     return `../../tests/fixtures/v2-tools/${toolId}.json`;
   }
@@ -1704,11 +1728,9 @@ class WorkspaceV2SessionProducer {
       this.setLibraryStatus(overwriteExisting ? "Enter a session ID before overwriting." : "Enter a session ID before saving.");
       return;
     }
-    const activePayload = this.readActiveSessionPayloadForLibraryActions();
-    if (!this.isValidSessionPayload(activePayload)) {
-      this.setLibraryStatus(overwriteExisting
-        ? "No active Workspace V2 session is available to overwrite from."
-        : "No active Workspace V2 session is available to save.");
+    const payloadForWrite = this.readSessionPayloadForLibraryWrite(sessionName);
+    if (!this.isValidSessionPayload(payloadForWrite)) {
+      this.setLibraryStatus("Session ID does not resolve to a valid Workspace V2 session.");
       return;
     }
     const library = this.readSessionLibrary();
@@ -1724,7 +1746,7 @@ class WorkspaceV2SessionProducer {
       this.setLibraryStatus("Saved session not found. Use Save Session to create it first.");
       return;
     }
-    library[sessionName] = activePayload;
+    library[sessionName] = payloadForWrite;
     this.writeSessionLibrary(library);
     this.renderSessionLibrary();
     this.setLibraryStatus(overwriteExisting ? "Saved session overwritten." : "Saved session created.");
