@@ -1,1 +1,1 @@
-Fix Workspace Manager click handler to use data-tool-id for correct tool launch - PR 11.182
+Remove cross-tool registry alias and require exact tool ids - PR 11.184

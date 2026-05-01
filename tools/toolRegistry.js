@@ -1,8 +1,4 @@
 const TOOL_NAME_SUFFIX_PATTERN = /(?:^|[\s_-])(v2|v3|new|final|copy)(?:$|[\s_-])/i;
-// Temporary centralized tool id compatibility aliases (PR 11.37).
-const TOOL_ID_ALIASES = Object.freeze({
-  "vector-asset-studio": "svg-asset-studio"
-});
 
 export const TOOL_REGISTRY = Object.freeze([
   {
@@ -392,11 +388,7 @@ export const TOOL_REGISTRY = Object.freeze([
 export { TOOL_NAME_SUFFIX_PATTERN };
 
 export function resolveToolIdAlias(toolId) {
-  const normalized = typeof toolId === "string" ? toolId.trim() : "";
-  if (!normalized) {
-    return "";
-  }
-  return TOOL_ID_ALIASES[normalized] || normalized;
+  return typeof toolId === "string" ? toolId.trim() : "";
 }
 
 export function getToolRegistry() {

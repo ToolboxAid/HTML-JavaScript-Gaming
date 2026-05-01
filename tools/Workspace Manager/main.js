@@ -123,6 +123,8 @@ let pagerMessageBridgeBound = false;
 let workspaceShellStateBridgeBound = false;
 let workspaceManifestToolDiagnostics = null;
 let loadedSvgWorkspaceTileState = null;
+let workspaceToolTileObserver = null;
+const boundWorkspaceToolTiles = new WeakSet();
 
 function refreshPagerRefs() {
   refs.prevButton = document.querySelector("[data-tool-host-prev]");
@@ -168,16 +170,7 @@ function traceWorkspaceToolTileRender(toolId = "") {
   return entry;
 }
 
-function readToolIdFromWorkspaceClickTarget(target = null) {
-  if (!(target instanceof Element)) {
-    return "";
-  }
-  const closestWithToolId = target.closest("[data-tool-id]");
-  const datasetToolId = normalizeTextParam(closestWithToolId?.dataset?.toolId);
-  return datasetToolId ? normalizeToken(datasetToolId) : "";
-}
-
-function traceWorkspaceToolClick({ target = null, datasetToolId = "", resolvedToolId = "", source = "" } = {}) {
+function traceWorkspaceToolClick({ target = null, clickedToolId = "", datasetToolId = "", resolvedToolId = "", source = "", error = "" } = {}) {
   const clickedText = target instanceof Element ? normalizeTextParam(target.textContent || "") : "";
   const eventTarget = target instanceof Element ? target.tagName.toLowerCase() : "";
   const closestToolId = target instanceof Element
@@ -185,12 +178,90 @@ function traceWorkspaceToolClick({ target = null, datasetToolId = "", resolvedTo
     : "";
   console.log("[WORKSPACE_TOOL_CLICK]", {
     source,
+    clickedToolId: normalizeTextParam(clickedToolId),
     clickedText,
     datasetToolId: normalizeTextParam(datasetToolId),
     resolvedToolId: normalizeTextParam(resolvedToolId),
     eventTarget,
-    closestToolId
+    closestToolId,
+    error: normalizeTextParam(error)
   });
+}
+
+function launchWorkspaceToolFromClickedTile(tileElement) {
+  if (!(tileElement instanceof HTMLElement)) {
+    return false;
+  }
+  const clickedToolId = normalizeTextParam(tileElement.dataset.toolId);
+  if (!clickedToolId) {
+    traceWorkspaceToolClick({
+      target: tileElement,
+      clickedToolId,
+      datasetToolId: "",
+      resolvedToolId: "",
+      source: "direct-tile",
+      error: "missing data-tool-id"
+    });
+    return false;
+  }
+  if (!toolIds.includes(clickedToolId) || !getToolHostEntryById(manifest, clickedToolId)) {
+    traceWorkspaceToolClick({
+      target: tileElement,
+      clickedToolId,
+      datasetToolId: clickedToolId,
+      resolvedToolId: "",
+      source: "direct-tile",
+      error: "data-tool-id is not launchable"
+    });
+    return false;
+  }
+  traceWorkspaceToolClick({
+    target: tileElement,
+    clickedToolId,
+    datasetToolId: clickedToolId,
+    resolvedToolId: clickedToolId,
+    source: "direct-tile"
+  });
+  writeSelectedToolId(clickedToolId);
+  updateSwitchMeta();
+  return mountSelectedTool("tool-click");
+}
+
+function bindWorkspaceToolTileClickHandlers(root = document) {
+  if (!root?.querySelectorAll) {
+    return;
+  }
+  root.querySelectorAll("[data-tool-id]").forEach((tileElement) => {
+    if (!(tileElement instanceof HTMLElement) || boundWorkspaceToolTiles.has(tileElement)) {
+      return;
+    }
+    boundWorkspaceToolTiles.add(tileElement);
+    tileElement.addEventListener("click", (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+      launchWorkspaceToolFromClickedTile(tileElement);
+    });
+  });
+}
+
+function observeWorkspaceToolTiles() {
+  if (workspaceToolTileObserver || typeof MutationObserver === "undefined" || typeof document === "undefined") {
+    return;
+  }
+  workspaceToolTileObserver = new MutationObserver((mutations) => {
+    mutations.forEach((mutation) => {
+      mutation.addedNodes.forEach((node) => {
+        if (node instanceof Element) {
+          bindWorkspaceToolTileClickHandlers(node);
+        }
+      });
+    });
+  });
+  workspaceToolTileObserver.observe(document.documentElement, {
+    childList: true,
+    subtree: true
+  });
+  bindWorkspaceToolTileClickHandlers(document);
 }
 
 function normalizeToolsUsedList(value) {
@@ -1537,21 +1608,17 @@ function bindPagerDelegatedEvents() {
 
     const toolNavTarget = target.closest(".tools-platform-frame__nav-link, .tools-platform-frame__nav-tool-row");
     if (toolNavTarget instanceof Element) {
-      const resolvedToolId = readToolIdFromWorkspaceClickTarget(toolNavTarget);
       const datasetToolId = normalizeTextParam(toolNavTarget.closest("[data-tool-id]")?.dataset?.toolId);
       traceWorkspaceToolClick({
         target: toolNavTarget,
+        clickedToolId: datasetToolId,
         datasetToolId,
-        resolvedToolId,
-        source: "tool-nav"
+        resolvedToolId: datasetToolId,
+        source: "tool-nav",
+        error: datasetToolId ? "direct data-tool-id handler did not receive click" : "missing data-tool-id"
       });
-      if (resolvedToolId && toolIds.includes(resolvedToolId)) {
-        event.preventDefault();
-        writeSelectedToolId(resolvedToolId);
-        updateSwitchMeta();
-        mountSelectedTool("tool-click");
-        return;
-      }
+      event.preventDefault();
+      return;
     }
 
     if (target.closest("[data-tool-host-prev]")) {
@@ -1851,6 +1918,7 @@ function mountSelectedTool(source = "manual") {
 }
 
 function bindEvents() {
+  observeWorkspaceToolTiles();
   bindPagerDelegatedEvents();
   bindPagerMessageBridge();
   bindWorkspaceShellStateBridge();
