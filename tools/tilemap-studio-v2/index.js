@@ -4,6 +4,14 @@ class TilemapStudioV2 {
     document.title = "Tilemap Studio V2";
     document.body.dataset.toolId = "tilemap-studio-v2";
     this.urlState = this.readUrlState();
+    this.handleNavigationState = this.handleNavigationState.bind(this);
+    window.addEventListener("popstate", this.handleNavigationState);
+    window.addEventListener("pageshow", this.handleNavigationState);
+    this.readSession();
+  }
+
+  handleNavigationState() {
+    this.urlState = this.readUrlState();
     this.readSession();
   }
 
