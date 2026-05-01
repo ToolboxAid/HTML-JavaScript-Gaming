@@ -6,6 +6,7 @@ class WorkspaceV2SessionProducer {
     this.historyStorageKey = "v2-session-history";
     this.errorLogsStorageKey = "v2-error-logs";
     this.mergeAuditStorageKey = "v2-merge-audit-log";
+    this.sessionSelectionStorageKey = "v2-session-selection";
     this.historyMaxEntries = 10;
     this.urlLengthLimit = 2000;
     this.sessionPayloadBytesLimit = 1024 * 1024;
@@ -530,6 +531,53 @@ class WorkspaceV2SessionProducer {
     return inventory;
   }
 
+  readPersistedSessionSelection() {
+    const raw = localStorage.getItem(this.sessionSelectionStorageKey);
+    if (!raw) {
+      return { sessionA: "", sessionB: "" };
+    }
+    const parsed = this.safeParseJson(raw);
+    if (!parsed.ok || !parsed.value || typeof parsed.value !== "object" || Array.isArray(parsed.value)) {
+      return { sessionA: "", sessionB: "" };
+    }
+    const sessionA = typeof parsed.value.sessionA === "string" ? parsed.value.sessionA.trim() : "";
+    const sessionB = typeof parsed.value.sessionB === "string" ? parsed.value.sessionB.trim() : "";
+    return { sessionA, sessionB };
+  }
+
+  writePersistedSessionSelection(leftEntry, rightEntry) {
+    const sessionA = leftEntry && typeof leftEntry.contextId === "string" ? leftEntry.contextId : "";
+    const sessionB = rightEntry && typeof rightEntry.contextId === "string" ? rightEntry.contextId : "";
+    localStorage.setItem(this.sessionSelectionStorageKey, JSON.stringify({ sessionA, sessionB }));
+  }
+
+  clearPersistedSessionSelection() {
+    localStorage.removeItem(this.sessionSelectionStorageKey);
+  }
+
+  findSessionEntryByContextId(entries, contextId) {
+    if (!Array.isArray(entries) || typeof contextId !== "string" || !contextId.trim()) {
+      return null;
+    }
+    return entries.find((entry) => entry.contextId === contextId.trim()) || null;
+  }
+
+  resolvePersistedSelectionIds(entries) {
+    if (!Array.isArray(entries) || entries.length < 2) {
+      return { leftId: "", rightId: "" };
+    }
+    const persisted = this.readPersistedSessionSelection();
+    if (!persisted.sessionA || !persisted.sessionB || persisted.sessionA === persisted.sessionB) {
+      return { leftId: "", rightId: "" };
+    }
+    const leftEntry = this.findSessionEntryByContextId(entries, persisted.sessionA);
+    const rightEntry = this.findSessionEntryByContextId(entries, persisted.sessionB);
+    if (!leftEntry || !rightEntry || leftEntry.id === rightEntry.id) {
+      return { leftId: "", rightId: "" };
+    }
+    return { leftId: leftEntry.id, rightId: rightEntry.id };
+  }
+
   findSessionEntryById(entries, selectedId) {
     if (!Array.isArray(entries) || typeof selectedId !== "string" || !selectedId.trim()) {
       return null;
@@ -568,6 +616,7 @@ class WorkspaceV2SessionProducer {
   updateDiffSelectionFeedbackAndState() {
     const left = this.findSessionEntryById(this.diffCandidates, this.diffLeftSelect.value);
     const right = this.findSessionEntryById(this.diffCandidates, this.diffRightSelect.value);
+    this.writePersistedSessionSelection(left, right);
     this.diffLeftSelectedLabelNode.textContent = this.formatSelectionLabel(left);
     this.diffRightSelectedLabelNode.textContent = this.formatSelectionLabel(right);
     const canRunDiff = Boolean(left && right && left.id !== right.id);
@@ -584,6 +633,7 @@ class WorkspaceV2SessionProducer {
   updateMergeSelectionFeedbackAndState() {
     const left = this.findSessionEntryById(this.mergeCandidates, this.mergeLeftSelect.value);
     const right = this.findSessionEntryById(this.mergeCandidates, this.mergeRightSelect.value);
+    this.writePersistedSessionSelection(left, right);
     this.mergeLeftSelectedLabelNode.textContent = this.formatSelectionLabel(left);
     this.mergeRightSelectedLabelNode.textContent = this.formatSelectionLabel(right);
     const canPreviewMerge = Boolean(left && right && left.id !== right.id);
@@ -608,6 +658,7 @@ class WorkspaceV2SessionProducer {
     this.diffCandidates = this.resolveWorkspaceSessionInventory();
     const currentLeft = this.diffLeftSelect.value;
     const currentRight = this.diffRightSelect.value;
+    const persistedSelections = this.resolvePersistedSelectionIds(this.diffCandidates);
     this.diffLeftSelect.replaceChildren();
     this.diffRightSelect.replaceChildren();
 
@@ -633,8 +684,12 @@ class WorkspaceV2SessionProducer {
       this.diffRightSelect.appendChild(rightOption);
     });
 
-    this.diffLeftSelect.value = this.diffCandidates.some((entry) => entry.id === currentLeft) ? currentLeft : "";
-    this.diffRightSelect.value = this.diffCandidates.some((entry) => entry.id === currentRight) ? currentRight : "";
+    this.diffLeftSelect.value = this.diffCandidates.some((entry) => entry.id === currentLeft)
+      ? currentLeft
+      : persistedSelections.leftId;
+    this.diffRightSelect.value = this.diffCandidates.some((entry) => entry.id === currentRight)
+      ? currentRight
+      : persistedSelections.rightId;
 
     this.diffEmptyState.hidden = this.diffCandidates.length >= 2;
     this.diffEmptyState.textContent = "Create or reopen at least two Workspace V2 sessions before comparing.";
@@ -656,6 +711,7 @@ class WorkspaceV2SessionProducer {
     this.applyMergeButton.disabled = true;
     const currentLeft = this.mergeLeftSelect.value;
     const currentRight = this.mergeRightSelect.value;
+    const persistedSelections = this.resolvePersistedSelectionIds(this.mergeCandidates);
     this.mergeLeftSelect.replaceChildren();
     this.mergeRightSelect.replaceChildren();
 
@@ -681,8 +737,12 @@ class WorkspaceV2SessionProducer {
       this.mergeRightSelect.appendChild(rightOption);
     });
 
-    this.mergeLeftSelect.value = this.mergeCandidates.some((entry) => entry.id === currentLeft) ? currentLeft : "";
-    this.mergeRightSelect.value = this.mergeCandidates.some((entry) => entry.id === currentRight) ? currentRight : "";
+    this.mergeLeftSelect.value = this.mergeCandidates.some((entry) => entry.id === currentLeft)
+      ? currentLeft
+      : persistedSelections.leftId;
+    this.mergeRightSelect.value = this.mergeCandidates.some((entry) => entry.id === currentRight)
+      ? currentRight
+      : persistedSelections.rightId;
 
     this.mergeEmptyState.hidden = this.mergeCandidates.length >= 2;
     this.mergeEmptyState.textContent = "Create or reopen at least two Workspace V2 sessions before previewing a merge.";
@@ -1202,10 +1262,17 @@ class WorkspaceV2SessionProducer {
 
   clearSessionStorage(emitStatus = true) {
     sessionStorage.clear();
+    this.clearPersistedSessionSelection();
+    this.diffLeftSelect.value = "";
+    this.diffRightSelect.value = "";
+    this.mergeLeftSelect.value = "";
+    this.mergeRightSelect.value = "";
+    this.updateDiffSelectionFeedbackAndState();
+    this.updateMergeSelectionFeedbackAndState();
     this.currentHostContextId = "";
     this.renderDiagnosticsPanel();
     if (emitStatus) {
-      this.statusNode.textContent = "Session storage cleared.";
+      this.statusNode.textContent = "Session storage cleared and session selections reset.";
     }
   }
 
