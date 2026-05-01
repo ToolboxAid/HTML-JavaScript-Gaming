@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Workspace V2</title>
+    <link rel="stylesheet" href="../../src/engine/theme/main.css" />
+    <link rel="stylesheet" href="../../src/engine/ui/hubCommon.css" />
+  </head>
+  <body data-tool-id="workspace-v2">
+    <div id="shared-theme-header"></div>
+    <main class="hub-page">
+      <section class="hub-panel">
+        <h1>Workspace V2 Session Producer</h1>
+        <p>Create a hostContext session from a V2 fixture and launch a V2 tool with that context.</p>
+      </section>
+
+      <section class="hub-panel">
+        <h2>Producer</h2>
+        <label for="workspaceV2ToolSelect">Tool</label>
+        <select id="workspaceV2ToolSelect">
+          <option value="asset-browser-v2">Asset Browser V2</option>
+          <option value="palette-manager-v2">Palette Manager V2</option>
+          <option value="svg-asset-studio-v2">SVG Asset Studio V2</option>
+          <option value="tilemap-studio-v2">Tilemap Studio V2</option>
+          <option value="vector-map-editor-v2">Vector Map Editor V2</option>
+        </select>
+        <div>
+          <button id="workspaceV2LoadFixtureButton" type="button">Load Fixture</button>
+          <button id="workspaceV2LaunchButton" type="button">Create Session + Launch</button>
+        </div>
+      </section>
+
+      <section class="hub-panel">
+        <h2>Session Output</h2>
+        <pre id="workspaceV2Status">No fixture loaded.</pre>
+      </section>
+    </main>
+    <script type="module" src="../../src/engine/theme/mount-shared-header.js"></script>
+    <script type="module" src="./index.js"></script>
+  </body>
+</html>
