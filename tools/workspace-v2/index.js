@@ -438,20 +438,65 @@ class WorkspaceV2SessionProducer {
     history.forEach((entry) => {
       const item = document.createElement("li");
       const title = document.createElement("strong");
+      const idLine = document.createElement("div");
+      const idLabel = document.createElement("span");
+      const idCode = document.createElement("code");
       const meta = document.createElement("div");
       const reopenButton = document.createElement("button");
+      const copyIdButton = document.createElement("button");
+      const useInLibraryButton = document.createElement("button");
       title.textContent = `${entry.tool} (${entry.hostContextId})`;
+      idLabel.textContent = "Session ID: ";
+      idCode.textContent = entry.hostContextId;
+      idCode.title = entry.hostContextId;
+      idLine.append(idLabel, idCode);
       meta.textContent = entry.timestamp;
       reopenButton.type = "button";
       reopenButton.textContent = "Reopen";
       reopenButton.addEventListener("click", () => {
         this.reopenSessionHistoryEntry(entry.hostContextId);
       });
-      item.append(title, meta, reopenButton);
+      copyIdButton.type = "button";
+      copyIdButton.textContent = "Copy ID";
+      copyIdButton.addEventListener("click", () => {
+        this.copySessionIdToClipboard(entry.hostContextId);
+      });
+      useInLibraryButton.type = "button";
+      useInLibraryButton.textContent = "Use in Library";
+      useInLibraryButton.addEventListener("click", () => {
+        this.useSessionIdInLibraryInput(entry.hostContextId);
+      });
+      item.append(title, idLine, meta, reopenButton, copyIdButton, useInLibraryButton);
       this.sessionHistoryListNode.appendChild(item);
     });
     this.renderSessionDiffInputs();
     this.renderSessionMergeInputs();
+  }
+
+  async copySessionIdToClipboard(hostContextId) {
+    if (typeof hostContextId !== "string" || !hostContextId.trim()) {
+      this.statusNode.textContent = "Copy ID failed: session ID is missing.";
+      return;
+    }
+    try {
+      if (!navigator.clipboard || typeof navigator.clipboard.writeText !== "function") {
+        this.statusNode.textContent = "Copy ID is unavailable in this browser context.";
+        return;
+      }
+      await navigator.clipboard.writeText(hostContextId.trim());
+      this.statusNode.textContent = `Session ID copied: ${hostContextId.trim()}`;
+    } catch (error) {
+      this.statusNode.textContent = `Copy ID failed: ${error instanceof Error ? error.message : "unknown error"}`;
+    }
+  }
+
+  useSessionIdInLibraryInput(hostContextId) {
+    if (typeof hostContextId !== "string" || !hostContextId.trim()) {
+      this.statusNode.textContent = "Use in Library failed: session ID is missing.";
+      return;
+    }
+    this.sessionNameNode.value = hostContextId.trim();
+    this.statusNode.textContent = `Session ID ready for Library actions: ${hostContextId.trim()}`;
   }
 
   resolveSessionPayloadFromContextId(contextId, fallbackPayload) {
