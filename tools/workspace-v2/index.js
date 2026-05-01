@@ -29,6 +29,11 @@ class WorkspaceV2SessionProducer {
     this.refreshSessionHistoryButton = document.getElementById("workspaceV2RefreshSessionHistoryButton");
     this.sessionHistoryEmptyState = document.getElementById("workspaceV2SessionHistoryEmptyState");
     this.sessionHistoryListNode = document.getElementById("workspaceV2SessionHistoryList");
+    this.diffLeftSelect = document.getElementById("workspaceV2DiffLeftSelect");
+    this.diffRightSelect = document.getElementById("workspaceV2DiffRightSelect");
+    this.computeDiffButton = document.getElementById("workspaceV2ComputeDiffButton");
+    this.diffEmptyState = document.getElementById("workspaceV2DiffEmptyState");
+    this.diffOutputNode = document.getElementById("workspaceV2DiffOutput");
     this.refreshErrorLogsButton = document.getElementById("workspaceV2RefreshErrorLogsButton");
     this.clearErrorLogsButton = document.getElementById("workspaceV2ClearErrorLogsButton");
     this.errorLogsEmptyState = document.getElementById("workspaceV2ErrorLogsEmptyState");
@@ -87,6 +92,9 @@ class WorkspaceV2SessionProducer {
     this.refreshSessionHistoryButton.addEventListener("click", () => {
       this.renderSessionHistory();
     });
+    this.computeDiffButton.addEventListener("click", () => {
+      this.computeSelectedSessionDiff();
+    });
     this.refreshErrorLogsButton.addEventListener("click", () => {
       this.renderErrorLogsViewer();
     });
@@ -129,6 +137,7 @@ class WorkspaceV2SessionProducer {
     this.registerSnapshotHook();
     this.renderSessionLibrary();
     this.renderSessionHistory();
+    this.renderSessionDiffInputs();
     this.renderErrorLogsViewer();
     this.renderDiagnosticsPanel();
   }
@@ -282,6 +291,7 @@ class WorkspaceV2SessionProducer {
 
   writeSessionLibrary(library) {
     localStorage.setItem(this.libraryStorageKey, JSON.stringify(library));
+    this.renderSessionDiffInputs();
     this.renderDiagnosticsPanel();
   }
 
@@ -308,6 +318,7 @@ class WorkspaceV2SessionProducer {
       item.appendChild(button);
       this.sessionListNode.appendChild(item);
     });
+    this.renderSessionDiffInputs();
   }
 
   isValidSessionHistoryEntry(entry) {
@@ -352,6 +363,7 @@ class WorkspaceV2SessionProducer {
 
   writeSessionHistory(entries) {
     localStorage.setItem(this.historyStorageKey, JSON.stringify(entries));
+    this.renderSessionDiffInputs();
     this.renderDiagnosticsPanel();
   }
 
@@ -395,6 +407,134 @@ class WorkspaceV2SessionProducer {
       item.append(title, meta, reopenButton);
       this.sessionHistoryListNode.appendChild(item);
     });
+    this.renderSessionDiffInputs();
+  }
+
+  buildSessionDiffCandidates() {
+    const candidates = [];
+    const library = this.readSessionLibrary();
+    if (library && typeof library === "object" && !Array.isArray(library)) {
+      Object.keys(library)
+        .sort((left, right) => left.localeCompare(right))
+        .forEach((sessionName) => {
+          if (!this.isValidSessionPayload(library[sessionName])) {
+            return;
+          }
+          candidates.push({
+            id: `library:${sessionName}`,
+            label: `Library | ${sessionName}`,
+            payload: library[sessionName]
+          });
+        });
+    }
+    const history = this.readSessionHistory();
+    history.forEach((entry) => {
+      if (!this.isValidSessionHistoryEntry(entry)) {
+        return;
+      }
+      candidates.push({
+        id: `history:${entry.hostContextId}`,
+        label: `History | ${entry.tool} | ${entry.hostContextId} | ${entry.timestamp}`,
+        payload: entry.payload
+      });
+    });
+    return candidates;
+  }
+
+  renderSessionDiffInputs() {
+    this.diffCandidates = this.buildSessionDiffCandidates();
+    const currentLeft = this.diffLeftSelect.value;
+    const currentRight = this.diffRightSelect.value;
+    this.diffLeftSelect.replaceChildren();
+    this.diffRightSelect.replaceChildren();
+
+    this.diffCandidates.forEach((candidate) => {
+      const leftOption = document.createElement("option");
+      leftOption.value = candidate.id;
+      leftOption.textContent = candidate.label;
+      this.diffLeftSelect.appendChild(leftOption);
+      const rightOption = document.createElement("option");
+      rightOption.value = candidate.id;
+      rightOption.textContent = candidate.label;
+      this.diffRightSelect.appendChild(rightOption);
+    });
+
+    if (this.diffCandidates.length > 0) {
+      this.diffLeftSelect.value = this.diffCandidates.some((entry) => entry.id === currentLeft) ? currentLeft : this.diffCandidates[0].id;
+      if (this.diffCandidates.some((entry) => entry.id === currentRight)) {
+        this.diffRightSelect.value = currentRight;
+      } else if (this.diffCandidates.length > 1) {
+        this.diffRightSelect.value = this.diffCandidates[1].id;
+      } else {
+        this.diffRightSelect.value = this.diffCandidates[0].id;
+      }
+    }
+
+    this.diffEmptyState.hidden = this.diffCandidates.length >= 2;
+    this.diffEmptyState.textContent = "Need at least two valid sessions to compare.";
+  }
+
+  isComparableObject(value) {
+    return Boolean(value && typeof value === "object");
+  }
+
+  computeSessionDiff(leftPayload, rightPayload) {
+    const added = {};
+    const removed = {};
+    const changed = {};
+    const walk = (leftValue, rightValue, path) => {
+      if (leftValue === undefined && rightValue !== undefined) {
+        added[path] = rightValue;
+        return;
+      }
+      if (leftValue !== undefined && rightValue === undefined) {
+        removed[path] = leftValue;
+        return;
+      }
+      const leftComparable = this.isComparableObject(leftValue);
+      const rightComparable = this.isComparableObject(rightValue);
+      if (leftComparable && rightComparable) {
+        if (Array.isArray(leftValue) && Array.isArray(rightValue)) {
+          const maxLength = Math.max(leftValue.length, rightValue.length);
+          for (let index = 0; index < maxLength; index += 1) {
+            walk(leftValue[index], rightValue[index], `${path}[${index}]`);
+          }
+          return;
+        }
+        if (!Array.isArray(leftValue) && !Array.isArray(rightValue)) {
+          const keys = new Set([...Object.keys(leftValue), ...Object.keys(rightValue)]);
+          Array.from(keys).sort((a, b) => a.localeCompare(b)).forEach((key) => {
+            walk(leftValue[key], rightValue[key], path ? `${path}.${key}` : key);
+          });
+          return;
+        }
+      }
+      if (JSON.stringify(leftValue) !== JSON.stringify(rightValue)) {
+        changed[path || "$"] = { from: leftValue, to: rightValue };
+      }
+    };
+    walk(leftPayload, rightPayload, "");
+    return { added, removed, changed };
+  }
+
+  computeSelectedSessionDiff() {
+    if (!Array.isArray(this.diffCandidates) || this.diffCandidates.length < 2) {
+      this.diffOutputNode.textContent = "Need at least two valid sessions to compare.";
+      return;
+    }
+    const left = this.diffCandidates.find((entry) => entry.id === this.diffLeftSelect.value);
+    const right = this.diffCandidates.find((entry) => entry.id === this.diffRightSelect.value);
+    if (!left || !right) {
+      this.diffOutputNode.textContent = "Selected diff entries are not available.";
+      return;
+    }
+    if (!this.isValidSessionPayload(left.payload) || !this.isValidSessionPayload(right.payload)) {
+      this.diffOutputNode.textContent = "Selected diff payload is invalid.";
+      return;
+    }
+    const diff = this.computeSessionDiff(left.payload, right.payload);
+    this.diffOutputNode.textContent = JSON.stringify(diff, null, 2);
+    this.statusNode.textContent = "Session diff computed.";
   }
 
   reopenSessionHistoryEntry(hostContextId) {

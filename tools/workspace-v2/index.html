@@ -78,6 +78,18 @@
       </section>
 
       <section class="hub-panel">
+        <h2>Session Diff Viewer</h2>
+        <p>Compare two sessions from library/history with a deep structural diff.</p>
+        <label for="workspaceV2DiffLeftSelect">Session A</label>
+        <select id="workspaceV2DiffLeftSelect"></select>
+        <label for="workspaceV2DiffRightSelect">Session B</label>
+        <select id="workspaceV2DiffRightSelect"></select>
+        <button id="workspaceV2ComputeDiffButton" type="button">Compute Diff</button>
+        <p id="workspaceV2DiffEmptyState">Need at least two valid sessions to compare.</p>
+        <pre id="workspaceV2DiffOutput">No diff computed.</pre>
+      </section>
+
+      <section class="hub-panel">
         <h2>Error Viewer</h2>
         <p>Reads structured V2 tool logs from localStorage key <code>v2-error-logs</code>.</p>
         <div>
