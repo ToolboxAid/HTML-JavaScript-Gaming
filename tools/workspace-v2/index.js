@@ -673,6 +673,25 @@ class WorkspaceV2SessionProducer {
     return parsed.value;
   }
 
+  readSessionPayloadForSaveAction(sessionId) {
+    const storagePayload = this.readSessionPayloadForLibraryWrite(sessionId);
+    if (this.isValidSessionPayload(storagePayload)) {
+      return storagePayload;
+    }
+    const recentPayload = this.readSessionPayloadFromRecentSessionId(sessionId);
+    if (this.isValidSessionPayload(recentPayload)) {
+      return recentPayload;
+    }
+    const activePayload = this.readActiveSessionPayloadForLibraryActions();
+    if (this.isValidSessionPayload(activePayload)) {
+      return activePayload;
+    }
+    if (this.isValidSessionPayload(this.currentSessionPayload)) {
+      return this.currentSessionPayload;
+    }
+    return null;
+  }
+
   selectedMergedSessionId() {
     return typeof this.mergedSessionIdNode.value === "string" ? this.mergedSessionIdNode.value.trim() : "";
   }
@@ -2680,23 +2699,27 @@ class WorkspaceV2SessionProducer {
       return;
     }
     const exists = Object.prototype.hasOwnProperty.call(library, sessionName);
+    if (overwriteExisting && !exists) {
+      this.setLibraryStatus("Saved session not found. Use Save Session to create it first.");
+      return;
+    }
     if (!overwriteExisting && exists) {
       this.setLibraryStatus("Saved session already exists. Use Overwrite Session.");
       return;
     }
-    const payloadForWrite = this.readSessionPayloadForLibraryWrite(sessionName);
+    const payloadForWrite = this.readSessionPayloadForSaveAction(sessionName);
     if (!this.isValidSessionPayload(payloadForWrite)) {
-      this.setLibraryStatus("Session ID does not resolve to a valid Workspace V2 session.");
-      return;
-    }
-    if (overwriteExisting && !exists) {
-      this.setLibraryStatus("Saved session not found. Use Save Session to create it first.");
+      this.setLibraryStatus(overwriteExisting
+        ? "No active Workspace V2 session is available to overwrite from."
+        : "No active Workspace V2 session is available to save.");
       return;
     }
     library[sessionName] = payloadForWrite;
     this.writeSessionLibrary(library);
     this.renderSessionLibrary();
-    this.setLibraryStatus(overwriteExisting ? "Saved session overwritten." : "Saved session created.");
+    this.setLibraryStatus(overwriteExisting
+      ? "Saved session overwritten."
+      : "Saved session created. New session ID is now available for Load, Overwrite, and Delete.");
   }
 
   loadNamedSession() {

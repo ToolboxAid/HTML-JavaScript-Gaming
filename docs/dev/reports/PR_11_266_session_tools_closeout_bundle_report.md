@@ -57,3 +57,26 @@ Workspace V2 only:
 ## Full Samples Smoke Decision
 - Full samples smoke test was skipped.
 - Reason: changes are tightly scoped to Workspace V2 session UX/state handling and were covered by targeted runtime tests.
+
+
+## Continuation Fix (Session Library Save Behavior)
+- Adjusted Session Library action behavior so `Save Session` no longer requires the entered ID to pre-resolve to sessionStorage/recent history.
+- `Save Session` now creates a new saved entry when:
+  - session ID is non-empty
+  - session ID is not already saved
+  - a valid current Workspace V2 payload is available (resolved from entered ID, recent/history, active session, or current payload)
+- `Overwrite Session`, `Load Session`, and `Delete Saved Session` continue to require existing saved library entries.
+- Updated status messages to clearly distinguish:
+  - new ID save success
+  - overwrite/load/delete existing entry requirements
+  - missing/invalid active save source
+
+### Additional Files Updated
+- tests/runtime/V2SessionLibraryActions.test.mjs
+
+### Additional Validation
+1. `node --check tests/runtime/V2SessionLibraryActions.test.mjs`
+   - PASS
+2. `node tests/runtime/V2SessionLibraryActions.test.mjs`
+   - PASS
+   - Results: `tmp/v2-session-library-actions-results.json`
