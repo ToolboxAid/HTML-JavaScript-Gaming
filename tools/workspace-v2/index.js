@@ -260,8 +260,55 @@ class WorkspaceV2SessionProducer {
     this.statusNode.textContent = `Workspace V2 initialized.\nTool: ${selectedToolId}\nHostContextId: ${hostContextId}\nSession is active for Save Session.`;
   }
 
+  hasActiveWorkspaceSessionForSave() {
+    return Boolean(
+      typeof this.currentHostContextId === "string" &&
+      this.currentHostContextId.trim() &&
+      this.isValidSessionPayload(this.currentSessionPayload)
+    );
+  }
+
+  isValidNewSessionId(sessionId) {
+    if (typeof sessionId !== "string") {
+      return false;
+    }
+    const trimmed = sessionId.trim();
+    if (!trimmed) {
+      return false;
+    }
+    return /^[a-z0-9][a-z0-9-_]{1,63}$/i.test(trimmed);
+  }
+
+  savedSessionIdExists(sessionId) {
+    if (typeof sessionId !== "string" || !sessionId.trim()) {
+      return false;
+    }
+    const library = this.readSessionLibrary();
+    if (library === null) {
+      return false;
+    }
+    return Object.prototype.hasOwnProperty.call(library, sessionId.trim());
+  }
+
   updateSessionLibraryActionState() {
-    this.refreshWorkspaceSessionUiStateModel("refresh_load");
+    const model = this.refreshWorkspaceSessionUiStateModel("refresh_load");
+    if (!model.libraryHasSessionInput) {
+      this.libraryStatusNode.textContent = "Enter a new session ID to save.";
+      return;
+    }
+    if (!model.libraryIdValid) {
+      this.libraryStatusNode.textContent = "Enter a valid new session ID before saving.";
+      return;
+    }
+    if (model.librarySavedSessionExists) {
+      this.libraryStatusNode.textContent = "That session ID already exists. Use the saved session card to Load, Overwrite, or Delete it.";
+      return;
+    }
+    if (!model.libraryHasActiveSession) {
+      this.libraryStatusNode.textContent = "No active Workspace V2 session is available to save.";
+      return;
+    }
+    this.libraryStatusNode.textContent = "Ready to save a new session copy from the active Workspace V2 session.";
   }
 
   computeWorkspaceTransitionStateFromModel(model) {
@@ -340,7 +387,12 @@ class WorkspaceV2SessionProducer {
   }
 
   computeWorkspaceSessionUiStateModel() {
-    const libraryHasSessionInput = Boolean(this.selectedSessionName());
+    const selectedSessionName = this.selectedSessionName();
+    const libraryHasSessionInput = Boolean(selectedSessionName);
+    const libraryIdValid = this.isValidNewSessionId(selectedSessionName);
+    const librarySavedSessionExists = this.savedSessionIdExists(selectedSessionName);
+    const libraryHasActiveSession = this.hasActiveWorkspaceSessionForSave();
+    const libraryCanSave = Boolean(libraryHasSessionInput && libraryIdValid && !librarySavedSessionExists && libraryHasActiveSession);
     const diffLeftEntry = this.findSessionEntryById(this.diffCandidates, this.diffLeftSelect.value);
     const diffRightEntry = this.findSessionEntryById(this.diffCandidates, this.diffRightSelect.value);
     const diffCanCompute = Boolean(diffLeftEntry && diffRightEntry && diffLeftEntry.id !== diffRightEntry.id);
@@ -382,6 +434,10 @@ class WorkspaceV2SessionProducer {
     );
     return {
       libraryHasSessionInput,
+      libraryIdValid,
+      librarySavedSessionExists,
+      libraryHasActiveSession,
+      libraryCanSave,
       diffLeftEntry,
       diffRightEntry,
       diffCanCompute,
@@ -401,10 +457,10 @@ class WorkspaceV2SessionProducer {
   }
 
   renderWorkspaceSessionUiStateModel(model) {
-    this.saveSessionButton.disabled = !model.libraryHasSessionInput;
-    this.overwriteSessionButton.disabled = !model.libraryHasSessionInput;
-    this.loadSessionButton.disabled = !model.libraryHasSessionInput;
-    this.deleteSessionButton.disabled = !model.libraryHasSessionInput;
+    this.saveSessionButton.disabled = !model.libraryCanSave;
+    this.overwriteSessionButton.disabled = true;
+    this.loadSessionButton.disabled = true;
+    this.deleteSessionButton.disabled = true;
     if (model.mergeLeftEntry || model.mergeRightEntry) {
       this.writePersistedSessionSelection(model.mergeLeftEntry, model.mergeRightEntry);
     } else {
@@ -2733,6 +2789,10 @@ class WorkspaceV2SessionProducer {
       this.setLibraryStatus(overwriteExisting ? "Enter a session ID before overwriting." : "Enter a session ID before saving.");
       return;
     }
+    if (!overwriteExisting && !this.isValidNewSessionId(sessionName)) {
+      this.setLibraryStatus("Enter a valid new session ID before saving.");
+      return;
+    }
     const library = this.readSessionLibrary();
     if (library === null) {
       return;
@@ -2743,7 +2803,7 @@ class WorkspaceV2SessionProducer {
       return;
     }
     if (!overwriteExisting && exists) {
-      this.setLibraryStatus("Saved session already exists. Manage it from its Saved Sessions card.");
+      this.setLibraryStatus("That session ID already exists. Use the saved session card to Load, Overwrite, or Delete it.");
       return;
     }
     const payloadForWrite = this.readSessionPayloadForSaveAction(sessionName);
@@ -2781,6 +2841,7 @@ class WorkspaceV2SessionProducer {
       return;
     }
     this.setLibraryStatus("Saved session loaded.");
+    this.refreshWorkspaceSessionUiStateModel("refresh_load");
   }
 
   deleteNamedSession() {

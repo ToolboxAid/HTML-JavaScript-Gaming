@@ -44,14 +44,14 @@ export function run() {
     '<button id="workspaceV2OverwriteSessionButton" type="button" hidden>Overwrite Session</button>',
     '<button id="workspaceV2LoadSessionButton" type="button" hidden>Load Session</button>',
     '<button id="workspaceV2DeleteSessionButton" type="button" hidden>Delete Saved Session</button>',
-    'Use Save Session to create a new saved entry. Manage existing saved sessions from their Saved Sessions cards.'
+    'Save creates a new saved copy from the active Workspace V2 session. Load from a saved card makes that saved session the active Workspace V2 session. Overwrite (when available on cards) updates an existing saved copy, and Delete removes the saved copy only.'
   ];
   requiredHtmlTokens.forEach((token) => {
     if (!html.includes(token)) failures.push(`Missing expected Session Library cleanup HTML token: ${token}`);
   });
 
   const requiredJsTokens = [
-    'this.setLibraryStatus("Saved session already exists. Manage it from its Saved Sessions card.");',
+    'this.setLibraryStatus("That session ID already exists. Use the saved session card to Load, Overwrite, or Delete it.");',
     'Saved session created. Manage this session from its Saved Sessions card.',
     'loadButton.textContent = "Load";',
     'deleteSavedButton.textContent = "Delete Saved";',
