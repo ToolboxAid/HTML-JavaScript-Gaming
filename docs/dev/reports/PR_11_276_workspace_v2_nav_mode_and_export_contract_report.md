@@ -1,10 +1,7 @@
-# PR_11_276 Workspace V2 Nav Mode Separation + Workspace Export Contract Report
+# PR_11_276 Workspace V2 Strict Nav Mode Separation + Export Contract Report
 
 ## Scope
-Workspace V2 only:
-- import/export controls
-- tool-vs-workspace nav mode separation
-- workspace export/import contract alignment
+Workspace V2 nav/import/export UI only, plus validation that tool pages do not expose workspace controls.
 
 ## Files Changed
 - tools/workspace-v2/index.html
@@ -15,28 +12,16 @@ Workspace V2 only:
 - docs/dev/reports/PR_11_276_workspace_v2_nav_mode_and_export_contract_report.md
 
 ## Implementation Summary
-- Added explicit nav mode selector:
-  - `Tool Mode (navTools)`
-  - `Workspace Mode (navWorkspace)`
-- Split UI actions by mode:
-  - navTools: tool session import/export only
-  - navWorkspace: workspace session import/export only
-- Added mode-gated handler checks so actions cannot run from the wrong mode.
-- Tool mode export (`exportCurrentSessionJson`) now exports only the active tool payload JSON.
-- Workspace mode export (`exportWorkspaceSessionJson`) now exports portable workspace container contract:
-  - `version`, `toolId: workspace-v2`
-  - `workspaceSession` with workspace identity, default/active tool, active host context, `toolSessions` grouped by toolId/sessionId, and `savedSessions`
-- Removed runtime-only fields from workspace export payload contract:
-  - `sessionHistory`
-  - `sessionSelection`
-  - `mergeAuditLog`
-  - lone `activeSessionPayload`
-- Added workspace import (`importWorkspaceSessionJson`) with contract validation and state hydration for active session + saved sessions.
-
-## Workspace Contract Alignment Notes
-- Existing repo schemas under `tools/schemas/workspace*.json` are workspace/game manifest contracts for legacy tool ids and are not directly compatible with Workspace V2 tool-session lane.
-- This PR keeps schema files untouched and enforces a Workspace V2 portable session wrapper contract in code/tests.
-- No schema file correction was required for this scoped Workspace V2 runtime/export lane.
+- Removed Workspace V2 Navigation Mode dropdown.
+- Removed Workspace V2 Tool Mode (navTools) controls from UI.
+- Workspace V2 now always runs workspace-context import/export controls only.
+- Wired Workspace V2 import/export buttons directly to workspace-session handlers.
+- Workspace export remains a portable workspace-session wrapper and excludes runtime-only fields:
+  - sessionHistory
+  - sessionSelection
+  - mergeAuditLog
+  - lone activeSessionPayload
+- Tool pages validated to confirm they do not expose workspace-session import/export controls.
 
 ## Validation Commands
 1. `node --check tools/workspace-v2/index.js`
@@ -47,6 +32,10 @@ Workspace V2 only:
    - PASS
    - Results: `tmp/v2-current-session-export-results.json`
 
+## Schema Alignment Note
+- Existing repository workspace schema files are legacy workspace/game manifest contracts and were not modified.
+- This PR keeps Workspace V2 session import/export validation in runtime code for the Workspace V2 portable session wrapper contract.
+
 ## Full Samples Smoke Decision
 - Skipped full samples smoke test.
-- Reason: changes are confined to Workspace V2 import/export/nav-mode logic and validated with targeted runtime checks.
+- Reason: scope is limited to Workspace V2 nav/import/export UI and targeted runtime validation covers the changed behavior.

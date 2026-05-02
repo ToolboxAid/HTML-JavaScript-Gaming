@@ -1,7 +1,7 @@
-# PLAN_PR_11_276_WORKSPACE_V2_NAV_MODE_SEPARATION_AND_EXPORT_CONTRACT_CORRECTION
+# PLAN_PR_11_276_WORKSPACE_V2_STRICT_NAV_MODE_SEPARATION
 
 ## Purpose
-Separate tool-vs-workspace navigation modes in Workspace V2 import/export controls and correct workspace export to a portable workspace-level contract.
+Enforce strict Workspace V2 navigation mode separation by removing mode switching and keeping Workspace V2 import/export controls workspace-session only.
 
 ## Scope
 - tools/workspace-v2/index.html
@@ -10,18 +10,16 @@ Separate tool-vs-workspace navigation modes in Workspace V2 import/export contro
 - docs/report only
 
 ## Goals
-- Add explicit nav mode separation:
-  - tool mode (navTools) exposes only tool import/export actions
-  - workspace mode (navWorkspace) exposes only workspace import/export actions
-- Keep tool mode import/export tool-session scoped.
-- Make workspace mode export a portable workspace wrapper contract.
-- Remove runtime-only fields from workspace export payload.
-- Keep Save/Load/Overwrite/Diff/Merge operational with imported/exported workspace data.
+- Remove/hide navigation mode dropdown in Workspace V2.
+- Workspace V2 exposes only navWorkspace import/export controls.
+- No Tool Mode controls on Workspace V2.
+- Workspace import/export validates workspace-session shape.
+- Tool pages do not expose workspace import/export controls.
+- No overlap/switching/fallback between navTools and navWorkspace.
 
 ## Out of Scope
-- No schema file rewrites.
-- No unrelated tool changes.
-- No merge/diff algorithm refactors.
+- No schema rewrites unless strictly required.
+- No unrelated tool behavior changes.
 
 ## Validation
 - node --check tools/workspace-v2/index.js

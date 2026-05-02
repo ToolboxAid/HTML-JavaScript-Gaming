@@ -19,12 +19,7 @@ class WorkspaceV2SessionProducer {
     this.importFileNode = document.getElementById("workspaceV2ImportFile");
     this.importButton = document.getElementById("workspaceV2ImportButton");
     this.exportButton = document.getElementById("workspaceV2ExportButton");
-    this.navModeSelect = document.getElementById("workspaceV2NavModeSelect");
-    this.navToolsActionsNode = document.getElementById("workspaceV2NavToolsActions");
-    this.navWorkspaceActionsNode = document.getElementById("workspaceV2NavWorkspaceActions");
-    this.workspaceJsonNode = document.getElementById("workspaceV2WorkspaceJson");
-    this.importWorkspaceButton = document.getElementById("workspaceV2ImportWorkspaceButton");
-    this.exportWorkspaceButton = document.getElementById("workspaceV2ExportWorkspaceButton");
+    this.workspaceJsonNode = this.importJsonNode;
     this.shareUrlNode = document.getElementById("workspaceV2ShareUrl");
     this.createShareLinkButton = document.getElementById("workspaceV2CreateShareLinkButton");
     this.applyShareLinkButton = document.getElementById("workspaceV2ApplyShareLinkButton");
@@ -102,19 +97,10 @@ class WorkspaceV2SessionProducer {
       this.createSessionAndLaunch();
     });
     this.importButton.addEventListener("click", () => {
-      this.importSessionJson();
-    });
-    this.exportButton.addEventListener("click", () => {
-      this.exportCurrentSessionJson();
-    });
-    this.importWorkspaceButton.addEventListener("click", () => {
       this.importWorkspaceSessionJson();
     });
-    this.exportWorkspaceButton.addEventListener("click", () => {
+    this.exportButton.addEventListener("click", () => {
       this.exportWorkspaceSessionJson();
-    });
-    this.navModeSelect.addEventListener("change", () => {
-      this.renderNavModeActions();
     });
     this.createShareLinkButton.addEventListener("click", () => {
       this.createShareLink();
@@ -219,7 +205,6 @@ class WorkspaceV2SessionProducer {
       }
     });
     this.applyDefaultWorkspaceToolSelection();
-    this.renderNavModeActions();
     this.decodeSessionParamFromUrl();
     this.initializeWorkspaceProducerSession();
     this.registerSnapshotHook();
@@ -241,24 +226,19 @@ class WorkspaceV2SessionProducer {
   }
 
   currentNavMode() {
-    return this.navModeSelect && this.navModeSelect.value === "workspace" ? "workspace" : "tools";
+    return "workspace";
   }
 
   inToolsNavMode() {
-    return this.currentNavMode() === "tools";
+    return false;
   }
 
   inWorkspaceNavMode() {
-    return this.currentNavMode() === "workspace";
+    return true;
   }
 
   renderNavModeActions() {
-    const toolsMode = this.inToolsNavMode();
-    this.navToolsActionsNode.hidden = !toolsMode;
-    this.navWorkspaceActionsNode.hidden = toolsMode;
-    this.statusNode.textContent = toolsMode
-      ? "Tool mode active: use navTools import/export actions."
-      : "Workspace mode active: use navWorkspace import/export actions.";
+    this.statusNode.textContent = "Workspace mode active: use navWorkspace import/export actions.";
   }
 
   applyDefaultWorkspaceToolSelection() {
@@ -2765,10 +2745,6 @@ class WorkspaceV2SessionProducer {
   }
 
   readImportFile() {
-    if (!this.inToolsNavMode()) {
-      this.statusNode.textContent = "Switch to tool mode to import tool session files.";
-      return;
-    }
     if (!this.importFileNode.files || this.importFileNode.files.length === 0) {
       return;
     }

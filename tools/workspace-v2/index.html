@@ -35,30 +35,14 @@
 
       <section class="hub-panel">
         <h2>Import / Export Session JSON</h2>
-        <label for="workspaceV2NavModeSelect">Navigation Mode</label>
-        <select id="workspaceV2NavModeSelect">
-          <option value="tools" selected>Tool Mode (navTools)</option>
-          <option value="workspace">Workspace Mode (navWorkspace)</option>
-        </select>
-        <div id="workspaceV2NavToolsActions">
-          <p>Tool mode actions (navTools): import/export a single active tool session payload.</p>
-          <label for="workspaceV2ImportJson">Tool Session JSON</label>
-          <textarea id="workspaceV2ImportJson" rows="12" spellcheck="false" placeholder='{"toolId":"asset-browser-v2","payloadJson":{}}'></textarea>
-          <label for="workspaceV2ImportFile">Import File</label>
-          <input id="workspaceV2ImportFile" type="file" accept="application/json,.json" />
-          <div>
-            <button id="workspaceV2ImportButton" type="button">Import Tool Session JSON</button>
-            <button id="workspaceV2ExportButton" type="button">Export Tool Session JSON</button>
-          </div>
-        </div>
-        <div id="workspaceV2NavWorkspaceActions" hidden>
-          <p>Workspace mode actions (navWorkspace): import/export a portable Workspace V2 session manifest.</p>
-          <label for="workspaceV2WorkspaceJson">Workspace Session JSON</label>
-          <textarea id="workspaceV2WorkspaceJson" rows="12" spellcheck="false" placeholder='{"version":"v2","toolId":"workspace-v2","workspaceSession":{}}'></textarea>
-          <div>
-            <button id="workspaceV2ImportWorkspaceButton" type="button">Import Workspace Session JSON</button>
-            <button id="workspaceV2ExportWorkspaceButton" type="button">Export Workspace Session JSON</button>
-          </div>
+        <p>Workspace mode actions (navWorkspace): import/export a portable Workspace V2 session manifest.</p>
+        <label for="workspaceV2ImportJson">Workspace Session JSON</label>
+        <textarea id="workspaceV2ImportJson" rows="12" spellcheck="false" placeholder='{"version":"v2","toolId":"workspace-v2","workspaceSession":{}}'></textarea>
+        <label for="workspaceV2ImportFile">Import File</label>
+        <input id="workspaceV2ImportFile" type="file" accept="application/json,.json" />
+        <div>
+          <button id="workspaceV2ImportButton" type="button">Import Workspace Session JSON</button>
+          <button id="workspaceV2ExportButton" type="button">Export Workspace Session JSON</button>
         </div>
       </section>
 

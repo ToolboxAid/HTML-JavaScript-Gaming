@@ -1,7 +1,7 @@
-# BUILD_PR_11_276_WORKSPACE_V2_NAV_MODE_SEPARATION_AND_EXPORT_CONTRACT_CORRECTION
+# BUILD_PR_11_276_WORKSPACE_V2_STRICT_NAV_MODE_SEPARATION
 
 ## Purpose
-Implement Workspace V2 nav mode separation for import/export controls and align workspace export/import with a portable workspace-level session contract.
+Continue/fix PR_11_276 by enforcing strict Workspace V2 navigation mode separation and workspace-session-only import/export controls.
 
 ## Files
 - tools/workspace-v2/index.html
@@ -10,31 +10,23 @@ Implement Workspace V2 nav mode separation for import/export controls and align 
 - docs/dev/reports/PR_11_276_workspace_v2_nav_mode_and_export_contract_report.md
 
 ## Implementation
-1. Add navigation mode selector in Workspace V2:
-   - `tools` (navTools)
-   - `workspace` (navWorkspace)
-2. Split Import/Export UI into mode-owned action groups:
-   - navTools section keeps single-tool import/export controls
-   - navWorkspace section adds workspace import/export controls
-3. Wire mode rendering in JS with explicit show/hide behavior.
-4. Enforce mode-gated actions:
-   - tool import/export blocked outside tool mode
-   - workspace import/export blocked outside workspace mode
-5. Tool mode export remains tool-payload scoped.
-6. Workspace mode export outputs portable workspace wrapper containing:
+1. Remove nav mode dropdown and all navTools UI controls from Workspace V2.
+2. Keep only workspace-session import/export controls in Workspace V2.
+3. Wire existing Workspace V2 import/export buttons directly to workspace-session handlers.
+4. Keep tool-mode handlers unavailable on Workspace V2 (no mode switching surface).
+5. Preserve workspace-session export contract:
    - workspace identity/version
    - active/default tool identity
-   - included tool payloads grouped by `toolId` and `sessionId`
-   - saved session map
-   - excludes runtime-only fields (`sessionHistory`, `sessionSelection`, `mergeAuditLog`, lone `activeSessionPayload`)
-7. Workspace import validates workspace wrapper contract and restores active session + saved sessions to operational state.
-8. Add targeted runtime coverage for mode separation and export contract behavior.
+   - toolSessions grouped by toolId/sessionId
+   - savedSessions
+   - excludes runtime-only fields (sessionHistory/sessionSelection/mergeAuditLog/lone activeSessionPayload)
+6. Update runtime test to assert strict no-overlap behavior and tool-page workspace-control absence.
 
 ## Acceptance
-- Tool mode only exposes tool import/export actions.
-- Workspace mode only exposes workspace import/export actions.
-- Workspace export is portable wrapper contract and excludes runtime-only fields.
-- Save/Load/Overwrite/Diff/Merge remain operational after workspace import.
+- Workspace V2 has no mode switch and no tool import/export controls.
+- Workspace V2 import/export is workspace-session only.
+- Tool pages do not expose workspace import/export controls.
+- No navTools/navWorkspace overlap on any page.
 
 ## Validation
 - node --check tools/workspace-v2/index.js
