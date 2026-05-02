@@ -314,11 +314,25 @@ class WorkspaceV2SessionProducer {
   }
 
   updateUndoLastMergeState() {
+    const mergedHostContextId = typeof this.lastMergedHostContextId === "string"
+      ? this.lastMergedHostContextId.trim()
+      : "";
+    if (!mergedHostContextId) {
+      this.undoLastMergeButton.disabled = true;
+      return;
+    }
     const history = this.readSessionHistory();
-    const hasRecentMerged = Boolean(
-      this.lastMergedHostContextId &&
-      history.some((entry) => entry.hostContextId === this.lastMergedHostContextId)
-    );
+    const existsInRecent = history.some((entry) => entry.hostContextId === mergedHostContextId);
+    const existsInSessionStorage = typeof sessionStorage.getItem(mergedHostContextId) === "string";
+    const hasRecentMerged = Boolean(mergedHostContextId && existsInRecent && existsInSessionStorage);
+    if (!hasRecentMerged) {
+      console.debug("[WorkspaceV2UndoLastMerge] stale_last_merged_context", {
+        lastMergedHostContextId: mergedHostContextId,
+        existsInRecent,
+        existsInSessionStorage
+      });
+      this.writeLastMergedHostContextId("");
+    }
     this.undoLastMergeButton.disabled = !hasRecentMerged;
   }
 
