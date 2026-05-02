@@ -1,0 +1,85 @@
+import assert from "node:assert/strict";
+import fs from "node:fs";
+import path from "node:path";
+import { execFileSync } from "node:child_process";
+import { fileURLToPath, pathToFileURL } from "node:url";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const repoRoot = path.resolve(__dirname, "..", "..");
+const htmlPath = path.join(repoRoot, "tools", "workspace-v2", "index.html");
+const jsPath = path.join(repoRoot, "tools", "workspace-v2", "index.js");
+const testPath = path.join(repoRoot, "tests", "runtime", "V2SessionLibraryActionCleanup.test.mjs");
+const resultsPath = path.join(repoRoot, "tmp", "v2-session-library-action-cleanup-results.json");
+
+function checkSyntax(filePath) {
+  try {
+    execFileSync(process.execPath, ["--check", filePath], {
+      cwd: repoRoot,
+      stdio: ["ignore", "pipe", "pipe"]
+    });
+    return { ok: true, error: "" };
+  } catch (error) {
+    return { ok: false, error: (error?.stderr || error?.stdout || error?.message || "").toString().trim() };
+  }
+}
+
+export function run() {
+  const failures = [];
+  const htmlExists = fs.existsSync(htmlPath);
+  const jsExists = fs.existsSync(jsPath);
+  const html = htmlExists ? fs.readFileSync(htmlPath, "utf8") : "";
+  const js = jsExists ? fs.readFileSync(jsPath, "utf8") : "";
+  const jsSyntax = checkSyntax(jsPath);
+  const testSyntax = checkSyntax(testPath);
+
+  if (!htmlExists) failures.push("Missing tools/workspace-v2/index.html.");
+  if (!jsExists) failures.push("Missing tools/workspace-v2/index.js.");
+  if (!jsSyntax.ok) failures.push("tools/workspace-v2/index.js failed syntax check.");
+  if (!testSyntax.ok) failures.push("tests/runtime/V2SessionLibraryActionCleanup.test.mjs failed syntax check.");
+
+  const requiredHtmlTokens = [
+    '<label for="workspaceV2SessionName">New Session ID (Save Session)</label>',
+    '<button id="workspaceV2SaveSessionButton" type="button">Save Session</button>',
+    '<button id="workspaceV2OverwriteSessionButton" type="button" hidden>Overwrite Session</button>',
+    '<button id="workspaceV2LoadSessionButton" type="button" hidden>Load Session</button>',
+    '<button id="workspaceV2DeleteSessionButton" type="button" hidden>Delete Saved Session</button>',
+    'Use Save Session to create a new saved entry. Manage existing saved sessions from their Saved Sessions cards.'
+  ];
+  requiredHtmlTokens.forEach((token) => {
+    if (!html.includes(token)) failures.push(`Missing expected Session Library cleanup HTML token: ${token}`);
+  });
+
+  const requiredJsTokens = [
+    'this.setLibraryStatus("Saved session already exists. Manage it from its Saved Sessions card.");',
+    'Saved session created. Manage this session from its Saved Sessions card.',
+    'loadButton.textContent = "Load";',
+    'deleteSavedButton.textContent = "Delete Saved";',
+    'useInLibraryButton.textContent = "Use in Diff/Merge";'
+  ];
+  requiredJsTokens.forEach((token) => {
+    if (!js.includes(token)) failures.push(`Missing expected Session Library cleanup JS token: ${token}`);
+  });
+
+  fs.mkdirSync(path.dirname(resultsPath), { recursive: true });
+  fs.writeFileSync(resultsPath, `${JSON.stringify({
+    generatedAt: new Date().toISOString(),
+    failures,
+    checks: { htmlExists, jsExists, jsSyntax, testSyntax }
+  }, null, 2)}
+`, "utf8");
+
+  console.log(`v2 session-library-action-cleanup results: ${resultsPath}`);
+  assert.equal(failures.length, 0, `V2 session-library-action-cleanup failures: ${failures.join(" | ")}`);
+  return { failures };
+}
+
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
+  try {
+    const summary = run();
+    console.log(JSON.stringify(summary, null, 2));
+  } catch (error) {
+    console.error(error);
+    process.exitCode = 1;
+  }
+}

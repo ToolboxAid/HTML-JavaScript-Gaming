@@ -57,14 +57,14 @@
 
       <section class="hub-panel">
         <h2>Session Library</h2>
-        <label for="workspaceV2SessionName">Session ID (for Save / Load / Delete)</label>
+        <label for="workspaceV2SessionName">New Session ID (Save Session)</label>
         <input id="workspaceV2SessionName" type="text" placeholder="session-id" />
-        <p>Saved sessions are stored in Session Library. Recent sessions are temporary.</p>
+        <p>Use Save Session to create a new saved entry. Manage existing saved sessions from their Saved Sessions cards.</p>
         <div>
           <button id="workspaceV2SaveSessionButton" type="button">Save Session</button>
-          <button id="workspaceV2OverwriteSessionButton" type="button">Overwrite Session</button>
-          <button id="workspaceV2LoadSessionButton" type="button">Load Session</button>
-          <button id="workspaceV2DeleteSessionButton" type="button">Delete Saved Session</button>
+          <button id="workspaceV2OverwriteSessionButton" type="button" hidden>Overwrite Session</button>
+          <button id="workspaceV2LoadSessionButton" type="button" hidden>Load Session</button>
+          <button id="workspaceV2DeleteSessionButton" type="button" hidden>Delete Saved Session</button>
         </div>
         <p id="workspaceV2LibraryStatus">No Session Library action yet.</p>
         <p id="workspaceV2LibraryEmptyState">No saved sessions in library.</p>

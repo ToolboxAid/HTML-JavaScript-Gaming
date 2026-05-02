@@ -2743,7 +2743,7 @@ class WorkspaceV2SessionProducer {
       return;
     }
     if (!overwriteExisting && exists) {
-      this.setLibraryStatus("Saved session already exists. Use Overwrite Session.");
+      this.setLibraryStatus("Saved session already exists. Manage it from its Saved Sessions card.");
       return;
     }
     const payloadForWrite = this.readSessionPayloadForSaveAction(sessionName);
@@ -2758,7 +2758,7 @@ class WorkspaceV2SessionProducer {
     this.renderSessionLibrary();
     this.setLibraryStatus(overwriteExisting
       ? "Saved session overwritten."
-      : "Saved session created. New session ID is now available for Load, Overwrite, and Delete.");
+      : "Saved session created. Manage this session from its Saved Sessions card.");
   }
 
   loadNamedSession() {
