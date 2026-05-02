@@ -51,6 +51,7 @@ class WorkspaceV2SessionProducer {
     this.applyMergeButton = document.getElementById("workspaceV2ApplyMergeButton");
     this.mergeEnableStateNode = document.getElementById("workspaceV2MergeEnableState");
     this.mergeEmptyState = document.getElementById("workspaceV2MergeEmptyState");
+    this.mergeConflictSummaryNode = document.getElementById("workspaceV2MergeConflictSummary");
     this.mergeOutputNode = document.getElementById("workspaceV2MergeOutput");
     this.refreshErrorLogsButton = document.getElementById("workspaceV2RefreshErrorLogsButton");
     this.clearErrorLogsButton = document.getElementById("workspaceV2ClearErrorLogsButton");
@@ -951,6 +952,45 @@ class WorkspaceV2SessionProducer {
     }
     this.confirmMergeButton.disabled = !previewReadyForConfirm;
     this.applyMergeButton.disabled = !previewReadyForApply;
+    this.renderMergeConflictSummary();
+  }
+
+  conflictValuePreview(value) {
+    if (value === undefined) {
+      return "undefined";
+    }
+    const json = JSON.stringify(value);
+    return this.truncatePreview(json === undefined ? String(value) : json, 140);
+  }
+
+  renderMergeConflictSummary() {
+    if (!this.mergeConflictSummaryNode) {
+      return;
+    }
+    if (!this.pendingMergePreview || !this.pendingMergePreview.conflicts || typeof this.pendingMergePreview.conflicts !== "object") {
+      this.mergeConflictSummaryNode.hidden = true;
+      this.mergeConflictSummaryNode.textContent = "";
+      return;
+    }
+    const conflictEntries = Object.entries(this.pendingMergePreview.conflicts);
+    if (conflictEntries.length === 0) {
+      this.mergeConflictSummaryNode.hidden = true;
+      this.mergeConflictSummaryNode.textContent = "";
+      return;
+    }
+    const lines = [
+      "Conflict preview only. Apply is blocked until conflicts are resolved.",
+      `Total conflicts: ${conflictEntries.length}`
+    ];
+    conflictEntries
+      .sort((left, right) => left[0].localeCompare(right[0]))
+      .forEach(([path, values]) => {
+        lines.push(`- ${path}`);
+        lines.push(`  source: ${this.conflictValuePreview(values && Object.prototype.hasOwnProperty.call(values, "a") ? values.a : undefined)}`);
+        lines.push(`  target: ${this.conflictValuePreview(values && Object.prototype.hasOwnProperty.call(values, "b") ? values.b : undefined)}`);
+      });
+    this.mergeConflictSummaryNode.textContent = lines.join("\n");
+    this.mergeConflictSummaryNode.hidden = false;
   }
 
   renderSessionDiffInputs() {
@@ -1063,6 +1103,7 @@ class WorkspaceV2SessionProducer {
       }
       this.statusNode.textContent = "Merge preview cleared because source or target session changed. Run Preview Merge (Dry Run) again.";
       this.mergeOutputNode.textContent = "No merge preview available.";
+      this.renderMergeConflictSummary();
       return;
     }
     if (this.mergeCandidates.length < 2) {
