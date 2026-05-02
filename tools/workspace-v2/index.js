@@ -1591,8 +1591,20 @@ class WorkspaceV2SessionProducer {
     this.setCurrentSessionPayload(appliedPayload, "merge-apply");
     this.importJsonNode.value = JSON.stringify(appliedPayload, null, 2);
     this.setLastMergedSessionResult(appliedPayload, this.pendingMergePreview.selectedToolId);
-    this.addRecentSessionEntry(hostContextId, this.pendingMergePreview.selectedToolId, appliedPayload);
     this.writeLastMergedHostContextId(hostContextId);
+    this.addRecentSessionEntry(hostContextId, this.pendingMergePreview.selectedToolId, appliedPayload);
+    const mergedRecentRegistered = this.readSessionHistory().some((entry) => entry.hostContextId === hostContextId);
+    if (!mergedRecentRegistered) {
+      this.writeLastMergedHostContextId("");
+      this.updateUndoLastMergeState();
+      this.statusNode.textContent = "Merge apply failed to register merged session in Recent Sessions. Undo remains disabled.";
+      return;
+    }
+    this.renderSessionHistory();
+    this.renderSessionDiffInputs();
+    this.renderSessionMergeInputs();
+    this.updateMergeSelectionFeedbackAndState();
+    this.updateUndoLastMergeState();
     this.recordMergeAuditEntry(this.pendingMergePreview);
     this.renderDiagnosticsPanel();
     this.pendingMergePreview = null;
