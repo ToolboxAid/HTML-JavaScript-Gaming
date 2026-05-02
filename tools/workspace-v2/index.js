@@ -38,6 +38,7 @@ class WorkspaceV2SessionProducer {
     this.diffRightSelectedLabelNode = document.getElementById("workspaceV2DiffRightSelectedLabel");
     this.diffSelectionStateNode = document.getElementById("workspaceV2DiffSelectionState");
     this.computeDiffButton = document.getElementById("workspaceV2ComputeDiffButton");
+    this.diffEnableStateNode = document.getElementById("workspaceV2DiffEnableState");
     this.diffEmptyState = document.getElementById("workspaceV2DiffEmptyState");
     this.diffOutputNode = document.getElementById("workspaceV2DiffOutput");
     this.mergeLeftSelect = document.getElementById("workspaceV2MergeLeftSelect");
@@ -48,6 +49,7 @@ class WorkspaceV2SessionProducer {
     this.computeMergeButton = document.getElementById("workspaceV2ComputeMergeButton");
     this.confirmMergeButton = document.getElementById("workspaceV2ConfirmMergeButton");
     this.applyMergeButton = document.getElementById("workspaceV2ApplyMergeButton");
+    this.mergeEnableStateNode = document.getElementById("workspaceV2MergeEnableState");
     this.mergeEmptyState = document.getElementById("workspaceV2MergeEmptyState");
     this.mergeOutputNode = document.getElementById("workspaceV2MergeOutput");
     this.refreshErrorLogsButton = document.getElementById("workspaceV2RefreshErrorLogsButton");
@@ -898,6 +900,9 @@ class WorkspaceV2SessionProducer {
     this.diffRightSelectedLabelNode.textContent = this.formatSelectionLabel(right);
     const canRunDiff = Boolean(left && right && left.id !== right.id);
     this.computeDiffButton.disabled = !canRunDiff;
+    this.diffEnableStateNode.textContent = canRunDiff
+      ? "Ready to compute diff."
+      : "Select two different sessions to enable Compute Diff.";
     if (left && right && left.id === right.id) {
       this.diffSelectionStateNode.textContent = "Choose two different sessions.";
       return;
@@ -915,6 +920,9 @@ class WorkspaceV2SessionProducer {
     this.mergeRightSelectedLabelNode.textContent = this.formatSelectionLabel(right);
     const canPreviewMerge = Boolean(left && right && left.id !== right.id);
     this.computeMergeButton.disabled = !canPreviewMerge;
+    this.mergeEnableStateNode.textContent = canPreviewMerge
+      ? "Ready to preview merge."
+      : "Select two different sessions to enable Preview Merge.";
     if (left && right && left.id === right.id) {
       this.mergeSelectionStateNode.textContent = "Choose two different sessions.";
     } else if (canPreviewMerge) {
