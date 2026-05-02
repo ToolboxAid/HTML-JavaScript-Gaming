@@ -921,11 +921,18 @@ class WorkspaceV2SessionProducer {
     const canPreviewMerge = Boolean(left && right && left.id !== right.id);
     this.computeMergeButton.disabled = !canPreviewMerge;
     const previewIsFresh = this.hasFreshMergePreviewContext(this.pendingMergePreview);
-    const previewHasConflicts = Boolean(this.pendingMergePreview && Object.keys(this.pendingMergePreview.conflicts).length > 0);
+    const previewConflictCount = this.pendingMergePreview
+      ? (typeof this.pendingMergePreview.conflictCount === "number"
+        ? this.pendingMergePreview.conflictCount
+        : Object.keys(this.pendingMergePreview.conflicts || {}).length)
+      : 0;
+    const previewHasConflicts = Boolean(this.pendingMergePreview && previewConflictCount > 0);
     const previewReadyForConfirm = Boolean(this.pendingMergePreview && !this.pendingMergePreview.confirmed && previewIsFresh && !previewHasConflicts);
     const previewReadyForApply = Boolean(this.pendingMergePreview && this.pendingMergePreview.confirmed && previewIsFresh && !previewHasConflicts);
     if (!canPreviewMerge) {
       this.mergeEnableStateNode.textContent = "Select two different sessions to enable Preview Merge.";
+    } else if (this.pendingMergePreview && !previewIsFresh) {
+      this.mergeEnableStateNode.textContent = "Preview is stale. Run Preview Merge again.";
     } else if (previewHasConflicts && previewIsFresh) {
       this.mergeEnableStateNode.textContent = "Preview has conflicts. Resolve conflicts before applying.";
     } else if (previewReadyForApply) {
@@ -1185,6 +1192,8 @@ class WorkspaceV2SessionProducer {
       selectedToolId,
       mergedPayload: versionedPayload,
       conflicts: result.conflicts,
+      conflictCount: Object.keys(result.conflicts).length,
+      previewFingerprint: `${left.id}|${right.id}|${JSON.stringify(left.payload)}|${JSON.stringify(right.payload)}`,
       changes: previewChanges,
       confirmed: false
     };
@@ -1195,6 +1204,7 @@ class WorkspaceV2SessionProducer {
       target: this.pendingMergePreview.target,
       changes: this.pendingMergePreview.changes,
       conflicts: this.pendingMergePreview.conflicts,
+      conflictCount: this.pendingMergePreview.conflictCount,
       confirmed: this.pendingMergePreview.confirmed,
       canApply: Object.keys(this.pendingMergePreview.conflicts).length === 0
     }, null, 2);
@@ -1243,6 +1253,20 @@ class WorkspaceV2SessionProducer {
       this.statusNode.textContent = "No merge preview available. Run Preview Merge (Dry Run) first.";
       return;
     }
+    const previewIsFresh = this.hasFreshMergePreviewContext(this.pendingMergePreview);
+    if (!previewIsFresh) {
+      this.updateMergeSelectionFeedbackAndState();
+      this.statusNode.textContent = "Merge preview is stale. Run Preview Merge (Dry Run) again.";
+      return;
+    }
+    const conflictCount = typeof this.pendingMergePreview.conflictCount === "number"
+      ? this.pendingMergePreview.conflictCount
+      : Object.keys(this.pendingMergePreview.conflicts || {}).length;
+    if (conflictCount > 0) {
+      this.updateMergeSelectionFeedbackAndState();
+      this.statusNode.textContent = "Merge preview has conflicts. Resolve conflicts before confirming.";
+      return;
+    }
     this.pendingMergePreview.confirmed = true;
     this.updateMergeSelectionFeedbackAndState();
     this.mergeOutputNode.textContent = JSON.stringify({
@@ -1250,6 +1274,7 @@ class WorkspaceV2SessionProducer {
       target: this.pendingMergePreview.target,
       changes: this.pendingMergePreview.changes,
       conflicts: this.pendingMergePreview.conflicts,
+      conflictCount: this.pendingMergePreview.conflictCount,
       confirmed: true,
       canApply: Object.keys(this.pendingMergePreview.conflicts).length === 0
     }, null, 2);
