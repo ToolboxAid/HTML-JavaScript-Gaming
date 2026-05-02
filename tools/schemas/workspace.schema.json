@@ -47,67 +47,8 @@
           "palette": {
             "type": "string",
             "minLength": 1
-          },
-          "session": {
-            "type": "object",
-            "required": ["hostContextId", "payload"],
-            "additionalProperties": false,
-            "properties": {
-              "hostContextId": {
-                "type": "string",
-                "minLength": 1
-              },
-              "payload": {
-                "$ref": "#/$defs/jsonValue"
-              }
-            }
           }
         }
-      }
-    }
-  },
-  "$defs": {
-    "jsonValue": {
-      "oneOf": [
-        {
-          "type": "string"
-        },
-        {
-          "type": "number"
-        },
-        {
-          "type": "integer"
-        },
-        {
-          "type": "boolean"
-        },
-        {
-          "type": "null"
-        },
-        {
-          "$ref": "#/$defs/jsonArray"
-        },
-        {
-          "$ref": "#/$defs/jsonObject"
-        }
-      ]
-    },
-    "jsonArray": {
-      "type": "array",
-      "items": {
-        "$ref": "#/$defs/jsonValue"
-      }
-    },
-    "jsonObject": {
-      "type": "object",
-      "additionalProperties": false,
-      "patternProperties": {
-        "^.*$": {
-          "$ref": "#/$defs/jsonValue"
-        }
-      },
-      "propertyNames": {
-        "type": "string"
       }
     }
   }

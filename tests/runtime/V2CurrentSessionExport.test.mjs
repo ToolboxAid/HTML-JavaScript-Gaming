@@ -33,7 +33,7 @@ function checkSyntax(filePath) {
   }
 }
 
-function simulateWorkspaceSchemaExport(activePayload, currentHostContextId, library) {
+function simulateWorkspaceSchemaExport(gamesSnapshot, activePayload, currentHostContextId, library) {
   if (!activePayload || typeof activePayload !== "object" || Array.isArray(activePayload)) {
     return {
       ok: false,
@@ -56,45 +56,19 @@ function simulateWorkspaceSchemaExport(activePayload, currentHostContextId, libr
       serialized: ""
     };
   }
-  const games = [
-    {
-      id: activeHostContextId,
-      level: "workspace-v2-active-session",
-      tool: activeToolId,
-      tools: [activeToolId],
-      session: {
-        hostContextId: activeHostContextId,
-        payload: activePayload
-      }
-    }
-  ];
-  Object.keys(library).forEach((sessionId) => {
-    const payload = library[sessionId];
-    if (!payload || typeof payload !== "object" || Array.isArray(payload)) {
-      return;
-    }
-    const payloadToolId = typeof payload.toolId === "string" && payload.toolId.trim()
-      ? payload.toolId.trim()
-      : "";
-    if (!payloadToolId) {
-      return;
-    }
-    games.push({
-      id: sessionId,
-      level: "workspace-v2-saved-session",
-      tool: payloadToolId,
-      tools: [payloadToolId],
-      session: {
-        hostContextId: sessionId,
-        payload
-      }
-    });
-  });
   const container = {
     documentKind: "workspace-manifest",
     schema: "html-js-gaming.workspace-v2-session-export/1",
     version: 1,
-    games
+    games: Array.isArray(gamesSnapshot) ? JSON.parse(JSON.stringify(gamesSnapshot)) : [],
+    workspaceSession: {
+      schema: "html-js-gaming.workspace-v2-session/1",
+      defaultToolId: "palette-manager-v2",
+      activeToolId,
+      activeHostContextId,
+      activeSession: activePayload,
+      savedSessions: library
+    }
   };
   return {
     ok: true,
@@ -147,6 +121,31 @@ export function run() {
     }
   });
 
+  const requiredWorkspaceJsTokens = [
+    "importWorkspaceSessionJson()",
+    "exportWorkspaceSessionJson()",
+    "buildWorkspaceSchemaDocument()",
+    "validateWorkspaceSchemaDocument(",
+    "workspaceManifestGames",
+    "workspaceSession",
+    "Diff requires sessions from the same tool."
+  ];
+  requiredWorkspaceJsTokens.forEach((token) => {
+    if (!workspaceJs.includes(token)) {
+      failures.push(`Missing required workspace contract JS token: ${token}`);
+    }
+  });
+
+  const forbiddenWorkspaceJsTokens = [
+    "workspace-v2-active-session",
+    "workspace-v2-saved-session"
+  ];
+  forbiddenWorkspaceJsTokens.forEach((token) => {
+    if (workspaceJs.includes(token)) {
+      failures.push(`Workspace V2 export/import should not model session snapshots in games[] (${token}).`);
+    }
+  });
+
   const forbiddenWorkspaceHtmlTokens = [
     'id="workspaceV2NavModeSelect"',
     'id="workspaceV2NavToolsActions"',
@@ -158,20 +157,6 @@ export function run() {
   forbiddenWorkspaceHtmlTokens.forEach((token) => {
     if (workspaceHtml.includes(token)) {
       failures.push(`Workspace V2 should not expose mode-switch/tool-mode control: ${token}`);
-    }
-  });
-
-  const requiredWorkspaceJsTokens = [
-    "importWorkspaceSessionJson()",
-    "exportWorkspaceSessionJson()",
-    "buildWorkspaceSchemaDocument()",
-    "validateWorkspaceSchemaDocument(",
-    "tools/schemas/workspace.schema.json",
-    "Diff requires sessions from the same tool."
-  ];
-  requiredWorkspaceJsTokens.forEach((token) => {
-    if (!workspaceJs.includes(token)) {
-      failures.push(`Missing required workspace contract JS token: ${token}`);
     }
   });
 
@@ -204,8 +189,17 @@ export function run() {
         failures.push(`workspace.schema.json must require root.${key}.`);
       }
     });
-    if (!workspaceSchema.properties.games?.items?.properties?.session) {
-      failures.push("workspace.schema.json must allow games[].session for Workspace V2 session export/import.");
+    if (workspaceSchema.properties.games?.items?.properties?.session) {
+      failures.push("workspace.schema.json must not allow games[].session.");
+    }
+    if (!workspaceSchema.properties.workspaceSession) {
+      failures.push("workspace.schema.json must define optional root.workspaceSession.");
+    } else {
+      const requiredWorkspaceSessionKeys = workspaceSchema.properties.workspaceSession.required || [];
+      const expectedWorkspaceSessionKeys = ["schema", "defaultToolId", "activeToolId", "activeHostContextId", "activeSession", "savedSessions"];
+      if (JSON.stringify(requiredWorkspaceSessionKeys) !== JSON.stringify(expectedWorkspaceSessionKeys)) {
+        failures.push("workspace.schema.json workspaceSession required keys do not match minimal contract.");
+      }
     }
   }
 
@@ -221,22 +215,35 @@ export function run() {
       payloadJson: { assetCatalog: { entries: [{ id: "asset-1" }] } }
     }
   };
-  const workspaceExport = simulateWorkspaceSchemaExport(activePayload, "palette-manager-v2-1234567890123-abcd1234", library);
+  const projectGames = [
+    {
+      id: "0207",
+      level: "phase-02",
+      tool: "sprite-editor",
+      tools: ["sprite-editor"],
+      palette: "samples/phase-02/0207/sample.0207.palette.json"
+    }
+  ];
+  const workspaceExport = simulateWorkspaceSchemaExport(projectGames, activePayload, "palette-manager-v2-1234567890123-abcd1234", library);
   if (!workspaceExport.ok) failures.push("Workspace export should succeed when active payload exists.");
   const workspaceExportParsed = workspaceExport.serialized ? JSON.parse(workspaceExport.serialized) : null;
   if (!workspaceExportParsed || typeof workspaceExportParsed !== "object" || Array.isArray(workspaceExportParsed)) {
     failures.push("Workspace export should be an object matching workspace.schema.json.");
   } else {
     const rootKeys = Object.keys(workspaceExportParsed).sort((left, right) => left.localeCompare(right));
-    const expectedRootKeys = ["documentKind", "games", "schema", "version"];
+    const expectedRootKeys = ["documentKind", "games", "schema", "version", "workspaceSession"];
     if (JSON.stringify(rootKeys) !== JSON.stringify(expectedRootKeys)) {
       failures.push(`Workspace export root keys mismatch. Expected ${expectedRootKeys.join(", ")} and received ${rootKeys.join(", ")}.`);
     }
-    if (!Array.isArray(workspaceExportParsed.games) || workspaceExportParsed.games.length < 1) {
-      failures.push("Workspace export must include games array entries.");
-    }
-    if (Object.prototype.hasOwnProperty.call(workspaceExportParsed, "workspaceSession")) {
-      failures.push("Workspace export must not include workspaceSession wrapper.");
+    if (!Array.isArray(workspaceExportParsed.games) || workspaceExportParsed.games.length !== 1) {
+      failures.push("Workspace export must preserve project games[] entries.");
+    } else {
+      if (Object.prototype.hasOwnProperty.call(workspaceExportParsed.games[0], "session")) {
+        failures.push("Workspace export games[] entries must not include session snapshots.");
+      }
+      if (workspaceExportParsed.games[0].id !== "0207" || workspaceExportParsed.games[0].tool !== "sprite-editor") {
+        failures.push("Workspace export must keep original games[] entry values unchanged.");
+      }
     }
     if (Object.prototype.hasOwnProperty.call(workspaceExportParsed, "workspaceV2Session")) {
       failures.push("Workspace export must not include workspaceV2Session wrapper.");
@@ -244,24 +251,28 @@ export function run() {
     if (Object.prototype.hasOwnProperty.call(workspaceExportParsed, "toolSessions")) {
       failures.push("Workspace export must not include toolSessions wrapper.");
     }
-    if (Object.prototype.hasOwnProperty.call(workspaceExportParsed, "savedSessions")) {
-      failures.push("Workspace export must not include savedSessions wrapper.");
+    if (Object.prototype.hasOwnProperty.call(workspaceExportParsed, "savedSessions") && !Object.prototype.hasOwnProperty.call(workspaceExportParsed, "workspaceSession")) {
+      failures.push("Workspace export must not include root savedSessions wrapper.");
     }
     if (Object.prototype.hasOwnProperty.call(workspaceExportParsed, "exportedAt")) {
       failures.push("Workspace export must not include exportedAt root field.");
     }
-    const activeEntry = workspaceExportParsed.games.find((entry) => entry.level === "workspace-v2-active-session");
-    if (!activeEntry) {
-      failures.push("Workspace export must include one active session entry in games.");
+    if (!workspaceExportParsed.workspaceSession || typeof workspaceExportParsed.workspaceSession !== "object") {
+      failures.push("Workspace export must include workspaceSession resume block.");
     } else {
-      if (activeEntry.tool !== "palette-manager-v2") {
-        failures.push("Active session games entry must preserve tool id.");
+      const workspaceSessionKeys = Object.keys(workspaceExportParsed.workspaceSession).sort((left, right) => left.localeCompare(right));
+      const expectedWorkspaceSessionKeys = ["activeHostContextId", "activeSession", "activeToolId", "defaultToolId", "savedSessions", "schema"];
+      if (JSON.stringify(workspaceSessionKeys) !== JSON.stringify(expectedWorkspaceSessionKeys)) {
+        failures.push("workspaceSession keys do not match minimal allowed set.");
       }
-      if (activeEntry.session?.hostContextId !== "palette-manager-v2-1234567890123-abcd1234") {
-        failures.push("Active session games entry must preserve hostContextId.");
+      if (workspaceExportParsed.workspaceSession.activeHostContextId !== "palette-manager-v2-1234567890123-abcd1234") {
+        failures.push("workspaceSession.activeHostContextId must preserve active hostContextId.");
       }
-      if (JSON.stringify(activeEntry.session?.payload) !== JSON.stringify(activePayload)) {
-        failures.push("Active session games entry must preserve payload.");
+      if (workspaceExportParsed.workspaceSession.activeToolId !== "palette-manager-v2") {
+        failures.push("workspaceSession.activeToolId must preserve active toolId.");
+      }
+      if (JSON.stringify(workspaceExportParsed.workspaceSession.activeSession) !== JSON.stringify(activePayload)) {
+        failures.push("workspaceSession.activeSession must preserve active payload.");
       }
     }
   }

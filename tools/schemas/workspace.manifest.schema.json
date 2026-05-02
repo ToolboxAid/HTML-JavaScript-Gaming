@@ -32,7 +32,7 @@
     },
     "tools": {
       "type": "object",
-      "required": [],
+      "required": ["palette-browser"],
       "additionalProperties": false,
       "description": "Workspace-owned tool entry map keyed by canonical registry ids; payload schemas are referenced, never inlined here.",
       "properties": {
@@ -87,111 +87,6 @@
         "3d-camera-path-editor": {
           "$ref": "./tools/3d-camera-path-editor.schema.json"
         }
-      }
-    },
-    "workspaceV2Session": {
-      "type": "object",
-      "required": ["schema", "defaultToolId", "activeToolId", "activeHostContextId", "toolSessions", "savedSessions", "exportedAt"],
-      "additionalProperties": false,
-      "properties": {
-        "schema": {
-          "type": "string",
-          "const": "html-js-gaming.workspace-v2-session/1"
-        },
-        "defaultToolId": {
-          "type": "string",
-          "minLength": 1
-        },
-        "activeToolId": {
-          "type": "string",
-          "minLength": 1
-        },
-        "activeHostContextId": {
-          "type": "string",
-          "minLength": 1
-        },
-        "toolSessions": {
-          "type": "object",
-          "additionalProperties": false,
-          "patternProperties": {
-            "^.*$": {
-              "type": "object",
-              "additionalProperties": false,
-              "patternProperties": {
-                "^.*$": {
-                  "$ref": "#/$defs/jsonValue"
-                }
-              },
-              "propertyNames": {
-                "type": "string"
-              }
-            }
-          },
-          "propertyNames": {
-            "type": "string"
-          }
-        },
-        "savedSessions": {
-          "type": "object",
-          "additionalProperties": false,
-          "patternProperties": {
-            "^.*$": {
-              "$ref": "#/$defs/jsonValue"
-            }
-          },
-          "propertyNames": {
-            "type": "string"
-          }
-        },
-        "exportedAt": {
-          "type": "string",
-          "minLength": 1
-        }
-      }
-    }
-  },
-  "$defs": {
-    "jsonValue": {
-      "oneOf": [
-        {
-          "type": "string"
-        },
-        {
-          "type": "number"
-        },
-        {
-          "type": "integer"
-        },
-        {
-          "type": "boolean"
-        },
-        {
-          "type": "null"
-        },
-        {
-          "$ref": "#/$defs/jsonArray"
-        },
-        {
-          "$ref": "#/$defs/jsonObject"
-        }
-      ]
-    },
-    "jsonArray": {
-      "type": "array",
-      "items": {
-        "$ref": "#/$defs/jsonValue"
-      }
-    },
-    "jsonObject": {
-      "type": "object",
-      "additionalProperties": false,
-      "patternProperties": {
-        "^.*$": {
-          "$ref": "#/$defs/jsonValue"
-        }
-      },
-      "propertyNames": {
-        "type": "string"
       }
     }
   }

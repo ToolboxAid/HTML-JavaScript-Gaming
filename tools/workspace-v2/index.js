@@ -90,6 +90,7 @@ class WorkspaceV2SessionProducer {
     this.mergeOutputSelectionKey = "";
     this.diffOutputSelectionKey = "";
     this.recentSessionInventory = [];
+    this.workspaceManifestGames = [];
     this.loadFixtureButton.addEventListener("click", () => {
       this.loadSelectedFixture();
     });
@@ -2898,49 +2899,22 @@ class WorkspaceV2SessionProducer {
     if (!activeToolId || !activeHostContextId) {
       return null;
     }
-    const games = [];
-    const sessionIds = new Set();
-    games.push({
-      id: activeHostContextId,
-      level: "workspace-v2-active-session",
-      tool: activeToolId,
-      tools: [activeToolId],
-      session: {
-        hostContextId: activeHostContextId,
-        payload: this.cloneSessionValue(activePayload)
-      }
-    });
-    sessionIds.add(activeHostContextId);
-    Object.keys(library).forEach((sessionId) => {
-      const payload = library[sessionId];
-      if (!this.isValidSessionPayload(payload)) {
-        return;
-      }
-      const payloadToolId = typeof payload.toolId === "string" && payload.toolId.trim() ? payload.toolId.trim() : "";
-      if (!payloadToolId) {
-        return;
-      }
-      const contextId = typeof sessionId === "string" ? sessionId.trim() : "";
-      if (!contextId || sessionIds.has(contextId)) {
-        return;
-      }
-      games.push({
-        id: contextId,
-        level: "workspace-v2-saved-session",
-        tool: payloadToolId,
-        tools: [payloadToolId],
-        session: {
-          hostContextId: contextId,
-          payload: this.cloneSessionValue(payload)
-        }
-      });
-      sessionIds.add(contextId);
-    });
+    const games = Array.isArray(this.workspaceManifestGames)
+      ? this.cloneSessionValue(this.workspaceManifestGames)
+      : [];
     return {
       documentKind: "workspace-manifest",
       schema: "html-js-gaming.workspace-v2-session-export/1",
       version: 1,
-      games
+      games,
+      workspaceSession: {
+        schema: "html-js-gaming.workspace-v2-session/1",
+        defaultToolId: "palette-manager-v2",
+        activeToolId,
+        activeHostContextId,
+        activeSession: this.cloneSessionValue(activePayload),
+        savedSessions: this.cloneSessionValue(library)
+      }
     };
   }
 
@@ -2961,11 +2935,8 @@ class WorkspaceV2SessionProducer {
         return;
       }
       const serialized = JSON.stringify(workspaceSchemaDocument, null, 2);
-      const activeEntry = workspaceSchemaDocument.games.find((entry) => entry.level === "workspace-v2-active-session");
-      const activeToolId = activeEntry && typeof activeEntry.tool === "string" ? activeEntry.tool : "workspace-v2";
-      const activeHostContextId = activeEntry && activeEntry.session && typeof activeEntry.session.hostContextId === "string"
-        ? activeEntry.session.hostContextId
-        : "session";
+      const activeToolId = workspaceSchemaDocument.workspaceSession.activeToolId || "workspace-v2";
+      const activeHostContextId = workspaceSchemaDocument.workspaceSession.activeHostContextId || "session";
       const downloadFileName = `workspace-v2-${activeToolId}-${activeHostContextId}.json`;
       const fileBlob = new Blob([serialized], { type: "application/json" });
       const fileUrl = URL.createObjectURL(fileBlob);
@@ -2989,7 +2960,6 @@ class WorkspaceV2SessionProducer {
       return { ok: false, message: "Workspace import failed: expected a JSON object." };
     }
     if (
-      Object.prototype.hasOwnProperty.call(workspaceDocument, "workspaceSession") ||
       Object.prototype.hasOwnProperty.call(workspaceDocument, "workspaceV2Session") ||
       Object.prototype.hasOwnProperty.call(workspaceDocument, "toolSessions") ||
       Object.prototype.hasOwnProperty.call(workspaceDocument, "savedSessions") ||
@@ -2998,7 +2968,7 @@ class WorkspaceV2SessionProducer {
       return { ok: false, message: "Workspace import failed: payload must match tools/schemas/workspace.schema.json and must not include workspaceV2Session/toolSessions/savedSessions wrappers." };
     }
     const topLevelKeys = Object.keys(workspaceDocument);
-    const allowedTopLevelKeys = new Set(["documentKind", "schema", "version", "games"]);
+    const allowedTopLevelKeys = new Set(["documentKind", "schema", "version", "games", "workspaceSession"]);
     for (const key of topLevelKeys) {
       if (!allowedTopLevelKeys.has(key)) {
         return { ok: false, message: `Workspace import failed: root.${key} is not allowed by tools/schemas/workspace.schema.json.` };
@@ -3016,15 +2986,11 @@ class WorkspaceV2SessionProducer {
     if (!Array.isArray(workspaceDocument.games)) {
       return { ok: false, message: "Workspace import failed: games must be an array." };
     }
-    if (workspaceDocument.games.length === 0) {
-      return { ok: false, message: "Workspace import failed: games must include at least one workspace session entry." };
-    }
-    let hasActiveSessionEntry = false;
     for (const gameEntry of workspaceDocument.games) {
       if (!gameEntry || typeof gameEntry !== "object" || Array.isArray(gameEntry)) {
         return { ok: false, message: "Workspace import failed: each games entry must be an object." };
       }
-      const allowedGameKeys = new Set(["id", "level", "tool", "tools", "palette", "session"]);
+      const allowedGameKeys = new Set(["id", "level", "tool", "tools", "palette"]);
       for (const key of Object.keys(gameEntry)) {
         if (!allowedGameKeys.has(key)) {
           return { ok: false, message: `Workspace import failed: games entry field '${key}' is not allowed by tools/schemas/workspace.schema.json.` };
@@ -3039,28 +3005,50 @@ class WorkspaceV2SessionProducer {
       if (typeof gameEntry.tool !== "string" || !gameEntry.tool.trim()) {
         return { ok: false, message: "Workspace import failed: games entry tool is required." };
       }
-      if (!gameEntry.session || typeof gameEntry.session !== "object" || Array.isArray(gameEntry.session)) {
-        return { ok: false, message: `Workspace import failed: games entry '${gameEntry.id}' is missing session object.` };
-      }
-      const sessionKeys = Object.keys(gameEntry.session);
-      const allowedSessionKeys = new Set(["hostContextId", "payload"]);
-      for (const key of sessionKeys) {
-        if (!allowedSessionKeys.has(key)) {
-          return { ok: false, message: `Workspace import failed: games entry '${gameEntry.id}' session field '${key}' is not allowed.` };
-        }
-      }
-      if (typeof gameEntry.session.hostContextId !== "string" || !gameEntry.session.hostContextId.trim()) {
-        return { ok: false, message: `Workspace import failed: games entry '${gameEntry.id}' session hostContextId is required.` };
-      }
-      if (!this.isValidSessionPayload(gameEntry.session.payload)) {
-        return { ok: false, message: `Workspace import failed: games entry '${gameEntry.id}' session payload is invalid.` };
-      }
-      if (gameEntry.level === "workspace-v2-active-session") {
-        hasActiveSessionEntry = true;
+    }
+    if (!Object.prototype.hasOwnProperty.call(workspaceDocument, "workspaceSession")) {
+      return { ok: true, message: "" };
+    }
+    const workspaceSession = workspaceDocument.workspaceSession;
+    if (!workspaceSession || typeof workspaceSession !== "object" || Array.isArray(workspaceSession)) {
+      return { ok: false, message: "Workspace import failed: workspaceSession must be an object." };
+    }
+    const workspaceSessionKeys = Object.keys(workspaceSession);
+    const allowedWorkspaceSessionKeys = new Set(["schema", "defaultToolId", "activeToolId", "activeHostContextId", "activeSession", "savedSessions"]);
+    for (const key of workspaceSessionKeys) {
+      if (!allowedWorkspaceSessionKeys.has(key)) {
+        return { ok: false, message: `Workspace import failed: workspaceSession.${key} is not allowed.` };
       }
     }
-    if (!hasActiveSessionEntry) {
-      return { ok: false, message: "Workspace import failed: one games entry with level 'workspace-v2-active-session' is required." };
+    const requiredWorkspaceSessionKeys = ["schema", "defaultToolId", "activeToolId", "activeHostContextId", "activeSession", "savedSessions"];
+    for (const key of requiredWorkspaceSessionKeys) {
+      if (!Object.prototype.hasOwnProperty.call(workspaceSession, key)) {
+        return { ok: false, message: `Workspace import failed: workspaceSession.${key} is required.` };
+      }
+    }
+    if (workspaceSession.schema !== "html-js-gaming.workspace-v2-session/1") {
+      return { ok: false, message: "Workspace import failed: workspaceSession.schema is unsupported." };
+    }
+    if (typeof workspaceSession.defaultToolId !== "string" || !workspaceSession.defaultToolId.trim()) {
+      return { ok: false, message: "Workspace import failed: workspaceSession.defaultToolId is required." };
+    }
+    if (typeof workspaceSession.activeToolId !== "string" || !workspaceSession.activeToolId.trim()) {
+      return { ok: false, message: "Workspace import failed: workspaceSession.activeToolId is required." };
+    }
+    if (typeof workspaceSession.activeHostContextId !== "string" || !workspaceSession.activeHostContextId.trim()) {
+      return { ok: false, message: "Workspace import failed: workspaceSession.activeHostContextId is required." };
+    }
+    if (!this.isValidSessionPayload(workspaceSession.activeSession)) {
+      return { ok: false, message: "Workspace import failed: workspaceSession.activeSession is invalid." };
+    }
+    if (!workspaceSession.savedSessions || typeof workspaceSession.savedSessions !== "object" || Array.isArray(workspaceSession.savedSessions)) {
+      return { ok: false, message: "Workspace import failed: workspaceSession.savedSessions must be an object map." };
+    }
+    for (const sessionId of Object.keys(workspaceSession.savedSessions)) {
+      const savedPayload = workspaceSession.savedSessions[sessionId];
+      if (!this.isValidSessionPayload(savedPayload)) {
+        return { ok: false, message: `Workspace import failed: workspaceSession.savedSessions.${sessionId} is invalid.` };
+      }
     }
     return { ok: true, message: "" };
   }
@@ -3082,35 +3070,25 @@ class WorkspaceV2SessionProducer {
         this.statusNode.textContent = validation.message;
         return;
       }
-      const savedSessions = {};
-      let activeEntry = null;
-      parsed.games.forEach((gameEntry) => {
-        const hostContextId = gameEntry.session.hostContextId.trim();
-        const payload = gameEntry.session.payload;
-        sessionStorage.setItem(hostContextId, JSON.stringify(payload));
-        if (gameEntry.level === "workspace-v2-active-session" && !activeEntry) {
-          activeEntry = {
-            hostContextId,
-            toolId: gameEntry.tool.trim(),
-            payload
-          };
-          return;
+      this.workspaceManifestGames = Array.isArray(parsed.games) ? this.cloneSessionValue(parsed.games) : [];
+      if (parsed.workspaceSession && typeof parsed.workspaceSession === "object" && !Array.isArray(parsed.workspaceSession)) {
+        const activeHostContextId = parsed.workspaceSession.activeHostContextId.trim();
+        const activeToolId = parsed.workspaceSession.activeToolId.trim();
+        const activePayload = parsed.workspaceSession.activeSession;
+        sessionStorage.setItem(activeHostContextId, JSON.stringify(activePayload));
+        const savedSessions = parsed.workspaceSession.savedSessions;
+        localStorage.setItem(this.libraryStorageKey, JSON.stringify(savedSessions));
+        this.currentHostContextId = activeHostContextId;
+        this.setCurrentSessionPayload(activePayload, "workspace-import");
+        this.importJsonNode.value = JSON.stringify(activePayload, null, 2);
+        const hasToolOption = Array.from(this.toolSelect.options).some((option) => option.value === activeToolId);
+        if (hasToolOption) {
+          this.toolSelect.value = activeToolId;
         }
-        if (gameEntry.level === "workspace-v2-saved-session") {
-          savedSessions[gameEntry.id.trim()] = this.cloneSessionValue(payload);
-        }
-      });
-      if (!activeEntry) {
-        this.statusNode.textContent = "Workspace import failed: active workspace session entry is missing.";
-        return;
-      }
-      localStorage.setItem(this.libraryStorageKey, JSON.stringify(savedSessions));
-      this.currentHostContextId = activeEntry.hostContextId;
-      this.setCurrentSessionPayload(activeEntry.payload, "workspace-import");
-      this.importJsonNode.value = JSON.stringify(activeEntry.payload, null, 2);
-      const hasToolOption = Array.from(this.toolSelect.options).some((option) => option.value === activeEntry.toolId);
-      if (hasToolOption) {
-        this.toolSelect.value = activeEntry.toolId;
+      } else {
+        this.currentHostContextId = "";
+        this.setCurrentSessionPayload(null, "");
+        this.importJsonNode.value = "";
       }
       this.renderSessionLibrary();
       this.renderSessionHistory();
