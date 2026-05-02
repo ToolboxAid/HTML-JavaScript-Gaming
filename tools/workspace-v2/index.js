@@ -986,6 +986,7 @@ class WorkspaceV2SessionProducer {
     this.sessionListNode.replaceChildren();
     this.libraryEmptyState.hidden = sessionNames.length > 0;
     this.libraryEmptyState.textContent = "No saved sessions in library.";
+    const canOverwriteFromActiveSession = this.hasActiveWorkspaceSessionForSave();
     sessionNames.forEach((sessionName) => {
       const item = document.createElement("li");
       const payload = library[sessionName];
@@ -996,6 +997,7 @@ class WorkspaceV2SessionProducer {
       const copyIdButton = document.createElement("button");
       const useInLibraryButton = document.createElement("button");
       const loadButton = document.createElement("button");
+      const overwriteButton = document.createElement("button");
       const deleteSavedButton = document.createElement("button");
       const readableLabel = payload && typeof payload.toolId === "string" && payload.toolId.trim()
         ? payload.toolId.trim()
@@ -1020,12 +1022,18 @@ class WorkspaceV2SessionProducer {
       loadButton.addEventListener("click", () => {
         this.loadSavedSessionById(sessionName);
       });
+      overwriteButton.type = "button";
+      overwriteButton.textContent = "Overwrite";
+      overwriteButton.disabled = !canOverwriteFromActiveSession;
+      overwriteButton.addEventListener("click", () => {
+        this.overwriteSavedSessionById(sessionName);
+      });
       deleteSavedButton.type = "button";
       deleteSavedButton.textContent = "Delete Saved";
       deleteSavedButton.addEventListener("click", () => {
         this.deleteSavedSessionById(sessionName);
       });
-      item.append(label, idLine, copyIdButton, useInLibraryButton, loadButton, deleteSavedButton);
+      item.append(label, idLine, copyIdButton, useInLibraryButton, loadButton, overwriteButton, deleteSavedButton);
       this.sessionListNode.appendChild(item);
     });
     this.renderSessionDiffInputs();
@@ -1071,6 +1079,30 @@ class WorkspaceV2SessionProducer {
     this.loadNamedSession();
     this.syncDiffAndMergeSelectionSlotsFromContextId(sessionId.trim());
     this.renderSessionLibrary();
+  }
+
+  overwriteSavedSessionById(sessionId) {
+    if (typeof sessionId !== "string" || !sessionId.trim()) {
+      this.setLibraryStatus("Enter a saved session ID before overwriting.");
+      return;
+    }
+    const activePayload = this.readActiveSessionPayloadForLibraryActions();
+    if (!this.isValidSessionPayload(activePayload)) {
+      this.setLibraryStatus("No active Workspace V2 session is available to overwrite from.");
+      return;
+    }
+    const library = this.readSessionLibrary();
+    if (library === null) {
+      return;
+    }
+    if (!Object.prototype.hasOwnProperty.call(library, sessionId.trim())) {
+      this.setLibraryStatus("Saved session not found. Use Save Session to create it first.");
+      return;
+    }
+    library[sessionId.trim()] = activePayload;
+    this.writeSessionLibrary(library);
+    this.renderSessionLibrary();
+    this.setLibraryStatus("Saved session updated.");
   }
 
   deleteSavedSessionById(sessionId) {

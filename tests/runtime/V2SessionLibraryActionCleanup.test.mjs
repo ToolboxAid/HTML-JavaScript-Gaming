@@ -54,6 +54,7 @@ export function run() {
     'this.setLibraryStatus("That session ID already exists. Use the saved session card to Load, Overwrite, or Delete it.");',
     'Saved session created. Manage this session from its Saved Sessions card.',
     'loadButton.textContent = "Load";',
+    'overwriteButton.textContent = "Overwrite";',
     'deleteSavedButton.textContent = "Delete Saved";',
     'useInLibraryButton.textContent = "Use in Diff/Merge";'
   ];

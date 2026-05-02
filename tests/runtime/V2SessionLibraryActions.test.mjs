@@ -137,6 +137,7 @@ export function run() {
     "No active Workspace V2 session is available to overwrite from.",
     "Saved session not found. Use Save Session to create it first.",
     "Saved session overwritten.",
+    "Saved session updated.",
     "Enter a saved session ID before loading.",
     "Saved session loaded.",
     "Enter a saved session ID before deleting.",
