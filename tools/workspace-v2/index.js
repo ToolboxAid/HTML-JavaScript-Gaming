@@ -202,7 +202,9 @@ class WorkspaceV2SessionProducer {
         this.renderSessionHistory();
       }
     });
+    this.applyDefaultWorkspaceToolSelection();
     this.decodeSessionParamFromUrl();
+    this.initializeWorkspaceProducerSession();
     this.registerSnapshotHook();
     this.renderSessionLibrary();
     this.renderSessionHistory();
@@ -219,6 +221,43 @@ class WorkspaceV2SessionProducer {
 
   selectedSessionName() {
     return typeof this.sessionNameNode.value === "string" ? this.sessionNameNode.value.trim() : "";
+  }
+
+  applyDefaultWorkspaceToolSelection() {
+    if (!this.toolSelect) {
+      return;
+    }
+    const defaultToolId = "palette-manager-v2";
+    const hasDefaultOption = Array.from(this.toolSelect.options).some((option) => option.value === defaultToolId);
+    if (hasDefaultOption) {
+      this.toolSelect.value = defaultToolId;
+    }
+  }
+
+  initializeWorkspaceProducerSession() {
+    if (this.isValidSessionPayload(this.currentSessionPayload) && this.currentHostContextId) {
+      return;
+    }
+    const selectedToolId = this.selectedToolId();
+    if (!selectedToolId) {
+      this.statusNode.textContent = "Workspace V2 initialization blocked: default tool is missing.";
+      return;
+    }
+    const initialPayload = this.withSessionVersion({
+      toolId: selectedToolId,
+      payloadJson: {}
+    });
+    const sizeValidation = this.validateSessionPayloadSize(initialPayload);
+    if (!sizeValidation.ok) {
+      this.statusNode.textContent = sizeValidation.message;
+      return;
+    }
+    const hostContextId = this.createHostContextId(selectedToolId);
+    sessionStorage.setItem(hostContextId, sizeValidation.metrics.serializedPayload);
+    this.currentHostContextId = hostContextId;
+    this.setCurrentSessionPayload(initialPayload, "workspace-v2-init");
+    this.importJsonNode.value = JSON.stringify(initialPayload, null, 2);
+    this.statusNode.textContent = `Workspace V2 initialized.\nTool: ${selectedToolId}\nHostContextId: ${hostContextId}\nSession is active for Save Session.`;
   }
 
   updateSessionLibraryActionState() {
