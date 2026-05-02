@@ -19,6 +19,12 @@ class WorkspaceV2SessionProducer {
     this.importFileNode = document.getElementById("workspaceV2ImportFile");
     this.importButton = document.getElementById("workspaceV2ImportButton");
     this.exportButton = document.getElementById("workspaceV2ExportButton");
+    this.navModeSelect = document.getElementById("workspaceV2NavModeSelect");
+    this.navToolsActionsNode = document.getElementById("workspaceV2NavToolsActions");
+    this.navWorkspaceActionsNode = document.getElementById("workspaceV2NavWorkspaceActions");
+    this.workspaceJsonNode = document.getElementById("workspaceV2WorkspaceJson");
+    this.importWorkspaceButton = document.getElementById("workspaceV2ImportWorkspaceButton");
+    this.exportWorkspaceButton = document.getElementById("workspaceV2ExportWorkspaceButton");
     this.shareUrlNode = document.getElementById("workspaceV2ShareUrl");
     this.createShareLinkButton = document.getElementById("workspaceV2CreateShareLinkButton");
     this.applyShareLinkButton = document.getElementById("workspaceV2ApplyShareLinkButton");
@@ -100,6 +106,15 @@ class WorkspaceV2SessionProducer {
     });
     this.exportButton.addEventListener("click", () => {
       this.exportCurrentSessionJson();
+    });
+    this.importWorkspaceButton.addEventListener("click", () => {
+      this.importWorkspaceSessionJson();
+    });
+    this.exportWorkspaceButton.addEventListener("click", () => {
+      this.exportWorkspaceSessionJson();
+    });
+    this.navModeSelect.addEventListener("change", () => {
+      this.renderNavModeActions();
     });
     this.createShareLinkButton.addEventListener("click", () => {
       this.createShareLink();
@@ -204,6 +219,7 @@ class WorkspaceV2SessionProducer {
       }
     });
     this.applyDefaultWorkspaceToolSelection();
+    this.renderNavModeActions();
     this.decodeSessionParamFromUrl();
     this.initializeWorkspaceProducerSession();
     this.registerSnapshotHook();
@@ -222,6 +238,27 @@ class WorkspaceV2SessionProducer {
 
   selectedSessionName() {
     return typeof this.sessionNameNode.value === "string" ? this.sessionNameNode.value.trim() : "";
+  }
+
+  currentNavMode() {
+    return this.navModeSelect && this.navModeSelect.value === "workspace" ? "workspace" : "tools";
+  }
+
+  inToolsNavMode() {
+    return this.currentNavMode() === "tools";
+  }
+
+  inWorkspaceNavMode() {
+    return this.currentNavMode() === "workspace";
+  }
+
+  renderNavModeActions() {
+    const toolsMode = this.inToolsNavMode();
+    this.navToolsActionsNode.hidden = !toolsMode;
+    this.navWorkspaceActionsNode.hidden = toolsMode;
+    this.statusNode.textContent = toolsMode
+      ? "Tool mode active: use navTools import/export actions."
+      : "Workspace mode active: use navWorkspace import/export actions.";
   }
 
   applyDefaultWorkspaceToolSelection() {
@@ -2728,6 +2765,10 @@ class WorkspaceV2SessionProducer {
   }
 
   readImportFile() {
+    if (!this.inToolsNavMode()) {
+      this.statusNode.textContent = "Switch to tool mode to import tool session files.";
+      return;
+    }
     if (!this.importFileNode.files || this.importFileNode.files.length === 0) {
       return;
     }
@@ -2761,6 +2802,10 @@ class WorkspaceV2SessionProducer {
   }
 
   importSessionJson() {
+    if (!this.inToolsNavMode()) {
+      this.statusNode.textContent = "Switch to tool mode to import tool session JSON.";
+      return;
+    }
     const toolId = this.selectedToolId();
     const rawJson = typeof this.importJsonNode.value === "string" ? this.importJsonNode.value.trim() : "";
     if (!toolId) {
@@ -2773,6 +2818,10 @@ class WorkspaceV2SessionProducer {
     }
     try {
       const parsed = JSON.parse(rawJson);
+      if (typeof parsed.toolId !== "string" || parsed.toolId.trim() !== toolId) {
+        this.statusNode.textContent = `Tool import blocked. Session toolId must match selected tool '${toolId}'.`;
+        return;
+      }
       if (!this.applySessionPayload(parsed, "import")) {
         return;
       }
@@ -2783,47 +2832,23 @@ class WorkspaceV2SessionProducer {
   }
 
   exportCurrentSessionJson() {
+    if (!this.inToolsNavMode()) {
+      this.statusNode.textContent = "Switch to tool mode to export a single tool session JSON payload.";
+      return;
+    }
     const activePayload = this.readActiveSessionPayloadForLibraryActions();
     if (!this.isValidSessionPayload(activePayload)) {
       this.statusNode.textContent = "No active Workspace V2 session is available to export.";
       return;
     }
     try {
-      const library = this.readSessionLibrary();
-      if (library === null) {
-        this.statusNode.textContent = "Workspace V2 export blocked: Session Library is invalid.";
-        return;
-      }
-      const history = this.readSessionHistory();
-      const persistedSelection = this.readPersistedSessionSelection();
-      const mergeAuditRaw = localStorage.getItem(this.mergeAuditStorageKey);
-      const mergeAuditParsed = this.safeParseJson(typeof mergeAuditRaw === "string" ? mergeAuditRaw : "");
-      const mergeAuditEntries = mergeAuditParsed.ok && Array.isArray(mergeAuditParsed.value) ? mergeAuditParsed.value : [];
-      const activeToolId = typeof activePayload.toolId === "string" && activePayload.toolId.trim()
-        ? activePayload.toolId.trim()
-        : this.selectedToolId();
-      const workspaceContainer = {
-        version: "v2",
-        toolId: "workspace-v2",
-        workspaceSession: {
-          workspaceToolId: "workspace-v2",
-          workspaceSessionId: typeof this.currentHostContextId === "string" ? this.currentHostContextId.trim() : "",
-          activeToolId,
-          activeHostContextId: typeof this.currentHostContextId === "string" ? this.currentHostContextId.trim() : "",
-          activeSessionPayload: activePayload,
-          sessionLibrary: library,
-          sessionHistory: history,
-          sessionSelection: persistedSelection,
-          mergeAuditLog: mergeAuditEntries,
-          exportedAt: new Date().toISOString()
-        }
-      };
-      const serialized = JSON.stringify(workspaceContainer, null, 2);
-      const filenameToolId = activeToolId || "workspace-v2";
+      const serialized = JSON.stringify(activePayload, null, 2);
+      const payloadToolId = typeof activePayload.toolId === "string" ? activePayload.toolId.trim() : "";
+      const filenameToolId = payloadToolId || this.selectedToolId() || "workspace-v2";
       const filenameSessionId = typeof this.currentHostContextId === "string" && this.currentHostContextId.trim()
         ? this.currentHostContextId.trim()
         : "session";
-      const downloadFileName = `workspace-v2-${filenameToolId}-${filenameSessionId}.json`;
+      const downloadFileName = `${filenameToolId}-${filenameSessionId}.json`;
       const fileBlob = new Blob([serialized], { type: "application/json" });
       const fileUrl = URL.createObjectURL(fileBlob);
       const downloadLink = document.createElement("a");
@@ -2838,6 +2863,192 @@ class WorkspaceV2SessionProducer {
       this.statusNode.textContent = "Exported current workspace session JSON.";
     } catch (error) {
       this.statusNode.textContent = `Session export failed: ${error instanceof Error ? error.message : "unknown error"}`;
+    }
+  }
+
+  buildPortableWorkspaceSessionContainer() {
+    const activePayload = this.readActiveSessionPayloadForLibraryActions();
+    if (!this.isValidSessionPayload(activePayload)) {
+      return null;
+    }
+    const library = this.readSessionLibrary();
+    if (library === null) {
+      return null;
+    }
+    const activeToolId = typeof activePayload.toolId === "string" && activePayload.toolId.trim()
+      ? activePayload.toolId.trim()
+      : this.selectedToolId();
+    const activeHostContextId = typeof this.currentHostContextId === "string" ? this.currentHostContextId.trim() : "";
+    const toolSessions = {};
+    if (activeToolId && activeHostContextId) {
+      if (!Object.prototype.hasOwnProperty.call(toolSessions, activeToolId)) {
+        toolSessions[activeToolId] = {};
+      }
+      toolSessions[activeToolId][activeHostContextId] = this.cloneSessionValue(activePayload);
+    }
+    Object.keys(library).forEach((sessionId) => {
+      const payload = library[sessionId];
+      if (!this.isValidSessionPayload(payload)) {
+        return;
+      }
+      const payloadToolId = typeof payload.toolId === "string" && payload.toolId.trim()
+        ? payload.toolId.trim()
+        : this.selectedToolId();
+      if (!payloadToolId) {
+        return;
+      }
+      if (!Object.prototype.hasOwnProperty.call(toolSessions, payloadToolId)) {
+        toolSessions[payloadToolId] = {};
+      }
+      toolSessions[payloadToolId][sessionId] = this.cloneSessionValue(payload);
+    });
+    return {
+      version: "v2",
+      toolId: "workspace-v2",
+      workspaceSession: {
+        workspaceToolId: "workspace-v2",
+        workspaceSessionId: activeHostContextId,
+        defaultToolId: "palette-manager-v2",
+        activeToolId,
+        activeHostContextId,
+        toolSessions,
+        savedSessions: this.cloneSessionValue(library),
+        exportedAt: new Date().toISOString()
+      }
+    };
+  }
+
+  exportWorkspaceSessionJson() {
+    if (!this.inWorkspaceNavMode()) {
+      this.statusNode.textContent = "Switch to workspace mode to export workspace session JSON.";
+      return;
+    }
+    const workspaceContainer = this.buildPortableWorkspaceSessionContainer();
+    if (!workspaceContainer) {
+      this.statusNode.textContent = "No active Workspace V2 session is available to export.";
+      return;
+    }
+    try {
+      const serialized = JSON.stringify(workspaceContainer, null, 2);
+      const activeToolId = workspaceContainer.workspaceSession.activeToolId || "workspace-v2";
+      const activeHostContextId = workspaceContainer.workspaceSession.activeHostContextId || "session";
+      const downloadFileName = `workspace-v2-${activeToolId}-${activeHostContextId}.json`;
+      const fileBlob = new Blob([serialized], { type: "application/json" });
+      const fileUrl = URL.createObjectURL(fileBlob);
+      const downloadLink = document.createElement("a");
+      downloadLink.href = fileUrl;
+      downloadLink.download = downloadFileName;
+      downloadLink.style.display = "none";
+      document.body.appendChild(downloadLink);
+      downloadLink.click();
+      downloadLink.remove();
+      URL.revokeObjectURL(fileUrl);
+      this.workspaceJsonNode.value = serialized;
+      this.statusNode.textContent = "Exported current workspace session JSON.";
+    } catch (error) {
+      this.statusNode.textContent = `Workspace export failed: ${error instanceof Error ? error.message : "unknown error"}`;
+    }
+  }
+
+  isValidPortableWorkspaceSessionContainer(container) {
+    if (!container || typeof container !== "object" || Array.isArray(container)) {
+      return { ok: false, message: "Workspace import failed: expected a JSON object." };
+    }
+    if (container.version !== "v2") {
+      return { ok: false, message: "Workspace import failed: unsupported workspace version." };
+    }
+    if (container.toolId !== "workspace-v2") {
+      return { ok: false, message: "Workspace import failed: expected toolId 'workspace-v2'." };
+    }
+    if (!container.workspaceSession || typeof container.workspaceSession !== "object" || Array.isArray(container.workspaceSession)) {
+      return { ok: false, message: "Workspace import failed: missing workspaceSession object." };
+    }
+    if (
+      Object.prototype.hasOwnProperty.call(container.workspaceSession, "sessionHistory") ||
+      Object.prototype.hasOwnProperty.call(container.workspaceSession, "sessionSelection") ||
+      Object.prototype.hasOwnProperty.call(container.workspaceSession, "mergeAuditLog") ||
+      Object.prototype.hasOwnProperty.call(container.workspaceSession, "activeSessionPayload")
+    ) {
+      return { ok: false, message: "Workspace import failed: runtime-only fields are not allowed in portable workspace payload." };
+    }
+    const activeToolId = typeof container.workspaceSession.activeToolId === "string" ? container.workspaceSession.activeToolId.trim() : "";
+    const activeHostContextId = typeof container.workspaceSession.activeHostContextId === "string" ? container.workspaceSession.activeHostContextId.trim() : "";
+    if (!activeToolId || !activeHostContextId) {
+      return { ok: false, message: "Workspace import failed: active tool/session identity is missing." };
+    }
+    if (!container.workspaceSession.toolSessions || typeof container.workspaceSession.toolSessions !== "object" || Array.isArray(container.workspaceSession.toolSessions)) {
+      return { ok: false, message: "Workspace import failed: missing toolSessions map." };
+    }
+    if (!Object.prototype.hasOwnProperty.call(container.workspaceSession.toolSessions, activeToolId)) {
+      return { ok: false, message: "Workspace import failed: active tool is missing from toolSessions." };
+    }
+    const activeToolSessions = container.workspaceSession.toolSessions[activeToolId];
+    if (!activeToolSessions || typeof activeToolSessions !== "object" || Array.isArray(activeToolSessions)) {
+      return { ok: false, message: "Workspace import failed: active tool sessions are invalid." };
+    }
+    if (!Object.prototype.hasOwnProperty.call(activeToolSessions, activeHostContextId)) {
+      return { ok: false, message: "Workspace import failed: active hostContextId is missing from toolSessions." };
+    }
+    const activePayload = activeToolSessions[activeHostContextId];
+    if (!this.isValidSessionPayload(activePayload)) {
+      return { ok: false, message: "Workspace import failed: active payload is invalid." };
+    }
+    return { ok: true, message: "" };
+  }
+
+  importWorkspaceSessionJson() {
+    if (!this.inWorkspaceNavMode()) {
+      this.statusNode.textContent = "Switch to workspace mode to import workspace session JSON.";
+      return;
+    }
+    const rawJson = typeof this.workspaceJsonNode.value === "string" ? this.workspaceJsonNode.value.trim() : "";
+    if (!rawJson) {
+      this.statusNode.textContent = "Workspace session JSON is required for import.";
+      return;
+    }
+    try {
+      const parsed = JSON.parse(rawJson);
+      const validation = this.isValidPortableWorkspaceSessionContainer(parsed);
+      if (!validation.ok) {
+        this.statusNode.textContent = validation.message;
+        return;
+      }
+      const activeToolId = parsed.workspaceSession.activeToolId.trim();
+      const activeHostContextId = parsed.workspaceSession.activeHostContextId.trim();
+      const activePayload = parsed.workspaceSession.toolSessions[activeToolId][activeHostContextId];
+      Object.keys(parsed.workspaceSession.toolSessions).forEach((toolId) => {
+        const sessionMap = parsed.workspaceSession.toolSessions[toolId];
+        if (!sessionMap || typeof sessionMap !== "object" || Array.isArray(sessionMap)) {
+          return;
+        }
+        Object.keys(sessionMap).forEach((sessionId) => {
+          const payload = sessionMap[sessionId];
+          if (!this.isValidSessionPayload(payload)) {
+            return;
+          }
+          sessionStorage.setItem(sessionId, JSON.stringify(payload));
+        });
+      });
+      const savedSessions = parsed.workspaceSession.savedSessions;
+      if (savedSessions && typeof savedSessions === "object" && !Array.isArray(savedSessions)) {
+        localStorage.setItem(this.libraryStorageKey, JSON.stringify(savedSessions));
+      }
+      this.currentHostContextId = activeHostContextId;
+      this.setCurrentSessionPayload(activePayload, "workspace-import");
+      this.importJsonNode.value = JSON.stringify(activePayload, null, 2);
+      const hasToolOption = Array.from(this.toolSelect.options).some((option) => option.value === activeToolId);
+      if (hasToolOption) {
+        this.toolSelect.value = activeToolId;
+      }
+      this.renderSessionLibrary();
+      this.renderSessionHistory();
+      this.renderSessionDiffInputs();
+      this.renderSessionMergeInputs();
+      this.refreshWorkspaceSessionUiStateModel("refresh_load");
+      this.renderDiagnosticsPanel();
+      this.statusNode.textContent = "Workspace session imported.";
+    } catch (error) {
+      this.statusNode.textContent = `Workspace import failed: ${error instanceof Error ? error.message : "unknown error"}`;
     }
   }
 
