@@ -223,15 +223,52 @@ class WorkspaceV2SessionProducer {
   }
 
   readSessionPayloadForLibraryWrite(sessionId) {
-    const recentPayload = this.readSessionPayloadFromRecentSessionId(sessionId);
-    if (this.isValidSessionPayload(recentPayload)) {
-      return recentPayload;
+    if (typeof sessionId !== "string" || !sessionId.trim()) {
+      return null;
     }
-    const activePayload = this.readActiveSessionPayloadForLibraryActions();
-    if (this.isValidSessionPayload(activePayload)) {
-      return activePayload;
+    const raw = sessionStorage.getItem(sessionId.trim());
+    if (typeof raw !== "string") {
+      return null;
     }
-    return null;
+    const parsed = this.safeParseJson(raw);
+    if (!parsed.ok || !this.isValidSessionPayload(parsed.value)) {
+      return null;
+    }
+    return parsed.value;
+  }
+
+  looksLikeWorkspaceHostContextId(sessionId) {
+    if (typeof sessionId !== "string" || !sessionId.trim()) {
+      return false;
+    }
+    return /-v2-\d{13}-[a-z0-9]{8}$/i.test(sessionId.trim());
+  }
+
+  cleanupStaleInvalidSavedEntries(library) {
+    if (!library || typeof library !== "object" || Array.isArray(library)) {
+      return false;
+    }
+    let removedAny = false;
+    Object.keys(library).forEach((sessionId) => {
+      const payload = library[sessionId];
+      if (!this.isValidSessionPayload(payload)) {
+        return;
+      }
+      if (!this.looksLikeWorkspaceHostContextId(sessionId)) {
+        return;
+      }
+      const storagePayload = this.readSessionPayloadForLibraryWrite(sessionId);
+      const hasMatchingStorage = this.isValidSessionPayload(storagePayload);
+      const payloadHostContextId = typeof payload.hostContextId === "string" ? payload.hostContextId.trim() : "";
+      const payloadToolId = typeof payload.toolId === "string" ? payload.toolId.trim() : "";
+      const idMatchesPayloadHostContext = payloadHostContextId && payloadHostContextId === sessionId;
+      const idMatchesToolMetadata = payloadToolId && sessionId.startsWith(`${payloadToolId}-`);
+      if (!hasMatchingStorage && !idMatchesPayloadHostContext && !idMatchesToolMetadata) {
+        delete library[sessionId];
+        removedAny = true;
+      }
+    });
+    return removedAny;
   }
 
   fixturePathForTool(toolId) {
@@ -387,6 +424,9 @@ class WorkspaceV2SessionProducer {
       this.libraryEmptyState.hidden = false;
       this.libraryEmptyState.textContent = "Session library is invalid. Fix stored JSON or clear v2-session-library.";
       return;
+    }
+    if (this.cleanupStaleInvalidSavedEntries(library)) {
+      localStorage.setItem(this.libraryStorageKey, JSON.stringify(library));
     }
     const sessionNames = Object.keys(library).sort((left, right) => left.localeCompare(right));
     this.sessionListNode.replaceChildren();
@@ -1728,11 +1768,6 @@ class WorkspaceV2SessionProducer {
       this.setLibraryStatus(overwriteExisting ? "Enter a session ID before overwriting." : "Enter a session ID before saving.");
       return;
     }
-    const payloadForWrite = this.readSessionPayloadForLibraryWrite(sessionName);
-    if (!this.isValidSessionPayload(payloadForWrite)) {
-      this.setLibraryStatus("Session ID does not resolve to a valid Workspace V2 session.");
-      return;
-    }
     const library = this.readSessionLibrary();
     if (library === null) {
       return;
@@ -1740,6 +1775,11 @@ class WorkspaceV2SessionProducer {
     const exists = Object.prototype.hasOwnProperty.call(library, sessionName);
     if (!overwriteExisting && exists) {
       this.setLibraryStatus("Saved session already exists. Use Overwrite Session.");
+      return;
+    }
+    const payloadForWrite = this.readSessionPayloadForLibraryWrite(sessionName);
+    if (!this.isValidSessionPayload(payloadForWrite)) {
+      this.setLibraryStatus("Session ID does not resolve to a valid Workspace V2 session.");
       return;
     }
     if (overwriteExisting && !exists) {
