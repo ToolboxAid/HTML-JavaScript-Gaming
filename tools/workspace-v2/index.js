@@ -84,7 +84,6 @@ class WorkspaceV2SessionProducer {
     this.currentHostContextId = "";
     this.pendingMergePreview = null;
     this.lastMergedSessionResult = null;
-    this.lastMergedHostContextId = "";
     this.mergeOutputSelectionKey = "";
     this.recentSessionInventory = [];
     this.loadFixtureButton.addEventListener("click", () => {
@@ -195,7 +194,6 @@ class WorkspaceV2SessionProducer {
       }
     });
     this.decodeSessionParamFromUrl();
-    this.lastMergedHostContextId = this.readLastMergedHostContextId();
     this.registerSnapshotHook();
     this.renderSessionLibrary();
     this.renderSessionHistory();
@@ -316,35 +314,50 @@ class WorkspaceV2SessionProducer {
 
   writeLastMergedHostContextId(hostContextId) {
     if (typeof hostContextId !== "string" || !hostContextId.trim()) {
-      this.lastMergedHostContextId = "";
       sessionStorage.removeItem(this.lastMergedSessionStorageKey);
       return;
     }
-    this.lastMergedHostContextId = hostContextId.trim();
-    sessionStorage.setItem(this.lastMergedSessionStorageKey, this.lastMergedHostContextId);
+    sessionStorage.setItem(this.lastMergedSessionStorageKey, hostContextId.trim());
+  }
+
+  resolveAuthoritativeLastMergedHostContextId() {
+    const mergedHostContextId = this.readLastMergedHostContextId();
+    if (!mergedHostContextId) {
+      return "";
+    }
+    const history = this.readSessionHistory();
+    const mergedRecentEntry = history.find((entry) => entry.hostContextId === mergedHostContextId);
+    const existsInRecent = Boolean(mergedRecentEntry);
+    const existsInSessionStorage = typeof sessionStorage.getItem(mergedHostContextId) === "string";
+    const existsAsMergedRecent = Boolean(
+      mergedRecentEntry &&
+      mergedRecentEntry.payload &&
+      typeof mergedRecentEntry.payload === "object" &&
+      !Array.isArray(mergedRecentEntry.payload) &&
+      mergedRecentEntry.payload.mergeResultMeta &&
+      typeof mergedRecentEntry.payload.mergeResultMeta === "object" &&
+      mergedRecentEntry.payload.mergeResultMeta.isMergedResult === true
+    );
+    if (!existsInRecent || !existsInSessionStorage || !existsAsMergedRecent) {
+      console.debug("[WorkspaceV2UndoLastMerge] stale_authoritative_merge_record", {
+        lastMergedHostContextId: mergedHostContextId,
+        existsInRecent,
+        existsInSessionStorage,
+        existsAsMergedRecent
+      });
+      this.writeLastMergedHostContextId("");
+      return "";
+    }
+    return mergedHostContextId;
   }
 
   updateUndoLastMergeState() {
-    const mergedHostContextId = typeof this.lastMergedHostContextId === "string"
-      ? this.lastMergedHostContextId.trim()
-      : "";
+    const mergedHostContextId = this.resolveAuthoritativeLastMergedHostContextId();
     if (!mergedHostContextId) {
       this.undoLastMergeButton.disabled = true;
       return;
     }
-    const history = this.readSessionHistory();
-    const existsInRecent = history.some((entry) => entry.hostContextId === mergedHostContextId);
-    const existsInSessionStorage = typeof sessionStorage.getItem(mergedHostContextId) === "string";
-    const hasRecentMerged = Boolean(mergedHostContextId && existsInRecent && existsInSessionStorage);
-    if (!hasRecentMerged) {
-      console.debug("[WorkspaceV2UndoLastMerge] stale_last_merged_context", {
-        lastMergedHostContextId: mergedHostContextId,
-        existsInRecent,
-        existsInSessionStorage
-      });
-      this.writeLastMergedHostContextId("");
-    }
-    this.undoLastMergeButton.disabled = !hasRecentMerged;
+    this.undoLastMergeButton.disabled = false;
   }
 
   readActiveSessionPayloadForLibraryActions() {
@@ -879,7 +892,7 @@ class WorkspaceV2SessionProducer {
   }
 
   undoLastMerge() {
-    const lastMergedId = typeof this.lastMergedHostContextId === "string" ? this.lastMergedHostContextId.trim() : "";
+    const lastMergedId = this.resolveAuthoritativeLastMergedHostContextId();
     if (!lastMergedId) {
       this.updateUndoLastMergeState();
       this.clearMergePanelTransientState(
@@ -2037,7 +2050,6 @@ class WorkspaceV2SessionProducer {
 
   clearSessionStorage(emitStatus = true) {
     sessionStorage.clear();
-    this.lastMergedHostContextId = "";
     this.clearPersistedSessionSelection();
     this.diffLeftSelect.value = "";
     this.diffRightSelect.value = "";
@@ -2095,7 +2107,6 @@ class WorkspaceV2SessionProducer {
     this.shareUrlNode.value = "";
     this.sessionNameNode.value = "";
     this.lastMergedSessionResult = null;
-    this.lastMergedHostContextId = "";
     this.mergeOutputSelectionKey = "";
     this.mergedSessionIdNode.value = "";
     this.mergedSessionStatusNode.textContent = "No merged session result to save.";
