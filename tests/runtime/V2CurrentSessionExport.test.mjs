@@ -23,7 +23,7 @@ function checkSyntax(filePath) {
   }
 }
 
-function simulateExport(activePayload, selectedToolId, currentHostContextId) {
+function simulateExport(activePayload, selectedToolId, currentHostContextId, library, history, selection, mergeAuditLog) {
   if (!activePayload || typeof activePayload !== "object" || Array.isArray(activePayload)) {
     return {
       ok: false,
@@ -37,11 +37,26 @@ function simulateExport(activePayload, selectedToolId, currentHostContextId) {
   const filenameSessionId = typeof currentHostContextId === "string" && currentHostContextId.trim()
     ? currentHostContextId.trim()
     : "session";
+  const exportedContainer = {
+    version: "v2",
+    toolId: "workspace-v2",
+    workspaceSession: {
+      workspaceToolId: "workspace-v2",
+      workspaceSessionId: filenameSessionId === "session" ? "" : filenameSessionId,
+      activeToolId: filenameToolId,
+      activeHostContextId: filenameSessionId === "session" ? "" : filenameSessionId,
+      activeSessionPayload: activePayload,
+      sessionLibrary: library,
+      sessionHistory: history,
+      sessionSelection: selection,
+      mergeAuditLog
+    }
+  };
   return {
     ok: true,
     status: "Exported current workspace session JSON.",
-    filename: `${filenameToolId}-${filenameSessionId}.json`,
-    serialized: JSON.stringify(activePayload, null, 2)
+    filename: `workspace-v2-${filenameToolId}-${filenameSessionId}.json`,
+    serialized: JSON.stringify(exportedContainer, null, 2)
   };
 }
 
@@ -61,7 +76,11 @@ export function run() {
     "No active Workspace V2 session is available to export.",
     "Exported current workspace session JSON.",
     "URL.createObjectURL",
-    "downloadLink.download"
+    "downloadLink.download",
+    "workspaceSession",
+    "sessionLibrary",
+    "sessionHistory",
+    "activeSessionPayload"
   ];
   requiredTokens.forEach((token) => {
     if (!workspaceJs.includes(token)) {
@@ -77,20 +96,32 @@ export function run() {
     toolId: "palette-manager-v2",
     payloadJson: { swatches: ["#000000", "#ffffff"] }
   };
-  const activeResult = simulateExport(activePayload, "asset-browser-v2", "palette-manager-v2-1234567890123-abcd1234");
+  const activeResult = simulateExport(
+    activePayload,
+    "asset-browser-v2",
+    "palette-manager-v2-1234567890123-abcd1234",
+    { "saved-1": { version: "v2", toolId: "asset-browser-v2", payloadJson: { id: 1 } } },
+    [{ hostContextId: "palette-manager-v2-1234567890123-abcd1234", tool: "palette-manager-v2", timestamp: "2026-05-02T12:00:00.000Z", payload: activePayload }],
+    { sessionA: "a", sessionB: "b" },
+    [{ sourceSessionContextId: "a", targetSessionContextId: "b" }]
+  );
   if (!activeResult.ok) failures.push("Active session export should be allowed.");
   if (activeResult.status !== "Exported current workspace session JSON.") {
     failures.push("Active session export status mismatch.");
   }
-  if (activeResult.filename !== "palette-manager-v2-palette-manager-v2-1234567890123-abcd1234.json") {
+  if (activeResult.filename !== "workspace-v2-palette-manager-v2-palette-manager-v2-1234567890123-abcd1234.json") {
     failures.push("Export filename should include tool/session identity.");
   }
   const parsedActive = activeResult.serialized ? JSON.parse(activeResult.serialized) : null;
-  if (JSON.stringify(parsedActive) !== JSON.stringify(activePayload)) {
-    failures.push("Exported JSON does not preserve active session payload exactly.");
+  if (!parsedActive || typeof parsedActive !== "object" || Array.isArray(parsedActive)) {
+    failures.push("Exported JSON should be a workspace container object.");
+  } else if (!parsedActive.workspaceSession || typeof parsedActive.workspaceSession !== "object") {
+    failures.push("Exported JSON should include workspaceSession container.");
+  } else if (JSON.stringify(parsedActive.workspaceSession.activeSessionPayload) !== JSON.stringify(activePayload)) {
+    failures.push("Exported workspace container does not preserve active session payload exactly.");
   }
 
-  const noActiveResult = simulateExport(null, "asset-browser-v2", "");
+  const noActiveResult = simulateExport(null, "asset-browser-v2", "", {}, [], { sessionA: "", sessionB: "" }, []);
   if (noActiveResult.ok) failures.push("Export should be blocked when no active session exists.");
   if (noActiveResult.status !== "No active Workspace V2 session is available to export.") {
     failures.push("No-active export status mismatch.");

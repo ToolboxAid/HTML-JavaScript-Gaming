@@ -2789,13 +2789,41 @@ class WorkspaceV2SessionProducer {
       return;
     }
     try {
-      const serialized = JSON.stringify(activePayload, null, 2);
-      const payloadToolId = typeof activePayload.toolId === "string" ? activePayload.toolId.trim() : "";
-      const filenameToolId = payloadToolId || this.selectedToolId() || "workspace-v2";
+      const library = this.readSessionLibrary();
+      if (library === null) {
+        this.statusNode.textContent = "Workspace V2 export blocked: Session Library is invalid.";
+        return;
+      }
+      const history = this.readSessionHistory();
+      const persistedSelection = this.readPersistedSessionSelection();
+      const mergeAuditRaw = localStorage.getItem(this.mergeAuditStorageKey);
+      const mergeAuditParsed = this.safeParseJson(typeof mergeAuditRaw === "string" ? mergeAuditRaw : "");
+      const mergeAuditEntries = mergeAuditParsed.ok && Array.isArray(mergeAuditParsed.value) ? mergeAuditParsed.value : [];
+      const activeToolId = typeof activePayload.toolId === "string" && activePayload.toolId.trim()
+        ? activePayload.toolId.trim()
+        : this.selectedToolId();
+      const workspaceContainer = {
+        version: "v2",
+        toolId: "workspace-v2",
+        workspaceSession: {
+          workspaceToolId: "workspace-v2",
+          workspaceSessionId: typeof this.currentHostContextId === "string" ? this.currentHostContextId.trim() : "",
+          activeToolId,
+          activeHostContextId: typeof this.currentHostContextId === "string" ? this.currentHostContextId.trim() : "",
+          activeSessionPayload: activePayload,
+          sessionLibrary: library,
+          sessionHistory: history,
+          sessionSelection: persistedSelection,
+          mergeAuditLog: mergeAuditEntries,
+          exportedAt: new Date().toISOString()
+        }
+      };
+      const serialized = JSON.stringify(workspaceContainer, null, 2);
+      const filenameToolId = activeToolId || "workspace-v2";
       const filenameSessionId = typeof this.currentHostContextId === "string" && this.currentHostContextId.trim()
         ? this.currentHostContextId.trim()
         : "session";
-      const downloadFileName = `${filenameToolId}-${filenameSessionId}.json`;
+      const downloadFileName = `workspace-v2-${filenameToolId}-${filenameSessionId}.json`;
       const fileBlob = new Blob([serialized], { type: "application/json" });
       const fileUrl = URL.createObjectURL(fileBlob);
       const downloadLink = document.createElement("a");
