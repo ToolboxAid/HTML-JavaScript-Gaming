@@ -41,6 +41,7 @@ class WorkspaceV2SessionProducer {
     this.computeDiffButton = document.getElementById("workspaceV2ComputeDiffButton");
     this.diffEnableStateNode = document.getElementById("workspaceV2DiffEnableState");
     this.diffEmptyState = document.getElementById("workspaceV2DiffEmptyState");
+    this.diffSummaryNode = document.getElementById("workspaceV2DiffSummary");
     this.diffOutputNode = document.getElementById("workspaceV2DiffOutput");
     this.mergeLeftSelect = document.getElementById("workspaceV2MergeLeftSelect");
     this.mergeRightSelect = document.getElementById("workspaceV2MergeRightSelect");
@@ -566,6 +567,7 @@ class WorkspaceV2SessionProducer {
 
   clearDiffOutputForStateChange(statusMessage, outputMessage) {
     this.diffOutputSelectionKey = "";
+    this.diffSummaryNode.textContent = "";
     this.diffOutputNode.textContent = typeof outputMessage === "string" && outputMessage.trim()
       ? outputMessage
       : "No diff computed.";
@@ -2286,7 +2288,16 @@ class WorkspaceV2SessionProducer {
     return { added, removed, changed };
   }
 
+  setDiffSummaryFromCounts(addedCount, removedCount, changedCount) {
+    if (addedCount === 0 && removedCount === 0 && changedCount === 0) {
+      this.diffSummaryNode.textContent = "No differences (added: 0, removed: 0, changed: 0)";
+      return;
+    }
+    this.diffSummaryNode.textContent = `Differences detected (added: ${addedCount}, removed: ${removedCount}, changed: ${changedCount})`;
+  }
+
   computeSelectedSessionDiff() {
+    this.diffSummaryNode.textContent = "";
     if (!Array.isArray(this.diffCandidates) || this.diffCandidates.length < 2) {
       this.diffOutputSelectionKey = "";
       this.diffOutputNode.textContent = "Create or reopen at least two Workspace V2 sessions before comparing.";
@@ -2334,13 +2345,13 @@ class WorkspaceV2SessionProducer {
       return;
     }
     const diff = this.computeSessionDiff(left.payload, right.payload);
+    const addedCount = Object.keys(diff.added).length;
+    const removedCount = Object.keys(diff.removed).length;
+    const changedCount = Object.keys(diff.changed).length;
     this.diffOutputSelectionKey = this.buildMergeSelectionKey(left.id, right.id);
+    this.setDiffSummaryFromCounts(addedCount, removedCount, changedCount);
     this.diffOutputNode.textContent = JSON.stringify(diff, null, 2);
-    if (
-      Object.keys(diff.added).length === 0 &&
-      Object.keys(diff.removed).length === 0 &&
-      Object.keys(diff.changed).length === 0
-    ) {
+    if (addedCount === 0 && removedCount === 0 && changedCount === 0) {
       this.statusNode.textContent = "No differences. The selected sessions are identical.";
       return;
     }
