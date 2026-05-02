@@ -501,6 +501,7 @@ class WorkspaceV2SessionProducer {
       return;
     }
     this.sessionNameNode.value = sessionId.trim();
+    this.syncDiffAndMergeSelectionSlotsFromContextId(sessionId.trim());
     this.setLibraryStatus(`Saved session ID ready for Library actions: ${sessionId.trim()}`);
   }
 
@@ -511,6 +512,7 @@ class WorkspaceV2SessionProducer {
     }
     this.sessionNameNode.value = sessionId.trim();
     this.loadNamedSession();
+    this.syncDiffAndMergeSelectionSlotsFromContextId(sessionId.trim());
     this.renderSessionLibrary();
   }
 
@@ -818,6 +820,46 @@ class WorkspaceV2SessionProducer {
       return null;
     }
     return entries.find((entry) => entry.id === selectedId) || null;
+  }
+
+  syncSelectionSlotsFromContextId(leftSelectNode, rightSelectNode, candidates, contextId) {
+    if (
+      !leftSelectNode ||
+      !rightSelectNode ||
+      !Array.isArray(candidates) ||
+      typeof contextId !== "string" ||
+      !contextId.trim()
+    ) {
+      return false;
+    }
+    const selectedEntry = this.findSessionEntryByContextId(candidates, contextId.trim());
+    if (!selectedEntry) {
+      return false;
+    }
+    const leftEntry = this.findSessionEntryById(candidates, leftSelectNode.value);
+    const rightEntry = this.findSessionEntryById(candidates, rightSelectNode.value);
+    if (!leftEntry) {
+      if (rightEntry && rightEntry.id === selectedEntry.id) {
+        return false;
+      }
+      leftSelectNode.value = selectedEntry.id;
+      return true;
+    }
+    if (!rightEntry) {
+      if (leftEntry.id === selectedEntry.id) {
+        return false;
+      }
+      rightSelectNode.value = selectedEntry.id;
+      return true;
+    }
+    return false;
+  }
+
+  syncDiffAndMergeSelectionSlotsFromContextId(contextId) {
+    this.syncSelectionSlotsFromContextId(this.diffLeftSelect, this.diffRightSelect, this.diffCandidates, contextId);
+    this.syncSelectionSlotsFromContextId(this.mergeLeftSelect, this.mergeRightSelect, this.mergeCandidates, contextId);
+    this.updateDiffSelectionFeedbackAndState();
+    this.updateMergeSelectionFeedbackAndState();
   }
 
   formatSelectionLabel(entry) {
