@@ -457,7 +457,7 @@ class WorkspaceV2SessionProducer {
         this.copySavedSessionIdToClipboard(sessionName);
       });
       useInLibraryButton.type = "button";
-      useInLibraryButton.textContent = "Use in Library";
+      useInLibraryButton.textContent = "Use in Diff/Merge";
       useInLibraryButton.addEventListener("click", () => {
         this.useSavedSessionIdInLibraryInput(sessionName);
       });
@@ -502,7 +502,7 @@ class WorkspaceV2SessionProducer {
     }
     this.sessionNameNode.value = sessionId.trim();
     this.syncDiffAndMergeSelectionSlotsFromContextId(sessionId.trim());
-    this.setLibraryStatus(`Saved session ID ready for Library actions: ${sessionId.trim()}`);
+    this.setLibraryStatus(`Saved session ID ready for Diff/Merge and Library actions: ${sessionId.trim()}`);
   }
 
   loadSavedSessionById(sessionId) {
