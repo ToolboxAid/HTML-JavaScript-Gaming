@@ -51,6 +51,10 @@ class WorkspaceV2SessionProducer {
     this.applyMergeButton = document.getElementById("workspaceV2ApplyMergeButton");
     this.mergeEnableStateNode = document.getElementById("workspaceV2MergeEnableState");
     this.mergeEmptyState = document.getElementById("workspaceV2MergeEmptyState");
+    this.mergedSessionIdNode = document.getElementById("workspaceV2MergedSessionId");
+    this.saveMergedSessionButton = document.getElementById("workspaceV2SaveMergedSessionButton");
+    this.useMergedInDiffMergeButton = document.getElementById("workspaceV2UseMergedInDiffMergeButton");
+    this.mergedSessionStatusNode = document.getElementById("workspaceV2MergedSessionStatus");
     this.mergeConflictSummaryNode = document.getElementById("workspaceV2MergeConflictSummary");
     this.mergeOutputNode = document.getElementById("workspaceV2MergeOutput");
     this.refreshErrorLogsButton = document.getElementById("workspaceV2RefreshErrorLogsButton");
@@ -76,6 +80,7 @@ class WorkspaceV2SessionProducer {
     this.currentSessionSource = "";
     this.currentHostContextId = "";
     this.pendingMergePreview = null;
+    this.lastMergedSessionResult = null;
     this.recentSessionInventory = [];
     this.loadFixtureButton.addEventListener("click", () => {
       this.loadSelectedFixture();
@@ -136,6 +141,12 @@ class WorkspaceV2SessionProducer {
     });
     this.applyMergeButton.addEventListener("click", () => {
       this.applySelectedSessionMerge();
+    });
+    this.saveMergedSessionButton.addEventListener("click", () => {
+      this.saveMergedSessionResult();
+    });
+    this.useMergedInDiffMergeButton.addEventListener("click", () => {
+      this.useMergedSessionInDiffMerge();
     });
     this.refreshErrorLogsButton.addEventListener("click", () => {
       this.renderErrorLogsViewer();
@@ -198,6 +209,11 @@ class WorkspaceV2SessionProducer {
     this.statusNode.textContent = message;
   }
 
+  setMergedSessionStatus(message) {
+    this.mergedSessionStatusNode.textContent = message;
+    this.statusNode.textContent = message;
+  }
+
   readActiveSessionPayloadForLibraryActions() {
     if (!this.currentHostContextId || typeof this.currentHostContextId !== "string" || !this.currentHostContextId.trim()) {
       return null;
@@ -238,6 +254,10 @@ class WorkspaceV2SessionProducer {
       return null;
     }
     return parsed.value;
+  }
+
+  selectedMergedSessionId() {
+    return typeof this.mergedSessionIdNode.value === "string" ? this.mergedSessionIdNode.value.trim() : "";
   }
 
   looksLikeWorkspaceHostContextId(sessionId) {
@@ -1202,6 +1222,19 @@ class WorkspaceV2SessionProducer {
       this.mergeOutputNode.textContent = "Selected merge payload is invalid.";
       return;
     }
+    const leftToolId = typeof left.payload.toolId === "string" ? left.payload.toolId.trim() : "";
+    const rightToolId = typeof right.payload.toolId === "string" ? right.payload.toolId.trim() : "";
+    if (leftToolId && rightToolId && leftToolId !== rightToolId) {
+      this.pendingMergePreview = null;
+      this.updateMergeSelectionFeedbackAndState();
+      this.mergeOutputNode.textContent = [
+        "Cross-tool merge is not supported. Select two sessions with the same toolId.",
+        `Session A toolId: ${leftToolId}`,
+        `Session B toolId: ${rightToolId}`
+      ].join("\n");
+      this.statusNode.textContent = "Cross-tool merge is not supported. Select two sessions with the same toolId.";
+      return;
+    }
 
     const result = this.mergeSessionPayloads(left.payload, right.payload);
     const selectedToolId = this.selectedToolId();
@@ -1287,6 +1320,67 @@ class WorkspaceV2SessionProducer {
     };
     walk(sourcePayload, targetPayload, mergedPayload, "");
     return { added, updated, unchanged };
+  }
+
+  defaultMergedSessionId(toolId) {
+    const safeToolId = typeof toolId === "string" && toolId.trim() ? toolId.trim() : this.selectedToolId();
+    return `${safeToolId}-merged-${Date.now()}`;
+  }
+
+  setLastMergedSessionResult(payload, toolId) {
+    if (!this.isValidSessionPayload(payload)) {
+      this.lastMergedSessionResult = null;
+      this.mergedSessionStatusNode.textContent = "No merged session result to save.";
+      return;
+    }
+    this.lastMergedSessionResult = {
+      payload: this.cloneSessionValue(payload),
+      toolId: typeof toolId === "string" && toolId.trim() ? toolId.trim() : this.selectedToolId(),
+      createdAt: new Date().toISOString()
+    };
+    this.mergedSessionIdNode.value = this.defaultMergedSessionId(this.lastMergedSessionResult.toolId);
+    this.mergedSessionStatusNode.textContent = "Merged session ready. Choose an ID and save if desired.";
+  }
+
+  saveMergedSessionResult() {
+    if (!this.lastMergedSessionResult || !this.isValidSessionPayload(this.lastMergedSessionResult.payload)) {
+      this.setMergedSessionStatus("No merged session result available to save.");
+      return;
+    }
+    const mergedSessionId = this.selectedMergedSessionId();
+    if (!mergedSessionId) {
+      this.setMergedSessionStatus("Enter a merged session ID before saving.");
+      return;
+    }
+    const library = this.readSessionLibrary();
+    if (library === null) {
+      return;
+    }
+    if (Object.prototype.hasOwnProperty.call(library, mergedSessionId)) {
+      this.setMergedSessionStatus("Session ID already exists. Choose a different ID.");
+      return;
+    }
+    library[mergedSessionId] = this.cloneSessionValue(this.lastMergedSessionResult.payload);
+    this.writeSessionLibrary(library);
+    this.renderSessionLibrary();
+    this.setMergedSessionStatus("Merged session saved.");
+  }
+
+  useMergedSessionInDiffMerge() {
+    if (!this.lastMergedSessionResult || !this.isValidSessionPayload(this.lastMergedSessionResult.payload)) {
+      this.setMergedSessionStatus("No merged session result available to use.");
+      return;
+    }
+    const mergedSessionId = this.selectedMergedSessionId();
+    if (!mergedSessionId) {
+      this.setMergedSessionStatus("Enter a merged session ID before using in Diff/Merge.");
+      return;
+    }
+    const serialized = JSON.stringify(this.lastMergedSessionResult.payload);
+    sessionStorage.setItem(mergedSessionId, serialized);
+    this.addRecentSessionEntry(mergedSessionId, this.lastMergedSessionResult.toolId, this.lastMergedSessionResult.payload);
+    this.syncDiffAndMergeSelectionSlotsFromContextId(mergedSessionId);
+    this.setMergedSessionStatus("Merged session ready in Diff/Merge selections.");
   }
 
   confirmSelectedSessionMergePreview() {
@@ -1398,6 +1492,7 @@ class WorkspaceV2SessionProducer {
     this.currentHostContextId = hostContextId;
     this.setCurrentSessionPayload(this.pendingMergePreview.mergedPayload, "merge-apply");
     this.importJsonNode.value = JSON.stringify(this.pendingMergePreview.mergedPayload, null, 2);
+    this.setLastMergedSessionResult(appliedPayload, this.pendingMergePreview.selectedToolId);
     this.recordMergeAuditEntry(this.pendingMergePreview);
     this.renderDiagnosticsPanel();
     this.pendingMergePreview = null;
@@ -1675,6 +1770,9 @@ class WorkspaceV2SessionProducer {
     this.importJsonNode.value = "";
     this.shareUrlNode.value = "";
     this.sessionNameNode.value = "";
+    this.lastMergedSessionResult = null;
+    this.mergedSessionIdNode.value = "";
+    this.mergedSessionStatusNode.textContent = "No merged session result to save.";
     this.renderSessionLibrary();
     this.renderErrorLogsViewer();
     this.renderDiagnosticsPanel();

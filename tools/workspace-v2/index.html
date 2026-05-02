@@ -112,6 +112,13 @@
         </div>
         <p id="workspaceV2MergeEnableState">Select two different sessions to enable Preview Merge.</p>
         <p id="workspaceV2MergeEmptyState">Need at least two valid sessions to merge.</p>
+        <label for="workspaceV2MergedSessionId">Merged Session ID</label>
+        <input id="workspaceV2MergedSessionId" type="text" placeholder="tool-v2-merged-0000000000000" />
+        <div>
+          <button id="workspaceV2SaveMergedSessionButton" type="button">Save Merged Session</button>
+          <button id="workspaceV2UseMergedInDiffMergeButton" type="button">Use in Diff/Merge</button>
+        </div>
+        <p id="workspaceV2MergedSessionStatus">No merged session result to save.</p>
         <pre id="workspaceV2MergeConflictSummary" hidden>No merge conflicts.</pre>
         <pre id="workspaceV2MergeOutput" style="max-height: 18rem; overflow: auto; position: relative;">No merge computed.</pre>
       </section>
