@@ -219,11 +219,104 @@ class WorkspaceV2SessionProducer {
   }
 
   updateSessionLibraryActionState() {
-    const hasSessionInput = Boolean(this.selectedSessionName());
-    this.saveSessionButton.disabled = !hasSessionInput;
-    this.overwriteSessionButton.disabled = !hasSessionInput;
-    this.loadSessionButton.disabled = !hasSessionInput;
-    this.deleteSessionButton.disabled = !hasSessionInput;
+    this.refreshWorkspaceSessionUiStateModel();
+  }
+
+  computeWorkspaceSessionUiStateModel() {
+    const libraryHasSessionInput = Boolean(this.selectedSessionName());
+    const diffLeftEntry = this.findSessionEntryById(this.diffCandidates, this.diffLeftSelect.value);
+    const diffRightEntry = this.findSessionEntryById(this.diffCandidates, this.diffRightSelect.value);
+    const diffCanCompute = Boolean(diffLeftEntry && diffRightEntry && diffLeftEntry.id !== diffRightEntry.id);
+    const mergeLeftEntry = this.findSessionEntryById(this.mergeCandidates, this.mergeLeftSelect.value);
+    const mergeRightEntry = this.findSessionEntryById(this.mergeCandidates, this.mergeRightSelect.value);
+    const mergeCanPreview = Boolean(mergeLeftEntry && mergeRightEntry && mergeLeftEntry.id !== mergeRightEntry.id);
+    const mergePreviewFresh = this.hasFreshMergePreviewContext(this.pendingMergePreview);
+    const mergePreviewConflictCount = this.pendingMergePreview
+      ? (typeof this.pendingMergePreview.conflictCount === "number"
+        ? this.pendingMergePreview.conflictCount
+        : Object.keys(this.pendingMergePreview.conflicts || {}).length)
+      : 0;
+    const mergePreviewHasConflicts = Boolean(this.pendingMergePreview && mergePreviewConflictCount > 0);
+    const mergeCanConfirm = Boolean(this.pendingMergePreview && !this.pendingMergePreview.confirmed && mergePreviewFresh && !mergePreviewHasConflicts);
+    const mergeCanApply = Boolean(this.pendingMergePreview && this.pendingMergePreview.confirmed && mergePreviewFresh && !mergePreviewHasConflicts);
+    let mergeEnableText = "Preview Merge is enabled.";
+    if (!mergeCanPreview) {
+      mergeEnableText = "Select two different sessions to enable Preview Merge.";
+    } else if (this.pendingMergePreview && !mergePreviewFresh) {
+      mergeEnableText = "Preview is stale. Run Preview Merge again.";
+    } else if (mergePreviewHasConflicts && mergePreviewFresh) {
+      mergeEnableText = "Preview has conflicts. Resolve conflicts before applying.";
+    } else if (mergeCanApply) {
+      mergeEnableText = "Apply Merge is enabled.";
+    } else if (mergeCanConfirm) {
+      mergeEnableText = "Confirm Preview is enabled.";
+    }
+    const mergeSelectionText = mergeLeftEntry && mergeRightEntry && mergeLeftEntry.id === mergeRightEntry.id
+      ? "Choose two different sessions."
+      : (mergeCanPreview ? "Selections are valid." : "Select two different sessions to preview merge.");
+    const diffSelectionText = diffLeftEntry && diffRightEntry && diffLeftEntry.id === diffRightEntry.id
+      ? "Choose two different sessions."
+      : (diffCanCompute ? "Selections are valid." : "Select two different sessions to compute diff.");
+    const authoritativeLastMergedHostContextId = this.resolveAuthoritativeLastMergedHostContextId();
+    const mergePreviewVisible = Boolean(
+      this.pendingMergePreview ||
+      this.mergeOutputSelectionKey ||
+      this.mergeOutputNode.textContent !== "No merge preview available."
+    );
+    return {
+      libraryHasSessionInput,
+      diffLeftEntry,
+      diffRightEntry,
+      diffCanCompute,
+      diffEnableText: diffCanCompute ? "Compute Diff is enabled." : "Select two different sessions to enable Compute Diff.",
+      diffSelectionText,
+      mergeLeftEntry,
+      mergeRightEntry,
+      mergeCanPreview,
+      mergeCanConfirm,
+      mergeCanApply,
+      mergeEnableText,
+      mergeSelectionText,
+      mergePreviewStale: Boolean(this.pendingMergePreview && !mergePreviewFresh),
+      mergePreviewVisible,
+      undoEnabled: Boolean(authoritativeLastMergedHostContextId)
+    };
+  }
+
+  renderWorkspaceSessionUiStateModel(model) {
+    this.saveSessionButton.disabled = !model.libraryHasSessionInput;
+    this.overwriteSessionButton.disabled = !model.libraryHasSessionInput;
+    this.loadSessionButton.disabled = !model.libraryHasSessionInput;
+    this.deleteSessionButton.disabled = !model.libraryHasSessionInput;
+    if (model.mergeLeftEntry || model.mergeRightEntry) {
+      this.writePersistedSessionSelection(model.mergeLeftEntry, model.mergeRightEntry);
+    } else {
+      this.writePersistedSessionSelection(model.diffLeftEntry, model.diffRightEntry);
+    }
+    this.diffLeftSelectedLabelNode.textContent = this.formatSelectionLabel(model.diffLeftEntry);
+    this.diffRightSelectedLabelNode.textContent = this.formatSelectionLabel(model.diffRightEntry);
+    this.computeDiffButton.disabled = !model.diffCanCompute;
+    this.diffEnableStateNode.textContent = model.diffEnableText;
+    this.diffSelectionStateNode.textContent = model.diffSelectionText;
+    this.mergeLeftSelectedLabelNode.textContent = this.formatSelectionLabel(model.mergeLeftEntry);
+    this.mergeRightSelectedLabelNode.textContent = this.formatSelectionLabel(model.mergeRightEntry);
+    this.computeMergeButton.disabled = !model.mergeCanPreview;
+    this.confirmMergeButton.disabled = !model.mergeCanConfirm;
+    this.applyMergeButton.disabled = !model.mergeCanApply;
+    this.mergeEnableStateNode.textContent = model.mergeEnableText;
+    this.mergeSelectionStateNode.textContent = model.mergeSelectionText;
+    if (model.mergePreviewStale) {
+      this.setMergeResultSummary("Preview summary is stale because Session A or Session B changed. Run Preview Merge again.");
+    }
+    this.undoLastMergeButton.disabled = !model.undoEnabled;
+    this.mergeOutputNode.hidden = !model.mergePreviewVisible;
+    this.renderMergeConflictSummary();
+  }
+
+  refreshWorkspaceSessionUiStateModel() {
+    const model = this.computeWorkspaceSessionUiStateModel();
+    this.renderWorkspaceSessionUiStateModel(model);
+    return model;
   }
 
   setLibraryStatus(message) {
@@ -299,11 +392,10 @@ class WorkspaceV2SessionProducer {
     this.mergeOutputNode.textContent = outputMessage;
     this.mergeConflictSummaryNode.hidden = true;
     this.mergeConflictSummaryNode.textContent = "";
-    this.confirmMergeButton.disabled = true;
-    this.applyMergeButton.disabled = true;
     if (typeof statusMessage === "string" && statusMessage.trim()) {
       this.statusNode.textContent = statusMessage;
     }
+    this.refreshWorkspaceSessionUiStateModel();
   }
 
   clearMergeOutputForSelectionChange() {
@@ -319,7 +411,7 @@ class WorkspaceV2SessionProducer {
     if (this.mergeOutputSelectionKey && this.mergeOutputSelectionKey !== currentSelectionKey) {
       this.clearMergeOutputForSelectionChange();
     }
-    this.updateMergeSelectionFeedbackAndState();
+    this.refreshWorkspaceSessionUiStateModel();
   }
 
   readLastMergedHostContextId() {
@@ -367,12 +459,7 @@ class WorkspaceV2SessionProducer {
   }
 
   updateUndoLastMergeState() {
-    const mergedHostContextId = this.resolveAuthoritativeLastMergedHostContextId();
-    if (!mergedHostContextId) {
-      this.undoLastMergeButton.disabled = true;
-      return;
-    }
-    this.undoLastMergeButton.disabled = false;
+    this.refreshWorkspaceSessionUiStateModel();
   }
 
   readActiveSessionPayloadForLibraryActions() {
@@ -1164,68 +1251,11 @@ class WorkspaceV2SessionProducer {
   }
 
   updateDiffSelectionFeedbackAndState() {
-    const left = this.findSessionEntryById(this.diffCandidates, this.diffLeftSelect.value);
-    const right = this.findSessionEntryById(this.diffCandidates, this.diffRightSelect.value);
-    this.writePersistedSessionSelection(left, right);
-    this.diffLeftSelectedLabelNode.textContent = this.formatSelectionLabel(left);
-    this.diffRightSelectedLabelNode.textContent = this.formatSelectionLabel(right);
-    const canRunDiff = Boolean(left && right && left.id !== right.id);
-    this.computeDiffButton.disabled = !canRunDiff;
-    this.diffEnableStateNode.textContent = canRunDiff
-      ? "Compute Diff is enabled."
-      : "Select two different sessions to enable Compute Diff.";
-    if (left && right && left.id === right.id) {
-      this.diffSelectionStateNode.textContent = "Choose two different sessions.";
-      return;
-    }
-    this.diffSelectionStateNode.textContent = canRunDiff
-      ? "Selections are valid."
-      : "Select two different sessions to compute diff.";
+    this.refreshWorkspaceSessionUiStateModel();
   }
 
   updateMergeSelectionFeedbackAndState() {
-    const left = this.findSessionEntryById(this.mergeCandidates, this.mergeLeftSelect.value);
-    const right = this.findSessionEntryById(this.mergeCandidates, this.mergeRightSelect.value);
-    this.writePersistedSessionSelection(left, right);
-    this.mergeLeftSelectedLabelNode.textContent = this.formatSelectionLabel(left);
-    this.mergeRightSelectedLabelNode.textContent = this.formatSelectionLabel(right);
-    const canPreviewMerge = Boolean(left && right && left.id !== right.id);
-    this.computeMergeButton.disabled = !canPreviewMerge;
-    const previewIsFresh = this.hasFreshMergePreviewContext(this.pendingMergePreview);
-    const previewConflictCount = this.pendingMergePreview
-      ? (typeof this.pendingMergePreview.conflictCount === "number"
-        ? this.pendingMergePreview.conflictCount
-        : Object.keys(this.pendingMergePreview.conflicts || {}).length)
-      : 0;
-    const previewHasConflicts = Boolean(this.pendingMergePreview && previewConflictCount > 0);
-    const previewReadyForConfirm = Boolean(this.pendingMergePreview && !this.pendingMergePreview.confirmed && previewIsFresh && !previewHasConflicts);
-    const previewReadyForApply = Boolean(this.pendingMergePreview && this.pendingMergePreview.confirmed && previewIsFresh && !previewHasConflicts);
-    if (!canPreviewMerge) {
-      this.mergeEnableStateNode.textContent = "Select two different sessions to enable Preview Merge.";
-    } else if (this.pendingMergePreview && !previewIsFresh) {
-      this.mergeEnableStateNode.textContent = "Preview is stale. Run Preview Merge again.";
-    } else if (previewHasConflicts && previewIsFresh) {
-      this.mergeEnableStateNode.textContent = "Preview has conflicts. Resolve conflicts before applying.";
-    } else if (previewReadyForApply) {
-      this.mergeEnableStateNode.textContent = "Apply Merge is enabled.";
-    } else if (previewReadyForConfirm) {
-      this.mergeEnableStateNode.textContent = "Confirm Preview is enabled.";
-    } else {
-      this.mergeEnableStateNode.textContent = "Preview Merge is enabled.";
-    }
-    if (this.pendingMergePreview && !previewIsFresh) {
-      this.setMergeResultSummary("Preview summary is stale because Session A or Session B changed. Run Preview Merge again.");
-    }
-    if (left && right && left.id === right.id) {
-      this.mergeSelectionStateNode.textContent = "Choose two different sessions.";
-    } else if (canPreviewMerge) {
-      this.mergeSelectionStateNode.textContent = "Selections are valid.";
-    } else {
-      this.mergeSelectionStateNode.textContent = "Select two different sessions to preview merge.";
-    }
-    this.confirmMergeButton.disabled = !previewReadyForConfirm;
-    this.applyMergeButton.disabled = !previewReadyForApply;
-    this.renderMergeConflictSummary();
+    this.refreshWorkspaceSessionUiStateModel();
   }
 
   conflictValuePreview(value) {
