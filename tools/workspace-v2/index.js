@@ -2783,13 +2783,34 @@ class WorkspaceV2SessionProducer {
   }
 
   exportCurrentSessionJson() {
-    if (!this.isValidSessionPayload(this.currentSessionPayload)) {
-      this.statusNode.textContent = "No current session payload to export. Load fixture or import JSON first.";
+    const activePayload = this.readActiveSessionPayloadForLibraryActions();
+    if (!this.isValidSessionPayload(activePayload)) {
+      this.statusNode.textContent = "No active Workspace V2 session is available to export.";
       return;
     }
-    const serialized = JSON.stringify(this.currentSessionPayload, null, 2);
-    this.importJsonNode.value = serialized;
-    this.statusNode.textContent = `Session JSON exported from ${this.currentSessionSource || "session"} payload.`;
+    try {
+      const serialized = JSON.stringify(activePayload, null, 2);
+      const payloadToolId = typeof activePayload.toolId === "string" ? activePayload.toolId.trim() : "";
+      const filenameToolId = payloadToolId || this.selectedToolId() || "workspace-v2";
+      const filenameSessionId = typeof this.currentHostContextId === "string" && this.currentHostContextId.trim()
+        ? this.currentHostContextId.trim()
+        : "session";
+      const downloadFileName = `${filenameToolId}-${filenameSessionId}.json`;
+      const fileBlob = new Blob([serialized], { type: "application/json" });
+      const fileUrl = URL.createObjectURL(fileBlob);
+      const downloadLink = document.createElement("a");
+      downloadLink.href = fileUrl;
+      downloadLink.download = downloadFileName;
+      downloadLink.style.display = "none";
+      document.body.appendChild(downloadLink);
+      downloadLink.click();
+      downloadLink.remove();
+      URL.revokeObjectURL(fileUrl);
+      this.importJsonNode.value = serialized;
+      this.statusNode.textContent = "Exported current workspace session JSON.";
+    } catch (error) {
+      this.statusNode.textContent = `Session export failed: ${error instanceof Error ? error.message : "unknown error"}`;
+    }
   }
 
   createShareLink() {
