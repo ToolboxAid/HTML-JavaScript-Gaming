@@ -301,7 +301,7 @@ class WorkspaceV2SessionProducer {
       return;
     }
     if (model.librarySavedSessionExists) {
-      this.libraryStatusNode.textContent = "That session ID already exists. Use the saved session card to Load, Overwrite, or Delete it.";
+      this.libraryStatusNode.textContent = "That session ID already exists. Use the saved session card to Load or Overwrite it.";
       return;
     }
     if (!model.libraryHasActiveSession) {
@@ -1102,7 +1102,7 @@ class WorkspaceV2SessionProducer {
     library[sessionId.trim()] = activePayload;
     this.writeSessionLibrary(library);
     this.renderSessionLibrary();
-    this.setLibraryStatus("Saved session updated.");
+    this.setLibraryStatus(`Saved session '${sessionId.trim()}' overwritten with current workspace state.`);
   }
 
   deleteSavedSessionById(sessionId) {
@@ -2336,7 +2336,15 @@ class WorkspaceV2SessionProducer {
     const diff = this.computeSessionDiff(left.payload, right.payload);
     this.diffOutputSelectionKey = this.buildMergeSelectionKey(left.id, right.id);
     this.diffOutputNode.textContent = JSON.stringify(diff, null, 2);
-    this.statusNode.textContent = "Session diff computed.";
+    if (
+      Object.keys(diff.added).length === 0 &&
+      Object.keys(diff.removed).length === 0 &&
+      Object.keys(diff.changed).length === 0
+    ) {
+      this.statusNode.textContent = "No differences. The selected sessions are identical.";
+      return;
+    }
+    this.statusNode.textContent = "Differences detected between selected sessions.";
   }
 
   reopenSessionHistoryEntry(hostContextId) {
@@ -2835,7 +2843,7 @@ class WorkspaceV2SessionProducer {
       return;
     }
     if (!overwriteExisting && exists) {
-      this.setLibraryStatus("That session ID already exists. Use the saved session card to Load, Overwrite, or Delete it.");
+      this.setLibraryStatus("That session ID already exists. Use the saved session card to Load or Overwrite it.");
       return;
     }
     const payloadForWrite = this.readSessionPayloadForSaveAction(sessionName);
@@ -2849,8 +2857,8 @@ class WorkspaceV2SessionProducer {
     this.writeSessionLibrary(library);
     this.renderSessionLibrary();
     this.setLibraryStatus(overwriteExisting
-      ? "Saved session overwritten."
-      : "Saved session created. Manage this session from its Saved Sessions card.");
+      ? `Saved session '${sessionName}' overwritten with current workspace state.`
+      : `Saved session '${sessionName}' created.`);
   }
 
   loadNamedSession() {
@@ -2872,7 +2880,7 @@ class WorkspaceV2SessionProducer {
       this.setLibraryStatus("Saved session not found.");
       return;
     }
-    this.setLibraryStatus("Saved session loaded.");
+    this.setLibraryStatus(`Loaded '${sessionName}' into the current workspace.`);
     this.refreshWorkspaceSessionUiStateModel("refresh_load");
   }
 

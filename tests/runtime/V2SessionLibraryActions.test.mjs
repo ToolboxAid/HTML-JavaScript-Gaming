@@ -37,10 +37,10 @@ function evaluateSaveAction(inputId, activePayload, library) {
     return { message: "No active Workspace V2 session is available to save.", library: libraryMap };
   }
   if (Object.prototype.hasOwnProperty.call(libraryMap, sessionId)) {
-    return { message: "That session ID already exists. Use the saved session card to Load, Overwrite, or Delete it.", library: libraryMap };
+    return { message: "That session ID already exists. Use the saved session card to Load or Overwrite it.", library: libraryMap };
   }
   libraryMap[sessionId] = activePayload;
-  return { message: "Saved session created. Manage this session from its Saved Sessions card.", library: libraryMap };
+  return { message: `Saved session '${sessionId}' created.`, library: libraryMap };
 }
 
 function evaluateOverwriteAction(inputId, activePayload, library) {
@@ -56,7 +56,7 @@ function evaluateOverwriteAction(inputId, activePayload, library) {
     return { message: "Saved session not found. Use Save Session to create it first.", library: libraryMap };
   }
   libraryMap[sessionId] = activePayload;
-  return { message: "Saved session overwritten.", library: libraryMap };
+  return { message: `Saved session '${sessionId}' overwritten with current workspace state.`, library: libraryMap };
 }
 
 function evaluateLoadAction(inputId, library) {
@@ -67,7 +67,7 @@ function evaluateLoadAction(inputId, library) {
   if (!Object.prototype.hasOwnProperty.call(library, sessionId)) {
     return { message: "Saved session not found.", loaded: false };
   }
-  return { message: "Saved session loaded.", loaded: true, payload: library[sessionId] };
+  return { message: `Loaded '${sessionId}' into the current workspace.`, loaded: true, payload: library[sessionId] };
 }
 
 function evaluateDeleteSavedAction(inputId, library, historyEntries, sessionStorageMap) {
@@ -131,15 +131,14 @@ export function run() {
   const requiredMessages = [
     "Enter a session ID before saving.",
     "No active Workspace V2 session is available to save.",
-    "That session ID already exists. Use the saved session card to Load, Overwrite, or Delete it.",
-    "Saved session created. Manage this session from its Saved Sessions card.",
+    "That session ID already exists. Use the saved session card to Load or Overwrite it.",
+    "Saved session '${sessionName}' created.",
     "Enter a session ID before overwriting.",
     "No active Workspace V2 session is available to overwrite from.",
     "Saved session not found. Use Save Session to create it first.",
-    "Saved session overwritten.",
-    "Saved session updated.",
+    "Saved session '${sessionName}' overwritten with current workspace state.",
     "Enter a saved session ID before loading.",
-    "Saved session loaded.",
+    "Loaded '${sessionName}' into the current workspace.",
     "Enter a saved session ID before deleting.",
     "No saved sessions exist. Use Delete on Recent Sessions to remove temporary sessions.",
     "Session ID is not saved in Session Library. Use Delete on Recent Sessions to remove temporary sessions.",
@@ -175,12 +174,12 @@ export function run() {
   if (emptyDelete.message !== "Enter a saved session ID before deleting.") failures.push("Delete empty input message mismatch.");
 
   const saveCreated = evaluateSaveAction("saved-a", activePayload, {});
-  if (saveCreated.message !== "Saved session created. Manage this session from its Saved Sessions card." || !Object.prototype.hasOwnProperty.call(saveCreated.library, "saved-a")) {
+  if (saveCreated.message !== "Saved session 'saved-a' created." || !Object.prototype.hasOwnProperty.call(saveCreated.library, "saved-a")) {
     failures.push("Save with valid active payload should create library entry.");
   }
 
   const duplicateSave = evaluateSaveAction("saved-a", activePayload, { "saved-a": { toolId: "palette-manager-v2", version: "v2" } });
-  if (duplicateSave.message !== "That session ID already exists. Use the saved session card to Load, Overwrite, or Delete it.") {
+  if (duplicateSave.message !== "That session ID already exists. Use the saved session card to Load or Overwrite it.") {
     failures.push("Duplicate save should be blocked with overwrite guidance.");
   }
 
@@ -190,7 +189,7 @@ export function run() {
   }
 
   const overwriteExisting = evaluateOverwriteAction("saved-a", activePayload, { "saved-a": { toolId: "palette-manager-v2", version: "v2", payloadJson: { old: true } } });
-  if (overwriteExisting.message !== "Saved session overwritten." || overwriteExisting.library["saved-a"].payloadJson?.ok !== true) {
+  if (overwriteExisting.message !== "Saved session 'saved-a' overwritten with current workspace state." || overwriteExisting.library["saved-a"].payloadJson?.ok !== true) {
     failures.push("Overwrite existing entry should succeed.");
   }
 
@@ -200,7 +199,7 @@ export function run() {
   }
 
   const loadExisting = evaluateLoadAction("saved-a", { "saved-a": activePayload });
-  if (loadExisting.message !== "Saved session loaded." || !loadExisting.loaded) {
+  if (loadExisting.message !== "Loaded 'saved-a' into the current workspace." || !loadExisting.loaded) {
     failures.push("Load existing entry should succeed.");
   }
 
