@@ -67,11 +67,15 @@ function simulateWorkspaceModeExport(activePayload, currentHostContextId, librar
     toolSessions[payloadToolId][sessionId] = payload;
   });
   const container = {
-    version: "v2",
-    toolId: "workspace-v2",
-    workspaceSession: {
-      workspaceToolId: "workspace-v2",
-      workspaceSessionId: activeHostContextId,
+    $schema: "../../tools/schemas/workspace.manifest.schema.json",
+    documentKind: "workspace-manifest",
+    schema: "html-js-gaming.project",
+    version: 1,
+    id: `workspace-v2-${activeHostContextId || "session"}`,
+    name: "Workspace V2 Session Export",
+    tools: {},
+    workspaceV2Session: {
+      schema: "html-js-gaming.workspace-v2-session/1",
       defaultToolId: "palette-manager-v2",
       activeToolId,
       activeHostContextId,
@@ -94,6 +98,9 @@ export function run() {
   const workspaceJsExists = fs.existsSync(workspaceJsPath);
   const workspaceHtml = workspaceHtmlExists ? fs.readFileSync(workspaceHtmlPath, "utf8") : "";
   const workspaceJs = workspaceJsExists ? fs.readFileSync(workspaceJsPath, "utf8") : "";
+  const workspaceManifestSchema = JSON.parse(
+    fs.readFileSync(path.join(repoRoot, "tools", "schemas", "workspace.manifest.schema.json"), "utf8")
+  );
   const workspaceJsSyntax = checkSyntax(workspaceJsPath);
   const testSyntax = checkSyntax(testPath);
 
@@ -132,14 +139,30 @@ export function run() {
   const requiredWorkspaceJsTokens = [
     "importWorkspaceSessionJson()",
     "exportWorkspaceSessionJson()",
-    "buildPortableWorkspaceSessionContainer()",
+    "buildWorkspaceManifestDocument()",
+    "validateWorkspaceManifestDocument(",
+    "workspaceV2Session",
     "runtime-only fields are not allowed in portable workspace payload",
     "toolSessions",
-    "savedSessions"
+    "savedSessions",
+    "workspaceSession wrapper is not allowed"
   ];
   requiredWorkspaceJsTokens.forEach((token) => {
     if (!workspaceJs.includes(token)) {
       failures.push(`Missing required workspace contract JS token: ${token}`);
+    }
+  });
+
+  const requiredSessionFlowTokens = [
+    "saveNamedSession(",
+    "loadNamedSession(",
+    "computeSelectedSessionDiff(",
+    "computeSelectedSessionMerge(",
+    "readActiveSessionPayloadForLibraryActions()"
+  ];
+  requiredSessionFlowTokens.forEach((token) => {
+    if (!workspaceJs.includes(token)) {
+      failures.push(`Missing expected session flow token: ${token}`);
     }
   });
 
@@ -181,24 +204,49 @@ export function run() {
   if (!workspaceExport.ok) failures.push("Workspace export should succeed when active payload exists.");
   const workspaceExportParsed = workspaceExport.serialized ? JSON.parse(workspaceExport.serialized) : null;
   if (!workspaceExportParsed || typeof workspaceExportParsed !== "object" || Array.isArray(workspaceExportParsed)) {
-    failures.push("Workspace export should be an object container.");
-  } else if (!workspaceExportParsed.workspaceSession || typeof workspaceExportParsed.workspaceSession !== "object") {
-    failures.push("Workspace export should include workspaceSession container.");
+    failures.push("Workspace export should be an object.");
   } else {
-    if (Object.prototype.hasOwnProperty.call(workspaceExportParsed.workspaceSession, "sessionHistory")) {
+    if (Object.prototype.hasOwnProperty.call(workspaceExportParsed, "workspaceSession")) {
+      failures.push("Workspace export must not include workspaceSession wrapper.");
+    }
+    if (workspaceExportParsed.documentKind !== "workspace-manifest") {
+      failures.push("Workspace export documentKind must be workspace-manifest.");
+    }
+    if (!workspaceExportParsed.workspaceV2Session || typeof workspaceExportParsed.workspaceV2Session !== "object") {
+      failures.push("Workspace export should include workspaceV2Session payload.");
+    }
+    if (!workspaceExportParsed.tools || typeof workspaceExportParsed.tools !== "object" || Array.isArray(workspaceExportParsed.tools)) {
+      failures.push("Workspace export should include tools object.");
+    }
+    const requiredSchemaKeys = Array.isArray(workspaceManifestSchema.required) ? workspaceManifestSchema.required : [];
+    requiredSchemaKeys.forEach((schemaKey) => {
+      if (!Object.prototype.hasOwnProperty.call(workspaceExportParsed, schemaKey)) {
+        failures.push(`Workspace export is missing required schema key: ${schemaKey}`);
+      }
+    });
+    if (!Object.prototype.hasOwnProperty.call(workspaceManifestSchema.properties || {}, "workspaceV2Session")) {
+      failures.push("workspace.manifest schema should define workspaceV2Session property.");
+    }
+    if (!workspaceManifestSchema.properties?.workspaceV2Session?.properties?.toolSessions) {
+      failures.push("workspace.manifest schema should define workspaceV2Session.toolSessions.");
+    }
+    if (!workspaceManifestSchema.properties?.workspaceV2Session?.properties?.savedSessions) {
+      failures.push("workspace.manifest schema should define workspaceV2Session.savedSessions.");
+    }
+    if (Object.prototype.hasOwnProperty.call(workspaceExportParsed.workspaceV2Session, "sessionHistory")) {
       failures.push("Workspace export must not include sessionHistory runtime field.");
     }
-    if (Object.prototype.hasOwnProperty.call(workspaceExportParsed.workspaceSession, "sessionSelection")) {
+    if (Object.prototype.hasOwnProperty.call(workspaceExportParsed.workspaceV2Session, "sessionSelection")) {
       failures.push("Workspace export must not include sessionSelection runtime field.");
     }
-    if (Object.prototype.hasOwnProperty.call(workspaceExportParsed.workspaceSession, "mergeAuditLog")) {
+    if (Object.prototype.hasOwnProperty.call(workspaceExportParsed.workspaceV2Session, "mergeAuditLog")) {
       failures.push("Workspace export must not include mergeAuditLog runtime field.");
     }
-    if (Object.prototype.hasOwnProperty.call(workspaceExportParsed.workspaceSession, "activeSessionPayload")) {
+    if (Object.prototype.hasOwnProperty.call(workspaceExportParsed.workspaceV2Session, "activeSessionPayload")) {
       failures.push("Workspace export must not include lone activeSessionPayload runtime field.");
     }
     const activeEntry =
-      workspaceExportParsed.workspaceSession.toolSessions?.["palette-manager-v2"]?.["palette-manager-v2-1234567890123-abcd1234"];
+      workspaceExportParsed.workspaceV2Session.toolSessions?.["palette-manager-v2"]?.["palette-manager-v2-1234567890123-abcd1234"];
     if (JSON.stringify(activeEntry) !== JSON.stringify(activePayload)) {
       failures.push("Workspace export should preserve active payload under toolSessions by tool/session id.");
     }

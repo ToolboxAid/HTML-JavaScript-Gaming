@@ -2842,7 +2842,7 @@ class WorkspaceV2SessionProducer {
     }
   }
 
-  buildPortableWorkspaceSessionContainer() {
+  buildWorkspaceManifestDocument() {
     const activePayload = this.readActiveSessionPayloadForLibraryActions();
     if (!this.isValidSessionPayload(activePayload)) {
       return null;
@@ -2879,11 +2879,15 @@ class WorkspaceV2SessionProducer {
       toolSessions[payloadToolId][sessionId] = this.cloneSessionValue(payload);
     });
     return {
-      version: "v2",
-      toolId: "workspace-v2",
-      workspaceSession: {
-        workspaceToolId: "workspace-v2",
-        workspaceSessionId: activeHostContextId,
+      $schema: "../../tools/schemas/workspace.manifest.schema.json",
+      documentKind: "workspace-manifest",
+      schema: "html-js-gaming.project",
+      version: 1,
+      id: activeHostContextId ? `workspace-v2-${activeHostContextId}` : `workspace-v2-${Date.now()}`,
+      name: "Workspace V2 Session Export",
+      tools: {},
+      workspaceV2Session: {
+        schema: "html-js-gaming.workspace-v2-session/1",
         defaultToolId: "palette-manager-v2",
         activeToolId,
         activeHostContextId,
@@ -2899,15 +2903,20 @@ class WorkspaceV2SessionProducer {
       this.statusNode.textContent = "Switch to workspace mode to export workspace session JSON.";
       return;
     }
-    const workspaceContainer = this.buildPortableWorkspaceSessionContainer();
-    if (!workspaceContainer) {
+    const workspaceManifest = this.buildWorkspaceManifestDocument();
+    if (!workspaceManifest) {
       this.statusNode.textContent = "No active Workspace V2 session is available to export.";
       return;
     }
     try {
-      const serialized = JSON.stringify(workspaceContainer, null, 2);
-      const activeToolId = workspaceContainer.workspaceSession.activeToolId || "workspace-v2";
-      const activeHostContextId = workspaceContainer.workspaceSession.activeHostContextId || "session";
+      const validation = this.validateWorkspaceManifestDocument(workspaceManifest);
+      if (!validation.ok) {
+        this.statusNode.textContent = validation.message;
+        return;
+      }
+      const serialized = JSON.stringify(workspaceManifest, null, 2);
+      const activeToolId = workspaceManifest.workspaceV2Session.activeToolId || "workspace-v2";
+      const activeHostContextId = workspaceManifest.workspaceV2Session.activeHostContextId || "session";
       const downloadFileName = `workspace-v2-${activeToolId}-${activeHostContextId}.json`;
       const fileBlob = new Blob([serialized], { type: "application/json" });
       const fileUrl = URL.createObjectURL(fileBlob);
@@ -2926,39 +2935,57 @@ class WorkspaceV2SessionProducer {
     }
   }
 
-  isValidPortableWorkspaceSessionContainer(container) {
-    if (!container || typeof container !== "object" || Array.isArray(container)) {
+  validateWorkspaceManifestDocument(manifestDocument) {
+    if (!manifestDocument || typeof manifestDocument !== "object" || Array.isArray(manifestDocument)) {
       return { ok: false, message: "Workspace import failed: expected a JSON object." };
     }
-    if (container.version !== "v2") {
-      return { ok: false, message: "Workspace import failed: unsupported workspace version." };
+    if (Object.prototype.hasOwnProperty.call(manifestDocument, "workspaceSession")) {
+      return { ok: false, message: "Workspace export/import blocked: workspaceSession wrapper is not allowed. Use workspace manifest root fields." };
     }
-    if (container.toolId !== "workspace-v2") {
-      return { ok: false, message: "Workspace import failed: expected toolId 'workspace-v2'." };
+    if (manifestDocument.documentKind !== "workspace-manifest") {
+      return { ok: false, message: "Workspace import failed: documentKind must be workspace-manifest." };
     }
-    if (!container.workspaceSession || typeof container.workspaceSession !== "object" || Array.isArray(container.workspaceSession)) {
-      return { ok: false, message: "Workspace import failed: missing workspaceSession object." };
+    if (typeof manifestDocument.schema !== "string" || !manifestDocument.schema.trim()) {
+      return { ok: false, message: "Workspace import failed: schema is required." };
+    }
+    if (!Number.isInteger(manifestDocument.version) || manifestDocument.version < 1) {
+      return { ok: false, message: "Workspace import failed: version must be a positive integer." };
+    }
+    if (typeof manifestDocument.id !== "string" || !manifestDocument.id.trim()) {
+      return { ok: false, message: "Workspace import failed: id is required." };
+    }
+    if (typeof manifestDocument.name !== "string" || !manifestDocument.name.trim()) {
+      return { ok: false, message: "Workspace import failed: name is required." };
+    }
+    if (!manifestDocument.tools || typeof manifestDocument.tools !== "object" || Array.isArray(manifestDocument.tools)) {
+      return { ok: false, message: "Workspace import failed: tools must be an object." };
+    }
+    if (!manifestDocument.workspaceV2Session || typeof manifestDocument.workspaceV2Session !== "object" || Array.isArray(manifestDocument.workspaceV2Session)) {
+      return { ok: false, message: "Workspace import failed: workspaceV2Session is required." };
+    }
+    if (manifestDocument.workspaceV2Session.schema !== "html-js-gaming.workspace-v2-session/1") {
+      return { ok: false, message: "Workspace import failed: unsupported workspaceV2Session schema." };
     }
     if (
-      Object.prototype.hasOwnProperty.call(container.workspaceSession, "sessionHistory") ||
-      Object.prototype.hasOwnProperty.call(container.workspaceSession, "sessionSelection") ||
-      Object.prototype.hasOwnProperty.call(container.workspaceSession, "mergeAuditLog") ||
-      Object.prototype.hasOwnProperty.call(container.workspaceSession, "activeSessionPayload")
+      Object.prototype.hasOwnProperty.call(manifestDocument.workspaceV2Session, "sessionHistory") ||
+      Object.prototype.hasOwnProperty.call(manifestDocument.workspaceV2Session, "sessionSelection") ||
+      Object.prototype.hasOwnProperty.call(manifestDocument.workspaceV2Session, "mergeAuditLog") ||
+      Object.prototype.hasOwnProperty.call(manifestDocument.workspaceV2Session, "activeSessionPayload")
     ) {
       return { ok: false, message: "Workspace import failed: runtime-only fields are not allowed in portable workspace payload." };
     }
-    const activeToolId = typeof container.workspaceSession.activeToolId === "string" ? container.workspaceSession.activeToolId.trim() : "";
-    const activeHostContextId = typeof container.workspaceSession.activeHostContextId === "string" ? container.workspaceSession.activeHostContextId.trim() : "";
+    const activeToolId = typeof manifestDocument.workspaceV2Session.activeToolId === "string" ? manifestDocument.workspaceV2Session.activeToolId.trim() : "";
+    const activeHostContextId = typeof manifestDocument.workspaceV2Session.activeHostContextId === "string" ? manifestDocument.workspaceV2Session.activeHostContextId.trim() : "";
     if (!activeToolId || !activeHostContextId) {
       return { ok: false, message: "Workspace import failed: active tool/session identity is missing." };
     }
-    if (!container.workspaceSession.toolSessions || typeof container.workspaceSession.toolSessions !== "object" || Array.isArray(container.workspaceSession.toolSessions)) {
+    if (!manifestDocument.workspaceV2Session.toolSessions || typeof manifestDocument.workspaceV2Session.toolSessions !== "object" || Array.isArray(manifestDocument.workspaceV2Session.toolSessions)) {
       return { ok: false, message: "Workspace import failed: missing toolSessions map." };
     }
-    if (!Object.prototype.hasOwnProperty.call(container.workspaceSession.toolSessions, activeToolId)) {
+    if (!Object.prototype.hasOwnProperty.call(manifestDocument.workspaceV2Session.toolSessions, activeToolId)) {
       return { ok: false, message: "Workspace import failed: active tool is missing from toolSessions." };
     }
-    const activeToolSessions = container.workspaceSession.toolSessions[activeToolId];
+    const activeToolSessions = manifestDocument.workspaceV2Session.toolSessions[activeToolId];
     if (!activeToolSessions || typeof activeToolSessions !== "object" || Array.isArray(activeToolSessions)) {
       return { ok: false, message: "Workspace import failed: active tool sessions are invalid." };
     }
@@ -2984,16 +3011,16 @@ class WorkspaceV2SessionProducer {
     }
     try {
       const parsed = JSON.parse(rawJson);
-      const validation = this.isValidPortableWorkspaceSessionContainer(parsed);
+      const validation = this.validateWorkspaceManifestDocument(parsed);
       if (!validation.ok) {
         this.statusNode.textContent = validation.message;
         return;
       }
-      const activeToolId = parsed.workspaceSession.activeToolId.trim();
-      const activeHostContextId = parsed.workspaceSession.activeHostContextId.trim();
-      const activePayload = parsed.workspaceSession.toolSessions[activeToolId][activeHostContextId];
-      Object.keys(parsed.workspaceSession.toolSessions).forEach((toolId) => {
-        const sessionMap = parsed.workspaceSession.toolSessions[toolId];
+      const activeToolId = parsed.workspaceV2Session.activeToolId.trim();
+      const activeHostContextId = parsed.workspaceV2Session.activeHostContextId.trim();
+      const activePayload = parsed.workspaceV2Session.toolSessions[activeToolId][activeHostContextId];
+      Object.keys(parsed.workspaceV2Session.toolSessions).forEach((toolId) => {
+        const sessionMap = parsed.workspaceV2Session.toolSessions[toolId];
         if (!sessionMap || typeof sessionMap !== "object" || Array.isArray(sessionMap)) {
           return;
         }
@@ -3005,7 +3032,7 @@ class WorkspaceV2SessionProducer {
           sessionStorage.setItem(sessionId, JSON.stringify(payload));
         });
       });
-      const savedSessions = parsed.workspaceSession.savedSessions;
+      const savedSessions = parsed.workspaceV2Session.savedSessions;
       if (savedSessions && typeof savedSessions === "object" && !Array.isArray(savedSessions)) {
         localStorage.setItem(this.libraryStorageKey, JSON.stringify(savedSessions));
       }
