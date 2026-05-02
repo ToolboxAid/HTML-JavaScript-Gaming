@@ -434,17 +434,93 @@ class WorkspaceV2SessionProducer {
     this.libraryEmptyState.textContent = "No saved sessions in library.";
     sessionNames.forEach((sessionName) => {
       const item = document.createElement("li");
-      const button = document.createElement("button");
-      button.type = "button";
-      button.textContent = sessionName;
-      button.addEventListener("click", () => {
-        this.sessionNameNode.value = sessionName;
+      const payload = library[sessionName];
+      const label = document.createElement("strong");
+      const idLine = document.createElement("div");
+      const idLabel = document.createElement("span");
+      const idCode = document.createElement("code");
+      const copyIdButton = document.createElement("button");
+      const useInLibraryButton = document.createElement("button");
+      const loadButton = document.createElement("button");
+      const deleteSavedButton = document.createElement("button");
+      const readableLabel = payload && typeof payload.toolId === "string" && payload.toolId.trim()
+        ? payload.toolId.trim()
+        : "saved-session";
+      label.textContent = `${readableLabel} (${sessionName})`;
+      idLabel.textContent = "Session ID: ";
+      idCode.textContent = sessionName;
+      idCode.title = sessionName;
+      idLine.append(idLabel, idCode);
+      copyIdButton.type = "button";
+      copyIdButton.textContent = "Copy ID";
+      copyIdButton.addEventListener("click", () => {
+        this.copySavedSessionIdToClipboard(sessionName);
       });
-      item.appendChild(button);
+      useInLibraryButton.type = "button";
+      useInLibraryButton.textContent = "Use in Library";
+      useInLibraryButton.addEventListener("click", () => {
+        this.useSavedSessionIdInLibraryInput(sessionName);
+      });
+      loadButton.type = "button";
+      loadButton.textContent = "Load";
+      loadButton.addEventListener("click", () => {
+        this.loadSavedSessionById(sessionName);
+      });
+      deleteSavedButton.type = "button";
+      deleteSavedButton.textContent = "Delete Saved";
+      deleteSavedButton.addEventListener("click", () => {
+        this.deleteSavedSessionById(sessionName);
+      });
+      item.append(label, idLine, copyIdButton, useInLibraryButton, loadButton, deleteSavedButton);
       this.sessionListNode.appendChild(item);
     });
     this.renderSessionDiffInputs();
     this.renderSessionMergeInputs();
+  }
+
+  async copySavedSessionIdToClipboard(sessionId) {
+    if (typeof sessionId !== "string" || !sessionId.trim()) {
+      this.setLibraryStatus("Copy ID failed: saved session ID is missing.");
+      return;
+    }
+    try {
+      if (!navigator.clipboard || typeof navigator.clipboard.writeText !== "function") {
+        this.setLibraryStatus("Copy ID is unavailable in this browser context.");
+        return;
+      }
+      await navigator.clipboard.writeText(sessionId.trim());
+      this.setLibraryStatus(`Saved session ID copied: ${sessionId.trim()}`);
+    } catch (error) {
+      this.setLibraryStatus(`Copy ID failed: ${error instanceof Error ? error.message : "unknown error"}`);
+    }
+  }
+
+  useSavedSessionIdInLibraryInput(sessionId) {
+    if (typeof sessionId !== "string" || !sessionId.trim()) {
+      this.setLibraryStatus("Use in Library failed: saved session ID is missing.");
+      return;
+    }
+    this.sessionNameNode.value = sessionId.trim();
+    this.setLibraryStatus(`Saved session ID ready for Library actions: ${sessionId.trim()}`);
+  }
+
+  loadSavedSessionById(sessionId) {
+    if (typeof sessionId !== "string" || !sessionId.trim()) {
+      this.setLibraryStatus("Enter a saved session ID before loading.");
+      return;
+    }
+    this.sessionNameNode.value = sessionId.trim();
+    this.loadNamedSession();
+    this.renderSessionLibrary();
+  }
+
+  deleteSavedSessionById(sessionId) {
+    if (typeof sessionId !== "string" || !sessionId.trim()) {
+      this.setLibraryStatus("Enter a saved session ID before deleting.");
+      return;
+    }
+    this.sessionNameNode.value = sessionId.trim();
+    this.deleteNamedSession();
   }
 
   isValidSessionHistoryEntry(entry) {
