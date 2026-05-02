@@ -85,6 +85,7 @@ class WorkspaceV2SessionProducer {
     this.pendingMergePreview = null;
     this.lastMergedSessionResult = null;
     this.lastMergedHostContextId = "";
+    this.mergeOutputSelectionKey = "";
     this.recentSessionInventory = [];
     this.loadFixtureButton.addEventListener("click", () => {
       this.loadSelectedFixture();
@@ -135,10 +136,10 @@ class WorkspaceV2SessionProducer {
       this.computeSelectedSessionMerge();
     });
     this.mergeLeftSelect.addEventListener("change", () => {
-      this.updateMergeSelectionFeedbackAndState();
+      this.handleMergeSelectionChange();
     });
     this.mergeRightSelect.addEventListener("change", () => {
-      this.updateMergeSelectionFeedbackAndState();
+      this.handleMergeSelectionChange();
     });
     this.confirmMergeButton.addEventListener("click", () => {
       this.confirmSelectedSessionMergePreview();
@@ -265,6 +266,36 @@ class WorkspaceV2SessionProducer {
       `Updated: ${updatedCount}`,
       `Unchanged: ${unchangedCount}`
     ].join("\n"));
+  }
+
+  buildMergeSelectionKey(leftId, rightId) {
+    return `${typeof leftId === "string" ? leftId : ""}|${typeof rightId === "string" ? rightId : ""}`;
+  }
+
+  currentMergeSelectionKey() {
+    return this.buildMergeSelectionKey(this.mergeLeftSelect.value, this.mergeRightSelect.value);
+  }
+
+  clearMergeOutputForSelectionChange() {
+    this.pendingMergePreview = null;
+    this.mergeOutputSelectionKey = "";
+    this.lastMergedSessionResult = null;
+    this.mergedSessionIdNode.value = "";
+    this.mergedSessionStatusNode.textContent = "No merged session result to save.";
+    this.setMergeResultSummary("Selections changed. Run Preview Merge again.");
+    this.mergeOutputNode.textContent = "No merge preview available.";
+    this.mergeConflictSummaryNode.hidden = true;
+    this.mergeConflictSummaryNode.textContent = "";
+    this.confirmMergeButton.disabled = true;
+    this.applyMergeButton.disabled = true;
+  }
+
+  handleMergeSelectionChange() {
+    const currentSelectionKey = this.currentMergeSelectionKey();
+    if (this.mergeOutputSelectionKey && this.mergeOutputSelectionKey !== currentSelectionKey) {
+      this.clearMergeOutputForSelectionChange();
+    }
+    this.updateMergeSelectionFeedbackAndState();
   }
 
   readLastMergedHostContextId() {
@@ -1247,6 +1278,7 @@ class WorkspaceV2SessionProducer {
         const targetMatches = JSON.stringify(refreshedTarget.payload) === previousPreview.target.hash;
         if (sourceMatches && targetMatches) {
           this.pendingMergePreview = previousPreview;
+          this.mergeOutputSelectionKey = this.buildMergeSelectionKey(previousPreview.source.id, previousPreview.target.id);
           this.mergeLeftSelect.value = previousPreview.source.id;
           this.mergeRightSelect.value = previousPreview.target.id;
           this.confirmMergeButton.disabled = false;
@@ -1263,6 +1295,7 @@ class WorkspaceV2SessionProducer {
       return;
     }
     if (this.mergeCandidates.length < 2) {
+      this.mergeOutputSelectionKey = "";
       this.setMergeResultSummary("Create or reopen at least two Workspace V2 sessions before previewing a merge.");
       this.mergeOutputNode.textContent = "Create or reopen at least two Workspace V2 sessions before previewing a merge.";
     }
@@ -1322,30 +1355,35 @@ class WorkspaceV2SessionProducer {
 
   computeSelectedSessionMerge() {
     if (!Array.isArray(this.mergeCandidates) || this.mergeCandidates.length < 2) {
+      this.mergeOutputSelectionKey = "";
       this.setMergeResultSummary("Create or reopen at least two Workspace V2 sessions before previewing a merge.");
       this.mergeOutputNode.textContent = "Create or reopen at least two Workspace V2 sessions before previewing a merge.";
       this.statusNode.textContent = "Create or reopen at least two Workspace V2 sessions before previewing a merge.";
       return;
     }
     if (!this.mergeLeftSelect.value && !this.mergeRightSelect.value) {
+      this.mergeOutputSelectionKey = "";
       this.setMergeResultSummary("Merge preview blocked. Session A and Session B selections are missing.");
       this.mergeOutputNode.textContent = "Merge preview blocked. Session A and Session B selections are missing.";
       this.statusNode.textContent = "Merge preview blocked. Select Session A and Session B, then run Preview Merge (Dry Run).";
       return;
     }
     if (!this.mergeLeftSelect.value) {
+      this.mergeOutputSelectionKey = "";
       this.setMergeResultSummary("Merge preview blocked. Session A selection is missing.");
       this.mergeOutputNode.textContent = "Merge preview blocked. Session A selection is missing.";
       this.statusNode.textContent = "Merge preview blocked. Select Session A, then run Preview Merge (Dry Run).";
       return;
     }
     if (!this.mergeRightSelect.value) {
+      this.mergeOutputSelectionKey = "";
       this.setMergeResultSummary("Merge preview blocked. Session B selection is missing.");
       this.mergeOutputNode.textContent = "Merge preview blocked. Session B selection is missing.";
       this.statusNode.textContent = "Merge preview blocked. Select Session B, then run Preview Merge (Dry Run).";
       return;
     }
     if (this.mergeLeftSelect.value === this.mergeRightSelect.value) {
+      this.mergeOutputSelectionKey = "";
       this.setMergeResultSummary("Merge preview blocked. Session A and Session B must be different sessions.");
       this.mergeOutputNode.textContent = "Merge preview blocked. Session A and Session B must be different sessions.";
       this.statusNode.textContent = "Merge preview blocked. Choose two different sessions, then run Preview Merge (Dry Run).";
@@ -1354,6 +1392,7 @@ class WorkspaceV2SessionProducer {
     const left = this.mergeCandidates.find((entry) => entry.id === this.mergeLeftSelect.value);
     const right = this.mergeCandidates.find((entry) => entry.id === this.mergeRightSelect.value);
     if (!left || !right) {
+      this.mergeOutputSelectionKey = "";
       this.setMergeResultSummary(!left
         ? "Merge preview blocked. Session A selection is no longer available."
         : "Merge preview blocked. Session B selection is no longer available.");
@@ -1364,6 +1403,7 @@ class WorkspaceV2SessionProducer {
       return;
     }
     if (!this.isValidSessionPayload(left.payload) || !this.isValidSessionPayload(right.payload)) {
+      this.mergeOutputSelectionKey = "";
       this.setMergeResultSummary("Selected merge payload is invalid.");
       this.mergeOutputNode.textContent = "Selected merge payload is invalid.";
       return;
@@ -1372,6 +1412,7 @@ class WorkspaceV2SessionProducer {
     const rightToolId = typeof right.payload.toolId === "string" ? right.payload.toolId.trim() : "";
     if (leftToolId && rightToolId && leftToolId !== rightToolId) {
       this.pendingMergePreview = null;
+      this.mergeOutputSelectionKey = "";
       this.updateMergeSelectionFeedbackAndState();
       this.setMergeResultSummary([
         "Cross-tool merge is not supported. Select two sessions with the same toolId.",
@@ -1390,6 +1431,7 @@ class WorkspaceV2SessionProducer {
     const result = this.mergeSessionPayloads(left.payload, right.payload);
     const selectedToolId = this.selectedToolId();
     if (!selectedToolId) {
+      this.mergeOutputSelectionKey = "";
       this.setMergeResultSummary("Select a V2 tool before computing merge.");
       this.mergeOutputNode.textContent = "Select a V2 tool before computing merge.";
       return;
@@ -1397,6 +1439,7 @@ class WorkspaceV2SessionProducer {
     const versionedPayload = this.withSessionVersion(result.mergedPayload);
     const sizeValidation = this.validateSessionPayloadSize(versionedPayload);
     if (!sizeValidation.ok) {
+      this.mergeOutputSelectionKey = "";
       this.setMergeResultSummary(sizeValidation.message);
       this.mergeOutputNode.textContent = sizeValidation.message;
       return;
@@ -1424,6 +1467,7 @@ class WorkspaceV2SessionProducer {
       changes: previewChanges,
       confirmed: false
     };
+    this.mergeOutputSelectionKey = this.buildMergeSelectionKey(left.id, right.id);
     this.setMergePreviewSummary(this.pendingMergePreview);
     this.updateMergeSelectionFeedbackAndState();
 
@@ -1681,6 +1725,7 @@ class WorkspaceV2SessionProducer {
     if (!mergedRecentRegistered) {
       this.writeLastMergedHostContextId("");
       this.updateUndoLastMergeState();
+      this.mergeOutputSelectionKey = "";
       this.setMergeResultSummary("Merge apply failed to register merged session in Recent Sessions. Undo remains disabled.");
       this.statusNode.textContent = "Merge apply failed to register merged session in Recent Sessions. Undo remains disabled.";
       return;
@@ -1691,6 +1736,7 @@ class WorkspaceV2SessionProducer {
       mergedResultPayload.mergeResultMeta.mergedAt,
       appliedChanges
     );
+    this.mergeOutputSelectionKey = this.buildMergeSelectionKey(this.pendingMergePreview.source.id, this.pendingMergePreview.target.id);
     this.renderSessionHistory();
     this.renderSessionDiffInputs();
     this.renderSessionMergeInputs();
@@ -1977,6 +2023,7 @@ class WorkspaceV2SessionProducer {
     this.sessionNameNode.value = "";
     this.lastMergedSessionResult = null;
     this.lastMergedHostContextId = "";
+    this.mergeOutputSelectionKey = "";
     this.mergedSessionIdNode.value = "";
     this.mergedSessionStatusNode.textContent = "No merged session result to save.";
     this.setMergeResultSummary("No merge summary yet.");
