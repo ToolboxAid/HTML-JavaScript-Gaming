@@ -276,18 +276,29 @@ class WorkspaceV2SessionProducer {
     return this.buildMergeSelectionKey(this.mergeLeftSelect.value, this.mergeRightSelect.value);
   }
 
-  clearMergeOutputForSelectionChange() {
+  clearMergePanelTransientState(summaryMessage, outputMessage, statusMessage) {
     this.pendingMergePreview = null;
     this.mergeOutputSelectionKey = "";
     this.lastMergedSessionResult = null;
     this.mergedSessionIdNode.value = "";
     this.mergedSessionStatusNode.textContent = "No merged session result to save.";
-    this.setMergeResultSummary("Selections changed. Run Preview Merge again.");
-    this.mergeOutputNode.textContent = "No merge preview available.";
+    this.setMergeResultSummary(summaryMessage);
+    this.mergeOutputNode.textContent = outputMessage;
     this.mergeConflictSummaryNode.hidden = true;
     this.mergeConflictSummaryNode.textContent = "";
     this.confirmMergeButton.disabled = true;
     this.applyMergeButton.disabled = true;
+    if (typeof statusMessage === "string" && statusMessage.trim()) {
+      this.statusNode.textContent = statusMessage;
+    }
+  }
+
+  clearMergeOutputForSelectionChange() {
+    this.clearMergePanelTransientState(
+      "Selections changed. Run Preview Merge again.",
+      "No merge preview available.",
+      "Selections changed. Run Preview Merge again."
+    );
   }
 
   handleMergeSelectionChange() {
@@ -830,6 +841,7 @@ class WorkspaceV2SessionProducer {
     }
     const sessionId = hostContextId.trim();
     const history = this.readSessionHistory();
+    const deletedEntry = history.find((entry) => entry.hostContextId === sessionId);
     const exists = history.some((entry) => entry.hostContextId === sessionId);
     if (!exists) {
       this.statusNode.textContent = `Recent session '${sessionId}' was not found.`;
@@ -838,6 +850,26 @@ class WorkspaceV2SessionProducer {
     const nextHistory = history.filter((entry) => entry.hostContextId !== sessionId);
     this.writeSessionHistory(nextHistory);
     sessionStorage.removeItem(sessionId);
+    if (
+      this.mergeLeftSelect.value === `history:${sessionId}` ||
+      this.mergeRightSelect.value === `history:${sessionId}` ||
+      this.mergeOutputSelectionKey.split("|").includes(`history:${sessionId}`) ||
+      Boolean(
+        deletedEntry &&
+        deletedEntry.payload &&
+        typeof deletedEntry.payload === "object" &&
+        !Array.isArray(deletedEntry.payload) &&
+        deletedEntry.payload.mergeResultMeta &&
+        typeof deletedEntry.payload.mergeResultMeta === "object" &&
+        deletedEntry.payload.mergeResultMeta.isMergedResult === true
+      )
+    ) {
+      this.clearMergePanelTransientState(
+        "Selections changed. Run Preview Merge again.",
+        "No merge preview available.",
+        "Selections changed. Run Preview Merge again."
+      );
+    }
     if (this.currentHostContextId === sessionId) {
       this.currentHostContextId = "";
       this.setCurrentSessionPayload(null, "");
@@ -850,8 +882,11 @@ class WorkspaceV2SessionProducer {
     const lastMergedId = typeof this.lastMergedHostContextId === "string" ? this.lastMergedHostContextId.trim() : "";
     if (!lastMergedId) {
       this.updateUndoLastMergeState();
-      this.setMergeResultSummary("No recent merge to undo.");
-      this.setMergedSessionStatus("No recent merge to undo.");
+      this.clearMergePanelTransientState(
+        "No recent merge to undo.",
+        "No merge preview available.",
+        "No recent merge to undo."
+      );
       return;
     }
     const history = this.readSessionHistory();
@@ -859,8 +894,11 @@ class WorkspaceV2SessionProducer {
     if (!exists) {
       this.writeLastMergedHostContextId("");
       this.updateUndoLastMergeState();
-      this.setMergeResultSummary("No recent merge to undo.");
-      this.setMergedSessionStatus("No recent merge to undo.");
+      this.clearMergePanelTransientState(
+        "No recent merge to undo.",
+        "No merge preview available.",
+        "No recent merge to undo."
+      );
       return;
     }
     const nextHistory = history.filter((entry) => entry.hostContextId !== lastMergedId);
@@ -886,8 +924,11 @@ class WorkspaceV2SessionProducer {
     this.updateMergeSelectionFeedbackAndState();
     this.writeLastMergedHostContextId("");
     this.renderSessionHistory();
-    this.setMergeResultSummary(`Last merged session removed.\nRemoved Session ID: ${lastMergedId}`);
-    this.setMergedSessionStatus("Last merged session removed.");
+    this.clearMergePanelTransientState(
+      `Last merged session removed.\nRemoved Session ID: ${lastMergedId}`,
+      "No merge preview available.",
+      "Last merged session removed."
+    );
   }
 
   resolveSessionPayloadFromContextId(contextId, fallbackPayload) {
@@ -1303,15 +1344,25 @@ class WorkspaceV2SessionProducer {
         }
       }
       this.statusNode.textContent = "Merge preview cleared because source or target session changed. Run Preview Merge (Dry Run) again.";
-      this.setMergeResultSummary("Preview summary is stale because Session A or Session B changed. Run Preview Merge again.");
-      this.mergeOutputNode.textContent = "No merge preview available.";
-      this.renderMergeConflictSummary();
+      this.clearMergePanelTransientState(
+        "Preview summary is stale because Session A or Session B changed. Run Preview Merge again.",
+        "No merge preview available.",
+        "Merge preview cleared because source or target session changed. Run Preview Merge (Dry Run) again."
+      );
       return;
     }
     if (this.mergeCandidates.length < 2) {
-      this.mergeOutputSelectionKey = "";
-      this.setMergeResultSummary("Create or reopen at least two Workspace V2 sessions before previewing a merge.");
-      this.mergeOutputNode.textContent = "Create or reopen at least two Workspace V2 sessions before previewing a merge.";
+      this.clearMergePanelTransientState(
+        "Create or reopen at least two Workspace V2 sessions before previewing a merge.",
+        "Create or reopen at least two Workspace V2 sessions before previewing a merge.",
+        ""
+      );
+    } else if (!this.mergeOutputSelectionKey) {
+      this.clearMergePanelTransientState(
+        "No merge summary yet.",
+        "No merge preview available.",
+        ""
+      );
     }
     this.updateMergeSelectionFeedbackAndState();
   }
@@ -1369,93 +1420,101 @@ class WorkspaceV2SessionProducer {
 
   computeSelectedSessionMerge() {
     if (!Array.isArray(this.mergeCandidates) || this.mergeCandidates.length < 2) {
-      this.mergeOutputSelectionKey = "";
-      this.setMergeResultSummary("Create or reopen at least two Workspace V2 sessions before previewing a merge.");
-      this.mergeOutputNode.textContent = "Create or reopen at least two Workspace V2 sessions before previewing a merge.";
-      this.statusNode.textContent = "Create or reopen at least two Workspace V2 sessions before previewing a merge.";
+      this.clearMergePanelTransientState(
+        "Create or reopen at least two Workspace V2 sessions before previewing a merge.",
+        "Create or reopen at least two Workspace V2 sessions before previewing a merge.",
+        "Create or reopen at least two Workspace V2 sessions before previewing a merge."
+      );
       return;
     }
     if (!this.mergeLeftSelect.value && !this.mergeRightSelect.value) {
-      this.mergeOutputSelectionKey = "";
-      this.setMergeResultSummary("Merge preview blocked. Session A and Session B selections are missing.");
-      this.mergeOutputNode.textContent = "Merge preview blocked. Session A and Session B selections are missing.";
-      this.statusNode.textContent = "Merge preview blocked. Select Session A and Session B, then run Preview Merge (Dry Run).";
+      this.clearMergePanelTransientState(
+        "Merge preview blocked. Session A and Session B selections are missing.",
+        "Merge preview blocked. Session A and Session B selections are missing.",
+        "Merge preview blocked. Select Session A and Session B, then run Preview Merge (Dry Run)."
+      );
       return;
     }
     if (!this.mergeLeftSelect.value) {
-      this.mergeOutputSelectionKey = "";
-      this.setMergeResultSummary("Merge preview blocked. Session A selection is missing.");
-      this.mergeOutputNode.textContent = "Merge preview blocked. Session A selection is missing.";
-      this.statusNode.textContent = "Merge preview blocked. Select Session A, then run Preview Merge (Dry Run).";
+      this.clearMergePanelTransientState(
+        "Merge preview blocked. Session A selection is missing.",
+        "Merge preview blocked. Session A selection is missing.",
+        "Merge preview blocked. Select Session A, then run Preview Merge (Dry Run)."
+      );
       return;
     }
     if (!this.mergeRightSelect.value) {
-      this.mergeOutputSelectionKey = "";
-      this.setMergeResultSummary("Merge preview blocked. Session B selection is missing.");
-      this.mergeOutputNode.textContent = "Merge preview blocked. Session B selection is missing.";
-      this.statusNode.textContent = "Merge preview blocked. Select Session B, then run Preview Merge (Dry Run).";
+      this.clearMergePanelTransientState(
+        "Merge preview blocked. Session B selection is missing.",
+        "Merge preview blocked. Session B selection is missing.",
+        "Merge preview blocked. Select Session B, then run Preview Merge (Dry Run)."
+      );
       return;
     }
     if (this.mergeLeftSelect.value === this.mergeRightSelect.value) {
-      this.mergeOutputSelectionKey = "";
-      this.setMergeResultSummary("Merge preview blocked. Session A and Session B must be different sessions.");
-      this.mergeOutputNode.textContent = "Merge preview blocked. Session A and Session B must be different sessions.";
-      this.statusNode.textContent = "Merge preview blocked. Choose two different sessions, then run Preview Merge (Dry Run).";
+      this.clearMergePanelTransientState(
+        "Merge preview blocked. Session A and Session B must be different sessions.",
+        "Merge preview blocked. Session A and Session B must be different sessions.",
+        "Merge preview blocked. Choose two different sessions, then run Preview Merge (Dry Run)."
+      );
       return;
     }
     const left = this.mergeCandidates.find((entry) => entry.id === this.mergeLeftSelect.value);
     const right = this.mergeCandidates.find((entry) => entry.id === this.mergeRightSelect.value);
     if (!left || !right) {
-      this.mergeOutputSelectionKey = "";
-      this.setMergeResultSummary(!left
-        ? "Merge preview blocked. Session A selection is no longer available."
-        : "Merge preview blocked. Session B selection is no longer available.");
-      this.mergeOutputNode.textContent = !left
-        ? "Merge preview blocked. Session A selection is no longer available."
-        : "Merge preview blocked. Session B selection is no longer available.";
-      this.statusNode.textContent = "Merge preview blocked. Refresh or re-select sessions, then run Preview Merge (Dry Run).";
+      this.clearMergePanelTransientState(
+        !left
+          ? "Merge preview blocked. Session A selection is no longer available."
+          : "Merge preview blocked. Session B selection is no longer available.",
+        !left
+          ? "Merge preview blocked. Session A selection is no longer available."
+          : "Merge preview blocked. Session B selection is no longer available.",
+        "Merge preview blocked. Refresh or re-select sessions, then run Preview Merge (Dry Run)."
+      );
       return;
     }
     if (!this.isValidSessionPayload(left.payload) || !this.isValidSessionPayload(right.payload)) {
-      this.mergeOutputSelectionKey = "";
-      this.setMergeResultSummary("Selected merge payload is invalid.");
-      this.mergeOutputNode.textContent = "Selected merge payload is invalid.";
+      this.clearMergePanelTransientState(
+        "Selected merge payload is invalid.",
+        "Selected merge payload is invalid.",
+        "Selected merge payload is invalid."
+      );
       return;
     }
     const leftToolId = typeof left.payload.toolId === "string" ? left.payload.toolId.trim() : "";
     const rightToolId = typeof right.payload.toolId === "string" ? right.payload.toolId.trim() : "";
     if (leftToolId && rightToolId && leftToolId !== rightToolId) {
-      this.pendingMergePreview = null;
-      this.mergeOutputSelectionKey = "";
+      this.clearMergePanelTransientState(
+        [
+          "Cross-tool merge is not supported. Select two sessions with the same toolId.",
+          `Session A toolId: ${leftToolId}`,
+          `Session B toolId: ${rightToolId}`
+        ].join("\n"),
+        [
+          "Cross-tool merge is not supported. Select two sessions with the same toolId.",
+          `Session A toolId: ${leftToolId}`,
+          `Session B toolId: ${rightToolId}`
+        ].join("\n"),
+        "Cross-tool merge is not supported. Select two sessions with the same toolId."
+      );
       this.updateMergeSelectionFeedbackAndState();
-      this.setMergeResultSummary([
-        "Cross-tool merge is not supported. Select two sessions with the same toolId.",
-        `Session A toolId: ${leftToolId}`,
-        `Session B toolId: ${rightToolId}`
-      ].join("\n"));
-      this.mergeOutputNode.textContent = [
-        "Cross-tool merge is not supported. Select two sessions with the same toolId.",
-        `Session A toolId: ${leftToolId}`,
-        `Session B toolId: ${rightToolId}`
-      ].join("\n");
-      this.statusNode.textContent = "Cross-tool merge is not supported. Select two sessions with the same toolId.";
       return;
     }
 
     const result = this.mergeSessionPayloads(left.payload, right.payload);
     const selectedToolId = this.selectedToolId();
     if (!selectedToolId) {
-      this.mergeOutputSelectionKey = "";
-      this.setMergeResultSummary("Select a V2 tool before computing merge.");
-      this.mergeOutputNode.textContent = "Select a V2 tool before computing merge.";
+      this.clearMergePanelTransientState(
+        "Select a V2 tool before computing merge.",
+        "Select a V2 tool before computing merge.",
+        "Select a V2 tool before computing merge."
+      );
       return;
     }
     const versionedPayload = this.withSessionVersion(result.mergedPayload);
     const sizeValidation = this.validateSessionPayloadSize(versionedPayload);
     if (!sizeValidation.ok) {
-      this.mergeOutputSelectionKey = "";
-      this.setMergeResultSummary(sizeValidation.message);
-      this.mergeOutputNode.textContent = sizeValidation.message;
+      this.clearMergePanelTransientState(sizeValidation.message, sizeValidation.message, sizeValidation.message);
       return;
     }
 

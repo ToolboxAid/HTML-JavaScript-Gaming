@@ -5,6 +5,11 @@ You are working in a docs-first repo workflow.
 Workflow:
 PLAN_PR → BUILD_PR → APPLY_PR
 
+ChatGPT execution role:
+- ChatGPT no longer creates PLAN_PR, BUILD_PR, APPLY_PR docs, or ZIP bundles.
+- ChatGPT produces only the Codex command, commit comment, and how to test the change.
+- Codex creates the plan, docs, ZIP bundle, and implementation changes.
+
 Rules:
 - One PR purpose only
 - Smallest scoped valid change
@@ -13,8 +18,8 @@ Rules:
 - No repo-wide scanning unless required
 
 Responsibilities:
-- ChatGPT: create plans, PR docs, and ZIP bundles
-- Codex: writes implementation code
+- ChatGPT: produce the Codex command, commit comment, and how to test the change
+- Codex: creates plans, PR docs, ZIP bundles, and implementation code
 - User: runs Codex + validates
 
 Output rules:
@@ -26,11 +31,9 @@ Output rules:
 
 - Print a little detail about the PR (1–3 lines, clear purpose)
 - Do NOT present options (assume correct path and proceed)
-- Always provide a ZIP that is:
-  - testable
-  - pushes the roadmap forward
-- ZIP must be placed in the response BEFORE the Next step section
-- Keep chat response minimal (ZIP + short summary + next step)
+- Do not create ZIPs in ChatGPT responses
+- Provide the Codex command, commit comment, and how to test the change
+- Keep chat response minimal
 
 ## 🧾 COMMIT COMMENT FORMAT (MANDATORY)
 
@@ -70,31 +73,27 @@ Then:
 1. Validate the PLAN
 2. Generate a compact BUILD_PR
 3. Generate Codex command
-4. Package a repo-structured ZIP
-5. Return all outputs
+4. Have Codex package a repo-structured ZIP
+5. Return only the Codex command, commit comment, and how to test
 
 Do not ask for confirmation unless ambiguity exists.
 
 OUTPUT FORMAT (STRICT)
 
-When producing BUILD, PLAN, or APPLY results:
+When producing repo workflow guidance:
 
-- ALWAYS return a downloadable ZIP
-- DO NOT output full command text, PR docs, or reports inline
-- Keep chat response minimal:
-  - ZIP download
-  - short summary (1–3 lines max)
-  - NEXT step (if applicable)
+- DO NOT create a downloadable ZIP
+- DO output only:
+  - Codex command
+  - commit comment
+  - how to test the change
+- Keep chat response minimal
 
-All detailed content must be placed inside the ZIP, including:
+Codex must place detailed content in the ZIP, including:
 - docs/pr/*
 - docs/dev/codex_commands.md
 - docs/dev/commit_comment.txt
 - docs/dev/reports/*
-
-If a ZIP cannot be produced:
-- STOP and explain why
-- DO NOT fall back to full inline output
 
 ZIP STANDARD (ENFORCED)
 
@@ -112,14 +111,14 @@ Commit Comment:
 
 ## 🔧 ZIP DELIVERY VALIDATION (MANDATORY)
 
-Before returning any ZIP, ChatGPT MUST:
+Before Codex returns any ZIP, Codex MUST:
 
 1. Physically create the ZIP file  
 2. Verify the file exists on disk  
 3. Verify file size > 0  
 4. List contents to confirm correct repo structure  
 5. Use a NEW filename for every attempt (no reuse)  
-6. Place ZIP at root path: /mnt/data/  
+6. Place ZIP under <project folder>/tmp/  
 7. Never reuse a previous file handle or path  
 
 ---
