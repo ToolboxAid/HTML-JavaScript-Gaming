@@ -70,12 +70,12 @@ export function run() {
   const requiredTokens = [
     "computeWorkspaceSessionUiStateModel()",
     "renderWorkspaceSessionUiStateModel(model)",
-    "refreshWorkspaceSessionUiStateModel()",
+    "refreshWorkspaceSessionUiStateModel(actionName = \"refresh_load\")",
     "updateSessionLibraryActionState() {",
     "updateDiffSelectionFeedbackAndState() {",
     "updateMergeSelectionFeedbackAndState() {",
     "updateUndoLastMergeState() {",
-    "this.refreshWorkspaceSessionUiStateModel();",
+    "this.refreshWorkspaceSessionUiStateModel(\"refresh_load\");",
     "this.mergeOutputNode.hidden = !model.mergePreviewVisible;"
   ];
   requiredTokens.forEach((token) => {

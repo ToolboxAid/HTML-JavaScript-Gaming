@@ -82,6 +82,7 @@ class WorkspaceV2SessionProducer {
     this.currentSessionPayload = null;
     this.currentSessionSource = "";
     this.currentHostContextId = "";
+    this.workspaceTransitionState = "idle";
     this.pendingMergePreview = null;
     this.lastMergedSessionResult = null;
     this.mergeOutputSelectionKey = "";
@@ -219,7 +220,82 @@ class WorkspaceV2SessionProducer {
   }
 
   updateSessionLibraryActionState() {
-    this.refreshWorkspaceSessionUiStateModel();
+    this.refreshWorkspaceSessionUiStateModel("refresh_load");
+  }
+
+  computeWorkspaceTransitionStateFromModel(model) {
+    if (model.undoEnabled) {
+      return "undo_available";
+    }
+    if (this.lastMergedSessionResult && this.isValidSessionPayload(this.lastMergedSessionResult.payload)) {
+      return "merge_applied";
+    }
+    if (this.pendingMergePreview && (model.mergeCanConfirm || model.mergeCanApply)) {
+      return "preview_ready";
+    }
+    if (this.pendingMergePreview) {
+      return "preview_active";
+    }
+    if (model.mergeCanPreview) {
+      return "valid_selection";
+    }
+    return "idle";
+  }
+
+  isWorkspaceTransitionAllowed(actionName, model) {
+    if (actionName === "refresh_load") {
+      return true;
+    }
+    if (actionName === "selection_change") {
+      return true;
+    }
+    if (actionName === "delete_session") {
+      return true;
+    }
+    if (actionName === "preview_merge") {
+      return model.mergeCanPreview;
+    }
+    if (actionName === "confirm_preview") {
+      return model.mergeCanConfirm;
+    }
+    if (actionName === "apply_merge") {
+      return model.mergeCanApply;
+    }
+    if (actionName === "undo_merge") {
+      return model.undoEnabled;
+    }
+    return false;
+  }
+
+  computeNextWorkspaceTransitionState(actionName, model) {
+    if (actionName === "preview_merge") {
+      return "preview_active";
+    }
+    if (actionName === "confirm_preview") {
+      return "preview_ready";
+    }
+    if (actionName === "apply_merge") {
+      return model.undoEnabled ? "undo_available" : "merge_applied";
+    }
+    if (actionName === "undo_merge") {
+      return this.computeWorkspaceTransitionStateFromModel(model);
+    }
+    if (actionName === "selection_change") {
+      return this.computeWorkspaceTransitionStateFromModel(model);
+    }
+    if (actionName === "delete_session") {
+      return this.computeWorkspaceTransitionStateFromModel(model);
+    }
+    return this.computeWorkspaceTransitionStateFromModel(model);
+  }
+
+  requestWorkspaceTransition(actionName, model) {
+    const uiModel = model || this.computeWorkspaceSessionUiStateModel();
+    if (!this.isWorkspaceTransitionAllowed(actionName, uiModel)) {
+      return false;
+    }
+    this.workspaceTransitionState = this.computeNextWorkspaceTransitionState(actionName, uiModel);
+    return true;
   }
 
   computeWorkspaceSessionUiStateModel() {
@@ -313,8 +389,13 @@ class WorkspaceV2SessionProducer {
     this.renderMergeConflictSummary();
   }
 
-  refreshWorkspaceSessionUiStateModel() {
+  refreshWorkspaceSessionUiStateModel(actionName = "refresh_load") {
     const model = this.computeWorkspaceSessionUiStateModel();
+    if (actionName === "refresh_load") {
+      this.workspaceTransitionState = this.computeWorkspaceTransitionStateFromModel(model);
+    } else if (!this.requestWorkspaceTransition(actionName, model)) {
+      return model;
+    }
     this.renderWorkspaceSessionUiStateModel(model);
     return model;
   }
@@ -395,7 +476,7 @@ class WorkspaceV2SessionProducer {
     if (typeof statusMessage === "string" && statusMessage.trim()) {
       this.statusNode.textContent = statusMessage;
     }
-    this.refreshWorkspaceSessionUiStateModel();
+    this.refreshWorkspaceSessionUiStateModel("refresh_load");
   }
 
   clearMergeOutputForSelectionChange() {
@@ -411,7 +492,7 @@ class WorkspaceV2SessionProducer {
     if (this.mergeOutputSelectionKey && this.mergeOutputSelectionKey !== currentSelectionKey) {
       this.clearMergeOutputForSelectionChange();
     }
-    this.refreshWorkspaceSessionUiStateModel();
+    this.refreshWorkspaceSessionUiStateModel("selection_change");
   }
 
   readLastMergedHostContextId() {
@@ -459,7 +540,7 @@ class WorkspaceV2SessionProducer {
   }
 
   updateUndoLastMergeState() {
-    this.refreshWorkspaceSessionUiStateModel();
+    this.refreshWorkspaceSessionUiStateModel("refresh_load");
   }
 
   readActiveSessionPayloadForLibraryActions() {
@@ -995,10 +1076,20 @@ class WorkspaceV2SessionProducer {
       this.setCurrentSessionPayload(null, "");
     }
     this.renderSessionHistory();
+    this.refreshWorkspaceSessionUiStateModel("delete_session");
     this.statusNode.textContent = `Recent session '${sessionId}' deleted.`;
   }
 
   undoLastMerge() {
+    if (!this.requestWorkspaceTransition("undo_merge", this.computeWorkspaceSessionUiStateModel())) {
+      this.updateUndoLastMergeState();
+      this.clearMergePanelTransientState(
+        "No recent merge to undo.",
+        "No merge preview available.",
+        "No recent merge to undo."
+      );
+      return;
+    }
     const lastMergedId = this.resolveAuthoritativeLastMergedHostContextId();
     if (!lastMergedId) {
       this.updateUndoLastMergeState();
@@ -1044,6 +1135,7 @@ class WorkspaceV2SessionProducer {
     this.updateMergeSelectionFeedbackAndState();
     this.writeLastMergedHostContextId("");
     this.renderSessionHistory();
+    this.refreshWorkspaceSessionUiStateModel("refresh_load");
     this.clearMergePanelTransientState(
       `Last merged session removed.\nRemoved Session ID: ${lastMergedId}`,
       "No merge preview available.",
@@ -1251,11 +1343,11 @@ class WorkspaceV2SessionProducer {
   }
 
   updateDiffSelectionFeedbackAndState() {
-    this.refreshWorkspaceSessionUiStateModel();
+    this.refreshWorkspaceSessionUiStateModel("refresh_load");
   }
 
   updateMergeSelectionFeedbackAndState() {
-    this.refreshWorkspaceSessionUiStateModel();
+    this.refreshWorkspaceSessionUiStateModel("refresh_load");
   }
 
   conflictValuePreview(value) {
@@ -1349,8 +1441,6 @@ class WorkspaceV2SessionProducer {
     const previousPreview = this.pendingMergePreview;
     this.mergeCandidates = this.buildSessionMergeCandidates();
     this.pendingMergePreview = null;
-    this.confirmMergeButton.disabled = true;
-    this.applyMergeButton.disabled = true;
     const currentLeft = this.mergeLeftSelect.value;
     const currentRight = this.mergeRightSelect.value;
     const persistedSelections = this.resolvePersistedSelectionIds(this.mergeCandidates);
@@ -1399,8 +1489,6 @@ class WorkspaceV2SessionProducer {
           this.mergeOutputSelectionKey = this.buildMergeSelectionKey(previousPreview.source.id, previousPreview.target.id);
           this.mergeLeftSelect.value = previousPreview.source.id;
           this.mergeRightSelect.value = previousPreview.target.id;
-          this.confirmMergeButton.disabled = false;
-          this.applyMergeButton.disabled = !previousPreview.confirmed;
           this.setMergePreviewSummary(previousPreview);
           this.updateMergeSelectionFeedbackAndState();
           return;
@@ -1563,6 +1651,11 @@ class WorkspaceV2SessionProducer {
       this.updateMergeSelectionFeedbackAndState();
       return;
     }
+    if (!this.requestWorkspaceTransition("preview_merge", this.computeWorkspaceSessionUiStateModel())) {
+      this.setMergeResultSummary("Merge preview blocked. Select two different sessions, then run Preview Merge (Dry Run).");
+      this.statusNode.textContent = "Merge preview blocked. Select two different sessions, then run Preview Merge (Dry Run).";
+      return;
+    }
 
     const result = this.mergeSessionPayloads(left.payload, right.payload);
     const selectedToolId = this.selectedToolId();
@@ -1605,7 +1698,7 @@ class WorkspaceV2SessionProducer {
     };
     this.mergeOutputSelectionKey = this.buildMergeSelectionKey(left.id, right.id);
     this.setMergePreviewSummary(this.pendingMergePreview);
-    this.updateMergeSelectionFeedbackAndState();
+    this.refreshWorkspaceSessionUiStateModel("refresh_load");
 
     this.mergeOutputNode.textContent = JSON.stringify({
       source: this.pendingMergePreview.source,
@@ -1739,8 +1832,13 @@ class WorkspaceV2SessionProducer {
       this.statusNode.textContent = "Merge preview has conflicts. Resolve conflicts before confirming.";
       return;
     }
+    if (!this.requestWorkspaceTransition("confirm_preview", this.computeWorkspaceSessionUiStateModel())) {
+      this.setMergeResultSummary("Merge preview confirmation blocked. Run Preview Merge (Dry Run) again.");
+      this.statusNode.textContent = "Merge preview confirmation blocked. Run Preview Merge (Dry Run) again.";
+      return;
+    }
     this.pendingMergePreview.confirmed = true;
-    this.updateMergeSelectionFeedbackAndState();
+    this.refreshWorkspaceSessionUiStateModel("refresh_load");
     this.setMergeResultSummary("Preview confirmed. Apply Merge is enabled.");
     this.mergeOutputNode.textContent = JSON.stringify({
       source: this.pendingMergePreview.source,
@@ -1788,6 +1886,11 @@ class WorkspaceV2SessionProducer {
     if (!this.pendingMergePreview.confirmed) {
       this.setMergeResultSummary("Merge apply blocked. Confirm preview before apply.");
       this.statusNode.textContent = "Merge apply blocked. Confirm preview before apply.";
+      return;
+    }
+    if (!this.requestWorkspaceTransition("apply_merge", this.computeWorkspaceSessionUiStateModel())) {
+      this.setMergeResultSummary("Merge apply blocked. Preview must be confirmed, fresh, and conflict-free.");
+      this.statusNode.textContent = "Merge apply blocked. Preview must be confirmed, fresh, and conflict-free.";
       return;
     }
     const currentMergeCandidates = this.buildSessionMergeCandidates();
@@ -1876,12 +1979,11 @@ class WorkspaceV2SessionProducer {
     this.renderSessionHistory();
     this.renderSessionDiffInputs();
     this.renderSessionMergeInputs();
-    this.updateMergeSelectionFeedbackAndState();
-    this.updateUndoLastMergeState();
+    this.refreshWorkspaceSessionUiStateModel("refresh_load");
     this.recordMergeAuditEntry(this.pendingMergePreview);
     this.renderDiagnosticsPanel();
     this.pendingMergePreview = null;
-    this.updateMergeSelectionFeedbackAndState();
+    this.refreshWorkspaceSessionUiStateModel("refresh_load");
     this.mergeOutputNode.textContent = JSON.stringify({
       source: liveSource.id,
       target: liveTarget.id,
