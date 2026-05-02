@@ -119,8 +119,14 @@ class WorkspaceV2SessionProducer {
     this.deleteSessionButton.addEventListener("click", () => {
       this.deleteNamedSession();
     });
+    this.sessionNameNode.addEventListener("input", () => {
+      this.updateSessionLibraryActionState();
+    });
     this.refreshSessionHistoryButton.addEventListener("click", () => {
+      this.renderSessionLibrary();
       this.renderSessionHistory();
+      this.updateSessionLibraryActionState();
+      this.statusNode.textContent = "Workspace V2 session views refreshed.";
     });
     this.computeDiffButton.addEventListener("click", () => {
       this.computeSelectedSessionDiff();
@@ -199,6 +205,7 @@ class WorkspaceV2SessionProducer {
     this.renderSessionHistory();
     this.renderSessionDiffInputs();
     this.renderSessionMergeInputs();
+    this.updateSessionLibraryActionState();
     this.renderErrorLogsViewer();
     this.renderDiagnosticsPanel();
   }
@@ -209,6 +216,14 @@ class WorkspaceV2SessionProducer {
 
   selectedSessionName() {
     return typeof this.sessionNameNode.value === "string" ? this.sessionNameNode.value.trim() : "";
+  }
+
+  updateSessionLibraryActionState() {
+    const hasSessionInput = Boolean(this.selectedSessionName());
+    this.saveSessionButton.disabled = !hasSessionInput;
+    this.overwriteSessionButton.disabled = !hasSessionInput;
+    this.loadSessionButton.disabled = !hasSessionInput;
+    this.deleteSessionButton.disabled = !hasSessionInput;
   }
 
   setLibraryStatus(message) {
@@ -645,6 +660,7 @@ class WorkspaceV2SessionProducer {
     });
     this.renderSessionDiffInputs();
     this.renderSessionMergeInputs();
+    this.updateSessionLibraryActionState();
   }
 
   async copySavedSessionIdToClipboard(sessionId) {
@@ -670,6 +686,7 @@ class WorkspaceV2SessionProducer {
       return;
     }
     this.sessionNameNode.value = sessionId.trim();
+    this.updateSessionLibraryActionState();
     this.syncDiffAndMergeSelectionSlotsFromContextId(sessionId.trim());
     this.setLibraryStatus(`Saved session ID ready for Diff/Merge and Library actions: ${sessionId.trim()}`);
   }
@@ -680,6 +697,7 @@ class WorkspaceV2SessionProducer {
       return;
     }
     this.sessionNameNode.value = sessionId.trim();
+    this.updateSessionLibraryActionState();
     this.loadNamedSession();
     this.syncDiffAndMergeSelectionSlotsFromContextId(sessionId.trim());
     this.renderSessionLibrary();
@@ -691,6 +709,7 @@ class WorkspaceV2SessionProducer {
       return;
     }
     this.sessionNameNode.value = sessionId.trim();
+    this.updateSessionLibraryActionState();
     this.deleteNamedSession();
   }
 
@@ -844,6 +863,7 @@ class WorkspaceV2SessionProducer {
       return;
     }
     this.sessionNameNode.value = hostContextId.trim();
+    this.updateSessionLibraryActionState();
     this.statusNode.textContent = `Session ID ready for Library actions: ${hostContextId.trim()}`;
   }
 
@@ -1152,7 +1172,7 @@ class WorkspaceV2SessionProducer {
     const canRunDiff = Boolean(left && right && left.id !== right.id);
     this.computeDiffButton.disabled = !canRunDiff;
     this.diffEnableStateNode.textContent = canRunDiff
-      ? "Ready to compute diff."
+      ? "Compute Diff is enabled."
       : "Select two different sessions to enable Compute Diff.";
     if (left && right && left.id === right.id) {
       this.diffSelectionStateNode.textContent = "Choose two different sessions.";
@@ -1187,11 +1207,11 @@ class WorkspaceV2SessionProducer {
     } else if (previewHasConflicts && previewIsFresh) {
       this.mergeEnableStateNode.textContent = "Preview has conflicts. Resolve conflicts before applying.";
     } else if (previewReadyForApply) {
-      this.mergeEnableStateNode.textContent = "Preview confirmed. Ready to apply merge.";
+      this.mergeEnableStateNode.textContent = "Apply Merge is enabled.";
     } else if (previewReadyForConfirm) {
-      this.mergeEnableStateNode.textContent = "Preview ready. Confirm to enable apply.";
+      this.mergeEnableStateNode.textContent = "Confirm Preview is enabled.";
     } else {
-      this.mergeEnableStateNode.textContent = "Ready to preview merge.";
+      this.mergeEnableStateNode.textContent = "Preview Merge is enabled.";
     }
     if (this.pendingMergePreview && !previewIsFresh) {
       this.setMergeResultSummary("Preview summary is stale because Session A or Session B changed. Run Preview Merge again.");
@@ -1623,7 +1643,7 @@ class WorkspaceV2SessionProducer {
       createdAt: new Date().toISOString()
     };
     this.mergedSessionIdNode.value = this.defaultMergedSessionId(this.lastMergedSessionResult.toolId);
-    this.mergedSessionStatusNode.textContent = "Merged session ready. Choose an ID and save if desired.";
+    this.mergedSessionStatusNode.textContent = "Merged session is available for save.";
   }
 
   saveMergedSessionResult() {
@@ -1691,7 +1711,7 @@ class WorkspaceV2SessionProducer {
     }
     this.pendingMergePreview.confirmed = true;
     this.updateMergeSelectionFeedbackAndState();
-    this.setMergeResultSummary("Preview confirmed. Apply Merge is ready.");
+    this.setMergeResultSummary("Preview confirmed. Apply Merge is enabled.");
     this.mergeOutputNode.textContent = JSON.stringify({
       source: this.pendingMergePreview.source,
       target: this.pendingMergePreview.target,
@@ -2051,6 +2071,8 @@ class WorkspaceV2SessionProducer {
   clearSessionStorage(emitStatus = true) {
     sessionStorage.clear();
     this.clearPersistedSessionSelection();
+    this.sessionNameNode.value = "";
+    this.updateSessionLibraryActionState();
     this.diffLeftSelect.value = "";
     this.diffRightSelect.value = "";
     this.mergeLeftSelect.value = "";
@@ -2106,6 +2128,7 @@ class WorkspaceV2SessionProducer {
     this.importJsonNode.value = "";
     this.shareUrlNode.value = "";
     this.sessionNameNode.value = "";
+    this.updateSessionLibraryActionState();
     this.lastMergedSessionResult = null;
     this.mergeOutputSelectionKey = "";
     this.mergedSessionIdNode.value = "";
