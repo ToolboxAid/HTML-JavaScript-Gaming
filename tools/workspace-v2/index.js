@@ -920,9 +920,21 @@ class WorkspaceV2SessionProducer {
     this.mergeRightSelectedLabelNode.textContent = this.formatSelectionLabel(right);
     const canPreviewMerge = Boolean(left && right && left.id !== right.id);
     this.computeMergeButton.disabled = !canPreviewMerge;
-    this.mergeEnableStateNode.textContent = canPreviewMerge
-      ? "Ready to preview merge."
-      : "Select two different sessions to enable Preview Merge.";
+    const previewIsFresh = this.hasFreshMergePreviewContext(this.pendingMergePreview);
+    const previewHasConflicts = Boolean(this.pendingMergePreview && Object.keys(this.pendingMergePreview.conflicts).length > 0);
+    const previewReadyForConfirm = Boolean(this.pendingMergePreview && !this.pendingMergePreview.confirmed && previewIsFresh && !previewHasConflicts);
+    const previewReadyForApply = Boolean(this.pendingMergePreview && this.pendingMergePreview.confirmed && previewIsFresh && !previewHasConflicts);
+    if (!canPreviewMerge) {
+      this.mergeEnableStateNode.textContent = "Select two different sessions to enable Preview Merge.";
+    } else if (previewHasConflicts && previewIsFresh) {
+      this.mergeEnableStateNode.textContent = "Preview has conflicts. Resolve conflicts before applying.";
+    } else if (previewReadyForApply) {
+      this.mergeEnableStateNode.textContent = "Preview confirmed. Ready to apply merge.";
+    } else if (previewReadyForConfirm) {
+      this.mergeEnableStateNode.textContent = "Preview ready. Confirm to enable apply.";
+    } else {
+      this.mergeEnableStateNode.textContent = "Ready to preview merge.";
+    }
     if (left && right && left.id === right.id) {
       this.mergeSelectionStateNode.textContent = "Choose two different sessions.";
     } else if (canPreviewMerge) {
@@ -930,11 +942,6 @@ class WorkspaceV2SessionProducer {
     } else {
       this.mergeSelectionStateNode.textContent = "Select two different sessions to preview merge.";
     }
-
-    const previewIsFresh = this.hasFreshMergePreviewContext(this.pendingMergePreview);
-    const previewHasConflicts = this.pendingMergePreview && Object.keys(this.pendingMergePreview.conflicts).length > 0;
-    const previewReadyForConfirm = Boolean(this.pendingMergePreview && !this.pendingMergePreview.confirmed && previewIsFresh && !previewHasConflicts);
-    const previewReadyForApply = Boolean(this.pendingMergePreview && this.pendingMergePreview.confirmed && previewIsFresh && !previewHasConflicts);
     this.confirmMergeButton.disabled = !previewReadyForConfirm;
     this.applyMergeButton.disabled = !previewReadyForApply;
   }
