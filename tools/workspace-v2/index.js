@@ -413,7 +413,16 @@ class WorkspaceV2SessionProducer {
     const libraryCanSave = Boolean(libraryHasSessionInput && libraryIdValid && !librarySavedSessionExists && libraryHasActiveSession);
     const diffLeftEntry = this.findSessionEntryById(this.diffCandidates, this.diffLeftSelect.value);
     const diffRightEntry = this.findSessionEntryById(this.diffCandidates, this.diffRightSelect.value);
-    const diffCanCompute = Boolean(diffLeftEntry && diffRightEntry && diffLeftEntry.id !== diffRightEntry.id);
+    const diffSameTool = Boolean(
+      diffLeftEntry &&
+      diffRightEntry &&
+      typeof diffLeftEntry.toolId === "string" &&
+      typeof diffRightEntry.toolId === "string" &&
+      diffLeftEntry.toolId.trim() &&
+      diffRightEntry.toolId.trim() &&
+      diffLeftEntry.toolId.trim() === diffRightEntry.toolId.trim()
+    );
+    const diffCanCompute = Boolean(diffLeftEntry && diffRightEntry && diffLeftEntry.id !== diffRightEntry.id && diffSameTool);
     const mergeLeftEntry = this.findSessionEntryById(this.mergeCandidates, this.mergeLeftSelect.value);
     const mergeRightEntry = this.findSessionEntryById(this.mergeCandidates, this.mergeRightSelect.value);
     const mergeCanPreview = Boolean(mergeLeftEntry && mergeRightEntry && mergeLeftEntry.id !== mergeRightEntry.id);
@@ -443,7 +452,14 @@ class WorkspaceV2SessionProducer {
       : (mergeCanPreview ? "Selections are valid." : "Select two different sessions to preview merge.");
     const diffSelectionText = diffLeftEntry && diffRightEntry && diffLeftEntry.id === diffRightEntry.id
       ? "Choose two different sessions."
-      : (diffCanCompute ? "Selections are valid." : "Select two different sessions to compute diff.");
+      : (
+        diffLeftEntry &&
+        diffRightEntry &&
+        diffLeftEntry.id !== diffRightEntry.id &&
+        !diffSameTool
+          ? "Diff requires sessions from the same tool."
+          : (diffCanCompute ? "Selections are valid." : "Select two different sessions to compute diff.")
+      );
     const authoritativeLastMergedHostContextId = this.resolveAuthoritativeLastMergedHostContextId();
     const mergePreviewVisible = Boolean(
       this.pendingMergePreview ||
@@ -459,7 +475,16 @@ class WorkspaceV2SessionProducer {
       diffLeftEntry,
       diffRightEntry,
       diffCanCompute,
-      diffEnableText: diffCanCompute ? "Compute Diff is enabled." : "Select two different sessions to enable Compute Diff.",
+      diffEnableText: diffCanCompute
+        ? "Compute Diff is enabled."
+        : (
+          diffLeftEntry &&
+          diffRightEntry &&
+          diffLeftEntry.id !== diffRightEntry.id &&
+          !diffSameTool
+            ? "Diff requires sessions from the same tool."
+            : "Select two different sessions to enable Compute Diff."
+        ),
       diffSelectionText,
       mergeLeftEntry,
       mergeRightEntry,
@@ -629,6 +654,17 @@ class WorkspaceV2SessionProducer {
     }
     if (this.diffLeftSelect.value === this.diffRightSelect.value) {
       this.statusNode.textContent = "Choose two different sessions to enable Compute Diff.";
+      return;
+    }
+    const diffLeftEntry = this.findSessionEntryById(this.diffCandidates, this.diffLeftSelect.value);
+    const diffRightEntry = this.findSessionEntryById(this.diffCandidates, this.diffRightSelect.value);
+    if (
+      diffLeftEntry &&
+      diffRightEntry &&
+      diffLeftEntry.id !== diffRightEntry.id &&
+      diffLeftEntry.toolId !== diffRightEntry.toolId
+    ) {
+      this.statusNode.textContent = "Diff requires sessions from the same tool.";
       return;
     }
     this.statusNode.textContent = "Select two different sessions to enable Compute Diff.";
@@ -2361,6 +2397,12 @@ class WorkspaceV2SessionProducer {
       this.statusNode.textContent = "Selected diff payload is invalid.";
       return;
     }
+    if (left.toolId !== right.toolId) {
+      this.diffOutputSelectionKey = "";
+      this.diffOutputNode.textContent = "Diff requires sessions from the same tool.";
+      this.statusNode.textContent = "Diff requires sessions from the same tool.";
+      return;
+    }
     const diff = this.computeSessionDiff(left.payload, right.payload);
     const addedCount = Object.keys(diff.added).length;
     const removedCount = Object.keys(diff.removed).length;
@@ -2842,7 +2884,7 @@ class WorkspaceV2SessionProducer {
     }
   }
 
-  buildWorkspaceManifestDocument() {
+  buildWorkspaceSchemaDocument() {
     const activePayload = this.readActiveSessionPayloadForLibraryActions();
     if (!this.isValidSessionPayload(activePayload)) {
       return null;
@@ -2851,50 +2893,54 @@ class WorkspaceV2SessionProducer {
     if (library === null) {
       return null;
     }
-    const activeToolId = typeof activePayload.toolId === "string" && activePayload.toolId.trim()
-      ? activePayload.toolId.trim()
-      : this.selectedToolId();
+    const activeToolId = typeof activePayload.toolId === "string" && activePayload.toolId.trim() ? activePayload.toolId.trim() : "";
     const activeHostContextId = typeof this.currentHostContextId === "string" ? this.currentHostContextId.trim() : "";
-    const toolSessions = {};
-    if (activeToolId && activeHostContextId) {
-      if (!Object.prototype.hasOwnProperty.call(toolSessions, activeToolId)) {
-        toolSessions[activeToolId] = {};
-      }
-      toolSessions[activeToolId][activeHostContextId] = this.cloneSessionValue(activePayload);
+    if (!activeToolId || !activeHostContextId) {
+      return null;
     }
+    const games = [];
+    const sessionIds = new Set();
+    games.push({
+      id: activeHostContextId,
+      level: "workspace-v2-active-session",
+      tool: activeToolId,
+      tools: [activeToolId],
+      session: {
+        hostContextId: activeHostContextId,
+        payload: this.cloneSessionValue(activePayload)
+      }
+    });
+    sessionIds.add(activeHostContextId);
     Object.keys(library).forEach((sessionId) => {
       const payload = library[sessionId];
       if (!this.isValidSessionPayload(payload)) {
         return;
       }
-      const payloadToolId = typeof payload.toolId === "string" && payload.toolId.trim()
-        ? payload.toolId.trim()
-        : this.selectedToolId();
+      const payloadToolId = typeof payload.toolId === "string" && payload.toolId.trim() ? payload.toolId.trim() : "";
       if (!payloadToolId) {
         return;
       }
-      if (!Object.prototype.hasOwnProperty.call(toolSessions, payloadToolId)) {
-        toolSessions[payloadToolId] = {};
+      const contextId = typeof sessionId === "string" ? sessionId.trim() : "";
+      if (!contextId || sessionIds.has(contextId)) {
+        return;
       }
-      toolSessions[payloadToolId][sessionId] = this.cloneSessionValue(payload);
+      games.push({
+        id: contextId,
+        level: "workspace-v2-saved-session",
+        tool: payloadToolId,
+        tools: [payloadToolId],
+        session: {
+          hostContextId: contextId,
+          payload: this.cloneSessionValue(payload)
+        }
+      });
+      sessionIds.add(contextId);
     });
     return {
-      $schema: "../../tools/schemas/workspace.manifest.schema.json",
       documentKind: "workspace-manifest",
-      schema: "html-js-gaming.project",
+      schema: "html-js-gaming.workspace-v2-session-export/1",
       version: 1,
-      id: activeHostContextId ? `workspace-v2-${activeHostContextId}` : `workspace-v2-${Date.now()}`,
-      name: "Workspace V2 Session Export",
-      tools: {},
-      workspaceV2Session: {
-        schema: "html-js-gaming.workspace-v2-session/1",
-        defaultToolId: "palette-manager-v2",
-        activeToolId,
-        activeHostContextId,
-        toolSessions,
-        savedSessions: this.cloneSessionValue(library),
-        exportedAt: new Date().toISOString()
-      }
+      games
     };
   }
 
@@ -2903,20 +2949,23 @@ class WorkspaceV2SessionProducer {
       this.statusNode.textContent = "Switch to workspace mode to export workspace session JSON.";
       return;
     }
-    const workspaceManifest = this.buildWorkspaceManifestDocument();
-    if (!workspaceManifest) {
+    const workspaceSchemaDocument = this.buildWorkspaceSchemaDocument();
+    if (!workspaceSchemaDocument) {
       this.statusNode.textContent = "No active Workspace V2 session is available to export.";
       return;
     }
     try {
-      const validation = this.validateWorkspaceManifestDocument(workspaceManifest);
+      const validation = this.validateWorkspaceSchemaDocument(workspaceSchemaDocument);
       if (!validation.ok) {
         this.statusNode.textContent = validation.message;
         return;
       }
-      const serialized = JSON.stringify(workspaceManifest, null, 2);
-      const activeToolId = workspaceManifest.workspaceV2Session.activeToolId || "workspace-v2";
-      const activeHostContextId = workspaceManifest.workspaceV2Session.activeHostContextId || "session";
+      const serialized = JSON.stringify(workspaceSchemaDocument, null, 2);
+      const activeEntry = workspaceSchemaDocument.games.find((entry) => entry.level === "workspace-v2-active-session");
+      const activeToolId = activeEntry && typeof activeEntry.tool === "string" ? activeEntry.tool : "workspace-v2";
+      const activeHostContextId = activeEntry && activeEntry.session && typeof activeEntry.session.hostContextId === "string"
+        ? activeEntry.session.hostContextId
+        : "session";
       const downloadFileName = `workspace-v2-${activeToolId}-${activeHostContextId}.json`;
       const fileBlob = new Blob([serialized], { type: "application/json" });
       const fileUrl = URL.createObjectURL(fileBlob);
@@ -2935,66 +2984,83 @@ class WorkspaceV2SessionProducer {
     }
   }
 
-  validateWorkspaceManifestDocument(manifestDocument) {
-    if (!manifestDocument || typeof manifestDocument !== "object" || Array.isArray(manifestDocument)) {
+  validateWorkspaceSchemaDocument(workspaceDocument) {
+    if (!workspaceDocument || typeof workspaceDocument !== "object" || Array.isArray(workspaceDocument)) {
       return { ok: false, message: "Workspace import failed: expected a JSON object." };
     }
-    if (Object.prototype.hasOwnProperty.call(manifestDocument, "workspaceSession")) {
-      return { ok: false, message: "Workspace export/import blocked: workspaceSession wrapper is not allowed. Use workspace manifest root fields." };
+    if (
+      Object.prototype.hasOwnProperty.call(workspaceDocument, "workspaceSession") ||
+      Object.prototype.hasOwnProperty.call(workspaceDocument, "workspaceV2Session") ||
+      Object.prototype.hasOwnProperty.call(workspaceDocument, "toolSessions") ||
+      Object.prototype.hasOwnProperty.call(workspaceDocument, "savedSessions") ||
+      Object.prototype.hasOwnProperty.call(workspaceDocument, "exportedAt")
+    ) {
+      return { ok: false, message: "Workspace import failed: payload must match tools/schemas/workspace.schema.json and must not include workspaceV2Session/toolSessions/savedSessions wrappers." };
     }
-    if (manifestDocument.documentKind !== "workspace-manifest") {
+    const topLevelKeys = Object.keys(workspaceDocument);
+    const allowedTopLevelKeys = new Set(["documentKind", "schema", "version", "games"]);
+    for (const key of topLevelKeys) {
+      if (!allowedTopLevelKeys.has(key)) {
+        return { ok: false, message: `Workspace import failed: root.${key} is not allowed by tools/schemas/workspace.schema.json.` };
+      }
+    }
+    if (workspaceDocument.documentKind !== "workspace-manifest") {
       return { ok: false, message: "Workspace import failed: documentKind must be workspace-manifest." };
     }
-    if (typeof manifestDocument.schema !== "string" || !manifestDocument.schema.trim()) {
+    if (typeof workspaceDocument.schema !== "string" || !workspaceDocument.schema.trim()) {
       return { ok: false, message: "Workspace import failed: schema is required." };
     }
-    if (!Number.isInteger(manifestDocument.version) || manifestDocument.version < 1) {
+    if (!Number.isInteger(workspaceDocument.version) || workspaceDocument.version < 1) {
       return { ok: false, message: "Workspace import failed: version must be a positive integer." };
     }
-    if (typeof manifestDocument.id !== "string" || !manifestDocument.id.trim()) {
-      return { ok: false, message: "Workspace import failed: id is required." };
+    if (!Array.isArray(workspaceDocument.games)) {
+      return { ok: false, message: "Workspace import failed: games must be an array." };
     }
-    if (typeof manifestDocument.name !== "string" || !manifestDocument.name.trim()) {
-      return { ok: false, message: "Workspace import failed: name is required." };
+    if (workspaceDocument.games.length === 0) {
+      return { ok: false, message: "Workspace import failed: games must include at least one workspace session entry." };
     }
-    if (!manifestDocument.tools || typeof manifestDocument.tools !== "object" || Array.isArray(manifestDocument.tools)) {
-      return { ok: false, message: "Workspace import failed: tools must be an object." };
+    let hasActiveSessionEntry = false;
+    for (const gameEntry of workspaceDocument.games) {
+      if (!gameEntry || typeof gameEntry !== "object" || Array.isArray(gameEntry)) {
+        return { ok: false, message: "Workspace import failed: each games entry must be an object." };
+      }
+      const allowedGameKeys = new Set(["id", "level", "tool", "tools", "palette", "session"]);
+      for (const key of Object.keys(gameEntry)) {
+        if (!allowedGameKeys.has(key)) {
+          return { ok: false, message: `Workspace import failed: games entry field '${key}' is not allowed by tools/schemas/workspace.schema.json.` };
+        }
+      }
+      if (typeof gameEntry.id !== "string" || !gameEntry.id.trim()) {
+        return { ok: false, message: "Workspace import failed: games entry id is required." };
+      }
+      if (typeof gameEntry.level !== "string" || !gameEntry.level.trim()) {
+        return { ok: false, message: "Workspace import failed: games entry level is required." };
+      }
+      if (typeof gameEntry.tool !== "string" || !gameEntry.tool.trim()) {
+        return { ok: false, message: "Workspace import failed: games entry tool is required." };
+      }
+      if (!gameEntry.session || typeof gameEntry.session !== "object" || Array.isArray(gameEntry.session)) {
+        return { ok: false, message: `Workspace import failed: games entry '${gameEntry.id}' is missing session object.` };
+      }
+      const sessionKeys = Object.keys(gameEntry.session);
+      const allowedSessionKeys = new Set(["hostContextId", "payload"]);
+      for (const key of sessionKeys) {
+        if (!allowedSessionKeys.has(key)) {
+          return { ok: false, message: `Workspace import failed: games entry '${gameEntry.id}' session field '${key}' is not allowed.` };
+        }
+      }
+      if (typeof gameEntry.session.hostContextId !== "string" || !gameEntry.session.hostContextId.trim()) {
+        return { ok: false, message: `Workspace import failed: games entry '${gameEntry.id}' session hostContextId is required.` };
+      }
+      if (!this.isValidSessionPayload(gameEntry.session.payload)) {
+        return { ok: false, message: `Workspace import failed: games entry '${gameEntry.id}' session payload is invalid.` };
+      }
+      if (gameEntry.level === "workspace-v2-active-session") {
+        hasActiveSessionEntry = true;
+      }
     }
-    if (!manifestDocument.workspaceV2Session || typeof manifestDocument.workspaceV2Session !== "object" || Array.isArray(manifestDocument.workspaceV2Session)) {
-      return { ok: false, message: "Workspace import failed: workspaceV2Session is required." };
-    }
-    if (manifestDocument.workspaceV2Session.schema !== "html-js-gaming.workspace-v2-session/1") {
-      return { ok: false, message: "Workspace import failed: unsupported workspaceV2Session schema." };
-    }
-    if (
-      Object.prototype.hasOwnProperty.call(manifestDocument.workspaceV2Session, "sessionHistory") ||
-      Object.prototype.hasOwnProperty.call(manifestDocument.workspaceV2Session, "sessionSelection") ||
-      Object.prototype.hasOwnProperty.call(manifestDocument.workspaceV2Session, "mergeAuditLog") ||
-      Object.prototype.hasOwnProperty.call(manifestDocument.workspaceV2Session, "activeSessionPayload")
-    ) {
-      return { ok: false, message: "Workspace import failed: runtime-only fields are not allowed in portable workspace payload." };
-    }
-    const activeToolId = typeof manifestDocument.workspaceV2Session.activeToolId === "string" ? manifestDocument.workspaceV2Session.activeToolId.trim() : "";
-    const activeHostContextId = typeof manifestDocument.workspaceV2Session.activeHostContextId === "string" ? manifestDocument.workspaceV2Session.activeHostContextId.trim() : "";
-    if (!activeToolId || !activeHostContextId) {
-      return { ok: false, message: "Workspace import failed: active tool/session identity is missing." };
-    }
-    if (!manifestDocument.workspaceV2Session.toolSessions || typeof manifestDocument.workspaceV2Session.toolSessions !== "object" || Array.isArray(manifestDocument.workspaceV2Session.toolSessions)) {
-      return { ok: false, message: "Workspace import failed: missing toolSessions map." };
-    }
-    if (!Object.prototype.hasOwnProperty.call(manifestDocument.workspaceV2Session.toolSessions, activeToolId)) {
-      return { ok: false, message: "Workspace import failed: active tool is missing from toolSessions." };
-    }
-    const activeToolSessions = manifestDocument.workspaceV2Session.toolSessions[activeToolId];
-    if (!activeToolSessions || typeof activeToolSessions !== "object" || Array.isArray(activeToolSessions)) {
-      return { ok: false, message: "Workspace import failed: active tool sessions are invalid." };
-    }
-    if (!Object.prototype.hasOwnProperty.call(activeToolSessions, activeHostContextId)) {
-      return { ok: false, message: "Workspace import failed: active hostContextId is missing from toolSessions." };
-    }
-    const activePayload = activeToolSessions[activeHostContextId];
-    if (!this.isValidSessionPayload(activePayload)) {
-      return { ok: false, message: "Workspace import failed: active payload is invalid." };
+    if (!hasActiveSessionEntry) {
+      return { ok: false, message: "Workspace import failed: one games entry with level 'workspace-v2-active-session' is required." };
     }
     return { ok: true, message: "" };
   }
@@ -3011,37 +3077,40 @@ class WorkspaceV2SessionProducer {
     }
     try {
       const parsed = JSON.parse(rawJson);
-      const validation = this.validateWorkspaceManifestDocument(parsed);
+      const validation = this.validateWorkspaceSchemaDocument(parsed);
       if (!validation.ok) {
         this.statusNode.textContent = validation.message;
         return;
       }
-      const activeToolId = parsed.workspaceV2Session.activeToolId.trim();
-      const activeHostContextId = parsed.workspaceV2Session.activeHostContextId.trim();
-      const activePayload = parsed.workspaceV2Session.toolSessions[activeToolId][activeHostContextId];
-      Object.keys(parsed.workspaceV2Session.toolSessions).forEach((toolId) => {
-        const sessionMap = parsed.workspaceV2Session.toolSessions[toolId];
-        if (!sessionMap || typeof sessionMap !== "object" || Array.isArray(sessionMap)) {
+      const savedSessions = {};
+      let activeEntry = null;
+      parsed.games.forEach((gameEntry) => {
+        const hostContextId = gameEntry.session.hostContextId.trim();
+        const payload = gameEntry.session.payload;
+        sessionStorage.setItem(hostContextId, JSON.stringify(payload));
+        if (gameEntry.level === "workspace-v2-active-session" && !activeEntry) {
+          activeEntry = {
+            hostContextId,
+            toolId: gameEntry.tool.trim(),
+            payload
+          };
           return;
         }
-        Object.keys(sessionMap).forEach((sessionId) => {
-          const payload = sessionMap[sessionId];
-          if (!this.isValidSessionPayload(payload)) {
-            return;
-          }
-          sessionStorage.setItem(sessionId, JSON.stringify(payload));
-        });
+        if (gameEntry.level === "workspace-v2-saved-session") {
+          savedSessions[gameEntry.id.trim()] = this.cloneSessionValue(payload);
+        }
       });
-      const savedSessions = parsed.workspaceV2Session.savedSessions;
-      if (savedSessions && typeof savedSessions === "object" && !Array.isArray(savedSessions)) {
-        localStorage.setItem(this.libraryStorageKey, JSON.stringify(savedSessions));
+      if (!activeEntry) {
+        this.statusNode.textContent = "Workspace import failed: active workspace session entry is missing.";
+        return;
       }
-      this.currentHostContextId = activeHostContextId;
-      this.setCurrentSessionPayload(activePayload, "workspace-import");
-      this.importJsonNode.value = JSON.stringify(activePayload, null, 2);
-      const hasToolOption = Array.from(this.toolSelect.options).some((option) => option.value === activeToolId);
+      localStorage.setItem(this.libraryStorageKey, JSON.stringify(savedSessions));
+      this.currentHostContextId = activeEntry.hostContextId;
+      this.setCurrentSessionPayload(activeEntry.payload, "workspace-import");
+      this.importJsonNode.value = JSON.stringify(activeEntry.payload, null, 2);
+      const hasToolOption = Array.from(this.toolSelect.options).some((option) => option.value === activeEntry.toolId);
       if (hasToolOption) {
-        this.toolSelect.value = activeToolId;
+        this.toolSelect.value = activeEntry.toolId;
       }
       this.renderSessionLibrary();
       this.renderSessionHistory();
