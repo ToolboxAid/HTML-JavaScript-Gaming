@@ -3,7 +3,7 @@
 ## Breadcrumb Behavior
 Added breadcrumb UI to V2 tools (including `workspace-v2`) with visible top-area context text:
 - `workspace-v2`: `Workspace V2`
-- `asset-browser-v2`: `Workspace V2 -> <source> -> Asset Browser V2`
+- `asset-manager-v2`: `Workspace V2 -> <source> -> Asset Browser V2`
 - `palette-manager-v2`: `Workspace V2 -> <source> -> Palette Manager V2`
 - `svg-asset-studio-v2`: `Workspace V2 -> <source> -> SVG Asset Studio V2`
 - `tilemap-studio-v2`: `Workspace V2 -> <source> -> Tilemap Studio V2`
@@ -28,9 +28,9 @@ This enables predictable back traversal without session mutation.
 Runtime test: `tests/runtime/V2BackNav.test.mjs`
 
 Simulated flows:
-1. `workspace-v2 -> asset-browser-v2 -> svg-asset-studio-v2`
+1. `workspace-v2 -> asset-manager-v2 -> svg-asset-studio-v2`
 2. `workspace-v2 -> palette-manager-v2 -> vector-map-editor-v2`
-3. `workspace-v2 -> tilemap-studio-v2 -> asset-browser-v2`
+3. `workspace-v2 -> tilemap-studio-v2 -> asset-manager-v2`
 
 Validated for each flow:
 - Forward URLs include required target path.
@@ -45,8 +45,8 @@ Output:
 ## Files Changed
 - `tools/workspace-v2/index.html`
 - `tools/workspace-v2/index.js`
-- `tools/asset-browser-v2/index.html`
-- `tools/asset-browser-v2/index.js`
+- `tools/asset-manager-v2/index.html`
+- `tools/asset-manager-v2/index.js`
 - `tools/palette-manager-v2/index.html`
 - `tools/palette-manager-v2/index.js`
 - `tools/svg-asset-studio-v2/index.html`
@@ -67,7 +67,7 @@ Output:
    - Result: **FAIL** in PowerShell wildcard expansion (`*` passed literally to Node)
 4. Equivalent per-file syntax checks:
    - `node --check tools/workspace-v2/index.js` — **PASS**
-   - `node --check tools/asset-browser-v2/index.js` — **PASS**
+   - `node --check tools/asset-manager-v2/index.js` — **PASS**
    - `node --check tools/palette-manager-v2/index.js` — **PASS**
    - `node --check tools/svg-asset-studio-v2/index.js` — **PASS**
    - `node --check tools/tilemap-studio-v2/index.js` — **PASS**

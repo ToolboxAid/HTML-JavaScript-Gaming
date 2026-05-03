@@ -12,7 +12,7 @@ const fixturesRoot = path.join(repoRoot, "tests", "fixtures", "v2-tools");
 const resultsPath = path.join(repoRoot, "tmp", "v2-session-validation-results.json");
 
 const TOOLS = [
-  "asset-browser-v2",
+  "asset-manager-v2",
   "palette-manager-v2",
   "svg-asset-studio-v2",
   "tilemap-studio-v2",
@@ -229,7 +229,7 @@ function validateVectorMapEditor(sessionContext) {
 }
 
 function validateByTool(toolId, sessionContext) {
-  if (toolId === "asset-browser-v2") return validateAssetBrowser(sessionContext);
+  if (toolId === "asset-manager-v2") return validateAssetBrowser(sessionContext);
   if (toolId === "palette-manager-v2") return validatePaletteManager(sessionContext);
   if (toolId === "svg-asset-studio-v2") return validateSvgAssetStudio(sessionContext);
   if (toolId === "tilemap-studio-v2") return validateTilemapStudio(sessionContext);
@@ -247,7 +247,7 @@ function buildMissingRequiredShape(toolId, validSessionContext) {
     broken.payloadJson = {};
     return broken;
   }
-  if (toolId === "asset-browser-v2") delete broken.payloadJson.assetCatalog;
+  if (toolId === "asset-manager-v2") delete broken.payloadJson.assetCatalog;
   if (toolId === "svg-asset-studio-v2") delete broken.payloadJson.vectorAssetDocument;
   if (toolId === "tilemap-studio-v2") delete broken.payloadJson.tileMapDocument;
   if (toolId === "vector-map-editor-v2") delete broken.payloadJson.vectorMapDocument;

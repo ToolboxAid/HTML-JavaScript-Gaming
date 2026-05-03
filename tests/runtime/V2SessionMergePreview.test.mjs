@@ -160,7 +160,7 @@ export function run() {
   if (!jsHasConflictBlock) failures.push("Missing conflict block message in apply flow.");
 
   const conflictSource = {
-    toolId: "asset-browser-v2",
+    toolId: "asset-manager-v2",
     payloadJson: {
       shared: "same",
       onlySource: { a: 1 },
@@ -168,7 +168,7 @@ export function run() {
     }
   };
   const conflictTarget = {
-    toolId: "asset-browser-v2",
+    toolId: "asset-manager-v2",
     payloadJson: {
       shared: "same",
       onlyTarget: { b: 1 },
@@ -176,14 +176,14 @@ export function run() {
     }
   };
   const cleanSource = {
-    toolId: "asset-browser-v2",
+    toolId: "asset-manager-v2",
     payloadJson: {
       shared: "same",
       onlySource: { a: 1 }
     }
   };
   const cleanTarget = {
-    toolId: "asset-browser-v2",
+    toolId: "asset-manager-v2",
     payloadJson: {
       shared: "same",
       onlyTarget: { b: 1 }
@@ -200,7 +200,7 @@ export function run() {
     failures.push("Preview mutated source/target payloads.");
   }
 
-  const blockedApply = applyMergePreview(conflictPreview, "asset-browser-v2", storage);
+  const blockedApply = applyMergePreview(conflictPreview, "asset-manager-v2", storage);
   if (blockedApply.applied) {
     failures.push("Conflict preview should block apply.");
   }
@@ -208,7 +208,7 @@ export function run() {
     failures.push("Conflict apply block reason mismatch.");
   }
 
-  const cleanApply = applyMergePreview(cleanPreview, "asset-browser-v2", storage);
+  const cleanApply = applyMergePreview(cleanPreview, "asset-manager-v2", storage);
   if (!cleanApply.applied) {
     failures.push("Clean preview should proceed to apply.");
   }

@@ -12,7 +12,7 @@ const fixturesRoot = path.join(repoRoot, "tests", "fixtures", "v2-tools");
 const resultsPath = path.join(repoRoot, "tmp", "v2-session-persistence-results.json");
 
 const TOOLS = [
-  "asset-browser-v2",
+  "asset-manager-v2",
   "palette-manager-v2",
   "svg-asset-studio-v2",
   "tilemap-studio-v2",
@@ -56,7 +56,7 @@ function classifyToolState(toolId, hostContextId, sessionContext) {
     return "EMPTY";
   }
 
-  if (toolId === "asset-browser-v2") {
+  if (toolId === "asset-manager-v2") {
     const catalog = sessionContext?.payloadJson?.assetCatalog;
     if (!catalog || typeof catalog !== "object" || Array.isArray(catalog)) return "INVALID";
     if (typeof catalog.name !== "string" || !catalog.name.trim()) return "INVALID";
@@ -179,7 +179,7 @@ function buildInvalidSession(toolId, sessionContext) {
   }
 
   const invalidSessionContext = { ...sessionContext };
-  if (toolId === "asset-browser-v2" || toolId === "svg-asset-studio-v2" || toolId === "tilemap-studio-v2" || toolId === "vector-map-editor-v2") {
+  if (toolId === "asset-manager-v2" || toolId === "svg-asset-studio-v2" || toolId === "tilemap-studio-v2" || toolId === "vector-map-editor-v2") {
     invalidSessionContext.payloadJson = {};
   }
   if (toolId === "palette-manager-v2") {

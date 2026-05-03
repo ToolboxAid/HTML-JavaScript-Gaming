@@ -4,7 +4,7 @@
 Complete Asset Browser V2 strict JSON behavior with explicit valid-empty handling and strict rejection of invalid/legacy payload fields.
 
 ## Files Changed
-- `tools/asset-browser-v2/index.js`
+- `tools/asset-manager-v2/index.js`
 - `tests/runtime/V2AssetBrowserStrictJson.test.mjs`
 - `docs/pr/PR_11_313_ASSET_BROWSER_V2_STRICT_JSON_BEHAVIOR/PLAN_PR.md`
 - `docs/pr/PR_11_313_ASSET_BROWSER_V2_STRICT_JSON_BEHAVIOR/BUILD_PR.md`
@@ -22,7 +22,7 @@ Complete Asset Browser V2 strict JSON behavior with explicit valid-empty handlin
 - Added targeted runtime test coverage for strict JSON behavior and failure modes.
 
 ## Validation Commands Run
-- `node --check tools/asset-browser-v2/index.js` -> **PASS**
+- `node --check tools/asset-manager-v2/index.js` -> **PASS**
 - `node --check tests/runtime/V2AssetBrowserStrictJson.test.mjs` -> **PASS**
 - `node tests/runtime/V2AssetBrowserStrictJson.test.mjs` -> **PASS**
 - `node tests/runtime/LaunchSmokeAllEntries.test.mjs --samples --sample-range=1505-1505` -> **PASS**

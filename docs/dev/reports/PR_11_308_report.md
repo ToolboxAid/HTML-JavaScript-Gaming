@@ -15,7 +15,7 @@ Remove palette-manager from Workspace V2 Producer selection, remove duplicate te
   - import validates/loads automatically
 - Added manual textarea fallback only when file picker is unavailable and textarea has JSON.
 - Removed `palette-manager-v2` option from the Producer tool dropdown at runtime.
-- Updated Producer default selection to a non-palette tool (`asset-browser-v2`) with first-option fallback.
+- Updated Producer default selection to a non-palette tool (`asset-manager-v2`) with first-option fallback.
 
 ## Validation Commands
 - `node --check tools/workspace-v2/index.js`

@@ -31,7 +31,7 @@ Example entries displayed by viewer:
 ```json
 [
   {
-    "tool": "asset-browser-v2",
+    "tool": "asset-manager-v2",
     "type": "EMPTY",
     "message": "No hostContextId was provided for this tool.",
     "details": { "hostContextId": "" },

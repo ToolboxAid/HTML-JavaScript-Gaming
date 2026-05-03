@@ -1,7 +1,7 @@
 # PR_11_209 Report — V2 Session Storage Backing (Deterministic) + Test
 
 ## Files Changed
-- `tools/asset-browser-v2/index.js`
+- `tools/asset-manager-v2/index.js`
 - `tools/palette-manager-v2/index.js`
 - `tools/svg-asset-studio-v2/index.js`
 - `tools/tilemap-studio-v2/index.js`
@@ -9,7 +9,7 @@
 - `tests/runtime/V2SessionStorage.test.mjs`
 
 ## Tools Validated
-- `asset-browser-v2`
+- `asset-manager-v2`
 - `palette-manager-v2`
 - `svg-asset-studio-v2`
 - `tilemap-studio-v2`
@@ -38,7 +38,7 @@
 3. `node --check tools/*-v2/index.js`  
    - Result: **FAIL** in PowerShell (`*` passed literally to Node module loader)
 4. Equivalent per-tool syntax checks:
-   - `node --check tools/asset-browser-v2/index.js` — **PASS**
+   - `node --check tools/asset-manager-v2/index.js` — **PASS**
    - `node --check tools/palette-manager-v2/index.js` — **PASS**
    - `node --check tools/svg-asset-studio-v2/index.js` — **PASS**
    - `node --check tools/tilemap-studio-v2/index.js` — **PASS**

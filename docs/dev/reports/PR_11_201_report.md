@@ -1,7 +1,7 @@
 # PR_11_201 Report
 
 ## Tools Tested
-- `tools/asset-browser-v2/index.js`
+- `tools/asset-manager-v2/index.js`
 - `tools/palette-manager-v2/index.js`
 - `tools/svg-asset-studio-v2/index.js`
 - `tools/tilemap-studio-v2/index.js`
@@ -9,7 +9,7 @@
 
 ## Files Changed
 - `tools/index.html`
-- `tools/asset-browser-v2/index.js`
+- `tools/asset-manager-v2/index.js`
 - `tools/palette-manager-v2/index.js`
 - `tools/svg-asset-studio-v2/index.js`
 - `tools/tilemap-studio-v2/index.js`
@@ -24,14 +24,14 @@
   - valid `hostContextId` with valid session payload -> normal render path
 
 ## Validation Commands
-- `node --check tools/asset-browser-v2/index.js`
+- `node --check tools/asset-manager-v2/index.js`
 - `node --check tools/palette-manager-v2/index.js`
 - `node --check tools/svg-asset-studio-v2/index.js`
 - `node --check tools/tilemap-studio-v2/index.js`
 - `node --check tools/vector-map-editor-v2/index.js`
 
 ## Validation Results
-- `node --check tools/asset-browser-v2/index.js`: **PASS**
+- `node --check tools/asset-manager-v2/index.js`: **PASS**
 - `node --check tools/palette-manager-v2/index.js`: **PASS**
 - `node --check tools/svg-asset-studio-v2/index.js`: **PASS**
 - `node --check tools/tilemap-studio-v2/index.js`: **PASS**
@@ -43,7 +43,7 @@
 - Scenario 1 (no parameters): **PASS** (code-path inspection: `renderMissing(...)` when `hostContextId` is absent)
 - Scenario 2 (invalid `hostContextId`): **PASS** (code-path inspection: `renderError(...)` with actionable message when session key is missing)
 - Scenario 3 (valid `hostContextId`): **PASS** (code-path inspection: resolves `toolboxaid.toolHost.context.<id>`, parses JSON, validates `payloadJson.assetCatalog`, renders)
-- Scenario 4 (open from tools index): **PASS** (link points to `./asset-browser-v2/index.html`)
+- Scenario 4 (open from tools index): **PASS** (link points to `./asset-manager-v2/index.html`)
 
 ### Palette Manager V2
 - Scenario 1 (no parameters): **PASS** (code-path inspection: `renderMissing(...)`)

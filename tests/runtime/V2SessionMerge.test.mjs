@@ -105,7 +105,7 @@ export function run() {
 
   const payloadA = {
     version: "v2",
-    toolId: "asset-browser-v2",
+    toolId: "asset-manager-v2",
     payloadJson: {
       shared: "same",
       onlyA: { enabled: true },
@@ -115,7 +115,7 @@ export function run() {
   };
   const payloadB = {
     version: "v2",
-    toolId: "asset-browser-v2",
+    toolId: "asset-manager-v2",
     payloadJson: {
       shared: "same",
       onlyB: { enabled: true },

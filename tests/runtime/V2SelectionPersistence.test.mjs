@@ -100,8 +100,8 @@ export function run() {
   if (!hasResetHook) failures.push("Missing reset hook that clears persisted selection.");
 
   const entries = [
-    { id: "history:ctx-a", contextId: "ctx-a", payload: { toolId: "asset-browser-v2", payloadJson: { a: 1 } } },
-    { id: "history:ctx-b", contextId: "ctx-b", payload: { toolId: "asset-browser-v2", payloadJson: { b: 2 } } }
+    { id: "history:ctx-a", contextId: "ctx-a", payload: { toolId: "asset-manager-v2", payloadJson: { a: 1 } } },
+    { id: "history:ctx-b", contextId: "ctx-b", payload: { toolId: "asset-manager-v2", payloadJson: { b: 2 } } }
   ];
   const store = {};
 
@@ -116,7 +116,7 @@ export function run() {
     failures.push("Valid persisted selections were not restored.");
   }
 
-  const deletedEntries = [{ id: "history:ctx-a", contextId: "ctx-a", payload: { toolId: "asset-browser-v2", payloadJson: { a: 1 } } }];
+  const deletedEntries = [{ id: "history:ctx-a", contextId: "ctx-a", payload: { toolId: "asset-manager-v2", payloadJson: { a: 1 } } }];
   const deletedRestore = resolvePersistedSelectionIds(deletedEntries, store);
   if (deletedRestore.leftId || deletedRestore.rightId) {
     failures.push("Deleted/missing sessions should not restore.");

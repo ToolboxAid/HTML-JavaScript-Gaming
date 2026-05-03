@@ -9,7 +9,7 @@
 - `SVG Asset Studio V2` -> `/tools/svg-asset-studio-v2/index.html`
 - `Vector Map Editor V2` -> `/tools/vector-map-editor-v2/index.html`
 - `Tilemap Studio V2` -> `/tools/tilemap-studio-v2/index.html`
-- `Asset Browser V2` -> `/tools/asset-browser-v2/index.html`
+- `Asset Browser V2` -> `/tools/asset-manager-v2/index.html`
 
 All entries explicitly include `V2`, route directly to V2 tool `index.html`, and do not alias to legacy tool paths.
 
@@ -23,7 +23,7 @@ All entries explicitly include `V2`, route directly to V2 tool `index.html`, and
   - `/tools/svg-asset-studio-v2/index.html`
   - `/tools/vector-map-editor-v2/index.html`
   - `/tools/tilemap-studio-v2/index.html`
-  - `/tools/asset-browser-v2/index.html`
+  - `/tools/asset-manager-v2/index.html`
 - No V1 label reuse for these entries (all show explicit `V2` suffix text in entry titles).
 
 ## Full Smoke Decision

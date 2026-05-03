@@ -26,7 +26,7 @@ Validated:
    - no broken paths
 
 Tools validated:
-- `asset-browser-v2`
+- `asset-manager-v2`
 - `palette-manager-v2`
 - `svg-asset-studio-v2`
 - `tilemap-studio-v2`

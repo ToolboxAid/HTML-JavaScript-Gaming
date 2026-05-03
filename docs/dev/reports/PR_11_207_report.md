@@ -2,7 +2,7 @@
 
 ## Files Changed
 - `tests/runtime/V2UrlState.test.mjs`
-- `tools/asset-browser-v2/index.js`
+- `tools/asset-manager-v2/index.js`
 - `tools/palette-manager-v2/index.js`
 - `tools/svg-asset-studio-v2/index.js`
 - `tools/tilemap-studio-v2/index.js`
@@ -10,7 +10,7 @@
 - `docs/dev/reports/PR_11_207_report.md`
 
 ## Tools Validated
-- `asset-browser-v2`
+- `asset-manager-v2`
 - `palette-manager-v2`
 - `svg-asset-studio-v2`
 - `tilemap-studio-v2`

@@ -59,7 +59,7 @@ export function run() {
 
   const initialLibrary = {
     "saved-1": { version: "v2", toolId: "palette-manager-v2", payloadJson: { original: true } },
-    "saved-2": { version: "v2", toolId: "asset-browser-v2", payloadJson: { untouched: true } }
+    "saved-2": { version: "v2", toolId: "asset-manager-v2", payloadJson: { untouched: true } }
   };
   const activePayload = { version: "v2", toolId: "palette-manager-v2", payloadJson: { updated: true } };
 

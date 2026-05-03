@@ -13,7 +13,7 @@ const toolsIndexPath = path.join(toolsRoot, "index.html");
 const resultsPath = path.join(repoRoot, "tmp", "v2-tool-launch-results.json");
 
 const REQUIRED_V2_TOOLS = [
-  "asset-browser-v2",
+  "asset-manager-v2",
   "palette-manager-v2",
   "svg-asset-studio-v2",
   "tilemap-studio-v2",
@@ -40,7 +40,7 @@ function hasToolSpecificPayload(toolId, fixtureJson) {
   if (!sessionContext || typeof sessionContext !== "object" || Array.isArray(sessionContext)) {
     return false;
   }
-  if (toolId === "asset-browser-v2") {
+  if (toolId === "asset-manager-v2") {
     return Boolean(sessionContext?.payloadJson?.assetCatalog);
   }
   if (toolId === "palette-manager-v2") {

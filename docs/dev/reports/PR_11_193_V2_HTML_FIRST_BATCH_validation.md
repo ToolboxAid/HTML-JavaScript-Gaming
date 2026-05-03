@@ -10,7 +10,7 @@ Batch-correct and verify the active V2 tool lane so `index.html` owns static she
 
 ## Listed V2 Folders Not Present
 - `tools/tilemap-studio-v2/` - NOT PRESENT - SKIPPED
-- `tools/asset-browser-v2/` - NOT PRESENT - SKIPPED
+- `tools/asset-manager-v2/` - NOT PRESENT - SKIPPED
 
 No unrelated scaffolding was created for absent V2 tools.
 
@@ -70,7 +70,7 @@ Results:
 
 Skipped commands:
 - `node --check tools/tilemap-studio-v2/index.js` - NOT PRESENT - SKIPPED
-- `node --check tools/asset-browser-v2/index.js` - NOT PRESENT - SKIPPED
+- `node --check tools/asset-manager-v2/index.js` - NOT PRESENT - SKIPPED
 
 ## Additional Guard Checks
 - HTML/JS compliance scan passed for the three active V2 folders.

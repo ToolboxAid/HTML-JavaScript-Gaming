@@ -94,9 +94,9 @@ export function run() {
     }
   }
 
-  const history = [{ hostContextId: "recent-only", tool: "asset-browser-v2", timestamp: "2026-05-01T00:00:00.000Z", payload: { toolId: "asset-browser-v2", version: "v2" } }];
+  const history = [{ hostContextId: "recent-only", tool: "asset-manager-v2", timestamp: "2026-05-01T00:00:00.000Z", payload: { toolId: "asset-manager-v2", version: "v2" } }];
   const recentBefore = JSON.stringify(history);
-  const storageBefore = { "recent-only": "{\"toolId\":\"asset-browser-v2\",\"version\":\"v2\"}" };
+  const storageBefore = { "recent-only": "{\"toolId\":\"asset-manager-v2\",\"version\":\"v2\"}" };
   const storageAfter = { ...storageBefore };
 
   const emptyInputCase = evaluateDeleteFeedback("", {}, history);
@@ -119,7 +119,7 @@ export function run() {
     failures.push("Unknown id did not produce required explicit message.");
   }
 
-  const savedDeleteCase = evaluateDeleteFeedback("saved-id", { "saved-id": { toolId: "palette-manager-v2", version: "v2" }, "saved-2": { toolId: "asset-browser-v2", version: "v2" } }, history);
+  const savedDeleteCase = evaluateDeleteFeedback("saved-id", { "saved-id": { toolId: "palette-manager-v2", version: "v2" }, "saved-2": { toolId: "asset-manager-v2", version: "v2" } }, history);
   if (savedDeleteCase.message !== "Saved session deleted.") {
     failures.push("Saved session delete did not produce success message.");
   }

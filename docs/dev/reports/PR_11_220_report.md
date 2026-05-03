@@ -6,7 +6,7 @@
 
 ## Measurement Scope
 Baseline-only runtime measurement (no optimization pass) for:
-- `asset-browser-v2`
+- `asset-manager-v2`
 - `palette-manager-v2`
 - `svg-asset-studio-v2`
 - `tilemap-studio-v2`
@@ -31,7 +31,7 @@ Result: **FAIL** on Windows/Node wildcard resolution (`MODULE_NOT_FOUND` for lit
 Result: **PASS** for all detected V2 tool JS files
 
 ## Timing Results Per Tool (ms)
-- `asset-browser-v2`: load `0.190`, session `0.183`, render `0.077`, total `0.576`
+- `asset-manager-v2`: load `0.190`, session `0.183`, render `0.077`, total `0.576`
 - `palette-manager-v2`: load `0.095`, session `0.207`, render `0.079`, total `0.398`
 - `svg-asset-studio-v2`: load `0.109`, session `0.133`, render `0.080`, total `0.334`
 - `tilemap-studio-v2`: load `0.103`, session `0.133`, render `0.058`, total `0.309`

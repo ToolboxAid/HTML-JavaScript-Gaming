@@ -8,7 +8,7 @@
 - Updated palette fixture to strict payloadJson contract for targeted validation.
 
 ## Validation
-- `node --check tools/asset-browser-v2/index.js`
+- `node --check tools/asset-manager-v2/index.js`
 - `node --check tools/palette-manager-v2/index.js`
 - `node --check tools/svg-asset-studio-v2/index.js`
 - `node --check tools/tilemap-studio-v2/index.js`

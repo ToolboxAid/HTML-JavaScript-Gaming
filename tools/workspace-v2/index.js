@@ -399,7 +399,7 @@ class WorkspaceV2SessionProducer {
     if (!this.toolSelect) {
       return;
     }
-    const defaultToolId = "asset-browser-v2";
+    const defaultToolId = "asset-manager-v2";
     const hasDefaultOption = Array.from(this.toolSelect.options).some((option) => option.value === defaultToolId);
     if (hasDefaultOption) {
       this.toolSelect.value = defaultToolId;
@@ -3518,7 +3518,7 @@ class WorkspaceV2SessionProducer {
     }
     const toolId = sessionPayload.toolId.trim();
     const allowedToolIds = new Set([
-      "asset-browser-v2",
+      "asset-manager-v2",
       "palette-manager-v2",
       "svg-asset-studio-v2",
       "tilemap-studio-v2",
@@ -3955,7 +3955,7 @@ class WorkspaceV2SessionProducer {
       return;
     }
     const assetManagerPayload = this.withSessionVersion({
-      toolId: "asset-browser-v2",
+      toolId: "asset-manager-v2",
       payloadJson: this.cloneSessionValue(this.currentSessionPayload.payloadJson)
     });
     const payloadValidation = this.validateWorkspaceToolSessionPayload(assetManagerPayload, "assetManagerLaunch");
@@ -3964,7 +3964,7 @@ class WorkspaceV2SessionProducer {
       return;
     }
     const activation = this.activateWorkspaceSession(
-      this.createHostContextId("asset-browser-v2"),
+      this.createHostContextId("asset-manager-v2"),
       assetManagerPayload,
       "workspace-v2-asset-manager-launch"
     );
@@ -3973,9 +3973,9 @@ class WorkspaceV2SessionProducer {
       return;
     }
     const hostContextId = this.currentHostContextId;
-    this.addRecentSessionEntry(hostContextId, "asset-browser-v2", activation.payload);
-    const launchUrl = this.buildToolLaunchUrl("asset-browser-v2", hostContextId);
-    this.statusNode.textContent = `Session created.\nTool: asset-browser-v2\nHostContextId: ${hostContextId}\nURL: tools/asset-browser-v2/index.html?hostContextId=${hostContextId}`;
+    this.addRecentSessionEntry(hostContextId, "asset-manager-v2", activation.payload);
+    const launchUrl = this.buildToolLaunchUrl("asset-manager-v2", hostContextId);
+    this.statusNode.textContent = `Session created.\nTool: asset-manager-v2\nHostContextId: ${hostContextId}\nURL: tools/asset-manager-v2/index.html?hostContextId=${hostContextId}`;
     window.location.href = launchUrl;
   }
 }

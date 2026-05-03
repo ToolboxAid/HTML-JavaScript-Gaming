@@ -7,8 +7,8 @@ import { fileURLToPath, pathToFileURL } from "node:url";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const repoRoot = path.resolve(__dirname, "..", "..");
-const fixturePath = path.join(repoRoot, "tests", "fixtures", "v2-tools", "asset-browser-v2.json");
-const toolJsPath = path.join(repoRoot, "tools", "asset-browser-v2", "index.js");
+const fixturePath = path.join(repoRoot, "tests", "fixtures", "v2-tools", "asset-manager-v2.json");
+const toolJsPath = path.join(repoRoot, "tools", "asset-manager-v2", "index.js");
 const resultsPath = path.join(repoRoot, "tmp", "pr_11_313_asset_browser_results.json");
 
 function cloneJson(value) {
@@ -22,8 +22,8 @@ function validateAssetBrowserSession(sessionContext) {
   if (sessionContext.version !== "v2") {
     return { state: "INVALID", message: "Unsupported session version." };
   }
-  if (typeof sessionContext.toolId !== "string" || sessionContext.toolId.trim() !== "asset-browser-v2") {
-    return { state: "INVALID", message: "Expected toolId 'asset-browser-v2'." };
+  if (typeof sessionContext.toolId !== "string" || sessionContext.toolId.trim() !== "asset-manager-v2") {
+    return { state: "INVALID", message: "Expected toolId 'asset-manager-v2'." };
   }
   if (!sessionContext.payloadJson || typeof sessionContext.payloadJson !== "object" || Array.isArray(sessionContext.payloadJson)) {
     return { state: "INVALID", message: "Expected payloadJson object." };

@@ -5,7 +5,7 @@
 - `docs/dev/reports/PR_11_205_report.md`
 
 ## Tools Validated
-- `asset-browser-v2`
+- `asset-manager-v2`
 - `palette-manager-v2`
 - `svg-asset-studio-v2`
 - `tilemap-studio-v2`
@@ -51,7 +51,7 @@ Command summary:
 - Requested command run:
   - `node --check tools/*-v2/index.js` -> **FAIL** in PowerShell/Node wildcard resolution context (`MODULE_NOT_FOUND` for literal `*-v2` path)
 - Equivalent per-file validation run:
-  - `node --check tools/asset-browser-v2/index.js` -> **PASS**
+  - `node --check tools/asset-manager-v2/index.js` -> **PASS**
   - `node --check tools/palette-manager-v2/index.js` -> **PASS**
   - `node --check tools/svg-asset-studio-v2/index.js` -> **PASS**
   - `node --check tools/tilemap-studio-v2/index.js` -> **PASS**

@@ -211,23 +211,23 @@ export function run() {
 
   const historyZero = [];
   const historyOne = [
-    { hostContextId: "ctx-1", tool: "asset-browser-v2", timestamp: "2026-05-01T00:00:00.000Z", payload: { toolId: "asset-browser-v2", payloadJson: { x: 1 } } }
+    { hostContextId: "ctx-1", tool: "asset-manager-v2", timestamp: "2026-05-01T00:00:00.000Z", payload: { toolId: "asset-manager-v2", payloadJson: { x: 1 } } }
   ];
   const historyTwo = [
-    { hostContextId: "ctx-1", tool: "asset-browser-v2", timestamp: "2026-05-01T00:00:00.000Z", payload: { toolId: "asset-browser-v2", payloadJson: { x: 1, shared: "yes" } } },
-    { hostContextId: "ctx-2", tool: "asset-browser-v2", timestamp: "2026-05-01T00:01:00.000Z", payload: { toolId: "asset-browser-v2", payloadJson: { y: 2, shared: "yes" } } }
+    { hostContextId: "ctx-1", tool: "asset-manager-v2", timestamp: "2026-05-01T00:00:00.000Z", payload: { toolId: "asset-manager-v2", payloadJson: { x: 1, shared: "yes" } } },
+    { hostContextId: "ctx-2", tool: "asset-manager-v2", timestamp: "2026-05-01T00:01:00.000Z", payload: { toolId: "asset-manager-v2", payloadJson: { y: 2, shared: "yes" } } }
   ];
 
   const zeroCandidates = buildMergeCandidatesFromHistory(historyZero);
   const oneCandidates = buildMergeCandidatesFromHistory(historyOne);
   const twoCandidates = buildMergeCandidatesFromHistory(historyTwo);
 
-  const zeroPreview = previewFromSelections(zeroCandidates, "", "", "asset-browser-v2");
+  const zeroPreview = previewFromSelections(zeroCandidates, "", "", "asset-manager-v2");
   if (zeroPreview.ok || zeroPreview.message !== "Create or reopen at least two Workspace V2 sessions before previewing a merge.") {
     failures.push("Zero valid history sessions should show specific create/reopen message.");
   }
 
-  const onePreview = previewFromSelections(oneCandidates, "", "", "asset-browser-v2");
+  const onePreview = previewFromSelections(oneCandidates, "", "", "asset-manager-v2");
   if (onePreview.ok || onePreview.message !== "Create or reopen at least two Workspace V2 sessions before previewing a merge.") {
     failures.push("One valid history session should show specific create/reopen message.");
   }
@@ -236,12 +236,12 @@ export function run() {
     failures.push("Two valid history sessions should populate both selectors.");
   }
 
-  const samePreview = previewFromSelections(twoCandidates, twoCandidates[0].id, twoCandidates[0].id, "asset-browser-v2");
+  const samePreview = previewFromSelections(twoCandidates, twoCandidates[0].id, twoCandidates[0].id, "asset-manager-v2");
   if (samePreview.ok || !samePreview.message.includes("two different")) {
     failures.push("Same selected history session for A and B should block preview.");
   }
 
-  const validPreview = previewFromSelections(twoCandidates, twoCandidates[0].id, twoCandidates[1].id, "asset-browser-v2");
+  const validPreview = previewFromSelections(twoCandidates, twoCandidates[0].id, twoCandidates[1].id, "asset-manager-v2");
   if (!validPreview.ok || !validPreview.preview) {
     failures.push("Distinct selected history sessions should produce dry-run preview.");
   }

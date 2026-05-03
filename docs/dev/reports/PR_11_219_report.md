@@ -5,7 +5,7 @@
 - `docs/dev/reports/PR_11_219_report.md`
 
 ## Validation Cases Tested
-Per tool (`asset-browser-v2`, `palette-manager-v2`, `svg-asset-studio-v2`, `tilemap-studio-v2`, `vector-map-editor-v2`), the runtime harness tested:
+Per tool (`asset-manager-v2`, `palette-manager-v2`, `svg-asset-studio-v2`, `tilemap-studio-v2`, `vector-map-editor-v2`), the runtime harness tested:
 1. valid fixture payload -> expected `VALID`
 2. malformed JSON -> expected `INVALID`
 3. missing required fields -> expected `INVALID`
@@ -20,7 +20,7 @@ Result: **PASS** (writes `tmp/v2-session-validation-results.json`)
 Result: **FAIL** on Windows/Node CLI wildcard resolution (`MODULE_NOT_FOUND` for literal `tools\\*-v2\\index.js`)
 4. Explicit equivalent per-file syntax sweep for `tools/*-v2/index.js`  
 Result: **PASS** for:
-   - `tools/asset-browser-v2/index.js`
+   - `tools/asset-manager-v2/index.js`
    - `tools/palette-manager-v2/index.js`
    - `tools/svg-asset-studio-v2/index.js`
    - `tools/tilemap-studio-v2/index.js`

@@ -10,7 +10,7 @@ Added a new minimal V2 producer at `tools/workspace-v2/`:
   3. navigates to `tools/<tool>-v2/index.html?hostContextId=<id>` (tool-relative URL generated from workspace path)
 
 ## Tools Launched
-- `asset-browser-v2`
+- `asset-manager-v2`
 - `palette-manager-v2`
 - `svg-asset-studio-v2`
 - `tilemap-studio-v2`

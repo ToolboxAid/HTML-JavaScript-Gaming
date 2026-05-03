@@ -1,8 +1,8 @@
 {
-  "hostContextId": "asset-browser-v2-fixture",
+  "hostContextId": "asset-manager-v2-fixture",
   "sessionContext": {
     "version": "v2",
-    "toolId": "asset-browser-v2",
+    "toolId": "asset-manager-v2",
     "payloadJson": {
       "assetCatalog": {
         "name": "Fixture Asset Catalog",

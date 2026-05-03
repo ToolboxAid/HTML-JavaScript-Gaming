@@ -82,14 +82,14 @@ export function run() {
   const baseState = {
     sessionStorage: {},
     recent: [
-      { hostContextId: "asset-browser-v2-123", tool: "asset-browser-v2", timestamp: "2026-05-01T00:00:00.000Z", payload: { version: "v2", toolId: "asset-browser-v2" } }
+      { hostContextId: "asset-manager-v2-123", tool: "asset-manager-v2", timestamp: "2026-05-01T00:00:00.000Z", payload: { version: "v2", toolId: "asset-manager-v2" } }
     ],
     library: {}
   };
   const mergedPayload = { payloadJson: { combined: true } };
-  const { next, hostContextId, mergedResultPayload } = registerMergedResult(baseState, "asset-browser-v2", mergedPayload, 1777777777777, "abc123xy");
+  const { next, hostContextId, mergedResultPayload } = registerMergedResult(baseState, "asset-manager-v2", mergedPayload, 1777777777777, "abc123xy");
 
-  if (!hostContextId.startsWith("asset-browser-v2-merged-1777777777777-")) {
+  if (!hostContextId.startsWith("asset-manager-v2-merged-1777777777777-")) {
     failures.push("Merged hostContextId format is incorrect.");
   }
   if (!Object.prototype.hasOwnProperty.call(next.sessionStorage, hostContextId)) {
@@ -104,7 +104,7 @@ export function run() {
   if (!next.recent[0].payload.version || next.recent[0].payload.version !== "v2") {
     failures.push("Merged recent payload must include version v2.");
   }
-  if (!next.recent[0].payload.toolId || next.recent[0].payload.toolId !== "asset-browser-v2") {
+  if (!next.recent[0].payload.toolId || next.recent[0].payload.toolId !== "asset-manager-v2") {
     failures.push("Merged recent payload must include toolId.");
   }
 

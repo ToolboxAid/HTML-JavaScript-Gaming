@@ -192,11 +192,11 @@ export function run() {
 
   const libraryEmpty = {};
   const historyEmpty = [];
-  const libraryOne = { only: { toolId: "asset-browser-v2", payloadJson: { a: 1 }, version: "v2" } };
+  const libraryOne = { only: { toolId: "asset-manager-v2", payloadJson: { a: 1 }, version: "v2" } };
   const historyOne = [];
-  const libraryTwo = { left: { toolId: "asset-browser-v2", payloadJson: { a: 1 }, version: "v2" } };
+  const libraryTwo = { left: { toolId: "asset-manager-v2", payloadJson: { a: 1 }, version: "v2" } };
   const historyTwo = [
-    { hostContextId: "ctx-b", tool: "asset-browser-v2", timestamp: "2026-05-01T00:00:00.000Z", payload: { toolId: "asset-browser-v2", payloadJson: { b: 2 }, version: "v2" } }
+    { hostContextId: "ctx-b", tool: "asset-manager-v2", timestamp: "2026-05-01T00:00:00.000Z", payload: { toolId: "asset-manager-v2", payloadJson: { b: 2 }, version: "v2" } }
   ];
 
   const invZero = resolveInventory(libraryEmpty, historyEmpty);
@@ -204,9 +204,9 @@ export function run() {
   const invTwo = resolveInventory(libraryTwo, historyTwo);
 
   const diffZero = computeDiff(invZero, "", "");
-  const mergeZero = mergePreview(invZero, "", "", "asset-browser-v2");
+  const mergeZero = mergePreview(invZero, "", "", "asset-manager-v2");
   const diffOne = computeDiff(invOne, "", "");
-  const mergeOne = mergePreview(invOne, "", "", "asset-browser-v2");
+  const mergeOne = mergePreview(invOne, "", "", "asset-manager-v2");
   if (diffZero.ok || diffZero.message !== "Create or reopen at least two Workspace V2 sessions before comparing.") failures.push("Zero inventory should show single Diff message.");
   if (mergeZero.ok || mergeZero.message !== "Create or reopen at least two Workspace V2 sessions before previewing a merge.") failures.push("Zero inventory should show single Merge message.");
   if (diffOne.ok || diffOne.message !== "Create or reopen at least two Workspace V2 sessions before comparing.") failures.push("One inventory entry should show single Diff message.");
@@ -216,12 +216,12 @@ export function run() {
 
   const diffSame = computeDiff(invTwo, invTwo[0].id, invTwo[0].id);
   if (diffSame.ok || !diffSame.message.includes("must be different")) failures.push("Same-session selection should block Diff.");
-  const mergeSame = mergePreview(invTwo, invTwo[0].id, invTwo[0].id, "asset-browser-v2");
+  const mergeSame = mergePreview(invTwo, invTwo[0].id, invTwo[0].id, "asset-manager-v2");
   if (mergeSame.ok || !mergeSame.message.includes("must be different")) failures.push("Same-session selection should block Merge.");
 
   const diffDistinct = computeDiff(invTwo, invTwo[0].id, invTwo[1].id);
   if (!diffDistinct.ok) failures.push("Distinct selections should allow Compute Diff.");
-  const mergeDistinct = mergePreview(invTwo, invTwo[0].id, invTwo[1].id, "asset-browser-v2");
+  const mergeDistinct = mergePreview(invTwo, invTwo[0].id, invTwo[1].id, "asset-manager-v2");
   if (!mergeDistinct.ok || !mergeDistinct.preview) failures.push("Distinct selections should allow Preview Merge.");
   if (!mergeDistinct.confirmEnabled || mergeDistinct.applyEnabled) failures.push("Valid merge preview should enable confirm and keep apply disabled.");
   const confirmed = confirmPreview(mergeDistinct.preview);

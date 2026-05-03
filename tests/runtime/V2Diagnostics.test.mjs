@@ -189,7 +189,7 @@ export function run() {
   const hostContextId = "diag-host-1";
   const url = `https://example.test/tools/workspace-v2/index.html?hostContextId=${encodeURIComponent(hostContextId)}&view=inspector&panel=diagnostics`;
   const payload = {
-    toolId: "asset-browser-v2",
+    toolId: "asset-manager-v2",
     payloadJson: {
       assetCatalog: {
         name: "Diagnostics Fixture",

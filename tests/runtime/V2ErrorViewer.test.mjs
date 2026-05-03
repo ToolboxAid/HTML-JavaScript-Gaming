@@ -137,7 +137,7 @@ export function run() {
   const now = new Date().toISOString();
   const mockLogs = [
     {
-      tool: "asset-browser-v2",
+      tool: "asset-manager-v2",
       type: "EMPTY",
       message: "No hostContextId was provided.",
       details: { hostContextId: "" },
@@ -181,8 +181,8 @@ export function run() {
   if (!warnings.some((entry) => entry.includes("Ignored 2 invalid error log entries."))) {
     failures.push("Expected warning for ignored invalid entries.");
   }
-  if (!Object.prototype.hasOwnProperty.call(groupedErrorLogs, "asset-browser-v2")) {
-    failures.push("Grouped logs missing asset-browser-v2 bucket.");
+  if (!Object.prototype.hasOwnProperty.call(groupedErrorLogs, "asset-manager-v2")) {
+    failures.push("Grouped logs missing asset-manager-v2 bucket.");
   }
   if (!Object.prototype.hasOwnProperty.call(groupedErrorLogs, "tilemap-studio-v2")) {
     failures.push("Grouped logs missing tilemap-studio-v2 bucket.");

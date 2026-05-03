@@ -2,14 +2,14 @@
 
 ## Files Changed
 - `tests/runtime/V2SessionPersistence.test.mjs`
-- `tools/asset-browser-v2/index.js`
+- `tools/asset-manager-v2/index.js`
 - `tools/palette-manager-v2/index.js`
 - `tools/svg-asset-studio-v2/index.js`
 - `tools/tilemap-studio-v2/index.js`
 - `tools/vector-map-editor-v2/index.js`
 
 ## Tools Validated
-- `asset-browser-v2`
+- `asset-manager-v2`
 - `palette-manager-v2`
 - `svg-asset-studio-v2`
 - `tilemap-studio-v2`
@@ -30,14 +30,14 @@
 3. `node --check tools/*-v2/index.js`  
    - Result: **FAIL** in PowerShell (wildcard passed literally to Node, module not found)
 4. Per-tool equivalent syntax checks:
-   - `node --check tools/asset-browser-v2/index.js` — **PASS**
+   - `node --check tools/asset-manager-v2/index.js` — **PASS**
    - `node --check tools/palette-manager-v2/index.js` — **PASS**
    - `node --check tools/svg-asset-studio-v2/index.js` — **PASS**
    - `node --check tools/tilemap-studio-v2/index.js` — **PASS**
    - `node --check tools/vector-map-editor-v2/index.js` — **PASS**
 
 ## Reload/Back Behavior Results (Pass/Fail Per Tool)
-- `asset-browser-v2`: initial/reload/back-forward state classification stable (**PASS**)
+- `asset-manager-v2`: initial/reload/back-forward state classification stable (**PASS**)
 - `palette-manager-v2`: initial/reload/back-forward state classification stable (**PASS**)
 - `svg-asset-studio-v2`: initial/reload/back-forward state classification stable (**PASS**)
 - `tilemap-studio-v2`: initial/reload/back-forward state classification stable (**PASS**)

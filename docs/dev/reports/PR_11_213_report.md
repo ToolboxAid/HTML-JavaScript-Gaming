@@ -1,7 +1,7 @@
 # PR_11_213 Report — V2 Tool -> Tool Launch Actions (Real UX)
 
 ## Actions Added Per Tool
-- `asset-browser-v2`
+- `asset-manager-v2`
   - UI action: `Open in SVG Asset Studio V2`
   - Control: `#assetBrowserV2OpenSvgAssetStudioV2Button`
   - Target: `tools/svg-asset-studio-v2/index.html?hostContextId=<id>`
@@ -14,7 +14,7 @@
 - `tilemap-studio-v2`
   - UI action: `Open in Asset Browser V2`
   - Control: `#tilemapV2OpenAssetBrowserV2Button`
-  - Target: `tools/asset-browser-v2/index.html?hostContextId=<id>`
+  - Target: `tools/asset-manager-v2/index.html?hostContextId=<id>`
 
 All actions preserve `hostContextId`, do not mutate payload, and do not write fallback data.
 
@@ -40,8 +40,8 @@ Result output:
 - Tilemap Studio V2 -> Asset Browser V2: **PASS**
 
 ## Files Changed
-- `tools/asset-browser-v2/index.html`
-- `tools/asset-browser-v2/index.js`
+- `tools/asset-manager-v2/index.html`
+- `tools/asset-manager-v2/index.js`
 - `tools/palette-manager-v2/index.html`
 - `tools/palette-manager-v2/index.js`
 - `tools/tilemap-studio-v2/index.html`
@@ -57,7 +57,7 @@ Result output:
 3. `node --check tools/*-v2/index.js`
    - Result: **FAIL** in PowerShell wildcard expansion (`*` passed literally to Node)
 4. Equivalent per-tool syntax checks:
-   - `node --check tools/asset-browser-v2/index.js` — **PASS**
+   - `node --check tools/asset-manager-v2/index.js` — **PASS**
    - `node --check tools/palette-manager-v2/index.js` — **PASS**
    - `node --check tools/svg-asset-studio-v2/index.js` — **PASS**
    - `node --check tools/tilemap-studio-v2/index.js` — **PASS**

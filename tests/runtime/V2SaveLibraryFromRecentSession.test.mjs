@@ -155,14 +155,14 @@ export function run() {
 
   const history = [
     {
-      hostContextId: "asset-browser-v2-1777676088718-3eff5h3y",
-      tool: "asset-browser-v2",
+      hostContextId: "asset-manager-v2-1777676088718-3eff5h3y",
+      tool: "asset-manager-v2",
       timestamp: "2026-05-01T01:00:00.000Z",
-      payload: { version: "v2", toolId: "asset-browser-v2", payloadJson: { source: "history-fallback" } }
+      payload: { version: "v2", toolId: "asset-manager-v2", payloadJson: { source: "history-fallback" } }
     }
   ];
   const storage = {
-    "asset-browser-v2-1777676088718-3eff5h3y": JSON.stringify({ version: "v2", toolId: "asset-browser-v2", payloadJson: { source: "storage" } })
+    "asset-manager-v2-1777676088718-3eff5h3y": JSON.stringify({ version: "v2", toolId: "asset-manager-v2", payloadJson: { source: "storage" } })
   };
   const activePayload = null;
   const initialRecentSnapshot = JSON.stringify(history);
@@ -177,18 +177,18 @@ export function run() {
   if (loadEmpty.message !== "Enter a saved session ID before loading.") failures.push("Load empty input message mismatch.");
   if (deleteEmpty.message !== "Enter a saved session ID before deleting.") failures.push("Delete empty input message mismatch.");
 
-  const saveRecent = simulateSave(false, "asset-browser-v2-1777676088718-3eff5h3y", {}, history, storage, activePayload);
+  const saveRecent = simulateSave(false, "asset-manager-v2-1777676088718-3eff5h3y", {}, history, storage, activePayload);
   if (saveRecent.message !== "Saved session created.") failures.push("Save should create from valid recent-session id.");
-  if (!Object.prototype.hasOwnProperty.call(saveRecent.library, "asset-browser-v2-1777676088718-3eff5h3y")) {
+  if (!Object.prototype.hasOwnProperty.call(saveRecent.library, "asset-manager-v2-1777676088718-3eff5h3y")) {
     failures.push("Save from recent-session id did not create library entry.");
   }
 
-  const duplicateSave = simulateSave(false, "asset-browser-v2-1777676088718-3eff5h3y", saveRecent.library, history, storage, activePayload);
+  const duplicateSave = simulateSave(false, "asset-manager-v2-1777676088718-3eff5h3y", saveRecent.library, history, storage, activePayload);
   if (duplicateSave.message !== "Saved session already exists. Use Overwrite Session.") {
     failures.push("Duplicate save should be blocked with overwrite guidance.");
   }
 
-  const overwriteExisting = simulateSave(true, "asset-browser-v2-1777676088718-3eff5h3y", saveRecent.library, history, storage, activePayload);
+  const overwriteExisting = simulateSave(true, "asset-manager-v2-1777676088718-3eff5h3y", saveRecent.library, history, storage, activePayload);
   if (overwriteExisting.message !== "Saved session overwritten.") {
     failures.push("Overwrite should succeed for existing saved recent-session id.");
   }
@@ -200,7 +200,7 @@ export function run() {
 
   const overwriteMissingSavedButResolvable = simulateSave(
     true,
-    "asset-browser-v2-1777676088718-3eff5h3y",
+    "asset-manager-v2-1777676088718-3eff5h3y",
     {},
     history,
     storage,
@@ -219,16 +219,16 @@ export function run() {
   if (loadMissing.message !== "Saved session not found.") {
     failures.push("Load should remain library-only and block missing entry.");
   }
-  const loadExisting = simulateLoad("asset-browser-v2-1777676088718-3eff5h3y", saveRecent.library);
+  const loadExisting = simulateLoad("asset-manager-v2-1777676088718-3eff5h3y", saveRecent.library);
   if (loadExisting.message !== "Saved session loaded." || !loadExisting.loaded) {
     failures.push("Load existing saved entry should succeed.");
   }
 
-  const deleteRecentOnly = simulateDelete("asset-browser-v2-1777676088718-3eff5h3y", {}, history, storage);
+  const deleteRecentOnly = simulateDelete("asset-manager-v2-1777676088718-3eff5h3y", {}, history, storage);
   if (deleteRecentOnly.message !== "Session ID is not saved in Session Library. Use Delete on Recent Sessions to remove temporary sessions.") {
     failures.push("Delete Saved Session recent-only guidance message mismatch.");
   }
-  const deleteSaved = simulateDelete("asset-browser-v2-1777676088718-3eff5h3y", saveRecent.library, history, storage);
+  const deleteSaved = simulateDelete("asset-manager-v2-1777676088718-3eff5h3y", saveRecent.library, history, storage);
   if (deleteSaved.message !== "Saved session deleted.") {
     failures.push("Delete saved entry should succeed.");
   }

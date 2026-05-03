@@ -1,1 +1,1 @@
-Add explicit Workspace V2 Asset Manager launcher and rename Asset Browser V2 user-facing labels without contract changes - PR 11.313
+Rename legacy asset browser v2 id to asset-manager-v2 as a single repo-wide contract with zero legacy references - PR 11.313

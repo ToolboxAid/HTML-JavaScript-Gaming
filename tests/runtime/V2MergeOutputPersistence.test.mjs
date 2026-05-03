@@ -94,13 +94,13 @@ export function run() {
     if (!js.includes(token)) failures.push(`Missing merged-session persistence token: ${token}`);
   });
 
-  const mergedPayload = { version: "v2", toolId: "asset-browser-v2", payloadJson: { merged: true } };
+  const mergedPayload = { version: "v2", toolId: "asset-manager-v2", payloadJson: { merged: true } };
   const baseState = {
     library: {},
     sessionStorage: {},
     history: [],
     lastMergedPayload: mergedPayload,
-    lastMergedToolId: "asset-browser-v2"
+    lastMergedToolId: "asset-manager-v2"
   };
 
   const noSaveState = { ...baseState, library: {} };
@@ -108,13 +108,13 @@ export function run() {
     failures.push("Initial library fixture invalid.");
   }
 
-  const saved = saveMergedSessionResult(baseState, "asset-browser-v2-merged-1000");
+  const saved = saveMergedSessionResult(baseState, "asset-manager-v2-merged-1000");
   if (saved.status !== "Merged session saved.") failures.push("Merged payload should be savable with new ID.");
-  if (!Object.prototype.hasOwnProperty.call(saved.library, "asset-browser-v2-merged-1000")) {
+  if (!Object.prototype.hasOwnProperty.call(saved.library, "asset-manager-v2-merged-1000")) {
     failures.push("Saved merged session should appear in library.");
   }
 
-  const duplicate = saveMergedSessionResult(saved, "asset-browser-v2-merged-1000");
+  const duplicate = saveMergedSessionResult(saved, "asset-manager-v2-merged-1000");
   if (duplicate.status !== "Session ID already exists. Choose a different ID.") {
     failures.push("Duplicate merged session ID should be blocked.");
   }
@@ -124,11 +124,11 @@ export function run() {
     failures.push("Library should remain unchanged when user does not save merged result.");
   }
 
-  const reused = useMergedInDiffMerge(baseState, "asset-browser-v2-merged-1001");
+  const reused = useMergedInDiffMerge(baseState, "asset-manager-v2-merged-1001");
   if (reused.status !== "Merged session ready in Diff/Merge selections.") {
     failures.push("Merged session should be reusable in Diff/Merge.");
   }
-  if (!Object.prototype.hasOwnProperty.call(reused.sessionStorage, "asset-browser-v2-merged-1001")) {
+  if (!Object.prototype.hasOwnProperty.call(reused.sessionStorage, "asset-manager-v2-merged-1001")) {
     failures.push("Use in Diff/Merge should place merged payload in runtime session storage.");
   }
 

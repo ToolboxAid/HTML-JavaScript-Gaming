@@ -14,7 +14,7 @@ const resultsPath = path.join(repoRoot, "tmp", "v2-producer-render-results.json"
 
 const TOOLS = [
   {
-    toolId: "asset-browser-v2",
+    toolId: "asset-manager-v2",
     validStateId: "assetBrowserV2ValidState",
     emptyStateId: "assetBrowserV2EmptyState",
     invalidStateId: "assetBrowserV2InvalidState"
@@ -104,7 +104,7 @@ function hasValidPayload(toolId, sessionContext) {
     return false;
   }
 
-  if (toolId === "asset-browser-v2") {
+  if (toolId === "asset-manager-v2") {
     const catalog = sessionContext?.payloadJson?.assetCatalog;
     if (!catalog || typeof catalog !== "object" || Array.isArray(catalog)) return false;
     if (typeof catalog.name !== "string" || !catalog.name.trim()) return false;

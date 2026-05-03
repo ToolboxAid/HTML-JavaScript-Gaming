@@ -91,21 +91,21 @@ export function run() {
   });
 
   const preview = {
-    source: { id: "history:asset-browser-v2-a1" },
-    target: { id: "history:asset-browser-v2-b2" },
-    selectedToolId: "asset-browser-v2",
+    source: { id: "history:asset-manager-v2-a1" },
+    target: { id: "history:asset-manager-v2-b2" },
+    selectedToolId: "asset-manager-v2",
     changes: {
       added: { "payload.layers.2": {} },
       updated: { "payload.zoom": { from: 1, to: 2 } },
-      unchanged: { "payload.toolId": "asset-browser-v2" }
+      unchanged: { "payload.toolId": "asset-manager-v2" }
     },
     conflictCount: 0
   };
   const previewSummaryText = previewSummary(preview);
   if (!previewSummaryText.includes("Merge Preview Summary")) failures.push("Preview summary missing heading.");
-  if (!previewSummaryText.includes("Source Session ID: history:asset-browser-v2-a1")) failures.push("Preview summary missing source id.");
-  if (!previewSummaryText.includes("Target Session ID: history:asset-browser-v2-b2")) failures.push("Preview summary missing target id.");
-  if (!previewSummaryText.includes("Tool ID: asset-browser-v2")) failures.push("Preview summary missing tool id.");
+  if (!previewSummaryText.includes("Source Session ID: history:asset-manager-v2-a1")) failures.push("Preview summary missing source id.");
+  if (!previewSummaryText.includes("Target Session ID: history:asset-manager-v2-b2")) failures.push("Preview summary missing target id.");
+  if (!previewSummaryText.includes("Tool ID: asset-manager-v2")) failures.push("Preview summary missing tool id.");
   if (!previewSummaryText.includes("Added: 1") || !previewSummaryText.includes("Updated: 1") || !previewSummaryText.includes("Unchanged: 1")) {
     failures.push("Preview summary missing added/updated/unchanged counts.");
   }
@@ -114,8 +114,8 @@ export function run() {
   if (confirmSummaryText !== "Preview confirmed. Apply Merge is ready.") failures.push("Confirm summary mismatch.");
 
   const applied = {
-    hostContextId: "asset-browser-v2-merged-1777777777777-abc123xy",
-    toolId: "asset-browser-v2",
+    hostContextId: "asset-manager-v2-merged-1777777777777-abc123xy",
+    toolId: "asset-manager-v2",
     timestamp: "2026-05-02T00:00:00.000Z",
     addedCount: 2,
     updatedCount: 1,

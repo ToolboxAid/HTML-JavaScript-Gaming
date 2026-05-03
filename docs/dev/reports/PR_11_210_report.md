@@ -4,7 +4,7 @@
 - `tests/runtime/V2SessionSource.test.mjs`
 
 ## Tools Validated
-- `asset-browser-v2`
+- `asset-manager-v2`
 - `palette-manager-v2`
 - `svg-asset-studio-v2`
 - `tilemap-studio-v2`
@@ -44,7 +44,7 @@ Additional precedence checks passed:
 3. `node --check tools/*-v2/index.js`  
    - Result: **FAIL** in PowerShell (`*` passed literally to Node module loader)
 4. Equivalent per-tool syntax checks:
-   - `node --check tools/asset-browser-v2/index.js` — **PASS**
+   - `node --check tools/asset-manager-v2/index.js` — **PASS**
    - `node --check tools/palette-manager-v2/index.js` — **PASS**
    - `node --check tools/svg-asset-studio-v2/index.js` — **PASS**
    - `node --check tools/tilemap-studio-v2/index.js` — **PASS**

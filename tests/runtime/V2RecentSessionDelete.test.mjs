@@ -64,11 +64,11 @@ export function run() {
   if (!hasLibraryScopeMessage) failures.push("Missing explicit message for recent-only delete attempts in library delete flow.");
 
   const history = [
-    { hostContextId: "ctx-a", tool: "asset-browser-v2", timestamp: "2026-05-01T00:00:00.000Z", payload: { toolId: "asset-browser-v2" } },
-    { hostContextId: "ctx-b", tool: "asset-browser-v2", timestamp: "2026-05-01T00:01:00.000Z", payload: { toolId: "asset-browser-v2" } }
+    { hostContextId: "ctx-a", tool: "asset-manager-v2", timestamp: "2026-05-01T00:00:00.000Z", payload: { toolId: "asset-manager-v2" } },
+    { hostContextId: "ctx-b", tool: "asset-manager-v2", timestamp: "2026-05-01T00:01:00.000Z", payload: { toolId: "asset-manager-v2" } }
   ];
-  const sessionStorageMap = { "ctx-a": "{\"toolId\":\"asset-browser-v2\"}", "ctx-b": "{\"toolId\":\"asset-browser-v2\"}" };
-  const library = { "saved-1": { toolId: "asset-browser-v2" } };
+  const sessionStorageMap = { "ctx-a": "{\"toolId\":\"asset-manager-v2\"}", "ctx-b": "{\"toolId\":\"asset-manager-v2\"}" };
+  const library = { "saved-1": { toolId: "asset-manager-v2" } };
   let currentHostContextId = "ctx-a";
 
   const nextHistory = history.filter((entry) => entry.hostContextId !== "ctx-a");

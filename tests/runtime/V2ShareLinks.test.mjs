@@ -7,7 +7,7 @@ import { fileURLToPath, pathToFileURL } from "node:url";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const repoRoot = path.resolve(__dirname, "..", "..");
-const fixturePath = path.join(repoRoot, "tests", "fixtures", "v2-tools", "asset-browser-v2.json");
+const fixturePath = path.join(repoRoot, "tests", "fixtures", "v2-tools", "asset-manager-v2.json");
 const workspaceHtmlPath = path.join(repoRoot, "tools", "workspace-v2", "index.html");
 const workspaceJsPath = path.join(repoRoot, "tools", "workspace-v2", "index.js");
 const resultsPath = path.join(repoRoot, "tmp", "v2-share-links-results.json");
@@ -118,7 +118,7 @@ export function run() {
       sessionUrl = `https://example.local/tools/workspace-v2/index.html?session=${encoded}`;
       const parsedUrl = new URL(sessionUrl);
       decoded = decodePayload(parsedUrl.searchParams.get("session") || "");
-      assignedHostContextId = generateHostContextId("asset-browser-v2");
+      assignedHostContextId = generateHostContextId("asset-manager-v2");
       storage.setItem(assignedHostContextId, JSON.stringify(decoded));
     } catch (error) {
       failures.push(`Encode/decode simulation failed: ${error instanceof Error ? error.message : "unknown error"}`);

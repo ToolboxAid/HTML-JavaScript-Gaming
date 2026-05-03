@@ -13,7 +13,7 @@ const workspaceJsPath = path.join(repoRoot, "tools", "workspace-v2", "index.js")
 const resultsPath = path.join(repoRoot, "tmp", "v2-snapshot-results.json");
 
 const TOOLS = [
-  "asset-browser-v2",
+  "asset-manager-v2",
   "palette-manager-v2",
   "svg-asset-studio-v2",
   "tilemap-studio-v2",
@@ -169,7 +169,7 @@ export function run() {
 
   const malformedHostContextId = "snapshot-host-malformed";
   sessionStorageLike.setItem(malformedHostContextId, "{bad-json");
-  const malformedSnapshot = buildToolSnapshot("asset-browser-v2", `https://example.test/tools/asset-browser-v2/index.html?hostContextId=${malformedHostContextId}`, malformedHostContextId, sessionStorageLike);
+  const malformedSnapshot = buildToolSnapshot("asset-manager-v2", `https://example.test/tools/asset-manager-v2/index.html?hostContextId=${malformedHostContextId}`, malformedHostContextId, sessionStorageLike);
   if (!malformedSnapshot.sessionError) failures.push("Malformed snapshot should include sessionError.");
 
   const toolRows = TOOLS.map(validateToolHook);

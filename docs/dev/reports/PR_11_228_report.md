@@ -1,7 +1,7 @@
 # PR_11_228 Report - V2 Tool State Snapshot (Export for Debug)
 
 ## Files Changed
-- `tools/asset-browser-v2/index.js`
+- `tools/asset-manager-v2/index.js`
 - `tools/palette-manager-v2/index.js`
 - `tools/svg-asset-studio-v2/index.js`
 - `tools/tilemap-studio-v2/index.js`

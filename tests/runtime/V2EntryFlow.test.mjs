@@ -12,7 +12,7 @@ const fixturesRoot = path.join(repoRoot, "tests", "fixtures", "v2-tools");
 const resultsPath = path.join(repoRoot, "tmp", "v2-entry-flow-results.json");
 
 const TOOL_IDS = [
-  "asset-browser-v2",
+  "asset-manager-v2",
   "palette-manager-v2",
   "svg-asset-studio-v2",
   "tilemap-studio-v2",

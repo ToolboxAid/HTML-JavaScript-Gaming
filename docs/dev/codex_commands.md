@@ -131,3 +131,10 @@ PR_11_313 (Workspace V2 launcher + Asset Manager V2 UI labels)
 ```bash
 npx @openai/codex run --model gpt-5.3-codex --reasoning medium "Implement PR_11_313: Workspace V2 tool launcher UI + Asset Manager V2 user-facing rename."
 ```
+
+---
+PR_11_313 (single contract rename: asset-manager-v2)
+
+```bash
+npx @openai/codex run --model gpt-5.3-codex --reasoning medium "Implement PR_11_313: rename legacy asset browser v2 id to asset-manager-v2 across tool ID, paths, payloads, registry links, tests, and docs with zero old references."
+```

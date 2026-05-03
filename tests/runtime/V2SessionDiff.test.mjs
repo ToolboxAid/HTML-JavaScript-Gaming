@@ -101,7 +101,7 @@ export function run() {
 
   const leftPayload = {
     version: "v2",
-    toolId: "asset-browser-v2",
+    toolId: "asset-manager-v2",
     payloadJson: {
       assetCatalog: {
         name: "A",
@@ -113,7 +113,7 @@ export function run() {
   };
   const rightPayload = {
     version: "v2",
-    toolId: "asset-browser-v2",
+    toolId: "asset-manager-v2",
     payloadJson: {
       assetCatalog: {
         name: "B",

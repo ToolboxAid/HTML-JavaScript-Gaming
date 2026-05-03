@@ -27,7 +27,7 @@ class TilemapStudioV2 {
       this.renderMissing("No hostContextId is available for launch. Re-open Tilemap Studio V2 from a valid Tool V2 session link.");
       return;
     }
-    const targetUrl = this.buildToolUrl("asset-browser-v2");
+    const targetUrl = this.buildToolUrl("asset-manager-v2");
     targetUrl.searchParams.set("fromTool", "tilemap-studio-v2");
     window.location.href = targetUrl.toString();
   }
@@ -51,7 +51,7 @@ class TilemapStudioV2 {
   }
 
   toolLabel(toolId) {
-    if (toolId === "asset-browser-v2") return "Asset Browser V2";
+    if (toolId === "asset-manager-v2") return "Asset Browser V2";
     if (toolId === "palette-manager-v2") return "Palette Manager V2";
     if (toolId === "svg-asset-studio-v2") return "SVG Asset Studio V2";
     if (toolId === "tilemap-studio-v2") return "Tilemap Studio V2";

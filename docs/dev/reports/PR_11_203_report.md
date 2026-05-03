@@ -4,12 +4,12 @@
 - `docs/dev/reports/PR_11_203_report.md`
 
 ## Tools Validated
-- `tools/asset-browser-v2/index.html`
+- `tools/asset-manager-v2/index.html`
 - `tools/palette-manager-v2/index.html`
 - `tools/svg-asset-studio-v2/index.html`
 - `tools/tilemap-studio-v2/index.html`
 - `tools/vector-map-editor-v2/index.html`
-- `tools/asset-browser-v2/index.js`
+- `tools/asset-manager-v2/index.js`
 - `tools/palette-manager-v2/index.js`
 - `tools/svg-asset-studio-v2/index.js`
 - `tools/tilemap-studio-v2/index.js`
@@ -40,7 +40,7 @@
 - Attempted as specified:
   - `node --check tools/*-v2/index.js` -> fails in this PowerShell context because Node does not resolve wildcard path input for `--check`.
 - Executed equivalent per-file validation:
-  - `node --check tools/asset-browser-v2/index.js` -> **PASS**
+  - `node --check tools/asset-manager-v2/index.js` -> **PASS**
   - `node --check tools/palette-manager-v2/index.js` -> **PASS**
   - `node --check tools/svg-asset-studio-v2/index.js` -> **PASS**
   - `node --check tools/tilemap-studio-v2/index.js` -> **PASS**

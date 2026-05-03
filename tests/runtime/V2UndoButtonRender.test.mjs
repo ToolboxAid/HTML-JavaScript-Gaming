@@ -62,7 +62,7 @@ export function run() {
     if (!js.includes(token)) failures.push(`Missing Undo button wiring token: ${token}`);
   });
 
-  const mergedId = "asset-browser-v2-merged-1777777777777-abcd1234";
+  const mergedId = "asset-manager-v2-merged-1777777777777-abcd1234";
   const recentWithMerge = [{ hostContextId: mergedId }, { hostContextId: "other" }];
   const recentWithoutMerge = [{ hostContextId: "other" }];
   const initiallyDisabled = !undoEnabled("", recentWithoutMerge);
@@ -72,7 +72,7 @@ export function run() {
   if (!enabledAfterMerge) failures.push("Undo button should enable when last merged session exists in recent.");
   if (!disabledAfterUndo) failures.push("Undo button should disable after undo clears last merged session.");
 
-  const libraryBefore = { "saved-1": { toolId: "asset-browser-v2", version: "v2" } };
+  const libraryBefore = { "saved-1": { toolId: "asset-manager-v2", version: "v2" } };
   const libraryAfter = { ...libraryBefore };
   if (JSON.stringify(libraryBefore) !== JSON.stringify(libraryAfter)) {
     failures.push("Undo should not impact Session Library.");

@@ -89,22 +89,22 @@ export function run() {
     if (!js.includes(token)) failures.push(`Missing Undo Last Merge token: ${token}`);
   });
 
-  const mergedId = "asset-browser-v2-merged-1777777777777-abcd1234";
+  const mergedId = "asset-manager-v2-merged-1777777777777-abcd1234";
   const baseState = {
     lastMergedHostContextId: mergedId,
     recent: [
-      { hostContextId: mergedId, tool: "asset-browser-v2", payload: { version: "v2", toolId: "asset-browser-v2", mergeResultMeta: { isMergedResult: true } } },
-      { hostContextId: "asset-browser-v2-regular", tool: "asset-browser-v2", payload: { version: "v2", toolId: "asset-browser-v2" } }
+      { hostContextId: mergedId, tool: "asset-manager-v2", payload: { version: "v2", toolId: "asset-manager-v2", mergeResultMeta: { isMergedResult: true } } },
+      { hostContextId: "asset-manager-v2-regular", tool: "asset-manager-v2", payload: { version: "v2", toolId: "asset-manager-v2" } }
     ],
     sessionStorageMap: {
-      [mergedId]: "{\"version\":\"v2\",\"toolId\":\"asset-browser-v2\"}",
-      "asset-browser-v2-regular": "{\"version\":\"v2\",\"toolId\":\"asset-browser-v2\"}"
+      [mergedId]: "{\"version\":\"v2\",\"toolId\":\"asset-manager-v2\"}",
+      "asset-manager-v2-regular": "{\"version\":\"v2\",\"toolId\":\"asset-manager-v2\"}"
     },
     library: {
-      "saved-1": { version: "v2", toolId: "asset-browser-v2" }
+      "saved-1": { version: "v2", toolId: "asset-manager-v2" }
     },
     diffLeft: `history:${mergedId}`,
-    diffRight: "history:asset-browser-v2-regular",
+    diffRight: "history:asset-manager-v2-regular",
     mergeLeft: `history:${mergedId}`,
     mergeRight: ""
   };

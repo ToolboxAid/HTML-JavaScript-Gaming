@@ -74,9 +74,9 @@ export function run() {
   const failures = [];
   const libraryKey = "v2-session-library";
   const sessionName = "Library Sample";
-  const toolId = "asset-browser-v2";
+  const toolId = "asset-manager-v2";
   const samplePayload = {
-    toolId: "asset-browser-v2",
+    toolId: "asset-manager-v2",
     payloadJson: {
       assetCatalog: {
         name: "Library Fixture",
@@ -130,7 +130,7 @@ export function run() {
 
     const attemptedSilentOverwrite = readLibrary(localStorageLike, libraryKey);
     const beforeAttemptJson = JSON.stringify(attemptedSilentOverwrite[sessionName]);
-    const differentPayload = { toolId: "asset-browser-v2", payloadJson: { assetCatalog: { name: "Different", entries: [] } } };
+    const differentPayload = { toolId: "asset-manager-v2", payloadJson: { assetCatalog: { name: "Different", entries: [] } } };
     if (Object.prototype.hasOwnProperty.call(attemptedSilentOverwrite, sessionName)) {
       // Explicitly skip writing here to model non-overwrite save path.
       const afterAttempt = readLibrary(localStorageLike, libraryKey);

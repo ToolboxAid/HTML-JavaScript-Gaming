@@ -13,10 +13,10 @@ const resultsPath = path.join(repoRoot, "tmp", "v2-back-nav-results.json");
 const FLOWS = [
   {
     first: "workspace-v2",
-    second: "asset-browser-v2",
+    second: "asset-manager-v2",
     third: "svg-asset-studio-v2",
     secondActionQueryFrom: "workspace-v2",
-    thirdActionQueryFrom: "asset-browser-v2"
+    thirdActionQueryFrom: "asset-manager-v2"
   },
   {
     first: "workspace-v2",
@@ -28,7 +28,7 @@ const FLOWS = [
   {
     first: "workspace-v2",
     second: "tilemap-studio-v2",
-    third: "asset-browser-v2",
+    third: "asset-manager-v2",
     secondActionQueryFrom: "workspace-v2",
     thirdActionQueryFrom: "tilemap-studio-v2"
   }

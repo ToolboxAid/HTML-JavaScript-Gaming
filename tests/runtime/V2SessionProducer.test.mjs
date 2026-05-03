@@ -12,7 +12,7 @@ const workspaceJsPath = path.join(repoRoot, "tools", "workspace-v2", "index.js")
 const resultsPath = path.join(repoRoot, "tmp", "v2-session-producer-results.json");
 
 const TOOLS = [
-  "asset-browser-v2",
+  "asset-manager-v2",
   "palette-manager-v2",
   "svg-asset-studio-v2",
   "tilemap-studio-v2",

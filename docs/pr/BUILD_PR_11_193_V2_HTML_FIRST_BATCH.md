@@ -10,7 +10,7 @@ Only these folders may be modified if present:
 - `tools/svg-asset-studio-v2/`
 - `tools/vector-map-editor-v2/`
 - `tools/tilemap-studio-v2/`
-- `tools/asset-browser-v2/`
+- `tools/asset-manager-v2/`
 - `docs/dev/roadmaps/MASTER_ROADMAP_ENGINE.md` status markers only
 - `docs/dev/reports/` for evidence only
 
@@ -73,7 +73,7 @@ node --check tools/palette-manager-v2/index.js
 node --check tools/svg-asset-studio-v2/index.js
 node --check tools/vector-map-editor-v2/index.js
 node --check tools/tilemap-studio-v2/index.js
-node --check tools/asset-browser-v2/index.js
+node --check tools/asset-manager-v2/index.js
 ```
 
 If a listed folder does not exist yet, record it as `NOT PRESENT - SKIPPED` in the report and do not create unrelated scaffolding unless this PR's tool folder already exists in the active V2 lane.

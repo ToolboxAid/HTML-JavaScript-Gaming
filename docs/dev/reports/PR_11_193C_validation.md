@@ -6,8 +6,8 @@ Implement the V2 HTML-first batch for Palette Manager V2, SVG Asset Studio V2, V
 ## Files Changed
 - `tools/tilemap-studio-v2/index.html`
 - `tools/tilemap-studio-v2/index.js`
-- `tools/asset-browser-v2/index.html`
-- `tools/asset-browser-v2/index.js`
+- `tools/asset-manager-v2/index.html`
+- `tools/asset-manager-v2/index.js`
 - `docs/dev/reports/PR_11_193C_validation.md`
 
 Existing active V2 tools verified without additional implementation edits in this pass:
@@ -23,7 +23,7 @@ Existing PR source doc was present in the worktree and included in the ZIP:
 
 ## Implementation Summary
 - Added `Tilemap Studio V2` as `tools/tilemap-studio-v2/`.
-- Added `Asset Browser V2` as `tools/asset-browser-v2/`.
+- Added `Asset Browser V2` as `tools/asset-manager-v2/`.
 - Both new tools are HTML-first: `index.html` owns static shell, CSS links, shared header mount, layout, menus, state containers, and module scripts.
 - Both new tools keep `index.js` behavior-only: document title/tool id setup, session read, contract validation, event binding, dynamic rendering into existing DOM nodes, and empty/error states.
 - No legacy implementation files were copied into V2. Legacy files were used only to infer high-level contract names and user-facing data shape.
@@ -34,7 +34,7 @@ Passed for all five scoped V2 tools:
 - `tools/svg-asset-studio-v2/index.html`
 - `tools/vector-map-editor-v2/index.html`
 - `tools/tilemap-studio-v2/index.html`
-- `tools/asset-browser-v2/index.html`
+- `tools/asset-manager-v2/index.html`
 
 Each contains:
 - `<div id="shared-theme-header"></div>`
@@ -84,7 +84,7 @@ node --check tools/palette-manager-v2/index.js
 node --check tools/svg-asset-studio-v2/index.js
 node --check tools/vector-map-editor-v2/index.js
 node --check tools/tilemap-studio-v2/index.js
-node --check tools/asset-browser-v2/index.js
+node --check tools/asset-manager-v2/index.js
 ```
 
 Results:
@@ -92,7 +92,7 @@ Results:
 - `node --check tools/svg-asset-studio-v2/index.js` passed.
 - `node --check tools/vector-map-editor-v2/index.js` passed.
 - `node --check tools/tilemap-studio-v2/index.js` passed.
-- `node --check tools/asset-browser-v2/index.js` passed.
+- `node --check tools/asset-manager-v2/index.js` passed.
 
 Targeted direct-entry/HTML validation:
 - Verified all five scoped `index.html` files have the required static shell/header/menu/script markers.

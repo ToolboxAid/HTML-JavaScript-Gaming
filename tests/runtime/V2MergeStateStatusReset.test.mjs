@@ -77,8 +77,8 @@ export function run() {
   if (!html.includes("id=\"workspaceV2MergedSessionStatus\"")) failures.push("Missing merged session status node.");
 
   const previewState = {
-    mergeResultSummary: "Merge Preview Summary\nSource Session ID: history:asset-browser-v2-a",
-    mergeOutput: "{\n  \"source\": \"history:asset-browser-v2-a\"\n}",
+    mergeResultSummary: "Merge Preview Summary\nSource Session ID: history:asset-manager-v2-a",
+    mergeOutput: "{\n  \"source\": \"history:asset-manager-v2-a\"\n}",
     mergedSessionStatus: "Merged session ready. Choose an ID and save if desired.",
     confirmDisabled: false,
     applyDisabled: false
@@ -97,7 +97,7 @@ export function run() {
   if (!selectionChangeReset.confirmDisabled || !selectionChangeReset.applyDisabled) failures.push("Selection change should disable Confirm/Apply.");
 
   const undoReset = clearMergePanelTransientState(
-    "Last merged session removed.\nRemoved Session ID: asset-browser-v2-merged-1777777777777-abc123xy",
+    "Last merged session removed.\nRemoved Session ID: asset-manager-v2-merged-1777777777777-abc123xy",
     "No merge preview available.",
     "Last merged session removed."
   );
@@ -128,9 +128,9 @@ export function run() {
   if (refreshBaseline.mergeOutput !== "No merge preview available.") failures.push("Refresh baseline should clear stale raw output.");
 
   const undoAvailabilityAfterResets = isUndoAvailable(
-    "asset-browser-v2-merged-1777777777777-abc123xy",
-    ["asset-browser-v2-merged-1777777777777-abc123xy", "asset-browser-v2-regular"],
-    ["asset-browser-v2-merged-1777777777777-abc123xy", "asset-browser-v2-regular"]
+    "asset-manager-v2-merged-1777777777777-abc123xy",
+    ["asset-manager-v2-merged-1777777777777-abc123xy", "asset-manager-v2-regular"],
+    ["asset-manager-v2-merged-1777777777777-abc123xy", "asset-manager-v2-regular"]
   );
   if (!undoAvailabilityAfterResets) failures.push("Undo availability should remain based on actual recent+session entries.");
 

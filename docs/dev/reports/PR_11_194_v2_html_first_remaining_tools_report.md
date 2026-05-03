@@ -8,7 +8,7 @@ Verify and complete the remaining Tool V2 HTML-first shell batch. Each scoped V2
 - `tools/svg-asset-studio-v2/`
 - `tools/vector-map-editor-v2/`
 - `tools/tilemap-studio-v2/`
-- `tools/asset-browser-v2/`
+- `tools/asset-manager-v2/`
 
 ## Files Changed
 - `docs/dev/reports/PR_11_194_v2_html_first_remaining_tools_report.md`
@@ -74,7 +74,7 @@ node --check tools/palette-manager-v2/index.js
 node --check tools/svg-asset-studio-v2/index.js
 node --check tools/vector-map-editor-v2/index.js
 node --check tools/tilemap-studio-v2/index.js
-node --check tools/asset-browser-v2/index.js
+node --check tools/asset-manager-v2/index.js
 ```
 
 Results:
@@ -82,7 +82,7 @@ Results:
 - `node --check tools/svg-asset-studio-v2/index.js` passed.
 - `node --check tools/vector-map-editor-v2/index.js` passed.
 - `node --check tools/tilemap-studio-v2/index.js` passed.
-- `node --check tools/asset-browser-v2/index.js` passed.
+- `node --check tools/asset-manager-v2/index.js` passed.
 
 Additional targeted validation:
 - `PR_11_194 V2 HTML-first compliance validation passed`
@@ -93,7 +93,7 @@ Manual browser validation was not launched from this terminal session. The per-t
 - Open `tools/svg-asset-studio-v2/index.html`; confirm shared header renders, static shell is visible before session data, missing session shows explicit empty state, valid session renders without legacy coupling.
 - Open `tools/vector-map-editor-v2/index.html`; confirm shared header renders, static shell is visible before session data, missing session shows explicit empty state, valid session renders without legacy coupling.
 - Open `tools/tilemap-studio-v2/index.html`; confirm shared header renders, static shell is visible before session data, missing session shows explicit empty state, valid session renders without legacy coupling.
-- Open `tools/asset-browser-v2/index.html`; confirm shared header renders, static shell is visible before session data, missing session shows explicit empty state, valid session renders without legacy coupling.
+- Open `tools/asset-manager-v2/index.html`; confirm shared header renders, static shell is visible before session data, missing session shows explicit empty state, valid session renders without legacy coupling.
 
 ## Banned Path Check Result
 Scoped status check confirmed no changes under:

@@ -99,7 +99,7 @@ export function run() {
   if (!emptyInput.saveDisabled || !emptyInput.overwriteDisabled || !emptyInput.loadDisabled || !emptyInput.deleteDisabled) {
     failures.push("Library actions should be disabled when session input is empty.");
   }
-  const filledInput = libraryActionState("asset-browser-v2-123");
+  const filledInput = libraryActionState("asset-manager-v2-123");
   if (filledInput.saveDisabled || filledInput.overwriteDisabled || filledInput.loadDisabled || filledInput.deleteDisabled) {
     failures.push("Library actions should be enabled when session input is present.");
   }

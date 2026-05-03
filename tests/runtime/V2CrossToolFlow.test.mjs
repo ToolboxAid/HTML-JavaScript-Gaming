@@ -13,7 +13,7 @@ const resultsPath = path.join(repoRoot, "tmp", "v2-cross-tool-results.json");
 
 const FLOWS = [
   {
-    sourceTool: "asset-browser-v2",
+    sourceTool: "asset-manager-v2",
     targetTool: "svg-asset-studio-v2"
   },
   {
@@ -22,7 +22,7 @@ const FLOWS = [
   },
   {
     sourceTool: "tilemap-studio-v2",
-    targetTool: "asset-browser-v2"
+    targetTool: "asset-manager-v2"
   }
 ];
 

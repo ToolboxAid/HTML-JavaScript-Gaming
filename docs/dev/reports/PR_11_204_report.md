@@ -1,7 +1,7 @@
 # PR_11_204 Report
 
 ## Fixtures Added
-- `tests/fixtures/v2-tools/asset-browser-v2.json`
+- `tests/fixtures/v2-tools/asset-manager-v2.json`
 - `tests/fixtures/v2-tools/palette-manager-v2.json`
 - `tests/fixtures/v2-tools/svg-asset-studio-v2.json`
 - `tests/fixtures/v2-tools/tilemap-studio-v2.json`
@@ -14,7 +14,7 @@ For each required V2 tool, the test now verifies:
 - fixture is valid JSON
 - fixture contains non-empty `hostContextId`
 - fixture contains valid tool-specific payload in `sessionContext`
-  - `asset-browser-v2`: `payloadJson.assetCatalog`
+  - `asset-manager-v2`: `payloadJson.assetCatalog`
   - `palette-manager-v2`: `paletteJson`
   - `svg-asset-studio-v2`: `payloadJson.vectorAssetDocument`
   - `tilemap-studio-v2`: `payloadJson.tileMapDocument`

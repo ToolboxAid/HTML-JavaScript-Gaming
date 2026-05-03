@@ -4,16 +4,16 @@
 Complete Asset Browser V2 as the focused, testable V2 implementation target while preserving the HTML-first/static-shell and session-only runtime architecture.
 
 ## Files Changed
-- `tools/asset-browser-v2/index.js`
+- `tools/asset-manager-v2/index.js`
 - `docs/dev/reports/PR_11_197B_v2_asset_browser_validation.md`
 - `docs/dev/reports/PR_11_197B_expected_evidence.md`
 
 Unchanged but packaged for review context:
-- `tools/asset-browser-v2/index.html`
+- `tools/asset-manager-v2/index.html`
 
 ## Implementation Summary
-- Kept `tools/asset-browser-v2/index.html` as the static shell owner: CSS links, shared header mount, page layout, menu regions, state containers, and module script tags remain in HTML.
-- Kept `tools/asset-browser-v2/index.js` behavior-only: title/tool id setup, session read, validation, DOM population, event binding, dynamic render, empty state, and invalid state.
+- Kept `tools/asset-manager-v2/index.html` as the static shell owner: CSS links, shared header mount, page layout, menu regions, state containers, and module script tags remain in HTML.
+- Kept `tools/asset-manager-v2/index.js` behavior-only: title/tool id setup, session read, validation, DOM population, event binding, dynamic render, empty state, and invalid state.
 - Tightened valid session contract to require explicit `assetCatalog.entries[]` fields: `id`, `label`, `kind`, and `path`.
 - Removed auto-previewing the first asset as an implicit selection. Valid sessions now render list/count and instruct the user to select an entry to inspect session-backed metadata.
 - No legacy Asset Browser implementation code was copied.
@@ -22,7 +22,7 @@ Unchanged but packaged for review context:
 ## Validation Commands Run
 
 ```powershell
-node --check tools/asset-browser-v2/index.js
+node --check tools/asset-manager-v2/index.js
 ```
 
 Result: passed.
@@ -30,7 +30,7 @@ Result: passed.
 Static banned-pattern check:
 
 ```powershell
-rg -n "document\.body\.innerHTML|document\.head\.insertAdjacentHTML|createElement\(|appendChild\(|platformShell|assetUsageIntegration|tools/shared/|\.\.\/shared|Workspace Manager|fallback|default data|sample data|demo data" -- tools/asset-browser-v2/index.js
+rg -n "document\.body\.innerHTML|document\.head\.insertAdjacentHTML|createElement\(|appendChild\(|platformShell|assetUsageIntegration|tools/shared/|\.\.\/shared|Workspace Manager|fallback|default data|sample data|demo data" -- tools/asset-manager-v2/index.js
 ```
 
 Result: passed. No matches.
@@ -39,13 +39,13 @@ HTML shell marker check verified:
 - `id="shared-theme-header"`
 - `src="../../src/engine/theme/mount-shared-header.js"`
 - `src="./index.js"`
-- `data-tool-id="asset-browser-v2"`
+- `data-tool-id="asset-manager-v2"`
 - `<title>Asset Browser V2</title>`
 
 Result: passed.
 
 ## Lightweight Browser Validation Evidence
-A Node VM harness executed `tools/asset-browser-v2/index.js` with minimal browser/session mocks and verified direct empty, invalid session, and valid session states.
+A Node VM harness executed `tools/asset-manager-v2/index.js` with minimal browser/session mocks and verified direct empty, invalid session, and valid session states.
 
 Log snippets:
 

@@ -64,11 +64,11 @@ export function run() {
     if (!js.includes(token)) failures.push(`Missing undo-availability token/text: ${token}`);
   });
 
-  const mergedId = "asset-browser-v2-merged-1777777777777-abcd1234";
-  const recent = [{ hostContextId: mergedId }, { hostContextId: "asset-browser-v2-regular" }];
+  const mergedId = "asset-manager-v2-merged-1777777777777-abcd1234";
+  const recent = [{ hostContextId: mergedId }, { hostContextId: "asset-manager-v2-regular" }];
   const storageMap = {
-    [mergedId]: "{\"version\":\"v2\",\"toolId\":\"asset-browser-v2\"}",
-    "asset-browser-v2-regular": "{\"version\":\"v2\",\"toolId\":\"asset-browser-v2\"}"
+    [mergedId]: "{\"version\":\"v2\",\"toolId\":\"asset-manager-v2\"}",
+    "asset-manager-v2-regular": "{\"version\":\"v2\",\"toolId\":\"asset-manager-v2\"}"
   };
 
   const initialLoad = computeUndoAvailability("", recent, storageMap);
@@ -78,7 +78,7 @@ export function run() {
   if (!afterApply.enabled) failures.push("Undo must be enabled immediately after apply when recent+storage are present.");
 
   const afterUndo = computeUndoAvailability("", recent.filter((entry) => entry.hostContextId !== mergedId), {
-    "asset-browser-v2-regular": "{\"version\":\"v2\",\"toolId\":\"asset-browser-v2\"}"
+    "asset-manager-v2-regular": "{\"version\":\"v2\",\"toolId\":\"asset-manager-v2\"}"
   });
   if (afterUndo.enabled) failures.push("Undo must be disabled immediately after undo clears last merge.");
 
@@ -87,7 +87,7 @@ export function run() {
   if (manualDelete.nextLastMergedHostContextId !== "") failures.push("Stale last merged id should be cleared when recent entry is missing.");
 
   const staleStorage = computeUndoAvailability(mergedId, recent, {
-    "asset-browser-v2-regular": "{\"version\":\"v2\",\"toolId\":\"asset-browser-v2\"}"
+    "asset-manager-v2-regular": "{\"version\":\"v2\",\"toolId\":\"asset-manager-v2\"}"
   });
   if (staleStorage.enabled) failures.push("Undo must be disabled if merged session payload is missing from sessionStorage.");
   if (staleStorage.nextLastMergedHostContextId !== "") failures.push("Stale last merged id should be cleared when storage entry is missing.");

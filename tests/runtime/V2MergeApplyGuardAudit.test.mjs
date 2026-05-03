@@ -193,10 +193,10 @@ export function run() {
   if (!jsHasAuditKey) failures.push("Missing merge audit storage key.");
   if (!jsHasAuditMethod) failures.push("Missing recordMergeAuditEntry(preview).");
 
-  const sourcePayload = { toolId: "asset-browser-v2", payloadJson: { shared: "same", left: 1 } };
-  const targetPayload = { toolId: "asset-browser-v2", payloadJson: { shared: "same", right: 2 } };
-  const conflictSource = { toolId: "asset-browser-v2", payloadJson: { shared: "same", mode: "A" } };
-  const conflictTarget = { toolId: "asset-browser-v2", payloadJson: { shared: "same", mode: "B" } };
+  const sourcePayload = { toolId: "asset-manager-v2", payloadJson: { shared: "same", left: 1 } };
+  const targetPayload = { toolId: "asset-manager-v2", payloadJson: { shared: "same", right: 2 } };
+  const conflictSource = { toolId: "asset-manager-v2", payloadJson: { shared: "same", mode: "A" } };
+  const conflictTarget = { toolId: "asset-manager-v2", payloadJson: { shared: "same", mode: "B" } };
 
   const sessionStorageLike = {};
   const auditLogLike = [];
@@ -206,22 +206,22 @@ export function run() {
     failures.push("Apply should be blocked when preview was not run.");
   }
 
-  const stalePreview = createPreview("library:A", "library:B", sourcePayload, targetPayload, "asset-browser-v2");
+  const stalePreview = createPreview("library:A", "library:B", sourcePayload, targetPayload, "asset-manager-v2");
   stalePreview.confirmed = true;
-  const changedSourcePayload = { toolId: "asset-browser-v2", payloadJson: { shared: "same", left: 999 } };
+  const changedSourcePayload = { toolId: "asset-manager-v2", payloadJson: { shared: "same", left: 999 } };
   const staleApply = applyPreview(stalePreview, "library:A", "library:B", changedSourcePayload, targetPayload, sessionStorageLike, auditLogLike);
   if (staleApply.ok || staleApply.reason !== "STALE_PAYLOAD") {
     failures.push("Apply should be blocked when preview is stale due to source/target change.");
   }
 
-  const conflictPreview = createPreview("history:1", "history:2", conflictSource, conflictTarget, "asset-browser-v2");
+  const conflictPreview = createPreview("history:1", "history:2", conflictSource, conflictTarget, "asset-manager-v2");
   conflictPreview.confirmed = true;
   const conflictApply = applyPreview(conflictPreview, "history:1", "history:2", conflictSource, conflictTarget, sessionStorageLike, auditLogLike);
   if (conflictApply.ok || conflictApply.reason !== "CONFLICT_BLOCK") {
     failures.push("Apply should be blocked when conflicts exist.");
   }
 
-  const cleanPreview = createPreview("library:A", "library:B", sourcePayload, targetPayload, "asset-browser-v2");
+  const cleanPreview = createPreview("library:A", "library:B", sourcePayload, targetPayload, "asset-manager-v2");
   cleanPreview.confirmed = true;
   const cleanApply = applyPreview(cleanPreview, "library:A", "library:B", sourcePayload, targetPayload, sessionStorageLike, auditLogLike);
   if (!cleanApply.ok) {

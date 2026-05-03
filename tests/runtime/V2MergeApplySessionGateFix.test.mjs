@@ -190,26 +190,26 @@ export function run() {
   if (applyContainsTwoSessionGateMessage) failures.push("Apply method still contains two-session gate message.");
 
   const cleanCandidates = [
-    { id: "library:a", payload: { toolId: "asset-browser-v2", payloadJson: { left: 1, shared: "yes" } } },
-    { id: "library:b", payload: { toolId: "asset-browser-v2", payloadJson: { right: 2, shared: "yes" } } }
+    { id: "library:a", payload: { toolId: "asset-manager-v2", payloadJson: { left: 1, shared: "yes" } } },
+    { id: "library:b", payload: { toolId: "asset-manager-v2", payloadJson: { right: 2, shared: "yes" } } }
   ];
   const oneCandidate = [
-    { id: "library:a", payload: { toolId: "asset-browser-v2", payloadJson: { left: 1 } } }
+    { id: "library:a", payload: { toolId: "asset-manager-v2", payloadJson: { left: 1 } } }
   ];
   const conflictCandidates = [
-    { id: "history:1", payload: { toolId: "asset-browser-v2", payloadJson: { mode: "A", shared: "yes" } } },
-    { id: "history:2", payload: { toolId: "asset-browser-v2", payloadJson: { mode: "B", shared: "yes" } } }
+    { id: "history:1", payload: { toolId: "asset-manager-v2", payloadJson: { mode: "A", shared: "yes" } } },
+    { id: "history:2", payload: { toolId: "asset-manager-v2", payloadJson: { mode: "B", shared: "yes" } } }
   ];
 
   const sessionStorageLike = {};
   const auditEntries = [];
 
-  const previewTooFew = runPreview(oneCandidate, "library:a", "library:a", "asset-browser-v2");
+  const previewTooFew = runPreview(oneCandidate, "library:a", "library:a", "asset-manager-v2");
   if (previewTooFew.ok || previewTooFew.reason !== "PREVIEW_TWO_SESSION_GATE") {
     failures.push("Preview should be blocked when session count is below two.");
   }
 
-  const previewClean = runPreview(cleanCandidates, "library:a", "library:b", "asset-browser-v2");
+  const previewClean = runPreview(cleanCandidates, "library:a", "library:b", "asset-manager-v2");
   if (!previewClean.ok || !previewClean.preview) {
     failures.push("Preview should succeed with two valid sessions.");
   }
@@ -228,18 +228,18 @@ export function run() {
     failures.push("Applied result diff does not match preview diff.");
   }
 
-  const previewStale = runPreview(cleanCandidates, "library:a", "library:b", "asset-browser-v2");
+  const previewStale = runPreview(cleanCandidates, "library:a", "library:b", "asset-manager-v2");
   confirmPreview(previewStale.preview);
   const staleCandidates = [
-    { id: "library:a", payload: { toolId: "asset-browser-v2", payloadJson: { left: 999, shared: "yes" } } },
-    { id: "library:b", payload: { toolId: "asset-browser-v2", payloadJson: { right: 2, shared: "yes" } } }
+    { id: "library:a", payload: { toolId: "asset-manager-v2", payloadJson: { left: 999, shared: "yes" } } },
+    { id: "library:b", payload: { toolId: "asset-manager-v2", payloadJson: { right: 2, shared: "yes" } } }
   ];
   const applyStale = applyPreview(previewStale.preview, staleCandidates, sessionStorageLike, auditEntries);
   if (applyStale.ok || applyStale.reason !== "STALE_PREVIEW_CHANGED_CONTEXT") {
     failures.push("Stale preview should block apply.");
   }
 
-  const previewConflict = runPreview(conflictCandidates, "history:1", "history:2", "asset-browser-v2");
+  const previewConflict = runPreview(conflictCandidates, "history:1", "history:2", "asset-manager-v2");
   confirmPreview(previewConflict.preview);
   const applyConflict = applyPreview(previewConflict.preview, conflictCandidates, sessionStorageLike, auditEntries);
   if (applyConflict.ok || applyConflict.reason !== "CONFLICT_BLOCK") {

@@ -125,12 +125,12 @@ export function run() {
     if (!js.includes(token)) failures.push(`Missing required implementation token/message: ${token}`);
   });
 
-  const validId = "asset-browser-v2-1777676088718-3eff5h3y";
+  const validId = "asset-manager-v2-1777676088718-3eff5h3y";
   const fakeId = "fake-manager-v2-1777676067919-bzuo73di";
   const storage = {
-    [validId]: JSON.stringify({ version: "v2", toolId: "asset-browser-v2", payloadJson: { source: "sessionStorage" } })
+    [validId]: JSON.stringify({ version: "v2", toolId: "asset-manager-v2", payloadJson: { source: "sessionStorage" } })
   };
-  const activePayload = { version: "v2", toolId: "asset-browser-v2", payloadJson: { source: "active-only" } };
+  const activePayload = { version: "v2", toolId: "asset-manager-v2", payloadJson: { source: "active-only" } };
 
   const saveFake = simulateSave(fakeId, {}, storage);
   if (saveFake.message !== "Session ID does not resolve to a valid Workspace V2 session.") {
@@ -140,7 +140,7 @@ export function run() {
     failures.push("Fake unknown ID unexpectedly created saved entry.");
   }
 
-  const overwriteFake = simulateOverwrite(fakeId, { [validId]: { version: "v2", toolId: "asset-browser-v2" } }, storage);
+  const overwriteFake = simulateOverwrite(fakeId, { [validId]: { version: "v2", toolId: "asset-manager-v2" } }, storage);
   if (overwriteFake.message !== "Session ID does not resolve to a valid Workspace V2 session.") {
     failures.push("Fake unknown ID should not overwrite saved entry.");
   }
@@ -169,9 +169,9 @@ export function run() {
   }
 
   const libraryBeforeCleanup = {
-    [fakeId]: { version: "v2", toolId: "asset-browser-v2", payloadJson: { old: true } },
-    [validId]: { version: "v2", toolId: "asset-browser-v2", payloadJson: { valid: true } },
-    "custom-user-label": { version: "v2", toolId: "asset-browser-v2", payloadJson: { custom: true } },
+    [fakeId]: { version: "v2", toolId: "asset-manager-v2", payloadJson: { old: true } },
+    [validId]: { version: "v2", toolId: "asset-manager-v2", payloadJson: { valid: true } },
+    "custom-user-label": { version: "v2", toolId: "asset-manager-v2", payloadJson: { custom: true } },
     "palette-manager-v2-1777676088718-zzzzzzzz": { version: "v2", toolId: "palette-manager-v2", payloadJson: { keep: true } }
   };
   const cleanupResult = cleanupStaleInvalidSavedEntries(libraryBeforeCleanup, storage);

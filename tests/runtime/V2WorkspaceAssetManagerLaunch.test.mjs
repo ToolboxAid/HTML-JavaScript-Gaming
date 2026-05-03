@@ -9,8 +9,8 @@ const __dirname = path.dirname(__filename);
 const repoRoot = path.resolve(__dirname, "..", "..");
 const workspaceHtmlPath = path.join(repoRoot, "tools", "workspace-v2", "index.html");
 const workspaceJsPath = path.join(repoRoot, "tools", "workspace-v2", "index.js");
-const assetHtmlPath = path.join(repoRoot, "tools", "asset-browser-v2", "index.html");
-const assetJsPath = path.join(repoRoot, "tools", "asset-browser-v2", "index.js");
+const assetHtmlPath = path.join(repoRoot, "tools", "asset-manager-v2", "index.html");
+const assetJsPath = path.join(repoRoot, "tools", "asset-manager-v2", "index.js");
 const toolsIndexPath = path.join(repoRoot, "tools", "index.html");
 const resultsPath = path.join(repoRoot, "tmp", "pr_11_313_workspace_asset_manager_launch_results.json");
 
@@ -44,13 +44,13 @@ export function run() {
       workspaceWiresAssetManagerButton: workspaceJs.includes('this.openAssetManagerButton = document.getElementById("workspaceV2OpenAssetManagerButton");') &&
         workspaceJs.includes("this.openAssetManagerButton.addEventListener(\"click\", () => {"),
       workspaceHasAssetManagerLaunchPath: workspaceJs.includes("openAssetManagerFromWorkspace()") &&
-        workspaceJs.includes("toolId: \"asset-browser-v2\"") &&
+        workspaceJs.includes("toolId: \"asset-manager-v2\"") &&
         workspaceJs.includes("payloadJson: this.cloneSessionValue(this.currentSessionPayload.payloadJson)") &&
-        workspaceJs.includes("this.buildToolLaunchUrl(\"asset-browser-v2\", hostContextId)"),
+        workspaceJs.includes("this.buildToolLaunchUrl(\"asset-manager-v2\", hostContextId)"),
       assetManagerUiTitle: assetHtml.includes("<title>Asset Manager V2</title>") &&
         assetJs.includes("document.title = \"Asset Manager V2\";"),
-      assetManagerKeepsToolIdContract: assetHtml.includes('data-tool-id="asset-browser-v2"') &&
-        assetJs.includes("versionCheck.payload.toolId.trim() !== \"asset-browser-v2\""),
+      assetManagerKeepsToolIdContract: assetHtml.includes('data-tool-id="asset-manager-v2"') &&
+        assetJs.includes("versionCheck.payload.toolId.trim() !== \"asset-manager-v2\""),
       toolsIndexShowsAssetManager: toolsIndex.includes(">Asset Manager V2<")
     }
   };

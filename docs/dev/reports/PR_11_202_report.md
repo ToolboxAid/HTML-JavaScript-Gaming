@@ -1,14 +1,14 @@
 # PR_11_202 Report
 
 ## Tool List
-- `tools/asset-browser-v2`
+- `tools/asset-manager-v2`
 - `tools/palette-manager-v2`
 - `tools/svg-asset-studio-v2`
 - `tools/tilemap-studio-v2`
 - `tools/vector-map-editor-v2`
 
 ## Files Changed
-- `tools/asset-browser-v2/index.js`
+- `tools/asset-manager-v2/index.js`
 - `tools/palette-manager-v2/index.js`
 - `tools/svg-asset-studio-v2/index.js`
 - `tools/tilemap-studio-v2/index.js`
@@ -101,7 +101,7 @@
 - Attempted wildcard command:
   - `node --check tools/*-v2/index.js` -> **FAIL** in PowerShell path expansion for Node `--check` input.
 - Executed per-tool checks:
-  - `node --check tools/asset-browser-v2/index.js` -> **PASS**
+  - `node --check tools/asset-manager-v2/index.js` -> **PASS**
   - `node --check tools/palette-manager-v2/index.js` -> **PASS**
   - `node --check tools/svg-asset-studio-v2/index.js` -> **PASS**
   - `node --check tools/tilemap-studio-v2/index.js` -> **PASS**

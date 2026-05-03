@@ -67,16 +67,16 @@ export function run() {
     if (!js.includes(token)) failures.push(`Missing cross-tool merge block token/text: ${token}`);
   });
 
-  const crossTool = evaluateCrossTool("palette-manager-v2", "asset-browser-v2");
+  const crossTool = evaluateCrossTool("palette-manager-v2", "asset-manager-v2");
   if (!crossTool.blocked) failures.push("Cross-tool merge should be blocked.");
   if (crossTool.rawJsonRendered) failures.push("Cross-tool merge block should not render raw merge JSON.");
   if (!crossTool.message.includes("Session A toolId: palette-manager-v2")) failures.push("Cross-tool block must show Session A toolId.");
-  if (!crossTool.message.includes("Session B toolId: asset-browser-v2")) failures.push("Cross-tool block must show Session B toolId.");
+  if (!crossTool.message.includes("Session B toolId: asset-manager-v2")) failures.push("Cross-tool block must show Session B toolId.");
   const crossToolState = mergeUiState({ canPreviewMerge: true, previewExists: false, previewFresh: false, previewConfirmed: false, conflictCount: 0 });
   if (!crossToolState.previewEnabled) failures.push("Preview button should remain enabled for cross-tool validation message.");
   if (!crossToolState.confirmDisabled || !crossToolState.applyDisabled) failures.push("Confirm/Apply should remain disabled after cross-tool block.");
 
-  const sameToolConflict = evaluateCrossTool("asset-browser-v2", "asset-browser-v2");
+  const sameToolConflict = evaluateCrossTool("asset-manager-v2", "asset-manager-v2");
   if (sameToolConflict.blocked) failures.push("Same-tool merge should not be blocked by cross-tool guard.");
   if (!sameToolConflict.rawJsonRendered) failures.push("Same-tool preview should continue to render merge output.");
   const sameToolConflictState = mergeUiState({ canPreviewMerge: true, previewExists: true, previewFresh: true, previewConfirmed: false, conflictCount: 2 });

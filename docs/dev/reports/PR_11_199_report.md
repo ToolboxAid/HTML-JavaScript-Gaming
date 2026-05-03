@@ -1,15 +1,15 @@
 # PR_11_199 Report
 
 ## V2 Directories Inspected
-- `tools/asset-browser-v2`
+- `tools/asset-manager-v2`
 - `tools/palette-manager-v2`
 - `tools/svg-asset-studio-v2`
 - `tools/tilemap-studio-v2`
 - `tools/vector-map-editor-v2`
 
 ## Files Changed
-- `tools/asset-browser-v2/index.html`
-- `tools/asset-browser-v2/index.js`
+- `tools/asset-manager-v2/index.html`
+- `tools/asset-manager-v2/index.js`
 - `tools/palette-manager-v2/index.html`
 - `tools/palette-manager-v2/index.js`
 - `tools/svg-asset-studio-v2/index.html`
@@ -19,19 +19,19 @@
 - `docs/dev/reports/PR_11_199_report.md`
 
 ## Validation Commands Run
-- `node --check tools/asset-browser-v2/index.js`
+- `node --check tools/asset-manager-v2/index.js`
 - `node --check tools/palette-manager-v2/index.js`
 - `node --check tools/svg-asset-studio-v2/index.js`
 - `node --check tools/vector-map-editor-v2/index.js`
 
 ## Validation Results
-- `node --check tools/asset-browser-v2/index.js`: **PASS** (exit code 0)
+- `node --check tools/asset-manager-v2/index.js`: **PASS** (exit code 0)
 - `node --check tools/palette-manager-v2/index.js`: **PASS** (exit code 0)
 - `node --check tools/svg-asset-studio-v2/index.js`: **PASS** (exit code 0)
 - `node --check tools/vector-map-editor-v2/index.js`: **PASS** (exit code 0)
 
 ## Manual Validation Results By Tool
-- `asset-browser-v2`: browser-interactive manual run not executed in this CLI-only session (no interactive browser in terminal tooling). Static checks by source inspection: header mount present, no-session empty state region present, malformed-session invalid state region present, valid/render region present, no banned JS `innerHTML` page construction.
+- `asset-manager-v2`: browser-interactive manual run not executed in this CLI-only session (no interactive browser in terminal tooling). Static checks by source inspection: header mount present, no-session empty state region present, malformed-session invalid state region present, valid/render region present, no banned JS `innerHTML` page construction.
 - `palette-manager-v2`: browser-interactive manual run not executed in this CLI-only session (no interactive browser in terminal tooling). Static checks by source inspection: header mount present, no-session empty state region present, malformed-session invalid state region present, valid/render region present, no banned JS `innerHTML` page construction.
 - `svg-asset-studio-v2`: browser-interactive manual run not executed in this CLI-only session (no interactive browser in terminal tooling). Static checks by source inspection: header mount present, no-session empty state region present, malformed-session invalid state region present, valid/render region present, no banned JS `innerHTML` page construction, URL payload writeback path removed.
 - `vector-map-editor-v2`: browser-interactive manual run not executed in this CLI-only session (no interactive browser in terminal tooling). Static checks by source inspection: header mount present, no-session empty state region present, malformed-session invalid state region present, valid/render region present, no banned JS `innerHTML` page construction, vector preview rendered via SVG DOM nodes.

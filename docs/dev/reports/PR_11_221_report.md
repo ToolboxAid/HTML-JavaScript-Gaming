@@ -1,7 +1,7 @@
 # PR_11_221 Report - V2 Error Logging (Structured)
 
 ## Files Changed
-- `tools/asset-browser-v2/index.js`
+- `tools/asset-manager-v2/index.js`
 - `tools/palette-manager-v2/index.js`
 - `tools/svg-asset-studio-v2/index.js`
 - `tools/tilemap-studio-v2/index.js`
@@ -30,7 +30,7 @@ Triggers now covered per tool:
 Example EMPTY:
 ```json
 {
-  "tool": "asset-browser-v2",
+  "tool": "asset-manager-v2",
   "type": "EMPTY",
   "message": "No hostContextId was provided for this tool.",
   "details": { "hostContextId": "" }

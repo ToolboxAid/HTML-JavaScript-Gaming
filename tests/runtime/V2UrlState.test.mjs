@@ -11,7 +11,7 @@ const toolsRoot = path.join(repoRoot, "tools");
 const resultsPath = path.join(repoRoot, "tmp", "v2-url-state-results.json");
 
 const REQUIRED_V2_TOOLS = [
-  "asset-browser-v2",
+  "asset-manager-v2",
   "palette-manager-v2",
   "svg-asset-studio-v2",
   "tilemap-studio-v2",

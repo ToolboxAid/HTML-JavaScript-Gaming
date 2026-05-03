@@ -201,26 +201,26 @@ export function run() {
   if (applyHasTwoSessionMessage) failures.push("Apply still includes two-session gate message.");
 
   const cleanCandidates = [
-    { id: "library:a", payload: { toolId: "asset-browser-v2", payloadJson: { shared: "same", left: 1 } } },
-    { id: "library:b", payload: { toolId: "asset-browser-v2", payloadJson: { shared: "same", right: 2 } } }
+    { id: "library:a", payload: { toolId: "asset-manager-v2", payloadJson: { shared: "same", left: 1 } } },
+    { id: "library:b", payload: { toolId: "asset-manager-v2", payloadJson: { shared: "same", right: 2 } } }
   ];
   const conflictCandidates = [
-    { id: "history:1", payload: { toolId: "asset-browser-v2", payloadJson: { shared: "same", mode: "A" } } },
-    { id: "history:2", payload: { toolId: "asset-browser-v2", payloadJson: { shared: "same", mode: "B" } } }
+    { id: "history:1", payload: { toolId: "asset-manager-v2", payloadJson: { shared: "same", mode: "A" } } },
+    { id: "history:2", payload: { toolId: "asset-manager-v2", payloadJson: { shared: "same", mode: "B" } } }
   ];
   const storage = {};
   const audit = [];
 
-  const noSelections = preview(cleanCandidates, "", "", "asset-browser-v2");
+  const noSelections = preview(cleanCandidates, "", "", "asset-manager-v2");
   if (noSelections.ok || !noSelections.message.includes("Session A and Session B")) failures.push("No selections should block preview with specific Session A/B message.");
-  const onlyA = preview(cleanCandidates, "library:a", "", "asset-browser-v2");
+  const onlyA = preview(cleanCandidates, "library:a", "", "asset-manager-v2");
   if (onlyA.ok || !onlyA.message.includes("Session B")) failures.push("Only Session A should block preview with missing Session B message.");
-  const onlyB = preview(cleanCandidates, "", "library:b", "asset-browser-v2");
+  const onlyB = preview(cleanCandidates, "", "library:b", "asset-manager-v2");
   if (onlyB.ok || !onlyB.message.includes("Session A")) failures.push("Only Session B should block preview with missing Session A message.");
-  const sameSelection = preview(cleanCandidates, "library:a", "library:a", "asset-browser-v2");
+  const sameSelection = preview(cleanCandidates, "library:a", "library:a", "asset-manager-v2");
   if (sameSelection.ok || !sameSelection.message.includes("two different")) failures.push("Same session for A/B should block preview.");
 
-  const validPreview = preview(cleanCandidates, "library:a", "library:b", "asset-browser-v2");
+  const validPreview = preview(cleanCandidates, "library:a", "library:b", "asset-manager-v2");
   if (!validPreview.ok || !validPreview.preview) failures.push("Two distinct selected sessions should create dry-run preview.");
   if (!validPreview.confirmEnabled || validPreview.applyEnabled) failures.push("Valid preview should enable confirm and keep apply disabled.");
   const confirmed = confirm(validPreview.preview);
@@ -229,7 +229,7 @@ export function run() {
   if (!applied.ok) failures.push("Confirmed preview should apply successfully.");
   if (applied.reason === "PREVIEW_TWO_SESSION_GATE") failures.push("Apply repeated two-session gate error after valid preview.");
 
-  const conflictedPreview = preview(conflictCandidates, "history:1", "history:2", "asset-browser-v2");
+  const conflictedPreview = preview(conflictCandidates, "history:1", "history:2", "asset-manager-v2");
   confirm(conflictedPreview.preview);
   const conflictedApply = apply(conflictedPreview.preview, conflictCandidates, storage, audit);
   if (conflictedApply.ok || conflictedApply.reason !== "CONFLICT_BLOCK") failures.push("Conflicted preview should still block apply.");

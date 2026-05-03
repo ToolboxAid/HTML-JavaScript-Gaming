@@ -211,20 +211,20 @@ export function run() {
   const history = [
     {
       hostContextId: "ctx-a",
-      tool: "asset-browser-v2",
+      tool: "asset-manager-v2",
       timestamp: "2026-05-01T01:00:00.000Z",
-      payload: { toolId: "asset-browser-v2", payloadJson: { a: 1 }, version: "v2" }
+      payload: { toolId: "asset-manager-v2", payloadJson: { a: 1 }, version: "v2" }
     },
     {
       hostContextId: "ctx-b",
       tool: "palette-manager-v2",
       timestamp: "2026-05-01T01:01:00.000Z",
-      payload: { toolId: "asset-browser-v2", payloadJson: { b: 2 }, version: "v2" }
+      payload: { toolId: "asset-manager-v2", payloadJson: { b: 2 }, version: "v2" }
     }
   ];
   const sessionStorageMap = {
-    "ctx-a": JSON.stringify({ toolId: "asset-browser-v2", payloadJson: { a: 9 }, version: "v2" }),
-    "ctx-b": JSON.stringify({ toolId: "asset-browser-v2", payloadJson: { b: 8 }, version: "v2" })
+    "ctx-a": JSON.stringify({ toolId: "asset-manager-v2", payloadJson: { a: 9 }, version: "v2" }),
+    "ctx-b": JSON.stringify({ toolId: "asset-manager-v2", payloadJson: { b: 8 }, version: "v2" })
   };
 
   const inventoryRecentOnly = resolveRecentInventory(history, sessionStorageMap);
@@ -236,19 +236,19 @@ export function run() {
   const diffMissing = runDiff(optionsNoLibrary, "", "");
   if (diffMissing.ok || !diffMissing.message.includes("Session A and Session B selections are missing")) failures.push("Missing selections should block Diff with one clear message.");
 
-  const mergeMissing = previewMerge(optionsNoLibrary, "", "", "asset-browser-v2");
+  const mergeMissing = previewMerge(optionsNoLibrary, "", "", "asset-manager-v2");
   if (mergeMissing.ok || !mergeMissing.message.includes("Session A and Session B selections are missing")) failures.push("Missing selections should block Merge with one clear message.");
 
   const diffSame = runDiff(optionsNoLibrary, optionsNoLibrary[0].id, optionsNoLibrary[0].id);
   if (diffSame.ok || !diffSame.message.includes("must be different")) failures.push("Same recent session for A/B should block Diff.");
 
-  const mergeSame = previewMerge(optionsNoLibrary, optionsNoLibrary[0].id, optionsNoLibrary[0].id, "asset-browser-v2");
+  const mergeSame = previewMerge(optionsNoLibrary, optionsNoLibrary[0].id, optionsNoLibrary[0].id, "asset-manager-v2");
   if (mergeSame.ok || !mergeSame.message.includes("must be different")) failures.push("Same recent session for A/B should block Merge.");
 
   const diffDistinct = runDiff(optionsNoLibrary, optionsNoLibrary[0].id, optionsNoLibrary[1].id);
   if (!diffDistinct.ok) failures.push("Distinct recent sessions should allow Compute Diff.");
 
-  const mergeDistinct = previewMerge(optionsNoLibrary, optionsNoLibrary[0].id, optionsNoLibrary[1].id, "asset-browser-v2");
+  const mergeDistinct = previewMerge(optionsNoLibrary, optionsNoLibrary[0].id, optionsNoLibrary[1].id, "asset-manager-v2");
   if (!mergeDistinct.ok || !mergeDistinct.preview) failures.push("Distinct recent sessions should allow Preview Merge.");
   if (!mergeDistinct.confirmEnabled || mergeDistinct.applyEnabled) failures.push("Valid merge preview should enable confirm and keep apply disabled.");
 

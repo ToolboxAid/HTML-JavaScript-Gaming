@@ -8,7 +8,7 @@ Validate and clean up the completed V2 re-engineer lane after PR_11_195. The tar
 - `tools/svg-asset-studio-v2/` - SVG Asset Studio V2
 - `tools/vector-map-editor-v2/` - Vector Map Editor V2
 - `tools/tilemap-studio-v2/` - Tilemap Studio V2
-- `tools/asset-browser-v2/` - Asset Browser V2
+- `tools/asset-manager-v2/` - Asset Browser V2
 
 ## Files Changed
 - `docs/dev/reports/pr_11_196_v2_runtime_validation_cleanup_report.md`
@@ -37,7 +37,7 @@ node --check tools/palette-manager-v2/index.js
 node --check tools/svg-asset-studio-v2/index.js
 node --check tools/vector-map-editor-v2/index.js
 node --check tools/tilemap-studio-v2/index.js
-node --check tools/asset-browser-v2/index.js
+node --check tools/asset-manager-v2/index.js
 ```
 
 Results:
@@ -45,7 +45,7 @@ Results:
 - `node --check tools/svg-asset-studio-v2/index.js` passed.
 - `node --check tools/vector-map-editor-v2/index.js` passed.
 - `node --check tools/tilemap-studio-v2/index.js` passed.
-- `node --check tools/asset-browser-v2/index.js` passed.
+- `node --check tools/asset-manager-v2/index.js` passed.
 
 HTML and JS compliance checks verified each target V2 tool has:
 - document title ending in `V2`

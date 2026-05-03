@@ -3,7 +3,7 @@ class AssetBrowserV2 {
     console.log("[AssetBrowserV2]");
     this.sessionPayloadBytesLimit = 1024 * 1024;
     document.title = "Asset Manager V2";
-    document.body.dataset.toolId = "asset-browser-v2";
+    document.body.dataset.toolId = "asset-manager-v2";
     this.urlState = this.readUrlState();
     this.goBack = this.goBack.bind(this);
     this.openSvgAssetStudioV2 = this.openSvgAssetStudioV2.bind(this);
@@ -28,7 +28,7 @@ class AssetBrowserV2 {
       return;
     }
     const targetUrl = this.buildToolUrl("svg-asset-studio-v2");
-    targetUrl.searchParams.set("fromTool", "asset-browser-v2");
+    targetUrl.searchParams.set("fromTool", "asset-manager-v2");
     window.location.href = targetUrl.toString();
   }
 
@@ -51,7 +51,7 @@ class AssetBrowserV2 {
   }
 
   toolLabel(toolId) {
-    if (toolId === "asset-browser-v2") return "Asset Manager V2";
+    if (toolId === "asset-manager-v2") return "Asset Manager V2";
     if (toolId === "palette-manager-v2") return "Palette Manager V2";
     if (toolId === "svg-asset-studio-v2") return "SVG Asset Studio V2";
     if (toolId === "tilemap-studio-v2") return "Tilemap Studio V2";
@@ -104,7 +104,7 @@ class AssetBrowserV2 {
       }
     }
     return {
-      tool: "asset-browser-v2",
+      tool: "asset-manager-v2",
       url: window.location.href,
       hostContextId: this.urlState.hostContextId,
       session: parsedSession,
@@ -118,7 +118,7 @@ class AssetBrowserV2 {
 
   logStructuredError(type, message, details) {
     console.error({
-      tool: "asset-browser-v2",
+      tool: "asset-manager-v2",
       type,
       message,
       details: details && typeof details === "object" ? details : {}
@@ -166,8 +166,8 @@ class AssetBrowserV2 {
       this.renderError(versionCheck.error);
       return;
     }
-    if (typeof versionCheck.payload.toolId !== "string" || versionCheck.payload.toolId.trim() !== "asset-browser-v2") {
-      this.renderError("Asset Manager V2 session data is invalid. Expected toolId 'asset-browser-v2'.");
+    if (typeof versionCheck.payload.toolId !== "string" || versionCheck.payload.toolId.trim() !== "asset-manager-v2") {
+      this.renderError("Asset Manager V2 session data is invalid. Expected toolId 'asset-manager-v2'.");
       return;
     }
     if (!versionCheck.payload.payloadJson || typeof versionCheck.payload.payloadJson !== "object" || Array.isArray(versionCheck.payload.payloadJson)) {

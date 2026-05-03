@@ -92,23 +92,23 @@ export function run() {
   }
 
   const library = {
-    "asset-browser-v2-1777676088718-3eff5h3y": { version: "v2", toolId: "asset-browser-v2", payloadJson: { a: 1 } },
+    "asset-manager-v2-1777676088718-3eff5h3y": { version: "v2", toolId: "asset-manager-v2", payloadJson: { a: 1 } },
     "palette-manager-v2-1777676088720-abcd1234": { version: "v2", toolId: "palette-manager-v2", payloadJson: { b: 2 } }
   };
-  const history = [{ hostContextId: "asset-browser-v2-1777676088718-3eff5h3y", tool: "asset-browser-v2", timestamp: "2026-05-01T00:00:00.000Z", payload: { version: "v2", toolId: "asset-browser-v2" } }];
-  const storage = { "asset-browser-v2-1777676088718-3eff5h3y": "{\"version\":\"v2\",\"toolId\":\"asset-browser-v2\"}" };
+  const history = [{ hostContextId: "asset-manager-v2-1777676088718-3eff5h3y", tool: "asset-manager-v2", timestamp: "2026-05-01T00:00:00.000Z", payload: { version: "v2", toolId: "asset-manager-v2" } }];
+  const storage = { "asset-manager-v2-1777676088718-3eff5h3y": "{\"version\":\"v2\",\"toolId\":\"asset-manager-v2\"}" };
 
-  const deleted = simulateDeleteSavedRow("asset-browser-v2-1777676088718-3eff5h3y", library, history, storage);
+  const deleted = simulateDeleteSavedRow("asset-manager-v2-1777676088718-3eff5h3y", library, history, storage);
   if (deleted.message !== "Saved session deleted.") {
     failures.push("Row Delete Saved should delete saved library entry.");
   }
-  if (Object.prototype.hasOwnProperty.call(deleted.nextLibrary, "asset-browser-v2-1777676088718-3eff5h3y")) {
+  if (Object.prototype.hasOwnProperty.call(deleted.nextLibrary, "asset-manager-v2-1777676088718-3eff5h3y")) {
     failures.push("Row Delete Saved did not remove saved entry.");
   }
   if (deleted.nextHistory.length !== history.length) {
     failures.push("Row Delete Saved must not remove Recent Sessions.");
   }
-  if (!Object.prototype.hasOwnProperty.call(deleted.nextStorage, "asset-browser-v2-1777676088718-3eff5h3y")) {
+  if (!Object.prototype.hasOwnProperty.call(deleted.nextStorage, "asset-manager-v2-1777676088718-3eff5h3y")) {
     failures.push("Row Delete Saved must not remove sessionStorage payload.");
   }
 

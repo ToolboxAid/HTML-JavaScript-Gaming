@@ -1,7 +1,7 @@
 # PR_11_212 Report — V2 Producer -> Tool VALID Render Verification
 
 ## Tools Validated
-- `asset-browser-v2`
+- `asset-manager-v2`
 - `palette-manager-v2`
 - `svg-asset-studio-v2`
 - `tilemap-studio-v2`
@@ -35,7 +35,7 @@ All five tools passed all checks.
 3. `node --check tools/*-v2/index.js`  
    - Result: **FAIL** in PowerShell wildcard expansion (`*` passed literally to Node)
 4. Equivalent per-tool checks:
-   - `node --check tools/asset-browser-v2/index.js` — **PASS**
+   - `node --check tools/asset-manager-v2/index.js` — **PASS**
    - `node --check tools/palette-manager-v2/index.js` — **PASS**
    - `node --check tools/svg-asset-studio-v2/index.js` — **PASS**
    - `node --check tools/tilemap-studio-v2/index.js` — **PASS**

@@ -159,10 +159,10 @@ export function run() {
   }
 
   const recentHistory = [
-    { hostContextId: "recent-1", tool: "asset-browser-v2", timestamp: "2026-05-01T00:00:00.000Z", payload: { toolId: "asset-browser-v2", version: "v2" } }
+    { hostContextId: "recent-1", tool: "asset-manager-v2", timestamp: "2026-05-01T00:00:00.000Z", payload: { toolId: "asset-manager-v2", version: "v2" } }
   ];
-  const storageMap = { "recent-1": "{\"toolId\":\"asset-browser-v2\",\"version\":\"v2\"}" };
-  const activePayload = { toolId: "asset-browser-v2", version: "v2", payloadJson: { ok: true } };
+  const storageMap = { "recent-1": "{\"toolId\":\"asset-manager-v2\",\"version\":\"v2\"}" };
+  const activePayload = { toolId: "asset-manager-v2", version: "v2", payloadJson: { ok: true } };
 
   const emptySave = evaluateSaveAction("", activePayload, {});
   const emptyOverwrite = evaluateOverwriteAction("", activePayload, {});

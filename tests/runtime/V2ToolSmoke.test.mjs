@@ -10,7 +10,7 @@ const toolsRoot = path.join(repoRoot, "tools");
 const fixturesRoot = path.join(repoRoot, "tests", "fixtures", "v2-tools");
 const resultsPath = path.join(repoRoot, "tmp", "v2-tool-smoke-results.json");
 const REQUIRED_V2_TOOLS = [
-  "asset-browser-v2",
+  "asset-manager-v2",
   "palette-manager-v2",
   "svg-asset-studio-v2",
   "tilemap-studio-v2",
@@ -123,7 +123,7 @@ function validateV2Tool(toolDirName) {
     if (!sessionContext) {
       failures.push("Fixture must contain sessionContext object.");
     } else {
-      if (toolDirName === "asset-browser-v2") {
+      if (toolDirName === "asset-manager-v2") {
         const catalog = sessionContext?.payloadJson?.assetCatalog;
         checks.hasFixtureToolPayload =
           catalog &&

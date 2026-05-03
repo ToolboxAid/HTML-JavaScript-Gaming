@@ -85,8 +85,8 @@ export function run() {
 
   const base = {
     lastMergedHostContextId: "",
-    recent: [{ hostContextId: "asset-browser-v2-regular", tool: "asset-browser-v2", payload: { version: "v2", toolId: "asset-browser-v2" } }],
-    sessionStorageMap: { "asset-browser-v2-regular": "{\"version\":\"v2\",\"toolId\":\"asset-browser-v2\"}" },
+    recent: [{ hostContextId: "asset-manager-v2-regular", tool: "asset-manager-v2", payload: { version: "v2", toolId: "asset-manager-v2" } }],
+    sessionStorageMap: { "asset-manager-v2-regular": "{\"version\":\"v2\",\"toolId\":\"asset-manager-v2\"}" },
     diffLeft: "",
     diffRight: "",
     mergeLeft: "",
@@ -96,8 +96,8 @@ export function run() {
   const initiallyDisabled = !undoEnabled(base.lastMergedHostContextId, base.recent);
   if (!initiallyDisabled) failures.push("Undo should be disabled initially.");
 
-  const mergedId = "asset-browser-v2-merged-1777777777777-abc123xy";
-  const mergedPayload = { version: "v2", toolId: "asset-browser-v2", mergeResultMeta: { isMergedResult: true }, payloadJson: { merged: true } };
+  const mergedId = "asset-manager-v2-merged-1777777777777-abc123xy";
+  const mergedPayload = { version: "v2", toolId: "asset-manager-v2", mergeResultMeta: { isMergedResult: true }, payloadJson: { merged: true } };
   const applied = applyRegistration(base, mergedId, mergedPayload);
   const enabledImmediately = undoEnabled(applied.next.lastMergedHostContextId, applied.next.recent);
   if (!enabledImmediately) failures.push("Undo should enable immediately after successful apply registration.");

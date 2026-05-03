@@ -13,7 +13,7 @@ const fixturesRoot = path.join(repoRoot, "tests", "fixtures", "v2-tools");
 const resultsPath = path.join(repoRoot, "tmp", "v2-performance-results.json");
 
 const TOOLS = [
-  "asset-browser-v2",
+  "asset-manager-v2",
   "palette-manager-v2",
   "svg-asset-studio-v2",
   "tilemap-studio-v2",
@@ -168,7 +168,7 @@ function validateVectorMapEditor(sessionContext) {
 
 function validateByTool(toolId, sessionContext) {
   if (!sessionContext || typeof sessionContext !== "object" || Array.isArray(sessionContext)) return false;
-  if (toolId === "asset-browser-v2") return validateAssetBrowser(sessionContext);
+  if (toolId === "asset-manager-v2") return validateAssetBrowser(sessionContext);
   if (toolId === "palette-manager-v2") return validatePaletteManager(sessionContext);
   if (toolId === "svg-asset-studio-v2") return validateSvgAssetStudio(sessionContext);
   if (toolId === "tilemap-studio-v2") return validateTilemapStudio(sessionContext);
@@ -236,7 +236,7 @@ function simulateRenderVectorMapEditor(sessionContext) {
 }
 
 function simulateRenderByTool(toolId, sessionContext) {
-  if (toolId === "asset-browser-v2") return simulateRenderAssetBrowser(sessionContext);
+  if (toolId === "asset-manager-v2") return simulateRenderAssetBrowser(sessionContext);
   if (toolId === "palette-manager-v2") return simulateRenderPaletteManager(sessionContext);
   if (toolId === "svg-asset-studio-v2") return simulateRenderSvgAssetStudio(sessionContext);
   if (toolId === "tilemap-studio-v2") return simulateRenderTilemapStudio(sessionContext);

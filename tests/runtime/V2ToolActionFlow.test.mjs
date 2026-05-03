@@ -13,7 +13,7 @@ const resultsPath = path.join(repoRoot, "tmp", "v2-tool-action-results.json");
 
 const FLOWS = [
   {
-    sourceToolId: "asset-browser-v2",
+    sourceToolId: "asset-manager-v2",
     targetToolId: "svg-asset-studio-v2",
     buttonId: "assetBrowserV2OpenSvgAssetStudioV2Button",
     targetUrlSnippet: "../svg-asset-studio-v2/index.html"
@@ -26,9 +26,9 @@ const FLOWS = [
   },
   {
     sourceToolId: "tilemap-studio-v2",
-    targetToolId: "asset-browser-v2",
+    targetToolId: "asset-manager-v2",
     buttonId: "tilemapV2OpenAssetBrowserV2Button",
-    targetUrlSnippet: "../asset-browser-v2/index.html"
+    targetUrlSnippet: "../asset-manager-v2/index.html"
   }
 ];
 

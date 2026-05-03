@@ -7,7 +7,7 @@ import { fileURLToPath, pathToFileURL } from "node:url";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const repoRoot = path.resolve(__dirname, "..", "..");
-const fixturePath = path.join(repoRoot, "tests", "fixtures", "v2-tools", "asset-browser-v2.json");
+const fixturePath = path.join(repoRoot, "tests", "fixtures", "v2-tools", "asset-manager-v2.json");
 const workspaceHtmlPath = path.join(repoRoot, "tools", "workspace-v2", "index.html");
 const workspaceJsPath = path.join(repoRoot, "tools", "workspace-v2", "index.js");
 const resultsPath = path.join(repoRoot, "tmp", "v2-import-export-results.json");
@@ -110,7 +110,7 @@ export function run() {
   const sessionStorageLike = new MemorySessionStorage();
   let importResult = null;
   try {
-    importResult = simulateImport("asset-browser-v2", fixtureRawSessionJson, sessionStorageLike);
+    importResult = simulateImport("asset-manager-v2", fixtureRawSessionJson, sessionStorageLike);
   } catch (error) {
     failures.push(`Import simulation failed: ${error instanceof Error ? error.message : "unknown error"}`);
   }

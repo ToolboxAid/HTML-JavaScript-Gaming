@@ -141,7 +141,7 @@ export function run() {
   let history = [];
   const payloadBase = {
     version: "v2",
-    toolId: "asset-browser-v2",
+    toolId: "asset-manager-v2",
     payloadJson: {
       assetCatalog: {
         name: "History Fixture",
@@ -154,7 +154,7 @@ export function run() {
     history = addRecentSessionEntry(
       history,
       `host-${index}`,
-      "asset-browser-v2",
+      "asset-manager-v2",
       { ...payloadBase, payloadJson: { ...payloadBase.payloadJson, sequence: index } },
       `2026-05-01T00:00:${String(index).padStart(2, "0")}Z`
     );
@@ -182,7 +182,7 @@ export function run() {
 
   const malformedRawHistory = JSON.stringify([
     ...history,
-    { hostContextId: "", tool: "asset-browser-v2", timestamp: "bad", payload: {} },
+    { hostContextId: "", tool: "asset-manager-v2", timestamp: "bad", payload: {} },
     { hostContextId: "broken", timestamp: "2026-05-01T00:00:00Z", payload: {} },
     "invalid-row"
   ]);

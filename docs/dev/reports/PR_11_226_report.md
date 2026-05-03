@@ -1,13 +1,13 @@
 # PR_11_226 Report - V2 Session Version Tag (Forward Compatibility)
 
 ## Files Changed
-- `tests/fixtures/v2-tools/asset-browser-v2.json`
+- `tests/fixtures/v2-tools/asset-manager-v2.json`
 - `tests/fixtures/v2-tools/palette-manager-v2.json`
 - `tests/fixtures/v2-tools/svg-asset-studio-v2.json`
 - `tests/fixtures/v2-tools/tilemap-studio-v2.json`
 - `tests/fixtures/v2-tools/vector-map-editor-v2.json`
 - `tools/workspace-v2/index.js`
-- `tools/asset-browser-v2/index.js`
+- `tools/asset-manager-v2/index.js`
 - `tools/palette-manager-v2/index.js`
 - `tools/svg-asset-studio-v2/index.js`
 - `tools/tilemap-studio-v2/index.js`

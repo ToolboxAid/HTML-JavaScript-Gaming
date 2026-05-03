@@ -13,7 +13,7 @@ const workspaceJsPath = path.join(repoRoot, "tools", "workspace-v2", "index.js")
 const resultsPath = path.join(repoRoot, "tmp", "v2-session-version-results.json");
 
 const TOOLS = [
-  "asset-browser-v2",
+  "asset-manager-v2",
   "palette-manager-v2",
   "svg-asset-studio-v2",
   "tilemap-studio-v2",
@@ -55,7 +55,7 @@ function hasValidPayload(toolId, sessionContext) {
     return false;
   }
 
-  if (toolId === "asset-browser-v2") {
+  if (toolId === "asset-manager-v2") {
     const catalog = sessionContext?.payloadJson?.assetCatalog;
     if (!catalog || typeof catalog !== "object" || Array.isArray(catalog)) return false;
     if (typeof catalog.name !== "string" || !catalog.name.trim()) return false;

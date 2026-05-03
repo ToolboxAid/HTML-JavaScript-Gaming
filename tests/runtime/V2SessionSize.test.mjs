@@ -14,7 +14,7 @@ const resultsPath = path.join(repoRoot, "tmp", "v2-session-size-results.json");
 const URL_LENGTH_LIMIT = 2000;
 const SESSION_PAYLOAD_BYTES_LIMIT = 1024 * 1024;
 const TOOL_IDS = [
-  "asset-browser-v2",
+  "asset-manager-v2",
   "palette-manager-v2",
   "svg-asset-studio-v2",
   "tilemap-studio-v2",
@@ -88,7 +88,7 @@ function validateUrlLimit(sessionPayload) {
 
 function buildPayload(stringLength) {
   return {
-    toolId: "asset-browser-v2",
+    toolId: "asset-manager-v2",
     payloadJson: {
       assetCatalog: {
         name: "Session Size Fixture",

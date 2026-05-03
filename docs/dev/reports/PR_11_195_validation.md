@@ -39,13 +39,13 @@ Additional unchanged V2 lane sanity checks were also run:
 ```powershell
 node --check tools/vector-map-editor-v2/index.js
 node --check tools/tilemap-studio-v2/index.js
-node --check tools/asset-browser-v2/index.js
+node --check tools/asset-manager-v2/index.js
 ```
 
 Results:
 - `node --check tools/vector-map-editor-v2/index.js` passed.
 - `node --check tools/tilemap-studio-v2/index.js` passed.
-- `node --check tools/asset-browser-v2/index.js` passed.
+- `node --check tools/asset-manager-v2/index.js` passed.
 
 ## Banned JS Pattern Check
 Command covered changed JS files:

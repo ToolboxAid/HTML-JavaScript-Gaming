@@ -80,10 +80,10 @@ export function run() {
     if (!js.includes(token)) failures.push(`Missing stale-preview-clear token/text: ${token}`);
   });
 
-  const originalLeft = "history:asset-browser-v2-a";
-  const originalRight = "history:asset-browser-v2-b";
+  const originalLeft = "history:asset-manager-v2-a";
+  const originalRight = "history:asset-manager-v2-b";
   const originalKey = selectionKey(originalLeft, originalRight);
-  const mergedRecentId = "asset-browser-v2-merged-1777777777777-abc123xy";
+  const mergedRecentId = "asset-manager-v2-merged-1777777777777-abc123xy";
   const base = {
     mergeLeft: originalLeft,
     mergeRight: originalRight,
@@ -94,10 +94,10 @@ export function run() {
       confirmed: true
     },
     lastMergedSessionResult: { payload: { ok: true } },
-    mergedSessionId: "asset-browser-v2-merged-1777777777777",
+    mergedSessionId: "asset-manager-v2-merged-1777777777777",
     mergedSessionStatus: "Merged session ready. Choose an ID and save if desired.",
     mergeResultSummary: "Merge Apply Summary",
-    mergeOutput: "{\"source\":\"history:asset-browser-v2-a\"}",
+    mergeOutput: "{\"source\":\"history:asset-manager-v2-a\"}",
     confirmDisabled: false,
     applyDisabled: false,
     recent: [{ hostContextId: mergedRecentId }],
@@ -106,7 +106,7 @@ export function run() {
   };
 
   if (!base.mergeResultSummary.includes("Merge Apply Summary")) failures.push("Preview/apply summary should exist before selection change.");
-  if (!base.mergeOutput.includes("history:asset-browser-v2-a")) failures.push("Raw preview/apply JSON should exist before selection change.");
+  if (!base.mergeOutput.includes("history:asset-manager-v2-a")) failures.push("Raw preview/apply JSON should exist before selection change.");
 
   const changeA = onSelectionChange(base, "history:palette-manager-v2-a", originalRight);
   if (changeA.mergeResultSummary !== "Selections changed. Run Preview Merge again.") failures.push("Changing Session A should set stale-selection status.");

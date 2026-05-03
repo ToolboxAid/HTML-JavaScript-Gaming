@@ -1,0 +1,34 @@
+PR_11_313 Rename Audit
+Timestamp: 2026-05-03
+
+Target rename:
+legacy asset browser v2 id -> asset-manager-v2
+
+Audit commands and results:
+
+1) Content reference audit
+Command:
+rg -n "legacy asset browser v2 id" .
+Result:
+No matches found (exit code 1).
+
+2) Path/name audit
+Command:
+rg --files | rg "legacy asset browser v2 id"
+Result:
+No matches found (exit code 1).
+
+3) Syntax audit
+Command:
+node --check on all changed .js/.mjs files
+Result:
+checked=62 failed=0
+
+4) Targeted launch validation
+Command:
+node tests/runtime/V2WorkspaceAssetManagerLaunch.test.mjs
+Result:
+PASS
+
+Conclusion:
+The old contract ID `legacy asset browser v2 id` no longer exists in repository content or file paths.

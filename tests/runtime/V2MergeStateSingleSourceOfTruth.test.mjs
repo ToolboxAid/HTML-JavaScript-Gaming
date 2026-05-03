@@ -68,15 +68,15 @@ export function run() {
     if (!js.includes(token)) failures.push(`Missing merge-state SSoT token/text: ${token}`);
   });
 
-  const mergedId = "asset-browser-v2-merged-1777777777777-abcd1234";
+  const mergedId = "asset-manager-v2-merged-1777777777777-abcd1234";
   const validMergedPayload = {
     version: "v2",
-    toolId: "asset-browser-v2",
+    toolId: "asset-manager-v2",
     mergeResultMeta: { isMergedResult: true }
   };
 
-  const initialHistory = [{ hostContextId: "asset-browser-v2-regular", payload: { version: "v2", toolId: "asset-browser-v2" } }];
-  const initialStorage = { "asset-browser-v2-regular": "{\"version\":\"v2\",\"toolId\":\"asset-browser-v2\"}" };
+  const initialHistory = [{ hostContextId: "asset-manager-v2-regular", payload: { version: "v2", toolId: "asset-manager-v2" } }];
+  const initialStorage = { "asset-manager-v2-regular": "{\"version\":\"v2\",\"toolId\":\"asset-manager-v2\"}" };
   if (undoEnabled("", initialHistory, initialStorage)) failures.push("Undo must be disabled on initial load.");
 
   const applyHistory = [
@@ -102,7 +102,7 @@ export function run() {
   if (undoEnabled(mergedId, staleStorageHistory, staleStorage)) failures.push("Undo must be disabled if merged session storage entry is missing.");
 
   const staleMetaHistory = [
-    { hostContextId: mergedId, payload: { version: "v2", toolId: "asset-browser-v2" } },
+    { hostContextId: mergedId, payload: { version: "v2", toolId: "asset-manager-v2" } },
     ...initialHistory
   ];
   if (undoEnabled(mergedId, staleMetaHistory, applyStorage)) failures.push("Undo must be disabled if authoritative recent entry is not a merged result.");

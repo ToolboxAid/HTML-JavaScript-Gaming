@@ -5,14 +5,14 @@
 - `docs/dev/reports/PR_11_206_report.md`
 
 ## Flows Tested
-- `asset-browser-v2 -> svg-asset-studio-v2`
+- `asset-manager-v2 -> svg-asset-studio-v2`
 - `palette-manager-v2 -> vector-map-editor-v2`
-- `tilemap-studio-v2 -> asset-browser-v2`
+- `tilemap-studio-v2 -> asset-manager-v2`
 
 ## Pass/Fail Per Flow
-- `asset-browser-v2 -> svg-asset-studio-v2`: **PASS**
+- `asset-manager-v2 -> svg-asset-studio-v2`: **PASS**
 - `palette-manager-v2 -> vector-map-editor-v2`: **PASS**
-- `tilemap-studio-v2 -> asset-browser-v2`: **PASS**
+- `tilemap-studio-v2 -> asset-manager-v2`: **PASS**
 
 ## HostContextId Preservation
 Per flow, the runtime test confirms:
