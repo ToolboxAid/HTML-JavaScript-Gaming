@@ -1,1 +1,1 @@
-Enforce strict payloadJson-only contract and visible invalid-state rejection across V2 tools - PR 11.312
+Complete Asset Browser V2 strict payloadJson catalog handling with explicit valid-empty and invalid legacy hint rejection - PR 11.313

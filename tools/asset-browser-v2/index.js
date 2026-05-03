@@ -178,6 +178,10 @@ class AssetBrowserV2 {
       this.renderError("Asset Browser V2 session data is invalid. Expected payloadJson.assetCatalog.");
       return;
     }
+    if (typeof versionCheck.payload.payloadJson.importName === "string" || typeof versionCheck.payload.payloadJson.importDestination === "string") {
+      this.renderError("Asset Browser V2 session data is invalid. Remove payloadJson.importName/importDestination. Load assets from payloadJson.assetCatalog only.");
+      return;
+    }
     this.renderCatalog(versionCheck.payload.payloadJson.assetCatalog, versionCheck.payload);
   }
 
@@ -218,7 +222,12 @@ class AssetBrowserV2 {
     document.getElementById("assetBrowserV2State").textContent = assetCatalog.entries.length === 0
       ? "Asset Browser V2 loaded a valid session asset catalog with zero entries."
       : "Asset Browser V2 loaded the session asset catalog.";
-    document.getElementById("assetBrowserV2EmptyState").hidden = true;
+    if (assetCatalog.entries.length === 0) {
+      document.getElementById("assetBrowserV2EmptyState").textContent = "Asset catalog is valid but empty. Add assets to payloadJson.assetCatalog.entries and relaunch Asset Browser V2.";
+      document.getElementById("assetBrowserV2EmptyState").hidden = false;
+    } else {
+      document.getElementById("assetBrowserV2EmptyState").hidden = true;
+    }
     document.getElementById("assetBrowserV2InvalidState").hidden = true;
     document.getElementById("assetBrowserV2ValidState").hidden = false;
 
