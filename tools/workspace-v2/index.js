@@ -18,7 +18,6 @@ class WorkspaceV2SessionProducer {
     this.importJsonNode = document.getElementById("workspaceV2ImportJson");
     this.importFileNode = document.getElementById("workspaceV2ImportFile");
     this.importButton = document.getElementById("workspaceV2ImportButton");
-    this.importTextareaButton = null;
     this.exportButton = document.getElementById("workspaceV2ExportButton");
     this.workspaceJsonNode = this.importJsonNode;
     this.shareUrlNode = document.getElementById("workspaceV2ShareUrl");
@@ -218,12 +217,12 @@ class WorkspaceV2SessionProducer {
         this.renderSessionHistory();
       }
     });
+    this.removePaletteManagerProducerOption();
     this.applyDefaultWorkspaceToolSelection();
     this.registerScrollTextColorRule();
     this.initializeImportExportSectionStatusNode();
     this.initializeWorkspaceToolsSummaryNode();
     this.initializeHiddenImportFileInput();
-    this.initializeImportTextareaButton();
     this.decodeSessionParamFromUrl();
     this.initializeWorkspaceProducerSession();
     this.refreshPaletteOwnershipStateAndUi();
@@ -372,33 +371,17 @@ class WorkspaceV2SessionProducer {
     this.importFileNode.style.display = "none";
   }
 
-  initializeImportTextareaButton() {
-    const existingButton = document.getElementById("workspaceV2ImportTextareaButton");
-    if (existingButton instanceof HTMLButtonElement) {
-      this.importTextareaButton = existingButton;
-    } else {
-      const importButtonParent = this.importButton ? this.importButton.parentElement : null;
-      if (!importButtonParent) {
+  handleImportWorkspaceSessionJsonClick() {
+    if (!this.importFileNode) {
+      if (this.importJsonNode && this.importJsonNode.value.trim()) {
+        this.setImportExportStatus("File picker unavailable. Importing from Workspace Session JSON.");
+        this.importWorkspaceSessionJson();
         return;
       }
-      const textareaImportButton = document.createElement("button");
-      textareaImportButton.type = "button";
-      textareaImportButton.id = "workspaceV2ImportTextareaButton";
-      textareaImportButton.textContent = "Import Textarea JSON";
-      importButtonParent.insertBefore(textareaImportButton, this.importButton.nextSibling);
-      this.importTextareaButton = textareaImportButton;
-    }
-    this.importTextareaButton.addEventListener("click", () => {
-      this.importWorkspaceSessionJson();
-    });
-  }
-
-  handleImportWorkspaceSessionJsonClick() {
-    this.setImportExportStatus("Select a workspace session file to import.");
-    if (!this.importFileNode) {
       this.setImportExportStatus("Import error: file picker is unavailable.");
       return;
     }
+    this.setImportExportStatus("Select a workspace session file to import.");
     this.importFileDialogPending = true;
     this.importFileNode.value = "";
     this.importFileNode.click();
@@ -419,14 +402,29 @@ class WorkspaceV2SessionProducer {
     }, 0);
   }
 
+  removePaletteManagerProducerOption() {
+    if (!this.toolSelect) {
+      return;
+    }
+    Array.from(this.toolSelect.options).forEach((option) => {
+      if (option.value === "palette-manager-v2") {
+        option.remove();
+      }
+    });
+  }
+
   applyDefaultWorkspaceToolSelection() {
     if (!this.toolSelect) {
       return;
     }
-    const defaultToolId = "palette-manager-v2";
+    const defaultToolId = "asset-browser-v2";
     const hasDefaultOption = Array.from(this.toolSelect.options).some((option) => option.value === defaultToolId);
     if (hasDefaultOption) {
       this.toolSelect.value = defaultToolId;
+      return;
+    }
+    if (this.toolSelect.options.length > 0) {
+      this.toolSelect.selectedIndex = 0;
     }
   }
 
