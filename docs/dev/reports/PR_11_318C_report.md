@@ -13,17 +13,21 @@ Move Playwright outputs from defaults into `tests/results/**` via config-only ch
 
 ## Implementation Summary
 - Config now routes Playwright outputs under `tests/results/**`:
-  - test artifacts: `tests/results/artifacts`
+  - top-level `outputDir`: `tests/results`
+  - project artifact output: `tests/results/artifacts`
   - HTML report: `tests/results/report`
 - Kept existing run options:
   - `headless: false`
   - `slowMo: 500`
   - `trace: "on"`
-- Scoped Playwright discovery to `tests/ui` to run UI specs only when invoking `npx playwright test`.
+- `.gitignore` already included required ignore entries; no `.gitignore` changes were needed:
+  - `node_modules/`
+  - `tests/results/`
+  - `tmp/`
 
 ## Validation Commands
 - `node --check playwright.config.cjs` -> **PASS**
-- `npx playwright test` -> **PASS**
+- `npx playwright test tests/ui/workspace-v2.asset-manager.spec.js` -> **PASS**
 
 ## Output Verification
 - `tests/results/` exists -> **YES**
@@ -33,5 +37,4 @@ Move Playwright outputs from defaults into `tests/results/**` via config-only ch
 - `playwright-report/` created -> **NO**
 
 ## Constraint Note
-- A direct combination of `outputDir = tests/results` and HTML reporter `outputFolder = tests/results/report` is rejected by Playwright due folder-clash protection.
-- Final config keeps all output in `tests/results/**` without using default output folders.
+- Playwright rejects direct HTML/outputDir folder collision. Final config keeps all output in `tests/results/**` by using top-level `outputDir` plus project-level artifact `outputDir`.

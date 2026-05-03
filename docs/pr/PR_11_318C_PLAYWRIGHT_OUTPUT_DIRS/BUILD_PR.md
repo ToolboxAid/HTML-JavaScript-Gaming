@@ -2,8 +2,10 @@
 
 ## Implementation
 - Updated `playwright.config.cjs`:
-  - `testDir: "tests/ui"`
-  - `outputDir: "tests/results/artifacts"`
+  - top-level `outputDir: "tests/results"`
+  - project-level UI artifact output:
+    - `projects[0].outputDir: "tests/results/artifacts"`
+    - `projects[0].testDir: "tests/ui"`
   - HTML reporter output:
     - `tests/results/report`
   - Preserved:
@@ -12,9 +14,12 @@
     - `trace: "on"`
 
 ## Notes
-- Playwright rejects a config where HTML output folder is nested under the same root as `outputDir` when both are the same directory tree root (`tests/results`), because HTML reporter clears its output folder and can erase artifacts.
-- This config keeps all outputs under `tests/results/**` while avoiding reporter/outputDir collision.
+- `.gitignore` already includes required entries:
+  - `node_modules/`
+  - `tests/results/`
+  - `tmp/`
+- Playwright rejects a config where HTML output folder and test artifact `outputDir` share a collision path. Project-level `outputDir` avoids that clash while keeping all outputs under `tests/results/**`.
 
 ## Validation
 - `node --check playwright.config.cjs`
-- `npx playwright test`
+- `npx playwright test tests/ui/workspace-v2.asset-manager.spec.js`

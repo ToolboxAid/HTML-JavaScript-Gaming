@@ -1,6 +1,12 @@
 module.exports = {
-  testDir: "tests/ui",
-  outputDir: "tests/results/artifacts",
+  outputDir: "tests/results",
+  projects: [
+    {
+      name: "ui",
+      testDir: "tests/ui",
+      outputDir: "tests/results/artifacts"
+    }
+  ],
   reporter: [
     ["list"],
     ["html", { outputFolder: "tests/results/report", open: "never" }]
