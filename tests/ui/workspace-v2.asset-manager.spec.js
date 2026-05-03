@@ -3,6 +3,7 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import http from "node:http";
 import { fileURLToPath } from "node:url";
+import { ctrlTapClick } from "../helpers/playwrightCtrlTapClick.mjs";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -70,14 +71,14 @@ test("workspace v2 launches asset manager and add/remove is reflected in export"
   try {
     // 1) Workspace V2 startup baseline
     await page.goto(`${server.baseUrl}/tools/workspace-v2/index.html`);
-    await page.getByRole("button", { name: "Full Reset" }).click();
+    await ctrlTapClick(page, page.getByRole("button", { name: "Full Reset" }));
     await expect(page.locator("#workspaceV2WorkspaceToolsSummary")).toContainText("palette-browser");
     await expect(page.locator("#workspaceV2WorkspaceToolsSummary")).toContainText("workspace-v2");
 
     // 2) Producer launch to Asset Manager V2
     await page.locator("#workspaceV2ToolSelect").selectOption("asset-manager-v2");
-    await page.getByRole("button", { name: "Load Fixture" }).click();
-    await page.getByRole("button", { name: "Create Session + Launch" }).click();
+    await ctrlTapClick(page, page.getByRole("button", { name: "Load Fixture" }));
+    await ctrlTapClick(page, page.getByRole("button", { name: "Create Session + Launch" }));
     await expect(page).toHaveURL(/\/tools\/asset-manager-v2\/index\.html/);
     await expect(page).toHaveTitle("Asset Manager V2");
     await expect(page.locator("#assetBrowserV2ContractReadout")).toContainText("payloadJson.assetCatalog valid");
@@ -88,7 +89,7 @@ test("workspace v2 launches asset manager and add/remove is reflected in export"
     await page.locator("#assetManagerV2AddLabel").fill("Enemy Ship");
     await page.locator("#assetManagerV2AddKind").fill("svg");
     await page.locator("#assetManagerV2AddPath").fill("assets/vectors/enemy-ship.svg");
-    await page.getByRole("button", { name: "Add Asset" }).click();
+    await ctrlTapClick(page, page.getByRole("button", { name: "Add Asset" }));
     await expect(page.getByRole("button", { name: /Enemy Ship/ })).toBeVisible();
     await expect(page.locator("#assetManagerV2ActionStatus")).toHaveText("Asset 'asset-002' added.");
 
@@ -97,7 +98,7 @@ test("workspace v2 launches asset manager and add/remove is reflected in export"
     await page.locator("#assetManagerV2AddLabel").fill("Enemy Ship Duplicate");
     await page.locator("#assetManagerV2AddKind").fill("svg");
     await page.locator("#assetManagerV2AddPath").fill("assets/vectors/enemy-ship-duplicate.svg");
-    await page.getByRole("button", { name: "Add Asset" }).click();
+    await ctrlTapClick(page, page.getByRole("button", { name: "Add Asset" }));
     await expect(page.locator("#assetManagerV2ActionStatus")).toHaveText("Add blocked. Asset id 'asset-002' already exists.");
     await expect(page.locator("#assetBrowserV2List").getByRole("button", { name: /Enemy Ship/ })).toHaveCount(1);
 
@@ -106,7 +107,7 @@ test("workspace v2 launches asset manager and add/remove is reflected in export"
     await page.locator("#assetManagerV2AddLabel").fill("   ");
     await page.locator("#assetManagerV2AddKind").fill("   ");
     await page.locator("#assetManagerV2AddPath").fill("   ");
-    await page.getByRole("button", { name: "Add Asset" }).click();
+    await ctrlTapClick(page, page.getByRole("button", { name: "Add Asset" }));
     await expect(page.locator("#assetManagerV2ActionStatus")).toContainText("Missing required field(s):");
     await expect(page.locator("#assetManagerV2ActionStatus")).toContainText("id");
     await expect(page.locator("#assetManagerV2ActionStatus")).toContainText("label");
@@ -115,21 +116,21 @@ test("workspace v2 launches asset manager and add/remove is reflected in export"
     await expect(page.locator("#assetBrowserV2List").getByRole("button", { name: /Enemy Ship/ })).toHaveCount(1);
 
     // 6) Select asset/details
-    await page.locator("#assetBrowserV2List").getByRole("button", { name: /Player Ship/ }).click();
+    await ctrlTapClick(page, page.locator("#assetBrowserV2List").getByRole("button", { name: /Player Ship/ }));
     await expect(page.locator("#assetBrowserV2DetailId")).toHaveText("asset-001");
     await expect(page.locator("#assetBrowserV2DetailLabel")).toHaveText("Player Ship");
     await expect(page.locator("#assetBrowserV2DetailKind")).toHaveText("svg");
     await expect(page.locator("#assetBrowserV2DetailPath")).toHaveText("assets/vectors/player-ship.svg");
 
     // 7) Remove asset
-    await page.getByRole("button", { name: "Remove asset-002" }).click();
+    await ctrlTapClick(page, page.getByRole("button", { name: "Remove asset-002" }));
     await expect(page.getByRole("button", { name: /Enemy Ship/ })).toHaveCount(0);
     await expect(page.locator("#assetManagerV2ActionStatus")).toHaveText("Asset 'asset-002' removed.");
 
     // 8) Export validation
-    await page.getByRole("button", { name: /Back to Workspace V2/ }).click();
+    await ctrlTapClick(page, page.getByRole("button", { name: /Back to Workspace V2/ }));
     await expect(page).toHaveURL(/\/tools\/workspace-v2\/index\.html/);
-    await page.getByRole("button", { name: "Export Workspace Session JSON" }).click();
+    await ctrlTapClick(page, page.getByRole("button", { name: "Export Workspace Session JSON" }));
     const exportedJsonText = await page.locator("#workspaceV2ImportJson").inputValue();
     const exported = JSON.parse(exportedJsonText);
     const entries = exported?.tools?.["workspace-v2"]?.activeSession?.payloadJson?.assetCatalog?.entries;
@@ -151,7 +152,7 @@ test("workspace v2 launches asset manager and add/remove is reflected in export"
 
     // 9) Import/export round trip
     const importFileChooserPromise = page.waitForEvent("filechooser");
-    await page.getByRole("button", { name: "Import Workspace Session JSON" }).click();
+    await ctrlTapClick(page, page.getByRole("button", { name: "Import Workspace Session JSON" }));
     const importFileChooser = await importFileChooserPromise;
     await importFileChooser.setFiles({
       name: "workspace-v2-roundtrip.json",
@@ -159,7 +160,7 @@ test("workspace v2 launches asset manager and add/remove is reflected in export"
       buffer: Buffer.from(exportedJsonText, "utf8")
     });
     await expect(page.locator("#workspaceV2ImportExportStatus")).toHaveText("Workspace session imported.");
-    await page.getByRole("button", { name: /Open Asset Manager V2/ }).click();
+    await ctrlTapClick(page, page.getByRole("button", { name: /Open Asset Manager V2/ }));
     await expect(page).toHaveURL(/\/tools\/asset-manager-v2\/index\.html/);
     await expect(page.getByRole("button", { name: /Player Ship/ })).toBeVisible();
     await expect(page.locator("#assetBrowserV2InvalidState")).toBeHidden();

@@ -3,6 +3,7 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import http from "node:http";
 import { fileURLToPath } from "node:url";
+import { ctrlTapClick } from "../helpers/playwrightCtrlTapClick.mjs";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -67,7 +68,7 @@ async function startRepoServer() {
 
 async function importManifestFromObject(page, manifest) {
   const chooserPromise = page.waitForEvent("filechooser");
-  await page.getByRole("button", { name: "Import Workspace Session JSON" }).click();
+  await ctrlTapClick(page, page.getByRole("button", { name: "Import Workspace Session JSON" }));
   const chooser = await chooserPromise;
   const jsonText = JSON.stringify(manifest, null, 2);
   await chooser.setFiles({
@@ -79,7 +80,7 @@ async function importManifestFromObject(page, manifest) {
 }
 
 async function exportManifestFromTextarea(page) {
-  await page.getByRole("button", { name: "Export Workspace Session JSON" }).click();
+  await ctrlTapClick(page, page.getByRole("button", { name: "Export Workspace Session JSON" }));
   const exportedText = await page.locator("#workspaceV2ImportJson").inputValue();
   return JSON.parse(exportedText);
 }
@@ -89,7 +90,7 @@ test.describe("Workspace V2 validation coverage", () => {
     const server = await startRepoServer();
     try {
       await page.goto(`${server.baseUrl}/tools/workspace-v2/index.html`);
-      await page.getByRole("button", { name: "Full Reset" }).click();
+      await ctrlTapClick(page, page.getByRole("button", { name: "Full Reset" }));
       await expect(page.locator("#workspaceV2WorkspaceToolsSummary")).toContainText("palette-browser");
       await expect(page.locator("#workspaceV2WorkspaceToolsSummary")).toContainText("workspace-v2");
 
@@ -115,7 +116,7 @@ test.describe("Workspace V2 validation coverage", () => {
     const server = await startRepoServer();
     try {
       await page.goto(`${server.baseUrl}/tools/workspace-v2/index.html`);
-      await page.getByRole("button", { name: "Full Reset" }).click();
+      await ctrlTapClick(page, page.getByRole("button", { name: "Full Reset" }));
 
       const manifest = JSON.parse(await page.locator("#workspaceV2ImportJson").inputValue());
       expect(manifest.tools?.["palette-browser"]).toBeTruthy();
@@ -133,7 +134,7 @@ test.describe("Workspace V2 validation coverage", () => {
     const server = await startRepoServer();
     try {
       await page.goto(`${server.baseUrl}/tools/workspace-v2/index.html`);
-      await page.getByRole("button", { name: "Full Reset" }).click();
+      await ctrlTapClick(page, page.getByRole("button", { name: "Full Reset" }));
       await expect(page.locator("#workspaceV2SessionHistoryEmptyState")).toHaveText("No recent sessions.");
 
       await importManifestFromObject(page, {
@@ -190,9 +191,9 @@ test.describe("Workspace V2 validation coverage", () => {
     const server = await startRepoServer();
     try {
       await page.goto(`${server.baseUrl}/tools/workspace-v2/index.html`);
-      await page.getByRole("button", { name: "Full Reset" }).click();
+      await ctrlTapClick(page, page.getByRole("button", { name: "Full Reset" }));
       await page.locator("#workspaceV2ToolSelect").selectOption("asset-manager-v2");
-      await page.getByRole("button", { name: "Load Fixture" }).click();
+      await ctrlTapClick(page, page.getByRole("button", { name: "Load Fixture" }));
 
       const loadedManifest = JSON.parse(await page.locator("#workspaceV2ImportJson").inputValue());
       const exportedManifest = await exportManifestFromTextarea(page);
@@ -211,16 +212,16 @@ test.describe("Workspace V2 validation coverage", () => {
     const server = await startRepoServer();
     try {
       await page.goto(`${server.baseUrl}/tools/workspace-v2/index.html`);
-      await page.getByRole("button", { name: "Full Reset" }).click();
+      await ctrlTapClick(page, page.getByRole("button", { name: "Full Reset" }));
 
       await page.locator("#workspaceV2ToolSelect").selectOption("tilemap-studio-v2");
-      await page.getByRole("button", { name: "Load Fixture" }).click();
+      await ctrlTapClick(page, page.getByRole("button", { name: "Load Fixture" }));
       let exportedManifest = await exportManifestFromTextarea(page);
       expect(exportedManifest.tools?.["workspace-v2"]?.activeToolId).toBe("tilemap-studio-v2");
       expect(exportedManifest.tools?.["workspace-v2"]?.activeSession?.toolId).toBe("tilemap-studio-v2");
 
       await page.locator("#workspaceV2ToolSelect").selectOption("vector-map-editor-v2");
-      await page.getByRole("button", { name: "Load Fixture" }).click();
+      await ctrlTapClick(page, page.getByRole("button", { name: "Load Fixture" }));
       exportedManifest = await exportManifestFromTextarea(page);
       expect(exportedManifest.tools?.["workspace-v2"]?.activeToolId).toBe("vector-map-editor-v2");
       expect(exportedManifest.tools?.["workspace-v2"]?.activeSession?.toolId).toBe("vector-map-editor-v2");

@@ -299,3 +299,10 @@ PR_26124_004-workspace-v2-launch-toolid-guard
 ```bash
 npx @openai/codex run --model gpt-5.3-codex --reasoning medium "Implement PR_26124_004: fix next failing Workspace V2 tool lane issue with a minimal guard that blocks launch when active session.toolId does not match selected tool and preserves strict payload behavior."
 ```
+
+---
+PR_26124_006-playwright-ctrl-tap-debug
+
+```bash
+npx @openai/codex run --model gpt-5.3-codex --reasoning medium "Implement PR_26124_006: add shared Ctrl tap (Control down/up) before key Playwright click actions for Workspace V2 navigation/tool/workspace interaction points without changing runtime behavior."
+```
