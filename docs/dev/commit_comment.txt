@@ -1,1 +1,1 @@
-Fix extracted FAIL tool group (workspace-v2, asset-manager-v2, palette-manager-v2) and update audit statuses with explicit fail-list trace - PR_26124_008-next-fail-group-fix
+Capture empty FAIL batch state from tool completion audit with explicit before/after report and validation evidence - PR_26124_009-empty-fail-batch-capture

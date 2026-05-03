@@ -320,3 +320,10 @@ PR_26124_008-next-fail-group-fix
 ```bash
 npx @openai/codex run --model gpt-5.3-codex --reasoning medium "Implement PR_26124_008: extract next 3 FAIL tools from tool_completion_audit.md, fix only that group with minimal contract-safe changes, update audit statuses for those tools only, and validate with npm run test:workspace-v2."
 ```
+
+---
+PR_26124_009-empty-fail-batch-capture
+
+```bash
+npx @openai/codex run --model gpt-5.3-codex --reasoning medium "Implement PR_26124_009: extract next FAIL tools from tool_completion_audit.md, record explicit batch fail list, and if no FAIL tools remain capture the empty batch with validation evidence and no runtime changes."
+```
