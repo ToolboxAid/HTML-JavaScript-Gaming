@@ -132,8 +132,13 @@ class AssetBrowserV2 {
     const label = typeof document.getElementById("assetManagerV2AddLabel").value === "string" ? document.getElementById("assetManagerV2AddLabel").value.trim() : "";
     const kind = typeof document.getElementById("assetManagerV2AddKind").value === "string" ? document.getElementById("assetManagerV2AddKind").value.trim() : "";
     const path = typeof document.getElementById("assetManagerV2AddPath").value === "string" ? document.getElementById("assetManagerV2AddPath").value.trim() : "";
-    if (!id || !label || !kind || !path) {
-      return { ok: false, message: "Add blocked. id, label, kind, and path are required.", entry: null };
+    const missingFields = [];
+    if (!id) missingFields.push("id");
+    if (!label) missingFields.push("label");
+    if (!kind) missingFields.push("kind");
+    if (!path) missingFields.push("path");
+    if (missingFields.length > 0) {
+      return { ok: false, message: `Add blocked. Missing required field(s): ${missingFields.join(", ")}.`, entry: null };
     }
     return { ok: true, message: "", entry: { id, label, kind, path } };
   }
@@ -167,8 +172,9 @@ class AssetBrowserV2 {
       this.setActionStatus(newEntry.message);
       return;
     }
-    if (this.currentSessionContext.payloadJson.assetCatalog.entries.some((entry) => entry && typeof entry === "object" && !Array.isArray(entry) && typeof entry.id === "string" && entry.id.trim() === newEntry.entry.id)) {
-      this.setActionStatus(`Add blocked. Asset id '${newEntry.entry.id}' already exists.`);
+    const normalizedId = newEntry.entry.id.trim();
+    if (this.currentSessionContext.payloadJson.assetCatalog.entries.some((entry) => entry && typeof entry === "object" && !Array.isArray(entry) && typeof entry.id === "string" && entry.id.trim() === normalizedId)) {
+      this.setActionStatus(`Add blocked. Asset id '${normalizedId}' already exists.`);
       return;
     }
     const nextSessionContext = this.cloneSessionValue(this.currentSessionContext);
@@ -199,15 +205,16 @@ class AssetBrowserV2 {
       this.setActionStatus("Remove blocked. Asset id is required.");
       return;
     }
+    const normalizedId = assetId.trim();
     const nextSessionContext = this.cloneSessionValue(this.currentSessionContext);
     const startLength = nextSessionContext.payloadJson.assetCatalog.entries.length;
-    nextSessionContext.payloadJson.assetCatalog.entries = nextSessionContext.payloadJson.assetCatalog.entries.filter((entry) => !entry || typeof entry !== "object" || Array.isArray(entry) || typeof entry.id !== "string" || entry.id.trim() !== assetId.trim());
+    nextSessionContext.payloadJson.assetCatalog.entries = nextSessionContext.payloadJson.assetCatalog.entries.filter((entry) => !entry || typeof entry !== "object" || Array.isArray(entry) || typeof entry.id !== "string" || entry.id.trim() !== normalizedId);
     if (nextSessionContext.payloadJson.assetCatalog.entries.length === startLength) {
-      this.setActionStatus(`Remove blocked. Asset id '${assetId.trim()}' was not found.`);
+      this.setActionStatus(`Remove blocked. Asset id '${normalizedId}' was not found.`);
       return;
     }
     this.loadContract(nextSessionContext);
-    this.setActionStatus(`Asset '${assetId.trim()}' removed.`);
+    this.setActionStatus(`Asset '${normalizedId}' removed.`);
   }
 
   logStructuredError(type, message, details) {

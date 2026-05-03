@@ -1,1 +1,1 @@
-Enable Asset Manager V2 add/remove asset entries with strict validation and workspace persistence - PR 11.315
+Harden Asset Manager V2 add/remove rejection paths and preserve valid persistence behavior - PR 11.316

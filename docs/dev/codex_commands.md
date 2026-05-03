@@ -152,3 +152,10 @@ PR_11_315
 ```bash
 npx @openai/codex run --model gpt-5.3-codex --reasoning medium "Implement PR_11_315: Enable core asset management actions in Asset Manager V2 (add/remove entries) with strict required-field validation and workspace persistence."
 ```
+
+---
+PR_11_316
+
+```bash
+npx @openai/codex run --model gpt-5.3-codex --reasoning medium "Implement PR_11_316: Harden Asset Manager V2 add/remove actions by rejecting duplicate ids, blank/whitespace fields, and missing remove ids with actionable status messages while preserving valid persistence behavior."
+```
