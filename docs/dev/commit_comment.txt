@@ -1,1 +1,1 @@
-Add first Playwright Workspace V2 to Asset Manager V2 add/remove export verification UI test - PR 11.318B
+Redirect Playwright output artifacts and reports into tests/results and remove default output folder usage - PR 11.318C

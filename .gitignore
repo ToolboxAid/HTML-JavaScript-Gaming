@@ -7,14 +7,13 @@
 .DS_Store
 *.log
 
-# Ignore all files in the tmp directory
-/tmp/*
-
 # Ignore zip files and temporary files
 /*.zip
 
 # Ignore the NEXT_COMMAND.txt file
 NEXT_COMMAND.txt
 
-# Ignore the node_modules directory
+# Ignore the tests results and temporary files
 node_modules/
+tests/results/
+tmp/

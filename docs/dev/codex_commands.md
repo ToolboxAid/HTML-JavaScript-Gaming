@@ -187,3 +187,10 @@ PR_11_318B
 ```bash
 npx @openai/codex run --model gpt-5.3-codex --reasoning medium "Implement PR_11_318B: Add first Playwright UI test for Workspace V2 launching Asset Manager V2, add/remove asset flow, and export verification."
 ```
+
+---
+PR_11_318C
+
+```bash
+npx @openai/codex run --model gpt-5.3-codex --reasoning medium "Implement PR_11_318C: Redirect Playwright outputs to tests/results/** and avoid default output folders with config-only changes."
+```
