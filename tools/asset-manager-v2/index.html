@@ -24,6 +24,19 @@
               <h3>menuTool</h3>
               <p id="assetBrowserV2ContractReadout">payloadJson.assetCatalog not loaded.</p>
               <button id="assetBrowserV2OpenSvgAssetStudioV2Button" type="button">Open in SVG Asset Studio V2</button>
+              <div>
+                <h4>Add Asset</h4>
+                <label for="assetManagerV2AddId">id</label>
+                <input id="assetManagerV2AddId" type="text" />
+                <label for="assetManagerV2AddLabel">label</label>
+                <input id="assetManagerV2AddLabel" type="text" />
+                <label for="assetManagerV2AddKind">kind</label>
+                <input id="assetManagerV2AddKind" type="text" />
+                <label for="assetManagerV2AddPath">path</label>
+                <input id="assetManagerV2AddPath" type="text" />
+                <button id="assetManagerV2AddButton" type="button">Add Asset</button>
+                <p id="assetManagerV2ActionStatus">No asset action yet.</p>
+              </div>
               <div id="assetBrowserV2List" aria-label="Asset Manager V2 asset list"></div>
             </aside>
             <section class="asset-manager-v2-panel" aria-live="polite">

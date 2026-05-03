@@ -145,3 +145,10 @@ PR_11_314
 ```bash
 npx @openai/codex run --model gpt-5.3-codex --reasoning medium "Implement PR_11_314: persist valid Asset Manager V2 payloadJson.assetCatalog into Workspace V2 active session/export path and block invalid writes."
 ```
+
+---
+PR_11_315
+
+```bash
+npx @openai/codex run --model gpt-5.3-codex --reasoning medium "Implement PR_11_315: Enable core asset management actions in Asset Manager V2 (add/remove entries) with strict required-field validation and workspace persistence."
+```

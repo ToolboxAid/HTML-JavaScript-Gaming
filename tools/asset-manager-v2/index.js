@@ -7,11 +7,14 @@ class AssetBrowserV2 {
     this.urlState = this.readUrlState();
     this.goBack = this.goBack.bind(this);
     this.openSvgAssetStudioV2 = this.openSvgAssetStudioV2.bind(this);
+    this.addAssetEntry = this.addAssetEntry.bind(this);
+    this.currentSessionContext = null;
     this.handleNavigationState = this.handleNavigationState.bind(this);
     window.addEventListener("popstate", this.handleNavigationState);
     window.addEventListener("pageshow", this.handleNavigationState);
     document.getElementById("assetBrowserV2BackButton").addEventListener("click", this.goBack);
     document.getElementById("assetBrowserV2OpenSvgAssetStudioV2Button").addEventListener("click", this.openSvgAssetStudioV2);
+    document.getElementById("assetManagerV2AddButton").addEventListener("click", this.addAssetEntry);
     this.renderNavigation();
     this.registerSnapshotHook();
     this.readSession();
@@ -114,6 +117,97 @@ class AssetBrowserV2 {
 
   registerSnapshotHook() {
     window.__v2RuntimeSnapshot = () => this.buildRuntimeSnapshot();
+  }
+
+  cloneSessionValue(value) {
+    return JSON.parse(JSON.stringify(value));
+  }
+
+  setActionStatus(message) {
+    document.getElementById("assetManagerV2ActionStatus").textContent = message;
+  }
+
+  normalizedAssetEntryFromForm() {
+    const id = typeof document.getElementById("assetManagerV2AddId").value === "string" ? document.getElementById("assetManagerV2AddId").value.trim() : "";
+    const label = typeof document.getElementById("assetManagerV2AddLabel").value === "string" ? document.getElementById("assetManagerV2AddLabel").value.trim() : "";
+    const kind = typeof document.getElementById("assetManagerV2AddKind").value === "string" ? document.getElementById("assetManagerV2AddKind").value.trim() : "";
+    const path = typeof document.getElementById("assetManagerV2AddPath").value === "string" ? document.getElementById("assetManagerV2AddPath").value.trim() : "";
+    if (!id || !label || !kind || !path) {
+      return { ok: false, message: "Add blocked. id, label, kind, and path are required.", entry: null };
+    }
+    return { ok: true, message: "", entry: { id, label, kind, path } };
+  }
+
+  clearAddAssetForm() {
+    document.getElementById("assetManagerV2AddId").value = "";
+    document.getElementById("assetManagerV2AddLabel").value = "";
+    document.getElementById("assetManagerV2AddKind").value = "";
+    document.getElementById("assetManagerV2AddPath").value = "";
+  }
+
+  addAssetEntry() {
+    if (!this.currentSessionContext || typeof this.currentSessionContext !== "object" || Array.isArray(this.currentSessionContext)) {
+      this.setActionStatus("Add blocked. No valid Asset Manager V2 session is loaded.");
+      return;
+    }
+    if (!this.currentSessionContext.payloadJson || typeof this.currentSessionContext.payloadJson !== "object" || Array.isArray(this.currentSessionContext.payloadJson)) {
+      this.setActionStatus("Add blocked. payloadJson is missing.");
+      return;
+    }
+    if (!this.currentSessionContext.payloadJson.assetCatalog || typeof this.currentSessionContext.payloadJson.assetCatalog !== "object" || Array.isArray(this.currentSessionContext.payloadJson.assetCatalog)) {
+      this.setActionStatus("Add blocked. payloadJson.assetCatalog is missing.");
+      return;
+    }
+    if (!Array.isArray(this.currentSessionContext.payloadJson.assetCatalog.entries)) {
+      this.setActionStatus("Add blocked. payloadJson.assetCatalog.entries must be an array.");
+      return;
+    }
+    const newEntry = this.normalizedAssetEntryFromForm();
+    if (!newEntry.ok) {
+      this.setActionStatus(newEntry.message);
+      return;
+    }
+    if (this.currentSessionContext.payloadJson.assetCatalog.entries.some((entry) => entry && typeof entry === "object" && !Array.isArray(entry) && typeof entry.id === "string" && entry.id.trim() === newEntry.entry.id)) {
+      this.setActionStatus(`Add blocked. Asset id '${newEntry.entry.id}' already exists.`);
+      return;
+    }
+    const nextSessionContext = this.cloneSessionValue(this.currentSessionContext);
+    nextSessionContext.payloadJson.assetCatalog.entries.push(newEntry.entry);
+    this.loadContract(nextSessionContext);
+    this.clearAddAssetForm();
+    this.setActionStatus(`Asset '${newEntry.entry.id}' added.`);
+  }
+
+  removeAssetEntryById(assetId) {
+    if (!this.currentSessionContext || typeof this.currentSessionContext !== "object" || Array.isArray(this.currentSessionContext)) {
+      this.setActionStatus("Remove blocked. No valid Asset Manager V2 session is loaded.");
+      return;
+    }
+    if (!this.currentSessionContext.payloadJson || typeof this.currentSessionContext.payloadJson !== "object" || Array.isArray(this.currentSessionContext.payloadJson)) {
+      this.setActionStatus("Remove blocked. payloadJson is missing.");
+      return;
+    }
+    if (!this.currentSessionContext.payloadJson.assetCatalog || typeof this.currentSessionContext.payloadJson.assetCatalog !== "object" || Array.isArray(this.currentSessionContext.payloadJson.assetCatalog)) {
+      this.setActionStatus("Remove blocked. payloadJson.assetCatalog is missing.");
+      return;
+    }
+    if (!Array.isArray(this.currentSessionContext.payloadJson.assetCatalog.entries)) {
+      this.setActionStatus("Remove blocked. payloadJson.assetCatalog.entries must be an array.");
+      return;
+    }
+    if (typeof assetId !== "string" || !assetId.trim()) {
+      this.setActionStatus("Remove blocked. Asset id is required.");
+      return;
+    }
+    const nextSessionContext = this.cloneSessionValue(this.currentSessionContext);
+    const startLength = nextSessionContext.payloadJson.assetCatalog.entries.length;
+    nextSessionContext.payloadJson.assetCatalog.entries = nextSessionContext.payloadJson.assetCatalog.entries.filter((entry) => !entry || typeof entry !== "object" || Array.isArray(entry) || typeof entry.id !== "string" || entry.id.trim() !== assetId.trim());
+    if (nextSessionContext.payloadJson.assetCatalog.entries.length === startLength) {
+      this.setActionStatus(`Remove blocked. Asset id '${assetId.trim()}' was not found.`);
+      return;
+    }
+    this.loadContract(nextSessionContext);
+    this.setActionStatus(`Asset '${assetId.trim()}' removed.`);
   }
 
   logStructuredError(type, message, details) {
@@ -270,16 +364,21 @@ class AssetBrowserV2 {
     }
     document.getElementById("assetBrowserV2InvalidState").hidden = true;
     document.getElementById("assetBrowserV2ValidState").hidden = false;
+    this.currentSessionContext = this.cloneSessionValue(sessionContext);
 
     document.getElementById("assetBrowserV2List").replaceChildren();
     assetCatalog.entries.forEach((entry) => {
+      const assetRow = document.createElement("div");
       const assetItem = document.createElement("button");
       const assetName = document.createElement("strong");
       const assetMeta = document.createElement("div");
+      const removeButton = document.createElement("button");
       assetItem.type = "button";
+      removeButton.type = "button";
       assetName.textContent = entry.label.trim();
       assetMeta.textContent = `${entry.kind.trim()} | ${entry.path.trim()}`;
       assetItem.append(assetName, assetMeta);
+      removeButton.textContent = `Remove ${entry.id.trim()}`;
       assetItem.addEventListener("click", () => {
         document.getElementById("assetBrowserV2Preview").textContent = JSON.stringify(
           {
@@ -292,7 +391,11 @@ class AssetBrowserV2 {
           2
         );
       });
-      document.getElementById("assetBrowserV2List").appendChild(assetItem);
+      removeButton.addEventListener("click", () => {
+        this.removeAssetEntryById(entry.id.trim());
+      });
+      assetRow.append(assetItem, removeButton);
+      document.getElementById("assetBrowserV2List").appendChild(assetRow);
     });
 
     document.getElementById("assetBrowserV2Preview").textContent = assetCatalog.entries.length === 0
@@ -313,6 +416,8 @@ class AssetBrowserV2 {
     document.getElementById("assetBrowserV2ValidState").hidden = true;
     document.getElementById("assetBrowserV2List").replaceChildren();
     document.getElementById("assetBrowserV2Preview").textContent = "";
+    this.currentSessionContext = null;
+    this.setActionStatus("No asset action yet.");
   }
 
   renderError(message) {
@@ -328,6 +433,8 @@ class AssetBrowserV2 {
     document.getElementById("assetBrowserV2ValidState").hidden = true;
     document.getElementById("assetBrowserV2List").replaceChildren();
     document.getElementById("assetBrowserV2Preview").textContent = "";
+    this.currentSessionContext = null;
+    this.setActionStatus("No asset action yet.");
   }
 }
 

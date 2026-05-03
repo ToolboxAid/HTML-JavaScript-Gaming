@@ -1,1 +1,1 @@
-Persist valid Asset Manager V2 assetCatalog into Workspace V2 activeSession export path and block invalid write-back - PR 11.314
+Enable Asset Manager V2 add/remove asset entries with strict validation and workspace persistence - PR 11.315
