@@ -100,3 +100,11 @@ PR_11_310
 ```bash
 npx @openai/codex run --model gpt-5.3-codex --reasoning medium "Implement PR_11_310 ..."
 ```
+
+
+---
+PR_11_311
+
+```bash
+npx @openai/codex run --model gpt-5.3-codex --reasoning medium "Implement PR_11_311 ..."
+```

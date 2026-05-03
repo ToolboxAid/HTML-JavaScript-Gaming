@@ -1,1 +1,1 @@
-Remove Workspace V2 legacy diagnostics and duplicate session handlers; enforce single import/export/session activation paths - PR 11.310
+Enforce strict schema validation-only acceptance for Workspace V2 import/load/activation paths - PR 11.311

@@ -1207,13 +1207,14 @@ class WorkspaceV2SessionProducer {
     if (!parsed.ok || !this.isValidSessionPayload(parsed.value)) {
       return null;
     }
+    const payloadValidation = this.validateWorkspaceToolSessionPayload(parsed.value, "activeSession");
+    if (!payloadValidation.ok) {
+      return null;
+    }
     return parsed.value;
   }
 
   resolveActiveSessionPayloadForWorkspaceManifest() {
-    if (this.isValidSessionPayload(this.currentSessionPayload)) {
-      return this.currentSessionPayload;
-    }
     return this.readActiveSessionPayloadForLibraryActions();
   }
 
@@ -1226,7 +1227,7 @@ class WorkspaceV2SessionProducer {
     if (!recentEntry) {
       return null;
     }
-    return this.resolveSessionPayloadFromContextId(sessionId.trim(), recentEntry.payload);
+    return this.resolveSessionPayloadFromContextId(sessionId.trim());
   }
 
   readSessionPayloadForLibraryWrite(sessionId) {
@@ -1241,6 +1242,10 @@ class WorkspaceV2SessionProducer {
     if (!parsed.ok || !this.isValidSessionPayload(parsed.value)) {
       return null;
     }
+    const payloadValidation = this.validateWorkspaceToolSessionPayload(parsed.value, `sessionStorage.${sessionId.trim()}`);
+    if (!payloadValidation.ok) {
+      return null;
+    }
     return parsed.value;
   }
 
@@ -1248,9 +1253,6 @@ class WorkspaceV2SessionProducer {
     const activePayload = this.readActiveSessionPayloadForLibraryActions();
     if (this.isValidSessionPayload(activePayload)) {
       return activePayload;
-    }
-    if (this.isValidSessionPayload(this.currentSessionPayload)) {
-      return this.currentSessionPayload;
     }
     return null;
   }
@@ -1450,15 +1452,18 @@ class WorkspaceV2SessionProducer {
     if (!this.isValidSessionPayload(sessionPayload)) {
       return { ok: false, message: "Session activation failed: payload is invalid." };
     }
-    const versionedPayload = this.withSessionVersion(sessionPayload);
-    const sizeValidation = this.validateSessionPayloadSize(versionedPayload);
+    const payloadValidation = this.validateWorkspaceToolSessionPayload(sessionPayload, "sessionActivation");
+    if (!payloadValidation.ok) {
+      return { ok: false, message: payloadValidation.message };
+    }
+    const sizeValidation = this.validateSessionPayloadSize(sessionPayload);
     if (!sizeValidation.ok) {
       return { ok: false, message: sizeValidation.message };
     }
     sessionStorage.setItem(hostContextId.trim(), sizeValidation.metrics.serializedPayload);
     this.currentHostContextId = hostContextId.trim();
-    this.setCurrentSessionPayload(versionedPayload, sourceLabel);
-    return { ok: true, message: "", payload: versionedPayload };
+    this.setCurrentSessionPayload(sessionPayload, sourceLabel);
+    return { ok: true, message: "", payload: sessionPayload };
   }
 
   applySessionPayload(sessionPayload, sourceLabel) {
@@ -1466,9 +1471,18 @@ class WorkspaceV2SessionProducer {
       this.statusNode.textContent = "Session payload is invalid. Expected a JSON object payload.";
       return false;
     }
+    const payloadValidation = this.validateWorkspaceToolSessionPayload(sessionPayload, "sessionPayload");
+    if (!payloadValidation.ok) {
+      this.statusNode.textContent = payloadValidation.message;
+      return false;
+    }
     const toolId = this.selectedToolId();
     if (!toolId) {
       this.statusNode.textContent = "Select a V2 tool before applying session payload.";
+      return false;
+    }
+    if (sessionPayload.toolId.trim() !== toolId) {
+      this.statusNode.textContent = `Session payload toolId '${sessionPayload.toolId.trim()}' does not match selected tool '${toolId}'.`;
       return false;
     }
     if (this.hasWorkspaceActivePalette() && this.isPaletteManagerToolId(toolId)) {
@@ -1547,6 +1561,11 @@ class WorkspaceV2SessionProducer {
       for (const sessionName of Object.keys(parsed)) {
         if (!this.isValidSessionPayload(parsed[sessionName])) {
           this.statusNode.textContent = `Session library entry '${sessionName}' is invalid.`;
+          return null;
+        }
+        const payloadValidation = this.validateWorkspaceToolSessionPayload(parsed[sessionName], `tools.workspace-v2.savedSessions.${sessionName}`);
+        if (!payloadValidation.ok) {
+          this.statusNode.textContent = `Session library entry '${sessionName}' is invalid: ${payloadValidation.message}`;
           return null;
         }
       }
@@ -1741,6 +1760,9 @@ class WorkspaceV2SessionProducer {
     if (typeof entry.tool !== "string" || !entry.tool.trim()) return false;
     if (typeof entry.timestamp !== "string" || !entry.timestamp.trim()) return false;
     if (!this.isValidSessionPayload(entry.payload)) return false;
+    const payloadValidation = this.validateWorkspaceToolSessionPayload(entry.payload, `history.${entry.hostContextId.trim()}.payload`);
+    if (!payloadValidation.ok) return false;
+    if (entry.payload.toolId.trim() !== entry.tool.trim()) return false;
     return true;
   }
 
@@ -1771,6 +1793,7 @@ class WorkspaceV2SessionProducer {
     });
     if (invalidCount > 0) {
       console.warn(`[WorkspaceV2SessionHistory] Ignored ${invalidCount} invalid history entr${invalidCount === 1 ? "y" : "ies"}.`);
+      this.statusNode.textContent = `Session history contains ${invalidCount} invalid entr${invalidCount === 1 ? "y" : "ies"}. Remove invalid entries before loading sessions.`;
     }
     return validEntries;
   }
@@ -2015,18 +2038,19 @@ class WorkspaceV2SessionProducer {
     );
   }
 
-  resolveSessionPayloadFromContextId(contextId, fallbackPayload) {
+  resolveSessionPayloadFromContextId(contextId) {
     if (typeof contextId === "string" && contextId.trim()) {
       const raw = sessionStorage.getItem(contextId.trim());
       if (typeof raw === "string") {
         const parsed = this.safeParseJson(raw);
         if (parsed.ok && this.isValidSessionPayload(parsed.value)) {
+          const payloadValidation = this.validateWorkspaceToolSessionPayload(parsed.value, `sessionStorage.${contextId.trim()}`);
+          if (!payloadValidation.ok) {
+            return null;
+          }
           return parsed.value;
         }
       }
-    }
-    if (this.isValidSessionPayload(fallbackPayload)) {
-      return fallbackPayload;
     }
     return null;
   }
@@ -2040,7 +2064,7 @@ class WorkspaceV2SessionProducer {
       if (!this.isValidSessionHistoryEntry(entry)) {
         return;
       }
-      const resolvedPayload = this.resolveSessionPayloadFromContextId(entry.hostContextId, entry.payload);
+      const resolvedPayload = this.resolveSessionPayloadFromContextId(entry.hostContextId);
       if (!this.isValidSessionPayload(resolvedPayload)) {
         return;
       }
@@ -2678,6 +2702,11 @@ class WorkspaceV2SessionProducer {
       this.setMergedSessionStatus("Enter a merged session ID before using in Diff/Merge.");
       return;
     }
+    const payloadValidation = this.validateWorkspaceToolSessionPayload(this.lastMergedSessionResult.payload, "mergedSessionResult");
+    if (!payloadValidation.ok) {
+      this.setMergedSessionStatus(payloadValidation.message);
+      return;
+    }
     const serialized = JSON.stringify(this.lastMergedSessionResult.payload);
     sessionStorage.setItem(mergedSessionId, serialized);
     this.addRecentSessionEntry(mergedSessionId, this.lastMergedSessionResult.toolId, this.lastMergedSessionResult.payload);
@@ -3218,49 +3247,15 @@ class WorkspaceV2SessionProducer {
     if (!paletteJson || typeof paletteJson !== "object" || Array.isArray(paletteJson)) {
       return { ok: false, message: "Fixture is invalid. paletteJson must be an object for palette-manager-v2.", value: null };
     }
-    if (Object.prototype.hasOwnProperty.call(paletteJson, "colors") && !Array.isArray(paletteJson.swatches)) {
-      if (!Array.isArray(paletteJson.colors)) {
-        return { ok: false, message: "Fixture is invalid. paletteJson.colors must be an array when swatches is missing.", value: null };
-      }
-      const convertedSwatches = [];
-      for (let index = 0; index < paletteJson.colors.length; index += 1) {
-        const colorEntry = paletteJson.colors[index];
-        if (typeof colorEntry === "string") {
-          if (!/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{8})$/.test(colorEntry)) {
-            return { ok: false, message: `Fixture is invalid. paletteJson.colors[${index}] must be #RRGGBB or #RRGGBBAA.`, value: null };
-          }
-          convertedSwatches.push({
-            symbol: String.fromCharCode(65 + (index % 26)),
-            hex: colorEntry,
-            name: `Color ${index + 1}`
-          });
-          continue;
-        }
-        if (!colorEntry || typeof colorEntry !== "object" || Array.isArray(colorEntry)) {
-          return { ok: false, message: `Fixture is invalid. paletteJson.colors[${index}] must be a string or object.`, value: null };
-        }
-        if (typeof colorEntry.hex !== "string" || !/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{8})$/.test(colorEntry.hex)) {
-          return { ok: false, message: `Fixture is invalid. paletteJson.colors[${index}].hex must be #RRGGBB or #RRGGBBAA.`, value: null };
-        }
-        const symbol = typeof colorEntry.symbol === "string" && colorEntry.symbol.length === 1
-          ? colorEntry.symbol
-          : String.fromCharCode(65 + (index % 26));
-        const name = typeof colorEntry.name === "string" && colorEntry.name.trim()
-          ? colorEntry.name
-          : `Color ${index + 1}`;
-        convertedSwatches.push({
-          symbol,
-          hex: colorEntry.hex,
-          name
-        });
-      }
-      const normalizedPalette = { ...paletteJson };
-      delete normalizedPalette.colors;
-      normalizedPalette.swatches = convertedSwatches;
-      return { ok: true, message: "", value: normalizedPalette };
+    if (Object.prototype.hasOwnProperty.call(paletteJson, "colors")) {
+      return { ok: false, message: "Fixture is invalid. paletteJson.colors is not supported; use paletteJson.swatches.", value: null };
     }
     if (!Array.isArray(paletteJson.swatches)) {
       return { ok: false, message: "Fixture is invalid. paletteJson.swatches must be an array for palette-manager-v2.", value: null };
+    }
+    const swatchValidation = this.validatePaletteSwatchesForWorkspaceExport(paletteJson.swatches, "fixture.sessionContext.paletteJson.swatches");
+    if (!swatchValidation.ok) {
+      return { ok: false, message: swatchValidation.message, value: null };
     }
     return { ok: true, message: "", value: paletteJson };
   }
@@ -3269,7 +3264,14 @@ class WorkspaceV2SessionProducer {
     if (!this.isValidSessionPayload(sessionContext)) {
       return { ok: false, message: "Fixture is invalid. Missing sessionContext object.", value: null };
     }
-    const normalizedSession = this.withSessionVersion(this.cloneSessionValue(sessionContext));
+    const normalizedSession = this.cloneSessionValue(sessionContext);
+    const payloadValidation = this.validateWorkspaceToolSessionPayload(normalizedSession, "fixture.sessionContext");
+    if (!payloadValidation.ok) {
+      return { ok: false, message: payloadValidation.message, value: null };
+    }
+    if (typeof normalizedSession.toolId !== "string" || normalizedSession.toolId.trim() !== toolId) {
+      return { ok: false, message: `Fixture is invalid. sessionContext.toolId must be '${toolId}'.`, value: null };
+    }
     if (toolId === "palette-manager-v2") {
       if (Object.prototype.hasOwnProperty.call(normalizedSession, "payloadJson")) {
         return { ok: false, message: "Fixture is invalid. payloadJson is not supported for palette-manager-v2.", value: null };
@@ -3510,7 +3512,18 @@ class WorkspaceV2SessionProducer {
     if (typeof sessionPayload.toolId !== "string" || !sessionPayload.toolId.trim()) {
       return { ok: false, message: `${sessionPath}.toolId is required.` };
     }
-    if (sessionPayload.toolId.trim() === "palette-manager-v2") {
+    const toolId = sessionPayload.toolId.trim();
+    const allowedToolIds = new Set([
+      "asset-browser-v2",
+      "palette-manager-v2",
+      "svg-asset-studio-v2",
+      "tilemap-studio-v2",
+      "vector-map-editor-v2"
+    ]);
+    if (!allowedToolIds.has(toolId)) {
+      return { ok: false, message: `${sessionPath}.toolId '${toolId}' is not supported.` };
+    }
+    if (toolId === "palette-manager-v2") {
       if (Object.prototype.hasOwnProperty.call(sessionPayload, "payloadJson")) {
         return { ok: false, message: `${sessionPath}.payloadJson is not supported for palette-manager-v2. Use paletteJson.` };
       }
@@ -3530,6 +3543,16 @@ class WorkspaceV2SessionProducer {
       if (Object.prototype.hasOwnProperty.call(sessionPayload.paletteJson, "colors")) {
         return { ok: false, message: `${sessionPath}.paletteJson.colors is not supported. Use paletteJson.swatches.` };
       }
+      return { ok: true, message: "" };
+    }
+    if (!Object.prototype.hasOwnProperty.call(sessionPayload, "payloadJson")) {
+      return { ok: false, message: `${sessionPath}.payloadJson is required for ${toolId}.` };
+    }
+    if (!sessionPayload.payloadJson || typeof sessionPayload.payloadJson !== "object" || Array.isArray(sessionPayload.payloadJson)) {
+      return { ok: false, message: `${sessionPath}.payloadJson must be an object for ${toolId}.` };
+    }
+    if (Object.prototype.hasOwnProperty.call(sessionPayload, "paletteJson")) {
+      return { ok: false, message: `${sessionPath}.paletteJson is not supported for ${toolId}.` };
     }
     return { ok: true, message: "" };
   }
@@ -3706,16 +3729,15 @@ class WorkspaceV2SessionProducer {
         this.setImportExportStatus(`Import error: ${validation.message}`);
         return;
       }
-      this.workspaceImportedToolEntries = {};
+      const nextWorkspaceImportedToolEntries = {};
       const importedToolIds = Object.keys(parsed.tools).sort((left, right) => left.localeCompare(right));
       importedToolIds.forEach((toolId) => {
         if (toolId === "palette-browser" || toolId === "workspace-v2") {
           return;
         }
-        this.workspaceImportedToolEntries[toolId] = this.cloneSessionValue(parsed.tools[toolId]);
+        nextWorkspaceImportedToolEntries[toolId] = this.cloneSessionValue(parsed.tools[toolId]);
       });
       const workspaceV2Tool = parsed.tools["workspace-v2"];
-      this.workspaceManifestGame = this.cloneSessionValue(workspaceV2Tool.game);
       const activeHostContextId = workspaceV2Tool.activeHostContextId.trim();
       const activeToolId = workspaceV2Tool.activeToolId.trim();
       const activePayload = workspaceV2Tool.activeSession;
@@ -3724,6 +3746,8 @@ class WorkspaceV2SessionProducer {
         this.setImportExportStatus(`Import error: ${activation.message}`);
         return;
       }
+      this.workspaceManifestGame = this.cloneSessionValue(workspaceV2Tool.game);
+      this.workspaceImportedToolEntries = nextWorkspaceImportedToolEntries;
       localStorage.setItem(this.libraryStorageKey, JSON.stringify(workspaceV2Tool.savedSessions));
       this.updateWorkspaceActivePaletteFromManifest(parsed);
       this.workspaceJsonNode.value = JSON.stringify(parsed, null, 2);
