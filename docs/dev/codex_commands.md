@@ -222,3 +222,10 @@ PR_11_320
 ```bash
 npx @openai/codex run --model gpt-5.3-codex --reasoning medium "Implement PR_11_320: Update Workspace V2 Playwright gate to execute installed Playwright command path only, preserving fail-fast and summary output."
 ```
+
+---
+PR_11_321
+
+```bash
+npx @openai/codex run --model gpt-5.3-codex --reasoning medium "Implement PR_11_321: Document the Workspace V2 Playwright validation gate for repeatable local testing."
+```

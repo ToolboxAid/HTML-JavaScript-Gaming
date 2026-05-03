@@ -1,1 +1,1 @@
-Update Workspace V2 Playwright gate to use installed command path while preserving fail-fast summary behavior - PR 11.320
+Document Workspace V2 Playwright validation gate usage and expected output/exit behavior - PR 11.321
