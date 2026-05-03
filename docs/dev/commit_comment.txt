@@ -1,1 +1,1 @@
-Expand Workspace V2 Playwright UI regression coverage for Asset Manager launch, validation, export, and round-trip import - PR 11.318D
+Enable automatic Playwright HTML report opening while preserving existing test output settings - PR 11.318E

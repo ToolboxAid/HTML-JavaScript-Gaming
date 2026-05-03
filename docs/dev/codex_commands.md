@@ -201,3 +201,10 @@ PR_11_318D
 ```bash
 npx @openai/codex run --model gpt-5.3-codex --reasoning medium "Implement PR_11_318D: Expand Workspace V2 Playwright UI coverage into full Asset Manager regression with launch/add/remove/validation/export/import round-trip assertions."
 ```
+
+---
+PR_11_318E
+
+```bash
+npx @openai/codex run --model gpt-5.3-codex --reasoning medium "Implement PR_11_318E: Configure Playwright HTML reporter to open automatically after targeted UI test runs."
+```

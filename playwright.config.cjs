@@ -9,7 +9,7 @@ module.exports = {
   ],
   reporter: [
     ["list"],
-    ["html", { outputFolder: "tests/results/report", open: "never" }]
+    ["html", { outputFolder: "tests/results/report", open: "always" }]
   ],
   use: {
     headless: false,
