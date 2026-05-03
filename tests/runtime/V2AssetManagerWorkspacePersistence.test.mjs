@@ -22,21 +22,21 @@ function checkSyntax(filePath) {
   });
 }
 
-function simulatePersistence(hostContextId, sessionContext, limitBytes) {
+function simulatePersistence(hostContextId, toolStateContext, limitBytes) {
   if (!hostContextId) return { ok: false, message: "No hostContextId is available for Workspace V2 persistence." };
-  if (!sessionContext || typeof sessionContext !== "object" || Array.isArray(sessionContext)) {
-    return { ok: false, message: "Session context is invalid for Workspace V2 persistence." };
+  if (!toolStateContext || typeof toolStateContext !== "object" || Array.isArray(toolStateContext)) {
+    return { ok: false, message: "Tool state context is invalid for Workspace V2 persistence." };
   }
-  if (!sessionContext.payloadJson || typeof sessionContext.payloadJson !== "object" || Array.isArray(sessionContext.payloadJson)) {
+  if (!toolStateContext.payloadJson || typeof toolStateContext.payloadJson !== "object" || Array.isArray(toolStateContext.payloadJson)) {
     return { ok: false, message: "payloadJson is invalid for Workspace V2 persistence." };
   }
-  if (!sessionContext.payloadJson.assetCatalog || typeof sessionContext.payloadJson.assetCatalog !== "object" || Array.isArray(sessionContext.payloadJson.assetCatalog)) {
+  if (!toolStateContext.payloadJson.assetCatalog || typeof toolStateContext.payloadJson.assetCatalog !== "object" || Array.isArray(toolStateContext.payloadJson.assetCatalog)) {
     return { ok: false, message: "payloadJson.assetCatalog is invalid for Workspace V2 persistence." };
   }
   const payload = {
     version: "v2",
     toolId: "asset-manager-v2",
-    payloadJson: sessionContext.payloadJson
+    payloadJson: toolStateContext.payloadJson
   };
   const serialized = JSON.stringify(payload);
   if (serialized.length > limitBytes) {
@@ -45,13 +45,13 @@ function simulatePersistence(hostContextId, sessionContext, limitBytes) {
   return { ok: true, payload: JSON.parse(serialized) };
 }
 
-function simulateWorkspaceExportDocument(activeHostContextId, activeSessionPayload, savedSessions) {
+function simulateWorkspaceExportDocument(activeHostContextId, activeToolStatePayload, savedToolStates) {
   return {
     documentKind: "workspace-manifest",
     schema: "html-js-gaming.project",
     version: 1,
     id: `workspace-v2-${activeHostContextId}`,
-    name: `Workspace V2 Session ${activeSessionPayload.toolId}`,
+    name: `Workspace V2 Session ${activeToolStatePayload.toolId}`,
     tools: {
       "palette-browser": {
         schema: "html-js-gaming.palette",
@@ -60,28 +60,28 @@ function simulateWorkspaceExportDocument(activeHostContextId, activeSessionPaylo
         swatches: []
       },
       "workspace-v2": {
-        schema: "html-js-gaming.workspace-v2-session/1",
+        schema: "html-js-gaming.workspace-v2-tool-state/1",
         game: {
           id: `workspace-${activeHostContextId}`,
           name: "Workspace V2 Session"
         },
         defaultToolId: "palette-manager-v2",
-        activeToolId: activeSessionPayload.toolId,
+        activeToolId: activeToolStatePayload.toolId,
         activeHostContextId,
-        activeSession: activeSessionPayload,
-        savedSessions
+        activeToolState: activeToolStatePayload,
+        savedToolStates
       }
     }
   };
 }
 
 function simulateWorkspaceImportAndOpenAssetManager(workspaceDocument) {
-  if (!workspaceDocument?.tools?.["workspace-v2"]?.activeSession) {
-    return { ok: false, message: "Missing activeSession in workspace manifest." };
+  if (!workspaceDocument?.tools?.["workspace-v2"]?.activeToolState) {
+    return { ok: false, message: "Missing activeToolState in workspace manifest." };
   }
-  const importedActiveSession = workspaceDocument.tools["workspace-v2"].activeSession;
+  const importedActiveSession = workspaceDocument.tools["workspace-v2"].activeToolState;
   if (!importedActiveSession.payloadJson || typeof importedActiveSession.payloadJson !== "object" || Array.isArray(importedActiveSession.payloadJson)) {
-    return { ok: false, message: "Imported activeSession.payloadJson is invalid." };
+    return { ok: false, message: "Imported activeToolState.payloadJson is invalid." };
   }
   const launchPayload = {
     version: "v2",
@@ -101,7 +101,7 @@ export function run() {
   const assetSource = readText(assetManagerPath);
   const workspaceSource = readText(workspacePath);
 
-  const validSession = {
+  const validToolState = {
     version: "v2",
     toolId: "asset-manager-v2",
     payloadJson: {
@@ -113,19 +113,19 @@ export function run() {
       }
     }
   };
-  const invalidSession = {
+  const invalidToolState = {
     version: "v2",
     toolId: "asset-manager-v2",
     payloadJson: {}
   };
 
-  const validWrite = simulatePersistence("asset-manager-v2-123", validSession, 1024 * 1024);
-  const invalidWrite = simulatePersistence("asset-manager-v2-123", invalidSession, 1024 * 1024);
+  const validWrite = simulatePersistence("asset-manager-v2-123", validToolState, 1024 * 1024);
+  const invalidWrite = simulatePersistence("asset-manager-v2-123", invalidToolState, 1024 * 1024);
   const exportedWorkspaceDocument = simulateWorkspaceExportDocument(
     "asset-manager-v2-123",
     validWrite.payload,
     {
-      "saved-asset-session": {
+      "saved-asset-tool-state": {
         version: "v2",
         toolId: "asset-manager-v2",
         payloadJson: {
@@ -145,19 +145,19 @@ export function run() {
     generatedAt: new Date().toISOString(),
     checks: {
       noDeferredWorkspaceWriteMessage: !assetSource.includes("Workspace writes are deferred for this isolated V2 entry."),
-      hasValidSessionPersistenceMethod: assetSource.includes("persistValidSessionForWorkspace(sessionContext, assetCatalog)") &&
+      hasValidToolStatePersistenceMethod: assetSource.includes("persistValidToolStateForWorkspace(toolStateContext, assetCatalog)") &&
         assetSource.includes("window.sessionStorage.setItem(this.urlState.hostContextId, serializedPayload);"),
-      hasWorkspacePersistenceReadout: assetSource.includes("Workspace session context was read and persisted for Workspace V2 export."),
+      hasWorkspacePersistenceReadout: assetSource.includes("Workspace tool state context was read and persisted for Workspace V2 export."),
       hasWorkspaceHostContextRestore: workspaceSource.includes("restoreActiveSessionFromHostContextIdUrl()") &&
         workspaceSource.includes("this.restoreActiveSessionFromHostContextIdUrl();") &&
         workspaceSource.includes("if (parsed.value.toolId !== \"asset-manager-v2\")") &&
         workspaceSource.includes("this.syncWorkspaceManifestTextarea();"),
       hasAssetManagerOpenLaunchUsingActivePayloadJson: workspaceSource.includes("openAssetManagerFromWorkspace()") &&
-        workspaceSource.includes("payloadJson: this.cloneSessionValue(this.currentSessionPayload.payloadJson)"),
+        workspaceSource.includes("payloadJson: this.cloneToolStateValue(this.currentSessionPayload.payloadJson)"),
       validWriteAllowed: validWrite.ok === true && validWrite.payload?.payloadJson?.assetCatalog?.name === "Catalog",
       invalidWriteBlocked: invalidWrite.ok === false,
-      exportedManifestRetainsActiveAssetCatalog: exportedWorkspaceDocument.tools["workspace-v2"].activeSession?.payloadJson?.assetCatalog?.name === "Catalog" &&
-        Array.isArray(exportedWorkspaceDocument.tools["workspace-v2"].activeSession?.payloadJson?.assetCatalog?.entries),
+      exportedManifestRetainsActiveAssetCatalog: exportedWorkspaceDocument.tools["workspace-v2"].activeToolState?.payloadJson?.assetCatalog?.name === "Catalog" &&
+        Array.isArray(exportedWorkspaceDocument.tools["workspace-v2"].activeToolState?.payloadJson?.assetCatalog?.entries),
       importThenOpenAssetManagerLoadsCatalog: importAndOpen.ok === true &&
         importAndOpen.launchPayload?.payloadJson?.assetCatalog?.entries?.[0]?.id === "a1"
     }

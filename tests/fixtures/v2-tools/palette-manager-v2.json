@@ -1,6 +1,6 @@
 {
   "hostContextId": "palette-manager-v2-fixture",
-  "sessionContext": {
+  "toolStateContext": {
     "version": "v2",
     "toolId": "palette-manager-v2",
     "payloadJson": {

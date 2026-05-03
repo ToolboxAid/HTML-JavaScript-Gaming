@@ -4,7 +4,7 @@ import { ctrlTapClick } from "../helpers/playwrightCtrlTapClick.mjs";
 
 async function importManifestFromObject(page, manifest) {
   const chooserPromise = page.waitForEvent("filechooser");
-  await ctrlTapClick(page, page.getByRole("button", { name: "Import Workspace Session JSON" }));
+  await ctrlTapClick(page, page.getByRole("button", { name: "Import Workspace Tool State JSON" }));
   const chooser = await chooserPromise;
   const jsonText = JSON.stringify(manifest, null, 2);
   await chooser.setFiles({
@@ -16,7 +16,7 @@ async function importManifestFromObject(page, manifest) {
 }
 
 async function exportManifestFromTextarea(page) {
-  await ctrlTapClick(page, page.getByRole("button", { name: "Export Workspace Session JSON" }));
+  await ctrlTapClick(page, page.getByRole("button", { name: "Export Workspace Tool State JSON" }));
   const exportedText = await page.locator("#workspaceV2ImportJson").inputValue();
   return JSON.parse(exportedText);
 }
@@ -36,13 +36,13 @@ test.describe("Workspace V2 validation coverage", () => {
       expect(baselineManifest.tools?.["workspace-v2"]).toBeTruthy();
 
       await importManifestFromObject(page, baselineManifest);
-      await expect(page.locator("#workspaceV2ImportExportStatus")).toHaveText("Workspace session imported.");
+      await expect(page.locator("#workspaceV2ImportExportStatus")).toHaveText("Workspace tool state imported.");
 
       const exportedManifest = await exportManifestFromTextarea(page);
       expect(exportedManifest.documentKind).toBe("workspace-manifest");
 
       await importManifestFromObject(page, exportedManifest);
-      await expect(page.locator("#workspaceV2ImportExportStatus")).toHaveText("Workspace session imported.");
+      await expect(page.locator("#workspaceV2ImportExportStatus")).toHaveText("Workspace tool state imported.");
     } finally {
       await server.close();
     }
@@ -71,7 +71,7 @@ test.describe("Workspace V2 validation coverage", () => {
     try {
       await page.goto(`${server.baseUrl}/tools/workspace-v2/index.html`);
       await ctrlTapClick(page, page.getByRole("button", { name: "Full Reset" }));
-      await expect(page.locator("#workspaceV2SessionHistoryEmptyState")).toHaveText("No recent sessions.");
+      await expect(page.locator("#workspaceV2ToolStateHistoryEmptyState")).toHaveText("No recent tool states.");
 
       await importManifestFromObject(page, {
         schema: "html-js-gaming.project",
@@ -81,7 +81,7 @@ test.describe("Workspace V2 validation coverage", () => {
         tools: {}
       });
       await expect(page.locator("#workspaceV2ImportExportStatus")).toContainText("Import error:");
-      await expect(page.locator("#workspaceV2SessionHistoryEmptyState")).toHaveText("No recent sessions.");
+      await expect(page.locator("#workspaceV2ToolStateHistoryEmptyState")).toHaveText("No recent tool states.");
 
       const invalidPayloadManifest = {
         documentKind: "workspace-manifest",
@@ -97,7 +97,7 @@ test.describe("Workspace V2 validation coverage", () => {
             swatches: []
           },
           "workspace-v2": {
-            schema: "html-js-gaming.workspace-v2-session/1",
+            schema: "html-js-gaming.workspace-v2-tool-state/1",
             game: {
               id: "game-bad",
               name: "Bad Game"
@@ -105,18 +105,18 @@ test.describe("Workspace V2 validation coverage", () => {
             defaultToolId: "asset-manager-v2",
             activeToolId: "asset-manager-v2",
             activeHostContextId: "asset-manager-v2-bad-0001",
-            activeSession: {
+            activeToolState: {
               version: "v2",
               toolId: "asset-manager-v2",
               payloadJson: null
             },
-            savedSessions: {}
+            savedToolStates: {}
           }
         }
       };
       await importManifestFromObject(page, invalidPayloadManifest);
       await expect(page.locator("#workspaceV2ImportExportStatus")).toContainText("Import error:");
-      await expect(page.locator("#workspaceV2SessionHistoryEmptyState")).toHaveText("No recent sessions.");
+      await expect(page.locator("#workspaceV2ToolStateHistoryEmptyState")).toHaveText("No recent tool states.");
       await expect(page).toHaveURL(/\/tools\/workspace-v2\/index\.html/);
     } finally {
       await server.close();
@@ -129,14 +129,14 @@ test.describe("Workspace V2 validation coverage", () => {
       await page.goto(`${server.baseUrl}/tools/workspace-v2/index.html`);
       await ctrlTapClick(page, page.getByRole("button", { name: "Full Reset" }));
       await page.locator("#workspaceV2ToolSelect").selectOption("asset-manager-v2");
-      await ctrlTapClick(page, page.getByRole("button", { name: "Load Fixture" }));
+      await ctrlTapClick(page, page.getByRole("button", { name: "Load Tool State" }));
 
       const loadedManifest = JSON.parse(await page.locator("#workspaceV2ImportJson").inputValue());
       const exportedManifest = await exportManifestFromTextarea(page);
       expect(exportedManifest).toEqual(loadedManifest);
 
       await importManifestFromObject(page, exportedManifest);
-      await expect(page.locator("#workspaceV2ImportExportStatus")).toHaveText("Workspace session imported.");
+      await expect(page.locator("#workspaceV2ImportExportStatus")).toHaveText("Workspace tool state imported.");
       const postImportManifest = JSON.parse(await page.locator("#workspaceV2ImportJson").inputValue());
       expect(postImportManifest).toEqual(exportedManifest);
     } finally {
@@ -144,23 +144,23 @@ test.describe("Workspace V2 validation coverage", () => {
     }
   });
 
-  test("tool switching keeps activeSession consistent with selected fixture tool", async ({ page }) => {
+  test("tool switching keeps activeToolState consistent with selected fixture tool", async ({ page }) => {
     const server = await startRepoServer();
     try {
       await page.goto(`${server.baseUrl}/tools/workspace-v2/index.html`);
       await ctrlTapClick(page, page.getByRole("button", { name: "Full Reset" }));
 
       await page.locator("#workspaceV2ToolSelect").selectOption("tilemap-studio-v2");
-      await ctrlTapClick(page, page.getByRole("button", { name: "Load Fixture" }));
+      await ctrlTapClick(page, page.getByRole("button", { name: "Load Tool State" }));
       let exportedManifest = await exportManifestFromTextarea(page);
       expect(exportedManifest.tools?.["workspace-v2"]?.activeToolId).toBe("tilemap-studio-v2");
-      expect(exportedManifest.tools?.["workspace-v2"]?.activeSession?.toolId).toBe("tilemap-studio-v2");
+      expect(exportedManifest.tools?.["workspace-v2"]?.activeToolState?.toolId).toBe("tilemap-studio-v2");
 
       await page.locator("#workspaceV2ToolSelect").selectOption("vector-map-editor-v2");
-      await ctrlTapClick(page, page.getByRole("button", { name: "Load Fixture" }));
+      await ctrlTapClick(page, page.getByRole("button", { name: "Load Tool State" }));
       exportedManifest = await exportManifestFromTextarea(page);
       expect(exportedManifest.tools?.["workspace-v2"]?.activeToolId).toBe("vector-map-editor-v2");
-      expect(exportedManifest.tools?.["workspace-v2"]?.activeSession?.toolId).toBe("vector-map-editor-v2");
+      expect(exportedManifest.tools?.["workspace-v2"]?.activeToolState?.toolId).toBe("vector-map-editor-v2");
     } finally {
       await server.close();
     }

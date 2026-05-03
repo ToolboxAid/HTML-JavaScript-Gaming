@@ -1,6 +1,6 @@
 {
   "hostContextId": "svg-asset-studio-v2-fixture",
-  "sessionContext": {
+  "toolStateContext": {
     "version": "v2",
     "toolId": "svg-asset-studio-v2",
     "payloadJson": {

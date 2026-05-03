@@ -1,6 +1,6 @@
 {
   "hostContextId": "asset-manager-v2-fixture",
-  "sessionContext": {
+  "toolStateContext": {
     "version": "v2",
     "toolId": "asset-manager-v2",
     "payloadJson": {

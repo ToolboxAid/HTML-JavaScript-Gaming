@@ -13,8 +13,8 @@ test("workspace v2 launches asset manager and add/remove is reflected in export"
 
     // 2) Producer launch to Asset Manager V2
     await page.locator("#workspaceV2ToolSelect").selectOption("asset-manager-v2");
-    await ctrlTapClick(page, page.getByRole("button", { name: "Load Fixture" }));
-    await ctrlTapClick(page, page.getByRole("button", { name: "Create Session + Launch" }));
+    await ctrlTapClick(page, page.getByRole("button", { name: "Load Tool State" }));
+    await ctrlTapClick(page, page.getByRole("button", { name: "Create & Open Tool State" }));
     await expect(page).toHaveURL(/\/tools\/asset-manager-v2\/index\.html/);
     await expect(page).toHaveTitle("Asset Manager V2");
     await expect(page.locator("#assetBrowserV2ContractReadout")).toContainText("payloadJson.assetCatalog valid");
@@ -66,17 +66,17 @@ test("workspace v2 launches asset manager and add/remove is reflected in export"
     // 8) Export validation
     await ctrlTapClick(page, page.getByRole("button", { name: /Back to Workspace V2/ }));
     await expect(page).toHaveURL(/\/tools\/workspace-v2\/index\.html/);
-    await ctrlTapClick(page, page.getByRole("button", { name: "Export Workspace Session JSON" }));
+    await ctrlTapClick(page, page.getByRole("button", { name: "Export Workspace Tool State JSON" }));
     const exportedJsonText = await page.locator("#workspaceV2ImportJson").inputValue();
     const exported = JSON.parse(exportedJsonText);
-    const entries = exported?.tools?.["workspace-v2"]?.activeSession?.payloadJson?.assetCatalog?.entries;
+    const entries = exported?.tools?.["workspace-v2"]?.activeToolState?.payloadJson?.assetCatalog?.entries;
     if (!Array.isArray(entries)) {
-      throw new Error("Exported manifest is missing tools.workspace-v2.activeSession.payloadJson.assetCatalog.entries.");
+      throw new Error("Exported manifest is missing tools.workspace-v2.activeToolState.payloadJson.assetCatalog.entries.");
     }
     expect(exported.documentKind).toBe("workspace-manifest");
     expect(exported.tools?.["palette-browser"]).toBeTruthy();
     expect(exported.tools?.["workspace-v2"]).toBeTruthy();
-    expect(exported.tools?.["workspace-v2"]?.activeSession?.toolId).toBe("asset-manager-v2");
+    expect(exported.tools?.["workspace-v2"]?.activeToolState?.toolId).toBe("asset-manager-v2");
     expect(entries.some((entry) => entry?.id === "asset-001")).toBe(true);
     expect(entries.some((entry) => entry?.id === "asset-002")).toBe(false);
     expect(Object.prototype.hasOwnProperty.call(exported, "workspaceSession")).toBe(false);
@@ -88,14 +88,14 @@ test("workspace v2 launches asset manager and add/remove is reflected in export"
 
     // 9) Import/export round trip
     const importFileChooserPromise = page.waitForEvent("filechooser");
-    await ctrlTapClick(page, page.getByRole("button", { name: "Import Workspace Session JSON" }));
+    await ctrlTapClick(page, page.getByRole("button", { name: "Import Workspace Tool State JSON" }));
     const importFileChooser = await importFileChooserPromise;
     await importFileChooser.setFiles({
       name: "workspace-v2-roundtrip.json",
       mimeType: "application/json",
       buffer: Buffer.from(exportedJsonText, "utf8")
     });
-    await expect(page.locator("#workspaceV2ImportExportStatus")).toHaveText("Workspace session imported.");
+    await expect(page.locator("#workspaceV2ImportExportStatus")).toHaveText("Workspace tool state imported.");
     await ctrlTapClick(page, page.getByRole("button", { name: /Open Asset Manager V2/ }));
     await expect(page).toHaveURL(/\/tools\/asset-manager-v2\/index\.html/);
     await expect(page.getByRole("button", { name: /Player Ship/ })).toBeVisible();

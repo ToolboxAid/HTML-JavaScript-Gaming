@@ -30,7 +30,7 @@ function readFixtureSession(toolId) {
   const fixture = JSON.parse(fs.readFileSync(fixturePath, "utf8"));
   return {
     hostContextId: typeof fixture.hostContextId === "string" ? fixture.hostContextId.trim() : `${toolId}-fixture`,
-    sessionContext: fixture.sessionContext
+    toolStateContext: fixture.toolStateContext
   };
 }
 
@@ -38,7 +38,7 @@ function cloneJson(value) {
   return JSON.parse(JSON.stringify(value));
 }
 
-function buildWorkspaceManifest(sessionContext, hostContextId) {
+function buildWorkspaceManifest(toolStateContext, hostContextId) {
   return {
     documentKind: "workspace-manifest",
     schema: "html-js-gaming.project",
@@ -53,16 +53,16 @@ function buildWorkspaceManifest(sessionContext, hostContextId) {
         swatches: []
       },
       "workspace-v2": {
-        schema: "html-js-gaming.workspace-v2-session/1",
+        schema: "html-js-gaming.workspace-v2-tool-state/1",
         game: {
           id: "workspace-v2-tool-validation-game",
           name: "Workspace V2 Tool Validation"
         },
         defaultToolId: "asset-manager-v2",
-        activeToolId: typeof sessionContext.toolId === "string" ? sessionContext.toolId : "asset-manager-v2",
+        activeToolId: typeof toolStateContext.toolId === "string" ? toolStateContext.toolId : "asset-manager-v2",
         activeHostContextId: hostContextId,
-        activeSession: cloneJson(sessionContext),
-        savedSessions: {}
+        activeToolState: cloneJson(toolStateContext),
+        savedToolStates: {}
       }
     }
   };
@@ -70,7 +70,7 @@ function buildWorkspaceManifest(sessionContext, hostContextId) {
 
 async function importWorkspaceManifest(page, manifest) {
   const chooserPromise = page.waitForEvent("filechooser");
-  await ctrlTapClick(page, page.getByRole("button", { name: "Import Workspace Session JSON" }));
+  await ctrlTapClick(page, page.getByRole("button", { name: "Import Workspace Tool State JSON" }));
   const chooser = await chooserPromise;
   await chooser.setFiles({
     name: "workspace-v2-tool-validation-import.json",
@@ -79,11 +79,11 @@ async function importWorkspaceManifest(page, manifest) {
   });
 }
 
-async function seedSessionAndOpenTool(page, baseUrl, toolId, hostContextId, sessionContext) {
+async function seedSessionAndOpenTool(page, baseUrl, toolId, hostContextId, toolStateContext) {
   await page.goto(`${baseUrl}/tools/workspace-v2/index.html`);
-  await page.evaluate(({ hostContextId: id, sessionContext: payload }) => {
+  await page.evaluate(({ hostContextId: id, toolStateContext: payload }) => {
     window.sessionStorage.setItem(id, JSON.stringify(payload));
-  }, { hostContextId, sessionContext });
+  }, { hostContextId, toolStateContext });
   await page.goto(`${baseUrl}/tools/${toolId}/index.html?hostContextId=${encodeURIComponent(hostContextId)}`);
 }
 
@@ -143,10 +143,10 @@ test("@workspace-v2 valid workspace manifest payloadJson imports", async ({ page
   const server = await startRepoServer();
   try {
     const fixture = readFixtureSession("asset-manager-v2");
-    const manifest = buildWorkspaceManifest(fixture.sessionContext, `${fixture.hostContextId}-workspace-valid`);
+    const manifest = buildWorkspaceManifest(fixture.toolStateContext, `${fixture.hostContextId}-workspace-valid`);
     await page.goto(`${server.baseUrl}/tools/workspace-v2/index.html`);
     await importWorkspaceManifest(page, manifest);
-    await expect(page.locator("#workspaceV2ImportExportStatus")).toHaveText("Workspace session imported.");
+    await expect(page.locator("#workspaceV2ImportExportStatus")).toHaveText("Workspace tool state imported.");
   } finally {
     await server.close();
   }
@@ -156,8 +156,8 @@ test("@workspace-v2 invalid workspace manifest payloadJson is rejected", async (
   const server = await startRepoServer();
   try {
     const fixture = readFixtureSession("asset-manager-v2");
-    const manifest = buildWorkspaceManifest(fixture.sessionContext, `${fixture.hostContextId}-workspace-invalid`);
-    manifest.tools["workspace-v2"].activeSession.payloadJson = null;
+    const manifest = buildWorkspaceManifest(fixture.toolStateContext, `${fixture.hostContextId}-workspace-invalid`);
+    manifest.tools["workspace-v2"].activeToolState.payloadJson = null;
     await page.goto(`${server.baseUrl}/tools/workspace-v2/index.html`);
     await importWorkspaceManifest(page, manifest);
     await expect(page.locator("#workspaceV2ImportExportStatus")).toContainText("Import error:");
@@ -181,7 +181,7 @@ for (const toolId of toolIds) {
         server.baseUrl,
         toolId,
         `${fixture.hostContextId}-valid`,
-        fixture.sessionContext
+        fixture.toolStateContext
       );
       await expect(page.locator(selectors.valid)).toBeVisible();
       await expect(page.locator(selectors.invalid)).toBeHidden();
@@ -195,14 +195,14 @@ for (const toolId of toolIds) {
     const server = await startRepoServer();
     try {
       const fixture = readFixtureSession(toolId);
-      const invalidSession = cloneJson(fixture.sessionContext);
-      invalidSession.payloadJson = null;
+      const invalidToolState = cloneJson(fixture.toolStateContext);
+      invalidToolState.payloadJson = null;
       await seedSessionAndOpenTool(
         page,
         server.baseUrl,
         toolId,
         `${fixture.hostContextId}-invalid`,
-        invalidSession
+        invalidToolState
       );
       await expect(page.locator(selectors.invalid)).toBeVisible();
       await expect(page.locator(selectors.valid)).toBeHidden();

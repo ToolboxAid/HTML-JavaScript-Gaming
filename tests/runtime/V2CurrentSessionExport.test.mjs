@@ -11,7 +11,7 @@ const workspaceJsPath = path.join(repoRoot, "tools", "workspace-v2", "index.js")
 const workspaceManifestSchemaPath = path.join(repoRoot, "tools", "schemas", "workspace.manifest.schema.json");
 const deprecatedWorkspaceSchemaPath = path.join(repoRoot, "tools", "schemas", "workspace.schema.json");
 const testPath = path.join(repoRoot, "tests", "runtime", "V2CurrentSessionExport.test.mjs");
-const resultsPath = path.join(repoRoot, "tmp", "v2-current-session-export-results.json");
+const resultsPath = path.join(repoRoot, "tmp", "v2-current-tool-state-export-results.json");
 
 function checkSyntax(filePath) {
   try {
@@ -178,12 +178,12 @@ export function run() {
         ]
       },
       "workspace-v2": {
-        schema: "html-js-gaming.workspace-v2-session/1",
+        schema: "html-js-gaming.workspace-v2-tool-state/1",
         game: { id: "workspace-palette-manager-v2-1234567890123-abcd1234", name: "Workspace V2 Session" },
         defaultToolId: "palette-manager-v2",
         activeToolId: "palette-manager-v2",
         activeHostContextId: "palette-manager-v2-1234567890123-abcd1234",
-        activeSession: {
+        activeToolState: {
           version: "v2",
           toolId: "palette-manager-v2",
           paletteJson: {
@@ -193,7 +193,7 @@ export function run() {
             ]
           }
         },
-        savedSessions: {}
+        savedToolStates: {}
       }
     }
   };
@@ -218,8 +218,8 @@ export function run() {
     }
   }, null, 2)}\n`, "utf8");
 
-  console.log(`v2 current-session export results: ${resultsPath}`);
-  assert.equal(failures.length, 0, `V2 current-session export failures: ${failures.join(" | ")}`);
+  console.log(`v2 current-tool-state export results: ${resultsPath}`);
+  assert.equal(failures.length, 0, `V2 current-tool-state export failures: ${failures.join(" | ")}`);
   return { failures };
 }
 

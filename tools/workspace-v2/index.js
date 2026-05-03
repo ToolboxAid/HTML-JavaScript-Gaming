@@ -1,16 +1,16 @@
-class WorkspaceV2SessionProducer {
+class WorkspaceV2ToolStateProducer {
   constructor() {
     document.title = "Workspace V2";
     document.body.dataset.toolId = "workspace-v2";
-    this.libraryStorageKey = "v2-session-library";
-    this.historyStorageKey = "v2-session-history";
+    this.libraryStorageKey = "v2-tool-state-library";
+    this.historyStorageKey = "v2-tool-state-history";
     this.errorLogsStorageKey = "v2-error-logs";
     this.mergeAuditStorageKey = "v2-merge-audit-log";
-    this.sessionSelectionStorageKey = "v2-session-selection";
-    this.lastMergedSessionStorageKey = "v2-last-merged";
+    this.toolStateSelectionStorageKey = "v2-tool-state-selection";
+    this.lastMergedToolStateStorageKey = "v2-last-merged-tool-state";
     this.historyMaxEntries = 10;
     this.urlLengthLimit = 2000;
-    this.sessionPayloadBytesLimit = 1024 * 1024;
+    this.toolStatePayloadBytesLimit = 1024 * 1024;
     this.toolSelect = document.getElementById("workspaceV2ToolSelect");
     this.backButton = document.getElementById("workspaceV2BackButton");
     this.loadFixtureButton = document.getElementById("workspaceV2LoadFixtureButton");
@@ -24,17 +24,17 @@ class WorkspaceV2SessionProducer {
     this.shareUrlNode = document.getElementById("workspaceV2ShareUrl");
     this.createShareLinkButton = document.getElementById("workspaceV2CreateShareLinkButton");
     this.applyShareLinkButton = document.getElementById("workspaceV2ApplyShareLinkButton");
-    this.sessionNameNode = document.getElementById("workspaceV2SessionName");
-    this.saveSessionButton = document.getElementById("workspaceV2SaveSessionButton");
-    this.overwriteSessionButton = document.getElementById("workspaceV2OverwriteSessionButton");
-    this.loadSessionButton = document.getElementById("workspaceV2LoadSessionButton");
-    this.deleteSessionButton = document.getElementById("workspaceV2DeleteSessionButton");
+    this.toolStateNameNode = document.getElementById("workspaceV2ToolStateName");
+    this.saveToolStateButton = document.getElementById("workspaceV2SaveToolStateButton");
+    this.overwriteToolStateButton = document.getElementById("workspaceV2OverwriteToolStateButton");
+    this.loadToolStateButton = document.getElementById("workspaceV2LoadToolStateButton");
+    this.deleteToolStateButton = document.getElementById("workspaceV2DeleteToolStateButton");
     this.libraryStatusNode = document.getElementById("workspaceV2LibraryStatus");
     this.libraryEmptyState = document.getElementById("workspaceV2LibraryEmptyState");
-    this.sessionListNode = document.getElementById("workspaceV2SessionList");
-    this.refreshSessionHistoryButton = document.getElementById("workspaceV2RefreshSessionHistoryButton");
-    this.sessionHistoryEmptyState = document.getElementById("workspaceV2SessionHistoryEmptyState");
-    this.sessionHistoryListNode = document.getElementById("workspaceV2SessionHistoryList");
+    this.toolStateListNode = document.getElementById("workspaceV2ToolStateList");
+    this.refreshToolStateHistoryButton = document.getElementById("workspaceV2RefreshToolStateHistoryButton");
+    this.toolStateHistoryEmptyState = document.getElementById("workspaceV2ToolStateHistoryEmptyState");
+    this.toolStateHistoryListNode = document.getElementById("workspaceV2ToolStateHistoryList");
     this.diffLeftSelect = document.getElementById("workspaceV2DiffLeftSelect");
     this.diffRightSelect = document.getElementById("workspaceV2DiffRightSelect");
     this.diffLeftSelectedLabelNode = document.getElementById("workspaceV2DiffLeftSelectedLabel");
@@ -56,52 +56,52 @@ class WorkspaceV2SessionProducer {
     this.mergeEnableStateNode = document.getElementById("workspaceV2MergeEnableState");
     this.mergeResultSummaryNode = document.getElementById("workspaceV2MergeResultSummary");
     this.mergeEmptyState = document.getElementById("workspaceV2MergeEmptyState");
-    this.mergedSessionIdNode = document.getElementById("workspaceV2MergedSessionId");
-    this.saveMergedSessionButton = document.getElementById("workspaceV2SaveMergedSessionButton");
+    this.mergedToolStateIdNode = document.getElementById("workspaceV2MergedToolStateId");
+    this.saveMergedToolStateButton = document.getElementById("workspaceV2SaveMergedToolStateButton");
     this.useMergedInDiffMergeButton = document.getElementById("workspaceV2UseMergedInDiffMergeButton");
     this.undoLastMergeButton = document.getElementById("workspaceV2UndoLastMergeButton");
-    this.mergedSessionStatusNode = document.getElementById("workspaceV2MergedSessionStatus");
+    this.mergedToolStateStatusNode = document.getElementById("workspaceV2MergedToolStateStatus");
     this.mergeConflictSummaryNode = document.getElementById("workspaceV2MergeConflictSummary");
     this.mergeOutputNode = document.getElementById("workspaceV2MergeOutput");
     this.refreshErrorLogsButton = document.getElementById("workspaceV2RefreshErrorLogsButton");
     this.clearErrorLogsButton = document.getElementById("workspaceV2ClearErrorLogsButton");
     this.errorLogsEmptyState = document.getElementById("workspaceV2ErrorLogsEmptyState");
     this.errorLogsListNode = document.getElementById("workspaceV2ErrorLogsList");
-    this.clearSessionStorageButton = document.getElementById("workspaceV2ClearSessionStorageButton");
-    this.clearSavedSessionsButton = document.getElementById("workspaceV2ClearSavedSessionsButton");
+    this.clearToolStateStorageButton = document.getElementById("workspaceV2ClearSessionStorageButton");
+    this.clearSavedToolStatesButton = document.getElementById("workspaceV2ClearSavedToolStatesButton");
     this.resetClearErrorLogsButton = document.getElementById("workspaceV2ResetClearErrorLogsButton");
     this.fullResetButton = document.getElementById("workspaceV2FullResetButton");
     this.statusNode = document.getElementById("workspaceV2Status");
     this.importExportStatusNode = null;
     this.importFileDialogPending = false;
-    this.currentSessionPayload = null;
-    this.currentSessionSource = "";
+    this.currentToolStatePayload = null;
+    this.currentToolStateSource = "";
     this.currentHostContextId = "";
     this.lastWorkspaceExportBuildErrorMessage = "";
     this.workspaceActivePalette = null;
     this.workspaceTransitionState = "idle";
     this.pendingMergePreview = null;
-    this.lastMergedSessionResult = null;
-    this.mergeOutputSelectionKey = "";
-    this.diffOutputSelectionKey = "";
-    this.recentSessionInventory = [];
+    this.lastMergedToolStateResult = null;
+    this.mergeOutputToolStateKey = "";
+    this.diffOutputToolStateKey = "";
+    this.recentToolStateInventory = [];
     this.workspaceManifestGame = null;
     this.workspaceImportedToolEntries = {};
     this.workspaceToolsSummaryNode = null;
     this.loadFixtureButton.addEventListener("click", () => {
-      this.loadSelectedFixture();
+      this.loadSelectedToolState();
     });
     this.launchButton.addEventListener("click", () => {
-      this.createSessionAndLaunch();
+      this.createToolStateAndLaunch();
     });
     this.openAssetManagerButton.addEventListener("click", () => {
       this.openAssetManagerFromWorkspace();
     });
     this.importButton.addEventListener("click", () => {
-      this.handleImportWorkspaceSessionJsonClick();
+      this.handleImportWorkspaceToolStateJsonClick();
     });
     this.exportButton.addEventListener("click", () => {
-      this.exportWorkspaceSessionJson();
+      this.exportWorkspaceToolStateJson();
     });
     this.createShareLinkButton.addEventListener("click", () => {
       this.createShareLink();
@@ -115,33 +115,33 @@ class WorkspaceV2SessionProducer {
     window.addEventListener("focus", () => {
       this.handleImportFileDialogFocus();
     });
-    this.saveSessionButton.addEventListener("click", () => {
-      this.saveNamedSession(false);
+    this.saveToolStateButton.addEventListener("click", () => {
+      this.saveNamedToolState(false);
     });
-    this.overwriteSessionButton.addEventListener("click", () => {
-      this.saveNamedSession(true);
+    this.overwriteToolStateButton.addEventListener("click", () => {
+      this.saveNamedToolState(true);
     });
-    this.loadSessionButton.addEventListener("click", () => {
-      this.loadNamedSession();
+    this.loadToolStateButton.addEventListener("click", () => {
+      this.loadNamedToolState();
     });
-    this.deleteSessionButton.addEventListener("click", () => {
-      this.deleteNamedSession();
+    this.deleteToolStateButton.addEventListener("click", () => {
+      this.deleteNamedToolState();
     });
-    this.sessionNameNode.addEventListener("input", () => {
-      this.updateSessionLibraryActionState();
+    this.toolStateNameNode.addEventListener("input", () => {
+      this.updateToolStateLibraryActionState();
     });
     this.toolSelect.addEventListener("change", () => {
       this.refreshPaletteOwnershipStateAndUi();
     });
-    this.refreshSessionHistoryButton.addEventListener("click", () => {
-      this.renderSessionLibrary();
-      this.renderSessionHistory();
-      this.updateSessionLibraryActionState();
+    this.refreshToolStateHistoryButton.addEventListener("click", () => {
+      this.renderToolStateLibrary();
+      this.renderToolStateHistory();
+      this.updateToolStateLibraryActionState();
       this.clearDiffOutputForStateChange("", "No diff computed.");
-      this.statusNode.textContent = "Workspace V2 session views refreshed. Compute Diff or Preview Merge for current selections.";
+      this.statusNode.textContent = "Workspace V2 tool state views refreshed. Compute Diff or Preview Merge for current selections.";
     });
     this.computeDiffButton.addEventListener("click", () => {
-      this.computeSelectedSessionDiff();
+      this.computeSelectedToolStateDiff();
     });
     this.diffLeftSelect.addEventListener("change", () => {
       this.handleDiffSelectionChange();
@@ -150,7 +150,7 @@ class WorkspaceV2SessionProducer {
       this.handleDiffSelectionChange();
     });
     this.computeMergeButton.addEventListener("click", () => {
-      this.computeSelectedSessionMerge();
+      this.computeSelectedToolStateMerge();
     });
     this.mergeLeftSelect.addEventListener("change", () => {
       this.handleMergeSelectionChange();
@@ -159,16 +159,16 @@ class WorkspaceV2SessionProducer {
       this.handleMergeSelectionChange();
     });
     this.confirmMergeButton.addEventListener("click", () => {
-      this.confirmSelectedSessionMergePreview();
+      this.confirmSelectedToolStateMergePreview();
     });
     this.applyMergeButton.addEventListener("click", () => {
-      this.applySelectedSessionMerge();
+      this.applySelectedToolStateMerge();
     });
-    this.saveMergedSessionButton.addEventListener("click", () => {
-      this.saveMergedSessionResult();
+    this.saveMergedToolStateButton.addEventListener("click", () => {
+      this.saveMergedToolStateResult();
     });
     this.useMergedInDiffMergeButton.addEventListener("click", () => {
-      this.useMergedSessionInDiffMerge();
+      this.useMergedToolStateInDiffMerge();
     });
     this.undoLastMergeButton.addEventListener("click", () => {
       this.undoLastMerge();
@@ -179,11 +179,11 @@ class WorkspaceV2SessionProducer {
     this.clearErrorLogsButton.addEventListener("click", () => {
       this.clearErrorLogs();
     });
-    this.clearSessionStorageButton.addEventListener("click", () => {
-      this.clearSessionStorage();
+    this.clearToolStateStorageButton.addEventListener("click", () => {
+      this.clearToolStateStorage();
     });
-    this.clearSavedSessionsButton.addEventListener("click", () => {
-      this.clearSavedSessions();
+    this.clearSavedToolStatesButton.addEventListener("click", () => {
+      this.clearSavedToolStates();
     });
     this.resetClearErrorLogsButton.addEventListener("click", () => {
       this.clearErrorLogs();
@@ -199,7 +199,7 @@ class WorkspaceV2SessionProducer {
         this.renderErrorLogsViewer();
       }
       if (event.key === this.historyStorageKey) {
-        this.renderSessionHistory();
+        this.renderToolStateHistory();
       }
     });
     this.removePaletteManagerProducerOption();
@@ -209,16 +209,16 @@ class WorkspaceV2SessionProducer {
     this.initializeImportExportSectionStatusNode();
     this.initializeWorkspaceToolsSummaryNode();
     this.initializeHiddenImportFileInput();
-    this.decodeSessionParamFromUrl();
-    this.restoreActiveSessionFromHostContextIdUrl();
+    this.decodeToolStateParamFromUrl();
+    this.restoreActiveToolStateFromHostContextIdUrl();
     this.ensureWorkspaceActivePaletteBaseline();
-    this.initializeWorkspaceProducerSession();
+    this.initializeWorkspaceProducerToolState();
     this.refreshPaletteOwnershipStateAndUi();
-    this.renderSessionLibrary();
-    this.renderSessionHistory();
-    this.renderSessionDiffInputs();
-    this.renderSessionMergeInputs();
-    this.updateSessionLibraryActionState();
+    this.renderToolStateLibrary();
+    this.renderToolStateHistory();
+    this.renderToolStateDiffInputs();
+    this.renderToolStateMergeInputs();
+    this.updateToolStateLibraryActionState();
     this.renderErrorLogsViewer();
   }
 
@@ -226,13 +226,13 @@ class WorkspaceV2SessionProducer {
     return typeof this.toolSelect.value === "string" ? this.toolSelect.value.trim() : "";
   }
 
-  selectedSessionName() {
-    return typeof this.sessionNameNode.value === "string" ? this.sessionNameNode.value : "";
+  selectedToolStateName() {
+    return typeof this.toolStateNameNode.value === "string" ? this.toolStateNameNode.value : "";
   }
 
   initializeImportExportSectionStatusNode() {
     const heading = Array.from(document.querySelectorAll("h2")).find((node) => {
-      return node.textContent && node.textContent.trim() === "Import / Export Session JSON";
+      return node.textContent && node.textContent.trim() === "Import / Export Tool State JSON";
     });
     if (!heading) {
       return;
@@ -255,7 +255,7 @@ class WorkspaceV2SessionProducer {
 
   initializeWorkspaceToolsSummaryNode() {
     const heading = Array.from(document.querySelectorAll("h2")).find((node) => {
-      return node.textContent && node.textContent.trim() === "Import / Export Session JSON";
+      return node.textContent && node.textContent.trim() === "Import / Export Tool State JSON";
     });
     if (!heading) {
       return;
@@ -341,17 +341,17 @@ class WorkspaceV2SessionProducer {
     this.importFileNode.style.display = "none";
   }
 
-  handleImportWorkspaceSessionJsonClick() {
+  handleImportWorkspaceToolStateJsonClick() {
     if (!this.importFileNode) {
       if (this.importJsonNode && this.importJsonNode.value.trim()) {
-        this.setImportExportStatus("File picker unavailable. Importing from Workspace Session JSON.");
-        this.importWorkspaceSessionJson();
+        this.setImportExportStatus("File picker unavailable. Importing from Workspace Tool State JSON.");
+        this.importWorkspaceToolStateJson();
         return;
       }
       this.setImportExportStatus("Import error: file picker is unavailable.");
       return;
     }
-    this.setImportExportStatus("Select a workspace session file to import.");
+    this.setImportExportStatus("Select a workspace tool state file to import.");
     this.importFileDialogPending = true;
     this.importFileNode.value = "";
     this.importFileNode.click();
@@ -471,19 +471,19 @@ class WorkspaceV2SessionProducer {
     return typeof toolId === "string" && toolId.trim() === "palette-manager-v2";
   }
 
-  isPaletteSessionPayload(sessionPayload) {
+  isPaletteSessionPayload(toolStatePayload) {
     return Boolean(
-      sessionPayload &&
-      typeof sessionPayload === "object" &&
-      !Array.isArray(sessionPayload) &&
-      this.isPaletteManagerToolId(sessionPayload.toolId) &&
-      sessionPayload.payloadJson &&
-      typeof sessionPayload.payloadJson === "object" &&
-      !Array.isArray(sessionPayload.payloadJson) &&
-      sessionPayload.payloadJson.paletteDocument &&
-      typeof sessionPayload.payloadJson.paletteDocument === "object" &&
-      !Array.isArray(sessionPayload.payloadJson.paletteDocument) &&
-      Array.isArray(sessionPayload.payloadJson.paletteDocument.swatches)
+      toolStatePayload &&
+      typeof toolStatePayload === "object" &&
+      !Array.isArray(toolStatePayload) &&
+      this.isPaletteManagerToolId(toolStatePayload.toolId) &&
+      toolStatePayload.payloadJson &&
+      typeof toolStatePayload.payloadJson === "object" &&
+      !Array.isArray(toolStatePayload.payloadJson) &&
+      toolStatePayload.payloadJson.paletteDocument &&
+      typeof toolStatePayload.payloadJson.paletteDocument === "object" &&
+      !Array.isArray(toolStatePayload.payloadJson.paletteDocument) &&
+      Array.isArray(toolStatePayload.payloadJson.paletteDocument.swatches)
     );
   }
 
@@ -525,24 +525,24 @@ class WorkspaceV2SessionProducer {
   }
 
   singleActivePaletteLibraryMessage() {
-    return "Palette is already the active workspace palette at tools.palette-browser. It is not saved as a Session Library entry.";
+    return "Palette is already the active workspace palette at tools.palette-browser. It is not saved as a Tool State Library entry.";
   }
 
-  isBlockedAlternatePaletteSession(sessionId, sessionPayload) {
+  isBlockedAlternatePaletteSession(toolStateId, toolStatePayload) {
     if (!this.hasWorkspaceActivePalette()) {
       return false;
     }
-    if (!this.isPaletteSessionPayload(sessionPayload)) {
+    if (!this.isPaletteSessionPayload(toolStatePayload)) {
       return false;
     }
-    if (typeof sessionId !== "string" || !sessionId.trim()) {
+    if (typeof toolStateId !== "string" || !toolStateId.trim()) {
       return true;
     }
-    return sessionId.trim() !== this.activePaletteHostContextId();
+    return toolStateId.trim() !== this.activePaletteHostContextId();
   }
 
   updateWorkspaceActivePaletteFromCurrentSession() {
-    if (!this.isPaletteSessionPayload(this.currentSessionPayload)) {
+    if (!this.isPaletteSessionPayload(this.currentToolStatePayload)) {
       return;
     }
     if (typeof this.currentHostContextId !== "string" || !this.currentHostContextId.trim()) {
@@ -551,7 +551,7 @@ class WorkspaceV2SessionProducer {
     this.workspaceActivePalette = {
       hostContextId: this.currentHostContextId.trim(),
       palette: {
-        swatches: this.cloneSessionValue(this.currentSessionPayload.payloadJson.paletteDocument.swatches)
+        swatches: this.cloneToolStateValue(this.currentToolStatePayload.payloadJson.paletteDocument.swatches)
       }
     };
   }
@@ -584,7 +584,7 @@ class WorkspaceV2SessionProducer {
     this.workspaceActivePalette = {
       hostContextId: nextHostContextId,
       palette: {
-        swatches: this.cloneSessionValue(paletteBrowserPayload.swatches)
+        swatches: this.cloneToolStateValue(paletteBrowserPayload.swatches)
       }
     };
   }
@@ -594,27 +594,27 @@ class WorkspaceV2SessionProducer {
       return false;
     }
     const activePaletteHostContextId = this.activePaletteHostContextId();
-    const history = this.readSessionHistory();
+    const history = this.readToolStateHistory();
     const nextHistory = [];
-    const removedPaletteSessionIds = [];
+    const removedPaletteToolStateIds = [];
     history.forEach((entry) => {
-      if (!this.isValidSessionHistoryEntry(entry)) {
+      if (!this.isValidToolStateHistoryEntry(entry)) {
         return;
       }
       if (this.isPaletteManagerToolId(entry.tool) && entry.hostContextId !== activePaletteHostContextId) {
-        removedPaletteSessionIds.push(entry.hostContextId);
+        removedPaletteToolStateIds.push(entry.hostContextId);
         return;
       }
       nextHistory.push(entry);
     });
-    if (removedPaletteSessionIds.length === 0) {
+    if (removedPaletteToolStateIds.length === 0) {
       return false;
     }
-    removedPaletteSessionIds.forEach((sessionId) => {
-      sessionStorage.removeItem(sessionId);
-      if (this.currentHostContextId === sessionId) {
+    removedPaletteToolStateIds.forEach((toolStateId) => {
+      sessionStorage.removeItem(toolStateId);
+      if (this.currentHostContextId === toolStateId) {
         this.currentHostContextId = "";
-        this.setCurrentSessionPayload(null, "");
+        this.setCurrentToolStatePayload(null, "");
       }
     });
     localStorage.setItem(this.historyStorageKey, JSON.stringify(nextHistory));
@@ -639,16 +639,16 @@ class WorkspaceV2SessionProducer {
     const removedCompetingPaletteSessions = this.pruneCompetingPaletteRecentSessions();
     this.refreshPaletteOwnershipUiState();
     if (removedCompetingPaletteSessions) {
-      this.renderSessionHistory();
-      this.renderSessionDiffInputs();
-      this.renderSessionMergeInputs();
+      this.renderToolStateHistory();
+      this.renderToolStateDiffInputs();
+      this.renderToolStateMergeInputs();
     }
     this.refreshWorkspaceSessionUiStateModel("refresh_load");
   }
 
   createProducerPayloadForTool(toolId) {
     if (toolId === "palette-manager-v2") {
-      return this.withSessionVersion({
+      return this.withToolStateVersion({
         toolId: "palette-manager-v2",
         payloadJson: {
           paletteDocument: {
@@ -658,15 +658,15 @@ class WorkspaceV2SessionProducer {
         }
       });
     }
-    return this.withSessionVersion({
+    return this.withToolStateVersion({
       toolId,
       payloadJson: {}
     });
   }
 
-  initializeWorkspaceProducerSession() {
+  initializeWorkspaceProducerToolState() {
     this.ensureWorkspaceActivePaletteBaseline();
-    if (this.isValidSessionPayload(this.currentSessionPayload) && this.currentHostContextId) {
+    if (this.isValidToolStatePayload(this.currentToolStatePayload) && this.currentHostContextId) {
       return;
     }
     const selectedToolId = this.selectedToolId();
@@ -675,76 +675,76 @@ class WorkspaceV2SessionProducer {
       return;
     }
     const initialPayload = this.createProducerPayloadForTool(selectedToolId);
-    this.setCurrentSessionPayload(initialPayload, "workspace-v2-init");
-    const hostContextId = this.createHostContextId(selectedToolId);
-    const activation = this.activateWorkspaceSession(hostContextId, initialPayload, "workspace-v2-init");
+    this.setCurrentToolStatePayload(initialPayload, "workspace-v2-init");
+    const hostContextId = this.createHostContextToolStateId(selectedToolId);
+    const activation = this.activateWorkspaceToolState(hostContextId, initialPayload, "workspace-v2-init");
     if (!activation.ok) {
       this.statusNode.textContent = activation.message;
       return;
     }
     this.syncWorkspaceManifestTextarea();
-    this.statusNode.textContent = `Workspace V2 initialized.\nTool: ${selectedToolId}\nHostContextId: ${hostContextId}\nSession is active for Save Session.`;
+    this.statusNode.textContent = `Workspace V2 initialized.\nTool: ${selectedToolId}\nHostContextId: ${hostContextId}\nSession is active for Save Tool State.`;
   }
 
   hasActiveWorkspaceSessionForSave() {
     return Boolean(
       typeof this.currentHostContextId === "string" &&
       this.currentHostContextId.trim() &&
-      this.isValidSessionPayload(this.currentSessionPayload)
+      this.isValidToolStatePayload(this.currentToolStatePayload)
     );
   }
 
-  isValidNewSessionId(sessionId) {
-    if (typeof sessionId !== "string") {
+  isValidNewToolStateId(toolStateId) {
+    if (typeof toolStateId !== "string") {
       return false;
     }
-    if (!sessionId) {
+    if (!toolStateId) {
       return false;
     }
-    return /^[A-Za-z0-9_-]+$/.test(sessionId);
+    return /^[A-Za-z0-9_-]+$/.test(toolStateId);
   }
 
-  savedSessionIdExists(sessionId) {
-    if (typeof sessionId !== "string" || !sessionId) {
+  savedToolStateIdExists(toolStateId) {
+    if (typeof toolStateId !== "string" || !toolStateId) {
       return false;
     }
-    const library = this.readSessionLibrary();
+    const library = this.readToolStateLibrary();
     if (library === null) {
       return false;
     }
-    return Object.prototype.hasOwnProperty.call(library, sessionId);
+    return Object.prototype.hasOwnProperty.call(library, toolStateId);
   }
 
-  updateSessionLibraryActionState() {
+  updateToolStateLibraryActionState() {
     const model = this.refreshWorkspaceSessionUiStateModel("refresh_load");
     if (model.libraryPaletteLocked) {
       this.libraryStatusNode.textContent = this.singleActivePaletteLibraryMessage();
       return;
     }
     if (!model.libraryHasSessionInput) {
-      this.libraryStatusNode.textContent = "Enter a new session ID to save.";
+      this.libraryStatusNode.textContent = "Enter a new tool state ID to save.";
       return;
     }
     if (!model.libraryIdValid) {
-      this.libraryStatusNode.textContent = "Invalid session ID. Use letters, numbers, hyphen, or underscore only.";
+      this.libraryStatusNode.textContent = "Invalid tool state ID. Use letters, numbers, hyphen, or underscore only.";
       return;
     }
     if (model.librarySavedSessionExists) {
-      this.libraryStatusNode.textContent = "That session ID already exists. Use the saved session card to Load or Overwrite it.";
+      this.libraryStatusNode.textContent = "That tool state ID already exists. Use the saved tool state card to Load or Overwrite it.";
       return;
     }
     if (!model.libraryHasActiveSession) {
-      this.libraryStatusNode.textContent = "No active Workspace V2 session is available to save.";
+      this.libraryStatusNode.textContent = "No active Workspace V2 tool state is available to save.";
       return;
     }
-    this.libraryStatusNode.textContent = "Ready to save a new session copy from the active Workspace V2 session.";
+    this.libraryStatusNode.textContent = "Ready to save a new tool state copy from the active Workspace V2 tool state.";
   }
 
   computeWorkspaceTransitionStateFromModel(model) {
     if (model.undoEnabled) {
       return "undo_available";
     }
-    if (this.lastMergedSessionResult && this.isValidSessionPayload(this.lastMergedSessionResult.payload)) {
+    if (this.lastMergedToolStateResult && this.isValidToolStatePayload(this.lastMergedToolStateResult.payload)) {
       return "merge_applied";
     }
     if (this.pendingMergePreview && (model.mergeCanConfirm || model.mergeCanApply)) {
@@ -766,7 +766,7 @@ class WorkspaceV2SessionProducer {
     if (actionName === "selection_change") {
       return true;
     }
-    if (actionName === "delete_session") {
+    if (actionName === "delete_tool_state") {
       return true;
     }
     if (actionName === "preview_merge") {
@@ -800,7 +800,7 @@ class WorkspaceV2SessionProducer {
     if (actionName === "selection_change") {
       return this.computeWorkspaceTransitionStateFromModel(model);
     }
-    if (actionName === "delete_session") {
+    if (actionName === "delete_tool_state") {
       return this.computeWorkspaceTransitionStateFromModel(model);
     }
     return this.computeWorkspaceTransitionStateFromModel(model);
@@ -816,10 +816,10 @@ class WorkspaceV2SessionProducer {
   }
 
   computeWorkspaceSessionUiStateModel() {
-    const selectedSessionName = this.selectedSessionName();
-    const libraryHasSessionInput = Boolean(selectedSessionName);
-    const libraryIdValid = this.isValidNewSessionId(selectedSessionName);
-    const librarySavedSessionExists = this.savedSessionIdExists(selectedSessionName);
+    const selectedToolStateName = this.selectedToolStateName();
+    const libraryHasSessionInput = Boolean(selectedToolStateName);
+    const libraryIdValid = this.isValidNewToolStateId(selectedToolStateName);
+    const librarySavedSessionExists = this.savedToolStateIdExists(selectedToolStateName);
     const libraryHasActiveSession = this.hasActiveWorkspaceSessionForSave();
     const libraryActivePayload = this.resolveActiveSessionPayloadForWorkspaceManifest();
     const libraryPaletteLocked = Boolean(this.hasWorkspaceActivePalette() && this.isPaletteSessionPayload(libraryActivePayload));
@@ -856,7 +856,7 @@ class WorkspaceV2SessionProducer {
     const mergeCanApply = Boolean(this.pendingMergePreview && this.pendingMergePreview.confirmed && mergePreviewFresh && !mergePreviewHasConflicts);
     let mergeEnableText = "Preview Merge is enabled.";
     if (!mergeCanPreview) {
-      mergeEnableText = "Select two different sessions to enable Preview Merge.";
+      mergeEnableText = "Select two different tool states to enable Preview Merge.";
     } else if (this.pendingMergePreview && !mergePreviewFresh) {
       mergeEnableText = "Preview is stale. Run Preview Merge again.";
     } else if (mergePreviewHasConflicts && mergePreviewFresh) {
@@ -867,28 +867,28 @@ class WorkspaceV2SessionProducer {
       mergeEnableText = "Confirm Preview is enabled.";
     }
     const mergeSelectionText = mergeLeftEntry && mergeRightEntry && mergeLeftEntry.id === mergeRightEntry.id
-      ? "Choose two different sessions."
-      : (mergeCanPreview ? "Selections are valid." : "Select two different sessions to preview merge.");
+      ? "Choose two different tool states."
+      : (mergeCanPreview ? "Selections are valid." : "Select two different tool states to preview merge.");
     const diffSelectionText = diffLeftEntry && diffRightEntry && diffLeftEntry.id === diffRightEntry.id
-      ? "Choose two different sessions."
+      ? "Choose two different tool states."
       : (
         diffLeftEntry &&
         diffRightEntry &&
         diffLeftEntry.id !== diffRightEntry.id &&
         !diffSameTool
-          ? "Diff requires sessions from the same tool."
-          : (diffCanCompute ? "Selections are valid." : "Select two different sessions to compute diff.")
+          ? "Diff requires tool states from the same tool."
+          : (diffCanCompute ? "Selections are valid." : "Select two different tool states to compute diff.")
       );
     const authoritativeLastMergedHostContextId = this.resolveAuthoritativeLastMergedHostContextId();
     const assetManagerLaunchReady = Boolean(
-      this.isValidSessionPayload(this.currentSessionPayload) &&
-      this.currentSessionPayload.payloadJson &&
-      typeof this.currentSessionPayload.payloadJson === "object" &&
-      !Array.isArray(this.currentSessionPayload.payloadJson)
+      this.isValidToolStatePayload(this.currentToolStatePayload) &&
+      this.currentToolStatePayload.payloadJson &&
+      typeof this.currentToolStatePayload.payloadJson === "object" &&
+      !Array.isArray(this.currentToolStatePayload.payloadJson)
     );
     const mergePreviewVisible = Boolean(
       this.pendingMergePreview ||
-      this.mergeOutputSelectionKey ||
+      this.mergeOutputToolStateKey ||
       this.mergeOutputNode.textContent !== "No merge preview available."
     );
     return {
@@ -908,8 +908,8 @@ class WorkspaceV2SessionProducer {
           diffRightEntry &&
           diffLeftEntry.id !== diffRightEntry.id &&
           !diffSameTool
-            ? "Diff requires sessions from the same tool."
-            : "Select two different sessions to enable Compute Diff."
+            ? "Diff requires tool states from the same tool."
+            : "Select two different tool states to enable Compute Diff."
         ),
       diffSelectionText,
       mergeLeftEntry,
@@ -924,20 +924,20 @@ class WorkspaceV2SessionProducer {
       undoEnabled: Boolean(authoritativeLastMergedHostContextId),
       assetManagerLaunchReady,
       assetManagerLaunchLabel: assetManagerLaunchReady
-        ? "Open Asset Manager V2 (active session)"
-        : "Open Asset Manager V2 (no session)"
+        ? "Open Asset Manager V2 (active tool state)"
+        : "Open Asset Manager V2 (no tool state)"
     };
   }
 
   renderWorkspaceSessionUiStateModel(model) {
-    this.saveSessionButton.disabled = !model.libraryCanSave;
-    this.overwriteSessionButton.disabled = true;
-    this.loadSessionButton.disabled = true;
-    this.deleteSessionButton.disabled = true;
+    this.saveToolStateButton.disabled = !model.libraryCanSave;
+    this.overwriteToolStateButton.disabled = true;
+    this.loadToolStateButton.disabled = true;
+    this.deleteToolStateButton.disabled = true;
     if (model.mergeLeftEntry || model.mergeRightEntry) {
-      this.writePersistedSessionSelection(model.mergeLeftEntry, model.mergeRightEntry);
+      this.writePersistedToolStateSelection(model.mergeLeftEntry, model.mergeRightEntry);
     } else {
-      this.writePersistedSessionSelection(model.diffLeftEntry, model.diffRightEntry);
+      this.writePersistedToolStateSelection(model.diffLeftEntry, model.diffRightEntry);
     }
     this.diffLeftSelectedLabelNode.textContent = this.formatSelectionLabel(model.diffLeftEntry);
     this.diffRightSelectedLabelNode.textContent = this.formatSelectionLabel(model.diffRightEntry);
@@ -952,7 +952,7 @@ class WorkspaceV2SessionProducer {
     this.mergeEnableStateNode.textContent = model.mergeEnableText;
     this.mergeSelectionStateNode.textContent = model.mergeSelectionText;
     if (model.mergePreviewStale) {
-      this.setMergeResultSummary("Preview summary is stale because Session A or Session B changed. Run Preview Merge again.");
+      this.setMergeResultSummary("Preview summary is stale because Tool State A or Tool State B changed. Run Preview Merge again.");
     }
     this.undoLastMergeButton.disabled = !model.undoEnabled;
     this.mergeOutputNode.hidden = !model.mergePreviewVisible;
@@ -978,7 +978,7 @@ class WorkspaceV2SessionProducer {
   }
 
   setMergedSessionStatus(message) {
-    this.mergedSessionStatusNode.textContent = message;
+    this.mergedToolStateStatusNode.textContent = message;
     this.statusNode.textContent = message;
   }
 
@@ -1002,8 +1002,8 @@ class WorkspaceV2SessionProducer {
       : Object.keys(preview.conflicts || {}).length;
     this.setMergeResultSummary([
       "Merge Preview Summary",
-      `Source Session ID: ${preview.source && preview.source.id ? preview.source.id : "unknown"}`,
-      `Target Session ID: ${preview.target && preview.target.id ? preview.target.id : "unknown"}`,
+      `Source Tool State ID: ${preview.source && preview.source.id ? preview.source.id : "unknown"}`,
+      `Target Tool State ID: ${preview.target && preview.target.id ? preview.target.id : "unknown"}`,
       `Tool ID: ${preview.selectedToolId || "unknown"}`,
       `Added: ${addedCount}`,
       `Updated: ${updatedCount}`,
@@ -1018,7 +1018,7 @@ class WorkspaceV2SessionProducer {
     const unchangedCount = changes && changes.unchanged ? Object.keys(changes.unchanged).length : 0;
     this.setMergeResultSummary([
       "Merge Apply Summary",
-      `Merged Session ID: ${hostContextId}`,
+      `Merged Tool State ID: ${hostContextId}`,
       `Tool ID: ${toolId || "unknown"}`,
       `Timestamp: ${timestamp || "unknown"}`,
       `Added: ${addedCount}`,
@@ -1040,7 +1040,7 @@ class WorkspaceV2SessionProducer {
   }
 
   clearDiffOutputForStateChange(statusMessage, outputMessage) {
-    this.diffOutputSelectionKey = "";
+    this.diffOutputToolStateKey = "";
     this.diffSummaryNode.textContent = "";
     this.diffOutputNode.textContent = typeof outputMessage === "string" && outputMessage.trim()
       ? outputMessage
@@ -1053,14 +1053,14 @@ class WorkspaceV2SessionProducer {
   handleDiffSelectionChange() {
     const currentSelectionKey = this.currentDiffSelectionKey();
     const model = this.refreshWorkspaceSessionUiStateModel("selection_change");
-    if (this.diffOutputSelectionKey && this.diffOutputSelectionKey !== currentSelectionKey) {
+    if (this.diffOutputToolStateKey && this.diffOutputToolStateKey !== currentSelectionKey) {
       this.clearDiffOutputForStateChange("Selections changed. Compute Diff again.", "Selections changed. Compute Diff again.");
       return;
     }
-    if (!model.diffCanCompute && this.diffOutputSelectionKey) {
+    if (!model.diffCanCompute && this.diffOutputToolStateKey) {
       this.clearDiffOutputForStateChange(
-        "Diff selection is no longer valid. Select Session A and Session B, then compute diff.",
-        "Diff selection is no longer valid for current sessions."
+        "Diff selection is no longer valid. Select Tool State A and Tool State B, then compute diff.",
+        "Diff selection is no longer valid for current tool states."
       );
       return;
     }
@@ -1069,23 +1069,23 @@ class WorkspaceV2SessionProducer {
       return;
     }
     if (!Array.isArray(this.diffCandidates) || this.diffCandidates.length < 2) {
-      this.statusNode.textContent = "Create or reopen at least two Workspace V2 sessions before comparing.";
+      this.statusNode.textContent = "Create or reopen at least two Workspace V2 tool states before comparing.";
       return;
     }
     if (!this.diffLeftSelect.value && !this.diffRightSelect.value) {
-      this.statusNode.textContent = "Select Session A and Session B to enable Compute Diff.";
+      this.statusNode.textContent = "Select Tool State A and Tool State B to enable Compute Diff.";
       return;
     }
     if (!this.diffLeftSelect.value) {
-      this.statusNode.textContent = "Select Session A to enable Compute Diff.";
+      this.statusNode.textContent = "Select Tool State A to enable Compute Diff.";
       return;
     }
     if (!this.diffRightSelect.value) {
-      this.statusNode.textContent = "Select Session B to enable Compute Diff.";
+      this.statusNode.textContent = "Select Tool State B to enable Compute Diff.";
       return;
     }
     if (this.diffLeftSelect.value === this.diffRightSelect.value) {
-      this.statusNode.textContent = "Choose two different sessions to enable Compute Diff.";
+      this.statusNode.textContent = "Choose two different tool states to enable Compute Diff.";
       return;
     }
     const diffLeftEntry = this.findSessionEntryById(this.diffCandidates, this.diffLeftSelect.value);
@@ -1096,18 +1096,18 @@ class WorkspaceV2SessionProducer {
       diffLeftEntry.id !== diffRightEntry.id &&
       diffLeftEntry.toolId !== diffRightEntry.toolId
     ) {
-      this.statusNode.textContent = "Diff requires sessions from the same tool.";
+      this.statusNode.textContent = "Diff requires tool states from the same tool.";
       return;
     }
-    this.statusNode.textContent = "Select two different sessions to enable Compute Diff.";
+    this.statusNode.textContent = "Select two different tool states to enable Compute Diff.";
   }
 
   clearMergePanelTransientState(summaryMessage, outputMessage, statusMessage) {
     this.pendingMergePreview = null;
-    this.mergeOutputSelectionKey = "";
-    this.lastMergedSessionResult = null;
-    this.mergedSessionIdNode.value = "";
-    this.mergedSessionStatusNode.textContent = "No merged session result to save.";
+    this.mergeOutputToolStateKey = "";
+    this.lastMergedToolStateResult = null;
+    this.mergedToolStateIdNode.value = "";
+    this.mergedToolStateStatusNode.textContent = "No merged tool state result to save.";
     this.setMergeResultSummary(summaryMessage);
     this.mergeOutputNode.textContent = outputMessage;
     this.mergeConflictSummaryNode.hidden = true;
@@ -1128,28 +1128,28 @@ class WorkspaceV2SessionProducer {
 
   handleMergeSelectionChange() {
     const currentSelectionKey = this.currentMergeSelectionKey();
-    if (this.mergeOutputSelectionKey && this.mergeOutputSelectionKey !== currentSelectionKey) {
+    if (this.mergeOutputToolStateKey && this.mergeOutputToolStateKey !== currentSelectionKey) {
       this.clearMergeOutputForSelectionChange();
     }
     const model = this.refreshWorkspaceSessionUiStateModel("selection_change");
     if (!Array.isArray(this.mergeCandidates) || this.mergeCandidates.length < 2) {
-      this.statusNode.textContent = "Create or reopen at least two Workspace V2 sessions before previewing a merge.";
+      this.statusNode.textContent = "Create or reopen at least two Workspace V2 tool states before previewing a merge.";
       return;
     }
     if (!this.mergeLeftSelect.value && !this.mergeRightSelect.value) {
-      this.statusNode.textContent = "Select Session A and Session B to enable Preview Merge.";
+      this.statusNode.textContent = "Select Tool State A and Tool State B to enable Preview Merge.";
       return;
     }
     if (!this.mergeLeftSelect.value) {
-      this.statusNode.textContent = "Select Session A to enable Preview Merge.";
+      this.statusNode.textContent = "Select Tool State A to enable Preview Merge.";
       return;
     }
     if (!this.mergeRightSelect.value) {
-      this.statusNode.textContent = "Select Session B to enable Preview Merge.";
+      this.statusNode.textContent = "Select Tool State B to enable Preview Merge.";
       return;
     }
     if (this.mergeLeftSelect.value === this.mergeRightSelect.value) {
-      this.statusNode.textContent = "Choose two different sessions to enable Preview Merge.";
+      this.statusNode.textContent = "Choose two different tool states to enable Preview Merge.";
       return;
     }
     if (model.mergeCanApply) {
@@ -1166,16 +1166,16 @@ class WorkspaceV2SessionProducer {
   }
 
   readLastMergedHostContextId() {
-    const raw = sessionStorage.getItem(this.lastMergedSessionStorageKey);
+    const raw = sessionStorage.getItem(this.lastMergedToolStateStorageKey);
     return typeof raw === "string" ? raw.trim() : "";
   }
 
   writeLastMergedHostContextId(hostContextId) {
     if (typeof hostContextId !== "string" || !hostContextId.trim()) {
-      sessionStorage.removeItem(this.lastMergedSessionStorageKey);
+      sessionStorage.removeItem(this.lastMergedToolStateStorageKey);
       return;
     }
-    sessionStorage.setItem(this.lastMergedSessionStorageKey, hostContextId.trim());
+    sessionStorage.setItem(this.lastMergedToolStateStorageKey, hostContextId.trim());
   }
 
   resolveAuthoritativeLastMergedHostContextId() {
@@ -1183,7 +1183,7 @@ class WorkspaceV2SessionProducer {
     if (!mergedHostContextId) {
       return "";
     }
-    const history = this.readSessionHistory();
+    const history = this.readToolStateHistory();
     const mergedRecentEntry = history.find((entry) => entry.hostContextId === mergedHostContextId);
     const existsInRecent = Boolean(mergedRecentEntry);
     const existsInSessionStorage = typeof sessionStorage.getItem(mergedHostContextId) === "string";
@@ -1222,10 +1222,10 @@ class WorkspaceV2SessionProducer {
       return null;
     }
     const parsed = this.safeParseJson(raw);
-    if (!parsed.ok || !this.isValidSessionPayload(parsed.value)) {
+    if (!parsed.ok || !this.isValidToolStatePayload(parsed.value)) {
       return null;
     }
-    const payloadValidation = this.validateWorkspaceToolSessionPayload(parsed.value, "activeSession");
+    const payloadValidation = this.validateWorkspaceToolStatePayload(parsed.value, "activeToolState");
     if (!payloadValidation.ok) {
       return null;
     }
@@ -1236,51 +1236,51 @@ class WorkspaceV2SessionProducer {
     return this.readActiveSessionPayloadForLibraryActions();
   }
 
-  readSessionPayloadFromRecentSessionId(sessionId) {
-    if (typeof sessionId !== "string" || !sessionId.trim()) {
+  readToolStatePayloadFromRecentToolStateId(toolStateId) {
+    if (typeof toolStateId !== "string" || !toolStateId.trim()) {
       return null;
     }
-    const history = this.readSessionHistory();
-    const recentEntry = history.find((entry) => entry.hostContextId === sessionId.trim());
+    const history = this.readToolStateHistory();
+    const recentEntry = history.find((entry) => entry.hostContextId === toolStateId.trim());
     if (!recentEntry) {
       return null;
     }
-    return this.resolveSessionPayloadFromContextId(sessionId.trim());
+    return this.resolveToolStatePayloadFromContextId(toolStateId.trim());
   }
 
-  readSessionPayloadForLibraryWrite(sessionId) {
-    if (typeof sessionId !== "string" || !sessionId.trim()) {
+  readToolStatePayloadForLibraryWrite(toolStateId) {
+    if (typeof toolStateId !== "string" || !toolStateId.trim()) {
       return null;
     }
-    const raw = sessionStorage.getItem(sessionId.trim());
+    const raw = sessionStorage.getItem(toolStateId.trim());
     if (typeof raw !== "string") {
       return null;
     }
     const parsed = this.safeParseJson(raw);
-    if (!parsed.ok || !this.isValidSessionPayload(parsed.value)) {
+    if (!parsed.ok || !this.isValidToolStatePayload(parsed.value)) {
       return null;
     }
-    const payloadValidation = this.validateWorkspaceToolSessionPayload(parsed.value, `sessionStorage.${sessionId.trim()}`);
+    const payloadValidation = this.validateWorkspaceToolStatePayload(parsed.value, `sessionStorage.${toolStateId.trim()}`);
     if (!payloadValidation.ok) {
       return null;
     }
     return parsed.value;
   }
 
-  readSessionPayloadForSaveAction(sessionId) {
+  readToolStatePayloadForSaveAction(toolStateId) {
     const activePayload = this.readActiveSessionPayloadForLibraryActions();
-    if (this.isValidSessionPayload(activePayload)) {
+    if (this.isValidToolStatePayload(activePayload)) {
       return activePayload;
     }
     return null;
   }
 
-  readInvalidPaletteSavedSessionId(library) {
+  readInvalidPaletteSavedToolStateId(library) {
     if (!library || typeof library !== "object" || Array.isArray(library)) {
       return "";
     }
-    for (const sessionId of Object.keys(library)) {
-      const payload = library[sessionId];
+    for (const toolStateId of Object.keys(library)) {
+      const payload = library[toolStateId];
       if (!payload || typeof payload !== "object" || Array.isArray(payload)) {
         continue;
       }
@@ -1288,13 +1288,13 @@ class WorkspaceV2SessionProducer {
         continue;
       }
       if (Object.prototype.hasOwnProperty.call(payload, "paletteJson")) {
-        return sessionId;
+        return toolStateId;
       }
       if (!payload.payloadJson || typeof payload.payloadJson !== "object" || Array.isArray(payload.payloadJson)) {
-        return sessionId;
+        return toolStateId;
       }
       if (!payload.payloadJson.paletteDocument || typeof payload.payloadJson.paletteDocument !== "object" || Array.isArray(payload.payloadJson.paletteDocument)) {
-        return sessionId;
+        return toolStateId;
       }
     }
     return "";
@@ -1333,8 +1333,8 @@ class WorkspaceV2SessionProducer {
   resolveActivePaletteForWorkspaceExport(activePayload, library) {
     let knownPaletteCount = 0;
     if (library && typeof library === "object" && !Array.isArray(library)) {
-      for (const sessionId of Object.keys(library)) {
-        const savedPayload = library[sessionId];
+      for (const toolStateId of Object.keys(library)) {
+        const savedPayload = library[toolStateId];
         if (!this.isPaletteSessionPayload(savedPayload)) {
           continue;
         }
@@ -1355,14 +1355,14 @@ class WorkspaceV2SessionProducer {
           schema: "html-js-gaming.palette",
           version: 1,
           name: "Workspace Active Palette",
-          swatches: this.cloneSessionValue(this.workspaceActivePalette.palette.swatches)
+          swatches: this.cloneToolStateValue(this.workspaceActivePalette.palette.swatches)
         }
       };
     }
     if (this.isPaletteSessionPayload(activePayload)) {
       const swatchValidation = this.validatePaletteSwatchesForWorkspaceExport(
         activePayload.payloadJson.paletteDocument.swatches,
-        "tools.workspace-v2.activeSession.payloadJson.paletteDocument.swatches"
+        "tools.workspace-v2.activeToolState.payloadJson.paletteDocument.swatches"
       );
       if (!swatchValidation.ok) {
         return { ok: false, message: swatchValidation.message };
@@ -1373,14 +1373,14 @@ class WorkspaceV2SessionProducer {
           schema: "html-js-gaming.palette",
           version: 1,
           name: "Workspace Active Palette",
-          swatches: this.cloneSessionValue(activePayload.payloadJson.paletteDocument.swatches)
+          swatches: this.cloneToolStateValue(activePayload.payloadJson.paletteDocument.swatches)
         }
       };
     }
     if (knownPaletteCount > 1) {
       return {
         ok: false,
-        message: "Multiple palettes are present. Select one active palette session before export."
+        message: "Multiple palettes are present. Select one active palette tool state before export."
       };
     }
     return {
@@ -1389,15 +1389,15 @@ class WorkspaceV2SessionProducer {
     };
   }
 
-  selectedMergedSessionId() {
-    return typeof this.mergedSessionIdNode.value === "string" ? this.mergedSessionIdNode.value.trim() : "";
+  selectedMergedToolStateId() {
+    return typeof this.mergedToolStateIdNode.value === "string" ? this.mergedToolStateIdNode.value.trim() : "";
   }
 
-  looksLikeWorkspaceHostContextId(sessionId) {
-    if (typeof sessionId !== "string" || !sessionId.trim()) {
+  looksLikeWorkspaceHostContextId(toolStateId) {
+    if (typeof toolStateId !== "string" || !toolStateId.trim()) {
       return false;
     }
-    return /-v2-\d{13}-[a-z0-9]{8}$/i.test(sessionId.trim());
+    return /-v2-\d{13}-[a-z0-9]{8}$/i.test(toolStateId.trim());
   }
 
   cleanupStaleInvalidSavedEntries(library) {
@@ -1405,22 +1405,22 @@ class WorkspaceV2SessionProducer {
       return false;
     }
     let removedAny = false;
-    Object.keys(library).forEach((sessionId) => {
-      const payload = library[sessionId];
-      if (!this.isValidSessionPayload(payload)) {
+    Object.keys(library).forEach((toolStateId) => {
+      const payload = library[toolStateId];
+      if (!this.isValidToolStatePayload(payload)) {
         return;
       }
-      if (!this.looksLikeWorkspaceHostContextId(sessionId)) {
+      if (!this.looksLikeWorkspaceHostContextId(toolStateId)) {
         return;
       }
-      const storagePayload = this.readSessionPayloadForLibraryWrite(sessionId);
-      const hasMatchingStorage = this.isValidSessionPayload(storagePayload);
+      const storagePayload = this.readToolStatePayloadForLibraryWrite(toolStateId);
+      const hasMatchingStorage = this.isValidToolStatePayload(storagePayload);
       const payloadHostContextId = typeof payload.hostContextId === "string" ? payload.hostContextId.trim() : "";
       const payloadToolId = typeof payload.toolId === "string" ? payload.toolId.trim() : "";
-      const idMatchesPayloadHostContext = payloadHostContextId && payloadHostContextId === sessionId;
-      const idMatchesToolMetadata = payloadToolId && sessionId.startsWith(`${payloadToolId}-`);
+      const idMatchesPayloadHostContext = payloadHostContextId && payloadHostContextId === toolStateId;
+      const idMatchesToolMetadata = payloadToolId && toolStateId.startsWith(`${payloadToolId}-`);
       if (!hasMatchingStorage && !idMatchesPayloadHostContext && !idMatchesToolMetadata) {
-        delete library[sessionId];
+        delete library[toolStateId];
         removedAny = true;
       }
     });
@@ -1431,85 +1431,85 @@ class WorkspaceV2SessionProducer {
     return `../../tests/fixtures/v2-tools/${toolId}.json`;
   }
 
-  setCurrentSessionPayload(sessionPayload, sourceLabel) {
-    this.currentSessionPayload = sessionPayload;
-    this.currentSessionSource = sourceLabel;
+  setCurrentToolStatePayload(toolStatePayload, sourceLabel) {
+    this.currentToolStatePayload = toolStatePayload;
+    this.currentToolStateSource = sourceLabel;
     this.updateWorkspaceActivePaletteFromCurrentSession();
     this.refreshPaletteOwnershipUiState();
   }
 
-  isValidSessionPayload(sessionPayload) {
-    return Boolean(sessionPayload && typeof sessionPayload === "object" && !Array.isArray(sessionPayload));
+  isValidToolStatePayload(toolStatePayload) {
+    return Boolean(toolStatePayload && typeof toolStatePayload === "object" && !Array.isArray(toolStatePayload));
   }
 
-  sessionPayloadMetrics(sessionPayload) {
-    const serializedPayload = JSON.stringify(sessionPayload);
+  toolStatePayloadMetrics(toolStatePayload) {
+    const serializedPayload = JSON.stringify(toolStatePayload);
     return {
       serializedPayload,
       bytes: new TextEncoder().encode(serializedPayload).length
     };
   }
 
-  validateSessionPayloadSize(sessionPayload) {
-    const metrics = this.sessionPayloadMetrics(sessionPayload);
-    if (metrics.bytes > this.sessionPayloadBytesLimit) {
+  validateToolStatePayloadSize(toolStatePayload) {
+    const metrics = this.toolStatePayloadMetrics(toolStatePayload);
+    if (metrics.bytes > this.toolStatePayloadBytesLimit) {
       return {
         ok: false,
-        message: `Session size exceeds allowed limit. Payload is ${metrics.bytes} bytes and limit is ${this.sessionPayloadBytesLimit} bytes.`,
+        message: `Tool state size exceeds allowed limit. Payload is ${metrics.bytes} bytes and limit is ${this.toolStatePayloadBytesLimit} bytes.`,
         metrics
       };
     }
     return { ok: true, message: "", metrics };
   }
 
-  withSessionVersion(sessionPayload) {
+  withToolStateVersion(toolStatePayload) {
     return {
-      ...sessionPayload,
+      ...toolStatePayload,
       version: "v2"
     };
   }
 
-  activateWorkspaceSession(hostContextId, sessionPayload, sourceLabel) {
+  activateWorkspaceToolState(hostContextId, toolStatePayload, sourceLabel) {
     if (typeof hostContextId !== "string" || !hostContextId.trim()) {
       return { ok: false, message: "Session activation failed: hostContextId is required." };
     }
-    if (!this.isValidSessionPayload(sessionPayload)) {
+    if (!this.isValidToolStatePayload(toolStatePayload)) {
       return { ok: false, message: "Session activation failed: payload is invalid." };
     }
-    const payloadValidation = this.validateWorkspaceToolSessionPayload(sessionPayload, "sessionActivation");
+    const payloadValidation = this.validateWorkspaceToolStatePayload(toolStatePayload, "toolStateActivation");
     if (!payloadValidation.ok) {
       return { ok: false, message: payloadValidation.message };
     }
-    const sizeValidation = this.validateSessionPayloadSize(sessionPayload);
+    const sizeValidation = this.validateToolStatePayloadSize(toolStatePayload);
     if (!sizeValidation.ok) {
       return { ok: false, message: sizeValidation.message };
     }
     sessionStorage.setItem(hostContextId.trim(), sizeValidation.metrics.serializedPayload);
     this.currentHostContextId = hostContextId.trim();
-    this.setCurrentSessionPayload(sessionPayload, sourceLabel);
-    return { ok: true, message: "", payload: sessionPayload };
+    this.setCurrentToolStatePayload(toolStatePayload, sourceLabel);
+    return { ok: true, message: "", payload: toolStatePayload };
   }
 
-  applySessionPayload(sessionPayload, sourceLabel) {
-    if (!this.isValidSessionPayload(sessionPayload)) {
+  applyToolStatePayload(toolStatePayload, sourceLabel) {
+    if (!this.isValidToolStatePayload(toolStatePayload)) {
       this.statusNode.textContent = "Session payload is invalid. Expected a JSON object payload.";
       return false;
     }
-    const payloadValidation = this.validateWorkspaceToolSessionPayload(sessionPayload, "sessionPayload");
+    const payloadValidation = this.validateWorkspaceToolStatePayload(toolStatePayload, "toolStatePayload");
     if (!payloadValidation.ok) {
       this.statusNode.textContent = payloadValidation.message;
       return false;
     }
     const toolId = this.selectedToolId();
     if (!toolId) {
-      this.statusNode.textContent = "Select a V2 tool before applying session payload.";
+      this.statusNode.textContent = "Select a V2 tool before applying tool state payload.";
       return false;
     }
-    if (sessionPayload.toolId.trim() !== toolId) {
-      this.statusNode.textContent = `Session payload toolId '${sessionPayload.toolId.trim()}' does not match selected tool '${toolId}'.`;
+    if (toolStatePayload.toolId.trim() !== toolId) {
+      this.statusNode.textContent = `Session payload toolId '${toolStatePayload.toolId.trim()}' does not match selected tool '${toolId}'.`;
       return false;
     }
-    const activation = this.activateWorkspaceSession(this.createHostContextId(toolId), sessionPayload, sourceLabel);
+    const activation = this.activateWorkspaceToolState(this.createHostContextToolStateId(toolId), toolStatePayload, sourceLabel);
     if (!activation.ok) {
       this.statusNode.textContent = activation.message;
       return false;
@@ -1518,8 +1518,8 @@ class WorkspaceV2SessionProducer {
     return true;
   }
 
-  encodeSessionPayload(sessionPayload) {
-    const json = JSON.stringify(sessionPayload);
+  encodeToolStatePayload(toolStatePayload) {
+    const json = JSON.stringify(toolStatePayload);
     const bytes = new TextEncoder().encode(json);
     let binary = "";
     for (let index = 0; index < bytes.length; index += 1) {
@@ -1528,12 +1528,12 @@ class WorkspaceV2SessionProducer {
     return btoa(binary).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/g, "");
   }
 
-  decodeSessionPayload(encodedPayload) {
+  decodeToolStatePayload(encodedPayload) {
     if (typeof encodedPayload !== "string" || !encodedPayload.trim()) {
-      throw new Error("Missing encoded session payload.");
+      throw new Error("Missing encoded tool state payload.");
     }
     if (encodedPayload.trim().length > this.urlLengthLimit) {
-      throw new Error(`Session size exceeds allowed limit for URL payload. Encoded payload length is ${encodedPayload.trim().length} and limit is ${this.urlLengthLimit}.`);
+      throw new Error(`Tool state size exceeds allowed limit for URL payload. Encoded payload length is ${encodedPayload.trim().length} and limit is ${this.urlLengthLimit}.`);
     }
     const normalized = encodedPayload.trim().replace(/-/g, "+").replace(/_/g, "/");
     const padding = normalized.length % 4 === 0 ? "" : "=".repeat(4 - (normalized.length % 4));
@@ -1544,30 +1544,30 @@ class WorkspaceV2SessionProducer {
     }
     const json = new TextDecoder().decode(bytes);
     const parsed = JSON.parse(json);
-    if (!this.isValidSessionPayload(parsed)) {
-      throw new Error("Decoded session payload is invalid. Expected an object payload.");
+    if (!this.isValidToolStatePayload(parsed)) {
+      throw new Error("Decoded tool state payload is invalid. Expected an object payload.");
     }
     return parsed;
   }
 
-  decodeSessionParamFromUrl() {
+  decodeToolStateParamFromUrl() {
     const params = new URL(window.location.href).searchParams;
-    if (!params.has("session")) {
+    if (!params.has("toolState")) {
       return;
     }
     try {
-      const decoded = this.decodeSessionPayload(params.get("session"));
-      if (!this.applySessionPayload(decoded, "share-link")) {
+      const decoded = this.decodeToolStatePayload(params.get("toolState"));
+      if (!this.applyToolStatePayload(decoded, "share-link")) {
         return;
       }
-      this.statusNode.textContent = `Share session link decoded.\nTool: ${this.selectedToolId()}\nHostContextId: ${this.currentHostContextId}\nReady to launch.`;
+      this.statusNode.textContent = `Share tool state link decoded.\nTool: ${this.selectedToolId()}\nHostContextId: ${this.currentHostContextId}\nReady to launch.`;
       this.shareUrlNode.value = window.location.href;
     } catch (error) {
-      this.statusNode.textContent = `Share session decode failed: ${error instanceof Error ? error.message : "unknown error"}`;
+      this.statusNode.textContent = `Share tool state decode failed: ${error instanceof Error ? error.message : "unknown error"}`;
     }
   }
 
-  restoreActiveSessionFromHostContextIdUrl() {
+  restoreActiveToolStateFromHostContextIdUrl() {
     const params = new URL(window.location.href).searchParams;
     const hostContextId = typeof params.get("hostContextId") === "string" ? params.get("hostContextId").trim() : "";
     if (!hostContextId) {
@@ -1578,17 +1578,17 @@ class WorkspaceV2SessionProducer {
       return;
     }
     const parsed = this.safeParseJson(serializedPayload);
-    if (!parsed.ok || !this.isValidSessionPayload(parsed.value)) {
+    if (!parsed.ok || !this.isValidToolStatePayload(parsed.value)) {
       return;
     }
-    const payloadValidation = this.validateWorkspaceToolSessionPayload(parsed.value, `sessionStorage.${hostContextId}`);
+    const payloadValidation = this.validateWorkspaceToolStatePayload(parsed.value, `sessionStorage.${hostContextId}`);
     if (!payloadValidation.ok) {
       return;
     }
     if (parsed.value.toolId !== "asset-manager-v2") {
       return;
     }
-    const activation = this.activateWorkspaceSession(hostContextId, parsed.value, "workspace-host-context-url");
+    const activation = this.activateWorkspaceToolState(hostContextId, parsed.value, "workspace-host-context-url");
     if (!activation.ok) {
       return;
     }
@@ -1596,10 +1596,10 @@ class WorkspaceV2SessionProducer {
       this.toolSelect.value = parsed.value.toolId;
     }
     this.syncWorkspaceManifestTextarea();
-    this.statusNode.textContent = `Workspace V2 restored active session from hostContextId: ${hostContextId}`;
+    this.statusNode.textContent = `Workspace V2 restored active tool state from hostContextId: ${hostContextId}`;
   }
 
-  readSessionLibrary() {
+  readToolStateLibrary() {
     const rawLibrary = localStorage.getItem(this.libraryStorageKey);
     if (!rawLibrary) {
       return {};
@@ -1607,17 +1607,17 @@ class WorkspaceV2SessionProducer {
     try {
       const parsed = JSON.parse(rawLibrary);
       if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) {
-        this.statusNode.textContent = "Session library is invalid. Expected object map under localStorage key v2-session-library.";
+        this.statusNode.textContent = "Session library is invalid. Expected object map under localStorage key v2-tool-state-library.";
         return null;
       }
-      for (const sessionName of Object.keys(parsed)) {
-        if (!this.isValidSessionPayload(parsed[sessionName])) {
-          this.statusNode.textContent = `Session library entry '${sessionName}' is invalid.`;
+      for (const toolStateName of Object.keys(parsed)) {
+        if (!this.isValidToolStatePayload(parsed[toolStateName])) {
+          this.statusNode.textContent = `Session library entry '${toolStateName}' is invalid.`;
           return null;
         }
-        const payloadValidation = this.validateWorkspaceToolSessionPayload(parsed[sessionName], `tools.workspace-v2.savedSessions.${sessionName}`);
+        const payloadValidation = this.validateWorkspaceToolStatePayload(parsed[toolStateName], `tools.workspace-v2.savedToolStates.${toolStateName}`);
         if (!payloadValidation.ok) {
-          this.statusNode.textContent = `Session library entry '${sessionName}' is invalid: ${payloadValidation.message}`;
+          this.statusNode.textContent = `Session library entry '${toolStateName}' is invalid: ${payloadValidation.message}`;
           return null;
         }
       }
@@ -1628,33 +1628,33 @@ class WorkspaceV2SessionProducer {
     }
   }
 
-  writeSessionLibrary(library) {
+  writeToolStateLibrary(library) {
     localStorage.setItem(this.libraryStorageKey, JSON.stringify(library));
-    this.renderSessionDiffInputs();
-    this.renderSessionMergeInputs();
+    this.renderToolStateDiffInputs();
+    this.renderToolStateMergeInputs();
   }
 
-  renderSessionLibrary() {
-    const library = this.readSessionLibrary();
+  renderToolStateLibrary() {
+    const library = this.readToolStateLibrary();
     if (library === null) {
-      this.sessionListNode.replaceChildren();
+      this.toolStateListNode.replaceChildren();
       this.libraryEmptyState.hidden = false;
-      this.libraryEmptyState.textContent = "Session library is invalid. Fix stored JSON or clear v2-session-library.";
+      this.libraryEmptyState.textContent = "Session library is invalid. Fix stored JSON or clear v2-tool-state-library.";
       return;
     }
     if (this.cleanupStaleInvalidSavedEntries(library)) {
       localStorage.setItem(this.libraryStorageKey, JSON.stringify(library));
     }
-    const sessionNames = Object.keys(library).sort((left, right) => left.localeCompare(right));
-    this.sessionListNode.replaceChildren();
-    this.libraryEmptyState.hidden = sessionNames.length > 0;
-    this.libraryEmptyState.textContent = "No saved sessions in library.";
+    const toolStateNames = Object.keys(library).sort((left, right) => left.localeCompare(right));
+    this.toolStateListNode.replaceChildren();
+    this.libraryEmptyState.hidden = toolStateNames.length > 0;
+    this.libraryEmptyState.textContent = "No saved tool states in library.";
     const canOverwriteFromActiveSession = this.hasActiveWorkspaceSessionForSave();
     const hasActivePalette = this.hasWorkspaceActivePalette();
     const activePaletteHostContextId = this.activePaletteHostContextId();
-    sessionNames.forEach((sessionName) => {
+    toolStateNames.forEach((toolStateName) => {
       const item = document.createElement("li");
-      const payload = library[sessionName];
+      const payload = library[toolStateName];
       const label = document.createElement("strong");
       const idLine = document.createElement("div");
       const idLabel = document.createElement("span");
@@ -1666,55 +1666,55 @@ class WorkspaceV2SessionProducer {
       const deleteSavedButton = document.createElement("button");
       const readableLabel = payload && typeof payload.toolId === "string" && payload.toolId.trim()
         ? payload.toolId.trim()
-        : "saved-session";
+        : "saved-tool-state";
       const paletteRowLocked = Boolean(
         hasActivePalette &&
         this.isPaletteSessionPayload(payload) &&
-        sessionName !== activePaletteHostContextId
+        toolStateName !== activePaletteHostContextId
       );
-      label.textContent = `${readableLabel} (${sessionName})`;
-      idLabel.textContent = "Session ID: ";
-      idCode.textContent = sessionName;
-      idCode.title = sessionName;
+      label.textContent = `${readableLabel} (${toolStateName})`;
+      idLabel.textContent = "Tool State ID: ";
+      idCode.textContent = toolStateName;
+      idCode.title = toolStateName;
       idLine.append(idLabel, idCode);
       copyIdButton.type = "button";
       copyIdButton.textContent = "Copy ID";
       copyIdButton.addEventListener("click", () => {
-        this.copySavedSessionIdToClipboard(sessionName);
+        this.copySavedToolStateIdToClipboard(toolStateName);
       });
       useInLibraryButton.type = "button";
       useInLibraryButton.textContent = "Use in Diff/Merge";
       useInLibraryButton.addEventListener("click", () => {
-        this.useSavedSessionIdInLibraryInput(sessionName);
+        this.useSavedToolStateIdInLibraryInput(toolStateName);
       });
       loadButton.type = "button";
       loadButton.textContent = "Load";
       loadButton.disabled = paletteRowLocked;
       loadButton.addEventListener("click", () => {
-        this.loadSavedSessionById(sessionName);
+        this.loadSavedToolStateById(toolStateName);
       });
       overwriteButton.type = "button";
       overwriteButton.textContent = "Overwrite";
       overwriteButton.disabled = !canOverwriteFromActiveSession || paletteRowLocked;
       overwriteButton.addEventListener("click", () => {
-        this.overwriteSavedSessionById(sessionName);
+        this.overwriteSavedToolStateById(toolStateName);
       });
       deleteSavedButton.type = "button";
       deleteSavedButton.textContent = "Delete Saved";
       deleteSavedButton.addEventListener("click", () => {
-        this.deleteSavedSessionById(sessionName);
+        this.deleteSavedToolStateById(toolStateName);
       });
       item.append(label, idLine, copyIdButton, useInLibraryButton, loadButton, overwriteButton, deleteSavedButton);
-      this.sessionListNode.appendChild(item);
+      this.toolStateListNode.appendChild(item);
     });
-    this.renderSessionDiffInputs();
-    this.renderSessionMergeInputs();
-    this.updateSessionLibraryActionState();
+    this.renderToolStateDiffInputs();
+    this.renderToolStateMergeInputs();
+    this.updateToolStateLibraryActionState();
   }
 
-  async copySavedSessionIdToClipboard(sessionId) {
-    if (typeof sessionId !== "string" || !sessionId.trim()) {
-      this.setLibraryStatus("Copy ID failed: saved session ID is missing.");
+  async copySavedToolStateIdToClipboard(toolStateId) {
+    if (typeof toolStateId !== "string" || !toolStateId.trim()) {
+      this.setLibraryStatus("Copy ID failed: saved tool state ID is missing.");
       return;
     }
     try {
@@ -1722,103 +1722,103 @@ class WorkspaceV2SessionProducer {
         this.setLibraryStatus("Copy ID is unavailable in this browser context.");
         return;
       }
-      await navigator.clipboard.writeText(sessionId.trim());
-      this.setLibraryStatus(`Saved session ID copied: ${sessionId.trim()}`);
+      await navigator.clipboard.writeText(toolStateId.trim());
+      this.setLibraryStatus(`Saved tool state ID copied: ${toolStateId.trim()}`);
     } catch (error) {
       this.setLibraryStatus(`Copy ID failed: ${error instanceof Error ? error.message : "unknown error"}`);
     }
   }
 
-  useSavedSessionIdInLibraryInput(sessionId) {
-    if (typeof sessionId !== "string" || !sessionId.trim()) {
-      this.setLibraryStatus("Use in Library failed: saved session ID is missing.");
+  useSavedToolStateIdInLibraryInput(toolStateId) {
+    if (typeof toolStateId !== "string" || !toolStateId.trim()) {
+      this.setLibraryStatus("Use in Library failed: saved tool state ID is missing.");
       return;
     }
-    this.sessionNameNode.value = sessionId.trim();
-    this.updateSessionLibraryActionState();
-    this.syncDiffAndMergeSelectionSlotsFromContextId(sessionId.trim());
-    this.setLibraryStatus(`Saved session ID ready for Diff/Merge and Library actions: ${sessionId.trim()}`);
+    this.toolStateNameNode.value = toolStateId.trim();
+    this.updateToolStateLibraryActionState();
+    this.syncDiffAndMergeSelectionSlotsFromToolStateId(toolStateId.trim());
+    this.setLibraryStatus(`Saved tool state ID ready for Diff/Merge and Library actions: ${toolStateId.trim()}`);
   }
 
-  loadSavedSessionById(sessionId) {
-    if (typeof sessionId !== "string" || !sessionId.trim()) {
-      this.setLibraryStatus("Enter a saved session ID before loading.");
+  loadSavedToolStateById(toolStateId) {
+    if (typeof toolStateId !== "string" || !toolStateId.trim()) {
+      this.setLibraryStatus("Enter a saved tool state ID before loading.");
       return;
     }
-    const library = this.readSessionLibrary();
+    const library = this.readToolStateLibrary();
     if (library === null) {
       return;
     }
-    if (!Object.prototype.hasOwnProperty.call(library, sessionId.trim())) {
-      this.setLibraryStatus("Saved session not found.");
+    if (!Object.prototype.hasOwnProperty.call(library, toolStateId.trim())) {
+      this.setLibraryStatus("Saved tool state not found.");
       return;
     }
-    if (this.isBlockedAlternatePaletteSession(sessionId.trim(), library[sessionId.trim()])) {
+    if (this.isBlockedAlternatePaletteSession(toolStateId.trim(), library[toolStateId.trim()])) {
       this.setLibraryStatus(this.singleActivePaletteLibraryMessage());
       return;
     }
-    this.sessionNameNode.value = sessionId.trim();
-    this.updateSessionLibraryActionState();
-    this.loadNamedSession();
-    this.syncDiffAndMergeSelectionSlotsFromContextId(sessionId.trim());
-    this.renderSessionLibrary();
+    this.toolStateNameNode.value = toolStateId.trim();
+    this.updateToolStateLibraryActionState();
+    this.loadNamedToolState();
+    this.syncDiffAndMergeSelectionSlotsFromToolStateId(toolStateId.trim());
+    this.renderToolStateLibrary();
   }
 
-  overwriteSavedSessionById(sessionId) {
-    if (typeof sessionId !== "string" || !sessionId.trim()) {
-      this.setLibraryStatus("Enter a saved session ID before overwriting.");
+  overwriteSavedToolStateById(toolStateId) {
+    if (typeof toolStateId !== "string" || !toolStateId.trim()) {
+      this.setLibraryStatus("Enter a saved tool state ID before overwriting.");
       return;
     }
     const activePayload = this.readActiveSessionPayloadForLibraryActions();
-    if (!this.isValidSessionPayload(activePayload)) {
-      this.setLibraryStatus("No active Workspace V2 session is available to overwrite from.");
+    if (!this.isValidToolStatePayload(activePayload)) {
+      this.setLibraryStatus("No active Workspace V2 tool state is available to overwrite from.");
       return;
     }
-    const library = this.readSessionLibrary();
+    const library = this.readToolStateLibrary();
     if (library === null) {
       return;
     }
-    if (!Object.prototype.hasOwnProperty.call(library, sessionId.trim())) {
-      this.setLibraryStatus("Saved session not found. Use Save Session to create it first.");
+    if (!Object.prototype.hasOwnProperty.call(library, toolStateId.trim())) {
+      this.setLibraryStatus("Saved tool state not found. Use Save Tool State to create it first.");
       return;
     }
-    if (this.isBlockedAlternatePaletteSession(sessionId.trim(), library[sessionId.trim()])) {
+    if (this.isBlockedAlternatePaletteSession(toolStateId.trim(), library[toolStateId.trim()])) {
       this.setLibraryStatus(this.singleActivePaletteLibraryMessage());
       return;
     }
-    if (this.isBlockedAlternatePaletteSession(sessionId.trim(), activePayload)) {
+    if (this.isBlockedAlternatePaletteSession(toolStateId.trim(), activePayload)) {
       this.setLibraryStatus(this.singleActivePaletteLibraryMessage());
       return;
     }
-    library[sessionId.trim()] = activePayload;
-    this.writeSessionLibrary(library);
-    this.renderSessionLibrary();
-    this.setLibraryStatus(`Saved session '${sessionId.trim()}' overwritten with current workspace state.`);
+    library[toolStateId.trim()] = activePayload;
+    this.writeToolStateLibrary(library);
+    this.renderToolStateLibrary();
+    this.setLibraryStatus(`Saved tool state '${toolStateId.trim()}' overwritten with current workspace state.`);
   }
 
-  deleteSavedSessionById(sessionId) {
-    if (typeof sessionId !== "string" || !sessionId.trim()) {
-      this.setLibraryStatus("Enter a saved session ID before deleting.");
+  deleteSavedToolStateById(toolStateId) {
+    if (typeof toolStateId !== "string" || !toolStateId.trim()) {
+      this.setLibraryStatus("Enter a saved tool state ID before deleting.");
       return;
     }
-    this.sessionNameNode.value = sessionId.trim();
-    this.updateSessionLibraryActionState();
-    this.deleteNamedSession();
+    this.toolStateNameNode.value = toolStateId.trim();
+    this.updateToolStateLibraryActionState();
+    this.deleteNamedToolState();
   }
 
-  isValidSessionHistoryEntry(entry) {
+  isValidToolStateHistoryEntry(entry) {
     if (!entry || typeof entry !== "object" || Array.isArray(entry)) return false;
     if (typeof entry.hostContextId !== "string" || !entry.hostContextId.trim()) return false;
     if (typeof entry.tool !== "string" || !entry.tool.trim()) return false;
     if (typeof entry.timestamp !== "string" || !entry.timestamp.trim()) return false;
-    if (!this.isValidSessionPayload(entry.payload)) return false;
-    const payloadValidation = this.validateWorkspaceToolSessionPayload(entry.payload, `history.${entry.hostContextId.trim()}.payload`);
+    if (!this.isValidToolStatePayload(entry.payload)) return false;
+    const payloadValidation = this.validateWorkspaceToolStatePayload(entry.payload, `history.${entry.hostContextId.trim()}.payload`);
     if (!payloadValidation.ok) return false;
     if (entry.payload.toolId.trim() !== entry.tool.trim()) return false;
     return true;
   }
 
-  readSessionHistory() {
+  readToolStateHistory() {
     const rawHistory = localStorage.getItem(this.historyStorageKey);
     if (!rawHistory) {
       return [];
@@ -1827,41 +1827,41 @@ class WorkspaceV2SessionProducer {
     try {
       parsedHistory = JSON.parse(rawHistory);
     } catch (error) {
-      console.warn(`[WorkspaceV2SessionHistory] Ignoring invalid v2-session-history JSON: ${error instanceof Error ? error.message : "unknown error"}`);
+      console.warn(`[WorkspaceV2ToolStateHistory] Ignoring invalid v2-tool-state-history JSON: ${error instanceof Error ? error.message : "unknown error"}`);
       return [];
     }
     if (!Array.isArray(parsedHistory)) {
-      console.warn("[WorkspaceV2SessionHistory] Ignoring invalid v2-session-history value: expected array.");
+      console.warn("[WorkspaceV2ToolStateHistory] Ignoring invalid v2-tool-state-history value: expected array.");
       return [];
     }
     const validEntries = [];
     let invalidCount = 0;
     parsedHistory.forEach((entry) => {
-      if (this.isValidSessionHistoryEntry(entry)) {
+      if (this.isValidToolStateHistoryEntry(entry)) {
         validEntries.push(entry);
         return;
       }
       invalidCount += 1;
     });
     if (invalidCount > 0) {
-      console.warn(`[WorkspaceV2SessionHistory] Ignored ${invalidCount} invalid history entr${invalidCount === 1 ? "y" : "ies"}.`);
-      this.statusNode.textContent = `Session history contains ${invalidCount} invalid entr${invalidCount === 1 ? "y" : "ies"}. Remove invalid entries before loading sessions.`;
+      console.warn(`[WorkspaceV2ToolStateHistory] Ignored ${invalidCount} invalid history entr${invalidCount === 1 ? "y" : "ies"}.`);
+      this.statusNode.textContent = `Tool state history contains ${invalidCount} invalid entr${invalidCount === 1 ? "y" : "ies"}. Remove invalid entries before loading tool states.`;
     }
     return validEntries;
   }
 
-  writeSessionHistory(entries) {
+  writeToolStateHistory(entries) {
     localStorage.setItem(this.historyStorageKey, JSON.stringify(entries));
-    this.renderSessionDiffInputs();
-    this.renderSessionMergeInputs();
+    this.renderToolStateDiffInputs();
+    this.renderToolStateMergeInputs();
   }
 
-  addRecentSessionEntry(hostContextId, toolId, payload) {
+  addRecentToolStateEntry(hostContextId, toolId, payload) {
     if (typeof hostContextId !== "string" || !hostContextId.trim()) return;
     if (typeof toolId !== "string" || !toolId.trim()) return;
-    if (!this.isValidSessionPayload(payload)) return;
+    if (!this.isValidToolStatePayload(payload)) return;
 
-    const history = this.readSessionHistory();
+    const history = this.readToolStateHistory();
     const deduped = history.filter((entry) => entry.hostContextId !== hostContextId.trim());
     deduped.unshift({
       hostContextId: hostContextId.trim(),
@@ -1872,20 +1872,20 @@ class WorkspaceV2SessionProducer {
     if (deduped.length > this.historyMaxEntries) {
       deduped.length = this.historyMaxEntries;
     }
-    this.writeSessionHistory(deduped);
-    this.renderSessionHistory();
+    this.writeToolStateHistory(deduped);
+    this.renderToolStateHistory();
   }
 
-  renderSessionHistory() {
-    let history = this.readSessionHistory();
+  renderToolStateHistory() {
+    let history = this.readToolStateHistory();
     if (this.pruneCompetingPaletteRecentSessions()) {
-      history = this.readSessionHistory();
+      history = this.readToolStateHistory();
     }
-    this.recentSessionInventory = this.buildRecentSessionInventory(history);
+    this.recentToolStateInventory = this.buildRecentSessionInventory(history);
     this.updateUndoLastMergeState();
-    this.sessionHistoryListNode.replaceChildren();
-    this.sessionHistoryEmptyState.hidden = history.length > 0;
-    this.sessionHistoryEmptyState.textContent = "No recent sessions.";
+    this.toolStateHistoryListNode.replaceChildren();
+    this.toolStateHistoryEmptyState.hidden = history.length > 0;
+    this.toolStateHistoryEmptyState.textContent = "No recent tool states.";
     history.forEach((entry) => {
       const item = document.createElement("li");
       const title = document.createElement("strong");
@@ -1907,7 +1907,7 @@ class WorkspaceV2SessionProducer {
       );
       const titleToolLabel = isMergedResult ? `${entry.tool} (merged)` : entry.tool;
       title.textContent = `${titleToolLabel} (${entry.hostContextId})`;
-      idLabel.textContent = "Session ID: ";
+      idLabel.textContent = "Tool State ID: ";
       idCode.textContent = entry.hostContextId;
       idCode.title = entry.hostContextId;
       idLine.append(idLabel, idCode);
@@ -1915,17 +1915,17 @@ class WorkspaceV2SessionProducer {
       reopenButton.type = "button";
       reopenButton.textContent = "Reopen";
       reopenButton.addEventListener("click", () => {
-        this.reopenSessionHistoryEntry(entry.hostContextId);
+        this.reopenToolStateHistoryEntry(entry.hostContextId);
       });
       copyIdButton.type = "button";
       copyIdButton.textContent = "Copy ID";
       copyIdButton.addEventListener("click", () => {
-        this.copySessionIdToClipboard(entry.hostContextId);
+        this.copyToolStateIdToClipboard(entry.hostContextId);
       });
       useInLibraryButton.type = "button";
       useInLibraryButton.textContent = "Use in Library";
       useInLibraryButton.addEventListener("click", () => {
-        this.useSessionIdInLibraryInput(entry.hostContextId);
+        this.useToolStateIdInLibraryInput(entry.hostContextId);
       });
       deleteRecentButton.type = "button";
       deleteRecentButton.textContent = "Delete";
@@ -1933,15 +1933,15 @@ class WorkspaceV2SessionProducer {
         this.deleteRecentSessionEntry(entry.hostContextId);
       });
       item.append(title, idLine, meta, reopenButton, copyIdButton, useInLibraryButton, deleteRecentButton);
-      this.sessionHistoryListNode.appendChild(item);
+      this.toolStateHistoryListNode.appendChild(item);
     });
-    this.renderSessionDiffInputs();
-    this.renderSessionMergeInputs();
+    this.renderToolStateDiffInputs();
+    this.renderToolStateMergeInputs();
   }
 
-  async copySessionIdToClipboard(hostContextId) {
+  async copyToolStateIdToClipboard(hostContextId) {
     if (typeof hostContextId !== "string" || !hostContextId.trim()) {
-      this.statusNode.textContent = "Copy ID failed: session ID is missing.";
+      this.statusNode.textContent = "Copy ID failed: tool state ID is missing.";
       return;
     }
     try {
@@ -1950,50 +1950,50 @@ class WorkspaceV2SessionProducer {
         return;
       }
       await navigator.clipboard.writeText(hostContextId.trim());
-      this.statusNode.textContent = `Session ID copied: ${hostContextId.trim()}`;
+      this.statusNode.textContent = `Tool State ID copied: ${hostContextId.trim()}`;
     } catch (error) {
       this.statusNode.textContent = `Copy ID failed: ${error instanceof Error ? error.message : "unknown error"}`;
     }
   }
 
-  useSessionIdInLibraryInput(hostContextId) {
+  useToolStateIdInLibraryInput(hostContextId) {
     if (typeof hostContextId !== "string" || !hostContextId.trim()) {
-      this.statusNode.textContent = "Use in Library failed: session ID is missing.";
+      this.statusNode.textContent = "Use in Library failed: tool state ID is missing.";
       return;
     }
-    this.sessionNameNode.value = hostContextId.trim();
-    this.updateSessionLibraryActionState();
-    this.statusNode.textContent = `Session ID ready for Library actions: ${hostContextId.trim()}`;
+    this.toolStateNameNode.value = hostContextId.trim();
+    this.updateToolStateLibraryActionState();
+    this.statusNode.textContent = `Tool State ID ready for Library actions: ${hostContextId.trim()}`;
   }
 
   deleteRecentSessionEntry(hostContextId) {
     if (typeof hostContextId !== "string" || !hostContextId.trim()) {
-      this.statusNode.textContent = "Delete Recent failed: session ID is missing.";
+      this.statusNode.textContent = "Delete Recent failed: tool state ID is missing.";
       return;
     }
-    const sessionId = hostContextId.trim();
-    const sessionSelectionId = `history:${sessionId}`;
-    const history = this.readSessionHistory();
-    const deletedEntry = history.find((entry) => entry.hostContextId === sessionId);
-    const exists = history.some((entry) => entry.hostContextId === sessionId);
+    const toolStateId = hostContextId.trim();
+    const toolStateSelectionId = `history:${toolStateId}`;
+    const history = this.readToolStateHistory();
+    const deletedEntry = history.find((entry) => entry.hostContextId === toolStateId);
+    const exists = history.some((entry) => entry.hostContextId === toolStateId);
     if (!exists) {
-      this.statusNode.textContent = `Recent session '${sessionId}' was not found.`;
+      this.statusNode.textContent = `Recent tool state '${toolStateId}' was not found.`;
       return;
     }
-    const nextHistory = history.filter((entry) => entry.hostContextId !== sessionId);
-    this.writeSessionHistory(nextHistory);
-    sessionStorage.removeItem(sessionId);
+    const nextHistory = history.filter((entry) => entry.hostContextId !== toolStateId);
+    this.writeToolStateHistory(nextHistory);
+    sessionStorage.removeItem(toolStateId);
     if (
-      this.diffLeftSelect.value === sessionSelectionId ||
-      this.diffRightSelect.value === sessionSelectionId ||
-      this.diffOutputSelectionKey.split("|").includes(sessionSelectionId)
+      this.diffLeftSelect.value === toolStateSelectionId ||
+      this.diffRightSelect.value === toolStateSelectionId ||
+      this.diffOutputToolStateKey.split("|").includes(toolStateSelectionId)
     ) {
       this.clearDiffOutputForStateChange("", "Selections changed. Compute Diff again.");
     }
     if (
-      this.mergeLeftSelect.value === sessionSelectionId ||
-      this.mergeRightSelect.value === sessionSelectionId ||
-      this.mergeOutputSelectionKey.split("|").includes(sessionSelectionId) ||
+      this.mergeLeftSelect.value === toolStateSelectionId ||
+      this.mergeRightSelect.value === toolStateSelectionId ||
+      this.mergeOutputToolStateKey.split("|").includes(toolStateSelectionId) ||
       Boolean(
         deletedEntry &&
         deletedEntry.payload &&
@@ -2010,17 +2010,17 @@ class WorkspaceV2SessionProducer {
         "Selections changed. Run Preview Merge again."
       );
     }
-    if (this.currentHostContextId === sessionId) {
+    if (this.currentHostContextId === toolStateId) {
       this.currentHostContextId = "";
-      this.setCurrentSessionPayload(null, "");
+      this.setCurrentToolStatePayload(null, "");
     }
-    if (this.activePaletteHostContextId() === sessionId) {
+    if (this.activePaletteHostContextId() === toolStateId) {
       this.workspaceActivePalette = null;
       this.refreshPaletteOwnershipUiState();
     }
-    this.renderSessionHistory();
-    this.refreshWorkspaceSessionUiStateModel("delete_session");
-    this.statusNode.textContent = `Recent session '${sessionId}' deleted.`;
+    this.renderToolStateHistory();
+    this.refreshWorkspaceSessionUiStateModel("delete_tool_state");
+    this.statusNode.textContent = `Recent tool state '${toolStateId}' deleted.`;
   }
 
   undoLastMerge() {
@@ -2043,7 +2043,7 @@ class WorkspaceV2SessionProducer {
       );
       return;
     }
-    const history = this.readSessionHistory();
+    const history = this.readToolStateHistory();
     const exists = history.some((entry) => entry.hostContextId === lastMergedId);
     if (!exists) {
       this.writeLastMergedHostContextId("");
@@ -2056,11 +2056,11 @@ class WorkspaceV2SessionProducer {
       return;
     }
     const nextHistory = history.filter((entry) => entry.hostContextId !== lastMergedId);
-    this.writeSessionHistory(nextHistory);
+    this.writeToolStateHistory(nextHistory);
     sessionStorage.removeItem(lastMergedId);
     if (this.currentHostContextId === lastMergedId) {
       this.currentHostContextId = "";
-      this.setCurrentSessionPayload(null, "");
+      this.setCurrentToolStatePayload(null, "");
     }
     if (this.activePaletteHostContextId() === lastMergedId) {
       this.workspaceActivePalette = null;
@@ -2081,22 +2081,22 @@ class WorkspaceV2SessionProducer {
     this.updateDiffSelectionFeedbackAndState();
     this.updateMergeSelectionFeedbackAndState();
     this.writeLastMergedHostContextId("");
-    this.renderSessionHistory();
+    this.renderToolStateHistory();
     this.refreshWorkspaceSessionUiStateModel("refresh_load");
     this.clearMergePanelTransientState(
-      `Last merged session removed.\nRemoved Session ID: ${lastMergedId}`,
+      `Last merged tool state removed.\nRemoved Tool State ID: ${lastMergedId}`,
       "No merge preview available.",
-      "Last merged session removed."
+      "Last merged tool state removed."
     );
   }
 
-  resolveSessionPayloadFromContextId(contextId) {
+  resolveToolStatePayloadFromContextId(contextId) {
     if (typeof contextId === "string" && contextId.trim()) {
       const raw = sessionStorage.getItem(contextId.trim());
       if (typeof raw === "string") {
         const parsed = this.safeParseJson(raw);
-        if (parsed.ok && this.isValidSessionPayload(parsed.value)) {
-          const payloadValidation = this.validateWorkspaceToolSessionPayload(parsed.value, `sessionStorage.${contextId.trim()}`);
+        if (parsed.ok && this.isValidToolStatePayload(parsed.value)) {
+          const payloadValidation = this.validateWorkspaceToolStatePayload(parsed.value, `sessionStorage.${contextId.trim()}`);
           if (!payloadValidation.ok) {
             return null;
           }
@@ -2113,11 +2113,11 @@ class WorkspaceV2SessionProducer {
       return inventory;
     }
     history.forEach((entry) => {
-      if (!this.isValidSessionHistoryEntry(entry)) {
+      if (!this.isValidToolStateHistoryEntry(entry)) {
         return;
       }
-      const resolvedPayload = this.resolveSessionPayloadFromContextId(entry.hostContextId);
-      if (!this.isValidSessionPayload(resolvedPayload)) {
+      const resolvedPayload = this.resolveToolStatePayloadFromContextId(entry.hostContextId);
+      if (!this.isValidToolStatePayload(resolvedPayload)) {
         return;
       }
       inventory.push({
@@ -2135,32 +2135,32 @@ class WorkspaceV2SessionProducer {
 
   resolveWorkspaceSessionInventory() {
     const inventory = [];
-    if (Array.isArray(this.recentSessionInventory)) {
-      this.recentSessionInventory.forEach((entry) => {
+    if (Array.isArray(this.recentToolStateInventory)) {
+      this.recentToolStateInventory.forEach((entry) => {
         if (!entry || typeof entry !== "object") {
           return;
         }
-        if (!this.isValidSessionPayload(entry.payload)) {
+        if (!this.isValidToolStatePayload(entry.payload)) {
           return;
         }
         inventory.push(entry);
       });
     }
-    const library = this.readSessionLibrary();
+    const library = this.readToolStateLibrary();
     if (library && typeof library === "object" && !Array.isArray(library)) {
       Object.keys(library)
         .sort((left, right) => left.localeCompare(right))
-        .forEach((sessionName) => {
-          if (!this.isValidSessionPayload(library[sessionName])) {
+        .forEach((toolStateName) => {
+          if (!this.isValidToolStatePayload(library[toolStateName])) {
             return;
           }
           inventory.push({
-            id: `library:${sessionName}`,
-            label: `Library | ${sessionName}`,
-            payload: library[sessionName],
-            contextId: sessionName,
-            toolId: typeof library[sessionName].toolId === "string" ? library[sessionName].toolId : "",
-            version: typeof library[sessionName].version === "string" ? library[sessionName].version : "",
+            id: `library:${toolStateName}`,
+            label: `Library | ${toolStateName}`,
+            payload: library[toolStateName],
+            contextId: toolStateName,
+            toolId: typeof library[toolStateName].toolId === "string" ? library[toolStateName].toolId : "",
+            version: typeof library[toolStateName].version === "string" ? library[toolStateName].version : "",
             payloadSource: "library"
           });
         });
@@ -2168,31 +2168,31 @@ class WorkspaceV2SessionProducer {
     return inventory;
   }
 
-  readPersistedSessionSelection() {
-    const raw = localStorage.getItem(this.sessionSelectionStorageKey);
+  readPersistedToolStateSelection() {
+    const raw = localStorage.getItem(this.toolStateSelectionStorageKey);
     if (!raw) {
-      return { sessionA: "", sessionB: "" };
+      return { toolStateA: "", toolStateB: "" };
     }
     const parsed = this.safeParseJson(raw);
     if (!parsed.ok || !parsed.value || typeof parsed.value !== "object" || Array.isArray(parsed.value)) {
-      return { sessionA: "", sessionB: "" };
+      return { toolStateA: "", toolStateB: "" };
     }
-    const sessionA = typeof parsed.value.sessionA === "string" ? parsed.value.sessionA.trim() : "";
-    const sessionB = typeof parsed.value.sessionB === "string" ? parsed.value.sessionB.trim() : "";
-    return { sessionA, sessionB };
+    const toolStateA = typeof parsed.value.toolStateA === "string" ? parsed.value.toolStateA.trim() : "";
+    const toolStateB = typeof parsed.value.toolStateB === "string" ? parsed.value.toolStateB.trim() : "";
+    return { toolStateA, toolStateB };
   }
 
-  writePersistedSessionSelection(leftEntry, rightEntry) {
-    const sessionA = leftEntry && typeof leftEntry.contextId === "string" ? leftEntry.contextId : "";
-    const sessionB = rightEntry && typeof rightEntry.contextId === "string" ? rightEntry.contextId : "";
-    localStorage.setItem(this.sessionSelectionStorageKey, JSON.stringify({ sessionA, sessionB }));
+  writePersistedToolStateSelection(leftEntry, rightEntry) {
+    const toolStateA = leftEntry && typeof leftEntry.contextId === "string" ? leftEntry.contextId : "";
+    const toolStateB = rightEntry && typeof rightEntry.contextId === "string" ? rightEntry.contextId : "";
+    localStorage.setItem(this.toolStateSelectionStorageKey, JSON.stringify({ toolStateA, toolStateB }));
   }
 
-  clearPersistedSessionSelection() {
-    localStorage.removeItem(this.sessionSelectionStorageKey);
+  clearPersistedToolStateSelection() {
+    localStorage.removeItem(this.toolStateSelectionStorageKey);
   }
 
-  findSessionEntryByContextId(entries, contextId) {
+  findToolStateEntryByContextId(entries, contextId) {
     if (!Array.isArray(entries) || typeof contextId !== "string" || !contextId.trim()) {
       return null;
     }
@@ -2203,12 +2203,12 @@ class WorkspaceV2SessionProducer {
     if (!Array.isArray(entries) || entries.length < 2) {
       return { leftId: "", rightId: "" };
     }
-    const persisted = this.readPersistedSessionSelection();
-    if (!persisted.sessionA || !persisted.sessionB || persisted.sessionA === persisted.sessionB) {
+    const persisted = this.readPersistedToolStateSelection();
+    if (!persisted.toolStateA || !persisted.toolStateB || persisted.toolStateA === persisted.toolStateB) {
       return { leftId: "", rightId: "" };
     }
-    const leftEntry = this.findSessionEntryByContextId(entries, persisted.sessionA);
-    const rightEntry = this.findSessionEntryByContextId(entries, persisted.sessionB);
+    const leftEntry = this.findToolStateEntryByContextId(entries, persisted.toolStateA);
+    const rightEntry = this.findToolStateEntryByContextId(entries, persisted.toolStateB);
     if (!leftEntry || !rightEntry || leftEntry.id === rightEntry.id) {
       return { leftId: "", rightId: "" };
     }
@@ -2232,7 +2232,7 @@ class WorkspaceV2SessionProducer {
     ) {
       return false;
     }
-    const selectedEntry = this.findSessionEntryByContextId(candidates, contextId.trim());
+    const selectedEntry = this.findToolStateEntryByContextId(candidates, contextId.trim());
     if (!selectedEntry) {
       return false;
     }
@@ -2255,7 +2255,7 @@ class WorkspaceV2SessionProducer {
     return false;
   }
 
-  syncDiffAndMergeSelectionSlotsFromContextId(contextId) {
+  syncDiffAndMergeSelectionSlotsFromToolStateId(contextId) {
     this.syncSelectionSlotsFromContextId(this.diffLeftSelect, this.diffRightSelect, this.diffCandidates, contextId);
     this.syncSelectionSlotsFromContextId(this.mergeLeftSelect, this.mergeRightSelect, this.mergeCandidates, contextId);
     this.updateDiffSelectionFeedbackAndState();
@@ -2264,11 +2264,11 @@ class WorkspaceV2SessionProducer {
 
   formatSelectionLabel(entry) {
     if (!entry || typeof entry !== "object") {
-      return "No session selected";
+      return "No tool state selected";
     }
     const toolId = typeof entry.toolId === "string" && entry.toolId.trim()
       ? entry.toolId.trim()
-      : (entry.payload && typeof entry.payload.toolId === "string" ? entry.payload.toolId : "session");
+      : (entry.payload && typeof entry.payload.toolId === "string" ? entry.payload.toolId : "toolState");
     const contextId = typeof entry.contextId === "string" && entry.contextId.trim()
       ? entry.contextId.trim()
       : (typeof entry.id === "string" ? entry.id : "");
@@ -2336,7 +2336,7 @@ class WorkspaceV2SessionProducer {
     this.mergeConflictSummaryNode.hidden = false;
   }
 
-  renderSessionDiffInputs() {
+  renderToolStateDiffInputs() {
     this.diffCandidates = this.resolveWorkspaceSessionInventory();
     const currentLeft = this.diffLeftSelect.value;
     const currentRight = this.diffRightSelect.value;
@@ -2346,12 +2346,12 @@ class WorkspaceV2SessionProducer {
 
     const leftPlaceholder = document.createElement("option");
     leftPlaceholder.value = "";
-    leftPlaceholder.textContent = "No session selected";
+    leftPlaceholder.textContent = "No tool state selected";
     leftPlaceholder.disabled = true;
     this.diffLeftSelect.appendChild(leftPlaceholder);
     const rightPlaceholder = document.createElement("option");
     rightPlaceholder.value = "";
-    rightPlaceholder.textContent = "No session selected";
+    rightPlaceholder.textContent = "No tool state selected";
     rightPlaceholder.disabled = true;
     this.diffRightSelect.appendChild(rightPlaceholder);
 
@@ -2374,23 +2374,23 @@ class WorkspaceV2SessionProducer {
       : persistedSelections.rightId;
 
     this.diffEmptyState.hidden = this.diffCandidates.length >= 2;
-    this.diffEmptyState.textContent = "Create or reopen at least two Workspace V2 sessions before comparing.";
+    this.diffEmptyState.textContent = "Create or reopen at least two Workspace V2 tool states before comparing.";
     if (this.diffCandidates.length < 2) {
-      this.diffOutputSelectionKey = "";
-      this.diffOutputNode.textContent = "Create or reopen at least two Workspace V2 sessions before comparing.";
-    } else if (!this.diffOutputSelectionKey) {
+      this.diffOutputToolStateKey = "";
+      this.diffOutputNode.textContent = "Create or reopen at least two Workspace V2 tool states before comparing.";
+    } else if (!this.diffOutputToolStateKey) {
       this.diffOutputNode.textContent = "No diff computed.";
     }
     this.updateDiffSelectionFeedbackAndState();
   }
 
-  buildSessionMergeCandidates() {
+  buildToolStateMergeCandidates() {
     return this.resolveWorkspaceSessionInventory();
   }
 
-  renderSessionMergeInputs() {
+  renderToolStateMergeInputs() {
     const previousPreview = this.pendingMergePreview;
-    this.mergeCandidates = this.buildSessionMergeCandidates();
+    this.mergeCandidates = this.buildToolStateMergeCandidates();
     this.pendingMergePreview = null;
     const currentLeft = this.mergeLeftSelect.value;
     const currentRight = this.mergeRightSelect.value;
@@ -2400,12 +2400,12 @@ class WorkspaceV2SessionProducer {
 
     const leftPlaceholder = document.createElement("option");
     leftPlaceholder.value = "";
-    leftPlaceholder.textContent = "No session selected";
+    leftPlaceholder.textContent = "No tool state selected";
     leftPlaceholder.disabled = true;
     this.mergeLeftSelect.appendChild(leftPlaceholder);
     const rightPlaceholder = document.createElement("option");
     rightPlaceholder.value = "";
-    rightPlaceholder.textContent = "No session selected";
+    rightPlaceholder.textContent = "No tool state selected";
     rightPlaceholder.disabled = true;
     this.mergeRightSelect.appendChild(rightPlaceholder);
 
@@ -2428,7 +2428,7 @@ class WorkspaceV2SessionProducer {
       : persistedSelections.rightId;
 
     this.mergeEmptyState.hidden = this.mergeCandidates.length >= 2;
-    this.mergeEmptyState.textContent = "Create or reopen at least two Workspace V2 sessions before previewing a merge.";
+    this.mergeEmptyState.textContent = "Create or reopen at least two Workspace V2 tool states before previewing a merge.";
     if (previousPreview) {
       const refreshedSource = this.mergeCandidates.find((entry) => entry.id === previousPreview.source.id);
       const refreshedTarget = this.mergeCandidates.find((entry) => entry.id === previousPreview.target.id);
@@ -2437,7 +2437,7 @@ class WorkspaceV2SessionProducer {
         const targetMatches = JSON.stringify(refreshedTarget.payload) === previousPreview.target.hash;
         if (sourceMatches && targetMatches) {
           this.pendingMergePreview = previousPreview;
-          this.mergeOutputSelectionKey = this.buildMergeSelectionKey(previousPreview.source.id, previousPreview.target.id);
+          this.mergeOutputToolStateKey = this.buildMergeSelectionKey(previousPreview.source.id, previousPreview.target.id);
           this.mergeLeftSelect.value = previousPreview.source.id;
           this.mergeRightSelect.value = previousPreview.target.id;
           this.setMergePreviewSummary(previousPreview);
@@ -2445,21 +2445,21 @@ class WorkspaceV2SessionProducer {
           return;
         }
       }
-      this.statusNode.textContent = "Merge preview cleared because source or target session changed. Run Preview Merge (Dry Run) again.";
+      this.statusNode.textContent = "Merge preview cleared because source or target tool state changed. Run Preview Merge (Dry Run) again.";
       this.clearMergePanelTransientState(
-        "Preview summary is stale because Session A or Session B changed. Run Preview Merge again.",
+        "Preview summary is stale because Tool State A or Tool State B changed. Run Preview Merge again.",
         "No merge preview available.",
-        "Merge preview cleared because source or target session changed. Run Preview Merge (Dry Run) again."
+        "Merge preview cleared because source or target tool state changed. Run Preview Merge (Dry Run) again."
       );
       return;
     }
     if (this.mergeCandidates.length < 2) {
       this.clearMergePanelTransientState(
-        "Create or reopen at least two Workspace V2 sessions before previewing a merge.",
-        "Create or reopen at least two Workspace V2 sessions before previewing a merge.",
+        "Create or reopen at least two Workspace V2 tool states before previewing a merge.",
+        "Create or reopen at least two Workspace V2 tool states before previewing a merge.",
         ""
       );
-    } else if (!this.mergeOutputSelectionKey) {
+    } else if (!this.mergeOutputToolStateKey) {
       this.clearMergePanelTransientState(
         "No merge summary yet.",
         "No merge preview available.",
@@ -2469,7 +2469,7 @@ class WorkspaceV2SessionProducer {
     this.updateMergeSelectionFeedbackAndState();
   }
 
-  cloneSessionValue(value) {
+  cloneToolStateValue(value) {
     if (value === undefined) {
       return undefined;
     }
@@ -2480,10 +2480,10 @@ class WorkspaceV2SessionProducer {
     const conflicts = {};
     const mergeValues = (leftValue, rightValue, path) => {
       if (leftValue === undefined && rightValue !== undefined) {
-        return this.cloneSessionValue(rightValue);
+        return this.cloneToolStateValue(rightValue);
       }
       if (leftValue !== undefined && rightValue === undefined) {
-        return this.cloneSessionValue(leftValue);
+        return this.cloneToolStateValue(leftValue);
       }
       const leftIsObject = leftValue && typeof leftValue === "object";
       const rightIsObject = rightValue && typeof rightValue === "object";
@@ -2501,15 +2501,15 @@ class WorkspaceV2SessionProducer {
       }
       if (Array.isArray(leftValue) && Array.isArray(rightValue)) {
         if (JSON.stringify(leftValue) === JSON.stringify(rightValue)) {
-          return this.cloneSessionValue(leftValue);
+          return this.cloneToolStateValue(leftValue);
         }
-        conflicts[path || "$"] = { a: this.cloneSessionValue(leftValue), b: this.cloneSessionValue(rightValue) };
+        conflicts[path || "$"] = { a: this.cloneToolStateValue(leftValue), b: this.cloneToolStateValue(rightValue) };
         return undefined;
       }
       if (JSON.stringify(leftValue) === JSON.stringify(rightValue)) {
-        return this.cloneSessionValue(leftValue);
+        return this.cloneToolStateValue(leftValue);
       }
-      conflicts[path || "$"] = { a: this.cloneSessionValue(leftValue), b: this.cloneSessionValue(rightValue) };
+      conflicts[path || "$"] = { a: this.cloneToolStateValue(leftValue), b: this.cloneToolStateValue(rightValue) };
       return undefined;
     };
 
@@ -2520,44 +2520,44 @@ class WorkspaceV2SessionProducer {
     };
   }
 
-  computeSelectedSessionMerge() {
+  computeSelectedToolStateMerge() {
     if (!Array.isArray(this.mergeCandidates) || this.mergeCandidates.length < 2) {
       this.clearMergePanelTransientState(
-        "Create or reopen at least two Workspace V2 sessions before previewing a merge.",
-        "Create or reopen at least two Workspace V2 sessions before previewing a merge.",
-        "Create or reopen at least two Workspace V2 sessions before previewing a merge."
+        "Create or reopen at least two Workspace V2 tool states before previewing a merge.",
+        "Create or reopen at least two Workspace V2 tool states before previewing a merge.",
+        "Create or reopen at least two Workspace V2 tool states before previewing a merge."
       );
       return;
     }
     if (!this.mergeLeftSelect.value && !this.mergeRightSelect.value) {
       this.clearMergePanelTransientState(
-        "Merge preview blocked. Session A and Session B selections are missing.",
-        "Merge preview blocked. Session A and Session B selections are missing.",
-        "Merge preview blocked. Select Session A and Session B, then run Preview Merge (Dry Run)."
+        "Merge preview blocked. Tool State A and Tool State B selections are missing.",
+        "Merge preview blocked. Tool State A and Tool State B selections are missing.",
+        "Merge preview blocked. Select Tool State A and Tool State B, then run Preview Merge (Dry Run)."
       );
       return;
     }
     if (!this.mergeLeftSelect.value) {
       this.clearMergePanelTransientState(
-        "Merge preview blocked. Session A selection is missing.",
-        "Merge preview blocked. Session A selection is missing.",
-        "Merge preview blocked. Select Session A, then run Preview Merge (Dry Run)."
+        "Merge preview blocked. Tool State A selection is missing.",
+        "Merge preview blocked. Tool State A selection is missing.",
+        "Merge preview blocked. Select Tool State A, then run Preview Merge (Dry Run)."
       );
       return;
     }
     if (!this.mergeRightSelect.value) {
       this.clearMergePanelTransientState(
-        "Merge preview blocked. Session B selection is missing.",
-        "Merge preview blocked. Session B selection is missing.",
-        "Merge preview blocked. Select Session B, then run Preview Merge (Dry Run)."
+        "Merge preview blocked. Tool State B selection is missing.",
+        "Merge preview blocked. Tool State B selection is missing.",
+        "Merge preview blocked. Select Tool State B, then run Preview Merge (Dry Run)."
       );
       return;
     }
     if (this.mergeLeftSelect.value === this.mergeRightSelect.value) {
       this.clearMergePanelTransientState(
-        "Merge preview blocked. Session A and Session B must be different sessions.",
-        "Merge preview blocked. Session A and Session B must be different sessions.",
-        "Merge preview blocked. Choose two different sessions, then run Preview Merge (Dry Run)."
+        "Merge preview blocked. Tool State A and Tool State B must be different tool states.",
+        "Merge preview blocked. Tool State A and Tool State B must be different tool states.",
+        "Merge preview blocked. Choose two different tool states, then run Preview Merge (Dry Run)."
       );
       return;
     }
@@ -2566,16 +2566,16 @@ class WorkspaceV2SessionProducer {
     if (!left || !right) {
       this.clearMergePanelTransientState(
         !left
-          ? "Merge preview blocked. Session A selection is no longer available."
-          : "Merge preview blocked. Session B selection is no longer available.",
+          ? "Merge preview blocked. Tool State A selection is no longer available."
+          : "Merge preview blocked. Tool State B selection is no longer available.",
         !left
-          ? "Merge preview blocked. Session A selection is no longer available."
-          : "Merge preview blocked. Session B selection is no longer available.",
-        "Merge preview blocked. Refresh or re-select sessions, then run Preview Merge (Dry Run)."
+          ? "Merge preview blocked. Tool State A selection is no longer available."
+          : "Merge preview blocked. Tool State B selection is no longer available.",
+        "Merge preview blocked. Refresh or re-select tool states, then run Preview Merge (Dry Run)."
       );
       return;
     }
-    if (!this.isValidSessionPayload(left.payload) || !this.isValidSessionPayload(right.payload)) {
+    if (!this.isValidToolStatePayload(left.payload) || !this.isValidToolStatePayload(right.payload)) {
       this.clearMergePanelTransientState(
         "Selected merge payload is invalid.",
         "Selected merge payload is invalid.",
@@ -2588,23 +2588,23 @@ class WorkspaceV2SessionProducer {
     if (leftToolId && rightToolId && leftToolId !== rightToolId) {
       this.clearMergePanelTransientState(
         [
-          "Cross-tool merge is not supported. Select two sessions with the same toolId.",
-          `Session A toolId: ${leftToolId}`,
-          `Session B toolId: ${rightToolId}`
+          "Cross-tool merge is not supported. Select two tool states with the same toolId.",
+          `Tool State A toolId: ${leftToolId}`,
+          `Tool State B toolId: ${rightToolId}`
         ].join("\n"),
         [
-          "Cross-tool merge is not supported. Select two sessions with the same toolId.",
-          `Session A toolId: ${leftToolId}`,
-          `Session B toolId: ${rightToolId}`
+          "Cross-tool merge is not supported. Select two tool states with the same toolId.",
+          `Tool State A toolId: ${leftToolId}`,
+          `Tool State B toolId: ${rightToolId}`
         ].join("\n"),
-        "Cross-tool merge is not supported. Select two sessions with the same toolId."
+        "Cross-tool merge is not supported. Select two tool states with the same toolId."
       );
       this.updateMergeSelectionFeedbackAndState();
       return;
     }
     if (!this.requestWorkspaceTransition("preview_merge", this.computeWorkspaceSessionUiStateModel())) {
-      this.setMergeResultSummary("Merge preview blocked. Select two different sessions, then run Preview Merge (Dry Run).");
-      this.statusNode.textContent = "Merge preview blocked. Select two different sessions, then run Preview Merge (Dry Run).";
+      this.setMergeResultSummary("Merge preview blocked. Select two different tool states, then run Preview Merge (Dry Run).");
+      this.statusNode.textContent = "Merge preview blocked. Select two different tool states, then run Preview Merge (Dry Run).";
       return;
     }
 
@@ -2618,8 +2618,8 @@ class WorkspaceV2SessionProducer {
       );
       return;
     }
-    const versionedPayload = this.withSessionVersion(result.mergedPayload);
-    const sizeValidation = this.validateSessionPayloadSize(versionedPayload);
+    const versionedPayload = this.withToolStateVersion(result.mergedPayload);
+    const sizeValidation = this.validateToolStatePayloadSize(versionedPayload);
     if (!sizeValidation.ok) {
       this.clearMergePanelTransientState(sizeValidation.message, sizeValidation.message, sizeValidation.message);
       return;
@@ -2630,13 +2630,13 @@ class WorkspaceV2SessionProducer {
       source: {
         id: left.id,
         label: left.label,
-        payload: this.cloneSessionValue(left.payload),
+        payload: this.cloneToolStateValue(left.payload),
         hash: JSON.stringify(left.payload)
       },
       target: {
         id: right.id,
         label: right.label,
-        payload: this.cloneSessionValue(right.payload),
+        payload: this.cloneToolStateValue(right.payload),
         hash: JSON.stringify(right.payload)
       },
       selectedToolId,
@@ -2647,7 +2647,7 @@ class WorkspaceV2SessionProducer {
       changes: previewChanges,
       confirmed: false
     };
-    this.mergeOutputSelectionKey = this.buildMergeSelectionKey(left.id, right.id);
+    this.mergeOutputToolStateKey = this.buildMergeSelectionKey(left.id, right.id);
     this.setMergePreviewSummary(this.pendingMergePreview);
     this.refreshWorkspaceSessionUiStateModel("refresh_load");
 
@@ -2684,89 +2684,89 @@ class WorkspaceV2SessionProducer {
         return;
       }
       if (targetValue === undefined) {
-        added[path || "$"] = this.cloneSessionValue(mergedValue);
+        added[path || "$"] = this.cloneToolStateValue(mergedValue);
         return;
       }
       if (JSON.stringify(mergedValue) === JSON.stringify(targetValue)) {
-        unchanged[path || "$"] = this.cloneSessionValue(mergedValue);
+        unchanged[path || "$"] = this.cloneToolStateValue(mergedValue);
         return;
       }
       updated[path || "$"] = {
-        from: this.cloneSessionValue(targetValue),
-        to: this.cloneSessionValue(mergedValue)
+        from: this.cloneToolStateValue(targetValue),
+        to: this.cloneToolStateValue(mergedValue)
       };
     };
     walk(sourcePayload, targetPayload, mergedPayload, "");
     return { added, updated, unchanged };
   }
 
-  defaultMergedSessionId(toolId) {
+  defaultMergedToolStateId(toolId) {
     const safeToolId = typeof toolId === "string" && toolId.trim() ? toolId.trim() : this.selectedToolId();
     return `${safeToolId}-merged-${Date.now()}`;
   }
 
   setLastMergedSessionResult(payload, toolId) {
-    if (!this.isValidSessionPayload(payload)) {
-      this.lastMergedSessionResult = null;
-      this.mergedSessionStatusNode.textContent = "No merged session result to save.";
+    if (!this.isValidToolStatePayload(payload)) {
+      this.lastMergedToolStateResult = null;
+      this.mergedToolStateStatusNode.textContent = "No merged tool state result to save.";
       return;
     }
-    this.lastMergedSessionResult = {
-      payload: this.cloneSessionValue(payload),
+    this.lastMergedToolStateResult = {
+      payload: this.cloneToolStateValue(payload),
       toolId: typeof toolId === "string" && toolId.trim() ? toolId.trim() : this.selectedToolId(),
       createdAt: new Date().toISOString()
     };
-    this.mergedSessionIdNode.value = this.defaultMergedSessionId(this.lastMergedSessionResult.toolId);
-    this.mergedSessionStatusNode.textContent = "Merged session is available for save.";
+    this.mergedToolStateIdNode.value = this.defaultMergedToolStateId(this.lastMergedToolStateResult.toolId);
+    this.mergedToolStateStatusNode.textContent = "Merged tool state is available for save.";
   }
 
-  saveMergedSessionResult() {
-    if (!this.lastMergedSessionResult || !this.isValidSessionPayload(this.lastMergedSessionResult.payload)) {
-      this.setMergedSessionStatus("No merged session result available to save.");
+  saveMergedToolStateResult() {
+    if (!this.lastMergedToolStateResult || !this.isValidToolStatePayload(this.lastMergedToolStateResult.payload)) {
+      this.setMergedSessionStatus("No merged tool state result available to save.");
       return;
     }
-    const mergedSessionId = this.selectedMergedSessionId();
-    if (!mergedSessionId) {
-      this.setMergedSessionStatus("Enter a merged session ID before saving.");
+    const mergedToolStateId = this.selectedMergedToolStateId();
+    if (!mergedToolStateId) {
+      this.setMergedSessionStatus("Enter a merged tool state ID before saving.");
       return;
     }
-    const library = this.readSessionLibrary();
+    const library = this.readToolStateLibrary();
     if (library === null) {
       return;
     }
-    if (Object.prototype.hasOwnProperty.call(library, mergedSessionId)) {
-      this.setMergedSessionStatus("Session ID already exists. Choose a different ID.");
+    if (Object.prototype.hasOwnProperty.call(library, mergedToolStateId)) {
+      this.setMergedSessionStatus("Tool State ID already exists. Choose a different ID.");
       return;
     }
-    library[mergedSessionId] = this.cloneSessionValue(this.lastMergedSessionResult.payload);
-    this.writeSessionLibrary(library);
-    this.renderSessionLibrary();
-    this.setMergedSessionStatus("Merged session saved.");
+    library[mergedToolStateId] = this.cloneToolStateValue(this.lastMergedToolStateResult.payload);
+    this.writeToolStateLibrary(library);
+    this.renderToolStateLibrary();
+    this.setMergedSessionStatus("Merged tool state saved.");
   }
 
-  useMergedSessionInDiffMerge() {
-    if (!this.lastMergedSessionResult || !this.isValidSessionPayload(this.lastMergedSessionResult.payload)) {
-      this.setMergedSessionStatus("No merged session result available to use.");
+  useMergedToolStateInDiffMerge() {
+    if (!this.lastMergedToolStateResult || !this.isValidToolStatePayload(this.lastMergedToolStateResult.payload)) {
+      this.setMergedSessionStatus("No merged tool state result available to use.");
       return;
     }
-    const mergedSessionId = this.selectedMergedSessionId();
-    if (!mergedSessionId) {
-      this.setMergedSessionStatus("Enter a merged session ID before using in Diff/Merge.");
+    const mergedToolStateId = this.selectedMergedToolStateId();
+    if (!mergedToolStateId) {
+      this.setMergedSessionStatus("Enter a merged tool state ID before using in Diff/Merge.");
       return;
     }
-    const payloadValidation = this.validateWorkspaceToolSessionPayload(this.lastMergedSessionResult.payload, "mergedSessionResult");
+    const payloadValidation = this.validateWorkspaceToolStatePayload(this.lastMergedToolStateResult.payload, "mergedSessionResult");
     if (!payloadValidation.ok) {
       this.setMergedSessionStatus(payloadValidation.message);
       return;
     }
-    const serialized = JSON.stringify(this.lastMergedSessionResult.payload);
-    sessionStorage.setItem(mergedSessionId, serialized);
-    this.addRecentSessionEntry(mergedSessionId, this.lastMergedSessionResult.toolId, this.lastMergedSessionResult.payload);
-    this.syncDiffAndMergeSelectionSlotsFromContextId(mergedSessionId);
-    this.setMergedSessionStatus("Merged session ready in Diff/Merge selections.");
+    const serialized = JSON.stringify(this.lastMergedToolStateResult.payload);
+    sessionStorage.setItem(mergedToolStateId, serialized);
+    this.addRecentToolStateEntry(mergedToolStateId, this.lastMergedToolStateResult.toolId, this.lastMergedToolStateResult.payload);
+    this.syncDiffAndMergeSelectionSlotsFromToolStateId(mergedToolStateId);
+    this.setMergedSessionStatus("Merged tool state ready in Diff/Merge selections.");
   }
 
-  confirmSelectedSessionMergePreview() {
+  confirmSelectedToolStateMergePreview() {
     if (!this.pendingMergePreview) {
       this.setMergeResultSummary("No merge preview available. Run Preview Merge (Dry Run) first.");
       this.statusNode.textContent = "No merge preview available. Run Preview Merge (Dry Run) first.";
@@ -2833,7 +2833,7 @@ class WorkspaceV2SessionProducer {
     localStorage.setItem(this.mergeAuditStorageKey, JSON.stringify(auditEntries));
   }
 
-  applySelectedSessionMerge() {
+  applySelectedToolStateMerge() {
     if (!this.pendingMergePreview) {
       this.setMergeResultSummary("Merge apply blocked. Run Preview Merge (Dry Run), then Confirm Preview.");
       this.statusNode.textContent = "Merge apply blocked. Run Preview Merge (Dry Run), then Confirm Preview.";
@@ -2849,17 +2849,17 @@ class WorkspaceV2SessionProducer {
       this.statusNode.textContent = "Merge apply blocked. Preview must be confirmed, fresh, and conflict-free.";
       return;
     }
-    const currentMergeCandidates = this.buildSessionMergeCandidates();
+    const currentMergeCandidates = this.buildToolStateMergeCandidates();
     const liveSource = currentMergeCandidates.find((entry) => entry.id === this.pendingMergePreview.source.id);
     const liveTarget = currentMergeCandidates.find((entry) => entry.id === this.pendingMergePreview.target.id);
     if (!liveSource || !liveTarget) {
-      this.setMergeResultSummary("Merge apply blocked. Preview is stale because source or target session is no longer available.");
-      this.statusNode.textContent = "Merge apply blocked. Preview is stale because source or target session is no longer available.";
+      this.setMergeResultSummary("Merge apply blocked. Preview is stale because source or target tool state is no longer available.");
+      this.statusNode.textContent = "Merge apply blocked. Preview is stale because source or target tool state is no longer available.";
       return;
     }
     if (JSON.stringify(liveSource.payload) !== this.pendingMergePreview.source.hash || JSON.stringify(liveTarget.payload) !== this.pendingMergePreview.target.hash) {
-      this.setMergeResultSummary("Merge apply blocked. Preview is stale because source or target session changed.");
-      this.statusNode.textContent = "Merge apply blocked. Preview is stale because source or target session changed.";
+      this.setMergeResultSummary("Merge apply blocked. Preview is stale because source or target tool state changed.");
+      this.statusNode.textContent = "Merge apply blocked. Preview is stale because source or target tool state changed.";
       return;
     }
     const conflictKeys = Object.keys(this.pendingMergePreview.conflicts);
@@ -2868,7 +2868,7 @@ class WorkspaceV2SessionProducer {
       this.statusNode.textContent = `Merge apply blocked by ${conflictKeys.length} conflict${conflictKeys.length === 1 ? "" : "s"}.`;
       return;
     }
-    const sizeValidation = this.validateSessionPayloadSize(this.pendingMergePreview.mergedPayload);
+    const sizeValidation = this.validateToolStatePayloadSize(this.pendingMergePreview.mergedPayload);
     if (!sizeValidation.ok) {
       this.setMergeResultSummary(sizeValidation.message);
       this.statusNode.textContent = sizeValidation.message;
@@ -2886,13 +2886,13 @@ class WorkspaceV2SessionProducer {
         mergedAt: new Date().toISOString()
       }
     };
-    const mergedResultSizeValidation = this.validateSessionPayloadSize(mergedResultPayload);
+    const mergedResultSizeValidation = this.validateToolStatePayloadSize(mergedResultPayload);
     if (!mergedResultSizeValidation.ok) {
       this.setMergeResultSummary(mergedResultSizeValidation.message);
       this.statusNode.textContent = mergedResultSizeValidation.message;
       return;
     }
-    const activation = this.activateWorkspaceSession(hostContextId, mergedResultPayload, "merge-apply");
+    const activation = this.activateWorkspaceToolState(hostContextId, mergedResultPayload, "merge-apply");
     if (!activation.ok) {
       this.setMergeResultSummary(activation.message);
       this.statusNode.textContent = activation.message;
@@ -2918,14 +2918,14 @@ class WorkspaceV2SessionProducer {
     this.importJsonNode.value = JSON.stringify(appliedPayload, null, 2);
     this.setLastMergedSessionResult(appliedPayload, this.pendingMergePreview.selectedToolId);
     this.writeLastMergedHostContextId(hostContextId);
-    this.addRecentSessionEntry(hostContextId, this.pendingMergePreview.selectedToolId, appliedPayload);
-    const mergedRecentRegistered = this.readSessionHistory().some((entry) => entry.hostContextId === hostContextId);
+    this.addRecentToolStateEntry(hostContextId, this.pendingMergePreview.selectedToolId, appliedPayload);
+    const mergedRecentRegistered = this.readToolStateHistory().some((entry) => entry.hostContextId === hostContextId);
     if (!mergedRecentRegistered) {
       this.writeLastMergedHostContextId("");
       this.updateUndoLastMergeState();
-      this.mergeOutputSelectionKey = "";
-      this.setMergeResultSummary("Merge apply failed to register merged session in Recent Sessions. Undo remains disabled.");
-      this.statusNode.textContent = "Merge apply failed to register merged session in Recent Sessions. Undo remains disabled.";
+      this.mergeOutputToolStateKey = "";
+      this.setMergeResultSummary("Merge apply failed to register merged tool state in Recent Tool States. Undo remains disabled.");
+      this.statusNode.textContent = "Merge apply failed to register merged tool state in Recent Tool States. Undo remains disabled.";
       return;
     }
     this.setMergeApplySummary(
@@ -2934,10 +2934,10 @@ class WorkspaceV2SessionProducer {
       mergedResultPayload.mergeResultMeta.mergedAt,
       appliedChanges
     );
-    this.mergeOutputSelectionKey = this.buildMergeSelectionKey(this.pendingMergePreview.source.id, this.pendingMergePreview.target.id);
-    this.renderSessionHistory();
-    this.renderSessionDiffInputs();
-    this.renderSessionMergeInputs();
+    this.mergeOutputToolStateKey = this.buildMergeSelectionKey(this.pendingMergePreview.source.id, this.pendingMergePreview.target.id);
+    this.renderToolStateHistory();
+    this.renderToolStateDiffInputs();
+    this.renderToolStateMergeInputs();
     this.refreshWorkspaceSessionUiStateModel("refresh_load");
     this.recordMergeAuditEntry(this.pendingMergePreview);
     this.pendingMergePreview = null;
@@ -2960,7 +2960,7 @@ class WorkspaceV2SessionProducer {
     return Boolean(value && typeof value === "object");
   }
 
-  computeSessionDiff(leftPayload, rightPayload) {
+  computeToolStateDiff(leftPayload, rightPayload) {
     const added = {};
     const removed = {};
     const changed = {};
@@ -3007,82 +3007,82 @@ class WorkspaceV2SessionProducer {
     this.diffSummaryNode.textContent = `Differences detected (added: ${addedCount}, removed: ${removedCount}, changed: ${changedCount})`;
   }
 
-  computeSelectedSessionDiff() {
+  computeSelectedToolStateDiff() {
     this.diffSummaryNode.textContent = "";
     if (!Array.isArray(this.diffCandidates) || this.diffCandidates.length < 2) {
-      this.diffOutputSelectionKey = "";
-      this.diffOutputNode.textContent = "Create or reopen at least two Workspace V2 sessions before comparing.";
-      this.statusNode.textContent = "Create or reopen at least two Workspace V2 sessions before comparing.";
+      this.diffOutputToolStateKey = "";
+      this.diffOutputNode.textContent = "Create or reopen at least two Workspace V2 tool states before comparing.";
+      this.statusNode.textContent = "Create or reopen at least two Workspace V2 tool states before comparing.";
       return;
     }
     if (!this.diffLeftSelect.value && !this.diffRightSelect.value) {
-      this.diffOutputSelectionKey = "";
-      this.diffOutputNode.textContent = "Diff blocked. Session A and Session B selections are missing.";
-      this.statusNode.textContent = "Diff blocked. Select Session A and Session B, then compute diff.";
+      this.diffOutputToolStateKey = "";
+      this.diffOutputNode.textContent = "Diff blocked. Tool State A and Tool State B selections are missing.";
+      this.statusNode.textContent = "Diff blocked. Select Tool State A and Tool State B, then compute diff.";
       return;
     }
     if (!this.diffLeftSelect.value) {
-      this.diffOutputSelectionKey = "";
-      this.diffOutputNode.textContent = "Diff blocked. Session A selection is missing.";
-      this.statusNode.textContent = "Diff blocked. Select Session A, then compute diff.";
+      this.diffOutputToolStateKey = "";
+      this.diffOutputNode.textContent = "Diff blocked. Tool State A selection is missing.";
+      this.statusNode.textContent = "Diff blocked. Select Tool State A, then compute diff.";
       return;
     }
     if (!this.diffRightSelect.value) {
-      this.diffOutputSelectionKey = "";
-      this.diffOutputNode.textContent = "Diff blocked. Session B selection is missing.";
-      this.statusNode.textContent = "Diff blocked. Select Session B, then compute diff.";
+      this.diffOutputToolStateKey = "";
+      this.diffOutputNode.textContent = "Diff blocked. Tool State B selection is missing.";
+      this.statusNode.textContent = "Diff blocked. Select Tool State B, then compute diff.";
       return;
     }
     if (this.diffLeftSelect.value === this.diffRightSelect.value) {
-      this.diffOutputSelectionKey = "";
-      this.diffOutputNode.textContent = "Diff blocked. Session A and Session B must be different sessions.";
-      this.statusNode.textContent = "Diff blocked. Choose two different sessions, then compute diff.";
+      this.diffOutputToolStateKey = "";
+      this.diffOutputNode.textContent = "Diff blocked. Tool State A and Tool State B must be different tool states.";
+      this.statusNode.textContent = "Diff blocked. Choose two different tool states, then compute diff.";
       return;
     }
     const left = this.diffCandidates.find((entry) => entry.id === this.diffLeftSelect.value);
     const right = this.diffCandidates.find((entry) => entry.id === this.diffRightSelect.value);
     if (!left || !right) {
-      this.diffOutputSelectionKey = "";
+      this.diffOutputToolStateKey = "";
       this.diffOutputNode.textContent = !left
-        ? "Diff blocked. Session A selection is no longer available."
-        : "Diff blocked. Session B selection is no longer available.";
-      this.statusNode.textContent = "Diff blocked. Refresh or re-select sessions, then compute diff.";
+        ? "Diff blocked. Tool State A selection is no longer available."
+        : "Diff blocked. Tool State B selection is no longer available.";
+      this.statusNode.textContent = "Diff blocked. Refresh or re-select tool states, then compute diff.";
       return;
     }
-    if (!this.isValidSessionPayload(left.payload) || !this.isValidSessionPayload(right.payload)) {
-      this.diffOutputSelectionKey = "";
+    if (!this.isValidToolStatePayload(left.payload) || !this.isValidToolStatePayload(right.payload)) {
+      this.diffOutputToolStateKey = "";
       this.diffOutputNode.textContent = "Selected diff payload is invalid.";
       this.statusNode.textContent = "Selected diff payload is invalid.";
       return;
     }
     if (left.toolId !== right.toolId) {
-      this.diffOutputSelectionKey = "";
-      this.diffOutputNode.textContent = "Diff requires sessions from the same tool.";
-      this.statusNode.textContent = "Diff requires sessions from the same tool.";
+      this.diffOutputToolStateKey = "";
+      this.diffOutputNode.textContent = "Diff requires tool states from the same tool.";
+      this.statusNode.textContent = "Diff requires tool states from the same tool.";
       return;
     }
-    const diff = this.computeSessionDiff(left.payload, right.payload);
+    const diff = this.computeToolStateDiff(left.payload, right.payload);
     const addedCount = Object.keys(diff.added).length;
     const removedCount = Object.keys(diff.removed).length;
     const changedCount = Object.keys(diff.changed).length;
-    this.diffOutputSelectionKey = this.buildMergeSelectionKey(left.id, right.id);
+    this.diffOutputToolStateKey = this.buildMergeSelectionKey(left.id, right.id);
     this.setDiffSummaryFromCounts(addedCount, removedCount, changedCount);
     this.diffOutputNode.textContent = JSON.stringify(diff, null, 2);
     if (addedCount === 0 && removedCount === 0 && changedCount === 0) {
-      this.statusNode.textContent = "No differences. The selected sessions are identical.";
+      this.statusNode.textContent = "No differences. The selected tool states are identical.";
       return;
     }
-    this.statusNode.textContent = "Differences detected between selected sessions.";
+    this.statusNode.textContent = "Differences detected between selected tool states.";
   }
 
-  reopenSessionHistoryEntry(hostContextId) {
-    const history = this.readSessionHistory();
+  reopenToolStateHistoryEntry(hostContextId) {
+    const history = this.readToolStateHistory();
     const entry = history.find((row) => row.hostContextId === hostContextId);
     if (!entry) {
       this.statusNode.textContent = "Selected history entry was not found.";
       return;
     }
-    if (!this.isValidSessionHistoryEntry(entry)) {
+    if (!this.isValidToolStateHistoryEntry(entry)) {
       this.statusNode.textContent = "Selected history entry is invalid.";
       return;
     }
@@ -3090,14 +3090,14 @@ class WorkspaceV2SessionProducer {
       this.statusNode.textContent = this.singleActivePaletteBlockedMessage();
       return;
     }
-    const activation = this.activateWorkspaceSession(entry.hostContextId, entry.payload, `history:${entry.hostContextId}`);
+    const activation = this.activateWorkspaceToolState(entry.hostContextId, entry.payload, `history:${entry.hostContextId}`);
     if (!activation.ok) {
       this.statusNode.textContent = activation.message;
       return;
     }
     this.importJsonNode.value = JSON.stringify(entry.payload, null, 2);
     const launchUrl = this.buildToolLaunchUrl(entry.tool, entry.hostContextId);
-    this.statusNode.textContent = `Reopening session.\nTool: ${entry.tool}\nHostContextId: ${entry.hostContextId}`;
+    this.statusNode.textContent = `Reopening tool state.\nTool: ${entry.tool}\nHostContextId: ${entry.hostContextId}`;
     window.location.href = launchUrl;
   }
 
@@ -3196,12 +3196,12 @@ class WorkspaceV2SessionProducer {
     });
   }
 
-  clearSessionStorage(emitStatus = true) {
+  clearToolStateStorage(emitStatus = true) {
     sessionStorage.clear();
     this.workspaceActivePalette = null;
-    this.clearPersistedSessionSelection();
-    this.sessionNameNode.value = "";
-    this.updateSessionLibraryActionState();
+    this.clearPersistedToolStateSelection();
+    this.toolStateNameNode.value = "";
+    this.updateToolStateLibraryActionState();
     this.diffLeftSelect.value = "";
     this.diffRightSelect.value = "";
     this.mergeLeftSelect.value = "";
@@ -3213,15 +3213,15 @@ class WorkspaceV2SessionProducer {
     this.updateUndoLastMergeState();
     this.refreshPaletteOwnershipUiState();
     if (emitStatus) {
-      this.statusNode.textContent = "Session storage cleared and session selections reset.";
+      this.statusNode.textContent = "Session storage cleared and tool state selections reset.";
     }
   }
 
-  clearSavedSessions(emitStatus = true) {
+  clearSavedToolStates(emitStatus = true) {
     localStorage.removeItem(this.libraryStorageKey);
-    this.renderSessionLibrary();
+    this.renderToolStateLibrary();
     if (emitStatus) {
-      this.statusNode.textContent = "Saved sessions cleared from localStorage key v2-session-library.";
+      this.statusNode.textContent = "Saved tool states cleared from localStorage key v2-tool-state-library.";
     }
   }
 
@@ -3246,8 +3246,8 @@ class WorkspaceV2SessionProducer {
   }
 
   fullReset() {
-    this.clearSessionStorage(false);
-    this.clearSavedSessions(false);
+    this.clearToolStateStorage(false);
+    this.clearSavedToolStates(false);
     this.clearErrorLogs(false);
     this.resetUrlState(false);
     this.currentHostContextId = "";
@@ -3255,22 +3255,22 @@ class WorkspaceV2SessionProducer {
     this.ensureWorkspaceActivePaletteBaseline();
     this.workspaceImportedToolEntries = {};
     this.workspaceManifestGame = null;
-    this.setCurrentSessionPayload(null, "");
-    this.initializeWorkspaceProducerSession();
+    this.setCurrentToolStatePayload(null, "");
+    this.initializeWorkspaceProducerToolState();
     this.refreshPaletteOwnershipStateAndUi();
     this.syncWorkspaceManifestTextarea();
     this.shareUrlNode.value = "";
-    this.sessionNameNode.value = "";
-    this.updateSessionLibraryActionState();
-    this.lastMergedSessionResult = null;
-    this.mergeOutputSelectionKey = "";
-    this.diffOutputSelectionKey = "";
-    this.mergedSessionIdNode.value = "";
-    this.mergedSessionStatusNode.textContent = "No merged session result to save.";
+    this.toolStateNameNode.value = "";
+    this.updateToolStateLibraryActionState();
+    this.lastMergedToolStateResult = null;
+    this.mergeOutputToolStateKey = "";
+    this.diffOutputToolStateKey = "";
+    this.mergedToolStateIdNode.value = "";
+    this.mergedToolStateStatusNode.textContent = "No merged tool state result to save.";
     this.setMergeResultSummary("No merge summary yet.");
     this.diffOutputNode.textContent = "No diff computed.";
     this.updateUndoLastMergeState();
-    this.renderSessionLibrary();
+    this.renderToolStateLibrary();
     this.renderErrorLogsViewer();
     this.renderWorkspaceToolsSummary();
     this.statusNode.textContent = "Workspace V2 full reset complete. Workspace manifest baseline restored.";
@@ -3308,24 +3308,24 @@ class WorkspaceV2SessionProducer {
     if (!Array.isArray(paletteDocument.swatches)) {
       return { ok: false, message: "Fixture is invalid. payloadJson.paletteDocument.swatches must be an array for palette-manager-v2.", value: null };
     }
-    const swatchValidation = this.validatePaletteSwatchesForWorkspaceExport(paletteDocument.swatches, "fixture.sessionContext.payloadJson.paletteDocument.swatches");
+    const swatchValidation = this.validatePaletteSwatchesForWorkspaceExport(paletteDocument.swatches, "fixture.toolStateContext.payloadJson.paletteDocument.swatches");
     if (!swatchValidation.ok) {
       return { ok: false, message: swatchValidation.message, value: null };
     }
     return { ok: true, message: "", value: paletteDocument };
   }
 
-  normalizeFixtureSessionContext(toolId, sessionContext) {
-    if (!this.isValidSessionPayload(sessionContext)) {
-      return { ok: false, message: "Fixture is invalid. Missing sessionContext object.", value: null };
+  normalizeFixtureToolStateContext(toolId, toolStateContext) {
+    if (!this.isValidToolStatePayload(toolStateContext)) {
+      return { ok: false, message: "Fixture is invalid. Missing toolStateContext object.", value: null };
     }
-    const normalizedSession = this.cloneSessionValue(sessionContext);
-    const payloadValidation = this.validateWorkspaceToolSessionPayload(normalizedSession, "fixture.sessionContext");
+    const normalizedSession = this.cloneToolStateValue(toolStateContext);
+    const payloadValidation = this.validateWorkspaceToolStatePayload(normalizedSession, "fixture.toolStateContext");
     if (!payloadValidation.ok) {
       return { ok: false, message: payloadValidation.message, value: null };
     }
     if (typeof normalizedSession.toolId !== "string" || normalizedSession.toolId.trim() !== toolId) {
-      return { ok: false, message: `Fixture is invalid. sessionContext.toolId must be '${toolId}'.`, value: null };
+      return { ok: false, message: `Fixture is invalid. toolStateContext.toolId must be '${toolId}'.`, value: null };
     }
     if (toolId === "palette-manager-v2") {
       if (Object.prototype.hasOwnProperty.call(normalizedSession, "paletteJson")) {
@@ -3349,7 +3349,7 @@ class WorkspaceV2SessionProducer {
     return { ok: true, message: "", value: normalizedSession };
   }
 
-  async loadSelectedFixture() {
+  async loadSelectedToolState() {
     const toolId = this.selectedToolId();
     if (!toolId) {
       this.statusNode.textContent = "Select a V2 tool before loading a fixture.";
@@ -3359,31 +3359,31 @@ class WorkspaceV2SessionProducer {
       const response = await fetch(this.fixturePathForTool(toolId), { cache: "no-store" });
       if (!response.ok) {
         this.statusNode.textContent = `Fixture read failed (${response.status}). Expected ${this.fixturePathForTool(toolId)}.`;
-        this.setCurrentSessionPayload(null, "");
+        this.setCurrentToolStatePayload(null, "");
         return;
       }
       const fixture = await response.json();
       if (!fixture || typeof fixture !== "object" || Array.isArray(fixture)) {
-        this.statusNode.textContent = "Fixture is invalid. Expected a JSON object with hostContextId and sessionContext.";
-        this.setCurrentSessionPayload(null, "");
+        this.statusNode.textContent = "Fixture is invalid. Expected a JSON object with hostContextId and toolStateContext.";
+        this.setCurrentToolStatePayload(null, "");
         return;
       }
-      const normalizedFixtureSession = this.normalizeFixtureSessionContext(toolId, fixture.sessionContext);
+      const normalizedFixtureSession = this.normalizeFixtureToolStateContext(toolId, fixture.toolStateContext);
       if (!normalizedFixtureSession.ok) {
         this.statusNode.textContent = normalizedFixtureSession.message;
-        this.setCurrentSessionPayload(null, "");
+        this.setCurrentToolStatePayload(null, "");
         return;
       }
       const fixtureHostContextId = typeof fixture.hostContextId === "string" && fixture.hostContextId.trim()
         ? fixture.hostContextId.trim()
-        : this.createHostContextId(toolId);
-      const sizeValidation = this.validateSessionPayloadSize(normalizedFixtureSession.value);
+        : this.createHostContextToolStateId(toolId);
+      const sizeValidation = this.validateToolStatePayloadSize(normalizedFixtureSession.value);
       if (!sizeValidation.ok) {
         this.statusNode.textContent = sizeValidation.message;
-        this.setCurrentSessionPayload(null, "");
+        this.setCurrentToolStatePayload(null, "");
         return;
       }
-      const activation = this.activateWorkspaceSession(fixtureHostContextId, normalizedFixtureSession.value, `fixture:${toolId}`);
+      const activation = this.activateWorkspaceToolState(fixtureHostContextId, normalizedFixtureSession.value, `fixture:${toolId}`);
       if (!activation.ok) {
         this.statusNode.textContent = activation.message;
         return;
@@ -3394,7 +3394,7 @@ class WorkspaceV2SessionProducer {
       }
       this.statusNode.textContent = `Fixture loaded for ${toolId}.\nSession payload is ready for launch, export, share, or library save.`;
     } catch (error) {
-      this.setCurrentSessionPayload(null, "");
+      this.setCurrentToolStatePayload(null, "");
       this.currentHostContextId = "";
       this.statusNode.textContent = `Fixture read failed: ${error instanceof Error ? error.message : "unknown error"}`;
     }
@@ -3413,7 +3413,7 @@ class WorkspaceV2SessionProducer {
     const reader = new FileReader();
     reader.addEventListener("load", () => {
       this.importJsonNode.value = typeof reader.result === "string" ? reader.result : "";
-      this.importWorkspaceSessionJson();
+      this.importWorkspaceToolStateJson();
     });
     reader.addEventListener("error", () => {
       this.importFileDialogPending = false;
@@ -3422,7 +3422,7 @@ class WorkspaceV2SessionProducer {
     reader.readAsText(file);
   }
 
-  createHostContextId(toolId) {
+  createHostContextToolStateId(toolId) {
     const randomPart = Math.random().toString(36).slice(2, 10);
     return `${toolId}-${Date.now()}-${randomPart}`;
   }
@@ -3456,11 +3456,11 @@ class WorkspaceV2SessionProducer {
   buildWorkspaceSchemaDocument() {
     this.lastWorkspaceExportBuildErrorMessage = "";
     const activePayload = this.resolveActiveSessionPayloadForWorkspaceManifest();
-    if (!this.isValidSessionPayload(activePayload)) {
-      this.lastWorkspaceExportBuildErrorMessage = "Export error: No active Workspace V2 session is available to export.";
+    if (!this.isValidToolStatePayload(activePayload)) {
+      this.lastWorkspaceExportBuildErrorMessage = "Export error: No active Workspace V2 tool state is available to export.";
       return null;
     }
-    const library = this.readSessionLibrary();
+    const library = this.readToolStateLibrary();
     if (library === null) {
       this.lastWorkspaceExportBuildErrorMessage = "Export error: Session library could not be read.";
       return null;
@@ -3472,13 +3472,13 @@ class WorkspaceV2SessionProducer {
     }
     const activeToolId = typeof activePayload.toolId === "string" && activePayload.toolId.trim() ? activePayload.toolId.trim() : "";
     if (!activeToolId) {
-      this.lastWorkspaceExportBuildErrorMessage = "Export error: Active session toolId is missing.";
+      this.lastWorkspaceExportBuildErrorMessage = "Export error: Active tool state toolId is missing.";
       return null;
     }
     let activeHostContextId = typeof this.currentHostContextId === "string" ? this.currentHostContextId.trim() : "";
     if (!activeHostContextId) {
-      activeHostContextId = this.createHostContextId(activeToolId);
-      const activation = this.activateWorkspaceSession(activeHostContextId, activePayload, this.currentSessionSource || "workspace-export");
+      activeHostContextId = this.createHostContextToolStateId(activeToolId);
+      const activation = this.activateWorkspaceToolState(activeHostContextId, activePayload, this.currentToolStateSource || "workspace-export");
       if (!activation.ok) {
         this.lastWorkspaceExportBuildErrorMessage = `Export error: ${activation.message}`;
         return null;
@@ -3486,7 +3486,7 @@ class WorkspaceV2SessionProducer {
     }
     let workspaceGame = null;
     if (this.workspaceManifestGame && typeof this.workspaceManifestGame === "object" && !Array.isArray(this.workspaceManifestGame)) {
-      workspaceGame = this.cloneSessionValue(this.workspaceManifestGame);
+      workspaceGame = this.cloneToolStateValue(this.workspaceManifestGame);
     }
     if (!workspaceGame) {
       workspaceGame = {
@@ -3497,17 +3497,17 @@ class WorkspaceV2SessionProducer {
     const manifestTools = {};
     const importedToolIds = Object.keys(this.workspaceImportedToolEntries || {}).sort((left, right) => left.localeCompare(right));
     importedToolIds.forEach((toolId) => {
-      manifestTools[toolId] = this.cloneSessionValue(this.workspaceImportedToolEntries[toolId]);
+      manifestTools[toolId] = this.cloneToolStateValue(this.workspaceImportedToolEntries[toolId]);
     });
-    manifestTools["palette-browser"] = this.cloneSessionValue(activePaletteResolution.paletteBrowserPayload);
+    manifestTools["palette-browser"] = this.cloneToolStateValue(activePaletteResolution.paletteBrowserPayload);
     manifestTools["workspace-v2"] = {
-      schema: "html-js-gaming.workspace-v2-session/1",
+      schema: "html-js-gaming.workspace-v2-tool-state/1",
       game: workspaceGame,
       defaultToolId: "palette-manager-v2",
       activeToolId,
       activeHostContextId,
-      activeSession: this.cloneSessionValue(activePayload),
-      savedSessions: this.cloneSessionValue(library)
+      activeToolState: this.cloneToolStateValue(activePayload),
+      savedToolStates: this.cloneToolStateValue(library)
     };
     const workspaceDocument = {
       documentKind: "workspace-manifest",
@@ -3520,16 +3520,16 @@ class WorkspaceV2SessionProducer {
     return workspaceDocument;
   }
 
-  exportWorkspaceSessionJson() {
+  exportWorkspaceToolStateJson() {
     this.setImportExportStatus("Export clicked");
     const workspaceSchemaDocument = this.buildWorkspaceSchemaDocument();
     if (!workspaceSchemaDocument) {
-      this.setImportExportStatus(this.lastWorkspaceExportBuildErrorMessage || "Export error: No active Workspace V2 session is available to export.");
+      this.setImportExportStatus(this.lastWorkspaceExportBuildErrorMessage || "Export error: No active Workspace V2 tool state is available to export.");
       return;
     }
-    const invalidSavedSessionId = this.readInvalidPaletteSavedSessionId(workspaceSchemaDocument.tools["workspace-v2"].savedSessions);
-    if (invalidSavedSessionId) {
-      this.setImportExportStatus(`Export error: Saved session '${invalidSavedSessionId}' is invalid for palette-manager-v2. Load a valid session and overwrite it, or delete it.`);
+    const invalidSavedToolStateId = this.readInvalidPaletteSavedToolStateId(workspaceSchemaDocument.tools["workspace-v2"].savedToolStates);
+    if (invalidSavedToolStateId) {
+      this.setImportExportStatus(`Export error: Saved tool state '${invalidSavedToolStateId}' is invalid for palette-manager-v2. Load a valid tool state and overwrite it, or delete it.`);
       return;
     }
     try {
@@ -3540,7 +3540,7 @@ class WorkspaceV2SessionProducer {
       }
       const serialized = JSON.stringify(workspaceSchemaDocument, null, 2);
       const activeToolId = workspaceSchemaDocument.tools["workspace-v2"].activeToolId || "workspace-v2";
-      const activeHostContextId = workspaceSchemaDocument.tools["workspace-v2"].activeHostContextId || "session";
+      const activeHostContextId = workspaceSchemaDocument.tools["workspace-v2"].activeHostContextId || "toolState";
       const downloadFileName = `workspace-v2-${activeToolId}-${activeHostContextId}.json`;
       const fileBlob = new Blob([serialized], { type: "application/json" });
       const fileUrl = URL.createObjectURL(fileBlob);
@@ -3559,17 +3559,17 @@ class WorkspaceV2SessionProducer {
     }
   }
 
-  validateWorkspaceToolSessionPayload(sessionPayload, sessionPath) {
-    if (!sessionPayload || typeof sessionPayload !== "object" || Array.isArray(sessionPayload)) {
-      return { ok: false, message: `${sessionPath} must be an object.` };
+  validateWorkspaceToolStatePayload(toolStatePayload, toolStatePath) {
+    if (!toolStatePayload || typeof toolStatePayload !== "object" || Array.isArray(toolStatePayload)) {
+      return { ok: false, message: `${toolStatePath} must be an object.` };
     }
-    if (sessionPayload.version !== "v2") {
-      return { ok: false, message: `${sessionPath}.version must be 'v2'.` };
+    if (toolStatePayload.version !== "v2") {
+      return { ok: false, message: `${toolStatePath}.version must be 'v2'.` };
     }
-    if (typeof sessionPayload.toolId !== "string" || !sessionPayload.toolId.trim()) {
-      return { ok: false, message: `${sessionPath}.toolId is required.` };
+    if (typeof toolStatePayload.toolId !== "string" || !toolStatePayload.toolId.trim()) {
+      return { ok: false, message: `${toolStatePath}.toolId is required.` };
     }
-    const toolId = sessionPayload.toolId.trim();
+    const toolId = toolStatePayload.toolId.trim();
     const allowedToolIds = new Set([
       "asset-manager-v2",
       "palette-manager-v2",
@@ -3578,44 +3578,44 @@ class WorkspaceV2SessionProducer {
       "vector-map-editor-v2"
     ]);
     if (!allowedToolIds.has(toolId)) {
-      return { ok: false, message: `${sessionPath}.toolId '${toolId}' is not supported.` };
+      return { ok: false, message: `${toolStatePath}.toolId '${toolId}' is not supported.` };
     }
     if (toolId === "palette-manager-v2") {
-      if (Object.prototype.hasOwnProperty.call(sessionPayload, "paletteJson")) {
-        return { ok: false, message: `${sessionPath}.paletteJson is not supported for palette-manager-v2. Use payloadJson.paletteDocument.` };
+      if (Object.prototype.hasOwnProperty.call(toolStatePayload, "paletteJson")) {
+        return { ok: false, message: `${toolStatePath}.paletteJson is not supported for palette-manager-v2. Use payloadJson.paletteDocument.` };
       }
-      if (!sessionPayload.payloadJson || typeof sessionPayload.payloadJson !== "object" || Array.isArray(sessionPayload.payloadJson)) {
-        return { ok: false, message: `${sessionPath}.payloadJson is required for palette-manager-v2.` };
+      if (!toolStatePayload.payloadJson || typeof toolStatePayload.payloadJson !== "object" || Array.isArray(toolStatePayload.payloadJson)) {
+        return { ok: false, message: `${toolStatePath}.payloadJson is required for palette-manager-v2.` };
       }
-      if (!sessionPayload.payloadJson.paletteDocument || typeof sessionPayload.payloadJson.paletteDocument !== "object" || Array.isArray(sessionPayload.payloadJson.paletteDocument)) {
-        return { ok: false, message: `${sessionPath}.payloadJson.paletteDocument is required for palette-manager-v2.` };
+      if (!toolStatePayload.payloadJson.paletteDocument || typeof toolStatePayload.payloadJson.paletteDocument !== "object" || Array.isArray(toolStatePayload.payloadJson.paletteDocument)) {
+        return { ok: false, message: `${toolStatePath}.payloadJson.paletteDocument is required for palette-manager-v2.` };
       }
-      if (typeof sessionPayload.payloadJson.paletteDocument.name !== "string" || !sessionPayload.payloadJson.paletteDocument.name.trim()) {
-        return { ok: false, message: `${sessionPath}.payloadJson.paletteDocument.name is required.` };
+      if (typeof toolStatePayload.payloadJson.paletteDocument.name !== "string" || !toolStatePayload.payloadJson.paletteDocument.name.trim()) {
+        return { ok: false, message: `${toolStatePath}.payloadJson.paletteDocument.name is required.` };
       }
-      if (!Array.isArray(sessionPayload.payloadJson.paletteDocument.swatches)) {
-        return { ok: false, message: `${sessionPath}.payloadJson.paletteDocument.swatches must be an array.` };
+      if (!Array.isArray(toolStatePayload.payloadJson.paletteDocument.swatches)) {
+        return { ok: false, message: `${toolStatePath}.payloadJson.paletteDocument.swatches must be an array.` };
       }
       const swatchValidation = this.validatePaletteSwatchesForWorkspaceExport(
-        sessionPayload.payloadJson.paletteDocument.swatches,
-        `${sessionPath}.payloadJson.paletteDocument.swatches`
+        toolStatePayload.payloadJson.paletteDocument.swatches,
+        `${toolStatePath}.payloadJson.paletteDocument.swatches`
       );
       if (!swatchValidation.ok) {
         return swatchValidation;
       }
-      if (Object.prototype.hasOwnProperty.call(sessionPayload.payloadJson.paletteDocument, "colors")) {
-        return { ok: false, message: `${sessionPath}.payloadJson.paletteDocument.colors is not supported. Use payloadJson.paletteDocument.swatches.` };
+      if (Object.prototype.hasOwnProperty.call(toolStatePayload.payloadJson.paletteDocument, "colors")) {
+        return { ok: false, message: `${toolStatePath}.payloadJson.paletteDocument.colors is not supported. Use payloadJson.paletteDocument.swatches.` };
       }
       return { ok: true, message: "" };
     }
-    if (!Object.prototype.hasOwnProperty.call(sessionPayload, "payloadJson")) {
-      return { ok: false, message: `${sessionPath}.payloadJson is required for ${toolId}.` };
+    if (!Object.prototype.hasOwnProperty.call(toolStatePayload, "payloadJson")) {
+      return { ok: false, message: `${toolStatePath}.payloadJson is required for ${toolId}.` };
     }
-    if (!sessionPayload.payloadJson || typeof sessionPayload.payloadJson !== "object" || Array.isArray(sessionPayload.payloadJson)) {
-      return { ok: false, message: `${sessionPath}.payloadJson must be an object for ${toolId}.` };
+    if (!toolStatePayload.payloadJson || typeof toolStatePayload.payloadJson !== "object" || Array.isArray(toolStatePayload.payloadJson)) {
+      return { ok: false, message: `${toolStatePath}.payloadJson must be an object for ${toolId}.` };
     }
-    if (Object.prototype.hasOwnProperty.call(sessionPayload, "paletteJson")) {
-      return { ok: false, message: `${sessionPath}.paletteJson is not supported for ${toolId}.` };
+    if (Object.prototype.hasOwnProperty.call(toolStatePayload, "paletteJson")) {
+      return { ok: false, message: `${toolStatePath}.paletteJson is not supported for ${toolId}.` };
     }
     return { ok: true, message: "" };
   }
@@ -3693,19 +3693,19 @@ class WorkspaceV2SessionProducer {
       return { ok: false, message: "tools.workspace-v2 must be an object." };
     }
     const workspaceV2Keys = Object.keys(workspaceV2Tool);
-    const allowedWorkspaceV2Keys = new Set(["schema", "game", "defaultToolId", "activeToolId", "activeHostContextId", "activeSession", "savedSessions"]);
+    const allowedWorkspaceV2Keys = new Set(["schema", "game", "defaultToolId", "activeToolId", "activeHostContextId", "activeToolState", "savedToolStates"]);
     for (const key of workspaceV2Keys) {
       if (!allowedWorkspaceV2Keys.has(key)) {
         return { ok: false, message: `tools.workspace-v2.${key} is not allowed.` };
       }
     }
-    const requiredWorkspaceV2Keys = ["schema", "game", "defaultToolId", "activeToolId", "activeHostContextId", "activeSession", "savedSessions"];
+    const requiredWorkspaceV2Keys = ["schema", "game", "defaultToolId", "activeToolId", "activeHostContextId", "activeToolState", "savedToolStates"];
     for (const key of requiredWorkspaceV2Keys) {
       if (!Object.prototype.hasOwnProperty.call(workspaceV2Tool, key)) {
         return { ok: false, message: `tools.workspace-v2.${key} is required.` };
       }
     }
-    if (workspaceV2Tool.schema !== "html-js-gaming.workspace-v2-session/1") {
+    if (workspaceV2Tool.schema !== "html-js-gaming.workspace-v2-tool-state/1") {
       return { ok: false, message: "tools.workspace-v2.schema is unsupported." };
     }
     if (typeof workspaceV2Tool.defaultToolId !== "string" || !workspaceV2Tool.defaultToolId.trim()) {
@@ -3726,17 +3726,17 @@ class WorkspaceV2SessionProducer {
     if (typeof workspaceV2Tool.game.name !== "string" || !workspaceV2Tool.game.name.trim()) {
       return { ok: false, message: "tools.workspace-v2.game.name is required." };
     }
-    const activeSessionValidation = this.validateWorkspaceToolSessionPayload(workspaceV2Tool.activeSession, "tools.workspace-v2.activeSession");
-    if (!activeSessionValidation.ok) {
-      return { ok: false, message: activeSessionValidation.message };
+    const activeToolStateValidation = this.validateWorkspaceToolStatePayload(workspaceV2Tool.activeToolState, "tools.workspace-v2.activeToolState");
+    if (!activeToolStateValidation.ok) {
+      return { ok: false, message: activeToolStateValidation.message };
     }
-    if (!workspaceV2Tool.savedSessions || typeof workspaceV2Tool.savedSessions !== "object" || Array.isArray(workspaceV2Tool.savedSessions)) {
-      return { ok: false, message: "tools.workspace-v2.savedSessions must be an object map." };
+    if (!workspaceV2Tool.savedToolStates || typeof workspaceV2Tool.savedToolStates !== "object" || Array.isArray(workspaceV2Tool.savedToolStates)) {
+      return { ok: false, message: "tools.workspace-v2.savedToolStates must be an object map." };
     }
-    for (const sessionId of Object.keys(workspaceV2Tool.savedSessions)) {
-      const savedPayloadValidation = this.validateWorkspaceToolSessionPayload(
-        workspaceV2Tool.savedSessions[sessionId],
-        `tools.workspace-v2.savedSessions.${sessionId}`
+    for (const toolStateId of Object.keys(workspaceV2Tool.savedToolStates)) {
+      const savedPayloadValidation = this.validateWorkspaceToolStatePayload(
+        workspaceV2Tool.savedToolStates[toolStateId],
+        `tools.workspace-v2.savedToolStates.${toolStateId}`
       );
       if (!savedPayloadValidation.ok) {
         return { ok: false, message: savedPayloadValidation.message };
@@ -3745,11 +3745,11 @@ class WorkspaceV2SessionProducer {
     return { ok: true, message: "" };
   }
 
-  importWorkspaceSessionJson() {
+  importWorkspaceToolStateJson() {
     this.setImportExportStatus("Import clicked");
     const rawJson = typeof this.workspaceJsonNode.value === "string" ? this.workspaceJsonNode.value.trim() : "";
     if (!rawJson) {
-      this.setImportExportStatus("Import error: Workspace session JSON is required for import.");
+      this.setImportExportStatus("Import error: Workspace tool state JSON is required for import.");
       return;
     }
     try {
@@ -3798,54 +3798,54 @@ class WorkspaceV2SessionProducer {
         if (toolId === "palette-browser" || toolId === "workspace-v2") {
           return;
         }
-        nextWorkspaceImportedToolEntries[toolId] = this.cloneSessionValue(parsed.tools[toolId]);
+        nextWorkspaceImportedToolEntries[toolId] = this.cloneToolStateValue(parsed.tools[toolId]);
       });
       const workspaceV2Tool = parsed.tools["workspace-v2"];
       const activeHostContextId = workspaceV2Tool.activeHostContextId.trim();
       const activeToolId = workspaceV2Tool.activeToolId.trim();
-      const activePayload = workspaceV2Tool.activeSession;
-      const activation = this.activateWorkspaceSession(activeHostContextId, activePayload, "workspace-import");
+      const activePayload = workspaceV2Tool.activeToolState;
+      const activation = this.activateWorkspaceToolState(activeHostContextId, activePayload, "workspace-import");
       if (!activation.ok) {
         this.setImportExportStatus(`Import error: ${activation.message}`);
         return;
       }
-      this.workspaceManifestGame = this.cloneSessionValue(workspaceV2Tool.game);
+      this.workspaceManifestGame = this.cloneToolStateValue(workspaceV2Tool.game);
       this.workspaceImportedToolEntries = nextWorkspaceImportedToolEntries;
-      localStorage.setItem(this.libraryStorageKey, JSON.stringify(workspaceV2Tool.savedSessions));
+      localStorage.setItem(this.libraryStorageKey, JSON.stringify(workspaceV2Tool.savedToolStates));
       this.updateWorkspaceActivePaletteFromManifest(parsed);
       this.workspaceJsonNode.value = JSON.stringify(parsed, null, 2);
       const hasToolOption = Array.from(this.toolSelect.options).some((option) => option.value === activeToolId);
       if (hasToolOption) {
         this.toolSelect.value = activeToolId;
       }
-      this.renderSessionLibrary();
-      this.renderSessionHistory();
-      this.renderSessionDiffInputs();
-      this.renderSessionMergeInputs();
+      this.renderToolStateLibrary();
+      this.renderToolStateHistory();
+      this.renderToolStateDiffInputs();
+      this.renderToolStateMergeInputs();
       this.refreshPaletteOwnershipStateAndUi();
       this.refreshWorkspaceSessionUiStateModel("refresh_load");
       this.renderWorkspaceToolsSummary();
-      this.setImportExportStatus("Workspace session imported.");
+      this.setImportExportStatus("Workspace tool state imported.");
     } catch (error) {
       this.setImportExportStatus(`Import error: ${error instanceof Error ? error.message : "unknown error"}`);
     }
   }
 
   createShareLink() {
-    if (!this.isValidSessionPayload(this.currentSessionPayload)) {
-      this.statusNode.textContent = "No current session payload to share. Load fixture, import JSON, or load library session first.";
+    if (!this.isValidToolStatePayload(this.currentToolStatePayload)) {
+      this.statusNode.textContent = "No current tool state payload to share. Load tool state, import JSON, or load library tool state first.";
       return;
     }
     try {
-      const encoded = this.encodeSessionPayload(this.currentSessionPayload);
+      const encoded = this.encodeToolStatePayload(this.currentToolStatePayload);
       const shareUrl = new URL(window.location.href);
-      shareUrl.searchParams.set("session", encoded);
+      shareUrl.searchParams.set("toolState", encoded);
       if (shareUrl.toString().length > this.urlLengthLimit) {
-        this.statusNode.textContent = `Session size exceeds allowed limit for URL payload. URL length is ${shareUrl.toString().length} and limit is ${this.urlLengthLimit}.`;
+        this.statusNode.textContent = `Tool state size exceeds allowed limit for URL payload. URL length is ${shareUrl.toString().length} and limit is ${this.urlLengthLimit}.`;
         return;
       }
       this.shareUrlNode.value = shareUrl.toString();
-      this.statusNode.textContent = "Share link created from current session payload.";
+      this.statusNode.textContent = "Share link created from current tool state payload.";
     } catch (error) {
       this.statusNode.textContent = `Share link creation failed: ${error instanceof Error ? error.message : "unknown error"}`;
     }
@@ -3859,171 +3859,171 @@ class WorkspaceV2SessionProducer {
     }
     try {
       const parsedUrl = new URL(rawShareValue, window.location.href);
-      if (!parsedUrl.searchParams.has("session")) {
-        this.statusNode.textContent = "Share URL is invalid. Missing session query parameter.";
+      if (!parsedUrl.searchParams.has("toolState")) {
+        this.statusNode.textContent = "Share URL is invalid. Missing toolState query parameter.";
         return;
       }
-      const decoded = this.decodeSessionPayload(parsedUrl.searchParams.get("session"));
-      if (!this.applySessionPayload(decoded, "share-link")) {
+      const decoded = this.decodeToolStatePayload(parsedUrl.searchParams.get("toolState"));
+      if (!this.applyToolStatePayload(decoded, "share-link")) {
         return;
       }
-      this.statusNode.textContent = `Share session link applied.\nTool: ${this.selectedToolId()}\nHostContextId: ${this.currentHostContextId}\nReady to launch.`;
+      this.statusNode.textContent = `Share tool state link applied.\nTool: ${this.selectedToolId()}\nHostContextId: ${this.currentHostContextId}\nReady to launch.`;
     } catch (error) {
-      this.statusNode.textContent = `Share session decode failed: ${error instanceof Error ? error.message : "unknown error"}`;
+      this.statusNode.textContent = `Share tool state decode failed: ${error instanceof Error ? error.message : "unknown error"}`;
     }
   }
 
-  saveNamedSession(overwriteExisting) {
-    const sessionName = this.selectedSessionName();
-    if (!sessionName) {
-      this.setLibraryStatus(overwriteExisting ? "Enter a session ID before overwriting." : "Enter a session ID before saving.");
+  saveNamedToolState(overwriteExisting) {
+    const toolStateName = this.selectedToolStateName();
+    if (!toolStateName) {
+      this.setLibraryStatus(overwriteExisting ? "Enter a tool state ID before overwriting." : "Enter a tool state ID before saving.");
       return;
     }
-    if (!overwriteExisting && !this.isValidNewSessionId(sessionName)) {
-      this.setLibraryStatus("Invalid session ID. Use letters, numbers, hyphen, or underscore only.");
+    if (!overwriteExisting && !this.isValidNewToolStateId(toolStateName)) {
+      this.setLibraryStatus("Invalid tool state ID. Use letters, numbers, hyphen, or underscore only.");
       return;
     }
-    const library = this.readSessionLibrary();
+    const library = this.readToolStateLibrary();
     if (library === null) {
       return;
     }
-    const exists = Object.prototype.hasOwnProperty.call(library, sessionName);
+    const exists = Object.prototype.hasOwnProperty.call(library, toolStateName);
     if (overwriteExisting && !exists) {
-      this.setLibraryStatus("Saved session not found. Use Save Session to create it first.");
+      this.setLibraryStatus("Saved tool state not found. Use Save Tool State to create it first.");
       return;
     }
     if (!overwriteExisting && exists) {
-      this.setLibraryStatus("That session ID already exists. Use the saved session card to Load or Overwrite it.");
+      this.setLibraryStatus("That tool state ID already exists. Use the saved tool state card to Load or Overwrite it.");
       return;
     }
-    const payloadForWrite = this.readSessionPayloadForSaveAction(sessionName);
-    if (!this.isValidSessionPayload(payloadForWrite)) {
+    const payloadForWrite = this.readToolStatePayloadForSaveAction(toolStateName);
+    if (!this.isValidToolStatePayload(payloadForWrite)) {
       this.setLibraryStatus(overwriteExisting
-        ? "No active Workspace V2 session is available to overwrite from."
-        : "No active Workspace V2 session is available to save.");
+        ? "No active Workspace V2 tool state is available to overwrite from."
+        : "No active Workspace V2 tool state is available to save.");
       return;
     }
-    const payloadValidation = this.validateWorkspaceToolSessionPayload(payloadForWrite, `tools.workspace-v2.savedSessions.${sessionName}`);
+    const payloadValidation = this.validateWorkspaceToolStatePayload(payloadForWrite, `tools.workspace-v2.savedToolStates.${toolStateName}`);
     if (!payloadValidation.ok) {
       this.setLibraryStatus(payloadValidation.message);
       return;
     }
-    if (this.isBlockedAlternatePaletteSession(sessionName, payloadForWrite)) {
+    if (this.isBlockedAlternatePaletteSession(toolStateName, payloadForWrite)) {
       this.setLibraryStatus(this.singleActivePaletteLibraryMessage());
       return;
     }
-    library[sessionName] = payloadForWrite;
-    this.writeSessionLibrary(library);
-    this.renderSessionLibrary();
+    library[toolStateName] = payloadForWrite;
+    this.writeToolStateLibrary(library);
+    this.renderToolStateLibrary();
     this.setLibraryStatus(overwriteExisting
-      ? `Saved session '${sessionName}' overwritten with current workspace state.`
-      : `Saved session '${sessionName}' created.`);
+      ? `Saved tool state '${toolStateName}' overwritten with current workspace state.`
+      : `Saved tool state '${toolStateName}' created.`);
   }
 
-  loadNamedSession() {
-    const sessionName = this.selectedSessionName();
-    if (!sessionName) {
-      this.setLibraryStatus("Enter a saved session ID before loading.");
+  loadNamedToolState() {
+    const toolStateName = this.selectedToolStateName();
+    if (!toolStateName) {
+      this.setLibraryStatus("Enter a saved tool state ID before loading.");
       return;
     }
-    const library = this.readSessionLibrary();
+    const library = this.readToolStateLibrary();
     if (library === null) {
       return;
     }
-    if (!Object.prototype.hasOwnProperty.call(library, sessionName)) {
-      this.setLibraryStatus("Saved session not found.");
+    if (!Object.prototype.hasOwnProperty.call(library, toolStateName)) {
+      this.setLibraryStatus("Saved tool state not found.");
       return;
     }
-    const payload = library[sessionName];
-    if (this.isBlockedAlternatePaletteSession(sessionName, payload)) {
+    const payload = library[toolStateName];
+    if (this.isBlockedAlternatePaletteSession(toolStateName, payload)) {
       this.setLibraryStatus(this.singleActivePaletteLibraryMessage());
       return;
     }
-    if (!this.applySessionPayload(payload, `library:${sessionName}`)) {
-      this.setLibraryStatus("Saved session not found.");
+    if (!this.applyToolStatePayload(payload, `library:${toolStateName}`)) {
+      this.setLibraryStatus("Saved tool state not found.");
       return;
     }
-    this.setLibraryStatus(`Loaded '${sessionName}' into the current workspace.`);
+    this.setLibraryStatus(`Loaded '${toolStateName}' into the current workspace.`);
     this.refreshWorkspaceSessionUiStateModel("refresh_load");
   }
 
-  deleteNamedSession() {
-    const sessionName = this.selectedSessionName();
-    if (!sessionName) {
-      this.setLibraryStatus("Enter a saved session ID before deleting.");
+  deleteNamedToolState() {
+    const toolStateName = this.selectedToolStateName();
+    if (!toolStateName) {
+      this.setLibraryStatus("Enter a saved tool state ID before deleting.");
       return;
     }
-    const library = this.readSessionLibrary();
+    const library = this.readToolStateLibrary();
     if (library === null) {
       return;
     }
-    const history = this.readSessionHistory();
-    const recentMatch = history.some((entry) => entry.hostContextId === sessionName);
-    const librarySessionNames = Object.keys(library);
-    if (librarySessionNames.length === 0) {
+    const history = this.readToolStateHistory();
+    const recentMatch = history.some((entry) => entry.hostContextId === toolStateName);
+    const libraryToolStateNames = Object.keys(library);
+    if (libraryToolStateNames.length === 0) {
       this.setLibraryStatus(recentMatch
-        ? "Session ID is not saved in Session Library. Use Delete on Recent Sessions to remove temporary sessions."
-        : "No saved sessions exist. Use Delete on Recent Sessions to remove temporary sessions.");
+        ? "Tool State ID is not saved in Tool State Library. Use Delete on Recent Tool States to remove temporary tool states."
+        : "No saved tool states exist. Use Delete on Recent Tool States to remove temporary tool states.");
       return;
     }
-    if (!Object.prototype.hasOwnProperty.call(library, sessionName)) {
+    if (!Object.prototype.hasOwnProperty.call(library, toolStateName)) {
       this.setLibraryStatus(recentMatch
-        ? "Session ID is not saved in Session Library. Use Delete on Recent Sessions to remove temporary sessions."
-        : "Saved session not found.");
+        ? "Tool State ID is not saved in Tool State Library. Use Delete on Recent Tool States to remove temporary tool states."
+        : "Saved tool state not found.");
       return;
     }
-    delete library[sessionName];
-    this.writeSessionLibrary(library);
-    this.renderSessionLibrary();
-    this.setLibraryStatus("Saved session deleted.");
+    delete library[toolStateName];
+    this.writeToolStateLibrary(library);
+    this.renderToolStateLibrary();
+    this.setLibraryStatus("Saved tool state deleted.");
   }
 
-  createSessionAndLaunch() {
+  createToolStateAndLaunch() {
     const toolId = this.selectedToolId();
     if (!toolId) {
       this.statusNode.textContent = "Select a V2 tool before launch.";
       return;
     }
-    if (!this.isValidSessionPayload(this.currentSessionPayload)) {
-      this.statusNode.textContent = "No session payload is available. Load a fixture, import JSON, apply share link, or load library session first.";
+    if (!this.isValidToolStatePayload(this.currentToolStatePayload)) {
+      this.statusNode.textContent = "No tool state payload is available. Load a tool state, import JSON, apply share link, or load a library tool state first.";
       return;
     }
-    if (typeof this.currentSessionPayload.toolId !== "string" || this.currentSessionPayload.toolId.trim() !== toolId) {
-      this.statusNode.textContent = `Launch blocked. Active session toolId '${typeof this.currentSessionPayload.toolId === "string" ? this.currentSessionPayload.toolId.trim() : ""}' does not match selected tool '${toolId}'. Load a fixture or import a matching session first.`;
+    if (typeof this.currentToolStatePayload.toolId !== "string" || this.currentToolStatePayload.toolId.trim() !== toolId) {
+      this.statusNode.textContent = `Launch blocked. Active tool state toolId '${typeof this.currentToolStatePayload.toolId === "string" ? this.currentToolStatePayload.toolId.trim() : ""}' does not match selected tool '${toolId}'. Load a fixture or import a matching tool state first.`;
       return;
     }
-    const activation = this.activateWorkspaceSession(this.createHostContextId(toolId), this.currentSessionPayload, this.currentSessionSource || "workspace-v2");
+    const activation = this.activateWorkspaceToolState(this.createHostContextToolStateId(toolId), this.currentToolStatePayload, this.currentToolStateSource || "workspace-v2");
     if (!activation.ok) {
       this.statusNode.textContent = activation.message;
       return;
     }
     const hostContextId = this.currentHostContextId;
-    this.addRecentSessionEntry(hostContextId, toolId, activation.payload);
+    this.addRecentToolStateEntry(hostContextId, toolId, activation.payload);
     const launchUrl = this.buildToolLaunchUrl(toolId, hostContextId);
     this.statusNode.textContent = `Session created.\nTool: ${toolId}\nHostContextId: ${hostContextId}\nURL: tools/${toolId}/index.html?hostContextId=${hostContextId}`;
     window.location.href = launchUrl;
   }
 
   openAssetManagerFromWorkspace() {
-    if (!this.isValidSessionPayload(this.currentSessionPayload)) {
-      this.statusNode.textContent = "No active Workspace V2 session is available. Load fixture, import workspace session, or load a saved session first.";
+    if (!this.isValidToolStatePayload(this.currentToolStatePayload)) {
+      this.statusNode.textContent = "No active Workspace V2 tool state is available. Load tool state, import workspace tool state, or load a saved tool state first.";
       return;
     }
-    if (!this.currentSessionPayload.payloadJson || typeof this.currentSessionPayload.payloadJson !== "object" || Array.isArray(this.currentSessionPayload.payloadJson)) {
-      this.statusNode.textContent = "Active session payloadJson is missing. Open Asset Manager V2 from a session that provides payloadJson.";
+    if (!this.currentToolStatePayload.payloadJson || typeof this.currentToolStatePayload.payloadJson !== "object" || Array.isArray(this.currentToolStatePayload.payloadJson)) {
+      this.statusNode.textContent = "Active tool state payloadJson is missing. Open Asset Manager V2 from a tool state that provides payloadJson.";
       return;
     }
-    const assetManagerPayload = this.withSessionVersion({
+    const assetManagerPayload = this.withToolStateVersion({
       toolId: "asset-manager-v2",
-      payloadJson: this.cloneSessionValue(this.currentSessionPayload.payloadJson)
+      payloadJson: this.cloneToolStateValue(this.currentToolStatePayload.payloadJson)
     });
-    const payloadValidation = this.validateWorkspaceToolSessionPayload(assetManagerPayload, "assetManagerLaunch");
+    const payloadValidation = this.validateWorkspaceToolStatePayload(assetManagerPayload, "assetManagerLaunch");
     if (!payloadValidation.ok) {
       this.statusNode.textContent = payloadValidation.message;
       return;
     }
-    const activation = this.activateWorkspaceSession(
-      this.createHostContextId("asset-manager-v2"),
+    const activation = this.activateWorkspaceToolState(
+      this.createHostContextToolStateId("asset-manager-v2"),
       assetManagerPayload,
       "workspace-v2-asset-manager-launch"
     );
@@ -4032,11 +4032,11 @@ class WorkspaceV2SessionProducer {
       return;
     }
     const hostContextId = this.currentHostContextId;
-    this.addRecentSessionEntry(hostContextId, "asset-manager-v2", activation.payload);
+    this.addRecentToolStateEntry(hostContextId, "asset-manager-v2", activation.payload);
     const launchUrl = this.buildToolLaunchUrl("asset-manager-v2", hostContextId);
     this.statusNode.textContent = `Session created.\nTool: asset-manager-v2\nHostContextId: ${hostContextId}\nURL: tools/asset-manager-v2/index.html?hostContextId=${hostContextId}`;
     window.location.href = launchUrl;
   }
 }
 
-new WorkspaceV2SessionProducer();
+new WorkspaceV2ToolStateProducer();

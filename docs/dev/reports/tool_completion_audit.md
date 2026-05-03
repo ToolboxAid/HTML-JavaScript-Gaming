@@ -11,7 +11,7 @@
   - `vector-map-editor-v2`
 
 ## Evidence Used
-- `npm run test:workspace-v2` -> FAIL (`18 passed`, `1 failed`).
+- `npm run test:workspace-v2` -> PASS (`19 passed`, `0 failed`).
 - `node tests/runtime/V2CrossToolFlow.test.mjs` -> PASS.
 - `node tests/runtime/V2ToolLaunch.test.mjs` -> FAIL (palette fixture contract drift in test logic).
 - `node tests/runtime/V2ToolActionFlow.test.mjs` -> FAIL (string-token matcher drift in test logic).
@@ -95,6 +95,18 @@
   - `V2SessionValidation.test.mjs` expects legacy palette validation path.
   - `V2ToolActionFlow.test.mjs` checks brittle string tokens for route assembly.
 - Status updates above reflect the scoped fixes for the previously listed FAIL tools.
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

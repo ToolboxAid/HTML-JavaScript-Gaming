@@ -1,6 +1,6 @@
 {
   "hostContextId": "vector-map-editor-v2-fixture",
-  "sessionContext": {
+  "toolStateContext": {
     "version": "v2",
     "toolId": "vector-map-editor-v2",
     "payloadJson": {
