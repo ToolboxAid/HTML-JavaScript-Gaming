@@ -101,7 +101,7 @@ class WorkspaceV2SessionProducer {
       this.createSessionAndLaunch();
     });
     this.importButton.addEventListener("click", () => {
-      this.importWorkspaceSessionJson();
+      this.handleImportWorkspaceSessionJsonClick();
     });
     this.exportButton.addEventListener("click", () => {
       this.exportWorkspaceSessionJson();
@@ -214,6 +214,7 @@ class WorkspaceV2SessionProducer {
     this.applyDefaultWorkspaceToolSelection();
     this.registerScrollTextColorRule();
     this.initializeImportExportSectionStatusNode();
+    this.initializeHiddenImportFileInput();
     this.decodeSessionParamFromUrl();
     this.initializeWorkspaceProducerSession();
     this.refreshPaletteOwnershipStateAndUi();
@@ -279,6 +280,37 @@ class WorkspaceV2SessionProducer {
       this.importExportStatusNode.textContent = message;
     }
     this.statusNode.textContent = message;
+  }
+
+  initializeHiddenImportFileInput() {
+    if (!this.importFileNode) {
+      return;
+    }
+    const importFileLabel = document.querySelector('label[for="workspaceV2ImportFile"]');
+    if (importFileLabel instanceof HTMLElement) {
+      importFileLabel.hidden = true;
+      importFileLabel.style.display = "none";
+    }
+    this.importFileNode.type = "file";
+    this.importFileNode.hidden = true;
+    this.importFileNode.setAttribute("aria-hidden", "true");
+    this.importFileNode.tabIndex = -1;
+    this.importFileNode.style.display = "none";
+  }
+
+  handleImportWorkspaceSessionJsonClick() {
+    const rawJson = typeof this.workspaceJsonNode.value === "string" ? this.workspaceJsonNode.value.trim() : "";
+    if (rawJson) {
+      this.importWorkspaceSessionJson();
+      return;
+    }
+    this.setImportExportStatus("Select a workspace session file to import.");
+    if (!this.importFileNode) {
+      this.setImportExportStatus("Import error: file picker is unavailable.");
+      return;
+    }
+    this.importFileNode.value = "";
+    this.importFileNode.click();
   }
 
   applyDefaultWorkspaceToolSelection() {
@@ -3327,10 +3359,10 @@ class WorkspaceV2SessionProducer {
     const reader = new FileReader();
     reader.addEventListener("load", () => {
       this.importJsonNode.value = typeof reader.result === "string" ? reader.result : "";
-      this.statusNode.textContent = `Import file loaded: ${file.name}. Click Import Session JSON to validate and create session.`;
+      this.importWorkspaceSessionJson();
     });
     reader.addEventListener("error", () => {
-      this.statusNode.textContent = `Import file read failed: ${file.name}.`;
+      this.setImportExportStatus(`Import error: ${file.name} could not be read.`);
     });
     reader.readAsText(file);
   }
@@ -3752,7 +3784,7 @@ class WorkspaceV2SessionProducer {
       this.refreshPaletteOwnershipStateAndUi();
       this.refreshWorkspaceSessionUiStateModel("refresh_load");
       this.renderDiagnosticsPanel();
-      this.setImportExportStatus("Import success");
+      this.setImportExportStatus("Workspace session imported.");
     } catch (error) {
       this.setImportExportStatus(`Import error: ${error instanceof Error ? error.message : "unknown error"}`);
     }
