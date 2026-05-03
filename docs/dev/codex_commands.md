@@ -313,3 +313,10 @@ PR_26124_007-tool-payload-guards-group
 ```bash
 npx @openai/codex run --model gpt-5.3-codex --reasoning medium "Implement PR_26124_007: fix next small group of failing tools (asset-manager-v2 + palette-manager-v2) by adding strict pre-render cross-tool payload guards while preserving workspace launch behavior."
 ```
+
+---
+PR_26124_008-next-fail-group-fix
+
+```bash
+npx @openai/codex run --model gpt-5.3-codex --reasoning medium "Implement PR_26124_008: extract next 3 FAIL tools from tool_completion_audit.md, fix only that group with minimal contract-safe changes, update audit statuses for those tools only, and validate with npm run test:workspace-v2."
+```
