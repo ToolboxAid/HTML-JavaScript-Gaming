@@ -234,6 +234,18 @@ class WorkspaceV2ToolStateProducer {
     return this.isToolStateProducerToolId(selectedToolId) ? selectedToolId : "";
   }
 
+  ensureSelectedToolStateProducerToolId() {
+    const selectedToolId = this.selectedToolId();
+    if (selectedToolId) {
+      return selectedToolId;
+    }
+    const fallbackToolId = this.firstToolStateProducerToolId();
+    if (fallbackToolId && this.toolSelect) {
+      this.toolSelect.value = fallbackToolId;
+    }
+    return fallbackToolId;
+  }
+
   selectedToolStateName() {
     return typeof this.toolStateNameNode.value === "string" ? this.toolStateNameNode.value : "";
   }
@@ -423,6 +435,7 @@ class WorkspaceV2ToolStateProducer {
     if (this.toolSelect.options.length > 0) {
       this.toolSelect.selectedIndex = 0;
     }
+    this.ensureSelectedToolStateProducerToolId();
   }
 
   isToolStateProducerToolId(toolId) {
@@ -1611,15 +1624,15 @@ class WorkspaceV2ToolStateProducer {
     if (!payloadValidation.ok) {
       return;
     }
-    if (parsed.value.toolId !== "asset-manager-v2") {
-      return;
-    }
     const activation = this.activateWorkspaceToolState(hostContextId, parsed.value, "workspace-host-context-url");
     if (!activation.ok) {
       return;
     }
-    if (Array.from(this.toolSelect.options).some((option) => option.value === parsed.value.toolId)) {
-      this.toolSelect.value = parsed.value.toolId;
+    const restoredToolId = typeof parsed.value.toolId === "string" ? parsed.value.toolId.trim() : "";
+    if (Array.from(this.toolSelect.options).some((option) => option.value === restoredToolId)) {
+      this.toolSelect.value = restoredToolId;
+    } else {
+      this.ensureSelectedToolStateProducerToolId();
     }
     this.syncWorkspaceManifestTextarea();
     this.statusNode.textContent = `Workspace V2 restored active tool state from hostContextId: ${hostContextId}`;
@@ -3376,7 +3389,7 @@ class WorkspaceV2ToolStateProducer {
   }
 
   async loadSelectedToolState() {
-    const toolId = this.selectedToolId();
+    const toolId = this.ensureSelectedToolStateProducerToolId();
     if (!toolId) {
       this.statusNode.textContent = "Select a toolState-capable V2 tool before loading tool state.";
       return;
@@ -3391,6 +3404,11 @@ class WorkspaceV2ToolStateProducer {
       const fixture = await response.json();
       if (!fixture || typeof fixture !== "object" || Array.isArray(fixture)) {
         this.statusNode.textContent = "Fixture is invalid. Expected a JSON object with hostContextId and toolStateContext.";
+        this.setCurrentToolStatePayload(null, "");
+        return;
+      }
+      if (!Object.prototype.hasOwnProperty.call(fixture, "toolStateContext")) {
+        this.statusNode.textContent = "Fixture is invalid. Missing toolStateContext.";
         this.setCurrentToolStatePayload(null, "");
         return;
       }
@@ -3418,6 +3436,7 @@ class WorkspaceV2ToolStateProducer {
         this.statusNode.textContent = "Fixture loaded but workspace manifest sync failed.";
         return;
       }
+      this.ensureSelectedToolStateProducerToolId();
       this.statusNode.textContent = `Fixture loaded for ${toolId}.\nTool state payload is ready for launch, export, share, or library save.`;
     } catch (error) {
       this.setCurrentToolStatePayload(null, "");
@@ -3844,6 +3863,8 @@ class WorkspaceV2ToolStateProducer {
       const hasToolOption = Array.from(this.toolSelect.options).some((option) => option.value === activeToolId);
       if (hasToolOption) {
         this.toolSelect.value = activeToolId;
+      } else {
+        this.ensureSelectedToolStateProducerToolId();
       }
       this.renderToolStateLibrary();
       this.renderToolStateHistory();
@@ -4006,7 +4027,7 @@ class WorkspaceV2ToolStateProducer {
   }
 
   createToolStateAndLaunch() {
-    const toolId = this.selectedToolId();
+    const toolId = this.ensureSelectedToolStateProducerToolId();
     if (!toolId) {
       this.statusNode.textContent = "Select a toolState-capable V2 tool before opening tool state.";
       return;
@@ -4019,7 +4040,21 @@ class WorkspaceV2ToolStateProducer {
       this.statusNode.textContent = `Launch blocked. Active tool state toolId '${typeof this.currentToolStatePayload.toolId === "string" ? this.currentToolStatePayload.toolId.trim() : ""}' does not match selected tool '${toolId}'. Load a fixture or import a matching tool state first.`;
       return;
     }
-    const activation = this.activateWorkspaceToolState(this.createHostContextToolStateId(toolId), this.currentToolStatePayload, this.currentToolStateSource || "workspace-v2");
+    const toolStateContext = this.cloneToolStateValue(this.currentToolStatePayload);
+    if (!this.isValidToolStatePayload(toolStateContext)) {
+      this.statusNode.textContent = "Launch blocked. Missing toolStateContext.";
+      return;
+    }
+    const payloadValidation = this.validateWorkspaceToolStatePayload(toolStateContext, "toolStateContext");
+    if (!payloadValidation.ok) {
+      this.statusNode.textContent = payloadValidation.message;
+      return;
+    }
+    if (typeof toolStateContext.toolId !== "string" || toolStateContext.toolId.trim() !== toolId) {
+      this.statusNode.textContent = `Launch blocked. toolStateContext.toolId '${typeof toolStateContext.toolId === "string" ? toolStateContext.toolId.trim() : ""}' does not match selected tool '${toolId}'.`;
+      return;
+    }
+    const activation = this.activateWorkspaceToolState(this.createHostContextToolStateId(toolId), toolStateContext, this.currentToolStateSource || "workspace-v2");
     if (!activation.ok) {
       this.statusNode.textContent = activation.message;
       return;

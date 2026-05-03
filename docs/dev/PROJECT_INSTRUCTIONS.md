@@ -26,317 +26,439 @@ Rules:
 - Description must be short and hyphenated
 - Do NOT reuse old `PR_11_*` format for new PRs
 
-ChatGPT execution role:
-- ChatGPT no longer creates PLAN_PR, BUILD_PR, APPLY_PR docs, or ZIP bundles.
-- ChatGPT produces only the Codex command, commit comment, and how to test the change.
-- Codex creates the plan, docs, ZIP bundle, and implementation changes.
+## CHATGPT EXECUTION ROLE
 
-Rules:
+ChatGPT no longer creates PLAN_PR, BUILD_PR, APPLY_PR docs, ZIP bundles, or implementation code.
+
+ChatGPT produces only:
+1. Codex command
+2. Commit comment
+3. What Playwright is testing
+4. What the user should test manually
+
+ChatGPT must not:
+- create ZIP files
+- reference ZIP delivery
+- produce PLAN/BUILD/APPLY docs
+- write implementation code unless explicitly requested
+
+## CODEX EXECUTION ROLE
+
+Codex creates:
+- PLAN_PR docs
+- BUILD_PR docs
+- APPLY_PR docs when needed
+- repo-structured ZIP bundles
+- implementation changes
+- Playwright/test updates when required
+- review artifacts for ChatGPT code review
+
+Codex must place detailed content in:
+- `docs/pr/*`
+- `docs/dev/codex_commands.md`
+- `docs/dev/commit_comment.txt`
+- `docs/dev/reports/*`
+
+## USER ROLE
+
+User:
+- runs Codex
+- validates results
+- commits approved changes
+- uploads deltas/reports when ChatGPT review is needed
+
+## RULES
+
 - One PR purpose only
 - Smallest scoped valid change
 - BUILD must be one-pass executable
 - No vague wording
 - No repo-wide scanning unless required
+- Do not expand scope beyond the PR
+- Do not modify `start_of_day` folders unless requested
 
-Responsibilities:
-- ChatGPT produces:
-  - Codex command
-  - commit comment
-  - what Playwright is testing
-  - what the user should test manually
-- ChatGPT does NOT:
-  - create ZIP files
-  - reference ZIP delivery
-  - produce PLAN/BUILD/APPLY docs
-- Codex: creates plans, PR docs, ZIP bundles, and implementation code
-- User: runs Codex + validates
+## OUTPUT RULES
 
-Output rules:
-- ChatGPT MUST output ONLY:
-  1. Codex command
-  2. Commit comment
-  3. What Playwright is testing
-  4. What to test manually
+ChatGPT MUST output ONLY:
+
+1. Codex command
+2. Commit comment
+3. What Playwright is testing
+4. What to test manually
+
+ChatGPT responses must:
+- print a little detail about the PR, 1–3 lines only
+- not present options
+- assume correct path and proceed
+- not create ZIPs
+- not reference ZIP delivery
+- keep chat response minimal
+
+## COMMIT COMMENT FORMAT
+
+Format:
+
+`<description> - <PR info>`
+
+Example:
+
+`Normalize palette contract to manifest SSoT and remove tool-level schema drift - PR_26124_001-palette-baseline`
 
 ## PLAYWRIGHT VALIDATION REQUIREMENT
 
-Every PR must include:
-- What Playwright validates
-- Expected pass/fail behavior
+Every PR must include a clear Playwright section.
+
+The Playwright section must state:
+- what Playwright validates
+- expected pass behavior
+- expected fail behavior
+- whether Playwright is impacted
+
+Default Playwright command:
+
+`npm run test:workspace-v2`
+
+Playwright is the required validation gate for Workspace V2 and toolState work.
+
+If Playwright is not impacted, say so explicitly:
+
+`No Playwright impact. This PR is docs/workflow only.`
+
+## CODEX REVIEW DIFF REQUIREMENT
+
+Every Codex PR must produce review artifacts so ChatGPT can review the exact code changes.
+
+Codex must create:
+
+- `docs/dev/reports/codex_review.diff`
+- `docs/dev/reports/codex_changed_files.txt`
+
+`codex_review.diff` must contain:
+- `git diff --cached`
+- or, if files are not staged, `git diff`
+
+`codex_changed_files.txt` must contain:
+- `git status --short`
+- `git diff --stat`
+
+Rules:
+- Do not add pre-commit hooks
+- Do not pause commits
+- Do not add dependencies
+- Do not change runtime behavior just to create review artifacts
+
+When user asks for code review, they should upload:
+- PR delta ZIP
+- `codex_review.diff`
+- `codex_changed_files.txt`
 
 ## MANUAL TEST REQUIREMENT
 
 Every PR must include:
 - exact manual validation steps
 - expected outcome
+- any known out-of-scope checks
 
-## 🔥 RESPONSE RULES (MANDATORY)
+Manual test steps must not claim sample launch is required until sample JSON files are schema-compliant.
 
-- Print a little detail about the PR (1–3 lines, clear purpose)
-- Do NOT present options (assume correct path and proceed)
-- Do not create ZIPs in ChatGPT responses
-- Provide the Codex command, commit comment, and how to test the change
-- Keep chat response minimal
+Current sample validation rule:
+- sample launch is out-of-scope until sample JSON is updated to match schema
+- sample validation will happen in a dedicated sample alignment phase
 
-## 🧾 COMMIT COMMENT FORMAT (MANDATORY)
+## NEXT RESOLUTION RULES
 
-<description> - <PR info>
+If the user says `NEXT`:
 
-Example:
-Normalize palette contract to manifest SSoT and remove tool-level schema drift - PR 10.6B
+1. Look for the highest completed or referenced PR in the session.
+2. Increment to the next logical PR using the current PR naming standard.
+3. If sequence is unclear, STOP and ask for clarification.
 
-Do not:
-- Write implementation code unless explicitly asked
-- Expand scope beyond the PR
-- Modify start_of_day folders unless requested
+Use the current naming standard:
 
-NEXT resolution rules:
+`PR_<YYJJJ>_<###>-<short-description>`
 
-If the user says "NEXT":
-1. Look for the highest completed or referenced PLAN_PR in the session
-2. Increment to the next logical PLAN_PR in sequence
-3. If sequence is unclear, STOP and ask for clarification
+Do NOT continue old `PR_11_*` naming for new work.
 
-Assume naming pattern:
-PLAN_PR_LEVEL_<major>_<minor>_<name>
-
-Example:
-If last = PLAN_PR_LEVEL_11_1_...
-NEXT = PLAN_PR_LEVEL_11_2_...
-
-If no prior context exists:
-STOP and ask: "What is the base PLAN_PR?"
-
-One-shot execution rule:
+## ONE-SHOT EXECUTION RULE
 
 If the user says:
-"Run full workflow for <PLAN_PR_NAME>" or "NEXT"
 
-Then:
-1. Validate the PLAN
-2. Generate a compact BUILD_PR
-3. Generate Codex command
-4. Have Codex package a repo-structured ZIP
-5. Return only the Codex command, commit comment, and how to test
+`Run full workflow for <PR_NAME>`
+
+or:
+
+`NEXT`
+
+Then ChatGPT must:
+
+1. Determine the next PR.
+2. Provide a compact Codex command.
+3. Provide commit comment.
+4. Provide what Playwright is testing.
+5. Provide what the user should test manually.
 
 Do not ask for confirmation unless ambiguity exists.
 
-OUTPUT FORMAT (STRICT)
+## ZIP CREATION OWNERSHIP
 
-When producing repo workflow guidance:
+ZIP creation is handled by Codex only.
 
-- DO NOT create a downloadable ZIP
-- DO output only:
-  - Codex command
-  - commit comment
-  - how to test the change
-- Keep chat response minimal
+ChatGPT must not:
+- create ZIP files
+- link ZIP files
+- reference ZIP delivery as something ChatGPT produced
 
-Codex must place detailed content in the ZIP, including:
-- docs/pr/*
-- docs/dev/codex_commands.md
-- docs/dev/commit_comment.txt
-- docs/dev/reports/*
+Codex must produce ZIP artifacts when required by the repo workflow.
 
-ZIP STANDARD (ENFORCED)
+## CODEX ZIP STANDARD
 
-- Exactly one ZIP per request
-- ZIP name MUST match PR name
-- ZIP path MUST be:
-  <project folder>/tmp/<PR_NAME>.zip
-- Internal structure MUST be repo-relative only
-- No extra files outside defined structure
+Codex ZIPs must:
+- be repo-structured
+- preserve exact repo-relative paths
+- be placed under `<project folder>/tmp/`
+- use the PR name in the ZIP filename
+- contain no extra files outside the defined structure
 
-Commit Comment:
-<description> - <PR info>
+Before Codex returns any ZIP, Codex must:
+1. Physically create the ZIP file.
+2. Verify the file exists on disk.
+3. Verify file size > 0.
+4. List contents to confirm correct repo structure.
+5. Use a new filename for every attempt.
+6. Place ZIP under `<project folder>/tmp/`.
+7. Never reuse a previous file handle or path.
 
----
-
-## 🔧 ZIP DELIVERY VALIDATION (MANDATORY)
-
-Before Codex returns any ZIP, Codex MUST:
-
-1. Physically create the ZIP file  
-2. Verify the file exists on disk  
-3. Verify file size > 0  
-4. List contents to confirm correct repo structure  
-5. Use a NEW filename for every attempt (no reuse)  
-6. Place ZIP under <project folder>/tmp/  
-7. Never reuse a previous file handle or path  
-
----
-
-## 📦 ZIP NAMING PATTERN (ENFORCED)
-
-All ZIP files MUST follow:
-
-PR_<major>_<minor>_<timestamp>.zip
-
-Example:
-PR_10_6X_20260427_01.zip
-
----
-
-## 🚫 DELIVERY CONSTRAINTS
-
-- Use shortest possible valid filename  
-- Avoid nested paths  
-- Avoid large payloads when possible  
-- Exactly one ZIP per response  
-
----
-
-## 🛑 FAILURE HANDLING (MANDATORY)
+## FAILURE HANDLING
 
 If ZIP delivery fails more than once:
 
-- Do NOT retry with same name  
-- Generate a new filename with timestamp  
-- Rebuild ZIP from scratch  
-- If still failing, STOP and provide inline content for manual application  
+- Do NOT retry with the same name.
+- Generate a new filename with timestamp.
+- Rebuild ZIP from scratch.
+- If still failing, STOP and provide inline content for manual application.
 
----
-
-## 🔒 EXECUTION DEFAULTS (MANDATORY)
+## EXECUTION DEFAULTS
 
 ### ALWAYS CONTINUE
-- Never pause for confirmation
-- Never present optional branches
-- Always proceed to the next logical step
+
+- Never pause for confirmation.
+- Never present optional branches.
+- Always proceed to the next logical step.
+- Assume approval unless blocked.
 
 ### NO COMMIT-ONLY PRs
-- Roadmap lives at: docs\dev\roadmaps\MASTER_ROADMAP_ENGINE.md
-- Only one roadmap
-- PRs must include something testable and improve the Roadmap
-- All PRs numbe improve the roadmap [ ] to [.] or [.] to [x]
-- If a PR is doc-only, bundle with next smallest executable/testable change
 
-### ZIP CREATION OWNERSHIP
-- ZIP creation is handled by Codex only.
-- ChatGPT must not create or reference ZIP delivery.
+- Roadmap lives at: `docs\dev\roadmaps\MASTER_ROADMAP_ENGINE.md`
+- Only one roadmap.
+- PRs must include something testable and improve the roadmap.
+- Roadmap updates must be status-only unless explicitly requested.
+- Valid roadmap status transitions:
+  - `[ ]` → `[.]`
+  - `[.]` → `[x]`
 
-### DEFAULT EXECUTION MODE
-- Assume approval
-- Continue automatically
-- Do not stop unless blocked
+If a PR is doc-only, bundle it with the next smallest executable/testable change when appropriate.
 
----
+## PRODUCTIZATION RULES
 
-## Productization Rules
-- Do not create standalone showcase tracks in future roadmaps
-- Fold showcase importance into the main feature or sample title when needed
+- Do not create standalone showcase tracks in future roadmaps.
+- Fold showcase importance into the main feature or sample title when needed.
 
----
+## ROADMAP INSTRUCTION MOVE GUARDS
 
-## Roadmap Instruction Move Guards
 - If roadmap content is moved to `PROJECT_INSTRUCTIONS.md`, move it and do not delete it without relocation.
 - Ensure destination text exists before removing the source text.
 - Preserve wording unless the PR explicitly requires rewriting.
 - Keep roadmap handling status-only unless explicitly requested otherwise.
 - Do not delete roadmap content during cleanup work.
 - Do not modify roadmap content during cleanup work.
-- Only update status [ ] [.] [x] in roadmap content during cleanup work.
-
----
+- Only update status `[ ]`, `[.]`, `[x]` in roadmap content during cleanup work.
 
 ## EXECUTION EFFICIENCY
 
 - Bundle PRs whenever it is safe and testable to reduce overall timeline and churn.
-- Prefer fewer, higher-quality PR bundles over many small retries
-- Codex must always return a ZIP artifact at:
-  <project folder>/tmp/<PR_NAME>.zip
-- Never ask whether to create the next ZIP for Codex; always assume it is required.
-- Default execution behavior:
-  - Choose the correct path automatically
-  - Reduce the number of options presented
-  - Do the right thing and complete the task fully and correctly
-  - Don't ask if I want the next bundled PR, assume I want it.
-- Update Roadmap stutus every PR.
-- Every PRs must improve roadmap and be testable.
+- Prefer fewer, higher-quality PR bundles over many small retries.
+- Never ask whether to create the next Codex PR; assume it is required.
+- Choose the correct path automatically.
+- Reduce options presented.
+- Complete the task fully and correctly.
+- Update roadmap status every PR when execution-backed.
+- Every PR must be testable.
 
+## TESTING RULES
 
-- Full samples smoke test takes ~20 minutes.
-- DO NOT run full samples test by default.
+Full samples smoke test takes about 20 minutes.
 
-- Run full samples test ONLY when:
-  - shared sample loader/framework is modified
-  - change impacts multiple samples broadly
-  - correctness cannot be verified with targeted tests
+Do NOT run full samples test by default.
 
-- Prefer targeted validation:
-  - syntax checks for changed files
-  - run only affected samples
-  - run tool-specific tests when available
+Run full samples test ONLY when:
+- shared sample loader/framework is modified
+- change impacts multiple samples broadly
+- correctness cannot be verified with targeted tests
 
-- Every PR must document:
-  - whether full samples test was skipped or run
-  - reason for decision
----
+Prefer targeted validation:
+- syntax checks for changed files
+- `npm run test:workspace-v2`
+- affected tool-specific tests
+- affected sample-specific tests only when sample JSON is in scope
 
-# BUILD_PR_LEVEL_19_20_TOOLCHAIN_ROADMAP_GUARD_ENFORCEMENT
+Every PR must document:
+- whether full samples test was skipped or run
+- reason for decision
 
-## Purpose
-Enforce the master roadmap guard for future Codex executions during the Phase 19 closeout lane.
+## WORKSPACE V2 CURRENT CONTRACT
 
-## Mandatory Roadmap Rules
-- never delete roadmap content
-- never rewrite existing roadmap text
-- only append new roadmap content when explicitly required by the PR
-- only update status markers using:
-  - [ ] -> [.]
-  - [.] -> [x]
+Workspace manifest is the runtime contract.
 
-## Scope
-- docs-first enforcement only
-- no implementation code
-- no tests
-- no scripts
-- no roadmap rewrite
-- no roadmap replacement file in this bundle
+Rules:
+- workspace manifest is SSoT
+- no `workspaceSession`
+- no `games[]`
+- tools own all tool payloads
+- no tool payloads at manifest root
+- no hidden fallback data
+- no silent defaults
+- schema validation is the only acceptance gate
 
-## Codex Responsibilities
-- validate any roadmap touch against the guard rules above
-- reject edits that delete, shorten, paraphrase, reflow, or otherwise rewrite existing roadmap text
-- if roadmap status must change for this PR, edit the existing repo roadmap in place with status-only transitions
-- if no roadmap status change is execution-backed, leave roadmap content untouched
-- place validation findings in docs/dev/reports
+Palette:
+- exactly one active palette
+- global workspace state
+- lives at `tools.palette-browser`
+- not a toolState
+- not in Tool State Library
+- baseline:
+  - `tools.palette-browser.swatches = []`
 
-## Acceptance
-- no roadmap text deletion
-- no roadmap text rewrite
-- any roadmap update is status-only unless explicit additive content is required by the PR
-- bundle remains docs-only
+Tool State:
+- use `toolState`, not Workspace V2 “session” terminology
+- saved tool states live under Workspace V2 tool state storage
+- only one active tool state at a time
+- toolState payloads must validate before use
+- invalid toolState payloads must be rejected before render
+- no partial render on invalid input
+- no mutation of incoming payloadJson
 
----
+Terminology:
+- `savedSessions` → `savedToolStates`
+- `activeSession` → `activeToolState`
+- `sessionId` → `toolStateId`
+- `Session Library` → `Tool State Library`
+- `Workspace Session` → `Workspace Tool State`
+- `Create Session + Launch` → `Create & Open Tool State`
+- `New Session` → `New Tool State`
+- `Load Fixture` → `Load Tool State`
+- `session payload` → `tool state payload`
+- `saved session` → `saved tool state`
+- `active session` → `active tool state`
 
-## Codex Anti-Pattern Guard
+Do not rename unrelated browser/sessionStorage/auth/session concepts.
+
+## SAMPLE JSON STATUS
+
+Samples are intentionally out-of-scope until tools are complete.
+
+Rules:
+- Do not touch sample JSON unless the PR is explicitly a sample alignment PR.
+- Do not require sample launch validation during tool completion.
+- Do not claim sample launch works until sample JSON has been updated to schema.
+- Sample validation will happen after tool completion.
+
+## TOOL COMPLETION RULES
+
+During tool completion:
+- use the audit as the source for remaining tool gaps
+- include exact list of failing tools from the audit
+- say which tools are being fixed in the PR
+- update audit/report status when execution-backed
+- do not fix unlimited tools in one PR
+- bundle only when tools are similar, low-risk, and covered by Playwright
+
+Every tool completion PR must include:
+- failing tools before
+- tools fixed
+- remaining failures after
+- Playwright result
+- manual validation steps
+
+## PLAYWRIGHT TOOL COVERAGE RULES
+
+Playwright should validate:
+- Workspace lifecycle
+- reset/load/export/import
+- palette baseline
+- valid toolState payload render
+- invalid toolState payload rejection
+- no payload mutation
+- active tool state integrity
+- no reliance on sample JSON during tool completion
+
+When tool-level Playwright exists:
+- tool completion audit should align to Playwright results
+- failures must identify tool name
+- reports must clearly show PASS/FAIL per tool
+
+## CODEX ANTI-PATTERN GUARD
 
 These rules are mandatory for every Codex BUILD execution:
 
 - One concept = one name.
-- Do not introduce alias variables or remapping chains such as `name1` -> `nameA`.
+- Do not introduce alias variables or remapping chains such as `name1` → `nameA`.
 - Do not create pass-through variables that only copy another variable.
-- Do not create `a` -> `b` -> `c` assignment chains.
+- Do not create `a` → `b` → `c` assignment chains.
 - Only introduce a variable when it transforms data, improves a complex expression, or is required for control flow.
 - Preserve existing meaningful names unless a rename is required for correctness and is applied consistently.
 - Do not add abstraction layers, helper functions, or broad refactors unless the BUILD explicitly requires them.
 - Do not change unrelated files.
 - Before finishing, review the diff and remove unused, redundant, pass-through, or alias variables.
 
----
+## ROADMAP GUARD ENFORCEMENT
 
-## Current Recovery Lane
+Codex must validate any roadmap touch against these rules:
 
-The active UAT lane is opening Workspace Manager from a `games/index.html` game tile.
-Treat this as a recovery/stabilization PR only. Do not expand into a broader games hub, tool registry, template, or roadmap rewrite.
+- never delete roadmap content
+- never rewrite existing roadmap text
+- only append new roadmap content when explicitly required by the PR
+- only update status markers using:
+  - `[ ]` → `[.]`
+  - `[.]` → `[x]`
 
----
+If roadmap status must change:
+- edit the existing repo roadmap in place
+- status-only transitions only
+- place validation findings in `docs/dev/reports`
+
+If no roadmap status change is execution-backed:
+- leave roadmap content untouched
+
+## CURRENT RECOVERY LANE
+
+The active UAT lane is Workspace V2 and tool completion.
+
+Treat this as a recovery/stabilization lane only.
+
+Do not expand into:
+- broader games hub work
+- unrelated tool registry rewrites
+- unrelated template rewrites
+- roadmap rewrites
+- sample JSON alignment until tools are complete
 
 ## ARRAY FORMATTING RULE
 
-- Primitive-only arrays in JSON must use compact grouped formatting.
-- Primitive values are: string, number, boolean, and null.
-- Valid compact form example:
-  `[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]`
-- Do not compact arrays of objects, nested arrays, or complex structures.
-- Do not change JSON contracts or semantics while applying array formatting.
+Primitive-only arrays in JSON must use compact grouped formatting.
+
+Primitive values are:
+- string
+- number
+- boolean
+- null
+
+Valid compact form example:
+
+`[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]`
+
+Do not compact:
+- arrays of objects
+- nested arrays
+- complex structures
+
+Do not change JSON contracts or semantics while applying array formatting.
