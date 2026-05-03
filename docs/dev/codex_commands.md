@@ -278,3 +278,10 @@ PR_26123_001-project-instructions-update
 ```bash
 npx @openai/codex run --model gpt-5.3-codex --reasoning medium "Implement PROJECT_INSTRUCTIONS update: add PR naming standard, update ChatGPT output contract (command + commit comment + Playwright coverage + manual test steps), and enforce ChatGPT non-ZIP ownership language while keeping Codex ZIP ownership intact."
 ```
+
+---
+PR_26124_002-palette-manager-strict-payload-guard
+
+```bash
+npx @openai/codex run --model gpt-5.3-codex --reasoning medium "Implement PR_26124_002: fix the next failing tool from tool_completion_audit.md with a minimal single-tool palette-manager-v2 guard that rejects legacy payloadJson.paletteDocument.colors before render and validates required swatches contract."
+```

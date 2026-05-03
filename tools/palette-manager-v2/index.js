@@ -182,6 +182,10 @@ class PaletteManagerV2 {
       this.renderError("Palette Manager V2 session data is invalid. Expected payloadJson.paletteDocument.");
       return;
     }
+    if (Object.prototype.hasOwnProperty.call(versionCheck.payload.payloadJson.paletteDocument, "colors")) {
+      this.renderError("Palette Manager V2 session data is invalid. payloadJson.paletteDocument.colors is not supported; use payloadJson.paletteDocument.swatches.");
+      return;
+    }
     this.renderPalette(versionCheck.payload.payloadJson.paletteDocument, versionCheck.payload);
   }
 

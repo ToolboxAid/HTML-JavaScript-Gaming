@@ -1,1 +1,1 @@
-Add PR naming standard and tighten ChatGPT output contract (command, commit, Playwright coverage, manual tests) with Codex-only ZIP ownership - PR_26123_001-project-instructions-update
+Reject legacy paletteDocument.colors in Palette Manager V2 before render and require swatches contract - PR_26124_002-palette-manager-strict-payload-guard
