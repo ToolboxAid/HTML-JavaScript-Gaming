@@ -327,3 +327,10 @@ PR_26124_009-empty-fail-batch-capture
 ```bash
 npx @openai/codex run --model gpt-5.3-codex --reasoning medium "Implement PR_26124_009: extract next FAIL tools from tool_completion_audit.md, record explicit batch fail list, and if no FAIL tools remain capture the empty batch with validation evidence and no runtime changes."
 ```
+
+---
+PR_26124_014-include-review-diff
+
+```bash
+npm run codex:review-artifacts
+```

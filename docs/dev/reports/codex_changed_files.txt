@@ -1,0 +1,16 @@
+# git status --short
+M docs/dev/codex_commands.md
+ M package.json
+ D tests/playwright.zip
+ D tools/workspace-v2.zip
+?? docs/dev/reports/PR_26124_014_include_review_diff_report.md
+?? docs/dev/reports/codex_changed_files.txt
+?? docs/dev/reports/codex_review.diff
+?? scripts/write-codex-review-artifacts.mjs
+
+# git diff --stat
+docs/dev/codex_commands.md |   7 +++++++
+ package.json               |   1 +
+ tests/playwright.zip       | Bin 4491 -> 0 bytes
+ tools/workspace-v2.zip     | Bin 31477 -> 0 bytes
+ 4 files changed, 8 insertions(+)

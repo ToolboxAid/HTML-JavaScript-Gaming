@@ -1,0 +1,35 @@
+diff --git a/docs/dev/codex_commands.md b/docs/dev/codex_commands.md
+index c99e0d6c..1ca60ee5 100644
+--- a/docs/dev/codex_commands.md
++++ b/docs/dev/codex_commands.md
+@@ -327,3 +327,10 @@ PR_26124_009-empty-fail-batch-capture
+ ```bash
+ npx @openai/codex run --model gpt-5.3-codex --reasoning medium "Implement PR_26124_009: extract next FAIL tools from tool_completion_audit.md, record explicit batch fail list, and if no FAIL tools remain capture the empty batch with validation evidence and no runtime changes."
+ ```
++
++---
++PR_26124_014-include-review-diff
++
++```bash
++npm run codex:review-artifacts
++```
+diff --git a/package.json b/package.json
+index 1e5462bd..533204d3 100644
+--- a/package.json
++++ b/package.json
+@@ -13,6 +13,7 @@
+     "check:games-template-contract": "node ./scripts/validate-games-template-contract.mjs",
+     "test:workspace-v2:playwright": "playwright test --workers=1 tests/ui/workspace-v2.asset-manager.spec.js tests/playwright/workspace-v2.validation.spec.js tests/playwright/tool-validation",
+     "test:workspace-v2": "node ./scripts/run-workspace-v2-playwright-gate.mjs",
++    "codex:review-artifacts": "node ./scripts/write-codex-review-artifacts.mjs",
+     "test:launch-smoke": "node ./tests/runtime/LaunchSmokeAllEntries.test.mjs",
+     "test:launch-smoke:games": "node ./tests/runtime/LaunchSmokeAllEntries.test.mjs --games",
+     "test:workspace-manager:games": "node ./tests/runtime/GamesIndexWorkspaceManagerOpen.test.mjs",
+diff --git a/tests/playwright.zip b/tests/playwright.zip
+deleted file mode 100644
+index 84f08898..00000000
+Binary files a/tests/playwright.zip and /dev/null differ
+diff --git a/tools/workspace-v2.zip b/tools/workspace-v2.zip
+deleted file mode 100644
+index 5047d4aa..00000000
+Binary files a/tools/workspace-v2.zip and /dev/null differ
