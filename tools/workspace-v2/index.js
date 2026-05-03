@@ -85,6 +85,7 @@ class WorkspaceV2SessionProducer {
     this.currentSessionPayload = null;
     this.currentSessionSource = "";
     this.currentHostContextId = "";
+    this.lastWorkspaceExportBuildErrorMessage = "";
     this.workspaceTransitionState = "idle";
     this.pendingMergePreview = null;
     this.lastMergedSessionResult = null;
@@ -903,6 +904,90 @@ class WorkspaceV2SessionProducer {
       }
     }
     return "";
+  }
+
+  validatePaletteSwatchesForWorkspaceExport(swatches, swatchesPath) {
+    if (!Array.isArray(swatches)) {
+      return { ok: false, message: `${swatchesPath} must be an array.` };
+    }
+    for (let index = 0; index < swatches.length; index += 1) {
+      const swatchPath = `${swatchesPath}[${index}]`;
+      const swatch = swatches[index];
+      if (!swatch || typeof swatch !== "object" || Array.isArray(swatch)) {
+        return { ok: false, message: `${swatchPath} must be an object.` };
+      }
+      const swatchKeys = Object.keys(swatch);
+      const allowedSwatchKeys = new Set(["symbol", "hex", "name"]);
+      for (const swatchKey of swatchKeys) {
+        if (!allowedSwatchKeys.has(swatchKey)) {
+          return { ok: false, message: `${swatchPath}.${swatchKey} is not allowed.` };
+        }
+      }
+      if (typeof swatch.symbol !== "string" || swatch.symbol.length !== 1) {
+        return { ok: false, message: `${swatchPath}.symbol must be exactly one character.` };
+      }
+      if (typeof swatch.hex !== "string" || !/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{8})$/.test(swatch.hex)) {
+        return { ok: false, message: `${swatchPath}.hex must be #RRGGBB or #RRGGBBAA.` };
+      }
+      if (typeof swatch.name !== "string" || !swatch.name.trim()) {
+        return { ok: false, message: `${swatchPath}.name is required.` };
+      }
+    }
+    return { ok: true, message: "" };
+  }
+
+  resolveActivePaletteForWorkspaceExport(activePayload, library) {
+    let savedPaletteCount = 0;
+    if (library && typeof library === "object" && !Array.isArray(library)) {
+      for (const sessionId of Object.keys(library)) {
+        const savedPayload = library[sessionId];
+        if (!savedPayload || typeof savedPayload !== "object" || Array.isArray(savedPayload)) {
+          continue;
+        }
+        if (savedPayload.toolId !== "palette-manager-v2") {
+          continue;
+        }
+        if (!savedPayload.paletteJson || typeof savedPayload.paletteJson !== "object" || Array.isArray(savedPayload.paletteJson)) {
+          continue;
+        }
+        if (!Array.isArray(savedPayload.paletteJson.swatches)) {
+          continue;
+        }
+        savedPaletteCount += 1;
+      }
+    }
+    if (!activePayload || typeof activePayload !== "object" || Array.isArray(activePayload)) {
+      return { ok: false, message: "Active session payload could not be resolved for export." };
+    }
+    if (activePayload.toolId !== "palette-manager-v2") {
+      if (savedPaletteCount > 1) {
+        return {
+          ok: false,
+          message: "Multiple palettes are present. Select one active palette session before export."
+        };
+      }
+      return {
+        ok: false,
+        message: "Workspace export requires one active palette in the current palette-manager-v2 session."
+      };
+    }
+    const activePaletteValidation = this.validateWorkspaceToolSessionPayload(activePayload, "tools.workspace-v2.activeSession");
+    if (!activePaletteValidation.ok) {
+      return { ok: false, message: activePaletteValidation.message };
+    }
+    const swatchValidation = this.validatePaletteSwatchesForWorkspaceExport(
+      activePayload.paletteJson.swatches,
+      "tools.workspace-v2.activeSession.paletteJson.swatches"
+    );
+    if (!swatchValidation.ok) {
+      return { ok: false, message: swatchValidation.message };
+    }
+    return {
+      ok: true,
+      activePalette: {
+        swatches: this.cloneSessionValue(activePayload.paletteJson.swatches)
+      }
+    };
   }
 
   selectedMergedSessionId() {
@@ -3048,16 +3133,25 @@ class WorkspaceV2SessionProducer {
   }
 
   buildWorkspaceSchemaDocument() {
+    this.lastWorkspaceExportBuildErrorMessage = "";
     const activePayload = this.resolveActiveSessionPayloadForWorkspaceManifest();
     if (!this.isValidSessionPayload(activePayload)) {
+      this.lastWorkspaceExportBuildErrorMessage = "Export error: No active Workspace V2 session is available to export.";
       return null;
     }
     const library = this.readSessionLibrary();
     if (library === null) {
+      this.lastWorkspaceExportBuildErrorMessage = "Export error: Session library could not be read.";
+      return null;
+    }
+    const activePaletteResolution = this.resolveActivePaletteForWorkspaceExport(activePayload, library);
+    if (!activePaletteResolution.ok) {
+      this.lastWorkspaceExportBuildErrorMessage = `Export error: ${activePaletteResolution.message}`;
       return null;
     }
     const activeToolId = typeof activePayload.toolId === "string" && activePayload.toolId.trim() ? activePayload.toolId.trim() : "";
     if (!activeToolId) {
+      this.lastWorkspaceExportBuildErrorMessage = "Export error: Active session toolId is missing.";
       return null;
     }
     let activeHostContextId = typeof this.currentHostContextId === "string" ? this.currentHostContextId.trim() : "";
@@ -3086,6 +3180,9 @@ class WorkspaceV2SessionProducer {
       id: `workspace-v2-${activeHostContextId}`,
       name: `Workspace V2 Session ${activeToolId}`,
       tools: {
+        palettes: {
+          activePalette: this.cloneSessionValue(activePaletteResolution.activePalette)
+        },
         "workspace-v2": {
         schema: "html-js-gaming.workspace-v2-session/1",
           game: workspaceGame,
@@ -3104,7 +3201,7 @@ class WorkspaceV2SessionProducer {
     this.setImportExportStatus("Export clicked");
     const workspaceSchemaDocument = this.buildWorkspaceSchemaDocument();
     if (!workspaceSchemaDocument) {
-      this.setImportExportStatus("Export error: No active Workspace V2 session is available to export.");
+      this.setImportExportStatus(this.lastWorkspaceExportBuildErrorMessage || "Export error: No active Workspace V2 session is available to export.");
       return;
     }
     const invalidSavedSessionId = this.readInvalidPaletteSavedSessionId(workspaceSchemaDocument.tools["workspace-v2"].savedSessions);
@@ -3159,6 +3256,13 @@ class WorkspaceV2SessionProducer {
       if (!Array.isArray(sessionPayload.paletteJson.swatches)) {
         return { ok: false, message: `${sessionPath}.paletteJson.swatches must be an array.` };
       }
+      const swatchValidation = this.validatePaletteSwatchesForWorkspaceExport(
+        sessionPayload.paletteJson.swatches,
+        `${sessionPath}.paletteJson.swatches`
+      );
+      if (!swatchValidation.ok) {
+        return swatchValidation;
+      }
       if (Object.prototype.hasOwnProperty.call(sessionPayload.paletteJson, "colors")) {
         return { ok: false, message: `${sessionPath}.paletteJson.colors is not supported. Use paletteJson.swatches.` };
       }
@@ -3205,11 +3309,45 @@ class WorkspaceV2SessionProducer {
       return { ok: false, message: "tools must be an object." };
     }
     const toolsKeys = Object.keys(workspaceDocument.tools);
-    const allowedToolsKeys = new Set(["workspace-v2"]);
+    const allowedToolsKeys = new Set(["palettes", "workspace-v2"]);
     for (const key of toolsKeys) {
       if (!allowedToolsKeys.has(key)) {
         return { ok: false, message: `tools.${key} is not allowed.` };
       }
+    }
+    if (!Object.prototype.hasOwnProperty.call(workspaceDocument.tools, "palettes")) {
+      return { ok: false, message: "tools.palettes is required." };
+    }
+    const palettesTool = workspaceDocument.tools.palettes;
+    if (!palettesTool || typeof palettesTool !== "object" || Array.isArray(palettesTool)) {
+      return { ok: false, message: "tools.palettes must be an object." };
+    }
+    const palettesToolKeys = Object.keys(palettesTool);
+    const allowedPalettesToolKeys = new Set(["activePalette"]);
+    for (const key of palettesToolKeys) {
+      if (!allowedPalettesToolKeys.has(key)) {
+        return { ok: false, message: `tools.palettes.${key} is not allowed.` };
+      }
+    }
+    if (!Object.prototype.hasOwnProperty.call(palettesTool, "activePalette")) {
+      return { ok: false, message: "tools.palettes.activePalette is required." };
+    }
+    if (!palettesTool.activePalette || typeof palettesTool.activePalette !== "object" || Array.isArray(palettesTool.activePalette)) {
+      return { ok: false, message: "tools.palettes.activePalette must be an object." };
+    }
+    const activePaletteKeys = Object.keys(palettesTool.activePalette);
+    const allowedActivePaletteKeys = new Set(["swatches"]);
+    for (const key of activePaletteKeys) {
+      if (!allowedActivePaletteKeys.has(key)) {
+        return { ok: false, message: `tools.palettes.activePalette.${key} is not allowed.` };
+      }
+    }
+    const activePaletteSwatchValidation = this.validatePaletteSwatchesForWorkspaceExport(
+      palettesTool.activePalette.swatches,
+      "tools.palettes.activePalette.swatches"
+    );
+    if (!activePaletteSwatchValidation.ok) {
+      return activePaletteSwatchValidation;
     }
     if (!Object.prototype.hasOwnProperty.call(workspaceDocument.tools, "workspace-v2")) {
       return { ok: false, message: "tools.workspace-v2 is required." };
