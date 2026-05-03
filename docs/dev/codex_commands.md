@@ -238,6 +238,13 @@ npx @openai/codex run --model gpt-5.3-codex --reasoning medium "Implement PR_11_
 ```
 
 ---
+PR_11_324
+
+```bash
+npx @openai/codex run --model gpt-5.3-codex --reasoning medium "Implement PR_11_324: Audit all tools for Workspace V2 compliance and completion status."
+```
+
+---
 PR_11_321
 
 ```bash

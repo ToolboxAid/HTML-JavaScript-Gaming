@@ -1,1 +1,1 @@
-Add Workspace V2 Playwright validation coverage tests for lifecycle, palette contract, validation rejection, roundtrip integrity, and tool switching - PR 11.323
+Audit Workspace V2 tool compliance/completion status and document per-tool PASS/FAIL with required fixes - PR 11.324
