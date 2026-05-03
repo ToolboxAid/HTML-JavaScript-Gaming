@@ -879,6 +879,12 @@ class WorkspaceV2SessionProducer {
           : (diffCanCompute ? "Selections are valid." : "Select two different sessions to compute diff.")
       );
     const authoritativeLastMergedHostContextId = this.resolveAuthoritativeLastMergedHostContextId();
+    const assetManagerLaunchReady = Boolean(
+      this.isValidSessionPayload(this.currentSessionPayload) &&
+      this.currentSessionPayload.payloadJson &&
+      typeof this.currentSessionPayload.payloadJson === "object" &&
+      !Array.isArray(this.currentSessionPayload.payloadJson)
+    );
     const mergePreviewVisible = Boolean(
       this.pendingMergePreview ||
       this.mergeOutputSelectionKey ||
@@ -914,7 +920,11 @@ class WorkspaceV2SessionProducer {
       mergeSelectionText,
       mergePreviewStale: Boolean(this.pendingMergePreview && !mergePreviewFresh),
       mergePreviewVisible,
-      undoEnabled: Boolean(authoritativeLastMergedHostContextId)
+      undoEnabled: Boolean(authoritativeLastMergedHostContextId),
+      assetManagerLaunchReady,
+      assetManagerLaunchLabel: assetManagerLaunchReady
+        ? "Open Asset Manager V2 (active session)"
+        : "Open Asset Manager V2 (no session)"
     };
   }
 
@@ -946,6 +956,8 @@ class WorkspaceV2SessionProducer {
     this.undoLastMergeButton.disabled = !model.undoEnabled;
     this.mergeOutputNode.hidden = !model.mergePreviewVisible;
     this.renderMergeConflictSummary();
+    this.openAssetManagerButton.disabled = !model.assetManagerLaunchReady;
+    this.openAssetManagerButton.textContent = model.assetManagerLaunchLabel;
   }
 
   refreshWorkspaceSessionUiStateModel(actionName = "refresh_load") {

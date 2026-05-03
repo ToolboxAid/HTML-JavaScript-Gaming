@@ -1,1 +1,1 @@
-Harden Asset Manager V2 add/remove rejection paths and preserve valid persistence behavior - PR 11.316
+Clarify Workspace V2 Asset Manager launcher session/no-session state and prevent no-session confusion - PR 11.317

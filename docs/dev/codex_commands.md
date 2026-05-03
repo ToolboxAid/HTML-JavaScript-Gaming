@@ -159,3 +159,10 @@ PR_11_316
 ```bash
 npx @openai/codex run --model gpt-5.3-codex --reasoning medium "Implement PR_11_316: Harden Asset Manager V2 add/remove actions by rejecting duplicate ids, blank/whitespace fields, and missing remove ids with actionable status messages while preserving valid persistence behavior."
 ```
+
+---
+PR_11_317
+
+```bash
+npx @openai/codex run --model gpt-5.3-codex --reasoning medium "Implement PR_11_317: Clarify Workspace V2 Asset Manager launcher with explicit no-session vs active-session state while preserving session-routed launch behavior."
+```
