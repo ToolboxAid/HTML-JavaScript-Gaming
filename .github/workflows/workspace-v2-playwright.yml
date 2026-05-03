@@ -1,0 +1,39 @@
+name: Workspace V2 Playwright Gate
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  workspace-v2-playwright:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node LTS
+        uses: actions/setup-node@v4
+        with:
+          node-version: "lts/*"
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps
+
+      - name: Run Workspace V2 gate
+        run: npm run test:workspace-v2
+
+      - name: Upload Workspace V2 test artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: workspace-v2-playwright-results
+          path: tests/results
+          if-no-files-found: warn

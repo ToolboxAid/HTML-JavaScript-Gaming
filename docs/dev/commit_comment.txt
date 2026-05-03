@@ -1,1 +1,1 @@
-Document Workspace V2 Playwright validation gate usage and expected output/exit behavior - PR 11.321
+Add GitHub Actions Workspace V2 Playwright gate with artifact upload from tests/results - PR 11.322

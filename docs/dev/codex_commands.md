@@ -224,6 +224,13 @@ npx @openai/codex run --model gpt-5.3-codex --reasoning medium "Implement PR_11_
 ```
 
 ---
+PR_11_322
+
+```bash
+npx @openai/codex run --model gpt-5.3-codex --reasoning medium "Implement PR_11_322: Run Workspace V2 Playwright tests automatically via CI."
+```
+
+---
 PR_11_321
 
 ```bash
