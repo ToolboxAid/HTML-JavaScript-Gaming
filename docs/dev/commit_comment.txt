@@ -1,1 +1,1 @@
-Fix Workspace V2 palette-manager launch/session contract handling and clear the top audit failure - PR 11.325
+Scope Asset Manager V2 persistence to explicit add/remove actions and remove passive render-time mutation writes - PR 11.326

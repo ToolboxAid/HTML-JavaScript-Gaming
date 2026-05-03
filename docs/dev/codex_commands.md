@@ -252,6 +252,13 @@ npx @openai/codex run --model gpt-5.3-codex --reasoning medium "Implement PR_11_
 ```
 
 ---
+PR_11_326
+
+```bash
+npx @openai/codex run --model gpt-5.3-codex --reasoning medium "Implement PR_11_326: Fix the next failing tool from tool_completion_audit.md."
+```
+
+---
 PR_11_321
 
 ```bash

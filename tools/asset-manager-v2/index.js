@@ -211,7 +211,7 @@ class AssetBrowserV2 {
     }
     const nextSessionContext = this.cloneSessionValue(this.currentSessionContext);
     nextSessionContext.payloadJson.assetCatalog.entries.push(newEntry.entry);
-    this.loadContract(nextSessionContext);
+    this.loadContract(nextSessionContext, true);
     this.clearAddAssetForm();
     this.setActionStatus(`Asset '${newEntry.entry.id}' added.`);
   }
@@ -245,7 +245,7 @@ class AssetBrowserV2 {
       this.setActionStatus(`Remove blocked. Asset id '${normalizedId}' was not found.`);
       return;
     }
-    this.loadContract(nextSessionContext);
+    this.loadContract(nextSessionContext, true);
     this.setActionStatus(`Asset '${normalizedId}' removed.`);
   }
 
@@ -279,7 +279,8 @@ class AssetBrowserV2 {
         return;
       }
       this.loadContract(
-        JSON.parse(serializedSession)
+        JSON.parse(serializedSession),
+        false
       );
     } catch (error) {
       const runtimeMessage = `Unable to read Asset Manager V2 session context: ${error instanceof Error ? error.message : "unknown error"}`;
@@ -288,7 +289,7 @@ class AssetBrowserV2 {
     }
   }
 
-  loadContract(sessionContext) {
+  loadContract(sessionContext, persistToWorkspace = false) {
     console.log("[ASSET_BROWSER_V2_CONTRACT_LOADED]");
     if (!sessionContext || typeof sessionContext !== "object" || Array.isArray(sessionContext)) {
       this.renderError("Session context is invalid. Expected an object containing payloadJson.assetCatalog.");
@@ -315,7 +316,7 @@ class AssetBrowserV2 {
       this.renderError("Asset Manager V2 session data is invalid. Remove payloadJson.importName/importDestination. Load assets from payloadJson.assetCatalog only.");
       return;
     }
-    this.renderCatalog(versionCheck.payload.payloadJson.assetCatalog, versionCheck.payload);
+    this.renderCatalog(versionCheck.payload.payloadJson.assetCatalog, versionCheck.payload, persistToWorkspace);
   }
 
   persistValidSessionForWorkspace(sessionContext, assetCatalog) {
@@ -355,7 +356,7 @@ class AssetBrowserV2 {
     return { ok: true, message: "" };
   }
 
-  renderCatalog(assetCatalog, sessionContext) {
+  renderCatalog(assetCatalog, sessionContext, persistToWorkspace = false) {
     if (typeof assetCatalog.name !== "string" || !assetCatalog.name.trim()) {
       this.renderError("Asset Manager V2 session data is invalid. Expected assetCatalog.name.");
       return;
@@ -386,10 +387,14 @@ class AssetBrowserV2 {
 
     document.getElementById("assetBrowserV2SessionReadout").textContent = `Session: loaded\nContext: ${this.urlState.hostContextId}\nTool: ${typeof sessionContext.toolId === "string" && sessionContext.toolId.trim() ? sessionContext.toolId.trim() : "not provided"}${this.optionalUrlStateSummary() ? `\nURL State: ${this.optionalUrlStateSummary()}` : ""}`;
     document.getElementById("assetBrowserV2ContractReadout").textContent = "payloadJson loaded\npayloadJson.assetCatalog valid\nentries[] valid";
-    const persistence = this.persistValidSessionForWorkspace(sessionContext, assetCatalog);
-    document.getElementById("assetBrowserV2WorkspaceReadout").textContent = persistence.ok
-      ? "Workspace session context was read and persisted for Workspace V2 export."
-      : `Workspace session context was read but could not be persisted: ${persistence.message}`;
+    if (persistToWorkspace) {
+      const persistence = this.persistValidSessionForWorkspace(sessionContext, assetCatalog);
+      document.getElementById("assetBrowserV2WorkspaceReadout").textContent = persistence.ok
+        ? "Workspace session context was read and persisted for Workspace V2 export."
+        : `Workspace session context was read but could not be persisted: ${persistence.message}`;
+    } else {
+      document.getElementById("assetBrowserV2WorkspaceReadout").textContent = "Workspace session context loaded. Changes persist only after Add or Remove actions.";
+    }
     document.getElementById("assetBrowserV2Title").textContent = assetCatalog.name.trim();
     document.getElementById("assetBrowserV2Count").textContent = `${assetCatalog.entries.length} asset${assetCatalog.entries.length === 1 ? "" : "s"}`;
     document.getElementById("assetBrowserV2State").textContent = assetCatalog.entries.length === 0
