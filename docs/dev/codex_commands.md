@@ -292,3 +292,10 @@ PR_26124_003-validation-scope-sample-exclusion
 ```bash
 npx @openai/codex run --model gpt-5.3-codex --reasoning medium "Implement PR_26124_003: adjust validation scope to exclude sample-launch requirements until sample JSON is schema-compliant, update docs/dev validation wording, and keep Playwright workspace lifecycle/payload/roundtrip coverage sample-independent."
 ```
+
+---
+PR_26124_004-workspace-v2-launch-toolid-guard
+
+```bash
+npx @openai/codex run --model gpt-5.3-codex --reasoning medium "Implement PR_26124_004: fix next failing Workspace V2 tool lane issue with a minimal guard that blocks launch when active session.toolId does not match selected tool and preserves strict payload behavior."
+```

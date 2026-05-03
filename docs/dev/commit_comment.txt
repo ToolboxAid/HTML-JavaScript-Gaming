@@ -1,1 +1,1 @@
-Adjust Workspace V2 validation scope to workspace-only launch checks and defer sample-launch validation to dedicated post-completion PR - PR_26124_003-validation-scope-sample-exclusion
+Block Workspace V2 launch when active session toolId does not match selected tool to enforce deterministic workspace launch contract - PR_26124_004-workspace-v2-launch-toolid-guard

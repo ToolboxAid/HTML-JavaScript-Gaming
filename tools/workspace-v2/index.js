@@ -3988,6 +3988,10 @@ class WorkspaceV2SessionProducer {
       this.statusNode.textContent = "No session payload is available. Load a fixture, import JSON, apply share link, or load library session first.";
       return;
     }
+    if (typeof this.currentSessionPayload.toolId !== "string" || this.currentSessionPayload.toolId.trim() !== toolId) {
+      this.statusNode.textContent = `Launch blocked. Active session toolId '${typeof this.currentSessionPayload.toolId === "string" ? this.currentSessionPayload.toolId.trim() : ""}' does not match selected tool '${toolId}'. Load a fixture or import a matching session first.`;
+      return;
+    }
     const activation = this.activateWorkspaceSession(this.createHostContextId(toolId), this.currentSessionPayload, this.currentSessionSource || "workspace-v2");
     if (!activation.ok) {
       this.statusNode.textContent = activation.message;
