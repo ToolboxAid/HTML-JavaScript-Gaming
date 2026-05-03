@@ -501,18 +501,16 @@ class WorkspaceV2SessionProducer {
       !workspaceDocument.tools ||
       typeof workspaceDocument.tools !== "object" ||
       Array.isArray(workspaceDocument.tools) ||
-      !workspaceDocument.tools.palettes ||
-      typeof workspaceDocument.tools.palettes !== "object" ||
-      Array.isArray(workspaceDocument.tools.palettes) ||
-      !workspaceDocument.tools.palettes.activePalette ||
-      typeof workspaceDocument.tools.palettes.activePalette !== "object" ||
-      Array.isArray(workspaceDocument.tools.palettes.activePalette)
+      !workspaceDocument.tools["palette-browser"] ||
+      typeof workspaceDocument.tools["palette-browser"] !== "object" ||
+      Array.isArray(workspaceDocument.tools["palette-browser"])
     ) {
       return;
     }
+    const paletteBrowserPayload = workspaceDocument.tools["palette-browser"];
     const paletteValidation = this.validatePaletteSwatchesForWorkspaceExport(
-      workspaceDocument.tools.palettes.activePalette.swatches,
-      "tools.palettes.activePalette.swatches"
+      paletteBrowserPayload.swatches,
+      "tools.palette-browser.swatches"
     );
     if (!paletteValidation.ok) {
       return;
@@ -523,7 +521,7 @@ class WorkspaceV2SessionProducer {
     this.workspaceActivePalette = {
       hostContextId: nextHostContextId,
       palette: {
-        swatches: this.cloneSessionValue(workspaceDocument.tools.palettes.activePalette.swatches)
+        swatches: this.cloneSessionValue(paletteBrowserPayload.swatches)
       }
     };
   }
@@ -1262,14 +1260,17 @@ class WorkspaceV2SessionProducer {
     if (this.hasWorkspaceActivePalette()) {
       const swatchValidation = this.validatePaletteSwatchesForWorkspaceExport(
         this.workspaceActivePalette.palette.swatches,
-        "tools.palettes.activePalette.swatches"
+        "tools.palette-browser.swatches"
       );
       if (!swatchValidation.ok) {
         return { ok: false, message: swatchValidation.message };
       }
       return {
         ok: true,
-        activePalette: {
+        paletteBrowserPayload: {
+          schema: "html-js-gaming.palette",
+          version: 1,
+          name: "Workspace Active Palette",
           swatches: this.cloneSessionValue(this.workspaceActivePalette.palette.swatches)
         }
       };
@@ -1284,7 +1285,10 @@ class WorkspaceV2SessionProducer {
       }
       return {
         ok: true,
-        activePalette: {
+        paletteBrowserPayload: {
+          schema: "html-js-gaming.palette",
+          version: 1,
+          name: "Workspace Active Palette",
           swatches: this.cloneSessionValue(activePayload.paletteJson.swatches)
         }
       };
@@ -3554,9 +3558,7 @@ class WorkspaceV2SessionProducer {
       id: `workspace-v2-${activeHostContextId}`,
       name: `Workspace V2 Session ${activeToolId}`,
       tools: {
-        palettes: {
-          activePalette: this.cloneSessionValue(activePaletteResolution.activePalette)
-        },
+        "palette-browser": this.cloneSessionValue(activePaletteResolution.paletteBrowserPayload),
         "workspace-v2": {
         schema: "html-js-gaming.workspace-v2-session/1",
           game: workspaceGame,
@@ -3682,43 +3684,45 @@ class WorkspaceV2SessionProducer {
     if (!workspaceDocument.tools || typeof workspaceDocument.tools !== "object" || Array.isArray(workspaceDocument.tools)) {
       return { ok: false, message: "tools must be an object." };
     }
+    if (Object.prototype.hasOwnProperty.call(workspaceDocument.tools, "palettes")) {
+      return { ok: false, message: "Use tools.palette-browser. Workspace supports one active palette tool entry." };
+    }
+    if (Object.prototype.hasOwnProperty.call(workspaceDocument.tools, "palette")) {
+      return { ok: false, message: "Use tools.palette-browser. Workspace supports one active palette tool entry." };
+    }
     const toolsKeys = Object.keys(workspaceDocument.tools);
-    const allowedToolsKeys = new Set(["palettes", "workspace-v2"]);
+    const allowedToolsKeys = new Set(["palette-browser", "workspace-v2"]);
     for (const key of toolsKeys) {
       if (!allowedToolsKeys.has(key)) {
         return { ok: false, message: `tools.${key} is not allowed.` };
       }
     }
-    if (!Object.prototype.hasOwnProperty.call(workspaceDocument.tools, "palettes")) {
-      return { ok: false, message: "tools.palettes is required." };
+    if (!Object.prototype.hasOwnProperty.call(workspaceDocument.tools, "palette-browser")) {
+      return { ok: false, message: "tools.palette-browser is required." };
     }
-    const palettesTool = workspaceDocument.tools.palettes;
-    if (!palettesTool || typeof palettesTool !== "object" || Array.isArray(palettesTool)) {
-      return { ok: false, message: "tools.palettes must be an object." };
+    const paletteBrowserTool = workspaceDocument.tools["palette-browser"];
+    if (!paletteBrowserTool || typeof paletteBrowserTool !== "object" || Array.isArray(paletteBrowserTool)) {
+      return { ok: false, message: "tools.palette-browser must be an object." };
     }
-    const palettesToolKeys = Object.keys(palettesTool);
-    const allowedPalettesToolKeys = new Set(["activePalette"]);
-    for (const key of palettesToolKeys) {
-      if (!allowedPalettesToolKeys.has(key)) {
-        return { ok: false, message: `tools.palettes.${key} is not allowed.` };
+    const paletteBrowserToolKeys = Object.keys(paletteBrowserTool);
+    const allowedPaletteBrowserToolKeys = new Set(["$schema", "schema", "version", "id", "name", "source", "sourceId", "locked", "swatches"]);
+    for (const key of paletteBrowserToolKeys) {
+      if (!allowedPaletteBrowserToolKeys.has(key)) {
+        return { ok: false, message: `tools.palette-browser.${key} is not allowed.` };
       }
     }
-    if (!Object.prototype.hasOwnProperty.call(palettesTool, "activePalette")) {
-      return { ok: false, message: "tools.palettes.activePalette is required." };
+    if (paletteBrowserTool.schema !== "html-js-gaming.palette") {
+      return { ok: false, message: "tools.palette-browser.schema is unsupported." };
     }
-    if (!palettesTool.activePalette || typeof palettesTool.activePalette !== "object" || Array.isArray(palettesTool.activePalette)) {
-      return { ok: false, message: "tools.palettes.activePalette must be an object." };
+    if (!Number.isInteger(paletteBrowserTool.version) || paletteBrowserTool.version < 1) {
+      return { ok: false, message: "tools.palette-browser.version must be a positive integer." };
     }
-    const activePaletteKeys = Object.keys(palettesTool.activePalette);
-    const allowedActivePaletteKeys = new Set(["swatches"]);
-    for (const key of activePaletteKeys) {
-      if (!allowedActivePaletteKeys.has(key)) {
-        return { ok: false, message: `tools.palettes.activePalette.${key} is not allowed.` };
-      }
+    if (typeof paletteBrowserTool.name !== "string" || !paletteBrowserTool.name.trim()) {
+      return { ok: false, message: "tools.palette-browser.name is required." };
     }
     const activePaletteSwatchValidation = this.validatePaletteSwatchesForWorkspaceExport(
-      palettesTool.activePalette.swatches,
-      "tools.palettes.activePalette.swatches"
+      paletteBrowserTool.swatches,
+      "tools.palette-browser.swatches"
     );
     if (!activePaletteSwatchValidation.ok) {
       return activePaletteSwatchValidation;
@@ -3792,6 +3796,30 @@ class WorkspaceV2SessionProducer {
     }
     try {
       const parsed = JSON.parse(rawJson);
+      if (
+        parsed &&
+        typeof parsed === "object" &&
+        !Array.isArray(parsed) &&
+        parsed.tools &&
+        typeof parsed.tools === "object" &&
+        !Array.isArray(parsed.tools) &&
+        Object.prototype.hasOwnProperty.call(parsed.tools, "palettes")
+      ) {
+        this.setImportExportStatus("Use tools.palette-browser. Workspace supports one active palette tool entry.");
+        return;
+      }
+      if (
+        parsed &&
+        typeof parsed === "object" &&
+        !Array.isArray(parsed) &&
+        parsed.tools &&
+        typeof parsed.tools === "object" &&
+        !Array.isArray(parsed.tools) &&
+        Object.prototype.hasOwnProperty.call(parsed.tools, "palette")
+      ) {
+        this.setImportExportStatus("Use tools.palette-browser. Workspace supports one active palette tool entry.");
+        return;
+      }
       if (
         Object.prototype.hasOwnProperty.call(parsed, "toolId") &&
         Object.prototype.hasOwnProperty.call(parsed, "version") &&

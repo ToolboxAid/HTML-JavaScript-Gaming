@@ -7,19 +7,11 @@ import { fileURLToPath, pathToFileURL } from "node:url";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const repoRoot = path.resolve(__dirname, "..", "..");
-const workspaceHtmlPath = path.join(repoRoot, "tools", "workspace-v2", "index.html");
 const workspaceJsPath = path.join(repoRoot, "tools", "workspace-v2", "index.js");
-const workspaceSchemaPath = path.join(repoRoot, "tools", "schemas", "workspace.schema.json");
+const workspaceManifestSchemaPath = path.join(repoRoot, "tools", "schemas", "workspace.manifest.schema.json");
+const deprecatedWorkspaceSchemaPath = path.join(repoRoot, "tools", "schemas", "workspace.schema.json");
 const testPath = path.join(repoRoot, "tests", "runtime", "V2CurrentSessionExport.test.mjs");
 const resultsPath = path.join(repoRoot, "tmp", "v2-current-session-export-results.json");
-
-const TOOL_IDS = [
-  "asset-browser-v2",
-  "palette-manager-v2",
-  "svg-asset-studio-v2",
-  "tilemap-studio-v2",
-  "vector-map-editor-v2"
-];
 
 function checkSyntax(filePath) {
   try {
@@ -33,267 +25,181 @@ function checkSyntax(filePath) {
   }
 }
 
-function simulateWorkspaceSchemaExport(gamesSnapshot, activePayload, currentHostContextId, library) {
-  if (!activePayload || typeof activePayload !== "object" || Array.isArray(activePayload)) {
-    return {
-      ok: false,
-      status: "No active Workspace V2 session is available to export.",
-      filename: "",
-      serialized: ""
-    };
+function validateWorkspaceManifestShape(workspaceDocument) {
+  if (!workspaceDocument || typeof workspaceDocument !== "object" || Array.isArray(workspaceDocument)) {
+    return { ok: false, message: "manifest must be an object." };
   }
-  const activeToolId = typeof activePayload.toolId === "string" && activePayload.toolId.trim()
-    ? activePayload.toolId.trim()
-    : "workspace-v2";
-  const activeHostContextId = typeof currentHostContextId === "string" && currentHostContextId.trim()
-    ? currentHostContextId.trim()
-    : "";
-  if (!activeHostContextId) {
-    return {
-      ok: false,
-      status: "No active Workspace V2 session is available to export.",
-      filename: "",
-      serialized: ""
-    };
-  }
-  const container = {
-    documentKind: "workspace-manifest",
-    schema: "html-js-gaming.workspace-v2-session-export/1",
-    version: 1,
-    games: Array.isArray(gamesSnapshot) ? JSON.parse(JSON.stringify(gamesSnapshot)) : [],
-    workspaceSession: {
-      schema: "html-js-gaming.workspace-v2-session/1",
-      defaultToolId: "palette-manager-v2",
-      activeToolId,
-      activeHostContextId,
-      activeSession: activePayload,
-      savedSessions: library
+  const requiredRootKeys = ["documentKind", "schema", "version", "id", "name", "tools"];
+  for (const key of requiredRootKeys) {
+    if (!Object.prototype.hasOwnProperty.call(workspaceDocument, key)) {
+      return { ok: false, message: `root.${key} is required.` };
     }
-  };
-  return {
-    ok: true,
-    status: "Exported current workspace session JSON.",
-    filename: `workspace-v2-${activeToolId}-${activeHostContextId}.json`,
-    serialized: JSON.stringify(container, null, 2)
-  };
-}
-
-function computeDiffGuard(leftEntry, rightEntry) {
-  if (!leftEntry || !rightEntry) {
-    return { canCompute: false, message: "Select two different sessions to enable Compute Diff." };
   }
-  if (leftEntry.id === rightEntry.id) {
-    return { canCompute: false, message: "Select two different sessions to enable Compute Diff." };
+  if (workspaceDocument.documentKind !== "workspace-manifest") {
+    return { ok: false, message: "documentKind must be workspace-manifest." };
   }
-  if (leftEntry.toolId !== rightEntry.toolId) {
-    return { canCompute: false, message: "Diff requires sessions from the same tool." };
+  if (!workspaceDocument.tools || typeof workspaceDocument.tools !== "object" || Array.isArray(workspaceDocument.tools)) {
+    return { ok: false, message: "tools must be an object." };
   }
-  return { canCompute: true, message: "Compute Diff is enabled." };
+  if (Object.prototype.hasOwnProperty.call(workspaceDocument.tools, "palette")) {
+    return { ok: false, message: "tools.palette is not allowed." };
+  }
+  if (Object.prototype.hasOwnProperty.call(workspaceDocument.tools, "palettes")) {
+    return { ok: false, message: "tools.palettes is not allowed." };
+  }
+  if (!Object.prototype.hasOwnProperty.call(workspaceDocument.tools, "palette-browser")) {
+    return { ok: false, message: "tools.palette-browser is required." };
+  }
+  const paletteBrowser = workspaceDocument.tools["palette-browser"];
+  if (!paletteBrowser || typeof paletteBrowser !== "object" || Array.isArray(paletteBrowser)) {
+    return { ok: false, message: "tools.palette-browser must be an object." };
+  }
+  if (paletteBrowser.schema !== "html-js-gaming.palette") {
+    return { ok: false, message: "tools.palette-browser.schema is unsupported." };
+  }
+  if (!Number.isInteger(paletteBrowser.version) || paletteBrowser.version < 1) {
+    return { ok: false, message: "tools.palette-browser.version must be a positive integer." };
+  }
+  if (typeof paletteBrowser.name !== "string" || !paletteBrowser.name.trim()) {
+    return { ok: false, message: "tools.palette-browser.name is required." };
+  }
+  if (!Array.isArray(paletteBrowser.swatches)) {
+    return { ok: false, message: "tools.palette-browser.swatches must be an array." };
+  }
+  for (let index = 0; index < paletteBrowser.swatches.length; index += 1) {
+    const swatch = paletteBrowser.swatches[index];
+    if (!swatch || typeof swatch !== "object" || Array.isArray(swatch)) {
+      return { ok: false, message: `tools.palette-browser.swatches[${index}] must be an object.` };
+    }
+    const swatchKeys = Object.keys(swatch);
+    const allowedSwatchKeys = new Set(["symbol", "hex", "name"]);
+    for (const key of swatchKeys) {
+      if (!allowedSwatchKeys.has(key)) {
+        return { ok: false, message: `tools.palette-browser.swatches[${index}].${key} is not allowed.` };
+      }
+    }
+    if (typeof swatch.symbol !== "string" || swatch.symbol.length !== 1) {
+      return { ok: false, message: `tools.palette-browser.swatches[${index}].symbol must be one character.` };
+    }
+    if (typeof swatch.hex !== "string" || !/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{8})$/.test(swatch.hex)) {
+      return { ok: false, message: `tools.palette-browser.swatches[${index}].hex must be #RRGGBB or #RRGGBBAA.` };
+    }
+    if (typeof swatch.name !== "string" || !swatch.name.trim()) {
+      return { ok: false, message: `tools.palette-browser.swatches[${index}].name is required.` };
+    }
+  }
+  if (!Object.prototype.hasOwnProperty.call(workspaceDocument.tools, "workspace-v2")) {
+    return { ok: false, message: "tools.workspace-v2 is required." };
+  }
+  if (Object.prototype.hasOwnProperty.call(workspaceDocument, "workspaceSession")) {
+    return { ok: false, message: "root.workspaceSession is not allowed." };
+  }
+  if (Object.prototype.hasOwnProperty.call(workspaceDocument, "games")) {
+    return { ok: false, message: "root.games is not allowed." };
+  }
+  return { ok: true, message: "" };
 }
 
 export function run() {
   const failures = [];
-  const workspaceHtmlExists = fs.existsSync(workspaceHtmlPath);
   const workspaceJsExists = fs.existsSync(workspaceJsPath);
-  const workspaceSchemaExists = fs.existsSync(workspaceSchemaPath);
-  const workspaceHtml = workspaceHtmlExists ? fs.readFileSync(workspaceHtmlPath, "utf8") : "";
+  const workspaceManifestSchemaExists = fs.existsSync(workspaceManifestSchemaPath);
+  const deprecatedWorkspaceSchemaExists = fs.existsSync(deprecatedWorkspaceSchemaPath);
   const workspaceJs = workspaceJsExists ? fs.readFileSync(workspaceJsPath, "utf8") : "";
-  const workspaceSchema = workspaceSchemaExists ? JSON.parse(fs.readFileSync(workspaceSchemaPath, "utf8")) : null;
+  const workspaceManifestSchema = workspaceManifestSchemaExists
+    ? JSON.parse(fs.readFileSync(workspaceManifestSchemaPath, "utf8"))
+    : null;
   const workspaceJsSyntax = checkSyntax(workspaceJsPath);
   const testSyntax = checkSyntax(testPath);
 
-  if (!workspaceHtmlExists) failures.push("Missing tools/workspace-v2/index.html.");
   if (!workspaceJsExists) failures.push("Missing tools/workspace-v2/index.js.");
-  if (!workspaceSchemaExists) failures.push("Missing tools/schemas/workspace.schema.json.");
+  if (!workspaceManifestSchemaExists) failures.push("Missing tools/schemas/workspace.manifest.schema.json.");
   if (!workspaceJsSyntax.ok) failures.push("tools/workspace-v2/index.js failed syntax check.");
   if (!testSyntax.ok) failures.push("tests/runtime/V2CurrentSessionExport.test.mjs failed syntax check.");
+  if (deprecatedWorkspaceSchemaExists) failures.push("Deprecated tools/schemas/workspace.schema.json should not be present.");
 
-  const requiredWorkspaceHtmlTokens = [
-    'id="workspaceV2ImportJson"',
-    'id="workspaceV2ImportButton"',
-    'id="workspaceV2ExportButton"',
-    "Import Workspace Session JSON",
-    "Export Workspace Session JSON"
-  ];
-  requiredWorkspaceHtmlTokens.forEach((token) => {
-    if (!workspaceHtml.includes(token)) {
-      failures.push(`Missing required workspace import/export token: ${token}`);
+  if (workspaceManifestSchema && workspaceManifestSchema.properties && workspaceManifestSchema.properties.tools) {
+    const requiredToolsKeys = Array.isArray(workspaceManifestSchema.properties.tools.required)
+      ? workspaceManifestSchema.properties.tools.required
+      : [];
+    if (!requiredToolsKeys.includes("palette-browser")) {
+      failures.push("workspace.manifest.schema.json tools.required must include palette-browser.");
     }
-  });
+    const toolProperties = workspaceManifestSchema.properties.tools.properties || {};
+    if (!Object.prototype.hasOwnProperty.call(toolProperties, "palette-browser")) {
+      failures.push("workspace.manifest.schema.json must define tools.palette-browser.");
+    }
+    if (Object.prototype.hasOwnProperty.call(toolProperties, "palette")) {
+      failures.push("workspace.manifest.schema.json must not define tools.palette.");
+    }
+    if (Object.prototype.hasOwnProperty.call(toolProperties, "palettes")) {
+      failures.push("workspace.manifest.schema.json must not define tools.palettes.");
+    }
+  }
 
   const requiredWorkspaceJsTokens = [
-    "importWorkspaceSessionJson()",
-    "exportWorkspaceSessionJson()",
     "buildWorkspaceSchemaDocument()",
     "validateWorkspaceSchemaDocument(",
-    "workspaceManifestGames",
-    "workspaceSession",
-    "Diff requires sessions from the same tool."
+    "\"palette-browser\"",
+    "Use tools.palette-browser. Workspace supports one active palette tool entry."
   ];
   requiredWorkspaceJsTokens.forEach((token) => {
     if (!workspaceJs.includes(token)) {
-      failures.push(`Missing required workspace contract JS token: ${token}`);
+      failures.push(`Missing required workspace manifest token: ${token}`);
     }
   });
-
   const forbiddenWorkspaceJsTokens = [
-    "workspace-v2-active-session",
-    "workspace-v2-saved-session"
+    "tools.palette.",
+    "tools.palettes."
   ];
   forbiddenWorkspaceJsTokens.forEach((token) => {
     if (workspaceJs.includes(token)) {
-      failures.push(`Workspace V2 export/import should not model session snapshots in games[] (${token}).`);
+      failures.push(`Workspace V2 must not use legacy palette key path: ${token}`);
     }
   });
-
-  const forbiddenWorkspaceHtmlTokens = [
-    'id="workspaceV2NavModeSelect"',
-    'id="workspaceV2NavToolsActions"',
-    'id="workspaceV2NavWorkspaceActions"',
-    "Tool Mode (navTools)",
-    "Import Tool Session JSON",
-    "Export Tool Session JSON"
-  ];
-  forbiddenWorkspaceHtmlTokens.forEach((token) => {
-    if (workspaceHtml.includes(token)) {
-      failures.push(`Workspace V2 should not expose mode-switch/tool-mode control: ${token}`);
-    }
-  });
-
-  TOOL_IDS.forEach((toolId) => {
-    const toolHtmlPath = path.join(repoRoot, "tools", toolId, "index.html");
-    const toolHtmlExists = fs.existsSync(toolHtmlPath);
-    if (!toolHtmlExists) {
-      failures.push(`Missing tool page HTML: tools/${toolId}/index.html`);
-      return;
-    }
-    const toolHtml = fs.readFileSync(toolHtmlPath, "utf8");
-    const forbiddenToolTokens = [
-      'id="workspaceV2ImportJson"',
-      'id="workspaceV2ImportButton"',
-      'id="workspaceV2ExportButton"',
-      "Import Workspace Session JSON",
-      "Export Workspace Session JSON"
-    ];
-    forbiddenToolTokens.forEach((token) => {
-      if (toolHtml.includes(token)) {
-        failures.push(`Tool page should not expose workspace import/export controls (${toolId}): ${token}`);
-      }
-    });
-  });
-
-  if (workspaceSchema && workspaceSchema.properties) {
-    const requiredRootKeys = Array.isArray(workspaceSchema.required) ? workspaceSchema.required : [];
-    ["documentKind", "schema", "version", "games"].forEach((key) => {
-      if (!requiredRootKeys.includes(key)) {
-        failures.push(`workspace.schema.json must require root.${key}.`);
-      }
-    });
-    if (workspaceSchema.properties.games?.items?.properties?.session) {
-      failures.push("workspace.schema.json must not allow games[].session.");
-    }
-    if (!workspaceSchema.properties.workspaceSession) {
-      failures.push("workspace.schema.json must define optional root.workspaceSession.");
-    } else {
-      const requiredWorkspaceSessionKeys = workspaceSchema.properties.workspaceSession.required || [];
-      const expectedWorkspaceSessionKeys = ["schema", "defaultToolId", "activeToolId", "activeHostContextId", "activeSession", "savedSessions"];
-      if (JSON.stringify(requiredWorkspaceSessionKeys) !== JSON.stringify(expectedWorkspaceSessionKeys)) {
-        failures.push("workspace.schema.json workspaceSession required keys do not match minimal contract.");
-      }
-    }
+  if (workspaceJs.includes("workspace.schema.json")) {
+    failures.push("Workspace V2 runtime must not reference workspace.schema.json.");
   }
 
-  const activePayload = {
-    version: "v2",
-    toolId: "palette-manager-v2",
-    payloadJson: { swatches: ["#112233", "#445566"] }
-  };
-  const library = {
-    "asset-browser-v2-saved": {
-      version: "v2",
-      toolId: "asset-browser-v2",
-      payloadJson: { assetCatalog: { entries: [{ id: "asset-1" }] } }
+  const workspaceExport = {
+    documentKind: "workspace-manifest",
+    schema: "html-js-gaming.project",
+    version: 1,
+    id: "workspace-v2-palette-manager-v2-1234567890123-abcd1234",
+    name: "Workspace V2 Session palette-manager-v2",
+    tools: {
+      "palette-browser": {
+        schema: "html-js-gaming.palette",
+        version: 1,
+        name: "Workspace Active Palette",
+        swatches: [
+          { symbol: "A", hex: "#112233", name: "Primary" },
+          { symbol: "B", hex: "#445566", name: "Secondary" }
+        ]
+      },
+      "workspace-v2": {
+        schema: "html-js-gaming.workspace-v2-session/1",
+        game: { id: "workspace-palette-manager-v2-1234567890123-abcd1234", name: "Workspace V2 Session" },
+        defaultToolId: "palette-manager-v2",
+        activeToolId: "palette-manager-v2",
+        activeHostContextId: "palette-manager-v2-1234567890123-abcd1234",
+        activeSession: {
+          version: "v2",
+          toolId: "palette-manager-v2",
+          paletteJson: {
+            swatches: [
+              { symbol: "A", hex: "#112233", name: "Primary" },
+              { symbol: "B", hex: "#445566", name: "Secondary" }
+            ]
+          }
+        },
+        savedSessions: {}
+      }
     }
   };
-  const projectGames = [
-    {
-      id: "0207",
-      level: "phase-02",
-      tool: "sprite-editor",
-      tools: ["sprite-editor"],
-      palette: "samples/phase-02/0207/sample.0207.palette.json"
-    }
-  ];
-  const workspaceExport = simulateWorkspaceSchemaExport(projectGames, activePayload, "palette-manager-v2-1234567890123-abcd1234", library);
-  if (!workspaceExport.ok) failures.push("Workspace export should succeed when active payload exists.");
-  const workspaceExportParsed = workspaceExport.serialized ? JSON.parse(workspaceExport.serialized) : null;
-  if (!workspaceExportParsed || typeof workspaceExportParsed !== "object" || Array.isArray(workspaceExportParsed)) {
-    failures.push("Workspace export should be an object matching workspace.schema.json.");
-  } else {
-    const rootKeys = Object.keys(workspaceExportParsed).sort((left, right) => left.localeCompare(right));
-    const expectedRootKeys = ["documentKind", "games", "schema", "version", "workspaceSession"];
-    if (JSON.stringify(rootKeys) !== JSON.stringify(expectedRootKeys)) {
-      failures.push(`Workspace export root keys mismatch. Expected ${expectedRootKeys.join(", ")} and received ${rootKeys.join(", ")}.`);
-    }
-    if (!Array.isArray(workspaceExportParsed.games) || workspaceExportParsed.games.length !== 1) {
-      failures.push("Workspace export must preserve project games[] entries.");
-    } else {
-      if (Object.prototype.hasOwnProperty.call(workspaceExportParsed.games[0], "session")) {
-        failures.push("Workspace export games[] entries must not include session snapshots.");
-      }
-      if (workspaceExportParsed.games[0].id !== "0207" || workspaceExportParsed.games[0].tool !== "sprite-editor") {
-        failures.push("Workspace export must keep original games[] entry values unchanged.");
-      }
-    }
-    if (Object.prototype.hasOwnProperty.call(workspaceExportParsed, "workspaceV2Session")) {
-      failures.push("Workspace export must not include workspaceV2Session wrapper.");
-    }
-    if (Object.prototype.hasOwnProperty.call(workspaceExportParsed, "toolSessions")) {
-      failures.push("Workspace export must not include toolSessions wrapper.");
-    }
-    if (Object.prototype.hasOwnProperty.call(workspaceExportParsed, "savedSessions") && !Object.prototype.hasOwnProperty.call(workspaceExportParsed, "workspaceSession")) {
-      failures.push("Workspace export must not include root savedSessions wrapper.");
-    }
-    if (Object.prototype.hasOwnProperty.call(workspaceExportParsed, "exportedAt")) {
-      failures.push("Workspace export must not include exportedAt root field.");
-    }
-    if (!workspaceExportParsed.workspaceSession || typeof workspaceExportParsed.workspaceSession !== "object") {
-      failures.push("Workspace export must include workspaceSession resume block.");
-    } else {
-      const workspaceSessionKeys = Object.keys(workspaceExportParsed.workspaceSession).sort((left, right) => left.localeCompare(right));
-      const expectedWorkspaceSessionKeys = ["activeHostContextId", "activeSession", "activeToolId", "defaultToolId", "savedSessions", "schema"];
-      if (JSON.stringify(workspaceSessionKeys) !== JSON.stringify(expectedWorkspaceSessionKeys)) {
-        failures.push("workspaceSession keys do not match minimal allowed set.");
-      }
-      if (workspaceExportParsed.workspaceSession.activeHostContextId !== "palette-manager-v2-1234567890123-abcd1234") {
-        failures.push("workspaceSession.activeHostContextId must preserve active hostContextId.");
-      }
-      if (workspaceExportParsed.workspaceSession.activeToolId !== "palette-manager-v2") {
-        failures.push("workspaceSession.activeToolId must preserve active toolId.");
-      }
-      if (JSON.stringify(workspaceExportParsed.workspaceSession.activeSession) !== JSON.stringify(activePayload)) {
-        failures.push("workspaceSession.activeSession must preserve active payload.");
-      }
-    }
-  }
-
-  const diffCrossTool = computeDiffGuard(
-    { id: "history:a", toolId: "palette-manager-v2" },
-    { id: "history:b", toolId: "asset-browser-v2" }
-  );
-  if (diffCrossTool.canCompute) {
-    failures.push("Cross-tool diff must be blocked.");
-  }
-  if (diffCrossTool.message !== "Diff requires sessions from the same tool.") {
-    failures.push("Cross-tool diff guard must return the exact required message.");
-  }
-
-  const diffSameTool = computeDiffGuard(
-    { id: "history:a", toolId: "palette-manager-v2" },
-    { id: "history:b", toolId: "palette-manager-v2" }
-  );
-  if (!diffSameTool.canCompute) {
-    failures.push("Same-tool diff must remain enabled.");
+  const workspaceExportValidation = validateWorkspaceManifestShape(workspaceExport);
+  if (!workspaceExportValidation.ok) {
+    failures.push(`Manifest-only workspace export shape is invalid: ${workspaceExportValidation.message}`);
   }
 
   fs.mkdirSync(path.dirname(resultsPath), { recursive: true });
@@ -301,16 +207,14 @@ export function run() {
     generatedAt: new Date().toISOString(),
     failures,
     checks: {
-      workspaceHtmlExists,
       workspaceJsExists,
-      workspaceSchemaExists,
+      workspaceManifestSchemaExists,
+      deprecatedWorkspaceSchemaExists,
       workspaceJsSyntax,
       testSyntax
     },
     scenarios: {
-      workspaceExport,
-      diffCrossTool,
-      diffSameTool
+      workspaceExportValidation
     }
   }, null, 2)}\n`, "utf8");
 
