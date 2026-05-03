@@ -86,6 +86,7 @@ class WorkspaceV2SessionProducer {
     this.currentSessionSource = "";
     this.currentHostContextId = "";
     this.lastWorkspaceExportBuildErrorMessage = "";
+    this.workspaceActivePalette = null;
     this.workspaceTransitionState = "idle";
     this.pendingMergePreview = null;
     this.lastMergedSessionResult = null;
@@ -128,6 +129,9 @@ class WorkspaceV2SessionProducer {
     });
     this.sessionNameNode.addEventListener("input", () => {
       this.updateSessionLibraryActionState();
+    });
+    this.toolSelect.addEventListener("change", () => {
+      this.refreshPaletteOwnershipStateAndUi();
     });
     this.refreshSessionHistoryButton.addEventListener("click", () => {
       this.renderSessionLibrary();
@@ -208,9 +212,11 @@ class WorkspaceV2SessionProducer {
       }
     });
     this.applyDefaultWorkspaceToolSelection();
+    this.registerScrollTextColorRule();
     this.initializeImportExportSectionStatusNode();
     this.decodeSessionParamFromUrl();
     this.initializeWorkspaceProducerSession();
+    this.refreshPaletteOwnershipStateAndUi();
     this.registerSnapshotHook();
     this.renderSessionLibrary();
     this.renderSessionHistory();
@@ -286,6 +292,191 @@ class WorkspaceV2SessionProducer {
     }
   }
 
+  registerScrollTextColorRule() {
+    const updateColors = () => {
+      const scrollHeight = document.documentElement.scrollHeight - window.innerHeight;
+      const scrolledPercent = scrollHeight > 0 ? (window.scrollY / scrollHeight) * 100 : 0;
+      const nextColor = scrolledPercent >= 50 ? "#ffffff" : "#000000";
+      const textNodes = document.querySelectorAll(
+        "h1, h2, h3, h4, h5, h6, p, span, div, label, li, strong, code, pre, button, a, small, legend, input, select, option, textarea"
+      );
+      textNodes.forEach((node) => {
+        if (
+          node instanceof HTMLElement &&
+          window.getComputedStyle(node).display !== "none" &&
+          window.getComputedStyle(node).visibility !== "hidden"
+        ) {
+          node.style.color = nextColor;
+        }
+      });
+    };
+    window.addEventListener("scroll", updateColors, { passive: true });
+    window.addEventListener("resize", updateColors);
+    updateColors();
+  }
+
+  isPaletteManagerToolId(toolId) {
+    return typeof toolId === "string" && toolId.trim() === "palette-manager-v2";
+  }
+
+  isPaletteSessionPayload(sessionPayload) {
+    return Boolean(
+      sessionPayload &&
+      typeof sessionPayload === "object" &&
+      !Array.isArray(sessionPayload) &&
+      this.isPaletteManagerToolId(sessionPayload.toolId) &&
+      sessionPayload.paletteJson &&
+      typeof sessionPayload.paletteJson === "object" &&
+      !Array.isArray(sessionPayload.paletteJson) &&
+      Array.isArray(sessionPayload.paletteJson.swatches)
+    );
+  }
+
+  hasWorkspaceActivePalette() {
+    return Boolean(
+      this.workspaceActivePalette &&
+      typeof this.workspaceActivePalette === "object" &&
+      !Array.isArray(this.workspaceActivePalette) &&
+      typeof this.workspaceActivePalette.hostContextId === "string" &&
+      this.workspaceActivePalette.hostContextId.trim() &&
+      this.workspaceActivePalette.palette &&
+      typeof this.workspaceActivePalette.palette === "object" &&
+      !Array.isArray(this.workspaceActivePalette.palette) &&
+      Array.isArray(this.workspaceActivePalette.palette.swatches)
+    );
+  }
+
+  activePaletteHostContextId() {
+    if (!this.hasWorkspaceActivePalette()) {
+      return "";
+    }
+    return this.workspaceActivePalette.hostContextId.trim();
+  }
+
+  singleActivePaletteBlockedMessage() {
+    return "Workspace already has an active palette. Only one active palette is allowed.";
+  }
+
+  isBlockedAlternatePaletteSession(sessionId, sessionPayload) {
+    if (!this.hasWorkspaceActivePalette()) {
+      return false;
+    }
+    if (!this.isPaletteSessionPayload(sessionPayload)) {
+      return false;
+    }
+    if (typeof sessionId !== "string" || !sessionId.trim()) {
+      return true;
+    }
+    return sessionId.trim() !== this.activePaletteHostContextId();
+  }
+
+  updateWorkspaceActivePaletteFromCurrentSession() {
+    if (!this.isPaletteSessionPayload(this.currentSessionPayload)) {
+      return;
+    }
+    if (typeof this.currentHostContextId !== "string" || !this.currentHostContextId.trim()) {
+      return;
+    }
+    this.workspaceActivePalette = {
+      hostContextId: this.currentHostContextId.trim(),
+      palette: {
+        swatches: this.cloneSessionValue(this.currentSessionPayload.paletteJson.swatches)
+      }
+    };
+  }
+
+  updateWorkspaceActivePaletteFromManifest(workspaceDocument) {
+    if (
+      !workspaceDocument ||
+      typeof workspaceDocument !== "object" ||
+      Array.isArray(workspaceDocument) ||
+      !workspaceDocument.tools ||
+      typeof workspaceDocument.tools !== "object" ||
+      Array.isArray(workspaceDocument.tools) ||
+      !workspaceDocument.tools.palettes ||
+      typeof workspaceDocument.tools.palettes !== "object" ||
+      Array.isArray(workspaceDocument.tools.palettes) ||
+      !workspaceDocument.tools.palettes.activePalette ||
+      typeof workspaceDocument.tools.palettes.activePalette !== "object" ||
+      Array.isArray(workspaceDocument.tools.palettes.activePalette)
+    ) {
+      return;
+    }
+    const paletteValidation = this.validatePaletteSwatchesForWorkspaceExport(
+      workspaceDocument.tools.palettes.activePalette.swatches,
+      "tools.palettes.activePalette.swatches"
+    );
+    if (!paletteValidation.ok) {
+      return;
+    }
+    const nextHostContextId = typeof this.currentHostContextId === "string" && this.currentHostContextId.trim()
+      ? this.currentHostContextId.trim()
+      : "workspace-active-palette";
+    this.workspaceActivePalette = {
+      hostContextId: nextHostContextId,
+      palette: {
+        swatches: this.cloneSessionValue(workspaceDocument.tools.palettes.activePalette.swatches)
+      }
+    };
+  }
+
+  pruneCompetingPaletteRecentSessions() {
+    if (!this.hasWorkspaceActivePalette()) {
+      return false;
+    }
+    const activePaletteHostContextId = this.activePaletteHostContextId();
+    const history = this.readSessionHistory();
+    const nextHistory = [];
+    const removedPaletteSessionIds = [];
+    history.forEach((entry) => {
+      if (!this.isValidSessionHistoryEntry(entry)) {
+        return;
+      }
+      if (this.isPaletteManagerToolId(entry.tool) && entry.hostContextId !== activePaletteHostContextId) {
+        removedPaletteSessionIds.push(entry.hostContextId);
+        return;
+      }
+      nextHistory.push(entry);
+    });
+    if (removedPaletteSessionIds.length === 0) {
+      return false;
+    }
+    removedPaletteSessionIds.forEach((sessionId) => {
+      sessionStorage.removeItem(sessionId);
+      if (this.currentHostContextId === sessionId) {
+        this.currentHostContextId = "";
+        this.setCurrentSessionPayload(null, "");
+      }
+    });
+    localStorage.setItem(this.historyStorageKey, JSON.stringify(nextHistory));
+    return true;
+  }
+
+  refreshPaletteOwnershipUiState() {
+    const hasActivePalette = this.hasWorkspaceActivePalette();
+    const selectedToolId = this.selectedToolId();
+    Array.from(this.toolSelect.options).forEach((option) => {
+      if (option.value === "palette-manager-v2") {
+        option.disabled = hasActivePalette;
+      }
+    });
+    const paletteToolSelected = selectedToolId === "palette-manager-v2";
+    this.loadFixtureButton.disabled = hasActivePalette && paletteToolSelected;
+    this.launchButton.disabled = hasActivePalette && paletteToolSelected;
+  }
+
+  refreshPaletteOwnershipStateAndUi() {
+    this.updateWorkspaceActivePaletteFromCurrentSession();
+    const removedCompetingPaletteSessions = this.pruneCompetingPaletteRecentSessions();
+    this.refreshPaletteOwnershipUiState();
+    if (removedCompetingPaletteSessions) {
+      this.renderSessionHistory();
+      this.renderSessionDiffInputs();
+      this.renderSessionMergeInputs();
+    }
+    this.refreshWorkspaceSessionUiStateModel("refresh_load");
+  }
+
   createProducerPayloadForTool(toolId) {
     if (toolId === "palette-manager-v2") {
       return {
@@ -356,6 +547,10 @@ class WorkspaceV2SessionProducer {
 
   updateSessionLibraryActionState() {
     const model = this.refreshWorkspaceSessionUiStateModel("refresh_load");
+    if (model.libraryPaletteLocked) {
+      this.libraryStatusNode.textContent = "Workspace already has an active palette. Only one active palette is allowed.";
+      return;
+    }
     if (!model.libraryHasSessionInput) {
       this.libraryStatusNode.textContent = "Enter a new session ID to save.";
       return;
@@ -456,7 +651,15 @@ class WorkspaceV2SessionProducer {
     const libraryIdValid = this.isValidNewSessionId(selectedSessionName);
     const librarySavedSessionExists = this.savedSessionIdExists(selectedSessionName);
     const libraryHasActiveSession = this.hasActiveWorkspaceSessionForSave();
-    const libraryCanSave = Boolean(libraryHasSessionInput && libraryIdValid && !librarySavedSessionExists && libraryHasActiveSession);
+    const libraryActivePayload = this.resolveActiveSessionPayloadForWorkspaceManifest();
+    const libraryPaletteLocked = Boolean(this.hasWorkspaceActivePalette() && this.isPaletteSessionPayload(libraryActivePayload));
+    const libraryCanSave = Boolean(
+      !libraryPaletteLocked &&
+      libraryHasSessionInput &&
+      libraryIdValid &&
+      !librarySavedSessionExists &&
+      libraryHasActiveSession
+    );
     const diffLeftEntry = this.findSessionEntryById(this.diffCandidates, this.diffLeftSelect.value);
     const diffRightEntry = this.findSessionEntryById(this.diffCandidates, this.diffRightSelect.value);
     const diffSameTool = Boolean(
@@ -517,6 +720,7 @@ class WorkspaceV2SessionProducer {
       libraryIdValid,
       librarySavedSessionExists,
       libraryHasActiveSession,
+      libraryPaletteLocked,
       libraryCanSave,
       diffLeftEntry,
       diffRightEntry,
@@ -937,56 +1141,55 @@ class WorkspaceV2SessionProducer {
   }
 
   resolveActivePaletteForWorkspaceExport(activePayload, library) {
-    let savedPaletteCount = 0;
+    let knownPaletteCount = 0;
     if (library && typeof library === "object" && !Array.isArray(library)) {
       for (const sessionId of Object.keys(library)) {
         const savedPayload = library[sessionId];
-        if (!savedPayload || typeof savedPayload !== "object" || Array.isArray(savedPayload)) {
+        if (!this.isPaletteSessionPayload(savedPayload)) {
           continue;
         }
-        if (savedPayload.toolId !== "palette-manager-v2") {
-          continue;
-        }
-        if (!savedPayload.paletteJson || typeof savedPayload.paletteJson !== "object" || Array.isArray(savedPayload.paletteJson)) {
-          continue;
-        }
-        if (!Array.isArray(savedPayload.paletteJson.swatches)) {
-          continue;
-        }
-        savedPaletteCount += 1;
+        knownPaletteCount += 1;
       }
     }
-    if (!activePayload || typeof activePayload !== "object" || Array.isArray(activePayload)) {
-      return { ok: false, message: "Active session payload could not be resolved for export." };
-    }
-    if (activePayload.toolId !== "palette-manager-v2") {
-      if (savedPaletteCount > 1) {
-        return {
-          ok: false,
-          message: "Multiple palettes are present. Select one active palette session before export."
-        };
+    if (this.hasWorkspaceActivePalette()) {
+      const swatchValidation = this.validatePaletteSwatchesForWorkspaceExport(
+        this.workspaceActivePalette.palette.swatches,
+        "tools.palettes.activePalette.swatches"
+      );
+      if (!swatchValidation.ok) {
+        return { ok: false, message: swatchValidation.message };
       }
       return {
-        ok: false,
-        message: "Workspace export requires one active palette in the current palette-manager-v2 session."
+        ok: true,
+        activePalette: {
+          swatches: this.cloneSessionValue(this.workspaceActivePalette.palette.swatches)
+        }
       };
     }
-    const activePaletteValidation = this.validateWorkspaceToolSessionPayload(activePayload, "tools.workspace-v2.activeSession");
-    if (!activePaletteValidation.ok) {
-      return { ok: false, message: activePaletteValidation.message };
+    if (this.isPaletteSessionPayload(activePayload)) {
+      const swatchValidation = this.validatePaletteSwatchesForWorkspaceExport(
+        activePayload.paletteJson.swatches,
+        "tools.workspace-v2.activeSession.paletteJson.swatches"
+      );
+      if (!swatchValidation.ok) {
+        return { ok: false, message: swatchValidation.message };
+      }
+      return {
+        ok: true,
+        activePalette: {
+          swatches: this.cloneSessionValue(activePayload.paletteJson.swatches)
+        }
+      };
     }
-    const swatchValidation = this.validatePaletteSwatchesForWorkspaceExport(
-      activePayload.paletteJson.swatches,
-      "tools.workspace-v2.activeSession.paletteJson.swatches"
-    );
-    if (!swatchValidation.ok) {
-      return { ok: false, message: swatchValidation.message };
+    if (knownPaletteCount > 1) {
+      return {
+        ok: false,
+        message: "Multiple palettes are present. Select one active palette session before export."
+      };
     }
     return {
-      ok: true,
-      activePalette: {
-        swatches: this.cloneSessionValue(activePayload.paletteJson.swatches)
-      }
+      ok: false,
+      message: "Workspace export requires one active palette. Only one active palette is allowed."
     };
   }
 
@@ -1035,6 +1238,8 @@ class WorkspaceV2SessionProducer {
   setCurrentSessionPayload(sessionPayload, sourceLabel) {
     this.currentSessionPayload = sessionPayload;
     this.currentSessionSource = sourceLabel;
+    this.updateWorkspaceActivePaletteFromCurrentSession();
+    this.refreshPaletteOwnershipUiState();
     this.renderDiagnosticsPanel();
   }
 
@@ -1077,6 +1282,10 @@ class WorkspaceV2SessionProducer {
     const toolId = this.selectedToolId();
     if (!toolId) {
       this.statusNode.textContent = "Select a V2 tool before applying session payload.";
+      return false;
+    }
+    if (this.hasWorkspaceActivePalette() && this.isPaletteManagerToolId(toolId)) {
+      this.statusNode.textContent = this.singleActivePaletteBlockedMessage();
       return false;
     }
     const versionedPayload = this.withSessionVersion(sessionPayload);
@@ -1190,6 +1399,8 @@ class WorkspaceV2SessionProducer {
     this.libraryEmptyState.hidden = sessionNames.length > 0;
     this.libraryEmptyState.textContent = "No saved sessions in library.";
     const canOverwriteFromActiveSession = this.hasActiveWorkspaceSessionForSave();
+    const hasActivePalette = this.hasWorkspaceActivePalette();
+    const activePaletteHostContextId = this.activePaletteHostContextId();
     sessionNames.forEach((sessionName) => {
       const item = document.createElement("li");
       const payload = library[sessionName];
@@ -1205,6 +1416,11 @@ class WorkspaceV2SessionProducer {
       const readableLabel = payload && typeof payload.toolId === "string" && payload.toolId.trim()
         ? payload.toolId.trim()
         : "saved-session";
+      const paletteRowLocked = Boolean(
+        hasActivePalette &&
+        this.isPaletteSessionPayload(payload) &&
+        sessionName !== activePaletteHostContextId
+      );
       label.textContent = `${readableLabel} (${sessionName})`;
       idLabel.textContent = "Session ID: ";
       idCode.textContent = sessionName;
@@ -1222,12 +1438,13 @@ class WorkspaceV2SessionProducer {
       });
       loadButton.type = "button";
       loadButton.textContent = "Load";
+      loadButton.disabled = paletteRowLocked;
       loadButton.addEventListener("click", () => {
         this.loadSavedSessionById(sessionName);
       });
       overwriteButton.type = "button";
       overwriteButton.textContent = "Overwrite";
-      overwriteButton.disabled = !canOverwriteFromActiveSession;
+      overwriteButton.disabled = !canOverwriteFromActiveSession || paletteRowLocked;
       overwriteButton.addEventListener("click", () => {
         this.overwriteSavedSessionById(sessionName);
       });
@@ -1277,6 +1494,18 @@ class WorkspaceV2SessionProducer {
       this.setLibraryStatus("Enter a saved session ID before loading.");
       return;
     }
+    const library = this.readSessionLibrary();
+    if (library === null) {
+      return;
+    }
+    if (!Object.prototype.hasOwnProperty.call(library, sessionId.trim())) {
+      this.setLibraryStatus("Saved session not found.");
+      return;
+    }
+    if (this.isBlockedAlternatePaletteSession(sessionId.trim(), library[sessionId.trim()])) {
+      this.setLibraryStatus(this.singleActivePaletteBlockedMessage());
+      return;
+    }
     this.sessionNameNode.value = sessionId.trim();
     this.updateSessionLibraryActionState();
     this.loadNamedSession();
@@ -1300,6 +1529,14 @@ class WorkspaceV2SessionProducer {
     }
     if (!Object.prototype.hasOwnProperty.call(library, sessionId.trim())) {
       this.setLibraryStatus("Saved session not found. Use Save Session to create it first.");
+      return;
+    }
+    if (this.isBlockedAlternatePaletteSession(sessionId.trim(), library[sessionId.trim()])) {
+      this.setLibraryStatus(this.singleActivePaletteBlockedMessage());
+      return;
+    }
+    if (this.isBlockedAlternatePaletteSession(sessionId.trim(), activePayload)) {
+      this.setLibraryStatus(this.singleActivePaletteBlockedMessage());
       return;
     }
     library[sessionId.trim()] = activePayload;
@@ -1386,7 +1623,10 @@ class WorkspaceV2SessionProducer {
   }
 
   renderSessionHistory() {
-    const history = this.readSessionHistory();
+    let history = this.readSessionHistory();
+    if (this.pruneCompetingPaletteRecentSessions()) {
+      history = this.readSessionHistory();
+    }
     this.recentSessionInventory = this.buildRecentSessionInventory(history);
     this.updateUndoLastMergeState();
     this.sessionHistoryListNode.replaceChildren();
@@ -1520,6 +1760,10 @@ class WorkspaceV2SessionProducer {
       this.currentHostContextId = "";
       this.setCurrentSessionPayload(null, "");
     }
+    if (this.activePaletteHostContextId() === sessionId) {
+      this.workspaceActivePalette = null;
+      this.refreshPaletteOwnershipUiState();
+    }
     this.renderSessionHistory();
     this.refreshWorkspaceSessionUiStateModel("delete_session");
     this.statusNode.textContent = `Recent session '${sessionId}' deleted.`;
@@ -1563,6 +1807,10 @@ class WorkspaceV2SessionProducer {
     if (this.currentHostContextId === lastMergedId) {
       this.currentHostContextId = "";
       this.setCurrentSessionPayload(null, "");
+    }
+    if (this.activePaletteHostContextId() === lastMergedId) {
+      this.workspaceActivePalette = null;
+      this.refreshPaletteOwnershipUiState();
     }
     if (this.diffLeftSelect.value === `history:${lastMergedId}`) {
       this.diffLeftSelect.value = "";
@@ -2576,6 +2824,10 @@ class WorkspaceV2SessionProducer {
       this.statusNode.textContent = "Selected history entry is invalid.";
       return;
     }
+    if (this.isBlockedAlternatePaletteSession(entry.hostContextId, entry.payload)) {
+      this.statusNode.textContent = this.singleActivePaletteBlockedMessage();
+      return;
+    }
     sessionStorage.setItem(entry.hostContextId, JSON.stringify(entry.payload));
     this.currentHostContextId = entry.hostContextId;
     this.setCurrentSessionPayload(entry.payload, `history:${entry.hostContextId}`);
@@ -2682,6 +2934,7 @@ class WorkspaceV2SessionProducer {
 
   clearSessionStorage(emitStatus = true) {
     sessionStorage.clear();
+    this.workspaceActivePalette = null;
     this.clearPersistedSessionSelection();
     this.sessionNameNode.value = "";
     this.updateSessionLibraryActionState();
@@ -2694,6 +2947,7 @@ class WorkspaceV2SessionProducer {
     this.clearDiffOutputForStateChange("", "No diff computed.");
     this.currentHostContextId = "";
     this.updateUndoLastMergeState();
+    this.refreshPaletteOwnershipUiState();
     this.renderDiagnosticsPanel();
     if (emitStatus) {
       this.statusNode.textContent = "Session storage cleared and session selections reset.";
@@ -2737,8 +2991,10 @@ class WorkspaceV2SessionProducer {
     this.clearErrorLogs(false);
     this.resetUrlState(false);
     this.currentHostContextId = "";
+    this.workspaceActivePalette = null;
     this.setCurrentSessionPayload(null, "");
     this.initializeWorkspaceProducerSession();
+    this.refreshPaletteOwnershipStateAndUi();
     this.syncWorkspaceManifestTextarea();
     this.shareUrlNode.value = "";
     this.sessionNameNode.value = "";
@@ -2974,6 +3230,10 @@ class WorkspaceV2SessionProducer {
     const toolId = this.selectedToolId();
     if (!toolId) {
       this.statusNode.textContent = "Select a V2 tool before loading a fixture.";
+      return;
+    }
+    if (this.hasWorkspaceActivePalette() && this.isPaletteManagerToolId(toolId)) {
+      this.statusNode.textContent = this.singleActivePaletteBlockedMessage();
       return;
     }
     try {
@@ -3441,6 +3701,7 @@ class WorkspaceV2SessionProducer {
       localStorage.setItem(this.libraryStorageKey, JSON.stringify(workspaceV2Tool.savedSessions));
       this.currentHostContextId = activeHostContextId;
       this.setCurrentSessionPayload(activePayload, "workspace-import");
+      this.updateWorkspaceActivePaletteFromManifest(parsed);
       this.workspaceJsonNode.value = JSON.stringify(parsed, null, 2);
       const hasToolOption = Array.from(this.toolSelect.options).some((option) => option.value === activeToolId);
       if (hasToolOption) {
@@ -3450,6 +3711,7 @@ class WorkspaceV2SessionProducer {
       this.renderSessionHistory();
       this.renderSessionDiffInputs();
       this.renderSessionMergeInputs();
+      this.refreshPaletteOwnershipStateAndUi();
       this.refreshWorkspaceSessionUiStateModel("refresh_load");
       this.renderDiagnosticsPanel();
       this.setImportExportStatus("Import success");
@@ -3535,6 +3797,10 @@ class WorkspaceV2SessionProducer {
       this.setLibraryStatus(payloadValidation.message);
       return;
     }
+    if (this.isBlockedAlternatePaletteSession(sessionName, payloadForWrite)) {
+      this.setLibraryStatus(this.singleActivePaletteBlockedMessage());
+      return;
+    }
     library[sessionName] = payloadForWrite;
     this.writeSessionLibrary(library);
     this.renderSessionLibrary();
@@ -3558,6 +3824,10 @@ class WorkspaceV2SessionProducer {
       return;
     }
     const payload = library[sessionName];
+    if (this.isBlockedAlternatePaletteSession(sessionName, payload)) {
+      this.setLibraryStatus(this.singleActivePaletteBlockedMessage());
+      return;
+    }
     if (!this.applySessionPayload(payload, `library:${sessionName}`)) {
       this.setLibraryStatus("Saved session not found.");
       return;
@@ -3601,6 +3871,10 @@ class WorkspaceV2SessionProducer {
     const toolId = this.selectedToolId();
     if (!toolId) {
       this.statusNode.textContent = "Select a V2 tool before launch.";
+      return;
+    }
+    if (this.hasWorkspaceActivePalette() && this.isPaletteManagerToolId(toolId)) {
+      this.statusNode.textContent = this.singleActivePaletteBlockedMessage();
       return;
     }
     if (!this.isValidSessionPayload(this.currentSessionPayload)) {
