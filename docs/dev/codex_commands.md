@@ -180,3 +180,10 @@ PR_11_318A
 ```bash
 npx @openai/codex run --model gpt-5.3-codex --reasoning medium "Implement PR_11_318A: Remove test-to-test imports by extracting RuntimeSceneLoaderHotReload shared logic into tests/helpers and updating final/tool tests to consume helper."
 ```
+
+---
+PR_11_318B
+
+```bash
+npx @openai/codex run --model gpt-5.3-codex --reasoning medium "Implement PR_11_318B: Add first Playwright UI test for Workspace V2 launching Asset Manager V2, add/remove asset flow, and export verification."
+```
