@@ -18,6 +18,7 @@ class WorkspaceV2SessionProducer {
     this.importJsonNode = document.getElementById("workspaceV2ImportJson");
     this.importFileNode = document.getElementById("workspaceV2ImportFile");
     this.importButton = document.getElementById("workspaceV2ImportButton");
+    this.importTextareaButton = null;
     this.exportButton = document.getElementById("workspaceV2ExportButton");
     this.workspaceJsonNode = this.importJsonNode;
     this.shareUrlNode = document.getElementById("workspaceV2ShareUrl");
@@ -82,6 +83,7 @@ class WorkspaceV2SessionProducer {
     this.fullResetButton = document.getElementById("workspaceV2FullResetButton");
     this.statusNode = document.getElementById("workspaceV2Status");
     this.importExportStatusNode = null;
+    this.importFileDialogPending = false;
     this.currentSessionPayload = null;
     this.currentSessionSource = "";
     this.currentHostContextId = "";
@@ -114,6 +116,9 @@ class WorkspaceV2SessionProducer {
     });
     this.importFileNode.addEventListener("change", () => {
       this.readImportFile();
+    });
+    window.addEventListener("focus", () => {
+      this.handleImportFileDialogFocus();
     });
     this.saveSessionButton.addEventListener("click", () => {
       this.saveNamedSession(false);
@@ -215,6 +220,7 @@ class WorkspaceV2SessionProducer {
     this.registerScrollTextColorRule();
     this.initializeImportExportSectionStatusNode();
     this.initializeHiddenImportFileInput();
+    this.initializeImportTextareaButton();
     this.decodeSessionParamFromUrl();
     this.initializeWorkspaceProducerSession();
     this.refreshPaletteOwnershipStateAndUi();
@@ -298,19 +304,51 @@ class WorkspaceV2SessionProducer {
     this.importFileNode.style.display = "none";
   }
 
-  handleImportWorkspaceSessionJsonClick() {
-    const rawJson = typeof this.workspaceJsonNode.value === "string" ? this.workspaceJsonNode.value.trim() : "";
-    if (rawJson) {
-      this.importWorkspaceSessionJson();
-      return;
+  initializeImportTextareaButton() {
+    const existingButton = document.getElementById("workspaceV2ImportTextareaButton");
+    if (existingButton instanceof HTMLButtonElement) {
+      this.importTextareaButton = existingButton;
+    } else {
+      const importButtonParent = this.importButton ? this.importButton.parentElement : null;
+      if (!importButtonParent) {
+        return;
+      }
+      const textareaImportButton = document.createElement("button");
+      textareaImportButton.type = "button";
+      textareaImportButton.id = "workspaceV2ImportTextareaButton";
+      textareaImportButton.textContent = "Import Textarea JSON";
+      importButtonParent.insertBefore(textareaImportButton, this.importButton.nextSibling);
+      this.importTextareaButton = textareaImportButton;
     }
+    this.importTextareaButton.addEventListener("click", () => {
+      this.importWorkspaceSessionJson();
+    });
+  }
+
+  handleImportWorkspaceSessionJsonClick() {
     this.setImportExportStatus("Select a workspace session file to import.");
     if (!this.importFileNode) {
       this.setImportExportStatus("Import error: file picker is unavailable.");
       return;
     }
+    this.importFileDialogPending = true;
     this.importFileNode.value = "";
     this.importFileNode.click();
+  }
+
+  handleImportFileDialogFocus() {
+    if (!this.importFileDialogPending) {
+      return;
+    }
+    window.setTimeout(() => {
+      if (!this.importFileDialogPending) {
+        return;
+      }
+      if (!this.importFileNode.files || this.importFileNode.files.length === 0) {
+        this.importFileDialogPending = false;
+        this.setImportExportStatus("Import cancelled.");
+      }
+    }, 0);
   }
 
   applyDefaultWorkspaceToolSelection() {
@@ -3353,8 +3391,13 @@ class WorkspaceV2SessionProducer {
 
   readImportFile() {
     if (!this.importFileNode.files || this.importFileNode.files.length === 0) {
+      if (this.importFileDialogPending) {
+        this.importFileDialogPending = false;
+        this.setImportExportStatus("Import cancelled.");
+      }
       return;
     }
+    this.importFileDialogPending = false;
     const file = this.importFileNode.files[0];
     const reader = new FileReader();
     reader.addEventListener("load", () => {
@@ -3362,6 +3405,7 @@ class WorkspaceV2SessionProducer {
       this.importWorkspaceSessionJson();
     });
     reader.addEventListener("error", () => {
+      this.importFileDialogPending = false;
       this.setImportExportStatus(`Import error: ${file.name} could not be read.`);
     });
     reader.readAsText(file);
