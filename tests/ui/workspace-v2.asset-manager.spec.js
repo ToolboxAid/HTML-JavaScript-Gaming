@@ -9,7 +9,7 @@ test("workspace v2 launches asset manager and add/remove is reflected in export"
     await page.goto(`${server.baseUrl}/tools/workspace-v2/index.html`);
     await ctrlTapClick(page, page.getByRole("button", { name: "Full Reset" }));
     await expect(page.locator("#workspaceV2WorkspaceToolsSummary")).toContainText("palette-browser");
-    await expect(page.locator("#workspaceV2WorkspaceToolsSummary")).toContainText("workspace-v2");
+    await expect(page.locator("#workspaceV2WorkspaceToolsSummary")).not.toContainText("workspace-v2");
 
     // 2) Producer launch to Asset Manager V2
     await page.locator("#workspaceV2ToolSelect").selectOption("asset-manager-v2");

@@ -22,6 +22,7 @@ class WorkspaceV2ToolStateProducer {
     this.backButton = document.getElementById("workspaceV2BackButton");
     this.loadFixtureButton = document.getElementById("workspaceV2LoadFixtureButton");
     this.launchButton = document.getElementById("workspaceV2LaunchButton");
+    this.createDirectToolsEntryButton = document.getElementById("workspaceV2CreateDirectToolsEntryButton");
     this.promoteActiveToolStateButton = document.getElementById("workspaceV2PromoteActiveToolStateButton");
     this.openAssetManagerButton = document.getElementById("workspaceV2OpenAssetManagerButton");
     this.importJsonNode = document.getElementById("workspaceV2ImportJson");
@@ -79,6 +80,7 @@ class WorkspaceV2ToolStateProducer {
     this.clearSavedToolStatesButton = document.getElementById("workspaceV2ClearSavedToolStatesButton");
     this.resetClearErrorLogsButton = document.getElementById("workspaceV2ResetClearErrorLogsButton");
     this.fullResetButton = document.getElementById("workspaceV2FullResetButton");
+    this.activeToolStatePublishStatusNode = document.getElementById("workspaceV2ActiveToolStatePublishStatus");
     this.statusNode = document.getElementById("workspaceV2Status");
     this.importExportStatusNode = null;
     this.importFileDialogPending = false;
@@ -101,6 +103,9 @@ class WorkspaceV2ToolStateProducer {
     });
     this.launchButton.addEventListener("click", () => {
       this.createToolStateAndLaunch();
+    });
+    this.createDirectToolsEntryButton.addEventListener("click", () => {
+      this.createDirectToolsEntry();
     });
     this.promoteActiveToolStateButton.addEventListener("click", () => {
       this.promoteActiveToolStateToWorkspaceTools();
@@ -313,7 +318,9 @@ class WorkspaceV2ToolStateProducer {
     if (!parsed.value.tools || typeof parsed.value.tools !== "object" || Array.isArray(parsed.value.tools)) {
       return [];
     }
-    return Object.keys(parsed.value.tools).sort((left, right) => left.localeCompare(right));
+    return Object.keys(parsed.value.tools)
+      .filter((toolId) => toolId !== "workspace-v2")
+      .sort((left, right) => left.localeCompare(right));
   }
 
   workspaceToolSummaryEntries() {
@@ -321,10 +328,10 @@ class WorkspaceV2ToolStateProducer {
     if (fromTextarea.length > 0) {
       return fromTextarea;
     }
-    const entries = ["palette-browser", "workspace-v2"];
+    const entries = ["palette-browser"];
     const importedToolIds = Object.keys(this.workspaceImportedToolEntries || {}).sort((left, right) => left.localeCompare(right));
     importedToolIds.forEach((toolId) => {
-      if (!entries.includes(toolId)) {
+      if (toolId !== "workspace-v2" && !entries.includes(toolId)) {
         entries.push(toolId);
       }
     });
@@ -337,8 +344,8 @@ class WorkspaceV2ToolStateProducer {
     }
     const entries = this.workspaceToolSummaryEntries();
     this.workspaceToolsSummaryNode.textContent = entries.length > 0
-      ? `Workspace Tools: ${entries.join(", ")}`
-      : "Workspace Tools: none";
+      ? entries.join(", ")
+      : "none";
   }
 
   setImportExportStatus(message) {
@@ -347,6 +354,29 @@ class WorkspaceV2ToolStateProducer {
     }
     this.renderWorkspaceToolsSummary();
     this.statusNode.textContent = message;
+  }
+
+  activeToolStatePublishStatusText() {
+    const activeToolState = this.readActiveToolStatePayloadForLibraryActions();
+    if (!this.isValidToolStatePayload(activeToolState)) {
+      return "Active in Workspace only";
+    }
+    const toolId = typeof activeToolState.toolId === "string" ? activeToolState.toolId.trim() : "";
+    if (!toolId || !Object.prototype.hasOwnProperty.call(this.workspaceImportedToolEntries, toolId)) {
+      return "Active in Workspace only";
+    }
+    const publishedPayload = this.workspaceImportedToolEntries[toolId];
+    if (JSON.stringify(publishedPayload) !== JSON.stringify(activeToolState.payloadJson)) {
+      return "Active in Workspace only";
+    }
+    return `Promoted to tools.${toolId}`;
+  }
+
+  renderActiveToolStatePublishStatus() {
+    if (!this.activeToolStatePublishStatusNode) {
+      return;
+    }
+    this.activeToolStatePublishStatusNode.textContent = this.activeToolStatePublishStatusText();
   }
 
   initializeHiddenImportFileInput() {
@@ -1002,6 +1032,8 @@ class WorkspaceV2ToolStateProducer {
     this.renderMergeConflictSummary();
     this.openAssetManagerButton.disabled = !model.assetManagerLaunchReady;
     this.openAssetManagerButton.textContent = model.assetManagerLaunchLabel;
+    this.renderActiveToolStatePublishStatus();
+    this.renderWorkspaceToolsSummary();
   }
 
   refreshWorkspaceToolStateUiStateModel(actionName = "refresh_load") {
@@ -1335,6 +1367,33 @@ class WorkspaceV2ToolStateProducer {
     );
   }
 
+  createDirectToolsEntry() {
+    const selectedToolId = this.ensureSelectedToolStateProducerToolId();
+    if (!selectedToolId) {
+      this.statusNode.textContent = "Direct tools entry blocked. Select a toolState-capable V2 tool first.";
+      return;
+    }
+    const activeToolState = this.readActiveToolStatePayloadForLibraryActions();
+    if (!this.isValidToolStatePayload(activeToolState)) {
+      this.statusNode.textContent = "Direct tools entry blocked. No active tool state is available.";
+      return;
+    }
+    const activeToolId = typeof activeToolState.toolId === "string" ? activeToolState.toolId.trim() : "";
+    if (activeToolId !== selectedToolId) {
+      this.statusNode.textContent = `Direct tools entry blocked. Active tool state toolId '${activeToolId}' does not match selected tool '${selectedToolId}'.`;
+      return;
+    }
+    const promoted = this.promoteToolStatePayloadToWorkspaceTools(
+      activeToolState,
+      "tools.workspace-v2.activeToolState",
+      `Direct tools entry '${selectedToolId}'`
+    );
+    if (!promoted) {
+      return;
+    }
+    this.statusNode.textContent = `Direct tools entry created at tools.${selectedToolId}.`;
+  }
+
   readToolStatePayloadFromRecentToolStateId(toolStateId) {
     if (typeof toolStateId !== "string" || !toolStateId.trim()) {
       return null;
@@ -1535,6 +1594,7 @@ class WorkspaceV2ToolStateProducer {
     this.currentToolStateSource = sourceLabel;
     this.updateWorkspaceActivePaletteFromCurrentToolState();
     this.refreshPaletteOwnershipUiState();
+    this.renderActiveToolStatePublishStatus();
   }
 
   isValidToolStatePayload(toolStatePayload) {
@@ -3586,6 +3646,7 @@ class WorkspaceV2ToolStateProducer {
     }
     this.workspaceJsonNode.value = JSON.stringify(workspaceSchemaDocument, null, 2);
     this.renderWorkspaceToolsSummary();
+    this.renderActiveToolStatePublishStatus();
     return true;
   }
 

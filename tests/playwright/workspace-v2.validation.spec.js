@@ -49,7 +49,7 @@ test.describe("Workspace V2 validation coverage", () => {
       await ctrlTapClick(page, page.getByRole("button", { name: "Full Reset" }));
       await expect(page.locator("#workspaceV2ToolSelect option[value='palette-manager-v2']")).toHaveCount(0);
       await expect(page.locator("#workspaceV2WorkspaceToolsSummary")).toContainText("palette-browser");
-      await expect(page.locator("#workspaceV2WorkspaceToolsSummary")).toContainText("workspace-v2");
+      await expect(page.locator("#workspaceV2WorkspaceToolsSummary")).not.toContainText("workspace-v2");
 
       const baselineManifest = JSON.parse(await page.locator("#workspaceV2ImportJson").inputValue());
       expect(baselineManifest.documentKind).toBe("workspace-manifest");
@@ -189,7 +189,7 @@ test.describe("Workspace V2 validation coverage", () => {
     }
   });
 
-  test("promote to tools is explicit for active and saved tool states", async ({ page }) => {
+  test("direct publish and promote to tools stay explicit for active and saved tool states", async ({ page }) => {
     const server = await startRepoServer();
     try {
       await page.goto(`${server.baseUrl}/tools/workspace-v2/index.html`);
@@ -197,15 +197,20 @@ test.describe("Workspace V2 validation coverage", () => {
 
       await page.locator("#workspaceV2ToolSelect").selectOption("tilemap-studio-v2");
       await page.locator("#workspaceV2LoadFixtureButton").click();
+      await expect(page.locator("#workspaceV2ActiveToolStatePublishStatus")).toHaveText("Active in Workspace only");
       await page.locator("#workspaceV2ToolStateName").fill("tile-state-a");
       await page.locator("#workspaceV2SaveToolStateButton").click();
 
       let manifest = JSON.parse(await page.locator("#workspaceV2ImportJson").inputValue());
       expect(Object.prototype.hasOwnProperty.call(manifest.tools || {}, "tilemap-studio-v2")).toBe(false);
 
-      await page.getByRole("button", { name: "Promote Active Tool State to Tools" }).click();
+      await page.getByRole("button", { name: "Create Direct Tools Entry" }).click();
       manifest = JSON.parse(await page.locator("#workspaceV2ImportJson").inputValue());
       expect(manifest.tools?.["tilemap-studio-v2"]?.tileMapDocument).toBeTruthy();
+      await expect(page.locator("#workspaceV2ActiveToolStatePublishStatus")).toHaveText("Promoted to tools.tilemap-studio-v2");
+      await expect(page.locator("#workspaceV2WorkspaceToolsSummary")).toContainText("palette-browser");
+      await expect(page.locator("#workspaceV2WorkspaceToolsSummary")).toContainText("tilemap-studio-v2");
+      await expect(page.locator("#workspaceV2WorkspaceToolsSummary")).not.toContainText("workspace-v2");
 
       await page.locator("#workspaceV2ToolSelect").selectOption("vector-map-editor-v2");
       await page.locator("#workspaceV2LoadFixtureButton").click();

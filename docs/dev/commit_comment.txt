@@ -1,1 +1,1 @@
-Capture empty FAIL batch state from tool completion audit with explicit before/after report and validation evidence - PR_26124_009-empty-fail-batch-capture
+Clarify Workspace V2 tools output vs active/saved toolState UX with explicit direct publish action and published tools list - PR_26124_018-clarify-tools-vs-toolstate-ux
