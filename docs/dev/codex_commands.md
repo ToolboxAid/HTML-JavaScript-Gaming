@@ -306,3 +306,10 @@ PR_26124_006-playwright-ctrl-tap-debug
 ```bash
 npx @openai/codex run --model gpt-5.3-codex --reasoning medium "Implement PR_26124_006: add shared Ctrl tap (Control down/up) before key Playwright click actions for Workspace V2 navigation/tool/workspace interaction points without changing runtime behavior."
 ```
+
+---
+PR_26124_007-tool-payload-guards-group
+
+```bash
+npx @openai/codex run --model gpt-5.3-codex --reasoning medium "Implement PR_26124_007: fix next small group of failing tools (asset-manager-v2 + palette-manager-v2) by adding strict pre-render cross-tool payload guards while preserving workspace launch behavior."
+```

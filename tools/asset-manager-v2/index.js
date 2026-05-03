@@ -304,6 +304,10 @@ class AssetBrowserV2 {
       this.renderError("Asset Manager V2 session data is invalid. Expected toolId 'asset-manager-v2'.");
       return;
     }
+    if (Object.prototype.hasOwnProperty.call(versionCheck.payload, "paletteJson")) {
+      this.renderError("Asset Manager V2 session data is invalid. paletteJson is not supported; use payloadJson.assetCatalog.");
+      return;
+    }
     if (!versionCheck.payload.payloadJson || typeof versionCheck.payload.payloadJson !== "object" || Array.isArray(versionCheck.payload.payloadJson)) {
       this.renderError("Asset Manager V2 session data is invalid. Expected payloadJson only.");
       return;

@@ -1,1 +1,1 @@
-Add shared Playwright Ctrl-tap-before-click helper for Workspace V2 navigation and tool/workspace interaction actions - PR_26124_006-playwright-ctrl-tap-debug
+Add strict pre-render cross-tool payload guards for Asset Manager V2 and Palette Manager V2 without schema/runtime feature changes - PR_26124_007-tool-payload-guards-group
