@@ -22,6 +22,7 @@ class WorkspaceV2ToolStateProducer {
     this.backButton = document.getElementById("workspaceV2BackButton");
     this.loadFixtureButton = document.getElementById("workspaceV2LoadFixtureButton");
     this.launchButton = document.getElementById("workspaceV2LaunchButton");
+    this.promoteActiveToolStateButton = document.getElementById("workspaceV2PromoteActiveToolStateButton");
     this.openAssetManagerButton = document.getElementById("workspaceV2OpenAssetManagerButton");
     this.importJsonNode = document.getElementById("workspaceV2ImportJson");
     this.importFileNode = document.getElementById("workspaceV2ImportFile");
@@ -100,6 +101,9 @@ class WorkspaceV2ToolStateProducer {
     });
     this.launchButton.addEventListener("click", () => {
       this.createToolStateAndLaunch();
+    });
+    this.promoteActiveToolStateButton.addEventListener("click", () => {
+      this.promoteActiveToolStateToWorkspaceTools();
     });
     this.openAssetManagerButton.addEventListener("click", () => {
       this.openAssetManagerFromWorkspace();
@@ -1275,6 +1279,62 @@ class WorkspaceV2ToolStateProducer {
     return this.readActiveToolStatePayloadForLibraryActions();
   }
 
+  validateToolStatePromotionPayload(toolStatePayload, toolStatePath) {
+    if (!this.isValidToolStatePayload(toolStatePayload)) {
+      return { ok: false, message: `${toolStatePath} is invalid.`, toolId: "", payloadJson: null };
+    }
+    const payloadValidation = this.validateWorkspaceToolStatePayload(toolStatePayload, toolStatePath);
+    if (!payloadValidation.ok) {
+      return { ok: false, message: payloadValidation.message, toolId: "", payloadJson: null };
+    }
+    const toolId = typeof toolStatePayload.toolId === "string" ? toolStatePayload.toolId.trim() : "";
+    if (!toolId) {
+      return { ok: false, message: `${toolStatePath}.toolId is required for promotion.`, toolId: "", payloadJson: null };
+    }
+    if (toolId === "palette-manager-v2") {
+      return { ok: false, message: "Promotion blocked. palette-manager-v2 cannot be promoted to tools; palette is workspace-owned at tools.palette-browser.", toolId: "", payloadJson: null };
+    }
+    if (!toolStatePayload.payloadJson || typeof toolStatePayload.payloadJson !== "object" || Array.isArray(toolStatePayload.payloadJson)) {
+      return { ok: false, message: `${toolStatePath}.payloadJson must be an object for promotion.`, toolId: "", payloadJson: null };
+    }
+    return {
+      ok: true,
+      message: "",
+      toolId,
+      payloadJson: this.cloneToolStateValue(toolStatePayload.payloadJson)
+    };
+  }
+
+  promoteToolStatePayloadToWorkspaceTools(toolStatePayload, toolStatePath, successPrefix) {
+    const promotionValidation = this.validateToolStatePromotionPayload(toolStatePayload, toolStatePath);
+    if (!promotionValidation.ok) {
+      this.statusNode.textContent = promotionValidation.message;
+      return false;
+    }
+    this.workspaceImportedToolEntries[promotionValidation.toolId] = promotionValidation.payloadJson;
+    if (!this.syncWorkspaceManifestTextarea()) {
+      this.statusNode.textContent = "Promotion failed. Workspace manifest sync failed.";
+      return false;
+    }
+    this.renderWorkspaceToolsSummary();
+    this.statusNode.textContent = `${successPrefix} promoted to tools.${promotionValidation.toolId}.`;
+    return true;
+  }
+
+  promoteActiveToolStateToWorkspaceTools() {
+    const activeToolState = this.readActiveToolStatePayloadForLibraryActions();
+    if (!this.isValidToolStatePayload(activeToolState)) {
+      this.statusNode.textContent = "Promotion blocked. No active tool state is available.";
+      return;
+    }
+    const activeToolId = typeof activeToolState.toolId === "string" ? activeToolState.toolId.trim() : "";
+    this.promoteToolStatePayloadToWorkspaceTools(
+      activeToolState,
+      "tools.workspace-v2.activeToolState",
+      `Active tool state '${activeToolId || "unknown"}'`
+    );
+  }
+
   readToolStatePayloadFromRecentToolStateId(toolStateId) {
     if (typeof toolStateId !== "string" || !toolStateId.trim()) {
       return null;
@@ -1700,6 +1760,7 @@ class WorkspaceV2ToolStateProducer {
       const idCode = document.createElement("code");
       const copyIdButton = document.createElement("button");
       const useInLibraryButton = document.createElement("button");
+      const promoteToToolsButton = document.createElement("button");
       const loadButton = document.createElement("button");
       const overwriteButton = document.createElement("button");
       const deleteSavedButton = document.createElement("button");
@@ -1726,6 +1787,11 @@ class WorkspaceV2ToolStateProducer {
       useInLibraryButton.addEventListener("click", () => {
         this.useSavedToolStateIdInLibraryInput(toolStateName);
       });
+      promoteToToolsButton.type = "button";
+      promoteToToolsButton.textContent = "Promote to Tools";
+      promoteToToolsButton.addEventListener("click", () => {
+        this.promoteSavedToolStateById(toolStateName);
+      });
       loadButton.type = "button";
       loadButton.textContent = "Load";
       loadButton.disabled = paletteRowLocked;
@@ -1743,7 +1809,7 @@ class WorkspaceV2ToolStateProducer {
       deleteSavedButton.addEventListener("click", () => {
         this.deleteSavedToolStateById(toolStateName);
       });
-      item.append(label, idLine, copyIdButton, useInLibraryButton, loadButton, overwriteButton, deleteSavedButton);
+      item.append(label, idLine, copyIdButton, useInLibraryButton, promoteToToolsButton, loadButton, overwriteButton, deleteSavedButton);
       this.toolStateListNode.appendChild(item);
     });
     this.renderToolStateDiffInputs();
@@ -1777,6 +1843,31 @@ class WorkspaceV2ToolStateProducer {
     this.updateToolStateLibraryActionState();
     this.syncDiffAndMergeSelectionSlotsFromToolStateId(toolStateId.trim());
     this.setLibraryStatus(`Saved tool state ID ready for Diff/Merge and Library actions: ${toolStateId.trim()}`);
+  }
+
+  promoteSavedToolStateById(toolStateId) {
+    if (typeof toolStateId !== "string" || !toolStateId.trim()) {
+      this.setLibraryStatus("Promotion blocked. Enter a saved tool state ID before promoting.");
+      return;
+    }
+    const library = this.readToolStateLibrary();
+    if (library === null) {
+      return;
+    }
+    if (!Object.prototype.hasOwnProperty.call(library, toolStateId.trim())) {
+      this.setLibraryStatus("Promotion blocked. Saved tool state not found.");
+      return;
+    }
+    const savedToolStatePayload = library[toolStateId.trim()];
+    const promoted = this.promoteToolStatePayloadToWorkspaceTools(
+      savedToolStatePayload,
+      `tools.workspace-v2.savedToolStates.${toolStateId.trim()}`,
+      `Saved tool state '${toolStateId.trim()}'`
+    );
+    if (!promoted) {
+      return;
+    }
+    this.setLibraryStatus(`Saved tool state '${toolStateId.trim()}' promoted to tools.`);
   }
 
   loadSavedToolStateById(toolStateId) {

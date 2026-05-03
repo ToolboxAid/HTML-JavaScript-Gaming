@@ -176,12 +176,46 @@ test.describe("Workspace V2 validation coverage", () => {
       let manifest = JSON.parse(await page.locator("#workspaceV2ImportJson").inputValue());
       expect(manifest.tools?.["workspace-v2"]?.activeToolId).toBe("tilemap-studio-v2");
       expect(manifest.tools?.["workspace-v2"]?.activeToolState?.toolId).toBe("tilemap-studio-v2");
+      expect(Object.prototype.hasOwnProperty.call(manifest.tools || {}, "tilemap-studio-v2")).toBe(false);
 
       await page.locator("#workspaceV2ToolSelect").selectOption("vector-map-editor-v2");
       await page.locator("#workspaceV2LoadFixtureButton").click();
       manifest = JSON.parse(await page.locator("#workspaceV2ImportJson").inputValue());
       expect(manifest.tools?.["workspace-v2"]?.activeToolId).toBe("vector-map-editor-v2");
       expect(manifest.tools?.["workspace-v2"]?.activeToolState?.toolId).toBe("vector-map-editor-v2");
+      expect(Object.prototype.hasOwnProperty.call(manifest.tools || {}, "vector-map-editor-v2")).toBe(false);
+    } finally {
+      await server.close();
+    }
+  });
+
+  test("promote to tools is explicit for active and saved tool states", async ({ page }) => {
+    const server = await startRepoServer();
+    try {
+      await page.goto(`${server.baseUrl}/tools/workspace-v2/index.html`);
+      await ctrlTapClick(page, page.getByRole("button", { name: "Full Reset" }));
+
+      await page.locator("#workspaceV2ToolSelect").selectOption("tilemap-studio-v2");
+      await page.locator("#workspaceV2LoadFixtureButton").click();
+      await page.locator("#workspaceV2ToolStateName").fill("tile-state-a");
+      await page.locator("#workspaceV2SaveToolStateButton").click();
+
+      let manifest = JSON.parse(await page.locator("#workspaceV2ImportJson").inputValue());
+      expect(Object.prototype.hasOwnProperty.call(manifest.tools || {}, "tilemap-studio-v2")).toBe(false);
+
+      await page.getByRole("button", { name: "Promote Active Tool State to Tools" }).click();
+      manifest = JSON.parse(await page.locator("#workspaceV2ImportJson").inputValue());
+      expect(manifest.tools?.["tilemap-studio-v2"]?.tileMapDocument).toBeTruthy();
+
+      await page.locator("#workspaceV2ToolSelect").selectOption("vector-map-editor-v2");
+      await page.locator("#workspaceV2LoadFixtureButton").click();
+      manifest = JSON.parse(await page.locator("#workspaceV2ImportJson").inputValue());
+      expect(Object.prototype.hasOwnProperty.call(manifest.tools || {}, "vector-map-editor-v2")).toBe(false);
+
+      await page.getByRole("button", { name: "Promote to Tools" }).first().click();
+      manifest = JSON.parse(await page.locator("#workspaceV2ImportJson").inputValue());
+      expect(manifest.tools?.["tilemap-studio-v2"]?.tileMapDocument).toBeTruthy();
+      expect(Object.prototype.hasOwnProperty.call(manifest.tools || {}, "vector-map-editor-v2")).toBe(false);
     } finally {
       await server.close();
     }

@@ -67,6 +67,12 @@ test("workspace v2 launches asset manager and add/remove is reflected in export"
     await ctrlTapClick(page, page.getByRole("button", { name: /Back to Workspace V2/ }));
     await expect(page).toHaveURL(/\/tools\/workspace-v2\/index\.html/);
     await ctrlTapClick(page, page.getByRole("button", { name: "Export Workspace Tool State JSON" }));
+    const manifestBeforePromoteText = await page.locator("#workspaceV2ImportJson").inputValue();
+    const manifestBeforePromote = JSON.parse(manifestBeforePromoteText);
+    expect(Object.prototype.hasOwnProperty.call(manifestBeforePromote.tools || {}, "asset-manager-v2")).toBe(false);
+    await ctrlTapClick(page, page.getByRole("button", { name: "Promote Active Tool State to Tools" }));
+    await expect(page.locator("#workspaceV2Status")).toContainText("promoted to tools.asset-manager-v2");
+    await ctrlTapClick(page, page.getByRole("button", { name: "Export Workspace Tool State JSON" }));
     const exportedJsonText = await page.locator("#workspaceV2ImportJson").inputValue();
     const exported = JSON.parse(exportedJsonText);
     const entries = exported?.tools?.["workspace-v2"]?.activeToolState?.payloadJson?.assetCatalog?.entries;
@@ -79,9 +85,15 @@ test("workspace v2 launches asset manager and add/remove is reflected in export"
     expect(exported.tools?.["workspace-v2"]?.activeToolState?.toolId).toBe("asset-manager-v2");
     expect(entries.some((entry) => entry?.id === "asset-001")).toBe(true);
     expect(entries.some((entry) => entry?.id === "asset-002")).toBe(false);
+    const promotedEntries = exported?.tools?.["asset-manager-v2"]?.assetCatalog?.entries;
+    if (!Array.isArray(promotedEntries)) {
+      throw new Error("Exported manifest is missing tools.asset-manager-v2.assetCatalog.entries after promotion.");
+    }
+    expect(promotedEntries.some((entry) => entry?.id === "asset-001")).toBe(true);
+    expect(promotedEntries.some((entry) => entry?.id === "asset-002")).toBe(false);
     expect(Object.prototype.hasOwnProperty.call(exported, "workspaceSession")).toBe(false);
     expect(Object.prototype.hasOwnProperty.call(exported, "games")).toBe(false);
-    expect(Object.prototype.hasOwnProperty.call(exported.tools || {}, "asset-manager-v2")).toBe(false);
+    expect(Object.prototype.hasOwnProperty.call(exported.tools || {}, "asset-manager-v2")).toBe(true);
     const exportedString = JSON.stringify(exported);
     expect(exportedString.includes("selectedAssetId")).toBe(false);
     expect(exportedString.includes("assetBrowserV2Detail")).toBe(false);
