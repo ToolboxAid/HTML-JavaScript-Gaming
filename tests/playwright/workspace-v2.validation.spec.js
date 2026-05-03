@@ -3,11 +3,8 @@ import { startRepoServer } from "../helpers/playwrightRepoServer.mjs";
 import { ctrlTapClick } from "../helpers/playwrightCtrlTapClick.mjs";
 
 async function importManifestFromObject(page, manifest) {
-  const chooserPromise = page.waitForEvent("filechooser");
-  await ctrlTapClick(page, page.getByRole("button", { name: "Import Workspace Tool State JSON" }));
-  const chooser = await chooserPromise;
   const jsonText = JSON.stringify(manifest, null, 2);
-  await chooser.setFiles({
+  await page.locator("#workspaceV2ImportFile").setInputFiles({
     name: "workspace-v2-import.json",
     mimeType: "application/json",
     buffer: Buffer.from(jsonText, "utf8")
@@ -16,12 +13,35 @@ async function importManifestFromObject(page, manifest) {
 }
 
 async function exportManifestFromTextarea(page) {
-  await ctrlTapClick(page, page.getByRole("button", { name: "Export Workspace Tool State JSON" }));
+  await page.getByRole("button", { name: "Export Workspace Tool State JSON" }).click();
   const exportedText = await page.locator("#workspaceV2ImportJson").inputValue();
   return JSON.parse(exportedText);
 }
 
 test.describe("Workspace V2 validation coverage", () => {
+  test("producer tool selection excludes palette-manager-v2 and asset-manager load/create actions work", async ({ page }) => {
+    const server = await startRepoServer();
+    try {
+      await page.goto(`${server.baseUrl}/tools/workspace-v2/index.html`);
+      await ctrlTapClick(page, page.getByRole("button", { name: "Full Reset" }));
+
+      await expect(page.locator("#workspaceV2ToolSelect option[value='palette-manager-v2']")).toHaveCount(0);
+      await expect(page.locator("#workspaceV2ToolSelect")).not.toHaveValue("palette-manager-v2");
+
+      await page.locator("#workspaceV2ToolSelect").selectOption("asset-manager-v2");
+      await page.locator("#workspaceV2LoadFixtureButton").click();
+      await expect(page.locator("#workspaceV2Status")).toContainText("Fixture loaded for asset-manager-v2.");
+
+      await ctrlTapClick(page, page.getByRole("button", { name: "Create & Open Tool State" }));
+      await expect(page).toHaveURL(/\/tools\/asset-manager-v2\/index\.html/);
+
+      await ctrlTapClick(page, page.getByRole("button", { name: /Back to Workspace V2/ }));
+      await expect(page).toHaveURL(/\/tools\/workspace-v2\/index\.html/);
+    } finally {
+      await server.close();
+    }
+  });
+
   test("workspace lifecycle reset -> valid import -> export -> import success", async ({ page }) => {
     const server = await startRepoServer();
     try {
@@ -152,16 +172,16 @@ test.describe("Workspace V2 validation coverage", () => {
       await ctrlTapClick(page, page.getByRole("button", { name: "Full Reset" }));
 
       await page.locator("#workspaceV2ToolSelect").selectOption("tilemap-studio-v2");
-      await ctrlTapClick(page, page.getByRole("button", { name: "Load Tool State" }));
-      let exportedManifest = await exportManifestFromTextarea(page);
-      expect(exportedManifest.tools?.["workspace-v2"]?.activeToolId).toBe("tilemap-studio-v2");
-      expect(exportedManifest.tools?.["workspace-v2"]?.activeToolState?.toolId).toBe("tilemap-studio-v2");
+      await page.locator("#workspaceV2LoadFixtureButton").click();
+      let manifest = JSON.parse(await page.locator("#workspaceV2ImportJson").inputValue());
+      expect(manifest.tools?.["workspace-v2"]?.activeToolId).toBe("tilemap-studio-v2");
+      expect(manifest.tools?.["workspace-v2"]?.activeToolState?.toolId).toBe("tilemap-studio-v2");
 
       await page.locator("#workspaceV2ToolSelect").selectOption("vector-map-editor-v2");
-      await ctrlTapClick(page, page.getByRole("button", { name: "Load Tool State" }));
-      exportedManifest = await exportManifestFromTextarea(page);
-      expect(exportedManifest.tools?.["workspace-v2"]?.activeToolId).toBe("vector-map-editor-v2");
-      expect(exportedManifest.tools?.["workspace-v2"]?.activeToolState?.toolId).toBe("vector-map-editor-v2");
+      await page.locator("#workspaceV2LoadFixtureButton").click();
+      manifest = JSON.parse(await page.locator("#workspaceV2ImportJson").inputValue());
+      expect(manifest.tools?.["workspace-v2"]?.activeToolId).toBe("vector-map-editor-v2");
+      expect(manifest.tools?.["workspace-v2"]?.activeToolState?.toolId).toBe("vector-map-editor-v2");
     } finally {
       await server.close();
     }

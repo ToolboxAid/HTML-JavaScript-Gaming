@@ -3,7 +3,6 @@ import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { startRepoServer } from "../../helpers/playwrightRepoServer.mjs";
-import { ctrlTapClick } from "../../helpers/playwrightCtrlTapClick.mjs";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -69,10 +68,7 @@ function buildWorkspaceManifest(toolStateContext, hostContextId) {
 }
 
 async function importWorkspaceManifest(page, manifest) {
-  const chooserPromise = page.waitForEvent("filechooser");
-  await ctrlTapClick(page, page.getByRole("button", { name: "Import Workspace Tool State JSON" }));
-  const chooser = await chooserPromise;
-  await chooser.setFiles({
+  await page.locator("#workspaceV2ImportFile").setInputFiles({
     name: "workspace-v2-tool-validation-import.json",
     mimeType: "application/json",
     buffer: Buffer.from(JSON.stringify(manifest, null, 2), "utf8")
@@ -94,13 +90,6 @@ const toolSelectors = {
     readout: "#assetBrowserV2ContractReadout",
     validToken: "payloadJson.assetCatalog valid",
     invalidToken: "payloadJson.assetCatalog invalid"
-  },
-  "palette-manager-v2": {
-    valid: "#paletteManagerValidState",
-    invalid: "#paletteManagerInvalidState",
-    readout: "#paletteManagerContractReadout",
-    validToken: "payloadJson.paletteDocument valid",
-    invalidToken: "payloadJson.paletteDocument invalid"
   },
   "svg-asset-studio-v2": {
     valid: "#svgV2ValidState",
@@ -138,6 +127,10 @@ test("@workspace-v2 tool validation list includes all audited tools", async () =
     "tilemap-studio-v2",
     "vector-map-editor-v2"
   ]);
+});
+
+test("@workspace-v2 toolState-capable validation scope excludes palette-manager-v2", async () => {
+  expect(workspaceToolStateCapableToolIds).not.toContain("palette-manager-v2");
 });
 
 test("@workspace-v2 valid workspace manifest payloadJson imports", async ({ page }) => {
