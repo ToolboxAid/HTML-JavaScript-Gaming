@@ -1,1 +1,1 @@
-Redirect Playwright output artifacts and reports into tests/results and remove default output folder usage - PR 11.318C
+Expand Workspace V2 Playwright UI regression coverage for Asset Manager launch, validation, export, and round-trip import - PR 11.318D

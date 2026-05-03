@@ -1,0 +1,134 @@
+Here are **clean, copy/paste instructions** to install Playwright on another machine/page.
+
+---
+
+## 🧪 Install Playwright (VS Code / Windows / Node)
+
+### 1. Open project folder
+
+```powershell
+cd C:\path\to\HTML-JavaScript-Gaming
+```
+
+---
+
+### 2. Initialize Node (if not already)
+
+```powershell
+npm init -y
+```
+
+---
+
+### 3. Install Playwright test runner
+
+```powershell
+npm install -D @playwright/test
+```
+
+---
+
+### 4. Install browsers
+
+```powershell
+npx playwright install
+```
+
+---
+
+### 5. Verify install
+
+```powershell
+npx playwright --version
+```
+
+---
+
+## ▶️ Run your test
+
+```powershell
+npx playwright test tests/ui/workspace-v2.asset-manager.spec.js
+```
+
+---
+
+## 👀 Run with visible browser
+
+```powershell
+npx playwright test --headed
+```
+
+---
+
+## 🐢 Slow motion (via config)
+
+Create file at repo root:
+
+```text
+playwright.config.cjs
+```
+
+```javascript
+module.exports = {
+  use: {
+    headless: false,
+    launchOptions: {
+      slowMo: 500
+    },
+    trace: 'on'
+  }
+};
+```
+
+Then run:
+
+```powershell
+npx playwright test
+```
+
+---
+
+## 🔍 View test replay
+
+```powershell
+npx playwright show-trace
+```
+
+---
+
+## 📁 Required structure
+
+```text
+HTML-JavaScript-Gaming/
+├── tests/
+│   └── ui/
+│       └── workspace-v2.asset-manager.spec.js <<<< test code goes here
+├── playwright.config.cjs
+├── package.json
+```
+
+---
+
+## 🚫 Important
+
+```text
+✔ Keep node_modules at root
+✔ Do NOT move node_modules to tmp
+✔ tests/results is safe for outputs
+```
+
+---
+
+## 👍 That’s it
+
+Once installed, the user can:
+
+* run tests
+* see browser automation
+* replay test steps
+* validate Workspace V2 + tools automatically
+
+---
+
+If you want next:
+👉 I can generate a **README.md install section** you can drop into your repo 👍

@@ -68,45 +68,101 @@ async function startRepoServer() {
 test("workspace v2 launches asset manager and add/remove is reflected in export", async ({ page }) => {
   const server = await startRepoServer();
   try {
+    // 1) Workspace V2 startup baseline
     await page.goto(`${server.baseUrl}/tools/workspace-v2/index.html`);
-
     await page.getByRole("button", { name: "Full Reset" }).click();
+    await expect(page.locator("#workspaceV2WorkspaceToolsSummary")).toContainText("palette-browser");
+    await expect(page.locator("#workspaceV2WorkspaceToolsSummary")).toContainText("workspace-v2");
+
+    // 2) Producer launch to Asset Manager V2
     await page.locator("#workspaceV2ToolSelect").selectOption("asset-manager-v2");
     await page.getByRole("button", { name: "Load Fixture" }).click();
     await page.getByRole("button", { name: "Create Session + Launch" }).click();
-
     await expect(page).toHaveURL(/\/tools\/asset-manager-v2\/index\.html/);
     await expect(page).toHaveTitle("Asset Manager V2");
+    await expect(page.locator("#assetBrowserV2ContractReadout")).toContainText("payloadJson.assetCatalog valid");
     await expect(page.getByRole("button", { name: /Player Ship/ })).toBeVisible();
 
+    // 3) Add valid asset
     await page.locator("#assetManagerV2AddId").fill("asset-002");
     await page.locator("#assetManagerV2AddLabel").fill("Enemy Ship");
     await page.locator("#assetManagerV2AddKind").fill("svg");
     await page.locator("#assetManagerV2AddPath").fill("assets/vectors/enemy-ship.svg");
     await page.getByRole("button", { name: "Add Asset" }).click();
-
     await expect(page.getByRole("button", { name: /Enemy Ship/ })).toBeVisible();
+    await expect(page.locator("#assetManagerV2ActionStatus")).toHaveText("Asset 'asset-002' added.");
+
+    // 4) Reject duplicate id
+    await page.locator("#assetManagerV2AddId").fill("asset-002");
+    await page.locator("#assetManagerV2AddLabel").fill("Enemy Ship Duplicate");
+    await page.locator("#assetManagerV2AddKind").fill("svg");
+    await page.locator("#assetManagerV2AddPath").fill("assets/vectors/enemy-ship-duplicate.svg");
+    await page.getByRole("button", { name: "Add Asset" }).click();
+    await expect(page.locator("#assetManagerV2ActionStatus")).toHaveText("Add blocked. Asset id 'asset-002' already exists.");
+    await expect(page.locator("#assetBrowserV2List").getByRole("button", { name: /Enemy Ship/ })).toHaveCount(1);
+
+    // 5) Reject blank fields
+    await page.locator("#assetManagerV2AddId").fill("   ");
+    await page.locator("#assetManagerV2AddLabel").fill("   ");
+    await page.locator("#assetManagerV2AddKind").fill("   ");
+    await page.locator("#assetManagerV2AddPath").fill("   ");
+    await page.getByRole("button", { name: "Add Asset" }).click();
+    await expect(page.locator("#assetManagerV2ActionStatus")).toContainText("Missing required field(s):");
+    await expect(page.locator("#assetManagerV2ActionStatus")).toContainText("id");
+    await expect(page.locator("#assetManagerV2ActionStatus")).toContainText("label");
+    await expect(page.locator("#assetManagerV2ActionStatus")).toContainText("kind");
+    await expect(page.locator("#assetManagerV2ActionStatus")).toContainText("path");
+    await expect(page.locator("#assetBrowserV2List").getByRole("button", { name: /Enemy Ship/ })).toHaveCount(1);
+
+    // 6) Select asset/details
+    await page.locator("#assetBrowserV2List").getByRole("button", { name: /Player Ship/ }).click();
+    await expect(page.locator("#assetBrowserV2DetailId")).toHaveText("asset-001");
+    await expect(page.locator("#assetBrowserV2DetailLabel")).toHaveText("Player Ship");
+    await expect(page.locator("#assetBrowserV2DetailKind")).toHaveText("svg");
+    await expect(page.locator("#assetBrowserV2DetailPath")).toHaveText("assets/vectors/player-ship.svg");
+
+    // 7) Remove asset
     await page.getByRole("button", { name: "Remove asset-002" }).click();
     await expect(page.getByRole("button", { name: /Enemy Ship/ })).toHaveCount(0);
+    await expect(page.locator("#assetManagerV2ActionStatus")).toHaveText("Asset 'asset-002' removed.");
 
+    // 8) Export validation
     await page.getByRole("button", { name: /Back to Workspace V2/ }).click();
     await expect(page).toHaveURL(/\/tools\/workspace-v2\/index\.html/);
-
-    const downloadPromise = page.waitForEvent("download");
     await page.getByRole("button", { name: "Export Workspace Session JSON" }).click();
-    const download = await downloadPromise;
-    const downloadPath = await download.path();
-    if (!downloadPath) {
-      throw new Error("Workspace export did not produce a downloadable file.");
-    }
-    const exportedJsonText = await fs.readFile(downloadPath, "utf8");
+    const exportedJsonText = await page.locator("#workspaceV2ImportJson").inputValue();
     const exported = JSON.parse(exportedJsonText);
     const entries = exported?.tools?.["workspace-v2"]?.activeSession?.payloadJson?.assetCatalog?.entries;
     if (!Array.isArray(entries)) {
       throw new Error("Exported manifest is missing tools.workspace-v2.activeSession.payloadJson.assetCatalog.entries.");
     }
+    expect(exported.documentKind).toBe("workspace-manifest");
+    expect(exported.tools?.["palette-browser"]).toBeTruthy();
+    expect(exported.tools?.["workspace-v2"]).toBeTruthy();
+    expect(exported.tools?.["workspace-v2"]?.activeSession?.toolId).toBe("asset-manager-v2");
     expect(entries.some((entry) => entry?.id === "asset-001")).toBe(true);
     expect(entries.some((entry) => entry?.id === "asset-002")).toBe(false);
+    expect(Object.prototype.hasOwnProperty.call(exported, "workspaceSession")).toBe(false);
+    expect(Object.prototype.hasOwnProperty.call(exported, "games")).toBe(false);
+    expect(Object.prototype.hasOwnProperty.call(exported.tools || {}, "asset-manager-v2")).toBe(false);
+    const exportedString = JSON.stringify(exported);
+    expect(exportedString.includes("selectedAssetId")).toBe(false);
+    expect(exportedString.includes("assetBrowserV2Detail")).toBe(false);
+
+    // 9) Import/export round trip
+    const importFileChooserPromise = page.waitForEvent("filechooser");
+    await page.getByRole("button", { name: "Import Workspace Session JSON" }).click();
+    const importFileChooser = await importFileChooserPromise;
+    await importFileChooser.setFiles({
+      name: "workspace-v2-roundtrip.json",
+      mimeType: "application/json",
+      buffer: Buffer.from(exportedJsonText, "utf8")
+    });
+    await expect(page.locator("#workspaceV2ImportExportStatus")).toHaveText("Workspace session imported.");
+    await page.getByRole("button", { name: /Open Asset Manager V2/ }).click();
+    await expect(page).toHaveURL(/\/tools\/asset-manager-v2\/index\.html/);
+    await expect(page.getByRole("button", { name: /Player Ship/ })).toBeVisible();
+    await expect(page.locator("#assetBrowserV2InvalidState")).toBeHidden();
   } finally {
     await server.close();
   }

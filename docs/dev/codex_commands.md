@@ -194,3 +194,10 @@ PR_11_318C
 ```bash
 npx @openai/codex run --model gpt-5.3-codex --reasoning medium "Implement PR_11_318C: Redirect Playwright outputs to tests/results/** and avoid default output folders with config-only changes."
 ```
+
+---
+PR_11_318D
+
+```bash
+npx @openai/codex run --model gpt-5.3-codex --reasoning medium "Implement PR_11_318D: Expand Workspace V2 Playwright UI coverage into full Asset Manager regression with launch/add/remove/validation/export/import round-trip assertions."
+```
