@@ -1,1 +1,1 @@
-Clarify Workspace V2 toolState lifecycle ownership across Producer, Tool State Library, and Published Tools with explicit named create/load/promotion flows - PR_26124_018-workspace-toolstate-lifecycle-ux
+Add Workspace V2 and full tool reengineering design docs with explicit ownership boundaries and contract inventories - PR_26124_020-workspace-tools-reengineering-design-docs

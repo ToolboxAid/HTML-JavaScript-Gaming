@@ -348,3 +348,10 @@ PR_26124_018-workspace-toolstate-lifecycle-ux
 ```bash
 npx @openai/codex run --model gpt-5.3-codex --reasoning medium "Implement PR_26124_018-workspace-toolstate-lifecycle-ux."
 ```
+
+---
+PR_26124_020-workspace-tools-reengineering-design-docs
+
+```bash
+npx @openai/codex run --model gpt-5.3-codex --reasoning medium "Implement PR_26124_020-workspace-tools-reengineering-design-docs."
+```
