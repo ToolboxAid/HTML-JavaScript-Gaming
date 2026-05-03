@@ -215,3 +215,10 @@ PR_11_319
 ```bash
 npx @openai/codex run --model gpt-5.3-codex --reasoning medium "Implement PR_11_319: Add required Workspace V2 Playwright gate command with explicit pass/fail summary and non-zero failure handling."
 ```
+
+---
+PR_11_320
+
+```bash
+npx @openai/codex run --model gpt-5.3-codex --reasoning medium "Implement PR_11_320: Update Workspace V2 Playwright gate to execute installed Playwright command path only, preserving fail-fast and summary output."
+```

@@ -11,12 +11,11 @@ import { fileURLToPath } from "node:url";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const repoRoot = path.resolve(__dirname, "..");
+const npmExecPath = typeof process.env.npm_execpath === "string" ? process.env.npm_execpath.trim() : "";
 const command = process.execPath;
-const args = [
-  path.join(repoRoot, "node_modules", "@playwright", "test", "cli.js"),
-  "test",
-  "tests/ui/workspace-v2.asset-manager.spec.js"
-];
+const args = npmExecPath
+  ? [npmExecPath, "run", "--silent", "test:workspace-v2:playwright"]
+  : [path.join(repoRoot, "node_modules", "@playwright", "test", "cli.js"), "test", "tests/ui/workspace-v2.asset-manager.spec.js"];
 
 const result = spawnSync(command, args, {
   cwd: repoRoot,

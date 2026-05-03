@@ -1,1 +1,1 @@
-Promote Workspace V2 Playwright validation into required gate script with explicit non-zero failure handling - PR 11.319
+Update Workspace V2 Playwright gate to use installed command path while preserving fail-fast summary behavior - PR 11.320
