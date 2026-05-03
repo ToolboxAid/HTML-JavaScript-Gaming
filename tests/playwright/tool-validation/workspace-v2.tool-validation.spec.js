@@ -127,6 +127,7 @@ const toolSelectors = {
 
 const auditTools = parseAuditToolList();
 const toolIds = auditTools.filter((toolId) => toolId !== "workspace-v2");
+const workspaceToolStateCapableToolIds = toolIds.filter((toolId) => toolId !== "palette-manager-v2");
 
 test("@workspace-v2 tool validation list includes all audited tools", async () => {
   expect(auditTools).toEqual([
@@ -166,7 +167,7 @@ test("@workspace-v2 invalid workspace manifest payloadJson is rejected", async (
   }
 });
 
-for (const toolId of toolIds) {
+for (const toolId of workspaceToolStateCapableToolIds) {
   const selectors = toolSelectors[toolId];
   if (!selectors) {
     continue;

@@ -27,6 +27,7 @@ test.describe("Workspace V2 validation coverage", () => {
     try {
       await page.goto(`${server.baseUrl}/tools/workspace-v2/index.html`);
       await ctrlTapClick(page, page.getByRole("button", { name: "Full Reset" }));
+      await expect(page.locator("#workspaceV2ToolSelect option[value='palette-manager-v2']")).toHaveCount(0);
       await expect(page.locator("#workspaceV2WorkspaceToolsSummary")).toContainText("palette-browser");
       await expect(page.locator("#workspaceV2WorkspaceToolsSummary")).toContainText("workspace-v2");
 

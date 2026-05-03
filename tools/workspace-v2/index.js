@@ -681,17 +681,6 @@ class WorkspaceV2ToolStateProducer {
   }
 
   createProducerPayloadForTool(toolId) {
-    if (toolId === "palette-manager-v2") {
-      return this.withToolStateVersion({
-        toolId: "palette-manager-v2",
-        payloadJson: {
-          paletteDocument: {
-            name: "Workspace Palette",
-            swatches: []
-          }
-        }
-      });
-    }
     return this.withToolStateVersion({
       toolId,
       payloadJson: {}
