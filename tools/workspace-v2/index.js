@@ -224,6 +224,7 @@ class WorkspaceV2SessionProducer {
     this.initializeWorkspaceToolsSummaryNode();
     this.initializeHiddenImportFileInput();
     this.decodeSessionParamFromUrl();
+    this.ensureWorkspaceActivePaletteBaseline();
     this.initializeWorkspaceProducerSession();
     this.refreshPaletteOwnershipStateAndUi();
     this.registerSnapshotHook();
@@ -506,6 +507,18 @@ class WorkspaceV2SessionProducer {
     );
   }
 
+  ensureWorkspaceActivePaletteBaseline() {
+    if (this.hasWorkspaceActivePalette()) {
+      return;
+    }
+    this.workspaceActivePalette = {
+      hostContextId: "workspace-active-palette",
+      palette: {
+        swatches: []
+      }
+    };
+  }
+
   hasWorkspaceActivePalette() {
     return Boolean(
       this.workspaceActivePalette &&
@@ -670,6 +683,7 @@ class WorkspaceV2SessionProducer {
   }
 
   initializeWorkspaceProducerSession() {
+    this.ensureWorkspaceActivePaletteBaseline();
     if (this.isValidSessionPayload(this.currentSessionPayload) && this.currentHostContextId) {
       return;
     }
@@ -3174,6 +3188,7 @@ class WorkspaceV2SessionProducer {
     this.resetUrlState(false);
     this.currentHostContextId = "";
     this.workspaceActivePalette = null;
+    this.ensureWorkspaceActivePaletteBaseline();
     this.workspaceImportedToolEntries = {};
     this.setCurrentSessionPayload(null, "");
     this.initializeWorkspaceProducerSession();
