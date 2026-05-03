@@ -208,3 +208,10 @@ PR_11_318E
 ```bash
 npx @openai/codex run --model gpt-5.3-codex --reasoning medium "Implement PR_11_318E: Configure Playwright HTML reporter to open automatically after targeted UI test runs."
 ```
+
+---
+PR_11_319
+
+```bash
+npx @openai/codex run --model gpt-5.3-codex --reasoning medium "Implement PR_11_319: Add required Workspace V2 Playwright gate command with explicit pass/fail summary and non-zero failure handling."
+```

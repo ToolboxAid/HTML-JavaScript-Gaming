@@ -1,1 +1,1 @@
-Enable automatic Playwright HTML report opening while preserving existing test output settings - PR 11.318E
+Promote Workspace V2 Playwright validation into required gate script with explicit non-zero failure handling - PR 11.319
