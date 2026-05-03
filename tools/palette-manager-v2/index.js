@@ -51,7 +51,7 @@ class PaletteManagerV2 {
   }
 
   toolLabel(toolId) {
-    if (toolId === "asset-manager-v2") return "Asset Browser V2";
+    if (toolId === "asset-manager-v2") return "Asset Manager V2";
     if (toolId === "palette-manager-v2") return "Palette Manager V2";
     if (toolId === "svg-asset-studio-v2") return "SVG Asset Studio V2";
     if (toolId === "tilemap-studio-v2") return "Tilemap Studio V2";

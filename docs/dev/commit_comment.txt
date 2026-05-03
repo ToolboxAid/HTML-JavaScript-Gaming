@@ -1,1 +1,1 @@
-Scope Asset Manager V2 persistence to explicit add/remove actions and remove passive render-time mutation writes - PR 11.326
+Align Palette Manager V2 launch label mapping with asset-manager-v2 contract name (Asset Manager V2) - PR 11.327

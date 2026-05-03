@@ -264,3 +264,10 @@ PR_11_321
 ```bash
 npx @openai/codex run --model gpt-5.3-codex --reasoning medium "Implement PR_11_321: Document the Workspace V2 Playwright validation gate for repeatable local testing."
 ```
+
+---
+PR_11_327
+
+```bash
+npx @openai/codex run --model gpt-5.3-codex --reasoning medium "Implement PR_11_327: fix the next failing tool from tool_completion_audit.md with a minimal single-tool change and required Workspace V2 Playwright gate validation."
+```
