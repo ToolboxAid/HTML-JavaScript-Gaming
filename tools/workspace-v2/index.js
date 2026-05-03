@@ -533,6 +533,10 @@ class WorkspaceV2SessionProducer {
     return "Workspace already has an active palette. Only one active palette is allowed.";
   }
 
+  singleActivePaletteLibraryMessage() {
+    return "Palette is already the active workspace palette at tools.palette-browser. It is not saved as a Session Library entry.";
+  }
+
   isBlockedAlternatePaletteSession(sessionId, sessionPayload) {
     if (!this.hasWorkspaceActivePalette()) {
       return false;
@@ -722,7 +726,7 @@ class WorkspaceV2SessionProducer {
   updateSessionLibraryActionState() {
     const model = this.refreshWorkspaceSessionUiStateModel("refresh_load");
     if (model.libraryPaletteLocked) {
-      this.libraryStatusNode.textContent = "Workspace already has an active palette. Only one active palette is allowed.";
+      this.libraryStatusNode.textContent = this.singleActivePaletteLibraryMessage();
       return;
     }
     if (!model.libraryHasSessionInput) {
@@ -1683,7 +1687,7 @@ class WorkspaceV2SessionProducer {
       return;
     }
     if (this.isBlockedAlternatePaletteSession(sessionId.trim(), library[sessionId.trim()])) {
-      this.setLibraryStatus(this.singleActivePaletteBlockedMessage());
+      this.setLibraryStatus(this.singleActivePaletteLibraryMessage());
       return;
     }
     this.sessionNameNode.value = sessionId.trim();
@@ -1712,11 +1716,11 @@ class WorkspaceV2SessionProducer {
       return;
     }
     if (this.isBlockedAlternatePaletteSession(sessionId.trim(), library[sessionId.trim()])) {
-      this.setLibraryStatus(this.singleActivePaletteBlockedMessage());
+      this.setLibraryStatus(this.singleActivePaletteLibraryMessage());
       return;
     }
     if (this.isBlockedAlternatePaletteSession(sessionId.trim(), activePayload)) {
-      this.setLibraryStatus(this.singleActivePaletteBlockedMessage());
+      this.setLibraryStatus(this.singleActivePaletteLibraryMessage());
       return;
     }
     library[sessionId.trim()] = activePayload;
@@ -4017,7 +4021,7 @@ class WorkspaceV2SessionProducer {
       return;
     }
     if (this.isBlockedAlternatePaletteSession(sessionName, payloadForWrite)) {
-      this.setLibraryStatus(this.singleActivePaletteBlockedMessage());
+      this.setLibraryStatus(this.singleActivePaletteLibraryMessage());
       return;
     }
     library[sessionName] = payloadForWrite;
@@ -4044,7 +4048,7 @@ class WorkspaceV2SessionProducer {
     }
     const payload = library[sessionName];
     if (this.isBlockedAlternatePaletteSession(sessionName, payload)) {
-      this.setLibraryStatus(this.singleActivePaletteBlockedMessage());
+      this.setLibraryStatus(this.singleActivePaletteLibraryMessage());
       return;
     }
     if (!this.applySessionPayload(payload, `library:${sessionName}`)) {
