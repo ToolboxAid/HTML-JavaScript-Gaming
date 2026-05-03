@@ -1,1 +1,1 @@
-Add GitHub Actions Workspace V2 Playwright gate with artifact upload from tests/results - PR 11.322
+Add Workspace V2 Playwright validation coverage tests for lifecycle, palette contract, validation rejection, roundtrip integrity, and tool switching - PR 11.323

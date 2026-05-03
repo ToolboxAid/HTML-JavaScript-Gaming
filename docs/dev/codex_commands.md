@@ -231,6 +231,13 @@ npx @openai/codex run --model gpt-5.3-codex --reasoning medium "Implement PR_11_
 ```
 
 ---
+PR_11_323
+
+```bash
+npx @openai/codex run --model gpt-5.3-codex --reasoning medium "Implement PR_11_323: Add full Workspace V2 Playwright coverage beyond Asset Manager."
+```
+
+---
 PR_11_321
 
 ```bash
