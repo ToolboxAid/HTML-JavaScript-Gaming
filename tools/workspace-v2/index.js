@@ -293,26 +293,64 @@ class WorkspaceV2SessionProducer {
   }
 
   registerScrollTextColorRule() {
-    const updateColors = () => {
-      const scrollHeight = document.documentElement.scrollHeight - window.innerHeight;
-      const scrolledPercent = scrollHeight > 0 ? (window.scrollY / scrollHeight) * 100 : 0;
-      const nextColor = scrolledPercent >= 50 ? "#ffffff" : "#000000";
-      const textNodes = document.querySelectorAll(
-        "h1, h2, h3, h4, h5, h6, p, span, div, label, li, strong, code, pre, button, a, small, legend, input, select, option, textarea"
+    let textLightActive = false;
+    let scheduled = false;
+    const activateAt = 52;
+    const deactivateAt = 48;
+    const applyColors = () => {
+      document.body.classList.toggle("text-light", textLightActive);
+      const textColor = textLightActive ? "#ffffff" : "#000000";
+      document.body.style.transition = "color 180ms ease";
+      document.body.style.color = textColor;
+      const contentTextNodes = document.querySelectorAll(
+        "main h1, main h2, main h3, main h4, main h5, main h6, main p, main span, main div, main li, main strong, main code, main pre, main a, main small, section h1, section h2, section h3, section h4, section h5, section h6, section p, section span, section div, section li, section strong, section code, section pre, section a, section small, article h1, article h2, article h3, article h4, article h5, article h6, article p, article span, article div, article li, article strong, article code, article pre, article a, article small, .hub-panel h1, .hub-panel h2, .hub-panel h3, .hub-panel h4, .hub-panel h5, .hub-panel h6, .hub-panel p, .hub-panel span, .hub-panel div, .hub-panel li, .hub-panel strong, .hub-panel code, .hub-panel pre, .hub-panel a, .hub-panel small"
       );
-      textNodes.forEach((node) => {
+      contentTextNodes.forEach((node) => {
         if (
           node instanceof HTMLElement &&
+          !node.closest("button, input, select, textarea, label, option") &&
           window.getComputedStyle(node).display !== "none" &&
           window.getComputedStyle(node).visibility !== "hidden"
         ) {
-          node.style.color = nextColor;
+          node.style.transition = "color 180ms ease";
+          node.style.color = textColor;
+        }
+      });
+      const controls = document.querySelectorAll("button, input, select, textarea, label, option");
+      controls.forEach((control) => {
+        if (control instanceof HTMLElement) {
+          control.style.setProperty("color", "#000000", "important");
+          control.style.transition = "color 180ms ease";
         }
       });
     };
-    window.addEventListener("scroll", updateColors, { passive: true });
-    window.addEventListener("resize", updateColors);
-    updateColors();
+    const updateColors = () => {
+      scheduled = false;
+      const scrollHeight = document.documentElement.scrollHeight - window.innerHeight;
+      const scrolledPercent = scrollHeight > 0 ? (window.scrollY / scrollHeight) * 100 : 0;
+      if (textLightActive) {
+        if (scrolledPercent <= deactivateAt) {
+          textLightActive = false;
+        }
+      } else if (scrolledPercent >= activateAt) {
+        textLightActive = true;
+      }
+      applyColors();
+    };
+    const scheduleUpdate = () => {
+      if (scheduled) {
+        return;
+      }
+      scheduled = true;
+      window.requestAnimationFrame(updateColors);
+    };
+    window.addEventListener("scroll", scheduleUpdate, { passive: true });
+    window.addEventListener("resize", scheduleUpdate);
+    const observer = new MutationObserver(() => {
+      scheduleUpdate();
+    });
+    observer.observe(document.body, { childList: true, subtree: true });
+    scheduleUpdate();
   }
 
   isPaletteManagerToolId(toolId) {
