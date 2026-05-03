@@ -1,4 +1,11 @@
 class WorkspaceV2ToolStateProducer {
+  static TOOL_STATE_PRODUCER_TOOL_IDS = Object.freeze([
+    "asset-manager-v2",
+    "svg-asset-studio-v2",
+    "tilemap-studio-v2",
+    "vector-map-editor-v2"
+  ]);
+
   constructor() {
     document.title = "Workspace V2";
     document.body.dataset.toolId = "workspace-v2";
@@ -223,7 +230,8 @@ class WorkspaceV2ToolStateProducer {
   }
 
   selectedToolId() {
-    return typeof this.toolSelect.value === "string" ? this.toolSelect.value.trim() : "";
+    const selectedToolId = typeof this.toolSelect.value === "string" ? this.toolSelect.value.trim() : "";
+    return this.isToolStateProducerToolId(selectedToolId) ? selectedToolId : "";
   }
 
   selectedToolStateName() {
@@ -376,6 +384,17 @@ class WorkspaceV2ToolStateProducer {
     if (!this.toolSelect) {
       return;
     }
+    Array.from(this.toolSelect.options).forEach((option) => {
+      if (option.value === "palette-manager-v2") {
+        option.remove();
+      }
+    });
+    const validToolIds = new Set(WorkspaceV2ToolStateProducer.TOOL_STATE_PRODUCER_TOOL_IDS);
+    Array.from(this.toolSelect.options).forEach((option) => {
+      if (!validToolIds.has(option.value)) {
+        option.remove();
+      }
+    });
   }
 
   removeDiagnosticsPanelUi() {
@@ -395,7 +414,7 @@ class WorkspaceV2ToolStateProducer {
     if (!this.toolSelect) {
       return;
     }
-    const defaultToolId = "palette-manager-v2";
+    const defaultToolId = "asset-manager-v2";
     const hasDefaultOption = Array.from(this.toolSelect.options).some((option) => option.value === defaultToolId);
     if (hasDefaultOption) {
       this.toolSelect.value = defaultToolId;
@@ -404,6 +423,26 @@ class WorkspaceV2ToolStateProducer {
     if (this.toolSelect.options.length > 0) {
       this.toolSelect.selectedIndex = 0;
     }
+  }
+
+  isToolStateProducerToolId(toolId) {
+    return (
+      typeof toolId === "string" &&
+      WorkspaceV2ToolStateProducer.TOOL_STATE_PRODUCER_TOOL_IDS.includes(toolId.trim())
+    );
+  }
+
+  firstToolStateProducerToolId() {
+    if (!this.toolSelect) {
+      return "";
+    }
+    const availableOptionValues = Array.from(this.toolSelect.options)
+      .map((option) => option.value)
+      .filter((value) => this.isToolStateProducerToolId(value));
+    if (availableOptionValues.includes("asset-manager-v2")) {
+      return "asset-manager-v2";
+    }
+    return availableOptionValues.length > 0 ? availableOptionValues[0] : "";
   }
 
   registerScrollTextColorRule() {
@@ -625,11 +664,6 @@ class WorkspaceV2ToolStateProducer {
     if (!this.toolSelect) {
       return;
     }
-    Array.from(this.toolSelect.options).forEach((option) => {
-      if (option.value === "palette-manager-v2") {
-        option.disabled = false;
-      }
-    });
     this.loadFixtureButton.disabled = false;
     this.launchButton.disabled = false;
   }
@@ -670,20 +704,23 @@ class WorkspaceV2ToolStateProducer {
       return;
     }
     const selectedToolId = this.selectedToolId();
-    if (!selectedToolId) {
-      this.statusNode.textContent = "Workspace V2 initialization blocked: default tool is missing.";
+    const fallbackToolId = this.firstToolStateProducerToolId();
+    const toolId = selectedToolId || fallbackToolId;
+    if (!toolId) {
+      this.statusNode.textContent = "Workspace V2 initialization blocked: no toolState-capable producer tool is available.";
       return;
     }
-    const initialPayload = this.createProducerPayloadForTool(selectedToolId);
+    this.toolSelect.value = toolId;
+    const initialPayload = this.createProducerPayloadForTool(toolId);
     this.setCurrentToolStatePayload(initialPayload, "workspace-v2-init");
-    const hostContextId = this.createHostContextToolStateId(selectedToolId);
+    const hostContextId = this.createHostContextToolStateId(toolId);
     const activation = this.activateWorkspaceToolState(hostContextId, initialPayload, "workspace-v2-init");
     if (!activation.ok) {
       this.statusNode.textContent = activation.message;
       return;
     }
     this.syncWorkspaceManifestTextarea();
-    this.statusNode.textContent = `Workspace V2 initialized.\nTool: ${selectedToolId}\nHostContextId: ${hostContextId}\nTool state is active for Save Tool State.`;
+    this.statusNode.textContent = `Workspace V2 initialized.\nTool: ${toolId}\nHostContextId: ${hostContextId}\nTool state is active for Save Tool State.`;
   }
 
   hasActiveWorkspaceToolStateForSave() {
@@ -3352,7 +3389,7 @@ class WorkspaceV2ToolStateProducer {
   async loadSelectedToolState() {
     const toolId = this.selectedToolId();
     if (!toolId) {
-      this.statusNode.textContent = "Select a V2 tool before loading a fixture.";
+      this.statusNode.textContent = "Select a toolState-capable V2 tool before loading tool state.";
       return;
     }
     try {
@@ -3500,10 +3537,11 @@ class WorkspaceV2ToolStateProducer {
       manifestTools[toolId] = this.cloneToolStateValue(this.workspaceImportedToolEntries[toolId]);
     });
     manifestTools["palette-browser"] = this.cloneToolStateValue(activePaletteResolution.paletteBrowserPayload);
+    const exportDefaultToolId = this.firstToolStateProducerToolId() || activeToolId;
     manifestTools["workspace-v2"] = {
       schema: "html-js-gaming.workspace-v2-tool-state/1",
       game: workspaceGame,
-      defaultToolId: "palette-manager-v2",
+      defaultToolId: exportDefaultToolId,
       activeToolId,
       activeHostContextId,
       activeToolState: this.cloneToolStateValue(activePayload),
@@ -3981,7 +4019,7 @@ class WorkspaceV2ToolStateProducer {
   createToolStateAndLaunch() {
     const toolId = this.selectedToolId();
     if (!toolId) {
-      this.statusNode.textContent = "Select a V2 tool before launch.";
+      this.statusNode.textContent = "Select a toolState-capable V2 tool before opening tool state.";
       return;
     }
     if (!this.isValidToolStatePayload(this.currentToolStatePayload)) {

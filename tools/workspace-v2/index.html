@@ -21,8 +21,7 @@
         <h2>Producer</h2>
         <label for="workspaceV2ToolSelect">Tool</label>
         <select id="workspaceV2ToolSelect">
-          <option value="asset-manager-v2">Asset Manager V2</option>
-          <option value="palette-manager-v2" selected>Palette Manager V2</option>
+          <option value="asset-manager-v2" selected>Asset Manager V2</option>
           <option value="svg-asset-studio-v2">SVG Asset Studio V2</option>
           <option value="tilemap-studio-v2">Tilemap Studio V2</option>
           <option value="vector-map-editor-v2">Vector Map Editor V2</option>
@@ -43,7 +42,7 @@
         <h2>Import / Export Tool State JSON</h2>
         <p>Workspace mode actions (navWorkspace): import/export a portable Workspace V2 tool state manifest.</p>
         <label for="workspaceV2ImportJson">Workspace Tool State JSON</label>
-        <textarea id="workspaceV2ImportJson" rows="12" spellcheck="false" placeholder='{"documentKind":"workspace-manifest","schema":"html-js-gaming.project","version":1,"id":"workspace-v2-example","name":"Workspace V2 Example","tools":{"palette-browser":{"schema":"html-js-gaming.palette","version":1,"name":"Workspace Active Palette","swatches":[]},"workspace-v2":{"schema":"html-js-gaming.workspace-v2-tool-state/1","game":{"id":"workspace-v2-game","name":"Workspace V2 Game"},"defaultToolId":"palette-manager-v2","activeToolId":"palette-manager-v2","activeHostContextId":"palette-manager-v2-0000000000000-aaaa1111","activeToolState":{"toolId":"palette-manager-v2","version":"v2","payloadJson":{"paletteDocument":{"name":"Default Palette","swatches":[]}}},"savedToolStates":{}}}}'></textarea>
+        <textarea id="workspaceV2ImportJson" rows="12" spellcheck="false" placeholder='{"documentKind":"workspace-manifest","schema":"html-js-gaming.project","version":1,"id":"workspace-v2-example","name":"Workspace V2 Example","tools":{"palette-browser":{"schema":"html-js-gaming.palette","version":1,"name":"Workspace Active Palette","swatches":[]},"workspace-v2":{"schema":"html-js-gaming.workspace-v2-tool-state/1","game":{"id":"workspace-v2-game","name":"Workspace V2 Game"},"defaultToolId":"asset-manager-v2","activeToolId":"asset-manager-v2","activeHostContextId":"asset-manager-v2-0000000000000-aaaa1111","activeToolState":{"toolId":"asset-manager-v2","version":"v2","payloadJson":{"assetCatalog":{"name":"Workspace Assets","entries":[]}}},"savedToolStates":{}}}}'></textarea>
         <label for="workspaceV2ImportFile">Import File</label>
         <input id="workspaceV2ImportFile" type="file" accept="application/json,.json" />
         <div>
