@@ -6,6 +6,10 @@
 
 ## Files Changed
 - `tools/workspace-v2/index.js`
+- `docs/pr/PR_11_309_WORKSPACE_V2_DEFAULT_ACTIVE_PALETTE_INIT/PLAN_PR.md`
+- `docs/pr/PR_11_309_WORKSPACE_V2_DEFAULT_ACTIVE_PALETTE_INIT/BUILD_PR.md`
+- `docs/dev/codex_commands.md`
+- `docs/dev/commit_comment.txt`
 - `docs/dev/reports/PR_11_309_report.md`
 
 ## What Changed
@@ -28,6 +32,11 @@
   - `node --check tools/workspace-v2/index.js`
 - Result:
   - PASS
+
+## Execution Notes
+- No schema changes were made.
+- Workspace V2 baseline palette initialization and reset/export guard flow are contained in `tools/workspace-v2/index.js`.
+- Export baseline remains a single active palette source under `tools.palette-browser` with empty `swatches` allowed.
 
 ## Expected Runtime Outcome
 - Fresh page load and full reset now keep exactly one active palette baseline available.
