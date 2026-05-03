@@ -225,7 +225,7 @@ class WorkspaceV2SessionProducer {
   }
 
   selectedSessionName() {
-    return typeof this.sessionNameNode.value === "string" ? this.sessionNameNode.value.trim() : "";
+    return typeof this.sessionNameNode.value === "string" ? this.sessionNameNode.value : "";
   }
 
   currentNavMode() {
@@ -285,6 +285,22 @@ class WorkspaceV2SessionProducer {
     }
   }
 
+  createProducerPayloadForTool(toolId) {
+    if (toolId === "palette-manager-v2") {
+      return {
+        version: "v2",
+        toolId: "palette-manager-v2",
+        paletteJson: {
+          swatches: []
+        }
+      };
+    }
+    return this.withSessionVersion({
+      toolId,
+      payloadJson: {}
+    });
+  }
+
   initializeWorkspaceProducerSession() {
     if (this.isValidSessionPayload(this.currentSessionPayload) && this.currentHostContextId) {
       return;
@@ -294,10 +310,7 @@ class WorkspaceV2SessionProducer {
       this.statusNode.textContent = "Workspace V2 initialization blocked: default tool is missing.";
       return;
     }
-    const initialPayload = this.withSessionVersion({
-      toolId: selectedToolId,
-      payloadJson: {}
-    });
+    const initialPayload = this.createProducerPayloadForTool(selectedToolId);
     const sizeValidation = this.validateSessionPayloadSize(initialPayload);
     if (!sizeValidation.ok) {
       this.statusNode.textContent = sizeValidation.message;
@@ -307,7 +320,7 @@ class WorkspaceV2SessionProducer {
     sessionStorage.setItem(hostContextId, sizeValidation.metrics.serializedPayload);
     this.currentHostContextId = hostContextId;
     this.setCurrentSessionPayload(initialPayload, "workspace-v2-init");
-    this.importJsonNode.value = JSON.stringify(initialPayload, null, 2);
+    this.syncWorkspaceManifestTextarea();
     this.statusNode.textContent = `Workspace V2 initialized.\nTool: ${selectedToolId}\nHostContextId: ${hostContextId}\nSession is active for Save Session.`;
   }
 
@@ -323,22 +336,21 @@ class WorkspaceV2SessionProducer {
     if (typeof sessionId !== "string") {
       return false;
     }
-    const trimmed = sessionId.trim();
-    if (!trimmed) {
+    if (!sessionId) {
       return false;
     }
-    return /^[a-z0-9][a-z0-9-_]{1,63}$/i.test(trimmed);
+    return /^[A-Za-z0-9_-]+$/.test(sessionId);
   }
 
   savedSessionIdExists(sessionId) {
-    if (typeof sessionId !== "string" || !sessionId.trim()) {
+    if (typeof sessionId !== "string" || !sessionId) {
       return false;
     }
     const library = this.readSessionLibrary();
     if (library === null) {
       return false;
     }
-    return Object.prototype.hasOwnProperty.call(library, sessionId.trim());
+    return Object.prototype.hasOwnProperty.call(library, sessionId);
   }
 
   updateSessionLibraryActionState() {
@@ -348,7 +360,7 @@ class WorkspaceV2SessionProducer {
       return;
     }
     if (!model.libraryIdValid) {
-      this.libraryStatusNode.textContent = "Enter a valid new session ID before saving.";
+      this.libraryStatusNode.textContent = "Invalid session ID. Use letters, numbers, hyphen, or underscore only.";
       return;
     }
     if (model.librarySavedSessionExists) {
@@ -2789,6 +2801,78 @@ class WorkspaceV2SessionProducer {
     this.diagnosticsPayloadNode.textContent = snapshot.payloadPreview;
   }
 
+  normalizePaletteFixtureSwatches(paletteJson) {
+    if (!paletteJson || typeof paletteJson !== "object" || Array.isArray(paletteJson)) {
+      return { ok: false, message: "Fixture is invalid. paletteJson must be an object for palette-manager-v2.", value: null };
+    }
+    if (Object.prototype.hasOwnProperty.call(paletteJson, "colors") && !Array.isArray(paletteJson.swatches)) {
+      if (!Array.isArray(paletteJson.colors)) {
+        return { ok: false, message: "Fixture is invalid. paletteJson.colors must be an array when swatches is missing.", value: null };
+      }
+      const convertedSwatches = [];
+      for (let index = 0; index < paletteJson.colors.length; index += 1) {
+        const colorEntry = paletteJson.colors[index];
+        if (typeof colorEntry === "string") {
+          if (!/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{8})$/.test(colorEntry)) {
+            return { ok: false, message: `Fixture is invalid. paletteJson.colors[${index}] must be #RRGGBB or #RRGGBBAA.`, value: null };
+          }
+          convertedSwatches.push({
+            symbol: String.fromCharCode(65 + (index % 26)),
+            hex: colorEntry,
+            name: `Color ${index + 1}`
+          });
+          continue;
+        }
+        if (!colorEntry || typeof colorEntry !== "object" || Array.isArray(colorEntry)) {
+          return { ok: false, message: `Fixture is invalid. paletteJson.colors[${index}] must be a string or object.`, value: null };
+        }
+        if (typeof colorEntry.hex !== "string" || !/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{8})$/.test(colorEntry.hex)) {
+          return { ok: false, message: `Fixture is invalid. paletteJson.colors[${index}].hex must be #RRGGBB or #RRGGBBAA.`, value: null };
+        }
+        const symbol = typeof colorEntry.symbol === "string" && colorEntry.symbol.length === 1
+          ? colorEntry.symbol
+          : String.fromCharCode(65 + (index % 26));
+        const name = typeof colorEntry.name === "string" && colorEntry.name.trim()
+          ? colorEntry.name
+          : `Color ${index + 1}`;
+        convertedSwatches.push({
+          symbol,
+          hex: colorEntry.hex,
+          name
+        });
+      }
+      const normalizedPalette = { ...paletteJson };
+      delete normalizedPalette.colors;
+      normalizedPalette.swatches = convertedSwatches;
+      return { ok: true, message: "", value: normalizedPalette };
+    }
+    if (!Array.isArray(paletteJson.swatches)) {
+      return { ok: false, message: "Fixture is invalid. paletteJson.swatches must be an array for palette-manager-v2.", value: null };
+    }
+    return { ok: true, message: "", value: paletteJson };
+  }
+
+  normalizeFixtureSessionContext(toolId, sessionContext) {
+    if (!this.isValidSessionPayload(sessionContext)) {
+      return { ok: false, message: "Fixture is invalid. Missing sessionContext object.", value: null };
+    }
+    const normalizedSession = this.withSessionVersion(this.cloneSessionValue(sessionContext));
+    if (toolId === "palette-manager-v2") {
+      if (Object.prototype.hasOwnProperty.call(normalizedSession, "payloadJson")) {
+        return { ok: false, message: "Fixture is invalid. payloadJson is not supported for palette-manager-v2.", value: null };
+      }
+      if (!Object.prototype.hasOwnProperty.call(normalizedSession, "paletteJson")) {
+        return { ok: false, message: "Fixture is invalid. paletteJson is required for palette-manager-v2.", value: null };
+      }
+      const normalizedPalette = this.normalizePaletteFixtureSwatches(normalizedSession.paletteJson);
+      if (!normalizedPalette.ok) {
+        return { ok: false, message: normalizedPalette.message, value: null };
+      }
+      normalizedSession.paletteJson = normalizedPalette.value;
+    }
+    return { ok: true, message: "", value: normalizedSession };
+  }
+
   async loadSelectedFixture() {
     const toolId = this.selectedToolId();
     if (!toolId) {
@@ -2808,15 +2892,29 @@ class WorkspaceV2SessionProducer {
         this.setCurrentSessionPayload(null, "");
         return;
       }
-      if (!this.isValidSessionPayload(fixture.sessionContext)) {
-        this.statusNode.textContent = "Fixture is invalid. Missing sessionContext object.";
+      const normalizedFixtureSession = this.normalizeFixtureSessionContext(toolId, fixture.sessionContext);
+      if (!normalizedFixtureSession.ok) {
+        this.statusNode.textContent = normalizedFixtureSession.message;
         this.setCurrentSessionPayload(null, "");
         return;
       }
-      this.setCurrentSessionPayload(fixture.sessionContext, `fixture:${toolId}`);
-      this.currentHostContextId = "";
+      const fixtureHostContextId = typeof fixture.hostContextId === "string" && fixture.hostContextId.trim()
+        ? fixture.hostContextId.trim()
+        : this.createHostContextId(toolId);
+      const sizeValidation = this.validateSessionPayloadSize(normalizedFixtureSession.value);
+      if (!sizeValidation.ok) {
+        this.statusNode.textContent = sizeValidation.message;
+        this.setCurrentSessionPayload(null, "");
+        return;
+      }
+      sessionStorage.setItem(fixtureHostContextId, sizeValidation.metrics.serializedPayload);
+      this.setCurrentSessionPayload(normalizedFixtureSession.value, `fixture:${toolId}`);
+      this.currentHostContextId = fixtureHostContextId;
       this.renderDiagnosticsPanel();
-      this.importJsonNode.value = JSON.stringify(fixture.sessionContext, null, 2);
+      if (!this.syncWorkspaceManifestTextarea()) {
+        this.statusNode.textContent = "Fixture loaded but workspace manifest sync failed.";
+        return;
+      }
       this.statusNode.textContent = `Fixture loaded for ${toolId}.\nSession payload is ready for launch, export, share, or library save.`;
     } catch (error) {
       this.setCurrentSessionPayload(null, "");
@@ -2922,6 +3020,19 @@ class WorkspaceV2SessionProducer {
     } catch (error) {
       this.statusNode.textContent = `Session export failed: ${error instanceof Error ? error.message : "unknown error"}`;
     }
+  }
+
+  syncWorkspaceManifestTextarea() {
+    const workspaceSchemaDocument = this.buildWorkspaceSchemaDocument();
+    if (!workspaceSchemaDocument) {
+      return false;
+    }
+    const validation = this.validateWorkspaceSchemaDocument(workspaceSchemaDocument);
+    if (!validation.ok) {
+      return false;
+    }
+    this.workspaceJsonNode.value = JSON.stringify(workspaceSchemaDocument, null, 2);
+    return true;
   }
 
   buildWorkspaceSchemaDocument() {
@@ -3241,7 +3352,7 @@ class WorkspaceV2SessionProducer {
       return;
     }
     if (!overwriteExisting && !this.isValidNewSessionId(sessionName)) {
-      this.setLibraryStatus("Enter a valid new session ID before saving.");
+      this.setLibraryStatus("Invalid session ID. Use letters, numbers, hyphen, or underscore only.");
       return;
     }
     const library = this.readSessionLibrary();
