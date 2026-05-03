@@ -1,1 +1,1 @@
-Audit Workspace V2 tool compliance/completion status and document per-tool PASS/FAIL with required fixes - PR 11.324
+Fix Workspace V2 palette-manager launch/session contract handling and clear the top audit failure - PR 11.325

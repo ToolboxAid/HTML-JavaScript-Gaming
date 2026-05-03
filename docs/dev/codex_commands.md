@@ -245,6 +245,13 @@ npx @openai/codex run --model gpt-5.3-codex --reasoning medium "Implement PR_11_
 ```
 
 ---
+PR_11_325
+
+```bash
+npx @openai/codex run --model gpt-5.3-codex --reasoning medium "Implement PR_11_325: Fix the highest-impact failing Workspace V2 tool interaction from tool_completion_audit.md."
+```
+
+---
 PR_11_321
 
 ```bash

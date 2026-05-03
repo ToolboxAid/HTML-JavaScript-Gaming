@@ -376,11 +376,6 @@ class WorkspaceV2SessionProducer {
     if (!this.toolSelect) {
       return;
     }
-    Array.from(this.toolSelect.options).forEach((option) => {
-      if (option.value === "palette-manager-v2") {
-        option.remove();
-      }
-    });
   }
 
   removeDiagnosticsPanelUi() {
@@ -400,7 +395,7 @@ class WorkspaceV2SessionProducer {
     if (!this.toolSelect) {
       return;
     }
-    const defaultToolId = "asset-manager-v2";
+    const defaultToolId = "palette-manager-v2";
     const hasDefaultOption = Array.from(this.toolSelect.options).some((option) => option.value === defaultToolId);
     if (hasDefaultOption) {
       this.toolSelect.value = defaultToolId;
@@ -482,10 +477,13 @@ class WorkspaceV2SessionProducer {
       typeof sessionPayload === "object" &&
       !Array.isArray(sessionPayload) &&
       this.isPaletteManagerToolId(sessionPayload.toolId) &&
-      sessionPayload.paletteJson &&
-      typeof sessionPayload.paletteJson === "object" &&
-      !Array.isArray(sessionPayload.paletteJson) &&
-      Array.isArray(sessionPayload.paletteJson.swatches)
+      sessionPayload.payloadJson &&
+      typeof sessionPayload.payloadJson === "object" &&
+      !Array.isArray(sessionPayload.payloadJson) &&
+      sessionPayload.payloadJson.paletteDocument &&
+      typeof sessionPayload.payloadJson.paletteDocument === "object" &&
+      !Array.isArray(sessionPayload.payloadJson.paletteDocument) &&
+      Array.isArray(sessionPayload.payloadJson.paletteDocument.swatches)
     );
   }
 
@@ -553,7 +551,7 @@ class WorkspaceV2SessionProducer {
     this.workspaceActivePalette = {
       hostContextId: this.currentHostContextId.trim(),
       palette: {
-        swatches: this.cloneSessionValue(this.currentSessionPayload.paletteJson.swatches)
+        swatches: this.cloneSessionValue(this.currentSessionPayload.payloadJson.paletteDocument.swatches)
       }
     };
   }
@@ -624,16 +622,16 @@ class WorkspaceV2SessionProducer {
   }
 
   refreshPaletteOwnershipUiState() {
-    const hasActivePalette = this.hasWorkspaceActivePalette();
-    const selectedToolId = this.selectedToolId();
+    if (!this.toolSelect) {
+      return;
+    }
     Array.from(this.toolSelect.options).forEach((option) => {
       if (option.value === "palette-manager-v2") {
-        option.disabled = hasActivePalette;
+        option.disabled = false;
       }
     });
-    const paletteToolSelected = selectedToolId === "palette-manager-v2";
-    this.loadFixtureButton.disabled = hasActivePalette && paletteToolSelected;
-    this.launchButton.disabled = hasActivePalette && paletteToolSelected;
+    this.loadFixtureButton.disabled = false;
+    this.launchButton.disabled = false;
   }
 
   refreshPaletteOwnershipStateAndUi() {
@@ -650,13 +648,15 @@ class WorkspaceV2SessionProducer {
 
   createProducerPayloadForTool(toolId) {
     if (toolId === "palette-manager-v2") {
-      return {
-        version: "v2",
+      return this.withSessionVersion({
         toolId: "palette-manager-v2",
-        paletteJson: {
-          swatches: []
+        payloadJson: {
+          paletteDocument: {
+            name: "Workspace Palette",
+            swatches: []
+          }
         }
-      };
+      });
     }
     return this.withSessionVersion({
       toolId,
@@ -675,6 +675,7 @@ class WorkspaceV2SessionProducer {
       return;
     }
     const initialPayload = this.createProducerPayloadForTool(selectedToolId);
+    this.setCurrentSessionPayload(initialPayload, "workspace-v2-init");
     const hostContextId = this.createHostContextId(selectedToolId);
     const activation = this.activateWorkspaceSession(hostContextId, initialPayload, "workspace-v2-init");
     if (!activation.ok) {
@@ -1286,7 +1287,13 @@ class WorkspaceV2SessionProducer {
       if (typeof payload.toolId !== "string" || payload.toolId.trim() !== "palette-manager-v2") {
         continue;
       }
-      if (Object.prototype.hasOwnProperty.call(payload, "payloadJson")) {
+      if (Object.prototype.hasOwnProperty.call(payload, "paletteJson")) {
+        return sessionId;
+      }
+      if (!payload.payloadJson || typeof payload.payloadJson !== "object" || Array.isArray(payload.payloadJson)) {
+        return sessionId;
+      }
+      if (!payload.payloadJson.paletteDocument || typeof payload.payloadJson.paletteDocument !== "object" || Array.isArray(payload.payloadJson.paletteDocument)) {
         return sessionId;
       }
     }
@@ -1354,8 +1361,8 @@ class WorkspaceV2SessionProducer {
     }
     if (this.isPaletteSessionPayload(activePayload)) {
       const swatchValidation = this.validatePaletteSwatchesForWorkspaceExport(
-        activePayload.paletteJson.swatches,
-        "tools.workspace-v2.activeSession.paletteJson.swatches"
+        activePayload.payloadJson.paletteDocument.swatches,
+        "tools.workspace-v2.activeSession.payloadJson.paletteDocument.swatches"
       );
       if (!swatchValidation.ok) {
         return { ok: false, message: swatchValidation.message };
@@ -1366,7 +1373,7 @@ class WorkspaceV2SessionProducer {
           schema: "html-js-gaming.palette",
           version: 1,
           name: "Workspace Active Palette",
-          swatches: this.cloneSessionValue(activePayload.paletteJson.swatches)
+          swatches: this.cloneSessionValue(activePayload.payloadJson.paletteDocument.swatches)
         }
       };
     }
@@ -1500,10 +1507,6 @@ class WorkspaceV2SessionProducer {
     }
     if (sessionPayload.toolId.trim() !== toolId) {
       this.statusNode.textContent = `Session payload toolId '${sessionPayload.toolId.trim()}' does not match selected tool '${toolId}'.`;
-      return false;
-    }
-    if (this.hasWorkspaceActivePalette() && this.isPaletteManagerToolId(toolId)) {
-      this.statusNode.textContent = this.singleActivePaletteBlockedMessage();
       return false;
     }
     const activation = this.activateWorkspaceSession(this.createHostContextId(toolId), sessionPayload, sourceLabel);
@@ -3292,21 +3295,24 @@ class WorkspaceV2SessionProducer {
     return `${text.slice(0, maxLength)} ...truncated (${text.length - maxLength} more chars)`;
   }
 
-  normalizePaletteFixtureSwatches(paletteJson) {
-    if (!paletteJson || typeof paletteJson !== "object" || Array.isArray(paletteJson)) {
-      return { ok: false, message: "Fixture is invalid. paletteJson must be an object for palette-manager-v2.", value: null };
+  normalizePaletteFixtureSwatches(paletteDocument) {
+    if (!paletteDocument || typeof paletteDocument !== "object" || Array.isArray(paletteDocument)) {
+      return { ok: false, message: "Fixture is invalid. payloadJson.paletteDocument must be an object for palette-manager-v2.", value: null };
     }
-    if (Object.prototype.hasOwnProperty.call(paletteJson, "colors")) {
-      return { ok: false, message: "Fixture is invalid. paletteJson.colors is not supported; use paletteJson.swatches.", value: null };
+    if (Object.prototype.hasOwnProperty.call(paletteDocument, "colors")) {
+      return { ok: false, message: "Fixture is invalid. payloadJson.paletteDocument.colors is not supported; use payloadJson.paletteDocument.swatches.", value: null };
     }
-    if (!Array.isArray(paletteJson.swatches)) {
-      return { ok: false, message: "Fixture is invalid. paletteJson.swatches must be an array for palette-manager-v2.", value: null };
+    if (typeof paletteDocument.name !== "string" || !paletteDocument.name.trim()) {
+      return { ok: false, message: "Fixture is invalid. payloadJson.paletteDocument.name is required for palette-manager-v2.", value: null };
     }
-    const swatchValidation = this.validatePaletteSwatchesForWorkspaceExport(paletteJson.swatches, "fixture.sessionContext.paletteJson.swatches");
+    if (!Array.isArray(paletteDocument.swatches)) {
+      return { ok: false, message: "Fixture is invalid. payloadJson.paletteDocument.swatches must be an array for palette-manager-v2.", value: null };
+    }
+    const swatchValidation = this.validatePaletteSwatchesForWorkspaceExport(paletteDocument.swatches, "fixture.sessionContext.payloadJson.paletteDocument.swatches");
     if (!swatchValidation.ok) {
       return { ok: false, message: swatchValidation.message, value: null };
     }
-    return { ok: true, message: "", value: paletteJson };
+    return { ok: true, message: "", value: paletteDocument };
   }
 
   normalizeFixtureSessionContext(toolId, sessionContext) {
@@ -3322,17 +3328,23 @@ class WorkspaceV2SessionProducer {
       return { ok: false, message: `Fixture is invalid. sessionContext.toolId must be '${toolId}'.`, value: null };
     }
     if (toolId === "palette-manager-v2") {
-      if (Object.prototype.hasOwnProperty.call(normalizedSession, "payloadJson")) {
-        return { ok: false, message: "Fixture is invalid. payloadJson is not supported for palette-manager-v2.", value: null };
+      if (Object.prototype.hasOwnProperty.call(normalizedSession, "paletteJson")) {
+        return { ok: false, message: "Fixture is invalid. paletteJson is not supported for palette-manager-v2.", value: null };
       }
-      if (!Object.prototype.hasOwnProperty.call(normalizedSession, "paletteJson")) {
-        return { ok: false, message: "Fixture is invalid. paletteJson is required for palette-manager-v2.", value: null };
+      if (!Object.prototype.hasOwnProperty.call(normalizedSession, "payloadJson")) {
+        return { ok: false, message: "Fixture is invalid. payloadJson is required for palette-manager-v2.", value: null };
       }
-      const normalizedPalette = this.normalizePaletteFixtureSwatches(normalizedSession.paletteJson);
+      if (!normalizedSession.payloadJson || typeof normalizedSession.payloadJson !== "object" || Array.isArray(normalizedSession.payloadJson)) {
+        return { ok: false, message: "Fixture is invalid. payloadJson must be an object for palette-manager-v2.", value: null };
+      }
+      if (!Object.prototype.hasOwnProperty.call(normalizedSession.payloadJson, "paletteDocument")) {
+        return { ok: false, message: "Fixture is invalid. payloadJson.paletteDocument is required for palette-manager-v2.", value: null };
+      }
+      const normalizedPalette = this.normalizePaletteFixtureSwatches(normalizedSession.payloadJson.paletteDocument);
       if (!normalizedPalette.ok) {
         return { ok: false, message: normalizedPalette.message, value: null };
       }
-      normalizedSession.paletteJson = normalizedPalette.value;
+      normalizedSession.payloadJson.paletteDocument = normalizedPalette.value;
     }
     return { ok: true, message: "", value: normalizedSession };
   }
@@ -3341,10 +3353,6 @@ class WorkspaceV2SessionProducer {
     const toolId = this.selectedToolId();
     if (!toolId) {
       this.statusNode.textContent = "Select a V2 tool before loading a fixture.";
-      return;
-    }
-    if (this.hasWorkspaceActivePalette() && this.isPaletteManagerToolId(toolId)) {
-      this.statusNode.textContent = this.singleActivePaletteBlockedMessage();
       return;
     }
     try {
@@ -3573,24 +3581,30 @@ class WorkspaceV2SessionProducer {
       return { ok: false, message: `${sessionPath}.toolId '${toolId}' is not supported.` };
     }
     if (toolId === "palette-manager-v2") {
-      if (Object.prototype.hasOwnProperty.call(sessionPayload, "payloadJson")) {
-        return { ok: false, message: `${sessionPath}.payloadJson is not supported for palette-manager-v2. Use paletteJson.` };
+      if (Object.prototype.hasOwnProperty.call(sessionPayload, "paletteJson")) {
+        return { ok: false, message: `${sessionPath}.paletteJson is not supported for palette-manager-v2. Use payloadJson.paletteDocument.` };
       }
-      if (!sessionPayload.paletteJson || typeof sessionPayload.paletteJson !== "object" || Array.isArray(sessionPayload.paletteJson)) {
-        return { ok: false, message: `${sessionPath}.paletteJson is required for palette-manager-v2.` };
+      if (!sessionPayload.payloadJson || typeof sessionPayload.payloadJson !== "object" || Array.isArray(sessionPayload.payloadJson)) {
+        return { ok: false, message: `${sessionPath}.payloadJson is required for palette-manager-v2.` };
       }
-      if (!Array.isArray(sessionPayload.paletteJson.swatches)) {
-        return { ok: false, message: `${sessionPath}.paletteJson.swatches must be an array.` };
+      if (!sessionPayload.payloadJson.paletteDocument || typeof sessionPayload.payloadJson.paletteDocument !== "object" || Array.isArray(sessionPayload.payloadJson.paletteDocument)) {
+        return { ok: false, message: `${sessionPath}.payloadJson.paletteDocument is required for palette-manager-v2.` };
+      }
+      if (typeof sessionPayload.payloadJson.paletteDocument.name !== "string" || !sessionPayload.payloadJson.paletteDocument.name.trim()) {
+        return { ok: false, message: `${sessionPath}.payloadJson.paletteDocument.name is required.` };
+      }
+      if (!Array.isArray(sessionPayload.payloadJson.paletteDocument.swatches)) {
+        return { ok: false, message: `${sessionPath}.payloadJson.paletteDocument.swatches must be an array.` };
       }
       const swatchValidation = this.validatePaletteSwatchesForWorkspaceExport(
-        sessionPayload.paletteJson.swatches,
-        `${sessionPath}.paletteJson.swatches`
+        sessionPayload.payloadJson.paletteDocument.swatches,
+        `${sessionPath}.payloadJson.paletteDocument.swatches`
       );
       if (!swatchValidation.ok) {
         return swatchValidation;
       }
-      if (Object.prototype.hasOwnProperty.call(sessionPayload.paletteJson, "colors")) {
-        return { ok: false, message: `${sessionPath}.paletteJson.colors is not supported. Use paletteJson.swatches.` };
+      if (Object.prototype.hasOwnProperty.call(sessionPayload.payloadJson.paletteDocument, "colors")) {
+        return { ok: false, message: `${sessionPath}.payloadJson.paletteDocument.colors is not supported. Use payloadJson.paletteDocument.swatches.` };
       }
       return { ok: true, message: "" };
     }
@@ -3968,10 +3982,6 @@ class WorkspaceV2SessionProducer {
     const toolId = this.selectedToolId();
     if (!toolId) {
       this.statusNode.textContent = "Select a V2 tool before launch.";
-      return;
-    }
-    if (this.hasWorkspaceActivePalette() && this.isPaletteManagerToolId(toolId)) {
-      this.statusNode.textContent = this.singleActivePaletteBlockedMessage();
       return;
     }
     if (!this.isValidSessionPayload(this.currentSessionPayload)) {
