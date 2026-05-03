@@ -96,6 +96,8 @@ class WorkspaceV2SessionProducer {
     this.diffOutputSelectionKey = "";
     this.recentSessionInventory = [];
     this.workspaceManifestGames = [];
+    this.workspaceImportedToolEntries = {};
+    this.workspaceToolsSummaryNode = null;
     this.loadFixtureButton.addEventListener("click", () => {
       this.loadSelectedFixture();
     });
@@ -219,6 +221,7 @@ class WorkspaceV2SessionProducer {
     this.applyDefaultWorkspaceToolSelection();
     this.registerScrollTextColorRule();
     this.initializeImportExportSectionStatusNode();
+    this.initializeWorkspaceToolsSummaryNode();
     this.initializeHiddenImportFileInput();
     this.initializeImportTextareaButton();
     this.decodeSessionParamFromUrl();
@@ -281,10 +284,75 @@ class WorkspaceV2SessionProducer {
     this.importExportStatusNode = statusNode;
   }
 
+  initializeWorkspaceToolsSummaryNode() {
+    const heading = Array.from(document.querySelectorAll("h2")).find((node) => {
+      return node.textContent && node.textContent.trim() === "Import / Export Session JSON";
+    });
+    if (!heading) {
+      return;
+    }
+    const section = heading.closest("section");
+    if (!section) {
+      return;
+    }
+    const existingNode = document.getElementById("workspaceV2WorkspaceToolsSummary");
+    if (existingNode) {
+      this.workspaceToolsSummaryNode = existingNode;
+      this.renderWorkspaceToolsSummary();
+      return;
+    }
+    const summaryNode = document.createElement("p");
+    summaryNode.id = "workspaceV2WorkspaceToolsSummary";
+    section.appendChild(summaryNode);
+    this.workspaceToolsSummaryNode = summaryNode;
+    this.renderWorkspaceToolsSummary();
+  }
+
+  readWorkspaceToolsFromTextarea() {
+    const rawJson = typeof this.workspaceJsonNode.value === "string" ? this.workspaceJsonNode.value.trim() : "";
+    if (!rawJson) {
+      return [];
+    }
+    const parsed = this.safeParseJson(rawJson);
+    if (!parsed.ok || !parsed.value || typeof parsed.value !== "object" || Array.isArray(parsed.value)) {
+      return [];
+    }
+    if (!parsed.value.tools || typeof parsed.value.tools !== "object" || Array.isArray(parsed.value.tools)) {
+      return [];
+    }
+    return Object.keys(parsed.value.tools).sort((left, right) => left.localeCompare(right));
+  }
+
+  workspaceToolSummaryEntries() {
+    const fromTextarea = this.readWorkspaceToolsFromTextarea();
+    if (fromTextarea.length > 0) {
+      return fromTextarea;
+    }
+    const entries = ["palette-browser", "workspace-v2"];
+    const importedToolIds = Object.keys(this.workspaceImportedToolEntries || {}).sort((left, right) => left.localeCompare(right));
+    importedToolIds.forEach((toolId) => {
+      if (!entries.includes(toolId)) {
+        entries.push(toolId);
+      }
+    });
+    return entries;
+  }
+
+  renderWorkspaceToolsSummary() {
+    if (!this.workspaceToolsSummaryNode) {
+      return;
+    }
+    const entries = this.workspaceToolSummaryEntries();
+    this.workspaceToolsSummaryNode.textContent = entries.length > 0
+      ? `Workspace Tools: ${entries.join(", ")}`
+      : "Workspace Tools: none";
+  }
+
   setImportExportStatus(message) {
     if (this.importExportStatusNode) {
       this.importExportStatusNode.textContent = message;
     }
+    this.renderWorkspaceToolsSummary();
     this.statusNode.textContent = message;
   }
 
@@ -3104,6 +3172,7 @@ class WorkspaceV2SessionProducer {
     this.resetUrlState(false);
     this.currentHostContextId = "";
     this.workspaceActivePalette = null;
+    this.workspaceImportedToolEntries = {};
     this.setCurrentSessionPayload(null, "");
     this.initializeWorkspaceProducerSession();
     this.refreshPaletteOwnershipStateAndUi();
@@ -3122,6 +3191,7 @@ class WorkspaceV2SessionProducer {
     this.renderSessionLibrary();
     this.renderErrorLogsViewer();
     this.renderDiagnosticsPanel();
+    this.renderWorkspaceToolsSummary();
     this.statusNode.textContent = "Workspace V2 full reset complete. Workspace manifest baseline restored.";
   }
 
@@ -3507,6 +3577,7 @@ class WorkspaceV2SessionProducer {
       return false;
     }
     this.workspaceJsonNode.value = JSON.stringify(workspaceSchemaDocument, null, 2);
+    this.renderWorkspaceToolsSummary();
     return true;
   }
 
@@ -3551,24 +3622,28 @@ class WorkspaceV2SessionProducer {
         name: "Workspace V2 Session"
       };
     }
+    const manifestTools = {};
+    const importedToolIds = Object.keys(this.workspaceImportedToolEntries || {}).sort((left, right) => left.localeCompare(right));
+    importedToolIds.forEach((toolId) => {
+      manifestTools[toolId] = this.cloneSessionValue(this.workspaceImportedToolEntries[toolId]);
+    });
+    manifestTools["palette-browser"] = this.cloneSessionValue(activePaletteResolution.paletteBrowserPayload);
+    manifestTools["workspace-v2"] = {
+      schema: "html-js-gaming.workspace-v2-session/1",
+      game: workspaceGame,
+      defaultToolId: "palette-manager-v2",
+      activeToolId,
+      activeHostContextId,
+      activeSession: this.cloneSessionValue(activePayload),
+      savedSessions: this.cloneSessionValue(library)
+    };
     const workspaceDocument = {
       documentKind: "workspace-manifest",
       schema: "html-js-gaming.project",
       version: 1,
       id: `workspace-v2-${activeHostContextId}`,
       name: `Workspace V2 Session ${activeToolId}`,
-      tools: {
-        "palette-browser": this.cloneSessionValue(activePaletteResolution.paletteBrowserPayload),
-        "workspace-v2": {
-        schema: "html-js-gaming.workspace-v2-session/1",
-          game: workspaceGame,
-        defaultToolId: "palette-manager-v2",
-        activeToolId,
-        activeHostContextId,
-        activeSession: this.cloneSessionValue(activePayload),
-        savedSessions: this.cloneSessionValue(library)
-        }
-      }
+      tools: manifestTools
     };
     return workspaceDocument;
   }
@@ -3689,13 +3764,6 @@ class WorkspaceV2SessionProducer {
     }
     if (Object.prototype.hasOwnProperty.call(workspaceDocument.tools, "palette")) {
       return { ok: false, message: "Use tools.palette-browser. Workspace supports one active palette tool entry." };
-    }
-    const toolsKeys = Object.keys(workspaceDocument.tools);
-    const allowedToolsKeys = new Set(["palette-browser", "workspace-v2"]);
-    for (const key of toolsKeys) {
-      if (!allowedToolsKeys.has(key)) {
-        return { ok: false, message: `tools.${key} is not allowed.` };
-      }
     }
     if (!Object.prototype.hasOwnProperty.call(workspaceDocument.tools, "palette-browser")) {
       return { ok: false, message: "tools.palette-browser is required." };
@@ -3834,6 +3902,14 @@ class WorkspaceV2SessionProducer {
         this.setImportExportStatus(`Import error: ${validation.message}`);
         return;
       }
+      this.workspaceImportedToolEntries = {};
+      const importedToolIds = Object.keys(parsed.tools).sort((left, right) => left.localeCompare(right));
+      importedToolIds.forEach((toolId) => {
+        if (toolId === "palette-browser" || toolId === "workspace-v2") {
+          return;
+        }
+        this.workspaceImportedToolEntries[toolId] = this.cloneSessionValue(parsed.tools[toolId]);
+      });
       const workspaceV2Tool = parsed.tools["workspace-v2"];
       this.workspaceManifestGames = [this.cloneSessionValue(workspaceV2Tool.game)];
       const activeHostContextId = workspaceV2Tool.activeHostContextId.trim();
@@ -3856,6 +3932,7 @@ class WorkspaceV2SessionProducer {
       this.refreshPaletteOwnershipStateAndUi();
       this.refreshWorkspaceSessionUiStateModel("refresh_load");
       this.renderDiagnosticsPanel();
+      this.renderWorkspaceToolsSummary();
       this.setImportExportStatus("Workspace session imported.");
     } catch (error) {
       this.setImportExportStatus(`Import error: ${error instanceof Error ? error.message : "unknown error"}`);
