@@ -15,7 +15,13 @@ const npmExecPath = typeof process.env.npm_execpath === "string" ? process.env.n
 const command = process.execPath;
 const args = npmExecPath
   ? [npmExecPath, "run", "--silent", "test:workspace-v2:playwright"]
-  : [path.join(repoRoot, "node_modules", "@playwright", "test", "cli.js"), "test", "tests/ui/workspace-v2.asset-manager.spec.js"];
+  : [
+      path.join(repoRoot, "node_modules", "@playwright", "test", "cli.js"),
+      "test",
+      "tests/ui/workspace-v2.asset-manager.spec.js",
+      "tests/playwright/workspace-v2.validation.spec.js",
+      "tests/playwright/tool-validation"
+    ];
 
 const result = spawnSync(command, args, {
   cwd: repoRoot,
