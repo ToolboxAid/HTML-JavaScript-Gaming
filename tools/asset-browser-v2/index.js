@@ -2,7 +2,7 @@ class AssetBrowserV2 {
   constructor() {
     console.log("[AssetBrowserV2]");
     this.sessionPayloadBytesLimit = 1024 * 1024;
-    document.title = "Asset Browser V2";
+    document.title = "Asset Manager V2";
     document.body.dataset.toolId = "asset-browser-v2";
     this.urlState = this.readUrlState();
     this.goBack = this.goBack.bind(this);
@@ -24,7 +24,7 @@ class AssetBrowserV2 {
 
   openSvgAssetStudioV2() {
     if (!this.urlState.hostContextId) {
-      this.renderMissing("No hostContextId is available for launch. Re-open Asset Browser V2 from a valid Tool V2 session link.");
+      this.renderMissing("No hostContextId is available for launch. Re-open Asset Manager V2 from a valid Tool V2 session link.");
       return;
     }
     const targetUrl = this.buildToolUrl("svg-asset-studio-v2");
@@ -51,7 +51,7 @@ class AssetBrowserV2 {
   }
 
   toolLabel(toolId) {
-    if (toolId === "asset-browser-v2") return "Asset Browser V2";
+    if (toolId === "asset-browser-v2") return "Asset Manager V2";
     if (toolId === "palette-manager-v2") return "Palette Manager V2";
     if (toolId === "svg-asset-studio-v2") return "SVG Asset Studio V2";
     if (toolId === "tilemap-studio-v2") return "Tilemap Studio V2";
@@ -62,7 +62,7 @@ class AssetBrowserV2 {
 
   renderNavigation() {
     const sourceLabel = this.toolLabel(this.urlState.fromTool) || "Workspace V2";
-    document.getElementById("assetBrowserV2Breadcrumb").textContent = `Workspace V2 -> ${sourceLabel} -> Asset Browser V2`;
+    document.getElementById("assetBrowserV2Breadcrumb").textContent = `Workspace V2 -> ${sourceLabel} -> Asset Manager V2`;
     document.getElementById("assetBrowserV2BackButton").textContent = `Back to ${sourceLabel}`;
   }
 
@@ -129,7 +129,7 @@ class AssetBrowserV2 {
     console.log("[SESSION_CONTEXT_READ]");
     try {
       if (!this.urlState.hostContextId) {
-        this.renderMissing("No hostContextId was provided. Re-open Asset Browser V2 from a valid Tool V2 session link.");
+        this.renderMissing("No hostContextId was provided. Re-open Asset Manager V2 from a valid Tool V2 session link.");
         return;
       }
       const serializedSession = window.sessionStorage.getItem(
@@ -138,7 +138,7 @@ class AssetBrowserV2 {
       if (
         !serializedSession
       ) {
-        this.renderMissing("No session data was found for the provided hostContextId. Re-open Asset Browser V2 from the tools index or a host flow that creates the session context first.");
+        this.renderMissing("No session data was found for the provided hostContextId. Re-open Asset Manager V2 from the tools index or a host flow that creates the session context first.");
         return;
       }
       if (serializedSession.length > this.sessionPayloadBytesLimit) {
@@ -149,7 +149,7 @@ class AssetBrowserV2 {
         JSON.parse(serializedSession)
       );
     } catch (error) {
-      const runtimeMessage = `Unable to read Asset Browser V2 session context: ${error instanceof Error ? error.message : "unknown error"}`;
+      const runtimeMessage = `Unable to read Asset Manager V2 session context: ${error instanceof Error ? error.message : "unknown error"}`;
       this.logStructuredError("RUNTIME", runtimeMessage, { hostContextId: this.urlState.hostContextId || "" });
       this.renderError(runtimeMessage);
     }
@@ -167,19 +167,19 @@ class AssetBrowserV2 {
       return;
     }
     if (typeof versionCheck.payload.toolId !== "string" || versionCheck.payload.toolId.trim() !== "asset-browser-v2") {
-      this.renderError("Asset Browser V2 session data is invalid. Expected toolId 'asset-browser-v2'.");
+      this.renderError("Asset Manager V2 session data is invalid. Expected toolId 'asset-browser-v2'.");
       return;
     }
     if (!versionCheck.payload.payloadJson || typeof versionCheck.payload.payloadJson !== "object" || Array.isArray(versionCheck.payload.payloadJson)) {
-      this.renderError("Asset Browser V2 session data is invalid. Expected payloadJson only.");
+      this.renderError("Asset Manager V2 session data is invalid. Expected payloadJson only.");
       return;
     }
     if (!versionCheck.payload.payloadJson.assetCatalog || typeof versionCheck.payload.payloadJson.assetCatalog !== "object" || Array.isArray(versionCheck.payload.payloadJson.assetCatalog)) {
-      this.renderError("Asset Browser V2 session data is invalid. Expected payloadJson.assetCatalog.");
+      this.renderError("Asset Manager V2 session data is invalid. Expected payloadJson.assetCatalog.");
       return;
     }
     if (typeof versionCheck.payload.payloadJson.importName === "string" || typeof versionCheck.payload.payloadJson.importDestination === "string") {
-      this.renderError("Asset Browser V2 session data is invalid. Remove payloadJson.importName/importDestination. Load assets from payloadJson.assetCatalog only.");
+      this.renderError("Asset Manager V2 session data is invalid. Remove payloadJson.importName/importDestination. Load assets from payloadJson.assetCatalog only.");
       return;
     }
     this.renderCatalog(versionCheck.payload.payloadJson.assetCatalog, versionCheck.payload);
@@ -187,11 +187,11 @@ class AssetBrowserV2 {
 
   renderCatalog(assetCatalog, sessionContext) {
     if (typeof assetCatalog.name !== "string" || !assetCatalog.name.trim()) {
-      this.renderError("Asset Browser V2 session data is invalid. Expected assetCatalog.name.");
+      this.renderError("Asset Manager V2 session data is invalid. Expected assetCatalog.name.");
       return;
     }
     if (!Array.isArray(assetCatalog.entries)) {
-      this.renderError("Asset Browser V2 session data is invalid. Expected assetCatalog.entries[].");
+      this.renderError("Asset Manager V2 session data is invalid. Expected assetCatalog.entries[].");
       return;
     }
     if (
@@ -210,7 +210,7 @@ class AssetBrowserV2 {
           !entry.path.trim()
       )
     ) {
-      this.renderError("Asset Browser V2 session data is invalid. Every entry requires id, label, kind, and path.");
+      this.renderError("Asset Manager V2 session data is invalid. Every entry requires id, label, kind, and path.");
       return;
     }
 
@@ -220,10 +220,10 @@ class AssetBrowserV2 {
     document.getElementById("assetBrowserV2Title").textContent = assetCatalog.name.trim();
     document.getElementById("assetBrowserV2Count").textContent = `${assetCatalog.entries.length} asset${assetCatalog.entries.length === 1 ? "" : "s"}`;
     document.getElementById("assetBrowserV2State").textContent = assetCatalog.entries.length === 0
-      ? "Asset Browser V2 loaded a valid session asset catalog with zero entries."
-      : "Asset Browser V2 loaded the session asset catalog.";
+      ? "Asset Manager V2 loaded a valid session asset catalog with zero entries."
+      : "Asset Manager V2 loaded the session asset catalog.";
     if (assetCatalog.entries.length === 0) {
-      document.getElementById("assetBrowserV2EmptyState").textContent = "Asset catalog is valid but empty. Add assets to payloadJson.assetCatalog.entries and relaunch Asset Browser V2.";
+      document.getElementById("assetBrowserV2EmptyState").textContent = "Asset catalog is valid but empty. Add assets to payloadJson.assetCatalog.entries and relaunch Asset Manager V2.";
       document.getElementById("assetBrowserV2EmptyState").hidden = false;
     } else {
       document.getElementById("assetBrowserV2EmptyState").hidden = true;
@@ -279,10 +279,10 @@ class AssetBrowserV2 {
     this.logStructuredError("INVALID", message, { hostContextId: this.urlState.hostContextId || "" });
     document.getElementById("assetBrowserV2SessionReadout").textContent = "Session: read attempted";
     document.getElementById("assetBrowserV2ContractReadout").textContent = "payloadJson.assetCatalog invalid";
-    document.getElementById("assetBrowserV2WorkspaceReadout").textContent = "Workspace writes are disabled for invalid Asset Browser V2 session data.";
-    document.getElementById("assetBrowserV2Title").textContent = "Asset Browser V2 error";
+    document.getElementById("assetBrowserV2WorkspaceReadout").textContent = "Workspace writes are disabled for invalid Asset Manager V2 session data.";
+    document.getElementById("assetBrowserV2Title").textContent = "Asset Manager V2 error";
     document.getElementById("assetBrowserV2Count").textContent = "0 assets";
-    document.getElementById("assetBrowserV2InvalidState").textContent = `${message} Re-open Asset Browser V2 from a host session that provides payloadJson.assetCatalog.`;
+    document.getElementById("assetBrowserV2InvalidState").textContent = `${message} Re-open Asset Manager V2 from a host session that provides payloadJson.assetCatalog.`;
     document.getElementById("assetBrowserV2EmptyState").hidden = true;
     document.getElementById("assetBrowserV2InvalidState").hidden = false;
     document.getElementById("assetBrowserV2ValidState").hidden = true;

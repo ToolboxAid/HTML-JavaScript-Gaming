@@ -1,1 +1,1 @@
-Complete Asset Browser V2 strict payloadJson catalog handling with explicit valid-empty and invalid legacy hint rejection - PR 11.313
+Add explicit Workspace V2 Asset Manager launcher and rename Asset Browser V2 user-facing labels without contract changes - PR 11.313

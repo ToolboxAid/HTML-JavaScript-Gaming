@@ -15,6 +15,7 @@ class WorkspaceV2SessionProducer {
     this.backButton = document.getElementById("workspaceV2BackButton");
     this.loadFixtureButton = document.getElementById("workspaceV2LoadFixtureButton");
     this.launchButton = document.getElementById("workspaceV2LaunchButton");
+    this.openAssetManagerButton = document.getElementById("workspaceV2OpenAssetManagerButton");
     this.importJsonNode = document.getElementById("workspaceV2ImportJson");
     this.importFileNode = document.getElementById("workspaceV2ImportFile");
     this.importButton = document.getElementById("workspaceV2ImportButton");
@@ -92,6 +93,9 @@ class WorkspaceV2SessionProducer {
     });
     this.launchButton.addEventListener("click", () => {
       this.createSessionAndLaunch();
+    });
+    this.openAssetManagerButton.addEventListener("click", () => {
+      this.openAssetManagerFromWorkspace();
     });
     this.importButton.addEventListener("click", () => {
       this.handleImportWorkspaceSessionJsonClick();
@@ -3938,6 +3942,40 @@ class WorkspaceV2SessionProducer {
     this.addRecentSessionEntry(hostContextId, toolId, activation.payload);
     const launchUrl = this.buildToolLaunchUrl(toolId, hostContextId);
     this.statusNode.textContent = `Session created.\nTool: ${toolId}\nHostContextId: ${hostContextId}\nURL: tools/${toolId}/index.html?hostContextId=${hostContextId}`;
+    window.location.href = launchUrl;
+  }
+
+  openAssetManagerFromWorkspace() {
+    if (!this.isValidSessionPayload(this.currentSessionPayload)) {
+      this.statusNode.textContent = "No active Workspace V2 session is available. Load fixture, import workspace session, or load a saved session first.";
+      return;
+    }
+    if (!this.currentSessionPayload.payloadJson || typeof this.currentSessionPayload.payloadJson !== "object" || Array.isArray(this.currentSessionPayload.payloadJson)) {
+      this.statusNode.textContent = "Active session payloadJson is missing. Open Asset Manager V2 from a session that provides payloadJson.";
+      return;
+    }
+    const assetManagerPayload = this.withSessionVersion({
+      toolId: "asset-browser-v2",
+      payloadJson: this.cloneSessionValue(this.currentSessionPayload.payloadJson)
+    });
+    const payloadValidation = this.validateWorkspaceToolSessionPayload(assetManagerPayload, "assetManagerLaunch");
+    if (!payloadValidation.ok) {
+      this.statusNode.textContent = payloadValidation.message;
+      return;
+    }
+    const activation = this.activateWorkspaceSession(
+      this.createHostContextId("asset-browser-v2"),
+      assetManagerPayload,
+      "workspace-v2-asset-manager-launch"
+    );
+    if (!activation.ok) {
+      this.statusNode.textContent = activation.message;
+      return;
+    }
+    const hostContextId = this.currentHostContextId;
+    this.addRecentSessionEntry(hostContextId, "asset-browser-v2", activation.payload);
+    const launchUrl = this.buildToolLaunchUrl("asset-browser-v2", hostContextId);
+    this.statusNode.textContent = `Session created.\nTool: asset-browser-v2\nHostContextId: ${hostContextId}\nURL: tools/asset-browser-v2/index.html?hostContextId=${hostContextId}`;
     window.location.href = launchUrl;
   }
 }

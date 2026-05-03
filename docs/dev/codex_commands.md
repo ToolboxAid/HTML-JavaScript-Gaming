@@ -124,3 +124,10 @@ PR_11_313
 ```bash
 npx @openai/codex run --model gpt-5.3-codex --reasoning medium "Implement PR_11_313 ..."
 ```
+
+---
+PR_11_313 (Workspace V2 launcher + Asset Manager V2 UI labels)
+
+```bash
+npx @openai/codex run --model gpt-5.3-codex --reasoning medium "Implement PR_11_313: Workspace V2 tool launcher UI + Asset Manager V2 user-facing rename."
+```
