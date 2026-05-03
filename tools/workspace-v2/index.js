@@ -876,14 +876,6 @@ class WorkspaceV2SessionProducer {
   }
 
   readSessionPayloadForSaveAction(sessionId) {
-    const storagePayload = this.readSessionPayloadForLibraryWrite(sessionId);
-    if (this.isValidSessionPayload(storagePayload)) {
-      return storagePayload;
-    }
-    const recentPayload = this.readSessionPayloadFromRecentSessionId(sessionId);
-    if (this.isValidSessionPayload(recentPayload)) {
-      return recentPayload;
-    }
     const activePayload = this.readActiveSessionPayloadForLibraryActions();
     if (this.isValidSessionPayload(activePayload)) {
       return activePayload;
@@ -892,6 +884,25 @@ class WorkspaceV2SessionProducer {
       return this.currentSessionPayload;
     }
     return null;
+  }
+
+  readInvalidPaletteSavedSessionId(library) {
+    if (!library || typeof library !== "object" || Array.isArray(library)) {
+      return "";
+    }
+    for (const sessionId of Object.keys(library)) {
+      const payload = library[sessionId];
+      if (!payload || typeof payload !== "object" || Array.isArray(payload)) {
+        continue;
+      }
+      if (typeof payload.toolId !== "string" || payload.toolId.trim() !== "palette-manager-v2") {
+        continue;
+      }
+      if (Object.prototype.hasOwnProperty.call(payload, "payloadJson")) {
+        return sessionId;
+      }
+    }
+    return "";
   }
 
   selectedMergedSessionId() {
@@ -993,7 +1004,7 @@ class WorkspaceV2SessionProducer {
     sessionStorage.setItem(hostContextId, sizeValidation.metrics.serializedPayload);
     this.currentHostContextId = hostContextId;
     this.setCurrentSessionPayload(versionedPayload, sourceLabel);
-    this.importJsonNode.value = JSON.stringify(versionedPayload, null, 2);
+    this.syncWorkspaceManifestTextarea();
     this.renderDiagnosticsPanel();
     return true;
   }
@@ -2642,7 +2653,8 @@ class WorkspaceV2SessionProducer {
     this.resetUrlState(false);
     this.currentHostContextId = "";
     this.setCurrentSessionPayload(null, "");
-    this.importJsonNode.value = "";
+    this.initializeWorkspaceProducerSession();
+    this.syncWorkspaceManifestTextarea();
     this.shareUrlNode.value = "";
     this.sessionNameNode.value = "";
     this.updateSessionLibraryActionState();
@@ -2657,7 +2669,7 @@ class WorkspaceV2SessionProducer {
     this.renderSessionLibrary();
     this.renderErrorLogsViewer();
     this.renderDiagnosticsPanel();
-    this.statusNode.textContent = "Workspace V2 full reset complete. EMPTY baseline restored.";
+    this.statusNode.textContent = "Workspace V2 full reset complete. Workspace manifest baseline restored.";
   }
 
   safeParseJson(rawValue) {
@@ -3095,6 +3107,11 @@ class WorkspaceV2SessionProducer {
       this.setImportExportStatus("Export error: No active Workspace V2 session is available to export.");
       return;
     }
+    const invalidSavedSessionId = this.readInvalidPaletteSavedSessionId(workspaceSchemaDocument.tools["workspace-v2"].savedSessions);
+    if (invalidSavedSessionId) {
+      this.setImportExportStatus(`Export error: Saved session '${invalidSavedSessionId}' is invalid for palette-manager-v2. Load a valid session and overwrite it, or delete it.`);
+      return;
+    }
     try {
       const validation = this.validateWorkspaceSchemaDocument(workspaceSchemaDocument);
       if (!validation.ok) {
@@ -3373,6 +3390,11 @@ class WorkspaceV2SessionProducer {
       this.setLibraryStatus(overwriteExisting
         ? "No active Workspace V2 session is available to overwrite from."
         : "No active Workspace V2 session is available to save.");
+      return;
+    }
+    const payloadValidation = this.validateWorkspaceToolSessionPayload(payloadForWrite, `tools.workspace-v2.savedSessions.${sessionName}`);
+    if (!payloadValidation.ok) {
+      this.setLibraryStatus(payloadValidation.message);
       return;
     }
     library[sessionName] = payloadForWrite;

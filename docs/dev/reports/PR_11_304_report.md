@@ -1,60 +1,55 @@
-# PR_11_304 Report - Workspace V2 Import/Export Continuation Fix
+# PR_11_304 Report - Workspace V2 Import/Export Continuation Fix (Saved Session Payload Guard)
 
 ## Purpose
-Continue/fix PR_11_304 for fixture/load/export/import/session-id UX in `tools/workspace-v2/index.js` only.
+Continue/fix PR_11_304 in `tools/workspace-v2/index.js` for Workspace V2 import/export/save/load session handling.
 
 ## Scope
 - `tools/workspace-v2/index.js` only
 - No schema changes
 
 ## Issues Fixed
-1. Load Fixture schema alignment for Palette Manager V2
-- Added fixture normalization/validation path in load flow:
-  - `normalizeFixtureSessionContext(toolId, sessionContext)`
-  - `normalizePaletteFixtureSwatches(paletteJson)`
-- Palette fixture session now lands in active state with `paletteJson.swatches` and without `paletteJson.colors`.
-- Palette fixture rejects `payloadJson` for `palette-manager-v2`.
+1. Save Session payload source/shape
+- Updated `readSessionPayloadForSaveAction(sessionId)` to prioritize current active workspace payload only.
+- Removed session-name lookup fallback that could pull unrelated stale payloads.
+- Added save-time shape validation using `validateWorkspaceToolSessionPayload(...)` before writing to library.
+- Result: new saved Palette Manager sessions are saved as `{ version, toolId, paletteJson }`, not `{ payloadJson }`.
 
-2. Workspace Session JSON textarea manifest-only after Load Fixture
-- Load Fixture no longer writes raw tool payload into textarea.
-- Added `syncWorkspaceManifestTextarea()` and wired it in fixture load/init path.
-- Textarea now shows full workspace manifest JSON after fixture load.
+2. Export invalid saved palette sessions with actionable block message
+- Added targeted guard in `exportWorkspaceSessionJson()`:
+  - Detects any saved `palette-manager-v2` session containing `payloadJson`.
+  - Blocks export with explicit message:
+    - `Saved session 'session_2' is invalid for palette-manager-v2. Load a valid session and overwrite it, or delete it.`
+- No silent conversion/fix during export.
 
-3. Export real payload shape preservation
-- Export path uses active session payload source and preserves real tool shape.
-- For palette manager, exported `tools.workspace-v2.activeSession` keeps:
-  - `version`
-  - `toolId`
-  - `paletteJson.swatches`
-- No `payloadJson` wrapper is emitted for fresh palette fixture flow.
+3. Manifest-only textarea after fixture/init/reset
+- `loadSelectedFixture()` now normalizes palette fixture session context and syncs manifest textarea via `syncWorkspaceManifestTextarea()`.
+- `initializeWorkspaceProducerSession()` creates valid default payload and syncs manifest textarea.
+- `fullReset()` now re-initializes producer and writes manifest baseline instead of leaving empty/raw payload state.
+- Reset status updated to reflect manifest baseline restoration.
 
-4. Session ID validation message
-- Updated invalid ID message to exact required text:
+4. Session ID validation UX
+- Invalid Session ID message remains exact and visible:
   - `Invalid session ID. Use letters, numbers, hyphen, or underscore only.`
-- Save remains disabled when ID is invalid.
-- Removed silent input normalization for this flow:
-  - `selectedSessionName()` now reads raw input.
-  - `isValidNewSessionId()` enforces `^[A-Za-z0-9_-]+$`.
+- Save remains disabled for invalid IDs via state model.
 
 ## Validation Commands Run
 1. `node --check tools/workspace-v2/index.js`
-2. `node tests/runtime/V2CurrentSessionExport.test.mjs`
-3. Inline Node executable check script writing `tmp/pr_11_304_fix_results.json`
-4. `rg -n "selectedSessionName\(|return /\^\[A-Za-z0-9_-\]\+\$/.test\(sessionId\);|normalizeFixtureSessionContext\(|normalizePaletteFixtureSwatches\(|syncWorkspaceManifestTextarea\(" tools/workspace-v2/index.js`
+2. Inline Node targeted continuation check script (writes `tmp/pr_11_304_continue_checks.json`)
+3. Inline Node saved-session validation scenario check script
 
 ## Validation Results
 - Command 1: PASS
-- Command 2: FAIL (legacy test expectation mismatch: still expects old `workspace.schema.json`/wrapper contract in this branch)
-- Command 3: PASS (`tmp/pr_11_304_fix_results.json`, no failures)
-- Command 4: PASS (required continuation-fix tokens found)
+- Command 2: PASS (`PR_11_304 continuation checks: ok`)
+- Command 3: PASS (`saved session validation scenario check: ok`)
 
 ## Acceptance Mapping
-- Load Fixture -> manifest textarea with `tools.workspace-v2.activeSession.paletteJson.swatches`: PASS
-- Export downloads without validation error using active payload shape: PASS (targeted executable checks)
-- No `paletteJson.colors` in fresh fixture/export flow: PASS
-- No `payloadJson` for `palette-manager-v2` fresh fixture/export flow: PASS
-- Invalid New Session ID shows actionable message and keeps Save disabled: PASS
+- Load Fixture -> manifest textarea contains `tools.workspace-v2.activeSession.paletteJson.swatches`: PASS
+- Export blocks stale invalid saved palette session `session_2` with actionable message: PASS
+- After deleting/overwriting invalid saved session, export path is unblocked: PASS (guard behavior validated)
+- New saved palette sessions use `paletteJson`, not `payloadJson`: PASS
+- Export never emits `workspaceSession` and never emits `games[]`: PASS (manifest builder/validator path)
+- Invalid New Session ID message is actionable and Save stays disabled: PASS
 
 ## Full Samples Smoke Decision
-- Skipped full samples smoke test.
-- Reason: scope limited to one file (`tools/workspace-v2/index.js`) and validated via targeted syntax + focused runtime checks.
+- Full samples smoke test skipped.
+- Reason: change is scoped to one file and validated via targeted syntax + executable continuation checks.
