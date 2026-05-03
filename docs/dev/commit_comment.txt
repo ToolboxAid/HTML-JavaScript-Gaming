@@ -1,1 +1,1 @@
-Complete Tilemap Studio V2 with HTML-first shell and session-only behavior - PR 11.198
+Remove Workspace V2 legacy diagnostics and duplicate session handlers; enforce single import/export/session activation paths - PR 11.310

@@ -92,3 +92,11 @@ After validation, Codex must create:
 ```
 
 The ZIP must preserve repo-relative structure and include the final changed files plus docs/dev evidence.
+
+
+---
+PR_11_310
+
+```bash
+npx @openai/codex run --model gpt-5.3-codex --reasoning medium "Implement PR_11_310 ..."
+```

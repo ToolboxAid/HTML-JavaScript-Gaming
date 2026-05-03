@@ -66,16 +66,6 @@ class WorkspaceV2SessionProducer {
     this.clearErrorLogsButton = document.getElementById("workspaceV2ClearErrorLogsButton");
     this.errorLogsEmptyState = document.getElementById("workspaceV2ErrorLogsEmptyState");
     this.errorLogsListNode = document.getElementById("workspaceV2ErrorLogsList");
-    this.refreshDiagnosticsButton = document.getElementById("workspaceV2RefreshDiagnosticsButton");
-    this.exportSnapshotButton = document.getElementById("workspaceV2ExportSnapshotButton");
-    this.diagnosticsActiveStateNode = document.getElementById("workspaceV2DiagnosticsActiveState");
-    this.diagnosticsHostContextIdNode = document.getElementById("workspaceV2DiagnosticsHostContextId");
-    this.diagnosticsUrlParamsNode = document.getElementById("workspaceV2DiagnosticsUrlParams");
-    this.diagnosticsSessionStorageNode = document.getElementById("workspaceV2DiagnosticsSessionStorage");
-    this.diagnosticsSessionLibraryNode = document.getElementById("workspaceV2DiagnosticsSessionLibrary");
-    this.diagnosticsErrorLogsNode = document.getElementById("workspaceV2DiagnosticsErrorLogs");
-    this.diagnosticsPayloadNode = document.getElementById("workspaceV2DiagnosticsPayload");
-    this.snapshotOutputNode = document.getElementById("workspaceV2SnapshotOutput");
     this.clearSessionStorageButton = document.getElementById("workspaceV2ClearSessionStorageButton");
     this.clearSavedSessionsButton = document.getElementById("workspaceV2ClearSavedSessionsButton");
     this.resetClearErrorLogsButton = document.getElementById("workspaceV2ResetClearErrorLogsButton");
@@ -94,7 +84,7 @@ class WorkspaceV2SessionProducer {
     this.mergeOutputSelectionKey = "";
     this.diffOutputSelectionKey = "";
     this.recentSessionInventory = [];
-    this.workspaceManifestGames = [];
+    this.workspaceManifestGame = null;
     this.workspaceImportedToolEntries = {};
     this.workspaceToolsSummaryNode = null;
     this.loadFixtureButton.addEventListener("click", () => {
@@ -185,12 +175,6 @@ class WorkspaceV2SessionProducer {
     this.clearErrorLogsButton.addEventListener("click", () => {
       this.clearErrorLogs();
     });
-    this.refreshDiagnosticsButton.addEventListener("click", () => {
-      this.renderDiagnosticsPanel();
-    });
-    this.exportSnapshotButton.addEventListener("click", () => {
-      this.exportRuntimeSnapshot();
-    });
     this.clearSessionStorageButton.addEventListener("click", () => {
       this.clearSessionStorage();
     });
@@ -210,14 +194,12 @@ class WorkspaceV2SessionProducer {
       if (event.key === this.errorLogsStorageKey) {
         this.renderErrorLogsViewer();
       }
-      if (event.key === this.errorLogsStorageKey || event.key === this.libraryStorageKey) {
-        this.renderDiagnosticsPanel();
-      }
       if (event.key === this.historyStorageKey) {
         this.renderSessionHistory();
       }
     });
     this.removePaletteManagerProducerOption();
+    this.removeDiagnosticsPanelUi();
     this.applyDefaultWorkspaceToolSelection();
     this.registerScrollTextColorRule();
     this.initializeImportExportSectionStatusNode();
@@ -227,14 +209,12 @@ class WorkspaceV2SessionProducer {
     this.ensureWorkspaceActivePaletteBaseline();
     this.initializeWorkspaceProducerSession();
     this.refreshPaletteOwnershipStateAndUi();
-    this.registerSnapshotHook();
     this.renderSessionLibrary();
     this.renderSessionHistory();
     this.renderSessionDiffInputs();
     this.renderSessionMergeInputs();
     this.updateSessionLibraryActionState();
     this.renderErrorLogsViewer();
-    this.renderDiagnosticsPanel();
   }
 
   selectedToolId() {
@@ -243,22 +223,6 @@ class WorkspaceV2SessionProducer {
 
   selectedSessionName() {
     return typeof this.sessionNameNode.value === "string" ? this.sessionNameNode.value : "";
-  }
-
-  currentNavMode() {
-    return "workspace";
-  }
-
-  inToolsNavMode() {
-    return false;
-  }
-
-  inWorkspaceNavMode() {
-    return true;
-  }
-
-  renderNavModeActions() {
-    this.statusNode.textContent = "Workspace mode active: use navWorkspace import/export actions.";
   }
 
   initializeImportExportSectionStatusNode() {
@@ -412,6 +376,19 @@ class WorkspaceV2SessionProducer {
         option.remove();
       }
     });
+  }
+
+  removeDiagnosticsPanelUi() {
+    const diagnosticsHeading = Array.from(document.querySelectorAll("h2")).find((node) => {
+      return node.textContent && node.textContent.trim() === "Diagnostics";
+    });
+    if (!diagnosticsHeading) {
+      return;
+    }
+    const diagnosticsSection = diagnosticsHeading.closest("section");
+    if (diagnosticsSection) {
+      diagnosticsSection.remove();
+    }
   }
 
   applyDefaultWorkspaceToolSelection() {
@@ -693,15 +670,12 @@ class WorkspaceV2SessionProducer {
       return;
     }
     const initialPayload = this.createProducerPayloadForTool(selectedToolId);
-    const sizeValidation = this.validateSessionPayloadSize(initialPayload);
-    if (!sizeValidation.ok) {
-      this.statusNode.textContent = sizeValidation.message;
+    const hostContextId = this.createHostContextId(selectedToolId);
+    const activation = this.activateWorkspaceSession(hostContextId, initialPayload, "workspace-v2-init");
+    if (!activation.ok) {
+      this.statusNode.textContent = activation.message;
       return;
     }
-    const hostContextId = this.createHostContextId(selectedToolId);
-    sessionStorage.setItem(hostContextId, sizeValidation.metrics.serializedPayload);
-    this.currentHostContextId = hostContextId;
-    this.setCurrentSessionPayload(initialPayload, "workspace-v2-init");
     this.syncWorkspaceManifestTextarea();
     this.statusNode.textContent = `Workspace V2 initialized.\nTool: ${selectedToolId}\nHostContextId: ${hostContextId}\nSession is active for Save Session.`;
   }
@@ -1436,7 +1410,6 @@ class WorkspaceV2SessionProducer {
     this.currentSessionSource = sourceLabel;
     this.updateWorkspaceActivePaletteFromCurrentSession();
     this.refreshPaletteOwnershipUiState();
-    this.renderDiagnosticsPanel();
   }
 
   isValidSessionPayload(sessionPayload) {
@@ -1470,6 +1443,24 @@ class WorkspaceV2SessionProducer {
     };
   }
 
+  activateWorkspaceSession(hostContextId, sessionPayload, sourceLabel) {
+    if (typeof hostContextId !== "string" || !hostContextId.trim()) {
+      return { ok: false, message: "Session activation failed: hostContextId is required." };
+    }
+    if (!this.isValidSessionPayload(sessionPayload)) {
+      return { ok: false, message: "Session activation failed: payload is invalid." };
+    }
+    const versionedPayload = this.withSessionVersion(sessionPayload);
+    const sizeValidation = this.validateSessionPayloadSize(versionedPayload);
+    if (!sizeValidation.ok) {
+      return { ok: false, message: sizeValidation.message };
+    }
+    sessionStorage.setItem(hostContextId.trim(), sizeValidation.metrics.serializedPayload);
+    this.currentHostContextId = hostContextId.trim();
+    this.setCurrentSessionPayload(versionedPayload, sourceLabel);
+    return { ok: true, message: "", payload: versionedPayload };
+  }
+
   applySessionPayload(sessionPayload, sourceLabel) {
     if (!this.isValidSessionPayload(sessionPayload)) {
       this.statusNode.textContent = "Session payload is invalid. Expected a JSON object payload.";
@@ -1484,18 +1475,12 @@ class WorkspaceV2SessionProducer {
       this.statusNode.textContent = this.singleActivePaletteBlockedMessage();
       return false;
     }
-    const versionedPayload = this.withSessionVersion(sessionPayload);
-    const sizeValidation = this.validateSessionPayloadSize(versionedPayload);
-    if (!sizeValidation.ok) {
-      this.statusNode.textContent = sizeValidation.message;
+    const activation = this.activateWorkspaceSession(this.createHostContextId(toolId), sessionPayload, sourceLabel);
+    if (!activation.ok) {
+      this.statusNode.textContent = activation.message;
       return false;
     }
-    const hostContextId = this.createHostContextId(toolId);
-    sessionStorage.setItem(hostContextId, sizeValidation.metrics.serializedPayload);
-    this.currentHostContextId = hostContextId;
-    this.setCurrentSessionPayload(versionedPayload, sourceLabel);
     this.syncWorkspaceManifestTextarea();
-    this.renderDiagnosticsPanel();
     return true;
   }
 
@@ -1576,7 +1561,6 @@ class WorkspaceV2SessionProducer {
     localStorage.setItem(this.libraryStorageKey, JSON.stringify(library));
     this.renderSessionDiffInputs();
     this.renderSessionMergeInputs();
-    this.renderDiagnosticsPanel();
   }
 
   renderSessionLibrary() {
@@ -1795,7 +1779,6 @@ class WorkspaceV2SessionProducer {
     localStorage.setItem(this.historyStorageKey, JSON.stringify(entries));
     this.renderSessionDiffInputs();
     this.renderSessionMergeInputs();
-    this.renderDiagnosticsPanel();
   }
 
   addRecentSessionEntry(hostContextId, toolId, payload) {
@@ -2828,7 +2811,12 @@ class WorkspaceV2SessionProducer {
       this.statusNode.textContent = mergedResultSizeValidation.message;
       return;
     }
-    sessionStorage.setItem(hostContextId, mergedResultSizeValidation.metrics.serializedPayload);
+    const activation = this.activateWorkspaceSession(hostContextId, mergedResultPayload, "merge-apply");
+    if (!activation.ok) {
+      this.setMergeResultSummary(activation.message);
+      this.statusNode.textContent = activation.message;
+      return;
+    }
     let appliedPayload = null;
     try {
       appliedPayload = JSON.parse(sessionStorage.getItem(hostContextId));
@@ -2846,8 +2834,6 @@ class WorkspaceV2SessionProducer {
       this.statusNode.textContent = "Merge apply blocked. Applied result verification failed against preview.";
       return;
     }
-    this.currentHostContextId = hostContextId;
-    this.setCurrentSessionPayload(appliedPayload, "merge-apply");
     this.importJsonNode.value = JSON.stringify(appliedPayload, null, 2);
     this.setLastMergedSessionResult(appliedPayload, this.pendingMergePreview.selectedToolId);
     this.writeLastMergedHostContextId(hostContextId);
@@ -2873,7 +2859,6 @@ class WorkspaceV2SessionProducer {
     this.renderSessionMergeInputs();
     this.refreshWorkspaceSessionUiStateModel("refresh_load");
     this.recordMergeAuditEntry(this.pendingMergePreview);
-    this.renderDiagnosticsPanel();
     this.pendingMergePreview = null;
     this.refreshWorkspaceSessionUiStateModel("refresh_load");
     this.mergeOutputNode.textContent = JSON.stringify({
@@ -3024,9 +3009,11 @@ class WorkspaceV2SessionProducer {
       this.statusNode.textContent = this.singleActivePaletteBlockedMessage();
       return;
     }
-    sessionStorage.setItem(entry.hostContextId, JSON.stringify(entry.payload));
-    this.currentHostContextId = entry.hostContextId;
-    this.setCurrentSessionPayload(entry.payload, `history:${entry.hostContextId}`);
+    const activation = this.activateWorkspaceSession(entry.hostContextId, entry.payload, `history:${entry.hostContextId}`);
+    if (!activation.ok) {
+      this.statusNode.textContent = activation.message;
+      return;
+    }
     this.importJsonNode.value = JSON.stringify(entry.payload, null, 2);
     const launchUrl = this.buildToolLaunchUrl(entry.tool, entry.hostContextId);
     this.statusNode.textContent = `Reopening session.\nTool: ${entry.tool}\nHostContextId: ${entry.hostContextId}`;
@@ -3144,7 +3131,6 @@ class WorkspaceV2SessionProducer {
     this.currentHostContextId = "";
     this.updateUndoLastMergeState();
     this.refreshPaletteOwnershipUiState();
-    this.renderDiagnosticsPanel();
     if (emitStatus) {
       this.statusNode.textContent = "Session storage cleared and session selections reset.";
     }
@@ -3153,7 +3139,6 @@ class WorkspaceV2SessionProducer {
   clearSavedSessions(emitStatus = true) {
     localStorage.removeItem(this.libraryStorageKey);
     this.renderSessionLibrary();
-    this.renderDiagnosticsPanel();
     if (emitStatus) {
       this.statusNode.textContent = "Saved sessions cleared from localStorage key v2-session-library.";
     }
@@ -3162,7 +3147,6 @@ class WorkspaceV2SessionProducer {
   clearErrorLogs(emitStatus = true) {
     localStorage.removeItem(this.errorLogsStorageKey);
     this.renderErrorLogsViewer();
-    this.renderDiagnosticsPanel();
     if (emitStatus) {
       this.statusNode.textContent = "Error logs cleared from localStorage key v2-error-logs.";
     }
@@ -3175,7 +3159,6 @@ class WorkspaceV2SessionProducer {
       window.history.replaceState({}, "", nextPath);
     }
     this.currentHostContextId = "";
-    this.renderDiagnosticsPanel();
     if (emitStatus) {
       this.statusNode.textContent = "URL state reset to baseline path.";
     }
@@ -3190,6 +3173,7 @@ class WorkspaceV2SessionProducer {
     this.workspaceActivePalette = null;
     this.ensureWorkspaceActivePaletteBaseline();
     this.workspaceImportedToolEntries = {};
+    this.workspaceManifestGame = null;
     this.setCurrentSessionPayload(null, "");
     this.initializeWorkspaceProducerSession();
     this.refreshPaletteOwnershipStateAndUi();
@@ -3207,7 +3191,6 @@ class WorkspaceV2SessionProducer {
     this.updateUndoLastMergeState();
     this.renderSessionLibrary();
     this.renderErrorLogsViewer();
-    this.renderDiagnosticsPanel();
     this.renderWorkspaceToolsSummary();
     this.statusNode.textContent = "Workspace V2 full reset complete. Workspace manifest baseline restored.";
   }
@@ -3229,128 +3212,6 @@ class WorkspaceV2SessionProducer {
       return text;
     }
     return `${text.slice(0, maxLength)} ...truncated (${text.length - maxLength} more chars)`;
-  }
-
-  diagnosticsActiveHostContextId() {
-    const params = new URL(window.location.href).searchParams;
-    const urlHostContextId = typeof params.get("hostContextId") === "string" ? params.get("hostContextId").trim() : "";
-    if (urlHostContextId) {
-      return urlHostContextId;
-    }
-    if (typeof this.currentHostContextId === "string" && this.currentHostContextId.trim()) {
-      return this.currentHostContextId.trim();
-    }
-    return "";
-  }
-
-  diagnosticsActiveState(activeHostContextId) {
-    if (activeHostContextId) {
-      const stored = sessionStorage.getItem(activeHostContextId);
-      if (!stored) {
-        return "EMPTY";
-      }
-      const parsed = this.safeParseJson(stored);
-      if (!parsed.ok || !this.isValidSessionPayload(parsed.value)) {
-        return "INVALID";
-      }
-      return "VALID";
-    }
-    if (this.isValidSessionPayload(this.currentSessionPayload)) {
-      return "VALID";
-    }
-    return "EMPTY";
-  }
-
-  readDiagnosticsSnapshot() {
-    const params = new URL(window.location.href).searchParams;
-    const urlParams = {};
-    params.forEach((value, key) => {
-      urlParams[key] = value;
-    });
-
-    const activeHostContextId = this.diagnosticsActiveHostContextId();
-    const sessionMatches = [];
-    if (activeHostContextId) {
-      const rawSessionValue = sessionStorage.getItem(activeHostContextId);
-      if (typeof rawSessionValue === "string") {
-        const parsedSession = this.safeParseJson(rawSessionValue);
-        sessionMatches.push({
-          key: activeHostContextId,
-          parseOk: parsedSession.ok,
-          error: parsedSession.ok ? "" : parsedSession.error,
-          preview: this.truncatePreview(rawSessionValue, 500)
-        });
-      }
-    }
-
-    const sessionLibraryRaw = localStorage.getItem(this.libraryStorageKey);
-    const sessionLibraryParsed = this.safeParseJson(typeof sessionLibraryRaw === "string" ? sessionLibraryRaw : "");
-    const errorLogsRaw = localStorage.getItem(this.errorLogsStorageKey);
-    const errorLogsParsed = this.safeParseJson(typeof errorLogsRaw === "string" ? errorLogsRaw : "");
-    const payloadPreview = this.isValidSessionPayload(this.currentSessionPayload)
-      ? this.truncatePreview(JSON.stringify(this.currentSessionPayload, null, 2), 800)
-      : "No payload loaded.";
-
-    return {
-      urlParams,
-      activeHostContextId,
-      activeState: this.diagnosticsActiveState(activeHostContextId),
-      sessionMatches,
-      localStorage: {
-        sessionLibrary: {
-          exists: typeof sessionLibraryRaw === "string",
-          parseOk: typeof sessionLibraryRaw === "string" ? sessionLibraryParsed.ok : false,
-          error: typeof sessionLibraryRaw === "string" && !sessionLibraryParsed.ok ? sessionLibraryParsed.error : "",
-          preview: typeof sessionLibraryRaw === "string" ? this.truncatePreview(sessionLibraryRaw, 800) : "missing"
-        },
-        errorLogs: {
-          exists: typeof errorLogsRaw === "string",
-          parseOk: typeof errorLogsRaw === "string" ? errorLogsParsed.ok : false,
-          error: typeof errorLogsRaw === "string" && !errorLogsParsed.ok ? errorLogsParsed.error : "",
-          preview: typeof errorLogsRaw === "string" ? this.truncatePreview(errorLogsRaw, 800) : "missing"
-        }
-      },
-      payloadPreview
-    };
-  }
-
-  buildRuntimeSnapshot() {
-    const snapshot = this.readDiagnosticsSnapshot();
-    let sessionPayload = null;
-    if (snapshot.sessionMatches.length > 0 && snapshot.sessionMatches[0].parseOk) {
-      try {
-        sessionPayload = JSON.parse(sessionStorage.getItem(snapshot.activeHostContextId));
-      } catch {
-        sessionPayload = null;
-      }
-    }
-    return {
-      tool: "workspace-v2",
-      url: window.location.href,
-      hostContextId: snapshot.activeHostContextId,
-      session: sessionPayload
-    };
-  }
-
-  registerSnapshotHook() {
-    window.__v2RuntimeSnapshot = () => this.buildRuntimeSnapshot();
-  }
-
-  exportRuntimeSnapshot() {
-    const snapshot = this.buildRuntimeSnapshot();
-    this.snapshotOutputNode.textContent = JSON.stringify(snapshot, null, 2);
-    this.statusNode.textContent = "Runtime snapshot exported to Workspace V2 diagnostics.";
-  }
-
-  renderDiagnosticsPanel() {
-    const snapshot = this.readDiagnosticsSnapshot();
-    this.diagnosticsActiveStateNode.textContent = snapshot.activeState;
-    this.diagnosticsHostContextIdNode.textContent = snapshot.activeHostContextId || "none";
-    this.diagnosticsUrlParamsNode.textContent = JSON.stringify(snapshot.urlParams, null, 2);
-    this.diagnosticsSessionStorageNode.textContent = JSON.stringify(snapshot.sessionMatches, null, 2);
-    this.diagnosticsSessionLibraryNode.textContent = JSON.stringify(snapshot.localStorage.sessionLibrary, null, 2);
-    this.diagnosticsErrorLogsNode.textContent = JSON.stringify(snapshot.localStorage.errorLogs, null, 2);
-    this.diagnosticsPayloadNode.textContent = snapshot.payloadPreview;
   }
 
   normalizePaletteFixtureSwatches(paletteJson) {
@@ -3463,10 +3324,11 @@ class WorkspaceV2SessionProducer {
         this.setCurrentSessionPayload(null, "");
         return;
       }
-      sessionStorage.setItem(fixtureHostContextId, sizeValidation.metrics.serializedPayload);
-      this.setCurrentSessionPayload(normalizedFixtureSession.value, `fixture:${toolId}`);
-      this.currentHostContextId = fixtureHostContextId;
-      this.renderDiagnosticsPanel();
+      const activation = this.activateWorkspaceSession(fixtureHostContextId, normalizedFixtureSession.value, `fixture:${toolId}`);
+      if (!activation.ok) {
+        this.statusNode.textContent = activation.message;
+        return;
+      }
       if (!this.syncWorkspaceManifestTextarea()) {
         this.statusNode.textContent = "Fixture loaded but workspace manifest sync failed.";
         return;
@@ -3475,7 +3337,6 @@ class WorkspaceV2SessionProducer {
     } catch (error) {
       this.setCurrentSessionPayload(null, "");
       this.currentHostContextId = "";
-      this.renderDiagnosticsPanel();
       this.statusNode.textContent = `Fixture read failed: ${error instanceof Error ? error.message : "unknown error"}`;
     }
   }
@@ -3519,71 +3380,6 @@ class WorkspaceV2SessionProducer {
     return toolUrl.toString();
   }
 
-  importSessionJson() {
-    if (!this.inToolsNavMode()) {
-      this.statusNode.textContent = "Switch to tool mode to import tool session JSON.";
-      return;
-    }
-    const toolId = this.selectedToolId();
-    const rawJson = typeof this.importJsonNode.value === "string" ? this.importJsonNode.value.trim() : "";
-    if (!toolId) {
-      this.statusNode.textContent = "Select a V2 tool before importing session JSON.";
-      return;
-    }
-    if (!rawJson) {
-      this.statusNode.textContent = "Session JSON is required for import.";
-      return;
-    }
-    try {
-      const parsed = JSON.parse(rawJson);
-      if (typeof parsed.toolId !== "string" || parsed.toolId.trim() !== toolId) {
-        this.statusNode.textContent = `Tool import blocked. Session toolId must match selected tool '${toolId}'.`;
-        return;
-      }
-      if (!this.applySessionPayload(parsed, "import")) {
-        return;
-      }
-      this.statusNode.textContent = `Session imported.\nTool: ${toolId}\nHostContextId: ${this.currentHostContextId}\nReady to launch.`;
-    } catch (error) {
-      this.statusNode.textContent = `Imported JSON is invalid: ${error instanceof Error ? error.message : "unknown error"}`;
-    }
-  }
-
-  exportCurrentSessionJson() {
-    if (!this.inToolsNavMode()) {
-      this.statusNode.textContent = "Switch to tool mode to export a single tool session JSON payload.";
-      return;
-    }
-    const activePayload = this.readActiveSessionPayloadForLibraryActions();
-    if (!this.isValidSessionPayload(activePayload)) {
-      this.statusNode.textContent = "No active Workspace V2 session is available to export.";
-      return;
-    }
-    try {
-      const serialized = JSON.stringify(activePayload, null, 2);
-      const payloadToolId = typeof activePayload.toolId === "string" ? activePayload.toolId.trim() : "";
-      const filenameToolId = payloadToolId || this.selectedToolId() || "workspace-v2";
-      const filenameSessionId = typeof this.currentHostContextId === "string" && this.currentHostContextId.trim()
-        ? this.currentHostContextId.trim()
-        : "session";
-      const downloadFileName = `${filenameToolId}-${filenameSessionId}.json`;
-      const fileBlob = new Blob([serialized], { type: "application/json" });
-      const fileUrl = URL.createObjectURL(fileBlob);
-      const downloadLink = document.createElement("a");
-      downloadLink.href = fileUrl;
-      downloadLink.download = downloadFileName;
-      downloadLink.style.display = "none";
-      document.body.appendChild(downloadLink);
-      downloadLink.click();
-      downloadLink.remove();
-      URL.revokeObjectURL(fileUrl);
-      this.importJsonNode.value = serialized;
-      this.statusNode.textContent = "Exported current workspace session JSON.";
-    } catch (error) {
-      this.statusNode.textContent = `Session export failed: ${error instanceof Error ? error.message : "unknown error"}`;
-    }
-  }
-
   syncWorkspaceManifestTextarea() {
     const workspaceSchemaDocument = this.buildWorkspaceSchemaDocument();
     if (!workspaceSchemaDocument) {
@@ -3623,15 +3419,15 @@ class WorkspaceV2SessionProducer {
     let activeHostContextId = typeof this.currentHostContextId === "string" ? this.currentHostContextId.trim() : "";
     if (!activeHostContextId) {
       activeHostContextId = this.createHostContextId(activeToolId);
-      this.currentHostContextId = activeHostContextId;
-      sessionStorage.setItem(activeHostContextId, JSON.stringify(activePayload));
+      const activation = this.activateWorkspaceSession(activeHostContextId, activePayload, this.currentSessionSource || "workspace-export");
+      if (!activation.ok) {
+        this.lastWorkspaceExportBuildErrorMessage = `Export error: ${activation.message}`;
+        return null;
+      }
     }
     let workspaceGame = null;
-    if (Array.isArray(this.workspaceManifestGames) && this.workspaceManifestGames.length > 0) {
-      const firstGame = this.workspaceManifestGames[0];
-      if (firstGame && typeof firstGame === "object" && !Array.isArray(firstGame)) {
-        workspaceGame = this.cloneSessionValue(firstGame);
-      }
+    if (this.workspaceManifestGame && typeof this.workspaceManifestGame === "object" && !Array.isArray(this.workspaceManifestGame)) {
+      workspaceGame = this.cloneSessionValue(this.workspaceManifestGame);
     }
     if (!workspaceGame) {
       workspaceGame = {
@@ -3741,15 +3537,6 @@ class WorkspaceV2SessionProducer {
   validateWorkspaceSchemaDocument(workspaceDocument) {
     if (!workspaceDocument || typeof workspaceDocument !== "object" || Array.isArray(workspaceDocument)) {
       return { ok: false, message: "expected a JSON object." };
-    }
-    if (
-      Object.prototype.hasOwnProperty.call(workspaceDocument, "workspaceSession") ||
-      Object.prototype.hasOwnProperty.call(workspaceDocument, "workspaceV2Session") ||
-      Object.prototype.hasOwnProperty.call(workspaceDocument, "toolSessions") ||
-      Object.prototype.hasOwnProperty.call(workspaceDocument, "savedSessions") ||
-      Object.prototype.hasOwnProperty.call(workspaceDocument, "exportedAt")
-    ) {
-      return { ok: false, message: "legacy wrapper fields are not allowed." };
     }
     const topLevelKeys = Object.keys(workspaceDocument);
     const allowedTopLevelKeys = new Set(["$schema", "documentKind", "schema", "version", "id", "name", "tools"]);
@@ -3928,14 +3715,16 @@ class WorkspaceV2SessionProducer {
         this.workspaceImportedToolEntries[toolId] = this.cloneSessionValue(parsed.tools[toolId]);
       });
       const workspaceV2Tool = parsed.tools["workspace-v2"];
-      this.workspaceManifestGames = [this.cloneSessionValue(workspaceV2Tool.game)];
+      this.workspaceManifestGame = this.cloneSessionValue(workspaceV2Tool.game);
       const activeHostContextId = workspaceV2Tool.activeHostContextId.trim();
       const activeToolId = workspaceV2Tool.activeToolId.trim();
       const activePayload = workspaceV2Tool.activeSession;
-      sessionStorage.setItem(activeHostContextId, JSON.stringify(activePayload));
+      const activation = this.activateWorkspaceSession(activeHostContextId, activePayload, "workspace-import");
+      if (!activation.ok) {
+        this.setImportExportStatus(`Import error: ${activation.message}`);
+        return;
+      }
       localStorage.setItem(this.libraryStorageKey, JSON.stringify(workspaceV2Tool.savedSessions));
-      this.currentHostContextId = activeHostContextId;
-      this.setCurrentSessionPayload(activePayload, "workspace-import");
       this.updateWorkspaceActivePaletteFromManifest(parsed);
       this.workspaceJsonNode.value = JSON.stringify(parsed, null, 2);
       const hasToolOption = Array.from(this.toolSelect.options).some((option) => option.value === activeToolId);
@@ -3948,7 +3737,6 @@ class WorkspaceV2SessionProducer {
       this.renderSessionMergeInputs();
       this.refreshPaletteOwnershipStateAndUi();
       this.refreshWorkspaceSessionUiStateModel("refresh_load");
-      this.renderDiagnosticsPanel();
       this.renderWorkspaceToolsSummary();
       this.setImportExportStatus("Workspace session imported.");
     } catch (error) {
@@ -4117,18 +3905,13 @@ class WorkspaceV2SessionProducer {
       this.statusNode.textContent = "No session payload is available. Load a fixture, import JSON, apply share link, or load library session first.";
       return;
     }
-    const versionedPayload = this.withSessionVersion(this.currentSessionPayload);
-    const sizeValidation = this.validateSessionPayloadSize(versionedPayload);
-    if (!sizeValidation.ok) {
-      this.statusNode.textContent = sizeValidation.message;
+    const activation = this.activateWorkspaceSession(this.createHostContextId(toolId), this.currentSessionPayload, this.currentSessionSource || "workspace-v2");
+    if (!activation.ok) {
+      this.statusNode.textContent = activation.message;
       return;
     }
-    const hostContextId = this.createHostContextId(toolId);
-    sessionStorage.setItem(hostContextId, sizeValidation.metrics.serializedPayload);
-    this.currentHostContextId = hostContextId;
-    this.setCurrentSessionPayload(versionedPayload, this.currentSessionSource || "workspace-v2");
-    this.addRecentSessionEntry(hostContextId, toolId, versionedPayload);
-    this.renderDiagnosticsPanel();
+    const hostContextId = this.currentHostContextId;
+    this.addRecentSessionEntry(hostContextId, toolId, activation.payload);
     const launchUrl = this.buildToolLaunchUrl(toolId, hostContextId);
     this.statusNode.textContent = `Session created.\nTool: ${toolId}\nHostContextId: ${hostContextId}\nURL: tools/${toolId}/index.html?hostContextId=${hostContextId}`;
     window.location.href = launchUrl;
