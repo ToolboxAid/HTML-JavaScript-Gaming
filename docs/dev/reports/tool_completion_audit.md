@@ -27,7 +27,7 @@
 - Invalid JSON rejected + clear error: PASS
 - No defaults/fallbacks: PASS (palette baseline is explicit and intentional contract behavior)
 - Workspace integration/no payload mutation: PASS for import/export path, but see launch coverage gap below
-- Launch paths (sample + workspace): **FAIL**
+- Launch paths (workspace only; sample launch out-of-scope until sample JSON is schema-compliant): **FAIL**
 - Exact failure reason:
   - Producer path does not allow direct `palette-manager-v2` launch from Workspace V2 tool selection, so Workspace launch parity is incomplete for all V2 tools.
 - Required fix:
@@ -39,7 +39,7 @@
 - Invalid JSON rejected + clear error: PASS (explicit invalid/empty/runtime branches)
 - No defaults/fallbacks: PASS (no hidden sample/default data injection in tool runtime)
 - Workspace integration/no payload mutation: **FAIL**
-- Launch paths (sample + workspace): PASS
+- Launch paths (workspace only; sample launch out-of-scope until sample JSON is schema-compliant): PASS
 - Exact failure reason:
   - Tool persists updated catalog back to `sessionStorage` (`persistValidSessionForWorkspace` and add/remove flows), which mutates `payloadJson` over time.
 - Required fix:
@@ -51,7 +51,7 @@
 - Invalid JSON rejected + clear error: PASS
 - No defaults/fallbacks: PASS
 - Workspace integration/no payload mutation: PASS (read-only in current tool runtime)
-- Launch paths (sample + workspace): **FAIL**
+- Launch paths (workspace only; sample launch out-of-scope until sample JSON is schema-compliant): **FAIL**
 - Exact failure reason:
   - Workspace V2 producer currently removes palette manager from selectable launch options, so workspace-driven launch path is not complete for this tool.
 - Required fix:
@@ -63,7 +63,7 @@
 - Invalid JSON rejected + clear error: PASS
 - No defaults/fallbacks: PASS
 - Workspace integration/no payload mutation: PASS (read-only session consumption)
-- Launch paths (sample + workspace): PASS (sample route exists; workspace handoff flow validated)
+- Launch paths (workspace only; sample launch out-of-scope until sample JSON is schema-compliant): PASS (workspace handoff flow validated)
 - Exact failure reason: none
 - Required fix: none
 
@@ -73,7 +73,7 @@
 - Invalid JSON rejected + clear error: PASS
 - No defaults/fallbacks: PASS
 - Workspace integration/no payload mutation: PASS (read-only session consumption)
-- Launch paths (sample + workspace): PASS (sample route exists; workspace handoff flow validated)
+- Launch paths (workspace only; sample launch out-of-scope until sample JSON is schema-compliant): PASS (workspace handoff flow validated)
 - Exact failure reason: none
 - Required fix: none
 
@@ -83,11 +83,13 @@
 - Invalid JSON rejected + clear error: PASS
 - No defaults/fallbacks: PASS
 - Workspace integration/no payload mutation: PASS (read-only session consumption)
-- Launch paths (sample + workspace): PASS (sample route exists; workspace handoff flow validated)
+- Launch paths (workspace only; sample launch out-of-scope until sample JSON is schema-compliant): PASS (workspace handoff flow validated)
 - Exact failure reason: none
 - Required fix: none
 
 ## Cross-Cutting Findings
+- Sample launch validation is out-of-scope until sample JSON is schema-compliant.
+- Sample validation will be handled in a dedicated PR after tool completion.
 - Several runtime tests are now out of sync with current palette/session contracts:
   - `V2ToolLaunch.test.mjs` expects legacy palette fixture shape.
   - `V2SessionValidation.test.mjs` expects legacy palette validation path.

@@ -285,3 +285,10 @@ PR_26124_002-palette-manager-strict-payload-guard
 ```bash
 npx @openai/codex run --model gpt-5.3-codex --reasoning medium "Implement PR_26124_002: fix the next failing tool from tool_completion_audit.md with a minimal single-tool palette-manager-v2 guard that rejects legacy payloadJson.paletteDocument.colors before render and validates required swatches contract."
 ```
+
+---
+PR_26124_003-validation-scope-sample-exclusion
+
+```bash
+npx @openai/codex run --model gpt-5.3-codex --reasoning medium "Implement PR_26124_003: adjust validation scope to exclude sample-launch requirements until sample JSON is schema-compliant, update docs/dev validation wording, and keep Playwright workspace lifecycle/payload/roundtrip coverage sample-independent."
+```
