@@ -173,3 +173,10 @@ PR_11_318
 ```bash
 npx @openai/codex run --model gpt-5.3-codex --reasoning medium "Implement PR_11_318: Add Asset Manager V2 row selection + details panel with UI-only selection state and no payload mutation."
 ```
+
+---
+PR_11_318A
+
+```bash
+npx @openai/codex run --model gpt-5.3-codex --reasoning medium "Implement PR_11_318A: Remove test-to-test imports by extracting RuntimeSceneLoaderHotReload shared logic into tests/helpers and updating final/tool tests to consume helper."
+```

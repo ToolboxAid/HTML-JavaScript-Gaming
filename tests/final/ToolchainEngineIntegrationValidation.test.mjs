@@ -5,32 +5,42 @@ David Quesenberry
 ToolchainEngineIntegrationValidation.test.mjs
 */
 import assert from "node:assert/strict";
-import { run as runToolEntryLaunchContract } from "../tools/ToolEntryLaunchContract.test.mjs";
-import { run as runProjectToolDataContracts } from "../tools/ProjectToolDataContracts.test.mjs";
-import { run as runRuntimeAssetLoader } from "../tools/RuntimeAssetLoader.test.mjs";
-import { run as runRenderPipelineContractAll4Tools } from "../tools/RenderPipelineContractAll4Tools.test.mjs";
-import { run as runRuntimeSceneLoaderHotReload } from "../tools/RuntimeSceneLoaderHotReload.test.mjs";
+import { runRuntimeSceneLoaderHotReloadValidation } from "../helpers/runtimeSceneLoaderHotReload.helpers.mjs";
+import path from "node:path";
+import { execFileSync } from "node:child_process";
+import { fileURLToPath } from "node:url";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const repoRoot = path.resolve(__dirname, "..", "..");
+
+function runNodeTestFile(relativeTestPath) {
+  execFileSync(process.execPath, ["--test", relativeTestPath], {
+    cwd: repoRoot,
+    stdio: ["ignore", "pipe", "pipe"]
+  });
+}
 
 const TRACK_E_TOOLCHAIN_VALIDATION_STAGES = Object.freeze([
   Object.freeze({
     id: "tool-entry-launch-contract",
-    run: runToolEntryLaunchContract
+    run: async () => runNodeTestFile("tests/tools/ToolEntryLaunchContract.test.mjs")
   }),
   Object.freeze({
     id: "project-tool-data-contracts",
-    run: runProjectToolDataContracts
+    run: async () => runNodeTestFile("tests/tools/ProjectToolDataContracts.test.mjs")
   }),
   Object.freeze({
     id: "runtime-asset-loader",
-    run: runRuntimeAssetLoader
+    run: async () => runNodeTestFile("tests/tools/RuntimeAssetLoader.test.mjs")
   }),
   Object.freeze({
     id: "render-pipeline-contract-all-4-tools",
-    run: runRenderPipelineContractAll4Tools
+    run: async () => runNodeTestFile("tests/tools/RenderPipelineContractAll4Tools.test.mjs")
   }),
   Object.freeze({
     id: "runtime-scene-loader-hot-reload",
-    run: runRuntimeSceneLoaderHotReload
+    run: runRuntimeSceneLoaderHotReloadValidation
   })
 ]);
 
