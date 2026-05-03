@@ -9,6 +9,7 @@ class AssetBrowserV2 {
     this.openSvgAssetStudioV2 = this.openSvgAssetStudioV2.bind(this);
     this.addAssetEntry = this.addAssetEntry.bind(this);
     this.currentSessionContext = null;
+    this.selectedAssetId = "";
     this.handleNavigationState = this.handleNavigationState.bind(this);
     window.addEventListener("popstate", this.handleNavigationState);
     window.addEventListener("pageshow", this.handleNavigationState);
@@ -127,6 +128,26 @@ class AssetBrowserV2 {
     document.getElementById("assetManagerV2ActionStatus").textContent = message;
   }
 
+  clearSelectedAssetDetails() {
+    document.getElementById("assetBrowserV2DetailsMessage").textContent = "Select an asset entry to inspect its session metadata.";
+    document.getElementById("assetBrowserV2DetailId").textContent = "-";
+    document.getElementById("assetBrowserV2DetailLabel").textContent = "-";
+    document.getElementById("assetBrowserV2DetailKind").textContent = "-";
+    document.getElementById("assetBrowserV2DetailPath").textContent = "-";
+  }
+
+  renderSelectedAssetDetails(assetEntry) {
+    if (!assetEntry) {
+      this.clearSelectedAssetDetails();
+      return;
+    }
+    document.getElementById("assetBrowserV2DetailsMessage").textContent = "Selected asset details.";
+    document.getElementById("assetBrowserV2DetailId").textContent = assetEntry.id.trim();
+    document.getElementById("assetBrowserV2DetailLabel").textContent = assetEntry.label.trim();
+    document.getElementById("assetBrowserV2DetailKind").textContent = assetEntry.kind.trim();
+    document.getElementById("assetBrowserV2DetailPath").textContent = assetEntry.path.trim();
+  }
+
   normalizedAssetEntryFromForm() {
     const id = typeof document.getElementById("assetManagerV2AddId").value === "string" ? document.getElementById("assetManagerV2AddId").value.trim() : "";
     const label = typeof document.getElementById("assetManagerV2AddLabel").value === "string" ? document.getElementById("assetManagerV2AddLabel").value.trim() : "";
@@ -148,6 +169,17 @@ class AssetBrowserV2 {
     document.getElementById("assetManagerV2AddLabel").value = "";
     document.getElementById("assetManagerV2AddKind").value = "";
     document.getElementById("assetManagerV2AddPath").value = "";
+  }
+
+  selectedAssetEntryFromCatalogEntries(entries) {
+    if (!Array.isArray(entries)) {
+      return null;
+    }
+    if (typeof this.selectedAssetId !== "string" || !this.selectedAssetId.trim()) {
+      return null;
+    }
+    const selectedAssetEntry = entries.find((entry) => entry && typeof entry === "object" && !Array.isArray(entry) && typeof entry.id === "string" && entry.id.trim() === this.selectedAssetId);
+    return selectedAssetEntry || null;
   }
 
   addAssetEntry() {
@@ -372,6 +404,10 @@ class AssetBrowserV2 {
     document.getElementById("assetBrowserV2InvalidState").hidden = true;
     document.getElementById("assetBrowserV2ValidState").hidden = false;
     this.currentSessionContext = this.cloneSessionValue(sessionContext);
+    const selectedAssetEntry = this.selectedAssetEntryFromCatalogEntries(assetCatalog.entries);
+    if (!selectedAssetEntry) {
+      this.selectedAssetId = "";
+    }
 
     document.getElementById("assetBrowserV2List").replaceChildren();
     assetCatalog.entries.forEach((entry) => {
@@ -386,17 +422,15 @@ class AssetBrowserV2 {
       assetMeta.textContent = `${entry.kind.trim()} | ${entry.path.trim()}`;
       assetItem.append(assetName, assetMeta);
       removeButton.textContent = `Remove ${entry.id.trim()}`;
+      const entryIsSelected = typeof this.selectedAssetId === "string" && this.selectedAssetId.trim() === entry.id.trim();
+      assetItem.setAttribute("aria-pressed", entryIsSelected ? "true" : "false");
+      assetItem.style.borderWidth = entryIsSelected ? "2px" : "";
+      assetItem.style.borderStyle = entryIsSelected ? "solid" : "";
+      assetItem.style.borderColor = entryIsSelected ? "#1f6feb" : "";
+      assetItem.style.backgroundColor = entryIsSelected ? "#dbeafe" : "";
       assetItem.addEventListener("click", () => {
-        document.getElementById("assetBrowserV2Preview").textContent = JSON.stringify(
-          {
-            id: entry.id.trim(),
-            label: entry.label.trim(),
-            kind: entry.kind.trim(),
-            path: entry.path.trim()
-          },
-          null,
-          2
-        );
+        this.selectedAssetId = entry.id.trim();
+        this.renderCatalog(assetCatalog, sessionContext);
       });
       removeButton.addEventListener("click", () => {
         this.removeAssetEntryById(entry.id.trim());
@@ -404,10 +438,7 @@ class AssetBrowserV2 {
       assetRow.append(assetItem, removeButton);
       document.getElementById("assetBrowserV2List").appendChild(assetRow);
     });
-
-    document.getElementById("assetBrowserV2Preview").textContent = assetCatalog.entries.length === 0
-      ? "No assets are available in this session catalog."
-      : "Select an asset entry to inspect its session metadata.";
+    this.renderSelectedAssetDetails(this.selectedAssetEntryFromCatalogEntries(assetCatalog.entries));
   }
 
   renderMissing(message) {
@@ -422,7 +453,8 @@ class AssetBrowserV2 {
     document.getElementById("assetBrowserV2InvalidState").hidden = true;
     document.getElementById("assetBrowserV2ValidState").hidden = true;
     document.getElementById("assetBrowserV2List").replaceChildren();
-    document.getElementById("assetBrowserV2Preview").textContent = "";
+    this.selectedAssetId = "";
+    this.clearSelectedAssetDetails();
     this.currentSessionContext = null;
     this.setActionStatus("No asset action yet.");
   }
@@ -439,7 +471,8 @@ class AssetBrowserV2 {
     document.getElementById("assetBrowserV2InvalidState").hidden = false;
     document.getElementById("assetBrowserV2ValidState").hidden = true;
     document.getElementById("assetBrowserV2List").replaceChildren();
-    document.getElementById("assetBrowserV2Preview").textContent = "";
+    this.selectedAssetId = "";
+    this.clearSelectedAssetDetails();
     this.currentSessionContext = null;
     this.setActionStatus("No asset action yet.");
   }

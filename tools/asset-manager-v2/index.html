@@ -46,7 +46,13 @@
               <div id="assetBrowserV2InvalidState" hidden>Asset Manager V2 session data is invalid. Re-open the tool from a valid host session.</div>
               <div id="assetBrowserV2ValidState" hidden>
                 <div id="assetBrowserV2State">Asset Manager V2 loaded the session asset catalog.</div>
-                <pre id="assetBrowserV2Preview" aria-label="Asset Manager V2 preview"></pre>
+                <section aria-label="Asset Manager V2 selected asset details">
+                  <p id="assetBrowserV2DetailsMessage">Select an asset entry to inspect its session metadata.</p>
+                  <p><strong>id:</strong> <span id="assetBrowserV2DetailId">-</span></p>
+                  <p><strong>label:</strong> <span id="assetBrowserV2DetailLabel">-</span></p>
+                  <p><strong>kind:</strong> <span id="assetBrowserV2DetailKind">-</span></p>
+                  <p><strong>path:</strong> <span id="assetBrowserV2DetailPath">-</span></p>
+                </section>
               </div>
             </section>
             <aside class="asset-manager-v2-panel" data-menu-workspace>

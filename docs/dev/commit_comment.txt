@@ -1,1 +1,1 @@
-Clarify Workspace V2 Asset Manager launcher session/no-session state and prevent no-session confusion - PR 11.317
+Add Asset Manager V2 asset row selection and details panel with UI-only state - PR 11.318

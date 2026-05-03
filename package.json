@@ -19,5 +19,27 @@
   },
   "dependencies": {
     "ws": "^8.20.0"
+  },
+  "name": "html-javascript-gaming",
+  "version": "1.0.0",
+  "description": "> Learn, build, and scale 2D → 3D browser games with a structured engine, integrated tools, and progressive samples.",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs",
+    "test": "tests"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ToolboxAid/HTML-JavaScript-Gaming.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ToolboxAid/HTML-JavaScript-Gaming/issues"
+  },
+  "homepage": "https://github.com/ToolboxAid/HTML-JavaScript-Gaming#readme",
+  "devDependencies": {
+    "@playwright/test": "^1.59.1"
   }
 }

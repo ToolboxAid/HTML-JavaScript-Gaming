@@ -166,3 +166,10 @@ PR_11_317
 ```bash
 npx @openai/codex run --model gpt-5.3-codex --reasoning medium "Implement PR_11_317: Clarify Workspace V2 Asset Manager launcher with explicit no-session vs active-session state while preserving session-routed launch behavior."
 ```
+
+---
+PR_11_318
+
+```bash
+npx @openai/codex run --model gpt-5.3-codex --reasoning medium "Implement PR_11_318: Add Asset Manager V2 row selection + details panel with UI-only selection state and no payload mutation."
+```
