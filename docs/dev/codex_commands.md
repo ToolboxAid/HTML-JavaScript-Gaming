@@ -271,3 +271,10 @@ PR_11_327
 ```bash
 npx @openai/codex run --model gpt-5.3-codex --reasoning medium "Implement PR_11_327: fix the next failing tool from tool_completion_audit.md with a minimal single-tool change and required Workspace V2 Playwright gate validation."
 ```
+
+---
+PR_26123_001-project-instructions-update
+
+```bash
+npx @openai/codex run --model gpt-5.3-codex --reasoning medium "Implement PROJECT_INSTRUCTIONS update: add PR naming standard, update ChatGPT output contract (command + commit comment + Playwright coverage + manual test steps), and enforce ChatGPT non-ZIP ownership language while keeping Codex ZIP ownership intact."
+```

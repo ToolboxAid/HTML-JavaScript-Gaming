@@ -1,1 +1,1 @@
-Align Palette Manager V2 launch label mapping with asset-manager-v2 contract name (Asset Manager V2) - PR 11.327
+Add PR naming standard and tighten ChatGPT output contract (command, commit, Playwright coverage, manual tests) with Codex-only ZIP ownership - PR_26123_001-project-instructions-update

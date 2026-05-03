@@ -5,6 +5,27 @@ You are working in a docs-first repo workflow.
 Workflow:
 PLAN_PR → BUILD_PR → APPLY_PR
 
+## PR NAMING STANDARD
+
+PR names MUST follow:
+
+`PR_<YYJJJ>_<###>-<short-description>`
+
+Where:
+- `YY` = year (2 digit)
+- `JJJ` = Julian day (001–365)
+- `###` = sequence for the day (001+)
+
+Example:
+- `PR_26124_001-palette-baseline`
+- `PR_26124_002-tool-fix-asset-manager`
+
+Rules:
+- Must be unique per day
+- Must be sortable
+- Description must be short and hyphenated
+- Do NOT reuse old `PR_11_*` format for new PRs
+
 ChatGPT execution role:
 - ChatGPT no longer creates PLAN_PR, BUILD_PR, APPLY_PR docs, or ZIP bundles.
 - ChatGPT produces only the Codex command, commit comment, and how to test the change.
@@ -18,14 +39,36 @@ Rules:
 - No repo-wide scanning unless required
 
 Responsibilities:
-- ChatGPT: produce the Codex command, commit comment, and how to test the change
+- ChatGPT produces:
+  - Codex command
+  - commit comment
+  - what Playwright is testing
+  - what the user should test manually
+- ChatGPT does NOT:
+  - create ZIP files
+  - reference ZIP delivery
+  - produce PLAN/BUILD/APPLY docs
 - Codex: creates plans, PR docs, ZIP bundles, and implementation code
 - User: runs Codex + validates
 
 Output rules:
-- Always produce repo-structured ZIPs
-- Place ZIPs under <project folder>/tmp/
-- Preserve exact repo structure inside ZIP
+- ChatGPT MUST output ONLY:
+  1. Codex command
+  2. Commit comment
+  3. What Playwright is testing
+  4. What to test manually
+
+## PLAYWRIGHT VALIDATION REQUIREMENT
+
+Every PR must include:
+- What Playwright validates
+- Expected pass/fail behavior
+
+## MANUAL TEST REQUIREMENT
+
+Every PR must include:
+- exact manual validation steps
+- expected outcome
 
 ## 🔥 RESPONSE RULES (MANDATORY)
 
@@ -168,9 +211,9 @@ If ZIP delivery fails more than once:
 - All PRs numbe improve the roadmap [ ] to [.] or [.] to [x]
 - If a PR is doc-only, bundle with next smallest executable/testable change
 
-### ZIP IS ALWAYS REQUIRED
-- Never ask if a ZIP is needed
-- Always produce a ZIP
+### ZIP CREATION OWNERSHIP
+- ZIP creation is handled by Codex only.
+- ChatGPT must not create or reference ZIP delivery.
 
 ### DEFAULT EXECUTION MODE
 - Assume approval
