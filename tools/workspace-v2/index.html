@@ -33,6 +33,20 @@
           <button id="workspaceV2CreateDirectToolsEntryButton" type="button">Create Direct Tools Entry</button>
           <button id="workspaceV2PromoteActiveToolStateButton" type="button">Promote Active Tool State to Tools</button>
         </div>
+        <h3>Tool State Library</h3>
+        <label for="workspaceV2ToolStateName">Tool State ID</label>
+        <input id="workspaceV2ToolStateName" type="text" placeholder="tool-state-id" />
+        <p><code>savedToolStates</code> are workspace library entries only. Use card actions to Load, Promote, Overwrite, or Delete.</p>
+        <p>Save creates a new saved copy from the active Workspace V2 tool state. Load from a saved card makes that saved tool state the active Workspace V2 tool state. Overwrite replaces this saved tool state with what you are currently working on. Delete removes the saved copy only.</p>
+        <div>
+          <button id="workspaceV2SaveToolStateButton" type="button">Save Tool State</button>
+          <button id="workspaceV2OverwriteToolStateButton" type="button" hidden>Overwrite Tool State</button>
+          <button id="workspaceV2LoadToolStateButton" type="button" hidden>Load Tool State</button>
+          <button id="workspaceV2DeleteToolStateButton" type="button" hidden>Delete Saved Tool State</button>
+        </div>
+        <p id="workspaceV2LibraryStatus">No Tool State Library action yet.</p>
+        <p id="workspaceV2LibraryEmptyState">No saved tool states in library.</p>
+        <ul id="workspaceV2ToolStateList" aria-label="Workspace V2 saved tool states"></ul>
       </section>
 
       <section class="hub-panel">
@@ -44,7 +58,9 @@
       <section class="hub-panel">
         <h2>Import / Export Tool State JSON</h2>
         <p>Workspace mode actions (navWorkspace): import/export a portable Workspace V2 tool state manifest.</p>
-        <p><strong>Published Tools:</strong> <span id="workspaceV2WorkspaceToolsSummary">palette-browser</span></p>
+        <p><strong>Published Tools</strong></p>
+        <p id="workspaceV2WorkspaceToolsSummary">palette-browser</p>
+        <ul id="workspaceV2PublishedToolsList" aria-label="Workspace V2 published tools"></ul>
         <label for="workspaceV2ImportJson">Workspace Tool State JSON</label>
         <textarea id="workspaceV2ImportJson" rows="12" spellcheck="false" placeholder='{"documentKind":"workspace-manifest","schema":"html-js-gaming.project","version":1,"id":"workspace-v2-example","name":"Workspace V2 Example","tools":{"palette-browser":{"schema":"html-js-gaming.palette","version":1,"name":"Workspace Active Palette","swatches":[]},"workspace-v2":{"schema":"html-js-gaming.workspace-v2-tool-state/1","game":{"id":"workspace-v2-game","name":"Workspace V2 Game"},"defaultToolId":"asset-manager-v2","activeToolId":"asset-manager-v2","activeHostContextId":"asset-manager-v2-0000000000000-aaaa1111","activeToolState":{"toolId":"asset-manager-v2","version":"v2","payloadJson":{"assetCatalog":{"name":"Workspace Assets","entries":[]}}},"savedToolStates":{}}}}'></textarea>
         <label for="workspaceV2ImportFile">Import File</label>
@@ -63,23 +79,6 @@
           <button id="workspaceV2CreateShareLinkButton" type="button">Create Share Link</button>
           <button id="workspaceV2ApplyShareLinkButton" type="button">Apply Share Link</button>
         </div>
-      </section>
-
-      <section class="hub-panel">
-        <h2>Tool State Library</h2>
-        <label for="workspaceV2ToolStateName">New Tool State ID (Save Tool State)</label>
-        <input id="workspaceV2ToolStateName" type="text" placeholder="tool-state-id" />
-        <p><code>savedToolStates</code> are workspace library entries only. Use card actions to Load, Promote, Overwrite, or Delete.</p>
-        <p>Save creates a new saved copy from the active Workspace V2 tool state. Load from a saved card makes that saved tool state the active Workspace V2 tool state. Overwrite replaces this saved tool state with what you are currently working on. Delete removes the saved copy only.</p>
-        <div>
-          <button id="workspaceV2SaveToolStateButton" type="button">Save Tool State</button>
-          <button id="workspaceV2OverwriteToolStateButton" type="button" hidden>Overwrite Tool State</button>
-          <button id="workspaceV2LoadToolStateButton" type="button" hidden>Load Tool State</button>
-          <button id="workspaceV2DeleteToolStateButton" type="button" hidden>Delete Saved Tool State</button>
-        </div>
-        <p id="workspaceV2LibraryStatus">No Tool State Library action yet.</p>
-        <p id="workspaceV2LibraryEmptyState">No saved tool states in library.</p>
-        <ul id="workspaceV2ToolStateList" aria-label="Workspace V2 saved tool states"></ul>
       </section>
 
       <section class="hub-panel">

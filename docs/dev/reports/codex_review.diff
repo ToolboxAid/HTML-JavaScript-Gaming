@@ -1,285 +1,543 @@
 diff --git a/docs/dev/codex_commands.md b/docs/dev/codex_commands.md
-index 1ca60ee5..7de4aecc 100644
+index 7de4aecc..27b5b9bd 100644
 --- a/docs/dev/codex_commands.md
 +++ b/docs/dev/codex_commands.md
-@@ -334,3 +334,10 @@ PR_26124_014-include-review-diff
+@@ -341,3 +341,10 @@ PR_26124_018-clarify-tools-vs-toolstate-ux
  ```bash
- npm run codex:review-artifacts
+ npx @openai/codex run --model gpt-5.3-codex --reasoning medium "Implement PR_26124_018-clarify-tools-vs-toolstate-ux."
  ```
 +
 +---
-+PR_26124_018-clarify-tools-vs-toolstate-ux
++PR_26124_018-workspace-toolstate-lifecycle-ux
 +
 +```bash
-+npx @openai/codex run --model gpt-5.3-codex --reasoning medium "Implement PR_26124_018-clarify-tools-vs-toolstate-ux."
++npx @openai/codex run --model gpt-5.3-codex --reasoning medium "Implement PR_26124_018-workspace-toolstate-lifecycle-ux."
 +```
 diff --git a/docs/dev/commit_comment.txt b/docs/dev/commit_comment.txt
-index cec20f35..c765ec4a 100644
+index c765ec4a..936fe77e 100644
 --- a/docs/dev/commit_comment.txt
 +++ b/docs/dev/commit_comment.txt
 @@ -1 +1 @@
--Capture empty FAIL batch state from tool completion audit with explicit before/after report and validation evidence - PR_26124_009-empty-fail-batch-capture
-+Clarify Workspace V2 tools output vs active/saved toolState UX with explicit direct publish action and published tools list - PR_26124_018-clarify-tools-vs-toolstate-ux
-diff --git a/docs/dev/reports/codex_changed_files.txt b/docs/dev/reports/codex_changed_files.txt
-index 59068289..ea874418 100644
-Binary files a/docs/dev/reports/codex_changed_files.txt and b/docs/dev/reports/codex_changed_files.txt differ
-diff --git a/docs/dev/reports/codex_review.diff b/docs/dev/reports/codex_review.diff
-index ea8c09b0..80fed892 100644
-Binary files a/docs/dev/reports/codex_review.diff and b/docs/dev/reports/codex_review.diff differ
+-Clarify Workspace V2 tools output vs active/saved toolState UX with explicit direct publish action and published tools list - PR_26124_018-clarify-tools-vs-toolstate-ux
++Clarify Workspace V2 toolState lifecycle ownership across Producer, Tool State Library, and Published Tools with explicit named create/load/promotion flows - PR_26124_018-workspace-toolstate-lifecycle-ux
 diff --git a/tests/playwright/workspace-v2.validation.spec.js b/tests/playwright/workspace-v2.validation.spec.js
-index 1b3f24bc..bc07d82b 100644
+index bc07d82b..5cde7d09 100644
 --- a/tests/playwright/workspace-v2.validation.spec.js
 +++ b/tests/playwright/workspace-v2.validation.spec.js
-@@ -49,7 +49,7 @@ test.describe("Workspace V2 validation coverage", () => {
-       await ctrlTapClick(page, page.getByRole("button", { name: "Full Reset" }));
-       await expect(page.locator("#workspaceV2ToolSelect option[value='palette-manager-v2']")).toHaveCount(0);
-       await expect(page.locator("#workspaceV2WorkspaceToolsSummary")).toContainText("palette-browser");
--      await expect(page.locator("#workspaceV2WorkspaceToolsSummary")).toContainText("workspace-v2");
-+      await expect(page.locator("#workspaceV2WorkspaceToolsSummary")).not.toContainText("workspace-v2");
+@@ -30,8 +30,11 @@ test.describe("Workspace V2 validation coverage", () => {
  
-       const baselineManifest = JSON.parse(await page.locator("#workspaceV2ImportJson").inputValue());
-       expect(baselineManifest.documentKind).toBe("workspace-manifest");
-@@ -189,7 +189,7 @@ test.describe("Workspace V2 validation coverage", () => {
-     }
-   });
+       await page.locator("#workspaceV2ToolSelect").selectOption("asset-manager-v2");
+       await page.locator("#workspaceV2LoadFixtureButton").click();
+-      await expect(page.locator("#workspaceV2Status")).toContainText("Fixture loaded for asset-manager-v2.");
++      await expect(page).toHaveURL(/\/tools\/asset-manager-v2\/index\.html/);
++      await page.goBack();
++      await expect(page).toHaveURL(/\/tools\/workspace-v2\/index\.html/);
  
--  test("promote to tools is explicit for active and saved tool states", async ({ page }) => {
-+  test("direct publish and promote to tools stay explicit for active and saved tool states", async ({ page }) => {
-     const server = await startRepoServer();
-     try {
++      await page.locator("#workspaceV2ToolStateName").fill("asset-manager-v2-create-open-001");
+       await ctrlTapClick(page, page.getByRole("button", { name: "Create & Open Tool State" }));
+       await expect(page).toHaveURL(/\/tools\/asset-manager-v2\/index\.html/);
+ 
+@@ -150,7 +153,11 @@ test.describe("Workspace V2 validation coverage", () => {
        await page.goto(`${server.baseUrl}/tools/workspace-v2/index.html`);
-@@ -197,15 +197,20 @@ test.describe("Workspace V2 validation coverage", () => {
+       await ctrlTapClick(page, page.getByRole("button", { name: "Full Reset" }));
+       await page.locator("#workspaceV2ToolSelect").selectOption("asset-manager-v2");
++      await page.locator("#workspaceV2ToolStateName").fill("asset-manager-v2-roundtrip-001");
+       await ctrlTapClick(page, page.getByRole("button", { name: "Load Tool State" }));
++      await expect(page).toHaveURL(/\/tools\/asset-manager-v2\/index\.html/);
++      await page.goBack();
++      await expect(page).toHaveURL(/\/tools\/workspace-v2\/index\.html/);
+ 
+       const loadedManifest = JSON.parse(await page.locator("#workspaceV2ImportJson").inputValue());
+       const exportedManifest = await exportManifestFromTextarea(page);
+@@ -172,14 +179,22 @@ test.describe("Workspace V2 validation coverage", () => {
+       await ctrlTapClick(page, page.getByRole("button", { name: "Full Reset" }));
  
        await page.locator("#workspaceV2ToolSelect").selectOption("tilemap-studio-v2");
++      await page.locator("#workspaceV2ToolStateName").fill("tilemap-studio-v2-switch-001");
        await page.locator("#workspaceV2LoadFixtureButton").click();
-+      await expect(page.locator("#workspaceV2ActiveToolStatePublishStatus")).toHaveText("Active in Workspace only");
-       await page.locator("#workspaceV2ToolStateName").fill("tile-state-a");
-       await page.locator("#workspaceV2SaveToolStateButton").click();
- 
++      await expect(page).toHaveURL(/\/tools\/tilemap-studio-v2\/index\.html/);
++      await page.goBack();
++      await expect(page).toHaveURL(/\/tools\/workspace-v2\/index\.html/);
        let manifest = JSON.parse(await page.locator("#workspaceV2ImportJson").inputValue());
+       expect(manifest.tools?.["workspace-v2"]?.activeToolId).toBe("tilemap-studio-v2");
+       expect(manifest.tools?.["workspace-v2"]?.activeToolState?.toolId).toBe("tilemap-studio-v2");
        expect(Object.prototype.hasOwnProperty.call(manifest.tools || {}, "tilemap-studio-v2")).toBe(false);
  
--      await page.getByRole("button", { name: "Promote Active Tool State to Tools" }).click();
-+      await page.getByRole("button", { name: "Create Direct Tools Entry" }).click();
+       await page.locator("#workspaceV2ToolSelect").selectOption("vector-map-editor-v2");
++      await page.locator("#workspaceV2ToolStateName").fill("vector-map-editor-v2-switch-001");
+       await page.locator("#workspaceV2LoadFixtureButton").click();
++      await expect(page).toHaveURL(/\/tools\/vector-map-editor-v2\/index\.html/);
++      await page.goBack();
++      await expect(page).toHaveURL(/\/tools\/workspace-v2\/index\.html/);
        manifest = JSON.parse(await page.locator("#workspaceV2ImportJson").inputValue());
-       expect(manifest.tools?.["tilemap-studio-v2"]?.tileMapDocument).toBeTruthy();
-+      await expect(page.locator("#workspaceV2ActiveToolStatePublishStatus")).toHaveText("Promoted to tools.tilemap-studio-v2");
-+      await expect(page.locator("#workspaceV2WorkspaceToolsSummary")).toContainText("palette-browser");
-+      await expect(page.locator("#workspaceV2WorkspaceToolsSummary")).toContainText("tilemap-studio-v2");
-+      await expect(page.locator("#workspaceV2WorkspaceToolsSummary")).not.toContainText("workspace-v2");
+       expect(manifest.tools?.["workspace-v2"]?.activeToolId).toBe("vector-map-editor-v2");
+       expect(manifest.tools?.["workspace-v2"]?.activeToolState?.toolId).toBe("vector-map-editor-v2");
+@@ -196,12 +211,15 @@ test.describe("Workspace V2 validation coverage", () => {
+       await ctrlTapClick(page, page.getByRole("button", { name: "Full Reset" }));
+ 
+       await page.locator("#workspaceV2ToolSelect").selectOption("tilemap-studio-v2");
++      await page.locator("#workspaceV2ToolStateName").fill("tilemap-studio-v2-direct-001");
+       await page.locator("#workspaceV2LoadFixtureButton").click();
++      await expect(page).toHaveURL(/\/tools\/tilemap-studio-v2\/index\.html/);
++      await page.goBack();
++      await expect(page).toHaveURL(/\/tools\/workspace-v2\/index\.html/);
+       await expect(page.locator("#workspaceV2ActiveToolStatePublishStatus")).toHaveText("Active in Workspace only");
+-      await page.locator("#workspaceV2ToolStateName").fill("tile-state-a");
+-      await page.locator("#workspaceV2SaveToolStateButton").click();
+ 
+       let manifest = JSON.parse(await page.locator("#workspaceV2ImportJson").inputValue());
++      expect(manifest.tools?.["workspace-v2"]?.savedToolStates?.["tilemap-studio-v2-direct-001"]).toBeTruthy();
+       expect(Object.prototype.hasOwnProperty.call(manifest.tools || {}, "tilemap-studio-v2")).toBe(false);
+ 
+       await page.getByRole("button", { name: "Create Direct Tools Entry" }).click();
+@@ -211,9 +229,15 @@ test.describe("Workspace V2 validation coverage", () => {
+       await expect(page.locator("#workspaceV2WorkspaceToolsSummary")).toContainText("palette-browser");
+       await expect(page.locator("#workspaceV2WorkspaceToolsSummary")).toContainText("tilemap-studio-v2");
+       await expect(page.locator("#workspaceV2WorkspaceToolsSummary")).not.toContainText("workspace-v2");
++      await page.getByRole("button", { name: "Copy to Tool State" }).first().click();
++      await expect(page.locator("#workspaceV2LibraryStatus")).toContainText("copied to saved tool state");
  
        await page.locator("#workspaceV2ToolSelect").selectOption("vector-map-editor-v2");
++      await page.locator("#workspaceV2ToolStateName").fill("vector-map-editor-v2-direct-001");
        await page.locator("#workspaceV2LoadFixtureButton").click();
++      await expect(page).toHaveURL(/\/tools\/vector-map-editor-v2\/index\.html/);
++      await page.goBack();
++      await expect(page).toHaveURL(/\/tools\/workspace-v2\/index\.html/);
+       manifest = JSON.parse(await page.locator("#workspaceV2ImportJson").inputValue());
+       expect(Object.prototype.hasOwnProperty.call(manifest.tools || {}, "vector-map-editor-v2")).toBe(false);
+ 
 diff --git a/tests/ui/workspace-v2.asset-manager.spec.js b/tests/ui/workspace-v2.asset-manager.spec.js
-index 230cd43f..65cc5c47 100644
+index 65cc5c47..9a66250e 100644
 --- a/tests/ui/workspace-v2.asset-manager.spec.js
 +++ b/tests/ui/workspace-v2.asset-manager.spec.js
-@@ -9,7 +9,7 @@ test("workspace v2 launches asset manager and add/remove is reflected in export"
-     await page.goto(`${server.baseUrl}/tools/workspace-v2/index.html`);
-     await ctrlTapClick(page, page.getByRole("button", { name: "Full Reset" }));
-     await expect(page.locator("#workspaceV2WorkspaceToolsSummary")).toContainText("palette-browser");
--    await expect(page.locator("#workspaceV2WorkspaceToolsSummary")).toContainText("workspace-v2");
-+    await expect(page.locator("#workspaceV2WorkspaceToolsSummary")).not.toContainText("workspace-v2");
+@@ -13,8 +13,8 @@ test("workspace v2 launches asset manager and add/remove is reflected in export"
  
      // 2) Producer launch to Asset Manager V2
      await page.locator("#workspaceV2ToolSelect").selectOption("asset-manager-v2");
++    await page.locator("#workspaceV2ToolStateName").fill("asset-manager-v2-ui-001");
+     await ctrlTapClick(page, page.getByRole("button", { name: "Load Tool State" }));
+-    await ctrlTapClick(page, page.getByRole("button", { name: "Create & Open Tool State" }));
+     await expect(page).toHaveURL(/\/tools\/asset-manager-v2\/index\.html/);
+     await expect(page).toHaveTitle("Asset Manager V2");
+     await expect(page.locator("#assetBrowserV2ContractReadout")).toContainText("payloadJson.assetCatalog valid");
+@@ -70,8 +70,8 @@ test("workspace v2 launches asset manager and add/remove is reflected in export"
+     const manifestBeforePromoteText = await page.locator("#workspaceV2ImportJson").inputValue();
+     const manifestBeforePromote = JSON.parse(manifestBeforePromoteText);
+     expect(Object.prototype.hasOwnProperty.call(manifestBeforePromote.tools || {}, "asset-manager-v2")).toBe(false);
+-    await ctrlTapClick(page, page.getByRole("button", { name: "Promote Active Tool State to Tools" }));
+-    await expect(page.locator("#workspaceV2Status")).toContainText("promoted to tools.asset-manager-v2");
++    await ctrlTapClick(page, page.getByRole("button", { name: "Create Direct Tools Entry" }));
++    await expect(page.locator("#workspaceV2Status")).toContainText("Direct tools entry created at tools.asset-manager-v2");
+     await ctrlTapClick(page, page.getByRole("button", { name: "Export Workspace Tool State JSON" }));
+     const exportedJsonText = await page.locator("#workspaceV2ImportJson").inputValue();
+     const exported = JSON.parse(exportedJsonText);
 diff --git a/tools/workspace-v2/index.html b/tools/workspace-v2/index.html
-index 502c70d3..dbb89972 100644
+index dbb89972..dd999868 100644
 --- a/tools/workspace-v2/index.html
 +++ b/tools/workspace-v2/index.html
-@@ -19,6 +19,7 @@
- 
-       <section class="hub-panel">
-         <h2>Producer</h2>
-+        <p><code>tools.&lt;toolId&gt;</code> is published output for games/samples. <code>activeToolState</code> is workspace editing state.</p>
-         <label for="workspaceV2ToolSelect">Tool</label>
-         <select id="workspaceV2ToolSelect">
-           <option value="asset-manager-v2" selected>Asset Manager V2</option>
-@@ -29,6 +30,7 @@
-         <div>
-           <button id="workspaceV2LoadFixtureButton" type="button">Load Tool State</button>
-           <button id="workspaceV2LaunchButton" type="button">Create & Open Tool State</button>
-+          <button id="workspaceV2CreateDirectToolsEntryButton" type="button">Create Direct Tools Entry</button>
+@@ -33,6 +33,20 @@
+           <button id="workspaceV2CreateDirectToolsEntryButton" type="button">Create Direct Tools Entry</button>
            <button id="workspaceV2PromoteActiveToolStateButton" type="button">Promote Active Tool State to Tools</button>
          </div>
++        <h3>Tool State Library</h3>
++        <label for="workspaceV2ToolStateName">Tool State ID</label>
++        <input id="workspaceV2ToolStateName" type="text" placeholder="tool-state-id" />
++        <p><code>savedToolStates</code> are workspace library entries only. Use card actions to Load, Promote, Overwrite, or Delete.</p>
++        <p>Save creates a new saved copy from the active Workspace V2 tool state. Load from a saved card makes that saved tool state the active Workspace V2 tool state. Overwrite replaces this saved tool state with what you are currently working on. Delete removes the saved copy only.</p>
++        <div>
++          <button id="workspaceV2SaveToolStateButton" type="button">Save Tool State</button>
++          <button id="workspaceV2OverwriteToolStateButton" type="button" hidden>Overwrite Tool State</button>
++          <button id="workspaceV2LoadToolStateButton" type="button" hidden>Load Tool State</button>
++          <button id="workspaceV2DeleteToolStateButton" type="button" hidden>Delete Saved Tool State</button>
++        </div>
++        <p id="workspaceV2LibraryStatus">No Tool State Library action yet.</p>
++        <p id="workspaceV2LibraryEmptyState">No saved tool states in library.</p>
++        <ul id="workspaceV2ToolStateList" aria-label="Workspace V2 saved tool states"></ul>
        </section>
-@@ -42,6 +44,7 @@
+ 
+       <section class="hub-panel">
+@@ -44,7 +58,9 @@
        <section class="hub-panel">
          <h2>Import / Export Tool State JSON</h2>
          <p>Workspace mode actions (navWorkspace): import/export a portable Workspace V2 tool state manifest.</p>
-+        <p><strong>Published Tools:</strong> <span id="workspaceV2WorkspaceToolsSummary">palette-browser</span></p>
+-        <p><strong>Published Tools:</strong> <span id="workspaceV2WorkspaceToolsSummary">palette-browser</span></p>
++        <p><strong>Published Tools</strong></p>
++        <p id="workspaceV2WorkspaceToolsSummary">palette-browser</p>
++        <ul id="workspaceV2PublishedToolsList" aria-label="Workspace V2 published tools"></ul>
          <label for="workspaceV2ImportJson">Workspace Tool State JSON</label>
          <textarea id="workspaceV2ImportJson" rows="12" spellcheck="false" placeholder='{"documentKind":"workspace-manifest","schema":"html-js-gaming.project","version":1,"id":"workspace-v2-example","name":"Workspace V2 Example","tools":{"palette-browser":{"schema":"html-js-gaming.palette","version":1,"name":"Workspace Active Palette","swatches":[]},"workspace-v2":{"schema":"html-js-gaming.workspace-v2-tool-state/1","game":{"id":"workspace-v2-game","name":"Workspace V2 Game"},"defaultToolId":"asset-manager-v2","activeToolId":"asset-manager-v2","activeHostContextId":"asset-manager-v2-0000000000000-aaaa1111","activeToolState":{"toolId":"asset-manager-v2","version":"v2","payloadJson":{"assetCatalog":{"name":"Workspace Assets","entries":[]}}},"savedToolStates":{}}}}'></textarea>
          <label for="workspaceV2ImportFile">Import File</label>
-@@ -66,6 +69,7 @@
-         <h2>Tool State Library</h2>
-         <label for="workspaceV2ToolStateName">New Tool State ID (Save Tool State)</label>
-         <input id="workspaceV2ToolStateName" type="text" placeholder="tool-state-id" />
-+        <p><code>savedToolStates</code> are workspace library entries only. Use card actions to Load, Promote, Overwrite, or Delete.</p>
-         <p>Save creates a new saved copy from the active Workspace V2 tool state. Load from a saved card makes that saved tool state the active Workspace V2 tool state. Overwrite replaces this saved tool state with what you are currently working on. Delete removes the saved copy only.</p>
-         <div>
-           <button id="workspaceV2SaveToolStateButton" type="button">Save Tool State</button>
-@@ -179,7 +183,8 @@
+@@ -65,23 +81,6 @@
+         </div>
        </section>
  
+-      <section class="hub-panel">
+-        <h2>Tool State Library</h2>
+-        <label for="workspaceV2ToolStateName">New Tool State ID (Save Tool State)</label>
+-        <input id="workspaceV2ToolStateName" type="text" placeholder="tool-state-id" />
+-        <p><code>savedToolStates</code> are workspace library entries only. Use card actions to Load, Promote, Overwrite, or Delete.</p>
+-        <p>Save creates a new saved copy from the active Workspace V2 tool state. Load from a saved card makes that saved tool state the active Workspace V2 tool state. Overwrite replaces this saved tool state with what you are currently working on. Delete removes the saved copy only.</p>
+-        <div>
+-          <button id="workspaceV2SaveToolStateButton" type="button">Save Tool State</button>
+-          <button id="workspaceV2OverwriteToolStateButton" type="button" hidden>Overwrite Tool State</button>
+-          <button id="workspaceV2LoadToolStateButton" type="button" hidden>Load Tool State</button>
+-          <button id="workspaceV2DeleteToolStateButton" type="button" hidden>Delete Saved Tool State</button>
+-        </div>
+-        <p id="workspaceV2LibraryStatus">No Tool State Library action yet.</p>
+-        <p id="workspaceV2LibraryEmptyState">No saved tool states in library.</p>
+-        <ul id="workspaceV2ToolStateList" aria-label="Workspace V2 saved tool states"></ul>
+-      </section>
+-
        <section class="hub-panel">
--        <h2>Tool State Output</h2>
-+        <h2>Active Workspace Tool State</h2>
-+        <p id="workspaceV2ActiveToolStatePublishStatus">Active in Workspace only</p>
-         <pre id="workspaceV2Status">No tool state loaded.</pre>
-       </section>
-     </main>
+         <h2>Recent Tool States</h2>
+         <p>Tracks recent launches from Workspace V2 (newest first).</p>
 diff --git a/tools/workspace-v2/index.js b/tools/workspace-v2/index.js
-index 112360a2..3f0c0cde 100644
+index 3f0c0cde..3233653c 100644
 --- a/tools/workspace-v2/index.js
 +++ b/tools/workspace-v2/index.js
-@@ -22,6 +22,7 @@ class WorkspaceV2ToolStateProducer {
-     this.backButton = document.getElementById("workspaceV2BackButton");
-     this.loadFixtureButton = document.getElementById("workspaceV2LoadFixtureButton");
-     this.launchButton = document.getElementById("workspaceV2LaunchButton");
-+    this.createDirectToolsEntryButton = document.getElementById("workspaceV2CreateDirectToolsEntryButton");
-     this.promoteActiveToolStateButton = document.getElementById("workspaceV2PromoteActiveToolStateButton");
-     this.openAssetManagerButton = document.getElementById("workspaceV2OpenAssetManagerButton");
-     this.importJsonNode = document.getElementById("workspaceV2ImportJson");
-@@ -79,6 +80,7 @@ class WorkspaceV2ToolStateProducer {
-     this.clearSavedToolStatesButton = document.getElementById("workspaceV2ClearSavedToolStatesButton");
-     this.resetClearErrorLogsButton = document.getElementById("workspaceV2ResetClearErrorLogsButton");
-     this.fullResetButton = document.getElementById("workspaceV2FullResetButton");
-+    this.activeToolStatePublishStatusNode = document.getElementById("workspaceV2ActiveToolStatePublishStatus");
-     this.statusNode = document.getElementById("workspaceV2Status");
-     this.importExportStatusNode = null;
-     this.importFileDialogPending = false;
-@@ -102,6 +104,9 @@ class WorkspaceV2ToolStateProducer {
-     this.launchButton.addEventListener("click", () => {
-       this.createToolStateAndLaunch();
+@@ -98,6 +98,7 @@ class WorkspaceV2ToolStateProducer {
+     this.workspaceManifestGame = null;
+     this.workspaceImportedToolEntries = {};
+     this.workspaceToolsSummaryNode = null;
++    this.publishedToolsListNode = document.getElementById("workspaceV2PublishedToolsList");
+     this.loadFixtureButton.addEventListener("click", () => {
+       this.loadSelectedToolState();
      });
-+    this.createDirectToolsEntryButton.addEventListener("click", () => {
-+      this.createDirectToolsEntry();
-+    });
-     this.promoteActiveToolStateButton.addEventListener("click", () => {
-       this.promoteActiveToolStateToWorkspaceTools();
+@@ -147,6 +148,7 @@ class WorkspaceV2ToolStateProducer {
+       this.updateToolStateLibraryActionState();
      });
-@@ -313,7 +318,9 @@ class WorkspaceV2ToolStateProducer {
-     if (!parsed.value.tools || typeof parsed.value.tools !== "object" || Array.isArray(parsed.value.tools)) {
-       return [];
-     }
--    return Object.keys(parsed.value.tools).sort((left, right) => left.localeCompare(right));
-+    return Object.keys(parsed.value.tools)
-+      .filter((toolId) => toolId !== "workspace-v2")
-+      .sort((left, right) => left.localeCompare(right));
+     this.toolSelect.addEventListener("change", () => {
++      this.seedToolStateIdForSelectedTool();
+       this.refreshPaletteOwnershipStateAndUi();
+     });
+     this.refreshToolStateHistoryButton.addEventListener("click", () => {
+@@ -221,6 +223,7 @@ class WorkspaceV2ToolStateProducer {
+     this.removePaletteManagerProducerOption();
+     this.removeDiagnosticsPanelUi();
+     this.applyDefaultWorkspaceToolSelection();
++    this.seedToolStateIdForSelectedTool();
+     this.registerScrollTextColorRule();
+     this.initializeImportExportSectionStatusNode();
+     this.initializeWorkspaceToolsSummaryNode();
+@@ -259,6 +262,26 @@ class WorkspaceV2ToolStateProducer {
+     return typeof this.toolStateNameNode.value === "string" ? this.toolStateNameNode.value : "";
    }
  
-   workspaceToolSummaryEntries() {
-@@ -321,10 +328,10 @@ class WorkspaceV2ToolStateProducer {
-     if (fromTextarea.length > 0) {
-       return fromTextarea;
++  generatedToolStateIdForTool(toolId) {
++    const safeToolId = typeof toolId === "string" && toolId.trim() ? toolId.trim() : "tool-state";
++    return `${safeToolId}-${Date.now()}`;
++  }
++
++  seedToolStateIdForSelectedTool() {
++    if (!this.toolStateNameNode) {
++      return;
++    }
++    const currentToolStateId = this.selectedToolStateName().trim();
++    if (currentToolStateId) {
++      return;
++    }
++    const toolId = this.ensureSelectedToolStateProducerToolId();
++    if (!toolId) {
++      return;
++    }
++    this.toolStateNameNode.value = this.generatedToolStateIdForTool(toolId);
++  }
++
+   initializeImportExportSectionStatusNode() {
+     const heading = Array.from(document.querySelectorAll("h2")).find((node) => {
+       return node.textContent && node.textContent.trim() === "Import / Export Tool State JSON";
+@@ -338,14 +361,77 @@ class WorkspaceV2ToolStateProducer {
+     return entries;
+   }
+ 
++  renderedPublishedTools() {
++    return this.workspaceToolSummaryEntries().filter((toolId) => toolId !== "workspace-v2");
++  }
++
++  copyPublishedToolToToolState(toolId) {
++    if (typeof toolId !== "string" || !toolId.trim()) {
++      this.setLibraryStatus("Copy to Tool State blocked. Published toolId is missing.");
++      return;
++    }
++    if (toolId.trim() === "palette-browser") {
++      this.setLibraryStatus("Copy to Tool State blocked. tools.palette-browser is global palette state.");
++      return;
++    }
++    if (!Object.prototype.hasOwnProperty.call(this.workspaceImportedToolEntries, toolId.trim())) {
++      this.setLibraryStatus(`Copy to Tool State blocked. tools.${toolId.trim()} is missing.`);
++      return;
++    }
++    const payloadJson = this.cloneToolStateValue(this.workspaceImportedToolEntries[toolId.trim()]);
++    const toolStatePayload = this.withToolStateVersion({
++      toolId: toolId.trim(),
++      payloadJson
++    });
++    const payloadValidation = this.validateWorkspaceToolStatePayload(toolStatePayload, `tools.${toolId.trim()}`);
++    if (!payloadValidation.ok) {
++      this.setLibraryStatus(payloadValidation.message);
++      return;
++    }
++    const library = this.readToolStateLibrary();
++    if (library === null) {
++      return;
++    }
++    let toolStateId = this.generatedToolStateIdForTool(toolId.trim());
++    while (Object.prototype.hasOwnProperty.call(library, toolStateId)) {
++      toolStateId = this.generatedToolStateIdForTool(toolId.trim());
++    }
++    library[toolStateId] = toolStatePayload;
++    this.writeToolStateLibrary(library);
++    this.renderToolStateLibrary();
++    this.toolStateNameNode.value = toolStateId;
++    this.updateToolStateLibraryActionState();
++    this.setLibraryStatus(`Published tools.${toolId.trim()} copied to saved tool state '${toolStateId}'.`);
++  }
++
+   renderWorkspaceToolsSummary() {
+     if (!this.workspaceToolsSummaryNode) {
+       return;
      }
--    const entries = ["palette-browser", "workspace-v2"];
-+    const entries = ["palette-browser"];
-     const importedToolIds = Object.keys(this.workspaceImportedToolEntries || {}).sort((left, right) => left.localeCompare(right));
-     importedToolIds.forEach((toolId) => {
--      if (!entries.includes(toolId)) {
-+      if (toolId !== "workspace-v2" && !entries.includes(toolId)) {
-         entries.push(toolId);
-       }
-     });
-@@ -337,8 +344,8 @@ class WorkspaceV2ToolStateProducer {
-     }
-     const entries = this.workspaceToolSummaryEntries();
+-    const entries = this.workspaceToolSummaryEntries();
++    const entries = this.renderedPublishedTools();
      this.workspaceToolsSummaryNode.textContent = entries.length > 0
--      ? `Workspace Tools: ${entries.join(", ")}`
--      : "Workspace Tools: none";
-+      ? entries.join(", ")
-+      : "none";
+       ? entries.join(", ")
+       : "none";
++    if (!this.publishedToolsListNode) {
++      return;
++    }
++    this.publishedToolsListNode.replaceChildren();
++    entries.forEach((toolId) => {
++      const item = document.createElement("li");
++      const label = document.createElement("span");
++      label.textContent = `tools.${toolId}`;
++      item.append(label);
++      if (toolId !== "palette-browser") {
++        const copyButton = document.createElement("button");
++        copyButton.type = "button";
++        copyButton.textContent = "Copy to Tool State";
++        copyButton.addEventListener("click", () => {
++          this.copyPublishedToolToToolState(toolId);
++        });
++        item.append(document.createTextNode(" "), copyButton);
++      }
++      this.publishedToolsListNode.appendChild(item);
++    });
    }
  
    setImportExportStatus(message) {
-@@ -349,6 +356,29 @@ class WorkspaceV2ToolStateProducer {
-     this.statusNode.textContent = message;
-   }
- 
-+  activeToolStatePublishStatusText() {
-+    const activeToolState = this.readActiveToolStatePayloadForLibraryActions();
-+    if (!this.isValidToolStatePayload(activeToolState)) {
-+      return "Active in Workspace only";
-+    }
-+    const toolId = typeof activeToolState.toolId === "string" ? activeToolState.toolId.trim() : "";
-+    if (!toolId || !Object.prototype.hasOwnProperty.call(this.workspaceImportedToolEntries, toolId)) {
-+      return "Active in Workspace only";
-+    }
-+    const publishedPayload = this.workspaceImportedToolEntries[toolId];
-+    if (JSON.stringify(publishedPayload) !== JSON.stringify(activeToolState.payloadJson)) {
-+      return "Active in Workspace only";
-+    }
-+    return `Promoted to tools.${toolId}`;
-+  }
-+
-+  renderActiveToolStatePublishStatus() {
-+    if (!this.activeToolStatePublishStatusNode) {
-+      return;
-+    }
-+    this.activeToolStatePublishStatusNode.textContent = this.activeToolStatePublishStatusText();
-+  }
-+
-   initializeHiddenImportFileInput() {
-     if (!this.importFileNode) {
+@@ -747,16 +833,20 @@ class WorkspaceV2ToolStateProducer {
        return;
-@@ -1002,6 +1032,8 @@ class WorkspaceV2ToolStateProducer {
-     this.renderMergeConflictSummary();
-     this.openAssetManagerButton.disabled = !model.assetManagerLaunchReady;
-     this.openAssetManagerButton.textContent = model.assetManagerLaunchLabel;
-+    this.renderActiveToolStatePublishStatus();
-+    this.renderWorkspaceToolsSummary();
+     }
+     this.toolSelect.value = toolId;
++    this.seedToolStateIdForSelectedTool();
++    const toolStateId = this.selectedToolStateName().trim();
++    if (!this.isValidNewToolStateId(toolStateId)) {
++      this.statusNode.textContent = "Workspace V2 initialization blocked: generated tool state ID is invalid.";
++      return;
++    }
+     const initialPayload = this.createProducerPayloadForTool(toolId);
+-    this.setCurrentToolStatePayload(initialPayload, "workspace-v2-init");
+-    const hostContextId = this.createHostContextToolStateId(toolId);
+-    const activation = this.activateWorkspaceToolState(hostContextId, initialPayload, "workspace-v2-init");
++    const activation = this.activateWorkspaceToolState(toolStateId, initialPayload, "workspace-v2-init");
+     if (!activation.ok) {
+       this.statusNode.textContent = activation.message;
+       return;
+     }
+     this.syncWorkspaceManifestTextarea();
+-    this.statusNode.textContent = `Workspace V2 initialized.\nTool: ${toolId}\nHostContextId: ${hostContextId}\nTool state is active for Save Tool State.`;
++    this.statusNode.textContent = `Workspace V2 initialized.\nTool: ${toolId}\nTool State ID: ${toolStateId}\nTool state is active for workspace editing.`;
    }
  
-   refreshWorkspaceToolStateUiStateModel(actionName = "refresh_load") {
-@@ -1335,6 +1367,33 @@ class WorkspaceV2ToolStateProducer {
-     );
-   }
- 
-+  createDirectToolsEntry() {
-+    const selectedToolId = this.ensureSelectedToolStateProducerToolId();
-+    if (!selectedToolId) {
-+      this.statusNode.textContent = "Direct tools entry blocked. Select a toolState-capable V2 tool first.";
-+      return;
-+    }
-+    const activeToolState = this.readActiveToolStatePayloadForLibraryActions();
-+    if (!this.isValidToolStatePayload(activeToolState)) {
-+      this.statusNode.textContent = "Direct tools entry blocked. No active tool state is available.";
-+      return;
-+    }
-+    const activeToolId = typeof activeToolState.toolId === "string" ? activeToolState.toolId.trim() : "";
-+    if (activeToolId !== selectedToolId) {
-+      this.statusNode.textContent = `Direct tools entry blocked. Active tool state toolId '${activeToolId}' does not match selected tool '${selectedToolId}'.`;
-+      return;
-+    }
+   hasActiveWorkspaceToolStateForSave() {
+@@ -1360,11 +1450,29 @@ class WorkspaceV2ToolStateProducer {
+       return;
+     }
+     const activeToolId = typeof activeToolState.toolId === "string" ? activeToolState.toolId.trim() : "";
+-    this.promoteToolStatePayloadToWorkspaceTools(
 +    const promoted = this.promoteToolStatePayloadToWorkspaceTools(
-+      activeToolState,
-+      "tools.workspace-v2.activeToolState",
-+      `Direct tools entry '${selectedToolId}'`
-+    );
+       activeToolState,
+       "tools.workspace-v2.activeToolState",
+       `Active tool state '${activeToolId || "unknown"}'`
+     );
 +    if (!promoted) {
 +      return;
 +    }
-+    this.statusNode.textContent = `Direct tools entry created at tools.${selectedToolId}.`;
-+  }
-+
-   readToolStatePayloadFromRecentToolStateId(toolStateId) {
-     if (typeof toolStateId !== "string" || !toolStateId.trim()) {
-       return null;
-@@ -1535,6 +1594,7 @@ class WorkspaceV2ToolStateProducer {
-     this.currentToolStateSource = sourceLabel;
-     this.updateWorkspaceActivePaletteFromCurrentToolState();
-     this.refreshPaletteOwnershipUiState();
-+    this.renderActiveToolStatePublishStatus();
++    const library = this.readToolStateLibrary();
++    if (library !== null && this.currentHostContextId && Object.prototype.hasOwnProperty.call(library, this.currentHostContextId)) {
++      delete library[this.currentHostContextId];
++      this.writeToolStateLibrary(library);
++      this.renderToolStateLibrary();
++    }
++    if (this.currentHostContextId) {
++      sessionStorage.removeItem(this.currentHostContextId);
++      this.currentHostContextId = "";
++      this.setCurrentToolStatePayload(null, "");
++      this.workspaceJsonNode.value = "";
++      this.resetUrlState(false);
++      this.refreshWorkspaceToolStateUiStateModel("refresh_load");
++    }
++    this.statusNode.textContent = `Active tool state '${activeToolId || "unknown"}' promoted to tools.${activeToolId || "unknown"} and cleared from workspace draft state.`;
    }
  
-   isValidToolStatePayload(toolStatePayload) {
-@@ -3586,6 +3646,7 @@ class WorkspaceV2ToolStateProducer {
+   createDirectToolsEntry() {
+@@ -1927,7 +2035,10 @@ class WorkspaceV2ToolStateProducer {
+     if (!promoted) {
+       return;
      }
-     this.workspaceJsonNode.value = JSON.stringify(workspaceSchemaDocument, null, 2);
-     this.renderWorkspaceToolsSummary();
-+    this.renderActiveToolStatePublishStatus();
-     return true;
+-    this.setLibraryStatus(`Saved tool state '${toolStateId.trim()}' promoted to tools.`);
++    delete library[toolStateId.trim()];
++    this.writeToolStateLibrary(library);
++    this.renderToolStateLibrary();
++    this.setLibraryStatus(`Saved tool state '${toolStateId.trim()}' promoted to tools and removed from Tool State Library.`);
+   }
+ 
+   loadSavedToolStateById(toolStateId) {
+@@ -3545,6 +3656,10 @@ class WorkspaceV2ToolStateProducer {
+       this.statusNode.textContent = "Select a toolState-capable V2 tool before loading tool state.";
+       return;
+     }
++    const toolStateId = this.selectedToolStateIdForProducerAction("loading tool state");
++    if (!toolStateId) {
++      return;
++    }
+     try {
+       const response = await fetch(this.fixturePathForTool(toolId), { cache: "no-store" });
+       if (!response.ok) {
+@@ -3569,26 +3684,27 @@ class WorkspaceV2ToolStateProducer {
+         this.setCurrentToolStatePayload(null, "");
+         return;
+       }
+-      const fixtureHostContextId = typeof fixture.hostContextId === "string" && fixture.hostContextId.trim()
+-        ? fixture.hostContextId.trim()
+-        : this.createHostContextToolStateId(toolId);
+       const sizeValidation = this.validateToolStatePayloadSize(normalizedFixtureToolState.value);
+       if (!sizeValidation.ok) {
+         this.statusNode.textContent = sizeValidation.message;
+         this.setCurrentToolStatePayload(null, "");
+         return;
+       }
+-      const activation = this.activateWorkspaceToolState(fixtureHostContextId, normalizedFixtureToolState.value, `fixture:${toolId}`);
+-      if (!activation.ok) {
+-        this.statusNode.textContent = activation.message;
++    const saveAndActivate = this.saveAndActivateProducerToolState(toolStateId, normalizedFixtureToolState.value, `fixture:${toolId}`, true, true);
++      if (!saveAndActivate.ok) {
++        this.statusNode.textContent = saveAndActivate.message;
+         return;
+       }
++      this.toolStateNameNode.value = toolStateId;
++      this.updateToolStateLibraryActionState();
+       if (!this.syncWorkspaceManifestTextarea()) {
+         this.statusNode.textContent = "Fixture loaded but workspace manifest sync failed.";
+         return;
+       }
+       this.ensureSelectedToolStateProducerToolId();
+-      this.statusNode.textContent = `Fixture loaded for ${toolId}.\nTool state payload is ready for launch, export, share, or library save.`;
++      this.statusNode.textContent = `Tool state loaded and opened.\nTool: ${toolId}\nTool State ID: ${toolStateId}`;
++      this.setWorkspaceHostContextIdUrl(toolStateId);
++      window.location.href = this.buildToolLaunchUrl(toolId, toolStateId);
+     } catch (error) {
+       this.setCurrentToolStatePayload(null, "");
+       this.currentHostContextId = "";
+@@ -3635,6 +3751,17 @@ class WorkspaceV2ToolStateProducer {
+     return toolUrl.toString();
+   }
+ 
++  setWorkspaceHostContextIdUrl(hostContextId) {
++    if (typeof hostContextId !== "string" || !hostContextId.trim()) {
++      return;
++    }
++    const nextUrl = new URL(window.location.href);
++    nextUrl.searchParams.set("hostContextId", hostContextId.trim());
++    if (window.history && typeof window.history.replaceState === "function") {
++      window.history.replaceState({}, "", `${nextUrl.pathname}${nextUrl.search}${nextUrl.hash}`);
++    }
++  }
++
+   syncWorkspaceManifestTextarea() {
+     const workspaceSchemaDocument = this.buildWorkspaceSchemaDocument();
+     if (!workspaceSchemaDocument) {
+@@ -4073,6 +4200,47 @@ class WorkspaceV2ToolStateProducer {
+     }
+   }
+ 
++  selectedToolStateIdForProducerAction(actionLabel) {
++    const toolStateId = this.selectedToolStateName().trim();
++    if (!toolStateId) {
++      this.setLibraryStatus(`Enter a tool state ID before ${actionLabel}.`);
++      return "";
++    }
++    if (!this.isValidNewToolStateId(toolStateId)) {
++      this.setLibraryStatus("Invalid tool state ID. Use letters, numbers, hyphen, or underscore only.");
++      return "";
++    }
++    return toolStateId;
++  }
++
++  saveAndActivateProducerToolState(toolStateId, toolStatePayload, sourceLabel, allowOverwrite, addRecentEntry) {
++    const library = this.readToolStateLibrary();
++    if (library === null) {
++      return { ok: false, message: "Tool state library could not be read.", payload: null };
++    }
++    if (!allowOverwrite && Object.prototype.hasOwnProperty.call(library, toolStateId)) {
++      return { ok: false, message: `Tool state ID '${toolStateId}' already exists. Enter a new tool state ID before creating and opening.`, payload: null };
++    }
++    const payloadValidation = this.validateWorkspaceToolStatePayload(toolStatePayload, `tools.workspace-v2.savedToolStates.${toolStateId}`);
++    if (!payloadValidation.ok) {
++      return { ok: false, message: payloadValidation.message, payload: null };
++    }
++    if (this.isBlockedAlternatePaletteToolState(toolStateId, toolStatePayload)) {
++      return { ok: false, message: this.singleActivePaletteLibraryMessage(), payload: null };
++    }
++    const activation = this.activateWorkspaceToolState(toolStateId, toolStatePayload, sourceLabel);
++    if (!activation.ok) {
++      return { ok: false, message: activation.message, payload: null };
++    }
++    library[toolStateId] = this.cloneToolStateValue(activation.payload);
++    this.writeToolStateLibrary(library);
++    if (addRecentEntry) {
++      this.addRecentToolStateEntry(toolStateId, activation.payload.toolId, activation.payload);
++    }
++    this.renderToolStateLibrary();
++    return { ok: true, message: "", payload: activation.payload };
++  }
++
+   saveNamedToolState(overwriteExisting) {
+     const toolStateName = this.selectedToolStateName();
+     if (!toolStateName) {
+@@ -4184,6 +4352,10 @@ class WorkspaceV2ToolStateProducer {
+       this.statusNode.textContent = "Select a toolState-capable V2 tool before opening tool state.";
+       return;
+     }
++    const toolStateId = this.selectedToolStateIdForProducerAction("creating and opening tool state");
++    if (!toolStateId) {
++      return;
++    }
+     if (!this.isValidToolStatePayload(this.currentToolStatePayload)) {
+       this.statusNode.textContent = "No tool state payload is available. Load a tool state, import JSON, apply share link, or load a library tool state first.";
+       return;
+@@ -4206,15 +4378,17 @@ class WorkspaceV2ToolStateProducer {
+       this.statusNode.textContent = `Launch blocked. toolStateContext.toolId '${typeof toolStateContext.toolId === "string" ? toolStateContext.toolId.trim() : ""}' does not match selected tool '${toolId}'.`;
+       return;
+     }
+-    const activation = this.activateWorkspaceToolState(this.createHostContextToolStateId(toolId), toolStateContext, this.currentToolStateSource || "workspace-v2");
+-    if (!activation.ok) {
+-      this.statusNode.textContent = activation.message;
++    const saveAndActivate = this.saveAndActivateProducerToolState(toolStateId, toolStateContext, this.currentToolStateSource || "workspace-v2", false, true);
++    if (!saveAndActivate.ok) {
++      this.statusNode.textContent = saveAndActivate.message;
+       return;
+     }
+-    const hostContextId = this.currentHostContextId;
+-    this.addRecentToolStateEntry(hostContextId, toolId, activation.payload);
+-    const launchUrl = this.buildToolLaunchUrl(toolId, hostContextId);
+-    this.statusNode.textContent = `Tool state created.\nTool: ${toolId}\nHostContextId: ${hostContextId}\nURL: tools/${toolId}/index.html?hostContextId=${hostContextId}`;
++    this.toolStateNameNode.value = toolStateId;
++    this.updateToolStateLibraryActionState();
++    this.syncWorkspaceManifestTextarea();
++    const launchUrl = this.buildToolLaunchUrl(toolId, toolStateId);
++    this.statusNode.textContent = `Tool state created and opened.\nTool: ${toolId}\nTool State ID: ${toolStateId}\nURL: tools/${toolId}/index.html?hostContextId=${toolStateId}`;
++    this.setWorkspaceHostContextIdUrl(toolStateId);
+     window.location.href = launchUrl;
    }
  

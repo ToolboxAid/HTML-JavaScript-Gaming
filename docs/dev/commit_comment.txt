@@ -1,1 +1,1 @@
-Clarify Workspace V2 tools output vs active/saved toolState UX with explicit direct publish action and published tools list - PR_26124_018-clarify-tools-vs-toolstate-ux
+Clarify Workspace V2 toolState lifecycle ownership across Producer, Tool State Library, and Published Tools with explicit named create/load/promotion flows - PR_26124_018-workspace-toolstate-lifecycle-ux

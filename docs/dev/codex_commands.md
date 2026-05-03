@@ -341,3 +341,10 @@ PR_26124_018-clarify-tools-vs-toolstate-ux
 ```bash
 npx @openai/codex run --model gpt-5.3-codex --reasoning medium "Implement PR_26124_018-clarify-tools-vs-toolstate-ux."
 ```
+
+---
+PR_26124_018-workspace-toolstate-lifecycle-ux
+
+```bash
+npx @openai/codex run --model gpt-5.3-codex --reasoning medium "Implement PR_26124_018-workspace-toolstate-lifecycle-ux."
+```

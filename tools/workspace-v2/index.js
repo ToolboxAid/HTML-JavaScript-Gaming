@@ -98,6 +98,7 @@ class WorkspaceV2ToolStateProducer {
     this.workspaceManifestGame = null;
     this.workspaceImportedToolEntries = {};
     this.workspaceToolsSummaryNode = null;
+    this.publishedToolsListNode = document.getElementById("workspaceV2PublishedToolsList");
     this.loadFixtureButton.addEventListener("click", () => {
       this.loadSelectedToolState();
     });
@@ -147,6 +148,7 @@ class WorkspaceV2ToolStateProducer {
       this.updateToolStateLibraryActionState();
     });
     this.toolSelect.addEventListener("change", () => {
+      this.seedToolStateIdForSelectedTool();
       this.refreshPaletteOwnershipStateAndUi();
     });
     this.refreshToolStateHistoryButton.addEventListener("click", () => {
@@ -221,6 +223,7 @@ class WorkspaceV2ToolStateProducer {
     this.removePaletteManagerProducerOption();
     this.removeDiagnosticsPanelUi();
     this.applyDefaultWorkspaceToolSelection();
+    this.seedToolStateIdForSelectedTool();
     this.registerScrollTextColorRule();
     this.initializeImportExportSectionStatusNode();
     this.initializeWorkspaceToolsSummaryNode();
@@ -257,6 +260,26 @@ class WorkspaceV2ToolStateProducer {
 
   selectedToolStateName() {
     return typeof this.toolStateNameNode.value === "string" ? this.toolStateNameNode.value : "";
+  }
+
+  generatedToolStateIdForTool(toolId) {
+    const safeToolId = typeof toolId === "string" && toolId.trim() ? toolId.trim() : "tool-state";
+    return `${safeToolId}-${Date.now()}`;
+  }
+
+  seedToolStateIdForSelectedTool() {
+    if (!this.toolStateNameNode) {
+      return;
+    }
+    const currentToolStateId = this.selectedToolStateName().trim();
+    if (currentToolStateId) {
+      return;
+    }
+    const toolId = this.ensureSelectedToolStateProducerToolId();
+    if (!toolId) {
+      return;
+    }
+    this.toolStateNameNode.value = this.generatedToolStateIdForTool(toolId);
   }
 
   initializeImportExportSectionStatusNode() {
@@ -338,14 +361,77 @@ class WorkspaceV2ToolStateProducer {
     return entries;
   }
 
+  renderedPublishedTools() {
+    return this.workspaceToolSummaryEntries().filter((toolId) => toolId !== "workspace-v2");
+  }
+
+  copyPublishedToolToToolState(toolId) {
+    if (typeof toolId !== "string" || !toolId.trim()) {
+      this.setLibraryStatus("Copy to Tool State blocked. Published toolId is missing.");
+      return;
+    }
+    if (toolId.trim() === "palette-browser") {
+      this.setLibraryStatus("Copy to Tool State blocked. tools.palette-browser is global palette state.");
+      return;
+    }
+    if (!Object.prototype.hasOwnProperty.call(this.workspaceImportedToolEntries, toolId.trim())) {
+      this.setLibraryStatus(`Copy to Tool State blocked. tools.${toolId.trim()} is missing.`);
+      return;
+    }
+    const payloadJson = this.cloneToolStateValue(this.workspaceImportedToolEntries[toolId.trim()]);
+    const toolStatePayload = this.withToolStateVersion({
+      toolId: toolId.trim(),
+      payloadJson
+    });
+    const payloadValidation = this.validateWorkspaceToolStatePayload(toolStatePayload, `tools.${toolId.trim()}`);
+    if (!payloadValidation.ok) {
+      this.setLibraryStatus(payloadValidation.message);
+      return;
+    }
+    const library = this.readToolStateLibrary();
+    if (library === null) {
+      return;
+    }
+    let toolStateId = this.generatedToolStateIdForTool(toolId.trim());
+    while (Object.prototype.hasOwnProperty.call(library, toolStateId)) {
+      toolStateId = this.generatedToolStateIdForTool(toolId.trim());
+    }
+    library[toolStateId] = toolStatePayload;
+    this.writeToolStateLibrary(library);
+    this.renderToolStateLibrary();
+    this.toolStateNameNode.value = toolStateId;
+    this.updateToolStateLibraryActionState();
+    this.setLibraryStatus(`Published tools.${toolId.trim()} copied to saved tool state '${toolStateId}'.`);
+  }
+
   renderWorkspaceToolsSummary() {
     if (!this.workspaceToolsSummaryNode) {
       return;
     }
-    const entries = this.workspaceToolSummaryEntries();
+    const entries = this.renderedPublishedTools();
     this.workspaceToolsSummaryNode.textContent = entries.length > 0
       ? entries.join(", ")
       : "none";
+    if (!this.publishedToolsListNode) {
+      return;
+    }
+    this.publishedToolsListNode.replaceChildren();
+    entries.forEach((toolId) => {
+      const item = document.createElement("li");
+      const label = document.createElement("span");
+      label.textContent = `tools.${toolId}`;
+      item.append(label);
+      if (toolId !== "palette-browser") {
+        const copyButton = document.createElement("button");
+        copyButton.type = "button";
+        copyButton.textContent = "Copy to Tool State";
+        copyButton.addEventListener("click", () => {
+          this.copyPublishedToolToToolState(toolId);
+        });
+        item.append(document.createTextNode(" "), copyButton);
+      }
+      this.publishedToolsListNode.appendChild(item);
+    });
   }
 
   setImportExportStatus(message) {
@@ -747,16 +833,20 @@ class WorkspaceV2ToolStateProducer {
       return;
     }
     this.toolSelect.value = toolId;
+    this.seedToolStateIdForSelectedTool();
+    const toolStateId = this.selectedToolStateName().trim();
+    if (!this.isValidNewToolStateId(toolStateId)) {
+      this.statusNode.textContent = "Workspace V2 initialization blocked: generated tool state ID is invalid.";
+      return;
+    }
     const initialPayload = this.createProducerPayloadForTool(toolId);
-    this.setCurrentToolStatePayload(initialPayload, "workspace-v2-init");
-    const hostContextId = this.createHostContextToolStateId(toolId);
-    const activation = this.activateWorkspaceToolState(hostContextId, initialPayload, "workspace-v2-init");
+    const activation = this.activateWorkspaceToolState(toolStateId, initialPayload, "workspace-v2-init");
     if (!activation.ok) {
       this.statusNode.textContent = activation.message;
       return;
     }
     this.syncWorkspaceManifestTextarea();
-    this.statusNode.textContent = `Workspace V2 initialized.\nTool: ${toolId}\nHostContextId: ${hostContextId}\nTool state is active for Save Tool State.`;
+    this.statusNode.textContent = `Workspace V2 initialized.\nTool: ${toolId}\nTool State ID: ${toolStateId}\nTool state is active for workspace editing.`;
   }
 
   hasActiveWorkspaceToolStateForSave() {
@@ -1360,11 +1450,29 @@ class WorkspaceV2ToolStateProducer {
       return;
     }
     const activeToolId = typeof activeToolState.toolId === "string" ? activeToolState.toolId.trim() : "";
-    this.promoteToolStatePayloadToWorkspaceTools(
+    const promoted = this.promoteToolStatePayloadToWorkspaceTools(
       activeToolState,
       "tools.workspace-v2.activeToolState",
       `Active tool state '${activeToolId || "unknown"}'`
     );
+    if (!promoted) {
+      return;
+    }
+    const library = this.readToolStateLibrary();
+    if (library !== null && this.currentHostContextId && Object.prototype.hasOwnProperty.call(library, this.currentHostContextId)) {
+      delete library[this.currentHostContextId];
+      this.writeToolStateLibrary(library);
+      this.renderToolStateLibrary();
+    }
+    if (this.currentHostContextId) {
+      sessionStorage.removeItem(this.currentHostContextId);
+      this.currentHostContextId = "";
+      this.setCurrentToolStatePayload(null, "");
+      this.workspaceJsonNode.value = "";
+      this.resetUrlState(false);
+      this.refreshWorkspaceToolStateUiStateModel("refresh_load");
+    }
+    this.statusNode.textContent = `Active tool state '${activeToolId || "unknown"}' promoted to tools.${activeToolId || "unknown"} and cleared from workspace draft state.`;
   }
 
   createDirectToolsEntry() {
@@ -1927,7 +2035,10 @@ class WorkspaceV2ToolStateProducer {
     if (!promoted) {
       return;
     }
-    this.setLibraryStatus(`Saved tool state '${toolStateId.trim()}' promoted to tools.`);
+    delete library[toolStateId.trim()];
+    this.writeToolStateLibrary(library);
+    this.renderToolStateLibrary();
+    this.setLibraryStatus(`Saved tool state '${toolStateId.trim()}' promoted to tools and removed from Tool State Library.`);
   }
 
   loadSavedToolStateById(toolStateId) {
@@ -3545,6 +3656,10 @@ class WorkspaceV2ToolStateProducer {
       this.statusNode.textContent = "Select a toolState-capable V2 tool before loading tool state.";
       return;
     }
+    const toolStateId = this.selectedToolStateIdForProducerAction("loading tool state");
+    if (!toolStateId) {
+      return;
+    }
     try {
       const response = await fetch(this.fixturePathForTool(toolId), { cache: "no-store" });
       if (!response.ok) {
@@ -3569,26 +3684,27 @@ class WorkspaceV2ToolStateProducer {
         this.setCurrentToolStatePayload(null, "");
         return;
       }
-      const fixtureHostContextId = typeof fixture.hostContextId === "string" && fixture.hostContextId.trim()
-        ? fixture.hostContextId.trim()
-        : this.createHostContextToolStateId(toolId);
       const sizeValidation = this.validateToolStatePayloadSize(normalizedFixtureToolState.value);
       if (!sizeValidation.ok) {
         this.statusNode.textContent = sizeValidation.message;
         this.setCurrentToolStatePayload(null, "");
         return;
       }
-      const activation = this.activateWorkspaceToolState(fixtureHostContextId, normalizedFixtureToolState.value, `fixture:${toolId}`);
-      if (!activation.ok) {
-        this.statusNode.textContent = activation.message;
+    const saveAndActivate = this.saveAndActivateProducerToolState(toolStateId, normalizedFixtureToolState.value, `fixture:${toolId}`, true, true);
+      if (!saveAndActivate.ok) {
+        this.statusNode.textContent = saveAndActivate.message;
         return;
       }
+      this.toolStateNameNode.value = toolStateId;
+      this.updateToolStateLibraryActionState();
       if (!this.syncWorkspaceManifestTextarea()) {
         this.statusNode.textContent = "Fixture loaded but workspace manifest sync failed.";
         return;
       }
       this.ensureSelectedToolStateProducerToolId();
-      this.statusNode.textContent = `Fixture loaded for ${toolId}.\nTool state payload is ready for launch, export, share, or library save.`;
+      this.statusNode.textContent = `Tool state loaded and opened.\nTool: ${toolId}\nTool State ID: ${toolStateId}`;
+      this.setWorkspaceHostContextIdUrl(toolStateId);
+      window.location.href = this.buildToolLaunchUrl(toolId, toolStateId);
     } catch (error) {
       this.setCurrentToolStatePayload(null, "");
       this.currentHostContextId = "";
@@ -3633,6 +3749,17 @@ class WorkspaceV2ToolStateProducer {
     toolUrl.searchParams.set("hostContextId", hostContextId);
     toolUrl.searchParams.set("fromTool", "workspace-v2");
     return toolUrl.toString();
+  }
+
+  setWorkspaceHostContextIdUrl(hostContextId) {
+    if (typeof hostContextId !== "string" || !hostContextId.trim()) {
+      return;
+    }
+    const nextUrl = new URL(window.location.href);
+    nextUrl.searchParams.set("hostContextId", hostContextId.trim());
+    if (window.history && typeof window.history.replaceState === "function") {
+      window.history.replaceState({}, "", `${nextUrl.pathname}${nextUrl.search}${nextUrl.hash}`);
+    }
   }
 
   syncWorkspaceManifestTextarea() {
@@ -4073,6 +4200,47 @@ class WorkspaceV2ToolStateProducer {
     }
   }
 
+  selectedToolStateIdForProducerAction(actionLabel) {
+    const toolStateId = this.selectedToolStateName().trim();
+    if (!toolStateId) {
+      this.setLibraryStatus(`Enter a tool state ID before ${actionLabel}.`);
+      return "";
+    }
+    if (!this.isValidNewToolStateId(toolStateId)) {
+      this.setLibraryStatus("Invalid tool state ID. Use letters, numbers, hyphen, or underscore only.");
+      return "";
+    }
+    return toolStateId;
+  }
+
+  saveAndActivateProducerToolState(toolStateId, toolStatePayload, sourceLabel, allowOverwrite, addRecentEntry) {
+    const library = this.readToolStateLibrary();
+    if (library === null) {
+      return { ok: false, message: "Tool state library could not be read.", payload: null };
+    }
+    if (!allowOverwrite && Object.prototype.hasOwnProperty.call(library, toolStateId)) {
+      return { ok: false, message: `Tool state ID '${toolStateId}' already exists. Enter a new tool state ID before creating and opening.`, payload: null };
+    }
+    const payloadValidation = this.validateWorkspaceToolStatePayload(toolStatePayload, `tools.workspace-v2.savedToolStates.${toolStateId}`);
+    if (!payloadValidation.ok) {
+      return { ok: false, message: payloadValidation.message, payload: null };
+    }
+    if (this.isBlockedAlternatePaletteToolState(toolStateId, toolStatePayload)) {
+      return { ok: false, message: this.singleActivePaletteLibraryMessage(), payload: null };
+    }
+    const activation = this.activateWorkspaceToolState(toolStateId, toolStatePayload, sourceLabel);
+    if (!activation.ok) {
+      return { ok: false, message: activation.message, payload: null };
+    }
+    library[toolStateId] = this.cloneToolStateValue(activation.payload);
+    this.writeToolStateLibrary(library);
+    if (addRecentEntry) {
+      this.addRecentToolStateEntry(toolStateId, activation.payload.toolId, activation.payload);
+    }
+    this.renderToolStateLibrary();
+    return { ok: true, message: "", payload: activation.payload };
+  }
+
   saveNamedToolState(overwriteExisting) {
     const toolStateName = this.selectedToolStateName();
     if (!toolStateName) {
@@ -4184,6 +4352,10 @@ class WorkspaceV2ToolStateProducer {
       this.statusNode.textContent = "Select a toolState-capable V2 tool before opening tool state.";
       return;
     }
+    const toolStateId = this.selectedToolStateIdForProducerAction("creating and opening tool state");
+    if (!toolStateId) {
+      return;
+    }
     if (!this.isValidToolStatePayload(this.currentToolStatePayload)) {
       this.statusNode.textContent = "No tool state payload is available. Load a tool state, import JSON, apply share link, or load a library tool state first.";
       return;
@@ -4206,15 +4378,17 @@ class WorkspaceV2ToolStateProducer {
       this.statusNode.textContent = `Launch blocked. toolStateContext.toolId '${typeof toolStateContext.toolId === "string" ? toolStateContext.toolId.trim() : ""}' does not match selected tool '${toolId}'.`;
       return;
     }
-    const activation = this.activateWorkspaceToolState(this.createHostContextToolStateId(toolId), toolStateContext, this.currentToolStateSource || "workspace-v2");
-    if (!activation.ok) {
-      this.statusNode.textContent = activation.message;
+    const saveAndActivate = this.saveAndActivateProducerToolState(toolStateId, toolStateContext, this.currentToolStateSource || "workspace-v2", false, true);
+    if (!saveAndActivate.ok) {
+      this.statusNode.textContent = saveAndActivate.message;
       return;
     }
-    const hostContextId = this.currentHostContextId;
-    this.addRecentToolStateEntry(hostContextId, toolId, activation.payload);
-    const launchUrl = this.buildToolLaunchUrl(toolId, hostContextId);
-    this.statusNode.textContent = `Tool state created.\nTool: ${toolId}\nHostContextId: ${hostContextId}\nURL: tools/${toolId}/index.html?hostContextId=${hostContextId}`;
+    this.toolStateNameNode.value = toolStateId;
+    this.updateToolStateLibraryActionState();
+    this.syncWorkspaceManifestTextarea();
+    const launchUrl = this.buildToolLaunchUrl(toolId, toolStateId);
+    this.statusNode.textContent = `Tool state created and opened.\nTool: ${toolId}\nTool State ID: ${toolStateId}\nURL: tools/${toolId}/index.html?hostContextId=${toolStateId}`;
+    this.setWorkspaceHostContextIdUrl(toolStateId);
     window.location.href = launchUrl;
   }
 

@@ -13,8 +13,8 @@ test("workspace v2 launches asset manager and add/remove is reflected in export"
 
     // 2) Producer launch to Asset Manager V2
     await page.locator("#workspaceV2ToolSelect").selectOption("asset-manager-v2");
+    await page.locator("#workspaceV2ToolStateName").fill("asset-manager-v2-ui-001");
     await ctrlTapClick(page, page.getByRole("button", { name: "Load Tool State" }));
-    await ctrlTapClick(page, page.getByRole("button", { name: "Create & Open Tool State" }));
     await expect(page).toHaveURL(/\/tools\/asset-manager-v2\/index\.html/);
     await expect(page).toHaveTitle("Asset Manager V2");
     await expect(page.locator("#assetBrowserV2ContractReadout")).toContainText("payloadJson.assetCatalog valid");
@@ -70,8 +70,8 @@ test("workspace v2 launches asset manager and add/remove is reflected in export"
     const manifestBeforePromoteText = await page.locator("#workspaceV2ImportJson").inputValue();
     const manifestBeforePromote = JSON.parse(manifestBeforePromoteText);
     expect(Object.prototype.hasOwnProperty.call(manifestBeforePromote.tools || {}, "asset-manager-v2")).toBe(false);
-    await ctrlTapClick(page, page.getByRole("button", { name: "Promote Active Tool State to Tools" }));
-    await expect(page.locator("#workspaceV2Status")).toContainText("promoted to tools.asset-manager-v2");
+    await ctrlTapClick(page, page.getByRole("button", { name: "Create Direct Tools Entry" }));
+    await expect(page.locator("#workspaceV2Status")).toContainText("Direct tools entry created at tools.asset-manager-v2");
     await ctrlTapClick(page, page.getByRole("button", { name: "Export Workspace Tool State JSON" }));
     const exportedJsonText = await page.locator("#workspaceV2ImportJson").inputValue();
     const exported = JSON.parse(exportedJsonText);

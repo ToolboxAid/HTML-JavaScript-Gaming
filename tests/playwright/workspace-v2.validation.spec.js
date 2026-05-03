@@ -30,8 +30,11 @@ test.describe("Workspace V2 validation coverage", () => {
 
       await page.locator("#workspaceV2ToolSelect").selectOption("asset-manager-v2");
       await page.locator("#workspaceV2LoadFixtureButton").click();
-      await expect(page.locator("#workspaceV2Status")).toContainText("Fixture loaded for asset-manager-v2.");
+      await expect(page).toHaveURL(/\/tools\/asset-manager-v2\/index\.html/);
+      await page.goBack();
+      await expect(page).toHaveURL(/\/tools\/workspace-v2\/index\.html/);
 
+      await page.locator("#workspaceV2ToolStateName").fill("asset-manager-v2-create-open-001");
       await ctrlTapClick(page, page.getByRole("button", { name: "Create & Open Tool State" }));
       await expect(page).toHaveURL(/\/tools\/asset-manager-v2\/index\.html/);
 
@@ -150,7 +153,11 @@ test.describe("Workspace V2 validation coverage", () => {
       await page.goto(`${server.baseUrl}/tools/workspace-v2/index.html`);
       await ctrlTapClick(page, page.getByRole("button", { name: "Full Reset" }));
       await page.locator("#workspaceV2ToolSelect").selectOption("asset-manager-v2");
+      await page.locator("#workspaceV2ToolStateName").fill("asset-manager-v2-roundtrip-001");
       await ctrlTapClick(page, page.getByRole("button", { name: "Load Tool State" }));
+      await expect(page).toHaveURL(/\/tools\/asset-manager-v2\/index\.html/);
+      await page.goBack();
+      await expect(page).toHaveURL(/\/tools\/workspace-v2\/index\.html/);
 
       const loadedManifest = JSON.parse(await page.locator("#workspaceV2ImportJson").inputValue());
       const exportedManifest = await exportManifestFromTextarea(page);
@@ -172,14 +179,22 @@ test.describe("Workspace V2 validation coverage", () => {
       await ctrlTapClick(page, page.getByRole("button", { name: "Full Reset" }));
 
       await page.locator("#workspaceV2ToolSelect").selectOption("tilemap-studio-v2");
+      await page.locator("#workspaceV2ToolStateName").fill("tilemap-studio-v2-switch-001");
       await page.locator("#workspaceV2LoadFixtureButton").click();
+      await expect(page).toHaveURL(/\/tools\/tilemap-studio-v2\/index\.html/);
+      await page.goBack();
+      await expect(page).toHaveURL(/\/tools\/workspace-v2\/index\.html/);
       let manifest = JSON.parse(await page.locator("#workspaceV2ImportJson").inputValue());
       expect(manifest.tools?.["workspace-v2"]?.activeToolId).toBe("tilemap-studio-v2");
       expect(manifest.tools?.["workspace-v2"]?.activeToolState?.toolId).toBe("tilemap-studio-v2");
       expect(Object.prototype.hasOwnProperty.call(manifest.tools || {}, "tilemap-studio-v2")).toBe(false);
 
       await page.locator("#workspaceV2ToolSelect").selectOption("vector-map-editor-v2");
+      await page.locator("#workspaceV2ToolStateName").fill("vector-map-editor-v2-switch-001");
       await page.locator("#workspaceV2LoadFixtureButton").click();
+      await expect(page).toHaveURL(/\/tools\/vector-map-editor-v2\/index\.html/);
+      await page.goBack();
+      await expect(page).toHaveURL(/\/tools\/workspace-v2\/index\.html/);
       manifest = JSON.parse(await page.locator("#workspaceV2ImportJson").inputValue());
       expect(manifest.tools?.["workspace-v2"]?.activeToolId).toBe("vector-map-editor-v2");
       expect(manifest.tools?.["workspace-v2"]?.activeToolState?.toolId).toBe("vector-map-editor-v2");
@@ -196,12 +211,15 @@ test.describe("Workspace V2 validation coverage", () => {
       await ctrlTapClick(page, page.getByRole("button", { name: "Full Reset" }));
 
       await page.locator("#workspaceV2ToolSelect").selectOption("tilemap-studio-v2");
+      await page.locator("#workspaceV2ToolStateName").fill("tilemap-studio-v2-direct-001");
       await page.locator("#workspaceV2LoadFixtureButton").click();
+      await expect(page).toHaveURL(/\/tools\/tilemap-studio-v2\/index\.html/);
+      await page.goBack();
+      await expect(page).toHaveURL(/\/tools\/workspace-v2\/index\.html/);
       await expect(page.locator("#workspaceV2ActiveToolStatePublishStatus")).toHaveText("Active in Workspace only");
-      await page.locator("#workspaceV2ToolStateName").fill("tile-state-a");
-      await page.locator("#workspaceV2SaveToolStateButton").click();
 
       let manifest = JSON.parse(await page.locator("#workspaceV2ImportJson").inputValue());
+      expect(manifest.tools?.["workspace-v2"]?.savedToolStates?.["tilemap-studio-v2-direct-001"]).toBeTruthy();
       expect(Object.prototype.hasOwnProperty.call(manifest.tools || {}, "tilemap-studio-v2")).toBe(false);
 
       await page.getByRole("button", { name: "Create Direct Tools Entry" }).click();
@@ -211,9 +229,15 @@ test.describe("Workspace V2 validation coverage", () => {
       await expect(page.locator("#workspaceV2WorkspaceToolsSummary")).toContainText("palette-browser");
       await expect(page.locator("#workspaceV2WorkspaceToolsSummary")).toContainText("tilemap-studio-v2");
       await expect(page.locator("#workspaceV2WorkspaceToolsSummary")).not.toContainText("workspace-v2");
+      await page.getByRole("button", { name: "Copy to Tool State" }).first().click();
+      await expect(page.locator("#workspaceV2LibraryStatus")).toContainText("copied to saved tool state");
 
       await page.locator("#workspaceV2ToolSelect").selectOption("vector-map-editor-v2");
+      await page.locator("#workspaceV2ToolStateName").fill("vector-map-editor-v2-direct-001");
       await page.locator("#workspaceV2LoadFixtureButton").click();
+      await expect(page).toHaveURL(/\/tools\/vector-map-editor-v2\/index\.html/);
+      await page.goBack();
+      await expect(page).toHaveURL(/\/tools\/workspace-v2\/index\.html/);
       manifest = JSON.parse(await page.locator("#workspaceV2ImportJson").inputValue());
       expect(Object.prototype.hasOwnProperty.call(manifest.tools || {}, "vector-map-editor-v2")).toBe(false);
 
