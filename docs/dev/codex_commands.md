@@ -138,3 +138,10 @@ PR_11_313 (single contract rename: asset-manager-v2)
 ```bash
 npx @openai/codex run --model gpt-5.3-codex --reasoning medium "Implement PR_11_313: rename legacy asset browser v2 id to asset-manager-v2 across tool ID, paths, payloads, registry links, tests, and docs with zero old references."
 ```
+
+---
+PR_11_314
+
+```bash
+npx @openai/codex run --model gpt-5.3-codex --reasoning medium "Implement PR_11_314: persist valid Asset Manager V2 payloadJson.assetCatalog into Workspace V2 active session/export path and block invalid writes."
+```

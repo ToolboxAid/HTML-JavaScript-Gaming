@@ -210,6 +210,7 @@ class WorkspaceV2SessionProducer {
     this.initializeWorkspaceToolsSummaryNode();
     this.initializeHiddenImportFileInput();
     this.decodeSessionParamFromUrl();
+    this.restoreActiveSessionFromHostContextIdUrl();
     this.ensureWorkspaceActivePaletteBaseline();
     this.initializeWorkspaceProducerSession();
     this.refreshPaletteOwnershipStateAndUi();
@@ -1549,6 +1550,38 @@ class WorkspaceV2SessionProducer {
     } catch (error) {
       this.statusNode.textContent = `Share session decode failed: ${error instanceof Error ? error.message : "unknown error"}`;
     }
+  }
+
+  restoreActiveSessionFromHostContextIdUrl() {
+    const params = new URL(window.location.href).searchParams;
+    const hostContextId = typeof params.get("hostContextId") === "string" ? params.get("hostContextId").trim() : "";
+    if (!hostContextId) {
+      return;
+    }
+    const serializedPayload = sessionStorage.getItem(hostContextId);
+    if (typeof serializedPayload !== "string") {
+      return;
+    }
+    const parsed = this.safeParseJson(serializedPayload);
+    if (!parsed.ok || !this.isValidSessionPayload(parsed.value)) {
+      return;
+    }
+    const payloadValidation = this.validateWorkspaceToolSessionPayload(parsed.value, `sessionStorage.${hostContextId}`);
+    if (!payloadValidation.ok) {
+      return;
+    }
+    if (parsed.value.toolId !== "asset-manager-v2") {
+      return;
+    }
+    const activation = this.activateWorkspaceSession(hostContextId, parsed.value, "workspace-host-context-url");
+    if (!activation.ok) {
+      return;
+    }
+    if (Array.from(this.toolSelect.options).some((option) => option.value === parsed.value.toolId)) {
+      this.toolSelect.value = parsed.value.toolId;
+    }
+    this.syncWorkspaceManifestTextarea();
+    this.statusNode.textContent = `Workspace V2 restored active session from hostContextId: ${hostContextId}`;
   }
 
   readSessionLibrary() {

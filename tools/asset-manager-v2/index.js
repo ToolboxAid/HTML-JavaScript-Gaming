@@ -185,6 +185,43 @@ class AssetBrowserV2 {
     this.renderCatalog(versionCheck.payload.payloadJson.assetCatalog, versionCheck.payload);
   }
 
+  persistValidSessionForWorkspace(sessionContext, assetCatalog) {
+    if (!this.urlState.hostContextId) {
+      return { ok: false, message: "No hostContextId is available for Workspace V2 persistence." };
+    }
+    if (!sessionContext || typeof sessionContext !== "object" || Array.isArray(sessionContext)) {
+      return { ok: false, message: "Session context is invalid for Workspace V2 persistence." };
+    }
+    if (!sessionContext.payloadJson || typeof sessionContext.payloadJson !== "object" || Array.isArray(sessionContext.payloadJson)) {
+      return { ok: false, message: "payloadJson is invalid for Workspace V2 persistence." };
+    }
+    const payload = {
+      version: "v2",
+      toolId: "asset-manager-v2",
+      payloadJson: {
+        ...sessionContext.payloadJson,
+        assetCatalog: {
+          name: assetCatalog.name.trim(),
+          entries: assetCatalog.entries.map((entry) => ({
+            id: entry.id.trim(),
+            label: entry.label.trim(),
+            kind: entry.kind.trim(),
+            path: entry.path.trim()
+          }))
+        }
+      }
+    };
+    const serializedPayload = JSON.stringify(payload);
+    if (serializedPayload.length > this.sessionPayloadBytesLimit) {
+      return {
+        ok: false,
+        message: `Session size exceeds allowed limit for Workspace V2 persistence. Payload is ${serializedPayload.length} bytes and limit is ${this.sessionPayloadBytesLimit} bytes.`
+      };
+    }
+    window.sessionStorage.setItem(this.urlState.hostContextId, serializedPayload);
+    return { ok: true, message: "" };
+  }
+
   renderCatalog(assetCatalog, sessionContext) {
     if (typeof assetCatalog.name !== "string" || !assetCatalog.name.trim()) {
       this.renderError("Asset Manager V2 session data is invalid. Expected assetCatalog.name.");
@@ -216,7 +253,10 @@ class AssetBrowserV2 {
 
     document.getElementById("assetBrowserV2SessionReadout").textContent = `Session: loaded\nContext: ${this.urlState.hostContextId}\nTool: ${typeof sessionContext.toolId === "string" && sessionContext.toolId.trim() ? sessionContext.toolId.trim() : "not provided"}${this.optionalUrlStateSummary() ? `\nURL State: ${this.optionalUrlStateSummary()}` : ""}`;
     document.getElementById("assetBrowserV2ContractReadout").textContent = "payloadJson loaded\npayloadJson.assetCatalog valid\nentries[] valid";
-    document.getElementById("assetBrowserV2WorkspaceReadout").textContent = "Workspace session context was read. Workspace writes are deferred for this isolated V2 entry.";
+    const persistence = this.persistValidSessionForWorkspace(sessionContext, assetCatalog);
+    document.getElementById("assetBrowserV2WorkspaceReadout").textContent = persistence.ok
+      ? "Workspace session context was read and persisted for Workspace V2 export."
+      : `Workspace session context was read but could not be persisted: ${persistence.message}`;
     document.getElementById("assetBrowserV2Title").textContent = assetCatalog.name.trim();
     document.getElementById("assetBrowserV2Count").textContent = `${assetCatalog.entries.length} asset${assetCatalog.entries.length === 1 ? "" : "s"}`;
     document.getElementById("assetBrowserV2State").textContent = assetCatalog.entries.length === 0

@@ -1,1 +1,1 @@
-Rename legacy asset browser v2 id to asset-manager-v2 as a single repo-wide contract with zero legacy references - PR 11.313
+Persist valid Asset Manager V2 assetCatalog into Workspace V2 activeSession export path and block invalid write-back - PR 11.314
