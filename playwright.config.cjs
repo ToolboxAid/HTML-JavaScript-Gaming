@@ -15,7 +15,8 @@ module.exports = {
   ],
   reporter: [
     ["list"],
-    ["html", { outputFolder: "tests/results/report", open: "always" }]
+    ["html", { outputFolder: "tests/results/report", open: "always" }],
+    ["json", { outputFile: "tests/results/playwright-results.json" }]
   ],
   use: {
     headless: false,

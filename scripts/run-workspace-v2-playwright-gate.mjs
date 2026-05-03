@@ -42,9 +42,31 @@ const failedCount = failedMatch ? Number.parseInt(failedMatch[2], 10) : 0;
 
 console.log(`Workspace V2 Playwright Gate Summary: passed=${passedCount} failed=${failedCount}`);
 
+const auditSyncResult = spawnSync(
+  command,
+  [path.join(repoRoot, "scripts", "update-tool-completion-audit-from-playwright.mjs")],
+  {
+    cwd: repoRoot,
+    encoding: "utf8",
+    stdio: ["ignore", "pipe", "pipe"]
+  }
+);
+
+if (typeof auditSyncResult.stdout === "string" && auditSyncResult.stdout) {
+  process.stdout.write(auditSyncResult.stdout);
+}
+if (typeof auditSyncResult.stderr === "string" && auditSyncResult.stderr) {
+  process.stderr.write(auditSyncResult.stderr);
+}
+
 if (result.error) {
   console.error(`Workspace V2 Playwright gate execution failed: ${result.error.message}`);
   process.exitCode = 1;
+} else if (auditSyncResult.error) {
+  console.error(`Workspace V2 audit sync failed: ${auditSyncResult.error.message}`);
+  process.exitCode = 1;
+} else if (auditSyncResult.status !== 0) {
+  process.exitCode = typeof auditSyncResult.status === "number" && auditSyncResult.status !== 0 ? auditSyncResult.status : 1;
 } else if (result.status !== 0 || failedCount > 0) {
   process.exitCode = typeof result.status === "number" && result.status !== 0 ? result.status : 1;
 }
