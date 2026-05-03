@@ -25,7 +25,7 @@ function parseAuditToolList() {
   return uniqueTools;
 }
 
-function readFixtureSession(toolId) {
+function readFixtureToolState(toolId) {
   const fixturePath = path.join(fixtureRoot, `${toolId}.json`);
   const fixture = JSON.parse(fs.readFileSync(fixturePath, "utf8"));
   return {
@@ -79,7 +79,7 @@ async function importWorkspaceManifest(page, manifest) {
   });
 }
 
-async function seedSessionAndOpenTool(page, baseUrl, toolId, hostContextId, toolStateContext) {
+async function seedToolStateAndOpenTool(page, baseUrl, toolId, hostContextId, toolStateContext) {
   await page.goto(`${baseUrl}/tools/workspace-v2/index.html`);
   await page.evaluate(({ hostContextId: id, toolStateContext: payload }) => {
     window.sessionStorage.setItem(id, JSON.stringify(payload));
@@ -142,7 +142,7 @@ test("@workspace-v2 tool validation list includes all audited tools", async () =
 test("@workspace-v2 valid workspace manifest payloadJson imports", async ({ page }) => {
   const server = await startRepoServer();
   try {
-    const fixture = readFixtureSession("asset-manager-v2");
+    const fixture = readFixtureToolState("asset-manager-v2");
     const manifest = buildWorkspaceManifest(fixture.toolStateContext, `${fixture.hostContextId}-workspace-valid`);
     await page.goto(`${server.baseUrl}/tools/workspace-v2/index.html`);
     await importWorkspaceManifest(page, manifest);
@@ -155,7 +155,7 @@ test("@workspace-v2 valid workspace manifest payloadJson imports", async ({ page
 test("@workspace-v2 invalid workspace manifest payloadJson is rejected", async ({ page }) => {
   const server = await startRepoServer();
   try {
-    const fixture = readFixtureSession("asset-manager-v2");
+    const fixture = readFixtureToolState("asset-manager-v2");
     const manifest = buildWorkspaceManifest(fixture.toolStateContext, `${fixture.hostContextId}-workspace-invalid`);
     manifest.tools["workspace-v2"].activeToolState.payloadJson = null;
     await page.goto(`${server.baseUrl}/tools/workspace-v2/index.html`);
@@ -175,8 +175,8 @@ for (const toolId of toolIds) {
   test(`@${toolId} valid payloadJson renders`, async ({ page }) => {
     const server = await startRepoServer();
     try {
-      const fixture = readFixtureSession(toolId);
-      await seedSessionAndOpenTool(
+      const fixture = readFixtureToolState(toolId);
+      await seedToolStateAndOpenTool(
         page,
         server.baseUrl,
         toolId,
@@ -194,10 +194,10 @@ for (const toolId of toolIds) {
   test(`@${toolId} invalid payloadJson is rejected without partial render`, async ({ page }) => {
     const server = await startRepoServer();
     try {
-      const fixture = readFixtureSession(toolId);
+      const fixture = readFixtureToolState(toolId);
       const invalidToolState = cloneJson(fixture.toolStateContext);
       invalidToolState.payloadJson = null;
-      await seedSessionAndOpenTool(
+      await seedToolStateAndOpenTool(
         page,
         server.baseUrl,
         toolId,
