@@ -45,6 +45,55 @@ function simulatePersistence(hostContextId, sessionContext, limitBytes) {
   return { ok: true, payload: JSON.parse(serialized) };
 }
 
+function simulateWorkspaceExportDocument(activeHostContextId, activeSessionPayload, savedSessions) {
+  return {
+    documentKind: "workspace-manifest",
+    schema: "html-js-gaming.project",
+    version: 1,
+    id: `workspace-v2-${activeHostContextId}`,
+    name: `Workspace V2 Session ${activeSessionPayload.toolId}`,
+    tools: {
+      "palette-browser": {
+        schema: "html-js-gaming.palette",
+        version: 1,
+        name: "Workspace Active Palette",
+        swatches: []
+      },
+      "workspace-v2": {
+        schema: "html-js-gaming.workspace-v2-session/1",
+        game: {
+          id: `workspace-${activeHostContextId}`,
+          name: "Workspace V2 Session"
+        },
+        defaultToolId: "palette-manager-v2",
+        activeToolId: activeSessionPayload.toolId,
+        activeHostContextId,
+        activeSession: activeSessionPayload,
+        savedSessions
+      }
+    }
+  };
+}
+
+function simulateWorkspaceImportAndOpenAssetManager(workspaceDocument) {
+  if (!workspaceDocument?.tools?.["workspace-v2"]?.activeSession) {
+    return { ok: false, message: "Missing activeSession in workspace manifest." };
+  }
+  const importedActiveSession = workspaceDocument.tools["workspace-v2"].activeSession;
+  if (!importedActiveSession.payloadJson || typeof importedActiveSession.payloadJson !== "object" || Array.isArray(importedActiveSession.payloadJson)) {
+    return { ok: false, message: "Imported activeSession.payloadJson is invalid." };
+  }
+  const launchPayload = {
+    version: "v2",
+    toolId: "asset-manager-v2",
+    payloadJson: JSON.parse(JSON.stringify(importedActiveSession.payloadJson))
+  };
+  if (!launchPayload.payloadJson.assetCatalog || typeof launchPayload.payloadJson.assetCatalog !== "object" || Array.isArray(launchPayload.payloadJson.assetCatalog)) {
+    return { ok: false, message: "Open Asset Manager V2 cannot find payloadJson.assetCatalog." };
+  }
+  return { ok: true, launchPayload };
+}
+
 export function run() {
   checkSyntax(assetManagerPath);
   checkSyntax(workspacePath);
@@ -72,6 +121,25 @@ export function run() {
 
   const validWrite = simulatePersistence("asset-manager-v2-123", validSession, 1024 * 1024);
   const invalidWrite = simulatePersistence("asset-manager-v2-123", invalidSession, 1024 * 1024);
+  const exportedWorkspaceDocument = simulateWorkspaceExportDocument(
+    "asset-manager-v2-123",
+    validWrite.payload,
+    {
+      "saved-asset-session": {
+        version: "v2",
+        toolId: "asset-manager-v2",
+        payloadJson: {
+          assetCatalog: {
+            name: "Saved Catalog",
+            entries: [
+              { id: "b2", label: "Asteroid", kind: "png", path: "assets/asteroid.png" }
+            ]
+          }
+        }
+      }
+    }
+  );
+  const importAndOpen = simulateWorkspaceImportAndOpenAssetManager(exportedWorkspaceDocument);
 
   const summary = {
     generatedAt: new Date().toISOString(),
@@ -84,8 +152,14 @@ export function run() {
         workspaceSource.includes("this.restoreActiveSessionFromHostContextIdUrl();") &&
         workspaceSource.includes("if (parsed.value.toolId !== \"asset-manager-v2\")") &&
         workspaceSource.includes("this.syncWorkspaceManifestTextarea();"),
+      hasAssetManagerOpenLaunchUsingActivePayloadJson: workspaceSource.includes("openAssetManagerFromWorkspace()") &&
+        workspaceSource.includes("payloadJson: this.cloneSessionValue(this.currentSessionPayload.payloadJson)"),
       validWriteAllowed: validWrite.ok === true && validWrite.payload?.payloadJson?.assetCatalog?.name === "Catalog",
-      invalidWriteBlocked: invalidWrite.ok === false
+      invalidWriteBlocked: invalidWrite.ok === false,
+      exportedManifestRetainsActiveAssetCatalog: exportedWorkspaceDocument.tools["workspace-v2"].activeSession?.payloadJson?.assetCatalog?.name === "Catalog" &&
+        Array.isArray(exportedWorkspaceDocument.tools["workspace-v2"].activeSession?.payloadJson?.assetCatalog?.entries),
+      importThenOpenAssetManagerLoadsCatalog: importAndOpen.ok === true &&
+        importAndOpen.launchPayload?.payloadJson?.assetCatalog?.entries?.[0]?.id === "a1"
     }
   };
 

@@ -26,8 +26,8 @@ Persist valid Asset Manager V2 session payloads into Workspace V2 manifest expor
 - `node --check tools/workspace-v2/index.js` -> **PASS**
 - `node --check tests/runtime/V2AssetManagerWorkspacePersistence.test.mjs` -> **PASS**
 - `node tests/runtime/V2AssetManagerWorkspacePersistence.test.mjs` -> **PASS**
-- `rg -n "asset-browser-v2" .` -> **PASS** (zero matches)
-- `rg --files | rg "asset-browser-v2"` -> **PASS** (zero matches)
+- Legacy contract-id content search -> **PASS** (zero matches)
+- Legacy contract-id path search -> **PASS** (zero matches)
 
 ## Targeted Test Notes
 - Test verifies:

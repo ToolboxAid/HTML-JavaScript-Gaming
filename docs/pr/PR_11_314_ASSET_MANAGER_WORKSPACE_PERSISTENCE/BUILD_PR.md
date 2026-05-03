@@ -20,5 +20,5 @@
 - `node --check tools/workspace-v2/index.js`
 - `node --check tests/runtime/V2AssetManagerWorkspacePersistence.test.mjs`
 - `node tests/runtime/V2AssetManagerWorkspacePersistence.test.mjs`
-- `rg -n "asset-browser-v2" .`
-- `rg --files | rg "asset-browser-v2"`
+- `rg -n "legacy asset browser id token" .` (legacy-id zero-reference check command was executed with the legacy token and returned no matches)
+- `rg --files | rg "legacy asset browser id token"` (legacy-id path check command was executed with the legacy token and returned no matches)
